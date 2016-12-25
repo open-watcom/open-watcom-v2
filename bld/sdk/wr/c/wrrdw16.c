@@ -123,7 +123,7 @@ long int WRReadWin16ExeHeader( WResFileID fid, os2_exe_header *header )
     ok = (fid != WRES_NIL_HANDLE && header != NULL);
 
     if( ok ) {
-        ok = ((old_pos = RCSEEK( fid, 0x18, SEEK_SET )) != -1);
+        ok = ((old_pos = RESSEEK( fid, 0x18, SEEK_SET )) != -1);
     }
 
     /* check the reloc offset */
@@ -133,7 +133,7 @@ long int WRReadWin16ExeHeader( WResFileID fid, os2_exe_header *header )
     }
 
     if( ok ) {
-        ok = (RCSEEK( fid, OS2_NE_OFFSET, SEEK_SET ) != -1);
+        ok = (RESSEEK( fid, OS2_NE_OFFSET, SEEK_SET ) != -1);
     }
 
     /* check header offset */
@@ -143,11 +143,11 @@ long int WRReadWin16ExeHeader( WResFileID fid, os2_exe_header *header )
     }
 
     if( ok ) {
-        ok = (RCSEEK( fid, offset, SEEK_SET ) != -1);
+        ok = (RESSEEK( fid, offset, SEEK_SET ) != -1);
     }
 
     if( ok ) {
-        ok = (RCREAD( fid, header, sizeof( os2_exe_header ) ) ==
+        ok = (RESREAD( fid, header, sizeof( os2_exe_header ) ) ==
               sizeof( os2_exe_header ));
     }
 
@@ -157,7 +157,7 @@ long int WRReadWin16ExeHeader( WResFileID fid, os2_exe_header *header )
     }
 
     if( old_pos != -1 ) {
-        ok = (RCSEEK( fid, old_pos, SEEK_SET ) != -1 && ok);
+        ok = (RESSEEK( fid, old_pos, SEEK_SET ) != -1 && ok);
     }
 
     if( ok ) {
@@ -217,11 +217,11 @@ bool WRLoadWResDirFromWin16EXE( WResFileID fid, WResDir *dir )
     }
 
     if( ok ) {
-        ok = (RCSEEK( fid, offset, SEEK_SET ) != -1);
+        ok = (RESSEEK( fid, offset, SEEK_SET ) != -1);
     }
 
     if( ok ) {
-        ok = (RCSEEK( fid, win_header.resource_off, SEEK_CUR ) != -1);
+        ok = (RESSEEK( fid, win_header.resource_off, SEEK_CUR ) != -1);
     }
 
     if( ok ) {
@@ -249,7 +249,7 @@ bool WRLoadWResDirFromWin16EXE( WResFileID fid, WResDir *dir )
             (*dir)->NumResources += type_node->Info.NumResources;
             type_node = WRReadWResTypeNodeFromExe ( fid, align_shift );
         }
-        name_offset = RCTELL( fid ) - offset - win_header.resource_off;
+        name_offset = RESTELL( fid ) - offset - win_header.resource_off;
         ok = WRReadResourceNames( *dir, fid, name_offset );
     }
 
@@ -341,7 +341,7 @@ WResResNode *WRReadWResResNodeFromExe( WResFileID fid, uint_16 align )
         return( NULL );
     }
 
-    if( RCREAD( fid, &name_info, sizeof( WRNameInfo ) ) != sizeof( WRNameInfo ) ) {
+    if( RESREAD( fid, &name_info, sizeof( WRNameInfo ) ) != sizeof( WRNameInfo ) ) {
         return( NULL );
     }
 
@@ -391,7 +391,7 @@ int WRReadResourceNames( WResDir dir, WResFileID fid, uint_32 name_offset )
             }
         } else {
             name = (char *)MemAlloc( name_len + 1 );
-            if( RCREAD( fid, name, name_len ) != name_len ) {
+            if( RESREAD( fid, name, name_len ) != name_len ) {
                 return( FALSE );
             }
             name[name_len] = 0;
@@ -535,7 +535,7 @@ uint_32 WRReadNameTable( WResDir dir, WResFileID fid, uint_8 **name_table,
             /* if there are two name tables we ignore all but the first */
             res_len = res_node->Head->Info.Length;
             res_offset = res_node->Head->Info.Offset;
-            if( RCSEEK( fid, res_offset, SEEK_SET ) == -1 ) {
+            if( RESSEEK( fid, res_offset, SEEK_SET ) == -1 ) {
                 return( FALSE );
             }
         } else {
@@ -565,7 +565,7 @@ uint_32 WRReadNameTable( WResDir dir, WResFileID fid, uint_8 **name_table,
      * and must abort the reading of the name resource!!
      */
     if( num_leftover != 0 && leftover == NULL ) {
-        if( RCSEEK( fid, num_leftover, SEEK_CUR ) == -1 ) {
+        if( RESSEEK( fid, num_leftover, SEEK_CUR ) == -1 ) {
             return( 0 );
         }
         num_read += num_leftover;
@@ -581,7 +581,7 @@ uint_32 WRReadNameTable( WResDir dir, WResFileID fid, uint_8 **name_table,
         memcpy( *name_table, leftover, num_leftover );
     }
 
-    if( RCREAD( fid, *name_table + num_leftover, len ) != len ) {
+    if( RESREAD( fid, *name_table + num_leftover, len ) != len ) {
         /* hmmmm... the read failed */
     }
 

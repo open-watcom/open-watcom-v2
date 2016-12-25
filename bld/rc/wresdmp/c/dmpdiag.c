@@ -121,7 +121,7 @@ bool DumpDialog( uint_32 offset, uint_32 length, WResFileID fid )
 
     length = length;
     head.NumOfItems = 0;
-    prevpos = RCSEEK( fid, offset, SEEK_SET );
+    prevpos = RESSEEK( fid, offset, SEEK_SET );
     error = ( prevpos == -1 );
 
     if( !error ) {
@@ -139,17 +139,17 @@ bool DumpDialog( uint_32 offset, uint_32 length, WResFileID fid )
             printf( "   %3d. ", itemnum + 1 );
             PrintDialogBoxControl( &control );
             if( control.ClassID != NULL ) {
-                RCFREE( control.ClassID );
+                RESFREE( control.ClassID );
             }
             if( control.Text != NULL ) {
-                RCFREE( control.Text );
+                RESFREE( control.Text );
             }
         }
     }
 
     ResFreeDialogBoxHeaderPtrs( &head );
 
-    RCSEEK( fid, prevpos, SEEK_SET );
+    RESSEEK( fid, prevpos, SEEK_SET );
 
     return( error );
 }

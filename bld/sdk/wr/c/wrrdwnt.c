@@ -114,7 +114,7 @@ long int WRReadWinNTExeHeader( WResFileID fid, exe_pe_header *header )
     ok = (fid != WRES_NIL_HANDLE && header != NULL);
 
     if( ok ) {
-        ok = ((old_pos = RCSEEK( fid, 0x18, SEEK_SET )) != -1);
+        ok = ((old_pos = RESSEEK( fid, 0x18, SEEK_SET )) != -1);
     }
 
     /* check the reloc offset */
@@ -124,7 +124,7 @@ long int WRReadWinNTExeHeader( WResFileID fid, exe_pe_header *header )
     }
 
     if( ok ) {
-        ok = (RCSEEK( fid, PE_OFFSET, SEEK_SET ) != -1);
+        ok = (RESSEEK( fid, PE_OFFSET, SEEK_SET ) != -1);
     }
 
     /* check header offset */
@@ -134,15 +134,15 @@ long int WRReadWinNTExeHeader( WResFileID fid, exe_pe_header *header )
     }
 
     if( ok ) {
-        ok = (RCSEEK( fid, offset, SEEK_SET ) != -1);
+        ok = (RESSEEK( fid, offset, SEEK_SET ) != -1);
     }
 
     if( ok ) {
-        ok = (RCREAD( fid, &PE32( *header ), sizeof( pe_header ) ) == sizeof( pe_header ));
+        ok = (RESREAD( fid, &PE32( *header ), sizeof( pe_header ) ) == sizeof( pe_header ));
         if( ok && IS_PE64( *header ) ) {
-            ok = (RCSEEK( fid, offset, SEEK_SET ) != -1);
+            ok = (RESSEEK( fid, offset, SEEK_SET ) != -1);
             if( ok ) {
-                ok = (RCREAD( fid, &PE64( *header ), sizeof( pe_header64 ) ) == sizeof( pe_header64 ));
+                ok = (RESREAD( fid, &PE64( *header ), sizeof( pe_header64 ) ) == sizeof( pe_header64 ));
             }
         }
     }
@@ -153,7 +153,7 @@ long int WRReadWinNTExeHeader( WResFileID fid, exe_pe_header *header )
     }
 
     if( old_pos != -1 ) {
-        ok = (RCSEEK( fid, old_pos, SEEK_SET ) != -1 && ok);
+        ok = (RESSEEK( fid, old_pos, SEEK_SET ) != -1 && ok);
     }
 
     if( !ok ) {
@@ -206,7 +206,7 @@ int WRReadNTObjectTable( WResFileID fid, exe_pe_header *hdr, pe_object **ot )
     }
     *ot = (pe_object *)MemAlloc( size );
     if( *ot != NULL ) {
-        if( RCREAD( fid, *ot, size ) != size ) {
+        if( RESREAD( fid, *ot, size ) != size ) {
             MemFree( *ot );
             *ot = NULL;
         }
@@ -531,11 +531,11 @@ bool WRReadResourceHeader( WResFileID fid, uint_32 offset,
     *rd_entry = NULL;
 
     /* if offset is zero don't perform the seek to beginning of resource directory */
-    ok = (offset == 0 || RCSEEK( fid, offset, SEEK_SET ) != -1);
+    ok = (offset == 0 || RESSEEK( fid, offset, SEEK_SET ) != -1);
 
     /* read the resource directory header */
     if( ok ) {
-        ok = (RCREAD( fid, rd_hdr, sizeof( resource_dir_header ) ) ==
+        ok = (RESREAD( fid, rd_hdr, sizeof( resource_dir_header ) ) ==
               sizeof( resource_dir_header ) );
     }
 
@@ -547,7 +547,7 @@ bool WRReadResourceHeader( WResFileID fid, uint_32 offset,
     }
 
     if( ok ) {
-        ok = (RCREAD( fid, *rd_entry, rde_size ) == rde_size);
+        ok = (RESREAD( fid, *rd_entry, rde_size ) == rde_size);
     }
 
     if( !ok && *rd_entry != NULL ) {
@@ -572,7 +572,7 @@ WResID *WRGetUniCodeWResID( WResFileID fid, uint_32 rva )
     unistr = NULL;
 
     /* seek to the location of the Unicode string */
-    ok = ((old_pos = RCSEEK( fid, offset, SEEK_SET )) != -1);
+    ok = ((old_pos = RESSEEK( fid, offset, SEEK_SET )) != -1);
 
     /* read the Unicode string */
     if( ok ) {
@@ -585,7 +585,7 @@ WResID *WRGetUniCodeWResID( WResFileID fid, uint_32 rva )
     if( ok ) {
         unistr[len] = 0;
         unistr[len + 1] = 0;
-        ok = (RCREAD( fid, unistr, len ) == len);
+        ok = (RESREAD( fid, unistr, len ) == len);
     }
 
     if( ok ) {
@@ -597,7 +597,7 @@ WResID *WRGetUniCodeWResID( WResFileID fid, uint_32 rva )
 
 #if 0
     if( old_pos != -1 ) {
-        ok = (RCSEEK( fid, old_pos, SEEK_SET ) != -1 && ok);
+        ok = (RESSEEK( fid, old_pos, SEEK_SET ) != -1 && ok);
     }
 #endif
 
@@ -621,7 +621,7 @@ bool WRReadResourceEntry( WResFileID fid, uint_32 offset, resource_entry *res_en
 
     /* read the resource entry */
     if( ok ) {
-        ok = (RCREAD( fid, res_entry, sizeof( resource_entry ) ) == sizeof( resource_entry ));
+        ok = (RESREAD( fid, res_entry, sizeof( resource_entry ) ) == sizeof( resource_entry ));
     }
 
     return( ok );

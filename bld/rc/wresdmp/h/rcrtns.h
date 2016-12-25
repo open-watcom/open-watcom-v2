@@ -35,15 +35,17 @@
 
 #include "trmemcvr.h"
 
-#define RCOPEN          res_open
-#define RCCLOSE         res_close
-#define RCWRITE         res_write
-#define RCREAD          res_read
-#define RCSEEK          res_seek
-#define RCTELL          res_tell
+#define RESOPEN         res_open
+#define RESCLOSE        res_close
+#define RESWRITE        res_write
+#define RESREAD         res_read
+#define RESSEEK         res_seek
+#define RESTELL         res_tell
+#define RESIOERR(fh,rc) (rc == -1)
 
-#define RCALLOC         TRMemAlloc
-#define RCFREE          TRMemFree
+#define RESALLOC        TRMemAlloc
+#define RESFREE         TRMemFree
+
 #define RCREALLOC       TRMemRealloc
 
 extern WResFileID       res_open( const char *name, wres_open_mode omode );

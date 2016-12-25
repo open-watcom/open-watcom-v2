@@ -84,7 +84,7 @@ static RcStatus readDBIndex( FILE *fh )
     size_t      size;
 
     size = charInfo.header.num_indices * sizeof( DBIndexEntry );
-    charInfo.index = RCALLOC( size );
+    charInfo.index = RESALLOC( size );
     numread = fread( charInfo.index, 1, size, fh );
     if( numread != size ) {
         return( feof( fh ) ? RS_READ_INCMPLT : RS_READ_ERROR );
@@ -98,7 +98,7 @@ static RcStatus readDBTable( FILE *fh )
     size_t      size;
 
     size = charInfo.header.num_entries * sizeof( uint_16 );
-    charInfo.entries = RCALLOC( size );
+    charInfo.entries = RESALLOC( size );
     numread = fread( charInfo.entries, 1, size, fh );
     if( numread != size ) {
         return( feof( fh ) ? RS_READ_INCMPLT : RS_READ_ERROR );
@@ -185,11 +185,11 @@ void FreeCharTable( void )
 /************************/
 {
     if( charInfo.index != NULL ) {
-        RCFREE( charInfo.index );
+        RESFREE( charInfo.index );
         charInfo.index = NULL;
     }
     if( charInfo.entries != NULL ) {
-        RCFREE( charInfo.entries );
+        RESFREE( charInfo.entries );
         charInfo.entries = NULL;
     }
 }

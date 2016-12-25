@@ -55,11 +55,11 @@ RcStatus CopyExeData( WResFileID in_fid, WResFileID out_fid, uint_32 length )
         if( length < bufflen ) {
             bufflen = length;
         }
-        numread = RCREAD( in_fid, Pass2Info.IoBuffer, bufflen );
+        numread = RESREAD( in_fid, Pass2Info.IoBuffer, bufflen );
         if( numread != bufflen ) {
-            return( RCIOERR( in_fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+            return( RESIOERR( in_fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         }
-        if( RCWRITE( out_fid, Pass2Info.IoBuffer, bufflen ) != bufflen ) {
+        if( RESWRITE( out_fid, Pass2Info.IoBuffer, bufflen ) != bufflen ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -75,11 +75,11 @@ RcStatus CopyExeDataTilEOF( WResFileID in_fid, WResFileID out_fid )
 {
     WResFileSSize   numread;
 
-    while( (numread = RCREAD( in_fid, Pass2Info.IoBuffer, IO_BUFFER_SIZE )) != 0 ) {
-        if( RCIOERR( in_fid, numread ) ) {
+    while( (numread = RESREAD( in_fid, Pass2Info.IoBuffer, IO_BUFFER_SIZE )) != 0 ) {
+        if( RESIOERR( in_fid, numread ) ) {
             return( RS_READ_ERROR );
         }
-        if( RCWRITE( out_fid, Pass2Info.IoBuffer, numread ) != numread ) {
+        if( RESWRITE( out_fid, Pass2Info.IoBuffer, numread ) != numread ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -155,13 +155,13 @@ RcStatus PadExeData( WResFileID fid, long length )
 
     while( length > IO_BUFFER_SIZE ) {
         length -= IO_BUFFER_SIZE;
-        if( RCWRITE( fid, Pass2Info.IoBuffer, IO_BUFFER_SIZE ) != IO_BUFFER_SIZE ) {
+        if( RESWRITE( fid, Pass2Info.IoBuffer, IO_BUFFER_SIZE ) != IO_BUFFER_SIZE ) {
             return( RS_WRITE_ERROR );
         }
     }
 
     if( length > 0 ) {
-        if( RCWRITE( fid, Pass2Info.IoBuffer, length ) != length ) {
+        if( RESWRITE( fid, Pass2Info.IoBuffer, length ) != length ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -174,7 +174,7 @@ extern void CheckDebugOffset( ExeFileInfo * exe )
 {
     uint_32     curroffset;
 
-    curroffset = RCTELL( exe->fid );
+    curroffset = RESTELL( exe->fid );
     if( curroffset > exe->DebugOffset ) {
         exe->DebugOffset = curroffset;
     }
@@ -221,11 +221,11 @@ RcStatus SeekRead( WResFileID fid, long newpos, void *buff, unsigned size )
 {
     WResFileSSize   numread;
 
-    if( RCSEEK( fid, newpos, SEEK_SET ) == -1 )
+    if( RESSEEK( fid, newpos, SEEK_SET ) == -1 )
         return( RS_READ_ERROR );
-    numread = RCREAD( fid, buff, size );
+    numread = RESREAD( fid, buff, size );
     if( numread != size ) {
-        return( RCIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( RESIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     return( RS_OK );
 

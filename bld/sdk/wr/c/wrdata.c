@@ -75,12 +75,12 @@ bool WRReadResData( WResFileID fid, BYTE *data, size_t length )
 
     ok = ( data != NULL && length > 0 );
     while( ok && length > CHUNK_SIZE ) {
-        ok = ( RCREAD( fid, data, CHUNK_SIZE ) == CHUNK_SIZE );
+        ok = ( RESREAD( fid, data, CHUNK_SIZE ) == CHUNK_SIZE );
         data += CHUNK_SIZE;
         length -= CHUNK_SIZE;
     }
     if( ok && length > 0 ) {
-        ok = ( RCREAD( fid, data, length ) == length );
+        ok = ( RESREAD( fid, data, length ) == length );
     }
 
     return( ok );
@@ -92,12 +92,12 @@ bool WRWriteResData( WResFileID fid, BYTE *data, size_t length )
 
     ok = ( data != NULL && length > 0 );
     while( ok && length > CHUNK_SIZE ) {
-        ok = ( RCWRITE( fid, data, CHUNK_SIZE ) == CHUNK_SIZE );
+        ok = ( RESWRITE( fid, data, CHUNK_SIZE ) == CHUNK_SIZE );
         data += CHUNK_SIZE;
         length -= CHUNK_SIZE;
     }
     if( ok && length > 0 ) {
-        ok = ( RCWRITE( fid, data, length ) == length );
+        ok = ( RESWRITE( fid, data, length ) == length );
     }
 
     return( ok );

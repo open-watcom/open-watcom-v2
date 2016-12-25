@@ -62,7 +62,7 @@ static void closeAResFile( ResFileInfo *res )
         WResFreeDir( res->Dir );
         res->Dir = NULL;
     }
-    RCFREE( res );
+    RESFREE( res );
 }
 
 bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
@@ -82,7 +82,7 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
     *resinfo = NULL;
 
     while( resnames != NULL ) {
-        resfile = RCALLOC( sizeof( ResFileInfo ) );
+        resfile = RESALLOC( sizeof( ResFileInfo ) );
         resfile->next = *resinfo;
         *resinfo = resfile;
         resfile->Dir = WResInitDir();
@@ -322,9 +322,9 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
         }
     }
     if( nameid->IsName ) {
-        RCFREE( name );
+        RESFREE( name );
     }
     if( typeid->IsName ) {
-        RCFREE( type );
+        RESFREE( type );
     }
 }

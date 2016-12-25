@@ -41,7 +41,7 @@
 static bool ResOS2WriteAccelEntry( AccelTableEntryOS2 *currentry, WResFileID fid )
 /********************************************************************************/
 {
-    if( RCWRITE( fid, currentry, sizeof( AccelTableEntryOS2 ) ) != sizeof( AccelTableEntryOS2 ) ) {
+    if( RESWRITE( fid, currentry, sizeof( AccelTableEntryOS2 ) ) != sizeof( AccelTableEntryOS2 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     }
@@ -127,8 +127,8 @@ FullAccelTableOS2 *SemOS2NewAccelTable( FullAccelEntryOS2 firstentry )
     FullAccelTableOS2   *newtable;
     FullAccelEntryOS2   *newentry;
 
-    newtable = RCALLOC( sizeof( FullAccelTableOS2 ) );
-    newentry = RCALLOC( sizeof( FullAccelEntryOS2 ) );
+    newtable = RESALLOC( sizeof( FullAccelTableOS2 ) );
+    newentry = RESALLOC( sizeof( FullAccelEntryOS2 ) );
 
     if( newtable == NULL || newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -150,7 +150,7 @@ FullAccelTableOS2 *SemOS2AddAccelEntry( FullAccelEntryOS2 currentry, FullAccelTa
 {
     FullAccelEntryOS2     *newentry;
 
-    newentry = RCALLOC( sizeof( FullAccelEntryOS2 ) );
+    newentry = RESALLOC( sizeof( FullAccelEntryOS2 ) );
 
     if( newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -175,9 +175,9 @@ static void SemOS2FreeAccelTable( FullAccelTableOS2 * acctable )
     while( currentry != NULL ) {
         oldentry = currentry;
         currentry = currentry->next;
-        RCFREE( oldentry );
+        RESFREE( oldentry );
     }
-    RCFREE( acctable );
+    RESFREE( acctable );
 }
 
 static int SemOS2CountAccelTableEntries( FullAccelTableOS2 *acctable )
@@ -231,7 +231,7 @@ void SemOS2WriteAccelTable( WResID *name, ResMemFlags flags, uint_32 codepage,
         loc.len = SemEndResource( loc.start );
         SemAddResourceFree( name, WResIDFromNum( OS2_RT_ACCELTABLE ), flags, loc );
     } else {
-        RCFREE( name );
+        RESFREE( name );
     }
 
     SemOS2FreeAccelTable( acctable );

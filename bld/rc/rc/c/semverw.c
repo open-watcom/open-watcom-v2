@@ -56,9 +56,9 @@ FullVerValueList * SemWINNewVerValueList( VerValueItem item )
         item.strlen = VER_CALC_SIZE; // terminate at the first NULLCHAR
     }                                // instead of using the full string.
                                      // This is what Microsoft does.
-    list = RCALLOC( sizeof(FullVerValueList) );
+    list = RESALLOC( sizeof(FullVerValueList) );
     list->NumItems = 1;
-    list->Item = RCALLOC( sizeof(VerValueItem) );
+    list->Item = RESALLOC( sizeof(VerValueItem) );
     list->Item[0] = item;
 
     return( list );
@@ -84,7 +84,7 @@ static void FreeValItem( VerValueItem * item )
 /********************************************/
 {
     if( !item->IsNum ) {
-        RCFREE( item->Value.String );
+        RESFREE( item->Value.String );
     }
 }
 
@@ -96,8 +96,8 @@ static void FreeValList( FullVerValueList * list )
     for( curr_val = 0; curr_val < list->NumItems; curr_val++ ) {
         FreeValItem( list->Item + curr_val );
     }
-    RCFREE( list->Item );
-    RCFREE( list );
+    RESFREE( list->Item );
+    RESFREE( list );
 }
 
 static bool semWriteVerValueList( FullVerValueList *list, bool use_unicode, WResFileID fid, int *err_code )
@@ -120,7 +120,7 @@ FullVerBlock * SemWINNewBlockVal( char * name, FullVerValueList * list )
 {
     FullVerBlock *  block;
 
-    block = RCALLOC( sizeof(FullVerBlock) );
+    block = RESALLOC( sizeof(FullVerBlock) );
     block->Next = NULL;
     block->Prev = NULL;
     block->Head.Key = name;
@@ -140,7 +140,7 @@ FullVerBlock * SemWINNameVerBlock( char * name, FullVerBlockNest * nest )
 {
     FullVerBlock *  block;
 
-    block = RCALLOC( sizeof(FullVerBlock) );
+    block = RESALLOC( sizeof(FullVerBlock) );
     block->Next = NULL;
     block->Prev = NULL;
     block->Head.Key = name;
@@ -230,7 +230,7 @@ static bool SemWriteVerBlock( FullVerBlock * block, WResFileID fid, int *err_cod
 static void FreeVerBlock( FullVerBlock * block )
 /**********************************************/
 {
-    RCFREE( block->Head.Key );
+    RESFREE( block->Head.Key );
     if( block->Value != NULL ) {
         FreeValList( block->Value );
     }
@@ -238,7 +238,7 @@ static void FreeVerBlock( FullVerBlock * block )
         FreeVerBlockNest( block->Nest );
     }
 
-    RCFREE( block );
+    RESFREE( block );
 }
 
 FullVerBlockNest * SemWINNewBlockNest( FullVerBlock * child )
@@ -246,7 +246,7 @@ FullVerBlockNest * SemWINNewBlockNest( FullVerBlock * child )
 {
     FullVerBlockNest *  parent;
 
-    parent = RCALLOC( sizeof(FullVerBlockNest) );
+    parent = RESALLOC( sizeof(FullVerBlockNest) );
     parent->Head = NULL;
     parent->Tail = NULL;
 
@@ -271,7 +271,7 @@ FullVerBlockNest * SemWINMergeBlockNest( FullVerBlockNest * nest1,
         ResAddLLItemAtEnd( (void **) &nest1->Head, (void **) &nest1->Tail, block );
     }
 
-    RCFREE( nest2 );
+    RESFREE( nest2 );
 
     return( nest1 );
 }
@@ -304,7 +304,7 @@ static void FreeVerBlockNest( FullVerBlockNest * nest )
         FreeVerBlock( old_block );
     }
 
-    RCFREE( nest );
+    RESFREE( nest );
 }
 
 static bool SemWriteVerBlockNest( FullVerBlockNest *nest, WResFileID fid, int *err_code )
@@ -327,7 +327,7 @@ VerFixedInfo * SemWINNewVerFixedInfo( VerFixedOption option )
 {
     VerFixedInfo *  info;
 
-    info = RCALLOC( sizeof(VerFixedInfo) );
+    info = RESALLOC( sizeof(VerFixedInfo) );
     memset( info, 0, sizeof(VerFixedInfo) );
 
     return( SemWINAddVerFixedInfo( info, option ) );
@@ -437,10 +437,10 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
         SemWINSetResourceLanguage( &lang, false );
         SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_VERSIONINFO ) ), flags, loc );
     } else {
-        RCFREE( name );
+        RESFREE( name );
     }
 
-    RCFREE( info );
+    RESFREE( info );
     FreeVerBlockNest( nest );
 
     return;
@@ -448,7 +448,7 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
 OutputWriteError:
     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
     ErrorHasOccured = true;
-    RCFREE( info );
+    RESFREE( info );
     FreeVerBlockNest( nest );
     return;
 }

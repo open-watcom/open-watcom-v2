@@ -38,13 +38,13 @@
 void *PP_Malloc( size_t size )
 /****************************/
 {
-    return( RCALLOC( size ) );
+    return( RESALLOC( size ) );
 }
 
 void PP_Free( void *p )
 /*********************/
 {
-    RCFREE( p );
+    RESFREE( p );
 }
 
 void PP_OutOfMemory( void )

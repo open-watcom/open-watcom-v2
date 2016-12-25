@@ -47,11 +47,11 @@ bool BinaryCopy( WResFileID in_fid, WResFileID out_fid, unsigned long length )
 
     /* read the parts that fill the buffer */
     while( length >= BUFFER_SIZE ) {
-        nummoved = RCREAD( in_fid, Buffer, BUFFER_SIZE );
+        nummoved = RESREAD( in_fid, Buffer, BUFFER_SIZE );
         if( nummoved != BUFFER_SIZE ) {
             return( true );
         }
-        nummoved = RCWRITE( out_fid, Buffer, BUFFER_SIZE );
+        nummoved = RESWRITE( out_fid, Buffer, BUFFER_SIZE );
         if( nummoved != BUFFER_SIZE ) {
             return( true );
         }
@@ -60,11 +60,11 @@ bool BinaryCopy( WResFileID in_fid, WResFileID out_fid, unsigned long length )
     }
 
     if( length > 0 ) {
-        nummoved = RCREAD( in_fid, Buffer, length );
+        nummoved = RESREAD( in_fid, Buffer, length );
         if( nummoved != (int)length ) {
             return( true );
         }
-        nummoved = RCWRITE( out_fid, Buffer, length );
+        nummoved = RESWRITE( out_fid, Buffer, length );
         if( nummoved != (int)length ) {
             return( true );
         }

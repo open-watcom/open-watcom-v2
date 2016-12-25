@@ -77,11 +77,11 @@ static RcStatus seekPastResTable( int *err_code )
                     tmpexe->u.NEInfo.Seg.NumSegs * sizeof( segment_record ) +
                     res_tbl_size +
                     tmpexe->u.NEInfo.Res.Str.StringBlockSize;
-    if( RCSEEK( tmpexe->fid, seekamount, SEEK_CUR ) == -1 ) {
+    if( RESSEEK( tmpexe->fid, seekamount, SEEK_CUR ) == -1 ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
-    winheadoffset = RCTELL( tmpexe->fid );
+    winheadoffset = RESTELL( tmpexe->fid );
     tmpexe->WinHeadOffset = winheadoffset;
     return( RS_OK );
 
@@ -103,7 +103,7 @@ static RcStatus copyOtherTables( int *err_code )
     /* of the non-resident names table */
     tablelen = (oldhead->nonres_off + oldhead->nonres_size) - ( oldhead->resident_off + oldoffset );
 
-    if( RCSEEK( old_fid, oldhead->resident_off + oldoffset, SEEK_SET ) == -1 ) {
+    if( RESSEEK( old_fid, oldhead->resident_off + oldoffset, SEEK_SET ) == -1 ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
@@ -209,7 +209,7 @@ static bool copyWINBody( void )
     }
 
     /* third arg to Copy???? is false --> copy section one */
-    gangloadstart = RCTELL( Pass2Info.TmpFile.fid );
+    gangloadstart = RESTELL( Pass2Info.TmpFile.fid );
     gangloadstart += AlignAmount( gangloadstart, tmp->Res.Dir.ResShiftCount );
     copy_segs_ret = CopyWINSegments( sect2mask, sect2bits, false );
     switch( copy_segs_ret ) {
@@ -230,7 +230,7 @@ static bool copyWINBody( void )
             return( true );
         }
     }
-    gangloadlen = RCTELL( Pass2Info.TmpFile.fid ) - gangloadstart;
+    gangloadlen = RESTELL( Pass2Info.TmpFile.fid ) - gangloadstart;
 
     /* third arg to Copy???? is true  --> copy section two */
     copy_segs_ret = CopyWINSegments( sect2mask, sect2bits, true );
@@ -296,9 +296,9 @@ static RcStatus copyDebugInfo( void )
     old = &(Pass2Info.OldFile);
     tmp = &(Pass2Info.TmpFile);
 
-    if( RCSEEK( old->fid, old->DebugOffset, SEEK_SET ) == -1 )
+    if( RESSEEK( old->fid, old->DebugOffset, SEEK_SET ) == -1 )
         return( RS_READ_ERROR );
-    if( RCSEEK( tmp->fid, tmp->DebugOffset, SEEK_SET ) == -1 )
+    if( RESSEEK( tmp->fid, tmp->DebugOffset, SEEK_SET ) == -1 )
         return( RS_WRITE_ERROR );
     return( CopyExeDataTilEOF( old->fid, tmp->fid ) );
 
@@ -369,13 +369,13 @@ static RcStatus writeHeadAndTables( int *err_code )
     }
 
     /* seek to the start of the os2_exe_header in tmpfile */
-    if( RCSEEK( tmpfile->fid, tmpfile->WinHeadOffset, SEEK_SET ) == -1 ) {
+    if( RESSEEK( tmpfile->fid, tmpfile->WinHeadOffset, SEEK_SET ) == -1 ) {
         *err_code = errno;
         return( RS_WRITE_ERROR );
     }
 
     /* write the header */
-    if( RCWRITE( tmpfile->fid, &(tmpne->WinHead), sizeof( os2_exe_header ) ) != sizeof( os2_exe_header ) ) {
+    if( RESWRITE( tmpfile->fid, &(tmpne->WinHead), sizeof( os2_exe_header ) ) != sizeof( os2_exe_header ) ) {
         *err_code = errno;
         return( RS_WRITE_ERROR );
     }
@@ -385,7 +385,7 @@ static RcStatus writeHeadAndTables( int *err_code )
         unsigned  numwrite;
 
         numwrite = tmpne->Seg.NumSegs * sizeof( segment_record );
-        if( RCWRITE( tmpfile->fid, tmpne->Seg.Segments, numwrite ) != numwrite ) {
+        if( RESWRITE( tmpfile->fid, tmpne->Seg.Segments, numwrite ) != numwrite ) {
             *err_code = errno;
             return( RS_WRITE_ERROR );
         }
@@ -441,13 +441,13 @@ static RcStatus writeOS2HeadAndTables( int *err_code )
     tmpne->WinHead.segments   = tmpne->Seg.NumSegs;
 
     /* seek to the start of the os2_exe_header in tmpfile */
-    if( RCSEEK( tmpfile->fid, tmpfile->WinHeadOffset, SEEK_SET ) == -1 ) {
+    if( RESSEEK( tmpfile->fid, tmpfile->WinHeadOffset, SEEK_SET ) == -1 ) {
         *err_code = errno;
         return( RS_WRITE_ERROR );
     }
 
     /* write the header */
-    if( RCWRITE( tmpfile->fid, &(tmpne->WinHead), sizeof( os2_exe_header ) ) != sizeof( os2_exe_header ) ) {
+    if( RESWRITE( tmpfile->fid, &(tmpne->WinHead), sizeof( os2_exe_header ) ) != sizeof( os2_exe_header ) ) {
         *err_code = errno;
         return( RS_WRITE_ERROR );
     }
@@ -457,7 +457,7 @@ static RcStatus writeOS2HeadAndTables( int *err_code )
         unsigned  numwrite;
 
         numwrite = tmpne->Seg.NumSegs * sizeof( segment_record );
-        if( RCWRITE( tmpfile->fid, tmpne->Seg.Segments, numwrite ) != numwrite ) {
+        if( RESWRITE( tmpfile->fid, tmpne->Seg.Segments, numwrite ) != numwrite ) {
             *err_code = errno;
             return( RS_WRITE_ERROR );
         }
@@ -496,39 +496,39 @@ static RcStatus findEndOfResources( int *err_code )
         return( RS_OK );
     }
 
-    if( RCSEEK( old_fid, oldneinfo->WinHead.resource_off + oldoffset, SEEK_SET ) == -1 ) {
+    if( RESSEEK( old_fid, oldneinfo->WinHead.resource_off + oldoffset, SEEK_SET ) == -1 ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
 
-    numread = RCREAD( old_fid, &alignshift, sizeof( uint_16 ) );
+    numread = RESREAD( old_fid, &alignshift, sizeof( uint_16 ) );
     if( numread != sizeof( uint_16 ) ) {
         *err_code = errno;
-        return( RCIOERR( old_fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( RESIOERR( old_fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     alignshift = 1 << alignshift;
 
-    numread = RCREAD( old_fid, &typeinfo, sizeof( resource_type_record ) );
+    numread = RESREAD( old_fid, &typeinfo, sizeof( resource_type_record ) );
     if( numread != sizeof( resource_type_record ) )  {
         *err_code = errno;
-        return( RCIOERR( old_fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( RESIOERR( old_fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     while( typeinfo.type != 0 ) {
         for( i = typeinfo.num_resources; i > 0 ; --i ) {
-            numread = RCREAD( old_fid, &nameinfo, sizeof( resource_record ) );
+            numread = RESREAD( old_fid, &nameinfo, sizeof( resource_record ) );
             if( numread != sizeof( resource_record ) ) {
                 *err_code = errno;
-                return( RCIOERR( old_fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+                return( RESIOERR( old_fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
             }
             tmp = nameinfo.offset + nameinfo.length;
             if( tmp > end ) {
                 end = tmp;
             }
         }
-        numread = RCREAD( old_fid, &typeinfo, sizeof( resource_type_record ) );
+        numread = RESREAD( old_fid, &typeinfo, sizeof( resource_type_record ) );
         if( numread != sizeof( resource_type_record ) ) {
             *err_code = errno;
-            return( RCIOERR( old_fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+            return( RESIOERR( old_fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         }
     }
     end *= alignshift;
@@ -572,21 +572,21 @@ static RcStatus writePEHeadAndObjTable( void )
         PE32( *pehdr ).image_size = image_size;
     }
 
-    if( RCSEEK( tmp->fid, tmp->WinHeadOffset, SEEK_SET ) == -1 )
+    if( RESSEEK( tmp->fid, tmp->WinHeadOffset, SEEK_SET ) == -1 )
         return( RS_WRITE_ERROR );
 
     if( IS_PE64( *pehdr ) ) {
-        if( RCWRITE( tmp->fid, &PE64( *pehdr ), sizeof( pe_header64 ) ) != sizeof( pe_header64 ) ) {
+        if( RESWRITE( tmp->fid, &PE64( *pehdr ), sizeof( pe_header64 ) ) != sizeof( pe_header64 ) ) {
             return( RS_WRITE_ERROR );
         }
     } else {
-        if( RCWRITE( tmp->fid, &PE32( *pehdr ), sizeof( pe_header ) ) != sizeof( pe_header ) ) {
+        if( RESWRITE( tmp->fid, &PE32( *pehdr ), sizeof( pe_header ) ) != sizeof( pe_header ) ) {
             return( RS_WRITE_ERROR );
         }
     }
 
     for( obj_num = 0; obj_num < num_objects; obj_num++ ) {
-        if( RCWRITE( tmp->fid, tmp->u.PEInfo.Objects + obj_num, sizeof( pe_object ) ) != sizeof( pe_object ) ) {
+        if( RESWRITE( tmp->fid, tmp->u.PEInfo.Objects + obj_num, sizeof( pe_object ) ) != sizeof( pe_object ) ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -818,9 +818,9 @@ static RcStatus updateDebugDirectory( void )
     if( old_offset == 0xFFFFFFFF || tmp_offset == 0xFFFFFFFF ) {
         return( RS_BAD_FILE_FMT );
     }
-    if( RCSEEK( tmp->fid, tmp_offset, SEEK_SET ) == -1 )
+    if( RESSEEK( tmp->fid, tmp_offset, SEEK_SET ) == -1 )
         return( RS_WRITE_ERROR );
-    if( RCSEEK( old->fid, old_offset, SEEK_SET ) == -1 )
+    if( RESSEEK( old->fid, old_offset, SEEK_SET ) == -1 )
         return( RS_READ_ERROR );
     debug_cnt = debug_size / sizeof( debug_directory );
     while( debug_cnt > 0 ) {
@@ -828,16 +828,16 @@ static RcStatus updateDebugDirectory( void )
         if( read_cnt > debug_cnt )
             read_cnt = debug_cnt;
         read_size = read_cnt * sizeof( debug_directory );
-        numread = RCREAD( old->fid, Pass2Info.IoBuffer, read_size );
+        numread = RESREAD( old->fid, Pass2Info.IoBuffer, read_size );
         if( numread != read_size )
-            return( RCIOERR( old->fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+            return( RESIOERR( old->fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         entry = Pass2Info.IoBuffer;
         for( i=0; i < read_cnt; i++ ) {
             if( entry[i].data_seek >= old->DebugOffset ) {
                 entry[i].data_seek += tmp->DebugOffset - old->DebugOffset;
             }
         }
-        if( RCWRITE( tmp->fid, Pass2Info.IoBuffer, read_size ) != read_size )
+        if( RESWRITE( tmp->fid, Pass2Info.IoBuffer, read_size ) != read_size )
             return( RS_WRITE_ERROR );
         debug_cnt -= read_cnt;
     }
@@ -942,33 +942,33 @@ static RcStatus writeLXHeadAndTables( void )
     lx_info = &tmp->u.LXInfo;
 
     offset = sizeof( os2_flat_header );
-    if( RCSEEK( tmp->fid, tmp->WinHeadOffset + offset, SEEK_SET ) == -1 )
+    if( RESSEEK( tmp->fid, tmp->WinHeadOffset + offset, SEEK_SET ) == -1 )
         return( RS_WRITE_ERROR );
 
     // write object table
     length = lx_info->OS2Head.num_objects * sizeof( object_record );
-    if( RCWRITE( tmp->fid, lx_info->Objects, length ) != length )
+    if( RESWRITE( tmp->fid, lx_info->Objects, length ) != length )
         return( RS_WRITE_ERROR );
 
     // write page table
     offset += length;
     length = lx_info->OS2Head.num_pages * sizeof( lx_map_entry );
-    if( RCWRITE( tmp->fid, lx_info->Pages, length ) != length )
+    if( RESWRITE( tmp->fid, lx_info->Pages, length ) != length )
         return( RS_WRITE_ERROR );
 
     // write resource table
     offset += length;
     for( i = 0; i < lx_info->OS2Head.num_rsrcs; ++i ) {
-        if( RCWRITE( tmp->fid, &lx_info->Res.resources[i].resource, sizeof( flat_res_table ) ) != sizeof( flat_res_table ) ) {
+        if( RESWRITE( tmp->fid, &lx_info->Res.resources[i].resource, sizeof( flat_res_table ) ) != sizeof( flat_res_table ) ) {
             return( RS_WRITE_ERROR );
         }
     }
 
     // finally write LX header
-    if( RCSEEK( tmp->fid, tmp->WinHeadOffset, SEEK_SET ) == -1 )
+    if( RESSEEK( tmp->fid, tmp->WinHeadOffset, SEEK_SET ) == -1 )
         return( RS_WRITE_ERROR );
 
-    if( RCWRITE( tmp->fid, &lx_info->OS2Head, sizeof( os2_flat_header ) ) != sizeof( os2_flat_header ) )
+    if( RESWRITE( tmp->fid, &lx_info->OS2Head, sizeof( os2_flat_header ) ) != sizeof( os2_flat_header ) )
         return( RS_WRITE_ERROR );
 
     return( RS_OK );
@@ -1003,9 +1003,9 @@ static RcStatus copyLXNonresData( void )
     // DebugOffset is pointing to the current EOF
     new_head->nonres_off = tmp->DebugOffset;
 
-    if( RCSEEK( old->fid, old_head->nonres_off, SEEK_SET ) == -1 )
+    if( RESSEEK( old->fid, old_head->nonres_off, SEEK_SET ) == -1 )
         return( RS_READ_ERROR );
-    if( RCSEEK( tmp->fid, tmp->DebugOffset, SEEK_SET ) == -1 )
+    if( RESSEEK( tmp->fid, tmp->DebugOffset, SEEK_SET ) == -1 )
         return( RS_WRITE_ERROR );
 
     ret = CopyExeData( Pass2Info.OldFile.fid, Pass2Info.TmpFile.fid, old_head->nonres_size );
@@ -1040,9 +1040,9 @@ static RcStatus copyLXDebugInfo( void )
     new_head->debug_off = tmp->DebugOffset;
     new_head->debug_len = old_head->debug_len;
 
-    if( RCSEEK( old->fid, old_head->debug_off, SEEK_SET ) == -1 )
+    if( RESSEEK( old->fid, old_head->debug_off, SEEK_SET ) == -1 )
         return( RS_READ_ERROR );
-    if( RCSEEK( tmp->fid, tmp->DebugOffset, SEEK_SET ) == -1 )
+    if( RESSEEK( tmp->fid, tmp->DebugOffset, SEEK_SET ) == -1 )
         return( RS_WRITE_ERROR );
     return( CopyExeDataTilEOF( old->fid, tmp->fid ) );
 } /* copyLXDebugInfo */

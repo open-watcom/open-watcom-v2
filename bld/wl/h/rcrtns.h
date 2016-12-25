@@ -33,9 +33,20 @@
 #ifndef RCRTNS_INLCUDED
 #define RCRTNS_INLCUDED
 
-#include "wio.h"
 #include "alloc.h"
-#include "wressetr.h"
+
+#define RESOPEN         res_open
+#define RESCLOSE        res_close
+#define RESWRITE        res_write
+#define RESREAD         res_read
+#define RESSEEK         res_seek
+#define RESTELL         res_tell
+#define RESIOERR(fh,rc) (rc == -1)
+
+#define RESALLOC        ChkLAlloc
+#define RESFREE         LFree
+
+#define RCREALLOC       LnkReAlloc
 
 extern WResFileID       res_open( const char *name, wres_open_mode omode );
 extern int              res_close( WResFileID fid );
@@ -43,15 +54,5 @@ extern WResFileSSize    res_read( WResFileID fid, void *buf, WResFileSize len );
 extern WResFileSSize    res_write( WResFileID fid, const void *buf, WResFileSize len );
 extern WResFileOffset   res_seek( WResFileID fid, WResFileOffset off, int where );
 extern WResFileOffset   res_tell( WResFileID fid );
-
-#define RCOPEN          res_open
-#define RCCLOSE         res_close
-#define RCWRITE         res_write
-#define RCREAD          res_read
-#define RCSEEK          res_seek
-#define RCTELL          res_tell
-#define RCALLOC         ChkLAlloc
-#define RCFREE          LFree
-#define RCREALLOC       LnkReAlloc
 
 #endif

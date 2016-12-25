@@ -34,18 +34,18 @@
 
 #include "rcmem.h"
 
-#define RCOPEN          res_open
-#define RCCLOSE         res_close
-#define RCWRITE         res_write
-#define RCREAD          res_read
-#define RCSEEK          res_seek
-#define RCTELL          res_tell
+#define RESOPEN         res_open
+#define RESCLOSE        res_close
+#define RESWRITE        res_write
+#define RESREAD         res_read
+#define RESSEEK         res_seek
+#define RESTELL         res_tell
+#define RESIOERR(fh,rc) (rc == -1)
 
-#define RCALLOC         RcMemMalloc
-#define RCFREE          RcMemFree
+#define RESALLOC        RcMemMalloc
+#define RESFREE         RcMemFree
+
 #define RCREALLOC       RcMemRealloc
-
-#define RCIOERR(fh,rc)  (rc == -1)
 
 extern WResFileID       res_open( const char *, wres_open_mode );
 extern int              res_close( WResFileID );

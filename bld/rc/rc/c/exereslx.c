@@ -229,11 +229,11 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
         entry->resource.object += exe->u.LXInfo.FirstResObj + 1;
 
         // Copy resource data
-        if( RCSEEK( exe->fid, file_offset, SEEK_SET ) == -1 )
+        if( RESSEEK( exe->fid, file_offset, SEEK_SET ) == -1 )
             return( RS_WRITE_ERROR );
 
         res_info = WResGetLangInfo( entry->wind );
-        if( RCSEEK( info->fid, res_info->Offset, SEEK_SET ) == -1 )
+        if( RESSEEK( info->fid, res_info->Offset, SEEK_SET ) == -1 )
             return( RS_READ_ERROR );
 
         ret = CopyExeData( info->fid, exe->fid, res_info->Length );

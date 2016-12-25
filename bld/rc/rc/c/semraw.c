@@ -57,7 +57,7 @@ void SemWriteRawDataItem( RawDataItem item )
             ErrorHasOccured = true;
         }
         if( item.TmpStr ) {
-            RCFREE( item.Item.String );
+            RESFREE( item.Item.String );
         }
     } else {
         if( !item.LongItem ) {
@@ -91,17 +91,17 @@ RcStatus SemCopyDataUntilEOF( WResFileOffset offset, WResFileID fid,
 {
     WResFileSSize   numread;
 
-    if( RCSEEK( fid, offset, SEEK_SET ) == -1 ) {
+    if( RESSEEK( fid, offset, SEEK_SET ) == -1 ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
 
-    while( (numread = RCREAD( fid, buff, buffsize )) != 0 ) {
-        if( RCIOERR( fid, numread ) ) {
+    while( (numread = RESREAD( fid, buff, buffsize )) != 0 ) {
+        if( RESIOERR( fid, numread ) ) {
             *err_code = errno;
             return( RS_READ_ERROR );
         }
-        if( RCWRITE( CurrResFile.fid, buff, numread ) != numread ) {
+        if( RESWRITE( CurrResFile.fid, buff, numread ) != numread ) {
             *err_code = errno;
             return( RS_WRITE_ERROR );
         }
@@ -123,7 +123,7 @@ ResLocation SemCopyRawFile( const char *filename )
     int             err_code;
     WResFileOffset  pos;
 
-    buffer = RCALLOC( BUFFER_SIZE );
+    buffer = RESALLOC( BUFFER_SIZE );
 
     if( RcFindResource( filename, full_filename ) == -1 ) {
         RcError( ERR_CANT_FIND_FILE, filename );
@@ -141,25 +141,25 @@ ResLocation SemCopyRawFile( const char *filename )
 
     loc.start = SemStartResource();
 
-    pos = RCTELL( fid );
+    pos = RESTELL( fid );
     if( pos == -1 ) {
         RcError( ERR_READING_DATA, full_filename, strerror( errno ) );
-        RCCLOSE( fid );
+        RESCLOSE( fid );
         goto HANDLE_ERROR;
     } else {
         ret = SemCopyDataUntilEOF( pos, fid, buffer, BUFFER_SIZE, &err_code );
         if( ret != RS_OK ) {
             ReportCopyError( ret, ERR_READING_DATA, full_filename, err_code );
-            RCCLOSE( fid );
+            RESCLOSE( fid );
             goto HANDLE_ERROR;
         }
     }
 
     loc.len = SemEndResource( loc.start );
 
-    RCCLOSE( fid );
+    RESCLOSE( fid );
 
-    RCFREE( buffer );
+    RESFREE( buffer );
 
     return( loc );
 
@@ -168,7 +168,7 @@ HANDLE_ERROR:
     ErrorHasOccured = true;
     loc.start = 0;
     loc.len = 0;
-    RCFREE( buffer );
+    RESFREE( buffer );
     return( loc );
 }
 
@@ -177,7 +177,7 @@ DataElemList *SemNewDataElemList( RawDataItem node )
 {
     DataElemList    *head;
 
-    head = RCALLOC( sizeof( DataElemList ) );
+    head = RESALLOC( sizeof( DataElemList ) );
     head->data[0] = node;
     head->count = 1;
     head->next = NULL;
@@ -226,7 +226,7 @@ ResLocation SemFlushDataElemList( DataElemList *head, bool call_startend )
         for( i = 0; i < curnode->count; i++ ) {
             SemWriteRawDataItem( curnode->data[i] );
         }
-        RCFREE( curnode );
+        RESFREE( curnode );
         curnode = nextnode;
     }
     if( call_startend ) {
@@ -253,10 +253,10 @@ void SemFreeDataElemList( DataElemList *head )
         nextnode = curnode->next;
         for( i = 0; i < curnode->count; i++ ) {
             if( curnode->data[i].IsString ) {
-                RCFREE( curnode->data[i].Item.String );
+                RESFREE( curnode->data[i].Item.String );
             }
         }
-        RCFREE( curnode );
+        RESFREE( curnode );
         curnode = nextnode;
     }
 }

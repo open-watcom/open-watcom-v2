@@ -59,7 +59,7 @@ bool AddDependency( char *fname )
     int                 cmp;
 
     if( CmdLineParms.GenAutoDep ) {
-        name = RCALLOC( _MAX_PATH );
+        name = RESALLOC( _MAX_PATH );
         _fullpath( name, fname, _MAX_PATH );
         cur = &depList;
         for( ;; ) {
@@ -68,7 +68,7 @@ bool AddDependency( char *fname )
             } else {
                 cmp = strcmp( name, (*cur)->info.name );
                 if( cmp == 0 ) {
-                    RCFREE( name );
+                    RESFREE( name );
                     return( false );
                 } else if( cmp > 0 ) {
                     break;
@@ -78,7 +78,7 @@ bool AddDependency( char *fname )
             }
         }
         len = strlen( name ) + 1;
-        new = RCALLOC( sizeof( DepNode ) + len );
+        new = RESALLOC( sizeof( DepNode ) + len );
         new->next = *cur;
         new->info.len = len;
 
@@ -88,7 +88,7 @@ bool AddDependency( char *fname )
          */
         memcpy( new->info.name, name, len + 1);
         *cur = new;
-        RCFREE( name );
+        RESFREE( name );
     }
     return( false );
 }
@@ -137,7 +137,7 @@ static void freeDepList( void )
 
     for( cur = depList; cur != NULL; cur = next ) {
         next = cur->next;
-        RCFREE( cur );
+        RESFREE( cur );
     }
 }
 

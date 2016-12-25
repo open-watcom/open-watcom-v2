@@ -71,7 +71,7 @@ static char *MakeTmpInSameDir( const char *dirfile, char *ext )
     // in the same directory
     sprintf( fname, "__RCTMP%lu__", (unsigned long)getpid() );
 #endif
-    out = RCALLOC( strlen( dirfile ) + 1 + strlen( fname ) + strlen( ext ) + 1 );
+    out = RESALLOC( strlen( dirfile ) + 1 + strlen( fname ) + strlen( ext ) + 1 );
     _splitpath( dirfile, drive, dir, NULL, NULL );
     _makepath( out, drive, dir, fname, ext );
     return( out );
@@ -88,7 +88,7 @@ static bool Pass1InitRes( void )
 #ifdef USE_TEMPFILE
     CurrResFile.filename = MakeTmpInSameDir( CmdLineParms.OutResFileName, "res" );
 #else
-    CurrResFile.filename = RCALLOC( strlen( CmdLineParms.OutResFileName ) + 1 );
+    CurrResFile.filename = RESALLOC( strlen( CmdLineParms.OutResFileName ) + 1 );
     strcpy( CurrResFile.filename, CmdLineParms.OutResFileName );
 #endif
 
@@ -192,7 +192,7 @@ char *RcTmpFileName( void )
     if( tmpdir != NULL && *tmpdir != '\0' ) {
         len += GetPathElementLen( tmpdir, NULL ) + 1;
     }
-    out = RCALLOC( len );
+    out = RESALLOC( len );
     nextchar = out;
     if( tmpdir != NULL && *tmpdir != '\0' ) {
         GetPathElement( tmpdir, NULL, &nextchar );
@@ -249,7 +249,7 @@ static bool PreprocessInputFile( void )
             }
             p = *cppargs;
             PP_Define( p + 2 );         // skip over -d
-            RCFREE( p );
+            RESFREE( p );
             ++cppargs;
         }
     }
@@ -416,7 +416,7 @@ static void Pass1ResFileShutdown( void )
         }
         WResFreeDir( CurrResFile.dir );
         CurrResFile.dir = NULL;
-        RCFREE( CurrResFile.filename );
+        RESFREE( CurrResFile.filename );
         CurrResFile.filename = NULL;
     }
 } /* Pass1ResFileShutdown */
@@ -445,7 +445,7 @@ static bool OpenResFileInfo( ExeType type )
     }
     Pass2Info.AllResFilesOpen = true;
     if( CmdLineParms.NoResFile ) {
-        Pass2Info.ResFile = RCALLOC( sizeof( ResFileInfo ) );
+        Pass2Info.ResFile = RESALLOC( sizeof( ResFileInfo ) );
         Pass2Info.ResFile->next = NULL;
         Pass2Info.ResFile->name = NULL;
         Pass2Info.ResFile->IsOpen = false;
@@ -459,7 +459,7 @@ static bool OpenResFileInfo( ExeType type )
     } else {
         name = CmdLineParms.OutResFileName;
     }
-    curfile = RCALLOC( sizeof( ExtraRes ) + strlen( name ) );
+    curfile = RESALLOC( sizeof( ExtraRes ) + strlen( name ) );
     curfile->next = CmdLineParms.ExtraResFiles;
     CmdLineParms.ExtraResFiles = curfile;
     strcpy( curfile->name, name );
@@ -532,7 +532,7 @@ static bool openExeFileInfoRO( char *filename, ExeFileInfo *info )
         break;
     }
 
-    return( RCSEEK( info->fid, 0, SEEK_SET ) != -1 );
+    return( RESSEEK( info->fid, 0, SEEK_SET ) != -1 );
 } /* openExeFileInfoRO */
 
 static bool openNewExeFileInfo( char *filename, ExeFileInfo *info )
@@ -555,15 +555,15 @@ static void FreeNEFileInfoPtrs( NEExeInfo * info )
 /*************************************************/
 {
     if( info->Seg.Segments != NULL ) {
-        RCFREE( info->Seg.Segments );
+        RESFREE( info->Seg.Segments );
         info->Seg.Segments = NULL;
     }
     if( info->Res.Str.StringBlock != NULL ) {
-        RCFREE( info->Res.Str.StringBlock );
+        RESFREE( info->Res.Str.StringBlock );
         info->Res.Str.StringBlock = NULL;
     }
     if( info->Res.Str.StringList != NULL ) {
-        RCFREE( info->Res.Str.StringList );
+        RESFREE( info->Res.Str.StringList );
         info->Res.Str.StringList = NULL;
     }
 } /* FreeNEFileInfoPtrs */
@@ -572,7 +572,7 @@ static void FreePEFileInfoPtrs( PEExeInfo * info )
 /************************************************/
 {
     if( info->Objects != NULL ) {
-        RCFREE( info->Objects );
+        RESFREE( info->Objects );
     }
 }
 
@@ -580,13 +580,13 @@ static void FreeLXFileInfoPtrs( LXExeInfo *info )
 /***********************************************/
 {
     if( info->Objects != NULL ) {
-        RCFREE( info->Objects );
+        RESFREE( info->Objects );
     }
     if( info->Pages != NULL ) {
-        RCFREE( info->Pages );
+        RESFREE( info->Pages );
     }
     if( info->Res.resources != NULL ) {
-        RCFREE( info->Res.resources );
+        RESFREE( info->Res.resources );
     }
 }
 
@@ -602,7 +602,7 @@ extern void ClosePass2FilesAndFreeMem( void )
 //    tmpfilename = Pass2Info.TmpFileName;
 
     if( old->IsOpen ) {
-        RCCLOSE( old->fid );
+        RESCLOSE( old->fid );
         old->IsOpen = false;
     }
     switch( old->Type ) {
@@ -621,7 +621,7 @@ extern void ClosePass2FilesAndFreeMem( void )
     }
 
     if( tmp->IsOpen ) {
-        RCCLOSE( tmp->fid );
+        RESCLOSE( tmp->fid );
         tmp->IsOpen = false;
     }
     switch( tmp->Type ) {
@@ -648,7 +648,7 @@ extern bool RcPass2IoInit( void )
     bool    tmpexe_exists;
 
     memset( &Pass2Info, '\0', sizeof( RcPass2Info ) );
-    Pass2Info.IoBuffer = RCALLOC( IO_BUFFER_SIZE );
+    Pass2Info.IoBuffer = RESALLOC( IO_BUFFER_SIZE );
     Pass2Info.TmpFileName = MakeTmpInSameDir( CmdLineParms.OutExeFileName, "tmp" );
     noerror = openExeFileInfoRO( CmdLineParms.InExeFileName, &(Pass2Info.OldFile) );
     if( noerror ) {
@@ -673,13 +673,13 @@ extern bool RcPass2IoInit( void )
     }
 
     if( !noerror ) {
-        RCFREE( Pass2Info.IoBuffer );
+        RESFREE( Pass2Info.IoBuffer );
         Pass2Info.IoBuffer = NULL;
         ClosePass2FilesAndFreeMem();
         if( tmpexe_exists ) {
             remove( Pass2Info.TmpFileName );
             UnregisterTmpFile( Pass2Info.TmpFileName );
-            RCFREE( Pass2Info.TmpFileName );
+            RESFREE( Pass2Info.TmpFileName );
             Pass2Info.TmpFileName = NULL;
         }
     }
@@ -692,7 +692,7 @@ extern void RcPass2IoShutdown( bool noerror )
 {
     ClosePass2FilesAndFreeMem();
     if( Pass2Info.IoBuffer != NULL ) {
-        RCFREE( Pass2Info.IoBuffer );
+        RESFREE( Pass2Info.IoBuffer );
         Pass2Info.IoBuffer = NULL;
     }
     if( noerror ) {
@@ -701,7 +701,7 @@ extern void RcPass2IoShutdown( bool noerror )
         UnregisterTmpFile( Pass2Info.TmpFileName );
         remove( Pass2Info.TmpFileName );
     }
-    RCFREE( Pass2Info.TmpFileName );
+    RESFREE( Pass2Info.TmpFileName );
     Pass2Info.TmpFileName = NULL;
 } /* RcPass2IoShutdown */
 
@@ -750,7 +750,7 @@ FileStack InStack;
 extern void RcIoTextInputInit( void )
 /***********************************/
 {
-    InStack.Buffer = RCALLOC( IO_BUFFER_SIZE );
+    InStack.Buffer = RESALLOC( IO_BUFFER_SIZE );
     InStack.BufferSize = IO_BUFFER_SIZE;
     InStack.Current = InStack.Stack;
 } /* RcIoTextInputInit */
@@ -759,7 +759,7 @@ extern bool RcIoTextInputShutdown( void )
 /***************************************/
 {
     if( InStack.Buffer != NULL ) {
-        RCFREE( InStack.Buffer );
+        RESFREE( InStack.Buffer );
         InStack.Buffer = NULL;
         InStack.BufferSize = 0;
         if( IsEmptyFileStack( InStack ) ) {
@@ -796,7 +796,7 @@ static bool OpenPhysicalFile( PhysFileInfo *phys )
 static bool OpenNewPhysicalFile( PhysFileInfo *phys, const char *filename )
 /*************************************************************************/
 {
-    phys->Filename = RCALLOC( strlen( filename ) + 1 );
+    phys->Filename = RESALLOC( strlen( filename ) + 1 );
     strcpy( phys->Filename, filename );
     phys->IsOpen = false;
     phys->Offset = 0;
@@ -854,7 +854,7 @@ static void FreeLogicalFilename( void )
     LogicalFileInfo     *log;
 
     log = &(InStack.Current->Logical);
-    RCFREE( log->Filename );
+    RESFREE( log->Filename );
     log->Filename = NULL;
 }
 
@@ -863,7 +863,7 @@ static void FreePhysicalFilename( void )
     PhysFileInfo    *phys;
 
     phys = &(InStack.Current->Physical);
-    RCFREE( phys->Filename );
+    RESFREE( phys->Filename );
     phys->Filename = NULL;
 }
 
@@ -1032,11 +1032,11 @@ extern void RcIoSetLogicalFileInfo( int linenum, const char * filename )
         log->LineNum = linenum;
         if( filename != NULL ) {
             if( log->Filename == NULL ) {
-                log->Filename = RCALLOC( strlen( filename ) + 1 );
+                log->Filename = RESALLOC( strlen( filename ) + 1 );
                 strcpy( log->Filename, filename );
             } else if( strcmp( log->Filename, filename ) != 0 ) {
-                RCFREE( log->Filename );
-                log->Filename = RCALLOC( strlen( filename ) + 1 );
+                RESFREE( log->Filename );
+                log->Filename = RESALLOC( strlen( filename ) + 1 );
                 strcpy( log->Filename, filename );
             }
             RcIoSetIsCOrHFlag();

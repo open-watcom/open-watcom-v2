@@ -138,7 +138,7 @@ extern RcStatus InitOS2ResTable( int *err_code )
         /* One resource type/id record per resource segment, 16-bits each */
         res->table_size   = res->num_res_segs * 2 * sizeof( uint_16 );
 
-        res->resources = RCALLOC( res->num_res_segs * sizeof( res->resources[0] ) );
+        res->resources = RESALLOC( res->num_res_segs * sizeof( res->resources[0] ) );
         if( res->resources == NULL ) {
             *err_code = errno;
             return( RS_NO_MEM );
@@ -198,14 +198,14 @@ static RcStatus copyOneResource( WResLangInfo *lang, WResFileID res_fid,
 
     /* align the output file to a boundary for shift_count */
     ret = RS_OK;
-    out_offset = RCTELL( out_fid );
+    out_offset = RESTELL( out_fid );
     if( out_offset == -1 ) {
         ret = RS_WRITE_ERROR;
         *err_code = errno;
     }
     if( ret == RS_OK ) {
         align_amount = AlignAmount( out_offset, shift_count );
-        if( RCSEEK( out_fid, align_amount, SEEK_CUR ) == -1 ) {
+        if( RESSEEK( out_fid, align_amount, SEEK_CUR ) == -1 ) {
             ret = RS_WRITE_ERROR;
             *err_code = errno;
         }
@@ -213,7 +213,7 @@ static RcStatus copyOneResource( WResLangInfo *lang, WResFileID res_fid,
     }
 
     if( ret == RS_OK ) {
-        if( RCSEEK( res_fid, lang->Offset, SEEK_SET ) == -1 ) {
+        if( RESSEEK( res_fid, lang->Offset, SEEK_SET ) == -1 ) {
             ret = RS_READ_ERROR;
             *err_code = errno;
         }
@@ -223,7 +223,7 @@ static RcStatus copyOneResource( WResLangInfo *lang, WResFileID res_fid,
         *err_code = errno;
     }
     if( ret == RS_OK ) {
-        align_amount = AlignAmount( RCTELL( out_fid ), shift_count );
+        align_amount = AlignAmount( RESTELL( out_fid ), shift_count );
         ret = PadExeData( out_fid, align_amount );
         *err_code = errno;
     }
@@ -264,7 +264,7 @@ RcStatus CopyOS2Resources( void )
     seg_offset = 0;     // shut up gcc
 
     /* We may need to add padding before the first resource segment */
-    align_amount = AlignAmount( RCTELL( tmp_fid ), shift_count );
+    align_amount = AlignAmount( RESTELL( tmp_fid ), shift_count );
     if( align_amount ) {
         ret = PadExeData( tmp_fid, align_amount );
         err_code = errno;
@@ -276,7 +276,7 @@ RcStatus CopyOS2Resources( void )
         lang = WResGetLangInfo( wind );
 
         if( entry->first_part ) {
-            seg_offset = RCTELL( tmp_fid );
+            seg_offset = RESTELL( tmp_fid );
         } else {
             seg_offset += 0x10000;
         }
@@ -342,10 +342,10 @@ extern RcStatus WriteOS2ResTable( WResFileID fid, OS2ResTable *restab, int *err_
     for( i = 0; i < restab->num_res_segs && ret == RS_OK; i++ ) {
         res_type = restab->resources[i].res_type;
         res_id   = restab->resources[i].res_id;
-        if( RCWRITE( fid, &res_type, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
+        if( RESWRITE( fid, &res_type, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
             ret = RS_WRITE_ERROR;
         } else {
-            if( RCWRITE( fid, &res_id, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
+            if( RESWRITE( fid, &res_id, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
                 ret = RS_WRITE_ERROR;
             }
         }
@@ -353,7 +353,7 @@ extern RcStatus WriteOS2ResTable( WResFileID fid, OS2ResTable *restab, int *err_
 
     *err_code = errno;
     if( restab->resources != NULL ) {
-        RCFREE( restab->resources );
+        RESFREE( restab->resources );
     }
 
     return( ret );

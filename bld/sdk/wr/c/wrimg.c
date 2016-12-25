@@ -75,10 +75,10 @@ bool WRLoadBitmapFile( WRInfo *info )
         ok = ( (fid = ResOpenFileRO( info->file_name )) != WRES_NIL_HANDLE );
     }
     if( ok ) {
-        ok = ( RCSEEK( fid, 0, SEEK_END ) != -1 );
+        ok = ( RESSEEK( fid, 0, SEEK_END ) != -1 );
     }
     if( ok ) {
-        file_length = RCTELL( fid );
+        file_length = RESTELL( fid );
         ok = ( file_length != 0 && file_length != -1 );
     }
 

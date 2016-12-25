@@ -44,7 +44,7 @@ FullStringTable * SemWINNewStringTable( void )
 {
     FullStringTable *   newtable;
 
-    newtable = RCALLOC( sizeof(FullStringTable) );
+    newtable = RESALLOC( sizeof(FullStringTable) );
     if( newtable != NULL ) {
         newtable->Head = NULL;
         newtable->Tail = NULL;
@@ -69,10 +69,10 @@ static void semFreeStringTable( FullStringTable * oldtable )
         oldblock = currblock;
         currblock = currblock->Next;
 
-        RCFREE( oldblock );
+        RESFREE( oldblock );
     }
 
-    RCFREE( oldtable );
+    RESFREE( oldtable );
 } /* semFreeStringTable */
 
 static FullStringTableBlock * findStringTableBlock( FullStringTable * table,
@@ -95,7 +95,7 @@ static FullStringTableBlock * newStringTableBlock( void )
 {
     FullStringTableBlock *      newblock;
 
-    newblock = RCALLOC( sizeof(FullStringTableBlock) );
+    newblock = RESALLOC( sizeof(FullStringTableBlock) );
     if( newblock != NULL ) {
         newblock->Next = NULL;
         newblock->Prev = NULL;
@@ -292,13 +292,13 @@ void SemWINWriteStringTable( FullStringTable * currtable, WResID * type )
             name = WResIDFromNum( currblock->BlockNum + 1 );
             SemWINSetResourceLanguage( &currtable->lang, false );
             SemAddResource( name, type, currblock->Flags, loc );
-            RCFREE( name );
+            RESFREE( name );
         }
 
         tofree = currtable;
         currtable = currtable->next;
         semFreeStringTable( tofree );
     }
-    RCFREE( type );
+    RESFREE( type );
     return;
 }

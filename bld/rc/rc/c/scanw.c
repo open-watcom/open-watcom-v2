@@ -127,14 +127,14 @@ static YYTOKENTYPE ScanCPPDirective( ScanValue *value )
     }
 
     if( stricmp( value->string.string, "line" ) == 0 ) {
-        RCFREE( value->string.string );
+        RESFREE( value->string.string );
 
         /* get the line number */
         token = ScanDFA( value );
         if( token != Y_INTEGER ) {
             RcFatalError( ERR_INVALID_CPP_LINE );
         }
-        RCFREE( value->intinfo.str );
+        RESFREE( value->intinfo.str );
         value->intinfo.str = NULL;
         linenum = value->intinfo.val;
 
@@ -145,13 +145,13 @@ static YYTOKENTYPE ScanCPPDirective( ScanValue *value )
             if( AddDependency( value->string.string ) ) {
                 ErrorHasOccured = true;
             }
-            RCFREE( value->string.string );
+            RESFREE( value->string.string );
             token = ScanDFA( value );
         } else {
             RcIoSetLogicalFileInfo( linenum, NULL );
         }
     } else if( stricmp( value->string.string, "pragma" ) == 0 ) {
-        RCFREE( value->string.string );
+        RESFREE( value->string.string );
         token = Y_POUND_PRAGMA;
     } else if( stricmp( value->string.string, "error" ) == 0 ) {
         char            buf[80];
@@ -260,7 +260,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
     state( S_L_STRING ):
         if( LookAhead =='"' ) {
             longString = true;
-            RCFREE( VarStringEnd( newstring, NULL ) );
+            RESFREE( VarStringEnd( newstring, NULL ) );
             change_state( S_START );
         } else {
             change_state( S_NAME );
@@ -730,7 +730,7 @@ static YYTOKENTYPE ScanDFA( ScanValue * value )
             token = LookupKeywordWIN( value->string );
             if( token != Y_NAME ) {
                 /* release the string if it is a keyword */
-                RCFREE( value->string.string );
+                RESFREE( value->string.string );
             }
             if( token == Y_RCINCLUDE ) {
                 /* when inline preprocessing is in place take steps here */

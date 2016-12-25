@@ -197,7 +197,7 @@ extern void RcFatalError( unsigned int errornum, ... )
         ResCloseFile( CurrResFile.fid );
         remove( CurrResFile.filename );
         UnregisterTmpFile( CurrResFile.filename );
-        RCFREE( CurrResFile.filename );
+        RESFREE( CurrResFile.filename );
         CurrResFile.filename = NULL;
     }
 #if !defined( WRDLL )

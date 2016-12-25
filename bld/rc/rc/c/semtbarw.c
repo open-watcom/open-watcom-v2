@@ -48,7 +48,7 @@ static void initToolBarItems( ToolBarItems *ret ) {
 ToolBar *SemWINCreateToolBar( void ) {
     ToolBar     *ret;
 
-    ret = RCALLOC( sizeof( ToolBar ) );
+    ret = RESALLOC( sizeof( ToolBar ) );
     ret->last = &ret->first;
     ret->nodecnt = 1;
     initToolBarItems( &ret->first );
@@ -60,7 +60,7 @@ void SemWINAddToolBarItem( ToolBar *toolbar, uint_16 item ) {
     ToolBarItems        *node;
 
     if( toolbar->last->cnt == TB_ITEM_CNT ) {
-        toolbar->last->next = RCALLOC( sizeof( ToolBarItems ) );
+        toolbar->last->next = RESALLOC( sizeof( ToolBarItems ) );
         toolbar->last = toolbar->last->next;
         initToolBarItems( toolbar->last );
         toolbar->nodecnt++;
@@ -79,9 +79,9 @@ static void semFreeToolBar( ToolBar *toolbar ) {
     while( cur != NULL ) {
         tmp = cur;
         cur = cur->next;
-        RCFREE( tmp );
+        RESFREE( tmp );
     }
-    RCFREE( toolbar );
+    RESFREE( toolbar );
 }
 
 void SemWINWriteToolBar( WResID *name, ToolBar *toolbar,

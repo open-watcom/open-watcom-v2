@@ -38,19 +38,20 @@
 #include <process.h>
 #include "clibint.h"
 #endif
+#include "wio.h"
 #include "linkstd.h"
 #include "dbginfo.h"
 #include "alloc.h"
-#include "wlnkmsg.h"
 #include "mapio.h"
 #include "msg.h"
 #include "fileio.h"
 #include "ideentry.h"
 #include "loadfile.h"
 #include "wreslang.h"
-#include "rcrtns.h"
-#include "wresset2.h"
 #include "wressetr.h"
+#include "wresset2.h"
+#include "rcrtns.h"
+#include "wlnkmsg.h"
 
 #include "clibext.h"
 

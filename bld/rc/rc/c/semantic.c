@@ -108,8 +108,8 @@ void SemAddResourceFree( WResID * name, WResID * type, ResMemFlags flags,
 /***********************************************************************/
 {
     SemAddResource2( name, type, flags, loc, NULL );
-    RCFREE( name );
-    RCFREE( type );
+    RESFREE( name );
+    RESFREE( type );
 }
 
 static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
@@ -141,12 +141,12 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
     }
     if( error ) {
         RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
-        RCFREE( ms_head.Type );
-        RCFREE( ms_head.Name );
+        RESFREE( ms_head.Type );
+        RESFREE( ms_head.Name );
         ErrorHasOccured = true;
     } else {
-        RCFREE( ms_head.Type );
-        RCFREE( ms_head.Name );
+        RESFREE( ms_head.Type );
+        RESFREE( ms_head.Name );
         tmp_fid = ResOpenFileRO( MSFormatTmpFile );
         if( tmp_fid == WRES_NIL_HANDLE ) {
             RcError( ERR_OPENING_TMP, MSFormatTmpFile, LastWresErrStr() );
@@ -212,12 +212,12 @@ void SemAddResource2( WResID *name, WResID *type, ResMemFlags flags,
         if( !type->IsName && type->ID.Num > 0x7FFF ) {
             namestr = WResIDToStr( type );
             RcWarning( ERR_TYPE_GT_7FFF, namestr );
-            RCFREE( namestr );
+            RESFREE( namestr );
         }
         if( !name->IsName && name->ID.Num > 0x7FFF ) {
             namestr = WResIDToStr( name );
             RcWarning( ERR_NAME_GT_7FFF, namestr );
-            RCFREE( namestr );
+            RESFREE( namestr );
         }
     }
     error = WResAddResource( type, name, flags, loc.start, loc.len, CurrResFile.dir, lang, &duplicate );
@@ -244,7 +244,7 @@ void SemAddResource2( WResID *name, WResID *type, ResMemFlags flags,
         /* erase the temporary file */
         remove( MSFormatTmpFile );
         UnregisterTmpFile( MSFormatTmpFile );
-        RCFREE( MSFormatTmpFile );
+        RESFREE( MSFormatTmpFile );
         MSFormatTmpFile = NULL;
     }
 }

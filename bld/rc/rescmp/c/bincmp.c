@@ -54,25 +54,25 @@ int BinaryCompare( WResFileID fid1, uint_32 offset1, WResFileID fid2, uint_32 of
     int             rc;
 
     /* seek to the start of the places to compare */
-    currpos1 = RCSEEK( fid1, offset1, SEEK_SET );
+    currpos1 = RESSEEK( fid1, offset1, SEEK_SET );
     if( currpos1 == -1 ) {
         return( -1 );
     }
-    currpos2 = RCSEEK( fid2, offset2, SEEK_SET );
+    currpos2 = RESSEEK( fid2, offset2, SEEK_SET );
     if( currpos2 == -1 ) {
-        RCSEEK( fid1, currpos1, SEEK_SET );
+        RESSEEK( fid1, currpos1, SEEK_SET );
         return( -1 );
     }
 
     /* compare the parts that fill the buffer */
     rc = 0;
     while( length >= BUFFER_SIZE ) {
-        numread = RCREAD( fid1, Buffer1, BUFFER_SIZE );
+        numread = RESREAD( fid1, Buffer1, BUFFER_SIZE );
         if( numread != BUFFER_SIZE ) {
             rc = -1;
             break;
         }
-        numread = RCREAD( fid2, Buffer2, BUFFER_SIZE );
+        numread = RESREAD( fid2, Buffer2, BUFFER_SIZE );
         if( numread != BUFFER_SIZE ) {
             rc = -1;
             break;
@@ -85,11 +85,11 @@ int BinaryCompare( WResFileID fid1, uint_32 offset1, WResFileID fid2, uint_32 of
     }
 
     if( rc == 0 && length > 0 ) {
-        numread = RCREAD( fid1, Buffer1, length );
+        numread = RESREAD( fid1, Buffer1, length );
         if( numread != length ) {
             rc = -1;
         } else {
-            numread = RCREAD( fid2, Buffer2, length );
+            numread = RESREAD( fid2, Buffer2, length );
             if( numread != length ) {
                 rc = -1;
             } else {
@@ -100,7 +100,7 @@ int BinaryCompare( WResFileID fid1, uint_32 offset1, WResFileID fid2, uint_32 of
         }
     }
 
-    RCSEEK( fid2, currpos2, SEEK_SET );
-    RCSEEK( fid1, currpos1, SEEK_SET );
+    RESSEEK( fid2, currpos2, SEEK_SET );
+    RESSEEK( fid1, currpos1, SEEK_SET );
     return( rc );
 }

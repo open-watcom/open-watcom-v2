@@ -90,7 +90,7 @@ static bool WRWriteResourceToWRES( WResTypeNode *tnode, WResResNode *rnode,
         }
     }
 
-    offset = RCTELL( dst_fid );
+    offset = RESTELL( dst_fid );
 
     lnode = rnode->Head;
 
@@ -440,7 +440,7 @@ bool WRCopyResFromFileToFile( WResFileID src_fid, uint_32 offset, uint_32 length
 
     ok = (ok && (buf = (uint_8 *)MemAlloc( CHUNK_SIZE )) != NULL);
 
-    ok = (ok && RCSEEK( src_fid, offset, SEEK_SET ) != -1);
+    ok = (ok && RESSEEK( src_fid, offset, SEEK_SET ) != -1);
 
     while( ok && length - size > CHUNK_SIZE ) {
         ok = ok && WRReadResData( src_fid, (BYTE *)buf, CHUNK_SIZE );

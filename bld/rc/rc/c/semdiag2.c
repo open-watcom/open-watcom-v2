@@ -76,7 +76,7 @@ struct DLGTITEM {
 static bool ResOS2WriteDlgTemplate( char *tmpldata, int size, WResFileID fid )
 /****************************************************************************/
 {
-    if( RCWRITE( fid, tmpldata, size ) != size ) {
+    if( RESWRITE( fid, tmpldata, size ) != size ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     } else {
@@ -101,7 +101,7 @@ static FullDiagCtrlListOS2 *SemOS2EmptyDiagCtrlList( void )
 {
     FullDiagCtrlListOS2     *newlist;
 
-    newlist = RCALLOC( sizeof(FullDiagCtrlListOS2) );
+    newlist = RESALLOC( sizeof(FullDiagCtrlListOS2) );
     newlist->head = NULL;
     newlist->tail = NULL;
     newlist->numctrls = 0;
@@ -139,7 +139,7 @@ static FullDialogBoxControlOS2 *SemOS2InitDiagCtrl( void )
 {
     FullDialogBoxControlOS2     *newctrl;
 
-    newctrl = RCALLOC( sizeof(FullDialogBoxControlOS2) );
+    newctrl = RESALLOC( sizeof(FullDialogBoxControlOS2) );
     newctrl->next = NULL;
     newctrl->prev = NULL;
     newctrl->children = NULL;
@@ -303,13 +303,13 @@ static void SemOS2FreePresParamList( PresParamListOS2 *list )
 
     presparam = list->head;
     while( presparam != NULL ) {
-        RCFREE( presparam->Name );
+        RESFREE( presparam->Name );
         SemFreeDataElemList( presparam->dataList );
         currparam = presparam;
         presparam = presparam->next;
-        RCFREE( currparam );
+        RESFREE( currparam );
     }
-    RCFREE( list );
+    RESFREE( list );
 }
 
 static void SemOS2FreeDiagCtrlList( FullDiagCtrlListOS2 *list )
@@ -322,10 +322,10 @@ static void SemOS2FreeDiagCtrlList( FullDiagCtrlListOS2 *list )
     while( ctrl != NULL ) {
         /* free the contents of pointers within the structure */
         if( ctrl->ctrl.ClassID != NULL ) {
-            RCFREE( ctrl->ctrl.ClassID );
+            RESFREE( ctrl->ctrl.ClassID );
         }
         if( ctrl->ctrl.Text != NULL ) {
-            RCFREE( ctrl->ctrl.Text );
+            RESFREE( ctrl->ctrl.Text );
         }
 
         oldctrl = ctrl;
@@ -338,10 +338,10 @@ static void SemOS2FreeDiagCtrlList( FullDiagCtrlListOS2 *list )
 
         ctrl = ctrl->next;
 
-        RCFREE( oldctrl );
+        RESFREE( oldctrl );
     }
 
-    RCFREE( list );
+    RESFREE( list );
 } /* SemOS2FreeDiagCtrlList */
 
 static uint_16 SemOS2CountBytes( DataElemList *list )
@@ -682,7 +682,7 @@ void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
         // TODO: Error, template is too big
     }
 
-    tmpl = RCALLOC( size );
+    tmpl = RESALLOC( size );
 
     head = (DialogHeaderOS2 *)tmpl;
     InitOS2DialogBoxHeader( head, codepage );
@@ -704,7 +704,7 @@ void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
         goto OutputWriteError;
     }
 
-    RCFREE( tmpl );
+    RESFREE( tmpl );
 
     loc.len = SemEndResource( loc.start );
     SemAddResourceFree( name, WResIDFromNum( OS2_RT_DIALOG ), flags, loc );
@@ -739,7 +739,7 @@ FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name,
     control->children        = childctls;
     control->ctrl.ExtraBytes = 0;
     control->presParams      = presparams;
-    RCFREE( ctlclassname );
+    RESFREE( ctlclassname );
 
     return( control );
 }
@@ -801,13 +801,13 @@ void SemOS2AddDlgincResource( WResID *name, char *filename )
     SemAddResourceFree( name, WResIDFromNum( OS2_RT_DLGINCLUDE ),
                         MEMFLAG_DISCARDABLE | MEMFLAG_MOVEABLE | MEMFLAG_PURE,
                         loc );
-    RCFREE( filename );
+    RESFREE( filename );
     return;
 
 OutputWriteError:
     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
     ErrorHasOccured = true;
-    RCFREE( filename );
+    RESFREE( filename );
     return;
 }
 
@@ -816,7 +816,7 @@ PresParamListOS2 *SemOS2NewPresParamList( PresParamsOS2 presparam )
 {
     PresParamListOS2    *newlist;
 
-    newlist = RCALLOC( sizeof( PresParamListOS2 ) );
+    newlist = RESALLOC( sizeof( PresParamListOS2 ) );
     newlist->head = NULL;
     newlist->tail = NULL;
     return( SemOS2AppendPresParam( newlist, presparam ) );
@@ -828,7 +828,7 @@ PresParamListOS2 *SemOS2AppendPresParam( PresParamListOS2 *list,
 {
     PresParamsOS2       *params;
 
-    params = RCALLOC( sizeof( PresParamsOS2 ) );
+    params = RESALLOC( sizeof( PresParamsOS2 ) );
     *params = presparams;
     ResAddLLItemAtEnd( (void **)&(list->head), (void **)&(list->tail), params );
     return( list );

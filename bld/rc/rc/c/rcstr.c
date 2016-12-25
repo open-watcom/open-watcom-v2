@@ -199,7 +199,7 @@ static void ConstructStringBlock( StringsBlock * str )
 #endif
 
     /* allocate the block for the strings */
-    str->StringBlock = RCALLOC( str->StringBlockSize );
+    str->StringBlock = RESALLOC( str->StringBlockSize );
 
     /* copy the strings into the block */
     nextstring = str->StringBlock;
@@ -237,7 +237,7 @@ void StringBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
         /* set the initial list_len to be the max possible */
         list_len = WResGetNumTypes( dir ) + WResGetNumResources( dir );
         str->UseUnicode = use_unicode;
-        str->StringList = RCALLOC( list_len * sizeof( void * ) );
+        str->StringList = RESALLOC( list_len * sizeof( void * ) );
 
         list_len = InitStringList( dir, str->StringList, list_len );
         list_len = SortAndRemoveRedundantStrings( str->StringList,
@@ -245,7 +245,7 @@ void StringBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
         str->StringListLen = list_len;
 
         if( list_len == 0 ) {
-            RCFREE( str->StringList );
+            RESFREE( str->StringList );
             str->StringList = NULL;
             str->StringBlock = NULL;
             str->StringBlockSize = 0;

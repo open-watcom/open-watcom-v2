@@ -90,4 +90,4 @@ WResFileOffset res_tell( WResFileID fid )
     return( tell( WRES_FID2PH( fid ) ) );
 }
 
-WResSetRtns( res_open, res_close, res_read, res_write, res_seek, res_tell, RCALLOC, RCFREE );
+WResSetRtns( res_open, res_close, res_read, res_write, res_seek, res_tell, RESALLOC, RESFREE );

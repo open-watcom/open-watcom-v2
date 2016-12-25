@@ -45,7 +45,7 @@ static RcStatus allocSegTable( SegTable *seg, int *err_code )
     int     tablesize;
 
     tablesize = seg->NumSegs * sizeof(segment_record);
-    seg->Segments = RCALLOC( tablesize );
+    seg->Segments = RESALLOC( tablesize );
     if( seg->Segments == NULL ) {
         *err_code = errno;
         return( RS_NO_MEM );
@@ -65,11 +65,11 @@ static RcStatus readSegTable( WResFileID fid, uint_32 offset, SegTable * seg )
 
     tablesize = seg->NumSegs * sizeof(segment_record);
 
-    if( RCSEEK( fid, offset, SEEK_SET ) == -1 )
+    if( RESSEEK( fid, offset, SEEK_SET ) == -1 )
         return( RS_READ_ERROR );
-    numread = RCREAD( fid, seg->Segments, tablesize );
+    numread = RESREAD( fid, seg->Segments, tablesize );
     if( numread != tablesize ) {
-        return( RCIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+        return( RESIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     return( RS_OK );
 
@@ -178,9 +178,9 @@ extern uint_32 ComputeSegmentSize( WResFileID fid, SegTable * segs, int shift_co
             currseg < afterlast; currseg++ ) {
         length += currseg->size;
         if( currseg->info & SEG_RELOC ) {
-            if( RCSEEK( fid, (((long)currseg->address) << (long)shift_count) + currseg->size, SEEK_SET ) == -1 )
+            if( RESSEEK( fid, (((long)currseg->address) << (long)shift_count) + currseg->size, SEEK_SET ) == -1 )
                 return( 0 );
-            numread = RCREAD( fid, &num_relocs, sizeof(uint_16) );
+            numread = RESREAD( fid, &num_relocs, sizeof(uint_16) );
             if( numread != sizeof(uint_16) )
                 return( 0 );
             length += (unsigned_32)( (unsigned_32)num_relocs * (unsigned_32)OS_RELOC_ITEM_SIZE );
@@ -234,14 +234,14 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
     /* check if this is a segment that has no image in the exe file */
     if( inseg->address != 0 ) {
         /* align in the out file so that shift_count will be valid */
-        out_offset = RCTELL( outexe->fid );
+        out_offset = RESTELL( outexe->fid );
         if( out_offset == -1 ) {
             error = true;
             RcError( ERR_WRITTING_FILE, outexe->name, strerror( errno ) );
         }
         if( !error ) {
             align_amount = AlignAmount( out_offset, new_shift_count );
-            if( RCSEEK( outexe->fid, align_amount, SEEK_CUR ) == -1 ) {
+            if( RESSEEK( outexe->fid, align_amount, SEEK_CUR ) == -1 ) {
                 error = true;
                 RcError( ERR_WRITTING_FILE, outexe->name, strerror( errno ) );
             }
@@ -251,7 +251,7 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
         /* move in the in file to the start of the segment */
         if( !error ) {
             /* convert the address to a long before shifting it */
-            if( RCSEEK( inexe->fid, (long)inseg->address << old_shift_count, SEEK_SET ) == -1 ) {
+            if( RESSEEK( inexe->fid, (long)inseg->address << old_shift_count, SEEK_SET ) == -1 ) {
                 error = true;
                 RcError( ERR_READING_EXE, inexe->name, strerror( errno ) );
             }
@@ -268,16 +268,16 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
 
         if( (inseg->info & SEG_RELOC) && !error ) {
             /* read the number of relocation items */
-            numread = RCREAD( inexe->fid, &numrelocs, sizeof(uint_16) );
+            numread = RESREAD( inexe->fid, &numrelocs, sizeof(uint_16) );
             if( numread != sizeof( uint_16 ) ) {
                 error = true;
-                if( RCIOERR( inexe->fid, numread ) ) {
+                if( RESIOERR( inexe->fid, numread ) ) {
                     RcError( ERR_READING_EXE, inexe->name, strerror( errno ) );
                 } else {
                     RcError( ERR_UNEXPECTED_EOF, inexe->name );
                 }
             } else {
-                if( RCWRITE( outexe->fid, &numrelocs, sizeof(uint_16) ) != sizeof( uint_16 ) ) {
+                if( RESWRITE( outexe->fid, &numrelocs, sizeof(uint_16) ) != sizeof( uint_16 ) ) {
                     error = true;
                     RcError( ERR_WRITTING_FILE, outexe->name, strerror( errno ) );
                 }
@@ -292,19 +292,19 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
         }
 
         if( pad_end && ret != CPSEG_SEG_TOO_BIG && !error ) {
-            align_amount = AlignAmount( RCTELL( outexe->fid ), new_shift_count );
+            align_amount = AlignAmount( RESTELL( outexe->fid ), new_shift_count );
             /* make sure there is room for the memory arena header */
             if( align_amount < 16 ) {
                 align_amount += 16;
             }
-            if( RCSEEK( outexe->fid, align_amount - 1, SEEK_CUR ) == -1 ) {
+            if( RESSEEK( outexe->fid, align_amount - 1, SEEK_CUR ) == -1 ) {
                 error = true;
                 RcError( ERR_WRITTING_FILE, outexe->name );
             } else {
                 /* write something out so if we have just seeked past the
                  * end of the file the file's size will be adjusted
                  * appropriately */
-                if( RCWRITE( outexe->fid, &zero, 1 ) != 1 ) {
+                if( RESWRITE( outexe->fid, &zero, 1 ) != 1 ) {
                     error = true;
                     RcError( ERR_WRITTING_FILE, outexe->name );
                 }
@@ -459,7 +459,7 @@ extern CpSegRc CopyOS2Segments( void )
         else
             end_offset += oldseg->size;
 
-        if( RCSEEK( old_exe_info->fid, end_offset, SEEK_SET ) == -1 ) {
+        if( RESSEEK( old_exe_info->fid, end_offset, SEEK_SET ) == -1 ) {
             ret = CPSEG_ERROR;
             RcError( ERR_READING_EXE, old_exe_info->name, strerror( errno ) );
         }

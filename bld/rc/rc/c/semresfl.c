@@ -103,22 +103,22 @@ static bool copyResourcesFromRes( const char *full_filename )
         RcError( ERR_RES_OS_MISMATCH, full_filename );
         goto HANDLE_ERROR;
     }
-    buffer = RCALLOC( BUFFER_SIZE );
+    buffer = RESALLOC( BUFFER_SIZE );
     wind = WResFirstResource( dir );
     while( !WResIsEmptyWindow( wind ) ) {
         copyAResource( fid, &wind, buffer, full_filename );
         wind = WResNextResource( wind, dir );
     }
-    RCFREE( buffer );
+    RESFREE( buffer );
     WResFreeDir( dir );
-    RCCLOSE( fid );
+    RESCLOSE( fid );
     return( false );
 
 HANDLE_ERROR:
     ErrorHasOccured = true;
     WResFreeDir( dir );
     if( fid != WRES_NIL_HANDLE )
-        RCCLOSE( fid );
+        RESCLOSE( fid );
     return( true );
 }
 
@@ -135,10 +135,10 @@ void SemWINAddResFile( char *filename )
         goto HANDLE_ERROR;
     if( copyResourcesFromRes( full_filename ) )
         goto HANDLE_ERROR;
-    RCFREE( filename );
+    RESFREE( filename );
     return;
 
 HANDLE_ERROR:
     ErrorHasOccured = true;
-    RCFREE( filename );
+    RESFREE( filename );
 }

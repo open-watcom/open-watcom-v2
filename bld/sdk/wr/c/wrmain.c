@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <io.h>
+#include "wio.h"
 #include "watcom.h"
 #include "wrglbl.h"
 #include "wrmemi.h"
@@ -145,7 +145,7 @@ WResFileOffset res_tell( WResFileID fid )
 }
 
 /* set the WRES library to use compatible functions */
-WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,RCALLOC,RCFREE);
+WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,RESALLOC,RESFREE);
 
 #ifdef __NT__
 
