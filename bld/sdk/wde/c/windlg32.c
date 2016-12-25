@@ -41,7 +41,7 @@
 /*
  * stringLength - get length of string
  */
-static int stringLength( const char _ISFAR *str )
+static size_t stringLength( const char _ISFAR *str )
 {
 #if defined( __NT__ ) && !defined( __DEC__ )
     if( str == NULL ) {
@@ -220,7 +220,7 @@ GLOBALHANDLE AddControlEX( GLOBALHANDLE data, int dtilx, int dtily,
     UINT                _ISFAR *numbytes;
     _DLGEXTEMPLATE      _ISFAR *dt;
     _DLGEXITEMTEMPLATE  _ISFAR *dit;
-    char                _ISFAR * ditstr;
+    char                _ISFAR *ditstr;
 #if defined( __NT__ ) && !defined( __DEC__ )
     MyControlClass      cclass;
     BOOL                textClass;

@@ -192,11 +192,8 @@ WRSaveIntoData *WRECreateSaveData( WRECurrentResInfo *curr )
 
     nodes = NULL;
     tcurr = *curr;
-    rnode = curr->type->Head;
-
-    while( rnode != NULL ) {
-        lnode = rnode->Head;
-        while( lnode != NULL ) {
+    for( rnode = curr->type->Head; rnode != NULL; rnode = rnode->Next ) {
+        for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
             tcurr.res = rnode;
             tcurr.lang = lnode;
             new = WREMakeSaveIntoNode( &tcurr );
@@ -210,9 +207,7 @@ WRSaveIntoData *WRECreateSaveData( WRECurrentResInfo *curr )
             } else {
                 nodes = new;
             }
-            lnode = lnode->Next;
         }
-        rnode = rnode->Next;
     }
 
     return( nodes );

@@ -165,21 +165,16 @@ int WRAPI WRRemoveTypeNodeFromDir( WResDir dir, WResTypeNode *tnode )
 
 int WRFreeResNodes( WResTypeNode *tnode )
 {
-    WResResNode         *oldnode;
     WResResNode         *currnode;
     int                 count;
 
     count = 0;
-    currnode = tnode->Head;
-    while( currnode != NULL ) {
-        oldnode = currnode;
-        currnode = currnode->Next;
-        WRFreeLangNodes( oldnode );
-        MemFree( oldnode );
+    while( (currnode = tnode->Head) != NULL ) {
+        tnode->Head = currnode->Next;
+        WRFreeLangNodes( currnode );
+        MemFree( currnode );
         count++;
     }
-
-    tnode->Head = NULL;
     tnode->Tail = NULL;
 
     return( count );
@@ -187,20 +182,15 @@ int WRFreeResNodes( WResTypeNode *tnode )
 
 int WRFreeLangNodes( WResResNode *rnode )
 {
-    WResLangNode        *oldnode;
     WResLangNode        *currnode;
     int                 count;
 
     count = 0;
-    currnode = rnode->Head;
-    while( currnode != NULL ) {
-        oldnode = currnode;
-        currnode = currnode->Next;
-        MemFree( oldnode );
+    while( (currnode = rnode->Head) != NULL ) {
+        rnode->Head = currnode->Next;
+        MemFree( currnode );
         count++;
     }
-
-    rnode->Head = NULL;
     rnode->Tail = NULL;
 
     return( count );

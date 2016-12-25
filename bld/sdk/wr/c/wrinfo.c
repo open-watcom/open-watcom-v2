@@ -120,21 +120,15 @@ void WRAPI WRFreeWResDirData( WResDir dir )
         return;
     }
 
-    tnode = dir->Head;
-    while( tnode != NULL ) {
-        rnode = tnode->Head;
-        while( rnode != NULL ) {
-            lnode = rnode->Head;
-            while( lnode != NULL ) {
+    for( tnode = dir->Head; tnode != NULL; tnode = tnode->Next ) {
+        for( rnode = tnode->Head; rnode != NULL; rnode = rnode->Next ) {
+            for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
                 if( lnode->data != NULL ) {
                     MemFree( lnode->data );
                     lnode->data = NULL;
                 }
-                lnode = lnode->Next;
             }
-            rnode = rnode->Next;
         }
-        tnode = tnode->Next;
     }
 }
 
@@ -150,21 +144,14 @@ int WRAPI WRCountZeroLengthResources( WResDir dir )
     }
 
     count = 0;
-
-    tnode = dir->Head;
-    while( tnode != NULL ) {
-        rnode = tnode->Head;
-        while( rnode != NULL ) {
-            lnode = rnode->Head;
-            while( lnode != NULL ) {
+    for( tnode = dir->Head; tnode != NULL; tnode = tnode->Next ) {
+        for( rnode = tnode->Head; rnode != NULL; rnode = rnode->Next ) {
+            for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
                 if( lnode->Info.Length == 0 ) {
                     count++;
                 }
-                lnode = lnode->Next;
             }
-            rnode = rnode->Next;
         }
-        tnode = tnode->Next;
     }
 
     return( count );

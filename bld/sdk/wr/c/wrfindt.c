@@ -107,8 +107,7 @@ WResLangNode *WRAPI WRFindLangNodeFromLangType( WResResNode *rnode, WResLangType
     WResLangNode *lnode;
 
     if( rnode != NULL && lang != NULL ) {
-        lnode = rnode->Head;
-        while( lnode != NULL ) {
+        for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
             if( lnode->Info.lang.lang == lang->lang  &&
                 lnode->Info.lang.sublang == lang->sublang ) {
                 return( lnode );
@@ -116,7 +115,6 @@ WResLangNode *WRAPI WRFindLangNodeFromLangType( WResResNode *rnode, WResLangType
             if( lnode == rnode->Tail ) {
                 break;
             }
-            lnode = lnode->Next;
         }
     }
 
@@ -131,18 +129,13 @@ WResTypeNode * WRAPI WRFindTypeNode( WResDir dir, uint_16 type, const char *type
         return( NULL );
     }
 
-    type_node = dir->Head;
-
-    while( type_node != NULL ) {
+    for( type_node = dir->Head; type_node != NULL; type_node = type_node->Next ) {
         if( WRIsCorrectNode( &type_node->Info.TypeName, type, type_name ) ) {
             return( type_node );
         }
-
         if( type_node == dir->Tail ) {
             break;
         }
-
-        type_node = type_node->Next;
     }
 
     return( NULL );
@@ -157,18 +150,13 @@ WResResNode * WRAPI WRFindResNode( WResTypeNode *type, uint_16 res, const char *
         return( NULL );
     }
 
-    res_node = type->Head;
-
-    while( res_node != NULL ) {
+    for( res_node = type->Head; res_node != NULL; res_node = res_node->Next ) {
         if( WRIsCorrectNode( &res_node->Info.ResName, res, res_name ) ) {
             return( res_node );
         }
-
         if( res_node == type->Tail ) {
             break;
         }
-
-        res_node = res_node->Next;
     }
 
     return( NULL );

@@ -412,8 +412,7 @@ int WRSetResName( WResDir dir, uint_32 offset, const char *name )
     int          found_one;
 
     found_one = FALSE;
-    type_node = dir->Head;
-    while( type_node != NULL ) {
+    for( type_node = dir->Head; type_node != NULL; type_node = type_node->Next ) {
         if( type_node->Info.TypeName.IsName && type_node->Info.TypeName.ID.Num == offset ) {
             type_node = WRRenameWResTypeNode( dir, type_node, name );
             if( type_node == NULL ) {
@@ -422,8 +421,7 @@ int WRSetResName( WResDir dir, uint_32 offset, const char *name )
                 found_one = TRUE;
             }
         }
-        res_node = type_node->Head;
-        while( res_node != NULL ) {
+        for( res_node = type_node->Head; res_node != NULL; res_node = res_node->Next ) {
             if( res_node->Info.ResName.IsName && res_node->Info.ResName.ID.Num == offset ) {
                 res_node = WRRenameWResResNode( type_node, res_node, name );
                 if( res_node == NULL ) {
@@ -435,12 +433,10 @@ int WRSetResName( WResDir dir, uint_32 offset, const char *name )
             if( res_node == type_node->Tail ) {
                 break;
             }
-            res_node = res_node->Next;
         }
         if( type_node == dir->Tail ) {
             break;
         }
-        type_node = type_node->Next;
     }
 
     return( found_one );
@@ -623,12 +619,10 @@ int WRSetResNameFromNameTable( WResDir dir, WRNameTableEntry *entry )
     WResTypeNode *type_node;
     WResResNode  *res_node;
 
-    type_node = dir->Head;
-    while( type_node != NULL ) {
+    for( type_node = dir->Head; type_node != NULL; type_node = type_node->Next ) {
         if( !type_node->Info.TypeName.IsName &&
             type_node->Info.TypeName.ID.Num == entry->type ) {
-            res_node = type_node->Head;
-            while( res_node != NULL ) {
+            for( res_node = type_node->Head; res_node != NULL; res_node = res_node->Next ) {
                 if( !res_node->Info.ResName.IsName &&
                     res_node->Info.ResName.ID.Num == (entry->id & 0x7fff) ) {
                     if( WRRenameWResResNode( type_node, res_node, entry->name ) == NULL ) {
@@ -640,13 +634,11 @@ int WRSetResNameFromNameTable( WResDir dir, WRNameTableEntry *entry )
                 if( res_node == type_node->Tail ) {
                     break;
                 }
-                res_node = res_node->Next;
             }
         }
         if( type_node == dir->Tail ) {
             break;
         }
-        type_node = type_node->Next;
     }
 
     return( FALSE );

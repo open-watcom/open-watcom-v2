@@ -438,10 +438,8 @@ bool WdeAddDlgItems( WdeResInfo *res_info )
     } else {
         rnode = NULL;
     }
-
-    while( rnode != NULL ) {
-        lnode = rnode->Head;
-        while( lnode != NULL ) {
+    for( ; rnode != NULL; rnode = rnode->Next ) {
+        for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
             dlg_item = WdeAllocResDlgItem();
             if( dlg_item == NULL ) {
                 return( FALSE );
@@ -450,9 +448,7 @@ bool WdeAddDlgItems( WdeResInfo *res_info )
             dlg_item->rnode = rnode;
             dlg_item->lnode = lnode;
             WdeAddResDlgItemToResInfo( res_info, dlg_item );
-            lnode = lnode->Next;
         }
-        rnode = rnode->Next;
     }
 
     return( TRUE );
