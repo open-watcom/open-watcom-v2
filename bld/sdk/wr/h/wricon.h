@@ -129,8 +129,8 @@ WRDLLENTRY extern bool     WRAPI WRCreateIconHeader( BYTE *data, uint_32 size, W
 WRDLLENTRY extern bool     WRAPI WRCreateCursorResHeader( RESCURSORHEADER **rch, uint_32 *rchsize, BYTE *data, uint_32 data_size );
 WRDLLENTRY extern bool     WRAPI WRCreateIconResHeader( RESICONHEADER **rih, uint_32 *rihsize, BYTE *data, uint_32 data_size );
 WRDLLENTRY extern bool     WRAPI WRAddCursorHotspot( BYTE **cursor, uint_32 *size, CURSORHOTSPOT *hs );
-WRDLLENTRY extern bool     WRAPI WRGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, int ord );
-WRDLLENTRY extern bool     WRAPI WRGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, int ord );
+WRDLLENTRY extern bool     WRAPI WRGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, uint_16 ord );
+WRDLLENTRY extern bool     WRAPI WRGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, uint_16 ord );
 WRDLLENTRY extern bool     WRAPI WRFindImageId( WRInfo *info, WResTypeNode **otnode, WResResNode **ornode, WResLangNode **lnode, uint_16 type, uint_16 id, WResLangType *ltype );
 
 WRDLLENTRY extern bool     WRAPI WRAppendDataToData( BYTE **d1, uint_32 *d1size, BYTE *d2, uint_32 d2size );

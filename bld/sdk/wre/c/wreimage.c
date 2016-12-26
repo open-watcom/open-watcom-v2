@@ -68,8 +68,8 @@
 static bool     WREFindImageId( WRECurrentResInfo *image, uint_16 type, uint_16 id, WResLangType *ltype );
 static bool     WREAddCursorHotspot( BYTE **cursor, uint_32 *size, CURSORHOTSPOT *hs );
 static uint_16  WREFindUnusedImageId( WREResInfo *info, uint_16 start );
-static bool     WREGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, int ord );
-static bool     WREGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, int ord );
+static bool     WREGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, uint_16 ord );
+static bool     WREGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, uint_16 ord );
 static bool     WRECreateCursorResHeader( RESCURSORHEADER **rch, uint_32 *rchsize, BYTE *data, uint_32 data_size );
 static bool     WRECreateIconResHeader( RESICONHEADER **rih, uint_32 *rihsize, BYTE *data, uint_32 data_size );
 //static bool     WREIsCorrectImageGroup( WRECurrentResInfo *group, uint_16 type, uint_16 id, bool );
@@ -317,14 +317,6 @@ bool WRECreateCursorDataFromGroup( WRECurrentResInfo *group, BYTE **data, uint_3
         }
     }
 
-    if( !ok ) {
-        if( *data != NULL ) {
-            WRMemFree( *data );
-            *data = NULL;
-        }
-        *size = 0;
-    }
-
     return( ok );
 }
 
@@ -388,18 +380,10 @@ bool WRECreateIconDataFromGroup( WRECurrentResInfo *group, BYTE **data, uint_32 
         }
     }
 
-    if( !ok ) {
-        if( *data != NULL ) {
-            WRMemFree( *data );
-            *data = NULL;
-        }
-        *size = 0;
-    }
-
     return( ok );
 }
 
-bool WREGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, int ord )
+bool WREGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, uint_16 ord )
 {
     BYTE                *cursor;
     bool                dup;
@@ -467,7 +451,7 @@ bool WREGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, int o
     return( ok );
 }
 
-bool WREGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, int ord )
+bool WREGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, uint_16 ord )
 {
     BYTE                *icon;
     bool                dup;

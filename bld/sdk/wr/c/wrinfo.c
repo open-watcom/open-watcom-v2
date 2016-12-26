@@ -157,7 +157,7 @@ int WRAPI WRCountZeroLengthResources( WResDir dir )
     return( count );
 }
 
-static int WRRelinkDir( WResDir dest, WResDir src )
+static bool WRRelinkDir( WResDir dest, WResDir src )
 {
     WResLangType    lt;
     WResTypeNode    *dtnode;
@@ -168,11 +168,11 @@ static int WRRelinkDir( WResDir dest, WResDir src )
     WResLangNode    *slnode;
 
     if( dest == NULL || src == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( dest->NumTypes != src->NumTypes || dest->NumResources != src->NumResources ) {
-        return( FALSE );
+        return( false );
     }
 
     dtnode = dest->Head;
@@ -211,7 +211,7 @@ static int WRRelinkDir( WResDir dest, WResDir src )
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 // We really should not reread the file but, alas, time demands

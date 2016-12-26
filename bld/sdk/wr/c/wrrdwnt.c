@@ -62,7 +62,6 @@ bool WRReadResourceEntry( WResFileID fid, uint_32 offset, resource_entry *res_en
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static int      WRIsHeaderValidWINNT( exe_pe_header * );
 static int      WRWinNTHeaderHasResourceTable( exe_pe_header * );
 static int      WRCalcObjTableOffset( WResFileID, exe_pe_header * );
 static int      WRReadNTObjectTable( WResFileID, exe_pe_header *, pe_object ** );

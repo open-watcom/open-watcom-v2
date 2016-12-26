@@ -125,13 +125,13 @@ static ResNameOrOrdinal *WR16Mem2NameOrOrdinal( const void *data )
     return( new );
 }
 
-static int WRNameOrOrd2Mem16( ResNameOrOrdinal *name, void **data, size_t *size )
+static bool WRNameOrOrd2Mem16( ResNameOrOrdinal *name, void **data, size_t *size )
 {
     size_t      len;
     size_t      stringlen;
 
     if( name == NULL || data == NULL || size == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( name->ord.fFlag == 0xff ) {
@@ -144,7 +144,7 @@ static int WRNameOrOrd2Mem16( ResNameOrOrdinal *name, void **data, size_t *size 
 
     *data = MemAlloc( len );
     if( *data == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( name->ord.fFlag != 0xff ) {
@@ -155,16 +155,16 @@ static int WRNameOrOrd2Mem16( ResNameOrOrdinal *name, void **data, size_t *size 
 
     *size = len;
 
-    return( TRUE );
+    return( true );
 }
 
-static int WRNameOrOrd2Mem32( ResNameOrOrdinal *name, void **data, size_t *size )
+static bool WRNameOrOrd2Mem32( ResNameOrOrdinal *name, void **data, size_t *size )
 {
     uint_16     *data16;
     char        *uni_str;
 
     if( name == NULL || data == NULL || size == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( name->ord.fFlag == 0xff ) {
@@ -176,7 +176,7 @@ static int WRNameOrOrd2Mem32( ResNameOrOrdinal *name, void **data, size_t *size 
     }
 
     if( *data == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( name->ord.fFlag == 0xff ) {
@@ -185,7 +185,7 @@ static int WRNameOrOrd2Mem32( ResNameOrOrdinal *name, void **data, size_t *size 
         data16[1] = name->ord.wOrdinalID;
     }
 
-    return( TRUE );
+    return( true );
 }
 
 ResNameOrOrdinal * WRAPI WRMem2NameOrOrdinal( const void *data, bool is32bit )

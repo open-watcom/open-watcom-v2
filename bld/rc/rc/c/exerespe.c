@@ -734,7 +734,7 @@ static bool padObject( PEResDir *dir, ExeFileInfo *tmp, long size )
 
     if( RESSEEK( tmp->fid, dir->ResOffset, SEEK_SET ) == -1 )
         return( true );
-    if( RESSEEK( tmp->fid, size-1, SEEK_CUR ) == -1 )
+    if( RESSEEK( tmp->fid, size - 1, SEEK_CUR ) == -1 )
         return( true );
     if( RESWRITE( tmp->fid, &zero, 1 ) != 1 )
         return( true );

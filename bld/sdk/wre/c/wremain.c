@@ -73,7 +73,6 @@
 #include "wrdll.h"
 #include "wrdmsg.h"
 #include "wrbitmap.h"
-
 #include "wwinhelp.h"
 #include "jdlg.h"
 #include "aboutdlg.h"
@@ -885,7 +884,8 @@ bool WREHandleResEdit( void )
 
     // correct ok if this the 'All Strings' entry
     if( !ok ) {
-        ok = (curr.info != NULL && curr.type != NULL && curr.info->current_type == RESOURCE2INT( RT_STRING ));
+        ok = ( curr.info != NULL && curr.type != NULL &&
+              curr.info->current_type == RESOURCE2INT( RT_STRING ) );
     }
 
     if( ok ) {

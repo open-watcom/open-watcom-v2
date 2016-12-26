@@ -475,7 +475,7 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
 
     WRStripSymbol( str );
 
-    quoted_str = FALSE;
+    quoted_str = false;
     if( _mbclen( (unsigned char *)str ) == 1 && str[0] == '"' ) {
         unsigned char   *s;
 
@@ -490,7 +490,7 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
             *cp = '\0';
         }
         WRStripSymbol( str );
-        quoted_str = TRUE;
+        quoted_str = true;
     }
 
     if( str[0] == '\0' ) {
@@ -501,7 +501,7 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
     }
 
     ord = (uint_16)strtoul( str, &cp, 0 );
-    str_is_ordinal = (*cp == '\0');
+    str_is_ordinal = ( *cp == '\0' );
 
     c_is.symbol = NULL;
 
@@ -583,7 +583,7 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
     }
 
     ord = (uint_16)strtoul( str, &cp, 0 );
-    str_is_ordinal = (*cp == '\0');
+    str_is_ordinal = ( *cp == '\0' );
 
     c_is.symbol = NULL;
 

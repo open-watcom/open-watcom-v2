@@ -99,15 +99,16 @@ bool WREDeleteCurrResource( bool force )
 
 bool WREDeleteResource( WRECurrentResInfo *curr, bool force )
 {
-    char                *name;
-    int                 type_int;
+    char                *type_name;
+    uint_16             type_id;
     bool                ok;
     LRESULT             index;
     HWND                res_lbox;
     WResLangNode        *lnode;
 
-    name = NULL;
+    type_name = NULL;
     lnode = NULL;
+    type_id = 0;
 
     if( curr->info->current_type == RESOURCE2INT( RT_STRING ) ) {
         return( WREDeleteStringResources( curr, FALSE ) );
@@ -115,23 +116,22 @@ bool WREDeleteResource( WRECurrentResInfo *curr, bool force )
 
     ok = (curr->info != NULL && curr->res != NULL && curr->lang != NULL);
 
-    type_int = 0;
     if( ok )  {
         if( !curr->type->Info.TypeName.IsName ) {
-            type_int = curr->type->Info.TypeName.ID.Num;
+            type_id = curr->type->Info.TypeName.ID.Num;
         }
-        name = WREGetResName( curr->res, type_int );
-        ok = (name != NULL);
+        type_name = WREGetResName( curr->res, type_id );
+        ok = ( type_name != NULL );
     }
 
     if( ok && !force ) {
-        ok = WREQueryDeleteName( name );
+        ok = WREQueryDeleteName( type_name );
     }
 
     // nuke any edit sessions on this resource
     if( ok ) {
         lnode = curr->lang;
-        switch( type_int ) {
+        switch( type_id ) {
         case RESOURCE2INT( RT_MENU ):
             WREEndLangMenuSession( lnode );
             break;
@@ -146,7 +146,7 @@ bool WREDeleteResource( WRECurrentResInfo *curr, bool force )
             break;
         case RESOURCE2INT( RT_GROUP_CURSOR ):
         case RESOURCE2INT( RT_GROUP_ICON ):
-            ok = WREDeleteGroupImages( curr, (uint_16)type_int );
+            ok = WREDeleteGroupImages( curr, type_id );
             /* fall through */
         case RESOURCE2INT( RT_BITMAP ):
             if( ok ) {
@@ -168,7 +168,7 @@ bool WREDeleteResource( WRECurrentResInfo *curr, bool force )
             ok = WREInitResourceWindow( curr->info, 0 );
         } else {
             res_lbox = GetDlgItem( curr->info->info_win, IDM_RNRES );
-            index = SendMessage( res_lbox, LB_FINDSTRING, 0, (LPARAM)name );
+            index = SendMessage( res_lbox, LB_FINDSTRING, 0, (LPARAM)type_name );
             if( index == LB_ERR ) {
                 index = 0;
             }
@@ -181,8 +181,8 @@ bool WREDeleteResource( WRECurrentResInfo *curr, bool force )
         WRESetTotalText( curr->info );
     }
 
-    if( name != NULL ) {
-        WRMemFree( name );
+    if( type_name != NULL ) {
+        WRMemFree( type_name );
     }
 
     return( ok );
@@ -230,23 +230,22 @@ bool WREDeleteStringResources( WRECurrentResInfo *curr, bool removing )
 
 bool WRERemoveEmptyResource( WRECurrentResInfo *curr )
 {
-    char                *name;
-    int                 type;
+    char                *type_name;
+    uint_16             type_id;
     bool                ok;
     LRESULT             index;
     HWND                res_lbox;
 
-    name = NULL;
+    type_name = NULL;
     ok = true;
+    type_id = 0;
 
     if( ok )  {
-        if( curr->type->Info.TypeName.IsName ) {
-            type = 0;
-        } else {
-            type = curr->type->Info.TypeName.ID.Num;
+        if( !curr->type->Info.TypeName.IsName ) {
+            type_id = curr->type->Info.TypeName.ID.Num;
         }
-        name = WREGetResName( curr->res, type );
-        ok = (name != NULL);
+        type_name = WREGetResName( curr->res, type_id );
+        ok = ( type_name != NULL );
     }
 
     if( ok ) {
@@ -261,7 +260,7 @@ bool WRERemoveEmptyResource( WRECurrentResInfo *curr )
             ok = WREInitResourceWindow( curr->info, 0 );
         } else {
             res_lbox = GetDlgItem( curr->info->info_win, IDM_RNRES );
-            index = SendMessage( res_lbox, LB_FINDSTRING, 0, (LPARAM)name );
+            index = SendMessage( res_lbox, LB_FINDSTRING, 0, (LPARAM)type_name );
             if( index == LB_ERR ) {
                 index = 0;
             }
@@ -270,8 +269,8 @@ bool WRERemoveEmptyResource( WRECurrentResInfo *curr )
         }
     }
 
-    if( name != NULL ) {
-        WRMemFree( name );
+    if( type_name != NULL ) {
+        WRMemFree( type_name );
     }
 
     return( ok );

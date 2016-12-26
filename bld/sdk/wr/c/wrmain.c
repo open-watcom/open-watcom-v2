@@ -850,7 +850,7 @@ bool WREDoSaveImageInto( WRInfo *info, WRSaveIntoData *idata, bool *dup, bool is
     }
 
     if( replace_nixed ) {
-        return( TRUE );
+        return( true );
     }
 
     return( ok );
@@ -929,7 +929,7 @@ int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
     long            type;
     void            *data;
     uint_32         size;
-    int             strings;
+    bool            strings;
 
     if( info == NULL || info->dir == NULL || idata == NULL || idata->type == NULL ||
         idata->name == NULL ) {
@@ -938,7 +938,7 @@ int WRTestReplace( WRInfo *info, WRSaveIntoData *idata )
 
     type = WResIDToNum( idata->type );
 
-    strings = (type == RESOURCE2INT( RT_STRING ));
+    strings = ( type == RESOURCE2INT( RT_STRING ) );
 
     tnode = WRFindTypeNodeFromWResID( info->dir, idata->type );
     if( tnode == NULL ) {

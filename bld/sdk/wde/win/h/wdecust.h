@@ -125,9 +125,9 @@ typedef struct WdeCustLibStruct {
     bool        ms_lib;
     bool        load_only;
     char        *file_name;
-    char        *info_name;
-    char        *style_name;
-    char        *flags_name;
+    const char  *info_name;
+    const char  *style_name;
+    const char  *flags_name;
     LIST        *controls;
     HGLOBAL     class_list;
 } WdeCustLib;

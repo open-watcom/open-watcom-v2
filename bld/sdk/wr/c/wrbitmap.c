@@ -64,7 +64,7 @@
 /****************************************************************************/
 static BITMAPINFO       *WRReadDIBInfo( BYTE **data );
 static BITMAPCOREINFO   *WRReadCoreInfo( BYTE **data );
-static HBITMAP          WRReadBitmap( BYTE *data, long offset, BOOL core, bitmap_info *info );
+static HBITMAP          WRReadBitmap( BYTE *data, long offset, bool core, bitmap_info *info );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -140,7 +140,7 @@ static BITMAPCOREINFO *WRReadCoreInfo( BYTE **data )
     }
 
     pos = START_OF_HEADER;
-    header = (BITMAPCOREHEADER *)(*data + pos);
+    header = (BITMAPCOREHEADER *)( *data + pos );
     bitmap_size = CORE_INFO_SIZE( header->bcBitCount );
     bm_core = MemAlloc( bitmap_size );
     if( bm_core == NULL ) {
@@ -176,7 +176,7 @@ static void WRReadInPieces( BYTE _HUGE *dst, BYTE *data, DWORD size )
     MemFree( buffer );
 }
 
-static HBITMAP WRReadBitmap( BYTE *data, long offset, BOOL core, bitmap_info *info )
+static HBITMAP WRReadBitmap( BYTE *data, long offset, bool core, bitmap_info *info )
 {
     DWORD               size;           /* generic size - used repeatedly */
     BYTE _HUGE          *mask_ptr;      /* pointer to bit array in memory */
@@ -266,7 +266,7 @@ HBITMAP WRAPI WRBitmapFromData( BYTE *data, bitmap_info *info )
 {
     HBITMAP             bitmap_handle;
     BITMAPFILEHEADER    *file_header;
-    BOOL                core;
+    bool                core;
     DWORD               *size;
     int                 pos;
     long                offset;
@@ -285,14 +285,14 @@ HBITMAP WRAPI WRBitmapFromData( BYTE *data, bitmap_info *info )
     pos = sizeof( BITMAPFILEHEADER );
     size = (DWORD *)(data + pos);
 
-    core = (*size == sizeof( BITMAPCOREHEADER ));
+    core = ( *size == sizeof( BITMAPCOREHEADER ) );
     if( !core ) {
         offset = file_header->bfOffBits;
         bitmap_handle = WRReadBitmap( data, offset, core, info );
     }
 
     if( info != NULL ) {
-        info->is_core = ( core != 0 );
+        info->is_core = core;
     }
 
     return( bitmap_handle );
@@ -313,7 +313,7 @@ static void WRGetBitmapInfoHeader( BITMAPINFOHEADER *bmih, BITMAP *bm )
     bmih->biClrImportant = 0;
 }
 
-static int WRSetRGBValues( RGBQUAD *argbvals, int upperlimit )
+static bool WRSetRGBValues( RGBQUAD *argbvals, int upperlimit )
 {
     int                 i;
     PALETTEENTRY        *pe;
@@ -326,7 +326,7 @@ static int WRSetRGBValues( RGBQUAD *argbvals, int upperlimit )
 
     pe = (PALETTEENTRY *)MemAlloc( upperlimit * sizeof( PALETTEENTRY ) );
     if( pe == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hdc = GetDC( HWND_DESKTOP );
@@ -344,21 +344,21 @@ static int WRSetRGBValues( RGBQUAD *argbvals, int upperlimit )
 
     MemFree( pe );
 
-    return( TRUE );
+    return( true );
 }
 
-static int WRGetBitmapInfo( BITMAPINFO *bmi, BITMAP *bm )
+static bool WRGetBitmapInfo( BITMAPINFO *bmi, BITMAP *bm )
 {
     RGBQUAD     *rgb_quad;
-    int         ret;
+    bool        ret;
 
     if( bmi == NULL || bm == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     rgb_quad = MemAlloc( RGBQ_SIZE( bm->bmPlanes ) );
     if( rgb_quad == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     WRGetBitmapInfoHeader( &bmi->bmiHeader, bm );
@@ -394,8 +394,7 @@ static BITMAPINFO *WRGetDIBitmapInfo( HBITMAP hbitmap )
     return( bmi );
 }
 
-static int WRWriteDataInPiecesData( BITMAPINFO *bmi, BYTE **data, uint_32 *size,
-                             HBITMAP hbitmap )
+static bool WRWriteDataInPiecesData( BITMAPINFO *bmi, BYTE **data, uint_32 *size, HBITMAP hbitmap )
 {
     HDC         hdc;
     HDC         memdc;
@@ -407,7 +406,7 @@ static int WRWriteDataInPiecesData( BITMAPINFO *bmi, BYTE **data, uint_32 *size,
     long        byte_count;
 
     if( data == NULL || *data == NULL || size == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hdc = GetDC( (HWND)NULL );
@@ -438,7 +437,7 @@ static int WRWriteDataInPiecesData( BITMAPINFO *bmi, BYTE **data, uint_32 *size,
 
     DeleteDC( memdc );
 
-    return( TRUE );
+    return( true );
 }
 
 int WRAPI WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data, uint_32 *size )
@@ -520,7 +519,7 @@ int WRAPI WRAddBitmapFileHeader( BYTE **data, uint_32 *size )
         return( FALSE );
     }
 
-    is_core = (*(DWORD *)*data == sizeof( BITMAPCOREHEADER ));
+    is_core = ( *(DWORD *)*data == sizeof( BITMAPCOREHEADER ) );
 
     hsize = sizeof( BITMAPFILEHEADER );
     *data = MemRealloc( *data, *size + hsize );
@@ -537,10 +536,10 @@ int WRAPI WRAddBitmapFileHeader( BYTE **data, uint_32 *size )
     bmfh->bfOffBits = hsize;
 
     if( is_core ) {
-        bmci = (BITMAPCOREINFO *)(*data + hsize);
+        bmci = (BITMAPCOREINFO *)( *data + hsize );
         bmfh->bfOffBits += CORE_INFO_SIZE( bmci->bmciHeader.bcBitCount );
     } else {
-        bmi = (BITMAPINFO *)(*data + hsize);
+        bmi = (BITMAPINFO *)( *data + hsize );
         bmfh->bfOffBits += DIB_INFO_SIZE( bmi->bmiHeader.biBitCount );
     }
 

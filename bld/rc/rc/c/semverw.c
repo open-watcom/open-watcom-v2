@@ -407,7 +407,7 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
     if( !ErrorHasOccured ) {
         loc.start = SemStartResource();
 
-        error = ResWriteVerBlockHeader( &root, use_unicode, os, CurrResFile.fid);
+        error = ResWriteVerBlockHeader( &root, use_unicode, os, CurrResFile.fid );
         if( error ) {
             err_code = LastWresErr();
             goto OutputWriteError;

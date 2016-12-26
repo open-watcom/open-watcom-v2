@@ -86,7 +86,7 @@ static WResID *WR16Mem2WResID( void *data )
     }
 
     if( tmpName->IsName ) {
-        new->IsName = TRUE;
+        new->IsName = true;
         new->ID.Name.NumChars = stringlen;
         new->ID.Name.Name[0] = '\0';
         memcpy( &new->ID.Name.Name[0], &tmpName->ID.Name.Name[0], stringlen );
@@ -145,7 +145,7 @@ static WResID *WR32Mem2WResID( void *data )
     }
 
     if( tmpName->IsName ) {
-        new->IsName = TRUE;
+        new->IsName = true;
         new->ID.Name.NumChars = str_len - 1;
         new->ID.Name.Name[0] = '\0';
         memcpy( &new->ID.Name.Name[0], str, str_len - 1 );
@@ -232,7 +232,7 @@ static int WRWResID2Mem32( WResID *name, void **data, uint_32 *size )
 
     if( name->IsName ) {
         tmpName = (WResID *)*data;
-        tmpName->IsName = TRUE;
+        tmpName->IsName = true;
         tmpName->ID.Name.NumChars = name->ID.Name.NumChars;
         tmpName->ID.Name.Name[0] = '\0';
         memcpy( &tmpName->ID.Name.Name[0], uni_str, uni_len );

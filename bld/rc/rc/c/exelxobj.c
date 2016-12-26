@@ -46,15 +46,13 @@ static bool readObjectAndPageTable( ExeFileInfo *exe )
 
     table_size = exe->u.LXInfo.OS2Head.num_objects * sizeof( object_record );
     exe->u.LXInfo.Objects = RESALLOC( table_size );
-    ret = SeekRead( exe->fid,
-                exe->WinHeadOffset + exe->u.LXInfo.OS2Head.objtab_off,
+    ret = SeekRead( exe->fid, exe->WinHeadOffset + exe->u.LXInfo.OS2Head.objtab_off,
                 exe->u.LXInfo.Objects, table_size );
 
     if( ret == RS_OK ) {
         table_size = exe->u.LXInfo.OS2Head.num_pages * sizeof( lx_map_entry );
         exe->u.LXInfo.Pages = RESALLOC( table_size );
-        ret = SeekRead( exe->fid,
-                    exe->WinHeadOffset + exe->u.LXInfo.OS2Head.objmap_off,
+        ret = SeekRead( exe->fid, exe->WinHeadOffset + exe->u.LXInfo.OS2Head.objmap_off,
                     exe->u.LXInfo.Pages, table_size );
     }
     switch( ret ) {

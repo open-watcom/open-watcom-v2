@@ -45,14 +45,14 @@ static int OpenFiles( WResFileID *fid1, WResFileID *fid2 )
     int         error;
 
     *fid1 = ResOpenFileRO( CmdLineParms.FileName1 );
-    if (*fid1 == WRES_NIL_HANDLE) {
+    if( *fid1 == WRES_NIL_HANDLE ) {
         printf( "Unable to open %s\n", CmdLineParms.FileName1 );
         *fid2 = WRES_NIL_HANDLE;
         return( true );
     }
 
     *fid2 = ResOpenFileRO( CmdLineParms.FileName2 );
-    if (*fid2 == WRES_NIL_HANDLE) {
+    if( *fid2 == WRES_NIL_HANDLE ) {
         printf( "Unable to open %s\n", CmdLineParms.FileName2 );
         ResCloseFile( *fid1 );
         *fid1 = WRES_NIL_HANDLE;
@@ -60,12 +60,12 @@ static int OpenFiles( WResFileID *fid1, WResFileID *fid2 )
     }
 
     error = (!WResIsWResFile( *fid1 ));
-    if (error) {
+    if( error ) {
         printf( "File %s is not a Open Watcom .RES file\n",
                     CmdLineParms.FileName1 );
     } else {
         error = (!WResIsWResFile( *fid2 ));
-        if (error) {
+        if( error ) {
             printf( "File %s is not a Open Watcom .RES file\n",
                     CmdLineParms.FileName2 );
         }
@@ -77,10 +77,10 @@ static int OpenFiles( WResFileID *fid1, WResFileID *fid2 )
 static void CloseFiles( WResFileID fid1, WResFileID fid2 )
 /********************************************************/
 {
-    if (fid1 != WRES_NIL_HANDLE) {
+    if( fid1 != WRES_NIL_HANDLE ) {
         ResCloseFile( fid1 );
     }
-    if (fid2 != WRES_NIL_HANDLE) {
+    if( fid2 != WRES_NIL_HANDLE ) {
         ResCloseFile( fid2 );
     }
 }
@@ -95,7 +95,7 @@ int CompareFiles( void )
 
     error = OpenFiles( &fid1, &fid2 );
 
-    if (!error) {
+    if( !error ) {
         result = CompareContents( fid1, fid2 );
     } else {
         result = -1;

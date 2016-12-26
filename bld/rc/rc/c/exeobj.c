@@ -183,7 +183,7 @@ static int copyObjectTable( ExeFileInfo *old, ExeFileInfo *new )
  */
 static RcStatus copyOneObject( WResFileID old_fid, pe_object * old_obj,
                         WResFileID new_fid, pe_object * new_obj )
-/************************************************************************/
+/*********************************************************************/
 {
     /*
      * if this an uninitialized object (one for which there is not

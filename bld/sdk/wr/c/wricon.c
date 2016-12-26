@@ -79,7 +79,7 @@ WORD WRAPI WRCountIconImages( BYTE *data, uint_32 size )
     pos = 0;
     count = 0;
     while( pos < size ) {
-        bih = (BITMAPINFOHEADER *)(data + pos);
+        bih = (BITMAPINFOHEADER *)( data + pos );
         count++;
         pos += WRSizeOfImage( bih );
         // if we overrun do not count this block
@@ -119,7 +119,7 @@ bool WRAPI WRCreateIconHeader( BYTE *data, uint_32 size, WORD type,
     (*ih)->idCount = count;
 
     for( i = 0, pos = 0; i < count; i++ ) {
-        bih = (BITMAPINFOHEADER *)(data + pos);
+        bih = (BITMAPINFOHEADER *)( data + pos );
         (*ih)->idEntries[i].bWidth = bih->biWidth;
         (*ih)->idEntries[i].bHeight = bih->biHeight / 2;
         if( type == 1 ) {
@@ -262,7 +262,7 @@ bool WRAPI WRAddCursorHotspot( BYTE **cursor, uint_32 *size, CURSORHOTSPOT *hs )
     return( true );
 }
 
-bool WRAPI WRGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, int ord )
+bool WRAPI WRGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, uint_16 ord )
 {
     BYTE                *cursor;
     bool                dup;
@@ -329,7 +329,7 @@ bool WRAPI WRGetAndAddCursorImage( BYTE *data, WResDir dir, CURSORDIRENTRY *cd, 
     return( ok );
 }
 
-bool WRAPI WRGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, int ord )
+bool WRAPI WRGetAndAddIconImage( BYTE *data, WResDir dir, ICONDIRENTRY *id, uint_16 ord )
 {
     BYTE                *icon;
     bool                dup;
@@ -397,8 +397,8 @@ bool WRAPI WRFindImageId( WRInfo *info, WResTypeNode **otnode,
     WResLangType        lang;
     bool                ok;
 
-    ok = (info != NULL && lnode != NULL &&
-          (type == RESOURCE2INT( RT_ICON ) || type == RESOURCE2INT( RT_CURSOR )));
+    ok = ( info != NULL && lnode != NULL &&
+          (type == RESOURCE2INT( RT_ICON ) || type == RESOURCE2INT( RT_CURSOR )) );
 
     if( ok ) {
         tnode = WRFindTypeNode( info->dir, type, NULL );
@@ -567,14 +567,6 @@ bool WRAPI WRCreateCursorData( WRInfo *info, WResLangNode *lnode,
         }
     }
 
-    if( !ok ) {
-        if( *data != NULL ) {
-            MemFree( *data );
-            *data = NULL;
-        }
-        *size = 0;
-    }
-
     return( ok );
 }
 
@@ -634,14 +626,6 @@ bool WRAPI WRCreateIconData( WRInfo *info, WResLangNode *lnode,
                 }
             }
         }
-    }
-
-    if( !ok ) {
-        if( *data != NULL ) {
-            MemFree( *data );
-            *data = NULL;
-        }
-        *size = 0;
     }
 
     return( ok );
@@ -778,7 +762,9 @@ bool WRAPI WRDeleteGroupImages( WRInfo *info, WResLangNode *lnode, uint_16 type 
     uint_16             ord;
     bool                ok;
 
-    ok = (info != NULL && lnode != NULL && (type == RESOURCE2INT( RT_GROUP_ICON ) || type == RESOURCE2INT( RT_GROUP_CURSOR )));
+    data = NULL;
+    ok = ( info != NULL && lnode != NULL
+           && (type == RESOURCE2INT( RT_GROUP_ICON ) || type == RESOURCE2INT( RT_GROUP_CURSOR )) );
 
     if( ok ) {
         data = WRCopyResData( info, lnode );
