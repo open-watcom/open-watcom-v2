@@ -45,21 +45,21 @@
 RcStatus CopyExeData( WResFileID in_fid, WResFileID out_fid, uint_32 length )
 /***************************************************************************/
 {
-    WResFileSSize   numread;
-    uint_32         bufflen;
+    size_t          numread;
+    size_t          bufflen;
 
     if( length == 0 ) {
         return( RS_PARAM_ERROR );
     }
     for( bufflen = IO_BUFFER_SIZE; length > 0; length -= bufflen ) {
-        if( length < bufflen ) {
+        if( bufflen > length ) {
             bufflen = length;
         }
         numread = RESREAD( in_fid, Pass2Info.IoBuffer, bufflen );
         if( numread != bufflen ) {
             return( RESIOERR( in_fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         }
-        if( RESWRITE( out_fid, Pass2Info.IoBuffer, bufflen ) != bufflen ) {
+        if( RESWRITE( out_fid, Pass2Info.IoBuffer, numread ) != numread ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -73,10 +73,10 @@ RcStatus CopyExeData( WResFileID in_fid, WResFileID out_fid, uint_32 length )
 RcStatus CopyExeDataTilEOF( WResFileID in_fid, WResFileID out_fid )
 /*****************************************************************/
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
     while( (numread = RESREAD( in_fid, Pass2Info.IoBuffer, IO_BUFFER_SIZE )) != 0 ) {
-        if( RESIOERR( in_fid, numread ) ) {
+        if( numread != IO_BUFFER_SIZE && RESIOERR( in_fid, numread ) ) {
             return( RS_READ_ERROR );
         }
         if( RESWRITE( out_fid, Pass2Info.IoBuffer, numread ) != numread ) {
@@ -215,11 +215,11 @@ extern unsigned_32 OffsetFromRVA( ExeFileInfo *exe, pe_va rva )
  * SeekRead
  * NB When an error occurs the function MUST return without altering errno
  */
-RcStatus SeekRead( WResFileID fid, long newpos, void *buff, unsigned size )
-/*************************************************************************/
+RcStatus SeekRead( WResFileID fid, long newpos, void *buff, size_t size )
+/***********************************************************************/
 /* seek to a specified spot in the file, and read some data */
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
     if( RESSEEK( fid, newpos, SEEK_SET ) == -1 )
         return( RS_READ_ERROR );

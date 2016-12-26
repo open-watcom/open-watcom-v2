@@ -38,7 +38,7 @@
 bool ResReadUint32( uint_32 *newint, WResFileID fid )
 /***************************************************/
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
     numread = WRESREAD( fid, newint, sizeof( uint_32 ) );
     if( numread == sizeof( uint_32 ) ) {

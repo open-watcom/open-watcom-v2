@@ -60,8 +60,8 @@ static RcStatus allocSegTable( SegTable *seg, int *err_code )
  */
 static RcStatus readSegTable( WResFileID fid, uint_32 offset, SegTable * seg )
 {
-    int             tablesize;
-    WResFileSSize   numread;
+    size_t          tablesize;
+    size_t          numread;
 
     tablesize = seg->NumSegs * sizeof(segment_record);
 
@@ -170,7 +170,7 @@ extern uint_32 ComputeSegmentSize( WResFileID fid, SegTable * segs, int shift_co
     segment_record *    currseg;
     segment_record *    afterlast;
     uint_32             length;
-    WResFileSSize       numread;
+    size_t              numread;
     uint_16             num_relocs;
 
     length = 0;
@@ -180,8 +180,8 @@ extern uint_32 ComputeSegmentSize( WResFileID fid, SegTable * segs, int shift_co
         if( currseg->info & SEG_RELOC ) {
             if( RESSEEK( fid, (((long)currseg->address) << (long)shift_count) + currseg->size, SEEK_SET ) == -1 )
                 return( 0 );
-            numread = RESREAD( fid, &num_relocs, sizeof(uint_16) );
-            if( numread != sizeof(uint_16) )
+            numread = RESREAD( fid, &num_relocs, sizeof( num_relocs ) );
+            if( numread != sizeof( num_relocs ) )
                 return( 0 );
             length += (unsigned_32)( (unsigned_32)num_relocs * (unsigned_32)OS_RELOC_ITEM_SIZE );
         }
@@ -220,7 +220,7 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
 {
     CpSegRc         ret;
     bool            error;
-    WResFileSSize   numread;
+    size_t          numread;
     uint_16         numrelocs;
     long            out_offset;
     long            align_amount;
@@ -268,8 +268,8 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
 
         if( (inseg->info & SEG_RELOC) && !error ) {
             /* read the number of relocation items */
-            numread = RESREAD( inexe->fid, &numrelocs, sizeof(uint_16) );
-            if( numread != sizeof( uint_16 ) ) {
+            numread = RESREAD( inexe->fid, &numrelocs, sizeof( numrelocs ) );
+            if( numread != sizeof( numrelocs ) ) {
                 error = true;
                 if( RESIOERR( inexe->fid, numread ) ) {
                     RcError( ERR_READING_EXE, inexe->name, strerror( errno ) );
@@ -277,7 +277,7 @@ static CpSegRc copyOneSegment( const segment_record * inseg,
                     RcError( ERR_UNEXPECTED_EOF, inexe->name );
                 }
             } else {
-                if( RESWRITE( outexe->fid, &numrelocs, sizeof(uint_16) ) != sizeof( uint_16 ) ) {
+                if( RESWRITE( outexe->fid, &numrelocs, sizeof( numrelocs ) ) != sizeof( numrelocs ) ) {
                     error = true;
                     RcError( ERR_WRITTING_FILE, outexe->name, strerror( errno ) );
                 }

@@ -41,8 +41,8 @@ WResID *WResReadWResID( WResFileID fid )
 {
     WResID          newid;
     WResID          *newidptr;
-    WResFileSSize   numread;
-    int             extrabytes;     /* chars to be read beyond the fixed size */
+    size_t          numread;
+    unsigned        extrabytes;     /* chars to be read beyond the fixed size */
     bool            error;
 
     /* read in the fixed part of the record */

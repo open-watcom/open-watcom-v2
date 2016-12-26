@@ -39,7 +39,7 @@ bool WResReadFixedTypeRecord( WResTypeInfo *newtype, WResFileID fid )
 /*******************************************************************/
 /* read the fixed part of a Type info record */
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
     numread = WRESREAD( fid, newtype, sizeof( WResTypeInfo ) );
     if( numread == sizeof( WResTypeInfo ) ) {
@@ -54,7 +54,7 @@ bool WResReadFixedTypeRecord1or2( WResTypeInfo *newtype, WResFileID fid )
 /***********************************************************************/
 /* read the fixed part of a Type info record for version 2 or before */
 {
-    WResFileSSize       numread;
+    size_t              numread;
     WResTypeInfo1or2    info;
 
     numread = WRESREAD( fid, &info, sizeof( WResTypeInfo1or2 ) );

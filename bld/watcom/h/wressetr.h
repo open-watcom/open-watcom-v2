@@ -38,16 +38,10 @@
 /* function */
 
 #if defined( _WIN64 )
-#define WResFileSSize       __int64
-#define WResFileSize        unsigned __int64
 #define WResFileOffset      long
 #elif !defined( __WATCOMC__ ) && defined( __UNIX__ )
-#define WResFileSSize       ssize_t
-#define WResFileSize        size_t
 #define WResFileOffset      off_t
 #else
-#define WResFileSSize       int
-#define WResFileSize        unsigned
 #define WResFileOffset      long
 #endif
 
@@ -75,8 +69,8 @@ typedef struct WResRoutines {                                               /* d
     /* I/O routines */
     WResFileID      (*cli_open)(const char *, wres_open_mode);              /* open */
     int             (*cli_close)(WResFileID);                               /* close */
-    WResFileSSize   (*cli_read)(WResFileID, void *, WResFileSize);          /* read */
-    WResFileSSize   (*cli_write)(WResFileID, const void *, WResFileSize);   /* write */
+    size_t          (*cli_read)(WResFileID, void *, size_t);                /* read */
+    size_t          (*cli_write)(WResFileID, const void *, size_t);         /* write */
     WResFileOffset  (*cli_seek)(WResFileID, WResFileOffset, int );          /* lseek */
     WResFileOffset  (*cli_tell)(WResFileID);                                /* tell */
     /* memory routines */

@@ -42,7 +42,7 @@
 bool WResReadFixedResRecord( WResResInfo *newres, WResFileID fid )
 /****************************************************************/
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
     numread = WRESREAD( fid, newres, sizeof( WResResInfo ) );
     if( numread != sizeof( WResResInfo ) ) {
@@ -60,7 +60,7 @@ bool WResReadFixedResRecord( WResResInfo *newres, WResFileID fid )
 bool WResReadFixedResRecord1( WResResInfo1 *newres, WResFileID fid )
 /******************************************************************/
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
     numread = WRESREAD( fid, newres, sizeof( WResResInfo1 ) );
     if( numread != sizeof( WResResInfo1 ) ) {
@@ -77,7 +77,7 @@ bool WResReadFixedResRecord1( WResResInfo1 *newres, WResFileID fid )
 bool WResReadFixedResRecord2( WResResInfo *newres, WResFileID fid )
 /*****************************************************************/
 {
-    WResFileSSize   numread;
+    size_t          numread;
     WResResInfo2    info;
 
     numread = WRESREAD( fid, &info, sizeof( WResResInfo2 ) );

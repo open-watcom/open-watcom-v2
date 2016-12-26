@@ -39,7 +39,7 @@ bool WResReadHeaderRecord( WResHeader *header, WResFileID fid )
 /*************************************************************/
 {
     bool            error;
-    WResFileSSize   numread;
+    size_t          numread;
 
     error = ( WRESSEEK( fid, 0, SEEK_SET ) == -1 );
     if( error ) {
@@ -62,7 +62,7 @@ bool WResReadHeaderRecord( WResHeader *header, WResFileID fid )
 bool WResReadExtHeader( WResExtHeader *head, WResFileID fid )
 /***********************************************************/
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
     numread = WRESREAD( fid, head, sizeof( WResExtHeader ) );
     if( numread != sizeof( WResExtHeader ) ) {

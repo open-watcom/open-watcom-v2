@@ -209,12 +209,12 @@ int  res_close( WResFileID fid )
     return( close( WRES_FID2PH( fid ) ) );
 }
 
-WResFileSSize  res_read( WResFileID fid, void *buf, WResFileSize len )
+size_t res_read( WResFileID fid, void *buf, size_t len )
 {
     return( posix_read( WRES_FID2PH( fid ), buf, len ) );
 }
 
-WResFileSSize  res_write( WResFileID fid, const void *buf, WResFileSize len )
+size_t res_write( WResFileID fid, const void *buf, size_t len )
 {
     fid = fid;
     WriteLoad( buf, len );

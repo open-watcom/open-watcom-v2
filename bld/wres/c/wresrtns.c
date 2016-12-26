@@ -64,12 +64,12 @@ static int res_close( WResFileID fid )
     return( close( WRES_FID2PH( fid ) ) );
 }
 
-static WResFileSSize res_read( WResFileID fid, void *buf, WResFileSize size )
+static size_t res_read( WResFileID fid, void *buf, size_t size )
 {
     return( posix_read( WRES_FID2PH( fid ), buf, size ) );
 }
 
-static WResFileSSize res_write( WResFileID fid, const void *buf, WResFileSize size )
+static size_t res_write( WResFileID fid, const void *buf, size_t size )
 {
     return( posix_write( WRES_FID2PH( fid ), buf, size ) );
 }

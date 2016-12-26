@@ -45,7 +45,7 @@ DepInfo *WResGetAutoDep( const char *fname )
     WResDirWindow   window;
     WResLangInfo    *info;
     DepInfo         *ret;
-    WResFileSSize   numread;
+    size_t          numread;
 
     ret = NULL;
     fid = ResOpenFileRO( fname );
@@ -68,7 +68,7 @@ DepInfo *WResGetAutoDep( const char *fname )
                                 WRES_ERROR( WRS_MALLOC_FAILED );
                             } else {
                                 numread = WRESREAD( fid, ret, info->Length );
-                                if( numread != (WResFileSSize)info->Length ) {
+                                if( numread != (size_t)info->Length ) {
                                     WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
                                     ret = NULL;
                                 }

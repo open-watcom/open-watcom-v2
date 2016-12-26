@@ -39,7 +39,7 @@ WResIDName *WResReadWResIDName( WResFileID fid )
 {
     WResIDName      newname;
     WResIDName      *newptr;
-    WResFileSSize   numread;
+    size_t          numread;
     bool            error;
 
     /* read the size of the name in */

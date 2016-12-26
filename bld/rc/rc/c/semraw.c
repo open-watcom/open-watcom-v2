@@ -89,7 +89,7 @@ RcStatus SemCopyDataUntilEOF( WResFileOffset offset, WResFileID fid,
                          void *buff, unsigned buffsize, int *err_code )
 /*********************************************************************/
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
     if( RESSEEK( fid, offset, SEEK_SET ) == -1 ) {
         *err_code = errno;
@@ -97,7 +97,7 @@ RcStatus SemCopyDataUntilEOF( WResFileOffset offset, WResFileID fid,
     }
 
     while( (numread = RESREAD( fid, buff, buffsize )) != 0 ) {
-        if( RESIOERR( fid, numread ) ) {
+        if( numread != buffsize && RESIOERR( fid, numread ) ) {
             *err_code = errno;
             return( RS_READ_ERROR );
         }

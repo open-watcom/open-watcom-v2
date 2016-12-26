@@ -240,8 +240,8 @@ int res_close( WResFileID fid )
 
 } /* RcClose */
 
-WResFileSSize res_write( WResFileID fid, const void *out_buff, WResFileSize size )
-/********************************************************************************/
+size_t res_write( WResFileID fid, const void *out_buff, size_t size )
+/*******************************************************************/
 {
     RcBuffer    *buff;
     size_t      copy_bytes;
@@ -286,14 +286,14 @@ WResFileSSize res_write( WResFileID fid, const void *out_buff, WResFileSize size
     return( total_wrote );
 } /* RcWrite */
 
-static WResFileSSize FillRcBuffer( WResFileID fid, RcBuffer * buff )
-/******************************************************************/
+static size_t FillRcBuffer( WResFileID fid, RcBuffer *buff )
+/**********************************************************/
 {
     buff->Count = posix_read( WRES_FID2PH( fid ), buff->Buffer, RC_BUFFER_SIZE );
     if( buff->Count == -1 ) {
         buff->Count = 0;
         buff->BytesRead = 0;
-        return( -1 );
+        return( (size_t)-1 );
     }
     buff->BytesRead = buff->Count;
     buff->NextChar = buff->Buffer;
@@ -301,14 +301,14 @@ static WResFileSSize FillRcBuffer( WResFileID fid, RcBuffer * buff )
     return( buff->Count );
 } /* FillRcBuffer */
 
-WResFileSSize res_read( WResFileID fid, void * in_buff, WResFileSize size )
-/*************************************************************************/
+size_t res_read( WResFileID fid, void *in_buff, size_t size )
+/***********************************************************/
 {
     RcBuffer        *buff;
     size_t          copy_bytes;
     size_t          total_read;
     int             i;
-    WResFileSSize   bytes_added;        /* return value of FillRcBuffer */
+    size_t          bytes_added;        /* return value of FillRcBuffer */
 
     if( hInstance.fid == fid ) {
         return( posix_read( WRES_FID2PH( fid ), in_buff, size ) );
@@ -330,7 +330,7 @@ WResFileSSize res_read( WResFileID fid, void * in_buff, WResFileSize size )
     while( size > 0 ) {
         if( buff->Count == 0 ) {
             bytes_added = FillRcBuffer( fid, buff );
-            if( bytes_added == -1 ) {
+            if( bytes_added == (size_t)-1 ) {
                 return( bytes_added );
             } else if( bytes_added == 0 ) {
                 return( total_read );

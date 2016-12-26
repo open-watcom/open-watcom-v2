@@ -42,8 +42,8 @@ WResResInfo *WResReadResRecord( WResFileID fid )
 {
     WResResInfo     newres;
     WResResInfo     *newptr;
-    WResFileSSize   numread;
-    int             numcharsleft;
+    size_t          numread;
+    unsigned        numcharsleft;
     bool            error;
 
     error = WResReadFixedResRecord( &newres, fid );

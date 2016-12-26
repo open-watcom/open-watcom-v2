@@ -181,9 +181,9 @@ HANDLE_ERROR:
 static RcStatus ReadBitmapInfoHeader( BitmapInfoHeader * head, WResFileID fid )
 /*****************************************************************************/
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
-    numread = RESREAD( fid, head, sizeof(BitmapInfoHeader) );
+    numread = RESREAD( fid, head, sizeof( BitmapInfoHeader ) );
     if( numread == sizeof( BitmapInfoHeader ) )
         return( RS_OK );
     return( RESIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
@@ -192,9 +192,9 @@ static RcStatus ReadBitmapInfoHeader( BitmapInfoHeader * head, WResFileID fid )
 static RcStatus readIcoCurFileDirHeader( IconCurDirHeader * head, WResFileID fid, int *err_code )
 /***********************************************************************************************/
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
-    numread = RESREAD( fid, head, sizeof(IconCurDirHeader) );
+    numread = RESREAD( fid, head, sizeof( IconCurDirHeader ) );
     if( numread != sizeof( IconCurDirHeader ) ) {
         *err_code = errno;
         return( RESIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
@@ -205,10 +205,10 @@ static RcStatus readIcoCurFileDirHeader( IconCurDirHeader * head, WResFileID fid
 static RcStatus readIcoFileDirEntry( IcoFileDirEntry * entry, WResFileID fid, int *err_code )
 /*******************************************************************************************/
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
-    numread = RESREAD( fid, entry, sizeof(IcoFileDirEntry) );
-    if( numread != sizeof(IcoFileDirEntry ) ) {
+    numread = RESREAD( fid, entry, sizeof( IcoFileDirEntry ) );
+    if( numread != sizeof( IcoFileDirEntry ) ) {
         *err_code = errno;
         return( RESIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
@@ -557,10 +557,10 @@ static RcStatus copyCursors( FullCurDir * dir, WResFileID fid, ResMemFlags flags
 static RcStatus readCurFileDirEntry( CurFileDirEntry * entry, WResFileID fid, int *err_code )
 /*******************************************************************************************/
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
-    numread = RESREAD( fid, entry, sizeof(CurFileDirEntry) );
-    if( numread != sizeof(CurFileDirEntry ) ) {
+    numread = RESREAD( fid, entry, sizeof( CurFileDirEntry ) );
+    if( numread != sizeof( CurFileDirEntry ) ) {
         *err_code = errno;
         return( RESIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
@@ -685,9 +685,9 @@ COPY_CURSORS_ERROR:
 static RcStatus readBitmapFileHeader( WResFileID fid, BitmapFileHeader *head, int *err_code )
 /*******************************************************************************************/
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
-    numread = RESREAD( fid, head, sizeof(BitmapFileHeader) );
+    numread = RESREAD( fid, head, sizeof( BitmapFileHeader ) );
     if( numread != sizeof( BitmapFileHeader ) ) {
         *err_code = errno;
         return( RESIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
@@ -787,10 +787,10 @@ COPY_BITMAP_ERROR:
 static RcStatus readFontInfo( WResFileID fid, FontInfo *info, int *err_code )
 /***************************************************************************/
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
-    numread = RESREAD( fid, info, sizeof(FontInfo) );
-    if( numread != sizeof(FontInfo) ) {
+    numread = RESREAD( fid, info, sizeof( FontInfo ) );
+    if( numread != sizeof( FontInfo ) ) {
         *err_code = errno;
         return( RESIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }

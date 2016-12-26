@@ -42,8 +42,8 @@ WResTypeInfo *WResReadTypeRecord( WResFileID fid )
 {
     WResTypeInfo        newtype;
     WResTypeInfo        *newptr;
-    WResFileSSize       numread;
-    int                 numcharsleft;
+    size_t              numread;
+    unsigned            numcharsleft;
     bool                error;
 
     error = WResReadFixedTypeRecord( &newtype, fid );

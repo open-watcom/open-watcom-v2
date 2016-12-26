@@ -38,7 +38,7 @@
 bool ResReadUint16( uint_16 *newint, WResFileID fid )
 /***************************************************/
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
     numread = WRESREAD( fid, newint, sizeof( uint_16 ) );
     if( numread == sizeof( uint_16 ) ) {

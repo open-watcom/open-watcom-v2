@@ -212,7 +212,7 @@ static RcStatus copyHeaderSections( ExeFileInfo *old, ExeFileInfo *new )
     uint_32             lx_off;
     os2_flat_header     *old_head;
     os2_flat_header     *new_head;
-    WResFileSSize       numread;
+    size_t              numread;
 
     lx_off = new->WinHeadOffset;
     old_head = &old->u.LXInfo.OS2Head;

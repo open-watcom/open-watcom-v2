@@ -96,7 +96,7 @@ bool ResWritePadDWord( WResFileID fid )
 /*************************************/
 {
     WResFileOffset  curr_pos;
-    WResFileSize    padding;
+    size_t          padding;
     bool            error;
     uint_32         zero = 0;
 
@@ -108,7 +108,7 @@ bool ResWritePadDWord( WResFileID fid )
     }
     padding = RES_PADDING( curr_pos, sizeof( uint_32 ) );
     if( padding != 0 ) {
-        if( (WResFileSize)WRESWRITE( fid, &zero, padding ) != padding ) {
+        if( WRESWRITE( fid, &zero, padding ) != padding ) {
             WRES_ERROR( WRS_WRITE_FAILED );
             return( true );
         }

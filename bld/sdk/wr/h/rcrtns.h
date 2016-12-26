@@ -50,8 +50,8 @@
 
 extern WResFileID       res_open( const char *name, wres_open_mode omode );
 extern int              res_close( WResFileID fid );
-extern WResFileSSize    res_read( WResFileID fid, void *buf, WResFileSize size );
-extern WResFileSSize    res_write( WResFileID fid, const void *buf, WResFileSize size );
+extern size_t           res_read( WResFileID fid, void *buf, size_t size );
+extern size_t           res_write( WResFileID fid, const void *buf, size_t size );
 extern WResFileOffset   res_seek( WResFileID fid, WResFileOffset pos, int where );
 extern WResFileOffset   res_tell( WResFileID fid );
 

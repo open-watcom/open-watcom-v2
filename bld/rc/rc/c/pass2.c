@@ -477,7 +477,7 @@ static RcStatus findEndOfResources( int *err_code )
     NEExeInfo                   *oldneinfo;
     uint_32                     *debugoffset;
     WResFileID                  old_fid;
-    WResFileSSize               numread;
+    size_t                      numread;
     unsigned                    i;
     long                        oldoffset;
     uint_16                     alignshift;
@@ -501,22 +501,22 @@ static RcStatus findEndOfResources( int *err_code )
         return( RS_READ_ERROR );
     }
 
-    numread = RESREAD( old_fid, &alignshift, sizeof( uint_16 ) );
-    if( numread != sizeof( uint_16 ) ) {
+    numread = RESREAD( old_fid, &alignshift, sizeof( alignshift ) );
+    if( numread != sizeof( alignshift ) ) {
         *err_code = errno;
         return( RESIOERR( old_fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     alignshift = 1 << alignshift;
 
-    numread = RESREAD( old_fid, &typeinfo, sizeof( resource_type_record ) );
-    if( numread != sizeof( resource_type_record ) )  {
+    numread = RESREAD( old_fid, &typeinfo, sizeof( typeinfo ) );
+    if( numread != sizeof( typeinfo ) )  {
         *err_code = errno;
         return( RESIOERR( old_fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
     while( typeinfo.type != 0 ) {
         for( i = typeinfo.num_resources; i > 0 ; --i ) {
-            numread = RESREAD( old_fid, &nameinfo, sizeof( resource_record ) );
-            if( numread != sizeof( resource_record ) ) {
+            numread = RESREAD( old_fid, &nameinfo, sizeof( nameinfo ) );
+            if( numread != sizeof( nameinfo ) ) {
                 *err_code = errno;
                 return( RESIOERR( old_fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
             }
@@ -525,8 +525,8 @@ static RcStatus findEndOfResources( int *err_code )
                 end = tmp;
             }
         }
-        numread = RESREAD( old_fid, &typeinfo, sizeof( resource_type_record ) );
-        if( numread != sizeof( resource_type_record ) ) {
+        numread = RESREAD( old_fid, &typeinfo, sizeof( typeinfo ) );
+        if( numread != sizeof( typeinfo ) ) {
             *err_code = errno;
             return( RESIOERR( old_fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         }
@@ -784,7 +784,7 @@ static RcStatus updateDebugDirectory( void )
     unsigned_32         debug_size;
     long                old_offset;
     long                tmp_offset;
-    WResFileSSize       numread;
+    size_t              numread;
     unsigned            debug_cnt;
     unsigned            read_cnt;
     unsigned            read_size;

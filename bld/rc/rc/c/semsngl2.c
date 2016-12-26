@@ -152,10 +152,10 @@ HANDLE_ERROR:
 static RcStatus readFontInfo( WResFileID fid, FontInfo *info, int *err_code )
 /***************************************************************************/
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
-    numread = RESREAD( fid, info, sizeof( FontInfo ) );
-    if( numread != sizeof( FontInfo ) ) {
+    numread = RESREAD( fid, info, sizeof( *info ) );
+    if( numread != sizeof( *info ) ) {
         *err_code = errno;
         return( RESIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
     }
