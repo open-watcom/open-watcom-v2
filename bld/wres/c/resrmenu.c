@@ -60,7 +60,7 @@ bool ResReadMenuExtraBytes( MenuHeader *header, WResFileID fid, char *buf )
 {
     bool            error;
     size_t          numread;
-    int             size;
+    unsigned        size;
 
     error = false;
     numread = 0;

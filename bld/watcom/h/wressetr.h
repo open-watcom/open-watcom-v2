@@ -65,17 +65,17 @@ typedef enum {
     WRES_OPEN_NEW,
 } wres_open_mode;
 
-typedef struct WResRoutines {                                               /* defaults */
+typedef struct WResRoutines {                                           /* defaults */
     /* I/O routines */
-    WResFileID      (*cli_open)(const char *, wres_open_mode);              /* open */
-    int             (*cli_close)(WResFileID);                               /* close */
-    size_t          (*cli_read)(WResFileID, void *, size_t);                /* read */
-    size_t          (*cli_write)(WResFileID, const void *, size_t);         /* write */
-    WResFileOffset  (*cli_seek)(WResFileID, WResFileOffset, int );          /* lseek */
-    WResFileOffset  (*cli_tell)(WResFileID);                                /* tell */
+    WResFileID      (*cli_open)(const char *, wres_open_mode);          /* open */
+    int             (*cli_close)(WResFileID);                           /* close */
+    size_t          (*cli_read)(WResFileID, void *, size_t);            /* read */
+    size_t          (*cli_write)(WResFileID, const void *, size_t);     /* write */
+    WResFileOffset  (*cli_seek)(WResFileID, WResFileOffset, int );      /* lseek */
+    WResFileOffset  (*cli_tell)(WResFileID);                            /* tell */
     /* memory routines */
-    void            *(*cli_alloc)(size_t);                                  /* malloc */
-    void            (*cli_free)(void *);                                    /* free */
+    void            *(*cli_alloc)(size_t);                              /* malloc */
+    void            (*cli_free)(void *);                                /* free */
 } WResRoutines;
 
 #define WResSetRtns( __open, __close, __read, __write, __seek, __tell, __alloc, __free ) \

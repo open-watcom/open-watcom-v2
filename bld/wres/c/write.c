@@ -191,7 +191,7 @@ bool WResWriteWResID( const WResID *name, WResFileID fid )
  */
 bool WResWriteTypeRecord( const WResTypeInfo *type, WResFileID fid )
 {
-    int             size;
+    size_t      size;
 
     if( type->TypeName.IsName ) {
         /* -1 because one of the chars in the name is declared in the struct */
@@ -213,7 +213,7 @@ bool WResWriteTypeRecord( const WResTypeInfo *type, WResFileID fid )
  */
 bool WResWriteResRecord( const WResResInfo *res, WResFileID fid )
 {
-    int             size;
+    size_t      size;
 
     if( res->ResName.IsName ) {
         /* -1 because one of the chars in the name is declared in the struct */

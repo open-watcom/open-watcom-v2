@@ -58,9 +58,8 @@ void ResFreeStringTableBlock( StringTableBlock * currblock )
     }
 } /* ResFreeStringTableBlock */
 
-bool ResWriteStringTableBlock( StringTableBlock *currblock,
-                            bool use_unicode, WResFileID fid )
-/************************************************************/
+bool ResWriteStringTableBlock( StringTableBlock *currblock, bool use_unicode, WResFileID fid )
+/********************************************************************************************/
 {
     int     stringid;
     bool    error;

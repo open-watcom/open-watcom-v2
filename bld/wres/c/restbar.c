@@ -59,7 +59,7 @@ bool ResWriteToolBarHeader( WResFileID fid, uint_16 item1, uint_16 item2, uint_1
 bool ResWriteToolBarItems( WResFileID fid, uint_16 *items, unsigned cnt )
 /***********************************************************************/
 {
-    int         size;
+    unsigned    size;
 
     size = cnt * sizeof( uint_16 );
     if( WRESWRITE( fid, items, size ) != size ) {

@@ -66,12 +66,12 @@ static int res_close( WResFileID fid )
 
 static size_t res_read( WResFileID fid, void *buf, size_t size )
 {
-    return( posix_read( WRES_FID2PH( fid ), buf, size ) );
+    return( (size_t)posix_read( WRES_FID2PH( fid ), buf, size ) );
 }
 
 static size_t res_write( WResFileID fid, const void *buf, size_t size )
 {
-    return( posix_write( WRES_FID2PH( fid ), buf, size ) );
+    return( (size_t)posix_write( WRES_FID2PH( fid ), buf, size ) );
 }
 
 static WResFileOffset res_seek( WResFileID fid, WResFileOffset pos, int where )
