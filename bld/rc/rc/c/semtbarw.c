@@ -39,13 +39,15 @@
 #include "rccore.h"
 
 
-static void initToolBarItems( ToolBarItems *ret ) {
+static void initToolBarItems( ToolBarItems *ret )
+{
     ret->next = NULL;
     ret->cnt = 0;
     memset( ret->items, 0, TB_ITEM_CNT * sizeof( uint_16 ) );
 }
 
-ToolBar *SemWINCreateToolBar( void ) {
+ToolBar *SemWINCreateToolBar( void )
+{
     ToolBar     *ret;
 
     ret = RESALLOC( sizeof( ToolBar ) );
@@ -55,8 +57,8 @@ ToolBar *SemWINCreateToolBar( void ) {
     return( ret );
 }
 
-void SemWINAddToolBarItem( ToolBar *toolbar, uint_16 item ) {
-
+void SemWINAddToolBarItem( ToolBar *toolbar, uint_16 item )
+{
     ToolBarItems        *node;
 
     if( toolbar->last->cnt == TB_ITEM_CNT ) {
@@ -70,8 +72,8 @@ void SemWINAddToolBarItem( ToolBar *toolbar, uint_16 item ) {
     node->cnt++;
 }
 
-static void semFreeToolBar( ToolBar *toolbar ) {
-
+static void semFreeToolBar( ToolBar *toolbar )
+{
     ToolBarItems        *cur;
     ToolBarItems        *tmp;
 
@@ -86,8 +88,8 @@ static void semFreeToolBar( ToolBar *toolbar ) {
 
 void SemWINWriteToolBar( WResID *name, ToolBar *toolbar,
                       unsigned long item1, unsigned long item2,
-                      ResMemFlags flags ) {
-
+                      ResMemFlags flags )
+{
     ResLocation              loc;
     unsigned                 cnt;
     ToolBarItems            *cur;
