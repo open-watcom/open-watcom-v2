@@ -89,7 +89,7 @@ bool WRLoadResourceFromWinNTEXE( WRInfo *info )
     WResFileID  fid;
     bool        ok;
 
-    ok = ((fid = ResOpenFileRO( info->file_name )) != WRES_NIL_HANDLE);
+    ok = ( (fid = ResOpenFileRO( info->file_name )) != WRES_NIL_HANDLE );
 
     if( ok ) {
         ok = WRLoadWResDirFromWinNTEXE( fid, &info->dir );
@@ -110,38 +110,38 @@ long int WRReadWinNTExeHeader( WResFileID fid, exe_pe_header *header )
 
     old_pos = -1;
 
-    ok = (fid != WRES_NIL_HANDLE && header != NULL);
+    ok = ( fid != WRES_NIL_HANDLE && header != NULL );
 
     if( ok ) {
-        ok = ((old_pos = RESSEEK( fid, 0x18, SEEK_SET )) != -1);
+        ok = ( (old_pos = RESSEEK( fid, 0x18, SEEK_SET )) != -1 );
     }
 
     /* check the reloc offset */
     if( ok ) {
         ResReadUint16( &offset, fid );
-        ok = (offset >= 0x0040);
+        ok = ( offset >= 0x0040 );
     }
 
     if( ok ) {
-        ok = (RESSEEK( fid, PE_OFFSET, SEEK_SET ) != -1);
+        ok = ( RESSEEK( fid, PE_OFFSET, SEEK_SET ) != -1 );
     }
 
     /* check header offset */
     if( ok ) {
         ResReadUint16( &offset, fid );
-        ok = (offset != 0x0000);
+        ok = ( offset != 0 );
     }
 
     if( ok ) {
-        ok = (RESSEEK( fid, offset, SEEK_SET ) != -1);
+        ok = ( RESSEEK( fid, offset, SEEK_SET ) != -1 );
     }
 
     if( ok ) {
-        ok = (RESREAD( fid, &PE32( *header ), sizeof( pe_header ) ) == sizeof( pe_header ));
+        ok = ( RESREAD( fid, &PE32( *header ), sizeof( pe_header ) ) == sizeof( pe_header ) );
         if( ok && IS_PE64( *header ) ) {
-            ok = (RESSEEK( fid, offset, SEEK_SET ) != -1);
+            ok = ( RESSEEK( fid, offset, SEEK_SET ) != -1 );
             if( ok ) {
-                ok = (RESREAD( fid, &PE64( *header ), sizeof( pe_header64 ) ) == sizeof( pe_header64 ));
+                ok = ( RESREAD( fid, &PE64( *header ), sizeof( pe_header64 ) ) == sizeof( pe_header64 ) );
             }
         }
     }
@@ -152,7 +152,7 @@ long int WRReadWinNTExeHeader( WResFileID fid, exe_pe_header *header )
     }
 
     if( old_pos != -1 ) {
-        ok = (RESSEEK( fid, old_pos, SEEK_SET ) != -1 && ok);
+        ok = ( RESSEEK( fid, old_pos, SEEK_SET ) != -1 && ok );
     }
 
     if( !ok ) {
@@ -169,11 +169,11 @@ int WRCalcObjTableOffset( WResFileID fid, exe_pe_header *hdr )
     int      offset;
     bool     ok;
 
-    ok = (ResSeek( fid, PE_OFFSET, SEEK_SET ) != -1);
+    ok = ( ResSeek( fid, PE_OFFSET, SEEK_SET ) != -1 );
 
     if( ok ) {
         ResReadUint16( &pe_offset, fid );
-        ok = (pe_offset != 0);
+        ok = ( pe_offset != 0 );
     }
 
     if ( ok ) {
@@ -191,8 +191,8 @@ int WRCalcObjTableOffset( WResFileID fid, exe_pe_header *hdr )
 
 int WRReadNTObjectTable( WResFileID fid, exe_pe_header *hdr, pe_object **ot )
 {
-    int size;
-    int ot_offset;
+    size_t  size;
+    int     ot_offset;
 
     ot_offset = WRCalcObjTableOffset( fid, hdr );
     if( ot_offset == 0 || ResSeek( fid, ot_offset, SEEK_SET ) == -1 ) {
@@ -249,14 +249,14 @@ bool WRLoadWResDirFromWinNTEXE( WResFileID fid, WResDir *dir )
     bool                ok;
     unsigned_32         resource_rva;
 
-    ok = (fid != WRES_NIL_HANDLE);
+    ok = ( fid != WRES_NIL_HANDLE );
 
     if( ok ) {
-        ok = ((*dir = WResInitDir()) != NULL);
+        ok = ( (*dir = WResInitDir()) != NULL );
     }
 
     if( ok ) {
-        ok = (WRReadWinNTExeHeader( fid, &nt_header ) != 0);
+        ok = ( WRReadWinNTExeHeader( fid, &nt_header ) != 0 );
     }
 
     /* check if a resource table is present */
@@ -298,7 +298,7 @@ bool WRLoadWResDirFromWinNTEXE( WResFileID fid, WResDir *dir )
                 break;
             }
         }
-        ok = (physical_size != 0 && physical_offset != 0 && physical_size % file_align == 0 && physical_offset % file_align == 0);
+        ok = ( physical_size != 0 && physical_offset != 0 && (physical_size % file_align) == 0 && (physical_offset % file_align) == 0 );
     }
 
     if( otable != NULL ) {
@@ -328,8 +328,7 @@ bool WRHandleWinNTTypeDir( WResFileID fid, WResDir *dir, uint_32 offset )
         for( i = 0; i < rd_hdr.num_name_entries; i++ ) {
             WRHandleWinNTTypeEntry( fid, dir, &rd_entry[i], TRUE );
         }
-        for( i = rd_hdr.num_name_entries;
-             i < rd_hdr.num_name_entries + rd_hdr.num_id_entries; i++ ) {
+        for( i = rd_hdr.num_name_entries; i < rd_hdr.num_name_entries + rd_hdr.num_id_entries; i++ ) {
             WRHandleWinNTTypeEntry( fid, dir, &rd_entry[i], FALSE );
         }
         MemFree( rd_entry );
@@ -357,11 +356,11 @@ bool WRHandleWinNTTypeEntry( WResFileID fid, WResDir *dir,
         type = WResIDFromNum( rd_entry->id_name );
     }
 
-    ok = (type != NULL);
+    ok = ( type != NULL );
 
     if( ok ) {
         /* verify that entry_rva is a subdir */
-        ok = ((rd_entry->entry_rva & PE_RESOURCE_MASK_ON) != 0);
+        ok = ( (rd_entry->entry_rva & PE_RESOURCE_MASK_ON) != 0 );
         if( !ok ) {
             WRDisplayErrorMsg( WR_BADRVADISCARDTYPE );
         }
@@ -394,8 +393,7 @@ bool WRHandleWinNTNameDir( WResFileID fid, WResDir *dir, WResID *type, uint_32 r
         for( i = 0; i < rd_hdr.num_name_entries; i++ ) {
             WRHandleWinNTNameEntry( fid, dir, type, &rd_entry[i], true );
         }
-        for( i = rd_hdr.num_name_entries;
-             i < rd_hdr.num_name_entries + rd_hdr.num_id_entries; i++ ) {
+        for( i = rd_hdr.num_name_entries; i < rd_hdr.num_name_entries + rd_hdr.num_id_entries; i++ ) {
             WRHandleWinNTNameEntry( fid, dir, type, &rd_entry[i], false );
         }
         MemFree( rd_entry );
@@ -430,7 +428,7 @@ bool WRHandleWinNTNameEntry( WResFileID fid, WResDir *dir, WResID *type,
         name = WResIDFromNum( rd_entry->id_name );
     }
 
-    ok = (name != NULL);
+    ok = ( name != NULL );
 
     if( ok ) {
         /* is the entry_rva is a subdir */
@@ -497,7 +495,7 @@ bool WRHandleWinNTLangIDEntry( WResFileID fid, WResDir *dir, WResID *type,
     uint_32         offset;
     bool            ok;
 
-    ok = (name != NULL);
+    ok = ( name != NULL );
 
     if( ok ) {
         /* is the entry_rva is a subdir */
@@ -524,29 +522,27 @@ bool WRReadResourceHeader( WResFileID fid, uint_32 offset,
                           resource_dir_header *rd_hdr,
                           resource_dir_entry **rd_entry )
 {
-    bool ok;
-    int rde_size;
+    bool    ok;
+    size_t  rde_size;
 
     *rd_entry = NULL;
 
     /* if offset is zero don't perform the seek to beginning of resource directory */
-    ok = (offset == 0 || RESSEEK( fid, offset, SEEK_SET ) != -1);
+    ok = ( offset == 0 || RESSEEK( fid, offset, SEEK_SET ) != -1 );
 
     /* read the resource directory header */
     if( ok ) {
-        ok = (RESREAD( fid, rd_hdr, sizeof( resource_dir_header ) ) ==
-              sizeof( resource_dir_header ) );
+        ok = ( RESREAD( fid, rd_hdr, sizeof( resource_dir_header ) ) == sizeof( resource_dir_header ) );
     }
 
     if( ok ) {
-        rde_size = sizeof( resource_dir_entry ) *
-                   (rd_hdr->num_name_entries + rd_hdr->num_id_entries);
+        rde_size = sizeof( resource_dir_entry ) * ( rd_hdr->num_name_entries + rd_hdr->num_id_entries );
         *rd_entry = (resource_dir_entry *)MemAlloc( rde_size );
-        ok = (*rd_entry != NULL);
+        ok = ( *rd_entry != NULL );
     }
 
     if( ok ) {
-        ok = (RESREAD( fid, *rd_entry, rde_size ) == rde_size);
+        ok = ( RESREAD( fid, *rd_entry, rde_size ) == rde_size );
     }
 
     if( !ok && *rd_entry != NULL ) {
@@ -571,32 +567,32 @@ WResID *WRGetUniCodeWResID( WResFileID fid, uint_32 rva )
     unistr = NULL;
 
     /* seek to the location of the Unicode string */
-    ok = ((old_pos = RESSEEK( fid, offset, SEEK_SET )) != -1);
+    ok = ( (old_pos = RESSEEK( fid, offset, SEEK_SET )) != -1 );
 
     /* read the Unicode string */
     if( ok ) {
         ResReadUint16( &len, fid );
         len *= 2;
         unistr = (char *)MemAlloc( len + 2 );
-        ok = (unistr != NULL);
+        ok = ( unistr != NULL );
     }
 
     if( ok ) {
         unistr[len] = 0;
         unistr[len + 1] = 0;
-        ok = (RESREAD( fid, unistr, len ) == len);
+        ok = ( RESREAD( fid, unistr, len ) == len );
     }
 
     if( ok ) {
         for( i = 0; i < len + 2; i += 2 ) {
             unistr[i / 2] = unistr[i];
         }
-        ok = ((id = WResIDFromStr( unistr )) != NULL);
+        ok = ( (id = WResIDFromStr( unistr )) != NULL );
     }
 
 #if 0
     if( old_pos != -1 ) {
-        ok = (RESSEEK( fid, old_pos, SEEK_SET ) != -1 && ok);
+        ok = ( RESSEEK( fid, old_pos, SEEK_SET ) != -1 && ok );
     }
 #endif
 
@@ -620,7 +616,7 @@ bool WRReadResourceEntry( WResFileID fid, uint_32 offset, resource_entry *res_en
 
     /* read the resource entry */
     if( ok ) {
-        ok = (RESREAD( fid, res_entry, sizeof( resource_entry ) ) == sizeof( resource_entry ));
+        ok = ( RESREAD( fid, res_entry, sizeof( resource_entry ) ) == sizeof( resource_entry ) );
     }
 
     return( ok );

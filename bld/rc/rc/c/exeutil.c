@@ -52,9 +52,8 @@ RcStatus CopyExeData( WResFileID in_fid, WResFileID out_fid, uint_32 length )
         return( RS_PARAM_ERROR );
     }
     for( bufflen = IO_BUFFER_SIZE; length > 0; length -= bufflen ) {
-        if( bufflen > length ) {
+        if( bufflen > length )
             bufflen = length;
-        }
         numread = RESREAD( in_fid, Pass2Info.IoBuffer, bufflen );
         if( numread != bufflen ) {
             return( RESIOERR( in_fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
@@ -151,21 +150,17 @@ extern uint_16 FindShiftCount( uint_32 filelen, uint_16 numobjs )
 RcStatus PadExeData( WResFileID fid, long length )
 /************************************************/
 {
+    size_t  numwrite;
+
     memset( Pass2Info.IoBuffer, 0, IO_BUFFER_SIZE );
 
-    while( length > IO_BUFFER_SIZE ) {
-        length -= IO_BUFFER_SIZE;
-        if( RESWRITE( fid, Pass2Info.IoBuffer, IO_BUFFER_SIZE ) != IO_BUFFER_SIZE ) {
+    for( numwrite = IO_BUFFER_SIZE; length > 0; length -= numwrite ) {
+        if( numwrite > length )
+            numwrite = length;
+        if( RESWRITE( fid, Pass2Info.IoBuffer, numwrite ) != numwrite ) {
             return( RS_WRITE_ERROR );
         }
     }
-
-    if( length > 0 ) {
-        if( RESWRITE( fid, Pass2Info.IoBuffer, length ) != length ) {
-            return( RS_WRITE_ERROR );
-        }
-    }
-
     return( RS_OK );
 } /* PadExeData */
 

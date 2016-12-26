@@ -48,7 +48,7 @@ static char     Buffer2[BUFFER_SIZE];
 int BinaryCompare( WResFileID fid1, uint_32 offset1, WResFileID fid2, uint_32 offset2, uint_32 length )
 /*****************************************************************************************************/
 {
-    int             numread;
+    size_t          numread;
     WResFileOffset  currpos1;
     WResFileOffset  currpos2;
     int             rc;
@@ -66,37 +66,20 @@ int BinaryCompare( WResFileID fid1, uint_32 offset1, WResFileID fid2, uint_32 of
 
     /* compare the parts that fill the buffer */
     rc = 0;
-    while( length >= BUFFER_SIZE ) {
-        numread = RESREAD( fid1, Buffer1, BUFFER_SIZE );
-        if( numread != BUFFER_SIZE ) {
+    for( numread = BUFFER_SIZE; length > 0; length -= numread ) {
+        if( numread > length )
+            numread = length;
+        if( RESREAD( fid1, Buffer1, numread ) != numread ) {
             rc = -1;
             break;
         }
-        numread = RESREAD( fid2, Buffer2, BUFFER_SIZE );
-        if( numread != BUFFER_SIZE ) {
+        if( RESREAD( fid2, Buffer2, numread ) != numread ) {
             rc = -1;
             break;
         }
-        if( memcmp( Buffer1, Buffer2, BUFFER_SIZE ) != 0 ) {
+        if( memcmp( Buffer1, Buffer2, numread ) != 0 ) {
             rc = 1;
             break;
-        }
-        length -= BUFFER_SIZE;
-    }
-
-    if( rc == 0 && length > 0 ) {
-        numread = RESREAD( fid1, Buffer1, length );
-        if( numread != length ) {
-            rc = -1;
-        } else {
-            numread = RESREAD( fid2, Buffer2, length );
-            if( numread != length ) {
-                rc = -1;
-            } else {
-                if( memcmp( Buffer1, Buffer2, length ) != 0 ) {
-                    rc = 1;
-                }
-            }
         }
     }
 

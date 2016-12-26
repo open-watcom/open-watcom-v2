@@ -40,6 +40,7 @@
 #include "wrmsg.h"
 #include "wrmemi.h"
 #include "rcrtns.h"
+#include "wresdefn.h"
 
 #include "clibext.h"
 
@@ -52,7 +53,6 @@
 /* macro definitions                                                        */
 /****************************************************************************/
 #define NAME_TABLE_MAX   8192
-#define WR_RT_NAMETABLE  15
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -98,7 +98,7 @@ bool WRLoadResourceFromWin16EXE( WRInfo *info )
     WResFileID  fid;
     bool        ok;
 
-    ok = ((fid = ResOpenFileRO( info->file_name )) != WRES_NIL_HANDLE);
+    ok = ( (fid = ResOpenFileRO( info->file_name )) != WRES_NIL_HANDLE );
 
     if( ok ) {
         ok = WRLoadWResDirFromWin16EXE( fid, &info->dir );
@@ -119,35 +119,34 @@ long int WRReadWin16ExeHeader( WResFileID fid, os2_exe_header *header )
 
     old_pos = -1;
 
-    ok = (fid != WRES_NIL_HANDLE && header != NULL);
+    ok = ( fid != WRES_NIL_HANDLE && header != NULL );
 
     if( ok ) {
-        ok = ((old_pos = RESSEEK( fid, 0x18, SEEK_SET )) != -1);
+        ok = ( (old_pos = RESSEEK( fid, 0x18, SEEK_SET )) != -1 );
     }
 
     /* check the reloc offset */
     if( ok ) {
         ResReadUint16( &offset, fid );
-        ok = (offset >= 0x0040);
+        ok = ( offset >= 0x0040 );
     }
 
     if( ok ) {
-        ok = (RESSEEK( fid, OS2_NE_OFFSET, SEEK_SET ) != -1);
+        ok = ( RESSEEK( fid, OS2_NE_OFFSET, SEEK_SET ) != -1 );
     }
 
     /* check header offset */
     if( ok ) {
         ResReadUint16( &offset, fid );
-        ok = (offset != 0x0000);
+        ok = ( offset != 0 );
     }
 
     if( ok ) {
-        ok = (RESSEEK( fid, offset, SEEK_SET ) != -1);
+        ok = ( RESSEEK( fid, offset, SEEK_SET ) != -1 );
     }
 
     if( ok ) {
-        ok = (RESREAD( fid, header, sizeof( os2_exe_header ) ) ==
-              sizeof( os2_exe_header ));
+        ok = ( RESREAD( fid, header, sizeof( os2_exe_header ) ) == sizeof( os2_exe_header ) );
     }
 
     /* check for valid Win16 EXE */
@@ -156,7 +155,7 @@ long int WRReadWin16ExeHeader( WResFileID fid, os2_exe_header *header )
     }
 
     if( old_pos != -1 ) {
-        ok = (RESSEEK( fid, old_pos, SEEK_SET ) != -1 && ok);
+        ok = ( RESSEEK( fid, old_pos, SEEK_SET ) != -1 && ok );
     }
 
     if( ok ) {
@@ -197,14 +196,14 @@ bool WRLoadWResDirFromWin16EXE( WResFileID fid, WResDir *dir )
     uint_32         num_leftover;
     bool            ok;
 
-    ok = (fid != WRES_NIL_HANDLE);
+    ok = ( fid != WRES_NIL_HANDLE );
 
     if( ok ) {
-        ok = ((*dir = WResInitDir()) != NULL);
+        ok = ( (*dir = WResInitDir()) != NULL );
     }
 
     if( ok ) {
-        ok = ((offset = WRReadWin16ExeHeader( fid, &win_header )) != 0);
+        ok = ( (offset = WRReadWin16ExeHeader( fid, &win_header )) != 0 );
     }
 
     /* check if a resource table is present */
@@ -216,16 +215,16 @@ bool WRLoadWResDirFromWin16EXE( WResFileID fid, WResDir *dir )
     }
 
     if( ok ) {
-        ok = (RESSEEK( fid, offset, SEEK_SET ) != -1);
+        ok = ( RESSEEK( fid, offset, SEEK_SET ) != -1 );
     }
 
     if( ok ) {
-        ok = (RESSEEK( fid, win_header.resource_off, SEEK_CUR ) != -1);
+        ok = ( RESSEEK( fid, win_header.resource_off, SEEK_CUR ) != -1 );
     }
 
     if( ok ) {
         ResReadUint16( &align_shift, fid );
-        ok = (align_shift <= 16);
+        ok = ( align_shift <= 16 );
         if( !ok ) {
             WRDisplayErrorMsg( WR_BADEXE );
         }
@@ -261,8 +260,7 @@ bool WRLoadWResDirFromWin16EXE( WResFileID fid, WResDir *dir )
             if( name_table != NULL ) {
                 MemFree( name_table );
             }
-            name_table_len = WRReadNameTable( NULL, fid, &name_table,
-                                              num_leftover, leftover );
+            name_table_len = WRReadNameTable( NULL, fid, &name_table, num_leftover, leftover );
             if( leftover != NULL ) {
                 MemFree( leftover );
                 leftover = NULL;
@@ -516,7 +514,7 @@ uint_32 WRReadNameTable( WResDir dir, WResFileID fid, uint_8 **name_table,
     uint_32             len;
 
     if( dir != NULL ) {
-        type_node = WRFindTypeNode( dir, (uint_16)WR_RT_NAMETABLE, NULL );
+        type_node = WRFindTypeNode( dir, RESOURCE2INT( RT_NAMETABLE ), NULL );
         if( type_node != NULL ) {
             res_node = type_node->Head;
             /* if there are two name tables we ignore all but the first */

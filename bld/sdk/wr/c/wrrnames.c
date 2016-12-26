@@ -107,7 +107,6 @@ static bool WRSetLBoxWithResNode( HWND lbox, WResResNode *rnode, uint_16 type_id
     bool                ok;
 
     ok = (lbox != (HWND)NULL && rnode != NULL);
-
     if( ok ) {
         for( lnode = rnode->Head; ok && lnode != NULL; lnode = lnode->Next ) {
             ok = WRSetLBoxWithLangNode( lbox, rnode, lnode, type_id );

@@ -91,7 +91,6 @@ static bool WRWriteResourceToWRES( WResTypeNode *tnode, WResResNode *rnode,
     }
 
     offset = RESTELL( dst_fid );
-
     for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
         lt = lnode->Info.lang;
         if( WResAddResource( &tnode->Info.TypeName, &rnode->Info.ResName,
@@ -109,8 +108,7 @@ static bool WRWriteResourceToWRES( WResTypeNode *tnode, WResResNode *rnode,
                 return( false );
             }
         } else {
-            if( !WRCopyResFromFileToFile( src_fid, lnode->Info.Offset,
-                                          lnode->Info.Length, dst_fid ) ) {
+            if( !WRCopyResFromFileToFile( src_fid, lnode->Info.Offset, lnode->Info.Length, dst_fid ) ) {
                 return( false );
             }
         }
@@ -244,8 +242,7 @@ static bool WRWriteResourcesToWRES( WRInfo *info, WResDir new_dir,
     }
     for( ; type_node != NULL; type_node = type_node->Next ) {
         for( res_node = type_node->Head; res_node != NULL; res_node = res_node->Next ) {
-            if( !WRWriteResourceToWRES( type_node, res_node, new_dir,
-                                        src_fid, dst_fid, is32bit ) ) {
+            if( !WRWriteResourceToWRES( type_node, res_node, new_dir, src_fid, dst_fid, is32bit ) ) {
                 return( false );
             }
             if( res_node == type_node->Tail ) {

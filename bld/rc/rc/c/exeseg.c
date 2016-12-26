@@ -63,7 +63,7 @@ static RcStatus readSegTable( WResFileID fid, uint_32 offset, SegTable * seg )
     size_t          tablesize;
     size_t          numread;
 
-    tablesize = seg->NumSegs * sizeof(segment_record);
+    tablesize = seg->NumSegs * sizeof( segment_record );
 
     if( RESSEEK( fid, offset, SEEK_SET ) == -1 )
         return( RS_READ_ERROR );
@@ -167,23 +167,20 @@ extern RcStatus AllocAndReadOS2SegTables( int *err_code )
 
 extern uint_32 ComputeSegmentSize( WResFileID fid, SegTable * segs, int shift_count )
 {
-    segment_record *    currseg;
-    segment_record *    afterlast;
-    uint_32             length;
-    size_t              numread;
-    uint_16             num_relocs;
+    segment_record  *currseg;
+    segment_record  *afterlast;
+    uint_32         length;
+    uint_16         numrelocs;
 
     length = 0;
-    for( currseg = segs->Segments, afterlast = segs->Segments + segs->NumSegs;
-            currseg < afterlast; currseg++ ) {
+    for( currseg = segs->Segments, afterlast = segs->Segments + segs->NumSegs; currseg < afterlast; currseg++ ) {
         length += currseg->size;
         if( currseg->info & SEG_RELOC ) {
             if( RESSEEK( fid, (((long)currseg->address) << (long)shift_count) + currseg->size, SEEK_SET ) == -1 )
                 return( 0 );
-            numread = RESREAD( fid, &num_relocs, sizeof( num_relocs ) );
-            if( numread != sizeof( num_relocs ) )
+            if( RESREAD( fid, &numrelocs, sizeof( numrelocs ) ) != sizeof( numrelocs ) )
                 return( 0 );
-            length += (unsigned_32)( (unsigned_32)num_relocs * (unsigned_32)OS_RELOC_ITEM_SIZE );
+            length += (unsigned_32)( (unsigned_32)numrelocs * (unsigned_32)OS_RELOC_ITEM_SIZE );
         }
     }
 

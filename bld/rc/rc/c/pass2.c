@@ -382,7 +382,7 @@ static RcStatus writeHeadAndTables( int *err_code )
 
     /* write the segment table */
     if( tmpne->Seg.NumSegs > 0 ) {
-        unsigned  numwrite;
+        size_t  numwrite;
 
         numwrite = tmpne->Seg.NumSegs * sizeof( segment_record );
         if( RESWRITE( tmpfile->fid, tmpne->Seg.Segments, numwrite ) != numwrite ) {
@@ -454,7 +454,7 @@ static RcStatus writeOS2HeadAndTables( int *err_code )
 
     /* write the segment table */
     if( tmpne->Seg.NumSegs > 0 ) {
-        unsigned  numwrite;
+        size_t  numwrite;
 
         numwrite = tmpne->Seg.NumSegs * sizeof( segment_record );
         if( RESWRITE( tmpfile->fid, tmpne->Seg.Segments, numwrite ) != numwrite ) {
@@ -787,7 +787,7 @@ static RcStatus updateDebugDirectory( void )
     size_t              numread;
     unsigned            debug_cnt;
     unsigned            read_cnt;
-    unsigned            read_size;
+    size_t              read_size;
     unsigned            i;
     debug_directory     *entry;
     pe_hdr_table_entry  *old_table;
@@ -934,7 +934,7 @@ static RcStatus writeLXHeadAndTables( void )
 {
     ExeFileInfo     *tmp;
     LXExeInfo       *lx_info;
-    unsigned        length;
+    size_t          length;
     long            offset;
     unsigned        i;
 

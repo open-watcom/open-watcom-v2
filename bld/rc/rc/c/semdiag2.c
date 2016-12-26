@@ -73,8 +73,8 @@ struct DLGTITEM {
 #include "rccore.h"
 
 
-static bool ResOS2WriteDlgTemplate( char *tmpldata, int size, WResFileID fid )
-/****************************************************************************/
+static bool ResOS2WriteDlgTemplate( char *tmpldata, size_t size, WResFileID fid )
+/*******************************************************************************/
 {
     if( RESWRITE( fid, tmpldata, size ) != size ) {
         WRES_ERROR( WRS_WRITE_FAILED );

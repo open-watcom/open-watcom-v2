@@ -44,8 +44,8 @@ bool DumpString( uint_32 offset, uint_32 length, WResFileID fid )
 {
     WResFileOffset      prevpos;
     unsigned            len;
-    unsigned            numread;
-    unsigned            cursor;
+    size_t              numread;
+    size_t              cursor;
     unsigned            stringlen;
     char                *stringbuff;
 

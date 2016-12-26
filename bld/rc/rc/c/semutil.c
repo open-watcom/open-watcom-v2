@@ -70,7 +70,7 @@ RcStatus CopyData( WResFileOffset offset, uint_32 length, WResFileID fid,
         return( RS_READ_ERROR );
     }
 
-    while( length > 0 ) {
+    for( ; length > 0; length -= buffsize ) {
         if( buffsize > length )
             buffsize = (unsigned)length;
         numread = RESREAD( fid, buff, buffsize );
@@ -78,7 +78,6 @@ RcStatus CopyData( WResFileOffset offset, uint_32 length, WResFileID fid,
             *err_code = errno;
             return( RESIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         }
-        length -= buffsize;
         if( RESWRITE( CurrResFile.fid, buff, buffsize ) != buffsize ) {
             *err_code = errno;
             return( RS_WRITE_ERROR );
