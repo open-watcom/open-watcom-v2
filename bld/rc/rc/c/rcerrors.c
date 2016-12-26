@@ -49,8 +49,8 @@
 static char             rcStrBuf[1024];
 static char             errBuffer[1024];
 
-static int checkForTmpFiles( unsigned errornum, va_list arglist ) {
-
+static int checkForTmpFiles( unsigned errornum, va_list arglist )
+{
     char        *fname;
 
     switch( errornum ) {

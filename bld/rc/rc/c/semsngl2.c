@@ -76,7 +76,7 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
     switch( type ) {
     case Y_DEFAULTICON:
         /* DEFAULTICON doesn't have a name, let's make our own */
-        name = (WResID*)RESALLOC( sizeof( WResID ) );
+        name = RESALLOC( sizeof( WResID ) );
         name->IsName = false;
         name->ID.Num = 999;
         firstIcon    = true;    /* Trigger a warning if we have one already */
@@ -96,7 +96,7 @@ void SemOS2AddSingleLineResource( WResID *name, YYTOKENTYPE type,
         if( firstIcon && !name->IsName && (name->ID.Num == 999 || name->ID.Num == 1) ) {
             WResID      *id;
 
-            id = (WResID*)RESALLOC( sizeof( WResID ) );
+            id = RESALLOC( sizeof( WResID ) );
             if( id == NULL )
                 break;
 

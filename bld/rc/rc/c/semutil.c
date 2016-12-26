@@ -79,7 +79,7 @@ RcStatus CopyData( WResFileOffset offset, uint_32 length, WResFileID fid,
             return( RESIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         }
         length -= buffsize;
-        if( (WResFileSize)RESWRITE( CurrResFile.fid, buff, buffsize ) != buffsize ) {
+        if( RESWRITE( CurrResFile.fid, buff, buffsize ) != buffsize ) {
             *err_code = errno;
             return( RS_WRITE_ERROR );
         }

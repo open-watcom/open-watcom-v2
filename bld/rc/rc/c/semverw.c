@@ -56,9 +56,9 @@ FullVerValueList * SemWINNewVerValueList( VerValueItem item )
         item.strlen = VER_CALC_SIZE; // terminate at the first NULLCHAR
     }                                // instead of using the full string.
                                      // This is what Microsoft does.
-    list = RESALLOC( sizeof(FullVerValueList) );
+    list = RESALLOC( sizeof( FullVerValueList ) );
     list->NumItems = 1;
-    list->Item = RESALLOC( sizeof(VerValueItem) );
+    list->Item = RESALLOC( sizeof( VerValueItem ) );
     list->Item[0] = item;
 
     return( list );
@@ -73,8 +73,7 @@ FullVerValueList * SemWINAddVerValueList( FullVerValueList * list,
     }                                // instead of using the full string.
                                      // This is what MS does.
     list->NumItems++;
-    list->Item = RCREALLOC( list->Item,
-                            list->NumItems * sizeof(VerValueItem) );
+    list->Item = RCREALLOC( list->Item, list->NumItems * sizeof( VerValueItem ) );
     list->Item[list->NumItems - 1] = item;
 
     return( list );

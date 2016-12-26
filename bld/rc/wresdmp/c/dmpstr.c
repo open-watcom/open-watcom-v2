@@ -53,7 +53,7 @@ bool DumpString( uint_32 offset, uint_32 length, WResFileID fid )
     if( prevpos == -1 )
         return( true );
     len = DMP_STR_BUF_LEN;
-    stringbuff = (char *)RESALLOC( len );
+    stringbuff = RESALLOC( len );
     if( stringbuff == NULL )
         return( true );
 
