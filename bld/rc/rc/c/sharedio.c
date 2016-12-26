@@ -78,10 +78,9 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
     WResTargetOS    target;
 
     *allopen = true;
-    rescnt = 0;
     *resinfo = NULL;
-
-    while( resnames != NULL ) {
+    rescnt = 0;
+    for( ; resnames != NULL; resnames = resnames->next ) {
         resfile = RESALLOC( sizeof( ResFileInfo ) );
         resfile->next = *resinfo;
         *resinfo = resfile;
@@ -156,7 +155,6 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
         default: // EXE_TYPE_UNKNOWN
             break;
         }
-        resnames = resnames->next;
         rescnt++;
     }
     return( true );
@@ -172,8 +170,7 @@ void CloseResFiles( ResFileInfo *resfiles )
 {
     ResFileInfo         *res;
 
-    while( resfiles != NULL ) {
-        res = resfiles;
+    while( (res = resfiles) != NULL ) {
         resfiles = res->next;
         closeAResFile( res );
     }

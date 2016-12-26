@@ -519,10 +519,10 @@ static void SemFreeDiagCtrlList( FullDiagCtrlList *list )
 /*******************************************************/
 {
     FullDialogBoxControl        *ctrl;
-    FullDialogBoxControl        *oldctrl;
+    FullDialogBoxControl        *next;
 
-    ctrl = list->head;
-    while( ctrl != NULL ) {
+    for( ctrl = list->head; ctrl != NULL; ctrl = next ) {
+        next = ctrl->next;
         /* free the contents of pointers within the structure */
         if( ctrl->Win32 ) {
             if( ctrl->u.ctrl32.ClassID != NULL ) {
@@ -539,11 +539,7 @@ static void SemFreeDiagCtrlList( FullDiagCtrlList *list )
                 RESFREE( ctrl->u.ctrl.Text );
             }
         }
-
-        oldctrl = ctrl;
-        ctrl = ctrl->next;
-
-        RESFREE( oldctrl );
+        RESFREE( ctrl );
     }
 
     RESFREE( list );

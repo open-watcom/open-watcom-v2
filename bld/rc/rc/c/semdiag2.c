@@ -295,18 +295,16 @@ FullDialogBoxControlOS2 *SemOS2NewDiagCtrl( YYTOKENTYPE token,
 static void SemOS2FreePresParamList( PresParamListOS2 *list )
 /***********************************************************/
 {
-    PresParamsOS2       *presparam;
     PresParamsOS2       *currparam;
+    PresParamsOS2       *nextparam;
 
     if( list == NULL )
         return;
 
-    presparam = list->head;
-    while( presparam != NULL ) {
-        RESFREE( presparam->Name );
-        SemFreeDataElemList( presparam->dataList );
-        currparam = presparam;
-        presparam = presparam->next;
+    for( currparam = list->head; currparam != NULL; currparam = nextparam ) {
+        nextparam = currparam->next;
+        RESFREE( currparam->Name );
+        SemFreeDataElemList( currparam->dataList );
         RESFREE( currparam );
     }
     RESFREE( list );
@@ -316,10 +314,10 @@ static void SemOS2FreeDiagCtrlList( FullDiagCtrlListOS2 *list )
 /*************************************************************/
 {
     FullDialogBoxControlOS2     *ctrl;
-    FullDialogBoxControlOS2     *oldctrl;
+    FullDialogBoxControlOS2     *next;
 
-    ctrl = list->head;
-    while( ctrl != NULL ) {
+    for( ctrl = list->head; ctrl != NULL; ctrl = next ) {
+        next = ctrl->next;
         /* free the contents of pointers within the structure */
         if( ctrl->ctrl.ClassID != NULL ) {
             RESFREE( ctrl->ctrl.ClassID );
@@ -327,18 +325,12 @@ static void SemOS2FreeDiagCtrlList( FullDiagCtrlListOS2 *list )
         if( ctrl->ctrl.Text != NULL ) {
             RESFREE( ctrl->ctrl.Text );
         }
-
-        oldctrl = ctrl;
-
         if( ctrl->children != NULL )
             SemOS2FreeDiagCtrlList( ctrl->children );
 
         SemFreeDataElemList( ctrl->dataListHead );
         SemOS2FreePresParamList( ctrl->presParams );
-
-        ctrl = ctrl->next;
-
-        RESFREE( oldctrl );
+        RESFREE( ctrl );
     }
 
     RESFREE( list );

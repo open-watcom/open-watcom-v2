@@ -60,16 +60,12 @@ static void semFreeStringTable( FullStringTable * oldtable )
 /*************************************************************/
 {
     FullStringTableBlock *      currblock;
-    FullStringTableBlock *      oldblock;
+    FullStringTableBlock *      nextblock;
 
-    currblock = oldtable->Head;
-    while( currblock != NULL ) {
+    for( currblock = oldtable->Head; currblock != NULL; currblock = nextblock ) {
+        nextblock = currblock->Next;
         ResFreeStringTableBlock( &(currblock->Block) );
-
-        oldblock = currblock;
-        currblock = currblock->Next;
-
-        RESFREE( oldblock );
+        RESFREE( currblock );
     }
 
     RESFREE( oldtable );
@@ -167,8 +163,7 @@ static void semMergeStringTables( FullStringTable * currtable,
     FullStringTableBlock        *nextblock;
 
     /* run through the list of block in oldtable */
-    oldblock = oldtable->Head;
-    while( oldblock != NULL ) {
+    for( oldblock = oldtable->Head; oldblock != NULL; oldblock = nextblock ) {
         /* find oldblock in currtable if it is there */
         nextblock = oldblock->Next;
         currblock = findStringTableBlock( currtable, oldblock->BlockNum );
@@ -181,7 +176,6 @@ static void semMergeStringTables( FullStringTable * currtable,
             /* otherwise move the WSemID's to that block */
             mergeStringTableBlocks( currblock, oldblock );
         }
-        oldblock = nextblock;
     }
 
     semFreeStringTable( oldtable );
@@ -191,18 +185,18 @@ static void setStringTableMemFlags( FullStringTable * currtable,
                                     ResMemFlags flags )
 /**************************************************************/
 {
-    FullStringTableBlock *  currblock;
+    FullStringTableBlock    *currblock;
 
-    for( currblock = currtable->Head; currblock != NULL;
-                currblock = currblock->Next ) {
+    for( currblock = currtable->Head; currblock != NULL; currblock = currblock->Next ) {
         currblock->Flags = flags;
     }
 }
 
-static void addTable( FullStringTable **tables, FullStringTable *newtable ) {
-/***************************************************************************/
-
-    while( *tables != NULL ) tables = &( ( *tables )->next );
+static void addTable( FullStringTable **tables, FullStringTable *newtable )
+/*************************************************************************/
+{
+    while( *tables != NULL )
+        tables = &( ( *tables )->next );
     *tables = newtable;
     newtable->next = NULL;
 }
@@ -262,20 +256,18 @@ void SemWINWriteStringTable( FullStringTable * currtable, WResID * type )
 /* free the memory that it occupied */
 {
     FullStringTableBlock *  currblock;
-    FullStringTable         *tofree;
+    FullStringTable         *nexttable;
     WResID *                name;
     bool                    error;
     ResLocation             loc;
 
-    while( currtable != NULL ) {
-        for( currblock = currtable->Head; currblock != NULL;
-                    currblock = currblock->Next ) {
+    for( ; currtable != NULL; currtable = nexttable ) {
+        nexttable = currtable->next;
+        for( currblock = currtable->Head; currblock != NULL; currblock = currblock->Next ) {
             loc.start = SemStartResource();
 
-            error = ResWriteStringTableBlock( &(currblock->Block),
-                            currblock->UseUnicode, CurrResFile.fid );
-            if( !error && CmdLineParms.MSResFormat &&
-                          CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+            error = ResWriteStringTableBlock( &(currblock->Block), currblock->UseUnicode, CurrResFile.fid );
+            if( !error && CmdLineParms.MSResFormat && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
                 error = ResWritePadDWord( CurrResFile.fid );
             }
             if( error ) {
@@ -285,7 +277,6 @@ void SemWINWriteStringTable( FullStringTable * currtable, WResID * type )
                 return;
             }
 
-
             loc.len = SemEndResource( loc.start );
             /* +1 because WResID's can't be 0
              * ( see Microsoft Internal Res Docs) */
@@ -294,10 +285,7 @@ void SemWINWriteStringTable( FullStringTable * currtable, WResID * type )
             SemAddResource( name, type, currblock->Flags, loc );
             RESFREE( name );
         }
-
-        tofree = currtable;
-        currtable = currtable->next;
-        semFreeStringTable( tofree );
+        semFreeStringTable( currtable );
     }
     RESFREE( type );
     return;

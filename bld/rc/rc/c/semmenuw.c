@@ -277,16 +277,13 @@ static void SemFreeSubMenu( FullMenu *submenu )
 /**********************************************/
 {
     FullMenuItem   *curritem;
-    FullMenuItem   *olditem;
+    FullMenuItem   *nextitem;
 
-    curritem = submenu->head;
-    while( curritem != NULL ) {
+    for( curritem = submenu->head; curritem != NULL; curritem = nextitem ) {
+        nextitem = curritem->next;
         SemFreeMenuItem( curritem );
-        olditem = curritem;
-        curritem = curritem->next;
-        RESFREE( olditem );
+        RESFREE( curritem );
     }
-
     RESFREE( submenu );
 }
 

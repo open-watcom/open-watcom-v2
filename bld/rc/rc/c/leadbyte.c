@@ -47,10 +47,8 @@ void SetNativeLeadBytes( void ) {
     unsigned    i;
 
     GetCPInfo( CP_ACP, &info );
-    i = 0;
-    while( info.LeadByte[i] != 0 && info.LeadByte[i+1] != 0 ) {
-        SetMBRange( info.LeadByte[i], info.LeadByte[i+1], 1 );
-        i += 2;
+    for( i = 0; info.LeadByte[i] != 0 && info.LeadByte[i + 1] != 0; i += 2 ) {
+        SetMBRange( info.LeadByte[i], info.LeadByte[i + 1], 1 );
     }
 }
 

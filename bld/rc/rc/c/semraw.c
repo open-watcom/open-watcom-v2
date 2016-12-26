@@ -213,25 +213,21 @@ ResLocation SemFlushDataElemList( DataElemList *head, bool call_startend )
     ResLocation     resLoc;
     int             i;
 
-    curnode = head;
-    nextnode = head;
     resLoc.len = 0;
     if( call_startend ) {
         resLoc.start = SemStartResource();
     } else {
         resLoc.start = 0;
     }
-    while( nextnode != NULL ) {
+    for( curnode = head; curnode != NULL; curnode = nextnode ) {
         nextnode = curnode->next;
         for( i = 0; i < curnode->count; i++ ) {
             SemWriteRawDataItem( curnode->data[i] );
         }
         RESFREE( curnode );
-        curnode = nextnode;
     }
     if( call_startend ) {
-        if( CmdLineParms.MSResFormat
-          && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+        if( CmdLineParms.MSResFormat && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
             ResWritePadDWord( CurrResFile.fid );
         }
         resLoc.len = SemEndResource( resLoc.start );
@@ -247,9 +243,7 @@ void SemFreeDataElemList( DataElemList *head )
     DataElemList    *nextnode;
     int             i;
 
-    curnode = head;
-    nextnode = head;
-    while( nextnode != NULL ) {
+    for( curnode = head; curnode != NULL; curnode = nextnode ) {
         nextnode = curnode->next;
         for( i = 0; i < curnode->count; i++ ) {
             if( curnode->data[i].IsString ) {
@@ -257,6 +251,5 @@ void SemFreeDataElemList( DataElemList *head )
             }
         }
         RESFREE( curnode );
-        curnode = nextnode;
     }
 }

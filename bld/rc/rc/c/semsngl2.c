@@ -365,18 +365,15 @@ COPY_FONT_ERROR:
     return;
 }
 
-static void FreeFontDir( FullFontDir * olddir )
-/*********************************************/
+static void FreeFontDir( FullFontDir *olddir )
+/********************************************/
 {
-    FullFontDirEntry *  currentry;
-    FullFontDirEntry *  oldentry;
+    FullFontDirEntry    *currentry;
+    FullFontDirEntry    *nextentry;
 
-    currentry = olddir->Head;
-    while( currentry != NULL ) {
-        oldentry = currentry;
-        currentry = currentry->Next;
-
-        RESFREE( oldentry );
+    for( currentry = olddir->Head; currentry != NULL; currentry = nextentry ) {
+        nextentry = currentry->Next;
+        RESFREE( currentry );
     }
 
     RESFREE( olddir );

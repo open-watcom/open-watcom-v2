@@ -112,14 +112,12 @@ static void SemOS2FreeHelpTable( FullHelpTableOS2 *helptable )
 /************************************************************/
 {
     FullHelpEntryOS2   *currentry;
-    FullHelpEntryOS2   *oldentry;
+    FullHelpEntryOS2   *nextentry;
 
     if( helptable != NULL ) {
-        currentry = helptable->head;
-        while( currentry != NULL ) {
-            oldentry = currentry;
-            currentry = currentry->next;
-            RESFREE( oldentry );
+        for( currentry = helptable->head; currentry != NULL; currentry = nextentry ) {
+            nextentry = currentry->next;
+            RESFREE( currentry );
         }
         RESFREE( helptable );
     }
@@ -133,10 +131,8 @@ static bool SemOS2WriteHelpTableEntries( FullHelpTableOS2 *helptable, WResFileID
 
     error = false;
     if( helptable != NULL ) {
-        currentry = helptable->head;
-        while( currentry != NULL && !error ) {
+        for( currentry = helptable->head; currentry != NULL && !error; currentry = currentry->next ) {
             error = ResOS2WriteHelpEntry( &currentry->entry, fid );
-            currentry = currentry->next;
         }
     }
     if( !error )
@@ -227,15 +223,13 @@ static void SemOS2FreeHelpSubTable( FullHelpSubTableOS2 *helptable )
 /******************************************************************/
 {
     FullHelpSubEntryOS2   *currentry;
-    FullHelpSubEntryOS2   *oldentry;
+    FullHelpSubEntryOS2   *nextentry;
 
     if( helptable != NULL ) {
-        currentry = helptable->head;
-        while( currentry != NULL ) {
+        for( currentry = helptable->head; currentry != NULL; currentry = nextentry ) {
+            nextentry = currentry->next;
             SemFreeDataElemList( currentry->dataListHead );
-            oldentry = currentry;
-            currentry = currentry->next;
-            RESFREE( oldentry );
+            RESFREE( currentry );
         }
         RESFREE( helptable );
     }
@@ -272,9 +266,8 @@ static bool SemOS2WriteHelpSubTableEntries( FullHelpSubTableOS2 *helptable, WRes
         tmp = helptable->numWords;
     }
     error = ResWriteUint16( tmp, fid );
-    while( currentry != NULL && !error ) {
+    for( ; currentry != NULL && !error; currentry = currentry->next ) {
         error = SemOS2WriteHelpData( currentry->dataListHead, fid, helptable->numWords );
-        currentry = currentry->next;
     }
     if( !error ) {
         error = ResWriteUint16( 0, fid ); // Closing zero

@@ -169,13 +169,11 @@ static void SemOS2FreeAccelTable( FullAccelTableOS2 * acctable )
 /**************************************************************/
 {
     FullAccelEntryOS2   *currentry;
-    FullAccelEntryOS2   *oldentry;
+    FullAccelEntryOS2   *nextentry;
 
-    currentry = acctable->head;
-    while( currentry != NULL ) {
-        oldentry = currentry;
-        currentry = currentry->next;
-        RESFREE( oldentry );
+    for( currentry = acctable->head; currentry != NULL; currentry = nextentry ) {
+        nextentry = currentry->next;
+        RESFREE( currentry );
     }
     RESFREE( acctable );
 }
@@ -184,12 +182,11 @@ static int SemOS2CountAccelTableEntries( FullAccelTableOS2 *acctable )
 /********************************************************************/
 {
     FullAccelEntryOS2   *currentry;
-    int                 count = 0;
+    int                 count;
 
-    currentry = acctable->head;
-    while( currentry != NULL ) {
+    count = 0;
+    for( currentry = acctable->head; currentry != NULL; currentry = currentry->next ) {
         count++;
-        currentry = currentry->next;
     }
     return( count );
 }
@@ -205,10 +202,8 @@ static bool writeAccelTableEntries( FullAccelTableOS2 *acctable,
     if( !error ) {
         error = ResWriteUint16( codepage, fid );
     }
-    currentry = acctable->head;
-    while( currentry != NULL && !error ) {
+    for( currentry = acctable->head; currentry != NULL && !error; currentry = currentry->next ) {
         ResOS2WriteAccelEntry( &currentry->entry, fid );
-        currentry = currentry->next;
     }
     return( error );
 }

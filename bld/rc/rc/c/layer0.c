@@ -263,7 +263,7 @@ size_t res_write( WResFileID fid, const void *out_buff, size_t size )
     }
 
     total_wrote = 0;
-    while( size > 0 ) {
+    for( ; size > 0; size -= copy_bytes ) {
         copy_bytes = RC_BUFFER_SIZE - buff->Count;
         if( copy_bytes > size )
             copy_bytes = size;
@@ -273,7 +273,6 @@ size_t res_write( WResFileID fid, const void *out_buff, size_t size )
         buff->NextChar += copy_bytes;
         buff->Count += copy_bytes;
         out_buff = (char *)out_buff + copy_bytes;
-        size -= copy_bytes;
         total_wrote += copy_bytes;
 
         if( buff->Count == RC_BUFFER_SIZE ) {
@@ -327,7 +326,7 @@ size_t res_read( WResFileID fid, void *in_buff, size_t size )
     }
 
     total_read = 0;
-    while( size > 0 ) {
+    for( ; size > 0; size -= copy_bytes ) {
         if( buff->Count == 0 ) {
             bytes_added = FillRcBuffer( fid, buff );
             if( bytes_added == (size_t)-1 ) {
@@ -344,7 +343,6 @@ size_t res_read( WResFileID fid, void *in_buff, size_t size )
         buff->NextChar += copy_bytes;
         buff->Count -= copy_bytes;
         in_buff = (char *)in_buff + copy_bytes;
-        size -= copy_bytes;
         total_read += copy_bytes;
     }
 

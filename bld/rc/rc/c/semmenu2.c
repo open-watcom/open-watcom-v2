@@ -255,17 +255,14 @@ static void SemOS2FreeSubMenu( FullMenuOS2 *submenu )
 /***************************************************/
 {
     FullMenuItemOS2   *curritem;
-    FullMenuItemOS2   *olditem;
+    FullMenuItemOS2   *nextitem;
 
     if( submenu != NULL ) {
-        curritem = submenu->head;
-        while( curritem != NULL ) {
+        for( curritem = submenu->head; curritem != NULL; curritem = nextitem ) {
+            nextitem = curritem->next;
             SemOS2FreeMenuItem( curritem );
-            olditem = curritem;
-            curritem = curritem->next;
-            RESFREE( olditem );
+            RESFREE( curritem );
         }
-
         RESFREE( submenu );
     }
 }

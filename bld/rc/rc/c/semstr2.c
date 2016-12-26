@@ -96,16 +96,12 @@ static void SemOS2FreeStringTable( FullStringTable *oldtable )
 /*****************************************************/
 {
     FullStringTableBlock        *currblock;
-    FullStringTableBlock        *oldblock;
+    FullStringTableBlock        *nextblock;
 
-    currblock = oldtable->Head;
-    while( currblock != NULL ) {
+    for( currblock = oldtable->Head; currblock != NULL; currblock = nextblock ) {
+        nextblock = currblock->Next;
         ResFreeStringTableBlock( &(currblock->Block) );
-
-        oldblock = currblock;
-        currblock = currblock->Next;
-
-        RESFREE( oldblock );
+        RESFREE( currblock );
     }
 
     RESFREE( oldtable );
@@ -205,8 +201,7 @@ static void semMergeStringTables( FullStringTable *currtable,
     FullStringTableBlock        *nextblock;
 
     /* run through the list of block in oldtable */
-    oldblock = oldtable->Head;
-    while( oldblock != NULL ) {
+    for( oldblock = oldtable->Head; oldblock != NULL; oldblock = nextblock ) {
         /* find oldblock in currtable if it is there */
         nextblock = oldblock->Next;
         currblock = findStringTableBlock( currtable, oldblock->BlockNum );
@@ -220,7 +215,6 @@ static void semMergeStringTables( FullStringTable *currtable,
             /* otherwise move the WSemID's to that block */
             mergeStringTableBlocks( currblock, oldblock );
         }
-        oldblock = nextblock;
     }
 
     SemOS2FreeStringTable( oldtable );
@@ -290,14 +284,14 @@ void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
 /* free the memory that it occupied */
 {
     FullStringTableBlock    *currblock;
-    FullStringTable         *tofree;
+    FullStringTable         *nexttable;
     WResID                  *name;
     bool                    error;
     ResLocation             loc;
 
-    while( currtable != NULL ) {
-        for( currblock = currtable->Head; currblock != NULL;
-                    currblock = currblock->Next ) {
+    for( ; currtable != NULL; currtable = nexttable ) {
+        nexttable = currtable->next;
+        for( currblock = currtable->Head; currblock != NULL; currblock = currblock->Next ) {
             loc.start = SemStartResource();
 
             error = ResOS2WriteStringTableBlock( &(currblock->Block),
@@ -310,17 +304,13 @@ void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
                 return;
             }
 
-
             loc.len = SemEndResource( loc.start );
             /* +1 because WResID's can't be 0 */
             name = WResIDFromNum( currblock->BlockNum + 1 );
             SemAddResource( name, type, currblock->Flags, loc );
             RESFREE( name );
         }
-
-        tofree = currtable;
-        currtable = currtable->next;
-        SemOS2FreeStringTable( tofree );
+        SemOS2FreeStringTable( currtable );
     }
     RESFREE( type );
     return;

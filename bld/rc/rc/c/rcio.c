@@ -238,19 +238,16 @@ static bool PreprocessInputFile( void )
     }
     cppargs = CmdLineParms.CPPArgs;
     if( cppargs != NULL ) {
-        ++cppargs;
-        while( (p = *cppargs) != NULL ) {
-            while( *p != '\0' ) {
+        for( ++cppargs; (p = *cppargs) != NULL; ++cppargs ) {
+            for( ; *p != '\0'; ++p ) {
                 if( *p == '=' ) {
                     *p = ' ';
                     break;
                 }
-                ++p;
             }
             p = *cppargs;
             PP_Define( p + 2 );         // skip over -d
             RESFREE( p );
-            ++cppargs;
         }
     }
     return( false );                    // indicate no error

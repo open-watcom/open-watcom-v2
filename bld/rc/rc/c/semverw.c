@@ -292,15 +292,12 @@ static uint_16 CalcNestSize( FullVerBlockNest * nest )
 static void FreeVerBlockNest( FullVerBlockNest * nest )
 /*****************************************************/
 {
-    FullVerBlock *  block;
-    FullVerBlock *  old_block;
+    FullVerBlock    *block;
+    FullVerBlock    *nextblock;
 
-    block = nest->Head;
-    while( block != NULL ) {
-        old_block = block;
-        block = block->Next;
-
-        FreeVerBlock( old_block );
+    for( block = nest->Head; block != NULL; block = nextblock ) {
+        nextblock = block->Next;
+        FreeVerBlock( block );
     }
 
     RESFREE( nest );

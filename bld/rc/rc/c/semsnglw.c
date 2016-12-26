@@ -328,15 +328,12 @@ static RcStatus copyIcons( FullIconDir * dir, WResFileID fid, ResMemFlags flags,
 static void FreeIconDir( FullIconDir * dir )
 /******************************************/
 {
-    FullIconDirEntry * currentry;
-    FullIconDirEntry * oldentry;
+    FullIconDirEntry    *currentry;
+    FullIconDirEntry    *nextentry;
 
-    currentry = dir->Head;
-    while( currentry != NULL ) {
-        oldentry = currentry;
-        currentry = currentry->Next;
-
-        RESFREE( oldentry );
+    for( currentry = dir->Head; currentry != NULL; currentry = nextentry ) {
+        nextentry = currentry->Next;
+        RESFREE( currentry );
     }
 } /* FreeIconDir */
 
@@ -601,15 +598,12 @@ static RcStatus readCurFileDir( WResFileID fid, FullCurDir *dir, int *err_code )
 static void FreeCurDir( FullCurDir * dir )
 /****************************************/
 {
-    FullCurDirEntry * currentry;
-    FullCurDirEntry * oldentry;
+    FullCurDirEntry     *currentry;
+    FullCurDirEntry     *nextentry;
 
-    currentry = dir->Head;
-    while( currentry != NULL ) {
-        oldentry = currentry;
-        currentry = currentry->Next;
-
-        RESFREE( oldentry );
+    for( currentry = dir->Head; currentry != NULL; currentry = nextentry ) {
+        nextentry = currentry->Next;
+        RESFREE( currentry );
     }
 } /* FreeCurDir */
 
@@ -1002,15 +996,12 @@ COPY_FONT_ERROR:
 static void FreeFontDir( FullFontDir * olddir )
 /*********************************************/
 {
-    FullFontDirEntry *  currentry;
-    FullFontDirEntry *  oldentry;
+    FullFontDirEntry    *currentry;
+    FullFontDirEntry    *nextentry;
 
-    currentry = olddir->Head;
-    while( currentry != NULL ) {
-        oldentry = currentry;
-        currentry = currentry->Next;
-
-        RESFREE( oldentry );
+    for( currentry = olddir->Head; currentry != NULL; currentry = nextentry ) {
+        nextentry = currentry->Next;
+        RESFREE( currentry );
     }
 
     RESFREE( olddir );

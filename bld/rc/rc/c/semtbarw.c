@@ -75,13 +75,11 @@ void SemWINAddToolBarItem( ToolBar *toolbar, uint_16 item )
 static void semFreeToolBar( ToolBar *toolbar )
 {
     ToolBarItems        *cur;
-    ToolBarItems        *tmp;
+    ToolBarItems        *next;
 
-    cur = toolbar->first.next;
-    while( cur != NULL ) {
-        tmp = cur;
-        cur = cur->next;
-        RESFREE( tmp );
+    for( cur = toolbar->first.next; cur != NULL; cur = next ) {
+        next = cur->next;
+        RESFREE( cur );
     }
     RESFREE( toolbar );
 }
@@ -90,19 +88,17 @@ void SemWINWriteToolBar( WResID *name, ToolBar *toolbar,
                       unsigned long item1, unsigned long item2,
                       ResMemFlags flags )
 {
-    ResLocation              loc;
-    unsigned                 cnt;
-    ToolBarItems            *cur;
+    ResLocation         loc;
+    unsigned            cnt;
+    ToolBarItems        *cur;
 
     if( !ErrorHasOccured ) {
         loc.start = SemStartResource();
         cnt = ( toolbar->nodecnt - 1 ) * TB_ITEM_CNT;
         cnt += toolbar->last->cnt;
         ResWriteToolBarHeader( CurrResFile.fid, item1, item2, cnt );
-        cur = &toolbar->first;
-        while( cur != NULL ) {
+        for( cur = &toolbar->first; cur != NULL; cur = cur->next ) {
             ResWriteToolBarItems( CurrResFile.fid, cur->items, cur->cnt );
-            cur = cur->next;
         }
         loc.len = SemEndResource( loc.start );
         SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_TOOLBAR ) ), flags, loc );
