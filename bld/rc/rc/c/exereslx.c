@@ -36,9 +36,9 @@
 #include "rcstrblk.h"
 #include "rcerrors.h"
 #include "os2res.h"
-#include "wrmergdi.h"
 #include "rcrtns.h"
 #include "rccore.h"
+#include "mergedir.h"
 #include "exeutil.h"
 #include "exereslx.h"
 
@@ -146,26 +146,6 @@ static void reportDuplicateResources( WResMergeError *errs )
         file2 = WResGetFileInfo( curerr->srcres );
         ReportDupResource( &resinfo->ResName, &typeinfo->TypeName, file1->name, file2->name, false );
     }
-}
-
-
-// merge the directories of all the res files into one large directory
-// stored on the first resfileinfo node
-static bool mergeDirectory( ResFileInfo *resfiles, WResMergeError **errs )
-/************************************************************************/
-{
-    ResFileInfo         *cur;
-
-    if( errs != NULL )
-        *errs = NULL;
-    if( resfiles == NULL )
-        return( false );
-    for( cur = resfiles->next; cur != NULL; cur = cur->next ) {
-        if( WResMergeDirs( resfiles->Dir, cur->Dir, errs ) ) {
-            return( true );
-        }
-    }
-    return( false );
 }
 
 
@@ -289,7 +269,7 @@ bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
 
     dir = &exeinfo->u.LXInfo.Res;
 
-    mergeDirectory( resinfo, &errs );
+    MergeDirectory( resinfo, &errs );
     if( errs != NULL ) {
         reportDuplicateResources( errs );
         WResFreeMergeErrors( errs );

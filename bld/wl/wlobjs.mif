@@ -106,6 +106,7 @@ common_objs = &
 
 common_rc_objs = &
     $(_subdir_)exerespe.obj &
+    $(_subdir_)mergedir.obj &
     $(_subdir_)sharedio.obj &
     $(_subdir_)rcstr.obj
 

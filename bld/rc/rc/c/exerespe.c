@@ -36,9 +36,9 @@
 #include "rcstrblk.h"
 #include "rcstr.h"
 #include "rcerrors.h"
-#include "wrmergdi.h"
 #include "rcrtns.h"
 #include "rccore.h"
+#include "mergedir.h"
 #include "exeobj.h"
 #include "exeutil.h"
 #include "exerespe.h"
@@ -759,25 +759,6 @@ static void fillResourceObj( pe_object *res_obj, PEResDir *dir,
     res_obj->flags = PE_OBJ_INIT_DATA | PE_OBJ_READABLE;
 }
 
-// merge the directories of all the res files into one large directory
-// stored on the first resfileinfo node
-static bool mergeDirectory( ResFileInfo *resfiles, WResMergeError **errs )
-/***********************************************************************/
-{
-    ResFileInfo         *cur;
-
-    if( errs != NULL )
-        *errs = NULL;
-    if( resfiles == NULL )
-        return( false );
-    for( cur = resfiles->next; cur != NULL; cur = cur->next ) {
-        if( WResMergeDirs( resfiles->Dir, cur->Dir, errs ) ) {
-            return( true );
-        }
-    }
-    return( false );
-}
-
 static void setDataOffsets( PEResDir *dir, unsigned_32 *curr_rva,
                                 ResFileInfo *resfiles, bool writebyfile )
 /****************************************************************/
@@ -832,7 +813,7 @@ bool BuildPEResourceObject( ExeFileInfo *exe, ResFileInfo *resinfo,
 
     dir = &exe->u.PEInfo.Res;
 
-    mergeDirectory( resinfo, &errs );
+    MergeDirectory( resinfo, &errs );
     if( errs != NULL ) {
         reportDuplicateResources( errs );
         WResFreeMergeErrors( errs );

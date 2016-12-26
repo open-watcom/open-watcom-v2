@@ -64,6 +64,7 @@ common_objs = &
     $(_subdir_)exeutil.obj &
     $(_subdir_)global.obj &
     $(_subdir_)layer0.obj &
+    $(_subdir_)mergedir.obj &
     $(_subdir_)param.obj &
     $(_subdir_)pass2.obj &
     $(_subdir_)rc.obj &
