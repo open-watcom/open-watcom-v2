@@ -29,14 +29,12 @@
 *
 ****************************************************************************/
 
-#include "wio.h"
+
 #include "layer0.h"
 #include "opcl.h"
 #include "reserr.h"
 #include "wres.h"
 #include "wresrtns.h"
-
-#include "clibext.h"
 
 
 WResFileID ResOpenNewFile( const char *filename )
