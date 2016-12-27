@@ -1,6 +1,7 @@
 #
-#	These are all the imports required by WSAMPLE NLM
+#       These are all the imports required by WSAMPLE NLM
 #
+ __get_errno_ptr,
  __Must_Have_Three_One_Or_Greater,
  __STK,
  _exit,
@@ -20,9 +21,11 @@
  exit,
  ExitThread,
  free,
+ getche,
  getenv,
  GetNLMHandle,
  GetThreadID,
+ isatty,
  lseek,
  malloc,
  open,
@@ -32,6 +35,7 @@
  ResumeThread,
  setmode,
  SignalLocalSemaphore,
+ sopen,
  stackavail,
  SuspendThread,
  tell,
