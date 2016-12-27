@@ -343,8 +343,7 @@ static void WriteQNXResource( void )
         if( FmtData.res_name_only ) {
             file = QObjOpen( FmtData.resource );
             if( file == NIL_FHANDLE ) {
-                PrintIOError( WRN+MSG_CANT_OPEN_NO_REASON, "s",
-                                        FmtData.resource );
+                PrintIOError( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.resource );
                 return;
             }
             len = QFileSize( file );

@@ -370,7 +370,7 @@ static void WriteOS2Resources( WResFileID res_fid, WResDir inRes, ResTable *outR
 
         wind = WResNextResource( wind, inRes );
     }
-    NullAlign(align);
+    NullAlign( align );
 }
 
 
@@ -826,7 +826,7 @@ static unsigned_32 ComputeResourceSize( WResDir dir )
     return( length );
 }
 
-#define MAX_DGROUP_SIZE (64*1024UL)
+#define MAX_DGROUP_SIZE (64 * 1024UL)
 
 void FiniOS2LoadFile( void )
 /***************************/
@@ -887,7 +887,7 @@ void FiniOS2LoadFile( void )
         exe_head.resource = 0;
     }
     exe_head.resident_off = temp;
-    SeekLoad( stub_len+temp );
+    SeekLoad( stub_len + temp );
     temp += ResNonResNameTable( true );  // true - do resident table.
     exe_head.module_off = temp;
     exe_head.modrefs = ModRefTable();
@@ -911,14 +911,13 @@ void FiniOS2LoadFile( void )
                      + stub_len + exe_head.segments * 3;
         pad_len = blog_16( (imageguess >> 16) << 1 );
         imageguess += ((1 << pad_len) - 1) * exe_head.segments;
-        imageguess += ComputeResourceSize( inRes ); // inRes may be 0
+        imageguess += ComputeResourceSize( inRes ); // inRes may be NULL
         FmtData.u.os2.segment_shift = blog_16( (imageguess >> 16) << 1 );
         if( FmtData.u.os2.segment_shift == 0 ) {
             FmtData.u.os2.segment_shift = 1;     // since microsoft thinks 0 == 9
         }
     }
-    exe_head.gangstart = NullAlign( 1 << FmtData.u.os2.segment_shift ) >>
-                         FmtData.u.os2.segment_shift;
+    exe_head.gangstart = NullAlign( 1 << FmtData.u.os2.segment_shift ) >> FmtData.u.os2.segment_shift;
     WriteOS2Data( stub_len, &exe_head );
     WriteOS2Resources( res_fid, inRes, &outRes );
     exe_head.gangstart = 0;
