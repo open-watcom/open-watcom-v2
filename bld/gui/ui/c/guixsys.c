@@ -138,15 +138,16 @@ void GUICleanup( void )
 
 static bool LoadStrings( void )
 {
-    char *      resource_name;
+    char        *resource_file_name;
     char        fname[_MAX_PATH];
 
-    resource_name = GUIGetExtName();
-    if( resource_name != NULL ) {
-        return( GUILoadStrInit( resource_name ) );
+    resource_file_name = GUIGetResFileName();
+    if( resource_file_name != NULL ) {
+        return( GUILoadStrInit( resource_file_name ) );
     } else {
         _cmdname( fname );
-        if( fname == NULL ) return( false );
+        if( fname == NULL )
+            return( false );
         return( GUILoadStrInit( fname ) );
     }
 }

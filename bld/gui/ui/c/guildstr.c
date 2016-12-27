@@ -71,7 +71,7 @@ bool GUIIsLoadStrInitialized( void )
 bool GUILoadStrInit( const char *fname )
 {
     hInstance.status = 0;
-    if( OpenResFileX( &hInstance, fname, GUIGetExtName() != NULL ) ) {
+    if( OpenResFileX( &hInstance, fname, GUIGetResFileName() != NULL ) ) {
         // if we are using an external resource file then we don't have to search
         return( true );
     }
@@ -89,14 +89,12 @@ bool GUILoadStrFini( void )
 
 bool GUILoadString( gui_res_id id, char *buffer, int buffer_length )
 {
-    if( hInstance.status && buffer != NULL && buffer_length != 0 ) {
-        if( WResLoadString( &hInstance, id, (lpstr)buffer, buffer_length ) > 0 ) {
+    if( buffer != NULL && buffer_length != 0 ) {
+        if( hInstance.status && WResLoadString( &hInstance, id, (lpstr)buffer, buffer_length ) > 0 ) {
             return( true );
-        } else {
-            buffer[0] = '\0';
         }
+        buffer[0] = '\0';
     }
-
     return( false );
 }
 

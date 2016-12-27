@@ -37,28 +37,28 @@
 #include "clibext.h"
 
 
-static char   GUIExtName[_MAX_PATH] = "";
+static char   GUIResFileName[_MAX_PATH] = "";
 
-char *GUIGetExtName( void )
+char *GUIGetResFileName( void )
 {
-    if( GUIExtName[0] == '\0' ) {
+    if( GUIResFileName[0] == '\0' ) {
 #if defined( __UNIX__ ) && defined( GUI_EXT_RES )
-        _cmdname( GUIExtName );
-        strcat( GUIExtName, ".res" );
-        return( GUIExtName );
+        _cmdname( GUIResFileName );
+        strcat( GUIResFileName, ".res" );
+        return( GUIResFileName );
 #else
         return( NULL );
 #endif
     }
     /* to keep the 10.6 compiler happy */
-    return( GUIExtName );
+    return( GUIResFileName );
 }
 
-bool GUISetExtName( char *fname )
+bool GUISetResFileName( const char *fname )
 {
     if( strlen( fname ) < _MAX_PATH ) {
-        strcpy( GUIExtName, fname );
-        return true;
+        strcpy( GUIResFileName, fname );
+        return( true );
     }
-    return false;
+    return( false );
 }

@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-extern char * GUIGetExtName( void );
-extern bool GUISetExtName( char * fname );
+extern char *GUIGetResFileName( void );
+extern bool GUISetResFileName( const char *fname );

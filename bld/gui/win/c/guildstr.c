@@ -36,9 +36,8 @@
 #include "guirdlg.h"
 
 
-static  bool            GUIMsgInitFlag = false;
-
-static  bool            external = false;
+static  bool        GUIMsgInitFlag = false;
+static  bool        external = false;
 
 bool GUIIsLoadStrInitialized( void )
 {
@@ -50,16 +49,16 @@ bool GUILoadStrInit( const char * fname )
 #ifndef __OS2_PM__
     WPI_INST    library;
 #endif
-    char *      ext_name;
+    char        *resource_file_name;
 
     fname = fname;
     if( !GUIMsgInitFlag ) {
-        ext_name = GUIGetExtName();
-        external = ( ext_name != NULL );
+        resource_file_name = GUIGetResFileName();
+        external = ( resource_file_name != NULL );
 #ifndef __OS2_PM__
         if( external ) {
-        // if an external resource DLL is specified, then load it
-            library = _wpi_loadlibrary( GUIMainHInst, ext_name );
+            // if an external resource DLL is specified, then load it
+            library = _wpi_loadlibrary( GUIMainHInst, resource_file_name );
             if( library != NULL ) {
                 memcpy( &GUIResHInst, &library, sizeof( WPI_INST ) ) ;
             } else {
@@ -93,11 +92,9 @@ bool GUILoadString( gui_res_id id, char *buffer, int buffer_length )
     if( buffer != NULL && buffer_length != 0 ) {
         if( _wpi_loadstring( GUIResHInst, id, (LPSTR)buffer, buffer_length ) > 0 ) {
             return( true );
-        } else {
-            buffer[0] = '\0';
         }
+        buffer[0] = '\0';
     }
-
     return( false );
 }
 
