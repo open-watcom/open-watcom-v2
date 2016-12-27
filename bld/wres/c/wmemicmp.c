@@ -30,32 +30,27 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
-#include "wresall.h"
+#include <stddef.h>
+#include <ctype.h>
 #include "wmemicmp.h"
 
 
-int WResIDNameCmp( const WResIDName *name1, const WResIDName *name2 )
-/*******************************************************************/
-/* Note: don't use stricmp since the names in WResID's are not NULL terminated */
+int WresMemicmp( const void *p1, const void *p2, size_t len )
+/************************************************************
+ * Kludge to get around memicmp behavior where comparing upper case letters
+ * against characters in the range z-A would return the negative
+ * result */
 {
-    int         cmp_rc;
-    unsigned    len;
+    char        ch1;
+    char        ch2;
+    size_t      i;
 
-    len = name1->NumChars;
-    if( len > name2->NumChars )
-        len = name2->NumChars;
-    cmp_rc = WresMemicmp( name1->Name, name2->Name, len );
-    if( cmp_rc == 0 ) {
-        if( name1->NumChars == name2->NumChars ) {
-            return( 0 );
-        } else if( name1->NumChars > name2->NumChars ) {
-            /* longer names with the same prefix are greater */
-            return( 1 );
-        } else {
-            return( -1 );
+    for( i = 0; i < len; i++ ) {
+        ch1 = (char)toupper( ((const char *)p1)[i] );
+        ch2 = (char)toupper( ((const char *)p2)[i] );
+        if( ch1 != ch2 ) {
+            return( ch1 - ch2 );
         }
-    } else {
-        return( cmp_rc );
     }
-} /* WResIDNameCmp */
+    return( 0 );
+}

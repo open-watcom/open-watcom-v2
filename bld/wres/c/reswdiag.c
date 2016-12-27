@@ -41,9 +41,10 @@
 #include "reserr.h"
 #include "wresdefn.h"
 #include "wresrtns.h"
+#include "wmemicmp.h"
 
-#include "clibext.h"
 
+#define IS_STR_IGNORE_CASE(s,c) ( WresMemicmp( s, c, sizeof( c ) ) == 0 )
 
 static bool ResWriteDialogSizeInfo( DialogSizeInfo *size, WResFileID fid )
 /************************************************************************/
@@ -338,17 +339,17 @@ ControlClass *ResNameOrOrdToControlClass( const ResNameOrOrdinal *name )
     if( name->ord.fFlag == 0xff ) {
         class = ResNumToControlClass( name->ord.wOrdinalID );
     } else {
-        if( stricmp( name->name, "button" ) == 0 ) {
+        if( IS_STR_IGNORE_CASE( name->name, "button" ) ) {
             class = ResNumToControlClass( CLASS_BUTTON );
-        } else if( stricmp( name->name, "edit" ) == 0 ) {
+        } else if( IS_STR_IGNORE_CASE( name->name, "edit" ) ) {
             class = ResNumToControlClass( CLASS_EDIT );
-        } else if( stricmp( name->name, "static" ) == 0 ) {
+        } else if( IS_STR_IGNORE_CASE( name->name, "static" ) ) {
             class = ResNumToControlClass( CLASS_STATIC );
-        } else if( stricmp( name->name, "listbox" ) == 0 ) {
+        } else if( IS_STR_IGNORE_CASE( name->name, "listbox" ) ) {
             class = ResNumToControlClass( CLASS_LISTBOX );
-        } else if( stricmp( name->name, "scrollbar" ) == 0 ) {
+        } else if( IS_STR_IGNORE_CASE( name->name, "scrollbar" ) ) {
             class = ResNumToControlClass( CLASS_SCROLLBAR );
-        } else if( stricmp( name->name, "combobox" ) == 0 ) {
+        } else if( IS_STR_IGNORE_CASE( name->name, "combobox" ) ) {
             class = ResNumToControlClass( CLASS_COMBOBOX );
         } else {
             /* space for the '\0' is reserve in the ControlClass structure */

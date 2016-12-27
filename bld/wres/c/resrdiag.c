@@ -42,8 +42,6 @@
 #include "wresdefn.h"
 #include "wresrtns.h"
 
-#include "clibext.h"
-
 
 static bool ResReadDialogSizeInfo( DialogSizeInfo *size, WResFileID fid )
 /***********************************************************************/
