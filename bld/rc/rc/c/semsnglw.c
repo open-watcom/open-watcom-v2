@@ -1003,7 +1003,6 @@ static void FreeFontDir( FullFontDir * olddir )
         nextentry = currentry->Next;
         RESFREE( currentry );
     }
-
     RESFREE( olddir );
 }
 

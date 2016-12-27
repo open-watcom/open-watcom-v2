@@ -299,9 +299,8 @@ bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
         res_size = ALIGN_VALUE( entry->resource.res_size, sizeof( uint_32 ) );
         total += res_size;
         curr_total += res_size;
-        while( curr_total > OSF_DEF_PAGE_SIZE ) {
+        for( ; curr_total > OSF_DEF_PAGE_SIZE; curr_total -= OSF_DEF_PAGE_SIZE ) {
             dir->num_pages++;
-            curr_total -= OSF_DEF_PAGE_SIZE;
         }
 
 #ifndef NDEBUG

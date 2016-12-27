@@ -907,7 +907,8 @@ extern int ParseEnvVar( const char *env, char **argv, char *buf )
         argv[0] = ""; //fill in the program name
     for( ;; ) {
         got_quote = false;
-        while( isspace( *env ) && *env != '\0' ) env++;
+        while( isspace( *env ) && *env != '\0' )
+            env++;
         start = env;
         if( buf != NULL ) {
             argv[argc] = bufend;
@@ -1040,13 +1041,11 @@ extern void ScanParamShutdown( void )
         RcMemFree( CmdLineParms.CPPArgs );
     }
     PP_IncludePathFini();
-    while( CmdLineParms.ExtraResFiles != NULL ) {
-        tmpres = CmdLineParms.ExtraResFiles;
+    while( (tmpres = CmdLineParms.ExtraResFiles) != NULL ) {
         CmdLineParms.ExtraResFiles = CmdLineParms.ExtraResFiles->next;
         RcMemFree( tmpres );
     }
-    while( CmdLineParms.FindReplaceStrings != NULL ) {
-        strings = CmdLineParms.FindReplaceStrings;
+    while( (strings = CmdLineParms.FindReplaceStrings) != NULL ) {
         CmdLineParms.FindReplaceStrings = CmdLineParms.FindReplaceStrings->next;
         RcMemFree( strings );
     }
@@ -1082,7 +1081,7 @@ extern char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
                                        //of the find string in the string
                                        //from the file
 
-    while( frStrings != NULL ) {
+    for( ; frStrings != NULL; frStrings = frStrings->next ) {
         i = 0;
         j = 0;
         k = 0;
@@ -1097,34 +1096,32 @@ extern char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
         if( strstr( stringFromFile, frStrings->findString ) != NULL ) {
             //checking if a replacement is to be done, then allocating memory
             replacedString = RcMemMalloc( lenOfStringFromFile+1 );
-            for( k=0; k < lenOfStringFromFile; k++ ) {
+            for( k = 0; k < lenOfStringFromFile; k++ ) {
                 replacedString[k] = '\0';
             }
-            while( i <= lenOfStringFromFile ) {
+            for( ; i <= lenOfStringFromFile; ++i ) {
                 foundString = strstr( stringFromFile+i, frStrings->findString );
-                if( foundString != NULL ) {
-                    while( foundString != &stringFromFile[i] ) {
-                    //while the ptr is not where the replacment string is, copy.
-                        replacedString[j] = stringFromFile[i];
-                        i++;
-                        j++;
-                    }//end of while
-                    if( diffInLen > 0 ) {
-                        //allocating more memory if the string to replace is
-                        //bigger than the string to find
-                        newMemSize = lenOfStringFromFile + 1 + diffInLen * ( noOfInstances + 1 );
-                        replacedString = RcMemRealloc( replacedString, newMemSize );
-                    }
-                    strcpy( &replacedString[j], frStrings->replaceString );
-                    j = j + lenOfReplaceString;
-                    i = i + lenOfFindString-1;
-                    noOfInstances++;
-                } else {
+                if( foundString == NULL ) {
                     strcpy( &replacedString[j], &stringFromFile[i] );
                     break;
-                }//end of if-else
-                i++;
-            }//end of while
+                }
+                while( foundString != &stringFromFile[i] ) {
+                    //while the ptr is not where the replacment string is, copy.
+                    replacedString[j] = stringFromFile[i];
+                    i++;
+                    j++;
+                }
+                if( diffInLen > 0 ) {
+                    //allocating more memory if the string to replace is
+                    //bigger than the string to find
+                    newMemSize = lenOfStringFromFile + 1 + diffInLen * ( noOfInstances + 1 );
+                    replacedString = RcMemRealloc( replacedString, newMemSize );
+                }
+                strcpy( &replacedString[j], frStrings->replaceString );
+                j = j + lenOfReplaceString;
+                i = i + lenOfFindString-1;
+                noOfInstances++;
+            }
         }
         if( replacedString != NULL && frStrings->next != NULL ) {
             stringFromFile = RcMemRealloc( stringFromFile, strlen( replacedString ) + 1 );
@@ -1132,7 +1129,6 @@ extern char *FindAndReplace( char *stringFromFile, FRStrings *frStrings )
             RcMemFree( replacedString );
             replacedString = NULL;
         }
-        frStrings =  frStrings->next;
     }
 
     if( replacedString != NULL ) {

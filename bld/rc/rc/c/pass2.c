@@ -822,8 +822,7 @@ static RcStatus updateDebugDirectory( void )
         return( RS_WRITE_ERROR );
     if( RESSEEK( old->fid, old_offset, SEEK_SET ) == -1 )
         return( RS_READ_ERROR );
-    debug_cnt = debug_size / sizeof( debug_directory );
-    while( debug_cnt > 0 ) {
+    for( debug_cnt = debug_size / sizeof( debug_directory ); debug_cnt > 0; debug_cnt -= read_cnt ) {
         read_cnt = IO_BUFFER_SIZE / sizeof( debug_directory);
         if( read_cnt > debug_cnt )
             read_cnt = debug_cnt;
@@ -832,14 +831,14 @@ static RcStatus updateDebugDirectory( void )
         if( numread != read_size )
             return( RESIOERR( old->fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         entry = Pass2Info.IoBuffer;
-        for( i=0; i < read_cnt; i++ ) {
+        for( i = 0; i < read_cnt; i++ ) {
             if( entry[i].data_seek >= old->DebugOffset ) {
                 entry[i].data_seek += tmp->DebugOffset - old->DebugOffset;
             }
         }
-        if( RESWRITE( tmp->fid, Pass2Info.IoBuffer, read_size ) != read_size )
+        if( RESWRITE( tmp->fid, Pass2Info.IoBuffer, read_size ) != read_size ) {
             return( RS_WRITE_ERROR );
-        debug_cnt -= read_cnt;
+        }
     }
     return( RS_OK );
 } /* updateDebugDirectory */

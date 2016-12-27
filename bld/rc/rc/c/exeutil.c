@@ -153,7 +153,6 @@ RcStatus PadExeData( WResFileID fid, long length )
     size_t  numwrite;
 
     memset( Pass2Info.IoBuffer, 0, IO_BUFFER_SIZE );
-
     for( numwrite = IO_BUFFER_SIZE; length > 0; length -= numwrite ) {
         if( numwrite > length )
             numwrite = length;

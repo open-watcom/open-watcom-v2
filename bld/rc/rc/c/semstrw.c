@@ -57,10 +57,10 @@ FullStringTable * SemWINNewStringTable( void )
 } /* SemWINNewStringTable */
 
 static void semFreeStringTable( FullStringTable * oldtable )
-/*************************************************************/
+/**********************************************************/
 {
-    FullStringTableBlock *      currblock;
-    FullStringTableBlock *      nextblock;
+    FullStringTableBlock    *currblock;
+    FullStringTableBlock    *nextblock;
 
     for( currblock = oldtable->Head; currblock != NULL; currblock = nextblock ) {
         nextblock = currblock->Next;
@@ -106,7 +106,7 @@ static FullStringTableBlock * newStringTableBlock( void )
 
 void SemWINAddStrToStringTable( FullStringTable * currtable,
                             uint_16 stringid, char * string )
-/**************************************************************/
+/***********************************************************/
 {
     FullStringTableBlock *      currblock;
     uint_16                     blocknum;
@@ -255,9 +255,9 @@ void SemWINWriteStringTable( FullStringTable * currtable, WResID * type )
 /* write the table identified by currtable as a table of type type and then */
 /* free the memory that it occupied */
 {
-    FullStringTableBlock *  currblock;
+    FullStringTableBlock    *currblock;
     FullStringTable         *nexttable;
-    WResID *                name;
+    WResID                  *name;
     bool                    error;
     ResLocation             loc;
 

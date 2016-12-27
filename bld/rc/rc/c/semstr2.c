@@ -103,7 +103,6 @@ static void SemOS2FreeStringTable( FullStringTable *oldtable )
         ResFreeStringTableBlock( &(currblock->Block) );
         RESFREE( currblock );
     }
-
     RESFREE( oldtable );
 } /* SemOS2FreeStringTable */
 
@@ -113,10 +112,10 @@ static FullStringTableBlock *findStringTableBlock( FullStringTable *table,
 {
     FullStringTableBlock        *currblock;
 
-    for( currblock = table->Head; currblock != NULL;
-                currblock = currblock->Next ) {
-        if( currblock->BlockNum == blocknum)
+    for( currblock = table->Head; currblock != NULL; currblock = currblock->Next ) {
+        if( currblock->BlockNum == blocknum ) {
             break;
+        }
     }
 
     return( currblock );
@@ -249,9 +248,8 @@ static FullStringTable *findTable( FullStringTable *tables )
     return( tables );
 }
 
-void SemOS2MergeStrTable( FullStringTable *currtable,
-                                    ResMemFlags flags, uint_32 codepage )
-/***********************************************************************/
+void SemOS2MergeStrTable( FullStringTable *currtable, ResMemFlags flags, uint_32 codepage )
+/*****************************************************************************************/
 {
     FullStringTable     *table;
 

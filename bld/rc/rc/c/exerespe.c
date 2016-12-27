@@ -524,7 +524,7 @@ static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
         *errres = copy_info.errres;
     } else {
         ret = RS_OK;
-        while( resfiles != NULL ) {
+        for( ; resfiles != NULL; resfiles = resfiles->next ) {
             copy_info.curres = resfiles;
             if( resfiles->IsOpen ) {
                 tmpopened = false;
@@ -548,7 +548,6 @@ static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
                 *errres = resfiles;
                 break;
             }
-            resfiles = resfiles->next;
         }
     }
     return( ret );
@@ -767,10 +766,9 @@ static void setDataOffsets( PEResDir *dir, unsigned_32 *curr_rva,
 
     cookie.rva = curr_rva;
     if( writebyfile ) {
-        while( resfiles != NULL ) {
+        for( ; resfiles != NULL; resfiles = resfiles->next ) {
             cookie.curfile = resfiles;
             traverseTree( dir, &cookie, setDataEntry );
-            resfiles = resfiles->next;
         }
     } else {
         cookie.curfile = NULL;
