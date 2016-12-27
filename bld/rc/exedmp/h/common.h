@@ -42,23 +42,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-
-/*** predefined resource type numbers ***/
-
 #define RT_NONE                 0
-#define RT_CURSOR               1
-#define RT_BITMAP               2
-#define RT_ICON                 3
-#define RT_MENU                 4
-#define RT_DIALOG               5
-#define RT_STRING               6
-#define RT_FONTDIR              7
-#define RT_FONT                 8
-#define RT_ACCELERATOR          9
-#define RT_RCDATA               10      /* note: no type 11 resource */
-#define RT_GROUP_CURSOR         12      /* note: no type 13 resource */
-#define RT_GROUP_ICON           14
-
 #define RT_COUNT                15
 
 typedef enum {

@@ -102,11 +102,10 @@ static uint_16 findResOrTypeName( ResTable *restab, WResID *name )
     uint_16     name_id;
     int_32      str_offset;
 
+    name_id = 0;
     if( name->IsName ) {
         str_offset = StringBlockFind( &restab->Str, &name->ID.Name );
-        if( str_offset == -1 ) {
-            name_id = 0;
-        } else {
+        if( str_offset != -1 ) {
             name_id = str_offset + restab->Dir.TableSize;
         }
     } else {
@@ -145,8 +144,7 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
     FullTypeRecord      *exe_type;
     StringItem16        *exe_type_name;
 
-    for( exe_type = restab->Dir.Head; exe_type != NULL;
-                exe_type = exe_type->Next ) {
+    for( exe_type = restab->Dir.Head; exe_type != NULL; exe_type = exe_type->Next ) {
         if( type->TypeName.IsName && !(exe_type->Info.type & 0x8000) ) {
             /* if they are both names */
             exe_type_name = (StringItem16 *)((char *)restab->Str.StringBlock +

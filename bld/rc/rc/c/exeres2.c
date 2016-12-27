@@ -55,8 +55,8 @@ static void buildOS2ResTable( OS2ResTable *res_tbl, WResDir dir )
     OS2ResEntry     *entry;
     WResTypeInfo    *res_type;
     WResResInfo     *resinfo;
-    uint_16         type;
-    uint_16         id;
+    uint_16         type_id;
+    uint_16         name_id;
     int_32          length;
 
     entry = res_tbl->resources;
@@ -73,19 +73,17 @@ static void buildOS2ResTable( OS2ResTable *res_tbl, WResDir dir )
             continue;
         }
 
-        if( res_type->TypeName.IsName )
-            type = 0;
-        else
-            type = res_type->TypeName.ID.Num;
+        type_id = 0;
+        if( !res_type->TypeName.IsName )
+            type_id = res_type->TypeName.ID.Num;
 
-        if( resinfo->ResName.IsName )
-            id = 0;
-        else
-            id = resinfo->ResName.ID.Num;
+        name_id = 0;
+        if( !resinfo->ResName.IsName )
+            name_id = resinfo->ResName.ID.Num;
 
         /* Fill in resource entries */
-        entry->res_type   = type;
-        entry->res_id     = id;
+        entry->res_type   = type_id;
+        entry->res_id     = name_id;
         entry->wind       = wind;
         entry->mem_flags  = lang->MemoryFlags;
         entry->seg_length = 0;  /* Zero means 64K */
@@ -93,8 +91,8 @@ static void buildOS2ResTable( OS2ResTable *res_tbl, WResDir dir )
 
         for( length = lang->Length; length > 0x10000; length -= 0x10000 ) {
             entry++;
-            entry->res_type   = type;
-            entry->res_id     = id;
+            entry->res_type   = type_id;
+            entry->res_id     = name_id;
             entry->wind       = wind;
             entry->mem_flags  = lang->MemoryFlags;
             entry->seg_length = 0;

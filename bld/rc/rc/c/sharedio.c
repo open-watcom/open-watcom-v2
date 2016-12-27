@@ -229,7 +229,6 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
 {
     char        *type;
     char        *name;
-    char        namebuf[20];
     char        typebuf[20];
     unsigned    strbase;
 
@@ -282,12 +281,7 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
         }
     }
 
-    if( nameid->IsName ) {
-        name = WResIDToStr( nameid );
-    } else {
-        name = namebuf;
-        itoa( nameid->ID.Num, name, 10 );
-    }
+    name = WResIDToStr( nameid );
     if( !typeid->IsName && typeid->ID.Num == RESOURCE2INT( RT_STRING ) ) {
         strbase = ( nameid->ID.Num - 1 ) * 16;
         if( file1 != NULL && file2 != NULL ) {
@@ -318,9 +312,8 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
             RcError( ERR_DUPLICATE_RES, type, name );
         }
     }
-    if( nameid->IsName ) {
+    if( name != NULL )
         RESFREE( name );
-    }
     if( typeid->IsName ) {
         RESFREE( type );
     }

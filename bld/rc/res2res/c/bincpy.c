@@ -47,7 +47,7 @@ bool BinaryCopy( WResFileID in_fid, WResFileID out_fid, unsigned long length )
 
     for( bufflen = sizeof( Buffer ); length > 0; length -= bufflen ) {
         if( bufflen > length )
-            bufflen = length
+            bufflen = length;
         if( RESREAD( in_fid, Buffer, bufflen ) != bufflen ) {
             return( true );
         }
