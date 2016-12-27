@@ -31,36 +31,35 @@
 
 
 #include <errno.h>
-#undef errno
 
 #if defined( __QNX__ )
     // QNX errno is magically multithread aware
+    #undef errno
     _WCRTDATA extern int    errno;
     #define _RWD_errno      errno
 #elif defined( __NETWARE__ )
     // What does NETWARE do?
   #if defined( _NETWARE_LIBC )
+    #undef errno
     extern int              *___errno( void );
     #define _RWD_errno      (*___errno())       /* get LibC errno */
   #else
-    _WCRTDATA extern int    errno;
     #define _RWD_errno      errno
   #endif
 #elif defined( __SW_BM ) && !defined( __RDOSDEV__ )
+    #undef errno
     #define _ERRNO          (__THREADDATAPTR->__errnoP)
     #define _RWD_errno      _ERRNO
 #else
-    _WCRTDATA extern int    errno;
     #define _RWD_errno      errno
 #endif
 
-#undef _doserrno
 
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
   #if defined( __SW_BM ) && !defined( __RDOSDEV__ )
+    #undef _doserrno
     #define _RWD_doserrno   (__THREADDATAPTR->__doserrnoP)
   #else
-    extern int              _doserrno;
     #define _RWD_doserrno   _doserrno
   #endif
 #endif
