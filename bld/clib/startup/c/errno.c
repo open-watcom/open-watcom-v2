@@ -52,6 +52,8 @@ _WCRTLINK int *__get_errno_ptr( void )
 
 #else
 
+#undef errno
+
 #if !defined( __SW_BM ) || defined( __RDOSDEV__ )
 
 _WCRTDATA int       errno;

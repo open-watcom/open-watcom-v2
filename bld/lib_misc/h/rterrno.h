@@ -34,8 +34,6 @@
 
 #if defined( __QNX__ )
     // QNX errno is magically multithread aware
-    #undef errno
-    _WCRTDATA extern int    errno;
     #define _RWD_errno      errno
 #elif defined( __NETWARE__ )
     // What does NETWARE do?
@@ -48,8 +46,7 @@
   #endif
 #elif defined( __SW_BM ) && !defined( __RDOSDEV__ )
     #undef errno
-    #define _ERRNO          (__THREADDATAPTR->__errnoP)
-    #define _RWD_errno      _ERRNO
+    #define _RWD_errno      (__THREADDATAPTR->__errnoP)
 #else
     #define _RWD_errno      errno
 #endif

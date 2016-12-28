@@ -40,13 +40,10 @@ typedef void _WCI86FAR thread_fn( void _WCI86FAR * );
 #endif
 
 #if !defined( _M_I86 )
-    #if defined(__RDOS__)
+    #if defined(__RDOS__) || defined(__RDOSDEV__)
         typedef int     beginner( thread_fn *start_addr, int prio, const char *thread_name,
                                   unsigned stack_size, void *arglist );
-    #elif defined(__RDOSDEV__)
-        typedef int     beginner( thread_fn *start_addr, int prio, const char *thread_name,
-                                  unsigned stack_size, void *arglist );
-    #else                                
+    #else
         typedef int     beginner( thread_fn *start_addr, void *stack_bottom,
                                   unsigned stack_size, void *arglist );
     #endif

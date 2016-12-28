@@ -85,7 +85,7 @@ struct wcpp_thread_ctl {
 };
 #endif
 
-/* stack checking routine assumes "__stklowP" is first field */
+/* stack checking routine (assembly code) assumes "__stklowP" is first field */
 typedef struct thread_data {
     unsigned                    __stklowP;
 #if defined( __NT__ ) || defined( __OS2__ ) || defined( __RDOS__ ) || defined( __LINUX__ )
