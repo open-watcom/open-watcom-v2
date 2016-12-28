@@ -85,13 +85,13 @@ static void NoCRLF( char *str )
 
 void SetProgState( unsigned run_conditions )
 {
-    ReadDbgRegs();
-    if( run_conditions & COND_THREAD_EXTRA ) {
-        _SwitchOn( SW_THREAD_EXTRA_CHANGED );
-    }
     if( run_conditions & COND_THREAD ) {
         DbgRegs->tid = RemoteSetThread( 0 );
         CheckForNewThreads( true );
+    }
+    ReadDbgRegs();
+    if( run_conditions & COND_THREAD_EXTRA ) {
+        _SwitchOn( SW_THREAD_EXTRA_CHANGED );
     }
     if( run_conditions & COND_ALIASING ) {
         CheckSegAlias();
