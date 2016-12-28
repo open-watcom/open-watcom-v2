@@ -144,8 +144,15 @@ WResFileOffset res_tell( WResFileID fid )
     return( tell( WRES_FID2PH( fid ) ) );
 }
 
+int res_ioerr( WResFileID fid, size_t rc )
+/****************************************/
+{
+    fid=fid;
+    return( rc == -1 );
+}
+
 /* set the WRES library to use compatible functions */
-WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,RESALLOC,RESFREE);
+WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,res_ioerr,RESALLOC,RESFREE);
 
 #ifdef __NT__
 

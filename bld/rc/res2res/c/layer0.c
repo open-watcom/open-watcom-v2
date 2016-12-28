@@ -85,4 +85,11 @@ WResFileOffset res_tell( WResFileID fid )
     return( tell( WRES_FID2PH( fid ) ) );
 }
 
-WResSetRtns( res_open, res_close, res_read, res_write, res_seek, res_tell, RESALLOC, RESFREE );
+int res_ioerr( WResFileID fid, size_t rc )
+/****************************************/
+{
+    fid=fid;
+    return( rc == -1 );
+}
+
+WResSetRtns( res_open, res_close, res_read, res_write, res_seek, res_tell, res_ioerr, RESALLOC, RESFREE );

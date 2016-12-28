@@ -44,13 +44,11 @@ bool WResReadFixedResRecord( WResResInfo *newres, WResFileID fid )
 {
     size_t      numread;
 
-    numread = WRESREAD( fid, newres, sizeof( WResResInfo ) );
-    if( numread != sizeof( WResResInfo ) ) {
+    if( (numread = WRESREAD( fid, newres, sizeof( WResResInfo ) )) != sizeof( WResResInfo ) ) {
         WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
         return( true );
-    } else {
-        return( false );
     }
+    return( false );
 } /* WResReadFixedResRecord */
 
 /*
@@ -62,13 +60,11 @@ bool WResReadFixedResRecord1( WResResInfo1 *newres, WResFileID fid )
 {
     size_t      numread;
 
-    numread = WRESREAD( fid, newres, sizeof( WResResInfo1 ) );
-    if( numread != sizeof( WResResInfo1 ) ) {
+    if( (numread = WRESREAD( fid, newres, sizeof( WResResInfo1 ) )) != sizeof( WResResInfo1 ) ) {
         WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
         return( true );
-    } else {
-        return( false );
     }
+    return( false );
 }
 
 /*
@@ -80,19 +76,17 @@ bool WResReadFixedResRecord2( WResResInfo *newres, WResFileID fid )
     size_t          numread;
     WResResInfo2    info;
 
-    numread = WRESREAD( fid, &info, sizeof( WResResInfo2 ) );
-    if( numread != sizeof( WResResInfo2 ) ) {
+    if( (numread = WRESREAD( fid, &info, sizeof( WResResInfo2 ) )) != sizeof( WResResInfo2 ) ) {
         WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
         return( true );
-    } else {
-        newres->NumResources = info.NumResources;
-        newres->ResName.IsName = info.ResName.IsName;
-        if( newres->ResName.IsName ) {
-            newres->ResName.ID.Name.Name[0] = info.ResName.ID.Name.Name[0];
-            newres->ResName.ID.Name.NumChars = info.ResName.ID.Name.NumChars;
-        } else {
-            newres->ResName.ID.Num = info.ResName.ID.Num;
-        }
-        return( false );
     }
+    newres->NumResources = info.NumResources;
+    newres->ResName.IsName = info.ResName.IsName;
+    if( newres->ResName.IsName ) {
+        newres->ResName.ID.Name.Name[0] = info.ResName.ID.Name.Name[0];
+        newres->ResName.ID.Name.NumChars = info.ResName.ID.Name.NumChars;
+    } else {
+        newres->ResName.ID.Num = info.ResName.ID.Num;
+    }
+    return( false );
 }

@@ -62,8 +62,7 @@ WResResInfo *WResReadResRecord( WResFileID fid )
     } else {
         memcpy( newptr, &newres, sizeof( WResResInfo ) );
         if( numcharsleft != 0 ) {
-            numread = WRESREAD( fid, newptr->ResName.ID.Name.Name + 1, numcharsleft );
-            if( numread != numcharsleft ) {
+            if( (numread = WRESREAD( fid, newptr->ResName.ID.Name.Name + 1, numcharsleft )) != numcharsleft ) {
                 WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
                 WRESFREE( newptr );
                 newptr = NULL;

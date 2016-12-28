@@ -49,8 +49,7 @@ static bool readLangInfoList( WResFileID fid, WResResNode *res, void *fileinfo )
             WRES_ERROR( WRS_MALLOC_FAILED );
             return( true );
         }
-        numread = WRESREAD( fid, &(langnode->Info), sizeof( WResLangInfo ) );
-        if( numread != sizeof( WResLangInfo ) ) {
+        if( (numread = WRESREAD( fid, &(langnode->Info), sizeof( WResLangInfo ) )) != sizeof( WResLangInfo ) ) {
             WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
             WRESFREE( langnode );
             return( true );

@@ -39,9 +39,9 @@
 #define WRESREAD(fid,b,s)   WResRtns.cli_read(fid,b,s)
 #define WRESSEEK(fid,o,d)   WResRtns.cli_seek(fid,o,d)
 #define WRESTELL(fid)       WResRtns.cli_tell(fid)
+#define WRESIOERR(fid,rc)   WResRtns.cli_ioerr(fid,rc)
+
 #define WRESALLOC           WResRtns.cli_alloc
 #define WRESFREE            WResRtns.cli_free
-
-#define WRESIOERR(fid,rc)   (rc == -1)
 
 #endif

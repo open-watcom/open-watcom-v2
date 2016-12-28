@@ -41,13 +41,11 @@ bool WResReadFixedTypeRecord( WResTypeInfo *newtype, WResFileID fid )
 {
     size_t      numread;
 
-    numread = WRESREAD( fid, newtype, sizeof( WResTypeInfo ) );
-    if( numread == sizeof( WResTypeInfo ) ) {
-        return( false );
-    } else {
+    if( (numread = WRESREAD( fid, newtype, sizeof( WResTypeInfo ) )) != sizeof( WResTypeInfo ) ) {
         WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+        return( true );
     }
-    return( true );
+    return( false );
 } /* WResReadFixedTypeRecord */
 
 bool WResReadFixedTypeRecord1or2( WResTypeInfo *newtype, WResFileID fid )
@@ -57,19 +55,17 @@ bool WResReadFixedTypeRecord1or2( WResTypeInfo *newtype, WResFileID fid )
     size_t              numread;
     WResTypeInfo1or2    info;
 
-    numread = WRESREAD( fid, &info, sizeof( WResTypeInfo1or2 ) );
-    if( numread == sizeof( WResTypeInfo1or2 ) ) {
-        newtype->NumResources = info.NumResources;
-        newtype->TypeName.IsName = info.TypeName.IsName;
-        if( newtype->TypeName.IsName ) {
-            newtype->TypeName.ID.Name.Name[0] = info.TypeName.ID.Name.Name[0];
-            newtype->TypeName.ID.Name.NumChars = info.TypeName.ID.Name.NumChars;
-        } else {
-            newtype->TypeName.ID.Num = info.TypeName.ID.Num;
-        }
-        return( false );
-    } else {
+    if( (numread = WRESREAD( fid, &info, sizeof( WResTypeInfo1or2 ) )) != sizeof( WResTypeInfo1or2 ) ) {
         WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+        return( true );
     }
-    return( true );
+    newtype->NumResources = info.NumResources;
+    newtype->TypeName.IsName = info.TypeName.IsName;
+    if( newtype->TypeName.IsName ) {
+        newtype->TypeName.ID.Name.Name[0] = info.TypeName.ID.Name.Name[0];
+        newtype->TypeName.ID.Name.NumChars = info.TypeName.ID.Name.NumChars;
+    } else {
+        newtype->TypeName.ID.Num = info.TypeName.ID.Num;
+    }
+    return( false );
 } /* WResReadFixedTypeRecord */

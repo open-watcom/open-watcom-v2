@@ -33,6 +33,7 @@
 #include "layer0.h"
 #include "reserr.h"
 
-void WresRecordError( WResStatus status ) {
+void WresRecordError( WResStatus status )
+{
     status = status;
 }

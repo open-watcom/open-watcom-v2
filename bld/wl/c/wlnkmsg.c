@@ -268,4 +268,11 @@ WResFileOffset res_tell( WResFileID fid )
     return( PosLoad() );
 }
 
-WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,ChkLAlloc,LFree);
+int res_ioerr( WResFileID fid, size_t rc )
+/****************************************/
+{
+    fid=fid;
+    return( rc == -1 );
+}
+
+WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,res_ioerr,ChkLAlloc,LFree);

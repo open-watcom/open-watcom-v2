@@ -73,13 +73,14 @@ typedef struct WResRoutines {                                           /* defau
     size_t          (*cli_write)(WResFileID, const void *, size_t);     /* write */
     WResFileOffset  (*cli_seek)(WResFileID, WResFileOffset, int );      /* lseek */
     WResFileOffset  (*cli_tell)(WResFileID);                            /* tell */
+    int             (*cli_ioerr)(WResFileID,size_t);                    /* ioerr */
     /* memory routines */
     void            *(*cli_alloc)(size_t);                              /* malloc */
     void            (*cli_free)(void *);                                /* free */
 } WResRoutines;
 
-#define WResSetRtns( __open, __close, __read, __write, __seek, __tell, __alloc, __free ) \
-    WResRoutines WResRtns = { __open, __close, __read, __write, __seek, __tell, __alloc, __free }
+#define WResSetRtns( __open, __close, __read, __write, __seek, __tell, __ioerr, __alloc, __free ) \
+    WResRoutines WResRtns = { __open, __close, __read, __write, __seek, __tell, __ioerr, __alloc, __free }
 
 /* This is a global variable exported by function FindResources */
 extern WResFileOffset   WResFileShift;

@@ -41,9 +41,8 @@ bool ResWriteFontInfo( FontInfo *info, WResFileID fid )
     if( WRESWRITE( fid, info, sizeof( FontInfo ) ) != sizeof( FontInfo ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
-    } else {
-        return( false );
     }
+    return( false );
 }
 
 bool ResWriteFontDirEntry( FontDirEntry *entry, WResFileID fid )
@@ -52,7 +51,6 @@ bool ResWriteFontDirEntry( FontDirEntry *entry, WResFileID fid )
     if( WRESWRITE( fid, &(entry->Info), entry->StructSize ) != entry->StructSize ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
-    } else {
-        return( false );
     }
+    return( false );
 }

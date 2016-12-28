@@ -58,8 +58,7 @@ WResIDName *WResReadWResIDName( WResFileID fid )
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         newptr->NumChars = newname.NumChars;
-        numread = WRESREAD( fid, newptr->Name, newptr->NumChars );
-        if( numread != newptr->NumChars ) {
+        if( (numread = WRESREAD( fid, newptr->Name, newptr->NumChars )) != newptr->NumChars ) {
             WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
             WRESFREE( newptr );
             newptr = NULL;

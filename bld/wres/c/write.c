@@ -65,9 +65,8 @@ bool ResWriteUint8( uint_8 newint, WResFileID fid )
     if( WRESWRITE( fid, &newint, sizeof( uint_8 ) ) != sizeof( uint_8 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
-    } else {
-        return( false );
     }
+    return( false );
 }
 
 bool ResWriteUint16( uint_16 newint, WResFileID fid )
@@ -76,9 +75,8 @@ bool ResWriteUint16( uint_16 newint, WResFileID fid )
     if( WRESWRITE( fid, &newint, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
-    } else {
-        return( false );
     }
+    return( false );
 }
 
 bool ResWriteUint32( uint_32 newint, WResFileID fid )
@@ -87,9 +85,8 @@ bool ResWriteUint32( uint_32 newint, WResFileID fid )
     if( WRESWRITE( fid, &newint, sizeof( uint_32 ) ) != sizeof( uint_32 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
-    } else {
-        return( false );
     }
+    return( false );
 }
 
 bool ResWritePadDWord( WResFileID fid )
@@ -150,8 +147,8 @@ bool WResWriteWResIDNameUni( const WResIDName *name, bool use_unicode, WResFileI
     }
     if( !error && numchars > 0 ) {
         if( WRESWRITE( fid, ptr, numchars ) != numchars ) {
-            error = true;
             WRES_ERROR( WRS_WRITE_FAILED );
+            error = true;
         }
     }
     if( freebuf ) {
@@ -200,9 +197,8 @@ bool WResWriteTypeRecord( const WResTypeInfo *type, WResFileID fid )
     if( WRESWRITE( fid, type, size ) != size ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
-    } else {
-        return( false );
     }
+    return( false );
 } /* WResWriteTypeRecord */
 
 /*
@@ -222,9 +218,8 @@ bool WResWriteResRecord( const WResResInfo *res, WResFileID fid )
     if( WRESWRITE( fid, (uint_8 *)res, size ) != size ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
-    } else {
-        return( false );
     }
+    return( false );
 } /* WResWriteResRecord */
 
 /*
@@ -236,9 +231,8 @@ bool WResWriteLangRecord( const WResLangInfo *info, WResFileID fid )
     if( WRESWRITE( fid, info, sizeof( WResLangInfo ) ) != sizeof( WResLangInfo ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
-    } else {
-        return( false );
     }
+    return( false );
 }
 
 bool WResWriteHeaderRecord( const WResHeader *header, WResFileID fid )
@@ -253,8 +247,8 @@ bool WResWriteHeaderRecord( const WResHeader *header, WResFileID fid )
 
     if( !error ) {
         if( WRESWRITE( fid, header, sizeof( WResHeader ) ) != sizeof( WResHeader ) ) {
-            error = true;
             WRES_ERROR( WRS_WRITE_FAILED );
+            error = true;
         }
     }
 
@@ -267,9 +261,8 @@ bool WResWriteExtHeader( const WResExtHeader *ext_head, WResFileID fid )
     if( WRESWRITE( fid, ext_head, sizeof( WResExtHeader ) ) != sizeof( WResExtHeader ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
-    } else {
-        return( false );
     }
+    return( false );
 }
 
 bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID fid, uint_16 len )

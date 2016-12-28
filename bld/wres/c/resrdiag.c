@@ -263,13 +263,13 @@ static ControlClass *ReadControlClass( WResFileID fid )
             restofstring = ResReadString( fid, &stringlen );
             stringlen++;    /* for the '\0' */
             error = (restofstring == NULL);
-    }
+        }
     }
 
     /* allocate memory for the new class */
     if( error ) {
         newclass = NULL;
-        } else {
+    } else {
         newclass = WRESALLOC( sizeof( ControlClass ) + stringlen );
         if( newclass == NULL ) {
             error = true;
@@ -308,7 +308,7 @@ static ControlClass *Read32ControlClass( WResFileID fid )
 
     /* read in the first word */
     error = ResReadUint16( &flags, fid );
-        if( !error ) {
+    if( !error ) {
         if( flags == 0xffff ) {
             error = ResReadUint16( &class, fid );
         } else {
@@ -317,7 +317,7 @@ static ControlClass *Read32ControlClass( WResFileID fid )
             stringlen++;                /* for the '\0' */
             error = (restofstring == NULL);
         }
-        }
+    }
 
     /* allocate memory for the new class */
     if( error ) {
@@ -364,7 +364,7 @@ bool ResReadDialogBoxControl( DialogBoxControl *control, WResFileID fid )
     }
     if( !error ) {
         control->ClassID = ReadControlClass( fid );
-        error = (control->ClassID == NULL);
+        error = ( control->ClassID == NULL );
     }
     if( !error ) {
         control->Text = ResReadNameOrOrdinal( fid );
@@ -383,7 +383,7 @@ static bool ResReadDialogControlCommon32( ControlClass **class_id, ResNameOrOrdi
     uint_16         tmp16;
 
     *class_id = Read32ControlClass( fid );
-    error = (*class_id == NULL);
+    error = ( *class_id == NULL );
     if( !error ) {
         *text = ResRead32NameOrOrdinal( fid );
     }
@@ -448,10 +448,10 @@ bool ResReadDialogExControl32( DialogBoxExControl32 *control, WResFileID fid )
     if( !error ) {
         error = ResReadUint32( &tmp32, fid );
         control->ID = tmp32;
-            }
+    }
     if( !error ) {
         error = ResReadDialogControlCommon32( &(control->ClassID), &(control->Text), &(control->ExtraBytes), fid );
-        }
+    }
 
     if( !error ) {
         /* seek to dword boundary if necessary */

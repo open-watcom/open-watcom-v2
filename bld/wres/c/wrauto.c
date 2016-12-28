@@ -67,8 +67,7 @@ DepInfo *WResGetAutoDep( const char *fname )
                             if( ret == NULL ) {
                                 WRES_ERROR( WRS_MALLOC_FAILED );
                             } else {
-                                numread = WRESREAD( fid, ret, info->Length );
-                                if( numread != (size_t)info->Length ) {
+                                if( (numread = WRESREAD( fid, ret, info->Length )) != (size_t)info->Length ) {
                                     WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
                                     ret = NULL;
                                 }

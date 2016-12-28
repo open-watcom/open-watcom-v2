@@ -58,23 +58,17 @@ bool ResReadMenuHeader( MenuHeader *currhead, WResFileID fid )
 bool ResReadMenuExtraBytes( MenuHeader *header, WResFileID fid, char *buf )
 /*************************************************************************/
 {
-    bool            error;
-    size_t          numread;
     unsigned        size;
 
-    error = false;
-    numread = 0;
     size = header->HeaderSize;
     if( buf != NULL ) {
-        numread = WRESREAD( fid, buf, size );
-        if( numread != size ) {
-            error = true;
+        if( WRESREAD( fid, buf, size ) != size ) {
+            return( true );
         }
     } else {
         WRESSEEK( fid, size, SEEK_CUR );
     }
-
-    return( error );
+    return( false );
 }
 
 // NB: Anyone using this function will have to manually seek back after

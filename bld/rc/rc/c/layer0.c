@@ -469,6 +469,13 @@ WResFileOffset res_tell( WResFileID fid )
     }
 } /* RcTell */
 
+int res_ioerr( WResFileID fid, size_t rc )
+/****************************************/
+{
+    fid=fid;
+    return( rc == -1 );
+}
+
 void Layer0InitStatics( void )
 /***********************************/
 {

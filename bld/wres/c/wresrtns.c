@@ -77,4 +77,10 @@ static WResFileOffset res_tell( WResFileID fid )
     return( ftell( WRES_FID2FH( fid ) ) );
 }
 
-WResSetRtns( res_open, res_close, res_read, res_write, res_seek, res_tell, malloc, free );
+static int res_ioerr( WResFileID fid, size_t rc )
+{
+    rc = rc;
+    return( ferror( WRES_FID2FH( fid ) ) != 0 );
+}
+
+WResSetRtns( res_open, res_close, res_read, res_write, res_seek, res_tell, res_ioerr, malloc, free );

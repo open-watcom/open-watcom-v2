@@ -131,7 +131,6 @@ bool ResWriteVerFixedInfo( VerFixedInfo *fixed, WResFileID fid )
     if( WRESWRITE( fid, fixed, sizeof( VerFixedInfo ) ) != sizeof( VerFixedInfo ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
-    } else {
-        return( false );
     }
+    return( false );
 }

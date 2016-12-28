@@ -40,7 +40,7 @@
 #define RESREAD         res_read
 #define RESSEEK         res_seek
 #define RESTELL         res_tell
-#define RESIOERR(fh,rc) (rc == -1)
+#define RESIOERR        res_ioerr
 
 #define RESALLOC        RcMemMalloc
 #define RESFREE         RcMemFree
@@ -53,5 +53,6 @@ extern size_t           res_write( WResFileID, const void *, size_t );
 extern size_t           res_read( WResFileID, void *, size_t );
 extern WResFileOffset   res_seek( WResFileID, WResFileOffset, int );
 extern WResFileOffset   res_tell( WResFileID );
+extern int              res_ioerr( WResFileID, size_t );
 
 #endif

@@ -65,7 +65,6 @@ bool ResWriteToolBarItems( WResFileID fid, uint_16 *items, unsigned cnt )
     if( WRESWRITE( fid, items, size ) != size ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
-    } else {
-        return( false );
     }
+    return( false );
 }
