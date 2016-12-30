@@ -107,7 +107,6 @@ bool DumpMenu( uint_32 offset, uint_32 length, WResFileID fid )
 /*************************************************************/
 {
     bool            error;
-    WResFileOffset  prevpos;
     int             depth;  /* number of menu levels deep */
     MenuItem        *item;
     MenuHeader      head;
