@@ -58,12 +58,11 @@ bool DumpCursorGroup( uint_32 offset, uint_32 length, WResFileID fid )
 {
     IconCurDirHeader    head;
     CurDirEntry         entry;
-    WResFileOffset      prevpos;
     bool                error;
     int                 currentry;
 
     length = length;
-    prevpos = RESSEEK( fid, offset, SEEK_SET );
+    RESSEEK( fid, offset, SEEK_SET );
 
     error = ResReadIconCurDirHeader( &(head), fid );
     PrintIconCurDirHeader( &head );
@@ -76,7 +75,7 @@ bool DumpCursorGroup( uint_32 offset, uint_32 length, WResFileID fid )
         }
     }
 
-    RESSEEK( fid, prevpos, SEEK_SET );
+    RESSEEK( fid, offset, SEEK_SET );
 
     return( error );
 }

@@ -422,7 +422,7 @@ bool WRCopyResFromFileToFile( WResFileID src_fid, uint_32 offset, uint_32 length
 
     ok = (ok && (buf = (uint_8 *)MemAlloc( CHUNK_SIZE )) != NULL);
 
-    ok = (ok && RESSEEK( src_fid, offset, SEEK_SET ) != -1);
+    ok = ( ok && !RESSEEK( src_fid, offset, SEEK_SET ) );
 
     while( ok && length - size > CHUNK_SIZE ) {
         ok = ok && WRReadResData( src_fid, (BYTE *)buf, CHUNK_SIZE );

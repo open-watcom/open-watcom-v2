@@ -203,7 +203,7 @@ static RcStatus copyOneResource( WResLangInfo *lang, WResFileID res_fid,
     }
     if( ret == RS_OK ) {
         align_amount = AlignAmount( out_offset, shift_count );
-        if( RESSEEK( out_fid, align_amount, SEEK_CUR ) == -1 ) {
+        if( RESSEEK( out_fid, align_amount, SEEK_CUR ) ) {
             ret = RS_WRITE_ERROR;
             *err_code = errno;
         }
@@ -211,7 +211,7 @@ static RcStatus copyOneResource( WResLangInfo *lang, WResFileID res_fid,
     }
 
     if( ret == RS_OK ) {
-        if( RESSEEK( res_fid, lang->Offset, SEEK_SET ) == -1 ) {
+        if( RESSEEK( res_fid, lang->Offset, SEEK_SET ) ) {
             ret = RS_READ_ERROR;
             *err_code = errno;
         }

@@ -113,7 +113,7 @@ bool WResWriteDir( WResFileID fid, WResDir currdir )
 
     /* leave the handle at the start of the file */
     if( !error ) {
-        error = ( WRESSEEK( fid, 0L, SEEK_SET ) == -1 );
+        error = WRESSEEK( fid, 0L, SEEK_SET );
         if( error ) {
             WRES_ERROR( WRS_SEEK_FAILED );
         }

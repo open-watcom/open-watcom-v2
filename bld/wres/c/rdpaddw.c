@@ -51,7 +51,7 @@ bool ResReadPadDWord( WResFileID fid )
         error = WRES_ERROR( WRS_TELL_FAILED );
     } else {
         padding = RES_PADDING( curr_pos, sizeof( uint_32 ) );
-        error = ( WRESSEEK( fid, padding, SEEK_CUR ) == -1 );
+        error = WRESSEEK( fid, padding, SEEK_CUR );
         if( error ) {
             WRES_ERROR( WRS_SEEK_FAILED );
         }

@@ -472,7 +472,7 @@ static RcStatus copyDataEntry( PEResEntry *entry, void *_copy_info )
         info = WResGetFileInfo( entry->u.Data.Wind );
         if( copy_info->curres == NULL || copy_info->curres == info ) {
             res_info = WResGetLangInfo( entry->u.Data.Wind );
-            if( RESSEEK( info->fid, res_info->Offset, SEEK_SET ) == -1 )
+            if( RESSEEK( info->fid, res_info->Offset, SEEK_SET ) )
                 return( RS_READ_ERROR );
             ret = CopyExeData( info->fid, copy_info->to_fid, res_info->Length );
             if( ret != RS_OK ) {
@@ -516,7 +516,7 @@ static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
     copy_info.file = tmp;       /* for tracking debugging info offset */
     start_off = ALIGN_VALUE( start_off, sizeof(uint_32) );
 
-    if( RESSEEK( to_fid, start_off, SEEK_SET ) == -1 )
+    if( RESSEEK( to_fid, start_off, SEEK_SET ) )
         return( RS_WRITE_ERROR );
     if( !writebyfile ) {
         copy_info.curres = NULL;
@@ -642,7 +642,7 @@ static RcStatus writeDirectory( PEResDir * dir, WResFileID fid )
 {
     RcStatus    ret;
 
-    if( RESSEEK( fid, dir->ResOffset, SEEK_SET ) == -1 )
+    if( RESSEEK( fid, dir->ResOffset, SEEK_SET ) )
         return( RS_WRITE_ERROR );
 
     /* write the root entry header */
@@ -699,7 +699,7 @@ extern bool RcPadFile( WResFileID fid, size_t pad )
     char        zero = 0;
 
     if( pad > 0 ) {
-        if( RESSEEK( fid, pad - 1, SEEK_CUR ) == -1 ) {
+        if( RESSEEK( fid, pad - 1, SEEK_CUR ) ) {
             return( true );
         }
         if( RESWRITE( fid, &zero, 1 ) != 1 )  {
@@ -731,9 +731,9 @@ static bool padObject( PEResDir *dir, ExeFileInfo *tmp, long size )
 #if( 0)
     char        zero=0;
 
-    if( RESSEEK( tmp->fid, dir->ResOffset, SEEK_SET ) == -1 )
+    if( RESSEEK( tmp->fid, dir->ResOffset, SEEK_SET ) )
         return( true );
-    if( RESSEEK( tmp->fid, size - 1, SEEK_CUR ) == -1 )
+    if( RESSEEK( tmp->fid, size - 1, SEEK_CUR ) )
         return( true );
     if( RESWRITE( tmp->fid, &zero, 1 ) != 1 )
         return( true );

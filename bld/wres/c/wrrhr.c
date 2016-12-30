@@ -41,13 +41,13 @@ bool WResReadHeaderRecord( WResHeader *header, WResFileID fid )
     bool            error;
     size_t          numread;
 
-    error = ( WRESSEEK( fid, 0, SEEK_SET ) == -1 );
+    error = WRESSEEK( fid, 0, SEEK_SET );
     if( error ) {
         WRES_ERROR( WRS_SEEK_FAILED );
     } else {
         if( (numread = WRESREAD( fid, header, sizeof( WResHeader ) )) != sizeof( WResHeader ) )
             return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
-        error = ( WRESSEEK( fid, 0, SEEK_SET ) == -1 );
+        error = WRESSEEK( fid, 0, SEEK_SET );
         if( error ) {
             WRES_ERROR( WRS_SEEK_FAILED );
         }

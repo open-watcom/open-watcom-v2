@@ -40,7 +40,7 @@ bool ResSeek( WResFileID fid, WResFileOffset offset, int origin )
 /***************************************************************/
 /* cover function for seek */
 {
-    if( WRESSEEK( fid, offset, origin ) == -1 )
+    if( WRESSEEK( fid, offset, origin ) )
         return( WRES_ERROR( WRS_SEEK_FAILED ) );
     return( false );
 }

@@ -60,7 +60,7 @@ DepInfo *WResGetAutoDep( const char *fname )
                         WRES_ERROR( WRS_RES_NOT_FOUND );
                     } else {
                         info = WResGetLangInfo( window );
-                        if( WRESSEEK( fid, info->Offset, SEEK_SET ) == -1 ) {
+                        if( WRESSEEK( fid, info->Offset, SEEK_SET ) ) {
                             WRES_ERROR( WRS_SEEK_FAILED );
                         } else {
                             ret = WRESALLOC( info->Length );

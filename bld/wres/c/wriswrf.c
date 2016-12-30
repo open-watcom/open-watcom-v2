@@ -42,7 +42,7 @@ ResTypeInfo WResFindResType( WResFileID fid )
     uint_32         magic[2];
     bool            error;
 
-    error = ( WRESSEEK( fid, 0, SEEK_SET ) == -1 );
+    error = WRESSEEK( fid, 0, SEEK_SET );
     if( error ) {
         WRES_ERROR( WRS_SEEK_FAILED );
     } else {
@@ -50,7 +50,7 @@ ResTypeInfo WResFindResType( WResFileID fid )
         if( !error ) {
             error = ResReadUint32( magic + 1, fid );
         }
-        if( WRESSEEK( fid, 0, SEEK_SET ) == -1 ) {
+        if( WRESSEEK( fid, 0, SEEK_SET ) ) {
             WRES_ERROR( WRS_SEEK_FAILED );
         }
     }

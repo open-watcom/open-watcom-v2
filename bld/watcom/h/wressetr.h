@@ -71,7 +71,7 @@ typedef struct WResRoutines {                                           /* defau
     bool            (*cli_close)(WResFileID);                           /* close */
     size_t          (*cli_read)(WResFileID, void *, size_t);            /* read */
     size_t          (*cli_write)(WResFileID, const void *, size_t);     /* write */
-    WResFileOffset  (*cli_seek)(WResFileID, WResFileOffset, int );      /* lseek */
+    bool            (*cli_seek)(WResFileID, WResFileOffset, int );      /* lseek */
     WResFileOffset  (*cli_tell)(WResFileID);                            /* tell */
     bool            (*cli_ioerr)(WResFileID,size_t);                    /* ioerr */
     /* memory routines */

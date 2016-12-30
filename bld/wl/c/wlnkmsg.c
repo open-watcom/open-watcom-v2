@@ -221,13 +221,13 @@ size_t res_write( WResFileID fid, const void *buf, size_t len )
     return( len );
 }
 
-WResFileOffset res_seek( WResFileID fid, WResFileOffset amount, int where )
+bool res_seek( WResFileID fid, WResFileOffset amount, int where )
 {
     if( fid == hInstance.fid ) {
         if( where == SEEK_SET ) {
-            return( lseek( WRES_FID2PH( fid ), amount + WResFileShift, where ) - WResFileShift );
+            return( lseek( WRES_FID2PH( fid ), amount + WResFileShift, where ) == -1 );
         } else {
-            return( lseek( WRES_FID2PH( fid ), amount, where ) );
+            return( lseek( WRES_FID2PH( fid ), amount, where ) == -1 );
         }
     }
 
@@ -246,13 +246,13 @@ WResFileOffset res_seek( WResFileID fid, WResFileOffset amount, int where )
             } else {
                 SeekLoad( new_pos );
             }
-            return( new_pos );
+            return( false );
         } else {
             SeekLoad( amount );
-            return( amount );
+            return( false );
         }
     } else {
-        return( QLSeek( WRES_FID2PH( fid ), amount, where, "resource file" ) );
+        return( QLSeek( WRES_FID2PH( fid ), amount, where, "resource file" ) == -1 );
     }
 }
 

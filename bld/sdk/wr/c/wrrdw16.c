@@ -113,7 +113,7 @@ bool WRLoadResourceFromWin16EXE( WRInfo *info )
 
 long int WRReadWin16ExeHeader( WResFileID fid, os2_exe_header *header )
 {
-    long int    old_pos;
+    bool        old_pos;
     uint_16     offset;
     bool        ok;
 
@@ -122,7 +122,7 @@ long int WRReadWin16ExeHeader( WResFileID fid, os2_exe_header *header )
     ok = ( fid != WRES_NIL_HANDLE && header != NULL );
 
     if( ok ) {
-        ok = ( (old_pos = RESSEEK( fid, 0x18, SEEK_SET )) != -1 );
+        ok = old_pos = !RESSEEK( fid, 0x18, SEEK_SET );
     }
 
     /* check the reloc offset */
@@ -132,7 +132,7 @@ long int WRReadWin16ExeHeader( WResFileID fid, os2_exe_header *header )
     }
 
     if( ok ) {
-        ok = ( RESSEEK( fid, OS2_NE_OFFSET, SEEK_SET ) != -1 );
+        ok = !RESSEEK( fid, OS2_NE_OFFSET, SEEK_SET );
     }
 
     /* check header offset */
@@ -142,7 +142,7 @@ long int WRReadWin16ExeHeader( WResFileID fid, os2_exe_header *header )
     }
 
     if( ok ) {
-        ok = ( RESSEEK( fid, offset, SEEK_SET ) != -1 );
+        ok = !RESSEEK( fid, offset, SEEK_SET );
     }
 
     if( ok ) {
@@ -154,8 +154,8 @@ long int WRReadWin16ExeHeader( WResFileID fid, os2_exe_header *header )
         ok = WRIsHeaderValidWIN16( header );
     }
 
-    if( old_pos != -1 ) {
-        ok = ( RESSEEK( fid, old_pos, SEEK_SET ) != -1 && ok );
+    if( old_pos ) {
+        ok = ( !RESSEEK( fid, 0x18, SEEK_SET ) && ok );
     }
 
     if( ok ) {
@@ -215,11 +215,11 @@ bool WRLoadWResDirFromWin16EXE( WResFileID fid, WResDir *dir )
     }
 
     if( ok ) {
-        ok = ( RESSEEK( fid, offset, SEEK_SET ) != -1 );
+        ok = !RESSEEK( fid, offset, SEEK_SET );
     }
 
     if( ok ) {
-        ok = ( RESSEEK( fid, win_header.resource_off, SEEK_CUR ) != -1 );
+        ok = !RESSEEK( fid, win_header.resource_off, SEEK_CUR );
     }
 
     if( ok ) {
@@ -520,7 +520,7 @@ uint_32 WRReadNameTable( WResDir dir, WResFileID fid, uint_8 **name_table,
             /* if there are two name tables we ignore all but the first */
             res_len = res_node->Head->Info.Length;
             res_offset = res_node->Head->Info.Offset;
-            if( RESSEEK( fid, res_offset, SEEK_SET ) == -1 ) {
+            if( RESSEEK( fid, res_offset, SEEK_SET ) ) {
                 return( FALSE );
             }
         } else {
@@ -550,7 +550,7 @@ uint_32 WRReadNameTable( WResDir dir, WResFileID fid, uint_8 **name_table,
      * and must abort the reading of the name resource!!
      */
     if( num_leftover != 0 && leftover == NULL ) {
-        if( RESSEEK( fid, num_leftover, SEEK_CUR ) == -1 ) {
+        if( RESSEEK( fid, num_leftover, SEEK_CUR ) ) {
             return( 0 );
         }
         num_read += num_leftover;

@@ -256,7 +256,7 @@ static RcStatus copyOneIcon( const IcoFileDirEntry *entry, WResFileID fid,
     WResFileOffset      curpos;
 
     ret = RS_OK;
-    if( RESSEEK( fid, entry->Offset, SEEK_SET ) == -1 ) {
+    if( RESSEEK( fid, entry->Offset, SEEK_SET ) ) {
         ret = RS_READ_ERROR;
         *err_code = errno;
     }
@@ -466,7 +466,7 @@ static RcStatus copyOneCursor( const CurFileDirEntry *entry, WResFileID fid,
     WResFileOffset  curpos;
 
     ret = RS_OK;
-    if( RESSEEK( fid, entry->Offset, SEEK_SET ) == -1 ) {
+    if( RESSEEK( fid, entry->Offset, SEEK_SET ) ) {
         ret = RS_READ_ERROR;
         *err_code = errno;
     }
@@ -838,7 +838,7 @@ static void * readString( WResFileID fid, long offset, ReadStrErrInfo *err )
 {
     char    *retstr;
 
-    if( RESSEEK( fid, offset, SEEK_SET ) == -1 ) {
+    if( RESSEEK( fid, offset, SEEK_SET ) ) {
         err->status = RS_READ_ERROR;
         err->err_code = errno;
         return( NULL );

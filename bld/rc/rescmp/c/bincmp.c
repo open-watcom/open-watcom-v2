@@ -49,18 +49,13 @@ int BinaryCompare( WResFileID fid1, uint_32 offset1, WResFileID fid2, uint_32 of
 /*****************************************************************************************************/
 {
     size_t          numread;
-    WResFileOffset  currpos1;
-    WResFileOffset  currpos2;
     int             rc;
 
     /* seek to the start of the places to compare */
-    currpos1 = RESSEEK( fid1, offset1, SEEK_SET );
-    if( currpos1 == -1 ) {
+    if( RESSEEK( fid1, offset1, SEEK_SET ) ) {
         return( -1 );
     }
-    currpos2 = RESSEEK( fid2, offset2, SEEK_SET );
-    if( currpos2 == -1 ) {
-        RESSEEK( fid1, currpos1, SEEK_SET );
+    if( RESSEEK( fid2, offset2, SEEK_SET ) ) {
         return( -1 );
     }
 
@@ -83,7 +78,7 @@ int BinaryCompare( WResFileID fid1, uint_32 offset1, WResFileID fid2, uint_32 of
         }
     }
 
-    RESSEEK( fid2, currpos2, SEEK_SET );
-    RESSEEK( fid1, currpos1, SEEK_SET );
+    RESSEEK( fid2, offset2, SEEK_SET );
+    RESSEEK( fid1, offset1, SEEK_SET );
     return( rc );
 }

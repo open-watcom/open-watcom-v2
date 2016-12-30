@@ -65,7 +65,7 @@ RcStatus CopyData( WResFileOffset offset, uint_32 length, WResFileID fid,
 {
     size_t      numread;
 
-    if( RESSEEK( fid, offset, SEEK_SET ) == -1 ) {
+    if( RESSEEK( fid, offset, SEEK_SET ) ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }

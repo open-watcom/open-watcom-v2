@@ -57,7 +57,7 @@ static int GetString( WResLangInfo *res, PHANDLE_INFO hinfo, UINT idResource, lp
     int                 ix2;
     char                stringbuff[GET_STR_BUF_LEN];
 
-    if( WRESSEEK( hinfo->fid, res->Offset, SEEK_SET ) == -1 )
+    if( WRESSEEK( hinfo->fid, res->Offset, SEEK_SET ) )
         return( -1 );
     length = res->Length;
     stringnum = idResource & 0x0f;

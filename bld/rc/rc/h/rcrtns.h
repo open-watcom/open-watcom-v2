@@ -51,7 +51,7 @@ extern WResFileID       res_open( const char *, wres_open_mode );
 extern bool             res_close( WResFileID );
 extern size_t           res_write( WResFileID, const void *, size_t );
 extern size_t           res_read( WResFileID, void *, size_t );
-extern WResFileOffset   res_seek( WResFileID, WResFileOffset, int );
+extern bool             res_seek( WResFileID, WResFileOffset, int );
 extern WResFileOffset   res_tell( WResFileID );
 extern bool             res_ioerr( WResFileID, size_t );
 

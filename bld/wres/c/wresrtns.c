@@ -63,13 +63,13 @@ static size_t res_write( WResFileID fid, const void *buf, size_t size )
     return( fwrite( buf, 1, size, WRES_FID2FH( fid ) ) );
 }
 
-static WResFileOffset res_seek( WResFileID fid, WResFileOffset pos, int where )
+static bool res_seek( WResFileID fid, WResFileOffset pos, int where )
 {
     if( where == SEEK_SET ) {
         /* fool the wres library into thinking that the resource information starts at offset 0 */
-        return( fseek( WRES_FID2FH( fid ), pos + WResFileShift, where ) - WResFileShift );
+        return( fseek( WRES_FID2FH( fid ), pos + WResFileShift, where ) != 0 );
     } else {
-        return( fseek( WRES_FID2FH( fid ), pos, where ) );
+        return( fseek( WRES_FID2FH( fid ), pos, where ) != 0 );
     }
 }
 

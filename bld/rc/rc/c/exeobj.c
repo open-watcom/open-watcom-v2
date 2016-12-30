@@ -192,9 +192,9 @@ static RcStatus copyOneObject( WResFileID old_fid, pe_object * old_obj,
     if( (old_obj->flags & PE_OBJ_UNINIT_DATA) && ( old_obj->physical_offset == 0 ) ) {
         return( RS_OK );
     }
-    if( RESSEEK( old_fid, old_obj->physical_offset, SEEK_SET ) == -1 )
+    if( RESSEEK( old_fid, old_obj->physical_offset, SEEK_SET ) )
         return( RS_READ_ERROR );
-    if( RESSEEK( new_fid, new_obj->physical_offset, SEEK_SET ) == -1 )
+    if( RESSEEK( new_fid, new_obj->physical_offset, SEEK_SET ) )
         return( RS_WRITE_ERROR );
 
     return( CopyExeData( old_fid, new_fid, old_obj->physical_size ) );

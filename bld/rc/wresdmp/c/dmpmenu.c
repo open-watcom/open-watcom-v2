@@ -113,8 +113,8 @@ bool DumpMenu( uint_32 offset, uint_32 length, WResFileID fid )
     MenuHeader      head;
 
     length = length;
-    prevpos = RESSEEK( fid, offset, SEEK_SET );
-    error = (prevpos == -1);
+
+    error = RESSEEK( fid, offset, SEEK_SET );
 
     if( !error ) {
         error = ResReadMenuHeader( &head, fid );
@@ -144,7 +144,7 @@ bool DumpMenu( uint_32 offset, uint_32 length, WResFileID fid )
         ResFreeMenuItem( item );
     }
 
-    RESSEEK( fid, prevpos, SEEK_SET );
+    RESSEEK( fid, offset, SEEK_SET );
 
     return( error );
 }

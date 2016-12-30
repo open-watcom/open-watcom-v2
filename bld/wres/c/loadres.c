@@ -45,7 +45,7 @@
 static int GetResource( WResLangInfo *res, PHANDLE_INFO hinfo, char *res_buffer )
 /***********************************************************************************/
 {
-    if( WRESSEEK( hinfo->fid, res->Offset, SEEK_SET ) == -1 )
+    if( WRESSEEK( hinfo->fid, res->Offset, SEEK_SET ) )
         return( -1 );
     WRESREAD( hinfo->fid, res_buffer, res->Length );
     return( 0 );

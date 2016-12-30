@@ -349,8 +349,8 @@ size_t res_read( WResFileID fid, void *in_buff, size_t size )
     return( total_read );
 } /* RcRead */
 
-WResFileOffset res_seek( WResFileID fid, WResFileOffset amount, int where )
-/*************************************************************************/
+bool res_seek( WResFileID fid, WResFileOffset amount, int where )
+/***************************************************************/
 /* Note: Don't seek backwards in a buffer that has been writen to without */
 /* flushing the buffer and doing an lseek since moving the NextChar pointer */
 /* back will make it look like less data has been writen */
@@ -362,14 +362,14 @@ WResFileOffset res_seek( WResFileID fid, WResFileOffset amount, int where )
 
     if( hInstance.fid == fid ) {
         if( where == SEEK_SET ) {
-            return( lseek( WRES_FID2PH( fid ), amount + WResFileShift, where ) - WResFileShift );
+            return( lseek( WRES_FID2PH( fid ), amount + WResFileShift, where ) == -1 );
         } else {
-            return( lseek( WRES_FID2PH( fid ), amount, where ) );
+            return( lseek( WRES_FID2PH( fid ), amount, where ) == -1 );
         }
     }
     i = RcFindIndex( fid );
     if( i >= RC_MAX_FILES ) {
-        return( lseek( WRES_FID2PH( fid ), amount, where ) );
+        return( lseek( WRES_FID2PH( fid ), amount, where ) == -1 );
     }
 
     buff = RcFileList[i].Buffer;
@@ -387,9 +387,9 @@ WResFileOffset res_seek( WResFileID fid, WResFileOffset amount, int where )
             /* end of the buffer */
             if( amount < currpos || amount >= currpos + ( RC_BUFFER_SIZE - buff->Count ) ) {
                 if( FlushRcBuffer( fid, buff ) )
-                    return( -1 );
+                    return( true );
                 if( lseek( WRES_FID2PH( fid ), amount, SEEK_SET ) == -1 ) {
-                    return( -1 );
+                    return( true );
                 }
             } else {
                 diff = amount - currpos;
@@ -401,13 +401,12 @@ WResFileOffset res_seek( WResFileID fid, WResFileOffset amount, int where )
             break;
         case SEEK_END:
             if( FlushRcBuffer( fid, buff ) )
-                return( -1 );
+                return( true );
             if( lseek( WRES_FID2PH( fid ), amount, where ) == -1 )
-                return( -1 );
+                return( true );
             break;
         default:
-            return( -1 );
-            break;
+            return( true );
         }
     } else {
         switch( where ) {
@@ -419,9 +418,9 @@ WResFileOffset res_seek( WResFileID fid, WResFileOffset amount, int where )
             /* if the new pos is outside the buffer */
             if( amount < currpos + buff->Count - buff->BytesRead || amount >= currpos + buff->Count ) {
                 if( FlushRcBuffer( fid, buff ) )
-                    return( -1 );
+                    return( true );
                 if( lseek( WRES_FID2PH( fid ), amount, SEEK_SET ) == -1 ) {
-                    return( -1 );
+                    return( true );
                 }
             } else {
                 diff = amount - currpos;
@@ -433,17 +432,16 @@ WResFileOffset res_seek( WResFileID fid, WResFileOffset amount, int where )
             break;
         case SEEK_END:
             if( FlushRcBuffer( fid, buff ) )
-                return( -1 );
+                return( true );
             if( lseek( WRES_FID2PH( fid ), amount, SEEK_END ) == -1 )
-                return( -1 );
+                return( true );
             break;
         default:
-            return( -1 );
-            break;
+            return( true );
         }
     }
 
-    return( currpos );
+    return( false );
 } /* RcSeek */
 
 WResFileOffset res_tell( WResFileID fid )

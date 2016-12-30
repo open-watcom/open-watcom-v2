@@ -52,7 +52,7 @@ bool WResFileInit( WResFileID fid )
     head.WResVer = WRESVERSION;
 
     /* write the empty record out at the begining of the file */
-    error = ( WRESSEEK( fid, 0, SEEK_SET ) == -1 );
+    error = WRESSEEK( fid, 0, SEEK_SET );
     if( error ) {
         WRES_ERROR( WRS_SEEK_FAILED );
     } else {
@@ -61,7 +61,7 @@ bool WResFileInit( WResFileID fid )
             WRES_ERROR( WRS_SEEK_FAILED );
         } else {
             /* leave room for the extended header */
-            error = ( WRESSEEK( fid, sizeof( WResExtHeader ), SEEK_CUR ) == -1 );
+            error = WRESSEEK( fid, sizeof( WResExtHeader ), SEEK_CUR );
             if( error ) {
                 WRES_ERROR( WRS_SEEK_FAILED );
             }

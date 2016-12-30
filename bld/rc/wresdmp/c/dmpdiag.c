@@ -114,16 +114,14 @@ bool DumpDialog( uint_32 offset, uint_32 length, WResFileID fid )
 /***************************************************************/
 {
     bool                error;
-    WResFileOffset      prevpos;
     int                 itemnum;
     DialogBoxHeader     head;
     DialogBoxControl    control;
 
     length = length;
     head.NumOfItems = 0;
-    prevpos = RESSEEK( fid, offset, SEEK_SET );
-    error = ( prevpos == -1 );
 
+    error = RESSEEK( fid, offset, SEEK_SET );
     if( !error ) {
         error = ResReadDialogBoxHeader( &head, fid );
     }
@@ -149,7 +147,7 @@ bool DumpDialog( uint_32 offset, uint_32 length, WResFileID fid )
 
     ResFreeDialogBoxHeaderPtrs( &head );
 
-    RESSEEK( fid, prevpos, SEEK_SET );
+    RESSEEK( fid, offset, SEEK_SET );
 
     return( error );
 }

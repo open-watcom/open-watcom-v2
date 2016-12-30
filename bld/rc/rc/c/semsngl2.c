@@ -210,7 +210,7 @@ static void * readString( WResFileID fid, long offset, ReadStrErrInfo *err )
     char    *retstr;
 
 
-    if( RESSEEK( fid, offset, SEEK_SET ) == -1 ) {
+    if( RESSEEK( fid, offset, SEEK_SET ) ) {
         err->status = RS_READ_ERROR;
         err->err_code = errno;
         return( NULL );

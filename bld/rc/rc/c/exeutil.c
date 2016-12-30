@@ -215,7 +215,7 @@ RcStatus SeekRead( WResFileID fid, long newpos, void *buff, size_t size )
 {
     size_t      numread;
 
-    if( RESSEEK( fid, newpos, SEEK_SET ) == -1 )
+    if( RESSEEK( fid, newpos, SEEK_SET ) )
         return( RS_READ_ERROR );
     numread = RESREAD( fid, buff, size );
     if( numread != size ) {

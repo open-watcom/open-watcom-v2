@@ -104,7 +104,7 @@ bool WRLoadResourceFromWinNTEXE( WRInfo *info )
 
 long int WRReadWinNTExeHeader( WResFileID fid, exe_pe_header *header )
 {
-    long int    old_pos;
+    bool        old_pos;
     uint_16     offset;
     bool        ok;
 
@@ -113,7 +113,7 @@ long int WRReadWinNTExeHeader( WResFileID fid, exe_pe_header *header )
     ok = ( fid != WRES_NIL_HANDLE && header != NULL );
 
     if( ok ) {
-        ok = ( (old_pos = RESSEEK( fid, 0x18, SEEK_SET )) != -1 );
+        ok = old_pos = !RESSEEK( fid, 0x18, SEEK_SET );
     }
 
     /* check the reloc offset */
@@ -123,7 +123,7 @@ long int WRReadWinNTExeHeader( WResFileID fid, exe_pe_header *header )
     }
 
     if( ok ) {
-        ok = ( RESSEEK( fid, PE_OFFSET, SEEK_SET ) != -1 );
+        ok = !RESSEEK( fid, PE_OFFSET, SEEK_SET );
     }
 
     /* check header offset */
@@ -133,13 +133,13 @@ long int WRReadWinNTExeHeader( WResFileID fid, exe_pe_header *header )
     }
 
     if( ok ) {
-        ok = ( RESSEEK( fid, offset, SEEK_SET ) != -1 );
+        ok = !RESSEEK( fid, offset, SEEK_SET );
     }
 
     if( ok ) {
         ok = ( RESREAD( fid, &PE32( *header ), sizeof( pe_header ) ) == sizeof( pe_header ) );
         if( ok && IS_PE64( *header ) ) {
-            ok = ( RESSEEK( fid, offset, SEEK_SET ) != -1 );
+            ok = !RESSEEK( fid, offset, SEEK_SET );
             if( ok ) {
                 ok = ( RESREAD( fid, &PE64( *header ), sizeof( pe_header64 ) ) == sizeof( pe_header64 ) );
             }
@@ -151,8 +151,8 @@ long int WRReadWinNTExeHeader( WResFileID fid, exe_pe_header *header )
         ok = WRIsHeaderValidWINNT( header );
     }
 
-    if( old_pos != -1 ) {
-        ok = ( RESSEEK( fid, old_pos, SEEK_SET ) != -1 && ok );
+    if( old_pos ) {
+        ok = ( !RESSEEK( fid, 0x18, SEEK_SET ) && ok );
     }
 
     if( !ok ) {
@@ -528,7 +528,7 @@ bool WRReadResourceHeader( WResFileID fid, uint_32 offset,
     *rd_entry = NULL;
 
     /* if offset is zero don't perform the seek to beginning of resource directory */
-    ok = ( offset == 0 || RESSEEK( fid, offset, SEEK_SET ) != -1 );
+    ok = ( offset == 0 || !RESSEEK( fid, offset, SEEK_SET ) );
 
     /* read the resource directory header */
     if( ok ) {
@@ -554,7 +554,7 @@ bool WRReadResourceHeader( WResFileID fid, uint_32 offset,
 
 WResID *WRGetUniCodeWResID( WResFileID fid, uint_32 rva )
 {
-    uint_32 old_pos;
+    bool    old_pos;
     uint_32 offset;
     uint_16 len;
     bool    ok;
@@ -567,7 +567,7 @@ WResID *WRGetUniCodeWResID( WResFileID fid, uint_32 rva )
     unistr = NULL;
 
     /* seek to the location of the Unicode string */
-    ok = ( (old_pos = RESSEEK( fid, offset, SEEK_SET )) != -1 );
+    ok = old_pos = !RESSEEK( fid, offset, SEEK_SET );
 
     /* read the Unicode string */
     if( ok ) {
@@ -591,8 +591,8 @@ WResID *WRGetUniCodeWResID( WResFileID fid, uint_32 rva )
     }
 
 #if 0
-    if( old_pos != -1 ) {
-        ok = ( RESSEEK( fid, old_pos, SEEK_SET ) != -1 && ok );
+    if( old_pos ) {
+        ok = ( !RESSEEK( fid, offset, SEEK_SET ) && ok );
     }
 #endif
 

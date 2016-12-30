@@ -224,7 +224,7 @@ bool WResWriteHeaderRecord( const WResHeader *header, WResFileID fid )
 {
     bool            error;
 
-    error = ( WRESSEEK( fid, 0L, SEEK_SET ) == -1 );
+    error = WRESSEEK( fid, 0L, SEEK_SET );
     if( error ) {
         WRES_ERROR( WRS_SEEK_FAILED );
     }
