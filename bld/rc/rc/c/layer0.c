@@ -362,10 +362,9 @@ bool res_seek( WResFileID fid, WResFileOffset amount, int where )
 
     if( hInstance.fid == fid ) {
         if( where == SEEK_SET ) {
-            return( lseek( WRES_FID2PH( fid ), amount + WResFileShift, where ) == -1 );
-        } else {
-            return( lseek( WRES_FID2PH( fid ), amount, where ) == -1 );
+            return( lseek( WRES_FID2PH( fid ), amount + WResFileShift, SEEK_SET ) == -1 );
         }
+        return( lseek( WRES_FID2PH( fid ), amount, where ) == -1 );
     }
     i = RcFindIndex( fid );
     if( i >= RC_MAX_FILES ) {
@@ -388,9 +387,7 @@ bool res_seek( WResFileID fid, WResFileOffset amount, int where )
             if( amount < currpos || amount >= currpos + ( RC_BUFFER_SIZE - buff->Count ) ) {
                 if( FlushRcBuffer( fid, buff ) )
                     return( true );
-                if( lseek( WRES_FID2PH( fid ), amount, SEEK_SET ) == -1 ) {
-                    return( true );
-                }
+                return( lseek( WRES_FID2PH( fid ), amount, SEEK_SET ) == -1 );
             } else {
                 diff = amount - currpos;
                 /* add here because Count is chars to left of NextChar */
@@ -402,9 +399,7 @@ bool res_seek( WResFileID fid, WResFileOffset amount, int where )
         case SEEK_END:
             if( FlushRcBuffer( fid, buff ) )
                 return( true );
-            if( lseek( WRES_FID2PH( fid ), amount, where ) == -1 )
-                return( true );
-            break;
+            return( lseek( WRES_FID2PH( fid ), amount, SEEK_END ) == -1 );
         default:
             return( true );
         }
@@ -419,9 +414,7 @@ bool res_seek( WResFileID fid, WResFileOffset amount, int where )
             if( amount < currpos + buff->Count - buff->BytesRead || amount >= currpos + buff->Count ) {
                 if( FlushRcBuffer( fid, buff ) )
                     return( true );
-                if( lseek( WRES_FID2PH( fid ), amount, SEEK_SET ) == -1 ) {
-                    return( true );
-                }
+                return( lseek( WRES_FID2PH( fid ), amount, SEEK_SET ) == -1 );
             } else {
                 diff = amount - currpos;
                 /* subtract here because Count is chars to right of NextChar */
@@ -433,9 +426,7 @@ bool res_seek( WResFileID fid, WResFileOffset amount, int where )
         case SEEK_END:
             if( FlushRcBuffer( fid, buff ) )
                 return( true );
-            if( lseek( WRES_FID2PH( fid ), amount, SEEK_END ) == -1 )
-                return( true );
-            break;
+            return( lseek( WRES_FID2PH( fid ), amount, SEEK_END ) == -1 );
         default:
             return( true );
         }
