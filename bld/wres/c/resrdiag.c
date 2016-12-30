@@ -280,7 +280,7 @@ static ControlClass *ReadControlClass( WResFileID fid )
     /* copy the class or string into the correct place */
     if( !error ) {
         newclass->Class = class;
-        if( stringlen > 0 ) {
+        if( restofstring != NULL ) {
             memcpy( newclass->ClassName + 1, restofstring, stringlen );
         }
     }
@@ -311,6 +311,9 @@ static ControlClass *Read32ControlClass( WResFileID fid )
     if( !error ) {
         if( flags == 0xffff ) {
             error = ResReadUint16( &class, fid );
+        } else if( flags == 0x0000 ) {
+            class = UNI2ASCII( flags ); /* first 16-bit UNICODE character */
+            error = false;
         } else {
             class = UNI2ASCII( flags ); /* first 16-bit UNICODE character */
             restofstring = ResRead32String( fid, &stringlen );
@@ -333,7 +336,7 @@ static ControlClass *Read32ControlClass( WResFileID fid )
     /* copy the class or string into the correct place */
     if( !error ) {
         newclass->Class = (uint_8)class;
-        if( flags != 0xffff ) {
+        if( restofstring != NULL ) {
             memcpy( newclass->ClassName + 1, restofstring, stringlen );
         }
     }
