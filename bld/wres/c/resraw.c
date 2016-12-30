@@ -39,9 +39,7 @@
 bool ResWrite( void *buffer, size_t len, WResFileID fid )
 /*******************************************************/
 {
-    if( WRESWRITE( fid, buffer, len ) != len ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    }
+    if( WRESWRITE( fid, buffer, len ) != len )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }

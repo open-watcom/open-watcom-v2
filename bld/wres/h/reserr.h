@@ -51,7 +51,7 @@ typedef enum {
     WRS_RES_NOT_FOUND
 } WResStatus;
 
-#define WRES_ERROR( x )         WresRecordError( x );
+#define WRES_ERROR( x )         WresRecordError( x )
 
-extern void WresRecordError( WResStatus status );
+extern bool     WresRecordError( WResStatus status );
 #endif

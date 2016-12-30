@@ -128,9 +128,7 @@ bool ResWriteVerFixedInfo( VerFixedInfo *fixed, WResFileID fid )
     fixed->Signature = VER_FIXED_SIGNATURE;
     fixed->StructVer = VER_FIXED_STRUCT_VER;
     fixed->FileDateLow = (uint_32)time( NULL );
-    if( WRESWRITE( fid, fixed, sizeof( VerFixedInfo ) ) != sizeof( VerFixedInfo ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    }
+    if( WRESWRITE( fid, fixed, sizeof( VerFixedInfo ) ) != sizeof( VerFixedInfo ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }

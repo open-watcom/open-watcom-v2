@@ -39,19 +39,15 @@
 bool ResWriteAccelEntry( AccelTableEntry *currentry, WResFileID fid )
 /*******************************************************************/
 {
-    if( WRESWRITE( fid, currentry, sizeof( AccelTableEntry ) ) != sizeof( AccelTableEntry ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    }
+    if( WRESWRITE( fid, currentry, sizeof( AccelTableEntry ) ) != sizeof( AccelTableEntry ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }
 
 bool ResWriteAccelEntry32( AccelTableEntry32 *currentry, WResFileID fid )
 /***********************************************************************/
 {
-    if( WRESWRITE( fid, currentry, sizeof( AccelTableEntry32 ) ) != sizeof( AccelTableEntry32 ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    }
+    if( WRESWRITE( fid, currentry, sizeof( AccelTableEntry32 ) ) != sizeof( AccelTableEntry32 ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }

@@ -204,9 +204,9 @@ WResFileID  res_open( const char *name, wres_open_mode omode )
     }
 }
 
-int  res_close( WResFileID fid )
+bool res_close( WResFileID fid )
 {
-    return( close( WRES_FID2PH( fid ) ) );
+    return( close( WRES_FID2PH( fid ) ) != 0 );
 }
 
 size_t res_read( WResFileID fid, void *buf, size_t len )
@@ -268,8 +268,8 @@ WResFileOffset res_tell( WResFileID fid )
     return( PosLoad() );
 }
 
-int res_ioerr( WResFileID fid, size_t rc )
-/****************************************/
+bool res_ioerr( WResFileID fid, size_t rc )
+/*****************************************/
 {
     fid=fid;
     return( rc == -1 );

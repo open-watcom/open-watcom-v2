@@ -34,6 +34,7 @@
 #if defined( __WATCOMC__ )
     #include <process.h>
 #endif
+#include "bool.h"
 #include "wio.h"
 #include "wressetr.h"
 #include "wresset2.h"

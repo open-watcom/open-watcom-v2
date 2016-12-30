@@ -68,12 +68,12 @@ typedef enum {
 typedef struct WResRoutines {                                           /* defaults */
     /* I/O routines */
     WResFileID      (*cli_open)(const char *, wres_open_mode);          /* open */
-    int             (*cli_close)(WResFileID);                           /* close */
+    bool            (*cli_close)(WResFileID);                           /* close */
     size_t          (*cli_read)(WResFileID, void *, size_t);            /* read */
     size_t          (*cli_write)(WResFileID, const void *, size_t);     /* write */
     WResFileOffset  (*cli_seek)(WResFileID, WResFileOffset, int );      /* lseek */
     WResFileOffset  (*cli_tell)(WResFileID);                            /* tell */
-    int             (*cli_ioerr)(WResFileID,size_t);                    /* ioerr */
+    bool            (*cli_ioerr)(WResFileID,size_t);                    /* ioerr */
     /* memory routines */
     void            *(*cli_alloc)(size_t);                              /* malloc */
     void            (*cli_free)(void *);                                /* free */

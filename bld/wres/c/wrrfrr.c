@@ -44,10 +44,8 @@ bool WResReadFixedResRecord( WResResInfo *newres, WResFileID fid )
 {
     size_t      numread;
 
-    if( (numread = WRESREAD( fid, newres, sizeof( WResResInfo ) )) != sizeof( WResResInfo ) ) {
-        WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-        return( true );
-    }
+    if( (numread = WRESREAD( fid, newres, sizeof( WResResInfo ) )) != sizeof( WResResInfo ) )
+        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
     return( false );
 } /* WResReadFixedResRecord */
 
@@ -60,10 +58,8 @@ bool WResReadFixedResRecord1( WResResInfo1 *newres, WResFileID fid )
 {
     size_t      numread;
 
-    if( (numread = WRESREAD( fid, newres, sizeof( WResResInfo1 ) )) != sizeof( WResResInfo1 ) ) {
-        WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-        return( true );
-    }
+    if( (numread = WRESREAD( fid, newres, sizeof( WResResInfo1 ) )) != sizeof( WResResInfo1 ) )
+        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
     return( false );
 }
 
@@ -76,10 +72,8 @@ bool WResReadFixedResRecord2( WResResInfo *newres, WResFileID fid )
     size_t          numread;
     WResResInfo2    info;
 
-    if( (numread = WRESREAD( fid, &info, sizeof( WResResInfo2 ) )) != sizeof( WResResInfo2 ) ) {
-        WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-        return( true );
-    }
+    if( (numread = WRESREAD( fid, &info, sizeof( WResResInfo2 ) )) != sizeof( WResResInfo2 ) )
+        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
     newres->NumResources = info.NumResources;
     newres->ResName.IsName = info.ResName.IsName;
     if( newres->ResName.IsName ) {

@@ -38,10 +38,8 @@
 bool ResWriteIconCurDirHeader( const IconCurDirHeader *head, WResFileID fid )
 /***************************************************************************/
 {
-    if( WRESWRITE( fid, head, sizeof( IconCurDirHeader ) ) != sizeof( IconCurDirHeader ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    }
+    if( WRESWRITE( fid, head, sizeof( IconCurDirHeader ) ) != sizeof( IconCurDirHeader ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }
 
@@ -50,20 +48,16 @@ bool ResReadIconCurDirHeader( IconCurDirHeader *head, WResFileID fid )
 {
     size_t      numread;
 
-    if( (numread = WRESREAD( fid, head, sizeof( IconCurDirHeader ) )) != sizeof( IconCurDirHeader ) ) {
-        WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
-        return( true );
-    }
+    if( (numread = WRESREAD( fid, head, sizeof( IconCurDirHeader ) )) != sizeof( IconCurDirHeader ) )
+        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
     return( false );
 }
 
 bool ResWriteIconDirEntry( const IconDirEntry *entry, WResFileID fid )
 /********************************************************************/
 {
-    if( WRESWRITE( fid, entry, sizeof( IconDirEntry ) ) != sizeof( IconDirEntry ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    }
+    if( WRESWRITE( fid, entry, sizeof( IconDirEntry ) ) != sizeof( IconDirEntry ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }
 
@@ -72,20 +66,16 @@ bool ResReadIconDirEntry( IconDirEntry *entry, WResFileID fid )
 {
     size_t      numread;
 
-    if( (numread = WRESREAD( fid, entry, sizeof( IconDirEntry ) )) != sizeof( IconDirEntry ) ) {
-        WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED:WRS_READ_INCOMPLETE );
-        return( true );
-    }
+    if( (numread = WRESREAD( fid, entry, sizeof( IconDirEntry ) )) != sizeof( IconDirEntry ) )
+        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
     return( false );
 }
 
 bool ResWriteCurDirEntry( const CurDirEntry *entry, WResFileID fid )
 /******************************************************************/
 {
-    if( WRESWRITE( fid, entry, sizeof( CurDirEntry ) ) != sizeof( CurDirEntry ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    }
+    if( WRESWRITE( fid, entry, sizeof( CurDirEntry ) ) != sizeof( CurDirEntry ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }
 
@@ -94,19 +84,15 @@ bool ResReadCurDirEntry( CurDirEntry *entry, WResFileID fid )
 {
     size_t      numread;
 
-    if( (numread = WRESREAD( fid, entry, sizeof( CurDirEntry ) )) != sizeof( CurDirEntry ) ) {
-        WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-        return( true );
-    }
+    if( (numread = WRESREAD( fid, entry, sizeof( CurDirEntry ) )) != sizeof( CurDirEntry ) )
+        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
     return( false );
 }
 
 bool ResWriteCurHotspot( const CurHotspot *hotspot, WResFileID fid )
 /******************************************************************/
 {
-    if( WRESWRITE( fid, hotspot, sizeof( CurHotspot ) ) != sizeof( CurHotspot ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    }
+    if( WRESWRITE( fid, hotspot, sizeof( CurHotspot ) ) != sizeof( CurHotspot ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }

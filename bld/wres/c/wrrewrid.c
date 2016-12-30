@@ -48,8 +48,7 @@ bool WResReadExtraWResID( WResID *name, WResFileID fid )
         extrabytes = name->ID.Name.NumChars - 1;
         if( extrabytes > 0 ) {
             if( (numread = WRESREAD( fid, name->ID.Name.Name + 1, extrabytes )) != extrabytes ) {
-                WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-                return( true );
+                return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
             }
         }
     }

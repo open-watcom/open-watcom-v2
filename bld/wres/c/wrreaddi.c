@@ -45,14 +45,11 @@ static bool readLangInfoList( WResFileID fid, WResResNode *res, void *fileinfo )
 
     for( i = 0; i < res->Info.NumResources; i++ ) {
         langnode = WRESALLOC( sizeof( WResLangNode ) );
-        if( langnode == NULL ) {
-            WRES_ERROR( WRS_MALLOC_FAILED );
-            return( true );
-        }
+        if( langnode == NULL )
+            return( WRES_ERROR( WRS_MALLOC_FAILED ) );
         if( (numread = WRESREAD( fid, &(langnode->Info), sizeof( WResLangInfo ) )) != sizeof( WResLangInfo ) ) {
-            WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
             WRESFREE( langnode );
-            return( true );
+            return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
         }
         langnode->data = NULL;
         langnode->fileInfo = fileinfo;
@@ -98,8 +95,7 @@ static bool readResList( WResFileID fid, WResTypeNode *currtype, uint_16 ver, vo
             extrabytes = WResIDExtraBytes( &tmpresinfo.ResName );
             newnode = WRESALLOC( sizeof( WResResNode ) + extrabytes );
             if( newnode == NULL ) {
-                error = true;
-                WRES_ERROR( WRS_MALLOC_FAILED );
+                error = WRES_ERROR( WRS_MALLOC_FAILED );
             }
         }
         if( !error ) {
@@ -116,8 +112,7 @@ static bool readResList( WResFileID fid, WResTypeNode *currtype, uint_16 ver, vo
             if( ver < 2 ) {
                 langnode = WRESALLOC( sizeof( WResLangNode ) );
                 if( langnode == NULL ) {
-                    error = true;
-                    WRES_ERROR( WRS_MALLOC_FAILED );
+                    error = WRES_ERROR( WRS_MALLOC_FAILED );
                 }
                 if( !error ) {
                     langnode->data = NULL;
@@ -169,8 +164,7 @@ static bool readTypeList( WResFileID fid, WResDirHead *currdir,uint_16 ver, void
             extrabytes = WResIDExtraBytes( &(newtype.TypeName) );
             newnode = WRESALLOC( sizeof( WResTypeNode ) + extrabytes );
             if( newnode == NULL ) {
-                error = true;
-                WRES_ERROR( WRS_MALLOC_FAILED );
+                error = WRES_ERROR( WRS_MALLOC_FAILED );
             }
         }
         if( !error ) {
@@ -208,14 +202,12 @@ static bool readWResDir( WResFileID fid, WResDir currdir, void *fileinfo )
     error = WResReadHeaderRecord( &head, fid );
     if( !error ) {
         if( head.Magic[0] != WRESMAGIC0 || head.Magic[1] != WRESMAGIC1 ) {
-            error = true;
-            WRES_ERROR( WRS_BAD_SIG );
+            error = WRES_ERROR( WRS_BAD_SIG );
         }
     }
     if( !error ) {
         if( head.WResVer > WRESVERSION ) {
-            error = true;
-            WRES_ERROR( WRS_BAD_VERSION );
+            error = WRES_ERROR( WRS_BAD_VERSION );
         }
     }
     if( !error ) {

@@ -42,6 +42,7 @@
 #if defined(__WINDOWS__)
     #include <windows.h>
 #else
+    #include "bool.h"
     #include "wressetr.h"
     #include "wresset2.h"
 #endif

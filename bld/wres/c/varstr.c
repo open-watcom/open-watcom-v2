@@ -103,7 +103,7 @@ char *VarStringEnd( VarString *list, size_t *retlength )
     newstring = WRESALLOC( length + 1 );
 
     if( newstring == NULL ) {
-        WRES_ERROR( WRS_MALLOC_FAILED )
+        WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         stringpart = newstring;
         while( list != NULL ) {

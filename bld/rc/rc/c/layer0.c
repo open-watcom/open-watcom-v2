@@ -216,8 +216,8 @@ static bool FlushRcBuffer( WResFileID fid, RcBuffer *buff )
 
 } /* FlushRcBuffer */
 
-int res_close( WResFileID fid )
-/*****************************/
+bool res_close( WResFileID fid )
+/******************************/
 {
     RcBuffer    *buff;
     int         i;
@@ -227,7 +227,7 @@ int res_close( WResFileID fid )
         buff = RcFileList[i].Buffer;
         if( buff->IsDirty ) {
             if( FlushRcBuffer( fid, buff ) ) {
-                return( -1 );
+                return( true );
             }
         }
         RcMemFree( buff );
@@ -236,7 +236,7 @@ int res_close( WResFileID fid )
         RcFileList[i].Buffer = NULL;
     }
     UnRegisterOpenFile( fid );
-    return( close( WRES_FID2PH( fid ) ) );
+    return( close( WRES_FID2PH( fid ) ) != 0 );
 
 } /* RcClose */
 
@@ -469,8 +469,8 @@ WResFileOffset res_tell( WResFileID fid )
     }
 } /* RcTell */
 
-int res_ioerr( WResFileID fid, size_t rc )
-/****************************************/
+bool res_ioerr( WResFileID fid, size_t rc )
+/*****************************************/
 {
     fid=fid;
     return( rc == -1 );

@@ -176,12 +176,13 @@ void CloseResFiles( ResFileInfo *resfiles )
     }
 }
 
-void WresRecordError( WResStatus status )
+bool WresRecordError( WResStatus status )
 /***************************************/
 {
     errFromWres.used = true;
     errFromWres.status = status;
     errFromWres.errnum = errno;
+    return( true );
 }
 
 char *LastWresErrStr( void )

@@ -272,8 +272,7 @@ static ControlClass *ReadControlClass( WResFileID fid )
     } else {
         newclass = WRESALLOC( sizeof( ControlClass ) + stringlen );
         if( newclass == NULL ) {
-            error = true;
-            WRES_ERROR( WRS_MALLOC_FAILED );
+            error = WRES_ERROR( WRS_MALLOC_FAILED );
         }
     }
 
@@ -328,8 +327,7 @@ static ControlClass *Read32ControlClass( WResFileID fid )
     } else {
         newclass = WRESALLOC( sizeof( ControlClass ) + stringlen );
         if( newclass == NULL ) {
-            error = true;
-            WRES_ERROR( WRS_MALLOC_FAILED );
+            error = WRES_ERROR( WRS_MALLOC_FAILED );
         }
     }
 

@@ -60,8 +60,7 @@ bool ResWriteMenuExHeader( MenuHeader *currhead, WResFileID fid, uint_8 *headerd
     } else {
         if( headerdata != NULL ) {
             if( WRESWRITE( fid, headerdata, currhead->HeaderSize ) != currhead->HeaderSize ) {
-                WRES_ERROR( WRS_WRITE_FAILED );
-                return( true );
+                return( WRES_ERROR( WRS_WRITE_FAILED ) );
             }
         }
         return( false );
@@ -79,8 +78,7 @@ bool ResWriteMenuItemPopup( const MenuItemPopup *curritem, bool use_unicode, WRe
             error = ResWriteString( curritem->ItemText, use_unicode, fid );
         }
     } else {
-        WRES_ERROR( WRS_BAD_PARAMETER );
-        error = true;
+        error = WRES_ERROR( WRS_BAD_PARAMETER );
     }
 
     return( error );
@@ -113,8 +111,7 @@ bool ResWriteMenuExItemPopup( const MenuItemPopup *curritem, const MenuExItemPop
             error = ResWriteUint32( exdata->HelpId, fid );
         }
     } else {
-        WRES_ERROR( WRS_BAD_PARAMETER );
-        error = true;
+        error = WRES_ERROR( WRS_BAD_PARAMETER );
     }
 
     return( error );
@@ -127,8 +124,7 @@ bool ResWriteMenuItemNormal( const MenuItemNormal *curritem, bool use_unicode, W
     bool        error;
 
     if( curritem->ItemFlags & MENU_POPUP ) {
-        WRES_ERROR( WRS_BAD_PARAMETER );
-        error = true;
+        error = WRES_ERROR( WRS_BAD_PARAMETER );
     } else {
         error = ResWriteUint16( curritem->ItemFlags, fid );
         if( !error ) {
@@ -149,8 +145,7 @@ bool ResWriteMenuExItemNormal( const MenuItemNormal *curritem, const MenuExItemN
     bool        error;
 
     if( curritem->ItemFlags & MENUEX_POPUP ) {
-        WRES_ERROR( WRS_BAD_PARAMETER );
-        error = true;
+        error = WRES_ERROR( WRS_BAD_PARAMETER );
     } else {
         error = ResWriteUint32( exdata->ItemType, fid );
         if( !error ) {

@@ -41,10 +41,8 @@ bool WResReadFixedTypeRecord( WResTypeInfo *newtype, WResFileID fid )
 {
     size_t      numread;
 
-    if( (numread = WRESREAD( fid, newtype, sizeof( WResTypeInfo ) )) != sizeof( WResTypeInfo ) ) {
-        WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-        return( true );
-    }
+    if( (numread = WRESREAD( fid, newtype, sizeof( WResTypeInfo ) )) != sizeof( WResTypeInfo ) )
+        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
     return( false );
 } /* WResReadFixedTypeRecord */
 
@@ -55,10 +53,8 @@ bool WResReadFixedTypeRecord1or2( WResTypeInfo *newtype, WResFileID fid )
     size_t              numread;
     WResTypeInfo1or2    info;
 
-    if( (numread = WRESREAD( fid, &info, sizeof( WResTypeInfo1or2 ) )) != sizeof( WResTypeInfo1or2 ) ) {
-        WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-        return( true );
-    }
+    if( (numread = WRESREAD( fid, &info, sizeof( WResTypeInfo1or2 ) )) != sizeof( WResTypeInfo1or2 ) )
+        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
     newtype->NumResources = info.NumResources;
     newtype->TypeName.IsName = info.TypeName.IsName;
     if( newtype->TypeName.IsName ) {

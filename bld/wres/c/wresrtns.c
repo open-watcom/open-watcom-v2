@@ -31,6 +31,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include "bool.h"
 #include "wressetr.h"
 #include "reserr.h"
 
@@ -47,9 +48,9 @@ static WResFileID res_open( const char *name, wres_open_mode omode )
     return( WRES_FH2FID( fp ) );
 }
 
-static int res_close( WResFileID fid )
+static bool res_close( WResFileID fid )
 {
-    return( fclose( WRES_FID2FH( fid ) ) );
+    return( fclose( WRES_FID2FH( fid ) ) != 0 );
 }
 
 static size_t res_read( WResFileID fid, void *buf, size_t size )
@@ -77,7 +78,7 @@ static WResFileOffset res_tell( WResFileID fid )
     return( ftell( WRES_FID2FH( fid ) ) );
 }
 
-static int res_ioerr( WResFileID fid, size_t rc )
+static bool res_ioerr( WResFileID fid, size_t rc )
 {
     rc = rc;
     return( ferror( WRES_FID2FH( fid ) ) != 0 );
