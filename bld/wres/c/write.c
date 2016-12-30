@@ -222,20 +222,11 @@ bool WResWriteLangRecord( const WResLangInfo *info, WResFileID fid )
 bool WResWriteHeaderRecord( const WResHeader *header, WResFileID fid )
 /********************************************************************/
 {
-    bool            error;
-
-    error = WRESSEEK( fid, 0L, SEEK_SET );
-    if( error ) {
-        WRES_ERROR( WRS_SEEK_FAILED );
-    }
-
-    if( !error ) {
-        if( WRESWRITE( fid, header, sizeof( WResHeader ) ) != sizeof( WResHeader ) ) {
-            error = WRES_ERROR( WRS_WRITE_FAILED );
-        }
-    }
-
-    return( error );
+    if( WRESSEEK( fid, 0L, SEEK_SET ) )
+        return( WRES_ERROR( WRS_SEEK_FAILED ) );
+    if( WRESWRITE( fid, header, sizeof( WResHeader ) ) != sizeof( WResHeader ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
+    return( false );
 } /* WResWriteHeaderRecord */
 
 bool WResWriteExtHeader( const WResExtHeader *ext_head, WResFileID fid )

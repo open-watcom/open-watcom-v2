@@ -32,8 +32,8 @@
 
 #include <wwindows.h>
 #include <string.h>
-#include <io.h>
 #include <stdlib.h>
+#include "wio.h"
 #include "watcom.h"
 #include "wrglbl.h"
 #include "wrrdw16.h"

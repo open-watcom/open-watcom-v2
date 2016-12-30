@@ -38,21 +38,15 @@
 bool WResReadHeaderRecord( WResHeader *header, WResFileID fid )
 /*************************************************************/
 {
-    bool            error;
     size_t          numread;
 
-    error = WRESSEEK( fid, 0, SEEK_SET );
-    if( error ) {
-        WRES_ERROR( WRS_SEEK_FAILED );
-    } else {
-        if( (numread = WRESREAD( fid, header, sizeof( WResHeader ) )) != sizeof( WResHeader ) )
-            return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
-        error = WRESSEEK( fid, 0, SEEK_SET );
-        if( error ) {
-            WRES_ERROR( WRS_SEEK_FAILED );
-        }
-    }
-    return( error );
+    if( WRESSEEK( fid, 0, SEEK_SET ) )
+        return( WRES_ERROR( WRS_SEEK_FAILED ) );
+    if( (numread = WRESREAD( fid, header, sizeof( WResHeader ) )) != sizeof( WResHeader ) )
+        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
+    if( WRESSEEK( fid, 0, SEEK_SET ) )
+        return( WRES_ERROR( WRS_SEEK_FAILED ) );
+    return( false );
 }
 
 bool WResReadExtHeader( WResExtHeader *head, WResFileID fid )
