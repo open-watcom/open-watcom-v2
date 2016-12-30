@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "bool.h"
 #include "wio.h"
 #include "watcom.h"
 #include "pcobj.h"
