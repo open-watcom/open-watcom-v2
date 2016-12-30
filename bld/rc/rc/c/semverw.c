@@ -415,7 +415,7 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
             goto OutputWriteError;
         }
 
-        if( ResSeek( CurrResFile.fid, padding, SEEK_CUR ) == -1 )  {
+        if( ResSeek( CurrResFile.fid, padding, SEEK_CUR ) )  {
             err_code = LastWresErr();
             goto OutputWriteError;
         }

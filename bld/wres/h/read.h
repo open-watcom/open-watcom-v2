@@ -70,7 +70,7 @@ extern bool             ResReadUint32( uint_32 *newint, WResFileID fid );
 extern bool             ResReadUint16( uint_16 *newint, WResFileID fid );
 extern bool             ResReadUint8( uint_8 *newint, WResFileID fid );
 extern WResFileOffset   ResTell( WResFileID fid );
-extern WResFileOffset   ResSeek( WResFileID fid, WResFileOffset offset, int origin );
+extern bool             ResSeek( WResFileID fid, WResFileOffset offset, int origin );
 extern bool             ResReadPadDWord( WResFileID fid );
 extern M32ResResourceHeader *M32ResReadResourceHeader( WResFileID fid );
 

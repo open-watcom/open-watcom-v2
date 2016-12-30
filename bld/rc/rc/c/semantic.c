@@ -155,7 +155,7 @@ static void copyMSFormatRes( WResID * name, WResID * type, ResMemFlags flags,
         }
 
         /* copy the data from the temperary file to the RES file */
-        if( ResSeek( tmp_fid, loc.start, SEEK_SET ) == -1 ) {
+        if( ResSeek( tmp_fid, loc.start, SEEK_SET ) ) {
             RcError( ERR_READING_TMP, MSFormatTmpFile, LastWresErrStr() );
             ResCloseFile( tmp_fid );
             ErrorHasOccured = true;

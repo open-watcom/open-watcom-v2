@@ -140,7 +140,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
 
     if( ok ) {
         dlg_info->MemoryFlags = lnode->Info.MemoryFlags;
-        ok = (ResSeek( fid, lnode->Info.Offset, SEEK_SET ) != -1);
+        ok = !ResSeek( fid, lnode->Info.Offset, SEEK_SET );
     }
 
     if( ok ) {

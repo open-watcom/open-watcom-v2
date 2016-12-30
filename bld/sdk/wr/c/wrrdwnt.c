@@ -169,7 +169,7 @@ int WRCalcObjTableOffset( WResFileID fid, exe_pe_header *hdr )
     int      offset;
     bool     ok;
 
-    ok = ( ResSeek( fid, PE_OFFSET, SEEK_SET ) != -1 );
+    ok = !ResSeek( fid, PE_OFFSET, SEEK_SET );
 
     if( ok ) {
         ResReadUint16( &pe_offset, fid );
@@ -195,7 +195,7 @@ int WRReadNTObjectTable( WResFileID fid, exe_pe_header *hdr, pe_object **ot )
     int     ot_offset;
 
     ot_offset = WRCalcObjTableOffset( fid, hdr );
-    if( ot_offset == 0 || ResSeek( fid, ot_offset, SEEK_SET ) == -1 ) {
+    if( ot_offset == 0 || ResSeek( fid, ot_offset, SEEK_SET ) ) {
         return( FALSE );
     }
     if( IS_PE64( *hdr ) ) {
@@ -612,7 +612,7 @@ bool WRReadResourceEntry( WResFileID fid, uint_32 offset, resource_entry *res_en
     bool ok;
 
     /* if offset is zero don't perform the seek to beginning of resource directory */
-    ok = (offset == 0 || ResSeek( fid, offset, SEEK_SET ) != -1);
+    ok = ( offset == 0 || !ResSeek( fid, offset, SEEK_SET ) );
 
     /* read the resource entry */
     if( ok ) {
