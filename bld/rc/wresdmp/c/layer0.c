@@ -80,9 +80,8 @@ bool res_seek( WResFileID fid, WResFileOffset pos, int where )
     if( where == SEEK_SET ) {
         /* fool the wres library into thinking that the resource information starts at offset 0 */
         return( lseek( WRES_FID2PH( fid ), pos + WResFileShift, where ) == -1 );
-    } else {
-        return( lseek( WRES_FID2PH( fid ), pos, where ) == -1 );
     }
+    return( lseek( WRES_FID2PH( fid ), pos, where ) == -1 );
 }
 
 WResFileOffset res_tell( WResFileID fid )
