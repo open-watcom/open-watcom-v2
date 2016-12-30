@@ -36,7 +36,6 @@
 #include <windows.h>
 #endif
 #include "wpi.h"
-#include "wpitypes.h"
 
 void _wpi_free( void * ptr )
 {

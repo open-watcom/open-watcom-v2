@@ -44,7 +44,6 @@
 #include <windows.h>
 #endif
 #include "wpi.h"
-#include "wpitypes.h"
 
 void *gmem_alloc(
 /***************/
