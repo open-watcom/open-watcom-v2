@@ -38,14 +38,6 @@
 /* function */
 
 #if defined( _WIN64 )
-#define WResFileOffset      long
-#elif !defined( __WATCOMC__ ) && defined( __UNIX__ )
-#define WResFileOffset      off_t
-#else
-#define WResFileOffset      long
-#endif
-
-#if defined( _WIN64 )
 #define WRES_FID2PH(fid)    (((int)(unsigned __int64)(fid)) - 1)
 #define WRES_PH2FID(ph)     ((WResFileID)(unsigned __int64)((ph) + 1))
 #else
@@ -58,6 +50,13 @@
 #define WRES_NIL_HANDLE     NULL
 
 typedef void                *WResFileID;
+#if defined( _WIN64 )
+typedef long                WResFileOffset;
+#elif !defined( __WATCOMC__ ) && defined( __UNIX__ )
+typedef off_t               WResFileOffset;
+#else
+typedef long                WResFileOffset;
+#endif
 
 typedef enum {
     WRES_OPEN_RO,

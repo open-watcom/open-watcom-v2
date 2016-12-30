@@ -232,7 +232,7 @@ bool res_seek( WResFileID fid, WResFileOffset amount, int where )
     }
 
     DbgAssert( where != SEEK_END );
-    DbgAssert( !(where == SEEK_CUR && amount < 0) );
+    DbgAssert( !( where == SEEK_CUR && amount < 0 ) );
 
     if( WRES_FID2PH( fid ) == Root->outfile->handle ) {
         if( where == SEEK_CUR ) {
@@ -246,11 +246,10 @@ bool res_seek( WResFileID fid, WResFileOffset amount, int where )
             } else {
                 SeekLoad( new_pos );
             }
-            return( false );
         } else {
             SeekLoad( amount );
-            return( false );
         }
+        return( false );
     } else {
         return( QLSeek( WRES_FID2PH( fid ), amount, where, "resource file" ) == -1 );
     }
