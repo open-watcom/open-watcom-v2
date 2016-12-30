@@ -100,7 +100,7 @@ void PrintMsg( const char *fmt, ... )
         if( c == '%' ) {
             c = *fmt++;
             if( c == 's' ) {
-                for( p = va_arg( args, char * ); (c = *fmt++) != '\0'; ) {
+                for( p = va_arg( args, char * ); (c = *p++) != '\0'; ) {
                     putchar(c);
                 }
             } else if( c == 'd' ) {
