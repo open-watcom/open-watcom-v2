@@ -111,9 +111,8 @@ static bool readResList( WResFileID fid, WResTypeNode *currtype, uint_16 ver, vo
 
             if( ver < 2 ) {
                 langnode = WRESALLOC( sizeof( WResLangNode ) );
-                if( langnode == NULL ) {
+                if( langnode == NULL )
                     error = WRES_ERROR( WRS_MALLOC_FAILED );
-                }
                 if( !error ) {
                     langnode->data = NULL;
                     langnode->fileInfo = fileinfo;
@@ -215,9 +214,8 @@ static bool readWResDir( WResFileID fid, WResDir currdir, void *fileinfo )
             /*
              * seek to the extended header and read it
              */
-            error = WRESSEEK( fid, sizeof( head ), SEEK_CUR );
-            if( error ) {
-                WRES_ERROR( WRS_SEEK_FAILED );
+            if( WRESSEEK( fid, sizeof( head ), SEEK_CUR ) ) {
+                error = WRES_ERROR( WRS_SEEK_FAILED );
             } else {
                 error = WResReadExtHeader( &ext_head, fid );
             }
@@ -229,9 +227,8 @@ static bool readWResDir( WResFileID fid, WResDir currdir, void *fileinfo )
         currdir->NumResources = head.NumResources;
         currdir->NumTypes = head.NumTypes;
         currdir->TargetOS = ext_head.TargetOS;
-        error = WRESSEEK( fid, head.DirOffset, SEEK_SET );
-        if( error ) {
-            WRES_ERROR( WRS_SEEK_FAILED );
+        if( WRESSEEK( fid, head.DirOffset, SEEK_SET ) ) {
+            error = WRES_ERROR( WRS_SEEK_FAILED );
         }
     }
     /* read in the list of types (and the resources) */
@@ -309,9 +306,8 @@ static bool readMResDir( WResFileID fid, WResDir currdir, bool *dup_discarded,
         }
 
         if( !error ) {
-            error = WRESSEEK( fid, head->Size, SEEK_CUR );
-            if( error ) {
-                WRES_ERROR( WRS_SEEK_FAILED );
+            if( WRESSEEK( fid, head->Size, SEEK_CUR ) ) {
+                error = WRES_ERROR( WRS_SEEK_FAILED );
             }
         }
 
@@ -368,22 +364,17 @@ bool WResReadDir2( WResFileID fid, WResDir currdir, bool *dup_discarded, void *f
     }
 
     /* seek to the start of the file */
-    error = WRESSEEK( fid, 0, SEEK_SET );
-    if( error ) {
-        WRES_ERROR( WRS_SEEK_FAILED );
-    }
+    if( WRESSEEK( fid, 0, SEEK_SET ) )
+        return( WRES_ERROR( WRS_SEEK_FAILED ) );
 
-    if( !error ) {
-        restype = WResFindResType( fid );
-        if( restype == RT_WATCOM ) {
-            error = readWResDir( fid, currdir, fileinfo );
-        } else if( restype == RT_WIN16 ) {
-            error = readMResDir( fid, currdir, dup_discarded, false, fileinfo );
-        } else {
-            error = readMResDir( fid, currdir, dup_discarded, true, fileinfo );
-        }
+    restype = WResFindResType( fid );
+    if( restype == RT_WATCOM ) {
+        error = readWResDir( fid, currdir, fileinfo );
+    } else if( restype == RT_WIN16 ) {
+        error = readMResDir( fid, currdir, dup_discarded, false, fileinfo );
+    } else {
+        error = readMResDir( fid, currdir, dup_discarded, true, fileinfo );
     }
-
     return( error );
 
 } /* WResReadDir */

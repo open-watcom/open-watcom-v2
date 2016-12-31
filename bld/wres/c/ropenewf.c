@@ -43,8 +43,7 @@ WResFileID ResOpenNewFile( const char *filename )
     WResFileID  fid;
 
     fid = WRESOPEN( filename, WRES_OPEN_NEW );
-    if( fid == WRES_NIL_HANDLE ) {
+    if( fid == WRES_NIL_HANDLE )
         WRES_ERROR( WRS_OPEN_FAILED );
-    }
     return( fid );
 }

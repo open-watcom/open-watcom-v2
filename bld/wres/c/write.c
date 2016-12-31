@@ -241,7 +241,7 @@ bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID fid, ui
 /*****************************************************************************************/
 {
     char            *buf = NULL;
-    bool            ret;
+    bool            error;
 
     if( use_unicode ) {
         if( len * 2 > CONV_BUF_SIZE ) {
@@ -252,24 +252,21 @@ bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID fid, ui
         len = (ConvToUnicode)( len, string, buf );
         string = buf;
     }
-    if( WRESWRITE( fid, string, len ) != len ) {
-        ret = WRES_ERROR( WRS_WRITE_FAILED );
-    } else {
-        ret = false;
-    }
+    error = false;
+    if( WRESWRITE( fid, string, len ) != len )
+        error = WRES_ERROR( WRS_WRITE_FAILED );
     if( use_unicode ) {
         if( buf != ConvBuffer ) {
             WRESFREE( buf );
         }
     }
-    return( ret );
+    return( error );
 }
 
 bool ResWriteString( const char *string, bool use_unicode, WResFileID fid )
 /*************************************************************************/
 {
     size_t  stringlen;
-    bool    ret;
 
     /* if string is NULL output the null string */
     if( string == NULL ) {
@@ -278,8 +275,7 @@ bool ResWriteString( const char *string, bool use_unicode, WResFileID fid )
 
     /* the +1 is so we will output the '\0' as well */
     stringlen = strlen( string ) + 1;
-    ret = ResWriteStringLen( string, use_unicode, fid, stringlen );
-    return( ret );
+    return( ResWriteStringLen( string, use_unicode, fid, stringlen ) );
 }
 
 bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, WResFileID fid )

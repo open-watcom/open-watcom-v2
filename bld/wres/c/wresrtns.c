@@ -42,9 +42,8 @@ static WResFileID res_open( const char *name, wres_open_mode omode )
 
     omode=omode;
     fp = fopen( name, "rb" );
-    if( fp == NULL ) {
+    if( fp == NULL )
         WRES_ERROR( WRS_OPEN_FAILED );
-    }
     return( WRES_FH2FID( fp ) );
 }
 

@@ -44,12 +44,9 @@ WResTypeInfo *WResReadTypeRecord( WResFileID fid )
     WResTypeInfo        *newptr;
     size_t              numread;
     unsigned            numcharsleft;
-    bool                error;
 
-    error = WResReadFixedTypeRecord( &newtype, fid );
-    if( error ) {
+    if( WResReadFixedTypeRecord( &newtype, fid ) )
         return( NULL );
-    }
 
     if( newtype.TypeName.IsName ) {
         numcharsleft = newtype.TypeName.ID.Name.NumChars - 1;

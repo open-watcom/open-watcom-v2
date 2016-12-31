@@ -101,7 +101,6 @@ char *VarStringEnd( VarString *list, size_t *retlength )
     length = ComputeVarStringLen( list );
     /* +1 is for the '\0' */
     newstring = WRESALLOC( length + 1 );
-
     if( newstring == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {

@@ -44,12 +44,9 @@ WResResInfo *WResReadResRecord( WResFileID fid )
     WResResInfo     *newptr;
     size_t          numread;
     unsigned        numcharsleft;
-    bool            error;
 
-    error = WResReadFixedResRecord( &newres, fid );
-    if( error ) {
+    if( WResReadFixedResRecord( &newres, fid ) )
         return( NULL );
-    }
 
     if( newres.ResName.IsName ) {
         numcharsleft = newres.ResName.ID.Name.NumChars - 1;

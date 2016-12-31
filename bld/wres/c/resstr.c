@@ -62,12 +62,11 @@ bool ResWriteStringTableBlock( StringTableBlock *currblock, bool use_unicode, WR
 /********************************************************************************************/
 {
     int     stringid;
-    bool    error;
 
-    error = false;
-    for( stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK && !error; stringid++ ) {
-        error = WResWriteWResIDNameUni( currblock->String[stringid], use_unicode, fid );
+    for( stringid = 0; stringid < STRTABLE_STRS_PER_BLOCK; stringid++ ) {
+        if( WResWriteWResIDNameUni( currblock->String[stringid], use_unicode, fid ) ) {
+            return( true );
+        }
     }
-
-    return( error );
+    return( false );
 } /* ResWriteStringTableBlock */

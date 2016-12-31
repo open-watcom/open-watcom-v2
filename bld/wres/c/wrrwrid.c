@@ -43,13 +43,10 @@ WResID *WResReadWResID( WResFileID fid )
     WResID          *newidptr;
     size_t          numread;
     unsigned        extrabytes;     /* chars to be read beyond the fixed size */
-    bool            error;
 
     /* read in the fixed part of the record */
-    error = WResReadFixedWResID( &newid, fid );
-    if( error ) {
+    if( WResReadFixedWResID( &newid, fid ) )
         return( NULL );
-    }
 
     if( newid.IsName ) {
         extrabytes = newid.ID.Name.NumChars - 1;

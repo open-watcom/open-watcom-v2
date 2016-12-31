@@ -46,7 +46,7 @@
 static bool ResReadDialogSizeInfo( DialogSizeInfo *size, WResFileID fid )
 /***********************************************************************/
 {
-    bool    error;
+    bool        error;
     uint_16     tmp16;
 
     error = ResReadUint16( &tmp16, fid );
@@ -253,23 +253,22 @@ static ControlClass *ReadControlClass( WResFileID fid )
     size_t          stringlen;
     char            *restofstring;
 
+    /* read in the first byte */
+    if( ResReadUint8( &class, fid ) )
+        return( NULL );
+
     restofstring = NULL;
     stringlen = 0;
-
-    /* read in the first byte */
-    error = ResReadUint8( &class, fid );
-    if( !error ) {
-        if( (class & 0x80) == 0 && class != '\0' ) {
-            restofstring = ResReadString( fid, &stringlen );
-            stringlen++;    /* for the '\0' */
-            error = (restofstring == NULL);
-        }
+    error = false;
+    if( (class & 0x80) == 0 && class != '\0' ) {
+        restofstring = ResReadString( fid, &stringlen );
+        stringlen++;    /* for the '\0' */
+        error = (restofstring == NULL);
     }
 
     /* allocate memory for the new class */
-    if( error ) {
-        newclass = NULL;
-    } else {
+    newclass = NULL;
+    if( !error ) {
         newclass = WRESALLOC( sizeof( ControlClass ) + stringlen );
         if( newclass == NULL ) {
             error = WRES_ERROR( WRS_MALLOC_FAILED );
@@ -301,30 +300,28 @@ static ControlClass *Read32ControlClass( WResFileID fid )
     size_t          stringlen;
     char            *restofstring;
 
+    /* read in the first word */
+    if( ResReadUint16( &flags, fid ) )
+        return( NULL );
+
+    class = 0;
     restofstring = NULL;
     stringlen = 0;
-    class = 0;
-
-    /* read in the first word */
-    error = ResReadUint16( &flags, fid );
-    if( !error ) {
-        if( flags == 0xffff ) {
-            error = ResReadUint16( &class, fid );
-        } else if( flags == 0x0000 ) {
-            class = UNI2ASCII( flags ); /* first 16-bit UNICODE character */
-            error = false;
-        } else {
-            class = UNI2ASCII( flags ); /* first 16-bit UNICODE character */
-            restofstring = ResRead32String( fid, &stringlen );
-            stringlen++;                /* for the '\0' */
-            error = (restofstring == NULL);
-        }
+    if( flags == 0xffff ) {
+        error = ResReadUint16( &class, fid );
+    } else if( flags == 0 ) {
+        class = UNI2ASCII( flags ); /* first 16-bit UNICODE character */
+        error = false;
+    } else {
+        class = UNI2ASCII( flags ); /* first 16-bit UNICODE character */
+        restofstring = ResRead32String( fid, &stringlen );
+        stringlen++;                /* for the '\0' */
+        error = (restofstring == NULL);
     }
 
     /* allocate memory for the new class */
-    if( error ) {
-        newclass = NULL;
-    } else {
+    newclass = NULL;
+    if( !error ) {
         newclass = WRESALLOC( sizeof( ControlClass ) + stringlen );
         if( newclass == NULL ) {
             error = WRES_ERROR( WRS_MALLOC_FAILED );
