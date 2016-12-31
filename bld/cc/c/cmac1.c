@@ -83,7 +83,6 @@ static struct special_macro_names  SpcMacros[] = {
     { "__LINE__",           MACRO_LINE          },
     { "__STDC__",           MACRO_STDC          },
     { "__STDC_HOSTED__",    MACRO_STDC_HOSTED   },
-    { "__STDC_LIB_EXT1__",  MACRO_STDC_LIB_EXT1 },
     { "__STDC_VERSION__",   MACRO_STDC_VERSION  },
     { "__TIME__",           MACRO_TIME          },
     { NULL,                 0                   }
@@ -362,11 +361,6 @@ TOKEN SpecialMacro( special_macros spc_macro )
         Buffer[1] = '\0';
         Constant = 1;
         ConstType = TYPE_INT;
-        return( T_CONSTANT );
-    case MACRO_STDC_LIB_EXT1:
-        CPYLIT( Buffer, "200509L" );
-        Constant = 200509;
-        ConstType = TYPE_LONG;
         return( T_CONSTANT );
     case MACRO_STDC_VERSION:
         if( CompFlags.c99_extensions ) {
