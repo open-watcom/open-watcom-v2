@@ -35,8 +35,8 @@
 #include "exitwmsg.h"
 
 
-_WCRTLINK _NORETURN void __exit_with_msg( char _WCI86FAR *msg, unsigned retcode )
-/*******************************************************************************/
+_WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *msg, unsigned retcode )
+/*********************************************************************************/
 {
     unsigned    len;
     char        _WCI86FAR *end;
@@ -50,14 +50,12 @@ _WCRTLINK _NORETURN void __exit_with_msg( char _WCI86FAR *msg, unsigned retcode 
     newline[1] = '\n';
     VioWrtTTY( &newline, 2, 0 );
     __exit( retcode );
-    // never return
 }
 
-_WCRTLINK _NORETURN void __fatal_runtime_error( char _WCI86FAR *msg, unsigned retcode )
-/***************************************************************************/
+_WCRTLINK _WCNORETURN void __fatal_runtime_error( char _WCI86FAR *msg, unsigned retcode )
+/***************************************************************************************/
 {
     if( __EnterWVIDEO( msg ) )
         __exit( retcode );
     __exit_with_msg( msg, retcode );
-    // never return
 }

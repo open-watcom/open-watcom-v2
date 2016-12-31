@@ -85,10 +85,9 @@ _WCRTLINK void _WCI86FAR __null_FPE_rtn( int fpe_type )
     fpe_type = fpe_type;
 }
 
-_NORETURN void _Not_Enough_Memory( void )
+_WCNORETURN void _Not_Enough_Memory( void )
 {
     __fatal_runtime_error( "Not enough memory", 1 );
-    // never return
 }
 
 #if defined( _M_I86 )

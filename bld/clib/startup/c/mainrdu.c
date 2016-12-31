@@ -128,7 +128,7 @@ int __RdosInit( int is_dll, thread_data *tdata, int hdll )
     return( 1 );
 }
 
-_WCRTLINK _NORETURN void __exit( unsigned ret_code )
+_WCRTLINK _WCNORETURN void __exit( unsigned ret_code )
 {
     if( !__Is_DLL ) {
         __DoneExceptionFilter();
@@ -140,5 +140,4 @@ _WCRTLINK _NORETURN void __exit( unsigned ret_code )
     if( !__Is_DLL ) {
         RdosUnloadExe( ret_code );
     }
-    // never return
 }

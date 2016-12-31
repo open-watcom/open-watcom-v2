@@ -232,14 +232,13 @@ int __deinit_environment( void *  reserved )
 //  __exit should ensure that __deinit_environment is
 //  called at termination.
 *****************************************************************************/
-_NORETURN void __exit( unsigned rc )
+_WCNORETURN void __exit( unsigned rc )
 {
     __FiniRtns( 0, InitFiniLevel );
 /*
  * Netware has own _exit procedure
  */
     _exit( rc );
-    // never return
 }
 
 /*#define INTERCEPT_ALLOCATIONS */

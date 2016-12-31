@@ -52,10 +52,9 @@ _WCRTLINK unsigned stackavail( void )
 }
 
 #if !defined( _M_IX86 )
-_WCRTLINK _NORETURN void __STKOVERFLOW( void )
+_WCRTLINK _WCNORETURN void __STKOVERFLOW( void )
 {
     __fatal_runtime_error( "stack overflow", -1 );
-    // never return
 }
 
 static void _init_stk( void )
