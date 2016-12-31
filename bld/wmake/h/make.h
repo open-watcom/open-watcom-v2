@@ -116,8 +116,8 @@ struct Glob {
 #define STATIC static
 #endif
 
-#if defined( _NORETURN )
-#define NO_RETURN   _NORETURN
+#if defined( _WCNORETURN )
+#define NO_RETURN   _WCNORETURN
 #else
 #define NO_RETURN
 #endif
