@@ -36,9 +36,8 @@
 #include "rtmsgs.h"
 
 
-// never return
 extern "C"
-_NORETURN
+_WCNORETURN
 void CPPLIB( corrupted_stack )( // TERMINATE, WITH CORRUPTED STACK MSG
     void )
 {
@@ -47,9 +46,8 @@ void CPPLIB( corrupted_stack )( // TERMINATE, WITH CORRUPTED STACK MSG
 }
 
 
-// never return
 extern "C"
-_NORETURN
+_WCNORETURN
 void CPPLIB( call_terminate )(  // CALL "terminate" SET BY "set_terminate"
     char* abort_msg,            // - abortion message
     THREAD_CTL *thr )           // - thread-specific data

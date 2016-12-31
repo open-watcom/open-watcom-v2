@@ -464,7 +464,7 @@ void CPPLIB( catch_done )(      // COMPLETION OF CATCH
 #endif
     )
 ;
-_NORETURN
+_WCNORETURN
 void CPPLIB( corrupted_stack )(// TERMINATE, WITH CORRUPTED STACK MSG
     void )
 ;

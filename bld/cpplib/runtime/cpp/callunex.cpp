@@ -34,7 +34,7 @@
 #include <except.h>
 
 extern "C"
-_NORETURN
+_WCNORETURN
 void CPPLIB( call_unexpected )( // CALL "unexpected" SET BY "set_unexpected"
     void )
 {

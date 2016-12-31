@@ -288,12 +288,12 @@ extern __lock               _wint_static_init_sema;
 // PROTOTYPES
 //************************************************************************
 
-_NORETURN
+_WCNORETURN
 void CPPLIB( call_terminate )(      // CALL "terminate" SET BY "set_terminate"
     char* abort_msg,                // - abortion message
     THREAD_CTL *thr )               // - thread-specific data
 ;
-_NORETURN
+_WCNORETURN
 void CPPLIB( call_unexpected )(     // CALL "unexpected" SET BY "set_unexpected"
     void )
 ;
@@ -373,7 +373,7 @@ _WPRTLINK
 void CPPLIB( pure_error )(          // TRAP NON-OVERRIDDEN PURE VIRTUAL CALLS
     void )
 ;
-_NORETURN
+_WCNORETURN
 void CPPLIB( fatal_runtime_error )( // FATAL RUNTIME ERROR
     char *msg,                      // - diagnostic message
     int code )                      // - exit code
@@ -393,7 +393,7 @@ size_t CPPLIB( ts_size )(           // GET SIZE OF ELEMENT FROM TYPE SIGNATURE
     RT_TYPE_SIG sig )               // - type signature
 ;
 _WPRTLINK
-_NORETURN
+_WCNORETURN
 void CPPLIB( undefed_cdtor )(       // ISSUE ERROR FOR UNDEFINED CTOR, DTOR
     void )
 ;
@@ -429,7 +429,7 @@ void CPPLIB( undef_vfun )(          // TRAP STRIPPED VIRTUAL CALLS
     void )
 ;
 _WPRTLINK
-_NORETURN
+_WCNORETURN
 void CPPLIB( undefined_member_function )( // ISSUE ERROR FOR UNDEFINED CTOR, DTOR
     void )
 ;

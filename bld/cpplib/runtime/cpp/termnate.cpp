@@ -41,7 +41,7 @@
 namespace std {
 
 _WPRTLINK
-_NORETURN
+_WCNORETURN
 void terminate( void )          // HANDLE TERMINATE
 {
     PFV handler;                // - NULL or handler set by "set_terminate"
