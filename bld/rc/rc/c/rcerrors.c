@@ -124,6 +124,7 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
     case ERR_BAD_RES_VER:
     case ERR_INVALID_RES:
     case ERR_INTERNAL:
+    case ERR_DELETING_FILE:
         /* don't print the filename & line number before these errors */
         GetRcMsg( errornum, errBuffer, sizeof( errBuffer ) );
         vsprintf( rcStrBuf, errBuffer, arglist );

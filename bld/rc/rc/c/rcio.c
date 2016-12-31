@@ -313,7 +313,7 @@ static bool ChangeTmpToOutFile( const char *tmpfile, const char *outfile )
             /* ignore the error if it says that the file doesn't exist */
             errno = 0;
         } else {
-            RcError( ERR_RENAMEING_TMP_FILE, tmpfile, outfile, strerror( errno ) );
+            RcError( ERR_DELETING_FILE, outfile, strerror( errno ) );
             remove( tmpfile );
             UnregisterTmpFile( tmpfile );
             return( true );

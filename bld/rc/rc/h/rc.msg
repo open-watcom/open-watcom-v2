@@ -312,6 +312,9 @@ pick(   ERR_WIN16_TOO_MANY_CONTROLS,
 pick(   ERR_SYMBOL_NOT_DEFINED,
         "Symbol '%s' is not defined.",
         "Can't expand environment variable '%s' recursively." )
+pick(   ERR_DELETING_FILE,
+        "Error deleting file \"%s\": %s.",
+        "Error deleting file \"%s\": %s." )
 #ifdef _STANDALONE_
 pick(   USAGE_MSG_FIRST,
         "Usage: %s {options} input-filename {options} [output-filename] {options}",
