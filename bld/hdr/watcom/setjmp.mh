@@ -27,7 +27,7 @@
 #endif
 
 _WCRTLINK extern int    _setjmp( jmp_buf __env );
-_WCRTLINK _NORETURN extern void   longjmp( jmp_buf __env, int __val );
+_WCRTLINK _WCNORETURN extern void   longjmp( jmp_buf __env, int __val );
 
 #if !defined(_SETJMPEX_H_INCLUDED_)
  #define setjmp(__env)  _setjmp(__env)
@@ -63,7 +63,7 @@ typedef struct {
 :include poppack.sp
 
 _WCRTLINK extern void __sigjmpsave( sigjmp_buf __env, int __msk );
-_WCRTLINK _NORETURN extern void siglongjmp( sigjmp_buf __env, int __val );
+_WCRTLINK _WCNORETURN extern void siglongjmp( sigjmp_buf __env, int __val );
 
 #define sigsetjmp( __env, __msk ) ( __sigjmpsave( __env, __msk ), \
                                     _setjmp( (__env)[0].__buf ) )

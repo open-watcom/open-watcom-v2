@@ -10,8 +10,8 @@ namespace std {
 :endsegment
 _WCRTLINK extern char   *getenv( const char *__name );
 _WCRTLINK extern int    system( const char *__cmd );
-_WCRTLINK _NORETURN extern void   abort( void );
-_WCRTLINK _NORETURN extern void   exit( int __status );
+_WCRTLINK _WCNORETURN extern void   abort( void );
+_WCRTLINK _WCNORETURN extern void   exit( int __status );
 :segment CNAME
 
 }
