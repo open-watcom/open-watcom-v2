@@ -231,7 +231,7 @@ static RcStatus readIcoFileDir( WResFileID fid, FullIconDir *dir, int *err_code 
 
     for( currentry = 0; ret == RS_OK && currentry < dir->Header.ResCount;
                             currentry++ ) {
-        entry = RESALLOC( sizeof(FullIconDirEntry) );
+        entry = RESALLOC( sizeof( FullIconDirEntry ) );
         entry->Next = NULL;
         entry->Prev = NULL;
         entry->IsIcoFileEntry = true;
@@ -276,8 +276,7 @@ static RcStatus copyOneIcon( const IcoFileDirEntry *entry, WResFileID fid,
             ret = RS_READ_ERROR;
             *err_code = errno;
         } else {
-            ret = CopyData( curpos,
-                              entry->Info.Length - sizeof(BitmapInfoHeader),
+            ret = CopyData( curpos, entry->Info.Length - sizeof( BitmapInfoHeader ),
                               fid, buffer, buffer_size, err_code );
         }
     }
@@ -287,8 +286,8 @@ static RcStatus copyOneIcon( const IcoFileDirEntry *entry, WResFileID fid,
 
 #define BUFFER_SIZE     1024
 
-static RcStatus copyIcons( FullIconDir * dir, WResFileID fid, ResMemFlags flags, int *err_code )
-/**********************************************************************************************/
+static RcStatus copyIcons( FullIconDir *dir, WResFileID fid, ResMemFlags flags, int *err_code )
+/*********************************************************************************************/
 {
     RcStatus            ret;
     char *              buffer;
@@ -487,8 +486,7 @@ static RcStatus copyOneCursor( const CurFileDirEntry *entry, WResFileID fid,
             ret = RS_READ_ERROR;
             *err_code = errno;
         } else {
-            ret = CopyData( curpos,
-                              entry->Length - sizeof(BitmapInfoHeader),
+            ret = CopyData( curpos, entry->Length - sizeof( BitmapInfoHeader ),
                               fid, buffer, buffer_size, err_code );
         }
     }
@@ -497,8 +495,8 @@ static RcStatus copyOneCursor( const CurFileDirEntry *entry, WResFileID fid,
 }
 
 
-static RcStatus copyCursors( FullCurDir * dir, WResFileID fid, ResMemFlags flags, int *err_code )
-/***********************************************************************************************/
+static RcStatus copyCursors( FullCurDir *dir, WResFileID fid, ResMemFlags flags, int *err_code )
+/**********************************************************************************************/
 /* This function uses the same size of buffers to copy info as for icons */
 {
     RcStatus            ret = RS_OK; // should this be RS_PARAM_ERROR ??
@@ -541,7 +539,7 @@ static RcStatus copyCursors( FullCurDir * dir, WResFileID fid, ResMemFlags flags
         entry->Entry.Res.Planes = dibhead.Planes;
         entry->Entry.Res.BitCount = dibhead.BitCount;
         /* the hotspot data is now part of the components */
-        entry->Entry.Res.Length = fileentry.Length + sizeof(CurHotspot);
+        entry->Entry.Res.Length = fileentry.Length + sizeof( CurHotspot );
         entry->Entry.Res.CurID = CurrResFile.NextCurOrIcon;
         CurrResFile.NextCurOrIcon += 1;
     }
@@ -580,7 +578,7 @@ static RcStatus readCurFileDir( WResFileID fid, FullCurDir *dir, int *err_code )
 
     for( currentry = 0; ret == RS_OK && currentry < dir->Header.ResCount;
                             currentry++ ) {
-        entry = RESALLOC( sizeof(FullCurDirEntry) );
+        entry = RESALLOC( sizeof( FullCurDirEntry ) );
         entry->Next = NULL;
         entry->Prev = NULL;
         entry->IsCurFileEntry = true;
@@ -709,7 +707,7 @@ static RcStatus copyBitmap( BitmapFileHeader *head, WResFileID fid,
         ret = RS_READ_ERROR;
         *err_code = errno;
     } else {
-        ret = CopyData( pos, head->Size - sizeof(BitmapFileHeader),
+        ret = CopyData( pos, head->Size - sizeof( BitmapFileHeader ),
                           fid, buffer, BITMAP_BUFFER_SIZE, err_code );
     }
 
@@ -863,7 +861,7 @@ static FullFontDir * NewFontDir( void )
 {
     FullFontDir *   newdir;
 
-    newdir = RESALLOC( sizeof(FullFontDir) );
+    newdir = RESALLOC( sizeof( FullFontDir ) );
     newdir->Head = NULL;
     newdir->Tail = NULL;
     newdir->NumOfFonts = 0;

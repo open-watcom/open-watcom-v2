@@ -99,7 +99,7 @@ static void QueueAdd( DirEntryQueue *queue, PEResDirEntry *entry )
 {
     QueueNode       *new;
 
-    new = RESALLOC( sizeof(QueueNode) );
+    new = RESALLOC( sizeof( QueueNode ) );
     new->entry = entry;
     new->next = NULL;
     if( queue->front == NULL ) {
@@ -288,7 +288,7 @@ static bool PEResDirBuild( PEResDir *res, WResDir dir )
         res->ResSize = 0;
     } else {
         StringBlockBuild( &res->String, dir, true );
-        res->DirSize = sizeof(resource_dir_header);
+        res->DirSize = sizeof( resource_dir_header );
         PEResDirEntryInit( &res->Root, WResGetNumTypes( dir ) );
         for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
             if( WResIsFirstResOfType( wind ) ) {
@@ -354,13 +354,11 @@ static RcStatus SetEntryOffset( PEResEntry * entry, void * _curr_offset )
 
     if( entry->IsDirEntry ) {
         entry->Entry.entry_rva = *curr_offset | PE_RESOURCE_MASK_ON;
-        num_entries = entry->u.Dir.Head.num_name_entries +
-                            entry->u.Dir.Head.num_id_entries;
-        *curr_offset += sizeof(resource_dir_header) +
-                            num_entries * sizeof(resource_dir_entry);
+        num_entries = entry->u.Dir.Head.num_name_entries + entry->u.Dir.Head.num_id_entries;
+        *curr_offset += sizeof( resource_dir_header ) + num_entries * sizeof( resource_dir_entry );
     } else {
         entry->Entry.entry_rva = *curr_offset;
-        *curr_offset += sizeof(resource_entry);
+        *curr_offset += sizeof( resource_entry );
     }
     return( RS_OK );
 } /* SetEntryOffset */
@@ -416,7 +414,7 @@ static RcStatus SortDirEntry( PEResEntry * entry, void * dummy )
 
     if( entry->IsDirEntry ) {
         num_entries = entry->u.Dir.Head.num_name_entries + entry->u.Dir.Head.num_id_entries;
-        qsort( entry->u.Dir.Children, num_entries, sizeof(PEResEntry), ComparePEResIdName );
+        qsort( entry->u.Dir.Children, num_entries, sizeof( PEResEntry ), ComparePEResIdName );
     }
     return( RS_OK );
 } /* SortDirEntry */
@@ -427,17 +425,14 @@ static void CompleteTree( PEResDir * dir )
     uint_32     curr_offset;
     int         num_entries;
 
-    num_entries = dir->Root.Head.num_name_entries +
-                                dir->Root.Head.num_id_entries;
+    num_entries = dir->Root.Head.num_name_entries + dir->Root.Head.num_id_entries;
 
     /* sort the entries at each level */
-    qsort( dir->Root.Children, num_entries, sizeof(PEResEntry),
-                ComparePEResIdName );
+    qsort( dir->Root.Children, num_entries, sizeof( PEResEntry ), ComparePEResIdName );
     traverseTree( dir, NULL, SortDirEntry );
 
     /* Set curr_offset to the size of the root entry */
-    curr_offset = sizeof(resource_dir_header) +
-                        num_entries * sizeof(resource_dir_entry);
+    curr_offset = sizeof( resource_dir_header ) + num_entries * sizeof( resource_dir_entry );
 
     traverseTree( dir, &curr_offset, SetEntryOffset );
     dir->DirSize = curr_offset;
@@ -479,7 +474,7 @@ static RcStatus copyDataEntry( PEResEntry *entry, void *_copy_info )
                 copy_info->errres = info;
                 return( ret );
             }
-            diff = ALIGN_VALUE( res_info->Length, sizeof(uint_32) );
+            diff = ALIGN_VALUE( res_info->Length, sizeof( uint_32 ) );
             if( diff > res_info->Length ) {
                 /* add the padding */
                 if( RcPadFile( copy_info->to_fid, (size_t)( diff - res_info->Length ) ) ) {
@@ -514,7 +509,7 @@ static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
     copy_info.to_fid = to_fid;
     copy_info.errres = NULL;
     copy_info.file = tmp;       /* for tracking debugging info offset */
-    start_off = ALIGN_VALUE( start_off, sizeof(uint_32) );
+    start_off = ALIGN_VALUE( start_off, sizeof( uint_32 ) );
 
     if( RESSEEK( to_fid, start_off, SEEK_SET ) )
         return( RS_WRITE_ERROR );
@@ -562,12 +557,11 @@ static RcStatus writeDirEntry( PEResDirEntry *entry, WResFileID fid )
 {
     int     child_num;
 
-    if( RESWRITE( fid, &entry->Head, sizeof(resource_dir_header) ) != sizeof(resource_dir_header) )
+    if( RESWRITE( fid, &entry->Head, sizeof( resource_dir_header ) ) != sizeof( resource_dir_header ) )
         return( RS_WRITE_ERROR );
 
-    for( child_num = 0; child_num < entry->Head.num_name_entries +
-                    entry->Head.num_id_entries; child_num++ ) {
-        if( RESWRITE( fid, entry->Children + child_num, sizeof(resource_dir_entry) ) != sizeof(resource_dir_entry) ) {
+    for( child_num = 0; child_num < entry->Head.num_name_entries + entry->Head.num_id_entries; child_num++ ) {
+        if( RESWRITE( fid, entry->Children + child_num, sizeof( resource_dir_entry ) ) != sizeof( resource_dir_entry ) ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -582,7 +576,7 @@ static RcStatus writeDirEntry( PEResDirEntry *entry, WResFileID fid )
 static RcStatus writeDataEntry( PEResDataEntry * entry, WResFileID fid )
 /**********************************************************************/
 {
-    if( RESWRITE( fid, &entry->Entry, sizeof(resource_entry) ) != sizeof(resource_entry) )
+    if( RESWRITE( fid, &entry->Entry, sizeof( resource_entry ) ) != sizeof( resource_entry ) )
         return( RS_WRITE_ERROR );
     return( RS_OK );
 } /* writeDataEntry */
@@ -610,8 +604,7 @@ static RcStatus setDataEntry( PEResEntry *entry, void *_info )
             entry->u.Data.Entry.size = langinfo->Length;
             entry->u.Data.Entry.code_page = 0;    /* should this be the UNICODE page*/
             entry->u.Data.Entry.rsvd = 0;
-            *info->rva = *info->rva +
-                        ALIGN_VALUE( langinfo->Length, sizeof(uint_32) );
+            *info->rva = *info->rva + ALIGN_VALUE( langinfo->Length, sizeof( uint_32 ) );
         }
     }
     return( RS_OK );
@@ -621,15 +614,13 @@ static RcStatus setDataEntry( PEResEntry *entry, void *_info )
  * writeEntry-
  * NB when an error occurs this function MUST return without altering errno
  */
-static RcStatus writeEntry( PEResEntry * entry, void *_fid )
-/**********************************************************/
+static RcStatus writeEntry( PEResEntry *entry, void *fid )
+/********************************************************/
 {
-    WResFileID *fid = _fid;
-
     if( entry->IsDirEntry ) {
-        return( writeDirEntry( &entry->u.Dir, *fid ) );
+        return( writeDirEntry( &entry->u.Dir, *(WResFileID *)fid ) );
     } else {
-        return( writeDataEntry( &entry->u.Data, *fid ) );
+        return( writeDataEntry( &entry->u.Data, *(WResFileID *)fid ) );
     }
 } /* writeEntry */
 
@@ -637,8 +628,8 @@ static RcStatus writeEntry( PEResEntry * entry, void *_fid )
  * writeDirectory
  * NB when an error occurs this function MUST return without altering errno
  */
-static RcStatus writeDirectory( PEResDir * dir, WResFileID fid )
-/**************************************************************/
+static RcStatus writeDirectory( PEResDir *dir, WResFileID fid )
+/*************************************************************/
 {
     RcStatus    ret;
 

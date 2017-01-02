@@ -57,39 +57,39 @@ typedef struct ResFileInfo {
 } ResFileInfo;
 
 typedef struct NEExeInfo {
-    os2_exe_header  WinHead;
-    SegTable        Seg;
-    ResTable        Res;
-    OS2ResTable     OS2Res;
+    os2_exe_header      WinHead;
+    SegTable            Seg;
+    ResTable            Res;
+    OS2ResTable         OS2Res;
 } NEExeInfo;
 
 typedef struct PEExeInfo {
-    exe_pe_header   *WinHead;
-    pe_object       *Objects;   /* array of objects. wlink no initialize */
-    PEResDir        Res;        /* non-initialized */
-    exe_pe_header   WinHeadData; // never access this value directly.  Use
-                                 // WinHead to get at it instead
+    exe_pe_header       *WinHead;
+    pe_object           *Objects;       /* array of objects. wlink no initialize */
+    PEResDir            Res;            /* non-initialized */
+    exe_pe_header       WinHeadData;    // never access this value directly.  Use
+                                        // WinHead to get at it instead
 } PEExeInfo;
 
 typedef struct LXExeInfo {
-    os2_flat_header OS2Head;
-    object_record   *Objects;
-    lx_map_entry    *Pages;
-    LXResTable      Res;
-    uint_32         FirstResObj;
-    uint_32         FirstResPage;
+    os2_flat_header     OS2Head;
+    object_record       *Objects;
+    lx_map_entry        *Pages;
+    LXResTable          Res;
+    uint_32             FirstResObj;
+    uint_32             FirstResPage;
 } LXExeInfo;
 
 typedef struct ExeFileInfo {
-    bool            IsOpen;
-    WResFileID      fid;
-    char            *name;
-    uint_32         WinHeadOffset;      /* wlink doesn't initialize this */
-    ExeType         Type;
+    bool                IsOpen;
+    WResFileID          fid;
+    char                *name;
+    uint_32             WinHeadOffset;      /* wlink doesn't initialize this */
+    ExeType             Type;
     union {
-        NEExeInfo   NEInfo;
-        PEExeInfo   PEInfo;
-        LXExeInfo   LXInfo;
+        NEExeInfo       NEInfo;
+        PEExeInfo       PEInfo;
+        LXExeInfo       LXInfo;
     } u;
-    uint_32         DebugOffset;        /* wlink doesn't initialize this */
+    uint_32             DebugOffset;        /* wlink doesn't initialize this */
 } ExeFileInfo;

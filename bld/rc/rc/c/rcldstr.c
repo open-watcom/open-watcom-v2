@@ -72,7 +72,7 @@ extern HANDLE_INFO  hInstance;
 
 extern bool         RcIoNoBuffer;
 
-static unsigned MsgShift;
+static unsigned     MsgShift;
 
 bool InitRcMsgs( void )
 {

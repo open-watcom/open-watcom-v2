@@ -128,8 +128,7 @@ static int computeShiftCount( void )
             old->WinHead.nonres_size +
             tmp->Res.Dir.TableSize +
             tmp->Res.Str.StringBlockSize;
-    filelen += ComputeSegmentSize( Pass2Info.OldFile.fid,
-                    &(tmp->Seg), old->WinHead.align );
+    filelen += ComputeSegmentSize( Pass2Info.OldFile.fid, &(tmp->Seg), old->WinHead.align );
     if( ! CmdLineParms.NoResFile ) {
         filelen += ComputeWINResourceSize( Pass2Info.ResFile->Dir );
     }

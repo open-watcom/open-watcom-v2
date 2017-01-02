@@ -1056,8 +1056,8 @@ extern bool RcIoIsCOrHFile( void )
  * RcIoOpenInput
  * NB when an error occurs this function MUST return without altering errno
  */
-WResFileID RcIoOpenInput( const char * filename, bool text_mode )
-/***************************************************************/
+WResFileID RcIoOpenInput( const char *filename, bool text_mode )
+/**************************************************************/
 {
     WResFileID          fid;
     FileStackEntry      *currfile;

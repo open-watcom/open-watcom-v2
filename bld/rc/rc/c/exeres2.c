@@ -144,9 +144,7 @@ extern RcStatus InitOS2ResTable( int *err_code )
         buildOS2ResTable( res, dir );
 
         /* OS/2 requires resources to be sorted */
-        qsort( res->resources, res->num_res_segs,
-                sizeof( res->resources[0] ), compareOS2ResTypeId );
-
+        qsort( res->resources, res->num_res_segs, sizeof( res->resources[0] ), compareOS2ResTypeId );
     }
     return( RS_OK );
 } /* InitOS2ResTable */
@@ -298,9 +296,7 @@ RcStatus CopyOS2Resources( void )
             continue;
 
         /* Copy resource data */
-        ret = copyOneResource( lang, res_fid, tmp_fid,
-                                shift_count, &err_code );
-
+        ret = copyOneResource( lang, res_fid, tmp_fid, shift_count, &err_code );
         if( ret != RS_OK )
             break;
 

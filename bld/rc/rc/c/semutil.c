@@ -61,7 +61,7 @@ void ReportCopyError( RcStatus status, int read_msg, const char *filename, int e
  */
 RcStatus CopyData( WResFileOffset offset, uint_32 length, WResFileID fid,
                 void *buff, unsigned buffsize, int *err_code )
-/***************************************************************************/
+/***********************************************************************/
 {
     size_t      numread;
 

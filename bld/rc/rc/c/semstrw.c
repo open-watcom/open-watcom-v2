@@ -44,7 +44,7 @@ FullStringTable * SemWINNewStringTable( void )
 {
     FullStringTable *   newtable;
 
-    newtable = RESALLOC( sizeof(FullStringTable) );
+    newtable = RESALLOC( sizeof( FullStringTable ) );
     if( newtable != NULL ) {
         newtable->Head = NULL;
         newtable->Tail = NULL;
@@ -91,7 +91,7 @@ static FullStringTableBlock * newStringTableBlock( void )
 {
     FullStringTableBlock *      newblock;
 
-    newblock = RESALLOC( sizeof(FullStringTableBlock) );
+    newblock = RESALLOC( sizeof( FullStringTableBlock ) );
     if( newblock != NULL ) {
         newblock->Next = NULL;
         newblock->Prev = NULL;

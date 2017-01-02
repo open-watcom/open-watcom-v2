@@ -48,6 +48,8 @@
 #define RC_MAX_FILES            20
 #define RC_BUFFER_SIZE          0x4000   /* 16k */
 
+#define RESIOERROR              ((size_t)-1)
+
 typedef struct RcBuffer {
     size_t      Count;          /* number of characters in buffer */
     size_t      BytesRead;
@@ -135,7 +137,7 @@ static void UnRegisterOpenFile( WResFileID fid )
     }
 }
 
-/* Find index in RcFileList table of given filehandle.
+/* Find index in RcFileList table of given file handle.
 *  Return: RC_MAX_FILES if not found, else index
 */
 static int RcFindIndex( WResFileID fid )
@@ -151,8 +153,9 @@ static int RcFindIndex( WResFileID fid )
     return( i );
 } /* RcFindIndex */
 
-void CloseAllFiles( void ) {
-/***************************/
+void CloseAllFiles( void )
+/************************/
+{
     unsigned    i;
 
     for( i = 0; i < MAX_OPEN_FILES; i++ ) {
@@ -162,8 +165,8 @@ void CloseAllFiles( void ) {
     }
 }
 
-WResFileID res_open( const char * file_name, wres_open_mode omode )
-/*****************************************************************/
+WResFileID res_open( const char *file_name, wres_open_mode omode )
+/****************************************************************/
 {
     WResFileID  fid;
     int         i;
@@ -194,8 +197,7 @@ WResFileID res_open( const char * file_name, wres_open_mode omode )
         }
     }
     return( fid );
-
-} /* RcOpen */
+}
 
 static bool FlushRcBuffer( WResFileID fid, RcBuffer *buff )
 /*********************************************************/
@@ -207,14 +209,12 @@ static bool FlushRcBuffer( WResFileID fid, RcBuffer *buff )
         error = ( (size_t)posix_write( WRES_FID2PH( fid ), buff->Buffer, buff->Count ) != buff->Count );
         memset( buff->Buffer, 0, RC_BUFFER_SIZE );
     }
-
     buff->IsDirty = false;
     buff->Count = 0;
     buff->BytesRead = 0;
     buff->NextChar = buff->Buffer;
     return( error );
-
-} /* FlushRcBuffer */
+}
 
 bool res_close( WResFileID fid )
 /******************************/
@@ -237,8 +237,7 @@ bool res_close( WResFileID fid )
     }
     UnRegisterOpenFile( fid );
     return( close( WRES_FID2PH( fid ) ) != 0 );
-
-} /* RcClose */
+}
 
 size_t res_write( WResFileID fid, const void *out_buff, size_t size )
 /*******************************************************************/
@@ -258,7 +257,7 @@ size_t res_write( WResFileID fid, const void *out_buff, size_t size )
     /* this is in case we have just read from the file */
     if( !buff->IsDirty ) {
         if( FlushRcBuffer( fid, buff ) ) {
-            return( -1 );
+            return( RESIOERROR );
         }
     }
 
@@ -277,28 +276,26 @@ size_t res_write( WResFileID fid, const void *out_buff, size_t size )
 
         if( buff->Count == RC_BUFFER_SIZE ) {
             if( FlushRcBuffer( fid, buff ) ) {
-                return( -1 );
+                return( RESIOERROR );
             }
         }
     }
-
     return( total_wrote );
-} /* RcWrite */
+}
 
 static size_t FillRcBuffer( WResFileID fid, RcBuffer *buff )
 /**********************************************************/
 {
     buff->Count = posix_read( WRES_FID2PH( fid ), buff->Buffer, RC_BUFFER_SIZE );
-    if( buff->Count == -1 ) {
+    if( buff->Count == RESIOERROR ) {
         buff->Count = 0;
         buff->BytesRead = 0;
-        return( (size_t)-1 );
+        return( RESIOERROR );
     }
     buff->BytesRead = buff->Count;
     buff->NextChar = buff->Buffer;
-
     return( buff->Count );
-} /* FillRcBuffer */
+}
 
 size_t res_read( WResFileID fid, void *in_buff, size_t size )
 /***********************************************************/
@@ -321,7 +318,7 @@ size_t res_read( WResFileID fid, void *in_buff, size_t size )
 
     if( buff->IsDirty ) {
         if( FlushRcBuffer( fid, buff ) ) {
-            return( -1 );
+            return( RESIOERROR );
         }
     }
 
@@ -329,8 +326,8 @@ size_t res_read( WResFileID fid, void *in_buff, size_t size )
     for( ; size > 0; size -= copy_bytes ) {
         if( buff->Count == 0 ) {
             bytes_added = FillRcBuffer( fid, buff );
-            if( bytes_added == (size_t)-1 ) {
-                return( bytes_added );
+            if( bytes_added == RESIOERROR ) {
+                return( RESIOERROR );
             } else if( bytes_added == 0 ) {
                 return( total_read );
             }
@@ -345,9 +342,8 @@ size_t res_read( WResFileID fid, void *in_buff, size_t size )
         in_buff = (char *)in_buff + copy_bytes;
         total_read += copy_bytes;
     }
-
     return( total_read );
-} /* RcRead */
+}
 
 bool res_seek( WResFileID fid, WResFileOffset amount, int where )
 /***************************************************************/
@@ -431,9 +427,8 @@ bool res_seek( WResFileID fid, WResFileOffset amount, int where )
             return( true );
         }
     }
-
     return( false );
-} /* RcSeek */
+}
 
 WResFileOffset res_tell( WResFileID fid )
 /***************************************/
@@ -456,13 +451,13 @@ WResFileOffset res_tell( WResFileID fid )
     } else {
         return( tell( WRES_FID2PH( fid ) ) - (WResFileOffset)buff->Count );
     }
-} /* RcTell */
+}
 
 bool res_ioerr( WResFileID fid, size_t rc )
 /*****************************************/
 {
     fid=fid;
-    return( rc == -1 );
+    return( rc == RESIOERROR );
 }
 
 void Layer0InitStatics( void )
