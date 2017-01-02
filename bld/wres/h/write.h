@@ -52,7 +52,7 @@ extern bool WResWriteExtHeader( const WResExtHeader *ext_head, WResFileID fid );
 extern void MResFreeResourceHeader( MResResourceHeader *oldheader );
 extern bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, WResFileID fid );
 extern bool ResWriteString( const char *string, bool use_unicode, WResFileID fid );
-extern bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID fid, uint_16 len );
+extern bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID fid, size_t len );
 extern void WriteInitStatics( void );
 extern bool MResWriteResourceHeader( MResResourceHeader *currhead, WResFileID fid, bool iswin32 );
 

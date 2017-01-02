@@ -237,8 +237,8 @@ bool WResWriteExtHeader( const WResExtHeader *ext_head, WResFileID fid )
     return( false );
 }
 
-bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID fid, uint_16 len )
-/*****************************************************************************************/
+bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID fid, size_t len )
+/****************************************************************************************/
 {
     char            *buf = NULL;
     bool            error;

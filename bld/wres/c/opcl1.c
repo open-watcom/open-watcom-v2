@@ -30,12 +30,9 @@
 
 
 #include <stdio.h>
-#include "bool.h"
 #include "watcom.h"
-#include "filefmt.h"
-#include "wressetr.h"
-#include "wresset2.h"
 #include "wres.h"
+#include "wresset2.h"
 #include "opcl.h"
 
 
