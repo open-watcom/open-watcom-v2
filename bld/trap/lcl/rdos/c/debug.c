@@ -1582,6 +1582,10 @@ static void FixupAfterTimeout( struct TDebug *obj, struct TDebugBreak *bp )
             RdosWriteThreadMem( thread->ThreadID, bp->Sel, bp->Offset, (char *)&brk_opcode, sizeof( brk_opcode ) );
         bp->IsActive = true;
     }
+
+    if( thread && !IsDebug( thread ) ) {
+        PickNewThread( obj );
+    }
 }
 
 int AsyncGo( struct TDebug *obj, int ms )
