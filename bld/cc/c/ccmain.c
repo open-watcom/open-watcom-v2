@@ -834,7 +834,7 @@ bool OpenSrcFile( const char *filename, bool is_lib )
         CErr2p( ERR_CANT_OPEN_FILE, filename );
     }
     CompFlags.cpp_output = save;
-    return( CompFlags.ignore_fnf != 0 );
+    return( false );
 }
 
 void CClose( FILE *fp )

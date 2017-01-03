@@ -141,11 +141,11 @@ static void OpenPgmFile(        // OPEN PROGRAM FILE
 }
 
 
-int OpenSrcFile(                // OPEN A SOURCE FILE
+bool OpenSrcFile(               // OPEN A SOURCE FILE
     const char * filename,      // - file name
     bool is_lib )               // - true ==> is <file>
+                                // return: true ==> opened ok
 {
-    bool        retb;           // - return: true ==> opened ok
     int         save;           // - saved pre-proc status
 
     // See if there's an alias for this file name
@@ -153,32 +153,30 @@ int OpenSrcFile(                // OPEN A SOURCE FILE
 
     if( IoSuppOpenSrc( filename, is_lib ? FT_LIBRARY : FT_HEADER ) ) {
         PpStartFile();
-        retb = true;
-    } else {
-        save = CompFlags.cpp_output;
-        if( CompFlags.cpp_output ) {
-            PrtChar( PreProcChar );
-            PrtString( "include ");
-            if( is_lib ) {
-                PrtChar( '<' );
-            } else {
-                PrtChar( '"' );
-            }
-            PrtString( filename );
-            if( is_lib ) {
-                PrtChar( '>' );
-            } else {
-                PrtChar( '"' );
-            }
-            CompFlags.cpp_output = 0;
-        }
-        if( !CompFlags.ignore_fnf ) {
-            CErr2p( ERR_CANT_OPEN_FILE, filename );
-        }
-        CompFlags.cpp_output = save;
-        retb = CompFlags.ignore_fnf;
+        return( true );
     }
-    return( retb );
+    save = CompFlags.cpp_output;
+    if( CompFlags.cpp_output ) {
+        PrtChar( PreProcChar );
+        PrtString( "include ");
+        if( is_lib ) {
+            PrtChar( '<' );
+        } else {
+            PrtChar( '"' );
+        }
+        PrtString( filename );
+        if( is_lib ) {
+            PrtChar( '>' );
+        } else {
+            PrtChar( '"' );
+        }
+        CompFlags.cpp_output = 0;
+    }
+    if( !CompFlags.ignore_fnf ) {
+        CErr2p( ERR_CANT_OPEN_FILE, filename );
+    }
+    CompFlags.cpp_output = save;
+    return( false );
 }
 
 

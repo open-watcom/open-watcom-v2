@@ -162,7 +162,7 @@ void MacroCanBeRedefined(       // SET MACRO SO THAT USE CAN REDEFINE IN SOURCE
 MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     macro_scanning defn )       // - scanning definition
 ;
-int OpenSrcFile(                // OPEN A SOURCE FILE
+bool OpenSrcFile(               // OPEN A SOURCE FILE
     const char * filename,      // - file name
     bool is_lib )               // - true ==> is <file>
 ;
