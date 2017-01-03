@@ -368,7 +368,7 @@ static void DoCCompile( char **cmdline )
             PrintWhiteSpace = true;
             if( ForcePreInclude != NULL ) {
                 CompFlags.cpp_output = false;
-                if( openForcePreInclude() {
+                if( openForcePreInclude() ) {
                     CurToken = T_NULL;
                     while( CurToken != T_EOF ) {
                         GetNextToken();
