@@ -196,9 +196,4 @@
  #ifndef _CRTIMP
   #define _CRTIMP _WCRTLINK
  #endif
-
- #ifdef __STDC_LIB_EXT1__
-  #error The macro __STDC_LIB_EXT1__ is reserved for use by the runtime library.
- #endif
-  #define __STDC_LIB_EXT1__     200509L
 #endif

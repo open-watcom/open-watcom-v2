@@ -5,8 +5,8 @@
 !inject _algsort.h             hcpp
 !inject _comdef.h                   hdos hlnx hqnx
 !inject _hash.h                hcpp
-!inject _ialias.h                   hdos hlnx hqnx
 !inject _meta.h                hcpp
+!inject _preincl.h                  hdos hlnx hqnx
 !inject _rbtree.h              hcpp
 !inject _strdef.h              hcpp
 !inject algorith         noext hcpp

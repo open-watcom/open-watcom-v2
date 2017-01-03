@@ -1129,6 +1129,16 @@ static void Set_FI( void )
     ForceInclude = GetAFileName();
 }
 
+static void Set_FIP( void )
+{
+    CMemFree( ForcePreInclude );
+    ForcePreInclude = GetAFileName();
+    if( *ForcePreInclude == '\0' ) {
+        CMemFree( ForcePreInclude );
+        ForcePreInclude = NULL;
+    }
+}
+
 static void Set_FLD( void )
 {
     CompFlags.use_long_double = 1;
@@ -1453,7 +1463,6 @@ static void Set_X( void )           { CompFlags.cpp_ignore_env = 1; }
 static void Set_XX( void )          { CompFlags.ignore_default_dirs = 1; }
 static void Set_PIL( void )         { CompFlags.cpp_ignore_line = 1; }
 static void Set_PL( void )          { CompFlags.cpp_line_wanted = 1; }
-static void Set_NA( void )          { CompFlags.disable_ialias = 1; }
 static void Set_PC( void )
 {
     CompFlags.keep_comments = 1;
@@ -1677,7 +1686,6 @@ static struct option const CFE_Options[] = {
 #if _CPU == 386
     { "mf",     SW_MF,          SetMemoryModel },
 #endif
-    { "na",     0,              Set_NA },
 #if _CPU == 8086 || _CPU == 386
     { "nc=$",   0,              SetCodeClass },
     { "nd=$",   0,              SetDataSegName },
@@ -1709,6 +1717,7 @@ static struct option const CFE_Options[] = {
     { "bt=$",   0,              Set_BT },
     { "fhq=@",  0,              Set_FHQ },
     { "fh=@",   0,              Set_FH },
+    { "fip=@",  0,              Set_FIP },
     { "fi=@",   0,              Set_FI },
     { "fld",    0,              Set_FLD },
     { "fo=@",   0,              Set_FO },

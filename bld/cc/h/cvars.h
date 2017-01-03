@@ -103,6 +103,7 @@ global char         *SrcFName;          /* source file name without suffix */
 global char         *DefFName;          /* .def file name (prototypes) */
 global char         *WholeFName;        /* whole file name with suffix */
 global char         *ForceInclude;
+global char         *ForcePreInclude;
 #if _CPU == 370
 global char         *AuxName;
 #endif

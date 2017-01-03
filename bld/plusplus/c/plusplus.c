@@ -244,6 +244,27 @@ static void setForceIncludeFromEnv( void )
     }
 }
 
+static bool openForcePreIncludeFile( void )
+{
+    bool    ok;
+
+    CtxSetCurrContext( CTX_FORCED_INCS );
+    if( CompFlags.cpp_output ) {
+        PrtChar( '\n' );
+    }
+    InitialMacroFlag = MFLAG_NONE;
+    CompFlags.ignore_fnf = true;
+    ok = OpenSrcFile( ForcePreInclude, false );
+    CompFlags.ignore_fnf = false;
+    CMemFreePtr( &ForcePreInclude );
+    return( ok );
+}
+
+static void setForcePreInclude( void )
+{
+    ForcePreInclude = strsave( "_preincl.h" );
+}
+
 static int doCCompile(          // COMPILE C++ PROGRAM
     char **argv )               // - command line vector
 {
@@ -261,6 +282,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
     } else {
         ScanInit();
         setForceIncludeFromEnv();
+        setForcePreInclude();
         if( flags.batch_cmds ) {
             CompFlags.batch_file_processing = true;
             CompFlags.banner_printed = true;
@@ -301,15 +323,14 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 CtxSetCurrContext( CTX_SOURCE );
                 ExitPointAcquire( cpp_preproc );
                 ExitPointAcquire( cpp_preproc_only );
-                CompFlags.ignore_fnf = true;
                 CompFlags.cpp_output = false;
-                if( !CompFlags.disable_ialias ) {
-                    OpenSrcFile( "_ialias.h", true );
-                    PpParse();
-                    SrcFileClose( true );
+                if( ForcePreInclude != NULL ) {
+                    if( openForcePreIncludeFile() ) {
+                        PpParse();
+                        SrcFileClose( true );
+                    }
                 }
                 CompFlags.cpp_output = true;
-                CompFlags.ignore_fnf = false;
                 if( ForceInclude != NULL ) {
                     EmitLine( 1, WholeFName );
                     openForceIncludeFile();
@@ -327,11 +348,9 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 ExitPointAcquire( cpp_analysis );
                 CgFrontModInitInit();       // must be before pchdr read point
                 CompFlags.watch_for_pcheader = false;
-                CompFlags.ignore_fnf = true;
-                if( !CompFlags.disable_ialias ) {
-                    OpenSrcFile( "_ialias.h", true );
+                if( ForcePreInclude != NULL ) {
+                    openForcePreIncludeFile();
                 }
-                CompFlags.ignore_fnf = false;
                 if( CompFlags.use_pcheaders ) {
                     // getting the first token should involve opening
                     // the first #include if there are no definitions
@@ -350,14 +369,14 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 CtxSetCurrContext( CTX_ENDFILE );
                 ModuleInitFini();
                 ScopeEndFileScope();
-                #ifndef NDEBUG
-                    if( PragDbgToggle.dump_scopes ) {
-                        DumpScopes();
-                    }
-                    if( PragDbgToggle.dump_hash ) {
-                        DumpHashStats();
-                    }
-                #endif
+#ifndef NDEBUG
+                if( PragDbgToggle.dump_scopes ) {
+                    DumpScopes();
+                }
+                if( PragDbgToggle.dump_hash ) {
+                    DumpHashStats();
+                }
+#endif
                 PragmaExtrefsValidate();
                 BrinfWrite();
                 ExitPointRelease( cpp_analysis );
@@ -378,9 +397,9 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                         AdDump();
                         AdClose( false );
                     }
-                }
-                else
+                } else {
                     AdClose( true );
+                }
                 CtxSetCurrContext( CTX_FINI );
                 ExitPointRelease( cpp_object );
             }

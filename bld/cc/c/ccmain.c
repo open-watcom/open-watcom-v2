@@ -325,6 +325,16 @@ static const char *IncludeAlias( const char *filename, bool is_lib )
     return( filename );
 }
 
+static bool openForcePreInclude( void )
+{
+    bool    ok;
+
+    CompFlags.ignore_fnf = true;
+    ok = OpenSrcFile( ForcePreInclude, false );
+    CompFlags.ignore_fnf = false;
+    return( ok );
+}
+
 static void DoCCompile( char **cmdline )
 /**************************************/
 {
@@ -356,12 +366,9 @@ static void DoCCompile( char **cmdline )
 #endif
         if( CompFlags.cpp_output ) {
             PrintWhiteSpace = true;
-            if( !CompFlags.disable_ialias ) {
+            if( ForcePreInclude != NULL ) {
                 CompFlags.cpp_output = false;
-                CompFlags.ignore_fnf = true;
-                OpenSrcFile( "_ialias.h", true );
-                CompFlags.ignore_fnf = false;
-                if( SrcFile != NULL ) {
+                if( openForcePreInclude() {
                     CurToken = T_NULL;
                     while( CurToken != T_EOF ) {
                         GetNextToken();
@@ -1287,6 +1294,7 @@ static void ParseInit( void )
     if( force != NULL ) {
         ForceInclude = CStrSave( force );
     }
+    ForcePreInclude = CStrSave( "_preincl.h" );
 }
 
 
@@ -1309,10 +1317,8 @@ static void Parse( void )
     }
     CompFlags.ok_to_use_precompiled_hdr = 0;
     CompFlags.use_precompiled_header = 0;
-    if( !CompFlags.disable_ialias ) {
-        CompFlags.ignore_fnf = true;
-        OpenSrcFile( "_ialias.h", true );
-        CompFlags.ignore_fnf = false;
+    if( ForcePreInclude != NULL ) {
+        openForcePreInclude();
     }
     if( ForceInclude == NULL ) {
         CompFlags.ok_to_use_precompiled_hdr = 1;

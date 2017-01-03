@@ -1,10 +1,12 @@
 /*
- *  _ialias.h    Automatic include aliases
+ *  _preincl.h    Automatic inclusion header file (per compilation unit)
+ *
+ *  It describes OW run-time environment specific features
  *
 :include crwatcnt.sp
  */
-#ifndef __IALIAS_H_INCLUDED
-#define __IALIAS_H_INCLUDED
+#ifndef __PREINCL_H_INCLUDED
+#define __PREINCL_H_INCLUDED
 
 :include readonly.sp
 
@@ -29,4 +31,6 @@
 #pragma include_alias( <unordered_map>,      <unorderm>   )
 #pragma include_alias( <unordered_set>,      <unorders>   )
 
-#endif /* __IALIAS_H_INCLUDED */
+#define __STDC_LIB_EXT1__     200509L
+
+#endif /* __PREINCL_H_INCLUDED */

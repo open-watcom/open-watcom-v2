@@ -96,6 +96,7 @@ global  char        __Time[10];         // "HH:MM:SS" for __TIME__ macro
 global  char        __Date[12];         // "MMM DD YYYY" for __DATE__ macro
 global  FILE *      CppFile;            /* output for preprocessor */
 global  char *      ForceInclude;
+global  char *      ForcePreInclude;
 global  char *      SrcFName;           /* source file name without suffix */
 global  char *      WholeFName;         /* whole file name with suffix */
 global  char        PreProcChar;        /* preprocessor directive indicator */

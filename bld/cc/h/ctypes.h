@@ -659,7 +659,6 @@ struct comp_flags {
     unsigned track_includes         : 1;    /* report opens of include files */
 
     unsigned ignore_fnf             : 1;    /* ignore file not found errors */
-    unsigned disable_ialias         : 1;    /* supress inclusion of _ialias.h */
     unsigned cpp_ignore_env         : 1;    /* ignore *INCLUDE env var(s) */
     unsigned ignore_default_dirs    : 1;    /* ignore default directories for file search .,../h,../c, etc. */
     unsigned pragma_library         : 1;    /* pragma library simulate -zlf option */

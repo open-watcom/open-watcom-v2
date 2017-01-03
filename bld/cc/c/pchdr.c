@@ -144,7 +144,6 @@ typedef struct pheader {
     unsigned        specialsyms_count;
     unsigned        cwd_len;        // length of current working directory
     unsigned        msgflags_len;   // length of MsgFlags array
-    unsigned        disable_ialias;
     unsigned        cpp_ignore_env;
     unsigned        ignore_default_dirs;
 } pheader;
@@ -310,7 +309,6 @@ static void OutPutHeader( void )
     pch.specialsyms_count = SymGetNumSpecialSyms();
     pch.cwd_len           = PH_cwd_len;
     pch.msgflags_len      = MESSAGE_COUNT;
-    pch.disable_ialias    = CompFlags.disable_ialias;
     pch.cpp_ignore_env    = CompFlags.cpp_ignore_env;
     pch.ignore_default_dirs = CompFlags.ignore_default_dirs;
 
@@ -1813,7 +1811,7 @@ int UsePreCompiledHeader( const char *filename )
     p = FixupIncludes( p + pch.cwd_len, pch.file_count );
     p = FixupRoDirList( p, pch.rdir_count );
     p = FixupIncAliasList( p, pch.ialias_count );
-    if( CompFlags.disable_ialias != pch.disable_ialias || VerifyIncludes( filename ) ) {
+    if( VerifyIncludes( filename ) ) {
         PCHNote( PCHDR_INCFILE_DIFFERENT );
         AbortPreCompiledHeader();
         return( -1 );

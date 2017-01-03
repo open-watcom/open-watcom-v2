@@ -890,6 +890,9 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     if( data->fi ) {
         SetStringOption( &ForceInclude, &(data->fi_value) );
     }
+    if( data->fip ) {
+        SetStringOption( &ForcePreInclude, &(data->fip_value) );
+    }
     if( data->ad ) {
         SetStringOption( &DependFileName, &(data->ad_value) );
         CompFlags.generate_auto_depend = 1;
@@ -1131,9 +1134,6 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
 #if COMP_CFG_COFF == 0
         CompFlags.virtual_stripping = true;
 #endif
-    }
-    if( data->na ) {
-        CompFlags.disable_ialias = 1;
     }
 #ifndef NDEBUG
     if( data->tp ) {

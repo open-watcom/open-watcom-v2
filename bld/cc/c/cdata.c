@@ -62,6 +62,7 @@ void InitGlobalVars( void )
     DefFName                = NULL; /* .def file name (prototypes) */
     WholeFName              = NULL; /* whole file name with suffix */
     ForceInclude            = NULL;
+    ForcePreInclude         = NULL;
 #if _CPU == 370
     AuxName                 = NULL;
 #endif
