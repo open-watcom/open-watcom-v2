@@ -466,13 +466,16 @@ static KW RecordInitialize( const char *record )
 // READ A RECORD
 static KW ReadInput( void )
 {
-    KW  retn;               // - return: type of record
+    char    *p;
+    KW      retn;           // - return: type of record
 
     if( NULL == fgets( Record, sizeof( Record ), Files->file_ptr ) ) {
         retn = KW_EOF;
     } else {
         ++Files->rec_count;
-        Record[strlen( Record ) - 1] = '\0'; // turf \n on the end
+        p = Record + strlen( Record ) - 1;
+        if( *p == '\n' )    // turf \n on the end
+            *p = '\0';
         retn = RecordInitialize( Record );
     }
     return( retn );
