@@ -44,14 +44,18 @@
 #if defined( WINRESDEFN )
 
 #if defined( _M_I86 )
-#define MAKEINTRESOURCE( x )    ((const char __far *)(pointer_int)(unsigned short)(x))
+#define MAKEINTRESOURCE( x )    ((const char __far *)(unsigned long)(unsigned short)(x))
 #else
-#define MAKEINTRESOURCE( x )    ((char *)(pointer_int)(unsigned short)(x))
+#define MAKEINTRESOURCE( x )    ((char *)(unsigned long)(unsigned short)(x))
 #endif
 
 #endif
 
-#define RESOURCE2INT( x )       ((pointer_int)(x))
+#if defined( _WIN64 )
+#define RESOURCE2INT( x )       ((unsigned __int64)(x))
+#else
+#define RESOURCE2INT( x )       ((unsigned long)(x))
+#endif
 
 #if defined( __WINDOWS_386__ )
 #define IS_INTRESOURCE( x ) ((RESOURCE2INT(x) >> 16) == 0xFFFF)
