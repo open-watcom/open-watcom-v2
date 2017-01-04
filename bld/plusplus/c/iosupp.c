@@ -458,7 +458,7 @@ static const char *openSrcExts( // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
     if( nd->ext[0] == '\0' ) {
         bool    doExt;
 
-        ext = openExt( NULL, nd, typ );
+        ext = openSrcExt( NULL, nd, typ );
 
         switch( typ ) {
         case FT_SRC:
