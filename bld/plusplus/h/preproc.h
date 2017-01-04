@@ -36,6 +36,7 @@
 
 #include "ctokens.h"            // tokens
 #include "srcfile.h"            // source files
+#include "ftype.h"              // source file types
 
 #include "macro.h"              // macro structures
 

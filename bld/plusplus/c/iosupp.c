@@ -187,7 +187,7 @@ static const char* extsOut[] =        // extensions for output files
 static char *FNameBuf = NULL;   // file name buffer for output files
 
 char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
-    enum out_file_type typ )    // - extension
+    out_file_type typ )         // - extension
 {
     char *drive;
     char *dir;
@@ -373,7 +373,7 @@ static void makeDirName(        // MAKE FILE NAME (WITHOUT DRIVE)
 
 static bool openSrc(            // ATTEMPT TO OPEN FILE
     char *name,                 // - file name
-    enum file_type typ )        // - type of file being opened
+    src_file_type typ )         // - type of file being opened
 {
     pch_absorb pch_OK;          // - pre-compiled header load status
     FILE *fp;                   // - file pointer
@@ -432,7 +432,7 @@ static bool openSrc(            // ATTEMPT TO OPEN FILE
 static const char *openExt(     // ATTEMPT TO OPEN FILE (EXT. TO BE APPENDED)
     const char *ext,            // - extension
     struct path_descr *nd,      // - name descriptor
-    enum file_type typ )        // - type of file being opened
+    src_file_type typ )         // - type of file being opened
 {
     const char  *ret;           // - ret
     char name[_MAX_PATH];       // - buffer for file name
@@ -450,7 +450,7 @@ static const char *openExt(     // ATTEMPT TO OPEN FILE (EXT. TO BE APPENDED)
 static const char *openSrcExts( // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
     const char **exts,          // - extensions
     struct path_descr *nd,      // - name descriptor
-    enum file_type typ )        // - type of file being opened
+    src_file_type typ )         // - type of file being opened
 {
     const char *ext;            // - current extension
 
@@ -483,7 +483,7 @@ static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
     const char *path,           // - path
     const char **exts,          // - file extensions
     struct path_descr *fd,      // - file descriptor
-    enum file_type typ )        // - type of file being opened
+    src_file_type typ )         // - type of file being opened
 {
     bool retb = false;          // - return: true ==> opened
     struct path_descr pd;       // - path descriptor
@@ -522,7 +522,7 @@ static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
 
 static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     struct path_descr *fd,      // - descriptor for file name
-    enum file_type typ )        // - type of search path to use
+    src_file_type typ )         // - type of search path to use
 {
     const char  **paths;        // - optional paths to prepend
     const char  **exts;         // - optional extensions to append
@@ -657,7 +657,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
 
 bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
     const char *file_name,      // - supplied file name
-    enum file_type typ )        // - type of search path to use
+    src_file_type typ )         // - type of search path to use
 {
     struct path_descr   fd;     // - descriptor for file name
 
