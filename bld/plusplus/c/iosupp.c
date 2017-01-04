@@ -430,7 +430,7 @@ static bool openSrc(            // ATTEMPT TO OPEN FILE
 }
 
 
-static const char *openExt(     // ATTEMPT TO OPEN FILE (EXT. TO BE APPENDED)
+static const char *openSrcExt(  // ATTEMPT TO OPEN FILE (EXT. TO BE APPENDED)
     const char *ext,            // - extension
     struct path_descr *nd,      // - name descriptor
     src_file_type typ )         // - type of file being opened
@@ -478,14 +478,14 @@ static const char *openSrcExts( // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
                 ext = *exts++;
                 if( ext == NULL ) 
                     break;
-                ext = openExt( ext, nd, typ );
+                ext = openSrcExt( ext, nd, typ );
                 if( ext != NULL ) {
                     break;
                 }
             }
         }
     } else {
-        ext = openExt( nd->ext, nd, typ );
+        ext = openSrcExt( nd->ext, nd, typ );
     }
     return( ext );
 }
@@ -499,7 +499,7 @@ static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
 {
     bool retb = false;          // - return: true ==> opened
     struct path_descr pd;       // - path descriptor
-    char dir[_MAX_PATH*2];      // - new path
+    char dir[_MAX_PATH * 2];    // - new path
     char *pp;                   // - pointer into path
     const char *ext;            // - extension opened
 
