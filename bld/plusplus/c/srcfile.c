@@ -768,7 +768,8 @@ static int getTestCharFromFile( OPEN_FILE **pact )
             break;
         }
         // '\0' in the middle of the buffer must be processed as a char
-        if( act->nextc != ( act->lastc + 1 ) ) break;
+        if( act->nextc != ( act->lastc + 1 ) )
+            break;
         if( readBuffer( getGuardState() == GUARD_IFNDEF ) ) {
             c = CurrChar;
             break;
@@ -854,7 +855,8 @@ static int getCharAfterTwoQuestion( void )
     return( CurrChar );
 }
 
-static void outputTrigraphWarning( char c ) {
+static void outputTrigraphWarning( char c )
+{
     if( ! CompFlags.extensions_enabled ) {
         // probably know about trigraphs if they are using -za
         return;
@@ -1204,35 +1206,43 @@ void SrcFileScanName( int e )   // CALLED FROM CSCAN TO SCAN AN IDENTIFIER
                 p = act->nextc;
                 for(;;) {
                     c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                        break;
                     Buffer[len] = c;
                     ++len;
                     c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                        break;
                     Buffer[len] = c;
                     ++len;
                     c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                        break;
                     Buffer[len] = c;
                     ++len;
                     c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                        break;
                     Buffer[len] = c;
                     ++len;
                     c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                        break;
                     Buffer[len] = c;
                     ++len;
                     c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                        break;
                     Buffer[len] = c;
                     ++len;
                     c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                        break;
                     Buffer[len] = c;
                     ++len;
                     c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                        break;
                     Buffer[len] = c;
                     ++len;
                     if( len > BUF_SIZE ) {
@@ -1241,11 +1251,13 @@ void SrcFileScanName( int e )   // CALLED FROM CSCAN TO SCAN AN IDENTIFIER
                 }
                 act->column += p - act->nextc;
                 act->nextc = p;
-                if(( CharSet[c] & C_EX ) == 0 ) break;
+                if(( CharSet[c] & C_EX ) == 0 )
+                    break;
                 // act->column is one too many at this point
                 --act->column;
                 c = getCharCheck( act, c );
-                if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                    break;
                 Buffer[len] = c;
                 ++len;
             }
@@ -1255,7 +1267,8 @@ void SrcFileScanName( int e )   // CALLED FROM CSCAN TO SCAN AN IDENTIFIER
             // but we'll just be safe rather than sorry...
             for(;;) {
                 c = NextChar();
-                if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                    break;
                 Buffer[len] = c;
                 ++len;
                 if( len > BUF_SIZE ) {
@@ -1282,32 +1295,42 @@ void SrcFileScanWhiteSpace( bool expanding )
 
     expanding = expanding;
     if( NextChar == GetNextChar ) {
-        for(;;) {
+        for( ;; ) {
             // codegen can't do this optimization so we have to
             c = '\0';
             act = activeSrc();
             p = act->nextc;
             for( ;; ) {
                 c = *p++;
-                if( CharSet[c] != C_WS ) break;
+                if( CharSet[c] != C_WS )
+                    break;
                 c = *p++;
-                if( CharSet[c] != C_WS ) break;
+                if( CharSet[c] != C_WS )
+                    break;
                 c = *p++;
-                if( CharSet[c] != C_WS ) break;
+                if( CharSet[c] != C_WS )
+                    break;
                 c = *p++;
-                if( CharSet[c] != C_WS ) break;
+                if( CharSet[c] != C_WS )
+                    break;
                 c = *p++;
-                if( CharSet[c] != C_WS ) break;
+                if( CharSet[c] != C_WS )
+                    break;
                 c = *p++;
-                if( CharSet[c] != C_WS ) break;
+                if( CharSet[c] != C_WS )
+                    break;
                 c = *p++;
-                if( CharSet[c] != C_WS ) break;
+                if( CharSet[c] != C_WS )
+                    break;
                 c = *p++;
-                if( CharSet[c] != C_WS ) break;
+                if( CharSet[c] != C_WS ) {
+                    break;
+                }
             }
             act->column += p - act->nextc;
             act->nextc = p;
-            if(( CharSet[c] & C_EX ) == 0 ) break;
+            if(( CharSet[c] & C_EX ) == 0 )
+                break;
             if( c == '\n' ) {
                 act->line++;
                 act->column = 0;
@@ -1319,21 +1342,26 @@ void SrcFileScanWhiteSpace( bool expanding )
             } else if( c != '\r' ) {
                 --act->column;
                 c = getCharCheck( act, c );
-                if(( CharSet[c] & C_WS ) == 0 ) break;
+                if(( CharSet[c] & C_WS ) == 0 ) {
+                    break;
+                }
             }
         }
         CurrChar = c;
     } else {
-        for(;;) {
+        for( ;; ) {
             c = NextChar();
-            if(( CharSet[c] & C_WS ) == 0 ) break;
+            if(( CharSet[c] & C_WS ) == 0 )
+                break;
             c = NextChar();
-            if(( CharSet[c] & C_WS ) == 0 ) break;
+            if(( CharSet[c] & C_WS ) == 0 ) {
+                break;
+            }
         }
     }
 }
 
-void SrcFileScanCppComment()
+void SrcFileScanCppComment( void )
 {
     unsigned char   *p;
     OPEN_FILE       *act;
@@ -1347,13 +1375,18 @@ void SrcFileScanCppComment()
             p = act->nextc;
             for( ;; ) {
                 c = *p++;
-                if( CharSet[c] & C_EX ) break;
+                if( CharSet[c] & C_EX )
+                    break;
                 c = *p++;
-                if( CharSet[c] & C_EX ) break;
+                if( CharSet[c] & C_EX )
+                    break;
                 c = *p++;
-                if( CharSet[c] & C_EX ) break;
+                if( CharSet[c] & C_EX )
+                    break;
                 c = *p++;
-                if( CharSet[c] & C_EX ) break;
+                if( CharSet[c] & C_EX ) {
+                    break;
+                }
             }
             // we don't have to keep the column up to date, because once
             // we get to the end of the line, we will be starting the
@@ -1385,8 +1418,11 @@ void SrcFileScanCppComment()
     } else {
         for( ;; ) {
             c = NextChar();
-            if( c == LCHR_EOF ) break;
-            if( c == '\n' ) break;
+            if( c == LCHR_EOF )
+                break;
+            if( c == '\n' ) {
+                break;
+            }
         }
     }
 }
@@ -1541,7 +1577,8 @@ SRCFILE SrcFileNotReadOnly(     // GET NEXT NON-READ-ONLY SOURCE FILE
     char const *file_name;      // - file name of current entry
 
     for( ; curr != NULL; curr = curr->unique ) {
-        if( curr->read_only ) continue;
+        if( curr->read_only )
+            continue;
         read_only = false;
         file_name = SrcFileFullName( curr );
         RingIterBeg( roDirs, srch ) {
@@ -1550,7 +1587,9 @@ SRCFILE SrcFileNotReadOnly(     // GET NEXT NON-READ-ONLY SOURCE FILE
                 break;
             }
         } RingIterEnd( srch );
-        if( ! read_only ) break;
+        if( !read_only ) {
+            break;
+        }
     }
     return( curr );
 }
@@ -1674,8 +1713,7 @@ void SrcFileGuardPpElse(        // #ELSE DETECTED IN SOURCE FILE
 void SrcFileGuardPpEndif(       // #ENDIF DETECTED IN SOURCE FILE
     void )
 {
-    if( ( 0 == IfDepthInSrcFile() )
-      &&( getGuardState() == GUARD_MID ) ) {
+    if( ( 0 == IfDepthInSrcFile() ) &&( getGuardState() == GUARD_MID ) ) {
         setGuardState( GUARD_BOT );
     }
 }
@@ -1901,15 +1939,19 @@ FILE *SrcFileFOpen( const char *name, src_file_open kind )
             }
             break;
         }
-        if( errno != ENOMEM && errno != ENFILE && errno != EMFILE ) break;
-        if( ! srcFileCacheClose( kind == SFO_SOURCE_FILE ) ) break;
+        if( errno != ENOMEM && errno != ENFILE && errno != EMFILE )
+            break;
+        if( ! srcFileCacheClose( kind == SFO_SOURCE_FILE ) ) {
+            break;
+        }
     }
     return( fp );
 }
 
 int SrcFileFClose( FILE *fp )
 {
-    if( fp == stdin ) return( 0 );
+    if( fp == stdin )
+        return( 0 );
     return( fclose( fp ) );
 }
 
