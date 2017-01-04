@@ -421,6 +421,7 @@ static bool openSrc(            // ATTEMPT TO OPEN FILE
       case FT_SRC :
       case FT_LIBRARY :
       case FT_HEADER :
+      case FT_HEADER_PRE :
         BrinfOpenSource( SrcFileCurrent() );
         break;
     }
@@ -455,14 +456,25 @@ static const char *openSrcExts( // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
     const char *ext;            // - current extension
 
     if( nd->ext[0] == '\0' ) {
-        bool doSrc = (!(CompFlags.dont_autogen_ext_src) && (FT_SRC == typ));
-        bool doInc = (!(CompFlags.dont_autogen_ext_inc) && ((FT_HEADER == typ)||(FT_LIBRARY == typ)));
-        bool doExt = (doSrc || doInc);
+        bool    doExt;
 
         ext = openExt( NULL, nd, typ );
 
-        if(( ext == NULL ) && (doExt)) {
-            for( ; ; ) {
+        switch( typ ) {
+        case FT_SRC:
+            doExt = !(CompFlags.dont_autogen_ext_src);
+            break;
+        case FT_HEADER:
+        case FT_HEADER_PRE:
+        case FT_LIBRARY:
+            doExt = !(CompFlags.dont_autogen_ext_inc);
+            break;
+        default:
+            doExt = false;
+            break;
+        }
+        if( ( ext == NULL ) && doExt ) {
+            for( ;; ) {
                 ext = *exts++;
                 if( ext == NULL ) 
                     break;
@@ -560,6 +572,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
         }
         break;
     case FT_HEADER:
+    case FT_HEADER_PRE:
     case FT_LIBRARY:
         exts = extsHdr;
         // have to look for absolute paths
@@ -567,12 +580,12 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
             retb = openSrcPath( "", exts, fd, typ );
             break;
         }
-        if( typ == FT_HEADER && !IS_DIR_SEP( fd->dir[0] ) ) {
+        if( typ != FT_LIBRARY && !IS_DIR_SEP( fd->dir[0] ) ) {
             if( CompFlags.ignore_default_dirs ) {
                 curr = SrcFileCurrent();
                 splitFileName( SrcFileName( curr ), &idescr );
                 _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
-                retb = openSrcPath( bufpth, exts, fd, FT_HEADER );
+                retb = openSrcPath( bufpth, exts, fd, typ );
                 if( retb ) {
                     break;
                 }
@@ -593,7 +606,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
                     _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
                     /*optimization: don't try and open if in previously checked dir*/
                     if( strcmp( bufpth, prevpth ) != 0 ) {
-                        retb = openSrcPath( bufpth, exts, fd, FT_HEADER );
+                        retb = openSrcPath( bufpth, exts, fd, typ );
                         if( retb ) {
                             break;
                         }
@@ -619,7 +632,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
         if( retb ) {
             break;
         }
-        if( typ == FT_HEADER && !CompFlags.ignore_default_dirs && !IS_DIR_SEP( fd->dir[0] ) ) {
+        if( typ != FT_LIBRARY && !CompFlags.ignore_default_dirs && !IS_DIR_SEP( fd->dir[0] ) ) {
             paths = pathHdr;
         }
         break;
@@ -666,9 +679,10 @@ bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
      && file_name[0] != '\0' ) {
         TOKEN_LOCN locn;
         switch( typ ) {
-          case FT_SRC :
-          case FT_HEADER :
-          case FT_LIBRARY :
+          case FT_SRC:
+          case FT_HEADER:
+          case FT_HEADER_PRE:
+          case FT_LIBRARY:
             SrcFileGetTokenLocn( &locn );
             BrinfIncludeSource( file_name, &locn );
             break;

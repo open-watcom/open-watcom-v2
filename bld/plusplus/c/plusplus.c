@@ -257,7 +257,7 @@ static bool openForcePreIncludeFile( void )
     }
     InitialMacroFlag = MFLAG_NONE;
     CompFlags.ignore_fnf = true;
-    ok = OpenSrcFile( ForcePreInclude, FT_HEADER );
+    ok = OpenSrcFile( ForcePreInclude, FT_HEADER_PRE );
     CompFlags.ignore_fnf = false;
     CMemFreePtr( &ForcePreInclude );
     return( ok );
