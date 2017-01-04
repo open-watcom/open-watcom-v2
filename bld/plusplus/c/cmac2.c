@@ -175,7 +175,7 @@ static void CInclude( void )
     NextToken();
     PPCTL_DISABLE_MACROS();
     if( CurToken == T_STRING ) {
-        OpenSrcFile( Buffer, false );
+        OpenSrcFile( Buffer, FT_HEADER );
     } else if( CurToken == T_LT ) {
         if( flags.in_macro ) {
             PPCTL_ENABLE_MACROS();
@@ -184,7 +184,7 @@ static void CInclude( void )
         for( ;; ) {
             NextToken();
             if( CurToken == T_GT ) {
-                OpenSrcFile( buf, true );
+                OpenSrcFile( buf, FT_LIBRARY );
                 break;
             }
             strncat( buf, Buffer, sizeof( buf ) - 2 );
