@@ -94,11 +94,11 @@ global  macro_flags InitialMacroFlag;   // current value to init macro flags to
 global  char        *MacroOffset;       // first free byte in MacroSegment
 global  char        __Time[10];         // "HH:MM:SS" for __TIME__ macro
 global  char        __Date[12];         // "MMM DD YYYY" for __DATE__ macro
-global  FILE *      CppFile;            /* output for preprocessor */
-global  char *      ForceInclude;
-global  char *      ForcePreInclude;
-global  char *      SrcFName;           /* source file name without suffix */
-global  char *      WholeFName;         /* whole file name with suffix */
+global  FILE        *CppFile;           /* output for preprocessor */
+global  char        *ForceInclude;
+global  char        *ForcePreInclude;
+global  char        *SrcFName;          /* source file name without suffix */
+global  char        *WholeFName;        /* whole file name with suffix */
 global  char        PreProcChar;        /* preprocessor directive indicator */
 global  int         SwitchChar;         // DOS switch character
 
@@ -107,7 +107,7 @@ global  int         SwitchChar;         // DOS switch character
 // extra uint_32 is for buffer overrun checking in debugging compiler
 global  char        Buffer[BUF_SIZE+16+sizeof(uint_32)];
 
-extern  int     (*NextChar)( void );    // next-character routine (initialized in SRCFILE)
+extern  int         (*NextChar)( void );    // next-character routine (initialized in SRCFILE)
 
 // PROTOTYPES: exposed to C++ project
 
