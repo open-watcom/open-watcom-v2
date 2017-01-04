@@ -166,7 +166,7 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
 ;
 bool OpenSrcFile(               // OPEN A SOURCE FILE
     const char * filename,      // - file name
-    bool is_lib )               // - true ==> is <file>
+    src_file_type typ )         // - source file type
 ;
 void PpInit(                    // INITIALIZE PREPROCESSING
     void )

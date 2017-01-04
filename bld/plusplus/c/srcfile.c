@@ -410,7 +410,7 @@ void SrcFileNotAFile(           // LABEL SRCFILE AS A DEVICE
 
 SRCFILE SrcFileOpen(            // OPEN NEW SOURCE FILE
     void *fp,                   // - system file control
-    char *name,                 // - file name
+    const char *name,           // - file name
     time_t ftime )
 {
     SRCFILE     new_src;        // - new source file
@@ -1646,7 +1646,7 @@ void SrcFileGuardPpIf(          // #IF DETECTED IN SOURCE FILE
 
 
 void SrcFileGuardPpIfndef(      // SUPPLY #IFNDEF NAME
-    char *name,                 // - macro name
+    const char *name,           // - macro name
     unsigned len )              // - length of name
 {
     SRCFILE src;
@@ -1712,7 +1712,7 @@ bool SrcFileGuardedIf(          // SKIP REST OF GUARDED FILE, IF POSSIBLE
 
 
 bool SrcFileProcessOnce(        // CHECK WHETHER WE HAVE TO OPEN THE FILE
-    char *name )
+    const char *name )
 {
     SRCFILE old;                // - existing SRCFILE
 
@@ -1867,7 +1867,7 @@ static bool srcFileCacheClose( bool close_all_ok )
 }
 
 
-static bool recursiveIncludeDetected( char *name )
+static bool recursiveIncludeDetected( const char *name )
 {
     SRCFILE curr;
 
@@ -1885,7 +1885,7 @@ static bool recursiveIncludeDetected( char *name )
 }
 
 
-FILE *SrcFileFOpen( char *name, src_file_open kind )
+FILE *SrcFileFOpen( const char *name, src_file_open kind )
 {
     FILE *fp;
     const char *mode;

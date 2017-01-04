@@ -143,15 +143,18 @@ static void OpenPgmFile(        // OPEN PROGRAM FILE
 
 bool OpenSrcFile(               // OPEN A SOURCE FILE
     const char * filename,      // - file name
-    bool is_lib )               // - true ==> is <file>
+    src_file_type typ )         // - source file type
                                 // return: true ==> opened ok
 {
     int         save;           // - saved pre-proc status
+    bool        is_lib;
+
+    is_lib = ( typ == FT_LIBRARY );
 
     // See if there's an alias for this file name
     filename = IAliasLookup( filename, is_lib );
 
-    if( IoSuppOpenSrc( filename, is_lib ? FT_LIBRARY : FT_HEADER ) ) {
+    if( IoSuppOpenSrc( filename, typ ) ) {
         PpStartFile();
         return( true );
     }

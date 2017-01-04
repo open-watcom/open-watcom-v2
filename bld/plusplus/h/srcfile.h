@@ -134,7 +134,7 @@ SRCFILE SrcFileNotReadOnly(     // GET NEXT NON-READ-ONLY SOURCE FILE
 ;
 SRCFILE SrcFileOpen(            // OPEN NEW SOURCE FILE
     void *fp,                   // - system file control
-    char *name,                 // - file name
+    const char *name,           // - file name
     time_t ftime )
 ;
 void SrcFileNotAFile(           // LABEL SRCFILE AS A DEVICE
@@ -189,7 +189,7 @@ bool SrcFileGuardedIf(          // SKIP REST OF GUARDED FILE, IF POSSIBLE
     bool value )                // - <value> in #if <value>
 ;
 bool SrcFileProcessOnce(        // CHECK WHETHER WE HAVE TO OPEN THE FILE
-    char *name )
+    const char *name )
 ;
 void SrcFileGuardPpElse(        // #ELSE DETECTED IN SOURCE FILE
     void )
@@ -201,7 +201,7 @@ void SrcFileGuardPpIf(          // #IF DETECTED IN SOURCE FILE
     void )
 ;
 void SrcFileGuardPpIfndef(      // SUPPLY #IFNDEF NAME
-    char *name,                 // - macro name
+    const char *name,           // - macro name
     unsigned len )              // - length of name
 ;
 void SrcFileGuardStateSig(      // SIGNAL SIGNIFICANCE (TOKEN, ETC) IN FILE
@@ -213,7 +213,7 @@ bool SrcFileSame(               // ARE THESE SRC FILES THE SAME FILE?
 ;
 
 FILE *SrcFileFOpen(             // FOPEN A FILE WITH HANDLE CACHEING
-    char *name,                 // - name of file to open
+    const char *name,           // - name of file to open
     src_file_open kind )        // - how to open file
 ;
 
