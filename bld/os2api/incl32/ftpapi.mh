@@ -49,7 +49,7 @@
 #define REST_PUT 2
 
 #if defined(__WATCOMC__)
-#pragma aux ftperrno "*";
+#pragma aux ftperrno "*"
 #endif
 
 extern int ftperrno;

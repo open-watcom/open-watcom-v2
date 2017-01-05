@@ -5,10 +5,12 @@
  *
 :include crwatcnt.sp
  */
+
+#pragma once
+#pragma read_only_file
+
 #ifndef __PREINCL_H_INCLUDED
 #define __PREINCL_H_INCLUDED
-
-:include readonly.sp
 
 #pragma include_alias( <algorithm>,          <algorith>   )
 #pragma include_alias( <cinttypes>,          <cinttype>   )

@@ -51,7 +51,7 @@ typedef __va_list va_list;
  #define _AXP_FLOAT_SIZE    8
  #define _AXP_FLOAT_REGS    6
  extern void *__builtin_va_start(__va_list*, ...);
- #pragma intrinsic(__builtin_va_start);
+ #pragma intrinsic(__builtin_va_start)
  #define va_start(ap,pn) (__builtin_va_start(&ap,pn,1))
  #define va_arg(ap,type) ((ap).__offset+=\
      ((sizeof(type)+_AXP_WORD_SIZE-1)&~(_AXP_WORD_SIZE-1)),\
@@ -73,7 +73,7 @@ typedef __va_list va_list;
  #else
 :endsegment
   extern void *__builtin_va_start( __va_list * );
-  #pragma intrinsic(__builtin_va_start);
+  #pragma intrinsic(__builtin_va_start)
   #define va_start(ap,pn) (__builtin_va_start(&ap,pn))
   #define va_arg(ap,type) (__builtin_va_arg(&ap,type))
 :segment DOS
@@ -82,7 +82,7 @@ typedef __va_list va_list;
 #elif defined(__MIPS__)
  #define _MIPS_WORD_SIZE     4
  extern void *__builtin_va_start(__va_list*, ...);
- #pragma intrinsic(__builtin_va_start);
+ #pragma intrinsic(__builtin_va_start)
  #define va_start(ap,pn) (__builtin_va_start(&ap,pn,1))
  #define va_arg(ap,type) ((ap).__offset+=\
      ((sizeof(type)+_MIPS_WORD_SIZE-1)&~(_MIPS_WORD_SIZE-1)),\
