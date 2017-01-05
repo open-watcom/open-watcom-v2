@@ -749,7 +749,7 @@ static bool stalePCH( char *include_file )
     return( false );
 }
 
-static unsigned readBuffer( unsigned left_check )
+static unsigned pchReadBuffer( unsigned left_check )
 {
     unsigned left;
 
@@ -765,7 +765,7 @@ static unsigned initialRead( void )
     unsigned left;
 
     DbgAssert( pch_buff_eob == pch_buff_cur );
-    left = readBuffer( -1 );
+    left = pchReadBuffer( -1 );
     pch_buff_cur = ioBuffer;
     return( left );
 }
@@ -867,7 +867,7 @@ void *PCHRead( void *p, unsigned size )
         p = (char *)p + left;
         size -= left;
         aligned_size -= left;
-        left = readBuffer( 0 );
+        left = pchReadBuffer( 0 );
         buff_ptr = ioBuffer;
         DbgAssert( ( aligned_size % PCH_ALIGN ) == 0 );
     }
@@ -891,7 +891,7 @@ void *PCHReadUnaligned( void *p, unsigned size )
         p = memcpy( p, buff_ptr, left );
         p = (char *)p + left;
         size -= left;
-        left = readBuffer( 0 );
+        left = pchReadBuffer( 0 );
         buff_ptr = ioBuffer;
     }
     memcpy( p, buff_ptr, size );

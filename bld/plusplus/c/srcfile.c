@@ -122,7 +122,7 @@ static SRCFILE primarySrcFile;              // primary source file
 static DIR_LIST* roDirs;                    // read-only directories
 static unsigned totalSrcFiles;              // running total of SRCFILE's
 
-static unsigned char notFilled[2] = { '\n', '\0' };  // default buffer to force readBuffer
+static unsigned char notFilled[2] = { '\n', '\0' };  // default buffer to force srcReadBuffer
 
 static int lastChar;                    // unknown char to return in GetNextChar
 
@@ -644,7 +644,7 @@ void SrcFileCurrentLocation(    // SET LOCATION FOR CURRENT SOURCE FILE
 }
 
 
-static bool readBuffer(         // READ NEXT BUFFER
+static bool srcReadBuffer(      // READ NEXT BUFFER
     bool close_top_file )       // - true ==> close top file
 {
     OPEN_FILE *act;             // - open file
@@ -770,7 +770,7 @@ static int getTestCharFromFile( OPEN_FILE **pact )
         // '\0' in the middle of the buffer must be processed as a char
         if( act->nextc != ( act->lastc + 1 ) )
             break;
-        if( readBuffer( getGuardState() == GUARD_IFNDEF ) ) {
+        if( srcReadBuffer( getGuardState() == GUARD_IFNDEF ) ) {
             c = CurrChar;
             break;
         }
@@ -1009,7 +1009,7 @@ static int getCharCheck( OPEN_FILE *act, int c )
         case '\0':
             // '\0' in the middle of the buffer must be processed as a char
             if( act->nextc == ( act->lastc + 1 ) ) {
-                if( ! readBuffer( getGuardState() == GUARD_IFNDEF ) ) {
+                if( !srcReadBuffer( getGuardState() == GUARD_IFNDEF ) ) {
                     return( GetNextChar() );
                 }
                 return( CurrChar );
@@ -1738,7 +1738,7 @@ bool SrcFileGuardedIf(          // SKIP REST OF GUARDED FILE, IF POSSIBLE
 {
     if( getGuardState() == GUARD_IF ) {
         if( !value ) {
-            if( !readBuffer( true ) ) {
+            if( !srcReadBuffer( true ) ) {
                 GetNextChar();
             }
             return( true );
