@@ -948,7 +948,7 @@ void RewriteRestoreToken( REWRITE *r )
 /************************************/
 {
     REWRITE *last_rewrite;
-    void (*last_source)( void );
+    token_source_fn *last_source;
 
     last_source = SetTokenSource( RewriteToken );
     last_rewrite = RewriteRewind( r );

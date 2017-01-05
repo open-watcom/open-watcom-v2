@@ -1155,7 +1155,7 @@ static void changeToInlineFunction( DECL_INFO *dinfo )
 void ClassProcessFunction( DECL_INFO *inline_func, bool is_inline )
 {
     REWRITE *last_rewrite;
-    void (*last_source)( void );
+    token_source_fn *last_source;
 
     ParseFlush();
     last_source = SetTokenSource( RewriteToken );
@@ -1174,7 +1174,7 @@ static void defineInlineFuncsAndDefArgExprs( CLASS_DATA *data )
     DECL_INFO *parm;
     REWRITE *last_rewrite;
     REWRITE *defarg_rewrite;
-    void (*last_source)( void );
+    token_source_fn *last_source;
     TOKEN_LOCN locn;
     SCOPE save_scope;
     SCOPE sym_scope;
@@ -3434,7 +3434,7 @@ PTREE ClassMemInit( SYMBOL ctor, REWRITE *mem_initializer )
     PTREE mem_init;
     REWRITE *save_token;
     REWRITE *last_rewrite;
-    void (*last_source)( void );
+    token_source_fn *last_source;
 
     mem_init = NULL;
     if( mem_initializer != NULL ) {

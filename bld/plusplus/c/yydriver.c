@@ -2538,7 +2538,7 @@ DECL_SPEC *ParseClassInstantiation( REWRITE *defn )
     PTREE       save_tree;
     YYTOKENTYPE save_yytoken;
     unsigned    suppressState;
-    void (*last_source)( void );
+    token_source_fn *last_source;
     auto error_state_t check;
     auto TOKEN_LOCN locn;
 
@@ -2622,7 +2622,7 @@ void ParseClassMemberInstantiation( REWRITE *defn )
     PARSE_STACK instantiate_state;
     p_action    what;
     REWRITE     *last_rewrite;
-    void (*last_source)( void );
+    token_source_fn *last_source;
     auto TOKEN_LOCN locn;
 
     if( defn == NULL ) {
@@ -2677,7 +2677,7 @@ void ParseFunctionInstantiation( REWRITE *defn )
     PARSE_STACK instantiate_state;
     p_action    what;
     REWRITE     *last_rewrite;
-    void (*last_source)( void );
+    token_source_fn *last_source;
     auto TOKEN_LOCN locn;
 
     if( defn == NULL ) {
@@ -2769,7 +2769,7 @@ DECL_INFO *ReparseFunctionDeclaration( REWRITE *defn )
     REWRITE     *save_token;
     PTREE       save_tree;
     YYTOKENTYPE save_yytoken;
-    void (*last_source)( void );
+    token_source_fn *last_source;
     auto error_state_t check;
     auto TOKEN_LOCN locn;
 

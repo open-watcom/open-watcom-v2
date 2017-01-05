@@ -56,6 +56,8 @@ enum {
     #undef pick
 };
 
+typedef void token_source_fn( void );
+
 //typedef target_ulong target_int_const;
 
 typedef enum ppctl_t {
@@ -117,10 +119,10 @@ void MacroStateGet( MACRO_STATE * );
 bool MacroStateMatchesCurrent( MACRO_STATE * );
 
 // provide a temporary source of tokens
-void (*SetTokenSource( void (*)( void ) ))( void );
+token_source_fn *SetTokenSource( token_source_fn * );
 
 // restore source of tokens
-void ResetTokenSource( void (*)( void ) );
+void ResetTokenSource( token_source_fn * );
 
 bool TokenUsesBuffer( TOKEN t );
 

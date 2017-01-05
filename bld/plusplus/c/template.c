@@ -1979,7 +1979,7 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms, bool 
                     something_went_wrong = true;
                     break;  /* from for loop */
                 } else {
-                    void (*last_source)( void );
+                    token_source_fn *last_source;
                     REWRITE *save_token;
                     REWRITE *last_rewrite;
                     REWRITE *defarg_rewrite;

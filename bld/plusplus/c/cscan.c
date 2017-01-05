@@ -56,10 +56,10 @@
 #define BUFFER_OVERRUN_CHECK    (0x35791113)
 #endif
 
-static  void    nextMacroToken( void );
-static  void    (*tokenSource)( void );
+static  void            nextMacroToken( void );
+static  token_source_fn *tokenSource;
 
-static  char    *ReScanPtr;
+static  char            *ReScanPtr;
 
 ExtraRptCtr( nextTokenCalls );
 ExtraRptCtr( nextTokenSavedId );
@@ -169,18 +169,18 @@ int ReScanToken( void )
     return( CompFlags.rescan_buffer_done );
 }
 
-void (*SetTokenSource( void (*source)( void ) ))( void )
-/******************************************************/
+token_source_fn *SetTokenSource( token_source_fn *source )
+/********************************************************/
 {
-    void (*last_source)( void );
+    token_source_fn *last_source;
 
     last_source = tokenSource;
     tokenSource = source;
     return( last_source );
 }
 
-void ResetTokenSource( void (*source)( void ) )
-/*********************************************/
+void ResetTokenSource( token_source_fn *source )
+/**********************************************/
 {
     tokenSource = source;
 }
