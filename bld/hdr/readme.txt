@@ -127,7 +127,7 @@ always stores these headers in 8.3 filename format, transforming the
 name, usually by truncation, if necessary. Programmers may still refer
 to the long name in their programs---and they are encouraged to do so.
 The Open Watcom compiler will look for the transformed name if it can't
-open the long name by consulting the mappings in _ialias.h.
+open the long name by consulting the mappings in "_preincl.h".
 
 In addition to the headers required by the C and C++ standards, Open
 Watcom also provides several non-standard headers that are part of Open
