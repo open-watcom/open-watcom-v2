@@ -189,37 +189,38 @@ struct open_file {                      // ACTIVE FILE (BEING READ)
 
 typedef struct _src_file *SRCFILE;
 
-struct _src_file {                      // SOURCE FILE (PERMANENT)
-    struct _src_file    *sister;        // - ring of files for #line directives
-    struct _src_file    *parent;        // - NULL or including source file
-    struct _src_file    *unique;        // - next in unique list
-    struct _src_file    *pch_child;     // - #include to create pchdr for (NULL otherwise)
-    LINE_NO             parent_locn;    // - line no. for inclusion
-    unsigned            index;          // - index of this source file
-    OPEN_FILE           *active;        // - information for open file
-    char                *name;          // - file name
-    char                *full_name;     // - absolute pathname for file
-    char                *ifndef_name;   // - name used when #ifndef
-    unsigned            ifndef_len;     // - length of name used when #ifndef
-    unsigned            guard_state;    // - guard state
-    MACRO_STATE         macro_state;    // - state of macro table when opened
-    time_t              time_stamp;     // - time stamp for file
-                                        // - SRCFILE attributes
-    unsigned            lib_inc  : 1;   // -- library include: #include <file>
-    unsigned            primary  : 1;   // -- primary source file
-    unsigned            alias    : 1;   // -- alias'ed source file
-    unsigned            cmdline  : 1;   // -- command-line file
-    unsigned            cmdlneol : 1;   // -- EOL for command-line file
-    unsigned            cmdlneof : 1;   // -- EOF for command-line file
-    unsigned            uncached : 1;   // -- have to re-open file on read
-    unsigned            free : 1;       // -- free SRCFILE
-    unsigned            pch_create : 1; // -- create pchdr when child closes
-    unsigned            pch_kludge : 1; // -- EOF needs 3 ';''s to align parser
-    unsigned            assume_file : 1;// -- handle represents a file not a device
-    unsigned            found_eof : 1;  // -- next read will return 0
-    unsigned            read_only : 1;  // -- read-only header file
-    unsigned            once_only : 1;  // -- read once header file
-    unsigned            ignore_swend:1; // -- ignore cmdline switch end chars
+struct _src_file {                          // SOURCE FILE (PERMANENT)
+    struct _src_file    *sister;            // - ring of files for #line directives
+    struct _src_file    *parent;            // - NULL or including source file
+    struct _src_file    *unique;            // - next in unique list
+    struct _src_file    *pch_child;         // - #include to create pchdr for (NULL otherwise)
+    LINE_NO             parent_locn;        // - line no. for inclusion
+    unsigned            index;              // - index of this source file
+    OPEN_FILE           *active;            // - information for open file
+    char                *name;              // - file name
+    char                *full_name;         // - absolute pathname for file
+    char                *ifndef_name;       // - name used when #ifndef
+    unsigned            ifndef_len;         // - length of name used when #ifndef
+    unsigned            guard_state;        // - guard state
+    MACRO_STATE         macro_state;        // - state of macro table when opened
+    time_t              time_stamp;         // - time stamp for file
+                                            // - SRCFILE attributes
+    unsigned            lib_inc  : 1;       // -- library include: #include <file>
+    unsigned            primary  : 1;       // -- primary source file
+    unsigned            alias    : 1;       // -- alias'ed source file
+    unsigned            cmdline  : 1;       // -- command-line file
+    unsigned            cmdlneol : 1;       // -- EOL for command-line file
+    unsigned            cmdlneof : 1;       // -- EOF for command-line file
+    unsigned            uncached : 1;       // -- have to re-open file on read
+    unsigned            free : 1;           // -- free SRCFILE
+    unsigned            pch_create : 1;     // -- create pchdr when child closes
+    unsigned            pch_kludge : 1;     // -- EOF needs 3 ';''s to align parser
+    unsigned            assume_file : 1;    // -- handle represents a file not a device
+    unsigned            found_eof : 1;      // -- next read will return 0
+    unsigned            read_only : 1;      // -- read-only header file
+    unsigned            once_only : 1;      // -- read once header file
+    unsigned            ignore_swend: 1;    // -- ignore cmdline switch end chars
+    unsigned            force_include: 1;   // -- force include this header file
 };
 
 

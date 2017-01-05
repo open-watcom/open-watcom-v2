@@ -417,13 +417,16 @@ static bool openSrc(            // ATTEMPT TO OPEN FILE
 #endif
     }
 #ifdef OPT_BR
-    if( might_browse ) switch( typ ) {
-      case FT_SRC :
-      case FT_LIBRARY :
-      case FT_HEADER :
-      case FT_HEADER_PRE :
-        BrinfOpenSource( SrcFileCurrent() );
-        break;
+    if( might_browse ) {
+        switch( typ ) {
+        case FT_SRC:
+        case FT_LIBRARY:
+        case FT_HEADER:
+        case FT_HEADER_FORCED:
+        case FT_HEADER_PRE:
+            BrinfOpenSource( SrcFileCurrent() );
+            break;
+        }
     }
 #endif
     return( true );
@@ -465,6 +468,7 @@ static const char *openSrcExts( // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
             doExt = !(CompFlags.dont_autogen_ext_src);
             break;
         case FT_HEADER:
+        case FT_HEADER_FORCED:
         case FT_HEADER_PRE:
         case FT_LIBRARY:
             doExt = !(CompFlags.dont_autogen_ext_inc);
@@ -572,6 +576,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
         }
         break;
     case FT_HEADER:
+    case FT_HEADER_FORCED:
     case FT_HEADER_PRE:
     case FT_LIBRARY:
         exts = extsHdr;
@@ -679,10 +684,11 @@ bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
      && file_name[0] != '\0' ) {
         TOKEN_LOCN locn;
         switch( typ ) {
-          case FT_SRC:
-          case FT_HEADER:
-          case FT_HEADER_PRE:
-          case FT_LIBRARY:
+        case FT_SRC:
+        case FT_HEADER:
+        case FT_HEADER_FORCED:
+        case FT_HEADER_PRE:
+        case FT_LIBRARY:
             SrcFileGetTokenLocn( &locn );
             BrinfIncludeSource( file_name, &locn );
             break;

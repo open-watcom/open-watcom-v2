@@ -35,6 +35,7 @@
 typedef enum {                  // TYPES OF SOURCE FILES
     FT_SRC,                     // - primary source file
     FT_HEADER,                  // - header file (i.e., #include "file.h")
+    FT_HEADER_FORCED,           // - header file forced by compiler -fi option
     FT_HEADER_PRE,              // - header file (pre-include)
     FT_LIBRARY,                 // - library file (i.e., #include <stdfile.h>)
     FT_CMD                      // - command line option file (i.e., @compflags)

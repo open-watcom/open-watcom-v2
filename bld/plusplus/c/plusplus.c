@@ -230,8 +230,7 @@ static void openForceIncludeFile( void )
     if( CompFlags.cpp_output ) {
         PrtChar( '\n' );
     }
-    InitialMacroFlag = MFLAG_NONE;
-    OpenSrcFile( ForceInclude, FT_HEADER );
+    OpenSrcFile( ForceInclude, FT_HEADER_FORCED );
     CMemFreePtr( &ForceInclude );
 }
 
@@ -255,7 +254,6 @@ static bool openForcePreIncludeFile( void )
     if( CompFlags.cpp_output ) {
         PrtChar( '\n' );
     }
-    InitialMacroFlag = MFLAG_NONE;
     CompFlags.ignore_fnf = true;
     ok = OpenSrcFile( ForcePreInclude, FT_HEADER_PRE );
     CompFlags.ignore_fnf = false;

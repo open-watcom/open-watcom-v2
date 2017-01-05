@@ -342,6 +342,7 @@ static SRCFILE srcFileAlloc(    // ALLOCATE A SRCFILE
     new_src->sister = new_src;
     new_src->guard_state = GUARD_NULL;
     new_src->time_stamp = ftime;
+    new_src->force_include = false;
     MacroStateGet( &(new_src->macro_state) );
     if( srcFile == NULL ) {
         new_src->parent_locn = 0;
@@ -668,6 +669,9 @@ static bool srcReadBuffer(      // READ NEXT BUFFER
             if( close_top_file ) {
                 close_top_file = false;
             } else {
+                if( src_file->force_include && act->nextc == notFilled ) {
+                    InitialMacroFlag = MFLAG_NONE;
+                }
                 act->nextc = &act->buff[0];
                 if( src_file->found_eof ) {
                     src_file->found_eof = false;
