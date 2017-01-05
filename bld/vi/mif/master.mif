@@ -12,7 +12,7 @@ vi_trmem = 1
 .EXTENSIONS: .ctl .dyn
 .EXTENSIONS: .vi .dat
 
-additional_cleanup = *.dh *.ch $(bind_compiled)
+additional_cleanup = *.rex *.dh *.ch $(bind_compiled)
 
 !include cproj.mif
 !include defrule.mif
