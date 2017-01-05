@@ -549,8 +549,8 @@ typedef struct info {
     mark                *MarkList;
     int                 VirtualColumnDesired;
     select_rgn          SelRgn;
-    bool                IsColumnRegion :1;
-    bool                linenumflag :1;
+    bool                IsColumnRegion      : 1;
+    bool                linenumflag         : 1;
     window_id           curr_num_window_id;
     window_id           current_window_id;
     vi_ushort           DuplicateID;
@@ -598,20 +598,20 @@ typedef struct {
  * SelectItem data
  */
 typedef struct {
-    window_info         *wi;            // info describing window to create
-    char                *title;         // title of window
-    char                **list;         // lines to display
-    int                 maxlist;        // number of lines in list
-    char                *result;        // where to copy the data for the picked line
-    int                 num;            // number of the picked line
-    int                 *allowrl;       // allow cursor right/left (for menu bar)
-    hilst               *hilite;        // chars to highlight
-    vi_key              *retevents;     // events that simulate pressing enter
-    vi_key              event;          // event that caused a return
-    linenum             cln;            // current line to display
-    window_id           eiw;            // alternate window to accept events in (like the options window after fgrep...)
-    bool                show_lineno : 1;// show lines in top-right corner
-    bool                is_menu     : 1;// is a menu we are showing
+    window_info         *wi;                // info describing window to create
+    char                *title;             // title of window
+    char                **list;             // lines to display
+    int                 maxlist;            // number of lines in list
+    char                *result;            // where to copy the data for the picked line
+    int                 num;                // number of the picked line
+    int                 *allowrl;           // allow cursor right/left (for menu bar)
+    hilst               *hilite;            // chars to highlight
+    vi_key              *retevents;         // events that simulate pressing enter
+    vi_key              event;              // event that caused a return
+    linenum             cln;                // current line to display
+    window_id           eiw;                // alternate window to accept events in (like the options window after fgrep...)
+    bool                show_lineno : 1;    // show lines in top-right corner
+    bool                is_menu     : 1;    // is a menu we are showing
 } selectitem;
 
 /*

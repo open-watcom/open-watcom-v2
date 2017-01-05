@@ -51,17 +51,17 @@ WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARA
 typedef struct {
     int         AutoSaveInterval;
     // int         MaxLineLen;
-    bool        Undo :1;
-    bool        AutoSave :1;
-    bool        LastEOL :1;
-    bool        SaveConfig :1;
-    bool        SaveOnBuild :1;
-    bool        BeepFlag :1;
-    bool        QuitMovesForward :1;
-    bool        SameFileCheck :1;
-    bool        Modal :1;
-    bool        CaseIgnore :1;
-    bool        SearchWrap :1;
+    bool        Undo                : 1;
+    bool        AutoSave            : 1;
+    bool        LastEOL             : 1;
+    bool        SaveConfig          : 1;
+    bool        SaveOnBuild         : 1;
+    bool        BeepFlag            : 1;
+    bool        QuitMovesForward    : 1;
+    bool        SameFileCheck       : 1;
+    bool        Modal               : 1;
+    bool        CaseIgnore          : 1;
+    bool        SearchWrap          : 1;
     char        Word[WORDWIDTH];
     char        WordAlt[WORDWIDTH];
     char        TmpDir[TMPDIRWIDTH];

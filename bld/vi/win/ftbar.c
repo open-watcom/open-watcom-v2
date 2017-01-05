@@ -82,8 +82,8 @@ enum {
 #define MAX_SIZES       16
 
 struct {
-    bool    bold :1;
-    bool    italic :1;
+    bool    bold        : 1;
+    bool    italic      : 1;
 }       Style[MAX_STYLES];
 
 int     NStyles, NSizes;

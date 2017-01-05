@@ -46,10 +46,10 @@ WINEXPORT BOOL CALLBACK SetScrProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARA
 
 typedef struct {
     int         PageLinesExposed;
-    bool        JumpyScroll :1;
-    bool        LineBased :1;
-    bool        SavePosition :1;
-    bool        AutoMessageClear :1;
+    bool        JumpyScroll         : 1;
+    bool        LineBased           : 1;
+    bool        SavePosition        : 1;
+    bool        AutoMessageClear    : 1;
     char        FileEndString[FILEENDSTRINGWIDTH];
 } dlg_data;
 
