@@ -48,10 +48,10 @@ static  hw_reg_set      STOSBParms[] = {
 #endif
 
 static struct {
-    unsigned    f_near : 1;
-    unsigned    f_routine_pops : 1;
-    unsigned    f_caller_return : 1;
-    unsigned    f_8087_returns : 1;
+    bool    f_near          : 1;
+    bool    f_routine_pops  : 1;
+    bool    f_caller_return : 1;
+    bool    f_8087_returns  : 1;
 } AuxInfoFlg;
 
 static void pragmaAuxInfoInit( void )
@@ -145,10 +145,10 @@ static void InitAuxInfo( void )
 
     memset( &AuxInfo, 0, sizeof( AuxInfo ) );
 
-    AuxInfoFlg.f_near = 0;
-    AuxInfoFlg.f_routine_pops = 0;
-    AuxInfoFlg.f_caller_return = 0;
-    AuxInfoFlg.f_8087_returns = 0;
+    AuxInfoFlg.f_near = false;
+    AuxInfoFlg.f_routine_pops = false;
+    AuxInfoFlg.f_caller_return = false;
+    AuxInfoFlg.f_8087_returns = false;
 }
 
 static void CopyAuxInfo( void )
@@ -412,10 +412,10 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
     SYM_ENTRY           sym;
     char                *name;
     unsigned            skip;
-    int                 mutate_to_segment;
+    bool                mutate_to_segment;
     bool                uses_auto;
 #if _CPU == 8086
-    int                 fixup_padding;
+    bool                fixup_padding;
 #endif
 
     sym_handle = SYM_NULL;
@@ -465,10 +465,10 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
                 /* insert fixup information */
                 skip = 0;
                 *dst++ = FLOATING_FIXUP_BYTE;
-                mutate_to_segment = 0;
+                mutate_to_segment = false;
                 cg_fix = 0;
 #if _CPU == 8086
-                fixup_padding = 0;
+                fixup_padding = false;
 #endif
                 switch( fix->fixup_type ) {
                 case FIX_FPPATCH:
@@ -512,24 +512,24 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
                     skip = 4;
                     cg_fix = FIX_SYM_RELOFF;
 #if _CPU == 8086
-                    fixup_padding = 1;
+                    fixup_padding = true;
 #endif
                     break;
                 case FIX_PTR16:
-                    mutate_to_segment = 1;
+                    mutate_to_segment = true;
                     /* fall through */
                 case FIX_OFF16:
                     skip = 2;
                     cg_fix = FIX_SYM_OFFSET;
                     break;
                 case FIX_PTR32:
-                    mutate_to_segment = 1;
+                    mutate_to_segment = true;
                     /* fall through */
                 case FIX_OFF32:
                     skip = 4;
                     cg_fix = FIX_SYM_OFFSET;
 #if _CPU == 8086
-                    fixup_padding = 1;
+                    fixup_padding = true;
 #endif
                     break;
                 default:
@@ -602,7 +602,7 @@ static bool InsertFixups( unsigned char *buff, byte_seq_len len, byte_seq **code
 
 
 static void AddAFix( unsigned loc, char *name, unsigned type, unsigned off )
-/*************************************************************************/
+/**************************************************************************/
 {
     struct asmfixup     *fix;
 
@@ -794,38 +794,38 @@ static void GetParmInfo( void )
 /****************************/
 {
     struct {
-        unsigned f_pop           : 1;
-        unsigned f_reverse       : 1;
-        unsigned f_loadds        : 1;
-        unsigned f_nomemory      : 1;
-        unsigned f_list          : 1;
+        bool    f_pop       : 1;
+        bool    f_reverse   : 1;
+        bool    f_loadds    : 1;
+        bool    f_nomemory  : 1;
+        bool    f_list      : 1;
     } have;
 
-    have.f_pop = 0;
-    have.f_reverse = 0;
-    have.f_loadds = 0;
-    have.f_nomemory = 0;
-    have.f_list = 0;
+    have.f_pop = false;
+    have.f_reverse = false;
+    have.f_loadds = false;
+    have.f_nomemory = false;
+    have.f_list = false;
     for( ;; ) {
         if( !have.f_pop && PragRecog( "caller" ) ) {
             AuxInfo.cclass |= CALLER_POPS;
-            have.f_pop = 1;
+            have.f_pop = true;
         } else if( !have.f_pop && PragRecog( "routine" ) ) {
             AuxInfo.cclass &= ~ CALLER_POPS;
-            AuxInfoFlg.f_routine_pops = 1;
-            have.f_pop = 1;
+            AuxInfoFlg.f_routine_pops = true;
+            have.f_pop = true;
         } else if( !have.f_reverse && PragRecog( "reverse" ) ) {
             AuxInfo.cclass |= REVERSE_PARMS;
-            have.f_reverse = 1;
+            have.f_reverse = true;
         } else if( !have.f_nomemory && PragRecog( "nomemory" ) ) {
             AuxInfo.cclass |= NO_MEMORY_READ;
-            have.f_nomemory = 1;
+            have.f_nomemory = true;
         } else if( !have.f_loadds && PragRecog( "loadds" ) ) {
             AuxInfo.cclass |= LOAD_DS_ON_CALL;
-            have.f_loadds = 1;
+            have.f_loadds = true;
         } else if( !have.f_list && PragRegSet() != T_NULL ) {
             AuxInfo.parms = PragManyRegSets();
-            have.f_list = 1;
+            have.f_list = true;
         } else {
             break;
         }
@@ -837,32 +837,32 @@ static void GetSTRetInfo( void )
 /*****************************/
 {
     struct {
-        unsigned f_float        : 1;
-        unsigned f_struct       : 1;
-        unsigned f_allocs       : 1;
-        unsigned f_list         : 1;
+        bool    f_float     : 1;
+        bool    f_struct    : 1;
+        bool    f_allocs    : 1;
+        bool    f_list      : 1;
     } have;
 
-    have.f_float = 0;
-    have.f_struct = 0;
-    have.f_allocs = 0;
-    have.f_list = 0;
+    have.f_float = false;
+    have.f_struct = false;
+    have.f_allocs = false;
+    have.f_list = false;
     for( ;; ) {
         if( !have.f_float && PragRecog( "float" ) ) {
-            have.f_float = 1;
+            have.f_float = true;
             AuxInfo.cclass |= NO_FLOAT_REG_RETURNS;
         } else if( !have.f_struct && PragRecog( "struct" ) ) {
-            have.f_struct = 1;
+            have.f_struct = true;
             AuxInfo.cclass |= NO_STRUCT_REG_RETURNS;
         } else if( !have.f_allocs && PragRecog( "routine" ) ) {
-            have.f_allocs = 1;
+            have.f_allocs = true;
             AuxInfo.cclass |= ROUTINE_RETURN;
         } else if( !have.f_allocs && PragRecog( "caller" ) ) {
-            have.f_allocs = 1;
+            have.f_allocs = true;
             AuxInfo.cclass &= ~ROUTINE_RETURN;
-            AuxInfoFlg.f_caller_return = 1;
+            AuxInfoFlg.f_caller_return = true;
         } else if( !have.f_list && PragRegSet() != T_NULL ) {
-            have.f_list = 1;
+            have.f_list = true;
             AuxInfo.cclass |= SPECIAL_STRUCT_RETURN;
             AuxInfo.streturn = PragRegList();
         } else {
@@ -876,27 +876,27 @@ static void GetRetInfo( void )
 /***************************/
 {
     struct {
-        unsigned f_no8087        : 1;
-        unsigned f_list          : 1;
-        unsigned f_struct        : 1;
+        bool    f_no8087    : 1;
+        bool    f_list      : 1;
+        bool    f_struct    : 1;
     } have;
 
-    have.f_no8087 = 0;
-    have.f_list = 0;
-    have.f_struct = 0;
+    have.f_no8087 = false;
+    have.f_list = false;
+    have.f_struct = false;
     AuxInfo.cclass &= ~ NO_8087_RETURNS;
-    AuxInfoFlg.f_8087_returns = 1;
+    AuxInfoFlg.f_8087_returns = true;
     for( ;; ) {
         if( !have.f_no8087 && PragRecog( "no8087" ) ) {
-            have.f_no8087 = 1;
+            have.f_no8087 = true;
             HW_CTurnOff( AuxInfo.returns, HW_FLTS );
             AuxInfo.cclass |= NO_8087_RETURNS;
         } else if( !have.f_list && PragRegSet() != T_NULL ) {
-            have.f_list = 1;
+            have.f_list = true;
             AuxInfo.cclass |= SPECIAL_RETURN;
             AuxInfo.returns = PragRegList();
         } else if( !have.f_struct && PragRecog( "struct" ) ) {
-            have.f_struct = 1;
+            have.f_struct = true;
             GetSTRetInfo();
         } else {
             break;
@@ -909,24 +909,24 @@ static void GetSaveInfo( void )
 /****************************/
 {
     struct {
-        unsigned    f_exact     : 1;
-        unsigned    f_nomemory  : 1;
-        unsigned    f_list      : 1;
+        bool    f_exact     : 1;
+        bool    f_nomemory  : 1;
+        bool    f_list      : 1;
     } have;
 
-    have.f_exact = 0;
-    have.f_nomemory = 0;
-    have.f_list = 0;
+    have.f_exact = false;
+    have.f_nomemory = false;
+    have.f_list = false;
     for( ;; ) {
         if( !have.f_exact && PragRecog( "exact" ) ) {
             AuxInfo.cclass |= MODIFY_EXACT;
-            have.f_exact = 1;
+            have.f_exact = true;
         } else if( !have.f_nomemory && PragRecog( "nomemory" ) ) {
             AuxInfo.cclass |= NO_MEMORY_CHANGED;
-            have.f_nomemory = 1;
+            have.f_nomemory = true;
         } else if( !have.f_list && PragRegSet() != T_NULL ) {
             HW_TurnOn( AuxInfo.save, PragRegList() );
-            have.f_list = 1;
+            have.f_list = true;
         } else {
             break;
         }
@@ -937,15 +937,15 @@ void PragAux( void )
 /******************/
 {
     struct {
-        unsigned    f_call   : 1;
-        unsigned    f_loadds : 1;
-        unsigned    f_rdosdev: 1;
-        unsigned    f_export : 1;
-        unsigned    f_parm   : 1;
-        unsigned    f_value  : 1;
-        unsigned    f_modify : 1;
-        unsigned    f_frame  : 1;
-        unsigned    uses_auto: 1;
+        bool    f_call      : 1;
+        bool    f_loadds    : 1;
+        bool    f_rdosdev   : 1;
+        bool    f_export    : 1;
+        bool    f_parm      : 1;
+        bool    f_value     : 1;
+        bool    f_modify    : 1;
+        bool    f_frame     : 1;
+        bool    uses_auto   : 1;
     } have;
 
     InitAuxInfo();
@@ -953,50 +953,50 @@ void PragAux( void )
         SetCurrInfo( Buffer );
         NextToken();
         PragObjNameInfo( &AuxInfo.objname );
-        have.f_call = 0;
-        have.f_loadds = 0;
-        have.f_rdosdev = 0;
-        have.f_export = 0;
-        have.f_parm = 0;
-        have.f_value = 0;
-        have.f_modify = 0;
-        have.f_frame = 0;
-        have.uses_auto = 0;
+        have.f_call = false;
+        have.f_loadds = false;
+        have.f_rdosdev = false;
+        have.f_export = false;
+        have.f_parm = false;
+        have.f_value = false;
+        have.f_modify = false;
+        have.f_frame = false;
+        have.uses_auto = false;
         for( ;; ) {
             if( !have.f_call && CurToken == T_EQUAL ) {
                 have.uses_auto = GetByteSeq( &AuxInfo.code );
-                have.f_call = 1;
+                have.f_call = true;
             } else if( !have.f_call && PragRecog( "far" ) ) {
                 AuxInfo.cclass |= FAR_CALL;
-                have.f_call = 1;
+                have.f_call = true;
             } else if( !have.f_call && PragRecog( "near" ) ) {
                 AuxInfo.cclass &= ~FAR_CALL;
-                AuxInfoFlg.f_near = 1;
-                have.f_call = 1;
+                AuxInfoFlg.f_near = true;
+                have.f_call = true;
             } else if( !have.f_loadds && PragRecog( "loadds" ) ) {
                 AuxInfo.cclass |= LOAD_DS_ON_ENTRY;
-                have.f_loadds = 1;
+                have.f_loadds = true;
             } else if( !have.f_rdosdev && PragRecog( "rdosdev" ) ) {
                 AuxInfo.cclass |= LOAD_RDOSDEV_ON_ENTRY;
-                have.f_rdosdev = 1;
+                have.f_rdosdev = true;
             } else if( !have.f_export && PragRecog( "export" ) ) {
                 AuxInfo.cclass |= DLL_EXPORT;
-                have.f_export = 1;
+                have.f_export = true;
             } else if( !have.f_parm && PragRecog( "parm" ) ) {
                 GetParmInfo();
-                have.f_parm = 1;
+                have.f_parm = true;
             } else if( !have.f_value && PragRecog( "value" ) ) {
                 GetRetInfo();
-                have.f_value = 1;
+                have.f_value = true;
             } else if( !have.f_value && PragRecog( "aborts" ) ) {
                 AuxInfo.cclass |= SUICIDAL;
-                have.f_value = 1;
+                have.f_value = true;
             } else if( !have.f_modify && PragRecog( "modify" ) ) {
                 GetSaveInfo();
-                have.f_modify = 1;
+                have.f_modify = true;
             } else if( !have.f_frame && PragRecog( "frame" ) ) {
                 AuxInfo.cclass |= GENERATE_STACK_FRAME;
-                have.f_frame = 1;
+                have.f_frame = true;
             } else {
                 break;
             }

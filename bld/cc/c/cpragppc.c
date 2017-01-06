@@ -41,8 +41,8 @@ static  int             AsmFuncNum;
 static  aux_info        AuxInfo;
 
 //static struct {
-//    unsigned    f_returns : 1;
-//    unsigned    f_streturn : 1;
+//    bool    f_returns   : 1;
+//    bool    f_streturn  : 1;
 //} AuxInfoFlg;
 
 
@@ -79,8 +79,8 @@ static void InitAuxInfo( void )
 
     memset( &AuxInfo, 0, sizeof( AuxInfo ) );
 
-//    AuxInfoFlg.f_returns = 0;
-//    AuxInfoFlg.f_streturn = 0;
+//    AuxInfoFlg.f_returns = false;
+//    AuxInfoFlg.f_streturn = false;
 }
 
 static void AdvanceToken( void )
@@ -250,7 +250,7 @@ void AsmSysLine( const char *buff )
 }
 
 static bool GetByteSeq( byte_seq **code )
-/**************************************/
+/***************************************/
 {
     auto unsigned char  buff[MAXIMUM_BYTESEQ + 32];
     bool                uses_auto;
@@ -306,12 +306,12 @@ void PragAux( void )
 /******************/
 {
     struct {
-        unsigned f_export : 1;
-        unsigned f_parm   : 1;
-        unsigned f_value  : 1;
-        unsigned f_modify : 1;
-        unsigned f_frame  : 1;
-        unsigned uses_auto: 1;
+        bool    f_export    : 1;
+        bool    f_parm      : 1;
+        bool    f_value     : 1;
+        bool    f_modify    : 1;
+        bool    f_frame     : 1;
+        bool    uses_auto   : 1;
     } have;
 
     InitAuxInfo();
@@ -319,33 +319,33 @@ void PragAux( void )
         SetCurrInfo( Buffer );
         NextToken();
         PragObjNameInfo( &AuxInfo.objname );
-        have.f_export = 0;
-        have.f_parm = 0;
-        have.f_value = 0;
-        have.f_modify = 0;
-        have.f_frame = 0;
-        have.uses_auto = 0;
+        have.f_export = false;
+        have.f_parm = false;
+        have.f_value = false;
+        have.f_modify = false;
+        have.f_frame = false;
+        have.uses_auto = false;
         for( ;; ) {
             if( CurToken == T_EQUAL ) {
                 have.uses_auto = GetByteSeq( &AuxInfo.code );
             } else if( !have.f_export && PragRecog( "export" ) ) {
                 AuxInfo.cclass |= DLL_EXPORT;
-                have.f_export = 1;
+                have.f_export = true;
             } else if( !have.f_parm && PragRecog( "parm" ) ) {
 //                GetParmInfo();
-                have.f_parm = 1;
+                have.f_parm = true;
             } else if( !have.f_value && PragRecog( "value" ) ) {
 //                GetRetInfo();
-                have.f_value = 1;
+                have.f_value = true;
             } else if( !have.f_value && PragRecog( "aborts" ) ) {
                 AuxInfo.cclass |= SUICIDAL;
-                have.f_value = 1;
+                have.f_value = true;
             } else if( !have.f_modify && PragRecog( "modify" ) ) {
 //                GetSaveInfo();
-                have.f_modify = 1;
+                have.f_modify = true;
             } else if( !have.f_frame && PragRecog( "frame" ) ) {
 //                AuxInfo.cclass |= GENERATE_STACK_FRAME;
-                have.f_frame = 1;
+                have.f_frame = true;
             } else {
                 break;
             }
