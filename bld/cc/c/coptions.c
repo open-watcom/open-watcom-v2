@@ -419,14 +419,20 @@ static void SetGenSwitches( void )
 {
 #if _CPU == 8086 || _CPU == 386
   #if _CPU == 386
-    if( SwData.cpu == SW_CPU_DEF ) SwData.cpu = SW_CPU6;
-    if( SwData.fpu == SW_FPU_DEF ) SwData.fpu = SW_FPU3;
-    if( SwData.mem == SW_M_DEF   ) SwData.mem = SW_MF;
+    if( SwData.cpu == SW_CPU_DEF )
+        SwData.cpu = SW_CPU6;
+    if( SwData.fpu == SW_FPU_DEF )
+        SwData.fpu = SW_FPU3;
+    if( SwData.mem == SW_M_DEF )
+        SwData.mem = SW_MF;
     TargetSwitches |= USE_32;
   #else
-    if( SwData.cpu == SW_CPU_DEF ) SwData.cpu = SW_CPU0;
-    if( SwData.fpu == SW_FPU_DEF ) SwData.fpu = SW_FPU0;
-    if( SwData.mem == SW_M_DEF   ) SwData.mem = SW_MS;
+    if( SwData.cpu == SW_CPU_DEF )
+        SwData.cpu = SW_CPU0;
+    if( SwData.fpu == SW_FPU_DEF )
+        SwData.fpu = SW_FPU0;
+    if( SwData.mem == SW_M_DEF )
+        SwData.mem = SW_MS;
     SET_PEG( f );
     SET_PEG( g );
   #endif
@@ -489,10 +495,14 @@ static void SetGenSwitches( void )
     default:
         break;
     }
-    if( !SwData.peg_ds_on ) TargetSwitches |= FLOATING_DS;
-    if( !SwData.peg_es_on ) TargetSwitches |= FLOATING_ES;
-    if( !SwData.peg_fs_on ) TargetSwitches |= FLOATING_FS;
-    if( !SwData.peg_gs_on ) TargetSwitches |= FLOATING_GS;
+    if( !SwData.peg_ds_on )
+        TargetSwitches |= FLOATING_DS;
+    if( !SwData.peg_es_on )
+        TargetSwitches |= FLOATING_ES;
+    if( !SwData.peg_fs_on )
+        TargetSwitches |= FLOATING_FS;
+    if( !SwData.peg_gs_on )
+        TargetSwitches |= FLOATING_GS;
 #endif
     switch( SwData.dbg_fmt ) {
     case SW_DF_WATCOM:

@@ -48,7 +48,7 @@ typedef struct tokens {
 
 typedef struct macro_token {
     struct macro_token  *next;
-    TOKEN               token;  
+    TOKEN               token;
     char                data[1];
 } MACRO_TOKEN;
 
@@ -182,10 +182,8 @@ void GetMacroToken( void )
     MACRO_TOKEN     *mtok;
     size_t          len;
     char            *buf;
-    struct {
-        unsigned keep_token : 1;
-        unsigned next_token : 1;
-    } flag;
+    bool            keep_token;
+    bool            next_token;
 
     buf = Buffer;
     buf[0] = '\0';
@@ -198,8 +196,8 @@ void GetMacroToken( void )
             len++;
         }
         TokenLen = len;
-        flag.keep_token = false;
-        flag.next_token = false;
+        keep_token = false;
+        next_token = false;
         switch( CurToken ) {
         case T_UNEXPANDABLE_ID:
             CalcHash( buf, len );
@@ -235,7 +233,7 @@ void GetMacroToken( void )
                     ++tcur;
                     ++tbeg;
                 }
-                flag.keep_token = true;
+                keep_token = true;
             }
             break;
         case T_LSTRING:
@@ -251,16 +249,16 @@ void GetMacroToken( void )
             if( mtok->data[0] == 'Z' ) {    // if end of macro
                 DeleteNestedMacro();
             }
-            flag.next_token = true;
+            next_token = true;
             break;
         default:
             break;
         }
-        if( !flag.keep_token ) {
+        if( !keep_token ) {
             TokenList = mtok->next;
             CMemFree( mtok );
         }
-        if( !flag.next_token ) {
+        if( !next_token ) {
             break;
         }
     }

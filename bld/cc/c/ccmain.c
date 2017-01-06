@@ -223,14 +223,15 @@ static void OpenDepFile( void )
 
 char *ForceSlash( char *name, char slash )
 {
-    char    *save = name;
+    char    *save;
 
-    if( slash == '\0' || name == NULL )
-        return( name );
-    while( name[0] != '\0' ) {
-        if( name[0] == '\\' || name[0] == '/' )
-            name[0] = slash;
-        name++;
+    save = name;
+    if( slash != '\0' || name != NULL ) {
+        while( name[0] != '\0' ) {
+            if( name[0] == '\\' || name[0] == '/' )
+                name[0] = slash;
+            name++;
+        }
     }
     return( save );
 }
@@ -762,7 +763,7 @@ bool OpenSrcFile( const char *filename, bool is_lib )
     char        try[_MAX_PATH];
     char        *drive;
     char        *dir;
-    int         save;
+    bool        save;
     FCB         *curr;
     char        c;
 
