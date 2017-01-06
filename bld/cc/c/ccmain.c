@@ -972,7 +972,7 @@ static bool TryOpen( const char *path, const char *fname )
 
     if( CompFlags.use_precompiled_header ) {
         CompFlags.use_precompiled_header = 0;
-        if( UsePreCompiledHeader( filename ) == 0 ) {
+        if( UsePreCompiledHeader( filename ) ) {
             fclose( fp );
             return( true );
         }

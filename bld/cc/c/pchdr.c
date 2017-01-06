@@ -1747,7 +1747,7 @@ static void AbortPreCompiledHeader( void )
 //      - all the include files are the same and have not been modified
 //========================================================================
 
-int UsePreCompiledHeader( const char *filename )
+bool UsePreCompiledHeader( const char *filename )
 {
     int                 handle;
     unsigned            size;
@@ -1758,7 +1758,7 @@ int UsePreCompiledHeader( const char *filename )
     handle = sopen3( PCH_FileName, O_RDONLY | O_BINARY, SH_DENYWR );
     if( handle == -1 ) {
         CompFlags.make_precompiled_header = 1;
-        return( -1 );
+        return( false );
     }
     PCH_Start = NULL;
     TextSegArray = NULL;
@@ -1771,19 +1771,19 @@ int UsePreCompiledHeader( const char *filename )
         close( handle );
         PCHNote( PCHDR_READ_ERROR );
         AbortPreCompiledHeader();
-        return( -1 );
+        return( false );
     }
     if( !ValidHeader( &pch ) ) {
         close( handle );
         PCHNote( PCHDR_INVALID_HEADER );
         AbortPreCompiledHeader();
-        return( -1 );
+        return( false );
     }
     if( pch.gen_switches != GenSwitches || pch.target_switches != TargetSwitches ) {
         close( handle );
         PCHNote( PCHDR_DIFFERENT_OPTIONS );
         AbortPreCompiledHeader();
-        return( -1 );
+        return( false );
     }
     p = FEmalloc( pch.size );                   // allocate big memory block
     PCH_Start = p;
@@ -1796,17 +1796,17 @@ int UsePreCompiledHeader( const char *filename )
     if( PH_size != pch.size || size != pch.macro_size ) {
         PCHNote( PCHDR_READ_ERROR );
         AbortPreCompiledHeader();
-        return( -1 );
+        return( false );
     }
     if( !SameCWD( p ) ) {
         PCHNote( PCHDR_DIFFERENT_CWD );
         AbortPreCompiledHeader();
-        return( -1 );
+        return( false );
     }
     if( CompFlags.cpp_ignore_env != pch.cpp_ignore_env || CompFlags.ignore_default_dirs != pch.ignore_default_dirs ) {
         PCHNote( PCHDR_INCFILE_DIFFERENT );
         AbortPreCompiledHeader();
-        return( -1 );
+        return( false );
     }
     p = FixupIncludes( p + pch.cwd_len, pch.file_count );
     p = FixupRoDirList( p, pch.rdir_count );
@@ -1814,25 +1814,25 @@ int UsePreCompiledHeader( const char *filename )
     if( VerifyIncludes( filename ) ) {
         PCHNote( PCHDR_INCFILE_DIFFERENT );
         AbortPreCompiledHeader();
-        return( -1 );
+        return( false );
     }
     len = strlen( p ) + 1;              // get length of saved IncPathList
     if( FNAMECMPSTR( p, IncPathList ) != 0 ) {
         PCHNote( PCHDR_INCPATH_CHANGED );
         AbortPreCompiledHeader();
-        return( -1 );
+        return( false );
     }
     p += PCHAlign( len );
     p = FixupIncFileList( p, pch.incfile_count );
     if( VerifyMacros( PCH_Macros, pch.macro_count, pch.undef_macro_count ) != 0 ) {
         PCHNote( PCHDR_MACRO_CHANGED );
         AbortPreCompiledHeader();
-        return( -1 );
+        return( false );
     }
     LoadPreCompiledHeader( p, &pch );
     FreeOldIncFileList();
     PCH_FileName = NULL;
-    return( 0 );
+    return( true );
 }
 
 static void SetDebugType( TYPEPTR typ )

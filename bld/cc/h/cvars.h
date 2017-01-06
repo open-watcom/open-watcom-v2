@@ -865,7 +865,7 @@ extern char         *ftoa( FLOATVAL * );
 extern unsigned     JIS2Unicode( unsigned );
 
 // pchdr.c
-extern int          UsePreCompiledHeader( const char * );
+extern bool         UsePreCompiledHeader( const char * );
 extern void         InitBuildPreCompiledHeader( void );
 extern void         BuildPreCompiledHeader( const char * );
 extern void         FreePreCompiledHeader( void );
