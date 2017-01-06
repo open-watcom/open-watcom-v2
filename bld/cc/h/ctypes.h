@@ -488,8 +488,8 @@ typedef struct label_entry {
     struct symtab_entry *thread;
     struct label_entry  *next_label;
     LABEL_INDEX         ref_list;
-    unsigned            defined     : 1;
-    unsigned            referenced  : 1;
+    bool                defined     : 1;
+    bool                referenced  : 1;
     char                name[1];
 } LABELDEFN, *LABELPTR;
 

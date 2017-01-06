@@ -39,7 +39,15 @@
 #include "caux.h"
 #include "cfeinfo.h"
 
-struct mathfuncs {
+
+#define TOKEN2BOOL(t)   ((bool)(t))
+#define BOOL2TOKEN(b)   ((TOKEN)(b))
+
+extern int64        LongValue64( TREEPTR leaf );
+
+call_list           *CallNodeList;
+
+static struct mathfuncs {
     const char      *name;
     unsigned char   parm_count;
     unsigned char   mathop;
@@ -50,32 +58,29 @@ struct mathfuncs {
     { NULL,      0, 0 }
 };
 
-static   TREEPTR GenNextParm(TREEPTR,TYPEPTR **);
-static   TREEPTR StartFunc(TREEPTR,TYPEPTR **);
-static   TREEPTR GetExpr(void);
-static   TREEPTR ExprId(void);
-static   TREEPTR ExprOpnd(void);
-static   TREEPTR SizeofOp(TYPEPTR);
-static   TREEPTR ScalarExpr(TREEPTR);
-static   TREEPTR UnaryPlus(TREEPTR);
-static   TREEPTR TernOp(TREEPTR,TREEPTR,TREEPTR);
-static   TREEPTR ColonOp(TREEPTR);
-static   TREEPTR StartTernary(TREEPTR);
-static   TREEPTR NotOp(TREEPTR);
-static   TREEPTR AndAnd(TREEPTR);
-static   TREEPTR OrOr(TREEPTR);
-static   TREEPTR GenFuncCall(TREEPTR);
-static   TREEPTR IndexOp(TREEPTR,TREEPTR);
-static   TREEPTR SegOp(TREEPTR,TREEPTR);
-static      void PopNestedParms( TYPEPTR **plistptr );
-static      void IncSymWeight( SYMPTR sym );
-static      void AddCallNode( TREEPTR tree );
+static TREEPTR      GenNextParm(TREEPTR,TYPEPTR **);
+static TREEPTR      StartFunc(TREEPTR,TYPEPTR **);
+static TREEPTR      GetExpr(void);
+static TREEPTR      ExprId(void);
+static TREEPTR      ExprOpnd(void);
+static TREEPTR      SizeofOp(TYPEPTR);
+static TREEPTR      ScalarExpr(TREEPTR);
+static TREEPTR      UnaryPlus(TREEPTR);
+static TREEPTR      TernOp(TREEPTR,TREEPTR,TREEPTR);
+static TREEPTR      ColonOp(TREEPTR);
+static TREEPTR      StartTernary(TREEPTR);
+static TREEPTR      NotOp(TREEPTR);
+static TREEPTR      AndAnd(TREEPTR);
+static TREEPTR      OrOr(TREEPTR);
+static TREEPTR      GenFuncCall(TREEPTR);
+static TREEPTR      IndexOp(TREEPTR,TREEPTR);
+static TREEPTR      SegOp(TREEPTR,TREEPTR);
+static void         PopNestedParms( TYPEPTR **plistptr );
+static void         IncSymWeight( SYMPTR sym );
+static void         AddCallNode( TREEPTR tree );
 
-extern    int64 LongValue64( TREEPTR leaf );
-
-        call_list   *CallNodeList;
-static  call_list   **LastCallLnk;
-static  call_list   **FirstCallLnk;
+static call_list    **LastCallLnk;
+static call_list    **FirstCallLnk;
 
 void ExprInit( void )
 {
@@ -509,7 +514,7 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
 
     if( tree->op.opr == OPR_ERROR )
         return( tree );
-    if( Pre_processing ) {
+    if( Pre_processing != PPCTL_NORMAL ) {
         if( tree->op.opr == OPR_PUSHFLOAT ) {
             CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
             return( ErrorNode( tree ) );
@@ -1227,7 +1232,7 @@ static TREEPTR GetExpr( void )
                 MustRecog( T_COLON );
                 break;
             case TC_TERNARY_DONE:
-                CompFlags.meaningless_stmt &= Token[ExprLevel];
+                CompFlags.meaningless_stmt &= TOKEN2BOOL( Token[ExprLevel] );
                 --ExprLevel;
                 tree = TernOp( ValueStack[ExprLevel], op1, tree );
                 CompFlags.pending_dead_code = false;
@@ -1330,34 +1335,34 @@ static TREEPTR GetExpr( void )
                 break;
             case TC_PARM_LIST:          /* do func call */
                 {
-                SYMPTR          sym;
-                expr_level_type n;
-                TREEPTR         functree;
+                    SYMPTR          sym;
+                    expr_level_type n;
+                    TREEPTR         functree;
 
-                // find the corresponding function symbol
-                n = ExprLevel;
-                while( Token[n] != T_LEFT_PAREN ) {
-                    --n;
-                }
-                functree = ValueStack[n];
-                sym = SymGetPtr( functree->op.u2.sym_handle );
-                if( (sym->flags & SYM_TEMP) == 0 )
-                    SetDiagSymbol( sym, functree->op.u2.sym_handle );
-                tree = GenNextParm( tree, &plist );
-                tree = GenFuncCall( tree );
-                if( plist != NULL ) {   // function has prototype
-                    if( *plist != NULL && (*plist)->decl_type != TYPE_DOT_DOT_DOT ) {
-                        CErr1( ERR_PARM_COUNT_MISMATCH );
+                    // find the corresponding function symbol
+                    n = ExprLevel;
+                    while( Token[n] != T_LEFT_PAREN ) {
+                        --n;
                     }
-                } else {
-                    AddCallNode( tree );
-                }
-                if( (sym->flags & SYM_TEMP) == 0 )
-                    SetDiagPop();
-                PopNestedParms( &plist );
-                curclass = TokenClass[CurToken];
-                CompFlags.meaningless_stmt = false;
-                CompFlags.useful_side_effect = true;
+                    functree = ValueStack[n];
+                    sym = SymGetPtr( functree->op.u2.sym_handle );
+                    if( (sym->flags & SYM_TEMP) == 0 )
+                        SetDiagSymbol( sym, functree->op.u2.sym_handle );
+                    tree = GenNextParm( tree, &plist );
+                    tree = GenFuncCall( tree );
+                    if( plist != NULL ) {   // function has prototype
+                        if( *plist != NULL && (*plist)->decl_type != TYPE_DOT_DOT_DOT ) {
+                            CErr1( ERR_PARM_COUNT_MISMATCH );
+                        }
+                    } else {
+                        AddCallNode( tree );
+                    }
+                    if( (sym->flags & SYM_TEMP) == 0 )
+                        SetDiagPop();
+                    PopNestedParms( &plist );
+                    curclass = TokenClass[CurToken];
+                    CompFlags.meaningless_stmt = false;
+                    CompFlags.useful_side_effect = true;
                 }
                 break;
             }
@@ -1374,7 +1379,7 @@ static TREEPTR GetExpr( void )
             break;
         case TC_COLON:
             tree = ColonOp( tree );
-            CurToken = CompFlags.meaningless_stmt;
+            CurToken = BOOL2TOKEN( CompFlags.meaningless_stmt );
             curclass = TC_TERNARY_DONE;
             break;
         case TC_OR_OR:
@@ -1489,7 +1494,7 @@ static TREEPTR ExprOpnd( void )
             NextToken();
             continue;
         case T_SIZEOF:
-            if( Pre_processing ) {
+            if( Pre_processing != PPCTL_NORMAL ) {
                 CErr1( ERR_NO_SIZEOF_DURING_PP );
             }
             Class[ExprLevel] = TC_SIZEOF;
@@ -1543,7 +1548,7 @@ static TREEPTR ExprOpnd( void )
             NextToken();
             typ = TypeName();
             if( typ != NULL ) {
-                if( Pre_processing ) {
+                if( Pre_processing != PPCTL_NORMAL ) {
                     CErr1( ERR_NO_CAST_DURING_PP );
                 }
                 MustRecog( T_RIGHT_PAREN );
@@ -1602,7 +1607,7 @@ static TREEPTR ExprOpnd( void )
             NextToken();
             break;
         default:
-            if( Pre_processing && IS_KEYWORD( CurToken ) ) {
+            if( Pre_processing != PPCTL_NORMAL && IS_KEYWORD( CurToken ) ) {
                 tree = ExprId();
             } else {
                 CErr1( ERR_MISSING_OPERAND );
@@ -1639,7 +1644,7 @@ static TREEPTR ExprId( void )
     int         value;
     int         count;
 
-    if( Pre_processing ) {
+    if( Pre_processing != PPCTL_NORMAL ) {
         if( CMPLIT( Buffer, "defined" ) == 0 ) {
             ppctl_t old_ppctl;
 

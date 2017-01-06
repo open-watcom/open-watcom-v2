@@ -66,7 +66,7 @@ extern void ConBlip( void ) {
 
 extern bool ConTTY( void ) {
 // C compiler do a blip to console
-    return( GlobalCompFlags.ide_console_output != 0 );
+    return( GlobalCompFlags.ide_console_output );
 }
 
 extern void ConsErrMsg( cmsg_info  *cinfo ) {

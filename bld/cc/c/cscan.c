@@ -908,7 +908,7 @@ static TOKEN ScanNum( void )
             break;
         }
     }
-    if( Pre_processing && (CharSet[c] & (C_AL | C_DI)) ) {
+    if( Pre_processing != PPCTL_NORMAL && (CharSet[c] & (C_AL | C_DI)) ) {
         do {
             c = SaveNextChar();
         } while( CharSet[c] & (C_AL | C_DI) );
@@ -1491,7 +1491,7 @@ static void SkipWhiteSpace( int c )
         ScanWhiteSpace();
     } else {
         for( ; (CharSet[c] & C_WS); ) {
-            if( c != '\r' && Pre_processing == 0 ) {
+            if( c != '\r' && Pre_processing == PPCTL_NORMAL ) {
                 CppPrtChar( c );
             }
             c = NextChar();
@@ -1509,7 +1509,7 @@ void SkipAhead( void )
             }
             if( CurrChar != '\n' )
                 break;
-            if( CompFlags.cpp_output && Pre_processing == 0 ) {
+            if( CompFlags.cpp_output && Pre_processing == PPCTL_NORMAL ) {
                 CppPrtChar( '\n' );
             }
             SrcFileLoc = SrcFile->src_loc;

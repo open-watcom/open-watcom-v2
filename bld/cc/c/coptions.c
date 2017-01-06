@@ -77,15 +77,14 @@ static const char   *OptParm;
 
 #define __isdigit(c)    ((c) >= '0' && (c) <= '9')
 
-#define PEGGED( r )     unsigned peg_##r##s_used        : 1;    \
-                        unsigned peg_##r##s_on          : 1
+#define PEGGED( r ) bool    peg_##r##s_used : 1; \
+                    bool    peg_##r##s_on   : 1
 
 static struct
 {
     char        *sys_name;
 
-    enum    /* TARGET CPU SUPPORT - Intel defined (AXP/PPC uses CPU0 as default CPU) */
-    {
+    enum {  /* TARGET CPU SUPPORT - Intel defined (AXP/PPC uses CPU0 as default CPU) */
         SW_CPU_DEF,     /*  No target CPU specified     */
         SW_CPU0,        /*  Target 8086/8               */
         SW_CPU1,        /*  Target 80186/8              */
@@ -94,27 +93,24 @@ static struct
         SW_CPU4,        /*  Target 80486                */
         SW_CPU5,        /*  Target Pentium              */
         SW_CPU6         /*  Target Pentium-Pro          */
-    }cpu;
+    } cpu;
 
-    enum    /* TARGET FPU SUPPORT */
-    {
+    enum {  /* TARGET FPU SUPPORT */
         SW_FPU_DEF,     /*  No target FPU specified     */
         SW_FPU0,        /*  Target 8087 co-pro          */
         SW_FPU3,        /*  Target 80387 co-pro         */
         SW_FPU5,        /*  Target Pentium int fpu      */
         SW_FPU6         /*  Target Pentium-Pro int fpu  */
-    }fpu;
+    } fpu;
 
-    enum    /* FPU CALL TYPES */
-    {
+    enum {  /* FPU CALL TYPES */
         SW_FPT_DEF,     /*  No FPU call type specified  */
         SW_FPT_CALLS,   /*  FPU calls via library       */
         SW_FPT_EMU,     /*  FPU calls inline & emulated */
         SW_FPT_INLINE   /*  FPU calls inline            */
-    }fpt;
+    } fpt;
 
-    enum    /* MEMORY MODELS */
-    {
+    enum {  /* MEMORY MODELS */
         SW_M_DEF,       /*  No memory model specified   */
         SW_MF,          /*  Flat memory model           */
         SW_MS,          /*  Small memory model          */
@@ -122,23 +118,22 @@ static struct
         SW_MC,          /*  Compact memory model        */
         SW_ML,          /*  Large memory model          */
         SW_MH           /*  Huge memory model           */
-    }mem;
+    } mem;
 
-    enum    /*  DEBUGGING INFORMATION TYPE */
-    {
+    enum {  /*  DEBUGGING INFORMATION TYPE */
         SW_DF_DEF,      /*  No debug type specified     */
         SW_DF_WATCOM,   /*  Use Watcom                  */
         SW_DF_CV,       /*  Use CodeView                */
         SW_DF_DWARF,    /*  Use DWARF                   */
         SW_DF_DWARF_A,  /*  Use DWARF + A?              */
         SW_DF_DWARF_G   /*  Use DWARF + G?              */
-    }dbg_fmt;
+    } dbg_fmt;
 
     PEGGED( d );
     PEGGED( e );
     PEGGED( f );
     PEGGED( g );
-    unsigned    nd_used         : 1;
+    bool    nd_used : 1;
 } SwData;
 
 // local variables
@@ -382,8 +377,8 @@ static void SetTargSystem( void )
 #if _CPU == 386
         PreDefine_Macro( "__WINDOWS_386__" );
         if( !SwData.peg_fs_used ) {
-            SwData.peg_fs_on = 0;
-            SwData.peg_fs_used = 1;
+            SwData.peg_fs_on = false;
+            SwData.peg_fs_used = true;
         }
         switch( SwData.fpt ) {
         case SW_FPT_DEF:
@@ -396,8 +391,8 @@ static void SetTargSystem( void )
         TargetSwitches |= WINDOWS | CHEAP_WINDOWS;
 #elif _CPU == 8086
         if( !SwData.peg_ds_used ) {
-            SwData.peg_ds_on = 1;
-            SwData.peg_ds_used = 1;
+            SwData.peg_ds_on = true;
+            SwData.peg_ds_used = true;
         }
         TargetSwitches |= WINDOWS | CHEAP_WINDOWS;
 #endif
@@ -413,7 +408,7 @@ static void SetTargSystem( void )
     PreDefine_Macro( buff );
 }
 
-#define SET_PEG( r ) if( !SwData.peg_##r##s_used ) SwData.peg_##r##s_on = 1;
+#define SET_PEG( r ) if( !SwData.peg_##r##s_used ) SwData.peg_##r##s_on = true;
 
 static void SetGenSwitches( void )
 {
@@ -1180,7 +1175,7 @@ static void Set_FR( void )
 static void SetCodeClass( void )    { CodeClassName = CopyOfParm(); }
 static void SetDataSegName( void )
 {
-    SwData.nd_used = 1;
+    SwData.nd_used = true;
     DataSegName = CopyOfParm();
     SegData = SEG_UNKNOWN - 1;
     if( *DataSegName == '\0' ) {
@@ -1313,13 +1308,13 @@ static void Set_ZC( void )
     CompFlags.zc_switch_used = true;
     TargetSwitches |= CONST_IN_CODE;
 }
-static void Set_ZDF( void )         { SwData.peg_ds_used = 1; SwData.peg_ds_on = 0; }
-static void Set_ZDP( void )         { SwData.peg_ds_used = 1; SwData.peg_ds_on = 1; }
+static void Set_ZDF( void )         { SwData.peg_ds_used = true; SwData.peg_ds_on = false; }
+static void Set_ZDP( void )         { SwData.peg_ds_used = true; SwData.peg_ds_on = true; }
 static void Set_ZDL( void )         { TargetSwitches |= LOAD_DS_DIRECTLY; }
-static void Set_ZFF( void )         { SwData.peg_fs_used = 1; SwData.peg_fs_on = 0; }
-static void Set_ZFP( void )         { SwData.peg_fs_used = 1; SwData.peg_fs_on = 1; }
-static void Set_ZGF( void )         { SwData.peg_gs_used = 1; SwData.peg_gs_on = 0; }
-static void Set_ZGP( void )         { SwData.peg_gs_used = 1; SwData.peg_gs_on = 1; }
+static void Set_ZFF( void )         { SwData.peg_fs_used = true; SwData.peg_fs_on = false; }
+static void Set_ZFP( void )         { SwData.peg_fs_used = true; SwData.peg_fs_on = true; }
+static void Set_ZGF( void )         { SwData.peg_gs_used = true; SwData.peg_gs_on = false; }
+static void Set_ZGP( void )         { SwData.peg_gs_used = true; SwData.peg_gs_on = true; }
 #endif
 static void Set_ZE( void )
 {
@@ -1430,8 +1425,7 @@ static void SetGenerateMakeAutoDepend( void )
     CompFlags.generate_auto_depend = true;
     CMemFree( DependFileName );
     DependFileName = GetAFileName();
-    if( !DependFileName[0] )
-    {
+    if( *DependFileName == '\0' ) {
         CMemFree( DependFileName );
         DependFileName = NULL;
     }
@@ -1507,7 +1501,7 @@ static void Set_OF( void )
     }
 }
 static void Set_OM( void )          { TargetSwitches |= I_MATH_INLINE; }
-static void Set_OP( void )          { CompFlags.op_switch_used = true; } // force floats to memory
+static void Set_OP( void )          { CompFlags.op_switch_used = true; }    // force floats to memory
 #endif
 static void Set_OH( void )          { GenSwitches |= SUPER_OPTIMAL; }
 static void Set_OK( void )          { GenSwitches |= FLOW_REG_SAVES; }

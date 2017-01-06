@@ -959,8 +959,8 @@ LABELPTR LkLabel( const char *name )
         label->next_label = LabelHead;
         LabelHead = label;
         memcpy( label->name, name, len );
-        label->defined = 0;
-        label->referenced = 0;
+        label->defined = false;
+        label->referenced = false;
         label->ref_list = NextLabel();
     }
     return( label );
@@ -973,9 +973,9 @@ void FreeLabels( void )
 
     for( ; (label = LabelHead) != NULL; ) {
         LabelHead = label->next_label;
-        if( label->defined == 0 ) {
+        if( !label->defined ) {
             CErr2p( ERR_UNDEFINED_LABEL, label->name );
-        } else if( label->referenced == 0 ) {
+        } else if( !label->referenced ) {
             CWarn2p( WARN_UNREFERENCED_LABEL, ERR_UNREFERENCED_LABEL, label->name );
         }
         CMemFree( label );

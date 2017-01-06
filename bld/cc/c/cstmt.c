@@ -332,11 +332,11 @@ static bool GrabLabels( void )
         if( LAToken != T_COLON )
             break; /* quit if look ahead not : */
         label = LkLabel( SavedId );
-        if( label->defined != 0 ) {
+        if( label->defined ) {
             CErr2p( ERR_LABEL_ALREADY_DEFINED, label->name );
         } else {
             DropLabel( label->ref_list );
-            label->defined = 1;         /* indicate label defined now */
+            label->defined = true;      /* indicate label defined now */
         }
         CMemFree( SavedId );            /* free the saved id */
         SavedId = NULL;
@@ -647,7 +647,7 @@ static void GotoStmt( void )
         CErr1( ERR_EXPECTING_LABEL );
     } else {
         label = LkLabel( Buffer );
-        label->referenced = 1;
+        label->referenced = true;
         Jump( label->ref_list );
     }
     NextToken();
