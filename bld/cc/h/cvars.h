@@ -219,8 +219,9 @@ global int          TmpSymCount;
 global int          LitCount;
 global target_size  LitPoolSize;
 global size_t       MacroSize;
-global struct comp_flags CompFlags;
-global struct global_comp_flags GlobalCompFlags;
+global ppctl_t      Pre_processing;
+global comp_flags   CompFlags;
+global global_comp_flags GlobalCompFlags;
 global segment_id   SegmentNum;         /* next PRIVATE segment number to use */
 global segment_id   FarStringSegment;
 

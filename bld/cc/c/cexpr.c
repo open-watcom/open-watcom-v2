@@ -509,7 +509,7 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
 
     if( tree->op.opr == OPR_ERROR )
         return( tree );
-    if( CompFlags.pre_processing ) {
+    if( Pre_processing ) {
         if( tree->op.opr == OPR_PUSHFLOAT ) {
             CErr1( ERR_EXPR_MUST_BE_INTEGRAL );
             return( ErrorNode( tree ) );
@@ -1489,7 +1489,7 @@ static TREEPTR ExprOpnd( void )
             NextToken();
             continue;
         case T_SIZEOF:
-            if( CompFlags.pre_processing ) {
+            if( Pre_processing ) {
                 CErr1( ERR_NO_SIZEOF_DURING_PP );
             }
             Class[ExprLevel] = TC_SIZEOF;
@@ -1543,7 +1543,7 @@ static TREEPTR ExprOpnd( void )
             NextToken();
             typ = TypeName();
             if( typ != NULL ) {
-                if( CompFlags.pre_processing ) {
+                if( Pre_processing ) {
                     CErr1( ERR_NO_CAST_DURING_PP );
                 }
                 MustRecog( T_RIGHT_PAREN );
@@ -1602,7 +1602,7 @@ static TREEPTR ExprOpnd( void )
             NextToken();
             break;
         default:
-            if( CompFlags.pre_processing && IS_KEYWORD( CurToken ) ) {
+            if( Pre_processing && IS_KEYWORD( CurToken ) ) {
                 tree = ExprId();
             } else {
                 CErr1( ERR_MISSING_OPERAND );
@@ -1639,11 +1639,11 @@ static TREEPTR ExprId( void )
     int         value;
     int         count;
 
-    if( CompFlags.pre_processing ) {
+    if( Pre_processing ) {
         if( CMPLIT( Buffer, "defined" ) == 0 ) {
             ppctl_t old_ppctl;
 
-            old_ppctl = CompFlags.pre_processing;
+            old_ppctl = Pre_processing;
             PPCTL_DISABLE_MACROS();    /* don't want macro expanded */
             NextToken();
             if( CurToken == T_LEFT_PAREN ) {
@@ -1651,10 +1651,10 @@ static TREEPTR ExprId( void )
                 value = IsMacroDefined();
                 NextToken();
                 MustRecog( T_RIGHT_PAREN );
-                CompFlags.pre_processing = old_ppctl;
+                Pre_processing = old_ppctl;
             } else {
                 value = IsMacroDefined();
-                CompFlags.pre_processing = old_ppctl;
+                Pre_processing = old_ppctl;
                 NextToken();
             }
         } else {

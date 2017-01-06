@@ -518,14 +518,14 @@ typedef enum {
     PPCTL_ASM           = 0x04,         // pre-processor is in _asm statement
 } ppctl_t;
 
-#define PPCTL_ENABLE_ASM()      CompFlags.pre_processing |= PPCTL_ASM
-#define PPCTL_DISABLE_ASM()     CompFlags.pre_processing &= ~PPCTL_ASM
-#define PPCTL_ENABLE_EOL()      CompFlags.pre_processing |= PPCTL_EOL
-#define PPCTL_DISABLE_EOL()     CompFlags.pre_processing &= ~PPCTL_EOL
-#define PPCTL_ENABLE_MACROS()   CompFlags.pre_processing &= ~PPCTL_NO_EXPAND
-#define PPCTL_DISABLE_MACROS()  CompFlags.pre_processing |= PPCTL_NO_EXPAND
+#define PPCTL_ENABLE_ASM()      Pre_processing |= PPCTL_ASM
+#define PPCTL_DISABLE_ASM()     Pre_processing &= ~PPCTL_ASM
+#define PPCTL_ENABLE_EOL()      Pre_processing |= PPCTL_EOL
+#define PPCTL_DISABLE_EOL()     Pre_processing &= ~PPCTL_EOL
+#define PPCTL_ENABLE_MACROS()   Pre_processing &= ~PPCTL_NO_EXPAND
+#define PPCTL_DISABLE_MACROS()  Pre_processing |= PPCTL_NO_EXPAND
 
-struct comp_flags {
+typedef struct comp_flags {
     unsigned label_dropped          : 1;
     unsigned has_main               : 1;
     unsigned float_used             : 1;
@@ -535,7 +535,6 @@ struct comp_flags {
     unsigned check_syntax           : 1;
     unsigned meaningless_stmt       : 1;
 
-    unsigned pre_processing         : 3;    /* pre-processor control bits */
     unsigned scanning_cpp_comment   : 1;
     unsigned thread_data_present    : 1;    /* __declspec(thread) */
     unsigned in_finally_block       : 1;    /* in _finally { ... } */
@@ -663,9 +662,9 @@ struct comp_flags {
     unsigned ignore_default_dirs    : 1;    /* ignore default directories for file search .,../h,../c, etc. */
     unsigned pragma_library         : 1;    /* pragma library simulate -zlf option */
     unsigned oldmacros_enabled      : 1;    /* enable old predefined macros (non-ISO compatible) */
-};
+} comp_flags;
 
-struct global_comp_flags {  // things that live across compiles
+typedef struct global_comp_flags {  // things that live across compiles
     unsigned cc_reuse               : 1;    /* in a reusable version batch, dll*/
     unsigned cc_first_use           : 1;    /* first time thru           */
     unsigned ignore_environment     : 1;
@@ -674,7 +673,7 @@ struct global_comp_flags {  // things that live across compiles
     unsigned ide_console_output     : 1;
     unsigned progress_messages      : 1;
 //    unsigned dll_active             : 1;
-};
+} global_comp_flags;
 
 /* Target System types */
 enum {

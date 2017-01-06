@@ -199,7 +199,7 @@ TOKEN ChkControl( void )
             CSuicide();
         }
         lines_skipped = false;
-        old_ppctl = CompFlags.pre_processing;
+        old_ppctl = Pre_processing;
         for( ; CurrChar != EOF_CHAR; ) {
             if( CompFlags.cpp_output ) {
                 CppPrtChar( '\n' );
@@ -215,13 +215,13 @@ TOKEN ChkControl( void )
                 PPCTL_DISABLE_MACROS();
                 PreProcStmt();
                 PPFlush2EOL();
-                CompFlags.pre_processing = old_ppctl;
+                Pre_processing = old_ppctl;
             } else if( NestLevel != SkipLevel ) {
                 PPCTL_ENABLE_EOL();
                 PPCTL_DISABLE_MACROS();
                 PPNextToken();              /* get into token mode */
                 PPFlush2EOL();
-                CompFlags.pre_processing = old_ppctl;
+                Pre_processing = old_ppctl;
             }
             if( NestLevel == SkipLevel )
                 break;
