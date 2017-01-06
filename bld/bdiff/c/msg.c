@@ -35,6 +35,8 @@
 #include "wreslang.h"
 #include "msg.h"
 
+#include "clibext.h"
+
 
 #define NO_RES_MESSAGE "Error: could not open message resource file."
 
