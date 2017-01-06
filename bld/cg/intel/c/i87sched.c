@@ -303,7 +303,7 @@ static  fp_attr ResultToReg( instruction *ins, temp_entry *temp, fp_attr attr ){
 
     if( ins == temp->first && !temp->whole_block ) {
         DoNothing( ins );
-        temp->actual_locn = InsLoc( ins, VIRTUAL_0 );
+        temp->actual_locn = InsSTLoc( ins, VIRTUAL_0 );
         PopVirtualStack( ins );
         attr &= ~POPS;
     } else {
@@ -327,8 +327,8 @@ static  byte    *ActualStackOwner( int actual ) {
 
     for( i = 0; i < MaxSeq; ++i ) {
         for( j = VIRTUAL_0; j < VIRTUAL_NONE; ++j ) {
-            if( RegLoc( i, j ) == actual ) {
-                return( &RegLoc( i, j ) );
+            if( RegSTLoc( i, j ) == actual ) {
+                return( &RegSTLoc( i, j ) );
             }
         }
     }
@@ -357,7 +357,7 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr ) 
         switch( G( ins ) ) {
         case G_MFLD:
             PushVirtualStack( ins );
-            InsLoc( ins, VIRTUAL_0 ) = temp->actual_locn;
+            InsSTLoc( ins, VIRTUAL_0 ) = temp->actual_locn;
             DoNothing( ins );
             break;
         case G_MCOMP:
@@ -387,7 +387,7 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr ) 
             ins->operands[0] = ST( temp->actual_locn );
             ins->result = ins->operands[0];
             ins->operands[1] = ST( 0 );
-            InsLoc( ins, VIRTUAL_0 ) = temp->actual_locn;
+            InsSTLoc( ins, VIRTUAL_0 ) = temp->actual_locn;
             DecrementAll();
             break;
         }
@@ -427,7 +427,7 @@ static instruction *OpToReg( instruction *ins, temp_entry *temp, fp_attr attr ) 
 static  void    SetResultReg( instruction *ins, int virtual_reg ) {
 /**********************************************************/
 
-    ins->result = ST( InsLoc( ins, virtual_reg ) );
+    ins->result = ST( InsSTLoc( ins, virtual_reg ) );
     ins->operands[0] = ins->result;
 }
 
@@ -438,12 +438,12 @@ static  void    GetToTopOfStack( instruction *ins, int virtual_reg ) {
     byte        actual_locn;
     byte        *actual_top_owner;
 
-    actual_locn = InsLoc( ins, virtual_reg );
+    actual_locn = InsSTLoc( ins, virtual_reg );
     if( actual_locn == ACTUAL_0 ) return;
     actual_top_owner = ActualStackOwner( ACTUAL_0 );
     if( actual_top_owner != NULL ) {
         PrefixExchange( ins, actual_locn );
-        InsLoc( ins, virtual_reg ) = ACTUAL_0;
+        InsSTLoc( ins, virtual_reg ) = ACTUAL_0;
         *actual_top_owner = actual_locn;
         return;
     }
@@ -455,8 +455,8 @@ static  instruction     *FComppKluge( instruction *ins ) {
     byte        actual_0,actual_1;
     byte        *owner_0,*owner_1;
 
-    actual_0 = InsLoc( ins, VIRTUAL_0 );
-    actual_1 = InsLoc( ins, VIRTUAL_1 );
+    actual_0 = InsSTLoc( ins, VIRTUAL_0 );
+    actual_1 = InsSTLoc( ins, VIRTUAL_1 );
     owner_0 = ActualStackOwner( ACTUAL_0 );
     owner_1 = ActualStackOwner( ACTUAL_1 );
     if( actual_0 == ACTUAL_0 ) {
@@ -486,8 +486,8 @@ static  instruction     *FComppKluge( instruction *ins ) {
         *owner_0 = actual_1;
         *owner_1 = actual_0;
     }
-    InsLoc( ins, VIRTUAL_0 ) = ACTUAL_0;
-    InsLoc( ins, VIRTUAL_1 ) = ACTUAL_1;
+    InsSTLoc( ins, VIRTUAL_0 ) = ACTUAL_0;
+    InsSTLoc( ins, VIRTUAL_1 ) = ACTUAL_1;
     return( ins );
 }
 
@@ -496,8 +496,8 @@ static  instruction     *GetST0andST1( instruction *ins ) {
 
     byte        actual_0,actual_1;
 
-    actual_0 = InsLoc( ins, VIRTUAL_0 );
-    actual_1 = InsLoc( ins, VIRTUAL_1 );
+    actual_0 = InsSTLoc( ins, VIRTUAL_0 );
+    actual_1 = InsSTLoc( ins, VIRTUAL_1 );
     if( actual_0 == ACTUAL_0 ) {
         if( actual_1 == ACTUAL_1 ) {    // actual_0=0 actual_1=1
             return( ins );
@@ -511,7 +511,7 @@ static  instruction     *GetST0andST1( instruction *ins ) {
             GetToTopOfStack( ins, VIRTUAL_0 );
             return( ins );
         } else {                        // actual_0=n actual_1=0
-            InsLoc( ins, VIRTUAL_1 ) = actual_0;
+            InsSTLoc( ins, VIRTUAL_1 ) = actual_0;
             PrefFLDOp( ins, OP_STKI, ST( actual_0 ) );
             return( SuffFSTPRes( ins, ST( actual_0 ), RES_STKI ) );
         }
@@ -520,7 +520,7 @@ static  instruction     *GetST0andST1( instruction *ins ) {
         return( ins );
     } else {                            // actual_0=1,n actual_1=n
         GetToTopOfStack( ins, VIRTUAL_1 );
-        InsLoc( ins, VIRTUAL_1 ) = actual_0;
+        InsSTLoc( ins, VIRTUAL_1 ) = actual_0;
         PrefFLDOp( ins, OP_STKI, ST( actual_0 ) );
         return( SuffFSTPRes( ins, ST( actual_0 ), RES_STKI ) );
     }
@@ -535,8 +535,8 @@ static  void    IncrementAll( void ) {
 
     for( i = 0; i < MaxSeq; ++i ) {
         for( j = VIRTUAL_0; j < VIRTUAL_NONE-1; ++j ) {
-            if( RegLoc( i, j ) != ACTUAL_NONE ) {
-                ++RegLoc( i, j );
+            if( RegSTLoc( i, j ) != ACTUAL_NONE ) {
+                ++RegSTLoc( i, j );
             }
         }
     }
@@ -554,9 +554,9 @@ static  void    PushVirtualStack( instruction *ins ) {
     int i;
 
     for( i = VIRTUAL_NONE-1; i > VIRTUAL_0; --i ) {
-        InsLoc( ins, i ) = InsLoc( ins, i-1 );
+        InsSTLoc( ins, i ) = InsSTLoc( ins, i-1 );
     }
-    InsLoc( ins, VIRTUAL_0 ) = ACTUAL_0;
+    InsSTLoc( ins, VIRTUAL_0 ) = ACTUAL_0;
 }
 
 
@@ -576,8 +576,8 @@ static  void    DecrementAll( void ) {
 
     for( i = 0; i < MaxSeq; ++i ) {
         for( j = VIRTUAL_0; j < VIRTUAL_NONE-1; ++j ) {
-            if( RegLoc( i, j ) != ACTUAL_NONE ) {
-                --RegLoc( i, j );
+            if( RegSTLoc( i, j ) != ACTUAL_NONE ) {
+                --RegSTLoc( i, j );
             }
         }
     }
@@ -595,9 +595,9 @@ static  void    PopVirtualStack( instruction *ins ) {
     int         i;
 
     for( i = VIRTUAL_0; i < VIRTUAL_NONE-1; ++i ) {
-        InsLoc( ins, i ) = InsLoc( ins, i+1 );
+        InsSTLoc( ins, i ) = InsSTLoc( ins, i+1 );
     }
-    InsLoc( ins, VIRTUAL_7 ) = VIRTUAL_NONE;
+    InsSTLoc( ins, VIRTUAL_7 ) = VIRTUAL_NONE;
 }
 
 
@@ -620,7 +620,7 @@ static  void    InitStackLocations( void ) {
     STLocations = CGAlloc( MaxSeq * sizeof( *STLocations ) );
     for( i = 0; i < MaxSeq; ++i ) {
         for( j = VIRTUAL_0; j < VIRTUAL_NONE; ++j ) {
-            RegLoc( i, j ) = ACTUAL_NONE;
+            RegSTLoc( i, j ) = ACTUAL_NONE;
         }
     }
     for( temp = TempList; temp != NULL; temp = temp->next ) {
@@ -996,7 +996,9 @@ static  void    InitGlobalTemps( void ) {
 
     locn = ACTUAL_0;
     for( temp = TempList; temp != NULL; temp = temp->next ) {
-        if( temp->whole_block ) ++locn;
+        if( temp->whole_block ) {
+            ++locn;
+        }
     }
     for( temp = TempList; temp != NULL; temp = temp->next ) {
         if( temp->whole_block ) {
@@ -1020,15 +1022,16 @@ static  void    XchForCall( instruction *ins, int i ) {
     byte        *actual_i_owner;
     byte        *actual_0_owner;
 
-    if( i <= 0 ) return;
-    if( InsLoc( ins, VIRTUAL_0+i ) != ACTUAL_0+i ) {
-        GetToTopOfStack( ins, VIRTUAL_0+i );
-        if( InsLoc( ins, VIRTUAL_0+i ) != ACTUAL_0+i ) {
-            PrefixExchange( ins, ACTUAL_0+i );
-            actual_i_owner = ActualStackOwner( ACTUAL_0+i );
+    if( i <= 0 )
+        return;
+    if( InsSTLoc( ins, VIRTUAL_0 + i ) != ACTUAL_0 + i ) {
+        GetToTopOfStack( ins, VIRTUAL_0 + i );
+        if( InsSTLoc( ins, VIRTUAL_0 + i ) != ACTUAL_0 + i ) {
+            PrefixExchange( ins, ACTUAL_0 + i );
+            actual_i_owner = ActualStackOwner( ACTUAL_0 + i );
             actual_0_owner = ActualStackOwner( ACTUAL_0 );
             *actual_i_owner = ACTUAL_0;
-            *actual_0_owner = ACTUAL_0+i;
+            *actual_0_owner = ACTUAL_0 + i;
         }
     }
     XchForCall( ins, i-1 );

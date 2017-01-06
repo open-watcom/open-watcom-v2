@@ -60,10 +60,10 @@ extern  void    DumpSeqs()
             DumpChar( j+'0' );
             DumpLiteral( ": " );
             for( i = 0; i < MaxSeq; ++i ) {
-                if( RegLoc( i, j ) == ACTUAL_NONE ) {
+                if( RegSTLoc( i, j ) == ACTUAL_NONE ) {
                     DumpChar( 'X' );
                 } else {
-                    DumpChar( RegLoc( i, j ) + '0' );
+                    DumpChar( RegSTLoc( i, j ) + '0' );
                 }
                 DumpChar( ' ' );
             }
