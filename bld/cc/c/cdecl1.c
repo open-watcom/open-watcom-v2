@@ -48,8 +48,8 @@ void ParsePgm( void )
 {
     SYM_HANDLE      dummysym;
 
-    CompFlags.external_defn_found = 0;
-    CompFlags.initializing_data = 0;
+    CompFlags.external_defn_found = false;
+    CompFlags.initializing_data = false;
     dummysym = SYM_NULL;
     GlobalSym = SYM_NULL;
 
@@ -77,7 +77,7 @@ void ParsePgm( void )
         }
     } while( CurToken != T_EOF );
 
-    if( CompFlags.external_defn_found == 0 ) {
+    if( !CompFlags.external_defn_found ) {
         if( !CompFlags.extensions_enabled ) {
             CErr1( ERR_NO_EXTERNAL_DEFNS_FOUND );
         }
@@ -117,7 +117,7 @@ static void FuncDefn( SYMPTR sym )
         sym->attribs.stg_class = SC_NONE;       /* indicate exported function */
     }
 
-    CompFlags.external_defn_found = 1;
+    CompFlags.external_defn_found = true;
     if( Toggles & TOGGLE_CHECK_STACK )
         sym->flags |= SYM_CHECK_STACK;
 
@@ -198,35 +198,35 @@ static void BeginFunc( void )
     }
     switch( checkMain( CurFunc->name ) ) {
     case MAIN_WMAIN:
-        CompFlags.has_wchar_entry =1;
+        CompFlags.has_wchar_entry = true;
         // fall through!
     case MAIN_MAIN:
         if( CurFunc->u.func.parms != SYM_NULL ) {
-            CompFlags.main_has_parms = 1;
+            CompFlags.main_has_parms = true;
         } else {
-            CompFlags.main_has_parms = 0;
+            CompFlags.main_has_parms = false;
         }
-        CompFlags.has_main = 1;
+        CompFlags.has_main = true;
         break;
 
     case MAIN_WWINMAIN:
-        CompFlags.has_wchar_entry =1;
+        CompFlags.has_wchar_entry = true;
         // fall through!
     case MAIN_WINMAIN:
         if( TargSys == TS_WINDOWS || TargSys == TS_CHEAP_WINDOWS || TargSys == TS_NT ) {
-            CompFlags.has_winmain = 1;
+            CompFlags.has_winmain = true;
         } else {
-            CompFlags.has_wchar_entry =0;
+            CompFlags.has_wchar_entry = false;
         }
         break;
 
     case MAIN_WLIBMAIN:
     case MAIN_WDLLMAIN:
-        CompFlags.has_wchar_entry =1;
+        CompFlags.has_wchar_entry = true;
         // fall through!
     case MAIN_LIBMAIN:
     case MAIN_DLLMAIN:
-        CompFlags.has_libmain = 1;
+        CompFlags.has_libmain = true;
         break;
 
     case MAIN_NUM:

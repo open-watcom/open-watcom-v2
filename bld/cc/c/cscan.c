@@ -116,7 +116,7 @@ static int reScanGetNextChar( void )
 static int reScanGetCharCheck( int c )
 {
     if( c == '\0' ) {
-        CompFlags.rescan_buffer_done = 1;
+        CompFlags.rescan_buffer_done = true;
     }
     return( c );
 }
@@ -125,7 +125,7 @@ static void reScanGetNextCharUndo( int c )
 {
     c = c;
     --SrcFile->src_ptr;
-    CompFlags.rescan_buffer_done = 0;
+    CompFlags.rescan_buffer_done = false;
 }
 
 static int SaveNextChar( void )
@@ -952,7 +952,7 @@ static TOKEN ScanSlash( void )
         if( CompFlags.cpp_output ) {
             CppComment( '/' );
         }
-        CompFlags.scanning_cpp_comment = 1;
+        CompFlags.scanning_cpp_comment = true;
         for( ;; ) {
             c = CurrChar;
             NextChar();
@@ -971,7 +971,7 @@ static TOKEN ScanSlash( void )
         if( CompFlags.cpp_output ) {
             CppComment( '\0' );
         }
-        CompFlags.scanning_cpp_comment = 0;
+        CompFlags.scanning_cpp_comment = false;
         Buffer[0] = ' ';
         Buffer[1] = '\0';
         return( T_WHITE_SPACE );
@@ -1126,7 +1126,7 @@ static void ScanComment( void )
     int         prev_char;
 
     CommentLoc = TokenLoc;
-    CompFlags.scanning_comment = 1;
+    CompFlags.scanning_comment = true;
     if( CompFlags.cpp_output ) {        // 30-dec-93
         CppComment( '*' );
         c = NextChar();
@@ -1193,7 +1193,7 @@ static void ScanComment( void )
         }
         CharSet['/'] &= ~C_EX;          // undo '/' special character
     }
-    CompFlags.scanning_comment = 0;
+    CompFlags.scanning_comment = false;
     NextChar();
 }
 
@@ -1341,7 +1341,7 @@ static TOKEN ScanString( void )
     for( ;; ) {
         if( c == '\n' ) {
             if( NestLevel != SkipLevel ) {
-                if ( CompFlags.extensions_enabled ) {
+                if( CompFlags.extensions_enabled ) {
                     CWarn1( WARN_MISSING_QUOTE, ERR_MISSING_QUOTE );
                     ok = true;
                 } else {
@@ -1656,8 +1656,8 @@ bool ReScanToken( void )
     GetCharCheck = reScanGetCharCheck;
     CurrChar = NextChar();
 
-    CompFlags.rescan_buffer_done = 0;
-    CompFlags.doing_macro_expansion = 1;        // return macros as ID's
+    CompFlags.rescan_buffer_done = false;
+    CompFlags.doing_macro_expansion = true;     // return macros as ID's
     CurToken = ScanToken();
     CompFlags.doing_macro_expansion = false;
     if( CurToken == T_STRING && CompFlags.wide_char_string ) {
@@ -1690,7 +1690,7 @@ void ScanInit( void )
     }
     CurrChar = '\n';
     Pre_processing = PPCTL_NORMAL;
-    CompFlags.scanning_comment = 0;
+    CompFlags.scanning_comment = false;
     SizeOfCount = 0;
     NextChar = GetNextChar;
     UnGetChar = GetNextCharUndo;

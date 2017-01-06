@@ -835,7 +835,7 @@ bool OpenSrcFile( const char *filename, bool is_lib )
         } else {
             CppPrtf( "#include \"%s\"", filename );
         }
-        CompFlags.cpp_output = 0;
+        CompFlags.cpp_output = false;
     }
     if( !CompFlags.ignore_fnf ) {
         CErr2p( ERR_CANT_OPEN_FILE, filename );
@@ -885,7 +885,7 @@ void CloseSrcFile( FCB *srcfcb )
         IncLineCount += srcfcb->src_line_cnt;
         if( SrcFile == MainSrcFile ) {
             if( CompFlags.make_precompiled_header ) {
-                CompFlags.make_precompiled_header = 0;
+                CompFlags.make_precompiled_header = false;
                 if( ErrCount == 0 ) {
                     BuildPreCompiledHeader( PCH_FileName );
                 }
@@ -971,7 +971,7 @@ static bool TryOpen( const char *path, const char *fname )
         return( false );
 
     if( CompFlags.use_precompiled_header ) {
-        CompFlags.use_precompiled_header = 0;
+        CompFlags.use_precompiled_header = false;
         if( UsePreCompiledHeader( filename ) ) {
             fclose( fp );
             return( true );
@@ -1305,28 +1305,28 @@ static void Parse( void )
     // use pre-compiled headers. The following call to NextToken() to
     // get the very first token of the file will load the pre-compiled
     // header if the user requested such and it is a #include directive.
-    CompFlags.ok_to_use_precompiled_hdr = 1;
+    CompFlags.ok_to_use_precompiled_hdr = true;
     if( ForceInclude != NULL ) {
         if( PCH_FileName != NULL ) {
-            CompFlags.use_precompiled_header = 1;
+            CompFlags.use_precompiled_header = true;
         }
         // we want to keep in the pre-compiled header
         // any macros that are defined in forced include file
         InitialMacroFlag = MFLAG_NONE;
         OpenSrcFile( ForceInclude, false );
     }
-    CompFlags.ok_to_use_precompiled_hdr = 0;
-    CompFlags.use_precompiled_header = 0;
+    CompFlags.ok_to_use_precompiled_hdr = false;
+    CompFlags.use_precompiled_header = false;
     if( ForcePreInclude != NULL ) {
         openForcePreInclude();
     }
     if( ForceInclude == NULL ) {
-        CompFlags.ok_to_use_precompiled_hdr = 1;
+        CompFlags.ok_to_use_precompiled_hdr = true;
     }
     NextToken();
     // If we didn't get a #include with the above call to NextToken()
     // it's too late to use pre-compiled header now.
-    CompFlags.ok_to_use_precompiled_hdr = 0;
+    CompFlags.ok_to_use_precompiled_hdr = false;
     ParsePgm();
     if( DefFile != NULL ) {
         fclose( DefFile );

@@ -1018,7 +1018,7 @@ void BuildPreCompiledHeader( const char *filename )
     InitDebugTags();
     FEfree( PH_Buffer );
     PCH_FileName = NULL;
-    CompFlags.make_precompiled_header = 0;
+    CompFlags.make_precompiled_header = false;
 }
 
 //========================================================================
@@ -1737,7 +1737,7 @@ static void AbortPreCompiledHeader( void )
     PCHMacroHash = NULL;
     IAliasNames = PCHIAliasNames;
     RestoreIncFileList();
-    CompFlags.make_precompiled_header = 1;      // force new PCH to be created
+    CompFlags.make_precompiled_header = true;   // force new PCH to be created
 }
 
 //========================================================================
@@ -1757,7 +1757,7 @@ bool UsePreCompiledHeader( const char *filename )
 
     handle = sopen3( PCH_FileName, O_RDONLY | O_BINARY, SH_DENYWR );
     if( handle == -1 ) {
-        CompFlags.make_precompiled_header = 1;
+        CompFlags.make_precompiled_header = true;
         return( false );
     }
     PCH_Start = NULL;

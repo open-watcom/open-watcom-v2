@@ -189,14 +189,14 @@ static void OutMsg( cmsg_info  *info )
 
     if( ErrFile == NULL )
         OpenErrFile();
-    if( CompFlags.no_conmsg == 0 )
+    if( !CompFlags.no_conmsg )
         ConsErrMsg( info );
     if( ErrFile != NULL ) {
         FmtCMsg( pre, info );
         fputs( pre, ErrFile );
         fputs( info->msgtxt, ErrFile );
         fputc( '\n', ErrFile );
-        CompFlags.errfile_written = 1;
+        CompFlags.errfile_written = true;
     }
 }
 

@@ -546,12 +546,12 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
     cclass &= ~ REVERSE_PARMS;
 #endif
 #ifdef PROLOG_HOOKS
-    if( CompFlags.ep_switch_used != 0 ) {
+    if( CompFlags.ep_switch_used ) {
         cclass |= PROLOG_HOOKS;
     }
 #endif
 #ifdef EPILOG_HOOKS
-    if( CompFlags.ee_switch_used != 0 ) {
+    if( CompFlags.ee_switch_used ) {
         cclass |= EPILOG_HOOKS;
     }
 #endif
@@ -1085,7 +1085,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
     case CLASS_NAME:
         return( (CGPOINTER)SegClassName( (segment_id)(pointer_int)req_handle ) );
     case USED_8087:
-        CompFlags.pgm_used_8087 = 1;
+        CompFlags.pgm_used_8087 = true;
         return( NULL );
   #if _CPU == 386
     case P5_PROF_DATA:

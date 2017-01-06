@@ -152,36 +152,36 @@ bool EqualChar( int c )
 
 static void SetCharacterEncoding( void )
 {
-    CompFlags.jis_to_unicode = 0;
+    CompFlags.jis_to_unicode = false;
 
     switch( character_encoding ) {
     case ENC_ZKU:
         LoadUnicodeTable( unicode_CP );
         break;
     case ENC_ZK0U:
-        CompFlags.use_unicode = 0;
+        CompFlags.use_unicode = false;
         SetDBChar( 0 );                     /* set double-byte char type */
-        CompFlags.jis_to_unicode = 1;
+        CompFlags.jis_to_unicode = true;
         break;
     case ENC_ZK:
     case ENC_ZK0:
-        CompFlags.use_unicode = 0;
+        CompFlags.use_unicode = false;
         SetDBChar( 0 );                     /* set double-byte char type */
         break;
     case ENC_ZK1:
-        CompFlags.use_unicode = 0;
+        CompFlags.use_unicode = false;
         SetDBChar( 1 );                     /* set double-byte char type */
         break;
     case ENC_ZK2:
-        CompFlags.use_unicode = 0;
+        CompFlags.use_unicode = false;
         SetDBChar( 2 );                     /* set double-byte char type */
         break;
     case ENC_ZK3:
-        CompFlags.use_unicode = 0;
+        CompFlags.use_unicode = false;
         SetDBChar( 3 );                     /* set double-byte char type */
         break;
     case ENC_ZKL:
-        CompFlags.use_unicode = 0;
+        CompFlags.use_unicode = false;
         SetDBChar( -1 );                    /* set double-byte char type to defualt */
         break;
     }
@@ -356,7 +356,7 @@ static void SetTargSystem( void )
         //  by default - silly people.
         */
         if( !CompFlags.register_conv_set ) {
-            CompFlags.register_conventions = 0;
+            CompFlags.register_conventions = false;
         }
         break;
 
@@ -691,7 +691,7 @@ static void MacroDefs( void )
     if( CompFlags.zc_switch_used ) {
         Define_Macro( "__SW_ZC" );
     }
-    if( CompFlags.use_unicode == 0 ) {
+    if( !CompFlags.use_unicode ) {
         Define_Macro( "__SW_ZK" );
     }
 #if _CPU == 8086 || _CPU == 386
@@ -773,7 +773,7 @@ static void MacroDefs( void )
     }
     switch( SwData.fpt ) {
     case SW_FPT_CALLS:
-        CompFlags.op_switch_used = 0;
+        CompFlags.op_switch_used = false;
         Define_Macro( "__SW_FPC" );
         break;
     case SW_FPT_EMU:
@@ -903,7 +903,7 @@ static void EnsureEndOfSwitch( void )
 }
 
 #if _CPU == _AXP
-static void SetStructPack( void )   { CompFlags.align_structs_on_qwords = 1; }
+static void SetStructPack( void )   { CompFlags.align_structs_on_qwords = true; }
 #endif
 
 static void Set_ZP( void )          { SetPackAmount( OptValue ); }
@@ -913,8 +913,8 @@ static void Set_DbgFmt( void )      { SwData.dbg_fmt = OptValue; }
 static void SetCPU( void )          { SwData.cpu = OptValue; }
 #endif
 #if _CPU == 386
-static void SetCPU_xR( void )   { SwData.cpu = OptValue; CompFlags.register_conventions = 1; }
-static void SetCPU_xS( void )   { SwData.cpu = OptValue; CompFlags.register_conventions = 0; }
+static void SetCPU_xR( void )   { SwData.cpu = OptValue; CompFlags.register_conventions = true; }
+static void SetCPU_xS( void )   { SwData.cpu = OptValue; CompFlags.register_conventions = false; }
 #endif
 #if _CPU == 8086 || _CPU == 386
 static void SetFPU( void )          { SwData.fpu = OptValue; }
@@ -927,24 +927,24 @@ static void Set_FPD( void )         { TargetSwitches |= P5_DIVIDE_CHECK; }
 static void SetMemoryModel( void )  { SwData.mem = OptValue; }
 #endif
 
-static void Set_BD( void )          { CompFlags.bd_switch_used = 1; GenSwitches |= DLL_RESIDENT_CODE; }
-static void Set_BC( void )          { CompFlags.bc_switch_used = 1; }
-static void Set_BG( void )          { CompFlags.bg_switch_used = 1; }
-static void Set_BM( void )          { CompFlags.bm_switch_used = 1; }
+static void Set_BD( void )          { CompFlags.bd_switch_used = true; GenSwitches |= DLL_RESIDENT_CODE; }
+static void Set_BC( void )          { CompFlags.bc_switch_used = true; }
+static void Set_BG( void )          { CompFlags.bg_switch_used = true; }
+static void Set_BM( void )          { CompFlags.bm_switch_used = true; }
 
 #if _CPU != 8086
-static void Set_BR( void )          { CompFlags.br_switch_used = 1; }
+static void Set_BR( void )          { CompFlags.br_switch_used = true; }
 #endif
 
-static void Set_BW( void )          { CompFlags.bw_switch_used = 1; }
+static void Set_BW( void )          { CompFlags.bw_switch_used = true; }
 static void Set_BT( void )          { SetTargName( OptParm,  OptScanPtr - OptParm ); }
 
 static void SetExtendedDefines( void )
 {
-    CompFlags.extended_defines = 1;
+    CompFlags.extended_defines = true;
     EnsureEndOfSwitch();
 }
-static void SetBrowserInfo( void )  { CompFlags.emit_browser_info = 1; }
+static void SetBrowserInfo( void )  { CompFlags.emit_browser_info = true; }
 
 #if _CPU == _AXP
 static void Set_AS( void )
@@ -953,14 +953,14 @@ static void Set_AS( void )
 }
 #endif
 
-static void Set_AA( void )          { CompFlags.auto_agg_inits = 1; }
-static void Set_AI( void )          { CompFlags.no_check_inits = 1; }
-static void Set_AQ( void )          { CompFlags.no_check_qualifiers = 1; }
+static void Set_AA( void )          { CompFlags.auto_agg_inits = true; }
+static void Set_AI( void )          { CompFlags.no_check_inits = true; }
+static void Set_AQ( void )          { CompFlags.no_check_qualifiers = true; }
 static void Set_D0( void )
 {
     GenSwitches &= ~(NUMBERS | DBG_TYPES | DBG_LOCALS | NO_OPTIMIZATION);
-    CompFlags.debug_info_some = 0;
-    CompFlags.no_debug_type_names = 0;
+    CompFlags.debug_info_some = false;
+    CompFlags.no_debug_type_names = false;
     EnsureEndOfSwitch();
 }
 static void Set_D1( void )
@@ -968,7 +968,7 @@ static void Set_D1( void )
     GenSwitches |= NUMBERS;
     if( *OptScanPtr == '+' ) {
         ++OptScanPtr;
-        CompFlags.debug_info_some = 1;
+        CompFlags.debug_info_some = true;
         GenSwitches |= DBG_TYPES | DBG_LOCALS;
     }
     EnsureEndOfSwitch();
@@ -976,19 +976,19 @@ static void Set_D1( void )
 static void Set_D2( void )
 {
     GenSwitches |= NUMBERS | DBG_TYPES | DBG_LOCALS | NO_OPTIMIZATION;
-    CompFlags.inline_functions = 0;
+    CompFlags.inline_functions = false;
     if( *OptScanPtr == '~' ) {
         ++OptScanPtr;
-        CompFlags.no_debug_type_names = 1;
+        CompFlags.no_debug_type_names = true;
     }
     EnsureEndOfSwitch();
 }
 static void Set_D3( void )
 {
-    CompFlags.dump_types_with_names = 1;
+    CompFlags.dump_types_with_names = true;
     Set_D2();
 }
-static void Set_D9( void )          { CompFlags.use_full_codegen_od = 1; }
+static void Set_D9( void )          { CompFlags.use_full_codegen_od = true; }
 static void DefineMacro( void )     { OptScanPtr = Define_UserMacro( OptScanPtr ); }
 
 static void SetErrorLimit( void )   { ErrLimit = OptValue; }
@@ -1024,16 +1024,16 @@ static void SetDftCallConv( void )
         break;
     }
 }
-static void Set_EC( void )          { CompFlags.ec_switch_used = 1; }
+static void Set_EC( void )          { CompFlags.ec_switch_used = true; }
 #endif
 
-static void Set_EE( void )          { CompFlags.ee_switch_used = 1; }
-static void Set_EF( void )          { CompFlags.ef_switch_used = 1; }
-static void Set_EN( void )          { CompFlags.emit_names = 1; }
-static void Set_EI( void )          { CompFlags.make_enums_an_int = 1;
-                                      CompFlags.original_enum_setting = 1;}
-static void Set_EM( void )          { CompFlags.make_enums_an_int = 0;
-                                      CompFlags.original_enum_setting = 0;}
+static void Set_EE( void )          { CompFlags.ee_switch_used = true; }
+static void Set_EF( void )          { CompFlags.ef_switch_used = true; }
+static void Set_EN( void )          { CompFlags.emit_names = true; }
+static void Set_EI( void )          { CompFlags.make_enums_an_int = true;
+                                      CompFlags.original_enum_setting = true;}
+static void Set_EM( void )          { CompFlags.make_enums_an_int = false;
+                                      CompFlags.original_enum_setting = false;}
 
 #if _CPU == 8086 || _CPU == 386
 static void Set_ET( void )          { TargetSwitches |= P5_PROFILING; }
@@ -1059,7 +1059,7 @@ static void Set_EndianBig( void )    { GenSwitches |= OBJ_ENDIAN_BIG; }
 
 static void Set_EP( void )
 {
-    CompFlags.ep_switch_used = 1;
+    CompFlags.ep_switch_used = true;
     ProEpiDataSize = OptValue;
 }
 
@@ -1119,7 +1119,7 @@ static void Set_FH( void )
 
 static void Set_FHQ( void )
 {
-    CompFlags.no_pch_warnings = 1;
+    CompFlags.no_pch_warnings = true;
     Set_FH();
 }
 
@@ -1141,19 +1141,19 @@ static void Set_FIP( void )
 
 static void Set_FLD( void )
 {
-    CompFlags.use_long_double = 1;
+    CompFlags.use_long_double = true;
 }
 
 static void SetTrackInc( void )
 {
-    CompFlags.track_includes = 1;
+    CompFlags.track_includes = true;
 }
 
 static void Set_FO( void )
 {
     CMemFree( ObjectFileName );
     ObjectFileName = GetAFileName();
-    CompFlags.cpp_output_to_file = 1;   /* in case '-p' option */
+    CompFlags.cpp_output_to_file = true;    /* in case '-p' option */
 }
 
 static void Set_FR( void )
@@ -1215,15 +1215,15 @@ static void SetReadOnlyDir( void )
 static void SetCharType( void )
 {
     SetSignedChar();
-    CompFlags.signed_char = 1;
+    CompFlags.signed_char = true;
 }
 
 #if _CPU == 8086 || _CPU == 386
-static void Set_RE( void )          { CompFlags.rent = 1; }
-static void Set_RI( void )          { CompFlags.returns_promoted = 1; }
-static void Set_R( void )           { CompFlags.save_restore_segregs = 1; }
-static void Set_SG( void )          { CompFlags.sg_switch_used = 1; }
-static void Set_ST( void )          { CompFlags.st_switch_used = 1; }
+static void Set_RE( void )          { CompFlags.rent = true; }
+static void Set_RI( void )          { CompFlags.returns_promoted = true; }
+static void Set_R( void )           { CompFlags.save_restore_segregs = true; }
+static void Set_SG( void )          { CompFlags.sg_switch_used = true; }
+static void Set_ST( void )          { CompFlags.st_switch_used = true; }
 #endif
 #if _CPU == _AXP || _CPU == _MIPS
 static void Set_SI( void )          { TargetSwitches |= STACK_INIT; }
@@ -1249,11 +1249,11 @@ static void Set_U( void )
     AddUndefName( name );
     CMemFree( name );
 }
-static void Set_V( void )           { CompFlags.generate_prototypes = 1; }
+static void Set_V( void )           { CompFlags.generate_prototypes = true; }
 
-static void Set_WE( void )          { CompFlags.warnings_cause_bad_exit = 1; }
-static void Set_WO( void )          { CompFlags.using_overlays = 1; }
-static void Set_WPX( void )         { Check_global_prototype = 1; }
+static void Set_WE( void )          { CompFlags.warnings_cause_bad_exit = true; }
+static void Set_WO( void )          { CompFlags.using_overlays = true; }
+static void Set_WPX( void )         { Check_global_prototype = true; }
 static void Set_WX( void )          { WngLevel = 4; }
 static void SetWarningLevel( void ) { WngLevel = OptValue; }
 static void Set_WCD( void )         { EnableDisableMessage( 0, OptValue ); }
@@ -1265,7 +1265,7 @@ static void Set_XGV( void )         { TargetSwitches |= INDEXED_GLOBALS; }
 
 static void Set_XBSA( void )
 {
-    CompFlags.unaligned_segs = 1;
+    CompFlags.unaligned_segs = true;
 }
 
 #if _CPU == _AXP
@@ -1274,33 +1274,33 @@ static void Set_XD( void )          { TargetSwitches |= EXCEPT_FILTER_USED; }
 
 static void Set_ZA99( void )
 {
-    CompFlags.c99_extensions = 1;
+    CompFlags.c99_extensions = true;
 }
 
 static void Set_ZA( void )
 {
-    CompFlags.extensions_enabled = 0;
-    CompFlags.oldmacros_enabled = 0;
-    CompFlags.unique_functions = 1;
+    CompFlags.extensions_enabled = false;
+    CompFlags.oldmacros_enabled = false;
+    CompFlags.unique_functions = true;
     TargetSwitches &= ~I_MATH_INLINE;
 }
 
 static void SetStrictANSI( void )
 {
-    CompFlags.strict_ANSI = 1;
+    CompFlags.strict_ANSI = true;
     Set_ZA();
 }
 
 static void Set_ZAM( void )
 {
-    CompFlags.oldmacros_enabled = 0;
+    CompFlags.oldmacros_enabled = false;
 }
 
 #if _CPU == 8086 || _CPU == 386
 static void Set_ZC( void )
 {
-    CompFlags.strings_in_code_segment = 1;
-    CompFlags.zc_switch_used = 1;
+    CompFlags.strings_in_code_segment = true;
+    CompFlags.zc_switch_used = true;
     TargetSwitches |= CONST_IN_CODE;
 }
 static void Set_ZDF( void )         { SwData.peg_ds_used = 1; SwData.peg_ds_on = 0; }
@@ -1313,16 +1313,16 @@ static void Set_ZGP( void )         { SwData.peg_gs_used = 1; SwData.peg_gs_on =
 #endif
 static void Set_ZE( void )
 {
-    CompFlags.extensions_enabled = 1;
-    CompFlags.oldmacros_enabled = 1;
+    CompFlags.extensions_enabled = true;
+    CompFlags.oldmacros_enabled = true;
 }
 static void Set_ZG( void )
 {
-    CompFlags.generate_prototypes = 1;
-    CompFlags.dump_prototypes = 1;
+    CompFlags.generate_prototypes = true;
+    CompFlags.dump_prototypes = true;
 }
 
-static void Set_ZI( void )          { CompFlags.extra_stats_wanted = 1; }
+static void Set_ZI( void )          { CompFlags.extra_stats_wanted = true; }
 
 static void Set_ZK( void )          { character_encoding = ENC_ZK; }
 static void Set_ZK0( void )         { character_encoding = ENC_ZK0; }
@@ -1337,17 +1337,17 @@ static void Set_ZKU( void )
 }
 static void Set_ZK0U( void )        { character_encoding = ENC_ZK0U; }
 
-static void Set_ZL( void )          { CompFlags.emit_library_names = 0; }
-static void Set_ZLF( void )         { CompFlags.emit_all_default_libs = 1; }
-static void Set_ZLD( void )         { CompFlags.emit_dependencies = 0; }
-static void Set_ZLS( void )         { CompFlags.emit_targimp_symbols = 0; }
-static void Set_ZEV( void )         { CompFlags.unix_ext = 1; }
+static void Set_ZL( void )          { CompFlags.emit_library_names = false; }
+static void Set_ZLF( void )         { CompFlags.emit_all_default_libs = true; }
+static void Set_ZLD( void )         { CompFlags.emit_dependencies = false; }
+static void Set_ZLS( void )         { CompFlags.emit_targimp_symbols = false; }
+static void Set_ZEV( void )         { CompFlags.unix_ext = true; }
 static void Set_ZM( void )
 {
-    CompFlags.multiple_code_segments = 1;
-    CompFlags.zm_switch_used = 1;
+    CompFlags.multiple_code_segments = true;
+    CompFlags.zm_switch_used = true;
 }
-static void Set_ZPW( void )         { CompFlags.slack_byte_warning = 1; }
+static void Set_ZPW( void )         { CompFlags.slack_byte_warning = true; }
 
 #if _CPU == 8086 || _CPU == 386
 static void Set_ZRO( void )
@@ -1365,11 +1365,11 @@ static void Set_ZRI( void )
 }
 #endif
 
-static void Set_ZQ( void )          { CompFlags.quiet_mode = 1; }
-static void Set_ZS( void )          { CompFlags.check_syntax = 1; }
+static void Set_ZQ( void )          { CompFlags.quiet_mode = true; }
+static void Set_ZS( void )          { CompFlags.check_syntax = true; }
 
 #if _CPU == 8086 || _CPU == 386
-static void Set_EQ( void )          { CompFlags.no_conmsg = 1; }
+static void Set_EQ( void )          { CompFlags.no_conmsg = true; }
 
 static void Set_ZFW( void )
 {
@@ -1378,14 +1378,14 @@ static void Set_ZFW( void )
 
 static void Set_ZU( void )
 {
-    CompFlags.zu_switch_used = 1;
+    CompFlags.zu_switch_used = true;
     TargetSwitches |= FLOATING_SS;
 }
 
 #if _CPU == 386
 static void Set_ZZ( void )
 {
-    CompFlags.use_stdcall_at_number = 0;
+    CompFlags.use_stdcall_at_number = false;
 }
 #endif
 
@@ -1417,7 +1417,7 @@ static void SetWindows( void )
 
 static void SetGenerateMakeAutoDepend( void )
 {
-    CompFlags.generate_auto_depend = 1;
+    CompFlags.generate_auto_depend = true;
     CMemFree( DependFileName );
     DependFileName = GetAFileName();
     if( !DependFileName[0] )
@@ -1430,21 +1430,21 @@ static void SetGenerateMakeAutoDepend( void )
 static void SetAutoDependTarget( void )
 {
    // auto set depend yes...
-    CompFlags.generate_auto_depend = 1;
+    CompFlags.generate_auto_depend = true;
     CMemFree( DependTarget );
     DependTarget = GetAFileName();
 }
 
 static void SetAutoDependSrcDepend( void )
 {
-    CompFlags.generate_auto_depend = 1;
+    CompFlags.generate_auto_depend = true;
     CMemFree( SrcDepName );
     SrcDepName = GetAFileName();
 }
 
 static void SetAutoDependHeaderPath( void )
 {
-    CompFlags.generate_auto_depend = 1;
+    CompFlags.generate_auto_depend = true;
     CMemFree( DependHeaderPath );
     DependHeaderPath = GetAFileName();
 }
@@ -1459,14 +1459,14 @@ static void SetAutoDependBackSlash( void )
     DependForceSlash = '\\';
 }
 
-static void Set_X( void )           { CompFlags.cpp_ignore_env = 1; }
-static void Set_XX( void )          { CompFlags.ignore_default_dirs = 1; }
-static void Set_PIL( void )         { CompFlags.cpp_ignore_line = 1; }
-static void Set_PL( void )          { CompFlags.cpp_line_wanted = 1; }
+static void Set_X( void )           { CompFlags.cpp_ignore_env = true; }
+static void Set_XX( void )          { CompFlags.ignore_default_dirs = true; }
+static void Set_PIL( void )         { CompFlags.cpp_ignore_line = true; }
+static void Set_PL( void )          { CompFlags.cpp_line_wanted = true; }
 static void Set_PC( void )
 {
-    CompFlags.keep_comments = 1;
-    CompFlags.comments_wanted = 1;
+    CompFlags.keep_comments = true;
+    CompFlags.comments_wanted = true;
 }
 static void Set_PW( void )
 {
@@ -1497,11 +1497,11 @@ static void Set_OF( void )
     }
 }
 static void Set_OM( void )          { TargetSwitches |= I_MATH_INLINE; }
-static void Set_OP( void )          { CompFlags.op_switch_used = 1; } // force floats to memory
+static void Set_OP( void )          { CompFlags.op_switch_used = true; } // force floats to memory
 #endif
 static void Set_OH( void )          { GenSwitches |= SUPER_OPTIMAL; }
 static void Set_OK( void )          { GenSwitches |= FLOW_REG_SAVES; }
-static void Set_OI( void )          { CompFlags.inline_functions = 1; }
+static void Set_OI( void )          { CompFlags.inline_functions = true; }
 static void Set_OL( void )          { GenSwitches |= LOOP_OPTIMIZATION; }
 static void Set_OL_plus( void )     { GenSwitches |= LOOP_OPTIMIZATION | LOOP_UNROLLING; }
 static void Set_ON( void )          { GenSwitches |= FP_UNSTABLE_OPTIMIZATION; }
@@ -1509,13 +1509,13 @@ static void Set_OO( void )          { GenSwitches &= ~MEMORY_LOW_FAILS; }
 static void Set_OR( void )          { GenSwitches |= INS_SCHEDULING; }
 static void Set_OS( void )          { GenSwitches &= ~NO_OPTIMIZATION; OptSize = 100; }
 static void Set_OT( void )          { GenSwitches &= ~NO_OPTIMIZATION; OptSize = 0; }
-static void Set_OU( void )          { CompFlags.unique_functions = 1; }
+static void Set_OU( void )          { CompFlags.unique_functions = true; }
 static void Set_OX( void )
 {
     Toggles &= ~TOGGLE_CHECK_STACK;
     GenSwitches &= ~NO_OPTIMIZATION;
     GenSwitches |= LOOP_OPTIMIZATION | INS_SCHEDULING | BRANCH_PREDICTION;
-    CompFlags.inline_functions = 1;
+    CompFlags.inline_functions = true;
     OptValue = 20; // Otherwise we effectively disable inlining!
     Set_OE();
 #if _CPU == 8086 || _CPU == 386
@@ -1936,7 +1936,7 @@ static void SetOptimization( void )
 
 static void SetPreprocessOptions( void )
 {
-    CompFlags.cpp_output_requested = 1;
+    CompFlags.cpp_output_requested = true;
     if( !OptionDelimiter( *OptScanPtr ) ) {
         ProcessSubOption( Preprocess_Options );
     }
@@ -2117,8 +2117,8 @@ static void InitCPUModInfo( void )
     TextSegName = "";
     DataSegName = "";
     GenCodeGroup = "";
-    CompFlags.register_conv_set = 0;
-    CompFlags.register_conventions = 1;
+    CompFlags.register_conv_set = false;
+    CompFlags.register_conventions = true;
     GenSwitches = MEMORY_LOW_FAILS;
 #else
     #error InitCPUModInfo not configured for system
@@ -2141,13 +2141,13 @@ static void Define_Memory_Model( void )
         break;
     case SW_MS:
         model = 's';
-        CompFlags.strings_in_code_segment = 0;
+        CompFlags.strings_in_code_segment = false;
         TargetSwitches &= ~CONST_IN_CODE;
         break;
     case SW_MM:
         model = 'm';
         WatcallInfo.cclass |= FAR_CALL;
-        CompFlags.strings_in_code_segment = 0;
+        CompFlags.strings_in_code_segment = false;
         TargetSwitches &= ~CONST_IN_CODE;
         CodePtrSize = TARGET_FAR_POINTER;
         break;
@@ -2197,7 +2197,8 @@ static void Define_Memory_Model( void )
     }
 #elif _CPU == 386
     model = 'r';
-    if( ! CompFlags.register_conventions ) model = 's';
+    if( !CompFlags.register_conventions )
+        model = 's';
     if( CompFlags.br_switch_used ) {
         CPYLIT( CLIB_Name, "1clb?dll" );
     } else {
@@ -2283,9 +2284,9 @@ void GenCOptions( char **cmdline )
         ProcOptions( *cmdline );
     }
     if( CompFlags.cpp_output_requested )
-        CompFlags.cpp_output = 1;
+        CompFlags.cpp_output = true;
     if( CompFlags.cpp_output )
-        CompFlags.quiet_mode = 1;
+        CompFlags.quiet_mode = true;
     CBanner();          /* print banner if -zq not specified */
     GblPackAmount = PackAmount;
     SetTargSystem();
@@ -2297,7 +2298,7 @@ void GenCOptions( char **cmdline )
         /* issue warning message if /zf[f|p] or /zg[f|p] spec'd? */
         TargetSwitches &= ~(FLOATING_FS|FLOATING_GS);
     }
-    if( ! CompFlags.save_restore_segregs ) {
+    if( !CompFlags.save_restore_segregs ) {
         if( TargetSwitches & FLOATING_DS ) {
             HW_CTurnOff( WatcallInfo.save, HW_DS );
         }
@@ -2312,7 +2313,7 @@ void GenCOptions( char **cmdline )
         }
     }
   #if _CPU == 386
-    if( ! CompFlags.register_conventions )
+    if( !CompFlags.register_conventions )
         SetAuxStackConventions();
   #endif
 #endif

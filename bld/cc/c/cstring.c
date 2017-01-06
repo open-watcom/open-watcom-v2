@@ -271,7 +271,7 @@ TREEPTR StringLeaf( string_flags flags )
     if( CompFlags.wide_char_string )
         flags |= STRLIT_WIDE;
     if( flags & STRLIT_FAR )
-        CompFlags.far_strings = 1;
+        CompFlags.far_strings = true;
     h = CalcStringHash( new_lit );
     if( Toggles & TOGGLE_REUSE_DUPLICATE_STRINGS ) {
         for( strlit = StringHash[h]; strlit != NULL; strlit = strlit->next_string ) {

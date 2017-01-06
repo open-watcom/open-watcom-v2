@@ -262,7 +262,7 @@ static void PragLibs( void )
         GetLibraryNames();
         MustRecog( T_RIGHT_PAREN );
     } else {
-        CompFlags.pragma_library = 1;
+        CompFlags.pragma_library = true;
     }
 }
 
@@ -768,7 +768,7 @@ static void PragAllocText( void )
             }
         }
 #if _CPU == 8086 || _CPU == 386
-        CompFlags.multiple_code_segments = 1;
+        CompFlags.multiple_code_segments = true;
 #endif
         MustRecog( T_RIGHT_PAREN );
     }
@@ -856,7 +856,7 @@ static void PushEnum( void )
     struct enums_info *ei;
 
     ei = CMemAlloc( sizeof( struct enums_info ) );
-    ei->make_enums = (bool)CompFlags.make_enums_an_int;
+    ei->make_enums = CompFlags.make_enums_an_int;
     ei->next = EnumInfo;
     EnumInfo = ei;
 }
@@ -948,7 +948,7 @@ static void PragCodeSeg( void )
         MustRecog( T_RIGHT_PAREN );
         DefCodeSegment = tseg;
 #if _CPU == 8086 || _CPU == 386
-        CompFlags.multiple_code_segments = 1;
+        CompFlags.multiple_code_segments = true;
 #endif
     }
 }
@@ -1276,7 +1276,7 @@ void CPragma( void )
     /* Note that the include_alias pragma must always be processed
      * because it's intended for the preprocessor, not the compiler.
      */
-    CompFlags.in_pragma = 1;
+    CompFlags.in_pragma = true;
     NextToken();
     if( PragRecog( "include_alias" ) ) {
         PragIncludeAlias();
@@ -1343,5 +1343,5 @@ void CPragma( void )
     }
     if( check_end )
         EndOfPragma();
-    CompFlags.in_pragma = 0;
+    CompFlags.in_pragma = false;
 }

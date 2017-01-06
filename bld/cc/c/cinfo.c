@@ -91,7 +91,7 @@ void AssignSeg( SYMPTR sym )
             }
             if( sym->u.var.segid == SEG_DATA ) {
                 sym->u.var.segid = SEG_BSS;
-                CompFlags.bss_segment_used = 1;
+                CompFlags.bss_segment_used = true;
             }
             SetSegAlign( sym );
         }
@@ -577,7 +577,7 @@ void    SetSegs( void )
     char            *name;
     align_type      optsize_segalign;
 
-    CompFlags.low_on_memory_printed = 0;
+    CompFlags.low_on_memory_printed = false;
     flags = GLOBAL | INIT | EXEC;
     if( *TextSegName == '\0' ) {
         name = TS_SEG_CODE;
@@ -762,9 +762,9 @@ void FEMessage( int class, CGPOINTER parm )
     case MSG_PEEPHOLE_FLUSHED:
         if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
             if( WngLevel >= 4 ) {
-                if( CompFlags.low_on_memory_printed == 0 ) {
+                if( !CompFlags.low_on_memory_printed ) {
                     CInfoMsg( INFO_NOT_ENOUGH_MEMORY_TO_MAINTAIN_PEEPHOLE);
-                    CompFlags.low_on_memory_printed = 1;
+                    CompFlags.low_on_memory_printed = true;
                 }
             }
         }

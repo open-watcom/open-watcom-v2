@@ -581,7 +581,7 @@ static TREEPTR TakeRValue( TREEPTR tree, int void_ok )
             SymGet( &sym, tree->op.u2.sym_handle );
             symb_flags = sym.flags;
             sym.flags |= SYM_REFERENCED;
-            if( CompFlags.label_dropped == 0 && SizeOfCount == 0 ) {
+            if( !CompFlags.label_dropped && SizeOfCount == 0 ) {
                 if( sym.level != 0
                   && sym.attribs.stg_class != SC_STATIC
                   && sym.attribs.stg_class != SC_EXTERN ) {
@@ -725,7 +725,7 @@ static TREEPTR AddrOp( TREEPTR tree )
         modifiers = sym.mods;
         if( sym.attribs.stg_class == SC_AUTO ) {
             segid = SEG_STACK;
-            CompFlags.addr_of_auto_taken = 1;
+            CompFlags.addr_of_auto_taken = true;
             if( TargetSwitches & FLOATING_SS ) {
                 modifiers |= FLAG_FAR;
             }
@@ -1356,8 +1356,8 @@ static TREEPTR GetExpr( void )
                     SetDiagPop();
                 PopNestedParms( &plist );
                 curclass = TokenClass[CurToken];
-                CompFlags.meaningless_stmt = 0;
-                CompFlags.useful_side_effect = 1;
+                CompFlags.meaningless_stmt = false;
+                CompFlags.useful_side_effect = true;
                 }
                 break;
             }
@@ -1916,7 +1916,7 @@ static TREEPTR GenNextParm( TREEPTR tree, TYPEPTR **plistptr )
     if( typ->decl_type == TYPE_DOUBLE ||
         typ->decl_type == TYPE_LONG_DOUBLE ||
         typ->decl_type == TYPE_FLOAT ) {
-        CompFlags.float_used = 1;
+        CompFlags.float_used = true;
     }
     return( tree );
 }
@@ -2082,7 +2082,7 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
         if( typ->decl_type == TYPE_DOUBLE
           || typ->decl_type == TYPE_LONG_DOUBLE
           || typ->decl_type == TYPE_FLOAT ) {
-            CompFlags.float_used = 1;
+            CompFlags.float_used = true;
         }
 #if _CPU == 386
         {
