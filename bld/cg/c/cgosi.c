@@ -40,25 +40,25 @@
 #include "blips.h"
 #include "feprotos.h"
 
-extern  char            *_BreakFlagPtr;
+extern  bool            *_BreakFlagPtr;
 static  int             TicCount;
 bool                    BlipsOn;
 
 
-int TBreak( void )
-/****************/
+bool TBreak( void )
+/*****************/
 {
-    int         brk;
+    bool        brk;
 
     brk = *_BreakFlagPtr;
-    *_BreakFlagPtr = 0;
+    *_BreakFlagPtr = false;
     return( brk );
 }
 
 void CauseTBreak( void )
 /**********************/
 {
-    *_BreakFlagPtr = 1;
+    *_BreakFlagPtr = true;
 }
 
 void FatalError( const char * str )
@@ -99,7 +99,7 @@ bool    WantZoiks2( void )
 static  void    CheckEvents( void )
 {
     if( *_BreakFlagPtr ) {              // if( TBreak() )
-        *_BreakFlagPtr = 0;
+        *_BreakFlagPtr = false;
         FatalError( "Program interrupted from keyboard" );
     }
 }
