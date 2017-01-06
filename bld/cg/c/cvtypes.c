@@ -1306,6 +1306,7 @@ extern  dbg_type    CVBasedPtr( cg_type ptr_type, dbg_type base,
     switch( expr.state ){
     case IS_ERROR:
         expr.sym = NULL;
+        /* fall through */
     case IS_NONE:
     case IS_VOID:
         based_kind = BASED_VOID;
@@ -1607,7 +1608,7 @@ static int  MkFlist( dbg_struct st )
                     break;
                 field = curr;
                 curr = curr->entry.next;
-                a_mlist = BuffInc( out, sizeof( a_mlist ) );
+                a_mlist = BuffInc( out, sizeof( *a_mlist ) );
             }
             EndTypeString( out );
          }
