@@ -430,7 +430,7 @@ extern void         CppPrtf(char *,...);
 extern void         SetCppWidth(unsigned);
 extern void         CppPrtChar(int);
 extern void         CppPrtToken(void);
-extern bool         OpenSrcFile(const char *,bool);
+extern bool         OpenSrcFile(const char *, src_file_type);
 extern void         OpenDefFile(void);
 extern FILE         *OpenBrowseFile(void);
 extern void         CloseFiles(void);

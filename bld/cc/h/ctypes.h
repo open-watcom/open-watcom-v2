@@ -279,6 +279,14 @@ typedef struct textsegment {        /* used for #pragma alloc_text(seg,func1,fun
     char               segname[1];
 } textsegment;
 
+typedef enum {
+    FT_SRC,
+    FT_HEADER,
+    FT_HEADER_FORCED,
+    FT_HEADER_PRE,
+    FT_LIBRARY,
+} src_file_type;
+
 typedef struct fname_list {
     struct fname_list   *next;      /* also used by pre-compiled header */
     time_t              mtime;      /* from stat.st_mtime */

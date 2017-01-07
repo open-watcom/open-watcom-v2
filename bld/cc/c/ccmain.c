@@ -77,12 +77,12 @@ bool    PrintWhiteSpace;     // also refered from cmac2.c
 static  void        DoCCompile( char **cmdline );
 static  void        DelErrFile( void );
 static  void        MakePgmName( void );
-static  bool        OpenFCB( FILE *fp, const char *filename );
+static  bool        OpenFCB( FILE *fp, const char *filename, src_file_type typ );
 static  bool        IsFNameOnce( char const *filename );
-static  bool        TryOpen( const char *path, const char *filename );
+static  bool        TryOpen( const char *path, const char *filename, src_file_type typ );
 static  void        ParseInit( void );
 static  void        CPP_Parse( void );
-static  bool        FCB_Alloc( FILE *fp, const char *filename );
+static  bool        FCB_Alloc( FILE *fp, const char *filename, src_file_type typ );
 static  void        Parse( void );
 static  bool        OpenPgmFile( void );
 static  void        DelDepFile( void );
@@ -331,7 +331,7 @@ static bool openForcePreInclude( void )
     bool    ok;
 
     CompFlags.ignore_fnf = true;
-    ok = OpenSrcFile( ForcePreInclude, false );
+    ok = OpenSrcFile( ForcePreInclude, FT_HEADER_PRE );
     CompFlags.ignore_fnf = false;
     return( ok );
 }
@@ -479,14 +479,14 @@ static void CantOpenFile( const char *name )
 static bool OpenPgmFile( void )
 {
     if( IsStdIn ) {
-        if( OpenFCB( stdin, "stdin" ) ) {
+        if( OpenFCB( stdin, "stdin", FT_SRC ) ) {
             MainSrcFile = SrcFile;
             return( true );
         }
         return( false );
     }
-    if( !TryOpen( "", WholeFName ) ) {
-        if( CompFlags.ignore_default_dirs || !TryOpen( C_PATH, WholeFName ) ) {
+    if( !TryOpen( "", WholeFName, FT_SRC ) ) {
+        if( CompFlags.ignore_default_dirs || !TryOpen( C_PATH, WholeFName, FT_SRC ) ) {
             CantOpenFile( WholeFName );
             CSuicide();
             return( false );
@@ -755,7 +755,7 @@ static void DelDepFile( void )
     }
 }
 
-bool OpenSrcFile( const char *filename, bool is_lib )
+bool OpenSrcFile( const char *filename, src_file_type typ )
 {
     char        *s;
     char        *p;
@@ -766,6 +766,9 @@ bool OpenSrcFile( const char *filename, bool is_lib )
     bool        save;
     FCB         *curr;
     char        c;
+    bool        is_lib;
+
+    is_lib = ( typ == FT_LIBRARY );
 
     // See if there's an alias for this filename
     filename = IncludeAlias( filename, is_lib );
@@ -775,7 +778,7 @@ bool OpenSrcFile( const char *filename, bool is_lib )
     if( drive[0] != '\0' || IS_DIR_SEP( dir[0] ) ) {
         // try absolute path
         // if drive letter given or path from root given
-        if( TryOpen( "", filename ) ) {
+        if( TryOpen( "", filename, typ ) ) {
             return( true );
         }
     } else {
@@ -784,19 +787,19 @@ bool OpenSrcFile( const char *filename, bool is_lib )
                 // physical file name must be used, not logical
                 _splitpath2( SrcFile->src_flist->name, buff, &drive, &dir, NULL, NULL );
                 _makepath( try, drive, dir, filename, NULL );
-                if( TryOpen( "", try ) ) {
+                if( TryOpen( "", try, typ ) ) {
                     return( true );
                 }
             } else {
                 // try current directory
-                if( !GlobalCompFlags.ignore_current_dir && TryOpen( "", filename ) ) {
+                if( !GlobalCompFlags.ignore_current_dir && TryOpen( "", filename, typ ) ) {
                     return( true );
                 }
                 for( curr = SrcFile; curr!= NULL; curr = curr->prev_file ) {
                     // physical file name must be used, not logical
                     _splitpath2( curr->src_flist->name, buff, &drive, &dir, NULL, NULL );
                     _makepath( try, drive, dir, filename, NULL );
-                    if( TryOpen( "", try ) ) {
+                    if( TryOpen( "", try, typ ) ) {
                         return( true );
                     }
                 }
@@ -816,14 +819,14 @@ bool OpenSrcFile( const char *filename, bool is_lib )
                 *p++ = DIR_SEP;
             }
             *p = '\0';
-            if( TryOpen( buff, filename ) ) {
+            if( TryOpen( buff, filename, typ ) ) {
                 return( true );
             }
         }
         if( !is_lib ) {
             if( !CompFlags.ignore_default_dirs ) {
                 // try current ../h directory
-                if( TryOpen( H_PATH, filename ) ) {
+                if( TryOpen( H_PATH, filename, typ ) ) {
                     return( true );
                 }
             }
@@ -902,7 +905,7 @@ void CloseSrcFile( FCB *srcfcb )
     CMemFree( srcfcb );
 }
 
-static bool OpenFCB( FILE *fp, const char *filename )
+static bool OpenFCB( FILE *fp, const char *filename, src_file_type typ )
 {
     if( CompFlags.track_includes ) {
         // Don't track the top level file (any semi-intelligent user should
@@ -912,7 +915,7 @@ static bool OpenFCB( FILE *fp, const char *filename )
         }
     }
 
-    if( FCB_Alloc( fp, filename ) ) {
+    if( FCB_Alloc( fp, filename, typ ) ) {
         return( true );
     }
     CErr1( ERR_OUT_OF_MEMORY );
@@ -942,7 +945,7 @@ static bool FreeSrcFP( void )
     return( ret );
 }
 
-static bool TryOpen( const char *path, const char *fname )
+static bool TryOpen( const char *path, const char *fname, src_file_type typ )
 {
     FILE        *fp;
     char        filename[_MAX_PATH];
@@ -978,7 +981,7 @@ static bool TryOpen( const char *path, const char *fname )
             return( true );
         }
     }
-    if( OpenFCB( fp, filename ) ) {
+    if( OpenFCB( fp, filename, typ ) ) {
         return( true );
     }
     fclose( fp );
@@ -1221,7 +1224,7 @@ void SrcFileIncludeAlias( const char *alias_name, const char *real_name, bool is
     AddIAlias( alias_name, real_name, is_lib );
 }
 
-static bool FCB_Alloc( FILE *fp, const char *filename )
+static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
 {
     FCB             *srcfcb;
     unsigned char   *src_buffer;
@@ -1245,7 +1248,6 @@ static bool FCB_Alloc( FILE *fp, const char *filename )
         srcfcb->prev_file = SrcFile;
         srcfcb->src_cnt = 0;
         srcfcb->prev_currchar = CurrChar;
-        srcfcb->src_bufsize = SRC_BUF_SIZE;
 #if _CPU == 370
         srcfcb->colum = 0;     /* init colum, trunc info */
         srcfcb->trunc = 0;
@@ -1258,6 +1260,7 @@ static bool FCB_Alloc( FILE *fp, const char *filename )
             }
         }
         srcfcb->rseekpos = 0;
+        srcfcb->typ = typ;
         srcfcb->no_eol = 0;
         SrcFile = srcfcb;
         CurrChar = '\n';    /* set next character to newline */
@@ -1314,7 +1317,7 @@ static void Parse( void )
         // we want to keep in the pre-compiled header
         // any macros that are defined in forced include file
         InitialMacroFlag = MFLAG_NONE;
-        OpenSrcFile( ForceInclude, false );
+        OpenSrcFile( ForceInclude, FT_HEADER_FORCED );
     }
     CompFlags.ok_to_use_precompiled_hdr = false;
     CompFlags.use_precompiled_header = false;
@@ -1342,7 +1345,7 @@ static void CPP_Parse( void )
 {
     if( ForceInclude != NULL ) {
         CppPrtChar( '\n' );
-        OpenSrcFile( ForceInclude, false );
+        OpenSrcFile( ForceInclude, FT_HEADER_FORCED );
     }
     CurToken = T_NULL;
     while( CurToken != T_EOF ) {

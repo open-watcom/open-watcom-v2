@@ -80,9 +80,7 @@ static bool ReadBuffer( FCB *srcfcb )
     } else {
         last_char = '\n';
     }
-    srcfcb->src_cnt = read( fileno( srcfcb->src_fp ),
-                            srcfcb->src_ptr,
-                            srcfcb->src_bufsize );
+    srcfcb->src_cnt = read( fileno( srcfcb->src_fp ), srcfcb->src_ptr, SRC_BUF_SIZE );
     if( srcfcb->src_cnt == -1 ) {
         CErr3p( ERR_IO_ERR, srcfcb->src_name, strerror( errno ) );
         CloseSrcFile( srcfcb );
@@ -93,7 +91,7 @@ static bool ReadBuffer( FCB *srcfcb )
     } else if( srcfcb->src_cnt != 0 ) {
         last_char = srcfcb->src_ptr[srcfcb->src_cnt - 1];
     }
-    if( ( srcfcb->src_cnt < srcfcb->src_bufsize ) && ( last_char != '\n' ) ) {
+    if( ( srcfcb->src_cnt < SRC_BUF_SIZE ) && ( last_char != '\n' ) ) {
         srcfcb->no_eol = 1;         // emit warning later so line # is right
         srcfcb->src_ptr[srcfcb->src_cnt] = '\n';      // mark end of buffer
         srcfcb->src_cnt++;
