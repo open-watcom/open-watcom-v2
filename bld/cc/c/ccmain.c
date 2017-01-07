@@ -67,26 +67,11 @@
 
 #define MAX_INC_DEPTH   255
 
+bool    PrintWhiteSpace;     // also refered from cmac2.c
+
 static  bool    IsStdIn;
 static  int     IncFileDepth;
 static  char    *FNameBuf = NULL;
-
-bool    PrintWhiteSpace;     // also refered from cmac2.c
-
-// local function prototypes
-static  void        DoCCompile( char **cmdline );
-static  void        DelErrFile( void );
-static  void        MakePgmName( void );
-static  bool        OpenFCB( FILE *fp, const char *filename, src_file_type typ );
-static  bool        IsFNameOnce( char const *filename );
-static  bool        TryOpen( const char *path, const char *filename, src_file_type typ );
-static  void        ParseInit( void );
-static  void        CPP_Parse( void );
-static  bool        FCB_Alloc( FILE *fp, const char *filename, src_file_type typ );
-static  void        Parse( void );
-static  bool        OpenPgmFile( void );
-static  void        DelDepFile( void );
-static  const char  *IncludeAlias( const char *filename, bool is_lib );
 
 void FrontEndInit( bool reuse )
 //***************************//
@@ -134,60 +119,6 @@ static void ClearGlobals( void )
     InitErrLoc();
 }
 
-
-int FrontEnd( char **cmdline )
-{
-#ifdef __WATCOMC__
-    /* set to 0 in case 8087 is present */
-    _real87 = 0;
-    _8087 = 0;
-#endif
-
-    InitGlobalVars();
-    CMemInit();
-    InitMsg();
-    InitPurge();
-
-    SwitchChar = _dos_switch_char();
-    ClearGlobals();
-    DoCCompile( cmdline );
-    PurgeMemory();
-    FiniMsg();
-    CMemFini();
-    GlobalCompFlags.cc_first_use = false;
-    return( ErrCount );
-}
-
-
-void CloseFiles( void )
-{
-    if( CppFile != NULL ) {
-        fflush( CppFile );
-        if( ferror( CppFile ) ) {
-            char    msgtxt[80];
-            char    msgbuf[MAX_MSG_LEN];
-
-            /* issue message */
-            CGetMsg( msgtxt, ERR_FATAL_ERROR );
-            sprintf( msgbuf, msgtxt, strerror( errno ) );
-            NoteMsg( msgbuf );
-        }
-        fclose( CppFile );
-        CppFile = NULL;
-    }
-    if( ErrFile != NULL ) {
-        fclose( ErrFile );
-        ErrFile = NULL;
-        if( ! CompFlags.errfile_written ) {
-            DelErrFile();
-        }
-    }
-    if( DefFile != NULL ) {
-        fclose( DefFile );
-        DefFile = NULL;
-    }
-}
-
 static bool ParseCmdLine( char **cmdline )
 {
     char        *cmd;
@@ -218,7 +149,7 @@ static void OpenDepFile( void )
                 setvbuf( DepFile, CPermAlloc( 1024 ), _IOFBF, 1024 );
             }
         }
-     }
+    }
 }
 
 char *ForceSlash( char *name, char slash )
@@ -249,6 +180,27 @@ FNAMEPTR NextDependency( FNAMEPTR curr )
         }
     }
     return( curr );
+}
+
+
+static void DelErrFile(void)
+{
+    char        *name;
+
+    name = ErrFileName();
+    if( name != NULL ) {
+        remove( name );
+    }
+}
+
+static void DelDepFile( void )
+{
+    char        *name;
+
+    name = DepFileName();
+    if( name != NULL ) {
+        remove( name );
+    }
 }
 
 static void DumpDepFile( void )
@@ -336,93 +288,6 @@ static bool openForcePreInclude( void )
     return( ok );
 }
 
-static void DoCCompile( char **cmdline )
-/**************************************/
-{
-    jmp_buf     env;
-
-    Environment = &env;
-    if( setjmp( env ) ) {           /* if fatal error has occurred */
-        EmitAbort();                /* abort code generator */
-        CPragmaFini();
-        CloseFiles();
-        FreeFNames();
-        FreeRDir();
-        FreeIAlias();
-        ErrCount = 1;
-        MyExit( 1 );
-    }
-    ParseInit();
-    if( ParseCmdLine( cmdline ) ) {
-        if( WholeFName == NULL ) {
-            CErr1( ERR_FILENAME_REQUIRED );
-            return;
-        }
-        MakePgmName();
-        DelErrFile();               /* delete old error file */
-        MergeInclude();             /* merge INCLUDE= with IncPathList */
-        CPragmaInit();              /* memory model is known now */
-#if _CPU == 370
-        ParseAuxFile();
-#endif
-        if( CompFlags.cpp_output ) {
-            PrintWhiteSpace = true;
-            if( ForcePreInclude != NULL ) {
-                CompFlags.cpp_output = false;
-                if( openForcePreInclude() ) {
-                    CurToken = T_NULL;
-                    while( CurToken != T_EOF ) {
-                        GetNextToken();
-                    }
-                }
-                CompFlags.cpp_output = true;
-            }
-            OpenPgmFile();
-            CPP_Parse();
-            if( !CompFlags.quiet_mode ) {
-                PrintStats();
-            }
-            if( CompFlags.warnings_cause_bad_exit ) {
-                ErrCount += WngCount;
-            }
-        } else {
-            OpenPgmFile();
-            MacroAddComp(); // Add any compile time only macros
-            Parse();
-            if( !CompFlags.quiet_mode ) {
-                PrintStats();
-            }
-            if( CompFlags.warnings_cause_bad_exit ) {
-                ErrCount += WngCount;
-            }
-            if( ( ErrCount == 0 ) && ( !CompFlags.check_syntax ) ) {
-                if( CompFlags.emit_browser_info ) {
-                    DwarfBrowseEmit();
-                }
-                FreeMacroSegments();
-                DoCompile();
-            } else {
-                FreeMacroSegments();
-            }
-        }
-        if( ErrCount == 0 ) {
-            DumpDepFile();
-        } else {
-            DelDepFile();
-        }
-
-        SymFini();
-        CPragmaFini();
-    } else {
-        ErrCount = 1;
-    }
-    CloseFiles();
-    FreeFNames();
-    FreeRDir();
-    FreeIAlias();
-    FreeIncFileList();
-}
-
 
 /* open the primary source file, and return pointer to root file name */
 
@@ -476,28 +341,181 @@ static void CantOpenFile( const char *name )
     ConsErrMsgVerbatim( msgbuf );
 }
 
-static bool OpenPgmFile( void )
+static unsigned CppColumn = 0;
+static unsigned CppWidth = 0;
+static unsigned CommentChar = '\0';
+static bool     CppFirstChar = false;
+
+void SetCppWidth( unsigned width )
 {
-    if( IsStdIn ) {
-        if( OpenFCB( stdin, "stdin", FT_SRC ) ) {
-            MainSrcFile = SrcFile;
-            return( true );
+    CppWidth = width - 1;
+}
+
+void CppComment( int ch )
+{
+    if( CompFlags.keep_comments && CppPrinting() ) {
+        if( ch != '\0' ) {
+            if( CppColumn + 2 >= CppWidth )
+                CppPutc( '\n' );
+            CppPutc( '/' );
+            CppPutc( ch );
+        } else if( CommentChar == '*' ) {
+            if( CppColumn + 2 >= CppWidth )
+                CppPutc( '\n' );
+            CppPutc( '*' );
+            CppPutc( '/' );
+//        } else if( CommentChar == '/' ) {
+//            CppPutc( '\n' );
         }
-        return( false );
+        CommentChar = ch;
     }
-    if( !TryOpen( "", WholeFName, FT_SRC ) ) {
-        if( CompFlags.ignore_default_dirs || !TryOpen( C_PATH, WholeFName, FT_SRC ) ) {
-            CantOpenFile( WholeFName );
-            CSuicide();
-            return( false );
+}
+
+void CppPutc( int ch )
+{
+    int     rc;
+
+    if( CppFirstChar ) {
+        CppFirstChar = false;
+        if( ch == '\n' ) {
+            return;
         }
     }
+    if( ch == '\n' ) {
+        CppColumn = 0;
+        rc = fputc( '\n', CppFile );
+    } else if( CppColumn >= CppWidth ) {
+        CppColumn = 1;
+        if( CommentChar == '\0' ) {
+            if( (rc = fputc( '\\', CppFile )) != EOF ) {
+                rc = fputc( '\n', CppFile );
+            }
+        } else if( (rc = fputc( '\n', CppFile )) != EOF ) {
+            if( CommentChar == '/' ) {
+                CppColumn += 2;
+                if( (rc = fputc( '/', CppFile )) != EOF ) {
+                    rc = fputc( '/', CppFile );
+                }
+            }
+        }
+        if( rc != EOF ) {
+            rc = fputc( ch, CppFile );
+        }
+    } else {
+        ++CppColumn;
+        rc = fputc( ch, CppFile );
+    }
+    if( rc == EOF ) {
+        CloseFiles();       /* get rid of temp file */
+        MyExit( 1 );        /* exit */
+    }
+}
+
+void CppPrtf( char *fmt, ... )
+{
+    va_list     arg;
+    char        *p;
+    char        *buff;
+
+    buff = CMemAlloc( BufSize );
+    va_start( arg, fmt );
+    vsnprintf( buff, BufSize, fmt, arg );
+    for( p = buff; *p != '\0'; ++p ) {
+        CppPutc( *p );
+    }
+    va_end( arg );
+    CMemFree( buff );
+}
+
+static void OpenCppFile( void )
+{
+    char  *name = NULL;
+
+    if( CompFlags.cpp_output_to_file ) {
+        name = CppFileName();
+        CppFile = fopen( name, "w" );
+    } else {
+        CppFile = stdout;
+    }
+    CppColumn = 0;
+    CppFirstChar = true;
+    if( CppFile == NULL ) {
+        CantOpenFile( name );
+        MyExit( 1 );
+    } else {
+        if( CppWidth == 0 ) {
+            CppWidth = ~0U;
+        }
+        setvbuf( CppFile, CPermAlloc( 4096 ), _IOFBF, 4096 );
+    }
+}
+
+static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
+{
+    FCB             *srcfcb;
+    unsigned char   *src_buffer;
+    FNAMEPTR        flist;
+
+    --IncFileDepth;
+    srcfcb = (FCB *)CMemAlloc( sizeof( FCB ) );
+    src_buffer = FEmalloc( SRC_BUF_SIZE + 3 );
+    if( srcfcb != NULL ) {
+        srcfcb->src_buf = src_buffer;
+        srcfcb->src_ptr = src_buffer;
+        src_buffer[0] = '\0';
+        flist = AddFlist( filename );
+        srcfcb->src_name = flist->name;
+        srcfcb->src_line_cnt = 0;
+        srcfcb->src_loc.line = 1;
+        srcfcb->src_loc.fno = flist->index;
+        SrcFileLoc = srcfcb->src_loc;
+        srcfcb->src_flist = flist;
+        srcfcb->src_fp = fp;
+        srcfcb->prev_file = SrcFile;
+        srcfcb->src_cnt = 0;
+        srcfcb->prev_currchar = CurrChar;
 #if _CPU == 370
-    SrcFile->colum = Column;
-    SrcFile->trunc = Trunc;
+        srcfcb->colum = 0;     /* init colum, trunc info */
+        srcfcb->trunc = 0;
+        srcfcb->prevcount = 0;
 #endif
-    MainSrcFile = SrcFile;
-    return( true );
+        if( SrcFile != NULL ) {
+            if( SrcFile == MainSrcFile ) {
+                // remember name of included file
+                AddIncFileList( filename );
+            }
+        }
+        srcfcb->rseekpos = 0;
+        srcfcb->typ = typ;
+        srcfcb->no_eol = 0;
+        SrcFile = srcfcb;
+        CurrChar = '\n';    /* set next character to newline */
+        if( CompFlags.cpp_output ) {
+            if( CppFile == NULL )
+                OpenCppFile();
+            EmitPoundLine( 1, filename, true );
+            CppFirstChar = true;
+        }
+        return( true );
+    }
+    return( false );
+}
+
+static bool OpenFCB( FILE *fp, const char *filename, src_file_type typ )
+{
+    if( CompFlags.track_includes ) {
+        // Don't track the top level file (any semi-intelligent user should
+        // have no trouble tracking *that* down)
+        if( IncFileDepth < MAX_INC_DEPTH ) {
+            CInfoMsg( INFO_INCLUDING_FILE, filename );
+        }
+    }
+
+    if( FCB_Alloc( fp, filename, typ ) ) {
+        return( true );
+    }
+    CErr1( ERR_OUT_OF_MEMORY );
+    return( false );
 }
 
 
@@ -578,120 +596,6 @@ void CppPrtChar( int c )
     }
 }
 
-
-static unsigned CppColumn = 0;
-static unsigned CppWidth = 0;
-static unsigned CommentChar = '\0';
-static bool     CppFirstChar = false;
-
-void SetCppWidth( unsigned width )
-{
-    CppWidth = width - 1;
-}
-
-void CppComment( int ch )
-{
-    if( CompFlags.keep_comments && CppPrinting() ) {
-        if( ch != '\0' ) {
-            if( CppColumn + 2 >= CppWidth )
-                CppPutc( '\n' );
-            CppPutc( '/' );
-            CppPutc( ch );
-        } else if( CommentChar == '*' ) {
-            if( CppColumn + 2 >= CppWidth )
-                CppPutc( '\n' );
-            CppPutc( '*' );
-            CppPutc( '/' );
-//        } else if( CommentChar == '/' ) {
-//            CppPutc( '\n' );
-        }
-        CommentChar = ch;
-    }
-}
-
-
-void CppPutc( int ch )
-{
-    int     rc;
-
-    if( CppFirstChar ) {
-        CppFirstChar = false;
-        if( ch == '\n' ) {
-            return;
-        }
-    }
-    if( ch == '\n' ) {
-        CppColumn = 0;
-        rc = fputc( '\n', CppFile );
-    } else if( CppColumn >= CppWidth ) {
-        CppColumn = 1;
-        if( CommentChar == '\0' ) {
-            if( (rc = fputc( '\\', CppFile )) != EOF ) {
-                rc = fputc( '\n', CppFile );
-            }
-        } else if( (rc = fputc( '\n', CppFile )) != EOF ) {
-            if( CommentChar == '/' ) {
-                CppColumn += 2;
-                if( (rc = fputc( '/', CppFile )) != EOF ) {
-                    rc = fputc( '/', CppFile );
-                }
-            }
-        }
-        if( rc != EOF ) {
-            rc = fputc( ch, CppFile );
-        }
-    } else {
-        ++CppColumn;
-        rc = fputc( ch, CppFile );
-    }
-    if( rc == EOF ) {
-        CloseFiles();       /* get rid of temp file */
-        MyExit( 1 );        /* exit */
-    }
-}
-
-
-void CppPrtf( char *fmt, ... )
-{
-    va_list     arg;
-    char        *p;
-    char        *buff;
-
-    buff = CMemAlloc( BufSize );
-    va_start( arg, fmt );
-    vsnprintf( buff, BufSize, fmt, arg );
-    for( p = buff; *p != '\0'; ++p ) {
-        CppPutc( *p );
-    }
-    va_end( arg );
-    CMemFree( buff );
-}
-
-
-static void OpenCppFile( void )
-{
-    char  *name = NULL;
-
-    if( CompFlags.cpp_output_to_file ) {
-        name = CppFileName();
-        CppFile = fopen( name, "w" );
-    } else {
-        CppFile = stdout;
-    }
-    CppColumn = 0;
-    CppFirstChar = true;
-    if( CppFile == NULL ) {
-        CantOpenFile( name );
-        MyExit( 1 );
-    } else {
-        if( CppWidth == 0 ) {
-            CppWidth = ~0U;
-        }
-        setvbuf( CppFile, CPermAlloc( 4096 ), _IOFBF, 4096 );
-    }
-}
-
-
 void OpenDefFile( void )
 {
 #if !defined( __CMS__ )
@@ -732,120 +636,6 @@ FILE *OpenBrowseFile( void )
         CantOpenFile( name );
     }
     return( mbr_file );
-}
-
-
-static void DelErrFile(void)
-{
-    char        *name;
-
-    name = ErrFileName();
-    if( name != NULL ) {
-        remove( name );
-    }
-}
-
-static void DelDepFile( void )
-{
-    char        *name;
-
-    name = DepFileName();
-    if( name != NULL ) {
-        remove( name );
-    }
-}
-
-bool OpenSrcFile( const char *filename, src_file_type typ )
-{
-    char        *s;
-    char        *p;
-    char        buff[_MAX_PATH2];
-    char        try[_MAX_PATH];
-    char        *drive;
-    char        *dir;
-    bool        save;
-    FCB         *curr;
-    char        c;
-    bool        is_lib;
-
-    is_lib = ( typ == FT_LIBRARY );
-
-    // See if there's an alias for this filename
-    filename = IncludeAlias( filename, is_lib );
-
-    // include path here...
-    _splitpath2( filename, buff, &drive, &dir, NULL, NULL );
-    if( drive[0] != '\0' || IS_DIR_SEP( dir[0] ) ) {
-        // try absolute path
-        // if drive letter given or path from root given
-        if( TryOpen( "", filename, typ ) ) {
-            return( true );
-        }
-    } else {
-        if( !is_lib ) {
-            if( CompFlags.ignore_default_dirs ) {
-                // physical file name must be used, not logical
-                _splitpath2( SrcFile->src_flist->name, buff, &drive, &dir, NULL, NULL );
-                _makepath( try, drive, dir, filename, NULL );
-                if( TryOpen( "", try, typ ) ) {
-                    return( true );
-                }
-            } else {
-                // try current directory
-                if( !GlobalCompFlags.ignore_current_dir && TryOpen( "", filename, typ ) ) {
-                    return( true );
-                }
-                for( curr = SrcFile; curr!= NULL; curr = curr->prev_file ) {
-                    // physical file name must be used, not logical
-                    _splitpath2( curr->src_flist->name, buff, &drive, &dir, NULL, NULL );
-                    _makepath( try, drive, dir, filename, NULL );
-                    if( TryOpen( "", try, typ ) ) {
-                        return( true );
-                    }
-                }
-            }
-        }
-        s = IncPathList;
-        while( (c = *s) != '\0' ) {
-            p = buff;
-            do {
-                ++s;
-                if( IS_PATH_LIST_SEP( c ) )
-                    break;
-                *p++ = c;
-            } while( (c = *s) != '\0' );
-            c = p[-1];
-            if( !IS_PATH_SEP( c ) ) {
-                *p++ = DIR_SEP;
-            }
-            *p = '\0';
-            if( TryOpen( buff, filename, typ ) ) {
-                return( true );
-            }
-        }
-        if( !is_lib ) {
-            if( !CompFlags.ignore_default_dirs ) {
-                // try current ../h directory
-                if( TryOpen( H_PATH, filename, typ ) ) {
-                    return( true );
-                }
-            }
-        }
-    }
-    save = CompFlags.cpp_output;
-    if( CompFlags.cpp_output ) {
-        if( is_lib ) {
-            CppPrtf( "#include <%s>", filename );
-        } else {
-            CppPrtf( "#include \"%s\"", filename );
-        }
-        CompFlags.cpp_output = false;
-    }
-    if( !CompFlags.ignore_fnf ) {
-        CErr2p( ERR_CANT_OPEN_FILE, filename );
-    }
-    CompFlags.cpp_output = save;
-    return( false );
 }
 
 void CClose( FILE *fp )
@@ -905,23 +695,6 @@ void CloseSrcFile( FCB *srcfcb )
     CMemFree( srcfcb );
 }
 
-static bool OpenFCB( FILE *fp, const char *filename, src_file_type typ )
-{
-    if( CompFlags.track_includes ) {
-        // Don't track the top level file (any semi-intelligent user should
-        // have no trouble tracking *that* down)
-        if( IncFileDepth < MAX_INC_DEPTH ) {
-            CInfoMsg( INFO_INCLUDING_FILE, filename );
-        }
-    }
-
-    if( FCB_Alloc( fp, filename, typ ) ) {
-        return( true );
-    }
-    CErr1( ERR_OUT_OF_MEMORY );
-    return( false );
-}
-
 static bool FreeSrcFP( void )
 /********************/
 {
@@ -945,6 +718,28 @@ static bool FreeSrcFP( void )
     return( ret );
 }
 
+
+static FNAMEPTR FindFlist( char const *filename )
+{ // find a flist
+    FNAMEPTR    flist;
+
+    for( flist = FNames; flist != NULL; flist = flist->next ) {
+        if( FNAMECMPSTR( filename, flist->name ) == 0 ) {
+            break;
+        }
+    }
+    return( flist );
+}
+
+static bool IsFNameOnce( char const *filename )
+{
+    FNAMEPTR    flist;
+
+    flist = FindFlist( filename );
+    if( flist == NULL )
+        return( false );
+    return( flist->once );
+}
 static bool TryOpen( const char *path, const char *fname, src_file_type typ )
 {
     FILE        *fp;
@@ -986,18 +781,6 @@ static bool TryOpen( const char *path, const char *fname, src_file_type typ )
     }
     fclose( fp );
     return( false );
-}
-
-static FNAMEPTR FindFlist( char const *filename )
-{ // find a flist
-    FNAMEPTR    flist;
-
-    for( flist = FNames; flist != NULL; flist = flist->next ) {
-        if( FNAMECMPSTR( filename, flist->name ) == 0 ) {
-            break;
-        }
-    }
-    return( flist );
 }
 
 FNAMEPTR AddFlist( char const *filename )
@@ -1081,16 +864,6 @@ char *FileIndexToCorrectName( unsigned file_index )
         name = flist->name;
     }
     return( name );
-}
-
-static bool IsFNameOnce( char const *filename )
-{
-    FNAMEPTR    flist;
-
-    flist = FindFlist( filename );
-    if( flist == NULL )
-        return( false );
-    return( flist->once );
 }
 
 void FreeFNames( void )
@@ -1224,57 +997,6 @@ void SrcFileIncludeAlias( const char *alias_name, const char *real_name, bool is
     AddIAlias( alias_name, real_name, is_lib );
 }
 
-static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
-{
-    FCB             *srcfcb;
-    unsigned char   *src_buffer;
-    FNAMEPTR        flist;
-
-    --IncFileDepth;
-    srcfcb = (FCB *)CMemAlloc( sizeof( FCB ) );
-    src_buffer = FEmalloc( SRC_BUF_SIZE + 3 );
-    if( srcfcb != NULL ) {
-        srcfcb->src_buf = src_buffer;
-        srcfcb->src_ptr = src_buffer;
-        src_buffer[0] = '\0';
-        flist = AddFlist( filename );
-        srcfcb->src_name = flist->name;
-        srcfcb->src_line_cnt = 0;
-        srcfcb->src_loc.line = 1;
-        srcfcb->src_loc.fno = flist->index;
-        SrcFileLoc = srcfcb->src_loc;
-        srcfcb->src_flist = flist;
-        srcfcb->src_fp = fp;
-        srcfcb->prev_file = SrcFile;
-        srcfcb->src_cnt = 0;
-        srcfcb->prev_currchar = CurrChar;
-#if _CPU == 370
-        srcfcb->colum = 0;     /* init colum, trunc info */
-        srcfcb->trunc = 0;
-        srcfcb->prevcount = 0;
-#endif
-        if( SrcFile != NULL ) {
-            if( SrcFile == MainSrcFile ) {
-                // remember name of included file
-                AddIncFileList( filename );
-            }
-        }
-        srcfcb->rseekpos = 0;
-        srcfcb->typ = typ;
-        srcfcb->no_eol = 0;
-        SrcFile = srcfcb;
-        CurrChar = '\n';    /* set next character to newline */
-        if( CompFlags.cpp_output ) {
-            if( CppFile == NULL )
-                OpenCppFile();
-            EmitPoundLine( 1, filename, true );
-            CppFirstChar = true;
-        }
-        return( true );
-    }
-    return( false );
-}
-
 void SetSrcFNameOnce( void )
 {
     SrcFile->src_flist->once = true;
@@ -1299,6 +1021,30 @@ static void ParseInit( void )
         ForceInclude = CStrSave( force );
     }
     ForcePreInclude = CStrSave( "_preincl.h" );
+}
+
+static bool OpenPgmFile( void )
+{
+    if( IsStdIn ) {
+        if( OpenFCB( stdin, "stdin", FT_SRC ) ) {
+            MainSrcFile = SrcFile;
+            return( true );
+        }
+        return( false );
+    }
+    if( !TryOpen( "", WholeFName, FT_SRC ) ) {
+        if( CompFlags.ignore_default_dirs || !TryOpen( C_PATH, WholeFName, FT_SRC ) ) {
+            CantOpenFile( WholeFName );
+            CSuicide();
+            return( false );
+        }
+    }
+#if _CPU == 370
+    SrcFile->colum = Column;
+    SrcFile->trunc = Trunc;
+#endif
+    MainSrcFile = SrcFile;
+    return( true );
 }
 
 
@@ -1353,6 +1099,186 @@ static void CPP_Parse( void )
         CppPrtToken();
     }
     MacroFini();
+}
+
+static void DoCCompile( char **cmdline )
+/**************************************/
+{
+    jmp_buf     env;
+
+    Environment = &env;
+    if( setjmp( env ) ) {           /* if fatal error has occurred */
+        EmitAbort();                /* abort code generator */
+        CPragmaFini();
+        CloseFiles();
+        FreeFNames();
+        FreeRDir();
+        FreeIAlias();
+        ErrCount = 1;
+        MyExit( 1 );
+    }
+    ParseInit();
+    if( ParseCmdLine( cmdline ) ) {
+        if( WholeFName == NULL ) {
+            CErr1( ERR_FILENAME_REQUIRED );
+            return;
+        }
+        MakePgmName();
+        DelErrFile();               /* delete old error file */
+        MergeInclude();             /* merge INCLUDE= with IncPathList */
+        CPragmaInit();              /* memory model is known now */
+#if _CPU == 370
+        ParseAuxFile();
+#endif
+        if( CompFlags.cpp_output ) {
+            PrintWhiteSpace = true;
+            if( ForcePreInclude != NULL ) {
+                CompFlags.cpp_output = false;
+                if( openForcePreInclude() ) {
+                    CurToken = T_NULL;
+                    while( CurToken != T_EOF ) {
+                        GetNextToken();
+                    }
+                }
+                CompFlags.cpp_output = true;
+            }
+            OpenPgmFile();
+            CPP_Parse();
+            if( !CompFlags.quiet_mode ) {
+                PrintStats();
+            }
+            if( CompFlags.warnings_cause_bad_exit ) {
+                ErrCount += WngCount;
+            }
+        } else {
+            OpenPgmFile();
+            MacroAddComp(); // Add any compile time only macros
+            Parse();
+            if( !CompFlags.quiet_mode ) {
+                PrintStats();
+            }
+            if( CompFlags.warnings_cause_bad_exit ) {
+                ErrCount += WngCount;
+            }
+            if( ( ErrCount == 0 ) && ( !CompFlags.check_syntax ) ) {
+                if( CompFlags.emit_browser_info ) {
+                    DwarfBrowseEmit();
+                }
+                FreeMacroSegments();
+                DoCompile();
+            } else {
+                FreeMacroSegments();
+            }
+        }
+        if( ErrCount == 0 ) {
+            DumpDepFile();
+        } else {
+            DelDepFile();
+        }
+
+        SymFini();
+        CPragmaFini();
+    } else {
+        ErrCount = 1;
+    }
+    CloseFiles();
+    FreeFNames();
+    FreeRDir();
+    FreeIAlias();
+    FreeIncFileList();
+}
+
+bool OpenSrcFile( const char *filename, src_file_type typ )
+{
+    char        *s;
+    char        *p;
+    char        buff[_MAX_PATH2];
+    char        try[_MAX_PATH];
+    char        *drive;
+    char        *dir;
+    bool        save;
+    FCB         *curr;
+    char        c;
+    bool        is_lib;
+
+    is_lib = ( typ == FT_LIBRARY );
+
+    // See if there's an alias for this filename
+    filename = IncludeAlias( filename, is_lib );
+
+    // include path here...
+    _splitpath2( filename, buff, &drive, &dir, NULL, NULL );
+    if( drive[0] != '\0' || IS_DIR_SEP( dir[0] ) ) {
+        // try absolute path
+        // if drive letter given or path from root given
+        if( TryOpen( "", filename, typ ) ) {
+            return( true );
+        }
+    } else {
+        if( !is_lib ) {
+            if( CompFlags.ignore_default_dirs ) {
+                // physical file name must be used, not logical
+                _splitpath2( SrcFile->src_flist->name, buff, &drive, &dir, NULL, NULL );
+                _makepath( try, drive, dir, filename, NULL );
+                if( TryOpen( "", try, typ ) ) {
+                    return( true );
+                }
+            } else {
+                // try current directory
+                if( !GlobalCompFlags.ignore_current_dir && TryOpen( "", filename, typ ) ) {
+                    return( true );
+                }
+                for( curr = SrcFile; curr!= NULL; curr = curr->prev_file ) {
+                    // physical file name must be used, not logical
+                    _splitpath2( curr->src_flist->name, buff, &drive, &dir, NULL, NULL );
+                    _makepath( try, drive, dir, filename, NULL );
+                    if( TryOpen( "", try, typ ) ) {
+                        return( true );
+                    }
+                }
+            }
+        }
+        s = IncPathList;
+        while( (c = *s) != '\0' ) {
+            p = buff;
+            do {
+                ++s;
+                if( IS_PATH_LIST_SEP( c ) )
+                    break;
+                *p++ = c;
+            } while( (c = *s) != '\0' );
+            c = p[-1];
+            if( !IS_PATH_SEP( c ) ) {
+                *p++ = DIR_SEP;
+            }
+            *p = '\0';
+            if( TryOpen( buff, filename, typ ) ) {
+                return( true );
+            }
+        }
+        if( !is_lib ) {
+            if( !CompFlags.ignore_default_dirs ) {
+                // try current ../h directory
+                if( TryOpen( H_PATH, filename, typ ) ) {
+                    return( true );
+                }
+            }
+        }
+    }
+    save = CompFlags.cpp_output;
+    if( CompFlags.cpp_output ) {
+        if( is_lib ) {
+            CppPrtf( "#include <%s>", filename );
+        } else {
+            CppPrtf( "#include \"%s\"", filename );
+        }
+        CompFlags.cpp_output = false;
+    }
+    if( !CompFlags.ignore_fnf ) {
+        CErr2p( ERR_CANT_OPEN_FILE, filename );
+    }
+    CompFlags.cpp_output = save;
+    return( false );
 }
 
 
@@ -1428,4 +1354,57 @@ void GetNextToken( void )
         }
         CurToken = ScanToken();
     }
+}
+
+void CloseFiles( void )
+{
+    if( CppFile != NULL ) {
+        fflush( CppFile );
+        if( ferror( CppFile ) ) {
+            char    msgtxt[80];
+            char    msgbuf[MAX_MSG_LEN];
+
+            /* issue message */
+            CGetMsg( msgtxt, ERR_FATAL_ERROR );
+            sprintf( msgbuf, msgtxt, strerror( errno ) );
+            NoteMsg( msgbuf );
+        }
+        fclose( CppFile );
+        CppFile = NULL;
+    }
+    if( ErrFile != NULL ) {
+        fclose( ErrFile );
+        ErrFile = NULL;
+        if( ! CompFlags.errfile_written ) {
+            DelErrFile();
+        }
+    }
+    if( DefFile != NULL ) {
+        fclose( DefFile );
+        DefFile = NULL;
+    }
+}
+
+
+int FrontEnd( char **cmdline )
+{
+#ifdef __WATCOMC__
+    /* set to 0 in case 8087 is present */
+    _real87 = 0;
+    _8087 = 0;
+#endif
+
+    InitGlobalVars();
+    CMemInit();
+    InitMsg();
+    InitPurge();
+
+    SwitchChar = _dos_switch_char();
+    ClearGlobals();
+    DoCCompile( cmdline );
+    PurgeMemory();
+    FiniMsg();
+    CMemFini();
+    GlobalCompFlags.cc_first_use = false;
+    return( ErrCount );
 }
