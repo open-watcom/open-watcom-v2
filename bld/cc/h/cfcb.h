@@ -34,13 +34,13 @@
 #define EOF_CHAR                256
 #define MACRO_CHAR              257
 
-typedef struct fcb_struct {     /* file control block structure */
+typedef struct fcb_struct {             /* file control block structure */
     char                *src_name;      /* pointer to file name (alias) */
     source_loc          src_loc;        /* source file current location (alias) */
     FNAMEPTR            src_flist;      /* pointer to flist_name struct */
     unsigned            src_line_cnt;   /* source file line counter */
     FILE                *src_fp;        /* pointer to FILE struct */
-    struct fcb_struct   *prev_file; /* pointer to previous fcb */
+    struct fcb_struct   *prev_file;     /* pointer to previous fcb */
     int                 prev_currchar;  /* value of CurrChar */
     int                 src_cnt;        /* number of bytes left in buffer */
     unsigned char       *src_ptr;       /* pointer to next character in buffer */
@@ -52,5 +52,5 @@ typedef struct fcb_struct {     /* file control block structure */
 #endif
     long                rseekpos;       /* if closed because of too many files reopen */
     src_file_type       typ;            /* source file type */
-    int                 no_eol;         /* set if no EOL before EOF */
+    bool                no_eol;         /* set if no EOL before EOF */
 } FCB;

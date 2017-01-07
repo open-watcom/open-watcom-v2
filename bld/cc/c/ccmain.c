@@ -487,7 +487,7 @@ static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
         }
         srcfcb->rseekpos = 0;
         srcfcb->typ = typ;
-        srcfcb->no_eol = 0;
+        srcfcb->no_eol = false;
         SrcFile = srcfcb;
         CurrChar = '\n';    /* set next character to newline */
         if( CompFlags.cpp_output ) {

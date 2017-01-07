@@ -92,12 +92,12 @@ static bool ReadBuffer( FCB *srcfcb )
         last_char = srcfcb->src_ptr[srcfcb->src_cnt - 1];
     }
     if( ( srcfcb->src_cnt < SRC_BUF_SIZE ) && ( last_char != '\n' ) ) {
-        srcfcb->no_eol = 1;         // emit warning later so line # is right
-        srcfcb->src_ptr[srcfcb->src_cnt] = '\n';      // mark end of buffer
+        srcfcb->no_eol = true;                      // emit warning later so line # is right
+        srcfcb->src_ptr[srcfcb->src_cnt] = '\n';    // mark end of buffer
         srcfcb->src_cnt++;
     }
-    srcfcb->src_ptr[srcfcb->src_cnt] = '\0';          // mark end of buffer
-    return( false );            // indicate CurrChar does not contain a character
+    srcfcb->src_ptr[srcfcb->src_cnt] = '\0';        // mark end of buffer
+    return( false );                                // indicate CurrChar does not contain a character
 }
 
 
