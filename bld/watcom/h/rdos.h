@@ -425,6 +425,23 @@ int RDOSAPI RdosCheckCanSerialPort(int ComPort, int *ModuleId, int *PortNr);
 int RDOSAPI RdosProgramCanModule(int Module, const char *ProgramName);
 int RDOSAPI RdosWaitForCanModuleProgramming(int Module, int *ErrorCode, int *Position);
 
+int RDOSAPI RdosOpenHandle(const char *Name, int Mode);
+int RDOSAPI RdosCloseHandle(int Handle);
+int RDOSAPI RdosReadHandle(int Handle, void *Buf, int Size);
+int RDOSAPI RdosWriteHandle(int Handle, const void *Buf, int Size);
+int RDOSAPI RdosDupHandle(int Handle);
+int RDOSAPI RdosDup2Handle(int Src, int Dest);
+long RDOSAPI RdosGetHandleSize(int Handle);
+int RDOSAPI RdosSetHandleSize(int Handle, long Size);
+int RDOSAPI RdosGetHandleMode(int Handle);
+int RDOSAPI RdosSetHandleMode(int Handle, int Mode);
+long RDOSAPI RdosGetHandlePos(int Handle);
+int RDOSAPI RdosSetHandlePos(int Handle, long Size);
+int RDOSAPI RdosEofHandle(int Handle);
+int RDOSAPI RdosIsHandleDevice(int Handle);
+int RDOSAPI RdosGetHandleTime(int Handle, unsigned long *MsbTime, unsigned long *LsbTime);
+int RDOSAPI RdosSetHandleTime(int Handle, unsigned long MsbTime, unsigned long LsbTime);
+
 int RDOSAPI RdosOpenFile(const char *FileName, char Access);
 int RDOSAPI RdosCreateFile(const char *FileName, int Attrib);
 void RDOSAPI RdosCloseFile(int Handle);
@@ -662,7 +679,6 @@ void RDOSAPI RdosWriteChar(char ch);
 void RDOSAPI RdosWriteSizeString(const char *Buf, int Size);
 void RDOSAPI RdosWriteAttributeString(int Row, int Col, const short int *Buf, int Size);
 void RDOSAPI RdosWriteString(const char *Buf);
-int RDOSAPI RdosReadLine(char *Buf, int MaxSize);
 
 int RDOSAPI RdosPing(long Node, long Timeout);
 

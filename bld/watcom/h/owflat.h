@@ -1233,6 +1233,91 @@
     parm [eax] [edi] \
     value [eax];
 
+#pragma aux RdosOpenHandle = \
+    CallGate_open_handle  \
+    parm [edi] [ecx] \
+    value [ebx];
+
+#pragma aux RdosCloseHandle = \
+    CallGate_close_handle  \
+    parm [ebx] \
+    value [ebx];
+    
+#pragma aux RdosReadHandle = \
+    CallGate_read_handle  \
+    parm [ebx] [edi] [ecx]  \
+    value [eax];
+
+#pragma aux RdosWriteHandle = \
+    CallGate_write_handle  \
+    parm [ebx] [edi] [ecx]  \
+    value [eax];
+
+#pragma aux RdosDupHandle = \
+    CallGate_dup_handle  \
+    parm [ebx]  \
+    value [ebx];
+
+#pragma aux RdosDup2Handle = \
+    CallGate_dup2_handle  \
+    parm [ebx] [eax]  \
+    value [ebx];
+
+#pragma aux RdosGetHandleSize = \
+    CallGate_get_handle_size  \
+    parm [ebx]  \
+    value [eax];
+
+#pragma aux RdosSetHandleSize = \
+    CallGate_set_handle_size  \
+    parm [ebx] [eax] \
+    value [eax];
+
+#pragma aux RdosGetHandleMode = \
+    CallGate_get_handle_mode  \
+    parm [ebx]  \
+    value [eax];
+
+#pragma aux RdosSetHandleMode = \
+    CallGate_set_handle_mode  \
+    parm [ebx] [eax] \
+    value [eax];
+
+#pragma aux RdosGetHandlePos = \
+    CallGate_get_handle_pos  \
+    parm [ebx]  \
+    value [eax];
+
+#pragma aux RdosSetHandlePos = \
+    CallGate_set_handle_pos  \
+    parm [ebx] [eax] \
+    value [eax];
+
+#pragma aux RdosEofHandle = \
+    CallGate_eof_handle  \
+    parm [ebx]  \
+    value [eax];
+
+#pragma aux RdosIsHandleDevice = \
+    CallGate_is_handle_device  \
+    CarryToBool \
+    parm [ebx] \
+    value [eax];
+
+#pragma aux RdosGetHandleTime = \
+    CallGate_get_handle_time  \
+    "mov [esi],edx" \
+    "mov [edi],eax" \
+    "and eax,edx" \
+    parm [ebx] [esi] [edi]  \
+    modify [edx] \
+    value [eax];
+
+#pragma aux RdosSetHandleTime = \
+    CallGate_set_handle_time  \
+    parm [ebx] [edx] [eax] \
+    value [eax];
+
 #pragma aux RdosOpenFile = \
     CallGate_open_file  \
     ValidateHandle  \
@@ -2473,11 +2558,6 @@
 #pragma aux RdosWriteString = \
     CallGate_write_asciiz  \
     parm [edi];
-
-#pragma aux RdosReadLine = \
-    CallGate_read_con  \
-    parm [edi] [ecx] \
-    value [eax];
 
 #pragma aux RdosPing = \
     CallGate_ping  \

@@ -1591,11 +1591,6 @@
     CallGate_write_asciiz  \
     parm [es edi];
 
-#pragma aux RdosReadLine = \
-    CallGate_read_con  \
-    parm [es edi] [ecx] \
-    value [eax];
-
 #pragma aux RdosPing = \
     CallGate_ping  \
     CarryToBool \
