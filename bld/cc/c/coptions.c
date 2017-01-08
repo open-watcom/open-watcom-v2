@@ -1693,9 +1693,12 @@ static struct option const CFE_Options[] = {
 #if _CPU == 8086 || _CPU == 386
     { "nc=$",   0,              SetCodeClass },
     { "nd=$",   0,              SetDataSegName },
-    { "nt=$",   0,              SetTextSegName },
 #endif
     { "nm=$",   0,              SetModuleName },
+    { "np",     0,              Set_NP },
+#if _CPU == 8086 || _CPU == 386
+    { "nt=$",   0,              SetTextSegName },
+#endif
     { "pil",    0,              Set_PIL },
     { "p*",     0,              SetPreprocessOptions },
     { "rod=@",  0,              SetReadOnlyDir },
