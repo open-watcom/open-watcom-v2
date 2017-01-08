@@ -285,7 +285,7 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
     void )
 {
     bool retb;
-    int macros_different;
+    bool macros_different;
     unsigned max_rlen;
     unsigned rlen;
     unsigned pch_hash;
@@ -330,10 +330,10 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
             if( strcmp( new_macro->macro_name, pch_macro->macro_name ) == 0 ) {
                 matched_macro = new_macro;
                 new_macro->macro_flags |= MFLAG_PCH_CHECKED;
-                macros_different = macroCompare( new_macro, pch_macro );
+                macros_different = ( macroCompare( new_macro, pch_macro ) != 0 );
                 if( pch_macro->macro_flags & MFLAG_REFERENCED ) {
                     // (2) original macro was referenced during first #include
-                    if( ! macros_different ) {
+                    if( !macros_different ) {
                         // OK; defns are identical in both compilation units
                         break;
                     }
@@ -654,14 +654,14 @@ static void doMacroUndef( char *name, size_t len, bool quiet )
     unsigned hash;          // - current macro hash
 
     if( magicPredefined( name ) ) {
-        if( ! quiet ) {
+        if( !quiet ) {
             CErr2p( ERR_UNDEF_IMPOSSIBLE, name );
         }
     } else {
         fmentry = macroFind( name, len, &hash );
         if( fmentry != NULL ) {
             if( fmentry->macro_defn == 0 ) {
-                if( ! quiet ) {
+                if( !quiet ) {
                     CErr2p( ERR_UNDEF_IMPOSSIBLE, name );
                 }
             } else {
