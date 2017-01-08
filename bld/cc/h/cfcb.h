@@ -42,8 +42,8 @@ typedef struct fcb_struct {             /* file control block structure */
     FILE                *src_fp;        /* pointer to FILE struct */
     struct fcb_struct   *prev_file;     /* pointer to previous fcb */
     int                 prev_currchar;  /* value of CurrChar */
-    int                 src_cnt;        /* number of bytes left in buffer */
     unsigned char       *src_ptr;       /* pointer to next character in buffer */
+    unsigned char       *src_end;       /* pointer to end of buffer */
     unsigned char       *src_buf;       /* source buffer */
 #if   _CPU ==  370  // just use for 370
     unsigned            colum;          /* start reading at colum  */

@@ -4,7 +4,6 @@
 #define __LINE__            stuff
 #define __STDC__            stuff
 #define __STDC_HOSTED__     stuff
-#define __STDC_LIB_EXT1__   stuff
 #define __STDC_VERSION__    stuff
 #define __TIME__            stuff
 
@@ -13,7 +12,6 @@
 #undef __LINE__
 #undef __STDC__
 #undef __STDC_HOSTED__
-#undef __STDC_LIB_EXT1__
 #undef __STDC_VERSION__
 #undef __TIME__
 

@@ -64,6 +64,7 @@ static  int     Tab1Count;
 static bool ReadBuffer( FCB *srcfcb )
 {
     int         last_char;
+    size_t      read_amount;
 
     if( srcfcb->src_fp == NULL ) {          /* in-memory buffer */
         CloseSrcFile( srcfcb );
@@ -74,30 +75,34 @@ static bool ReadBuffer( FCB *srcfcb )
      * whatever comes next will be tacked onto that unterminated
      * line, possibly confusing the hell out of the user.
      */
-    srcfcb->src_ptr = srcfcb->src_buf;
-    if( srcfcb->src_cnt ) {
-        last_char = srcfcb->src_ptr[srcfcb->src_cnt - 1];
+    if( srcfcb->src_buf != srcfcb->src_end ) {
+        last_char = *( srcfcb->src_end - 1 );
     } else {
-        last_char = '\n';
+        last_char = '\0';
     }
-    srcfcb->src_cnt = read( fileno( srcfcb->src_fp ), srcfcb->src_ptr, SRC_BUF_SIZE );
-    if( srcfcb->src_cnt == -1 ) {
-        CErr3p( ERR_IO_ERR, srcfcb->src_name, strerror( errno ) );
-        CloseSrcFile( srcfcb );
-        return( true );
-    } else if( ( srcfcb->src_cnt == 0 ) && ( last_char == '\n' ) ) {
-        CloseSrcFile( srcfcb );
-        return( true );
-    } else if( srcfcb->src_cnt != 0 ) {
-        last_char = srcfcb->src_ptr[srcfcb->src_cnt - 1];
+    srcfcb->src_end = srcfcb->src_ptr = srcfcb->src_buf;
+    read_amount = fread( srcfcb->src_buf, 1, SRC_BUF_SIZE, srcfcb->src_fp );
+    if( read_amount != SRC_BUF_SIZE ) {
+        if( ferror( srcfcb->src_fp ) ) {
+            CErr3p( ERR_IO_ERR, srcfcb->src_name, strerror( errno ) );
+            CloseSrcFile( srcfcb );
+            return( true );
+        }
+        if( read_amount == 0 && last_char == '\n' ) {
+            CloseSrcFile( srcfcb );
+            return( true );
+        }
     }
-    if( ( srcfcb->src_cnt < SRC_BUF_SIZE ) && ( last_char != '\n' ) ) {
-        srcfcb->no_eol = true;                      // emit warning later so line # is right
-        srcfcb->src_ptr[srcfcb->src_cnt] = '\n';    // mark end of buffer
-        srcfcb->src_cnt++;
+    srcfcb->src_end += read_amount;
+    if( read_amount != 0 ) {
+        last_char = *( srcfcb->src_end - 1 );
     }
-    srcfcb->src_ptr[srcfcb->src_cnt] = '\0';        // mark end of buffer
-    return( false );                                // indicate CurrChar does not contain a character
+    if( ( read_amount < SRC_BUF_SIZE ) && ( last_char != '\n' ) ) {
+        srcfcb->no_eol = true;          // emit warning later so line # is right
+        *srcfcb->src_end++ = '\n';      // mark end of buffer
+    }
+    *srcfcb->src_end = '\0';            // mark end of buffer
+    return( false );                    // indicate CurrChar does not contain a character
 }
 
 
@@ -163,7 +168,7 @@ static int getTestCharFromFile( void )
         /* check to make sure the NUL character we just found is at the
            end of the buffer, and not an embedded NUL character in the
            source file.  26-may-94 */
-        if( SrcFile->src_ptr != SrcFile->src_buf + SrcFile->src_cnt + 1 )
+        if( SrcFile->src_ptr != SrcFile->src_end + 1 )
             break;
         if( ReadBuffer( SrcFile ) ) {
             return( CurrChar );
@@ -291,7 +296,7 @@ int GetCharCheckFile( int c )
                end of the buffer, and not an embedded NUL character in the
                source file.  26-may-94 */
             CurrChar = '\0';
-            if( SrcFile->src_ptr == SrcFile->src_buf + SrcFile->src_cnt + 1 ) {
+            if( SrcFile->src_ptr == SrcFile->src_end + 1 ) {
                 if( ! ReadBuffer( SrcFile ) ) {
                     return( GetNextChar() );
                 }

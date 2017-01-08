@@ -462,6 +462,7 @@ static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
     if( srcfcb != NULL ) {
         srcfcb->src_buf = src_buffer;
         srcfcb->src_ptr = src_buffer;
+        srcfcb->src_end = src_buffer;
         src_buffer[0] = '\0';
         flist = AddFlist( filename );
         srcfcb->src_name = flist->name;
@@ -472,7 +473,6 @@ static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
         srcfcb->src_flist = flist;
         srcfcb->src_fp = fp;
         srcfcb->prev_file = SrcFile;
-        srcfcb->src_cnt = 0;
         srcfcb->prev_currchar = CurrChar;
 #if _CPU == 370
         srcfcb->colum = 0;     /* init colum, trunc info */

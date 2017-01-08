@@ -126,17 +126,15 @@ source\diag0008.c(3): Error! E1100: Definition of macro '__FILE__' not identical
 source\diag0008.c(4): Error! E1100: Definition of macro '__LINE__' not identical to previous definition
 source\diag0008.c(5): Error! E1100: Definition of macro '__STDC__' not identical to previous definition
 source\diag0008.c(6): Error! E1100: Definition of macro '__STDC_HOSTED__' not identical to previous definition
-source\diag0008.c(7): Error! E1100: Definition of macro '__STDC_LIB_EXT1__' not identical to previous definition
-source\diag0008.c(8): Error! E1100: Definition of macro '__STDC_VERSION__' not identical to previous definition
-source\diag0008.c(9): Error! E1100: Definition of macro '__TIME__' not identical to previous definition
-source\diag0008.c(11): Error! E1101: Cannot #undef '__DATE__'
-source\diag0008.c(12): Error! E1101: Cannot #undef '__FILE__'
-source\diag0008.c(13): Error! E1101: Cannot #undef '__LINE__'
-source\diag0008.c(14): Error! E1101: Cannot #undef '__STDC__'
-source\diag0008.c(15): Error! E1101: Cannot #undef '__STDC_HOSTED__'
-source\diag0008.c(16): Error! E1101: Cannot #undef '__STDC_LIB_EXT1__'
-source\diag0008.c(17): Error! E1101: Cannot #undef '__STDC_VERSION__'
-source\diag0008.c(18): Error! E1101: Cannot #undef '__TIME__'
+source\diag0008.c(7): Error! E1100: Definition of macro '__STDC_VERSION__' not identical to previous definition
+source\diag0008.c(8): Error! E1100: Definition of macro '__TIME__' not identical to previous definition
+source\diag0008.c(10): Error! E1101: Cannot #undef '__DATE__'
+source\diag0008.c(11): Error! E1101: Cannot #undef '__FILE__'
+source\diag0008.c(12): Error! E1101: Cannot #undef '__LINE__'
+source\diag0008.c(13): Error! E1101: Cannot #undef '__STDC__'
+source\diag0008.c(14): Error! E1101: Cannot #undef '__STDC_HOSTED__'
+source\diag0008.c(15): Error! E1101: Cannot #undef '__STDC_VERSION__'
+source\diag0008.c(16): Error! E1101: Cannot #undef '__TIME__'
 source\diag0009.c(11): Warning! W106: Constant out of range - truncated
 source\diag0009.c(13): Warning! W106: Constant out of range - truncated
 source\diag0009.c(19): Warning! W106: Constant out of range - truncated
@@ -177,6 +175,7 @@ source\diag0014.c(27): Warning! W201: Unreachable code
 source\diag0014.c(35): Warning! W107: Missing return value for function 'fn5'
 source\diag0014.c(53): Warning! W201: Unreachable code
 source\diag0014.c(62): Warning! W107: Missing return value for function 'fn8'
+source\inc1.h(1): Warning! W138: No newline at end of file
 source\inc2.h(1): Warning! W138: No newline at end of file
 inc3.h(35): Warning! W300: Nested comment found in comment started on line 8
 inc3.h(60): Error! E1046: Incomplete comment started on line 8
