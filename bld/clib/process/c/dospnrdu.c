@@ -67,7 +67,7 @@ int _dospawn( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     char *options;
     int ok;
 
-    options = __CreateInheritString();
+    options = "";
 
     __F_NAME(__ccmdline,__wccmdline)( pgmname, argv, cmdline, 0 );
 

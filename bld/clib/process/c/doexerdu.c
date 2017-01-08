@@ -63,7 +63,7 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     char *drive;
     char *dir;
 
-    options = __CreateInheritString();
+    options = "";
 
     __F_NAME(__ccmdline,__wccmdline)( pgmname, argv, cmdline, 0 );
 
