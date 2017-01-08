@@ -35,8 +35,10 @@
 #include "scan.h"
 
 
-// the following table is used to map three character sequences
-// beginning with ?? followed by 'tri' into the single character 'new'
+/*
+ * the following table is used to map three character sequences
+ * beginning with ?? followed by 'tri' into the single character 'new'
+ */
 struct tri_graph {
     char        tri;
     char        new;
@@ -70,7 +72,8 @@ static bool ReadBuffer( FCB *srcfcb )
         CloseSrcFile( srcfcb );
         return( false );
     }
-    /* ANSI/ISO C says a non-empty source file must be terminated
+    /*
+     * ANSI/ISO C says a non-empty source file must be terminated
      * with a newline. If it's not, we insert one, otherwise
      * whatever comes next will be tacked onto that unterminated
      * line, possibly confusing the hell out of the user.
@@ -165,9 +168,11 @@ static int getTestCharFromFile( void )
     int c;
 
     for( ; (c = *SrcFile->src_ptr++) == '\0'; ) {
-        /* check to make sure the NUL character we just found is at the
-           end of the buffer, and not an embedded NUL character in the
-           source file.  26-may-94 */
+        /*
+         * check to make sure the NUL character we just found is at the
+         * end of the buffer, and not an embedded NUL character in the
+         * source file.
+         */
         if( SrcFile->src_ptr != SrcFile->src_end + 1 )
             break;
         if( ReadBuffer( SrcFile ) ) {
@@ -292,9 +297,11 @@ int GetCharCheckFile( int c )
     if( c != '?' ) {
         switch( c ) {
         case '\0':
-            /* check to make sure the NUL character we just found is at the
-               end of the buffer, and not an embedded NUL character in the
-               source file.  26-may-94 */
+            /*
+             * check to make sure the NUL character we just found is at the
+             * end of the buffer, and not an embedded NUL character in the
+             * source file.
+             */
             CurrChar = '\0';
             if( SrcFile->src_ptr == SrcFile->src_end + 1 ) {
                 if( ! ReadBuffer( SrcFile ) ) {
@@ -320,9 +327,11 @@ int GetCharCheckFile( int c )
         default:
 //          SrcFile->column++;
             if( c > 0x7f && (CharSet[c] & C_DB) ) {
-                // we should not process the second byte through
-                // normal channels since its value is meaningless
-                // out of context
+                /*
+                 * we should not process the second byte through
+                 * normal channels since its value is meaningless
+                 * out of context
+                 */
                 NextChar = getSecondMultiByte;
             }
             break;
