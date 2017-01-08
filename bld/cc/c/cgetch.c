@@ -78,7 +78,7 @@ static bool ReadBuffer( FCB *srcfcb )
     if( srcfcb->src_buf != srcfcb->src_end ) {
         last_char = *( srcfcb->src_end - 1 );
     } else {
-        last_char = '\0';
+        last_char = '\n';
     }
     srcfcb->src_end = srcfcb->src_ptr = srcfcb->src_buf;
     read_amount = fread( srcfcb->src_buf, 1, SRC_BUF_SIZE, srcfcb->src_fp );
@@ -93,8 +93,8 @@ static bool ReadBuffer( FCB *srcfcb )
             return( true );
         }
     }
-    srcfcb->src_end += read_amount;
     if( read_amount != 0 ) {
+        srcfcb->src_end += read_amount;
         last_char = *( srcfcb->src_end - 1 );
     }
     if( ( read_amount < SRC_BUF_SIZE ) && ( last_char != '\n' ) ) {

@@ -30019,7 +30019,7 @@ static struct T foo( struct T p )
     return p;
 }
 
-void test( register struct T (*f)( struct T x ) )
+static void test( register struct T (*f)( struct T x ) )
 {
     struct T data;
     memset( &data, 0, sizeof(data) );
