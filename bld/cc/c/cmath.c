@@ -800,7 +800,7 @@ TREEPTR RelOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         if( opr != T_EQ && opr != T_NE ) {
             CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_POINTER_TYPE_MISMATCH );
         } else if( !IsZero( op1 ) && !IsZero( op2 ) ) {
-            CWarn1( WARN_POINTER_TYPE_MISMATCH, NON_ZERO_CONST );
+            CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_NON_ZERO_CONST );
         }
         if( op2_type == TYPE_POINTER ) {
             cmp_type = typ2;
