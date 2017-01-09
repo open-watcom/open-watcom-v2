@@ -677,8 +677,6 @@
 
 #define osgate_add_thread_int 559
 
-#define osgate_add_scheduler_log 560
-
 #define osgate_do_flush_tlb 561
 
 #define osgate_get_sel_bitness 562
@@ -696,8 +694,6 @@
 
 #define osgate_get_thread_selector_page 569
 
-#define osgate_is_efi 570
-
 #define osgate_init_app_process 571
 #define osgate_exit_app_process 572
 
@@ -708,10 +704,26 @@
 #define osgate_end_get_video_modes 576
 #define osgate_switch_video_mode 577
 
-#define osgate_init_video 578
+#define osgate_start_smp_core_dump 578
 #define osgate_start_core_dump 579
 #define osgate_notify_core_dump 580
 #define osgate_setup_nmi_core_dump 581
+
+#define osgate_create_app_handle 582
+#define osgate_create_c_handle 583
+
+#define osgate_allocate_c_handle 584
+#define osgate_open_c_file 585
+#define osgate_close_c_file 586
+#define osgate_ref_c_handle 587
+#define osgate_read_c_file 588
+#define osgate_write_c_file 589
+#define osgate_get_c_file_size 590
+#define osgate_set_c_file_size 591
+#define osgate_get_c_file_time 592
+#define osgate_set_c_file_time 593
+#define osgate_read_c_console 594
+#define osgate_write_c_console 595
 
 
 
@@ -1382,8 +1394,6 @@
 
 #define OsGate_add_thread_int 0x3E 0x67 0x9a 47 2 0 0 2 0
 
-#define OsGate_add_scheduler_log 0x3E 0x67 0x9a 48 2 0 0 2 0
-
 #define OsGate_do_flush_tlb 0x3E 0x67 0x9a 49 2 0 0 2 0
 
 #define OsGate_get_sel_bitness 0x3E 0x67 0x9a 50 2 0 0 2 0
@@ -1401,8 +1411,6 @@
 
 #define OsGate_get_thread_selector_page 0x3E 0x67 0x9a 57 2 0 0 2 0
 
-#define OsGate_is_efi 0x3E 0x67 0x9a 58 2 0 0 2 0
-
 #define OsGate_init_app_process 0x3E 0x67 0x9a 59 2 0 0 2 0
 #define OsGate_exit_app_process 0x3E 0x67 0x9a 60 2 0 0 2 0
 
@@ -1413,8 +1421,24 @@
 #define OsGate_end_get_video_modes 0x3E 0x67 0x9a 64 2 0 0 2 0
 #define OsGate_switch_video_mode 0x3E 0x67 0x9a 65 2 0 0 2 0
 
-#define OsGate_init_video 0x3E 0x67 0x9a 66 2 0 0 2 0
+#define OsGate_start_smp_core_dump 0x3E 0x67 0x9a 66 2 0 0 2 0
 #define OsGate_start_core_dump 0x3E 0x67 0x9a 67 2 0 0 2 0
 #define OsGate_notify_core_dump 0x3E 0x67 0x9a 68 2 0 0 2 0
 #define OsGate_setup_nmi_core_dump 0x3E 0x67 0x9a 69 2 0 0 2 0
+
+#define OsGate_create_app_handle 0x3E 0x67 0x9a 70 2 0 0 2 0
+#define OsGate_create_c_handle 0x3E 0x67 0x9a 71 2 0 0 2 0
+
+#define OsGate_allocate_c_handle 0x3E 0x67 0x9a 72 2 0 0 2 0
+#define OsGate_open_c_file 0x3E 0x67 0x9a 73 2 0 0 2 0
+#define OsGate_close_c_file 0x3E 0x67 0x9a 74 2 0 0 2 0
+#define OsGate_ref_c_handle 0x3E 0x67 0x9a 75 2 0 0 2 0
+#define OsGate_read_c_file 0x3E 0x67 0x9a 76 2 0 0 2 0
+#define OsGate_write_c_file 0x3E 0x67 0x9a 77 2 0 0 2 0
+#define OsGate_get_c_file_size 0x3E 0x67 0x9a 78 2 0 0 2 0
+#define OsGate_set_c_file_size 0x3E 0x67 0x9a 79 2 0 0 2 0
+#define OsGate_get_c_file_time 0x3E 0x67 0x9a 80 2 0 0 2 0
+#define OsGate_set_c_file_time 0x3E 0x67 0x9a 81 2 0 0 2 0
+#define OsGate_read_c_console 0x3E 0x67 0x9a 82 2 0 0 2 0
+#define OsGate_write_c_console 0x3E 0x67 0x9a 83 2 0 0 2 0
 
