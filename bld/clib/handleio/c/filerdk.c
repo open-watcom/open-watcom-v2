@@ -301,7 +301,7 @@ static int open_base( const CHAR_TYPE *name, int mode )
     if( mode & (O_BINARY|O_TEXT) )
         if( mode & O_BINARY )           iomode_flags |= _BINARY;
 
-    rdos_handle = RdosOpenCFile( name, mode );
+    rdos_handle = RdosOpenKernelFile( name, mode );
     if( rdos_handle ) {
         obj = AllocHandleObj( name );
         if( obj ) {
@@ -431,7 +431,7 @@ _WCRTLINK int eof( int handle )
     long        pos;
 
     rdos_handle = GetHandle( handle );
-    if( rdos_handle ) {
+    if( rdos_handle > 0 ) {
         pos = GetHandlePos( handle );
         if( RdosGetCFileSize( rdos_handle ) == pos )
             return( 1 );
@@ -446,7 +446,7 @@ _WCRTLINK long filelength( int handle )
     int         rdos_handle;
 
     rdos_handle = GetHandle( handle );
-    if( rdos_handle )
+    if( rdos_handle > 0 )
         return( RdosGetCFileSize( rdos_handle ) );
     else
         return( -1 );
@@ -457,7 +457,7 @@ _WCRTLINK int chsize( int handle, long size )
     int         rdos_handle;
 
     rdos_handle = GetHandle( handle );
-    if( rdos_handle ) {
+    if( rdos_handle > 0 ) {
         RdosSetCFileSize( rdos_handle, size );
         return( size );
     } else
@@ -477,7 +477,7 @@ _WCRTLINK int fstat( int handle, struct stat *buf )
 
     rdos_handle = GetHandle( handle );
 
-    if( rdos_handle ) {
+    if( rdos_handle > 0 ) {
         buf->st_attr = 0;
         buf->st_archivedID = 0;
         buf->st_updatedID = 0;
@@ -553,7 +553,7 @@ _WCRTLINK off_t lseek( int handle, off_t offset, int origin )
 
     rdos_handle = GetHandle( handle );
 
-    if( rdos_handle ) {
+    if( rdos_handle > 0 ) {
         switch( origin ) {
         case SEEK_SET:
             SetHandlePos( handle, offset );
@@ -589,7 +589,7 @@ int __qread( int handle, void *buffer, unsigned len )
 
     rdos_handle = GetHandle( handle );
 
-    if( rdos_handle ) {
+    if( rdos_handle > 0 ) {
         pos = GetHandlePos( handle );
         count = RdosReadCFile( rdos_handle, buffer, len, pos );
         pos += count;
@@ -607,7 +607,7 @@ int __qwrite( int handle, const void *buffer, unsigned len )
 
     rdos_handle = GetHandle( handle );
 
-    if( rdos_handle ) {
+    if( rdos_handle > 0 ) {
         pos = GetHandlePos( handle );
         count = RdosWriteCFile( rdos_handle, buffer, len, pos );
         pos += count;

@@ -758,7 +758,7 @@ void RdosInsertFileEntry(int dir_sel, int file_entry);
 int RdosGetFileInfo(int handle, char *access, char *drive, int *file_sel);
 int RdosDuplFileInfo(char access, char drive, int file_sel);
 
-int RdosOpenCFile(const char *FileName, int Mode);
+int RdosOpenKernelFile(const char *FileName, int Mode);
 void RdosCloseCFile(int Handle);
 long RdosGetCFileSize(int Handle);
 void RdosSetCFileSize(int Handle, long Size);
@@ -2007,8 +2007,8 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     parm [eax] \
     value [eax];
 
-#pragma aux RdosOpenCFile = \
-    OsGate_open_c_file \
+#pragma aux RdosOpenKernelFile = \
+    OsGate_open_kernel_file \
     ValidateHandle  \
     parm [es edi] [cx] \
     value [ebx];
