@@ -245,7 +245,6 @@ typedef struct comp_flags {
     bool    no_alternative_tokens   : 1;    // disable alternative tokens
 /*  160 */
     bool    enable_std0x            : 1;    // enable some C++0x features
-    
 
 /*****************************************************************************
 //                                                                          //
