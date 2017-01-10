@@ -205,22 +205,22 @@ struct _src_file {                          // SOURCE FILE (PERMANENT)
     MACRO_STATE         macro_state;        // - state of macro table when opened
     time_t              time_stamp;         // - time stamp for file
                                             // - SRCFILE attributes
-    unsigned            lib_inc  : 1;       // -- library include: #include <file>
-    unsigned            primary  : 1;       // -- primary source file
-    unsigned            alias    : 1;       // -- alias'ed source file
-    unsigned            cmdline  : 1;       // -- command-line file
-    unsigned            cmdlneol : 1;       // -- EOL for command-line file
-    unsigned            cmdlneof : 1;       // -- EOF for command-line file
-    unsigned            uncached : 1;       // -- have to re-open file on read
-    unsigned            free : 1;           // -- free SRCFILE
-    unsigned            pch_create : 1;     // -- create pchdr when child closes
-    unsigned            pch_kludge : 1;     // -- EOF needs 3 ';''s to align parser
-    unsigned            assume_file : 1;    // -- handle represents a file not a device
-    unsigned            found_eof : 1;      // -- next read will return 0
-    unsigned            read_only : 1;      // -- read-only header file
-    unsigned            once_only : 1;      // -- read once header file
-    unsigned            ignore_swend: 1;    // -- ignore cmdline switch end chars
-    unsigned            force_include: 1;   // -- force include this header file
+    bool                lib_inc       : 1;  // -- library include: #include <file>
+    bool                primary       : 1;  // -- primary source file
+    bool                alias         : 1;  // -- alias'ed source file
+    bool                cmdline       : 1;  // -- command-line file
+    bool                cmdlneol      : 1;  // -- EOL for command-line file
+    bool                cmdlneof      : 1;  // -- EOF for command-line file
+    bool                uncached      : 1;  // -- have to re-open file on read
+    bool                free          : 1;  // -- free SRCFILE
+    bool                pch_create    : 1;  // -- create pchdr when child closes
+    bool                pch_kludge    : 1;  // -- EOF needs 3 ';''s to align parser
+    bool                assume_file   : 1;  // -- handle represents a file not a device
+    bool                found_eof     : 1;  // -- next read will return 0
+    bool                read_only     : 1;  // -- read-only header file
+    bool                once_only     : 1;  // -- read once header file
+    bool                ignore_swend  : 1;  // -- ignore cmdline switch end chars
+    bool                force_include : 1;  // -- force include this header file
 };
 
 
@@ -234,12 +234,12 @@ struct _src_file {                          // SOURCE FILE (PERMANENT)
 #define BRINF_SYMBOL ((SYMBOL)0xFFFFFFFF) // FAKE BROWSE-INFO SYMBOL
 
                                     // COMMON DATA
-global int WngLevel;                // - warning severity level
-global unsigned TargetSystem;       // - target system
-global struct comp_flags CompFlags; // - compiler flags
-global struct comp_info CompInfo;   // - compiler information
-global void *Environment;           // - var for Suicide()
-global int ErrLimit;                // - error limit
+global int          WngLevel;       // - warning severity level
+global unsigned     TargetSystem;   // - target system
+global COMP_FLAGS   CompFlags;      // - compiler flags
+global comp_info    CompInfo;       // - compiler information
+global void         *Environment;   // - var for Suicide()
+global int          ErrLimit;       // - error limit
 
 int WppCompile(                 // MAIN-LINE (DLL)
     DLL_DATA* dll_data,         // - data for DLL
