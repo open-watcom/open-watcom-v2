@@ -3154,11 +3154,11 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 //
 
           case IC_TRACE_BEG :               // TURN IC TRACE ON
-            PragDbgToggle.dump_exec_ic = 1;
+            PragDbgToggle.dump_exec_ic = true;
             break;
 
           case IC_TRACE_END :               // TURN IC TRACE OFF
-            PragDbgToggle.dump_exec_ic = 0;
+            PragDbgToggle.dump_exec_ic = false;
             break;
 
 #endif
@@ -3317,7 +3317,7 @@ void CgBackEnd(                 // BACK-END CONTROLLER
     CDoptBackEnd();
     MarkFuncsToGen( max_inline_depth );
 #ifndef NDEBUG
-    PragDbgToggle.callgraph_scan = 0;
+    PragDbgToggle.callgraph_scan = false;
     if( PragDbgToggle.dump_cg ) {
         GenSwitches |= ECHO_API_CALLS;
     }

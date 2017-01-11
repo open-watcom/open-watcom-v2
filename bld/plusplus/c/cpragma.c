@@ -617,10 +617,10 @@ static void pragEnum            // #pragma enum PARSING
 
     if( PragRecog( "int" ) ) {
         pushPrag( &HeadEnums, CompFlags.make_enums_an_int );
-        CompFlags.make_enums_an_int = 1;
+        CompFlags.make_enums_an_int = true;
     } else if( PragRecog( "minimum" ) ) {
         pushPrag( &HeadEnums, CompFlags.make_enums_an_int );
-        CompFlags.make_enums_an_int = 0;
+        CompFlags.make_enums_an_int = false;
     } else if( PragRecog( "original" ) ) {
         pushPrag( &HeadEnums, CompFlags.make_enums_an_int );
         CompFlags.make_enums_an_int = CompFlags.original_enum_setting;
@@ -1042,7 +1042,7 @@ static void pragLibs(           // #PRAGMA library ( lib ... lib )
         }
         MustRecog( T_RIGHT_PAREN );
     } else {
-        CompFlags.pragma_library = 1;
+        CompFlags.pragma_library = true;
     }
 }
 
@@ -1103,7 +1103,7 @@ void CPragma( void )                  // PROCESS A PRAGMA
     bool check_end = true;
 
     SrcFileGuardStateSig();
-    CompFlags.in_pragma = 1;
+    CompFlags.in_pragma = true;
     NextToken();
     if( PragRecog( "include_alias" ) ) {
         pragIncludeAlias();
@@ -1188,7 +1188,7 @@ void CPragma( void )                  // PROCESS A PRAGMA
     if( check_end ) {
         endOfPragma();
     }
-    CompFlags.in_pragma = 0;
+    CompFlags.in_pragma = false;
 }
 
 

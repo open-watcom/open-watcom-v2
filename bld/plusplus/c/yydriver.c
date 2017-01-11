@@ -2461,7 +2461,7 @@ static void parseEpilogue( void )
 {
     /* current token state is end-of-file */
     RtnGenerate();
-    CompFlags.parsing_finished = 1;
+    CompFlags.parsing_finished = true;
 }
 
 void ParseDecls( void )

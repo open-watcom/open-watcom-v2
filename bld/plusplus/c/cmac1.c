@@ -322,7 +322,7 @@ static int file_name_copy(       // COPY STRING, ESCAPING ANY BACKSLASHES
     return( dst - org );
 }
 
-#define _FUNCTION_expandable    (CompFlags.cpp_output == 0)
+#define _FUNCTION_not_expandable    (CompFlags.cpp_output)
 
 static TOKEN genFUNCTION(
     special_macros spec_macro )
@@ -334,7 +334,7 @@ static TOKEN genFUNCTION(
 
     DbgAssert( ( spec_macro == MACRO_FUNCTION ) || ( spec_macro == MACRO_FUNC ) );
 
-    if( ! _FUNCTION_expandable ) {
+    if( _FUNCTION_not_expandable ) {
         name = SpcMacros[ spec_macro ].name;
         len = strlen( name );
         memcpy( Buffer, name, len + 1 );
@@ -704,7 +704,7 @@ static int isExpandable( MEPTR curr_mac, MACRO_TOKEN *mtok, int macro_parm )
 
     if( curr_mac->macro_defn == 0 ) {  /* if special macro */
         if( ( curr_mac->parm_count == MACRO_FUNCTION ) || ( curr_mac->parm_count == MACRO_FUNC ) ) {
-            if( ! _FUNCTION_expandable ) {
+            if( _FUNCTION_not_expandable ) {
                 return( 0 );
             }
         }

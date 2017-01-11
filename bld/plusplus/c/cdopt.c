@@ -389,7 +389,7 @@ static void DumpCdoptCaches(    // DUMP CDOPT CACHES
 {
     int saved = PragDbgToggle.cdopt;
 
-    PragDbgToggle.cdopt = 1;
+    PragDbgToggle.cdopt = true;
     dumpRing( allDescriptors.cdopt_ctor );
     dumpRing( allDescriptors.cdopt_dtor );
     dumpRing( allDescriptors.cdopt_opeq );

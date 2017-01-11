@@ -867,12 +867,12 @@ static call_class getCallClass( // GET CLASS OF CALL
         value &= ~ REVERSE_PARMS;
 #endif
 #ifdef PROLOG_HOOKS
-        if( CompFlags.ep_switch_used != 0 ) {
+        if( CompFlags.ep_switch_used ) {
             value |= PROLOG_HOOKS;
         }
 #endif
 #ifdef EPILOG_HOOKS
-        if( CompFlags.ee_switch_used != 0 ) {
+        if( CompFlags.ee_switch_used ) {
             value |= EPILOG_HOOKS;
         }
 #endif
@@ -1278,7 +1278,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case USED_8087:
         DbgNotSym();
         DbgNotRetn();
-        CompFlags.pgm_used_8087 = 1;
+        CompFlags.pgm_used_8087 = true;
         retn = NULL;
         break;
 #endif

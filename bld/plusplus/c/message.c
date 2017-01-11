@@ -220,7 +220,7 @@ static IDEBool IDEAPI idePrt    // PRINT FOR IDE
         ErrFileOpen();
     }
     if( err_file != NULL ) {
-        CompFlags.errfile_written = 1;
+        CompFlags.errfile_written = true;
         IdeMsgFormat( hdl
                     , info
                     , buffer

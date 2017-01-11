@@ -912,11 +912,11 @@ PTREE IcEmitExpr(               // EMIT EXPRESSION
 #ifndef NDEBUG
     if( PragDbgToggle.ic_trace_on ) {
         CgFrontCode( IC_TRACE_BEG );
-        PragDbgToggle.ic_trace_on = 0;
+        PragDbgToggle.ic_trace_on = false;
     }
     if( PragDbgToggle.ic_trace_off ) {
         CgFrontCode( IC_TRACE_END );
-        PragDbgToggle.ic_trace_off = 0;
+        PragDbgToggle.ic_trace_off = false;
     }
     if( PragDbgToggle.dump_ptree ) {
         DumpCommentary( "Parse tree to be emited" );

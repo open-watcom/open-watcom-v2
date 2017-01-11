@@ -661,11 +661,11 @@ static void CLine( void )
         line = U32Fetch( Constant64 ); // side effects of NextToken
         NextToken();
         if( CurToken == T_NULL ) {
-            if( CompFlags.cpp_ignore_line == 0 ) {
+            if( !CompFlags.cpp_ignore_line ) {
                 SrcFileAlias( SrcFileNameCurrent(), line, 0 );
             }
         } else if( ExpectingToken( T_STRING ) ) {
-            if( CompFlags.cpp_ignore_line == 0 ) {
+            if( !CompFlags.cpp_ignore_line ) {
                 if( CurrChar == '\n' ) {
                     // line # has already been incremented
                     adjust = 0;
@@ -698,14 +698,14 @@ static void CError( void )
     Buffer[ i ] = '\0';
     /* Force #error output to be reported, even with preprocessor */
     save = CompFlags.cpp_output;
-    CompFlags.cpp_output = 0;
+    CompFlags.cpp_output = false;
     CErr2p( ERR_USER_ERROR_MSG, Buffer );
     CompFlags.cpp_output = save;
 }
 
 static void CIdent( void )
 {
-    if( ! CompFlags.extensions_enabled ) {
+    if( !CompFlags.extensions_enabled ) {
         CUnknown();
     }
 }

@@ -78,7 +78,7 @@ int CBanner( void )
             ConsoleMessage( Token );                /* - print it */
             ++count;
         }
-        CompFlags.banner_printed = 1;
+        CompFlags.banner_printed = true;
     }
     return( count );
 }

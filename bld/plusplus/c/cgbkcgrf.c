@@ -1331,9 +1331,9 @@ void MarkFuncsToGen(            // DETERMINE FUNCTIONS TO BE GENERATED
 
 #ifndef NDEBUG
     unsigned int dbg_dump_exec = PragDbgToggle.dump_exec_ic;
-    PragDbgToggle.dump_exec_ic = 0;
+    PragDbgToggle.dump_exec_ic = false;
     if( PragDbgToggle.callgraph_scan ) {
-        PragDbgToggle.callgraph = 1;
+        PragDbgToggle.callgraph = true;
     }
 #endif
     vft_defs = NULL;

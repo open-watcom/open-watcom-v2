@@ -43,8 +43,8 @@ static void statsInit(          // INITIALIZE STATISTICS GATHERING
     INITFINI* defn )            // - definition
 {
     defn = defn;
-    CompFlags.stats_printed = 0;
-    CompFlags.extra_stats_wanted = 0;
+    CompFlags.stats_printed = false;
+    CompFlags.extra_stats_wanted = false;
     SrcLineCount = 0;
     IncLineCount = 0;
     WngCount = 0;
@@ -101,7 +101,7 @@ static void statsPrint(         // PRINT STATISTICS
         intPrint( &buffer, "warning", ", ", WngCount );
         intPrint( &buffer, "error", "", ErrCount );
         MsgDisplayLine( VbufString( &buffer ) );
-        CompFlags.stats_printed = 1;
+        CompFlags.stats_printed = true;
         VbufFree( &buffer );
     }
 }

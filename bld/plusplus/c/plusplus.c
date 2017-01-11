@@ -173,7 +173,7 @@ bool OpenSrcFile(               // OPEN A SOURCE FILE
         } else {
             PrtChar( '"' );
         }
-        CompFlags.cpp_output = 0;
+        CompFlags.cpp_output = false;
     }
     if( !CompFlags.ignore_fnf ) {
         CErr2p( ERR_CANT_OPEN_FILE, filename );
@@ -291,7 +291,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
         if( parseCmdLine( argv ) ) {
             exit_status |= WPP_WARNINGS;
         } else if( CompFlags.batch_file_primary
-                && ! CompFlags.batch_file_processing ) {
+                && !CompFlags.batch_file_processing ) {
             if( CompFlags.batch_file_eof ) {
                 exit_status |= WPP_ERRORS;
             } else {
@@ -303,7 +303,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
             exit_status |= WPP_ERRORS;
         } else {
             ErrFileErase();
-            if( ! CompFlags.quiet_mode ) {
+            if( !CompFlags.quiet_mode ) {
                 if( CompFlags.batch_file_processing
                  || CompInfo.compfile_max != 1 ) {
                     MsgDisplayLineArgs( "Compiling: "
@@ -360,12 +360,12 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 }
                 if( ForceInclude != NULL ) {
                     openForceIncludeFile();
-                    DbgVerify( ! CompFlags.watch_for_pcheader,
+                    DbgVerify( !CompFlags.watch_for_pcheader,
                         "force include file wasn't used for PCH" );
                 }
                 NextToken();
                 CompFlags.watch_for_pcheader = false;
-                CompFlags.external_defn_found = 0;
+                CompFlags.external_defn_found = false;
                 ParseDecls();
                 CtxSetCurrContext( CTX_ENDFILE );
                 ModuleInitFini();
@@ -417,11 +417,11 @@ static int doCCompile(          // COMPILE C++ PROGRAM
 static void initCompFlags( void )
 {
     struct {
-        unsigned ignore_environment : 1;
-        unsigned ignore_current_dir : 1;
-        unsigned ide_cmd_line       : 1;
-        unsigned ide_console_output : 1;
-        unsigned dll_active         : 1;
+        bool    ignore_environment : 1;
+        bool    ignore_current_dir : 1;
+        bool    ide_cmd_line       : 1;
+        bool    ide_console_output : 1;
+        bool    dll_active         : 1;
     } xfer_flags;
 
     #define __save_flag( x ) xfer_flags.x = CompFlags.x;

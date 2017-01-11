@@ -140,7 +140,7 @@ static int rescanBuffer( void )
 {
     CurrChar = *(unsigned char *)ReScanPtr++;
     if( CurrChar == '\0' ) {
-        CompFlags.rescan_buffer_done = 1;
+        CompFlags.rescan_buffer_done = true;
     }
     return( CurrChar );
 }
@@ -157,7 +157,7 @@ int ReScanToken( void )
     saved_column = TokenColumn;
     saved_currchar = CurrChar;
     saved_nextchar = NextChar;
-    CompFlags.rescan_buffer_done = 0;
+    CompFlags.rescan_buffer_done = false;
     NextChar = rescanBuffer;
     NextChar();
     CurToken = ScanToken( true );
@@ -293,7 +293,7 @@ static void scanCComment( void )
 
     SrcFileCurrentLocation();
     start_line = TokenLine;
-    CompFlags.scanning_c_comment = 1;
+    CompFlags.scanning_c_comment = true;
     if( CompFlags.cpp_output ) {
         prt_comment_char( '/' );
         prt_comment_char( '*' );
@@ -306,7 +306,7 @@ static void scanCComment( void )
                 if( c == '/' ) break;
                 if( c == LCHR_EOF ) {
                     /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = 0;
+                    CompFlags.scanning_c_comment = false;
                     return;
                 }
             }
@@ -321,7 +321,7 @@ static void scanCComment( void )
                 if( c == '/' ) break;
                 if( c == LCHR_EOF ) {
                     /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = 0;
+                    CompFlags.scanning_c_comment = false;
                     return;
                 }
                 SrcFileSetErrLoc();
@@ -337,7 +337,7 @@ static void scanCComment( void )
                 if( c == '/' ) break;
                 if( c == LCHR_EOF ) {
                     /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = 0;
+                    CompFlags.scanning_c_comment = false;
                     return;
                 }
             }
@@ -350,7 +350,7 @@ static void scanCComment( void )
                 if( c == '/' ) break;
                 if( c == LCHR_EOF ) {
                     /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = 0;
+                    CompFlags.scanning_c_comment = false;
                     return;
                 }
                 SrcFileSetErrLoc();
@@ -358,7 +358,7 @@ static void scanCComment( void )
             }
         }
     }
-    CompFlags.scanning_c_comment = 0;
+    CompFlags.scanning_c_comment = false;
     NextChar();
 }
 
@@ -366,7 +366,7 @@ static void scanCppComment( void )
 {
     int c;
 
-    CompFlags.scanning_cpp_comment = 1;
+    CompFlags.scanning_cpp_comment = true;
     if( CompFlags.cpp_output ) {
         prt_comment_char( '/' );
         prt_comment_char( '/' );
@@ -379,7 +379,7 @@ static void scanCppComment( void )
     } else {
         SrcFileScanCppComment();
     }
-    CompFlags.scanning_cpp_comment = 0;
+    CompFlags.scanning_cpp_comment = false;
 }
 
 static int doESCChar( int c, bool expanding, type_id char_type )
@@ -491,7 +491,7 @@ static TOKEN charConst( type_id char_type, bool expanding )
         value = (value << 8) + c;
         /* handle case where user wants a \ but doesn't escape it */
         if( c == '\'' && CurrChar != '\'' ) {
-            if( ! CompFlags.cpp_output ) {
+            if( !CompFlags.cpp_output ) {
                 token = T_BAD_TOKEN;
                 break;
             }
@@ -499,7 +499,7 @@ static TOKEN charConst( type_id char_type, bool expanding )
         c = CurrChar;
         if( c == '\'' ) break;
         if( i >= 4 ) {
-            if( ! CompFlags.cpp_output ) {
+            if( !CompFlags.cpp_output ) {
                 token = T_BAD_TOKEN;
                 break;
             }
@@ -563,7 +563,7 @@ static void unGetChar( int c )
 {
     if( NextChar == rescanBuffer ) {
         --ReScanPtr;
-        CompFlags.rescan_buffer_done = 0;
+        CompFlags.rescan_buffer_done = false;
     } else {
         GetNextCharUndo( c );
     }
@@ -1683,7 +1683,7 @@ void ScanInit( void )
     tokenSource = nextMacroToken;
     ReScanPtr = NULL;
     PPControl = PPCTL_NORMAL;
-    CompFlags.scanning_c_comment = 0;
+    CompFlags.scanning_c_comment = false;
     memset( ClassTable, SCAN_INVALID, sizeof( ClassTable ) );
     memset( &ClassTable['A'], SCAN_NAME, 26 );
     memset( &ClassTable['a'], SCAN_NAME, 26 );

@@ -124,7 +124,7 @@ static bool scanDefinePlus( OPT_STRING **p )
 
     p = p;
     if( CmdScanSwEnd() ) {
-        CompFlags.extended_defines = 1;
+        CompFlags.extended_defines = true;
     } else {
         cmdln_mac = DefineCmdLineMacro( true );
         if( cmdln_mac != NULL ) {
@@ -621,15 +621,15 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
 {
     // quickly do the quiet option so the banner can be printed
     if( data->q || data->zq ) {
-        CompFlags.quiet_mode = 1;
+        CompFlags.quiet_mode = true;
     }
     switch( data->char_set ) {
     case OPT_char_set_zku:
-        CompFlags.use_unicode = 1;
+        CompFlags.use_unicode = true;
         loadUnicodeTable( data->zku_value );
         break;
     case OPT_char_set_zk0u:
-        CompFlags.jis_to_unicode = 1;
+        CompFlags.jis_to_unicode = true;
         /* fall through */
     case OPT_char_set_zk0:
         SetDBChar( 0 );
@@ -681,11 +681,11 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     switch( data->file_83 ) {
     case OPT_file_83_fx:
-        CompFlags.check_truncated_fnames = 0;
+        CompFlags.check_truncated_fnames = false;
         break;
     case OPT_file_83_ft:
     default:
-        CompFlags.check_truncated_fnames = 1;
+        CompFlags.check_truncated_fnames = true;
         break;
     }
     switch( data->opt_level ) {
@@ -695,7 +695,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         GenSwitches |= LOOP_OPTIMIZATION;       // -ol
         GenSwitches |= INS_SCHEDULING;          // -or
         CmdSysSetMaxOptimization();             // -om
-        CompFlags.inline_intrinsics = 1;        // -oi
+        CompFlags.inline_intrinsics = true;     // -oi
 #if 0   // Disabled - introduces too many problems which no one is ready to fix
         if( ! data->oe ) {
             data->oe = 1;                       // -oe
@@ -703,7 +703,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
             data->oe_value = 100;
         }
 #endif
-        PragToggle.check_stack = 0;             // -s
+        PragToggle.check_stack = false;         // -s
         break;
     case OPT_opt_level_od:
         GenSwitches |= NO_OPTIMIZATION;
@@ -724,32 +724,32 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     switch( data->iso ) {
     case OPT_iso_za:
-        CompFlags.extensions_enabled = 0;
-        CompFlags.oldmacros_enabled = 0;
-        CompFlags.unique_functions = 1;
+        CompFlags.extensions_enabled = false;
+        CompFlags.oldmacros_enabled = false;
+        CompFlags.unique_functions = true;
         break;
     case OPT_iso_ze:
     default:
-        CompFlags.extensions_enabled = 1;
-        CompFlags.oldmacros_enabled = 1;
+        CompFlags.extensions_enabled = true;
+        CompFlags.oldmacros_enabled = true;
         break;
     }
     if( data->zam ) {
-        CompFlags.oldmacros_enabled = 0;
+        CompFlags.oldmacros_enabled = false;
     }
     // following must precede processing of data->oe
     switch( data->debug_info ) {
     case OPT_debug_info_d3s:
-        CompFlags.static_inline_fns = 1;
+        CompFlags.static_inline_fns = true;
         /* fall through */
     case OPT_debug_info_d3i:
-        CompFlags.inline_functions = 0;
+        CompFlags.inline_functions = false;
         /* fall through */
     case OPT_debug_info_d3:
         // this flag may be turned on when PCHs are written if we will be
         // optimizing the writing of the debugging info by referring back
         // to the info in another module
-        CompFlags.all_debug_type_names = 1;
+        CompFlags.all_debug_type_names = true;
         GenSwitches |= NUMBERS | DBG_TYPES | DBG_LOCALS;
         if( debugOptionAfterOptOption( data ) ) {
             GenSwitches |= NO_OPTIMIZATION;
@@ -757,10 +757,10 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         data->oe = 0;
         break;
     case OPT_debug_info_d2s:
-        CompFlags.static_inline_fns = 1;
+        CompFlags.static_inline_fns = true;
         /* fall through */
     case OPT_debug_info_d2i:
-        CompFlags.inline_functions = 0;
+        CompFlags.inline_functions = false;
         /* fall through */
     case OPT_debug_info_d2:
         GenSwitches |= NUMBERS | DBG_TYPES | DBG_LOCALS;
@@ -770,7 +770,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         data->oe = 0;
         break;
     case OPT_debug_info_d2t:
-        CompFlags.no_debug_type_names = 1;
+        CompFlags.no_debug_type_names = true;
         GenSwitches |= NUMBERS | DBG_TYPES | DBG_LOCALS;
         if( debugOptionAfterOptOption( data ) ) {
             GenSwitches |= NO_OPTIMIZATION;
@@ -785,57 +785,57 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     switch( data->enum_size ) {
     case OPT_enum_size_ei:
-        CompFlags.make_enums_an_int = 1;
-        CompFlags.original_enum_setting = 1;
+        CompFlags.make_enums_an_int = true;
+        CompFlags.original_enum_setting = true;
         break;
     case OPT_enum_size_em:
-        CompFlags.make_enums_an_int = 0;
-        CompFlags.original_enum_setting = 0;
+        CompFlags.make_enums_an_int = false;
+        CompFlags.original_enum_setting = false;
         break;
     /* default set in CmdSysInit() */
     }
     if( data->bd ) {
-        CompFlags.bd_switch_used = 1;
+        CompFlags.bd_switch_used = true;
         GenSwitches |= DLL_RESIDENT_CODE;
     }
     if( data->bm ) {
-        CompFlags.bm_switch_used = 1;
+        CompFlags.bm_switch_used = true;
     }
     if( data->bw ) {
-        CompFlags.bw_switch_used = 1;
+        CompFlags.bw_switch_used = true;
     }
     if( data->bc ) {
-        CompFlags.bc_switch_used = 1;
+        CompFlags.bc_switch_used = true;
     }
     if( data->bg ) {
-        CompFlags.bg_switch_used = 1;
+        CompFlags.bg_switch_used = true;
     }
     if( data->db ) {
-        CompFlags.emit_browser_info = 1;
+        CompFlags.emit_browser_info = true;
 #if 0
         if( data->fhd ) {
-            CompFlags.pch_debug_info_opt = 1;
+            CompFlags.pch_debug_info_opt = true;
         }
 #endif
     }
     if( data->ee ) {
-        CompFlags.ee_switch_used = 1;
+        CompFlags.ee_switch_used = true;
     }
     if( data->ef ) {
-        CompFlags.error_use_full = 1;
+        CompFlags.error_use_full = true;
     }
     if( data->ep ) {
-        CompFlags.ep_switch_used = 1;
+        CompFlags.ep_switch_used = true;
         ProEpiDataSize = data->ep_value;
     }
     if( data->en ) {
-        CompFlags.emit_names = 1;
+        CompFlags.emit_names = true;
     }
     if( data->er ) {
-        CompFlags.no_error_sym_injection = 1;
+        CompFlags.no_error_sym_injection = true;
     }
     if( data->ew ) {
-        CompFlags.ew_switch_used = 1;
+        CompFlags.ew_switch_used = true;
     }
     if( data->e ) {
         ErrLimit = data->e_value;
@@ -895,19 +895,19 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     if( data->ad ) {
         SetStringOption( &DependFileName, &(data->ad_value) );
-        CompFlags.generate_auto_depend = 1;
+        CompFlags.generate_auto_depend = true;
     }
     if( data->adt ) {
         SetStringOption( &TargetFileName, &(data->adt_value) );
-        CompFlags.generate_auto_depend = 1;
+        CompFlags.generate_auto_depend = true;
     }
     if( data->add ) {
         SetStringOption( &SrcDepFileName, &(data->add_value) );
-        CompFlags.generate_auto_depend = 1;
+        CompFlags.generate_auto_depend = true;
     }
     if( data->adhp ) {
         SetStringOption( &DependHeaderPath, &(data->adhp_value) );
-        CompFlags.generate_auto_depend = 1;
+        CompFlags.generate_auto_depend = true;
     }
     if( data->adfs ) {
         ForceSlash = '/';
@@ -917,7 +917,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     if( data->fo ) {
         SetStringOption( &ObjectFileName, &(data->fo_value) );
-        CompFlags.cpp_output_to_file = 1;   /* in case '-p' option */
+        CompFlags.cpp_output_to_file = true;    /* in case '-p' option */
     }
     if( data->fr ) {
         SetStringOption( &ErrorFileName, &(data->fr_value) );
@@ -931,14 +931,14 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
     }
     if( data->jw ) {
         data->j = true;
-        CompFlags.plain_char_promotion = 1;
+        CompFlags.plain_char_promotion = true;
     }
     if( data->j ) {
         PTypeSignedChar();
-        CompFlags.signed_char = 1;
+        CompFlags.signed_char = true;
     }
     if( data->k ) {
-        CompFlags.batch_file_continue = 1;
+        CompFlags.batch_file_continue = true;
     }
     if( data->oa ) {
         GenSwitches |= RELAX_ALIAS;
@@ -954,7 +954,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         GenSwitches |= SUPER_OPTIMAL;
     }
     if( data->oi ) {
-        CompFlags.inline_intrinsics = 1;
+        CompFlags.inline_intrinsics = true;
     }
     if( data->oi_plus ) {
         CgBackSetInlineDepth( MAX_INLINE_DEPTH );
@@ -980,42 +980,42 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         GenSwitches &= ~ MEMORY_LOW_FAILS;
     }
     if( data->op ) {
-        CompFlags.op_switch_used = 1;
+        CompFlags.op_switch_used = true;
     }
     if( data->or ) {
         GenSwitches |= INS_SCHEDULING;
     }
     if( data->ou ) {
-        CompFlags.unique_functions = 1;
+        CompFlags.unique_functions = true;
     }
     if( data->oz ) {
         GenSwitches |= NULL_DEREF_OK;
     }
     if( data->pil ) {
-        CompFlags.cpp_ignore_line = 1;
+        CompFlags.cpp_ignore_line = true;
     }
     if( data->p ) {
-        CompFlags.cpp_output_requested = 1;
+        CompFlags.cpp_output_requested = true;
     }
     if( data->pc ) {
-        CompFlags.cpp_output_requested = 1;
-        CompFlags.keep_comments = 1;
-        CompFlags.comments_wanted = 1;
+        CompFlags.cpp_output_requested = true;
+        CompFlags.keep_comments = true;
+        CompFlags.comments_wanted = true;
     }
     if( data->pe ) {
-        CompFlags.cpp_output_requested = 1;
-        CompFlags.encrypt_preproc_output = 1;
+        CompFlags.cpp_output_requested = true;
+        CompFlags.encrypt_preproc_output = true;
     }
     if( data->pj ) {
         data->pl = true;
-        CompFlags.line_comments = 1;
+        CompFlags.line_comments = true;
     }
     if( data->pl ) {
-        CompFlags.cpp_output_requested = 1;
-        CompFlags.cpp_line_wanted = 1;
+        CompFlags.cpp_output_requested = true;
+        CompFlags.cpp_line_wanted = true;
     }
     if( data->pw ) {
-        CompFlags.cpp_output_requested = 1;
+        CompFlags.cpp_output_requested = true;
         PpSetWidth( data->pw_value );
     } else {
         // #line directives get screwed by wrapped lines but we don't want
@@ -1025,8 +1025,8 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         }
     }
     if( CompFlags.cpp_output_requested ) {
-        CompFlags.cpp_output = 1;
-        CompFlags.quiet_mode = 1;
+        CompFlags.cpp_output = true;
+        CompFlags.quiet_mode = true;
     }
     if( data->p_sharp ) {
         PreProcChar = (char)data->p_sharp_value;
@@ -1038,13 +1038,13 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         }
     }
     if( data->s ) {
-        PragToggle.check_stack = 0;
+        PragToggle.check_stack = false;
     }
     if( data->t ) {
         SrcFileSetTab( data->t_value );
     }
     if( data->v ) {
-        CompFlags.dump_prototypes = 1;
+        CompFlags.dump_prototypes = true;
     }
     if( data->wcd ) {
         OPT_NUMBER *n;
@@ -1059,76 +1059,76 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         }
     }
     if( data->we ) {
-        CompFlags.warnings_cause_bad_exit = 1;
+        CompFlags.warnings_cause_bad_exit = true;
     }
     if( data->x ) {
-        CompFlags.cpp_ignore_env = 1;
+        CompFlags.cpp_ignore_env = true;
     }
     if( data->xbnm ) {
-        CompFlags.fixed_name_mangling = 1;
+        CompFlags.fixed_name_mangling = true;
     }
     if( data->xbsa ) {
-        CompFlags.dont_align_segs = 1;
+        CompFlags.dont_align_segs = true;
     }
     if( data->xbov1 ) {
-        CompFlags.overload_13332 = 1;
+        CompFlags.overload_13332 = true;
     }
     if( data->xcmb ) {
-        CompFlags.modifier_bind_compatibility = 1;
+        CompFlags.modifier_bind_compatibility = true;
     }
     if( data->xcpi ) {
-        CompFlags.prototype_instantiate = 1;
+        CompFlags.prototype_instantiate = true;
     }
     if( data->xr ) {
-        CompFlags.rtti_enabled = 1;
+        CompFlags.rtti_enabled = true;
     }
     if( data->xto ) {
-        CompFlags.obfuscate_typesig_names = 1;
+        CompFlags.obfuscate_typesig_names = true;
     }
     if( data->xx ) {
-        CompFlags.ignore_default_dirs = 1;
+        CompFlags.ignore_default_dirs = true;
     }
     if( data->zat ) {
-        CompFlags.no_alternative_tokens = 1;
+        CompFlags.no_alternative_tokens = true;
     }
     if( data->za0x ) {
-        CompFlags.enable_std0x = 1;
+        CompFlags.enable_std0x = true;
     }
     if( data->zf ) {
-        CompFlags.use_old_for_scope = 1;
+        CompFlags.use_old_for_scope = true;
     }
     if( data->zg ) {
-        CompFlags.use_base_types = 1;
+        CompFlags.use_base_types = true;
     }
     if( data->zld ) {
-        CompFlags.emit_dependencies = 0;
+        CompFlags.emit_dependencies = false;
     }
     if( data->zlf ) {
-        CompFlags.emit_all_default_libs = 1;
+        CompFlags.emit_all_default_libs = true;
     }
     if( data->zls ) {
-        CompFlags.emit_targimp_symbols = 0;
+        CompFlags.emit_targimp_symbols = false;
     }
     if( data->fzh ) {   /* Define the switch macros for STLPort */
-        CompFlags.dont_autogen_ext_inc = 1;
+        CompFlags.dont_autogen_ext_inc = true;
         DefSwitchMacro( "FZH" );
     }
     if( data->fzs ) {   /* Define the switch macros for STLPort */
-        CompFlags.dont_autogen_ext_src = 1;
+        CompFlags.dont_autogen_ext_src = true;
         DefSwitchMacro( "FZS" );
     }
     if( data->zl ) {
-        CompFlags.emit_library_names = 0;
+        CompFlags.emit_library_names = false;
     }
     if( data->zp ) {
         PackAmount = data->zp_value;
         GblPackAmount = PackAmount;
     }
     if( data->zpw ) {
-        CompFlags.warn_about_padding = 1;
+        CompFlags.warn_about_padding = true;
     }
     if( data->zs ) {
-        CompFlags.check_syntax = 1;
+        CompFlags.check_syntax = true;
     }
     if( data->zv ) {
 #if COMP_CFG_COFF == 0
@@ -1147,9 +1147,9 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         }
     }
     if( data->zi ) {
-        CompFlags.extra_stats_wanted = 1;
+        CompFlags.extra_stats_wanted = true;
         // try to prevent distortions caused by debug stuff
-        PragDbgToggle.no_mem_cleanup = 1;
+        PragDbgToggle.no_mem_cleanup = true;
     }
 #endif
     CBanner();
