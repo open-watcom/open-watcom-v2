@@ -4529,7 +4529,7 @@ static bool tryDisambigLookup( lookup_walk *data, SCOPE scope,
         RingIterBeg( (*top)->using_list, curr ) {
             if( curr->trigger != NULL ) {
                 edge_scope = curr->using_scope;
-                if( ! PstkContainsElement( cycle, edge_scope ) ) {
+                if( !PstkContainsElement( cycle, edge_scope ) ) {
                     PstkPush( cycle, edge_scope );
                     if( doRecordedLookup( data, edge_scope ) == NULL ) {
                         PstkPush( to_stack, edge_scope );
@@ -4599,7 +4599,7 @@ static bool simpleNSLookup( lookup_walk *data, SCOPE scope )
         if( data->member_lookup ?
             ( curr->trigger != NULL ) : (curr->trigger == NULL ) ) {
             edge_scope = curr->using_scope;
-            if( ! PstkContainsElement( &cycle, edge_scope ) ) {
+            if( !PstkContainsElement( &cycle, edge_scope ) ) {
                 PstkPush( &cycle, edge_scope );
                 PstkPush( &stack, edge_scope );
                 doRecordedLookup( data, edge_scope );
@@ -4616,7 +4616,7 @@ static bool simpleNSLookup( lookup_walk *data, SCOPE scope )
                     ( trigger_scope != NULL ) :
                     ( trigger_scope == scope || trigger_scope == top_scope ) ) {
                     edge_scope = curr->using_scope;
-                    if( ! PstkContainsElement( &cycle, edge_scope ) ) {
+                    if( !PstkContainsElement( &cycle, edge_scope ) ) {
                         PstkPush( &cycle, edge_scope );
                         PstkPush( &stack, edge_scope );
                         doRecordedLookup( data, edge_scope );
