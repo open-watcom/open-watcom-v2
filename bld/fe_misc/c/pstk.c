@@ -172,7 +172,6 @@ int PstkContainsElement( PSTK_CTL *h, elem_type e )
 /*************************************************/
 {
     const elem_type *curr;
-    const elem_type *stop;
     PSTK_BLK *block;
 
     curr = h->top_item;
