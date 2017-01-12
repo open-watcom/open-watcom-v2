@@ -211,7 +211,7 @@ static void fillInputOutput( char *input, char *output )
 
     input[0] = '\0';
     output[0] = '\0';
-    if( ! CompFlags.ide_cmd_line ) {
+    if( !CompFlags.ide_cmd_line ) {
         if( ! IDEFN(GetInfo)( CompInfo.idehdl, IDE_GET_SOURCE_FILE, 0, (IDEGetInfoLParam)&input[1] ) ) {
             input[0] = '"';
             len = strlen( &input[1] );

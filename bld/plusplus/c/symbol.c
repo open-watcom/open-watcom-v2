@@ -986,7 +986,7 @@ bool SymIsExtern(               // SYMBOL IS DEFINED OUTSIDE THIS MODULE
         }
     }
 #ifndef NDEBUG
-    if( retb && ! CompFlags.parsing_finished ) {
+    if( retb && !CompFlags.parsing_finished ) {
         // symbol still has a chance of being initialized!
         CFatal( "SymIsExtern return value is not accurate" );
     }

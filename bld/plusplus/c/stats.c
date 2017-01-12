@@ -84,7 +84,7 @@ static void statsPrint(         // PRINT STATISTICS
     if( CompFlags.quiet_mode ) {
         return;
     }
-    if( ! CompFlags.srcfile_compiled ) {
+    if( !CompFlags.srcfile_compiled ) {
         return;
     }
     if( WholeFName != NULL ) {
@@ -351,7 +351,7 @@ static void rptRepository       // PRINT REPOSITORY REPORT
     unsigned file_count;        // - # files
 
     defn = defn;
-    if( ! CompFlags.extra_stats_wanted ) {
+    if( !CompFlags.extra_stats_wanted ) {
         for(;;) {
             last = VstkPop( &srcFiles );
             if( NULL == last )

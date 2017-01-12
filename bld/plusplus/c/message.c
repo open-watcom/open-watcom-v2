@@ -389,12 +389,9 @@ void MsgDisplay                 // DISPLAY A MESSAGE
               , msgnum
               , VbufString( &buffer )
               , msg_locn );
-    if( context_changed
-     && ! CompFlags.ew_switch_used
-     && ( severity == IDEMSGSEV_ERROR
-       || severity == IDEMSGSEV_WARNING )
-     && ( context == CTX_SOURCE
-       || context == CTX_FORCED_INCS )
+    if( context_changed && !CompFlags.ew_switch_used
+     && ( severity == IDEMSGSEV_ERROR || severity == IDEMSGSEV_WARNING )
+     && ( context == CTX_SOURCE || context == CTX_FORCED_INCS )
       ) {
         build_file_nesting();
     }
@@ -601,10 +598,10 @@ static bool okToPrintMsg        // SEE IF OK TO PRINT MESSAGE
         break;
       case MSG_TYPE_ANSIERR :
       case MSG_TYPE_ANSIWARN :
-        print_err = ! CompFlags.extensions_enabled;
+        print_err = !CompFlags.extensions_enabled;
         break;
       case MSG_TYPE_ANSI :
-        if( ! CompFlags.extensions_enabled ) {
+        if( !CompFlags.extensions_enabled ) {
             level = WLEVEL_ERROR;
         }
         break;
@@ -1005,7 +1002,7 @@ static void errFileFini(        // CLOSE ERROR FILE
 {
     defn = defn;
     if( IoSuppCloseFile( &err_file ) ) {
-        if( ! CompFlags.errfile_written ) {
+        if( !CompFlags.errfile_written ) {
             fileErase( IoSuppOutFileName( OFT_ERR ) );
         }
     }

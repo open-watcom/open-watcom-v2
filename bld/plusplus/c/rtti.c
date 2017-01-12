@@ -143,7 +143,7 @@ SYMBOL RttiBuild( SCOPE host, CLASS_TABLE *location, target_offset_t *poffset )
     RTTI_CLASS *class_entry;
     RTTI_VFPTR *vfptr_entry;
 
-    if( ! CompFlags.rtti_enabled ) {
+    if( !CompFlags.rtti_enabled ) {
         *poffset = 0;
         return( NULL );
     }
@@ -166,7 +166,7 @@ void RttiDone( SCOPE host )
     RTTI_CLASS *class_entry;
 
     class_type = ScopeClass( host );
-    if( ! CompFlags.rtti_enabled ) {
+    if( !CompFlags.rtti_enabled ) {
         return;
     }
     class_entry = findClass( class_type );

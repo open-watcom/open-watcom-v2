@@ -1904,8 +1904,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                                      , exprn_type
                                      , (cg_sym_handle)func )
                          , exprn_type );
-            if( ! CompFlags.has_longjmp
-             && SPFN_LONGJMP == SpecialFunction( func ) ) {
+            if( !CompFlags.has_longjmp && SPFN_LONGJMP == SpecialFunction( func ) ) {
                 CompFlags.has_longjmp = true;
             }
           } break;

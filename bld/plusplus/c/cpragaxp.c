@@ -49,7 +49,7 @@ static void pragmaInit(         // INIT PRAGMAS
 {
     defn = defn;
     PragInit();
-    if( ! CompFlags.dll_subsequent ) {
+    if( !CompFlags.dll_subsequent ) {
         AsmInit();
     }
     SetAuxDefaultInfo();

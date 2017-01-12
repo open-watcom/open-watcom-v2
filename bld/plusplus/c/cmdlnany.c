@@ -1191,7 +1191,7 @@ void GenCOptions(               // PROCESS ALL OPTIONS
     CmdLnCtxInit();
     CmdSysInit();
     OPT_INIT( &data );
-    if( ! CompFlags.ignore_environment ) {
+    if( !CompFlags.ignore_environment ) {
         CtxSetCurrContext( CTX_CMDLN_ENV );
         env_var = CmdSysEnvVar();
         CmdLnCtxPushEnv( env_var );

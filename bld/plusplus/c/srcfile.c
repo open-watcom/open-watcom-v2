@@ -861,7 +861,7 @@ static int getCharAfterTwoQuestion( void )
 
 static void outputTrigraphWarning( char c )
 {
-    if( ! CompFlags.extensions_enabled ) {
+    if( !CompFlags.extensions_enabled ) {
         // probably know about trigraphs if they are using -za
         return;
     }

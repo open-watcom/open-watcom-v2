@@ -137,7 +137,7 @@ void PreDefineStringMacro(      // PREDEFINE A MACRO
     const char *sptr;           // - points into string
     MEPTR mptr;                 // - macro entry
 
-    if( ! CompFlags.undefine_all_macros ) {
+    if( !CompFlags.undefine_all_macros ) {
         mptr = NULL;
         if( undef_names.ring == NULL ) {
             mptr = defineStringMacro( str );
@@ -280,14 +280,14 @@ void MiscMacroDefs(             // PREDEFINE MISCELLANEOUS MACROS
         defineStringMacro( "_CPPRTTI" );
     }
     defineFeatureMacros();
-    if( ! CompFlags.no_alternative_tokens ) {
+    if( !CompFlags.no_alternative_tokens ) {
         DefineAlternativeTokens();
     }
     PreDefineStringMacro( "__WATCOMC__=" BANSTR( _BANVER ) );
     PreDefineStringMacro( "__WATCOM_CPLUSPLUS__=" BANSTR( _BANVER ) );
     // #if __WATCOM_REVISION__ >= 8
     PreDefineStringMacro( "__WATCOM_REVISION__=8" );
-    if( ! PragToggle.check_stack ) {
+    if( !PragToggle.check_stack ) {
         DefSwitchMacro( "S" );
     }
     RingNameFree( &undef_names );

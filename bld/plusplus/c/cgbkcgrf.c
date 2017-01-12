@@ -1184,7 +1184,7 @@ static bool procFunction(       // POST-PROCESS FUNCTION IN CALL GRAPH
             func->flag |= SF_ADDR_TAKEN;
         }
         markAsGen( node );
-    } else if( ! CompFlags.inline_functions ) {
+    } else if( !CompFlags.inline_functions ) {
         markAsGen( node );
     } else {
         genFunction( node );
@@ -1343,13 +1343,13 @@ void MarkFuncsToGen(            // DETERMINE FUNCTIONS TO BE GENERATED
     callGraphFlags.any_state_tables = false;
     callGraphFlags.only_once_found = false;
 //  callGraphFlags.not_inlined_set = false;
-    if( ! CompFlags.inline_functions ) {
+    if( !CompFlags.inline_functions ) {
         max_inline_depth = 0;
         ctl.scope_call_opt = false;
     } else {
         max_inline_depth = bounding_depth;
-        if( ! CompFlags.dt_method_pragma
-         && ( CompInfo.dt_method_speced == DTM_DIRECT
+        if( !CompFlags.dt_method_pragma
+          && ( CompInfo.dt_method_speced == DTM_DIRECT
            || CompInfo.dt_method_speced == DTM_DIRECT_SMALL
            || CompInfo.dt_method_speced == DTM_TABLE_SMALL ) ) {
             ctl.scope_call_opt = false;

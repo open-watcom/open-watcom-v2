@@ -124,7 +124,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
         break;
     case MSG_BLIP:
         if( CompFlags.ide_console_output ) {
-            if( ! CompFlags.quiet_mode ) {
+            if( !CompFlags.quiet_mode ) {
                 putchar( '.' );
                 fflush( stdout );
             }
@@ -134,14 +134,14 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
     case MSG_INFO_FILE:
     case MSG_INFO_PROC:
         if( CompFlags.ide_console_output ) {
-            if( ! CompFlags.quiet_mode ) {
+            if( !CompFlags.quiet_mode ) {
                 MsgDisplayLine( parm );
             }
         }
         break;
     case MSG_CODE_SIZE:
         if( CompFlags.ide_console_output ) {
-            if( ! CompFlags.quiet_mode ) {
+            if( !CompFlags.quiet_mode ) {
                 char buffer[30];
                 sprintf( buffer, "\rCode size: %u", (unsigned)(pointer_int)parm );
                 MsgDisplayLine( buffer );
@@ -175,7 +175,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
         break;
     case MSG_PEEPHOLE_FLUSHED:
         if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
-            if( ! CompFlags.low_on_memory_printed ) {
+            if( !CompFlags.low_on_memory_printed ) {
                 CompFlags.low_on_memory_printed = true;
                 CErr1( WARN_CG_MEM_PEEPHOLE );
             }

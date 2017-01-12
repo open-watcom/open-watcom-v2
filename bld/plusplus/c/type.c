@@ -3948,7 +3948,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
         }
         setStorageClass( sym, dspec->stg_class );
         SymbolLocnDefine( &(id_tree->locn), sym );
-        if( ! PragToggle.unreferenced ) {
+        if( !PragToggle.unreferenced ) {
             sym->flag |= SF_NO_REF_WARN;
         }
         dinfo->sym = sym;
@@ -6594,7 +6594,7 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
                 /* brand new declaration */
                 if( dinfo->friend_fn ) {
                     if( ScopeId( scope ) == SCOPE_FILE ) {
-                        if( ! CompFlags.extensions_enabled ) {
+                        if( !CompFlags.extensions_enabled ) {
                             /* required by the ANSI C++ draft */
                             if( check_sym->id == SC_FUNCTION_TEMPLATE ) {
                                 check_sym->id = SC_EXTERN_FUNCTION_TEMPLATE;

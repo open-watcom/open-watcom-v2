@@ -469,12 +469,12 @@ static int front_end(           // FRONT-END PROCESSING
         if( CompFlags.ide_console_output ) {
             IoSuppSetLineBuffering( stdout, 256 );
             IoSuppSetLineBuffering( errout, 256 );
-            #if defined(__DOS__)
-            if( ! CompFlags.dll_subsequent ) {
+#if defined(__DOS__)
+            if( !CompFlags.dll_subsequent ) {
                 SrcFileFClose( stdaux );
                 SrcFileFClose( stdprn );
             }
-            #endif
+#endif
         }
         CppAtExit( &resetHandlers );
         SwitchChar = _dos_switch_char();
@@ -533,8 +533,7 @@ static int compilePrimaryCmd(   // COMPILE PRIMARY CMD LINE
             }
             if( CompFlags.batch_file_eof ) break;
             if( exit_status != WPP_SUCCESS ) {
-                if( exit_status == WPP_FATAL
-                 || ! CompFlags.batch_file_continue ) {
+                if( exit_status == WPP_FATAL || !CompFlags.batch_file_continue ) {
                     CmdLnBatchAbort();
                     break;
                 }

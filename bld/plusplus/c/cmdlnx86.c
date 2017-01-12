@@ -944,7 +944,7 @@ static void miscAnalysis( OPT_STORAGE *data )
         /* issue warning message if /zf[f|p] or /zg[f|p] spec'd? */
         TargetSwitches &= ~( FLOATING_FS | FLOATING_GS );
     }
-    if( ! CompFlags.save_restore_segregs ) {
+    if( !CompFlags.save_restore_segregs ) {
         if( TargetSwitches & FLOATING_DS ) {
             HW_CTurnOff( WatcallInfo.save, HW_DS );
         }
@@ -962,7 +962,7 @@ static void miscAnalysis( OPT_STORAGE *data )
         PreDefineStringMacro( "__FPI__" );
     }
 #if _CPU == 386
-    if( ! CompFlags.register_conventions ) {
+    if( !CompFlags.register_conventions ) {
         SetAuxStackConventions();
     }
 #endif

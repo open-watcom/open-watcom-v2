@@ -2384,7 +2384,7 @@ void CtorPrologue(              // GENERATE PROLOGUE FOR CTOR
         CgFrontCode( IC_CTOR_COMP_END );
     }
     ScopeWalkDirectBases( scope, ctorPrologueBaseGen, &data );
-    if( ! CompFlags.extensions_enabled ) {
+    if( !CompFlags.extensions_enabled ) {
         // ISO C++ requires vfptr to be set here
         initVFPtr( scope, ctor );
     }

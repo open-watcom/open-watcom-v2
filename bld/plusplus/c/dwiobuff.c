@@ -346,9 +346,9 @@ static void dwioBuffReleaseMemory(  // RELEASE MEMORY
 
     for(;;) {
         buf = RingPop( &freeBufs );
-        if( buf == NULL ) break;
-        if( ! buf->written
-         && ! CompFlags.compile_failed ) {
+        if( buf == NULL )
+            break;
+        if( !buf->written && !CompFlags.compile_failed ) {
             savePrevNext( buf );
             beingWritten = buf;
             IoSuppTempWrite( buf->disk_addr

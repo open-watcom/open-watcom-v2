@@ -442,7 +442,7 @@ static void dumpThunk( THUNK_ACTION *thunk )
 {
     SYMBOL sym;
 
-    if( ! PragDbgToggle.dump_vftables ) {
+    if( !PragDbgToggle.dump_vftables ) {
         return;
     }
     printf( "thunk:" );
@@ -496,7 +496,7 @@ static void dumpVFN( SYMBOL sym, vftable_walk *data, CLASS_VFTABLE *table, vinde
     BASE_STACK *top;
     BASE_CLASS *base;
 
-    if( ! PragDbgToggle.dump_vftables ) {
+    if( !PragDbgToggle.dump_vftables ) {
         return;
     }
     printSymbolName( sym );
@@ -517,7 +517,7 @@ static void dumpVFN( SYMBOL sym, vftable_walk *data, CLASS_VFTABLE *table, vinde
 
 static void dumpDerivation( MEMBER_PTR_CAST *data )
 {
-    if( ! PragDbgToggle.dump_member_ptr ) {
+    if( !PragDbgToggle.dump_member_ptr ) {
         return;
     }
     if( data->safe ) {
@@ -530,7 +530,7 @@ static void dumpDerivation( MEMBER_PTR_CAST *data )
 
 static void dumpData( MEMBER_PTR_CAST *data )
 {
-    if( ! PragDbgToggle.dump_member_ptr ) {
+    if( !PragDbgToggle.dump_member_ptr ) {
         return;
     }
     printf(
@@ -824,7 +824,7 @@ static void scopeInit(          // SCOPES INITIALIZATION
     injectChipBug();
     injectDwarfAbbrev();
     injectBool();
-    if( ! CompFlags.enable_std0x ) {
+    if( !CompFlags.enable_std0x ) {
         KwDisable( T_STATIC_ASSERT );
         KwDisable( T_DECLTYPE );
     }
@@ -1882,7 +1882,7 @@ NAME ScopeUnnamedNamespaceName( TOKEN_LOCN *locn )
 {
     NAME ns_name;
 
-    if( ! CompFlags.extensions_enabled ) {
+    if( !CompFlags.extensions_enabled ) {
         ns_name = uniqueNameSpaceName;
         if( ns_name == NULL ) {
             ns_name = CppNameUniqueNS( locn );
@@ -2117,7 +2117,7 @@ void ScopeInsertErrorSym( SCOPE scope, PTREE id )
     SYMBOL sym;                 // - symbol
     SYMBOL_NAME sym_name;       // - symbol name
 
-    if( ! CompFlags.no_error_sym_injection ) {
+    if( !CompFlags.no_error_sym_injection ) {
         name = id->u.id.name;
         sym = AllocSymbol();
         sym->sym_type = TypeError;
@@ -3606,7 +3606,7 @@ static void dumpSearch( lookup_walk *data )
     PATH_CAP *cap;
     BASE_PATH *path;
 
-    if( ! PragDbgToggle.dump_scopes ) {
+    if( !PragDbgToggle.dump_scopes ) {
         return;
     }
     for( cap = data->paths; cap != NULL; cap = cap->next ) {

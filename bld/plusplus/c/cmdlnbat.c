@@ -110,10 +110,11 @@ static void cmdLnBatchFlushCrap(// FLUSH CARRIAGE-RETURNS, ETC
 {
     int chr;                    // - next char
 
-    if( ! CompFlags.batch_file_eof ) {
+    if( !CompFlags.batch_file_eof ) {
         for( ; ; ) {
             chr = nextChar();
-            if( CompFlags.batch_file_eof ) break;
+            if( CompFlags.batch_file_eof )
+                break;
             if( chr == '\n' ) {
                 ++ CompInfo.fc_file_line;
                 continue;

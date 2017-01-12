@@ -652,7 +652,7 @@ static void transferCompFlags( COMP_FLAGS *testflags )
 
 static bool stringIsDifferent( const char *from_pch, const char *curr, unsigned msg )
 {
-    if( ! CompFlags.pch_min_check ) {
+    if( !CompFlags.pch_min_check ) {
         if( FNAMECMPSTR( from_pch, curr ) != 0 ) {
             pchWarn( msg );
             return( true );

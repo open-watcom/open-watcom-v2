@@ -1003,7 +1003,7 @@ static bool dtorOptimizable(    // CAN DTOR BE OPTIMIZED UNDER ANY CONDITIONS?
     dtor = elem->cdtor;
     if( dtor == NULL ) {
         retb = true;
-    } else if( ! CompFlags.inline_functions ) {
+    } else if( !CompFlags.inline_functions ) {
         retb = false;
     } else {
         retb = classCanBeDtorOpt( SymClassInfo( dtor ) );
@@ -1129,10 +1129,7 @@ static bool classCanBeCtorOpt(  // CAN CLASS BE DEF-CTOR OPTIMIZED
     CLASSINFO *ci )             // - class info for ctor
 {
     ci->ctor_user_code_checked = true;
-    return ! ( ( ci->has_ctor && ci->ctor_user_code )
-            || ci->corrupted
-            || ( ! CompFlags.inline_functions )
-             );
+    return( !( ( ci->has_ctor && ci->ctor_user_code ) || ci->corrupted || ( !CompFlags.inline_functions ) ) );
 }
 
 

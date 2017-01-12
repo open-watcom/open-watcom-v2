@@ -590,7 +590,7 @@ static void parseForStmt( void )
 
     nextYYToken();
     mustRecog( T_LEFT_PAREN );
-    if( ! CompFlags.use_old_for_scope ) {
+    if( !CompFlags.use_old_for_scope ) {
         openScope();
     }
     if( CurToken == T_SEMI_COLON ) {
@@ -1473,7 +1473,7 @@ static bool endOfStmt(          // PROCESS END-OF-STATEMENT
             closeScope();
             doJUMP( IC_LABEL_CS, O_GOTO, top_block->u.l.top_loop );
             dumpOutsideLabel( top_block );
-            if( id == CS_FOR && ! CompFlags.use_old_for_scope ) {
+            if( id == CS_FOR && !CompFlags.use_old_for_scope ) {
                 closeScope();
             }
             CgFrontLabfreeCs( 3 );
@@ -1825,7 +1825,7 @@ static void initFunctionBody( DECL_INFO *dinfo, FUNCTION_DATA *f, TYPE fn_type )
     ScopeBeginFunction( func );
     if( (TargetSwitches & FLOATING_SS) == 0 ) {
         if( fn_type->flag & TF1_INTERRUPT ) {
-            if( ! CompFlags.mfi_switch_used ) {
+            if( !CompFlags.mfi_switch_used ) {
                 TargetSwitches |= FLOATING_SS;
                 f->floating_ss = true;
             }
