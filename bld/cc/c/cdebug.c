@@ -171,12 +171,14 @@ static dbug_type DBIntegralType( DATA_TYPE decl_type )
 
 static dbug_type DoBasedPtr( TYPEPTR typ, cg_type cgtype )
 {
-    dbug_type       ret_val = 0;
+    dbug_type       ret_val;
     dbg_loc         dl;
     SYM_HANDLE      sym_handle;
     auto SYM_ENTRY  sym;
-    int             have_retval = 0;
+    bool            have_retval;
 
+    have_retval = false;
+    ret_val = 0;
     dl = DBLocInit();
     sym_handle = typ->u.p.based_sym;
     if( sym_handle == SYM_NULL ) {
@@ -185,15 +187,15 @@ static dbug_type DoBasedPtr( TYPEPTR typ, cg_type cgtype )
     } else {
         if( sym_handle == Sym_CS ) {
             ret_val = DBPtr( cgtype, DBType( typ->object ) );
-            have_retval = 1;
+            have_retval = true;
         } else if( sym_handle == Sym_SS ) {
             ret_val = DBPtr( cgtype, DBType( typ->object ) );
-            have_retval = 1;
+            have_retval = true;
         } else {
             SymGet( &sym, sym_handle );
             if( sym.name[0] == '.' ) {  /* if segment label */
                 ret_val = DBPtr( cgtype, DBType( typ->object ) );
-                have_retval = 1;
+                have_retval = true;
             } else {
                 dl = DBLocSym( dl, (CGSYM_HANDLE)sym_handle );
                 dl = DBLocOp( dl, DB_OP_POINTS, TY_UINT_2 );

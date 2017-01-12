@@ -85,7 +85,7 @@ void SymInit( void )
     SymBufDirty = 0;
     CurFuncHandle = SYM_NULL;
     for( seg_num = 0; seg_num < MAX_SYM_SEGS; ++seg_num ) {
-        SymBufSegs[seg_num].allocated = 0;
+        SymBufSegs[seg_num].allocated = false;
     }
     SymBufSegment = AllocSegment( &SymBufSegs[0] );
     SymBufPtr = (char *)SymBufSegment;

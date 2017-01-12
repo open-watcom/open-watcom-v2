@@ -2063,8 +2063,8 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
     TYPEPTR         typ;
     type_modifiers  flags;
     target_size     string_len;
-    int             optimized;
-//    int             recursive = 0;
+    bool            optimized;
+//    bool            recursive = false;
     bool            far16_func = false;
     unsigned char   parm_count;
     SYM_NAMEPTR     sym_name;
@@ -2122,7 +2122,7 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
         }
         ExprLevel = n;
     } else {
-        optimized = 0;
+        optimized = false;
         string_len = 0;
         if( last_parm->op.opr == OPR_PUSHSTRING ) {
             if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
@@ -2133,7 +2133,7 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
                     if( CMPLIT( sym_name, "_inline_strcmp" ) == 0 ) {
                         SymGet( &sym, SymMEMCMP );
                         tree = VarLeaf( &sym, SymMEMCMP );
-                        optimized = 1;
+                        optimized = true;
                     }
                 }
             }
@@ -2142,7 +2142,7 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
                 SymGet( &sym, functree->op.u2.sym_handle );
 #if 0
                 if( functree->op.u2.sym_handle == CurFuncHandle ) {
-                    recursive = 1;
+                    recursive = true;
                 }
 #endif
                 sym_name = SymName( &sym, functree->op.u2.sym_handle );
@@ -2183,7 +2183,7 @@ static TREEPTR GenFuncCall( TREEPTR last_parm )
 #endif
             }
         }
-        if( ! optimized ) {
+        if( !optimized ) {
             tree = ParmNode( NULL, last_parm, far16_func );
         } else {
             tree = ParmNode( NULL, IntLeaf( string_len ), far16_func );
@@ -2242,7 +2242,7 @@ static TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
     TYPEPTR             *parm_types;
     TYPEPTR             parm_type;
     type_modifiers      decl_flags;
-//    char                recursive = 0;
+//    bool                recursive = false;
 #ifdef __SEH__
     opr_code            opr;
 #endif
@@ -2268,7 +2268,7 @@ static TREEPTR StartFunc( TREEPTR tree, TYPEPTR **plistptr )
         SymGet( &sym, sym_handle );
 #if 0
         if( tree->op.u2.sym_handle == CurFuncHandle ) {
-            recursive = 1;
+            recursive = true;
         }
 #endif
         decl_flags = sym.mods;

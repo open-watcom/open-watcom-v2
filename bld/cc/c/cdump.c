@@ -51,7 +51,7 @@ static  char    *CTypeNames[] = {
     #undef  pick1
 };
 
-static  char   do_message_output; /* Optimize output for human */
+static bool     do_message_output;  /* Optimize output for human */
 
 static void ChunkInit( STRCHUNK *pch )
 {
@@ -280,7 +280,7 @@ static void DumpArray( TYPEPTR typ, STRCHUNK *pch )
 static void DumpTagName( const char *tag_name, STRCHUNK *pch )
 {
     if( *tag_name == '\0' ) {
-        if (do_message_output) {
+        if( do_message_output ) {
             tag_name = "{...}";
         } else {
             tag_name = "_no_name_";
@@ -589,8 +589,8 @@ char *DiagGetTypeName( TYPEPTR typ )
     STRCHUNK    chunk;
 
     ChunkInit( &chunk );
-    do_message_output = 1;
+    do_message_output = true;
     DoDumpType( typ, NULL, &chunk );
-    do_message_output = 0;
+    do_message_output = false;
     return( ChunkToStr( &chunk ) );
 }

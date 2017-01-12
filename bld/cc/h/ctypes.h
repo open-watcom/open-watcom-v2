@@ -516,7 +516,7 @@ struct debug_fwd_types {
 
 typedef struct seg_info {
     SEGADDR_T           index;          /* segment #, EMS page #, disk seek # */
-    unsigned            allocated : 1;  /* 1 => has been allocated */
+    bool                allocated : 1;  /* 1 => has been allocated */
 } seg_info;
 
 typedef enum {
