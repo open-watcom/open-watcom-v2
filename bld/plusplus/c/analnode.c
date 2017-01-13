@@ -2345,13 +2345,12 @@ PTREE NodeLvExtract             // EXTRACT LVALUE, IF POSSIBLE
     PTREE curr;                 // - current node
     PTREE last;                 // - last node
     PTREE next;                 // - next node downwards
-    unsigned flags;             // - flags to be set
+    PTF_FLAG flags;             // - flags to be set
 
     expr_type = NodeType( expr );
     if( NULL == TypeReference( expr_type ) ) {
         TYPE cltype = StructType( expr_type );
-        if( NULL != cltype
-         && OMR_CLASS_REF == ObjModelArgument( cltype ) ) {
+        if( NULL != cltype && OMR_CLASS_REF == ObjModelArgument( cltype ) ) {
             expr = NodeConvert( MakeReferenceTo( expr_type ), expr );
         } else {
             for( last = NULL, curr = expr; ; ) {
@@ -2366,21 +2365,20 @@ PTREE NodeLvExtract             // EXTRACT LVALUE, IF POSSIBLE
                     break;
                 }
             }
-            if( ! ExprIsLvalue( curr )
-             && NodeIsUnaryOp( curr, CO_FETCH ) ) {
+            if( !ExprIsLvalue( curr ) && NodeIsUnaryOp( curr, CO_FETCH ) ) {
                 next = curr;
                 curr = PTreeCopySrcLocation( curr->u.subtree[0], curr );
                 PTreeFree( next );
                 flags = PTF_LVALUE;
             } else {
-                flags = 0;
+                flags = PTF_NULL;
             }
             for( ; last != NULL; ) {
                 next = curr;
                 curr = last;
                 last = curr->u.subtree[1];
                 curr->u.subtree[1] = next;
-                if( 0 != flags ) {
+                if( flags != PTF_NULL ) {
                     curr = nodeCommaPropogate( curr );
                     curr->flags |= flags;
                 }
