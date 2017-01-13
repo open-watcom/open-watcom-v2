@@ -1328,7 +1328,9 @@ void MarkFuncsToGen(            // DETERMINE FUNCTIONS TO BE GENERATED
     CGFILE *vfcg;               // - current VFTDefn CGFILE
 
 #ifndef NDEBUG
-    bool dbg_dump_exec = PragDbgToggle.dump_exec_ic;
+    bool dbg_dump_exec;
+
+    dbg_dump_exec = PragDbgToggle.dump_exec_ic;
     PragDbgToggle.dump_exec_ic = false;
     if( PragDbgToggle.callgraph_scan ) {
         PragDbgToggle.callgraph = true;

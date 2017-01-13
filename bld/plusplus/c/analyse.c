@@ -3623,16 +3623,17 @@ start_opac_string:
           { TYPE refed = TypeReferenced( type );
             PTREE node;
             CGOP new_op;
+            new_op = CO_INVALID;
             if( BoolType( refed ) != NULL ) {
                 switch( expr->cgop ) {
-                  case CO_PRE_MINUS_MINUS:
-                  case CO_POST_MINUS_MINUS:
+                case CO_PRE_MINUS_MINUS:
+                case CO_POST_MINUS_MINUS:
                     PTreeErrorExpr( expr, ERR_CANT_DEC_BOOL );
                     break;
-                  case CO_PRE_PLUS_PLUS:
+                case CO_PRE_PLUS_PLUS:
                     new_op = CO_BPRE_BOOL_PLUS_PLUS;
                     break;
-                  case CO_POST_PLUS_PLUS:
+                case CO_POST_PLUS_PLUS:
                     new_op = CO_BPOST_BOOL_PLUS_PLUS;
                     break;
                 }
@@ -3832,10 +3833,13 @@ start_opac_string:
             } else {
                 bool force_rvalue;
                 bool cast_to_left;
+
+                force_rvalue = false;
+                cast_to_left = false;
                 if( type_left->id == TYP_POINTER
-                 && type_right->id == TYP_POINTER
-                 && ( type_left->flag & TF1_REFERENCE )
-                 && ( type_right->flag & TF1_REFERENCE ) ) {
+                  && type_right->id == TYP_POINTER
+                  && ( type_left->flag & TF1_REFERENCE )
+                  && ( type_right->flag & TF1_REFERENCE ) ) {
                     ref_right = TypeGetActualFlags( type_right->of, &flags_right );
                     ref_left = TypeGetActualFlags( type_left->of, &flags_left );
                     if( ref_right == ref_left ) {
@@ -3854,22 +3858,22 @@ start_opac_string:
                         }
                     } else {
                         switch( TypeCommonDerivation( ref_left, ref_right ) ) {
-                          case CTD_NO :
+                        case CTD_NO :
                             force_rvalue = true;
                             break;
-                          case CTD_LEFT :
-                          case CTD_LEFT_PROTECTED :
-                          case CTD_LEFT_PRIVATE :
-                          case CTD_LEFT_AMBIGUOUS :
-                          case CTD_LEFT_VIRTUAL :
+                        case CTD_LEFT :
+                        case CTD_LEFT_PROTECTED :
+                        case CTD_LEFT_PRIVATE :
+                        case CTD_LEFT_AMBIGUOUS :
+                        case CTD_LEFT_VIRTUAL :
                            cast_to_left = false;
                            force_rvalue = false;
                            break;
-                          case CTD_RIGHT :
-                          case CTD_RIGHT_PROTECTED :
-                          case CTD_RIGHT_PRIVATE :
-                          case CTD_RIGHT_AMBIGUOUS :
-                          case CTD_RIGHT_VIRTUAL :
+                        case CTD_RIGHT :
+                        case CTD_RIGHT_PROTECTED :
+                        case CTD_RIGHT_PRIVATE :
+                        case CTD_RIGHT_AMBIGUOUS :
+                        case CTD_RIGHT_VIRTUAL :
                            cast_to_left = true;
                            force_rvalue = false;
                            break;
@@ -4051,9 +4055,9 @@ start_opac_string:
                                   , RTF_RETHROW );
             } else {
                 unsigned rtcode;// - code for R/T routine
-                TYPE cl_type;   // - NULL or class type
+//                TYPE cl_type;   // - NULL or class type
                 type = throw_exp->type;
-                cl_type = ClassTypeForType( type );
+//                cl_type = ClassTypeForType( type );
                 if( ! TypeDefedNonAbstract( type
                                           , throw_exp
                                           , ERR_THROW_ABSTRACT
@@ -4089,6 +4093,7 @@ start_opac_string:
                     }
                 }
                 type = NodeType( throw_exp );
+                rtcode = RTF_THROW;
                 switch( ThrowCategory( type ) ) {
 //                  PTREE constant; // - constant node
                   case THROBJ_SCALAR :
@@ -4096,7 +4101,6 @@ start_opac_string:
                   case THROBJ_PTR_CLASS :
                   case THROBJ_PTR_SCALAR :
                   case THROBJ_VOID_STAR :
-                    rtcode = RTF_THROW;
                     if( throw_exp->flags & PTF_LVALUE ) {
                         expr = PTreeOp( &throw_exp );
                     } else {
@@ -4118,11 +4122,9 @@ start_opac_string:
                     type = NodeType( expr );
                     DbgVerify( NULL != TypeReference( type )
                              , "throw expression not co-erced to lvalue" );
-                    rtcode = RTF_THROW;
                     break;
                   case THROBJ_REFERENCE :
                     expr = throw_exp;
-                    rtcode = RTF_THROW;
                     break;
                   DbgDefault( "ANALYSE -- invalid throw category" );
                 }

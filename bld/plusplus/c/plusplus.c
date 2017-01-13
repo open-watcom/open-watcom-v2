@@ -502,7 +502,7 @@ static int compileFiles(        // COMPILE FILES
 
     exit_status = 0;
     for( CompInfo.compfile_cur = 1; ; ++CompInfo.compfile_cur ) {
-        CompInfo.compfile_max = 0;
+        CompInfo.compfile_max = false;
         file_status = front_end( argv );
         if( file_status > exit_status ) {
             if( exit_status == WPP_BATCH_FILES ) break;

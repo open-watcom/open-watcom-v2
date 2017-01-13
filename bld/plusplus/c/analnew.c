@@ -698,6 +698,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
       unsigned adjust_for_num:1;// - true ==> subtract sizeof(int) from ptr
     } flag;
 
+    info = NULL;
     flag.inside_dtor = in_dtor;
     oper = expr->cgop;
     flag.array_delete = ( oper == CO_DELETE_ARRAY || oper == CO_DELETE_G_ARRAY );

@@ -260,15 +260,15 @@ static void dump_state_stack(const char * label, PARSE_STACK * stack)
         printf( "*** PARSE STACK CHANGE *** New: 0x%p Old: 0x%p\n", stack, last_stack );
         printf( "===============================================================================\n" );
         last_stack = stack;
-    }    
-    
+    }
+
     if( NULL == stack ) {
         printf( "dump_state_stack: NULL stack\n" );
     } else {
         YYACTIONTYPE *  the_ssp = stack->ssp;
         YYACTIONTYPE *  the_sstack = stack->sstack;
         unsigned        index;
-        
+
         printf( "dump_state_stack \"%s\" (0x%p):\n", label, the_sstack );
         /*
         //  ensure we dump the top of stack (test &(ssp[1]))
@@ -1708,7 +1708,7 @@ static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, YYACTIONTYPE 
         lhs = yyplhstab[rule];
         top_state = yyactiontab[lhs + yygotobase[ssp[-1]]];
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_parse ) { 
+        if( PragDbgToggle.dump_parse ) {
             printf( "=== Unit reduction. New top state %03u Old state %03u ===\n", top_state, ssp[0] );
         }
 #endif
@@ -2022,7 +2022,7 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
         DbgStmt( if( PragDbgToggle.parser_states ) printf( "parser top state: %u token: 0x%x (%s)\n", yyk, t , yytoknames[t] ); );
         DbgStmt(stackDepth = (state->ssp - &(state->sstack[0])) + 1; );
 
-        /* 
+        /*
         //  DumpStack
         */
 #ifndef NDEBUG
@@ -2475,8 +2475,8 @@ void ParseDecls( void )
 
     while( CurToken != T_EOF ) {
         /*
-        // We have seen a case where a macro subsitution was returned, leaving 
-        // us with T_BAD_CHAR rather than T_BAD_TOKEN. For now,just die and 
+        // We have seen a case where a macro subsitution was returned, leaving
+        // us with T_BAD_CHAR rather than T_BAD_TOKEN. For now,just die and
         // get the hell out of parsing.
         */
         if( CurToken == T_BAD_CHAR) {

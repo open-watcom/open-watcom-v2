@@ -2053,7 +2053,7 @@ static void emitUsageH( bool page_flag )
         }
         fprintf( ufp, "%s%s\"\n", s, ( optFlag.zero_term ) ? "\\0" : "" );
     }
-    
+
 }
 
 static void createChainHeader( OPTION **o, unsigned language, size_t max )
