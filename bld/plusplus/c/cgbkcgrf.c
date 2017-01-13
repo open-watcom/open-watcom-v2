@@ -315,7 +315,7 @@ static bool shouldBeInlined(    // DETERMINE IF INLINING AN INLINABLE FN IS OK
     if( fctl == NULL || SymIsThunk( fctl->func ) ) {
         return false;
     }
-    if( ! callGraphFlags.inline_recursion ) {
+    if( !callGraphFlags.inline_recursion ) {
         for( ; fctl != NULL; fctl = FnCtlPrev( fctl ) ) {
             if( sym == fctl->func ) return( false );
         }
@@ -1300,9 +1300,7 @@ static bool setFunctionStab(    // SET STATE-TABLE INFO. FOR FUNCTION
             cgfile->u.s.stab_gen = stab_gen;
             cgfile->cond_flags = max_cond_flags;
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_emit_ic ||
-                PragDbgToggle.callgraph         ||
-                PragDbgToggle.dump_stab ) {
+            if( PragDbgToggle.dump_emit_ic || PragDbgToggle.callgraph || PragDbgToggle.dump_stab ) {
                 VBUF vbuf;
                 SYMBOL func = cgfile->symbol;
                 if( state_table ) {
@@ -1330,7 +1328,7 @@ void MarkFuncsToGen(            // DETERMINE FUNCTIONS TO BE GENERATED
     CGFILE *vfcg;               // - current VFTDefn CGFILE
 
 #ifndef NDEBUG
-    unsigned int dbg_dump_exec = PragDbgToggle.dump_exec_ic;
+    bool dbg_dump_exec = PragDbgToggle.dump_exec_ic;
     PragDbgToggle.dump_exec_ic = false;
     if( PragDbgToggle.callgraph_scan ) {
         PragDbgToggle.callgraph = true;

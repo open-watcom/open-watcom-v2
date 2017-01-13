@@ -146,7 +146,7 @@ bool OpenSrcFile(               // OPEN A SOURCE FILE
     src_file_type typ )         // - source file type
                                 // return: true ==> opened ok
 {
-    int         save;           // - saved pre-proc status
+    bool        save;           // - saved pre-proc status
     bool        is_lib;
 
     is_lib = ( typ == FT_LIBRARY );
@@ -508,9 +508,13 @@ static int compileFiles(        // COMPILE FILES
             if( exit_status == WPP_BATCH_FILES ) break;
             exit_status = file_status;
         }
-        if( CompFlags.fatal_error ) break;
-        if( CompFlags.cmdline_error ) break;
-        if( CompInfo.compfile_cur >= CompInfo.compfile_max ) break;
+        if( CompFlags.fatal_error )
+            break;
+        if( CompFlags.cmdline_error )
+            break;
+        if( CompInfo.compfile_cur >= CompInfo.compfile_max ) {
+            break;
+        }
     }
     return exit_status;
 }
@@ -531,7 +535,8 @@ static int compilePrimaryCmd(   // COMPILE PRIMARY CMD LINE
             if( cmd_status > exit_status ) {
                 exit_status = cmd_status;
             }
-            if( CompFlags.batch_file_eof ) break;
+            if( CompFlags.batch_file_eof )
+                break;
             if( exit_status != WPP_SUCCESS ) {
                 if( exit_status == WPP_FATAL || !CompFlags.batch_file_continue ) {
                     CmdLnBatchAbort();

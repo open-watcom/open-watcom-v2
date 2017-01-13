@@ -89,7 +89,7 @@ void SrcFileCmdLnDummyOpen(     // OPEN DUMMY FILE FOR COMMAND LINE
 int SrcFileCmdLnGetChar(        // GET NEXT CHARACTER FOR CMD-LINE FILE
     void )
 ;
-void SrcFileCommand(            // MARK CURRENT SOURCE FILE AS A COMMAND FILE
+void SetSrcFileCommand(         // MARK CURRENT SOURCE FILE AS A COMMAND FILE
     void )
 ;
 SRCFILE SrcFileCurrent(         // GET CURRENT SRCFILE
@@ -104,7 +104,7 @@ void SrcFileCurrentLocation(    // SET LOCATION FOR CURRENT SOURCE FILE
 void SrcFileGetTokenLocn(       // FILL IN TOKEN_LOCN FROM CURRENT TOKEN LOCATION
     TOKEN_LOCN *tgt )           // - to be filled in
 ;
-void SrcFileResetTokenLocn(     // RESET TOKEN_LOCN
+void SrcFileSetTokenLocn(       // RESET TOKEN_LOCN
     TOKEN_LOCN *tgt )           // - from SrcFileGetTokenLocn
 ;
 bool SrcFileAreTLSameLine(      // CHECK WHETHER TOKEN_LOCNs ARE THE SAME LINE
@@ -114,7 +114,7 @@ bool SrcFileAreTLSameLine(      // CHECK WHETHER TOKEN_LOCNs ARE THE SAME LINE
 unsigned SrcFileIndex(          // GET INDEX OF THIS SRCFILE
     SRCFILE sf )                // - the source file
 ;
-void SrcFileLibrary(            // MARK CURRENT SOURCE FILE AS A LIBRARY FILE
+void SetSrcFileLibrary(         // MARK CURRENT SOURCE FILE AS A LIBRARY FILE
     void )
 ;
 LINE_NO SrcFileLine(            // GET CURRENT SOURCE LINE

@@ -423,13 +423,13 @@ static void handleOptionFC( OPT_STORAGE *data, int value )
     }
 }
 
-static void handleOptionEQ( OPT_STORAGE *data, int value )
+static void handleOptionEQ( OPT_STORAGE *data, bool value )
 {
     data = data;
     CompFlags.eq_switch_used = value;
 }
 
-static void handleOptionEW( OPT_STORAGE *data, int value )
+static void handleOptionEW( OPT_STORAGE *data, bool value )
 {
     data = data;
     CompFlags.ew_switch_used = value;

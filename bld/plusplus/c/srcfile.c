@@ -1438,7 +1438,7 @@ bool IsSrcFilePrimary(          // DETERMINE IF PRIMARY SOURCE FILE
 }
 
 
-void SrcFileLibrary(            // MARK CURRENT SOURCE FILE AS A LIBRARY FILE
+void SetSrcFileLibrary(         // MARK CURRENT SOURCE FILE AS A LIBRARY FILE
     void )
 {
     srcFile->lib_inc = true;
@@ -1480,7 +1480,7 @@ SRCFILE SrcFileGetPrimary(      // GET PRIMARY SOURCE FILE
 }
 
 
-void SrcFileCommand(            // MARK CURRENT SOURCE FILE AS A COMMAND FILE
+void SetSrcFileCommand(         // MARK CURRENT SOURCE FILE AS A COMMAND FILE
     void )
 {
     srcFile->cmdline   = true;
@@ -1517,7 +1517,7 @@ void SrcFileGetTokenLocn(       // FILL IN TOKEN_LOCN FROM CURRENCY
     tgt->column = TokenColumn;
 }
 
-void SrcFileResetTokenLocn(     // RESET TOKEN_LOCN
+void SrcFileSetTokenLocn(       // RESET TOKEN_LOCN
     TOKEN_LOCN *tgt )           // - from SrcFileGetTokenLocn
 {
     set_srcFile( tgt->src_file );

@@ -474,7 +474,8 @@ static void prtMsg(             // PRINT A MESSAGE
 {
     IDEMsgSeverity severity;    // - message severity
 
-    if( CompFlags.cpp_output )  return;
+    if( CompFlags.cpp_output )
+        return;
     if( warn_level == WLEVEL_NOTE ) {
         err_locn = notes_locn;
         severity = IDEMSGSEV_NOTE;

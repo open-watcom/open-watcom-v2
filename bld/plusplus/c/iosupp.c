@@ -662,10 +662,10 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     if( retb ) {
         switch( typ ) {
         case FT_CMD:
-            SrcFileCommand();
+            SetSrcFileCommand();
             break;
         case FT_LIBRARY:
-            SrcFileLibrary();
+            SetSrcFileLibrary();
             break;
         }
     }

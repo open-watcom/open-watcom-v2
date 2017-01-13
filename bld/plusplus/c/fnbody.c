@@ -444,11 +444,7 @@ static FNLABEL *findLabel( NAME name )
     new_label->dangerous = false;
     new_label->destination.id = CgFrontLabelGoto();
     new_label->destination.defn = LabelAllocLabDef();
-    if( PragToggle.unreferenced ) {
-        new_label->referenced = false;
-    } else {
-        new_label->referenced = true;
-    }
+    new_label->referenced = !PragToggle.unreferenced;
     return( new_label );
 }
 

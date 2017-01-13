@@ -617,7 +617,7 @@ void PCHWarn2p( MSG_NUM msg, void *p )
 
 static bool checkCompFlags( COMP_FLAGS *testflags )
 {
-    #define _VERIFY_FLAG( f ) if( testflags->f ^ CompFlags.f ) return( true );
+    #define _VERIFY_FLAG( f ) if( testflags->f ^ CompFlags.f ) return( true )
     _VERIFY_FLAG( signed_char );
     _VERIFY_FLAG( original_enum_setting );
     _VERIFY_FLAG( excs_enabled );
@@ -635,7 +635,7 @@ static bool checkCompFlags( COMP_FLAGS *testflags )
 static void transferCompFlags( COMP_FLAGS *testflags )
 {
     // flags that can be changed in header files usually go here
-    #define _COPY_FLAG( f ) CompFlags.f=testflags->f
+    #define _COPY_FLAG( f ) CompFlags.f = testflags->f
     _COPY_FLAG( float_used );
     _COPY_FLAG( external_defn_found );
     _COPY_FLAG( main_has_parms );

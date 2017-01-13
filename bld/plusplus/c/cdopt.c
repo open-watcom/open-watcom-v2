@@ -387,8 +387,9 @@ static void dumpRing(           // DUMP A RING
 static void DumpCdoptCaches(    // DUMP CDOPT CACHES
     void )
 {
-    int saved = PragDbgToggle.cdopt;
+    bool saved;
 
+    saved = PragDbgToggle.cdopt;
     PragDbgToggle.cdopt = true;
     dumpRing( allDescriptors.cdopt_ctor );
     dumpRing( allDescriptors.cdopt_dtor );

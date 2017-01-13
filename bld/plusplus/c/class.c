@@ -1220,7 +1220,7 @@ static void defineInlineFuncsAndDefArgExprs( CLASS_DATA *data )
         ClassProcessFunction( curr, true );
         FreeDeclInfo( curr );
     }
-    SrcFileResetTokenLocn( &locn );
+    SrcFileSetTokenLocn( &locn );
     CurToken = T_RIGHT_BRACE;
     strcpy( Buffer, Tokens[ T_RIGHT_BRACE ] );
 }

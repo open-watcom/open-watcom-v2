@@ -160,17 +160,14 @@ static void CUnknown( void )
 static void CInclude( void )
 {
     struct {
-        unsigned in_macro : 1;
+        bool    in_macro : 1;
     } flags;
 
     auto char   buf[_MAX_PATH];
 
     SrcFileGuardStateSig();
     InitialMacroFlag = MFLAG_NONE;
-    flags.in_macro = 0;
-    if( CompFlags.use_macro_tokens ) {
-        flags.in_macro = 1;
-    }
+    flags.in_macro = CompFlags.use_macro_tokens;
     PPCTL_ENABLE_MACROS();
     NextToken();
     PPCTL_DISABLE_MACROS();
@@ -685,7 +682,7 @@ static void CLine( void )
 static void CError( void )
 {
     int i;
-    int save;
+    bool save;
 
     i = 0;
     while( CurrChar != '\n' && CurrChar != '\r' && CurrChar != LCHR_EOF ) {
@@ -758,14 +755,14 @@ TOKEN ChkControl(               // CHECK AND PROCESS DIRECTIVES
         old_ppctl = PPControl;
         for(;;) {
             if( CompFlags.cpp_output )
-                    PrtChar( '\n' );
+                PrtChar( '\n' );
             NextChar();
             // look for a #-char or the corresponding digraph (%:)
             if( CurrChar != PreProcChar && CurrChar != '%' ) {
                 SkipAhead();
             }
             if( CurrChar == LCHR_EOF )
-                    break;
+                break;
 
             if( CurrChar == '%' ) {
                 NextChar();

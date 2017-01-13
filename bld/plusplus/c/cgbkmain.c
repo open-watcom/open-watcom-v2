@@ -3192,8 +3192,7 @@ static void writeVirtualFile(   // EMIT AND FREE A VIRTUAL FILE
     FstabInit();
 #ifndef NDEBUG
     func = file_ctl->symbol;
-    if( PragDbgToggle.callgraph || PragDbgToggle.dump_stab ||
-        PragDbgToggle.dump_exec_ic ) {
+    if( PragDbgToggle.callgraph || PragDbgToggle.dump_stab || PragDbgToggle.dump_exec_ic ) {
         if( func == NULL ) {
             printf( "generating module data\n" );
         } else {
