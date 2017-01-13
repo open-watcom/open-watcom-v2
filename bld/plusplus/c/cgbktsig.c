@@ -211,7 +211,7 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
     switch( thr ) {
     case THROBJ_PTR_SCALAR :
     case THROBJ_PTR_CLASS :
-        genBaseHdr( thr, 1 );
+        genBaseHdr( thr, TSIG_FLAGS_INDIRECT );
         BeGenTsRef( ts );
 #ifndef NDEBUG
         if( PragDbgToggle.dump_stab ) {
@@ -220,19 +220,19 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
 #endif
         break;
     case THROBJ_VOID_STAR :
-        genBaseHdr( thr, 0 );
+        genBaseHdr( thr, TSIG_FLAGS_NONE );
         genScalarHdr( ts );
         break;
     case THROBJ_PTR_FUN :
     case THROBJ_SCALAR :
-        genBaseHdr( thr, 0 );
+        genBaseHdr( thr, TSIG_FLAGS_NONE );
         genScalarHdr( ts );
         genName( thr, ts->type );
         break;
     case THROBJ_CLASS :
     case THROBJ_CLASS_VIRT :
       { unsigned size;
-        genBaseHdr( thr, 0 );
+        genBaseHdr( thr, TSIG_FLAGS_NONE );
         DgPtrSymCode( ts->default_ctor );
         DgPtrSymCode( ts->copy_ctor );
         DgPtrSymCode( ts->dtor );

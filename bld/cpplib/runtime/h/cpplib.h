@@ -129,6 +129,7 @@ extern "C" {
     #error bad target
 #endif
 
+#define TSIG_INDIRECT(p)    (((p)->base.flags & TSIG_FLAGS_INDIRECT) != 0)
 
 //************************************************************************
 // Type Signatures

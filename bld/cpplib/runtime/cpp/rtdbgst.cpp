@@ -198,7 +198,7 @@ static void dump(               // FORMATTED DUMP
                     , FT_CONT );
                 break;
               case THROBJ_PTR_SCALAR :
-                if( sig->base.indirect ) {
+                if( TSIG_INDIRECT( sig ) ) {
                     sig = CPPLIB( ts_pnted )( sig );
                     dump( FT_PTR, "ptr-scalar", sig
                         , FT_CONT );
@@ -225,7 +225,7 @@ static void dump(               // FORMATTED DUMP
                     , FT_CONT );
                 break;
               case THROBJ_PTR_SCALAR :
-                if( sig->base.indirect ) {
+                if( TSIG_INDIRECT( sig ) ) {
                     dump( FT_PTR, "ptr-scalar-indirect", sig->indirected.sig
                         , FT_CONT );
                 } else {

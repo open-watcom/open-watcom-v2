@@ -40,8 +40,8 @@ RT_TYPE_SIG CPPLIB( ts_refed )( // POINT PAST REFERENCE TYPE-SIG, IF REQ'D
     RT_TYPE_SIG sig )           // - the signature
 {
     if( sig->hdr.type == THROBJ_REFERENCE ) {
-        sig = (RT_TYPE_SIG)( (char*)sig - offsetof( TS_HDR, hdr_ref ) );
-        if( sig->base.indirect ) {
+        sig = (RT_TYPE_SIG)( (char *)sig - offsetof( TS_HDR, hdr_ref ) );
+        if( TSIG_INDIRECT( sig ) ) {
             sig = sig->indirected.sig;
         }
     }
@@ -53,8 +53,8 @@ extern "C"
 RT_TYPE_SIG CPPLIB( ts_pnted )( // POINT PAST POINTER TYPE-SIG
     RT_TYPE_SIG sig )           // - the signature
 {
-    sig = (RT_TYPE_SIG)( (char*)sig - offsetof( TS_HDR, hdr_ptr ) );
-    if( sig->base.indirect ) {
+    sig = (RT_TYPE_SIG)( (char *)sig - offsetof( TS_HDR, hdr_ptr ) );
+    if( TSIG_INDIRECT( sig ) ) {
         sig = sig->indirected.sig;
     }
     return sig;
@@ -95,7 +95,7 @@ rboolean CPPLIB( ts_equiv )(    // TEST IF TYPE SIG.S ARE EQUIVALENT
                 retn = true;
                 break;
               case THROBJ_PTR_SCALAR :
-                if( tgt->base.indirect != src->base.indirect ) {
+                if( TSIG_INDIRECT( tgt ) != TSIG_INDIRECT( src ) ) {
                     retn = false;
                     break;
                 }
