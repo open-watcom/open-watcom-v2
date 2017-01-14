@@ -68,10 +68,11 @@ static RcStatus seekPastResTable( int *err_code )
 
     tmpexe = &(Pass2Info.TmpFile);
 
-    if( Pass2Info.OldFile.u.NEInfo.WinHead.target == TARGET_OS2 )
+    if( Pass2Info.OldFile.u.NEInfo.WinHead.target == TARGET_OS2 ) {
         res_tbl_size = tmpexe->u.NEInfo.OS2Res.table_size;
-    else
+    } else {
         res_tbl_size = tmpexe->u.NEInfo.Res.Dir.TableSize;
+    }
 
     seekamount = sizeof( os2_exe_header ) +
                     tmpexe->u.NEInfo.Seg.NumSegs * sizeof( segment_record ) +
@@ -185,16 +186,14 @@ static bool copyWINBody( void )
         use_gangload = true;
         checkShiftCount();
         break;
-    case SEG_SORT_MANY:     /* only load on call, discardable, code segments */
-                            /* in section 2 */
+    case SEG_SORT_MANY:     /* only load on call, discardable, code segments in section 2 */
         sect2mask = SEG_DATA | SEG_PRELOAD | SEG_DISCARD;
         sect2bits = SEG_DISCARD;
 
         /* set the entry segment to be preload */
         {
             segment_record *    seg;        /* these two are here because a */
-            uint_16             entry_seg;  /* 71 character field reference */
-                                            /* is hard to read */
+            uint_16             entry_seg;  /* 71 character field reference is hard to read */
             seg = Pass2Info.OldFile.u.NEInfo.Seg.Segments;
             entry_seg = Pass2Info.OldFile.u.NEInfo.WinHead.entrynum;
             seg[entry_seg].info |= SEG_PRELOAD;
@@ -309,8 +308,7 @@ static RcStatus writeHeadAndTables( int *err_code )
     ExeFileInfo *   tmpfile;
     NEExeInfo *     oldne;
     NEExeInfo *     tmpne;
-    uint_16         tableshift;     /* amount the tables are shifted in the */
-                                    /* tmp file */
+    uint_16         tableshift;     /* amount the tables are shifted in the tmp file */
     uint_16         info;           /* os2_exe_header.info */
     RcStatus        ret;
 
@@ -407,8 +405,7 @@ static RcStatus writeOS2HeadAndTables( int *err_code )
     ExeFileInfo *   tmpfile;
     NEExeInfo *     oldne;
     NEExeInfo *     tmpne;
-    uint_16         tableshift;     /* amount the tables are shifted in the */
-                                    /* tmp file */
+    uint_16         tableshift;     /* amount the tables are shifted in the tmp file */
     RcStatus        ret;
 
     oldfile = &(Pass2Info.OldFile);
