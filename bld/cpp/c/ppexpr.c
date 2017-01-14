@@ -32,369 +32,7 @@
 #include "preproc.h"
 
 
-void PP_ConstExpr( PREPROC_VALUE *val );
-void PP_Expr1( PREPROC_VALUE *val );
-void PP_Expr2( PREPROC_VALUE *val );
-void PP_Expr3( PREPROC_VALUE *val );
-void PP_Expr4( PREPROC_VALUE *val );
-void PP_Expr5( PREPROC_VALUE *val );
-void PP_Expr6( PREPROC_VALUE *val );
-void PP_Expr7( PREPROC_VALUE *val );
-void PP_Expr8( PREPROC_VALUE *val );
-void PP_Expr9( PREPROC_VALUE *val );
-void PP_Expr10( PREPROC_VALUE *val );
-void PP_Expr11( PREPROC_VALUE *val );
-void PP_AdvanceToken( void );
-void PP_Identifier( PREPROC_VALUE *val );
-long int PP_HexNumber( void );
-void PP_CharConst( PREPROC_VALUE *val );
-void PP_Constant( PREPROC_VALUE *val );
-void PP_Constant( PREPROC_VALUE *val );
-
-int PPEvalExpr( const char *ptr, const char **endptr, PREPROC_VALUE *val )
-{
-    int         value;
-
-    PPTokenPtr = ptr;
-    PPCurToken = NULL;
-    PPFlags &= ~PPFLAG_PREPROCESSING;
-    PPFlags &= ~PPFLAG_UNDEFINED_VAR;
-    PPFlags |=  PPFLAG_DONT_READ;
-    PP_ConstExpr( val );
-    *endptr = PPTokenPtr;
-    if( PPFlags & PPFLAG_UNDEFINED_VAR ) {
-        value = 0;
-    } else {
-        value = 1;
-    }
-    return( value );
-}
-
-
-void PP_ConstExpr( PREPROC_VALUE *val )
-{
-    PREPROC_VALUE   value1;
-    PREPROC_VALUE   value2;
-
-    PP_Expr1( val );
-    if( PPTokenPtr[0] == '?' ) {
-        ++PPTokenPtr;
-        PP_ConstExpr( &value1 );
-        if( PPTokenPtr[0] == ':' ) {
-            ++PPTokenPtr;
-        } else {
-            // error
-        }
-        PP_ConstExpr( &value2 );
-/*          value = value ? value1 : value2;  */
-        if( val->val.ivalue != 0 ) {
-            val->val.ivalue = value1.val.ivalue;
-            val->type   = value1.type;
-        } else {
-            val->val.ivalue = value2.val.ivalue;
-            val->type   = value2.type;
-        }
-    }
-}
-
-
-void PP_Expr1( PREPROC_VALUE *val )
-{
-    PREPROC_VALUE   val2;
-
-    PP_Expr2( val );
-    while( PPTokenPtr[0] == '|' && PPTokenPtr[1] == '|' ) {
-        PPTokenPtr += 2;
-        PP_Expr2( &val2 );
-        val->val.ivalue |= val2.val.ivalue;
-        val->type = 0;
-    }
-}
-
-
-void PP_Expr2( PREPROC_VALUE *val )
-{
-    PREPROC_VALUE   val2;
-
-    PP_Expr3( val );
-    while( PPTokenPtr[0] == '&' && PPTokenPtr[1] == '&' ) {
-        PPTokenPtr += 2;
-        PP_Expr3( &val2 );
-        val->val.ivalue &= val2.val.ivalue;
-        val->type = 0;
-    }
-}
-
-
-void PP_Expr3( PREPROC_VALUE *val )
-{
-    PREPROC_VALUE   val2;
-
-    PP_Expr4( val );
-    while( PPTokenPtr[0] == '|' && PPTokenPtr[1] != '|' ) {
-        ++PPTokenPtr;
-        PP_Expr4( &val2 );
-        val->val.ivalue |= val2.val.ivalue;
-        val->type |= val2.type;
-    }
-}
-
-
-void PP_Expr4( PREPROC_VALUE *val )
-{
-    PREPROC_VALUE   val2;
-
-    PP_Expr5( val );
-    while( PPTokenPtr[0] == '^' ) {
-        ++PPTokenPtr;
-        PP_Expr5( &val2 );
-        val->val.ivalue ^= val2.val.ivalue;
-        val->type |= val2.type;
-    }
-}
-
-
-void PP_Expr5( PREPROC_VALUE *val )
-{
-    PREPROC_VALUE   val2;
-
-    PP_Expr6( val );
-    while( PPTokenPtr[0] == '&' && PPTokenPtr[1] != '&' ) {
-        ++PPTokenPtr;
-        PP_Expr6( &val2 );
-        val->val.ivalue &= val2.val.ivalue;
-        val->type |= val2.type;
-    }
-}
-
-
-void PP_Expr6( PREPROC_VALUE *val )
-{
-    PREPROC_VALUE   val2;
-
-    PP_Expr7( val );
-    for( ;; ) {
-        if( PPTokenPtr[0] == '=' && PPTokenPtr[1] == '=' ) {
-            PPTokenPtr += 2;
-            PP_Expr7( &val2 );
-            val->val.ivalue = val->val.ivalue == val2.val.ivalue;
-            val->type = 0;
-        } else if( PPTokenPtr[0] == '!' && PPTokenPtr[1] == '=' ) {
-            PPTokenPtr += 2;
-            PP_Expr7( &val2 );
-            val->val.ivalue = val->val.ivalue != val2.val.ivalue;
-            val->type = 0;
-        } else {
-            break;
-        }
-    }
-}
-
-
-void PP_Expr7( PREPROC_VALUE *val )
-{
-    PREPROC_VALUE   val2;
-
-    PP_Expr8( val );
-    for( ;; ) {
-        if( PPTokenPtr[0] == '<' ) {
-            ++PPTokenPtr;
-            PP_Expr8( &val2 );
-            val->type |= val2.type;
-            if( PPTokenPtr[0] == '=' ) {
-                ++PPTokenPtr;
-                val->val.ivalue = val->val.ivalue <= val2.val.ivalue;
-            } else {
-                val->val.ivalue = val->val.ivalue < val2.val.ivalue;
-            }
-        } else if( PPTokenPtr[0] == '>' ) {
-            ++PPTokenPtr;
-            PP_Expr8( &val2 );
-            val->type |= val2.type;
-            if( PPTokenPtr[0] == '=' ) {
-                ++PPTokenPtr;
-                if( val->type == 0 ) {
-                    val->val.ivalue = val->val.ivalue >= val2.val.ivalue;
-                } else {
-                    val->val.uvalue = val->val.uvalue >= val2.val.uvalue;
-                }
-            } else {
-                if( val->type == 0 ) {
-                    val->val.ivalue = val->val.ivalue > val2.val.ivalue;
-                } else {
-                    val->val.uvalue = val->val.uvalue > val2.val.uvalue;
-                }
-            }
-        } else {
-            break;
-        }
-    }
-}
-
-
-void PP_Expr8( PREPROC_VALUE *val )
-{
-    PREPROC_VALUE   val2;
-
-    PP_Expr9( val );
-    for( ;; ) {
-        if( PPTokenPtr[0] == '>' && PPTokenPtr[1] == '>' ) {
-            PPTokenPtr += 2;
-            PP_Expr9( &val2 );
-            val->type |= val2.type;
-            if( val->type == 0 ) {
-                val->val.ivalue >>= val2.val.uvalue;
-            } else {
-                val->val.uvalue >>= val2.val.uvalue;
-            }
-        } else if( PPTokenPtr[0] == '<' && PPTokenPtr[1] == '<' ) {
-            PPTokenPtr += 2;
-            PP_Expr9( &val2 );
-            val->val.ivalue <<= val2.val.uvalue;
-            val->type |= val2.type;
-        } else {
-            break;
-        }
-    }
-}
-
-
-void PP_Expr9( PREPROC_VALUE *val )
-{
-    PREPROC_VALUE   val2;
-
-    PP_Expr10( val );
-    for( ;; ) {
-        if( PPTokenPtr[0] == '+' ) {
-            ++PPTokenPtr;
-            PP_Expr10( &val2 );
-            val->val.ivalue += val2.val.ivalue;
-            val->type |= val2.type;
-        } else if( PPTokenPtr[0] == '-' ) {
-            ++PPTokenPtr;
-            PP_Expr10( &val2 );
-            val->val.ivalue -= val2.val.ivalue;
-            val->type |= val2.type;
-        } else {
-            break;
-        }
-    }
-}
-
-
-void PP_Expr10( PREPROC_VALUE *val )
-{
-    PREPROC_VALUE   val2;
-
-    PP_Expr11( val );
-    for( ;; ) {
-        if( PPTokenPtr[0] == '*' ) {
-            ++PPTokenPtr;
-            PP_Expr11( &val2 );
-            val->val.ivalue *= val2.val.ivalue;
-            val->type |= val2.type;
-        } else if( PPTokenPtr[0] == '/' ) {
-            ++PPTokenPtr;
-            PP_Expr11( &val2 );
-            val->type |= val2.type;
-            if( val->type == 0 ) {
-                val->val.ivalue /= val2.val.ivalue;
-            } else {
-                val->val.uvalue /= val2.val.uvalue;
-            }
-        } else if( PPTokenPtr[0] == '%' ) {
-            ++PPTokenPtr;
-            PP_Expr11( &val2 );
-            val->type |= val2.type;
-            if( val->type == 0 ) {
-                val->val.ivalue %= val2.val.ivalue;
-            } else {
-                val->val.uvalue %= val2.val.uvalue;
-            }
-        } else {
-            break;
-        }
-    }
-}
-
-
-void PP_Expr11( PREPROC_VALUE *val )
-{
-rescan:
-    val->val.ivalue = 0;
-    PP_AdvanceToken();
-    switch( PPTokenPtr[0] ) {
-    case '+':
-        ++PPTokenPtr;
-        PP_Expr11( val );
-        break;
-    case '-':
-        ++PPTokenPtr;
-        PP_Expr11( val );
-        val->val.ivalue = - val->val.ivalue;
-        break;
-    case '!':
-        ++PPTokenPtr;
-        PP_Expr11( val );
-        val->val.ivalue = ! val->val.ivalue;
-        break;
-    case '~':
-        ++PPTokenPtr;
-        PP_Expr11( val );
-        val->val.ivalue = ~ val->val.ivalue;
-        break;
-    case '(':
-        ++PPTokenPtr;
-        PP_AdvanceToken();
-        PP_ConstExpr( val );
-        PP_AdvanceToken();
-        if( PPTokenPtr[0] == ')' ) {
-            ++PPTokenPtr;
-        } else {
-            // error
-        }
-        break;
-    case '\'':
-        PP_CharConst( val );
-        break;
-    default:
-        switch( PP_Class( PPTokenPtr[0] ) ) {
-        case CC_DIGIT:
-            PP_Constant( val );
-            break;
-        case CC_ALPHA:
-            PP_Identifier( val );
-            if( val->type != 0 )  goto rescan;  // was a macro; must rescan
-            break;
-        }
-        break;
-    }
-    PP_AdvanceToken();
-}
-
-void PP_AdvanceToken( void )
-{
-    bool        white_space;
-
-    for( ;; ) {
-        PPTokenPtr = PP_SkipWhiteSpace( PPTokenPtr, &white_space );
-        if( PPTokenPtr[0] != '\0' ) 
-            break;
-        if( PPCurToken != NULL ) {
-            PP_Free( PPCurToken );
-            PPCurToken = PPNextToken();
-        }
-        if( PPCurToken == NULL ) {
-            if( PPNextTokenPtr != NULL ) {
-                PPTokenPtr = PP_SkipWhiteSpace( PPNextTokenPtr, &white_space );
-                PPNextTokenPtr = NULL;
-            }
-            break;
-        }
-    }
-}
-
-long int PP_HexNumber( void )
+static long int PP_HexNumber( void )
 {
     long int    value;
     char        c;
@@ -417,7 +55,7 @@ long int PP_HexNumber( void )
     return( value );
 }
 
-void PP_CharConst( PREPROC_VALUE *val )
+static void PP_CharConst( PREPROC_VALUE *val )
 {
     long int    value;
     char        c;
@@ -476,7 +114,7 @@ void PP_CharConst( PREPROC_VALUE *val )
     val->val.ivalue = value;
 }
 
-void PP_Constant( PREPROC_VALUE *val )
+static void PP_Constant( PREPROC_VALUE *val )
 {
     long int    value;
     char        c;
@@ -525,7 +163,7 @@ void PP_Constant( PREPROC_VALUE *val )
     val->val.ivalue = value;
 }
 
-void PP_Identifier( PREPROC_VALUE *val )
+static void PP_Identifier( PREPROC_VALUE *val )
 {
     long int    value;
     const char  *ptr;
@@ -576,4 +214,340 @@ void PP_Identifier( PREPROC_VALUE *val )
         }
     }
     val->val.ivalue = value;
+}
+
+static void PP_AdvanceToken( void )
+{
+    bool        white_space;
+
+    for( ;; ) {
+        PPTokenPtr = PP_SkipWhiteSpace( PPTokenPtr, &white_space );
+        if( PPTokenPtr[0] != '\0' ) 
+            break;
+        if( PPCurToken != NULL ) {
+            PP_Free( PPCurToken );
+            PPCurToken = PPNextToken();
+        }
+        if( PPCurToken == NULL ) {
+            if( PPNextTokenPtr != NULL ) {
+                PPTokenPtr = PP_SkipWhiteSpace( PPNextTokenPtr, &white_space );
+                PPNextTokenPtr = NULL;
+            }
+            break;
+        }
+    }
+}
+
+static void PP_Expr11( PREPROC_VALUE *val )
+{
+    bool    rescan;
+
+    rescan = false;
+    do {
+        val->val.ivalue = 0;
+        PP_AdvanceToken();
+        switch( PPTokenPtr[0] ) {
+        case '+':
+            ++PPTokenPtr;
+            PP_Expr11( val );
+            break;
+        case '-':
+            ++PPTokenPtr;
+            PP_Expr11( val );
+            val->val.ivalue = - val->val.ivalue;
+            break;
+        case '!':
+            ++PPTokenPtr;
+            PP_Expr11( val );
+            val->val.ivalue = ! val->val.ivalue;
+            break;
+        case '~':
+            ++PPTokenPtr;
+            PP_Expr11( val );
+            val->val.ivalue = ~ val->val.ivalue;
+            break;
+        case '(':
+            ++PPTokenPtr;
+            PP_AdvanceToken();
+            PP_ConstExpr( val );
+            PP_AdvanceToken();
+            if( PPTokenPtr[0] == ')' ) {
+                ++PPTokenPtr;
+            } else {
+                // error
+            }
+            break;
+        case '\'':
+            PP_CharConst( val );
+            break;
+        default:
+            switch( PP_Class( PPTokenPtr[0] ) ) {
+            case CC_DIGIT:
+                PP_Constant( val );
+                break;
+            case CC_ALPHA:
+                PP_Identifier( val );
+                if( val->type != 0 )    // was a macro; must rescan
+                    rescan = true;
+                break;
+            }
+            break;
+        }
+    } while( rescan );
+    PP_AdvanceToken();
+}
+
+static void PP_Expr10( PREPROC_VALUE *val )
+{
+    PREPROC_VALUE   val2;
+
+    PP_Expr11( val );
+    for( ;; ) {
+        if( PPTokenPtr[0] == '*' ) {
+            ++PPTokenPtr;
+            PP_Expr11( &val2 );
+            val->val.ivalue *= val2.val.ivalue;
+            val->type |= val2.type;
+        } else if( PPTokenPtr[0] == '/' ) {
+            ++PPTokenPtr;
+            PP_Expr11( &val2 );
+            val->type |= val2.type;
+            if( val->type == 0 ) {
+                val->val.ivalue /= val2.val.ivalue;
+            } else {
+                val->val.uvalue /= val2.val.uvalue;
+            }
+        } else if( PPTokenPtr[0] == '%' ) {
+            ++PPTokenPtr;
+            PP_Expr11( &val2 );
+            val->type |= val2.type;
+            if( val->type == 0 ) {
+                val->val.ivalue %= val2.val.ivalue;
+            } else {
+                val->val.uvalue %= val2.val.uvalue;
+            }
+        } else {
+            break;
+        }
+    }
+}
+
+static void PP_Expr9( PREPROC_VALUE *val )
+{
+    PREPROC_VALUE   val2;
+
+    PP_Expr10( val );
+    for( ;; ) {
+        if( PPTokenPtr[0] == '+' ) {
+            ++PPTokenPtr;
+            PP_Expr10( &val2 );
+            val->val.ivalue += val2.val.ivalue;
+            val->type |= val2.type;
+        } else if( PPTokenPtr[0] == '-' ) {
+            ++PPTokenPtr;
+            PP_Expr10( &val2 );
+            val->val.ivalue -= val2.val.ivalue;
+            val->type |= val2.type;
+        } else {
+            break;
+        }
+    }
+}
+
+static void PP_Expr8( PREPROC_VALUE *val )
+{
+    PREPROC_VALUE   val2;
+
+    PP_Expr9( val );
+    for( ;; ) {
+        if( PPTokenPtr[0] == '>' && PPTokenPtr[1] == '>' ) {
+            PPTokenPtr += 2;
+            PP_Expr9( &val2 );
+            val->type |= val2.type;
+            if( val->type == 0 ) {
+                val->val.ivalue >>= val2.val.uvalue;
+            } else {
+                val->val.uvalue >>= val2.val.uvalue;
+            }
+        } else if( PPTokenPtr[0] == '<' && PPTokenPtr[1] == '<' ) {
+            PPTokenPtr += 2;
+            PP_Expr9( &val2 );
+            val->val.ivalue <<= val2.val.uvalue;
+            val->type |= val2.type;
+        } else {
+            break;
+        }
+    }
+}
+
+static void PP_Expr7( PREPROC_VALUE *val )
+{
+    PREPROC_VALUE   val2;
+
+    PP_Expr8( val );
+    for( ;; ) {
+        if( PPTokenPtr[0] == '<' ) {
+            ++PPTokenPtr;
+            PP_Expr8( &val2 );
+            val->type |= val2.type;
+            if( PPTokenPtr[0] == '=' ) {
+                ++PPTokenPtr;
+                val->val.ivalue = val->val.ivalue <= val2.val.ivalue;
+            } else {
+                val->val.ivalue = val->val.ivalue < val2.val.ivalue;
+            }
+        } else if( PPTokenPtr[0] == '>' ) {
+            ++PPTokenPtr;
+            PP_Expr8( &val2 );
+            val->type |= val2.type;
+            if( PPTokenPtr[0] == '=' ) {
+                ++PPTokenPtr;
+                if( val->type == 0 ) {
+                    val->val.ivalue = val->val.ivalue >= val2.val.ivalue;
+                } else {
+                    val->val.uvalue = val->val.uvalue >= val2.val.uvalue;
+                }
+            } else {
+                if( val->type == 0 ) {
+                    val->val.ivalue = val->val.ivalue > val2.val.ivalue;
+                } else {
+                    val->val.uvalue = val->val.uvalue > val2.val.uvalue;
+                }
+            }
+        } else {
+            break;
+        }
+    }
+}
+
+static void PP_Expr6( PREPROC_VALUE *val )
+{
+    PREPROC_VALUE   val2;
+
+    PP_Expr7( val );
+    for( ;; ) {
+        if( PPTokenPtr[0] == '=' && PPTokenPtr[1] == '=' ) {
+            PPTokenPtr += 2;
+            PP_Expr7( &val2 );
+            val->val.ivalue = val->val.ivalue == val2.val.ivalue;
+            val->type = 0;
+        } else if( PPTokenPtr[0] == '!' && PPTokenPtr[1] == '=' ) {
+            PPTokenPtr += 2;
+            PP_Expr7( &val2 );
+            val->val.ivalue = val->val.ivalue != val2.val.ivalue;
+            val->type = 0;
+        } else {
+            break;
+        }
+    }
+}
+
+static void PP_Expr5( PREPROC_VALUE *val )
+{
+    PREPROC_VALUE   val2;
+
+    PP_Expr6( val );
+    while( PPTokenPtr[0] == '&' && PPTokenPtr[1] != '&' ) {
+        ++PPTokenPtr;
+        PP_Expr6( &val2 );
+        val->val.ivalue &= val2.val.ivalue;
+        val->type |= val2.type;
+    }
+}
+
+static void PP_Expr4( PREPROC_VALUE *val )
+{
+    PREPROC_VALUE   val2;
+
+    PP_Expr5( val );
+    while( PPTokenPtr[0] == '^' ) {
+        ++PPTokenPtr;
+        PP_Expr5( &val2 );
+        val->val.ivalue ^= val2.val.ivalue;
+        val->type |= val2.type;
+    }
+}
+
+static void PP_Expr3( PREPROC_VALUE *val )
+{
+    PREPROC_VALUE   val2;
+
+    PP_Expr4( val );
+    while( PPTokenPtr[0] == '|' && PPTokenPtr[1] != '|' ) {
+        ++PPTokenPtr;
+        PP_Expr4( &val2 );
+        val->val.ivalue |= val2.val.ivalue;
+        val->type |= val2.type;
+    }
+}
+
+static void PP_Expr2( PREPROC_VALUE *val )
+{
+    PREPROC_VALUE   val2;
+
+    PP_Expr3( val );
+    while( PPTokenPtr[0] == '&' && PPTokenPtr[1] == '&' ) {
+        PPTokenPtr += 2;
+        PP_Expr3( &val2 );
+        val->val.ivalue &= val2.val.ivalue;
+        val->type = 0;
+    }
+}
+
+static void PP_Expr1( PREPROC_VALUE *val )
+{
+    PREPROC_VALUE   val2;
+
+    PP_Expr2( val );
+    while( PPTokenPtr[0] == '|' && PPTokenPtr[1] == '|' ) {
+        PPTokenPtr += 2;
+        PP_Expr2( &val2 );
+        val->val.ivalue |= val2.val.ivalue;
+        val->type = 0;
+    }
+}
+
+void PP_ConstExpr( PREPROC_VALUE *val )
+{
+    PREPROC_VALUE   value1;
+    PREPROC_VALUE   value2;
+
+    PP_Expr1( val );
+    if( PPTokenPtr[0] == '?' ) {
+        ++PPTokenPtr;
+        PP_ConstExpr( &value1 );
+        if( PPTokenPtr[0] == ':' ) {
+            ++PPTokenPtr;
+        } else {
+            // error
+        }
+        PP_ConstExpr( &value2 );
+/*          value = value ? value1 : value2;  */
+        if( val->val.ivalue != 0 ) {
+            val->val.ivalue = value1.val.ivalue;
+            val->type   = value1.type;
+        } else {
+            val->val.ivalue = value2.val.ivalue;
+            val->type   = value2.type;
+        }
+    }
+}
+
+int PPEvalExpr( const char *ptr, const char **endptr, PREPROC_VALUE *val )
+{
+    int         value;
+
+    PPTokenPtr = ptr;
+    PPCurToken = NULL;
+    PPFlags &= ~PPFLAG_PREPROCESSING;
+    PPFlags &= ~PPFLAG_UNDEFINED_VAR;
+    PPFlags |=  PPFLAG_DONT_READ;
+    PP_ConstExpr( val );
+    *endptr = PPTokenPtr;
+    if( PPFlags & PPFLAG_UNDEFINED_VAR ) {
+        value = 0;
+    } else {
+        value = 1;
+    }
+    return( value );
 }
