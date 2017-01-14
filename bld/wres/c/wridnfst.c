@@ -44,8 +44,8 @@ WResIDName *WResIDNameFromStr( const char *string )
     size_t      stringlen;
 
     stringlen = strlen( string );
-    if( stringlen >= USHRT_MAX ) {
-        /* truncate the string if it is more that UCHAR_MAX in length */
+    if( stringlen > USHRT_MAX ) {
+        /* truncate the string if it is more that USHRT_MAX in length */
         stringlen = USHRT_MAX;
     }
 
@@ -55,7 +55,7 @@ WResIDName *WResIDNameFromStr( const char *string )
     } else {
         newstring->NumChars = stringlen;
         /* don't copy the '\0' */
-        memcpy( &(newstring->Name), string, stringlen );
+        memcpy( newstring->Name, string, stringlen );
     }
 
     return( newstring );
