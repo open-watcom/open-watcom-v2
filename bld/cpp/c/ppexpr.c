@@ -238,12 +238,10 @@ static void PP_AdvanceToken( void )
     }
 }
 
+
 static void PP_Expr11( PREPROC_VALUE *val )
 {
-    bool    rescan;
-
-    rescan = false;
-    do {
+    for( ;; ) {
         val->val.ivalue = 0;
         PP_AdvanceToken();
         switch( PPTokenPtr[0] ) {
@@ -288,12 +286,13 @@ static void PP_Expr11( PREPROC_VALUE *val )
             case CC_ALPHA:
                 PP_Identifier( val );
                 if( val->type != 0 )    // was a macro; must rescan
-                    rescan = true;
+                    continue;
                 break;
             }
             break;
         }
-    } while( rescan );
+        break;
+    }
     PP_AdvanceToken();
 }
 
