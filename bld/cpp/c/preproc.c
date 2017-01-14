@@ -1338,7 +1338,7 @@ int PP_Char( void )
                 break;
             if( !IS_END_OF_MACRO( mtok ) ) {
                 PPTokenPtr = mtok->data;
-                return( *PPTokenPtr++ );
+                return( (unsigned char)*PPTokenPtr++ );
             }
             DeleteNestedMacro();
         }
@@ -1372,7 +1372,7 @@ int PP_Char( void )
             }
         }
     }
-    return( *PPTokenPtr++ );
+    return( (unsigned char)*PPTokenPtr++ );
 }
 
 extern void PreprocVarInit( void )
