@@ -724,10 +724,10 @@ typedef struct FileStackEntry {
 } FileStackEntry;
 
 typedef struct FileStack {
-    unsigned char       *Buffer;
+    char                *Buffer;
     size_t              BufferSize;
-    unsigned char       *NextChar;
-    unsigned char       *EofChar;       /* DON'T dereference, see below */
+    char                *NextChar;
+    char                *EofChar;       /* DON'T dereference, see below */
     /* + 1 for the before first entry */
     FileStackEntry      Stack[MAX_INCLUDE_DEPTH + 1];
     FileStackEntry      *Current;
@@ -926,7 +926,7 @@ static int GetLogChar( FileStack * stack )
 {
     int     newchar;
 
-    newchar = *(stack->NextChar);
+    newchar = (unsigned char)*(stack->NextChar);
     assert( newchar > 0 );
     if( newchar == '\n' ) {
         stack->Current->Logical.LineNum++;

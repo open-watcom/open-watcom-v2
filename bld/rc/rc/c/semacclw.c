@@ -38,8 +38,8 @@
 
 const FullAccelFlags DefaultAccelFlags = { 0, false };
 
-int SemWINStrToAccelEvent( char * string )
-/****************************************/
+int SemWINStrToAccelEvent( char *string )
+/***************************************/
 {
     if( *string == '^' ) {
         /* control character requested */
@@ -47,7 +47,7 @@ int SemWINStrToAccelEvent( char * string )
         if( isalpha( *string ) ) {
             /* assume we are using the ASCII charater set to get the */
             /* corresponding code for control-letter */
-            return( toupper( *string ) - 0x40 );
+            return( toupper( (unsigned char)*string ) - 'A' + 1 );
         } else {
             return( 0 );
         }
