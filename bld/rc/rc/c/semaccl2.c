@@ -221,20 +221,14 @@ void SemOS2WriteAccelTable( WResID *name, ResMemFlags flags, uint_32 codepage,
         error = writeAccelTableEntries( acctable, CurrResFile.fid, codepage );
         if( error ) {
             err_code = LastWresErr();
-            goto OutputWriteError;
+            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
+            ErrorHasOccured = true;
+        } else {
+            loc.len = SemEndResource( loc.start );
+            SemAddResourceFree( name, WResIDFromNum( OS2_RT_ACCELTABLE ), flags, loc );
         }
-        loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( OS2_RT_ACCELTABLE ), flags, loc );
     } else {
         RESFREE( name );
     }
-
     SemOS2FreeAccelTable( acctable );
-    return;
-
-OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
-    ErrorHasOccured = true;
-    SemOS2FreeAccelTable( acctable );
-    return;
 }

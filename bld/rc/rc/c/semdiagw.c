@@ -685,10 +685,10 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
 {
     ResLocation              loc;
     int                      err_code = 0;
-    bool                     error;
+    int                      error;
     FullDialogBoxControl     *travptr;
 
-    error = false;
+    error = 0;
     if( head == NULL ) {
         head = NewDialogBoxHeader();
     }
@@ -709,10 +709,8 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
         head->u.Head32.Head.Size = size;
         /* pad the start of the resource so that padding within the resource */
         /* is easier */
-        error = ResWritePadDWord( CurrResFile.fid );
-        if( error ) {
-            err_code = LastWresErr();
-            goto OutputWriteError;
+        if( ResWritePadDWord( CurrResFile.fid ) ) {
+            error = 1;
         }
     } else {
         if( !head->StyleGiven ) {
@@ -721,53 +719,51 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
         /* Win16 resources stores resource count in one byte thus
            limiting number of controls to 255. */
         if( ctrls->numctrls > 255 ) {
-            RcError( ERR_WIN16_TOO_MANY_CONTROLS, ctrls->numctrls );
-            goto CustomError;
+            error = 2;
+        } else {
+            head->u.Head.NumOfItems = ctrls->numctrls & 0xFF;
+            head->u.Head.Size = size;
         }
-        head->u.Head.NumOfItems = ctrls->numctrls & 0xFF;
-        head->u.Head.Size = size;
     }
-    if( !ErrorHasOccured ) {
+    if( !error && !ErrorHasOccured ) {
         loc.start = SemStartResource();
-
         if( head->Win32 ) {
             if( tokentype == Y_DIALOG ) {
-                error = ResWriteDialogBoxHeader32( &(head->u.Head32.Head), CurrResFile.fid );
+                if( ResWriteDialogBoxHeader32( &(head->u.Head32.Head), CurrResFile.fid ) ) {
+                    error = 1;
+                }
             } else if( tokentype == Y_DIALOG_EX ) {
-                error = ResWriteDialogExHeader32( &(head->u.Head32.Head), &(head->u.Head32.ExHead), CurrResFile.fid );
+                if( ResWriteDialogExHeader32( &(head->u.Head32.Head), &(head->u.Head32.ExHead), CurrResFile.fid ) ) {
+                    error = 1;
+                }
             }
         } else {
-            error = ResWriteDialogBoxHeader( &(head->u.Head), CurrResFile.fid );
+            if( ResWriteDialogBoxHeader( &(head->u.Head), CurrResFile.fid ) ) {
+                error = 1;
+            }
         }
-        if( error ) {
-            err_code = LastWresErr();
-            goto OutputWriteError;
-        }
-
-        if( ctrls->head != NULL ) {
+        if( !error && ctrls->head != NULL ) {
             error = SemWriteDiagCtrlList( ctrls, &err_code, tokentype );
         }
-        if( error )
-            goto OutputWriteError;
-
-        loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_DIALOG ) ), flags, loc );
+        if( !error ) {
+            loc.len = SemEndResource( loc.start );
+            SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_DIALOG ) ), flags, loc );
+        }
     } else {
         RESFREE( name );
     }
-
+    if( error ) {
+        if( error == 2 ) {
+            RcError( ERR_WIN16_TOO_MANY_CONTROLS, ctrls->numctrls );
+        } else {
+            err_code = LastWresErr();
+            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
+        }
+        ErrorHasOccured = true;
+    }
     SemFreeDialogHeader( head );
     SemFreeDiagCtrlList( ctrls );
 
-    return;
-
-OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
-CustomError:
-    ErrorHasOccured = true;
-    SemFreeDialogHeader( head );
-    SemFreeDiagCtrlList( ctrls );
-    return;
 } /* SemWINWriteDialogBox */
 
 

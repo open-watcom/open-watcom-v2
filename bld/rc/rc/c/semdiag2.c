@@ -101,7 +101,7 @@ static FullDiagCtrlListOS2 *SemOS2EmptyDiagCtrlList( void )
 {
     FullDiagCtrlListOS2     *newlist;
 
-    newlist = RESALLOC( sizeof(FullDiagCtrlListOS2) );
+    newlist = RESALLOC( sizeof( FullDiagCtrlListOS2 ) );
     newlist->head = NULL;
     newlist->tail = NULL;
     newlist->numctrls = 0;
@@ -139,7 +139,7 @@ static FullDialogBoxControlOS2 *SemOS2InitDiagCtrl( void )
 {
     FullDialogBoxControlOS2     *newctrl;
 
-    newctrl = RESALLOC( sizeof(FullDialogBoxControlOS2) );
+    newctrl = RESALLOC( sizeof( FullDialogBoxControlOS2 ) );
     newctrl->next = NULL;
     newctrl->prev = NULL;
     newctrl->children = NULL;
@@ -502,22 +502,24 @@ static int SemOS2CalcControlSize( FullDiagCtrlListOS2 *ctrls )
     for( ctrl = ctrls->head; ctrl != NULL; ctrl = ctrl->next ) {
         control = &(ctrl->ctrl);
         size += sizeof( DialogTemplateItemOS2 );
-        if( !(control->ClassID->Class & 0x80) )  // Class name length if provided
+        if( (control->ClassID->Class & 0x80) == 0 ) // Class name length if provided
             size += strlen( control->ClassID->ClassName ) + 1;
-        if( control->Text != NULL )             // Conrol text if provided
-            if( control->Text->ord.fFlag == 0xFF )          // We have ID
+        if( control->Text != NULL ) {               // Conrol text if provided
+            if( control->Text->ord.fFlag == 0xFF ) {        // We have ID
                 size += 3;
-            else
+            } else {
                 size += strlen( control->Text->name ) + 1;  // We have name
-        else
+            }
+        } else {
             size += 1;
-
+        }
         size += control->ExtraBytes;
         size += SemOS2CountBytes( ctrl->dataListHead );
         size += SemOS2CountPresParams( ctrl->presParams );
 
-        if( ctrl->children != NULL )        // Add size of all children
+        if( ctrl->children != NULL ) {          // Add size of all children
             size += SemOS2CalcControlSize( ctrl->children );
+        }
     }
 
     return size;
@@ -548,33 +550,31 @@ static char *SemOS2BuildTemplateArray( char *ptr, FullDiagCtrlListOS2 *ctrls )
         tmpl->offPresParams = -1;
         tmpl->offCtlData    = -1;
 
-        if( !(control->ClassID->Class & 0x80) ) {
+        if( (control->ClassID->Class & 0x80) == 0 ) {
             tmpl->cchClassName = strlen( control->ClassID->ClassName );
-        }
-        else {
+        } else {
             tmpl->cchClassName = 0;
             tmpl->offClassName = control->ClassID->Class & 0x7F;
         }
 
         if( control->Text != NULL ) {
-            if( control->Text->ord.fFlag == 0xFF )
+            if( control->Text->ord.fFlag == 0xFF ) {
                 tmpl->cchText = 3;
-            else
+            } else {
                 tmpl->cchText = strlen( control->Text->name );
-        }
-        else
+            }
+        } else {
             tmpl->cchText = 0;
-
+        }
         ctrl->tmpl = tmpl;  // Save the pointer to DLGTITEM so we can update it later
 
         ptr += sizeof( *tmpl );
         if( ctrl->children != NULL ) {   // Process all children
             ptr = SemOS2BuildTemplateArray( ptr, ctrl->children );
             tmpl->cChildren = ctrl->children->numctrls;
-        }
-        else
+        } else {
             tmpl->cChildren = 0;
-
+        }
         tmpl = (DialogTemplateItemOS2 *)ptr;
     }
 
@@ -597,7 +597,7 @@ static char *SemOS2DumpTemplateData( char *base, char *ptr,
         tmpl    = ctrl->tmpl;
 
         // Write out class name if provided
-        if( !(control->ClassID->Class & 0x80) ) {
+        if( (control->ClassID->Class & 0x80) == 0 ) {
             strcpy( ptr, control->ClassID->ClassName );
             tmpl->offClassName = ptr - base;
             ptr += tmpl->cchClassName + 1;
@@ -611,13 +611,11 @@ static char *SemOS2DumpTemplateData( char *base, char *ptr,
             if( control->Text->ord.fFlag == 0xFF ) {
                 memcpy( ptr, control->Text->name, 3 );
                 ptr += 3;
-            }
-            else {
+            } else {
                 strcpy( ptr, control->Text->name );
                 ptr += tmpl->cchText + 1;
             }
-        }
-        else {
+        } else {
             *ptr = '\0';
             ptr++;
         }
@@ -629,8 +627,7 @@ static char *SemOS2DumpTemplateData( char *base, char *ptr,
             ptr += control->ExtraBytes;
             // Write out class data if provided
             ptr += SemOS2DumpCtlData( ptr, ctrl->dataListHead );
-        }
-        else {
+        } else {
             if( ctrl->dataListHead ) {
                 tmpl->offCtlData = ptr - base;
                 ptr += SemOS2DumpCtlData( ptr, ctrl->dataListHead );
@@ -642,8 +639,9 @@ static char *SemOS2DumpTemplateData( char *base, char *ptr,
             ptr += SemOS2DumpPresParams( ptr, ctrl->presParams );
         }
 
-        if( ctrl->children != NULL )    // Process all children
+        if( ctrl->children != NULL ) {  // Process all children
             ptr = SemOS2DumpTemplateData( base, ptr, ctrl->children );
+        }
     }
 
     return ptr;
@@ -693,23 +691,15 @@ void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
     error = ResOS2WriteDlgTemplate( tmpl, size, CurrResFile.fid );
     if( error ) {
         err_code = LastWresErr();
-        goto OutputWriteError;
+        RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
+        ErrorHasOccured = true;
+    } else {
+        loc.len = SemEndResource( loc.start );
+        SemAddResourceFree( name, WResIDFromNum( OS2_RT_DIALOG ), flags, loc );
     }
-
     RESFREE( tmpl );
-
-    loc.len = SemEndResource( loc.start );
-    SemAddResourceFree( name, WResIDFromNum( OS2_RT_DIALOG ), flags, loc );
-
     SemOS2FreeDiagCtrlList( ctrls );
 
-    return;
-
-OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
-    ErrorHasOccured = true;
-    SemOS2FreeDiagCtrlList( ctrls );
-    return;
 } /* SemOS2WriteDialogTemplate */
 
 
@@ -787,20 +777,14 @@ void SemOS2AddDlgincResource( WResID *name, char *filename )
     error = ResWriteString( filename, false, CurrResFile.fid );
     if( error ) {
         err_code = LastWresErr();
-        goto OutputWriteError;
+        RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
+        ErrorHasOccured = true;
+    } else {
+        loc.len = SemEndResource( loc.start );
+        SemAddResourceFree( name, WResIDFromNum( OS2_RT_DLGINCLUDE ),
+                        MEMFLAG_DISCARDABLE | MEMFLAG_MOVEABLE | MEMFLAG_PURE, loc );
     }
-    loc.len = SemEndResource( loc.start );
-    SemAddResourceFree( name, WResIDFromNum( OS2_RT_DLGINCLUDE ),
-                        MEMFLAG_DISCARDABLE | MEMFLAG_MOVEABLE | MEMFLAG_PURE,
-                        loc );
     RESFREE( filename );
-    return;
-
-OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
-    ErrorHasOccured = true;
-    RESFREE( filename );
-    return;
 }
 
 PresParamListOS2 *SemOS2NewPresParamList( PresParamsOS2 presparam )

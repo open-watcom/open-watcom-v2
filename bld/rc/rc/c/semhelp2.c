@@ -154,23 +154,16 @@ void SemOS2WriteHelpTable( WResID * name, ResMemFlags flags,
         error = SemOS2WriteHelpTableEntries( helptable, CurrResFile.fid );
         if( error ) {
             err_code = LastWresErr();
-            goto OutputWriteError;
+            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
+            ErrorHasOccured = true;
+        } else {
+            loc.len = SemEndResource( loc.start );
+            SemAddResourceFree( name, WResIDFromNum( OS2_RT_HELPTABLE ), flags, loc );
         }
-        loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( OS2_RT_HELPTABLE ), flags, loc );
     } else {
         RESFREE( name );
     }
-
     SemOS2FreeHelpTable( helptable );
-    return;
-
-OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
-    ErrorHasOccured = true;
-    SemOS2FreeHelpTable( helptable );
-    return;
-
 }
 
 
@@ -293,22 +286,15 @@ void SemOS2WriteHelpSubTable( WResID * name, int numWords,
         error = SemOS2WriteHelpSubTableEntries( helptable, CurrResFile.fid );
         if( error ) {
             err_code = LastWresErr();
-            goto OutputWriteError;
+            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
+            ErrorHasOccured = true;
+        } else {
+            loc.len = SemEndResource( loc.start );
+            SemAddResourceFree( name, WResIDFromNum( OS2_RT_HELPSUBTABLE ), flags, loc );
         }
-        loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( OS2_RT_HELPSUBTABLE ), flags, loc );
     } else {
         RESFREE( name );
     }
-
     SemOS2FreeHelpSubTable( helptable );
-    return;
-
-OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
-    ErrorHasOccured = true;
-    SemOS2FreeHelpSubTable( helptable );
-    return;
-
 }
 

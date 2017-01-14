@@ -316,28 +316,22 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
         }
         if( error ) {
             err_code = LastWresErr();
-            goto OutputWriteError;
+        } else {
+            error = SemWriteSubMenu( menu, &err_code, tokentype );
         }
-        error = SemWriteSubMenu( menu, &err_code, tokentype );
         if( !error && CmdLineParms.MSResFormat &&
                       CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
             error = ResWritePadDWord( CurrResFile.fid );
         }
-        if( error)
-            goto OutputWriteError;
-        loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_MENU ) ), flags, loc );
+        if( error) {
+            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
+            ErrorHasOccured = true;
+        } else {
+            loc.len = SemEndResource( loc.start );
+            SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_MENU ) ), flags, loc );
+        }
     } else {
         RESFREE( name );
     }
-
     SemFreeSubMenu( menu );
-    return;
-
-
-OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
-    ErrorHasOccured = true;
-    SemFreeSubMenu( menu );
-    return;
 }

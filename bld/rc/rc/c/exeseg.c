@@ -44,7 +44,7 @@ static RcStatus allocSegTable( SegTable *seg, int *err_code )
 {
     int     tablesize;
 
-    tablesize = seg->NumSegs * sizeof(segment_record);
+    tablesize = seg->NumSegs * sizeof( segment_record );
     seg->Segments = RESALLOC( tablesize );
     if( seg->Segments == NULL ) {
         *err_code = errno;
@@ -160,7 +160,7 @@ extern RcStatus AllocAndReadOS2SegTables( int *err_code )
 
 
 /********* WARNING *********/
-/* Hard coded constant. The value of sizeof(os2_reloc_item) is to hard */
+/* Hard coded constant. The value of sizeof( os2_reloc_item ) is to hard */
 /* to get from  wl  because of the other files that would have to be included */
 /* in order to get that structure */
 #define OS_RELOC_ITEM_SIZE      8
@@ -451,11 +451,11 @@ extern CpSegRc CopyOS2Segments( void )
         /* Must seek past the last segment in old file */
         oldseg += old_seg_tbl->NumOS2ResSegs - 1;
         end_offset = (uint_32)oldseg->address << old_shift_count;
-        if( oldseg->size == 0 )
+        if( oldseg->size == 0 ) {
             end_offset += 0x10000;
-        else
+        } else {
             end_offset += oldseg->size;
-
+        }
         if( RESSEEK( old_exe_info->fid, end_offset, SEEK_SET ) ) {
             ret = CPSEG_ERROR;
             RcError( ERR_READING_EXE, old_exe_info->name, strerror( errno ) );

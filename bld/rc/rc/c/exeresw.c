@@ -145,14 +145,15 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
     StringItem16        *exe_type_name;
 
     for( exe_type = restab->Dir.Head; exe_type != NULL; exe_type = exe_type->Next ) {
-        if( type->TypeName.IsName && !(exe_type->Info.type & 0x8000) ) {
+        if( type->TypeName.IsName && (exe_type->Info.type & 0x8000) == 0 ) {
             /* if they are both names */
             exe_type_name = (StringItem16 *)((char *)restab->Str.StringBlock +
                             (exe_type->Info.type - restab->Dir.TableSize));
             if( exe_type_name->NumChars == type->TypeName.ID.Name.NumChars
-                && !memicmp( exe_type_name->Name, type->TypeName.ID.Name.Name,
-                             exe_type_name->NumChars ) ) break;
-        } else if( !(type->TypeName.IsName) && exe_type->Info.type & 0x8000 ) {
+              && memicmp( exe_type_name->Name, type->TypeName.ID.Name.Name, exe_type_name->NumChars ) == 0 ) {
+                break;
+            }
+        } else if( !(type->TypeName.IsName) && (exe_type->Info.type & 0x8000) ) {
             /* if they are both numbers */
             if( type->TypeName.ID.Num == (exe_type->Info.type & ~0x8000) ) {
                 break;
@@ -233,8 +234,7 @@ static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
 
     if( ret == RS_OK ) {
         addExeResRecord( restab, type, &(res->ResName), lang->MemoryFlags,
-                out_offset >> shift_count,
-                (lang->Length + align_amount) >> shift_count );
+                out_offset >> shift_count, (lang->Length + align_amount) >> shift_count );
     }
 
     return( ret );
@@ -282,8 +282,7 @@ RcStatus CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
 
         if( ARE_BITS_EQUAL( sect2mask, sect2bits, lang->MemoryFlags ) == sect2 ) {
             ret = copyOneResource( restab, exe_type, lang, res, res_fid,
-                                    tmp_fid, restab->Dir.ResShiftCount,
-                                    &err_code );
+                                    tmp_fid, restab->Dir.ResShiftCount, &err_code );
         }
 
         if( ret != RS_OK )

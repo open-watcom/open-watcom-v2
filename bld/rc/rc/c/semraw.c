@@ -122,52 +122,51 @@ ResLocation SemCopyRawFile( const char *filename )
     ResLocation     loc;
     int             err_code;
     WResFileOffset  pos;
+    bool            error;
 
+    error = false;
+    fid = WRES_NIL_HANDLE;
     buffer = RESALLOC( BUFFER_SIZE );
-
     if( RcFindResource( filename, full_filename ) == -1 ) {
         RcError( ERR_CANT_FIND_FILE, filename );
-        goto HANDLE_ERROR;
+        error = true;
     }
 
-    if( AddDependency( full_filename ) )
-        goto HANDLE_ERROR;
+    if( !error && AddDependency( full_filename ) )
+        error = true;
 
-    fid = RcIoOpenInput( full_filename, false );
-    if( fid == WRES_NIL_HANDLE ) {
-        RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
-        goto HANDLE_ERROR;
-    }
-
-    loc.start = SemStartResource();
-
-    pos = RESTELL( fid );
-    if( pos == -1 ) {
-        RcError( ERR_READING_DATA, full_filename, strerror( errno ) );
-        RESCLOSE( fid );
-        goto HANDLE_ERROR;
-    } else {
-        ret = SemCopyDataUntilEOF( pos, fid, buffer, BUFFER_SIZE, &err_code );
-        if( ret != RS_OK ) {
-            ReportCopyError( ret, ERR_READING_DATA, full_filename, err_code );
-            RESCLOSE( fid );
-            goto HANDLE_ERROR;
+    if( !error ) {
+        fid = RcIoOpenInput( full_filename, false );
+        if( fid == WRES_NIL_HANDLE ) {
+            RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
+            error = true;
         }
     }
 
-    loc.len = SemEndResource( loc.start );
-
-    RESCLOSE( fid );
-
-    RESFREE( buffer );
-
-    return( loc );
-
-
-HANDLE_ERROR:
-    ErrorHasOccured = true;
-    loc.start = 0;
-    loc.len = 0;
+    if( !error ) {
+        loc.start = SemStartResource();
+        pos = RESTELL( fid );
+        if( pos == -1 ) {
+            RcError( ERR_READING_DATA, full_filename, strerror( errno ) );
+            error = true;
+        } else {
+            ret = SemCopyDataUntilEOF( pos, fid, buffer, BUFFER_SIZE, &err_code );
+            if( ret != RS_OK ) {
+                ReportCopyError( ret, ERR_READING_DATA, full_filename, err_code );
+                error = true;
+            }
+        }
+    }
+    if( error ) {
+        ErrorHasOccured = true;
+        loc.start = 0;
+        loc.len = 0;
+    } else {
+        loc.len = SemEndResource( loc.start );
+    }
+    if( fid != WRES_NIL_HANDLE ) {
+        RESCLOSE( fid );
+    }
     RESFREE( buffer );
     return( loc );
 }

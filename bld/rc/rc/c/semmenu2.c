@@ -282,20 +282,14 @@ void SemOS2WriteMenu( WResID *name, ResMemFlags flags, FullMenuOS2 *menu,
         error = SemOS2WriteSubMenu( menu, &err_code, codepage );
         if( error ) {
             err_code = LastWresErr();
-            goto OutputWriteError;
+            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
+            ErrorHasOccured = true;
+        } else {
+            loc.len = SemEndResource( loc.start );
+            SemAddResourceFree( name, WResIDFromNum( OS2_RT_MENU ), flags, loc );
         }
-        loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( OS2_RT_MENU ), flags, loc );
     } else {
         RESFREE( name );
     }
-
     SemOS2FreeSubMenu( menu );
-    return;
-
-OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
-    ErrorHasOccured = true;
-    SemOS2FreeSubMenu( menu );
-    return;
 }

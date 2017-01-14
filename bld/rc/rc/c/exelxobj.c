@@ -99,7 +99,7 @@ static int copyObjectAndPageTable( ExeFileInfo *old, ExeFileInfo *new )
     /* Figure out number of old objects/pages */
     for( obj_index = 0; obj_index < old->u.LXInfo.OS2Head.num_objects; obj_index++ ) {
         /* Simply skip any existing resource objects */
-        if( !(old_obj[obj_index].flags & OBJ_RESOURCE) ) {
+        if( (old_obj[obj_index].flags & OBJ_RESOURCE) == 0 ) {
             ++old_num_objects;
             old_num_pages += old_obj[obj_index].mapsize;
         }
@@ -140,7 +140,7 @@ static int copyObjectAndPageTable( ExeFileInfo *old, ExeFileInfo *new )
 
     /* Copy object and page records from old executable to new */
     for( obj_index = 0; obj_index < old->u.LXInfo.OS2Head.num_objects; obj_index++ ) {
-        if( !(old_obj[obj_index].flags & OBJ_RESOURCE) ) {
+        if( (old_obj[obj_index].flags & OBJ_RESOURCE) == 0 ) {
             new_obj[obj_index] = old_obj[old_obj_index];
             new_obj[obj_index].mapidx = page_index + 1;
             for( i = 0; i < old_obj[old_obj_index].mapsize; ++i ) {
@@ -273,11 +273,11 @@ static RcStatus copyHeaderSections( ExeFileInfo *old, ExeFileInfo *new )
     // copy entry table if provided
     if( old_head->entry_off ) {
         new_head->entry_off = offset;
-        if( old_head->moddir_off )
+        if( old_head->moddir_off ) {
             length = old_head->moddir_off - old_head->entry_off;
-        else
+        } else {
             length = old_head->fixpage_off - old_head->entry_off;
-
+        }
         if( RESSEEK( old->fid, lx_off + old_head->entry_off, SEEK_SET ) )
             return( RS_READ_ERROR );
 

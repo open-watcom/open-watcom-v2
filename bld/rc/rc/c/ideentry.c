@@ -295,7 +295,7 @@ static int RCMainLine( const char *opts, int argc, char **argv )
                 ParseEnvVar( str, argv, cmdbuf );
                 pass1 = false;
                 for( i = 0; i < argc; i++ ) {
-                    if( argv[i] != NULL && !stricmp( argv[i], "-r" ) ) {
+                    if( argv[i] != NULL && stricmp( argv[i], "-r" ) == 0 ) {
                         pass1 = true;
                         break;
                     }
