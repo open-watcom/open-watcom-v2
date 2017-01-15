@@ -638,7 +638,7 @@ raw-data-item
         {
             $$.IsString = true;
             $$.TmpStr = true;
-            $$.StrLen = (uint_16)$1.length;
+            $$.StrLen = $1.length;
             $$.Item.String = $1.string;
             $$.LongItem = $1.lstring;
         }
@@ -1874,12 +1874,12 @@ value-string-list
         {
             $$.IsNum = false;
             $$.Value.String = $1.string;
-            $$.strlen = (uint_16)$1.length;
+            $$.strlen = $1.length;
         }
     | value-string-list string-constant
         {
             $$.IsNum = false;
-            $$.strlen = (uint_16)( strlen( $1.Value.String ) + strlen( $2.string ) );
+            $$.strlen = strlen( $1.Value.String ) + strlen( $2.string );
             $$.Value.String = RcMemMalloc( $$.strlen + 1 );
             strcpy( $$.Value.String, $1.Value.String );
             strcat( $$.Value.String, $2.string );

@@ -35,19 +35,17 @@
 typedef struct FullDialogOptions {
     YYTOKENTYPE             token;
     union {
-        ResNameOrOrdinal *  Name;
-        char *              Str;
+        ResNameOrOrdinal    *Name;
+        char                *Str;
         DialogStyle         Style;
         DialogExstyle       Exstyle;
         WResLangType        lang;
         struct {
             uint_16         PointSize;
-            char *          FontName;
+            char            *FontName;
             uint_16         FontWeight;
             uint_8          FontItalic;
-            uint_8          FontCharset;    /* don't know what this is but
-                                             * MS rc accepts it and it appears in
-                                             * some samples */
+            uint_8          FontCharset;
             bool            FontWeightDefined;
             bool            FontItalicDefined;
             bool            FontCharsetDefined;
@@ -55,20 +53,13 @@ typedef struct FullDialogOptions {
     } Opt;
 } FullDialogOptions;
 
-extern FullDialogBoxHeader  *SemWINNewDiagOptions( FullDialogOptions * opt );
-extern FullDialogBoxHeader  *SemWINDiagOptions( FullDialogBoxHeader * head,
-                                FullDialogOptions * opt );
-extern FullDiagCtrlList     *SemWINNewDiagCtrlList( FullDialogBoxControl * ctrl,
-                                DataElemList * );
-extern FullDiagCtrlList     *SemWINAddDiagCtrlList( FullDiagCtrlList * list,
-                                FullDialogBoxControl * ctrl, DataElemList * );
-extern FullDialogBoxControl *SemWINNewDiagCtrl( YYTOKENTYPE token,
-                                FullDiagCtrlOptions opts );
-extern void                 SemWINWriteDialogBox( WResID * name, ResMemFlags, DialogSizeInfo,
-                                FullDialogBoxHeader *, FullDiagCtrlList *, DlgHelpId,
-                                YYTOKENTYPE );
+extern FullDialogBoxHeader  *SemWINNewDiagOptions( FullDialogOptions *opt );
+extern FullDialogBoxHeader  *SemWINDiagOptions( FullDialogBoxHeader *head, FullDialogOptions *opt );
+extern FullDiagCtrlList     *SemWINNewDiagCtrlList( FullDialogBoxControl *ctrl, DataElemList * );
+extern FullDiagCtrlList     *SemWINAddDiagCtrlList( FullDiagCtrlList *list, FullDialogBoxControl *ctrl, DataElemList * );
+extern FullDialogBoxControl *SemWINNewDiagCtrl( YYTOKENTYPE token, FullDiagCtrlOptions opts );
+extern void                 SemWINWriteDialogBox( WResID *name, ResMemFlags, DialogSizeInfo, FullDialogBoxHeader *, FullDiagCtrlList *, DlgHelpId, YYTOKENTYPE );
 extern FullDiagCtrlList     *SemWINEmptyDiagCtrlList( void );
-extern FullDialogBoxControl *SemWINSetControlData( IntMask, uint_16, DialogSizeInfo,
-                                WResID *, ResNameOrOrdinal *, uint_32, DlgHelpId * );
+extern FullDialogBoxControl *SemWINSetControlData( IntMask, uint_16, DialogSizeInfo, WResID *, ResNameOrOrdinal *, uint_32, DlgHelpId * );
 
 #endif

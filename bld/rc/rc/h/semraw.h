@@ -39,7 +39,7 @@
 typedef struct RawDataItem {
     union {
         char    *String;
-        uint_32  Num;
+        uint_32 Num;
     } Item;
     size_t      StrLen;
     bool        IsString  :1;
@@ -49,9 +49,9 @@ typedef struct RawDataItem {
 } RawDataItem;
 
 typedef struct DataElemList {
-    struct DataElemList   *next;
-    RawDataItem            data[MAX_DATA_NODES];
-    uint_16                count;
+    struct DataElemList *next;
+    RawDataItem         data[MAX_DATA_NODES];
+    uint_16             count;
 } DataElemList;
 
 extern void         SemWriteRawDataItem( RawDataItem item );

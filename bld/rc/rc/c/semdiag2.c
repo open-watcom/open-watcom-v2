@@ -336,13 +336,14 @@ static void SemOS2FreeDiagCtrlList( FullDiagCtrlListOS2 *list )
     RESFREE( list );
 } /* SemOS2FreeDiagCtrlList */
 
-static uint_16 SemOS2CountBytes( DataElemList *list )
-/***************************************************/
+static size_t SemOS2CountBytes( DataElemList *list )
+/**************************************************/
 {
     DataElemList        *travptr;
-    uint_16             bytes = 0;
+    size_t              bytes;
     int                 i;
 
+    bytes = 0;
     for( travptr = list; travptr != NULL; travptr = travptr->next ) {
         for( i = 0; i < travptr->count; i++ ) {
             if( travptr->data[i].IsString ) {
@@ -352,32 +353,31 @@ static uint_16 SemOS2CountBytes( DataElemList *list )
             }
         }
     }
-
     return( bytes );
 }
 
-static uint_16 SemOS2CountPresParams( PresParamListOS2 *list )
-/************************************************************/
+static size_t SemOS2CountPresParams( PresParamListOS2 *list )
+/***********************************************************/
 {
-    PresParamsOS2       *presparam;
+    PresParamsOS2       *presparams;
     DataElemList        *travptr;
-    uint_16             bytes = 0;
+    size_t              bytes;
     int                 i;
 
     if( list == NULL )
         return 0;
 
-    presparam = list->head;
-
-    for( presparam = list->head; presparam != NULL; presparam = presparam->next ) {
-        int     parmsize = 0;
+    bytes = 0;
+    for( presparams = list->head; presparams != NULL; presparams = presparams->next ) {
+        size_t  parmsize;
 
         bytes += 4; // Presparam ID or name length
-        if( !(presparam->Name->ord.fFlag == 0xFF) )         // Presparam has name
-            bytes += strlen( presparam->Name->name ) + 1 + 8;
+        if( !(presparams->Name->ord.fFlag == 0xFF) )         // Presparam has name
+            bytes += strlen( presparams->Name->name ) + 1 + 8;
 
-        bytes += 4; // Size of presparam data that follow
-        for( travptr = presparam->dataList; travptr != NULL; travptr = travptr->next ) {
+        bytes += 4; // Size of presparams data that follow
+        parmsize = 0;
+        for( travptr = presparams->dataList; travptr != NULL; travptr = travptr->next ) {
             for( i = 0; i < travptr->count; i++ ) {
                 if( travptr->data[i].IsString ) {
                     parmsize += travptr->data[i].StrLen + 1;
@@ -387,22 +387,22 @@ static uint_16 SemOS2CountPresParams( PresParamListOS2 *list )
             }
         }
         bytes += parmsize;
-        presparam->size = parmsize;
+        presparams->size = parmsize;
     }
     list->size = bytes;
 
     return( bytes + 4 );    // Add an ULONG for presparams size
 }
 
-static uint_16 SemOS2DumpPresParams( char *ptr, PresParamListOS2 *list )
-/**********************************************************************/
+static size_t SemOS2DumpPresParams( char *ptr, PresParamListOS2 *list )
+/*********************************************************************/
 {
-    PresParamsOS2       *presparam;
+    PresParamsOS2       *presparams;
     DataElemList        *travptr;
-    uint_16             bytes = 0;
+    size_t              bytes;
     uint_32             *data;
     int                 i;
-    int                 len;
+    size_t              len;
 
 
     if( list == NULL )
@@ -414,36 +414,34 @@ static uint_16 SemOS2DumpPresParams( char *ptr, PresParamListOS2 *list )
     bytes = 4;
     ptr  += 4;
 
-    presparam = list->head;
-
-    for( presparam = list->head; presparam != NULL; presparam = presparam->next ) {
+    for( presparams = list->head; presparams != NULL; presparams = presparams->next ) {
         // Presparam ID or name length
-        if( !(presparam->Name->ord.fFlag == 0xFF) ) {       // Presparam has name
-            len     = strlen( presparam->Name->name ) + 1;
+        if( !(presparams->Name->ord.fFlag == 0xFF) ) {       // Presparam has name
+            len     = strlen( presparams->Name->name ) + 1;
             data    = (uint_32 *)ptr;
             *data++ = 0;    // First ULONG is 0 to indicate this isn't numeric ID
             *data   = len;  // Next is string len
             ptr    += 8;
-            strcpy( ptr, presparam->Name->name );
+            strcpy( ptr, presparams->Name->name );
             ptr    += len;
             data    = (uint_32 *)ptr;
             *data   = -1;   // Not sure what this is
             ptr    += 4;
             bytes  += len + 12;
         } else {
-            data   = (uint_32 *)ptr;
-            *data  = presparam->Name->ord.wOrdinalID;
-            ptr   += 4;
-            bytes += 4;
+            data    = (uint_32 *)ptr;
+            *data   = presparams->Name->ord.wOrdinalID;
+            ptr    += 4;
+            bytes  += 4;
         }
 
         // Following is the size of presparam data
         data   = (uint_32 *)ptr;
-        *data  = presparam->size;
+        *data  = presparams->size;
         ptr   += 4;
         bytes += 4;
 
-        for( travptr = presparam->dataList; travptr != NULL; travptr = travptr->next ) {
+        for( travptr = presparams->dataList; travptr != NULL; travptr = travptr->next ) {
             for( i = 0; i < travptr->count; i++ ) {
                 if( travptr->data[i].IsString ) {
                     len    = travptr->data[i].StrLen + 1;
@@ -464,15 +462,16 @@ static uint_16 SemOS2DumpPresParams( char *ptr, PresParamListOS2 *list )
     return( bytes );
 }
 
-static uint_16 SemOS2DumpCtlData( char *ptr, DataElemList *list )
-/***************************************************************/
+static size_t SemOS2DumpCtlData( char *ptr, DataElemList *list )
+/**************************************************************/
 {
     DataElemList        *travptr;
-    uint_16             bytes = 0;
+    size_t              bytes;
     uint_16             *data;
-    uint_16             len;
+    size_t              len;
     int                 i;
 
+    bytes = 0;
     for( travptr = list; travptr != NULL; travptr = travptr->next ) {
         for( i = 0; i < travptr->count; i++ ) {
             if( travptr->data[i].IsString ) {
@@ -492,13 +491,14 @@ static uint_16 SemOS2DumpCtlData( char *ptr, DataElemList *list )
     return( bytes );
 }
 
-static int SemOS2CalcControlSize( FullDiagCtrlListOS2 *ctrls )
-/************************************************************/
+static size_t SemOS2CalcControlSize( FullDiagCtrlListOS2 *ctrls )
+/***************************************************************/
 {
     FullDialogBoxControlOS2 *ctrl;
     DialogBoxControl        *control;
-    int                     size = 0;
+    size_t                  size;
 
+    size = 0;
     for( ctrl = ctrls->head; ctrl != NULL; ctrl = ctrl->next ) {
         control = &(ctrl->ctrl);
         size += sizeof( DialogTemplateItemOS2 );
@@ -521,8 +521,7 @@ static int SemOS2CalcControlSize( FullDiagCtrlListOS2 *ctrls )
             size += SemOS2CalcControlSize( ctrl->children );
         }
     }
-
-    return size;
+    return( size );
 }
 
 static char *SemOS2BuildTemplateArray( char *ptr, FullDiagCtrlListOS2 *ctrls )
@@ -628,13 +627,13 @@ static char *SemOS2DumpTemplateData( char *base, char *ptr,
             // Write out class data if provided
             ptr += SemOS2DumpCtlData( ptr, ctrl->dataListHead );
         } else {
-            if( ctrl->dataListHead ) {
+            if( ctrl->dataListHead != NULL ) {
                 tmpl->offCtlData = ptr - base;
                 ptr += SemOS2DumpCtlData( ptr, ctrl->dataListHead );
             }
         }
 
-        if( ctrl->presParams ) {
+        if( ctrl->presParams != NULL ) {
             tmpl->offPresParams = ptr - base;
             ptr += SemOS2DumpPresParams( ptr, ctrl->presParams );
         }
@@ -662,7 +661,7 @@ void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
     ResLocation              loc;
     int                      err_code;
     bool                     error;
-    int                      size;
+    size_t                   size;
     DialogHeaderOS2          *head = NULL;
     char                     *tmpl;
     char                     *ptr;
@@ -787,20 +786,19 @@ void SemOS2AddDlgincResource( WResID *name, char *filename )
     RESFREE( filename );
 }
 
-PresParamListOS2 *SemOS2NewPresParamList( PresParamsOS2 presparam )
-/*****************************************************************/
+PresParamListOS2 *SemOS2NewPresParamList( PresParamsOS2 presparams )
+/******************************************************************/
 {
     PresParamListOS2    *newlist;
 
     newlist = RESALLOC( sizeof( PresParamListOS2 ) );
     newlist->head = NULL;
     newlist->tail = NULL;
-    return( SemOS2AppendPresParam( newlist, presparam ) );
+    return( SemOS2AppendPresParam( newlist, presparams ) );
 }
 
-PresParamListOS2 *SemOS2AppendPresParam( PresParamListOS2 *list,
-                                                 PresParamsOS2 presparams )
-/*************************************************************************/
+PresParamListOS2 *SemOS2AppendPresParam( PresParamListOS2 *list, PresParamsOS2 presparams )
+/*****************************************************************************************/
 {
     PresParamsOS2       *params;
 

@@ -600,7 +600,7 @@ raw-data-item
         {
             $$.IsString    = true;
             $$.LongItem    = $1.lstring;
-            $$.StrLen      = (uint_16)$1.length;
+            $$.StrLen      = $1.length;
             $$.TmpStr      = true;
             $$.WriteNull   = false;
             $$.Item.String = $1.string;
@@ -637,7 +637,7 @@ rc-data-item
         {
             $$.IsString    = true;
             $$.LongItem    = $1.lstring;
-            $$.StrLen      = (uint_16)$1.length;
+            $$.StrLen      = $1.length;
             $$.TmpStr      = true;
             $$.WriteNull   = true;
             $$.Item.String = $1.string;

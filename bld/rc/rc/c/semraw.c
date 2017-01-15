@@ -29,9 +29,8 @@
 ****************************************************************************/
 
 
-#include <limits.h>
-#include "wio.h"
 #include "global.h"
+#include "wio.h"
 #include "rcerrors.h"
 #include "semantic.h"
 #include "depend.h"
@@ -47,41 +46,32 @@ void SemWriteRawDataItem( RawDataItem item )
     bool        error;
 
     if( item.IsString ) {
-        size_t  len = item.StrLen;
-
-        if( item.WriteNull ) {
-            ++len;
-        }
-        if( ResWriteStringLen( item.Item.String, item.LongItem, CurrResFile.fid, len ) ) {
-            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
-            ErrorHasOccured = true;
+        error = ResWriteStringLen( item.Item.String, item.LongItem, CurrResFile.fid, item.StrLen );
+        if( !error ) {
+            if( item.WriteNull ) {
+                if( item.LongItem ) {
+                    error = ResWriteUint16( 0, CurrResFile.fid );
+                } else {
+                    error = ResWriteUint8( '\0', CurrResFile.fid );
+                }
+            }
         }
         if( item.TmpStr ) {
             RESFREE( item.Item.String );
         }
     } else {
-        if( !item.LongItem ) {
-            if( (int_32)item.Item.Num < 0 ) {
-                if( (int_32)item.Item.Num < SHRT_MIN ) {
-                    RcWarning( ERR_RAW_DATA_TOO_SMALL, item.Item.Num, SHRT_MIN );
-                }
-            } else {
-                if( item.Item.Num > USHRT_MAX ) {
-                    RcWarning( ERR_RAW_DATA_TOO_BIG, item.Item.Num, USHRT_MAX );
-                }
-            }
-        }
+        error = false;
         if( !ErrorHasOccured ) {
-            if( !item.LongItem ) {
-                error = ResWriteUint16( item.Item.Num, CurrResFile.fid );
-            } else {
+            if( item.LongItem ) {
                 error = ResWriteUint32( item.Item.Num, CurrResFile.fid );
-            }
-            if( error ) {
-                RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
-                ErrorHasOccured = true;
+            } else {
+                error = ResWriteUint16( item.Item.Num, CurrResFile.fid );
             }
         }
+    }
+    if( error ) {
+        RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
+        ErrorHasOccured = true;
     }
 }
 

@@ -179,9 +179,8 @@ static void AddDiagOption( DialogBoxHeader *head, FullDialogOptions *opt )
     }
 } /* AddDiagOptions */
 
-static void AddDiagOption32( DlgHeader32 *head,
-                             FullDialogOptions *opt )
-/***************************************************/
+static void AddDiagOption32( DlgHeader32 *head, FullDialogOptions *opt )
+/**********************************************************************/
 {
     switch( opt->token ) {
     case Y_STYLE:
@@ -229,9 +228,8 @@ static void AddDiagOption32( DlgHeader32 *head,
     }
 } /* AddDiagOptions32 */
 
-FullDialogBoxHeader *SemWINDiagOptions( FullDialogBoxHeader *head,
-                                             FullDialogOptions *opt )
-/********************************************************************/
+FullDialogBoxHeader *SemWINDiagOptions( FullDialogBoxHeader *head, FullDialogOptions *opt )
+/*****************************************************************************************/
 {
     if( head->Win32 ) {
         AddDiagOption32( &head->u.Head32, opt );
@@ -257,9 +255,8 @@ FullDiagCtrlList *SemWINEmptyDiagCtrlList( void )
     return( newlist );
 }
 
-FullDiagCtrlList *SemWINNewDiagCtrlList( FullDialogBoxControl *ctrl,
-                                             DataElemList *list )
-/******************************************************************/
+FullDiagCtrlList *SemWINNewDiagCtrlList( FullDialogBoxControl *ctrl, DataElemList *list )
+/***************************************************************************************/
 {
     FullDiagCtrlList    *newlist;
 
@@ -280,7 +277,7 @@ FullDiagCtrlList *SemWINAddDiagCtrlList( FullDiagCtrlList *list,
 } /* SemWINAddDiagCtrlList */
 
 static FullDialogBoxControl *semInitDiagCtrl( void )
-/*****************************************************/
+/**************************************************/
 {
     FullDialogBoxControl        *newctrl;
 
@@ -337,9 +334,8 @@ static FullDialogBoxControl *semInitDiagCtrl( void )
 #define LO_WORD     0x0000ffff
 #define HI_WORD     0xffff0000
 
-FullDialogBoxControl *SemWINNewDiagCtrl( YYTOKENTYPE token,
-                                FullDiagCtrlOptions opts )
-/********************************************************/
+FullDialogBoxControl *SemWINNewDiagCtrl( YYTOKENTYPE token, FullDiagCtrlOptions opts )
+/************************************************************************************/
 {
     FullDialogBoxControl    *newctrl;
     uint_32                 style_mask; /* for the style of the control */
@@ -579,9 +575,8 @@ static void SemFreeDialogHeader( FullDialogBoxHeader *head )
     RESFREE( head );
 } /* SemFreeDialogHeader */
 
-static bool SemWriteDiagCtrlList( FullDiagCtrlList *list, int *err_code,
-                                 YYTOKENTYPE tokentype )
-/*********************************************************************/
+static bool SemWriteDiagCtrlList( FullDiagCtrlList *list, int *err_code, YYTOKENTYPE tokentype )
+/**********************************************************************************************/
 {
     bool                        error;
     FullDialogBoxControl        *ctrl;

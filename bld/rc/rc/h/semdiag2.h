@@ -35,15 +35,15 @@
 typedef struct FullDialogOptions {
     YYTOKENTYPE             token;
     union {
-        ResNameOrOrdinal *  Name;
-        char *              Str;
+        ResNameOrOrdinal    *Name;
+        char                *Str;
         DialogStyle         Style;
         DialogExstyle       Exstyle;
         WResLangType        lang;
 #if 0
         struct {
             uint_16         PointSize;
-            char *          FontName;
+            char            *FontName;
             uint_16         FontWeight;
             uint_8          FontItalic;
             uint_8          FontExtra;  /* don't know what this is but

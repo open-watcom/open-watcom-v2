@@ -166,13 +166,14 @@ static bool SemOS2WriteMenuItem( FullMenuItemOS2 *item, int *err_code )
     return( error );
 }
 
-static int SemOS2CalcSubMenuSize( FullMenuOS2 *submenu, int *count )
-/******************************************************************/
+static size_t SemOS2CalcSubMenuSize( FullMenuOS2 *submenu, unsigned *count )
+/**************************************************************************/
 {
     FullMenuItemOS2 *curritem;
-    int             size = 0, dummycount;
+    size_t          size;
+    unsigned        dummycount;
 
-    size += sizeof( MenuHeaderOS2 );
+    size = sizeof( MenuHeaderOS2 );
 
     if( submenu == NULL ) {
         return( size );
@@ -181,8 +182,7 @@ static int SemOS2CalcSubMenuSize( FullMenuOS2 *submenu, int *count )
     for( curritem = submenu->head; curritem != NULL; curritem = curritem->next ) {
         *count += 1;
         size += 3 * sizeof( uint_16 );
-        if( !(curritem->item.ItemStyle & OS2_MIS_SEPARATOR) &&
-            curritem->item.ItemText != NULL )
+        if( !(curritem->item.ItemStyle & OS2_MIS_SEPARATOR) && curritem->item.ItemText != NULL )
             size += strlen( curritem->item.ItemText ) + 1;
         if( curritem->item.ItemStyle & OS2_MIS_SUBMENU ) {
             size += SemOS2CalcSubMenuSize( curritem->submenu, &dummycount );
@@ -192,11 +192,10 @@ static int SemOS2CalcSubMenuSize( FullMenuOS2 *submenu, int *count )
 }
 
 
-static bool SemOS2WriteSubMenu( FullMenuOS2 *submenu, int *err_code,
-                               uint_32 codepage )
-/******************************************************************/
+static bool SemOS2WriteSubMenu( FullMenuOS2 *submenu, int *err_code, uint_32 codepage )
+/*************************************************************************************/
 {
-    int             count = 0;
+    unsigned        count = 0;
     bool            error;
     FullMenuItemOS2 *curritem;
     MenuHeaderOS2   head;
