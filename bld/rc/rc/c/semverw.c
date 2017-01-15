@@ -186,7 +186,7 @@ static uint_16 CalcBlockSize( FullVerBlock *block )
     }
 
     block->Head.ValSize = val_size;
-    if( !stricmp( block->Head.Key, "Translation" ) ) {
+    if( stricmp( block->Head.Key, "Translation" ) == 0 ) {
         block->Head.Type = 0;
     } else {
         if( block->UseUnicode )
