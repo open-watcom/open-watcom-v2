@@ -31,5 +31,5 @@
 
 
 extern bool     WriteDependencyRes( void );
-extern bool     AddDependency( char *name );
+extern bool     AddDependency( const char *name );
 extern void     AutoDepInitStatics( void );
