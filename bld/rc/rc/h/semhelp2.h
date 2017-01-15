@@ -37,40 +37,34 @@
 /**** Semantic structures ****/
 
 typedef struct FullHelpEntryOS2 {
-    struct FullHelpEntryOS2 *  next;
-    struct FullHelpEntryOS2 *  prev;
-    HelpTableEntryOS2          entry;
+    struct FullHelpEntryOS2     *next;
+    struct FullHelpEntryOS2     *prev;
+    HelpTableEntryOS2           entry;
 } FullHelpEntryOS2;
 
 typedef struct FullHelpTableOS2 {
-    struct FullHelpEntryOS2 *  head;
-    struct FullHelpEntryOS2 *  tail;
+    struct FullHelpEntryOS2     *head;
+    struct FullHelpEntryOS2     *tail;
 } FullHelpTableOS2;
 
 typedef struct FullHelpSubEntryOS2 {
-    struct FullHelpSubEntryOS2 *  next;
-    struct FullHelpSubEntryOS2 *  prev;
-    DataElemList               *  dataListHead;
+    struct FullHelpSubEntryOS2  *next;
+    struct FullHelpSubEntryOS2  *prev;
+    DataElemList                *dataListHead;
 } FullHelpSubEntryOS2;
 
 typedef struct FullHelpSubTableOS2 {
-    struct FullHelpSubEntryOS2 *  head;
-    struct FullHelpSubEntryOS2 *  tail;
-    int                           numWords;
+    struct FullHelpSubEntryOS2  *head;
+    struct FullHelpSubEntryOS2  *tail;
+    unsigned                    numWords;
 } FullHelpSubTableOS2;
 
 /**** Semantic routines ****/
-extern FullHelpTableOS2 *SemOS2NewHelpTable( FullHelpEntryOS2 );
-extern FullHelpTableOS2 *SemOS2AddHelpItem( FullHelpEntryOS2,
-                                            FullHelpTableOS2 * );
-extern FullHelpEntryOS2 SemOS2MakeHelpItem( unsigned long id1, unsigned long id2,
-                                            unsigned long id3 );
-extern void SemOS2WriteHelpTable( WResID * name, ResMemFlags flags,
-                                  FullHelpTableOS2 * helptable );
-
-extern FullHelpSubTableOS2 *SemOS2NewHelpSubTable( DataElemList * );
-extern FullHelpSubTableOS2 *SemOS2AddHelpSubItem( DataElemList *,
-                                            FullHelpSubTableOS2 * );
-extern void SemOS2WriteHelpSubTable( WResID * name, int numWords, ResMemFlags flags,
-                                     FullHelpSubTableOS2 * helptable );
+extern FullHelpTableOS2     *SemOS2NewHelpTable( FullHelpEntryOS2 );
+extern FullHelpTableOS2     *SemOS2AddHelpItem( FullHelpEntryOS2, FullHelpTableOS2 * );
+extern FullHelpEntryOS2     SemOS2MakeHelpItem( unsigned long id1, unsigned long id2, unsigned long id3 );
+extern void                 SemOS2WriteHelpTable( WResID *name, ResMemFlags flags, FullHelpTableOS2 *helptable );
+extern FullHelpSubTableOS2  *SemOS2NewHelpSubTable( DataElemList * );
+extern FullHelpSubTableOS2  *SemOS2AddHelpSubItem( DataElemList *, FullHelpSubTableOS2 * );
+extern void                 SemOS2WriteHelpSubTable( WResID *name, unsigned numWords, ResMemFlags flags, FullHelpSubTableOS2 *helptable );
 #endif

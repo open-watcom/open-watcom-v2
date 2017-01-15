@@ -46,11 +46,11 @@ typedef struct {
     uint_32             time;       /* file's time taken from stat */
     uint_16             len;        /* sizeof the name array */
     char                name[1];    /* dynamic array */
-} RcDepInfo;
+} ResDepInfo;
 
 typedef struct DepNode {
     struct DepNode      *next;
-    RcDepInfo           info;       /* this must be the last element because it contains a dynamic array */
+    ResDepInfo          info;       /* this must be the last element because it contains a dynamic array */
 } DepNode;
 
 static DepNode          *depList;
@@ -85,7 +85,7 @@ bool AddDependency( const char *fname )
     return( false );
 }
 
-static void writeOneNode( RcDepInfo *cur )
+static void writeOneNode( ResDepInfo *cur )
 {
     RawDataItem         item = { 0 };
 
@@ -116,9 +116,9 @@ static void writeOneNode( RcDepInfo *cur )
 
 static void writeDepListEOF( void )
 {
-    RcDepInfo   eof;
+    ResDepInfo  eof;
 
-    memset( &eof, 0, sizeof( RcDepInfo ) );
+    memset( &eof, 0, sizeof( ResDepInfo ) );
     writeOneNode( &eof );
 }
 

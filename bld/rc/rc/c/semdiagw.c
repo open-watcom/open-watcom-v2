@@ -617,13 +617,14 @@ static bool SemWriteDiagCtrlList( FullDiagCtrlList *list, int *err_code, YYTOKEN
     return( error );
 } /* SemWriteDiagCtrlList */
 
-static uint_16 SemCountBytes( DataElemList *list )
-/************************************************/
+static size_t SemCountBytes( DataElemList *list )
+/***********************************************/
 {
     DataElemList      *travptr;
-    uint_16           bytes = 0;
-    int               i;
+    size_t            bytes;
+    unsigned          i;
 
+    bytes = 0;
     for( travptr = list; travptr != NULL; travptr = travptr->next ) {
         for( i = 0; i < travptr->count; i++ ) {
             if( travptr->data[i].IsString ) {
@@ -633,7 +634,6 @@ static uint_16 SemCountBytes( DataElemList *list )
             }
         }
     }
-
     return( bytes );
 }
 

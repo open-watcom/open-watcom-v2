@@ -88,8 +88,8 @@ FullHelpTableOS2 *SemOS2NewHelpTable( FullHelpEntryOS2 firstentry )
 }
 
 FullHelpTableOS2 *SemOS2AddHelpItem( FullHelpEntryOS2 currentry,
-                                    FullHelpTableOS2 * currtable )
-/****************************************************************/
+                                    FullHelpTableOS2 *currtable )
+/***************************************************************/
 {
     FullHelpEntryOS2     *newentry;
 
@@ -141,9 +141,9 @@ static bool SemOS2WriteHelpTableEntries( FullHelpTableOS2 *helptable, WResFileID
     return( error );
 }
 
-void SemOS2WriteHelpTable( WResID * name, ResMemFlags flags,
-                               FullHelpTableOS2 * helptable )
-/***********************************************************/
+void SemOS2WriteHelpTable( WResID *name, ResMemFlags flags,
+                               FullHelpTableOS2 *helptable )
+/**********************************************************/
 {
     ResLocation     loc;
     bool            error;
@@ -167,8 +167,8 @@ void SemOS2WriteHelpTable( WResID * name, ResMemFlags flags,
 }
 
 
-FullHelpSubTableOS2 *SemOS2NewHelpSubTable( DataElemList * data )
-/***************************************************************/
+FullHelpSubTableOS2 *SemOS2NewHelpSubTable( DataElemList *data )
+/**************************************************************/
 {
     FullHelpSubTableOS2   *newtable;
     FullHelpSubEntryOS2   *newentry;
@@ -191,9 +191,9 @@ FullHelpSubTableOS2 *SemOS2NewHelpSubTable( DataElemList * data )
     return( newtable );
 }
 
-FullHelpSubTableOS2 *SemOS2AddHelpSubItem( DataElemList * data,
-                            FullHelpSubTableOS2 * currtable )
-/*************************************************************/
+FullHelpSubTableOS2 *SemOS2AddHelpSubItem( DataElemList *data,
+                            FullHelpSubTableOS2 *currtable )
+/************************************************************/
 {
     FullHelpSubEntryOS2     *newentry;
 
@@ -228,11 +228,11 @@ static void SemOS2FreeHelpSubTable( FullHelpSubTableOS2 *helptable )
     }
 }
 
-static bool SemOS2WriteHelpData( DataElemList *list, WResFileID fid, int count )
-/******************************************************************************/
+static bool SemOS2WriteHelpData( DataElemList *list, WResFileID fid, unsigned count )
+/***********************************************************************************/
 {
     bool              error;
-    int               i;
+    unsigned          i;
 
     error = false;
     if( list->count > count ) {
@@ -269,10 +269,10 @@ static bool SemOS2WriteHelpSubTableEntries( FullHelpSubTableOS2 *helptable, WRes
     return( error );
 }
 
-void SemOS2WriteHelpSubTable( WResID * name, int numWords,
+void SemOS2WriteHelpSubTable( WResID *name, unsigned numWords,
                                      ResMemFlags flags,
-                                     FullHelpSubTableOS2 * helptable )
-/********************************************************************/
+                                     FullHelpSubTableOS2 *helptable )
+/*******************************************************************/
 {
     ResLocation     loc;
     bool            error;
@@ -297,4 +297,3 @@ void SemOS2WriteHelpSubTable( WResID * name, int numWords,
     }
     SemOS2FreeHelpSubTable( helptable );
 }
-

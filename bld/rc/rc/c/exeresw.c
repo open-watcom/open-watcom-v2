@@ -404,7 +404,7 @@ extern RcStatus WriteWINResTable( WResFileID fid, ResTable *restab, int *err_cod
 
     if( ret == RS_OK ) {
         zero = 0;
-        if( RESWRITE( fid, &zero, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
+        if( RESWRITE( fid, &zero, sizeof( zero ) ) != sizeof( zero ) ) {
             ret = RS_WRITE_ERROR;
         }
     }

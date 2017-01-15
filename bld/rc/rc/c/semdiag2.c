@@ -341,7 +341,7 @@ static size_t SemOS2CountBytes( DataElemList *list )
 {
     DataElemList        *travptr;
     size_t              bytes;
-    int                 i;
+    unsigned            i;
 
     bytes = 0;
     for( travptr = list; travptr != NULL; travptr = travptr->next ) {
@@ -362,7 +362,7 @@ static size_t SemOS2CountPresParams( PresParamListOS2 *list )
     PresParamsOS2       *presparams;
     DataElemList        *travptr;
     size_t              bytes;
-    int                 i;
+    unsigned            i;
 
     if( list == NULL )
         return 0;
@@ -401,7 +401,7 @@ static size_t SemOS2DumpPresParams( char *ptr, PresParamListOS2 *list )
     DataElemList        *travptr;
     size_t              bytes;
     uint_32             *data;
-    int                 i;
+    unsigned            i;
     size_t              len;
 
 
@@ -469,7 +469,7 @@ static size_t SemOS2DumpCtlData( char *ptr, DataElemList *list )
     size_t              bytes;
     uint_16             *data;
     size_t              len;
-    int                 i;
+    unsigned            i;
 
     bytes = 0;
     for( travptr = list; travptr != NULL; travptr = travptr->next ) {
