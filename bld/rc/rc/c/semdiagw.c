@@ -270,7 +270,7 @@ FullDiagCtrlList *SemWINAddDiagCtrlList( FullDiagCtrlList *list,
 {
     if( ctrl != NULL ) {
         ctrl->dataListHead = dataList;
-        ResAddLLItemAtEnd( (void **) &(list->head), (void **) &(list->tail), ctrl );
+        ResAddLLItemAtEnd( (void **)&(list->head), (void **)&(list->tail), ctrl );
         list->numctrls++;
     }
     return( list );

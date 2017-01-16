@@ -239,7 +239,7 @@ static RcStatus readIcoFileDir( WResFileID fid, FullIconDir *dir, int *err_code 
         if( ret != RS_OK ) {
             RESFREE( entry );
         } else {
-            ResAddLLItemAtEnd( (void **) &(dir->Head), (void **)&(dir->Tail), entry );
+            ResAddLLItemAtEnd( (void **)&(dir->Head), (void **)&(dir->Tail), entry );
         }
     }
     return( ret );
@@ -586,7 +586,7 @@ static RcStatus readCurFileDir( WResFileID fid, FullCurDir *dir, int *err_code )
         if( ret != RS_OK ) {
             RESFREE( entry );
         } else {
-            ResAddLLItemAtEnd( (void **) &(dir->Head), (void **) &(dir->Tail), entry );
+            ResAddLLItemAtEnd( (void **)&(dir->Head), (void **)&(dir->Tail), entry );
         }
     }
     return( ret );
@@ -912,8 +912,8 @@ static void AddFontToDir( FontInfo * info, char * devicename, char * facename,
         CurrResFile.FontDir = NewFontDir();
     }
 
-    ResAddLLItemAtEnd( (void **) &(CurrResFile.FontDir->Head),
-                        (void **) &(CurrResFile.FontDir->Tail), entry );
+    ResAddLLItemAtEnd( (void **)&(CurrResFile.FontDir->Head),
+                        (void **)&(CurrResFile.FontDir->Tail), entry );
     CurrResFile.FontDir->NumOfFonts += 1;
 }
 

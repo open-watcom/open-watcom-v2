@@ -254,7 +254,7 @@ FullVerBlockNest *SemWINNewBlockNest( FullVerBlock *child )
 FullVerBlockNest *SemWINAddBlockNest( FullVerBlockNest *parent, FullVerBlock *child )
 /***********************************************************************************/
 {
-    ResAddLLItemAtEnd( (void **) &(parent->Head), (void **) &(parent->Tail), child );
+    ResAddLLItemAtEnd( (void **)&(parent->Head), (void **)&(parent->Tail), child );
     return( parent );
 }
 
@@ -264,7 +264,7 @@ FullVerBlockNest *SemWINMergeBlockNest( FullVerBlockNest *nest1, FullVerBlockNes
     FullVerBlock    *block;
 
     for( block = nest2->Head; block != NULL; block = block->Next ) {
-        ResAddLLItemAtEnd( (void **) &nest1->Head, (void **) &nest1->Tail, block );
+        ResAddLLItemAtEnd( (void **)&nest1->Head, (void **)&nest1->Tail, block );
     }
 
     RESFREE( nest2 );

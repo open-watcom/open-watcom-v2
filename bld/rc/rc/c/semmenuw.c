@@ -120,8 +120,8 @@ FullMenu *SemWINNewMenu( FullMenuItem firstitem )
     FullMenu       *newmenu;
     FullMenuItem   *newitem;
 
-    newmenu = RESALLOC( sizeof(FullMenu) );
-    newitem = RESALLOC( sizeof(FullMenuItem) );
+    newmenu = RESALLOC( sizeof( FullMenu ) );
+    newitem = RESALLOC( sizeof( FullMenuItem ) );
 
     if( newmenu == NULL || newitem == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -133,7 +133,7 @@ FullMenu *SemWINNewMenu( FullMenuItem firstitem )
     newmenu->head = NULL;
     newmenu->tail = NULL;
 
-    ResAddLLItemAtEnd( (void **) &(newmenu->head), (void **) &(newmenu->tail), newitem );
+    ResAddLLItemAtEnd( (void **)&(newmenu->head), (void **)&(newmenu->tail), newitem );
 
     return( newmenu );
 }
@@ -144,7 +144,7 @@ FullMenu *SemWINAddMenuItem( FullMenu *currmenu, FullMenuItem curritem )
     FullMenuItem     *newitem;
 
 
-    newitem = RESALLOC( sizeof(FullMenuItem) );
+    newitem = RESALLOC( sizeof( FullMenuItem ) );
 
     if( newitem == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -154,7 +154,7 @@ FullMenu *SemWINAddMenuItem( FullMenu *currmenu, FullMenuItem curritem )
 
     *newitem = curritem;
 
-    ResAddLLItemAtEnd( (void **) &(currmenu->head), (void **) &(currmenu->tail), newitem );
+    ResAddLLItemAtEnd( (void **)&(currmenu->head), (void **)&(currmenu->tail), newitem );
 
     return( currmenu );
 }

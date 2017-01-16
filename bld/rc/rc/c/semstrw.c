@@ -125,7 +125,7 @@ void SemWINAddStrToStringTable( FullStringTable * currtable,
     } else {
         currblock = newStringTableBlock();
         currblock->BlockNum = blocknum;
-        ResAddLLItemAtEnd( (void **) &(currtable->Head), (void **) &(currtable->Tail), currblock );
+        ResAddLLItemAtEnd( (void **)&(currtable->Head), (void **)&(currtable->Tail), currblock );
     }
 
     currblock->Block.String[stringnum] = WResIDNameFromStr( string );
@@ -169,9 +169,9 @@ static void semMergeStringTables( FullStringTable * currtable,
         currblock = findStringTableBlock( currtable, oldblock->BlockNum );
         if( currblock == NULL ) {
             /* if oldblock in not in currtable move it there from oldtable */
-            ResDeleteLLItem( (void **) &(oldtable->Head), (void **) &(oldtable->Tail), oldblock );
+            ResDeleteLLItem( (void **)&(oldtable->Head), (void **)&(oldtable->Tail), oldblock );
             oldblock->Flags = newblockflags;
-            ResAddLLItemAtEnd( (void **) &(currtable->Head), (void **) &(currtable->Tail), oldblock );
+            ResAddLLItemAtEnd( (void **)&(currtable->Head), (void **)&(currtable->Tail), oldblock );
         } else {
             /* otherwise move the WSemID's to that block */
             mergeStringTableBlocks( currblock, oldblock );

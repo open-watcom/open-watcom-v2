@@ -365,7 +365,7 @@ static size_t SemOS2CountPresParams( PresParamListOS2 *list )
     unsigned            i;
 
     if( list == NULL )
-        return 0;
+        return( 0 );
 
     bytes = 0;
     for( presparams = list->head; presparams != NULL; presparams = presparams->next ) {
@@ -406,7 +406,7 @@ static size_t SemOS2DumpPresParams( char *ptr, PresParamListOS2 *list )
 
 
     if( list == NULL )
-        return 0;
+        return( 0 );
 
     // Total size of presparams
     data  = (uint_32 *)ptr;
@@ -577,7 +577,7 @@ static char *SemOS2BuildTemplateArray( char *ptr, FullDiagCtrlListOS2 *ctrls )
         tmpl = (DialogTemplateItemOS2 *)ptr;
     }
 
-    return ptr;
+    return( ptr );
 }
 
 static char *SemOS2DumpTemplateData( char *base, char *ptr,
@@ -615,8 +615,7 @@ static char *SemOS2DumpTemplateData( char *base, char *ptr,
                 ptr += tmpl->cchText + 1;
             }
         } else {
-            *ptr = '\0';
-            ptr++;
+            *ptr++ = '\0';
         }
 
         // Write out class data if provided
@@ -643,7 +642,7 @@ static char *SemOS2DumpTemplateData( char *base, char *ptr,
         }
     }
 
-    return ptr;
+    return( ptr );
 }
 
 /* The OS/2 dialog templates present us with a problem because the

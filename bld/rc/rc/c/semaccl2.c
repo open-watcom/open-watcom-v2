@@ -160,7 +160,7 @@ FullAccelTableOS2 *SemOS2AddAccelEntry( FullAccelEntryOS2 currentry, FullAccelTa
 
     *newentry = currentry;
 
-    ResAddLLItemAtEnd( (void **) &(currtable->head), (void **) &(currtable->tail), newentry );
+    ResAddLLItemAtEnd( (void **)&(currtable->head), (void **)&(currtable->tail), newentry );
 
     return( currtable );
 }

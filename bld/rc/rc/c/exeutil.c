@@ -231,7 +231,7 @@ RcStatus SeekRead( WResFileID fid, long newpos, void *buff, size_t size )
 #define DOS_EXE_SIGNATURE               0x5a4d
 
 /* If the value at DOS_RELOCATION_ADDRESS_OFFSET < */
-/* WIN_EXE_HEADER_OFFSET + sizeof(uint_32) then the DOS reloction */
+/* WIN_EXE_HEADER_OFFSET + sizeof( uint_32 ) then the DOS reloction */
 /* information starts before the end of the address of the os2_exe_header */
 /* so this is not a valid windows EXE file. */
 
@@ -253,11 +253,11 @@ ExeType FindNEPELXHeader( WResFileID fid, unsigned_32 *nh_offset )
     if( rc != RS_OK )
         return( EXE_TYPE_UNKNOWN );
 
-    if( data < WIN_EXE_HEADER_OFFSET + sizeof(uint_32) ) {
+    if( data < WIN_EXE_HEADER_OFFSET + sizeof( uint_32 ) ) {
         return( EXE_TYPE_UNKNOWN );
     }
 
-    rc = SeekRead( fid, WIN_EXE_HEADER_OFFSET, nh_offset, sizeof(uint_32) );
+    rc = SeekRead( fid, WIN_EXE_HEADER_OFFSET, nh_offset, sizeof( uint_32 ) );
     if( rc != RS_OK )
         return( EXE_TYPE_UNKNOWN );
 

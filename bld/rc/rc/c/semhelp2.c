@@ -82,7 +82,7 @@ FullHelpTableOS2 *SemOS2NewHelpTable( FullHelpEntryOS2 firstentry )
     newtable->head = NULL;
     newtable->tail = NULL;
 
-    ResAddLLItemAtEnd( (void **) &(newtable->head), (void **) &(newtable->tail), newentry );
+    ResAddLLItemAtEnd( (void **)&(newtable->head), (void **)&(newtable->tail), newentry );
 
     return( newtable );
 }
@@ -93,7 +93,7 @@ FullHelpTableOS2 *SemOS2AddHelpItem( FullHelpEntryOS2 currentry,
 {
     FullHelpEntryOS2     *newentry;
 
-    newentry = RESALLOC( sizeof(FullHelpEntryOS2) );
+    newentry = RESALLOC( sizeof( FullHelpEntryOS2 ) );
 
     if( newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -103,7 +103,7 @@ FullHelpTableOS2 *SemOS2AddHelpItem( FullHelpEntryOS2 currentry,
 
     *newentry = currentry;
 
-    ResAddLLItemAtEnd( (void **) &(currtable->head), (void **) &(currtable->tail), newentry );
+    ResAddLLItemAtEnd( (void **)&(currtable->head), (void **)&(currtable->tail), newentry );
 
     return( currtable );
 }
@@ -186,7 +186,7 @@ FullHelpSubTableOS2 *SemOS2NewHelpSubTable( DataElemList *data )
     newtable->head = NULL;
     newtable->tail = NULL;
 
-    ResAddLLItemAtEnd( (void **) &(newtable->head), (void **) &(newtable->tail), newentry );
+    ResAddLLItemAtEnd( (void **)&(newtable->head), (void **)&(newtable->tail), newentry );
 
     return( newtable );
 }
