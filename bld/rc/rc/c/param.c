@@ -772,13 +772,13 @@ static int getcharUTF8( const char **p, uint_32 *c )
 }
 
 
-static int UTF8StringToUnicode( int len, const char *str, char *buf )
-/*******************************************************************/
+static size_t UTF8StringToUnicode( size_t len, const char *str, char *buf )
+/*************************************************************************/
 {
-    int             ret;
-    int             outlen;
+    size_t          ret;
+    size_t          outlen;
     uint_32         unicode;
-    int             i;
+    size_t          i;
 
     ret = 0;
     if( len > 0 ) {

@@ -44,9 +44,9 @@
 
 static char     ConvBuffer[CONV_BUF_SIZE];
 
-static int DefaultConversion( int len, const char *str, char *buf )
+static size_t DefaultConversion( size_t len, const char *str, char *buf )
 {
-    int         i;
+    size_t  i;
 
     if( buf != NULL ) {
         for( i = 0; i < len; i++ ) {
@@ -56,8 +56,6 @@ static int DefaultConversion( int len, const char *str, char *buf )
     }
     return( len * 2 );
 }
-
-int (*ConvToUnicode)(int, const char *, char *) = DefaultConversion;
 
 bool ResWriteUint8( uint_8 newint, WResFileID fid )
 /*************************************************/
@@ -106,7 +104,7 @@ bool WResWriteWResIDNameUni( const WResIDName *name, bool use_unicode, WResFileI
 /*************************************************************************************/
 {
     bool            error;
-    uint_16         numchars;
+    unsigned        numchars;
     char            *ptr;
     bool            freebuf;
 
@@ -126,13 +124,12 @@ bool WResWriteWResIDNameUni( const WResIDName *name, bool use_unicode, WResFileI
             freebuf = true;
             ptr = WRESALLOC( 2 * numchars );
         }
-        numchars = (ConvToUnicode)( numchars, name->Name, ptr ) / 2;
-        error = ResWriteUint16( numchars, fid );
-        numchars *= 2;
+        numchars = ConvToUnicode( numchars, name->Name, ptr );
+        error = ResWriteUint16( numchars / 2, fid );
     } else {
         /* in 16-bit resources the string can be no more than 255 characters */
-        if( numchars > 0xFF )
-            numchars = 0xFF;
+        if( numchars > 255 )
+            numchars = 255;
         ptr = (char *)name->Name;
         error = ResWriteUint8( numchars, fid );
     }
@@ -249,7 +246,7 @@ bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID fid, si
         } else {
             buf = ConvBuffer;
         }
-        len = (ConvToUnicode)( len, string, buf );
+        len = ConvToUnicode( len, string, buf );
         string = buf;
     }
     error = false;
@@ -393,3 +390,5 @@ void WriteInitStatics( void )
 {
     memset( ConvBuffer, 0, CONV_BUF_SIZE * sizeof( char ) );
 }
+
+ConvToUnicode_fn    *ConvToUnicode = DefaultConversion;

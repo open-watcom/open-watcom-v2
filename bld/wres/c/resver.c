@@ -116,7 +116,7 @@ size_t ResSizeVerValueItem( VerValueItem * item, bool use_unicode )
             size = item->strlen + 1;
         }
         if( use_unicode ) {
-            size = ConvToUnicode( size, item->Value.String, NULL);
+            size = ConvToUnicode( size, item->Value.String, NULL );
         }
     }
     return( size );
