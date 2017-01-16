@@ -149,14 +149,12 @@ static void CopyString( void **nextstr, WResIDName **name, bool use_unicode )
         name32 = *nextstr;
         name32->NumChars = currname->NumChars;
         MemUprCpyUni( &name32->Name, &currname->Name, currname->NumChars );
-        *nextstr = (uint_8 *)(*nextstr) + 2 * ( currname->NumChars - 1 )
-                                        + sizeof( StringItem32 );
+        *nextstr = (uint_8 *)(*nextstr) + 2 * ( currname->NumChars - 1 ) + sizeof( StringItem32 );
     } else {
         name16 = *nextstr;
         name16->NumChars = currname->NumChars;
         MemUprCpy( &name16->Name, &currname->Name, currname->NumChars );
-        *nextstr = (uint_8 *)(*nextstr) + currname->NumChars - 1
-                                        + sizeof( StringItem16 );
+        *nextstr = (uint_8 *)(*nextstr) + currname->NumChars - 1 + sizeof( StringItem16 );
     }
 } /* CopyString */
 
@@ -173,15 +171,11 @@ static void ConstructStringBlock( StringsBlock *str )
     /* calculate the size of the block needed */
     str->StringBlockSize = 0;
 #if( 0 ) //may 24 1996 DRW
-    for( currname = str->StringList;
-                currname < str->StringList + str->StringListLen;
-                currname++ ) {
+    for( currname = str->StringList; currname < str->StringList + str->StringListLen; currname++ ) {
         if( str->UseUnicode ) {
-            str->StringBlockSize += sizeof( StringItem32 )
-                                    + 2 * ((**currname).NumChars - 1);
+            str->StringBlockSize += sizeof( StringItem32 ) + 2 * ((**currname).NumChars - 1);
         } else {
-            str->StringBlockSize += sizeof( StringItem16 )
-                                    + (**currname).NumChars - 1;
+            str->StringBlockSize += sizeof( StringItem16 ) + (**currname).NumChars - 1;
         }
     }
 #else
@@ -189,11 +183,9 @@ static void ConstructStringBlock( StringsBlock *str )
     for( i=0; i < cnt; i++ ) {
         currname = str->StringList[i];
         if( str->UseUnicode ) {
-            str->StringBlockSize += sizeof( StringItem32 )
-                                    + 2 * ((*currname).NumChars - 1);
+            str->StringBlockSize += sizeof( StringItem32 ) + 2 * ((*currname).NumChars - 1);
         } else {
-            str->StringBlockSize += sizeof( StringItem16 )
-                                    + (*currname).NumChars - 1;
+            str->StringBlockSize += sizeof( StringItem16 ) + (*currname).NumChars - 1;
         }
     }
 #endif
@@ -204,8 +196,7 @@ static void ConstructStringBlock( StringsBlock *str )
     /* copy the strings into the block */
     nextstring = str->StringBlock;
 #if( 0 ) //may 24 1996 DRW
-    for( currname = str->StringList; currname < str->StringList
-                + str->StringListLen; currname++ ) {
+    for( currname = str->StringList; currname < str->StringList + str->StringListLen; currname++ ) {
         CopyString( &nextstring, currname, str->UseUnicode );
     }
 #else
@@ -390,6 +381,6 @@ extern int_32 StringBlockFind( StringsBlock *str, WResIDName *name )
     if( location == NULL ) {
         return( -1 );
     } else {
-        return( *location - (uint_8 *)str->StringBlock );
+        return( (int_32)( *location - (uint_8 *)str->StringBlock ) );
     }
 }

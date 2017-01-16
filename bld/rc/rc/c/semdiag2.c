@@ -546,8 +546,8 @@ static char *SemOS2BuildTemplateArray( char *ptr, FullDiagCtrlListOS2 *ctrls )
         tmpl->cx            = control->Size.width;
         tmpl->cy            = control->Size.height;
         tmpl->id            = control->ID;
-        tmpl->offPresParams = -1;
-        tmpl->offCtlData    = -1;
+        tmpl->offPresParams = (uint_16)-1;
+        tmpl->offCtlData    = (uint_16)-1;
 
         if( (control->ClassID->Class & 0x80) == 0 ) {
             tmpl->cchClassName = strlen( control->ClassID->ClassName );
@@ -598,14 +598,14 @@ static char *SemOS2DumpTemplateData( char *base, char *ptr,
         // Write out class name if provided
         if( (control->ClassID->Class & 0x80) == 0 ) {
             strcpy( ptr, control->ClassID->ClassName );
-            tmpl->offClassName = ptr - base;
+            tmpl->offClassName = (uint_16)( ptr - base );
             ptr += tmpl->cchClassName + 1;
         }
 
         // IBM's RC always stores at least one character of text
         // even if no text is provided; it could be a buglet but we'll
         // do the same for compatibility.
-        tmpl->offText = ptr - base;
+        tmpl->offText = (uint_16)( ptr - base );
         if( control->Text != NULL ) {
             if( control->Text->ord.fFlag == 0xFF ) {
                 memcpy( ptr, control->Text->name, 3 );
@@ -621,19 +621,19 @@ static char *SemOS2DumpTemplateData( char *base, char *ptr,
         // Write out class data if provided
         if( control->ExtraBytes ) {
             memcpy( ptr, &ctrl->framectl, sizeof( uint_32 ) );
-            tmpl->offCtlData = ptr - base;
+            tmpl->offCtlData = (uint_16)( ptr - base );
             ptr += control->ExtraBytes;
             // Write out class data if provided
             ptr += SemOS2DumpCtlData( ptr, ctrl->dataListHead );
         } else {
             if( ctrl->dataListHead != NULL ) {
-                tmpl->offCtlData = ptr - base;
+                tmpl->offCtlData = (uint_16)( ptr - base );
                 ptr += SemOS2DumpCtlData( ptr, ctrl->dataListHead );
             }
         }
 
         if( ctrl->presParams != NULL ) {
-            tmpl->offPresParams = ptr - base;
+            tmpl->offPresParams = (uint_16)( ptr - base );
             ptr += SemOS2DumpPresParams( ptr, ctrl->presParams );
         }
 
@@ -666,10 +666,11 @@ void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
     char                     *ptr;
 
     size = sizeof( DialogHeaderOS2 ) + SemOS2CalcControlSize( ctrls );
+#if !defined( _M_I86 )
     if( size > 65536 ) {
         // TODO: Error, template is too big
     }
-
+#endif
     tmpl = RESALLOC( size );
 
     head = (DialogHeaderOS2 *)tmpl;
