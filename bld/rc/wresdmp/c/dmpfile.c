@@ -250,7 +250,7 @@ extern int DumpFile( void )
     }
 
     dir = WResInitDir();
-    if (dir == NULL) {
+    if( dir == NULL ) {
         FatalError( "Out of memory" );
     }
 

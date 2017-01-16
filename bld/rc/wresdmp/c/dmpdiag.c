@@ -48,8 +48,8 @@ static void PrintDialogBoxHeader( DialogBoxHeader * head )
     printf( "\tx: %d   y: %d   w: %d   h: %d\n", head->Size.x, head->Size.y,
                 head->Size.width, head->Size.height );
     printf( "\tMenu Name: %-10.10s    ClassName: %-10.10s\n",
-                head->MenuName, head->ClassName );
-    printf( "\tCaption: %-.40\n", head->Caption );
+                (char *)head->MenuName, (char *)head->ClassName );
+    printf( "\tCaption: %-.40s\n", (char *)head->Caption );
     if (head->Style & DS_SETFONT) {
         printf( "\tPoint Size: %d   FontName: %-.20s\n", head->PointSize,
                 head->FontName );

@@ -478,7 +478,7 @@ void printDirContents( ResDirEntry *dir, ExeFile *exeFile,
         if( dir->nameID == NAME ) {
             printf( MSG_DIR_NAME );
             for( i = 0; i < dir->nameSize; i++ ) {
-                printf( "%1s", &dir->name[ i ] );
+                printf( "%1s", (char *)&dir->name[ i ] );
             }
             printIndent( true, param );
             printf( MSG_DIR_NAMEADDRESS, getDirNameAbs( dir, exeFile ) );
