@@ -981,11 +981,12 @@ static bool scanEnvVar( const char *varname, int *nofilenames )
     // This used to cause stack overflow: set foo=@foo && wrc @foo.
     for( info = stack; info != NULL; info = info->next ) {
 #if !defined( __UNIX__ )
-        if( stricmp( varname, info->varname ) == 0 ) // Case-insensitive
+        if( stricmp( varname, info->varname ) == 0 ) {  // Case-insensitive
 #else
-        if( strcmp( varname, info->varname ) == 0 )  // Case-sensitive
+        if( strcmp( varname, info->varname ) == 0 ) {   // Case-sensitive
 #endif
             RcFatalError( ERR_RCVARIABLE_RECURSIVE, varname );
+        }
     }
     argc = ParseEnvVar( env, NULL, NULL );  // count parameters.
     argbufsize = strlen( env ) + 1 + argc;  // inter-parameter spaces map to 0

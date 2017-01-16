@@ -147,8 +147,8 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
     for( exe_type = restab->Dir.Head; exe_type != NULL; exe_type = exe_type->Next ) {
         if( type->TypeName.IsName && (exe_type->Info.type & 0x8000) == 0 ) {
             /* if they are both names */
-            exe_type_name = (StringItem16 *)((char *)restab->Str.StringBlock +
-                            (exe_type->Info.type - restab->Dir.TableSize));
+            exe_type_name = (StringItem16 *)((char *)restab->Str.StringBlock
+                               + (exe_type->Info.type - restab->Dir.TableSize));
             if( exe_type_name->NumChars == type->TypeName.ID.Name.NumChars
               && memicmp( exe_type_name->Name, type->TypeName.ID.Name.Name, exe_type_name->NumChars ) == 0 ) {
                 break;
