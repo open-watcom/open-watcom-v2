@@ -37,6 +37,7 @@
 #include <sys/wait.h>
 #include "trpimp.h"
 #include "trpcomm.h"
+#include "lnxcomm.h"
 
 
 trap_retval ReqFile_get_config( void )
@@ -242,7 +243,7 @@ trap_retval ReqFile_erase( void )
 trap_retval ReqFile_run_cmd( void )
 {
     char                buff[256];
-    char                *argv[4];
+    const char          *argv[4];
     char                *shell;
     pid_t               pid;
     int                 status;
@@ -266,13 +267,13 @@ trap_retval ReqFile_run_cmd( void )
     }
     if ( (pid = fork()) == 0 ) { /* child */
         pid_t   pgrp;
-    
+
         setpgid( 0, 0 );
         pgrp = getpgrp();
         tcsetpgrp( 0, pgrp );
         tcsetpgrp( 1, pgrp );
         tcsetpgrp( 2, pgrp );
-        execv( shell, (const char **)argv );
+        execve( shell, argv, (const char **)dbg_environ );
         exit( 1 );
     }
     /* parent */

@@ -50,31 +50,11 @@ const trap_requests *TrapLoad( const trap_callbacks *client )
     return( &ImpInterface );
 }
 
-#if !defined( __WATCOMC__ ) && !defined( BUILTIN_TRAP_FILE )
-
-void *_nmalloc( unsigned size )
-{
-    return( malloc( size ) );
-}
+#if !defined( BUILTIN_TRAP_FILE )
 
 void *malloc( unsigned size )
 {
     return( Client->malloc( size ) );
-}
-
-void *_nrealloc( void *ptr, unsigned size )
-{
-    return( realloc( ptr, size ) );
-}
-
-void *realloc( void *ptr, unsigned size )
-{
-    return( Client->realloc( ptr, size ) );
-}
-
-void _nfree( void *ptr )
-{
-    free( ptr );
 }
 
 void free( void *ptr )
