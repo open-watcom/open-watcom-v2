@@ -798,6 +798,10 @@
 #define usergate_get_handle_time 0x00000271
 #define usergate_set_handle_time 0x00000272
 
+#define usergate_dup_ini 0x00000273
+
+#define usergate_is_forked 0x00000274
+
 
 
 #ifdef __FLAT__
@@ -1601,6 +1605,10 @@
 #define CallGate_get_handle_time 0x55 0x67 0x9a 113 2 0 0 3 0 0x5d
 #define CallGate_set_handle_time 0x55 0x67 0x9a 114 2 0 0 3 0 0x5d
 
+#define CallGate_dup_ini 0x55 0x67 0x9a 115 2 0 0 3 0 0x5d
+
+#define CallGate_is_forked 0x55 0x67 0x9a 116 2 0 0 3 0 0x5d
+
 #else
 
 #define CallGate_allocate_dos_mem 0x3e 0x67 0x9a 0 0 0 0 3 0
@@ -2401,5 +2409,9 @@
 #define CallGate_is_handle_device 0x3e 0x67 0x9a 112 2 0 0 3 0
 #define CallGate_get_handle_time 0x3e 0x67 0x9a 113 2 0 0 3 0
 #define CallGate_set_handle_time 0x3e 0x67 0x9a 114 2 0 0 3 0
+
+#define CallGate_dup_ini 0x3e 0x67 0x9a 115 2 0 0 3 0
+
+#define CallGate_is_forked 0x3e 0x67 0x9a 116 2 0 0 3 0
 
 #endif

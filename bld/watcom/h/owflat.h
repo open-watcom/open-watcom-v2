@@ -1726,8 +1726,12 @@
 
 #pragma aux RdosFork = \
     CallGate_fork  \
-    "movsx eax,ax"  \
-    parm [esi] [edi] \
+    "movzx eax,ax"  \
+    value [eax];
+
+#pragma aux RdosIsForked = \
+    CallGate_is_forked  \
+    CarryToBool \
     value [eax];
 
 #pragma aux RdosUnloadExe = \
@@ -2991,6 +2995,12 @@
 #pragma aux RdosCloseIni = \
     CallGate_close_ini \
     parm [ebx];
+
+#pragma aux RdosDupIni = \
+    CallGate_dup_ini \
+    ValidateHandle \
+    parm [ebx] \
+    value [ebx];
 
 #pragma aux RdosGotoIniSection = \
     CallGate_goto_ini_section \
