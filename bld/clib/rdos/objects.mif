@@ -1,5 +1,6 @@
 #                  rdu
 #===========================
 !inject rdos.obj   rdu
+!inject fork.obj   rdu
 
 !include ../../../../objlist.mif

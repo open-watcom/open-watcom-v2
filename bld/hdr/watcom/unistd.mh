@@ -255,6 +255,12 @@ _WCRTLINK extern char   *_getcwd( char *__buf, size_t __size );
 _WCRTLINK extern int    getopt( int __argc, char * const __argv[], const char *__optstring );
 :segment DOS
 _WCRTLINK extern int    getpid( void );
+
+#if defined(__RDOS__)
+:include pid_t.sp
+_WCRTLINK extern pid_t  fork( void );
+#endif
+
 :endsegment
 :segment QNX | LINUX
 _WCRTLINK extern pid_t  getpid( void );
