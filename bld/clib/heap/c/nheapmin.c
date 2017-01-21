@@ -78,9 +78,9 @@ _WCRTLINK int _nheapmin( void )
     defined(__RDOS__)
 static int __ReturnMemToSystem( mheapptr mhp )
 {
-    mheapptr pnext;
+    mheapptr next_mhp;
 
-    pnext = mhp->next;
+    next_mhp = mhp->next;
   #if defined(__WARP__)
     if( DosFreeMem( (PBYTE)mhp ) )
         return( -1 );
@@ -102,8 +102,8 @@ static int __ReturnMemToSystem( mheapptr mhp )
     RdosFreeMem( mhp );
   #endif
     if( __MiniHeapRover == mhp ) {  // Update rovers
-        if( pnext ) {
-            __MiniHeapRover = pnext;
+        if( next_mhp != NULL ) {
+            __MiniHeapRover = next_mhp;
         } else {
             __MiniHeapRover = __nheapbeg;
             __LargestSizeB4MiniHeapRover = 0;
@@ -122,19 +122,19 @@ static int __ReturnMemToSystem( mheapptr mhp )
 
 static void __ReleaseMiniHeap( mheapptr mhp )
 {
-    mheapptr pprev;
-    mheapptr pnext;
+    mheapptr prev_mhp;
+    mheapptr next_mhp;
 
-    pprev = mhp->prev;
-    pnext = mhp->next;
+    prev_mhp = mhp->prev;
+    next_mhp = mhp->next;
     if( __ReturnMemToSystem( mhp ) == 0 ) {
-        if( pprev == NULL ) {
-            __nheapbeg = pnext;
+        if( prev_mhp == NULL ) {
+            __nheapbeg = next_mhp;
         } else {
-            pprev->next = pnext;
+            prev_mhp->next = next_mhp;
         }
-        if( pnext != NULL ) {
-            pnext->prev = pprev;
+        if( next_mhp != NULL ) {
+            next_mhp->prev = prev_mhp;
         }
     } //else: do not unlink if the memory cannot be freed successfully
 }
@@ -253,11 +253,11 @@ _WCRTLINK int _nheapshrink( void )
 #else
     // Shrink by releasing mini-heaps
     {
-        mheapptr pnext;
+        mheapptr next_mhp;
 
         _AccessNHeap();
-        for( mhp = __nheapbeg; mhp != NULL; mhp = pnext ) {
-            pnext = mhp->next;
+        for( mhp = __nheapbeg; mhp != NULL; mhp = next_mhp ) {
+            next_mhp = mhp->next;
             if( mhp->len - sizeof( miniheapblkp ) == (mhp->freehead.prev)->len ) {
                 __ReleaseMiniHeap( mhp );
             }

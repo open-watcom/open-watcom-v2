@@ -42,6 +42,8 @@
 #define VOID_BPTR       _WCNEAR *
 #endif
 
+#define HUGE_NULL       ((void _WCHUGE *)NULL)
+
 typedef unsigned int    tag;
 typedef unsigned char   _WCNEAR *PTR;
 typedef unsigned char   _WCFAR *FARPTR;
@@ -78,7 +80,7 @@ typedef struct heapblk {
     unsigned int        numalloc;       /* number of allocated blocks in heap */
     unsigned int        numfree;        /* number of free blocks in the heap */
     freelist            freehead;       /* listhead of free blocks in heap */
-#if defined(__WARP__)
+#if defined( __WARP__ )
     unsigned int        spare;          /* not used, match miniheapblkp size */
 #endif
 } heapblk;
@@ -112,7 +114,7 @@ typedef struct heapblkp {
     unsigned int        numalloc;
     unsigned int        numfree;
     frl                 freehead;
-#if defined(__WARP__)
+#if defined( __WARP__ )
     unsigned int        spare;          /* not used, match miniheapblkp size */
 #endif
 } heapblkp;
@@ -127,7 +129,7 @@ typedef struct miniheapblkp {
     unsigned int        numalloc;
     unsigned int        numfree;
     frl                 freehead;
-#if defined(__WARP__)
+#if defined( __WARP__ )
     unsigned int        used_obj_any    :1; /* allocated with OBJ_ANY - block may be in high memory */
 #endif
 } miniheapblkp;
@@ -152,30 +154,30 @@ typedef struct dpmi_hdr {
 #endif
 
 extern mheapptr         _WCNEAR __nheapbeg;
-#if defined(_M_IX86)
+#if defined( _M_I86 )
 extern __segment        __fheap;
 extern __segment        __bheap;
 extern __segment        __fheapRover;
 #endif
 extern int              __heap_enabled;
 extern unsigned int     __LargestSizeB4Rover;
-extern miniheapblkp     _WCNEAR *__MiniHeapRover;
+extern mheapptr         __MiniHeapRover;
 extern unsigned int     __LargestSizeB4MiniHeapRover;
-extern miniheapblkp     _WCNEAR *__MiniHeapFreeRover;
+extern mheapptr         __MiniHeapFreeRover;
 
 extern size_t           __LastFree( void );
 extern int              __NHeapWalk( struct _heapinfo *entry, mheapptr heapbeg );
 extern int              __ExpandDGROUP( unsigned int __amt );
-#if defined(_M_IX86)
+#if defined( _M_I86 )
 extern __segment        __AllocSeg( unsigned int __amt );
 extern int              __GrowSeg( __segment __seg, unsigned int __amt );
 extern int              __FreeSeg( __segment __seg );
-extern int              __HeapWalk( struct _heapinfo *entry, __segment __seg, unsigned all );
-extern int              __HeapMin( __segment __seg, unsigned one_seg );
+extern int              __HeapWalk( struct _heapinfo *entry, __segment __seg, unsigned one_heap );
+extern int              __HeapMin( __segment __seg, unsigned one_heap );
 extern int              __HeapSet( __segment __seg, unsigned fill );
 #endif
 
-#if defined(__DOS_EXT__)
+#if defined( __DOS_EXT__ )
 extern void             __FreeDPMIBlocks( void );
 extern void             *__ReAllocDPMIBlock( frlptr p1, unsigned req_size );
 extern void             *__ExpandDPMIBlock( frlptr, unsigned );
@@ -184,11 +186,11 @@ extern void             *__ExpandDPMIBlock( frlptr, unsigned );
 extern int              __HeapManager_expand( __segment seg, unsigned offset,
                             size_t req_size, size_t *growth_size );
 
-#if defined(_M_I86)
+#if defined( _M_I86 )
 extern void             _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount );
 #endif
 
-#if defined(_M_IX86)
+#if defined( _M_IX86 )
  #define _DGroup()      FP_SEG((&__nheapbeg))
 #else
  #define _DGroup()      0
@@ -196,9 +198,9 @@ extern void             _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amo
 // __IsCtsNHeap() is used to determine whether the operating system provides
 // a continuous near heap block. __ExpandDGroup should slice for more near
 // heap under those operating systems with __IsCtsNHeap() == 1.
-#if defined(__WARP__) || defined(__NT__) || defined(__WINDOWS__) || defined(__RDOS__)
+#if defined( __WARP__ ) || defined( __NT__ ) || defined( __WINDOWS__ ) || defined( __RDOS__ )
  #define __IsCtsNHeap() (0)
-#elif defined(__DOS_EXT__)
+#elif defined( __DOS_EXT__ )
  #define __IsCtsNHeap() (!(_IsRationalZeroBase() || _IsCodeBuilder()))
 #else
  #define __IsCtsNHeap() (1)
@@ -206,8 +208,8 @@ extern void             _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amo
 
 extern  unsigned        __MemAllocator( unsigned __sz, __segment __seg, unsigned __off );
 extern  void            __MemFree( unsigned __ptr, __segment __seg, unsigned __off );
-#if defined(_M_IX86)
- #if defined(_M_I86)
+#if defined( _M_IX86 )
+ #if defined( _M_I86 )
   #pragma aux __MemAllocator "*" parm [ax] [dx] [bx];
   #pragma aux __MemFree      "*" parm [ax] [dx] [bx];
  #else
@@ -238,7 +240,7 @@ extern  void            __MemFree( unsigned __ptr, __segment __seg, unsigned __o
 #define __HM_FAIL       1
 #define __HM_TRYGROW    2
 
-#if defined(__WARP__)
+#if defined( __WARP__ )
 extern unsigned char    _os2_use_obj_any;           // Prefer high memory heap block
 extern unsigned char    _os2_obj_any_supported;     // DosAllocMem supports OBJ_ANY
 #endif

@@ -93,7 +93,7 @@ _WCRTLINK int _bheapchk( __segment seg )
     heap_status = checkFreeList( &free_size, seg );
     if( heap_status == _HEAPOK ) {
         hi._pentry = NULL;
-        while( (heap_status = __HeapWalk( &hi, (seg == _NULLSEG ? __bheap : seg), (seg != _NULLSEG) )) == _HEAPOK ) {
+        while( (heap_status = __HeapWalk( &hi, (seg == _NULLSEG ? __bheap : seg), seg )) == _HEAPOK ) {
             if( hi._useflag == _FREEENTRY ) {
                 heap_status = checkFree( hi._pentry );
                 if( heap_status != _HEAPOK )

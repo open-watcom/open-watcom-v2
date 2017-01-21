@@ -44,7 +44,7 @@
 
 mheapptr        _WCNEAR __nheapbeg = NULL;
 
-miniheapblkp    _WCNEAR *__MiniHeapRover = NULL;
+mheapptr        __MiniHeapRover = NULL;
 unsigned int    __LargestSizeB4MiniHeapRover = 0;
 
 #if defined(__WARP__)
@@ -138,7 +138,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
     unsigned        size;
     unsigned        ptr;
     unsigned char   expanded;
-    mheapptr        miniheap_ptr;
+    mheapptr        mhp;
 
 #if defined(__WARP__)
     unsigned char   use_obj_any;
@@ -165,24 +165,24 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
 #endif
         // Figure out where to start looking for free blocks
         if( size > __LargestSizeB4MiniHeapRover ) {
-            miniheap_ptr = __MiniHeapRover;
-            if( miniheap_ptr == NULL ) {
+            mhp = __MiniHeapRover;
+            if( mhp == NULL ) {
                 __LargestSizeB4MiniHeapRover = 0;   // force to be updated
-                miniheap_ptr = __nheapbeg;
+                mhp = __nheapbeg;
             }
         } else {
             __LargestSizeB4MiniHeapRover = 0;   // force to be updated
-            miniheap_ptr = __nheapbeg;
+            mhp = __nheapbeg;
         }
         // Search for free block
-        for( ; miniheap_ptr != NULL; miniheap_ptr = miniheap_ptr->next ) {
-            __MiniHeapRover = miniheap_ptr;
-            largest = miniheap_ptr->largest_blk;
+        for( ; mhp != NULL; mhp = mhp->next ) {
+            __MiniHeapRover = mhp;
+            largest = mhp->largest_blk;
 #if defined(__WARP__)
-            if( use_obj_any == ( miniheap_ptr->used_obj_any != 0 ) ) {
+            if( use_obj_any == ( mhp->used_obj_any != 0 ) ) {
 #endif // __WARP__
               if( largest >= amt ) {
-                  ptr = __MemAllocator( amt, _DGroup(), (unsigned)miniheap_ptr );
+                  ptr = __MemAllocator( amt, _DGroup(), (unsigned)mhp );
                   if( ptr != 0 ) {
                       goto lbl_release_heap;
                   }

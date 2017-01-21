@@ -60,7 +60,7 @@
 #define BLKSIZE_ALIGN           0x1000  // 4kB
 #endif
 
-static frlptr __LinkUpNewMHeap( mheapptr );
+static frlptr __LinkUpNewMHeap( mheapptr mhp );
 
 #if defined(__DOS_EXT__)
 
@@ -73,30 +73,30 @@ extern  int SegmentLimit( void );
         value                   [eax] \
         modify exact            [eax];
 
-static void __unlink( mheapptr miniheapptr )
+static void __unlink( mheapptr mhp )
 {
-    mheapptr            prev_link;
-    mheapptr            next_link;
+    mheapptr            prev_mhp;
+    mheapptr            next_mhp;
 
-    if( __nheapbeg == miniheapptr ) {
-        __nheapbeg = miniheapptr->next;
+    if( __nheapbeg == mhp ) {
+        __nheapbeg = mhp->next;
     }
-    if( miniheapptr == __MiniHeapRover ) {
-        __MiniHeapRover = miniheapptr->prev;
+    if( mhp == __MiniHeapRover ) {
+        __MiniHeapRover = mhp->prev;
         if( __MiniHeapRover == NULL ) {
             __MiniHeapRover = __nheapbeg;
             __LargestSizeB4MiniHeapRover = 0;
         }
     }
-    if( miniheapptr == __MiniHeapFreeRover ) {
+    if( mhp == __MiniHeapFreeRover ) {
         __MiniHeapFreeRover = 0;
     }
-    prev_link = miniheapptr->prev;
-    next_link = miniheapptr->next;
-    if( prev_link != NULL )
-        prev_link->next = next_link;
-    if( next_link != NULL ) {
-        next_link->prev = prev_link;
+    prev_mhp = mhp->prev;
+    next_mhp = mhp->next;
+    if( prev_mhp != NULL )
+        prev_mhp->next = next_mhp;
+    if( next_mhp != NULL ) {
+        next_mhp->prev = prev_mhp;
     }
 }
 
@@ -104,10 +104,10 @@ void __FreeDPMIBlocks( void )
 {
     mheapptr    mhp;
     dpmi_hdr    *dpmi;
-    mheapptr    mhp_next;
+    mheapptr    next_mhp;
 
-    for( mhp = __nheapbeg; mhp != NULL; mhp = mhp_next ) {
-        mhp_next = mhp->next;
+    for( mhp = __nheapbeg; mhp != NULL; mhp = next_mhp ) {
+        next_mhp = mhp->next;
         // see if the last free entry has the full size of
         // the DPMI block ( - overhead).  If it is then we can give this
         // DPMI block back to the DPMI host.
@@ -176,50 +176,50 @@ void *__ReAllocDPMIBlock( frlptr p1, unsigned req_size )
 }
 #endif
 
-static frlptr __LinkUpNewMHeap( mheapptr p1 ) // originally __AddNewHeap()
+static frlptr __LinkUpNewMHeap( mheapptr mhp1 ) // originally __AddNewHeap()
 {
-    mheapptr    p2;
-    mheapptr    p2_prev;
+    mheapptr    mhp2;
+    mheapptr    prev_mhp2;
     tag         *last_tag;
     unsigned    amount;
 
     /* insert into ordered heap list (14-jun-91 AFS) */
     /* logic wasn't inserting heaps in proper ascending order */
     /* (09-nov-93 Fred) */
-    p2_prev = NULL;
-    for( p2 = __nheapbeg; p2 != NULL; p2 = p2->next ) {
-        if( p1 < p2 )
+    prev_mhp2 = NULL;
+    for( mhp2 = __nheapbeg; mhp2 != NULL; mhp2 = mhp2->next ) {
+        if( mhp1 < mhp2 )
             break;
-        p2_prev = p2;
+        prev_mhp2 = mhp2;
     }
-    /* ascending order should be: p2_prev < p1 < p2  */
-    /* except for special cases when p2_prev and/or p2 are NULL */
-    p1->prev = p2_prev;
-    p1->next = p2;
-    if( p2_prev != NULL ) {
-        p2_prev->next = p1;
-    } else {            /* add p1 to beginning of heap */
-        __nheapbeg = p1;
+    /* ascending order should be: prev_mhp2 < mhp1 < mhp2  */
+    /* except for special cases when prev_mhp2 and/or mhp2 are NULL */
+    mhp1->prev = prev_mhp2;
+    mhp1->next = mhp2;
+    if( prev_mhp2 != NULL ) {
+        prev_mhp2->next = mhp1;
+    } else {            /* add mhp1 to beginning of heap */
+        __nheapbeg = mhp1;
     }
-    if( p2 != NULL ) {
-        /* insert before 'p2' (list is non-empty) */
-        p2->prev = p1;
+    if( mhp2 != NULL ) {
+        /* insert before 'mhp2' (list is non-empty) */
+        mhp2->prev = mhp1;
     }
-    amount = p1->len - sizeof( miniheapblkp );
+    amount = mhp1->len - sizeof( miniheapblkp );
     /* Fill out the new miniheap descriptor */
-    p1->freehead.len = 0;
-    p1->freehead.prev = &p1->freehead;
-    p1->freehead.next = &p1->freehead;
-    p1->rover = &p1->freehead;
-    p1->b4rover = 0;
-    p1->numalloc = 0;
-    p1->numfree  = 0;
-    p1++;
-    ((frlptr)p1)->len = amount;
+    mhp1->freehead.len = 0;
+    mhp1->freehead.prev = &mhp1->freehead;
+    mhp1->freehead.next = &mhp1->freehead;
+    mhp1->rover = &mhp1->freehead;
+    mhp1->b4rover = 0;
+    mhp1->numalloc = 0;
+    mhp1->numfree  = 0;
+    mhp1++;
+    ((frlptr)mhp1)->len = amount;
     /* fix up end of heap links */
-    last_tag = (tag *) ( (PTR)p1 + amount );
+    last_tag = (tag *) ( (PTR)mhp1 + amount );
     *last_tag = END_TAG;
-    return( (frlptr)p1 );
+    return( (frlptr)mhp1 );
 }
 
 #if !( defined(__WINDOWS__) || defined(__WARP__) || defined(__NT__) )
@@ -361,7 +361,7 @@ static int __AdjustAmount( unsigned *amount )
   || defined(__CALL21__) || defined(__DOS_EXT__) || defined(__RDOS__)
 static int __CreateNewNHeap( unsigned amount )
 {
-    mheapptr        p1;
+    mheapptr        mhp1;
     frlptr          flp;
     unsigned        brk_value;
   #if defined(__WARP__)
@@ -456,19 +456,19 @@ static int __CreateNewNHeap( unsigned amount )
         return( 0 );
     }
     /* we've got a new heap block */
-    p1 = (mheapptr)brk_value;
-    p1->len = amount;
+    mhp1 = (mheapptr)brk_value;
+    mhp1->len = amount;
   #if defined(__WARP__)
     // Remeber if block was allocated with OBJ_ANY - may be in high memory
-    p1->used_obj_any = ( _os2_obj_any_supported && _os2_use_obj_any );
+    mhp1->used_obj_any = ( _os2_obj_any_supported && _os2_use_obj_any );
   #endif
     // Now link it up
-    flp = __LinkUpNewMHeap( p1 );
+    flp = __LinkUpNewMHeap( mhp1 );
     amount = flp->len;
     /* build a block for _nfree() */
     SET_MEMBLK_SIZE_USED( flp, amount );
-    ++p1->numalloc;
-    p1->largest_blk = 0;
+    ++mhp1->numalloc;
+    mhp1->largest_blk = 0;
     _nfree( (PTR)flp + TAG_SIZE );
     return( 1 );
 }
@@ -482,7 +482,7 @@ int __ExpandDGROUP( unsigned amount )
     _nheapshrink();
     return( __CreateNewNHeap( amount ) );
 #else
-    mheapptr    p1;
+    mheapptr    mhp1;
     frlptr      flp;
     unsigned    brk_value;
     tag         *last_tag;
@@ -527,21 +527,21 @@ int __ExpandDGROUP( unsigned amount )
     } else {
         amount -= TAG_SIZE;
     }
-    for( p1 = __nheapbeg; p1 != NULL; p1 = p1->next ) {
-        if( p1->next == NULL )
+    for( mhp1 = __nheapbeg; mhp1 != NULL; mhp1 = mhp1->next ) {
+        if( mhp1->next == NULL )
             break;
-        if( (unsigned)p1 <= brk_value && ((unsigned)p1) + p1->len + TAG_SIZE >= brk_value ) {
+        if( (unsigned)mhp1 <= brk_value && ((unsigned)mhp1) + mhp1->len + TAG_SIZE >= brk_value ) {
             break;
         }
     }
-    if( (p1 != NULL) && ((brk_value - TAG_SIZE) == (unsigned)( (PTR)p1 + p1->len) ) ) {
+    if( (mhp1 != NULL) && ((brk_value - TAG_SIZE) == (unsigned)( (PTR)mhp1 + mhp1->len) ) ) {
         /* we are extending the previous heap block (slicing) */
         /* nb. account for the end-of-heap tag */
         brk_value -= TAG_SIZE;
         amount += TAG_SIZE;
         flp = (frlptr) brk_value;
         /* adjust current entry in heap list */
-        p1->len += amount;
+        mhp1->len += amount;
         /* fix up end of heap links */
         last_tag = (tag *) ( (PTR)flp + amount );
         last_tag[0] = END_TAG;
@@ -553,15 +553,15 @@ int __ExpandDGROUP( unsigned amount )
         }
         // Initializing the near heap if __nheapbeg == NULL,
         // otherwise, a new mini-heap is getting linked up
-        p1 = (mheapptr)brk_value;
-        p1->len = amount;
-        flp = __LinkUpNewMHeap( p1 );
+        mhp1 = (mheapptr)brk_value;
+        mhp1->len = amount;
+        flp = __LinkUpNewMHeap( mhp1 );
         amount = flp->len;
     }
     /* build a block for _nfree() */
     SET_MEMBLK_SIZE_USED( flp, amount );
-    ++p1->numalloc;                         /* 28-dec-90 */
-    p1->largest_blk = ~0;    /* set to largest value to be safe */
+    ++mhp1->numalloc;
+    mhp1->largest_blk = ~0;    /* set to largest value to be safe */
     _nfree( (PTR)flp + TAG_SIZE );
     return( 1 );
 #endif

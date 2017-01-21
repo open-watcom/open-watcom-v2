@@ -46,7 +46,7 @@ _WCRTLINK void free( void *stg )
 
 #endif
 
-miniheapblkp _WCNEAR     *__MiniHeapFreeRover;
+mheapptr    __MiniHeapFreeRover;
 
 /* By setting __ALLOC_DEBUG it is possible to spot memory allocation errors in RDOS target */
 
@@ -63,7 +63,8 @@ _WCRTLINK void _nfree( void _WCNEAR *stg )
 
 _WCRTLINK void _nfree( void _WCNEAR *stg )
 {
-    mheapptr            p1,p2;
+    mheapptr        mhp1;
+    mheapptr        mhp2;
 
     if( !stg )
         return;
@@ -71,48 +72,48 @@ _WCRTLINK void _nfree( void _WCNEAR *stg )
     _AccessNHeap();
     do {
         // first try some likely locations
-        p1 = __MiniHeapFreeRover;
-        if( p1 ) {
-            if( (PTR)p1 <= (PTR)stg && (PTR)p1+p1->len > (PTR)stg ) {
+        mhp1 = __MiniHeapFreeRover;
+        if( mhp1 != NULL ) {
+            if( (PTR)mhp1 <= (PTR)stg && (PTR)mhp1 + mhp1->len > (PTR)stg ) {
                 break;
             }
-            p2 = p1;
-            p1 = p1->prev;
-            if( p1 ) {
-                if( (PTR)p1 <= (PTR)stg && (PTR)p1+p1->len > (PTR)stg ) {
+            mhp2 = mhp1;
+            mhp1 = mhp1->prev;
+            if( mhp1 != NULL ) {
+                if( (PTR)mhp1 <= (PTR)stg && (PTR)mhp1 + mhp1->len > (PTR)stg ) {
                     break;
                 }
             }
-            p1 = p2->next;
-            if( p1 ) {
-                if( (PTR)p1 <= (PTR)stg && (PTR)p1+p1->len > (PTR)stg ) {
+            mhp1 = mhp2->next;
+            if( mhp1 != NULL ) {
+                if( (PTR)mhp1 <= (PTR)stg && (PTR)mhp1 + mhp1->len > (PTR)stg ) {
                     break;
                 }
             }
         }
-        p1 = __MiniHeapRover;
-        if( p1 ) {
-            if( (PTR)p1 <= (PTR)stg && (PTR)p1+p1->len > (PTR)stg ) {
+        mhp1 = __MiniHeapRover;
+        if( mhp1 != NULL ) {
+            if( (PTR)mhp1 <= (PTR)stg && (PTR)mhp1 + mhp1->len > (PTR)stg ) {
                 break;
             }
-            p2 = p1;
-            p1 = p1->prev;
-            if( p1 ) {
-                if( (PTR)p1 <= (PTR)stg && (PTR)p1+p1->len > (PTR)stg ) {
+            mhp2 = mhp1;
+            mhp1 = mhp1->prev;
+            if( mhp1 != NULL ) {
+                if( (PTR)mhp1 <= (PTR)stg && (PTR)mhp1 + mhp1->len > (PTR)stg ) {
                     break;
                 }
             }
-            p1 = p2->next;
-            if( p1 ) {
-                if( (PTR)p1 <= (PTR)stg && (PTR)p1+p1->len > (PTR)stg ) {
+            mhp1 = mhp2->next;
+            if( mhp1 != NULL ) {
+                if( (PTR)mhp1 <= (PTR)stg && (PTR)mhp1 + mhp1->len > (PTR)stg ) {
                     break;
                 }
             }
         }
 
         // not found near rover, so search the list
-        for( p1 = __nheapbeg; p1 != NULL; p1 = p1->next ) {
-            if( (PTR)p1 <= (PTR)stg && (PTR)p1+p1->len > (PTR)stg ) {
+        for( mhp1 = __nheapbeg; mhp1 != NULL; mhp1 = mhp1->next ) {
+            if( (PTR)mhp1 <= (PTR)stg && (PTR)mhp1 + mhp1->len > (PTR)stg ) {
                 // break twice!
                 goto found_it;
             }
@@ -125,11 +126,11 @@ _WCRTLINK void _nfree( void _WCNEAR *stg )
 
 found_it:
     // we found the miniheap, free the storage
-    __MemFree( (unsigned)stg, _DGroup(), (unsigned) p1 );
-    __MiniHeapFreeRover = p1;
-    if( p1 < __MiniHeapRover ) {
-        if( p1->largest_blk > __LargestSizeB4MiniHeapRover ) {
-            __LargestSizeB4MiniHeapRover = p1->largest_blk;
+    __MemFree( (unsigned)stg, _DGroup(), (unsigned)mhp1 );
+    __MiniHeapFreeRover = mhp1;
+    if( mhp1 < __MiniHeapRover ) {
+        if( mhp1->largest_blk > __LargestSizeB4MiniHeapRover ) {
+            __LargestSizeB4MiniHeapRover = mhp1->largest_blk;
         }
     }
     _ReleaseNHeap();

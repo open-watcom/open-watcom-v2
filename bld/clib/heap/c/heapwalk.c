@@ -76,7 +76,7 @@ static int verifyHeapList( unsigned seg )
     return( _HEAPOK );
 }
 
-int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned all_segs )
+int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
 {
     heapblk     _WCFAR *prev_heap;
     heapblk     _WCFAR *next_heap;
@@ -89,7 +89,7 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned all_segs )
     p = entry->_pentry;
     if( p != NULL ) {
         seg = FP_SEG(p);
-    } else if( all_segs == 0 ) {
+    } else if( one_heap == 0 ) {
         /* we are starting a multi-heap walk */
         if( verifyHeapList( seg ) != _HEAPOK ) {
             return( _HEAPBADBEGIN );
@@ -123,7 +123,7 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned all_segs )
         if( p->len != END_TAG )
             break;
         seg =pheap->nextseg;
-        if( seg == 0 || all_segs != 0 ) {
+        if( seg == 0 || one_heap != 0 ) {
             entry->_useflag = _USEDENTRY;
             entry->_size    = 0;
             entry->_pentry  = NULL;

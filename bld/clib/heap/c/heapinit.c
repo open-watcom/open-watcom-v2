@@ -38,27 +38,27 @@
 
 void _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount )
 {
-    mheapptr p1;
+    mheapptr mhp1;
     tag *last_tag;
 
-    p1 = start;
+    mhp1 = start;
     amount -= sizeof( miniheapblkp ) + TAG_SIZE;
-    __nheapbeg = p1;
-    p1->len  = amount + sizeof( miniheapblkp );
-    p1->prev = NULL;
-    p1->next = NULL;
-    p1->rover = &p1->freehead;
-    p1->freehead.prev = &p1->freehead;
-    p1->freehead.next = &p1->freehead;
-    p1->numalloc = 0;
-    p1->numfree = 0;
-    ++p1;
+    __nheapbeg = mhp1;
+    mhp1->len  = amount + sizeof( miniheapblkp );
+    mhp1->prev = NULL;
+    mhp1->next = NULL;
+    mhp1->rover = &mhp1->freehead;
+    mhp1->freehead.prev = &mhp1->freehead;
+    mhp1->freehead.next = &mhp1->freehead;
+    mhp1->numalloc = 0;
+    mhp1->numfree = 0;
+    ++mhp1;
     /* fix up end of heap links */
-    last_tag = (tag *) ( (PTR)p1 + amount );
+    last_tag = (tag *) ( (PTR)mhp1 + amount );
     last_tag[0] = END_TAG;
     /* build a block for _nfree() */
-    SET_MEMBLK_SIZE_USED( (frlptr)p1, amount );
+    SET_MEMBLK_SIZE_USED( (frlptr)mhp1, amount );
     ++__nheapbeg->numalloc;
     __nheapbeg->largest_blk = ~0;    /* set to largest value to be safe */
-    _nfree( (PTR)p1 + TAG_SIZE );
+    _nfree( (PTR)mhp1 + TAG_SIZE );
 }

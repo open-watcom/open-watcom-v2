@@ -44,20 +44,20 @@ _WCRTLINK int _heapwalk( struct _heapinfo *entry )
     }
 #endif
 
-int __NHeapWalk( struct _heapinfo *entry, mheapptr heapbeg )
+int __NHeapWalk( struct _heapinfo *entry, mheapptr mhp )
     {
         frlptr p;
         frlptr q;
 
-        if( heapbeg == NULL ) {
+        if( mhp == NULL ) {
             return( _HEAPEMPTY );
         }
         p = (frlptr)(entry->_pentry);
         if( p == NULL ) {
-            p = (frlptr)(heapbeg + 1);
+            p = (frlptr)(mhp + 1);
         } else {    /* advance to next entry */
-            for( heapbeg = __nheapbeg; heapbeg->next != NULL; heapbeg = heapbeg->next ) {
-                if( (PTR)heapbeg <= (PTR)p && (PTR)heapbeg + heapbeg->len > (PTR)p ) {
+            for( mhp = __nheapbeg; mhp->next != NULL; mhp = mhp->next ) {
+                if( (PTR)mhp <= (PTR)p && (PTR)mhp + mhp->len > (PTR)p ) {
                     break;
                 }
             }
@@ -69,14 +69,14 @@ int __NHeapWalk( struct _heapinfo *entry, mheapptr heapbeg )
         }
         for( ;; ) {
             if( p->len == END_TAG ) {
-                if( heapbeg->next == NULL ) {
+                if( mhp->next == NULL ) {
                     entry->_useflag = _USEDENTRY;
                     entry->_size    = 0;
                     entry->_pentry  = NULL;
                     return( _HEAPEND );
                 } else { // We advance to next miniheapblk
-                    heapbeg = heapbeg->next;
-                    p = (frlptr)(heapbeg + 1);
+                    mhp = mhp->next;
+                    p = (frlptr)(mhp + 1);
                 }
             } else {
                 break;

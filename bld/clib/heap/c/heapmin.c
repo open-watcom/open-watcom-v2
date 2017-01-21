@@ -53,7 +53,7 @@
 #include "seterrno.h"
 
 
-int __HeapMin( __segment seg, unsigned one_seg )
+int __HeapMin( __segment seg, unsigned one_heap )
 {
     tag                 last_len;
     tag                 adjust_len;
@@ -75,7 +75,7 @@ int __HeapMin( __segment seg, unsigned one_seg )
         heap_seg = seg;
         seg = heap->nextseg;
         if( heap->numfree == 0 ) {      /* full heap */
-            if( one_seg != 0 )
+            if( one_heap != 0 )
                 break;
             continue;
         }
