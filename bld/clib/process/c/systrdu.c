@@ -51,6 +51,6 @@ _WCRTLINK int system( const CHAR_TYPE *cmd )
         name = "z:\\command.exe";
     }
 
-    ret_code = spawnlp( 0, name, "command", "/c", cmd, NULL );
+    ret_code = spawnlp( P_WAIT, name, "command", "/c", cmd, NULL );
     return( ret_code );
 }
