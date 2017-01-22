@@ -152,7 +152,7 @@ int __GrowSeg( __segment seg, unsigned int amount )
         if( pfree->len > p->largest_blk )
             p->largest_blk = pfree->len;
         last_tag = MK_FP( seg, p->heaplen - TAG_SIZE * 2 );
-        *last_tag = END_TAG;
+        last_tag[0] = END_TAG;
         last_tag[1] = 0;            /* link to next piece of near heap */
         return( 1 );                /* indicate segment was grown */
     }

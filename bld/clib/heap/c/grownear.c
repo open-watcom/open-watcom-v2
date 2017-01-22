@@ -218,7 +218,7 @@ static frlptr __LinkUpNewMHeap( mheapptr mhp1 ) // originally __AddNewHeap()
     ((frlptr)mhp1)->len = amount;
     /* fix up end of heap links */
     last_tag = (tag *) ( (PTR)mhp1 + amount );
-    *last_tag = END_TAG;
+    last_tag[0] = END_TAG;
     return( (frlptr)mhp1 );
 }
 

@@ -138,7 +138,7 @@ __segment __AllocSeg( unsigned int amount )
     p->first.prev = offsetof( heapblk, freehead );
     p->first.next = offsetof( heapblk, freehead );
     last_tag = MK_FP( seg, p->h.heaplen - TAG_SIZE * 2 );
-    *last_tag = END_TAG;
+    last_tag[0] = END_TAG;
     last_tag[1] = 0;        /* link to next piece of near heap */
     return( seg );          /* return allocated segment */
 }
