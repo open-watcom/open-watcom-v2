@@ -41,10 +41,10 @@ namespace std {
 
   // Implementation of read.
 
-  istream &istream::do_read( char *buf, int len ) {
+  istream &istream::do_read( char *buf, streamsize len ) {
 
     __lock_it( __i_lock );
-    int offset = rdbuf()->sgetn( buf, len );
+    streamsize offset = rdbuf()->sgetn( buf, len );
     if( offset < len ) {
 #if 0
         setstate( ios::failbit );

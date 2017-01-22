@@ -63,7 +63,7 @@ namespace std {
 
     filebuf();
     filebuf( filedesc __fd );
-    filebuf( filedesc __fd, char *__buf, int __len );
+    filebuf( filedesc __fd, char *__buf, streamsize __len );
    ~filebuf();
 
     int       is_open() const;
@@ -77,7 +77,7 @@ namespace std {
     virtual int        pbackfail( int __c );
     virtual int        overflow( int = EOF );
     virtual int        underflow();
-    virtual streambuf *setbuf( char *__buf, int __len );
+    virtual streambuf *setbuf( char *__buf, streamsize __len );
     virtual streampos  seekoff( streamoff     __offset,
                                 ios::seekdir  __direction,
                                 ios::openmode __ignored );
@@ -113,7 +113,7 @@ namespace std {
                     int            __prot = filebuf::openprot );
     void      close();
     filebuf  *rdbuf() const;
-    void      setbuf( char *__buf, int __len );
+    void      setbuf( char *__buf, streamsize __len );
 
   protected:
     fstreambase();
@@ -121,7 +121,7 @@ namespace std {
                  ios::openmode  __mode,
                  int            __prot = filebuf::openprot );
     fstreambase( filedesc __fd );
-    fstreambase( filedesc __fd, char *__buf, int __len );
+    fstreambase( filedesc __fd, char *__buf, streamsize __len );
     ~fstreambase();
 
   private:
@@ -155,7 +155,7 @@ namespace std {
               ios::openmode  __mode = ios::in,
               int            __prot = filebuf::openprot );
     ifstream( filedesc __fd );
-    ifstream( filedesc __fd, char *__buf, int __len );
+    ifstream( filedesc __fd, char *__buf, streamsize __len );
     ~ifstream();
 
     void open( char const    *__name,
@@ -178,7 +178,7 @@ namespace std {
               ios::openmode  __mode = ios::out,
               int            __prot = filebuf::openprot );
     ofstream( filedesc __fd );
-    ofstream( filedesc __fd, char *__buf, int __len );
+    ofstream( filedesc __fd, char *__buf, streamsize __len );
     ~ofstream();
 
     void open( char const    *__name,
@@ -201,7 +201,7 @@ namespace std {
              ios::openmode  __mode = ios::in|ios::out,
              int            __prot = filebuf::openprot );
     fstream( filedesc __fd );
-    fstream( filedesc __fd, char *__buf, int __len );
+    fstream( filedesc __fd, char *__buf, streamsize __len );
     ~fstream();
 
     void open( char const    *__name,

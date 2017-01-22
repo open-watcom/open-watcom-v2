@@ -9,11 +9,16 @@ Filename: stfdbp.cpp
 Declaration:
     void std::streambuf::dbp()
 
-Filename: stfconde.cpp
+Filename: stfconb.cpp
 Declaration:
-    std::streambuf::streambuf( char *buf, int len )
+    std::streambuf::streambuf( char *buf, streamsize len )
 Semantics: Construct an empty streambuf using the given buf.
            If buffer is NULL or len is 0, then the streambuf is unbuffered.
+
+Filename: stfconde.cpp
+Declaration:
+    std::streambuf::streambuf()
+Semantics: Construct an empty streambuf.
 
 Filename: stfdestr.cpp
 Declaration:
@@ -36,7 +41,7 @@ Semantics: Do the allocation required if allocate() thinks it's needed.
 
 Filename: stfdsgtn.cpp
 Declaration:
-    int std::streambuf::do_sgetn( char *buf, int len )
+    streamsize std::streambuf::do_sgetn( char *buf, streamsize len )
 Semantics: Return the "len" characters starting at get_ptr.
            If there aren't enough characters, return as many as possible.
            Advance the get_ptr.
@@ -44,7 +49,7 @@ Semantics: Return the "len" characters starting at get_ptr.
 
 Filename: stfdspun.cpp
 Declaration:
-    int std::streambuf::do_sputn( char const *buf, int len )
+    streamsize std::streambuf::do_sputn( char const *buf, streamsize len )
 Semantics: Write the "len" characters starting at "buf" into the put area.
            Return 0 if not possible.
            Return the number of characters successfully put.
@@ -60,7 +65,7 @@ Semantics: Default virtual function to handle failure of sputbackc.
 
 Filename: stfsbuf.cpp
 Declaration:
-    std::streambuf *std::streambuf::setbuf( char *buf, int len )
+    std::streambuf *std::streambuf::setbuf( char *buf, streamsize len )
 Semantics: Set up a new reserve area using the specified buffer and length.
            If a reserve area is already present, then ignore the offered
 	   buffer. If buffer is NULL or len is 0, then the streambuf is

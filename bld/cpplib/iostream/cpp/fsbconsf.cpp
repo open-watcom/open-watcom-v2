@@ -44,7 +44,7 @@ namespace std {
   // non-default constructors since there are multiply-inherited derived
   // classes that will only call the default constructors anyway.
 
-  fstreambase::fstreambase( filedesc fd, char *buf, int len ) {
+  fstreambase::fstreambase( filedesc fd, char *buf, streamsize len ) {
 
     ios::init( &__flbuf );
     if( __flbuf.attach( fd ) == NULL ) {
