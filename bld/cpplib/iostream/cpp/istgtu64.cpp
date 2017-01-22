@@ -49,10 +49,10 @@ std::ios::iostate __getunsignedint64( std::streambuf *sb,
 
     unsigned __int64  number;
     std::ios::iostate state;
-    char           sign;
-    int            base;
-    int            offset;
-    int            ch;
+    char              sign;
+    int               base;
+    std::streamsize   offset;
+    int               ch;
 
     state = std::ios::goodbit;
     offset = 0;

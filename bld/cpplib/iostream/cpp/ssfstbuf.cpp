@@ -53,7 +53,7 @@ namespace std {
   // Otherwise, it partitions the ptr/size area into a get area (from
   // ptr to pstart-1), and a put area (from pstart to ptr+size-1).
 
-  void strstreambuf::__strstreambuf( char *ptr, int size, char *pstart ) {
+  void strstreambuf::__strstreambuf( char *ptr, streamsize size, char *pstart ) {
     char *get;
     char *eget;
     char *put;

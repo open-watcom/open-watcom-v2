@@ -47,12 +47,12 @@ std::ios::iostate __getunsignedlong( std::streambuf *sb,
                                      std::ios::fmtflags format )
 {
 
-    unsigned long  number;
+    unsigned long       number;
     std::ios::iostate   state;
-    char           sign;
-    int            base;
-    int            offset;
-    int            ch;
+    char                sign;
+    int                 base;
+    std::streamsize     offset;
+    int                 ch;
 
     state = std::ios::goodbit;
     offset = 0;

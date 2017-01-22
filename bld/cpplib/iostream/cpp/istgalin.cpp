@@ -44,8 +44,8 @@
 // added).
 //
 // Used by:
-//    get( char *buf, int len, char delim )
-//    getline( char *buf, int len, char delim )
+//    get( char *buf, streamsize len, char delim )
+//    getline( char *buf, streamsize len, char delim )
 //
 // NOTE: Borland sets eofbit only. A full buffer just stops reading. If
 //       something has been read, set eofbit anyway.
@@ -64,12 +64,12 @@
 
 ios::iostate __getaline( std::istream &istrm,
                          char *buf,
-                         int len,
+                         std::streamsize len,
                          char delim,
                          int is_get,
-                         int &chars_read ) {
+                         std::streamsize &chars_read ) {
     int           c;
-    int           offset;
+    std::streamsize    offset;
     ios::iostate  state = 0;
     streambuf    *sb;
 

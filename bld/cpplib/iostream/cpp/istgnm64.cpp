@@ -65,7 +65,7 @@ static unsigned __int64 const overFlowMasks[] = {
 std::ios::iostate __getnumberint64( std::streambuf *sb,
                                     unsigned __int64 &number,
                                     int base,
-                                    int &offset ) {
+                                    std::streamsize &offset ) {
 
     unsigned __int64  result;
     unsigned __int64  overflow;

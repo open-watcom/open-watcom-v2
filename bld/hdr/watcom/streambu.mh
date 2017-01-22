@@ -56,10 +56,10 @@ namespace std {
 :include pshpackl.sp
   class _WPRTLINK streambuf {
   public:
-    int  in_avail() const;
+    streamsize  in_avail() const;
     int  out_waiting() const;
     int  snextc();
-    int  sgetn( char *__buf, int __len );
+    streamsize sgetn( char *__buf, streamsize __len );
     int  speekc();
     int  sgetc();
     int  sgetchar();
@@ -67,15 +67,15 @@ namespace std {
     void stossc();
     int  sputbackc( char __c );
     int  sputc( int __c );
-    int  sputn( char const *__buf, int __len );
+    streamsize sputn( char const *__buf, streamsize __len );
     void dbp();
 
-    virtual int        do_sgetn( char *__buf, int __len );
-    virtual int        do_sputn( char const *__buf, int __len );
+    virtual streamsize do_sgetn( char *__buf, streamsize __len );
+    virtual streamsize do_sputn( char const *__buf, streamsize __len );
     virtual int        pbackfail( int __ignored );
     virtual int        overflow( int = EOF ) = 0;
     virtual int        underflow() = 0;
-    virtual streambuf *setbuf( char *__buf, int __len );
+    virtual streambuf *setbuf( char *__buf, streamsize __len );
     virtual streampos  seekoff( streamoff     __ignored1,
                                 ios::seekdir  __ignored2,
                                 ios::openmode __ignored3 = ios::in | ios::out );
@@ -213,9 +213,9 @@ namespace std {
 
   // *********************** Inline input functions **************************
 
-  inline int streambuf::in_avail() const {
+  inline streamsize streambuf::in_avail() const {
     __lock_it( __b_lock );
-    return( (int)(__get_end - __get_ptr) );
+    return( (streamsize)(__get_end - __get_ptr) );
   }
 
   inline int streambuf::sgetchar() {
@@ -244,7 +244,7 @@ namespace std {
     return( speekc() );
   }
 
-  inline int streambuf::sgetn( char *__buf, int __len ) {
+  inline streamsize streambuf::sgetn( char *__buf, streamsize __len ) {
     __lock_it( __b_lock );
     if( __len < (int)(__get_end - __get_ptr) ) {
         memcpy( __buf, __get_ptr, __len );
@@ -280,7 +280,7 @@ namespace std {
                                      : __char_to_int( *__put_ptr++ = (char)__c ) );
   }
 
-  inline int streambuf::sputn( char const *__buf, int __len ) {
+  inline streamsize streambuf::sputn( char const *__buf, streamsize __len ) {
     __lock_it( __b_lock );
     if( __len < (int)(__put_end - __put_ptr) ) {
         memcpy( __put_ptr, __buf, __len );

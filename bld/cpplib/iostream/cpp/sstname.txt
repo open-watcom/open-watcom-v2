@@ -3,7 +3,7 @@
 
 Filename: ssfempsz.cpp
 Declaration:
-    std::strstreambuf::strstreambuf( int size )
+    std::strstreambuf::strstreambuf( streamsize size )
 Semantics: Create an empty strstreambuf that will use dynamic allocation
            of the specified size.
 
@@ -17,7 +17,7 @@ Semantics: Create an empty strstreambuf that will use dynamic allocation
 
 Filename: ssfstbuf.cpp
 Declaration:
-    void std::strstreambuf::__strstreambuf( char *ptr, int size, char *pstart )
+    void std::strstreambuf::__strstreambuf( char *ptr, streamsize size, char *pstart )
 Semantics: Initialize a streambuf.
 
 
@@ -48,7 +48,7 @@ Semantics: The streambuf has decided that it needs more characters for input.
 
 Filename: ssfsetbf.cpp
 Declaration:
-    streambuf *std::strstreambuf::setbuf( char *, int size )
+    streambuf *std::strstreambuf::setbuf( char *, streamsize size )
 Semantics: Just remember the size to allocate next time.
 
 
@@ -94,7 +94,7 @@ Semantics: Construct a default strstreambase.
 
 Filename: ssbconsz.cpp
 Declaration:
-std::strstreambase::strstreambase( char *str, int size, char *pstart )
+std::strstreambase::strstreambase( char *str, streamsize size, char *pstart )
              : __strstrmbuf( str, size, pstart ) 
 
 
@@ -132,7 +132,7 @@ Semantics: Construct an istrstream that will read from the NULLCHAR-delimited
 
 Filename: isscochz.cpp
 Declaration:
-    std::istrstream::istrstream( char *str, int size )
+    std::istrstream::istrstream( char *str, streamsize size )
               : strstreambase( str, size, NULL )
 Semantics: Construct an istrstream that reads from the characters starting at
            str for length size.
@@ -140,7 +140,7 @@ Semantics: Construct an istrstream that reads from the characters starting at
 
 Filename: isscoscz.cpp
 Declaration:
-    std::istrstream::istrstream( signed char *str, int size )
+    std::istrstream::istrstream( signed char *str, streamsize size )
               : strstreambase( (char *)str, size, NULL )
 Semantics: Construct an istrstream that reads from the characters starting at
            str for length size.
@@ -148,7 +148,7 @@ Semantics: Construct an istrstream that reads from the characters starting at
 
 Filename: isscoucz.cpp
 Declaration:
-    std::istrstream::istrstream( unsigned char *str, int size )
+    std::istrstream::istrstream( unsigned char *str, streamsize size )
               : strstreambase( (char *)str, size, NULL )
 Semantics: Construct an istrstream that reads from the characters starting at
 	   str for length size.

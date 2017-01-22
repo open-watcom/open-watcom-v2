@@ -45,7 +45,7 @@ namespace std {
   // not count ignored characters and will continue ignoring until the
   // delimiter is found.
 
-  istream &istream::ignore( int n, int delim ) {
+  istream &istream::ignore( streamsize n, int delim ) {
 
     int c;
 

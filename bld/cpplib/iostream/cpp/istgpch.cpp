@@ -40,7 +40,7 @@
 
 namespace std {
 
-  istream &istream::get( char *buf, int len, char delim ) {
+  istream &istream::get( char *buf, streamsize len, char delim ) {
     ios::iostate state;
 
     __lock_it( __i_lock );

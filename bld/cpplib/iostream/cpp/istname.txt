@@ -43,6 +43,11 @@ Semantics: *this is an istream that has been initialized, and may or may not
            have a streambuf associated with it.
            Associate the streambuf found in "istrm" with the stream.
 
+Filename: istdread.cpp
+Declaration: 
+    std::istream &std::istream::do_read( char *buf, streamsize len )
+Semantics: Read up to "len" characters from the stream and store them in
+	   buffer "buf".
 
 Filename: istipfx.cpp
 Declaration: 
@@ -91,6 +96,12 @@ Declaration:
             unsigned long maxval, signed long minval, ios::fmtflags format )
 
 
+Filename: istgtu64.cpp
+Declaration:
+    ios::iostate __getunsignedint64( streambuf *sb, unsigned int64 &value, 
+            unsigned int64 maxval, signed int64 minval, ios::fmtflags format )
+
+
 Filename: istgsign.cpp
 Declaration: 
     ios::iostate __getsign( streambuf *sb, char &sign, int &base )
@@ -99,17 +110,25 @@ Semantics: Examine the input for a + or - sign character.
 
 Filename: istgbase.cpp
 Declaration: 
-    ios::iostate __getbase( streambuf *sb, int &base, int &offset )
+    ios::iostate __getbase( streambuf *sb, int &base, streamsize &offset )
+
+
+Filename: istgnm64.cpp
+Declaration: 
+    ios::iostate ____getnumberint64( streambuf *sb, unsigned __int64 &number,
+    int base, streamsize &offset )
+Semantics: Extract digits from the stream.
+           Stop when a non-digit is found, leaving the non-digit in the stream.
+           As digits are read, convert to an "unsigned int64".
 
 
 Filename: istgnum.cpp
 Declaration: 
     ios::iostate __getnumber( streambuf *sb, unsigned long &number,
-    int base, int &offset ) 
+    int base, streamsize &offset ) 
 Semantics: Extract digits from the stream.
            Stop when a non-digit is found, leaving the non-digit in the stream.
            As digits are read, convert to an "unsigned long".
-
 
 Filename: istexslo.cpp
 Declaration: 
@@ -158,8 +177,8 @@ Semantics: Extract a single character and store it in "ch".
 
 Filename: istgalin.cpp
 Declaration: 
-    ios::iostate __getaline( std::istream &istrm, char *buf, int len,
-    char delim, int is_get, int &chars_read ) 
+    ios::iostate __getaline( std::istream &istrm, char *buf, streamsize len,
+    char delim, int is_get, streamsize &chars_read ) 
 Semantics: Read characters into buffer "buf".
            At most "len - 1" characters are read, and a 0 is added at the end.
            If "delim" is encountered, it is left in the stream and the read is
@@ -168,17 +187,17 @@ Semantics: Read characters into buffer "buf".
 
 Filename: istgpch.cpp
 Declaration: 
-    std::istream &std::istream::get( char *buf, int len, char delim )
+    std::istream &std::istream::get( char *buf, streamsize len, char delim )
 
 
 Filename: istgline.cpp
 Declaration: 
-    std::istream &std::istream::getline( char *buf, int len, char delim )
+    std::istream &std::istream::getline( char *buf, streamsize len, char delim )
 
 
 Filename: istread.cpp
 Declaration: 
-    std::istream &std::istream::read( char *buf, int len )
+    std::istream &std::istream::read( char *buf, streamsize len )
 Semantics: Read up to "len" characters from the stream and store them in
 	   buffer "buf".
 
@@ -192,7 +211,7 @@ Semantics: Extract characters from our streambuf and store them into the
 
 Filename: istignor.cpp
 Declaration: 
-    std::istream &std::istream::ignore( int n, int delim )
+    std::istream &std::istream::ignore( streamsize n, int delim )
 Semantics: Ignore "n" characters, or until the specified delimiter is found,
            whichever comes first. If "delim" is EOF, don't look for a delimiter.
            As an extension, specifying a negative "n" value will not count

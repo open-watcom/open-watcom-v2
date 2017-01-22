@@ -40,7 +40,7 @@ namespace std {
   // Attempt filebuf::setbuf() If something goes wrong, then set
   // "ios::failbit".
 
-  void fstreambase::setbuf( char *buf, int len ) {
+  void fstreambase::setbuf( char *buf, streamsize len ) {
 
     filebuf *fb;
 

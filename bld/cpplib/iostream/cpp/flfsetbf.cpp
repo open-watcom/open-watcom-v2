@@ -48,7 +48,7 @@ namespace std {
   // If the buffer is too small (<= DEFAULT_PUTBACK_SIZE), then it
   // cannot be used.
 
-  streambuf *filebuf::setbuf( char *buf, int len ) {
+  streambuf *filebuf::setbuf( char *buf, streamsize len ) {
 
     __lock_it( __b_lock );
     if( (fd() != EOF) && (base() != NULL) ) {

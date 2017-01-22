@@ -44,10 +44,10 @@ namespace std {
   // Return the "len" characters starting at get_ptr. If there aren't
   // enough characters, return as many as possible. Advance the get_ptr.
 
-  int streambuf::do_sgetn( char *buf, int len ) {
+  streamsize streambuf::do_sgetn( char *buf, streamsize len ) {
 
-    int available;
-    int returned;
+    streamsize available;
+    streamsize returned;
 
     returned = 0;
     __lock_it( __b_lock );

@@ -81,9 +81,9 @@ namespace std {
     ostream   &put(          char __c );
     ostream   &put(   signed char __c );
     ostream   &put( unsigned char __c );
-    ostream   &write(          char const *__buf, int __len );
-    ostream   &write(   signed char const *__buf, int __len );
-    ostream   &write( unsigned char const *__buf, int __len );
+    ostream   &write(          char const *__buf, streamsize __len );
+    ostream   &write(   signed char const *__buf, streamsize __len );
+    ostream   &write( unsigned char const *__buf, streamsize __len );
     ostream   &flush();
     ostream   &seekp( streampos __position );
     ostream   &seekp( streamoff __offset, ios::seekdir __direction );
@@ -180,7 +180,7 @@ namespace std {
   }
 
 #ifdef __BIG_INLINE__
-  inline ostream &ostream::write( char const *__buf, int __len ) {
+  inline ostream &ostream::write( char const *__buf, streamsize __len ) {
     __lock_it( __i_lock );
     if( opfx() ) {
         if( __len  ) {
@@ -194,11 +194,11 @@ namespace std {
   }
 #endif
 
-  inline ostream &ostream::write( signed char const *__buf, int __len ) {
+  inline ostream &ostream::write( signed char const *__buf, streamsize __len ) {
     return( write( (char const *) __buf, __len ) );
   }
 
-  inline ostream &ostream::write( unsigned char const *__buf, int __len ) {
+  inline ostream &ostream::write( unsigned char const *__buf, streamsize __len ) {
     return( write( (char const *) __buf, __len ) );
   }
 

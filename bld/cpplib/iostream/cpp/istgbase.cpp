@@ -40,7 +40,7 @@
 #include "lock.h"
 #include "isthdr.h"
 
-std::ios::iostate __getbase( std::streambuf *sb, int &base, int &offset ) {
+std::ios::iostate __getbase( std::streambuf *sb, int &base, std::streamsize &offset ) {
 
     int ch;
 

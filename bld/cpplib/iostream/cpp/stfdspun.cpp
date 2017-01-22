@@ -45,10 +45,10 @@ namespace std {
   // Return 0 if not possible. Return the number of characters
   // successfully put.
 
-  int streambuf::do_sputn( char const *buf, int len ) {
+  streamsize streambuf::do_sputn( char const *buf, streamsize len ) {
 
-    int waiting;
-    int written;
+    streamsize waiting;
+    streamsize written;
 
     written = 0;
     __lock_it( __b_lock );

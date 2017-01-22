@@ -44,7 +44,7 @@ namespace std {
   // a reserve area is already present, then ignore the offered buffer.
   // If buffer is NULL or len is 0, then the streambuf is unbuffered.
 
-  streambuf *streambuf::setbuf( char *buf, int len ) {
+  streambuf *streambuf::setbuf( char *buf, streamsize len ) {
 
     __lock_it( __b_lock );
     if( base() != NULL ) {

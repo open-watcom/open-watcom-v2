@@ -40,7 +40,7 @@ namespace std {
   // Create an empty strstreambuf that will use dynamic allocation of
   // the specified size.
 
-  strstreambuf::strstreambuf( int size ) {
+  strstreambuf::strstreambuf( streamsize size ) {
     __strstreambuf( NULL, 0, NULL );
     __allocation_size = size;
   }

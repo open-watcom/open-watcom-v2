@@ -33,10 +33,10 @@
 #define _ISTHDR_H_INCLUDED
 
 #define ERR_CHAR    '\0'
-extern std::ios::iostate __getaline( std::istream &, char *, int, char, int, int & );
+extern std::ios::iostate __getaline( std::istream &, char *, std::streamsize, char, int, std::streamsize & );
 extern std::ios::iostate __getsign( std::streambuf *, char & );
-extern std::ios::iostate __getbase( std::streambuf *, int &, int & );
-extern std::ios::iostate __getnumber( std::streambuf *, unsigned long &, int, int & );
+extern std::ios::iostate __getbase( std::streambuf *, int &, std::streamsize & );
+extern std::ios::iostate __getnumber( std::streambuf *, unsigned long &, int, std::streamsize & );
 extern std::ios::iostate __getunsignedlong( std::streambuf *,
                                             unsigned long &,
                                             unsigned long,
