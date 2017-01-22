@@ -41,18 +41,18 @@ farfrlptr __fheapchk_current;
 
 static int checkFreeList( unsigned long *free_size )
 {
-    farfrlptr       curr;
-    __segment       seg;
-    heapblk         _WCFAR *p;
+    farfrlptr       curr_frl;
+    __segment       curr_seg;
+    heapblk         _WCFAR *curr_heap;
     unsigned long   total_size;
 
     total_size = 0;
-    for( seg = __fheapbeg; seg != _NULLSEG; seg = p->nextseg ) {
-        p = MK_FP( seg, 0 );
-        __fheapchk_current = curr = MK_FP( seg, p->freehead.next );
-        while( FP_OFF( curr ) != offsetof( heapblk, freehead ) ) {
-            total_size += curr->len;
-            __fheapchk_current = curr = MK_FP( seg, curr->next );
+    for( curr_seg = __fheapbeg; curr_seg != _NULLSEG; curr_seg = curr_heap->nextseg ) {
+        curr_heap = MK_FP( curr_seg, 0 );
+        __fheapchk_current = curr_frl = MK_FP( curr_seg, curr_heap->freehead.next );
+        while( FP_OFF( curr_frl ) != offsetof( heapblk, freehead ) ) {
+            total_size += curr_frl->len;
+            __fheapchk_current = curr_frl = MK_FP( curr_seg, curr_frl->next );
         }
     }
     *free_size = total_size;

@@ -40,51 +40,50 @@ frlptr __nheapchk_current;
 
 static int checkFreeList( size_t *free_size )
 {
-    frlptr p;
-    frlptr end;
-    size_t new_size;
-    size_t free_list_size = 0;
-    mheapptr mhp;
+    frlptr      curr_frl;
+    frlptr      end;
+    size_t      new_size;
+    size_t      free_list_size;
+    mheapptr    mhp;
 
-    for( mhp = __nheapbeg; mhp != NULL; mhp = mhp ->next ) {
+    free_list_size = 0;
+    for( mhp = __nheapbeg; mhp != NULL; mhp = mhp->next ) {
         /* check that the free list is a doubly linked ring */
-        __nheapchk_current = p = mhp->freehead.next;
+        __nheapchk_current = curr_frl = mhp->freehead.next;
         /* make sure we start off on the right track */
-        if( (p->prev == NULL) ||
-            (p->prev < &(mhp->freehead)) ||
-            (((PTR)p->prev) > (((PTR)mhp)+mhp->len)) ) {
+        if( (curr_frl->prev == NULL) ||
+            (curr_frl->prev < &(mhp->freehead)) ||
+            (((PTR)curr_frl->prev) > (((PTR)mhp) + mhp->len)) ) {
             return( _HEAPBADNODE );
         }
-        if( p->prev->next != p ) {
+        if( curr_frl->prev->next != curr_frl ) {
             return( _HEAPBADNODE );
         }
-        end = p;
+        end = curr_frl;
         do {
-            /* loop invariant: p->prev->next == p */
-            /* are we still in a ring if we move to p->next? */
-            /* nb. this check is sufficient to ensure that we will
-               never cycle              */
-            if( (p->next == NULL) ||
-                (p->next < &(mhp->freehead)) ||
-                (((PTR)p->next) > (((PTR)mhp)+mhp->len)) ) {
+            /* loop invariant: curr_frl->prev->next == curr_frl */
+            /* are we still in a ring if we move to curr_frl->next? */
+            /* nb. this check is sufficient to ensure that we will never cycle */
+            if( (curr_frl->next == NULL) ||
+                (curr_frl->next < &(mhp->freehead)) ||
+                (((PTR)curr_frl->next) > (((PTR)mhp) + mhp->len)) ) {
                 return( _HEAPBADNODE );
             }
-            if( p->next->prev != p ) {
+            if( curr_frl->next->prev != curr_frl ) {
                 return( _HEAPBADNODE );
             }
             /* is entry allocated? */
-            if( IS_MEMBLK_USED( p ) ) {
+            if( IS_MEMBLK_USED( curr_frl ) ) {
                 return( _HEAPBADNODE );
             }
-            new_size = free_list_size + p->len;
+            new_size = free_list_size + curr_frl->len;
             if( new_size < free_list_size ) {
-                /* this is a case where we do not know where memory
-                   is corrupted         */
+                /* this is a case where we do not know where memory is corrupted */
                 return( _HEAPBADNODE );
             }
             free_list_size = new_size;
-            __nheapchk_current = p = p->next;
-        } while( p != end );
+            __nheapchk_current = curr_frl = curr_frl->next;
+        } while( curr_frl != end );
     }
     *free_size = free_list_size;
     return( _HEAPOK );
@@ -132,9 +131,9 @@ _WCRTLINK int _heapchk( void )
 
 _WCRTLINK int _nheapchk( void )
 {
-    struct _heapinfo hi;
-    int heap_status;
-    size_t free_size;
+    struct _heapinfo    hi;
+    int                 heap_status;
+    size_t              free_size;
 
     _AccessNHeap();
     heap_status = checkFreeList( &free_size );
@@ -143,12 +142,12 @@ _WCRTLINK int _nheapchk( void )
         return( heap_status );
     }
     hi._pentry = NULL;
-    for(;;) {
+    for( ;; ) {
         heap_status = __NHeapWalk( &hi, __nheapbeg );
         if( heap_status != _HEAPOK )
             break;
         if( hi._useflag == _FREEENTRY ) {
-            heap_status = checkFree( (frlptr) hi._pentry );
+            heap_status = checkFree( (frlptr)hi._pentry );
             if( heap_status != _HEAPOK )
                 break;
             free_size -= hi._size;

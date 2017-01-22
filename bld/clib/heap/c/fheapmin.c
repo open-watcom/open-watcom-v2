@@ -60,36 +60,35 @@ _WCRTLINK int _fheapmin( void )
 
 _WCRTLINK int _fheapshrink( void )
 {
-    __segment   seg;
-    __segment   heap_seg;
+    __segment   curr_seg;
+    __segment   next_seg;
     __segment   prev_seg;
     int         heap_status;
-    heapblk     _WCFAR *heap;
+    heapblk     _WCFAR *curr_heap;
     heapblk     _WCFAR *next_heap;
     heapblk     _WCFAR *prev_heap;
 
     heap_status = __HeapMin( __fheapbeg, 0 );
     _AccessFHeap();
-    for( seg = __fheapbeg; seg != _NULLSEG; ) {
-        heap = MK_FP( seg, 0 );
+    for( curr_seg = __fheapbeg; curr_seg != _NULLSEG; curr_seg = next_seg) {
+        curr_heap = MK_FP( curr_seg, 0 );
+        next_seg = curr_heap->nextseg;
         /* we might free this segment so get the next one now */
-        heap_seg = seg;
-        seg = heap->nextseg;
-        if( heap->numalloc == 0 ) {     /* empty heap */
+        if( curr_heap->numalloc == 0 ) {     /* empty heap */
             /* unlink from heap list */
-            prev_seg = heap->prevseg;
-            if( seg != _NULLSEG ) {
-                next_heap = MK_FP( seg, 0 );
+            prev_seg = curr_heap->prevseg;
+            if( next_seg != _NULLSEG ) {
+                next_heap = MK_FP( next_seg, 0 );
                 next_heap->prevseg = prev_seg;
             }
             if( prev_seg == _NULLSEG ) {
-                __fheapbeg = seg;
+                __fheapbeg = next_seg;
             } else {
                 prev_heap = MK_FP( prev_seg, 0 );
-                prev_heap->nextseg = seg;
+                prev_heap->nextseg = next_seg;
             }
             __fheapRover = __fheapbeg;
-            heap_status = __FreeSeg( heap_seg );
+            heap_status = __FreeSeg( curr_seg );
         }
     }
     _ReleaseFHeap();

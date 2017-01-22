@@ -40,16 +40,16 @@
 
 static int checkFreeList( unsigned long *free_size, __segment req_seg )
 {
-    farfrlptr       curr;
-    __segment       seg;
-    heapblk         _WCFAR *p;
+    farfrlptr       curr_frl;
+    __segment       curr_seg;
+    heapblk         _WCFAR *curr_heap;
     unsigned long   total_size;
 
     total_size = 0;
-    for( seg = (req_seg == _NULLSEG ? __bheapbeg : req_seg); seg != _NULLSEG; seg = p->nextseg ) {
-        p = MK_FP( seg, 0 );
-        for( curr = MK_FP( seg, p->freehead.next ); FP_OFF( curr ) != offsetof( heapblk, freehead ); curr = MK_FP( seg, curr->next ) ) {
-            total_size += curr->len;
+    for( curr_seg = (req_seg == _NULLSEG ? __bheapbeg : req_seg); curr_seg != _NULLSEG; curr_seg = curr_heap->nextseg ) {
+        curr_heap = MK_FP( curr_seg, 0 );
+        for( curr_frl = MK_FP( curr_seg, curr_heap->freehead.next ); FP_OFF( curr_frl ) != offsetof( heapblk, freehead ); curr_frl = MK_FP( curr_seg, curr_frl->next ) ) {
+            total_size += curr_frl->len;
         }
         if( req_seg != _NULLSEG ) {
             break;
