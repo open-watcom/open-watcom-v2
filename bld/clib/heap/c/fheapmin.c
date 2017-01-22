@@ -68,9 +68,9 @@ _WCRTLINK int _fheapshrink( void )
     heapblk     _WCFAR *next_heap;
     heapblk     _WCFAR *prev_heap;
 
-    heap_status = __HeapMin( __fheap, 0 );
+    heap_status = __HeapMin( __fheapbeg, 0 );
     _AccessFHeap();
-    for( seg = __fheap; seg != _NULLSEG; ) {
+    for( seg = __fheapbeg; seg != _NULLSEG; ) {
         heap = MK_FP( seg, 0 );
         /* we might free this segment so get the next one now */
         heap_seg = seg;
@@ -83,12 +83,12 @@ _WCRTLINK int _fheapshrink( void )
                 next_heap->prevseg = prev_seg;
             }
             if( prev_seg == _NULLSEG ) {
-                __fheap = seg;
+                __fheapbeg = seg;
             } else {
                 prev_heap = MK_FP( prev_seg, 0 );
                 prev_heap->nextseg = seg;
             }
-            __fheapRover = __fheap;
+            __fheapRover = __fheapbeg;
             heap_status = __FreeSeg( heap_seg );
         }
     }

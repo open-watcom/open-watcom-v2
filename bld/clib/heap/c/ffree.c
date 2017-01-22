@@ -65,7 +65,7 @@ _WCRTLINK void _ffree( void _WCFAR *stg )
         // seg might be after the __fheapRover, but we don't know that
         // and it might be expensive to find out. We will just update
         // __LargestSizeB4Rover anyway. The worst that will happen is
-        // that _fmalloc will start searching from __fheap when it could
+        // that _fmalloc will start searching from __fheapbeg when it could
         // have started at __fheapRover.
         p = MK_FP( seg, 0 );
         if( p->largest_blk > __LargestSizeB4Rover ) {

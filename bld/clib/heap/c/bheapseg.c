@@ -35,7 +35,7 @@
 #include <malloc.h>
 #include "heap.h"
 
-__segment __bheap = _NULLSEG;
+__segment __bheapbeg = _NULLSEG;
 
 _WCRTLINK __segment _bheapseg( size_t size )
 {
@@ -46,11 +46,11 @@ _WCRTLINK __segment _bheapseg( size_t size )
     if( seg == _NULLSEG )
         return( _NULLSEG );
     p = 0;
-    p->nextseg = __bheap;
-    __bheap = seg;
+    p->nextseg = __bheapbeg;
+    __bheapbeg = seg;
     seg = p->nextseg;
     if( seg != _NULLSEG ) {
-        p->prevseg = __bheap;
+        p->prevseg = __bheapbeg;
     }
-    return( __bheap );
+    return( __bheapbeg );
 }

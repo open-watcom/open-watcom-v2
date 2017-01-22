@@ -46,7 +46,7 @@ static int checkFreeList( unsigned long *free_size, __segment req_seg )
     unsigned long   total_size;
 
     total_size = 0;
-    for( seg = (req_seg == _NULLSEG ? __bheap : req_seg); seg != _NULLSEG; seg = p->nextseg ) {
+    for( seg = (req_seg == _NULLSEG ? __bheapbeg : req_seg); seg != _NULLSEG; seg = p->nextseg ) {
         p = MK_FP( seg, 0 );
         for( curr = MK_FP( seg, p->freehead.next ); FP_OFF( curr ) != offsetof( heapblk, freehead ); curr = MK_FP( seg, curr->next ) ) {
             total_size += curr->len;
@@ -93,7 +93,7 @@ _WCRTLINK int _bheapchk( __segment seg )
     heap_status = checkFreeList( &free_size, seg );
     if( heap_status == _HEAPOK ) {
         hi._pentry = NULL;
-        while( (heap_status = __HeapWalk( &hi, (seg == _NULLSEG ? __bheap : seg), seg )) == _HEAPOK ) {
+        while( (heap_status = __HeapWalk( &hi, (seg == _NULLSEG ? __bheapbeg : seg), seg )) == _HEAPOK ) {
             if( hi._useflag == _FREEENTRY ) {
                 heap_status = checkFree( hi._pentry );
                 if( heap_status != _HEAPOK )

@@ -56,7 +56,7 @@ _WCRTLINK int _bfreeseg( __segment seg )
         next_heap->prevseg = prev_seg;
     }
     if( prev_seg == _NULLSEG ) {
-        __bheap = seg;
+        __bheapbeg = seg;
     } else {
         prev_heap = MK_FP( prev_seg, 0 );
         prev_heap->nextseg = seg;

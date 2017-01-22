@@ -44,14 +44,14 @@
     #pragma aux (__outside_CLIB) __fmemneed;
 #endif
 
-__segment __fheap = _NULLSEG;          /* head of segment list in far heap */
-__segment __fheapRover = _NULLSEG;     /* segment to start search at */
+__segment __fheapbeg = _NULLSEG;        /* head of segment list in far heap */
+__segment __fheapRover = _NULLSEG;      /* segment to start search at */
 
 //   The following variable contains the size of the largest block in a
-//   segment between __fheap and __fheapRover. If we are trying to allocate
+//   segment between __fheapbeg and __fheapRover. If we are trying to allocate
 //   a block of memory larger than this value then we can start at search
 //   in the segment indicated by __fheapRover, otherwise we must start our
-//   search at the head of the segment list __fheap.
+//   search at the head of the segment list __fheapbeg.
 
 unsigned int   __LargestSizeB4Rover = 0;/* size of largest block */
 
@@ -91,15 +91,15 @@ _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
             seg = __fheapRover;
         } else {
             __LargestSizeB4Rover = 0;   // force value to be updated
-            seg = __fheap;
+            seg = __fheapbeg;
         }
         for( ;; ) {
             if( seg == _NULLSEG ) {
                 seg = __AllocSeg( amt );
                 if( seg == _NULLSEG )
                     break;
-                if( __fheap == _NULLSEG ) {
-                    __fheap = seg;
+                if( __fheapbeg == _NULLSEG ) {
+                    __fheapbeg = seg;
                 } else {
                     p->nextseg = seg;
                     p = MK_FP( seg, 0 );

@@ -45,7 +45,7 @@ _WCRTLINK int _bheapset( __segment seg, unsigned int fill )
         return( _nheapset( fill ) );
     if( seg == _NULLSEG ) {
         p = 0;
-        for( seg = __bheap; seg != _NULLSEG; seg = p->nextseg ) {
+        for( seg = __bheapbeg; seg != _NULLSEG; seg = p->nextseg ) {
             test_heap = _bheapset( seg, fill );
             if( test_heap != _HEAPOK ) {
                 return( test_heap );

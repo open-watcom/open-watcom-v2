@@ -52,5 +52,5 @@ _WCRTLINK int _fheapset( unsigned int fill )
     if( test_heap != _HEAPOK ) {
         return( test_heap );
     }
-    return( __HeapSet( __fheap, fill ) );
+    return( __HeapSet( __fheapbeg, fill ) );
 }
