@@ -36,7 +36,7 @@
 #include "heap.h"
 
 
-_WCRTLINK size_t _bmsize( __segment seg, void __based( void ) *offset )
+_WCRTLINK size_t _bmsize( __segment seg, void VOID_BPTR offset )
 {
     tag     _WCFAR *q;
 

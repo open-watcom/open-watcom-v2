@@ -36,9 +36,9 @@
 #include <string.h>
 #include "heap.h"
 
-_WCRTLINK void __based( void ) *_brealloc( __segment seg, void __based( void ) *mem, size_t size )
+_WCRTLINK void VOID_BPTR _brealloc( __segment seg, void VOID_BPTR mem, size_t size )
 {
-    void        __based( void ) *p;
+    void        VOID_BPTR p;
     size_t      old_size;
 
     if( mem == _NULLOFF )

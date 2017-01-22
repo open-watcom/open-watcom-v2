@@ -77,7 +77,7 @@ _WCRTLINK void _WCNEAR *_nrealloc( void _WCI86NEAR *stg, size_t req_size )
 #endif
 #if defined(__WARP__)
             // If block in upper memory (i.e. above 512MB), try to keep it there
-            if ( (unsigned int)stg >= 0x20000000 ) {
+            if( (unsigned int)stg >= 0x20000000 ) {
                 int prior;
                 _AccessNHeap();
                 prior = _os2_use_obj_any;

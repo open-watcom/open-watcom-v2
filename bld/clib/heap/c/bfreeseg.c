@@ -37,20 +37,6 @@
 #include "heapacc.h"
 
 
-#if defined(__OS2__)
-    #if defined(__BIG_DATA__)
-        #define MODIFIES ds es
-    #else
-        #define MODIFIES es
-    #endif
-#elif defined(__WINDOWS__)
-    #define MODIFIES es
-#endif
-
-#if defined(__WINDOWS__) || defined(__OS2__)
-    #pragma aux _bfreeseg modify [MODIFIES]
-#endif
-
 _WCRTLINK int _bfreeseg( __segment seg )
 {
     __segment   heap_seg;

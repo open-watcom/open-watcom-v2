@@ -54,7 +54,8 @@ static int verifyHeapList( unsigned seg )
             return( _HEAPBADBEGIN );
         }
         prev_heap = MK_FP( prev_seg, 0 );
-        if( prev_heap == NULL ) break;
+        if( prev_heap == NULL )
+            break;
         if( prev_heap->nextseg != FP_SEG( curr ) ) {
             return( _HEAPBADBEGIN );
         }
@@ -67,7 +68,8 @@ static int verifyHeapList( unsigned seg )
             return( _HEAPBADBEGIN );
         }
         next_heap = MK_FP( next_seg, 0 );
-        if( next_heap == NULL ) break;
+        if( next_heap == NULL )
+            break;
         if( next_heap->prevseg != FP_SEG( curr ) ) {
             return( _HEAPBADBEGIN );
         }
@@ -110,11 +112,13 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
             }
         }
         if( p == NULL ) {
-            if( pheap->freehead.len != 0 )  return( _HEAPBADBEGIN );
+            if( pheap->freehead.len != 0 )
+                return( _HEAPBADBEGIN );
             p = MK_FP( FP_SEG(pheap), sizeof( heapblk ) );
         } else {    /* advance to next entry */
             q = (farfrlptr)( (FARPTR)p + MEMBLK_SIZE( p ) );
-            if( q <= p )  return( _HEAPBADNODE );
+            if( q <= p )
+                return( _HEAPBADNODE );
             p = q;
             if( pheap->heaplen != 0 && (tag)p > pheap->heaplen ) {
                 return( _HEAPBADNODE );

@@ -38,19 +38,19 @@
 #include "heapacc.h"
 #include "heap.h"
 
-_WCRTLINK void __based( void ) *_bmalloc( __segment seg, size_t amt )
+_WCRTLINK void VOID_BPTR _bmalloc( __segment seg, size_t amt )
 {
-    void __based( void ) *ptr;
+    void VOID_BPTR ptr;
 
     if( amt == 0 )
         return( _NULLOFF );
     if( seg == _DGroup() ) {
-        ptr = (void __based( void ) *)_nmalloc( amt );
+        ptr = (void VOID_BPTR)_nmalloc( amt );
         return( ( ptr == NULL ) ? _NULLOFF : ptr );
     }
     _AccessFHeap();
     for( ;; ) {
-        ptr = (void __based( void ) *)__MemAllocator( amt, seg, 0 );
+        ptr = (void VOID_BPTR)__MemAllocator( amt, seg, 0 );
         if( ptr != 0 )
             break;
         ptr = _NULLOFF;

@@ -86,7 +86,7 @@ static int __ReturnMemToSystem( mheapptr mhp )
         return( -1 );
   #elif defined(__NT__)
     //if( LocalFree( (HLOCAL)mhp ) != NULL ) return( -1 );
-    if (!VirtualFree(mhp, 0, MEM_RELEASE))
+    if( !VirtualFree( mhp, 0, MEM_RELEASE ) )
         return -1;
   #elif defined(__WINDOWS_386__)
     if( DPMIFree( (unsigned long)mhp ) != 0 )

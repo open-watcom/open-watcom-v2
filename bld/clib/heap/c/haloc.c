@@ -50,8 +50,6 @@ extern  void    _dosfree(void _WCHUGE *);
                             0xcd 0x21   /* int 21h    */        \
                         parm caller [ax es] modify [es];
 
-#define HUGE_NULL       ((void _WCHUGE *)NULL)
-
 static int only_one_bit( size_t x )
 {
     if( x == 0 ) {
@@ -111,9 +109,6 @@ _WCRTLINK void _WCHUGE *halloc( long numb, unsigned size )
 #endif
 }
 
-#if defined(__WINDOWS__)
-  #pragma aux hfree modify [es]
-#endif
 _WCRTLINK void hfree( void _WCHUGE *ptr )
 {
 #if defined(__WINDOWS__)

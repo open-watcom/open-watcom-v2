@@ -41,7 +41,7 @@
 
 int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_t *growth_size )
 {
-    miniheapblkp    SEG_BPTR( seg ) hblk;
+    miniheapblkp    SEG_BPTR( seg ) mhp;
     freelistp       SEG_BPTR( seg ) p1;
     freelistp       SEG_BPTR( seg ) p2;
     freelistp       SEG_BPTR( seg ) pnext;
@@ -74,27 +74,27 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
                 pprev = p2->prev;
 
                 if( seg == _DGroup() ) { // near heap
-                    for( hblk = __nheapbeg; hblk->next != NULL; hblk = hblk->next ) {
-                        if( FRL_BPTR( seg, hblk, 0 ) <= FRL_BPTR( seg, offset, 0 )
-                          && FRL_BPTR( seg, hblk, hblk->len ) > FRL_BPTR( seg, offset, 0 ) ) {
+                    for( mhp = __nheapbeg; mhp->next != NULL; mhp = mhp->next ) {
+                        if( FRL_BPTR( seg, mhp, 0 ) <= FRL_BPTR( seg, offset, 0 )
+                          && FRL_BPTR( seg, mhp, mhp->len ) > FRL_BPTR( seg, offset, 0 ) ) {
                             break;
                         }
                     }
 #if defined( _M_I86 )
                 } else {      // Based heap
-                    hblk = 0;
+                    mhp = 0;
 #endif
                 }
 
-                if( hblk->rover == p2 ) {
-                    hblk->rover = p2->prev;
+                if( mhp->rover == p2 ) {
+                    mhp->rover = p2->prev;
                 }
                 if( free_size < *growth_size || free_size - *growth_size < FRL_SIZE ) {
                     /* unlink small free block */
                     pprev->next = pnext;
                     pnext->prev = pprev;
                     p1->len += free_size;
-                    hblk->numfree--;
+                    mhp->numfree--;
                     if( free_size >= *growth_size ) {
                         return( __HM_SUCCESS );
                     }
@@ -122,19 +122,19 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
             p1 = FRL_BPTR( seg, p1, new_size );
             SET_MEMBLK_SIZE_USED( p1, old_size - new_size );
             if( seg == _DGroup() ) { // near heap
-                for( hblk = __nheapbeg; hblk->next != NULL; hblk = hblk->next ) {
-                    if( FRL_BPTR( seg, hblk, 0 ) <= FRL_BPTR( seg, offset, 0 )
-                      && FRL_BPTR( seg, hblk, hblk->len ) > FRL_BPTR( seg, offset, 0 ) ) {
+                for( mhp = __nheapbeg; mhp->next != NULL; mhp = mhp->next ) {
+                    if( FRL_BPTR( seg, mhp, 0 ) <= FRL_BPTR( seg, offset, 0 )
+                      && FRL_BPTR( seg, mhp, mhp->len ) > FRL_BPTR( seg, offset, 0 ) ) {
                         break;
                     }
                 }
 #if defined( _M_I86 )
             } else {    // Based heap
-                hblk = 0;
+                mhp = 0;
 #endif
             }
             /* _bfree will decrement 'numalloc' 08-jul-91 */
-            hblk->numalloc++;
+            mhp->numalloc++;
 #if defined( _M_I86 )
             _bfree( seg, FRL_BPTR( seg, p1, TAG_SIZE ) );
             /* free the top portion */

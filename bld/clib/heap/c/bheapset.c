@@ -39,7 +39,7 @@
 _WCRTLINK int _bheapset( __segment seg, unsigned int fill )
 {
     int         test_heap;
-    heapblk     __based( seg ) *p;
+    heapblk     SEG_BPTR( seg ) p;
 
     if( seg == _DGroup() )
         return( _nheapset( fill ) );

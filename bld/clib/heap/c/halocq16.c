@@ -45,7 +45,7 @@ static int only_one_bit( size_t x )
         return 0;
     }
     /* turns off lowest 1 bit and leaves all other bits on */
-    if(( x & ( x - 1 )) != 0 ) {
+    if( (x & ( x - 1 )) != 0 ) {
         return 0;
     }
     /* only one bit was on! */
@@ -58,10 +58,13 @@ _WCRTLINK void _WCHUGE * (halloc)( long n, size_t size )
     unsigned long len;
 
     len = (unsigned long)n * size;
-    if( len == 0 ) return( 0 );
-    if( len > 65536 && ! only_one_bit( size ) ) return( 0 );
+    if( len == 0 )
+        return( 0 );
+    if( len > 65536 && !only_one_bit( size ) )
+        return( 0 );
     seg = qnx_segment_huge( len );
-    if( seg == -1 ) seg = 0;
+    if( seg == -1 )
+        seg = 0;
     return( (void _WCHUGE *)MK_FP( seg , 0 ) );
 }
 
@@ -75,9 +78,11 @@ _WCRTLINK void (hfree)( void _WCHUGE *ptr )
         incr = 1 << _HShift;
         seg = FP_SEG( ptr );
         for( ;; ) {
-            if( qnx_segment_info( 0, _my_pid, seg, &info ) != seg ) break;
+            if( qnx_segment_info( 0, _my_pid, seg, &info ) != seg )
+                break;
             qnx_segment_free( seg );
-            if( !(info.flags & _PMF_HUGE) ) break;
+            if( (info.flags & _PMF_HUGE) == 0 )
+                break;
             seg += incr;
         }
     }

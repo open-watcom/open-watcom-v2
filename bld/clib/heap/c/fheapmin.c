@@ -38,22 +38,8 @@
 #include "heap.h"
 #include "heapacc.h"
 
-#if defined(__OS2__)
-    #if defined(__BIG_DATA__)
-        #define MODIFIES ds es
-    #else
-        #define MODIFIES es
-    #endif
-#elif defined(__WINDOWS__)
-    #define MODIFIES es
-#endif
 
 #if defined(__BIG_DATA__)
-
-#if defined(__WINDOWS__) || defined(__OS2__)
-    #pragma aux _heapmin modify [MODIFIES]
-    #pragma aux _heapshrink modify [MODIFIES]
-#endif
 
 _WCRTLINK int _heapshrink( void )
 {
@@ -65,11 +51,6 @@ _WCRTLINK int _heapmin( void )
     return( _fheapshrink() );
 }
 
-#endif
-
-#if defined(__WINDOWS__) || defined(__OS2__)
-    #pragma aux _fheapmin modify [MODIFIES]
-    #pragma aux _fheapshrink modify [MODIFIES]
 #endif
 
 _WCRTLINK int _fheapmin( void )

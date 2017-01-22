@@ -40,7 +40,7 @@ __segment __bheap = _NULLSEG;
 _WCRTLINK __segment _bheapseg( size_t size )
 {
     __segment   seg;
-    heapblk     __based( seg ) *p;
+    heapblk     SEG_BPTR( seg ) p;
 
     seg = __AllocSeg( size );
     if( seg == _NULLSEG )
