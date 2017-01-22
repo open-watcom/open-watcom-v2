@@ -155,8 +155,8 @@ typedef struct dpmi_hdr {
 
 extern mheapptr         _WCNEAR __nheapbeg;
 #if defined( _M_I86 )
-extern __segment        __fheap;
-extern __segment        __bheap;
+extern __segment        __fheapbeg;
+extern __segment        __bheapbeg;
 extern __segment        __fheapRover;
 #endif
 extern int              __heap_enabled;
