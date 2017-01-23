@@ -38,8 +38,8 @@
 
 _WCRTLINK size_t _bmsize( __segment seg, void VOID_BPTR offset )
 {
-    tag     _WCFAR *q;
+    XBPTR( tag, seg )   q;
 
-    q = (tag _WCFAR *)( ((unsigned char _WCFAR *)(seg :> offset)) - TAG_SIZE );
+    q = (XBPTR( tag, seg ))( (char VOID_BPTR)offset - TAG_SIZE );
     return( ( *q & ~1 ) - TAG_SIZE );
 }

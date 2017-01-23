@@ -36,10 +36,11 @@
 #include <string.h>
 #include "heap.h"
 
+
 _WCRTLINK void VOID_BPTR _brealloc( __segment seg, void VOID_BPTR mem, size_t size )
 {
-    void        VOID_BPTR p;
-    size_t      old_size;
+    XBPTR( void, seg )  p;
+    size_t              old_size;
 
     if( mem == _NULLOFF )
         return( _bmalloc( seg, size ) );
@@ -52,9 +53,7 @@ _WCRTLINK void VOID_BPTR _brealloc( __segment seg, void VOID_BPTR mem, size_t si
     if( p == _NULLOFF ) {               /* if it couldn't be expanded */
         p = _bmalloc( seg, size );      /* - allocate new block */
         if( p != _NULLOFF ) {           /* - if we got one */
-            _fmemcpy( (void _WCFAR *)(seg :> p),
-                      (void _WCFAR *)(seg :> mem),
-                      old_size );
+            _fmemcpy( p, (XBPTR( void, seg ))mem, old_size );
             _bfree( seg, mem );
         } else {
             _bexpand( seg, mem, old_size );

@@ -54,14 +54,14 @@ void _os2zero_rest( unsigned ax, unsigned cx, unsigned es, unsigned di );
 static int only_one_bit( size_t x )
 {
     if( x == 0 ) {
-        return 0;
+        return( 0 );
     }
     /* turns off lowest 1 bit and leaves all other bits on */
     if( (x & ( x - 1 )) != 0 ) {
         return 0;
     }
     /* only one bit was on! */
-    return 1;
+    return( 1 );
 }
 
 _WCRTLINK void _WCHUGE * halloc( long n, unsigned size )

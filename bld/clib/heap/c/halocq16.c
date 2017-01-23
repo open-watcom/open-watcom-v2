@@ -37,25 +37,26 @@
 #include "crwd.h"
 #include "heap.h"
 
+
 extern  pid_t           _my_pid;
 
 static int only_one_bit( size_t x )
 {
     if( x == 0 ) {
-        return 0;
+        return( 0 );
     }
     /* turns off lowest 1 bit and leaves all other bits on */
     if( (x & ( x - 1 )) != 0 ) {
-        return 0;
+        return( 0 );
     }
     /* only one bit was on! */
-    return 1;
+    return( 1 );
 }
 
 _WCRTLINK void _WCHUGE * (halloc)( long n, size_t size )
 {
-    short seg;
-    unsigned long len;
+    short           seg;
+    unsigned long   len;
 
     len = (unsigned long)n * size;
     if( len == 0 )
