@@ -89,7 +89,7 @@ static void __unlink( mheapptr mhp )
         }
     }
     if( mhp == __MiniHeapFreeRover ) {
-        __MiniHeapFreeRover = 0;
+        __MiniHeapFreeRover = NULL;
     }
     prev_mhp = mhp->prev;
     next_mhp = mhp->next;

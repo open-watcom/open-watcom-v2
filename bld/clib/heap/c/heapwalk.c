@@ -40,77 +40,59 @@
 static int verifyHeapList( __segment seg )
 {
     /* make sure list of heaps is a doubly-linked NULL terminated list */
-    __segment       curr_seg;
-    __segment       next_seg;
-    __segment       prev_seg;
-    heapblk         _WCFAR *prev_heap;
-    heapblk         _WCFAR *next_heap;
-    heapblk         _WCFAR *curr_heap;
+    __segment   curr_seg;
+    __segment   next_seg;
+    __segment   prev_seg;
 
-    curr_seg = seg;
-    curr_heap = MK_FP( curr_seg, 0 );
     /* check previous heaps end in NULL */
-    for( ;; ) {
+    for( curr_seg = seg; ; curr_seg = prev_seg ) {
         prev_seg = curr_heap->prevseg;
         if( prev_seg == seg ) {
             return( _HEAPBADBEGIN );
         }
         if( prev_seg == _NULLSEG )
             break;
-        prev_heap = MK_FP( prev_seg, 0 );
         if( prev_heap->nextseg != curr_seg ) {
             return( _HEAPBADBEGIN );
         }
-        curr_seg = prev_seg;
-        curr_heap = prev_heap;
     }
-    curr_seg = seg;
-    curr_heap = MK_FP( curr_seg, 0 );
     /* check next heaps end in NULL */
-    for( ;; ) {
+    for( curr_seg = seg; ; curr_seg = next_seg ) {
         next_seg = curr_heap->nextseg;
         if( next_seg == seg ) {
             return( _HEAPBADBEGIN );
         }
         if( next_seg == _NULLSEG )
             break;
-        next_heap = MK_FP( next_seg, 0 );
         if( next_heap->prevseg != curr_seg ) {
             return( _HEAPBADBEGIN );
         }
-        curr_seg = next_seg;
-        curr_heap = next_heap;
     }
     return( _HEAPOK );
 }
 
-int __HeapWalk( struct _heapinfo *entry, __segment curr_seg, unsigned one_heap )
+int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
 {
+    __segment   curr_seg;
     __segment   next_seg;
     __segment   prev_seg;
-    heapblk     _WCFAR *prev_heap;
-    heapblk     _WCFAR *next_heap;
-    heapblk     _WCFAR *curr_heap;
     farfrlptr   p;
     farfrlptr   q;
 
-    if( curr_seg == _NULLSEG )
+    if( seg == _NULLSEG )
         return( _HEAPEMPTY );
     p = entry->_pentry;
     if( p != NULL ) {
-        curr_seg = FP_SEG( p );
+        seg = FP_SEG( p );
     } else if( one_heap == 0 ) {
         /* we are starting a multi-heap walk */
         if( verifyHeapList( curr_seg ) != _HEAPOK ) {
             return( _HEAPBADBEGIN );
         }
     }
-    for( ;; ) {
-        curr_heap = MK_FP( curr_seg, 0 );
+    for( curr_seg = seg; ; curr_seg = next_seg ) {
         prev_seg = curr_heap->prevseg;
         next_seg = curr_heap->nextseg;
-        prev_heap = MK_FP( prev_seg, 0 );
-        next_heap = MK_FP( next_seg, 0 );
         if( prev_seg != _NULLSEG ) {
             if( prev_heap->nextseg != curr_seg || prev_seg == next_seg ) {
                 return( _HEAPBADBEGIN );
@@ -130,7 +112,7 @@ int __HeapWalk( struct _heapinfo *entry, __segment curr_seg, unsigned one_heap )
             if( q <= p )
                 return( _HEAPBADNODE );
             p = q;
-            if( curr_heap->heaplen != 0 && (tag)p > curr_heap->heaplen ) {
+            if( curr_heap->heaplen != 0 && p->len > curr_heap->heaplen ) {
                 return( _HEAPBADNODE );
             }
         }
@@ -143,7 +125,6 @@ int __HeapWalk( struct _heapinfo *entry, __segment curr_seg, unsigned one_heap )
             return( _HEAPEND );
         }
         p = NULL;
-        curr_seg = next_seg;
     }
     entry->_pentry  = p;
     entry->_useflag = _FREEENTRY;

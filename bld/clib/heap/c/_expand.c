@@ -37,18 +37,18 @@
 #include "heapacc.h"
 
 
-#define FRL_BPTR(seg,p,s)   ((freelistp SEG_BPTR( seg ))((char VOID_BPTR)p + s))
+#define FRLPX_BPTR(se,p,s)  ((XBPTR(freelistp, se))((char VOID_BPTR)p + s))
 
 int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_t *growth_size )
 {
-    miniheapblkp    SEG_BPTR( seg ) mhp;
-    freelistp       SEG_BPTR( seg ) p1;
-    freelistp       SEG_BPTR( seg ) p2;
-    freelistp       SEG_BPTR( seg ) pnext;
-    freelistp       SEG_BPTR( seg ) pprev;
-    size_t          new_size;
-    size_t          old_size;
-    size_t          free_size;
+    XBPTR( miniheapblkp, seg )  mhp;
+    XBPTR( freelistp, seg )     p1;
+    XBPTR( freelistp, seg )     p2;
+    XBPTR( freelistp, seg )     pnext;
+    XBPTR( freelistp, seg )     pprev;
+    size_t                      new_size;
+    size_t                      old_size;
+    size_t                      free_size;
 
     /* round (new_size + tag) to multiple of pointer size */
     new_size = __ROUND_UP_SIZE( req_size + TAG_SIZE, ROUND_SIZE );
@@ -57,11 +57,11 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
     if( new_size < FRL_SIZE ) {
         new_size = FRL_SIZE;
     }
-    p1 = FRL_BPTR( seg, offset, -TAG_SIZE );
+    p1 = FRLPX_BPTR( seg, offset, -TAG_SIZE );
     old_size = MEMBLK_SIZE( p1 );
     if( new_size > old_size ) {
         /* enlarging the current allocation */
-        p2 = FRL_BPTR( seg, p1, old_size );
+        p2 = FRLPX_BPTR( seg, p1, old_size );
         *growth_size = new_size - old_size;
         for( ;; ) {
             if( p2->len == END_TAG ) {
@@ -75,8 +75,7 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
 
                 if( seg == _DGroup() ) { // near heap
                     for( mhp = __nheapbeg; mhp->next != NULL; mhp = mhp->next ) {
-                        if( FRL_BPTR( seg, mhp, 0 ) <= FRL_BPTR( seg, offset, 0 )
-                          && FRL_BPTR( seg, mhp, mhp->len ) > FRL_BPTR( seg, offset, 0 ) ) {
+                        if( (unsigned)mhp <= offset && offset < ( (unsigned)mhp + mhp->len ) ) {
                             break;
                         }
                     }
@@ -99,9 +98,9 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
                         return( __HM_SUCCESS );
                     }
                     *growth_size -= free_size;
-                    p2 = FRL_BPTR( seg, p2, free_size );
+                    p2 = FRLPX_BPTR( seg, p2, free_size );
                 } else {
-                    p2 = FRL_BPTR( seg, p2, *growth_size );
+                    p2 = FRLPX_BPTR( seg, p2, *growth_size );
                     p2->len = free_size - *growth_size;
                     p2->prev = pprev;
                     p2->next = pnext;
@@ -119,12 +118,11 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
         if( old_size - new_size >= FRL_SIZE ) {
             /* block big enough to split */
             SET_MEMBLK_SIZE_USED( p1, new_size );
-            p1 = FRL_BPTR( seg, p1, new_size );
+            p1 = FRLPX_BPTR( seg, p1, new_size );
             SET_MEMBLK_SIZE_USED( p1, old_size - new_size );
             if( seg == _DGroup() ) { // near heap
                 for( mhp = __nheapbeg; mhp->next != NULL; mhp = mhp->next ) {
-                    if( FRL_BPTR( seg, mhp, 0 ) <= FRL_BPTR( seg, offset, 0 )
-                      && FRL_BPTR( seg, mhp, mhp->len ) > FRL_BPTR( seg, offset, 0 ) ) {
+                    if( (unsigned)mhp <= offset && offset < ( (unsigned)mhp + mhp->len ) ) {
                         break;
                     }
                 }
@@ -136,10 +134,10 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
             /* _bfree will decrement 'numalloc' 08-jul-91 */
             mhp->numalloc++;
 #if defined( _M_I86 )
-            _bfree( seg, FRL_BPTR( seg, p1, TAG_SIZE ) );
+            _bfree( seg, FRLPX_BPTR( seg, p1, TAG_SIZE ) );
             /* free the top portion */
 #else
-            _nfree( FRL_BPTR( seg, p1, TAG_SIZE ) );
+            _nfree( FRLPX_BPTR( seg, p1, TAG_SIZE ) );
 #endif
         }
     }

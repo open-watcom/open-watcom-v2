@@ -59,7 +59,6 @@ int __HeapMin( __segment curr_seg, unsigned one_heap )
     tag                 adjust_len;
     tag                 new_heap_len;
     __segment           next_seg;
-    heapblk             _WCFAR *curr_heap;
     farfrlptr           last_free;
     farfrlptr           end_tag;
 #if defined(__OS2__)
@@ -70,7 +69,6 @@ int __HeapMin( __segment curr_seg, unsigned one_heap )
 
     _AccessFHeap();
     for( ; curr_seg != _NULLSEG; curr_seg = next_seg ) {
-        curr_heap = MK_FP( curr_seg, 0 );
         /* we might free this segment so get the next one now */
         next_seg = curr_heap->nextseg;
         if( curr_heap->numfree == 0 ) {      /* full heap */
@@ -88,7 +86,7 @@ int __HeapMin( __segment curr_seg, unsigned one_heap )
 
         /* verify the last block is just before the end of the heap */
         last_len = last_free->len;
-        end_tag = (farfrlptr)(((FARPTR) last_free) + last_len );
+        end_tag = (farfrlptr)(((FARPTR)last_free) + last_len );
         if( end_tag->len != END_TAG )
             continue;
 

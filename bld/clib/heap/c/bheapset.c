@@ -36,26 +36,24 @@
 #include "heap.h"
 
 
-_WCRTLINK int _bheapset( __segment seg, unsigned int fill )
+_WCRTLINK int _bheapset( __segment curr_seg, unsigned int fill )
 {
     int         test_heap;
-    heapblk     SEG_BPTR( seg ) p;
 
-    if( seg == _DGroup() )
+    if( curr_seg == _DGroup() )
         return( _nheapset( fill ) );
-    if( seg == _NULLSEG ) {
-        p = 0;
-        for( seg = __bheapbeg; seg != _NULLSEG; seg = p->nextseg ) {
-            test_heap = _bheapset( seg, fill );
+    if( curr_seg == _NULLSEG ) {
+        for( curr_seg = __bheapbeg; curr_seg != _NULLSEG; curr_seg = curr_heap->nextseg ) {
+            test_heap = _bheapset( curr_seg, fill );
             if( test_heap != _HEAPOK ) {
                 return( test_heap );
             }
         }
         return( _HEAPOK );
     } else {
-        test_heap = _bheapchk( seg );
+        test_heap = _bheapchk( curr_seg );
         if( test_heap != _HEAPOK )
             return( test_heap );
-        return( __HeapSet( seg, fill ) );
+        return( __HeapSet( curr_seg, fill ) );
     }
 }

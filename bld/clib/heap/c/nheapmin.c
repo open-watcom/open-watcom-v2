@@ -112,10 +112,10 @@ static int __ReturnMemToSystem( mheapptr mhp )
     // Re-test rover; if we freed the only mini-heap, we might end up
     // pointing back to it
     if( __MiniHeapRover == mhp ) {
-        __MiniHeapRover = 0;
+        __MiniHeapRover = NULL;
     }
     if( __MiniHeapFreeRover == mhp ) {
-        __MiniHeapFreeRover = 0;
+        __MiniHeapFreeRover = NULL;
     }
     return( 0 ); // success
 }

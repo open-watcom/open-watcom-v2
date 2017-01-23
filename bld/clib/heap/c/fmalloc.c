@@ -40,6 +40,7 @@
 #include "heap.h"
 #include "rtinit.h"
 
+
 #if defined(_M_IX86)
     #pragma aux (__outside_CLIB) __fmemneed;
 #endif
@@ -55,7 +56,6 @@ __segment __fheapRover = _NULLSEG;      /* segment to start search at */
 
 unsigned int   __LargestSizeB4Rover = 0;/* size of largest block */
 
-
 #if defined(__BIG_DATA__)
 
 _WCRTLINK void *malloc( size_t amount )
@@ -65,14 +65,12 @@ _WCRTLINK void *malloc( size_t amount )
 
 #endif
 
-
 _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
 {
     unsigned    size;
     unsigned    offset;
-    __segment   seg;
+    __segment   curr_seg;
     __segment   prev_seg;
-    heapblk     _WCFAR *p;
 
     if( amt == 0 || amt > - ( sizeof( heapblk ) + TAG_SIZE * 2 ) ) {
         return( (void _WCFAR *)NULL );
@@ -85,56 +83,55 @@ _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
         size = FRL_SIZE;
     }
 
+    prev_seg = _NULLSEG;
     _AccessFHeap();
     for( ;; ) {
         if( size > __LargestSizeB4Rover ) {
-            seg = __fheapRover;
+            curr_seg = __fheapRover;
         } else {
             __LargestSizeB4Rover = 0;   // force value to be updated
-            seg = __fheapbeg;
+            curr_seg = __fheapbeg;
         }
         for( ;; ) {
-            if( seg == _NULLSEG ) {
-                seg = __AllocSeg( amt );
-                if( seg == _NULLSEG )
+            if( curr_seg == _NULLSEG ) {
+                curr_seg = __AllocSeg( amt );
+                if( curr_seg == _NULLSEG )
                     break;
                 if( __fheapbeg == _NULLSEG ) {
-                    __fheapbeg = seg;
+                    __fheapbeg = curr_seg;
                 } else {
-                    p->nextseg = seg;
-                    p = MK_FP( seg, 0 );
-                    p->prevseg = prev_seg;
+                    curr_heap->prevseg = prev_seg;
+                    prev_heap->nextseg = curr_seg;
                 }
             }
             for( ;; ) {
-                __fheapRover = seg;
-                offset = __MemAllocator( amt, seg, 0 );
+                __fheapRover = curr_seg;
+                offset = __MemAllocator( amt, curr_seg, 0 );
                 if( offset != 0 )
                     goto release_heap;
-                if( __GrowSeg( seg, amt ) == 0 ) {
+                if( __GrowSeg( curr_seg, amt ) == 0 ) {
                     break;
                 }
             }
-            prev_seg = seg;
-            p = MK_FP( seg, 0 );
-            if( p->largest_blk > __LargestSizeB4Rover ) {
-                __LargestSizeB4Rover = p->largest_blk;
+            if( __LargestSizeB4Rover < curr_heap->largest_blk  ) {
+                __LargestSizeB4Rover = curr_heap->largest_blk;
             }
-            seg = p->nextseg;
+            prev_seg = curr_seg;
+            curr_seg = curr_heap->nextseg;
         }
         if( __fmemneed( amt ) == 0 ) {
             break;
         }
     }
-    if( seg == _NULLSEG ) {
+    if( curr_seg == _NULLSEG ) {
         offset = (unsigned)_nmalloc( amt );
         if( offset != 0 ) {
-            seg = _DGroup();
+            curr_seg = _DGroup();
         }
     }
 release_heap:
     _ReleaseFHeap();
-    return( MK_FP( seg, offset ) );
+    return( MK_FP( curr_seg, offset ) );
 }
 
 #if defined(__DOS__) && defined(__BIG_DATA__)

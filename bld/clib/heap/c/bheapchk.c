@@ -40,15 +40,13 @@
 
 static int checkFreeList( unsigned long *free_size, __segment req_seg )
 {
-    farfrlptr       curr_frl;
-    __segment       curr_seg;
-    heapblk         _WCFAR *curr_heap;
-    unsigned long   total_size;
+    __segment                   curr_seg;
+    XBPTR( freelist, curr_seg ) curr_frl;
+    unsigned long               total_size;
 
     total_size = 0;
     for( curr_seg = (req_seg == _NULLSEG ? __bheapbeg : req_seg); curr_seg != _NULLSEG; curr_seg = curr_heap->nextseg ) {
-        curr_heap = MK_FP( curr_seg, 0 );
-        for( curr_frl = MK_FP( curr_seg, curr_heap->freehead.next ); FP_OFF( curr_frl ) != offsetof( heapblk, freehead ); curr_frl = MK_FP( curr_seg, curr_frl->next ) ) {
+        for( curr_frl = (XBPTR( freelist, curr_seg ))curr_heap->freehead.next; FP_OFF( curr_frl ) != offsetof( heapblk, freehead ); curr_frl = (XBPTR( freelist, curr_seg ))curr_frl->next ) {
             total_size += curr_frl->len;
         }
         if( req_seg != _NULLSEG ) {
@@ -61,21 +59,17 @@ static int checkFreeList( unsigned long *free_size, __segment req_seg )
 
 static int checkFree( farfrlptr p )
 {
-    __segment seg;
-    farfrlptr prev;
-    farfrlptr next;
-    farfrlptr prev_prev;
-    farfrlptr next_next;
+    __segment               seg;
+    XBPTR( freelist, seg )  prev;
+    XBPTR( freelist, seg )  next;
 
     seg = FP_SEG( p );
-    prev = MK_FP( seg, p->prev );
-    next = MK_FP( seg, p->next );
+    prev = (XBPTR( freelist, seg ))p->prev;
+    next = (XBPTR( freelist, seg ))p->next;
     if( prev->next != FP_OFF( p ) || next->prev != FP_OFF( p ) ) {
         return( _HEAPBADNODE );
     }
-    prev_prev = MK_FP( seg, prev->prev );
-    next_next = MK_FP( seg, next->next );
-    if( prev_prev->next != FP_OFF( prev ) || next_next->prev != FP_OFF( next ) ) {
+    if( ((XBPTR( freelist, seg ))prev->prev)->next != FP_OFF( prev ) || ((XBPTR( freelist, seg ))next->next)->prev != FP_OFF( next ) ) {
         return( _HEAPBADNODE );
     }
     return( _HEAPOK );
