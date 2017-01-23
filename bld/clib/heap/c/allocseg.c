@@ -95,25 +95,25 @@ __segment __AllocSeg( unsigned int amount )
 #elif defined(__WINDOWS__)
     {
         HANDLE hmem;
-        LPSTR p;
+        LPSTR px;
 
         hmem = GlobalAlloc( __win_alloc_flags, ((long)num_of_paras) << 4 );
         if( hmem == NULL )
             return( _NULLSEG );
-        p = GlobalLock( hmem );
-        if( p == NULL ) {
+        px = GlobalLock( hmem );
+        if( px == NULL ) {
             GlobalFree( hmem );
             return( _NULLSEG );
         }
   #if 0
         /* code generator can't handle this */
-        if( FP_OFF( p ) != 0 ) {    /* in case, Microsoft changes Windows */
+        if( FP_OFF( px ) != 0 ) {    /* in case, Microsoft changes Windows */
             GlobalUnlock( hmem );   /* in post 3.1 versions */
             GlobalFree( hmem );
             return( _NULLSEG );
         }
   #endif
-        seg = FP_SEG( p );
+        seg = FP_SEG( px );
     }
 #else
     rc = TinyAllocBlock( num_of_paras );
