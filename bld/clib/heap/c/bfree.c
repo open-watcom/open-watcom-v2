@@ -37,7 +37,7 @@
 #include "heapacc.h"
 
 
-_WCRTLINK void _bfree( __segment seg, void VOID_BPTR offset )
+_WCRTLINK void _bfree( __segment seg, VOID_BPTR offset )
 {
     _AccessFHeap();
     if( offset != _NULLOFF ) {

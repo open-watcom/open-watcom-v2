@@ -56,7 +56,7 @@ _WCRTLINK void _WCFAR *_fexpand( void _WCFAR *stg, size_t req_size )
         if( tmp == NULL ) {
             return( NULL );
         }
-    } else if( _bexpand( seg, (void VOID_BPTR)stg, req_size ) == _NULLOFF ) {
+    } else if( _bexpand( seg, (VOID_BPTR)stg, req_size ) == _NULLOFF ) {
         return( NULL );
     }
     return( stg );

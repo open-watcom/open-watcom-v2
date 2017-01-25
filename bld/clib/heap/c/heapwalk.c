@@ -46,25 +46,25 @@ static int verifyHeapList( __segment seg )
 
     /* check previous heaps end in NULL */
     for( curr_seg = seg; ; curr_seg = prev_seg ) {
-        prev_seg = curr_heap->prevseg;
+        prev_seg = HBPTR( curr_seg )->prevseg;
         if( prev_seg == seg ) {
             return( _HEAPBADBEGIN );
         }
         if( prev_seg == _NULLSEG )
             break;
-        if( prev_heap->nextseg != curr_seg ) {
+        if( HBPTR( prev_seg )->nextseg != curr_seg ) {
             return( _HEAPBADBEGIN );
         }
     }
     /* check next heaps end in NULL */
     for( curr_seg = seg; ; curr_seg = next_seg ) {
-        next_seg = curr_heap->nextseg;
+        next_seg = HBPTR( curr_seg )->nextseg;
         if( next_seg == seg ) {
             return( _HEAPBADBEGIN );
         }
         if( next_seg == _NULLSEG )
             break;
-        if( next_heap->prevseg != curr_seg ) {
+        if( HBPTR( next_seg )->prevseg != curr_seg ) {
             return( _HEAPBADBEGIN );
         }
     }
@@ -91,20 +91,20 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
         }
     }
     for( curr_seg = seg; ; curr_seg = next_seg ) {
-        prev_seg = curr_heap->prevseg;
-        next_seg = curr_heap->nextseg;
+        prev_seg = HBPTR( curr_seg )->prevseg;
+        next_seg = HBPTR( curr_seg )->nextseg;
         if( prev_seg != _NULLSEG ) {
-            if( prev_heap->nextseg != curr_seg || prev_seg == next_seg ) {
+            if( HBPTR( prev_seg )->nextseg != curr_seg || prev_seg == next_seg ) {
                 return( _HEAPBADBEGIN );
             }
         }
         if( next_seg != _NULLSEG ) {
-            if( next_heap->prevseg != curr_seg ) {
+            if( HBPTR( next_seg )->prevseg != curr_seg ) {
                 return( _HEAPBADBEGIN );
             }
         }
         if( p == NULL ) {
-            if( curr_heap->freehead.len != 0 )
+            if( HBPTR( curr_seg )->freehead.len != 0 )
                 return( _HEAPBADBEGIN );
             p = MK_FP( curr_seg, sizeof( heapblk ) );
         } else {    /* advance to next entry */
@@ -112,7 +112,7 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
             if( q <= p )
                 return( _HEAPBADNODE );
             p = q;
-            if( curr_heap->heaplen != 0 && p->len > curr_heap->heaplen ) {
+            if( HBPTR( curr_seg )->heaplen != 0 && p->len > HBPTR( curr_seg )->heaplen ) {
                 return( _HEAPBADNODE );
             }
         }

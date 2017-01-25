@@ -36,9 +36,9 @@
 #include <string.h>
 #include "heap.h"
 
-_WCRTLINK void VOID_BPTR _bcalloc( __segment seg, size_t n, size_t el_size )
+_WCRTLINK VOID_BPTR _bcalloc( __segment seg, size_t n, size_t el_size )
 {
-    void            VOID_BPTR p;
+    VOID_BPTR       p;
     unsigned long   chk_size;
 
     chk_size = (unsigned long)n * el_size;

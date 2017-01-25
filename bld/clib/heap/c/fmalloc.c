@@ -100,8 +100,8 @@ _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
                 if( __fheapbeg == _NULLSEG ) {
                     __fheapbeg = curr_seg;
                 } else {
-                    curr_heap->prevseg = prev_seg;
-                    prev_heap->nextseg = curr_seg;
+                    HBPTR( curr_seg )->prevseg = prev_seg;
+                    HBPTR( prev_seg )->nextseg = curr_seg;
                 }
             }
             for( ;; ) {
@@ -113,11 +113,11 @@ _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
                     break;
                 }
             }
-            if( __LargestSizeB4Rover < curr_heap->largest_blk  ) {
-                __LargestSizeB4Rover = curr_heap->largest_blk;
+            if( __LargestSizeB4Rover < HBPTR( curr_seg )->largest_blk  ) {
+                __LargestSizeB4Rover = HBPTR( curr_seg )->largest_blk;
             }
             prev_seg = curr_seg;
-            curr_seg = curr_heap->nextseg;
+            curr_seg = HBPTR( curr_seg )->nextseg;
         }
         if( __fmemneed( amt ) == 0 ) {
             break;

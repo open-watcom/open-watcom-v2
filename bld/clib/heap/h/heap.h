@@ -36,18 +36,14 @@
 
 
 #ifdef _M_I86
-#define SEG_BPTR(s)     __based(s) *
-#define VOID_BPTR       __based(void) *
+#define XBPTR(t,s)      t __based(s) *
+#define VOID_BPTR       void __based(void) *
 #else
-#define SEG_BPTR(s)     _WCNEAR *
-#define VOID_BPTR       _WCNEAR *
+#define XBPTR(t,s)      t _WCNEAR *
+#define VOID_BPTR       void _WCNEAR *
 #endif
 
-#define XBPTR(t,s)      t SEG_BPTR(s)
-
-#define curr_heap       ((heapblk SEG_BPTR(curr_seg))0)
-#define next_heap       ((heapblk SEG_BPTR(next_seg))0)
-#define prev_heap       ((heapblk SEG_BPTR(prev_seg))0)
+#define HBPTR(s)        ((XBPTR(heapblk, s))0)
 
 #define HUGE_NULL       ((void _WCHUGE *)NULL)
 

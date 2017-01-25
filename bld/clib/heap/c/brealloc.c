@@ -37,7 +37,7 @@
 #include "heap.h"
 
 
-_WCRTLINK void VOID_BPTR _brealloc( __segment seg, void VOID_BPTR mem, size_t size )
+_WCRTLINK VOID_BPTR _brealloc( __segment seg, VOID_BPTR mem, size_t size )
 {
     XBPTR( void, seg )  p;
     size_t              old_size;

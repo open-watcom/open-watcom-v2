@@ -37,7 +37,7 @@
 #include "heapacc.h"
 
 
-#define FRLPX_BPTR(se,p,s)  ((XBPTR(freelistp, se))((char VOID_BPTR)p + s))
+#define FRLPX_BPTR(se,p,s)  ((XBPTR(freelistp, se))((PTR)p + s))
 
 int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_t *growth_size )
 {

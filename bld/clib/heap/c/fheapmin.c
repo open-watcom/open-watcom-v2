@@ -69,17 +69,17 @@ _WCRTLINK int _fheapshrink( void )
     _AccessFHeap();
     for( curr_seg = __fheapbeg; curr_seg != _NULLSEG; curr_seg = next_seg ) {
         /* we might free this segment so get the next one now */
-        next_seg = curr_heap->nextseg;
-        if( curr_heap->numalloc == 0 ) {     /* empty heap */
+        next_seg = HBPTR( curr_seg )->nextseg;
+        if( HBPTR( curr_seg )->numalloc == 0 ) {     /* empty heap */
             /* unlink from heap list */
-            prev_seg = curr_heap->prevseg;
+            prev_seg = HBPTR( curr_seg )->prevseg;
             if( next_seg != _NULLSEG ) {
-                next_heap->prevseg = prev_seg;
+                HBPTR( next_seg )->prevseg = prev_seg;
             }
             if( prev_seg == _NULLSEG ) {
                 __fheapbeg = next_seg;
             } else {
-                prev_heap->nextseg = next_seg;
+                HBPTR( prev_seg )->nextseg = next_seg;
             }
             __fheapRover = __fheapbeg;
             heap_status = __FreeSeg( curr_seg );

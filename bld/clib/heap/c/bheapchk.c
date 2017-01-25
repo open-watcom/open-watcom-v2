@@ -45,8 +45,8 @@ static int checkFreeList( unsigned long *free_size, __segment req_seg )
     unsigned long               total_size;
 
     total_size = 0;
-    for( curr_seg = (req_seg == _NULLSEG ? __bheapbeg : req_seg); curr_seg != _NULLSEG; curr_seg = curr_heap->nextseg ) {
-        for( curr_frl = (XBPTR( freelist, curr_seg ))curr_heap->freehead.next; FP_OFF( curr_frl ) != offsetof( heapblk, freehead ); curr_frl = (XBPTR( freelist, curr_seg ))curr_frl->next ) {
+    for( curr_seg = (req_seg == _NULLSEG ? __bheapbeg : req_seg); curr_seg != _NULLSEG; curr_seg = HBPTR( curr_seg )->nextseg ) {
+        for( curr_frl = (XBPTR( freelist, curr_seg ))HBPTR( curr_seg )->freehead.next; FP_OFF( curr_frl ) != offsetof( heapblk, freehead ); curr_frl = (XBPTR( freelist, curr_seg ))curr_frl->next ) {
             total_size += curr_frl->len;
         }
         if( req_seg != _NULLSEG ) {

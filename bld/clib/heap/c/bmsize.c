@@ -36,10 +36,10 @@
 #include "heap.h"
 
 
-_WCRTLINK size_t _bmsize( __segment seg, void VOID_BPTR offset )
+_WCRTLINK size_t _bmsize( __segment seg, VOID_BPTR offset )
 {
     XBPTR( tag, seg )   q;
 
-    q = (XBPTR( tag, seg ))( (char VOID_BPTR)offset - TAG_SIZE );
+    q = (XBPTR( tag, seg ))( (PTR)offset - TAG_SIZE );
     return( ( *q & ~1 ) - TAG_SIZE );
 }

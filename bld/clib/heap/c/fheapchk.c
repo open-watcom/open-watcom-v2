@@ -46,8 +46,8 @@ static int checkFreeList( unsigned long *free_size )
     unsigned long               total_size;
 
     total_size = 0;
-    for( curr_seg = __fheapbeg; curr_seg != _NULLSEG; curr_seg = curr_heap->nextseg ) {
-        __fheapchk_current = curr_frl = (XBPTR( freelist, curr_seg ))curr_heap->freehead.next;
+    for( curr_seg = __fheapbeg; curr_seg != _NULLSEG; curr_seg = HBPTR( curr_seg )->nextseg ) {
+        __fheapchk_current = curr_frl = (XBPTR( freelist, curr_seg ))HBPTR( curr_seg )->freehead.next;
         while( FP_OFF( curr_frl ) != offsetof( heapblk, freehead ) ) {
             total_size += curr_frl->len;
             __fheapchk_current = curr_frl = (XBPTR( freelist, curr_seg ))curr_frl->next;

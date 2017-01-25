@@ -44,15 +44,15 @@ _WCRTLINK int _bfreeseg( __segment curr_seg )
 
     _AccessFHeap();
     /* unlink from heap list */
-    prev_seg = curr_heap->prevseg;
-    next_seg = curr_heap->nextseg;
+    prev_seg = HBPTR( curr_seg )->prevseg;
+    next_seg = HBPTR( curr_seg )->nextseg;
     if( next_seg != _NULLSEG ) {
-        next_heap->prevseg = prev_seg;
+        HBPTR( next_seg )->prevseg = prev_seg;
     }
     if( prev_seg == _NULLSEG ) {
         __bheapbeg = next_seg;
     } else {
-        prev_heap->nextseg = next_seg;
+        HBPTR( prev_seg )->nextseg = next_seg;
     }
     _ReleaseFHeap();
     return( __FreeSeg( curr_seg ) );

@@ -70,17 +70,17 @@ int __HeapMin( __segment curr_seg, unsigned one_heap )
     _AccessFHeap();
     for( ; curr_seg != _NULLSEG; curr_seg = next_seg ) {
         /* we might free this segment so get the next one now */
-        next_seg = curr_heap->nextseg;
-        if( curr_heap->numfree == 0 ) {      /* full heap */
+        next_seg = HBPTR( curr_seg )->nextseg;
+        if( HBPTR( curr_seg )->numfree == 0 ) {      /* full heap */
             if( one_heap != 0 )
                 break;
             continue;
         }
-        if( curr_heap->numalloc == 0 ) {     /* empty heap */
+        if( HBPTR( curr_seg )->numalloc == 0 ) {     /* empty heap */
             continue;
         }
         /* verify the last block is free */
-        last_free = MK_FP( curr_seg, curr_heap->freehead.prev );
+        last_free = MK_FP( curr_seg, HBPTR( curr_seg )->freehead.prev );
         if( IS_MEMBLK_USED( last_free ) )
             continue;
 
@@ -94,8 +94,8 @@ int __HeapMin( __segment curr_seg, unsigned one_heap )
         if( last_len <= FRL_SIZE )
             continue;
 
-        new_heap_len = __ROUND_UP_SIZE_PARA( curr_heap->heaplen - ( last_len - FRL_SIZE ) );
-        adjust_len = curr_heap->heaplen - new_heap_len;
+        new_heap_len = __ROUND_UP_SIZE_PARA( HBPTR( curr_seg )->heaplen - ( last_len - FRL_SIZE ) );
+        adjust_len = HBPTR( curr_seg )->heaplen - new_heap_len;
         if( adjust_len == 0 )
             continue;
 
@@ -137,7 +137,7 @@ int __HeapMin( __segment curr_seg, unsigned one_heap )
 #endif
 
         /* make the changes to the heap structure */
-        curr_heap->heaplen = new_heap_len;
+        HBPTR( curr_seg )->heaplen = new_heap_len;
         last_free->len -= adjust_len;
         end_tag = (farfrlptr)( ((FARPTR)last_free) + last_free->len );
         end_tag->len = END_TAG;

@@ -47,9 +47,9 @@ _WCRTLINK __segment _bheapseg( size_t size )
         return( _NULLSEG );
     prev_seg = __bheapbeg;
     __bheapbeg = curr_seg;
-    curr_heap->nextseg = prev_seg;
+    HBPTR( curr_seg )->nextseg = prev_seg;
     if( prev_seg != _NULLSEG ) {
-        prev_heap->prevseg = curr_seg;
+        HBPTR( prev_seg )->prevseg = curr_seg;
     }
     return( __bheapbeg );
 }
