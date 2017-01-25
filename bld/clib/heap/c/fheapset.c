@@ -46,11 +46,11 @@ _WCRTLINK int _heapset( unsigned int fill )
 
 _WCRTLINK int _fheapset( unsigned int fill )
 {
-    int         test_heap;
+    int         heap_status;
 
-    test_heap = _heapchk();
-    if( test_heap != _HEAPOK ) {
-        return( test_heap );
+    heap_status = _heapchk();
+    if( heap_status != _HEAPOK ) {
+        return( heap_status );
     }
     return( __HeapSet( __fheapbeg, fill ) );
 }

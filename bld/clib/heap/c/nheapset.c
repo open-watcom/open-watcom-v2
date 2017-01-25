@@ -51,13 +51,13 @@ _WCRTLINK int _heapset( unsigned int fill )
 
 _WCRTLINK int _nheapset( unsigned int fill )
 {
-    mheapptr mhp;
-    frlptr  curr;
-    int test_heap;
+    mheapptr    mhp;
+    frlptr      curr;
+    int         heap_status;
 
-    test_heap = _heapchk();
-    if( test_heap != _HEAPOK ) {
-        return( test_heap );
+    heap_status = _heapchk();
+    if( heap_status != _HEAPOK ) {
+        return( heap_status );
     }
     fill |= fill << 8;
     _AccessNHeap();
