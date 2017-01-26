@@ -116,9 +116,6 @@ static int checkFree( frlptr p )
     if( next_next->prev != next || prev_prev->next != prev ) {
         return( _HEAPBADNODE );
     }
-    if( next_next->prev != next || prev_prev->next != prev ) {
-        return( _HEAPBADNODE );
-    }
     return( _HEAPOK );
 }
 
