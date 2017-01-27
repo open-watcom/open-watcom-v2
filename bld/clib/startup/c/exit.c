@@ -36,6 +36,9 @@
 #if defined(__WINDOWS__) || defined(__WINDOWS_386__)
 #include <windows.h>
 #endif
+#if defined(__RDOS__)
+#include <rdos.h>
+#endif
 #include "rtdata.h"
 #include "exitwmsg.h"
 #include "initfini.h"
@@ -84,6 +87,10 @@ _WCRTLINK void exit( int status )
     }
 #elif defined(__DOS__) || defined(__OS2__) || defined(__WINDOWS__) && defined(_M_I86)
     (*__int23_exit)();
+#elif defined(__RDOS__)
+    if( RdosIsForked() ) {
+        _exit( status );
+    }
 #endif
     __FiniRtns( FINI_PRIORITY_EXIT, 255 );
     _exit( status );

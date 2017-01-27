@@ -54,6 +54,7 @@
 #include "cinit.h"
 #include "exitwmsg.h"
 
+extern void __CEndFork();
 
 static char    DllName[_MAX_PATH];
 
@@ -130,14 +131,20 @@ int __RdosInit( int is_dll, thread_data *tdata, int hdll )
 
 _WCRTLINK _WCNORETURN void __exit( unsigned ret_code )
 {
-    if( !__Is_DLL ) {
-        __DoneExceptionFilter();
-        __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
-    }
-    // Also gets done by __FreeThreadDataList which is activated from FiniSema4s
-    // for multi-threaded apps
-    __FirstThreadData = NULL;
-    if( !__Is_DLL ) {
-        RdosUnloadExe( ret_code );
+    thread_data         *tdata;
+
+    if( RdosIsForked() ) {
+        __CEndFork();
+    } else {
+        if( !__Is_DLL ) {
+            __DoneExceptionFilter();
+            __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
+        }
+        // Also gets done by __FreeThreadDataList which is activated from FiniSema4s
+        // for multi-threaded apps
+        __FirstThreadData = NULL;
+        if( !__Is_DLL ) {
+            RdosUnloadExe( ret_code );
+        }
     }
 }
