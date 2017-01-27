@@ -43,12 +43,12 @@
 void _os2zero64k( unsigned ax, unsigned cx, unsigned es, unsigned di );
 #pragma aux _os2zero64k = 0xf3 0xab /* rep stosw */     \
         parm caller [ax] [cx] [es] [di]                     \
-        modify [cx di];
+        modify [cx di]
 
 void _os2zero_rest( unsigned ax, unsigned cx, unsigned es, unsigned di );
 #pragma aux _os2zero_rest = 0xf3 0xaa /* rep stosb */   \
         parm caller [ax] [cx] [es] [di]                     \
-        modify [cx di];
+        modify [cx di]
 
 
 static int only_one_bit( size_t x )

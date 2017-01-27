@@ -71,7 +71,7 @@ extern  int SegmentLimit( void );
         "lsl    eax,ax"         \
         "inc    eax"            \
         value                   [eax] \
-        modify exact            [eax];
+        modify exact            [eax]
 
 static void __unlink( mheapptr mhp )
 {
@@ -417,7 +417,7 @@ static int __CreateNewNHeap( unsigned amount )
         /* make sure it will not look like the end of a heap */
         tmp_tag[0] = ! END_TAG;
         brk_value = (unsigned)&tmp_tag[2];
-        amount -= 2 * TAG_SIZE; // 11-jun-95, subtract extra tag
+        amount -= 2 * TAG_SIZE; // subtract extra tag
     }
   #elif defined(__DOS_EXT__)
     // if( !__IsCtsNHeap() ) {

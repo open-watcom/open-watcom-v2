@@ -42,7 +42,7 @@
                 "push ax" \
                 "mov ax,ds" \
                 "pop ds" \
-                parm [ax] value [ax];
+                parm [ax] value [ax]
     #define setup_segment( _x ) _x = setup_ds( _x );
 #else
     #define setup_segment( _x ) (void)(_x = _x);

@@ -56,9 +56,7 @@ extern  void    far_memset(void _WCFAR *,int,unsigned);
         0x11 0xc9       /* adc cx,cx */\
         0xf3 0xaa       /* rep stosb */\
         parm caller [es _DI] [ax] [_CX] \
-        modify exact [_DI _CX];
-
-
+        modify exact [_DI _CX]
 
 int __HeapSet( __segment seg, unsigned int fill )
 {

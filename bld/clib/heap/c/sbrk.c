@@ -52,21 +52,21 @@
 extern  unsigned short SS_Reg( void );
 #pragma aux SS_Reg =    \
         "mov ax,ss"     \
-    parm caller value [ax];
+    parm caller value [ax]
 
 extern  int SetBlock( unsigned short, unsigned );
 #pragma aux SetBlock =      \
         "mov    ah,04ah"    \
         "int    021h"       \
         "sbb    ax,ax"      \
-    parm caller [es] [bx] value [ax];
+    parm caller [es] [bx] value [ax]
 
 #else
 
 extern  unsigned short  GetDS( void );
 #pragma aux GetDS =     \
         "mov    ax,ds"  \
-    value [ax];
+    value [ax]
 
 extern  int SetBlock( unsigned short selector, unsigned size );
 #pragma aux SetBlock =      \
@@ -78,7 +78,7 @@ extern  int SetBlock( unsigned short selector, unsigned size );
         "ror    eax,1"      \
         "pop    es"         \
     parm caller [ax] [ebx]  \
-    modify [ebx] value [eax];
+    modify [ebx] value [eax]
 
 extern  int SegInfo( unsigned short selector );
 #pragma aux SegInfo =           \
@@ -88,7 +88,7 @@ extern  int SegInfo( unsigned short selector );
         "and    edi,0000FFFFh"  \
         "or     edi,eax"        \
     parm caller [ebx] value [edi] \
-    modify exact [eax ecx edx esi ebx edi];
+    modify exact [eax ecx edx esi ebx edi]
 
 extern  int SegmentLimit( void );
 #pragma aux SegmentLimit =  \
@@ -96,7 +96,7 @@ extern  int SegmentLimit( void );
         "mov    ax,ds"      \
         "lsl    eax,ax"     \
         "inc    eax"        \
-    value [eax] modify exact [eax];
+    value [eax] modify exact [eax]
 
 #endif
 

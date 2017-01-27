@@ -43,12 +43,12 @@ extern  long _dosalloc(unsigned);
 #pragma aux     _dosalloc = 0xb4 0x48   /* mov ah,48h */        \
                             0xcd 0x21   /* int 21h    */        \
                             0x19 0xd2   /* sbb dx,dx  */        \
-                        parm caller [bx] value [dx ax] modify [dx ax];
+                        parm caller [bx] value [dx ax] modify [dx ax]
 
 extern  void    _dosfree(void _WCHUGE *);
 #pragma aux     _dosfree  = 0xb4 0x49   /* mov ah,49h */        \
                             0xcd 0x21   /* int 21h    */        \
-                        parm caller [ax es] modify [es];
+                        parm caller [ax es] modify [es]
 
 static int only_one_bit( size_t x )
 {

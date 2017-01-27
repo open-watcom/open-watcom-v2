@@ -213,11 +213,11 @@ extern  unsigned        __MemAllocator( unsigned __sz, __segment __seg, unsigned
 extern  void            __MemFree( unsigned __ptr, __segment __seg, unsigned __off );
 #if defined( _M_IX86 )
  #if defined( _M_I86 )
-  #pragma aux __MemAllocator "*" parm [ax] [dx] [bx];
-  #pragma aux __MemFree      "*" parm [ax] [dx] [bx];
+  #pragma aux __MemAllocator "*" parm [ax] [dx] [bx]
+  #pragma aux __MemFree      "*" parm [ax] [dx] [bx]
  #else
-  #pragma aux __MemAllocator "*" parm [eax] [dx] [ebx];
-  #pragma aux __MemFree      "*" parm [eax] [dx] [ebx];
+  #pragma aux __MemAllocator "*" parm [eax] [dx] [ebx]
+  #pragma aux __MemFree      "*" parm [eax] [dx] [ebx]
  #endif
 #endif
 

@@ -60,7 +60,7 @@ extern void _WCNEAR *_mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
         0x1f            /* pop ds */ \
         parm caller     [es _DI] [dx _SI] [_CX] \
         value           [_SI] \
-        modify exact    [_SI _DI _CX];
+        modify exact    [_SI _DI _CX]
 
 
 #if defined(__BIG_DATA__)
