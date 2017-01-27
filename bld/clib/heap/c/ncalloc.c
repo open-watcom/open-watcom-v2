@@ -38,7 +38,7 @@
 
 _WCRTLINK void _WCNEAR *_ncalloc( size_t n, size_t el_size )
 {
-    void _WCI86NEAR     *p;
+    void _WCNEAR        *p;
     unsigned long       chk_size;
 
     chk_size = (unsigned long) n * el_size;

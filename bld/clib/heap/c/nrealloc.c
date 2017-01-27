@@ -49,7 +49,7 @@ _WCRTLINK void *realloc( void *stg, size_t amount )
 
 #pragma intrinsic(memcpy)
 
-_WCRTLINK void _WCNEAR *_nrealloc( void _WCI86NEAR *stg, size_t req_size )
+_WCRTLINK void _WCNEAR *_nrealloc( void _WCNEAR *stg, size_t req_size )
     {
         void _WCNEAR *p;
         size_t     old_size;

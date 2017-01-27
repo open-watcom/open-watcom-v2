@@ -73,10 +73,10 @@ unsigned __MemAllocator( unsigned req_size, __segment segment, unsigned offset )
 
         size = __ROUND_UP_SIZE( req_size + TAG_SIZE, ROUND_SIZE );// round up size
         if( size >= req_size ) {                // quit if overflowed
-            heapblkp    _WCI86NEAR *heap;
+            heapblkp    _WCNEAR *heap;
             unsigned    largest;
 
-            heap = (heapblkp _WCI86NEAR *)offset;
+            heap = (heapblkp _WCNEAR *)offset;
             largest = heap->largest_blk;
             if( size < FRL_SIZE ) {
                 size = FRL_SIZE;
@@ -169,13 +169,13 @@ void __MemFree( unsigned pointer, __segment segment, unsigned offset )
 
         pfree = (frlptr)(pointer - TAG_SIZE);
         if( IS_MEMBLK_USED( pfree ) ) {         // quit if storage is free
-            heapblkp    _WCI86NEAR *heap;
+            heapblkp    _WCNEAR *heap;
             frlptr      pnext;
             frlptr      pprev;
             frlptr      ptr;
             unsigned    len;
 
-            heap = (heapblkp _WCI86NEAR *)offset;
+            heap = (heapblkp _WCNEAR *)offset;
             do {                                // this allows break statement
                 unsigned average;
                 unsigned numfree;
