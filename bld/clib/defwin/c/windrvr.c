@@ -35,10 +35,16 @@
 #include <stdio.h>
 #include <signal.h>
 #include "win.h"
+#include "banner.h"
 
-static char  DefaultAboutMsg[] = "   Open Watcom Default Window System\n\n                Version 1.0\n\n Portions Copyright (c) 1991-2002 Sybase, Inc.";
-static char  _WCI86FAR *AboutMsg = DefaultAboutMsg;
 static char  DefaultAboutTitle[] = "About Open Watcom Default Windowing System";
+static char  DefaultAboutMsg[] =
+banner1w1("Default Windowing System") "\n\n"
+"            Version 1.0\n\n"
+banner21 "\n"
+banner21a("1991");
+
+static char  _WCI86FAR *AboutMsg = DefaultAboutMsg;
 static char  _WCI86FAR *AboutTitle = DefaultAboutTitle;
 static long  shiftState = 0;
 
