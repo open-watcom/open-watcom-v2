@@ -35,6 +35,9 @@
 #include <malloc.h>
 #include "heap.h"
 #include "heapacc.h"
+#if defined(__RDOS__)
+#include <rdos.h>
+#endif
 
 
 #if defined(__SMALL_DATA__)
@@ -52,7 +55,6 @@ mheapptr    __MiniHeapFreeRover;
 
 #if defined( __RDOS__ ) && defined( __ALLOC_DEBUG )
 
-#include <rdos.h>
 
 _WCRTLINK void _nfree( void _WCNEAR *stg )
 {
@@ -68,6 +70,13 @@ _WCRTLINK void _nfree( void _WCNEAR *stg )
 
     if( !stg )
         return;
+
+#if defined( __RDOS__ )
+    if( RdosIsForked() ) {
+        RdosFreeMem( stg );
+        return;
+    }
+#endif
 
     _AccessNHeap();
     do {

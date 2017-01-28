@@ -37,6 +37,9 @@
 #include "extfunc.h"
 #include "heapacc.h"
 #include "heap.h"
+#if defined(__RDOS__)
+#include <rdos.h>
+#endif
 
 #if defined(_M_IX86)
     #pragma aux (__outside_CLIB) __nmemneed;
@@ -119,8 +122,6 @@ _WCRTLINK void *malloc( size_t amount )
 
 #if defined( __RDOS__ ) && defined( __ALLOC_DEBUG )
 
-#include <rdos.h>
-
 _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
 {
     void *ptr;
@@ -143,6 +144,15 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
 #if defined(__WARP__)
     unsigned char   use_obj_any;
 #endif // __WARP__
+
+#if defined(__RDOS__)
+    void *vptr;
+
+    if( RdosIsForked() ) {
+        vptr = RdosAllocateMem( amt );
+        return( (void _WCNEAR *)vptr );
+    }
+#endif
 
     if( (amt == 0) || (amt > -sizeof( heapblk )) ) {
         return( (void _WCNEAR *)NULL );
