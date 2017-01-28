@@ -46,6 +46,7 @@
 #include "mthread.h"
 #include "initarg.h"
 #include "cthread.h"
+#include "_rdos.h"
 
 
 extern  int             __TlsIndex;

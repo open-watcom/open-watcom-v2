@@ -32,8 +32,8 @@
 #include "variety.h"
 #include <unistd.h>
 #include "rdos.h"
+#include "_rdos.h"
 
-extern void __CBeginFork();
 
 _WCRTLINK pid_t fork( void )
 {

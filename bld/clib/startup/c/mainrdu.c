@@ -53,8 +53,8 @@
 #include "trdlstac.h"
 #include "cinit.h"
 #include "exitwmsg.h"
+#include "_rdos.h"
 
-extern void __CEndFork();
 
 static char    DllName[_MAX_PATH];
 
