@@ -59,8 +59,11 @@
 #define banner1w1(p)        "Open Watcom " p
 #define banner1w2(v)        banner1p2(v)
 
-#define banner2             "Copyright (c) 2002-" CURR_YEAR " The Open Watcom Contributors. All Rights Reserved."
-#define banner2a(year)      "Portions Copyright (c) " year "-2002 Sybase, Inc. All Rights Reserved."
+#define banner21            "Copyright (c) 2002-" CURR_YEAR " The Open Watcom Contributors."
+#define banner21a(year)     "Portions Copyright (c) " year "-2002 Sybase, Inc."
+
+#define banner2             banner21 " All Rights Reserved."
+#define banner2a(year)      banner21a(year) " All Rights Reserved."
 
 #define banner3             "Source code is available under the Sybase Open Watcom Public License."
 #define banner3a            "See http://www.openwatcom.org/ for details."
