@@ -661,18 +661,19 @@ static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
             op2 = BasedPtrNode( typ2, op2 );
         }
     } else if( typ2->decl_type == TYPE_POINTER ) {
-        // If we're converting a near pointer to some larger arithmetic type,
+        // If we're converting a based pointer to some larger arithmetic type,
         // we must convert it to a long pointer first to get proper segment.
         // However, in flat model this conversion isn't done, we pretend
         // that segments don't exist.
         if( TypeSize( typ1 ) > TypeSize( typ2 ) ) {
 #if _CPU == 386
-            if( (TargetSwitches & FLAT_MODEL) == 0 ) {
-                op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_UNKNOWN ), true );
-            }
+            if( (TargetSwitches & FLAT_MODEL) == 0 && (typ2_flags & FLAG_BASED) ) {
 #else
-            op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_UNKNOWN ), true );
+            if( typ2_flags & FLAG_BASED ) {
 #endif
+                op2 = BasedPtrNode( typ2, op2 );
+//                op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_UNKNOWN ), true );
+            }
         }
     } else if( typ1->decl_type == TYPE_POINTER ) {
         // If we're converting an arithmetic type to a pointer, first convert
