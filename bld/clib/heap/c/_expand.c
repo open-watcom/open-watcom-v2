@@ -65,7 +65,7 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
         p2 = (FRLBPTR)( (PTR)p1 + old_size );
         *growth_size = new_size - old_size;
         for( ;; ) {
-            if( p2->len == END_TAG ) {
+            if( IS_MEMBLK_END( p2 ) ) {
                 return( __HM_TRYGROW );
             } else if( IS_MEMBLK_USED( p2 ) ) { /* next piece is allocated */
                 break;
@@ -75,7 +75,7 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
             pnext = p2->next;
             pprev = p2->prev;
             if( seg == _DGroup() ) {    // near heap
-                for( mhp = __nheapbeg; mhp->next != NULL; mhp = (MHBPTR)mhp->next ) {
+                for( mhp = __nheapbeg; mhp->next != NULL; mhp = mhp->next ) {
                     if( (unsigned)mhp <= offset && offset < ( (unsigned)mhp + mhp->len ) ) {
                         break;
                     }
@@ -114,10 +114,10 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
             mhp = 0;                    // for based heap
             /* block big enough to split */
             SET_MEMBLK_SIZE_USED( p1, new_size );
-            p1 = (FRLBPTR)( (PTR)p1 + new_size );
-            SET_MEMBLK_SIZE_USED( p1, old_size - new_size );
+            p2 = (FRLBPTR)( (PTR)p1 + new_size );
+            SET_MEMBLK_SIZE_USED( p2, old_size - new_size );
             if( seg == _DGroup() ) {    // near heap
-                for( mhp = __nheapbeg; mhp->next != NULL; mhp = (MHBPTR)mhp->next ) {
+                for( mhp = __nheapbeg; mhp->next != NULL; mhp = mhp->next ) {
                     if( (unsigned)mhp <= offset && offset < ( (unsigned)mhp + mhp->len ) ) {
                         break;
                     }
@@ -126,10 +126,10 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
             /* _bfree will decrement 'numalloc' */
             mhp->numalloc++;
 #if defined( _M_I86 )
-            _bfree( seg, (FRLBPTR)( (PTR)p1 + TAG_SIZE ) );
+            _bfree( seg, (VOID_BPTR)( (PTR)p2 + TAG_SIZE ) );
             /* free the top portion */
 #else
-            _nfree( (FRLBPTR)( (PTR)p1 + TAG_SIZE ) );
+            _nfree( (void _WCNEAR *)( (PTR)p2 + TAG_SIZE ) );
 #endif
         }
     }
