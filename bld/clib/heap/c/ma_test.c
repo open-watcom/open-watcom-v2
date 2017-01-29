@@ -76,14 +76,6 @@
 
 #define BASED_HEAP_SIZE 512
 
-// Casting _NULLOFF to long produces 0xFFFFFFFF, while casting the return of
-// failing based heap routines to long produces 0xFFFF. At this point it is
-// unclear whether that is a compiler bug, whether the _NULLOFF macro is wrong,
-// or whether the test makes bad assumptions. For the moment, get around it
-// by casting to unsigned in a few specific cases. This hack should be removed
-// when it is determined what's actually wrong and the original problem fixed.
-#define HACK_CAST   (unsigned)
-
 // This is a macro performing everything needed before returning the call
 #if defined( _M_I86 )
     #define _CRET() {                                                   \
@@ -159,14 +151,14 @@
 
 // Macro to free based pointers and the corresponding segment
 #define _DOBFREE() {                                            \
-  if( (char __based(seg)*)ptr_char != _NULLOFF ) {              \
-      _bfree( seg, (char __based(seg)*)ptr_char );              \
+  if( (void __based(void)*)ptr_char != _NULLOFF ) {             \
+      _bfree( seg, (void __based(void)*)ptr_char );             \
   }                                                             \
-  if( (int __based(seg)*)ptr_int != _NULLOFF ) {                \
-      _bfree( seg,(int __based(seg)*)ptr_int );                 \
+  if( (void __based(void)*)ptr_int != _NULLOFF ) {              \
+      _bfree( seg,(void __based(void)*)ptr_int );               \
   }                                                             \
-  if( (double __based(seg)*)ptr_double != _NULLOFF ) {          \
-      _bfree( seg,(double __based(seg)*)ptr_double);            \
+  if( (void __based(void)*)ptr_double != _NULLOFF ) {           \
+      _bfree( seg,(void __based(void)*)ptr_double);             \
   }                                                             \
 }
 
@@ -478,7 +470,7 @@ void Test_calloc__msize( test_result *result, int type )
         _CRET();
     }
 #if defined( _M_I86 ) && (defined(__SMALL__) || defined(__MEDIUM__))
-    if( type != TYPE_FAR && HACK_CAST ptr_double != HACK_CAST _NUL ) {
+    if( type != TYPE_FAR && ptr_double != _NUL ) {
         result->status = TEST_FAIL;
         strcpy( result->msg, errmsg[14] );
         _CRET();
@@ -490,7 +482,7 @@ void Test_calloc__msize( test_result *result, int type )
 #else       // 32-bit or large data model
     if( type == TYPE_BASED || type == TYPE_NEAR ) {
     #if defined( _M_I86 )
-        if( HACK_CAST ptr_double != HACK_CAST _NUL ) {
+        if( ptr_double != _NUL ) {
             result->status = TEST_FAIL;
             strcpy( result->msg, errmsg[14] );
             _CRET();
@@ -576,7 +568,7 @@ void Test_calloc__msize( test_result *result, int type )
             break;
         case TYPE_BASED:
             strcpy( result->funcname,"_bmsize()" );
-            retsize = _bmsize( seg, (char __based( seg ) *)ptr_char );
+            retsize = _bmsize( seg, (void __based(void)*)ptr_char );
             break;
 #endif
         default:
@@ -666,7 +658,7 @@ void Test_malloc_realloc__expand( test_result *result, int type )
         _CRET();
     }
 #if defined( _M_I86 ) && (defined(__SMALL__) || defined(__MEDIUM__))
-    if( type != TYPE_FAR && HACK_CAST ptr_double != HACK_CAST _NUL ) {
+    if( type != TYPE_FAR && ptr_double != _NUL ) {
         result->status = TEST_FAIL;
         strcpy( result->msg, errmsg[14] );
         _CRET();
@@ -678,7 +670,7 @@ void Test_malloc_realloc__expand( test_result *result, int type )
 #else       // 32-bit or large data model
     if( type == TYPE_BASED || type == TYPE_NEAR ) {
     #if defined( _M_I86 )
-        if( HACK_CAST ptr_double != HACK_CAST _NUL ) {
+        if( ptr_double != _NUL ) {
             result->status = TEST_FAIL;
             strcpy( result->msg, errmsg[14] );
             _CRET();
@@ -751,7 +743,7 @@ void Test_malloc_realloc__expand( test_result *result, int type )
             break;
         case TYPE_BASED:
             strcpy( result->funcname, "_brealloc()" );
-            tmp_ptr = (long) _brealloc( seg,(int __based(seg)*)ptr_int,size);
+            tmp_ptr = (long) _brealloc( seg,(void __based(void)*)ptr_int,size);
             break;
 #endif
         default:
@@ -788,7 +780,7 @@ void Test_malloc_realloc__expand( test_result *result, int type )
             break;
         case TYPE_BASED:
             strcpy( result->funcname, "_bexpand()" );
-            tmp_ptr = (long)_bexpand( seg, (int __based(seg)*)ptr_int, size );
+            tmp_ptr = (long)_bexpand( seg, (void __based(void)*)ptr_int, size );
             break;
 #endif
         default:
