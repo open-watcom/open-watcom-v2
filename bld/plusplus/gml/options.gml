@@ -1025,6 +1025,12 @@
 :usage. treat all warnings as errors
 :jusage. ‚·‚×‚Ä‚ÌŒx‚ğƒGƒ‰[‚Æ‚µ‚Äˆµ‚¢‚Ü‚·
 
+:option. wpx
+:target. any
+:internal.
+:usage. check prototypes defined already
+:jusage.
+
 :option. wx
 :target. any
 :enumerate. warn_level

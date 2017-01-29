@@ -41,7 +41,7 @@ frlptr __nheapchk_current;
 static int checkFreeList( size_t *free_size )
 {
     frlptr      curr_frl;
-    frlptr      end;
+    frlptr      end_frl;
     size_t      new_size;
     size_t      free_list_size;
     mheapptr    mhp;
@@ -59,7 +59,7 @@ static int checkFreeList( size_t *free_size )
         if( curr_frl->prev->next != curr_frl ) {
             return( _HEAPBADNODE );
         }
-        end = curr_frl;
+        end_frl = curr_frl;
         do {
             /* loop invariant: curr_frl->prev->next == curr_frl */
             /* are we still in a ring if we move to curr_frl->next? */
@@ -83,7 +83,7 @@ static int checkFreeList( size_t *free_size )
             }
             free_list_size = new_size;
             __nheapchk_current = curr_frl = curr_frl->next;
-        } while( curr_frl != end );
+        } while( curr_frl != end_frl );
     }
     *free_size = free_list_size;
     return( _HEAPOK );
@@ -93,8 +93,6 @@ static int checkFree( frlptr p )
 {
     frlptr next;
     frlptr prev;
-    frlptr next_next;
-    frlptr prev_prev;
 
     __nheapchk_current = p;
     if( IS_MEMBLK_USED( p ) ) {
@@ -108,12 +106,10 @@ static int checkFree( frlptr p )
     if( next->prev != p || prev->next != p ) {
         return( _HEAPBADNODE );
     }
-    next_next = next->next;
-    prev_prev = prev->prev;
-    if( next_next == NULL || prev_prev == NULL ) {
+    if( next->next == NULL || prev->prev == NULL ) {
         return( _HEAPBADNODE );
     }
-    if( next_next->prev != next || prev_prev->next != prev ) {
+    if( next->next->prev != next || prev->prev->next != prev ) {
         return( _HEAPBADNODE );
     }
     return( _HEAPOK );

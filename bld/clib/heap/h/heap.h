@@ -46,6 +46,8 @@
 #define HBPTR(s)        ((XBPTR(heapblkp, s))0)
 
 #define HUGE_NULL       ((void _WCHUGE *)NULL)
+#define FAR_NULL        ((void _WCFAR *)NULL)
+#define NEAR_NULL       ((void _WCNEAR *)NULL)
 
 typedef unsigned int    tag;
 typedef unsigned char   _WCNEAR *PTR;
@@ -94,7 +96,6 @@ typedef struct freelistp {
     struct freelistp    _WCNEAR *next;
 } freelistp;
 
-typedef freelistp       frl;
 typedef freelistp       _WCNEAR *frlptr;
 
 typedef struct heapblkp {
@@ -116,7 +117,7 @@ typedef struct heapblkp {
     unsigned int        largest_blk;
     unsigned int        numalloc;
     unsigned int        numfree;
-    frl                 freehead;
+    freelistp           freehead;
 #if defined( __WARP__ )
     unsigned int        spare;          /* not used, match miniheapblkp size */
 #endif
@@ -131,7 +132,7 @@ typedef struct miniheapblkp {
     unsigned int        largest_blk;
     unsigned int        numalloc;
     unsigned int        numfree;
-    frl                 freehead;
+    freelistp           freehead;
 #if defined( __WARP__ )
     unsigned int        used_obj_any    :1; /* allocated with OBJ_ANY - block may be in high memory */
 #endif
@@ -211,14 +212,12 @@ extern void             _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amo
 
 extern  unsigned        __MemAllocator( unsigned __sz, __segment __seg, unsigned __off );
 extern  void            __MemFree( unsigned __ptr, __segment __seg, unsigned __off );
-#if defined( _M_IX86 )
- #if defined( _M_I86 )
+#if defined( _M_I86 )
   #pragma aux __MemAllocator "*" parm [ax] [dx] [bx]
   #pragma aux __MemFree      "*" parm [ax] [dx] [bx]
- #else
+#elif defined( _M_IX86 )
   #pragma aux __MemAllocator "*" parm [eax] [dx] [ebx]
   #pragma aux __MemFree      "*" parm [eax] [dx] [ebx]
- #endif
 #endif
 
 #define PARAS_IN_64K    (0x1000)
@@ -230,7 +229,7 @@ extern  void            __MemFree( unsigned __ptr, __segment __seg, unsigned __o
 #else
     #define ROUND_SIZE  (TAG_SIZE + TAG_SIZE)
 #endif
-#define FRL_SIZE        __ROUND_UP_SIZE( sizeof( frl ), ROUND_SIZE )
+#define FRL_SIZE        __ROUND_UP_SIZE( sizeof( freelistp ), ROUND_SIZE )
 
 #define MEMBLK_SIZE(p)              __ROUND_DOWN_SIZE( (p)->len, 2 )
 #define IS_MEMBLK_USED(p)           (((p)->len & 1) != 0)

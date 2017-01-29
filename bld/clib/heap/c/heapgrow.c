@@ -125,6 +125,6 @@ _WCRTLINK void _nheapgrow( void )
     expand = (( diff_paras + 1 ) << 4 ) - ( _curbrk & 0x0f );
     expand += __LastFree(); /* compensate for _expand's adjustment */
     _ReleaseNHeap();
-    _nfree( _nmalloc( expand - ( sizeof( size_t ) + sizeof( frl ) ) ) );
+    _nfree( _nmalloc( expand - ( sizeof( size_t ) + sizeof( freelistp ) ) ) );
 #endif
 }

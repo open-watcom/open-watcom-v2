@@ -25,6 +25,7 @@
 *  ========================================================================
 *
 * Description:  Implementation of far free() and _ffree().
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -48,7 +49,6 @@ _WCRTLINK void free( void *stg )
 
 _WCRTLINK void _ffree( void _WCFAR *stg )
 {
-    heapblk     _WCFAR *p;
     __segment   seg;
 
     seg = FP_SEG( stg );
@@ -56,20 +56,19 @@ _WCRTLINK void _ffree( void _WCFAR *stg )
         return;
     }
     if( seg == _DGroup() ) {
-        _nfree( (void _WCNEAR *)FP_OFF( stg ) );
+        _nfree( (void _WCNEAR *)stg );
         return;
     }
     _AccessFHeap();
     __MemFree( FP_OFF( stg ), seg, 0 );
-    if( seg != __fheapRover ) {                         /* 02-dec-92 */
+    if( seg != __fheapRover ) {
         // seg might be after the __fheapRover, but we don't know that
         // and it might be expensive to find out. We will just update
         // __LargestSizeB4Rover anyway. The worst that will happen is
         // that _fmalloc will start searching from __fheapbeg when it could
         // have started at __fheapRover.
-        p = MK_FP( seg, 0 );
-        if( p->largest_blk > __LargestSizeB4Rover ) {
-            __LargestSizeB4Rover = p->largest_blk;
+        if( __LargestSizeB4Rover < HBPTR( seg )->largest_blk ) {
+            __LargestSizeB4Rover = HBPTR( seg )->largest_blk;
         }
     }
     _ReleaseFHeap();

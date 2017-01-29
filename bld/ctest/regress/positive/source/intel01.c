@@ -20,15 +20,19 @@ void set_vec( void ( __interrupt *p )( void ) )
     if( sizeof( &int2 ) != sizeof( FAR_INT ) ) fail(__LINE__);
 }
 
-void __far *Ptr;
-long long Llp;
+void __far  *Ptr;
+long long   Llp;
 
 // verify that far pointer <-> long long conversions can generate code
 // and test other fun pointer <-> integer conversions
 
 long long llptr( void )
 {
+#ifdef __FLAT__
     return( (long long)&Ptr );  // should generate 'mov edx,ds'
+#else
+    return( (long long)(void __far *)&Ptr );  // should generate 'mov edx,ds'
+#endif
 }
 
 void ptr_cvt( int __near *np )

@@ -25,6 +25,7 @@
 *  ========================================================================
 *
 * Description:  Far heap reallocation routines.
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -36,32 +37,18 @@
 #include <string.h>
 #include "heap.h"
 
-#if defined(__386__)
-#define MOVSW   0x66 0xa5
-#define _DI     edi
-#define _SI     esi
-#define _CX     ecx
-#else
-#define MOVSW   0xa5
-#define _DI     di
-#define _SI     si
-#define _CX     cx
-#endif
-
 
 extern void _WCNEAR *_mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
 #pragma aux _mymemcpy = \
-        0x1e            /* push ds */ \
-        0x8e 0xda       /* mov ds,dx */ \
-        0xd1 0xe9       /* shr cx,1 */ \
-        0xf3 MOVSW      /* rep movsw */ \
-        0x11 0xc9       /* adc cx,cx */ \
-        0xf3 0xa4       /* rep movsb */ \
-        0x1f            /* pop ds */ \
-        parm caller     [es _DI] [dx _SI] [_CX] \
-        value           [_SI] \
-        modify exact    [_SI _DI _CX]
-
+        "push ds"       \
+        "mov ds,dx"     \
+        "shr cx,1"      \
+        "rep movsw"     \
+        "adc cx,cx"     \
+        "rep movsb"     \
+        "pop ds"        \
+    parm caller [es di] [dx si] [cx] \
+        value [si] modify exact [si di cx]
 
 #if defined(__BIG_DATA__)
 
@@ -88,7 +75,7 @@ _WCRTLINK void _WCFAR *_frealloc( void _WCFAR *stg, size_t req_size )
     old_size = _fmsize( stg );
     if( FP_SEG( stg ) == _DGroup() ) {
         p = stg;
-        if( _nexpand( (void _WCNEAR *)FP_OFF( stg ), req_size ) == NULL ) {
+        if( _nexpand( (void _WCNEAR *)stg, req_size ) == NULL ) {
             p = NULL;
         }
     } else {

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Re-allocate memory block
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -39,8 +39,8 @@
 
 _WCRTLINK VOID_BPTR _brealloc( __segment seg, VOID_BPTR mem, size_t size )
 {
-    XBPTR( void, seg )  p;
-    size_t              old_size;
+    VOID_BPTR   p;
+    size_t      old_size;
 
     if( mem == _NULLOFF )
         return( _bmalloc( seg, size ) );
@@ -53,7 +53,7 @@ _WCRTLINK VOID_BPTR _brealloc( __segment seg, VOID_BPTR mem, size_t size )
     if( p == _NULLOFF ) {               /* if it couldn't be expanded */
         p = _bmalloc( seg, size );      /* - allocate new block */
         if( p != _NULLOFF ) {           /* - if we got one */
-            _fmemcpy( p, (XBPTR( void, seg ))mem, old_size );
+            _fmemcpy( seg :> p, seg :> mem, old_size );
             _bfree( seg, mem );
         } else {
             _bexpand( seg, mem, old_size );

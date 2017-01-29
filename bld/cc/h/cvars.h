@@ -431,6 +431,7 @@ extern void         SetCppWidth(unsigned);
 extern void         CppPrtChar(int);
 extern void         CppPrtToken(void);
 extern bool         OpenSrcFile(const char *, src_file_type);
+extern void         CloseSrcFile(FCB *);
 extern void         OpenDefFile(void);
 extern FILE         *OpenBrowseFile(void);
 extern void         CloseFiles(void);
@@ -595,7 +596,10 @@ extern int          GetNextChar(void);
 extern void         GetNextCharUndo(int);
 extern int          GetCharCheckFile(int);
 extern int          getCharAfterBackSlash(void);
-extern void         CloseSrcFile(FCB *);
+extern bool         OpenFCB( FILE *fp, const char *filename, src_file_type typ );
+extern void         CloseFCB( FCB * );
+extern void         SrcPurge( void );
+extern void         InitIncFile( void );
 
 // cinfo.c
 extern void         SegInit(void);

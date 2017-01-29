@@ -73,7 +73,7 @@ _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
     __segment   prev_seg;
 
     if( amt == 0 || amt > - ( sizeof( heapblk ) + TAG_SIZE * 2 ) ) {
-        return( (void _WCFAR *)NULL );
+        return( FAR_NULL );
     }
 
     // Try to determine which segment to begin allocating from.

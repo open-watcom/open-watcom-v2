@@ -96,12 +96,12 @@ unsigned __MemAllocator( unsigned req_size, __segment segment, unsigned offset )
                     if( size <= len ) {         // found one
                         break;
                     }
-                    if( len > largest ) {       // update largest block size
+                    if( largest < len ) {       // update largest block size
                         largest = len;
                     }
                     pcur = pcur->next;          // advance to next entry
-                    if( pcur ==                 // if back at start
-                        (frlptr)&(heap->freehead)) {
+                                                // if back at start
+                    if( pcur == (frlptr)&(heap->freehead) ) {
                         heap->largest_blk = largest;    // update largest
                         setup_segment( segment );       // 16bit Intel restore
                         return( (unsigned)result );     // return 0
@@ -247,6 +247,7 @@ void __MemFree( unsigned pointer, __segment segment, unsigned offset )
                 numfree = heap->numfree;
                 average = heap->numalloc / (numfree+1);
                 if( average < numfree ) {
+                    unsigned    worst;
 
                     // There are lots of allocated blocks and lots of free
                     // blocks.  On average we should find a free block
@@ -255,19 +256,18 @@ void __MemFree( unsigned pointer, __segment segment, unsigned offset )
                     // allocated blocks and give up once we have looked at
                     // twice the average.
 
-                    unsigned worst;
                     worst = heap->numalloc - numfree;
                     average *= 2;               // give up after this many
                     if( worst <= numfree ) {
                         average = UINT_MAX;     // we won't give up loop
                     }
                                                 // point at next allocated
-                    pnext = (frlptr)((PTR)pfree + pfree->len);
-                    for(;;) {
+                    pnext = (frlptr)( (PTR)pfree + pfree->len );
+                    for( ;; ) {
                         if( IS_FRL_END( pnext ) )   // check for end TAG
                             break;          // stop at end tag
                         if( IS_MEMBLK_USED( pnext ) ) {    // pnext is allocated
-                            pnext = (frlptr)((PTR)pnext + MEMBLK_SIZE( pnext ));
+                            pnext = (frlptr)( (PTR)pnext + MEMBLK_SIZE( pnext ) );
                             average--;
                             if( !average ) {    // give up search
                                 break;
@@ -285,7 +285,7 @@ void __MemFree( unsigned pointer, __segment segment, unsigned offset )
                                                 // then begin at start
                     pnext = heap->freehead.next;
                 }
-                for(;;) {
+                for( ;; ) {
                     if( pfree < pnext ) {       // if pfree before pnext
                         break;                  // we found it
                     }
@@ -309,9 +309,8 @@ found_it:
 
             // pprev, pfree, pnext are all setup
             len = pfree->len;
-
                                                 // check pprev and pfree
-            ptr = (frlptr)((PTR)pprev + pprev->len);
+            ptr = (frlptr)( (PTR)pprev + pprev->len );
             if( ptr == pfree ) {                // are they adjacent?
                                                 // coalesce pprev and pfree
                 len += pprev->len;              // udpate len
@@ -330,12 +329,11 @@ found_it:
             heap->numalloc--;                   // one fewer allocated
 
             if( pfree < heap->rover ) {         // check rover impact
-                if( len > heap->b4rover ) {     // is len bigger than b4rover
+                if( heap->b4rover < len ) {     // is len bigger than b4rover
                     heap->b4rover = len;        // then update b4rover
                 }
             }
-
-            if( len > heap->largest_blk ) {     // check largest block
+            if( heap->largest_blk < len ) {     // check largest block
                 heap->largest_blk = len;
             }
         }

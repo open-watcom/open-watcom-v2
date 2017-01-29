@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Huge allocation/deallocation routines for QNX
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -60,9 +60,9 @@ _WCRTLINK void _WCHUGE * (halloc)( long n, size_t size )
 
     len = (unsigned long)n * size;
     if( len == 0 )
-        return( 0 );
+        return( HUGE_NULL );
     if( len > 65536 && !only_one_bit( size ) )
-        return( 0 );
+        return( HUGE_NULL );
     seg = qnx_segment_huge( len );
     if( seg == -1 )
         seg = 0;

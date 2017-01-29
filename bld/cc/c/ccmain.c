@@ -65,12 +65,9 @@
 #define CPP_EXT         ".i"
 #define DEP_EXT         ".d"
 
-#define MAX_INC_DEPTH   255
-
 bool    PrintWhiteSpace;     // also refered from cmac2.c
 
 static  bool    IsStdIn;
-static  int     IncFileDepth;
 static  char    *FNameBuf = NULL;
 
 void FrontEndInit( bool reuse )
@@ -110,12 +107,12 @@ static void ClearGlobals( void )
     CppFile = NULL;
     DepFile = NULL;
     IncPathList = CMemAlloc( 1 );
-    IncFileDepth = MAX_INC_DEPTH;
     SegmentNum = FIRST_PRIVATE_SEGMENT;
     BufSize = BUF_SIZE;
     Buffer = CMemAlloc( BufSize );
     TokenBuf = CMemAlloc( BufSize );
     FNameBuf = CMemAlloc( _MAX_PATH );
+    InitIncFile();
     InitErrLoc();
 }
 
@@ -450,75 +447,6 @@ static void OpenCppFile( void )
     }
 }
 
-static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
-{
-    FCB             *srcfcb;
-    unsigned char   *src_buffer;
-    FNAMEPTR        flist;
-
-    --IncFileDepth;
-    srcfcb = (FCB *)CMemAlloc( sizeof( FCB ) );
-    src_buffer = FEmalloc( SRC_BUF_SIZE + 3 );
-    if( srcfcb != NULL ) {
-        srcfcb->src_buf = src_buffer;
-        srcfcb->src_ptr = src_buffer;
-        srcfcb->src_end = src_buffer;
-        src_buffer[0] = '\0';
-        flist = AddFlist( filename );
-        srcfcb->src_name = flist->name;
-        srcfcb->src_line_cnt = 0;
-        srcfcb->src_loc.line = 1;
-        srcfcb->src_loc.fno = flist->index;
-        SrcFileLoc = srcfcb->src_loc;
-        srcfcb->src_flist = flist;
-        srcfcb->src_fp = fp;
-        srcfcb->prev_file = SrcFile;
-        srcfcb->prev_currchar = CurrChar;
-#if _CPU == 370
-        srcfcb->colum = 0;     /* init colum, trunc info */
-        srcfcb->trunc = 0;
-        srcfcb->prevcount = 0;
-#endif
-        if( SrcFile != NULL ) {
-            if( SrcFile == MainSrcFile ) {
-                // remember name of included file
-                AddIncFileList( filename );
-            }
-        }
-        srcfcb->rseekpos = 0;
-        srcfcb->typ = typ;
-        srcfcb->no_eol = false;
-        SrcFile = srcfcb;
-        CurrChar = '\n';    /* set next character to newline */
-        if( CompFlags.cpp_output ) {
-            if( CppFile == NULL )
-                OpenCppFile();
-            EmitPoundLine( 1, filename, true );
-            CppFirstChar = true;
-        }
-        return( true );
-    }
-    return( false );
-}
-
-static bool OpenFCB( FILE *fp, const char *filename, src_file_type typ )
-{
-    if( CompFlags.track_includes ) {
-        // Don't track the top level file (any semi-intelligent user should
-        // have no trouble tracking *that* down)
-        if( IncFileDepth < MAX_INC_DEPTH ) {
-            CInfoMsg( INFO_INCLUDING_FILE, filename );
-        }
-    }
-
-    if( FCB_Alloc( fp, filename, typ ) ) {
-        return( true );
-    }
-    CErr1( ERR_OUT_OF_MEMORY );
-    return( false );
-}
-
-
 char *CreateFileName( const char *template, const char *extension, bool forceext )
 {
 #if !defined( __CMS__ )
@@ -650,49 +578,8 @@ void CClose( FILE *fp )
 
 void CloseSrcFile( FCB *srcfcb )
 {
-    ++IncFileDepth;
-    if( srcfcb->src_fp != NULL ) {          /* not in-memory buffer */
-        CClose( srcfcb->src_fp );
-    }
-    FEfree( srcfcb->src_buf );
-    if( CompFlags.scanning_comment ) {
-        CErr2( ERR_INCOMPLETE_COMMENT, CommentLoc.line );
-    }
-    if( srcfcb->no_eol ) {
-        source_loc  err_loc;
-
-        err_loc.line = srcfcb->src_line_cnt;
-        err_loc.fno = srcfcb->src_flist->index;
-        SetErrLoc( &err_loc );
-        CWarn1( WARN_NO_EOL_BEFORE_EOF, ERR_NO_EOL_BEFORE_EOF );
-        InitErrLoc();
-    }
-    SrcFile = srcfcb->prev_file;
-    CurrChar = srcfcb->prev_currchar;
-    if( SrcFile != NULL ) {
-        if( SrcFile->src_fp == NULL ) {
-            // physical file name must be used, not logical
-            SrcFile->src_fp = fopen( SrcFile->src_flist->name, "rb" );
-            fseek( SrcFile->src_fp, SrcFile->rseekpos, SEEK_SET );
-        }
-        SrcFileLoc = SrcFile->src_loc;
-        IncLineCount += srcfcb->src_line_cnt;
-        if( SrcFile == MainSrcFile ) {
-            if( CompFlags.make_precompiled_header ) {
-                CompFlags.make_precompiled_header = false;
-                if( ErrCount == 0 ) {
-                    BuildPreCompiledHeader( PCH_FileName );
-                }
-            }
-        }
-        if( CompFlags.cpp_output ) {
-            EmitPoundLine( SrcFile->src_loc.line, SrcFile->src_name, true );
-        }
-    } else {
-        SrcLineCount = srcfcb->src_line_cnt;
-        CurrChar = EOF_CHAR;
-    }
-    CMemFree( srcfcb );
+    CClose( srcfcb->src_fp );
+    CloseFCB( srcfcb );
 }
 
 static bool FreeSrcFP( void )
@@ -746,11 +633,6 @@ static bool TryOpen( const char *path, const char *fname, src_file_type typ )
     char        filename[_MAX_PATH];
     char        *p;
 
-    if( IncFileDepth == 0 ) {
-        CErr2( ERR_INCDEPTH, MAX_INC_DEPTH );
-        CSuicide();
-        return( false );
-    }
     p = filename;
     while( (*p = *path++) != '\0' )
         ++p;
@@ -768,7 +650,7 @@ static bool TryOpen( const char *path, const char *fname, src_file_type typ )
     }
     if( fp == NULL )
         return( false );
-
+/*
     if( CompFlags.use_precompiled_header ) {
         CompFlags.use_precompiled_header = false;
         if( UsePreCompiledHeader( filename ) ) {
@@ -776,7 +658,14 @@ static bool TryOpen( const char *path, const char *fname, src_file_type typ )
             return( true );
         }
     }
+*/
     if( OpenFCB( fp, filename, typ ) ) {
+        if( CompFlags.cpp_output ) {
+            if( CppFile == NULL )
+                OpenCppFile();
+            EmitPoundLine( 1, filename, true );
+            CppFirstChar = true;
+        }
         return( true );
     }
     fclose( fp );
@@ -1027,6 +916,12 @@ static bool OpenPgmFile( void )
 {
     if( IsStdIn ) {
         if( OpenFCB( stdin, "stdin", FT_SRC ) ) {
+            if( CompFlags.cpp_output ) {
+                if( CppFile == NULL )
+                    OpenCppFile();
+                EmitPoundLine( 1, "stdin", true );
+                CppFirstChar = true;
+            }
             MainSrcFile = SrcFile;
             return( true );
         }
@@ -1055,24 +950,13 @@ static void Parse( void )
     // use pre-compiled headers. The following call to NextToken() to
     // get the very first token of the file will load the pre-compiled
     // header if the user requested such and it is a #include directive.
-    CompFlags.ok_to_use_precompiled_hdr = true;
     if( ForceInclude != NULL ) {
-        if( PCH_FileName != NULL ) {
-            CompFlags.use_precompiled_header = true;
-        }
-        // we want to keep in the pre-compiled header
-        // any macros that are defined in forced include file
-        InitialMacroFlag = MFLAG_NONE;
         OpenSrcFile( ForceInclude, FT_HEADER_FORCED );
     }
-    CompFlags.ok_to_use_precompiled_hdr = false;
-    CompFlags.use_precompiled_header = false;
     if( ForcePreInclude != NULL ) {
         openForcePreInclude();
     }
-    if( ForceInclude == NULL ) {
-        CompFlags.ok_to_use_precompiled_hdr = true;
-    }
+    CompFlags.ok_to_use_precompiled_hdr = true;
     NextToken();
     // If we didn't get a #include with the above call to NextToken()
     // it's too late to use pre-compiled header now.

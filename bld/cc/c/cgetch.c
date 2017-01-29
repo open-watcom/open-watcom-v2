@@ -35,6 +35,8 @@
 #include "scan.h"
 
 
+#define MAX_INC_DEPTH   255
+
 /*
  * the following table is used to map three character sequences
  * beginning with ?? followed by 'tri' into the single character 'new'
@@ -57,11 +59,20 @@ static struct tri_graph TriGraphs[] = {
     { '\0','\0'}
 };
 
-static  int     LastChar;
-static  int     Blank1Count;
-static  int     Blank2Count;
-static  int     Tab1Count;
+static unsigned char    notFilled[] = { '\n', '\0' };
 
+static int      LastChar;
+static int      Blank1Count;
+static int      Blank2Count;
+static int      Tab1Count;
+
+static int      IncFileDepth;
+
+
+void InitIncFile( void )
+{
+    IncFileDepth = MAX_INC_DEPTH;
+}
 
 static bool ReadBuffer( FCB *srcfcb )
 {
@@ -72,6 +83,26 @@ static bool ReadBuffer( FCB *srcfcb )
         CloseSrcFile( srcfcb );
         return( false );
     }
+    if( srcfcb->src_end == notFilled + 1 ) {
+        if( srcfcb->typ == FT_HEADER_FORCED ) {
+            InitialMacroFlag = MFLAG_NONE;
+            if( PCH_FileName != NULL && CompFlags.make_precompiled_header == 0 ) {
+                if( CompFlags.ok_to_use_precompiled_hdr ) {
+                    CompFlags.use_precompiled_header = true;
+                }
+            }
+            if( CompFlags.use_precompiled_header ) {
+                InitBuildPreCompiledHeader();
+            }
+            if( CompFlags.use_precompiled_header ) {
+                CompFlags.use_precompiled_header = false;
+                if( UsePreCompiledHeader( srcfcb->src_name ) ) {
+                    return( true );
+                }
+            }
+        }
+    }
+
     /*
      * ANSI/ISO C says a non-empty source file must be terminated
      * with a newline. If it's not, we insert one, otherwise
@@ -304,7 +335,7 @@ int GetCharCheckFile( int c )
              */
             CurrChar = '\0';
             if( SrcFile->src_ptr == SrcFile->src_end + 1 ) {
-                if( ! ReadBuffer( SrcFile ) ) {
+                if( !ReadBuffer( SrcFile ) ) {
                     return( GetNextChar() );
                 }
             }
@@ -450,4 +481,132 @@ void GetNextCharUndo( int c )
 #ifdef FDEBUG
     CFatal( "more than one GetNextCharUndo executed" );
 #endif
+}
+
+static bool FCB_Alloc( FILE *fp, const char *filename, src_file_type typ )
+{
+    FCB             *srcfcb;
+    unsigned char   *src_buffer;
+    FNAMEPTR        flist;
+
+    --IncFileDepth;
+    srcfcb = (FCB *)CMemAlloc( sizeof( FCB ) );
+    src_buffer = FEmalloc( SRC_BUF_SIZE + 3 );
+    if( srcfcb != NULL ) {
+        srcfcb->src_buf = src_buffer;
+        src_buffer[0] = '\0';
+        flist = AddFlist( filename );
+        srcfcb->src_name = flist->name;
+        srcfcb->src_line_cnt = 0;
+        srcfcb->src_loc.line = 1;
+        srcfcb->src_loc.fno = flist->index;
+        SrcFileLoc = srcfcb->src_loc;
+        srcfcb->src_flist = flist;
+        srcfcb->src_fp = fp;
+        srcfcb->src_ptr = notFilled + 1;
+        srcfcb->src_end = notFilled + 1;
+        srcfcb->prev_file = SrcFile;
+        srcfcb->prev_currchar = CurrChar;
+#if _CPU == 370
+        srcfcb->colum = 0;     /* init colum, trunc info */
+        srcfcb->trunc = 0;
+        srcfcb->prevcount = 0;
+#endif
+        if( SrcFile != NULL ) {
+            if( SrcFile == MainSrcFile ) {
+                // remember name of included file
+                AddIncFileList( filename );
+            }
+        }
+        srcfcb->rseekpos = 0;
+        srcfcb->typ = typ;
+        srcfcb->no_eol = 0;
+        SrcFile = srcfcb;
+        CurrChar = '\n';    /* set next character to newline */
+        return( true );
+    }
+    return( false );
+}
+
+static void FCB_Free( FCB *srcfcb )
+{
+    ++IncFileDepth;
+    FEfree( srcfcb->src_buf );
+    CMemFree( srcfcb );
+}
+
+bool OpenFCB( FILE *fp, const char *filename, src_file_type typ )
+{
+    if( IncFileDepth == 0 ) {
+        CErr2( ERR_INCDEPTH, MAX_INC_DEPTH );
+        CSuicide();
+        return( false );
+    }
+    if( CompFlags.track_includes ) {
+        // Don't track the top level file (any semi-intelligent user should
+        // have no trouble tracking *that* down)
+        if( IncFileDepth < MAX_INC_DEPTH ) {
+            CInfoMsg( INFO_INCLUDING_FILE, filename );
+        }
+    }
+
+    if( FCB_Alloc( fp, filename, typ ) ) {
+        return( true );
+    }
+    CErr1( ERR_OUT_OF_MEMORY );
+    return( false );
+}
+
+void CloseFCB( FCB *srcfcb )
+{
+    if( CompFlags.scanning_comment ) {
+        CErr2( ERR_INCOMPLETE_COMMENT, CommentLoc.line );
+    }
+    if( srcfcb->no_eol ) {
+        source_loc  err_loc;
+
+        err_loc.line = srcfcb->src_line_cnt;
+        err_loc.fno = srcfcb->src_flist->index;
+        SetErrLoc( &err_loc );
+        CWarn1( WARN_NO_EOL_BEFORE_EOF, ERR_NO_EOL_BEFORE_EOF );
+        InitErrLoc();
+    }
+    SrcFile = srcfcb->prev_file;
+    CurrChar = srcfcb->prev_currchar;
+    if( SrcFile != NULL ) {
+        if( SrcFile->src_fp == NULL ) {
+            // physical file name must be used, not logical
+            SrcFile->src_fp = fopen( SrcFile->src_flist->name, "rb" );
+            fseek( SrcFile->src_fp, SrcFile->rseekpos, SEEK_SET );
+        }
+        SrcFileLoc = SrcFile->src_loc;
+        IncLineCount += srcfcb->src_line_cnt;
+        if( SrcFile == MainSrcFile ) {
+            if( CompFlags.make_precompiled_header ) {
+                CompFlags.make_precompiled_header = false;
+                if( ErrCount == 0 ) {
+                    BuildPreCompiledHeader( PCH_FileName );
+                }
+            }
+        }
+        if( CompFlags.cpp_output ) {
+            EmitPoundLine( SrcFile->src_loc.line, SrcFile->src_name, true );
+        }
+    } else {
+        SrcLineCount = srcfcb->src_line_cnt;
+        CurrChar = EOF_CHAR;
+    }
+    FCB_Free( srcfcb );
+}
+
+void SrcPurge( void )
+/*******************/
+{
+    FCB *src_file;
+
+    while( (src_file = SrcFile) != NULL ) {
+        SrcFile = src_file->prev_file;
+        CClose( src_file->src_fp );
+        FCB_Free( src_file );
+    }
 }

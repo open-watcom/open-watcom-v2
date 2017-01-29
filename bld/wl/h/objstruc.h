@@ -521,10 +521,10 @@ typedef struct seg_flags {
 
 typedef struct extnode {
     symbol              *entry;
-    void                *handle;    // ORL: handle for the symbol
-    unsigned            ovlref : 12;
-    unsigned            isweak : 1;
-    unsigned            isdefd : 1; // used in ORL
+    void                *handle;        // ORL: handle for the symbol
+    unsigned            ovlref  : 12;
+    unsigned            isweak  : 1;
+    unsigned            isdefd  : 1;    // used in ORL
 } extnode;
 
 typedef struct grpnode {

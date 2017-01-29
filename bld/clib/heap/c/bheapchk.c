@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  perform consistency check on a based heap
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -68,7 +68,7 @@ static int checkFree( freelistp _WCFAR *p )
     seg = FP_SEG( p );
     prev = p->prev;
     next = p->next;
-    if( prev->next != (void _WCNEAR *)p || next->prev != (void _WCNEAR *)p ) {
+    if( prev->next != (FRLBPTR)p || next->prev != (FRLBPTR)p ) {
         return( _HEAPBADNODE );
     }
     if( ((FRLBPTR)prev->prev)->next != prev || ((FRLBPTR)next->next)->prev != next ) {

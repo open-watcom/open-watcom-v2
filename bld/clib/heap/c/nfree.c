@@ -138,7 +138,7 @@ found_it:
     __MemFree( (unsigned)stg, _DGroup(), (unsigned)mhp1 );
     __MiniHeapFreeRover = mhp1;
     if( mhp1 < __MiniHeapRover ) {
-        if( mhp1->largest_blk > __LargestSizeB4MiniHeapRover ) {
+        if( __LargestSizeB4MiniHeapRover < mhp1->largest_blk ) {
             __LargestSizeB4MiniHeapRover = mhp1->largest_blk;
         }
     }

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Internal heap free space filling
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -39,38 +39,27 @@
 #include "heapacc.h"
 
 
-#if defined(__386__)
-#define STOSW   0x66 0xab
-#define _DI     edi
-#define _CX     ecx
-#else
-#define STOSW   0xab
-#define _DI     di
-#define _CX     cx
-#endif
+#define FRLBPTR     XBPTR( freelistp, seg )
 
-extern  void    far_memset(void _WCFAR *,int,unsigned);
-#pragma aux     far_memset = \
-        0xd1 0xe9       /* shr cx,1 */\
-        0xf3 STOSW      /* rep stosw */\
-        0x11 0xc9       /* adc cx,cx */\
-        0xf3 0xaa       /* rep stosb */\
-        parm caller [es _DI] [ax] [_CX] \
-        modify exact [_DI _CX]
+extern  void    _mymemset(void _WCFAR *,unsigned,unsigned);
+#pragma aux     _mymemset = \
+        "shr cx,1"              \
+        "rep stosw"             \
+        "adc cx,cx"             \
+        "rep stosb"             \
+    parm caller [es di] [ax] [cx] modify exact [di cx]
 
 int __HeapSet( __segment seg, unsigned int fill )
 {
-    farfrlptr       curr;
-    heapblk         _WCFAR *p;
+    FRLBPTR     curr_frl;
 
     fill |= fill << 8;
     _AccessFHeap();
-    for( ; seg != _NULLSEG; seg = p->nextseg ) {
-        p = MK_FP( seg, 0 );
-        curr = MK_FP( seg, p->freehead.next );
-        while( FP_OFF( curr ) != offsetof( heapblk, freehead ) ) {
-            far_memset( (void _WCFAR *)( curr + 1 ), fill, curr->len - sizeof( frl ) );
-            curr = MK_FP( seg, curr->next );
+    for( ; seg != _NULLSEG; seg = HBPTR( seg )->nextseg ) {
+        curr_frl = HBPTR( seg )->freehead.next;
+        while( FP_OFF( curr_frl ) != offsetof( heapblk, freehead ) ) {
+            _mymemset( curr_frl + 1, fill, curr_frl->len - sizeof( freelistp ) );
+            curr_frl = curr_frl->next;
         }
     }
     _ReleaseFHeap();

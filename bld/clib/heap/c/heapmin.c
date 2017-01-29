@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Heap minimize function
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -53,14 +53,16 @@
 #include "seterrno.h"
 
 
+#define FRLBPTR     XBPTR( freelistp, curr_seg )
+
 int __HeapMin( __segment curr_seg, unsigned one_heap )
 {
     tag                 last_len;
     tag                 adjust_len;
     tag                 new_heap_len;
     __segment           next_seg;
-    farfrlptr           last_free;
-    farfrlptr           end_tag;
+    FRLBPTR             last_free;
+    FRLBPTR             end_tag;
 #if defined(__OS2__)
     APIRET              rc;
 #elif defined(__DOS__)
@@ -80,13 +82,13 @@ int __HeapMin( __segment curr_seg, unsigned one_heap )
             continue;
         }
         /* verify the last block is free */
-        last_free = MK_FP( curr_seg, HBPTR( curr_seg )->freehead.prev );
+        last_free = HBPTR( curr_seg )->freehead.prev;
         if( IS_MEMBLK_USED( last_free ) )
             continue;
 
         /* verify the last block is just before the end of the heap */
         last_len = last_free->len;
-        end_tag = (farfrlptr)(((FARPTR)last_free) + last_len );
+        end_tag = (FRLBPTR)( (PTR)last_free + last_len );
         if( !IS_FRL_END( end_tag ) )
             continue;
 
@@ -139,7 +141,7 @@ int __HeapMin( __segment curr_seg, unsigned one_heap )
         /* make the changes to the heap structure */
         HBPTR( curr_seg )->heaplen = new_heap_len;
         last_free->len -= adjust_len;
-        end_tag = (farfrlptr)( ((FARPTR)last_free) + last_free->len );
+        end_tag = (FRLBPTR)( (PTR)last_free + last_free->len );
         SET_FRL_END( end_tag );
         end_tag->prev = 0;
     }

@@ -68,6 +68,8 @@
 #include "clibint.h"
 
 
+#define DEFAULT_PREINCLUDE_FILE     "_preincl.h"
+
 enum {
     WPP_WARNINGS        = 0x01,                 /* only if -we is on */
     WPP_ERRORS          = 0x02,
@@ -263,7 +265,7 @@ static bool openForcePreIncludeFile( void )
 
 static void setForcePreInclude( void )
 {
-    ForcePreInclude = strsave( "_preincl.h" );
+    ForcePreInclude = strsave( DEFAULT_PREINCLUDE_FILE );
 }
 
 static int doCCompile(          // COMPILE C++ PROGRAM
@@ -290,8 +292,7 @@ static int doCCompile(          // COMPILE C++ PROGRAM
         }
         if( parseCmdLine( argv ) ) {
             exit_status |= WPP_WARNINGS;
-        } else if( CompFlags.batch_file_primary
-                && !CompFlags.batch_file_processing ) {
+        } else if( CompFlags.batch_file_primary && !CompFlags.batch_file_processing ) {
             if( CompFlags.batch_file_eof ) {
                 exit_status |= WPP_ERRORS;
             } else {
@@ -304,11 +305,8 @@ static int doCCompile(          // COMPILE C++ PROGRAM
         } else {
             ErrFileErase();
             if( !CompFlags.quiet_mode ) {
-                if( CompFlags.batch_file_processing
-                 || CompInfo.compfile_max != 1 ) {
-                    MsgDisplayLineArgs( "Compiling: "
-                                      , WholeFName
-                                      , NULL );
+                if( CompFlags.batch_file_processing || CompInfo.compfile_max != 1 ) {
+                    MsgDisplayLineArgs( "Compiling: ", WholeFName, NULL );
                 }
             }
             if( 0 < ErrCount ) {

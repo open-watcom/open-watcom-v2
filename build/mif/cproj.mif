@@ -188,8 +188,8 @@ mode_clflags   += -\"op nored\"
 mode_clflags   += -"op nored"
 !endif
 !ifndef bootstrap
-mode_cflags  += -x
-mode_clflags += -x
+mode_cflags  += -x-wpx
+mode_clflags += -x-wpx
 !endif
 !if !defined( bootstrap ) || ( $(watcom_ver) > 1300 )
 mode_cflags  += -xx -zam

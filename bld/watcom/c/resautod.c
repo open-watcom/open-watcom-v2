@@ -43,26 +43,25 @@
 walk_status WalkRESAutoDep( const char *file_name, rtn_status (*rtn)( time_t, char *, void * ), void *data )
 /**********************************************************************************************************/
 {
-    DepInfo* depends;
-    DepInfo* p;
+    DepInfo     *depends;
+    DepInfo     *p;
     walk_status wstatus;
-    rtn_status rstatus;
+    rtn_status  rstatus;
 
     wstatus = ADW_NOT_AN_OBJ;
     depends = WResGetAutoDep( file_name );
-    if( depends ) {
+    if( depends != NULL ) {
         wstatus = ADW_OK;
-        for( p=depends; p->len != 0; ) {
+        for( p = depends; p->len != 0; p = (DepInfo *)( (char *)p + sizeof( DepInfo ) - 1 + p->len ) ) {
             rstatus = (*rtn)( p->time, p->name, data );
             if( rstatus == ADR_STOP ) {
                 wstatus = ADW_RTN_STOPPED;
                 break;
             }
-            p = (DepInfo *) ( (char *)p + sizeof( DepInfo ) + p->len - 1 );
         }
         free( depends );
     }
-    return wstatus;
+    return( wstatus );
 }
 
 #ifdef TEST
@@ -85,7 +84,7 @@ rtn_status dump2Deps( time_t t, char *name, void *data )
     return( ADR_STOP );
 }
 
-int main()
+int main( void )
 {
     unsigned count;
 

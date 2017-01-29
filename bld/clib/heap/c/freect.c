@@ -45,7 +45,7 @@ _WCRTLINK unsigned int _freect( size_t size )
     unsigned int    count;
     size_t          memsize;
     size_t          size_of_chunk;
-    frlptr          pnext;
+    frlptr          curr_frl;
     mheapptr        mhp;
 
     count = 0;
@@ -57,8 +57,8 @@ _WCRTLINK unsigned int _freect( size_t size )
     }
     _AccessNHeap();
     for( mhp = __nheapbeg; mhp != NULL; mhp = mhp->next ) {
-        for( pnext = mhp->freehead.next; pnext != (frlptr)&mhp->freehead; pnext = pnext->next ) {
-            memsize = pnext->len;
+        for( curr_frl = mhp->freehead.next; curr_frl != (frlptr)&mhp->freehead; curr_frl = curr_frl->next ) {
+            memsize = curr_frl->len;
             count += memsize / size_of_chunk;
         }
     }

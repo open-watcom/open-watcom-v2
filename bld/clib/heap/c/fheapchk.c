@@ -25,6 +25,7 @@
 *  ========================================================================
 *
 * Description:  Implementation of far _heapchk() and _fheapchk().
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -37,8 +38,7 @@
 #include "heapacc.h"
 
 
-#define FRLBPTR    XBPTR( freelistp, seg )
-
+#define FRLBPTR     XBPTR( freelistp, curr_seg )
 
 freelistp _WCFAR *__fheapchk_current;
 
@@ -65,19 +65,15 @@ static int checkFree( freelistp _WCFAR *p )
     __segment   seg;
     FRLBPTR     prev;
     FRLBPTR     next;
-    FRLBPTR     prev_prev;
-    FRLBPTR     next_next;
 
     __fheapchk_current = p;
     seg = FP_SEG( p );
     prev = p->prev;
     next = p->next;
-    if( prev->next != (void _WCNEAR *)p || next->prev != (void _WCNEAR *)p ) {
+    if( prev->next != (FRLBPTR)p || next->prev != (FRLBPTR)p ) {
         return( _HEAPBADNODE );
     }
-    prev_prev = prev->prev;
-    next_next = next->next;
-    if( prev_prev->next != prev || next_next->prev != next ) {
+    if( ((FRLBPTR)prev->prev)->next != prev || ((FRLBPTR)next->next)->prev != next ) {
         return( _HEAPBADNODE );
     }
     return( _HEAPOK );

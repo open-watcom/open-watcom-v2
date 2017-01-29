@@ -46,15 +46,15 @@ _WCRTLINK VOID_BPTR _bmalloc( __segment seg, size_t amt )
         return( _NULLOFF );
     if( seg == _DGroup() ) {
         ptr = (VOID_BPTR)_nmalloc( amt );
-        return( ( ptr == NULL ) ? _NULLOFF : ptr );
+        return( ( ptr == (VOID_BPTR)NULL ) ? _NULLOFF : ptr );
     }
     _AccessFHeap();
     for( ;; ) {
         ptr = (VOID_BPTR)__MemAllocator( amt, seg, 0 );
-        if( ptr != 0 )
+        if( ptr != (VOID_BPTR)NULL )
             break;
-        ptr = _NULLOFF;
         if( __GrowSeg( seg, amt ) == 0 ) {
+            ptr = _NULLOFF;
             break;
         }
     }

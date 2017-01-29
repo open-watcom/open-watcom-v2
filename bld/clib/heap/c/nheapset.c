@@ -38,6 +38,41 @@
 #include "heapacc.h"
 
 
+#if defined( _M_I86 )
+// 16-bit Intel all models
+extern  void    _mymemset(void _WCFAR *,unsigned,unsigned);
+#pragma aux     _mymemset =     \
+        "shr cx,1"              \
+        "rep stosw"             \
+        "adc cx,cx"             \
+        "rep stosb"             \
+    parm caller [es di] [ax] [cx] modify exact [di cx]
+#elif defined( _M_IX86 )
+// 32-bit Intel
+#if defined( __NT__ ) ||  defined( __OS2__ ) || defined( __LINUX__ ) || defined( __WINDOWS__ ) || defined( __RDOS__ )
+// flat model
+extern  void    _mymemset(void *,unsigned,unsigned);
+#pragma aux     _mymemset =     \
+        "shr ecx,1"             \
+        "rep stosw"             \
+        "adc ecx,ecx"           \
+        "rep stosb"             \
+    parm caller [edi] [eax] [ecx] modify exact [edi ecx]
+#else
+// all segmented models
+extern  void    _mymemset(void _WCFAR *,unsigned,unsigned);
+#pragma aux     _mymemset =     \
+        "shr ecx,1"             \
+        "rep stosw"             \
+        "adc ecx,ecx"           \
+        "rep stosb"             \
+    parm caller [es edi] [eax] [ecx] modify exact [edi ecx]
+#endif
+#else
+// 32-bit non-Intel targets
+#define _mymemset   memset
+#endif
+
 #if defined(__SMALL_DATA__)
 _WCRTLINK int _heapset( unsigned int fill )
 {
@@ -45,14 +80,10 @@ _WCRTLINK int _heapset( unsigned int fill )
 }
 #endif
 
-#if defined(_M_IX86)
-    #pragma intrinsic(_fmemset)
-#endif
-
 _WCRTLINK int _nheapset( unsigned int fill )
 {
     mheapptr    mhp;
-    frlptr      curr;
+    frlptr      curr_frl;
     int         heap_status;
 
     heap_status = _heapchk();
@@ -63,12 +94,8 @@ _WCRTLINK int _nheapset( unsigned int fill )
     _AccessNHeap();
 
     for( mhp = __nheapbeg; mhp != NULL; mhp = mhp->next ) {
-        for( curr = mhp->freehead.next; curr != (frlptr)&mhp->freehead; curr = curr->next ) {
-#if defined(_M_IX86)
-            _fmemset( (void _WCFAR *)(curr + 1), fill, curr->len - sizeof(frl) );
-#else
-            memset( (void *)(curr + 1), fill, curr->len - sizeof(frl) );
-#endif
+        for( curr_frl = mhp->freehead.next; curr_frl != (frlptr)&mhp->freehead; curr_frl = curr_frl->next ) {
+            _mymemset( curr_frl + 1, fill, curr_frl->len - sizeof( freelistp ) );
         }
     }
     _ReleaseNHeap();

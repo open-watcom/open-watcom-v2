@@ -38,21 +38,21 @@
 #include "heapacc.h"
 
 _WCRTLINK size_t _memmax( void )  /* return size of largest free piece from near heap */
-    {
-        size_t maxlen, size;
-        frlptr pnext;
-        mheapptr mhp;
+{
+    size_t      maxlen, size;
+    frlptr      curr_frl;
+    mheapptr    mhp;
 
-        maxlen = 0;
-        _AccessNHeap();
-        for( mhp = __nheapbeg; mhp != NULL; mhp = mhp->next ) {
-            for( pnext = mhp->freehead.next; pnext != (frlptr)&mhp->freehead; pnext = pnext->next ) {
-                size = __ROUND_DOWN_SIZE( pnext->len - TAG_SIZE, ROUND_SIZE );
-                if( size > maxlen ) {
-                    maxlen = size;
-                }
+    maxlen = 0;
+    _AccessNHeap();
+    for( mhp = __nheapbeg; mhp != NULL; mhp = mhp->next ) {
+        for( curr_frl = mhp->freehead.next; curr_frl != (frlptr)&mhp->freehead; curr_frl = curr_frl->next ) {
+            size = __ROUND_DOWN_SIZE( curr_frl->len - TAG_SIZE, ROUND_SIZE );
+            if( maxlen < size  ) {
+                maxlen = size;
             }
         }
-        _ReleaseNHeap();
-        return( maxlen );
     }
+    _ReleaseNHeap();
+    return( maxlen );
+}

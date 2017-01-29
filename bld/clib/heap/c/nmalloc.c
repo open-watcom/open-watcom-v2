@@ -46,7 +46,6 @@
 #endif
 
 mheapptr        _WCNEAR __nheapbeg = NULL;
-
 mheapptr        __MiniHeapRover = NULL;
 unsigned int    __LargestSizeB4MiniHeapRover = 0;
 
@@ -155,7 +154,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
 #endif
 
     if( (amt == 0) || (amt > -sizeof( heapblk )) ) {
-        return( (void _WCNEAR *)NULL );
+        return( NEAR_NULL );
     }
 
     // Try to determine which miniheap to begin allocating from.
@@ -168,7 +167,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
     _AccessNHeap();
     ptr = 0;
     expanded = 0;
-    for(;;) {
+    for( ;; ) {
 #if defined(__WARP__)
         // Need to update each pass in case 1st DosAllocMem determines OBJ_ANY not supported
         use_obj_any = ( _os2_obj_any_supported && _os2_use_obj_any );
@@ -200,7 +199,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
 #if defined(__WARP__)
             }
 #endif // __WARP__
-            if( largest > __LargestSizeB4MiniHeapRover ) {
+            if( __LargestSizeB4MiniHeapRover < largest ) {
                 __LargestSizeB4MiniHeapRover = largest;
             }
         }
