@@ -116,7 +116,7 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
                 return( _HEAPBADNODE );
             }
         }
-        if( p->len != END_TAG )
+        if( !IS_FRL_END( p ) )
             break;
         if( next_seg == _NULLSEG || one_heap != 0 ) {
             entry->_useflag = _USEDENTRY;

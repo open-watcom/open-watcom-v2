@@ -43,7 +43,7 @@
 #define VOID_BPTR       void _WCNEAR *
 #endif
 
-#define HBPTR(s)        ((XBPTR(heapblk, s))0)
+#define HBPTR(s)        ((XBPTR(heapblkp, s))0)
 
 #define HUGE_NULL       ((void _WCHUGE *)NULL)
 
@@ -236,8 +236,8 @@ extern  void            __MemFree( unsigned __ptr, __segment __seg, unsigned __o
 #define IS_MEMBLK_USED(p)           (((p)->len & 1) != 0)
 #define SET_MEMBLK_SIZE_USED(p,s)   (p)->len = ((s) | 1)
 #define SET_MEMBLK_USED(p)          (p)->len |= 1
-#define IS_MEMBLK_END(p)            ((p)->len == END_TAG)
-#define SET_MEMBLK_END(p)           (p)->len = END_TAG
+#define IS_FRL_END(p)               ((p)->len == END_TAG)
+#define SET_FRL_END(p)              (p)->len = END_TAG
 
 #define __HM_SUCCESS    0
 #define __HM_FAIL       1

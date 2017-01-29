@@ -57,20 +57,21 @@
 #endif
 #include "heap.h"
 
+
+#define FRLBPTR     XBPTR(freelistp, seg)
+
 int __GrowSeg( __segment seg, unsigned int amount )
 {
     unsigned        num_of_paras;   /* number of paragraphs desired   */
     unsigned int    old_heaplen;
     unsigned int    old_heap_paras;
-    heapblk         _WCFAR *p;
-    freelist        _WCFAR *pfree;
-    freelist        _WCFAR *pnew;
-    tag             _WCFAR *last_tag;
+    FRLBPTR         pfree;
+    FRLBPTR         pnew;
+    FRLBPTR         last_tag;
 
     if( !__heap_enabled )
         return( 0 );
-    p = (heapblk _WCFAR *)MK_FP( seg, 0 );
-    old_heaplen = p->heaplen;
+    old_heaplen = HBPTR( seg )->heaplen;
     if( old_heaplen != 0 ) {                /* if not already 64K */
         amount += TAG_SIZE;
         if( amount < TAG_SIZE )
@@ -135,25 +136,25 @@ int __GrowSeg( __segment seg, unsigned int amount )
         if( TINY_ERROR( TinySetBlock( num_of_paras, seg ) ) )
             return( 0 );
 #endif
-        p->heaplen = num_of_paras << 4;        /* put in new heap length */
-        pfree = MK_FP( seg, p->freehead.prev );
+        HBPTR( seg )->heaplen = num_of_paras << 4;        /* put in new heap length */
+        pfree = HBPTR( seg )->freehead.prev;
         if( FP_OFF( pfree ) + pfree->len != old_heaplen - TAG_SIZE * 2 ) {
             /* last free entry not at end of the heap */
             /* add a new free entry to end of list */
-            pnew = MK_FP( seg, old_heaplen - TAG_SIZE * 2 );
-            pnew->prev = FP_OFF( pfree );
+            pnew = (FRLBPTR)( old_heaplen - TAG_SIZE * 2 );
+            pnew->prev = pfree;
             pnew->next = pfree->next;
-            pfree->next = FP_OFF( pnew );
-            p->freehead.prev = FP_OFF( pnew );
-            p->numfree++;
+            pfree->next = pnew;
+            HBPTR( seg )->freehead.prev = pnew;
+            HBPTR( seg )->numfree++;
             pfree = pnew;
         }
-        pfree->len = p->heaplen - FP_OFF( pfree ) - TAG_SIZE * 2;
-        if( pfree->len > p->largest_blk )
-            p->largest_blk = pfree->len;
-        last_tag = MK_FP( seg, p->heaplen - TAG_SIZE * 2 );
-        last_tag[0] = END_TAG;
-        last_tag[1] = 0;            /* link to next piece of near heap */
+        pfree->len = HBPTR( seg )->heaplen - FP_OFF( pfree ) - TAG_SIZE * 2;
+        if( pfree->len > HBPTR( seg )->largest_blk )
+            HBPTR( seg )->largest_blk = pfree->len;
+        last_tag = (FRLBPTR)( HBPTR( seg )->heaplen - TAG_SIZE * 2 );
+        SET_FRL_END( last_tag );
+        last_tag->prev = 0;         /* link to next piece of near heap */
         return( 1 );                /* indicate segment was grown */
     }
     return( 0 );    /* indicate failed to grow the segment */

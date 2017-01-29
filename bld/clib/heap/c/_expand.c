@@ -65,7 +65,7 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
         p2 = (FRLBPTR)( (PTR)p1 + old_size );
         *growth_size = new_size - old_size;
         for( ;; ) {
-            if( IS_MEMBLK_END( p2 ) ) {
+            if( IS_FRL_END( p2 ) ) {
                 return( __HM_TRYGROW );
             } else if( IS_MEMBLK_USED( p2 ) ) { /* next piece is allocated */
                 break;

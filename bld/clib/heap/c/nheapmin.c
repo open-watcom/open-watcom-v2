@@ -169,7 +169,7 @@ _WCRTLINK int _nheapshrink( void )
         /* check that last free block is at end of heap */
         last_free = mhp->freehead.prev;
         end_tag = (frlptr)( (PTR)last_free + last_free->len );
-        if( end_tag->len != END_TAG ) {
+        if( !IS_FRL_END( end_tag ) ) {
             _ReleaseNHeap();
             return( 0 );
         }
@@ -220,7 +220,7 @@ _WCRTLINK int _nheapshrink( void )
                 last_free = new_last_free;
             }
   #endif
-            last_free->len = END_TAG;
+            SET_FRL_END( last_free );
             new_brk = (unsigned)( (PTR)last_free + TAG_SIZE );
         } else {
             // we can remove this miniheapblk

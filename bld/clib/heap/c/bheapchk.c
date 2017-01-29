@@ -38,15 +38,17 @@
 #include "heapacc.h"
 
 
+#define FRLBPTR    XBPTR( freelistp, seg )
+
 static int checkFreeList( unsigned long *free_size, __segment req_seg )
 {
-    __segment                   curr_seg;
-    XBPTR( freelist, curr_seg ) curr_frl;
-    unsigned long               total_size;
+    __segment           seg;
+    FRLBPTR             curr_frl;
+    unsigned long       total_size;
 
     total_size = 0;
-    for( curr_seg = (req_seg == _NULLSEG ? __bheapbeg : req_seg); curr_seg != _NULLSEG; curr_seg = HBPTR( curr_seg )->nextseg ) {
-        for( curr_frl = (XBPTR( freelist, curr_seg ))HBPTR( curr_seg )->freehead.next; FP_OFF( curr_frl ) != offsetof( heapblk, freehead ); curr_frl = (XBPTR( freelist, curr_seg ))curr_frl->next ) {
+    for( seg = (req_seg == _NULLSEG ? __bheapbeg : req_seg); seg != _NULLSEG; seg = HBPTR( seg )->nextseg ) {
+        for( curr_frl = HBPTR( seg )->freehead.next; FP_OFF( curr_frl ) != offsetof( heapblk, freehead ); curr_frl = curr_frl->next ) {
             total_size += curr_frl->len;
         }
         if( req_seg != _NULLSEG ) {
@@ -57,19 +59,19 @@ static int checkFreeList( unsigned long *free_size, __segment req_seg )
     return( _HEAPOK );
 }
 
-static int checkFree( farfrlptr p )
+static int checkFree( freelistp _WCFAR *p )
 {
-    __segment               seg;
-    XBPTR( freelist, seg )  prev;
-    XBPTR( freelist, seg )  next;
+    __segment           seg;
+    FRLBPTR             prev;
+    FRLBPTR             next;
 
     seg = FP_SEG( p );
-    prev = (XBPTR( freelist, seg ))p->prev;
-    next = (XBPTR( freelist, seg ))p->next;
-    if( prev->next != FP_OFF( p ) || next->prev != FP_OFF( p ) ) {
+    prev = p->prev;
+    next = p->next;
+    if( prev->next != (void _WCNEAR *)p || next->prev != (void _WCNEAR *)p ) {
         return( _HEAPBADNODE );
     }
-    if( ((XBPTR( freelist, seg ))prev->prev)->next != FP_OFF( prev ) || ((XBPTR( freelist, seg ))next->next)->prev != FP_OFF( next ) ) {
+    if( ((FRLBPTR)prev->prev)->next != prev || ((FRLBPTR)next->next)->prev != next ) {
         return( _HEAPBADNODE );
     }
     return( _HEAPOK );

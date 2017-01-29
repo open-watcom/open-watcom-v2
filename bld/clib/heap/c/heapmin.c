@@ -87,7 +87,7 @@ int __HeapMin( __segment curr_seg, unsigned one_heap )
         /* verify the last block is just before the end of the heap */
         last_len = last_free->len;
         end_tag = (farfrlptr)(((FARPTR)last_free) + last_len );
-        if( end_tag->len != END_TAG )
+        if( !IS_FRL_END( end_tag ) )
             continue;
 
         /* adjust sizes so the last free block stays in the heap */
@@ -140,7 +140,7 @@ int __HeapMin( __segment curr_seg, unsigned one_heap )
         HBPTR( curr_seg )->heaplen = new_heap_len;
         last_free->len -= adjust_len;
         end_tag = (farfrlptr)( ((FARPTR)last_free) + last_free->len );
-        end_tag->len = END_TAG;
+        SET_FRL_END( end_tag );
         end_tag->prev = 0;
     }
     _ReleaseFHeap();

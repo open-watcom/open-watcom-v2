@@ -68,7 +68,7 @@ int __NHeapWalk( struct _heapinfo *entry, mheapptr mhp )
             p = q;
         }
         for( ;; ) {
-            if( p->len == END_TAG ) {
+            if( IS_FRL_END( p ) ) {
                 if( mhp->next == NULL ) {
                     entry->_useflag = _USEDENTRY;
                     entry->_size    = 0;

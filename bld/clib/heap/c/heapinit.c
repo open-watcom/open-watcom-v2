@@ -39,7 +39,7 @@
 void _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount )
 {
     mheapptr mhp1;
-    tag *last_tag;
+    frlptr   curr_frl;
 
     mhp1 = start;
     amount -= sizeof( miniheapblkp ) + TAG_SIZE;
@@ -52,13 +52,13 @@ void _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount )
     mhp1->freehead.next = &mhp1->freehead;
     mhp1->numalloc = 0;
     mhp1->numfree = 0;
-    ++mhp1;
+    mhp1++;
+    curr_frl = (frlptr)mhp1;
     /* fix up end of heap links */
-    last_tag = (tag *) ( (PTR)mhp1 + amount );
-    last_tag[0] = END_TAG;
+    SET_FRL_END( (frlptr)( (PTR)curr_frl + amount ) );
     /* build a block for _nfree() */
-    SET_MEMBLK_SIZE_USED( (frlptr)mhp1, amount );
-    ++__nheapbeg->numalloc;
+    SET_MEMBLK_SIZE_USED( curr_frl, amount );
+    __nheapbeg->numalloc++;
     __nheapbeg->largest_blk = ~0;    /* set to largest value to be safe */
-    _nfree( (PTR)mhp1 + TAG_SIZE );
+    _nfree( (PTR)curr_frl + TAG_SIZE );
 }

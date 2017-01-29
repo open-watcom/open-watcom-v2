@@ -180,7 +180,7 @@ static frlptr __LinkUpNewMHeap( mheapptr mhp1 ) // originally __AddNewHeap()
 {
     mheapptr    mhp2;
     mheapptr    prev_mhp2;
-    tag         *last_tag;
+    frlptr      curr_frl;
     unsigned    amount;
 
     /* insert into ordered heap list (14-jun-91 AFS) */
@@ -215,11 +215,11 @@ static frlptr __LinkUpNewMHeap( mheapptr mhp1 ) // originally __AddNewHeap()
     mhp1->numalloc = 0;
     mhp1->numfree  = 0;
     mhp1++;
-    ((frlptr)mhp1)->len = amount;
+    curr_frl = (frlptr)mhp1;
+    curr_frl->len = amount;
     /* fix up end of heap links */
-    last_tag = (tag *) ( (PTR)mhp1 + amount );
-    last_tag[0] = END_TAG;
-    return( (frlptr)mhp1 );
+    SET_FRL_END( (frlptr)( (PTR)curr_frl + amount ) );
+    return( curr_frl );
 }
 
 #if !( defined(__WINDOWS__) || defined(__WARP__) || defined(__NT__) )
@@ -485,7 +485,6 @@ int __ExpandDGROUP( unsigned amount )
     mheapptr    mhp1;
     frlptr      flp;
     unsigned    brk_value;
-    tag         *last_tag;
     unsigned    new_brk_value;
     void        _WCNEAR *brk_ret;
 
@@ -543,8 +542,7 @@ int __ExpandDGROUP( unsigned amount )
         /* adjust current entry in heap list */
         mhp1->len += amount;
         /* fix up end of heap links */
-        last_tag = (tag *) ( (PTR)flp + amount );
-        last_tag[0] = END_TAG;
+        SET_FRL_END( (frlptr)( (PTR)flp + amount ) );
     } else {
         if( amount < sizeof( miniheapblkp ) + sizeof( frl ) ) {
         /*  there isn't enough for a heap block (struct miniheapblkp) and

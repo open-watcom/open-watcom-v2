@@ -37,44 +37,47 @@
 #include "heapacc.h"
 
 
-farfrlptr __fheapchk_current;
+#define FRLBPTR    XBPTR( freelistp, seg )
+
+
+freelistp _WCFAR *__fheapchk_current;
 
 static int checkFreeList( unsigned long *free_size )
 {
-    __segment                   curr_seg;
-    XBPTR( freelist, curr_seg ) curr_frl;
-    unsigned long               total_size;
+    __segment           seg;
+    FRLBPTR             curr_frl;
+    unsigned long       total_size;
 
     total_size = 0;
-    for( curr_seg = __fheapbeg; curr_seg != _NULLSEG; curr_seg = HBPTR( curr_seg )->nextseg ) {
-        __fheapchk_current = curr_frl = (XBPTR( freelist, curr_seg ))HBPTR( curr_seg )->freehead.next;
+    for( seg = __fheapbeg; seg != _NULLSEG; seg = HBPTR( seg )->nextseg ) {
+        __fheapchk_current = curr_frl = HBPTR( seg )->freehead.next;
         while( FP_OFF( curr_frl ) != offsetof( heapblk, freehead ) ) {
             total_size += curr_frl->len;
-            __fheapchk_current = curr_frl = (XBPTR( freelist, curr_seg ))curr_frl->next;
+            __fheapchk_current = curr_frl = curr_frl->next;
         }
     }
     *free_size = total_size;
     return( _HEAPOK );
 }
 
-static int checkFree( farfrlptr p )
+static int checkFree( freelistp _WCFAR *p )
 {
     __segment   seg;
-    farfrlptr   prev;
-    farfrlptr   next;
-    farfrlptr   prev_prev;
-    farfrlptr   next_next;
+    FRLBPTR     prev;
+    FRLBPTR     next;
+    FRLBPTR     prev_prev;
+    FRLBPTR     next_next;
 
     __fheapchk_current = p;
     seg = FP_SEG( p );
-    prev = MK_FP( seg, p->prev );
-    next = MK_FP( seg, p->next );
-    if( prev->next != FP_OFF( p ) || next->prev != FP_OFF( p ) ) {
+    prev = p->prev;
+    next = p->next;
+    if( prev->next != (void _WCNEAR *)p || next->prev != (void _WCNEAR *)p ) {
         return( _HEAPBADNODE );
     }
-    prev_prev = MK_FP( seg, prev->prev );
-    next_next = MK_FP( seg, next->next );
-    if( prev_prev->next != FP_OFF( prev ) || next_next->prev != FP_OFF( next ) ) {
+    prev_prev = prev->prev;
+    next_next = next->next;
+    if( prev_prev->next != prev || next_next->prev != next ) {
         return( _HEAPBADNODE );
     }
     return( _HEAPOK );

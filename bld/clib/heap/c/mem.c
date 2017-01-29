@@ -264,15 +264,13 @@ void __MemFree( unsigned pointer, __segment segment, unsigned offset )
                                                 // point at next allocated
                     pnext = (frlptr)((PTR)pfree + pfree->len);
                     for(;;) {
+                        if( IS_FRL_END( pnext ) )   // check for end TAG
+                            break;          // stop at end tag
                         if( IS_MEMBLK_USED( pnext ) ) {    // pnext is allocated
-                            if( pnext->len != END_TAG ) {  // check for end TAG
-                                pnext = (frlptr)((PTR)pnext + MEMBLK_SIZE( pnext ));
-                                average--;
-                                if( !average ) {    // give up search
-                                    break;
-                                }
-                            } else {
-                                break;          // stop at end tag
+                            pnext = (frlptr)((PTR)pnext + MEMBLK_SIZE( pnext ));
+                            average--;
+                            if( !average ) {    // give up search
+                                break;
                             }
                         } else {
                             // break twice!

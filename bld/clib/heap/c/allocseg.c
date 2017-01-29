@@ -52,6 +52,10 @@
 #include "rtdata.h"
 #include "heap.h"
 
+
+#define SHBPTR(s)   ((XBPTR(heapstart, s))0)
+#define FRLBPTR     XBPTR( freelistp, seg )
+
 #if defined(__QNX__)
 extern unsigned         __qnx_alloc_flags;
 #endif
@@ -60,8 +64,7 @@ __segment __AllocSeg( unsigned int amount )
 {
     unsigned    num_of_paras;       /* number of paragraphs desired   */
     __segment   seg;
-    heapstart   _WCFAR *p;
-    tag         _WCFAR *last_tag;
+    FRLBPTR     last_tag;
 #if defined(__OS2__)
 #elif defined(__QNX__)
     unsigned    rc;
@@ -122,23 +125,22 @@ __segment __AllocSeg( unsigned int amount )
     }
     seg = TINY_INFO( rc );
 #endif
-    p = (heapstart _WCFAR *)MK_FP( seg, 0 );
-    p->h.heaplen = num_of_paras << 4;
-    p->h.prevseg = _NULLSEG;
-    p->h.nextseg = _NULLSEG;
-    p->h.rover   = offsetof( heapstart, first );
-    p->h.b4rover  = 0;
-    p->h.numalloc = 0;
-    p->h.numfree  = 1;
-    p->h.freehead.len  = 0;
-    p->h.freehead.prev = offsetof( heapstart, first );
-    p->h.freehead.next = offsetof( heapstart, first );
-    p->first.len  = p->h.heaplen - sizeof( heapblk ) - TAG_SIZE * 2;
-    p->h.largest_blk = p->first.len;
-    p->first.prev = offsetof( heapblk, freehead );
-    p->first.next = offsetof( heapblk, freehead );
-    last_tag = MK_FP( seg, p->h.heaplen - TAG_SIZE * 2 );
-    last_tag[0] = END_TAG;
-    last_tag[1] = 0;        /* link to next piece of near heap */
+    SHBPTR( seg )->h.heaplen = num_of_paras << 4;
+    SHBPTR( seg )->h.prevseg = _NULLSEG;
+    SHBPTR( seg )->h.nextseg = _NULLSEG;
+    SHBPTR( seg )->h.rover = offsetof( heapstart, first );
+    SHBPTR( seg )->h.b4rover = 0;
+    SHBPTR( seg )->h.numalloc = 0;
+    SHBPTR( seg )->h.numfree = 1;
+    SHBPTR( seg )->h.freehead.len = 0;
+    SHBPTR( seg )->h.freehead.prev = offsetof( heapstart, first );
+    SHBPTR( seg )->h.freehead.next = offsetof( heapstart, first );
+    SHBPTR( seg )->first.len = SHBPTR( seg )->h.heaplen - sizeof( heapblk ) - TAG_SIZE * 2;
+    SHBPTR( seg )->h.largest_blk = SHBPTR( seg )->first.len;
+    SHBPTR( seg )->first.prev = offsetof( heapblk, freehead );
+    SHBPTR( seg )->first.next = offsetof( heapblk, freehead );
+    last_tag = (FRLBPTR)( SHBPTR( seg )->h.heaplen - TAG_SIZE * 2 );
+    SET_FRL_END( last_tag );
+    last_tag->prev = 0;     /* link to next piece of near heap */
     return( seg );          /* return allocated segment */
 }
