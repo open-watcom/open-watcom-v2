@@ -38,7 +38,7 @@
 #include "heapacc.h"
 
 
-#define FRLBPTR     XBPTR( freelistp, curr_seg )
+#define FRLBPTR     XBPTR( freelistp, seg )
 
 freelistp _WCFAR *__fheapchk_current;
 
