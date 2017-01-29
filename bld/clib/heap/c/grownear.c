@@ -532,7 +532,7 @@ int __ExpandDGROUP( unsigned amount )
             break;
         }
     }
-    if( (mhp1 != NULL) && ((brk_value - TAG_SIZE) == (unsigned)( (PTR)mhp1 + mhp1->len) ) ) {
+    if( ( mhp1 != NULL ) && ( ( brk_value - TAG_SIZE ) == (unsigned)( (unsigned)mhp1 + mhp1->len ) ) ) {
         /* we are extending the previous heap block (slicing) */
         /* nb. account for the end-of-heap tag */
         brk_value -= TAG_SIZE;

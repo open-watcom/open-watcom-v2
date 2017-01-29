@@ -48,8 +48,10 @@ static int checkFreeList( unsigned long *free_size, __segment req_seg )
 
     total_size = 0;
     for( seg = (req_seg == _NULLSEG ? __bheapbeg : req_seg); seg != _NULLSEG; seg = HBPTR( seg )->nextseg ) {
-        for( curr_frl = HBPTR( seg )->freehead.next; FP_OFF( curr_frl ) != offsetof( heapblk, freehead ); curr_frl = curr_frl->next ) {
+        curr_frl = HBPTR( curr_seg )->freehead.next;
+        while( (unsigned)curr_frl != offsetof( heapblk, freehead ) ) {
             total_size += curr_frl->len;
+            curr_frl = curr_frl->next;
         }
         if( req_seg != _NULLSEG ) {
             break;
