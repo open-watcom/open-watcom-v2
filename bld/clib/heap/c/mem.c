@@ -57,15 +57,15 @@
 //                else           -> absolute pointer value
 //
 // output:
-//      result  - address of allocated storage or zero on failure
+//      c_stg   - "C" address of allocated storage or zero on failure
 //                if 16bit Intel -> offset within segment
 //                else           -> absolute pointer value
 //
 unsigned __MemAllocator( unsigned req_size, __segment segment, unsigned offset )
 {
-    frlptr  result;
+    unsigned    c_stg;
 
-    result = 0;                                 // assume the worst
+    c_stg = 0;                                  // assume the worst
     setup_segment( segment );                   // setup DS for 16bit Intel
 
     if( req_size != 0 ) {                       // quit if size is zero
@@ -104,7 +104,7 @@ unsigned __MemAllocator( unsigned req_size, __segment segment, unsigned offset )
                     if( pcur == (frlptr)&(heap->freehead) ) {
                         heap->largest_blk = largest;    // update largest
                         setup_segment( segment );       // 16bit Intel restore
-                        return( (unsigned)result );     // return 0
+                        return( c_stg );        // return 0
                     }
                 }
                 heap->b4rover = largest;        // update rover size
@@ -139,17 +139,17 @@ unsigned __MemAllocator( unsigned req_size, __segment segment, unsigned offset )
                 }
                 SET_MEMBLK_USED( pcur );        // mark as allocated
                                                 // get pointer to user area
-                result = (frlptr)((PTR)pcur + TAG_SIZE);
+                c_stg = FRL2CPTR( pcur );
             }
         }
     }
     setup_segment( segment );                   // 16bit Intel restore
-    return( (unsigned)result );
+    return( c_stg );
 }
 
 //
 // input:
-//      pointer - address of block to free
+//      c_stg   - "C" address of block to free
 //                if 16bit Intel -> offset within segment
 //                else           -> absolute pointer value
 //      segment - 16bit Intel data selector containing heap
@@ -160,14 +160,14 @@ unsigned __MemAllocator( unsigned req_size, __segment segment, unsigned offset )
 // output:
 //      none
 //
-void __MemFree( unsigned pointer, __segment segment, unsigned offset )
+void __MemFree( unsigned c_stg, __segment segment, unsigned offset )
 {
     setup_segment( segment );                   // setup DS for 16bit Intel
 
-    if( pointer != 0 ) {                        // quit if pointer is zero
+    if( c_stg != 0 ) {                          // quit if pointer is zero
         frlptr pfree;
 
-        pfree = (frlptr)(pointer - TAG_SIZE);
+        pfree = (frlptr)CPTR2FRL( c_stg );
         if( IS_MEMBLK_USED( pfree ) ) {         // quit if storage is free
             heapblkp    _WCNEAR *heap;
             frlptr      pnext;
@@ -265,11 +265,11 @@ void __MemFree( unsigned pointer, __segment segment, unsigned offset )
                     pnext = (frlptr)( (PTR)pfree + pfree->len );
                     for( ;; ) {
                         if( IS_FRL_END( pnext ) )   // check for end TAG
-                            break;          // stop at end tag
+                            break;              // stop at end tag
                         if( IS_MEMBLK_USED( pnext ) ) {    // pnext is allocated
                             pnext = (frlptr)( (PTR)pnext + MEMBLK_SIZE( pnext ) );
                             average--;
-                            if( !average ) {    // give up search
+                            if( average == 0 ) {    // give up search
                                 break;
                             }
                         } else {

@@ -165,7 +165,7 @@ void *__ReAllocDPMIBlock( frlptr p1, unsigned req_size )
                 SET_MEMBLK_SIZE_USED( flp2, size );
                 mhp->numalloc++;
                 mhp->largest_blk = 0;
-                _nfree( (PTR)flp2 + TAG_SIZE );
+                _nfree( (void _WCNEAR *)FRL2CPTR( flp2 ) );
             } else {
                 SET_MEMBLK_USED( flp ); // set allocated bit
             }
@@ -468,7 +468,7 @@ static int __CreateNewNHeap( unsigned amount )
     SET_MEMBLK_SIZE_USED( flp, amount );
     mhp1->numalloc++;
     mhp1->largest_blk = 0;
-    _nfree( (PTR)flp + TAG_SIZE );
+    _nfree( (void _WCNEAR *)FRL2CPTR( flp ) );
     return( 1 );
 }
 #endif
@@ -532,7 +532,7 @@ int __ExpandDGROUP( unsigned amount )
             break;
         }
     }
-    if( ( mhp1 != NULL ) && ( ( brk_value - TAG_SIZE ) == (unsigned)( (unsigned)mhp1 + mhp1->len ) ) ) {
+    if( ( mhp1 != NULL ) && ( CPTR2FRL( brk_value ) == (unsigned)( (unsigned)mhp1 + mhp1->len ) ) ) {
         /* we are extending the previous heap block (slicing) */
         /* nb. account for the end-of-heap tag */
         brk_value -= TAG_SIZE;
@@ -559,7 +559,7 @@ int __ExpandDGROUP( unsigned amount )
     SET_MEMBLK_SIZE_USED( flp, amount );
     mhp1->numalloc++;
     mhp1->largest_blk = ~0;    /* set to largest value to be safe */
-    _nfree( (PTR)flp + TAG_SIZE );
+    _nfree( (void _WCNEAR *)FRL2CPTR( flp ) );
     return( 1 );
 #endif
 }

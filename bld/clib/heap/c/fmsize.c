@@ -39,17 +39,11 @@
 #if defined(__BIG_DATA__)
 _WCRTLINK size_t _msize( void *p )
 {
-    tag     *q;
-
-    q = (tag *)(((unsigned char *)p) - TAG_SIZE);
-    return( ( *q & ~1 ) - TAG_SIZE );
+    return( MEMBLK_SIZE( (freelist *)( FP_SEG( p ) :> CPTR2FRL( p ) ) ) - TAG_SIZE );
 }
 #endif
 
 _WCRTLINK size_t _fmsize( void _WCFAR *p )
 {
-    tag     _WCFAR *q;
-
-    q = (tag _WCFAR *)(((unsigned char _WCFAR *)p) - TAG_SIZE);
-    return( ( *q & ~1 ) - TAG_SIZE );
+    return( MEMBLK_SIZE( (freelist _WCFAR *)( FP_SEG( p ) :> CPTR2FRL( p ) ) ) - TAG_SIZE );
 }

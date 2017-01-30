@@ -58,7 +58,7 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
     if( new_size < FRL_SIZE ) {
         new_size = FRL_SIZE;
     }
-    p1 = (FRLBPTR)( offset - TAG_SIZE );
+    p1 = (FRLBPTR)CPTR2FRL( offset );
     old_size = MEMBLK_SIZE( p1 );
     if( new_size > old_size ) {
         /* enlarging the current allocation */
@@ -126,10 +126,10 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
             /* _bfree will decrement 'numalloc' */
             mhp->numalloc++;
 #if defined( _M_I86 )
-            _bfree( seg, (VOID_BPTR)( (PTR)p2 + TAG_SIZE ) );
+            _bfree( seg, (VOID_BPTR)FRL2CPTR( p2 ) );
             /* free the top portion */
 #else
-            _nfree( (void _WCNEAR *)( (PTR)p2 + TAG_SIZE ) );
+            _nfree( (void _WCNEAR *)FRL2CPTR( p2 ) );
 #endif
         }
     }

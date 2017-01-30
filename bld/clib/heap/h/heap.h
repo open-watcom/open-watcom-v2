@@ -49,6 +49,9 @@
 #define FAR_NULL        ((void _WCFAR *)NULL)
 #define NEAR_NULL       ((void _WCNEAR *)NULL)
 
+#define FRL2CPTR(f)     ((unsigned)((unsigned)(f) + TAG_SIZE))
+#define CPTR2FRL(p)     ((unsigned)((unsigned)(p) - TAG_SIZE))
+
 typedef unsigned int    tag;
 typedef unsigned char   _WCNEAR *PTR;
 typedef unsigned char   _WCFAR *FARPTR;

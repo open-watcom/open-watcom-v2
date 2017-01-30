@@ -221,7 +221,7 @@ _WCRTLINK int _nheapshrink( void )
             }
   #endif
             SET_FRL_END( last_free );
-            new_brk = (unsigned)( (PTR)last_free + TAG_SIZE );
+            new_brk = (unsigned)FRL2CPTR( last_free );
         } else {
             // we can remove this miniheapblk
             if( mhp->prev ) { // Not the first miniheapblk

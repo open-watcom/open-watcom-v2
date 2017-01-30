@@ -116,10 +116,10 @@ _WCRTLINK void _WCNEAR *_nrealloc( void _WCNEAR *stg, size_t req_size )
         if( _IsRational() ) {
             frlptr  flp, newflp;
 
-            flp = (frlptr)( (PTR)stg - TAG_SIZE );
+            flp = (frlptr)CPTR2FRL( stg );
             newflp = __ReAllocDPMIBlock( flp, req_size + TAG_SIZE );
             if( newflp ) {
-                return( (void _WCNEAR *)( (PTR)newflp + TAG_SIZE ) );
+                return( (void _WCNEAR *)FRL2CPTR( newflp ) );
             }
         }
 #endif
