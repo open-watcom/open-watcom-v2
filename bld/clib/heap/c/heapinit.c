@@ -36,6 +36,7 @@
 #include <malloc.h>
 #include "heap.h"
 
+
 void _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount )
 {
     mheapptr mhp1;

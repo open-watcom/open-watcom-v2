@@ -544,8 +544,8 @@ int __ExpandDGROUP( unsigned amount )
         SET_FRL_END( (frlptr)( (PTR)flp + amount ) );
     } else {
         if( amount < sizeof( miniheapblkp ) + sizeof( freelistp ) ) {
-        /*  there isn't enough for a heap block (struct miniheapblkp) and
-            one free block (freelistp) */
+            /*  there isn't enough for a heap block (struct miniheapblkp) and
+                one free block (freelistp) */
             return( 0 );
         }
         // Initializing the near heap if __nheapbeg == NULL,

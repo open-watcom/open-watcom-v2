@@ -37,15 +37,15 @@
 #include "heapacc.h"
 
 
-_WCRTLINK int _bfreeseg( __segment curr_seg )
+_WCRTLINK int _bfreeseg( __segment seg )
 {
     __segment       next_seg;
     __segment       prev_seg;
 
     _AccessFHeap();
     /* unlink from heap list */
-    prev_seg = HBPTR( curr_seg )->prevseg;
-    next_seg = HBPTR( curr_seg )->nextseg;
+    prev_seg = HBPTR( seg )->prevseg;
+    next_seg = HBPTR( seg )->nextseg;
     if( next_seg != _NULLSEG ) {
         HBPTR( next_seg )->prevseg = prev_seg;
     }
@@ -55,5 +55,5 @@ _WCRTLINK int _bfreeseg( __segment curr_seg )
         HBPTR( prev_seg )->nextseg = next_seg;
     }
     _ReleaseFHeap();
-    return( __FreeSeg( curr_seg ) );
+    return( __FreeSeg( seg ) );
 }
