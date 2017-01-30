@@ -56,9 +56,9 @@ void _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount )
     mhp1++;
     curr_frl = (frlptr)mhp1;
     /* fix up end of heap links */
-    SET_FRL_END( (frlptr)( (PTR)curr_frl + amount ) );
+    SET_BLK_END( (frlptr)( (PTR)curr_frl + amount ) );
     /* build a block for _nfree() */
-    SET_MEMBLK_SIZE_USED( curr_frl, amount );
+    SET_BLK_SIZE_INUSE( curr_frl, amount );
     __nheapbeg->numalloc++;
     __nheapbeg->largest_blk = ~0;    /* set to largest value to be safe */
     _nfree( (void _WCNEAR *)FRL2CPTR( curr_frl ) );

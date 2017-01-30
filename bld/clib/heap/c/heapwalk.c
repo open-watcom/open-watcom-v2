@@ -108,7 +108,7 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
                 return( _HEAPBADBEGIN );
             p = MK_FP( curr_seg, sizeof( heapblk ) );
         } else {    /* advance to next entry */
-            q = (farfrlptr)( (FARPTR)p + MEMBLK_SIZE( p ) );
+            q = (farfrlptr)( (FARPTR)p + GET_BLK_SIZE( p ) );
             if( q <= p )
                 return( _HEAPBADNODE );
             p = q;
@@ -116,7 +116,7 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
                 return( _HEAPBADNODE );
             }
         }
-        if( !IS_FRL_END( p ) )
+        if( !IS_BLK_END( p ) )
             break;
         if( next_seg == _NULLSEG || one_heap != 0 ) {
             entry->_useflag = _USEDENTRY;
@@ -128,8 +128,8 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
     }
     entry->_pentry  = p;
     entry->_useflag = _FREEENTRY;
-    entry->_size    = MEMBLK_SIZE( p );
-    if( IS_MEMBLK_USED( p ) ) {
+    entry->_size    = GET_BLK_SIZE( p );
+    if( IS_BLK_INUSE( p ) ) {
         entry->_useflag = _USEDENTRY;
     }
     return( _HEAPOK );

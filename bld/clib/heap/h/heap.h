@@ -234,14 +234,14 @@ extern  void            __MemFree( unsigned __ptr, __segment __seg, unsigned __o
 #endif
 #define FRL_SIZE        __ROUND_UP_SIZE( sizeof( freelistp ), ROUND_SIZE )
 
-#define MEMBLK_SIZE(p)              __ROUND_DOWN_SIZE( (p)->len, 2 )
-#define IS_MEMBLK_USED(p)           (((p)->len & 1) != 0)
-#define SET_MEMBLK_SIZE_USED(p,s)   (p)->len = ((s) | 1)
-#define SET_MEMBLK_USED(p)          (p)->len |= 1
-#define IS_FRL_END(p)               ((p)->len == END_TAG)
-#define SET_FRL_END(p)              (p)->len = END_TAG
+#define GET_BLK_SIZE(p)             __ROUND_DOWN_SIZE( (p)->len, 2 )
+#define IS_BLK_INUSE(p)             (((p)->len & 1) != 0)
+#define SET_BLK_SIZE_INUSE(p,s)     (p)->len = ((s) | 1)
+#define SET_BLK_INUSE(p)            (p)->len |= 1
+#define IS_BLK_END(p)               ((p)->len == END_TAG)
+#define SET_BLK_END(p)              (p)->len = END_TAG
 
-#define NEXT_FRL(p)                 (frlptr)((PTR)(p) + (p)->len)
+#define NEXT_BLK(p)                 (frlptr)((PTR)(p) + (p)->len)
 
 #define __HM_SUCCESS    0
 #define __HM_FAIL       1

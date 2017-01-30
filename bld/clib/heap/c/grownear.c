@@ -159,15 +159,15 @@ void *__ReAllocDPMIBlock( frlptr p1, unsigned req_size )
             req_size = __ROUND_UP_SIZE( req_size, 2 );
             size = flp->len - req_size;
             if( size >= FRL_SIZE ) {    // Enough to spare a free block
-                SET_MEMBLK_SIZE_USED( flp, req_size );// adjust size and set allocated bit
+                SET_BLK_SIZE_INUSE( flp, req_size );// adjust size and set allocated bit
                 // Make up a free block at the end
                 flp2 = (frlptr)( (PTR)flp + req_size );
-                SET_MEMBLK_SIZE_USED( flp2, size );
+                SET_BLK_SIZE_INUSE( flp2, size );
                 mhp->numalloc++;
                 mhp->largest_blk = 0;
                 _nfree( (void _WCNEAR *)FRL2CPTR( flp2 ) );
             } else {
-                SET_MEMBLK_USED( flp ); // set allocated bit
+                SET_BLK_INUSE( flp );   // set allocated bit
             }
             return( flp );
         }
@@ -218,7 +218,7 @@ static frlptr __LinkUpNewMHeap( mheapptr mhp1 ) // originally __AddNewHeap()
     curr_frl = (frlptr)mhp1;
     curr_frl->len = amount;
     /* fix up end of heap links */
-    SET_FRL_END( (frlptr)( (PTR)curr_frl + amount ) );
+    SET_BLK_END( (frlptr)( (PTR)curr_frl + amount ) );
     return( curr_frl );
 }
 
@@ -465,7 +465,7 @@ static int __CreateNewNHeap( unsigned amount )
     flp = __LinkUpNewMHeap( mhp1 );
     amount = flp->len;
     /* build a block for _nfree() */
-    SET_MEMBLK_SIZE_USED( flp, amount );
+    SET_BLK_SIZE_INUSE( flp, amount );
     mhp1->numalloc++;
     mhp1->largest_blk = 0;
     _nfree( (void _WCNEAR *)FRL2CPTR( flp ) );
@@ -541,7 +541,7 @@ int __ExpandDGROUP( unsigned amount )
         /* adjust current entry in heap list */
         mhp1->len += amount;
         /* fix up end of heap links */
-        SET_FRL_END( (frlptr)( (PTR)flp + amount ) );
+        SET_BLK_END( (frlptr)( (PTR)flp + amount ) );
     } else {
         if( amount < sizeof( miniheapblkp ) + sizeof( freelistp ) ) {
             /*  there isn't enough for a heap block (struct miniheapblkp) and
@@ -556,7 +556,7 @@ int __ExpandDGROUP( unsigned amount )
         amount = flp->len;
     }
     /* build a block for _nfree() */
-    SET_MEMBLK_SIZE_USED( flp, amount );
+    SET_BLK_SIZE_INUSE( flp, amount );
     mhp1->numalloc++;
     mhp1->largest_blk = ~0;    /* set to largest value to be safe */
     _nfree( (void _WCNEAR *)FRL2CPTR( flp ) );

@@ -59,15 +59,15 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
         new_size = FRL_SIZE;
     }
     p1 = (FRLBPTR)CPTR2FRL( offset );
-    old_size = MEMBLK_SIZE( p1 );
+    old_size = GET_BLK_SIZE( p1 );
     if( new_size > old_size ) {
         /* enlarging the current allocation */
         p2 = (FRLBPTR)( (PTR)p1 + old_size );
         *growth_size = new_size - old_size;
         for( ;; ) {
-            if( IS_FRL_END( p2 ) ) {
+            if( IS_BLK_END( p2 ) ) {
                 return( __HM_TRYGROW );
-            } else if( IS_MEMBLK_USED( p2 ) ) { /* next piece is allocated */
+            } else if( IS_BLK_INUSE( p2 ) ) {   /* next piece is allocated */
                 break;
             }
             mhp = 0;                    // for based heap
@@ -113,9 +113,9 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
         if( old_size - new_size >= FRL_SIZE ) {
             mhp = 0;                    // for based heap
             /* block big enough to split */
-            SET_MEMBLK_SIZE_USED( p1, new_size );
+            SET_BLK_SIZE_INUSE( p1, new_size );
             p2 = (FRLBPTR)( (PTR)p1 + new_size );
-            SET_MEMBLK_SIZE_USED( p2, old_size - new_size );
+            SET_BLK_SIZE_INUSE( p2, old_size - new_size );
             if( seg == _DGroup() ) {    // near heap
                 for( mhp = __nheapbeg; mhp->next != NULL; mhp = mhp->next ) {
                     if( (unsigned)mhp <= offset && offset < ( (unsigned)mhp + mhp->len ) ) {

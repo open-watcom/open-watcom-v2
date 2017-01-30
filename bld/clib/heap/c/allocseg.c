@@ -140,7 +140,7 @@ __segment __AllocSeg( unsigned int amount )
     SHBPTR( seg )->first.prev = offsetof( heapblk, freehead );
     SHBPTR( seg )->first.next = offsetof( heapblk, freehead );
     last_tag = (FRLBPTR)( SHBPTR( seg )->h.heaplen - TAG_SIZE * 2 );
-    SET_FRL_END( last_tag );
+    SET_BLK_END( last_tag );
     last_tag->prev = 0;     /* link to next piece of near heap */
     return( seg );          /* return allocated segment */
 }

@@ -39,11 +39,11 @@
 #if defined(__SMALL_DATA__)
 _WCRTLINK size_t _msize( void *cstg )
 {
-    return( MEMBLK_SIZE( (freelist *)CPTR2FRL( cstg ) ) - TAG_SIZE );
+    return( GET_BLK_SIZE( (freelist *)CPTR2FRL( cstg ) ) - TAG_SIZE );
 }
 #endif
 
 _WCRTLINK size_t _nmsize( void _WCNEAR *cstg )
 {
-    return( MEMBLK_SIZE( (freelist _WCNEAR *)CPTR2FRL( cstg ) ) - TAG_SIZE );
+    return( GET_BLK_SIZE( (freelist _WCNEAR *)CPTR2FRL( cstg ) ) - TAG_SIZE );
 }

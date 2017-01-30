@@ -61,14 +61,14 @@ int __NHeapWalk( struct _heapinfo *entry, mheapptr mhp )
                     break;
                 }
             }
-            q = (frlptr)((PTR)p + MEMBLK_SIZE( p ));
+            q = (frlptr)((PTR)p + GET_BLK_SIZE( p ));
             if( q <= p ) {
                 return( _HEAPBADNODE );
             }
             p = q;
         }
         for( ;; ) {
-            if( IS_FRL_END( p ) ) {
+            if( IS_BLK_END( p ) ) {
                 if( mhp->next == NULL ) {
                     entry->_useflag = _USEDENTRY;
                     entry->_size    = 0;
@@ -84,8 +84,8 @@ int __NHeapWalk( struct _heapinfo *entry, mheapptr mhp )
         }
         entry->_pentry  = p;
         entry->_useflag = _FREEENTRY;
-        entry->_size    = MEMBLK_SIZE( p );
-        if( IS_MEMBLK_USED( p ) ) {
+        entry->_size    = GET_BLK_SIZE( p );
+        if( IS_BLK_INUSE( p ) ) {
             entry->_useflag = _USEDENTRY;
         }
         return( _HEAPOK );

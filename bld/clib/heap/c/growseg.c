@@ -153,7 +153,7 @@ int __GrowSeg( __segment seg, unsigned int amount )
         if( pfree->len > HBPTR( seg )->largest_blk )
             HBPTR( seg )->largest_blk = pfree->len;
         last_tag = (FRLBPTR)( HBPTR( seg )->heaplen - TAG_SIZE * 2 );
-        SET_FRL_END( last_tag );
+        SET_BLK_END( last_tag );
         last_tag->prev = 0;         /* link to next piece of near heap */
         return( 1 );                /* indicate segment was grown */
     }
