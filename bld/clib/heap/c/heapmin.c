@@ -53,9 +53,9 @@
 #include "seterrno.h"
 
 
-#define FRLBPTR     XBPTR( freelistp, curr_seg )
+#define FRLBPTR     XBPTR( freelistp, seg )
 
-int __HeapMin( __segment curr_seg, unsigned one_heap )
+int __HeapMin( __segment seg, unsigned one_heap )
 {
     tag                 last_len;
     tag                 adjust_len;
@@ -70,39 +70,39 @@ int __HeapMin( __segment curr_seg, unsigned one_heap )
 #endif
 
     _AccessFHeap();
-    for( ; curr_seg != _NULLSEG; curr_seg = next_seg ) {
+    for( ; seg != _NULLSEG; seg = next_seg ) {
         /* we might free this segment so get the next one now */
-        next_seg = HBPTR( curr_seg )->nextseg;
-        if( HBPTR( curr_seg )->numfree == 0 ) {      /* full heap */
+        next_seg = HBPTR( seg )->nextseg;
+        if( HBPTR( seg )->numfree == 0 ) {      /* full heap */
             if( one_heap != 0 )
                 break;
             continue;
         }
-        if( HBPTR( curr_seg )->numalloc == 0 ) {     /* empty heap */
+        if( HBPTR( seg )->numalloc == 0 ) {     /* empty heap */
             continue;
         }
         /* verify the last block is free */
-        last_free = HBPTR( curr_seg )->freehead.prev;
+        last_free = HBPTR( seg )->freehead.prev;
         if( IS_BLK_INUSE( last_free ) )
             continue;
 
         /* verify the last block is just before the end of the heap */
-        last_len = last_free->len;
-        end_tag = (FRLBPTR)( (PTR)last_free + last_len );
+        end_tag = (FRLBPTR)( NEXT_BLK( last_free ) );
         if( !IS_BLK_END( end_tag ) )
             continue;
 
         /* adjust sizes so the last free block stays in the heap */
+        last_len = last_free->len;
         if( last_len <= FRL_SIZE )
             continue;
 
-        new_heap_len = __ROUND_UP_SIZE_PARA( HBPTR( curr_seg )->heaplen - ( last_len - FRL_SIZE ) );
-        adjust_len = HBPTR( curr_seg )->heaplen - new_heap_len;
+        new_heap_len = __ROUND_UP_SIZE_PARA( HBPTR( seg )->heaplen - ( last_len - FRL_SIZE ) );
+        adjust_len = HBPTR( seg )->heaplen - new_heap_len;
         if( adjust_len == 0 )
             continue;
 
 #if defined(__QNX__)
-        if( qnx_segment_realloc( curr_seg, new_heap_len ) == -1 ) {
+        if( qnx_segment_realloc( seg, new_heap_len ) == -1 ) {
             _ReleaseFHeap();
             return( -1 );
         }
@@ -110,7 +110,7 @@ int __HeapMin( __segment curr_seg, unsigned one_heap )
         {
             HANDLE hmem;
 
-            hmem = (HANDLE)GlobalHandle( curr_seg );
+            hmem = (HANDLE)GlobalHandle( seg );
             if( hmem == NULL ) {
                 _ReleaseFHeap();
                 return( -1 );
@@ -121,16 +121,16 @@ int __HeapMin( __segment curr_seg, unsigned one_heap )
             }
         }
 #elif defined(__OS2__)
-        rc = DosReallocSeg( new_heap_len, curr_seg );
+        rc = DosReallocSeg( new_heap_len, seg );
         if( rc ) {
             _ReleaseFHeap();
             return( __set_errno_dos( rc ) );
         }
 #else
         if( new_heap_len != 0 ) {
-            rc = TinySetBlock( __ROUND_DOWN_SIZE_TO_PARA( new_heap_len ), curr_seg );
+            rc = TinySetBlock( __ROUND_DOWN_SIZE_TO_PARA( new_heap_len ), seg );
         } else {
-            rc = TinySetBlock( PARAS_IN_64K, curr_seg );
+            rc = TinySetBlock( PARAS_IN_64K, seg );
         }
         if( TINY_ERROR( rc ) ) {
             _ReleaseFHeap();
@@ -139,9 +139,9 @@ int __HeapMin( __segment curr_seg, unsigned one_heap )
 #endif
 
         /* make the changes to the heap structure */
-        HBPTR( curr_seg )->heaplen = new_heap_len;
+        HBPTR( seg )->heaplen = new_heap_len;
         last_free->len -= adjust_len;
-        SET_HEAP_END( last_free );
+        SET_HEAP_END( NEXT_BLK( last_free ) );
     }
     _ReleaseFHeap();
     return( _HEAPOK );
