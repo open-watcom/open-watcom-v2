@@ -78,7 +78,7 @@ _WCRTLINK int _nheapmin( void )
     defined(__RDOS__)
 static int __ReturnMemToSystem( mheapptr mhp )
 {
-    mheapptr next_mhp;
+    mheapptr    next_mhp;
 
     next_mhp = mhp->next;
   #if defined(__WARP__)
@@ -122,8 +122,8 @@ static int __ReturnMemToSystem( mheapptr mhp )
 
 static void __ReleaseMiniHeap( mheapptr mhp )
 {
-    mheapptr prev_mhp;
-    mheapptr next_mhp;
+    mheapptr    prev_mhp;
+    mheapptr    next_mhp;
 
     prev_mhp = mhp->prev;
     next_mhp = mhp->next;
@@ -143,7 +143,7 @@ static void __ReleaseMiniHeap( mheapptr mhp )
 
 _WCRTLINK int _nheapshrink( void )
 {
-    mheapptr mhp;
+    mheapptr    mhp;
 #if !defined(__WARP__)        && \
     !defined(__WINDOWS__)     && \
     !defined(__NT__)          && \
@@ -151,20 +151,20 @@ _WCRTLINK int _nheapshrink( void )
     !defined(__RDOS__)
     // Shrink by adjusting _curbrk
 
-    frlptr last_free;
-    frlptr end_tag;
-    unsigned new_brk;
+    frlptr      last_free;
+    frlptr      end_tag;
+    unsigned    new_brk;
 
     _AccessNHeap();
   #if defined(__DOS_EXT__)
     if( !__IsCtsNHeap() ) {
   #endif
-        if( __nheapbeg == NULL ) {
+        if( __nheapbeg == NEAR_NULL ) {
             _ReleaseNHeap();
             return( 0 ); // No near heap, can't shrink
         }
         /* Goto the end of miniheaplist (if there's more than 1 blk) */
-        for( mhp = __nheapbeg; mhp->next != NULL; mhp = mhp->next )
+        for( mhp = __nheapbeg; mhp->next != NEAR_NULL; mhp = mhp->next )
             ;
         /* check that last free block is at end of heap */
         last_free = mhp->freehead.prev;
@@ -190,7 +190,7 @@ _WCRTLINK int _nheapshrink( void )
         }
   #endif
         /* make sure there hasn't been an external change in _curbrk */
-        if( sbrk( 0 ) != &(end_tag->prev) ) {
+        if( sbrk( 0 ) != (void _WCNEAR *)FRL2CPTR( end_tag ) ) {
             _ReleaseNHeap();
             return( 0 );
         }
@@ -225,11 +225,11 @@ _WCRTLINK int _nheapshrink( void )
         } else {
             // we can remove this miniheapblk
             if( mhp->prev ) { // Not the first miniheapblk
-                mhp->prev->next = NULL;
+                mhp->prev->next = NEAR_NULL;
                 new_brk = (unsigned)mhp;//->prev + (unsigned)mhp->prev->len;
             } else { // Is the first miniheapblk
                 new_brk = (unsigned)__nheapbeg;
-                __nheapbeg = NULL;
+                __nheapbeg = NEAR_NULL;
             }
             // Update rover info
             if( __MiniHeapRover == mhp ) {

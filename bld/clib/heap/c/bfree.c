@@ -37,14 +37,14 @@
 #include "heapacc.h"
 
 
-_WCRTLINK void _bfree( __segment seg, VOID_BPTR offset )
+_WCRTLINK void _bfree( __segment seg, VOID_BPTR cstg )
 {
     _AccessFHeap();
-    if( offset != _NULLOFF ) {
+    if( cstg != _NULLOFF ) {
         if( seg == _DGroup() ) {
-            _nfree( offset );
+            _nfree( cstg );
         } else {
-            __MemFree( (unsigned)offset, seg, 0 );
+            __MemFree( (unsigned)cstg, seg, 0 );
         }
     }
     _ReleaseFHeap();

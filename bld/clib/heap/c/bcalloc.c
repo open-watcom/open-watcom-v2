@@ -38,7 +38,7 @@
 
 _WCRTLINK VOID_BPTR _bcalloc( __segment seg, size_t n, size_t el_size )
 {
-    VOID_BPTR       p;
+    VOID_BPTR       cstg;
     unsigned long   chk_size;
 
     chk_size = (unsigned long)n * el_size;
@@ -46,9 +46,9 @@ _WCRTLINK VOID_BPTR _bcalloc( __segment seg, size_t n, size_t el_size )
     if( el_size != chk_size ) {
         return( _NULLOFF );
     }
-    p = _bmalloc( seg, el_size );
-    if( p != _NULLOFF ) {
-        _fmemset( (void _WCFAR *)(seg :> p), 0, el_size );
+    cstg = _bmalloc( seg, el_size );
+    if( cstg != _NULLOFF ) {
+        _fmemset( (void _WCFAR *)(seg :> cstg), 0, el_size );
     }
-    return( p );
+    return( cstg );
 }

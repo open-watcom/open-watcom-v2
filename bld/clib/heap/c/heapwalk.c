@@ -82,7 +82,7 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
     if( seg == _NULLSEG )
         return( _HEAPEMPTY );
     p = entry->_pentry;
-    if( p != NULL ) {
+    if( p != FAR_NULL ) {
         seg = FP_SEG( p );
     } else if( one_heap == 0 ) {
         /* we are starting a multi-heap walk */
@@ -103,7 +103,7 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
                 return( _HEAPBADBEGIN );
             }
         }
-        if( p == NULL ) {
+        if( p == FAR_NULL ) {
             if( HBPTR( curr_seg )->freehead.len != 0 )
                 return( _HEAPBADBEGIN );
             p = MK_FP( curr_seg, sizeof( heapblk ) );
@@ -121,10 +121,10 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
         if( next_seg == _NULLSEG || one_heap != 0 ) {
             entry->_useflag = _USEDENTRY;
             entry->_size    = 0;
-            entry->_pentry  = NULL;
+            entry->_pentry  = FAR_NULL;
             return( _HEAPEND );
         }
-        p = NULL;
+        p = FAR_NULL;
     }
     entry->_pentry  = p;
     entry->_useflag = _FREEENTRY;

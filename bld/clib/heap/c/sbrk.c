@@ -198,24 +198,24 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
 {
 #ifdef __386__
     if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
-        void _WCNEAR *p;
+        void _WCNEAR *cstg;
 
         if( increment > 0 ) {
             increment = __ROUND_UP_SIZE_4K( increment );
             if( _IsRational() ) {
-                p = TinyDPMIAlloc( increment );
+                cstg = TinyDPMIAlloc( increment );
             } else {
-                p = TinyCBAlloc( increment );
+                cstg = TinyCBAlloc( increment );
             }
-            if( p == NULL ) {
+            if( cstg == NEAR_NULL ) {
                 _RWD_errno = ENOMEM;
-                p = (void _WCNEAR *)-1;
+                cstg = (void _WCNEAR *)-1;
             }
         } else {
             _RWD_errno = EINVAL;
-            p = (void _WCNEAR *)-1;
+            cstg = (void _WCNEAR *)-1;
         }
-        return( p );
+        return( cstg );
     } else if( _IsPharLap() ) {
         _curbrk = SegmentLimit();
     }

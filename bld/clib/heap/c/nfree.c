@@ -42,9 +42,9 @@
 
 #if defined(__SMALL_DATA__)
 
-_WCRTLINK void free( void *stg )
+_WCRTLINK void free( void *cstg )
 {
-    _nfree( stg );
+    _nfree( cstg );
 }
 
 #endif
@@ -56,24 +56,24 @@ mheapptr    __MiniHeapFreeRover;
 #if defined( __RDOS__ ) && defined( __ALLOC_DEBUG )
 
 
-_WCRTLINK void _nfree( void _WCNEAR *stg )
+_WCRTLINK void _nfree( void _WCNEAR *cstg )
 {
-    RdosFreeDebugMem( stg );
+    RdosFreeDebugMem( cstg );
 }
 
 #else
 
-_WCRTLINK void _nfree( void _WCNEAR *stg )
+_WCRTLINK void _nfree( void _WCNEAR *cstg )
 {
     mheapptr        mhp1;
     mheapptr        mhp2;
 
-    if( !stg )
+    if( cstg == NEAR_NULL )
         return;
 
 #if defined( __RDOS__ )
     if( RdosIsForked() ) {
-        RdosFreeMem( stg );
+        RdosFreeMem( cstg );
         return;
     }
 #endif
@@ -83,38 +83,38 @@ _WCRTLINK void _nfree( void _WCNEAR *stg )
         // first try some likely locations
         mhp1 = __MiniHeapFreeRover;
         if( mhp1 != NULL ) {
-            if( (PTR)mhp1 <= (PTR)stg && (PTR)mhp1 + mhp1->len > (PTR)stg ) {
+            if( (PTR)mhp1 <= (PTR)cstg && (PTR)mhp1 + mhp1->len > (PTR)cstg ) {
                 break;
             }
             mhp2 = mhp1;
             mhp1 = mhp1->prev;
             if( mhp1 != NULL ) {
-                if( (PTR)mhp1 <= (PTR)stg && (PTR)mhp1 + mhp1->len > (PTR)stg ) {
+                if( (PTR)mhp1 <= (PTR)cstg && (PTR)mhp1 + mhp1->len > (PTR)cstg ) {
                     break;
                 }
             }
             mhp1 = mhp2->next;
             if( mhp1 != NULL ) {
-                if( (PTR)mhp1 <= (PTR)stg && (PTR)mhp1 + mhp1->len > (PTR)stg ) {
+                if( (PTR)mhp1 <= (PTR)cstg && (PTR)mhp1 + mhp1->len > (PTR)cstg ) {
                     break;
                 }
             }
         }
         mhp1 = __MiniHeapRover;
         if( mhp1 != NULL ) {
-            if( (PTR)mhp1 <= (PTR)stg && (PTR)mhp1 + mhp1->len > (PTR)stg ) {
+            if( (PTR)mhp1 <= (PTR)cstg && (PTR)mhp1 + mhp1->len > (PTR)cstg ) {
                 break;
             }
             mhp2 = mhp1;
             mhp1 = mhp1->prev;
             if( mhp1 != NULL ) {
-                if( (PTR)mhp1 <= (PTR)stg && (PTR)mhp1 + mhp1->len > (PTR)stg ) {
+                if( (PTR)mhp1 <= (PTR)cstg && (PTR)mhp1 + mhp1->len > (PTR)cstg ) {
                     break;
                 }
             }
             mhp1 = mhp2->next;
             if( mhp1 != NULL ) {
-                if( (PTR)mhp1 <= (PTR)stg && (PTR)mhp1 + mhp1->len > (PTR)stg ) {
+                if( (PTR)mhp1 <= (PTR)cstg && (PTR)mhp1 + mhp1->len > (PTR)cstg ) {
                     break;
                 }
             }
@@ -122,7 +122,7 @@ _WCRTLINK void _nfree( void _WCNEAR *stg )
 
         // not found near rover, so search the list
         for( mhp1 = __nheapbeg; mhp1 != NULL; mhp1 = mhp1->next ) {
-            if( (PTR)mhp1 <= (PTR)stg && (PTR)mhp1 + mhp1->len > (PTR)stg ) {
+            if( (PTR)mhp1 <= (PTR)cstg && (PTR)mhp1 + mhp1->len > (PTR)cstg ) {
                 // break twice!
                 goto found_it;
             }
@@ -135,7 +135,7 @@ _WCRTLINK void _nfree( void _WCNEAR *stg )
 
 found_it:
     // we found the miniheap, free the storage
-    __MemFree( (unsigned)stg, _DGroup(), (unsigned)mhp1 );
+    __MemFree( (unsigned)cstg, _DGroup(), (unsigned)mhp1 );
     __MiniHeapFreeRover = mhp1;
     if( mhp1 < __MiniHeapRover ) {
         if( __LargestSizeB4MiniHeapRover < mhp1->largest_blk ) {

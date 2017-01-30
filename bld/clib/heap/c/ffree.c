@@ -40,27 +40,27 @@
 
 #if defined(__BIG_DATA__)
 
-_WCRTLINK void free( void *stg )
+_WCRTLINK void free( void *cstg )
 {
-    _ffree( stg );
+    _ffree( cstg );
 }
 
 #endif
 
-_WCRTLINK void _ffree( void _WCFAR *stg )
+_WCRTLINK void _ffree( void _WCFAR *cstg )
 {
     __segment   seg;
 
-    seg = FP_SEG( stg );
+    seg = FP_SEG( cstg );
     if( seg == _NULLSEG ) {
         return;
     }
     if( seg == _DGroup() ) {
-        _nfree( (void _WCNEAR *)stg );
+        _nfree( (void _WCNEAR *)cstg );
         return;
     }
     _AccessFHeap();
-    __MemFree( FP_OFF( stg ), seg, 0 );
+    __MemFree( FP_OFF( cstg ), seg, 0 );
     if( seg != __fheapRover ) {
         // seg might be after the __fheapRover, but we don't know that
         // and it might be expensive to find out. We will just update

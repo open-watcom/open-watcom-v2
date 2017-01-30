@@ -40,24 +40,24 @@
 
 _WCRTLINK VOID_BPTR _bmalloc( __segment seg, size_t amt )
 {
-    VOID_BPTR   ptr;
+    VOID_BPTR   cstg;
 
     if( amt == 0 )
         return( _NULLOFF );
     if( seg == _DGroup() ) {
-        ptr = (VOID_BPTR)_nmalloc( amt );
-        return( ( ptr == (VOID_BPTR)NULL ) ? _NULLOFF : ptr );
+        cstg = (VOID_BPTR)_nmalloc( amt );
+        return( ( cstg == (VOID_BPTR)NULL ) ? _NULLOFF : cstg );
     }
     _AccessFHeap();
     for( ;; ) {
-        ptr = (VOID_BPTR)__MemAllocator( amt, seg, 0 );
-        if( ptr != (VOID_BPTR)NULL )
+        cstg = (VOID_BPTR)__MemAllocator( amt, seg, 0 );
+        if( cstg != (VOID_BPTR)NULL )
             break;
         if( __GrowSeg( seg, amt ) == 0 ) {
-            ptr = _NULLOFF;
+            cstg = _NULLOFF;
             break;
         }
     }
     _ReleaseFHeap();
-    return( ptr );
+    return( cstg );
 }

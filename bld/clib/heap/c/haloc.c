@@ -70,7 +70,7 @@ _WCRTLINK void _WCHUGE *halloc( long numb, unsigned size )
     unsigned long   amount;
 #if defined(__WINDOWS__)
     HANDLE          hmem;
-    LPSTR           p;
+    LPSTR           cstg;
 
     amount = (unsigned long)numb * size;
     if( amount == 0 )
@@ -80,8 +80,8 @@ _WCRTLINK void _WCHUGE *halloc( long numb, unsigned size )
     hmem = GlobalAlloc( GMEM_MOVEABLE | GMEM_ZEROINIT, amount );
     if( hmem == NULL )
         return( HUGE_NULL );
-    p = GlobalLock( hmem );
-    return( p );
+    cstg = GlobalLock( hmem );
+    return( cstg );
 #else
     long            rc;
     unsigned int    num_of_paras;
@@ -111,11 +111,11 @@ _WCRTLINK void _WCHUGE *halloc( long numb, unsigned size )
 #endif
 }
 
-_WCRTLINK void hfree( void _WCHUGE *ptr )
+_WCRTLINK void hfree( void _WCHUGE *cstg )
 {
 #if defined(__WINDOWS__)
-    __FreeSeg( FP_SEG( ptr ) );
+    __FreeSeg( FP_SEG( cstg ) );
 #else
-    _dosfree( ptr );
+    _dosfree( cstg );
 #endif
 }

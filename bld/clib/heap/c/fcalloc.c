@@ -38,7 +38,7 @@
 
 _WCRTLINK void _WCFAR *_fcalloc( size_t n, size_t el_size )
 {
-    void            _WCFAR *p;
+    void            _WCFAR *cstg;
     unsigned long   chk_size;
 
     chk_size = (unsigned long)n * el_size;
@@ -46,9 +46,9 @@ _WCRTLINK void _WCFAR *_fcalloc( size_t n, size_t el_size )
     if( el_size != chk_size ) {
         return( FAR_NULL );
     }
-    p = _fmalloc( el_size );
-    if( p != FAR_NULL ) {
-        _fmemset( p, 0, el_size );
+    cstg = _fmalloc( el_size );
+    if( cstg != FAR_NULL ) {
+        _fmemset( cstg, 0, el_size );
     }
-    return( p );
+    return( cstg );
 }

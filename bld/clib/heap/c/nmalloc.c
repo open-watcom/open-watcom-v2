@@ -62,12 +62,13 @@ unsigned char _os2_use_obj_any;
 
 _WCRTLINK int _use_os2_high_mem( int fUseHighMem )
 {
-  int prior;
-  _AccessNHeap();
-  prior = _os2_use_obj_any;
-  _os2_use_obj_any = ( fUseHighMem != 0 );
-  _ReleaseNHeap();
-  return( prior );
+    int   prior;
+    
+    _AccessNHeap();
+    prior = _os2_use_obj_any;
+    _os2_use_obj_any = ( fUseHighMem != 0 );
+    _ReleaseNHeap();
+    return( prior );
 }
 
 /**
@@ -76,15 +77,15 @@ _WCRTLINK int _use_os2_high_mem( int fUseHighMem )
 
 _WCRTLINK void *_os2lmalloc( size_t amount )
 {
-  int prior;
-  void _WCNEAR *ptr;
-  _AccessNHeap();
-  prior = _use_os2_high_mem( 0 );
-  ptr = _nmalloc( amount );
-  _use_os2_high_mem( prior );
-  _ReleaseNHeap();
-  return( ptr );
+    int     prior;
+    void    _WCNEAR *cstg;
 
+    _AccessNHeap();
+    prior = _use_os2_high_mem( 0 );
+    cstg = _nmalloc( amount );
+    _use_os2_high_mem( prior );
+    _ReleaseNHeap();
+    return( cstg );
 }
 
 /**
@@ -93,14 +94,15 @@ _WCRTLINK void *_os2lmalloc( size_t amount )
 
 _WCRTLINK void *_os2hmalloc( size_t amount )
 {
-  int prior;
-  void _WCNEAR *ptr;
-  _AccessNHeap();
-  prior = _use_os2_high_mem( 1 );
-  ptr = _nmalloc( amount );
-  _use_os2_high_mem( prior );
-  _ReleaseNHeap();
-  return( ptr );
+    int     prior;
+    void    _WCNEAR *cstg;
+
+    _AccessNHeap();
+    prior = _use_os2_high_mem( 1 );
+    cstg = _nmalloc( amount );
+    _use_os2_high_mem( prior );
+    _ReleaseNHeap();
+    return( cstg );
 }
 
 #endif /* __WARP__ */
@@ -123,11 +125,11 @@ _WCRTLINK void *malloc( size_t amount )
 
 _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
 {
-    void *ptr;
+    void *cstg;
 
-    ptr = RdosAllocateDebugMem( amt );
+    cstg = RdosAllocateDebugMem( amt );
 
-    return( (void _WCNEAR *)ptr );
+    return( (void _WCNEAR *)cstg );
 }
 
 #else
@@ -136,7 +138,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
 {
     unsigned        largest;
     unsigned        size;
-    unsigned        ptr;
+    unsigned        cstg;
     unsigned char   expanded;
     mheapptr        mhp;
 
@@ -145,11 +147,11 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
 #endif // __WARP__
 
 #if defined(__RDOS__)
-    void *vptr;
+    void *v_cstg;
 
     if( RdosIsForked() ) {
-        vptr = RdosAllocateMem( amt );
-        return( (void _WCNEAR *)vptr );
+        v_cstg = RdosAllocateMem( amt );
+        return( (void _WCNEAR *)v_cstg );
     }
 #endif
 
@@ -165,7 +167,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
     }
 
     _AccessNHeap();
-    ptr = 0;
+    cstg = 0;
     expanded = 0;
     for( ;; ) {
 #if defined(__WARP__)
@@ -191,8 +193,8 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
             if( use_obj_any == ( mhp->used_obj_any != 0 ) ) {
 #endif // __WARP__
               if( largest >= amt ) {
-                  ptr = __MemAllocator( amt, _DGroup(), (unsigned)mhp );
-                  if( ptr != 0 ) {
+                  cstg = __MemAllocator( amt, _DGroup(), (unsigned)mhp );
+                  if( cstg != 0 ) {
                       goto lbl_release_heap;
                   }
               }
@@ -216,7 +218,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
     } /* forever */
 lbl_release_heap:
     _ReleaseNHeap();
-    return( (void _WCNEAR *)ptr );
+    return( (void _WCNEAR *)cstg );
 }
 
 #endif

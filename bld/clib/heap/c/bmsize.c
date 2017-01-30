@@ -36,7 +36,7 @@
 #include "heap.h"
 
 
-_WCRTLINK size_t _bmsize( __segment seg, VOID_BPTR offset )
+_WCRTLINK size_t _bmsize( __segment seg, VOID_BPTR cstg )
 {
-    return( MEMBLK_SIZE( (freelist _WCFAR *)( seg :> CPTR2FRL( offset ) ) ) - TAG_SIZE );
+    return( MEMBLK_SIZE( (freelist _WCFAR *)( seg :> CPTR2FRL( cstg ) ) ) - TAG_SIZE );
 }

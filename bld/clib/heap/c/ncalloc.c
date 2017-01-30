@@ -38,8 +38,8 @@
 
 _WCRTLINK void _WCNEAR *_ncalloc( size_t n, size_t el_size )
 {
-    void _WCNEAR        *p;
-    unsigned long       chk_size;
+    void            _WCNEAR *cstg;
+    unsigned long   chk_size;
 
     chk_size = (unsigned long)n * el_size;
     el_size = chk_size;
@@ -48,9 +48,9 @@ _WCRTLINK void _WCNEAR *_ncalloc( size_t n, size_t el_size )
         return( NEAR_NULL );
     }
 #endif
-    p = _nmalloc( el_size );
-    if( p != NEAR_NULL ) {
-        memset( p, 0, el_size );
+    cstg = _nmalloc( el_size );
+    if( cstg != NEAR_NULL ) {
+        memset( cstg, 0, el_size );
     }
-    return( p );
+    return( cstg );
 }

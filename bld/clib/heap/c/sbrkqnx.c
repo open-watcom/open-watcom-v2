@@ -72,13 +72,15 @@ void _WCNEAR *__brk( unsigned brk_value )
     return( (void _WCNEAR *)old_brk_value );
 }
 
-_WCRTLINK void _WCNEAR *sbrk( int increment ) {
+_WCRTLINK void _WCNEAR *sbrk( int increment )
+{
     return( __brk( _curbrk + increment ) );
 }
 
 #ifdef __386__
 
-_WCRTLINK int brk( void *endds ) {
+_WCRTLINK int brk( void *endds )
+{
     return( __brk( (unsigned)endds ) == (void *)-1 ? -1 : 0 );
 }
 

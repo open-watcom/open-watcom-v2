@@ -69,15 +69,15 @@ _WCRTLINK void _WCHUGE * (halloc)( long n, size_t size )
     return( (void _WCHUGE *)MK_FP( seg , 0 ) );
 }
 
-_WCRTLINK void (hfree)( void _WCHUGE *ptr )
+_WCRTLINK void (hfree)( void _WCHUGE *cstg )
 {
     unsigned            seg;
     unsigned            incr;
     struct _seginfo     info;
 
-    if( ptr != NULL ) {
+    if( cstg != HUGE_NULL ) {
         incr = 1 << _HShift;
-        seg = FP_SEG( ptr );
+        seg = FP_SEG( cstg );
         for( ;; ) {
             if( qnx_segment_info( 0, _my_pid, seg, &info ) != seg )
                 break;

@@ -36,7 +36,7 @@
 #include "heap.h"
 #include "heapacc.h"
 
-_WCRTLINK VOID_BPTR _bexpand( __segment seg, VOID_BPTR mem, size_t req_size )
+_WCRTLINK VOID_BPTR _bexpand( __segment seg, VOID_BPTR cstg, size_t req_size )
 {
     struct {
         unsigned expanded : 1;
@@ -47,10 +47,10 @@ _WCRTLINK VOID_BPTR _bexpand( __segment seg, VOID_BPTR mem, size_t req_size )
     flags.expanded = 0;
     _AccessFHeap();
     for( ;; ) {
-        retval = __HeapManager_expand( seg, (unsigned)mem, req_size, &growth_size );
+        retval = __HeapManager_expand( seg, (unsigned)cstg, req_size, &growth_size );
         if( retval == __HM_SUCCESS ) {
             _ReleaseFHeap();
-            return( mem );
+            return( cstg );
         }
         if( retval == __HM_FAIL )
             break;

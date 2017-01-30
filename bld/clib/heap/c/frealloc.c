@@ -52,47 +52,47 @@ extern void _WCNEAR *_mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
 
 #if defined(__BIG_DATA__)
 
-_WCRTLINK void *realloc( void *stg, size_t amount )
+_WCRTLINK void *realloc( void *cstg, size_t amount )
 {
-    return( _frealloc( stg, amount ) );
+    return( _frealloc( cstg, amount ) );
 }
 
 #endif
 
 
-_WCRTLINK void _WCFAR *_frealloc( void _WCFAR *stg, size_t req_size )
+_WCRTLINK void _WCFAR *_frealloc( void _WCFAR *cstg_old, size_t req_size )
 {
     size_t  old_size;
-    void    _WCFAR *p;
+    void    _WCFAR *cstg_new;
 
-    if( stg == NULL ) {
+    if( cstg_old == FAR_NULL ) {
         return( _fmalloc( req_size ) );
     }
     if( req_size == 0 ) {
-        _ffree( stg );
-        return( NULL );
+        _ffree( cstg_old );
+        return( FAR_NULL );
     }
-    old_size = _fmsize( stg );
-    if( FP_SEG( stg ) == _DGroup() ) {
-        p = stg;
-        if( _nexpand( (void _WCNEAR *)stg, req_size ) == NULL ) {
-            p = NULL;
+    old_size = _fmsize( cstg_old );
+    if( FP_SEG( cstg_old ) == _DGroup() ) {
+        cstg_new = cstg_old;
+        if( _nexpand( (void _WCNEAR *)cstg_old, req_size ) == NEAR_NULL ) {
+            cstg_new = FAR_NULL;
         }
     } else {
-        p = _fexpand( stg, req_size );
+        cstg_new = _fexpand( cstg_old, req_size );
     }
-    if( p == NULL ) {       /* couldn't be expanded inline */
-        p = _fmalloc( req_size );
-        if( p != NULL ) {
-            _mymemcpy( p, stg, old_size );
-            _ffree( stg );
+    if( cstg_new == FAR_NULL ) {        /* couldn't be expanded inline */
+        cstg_new = _fmalloc( req_size );
+        if( cstg_new != FAR_NULL ) {
+            _mymemcpy( cstg_new, cstg_old, old_size );
+            _ffree( cstg_old );
         } else {
-            if( FP_SEG( stg ) == _DGroup() ) {
-                _nexpand( (void _WCNEAR *)FP_OFF( stg ), old_size );
+            if( FP_SEG( cstg_old ) == _DGroup() ) {
+                _nexpand( (void _WCNEAR *)FP_OFF( cstg_old ), old_size );
             } else {
-                _fexpand( stg, old_size );
+                _fexpand( cstg_old, old_size );
             }
         }
     }
-    return( p );
+    return( cstg_new );
 }

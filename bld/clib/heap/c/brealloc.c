@@ -37,27 +37,27 @@
 #include "heap.h"
 
 
-_WCRTLINK VOID_BPTR _brealloc( __segment seg, VOID_BPTR mem, size_t size )
+_WCRTLINK VOID_BPTR _brealloc( __segment seg, VOID_BPTR cstg_old, size_t size )
 {
-    VOID_BPTR   p;
+    VOID_BPTR   cstg_new;
     size_t      old_size;
 
-    if( mem == _NULLOFF )
+    if( cstg_old == _NULLOFF )
         return( _bmalloc( seg, size ) );
     if( size == 0 ) {
-        _bfree( seg, mem );
+        _bfree( seg, cstg_old );
         return( _NULLOFF );
     }
-    old_size = _bmsize( seg, mem );
-    p = _bexpand( seg, mem, size );
-    if( p == _NULLOFF ) {               /* if it couldn't be expanded */
-        p = _bmalloc( seg, size );      /* - allocate new block */
-        if( p != _NULLOFF ) {           /* - if we got one */
-            _fmemcpy( seg :> p, seg :> mem, old_size );
-            _bfree( seg, mem );
+    old_size = _bmsize( seg, cstg_old );
+    cstg_new = _bexpand( seg, cstg_old, size );
+    if( cstg_new == _NULLOFF ) {                /* if it couldn't be expanded */
+        cstg_new = _bmalloc( seg, size );       /* - allocate new block */
+        if( cstg_new != _NULLOFF ) {            /* - if we got one */
+            _fmemcpy( seg :> cstg_new, seg :> cstg_old, old_size );
+            _bfree( seg, cstg_old );
         } else {
-            _bexpand( seg, mem, old_size );
+            _bexpand( seg, cstg_old, old_size );
         }
     }
-    return( p );
+    return( cstg_new );
 }

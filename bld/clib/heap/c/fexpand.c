@@ -38,26 +38,26 @@
 
 #if defined(__BIG_DATA__)
 
-_WCRTLINK void *_expand( void *stg, size_t amount )
+_WCRTLINK void *_expand( void *cstg, size_t amount )
 {
-    return( _fexpand( stg, amount ) );
+    return( _fexpand( cstg, amount ) );
 }
 
 #endif
 
-_WCRTLINK void _WCFAR *_fexpand( void _WCFAR *stg, size_t req_size )
+_WCRTLINK void _WCFAR *_fexpand( void _WCFAR *cstg, size_t req_size )
 {
     __segment   seg;
     void        _WCNEAR *tmp;
 
-    seg = FP_SEG( stg );
+    seg = FP_SEG( cstg );
     if( seg == _DGroup() ) {
-        tmp = _nexpand( (void _WCNEAR *)stg, req_size );
-        if( tmp == NULL ) {
-            return( NULL );
+        tmp = _nexpand( (void _WCNEAR *)cstg, req_size );
+        if( tmp == NEAR_NULL ) {
+            return( FAR_NULL );
         }
-    } else if( _bexpand( seg, (VOID_BPTR)stg, req_size ) == _NULLOFF ) {
-        return( NULL );
+    } else if( _bexpand( seg, (VOID_BPTR)cstg, req_size ) == _NULLOFF ) {
+        return( FAR_NULL );
     }
-    return( stg );
+    return( cstg );
 }

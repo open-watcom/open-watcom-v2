@@ -37,13 +37,13 @@
 
 
 #if defined(__BIG_DATA__)
-_WCRTLINK size_t _msize( void *p )
+_WCRTLINK size_t _msize( void *cstg )
 {
-    return( MEMBLK_SIZE( (freelist *)( FP_SEG( p ) :> CPTR2FRL( p ) ) ) - TAG_SIZE );
+    return( MEMBLK_SIZE( (freelist *)( FP_SEG( cstg ) :> CPTR2FRL( cstg ) ) ) - TAG_SIZE );
 }
 #endif
 
-_WCRTLINK size_t _fmsize( void _WCFAR *p )
+_WCRTLINK size_t _fmsize( void _WCFAR *cstg )
 {
-    return( MEMBLK_SIZE( (freelist _WCFAR *)( FP_SEG( p ) :> CPTR2FRL( p ) ) ) - TAG_SIZE );
+    return( MEMBLK_SIZE( (freelist _WCFAR *)( FP_SEG( cstg ) :> CPTR2FRL( cstg ) ) ) - TAG_SIZE );
 }

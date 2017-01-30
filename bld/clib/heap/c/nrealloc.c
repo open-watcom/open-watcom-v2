@@ -90,33 +90,33 @@ extern void _WCNEAR *_mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
 
 #if defined(__SMALL_DATA__)
 
-_WCRTLINK void *realloc( void *stg, size_t amount )
+_WCRTLINK void *realloc( void *cstg, size_t amount )
 {
-    return( _nrealloc( stg, amount ) );
+    return( _nrealloc( cstg, amount ) );
 }
 
 #endif
 
-_WCRTLINK void _WCNEAR *_nrealloc( void _WCNEAR *stg, size_t req_size )
+_WCRTLINK void _WCNEAR *_nrealloc( void _WCNEAR *cstg_old, size_t req_size )
 {
-    void        _WCNEAR *p;
+    void        _WCNEAR *cstg_new;
     size_t      old_size;
 
-    if( stg == NULL ) {
+    if( cstg_old == NULL ) {
         return( _nmalloc( req_size ) );
     }
     if( req_size == 0 ) {
-        _nfree( stg );
+        _nfree( cstg_old );
         return( NEAR_NULL );
     }
-    old_size = _nmsize( stg );
-    p = _nexpand( stg, req_size );  /* try to expand it in place */
-    if( p == NEAR_NULL ) {          /* if couldn't be expanded in place */
+    old_size = _nmsize( cstg_old );
+    cstg_new = _nexpand( cstg_old, req_size );  /* try to expand it in place */
+    if( cstg_new == NEAR_NULL ) {               /* if couldn't be expanded in place */
 #if defined(__DOS_EXT__)
         if( _IsRational() ) {
             frlptr  flp, newflp;
 
-            flp = (frlptr)CPTR2FRL( stg );
+            flp = (frlptr)CPTR2FRL( cstg_old );
             newflp = __ReAllocDPMIBlock( flp, req_size + TAG_SIZE );
             if( newflp ) {
                 return( (void _WCNEAR *)FRL2CPTR( newflp ) );
@@ -125,26 +125,26 @@ _WCRTLINK void _WCNEAR *_nrealloc( void _WCNEAR *stg, size_t req_size )
 #endif
 #if defined(__WARP__)
         // If block in upper memory (i.e. above 512MB), try to keep it there
-        if( (unsigned int)stg >= 0x20000000 ) {
+        if( (unsigned int)cstg_old >= 0x20000000 ) {
             int prior;
             _AccessNHeap();
             prior = _os2_use_obj_any;
             _os2_use_obj_any = 1;
-            p = _nmalloc( req_size );   /* - allocate a new block */
+            cstg_new = _nmalloc( req_size );    /* - allocate a new block */
             _os2_use_obj_any = prior;
             _ReleaseNHeap();
         } else {
-            p = _nmalloc( req_size );   /* - allocate a new block */
+            cstg_new = _nmalloc( req_size );    /* - allocate a new block */
         }
 #else // !__WARP__
-        p = _nmalloc( req_size );   /* - allocate a new block */
+        cstg_new = _nmalloc( req_size );        /* - allocate a new block */
 #endif
-        if( p != NEAR_NULL ) {              /* - if we got one */
-            _mymemcpy( p, stg, old_size );  /* copy it */
-            _nfree( stg );                  /* and free old one */
+        if( cstg_new != NEAR_NULL ) {           /* - if we got one */
+            _mymemcpy( cstg_new, cstg_old, old_size );  /* copy it */
+            _nfree( cstg_old );                 /* and free old one */
         } else {
-            _nexpand( stg, old_size );      /* reset back to old size */
+            _nexpand( cstg_old, old_size );     /* reset back to old size */
         }
     }
-    return( p );
+    return( cstg_new );
 }

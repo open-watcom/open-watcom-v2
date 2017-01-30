@@ -241,6 +241,8 @@ extern  void            __MemFree( unsigned __ptr, __segment __seg, unsigned __o
 #define IS_FRL_END(p)               ((p)->len == END_TAG)
 #define SET_FRL_END(p)              (p)->len = END_TAG
 
+#define NEXT_FRL(p)                 (frlptr)((PTR)(p) + (p)->len)
+
 #define __HM_SUCCESS    0
 #define __HM_FAIL       1
 #define __HM_TRYGROW    2

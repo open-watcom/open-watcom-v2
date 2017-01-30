@@ -68,8 +68,8 @@ _WCRTLINK void *malloc( size_t amount )
 _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
 {
     unsigned    size;
-    unsigned    offset;
-    __segment   curr_seg;
+    unsigned    cstg;
+    __segment   seg;
     __segment   prev_seg;
 
     if( amt == 0 || amt > - ( sizeof( heapblk ) + TAG_SIZE * 2 ) ) {
@@ -87,51 +87,51 @@ _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
     _AccessFHeap();
     for( ;; ) {
         if( size > __LargestSizeB4Rover ) {
-            curr_seg = __fheapRover;
+            seg = __fheapRover;
         } else {
             __LargestSizeB4Rover = 0;   // force value to be updated
-            curr_seg = __fheapbeg;
+            seg = __fheapbeg;
         }
         for( ;; ) {
-            if( curr_seg == _NULLSEG ) {
-                curr_seg = __AllocSeg( amt );
-                if( curr_seg == _NULLSEG )
+            if( seg == _NULLSEG ) {
+                seg = __AllocSeg( amt );
+                if( seg == _NULLSEG )
                     break;
                 if( __fheapbeg == _NULLSEG ) {
-                    __fheapbeg = curr_seg;
+                    __fheapbeg = seg;
                 } else {
-                    HBPTR( curr_seg )->prevseg = prev_seg;
-                    HBPTR( prev_seg )->nextseg = curr_seg;
+                    HBPTR( seg )->prevseg = prev_seg;
+                    HBPTR( prev_seg )->nextseg = seg;
                 }
             }
             for( ;; ) {
-                __fheapRover = curr_seg;
-                offset = __MemAllocator( amt, curr_seg, 0 );
-                if( offset != 0 )
+                __fheapRover = seg;
+                cstg = __MemAllocator( amt, seg, 0 );
+                if( cstg != 0 )
                     goto release_heap;
-                if( __GrowSeg( curr_seg, amt ) == 0 ) {
+                if( __GrowSeg( seg, amt ) == 0 ) {
                     break;
                 }
             }
-            if( __LargestSizeB4Rover < HBPTR( curr_seg )->largest_blk  ) {
-                __LargestSizeB4Rover = HBPTR( curr_seg )->largest_blk;
+            if( __LargestSizeB4Rover < HBPTR( seg )->largest_blk  ) {
+                __LargestSizeB4Rover = HBPTR( seg )->largest_blk;
             }
-            prev_seg = curr_seg;
-            curr_seg = HBPTR( curr_seg )->nextseg;
+            prev_seg = seg;
+            seg = HBPTR( seg )->nextseg;
         }
         if( __fmemneed( amt ) == 0 ) {
             break;
         }
     }
-    if( curr_seg == _NULLSEG ) {
-        offset = (unsigned)_nmalloc( amt );
-        if( offset != 0 ) {
-            curr_seg = _DGroup();
+    if( seg == _NULLSEG ) {
+        cstg = (unsigned)_nmalloc( amt );
+        if( cstg != 0 ) {
+            seg = _DGroup();
         }
     }
 release_heap:
     _ReleaseFHeap();
-    return( MK_FP( curr_seg, offset ) );
+    return( MK_FP( seg, cstg ) );
 }
 
 #if defined(__DOS__) && defined(__BIG_DATA__)

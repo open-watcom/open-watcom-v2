@@ -64,7 +64,7 @@ static int only_one_bit( size_t x )
     return( 1 );
 }
 
-_WCRTLINK void _WCHUGE * halloc( long n, unsigned size )
+_WCRTLINK void _WCHUGE *halloc( long n, unsigned size )
 {
     unsigned long len;
     USHORT      error, tseg;
@@ -101,7 +101,7 @@ _WCRTLINK void _WCHUGE * halloc( long n, unsigned size )
     return( (void _WCHUGE *)((unsigned long)seg << 16) );
 }
 
-_WCRTLINK void hfree( void _WCHUGE *ptr )
+_WCRTLINK void hfree( void _WCHUGE *cstg )
 {
-    __FreeSeg( FP_SEG( ptr ) );
+    __FreeSeg( FP_SEG( cstg ) );
 }
