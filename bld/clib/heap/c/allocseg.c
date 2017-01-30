@@ -63,8 +63,8 @@ extern unsigned         __qnx_alloc_flags;
 __segment __AllocSeg( unsigned int amount )
 {
     unsigned    num_of_paras;       /* number of paragraphs desired   */
+    unsigned    heaplen;
     __segment   seg;
-    FRLBPTR     last_tag;
 #if defined(__OS2__)
 #elif defined(__QNX__)
     unsigned    rc;
@@ -75,11 +75,11 @@ __segment __AllocSeg( unsigned int amount )
 
     if( !__heap_enabled )
         return( _NULLSEG );
-    /*               heapinfo + frl + frl,       end tags */
+    /*             heapinfo + frl + frl,     end tags */
     if( amount > - ( sizeof( heapstart ) + TAG_SIZE * 2 ) ) {
         return( _NULLSEG );
     }
-    /*        heapinfo + frl,        allocated blk,  end tags */
+    /*        heapinfo + frl,  allocated blk,  end tags */
     amount += sizeof( heapblk ) + TAG_SIZE + TAG_SIZE * 2;
     if( amount < _amblksiz )
         amount = _amblksiz;
@@ -125,7 +125,8 @@ __segment __AllocSeg( unsigned int amount )
     }
     seg = TINY_INFO( rc );
 #endif
-    SHBPTR( seg )->h.heaplen = num_of_paras << 4;
+    heaplen = num_of_paras << 4;
+    SHBPTR( seg )->h.heaplen = heaplen;
     SHBPTR( seg )->h.prevseg = _NULLSEG;
     SHBPTR( seg )->h.nextseg = _NULLSEG;
     SHBPTR( seg )->h.rover = offsetof( heapstart, first );
@@ -135,12 +136,10 @@ __segment __AllocSeg( unsigned int amount )
     SHBPTR( seg )->h.freehead.len = 0;
     SHBPTR( seg )->h.freehead.prev = offsetof( heapstart, first );
     SHBPTR( seg )->h.freehead.next = offsetof( heapstart, first );
-    SHBPTR( seg )->first.len = SHBPTR( seg )->h.heaplen - sizeof( heapblk ) - TAG_SIZE * 2;
-    SHBPTR( seg )->h.largest_blk = SHBPTR( seg )->first.len;
+    SHBPTR( seg )->h.largest_blk = heaplen - sizeof( heapblk ) - 2 * TAG_SIZE;
+    SHBPTR( seg )->first.len = heaplen - sizeof( heapblk ) - 2 * TAG_SIZE;
     SHBPTR( seg )->first.prev = offsetof( heapblk, freehead );
     SHBPTR( seg )->first.next = offsetof( heapblk, freehead );
-    last_tag = (FRLBPTR)( SHBPTR( seg )->h.heaplen - TAG_SIZE * 2 );
-    SET_BLK_END( last_tag );
-    last_tag->prev = 0;     /* link to next piece of near heap */
+    SET_HEAP_END( heaplen - 2 * TAG_SIZE );
     return( seg );          /* return allocated segment */
 }

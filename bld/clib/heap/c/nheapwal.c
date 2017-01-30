@@ -57,7 +57,7 @@ int __NHeapWalk( struct _heapinfo *entry, mheapptr mhp )
             p = (frlptr)(mhp + 1);
         } else {    /* advance to next entry */
             for( mhp = __nheapbeg; mhp->next != NULL; mhp = mhp->next ) {
-                if( (PTR)mhp <= (PTR)p && (PTR)mhp + mhp->len > (PTR)p ) {
+                if( (PTR)mhp <= (PTR)p && (PTR)NEXT_BLK( mhp ) > (PTR)p ) {
                     break;
                 }
             }

@@ -168,12 +168,12 @@ _WCRTLINK int _nheapshrink( void )
             ;
         /* check that last free block is at end of heap */
         last_free = mhp->freehead.prev;
-        end_tag = (frlptr)( (PTR)last_free + last_free->len );
+        end_tag = (frlptr)NEXT_BLK( last_free );
         if( !IS_BLK_END( end_tag ) ) {
             _ReleaseNHeap();
             return( 0 );
         }
-        if( end_tag != (frlptr)((PTR)mhp + mhp->len ) ) {
+        if( end_tag != (frlptr)NEXT_BLK( mhp ) ) {
             _ReleaseNHeap();
             return( 0 );
         }
@@ -190,12 +190,12 @@ _WCRTLINK int _nheapshrink( void )
         }
   #endif
         /* make sure there hasn't been an external change in _curbrk */
-        if( sbrk( 0 ) != (void _WCNEAR *)FRL2CPTR( end_tag ) ) {
+        if( sbrk( 0 ) != (void _WCNEAR *)BLK2CPTR( end_tag ) ) {
             _ReleaseNHeap();
             return( 0 );
         }
         /* calculate adjustment factor */
-        if( mhp->len-last_free->len > sizeof( miniheapblkp ) ) {
+        if( mhp->len - last_free->len > sizeof( miniheapblkp ) ) {
             // this miniheapblk is still being used
   #if defined(__DOS_EXT__)
             frlptr new_last_free;
@@ -221,7 +221,7 @@ _WCRTLINK int _nheapshrink( void )
             }
   #endif
             SET_BLK_END( last_free );
-            new_brk = (unsigned)FRL2CPTR( last_free );
+            new_brk = (unsigned)BLK2CPTR( last_free );
         } else {
             // we can remove this miniheapblk
             if( mhp->prev ) { // Not the first miniheapblk

@@ -49,8 +49,8 @@
 #define FAR_NULL        ((void _WCFAR *)NULL)
 #define NEAR_NULL       ((void _WCNEAR *)NULL)
 
-#define FRL2CPTR(f)     ((unsigned)((unsigned)(f) + TAG_SIZE))
-#define CPTR2FRL(p)     ((unsigned)((unsigned)(p) - TAG_SIZE))
+#define BLK2CPTR(f)     ((unsigned)((unsigned)(f) + TAG_SIZE))
+#define CPTR2BLK(p)     ((unsigned)((unsigned)(p) - TAG_SIZE))
 
 typedef unsigned int    tag;
 typedef unsigned char   _WCNEAR *PTR;
@@ -241,7 +241,9 @@ extern  void            __MemFree( unsigned __ptr, __segment __seg, unsigned __o
 #define IS_BLK_END(p)               ((p)->len == END_TAG)
 #define SET_BLK_END(p)              (p)->len = END_TAG
 
-#define NEXT_BLK(p)                 (frlptr)((PTR)(p) + (p)->len)
+#define NEXT_BLK(p)                 ((unsigned)(p) + (p)->len)
+
+#define SET_HEAP_END(p) ((FRLBPTR)(p))->len = END_TAG; ((FRLBPTR)(p))->prev = 0
 
 #define __HM_SUCCESS    0
 #define __HM_FAIL       1

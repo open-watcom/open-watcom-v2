@@ -139,7 +139,7 @@ unsigned __MemAllocator( unsigned req_size, __segment segment, unsigned offset )
                 }
                 SET_BLK_INUSE( pcur );          // mark as allocated
                                                 // get pointer to user area
-                cstg = FRL2CPTR( pcur );
+                cstg = BLK2CPTR( pcur );
             }
         }
     }
@@ -167,7 +167,7 @@ void __MemFree( unsigned cstg, __segment segment, unsigned offset )
     if( cstg != 0 ) {                           // quit if pointer is zero
         frlptr pfree;
 
-        pfree = (frlptr)CPTR2FRL( cstg );
+        pfree = (frlptr)CPTR2BLK( cstg );
         if( IS_BLK_INUSE( pfree ) ) {           // quit if storage is free
             heapblkp    _WCNEAR *heap;
             frlptr      pnext;
@@ -262,7 +262,7 @@ void __MemFree( unsigned cstg, __segment segment, unsigned offset )
                         average = UINT_MAX;     // we won't give up loop
                     }
                                                 // point at next allocated
-                    pnext = (frlptr)( (PTR)pfree + pfree->len );
+                    pnext = (frlptr)NEXT_BLK( pfree );
                     for( ;; ) {
                         if( IS_BLK_END( pnext ) )   // check for end TAG
                             break;              // stop at end tag
@@ -310,7 +310,7 @@ found_it:
             // pprev, pfree, pnext are all setup
             len = pfree->len;
                                                 // check pprev and pfree
-            ptr = (frlptr)( (PTR)pprev + pprev->len );
+            ptr = (frlptr)NEXT_BLK( pprev );
             if( ptr == pfree ) {                // are they adjacent?
                                                 // coalesce pprev and pfree
                 len += pprev->len;              // udpate len

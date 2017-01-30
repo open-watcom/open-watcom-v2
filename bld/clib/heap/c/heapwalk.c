@@ -108,7 +108,7 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
                 return( _HEAPBADBEGIN );
             p = MK_FP( curr_seg, sizeof( heapblk ) );
         } else {    /* advance to next entry */
-            q = (farfrlptr)( (FARPTR)p + GET_BLK_SIZE( p ) );
+            q = (farfrlptr)( FP_SEG( p ) :> NEXT_BLK( p ) );
             if( q <= p )
                 return( _HEAPBADNODE );
             p = q;

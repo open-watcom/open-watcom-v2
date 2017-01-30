@@ -53,7 +53,7 @@ static int checkFreeList( size_t *free_size )
         /* make sure we start off on the right track */
         if( (curr_frl->prev == NEAR_NULL) ||
             (curr_frl->prev < &(mhp->freehead)) ||
-            (((PTR)curr_frl->prev) > (((PTR)mhp) + mhp->len)) ) {
+            ((PTR)curr_frl->prev > (PTR)NEXT_BLK( mhp )) ) {
             return( _HEAPBADNODE );
         }
         if( curr_frl->prev->next != curr_frl ) {
@@ -66,7 +66,7 @@ static int checkFreeList( size_t *free_size )
             /* nb. this check is sufficient to ensure that we will never cycle */
             if( (curr_frl->next == NEAR_NULL) ||
                 (curr_frl->next < &(mhp->freehead)) ||
-                (((PTR)curr_frl->next) > (((PTR)mhp) + mhp->len)) ) {
+                (((PTR)curr_frl->next) > (PTR)NEXT_BLK( mhp )) ) {
                 return( _HEAPBADNODE );
             }
             if( curr_frl->next->prev != curr_frl ) {

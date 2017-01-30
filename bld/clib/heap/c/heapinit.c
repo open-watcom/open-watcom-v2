@@ -61,5 +61,5 @@ void _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount )
     SET_BLK_SIZE_INUSE( curr_frl, amount );
     __nheapbeg->numalloc++;
     __nheapbeg->largest_blk = ~0;    /* set to largest value to be safe */
-    _nfree( (void _WCNEAR *)FRL2CPTR( curr_frl ) );
+    _nfree( (void _WCNEAR *)BLK2CPTR( curr_frl ) );
 }

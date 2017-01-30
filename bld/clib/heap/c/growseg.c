@@ -63,11 +63,11 @@
 int __GrowSeg( __segment seg, unsigned int amount )
 {
     unsigned        num_of_paras;   /* number of paragraphs desired   */
+    unsigned        new_heaplen;
     unsigned int    old_heaplen;
     unsigned int    old_heap_paras;
     FRLBPTR         pfree;
     FRLBPTR         pnew;
-    FRLBPTR         last_tag;
 
     if( !__heap_enabled )
         return( 0 );
@@ -136,9 +136,10 @@ int __GrowSeg( __segment seg, unsigned int amount )
         if( TINY_ERROR( TinySetBlock( num_of_paras, seg ) ) )
             return( 0 );
 #endif
-        HBPTR( seg )->heaplen = num_of_paras << 4;        /* put in new heap length */
+        new_heaplen = num_of_paras << 4;
+        HBPTR( seg )->heaplen = new_heaplen;        /* put in new heap length */
         pfree = HBPTR( seg )->freehead.prev;
-        if( FP_OFF( pfree ) + pfree->len != old_heaplen - TAG_SIZE * 2 ) {
+        if( NEXT_BLK( pfree ) != old_heaplen - TAG_SIZE * 2 ) {
             /* last free entry not at end of the heap */
             /* add a new free entry to end of list */
             pnew = (FRLBPTR)( old_heaplen - TAG_SIZE * 2 );
@@ -149,12 +150,10 @@ int __GrowSeg( __segment seg, unsigned int amount )
             HBPTR( seg )->numfree++;
             pfree = pnew;
         }
-        pfree->len = HBPTR( seg )->heaplen - FP_OFF( pfree ) - TAG_SIZE * 2;
-        if( pfree->len > HBPTR( seg )->largest_blk )
+        pfree->len = new_heaplen - FP_OFF( pfree ) - TAG_SIZE * 2;
+        if( HBPTR( seg )->largest_blk < pfree->len )
             HBPTR( seg )->largest_blk = pfree->len;
-        last_tag = (FRLBPTR)( HBPTR( seg )->heaplen - TAG_SIZE * 2 );
-        SET_BLK_END( last_tag );
-        last_tag->prev = 0;         /* link to next piece of near heap */
+        SET_HEAP_END( new_heaplen - 2 * TAG_SIZE );
         return( 1 );                /* indicate segment was grown */
     }
     return( 0 );    /* indicate failed to grow the segment */

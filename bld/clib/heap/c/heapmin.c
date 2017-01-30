@@ -141,9 +141,7 @@ int __HeapMin( __segment curr_seg, unsigned one_heap )
         /* make the changes to the heap structure */
         HBPTR( curr_seg )->heaplen = new_heap_len;
         last_free->len -= adjust_len;
-        end_tag = (FRLBPTR)( (PTR)last_free + last_free->len );
-        SET_BLK_END( end_tag );
-        end_tag->prev = 0;
+        SET_HEAP_END( last_free );
     }
     _ReleaseFHeap();
     return( _HEAPOK );

@@ -58,7 +58,7 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
     if( new_size < FRL_SIZE ) {
         new_size = FRL_SIZE;
     }
-    p1 = (FRLBPTR)CPTR2FRL( offset );
+    p1 = (FRLBPTR)CPTR2BLK( offset );
     old_size = GET_BLK_SIZE( p1 );
     if( new_size > old_size ) {
         /* enlarging the current allocation */
@@ -76,7 +76,7 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
             pprev = p2->prev;
             if( seg == _DGroup() ) {    // near heap
                 for( mhp = __nheapbeg; mhp->next != NULL; mhp = mhp->next ) {
-                    if( (unsigned)mhp <= offset && offset < ( (unsigned)mhp + mhp->len ) ) {
+                    if( (unsigned)mhp <= offset && offset < NEXT_BLK( mhp ) ) {
                         break;
                     }
                 }
@@ -118,7 +118,7 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
             SET_BLK_SIZE_INUSE( p2, old_size - new_size );
             if( seg == _DGroup() ) {    // near heap
                 for( mhp = __nheapbeg; mhp->next != NULL; mhp = mhp->next ) {
-                    if( (unsigned)mhp <= offset && offset < ( (unsigned)mhp + mhp->len ) ) {
+                    if( (unsigned)mhp <= offset && offset < NEXT_BLK( mhp ) ) {
                         break;
                     }
                 }
@@ -126,10 +126,10 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
             /* _bfree will decrement 'numalloc' */
             mhp->numalloc++;
 #if defined( _M_I86 )
-            _bfree( seg, (VOID_BPTR)FRL2CPTR( p2 ) );
+            _bfree( seg, (VOID_BPTR)BLK2CPTR( p2 ) );
             /* free the top portion */
 #else
-            _nfree( (void _WCNEAR *)FRL2CPTR( p2 ) );
+            _nfree( (void _WCNEAR *)BLK2CPTR( p2 ) );
 #endif
         }
     }

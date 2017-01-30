@@ -39,11 +39,11 @@
 #if defined(__BIG_DATA__)
 _WCRTLINK size_t _msize( void *cstg )
 {
-    return( GET_BLK_SIZE( (freelist *)( FP_SEG( cstg ) :> CPTR2FRL( cstg ) ) ) - TAG_SIZE );
+    return( GET_BLK_SIZE( (freelist *)( FP_SEG( cstg ) :> CPTR2BLK( cstg ) ) ) - TAG_SIZE );
 }
 #endif
 
 _WCRTLINK size_t _fmsize( void _WCFAR *cstg )
 {
-    return( GET_BLK_SIZE( (freelist _WCFAR *)( FP_SEG( cstg ) :> CPTR2FRL( cstg ) ) ) - TAG_SIZE );
+    return( GET_BLK_SIZE( (freelist _WCFAR *)( FP_SEG( cstg ) :> CPTR2BLK( cstg ) ) ) - TAG_SIZE );
 }

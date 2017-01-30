@@ -165,7 +165,7 @@ void *__ReAllocDPMIBlock( frlptr p1, unsigned req_size )
                 SET_BLK_SIZE_INUSE( flp2, size );
                 mhp->numalloc++;
                 mhp->largest_blk = 0;
-                _nfree( (void _WCNEAR *)FRL2CPTR( flp2 ) );
+                _nfree( (void _WCNEAR *)BLK2CPTR( flp2 ) );
             } else {
                 SET_BLK_INUSE( flp );   // set allocated bit
             }
@@ -183,9 +183,8 @@ static frlptr __LinkUpNewMHeap( mheapptr mhp1 ) // originally __AddNewHeap()
     frlptr      curr_frl;
     unsigned    amount;
 
-    /* insert into ordered heap list (14-jun-91 AFS) */
+    /* insert into ordered heap list */
     /* logic wasn't inserting heaps in proper ascending order */
-    /* (09-nov-93 Fred) */
     prev_mhp2 = NULL;
     for( mhp2 = __nheapbeg; mhp2 != NULL; mhp2 = mhp2->next ) {
         if( mhp1 < mhp2 )
@@ -218,7 +217,7 @@ static frlptr __LinkUpNewMHeap( mheapptr mhp1 ) // originally __AddNewHeap()
     curr_frl = (frlptr)mhp1;
     curr_frl->len = amount;
     /* fix up end of heap links */
-    SET_BLK_END( (frlptr)( (PTR)curr_frl + amount ) );
+    SET_BLK_END( (frlptr)NEXT_BLK( curr_frl ) );
     return( curr_frl );
 }
 
@@ -232,7 +231,7 @@ size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
         return( 0 );
     }
     last_frl = __nheapbeg->freehead.prev; /* point to last free block */
-    brk_value = (unsigned)( (PTR)last_frl + last_frl->len + TAG_SIZE );
+    brk_value = BLK2CPTR( NEXT_BLK( last_frl ) );
   #if defined( __DOS_EXT__ )
     if( _IsPharLap() && !_IsFlashTek() )
         _curbrk = SegmentLimit();
@@ -468,7 +467,7 @@ static int __CreateNewNHeap( unsigned amount )
     SET_BLK_SIZE_INUSE( flp, amount );
     mhp1->numalloc++;
     mhp1->largest_blk = 0;
-    _nfree( (void _WCNEAR *)FRL2CPTR( flp ) );
+    _nfree( (void _WCNEAR *)BLK2CPTR( flp ) );
     return( 1 );
 }
 #endif
@@ -528,11 +527,11 @@ int __ExpandDGROUP( unsigned amount )
     for( mhp1 = __nheapbeg; mhp1 != NULL; mhp1 = mhp1->next ) {
         if( mhp1->next == NULL )
             break;
-        if( (unsigned)mhp1 <= brk_value && ((unsigned)mhp1) + mhp1->len + TAG_SIZE >= brk_value ) {
+        if( (unsigned)mhp1 <= brk_value && BLK2CPTR( NEXT_BLK( mhp1 ) ) >= brk_value ) {
             break;
         }
     }
-    if( ( mhp1 != NULL ) && ( CPTR2FRL( brk_value ) == (unsigned)( (unsigned)mhp1 + mhp1->len ) ) ) {
+    if( ( mhp1 != NULL ) && brk_value == BLK2CPTR( NEXT_BLK( mhp1 ) ) ) {
         /* we are extending the previous heap block (slicing) */
         /* nb. account for the end-of-heap tag */
         brk_value -= TAG_SIZE;
@@ -559,7 +558,7 @@ int __ExpandDGROUP( unsigned amount )
     SET_BLK_SIZE_INUSE( flp, amount );
     mhp1->numalloc++;
     mhp1->largest_blk = ~0;    /* set to largest value to be safe */
-    _nfree( (void _WCNEAR *)FRL2CPTR( flp ) );
+    _nfree( (void _WCNEAR *)BLK2CPTR( flp ) );
     return( 1 );
 #endif
 }

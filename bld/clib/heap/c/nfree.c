@@ -83,38 +83,38 @@ _WCRTLINK void _nfree( void _WCNEAR *cstg )
         // first try some likely locations
         mhp1 = __MiniHeapFreeRover;
         if( mhp1 != NULL ) {
-            if( (PTR)mhp1 <= (PTR)cstg && (PTR)mhp1 + mhp1->len > (PTR)cstg ) {
+            if( (PTR)mhp1 <= (PTR)cstg && (PTR)NEXT_BLK( mhp1 ) > (PTR)cstg ) {
                 break;
             }
             mhp2 = mhp1;
             mhp1 = mhp1->prev;
             if( mhp1 != NULL ) {
-                if( (PTR)mhp1 <= (PTR)cstg && (PTR)mhp1 + mhp1->len > (PTR)cstg ) {
+                if( (PTR)mhp1 <= (PTR)cstg && (PTR)NEXT_BLK( mhp1 ) > (PTR)cstg ) {
                     break;
                 }
             }
             mhp1 = mhp2->next;
             if( mhp1 != NULL ) {
-                if( (PTR)mhp1 <= (PTR)cstg && (PTR)mhp1 + mhp1->len > (PTR)cstg ) {
+                if( (PTR)mhp1 <= (PTR)cstg && (PTR)NEXT_BLK( mhp1 ) > (PTR)cstg ) {
                     break;
                 }
             }
         }
         mhp1 = __MiniHeapRover;
         if( mhp1 != NULL ) {
-            if( (PTR)mhp1 <= (PTR)cstg && (PTR)mhp1 + mhp1->len > (PTR)cstg ) {
+            if( (PTR)mhp1 <= (PTR)cstg && (PTR)NEXT_BLK( mhp1 ) > (PTR)cstg ) {
                 break;
             }
             mhp2 = mhp1;
             mhp1 = mhp1->prev;
             if( mhp1 != NULL ) {
-                if( (PTR)mhp1 <= (PTR)cstg && (PTR)mhp1 + mhp1->len > (PTR)cstg ) {
+                if( (PTR)mhp1 <= (PTR)cstg && (PTR)NEXT_BLK( mhp1 ) > (PTR)cstg ) {
                     break;
                 }
             }
             mhp1 = mhp2->next;
             if( mhp1 != NULL ) {
-                if( (PTR)mhp1 <= (PTR)cstg && (PTR)mhp1 + mhp1->len > (PTR)cstg ) {
+                if( (PTR)mhp1 <= (PTR)cstg && (PTR)NEXT_BLK( mhp1 ) > (PTR)cstg ) {
                     break;
                 }
             }
@@ -122,7 +122,7 @@ _WCRTLINK void _nfree( void _WCNEAR *cstg )
 
         // not found near rover, so search the list
         for( mhp1 = __nheapbeg; mhp1 != NULL; mhp1 = mhp1->next ) {
-            if( (PTR)mhp1 <= (PTR)cstg && (PTR)mhp1 + mhp1->len > (PTR)cstg ) {
+            if( (PTR)mhp1 <= (PTR)cstg && (PTR)NEXT_BLK( mhp1 ) > (PTR)cstg ) {
                 // break twice!
                 goto found_it;
             }
