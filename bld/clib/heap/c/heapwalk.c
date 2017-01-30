@@ -86,7 +86,7 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
         seg = FP_SEG( p );
     } else if( one_heap == 0 ) {
         /* we are starting a multi-heap walk */
-        if( verifyHeapList( curr_seg ) != _HEAPOK ) {
+        if( verifyHeapList( seg ) != _HEAPOK ) {
             return( _HEAPBADBEGIN );
         }
     }
