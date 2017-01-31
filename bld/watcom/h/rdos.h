@@ -718,7 +718,6 @@ int RDOSAPI RdosGetCurrentDllHandle();
 int RDOSAPI RdosGetModuleHandle();
 const char *RDOSAPI RdosGetExeName();
 const char *RDOSAPI RdosGetCmdLine();
-const char *RDOSAPI RdosGetOptions();
 int RDOSAPI RdosLoadDll(const char *Name);
 void RDOSAPI RdosFreeDll(int handle);
 int RDOSAPI RdosDuplModuleFileHandle(int handle);

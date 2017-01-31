@@ -401,10 +401,6 @@
 #define osgate_deref_proc_handle 352
 
 #define osgate_notify_time_drift 353
-#define osgate_set_options 354
-
-#define osgate_clone_handle_mem 355
-#define osgate_clone_app 356
 
 #define osgate_get_apic_id 357
 
@@ -694,8 +690,9 @@
 
 #define osgate_get_thread_selector_page 569
 
-#define osgate_init_app_process 571
-#define osgate_exit_app_process 572
+#define osgate_init_system_app 570
+#define osgate_init_process_app 571
+#define osgate_exit_process_app 572
 
 #define osgate_notify_delete_process 573
 
@@ -725,6 +722,11 @@
 #define osgate_read_c_console 594
 #define osgate_write_c_console 595
 #define osgate_open_kernel_file 596
+
+#define osgate_fork_process 597
+#define osgate_notify_process_forked 598
+#define osgate_clone_app 599
+#define osgate_clone_console 600
 
 
 
@@ -1119,10 +1121,6 @@
 #define OsGate_deref_proc_handle 0x3E 0x67 0x9a 96 1 0 0 2 0
 
 #define OsGate_notify_time_drift 0x3E 0x67 0x9a 97 1 0 0 2 0
-#define OsGate_set_options 0x3E 0x67 0x9a 98 1 0 0 2 0
-
-#define OsGate_clone_handle_mem 0x3E 0x67 0x9a 99 1 0 0 2 0
-#define OsGate_clone_app 0x3E 0x67 0x9a 100 1 0 0 2 0
 
 #define OsGate_get_apic_id 0x3E 0x67 0x9a 101 1 0 0 2 0
 
@@ -1412,8 +1410,9 @@
 
 #define OsGate_get_thread_selector_page 0x3E 0x67 0x9a 57 2 0 0 2 0
 
-#define OsGate_init_app_process 0x3E 0x67 0x9a 59 2 0 0 2 0
-#define OsGate_exit_app_process 0x3E 0x67 0x9a 60 2 0 0 2 0
+#define OsGate_init_system_app 0x3E 0x67 0x9a 58 2 0 0 2 0
+#define OsGate_init_process_app 0x3E 0x67 0x9a 59 2 0 0 2 0
+#define OsGate_exit_process_app 0x3E 0x67 0x9a 60 2 0 0 2 0
 
 #define OsGate_notify_delete_process 0x3E 0x67 0x9a 61 2 0 0 2 0
 
@@ -1443,4 +1442,9 @@
 #define OsGate_read_c_console 0x3E 0x67 0x9a 82 2 0 0 2 0
 #define OsGate_write_c_console 0x3E 0x67 0x9a 83 2 0 0 2 0
 #define OsGate_open_kernel_file 0x3E 0x67 0x9a 84 2 0 0 2 0
+
+#define OsGate_fork_process 0x3E 0x67 0x9a 85 2 0 0 2 0
+#define OsGate_notify_process_forked 0x3E 0x67 0x9a 86 2 0 0 2 0
+#define OsGate_clone_app 0x3E 0x67 0x9a 87 2 0 0 2 0
+#define OsGate_clone_console 0x3E 0x67 0x9a 88 2 0 0 2 0
 

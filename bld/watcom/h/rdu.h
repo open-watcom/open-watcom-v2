@@ -456,7 +456,6 @@
 #define usergate_get_proc_exit_code 0x0000017F
 
 #define usergate_get_cpu_version 0x00000180
-#define usergate_get_options 0x00000181
 
 #define usergate_fork 0x00000182
 
@@ -1263,7 +1262,6 @@
 #define CallGate_get_proc_exit_code 0x55 0x67 0x9a 127 1 0 0 3 0 0x5d
 
 #define CallGate_get_cpu_version 0x55 0x67 0x9a 128 1 0 0 3 0 0x5d
-#define CallGate_get_options 0x55 0x67 0x9a 129 1 0 0 3 0 0x5d
 
 #define CallGate_fork 0x55 0x67 0x9a 130 1 0 0 3 0 0x5d
 
@@ -2068,7 +2066,6 @@
 #define CallGate_get_proc_exit_code 0x3e 0x67 0x9a 127 1 0 0 3 0
 
 #define CallGate_get_cpu_version 0x3e 0x67 0x9a 128 1 0 0 3 0
-#define CallGate_get_options 0x3e 0x67 0x9a 129 1 0 0 3 0
 
 #define CallGate_fork 0x3e 0x67 0x9a 130 1 0 0 3 0
 

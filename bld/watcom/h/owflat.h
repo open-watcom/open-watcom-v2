@@ -2759,11 +2759,6 @@
     ValidateEdi \
     value [edi];
 
-#pragma aux RdosGetOptions = \
-    CallGate_get_options  \
-    ValidateEdi \
-    value [edi];
-
 #pragma aux RdosLoadDll = \
     CallGate_load_dll  \
     ValidateHandle \
