@@ -524,9 +524,9 @@ int RDOSAPI RdosIs64BitExe(const char *prog);
 
 #ifdef __RDOS__     // these are only available in user-mode
 
-int RDOSAPI RdosExec(const char *prog, const char *param, const char *options);
-int RDOSAPI RdosSpawn(const char *prog, const char *param, const char *startdir, const char *env, const char *options, int *thread);
-int RDOSAPI RdosSpawnDebug(const char *prog, const char *param, const char *startdir, const char *env, const char *options, int *thread);
+int RDOSAPI RdosExec(const char *prog, const char *param);
+int RDOSAPI RdosSpawn(const char *prog, const char *param, const char *startdir, const char *env, int *thread);
+int RDOSAPI RdosSpawnDebug(const char *prog, const char *param, const char *startdir, const char *env, int *thread);
 int RDOSAPI RdosFork();
 int RDOSAPI RdosIsForked();
 void RDOSAPI RdosUnloadExe(int ExitCode);

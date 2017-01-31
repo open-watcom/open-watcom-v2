@@ -45,7 +45,6 @@ typedef struct RdosSpawnParam
     TRdosPtr48 param;
     TRdosPtr48 startdir;
     TRdosPtr48 env;
-    TRdosPtr48 options;
 } TRdosSpawnParam;
 
 int RdosCarryToBool();
@@ -332,7 +331,7 @@ int RdosReadBinaryResource( int handle, int ID, char *Buf, int Size )
     return( RcSize );
 }
 
-int RdosSpawn( const char *prog, const char *param, const char *startdir, const char *env, const char *options, int *thread )
+int RdosSpawn( const char *prog, const char *param, const char *startdir, const char *env, int *thread )
 {
     TRdosSpawnParam p;
     TRdosSpawnParam *pp;    
@@ -371,15 +370,6 @@ int RdosSpawn( const char *prog, const char *param, const char *startdir, const 
     else {
         p.env.offset = 0;
         p.env.sel = 0;
-    }
-
-    if( options ) {
-        p.options.offset = options;
-        p.options.sel = flatdata;
-    }
-    else {
-        p.options.offset = 0;
-        p.options.sel = 0;
     }
 
     pp = &p; 
@@ -409,7 +399,7 @@ int RdosSpawn( const char *prog, const char *param, const char *startdir, const 
         return( 0 );
 }
 
-int RdosSpawnDebug( const char *prog, const char *param, const char *startdir, const char *env, const char *options, int *thread )
+int RdosSpawnDebug( const char *prog, const char *param, const char *startdir, const char *env, int *thread )
 {
     TRdosSpawnParam p;
     TRdosSpawnParam *pp;    
@@ -448,15 +438,6 @@ int RdosSpawnDebug( const char *prog, const char *param, const char *startdir, c
     else {
         p.env.offset = 0;
         p.env.sel = 0;
-    }
-
-    if( options ) {
-        p.options.offset = options;
-        p.options.sel = flatdata;
-    }
-    else {
-        p.options.offset = 0;
-        p.options.sel = 0;
     }
 
     pp = &p; 

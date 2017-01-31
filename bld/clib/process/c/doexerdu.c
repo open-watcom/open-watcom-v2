@@ -49,7 +49,6 @@
 int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
               const CHAR_TYPE * const argv[] )
 {
-    char *options;
     int len;
     char *p;
     int ok;
@@ -62,8 +61,6 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     int fh;
     char *drive;
     char *dir;
-
-    options = "";
 
     __F_NAME(__ccmdline,__wccmdline)( pgmname, argv, cmdline, 0 );
 
@@ -104,9 +101,8 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     }
 
     if( ok )
-        rc = RdosExec( pgmname, cmdline, options );
+        rc = RdosExec( pgmname, cmdline );
 
-    lib_free( options );
     lib_free( p );
 
     return( rc );

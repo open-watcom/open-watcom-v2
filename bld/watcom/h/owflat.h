@@ -1721,7 +1721,7 @@
     "pop gs" \
     CallGate_get_exit_code  \
     "movzx eax,ax"  \
-    parm [esi] [edi] [ebx] \
+    parm [esi] [edi] \
     value [eax];
 
 #pragma aux RdosFork = \

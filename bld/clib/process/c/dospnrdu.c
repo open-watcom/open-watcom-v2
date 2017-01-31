@@ -64,10 +64,7 @@ int _dospawn( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     char *envdata;
     char *envp;
     char *ep;
-    char *options;
     int ok;
-
-    options = "";
 
     __F_NAME(__ccmdline,__wccmdline)( pgmname, argv, cmdline, 0 );
 
@@ -108,7 +105,7 @@ int _dospawn( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     }
 
     if( ok ) {
-        handle = RdosSpawn( pgmname, cmdline, 0, envpar, options, &tid );
+        handle = RdosSpawn( pgmname, cmdline, 0, envpar, &tid );
 
         if( !handle )
             ok = 0;
@@ -128,7 +125,6 @@ int _dospawn( int mode, CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
         RdosFreeProcessHandle( handle );                        
     }
 
-    lib_free( options );
     lib_free( p );
 
     return( rc );
