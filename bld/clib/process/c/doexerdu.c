@@ -47,7 +47,8 @@
 
 
 int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
-              const CHAR_TYPE * const argv[] )
+             CHAR_TYPE *envpar, 
+             const CHAR_TYPE * const argv[] )
 {
     int len;
     char *p;
@@ -101,7 +102,7 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     }
 
     if( ok )
-        rc = RdosExec( pgmname, cmdline, "", "" );
+        rc = RdosExec( pgmname, cmdline, 0, envpar );
 
     lib_free( p );
 

@@ -45,10 +45,6 @@ _WCRTLINK int __F_NAME(execv,_wexecv)( const CHAR_TYPE *path, const CHAR_TYPE * 
         __create_wide_environment();
     return( _wexecve( path, argv, (const CHAR_TYPE **)_RWD_wenviron ) );
 #else
-  #ifdef __RDOS__
-    return( _doexec( path, argv );
-  #else
     return( execve( path, argv, (const CHAR_TYPE **)_RWD_environ ) );
-  #endif
 #endif
 }

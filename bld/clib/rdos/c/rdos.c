@@ -342,7 +342,6 @@ int RdosExec( const char *prog, const char *param, const char *startdir, const c
     TRdosParam *pp;    
     int flatdata = 0;
     int ok = 0;
-    int res = 0;
 
     __asm {
         mov eax,ds

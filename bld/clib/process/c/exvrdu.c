@@ -63,8 +63,9 @@ static int file_exists( const CHAR_TYPE *filename )                     /* 05-ap
 
 #pragma on(check_stack);
 
-_WCRTLINK int execv( const CHAR_TYPE * path,
-                     const CHAR_TYPE * const argv[] )
+_WCRTLINK int execve( const CHAR_TYPE * path,
+                     const CHAR_TYPE * const argv[],
+                     const CHAR_TYPE * const *envpass )
 {
     const CHAR_TYPE * const *envp = (const CHAR_TYPE **)_RWD_environ;
     CHAR_TYPE               *_envptr;       /* environment ptr (unaligned) */
@@ -124,18 +125,18 @@ _WCRTLINK int execv( const CHAR_TYPE * path,
         } else {
             _RWD_errno = 0;
             /* user specified an extension, so try it */
-            retval = _doexec( p, cmdline, argv );
+            retval = _doexec( p, cmdline, 0, argv );
         }
     }
     else {
         end_of_p = p + __F_NAME(strlen,wcslen)( p );
         __F_NAME(strcpy,wcscpy)( end_of_p, __F_NAME(".com",L".com") );
         _RWD_errno = 0;
-        retval = _doexec( p, cmdline, argv );
+        retval = _doexec( p, cmdline, 0, argv );
         if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
             _RWD_errno = 0;
             __F_NAME(strcpy,wcscpy)( end_of_p, __F_NAME(".exe",L".exe") );
-            retval = _doexec( p, cmdline, argv );
+            retval = _doexec( p, cmdline, 0, argv );
             if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
                 /* try for a .BAT file */
                 _RWD_errno = 0;
