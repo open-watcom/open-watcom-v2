@@ -101,7 +101,7 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     }
 
     if( ok )
-        rc = RdosExec( pgmname, cmdline );
+        rc = RdosExec( pgmname, cmdline, "", "" );
 
     lib_free( p );
 

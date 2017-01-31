@@ -40,12 +40,12 @@ typedef struct RdosPtr48
     int         sel;
 } TRdosPtr48;
 
-typedef struct RdosSpawnParam
+typedef struct RdosParam
 {
     TRdosPtr48 param;
     TRdosPtr48 startdir;
     TRdosPtr48 env;
-} TRdosSpawnParam;
+} TRdosParam;
 
 int RdosCarryToBool();
 
@@ -87,6 +87,11 @@ void RdosCreatePrioThread( void (*Start)(void *Param), int Prio, const char *Nam
 {
     _beginthread( Start, Prio, Name, StackSize, Param );
 }
+
+void RdosExecBase();
+
+#pragma aux RdosExecBase = \
+    CallGate_load_exe;
 
 void RdosSpawnBase();
 
@@ -331,10 +336,70 @@ int RdosReadBinaryResource( int handle, int ID, char *Buf, int Size )
     return( RcSize );
 }
 
+int RdosExec( const char *prog, const char *param, const char *startdir, const char *env )
+{
+    TRdosParam p;
+    TRdosParam *pp;    
+    int flatdata = 0;
+    int ok = 0;
+    int res = 0;
+
+    __asm {
+        mov eax,ds
+        mov flatdata,eax
+    }
+
+    if( param ) {
+        p.param.offset = param;
+        p.param.sel = flatdata;
+    }
+    else {
+        p.param.offset = 0;
+        p.param.sel = 0;
+    }
+
+    if( startdir ) {
+        p.startdir.offset = startdir;
+        p.startdir.sel = flatdata;
+    }
+    else {
+        p.startdir.offset = 0;
+        p.startdir.sel = 0;
+    }
+
+    if( env ) {
+        p.env.offset = env;
+        p.env.sel = flatdata;
+    }
+    else {
+        p.env.offset = 0;
+        p.env.sel = 0;
+    }
+
+    pp = &p; 
+
+    __asm {
+        mov esi,prog
+        mov edi,pp
+        xor edx,edx
+    }
+    RdosExecBase();
+    RdosCarryToBool();
+    __asm {
+        mov ok,eax
+    }    
+
+    if( ok ) {
+        return( RdosGetExitCode() );
+    }        
+    else
+        return( 0 );
+}
+
 int RdosSpawn( const char *prog, const char *param, const char *startdir, const char *env, int *thread )
 {
-    TRdosSpawnParam p;
-    TRdosSpawnParam *pp;    
+    TRdosParam p;
+    TRdosParam *pp;    
     int flatdata = 0;
     int ok = 0;
     int threadid = 0;
@@ -401,8 +466,8 @@ int RdosSpawn( const char *prog, const char *param, const char *startdir, const 
 
 int RdosSpawnDebug( const char *prog, const char *param, const char *startdir, const char *env, int *thread )
 {
-    TRdosSpawnParam p;
-    TRdosSpawnParam *pp;    
+    TRdosParam p;
+    TRdosParam *pp;    
     int flatdata = 0;
     int ok = 0;
     int threadid = 0;

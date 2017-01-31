@@ -1713,17 +1713,6 @@
     parm [esi] \
     value [eax];
 
-#pragma aux RdosExec = \
-    "push gs" \
-    "mov ax,ds" \
-    "mov gs,ax" \
-    CallGate_load_exe  \
-    "pop gs" \
-    CallGate_get_exit_code  \
-    "movzx eax,ax"  \
-    parm [esi] [edi] \
-    value [eax];
-
 #pragma aux RdosFork = \
     CallGate_fork  \
     "movzx eax,ax"  \
@@ -1737,6 +1726,11 @@
 #pragma aux RdosUnloadExe = \
     CallGate_unload_exe  \
     parm [eax];
+
+#pragma aux RdosGetExitCode = \
+    CallGate_get_exit_code  \
+    "movsx eax,ax" \
+    value [eax];
 
 #pragma aux RdosFreeProcessHandle = \
     CallGate_free_proc_handle  \
