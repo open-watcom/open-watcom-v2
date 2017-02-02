@@ -37,6 +37,20 @@
 #include "heap.h"
 
 
+extern void _mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
+#if defined(__SMALL_DATA__) || defined(__WINDOWS__)
+#pragma aux _mymemcpy = \
+        "push ds"       \
+        "mov ds,dx"     \
+        memcpy_i86      \
+        "pop ds"        \
+    parm caller [es di] [dx si] [cx] modify exact [si di cx]
+#else
+#pragma aux _mymemcpy = \
+        memcpy_i86      \
+    parm caller [es di] [ds si] [cx] modify exact [si di cx]
+#endif
+
 _WCRTLINK VOID_BPTR _brealloc( __segment seg, VOID_BPTR cstg_old, size_t size )
 {
     VOID_BPTR   cstg_new;
@@ -53,7 +67,7 @@ _WCRTLINK VOID_BPTR _brealloc( __segment seg, VOID_BPTR cstg_old, size_t size )
     if( cstg_new == _NULLOFF ) {                /* if it couldn't be expanded */
         cstg_new = _bmalloc( seg, size );       /* - allocate new block */
         if( cstg_new != _NULLOFF ) {            /* - if we got one */
-            _fmemcpy( seg :> cstg_new, seg :> cstg_old, old_size );
+            _mymemcpy( seg :> cstg_new, seg :> cstg_old, old_size );
             _bfree( seg, cstg_old );
         } else {
             _bexpand( seg, cstg_old, old_size );

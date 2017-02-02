@@ -38,44 +38,41 @@
 #include "heapacc.h"
 
 
-#define memcpy_i86  "shr cx,1"  "rep movsw" "adc cx,cx"   "rep movsb"
-#define memcpy_386  "shr ecx,1" "rep movsw" "adc ecx,ecx" "rep movsb"
-
 #if defined( _M_I86 )
 // 16-bit Intel
-#if defined(__SMALL_DATA__)
+#if defined(__SMALL_DATA__) || defined(__WINDOWS__)
 // small data models
-extern void _WCNEAR *_mymemcpy( void _WCFAR *, void _WCNEAR *, size_t );
+extern void _mymemcpy( void _WCFAR *, void _WCNEAR *, size_t );
 #pragma aux _mymemcpy = \
         memcpy_i86      \
-    parm caller [es di] [si] [cx] value [si] modify exact [si di cx]
+    parm caller [es di] [si] [cx] modify exact [si di cx]
 #else
 // big data models
-extern void _WCNEAR *_mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
+extern void _mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
 #pragma aux _mymemcpy = \
         "push ds"       \
         "mov ds,dx"     \
         memcpy_i86      \
         "pop ds"        \
-    parm caller [es di] [dx si] [cx] value [si] modify exact [si di cx]
+    parm caller [es di] [dx si] [cx] modify exact [si di cx]
 #endif
 #elif defined( _M_IX86 )
 // 32-bit Intel
-#if defined( __NT__ ) ||  defined( __OS2__ ) || defined( __LINUX__ ) || defined( __WINDOWS__ ) || defined( __RDOS__ )
+#if defined( __FLAT__ )
 // flat model
-extern void _WCNEAR *_mymemcpy( void _WCNEAR *, void _WCNEAR *, size_t );
+extern void _mymemcpy( void _WCNEAR *, void _WCNEAR *, size_t );
 #pragma aux _mymemcpy = \
         memcpy_386      \
-    parm caller [edi] [esi] [ecx] value [esi] modify exact [esi edi ecx]
+    parm caller [edi] [esi] [ecx] modify exact [esi edi ecx]
 #elif defined(__SMALL_DATA__)
 // small data models
-extern void _WCNEAR *_mymemcpy( void _WCFAR *, void _WCNEAR *, size_t );
+extern void _mymemcpy( void _WCFAR *, void _WCNEAR *, size_t );
 #pragma aux _mymemcpy = \
         memcpy_386      \
-    parm caller [es edi] [esi] [ecx] value [esi] modify exact [esi edi ecx]
+    parm caller [es edi] [esi] [ecx] modify exact [esi edi ecx]
 #else
 // big data models
-extern void _WCNEAR *_mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
+extern void _mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
 #pragma aux _mymemcpy = \
         "push ds"       \
         "mov ds,edx"    \

@@ -43,17 +43,13 @@
 
 extern  void    _mymemset(void _WCFAR *,unsigned,unsigned);
 #pragma aux     _mymemset = \
-        "shr cx,1"              \
-        "rep stosw"             \
-        "adc cx,cx"             \
-        "rep stosb"             \
-    parm caller [es di] [ax] [cx] modify exact [di cx]
+        memset_i86          \
+    parm caller [es di] [ax] [cx] modify exact [ax di cx]
 
 int __HeapSet( __segment seg, unsigned int fill )
 {
     FRLBPTR     curr_frl;
 
-    fill |= fill << 8;
     _AccessFHeap();
     for( ; seg != _NULLSEG; seg = HBPTR( seg )->nextseg ) {
         curr_frl = HBPTR( seg )->freehead.next;

@@ -52,6 +52,12 @@
 #define BLK2CPTR(f)     ((unsigned)((unsigned)(f) + TAG_SIZE))
 #define CPTR2BLK(p)     ((unsigned)((unsigned)(p) - TAG_SIZE))
 
+#define memcpy_i86      "shr cx,1"  "rep movsw" "adc cx,cx"   "rep movsb"
+#define memcpy_386      "shr ecx,1" "rep movsw" "adc ecx,ecx" "rep movsb"
+
+#define memset_i86      "mov ah,al" "shr cx,1"  "rep stosw" "adc cx,cx"   "rep stosb"
+#define memset_386      "mov ah,al" "shr ecx,1" "rep stosw" "adc ecx,ecx" "rep stosb"
+
 typedef unsigned int    tag;
 typedef unsigned char   _WCNEAR *PTR;
 typedef unsigned char   _WCFAR *FARPTR;

@@ -38,17 +38,19 @@
 #include "heap.h"
 
 
-extern void _WCNEAR *_mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
+extern void _mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
+#if defined(__SMALL_DATA__) || defined(__WINDOWS__)
 #pragma aux _mymemcpy = \
         "push ds"       \
         "mov ds,dx"     \
-        "shr cx,1"      \
-        "rep movsw"     \
-        "adc cx,cx"     \
-        "rep movsb"     \
+        memcpy_i86      \
         "pop ds"        \
-    parm caller [es di] [dx si] [cx] \
-        value [si] modify exact [si di cx]
+    parm caller [es di] [dx si] [cx] modify exact [si di cx]
+#else
+#pragma aux _mymemcpy = \
+        memcpy_i86      \
+    parm caller [es di] [ds si] [cx] modify exact [si di cx]
+#endif
 
 #if defined(__BIG_DATA__)
 

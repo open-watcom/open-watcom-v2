@@ -42,31 +42,22 @@
 // 16-bit Intel all models
 extern  void    _mymemset(void _WCFAR *,unsigned,unsigned);
 #pragma aux     _mymemset =     \
-        "shr cx,1"              \
-        "rep stosw"             \
-        "adc cx,cx"             \
-        "rep stosb"             \
-    parm caller [es di] [ax] [cx] modify exact [di cx]
+        memset_i86              \
+    parm caller [es di] [ax] [cx] modify exact [ax di cx]
 #elif defined( _M_IX86 )
 // 32-bit Intel
-#if defined( __NT__ ) ||  defined( __OS2__ ) || defined( __LINUX__ ) || defined( __WINDOWS__ ) || defined( __RDOS__ )
+#if defined( __FLAT__ )
 // flat model
 extern  void    _mymemset(void *,unsigned,unsigned);
 #pragma aux     _mymemset =     \
-        "shr ecx,1"             \
-        "rep stosw"             \
-        "adc ecx,ecx"           \
-        "rep stosb"             \
-    parm caller [edi] [eax] [ecx] modify exact [edi ecx]
+        memset_386              \
+    parm caller [edi] [eax] [ecx] modify exact [ax edi ecx]
 #else
 // all segmented models
 extern  void    _mymemset(void _WCFAR *,unsigned,unsigned);
 #pragma aux     _mymemset =     \
-        "shr ecx,1"             \
-        "rep stosw"             \
-        "adc ecx,ecx"           \
-        "rep stosb"             \
-    parm caller [es edi] [eax] [ecx] modify exact [edi ecx]
+        memset_386              \
+    parm caller [es edi] [eax] [ecx] modify exact [ax edi ecx]
 #endif
 #else
 // 32-bit non-Intel targets
@@ -90,7 +81,6 @@ _WCRTLINK int _nheapset( unsigned int fill )
     if( heap_status != _HEAPOK ) {
         return( heap_status );
     }
-    fill |= fill << 8;
     _AccessNHeap();
 
     for( mhp = __nheapbeg; mhp != NULL; mhp = mhp->next ) {
