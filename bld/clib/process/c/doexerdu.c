@@ -60,6 +60,7 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     char *ep;
     int rc = -1;
     int fh;
+    int pid;
     char *drive;
     char *dir;
 
@@ -101,8 +102,18 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
         ok = 1;
     }
 
-    if( ok )
-        rc = RdosExec( pgmname, cmdline, 0, envpar );
+    if( ok ) {
+        if( RdosIsForked() ) {
+            RdosExec( pgmname, cmdline, 0, envpar );
+        } else {
+            pid = RdosFork();
+            if( pid ) {
+                rc = RdosWaitForExec( pid );
+            } else {
+                RdosExec( pgmname, cmdline, 0, envpar );
+            }
+        }
+    }
 
     lib_free( p );
 

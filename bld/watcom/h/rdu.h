@@ -800,6 +800,7 @@
 #define usergate_dup_ini 0x00000273
 
 #define usergate_is_forked 0x00000274
+#define usergate_wait_for_exec 0x00000275
 
 
 
@@ -1606,6 +1607,7 @@
 #define CallGate_dup_ini 0x55 0x67 0x9a 115 2 0 0 3 0 0x5d
 
 #define CallGate_is_forked 0x55 0x67 0x9a 116 2 0 0 3 0 0x5d
+#define CallGate_wait_for_exec 0x55 0x67 0x9a 117 2 0 0 3 0 0x5d
 
 #else
 
@@ -2410,5 +2412,6 @@
 #define CallGate_dup_ini 0x3e 0x67 0x9a 115 2 0 0 3 0
 
 #define CallGate_is_forked 0x3e 0x67 0x9a 116 2 0 0 3 0
+#define CallGate_wait_for_exec 0x3e 0x67 0x9a 117 2 0 0 3 0
 
 #endif
