@@ -233,14 +233,20 @@ extern  void            MemConstTemp( conflict_node *conf ) {
             }
         }
     }
-    if( other == NULL ) return;
-    if( !_ConstTemp( other ) ) return;
-    if( other->v.conflict == NULL ) return;
+    if( other == NULL )
+        return;
+    if( !_ConstTemp( other ) )
+        return;
+    if( other->v.conflict == NULL )
+        return;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = 0; i < ins->num_operands; ++i ) {
-                if( ins->operands[i]->n.class != N_TEMP ) continue;
-                if( DeAlias( ins->operands[i] ) == other ) return;
+                if( ins->operands[i]->n.class != N_TEMP )
+                    continue;
+                if( DeAlias( ins->operands[i] ) == other ) {
+                    return;
+                }
             }
         }
     }

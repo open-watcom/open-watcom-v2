@@ -349,7 +349,8 @@ bool UseRepForm( unsigned size )
 
     count = size / WORD_SIZE;
     /* if move than 10 movs, then always use rep form */
-    if( count > 10 ) return( true );
+    if( count > 10 )
+        return( true );
     if( OptForSize > 50 ) {
         switch( size % WORD_SIZE ) {
         case 0: extra = 0;      break;
@@ -429,9 +430,12 @@ static  bool    SegmentFloats( name *op ) {
     name        *segname;
 
     segname = SegName( op );
-    if( segname->n.class != N_REGISTER ) return( true );
-    if( HW_COvlap( segname->r.reg, HW_DS ) ) return( _IsTargetModel( FLOATING_DS ) );
-    if( HW_COvlap( segname->r.reg, HW_SS ) ) return( _IsTargetModel( FLOATING_SS ) );
+    if( segname->n.class != N_REGISTER )
+        return( true );
+    if( HW_COvlap( segname->r.reg, HW_DS ) )
+        return( _IsTargetModel( FLOATING_DS ) );
+    if( HW_COvlap( segname->r.reg, HW_SS ) )
+        return( _IsTargetModel( FLOATING_SS ) );
     return( true );
 }
 
@@ -832,7 +836,8 @@ static  instruction     *SplitPush( instruction *ins, type_length size ) {
             break;
         }
         new_ins = MakeUnary( OP_PUSH, new_op, NULL, WD );
-        if( size == 0 ) break;
+        if( size == 0 )
+            break;
         if( first_ins == NULL ) {
             first_ins = new_ins;
         }
@@ -841,7 +846,8 @@ static  instruction     *SplitPush( instruction *ins, type_length size ) {
     }
     DupSeg( ins, new_ins );
     ReplIns( ins, new_ins );
-    if( first_ins == NULL ) return( new_ins );
+    if( first_ins == NULL )
+        return( new_ins );
     return( first_ins );
 }
 
@@ -992,9 +998,9 @@ extern  void            CnvOpToInt( instruction * ins, int op ) {
 }
 
 
-extern  instruction     *rCMPCP( instruction *ins ) {
-/***************************************************/
-
+extern  instruction     *rCMPCP( instruction *ins )
+/*************************************************/
+{
     assert( ins->type_class == CP );
     assert( ins->operands[1]->n.class == N_CONSTANT );
     assert( ins->operands[1]->c.lo.int_value == 0 );

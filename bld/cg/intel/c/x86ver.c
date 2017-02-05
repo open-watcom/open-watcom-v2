@@ -138,13 +138,15 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
             return( true );
         break;
     case V_OP2HIGH_W_FFFF_REG:
-        if( op1->n.class == N_REGISTER && HW_Ovlap( op1->r.reg, HW_BP ) ) break;
+        if( op1->n.class == N_REGISTER && HW_Ovlap( op1->r.reg, HW_BP ) )
+            break;
     case V_OP2HIGH_W_FFFF:
         if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.int_value & 0xffff0000) == 0xffff0000 )
             return( true );
         break;
     case V_OP2HIGH_W_ZERO_REG:
-        if( op1->n.class == N_REGISTER && HW_Ovlap( op1->r.reg, HW_BP ) ) break;
+        if( op1->n.class == N_REGISTER && HW_Ovlap( op1->r.reg, HW_BP ) )
+            break;
     case V_OP2HIGH_W_ZERO:
         if( op2->c.const_type == CONS_ABSOLUTE && (op2->c.lo.int_value & 0xffff0000) == 0 )
             return( true );
@@ -190,11 +192,16 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
                 switch( ins->head.next->head.opcode ) {
                 case OP_ADD:
                 case OP_SUB:
-                    if( ins->head.next->operands[0] != ins->result ) break;
-                    if( ins->head.next->result != ins->result ) break;
-                    if( ins->head.next->operands[1]->n.class != N_CONSTANT ) break;
-                    if( ins->head.next->operands[1]->c.const_type != CONS_ABSOLUTE ) break;
-                    if( ins->head.next->ins_flags & INS_CC_USED ) break;
+                    if( ins->head.next->operands[0] != ins->result )
+                        break;
+                    if( ins->head.next->result != ins->result )
+                        break;
+                    if( ins->head.next->operands[1]->n.class != N_CONSTANT )
+                        break;
+                    if( ins->head.next->operands[1]->c.const_type != CONS_ABSOLUTE )
+                        break;
+                    if( ins->head.next->ins_flags & INS_CC_USED )
+                        break;
                     return( true );
                 default:
                     break;
@@ -212,42 +219,59 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
         }
         break;
     case V_SIZE:
-        if( OptForSize > 50 ) return( true );
+        if( OptForSize > 50 )
+            return( true );
         break;
     case V_DIV_BUG: /* cant do idiv from mem on 80186 (or 8086 for compatibility)*/
         if( !_CPULevel( CPU_286 ) && ins->type_class != U1 && ins->type_class != U2 )
             return( true );
         break;
     case V_OP1SP:
-        if( HW_CEqual( op1->r.reg, HW_SP ) ) return( true );
+        if( HW_CEqual( op1->r.reg, HW_SP ) )
+            return( true );
         break;
     case V_WORDREG_AVAIL:
-        if( !HW_COvlap( ins->head.live.regs, HW_AX ) ) return( true );
-        if( !HW_COvlap( ins->head.live.regs, HW_BX ) ) return( true );
-        if( !HW_COvlap( ins->head.live.regs, HW_CX ) ) return( true );
-        if( !HW_COvlap( ins->head.live.regs, HW_DX ) ) return( true );
-        if( !HW_COvlap( ins->head.live.regs, HW_SI ) ) return( true );
-        if( !HW_COvlap( ins->head.live.regs, HW_DI ) ) return( true );
+        if( !HW_COvlap( ins->head.live.regs, HW_AX ) )
+            return( true );
+        if( !HW_COvlap( ins->head.live.regs, HW_BX ) )
+            return( true );
+        if( !HW_COvlap( ins->head.live.regs, HW_CX ) )
+            return( true );
+        if( !HW_COvlap( ins->head.live.regs, HW_DX ) )
+            return( true );
+        if( !HW_COvlap( ins->head.live.regs, HW_SI ) )
+            return( true );
+        if( !HW_COvlap( ins->head.live.regs, HW_DI ) )
+            return( true );
         break;
     case V_AC_BETTER:
-        if( op2->c.const_type != CONS_ABSOLUTE ) return( true );
-        if( op2->c.lo.int_value > 127 ) return( true );
-        if( op2->c.lo.int_value < -128 ) return( true );
+        if( op2->c.const_type != CONS_ABSOLUTE )
+            return( true );
+        if( op2->c.lo.int_value > 127 )
+            return( true );
+        if( op2->c.lo.int_value < -128 )
+            return( true );
         break;
     case V_OP2POW2_286:
-        if( !_CPULevel( CPU_286 ) ) return( false );
+        if( !_CPULevel( CPU_286 ) )
+            return( false );
         return( OtherVerify( V_OP2POW2, ins, op1, op2, result ) );
     case V_OP1ADDR:
     case V_OP1LOC:
-        if( _IsTargetModel( INDEXED_GLOBALS ) ) return( false );
-        if( op1->n.class == N_MEMORY ) return( true );
+        if( _IsTargetModel( INDEXED_GLOBALS ) )
+            return( false );
+        if( op1->n.class == N_MEMORY )
+            return( true );
         break;
     case V_RESLOC:
-        if( _IsTargetModel( INDEXED_GLOBALS ) ) return( false );
-        if( result->n.class == N_MEMORY ) return( true );
+        if( _IsTargetModel( INDEXED_GLOBALS ) )
+            return( false );
+        if( result->n.class == N_MEMORY )
+            return( true );
         break;
     case V_GOOD_CLR:
-        if( op1 == result ) return( true );
+        if( op1 == result )
+            return( true );
         /* Always allow cases like ax<-al which is just a simple mov or xor */
         if( op1->n.class == N_REGISTER
             && RegClass( result->r.reg ) == U2
@@ -257,10 +281,14 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
         /* On P6 architecture, 'and' will cause a partial register stall with
          * horrible performance implications. Always use movzx.
          */
-        if( !_CPULevel( CPU_486 ) || _CPULevel( CPU_686 ) ) break;
-        if( OptForSize > 50 ) break;
+        if( !_CPULevel( CPU_486 ) || _CPULevel( CPU_686 ) )
+            break;
+        if( OptForSize > 50 )
+            break;
         if( result->n.class == N_REGISTER ) {
-            if( HW_Ovlap( result->r.reg, HW_BP ) ) break;
+            if( HW_Ovlap( result->r.reg, HW_BP ) ) {
+                break;
+            }
         }
         return( true );
     case V_CDQ:
@@ -269,16 +297,22 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
          * Therefore, generate CDQ except when optimizing for time and the
          * CPU is 586 (on 386/486, CDQ is always better).
          */
-        if( _CPULevel( CPU_686 ) || !_CPULevel( CPU_586 ) ) return( true );
-        if( OptForSize >= 50 ) return( true );
+        if( _CPULevel( CPU_686 ) || !_CPULevel( CPU_586 ) )
+            return( true );
+        if( OptForSize >= 50 )
+            return( true );
         break;
     case V_P5_FXCH:
-        if( !_CPULevel( CPU_586 ) ) return( false );
-        if( OptForSize <= 50 ) return( true );
+        if( !_CPULevel( CPU_586 ) )
+            return( false );
+        if( OptForSize <= 50 )
+            return( true );
         break;
     case V_CYP_SEX:
-        if( !_CPULevel( CPU_586 ) ) return( false );
-        if( OptForSize > 50 ) return( false );
+        if( !_CPULevel( CPU_586 ) )
+            return( false );
+        if( OptForSize > 50 )
+            return( false );
         op1 = ins->operands[0];
         {
             type_length backup;
@@ -290,14 +324,19 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
                 return( true );
             case N_MEMORY:
                 new_off = op1->v.offset - backup;
-                if( new_off >= 0 ) return( true );
-                if( ins->num_operands > NumOperands( ins ) ) return( false );
+                if( new_off >= 0 )
+                    return( true );
+                if( ins->num_operands > NumOperands( ins ) )
+                    return( false );
                 return( true );
             case N_INDEXED:
                 new_off = op1->i.constant - backup;
-                if( new_off >= 0 ) return( true );
-                if( ins->num_operands > NumOperands( ins ) ) return( false );
-                if( op1->i.base == NULL ) return( false );
+                if( new_off >= 0 )
+                    return( true );
+                if( ins->num_operands > NumOperands( ins ) )
+                    return( false );
+                if( op1->i.base == NULL )
+                    return( false );
                 return( true );
             default:
                 break;
@@ -305,7 +344,8 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
         }
         break;
     case V_NEGATE:
-         if( ins->head.opcode == OP_NEGATE ) return( true );
+         if( ins->head.opcode == OP_NEGATE )
+            return( true );
          break;
     case V_CONSTTEMP:
         {
@@ -320,19 +360,25 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
             return( false );
         }
     case V_SWAP_GOOD_386:
-        if( !_CPULevel( CPU_386 ) ) return( false );
+        if( !_CPULevel( CPU_386 ) )
+            return( false );
         return( OtherVerify( V_SWAP_GOOD, ins, op1, op2, result ) );
     case V_INTCOMP:
-        if( ins->result != NULL && ins->type_class != FS ) return( false );
-        if( ins->head.opcode == OP_CMP_EQUAL ) return( true );
-        if( ins->head.opcode == OP_CMP_NOT_EQUAL ) return( true );
+        if( ins->result != NULL && ins->type_class != FS )
+            return( false );
+        if( ins->head.opcode == OP_CMP_EQUAL )
+            return( true );
+        if( ins->head.opcode == OP_CMP_NOT_EQUAL )
+            return( true );
 #if _TARGET & _TARG_80386
         // rINTCOMP reductions for 16-bit need work to handle < and >
         // comparisons - not worth it for now - BBB Apr 24, 1995
-        if( ins->type_class != FS ) return( false );
+        if( ins->type_class != FS )
+            return( false );
         if( ins->operands[1]->n.class == N_CONSTANT &&
             ins->operands[1]->c.const_type == CONS_ABSOLUTE &&
-            CFTest( ins->operands[1]->c.value ) > 0 ) return( true );
+            CFTest( ins->operands[1]->c.value ) > 0 )
+            return( true );
 #endif
         return( false );
     default:

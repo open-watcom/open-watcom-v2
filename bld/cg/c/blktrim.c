@@ -51,10 +51,11 @@ static  instruction     *FindOneCond( block *blk )
 
     cond = NULL;
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-         if( _OpIsCondition( ins->head.opcode ) ) {
-             if( cond != NULL ) return( NULL );
-             cond = ins;
-         }
+        if( _OpIsCondition( ins->head.opcode ) ) {
+            if( cond != NULL )
+                return( NULL );
+            cond = ins;
+        }
     }
     return( cond );
 }
@@ -139,7 +140,8 @@ void    RemoveBlock( block *blk )
     last_line = blk->ins.hd.line_num;
     for( ;; ) {
         next_ins = blk->ins.hd.next;
-        if( next_ins == (instruction *)&blk->ins ) break;
+        if( next_ins == (instruction *)&blk->ins )
+            break;
         if( next_ins->head.line_num != 0 ) {
             last_line = next_ins->head.line_num;
         }
@@ -189,7 +191,8 @@ void    RemoveInputEdge( block_edge *edge )
     block       *dest;
     block_edge  *prev;
 
-    if( ( edge->flags & DEST_IS_BLOCK ) == EMPTY ) return;
+    if( ( edge->flags & DEST_IS_BLOCK ) == EMPTY )
+        return;
     dest = edge->destination.u.blk;
     dest->inputs --;
     prev = dest->input_edges;
@@ -303,10 +306,10 @@ static  void    JoinBlocks( block *jump, block *target )
             /* this nop is only here to hold source info so we just
              * attach the source info to the next instruction and
              * nuke this nop so that it can't inhibit optimization */
-             if( target->ins.hd.next->head.line_num == 0 ) {
-                 target->ins.hd.next->head.line_num = nop->head.line_num;
-             }
-             FreeIns( nop );
+            if( target->ins.hd.next->head.line_num == 0 ) {
+                target->ins.hd.next->head.line_num = nop->head.line_num;
+            }
+            FreeIns( nop );
         }
     }
 

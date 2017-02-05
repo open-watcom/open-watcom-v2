@@ -58,7 +58,8 @@ static instruction  *DoReduce( instruction *ins, opcode_entry *try, bool has_ind
     hw_reg_set  *zap;
     hw_reg_set  zap_all;
 
-    if( try->generate == G_NO ) return( ins );
+    if( try->generate == G_NO )
+        return( ins );
     if( try->generate >= FIRST_REDUCT )
         return( Reduce( ins ) );
     zap_all = ins->zap->reg;
@@ -104,8 +105,11 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
         } else if( !_Any( try->op_type, RESULT_MUL ) ) {
             regs = name->r.reg;
             for( possible = RegSets[need->result]; ; ++possible ) {
-                if( HW_CEqual( *possible, HW_EMPTY ) ) return( false );
-                if( HW_Equal( *possible, regs ) ) break;
+                if( HW_CEqual( *possible, HW_EMPTY ) )
+                    return( false );
+                if( HW_Equal( *possible, regs ) ) {
+                    break;
+                }
             }
         }
     }
@@ -121,8 +125,11 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
         } else if( !_Any( try->op_type, OP1_MUL ) ) {
             regs = name->r.reg;
             for( possible = RegSets[need->left]; ; ++possible ) {
-                if( HW_CEqual( *possible, HW_EMPTY ) ) return( false );
-                if( HW_Equal( *possible, regs ) ) break;
+                if( HW_CEqual( *possible, HW_EMPTY ) )
+                    return( false );
+                if( HW_Equal( *possible, regs ) ) {
+                    break;
+                }
             }
         }
     }
@@ -138,8 +145,11 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
         } else if( !_Any( try->op_type, OP2_MUL ) ) {
             regs = name->r.reg;
             for( possible = RegSets[need->right]; ; ++possible ) {
-                if( HW_CEqual( *possible, HW_EMPTY ) ) return( false );
-                if( HW_Equal( *possible, regs ) ) break;
+                if( HW_CEqual( *possible, HW_EMPTY ) )
+                    return( false );
+                if( HW_Equal( *possible, regs ) ) {
+                    break;
+                }
             }
         }
     }
@@ -358,7 +368,8 @@ instruction     *ExpandIns( instruction *ins )
     bool                has_index;
 
     try = FindGenEntry( ins, &has_index );
-    if( try == NULL ) return( ins );
+    if( try == NULL )
+        return( ins );
     return( DoReduce( ins, try, has_index ) );
 }
 

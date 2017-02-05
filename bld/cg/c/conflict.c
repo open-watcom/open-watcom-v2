@@ -130,8 +130,10 @@ static  conflict_node   *FindConf( name *opnd, block *blk, instruction *ins )
     conflict_node *conf;
 
     conf = opnd->v.conflict;
-    if( conf == NULL ) return( AddOne( opnd, blk ) );
-    if( conf->start_block == NULL ) return( conf ); /* not filled in yet */
+    if( conf == NULL )
+        return( AddOne( opnd, blk ) );
+    if( conf->start_block == NULL )
+        return( conf ); /* not filled in yet */
     for( ; conf != NULL; conf = conf->next_for_name ) {                                    /* find the right one */
         _INS_NOT_BLOCK( conf->ins_range.first );
         _INS_NOT_BLOCK( conf->ins_range.last );
@@ -169,7 +171,8 @@ extern  conflict_node   *FindConflictNode( name *opnd,
     }
     _INS_NOT_BLOCK( ins );
     conf = FindConf( opnd, blk, ins );
-    if( conf == NULL ) return( NULL );
+    if( conf == NULL )
+        return( NULL );
     if( conf->start_block == NULL ) {
         conf->ins_range.first = ins;
         conf->ins_range.last = ins;
@@ -189,7 +192,9 @@ extern  conflict_node   *FindConflictNode( name *opnd,
             scan->v.conflict = opnd->v.conflict;
             scan->t.temp_flags |= HAD_CONFLICT;
             scan = scan->t.alias;
-            if( scan == opnd ) break;
+            if( scan == opnd ) {
+                break;
+            }
         }
     } else {
         old->v.conflict = opnd->v.conflict;
@@ -220,7 +225,9 @@ extern  conflict_node   *NameConflict( instruction *ins, name *opnd )
         _INS_NOT_BLOCK( conf->ins_range.first );
         _INS_NOT_BLOCK( conf->ins_range.last );
         if( conf->ins_range.first->id <= ins->id
-         && conf->ins_range.last->id  >= ins->id ) break;
+          && conf->ins_range.last->id  >= ins->id ) {
+            break;
+        }
     }
     return( conf );
 }
@@ -239,7 +246,7 @@ static  possible_for_alias *FindPossibleForAlias( conflict_node *conf, name *opn
             break;
         }
     }
-    return aposs;
+    return( aposs );
 }
 
 
@@ -260,7 +267,7 @@ static  possible_for_alias *MakePossibleForAlias( conflict_node *conf, name *opn
         aposs->possible = RL_NUMBER_OF_SETS;
         conf->possible_for_alias_list = aposs;
     }
-    return aposs;
+    return( aposs );
 }
 
 
@@ -286,7 +293,7 @@ extern  reg_set_index   GetPossibleForTemp(conflict_node *conf, name *temp)
         possible = conf->possible;
     }
 
-    return possible;
+    return( possible );
 }
 
 
@@ -319,7 +326,8 @@ extern  reg_set_index   MarkIndex( instruction *ins,
     possible_for_alias  *aposs;
 
     conf = NameConflict( ins, opnd );
-    if( conf == NULL ) return( RL_ );
+    if( conf == NULL )
+        return( RL_ );
     class = opnd->n.name_class;
     if( opnd->n.class == N_TEMP && ( opnd->t.temp_flags & ALIAS ) ) {
         aposs = MakePossibleForAlias( conf, opnd );
@@ -375,7 +383,9 @@ extern  void    FreeAConflict( conflict_node *conf )
                 scan->v.conflict = conf->next_for_name;
                 scan->t.temp_flags |= HAD_CONFLICT;
                 scan = scan->t.alias;
-                if( scan == opnd ) break;
+                if( scan == opnd ) {
+                    break;
+                }
             }
         } else {
             opnd->v.conflict = conf->next_for_name;
@@ -426,5 +436,5 @@ extern  bool    ConfFrlFree( void )
 
     ret  = FrlFreeAll( &ConfFrl, sizeof( conflict_node ) );
     ret |= FrlFreeAll( &ConfAliasVarsFrl, sizeof( possible_for_alias ) );
-    return ret;
+    return( ret );
 }

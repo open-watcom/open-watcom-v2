@@ -780,10 +780,14 @@ byte    RegTrans( hw_reg_set reg )
     int                 i;
 
     for( i = 0; i < sizeof( DWordRegs ) / sizeof( DWordRegs[0] ); i++ ) {
-        if( HW_Subset( DWordRegs[i], reg ) ) return( i );
+        if( HW_Subset( DWordRegs[i], reg ) ) {
+            return( i );
+        }
     }
     for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {
-        if( HW_Equal( reg, FloatRegs[i] ) ) return( i );
+        if( HW_Equal( reg, FloatRegs[i] ) ) {
+            return( i );
+        }
     }
     return( 0 );
 }
@@ -798,12 +802,14 @@ ppc_regn RegTransN( name *reg_name )
     reg = reg_name->r.reg;
 
     for( i = 0; i < sizeof( DWordRegs ) / sizeof( DWordRegs[0] ); i++ ) {
-        if( HW_Subset( DWordRegs[i], reg ) )
+        if( HW_Subset( DWordRegs[i], reg ) ) {
             return( i + PPC_REGN_r0 );
+        }
     }
     for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {
-        if( HW_Equal( reg, FloatRegs[i] ) )
+        if( HW_Equal( reg, FloatRegs[i] ) ) {
             return( i + PPC_REGN_f0 );
+        }
     }
     _Zoiks( ZOIKS_031 );
     return( PPC_REGN_END );

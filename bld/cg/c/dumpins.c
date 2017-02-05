@@ -450,7 +450,8 @@ extern  void    DumpCond( instruction *ins, block *blk ) {
 
     int         i;
 
-    if( !_OpIsCondition( ins->head.opcode ) ) return;
+    if( !_OpIsCondition( ins->head.opcode ) )
+        return;
     if( ins->result == NULL ) {
         i = _TrueIndex( ins );
         if( i != NO_JUMP ) {
@@ -503,7 +504,9 @@ extern  void    DumpVUsage( name *v ) {
         }
         u >>= 1;
         ++ i;
-        if( u == 0 ) break;
+        if( u == 0 ) {
+            break;
+        }
     }
     DumpNL();
 }

@@ -111,11 +111,14 @@ static  zero_bits       AZeroHalf( zero_bits l, zero_bits r ) {
     zero_bits   zhalf;
 
     zhalf = l & LO_HALF;
-    if( zhalf ) return( zhalf );
+    if( zhalf )
+        return( zhalf );
     zhalf = l & HI_HALF;
-    if( zhalf ) return( zhalf );
+    if( zhalf )
+        return( zhalf );
     zhalf = r & LO_HALF;
-    if( zhalf ) return( zhalf );
+    if( zhalf )
+        return( zhalf );
     zhalf = r & HI_HALF;
     return( zhalf );
 }
@@ -158,18 +161,25 @@ extern  bool    ScoreZero( score *sc, instruction **pins ) {
 #define NonZeroRESPart( x )  NonZeroPart( res, x, hc )
 
     ins = *pins;
-    if( ins->num_operands != 2 ) return( false );
-    if( ins->result == NULL ) return( false );
+    if( ins->num_operands != 2 )
+        return( false );
+    if( ins->result == NULL )
+        return( false );
     if( ( ins->head.opcode != OP_ADD && ins->head.opcode != OP_AND
        && ins->head.opcode != OP_OR && ins->head.opcode != OP_XOR
-       && ins->head.opcode != OP_SUB ) ) return( false );
-    if( ins->ins_flags & INS_CC_USED ) return( false );
-    if( VolatileIns( ins ) ) return( false );
+       && ins->head.opcode != OP_SUB ) )
+        return( false );
+    if( ins->ins_flags & INS_CC_USED )
+        return( false );
+    if( VolatileIns( ins ) )
+        return( false );
     op1 = ins->operands[0];
     op2 = ins->operands[1];
     res = ins->result;
-    if( op1->n.size != op2->n.size ) return( false );
-    if( res->n.size != op2->n.size ) return( false );
+    if( op1->n.size != op2->n.size )
+        return( false );
+    if( res->n.size != op2->n.size )
+        return( false );
     class = ins->type_class;
     op1zpart = HasZero( sc, op1 );
     op2zpart = HasZero( sc, op2 );

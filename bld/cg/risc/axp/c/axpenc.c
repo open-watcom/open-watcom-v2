@@ -665,9 +665,12 @@ static  bool    encodeThreadDataRef( instruction *ins ) {
     label_handle        tls_index;
 
     op = ins->operands[0];
-    if( op->n.class != N_MEMORY ) return( false );
-    if( op->m.memory_type != CG_FE ) return( false );
-    if( ( FEAttr( op->v.symbol ) & FE_THREAD_DATA ) == 0 ) return( false );
+    if( op->n.class != N_MEMORY )
+        return( false );
+    if( op->m.memory_type != CG_FE )
+        return( false );
+    if( ( FEAttr( op->v.symbol ) & FE_THREAD_DATA ) == 0 )
+        return( false );
 
     /*
      * Put out a sequence that looks like:

@@ -146,7 +146,8 @@ extern  void    InitFPStkReq( void ) {
 extern  int     FPStkReq( instruction *ins ) {
 /********************************************/
 
-    if( !_OpIsIFunc( ins->head.opcode ) ) return( 0 );
+    if( !_OpIsIFunc( ins->head.opcode ) )
+        return( 0 );
     if( _FPULevel( FPU_387 ) ) {
         return( StackReq387[ins->head.opcode - FIRST_IFUNC] );
     } else {
@@ -167,7 +168,8 @@ static  bool    MathOpsBlowStack( conflict_node *conf, int stk_level ) {
 
     ins = conf->ins_range.first;
     last = conf->ins_range.last;
-    if( ins == last ) return( true );
+    if( ins == last )
+        return( true );
     for( ins = ins->head.next; ins != last; ins = ins->head.next ) {
         if( FPStkReq( ins ) + stk_level + NumOperands( ins ) >= Max87Stk ) {
             return( true );
@@ -194,20 +196,30 @@ static  bool    AssignFPResult( block *blk, instruction *ins, int *stk_level ) {
     bool                need_live_update;
 
     op = ins->result;
-    if( op == NULL ) return( false );
+    if( op == NULL )
+        return( false );
     if( op->n.class == N_REGISTER ) {
-        if( HW_COvlap( op->r.reg, HW_FLTS ) ) ++*stk_level;
+        if( HW_COvlap( op->r.reg, HW_FLTS ) )
+            ++*stk_level;
         return( false );
     }
-    if( op->n.class != N_TEMP ) return( false );
-    if( ( op->t.temp_flags & CAN_STACK ) == 0 ) return( false );
-    if( op->v.usage & (USE_ADDRESS | USE_IN_ANOTHER_BLOCK) ) return( false );
-    if( !_IsFloating( op->n.name_class ) ) return( false );
-    if( *stk_level < 0 ) return( false );
-    if( *stk_level >= (Max87Stk-1) ) return( false );
+    if( op->n.class != N_TEMP )
+        return( false );
+    if( ( op->t.temp_flags & CAN_STACK ) == 0 )
+        return( false );
+    if( op->v.usage & (USE_ADDRESS | USE_IN_ANOTHER_BLOCK) )
+        return( false );
+    if( !_IsFloating( op->n.name_class ) )
+        return( false );
+    if( *stk_level < 0 )
+        return( false );
+    if( *stk_level >= (Max87Stk-1) )
+        return( false );
     conf = FindConflictNode( op, blk, ins );
-    if( conf == NULL ) return( false );
-    if( MathOpsBlowStack( conf, *stk_level ) ) return( false );
+    if( conf == NULL )
+        return( false );
+    if( MathOpsBlowStack( conf, *stk_level ) )
+        return( false );
     ++*stk_level;
     need_live_update = AssignARegister( conf, FPRegs[*stk_level] );
     return( need_live_update );
@@ -237,9 +249,12 @@ static  void    AssignFPOps( instruction *ins, int *stk_level ) {
                  --*stk_level;
             }
         }
-        if( ins->num_operands < 2 ) return;
-        if( ins->operands[0] != ins->operands[1] ) return;
-        if( old_level == *stk_level ) return;
+        if( ins->num_operands < 2 )
+            return;
+        if( ins->operands[0] != ins->operands[1] )
+            return;
+        if( old_level == *stk_level )
+            return;
         ++*stk_level;
     }
 }
@@ -251,9 +266,12 @@ static  void    SetStackLevel( instruction *ins, int *stk_level ) {
 */
 
 
-    if( !_OpIsCall( ins->head.opcode ) ) return;
-    if( !HW_CEqual( ins->result->r.reg, HW_ST0 ) ) return;
-    if( (ins->flags.call_flags & CALL_IGNORES_RETURN) == 0 ) return;
+    if( !_OpIsCall( ins->head.opcode ) )
+        return;
+    if( !HW_CEqual( ins->result->r.reg, HW_ST0 ) )
+        return;
+    if( (ins->flags.call_flags & CALL_IGNORES_RETURN) == 0 )
+        return;
     --*stk_level;
 }
 
@@ -285,7 +303,8 @@ static  void    FPAlloc( void ) {
     need_live_update = false;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         ins = blk->ins.hd.next;
-        if( ins->head.opcode == OP_BLOCK ) continue;
+        if( ins->head.opcode == OP_BLOCK )
+            continue;
         ins->stk_entry = stk_level;
         SetStackLevel( ins, &stk_level );
         sequence = 0;
@@ -295,11 +314,15 @@ static  void    FPAlloc( void ) {
              * split it up so that we can give it a register, since rDOCVT is so lame
              */
             for( ;; ) { // not really a loop - forgive me
-                if( ins->head.opcode != OP_CONVERT ) break;
+                if( ins->head.opcode != OP_CONVERT )
+                    break;
                 if( !( ( ins->type_class == FS && ins->base_type_class == FD ) ||
-                      ( ins->type_class == FD && ins->base_type_class == FS ) ) ) break;
-                if( ins->operands[0]->n.class == N_REGISTER ) break;
-                if( ins->operands[0]->n.class == N_TEMP && ( ( ins->operands[0]->t.temp_flags & CAN_STACK ) != EMPTY ) ) break;
+                      ( ins->type_class == FD && ins->base_type_class == FS ) ) )
+                    break;
+                if( ins->operands[0]->n.class == N_REGISTER )
+                    break;
+                if( ins->operands[0]->n.class == N_TEMP && ( ( ins->operands[0]->t.temp_flags & CAN_STACK ) != EMPTY ) )
+                    break;
                 name = AllocTemp( ins->base_type_class );
                 name->t.temp_flags |= CAN_STACK;
                 new_ins = MakeMove( ins->operands[0], name, ins->base_type_class );
@@ -319,7 +342,8 @@ static  void    FPAlloc( void ) {
             if(  _FPULevel( FPU_586 ) &&
                 stk_level == 0 ) ++sequence; // NYI - overflow?
             ins = ins->head.next;
-            if( ins->head.opcode == OP_BLOCK ) break;
+            if( ins->head.opcode == OP_BLOCK )
+                break;
             ins->stk_entry = stk_level;
             SetStackLevel( ins, &stk_level );
             AssignFPOps( ins, &stk_level );
@@ -509,7 +533,8 @@ extern  int     Count87Regs( hw_reg_set regs ) {
         if( HW_Ovlap( FPRegs[i], regs ) ) {
             ++count;
         }
-        if( i == 7 ) break;
+        if( i == 7 )
+            break;
         ++i;
     }
     return( count );
@@ -519,9 +544,12 @@ extern  int     Count87Regs( hw_reg_set regs ) {
 extern  bool    FPStackIns( instruction *ins ) {
 /**********************************************/
 
-    if( !_FPULevel( FPU_87 ) ) return( false );
-    if( _OpIsCall( ins->head.opcode ) ) return( true );
-    if( _Is87Ins( ins ) ) return( true );
+    if( !_FPULevel( FPU_87 ) )
+        return( false );
+    if( _OpIsCall( ins->head.opcode ) )
+        return( true );
+    if( _Is87Ins( ins ) )
+        return( true );
     return( false );
 }
 
@@ -536,10 +564,13 @@ extern  bool    FPSideEffect( instruction *ins ) {
     int         i;
     bool        has_fp_reg;
 
-    if( !_FPULevel( FPU_87 ) ) return( false );
+    if( !_FPULevel( FPU_87 ) )
+        return( false );
     /* calls require a clean stack */
-    if( _OpIsCall( ins->head.opcode ) ) return( true );
-    if( !_Is87Ins( ins ) ) return( false );
+    if( _OpIsCall( ins->head.opcode ) )
+        return( true );
+    if( !_Is87Ins( ins ) )
+        return( false );
     has_fp_reg = false;
     for( i = ins->num_operands; i-- > 0; ) {
         if( ins->operands[i]->n.class == N_REGISTER ) {
@@ -556,8 +587,11 @@ extern  bool    FPSideEffect( instruction *ins ) {
         }
     }
     if( has_fp_reg ) {
-        if( ins->ins_flags & INS_PARAMETER ) return( true );
-        if( ins->stk_entry != ins->stk_exit ) return( true );
+        if( ins->ins_flags & INS_PARAMETER )
+            return( true );
+        if( ins->stk_entry != ins->stk_exit ) {
+            return( true );
+        }
     }
     return( false );
 }
@@ -572,17 +606,25 @@ static  bool    CanStack( name *name ) {
     instruction         *last;
     conflict_node       *conf;
 
-    if( ( name->v.usage & USE_IN_ANOTHER_BLOCK ) ) return( false );
+    if( ( name->v.usage & USE_IN_ANOTHER_BLOCK ) )
+        return( false );
     for( conf = name->v.conflict; conf != NULL; conf = conf->next_for_name ) {
-        if( conf->start_block == NULL ) return( false );
+        if( conf->start_block == NULL )
+            return( false );
         first = conf->ins_range.first;
         last = conf->ins_range.last;
-        if( first == NULL ) return( false );
-        if( last == NULL ) return( false );
-        if( first == last ) return( false );
+        if( first == NULL )
+            return( false );
+        if( last == NULL )
+            return( false );
+        if( first == last )
+            return( false );
         for( first = first->head.next; first != last; first = first->head.next ) {
-            if( first->head.opcode == OP_CALL ) return( false );
-            if( first->head.opcode == OP_CALL_INDIRECT ) return( false );
+            if( first->head.opcode == OP_CALL )
+                return( false );
+            if( first->head.opcode == OP_CALL_INDIRECT ) {
+                return( false );
+            }
         }
     }
     return( true );
@@ -607,17 +649,27 @@ static  void    StackShortLivedTemps( void ) {
     for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
         ins1 = conf->ins_range.first;
         ins2 = conf->ins_range.last;
-        if( ins1 == NULL ) continue;
-        if( ins2 == NULL ) continue;
-        if( !_Is87Ins( ins1 ) ) continue;
-        if( !_Is87Ins( ins2 ) ) continue;
-        if( ins1->ins_flags & INS_PARAMETER ) continue;
-        if( ins2->ins_flags & INS_PARAMETER ) continue;
-        if( ins1->head.next != ins2 ) continue;
+        if( ins1 == NULL )
+            continue;
+        if( ins2 == NULL )
+            continue;
+        if( !_Is87Ins( ins1 ) )
+            continue;
+        if( !_Is87Ins( ins2 ) )
+            continue;
+        if( ins1->ins_flags & INS_PARAMETER )
+            continue;
+        if( ins2->ins_flags & INS_PARAMETER )
+            continue;
+        if( ins1->head.next != ins2 )
+            continue;
         temp = conf->name;
-        if( temp->n.class != N_TEMP ) continue;
-        if( temp->t.temp_flags & CROSSES_BLOCKS ) continue;
-        if( temp->t.alias != temp ) continue;
+        if( temp->n.class != N_TEMP )
+            continue;
+        if( temp->t.temp_flags & CROSSES_BLOCKS )
+            continue;
+        if( temp->t.alias != temp )
+            continue;
         FPSetStack( temp );
     }
 }
@@ -628,8 +680,10 @@ static  void    CheckForStack( name *temp )
     used by NoStackAcrossCalls
 */
 {
-    if( temp->n.class != N_TEMP ) return;
-    if( CanStack( temp ) ) return;
+    if( temp->n.class != N_TEMP )
+        return;
+    if( CanStack( temp ) )
+        return;
     temp->t.temp_flags &= ~CAN_STACK;
 }
 
@@ -666,8 +720,10 @@ extern  type_class_def  FPInsClass( instruction *ins ) {
     Return FD if the instruction will use the 8087.
 */
 
-    if( !_FPULevel( FPU_87 ) ) return( XX );
-    if( !_Is87Ins( ins ) ) return( XX );
+    if( !_FPULevel( FPU_87 ) )
+        return( XX );
+    if( !_Is87Ins( ins ) )
+        return( XX );
     return( FD );
 }
 
@@ -677,9 +733,12 @@ extern  void    FPSetStack( name *name ) {
     Turn on the CAN_STACK attribute in "name" if its ok to do so.
 */
 
-    if( name->n.class != N_TEMP ) return;
-    if( name->v.usage & USE_IN_ANOTHER_BLOCK ) return;
-    if( !_IsFloating( name->n.name_class ) ) return;
+    if( name->n.class != N_TEMP )
+        return;
+    if( name->v.usage & USE_IN_ANOTHER_BLOCK )
+        return;
+    if( !_IsFloating( name->n.name_class ) )
+        return;
     name->t.temp_flags |= CAN_STACK;
 }
 
@@ -689,8 +748,10 @@ extern  bool    FPIsStack( name *name ) {
     return true if "name" is a stackable temp.
 */
 
-    if( name->n.class != N_TEMP ) return( false );
-    if( ( name->t.temp_flags & CAN_STACK ) == EMPTY ) return( false );
+    if( name->n.class != N_TEMP )
+        return( false );
+    if( ( name->t.temp_flags & CAN_STACK ) == EMPTY )
+        return( false );
     return( true );
 }
 
@@ -700,7 +761,8 @@ extern  bool    FPStackOp( name *name ) {
     return true if "name" is a stackable temp.
 */
 
-    if( !_FPULevel( FPU_87 ) ) return( false );
+    if( !_FPULevel( FPU_87 ) )
+        return( false );
     return( FPIsStack( name ) );
 }
 
@@ -726,12 +788,16 @@ extern  bool    FPIsConvert( instruction *ins ) {
     type_class_def      op_class;
     type_class_def      res_class;
 
-    if( !_FPULevel( FPU_87 ) ) return( false );
-    if( ins->operands[0]->n.class == N_CONSTANT ) return( false );
+    if( !_FPULevel( FPU_87 ) )
+        return( false );
+    if( ins->operands[0]->n.class == N_CONSTANT )
+        return( false );
     op_class = ins->operands[0]->n.name_class;
     res_class = ins->result->n.name_class;
-    if( op_class == res_class ) return( false );
-    if( _Is87Ins( ins ) ) return( true );
+    if( op_class == res_class )
+        return( false );
+    if( _Is87Ins( ins ) )
+        return( true );
     return( false );
 }
 

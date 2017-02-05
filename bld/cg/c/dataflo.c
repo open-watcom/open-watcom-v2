@@ -60,10 +60,12 @@ static  void    AddTempSave( name *op, block *blk )
     if( op->n.class == N_INDEXED ) {
         op = op->i.index;
     }
-    if( op->n.class != N_TEMP ) return;
+    if( op->n.class != N_TEMP )
+        return;
     op = DeAlias( op );
     conf = op->v.conflict;
-    if( conf == NULL ) return;
+    if( conf == NULL )
+        return;
     conf->savings += Weight( 1, blk );
 }
 
@@ -85,7 +87,8 @@ static  bool    AllocBefore( void *n1, void *n2 )
         return( false );
     }
     if( t1->v.conflict != NULL ) {
-        if( t2->v.conflict == NULL ) return( true );
+        if( t2->v.conflict == NULL )
+            return( true );
         return( t1->v.conflict->savings > t2->v.conflict->savings );
     } else {
         return( t1->t.v.id > t2->t.v.id );

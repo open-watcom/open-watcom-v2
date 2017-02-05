@@ -81,7 +81,8 @@ static  bool    CoveringDefinitions( name *op )
     uint        loc;
     bool        covered[MAX_POSSIBLE_REG + 1];
 
-    if( op->n.size > MAX_POSSIBLE_REG ) return( false );
+    if( op->n.size > MAX_POSSIBLE_REG )
+        return( false );
     for( i = op->n.size; i-- > 0; ) {
         covered[i] = false;
     }
@@ -180,7 +181,8 @@ static void TransferOneTempBlockUsage( name *op )
         alias = op->t.alias;
         for( ;; ) {
             TransferBlockUsage( alias );
-            if( alias == op ) break;
+            if( alias == op )
+                break;
             alias = alias->t.alias;
         }
     }

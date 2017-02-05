@@ -1577,14 +1577,17 @@ extern  void _CGAPI DGString( cchar_ptr value, uint len )
 
     for( ;; ) {
         assert( d <= dt );
-        if( slen == 0 ) break;
+        if( slen == 0 )
+            break;
         --slen;
         c = *s++;
         if( !iscntrl(c) && isascii(c)) {
-            if(( d + (1+1)) >= dt ) break;
+            if(( d + (1+1)) >= dt )
+                break;
             *d++ = c;
         } else {
-            if(( d + (4+1) ) >= dt ) break;
+            if(( d + (4+1) ) >= dt )
+                break;
             *d++ = '\\';
             *d++ = 'x';
             *d++ = hex[( c >> 4 ) & 0x0f];

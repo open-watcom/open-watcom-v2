@@ -159,7 +159,8 @@
 /*  the very first use */
         for(;;) {
 /*  for each instruction in conflict range */
-            if( ins->head.opcode == OP_BLOCK ) break;
+            if( ins->head.opcode == OP_BLOCK )
+                break;
             next = ins->head.next;
 /*  reload volatile names after calls */
             if( _OpIsCall( ins->head.opcode ) ) {
@@ -288,7 +289,8 @@
             }
         }
         _UpdateCost( blk, opnd );
-        if( last ) break;
+        if( last )
+            break;
         blk = blk->next_block;
         ins = blk->ins.hd.next;
     }

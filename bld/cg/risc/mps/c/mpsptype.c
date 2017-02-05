@@ -86,7 +86,8 @@ extern  type_class_def  MapFloat( cg_type type, call_attributes attr )
 */
 {
     attr = attr;
-    if( type == TY_SINGLE ) return( FS );
+    if( type == TY_SINGLE )
+        return( FS );
     return( FD );
 }
 
@@ -100,9 +101,12 @@ extern  type_class_def MapStruct( type_length length, call_attributes attr )
     attr = attr;
     length = length;
 #if 0
-    if( length == 1 ) return( U1 );
-    if( length == 2 ) return( U2 );
-    if( length == 4 ) return( U4 );
+    if( length == 1 )
+        return( U1 );
+    if( length == 2 )
+        return( U2 );
+    if( length == 4 )
+        return( U4 );
 #endif
     return( XX );
 }

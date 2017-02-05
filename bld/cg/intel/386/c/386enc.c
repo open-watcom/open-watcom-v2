@@ -181,7 +181,8 @@ static  hw_reg_set IndexTab[] = {
 static  byte    Displacement( signed_32 val, hw_reg_set regs )
 /************************************************************/
 {
-    if( val == 0 && !HW_COvlap( regs, HW_BP ) ) return( D0 );
+    if( val == 0 && !HW_COvlap( regs, HW_BP ) )
+        return( D0 );
     if( val <= 127 && val >= -128 ) {
         AddByte( val & 0xff );
         return( D8 );
@@ -353,12 +354,17 @@ static  signed_32  GetNextAddConstant( instruction *ins )
         neg = -1;
         /* fall through */
     case OP_ADD:
-        if( next->operands[0] != ins->result ) break;
-        if( next->result != ins->result ) break;
-        if( next->operands[1]->n.class != N_CONSTANT ) break;
-        if( next->operands[1]->c.const_type != CONS_ABSOLUTE ) break;
+        if( next->operands[0] != ins->result )
+            break;
+        if( next->result != ins->result )
+            break;
+        if( next->operands[1]->n.class != N_CONSTANT )
+            break;
+        if( next->operands[1]->c.const_type != CONS_ABSOLUTE )
+            break;
         /* we should not remove the ADD if its flags are used! */
-        if( next->ins_flags & INS_CC_USED ) break;
+        if( next->ins_flags & INS_CC_USED )
+            break;
         /*
            we've got something like:
                 LEA     EAX, [ECX+EDX]
@@ -721,7 +727,8 @@ static  void    doProfilingPrologEpilog( label_handle label, bool prolog )
         segment_id      data_seg;
 
         bck = (back_handle)FEAuxInfo( AskForLblSym( label ), P5_PROF_DATA );
-        if( bck == NULL ) return;
+        if( bck == NULL )
+            return;
         data_lbl = bck->lbl;
         data_seg = (segment_id)(pointer_int)FEAuxInfo( NULL, P5_PROF_SEG );
         TellKeepLabel( data_lbl );

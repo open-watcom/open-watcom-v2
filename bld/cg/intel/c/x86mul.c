@@ -40,7 +40,8 @@ extern  int     MulCost( unsigned_32 num )
     int         cost;
 
     /* When optimizing for size, MUL/IMUL is always preferred. */
-    if( OptForSize > 50 ) return( 1 );
+    if( OptForSize > 50 )
+        return( 1 );
     /* Note that in the following, the cost given for multiplication 
      * is less than the number of cycles it takes to execute, to give slight
      * preference to multiply versus a shift/add sequence.

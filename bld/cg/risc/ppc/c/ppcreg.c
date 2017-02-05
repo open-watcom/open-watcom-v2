@@ -112,7 +112,8 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
     parm_dst = &parms[0];
     for(;;) {
         *parm_dst = *parm_src;
-        if( HW_CEqual( *parm_dst, HW_EMPTY ) ) break;
+        if( HW_CEqual( *parm_dst, HW_EMPTY ) )
+            break;
         if( HW_Ovlap( *parm_dst, state->unalterable ) ) {
             FEMessage( MSG_BAD_SAVE, aux );
         }
@@ -211,10 +212,12 @@ hw_reg_set      SaveRegs( void )
 bool            IsStackReg( name *n )
 /***********************************/
 {
-    if( n == NULL ) return( false );
-    if( n->n.class != N_REGISTER ) return( false );
-    if( !HW_CEqual( n->r.reg, HW_R1 ) &&
-        !HW_CEqual( n->r.reg, HW_D1 ) ) return( false );
+    if( n == NULL )
+        return( false );
+    if( n->n.class != N_REGISTER )
+        return( false );
+    if( !HW_CEqual( n->r.reg, HW_R1 ) && !HW_CEqual( n->r.reg, HW_D1 ) )
+        return( false );
     return( true );
 }
 

@@ -264,7 +264,8 @@ static  name    *DoAlphaParmDecl( hw_reg_set reg, cg_sym_handle sym, type_def *t
             AddIns( ins );
             offset += BASE_SIZE;
         }
-        if( offset >= len ) break;
+        if( offset >= len )
+            break;
         reg = ParmReg( BASE_TYPE, BASE_SIZE, BASE_ALIGNMENT, &CurrProc->state );
     }
     return( t2 );
@@ -619,9 +620,12 @@ void    BGZapBase( name *base, type_def *tipe ) {
 
     instruction *ins;
 
-    if( base == NULL ) return;
-    if( _IsntModel( FORTRAN_ALIASING ) ) return;
-    if( (tipe->attr & TYPE_POINTER) == 0 ) return;
+    if( base == NULL )
+        return;
+    if( _IsntModel( FORTRAN_ALIASING ) )
+        return;
+    if( (tipe->attr & TYPE_POINTER) == 0 )
+        return;
     ins = MakeNop();
     if( DummyIndex == NULL )
         DummyIndex = AllocTemp( WD );

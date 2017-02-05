@@ -68,8 +68,10 @@ static bool StupidMove( score *sc, instruction *ins )
     score_info  info;
     int         dst_index;
 
-    if( ins->head.opcode != OP_MOV ) return( false );
-    if( ins->result->n.class != N_REGISTER ) return( false );
+    if( ins->head.opcode != OP_MOV )
+        return( false );
+    if( ins->result->n.class != N_REGISTER )
+        return( false );
     dst_index = ins->result->r.reg_index;
     if( ins->operands[0]->n.class == N_REGISTER ) {
         if( !RegsEqual( sc, ins->operands[0]->r.reg_index, dst_index )  ) {
@@ -167,7 +169,8 @@ bool    DoScore( block *blk )
             change = true;
             UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
         }
-        if( ins->head.opcode == OP_BLOCK ) break;
+        if( ins->head.opcode == OP_BLOCK )
+            break;
         /* ScoreZero freed the last instr!*/
         next = ins->head.next;
         dst = ins->result;

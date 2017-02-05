@@ -256,8 +256,10 @@ static  void    FlowConflicts( instruction *first,
         case OP_XOR:
         case OP_MOD:
         case OP_DIV:
-            if( ins->operands[1] != ins->operands[0] ) break;
-            if( ins->operands[1]->n.class != N_REGISTER ) break;
+            if( ins->operands[1] != ins->operands[0] )
+                break;
+            if( ins->operands[1]->n.class != N_REGISTER )
+                break;
             i = NumOperands( ins ); /* ignore the register operands */
             break;
         }
@@ -288,7 +290,8 @@ static  void    FlowConflicts( instruction *first,
         ins->head.live.within_block = alive.within_block;
 
         ins = ins->head.prev;
-        if( ins == first ) break;
+        if( ins == first )
+            break;
 
         /*   Since the result is redefined by the current instruction,*/
         /*   its previous value is not live in previous instructions*/

@@ -352,11 +352,14 @@ static  reg_set_index   IsSets[] = {
 reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
 /****************************************************************/
 {
-    if( s1 == s2 ) return( s1 );
+    if( s1 == s2 )
+        return( s1 );
     switch( _Combine( s1, s2 ) ) {
     default:
-        if( s1 == RL_NUMBER_OF_SETS ) return( s2 );
-        if( s2 == RL_NUMBER_OF_SETS ) return( s1 );
+        if( s1 == RL_NUMBER_OF_SETS )
+            return( s2 );
+        if( s2 == RL_NUMBER_OF_SETS )
+            return( s1 );
         return( RL_ );
     }
 }
@@ -636,13 +639,17 @@ type_class_def  RegClass( hw_reg_set regs )
 {
     hw_reg_set          test;
 
-    if( HW_COvlap( regs, HW_FPR ) ) return( FD );
+    if( HW_COvlap( regs, HW_FPR ) )
+        return( FD );
     HW_CAsgn( test, HW_BREGS );
-    if( HW_Subset( test, regs ) ) return( U1 );
+    if( HW_Subset( test, regs ) )
+        return( U1 );
     HW_CAsgn( test, HW_WREGS );
-    if( HW_Subset( test, regs ) ) return( U2 );
+    if( HW_Subset( test, regs ) )
+        return( U2 );
     HW_CAsgn( test, HW_DREGS );
-    if( HW_Subset( test, regs ) ) return( U4 );
+    if( HW_Subset( test, regs ) )
+        return( U4 );
     return( U8 );
 }
 
@@ -782,10 +789,14 @@ byte            RegTrans( hw_reg_set reg )
      * This should be cached in the reg name and used instead of a stupid lookup
      */
     for( i = 0; i < sizeof( QWordRegs ) / sizeof( QWordRegs[0] ); i++ ) {
-        if( HW_Subset( QWordRegs[i], reg ) ) return( i );
+        if( HW_Subset( QWordRegs[i], reg ) ) {
+            return( i );
+        }
     }
     for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {
-        if( HW_Equal( reg, FloatRegs[i] ) ) return( i );
+        if( HW_Equal( reg, FloatRegs[i] ) ) {
+            return( i );
+        }
     }
     return( 0 );
 }
@@ -804,10 +815,14 @@ axp_regn RegTransN( name *reg_name )
     reg = reg_name->r.reg;
 
     for( i = 0; i < sizeof( QWordRegs ) / sizeof( QWordRegs[0] ); i++ ) {
-        if( HW_Subset( QWordRegs[i], reg ) ) return( i+AXP_REGN_r0 );
+        if( HW_Subset( QWordRegs[i], reg ) ) {
+            return( i+AXP_REGN_r0 );
+        }
     }
     for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {
-        if( HW_Equal( reg, FloatRegs[i] ) ) return( i+AXP_REGN_f0 );
+        if( HW_Equal( reg, FloatRegs[i] ) ) {
+            return( i+AXP_REGN_f0 );
+        }
     }
     _Zoiks( ZOIKS_031 );
     return( AXP_REGN_END );

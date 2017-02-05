@@ -49,7 +49,8 @@ static  label_handle    LocateLabel( instruction *ins, int index )
     find the true or false ("index") label of the block containing "ins"
 */
 {
-    if( index == NO_JUMP ) return( NULL );
+    if( index == NO_JUMP )
+        return( NULL );
     for( ins = ins->head.next; ins->head.opcode != OP_BLOCK; ) {
         ins = ins->head.next;
     }

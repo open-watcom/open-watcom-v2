@@ -47,8 +47,11 @@ extern  void    Zoiks( int msg )
     may want to hide.  1 is unfreed code labels which we always hide.
 */
 {
-    if( ( msg == ZOIKS_001 ) ) return;
-    if( ( msg == ZOIKS_002 ) && ( !WantZoiks2() ) ) return;
-    if( ( msg == ZOIKS_040 ) && ( ++Zoiks40 < MAX_ZOIKS_40 ) ) return;
+    if( ( msg == ZOIKS_001 ) )
+        return;
+    if( ( msg == ZOIKS_002 ) && ( !WantZoiks2() ) )
+        return;
+    if( ( msg == ZOIKS_040 ) && ( ++Zoiks40 < MAX_ZOIKS_40 ) )
+        return;
     FEMessage( MSG_BACK_END_ERROR, (pointer)(pointer_int)msg );
 }

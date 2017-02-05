@@ -37,7 +37,8 @@ extern  int     MulCost( unsigned_32 num )
 /****************************************/
 {
     num = num;
-    if( OptForSize > 50 ) return( 1 );
+    if( OptForSize > 50 )
+        return( 1 );
     return( 5 );
 }
 

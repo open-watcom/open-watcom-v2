@@ -525,7 +525,8 @@ static dbg_patch    RtnPatch[1];
 static  name    *LocSymBP( dbg_loc loc )
 /**************************************/
 {
-    if( loc == NULL ) return( NULL );
+    if( loc == NULL )
+        return( NULL );
     if( (loc->class & 0xf0) != LOC_BP_OFFSET ){
         return( NULL );
     }

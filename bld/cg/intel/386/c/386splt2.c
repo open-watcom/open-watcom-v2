@@ -189,7 +189,8 @@ name    *SegmentPart( name *tosplit )
         new = TempOffset( tosplit, 4, U2 );
         if( new->t.temp_flags & CONST_TEMP ) {
             seg = SegmentPart( tosplit->v.symbol );
-            if( seg->n.class == N_REGISTER ) return( seg );
+            if( seg->n.class == N_REGISTER )
+                return( seg );
             new->v.symbol = seg;
         }
         return( new );

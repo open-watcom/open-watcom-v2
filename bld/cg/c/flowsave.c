@@ -63,9 +63,13 @@ static block *FindDominatorBlock( dom_bit_set *dom, bool post )
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( post ) {
-            if( _DBitSame( *dom, blk->dom.post_dominator ) ) return( blk );
+            if( _DBitSame( *dom, blk->dom.post_dominator ) ) {
+                return( blk );
+            }
         } else {
-            if( _DBitSame( *dom, blk->dom.dominator ) ) return( blk );
+            if( _DBitSame( *dom, blk->dom.dominator ) ) {
+                return( blk );
+            }
         }
     }
     return( NULL );
@@ -77,11 +81,13 @@ static bool OpRefsReg( name *op, hw_reg_set reg )
 {
     switch( op->n.class ) {
     case N_REGISTER:
-        if( HW_Ovlap( op->r.reg, reg ) ) return( true );
+        if( HW_Ovlap( op->r.reg, reg ) )
+            return( true );
         break;
     case N_INDEXED:
         assert( op->i.index->n.class == N_REGISTER );
-        if( HW_Ovlap( op->i.index->r.reg, reg ) ) return( true );
+        if( HW_Ovlap( op->i.index->r.reg, reg ) )
+            return( true );
         break;
     }
     return( false );
@@ -95,12 +101,18 @@ static bool BlockUses( block *blk, hw_reg_set reg )
 
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         for( i = 0; i < ins->num_operands; i++ ) {
-            if( OpRefsReg( ins->operands[i], reg ) ) return( true );
+            if( OpRefsReg( ins->operands[i], reg ) ) {
+                return( true );
+            }
         }
         if( ins->result != NULL && ins->head.opcode != OP_NOP ) {
-            if( OpRefsReg( ins->result, reg ) ) return( true );
+            if( OpRefsReg( ins->result, reg ) ) {
+                return( true );
+            }
         }
-        if( ins->head.opcode != OP_NOP && HW_Ovlap( ins->zap->reg, reg ) ) return( true );
+        if( ins->head.opcode != OP_NOP && HW_Ovlap( ins->zap->reg, reg ) ) {
+            return( true );
+        }
     }
     return( false );
 }
@@ -237,25 +249,37 @@ static bool PairOk( block *save, block *restore, reg_flow_info *info, int curr_r
 {
     int                 i;
 
-    if( !_DBitOverlap( save->dom.id, info[curr_reg].dom_usage ) ) return( false );
-    if( !_DBitOverlap( restore->dom.id, info[curr_reg].post_dom_usage ) ) return( false );
-    if( !_DBitOverlap( save->dom.id, restore->dom.dominator ) ) return( false );
-    if( !_DBitOverlap( restore->dom.id, save->dom.post_dominator ) ) return( false );
+    if( !_DBitOverlap( save->dom.id, info[curr_reg].dom_usage ) )
+        return( false );
+    if( !_DBitOverlap( restore->dom.id, info[curr_reg].post_dom_usage ) )
+        return( false );
+    if( !_DBitOverlap( save->dom.id, restore->dom.dominator ) )
+        return( false );
+    if( !_DBitOverlap( restore->dom.id, save->dom.post_dominator ) )
+        return( false );
     if( _IsBlkAttr( restore, BLK_CONDITIONAL | BLK_SELECT ) )
         return( false );
-    if( InLoop( save ) || InLoop( restore ) ) return( false );
+    if( InLoop( save ) || InLoop( restore ) )
+        return( false );
     for( i = 0; i < curr_reg; i++ ) {
         // now, either our save/restore must dominate/postdominate info[i]'s
         // or info[i]'s save/restore must dominate/postdominate ours
-        if( info[i].save == NULL || info[i].restore == NULL ) continue;
-        if( info[i].save == save && info[i].restore != restore ) return( false );
-        if( info[i].save != save && info[i].restore == restore ) return( false );
+        if( info[i].save == NULL || info[i].restore == NULL )
+            continue;
+        if( info[i].save == save && info[i].restore != restore )
+            return( false );
+        if( info[i].save != save && info[i].restore == restore )
+            return( false );
         if( _DBitOverlap( info[i].save->dom.dominator, save->dom.id ) ) {
             // save dominates info[i].save - now check that restore postdominate
-            if( _DBitOverlap( info[i].restore->dom.post_dominator, restore->dom.id ) ) continue;
+            if( _DBitOverlap( info[i].restore->dom.post_dominator, restore->dom.id ) ) {
+                continue;
+            }
         } else if( _DBitOverlap( info[i].save->dom.id, save->dom.dominator ) ) {
             // info[i].save dominates save, now make sure info[i].restore postdom's restore
-            if( _DBitOverlap( info[i].restore->dom.id, restore->dom.post_dominator ) ) continue;
+            if( _DBitOverlap( info[i].restore->dom.id, restore->dom.post_dominator ) ) {
+                continue;
+            }
         }
         return( false );
     }
@@ -279,16 +303,20 @@ void FlowSave( hw_reg_set *preg )
     type_class_def      reg_type;
 
     HW_CAsgn( flowedRegs, HW_EMPTY );
-    if( _IsntModel( FLOW_REG_SAVES ) ) return;
-    if( !HaveDominatorInfo ) return;
+    if( _IsntModel( FLOW_REG_SAVES ) )
+        return;
+    if( !HaveDominatorInfo )
+        return;
     // we can't do this if we have push's which are 'live' at the end of a block
     // - this flag is set when we see a push being generated for a call in a different
     //   block
 #if _TARGET & _TARG_INTEL
-    if( CurrProc->targ.never_sp_frame ) return;
+    if( CurrProc->targ.never_sp_frame )
+        return;
 #endif
     num_regs = CountRegs( *preg );
-    if( num_regs == 0 ) return;
+    if( num_regs == 0 )
+        return;
     reg_info = CGAlloc( num_regs * sizeof( reg_flow_info ) );
     num_blocks = CountBlocks();
     InitBlockArray();
@@ -299,7 +327,8 @@ void FlowSave( hw_reg_set *preg )
         reg_info[curr_reg].save = NULL;
         reg_info[curr_reg].restore = NULL;
     #if _TARGET & _TARG_INTEL
-        if( HW_COvlap( *curr_push, HW_BP ) ) continue;  // don't mess with BP - it's magical
+        if( HW_COvlap( *curr_push, HW_BP ) )
+            continue;  // don't mess with BP - it's magical
     #endif
         GetRegUsage( &reg_info[curr_reg] );
         best = 0;

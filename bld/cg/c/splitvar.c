@@ -60,9 +60,9 @@ static  block   *FindUnMarkedInstance( void )
             continue;
         flow = blk->dataflow;
         if( _GBitOverlap( Id, flow->in )
-         || _GBitOverlap( Id, flow->out )
-         || _GBitOverlap( Id, flow->def )
-         || _GBitOverlap( Id, flow->use ) ) {
+          || _GBitOverlap( Id, flow->out )
+          || _GBitOverlap( Id, flow->def )
+          || _GBitOverlap( Id, flow->use ) ) {
             break;
         }
     }
@@ -152,7 +152,8 @@ static  bool    Split1Var( conflict_node *conf )
     _GBitAssign( Id, conf->id.out_of_block );
     for( ;; ) {
         unlabeled = FindUnMarkedInstance();
-        if( unlabeled == NULL ) break;
+        if( unlabeled == NULL )
+            break;
         ++Instance;
         MarkInstance( unlabeled );
     }

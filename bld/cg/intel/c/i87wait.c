@@ -44,10 +44,13 @@ static  bool    OpsCollide( name *op_87, name *op_86 ) {
 /****************************************************/
 
     if( op_87->n.class == N_INDEXED ) {
-        if( op_86 == NULL ) return( false );
+        if( op_86 == NULL )
+            return( false );
         if( op_86->n.class == N_INDEXED ) {
-            if( op_87->i.base == NULL ) return( true );
-            if( op_86->i.base == NULL ) return( true );
+            if( op_87->i.base == NULL )
+                return( true );
+            if( op_86->i.base == NULL )
+                return( true );
             return( SameThing( op_87->i.base, op_86->i.base ) );
         }
         if( op_86->n.class != N_MEMORY && op_86->n.class != N_TEMP ) {
@@ -72,11 +75,16 @@ static  bool    CallNeedsWait( name *op, name *res ) {
     if( op == NULL ) {
         op = res;
     }
-    if( op == NULL ) return( false );
-    if( op->n.class == N_REGISTER ) return( false );
-    if( op->n.class == N_CONSTANT ) return( false );
-    if( op->n.class == N_INDEXED ) return( true );
-    if( op->v.usage & (USE_ADDRESS | NEEDS_MEMORY) ) return( true );
+    if( op == NULL )
+        return( false );
+    if( op->n.class == N_REGISTER )
+        return( false );
+    if( op->n.class == N_CONSTANT )
+        return( false );
+    if( op->n.class == N_INDEXED )
+        return( true );
+    if( op->v.usage & (USE_ADDRESS | NEEDS_MEMORY) )
+        return( true );
     return( false );
 }
 
@@ -90,7 +98,8 @@ static  bool    NeedWait( name *op, name *res, instruction *ins_86 ) {
     if( op != NULL ) {
         need_wait = OpsCollide( op, ins_86->result );
     } else {
-        if( !DoesSomething( ins_86 ) ) return( false );
+        if( !DoesSomething( ins_86 ) )
+            return( false );
         need_wait = OpsCollide( res, ins_86->result );
         for( i = ins_86->num_operands; i-- > 0; ) {
             need_wait |= OpsCollide( res, ins_86->operands[i] );
@@ -115,14 +124,16 @@ extern  void    Wait8087( void ) {
     /* Prior to 386, FWAITs are always needed. On 386 and up, only when
      * user explicitly asked for them.
      */
-    if( _CPULevel( CPU_386 ) && _IsntTargetModel( GEN_FWAIT_386 ) ) return;
+    if( _CPULevel( CPU_386 ) && _IsntTargetModel( GEN_FWAIT_386 ) )
+        return;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         last_fpins = NULL;
         past_jump = false;
         for( ins = blk->ins.hd.next; ; ins = ins->head.next ) {
             for( ; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-                if( _OpIsCall( ins->head.opcode ) ) break;
+                if( _OpIsCall( ins->head.opcode ) )
+                    break;
                 gen = G( ins );
                 if( _GenIs8087( gen ) ) {
                     last_non_fpins = NULL;
@@ -158,7 +169,8 @@ extern  void    Wait8087( void ) {
                     }
                 }
             }
-            if( ins->head.opcode == OP_BLOCK ) break;
+            if( ins->head.opcode == OP_BLOCK )
+                break;
             if( last_fpins != NULL && CallNeedsWait( last_fpop, last_fpres ) ) {
                 PrefixIns( ins, MakeWait() );
                 last_fpins = NULL;

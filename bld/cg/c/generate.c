@@ -316,7 +316,8 @@ static  void    FreeExtraTemps( name *last, block_num id )
     owner = &Names[N_TEMP];
     for( ;; ) {
         temp = *owner;
-        if( temp == last ) break;
+        if( temp == last )
+            break;
         if( ( temp->v.usage & USE_IN_ANOTHER_BLOCK ) == 0
          && !_FrontEndTmp( temp )
          && temp->t.u.block_id == id ) {
@@ -424,7 +425,8 @@ static  void    BlockToCode( bool partly_done )
         owner = &ConfList;
         for( ;; ) {
             curr = *owner;
-            if( curr == NULL ) break;
+            if( curr == NULL )
+                break;
             if( curr->start_block == HeadBlock ) {
                 *owner = curr->next_conflict;
                 curr->next_conflict = conflist;
@@ -521,7 +523,8 @@ static  void    FreeExtraSyms( name *last )
     owner = &Names[N_TEMP];
     for(;;) {
         temp = *owner;
-        if( temp == last ) break;
+        if( temp == last )
+            break;
         if( ( temp->v.usage & USE_IN_ANOTHER_BLOCK ) == 0
          && !_FrontEndTmp( temp ) ) {
             *owner = temp->n.next_name;
@@ -652,25 +655,26 @@ void    Generate( bool routine_done )
  * Follow this routine to see the transformation of code unfold.
  */
 {
-    if( BGInInline() ) return;
+    if( BGInInline() )
+        return;
     HaveLiveInfo = false;
     HaveDominatorInfo = false;
-    #if ( _TARGET & ( _TARG_370 | _TARG_RISC ) ) == 0
-        /* if we want to go fast, generate statement at a time */
-        if( _IsModel( NO_OPTIMIZATION ) ) {
-            if( !BlockByBlock ) {
-                InitStackMap();
-                BlockByBlock = true;
-            }
-            LNBlip( SrcLine );
-            FlushBlocks( false );
-            FreeExtraSyms( LastTemp );
-            if( _MemLow ) {
-                BlowAwayFreeLists();
-            }
-            return;
+#if ( _TARGET & ( _TARG_370 | _TARG_RISC ) ) == 0
+    /* if we want to go fast, generate statement at a time */
+    if( _IsModel( NO_OPTIMIZATION ) ) {
+        if( !BlockByBlock ) {
+            InitStackMap();
+            BlockByBlock = true;
         }
-    #endif
+        LNBlip( SrcLine );
+        FlushBlocks( false );
+        FreeExtraSyms( LastTemp );
+        if( _MemLow ) {
+            BlowAwayFreeLists();
+        }
+        return;
+    }
+#endif
 
     /* if we couldn't get the whole procedure in memory, generate part of it */
     if( BlockByBlock ) {

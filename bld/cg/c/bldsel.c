@@ -117,11 +117,16 @@ static type_def         *SortTipe;
 int SelCompare( signed_32 lo1, signed_32 lo2 )
 /********************************************/
 {
-    if( lo1 == lo2 ) return( 0 );
+    if( lo1 == lo2 )
+        return( 0 );
     if( SortTipe->attr & TYPE_SIGNED ) {
-        if( lo1 < lo2 ) return( -1 );
+        if( lo1 < lo2 ) {
+            return( -1 );
+        }
     } else {
-        if( (unsigned_32)lo1 < (unsigned_32)lo2 ) return( -1 );
+        if( (unsigned_32)lo1 < (unsigned_32)lo2 ) {
+            return( -1 );
+        }
     }
     return( 1 );
 }
@@ -449,7 +454,9 @@ static  void    ScanBlock( tbl_control *table, an node, type_class_def class, la
         if( table->cases[i] != other ) {
             ++targets;
         }
-        if( ++i == table->size ) break;
+        if( ++i == table->size ) {
+            break;
+        }
     }
     if( other != NULL ) {
         ++targets;
@@ -460,7 +467,9 @@ static  void    ScanBlock( tbl_control *table, an node, type_class_def class, la
         if( table->cases[i] != other ) {
             AddTarget( table->cases[i], false );
         }
-        if( ++i == table->size ) break;
+        if( ++i == table->size ) {
+            break;
+        }
     }
     if( other != NULL ) {
         AddTarget( other, false );
@@ -483,7 +492,9 @@ static  void    SelectBlock( tbl_control *table, an node, label_handle other )
         if( table->cases[i] != other ) {
             ++targets;
         }
-        if( ++i == table->size ) break;
+        if( ++i == table->size ) {
+            break;
+        }
     }
     if( other != NULL ) {
         ++targets;
@@ -494,7 +505,9 @@ static  void    SelectBlock( tbl_control *table, an node, label_handle other )
         if( table->cases[i] != other ) {
             AddTarget( table->cases[i], false );
         }
-        if( ++i == table->size ) break;
+        if( ++i == table->size ) {
+            break;
+        }
     }
     if( other != NULL ) {
         AddTarget( other, false );

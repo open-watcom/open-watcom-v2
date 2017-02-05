@@ -173,7 +173,9 @@ extern  int     FPStkOver( instruction *ins, int stk_depth )
     max_depth = 0;
     for( i = ins->sequence + 1; i < MaxSeq; ++i ) {
         depth = SeqMaxDepth[i] - SeqCurDepth[i];
-        if( depth > max_depth ) max_depth = depth;
+        if( depth > max_depth ) {
+            max_depth = depth;
+        }
     }
     return( SeqMaxDepth[ins->sequence] - SeqCurDepth[ins->sequence] + max_depth + stk_depth - Max87Stk );
 }
@@ -182,7 +184,8 @@ extern  int     FPStkOver( instruction *ins, int stk_depth )
 static  int     InsMaxDepth( instruction *ins )
 /********************************************/
 {
-    if( ins->stk_entry > ins->stk_exit ) return( ins->stk_entry );
+    if( ins->stk_entry > ins->stk_exit )
+        return( ins->stk_entry );
     return( ins->stk_exit );
 }
 
@@ -198,13 +201,15 @@ extern  void    FPCalcStk( instruction *ins, int *pdepth )
 {
     int         affect;
 
-    if( FPStackIns( ins ) ) SeqMaxDepth[ins->sequence] = ins->t.stk_max;
+    if( FPStackIns( ins ) )
+        SeqMaxDepth[ins->sequence] = ins->t.stk_max;
     affect = ins->stk_entry - ins->stk_exit;
     SeqCurDepth[ins->sequence] += affect;
     ins->stk_exit = *pdepth;
     ins->stk_entry = *pdepth + affect;
     ins->s.stk_depth = *pdepth + ins->s.stk_extra;
-    if( affect > 0 ) ins->s.stk_depth += affect;
+    if( affect > 0 )
+        ins->s.stk_depth += affect;
     *pdepth += affect;
 }
 
@@ -228,11 +233,14 @@ static  fp_attr FPAttr( instruction *ins ) {
 /*******************************************/
 
     if( _OpIsCall( ins->head.opcode ) && ins->result != NULL ) {
-        if( ins->result->n.class != N_REGISTER ) return( POPS_ALL );
-        if( !HW_COvlap( ins->result->r.reg, HW_FLTS ) ) return( POPS_ALL );
+        if( ins->result->n.class != N_REGISTER )
+            return( POPS_ALL );
+        if( !HW_COvlap( ins->result->r.reg, HW_FLTS ) )
+            return( POPS_ALL );
         return( PUSHES + POPS_ALL );
     }
-    if( G( ins ) == G_FCHOP ) return( NEEDS_ST0 );
+    if( G( ins ) == G_FCHOP )
+        return( NEEDS_ST0 );
     if( !_GenIs8087( G( ins ) ) ) {
         return( NEEDS_NOTHING );
     }
@@ -439,7 +447,8 @@ static  void    GetToTopOfStack( instruction *ins, int virtual_reg ) {
     byte        *actual_top_owner;
 
     actual_locn = InsSTLoc( ins, virtual_reg );
-    if( actual_locn == ACTUAL_0 ) return;
+    if( actual_locn == ACTUAL_0 )
+        return;
     actual_top_owner = ActualStackOwner( ACTUAL_0 );
     if( actual_top_owner != NULL ) {
         PrefixExchange( ins, actual_locn );
@@ -642,10 +651,14 @@ static  temp_entry      *LookupTempEntry( name *op ) {
 
     temp_entry  *temp;
 
-    if( op == NULL ) return( NULL );
-    if( op->n.class == N_TEMP ) op = DeAlias( op );
+    if( op == NULL )
+        return( NULL );
+    if( op->n.class == N_TEMP )
+        op = DeAlias( op );
     for( temp = TempList; temp != NULL; temp = temp->next ) {
-        if( temp->op == op ) return( temp );
+        if( temp->op == op ) {
+            return( temp );
+        }
     }
     return( NULL );
 }
@@ -662,7 +675,8 @@ static  temp_entry      *AddTempEntry( name *op ) {
         temp->next = TempList;
         TempList = temp;
         temp->actual_op = op;
-        if( op->n.class == N_TEMP ) op = DeAlias( op );
+        if( op->n.class == N_TEMP )
+            op = DeAlias( op );
         temp->op = op;
         temp->first = NULL;
         temp->last = NULL;
@@ -691,10 +705,13 @@ static  void            DefUseTemp( name *op,
         temp->killed = true;
         return;
     }
-    if( temp->first == NULL ) temp->first = ins;
+    if( temp->first == NULL )
+        temp->first = ins;
     temp->last = ins;
     temp->savings++;
-    if( defined ) temp->defined = true;
+    if( defined ) {
+        temp->defined = true;
+    }
 }
 
 
@@ -744,7 +761,8 @@ extern  void    InitTempEntries( block *blk ) {
 
     TempList = NULL;
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-        if( ins->ins_flags & FP_INS_INTRODUCED ) continue;
+        if( ins->ins_flags & FP_INS_INTRODUCED )
+            continue;
         for( i = 0; i < ins->num_operands; ++i ) {
             CheckTemp( ins, ins->operands[i], false );
         }
@@ -792,7 +810,8 @@ static  void    KillRelatedTemps( name *op )
 {
     temp_entry  *temp;
 
-    if( op->n.class != N_MEMORY ) return;
+    if( op->n.class != N_MEMORY )
+        return;
     for( temp = TempList; temp != NULL; temp = temp->next ) {
         if( temp->op->n.class == N_MEMORY &&
             temp->op->v.symbol == op->v.symbol ) {
@@ -860,7 +879,8 @@ static  void    CacheTemps( block *blk ) {
         }
     }
     for( temp = TempList; temp != NULL; temp = temp->next ) {
-        if( temp->killed ) continue;
+        if( temp->killed )
+            continue;
         if( !OKToCache( temp ) ) {
             temp->killed = true;
         }
@@ -871,22 +891,31 @@ static  void    CacheTemps( block *blk ) {
         }
     }
     for( temp = TempList; temp != NULL; temp = temp->next ) {
-        if( temp->killed ) continue;
+        if( temp->killed )
+            continue;
         if( temp->op->v.usage & USE_IN_ANOTHER_BLOCK ) {
             if( Entry != NULL ) {
                 temp->first = blk->ins.hd.next;
                 temp->last = blk->ins.hd.prev;
                 temp->whole_block = true;
             } else {
-                if( temp->defined ) continue;
-                if( temp->first == temp->last ) continue;
+                if( temp->defined )
+                    continue;
+                if( temp->first == temp->last ) {
+                    continue;
+                }
             }
             temp->global = true;
         } else {
-            if( !temp->defined ) continue; // I'm not sure if these save anything
-            if( temp->defined && G( temp->first ) != G_MFST ) continue;
-            if( RegAction( temp->last ) == NULL ) continue;
-            if( temp->first == temp->last ) continue;
+            if( !temp->defined )
+                continue; // I'm not sure if these save anything
+            if( temp->defined && G( temp->first ) != G_MFST )
+                continue;
+            if( RegAction( temp->last ) == NULL )
+                continue;
+            if( temp->first == temp->last ) {
+                continue;
+            }
         }
         if( StackBetween( temp->first, temp->last, 0 ) ) {
             StackBetween( temp->first, temp->last, 1 );
@@ -896,7 +925,8 @@ static  void    CacheTemps( block *blk ) {
     owner = &TempList;
     for( ;; ) {
         temp = *owner;
-        if( temp == NULL ) break;
+        if( temp == NULL )
+            break;
         if( temp->cached ) {
             owner = &temp->next;
         } else {

@@ -237,10 +237,12 @@ hw_reg_set SaveRegs( void )
 bool IsStackReg( name *n )
 /************************/
 {
-    if( n == NULL ) return( false );
-    if( n->n.class != N_REGISTER ) return( false );
-    if( !HW_CEqual( n->r.reg, HW_R29 ) &&
-        !HW_CEqual( n->r.reg, HW_D29 ) ) return( false );
+    if( n == NULL )
+        return( false );
+    if( n->n.class != N_REGISTER )
+        return( false );
+    if( !HW_CEqual( n->r.reg, HW_R29 ) && !HW_CEqual( n->r.reg, HW_D29 ) )
+        return( false );
     return( true );
 }
 

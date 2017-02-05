@@ -134,9 +134,12 @@ name    *FindIndex( instruction *ins ) {
         }
     }
     index = ins->result;
-    if( index == NULL ) return( NULL );
-    if( index->n.class != N_INDEXED ) return( NULL );
-    if( IndexOkay( ins, index ) ) return( NULL );
+    if( index == NULL )
+        return( NULL );
+    if( index->n.class != N_INDEXED )
+        return( NULL );
+    if( IndexOkay( ins, index ) )
+        return( NULL );
     return( index );
 }
 
@@ -162,7 +165,8 @@ void    NoMemIndex( instruction *ins ) {
                 bad_index = ins->result;
             }
         }
-        if( bad_index == NULL ) break;
+        if( bad_index == NULL )
+            break;
         (void)IndexToTemp( ins, bad_index );
     }
 }
@@ -307,7 +311,8 @@ instruction     *OneMemRef( instruction *ins ) {
             if( op2->n.class != N_INDEXED && op2->n.class != N_MEMORY ) {
                 return( ins );
             }
-            if( op1 == op2 ) return( ins );
+            if( op1 == op2 )
+                return( ins );
             OpTemp( ins, 0, 0 );
         }
     } else if( ins->num_operands == 1 && ins->result != NULL ) {
@@ -319,10 +324,12 @@ instruction     *OneMemRef( instruction *ins ) {
         if( res->n.class != N_INDEXED && res->n.class != N_MEMORY ) {
             return( ins );
         }
-        if( op1 == res ) return( ins );
-        if( ins->type_class == XX ) return( ins );
+        if( op1 == res )
+            return( ins );
+        if( ins->type_class == XX )
+            return( ins );
         if( _IsConvert( ins ) && ins->type_class > ins->base_type_class ) {
-            ResTemp( ins ); /* 90-Nov-29 */
+            ResTemp( ins );
         } else {
             OpTemp( ins, 0, 0 );
         }

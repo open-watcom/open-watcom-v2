@@ -186,14 +186,19 @@ bool    SameThing( name *x, name *y )
     since they may (probably will) both end up on the 8087 stack.
 */
 {
-    if( x == y ) return( true );
-    if( x == NULL || y == NULL ) return( false );
-    if( FPIsStack( x ) && FPIsStack( y ) ) return( true );
+    if( x == y )
+        return( true );
+    if( x == NULL || y == NULL )
+        return( false );
+    if( FPIsStack( x ) && FPIsStack( y ) )
+        return( true );
     if( x->n.class == N_MEMORY
      && y->n.class == N_MEMORY
-     && x->v.symbol == y->v.symbol ) return( true );
+     && x->v.symbol == y->v.symbol )
+        return( true );
     if( x->n.class == N_TEMP && y->n.class == N_TEMP ) {
-        if( x->t.v.id != y->t.v.id ) return( false );
+        if( x->t.v.id != y->t.v.id )
+            return( false );
         if( (x->t.temp_flags & ALIAS) == 0 && (y->t.temp_flags & ALIAS) == 0 )
             return( false );
         return( true );
@@ -242,16 +247,21 @@ static  bool    IsDeadIns( block *blk, instruction *ins, instruction *next )
     name                *op;
 
     op = ins->result;
-    if( op == NULL ) return( false );
-//  if( op->n.class != N_TEMP ) return( false );
-    if( op->v.usage & USE_ADDRESS ) return( false );
-    if( SideEffect( ins ) ) return( false );
+    if( op == NULL )
+        return( false );
+//  if( op->n.class != N_TEMP )
+//        return( false );
+    if( op->v.usage & USE_ADDRESS )
+        return( false );
+    if( SideEffect( ins ) )
+        return( false );
     conf = FindConflictNode( op, blk, ins );
-    if( conf == NULL ) return( false );
+    if( conf == NULL )
+        return( false );
     if( _LBitEmpty( conf->id.within_block )
-     && _GBitEmpty( conf->id.out_of_block ) ) {
-         return( false );
-     }
+      && _GBitEmpty( conf->id.out_of_block ) ) {
+        return( false );
+    }
     if( _LBitOverlap( conf->id.within_block, next->head.live.within_block ) ) {
         return( false );
     }

@@ -146,9 +146,12 @@ extern  void    BGFiniLabel( label_handle lbl ) {
 
     block       *blk;
 
-    if( HaveCurrBlock && FiniLabel( lbl, CurrBlock ) ) return;
+    if( HaveCurrBlock && FiniLabel( lbl, CurrBlock ) )
+        return;
     for( blk = BlockList; blk != NULL; blk = blk->prev_block ) {
-        if( FiniLabel( lbl, blk ) ) return;
+        if( FiniLabel( lbl, blk ) ) {
+            return;
+        }
     }
     GenKillLabel( lbl );
 }
@@ -157,13 +160,17 @@ extern  void    BGFiniLabel( label_handle lbl ) {
 extern  bool    NeedConvert( type_def *from, type_def *to ) {
 /*********************************************************/
 
-    if( from == to ) return( false );
-    if( from->attr & TYPE_FLOAT ) return( true );
-    if( to->attr & TYPE_FLOAT ) return( true );
-    if( from->length != to->length ) return( true );
+    if( from == to )
+        return( false );
+    if( from->attr & TYPE_FLOAT )
+        return( true );
+    if( to->attr & TYPE_FLOAT )
+        return( true );
+    if( from->length != to->length )
+        return( true );
 #if _TARGET & _TARG_IAPX86
-    if( ( to->attr & TYPE_POINTER ) != ( from->attr & TYPE_POINTER )
-        && to->length != WORD_SIZE ) return( true ); /* long <=> pointer */
+    if( (to->attr & TYPE_POINTER) != (from->attr & TYPE_POINTER) && to->length != WORD_SIZE )
+        return( true ); /* long <=> pointer */
 #endif
     return( false );
 }

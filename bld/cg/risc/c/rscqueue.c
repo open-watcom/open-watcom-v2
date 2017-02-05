@@ -70,7 +70,8 @@ static  void    dumpDebug( void ) {
     oc_class            class;
 
     class = debugOC.oc_header.class;
-    if( ( class & GET_BASE ) != OC_INFO ) return;
+    if( ( class & GET_BASE ) != OC_INFO )
+        return;
     loc = AskLocation();
     switch( class & INFO_MASK ) {
     case INFO_LINE:

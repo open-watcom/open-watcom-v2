@@ -53,7 +53,9 @@ static bool HasSegRegs( reg_tree *tree )
     regs = tree->regs;
     if( regs != NULL ) {
         for( ; !HW_CEqual( *regs, HW_EMPTY ); ++regs ) {
-            if( HW_COvlap( *regs, HW_SEGS ) ) return( true );
+            if( HW_COvlap( *regs, HW_SEGS ) ) {
+                return( true );
+            }
         }
     }
     return( false );
@@ -330,7 +332,9 @@ static  reg_tree        *CheckTree( reg_tree *tree )
             tree = NULL;
             break;
         }
-        if( temp == alias ) break;
+        if( temp == alias ) {
+            break;
+        }
     }
     return( tree );
 }
@@ -427,7 +431,9 @@ static  bool    PartIntersect( reg_tree *part,
                 for( j = REG_COUNT; j > 0; --j ) {
                     if( !HW_CEqual( *dst, HW_EMPTY ) ) {
                         tmp = rtn( *dst );
-                        if( HW_Equal( curr, tmp ) ) break;
+                        if( HW_Equal( curr, tmp ) ) {
+                            break;
+                        }
                     }
                     ++dst;
                 }

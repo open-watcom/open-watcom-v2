@@ -411,7 +411,8 @@ static  void    AddDim( dbg_array ar, dim_any *dim )
     owner = &ar->list;
     for(;;) {
         curr = *owner;
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         owner = &curr->entry.next;
     }
     dim->entry.next = NULL;

@@ -78,7 +78,8 @@ static void     EchoAPIRedirect( void )
 static  void    EchoAPIUnredirect( void )
 /***************************************/
 {
-    if( EchoAPIFile == NULL ) return;
+    if( EchoAPIFile == NULL )
+        return;
     fclose( EchoAPIFile );
     EchoAPIFile = NULL;
 }
@@ -356,21 +357,21 @@ cg_name EchoAPICgnameReturn     // EchoAPI cg_name RETURN VALUE
     ( cg_name retn )            // - cg_name value
 {
     EchoAPI( " -> %n\n", retn );
-    return retn;
+    return( retn );
 }
 
 call_handle EchoAPICallHandleReturn // EchoAPI call_handle RETURN VALUE
     ( call_handle retn )            // - call_handle value
 {
     EchoAPI( " -> %C\n", retn );
-    return retn;
+    return( retn );
 }
 
 cg_type EchoAPICgtypeReturn     // EchoAPI cg_type RETURN VALUE
     ( cg_type retn )            // - cg_type value
 {
     EchoAPI( " -> %t\n", retn );
-    return retn;
+    return( retn );
 }
 
 
@@ -378,7 +379,7 @@ int EchoAPIHexReturn            // EchoAPI HEXADECIMAL RETURN VALUE
     ( int retn )                // - value
 {
     EchoAPI( " -> %x\n", retn );
-    return retn;
+    return( retn );
 }
 
 
@@ -386,7 +387,7 @@ int EchoAPIIntReturn    // EchoAPI DECIMAL RETURN VALUE
     ( int retn )        // - value
 {
     EchoAPI( " -> %i\n", retn );
-    return retn;
+    return( retn );
 }
 
 
@@ -394,7 +395,7 @@ sel_handle EchoAPISelHandleReturn   // EchoAPI sel_handle RETURN VALUE
     ( sel_handle retn )             // - sel_handle value
 {
     EchoAPI( " -> %S\n", retn );
-    return retn;
+    return( retn );
 }
 
 
@@ -402,7 +403,7 @@ temp_handle EchoAPITempHandleReturn // EchoAPI temp_handle RETURN VALUE
     ( temp_handle retn )            // - temp_handle value
 {
     EchoAPI( " -> %T\n", retn );
-    return retn;
+    return( retn );
 }
 
 
@@ -522,7 +523,7 @@ static char *callBackName       // MAKE CALL-BACK NAME FOR PRINTING
     } else {
         sprintf( buffer, "%p:%s", rtn, name );
     }
-    return buffer;
+    return( buffer );
 }
 
 

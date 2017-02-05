@@ -44,7 +44,8 @@ extern  void            DumpLBit(local_bit_set*);
 static  bool    Check( hw_reg_set *name, hw_reg_set test ) {
 /*********************************************************************/
 
-    if( !HW_Subset( *name, test ) ) return( false );
+    if( !HW_Subset( *name, test ) )
+        return( false );
     HW_TurnOff( *name, test );
     return( true );
 }

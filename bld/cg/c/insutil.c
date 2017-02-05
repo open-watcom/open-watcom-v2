@@ -72,7 +72,8 @@ static void RenumFrom( instruction *ins ) {
         for( ;; ) {
             for( ; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
                 ++id;
-                if( ins->id > id ) return;
+                if( ins->id > id )
+                    return;
                 ins->id = id;
             }
             blk = _BLOCK( ins )->next_block;
@@ -331,7 +332,8 @@ void    SuffixIns( instruction *ins, instruction *suff )
 static  block   *GetBlockPointer( block *blk, instruction *ins )
 /**************************************************************/
 {
-    if( blk != NULL ) return( blk );
+    if( blk != NULL )
+        return( blk );
     while( ins->head.opcode != OP_BLOCK ) {
         ins = ins->head.next;
     }

@@ -910,7 +910,8 @@ static  void GenParmLoc( dbg_local *parm, dbg_local **locals )
         if( *alt_lnk != NULL ){
             for(;;){
                 alt_loc = *alt_lnk;
-                if( alt_loc->next == NULL )break;
+                if( alt_loc->next == NULL )
+                    break;
                 alt_lnk = &alt_loc->next;
             }
             *alt_lnk = NULL;   // don't use base

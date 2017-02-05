@@ -380,8 +380,9 @@ static  bool    NeedBPProlog( void ) {
     if( ( CurrProc->state.attr & ROUTINE_NEEDS_PROLOG ) != 0 )
         return( true );
     if( FAR_RET_ON_STACK ) {
-        if( CHAIN_FRAME )
+        if( CHAIN_FRAME ) {
             return( true );
+        }
     }
     return( false );
 }
@@ -505,8 +506,9 @@ static  void    EpilogHook( void )
         DoRTCall( RT_EPIHOOK, false );
     }
     size = ProEpiDataSize();
-    if( size != 0 )
+    if( size != 0 ) {
         GenRegAdd( HW_SP, size );
+    }
 }
 
 
@@ -628,7 +630,7 @@ void    GenProlog( void )
 
     if( _RoutineIsInterrupt( CurrProc->state.attr ) ||
         ( CurrProc->state.attr & ROUTINE_NEVER_RETURNS ) ) {
-       ret_size = 0;
+        ret_size = 0;
     } else if( _RoutineIsLong( CurrProc->state.attr ) ) {
         ret_size = 2 * WORD_SIZE;
     } else if( _RoutineIsFar16( CurrProc->state.attr ) ) {
@@ -800,10 +802,11 @@ extern void     AdjustStackDepthDirect( int adjust ) {
 extern  bool    BaseIsSP( name *op ) {
 /************************************/
 
-    if( !CurrProc->targ.sp_frame ) return( false );
-        if( CurrProc->targ.sp_align && ( op->t.temp_flags & STACK_PARM ) ) {
-            return( false );
-        }
+    if( !CurrProc->targ.sp_frame )
+        return( false );
+    if( CurrProc->targ.sp_align && ( op->t.temp_flags & STACK_PARM ) ) {
+        return( false );
+    }
     return( true );
 }
 
@@ -1017,9 +1020,9 @@ type_length PushSize( type_length len )
 }
 
 
-static  void    AllocStack( void ) {
-/****************************/
-
+static  void    AllocStack( void )
+/********************************/
+{
     type_length     size;
 
     /* keep stack aligned */
@@ -1113,15 +1116,15 @@ void    GenEpilog( void )
 
 
     CurrProc->prolog_state |= GENERATED_EPILOG;
-    if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
+    if( _IsModel( DBG_LOCALS ) ) {  // d1+ or d2
         EmitRtnEnd();
     }
 }
 
 
-static  void    DoEpilog( void ) {
-/**************************/
-
+static  void    DoEpilog( void )
+/******************************/
+{
     hw_reg_set  to_pop;
     bool    is_long;
     type_length size;
@@ -1172,7 +1175,7 @@ static  void    DoEpilog( void ) {
                 EpilogHook();
                 if( FAR_RET_ON_STACK ) {
                     if( CHEAP_FRAME ) {
-                      GenCypWindowsEpilog();
+                        GenCypWindowsEpilog();
                     } else {
                         GenWindowsEpilog();
                     }
@@ -1192,7 +1195,7 @@ static  void    DoEpilog( void ) {
     if( CurrProc->prolog_state & GENERATE_THUNK_PROLOG ) {
         QuickSave( HW_SP, OP_POP );
     }
-    if( _IsTargetModel( NEW_P5_PROFILING|P5_PROFILING ) ) {
+    if( _IsTargetModel( NEW_P5_PROFILING | P5_PROFILING ) ) {
         GenP5ProfilingEpilog( CurrProc->label );
     }
 #endif

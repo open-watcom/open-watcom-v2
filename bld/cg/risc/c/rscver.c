@@ -152,7 +152,8 @@ static  bool    Aligned( name *op, type_length align, type_class_def tipe )
         // Note: this assumes we always put global elements on 8-byte
         // boundaries
         // correction - front end only puts globals on 4-byte boundaries
-        if( align == 8 ) return( false );
+        if( align == 8 )
+            return( false );
         /* fall through */
     case N_TEMP:
         // Note: this assumes we are not packing elements of size < 8 into
@@ -196,14 +197,16 @@ extern  bool    DoVerify( vertype kind, instruction *ins )
 #if _TARGET & _TARG_AXP
         if( ins->type_class == Unsigned[ins->type_class] &&
             ( ins->operands[1]->c.lo.int_value & 0x8000 ) &&
-            TypeClassSize[ins->type_class] >= 4 ) return( false );
+            TypeClassSize[ins->type_class] >= 4 )
+            return( false );
 #endif
         return( HalfWordConst( ins->operands[1] ) );
     case V_HALFWORDCONST1:
 #if _TARGET & _TARG_AXP
         if( ins->type_class == Unsigned[ins->type_class] &&
             ( ins->operands[0]->c.lo.int_value & 0x8000 ) &&
-            TypeClassSize[ins->type_class] >= 4 ) return( false );
+            TypeClassSize[ins->type_class] >= 4 )
+            return( false );
 #endif
         return( HalfWordConst( ins->operands[0] ) );
     case V_AXPBRANCH:   // FIXME: appears to be unused!

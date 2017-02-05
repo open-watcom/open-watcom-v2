@@ -105,8 +105,10 @@ static  bool    (*OverlapTable[N_INDEXED + 1][N_INDEXED + 1])( name *, name * ) 
 extern  bool    Overlaps( name *result, name *op )
 /************************************************/
 {
-    if( result == NULL || op == NULL ) return( false );
-    if( result == op ) return( true );
+    if( result == NULL || op == NULL )
+        return( false );
+    if( result == op )
+        return( true );
     return( OverlapTable[result->n.class][op->n.class]( result, op ) );
 }
 
@@ -116,7 +118,9 @@ extern  bool    CondOverlaps( name *result, name *ccop )
     to be modified as well.
 */
 {
-    if( result == NULL || ccop == NULL ) return( true );
-    if( result == ccop ) return( true );
+    if( result == NULL || ccop == NULL )
+        return( true );
+    if( result == ccop )
+        return( true );
     return( OverlapTable[result->n.class][ccop->n.class]( result, ccop ) );
 }

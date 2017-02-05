@@ -157,7 +157,9 @@ extern  void    ScoreClear( score *p )
         p->index = i;
         p->generation = 0;
         ++ p;
-        if( ++i == ScoreCount ) break;
+        if( ++i == ScoreCount ) {
+            break;
+        }
     }
 }
 
@@ -199,7 +201,9 @@ extern  void    FreeScoreBoard( score *p )
             --i;
             ScoreFreeList( q );
             ++q;
-            if( i == 0 ) break;
+            if( i == 0 ) {
+                break;
+            }
         }
         i = ScoreCount;
         list_heads = (list_head *)&p[i];
@@ -213,7 +217,9 @@ extern  void    FreeScoreBoard( score *p )
             p->prev_reg = p;
             p->generation = 0;
             ++ p;
-            if( i == 0 ) break;
+            if( i == 0 ) {
+                break;
+            }
         }
     }
 }
@@ -234,7 +240,8 @@ extern  void    MemChanged( score *p, bool statics_too )
             owner = p->list;
             for(;;) {
                 curr = *owner;
-                if( curr == NULL ) break;
+                if( curr == NULL )
+                    break;
                 changed = false;
                 switch( curr->info.class ) {
                 case N_CONSTANT:
@@ -273,7 +280,9 @@ extern  void    MemChanged( score *p, bool statics_too )
             }
         }
         ++ p;
-        if( i == 0 ) break;
+        if( i == 0 ) {
+            break;
+        }
     }
 }
 

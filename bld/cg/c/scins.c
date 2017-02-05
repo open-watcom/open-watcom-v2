@@ -102,7 +102,9 @@ bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
         class = ins->type_class;
     }
     if( to->n.class != N_CONSTANT ) {
-        if( TypeClassSize[class] != to->n.size ) return( false );
+        if( TypeClassSize[class] != to->n.size ) {
+            return( false );
+        }
     }
     for( i = ins->num_operands; i-- > 0; ) {
         save_ops[i] = ins->operands[i];
@@ -160,9 +162,12 @@ static  bool    TryOldIndex( score *sc, instruction *ins, name **opp ) {
     name        *reg_name;
 
     op = *opp;
-    if( op->n.class != N_INDEXED ) return( false );
-    if( op->i.index->n.class != N_REGISTER ) return( false );
-    if( op->i.index->r.reg_index == NO_INDEX ) return( false );
+    if( op->n.class != N_INDEXED )
+        return( false );
+    if( op->i.index->n.class != N_REGISTER )
+        return( false );
+    if( op->i.index->r.reg_index == NO_INDEX )
+        return( false );
     this_reg = &sc[op->i.index->r.reg_index];
     for( curr_reg = this_reg->next_reg; curr_reg != this_reg; curr_reg = curr_reg->next_reg ) {
         if( curr_reg->generation < this_reg->generation ) {
@@ -177,8 +182,9 @@ static  bool    TryOldIndex( score *sc, instruction *ins, name **opp ) {
                                     op->n.name_class,
                                     op->n.size, op->i.scale,
                                     op->i.index_flags );
-                if( IndexOkay( ins, index )
-                 && ChangeIns( ins, index, opp, CHANGE_NORMAL ) ) return( true );
+                if( IndexOkay( ins, index ) && ChangeIns( ins, index, opp, CHANGE_NORMAL ) ) {
+                    return( true );
+                }
             }
         }
     }
@@ -257,7 +263,8 @@ bool    FindRegOpnd( score *sc, instruction *ins )
     int         i;
     bool        change;
 
-    if( IsStackReg( ins->result ) ) return( false );
+    if( IsStackReg( ins->result ) )
+        return( false );
     change = false;
     for( i = NumOperands( ins ); i-- > 0; ) {
         if( TryRegOp( sc, ins, &ins->operands[i] ) ) {
@@ -409,10 +416,14 @@ void    ScZeroCheck( score *sc, instruction *ins )
 
     if( ins->head.opcode != OP_XOR
      && ins->head.opcode != OP_MOD
-     && ins->head.opcode != OP_SUB ) return;
-    if( ins->operands[0] != ins->operands[1] ) return;
-    if( ins->operands[0] != ins->result ) return;
-    if( ins->operands[0]->n.class != N_REGISTER ) return;
+     && ins->head.opcode != OP_SUB )
+        return;
+    if( ins->operands[0] != ins->operands[1] )
+        return;
+    if( ins->operands[0] != ins->result )
+        return;
+    if( ins->operands[0]->n.class != N_REGISTER )
+        return;
     i = ins->result->r.reg_index;
     ScoreAssign( sc, i, ScZero );
 }

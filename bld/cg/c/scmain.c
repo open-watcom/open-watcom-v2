@@ -87,7 +87,8 @@ static  void    ScoreSeed( block *blk, block *son, unsigned index )
     default:
         return;
     }
-    if( which != index ) return;
+    if( which != index )
+        return;
     ScoreMakeEqual( son->cc, cmp->operands[0], cmp->operands[1] );
 }
 
@@ -137,7 +138,9 @@ static  void    ScoreCopy( score *other_sc, score *sc )
         sc[i].list = NULL;
         *sc_heads = (list_head *)sc_heads + 1;
         ++sc_heads;
-        if( i == 0 ) break;
+        if( i == 0 ) {
+            break;
+        }
     }
     *sc_heads = NULL;
     i = ScoreCount;
@@ -145,7 +148,9 @@ static  void    ScoreCopy( score *other_sc, score *sc )
     for( ;; ) {
         --i;
         CopyList( other_sc, sc, sc_heads, i );
-        if( i == 0 ) break;
+        if( i == 0 ) {
+            break;
+        }
     }
 }
 
@@ -165,7 +170,8 @@ static  void *ScoreDescendants( block *blk )
             for(;;) {
                 ScoreCopy( blk->cc, son->cc );
                 ScoreSeed( blk, son, i );
-                if( !DoScore( son ) ) break;
+                if( !DoScore( son ) )
+                    break;
                 UpdateLive( son->ins.hd.next, son->ins.hd.prev );
             }
             _MarkBlkVisited( son );
@@ -223,7 +229,8 @@ static  void    ScoreRoutine( void )
                 for( ;; ) {
                     FreeScoreBoard( blk->cc );
                     ScInitRegs( blk->cc );
-                    if( !DoScore( blk ) ) break;
+                    if( !DoScore( blk ) )
+                        break;
                     UpdateLive( blk->ins.hd.next, blk->ins.hd.prev );
                 }
                 _MarkBlkVisited( blk );

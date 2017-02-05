@@ -266,7 +266,8 @@ tbl_control     *MakeScanTab( select_list *list, signed_32 hi,
         *tab_ptr = scan->label;
         GenCodePtr( *tab_ptr );
         ++tab_ptr;
-        if( SelCompare( curr, hi ) >= 0 ) break;
+        if( SelCompare( curr, hi ) >= 0 )
+            break;
         if( SelCompare( curr, scan->high ) >= 0 ) {
             scan = scan->next;
             curr = scan->low;
@@ -302,7 +303,8 @@ static  void    GenValuesForward( select_list *list, signed_32 hi,
             Gen4ByteValue( curr - to_sub );
             break;
         }
-        if( SelCompare( curr, hi ) >= 0 ) break;
+        if( SelCompare( curr, hi ) >= 0 )
+            break;
         if( SelCompare( curr, list->high ) >= 0 ) {
             list = list->next;
             curr = list->low;
@@ -337,7 +339,8 @@ static  void    GenValuesBackward( select_list *list, signed_32 hi,
             Gen4ByteValue( curr - to_sub );
             break;
         }
-        if( SelCompare( curr, lo ) <= 0 ) break;
+        if( SelCompare( curr, lo ) <= 0 )
+            break;
         if( SelCompare( curr, scan->low ) <= 0 ) {
             next = scan;
             for( scan = list; scan->next != next; ) {
@@ -375,7 +378,8 @@ tbl_control     *MakeJmpTab( select_list *list, signed_32 lo,
         }
         GenCodePtr( *tab_ptr );
         ++tab_ptr;
-        if( SelCompare( lo, hi ) >= 0 ) break;
+        if( SelCompare( lo, hi ) >= 0 )
+            break;
         if( SelCompare( lo, list->high ) >= 0 ) {
             list = list->next;
         }

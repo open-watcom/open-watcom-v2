@@ -134,7 +134,8 @@ static  void            FreeUnVisitedTemps( void )
     owner = &Names[N_TEMP];
     for( ;; ) {
         op = *owner;
-        if( op == NULL ) break;
+        if( op == NULL )
+            break;
         if( op->t.temp_flags & VISITED ) {
             op->t.temp_flags &= ~VISITED;
             owner = &op->n.next_name;
@@ -155,10 +156,14 @@ extern  bool            VolatileIns(instruction *ins)
     int         i;
 
     for( i = ins->num_operands; i-- > 0; ) {
-        if( IsVolatile( ins->operands[i] ) ) return( true );
+        if( IsVolatile( ins->operands[i] ) ) {
+            return( true );
+        }
     }
     if( ins->result != NULL ) {
-        if( IsVolatile( ins->result ) ) return( true );
+        if( IsVolatile( ins->result ) ) {
+            return( true );
+        }
     }
     return( false );
 }
@@ -171,11 +176,15 @@ extern  bool            SideEffect(instruction* ins)
     This is a utility routine for any module to use.
 */
 {
-    if( ins->head.opcode == OP_PUSH ) return( true );
-    if( ins->head.opcode == OP_POP ) return( true );
+    if( ins->head.opcode == OP_PUSH )
+        return( true );
+    if( ins->head.opcode == OP_POP )
+        return( true );
     if( ins->ins_flags & INS_CC_USED
-        && ins->head.opcode != OP_MOV ) return( true );
-    if( FPSideEffect( ins ) ) return( true );
+      && ins->head.opcode != OP_MOV )
+        return( true );
+    if( FPSideEffect( ins ) )
+        return( true );
     return( VolatileIns( ins ) );
 }
 
@@ -355,7 +364,8 @@ static  bool    RemoveUselessStuff( bool just_the_loop, bool in_regalloc )
     if( tail != NULL ) {
         change |= FreeUselessIns( tail, just_the_loop, in_regalloc );
     }
-    if( !in_regalloc ) FreeUnVisitedTemps();
+    if( !in_regalloc )
+        FreeUnVisitedTemps();
     return( change );
 }
 
@@ -363,7 +373,8 @@ static  bool    RemoveUselessStuff( bool just_the_loop, bool in_regalloc )
 static bool DoInsDead( bool just_the_loop, bool in_regalloc )
 /***********************************************************/
 {
-    if( BlockByBlock && !BreakExists() ) return( false );
+    if( BlockByBlock && !BreakExists() )
+        return( false );
     return( RemoveUselessStuff( just_the_loop, in_regalloc ) );
 }
 

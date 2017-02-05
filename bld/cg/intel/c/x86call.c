@@ -367,8 +367,10 @@ extern  reg_set_index   CallIPossible( instruction *ins ) {
 /*********************************************************/
 
 
-     if( ins->operands[CALL_OP_ADDR]->n.name_class == CP ) return( RL_ );
-     if( ins->operands[CALL_OP_ADDR]->n.name_class == PT ) return( RL_ );
+     if( ins->operands[CALL_OP_ADDR]->n.name_class == CP )
+        return( RL_ );
+     if( ins->operands[CALL_OP_ADDR]->n.name_class == PT )
+        return( RL_ );
 #if _TARGET & _TARG_IAPX86
      return( RL_WORD );
 #else
@@ -462,6 +464,7 @@ extern  void    PostCall( cn call ) {
 extern  type_def        *PassParmType( cg_sym_handle func, type_def* tipe, call_class class ) {
 /******************************************************************************************/
 
-    if( class & FAR16_CALL ) return( tipe );
+    if( class & FAR16_CALL )
+        return( tipe );
     return( QParmType( func, NULL, tipe ) );
 }

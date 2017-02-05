@@ -250,7 +250,8 @@ static  void    DumpInputs( block *b )
                 DumpChar( '?' );
             }
             edge = edge->next_source;
-            if( edge == NULL ) break;
+            if( edge == NULL )
+                break;
             DumpLiteral( ", " );
             ++ i;
             if( ( i & 7 ) == 0 ) {
@@ -375,8 +376,10 @@ extern  void    DumpFlowGraph( block *blk )
             DumpInt( curr->first_block->depth );
             DumpNL();
             for(;;) {
-                if( curr->next_sub_int != NULL ) break;
-                if( curr == head ) break;
+                if( curr->next_sub_int != NULL )
+                    break;
+                if( curr == head )
+                    break;
                 curr = curr->parent;
             }
             for( i = head->level; i > curr->level; --i ) {
@@ -385,14 +388,17 @@ extern  void    DumpFlowGraph( block *blk )
             if( i > 0 ) {
                 for(;;) {
                     DumpLiteral( "End   " );
-                    if( -- i == 0 ) break;
+                    if( -- i == 0 ) {
+                        break;
+                    }
                 }
                 DumpNL();
                 for( i = head->level; i > curr->level; --i ) {
                     DumpLiteral( "|     " );
                 }
             }
-            if( curr == head ) break;
+            if( curr == head )
+                break;
             curr = curr->next_sub_int;
         } else {
             DumpLiteral( "Start " );

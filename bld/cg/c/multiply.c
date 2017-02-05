@@ -73,8 +73,10 @@ static  int     Factor( unsigned_32 num, int *cost )
 
     *cost = 0;
     i = MAXOPS;
-    if( num == 0 ) return( i );
-    if( num == 0xFFFFFFFF ) return( i );
+    if( num == 0 )
+        return( i );
+    if( num == 0xFFFFFFFF )
+        return( i );
 
     test = num >> 1;
     do {
@@ -98,14 +100,17 @@ static  int     Factor( unsigned_32 num, int *cost )
 
                     num /= test;
 
-                    if( --i < 0 ) return( MAXOPS );
+                    if( --i < 0 )
+                        return( MAXOPS );
                     Ops[i].op = test == pow2-1 ? DO_SUB : DO_ADD;
 
-                    if( --i < 0 ) return( MAXOPS );
+                    if( --i < 0 )
+                        return( MAXOPS );
                     Ops[i].op = DO_SHL;
                     Ops[i].cnt= shlcnt;
 
-                    if( --i < 0 ) return( MAXOPS );
+                    if( --i < 0 )
+                        return( MAXOPS );
                     Ops[i].op = DO_XFR;
                     break;
                 }
@@ -122,12 +127,15 @@ static  int     Factor( unsigned_32 num, int *cost )
             num >>= 1;
         }
         if( shlcnt != 0 ) {
-            if( --i < 0 ) return( MAXOPS );
+            if( --i < 0 )
+                return( MAXOPS );
             Ops[i].op = DO_SHL;
             Ops[i].cnt= shlcnt;
         }
-        if( num == 1 ) break;
-        if( --i < 0 ) return( MAXOPS );
+        if( num == 1 )
+            break;
+        if( --i < 0 )
+            return( MAXOPS );
         shlcnt = 0;
         if( ( num & 3 ) == 1 ) {
             Ops[i].op = DO_ADD;
@@ -186,8 +194,10 @@ static  instruction     *CheckMul( instruction *ins )
         neg = true;
     }
     i = Factor( rhs, &cost );
-    if( MulCost( rhs ) <= cost ) return( ins );
-    if( i == MAXOPS ) return( ins );
+    if( MulCost( rhs ) <= cost )
+        return( ins );
+    if( i == MAXOPS )
+        return( ins );
     orig = AllocTemp( class );
     new_ins = MakeMove( ins->operands[0], orig, class );
     PrefixIns( ins, new_ins );

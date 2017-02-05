@@ -81,13 +81,13 @@ static  bool    ScoreStomp( score_info *x, score_info *y ) {
         switch( y->class ) {
         case N_MEMORY:
             if( _IsModel( RELAX_ALIAS ) )
-            return( false );
+                return( false );
             /* fall through */
         case N_INDEXED:
             return( true );
         case N_TEMP:
             if( y->symbol.v->usage & USE_ADDRESS )
-            return( true );
+                return( true );
             return( false );
         }
     }
@@ -101,21 +101,23 @@ static  bool    ScoreStomp( score_info *x, score_info *y ) {
         switch( y->class ) {
         case N_TEMP:
             if( x->base->n.class == N_TEMP ) {
-                if( y->symbol.t->v.id == x->base->t.v.id )
-            return( true );
+                if( y->symbol.t->v.id == x->base->t.v.id ) {
+                    return( true );
+                }
             }
             break;
         case N_MEMORY:
             if( x->base->n.class == N_MEMORY ) {
-                if( y->symbol.p == x->base->v.symbol )
-            return( true );
+                if( y->symbol.p == x->base->v.symbol ) {
+                    return( true );
+                }
             }
             break;
         case N_INDEXED:
             if( y->base == NULL )
-            return( true );
+                return( true );
             if( y->base->n.class != x->base->n.class )
-            return( false );
+                return( false );
             switch( x->base->n.class ) {
             case N_TEMP:
                 return( y->base->t.v.id == x->base->t.v.id );
@@ -194,8 +196,9 @@ static  void    ScoreInsert(  score *p,  int i,  score_info  *info ) {
     for(;;) {
        if( --j < 0 )
            return;
-       if( ( j != i ) && ScoreEqual( p, j, info ) )
+       if( ( j != i ) && ScoreEqual( p, j, info ) ) {
            break;
+       }
     }
     RegAdd( p, i, j );
 }
@@ -251,7 +254,8 @@ extern  void    ScoreAssign( score *p, int index, score_info *info ) {
                 hi_off = info->offset + entry->size / 2;
                 lo_off = info->offset;
             } else {
-                if( info->symbol.p != NULL ) return; /* relocatable const*/
+                if( info->symbol.p != NULL )
+                    return; /* relocatable const*/
                 hi_off = info->offset >> ( entry->size * 4 );
                 lo_off = info->offset & ~( hi_off << ( entry->size * 4 ) );
             }

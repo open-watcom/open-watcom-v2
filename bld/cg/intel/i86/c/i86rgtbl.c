@@ -701,7 +701,8 @@ extern  type_class_def  RegClass( hw_reg_set regs )
     type_class_def      class;
 
     if( HW_COvlap( regs, HW_FLTS ) ) {
-        if( HW_CEqual( regs, HW_ST0 ) ) return( FD );
+        if( HW_CEqual( regs, HW_ST0 ) )
+            return( FD );
         for( possible = STIReg; !HW_CEqual( *possible, HW_EMPTY ); ++possible ) {
             if( HW_Equal( regs, *possible ) ) {
                 return( FD );
@@ -774,9 +775,12 @@ extern  hw_reg_set      Low32Reg( hw_reg_set regs )
     hw_reg_set  low;
     hw_reg_set  *order;
 
-    if( HW_CEqual( regs, HW_EMPTY ) ) return( HW_EMPTY );
+    if( HW_CEqual( regs, HW_EMPTY ) )
+        return( HW_EMPTY );
     for( order = Reg32Order; ; ++order ) {
-        if( HW_Ovlap( *order, regs ) ) break;
+        if( HW_Ovlap( *order, regs ) ) {
+            break;
+        }
     }
     low = regs;
     HW_OnlyOn( low, *order );
@@ -916,10 +920,14 @@ extern  hw_reg_set      FixedRegs( void )
     HW_CTurnOn( tmp, HW_BP );
     HW_CTurnOn( tmp, HW_SS );
     HW_CTurnOn( tmp, HW_CS );
-    if( _IsntTargetModel( FLOATING_DS ) ) HW_CTurnOn( tmp, HW_DS );
-    if( _IsntTargetModel( FLOATING_ES ) ) HW_CTurnOn( tmp, HW_ES );
-    if( _IsntTargetModel( FLOATING_FS ) ) HW_CTurnOn( tmp, HW_FS );
-    if( _IsntTargetModel( FLOATING_GS ) ) HW_CTurnOn( tmp, HW_GS );
+    if( _IsntTargetModel( FLOATING_DS ) )
+        HW_CTurnOn( tmp, HW_DS );
+    if( _IsntTargetModel( FLOATING_ES ) )
+        HW_CTurnOn( tmp, HW_ES );
+    if( _IsntTargetModel( FLOATING_FS ) )
+        HW_CTurnOn( tmp, HW_FS );
+    if( _IsntTargetModel( FLOATING_GS ) )
+        HW_CTurnOn( tmp, HW_GS );
     return( tmp );
 }
 
@@ -927,9 +935,12 @@ extern  hw_reg_set      FixedRegs( void )
 extern  bool    IsStackReg( name *sp )
 /************************************/
 {
-    if( sp == NULL ) return( false );
-    if( sp->n.class != N_REGISTER ) return( false );
-    if( !HW_CEqual( sp->r.reg, HW_SP ) ) return( false );
+    if( sp == NULL )
+        return( false );
+    if( sp->n.class != N_REGISTER )
+        return( false );
+    if( !HW_CEqual( sp->r.reg, HW_SP ) )
+        return( false );
     return( true );
 }
 
@@ -964,10 +975,14 @@ extern  hw_reg_set      AllCacheRegs( void )
     HW_CTurnOn( tmp, HW_ABCD );
     HW_CTurnOn( tmp, HW_SI );
     HW_CTurnOn( tmp, HW_DI );
-    if( _IsTargetModel( FLOATING_DS ) ) HW_CTurnOn( tmp, HW_DS );
-    if( _IsTargetModel( FLOATING_ES ) ) HW_CTurnOn( tmp, HW_ES );
-    if( _IsTargetModel( FLOATING_FS ) ) HW_CTurnOn( tmp, HW_FS );
-    if( _IsTargetModel( FLOATING_GS ) ) HW_CTurnOn( tmp, HW_GS );
+    if( _IsTargetModel( FLOATING_DS ) )
+        HW_CTurnOn( tmp, HW_DS );
+    if( _IsTargetModel( FLOATING_ES ) )
+        HW_CTurnOn( tmp, HW_ES );
+    if( _IsTargetModel( FLOATING_FS ) )
+        HW_CTurnOn( tmp, HW_FS );
+    if( _IsTargetModel( FLOATING_GS ) )
+        HW_CTurnOn( tmp, HW_GS );
     return( tmp );
 }
 

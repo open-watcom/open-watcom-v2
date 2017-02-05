@@ -661,7 +661,8 @@ extern  dbg_block *DoDBBegBlock( int fast_codegen )
 {
     dbg_block   *blk;
 
-    if( CurrProc->targ.debug == NULL ) return( NULL );
+    if( CurrProc->targ.debug == NULL )
+        return( NULL );
     blk = MkBlock();
     if( !fast_codegen ) {
         /*%%%% stick a NOP in the instruction stream, point it at block*/

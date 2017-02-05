@@ -240,8 +240,10 @@ extern  bool    FPStackReg( name *reg_name ) {
     int         reg_num;
 
     reg_num = FPRegNum( reg_name );
-    if( reg_num == -1 ) return( false );
-    if( reg_num < Max87Stk ) return( true );
+    if( reg_num == -1 )
+        return( false );
+    if( reg_num < Max87Stk )
+        return( true );
     return( false );
 }
 
@@ -254,18 +256,28 @@ extern  int     FPRegNum( name *reg_name ) {
 
     hw_reg_set  tmp;
 
-    if( reg_name == NULL ) return( -1 );
-    if( reg_name->n.class != N_REGISTER ) return( -1 );
+    if( reg_name == NULL )
+        return( -1 );
+    if( reg_name->n.class != N_REGISTER )
+        return( -1 );
     tmp = reg_name->r.reg;
     HW_COnlyOn( tmp, HW_FLTS );
-    if( HW_CEqual( tmp, HW_ST0 ) ) return( 0 );
-    if( HW_CEqual( tmp, HW_ST1 ) ) return( 1 );
-    if( HW_CEqual( tmp, HW_ST2 ) ) return( 2 );
-    if( HW_CEqual( tmp, HW_ST3 ) ) return( 3 );
-    if( HW_CEqual( tmp, HW_ST4 ) ) return( 4 );
-    if( HW_CEqual( tmp, HW_ST5 ) ) return( 5 );
-    if( HW_CEqual( tmp, HW_ST6 ) ) return( 6 );
-    if( HW_CEqual( tmp, HW_ST7 ) ) return( 7 );
+    if( HW_CEqual( tmp, HW_ST0 ) )
+        return( 0 );
+    if( HW_CEqual( tmp, HW_ST1 ) )
+        return( 1 );
+    if( HW_CEqual( tmp, HW_ST2 ) )
+        return( 2 );
+    if( HW_CEqual( tmp, HW_ST3 ) )
+        return( 3 );
+    if( HW_CEqual( tmp, HW_ST4 ) )
+        return( 4 );
+    if( HW_CEqual( tmp, HW_ST5 ) )
+        return( 5 );
+    if( HW_CEqual( tmp, HW_ST6 ) )
+        return( 6 );
+    if( HW_CEqual( tmp, HW_ST7 ) )
+        return( 7 );
     return( -1 );
 }
 
@@ -408,8 +420,10 @@ static  void    PrefixChop( instruction *ins ) {
 
     instruction *new_ins;
 
-    if( ins->head.opcode == OP_ROUND ) return;
-    if( _IsFloating( ins->result->n.name_class ) ) return;
+    if( ins->head.opcode == OP_ROUND )
+        return;
+    if( _IsFloating( ins->result->n.name_class ) )
+        return;
     new_ins = MakeUnary( OP_MOV, ST0, ST0, FD );
     new_ins->u.gen_table = FCHOP;
     PrefixIns( ins, new_ins );
@@ -508,8 +522,9 @@ static  instruction     *ExpMove( instruction *ins,
         if( _IsModel( FPU_ROUNDING_INLINE ) ) {
             DoNothing( ins );
             ins = SuffixFSTPRes( ins );
-            if( WantsChop( ins ) )
+            if( WantsChop( ins ) ) {
                 ins->u.gen_table = MFSTRND;
+            }
         } else if( _IsModel( FPU_ROUNDING_OMIT ) ) {
             DoNothing( ins );
             ins = SuffixFSTPRes( ins );
@@ -663,7 +678,8 @@ static  instruction     *ExpandFPIns( instruction *ins, operand_type op1,
     8087 instructions.
 */
 
-    if( !_Is87Ins( ins ) ) return( ins );
+    if( !_Is87Ins( ins ) )
+        return( ins );
     if( op2 != OP_NONE ) {
         switch( ins->head.opcode ) {
         case OP_P5DIV:
@@ -995,7 +1011,8 @@ static  void    RevOtherCond( block *blk, instruction *ins ) {
             }
             break;
         }
-        if( ( ins->u.gen_table->op_type & MASK_CC ) != PRESERVE ) break;
+        if( ( ins->u.gen_table->op_type & MASK_CC ) != PRESERVE )
+            break;
         if( _OpIsCondition( ins->head.opcode )
           && ins->table == DoNop ) { /* used cond codes of original ins */
             RevCond( ins );
@@ -1224,8 +1241,10 @@ extern  void    InitFP( void ) {
 */
 
     Max87Stk = (int)(pointer_int)FEAuxInfo( NULL, STACK_SIZE_8087 );
-    if( Max87Stk > 8 ) Max87Stk = 8;
-    if( Max87Stk < 4 ) Max87Stk = 4;
+    if( Max87Stk > 8 )
+        Max87Stk = 8;
+    if( Max87Stk < 4 )
+        Max87Stk = 4;
     Used87 = false;
     InitFPStkReq();
 }

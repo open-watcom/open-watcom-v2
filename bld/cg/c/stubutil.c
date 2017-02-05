@@ -589,7 +589,8 @@ extern n *FindParm( n *p, n *r ) {
 //================================
 
     for( ;; ) {
-        if( p->r == r ) return( p );
+        if( p->r == r )
+            return( p );
         p = p->r;
     }
 //  return( NULL );
@@ -657,7 +658,7 @@ extern  bool    CheckInLine( n * t ) {
     Code( "%n======== Inline code for %s ends%n", FEName( t->h ) );
     Action( "%n======== Inline code for %s ends%n", FEName( t->h ) );
     NodeList = nlist;
-    return true;
+    return( true );
 }
 extern  void    DumpSubTree( n *t ) {
 //===================================

@@ -107,7 +107,8 @@ static  bool    MergeTwo( instruction *a, instruction *b, signed_32 value )
         instruction *ins;
 
         for( ins = a->head.next; ins != b; ins = ins->head.next ) {
-            if( InsOrderDependant( ins, b ) ) return( false );
+            if( InsOrderDependant( ins, b ) )
+                return( false );
             if( ins->head.opcode == OP_BLOCK ) {
                 Zoiks( ZOIKS_111 );
             }
@@ -185,12 +186,16 @@ static bool AndOr( instruction *and_ins, instruction *or_ins )
     signed_32   new_and;
     name        *mask;
 
-    if( and_ins->operands[0] != and_ins->result ) return( false );
-    if( or_ins->operands[0] != or_ins->result ) return( false );
+    if( and_ins->operands[0] != and_ins->result )
+        return( false );
+    if( or_ins->operands[0] != or_ins->result )
+        return( false );
     new_and = OP2VAL( and_ins ) & ~OP2VAL( or_ins );
-    if( new_and == OP2VAL( and_ins ) ) return( false );
+    if( new_and == OP2VAL( and_ins ) )
+        return( false );
     mask = AllocS32Const( new_and );
-    if( !InsChangeable( and_ins, mask, &and_ins->operands[1] ) ) return( false );
+    if( !InsChangeable( and_ins, mask, &and_ins->operands[1] ) )
+        return( false );
     and_ins->operands[1] = mask;
     InsReset( and_ins );
     return( true );
@@ -206,8 +211,10 @@ static bool OrAnd( instruction *or_ins, instruction *and_ins )
     signed_32   and;
     name        *mask;
 
-    if( or_ins->operands[0] != or_ins->result ) return( false );
-    if( and_ins->operands[0] != and_ins->result ) return( false );
+    if( or_ins->operands[0] != or_ins->result )
+        return( false );
+    if( and_ins->operands[0] != and_ins->result )
+        return( false );
     or = OP2VAL( or_ins );
     and = OP2VAL( and_ins );
     if( ( and & or ) == and ) { // the AND bits are a subset of the OR bits
@@ -220,9 +227,11 @@ static bool OrAnd( instruction *or_ins, instruction *and_ins )
         return( true );
     } else {
         new_or = or & and;
-        if( new_or == OP2VAL( or_ins ) ) return( false );
+        if( new_or == OP2VAL( or_ins ) )
+            return( false );
         mask = AllocS32Const( new_or );
-        if( !InsChangeable( or_ins, mask, &or_ins->operands[1] ) ) return( false );
+        if( !InsChangeable( or_ins, mask, &or_ins->operands[1] ) )
+            return( false );
         or_ins->operands[1] = mask;
         InsReset( or_ins );
         return( true );
@@ -237,7 +246,8 @@ static bool OrAndOr( instruction *a, instruction *b )
     signed_32   and_val;
     name        *mask;
 
-    if( a->result != b->result ) return( false );
+    if( a->result != b->result )
+        return( false );
     a->head.opcode = OP_AND;
     b->head.opcode = OP_OR;
     and_val = OP2VAL( a ) & OP2VAL( b );
@@ -265,7 +275,8 @@ static bool AndOrAnd( instruction *a, instruction *b )
     signed_32   or_val;
     name        *mask;
 
-    if( a->result != b->result ) return( false );
+    if( a->result != b->result )
+        return( false );
     a->head.opcode = OP_OR;
     b->head.opcode = OP_AND;
     or_val = OP2VAL( a ) | OP2VAL( b );
@@ -289,7 +300,8 @@ static bool AndOrAnd( instruction *a, instruction *b )
 static  bool    DoRShift( instruction *a, instruction *b )
 /*******************************************************/
 {
-    if( a->type_class != b->type_class ) return( false );
+    if( a->type_class != b->type_class )
+        return( false );
     return( DoAdd( a, b ) );
 }
 
@@ -333,10 +345,13 @@ static bool SameOpWithConst( instruction *ins, instruction *next )
 {
     name        *op;
 
-    if( ins->result != next->operands[0] ) return( false );
+    if( ins->result != next->operands[0] )
+        return( false );
     op = next->operands[1];
-    if( op->n.class != N_CONSTANT ) return( false );
-    if( op->c.const_type != CONS_ABSOLUTE ) return( false );
+    if( op->n.class != N_CONSTANT )
+        return( false );
+    if( op->c.const_type != CONS_ABSOLUTE )
+        return( false );
     return( true );
 }
 
@@ -346,11 +361,15 @@ static bool OpConst( instruction *ins )
 {
     name        *op;
 
-    if( ins->num_operands != 2 ) return( false );
+    if( ins->num_operands != 2 )
+        return( false );
     op = ins->operands[1];
-    if( op->n.class != N_CONSTANT ) return( false );
-    if( op->c.const_type != CONS_ABSOLUTE ) return( false );
-    if( !_IsIntegral( ins->type_class ) ) return( false );
+    if( op->n.class != N_CONSTANT )
+        return( false );
+    if( op->c.const_type != CONS_ABSOLUTE )
+        return( false );
+    if( !_IsIntegral( ins->type_class ) )
+        return( false );
     return( true );
 }
 
@@ -364,7 +383,8 @@ static  instruction     *FindInsPair( instruction *ins,
 {
     instruction         *next;
 
-    if( stopper != NULL ) *stopper = NULL;
+    if( stopper != NULL )
+        *stopper = NULL;
     for( next = ins->head.next; next->head.opcode != OP_BLOCK; next = next->head.next ) {
         if( next->head.opcode == op && SameOpWithConst( ins, next ) ) {
             if( oprtn( ins, next ) ) {
@@ -480,8 +500,10 @@ static bool DoArithmeticOps( instruction *ins, bool *change, instruction **n )
 {
     instruction *next;
 
-    if( ins->type_class == I8 || ins->type_class == U8 ) return( false );
-    if( !OpConst( ins ) ) return( false );
+    if( ins->type_class == I8 || ins->type_class == U8 )
+        return( false );
+    if( !OpConst( ins ) )
+        return( false );
     switch( ins->head.opcode ) {
     case OP_ADD:
         next = AddOpt( ins, change );
@@ -589,8 +611,11 @@ static bool ReferencedBy( instruction *ins, name *op ) {
         curr = ins->operands[i];
         // assume anything which looks at memory uses op
         if( curr->n.class == N_INDEXED ||
-            curr->n.class == N_MEMORY ) return( true );
-        if( SameThing( curr, op ) ) return( true );
+            curr->n.class == N_MEMORY )
+            return( true );
+        if( SameThing( curr, op ) ) {
+            return( true );
+        }
     }
     return( false );
 }
@@ -638,10 +663,15 @@ bool PeepOptBlock( block *blk, bool after_reg_alloc )
     AfterRegAlloc = after_reg_alloc;
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
         next = ins->head.next;
-        if( VolatileIns( ins ) ) continue;
-        if( DoArithmeticOps( ins, &change, &next ) ) continue;
-        if( DoConversionOps( ins, &change, &next ) ) continue;
-        if( DoMemWrites( ins, &change, &next ) ) continue;
+        if( VolatileIns( ins ) )
+            continue;
+        if( DoArithmeticOps( ins, &change, &next ) )
+            continue;
+        if( DoConversionOps( ins, &change, &next ) )
+            continue;
+        if( DoMemWrites( ins, &change, &next ) ) {
+            continue;
+        }
     }
     return( change );
 }

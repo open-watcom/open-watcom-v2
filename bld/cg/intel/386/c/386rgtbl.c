@@ -940,7 +940,8 @@ hw_reg_set      Low48Reg( hw_reg_set regs )
     return the low order part of 48 bit register "regs"
 */
 {
-    if( HW_CEqual( regs, HW_EMPTY ) ) return( HW_EMPTY );
+    if( HW_CEqual( regs, HW_EMPTY ) )
+        return( HW_EMPTY );
     if( HW_COvlap( regs, HW_SEGS ) ) {
         HW_CTurnOff( regs, HW_SEGS );
         return( regs );
@@ -973,10 +974,12 @@ hw_reg_set      Low64Reg( hw_reg_set regs )
     hw_reg_set  low;
     hw_reg_set  *order;
 
-    if( HW_CEqual( regs, HW_EMPTY ) ) return( HW_EMPTY );
+    if( HW_CEqual( regs, HW_EMPTY ) )
+        return( HW_EMPTY );
     order = Reg64Order;
     for( ;; ) {
-        if( HW_Ovlap( *order, regs ) ) break;
+        if( HW_Ovlap( *order, regs ) )
+            break;
         ++order;
     }
     low = regs;
@@ -1109,11 +1112,16 @@ hw_reg_set      FixedRegs( void )
     HW_CTurnOn( fixed, HW_BP );
     HW_CTurnOn( fixed, HW_SS );
     HW_CTurnOn( fixed, HW_CS );
-    if( _IsntTargetModel( FLOATING_DS ) ) HW_CTurnOn( fixed, HW_DS );
-    if( _IsntTargetModel( FLOATING_ES ) ) HW_CTurnOn( fixed, HW_ES );
-    if( _IsntTargetModel( FLOATING_FS ) ) HW_CTurnOn( fixed, HW_FS );
-    if( _IsntTargetModel( FLOATING_GS ) ) HW_CTurnOn( fixed, HW_GS );
-    if( _IsTargetModel( INDEXED_GLOBALS ) ) HW_CTurnOn( fixed, HW_EBX );
+    if( _IsntTargetModel( FLOATING_DS ) )
+        HW_CTurnOn( fixed, HW_DS );
+    if( _IsntTargetModel( FLOATING_ES ) )
+        HW_CTurnOn( fixed, HW_ES );
+    if( _IsntTargetModel( FLOATING_FS ) )
+        HW_CTurnOn( fixed, HW_FS );
+    if( _IsntTargetModel( FLOATING_GS ) )
+        HW_CTurnOn( fixed, HW_GS );
+    if( _IsTargetModel( INDEXED_GLOBALS ) )
+        HW_CTurnOn( fixed, HW_EBX );
     return( fixed );
 }
 
@@ -1121,9 +1129,12 @@ hw_reg_set      FixedRegs( void )
 bool    IsStackReg( name *sp )
 /****************************/
 {
-    if( sp == NULL ) return( false );
-    if( sp->n.class != N_REGISTER ) return( false );
-    if( !HW_CEqual( sp->r.reg, HW_SP ) ) return( false );
+    if( sp == NULL )
+        return( false );
+    if( sp->n.class != N_REGISTER )
+        return( false );
+    if( !HW_CEqual( sp->r.reg, HW_SP ) )
+        return( false );
     return( true );
 }
 
@@ -1138,7 +1149,8 @@ hw_reg_set      StackReg( void )
 hw_reg_set      DisplayReg( void )
 /********************************/
 {
-    if( CurrProc->targ.sp_frame ) return( HW_SP );
+    if( CurrProc->targ.sp_frame )
+        return( HW_SP );
     return( HW_BP );
 }
 
@@ -1169,8 +1181,10 @@ hw_reg_set      AllCacheRegs( void )
     HW_CTurnOn( all, HW_ES );
     HW_CTurnOn( all, HW_FS );
     HW_CTurnOn( all, HW_GS );
-    if( _IsTargetModel( FLOATING_DS ) ) HW_CTurnOn( all, HW_DS );
-    if( _IsTargetModel( INDEXED_GLOBALS ) ) HW_CTurnOff( all, HW_EBX );
+    if( _IsTargetModel( FLOATING_DS ) )
+        HW_CTurnOn( all, HW_DS );
+    if( _IsTargetModel( INDEXED_GLOBALS ) )
+        HW_CTurnOff( all, HW_EBX );
     return( all );
 }
 

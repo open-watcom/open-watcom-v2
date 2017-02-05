@@ -69,7 +69,8 @@ static uint_32 objNameHash( uint_32 h, const char *s )
     for(;;) {
         /* ( h & ~0x0ffffff ) == 0 is always true here */
         c = *s;
-        if( c == 0 ) break;
+        if( c == 0 )
+            break;
         h = (h << 4) + c;
         g = h & ~0x0ffffff;
         h ^= g;

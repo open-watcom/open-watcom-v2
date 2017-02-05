@@ -72,27 +72,41 @@ static  bool    UselessCompare( instruction *ins, cc_control *cc, name *zero )
 
     opcode = ins->head.opcode;
 
-    if( cc->state == UNKNOWN_STATE ) return( false );
+    if( cc->state == UNKNOWN_STATE )
+        return( false );
 #if _TARGET & _TARG_370
     if( opcode != OP_CMP_EQUAL && opcode != OP_CMP_NOT_EQUAL ) {
-        if( cc->op_type != ins->type_class ) return( false );
+        if( cc->op_type != ins->type_class ) {
+            return( false );
+        }
     }
 #endif
     if( ins->operands[0] == cc->left_op
      && ins->operands[1] == cc->right_op ) {
-        if( cc->state == CONDITIONS_SET ) return( true );
-        if( opcode == OP_CMP_EQUAL ) return( true );
-        if( opcode == OP_CMP_NOT_EQUAL ) return( true );
-        if( cc->state == EQUALITY_CONDITIONS_SET ) return( false );
-        if( ins->type_class == I1 ) return( true );
-        if( ins->type_class == I2 ) return( true );
+        if( cc->state == CONDITIONS_SET )
+            return( true );
+        if( opcode == OP_CMP_EQUAL )
+            return( true );
+        if( opcode == OP_CMP_NOT_EQUAL )
+            return( true );
+        if( cc->state == EQUALITY_CONDITIONS_SET )
+            return( false );
+        if( ins->type_class == I1 )
+            return( true );
+        if( ins->type_class == I2 ) {
+            return( true );
+        }
     } else if( ins->operands[0] == cc->result_op
             && ins->operands[1] == zero ) {
 #if _TARGET & _TARG_370
-        if( cc->state == CONDITIONS_SET ) return( true );
+        if( cc->state == CONDITIONS_SET )
+            return( true );
 #endif
-        if( opcode == OP_CMP_EQUAL ) return( true );
-        if( opcode == OP_CMP_NOT_EQUAL ) return( true );
+        if( opcode == OP_CMP_EQUAL )
+            return( true );
+        if( opcode == OP_CMP_NOT_EQUAL ) {
+            return( true );
+        }
     }
     return( false );
 }
@@ -273,9 +287,11 @@ static  void    GatherSources( block *blk )
         cc->result_op = source_cc->result_op;
         cc->op_type = source_cc->op_type;
         for(;;) {
-            if( cc->state == UNKNOWN_STATE ) break;
+            if( cc->state == UNKNOWN_STATE )
+                break;
             edge = edge->next_source;
-            if( edge == NULL ) break;
+            if( edge == NULL )
+                break;
             source_cc = edge->source->cc;
             if( source_cc->state == UNKNOWN_STATE ) {
                 cc->state = UNKNOWN_STATE;

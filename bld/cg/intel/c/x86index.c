@@ -434,7 +434,9 @@ void    FixChoices( void ) {
                 for(;;) {
                     alias = alias->t.alias;
                     alias->t.possible = NoSegments( alias->t.possible );
-                    if( alias == temp ) break;
+                    if( alias == temp ) {
+                        break;
+                    }
                 }
             }
 #else

@@ -380,12 +380,16 @@ static  bool    CanUseOp1( instruction *ins, name *op1 )
 {
     name        *name2;
 
-    if( op1->n.class != N_REGISTER ) return( false );
-    if( HW_Ovlap( op1->r.reg, ins->head.next->head.live.regs ) ) return( false );
+    if( op1->n.class != N_REGISTER )
+        return( false );
+    if( HW_Ovlap( op1->r.reg, ins->head.next->head.live.regs ) )
+        return( false );
     if( ins->result->n.class == N_INDEXED ) {
         name2 = ins->result->i.index;
         if( name2->n.class == N_REGISTER ) {
-            if( HW_Ovlap( name2->r.reg, op1->r.reg ) ) return( false );
+            if( HW_Ovlap( name2->r.reg, op1->r.reg ) ) {
+                return( false );
+            }
         }
     }
     return( true );

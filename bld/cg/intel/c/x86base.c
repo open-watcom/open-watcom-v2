@@ -120,9 +120,13 @@ type_length     AdjustBase( void ) {
         }
     }
     if( best_bp >= -MAX_SHORT_NEG && best_bp <= MAX_SHORT_POS ) {
-        if( best_savings*SHORT_SAVINGS <= SHORT_COST ) return( 0 );
+        if( best_savings*SHORT_SAVINGS <= SHORT_COST ) {
+            return( 0 );
+        }
     } else {
-        if( best_savings*SHORT_SAVINGS <= LONG_COST  ) return( 0 );
+        if( best_savings*SHORT_SAVINGS <= LONG_COST ) {
+            return( 0 );
+        }
     }
     return( best_bp );
 }
@@ -139,7 +143,8 @@ static  int             CalcBaseSave( type_length bp, name *temp ) {
     savings = 0;
     for( ; temp != NULL; temp = temp->n.next_name ) {
         if( temp->t.v.alt_location != NO_LOCATION ) {
-            if( temp->t.v.alt_location < bp-MAX_SHORT_NEG ) break;
+            if( temp->t.v.alt_location < bp-MAX_SHORT_NEG )
+                break;
             savings += temp->t.u.ref_count;
         }
     }

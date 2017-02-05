@@ -98,7 +98,8 @@ section_def *FindSection( segment_id id )
 
     curr = sectionDefs[id % N_SECTIONS];
     while( curr != NULL ) {
-        if( curr->id == id ) break;
+        if( curr->id == id )
+            break;
         curr = curr->next;
     }
     return( curr );
@@ -180,12 +181,16 @@ static  void    DefaultLibs( void )
     lib = NULL;
     for( ;; ) {  //Library dependencies
         lib = FEAuxInfo( lib, NEXT_LIBRARY );
-        if( lib == NULL ) break;
+        if( lib == NULL )
+            break;
         name =  (char *)FEAuxInfo( lib, LIBRARY_NAME ) + 1;
-        if( name == NULL || *name == '\0' ) continue;
+        if( name == NULL || *name == '\0' )
+            continue;
         if( comments == NULL ){
             comments = OWLSectionInit( owlFile, ".drectve", OWL_SECTION_INFO, 1 );
-            if( comments == NULL )break;
+            if( comments == NULL ) {
+                break;
+            }
         }
         OWLEmitData( comments, COMMENTV( COFF_DRECTVE_DEFLIB ) );
         OWLEmitData( comments, name, strlen( name ) );
@@ -214,7 +219,8 @@ static  void    AliasNames( void )
     alias = NULL;
     for( ;; ) {  // Aliases
         alias = FEAuxInfo( alias, NEXT_ALIAS );
-        if( alias == NULL ) break;
+        if( alias == NULL )
+            break;
         alias_name = FEAuxInfo( alias, ALIAS_NAME );
         if( alias_name == NULL ) {
             DoOutObjectName( FEAuxInfo( alias, ALIAS_SYMBOL ),
@@ -272,7 +278,8 @@ static  void    EmitDependencyInfo( void )
     depend = NULL;
     for( ;; ) {
         depend = FEAuxInfo( depend, NEXT_DEPENDENCY );
-        if( depend == NULL ) break;
+        if( depend == NULL )
+            break;
         if( sect == NULL ) {
             sect = OWLSectionInit( owlFile, dependSectionName, OWL_SECTION_INFO, 16 );
         }
@@ -856,7 +863,8 @@ static void DumpImportResolve( label_handle label )
     int                 type;
     back_handle         bck;
 
-    if( AskIfRTLabel( label ) ) return;
+    if( AskIfRTLabel( label ) )
+        return;
     sym = AskForLblSym( label );
     if( sym != NULL ){
         def_resolve = FEAuxInfo( sym, DEFAULT_IMPORT_RESOLVE );
