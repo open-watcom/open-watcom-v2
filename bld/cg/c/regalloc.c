@@ -1339,7 +1339,7 @@ bool    RegAlloc( bool keep_on_truckin ) {
     enum allocation_state       last;
 
     HW_CAsgn( GivenRegisters, HW_EMPTY );
-    if( BlockByBlock == false ) {
+    if( !BlockByBlock ) {
         InitChoices();
         unknowns = ExpandOps( keep_on_truckin );
         if( unknowns <= 0 )

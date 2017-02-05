@@ -71,7 +71,7 @@ static  bool    FlushSomeOpt( pointer_int size )
         old = SetOP( AskCodeSeg() );
         freed = ShrinkQueue( size );
         SetOP( old );
-        if( _IsntModel( NO_OPTIMIZATION ) && IckyWicky == false ) {
+        if( _IsntModel( NO_OPTIMIZATION ) && !IckyWicky ) {
             IckyWicky = true;
             FEMessage( MSG_PEEPHOLE_FLUSHED, NULL );
         }

@@ -942,7 +942,7 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
     SuffixPreHeader( add );
 
     // add a piece of code to check and make sure n and ( n - reps ) have the same sign
-    if( cond->complete == false && Signed[comp_type] != comp_type ) {
+    if( !cond->complete && Signed[comp_type] != comp_type ) {
         new = MakeBlock( AskForNewLabel(), 2 );
         _SetBlkAttr( new, BLK_CONDITIONAL );
         new->loop_head = PreHead->loop_head;

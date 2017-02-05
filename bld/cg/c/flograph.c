@@ -294,7 +294,7 @@ static  bool    FindIntervals( void )
                         break;
                     }
                 }
-                if( add == false ) {
+                if( !add ) {
                     curr->parent = prev_int;
                     prev_int->last_block = curr->last_block;
                     for( test = prev_int->sub_int; test->next_sub_int != NULL; ) {
@@ -452,7 +452,7 @@ static  void    NestingDepth( void )
                     }
                 }
             }
-            if( change == false ) {
+            if( !change ) {
                 break;
             }
         }

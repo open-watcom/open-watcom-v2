@@ -335,7 +335,7 @@ extern  byte    DoMDisp( name *op, bool alt_encoding )
 
 
     regs = CalcSegment( op->v.symbol, op->m.memory_type );
-    if( ( alt_encoding == false && ZPageType != ZP_USES_DS )
+    if( ( !alt_encoding && ZPageType != ZP_USES_DS )
       ||  !HW_COvlap( regs, HW_SS ) ) {
         zptype = ZP_USES_SS;
     } else {

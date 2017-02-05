@@ -102,7 +102,7 @@ extern  an      BGStopInline( call_handle handle, type_def *tipe ) {
     inline_stack    *junk;
     an              retv;
 
-    if( HaveCurrBlock == false ) {
+    if( !HaveCurrBlock ) {
         EnLink( AskForNewLabel(), true );
         HaveCurrBlock = true;
     }

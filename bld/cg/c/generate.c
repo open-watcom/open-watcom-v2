@@ -279,7 +279,8 @@ static  void            PostOptimize( void )
         // Reuse registers freed by deriscifier
         Score();
         DeadInstructions(); // cleanup junk after Score()
-        if( !BlockByBlock ) LoopRegInvariant();
+        if( !BlockByBlock )
+            LoopRegInvariant();
     #if (_TARGET & _TARG_RISC) == 0
         // Get rid of remaining unused conditions on register level.
         if( _IsntTargetModel( STATEMENT_COUNTING ) ) {
@@ -394,7 +395,7 @@ static  void    BlockToCode( bool partly_done )
     HeadBlock->u.partition = NULL;
 
     ForceTempsMemory();
-    if( partly_done == false ) {
+    if( !partly_done ) {
         FixMemRefs();
         HaveLiveInfo = false;
         if( _IsntModel( NO_OPTIMIZATION | FORTRAN_ALIASING ) ) {
@@ -488,10 +489,10 @@ static  void    FlushBlocks( bool partly_done )
     block       *curr;
     block_class classes;
 
-    if( BlockByBlock == false && _IsntModel( NO_OPTIMIZATION ) ) {
+    if( !BlockByBlock && _IsntModel( NO_OPTIMIZATION ) ) {
         ProcMessage( MSG_REGALLOC_DIED );
     }
-    if( partly_done == false ) {
+    if( !partly_done ) {
         Renumber();
     }
     curr = CurrBlock;
@@ -690,7 +691,7 @@ void    Generate( bool routine_done )
     }
 
     /* check to see that no basic block gets too unwieldy */
-    if( routine_done == false ) {
+    if( !routine_done ) {
         BlkTooBig();
         return;
     }
@@ -734,7 +735,7 @@ void    Generate( bool routine_done )
     FixIndex();
     FixSegments();
     FPRegAlloc();
-    if( RegAlloc( false ) == false ) {
+    if( !RegAlloc( false ) ) {
         Panic( true );
         HaveLiveInfo = false;
         return;

@@ -72,7 +72,7 @@ extern  an      BGCall( cn call, bool use_return, bool in_line ) {
     if( state->attr & ROUTINE_READS_NO_MEMORY ) {
         call_ins->flags.call_flags |= CALL_READS_NO_MEMORY;
     }
-    if( use_return == false ) {
+    if( !use_return ) {
         call_ins->flags.call_flags |= CALL_IGNORES_RETURN;
     }
 

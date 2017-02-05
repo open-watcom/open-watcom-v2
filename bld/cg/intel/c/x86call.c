@@ -210,7 +210,7 @@ extern  an      BGCall( cn call, bool use_return, bool in_line ) {
     if( _RoutineIsInterrupt( state->attr ) ) {
         call_ins->flags.call_flags |= CALL_INTERRUPT | CALL_POPS_PARMS;
     }
-    if( use_return == false ) {
+    if( !use_return ) {
         call_ins->flags.call_flags |= CALL_IGNORES_RETURN;
     }
     if( call_ins->type_class == XX ) {

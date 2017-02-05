@@ -546,7 +546,7 @@ void     MarkInvariants( void )
                         }
                     } else if( op->i.base->n.class == N_TEMP ) {
                         ZapTemp( op->i.base );
-                    } else if( free_index == false ) {
+                    } else if( !free_index ) {
                         ZapMemory( op->i.base );
                     }
                     MemChangedInLoop = true;
@@ -782,7 +782,7 @@ static bool     InvariantExpr( instruction *ins, block *blk )
 {
     int         i;
 
-    if( Hoistable( ins, blk ) == false )
+    if( !Hoistable( ins, blk ) )
         return( false );
     // For OP_LA, operand need not be invariant, only its address.
     if( (ins->head.opcode == OP_LA) && (ins->operands[0]->n.class == N_MEMORY) ) {
@@ -1292,7 +1292,7 @@ static  void    CheckNonBasic( instruction *ins, induction *var,
         plus2 = var->plus2;
         plus = var->plus;
         times = var->times;
-        if( BasicNotRedefined( var, ins ) == false ) {
+        if( !BasicNotRedefined( var, ins ) ) {
             return;
         }
     }
@@ -1374,7 +1374,7 @@ static  void    CheckInvariant( instruction *ins, induction *var,
         plus = 0;
         plus2 = 0;
     } else {
-        if( BasicNotRedefined( var, ins ) == false ) {
+        if( !BasicNotRedefined( var, ins ) ) {
             return;
         }
     }
@@ -2081,7 +2081,7 @@ static  bool    PathFrom( instruction *frum, instruction *to,
                 LabelDown( blk->ins.hd.next, avoiding, go_around );
             }
         }
-        if( change == false ) {
+        if( !change ) {
             break;
         }
     }
@@ -2938,7 +2938,7 @@ static  bool    ReplUses( induction *var, induction *rep,
     iv_usage    op1use;
     iv_usage    op2use;
 
-    if( ins->head.opcode == OP_CMP_EQUAL && DangerousTypeChange( var, rep ) == false ) {
+    if( ins->head.opcode == OP_CMP_EQUAL && !DangerousTypeChange( var, rep ) ) {
         op1use = Uses( ins->operands[0], var->name ); /* UNUSED | USED_AS_OP*/
         op2use = Uses( ins->operands[1], var->name ); /* UNUSED | USED_AS_OP*/
         if( op1use == IVU_USED_AS_OPERAND ) {

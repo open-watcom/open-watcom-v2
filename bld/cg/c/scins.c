@@ -133,7 +133,7 @@ bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
             ok = false;
         }
     }
-    if( ( ok == false ) || ( flags & CHANGE_CHECK ) ) {
+    if( !ok || (flags & CHANGE_CHECK) ) {
         // if we failed or we were just checking then
         // restore the original instruction
         for( i = ins->num_operands; i-- > 0; ) {
@@ -199,7 +199,8 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
     score       *curr_reg;
     score_info  info;
 
-    if( CanReplace( ins ) == false ) return( false );
+    if( !CanReplace( ins ) )
+        return( false );
     op = *opp;
     if( op->n.class == N_REGISTER ) {
         live = ins->head.next->head.live.regs;

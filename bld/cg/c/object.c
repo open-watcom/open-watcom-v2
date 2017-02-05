@@ -164,8 +164,7 @@ void    GenObject( void )
                 }
             }
         }
-        if( BlocksUnTrimmed == false
-          && blk->label != CurrProc->label && blk->label != NULL ) {
+        if( !BlocksUnTrimmed && blk->label != CurrProc->label && blk->label != NULL ) {
             TellCondemnedLabel( blk->label );
         }
         CurrBlock = blk;

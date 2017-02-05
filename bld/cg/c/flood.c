@@ -60,7 +60,7 @@ static void *doFloodForward( flood_parms *fp )
         next = fp->blk->edge[i].destination.u.blk;
         if( _IsBlkVisited( next ) )
             continue;
-        if( fp->func( next, fp->parm ) == false )
+        if( !fp->func( next, fp->parm ) )
             break;
         _MarkBlkVisited( next );
         new_parms.blk = next;
@@ -91,7 +91,7 @@ static void *doFloodBackward( flood_parms *fp )
         next = edge->source;
         if( _IsBlkVisited( next ) )
             continue;
-        if( fp->func( next, fp->parm ) == false )
+        if( !fp->func( next, fp->parm ) )
             break;
         _MarkBlkVisited( next );
         new_parms.blk = next;

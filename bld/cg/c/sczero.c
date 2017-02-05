@@ -273,19 +273,20 @@ extern  bool    ScoreZero( score *sc, instruction **pins ) {
         }
         break;
     }
-    if( CheckIns( &ins1 ) == false && ins2 != NULL ) {
+    if( !CheckIns( &ins1 ) && ins2 != NULL ) {
         ins2->head.next = ins2;
         ins2->head.prev = ins2;
         FreeIns( ins2 );
         ins2 = NULL;
     }
-    if( CheckIns( &ins2 ) == false && ins1 != NULL ) {
+    if( !CheckIns( &ins2 ) && ins1 != NULL ) {
         ins1->head.next = ins1;
         ins1->head.prev = ins1;
         FreeIns( ins1 );
         ins1 = NULL;
     }
-    if( ins1 == NULL && ins2 == NULL ) return( change );
+    if( ins1 == NULL && ins2 == NULL )
+        return( change );
     if( ins2 != NULL ) {
         SuffixIns( ins, ins2 );
     }

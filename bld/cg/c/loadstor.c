@@ -186,7 +186,7 @@ static  void    PropagateLoadStoreBits( block *start, global_bit_set *id )
                 }
             }
         }
-        if( change == false ) {
+        if( !change ) {
             break;
         }
     }
@@ -283,7 +283,7 @@ extern  void    CalcLoadStore( conflict_node *conf )
     see below
 */
 {
-    if( BlockByBlock == false ) {
+    if( !BlockByBlock ) {
         CalculateLoadStore( conf );
     }
 }

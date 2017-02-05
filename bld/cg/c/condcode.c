@@ -325,7 +325,8 @@ static  void    FlowConditions( void )
             GatherSources( blk );
             change |= Traverse( blk, zero );
         }
-        if( change == false ) break;
+        if( !change )
+            break;
         change = false;
     }
 }

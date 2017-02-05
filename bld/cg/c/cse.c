@@ -970,7 +970,7 @@ static  bool    DoArithOps( block *root )
               && ins->operands[0]->n.class != N_REGISTER
               && ins->operands[i1( ins )]->n.class != N_REGISTER
               && ins->result->n.class != N_REGISTER
-              && IsVolatile( ins->result ) == false ) {
+              && !IsVolatile( ins->result ) ) {
                 ins->ins_flags &= ~INS_DEFINES_OWN_OPERAND;
                 if( _IsReDefinedBy( ins, ins->operands[0] ) ) {
                     ins->ins_flags |= INS_DEFINES_OWN_OPERAND;

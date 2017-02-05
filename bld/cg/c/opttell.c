@@ -208,7 +208,7 @@ void    TellFreeAllLabels( void )
         if( _TstStatus( Handles, CODELABEL )
          && Handles->lbl.sym == NULL
          && !_TstStatus( Handles, REDIRECTION )
-         && unfreed == false ) {
+         && !unfreed ) {
             _Zoiks( ZOIKS_001 );
             unfreed = true;
         }

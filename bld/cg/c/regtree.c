@@ -253,21 +253,19 @@ static  reg_tree        *BuildTree( name *alias, name *master,
         have_hi = false;
         temp = master->t.alias;
         while( temp != master ) {
-            if( have_lo == false
-             && temp->v.offset == offset && temp->n.size == losize ) {
+            if( !have_lo && temp->v.offset == offset && temp->n.size == losize ) {
                 tree->lo = BuildTree( temp, master, offset, losize, conf );
                 have_lo = true;
-            } else if( have_hi == false
-                 && temp->v.offset == midpoint && temp->n.size == hisize ) {
+            } else if( !have_hi && temp->v.offset == midpoint && temp->n.size == hisize ) {
                 tree->hi = BuildTree( temp, master, midpoint, hisize, conf );
                 have_hi = true;
             }
             temp = temp->t.alias;
         }
-        if( have_lo == false ) {
+        if( !have_lo ) {
             tree->lo = BuildTree( NULL, master, offset, losize, conf );
         }
-        if( have_hi == false ) {
+        if( !have_hi ) {
             tree->hi = BuildTree( NULL, master, midpoint, hisize, conf );
         }
         if( tree->hi->has_name ) {
@@ -299,7 +297,7 @@ static  void    TrimTree( reg_tree *tree )
 /****************************************/
 {
     if( tree->lo != NULL ) {
-        if( tree->lo->has_name == false ) {
+        if( !tree->lo->has_name ) {
             BurnRegTree( tree->lo );
             tree->lo = NULL;
         } else {
@@ -307,7 +305,7 @@ static  void    TrimTree( reg_tree *tree )
         }
     }
     if( tree->hi != NULL ) {
-        if( tree->hi->has_name == false ) {
+        if( !tree->hi->has_name ) {
             BurnRegTree( tree->hi );
             tree->hi = NULL;
         } else {

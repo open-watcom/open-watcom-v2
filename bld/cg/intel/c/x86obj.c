@@ -373,7 +373,7 @@ static  byte    SegmentAttr( byte align, seg_attr tipe, bool use_16 )
 #ifdef _OMF_32
     if( _IsntTargetModel( EZ_OMF ) ) {
         if( _IsTargetModel( USE_32 ) ) {
-            if( use_16 == false ) {
+            if( !use_16 ) {
                 attr |= SEG_USE_32;
             }
         }

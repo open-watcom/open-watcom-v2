@@ -44,16 +44,24 @@ static  pointer HighAddrConst; /*ditto*/
 static  bool    ScoreSame( score_info *x, score_info *y ) {
 /*********************************************************/
 
-    if( x->class != y->class ) return( false );
-    if( x->base != y->base ) return( false );
-    if( x->index_reg != y->index_reg ) return( false );
+    if( x->class != y->class )
+        return( false );
+    if( x->base != y->base )
+        return( false );
+    if( x->index_reg != y->index_reg )
+        return( false );
     if( x->class == N_TEMP
-     && x->symbol.t->v.id == y->symbol.t->v.id ) return( true );
-    if( x->class == N_VOLATILE ) return( false );
-    if( x->class == N_INITIAL ) return( false );
+     && x->symbol.t->v.id == y->symbol.t->v.id )
+        return( true );
+    if( x->class == N_VOLATILE )
+        return( false );
+    if( x->class == N_INITIAL )
+        return( false );
     if( x->class == N_INDEXED
-     && x->scale != y->scale ) return( false );
-    if( x->symbol.p == y->symbol.p ) return( true );
+     && x->scale != y->scale )
+        return( false );
+    if( x->symbol.p == y->symbol.p )
+        return( true );
     return( false );
 }
 
@@ -125,14 +133,14 @@ extern  bool    ScoreLookup( score *p, score_info *info ) {
 
     score_list  *curr;
 
-    if( info->class == N_VOLATILE ) return( false );
+    if( info->class == N_VOLATILE )
+        return( false );
     curr = *p->list;
     for(;;) {
         if( curr == NULL )
-        break;
-        if( ScoreSame( &curr->info, info ) != false
-         && curr->info.offset == info->offset )
-        return( true );
+            break;
+        if( ScoreSame( &curr->info, info ) && curr->info.offset == info->offset )
+            return( true );
         curr = curr->next;
     }
     return( false );
@@ -151,13 +159,13 @@ extern  bool    ScoreEqual( score *p, int index, score_info *info ) {
 
         entry = ScoreList[index];
         if( entry->high == NO_INDEX || entry->low == NO_INDEX )
-        return( false );
+            return( false );
             /*  See if low parts & high parts of register pair contain*/
             /*  the right information*/
         if( info->class == N_CONSTANT )
-        return( false );
-        if( ScoreLookup( &p[entry->low], info ) == false )
-        return( false );
+            return( false );
+        if( !ScoreLookup( &p[entry->low], info ) )
+            return( false );
         half_size = entry->size / 2;
         info->offset += half_size;
         is_equal = ScoreLookup( &p[entry->high], info );
@@ -186,7 +194,7 @@ static  void    ScoreInsert(  score *p,  int i,  score_info  *info ) {
     for(;;) {
        if( --j < 0 )
            return;
-       if( ( j != i ) && ( ScoreEqual( p, j, info ) != false ) )
+       if( ( j != i ) && ScoreEqual( p, j, info ) )
            break;
     }
     RegAdd( p, i, j );
@@ -205,19 +213,21 @@ static  void    ScoreAdd( score *p, int i, score_info *info ) {
             curr = first;
             for(;;) {
                 info->index_reg = ScoreList[curr->index]->reg_name->r.reg_index;
-                if( ScoreLookup( &p[i], info ) == false ) {
+                if( !ScoreLookup( &p[i], info ) ) {
                     ScoreInsert( p, i, info );
                 }
                 curr = curr->next_reg;
-                if( curr == first ) break;
+                if( curr == first ) {
+                    break;
+                }
             }
         } else {
-            if( ScoreLookup( &p[i], info ) == false ) {
+            if( !ScoreLookup( &p[i], info ) ) {
                 ScoreInsert( p, i, info );
             }
         }
     } else {
-        if( ScoreLookup( &p[i], info ) == false ) {
+        if( !ScoreLookup( &p[i], info ) ) {
             ScoreInsert( p, i, info );
         }
     }
@@ -373,7 +383,7 @@ extern  void    ScoreKillInfo( score *scoreboard, name *op,
                 /*       curr            |-----|*/
 
 /* impossible!       if( info->base == op ) break;*/
-                if( ScoreStomp( info, &curr->info ) == false ) {
+                if( !ScoreStomp( info, &curr->info ) ) {
                     if( ScoreSame( info, &curr->info )
                      && last_offset > curr->info.offset
                      && info->offset < curr->info.offset+entry->size ) {

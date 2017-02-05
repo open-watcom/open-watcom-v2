@@ -145,7 +145,7 @@ void    EnLink( label_handle label, bool label_dies )
 void    AddIns( instruction *ins )
 /********************************/
 {
-    if( HaveCurrBlock == false ) {
+    if( !HaveCurrBlock ) {
         EnLink( AskForNewLabel(), true );
         HaveCurrBlock = true;
     }

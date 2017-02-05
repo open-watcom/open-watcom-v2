@@ -1363,12 +1363,12 @@ extern  void    TGControl( cg_op op, tn node, label_handle lbl )
 {
     switch( op ) {
     case O_IF_TRUE:
-        if( FoldIfTrue( node, lbl ) == false ) {
+        if( !FoldIfTrue( node, lbl ) ) {
             Control( op, node, lbl, true );
         }
         break;
     case O_IF_FALSE:
-        if( FoldIfFalse( node, lbl ) == false ) {
+        if( !FoldIfFalse( node, lbl ) ) {
             Control( op, node, lbl, true );
         }
         break;

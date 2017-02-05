@@ -243,7 +243,7 @@ static  void    PropagateConflicts( void )
     /*   (When we run out of bits, everything } else { is forced to memory)*/
 
     FindReferences();
-    if( BlockByBlock == false ) {
+    if( !BlockByBlock ) {
         LiveAnalysis( HeadBlock, MemoryBits );
     }
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
@@ -322,6 +322,8 @@ static  void    LiveAnalysis( block *tail, global_bit_set memory_bits )
                 change = true;
             }
         }
-        if( change == false ) break;
+        if( !change ) {
+            break;
+        }
     }
 }

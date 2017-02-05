@@ -774,7 +774,7 @@ extern  segment_id      SetFile( segment_id seg ) {
 
     old = CurSeg;
     CurSeg = seg;
-    if( seg > MAX_SEG || seg < MIN_SEG || SegOk[seg] == false ) {
+    if( seg > MAX_SEG || seg < MIN_SEG || !SegOk[seg] ) {
         CGError( "BESetSeg - bad segment (%d)", seg );
     } else {
         if( Files[seg].hdl == 0 ) {

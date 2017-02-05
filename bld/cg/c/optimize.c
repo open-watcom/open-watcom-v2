@@ -106,8 +106,10 @@ static  bool    CanReorder( instruction *try, instruction *after ) {
     return try if "try" could be moved past instruction "after"
 */
 
-    if( ReDefinesOps( try, after ) ) return( false );
-    if( ReDefinesOps( after, try ) ) return( false );
+    if( ReDefinesOps( try, after ) )
+        return( false );
+    if( ReDefinesOps( after, try ) )
+        return( false );
     return( true );
 }
 
@@ -120,16 +122,25 @@ static  instruction     *CanMoveAfter( instruction *ins ) {
 
     instruction *next;
 
-    if( _IsntIns( ins, PUSHABLE ) ) return( NULL );
-    if( ins->operands[0] != ins->result ) return( NULL );
-    if( ins->operands[1]->n.class != N_CONSTANT ) return( NULL );
-    if( _IsFloating( ins->type_class ) ) return( NULL );
-    if( _IsFloating( ins->base_type_class ) ) return( NULL );
+    if( _IsntIns( ins, PUSHABLE ) )
+        return( NULL );
+    if( ins->operands[0] != ins->result )
+        return( NULL );
+    if( ins->operands[1]->n.class != N_CONSTANT )
+        return( NULL );
+    if( _IsFloating( ins->type_class ) )
+        return( NULL );
+    if( _IsFloating( ins->base_type_class ) )
+        return( NULL );
     for( next = ins->head.next; next != NULL; next = next->head.next ) {
-        if( _IsntIns( next, SWAPABLE ) ) break;
-        if( CanReorder( ins, next ) == false ) break;
+        if( _IsntIns( next, SWAPABLE ) )
+            break;
+        if( !CanReorder( ins, next ) ) {
+            break;
+        }
     }
-    if( next == ins->head.next ) return( NULL );
+    if( next == ins->head.next )
+        return( NULL );
     return( next );
 }
 
@@ -210,8 +221,7 @@ void    DeadTemps( void )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;
-            if( SideEffect( ins ) == false
-             && _IsntIns( ins, SIDE_EFFECT )
+            if( !SideEffect( ins ) && _IsntIns( ins, SIDE_EFFECT )
              && ins->result != NULL
              && ins->result->n.class == N_TEMP
              && ( ins->result->v.usage & (USE_ADDRESS|HAS_MEMORY|USE_WITHIN_BLOCK|USE_IN_ANOTHER_BLOCK) ) == 0 ) {
@@ -294,7 +304,8 @@ void    AxeDeadCode( void )
                 }
             }
         }
-        if( change == false ) break;
+        if( !change )
+            break;
         FreeConflicts();
         /* Now it's safe to free instructions without problems with edges */
         while ( kill ) {

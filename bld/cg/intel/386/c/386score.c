@@ -48,13 +48,13 @@ void    ScInitRegs( score *sc )
     if( _IsntTargetModel( FLOATING_DS ) ) {
         if( _IsntTargetModel( FLOATING_ES ) ) {
             xs = AllocRegName(HW_ES)->r.reg_index;
-            if( RegsEqual( sc, xs, ds ) == false ) {
+            if( !RegsEqual( sc, xs, ds ) ) {
                 RegInsert( sc, xs, ds );
             }
         }
         if( _IsntTargetModel( FLOATING_SS ) ) {
             xs = AllocRegName(HW_SS)->r.reg_index;
-            if( RegsEqual( sc, xs, ds ) == false ) {
+            if( !RegsEqual( sc, xs, ds ) ) {
                 RegInsert( sc, xs, ds );
             }
         }

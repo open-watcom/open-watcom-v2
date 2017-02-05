@@ -288,18 +288,25 @@ opcode_entry    *FindGenEntry( instruction *ins, bool *has_index )
         try = CodeTable( ins );
         ins->table = try;
     }
-    if( try == NULL ) return( try );
+    if( try == NULL )
+        return( try );
     ops = ClassifyOps( ins, has_index );
     for( ;; ++try ) {
-        if( ( try->op_type & ops ) != ops ) continue;
+        if( ( try->op_type & ops ) != ops )
+            continue;
         verify = try->verify;
         if( verify != V_NO ) {
-            if( !DoVerify( verify & ~NOT_VOLATILE, ins ) ) continue;
-            if( (verify & NOT_VOLATILE) && VolatileIns( ins ) ) continue;
+            if( !DoVerify( verify & ~NOT_VOLATILE, ins ) )
+                continue;
+            if( (verify & NOT_VOLATILE) && VolatileIns( ins ) ) {
+                continue;
+            }
         }
         ins->u.gen_table = try;
         if( try->reg_set != RG_ ) {
-            if( VerifyRegs( ins, ops ) == false ) continue;
+            if( !VerifyRegs( ins, ops ) ) {
+                continue;
+            }
         }
         if( ins->head.opcode == OP_CALL_INDIRECT ) {
             MarkPossible(ins, ins->operands[CALL_OP_ADDR], CallIPossible(ins));
@@ -334,9 +341,12 @@ instruction     *PostExpandIns( instruction *ins )
     bool                dummy;
 
     try = FindGenEntry( ins, &dummy );
-    if( try == NULL ) return( ins );
-    if( try->generate == G_NO ) return( ins );
-    if( try->generate >= FIRST_REDUCT ) return( Reduce( ins ) );
+    if( try == NULL )
+        return( ins );
+    if( try->generate == G_NO )
+        return( ins );
+    if( try->generate >= FIRST_REDUCT )
+        return( Reduce( ins ) );
     return( ins );
 }
 
@@ -364,7 +374,7 @@ int     ExpandOps( bool keep_on_truckin )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         EXBlip();
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ) {
-            if( keep_on_truckin == false && _MemLow ) {
+            if( !keep_on_truckin && _MemLow ) {
                 return( -1 );
             }
             ins = ExpandIns( ins );
