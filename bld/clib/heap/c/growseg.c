@@ -153,7 +153,7 @@ int __GrowSeg( __segment seg, unsigned int amount )
         pfree->len = new_heaplen - FP_OFF( pfree ) - TAG_SIZE * 2;
         if( HBPTR( seg )->largest_blk < pfree->len )
             HBPTR( seg )->largest_blk = pfree->len;
-        SET_HEAP_END( new_heaplen - 2 * TAG_SIZE );
+        SET_HEAP_END( seg, new_heaplen - 2 * TAG_SIZE );
         return( 1 );                /* indicate segment was grown */
     }
     return( 0 );    /* indicate failed to grow the segment */

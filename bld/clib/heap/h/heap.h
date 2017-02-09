@@ -248,10 +248,11 @@ extern  void            __MemFree( unsigned __cstg, __segment __seg, unsigned __
 #define SET_BLK_END(p)              (p)->len = END_TAG
 
 #define NEXT_BLK(p)                 ((unsigned)(p) + (p)->len)
+#define NEXT_BLK_A(p)               ((unsigned)(p) + GET_BLK_SIZE(p))
 
-#define IS_IN_HEAP(m,h) ((unsigned)(h) <= (unsigned)(m) && (unsigned)(m) < (unsigned)NEXT_BLK((h)))
+#define IS_IN_HEAP(m,h)     ((unsigned)(h) <= (unsigned)(m) && (unsigned)(m) < (unsigned)NEXT_BLK((h)))
 
-#define SET_HEAP_END(p) ((FRLBPTR)(p))->len = END_TAG; ((FRLBPTR)(p))->prev = 0
+#define SET_HEAP_END(s,p)   ((XBPTR(freelistp, s))(p))->len = END_TAG; ((XBPTR(freelistp, s))(p))->prev = 0
 
 #define __HM_SUCCESS    0
 #define __HM_FAIL       1

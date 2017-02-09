@@ -61,7 +61,7 @@ int __NHeapWalk( struct _heapinfo *entry, mheapptr mhp )
                     break;
                 }
             }
-            q = (frlptr)((PTR)p + GET_BLK_SIZE( p ));
+            q = (frlptr)NEXT_BLK_A( p );
             if( q <= p ) {
                 return( _HEAPBADNODE );
             }

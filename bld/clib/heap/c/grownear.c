@@ -531,15 +531,14 @@ int __ExpandDGROUP( unsigned amount )
             break;
         }
     }
-    if( ( mhp1 != NULL ) && brk_value == BLK2CPTR( NEXT_BLK( mhp1 ) ) ) {
+    if( ( mhp1 != NULL ) && CPTR2BLK( brk_value ) == NEXT_BLK( mhp1 ) ) {
         /* we are extending the previous heap block (slicing) */
         /* nb. account for the end-of-heap tag */
-        brk_value -= TAG_SIZE;
         amount += TAG_SIZE;
-        flp = (frlptr)brk_value;
         /* adjust current entry in heap list */
         mhp1->len += amount;
         /* fix up end of heap links */
+        flp = (frlptr)CPTR2BLK( brk_value );
         SET_BLK_END( (frlptr)( (PTR)flp + amount ) );
     } else {
         if( amount < sizeof( miniheapblkp ) + sizeof( freelistp ) ) {

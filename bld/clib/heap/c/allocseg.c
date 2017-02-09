@@ -140,6 +140,6 @@ __segment __AllocSeg( unsigned int amount )
     SHBPTR( seg )->first.len = heaplen - sizeof( heapblk ) - 2 * TAG_SIZE;
     SHBPTR( seg )->first.prev = offsetof( heapblk, freehead );
     SHBPTR( seg )->first.next = offsetof( heapblk, freehead );
-    SET_HEAP_END( heaplen - 2 * TAG_SIZE );
+    SET_HEAP_END( seg, heaplen - 2 * TAG_SIZE );
     return( seg );          /* return allocated segment */
 }

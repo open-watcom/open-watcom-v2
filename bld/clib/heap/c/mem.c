@@ -248,7 +248,7 @@ void __MemFree( unsigned cstg, __segment seg, unsigned heap )
                         if( IS_BLK_END( pnext ) )   // check for end TAG
                             break;              // stop at end tag
                         if( IS_BLK_INUSE( pnext ) ) {   // pnext is allocated
-                            pnext = (FRLPTR)( (PTR)pnext + GET_BLK_SIZE( pnext ) );
+                            pnext = (FRLPTR)NEXT_BLK_A( pnext );
                             average--;
                             if( average == 0 ) {    // give up search
                                 break;
