@@ -40,7 +40,7 @@
 #define MHBPTR      XBPTR( miniheapblkp, seg )
 #define FRLBPTR     XBPTR( freelistp, seg )
 
-int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_t *growth_size )
+int __HeapManager_expand( __segment seg, unsigned cstg, size_t req_size, size_t *growth_size )
 {
     MHBPTR      mhp;
     FRLBPTR     p1;
@@ -58,7 +58,7 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
     if( new_size < FRL_SIZE ) {
         new_size = FRL_SIZE;
     }
-    p1 = (FRLBPTR)CPTR2BLK( offset );
+    p1 = (FRLBPTR)CPTR2BLK( cstg );
     old_size = GET_BLK_SIZE( p1 );
     if( new_size > old_size ) {
         /* enlarging the current allocation */
@@ -76,7 +76,7 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
             pprev = p2->prev;
             if( seg == _DGroup() ) {    // near heap
                 for( mhp = __nheapbeg; mhp->next != NULL; mhp = mhp->next ) {
-                    if( (unsigned)mhp <= offset && offset < NEXT_BLK( mhp ) ) {
+                    if( IS_IN_HEAP( p1, mhp ) ) {
                         break;
                     }
                 }
@@ -118,7 +118,7 @@ int __HeapManager_expand( __segment seg, unsigned offset, size_t req_size, size_
             SET_BLK_SIZE_INUSE( p2, old_size - new_size );
             if( seg == _DGroup() ) {    // near heap
                 for( mhp = __nheapbeg; mhp->next != NULL; mhp = mhp->next ) {
-                    if( (unsigned)mhp <= offset && offset < NEXT_BLK( mhp ) ) {
+                    if( IS_IN_HEAP( p1, mhp ) ) {
                         break;
                     }
                 }

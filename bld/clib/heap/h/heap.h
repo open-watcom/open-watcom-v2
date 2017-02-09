@@ -196,7 +196,7 @@ extern void             *__ReAllocDPMIBlock( frlptr p1, unsigned req_size );
 extern void             *__ExpandDPMIBlock( frlptr, unsigned );
 #endif
 
-extern int              __HeapManager_expand( __segment seg, unsigned offset,
+extern int              __HeapManager_expand( __segment seg, unsigned cstg,
                             size_t req_size, size_t *growth_size );
 
 #if defined( _M_I86 )
@@ -248,6 +248,8 @@ extern  void            __MemFree( unsigned __cstg, __segment __seg, unsigned __
 #define SET_BLK_END(p)              (p)->len = END_TAG
 
 #define NEXT_BLK(p)                 ((unsigned)(p) + (p)->len)
+
+#define IS_IN_HEAP(m,h) ((unsigned)(h) <= (unsigned)(m) && (unsigned)(m) < (unsigned)NEXT_BLK((h)))
 
 #define SET_HEAP_END(p) ((FRLBPTR)(p))->len = END_TAG; ((FRLBPTR)(p))->prev = 0
 
