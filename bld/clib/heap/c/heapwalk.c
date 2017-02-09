@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  far and based heap walk function implementation
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -37,6 +37,9 @@
 #include "heap.h"
 
 
+#define HEAP(s)     ((XBPTR(heapblkp, s))0)
+#define FRLPTR     XBPTR( freelistp, curr_seg )
+
 static int verifyHeapList( __segment seg )
 {
     /* make sure list of heaps is a doubly-linked NULL terminated list */
@@ -46,25 +49,25 @@ static int verifyHeapList( __segment seg )
 
     /* check previous heaps end in NULL */
     for( curr_seg = seg; ; curr_seg = prev_seg ) {
-        prev_seg = HBPTR( curr_seg )->prevseg;
+        prev_seg = HEAP( curr_seg )->prevseg;
         if( prev_seg == seg ) {
             return( _HEAPBADBEGIN );
         }
         if( prev_seg == _NULLSEG )
             break;
-        if( HBPTR( prev_seg )->nextseg != curr_seg ) {
+        if( HEAP( prev_seg )->nextseg != curr_seg ) {
             return( _HEAPBADBEGIN );
         }
     }
     /* check next heaps end in NULL */
     for( curr_seg = seg; ; curr_seg = next_seg ) {
-        next_seg = HBPTR( curr_seg )->nextseg;
+        next_seg = HEAP( curr_seg )->nextseg;
         if( next_seg == seg ) {
             return( _HEAPBADBEGIN );
         }
         if( next_seg == _NULLSEG )
             break;
-        if( HBPTR( next_seg )->prevseg != curr_seg ) {
+        if( HEAP( next_seg )->prevseg != curr_seg ) {
             return( _HEAPBADBEGIN );
         }
     }
@@ -76,14 +79,14 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
     __segment   curr_seg;
     __segment   next_seg;
     __segment   prev_seg;
-    farfrlptr   p;
-    farfrlptr   q;
+    FRLPTR      frl_curr;
+    FRLPTR      frl_next;
 
     if( seg == _NULLSEG )
         return( _HEAPEMPTY );
-    p = entry->_pentry;
-    if( p != FAR_NULL ) {
-        seg = FP_SEG( p );
+    frl_curr = entry->_pentry;
+    if( frl_curr != NULL ) {
+        seg = FP_SEG( entry->_pentry );
     } else if( one_heap == 0 ) {
         /* we are starting a multi-heap walk */
         if( verifyHeapList( seg ) != _HEAPOK ) {
@@ -91,45 +94,45 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
         }
     }
     for( curr_seg = seg; ; curr_seg = next_seg ) {
-        prev_seg = HBPTR( curr_seg )->prevseg;
-        next_seg = HBPTR( curr_seg )->nextseg;
+        prev_seg = HEAP( curr_seg )->prevseg;
+        next_seg = HEAP( curr_seg )->nextseg;
         if( prev_seg != _NULLSEG ) {
-            if( HBPTR( prev_seg )->nextseg != curr_seg || prev_seg == next_seg ) {
+            if( HEAP( prev_seg )->nextseg != curr_seg || prev_seg == next_seg ) {
                 return( _HEAPBADBEGIN );
             }
         }
         if( next_seg != _NULLSEG ) {
-            if( HBPTR( next_seg )->prevseg != curr_seg ) {
+            if( HEAP( next_seg )->prevseg != curr_seg ) {
                 return( _HEAPBADBEGIN );
             }
         }
-        if( p == FAR_NULL ) {
-            if( HBPTR( curr_seg )->freehead.len != 0 )
+        if( frl_curr == NULL ) {
+            if( HEAP( curr_seg )->freehead.len != 0 )
                 return( _HEAPBADBEGIN );
-            p = MK_FP( curr_seg, sizeof( heapblk ) );
+            frl_curr = (FRLPTR)sizeof( heapblk );
         } else {    /* advance to next entry */
-            q = (farfrlptr)( FP_SEG( p ) :> NEXT_BLK( p ) );
-            if( q <= p )
+            frl_next = (FRLPTR)NEXT_BLK( frl_curr );
+            if( frl_next <= frl_curr )
                 return( _HEAPBADNODE );
-            p = q;
-            if( HBPTR( curr_seg )->heaplen != 0 && p->len > HBPTR( curr_seg )->heaplen ) {
+            frl_curr = frl_next;
+            if( HEAP( curr_seg )->heaplen != 0 && frl_curr->len > HEAP( curr_seg )->heaplen ) {
                 return( _HEAPBADNODE );
             }
         }
-        if( !IS_BLK_END( p ) )
+        if( !IS_BLK_END( frl_curr ) )
             break;
         if( next_seg == _NULLSEG || one_heap != 0 ) {
             entry->_useflag = _USEDENTRY;
             entry->_size    = 0;
-            entry->_pentry  = FAR_NULL;
+            entry->_pentry  = NULL;
             return( _HEAPEND );
         }
-        p = FAR_NULL;
+        frl_curr = NULL;
     }
-    entry->_pentry  = p;
+    entry->_pentry  = frl_curr;
     entry->_useflag = _FREEENTRY;
-    entry->_size    = GET_BLK_SIZE( p );
-    if( IS_BLK_INUSE( p ) ) {
+    entry->_size    = GET_BLK_SIZE( frl_curr );
+    if( IS_BLK_INUSE( frl_curr ) ) {
         entry->_useflag = _USEDENTRY;
     }
     return( _HEAPOK );
