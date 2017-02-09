@@ -65,7 +65,7 @@ _WCRTLINK int _fheapshrink( void )
     __segment   prev_seg;
     int         heap_status;
 
-    heap_status = __HeapMin( __fheapbeg, 0 );
+    heap_status = __HeapMin( __fheapbeg, _NULLSEG );
     _AccessFHeap();
     for( curr_seg = __fheapbeg; curr_seg != _NULLSEG; curr_seg = next_seg ) {
         /* we might free this segment so get the next one now */
