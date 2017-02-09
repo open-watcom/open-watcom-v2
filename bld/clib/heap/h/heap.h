@@ -219,8 +219,8 @@ extern void             _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amo
  #define __IsCtsNHeap() (1)
 #endif
 
-extern  unsigned        __MemAllocator( unsigned __sz, __segment __seg, unsigned __off );
-extern  void            __MemFree( unsigned __ptr, __segment __seg, unsigned __off );
+extern  unsigned        __MemAllocator( unsigned __size, __segment __seg, unsigned __heap );
+extern  void            __MemFree( unsigned __cstg, __segment __seg, unsigned __heap );
 #if defined( _M_I86 )
   #pragma aux __MemAllocator "*" parm [ax] [dx] [bx]
   #pragma aux __MemFree      "*" parm [ax] [dx] [bx]
