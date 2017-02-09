@@ -74,7 +74,7 @@ static int verifyHeapList( __segment seg )
     return( _HEAPOK );
 }
 
-int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
+int __HeapWalk( struct _heapinfo *entry, __segment seg, __segment one_heap )
 {
     __segment   curr_seg;
     __segment   next_seg;
@@ -87,7 +87,7 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
     frl_curr = entry->_pentry;
     if( frl_curr != NULL ) {
         seg = FP_SEG( entry->_pentry );
-    } else if( one_heap == 0 ) {
+    } else if( one_heap == _NULLSEG ) {
         /* we are starting a multi-heap walk */
         if( verifyHeapList( seg ) != _HEAPOK ) {
             return( _HEAPBADBEGIN );
@@ -121,7 +121,7 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, unsigned one_heap )
         }
         if( !IS_BLK_END( frl_curr ) )
             break;
-        if( next_seg == _NULLSEG || one_heap != 0 ) {
+        if( next_seg == _NULLSEG || one_heap != _NULLSEG ) {
             entry->_useflag = _USEDENTRY;
             entry->_size    = 0;
             entry->_pentry  = NULL;

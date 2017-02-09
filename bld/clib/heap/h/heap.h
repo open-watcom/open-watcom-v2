@@ -185,8 +185,8 @@ extern int              __ExpandDGROUP( unsigned int __amt );
 extern __segment        __AllocSeg( unsigned int __amt );
 extern int              __GrowSeg( __segment __seg, unsigned int __amt );
 extern int              __FreeSeg( __segment __seg );
-extern int              __HeapWalk( struct _heapinfo *entry, __segment __seg, unsigned one_heap );
-extern int              __HeapMin( __segment __seg, unsigned one_heap );
+extern int              __HeapWalk( struct _heapinfo *entry, __segment __seg, __segment one_heap );
+extern int              __HeapMin( __segment __seg, __segment one_heap );
 extern int              __HeapSet( __segment __seg, unsigned fill );
 #endif
 

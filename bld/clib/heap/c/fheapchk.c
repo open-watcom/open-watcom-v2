@@ -101,7 +101,7 @@ _WCRTLINK int _fheapchk( void )
     }
     hi._pentry = NULL;
     for( ;; ) {
-        heap_status = __HeapWalk( &hi, __fheapbeg, 0 );
+        heap_status = __HeapWalk( &hi, __fheapbeg, _NULLSEG );
         if( heap_status != _HEAPOK )
             break;
         if( hi._useflag == _FREEENTRY ) {

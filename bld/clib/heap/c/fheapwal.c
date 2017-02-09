@@ -50,7 +50,7 @@ _WCRTLINK int _fheapwalk( struct _heapinfo *entry )
     int     heap_status;
 
     _AccessFHeap();
-    heap_status = __HeapWalk( entry, __fheapbeg, 0 );
+    heap_status = __HeapWalk( entry, __fheapbeg, _NULLSEG );
     _ReleaseFHeap();
     return( heap_status );
 }

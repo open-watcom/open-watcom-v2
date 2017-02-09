@@ -55,7 +55,7 @@
 
 #define FRLBPTR     XBPTR( freelistp, seg )
 
-int __HeapMin( __segment seg, unsigned one_heap )
+int __HeapMin( __segment seg, __segment one_heap )
 {
     tag                 last_len;
     tag                 adjust_len;
@@ -74,7 +74,7 @@ int __HeapMin( __segment seg, unsigned one_heap )
         /* we might free this segment so get the next one now */
         next_seg = HBPTR( seg )->nextseg;
         if( HBPTR( seg )->numfree == 0 ) {      /* full heap */
-            if( one_heap != 0 )
+            if( one_heap != _NULLSEG )
                 break;
             continue;
         }
