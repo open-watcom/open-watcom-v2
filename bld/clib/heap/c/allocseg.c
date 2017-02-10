@@ -53,8 +53,8 @@
 #include "heap.h"
 
 
-#define SHBPTR(s)   ((XBPTR(heapstart, s))0)
-#define FRLBPTR     XBPTR( freelistp, seg )
+#define HEAP                ((XBPTR(heapstart, seg))0)
+#define SET_HEAP_END(p)     ((XBPTR(freelistp, seg))(p))->len = END_TAG; ((XBPTR(freelistp, seg))(p))->prev = 0
 
 #if defined(__QNX__)
 extern unsigned         __qnx_alloc_flags;
@@ -126,20 +126,20 @@ __segment __AllocSeg( unsigned int amount )
     seg = TINY_INFO( rc );
 #endif
     heaplen = num_of_paras << 4;
-    SHBPTR( seg )->h.heaplen = heaplen;
-    SHBPTR( seg )->h.prevseg = _NULLSEG;
-    SHBPTR( seg )->h.nextseg = _NULLSEG;
-    SHBPTR( seg )->h.rover = offsetof( heapstart, first );
-    SHBPTR( seg )->h.b4rover = 0;
-    SHBPTR( seg )->h.numalloc = 0;
-    SHBPTR( seg )->h.numfree = 1;
-    SHBPTR( seg )->h.freehead.len = 0;
-    SHBPTR( seg )->h.freehead.prev = offsetof( heapstart, first );
-    SHBPTR( seg )->h.freehead.next = offsetof( heapstart, first );
-    SHBPTR( seg )->h.largest_blk = heaplen - sizeof( heapblk ) - 2 * TAG_SIZE;
-    SHBPTR( seg )->first.len = heaplen - sizeof( heapblk ) - 2 * TAG_SIZE;
-    SHBPTR( seg )->first.prev = offsetof( heapblk, freehead );
-    SHBPTR( seg )->first.next = offsetof( heapblk, freehead );
-    SET_HEAP_END( seg, heaplen - 2 * TAG_SIZE );
+    HEAP->h.heaplen = heaplen;
+    HEAP->h.prevseg = _NULLSEG;
+    HEAP->h.nextseg = _NULLSEG;
+    HEAP->h.rover = offsetof( heapstart, first );
+    HEAP->h.b4rover = 0;
+    HEAP->h.numalloc = 0;
+    HEAP->h.numfree = 1;
+    HEAP->h.freehead.len = 0;
+    HEAP->h.freehead.prev = offsetof( heapstart, first );
+    HEAP->h.freehead.next = offsetof( heapstart, first );
+    HEAP->h.largest_blk = heaplen - sizeof( heapblk ) - 2 * TAG_SIZE;
+    HEAP->first.len = heaplen - sizeof( heapblk ) - 2 * TAG_SIZE;
+    HEAP->first.prev = offsetof( heapblk, freehead );
+    HEAP->first.next = offsetof( heapblk, freehead );
+    SET_HEAP_END( heaplen - 2 * TAG_SIZE );
     return( seg );          /* return allocated segment */
 }

@@ -252,8 +252,6 @@ extern  void            __MemFree( unsigned __cstg, __segment __seg, unsigned __
 
 #define IS_IN_HEAP(m,h)     ((unsigned)(h) <= (unsigned)(m) && (unsigned)(m) < (unsigned)NEXT_BLK((h)))
 
-#define SET_HEAP_END(s,p)   ((XBPTR(freelistp, s))(p))->len = END_TAG; ((XBPTR(freelistp, s))(p))->prev = 0
-
 #define __HM_SUCCESS    0
 #define __HM_FAIL       1
 #define __HM_TRYGROW    2

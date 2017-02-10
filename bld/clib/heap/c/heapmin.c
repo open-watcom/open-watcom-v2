@@ -53,7 +53,9 @@
 #include "seterrno.h"
 
 
-#define FRLBPTR     XBPTR( freelistp, seg )
+#define HEAP                ((XBPTR(heapblkp, seg))0)
+#define SET_HEAP_END(p)     ((XBPTR(freelistp, seg))(p))->len = END_TAG; ((XBPTR(freelistp, seg))(p))->prev = 0
+#define FRLPTR              XBPTR( freelistp, seg )
 
 int __HeapMin( __segment seg, __segment one_heap )
 {
@@ -61,8 +63,8 @@ int __HeapMin( __segment seg, __segment one_heap )
     tag                 adjust_len;
     tag                 new_heap_len;
     __segment           next_seg;
-    FRLBPTR             last_free;
-    FRLBPTR             end_tag;
+    FRLPTR              last_free;
+    FRLPTR              end_tag;
 #if defined(__OS2__)
     APIRET              rc;
 #elif defined(__DOS__)
@@ -72,22 +74,22 @@ int __HeapMin( __segment seg, __segment one_heap )
     _AccessFHeap();
     for( ; seg != _NULLSEG; seg = next_seg ) {
         /* we might free this segment so get the next one now */
-        next_seg = HBPTR( seg )->nextseg;
-        if( HBPTR( seg )->numfree == 0 ) {      /* full heap */
+        next_seg = HEAP->nextseg;
+        if( HEAP->numfree == 0 ) {      /* full heap */
             if( one_heap != _NULLSEG )
                 break;
             continue;
         }
-        if( HBPTR( seg )->numalloc == 0 ) {     /* empty heap */
+        if( HEAP->numalloc == 0 ) {     /* empty heap */
             continue;
         }
         /* verify the last block is free */
-        last_free = HBPTR( seg )->freehead.prev;
+        last_free = HEAP->freehead.prev;
         if( IS_BLK_INUSE( last_free ) )
             continue;
 
         /* verify the last block is just before the end of the heap */
-        end_tag = (FRLBPTR)( NEXT_BLK( last_free ) );
+        end_tag = (FRLPTR)( NEXT_BLK( last_free ) );
         if( !IS_BLK_END( end_tag ) )
             continue;
 
@@ -96,8 +98,8 @@ int __HeapMin( __segment seg, __segment one_heap )
         if( last_len <= FRL_SIZE )
             continue;
 
-        new_heap_len = __ROUND_UP_SIZE_PARA( HBPTR( seg )->heaplen - ( last_len - FRL_SIZE ) );
-        adjust_len = HBPTR( seg )->heaplen - new_heap_len;
+        new_heap_len = __ROUND_UP_SIZE_PARA( HEAP->heaplen - ( last_len - FRL_SIZE ) );
+        adjust_len = HEAP->heaplen - new_heap_len;
         if( adjust_len == 0 )
             continue;
 
@@ -139,9 +141,9 @@ int __HeapMin( __segment seg, __segment one_heap )
 #endif
 
         /* make the changes to the heap structure */
-        HBPTR( seg )->heaplen = new_heap_len;
+        HEAP->heaplen = new_heap_len;
         last_free->len -= adjust_len;
-        SET_HEAP_END( seg, NEXT_BLK( last_free ) );
+        SET_HEAP_END( NEXT_BLK( last_free ) );
     }
     _ReleaseFHeap();
     return( _HEAPOK );
