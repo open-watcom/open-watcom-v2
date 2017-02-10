@@ -39,27 +39,26 @@
 
 void _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount )
 {
-    mheapptr mhp1;
-    frlptr   curr_frl;
+    mheapptr heap;
+    frlptr   frl;
 
-    mhp1 = start;
+    heap = start;
     amount -= sizeof( miniheapblkp ) + TAG_SIZE;
-    __nheapbeg = mhp1;
-    mhp1->len  = amount + sizeof( miniheapblkp );
-    mhp1->prev = NULL;
-    mhp1->next = NULL;
-    mhp1->rover = &mhp1->freehead;
-    mhp1->freehead.prev = &mhp1->freehead;
-    mhp1->freehead.next = &mhp1->freehead;
-    mhp1->numalloc = 0;
-    mhp1->numfree = 0;
-    mhp1++;
-    curr_frl = (frlptr)mhp1;
+    __nheapbeg = heap;
+    heap->len  = amount + sizeof( miniheapblkp );
+    heap->prev = NULL;
+    heap->next = NULL;
+    heap->rover = &heap->freehead;
+    heap->freehead.prev = &heap->freehead;
+    heap->freehead.next = &heap->freehead;
+    heap->numalloc = 0;
+    heap->numfree = 0;
+    frl = (frlptr)( heap + 1 );
     /* fix up end of heap links */
-    SET_BLK_END( (frlptr)( (PTR)curr_frl + amount ) );
+    SET_BLK_END( (frlptr)( (PTR)frl + amount ) );
     /* build a block for _nfree() */
-    SET_BLK_SIZE_INUSE( curr_frl, amount );
+    SET_BLK_SIZE_INUSE( frl, amount );
     __nheapbeg->numalloc++;
     __nheapbeg->largest_blk = ~0;    /* set to largest value to be safe */
-    _nfree( (void _WCNEAR *)BLK2CPTR( curr_frl ) );
+    _nfree( (void _WCNEAR *)BLK2CPTR( frl ) );
 }

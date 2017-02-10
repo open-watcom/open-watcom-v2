@@ -72,10 +72,12 @@
 
 !include ../../../../objlist.mif
 
-086_option_zdf =-zdf-r
-286_option_zdf =-zdf-r
+086_ms_option_zdf =-zdf-r
+086_mm_option_zdf =-zdf-r
+286_ms_option_zdf =-zdf-r
+286_mm_option_zdf =-zdf-r
 
-mem_opts      = -ol+t $($(processor)_option_zdf)
+mem_opts      = -ol+t $($(processor)_$(model)_option_zdf)
 grownear_opts = -I"$(win386_dir)/h"
 nheapmin_opts = -I"$(win386_dir)/h"
 sbrk_opts     = -I"$(win386_dir)/h"

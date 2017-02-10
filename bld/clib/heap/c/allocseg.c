@@ -80,7 +80,7 @@ __segment __AllocSeg( unsigned int amount )
         return( _NULLSEG );
     }
     /*        heapinfo + frl,  allocated blk,  end tags */
-    amount += sizeof( heapblk ) + TAG_SIZE + TAG_SIZE * 2;
+    amount += offsetof( heapstart, first ) + TAG_SIZE + TAG_SIZE * 2;
     if( amount < _amblksiz )
         amount = _amblksiz;
     num_of_paras = __ROUND_UP_SIZE_TO_PARA( amount );
@@ -136,10 +136,10 @@ __segment __AllocSeg( unsigned int amount )
     HEAP->h.freehead.len = 0;
     HEAP->h.freehead.prev = offsetof( heapstart, first );
     HEAP->h.freehead.next = offsetof( heapstart, first );
-    HEAP->h.largest_blk = heaplen - sizeof( heapblk ) - 2 * TAG_SIZE;
-    HEAP->first.len = heaplen - sizeof( heapblk ) - 2 * TAG_SIZE;
-    HEAP->first.prev = offsetof( heapblk, freehead );
-    HEAP->first.next = offsetof( heapblk, freehead );
+    HEAP->h.largest_blk = heaplen - offsetof( heapstart, first ) - 2 * TAG_SIZE;
+    HEAP->first.len = heaplen - offsetof( heapstart, first ) - 2 * TAG_SIZE;
+    HEAP->first.prev = offsetof( heapstart, h.freehead );
+    HEAP->first.next = offsetof( heapstart, h.freehead );
     SET_HEAP_END( heaplen - 2 * TAG_SIZE );
     return( seg );          /* return allocated segment */
 }

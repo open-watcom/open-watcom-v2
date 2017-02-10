@@ -76,34 +76,34 @@ _WCRTLINK int _nheapmin( void )
     defined(__NT__)          || \
     defined(__CALL21__)      || \
     defined(__RDOS__)
-static int __ReturnMemToSystem( mheapptr mhp )
+static int __ReturnMemToSystem( mheapptr heap )
 {
-    mheapptr    next_mhp;
+    mheapptr    next_heap;
 
-    next_mhp = mhp->next;
+    next_heap = heap->next;
   #if defined(__WARP__)
-    if( DosFreeMem( (PBYTE)mhp ) )
+    if( DosFreeMem( (PBYTE)heap ) )
         return( -1 );
   #elif defined(__NT__)
-    //if( LocalFree( (HLOCAL)mhp ) != NULL ) return( -1 );
-    if( !VirtualFree( (LPVOID)mhp, 0, MEM_RELEASE ) )
+    //if( LocalFree( (HLOCAL)heap ) != NULL ) return( -1 );
+    if( !VirtualFree( (LPVOID)heap, 0, MEM_RELEASE ) )
         return -1;
   #elif defined(__WINDOWS_386__)
-    if( DPMIFree( (unsigned long)mhp ) != 0 )
+    if( DPMIFree( (unsigned long)heap ) != 0 )
         return( -1 );
   #elif defined(__WINDOWS_286__)
-    if( LocalFree( (HLOCAL)mhp ) != NULL )
+    if( LocalFree( (HLOCAL)heap ) != NULL )
         return( -1 );
   #elif defined(__CALL21__)
     // No way to free storage under OSI
-    if( mhp )
+    if( heap )
         return( -1 );
   #elif defined(__RDOS__)
-    RdosFreeMem( mhp );
+    RdosFreeMem( heap );
   #endif
-    if( __MiniHeapRover == mhp ) {  // Update rovers
-        if( next_mhp != NULL ) {
-            __MiniHeapRover = next_mhp;
+    if( __MiniHeapRover == heap ) {  // Update rovers
+        if( next_heap != NULL ) {
+            __MiniHeapRover = next_heap;
         } else {
             __MiniHeapRover = __nheapbeg;
             __LargestSizeB4MiniHeapRover = 0;
@@ -111,30 +111,30 @@ static int __ReturnMemToSystem( mheapptr mhp )
     }
     // Re-test rover; if we freed the only mini-heap, we might end up
     // pointing back to it
-    if( __MiniHeapRover == mhp ) {
+    if( __MiniHeapRover == heap ) {
         __MiniHeapRover = NULL;
     }
-    if( __MiniHeapFreeRover == mhp ) {
+    if( __MiniHeapFreeRover == heap ) {
         __MiniHeapFreeRover = NULL;
     }
     return( 0 ); // success
 }
 
-static void __ReleaseMiniHeap( mheapptr mhp )
+static void __ReleaseMiniHeap( mheapptr heap )
 {
-    mheapptr    prev_mhp;
-    mheapptr    next_mhp;
+    mheapptr    prev_heap;
+    mheapptr    next_heap;
 
-    prev_mhp = mhp->prev;
-    next_mhp = mhp->next;
-    if( __ReturnMemToSystem( mhp ) == 0 ) {
-        if( prev_mhp == NULL ) {
-            __nheapbeg = next_mhp;
+    prev_heap = heap->prev;
+    next_heap = heap->next;
+    if( __ReturnMemToSystem( heap ) == 0 ) {
+        if( prev_heap == NULL ) {
+            __nheapbeg = next_heap;
         } else {
-            prev_mhp->next = next_mhp;
+            prev_heap->next = next_heap;
         }
-        if( next_mhp != NULL ) {
-            next_mhp->prev = prev_mhp;
+        if( next_heap != NULL ) {
+            next_heap->prev = prev_heap;
         }
     } //else: do not unlink if the memory cannot be freed successfully
 }
@@ -143,7 +143,7 @@ static void __ReleaseMiniHeap( mheapptr mhp )
 
 _WCRTLINK int _nheapshrink( void )
 {
-    mheapptr    mhp;
+    mheapptr    heap;
 #if !defined(__WARP__)        && \
     !defined(__WINDOWS__)     && \
     !defined(__NT__)          && \
@@ -164,16 +164,16 @@ _WCRTLINK int _nheapshrink( void )
             return( 0 ); // No near heap, can't shrink
         }
         /* Goto the end of miniheaplist (if there's more than 1 blk) */
-        for( mhp = __nheapbeg; mhp->next != NEAR_NULL; mhp = mhp->next )
+        for( heap = __nheapbeg; heap->next != NEAR_NULL; heap = heap->next )
             ;
         /* check that last free block is at end of heap */
-        last_free = mhp->freehead.prev;
+        last_free = heap->freehead.prev;
         end_tag = (frlptr)NEXT_BLK( last_free );
         if( !IS_BLK_END( end_tag ) ) {
             _ReleaseNHeap();
             return( 0 );
         }
-        if( end_tag != (frlptr)NEXT_BLK( mhp ) ) {
+        if( end_tag != (frlptr)NEXT_BLK( heap ) ) {
             _ReleaseNHeap();
             return( 0 );
         }
@@ -195,7 +195,7 @@ _WCRTLINK int _nheapshrink( void )
             return( 0 );
         }
         /* calculate adjustment factor */
-        if( mhp->len - last_free->len > sizeof( miniheapblkp ) ) {
+        if( heap->len - last_free->len > sizeof( miniheapblkp ) ) {
             // this miniheapblk is still being used
   #if defined(__DOS_EXT__)
             frlptr new_last_free;
@@ -203,20 +203,20 @@ _WCRTLINK int _nheapshrink( void )
             if( new_last_free == last_free ) {
   #endif
                 // remove entire entry
-                mhp->len -= last_free->len;
-                --mhp->numfree;
+                heap->len -= last_free->len;
+                --heap->numfree;
                 // Relink the freelist entries, and update the rover
-                mhp->freehead.prev = last_free->prev;
-                last_free->prev->next = &mhp->freehead;
-                if( mhp->rover == last_free ) {
-                    mhp->rover = last_free->prev;
+                heap->freehead.prev = last_free->prev;
+                last_free->prev->next = &heap->freehead;
+                if( heap->rover == last_free ) {
+                    heap->rover = last_free->prev;
                 }
   #if defined(__DOS_EXT__)
             } else {
                 // just shrink the last free entry
-                mhp->len -= last_free->len;
+                heap->len -= last_free->len;
                 last_free->len = (PTR)new_last_free - (PTR)last_free;
-                mhp->len += last_free->len;
+                heap->len += last_free->len;
                 last_free = new_last_free;
             }
   #endif
@@ -224,15 +224,15 @@ _WCRTLINK int _nheapshrink( void )
             new_brk = (unsigned)BLK2CPTR( last_free );
         } else {
             // we can remove this miniheapblk
-            if( mhp->prev ) { // Not the first miniheapblk
-                mhp->prev->next = NEAR_NULL;
-                new_brk = (unsigned)mhp;//->prev + (unsigned)mhp->prev->len;
+            if( heap->prev ) { // Not the first miniheapblk
+                heap->prev->next = NEAR_NULL;
+                new_brk = (unsigned)heap;//->prev + (unsigned)heap->prev->len;
             } else { // Is the first miniheapblk
                 new_brk = (unsigned)__nheapbeg;
                 __nheapbeg = NEAR_NULL;
             }
             // Update rover info
-            if( __MiniHeapRover == mhp ) {
+            if( __MiniHeapRover == heap ) {
                 __MiniHeapRover = __nheapbeg;
                 __LargestSizeB4MiniHeapRover = 0;
             }
@@ -253,13 +253,13 @@ _WCRTLINK int _nheapshrink( void )
 #else
     // Shrink by releasing mini-heaps
     {
-        mheapptr next_mhp;
+        mheapptr next_heap;
 
         _AccessNHeap();
-        for( mhp = __nheapbeg; mhp != NULL; mhp = next_mhp ) {
-            next_mhp = mhp->next;
-            if( mhp->len - sizeof( miniheapblkp ) == (mhp->freehead.prev)->len ) {
-                __ReleaseMiniHeap( mhp );
+        for( heap = __nheapbeg; heap != NULL; heap = next_heap ) {
+            next_heap = heap->next;
+            if( heap->len - sizeof( miniheapblkp ) == (heap->freehead.prev)->len ) {
+                __ReleaseMiniHeap( heap );
             }
         }
         _ReleaseNHeap();

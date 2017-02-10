@@ -46,8 +46,8 @@ _WCRTLINK unsigned int _freect( size_t size )
     unsigned int    count;
     size_t          memsize;
     size_t          size_of_chunk;
-    frlptr          curr_frl;
-    mheapptr        mhp;
+    frlptr          frl;
+    mheapptr        heap;
 
     count = 0;
     size_of_chunk = __ROUND_UP_SIZE( size + TAG_SIZE, ROUND_SIZE );
@@ -57,9 +57,9 @@ _WCRTLINK unsigned int _freect( size_t size )
         size_of_chunk = FRL_SIZE;
     }
     _AccessNHeap();
-    for( mhp = __nheapbeg; mhp != NULL; mhp = mhp->next ) {
-        for( curr_frl = mhp->freehead.next; curr_frl != (frlptr)&mhp->freehead; curr_frl = curr_frl->next ) {
-            memsize = curr_frl->len;
+    for( heap = __nheapbeg; heap != NULL; heap = heap->next ) {
+        for( frl = heap->freehead.next; frl != (frlptr)&heap->freehead; frl = frl->next ) {
+            memsize = frl->len;
             count += memsize / size_of_chunk;
         }
     }

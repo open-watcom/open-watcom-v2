@@ -63,7 +63,7 @@ unsigned char _os2_use_obj_any;
 _WCRTLINK int _use_os2_high_mem( int fUseHighMem )
 {
     int   prior;
-    
+
     _AccessNHeap();
     prior = _os2_use_obj_any;
     _os2_use_obj_any = ( fUseHighMem != 0 );
@@ -140,7 +140,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
     unsigned        size;
     unsigned        cstg;
     unsigned char   expanded;
-    mheapptr        mhp;
+    mheapptr        heap;
 
 #if defined(__WARP__)
     unsigned char   use_obj_any;
@@ -176,24 +176,24 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
 #endif
         // Figure out where to start looking for free blocks
         if( size > __LargestSizeB4MiniHeapRover ) {
-            mhp = __MiniHeapRover;
-            if( mhp == NULL ) {
+            heap = __MiniHeapRover;
+            if( heap == NULL ) {
                 __LargestSizeB4MiniHeapRover = 0;   // force to be updated
-                mhp = __nheapbeg;
+                heap = __nheapbeg;
             }
         } else {
             __LargestSizeB4MiniHeapRover = 0;   // force to be updated
-            mhp = __nheapbeg;
+            heap = __nheapbeg;
         }
         // Search for free block
-        for( ; mhp != NULL; mhp = mhp->next ) {
-            __MiniHeapRover = mhp;
-            largest = mhp->largest_blk;
+        for( ; heap != NULL; heap = heap->next ) {
+            __MiniHeapRover = heap;
+            largest = heap->largest_blk;
 #if defined(__WARP__)
-            if( use_obj_any == ( mhp->used_obj_any != 0 ) ) {
+            if( use_obj_any == ( heap->used_obj_any != 0 ) ) {
 #endif // __WARP__
               if( largest >= amt ) {
-                  cstg = __MemAllocator( amt, _DGroup(), (unsigned)mhp );
+                  cstg = __MemAllocator( amt, _DGroup(), (unsigned)heap );
                   if( cstg != 0 ) {
                       goto lbl_release_heap;
                   }
