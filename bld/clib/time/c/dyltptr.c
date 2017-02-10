@@ -33,7 +33,8 @@
 #include <time.h>
 #include "rtdata.h"
 
-_WCRTLINK int( *__get_daylight_ptr( void ) )
+
+_WCRTLINK int (*__get_daylight_ptr( void ))
 {
     return( &_RWD_daylight );
 }

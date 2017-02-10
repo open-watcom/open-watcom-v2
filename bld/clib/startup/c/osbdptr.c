@@ -33,7 +33,8 @@
 #include <stdlib.h>
 #include "rtdata.h"
 
-_WCRTLINK unsigned short *__get_osbuild_ptr( void )
+
+_WCRTLINK unsigned short (*__get_osbuild_ptr( void ))
 {
     return( &_RWD_osbuild );
 }

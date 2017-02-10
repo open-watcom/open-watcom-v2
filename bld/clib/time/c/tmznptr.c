@@ -29,11 +29,13 @@
 *
 ****************************************************************************/
 
+
 #include "variety.h"
 #include <time.h>
 #include "rtdata.h"
 
-_WCRTLINK long *__get_timezone_ptr( void )
+
+_WCRTLINK long (*__get_timezone_ptr( void ))
 {
     return( &_RWD_timezone );
 }

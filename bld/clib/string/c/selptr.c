@@ -34,7 +34,8 @@
 #include "rtdata.h"
 #include "errstr.h"
 
-_WCRTLINK char *(*__get_sys_errlist_ptr( void ))[]
+
+_WCRTLINK char * (*__get_sys_errlist_ptr( void ))[]
 {
     return( &_sys_errlist );
 }

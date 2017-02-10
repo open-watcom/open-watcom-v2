@@ -34,6 +34,8 @@
 #include <stdlib.h>
 #include "rtdata.h"
 
-_WCRTLINK unsigned long (*__get_win_realloc_flags_ptr( void )) {
+
+_WCRTLINK unsigned long (*__get_win_realloc_flags_ptr( void ))
+{
     return( &__win_realloc_flags );
 }

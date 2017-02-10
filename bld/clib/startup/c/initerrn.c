@@ -34,6 +34,7 @@
 #include <sys/magic.h>
 #include "rtdata.h"
 
+
 extern int      errno;  /* this is the real variable */
 
 extern void __initerrno( void )

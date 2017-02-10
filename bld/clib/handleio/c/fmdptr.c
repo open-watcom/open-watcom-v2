@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include "rtdata.h"
 
+
 _WCRTLINK int (*__get_fmode_ptr( void ))
 {
     return( &_RWD_fmode );

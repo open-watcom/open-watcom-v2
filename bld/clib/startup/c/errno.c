@@ -36,9 +36,10 @@
 #include "rterrno.h"
 #include "thread.h"
 
+
 #if defined(__QNX__)
 
-_WCRTLINK int *__get_errno_ptr( void )
+_WCRTLINK int (*__get_errno_ptr( void ))
 {
 #if defined(__386__)
     void        *err_ptr;
@@ -60,7 +61,7 @@ _WCRTDATA int       errno;
 
 #endif
 
-_WCRTLINK int *__get_errno_ptr( void )
+_WCRTLINK int (*__get_errno_ptr( void ))
 {
     return( &_RWD_errno );
 }
