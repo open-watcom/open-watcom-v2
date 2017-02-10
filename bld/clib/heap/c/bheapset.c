@@ -50,10 +50,9 @@ _WCRTLINK int _bheapset( __segment seg, unsigned int fill )
             }
         }
         return( _HEAPOK );
-    } else {
-        heap_status = _bheapchk( seg );
-        if( heap_status != _HEAPOK )
-            return( heap_status );
-        return( __HeapSet( seg, fill ) );
     }
+    heap_status = _bheapchk( seg );
+    if( heap_status != _HEAPOK )
+        return( heap_status );
+    return( __HeapSet( seg, fill ) );
 }

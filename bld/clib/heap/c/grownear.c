@@ -445,9 +445,8 @@ static int __CreateNewNHeap( unsigned amount )
   #endif
     if( amount - TAG_SIZE > amount ) {
         return( 0 );
-    } else {
-        amount -= TAG_SIZE;
     }
+    amount -= TAG_SIZE;
     if( amount < sizeof( miniheapblkp ) + sizeof( freelistp ) ) {
         /* there isn't enough for a heap block (struct miniheapblkp) and
            one free block (frl) */
@@ -521,9 +520,8 @@ int __ExpandDGROUP( unsigned amount )
     amount = new_brk_value - brk_value;
     if( amount - TAG_SIZE > amount ) {
         return( 0 );
-    } else {
-        amount -= TAG_SIZE;
     }
+    amount -= TAG_SIZE;
     for( mhp1 = __nheapbeg; mhp1 != NULL; mhp1 = mhp1->next ) {
         if( mhp1->next == NULL )
             break;

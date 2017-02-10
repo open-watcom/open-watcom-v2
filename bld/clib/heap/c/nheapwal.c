@@ -74,10 +74,10 @@ int __NHeapWalk( struct _heapinfo *entry, mheapptr mhp )
                 entry->_size    = 0;
                 entry->_pentry  = NULL;
                 return( _HEAPEND );
-            } else { // We advance to next miniheapblk
-                mhp = mhp->next;
-                p = (frlptr)(mhp + 1);
             }
+            // We advance to next miniheapblk
+            mhp = mhp->next;
+            p = (frlptr)(mhp + 1);
         } else {
             break;
         }
