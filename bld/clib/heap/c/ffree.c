@@ -38,6 +38,8 @@
 #include "heapacc.h"
 
 
+#define HEAP(s)     ((XBPTR(heapblkp, s))0)
+
 #if defined(__BIG_DATA__)
 
 _WCRTLINK void free( void *cstg )
@@ -67,8 +69,8 @@ _WCRTLINK void _ffree( void _WCFAR *cstg )
         // __LargestSizeB4Rover anyway. The worst that will happen is
         // that _fmalloc will start searching from __fheapbeg when it could
         // have started at __fheapRover.
-        if( __LargestSizeB4Rover < HBPTR( seg )->largest_blk ) {
-            __LargestSizeB4Rover = HBPTR( seg )->largest_blk;
+        if( __LargestSizeB4Rover < HEAP( seg )->largest_blk ) {
+            __LargestSizeB4Rover = HEAP( seg )->largest_blk;
         }
     }
     _ReleaseFHeap();

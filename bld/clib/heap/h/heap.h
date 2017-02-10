@@ -43,8 +43,6 @@
 #define VOID_BPTR       void _WCNEAR *
 #endif
 
-#define HBPTR(s)        ((XBPTR(heapblkp, s))0)
-
 #define HUGE_NULL       ((void _WCHUGE *)NULL)
 #define FAR_NULL        ((void _WCFAR *)NULL)
 #define NEAR_NULL       ((void _WCNEAR *)NULL)

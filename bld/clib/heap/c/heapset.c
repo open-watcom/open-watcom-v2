@@ -39,7 +39,8 @@
 #include "heapacc.h"
 
 
-#define FRLBPTR     XBPTR( freelistp, seg )
+#define HEAP(s)     ((XBPTR(heapblkp, s))0)
+#define FRLPTR      XBPTR( freelistp, seg )
 
 extern  void    _mymemset(void _WCFAR *,unsigned,unsigned);
 #pragma aux     _mymemset = \
@@ -48,14 +49,14 @@ extern  void    _mymemset(void _WCFAR *,unsigned,unsigned);
 
 int __HeapSet( __segment seg, unsigned int fill )
 {
-    FRLBPTR     curr_frl;
+    FRLPTR      frl;
 
     _AccessFHeap();
-    for( ; seg != _NULLSEG; seg = HBPTR( seg )->nextseg ) {
-        curr_frl = HBPTR( seg )->freehead.next;
-        while( FP_OFF( curr_frl ) != offsetof( heapblk, freehead ) ) {
-            _mymemset( curr_frl + 1, fill, curr_frl->len - sizeof( freelistp ) );
-            curr_frl = curr_frl->next;
+    for( ; seg != _NULLSEG; seg = HEAP( seg )->nextseg ) {
+        frl = HEAP( seg )->freehead.next;
+        while( FP_OFF( frl ) != offsetof( heapblk, freehead ) ) {
+            _mymemset( frl + 1, fill, frl->len - sizeof( freelistp ) );
+            frl = frl->next;
         }
     }
     _ReleaseFHeap();

@@ -36,6 +36,8 @@
 #include "heap.h"
 
 
+#define HEAP(s)     ((XBPTR(heapblkp, s))0)
+
 _WCRTLINK int _bheapset( __segment seg, unsigned int fill )
 {
     int         heap_status;
@@ -43,7 +45,7 @@ _WCRTLINK int _bheapset( __segment seg, unsigned int fill )
     if( seg == _DGroup() )
         return( _nheapset( fill ) );
     if( seg == _NULLSEG ) {
-        for( seg = __bheapbeg; seg != _NULLSEG; seg = HBPTR( seg )->nextseg ) {
+        for( seg = __bheapbeg; seg != _NULLSEG; seg = HEAP( seg )->nextseg ) {
             heap_status = _bheapset( seg, fill );
             if( heap_status != _HEAPOK ) {
                 return( heap_status );

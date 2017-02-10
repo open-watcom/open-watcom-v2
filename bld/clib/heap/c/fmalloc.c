@@ -45,6 +45,8 @@
     #pragma aux (__outside_CLIB) __fmemneed;
 #endif
 
+#define HEAP(s)     ((XBPTR(heapblkp, s))0)
+
 __segment __fheapbeg = _NULLSEG;        /* head of segment list in far heap */
 __segment __fheapRover = _NULLSEG;      /* segment to start search at */
 
@@ -100,8 +102,8 @@ _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
                 if( __fheapbeg == _NULLSEG ) {
                     __fheapbeg = seg;
                 } else {
-                    HBPTR( seg )->prevseg = prev_seg;
-                    HBPTR( prev_seg )->nextseg = seg;
+                    HEAP( seg )->prevseg = prev_seg;
+                    HEAP( prev_seg )->nextseg = seg;
                 }
             }
             for( ;; ) {
@@ -113,11 +115,11 @@ _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
                     break;
                 }
             }
-            if( __LargestSizeB4Rover < HBPTR( seg )->largest_blk  ) {
-                __LargestSizeB4Rover = HBPTR( seg )->largest_blk;
+            if( __LargestSizeB4Rover < HEAP( seg )->largest_blk  ) {
+                __LargestSizeB4Rover = HEAP( seg )->largest_blk;
             }
             prev_seg = seg;
-            seg = HBPTR( seg )->nextseg;
+            seg = HEAP( seg )->nextseg;
         }
         if( __fmemneed( amt ) == 0 ) {
             break;
