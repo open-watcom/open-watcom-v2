@@ -61,17 +61,17 @@ static int checkFreeList( unsigned long *free_size )
     return( _HEAPOK );
 }
 
-static int checkFree( freelistp _WCFAR *p )
+static int checkFree( freelistp _WCFAR *frl )
 {
     __segment   seg;
     FRLPTR      prev;
     FRLPTR      next;
 
-    __fheapchk_current = p;
-    seg = FP_SEG( p );
-    prev = p->prev;
-    next = p->next;
-    if( prev->next != (FRLPTR)p || next->prev != (FRLPTR)p ) {
+    __fheapchk_current = frl;
+    seg = FP_SEG( frl );
+    prev = frl->prev;
+    next = frl->next;
+    if( prev->next != (FRLPTR)frl || next->prev != (FRLPTR)frl ) {
         return( _HEAPBADNODE );
     }
     if( ((FRLPTR)prev->prev)->next != prev || ((FRLPTR)next->next)->prev != next ) {
