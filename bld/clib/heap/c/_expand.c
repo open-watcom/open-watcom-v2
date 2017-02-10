@@ -65,11 +65,10 @@ int __HeapManager_expand( __segment seg, unsigned cstg, size_t req_size, size_t 
         p2 = (FRLPTR)( (PTR)p1 + old_size );
         *growth_size = new_size - old_size;
         for( ;; ) {
-            if( IS_BLK_END( p2 ) ) {
+            if( IS_BLK_END( p2 ) )
                 return( __HM_TRYGROW );
-            } else if( IS_BLK_INUSE( p2 ) ) {   /* next piece is allocated */
+            if( IS_BLK_INUSE( p2 ) )    /* next piece is allocated */
                 break;
-            }
             heap = 0;                   // for based heap
             free_size = p2->len;
             pnext = p2->next;
@@ -108,30 +107,29 @@ int __HeapManager_expand( __segment seg, unsigned cstg, size_t req_size, size_t 
         }
         /* no suitable free blocks behind, have to move block */
         return( __HM_FAIL );
-    } else {
-        /* shrinking the current allocation */
-        if( old_size - new_size >= FRL_SIZE ) {
-            heap = 0;                   // for based heap
-            /* block big enough to split */
-            SET_BLK_SIZE_INUSE( p1, new_size );
-            p2 = (FRLPTR)( (PTR)p1 + new_size );
-            SET_BLK_SIZE_INUSE( p2, old_size - new_size );
-            if( seg == _DGroup() ) {    // near heap
-                for( heap = __nheapbeg; heap->next != NULL; heap = heap->next ) {
-                    if( IS_IN_HEAP( p1, heap ) ) {
-                        break;
-                    }
+    }
+    /* shrinking the current allocation */
+    if( old_size - new_size >= FRL_SIZE ) {
+        heap = 0;                   // for based heap
+        /* block big enough to split */
+        SET_BLK_SIZE_INUSE( p1, new_size );
+        p2 = (FRLPTR)( (PTR)p1 + new_size );
+        SET_BLK_SIZE_INUSE( p2, old_size - new_size );
+        if( seg == _DGroup() ) {    // near heap
+            for( heap = __nheapbeg; heap->next != NULL; heap = heap->next ) {
+                if( IS_IN_HEAP( p1, heap ) ) {
+                    break;
                 }
             }
-            /* _bfree will decrement 'numalloc' */
-            heap->numalloc++;
-#if defined( _M_I86 )
-            _bfree( seg, (VOID_BPTR)BLK2CPTR( p2 ) );
-            /* free the top portion */
-#else
-            _nfree( (void _WCNEAR *)BLK2CPTR( p2 ) );
-#endif
         }
+        /* _bfree will decrement 'numalloc' */
+        heap->numalloc++;
+#if defined( _M_I86 )
+        _bfree( seg, (VOID_BPTR)BLK2CPTR( p2 ) );
+        /* free the top portion */
+#else
+        _nfree( (void _WCNEAR *)BLK2CPTR( p2 ) );
+#endif
     }
     return( __HM_SUCCESS );
 }
