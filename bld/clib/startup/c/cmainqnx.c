@@ -63,14 +63,13 @@ extern int main( int, char **, char ** );
 
 extern  void    __qnx_exit( int __status );
 
-void    __near *_endheap;       /* temporary work-around */
+void    __near *_endheap;                   /* temporary work-around */
 char    *__near __env_mask;
-char    **environ;              /* pointer to environment variables */
-int     _argc;                  /* argument count  */
-char    **_argv;                /* argument vector */
+char    ** _WCDATA environ;                 /* pointer to environment variables */
+int     _argc;                              /* argument count  */
+char    **_argv;                            /* argument vector */
 
 #if defined( _M_I86 )
-extern  void    __near *_curbrk;        /* top of memory owned by process */
 
 pid_t                   _my_pid;        /* some sort of POSIX dodad */
 struct  _proc_spawn     *__cmd;         /* address of spawn msg */
@@ -80,7 +79,7 @@ extern  void __user_init( void );
 #define __user_init() ((int(__far *)()) __f[1])()
 #endif
 
-_WCRTLINK void _WCI86FAR __null_FPE_rtn( int fpe_type )
+static void _WCI86FAR __null_FPE_rtn( int fpe_type )
 {
     fpe_type = fpe_type;
 }
@@ -232,29 +231,29 @@ static void setup_slib()
 }
 
 void _CMain( free, n, cmd, stk_bot, pid )
-    void     __near *free;      /* start of free space                  */
-    short unsigned   n;         /* number of bytes                      */
-    struct _proc_spawn __near *cmd;/* pointer to spawn msg              */
-    short unsigned  stk_bot;    /* bottom of stack                      */
-    pid_t            pid;       /* process id                           */
+    void     __near *free;                  /* start of free space                  */
+    short unsigned   n;                     /* number of bytes                      */
+    struct _proc_spawn __near *cmd;         /* pointer to spawn msg                 */
+    short unsigned  stk_bot;                /* bottom of stack                      */
+    pid_t            pid;                   /* process id                           */
 {
 
-    _my_pid = pid;              /* save POSIX process id                */
-    __cmd = cmd;                /* save address of spawn msg            */
-    _STACKLOW = stk_bot;        /* set stack low                        */
-    _curbrk = free;             /* current end of dynamic memory        */
-                                /* pointer to top of memory owned by
-                                   process                              */
+    _my_pid = pid;                          /* save POSIX process id                */
+    __cmd = cmd;                            /* save address of spawn msg            */
+    _STACKLOW = stk_bot;                    /* set stack low                        */
+    _curbrk = (unsigned)free;               /* current end of dynamic memory        */
+                                            /* pointer to top of memory owned by
+                                               process                              */
     _RWD_FPE_handler = __null_FPE_rtn;
     _endheap = (char __near *)free + n;
     if( _endheap < free )
         _endheap = (char __near *)~0xfU;
     setup_slib();
 
-    __InitRtns( 255 );          /* call special initializer routines    */
-    __MAGIC.sptrs[2] = cmd;     /* save ptr to spawn message */
+    __InitRtns( 255 );                      /* call special initializer routines    */
+    __MAGIC.sptrs[2] = cmd;                 /* save ptr to spawn message */
     SetupArgs( cmd );
-    _amblksiz = 8 * 1024;       /* set minimum memory block allocation  */
+    _amblksiz = 8 * 1024;                   /* set minimum memory block allocation  */
 
     /*
        Invoke the "last chance" init code in the slib before executing the
@@ -313,6 +312,6 @@ void _CMain( int argc, char **argv, char **arge )
     __InitRtns( 255 );
     _amblksiz = 8 * 1024;       /* set minimum memory block allocation  */
     setup_es();
-    exit(main(argc,argv,arge));
+    exit( main( argc, argv, arge ) );
 }
 #endif

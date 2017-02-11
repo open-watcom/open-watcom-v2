@@ -46,6 +46,9 @@
 #include "exitwmsg.h"
 #include "grabfp87.h"
 #include "init8087.h"
+#if defined( __QNX__ )
+#include "osinfqnx.h"
+#endif
 
 #if defined( __WINDOWS_386__ )
 extern void __pascal _FloatingPoint( void );
@@ -238,9 +241,6 @@ void __chk8087( void )
 void __chk8087( void )
 /********************/
 {
-    extern      char    __87;
-    extern      char    __r87;
-
     _RWD_real87 = __r87;
     _RWD_8087 = __87;
     _fpreset();

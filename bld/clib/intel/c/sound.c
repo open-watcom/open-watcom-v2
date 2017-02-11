@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <i86.h>
 #include <conio.h>
 #ifndef __QNX__
     #include <dos.h>

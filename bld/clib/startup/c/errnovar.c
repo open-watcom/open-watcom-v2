@@ -31,8 +31,8 @@
 
 #include "variety.h"
 #include "rtinit.h"
+#include "initerrn.h"
 
-extern void __initerrno( void );
 
 int  errno;
 
