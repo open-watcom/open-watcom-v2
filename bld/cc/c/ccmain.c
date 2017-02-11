@@ -1085,7 +1085,7 @@ bool OpenSrcFile( const char *filename, src_file_type typ )
     char        c;
     bool        is_lib;
 
-    is_lib = ( typ == FT_LIBRARY );
+    is_lib = ( typ == FT_LIBRARY || typ == FT_HEADER_PRE );
 
     // See if there's an alias for this filename
     filename = IncludeAlias( filename, is_lib );
