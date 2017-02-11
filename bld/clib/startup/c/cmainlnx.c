@@ -56,7 +56,7 @@ void __cdecl _LinuxMain( int argc, char **argv, char **arge )
     // Initialise the heap. To do this we call sbrk() with
     // a value of 0, which will return the current top of the
     // process address space which is where we start the heap.
-    _curbrk             = (unsigned)sbrk( 0 );
+    _curbrk             = __syscall_val( unsigned, sys_call1( SYS_brk, 0 ) );
 
     // TODO: Need to find the end of the stack from the kernel! For now
     //       we make it big enough to cover the heap. This will work, but
