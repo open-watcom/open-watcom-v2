@@ -175,7 +175,7 @@ void _WCNEAR *__brk( unsigned brk_value )
             }
         }
     } else {        /* _IsPharLap() || IsRationalNonZeroBase() */
-        segm_size = ( brk_value + 4095U ) / 4096U;
+        segm_size = __ROUND_UP_SIZE_TO_4K( brk_value );
         if( segm_size == 0 )
             segm_size = 0x000FFFFF;
         if( _IsRationalNonZeroBase() ) {
@@ -207,7 +207,7 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
             } else {
                 cstg = TinyCBAlloc( increment );
             }
-            if( cstg == NEAR_NULL ) {
+            if( cstg == NULL ) {
                 _RWD_errno = ENOMEM;
                 cstg = (void _WCNEAR *)-1;
             }
