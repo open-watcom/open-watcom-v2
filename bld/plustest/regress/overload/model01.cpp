@@ -1,8 +1,8 @@
 #include "dump.h"
 
 
-void f( double, char far *, int ) BAD;
-void f( double, char near *, int ) GOOD;
+void f( double, char __far *, int ) BAD;
+void f( double, char __near *, int ) GOOD;
 
 void g( double a, char *b, int c )
 {

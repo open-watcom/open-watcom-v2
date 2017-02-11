@@ -1,6 +1,6 @@
 #include "dump.h"
 
-void f( int far & ) GOOD;
+void f( int __far & ) GOOD;
 void f( ... ) BAD;
 
 void g( int a )

@@ -5,19 +5,19 @@ class A { public: int a; };
 class B : public A { public: int b; };
 class C : public B { public: int c; };
 
-void f( A near * ) GOOD;
-void f( A far * ) GOOD;
-void f( B near * ) GOOD;
-void f( B far * ) GOOD;
-void f( C near * ) GOOD;
-void f( C far * ) GOOD;
+void f( A __near * ) GOOD;
+void f( A __far * ) GOOD;
+void f( B __near * ) GOOD;
+void f( B __far * ) GOOD;
+void f( C __near * ) GOOD;
+void f( C __far * ) GOOD;
 
-void g( A near *npa,
-	A far *fpa,
-	B near *npb,
-	B far *fpb,
-	C near *npc,
-	C far *fpc )
+void g( A __near *npa,
+        A __far *fpa,
+        B __near *npb,
+        B __far *fpb,
+        C __near *npc,
+        C __far *fpc )
 {
     f( npa );
     f( fpa );

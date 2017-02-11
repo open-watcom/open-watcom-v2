@@ -35,6 +35,6 @@ struct X33 {
     int b;
 };
 
-int far X33::* mpf;
+int __far X33::* mpf;
 int __based(seg) X33::* mps;
 int volatile X33::* mpc;

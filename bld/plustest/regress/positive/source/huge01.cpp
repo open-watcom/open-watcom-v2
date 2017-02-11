@@ -20,8 +20,8 @@ typedef struct temp {
     short a[32];
 } temp;
 
-struct temp huge HugeArr[N];
-struct temp huge *HugeMem;
+struct temp __huge HugeArr[N];
+struct temp __huge *HugeMem;
 
 void barf( char *a, int i, unsigned line )
 {
@@ -46,7 +46,7 @@ int main()
     int i;
     temp localvar;
 
-    HugeMem = (temp huge *) halloc( N, sizeof(temp) );
+    HugeMem = (temp __huge *) halloc( N, sizeof(temp) );
     if( HugeMem == NULL ) {
         main_terminated = 1;    // need to exit right now!
         fail(__LINE__);

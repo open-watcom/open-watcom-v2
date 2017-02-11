@@ -25,9 +25,9 @@ S::S( int x )
 foo( int x )
 {
     if( x ) {
-	return x + 1;
+        return x + 1;
     } else if( x + 1 ) {
-	return;
+        return;
     }
 }
 struct D;
@@ -44,7 +44,7 @@ struct D : B {
 
 void test_static_huge( void )
 {
-    static int huge a[65537];
+    static int __huge a[65537];
 
     a[0] = 1;
 }

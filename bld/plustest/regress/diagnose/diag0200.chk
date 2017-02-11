@@ -659,7 +659,7 @@ File: source\diag0223.c
 (173,50): Error! E328: storage class of 'S16::func3' conflicts with previous declaration
   definition: 'unsigned long volatile S16::func3( int * )'
 (167,36): Error! E204: 'this' pointer is not defined
-(177,35): Error! E254: 'S16::b' has not been declared as a member
+(177,37): Error! E254: 'S16::b' has not been declared as a member
   definition: 'float __far * S16::b[17]'
 (183,19): Error! E898: in-class initialization is only allowed for const static integral members
 (185,19): Error! E898: in-class initialization is only allowed for const static integral members
@@ -1375,7 +1375,7 @@ File: source\diag0227.c
 (131,9): Error! E021: 'continue' may only appear in a for, do, or while statement
 (134,13): Error! E021: 'continue' may only appear in a for, do, or while statement
 (139,5): Warning! W013: unreachable code
-(143,72): Error! E178: const object must be initialized
+(143,74): Error! E178: const object must be initialized
 (152,7): Warning! W013: unreachable code
 (152,7): Error! E029: symbol 'l' has not been declared
 (159,1): Error! E073: statement required after label
@@ -1754,9 +1754,9 @@ File: source\diag0233.c
 (23,12): Error! E064: invalid character constant
 (25,12): Error! E064: invalid character constant
 (28,12): Error! E064: invalid character constant
-(31,18): Error! E373: invalid modifier for auto variable
-(32,17): Error! E373: invalid modifier for auto variable
-(34,13): Error! E373: invalid modifier for auto variable
+(31,20): Error! E373: invalid modifier for auto variable
+(32,19): Error! E373: invalid modifier for auto variable
+(34,15): Error! E373: invalid modifier for auto variable
 (43,23): Warning! W728: class modifiers for 'X37' conflict with class modifiers for 'X39'
 (44,23): Warning! W728: class modifiers for 'X37' conflict with class modifiers for 'X41'
 (59,24): Warning! W728: class modifiers for 'x49::B1' conflict with class modifiers for 'x49::B2'
@@ -2951,10 +2951,10 @@ File: source\diag0259.c
 (163,14): Warning! W836: symbol has different type than previous symbol in same declaration
   companion definition is 'p'
   definition: 'char * p' in 'void x139( void )'
-(164,18): Warning! W836: symbol has different type than previous symbol in same declaration
+(164,20): Warning! W836: symbol has different type than previous symbol in same declaration
   companion definition is 'a'
   definition: 'char __far * a' in 'void x139( void )'
-(164,21): Warning! W836: symbol has different type than previous symbol in same declaration
+(164,23): Warning! W836: symbol has different type than previous symbol in same declaration
   companion definition is 'a'
   definition: 'char __far * a' in 'void x139( void )'
 (165,1): Warning! W014: no reference to symbol 'p'

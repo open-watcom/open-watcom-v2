@@ -10,7 +10,7 @@ template <class T>
         return x + x;
     }
 
-int far *fp;
+int __far *fp;
 
 void x9()
 {

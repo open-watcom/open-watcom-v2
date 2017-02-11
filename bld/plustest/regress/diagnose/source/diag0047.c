@@ -20,17 +20,17 @@ struct Y {
     static int i;
     friend void X::f( void )
     {
-	i = 5;
+        i = 5;
     }
     friend void q( void )
     {
-	i = 2;
+        i = 2;
     }
 };
 
 void bad_auto( void )
 {
-    unsigned far a;
+    unsigned __far a;
 
     a = a;
 }

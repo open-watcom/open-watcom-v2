@@ -63,7 +63,7 @@ testa( short ,  unsigned_char );
 testa( short ,  signed_char );
 testa( short ,  short );
 testa( short ,  unsigned_short );
-// testa( short ,  unsigned );		// 16-32 difference
+// testa( short ,  unsigned );          // 16-32 difference
 testa( short ,  int );
 testa( short ,  long );
 testa( short ,  unsigned_long );
@@ -85,8 +85,8 @@ testa( unsigned ,  short );
 testa( unsigned ,  unsigned_short );
 testa( unsigned ,  unsigned );
 testa( unsigned ,  int );
-//testa( unsigned ,  long );	// 16-32
-//testa( unsigned ,  unsigned_long );	// 16-32
+//testa( unsigned ,  long );    // 16-32
+//testa( unsigned ,  unsigned_long );   // 16-32
 
 testa( int ,  char );
 testa( int ,  unsigned_char );
@@ -95,7 +95,7 @@ testa( int ,  short );
 testa( int ,  unsigned_short );
 testa( int ,  unsigned );
 testa( int ,  int );
-//testa( int ,  long );		// 16-32
+//testa( int ,  long );         // 16-32
 //testa( int ,  unsigned_long );// 16-32
 
 testa( long ,  char );
@@ -163,19 +163,19 @@ struct X159 {
     };
     
     struct X {
-	virtual B *fn( int, ... );
+        virtual B *fn( int, ... );
     };
     struct Y : X {
-	virtual D *fn( int, ... );
+        virtual D *fn( int, ... );
     };
 };
 
 struct X173 {
     struct VV {
-	virtual int foo( int, ... );
+        virtual int foo( int, ... );
     };
     struct DD : virtual VV {
-	virtual int foo( int, ... );
+        virtual int foo( int, ... );
     };
     
     DD x;
@@ -185,20 +185,20 @@ void x184( int );
 
 template <class T>
     struct X187 {
-	X187( T x )
-	{
-	    x184( x );
-	}
+        X187( T x )
+        {
+            x184( x );
+        }
     };
 
 template <class T>
     struct X195 {
-	operator X187<T>();
+        operator X187<T>();
     };
 
 template <class T>
     X195<T>::operator X187<T>() {
-	return 0;
+        return 0;
     }
 int __export x203;
 int __export (*(x204(int,int)))( int, int, int )
@@ -242,7 +242,7 @@ struct D229 : B229 {
 };
 
 typedef struct X244 {
-} X244, const *CP244, far *FP244, const far *CFP244;
+} X244, const *CP244, __far *FP244, const __far *CFP244;
 
 CP244 s1244;
 
@@ -282,8 +282,8 @@ int x276( char c )
     case '\xff':
     case -2:
     case -1:
-	++c;
-	break;
+        ++c;
+        break;
     }
     return c;
 }

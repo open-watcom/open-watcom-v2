@@ -5,31 +5,31 @@ class A { public: int a; };
 class B : public A { public: int b; };
 class C : public B { public: int c; };
 
-void f( A near * ) GOOD;
-void f( A far * ) GOOD;
-void f( const A near * ) GOOD;
-void f( const A far * ) GOOD;
-void f( volatile A near * ) GOOD;
-void f( volatile A far * ) GOOD;
-void f( B near * ) GOOD;
-void f( B far * ) GOOD;
-void f( const B near * ) GOOD;
-void f( const B far * ) GOOD;
-void f( volatile B near * ) GOOD;
-void f( volatile B far * ) GOOD;
-void f( C near * ) GOOD;
-void f( C far * ) GOOD;
-void f( const C near * ) GOOD;
-void f( const C far * ) GOOD;
-void f( volatile C near * ) GOOD;
-void f( volatile C far * ) GOOD;
+void f( A __near * ) GOOD;
+void f( A __far * ) GOOD;
+void f( const A __near * ) GOOD;
+void f( const A __far * ) GOOD;
+void f( volatile A __near * ) GOOD;
+void f( volatile A __far * ) GOOD;
+void f( B __near * ) GOOD;
+void f( B __far * ) GOOD;
+void f( const B __near * ) GOOD;
+void f( const B __far * ) GOOD;
+void f( volatile B __near * ) GOOD;
+void f( volatile B __far * ) GOOD;
+void f( C __near * ) GOOD;
+void f( C __far * ) GOOD;
+void f( const C __near * ) GOOD;
+void f( const C __far * ) GOOD;
+void f( volatile C __near * ) GOOD;
+void f( volatile C __far * ) GOOD;
 
-void gA( A near *npa,
-	A far *fpa,
-	const A near * cnpa,
-	const A far * cfpa,
-	volatile A near * vnpa,
-	volatile A far * vfpa )
+void gA( A __near *npa,
+        A __far *fpa,
+        const A __near * cnpa,
+        const A __far * cfpa,
+        volatile A __near * vnpa,
+        volatile A __far * vfpa )
 {
     f( npa );
     f( fpa );
@@ -38,12 +38,12 @@ void gA( A near *npa,
     f( vnpa );
     f( vfpa );
 }
-void gB( B near *npb,
-	B far *fpb,
-	const B near * cnpb,
-	const B far * cfpb,
-	volatile B near * vnpb,
-	volatile B far * vfpb )
+void gB( B __near *npb,
+        B __far *fpb,
+        const B __near * cnpb,
+        const B __far * cfpb,
+        volatile B __near * vnpb,
+        volatile B __far * vfpb )
 {
     f( npb );
     f( fpb );
@@ -52,12 +52,12 @@ void gB( B near *npb,
     f( vnpb );
     f( vfpb );
 }
-void gC( C near *npc,
-	C far *fpc,
-	const C near * cnpc,
-	const C far * cfpc,
-	volatile C near * vnpc,
-	volatile C far * vfpc )
+void gC( C __near *npc,
+        C __far *fpc,
+        const C __near * cnpc,
+        const C __far * cfpc,
+        volatile C __near * vnpc,
+        volatile C __far * vfpc )
 {
     f( npc );
     f( fpc );

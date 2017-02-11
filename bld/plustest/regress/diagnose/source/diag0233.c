@@ -2,18 +2,18 @@
 int x29;
 #endif blah
 struct X1 {
-    int near *p;
-    int far *q;
-    int near *foo( int x );
-    int near *bar( int x );
+    int __near *p;
+    int __far *q;
+    int __near *foo( int x );
+    int __near *bar( int x );
 };
 
-int near *X1::foo( int x )
+int __near *X1::foo( int x )
 {
     return x ? 0 : p;
 }
 
-int near *X1::bar( int x )
+int __near *X1::bar( int x )
 {
     return x ? 0 : q;
 }
@@ -28,10 +28,10 @@ char c22 = '
 char c25 = '\
 ';
 ;;;;;;;
-int x31( int far x,
-	int far y )
+int x31( int __far x,
+        int __far y )
 {
-    int far z = x + y;
+    int __far z = x + y;
     return z;
 }
 struct X37 {
@@ -48,48 +48,48 @@ struct __export X44a : X37, X41 { };
 struct __export X45a : X39, X41 { };
 struct x49 {
     struct __cdecl B1 {
-	virtual void foo( int, int );
+        virtual void foo( int, int );
     };
     struct __pascal B2 {
-	virtual void foo( int, int );
+        virtual void foo( int, int );
     };
     struct B3 {
-	virtual void foo( int, int );
+        virtual void foo( int, int );
     };
     struct D1 : B1, B2 {
-	virtual void foo( int, int );
+        virtual void foo( int, int );
     };
     struct D2 : B1, B3 {
-	virtual void foo( int, int );
+        virtual void foo( int, int );
     };
     struct __cdecl D3 : B3 {
-	virtual void foo( int, int );
+        virtual void foo( int, int );
     };
     struct __cdecl D4 : B2 {
-	virtual void foo( int, int );
+        virtual void foo( int, int );
     };
     struct __cdecl D5 : B1 {
-	virtual void foo( int, int );
+        virtual void foo( int, int );
     };
     struct D6 : B2 {
-	virtual void foo( int, int );
+        virtual void foo( int, int );
     };
 };
 struct x78 {
     struct B {
-	B();
+        B();
     };
     struct D : B {
-	D(){};
+        D(){};
     };
 };
 struct X86 {
     struct B {
-	B();
+        B();
     };
     struct D : B {
-	virtual B();
-	D(){}
+        virtual B();
+        D(){}
     };
     B q;
 } x95;

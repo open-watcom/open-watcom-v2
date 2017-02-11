@@ -2,9 +2,9 @@
 
 #pragma warning 5 10
 
-int far a;
+int __far a;
 
-void f( int near & ) GOOD;
+void f( int __near & ) GOOD;
 void f( ... ) BAD;
 
 void g( void )
