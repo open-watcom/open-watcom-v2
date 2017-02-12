@@ -60,10 +60,7 @@
 #define BLKSIZE_ALIGN           0x1000  // 4kB
 #endif
 
-static frlptr __LinkUpNewMHeap( mheapptr heap );
-
 #if defined( __DOS_EXT__ )
-
 extern  int SegmentLimit( void );
 #pragma aux SegmentLimit        = \
         "xor    eax,eax"        \
@@ -72,6 +69,53 @@ extern  int SegmentLimit( void );
         "inc    eax"            \
         value                   [eax] \
         modify exact            [eax]
+#endif
+
+static frlptr __LinkUpNewMHeap( mheapptr heap1 ) // originally __AddNewHeap()
+{
+    mheapptr    heap2;
+    mheapptr    prev_heap2;
+    frlptr      frl;
+    unsigned    amount;
+
+    /* insert into ordered heap list */
+    /* logic wasn't inserting heaps in proper ascending order */
+    prev_heap2 = NULL;
+    for( heap2 = __nheapbeg; heap2 != NULL; heap2 = heap2->next ) {
+        if( heap1 < heap2 )
+            break;
+        prev_heap2 = heap2;
+    }
+    /* ascending order should be: prev_heap2 < heap1 < heap2  */
+    /* except for special cases when prev_heap2 and/or heap2 are NULL */
+    heap1->prev = prev_heap2;
+    heap1->next = heap2;
+    if( prev_heap2 != NULL ) {
+        prev_heap2->next = heap1;
+    } else {            /* add heap1 to beginning of heap */
+        __nheapbeg = heap1;
+    }
+    if( heap2 != NULL ) {
+        /* insert before 'heap2' (list is non-empty) */
+        heap2->prev = heap1;
+    }
+    amount = heap1->len - sizeof( miniheapblkp );
+    /* Fill out the new miniheap descriptor */
+    heap1->freehead.len = 0;
+    heap1->freehead.prev = &heap1->freehead;
+    heap1->freehead.next = &heap1->freehead;
+    heap1->rover = &heap1->freehead;
+    heap1->b4rover = 0;
+    heap1->numalloc = 0;
+    heap1->numfree  = 0;
+    frl = (frlptr)( heap1 + 1 );
+    frl->len = amount;
+    /* fix up end of heap links */
+    SET_BLK_END( (frlptr)NEXT_BLK( frl ) );
+    return( frl );
+}
+
+#if defined( __DOS_EXT__ )
 
 static void __unlink( mheapptr heap )
 {
@@ -175,50 +219,6 @@ void *__ReAllocDPMIBlock( frlptr old_frl, unsigned req_size )
     return( NULL );
 }
 #endif
-
-static frlptr __LinkUpNewMHeap( mheapptr heap1 ) // originally __AddNewHeap()
-{
-    mheapptr    heap2;
-    mheapptr    prev_heap2;
-    frlptr      frl;
-    unsigned    amount;
-
-    /* insert into ordered heap list */
-    /* logic wasn't inserting heaps in proper ascending order */
-    prev_heap2 = NULL;
-    for( heap2 = __nheapbeg; heap2 != NULL; heap2 = heap2->next ) {
-        if( heap1 < heap2 )
-            break;
-        prev_heap2 = heap2;
-    }
-    /* ascending order should be: prev_heap2 < heap1 < heap2  */
-    /* except for special cases when prev_heap2 and/or heap2 are NULL */
-    heap1->prev = prev_heap2;
-    heap1->next = heap2;
-    if( prev_heap2 != NULL ) {
-        prev_heap2->next = heap1;
-    } else {            /* add heap1 to beginning of heap */
-        __nheapbeg = heap1;
-    }
-    if( heap2 != NULL ) {
-        /* insert before 'heap2' (list is non-empty) */
-        heap2->prev = heap1;
-    }
-    amount = heap1->len - sizeof( miniheapblkp );
-    /* Fill out the new miniheap descriptor */
-    heap1->freehead.len = 0;
-    heap1->freehead.prev = &heap1->freehead;
-    heap1->freehead.next = &heap1->freehead;
-    heap1->rover = &heap1->freehead;
-    heap1->b4rover = 0;
-    heap1->numalloc = 0;
-    heap1->numfree  = 0;
-    frl = (frlptr)( heap1 + 1 );
-    frl->len = amount;
-    /* fix up end of heap links */
-    SET_BLK_END( (frlptr)NEXT_BLK( frl ) );
-    return( frl );
-}
 
 #if !( defined( __WINDOWS__ ) || defined( __WARP__ ) || defined( __NT__ ) )
 size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
