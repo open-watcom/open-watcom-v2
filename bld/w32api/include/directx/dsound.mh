@@ -356,7 +356,7 @@
 #if (DIRECTSOUND_VERSION >= 0x0900)
     #define DSBFREQUENCY_MAX    200000
 #else
-    #define DSBFREQUENCY_MIN    100000
+    #define DSBFREQUENCY_MAX    100000
 #endif
 
 /* DirectSound buffer pan values */
