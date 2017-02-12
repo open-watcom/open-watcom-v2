@@ -52,11 +52,11 @@
 //                if 16bit Intel -> offset within segment
 //                else           -> absolute pointer value
 //
-unsigned __MemAllocator( unsigned req_size, __segment seg, unsigned heap )
+VOID_BPTR __MemAllocator( unsigned req_size, __segment seg, VOID_BPTR heap )
 {
-    unsigned    cstg;
+    VOID_BPTR   cstg;
 
-    cstg = 0;                                   // assume the worst
+    cstg = NULL;                                // assume the worst
     if( req_size != 0 ) {                       // quit if size is zero
         unsigned    size;
 
@@ -125,7 +125,7 @@ unsigned __MemAllocator( unsigned req_size, __segment seg, unsigned heap )
                 }
                 SET_BLK_INUSE( pcur );          // mark as allocated
                                                 // get pointer to user area
-                cstg = BLK2CPTR( pcur );
+                cstg = (VOID_BPTR)BLK2CPTR( pcur );
             }
         }
     }
@@ -145,9 +145,9 @@ unsigned __MemAllocator( unsigned req_size, __segment seg, unsigned heap )
 // output:
 //      none
 //
-void __MemFree( unsigned cstg, __segment seg, unsigned heap )
+void __MemFree( VOID_BPTR cstg, __segment seg, VOID_BPTR heap )
 {
-    if( cstg != 0 ) {                           // quit if pointer is zero
+    if( cstg != NULL ) {                           // quit if pointer is zero
         FRLPTR pfree;
 
         pfree = (FRLPTR)CPTR2BLK( cstg );

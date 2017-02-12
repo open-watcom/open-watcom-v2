@@ -194,8 +194,7 @@ extern void             *__ReAllocDPMIBlock( frlptr p1, unsigned req_size );
 extern void             *__ExpandDPMIBlock( frlptr, unsigned );
 #endif
 
-extern int              __HeapManager_expand( __segment seg, unsigned cstg,
-                            size_t req_size, size_t *growth_size );
+extern int              __HeapManager_expand( __segment seg, VOID_BPTR cstg, size_t req_size, size_t *growth_size );
 
 #if defined( _M_I86 )
 extern void             _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount );
@@ -217,8 +216,8 @@ extern void             _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amo
  #define __IsCtsNHeap() (1)
 #endif
 
-extern  unsigned        __MemAllocator( unsigned __size, __segment __seg, unsigned __heap );
-extern  void            __MemFree( unsigned __cstg, __segment __seg, unsigned __heap );
+extern  VOID_BPTR       __MemAllocator( unsigned __size, __segment __seg, VOID_BPTR __heap );
+extern  void            __MemFree( VOID_BPTR __cstg, __segment __seg, VOID_BPTR __heap );
 #if defined( _M_I86 )
   #pragma aux __MemAllocator "*" parm [ax] [dx] [bx]
   #pragma aux __MemFree      "*" parm [ax] [dx] [bx]

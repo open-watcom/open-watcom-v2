@@ -44,7 +44,7 @@ _WCRTLINK void _bfree( __segment seg, VOID_BPTR cstg )
         if( seg == _DGroup() ) {
             _nfree( cstg );
         } else {
-            __MemFree( (unsigned)cstg, seg, 0 );
+            __MemFree( cstg, seg, 0 );
         }
     }
     _ReleaseFHeap();

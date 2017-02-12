@@ -138,7 +138,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
 {
     unsigned        largest;
     unsigned        size;
-    unsigned        cstg;
+    VOID_BPTR       cstg;
     unsigned char   expanded;
     mheapptr        heap;
 
@@ -167,7 +167,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
     }
 
     _AccessNHeap();
-    cstg = 0;
+    cstg = NULL;
     expanded = 0;
     for( ;; ) {
 #if defined(__WARP__)
@@ -193,8 +193,8 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
             if( use_obj_any == ( heap->used_obj_any != 0 ) ) {
 #endif // __WARP__
               if( largest >= amt ) {
-                  cstg = __MemAllocator( amt, _DGroup(), (unsigned)heap );
-                  if( cstg != 0 ) {
+                  cstg = __MemAllocator( amt, _DGroup(), heap );
+                  if( cstg != NULL ) {
                       goto lbl_release_heap;
                   }
               }
@@ -218,7 +218,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
     } /* forever */
 lbl_release_heap:
     _ReleaseNHeap();
-    return( (void _WCNEAR *)cstg );
+    return( cstg );
 }
 
 #endif

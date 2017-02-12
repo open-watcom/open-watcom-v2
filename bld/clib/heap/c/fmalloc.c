@@ -70,7 +70,7 @@ _WCRTLINK void *malloc( size_t amount )
 _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
 {
     unsigned    size;
-    unsigned    cstg;
+    VOID_BPTR   cstg;
     __segment   seg;
     __segment   prev_seg;
 
@@ -109,7 +109,7 @@ _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
             for( ;; ) {
                 __fheapRover = seg;
                 cstg = __MemAllocator( amt, seg, 0 );
-                if( cstg != 0 )
+                if( cstg != NULL )
                     goto release_heap;
                 if( __GrowSeg( seg, amt ) == 0 ) {
                     break;
@@ -126,8 +126,8 @@ _WCRTLINK void _WCFAR *_fmalloc( size_t amt )
         }
     }
     if( seg == _NULLSEG ) {
-        cstg = (unsigned)_nmalloc( amt );
-        if( cstg != 0 ) {
+        cstg = _nmalloc( amt );
+        if( cstg != NULL ) {
             seg = _DGroup();
         }
     }

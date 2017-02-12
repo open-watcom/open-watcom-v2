@@ -57,7 +57,7 @@ _WCRTLINK void _WCNEAR *_nexpand( void _WCNEAR *cstg, size_t req_size )
     flags.expanded = 0;
     _AccessNHeap();
     for( ;; ) {
-        retval = __HeapManager_expand( _DGroup(), (unsigned)cstg, req_size, &growth_size );
+        retval = __HeapManager_expand( _DGroup(), cstg, req_size, &growth_size );
         if( retval == __HM_SUCCESS ) {
             _ReleaseNHeap();
             return( cstg );

@@ -40,6 +40,8 @@
 #endif
 
 
+mheapptr    __MiniHeapFreeRover;
+
 #if defined(__SMALL_DATA__)
 
 _WCRTLINK void free( void *cstg )
@@ -48,8 +50,6 @@ _WCRTLINK void free( void *cstg )
 }
 
 #endif
-
-mheapptr    __MiniHeapFreeRover;
 
 /* By setting __ALLOC_DEBUG it is possible to spot memory allocation errors in RDOS target */
 
@@ -65,7 +65,7 @@ _WCRTLINK void _nfree( void _WCNEAR *cstg )
 
 _WCRTLINK void _nfree( void _WCNEAR *cstg )
 {
-    mheapptr        heap1;
+    mheapptr        heap;
     mheapptr        heap2;
 
     if( cstg == NEAR_NULL )
@@ -81,48 +81,48 @@ _WCRTLINK void _nfree( void _WCNEAR *cstg )
     _AccessNHeap();
     do {
         // first try some likely locations
-        heap1 = __MiniHeapFreeRover;
-        if( heap1 != NULL ) {
-            if( IS_IN_HEAP( cstg, heap1 ) ) {
+        heap = __MiniHeapFreeRover;
+        if( heap != NULL ) {
+            if( IS_IN_HEAP( cstg, heap ) ) {
                 break;
             }
-            heap2 = heap1;
-            heap1 = heap1->prev;
-            if( heap1 != NULL ) {
-                if( IS_IN_HEAP( cstg, heap1 ) ) {
+            heap2 = heap;
+            heap = heap->prev;
+            if( heap != NULL ) {
+                if( IS_IN_HEAP( cstg, heap ) ) {
                     break;
                 }
             }
-            heap1 = heap2->next;
-            if( heap1 != NULL ) {
-                if( IS_IN_HEAP( cstg, heap1 ) ) {
+            heap = heap2->next;
+            if( heap != NULL ) {
+                if( IS_IN_HEAP( cstg, heap ) ) {
                     break;
                 }
             }
         }
-        heap1 = __MiniHeapRover;
-        if( heap1 != NULL ) {
-            if( IS_IN_HEAP( cstg, heap1 ) ) {
+        heap = __MiniHeapRover;
+        if( heap != NULL ) {
+            if( IS_IN_HEAP( cstg, heap ) ) {
                 break;
             }
-            heap2 = heap1;
-            heap1 = heap1->prev;
-            if( heap1 != NULL ) {
-                if( IS_IN_HEAP( cstg, heap1 ) ) {
+            heap2 = heap;
+            heap = heap->prev;
+            if( heap != NULL ) {
+                if( IS_IN_HEAP( cstg, heap ) ) {
                     break;
                 }
             }
-            heap1 = heap2->next;
-            if( heap1 != NULL ) {
-                if( IS_IN_HEAP( cstg, heap1 ) ) {
+            heap = heap2->next;
+            if( heap != NULL ) {
+                if( IS_IN_HEAP( cstg, heap ) ) {
                     break;
                 }
             }
         }
 
         // not found near rover, so search the list
-        for( heap1 = __nheapbeg; heap1 != NULL; heap1 = heap1->next ) {
-            if( IS_IN_HEAP( cstg, heap1 ) ) {
+        for( heap = __nheapbeg; heap != NULL; heap = heap->next ) {
+            if( IS_IN_HEAP( cstg, heap ) ) {
                 // break twice!
                 goto found_it;
             }
@@ -135,11 +135,11 @@ _WCRTLINK void _nfree( void _WCNEAR *cstg )
 
 found_it:
     // we found the miniheap, free the storage
-    __MemFree( (unsigned)cstg, _DGroup(), (unsigned)heap1 );
-    __MiniHeapFreeRover = heap1;
-    if( heap1 < __MiniHeapRover ) {
-        if( __LargestSizeB4MiniHeapRover < heap1->largest_blk ) {
-            __LargestSizeB4MiniHeapRover = heap1->largest_blk;
+    __MemFree( cstg, _DGroup(), heap );
+    __MiniHeapFreeRover = heap;
+    if( heap < __MiniHeapRover ) {
+        if( __LargestSizeB4MiniHeapRover < heap->largest_blk ) {
+            __LargestSizeB4MiniHeapRover = heap->largest_blk;
         }
     }
     _ReleaseNHeap();

@@ -62,7 +62,7 @@ _WCRTLINK void _ffree( void _WCFAR *cstg )
         return;
     }
     _AccessFHeap();
-    __MemFree( FP_OFF( cstg ), seg, 0 );
+    __MemFree( (VOID_BPTR)cstg, seg, 0 );
     if( seg != __fheapRover ) {
         // seg might be after the __fheapRover, but we don't know that
         // and it might be expensive to find out. We will just update

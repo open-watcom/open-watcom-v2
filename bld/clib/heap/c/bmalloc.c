@@ -50,7 +50,7 @@ _WCRTLINK VOID_BPTR _bmalloc( __segment seg, size_t amt )
     }
     _AccessFHeap();
     for( ;; ) {
-        cstg = (VOID_BPTR)__MemAllocator( amt, seg, 0 );
+        cstg = __MemAllocator( amt, seg, 0 );
         if( cstg != (VOID_BPTR)NULL )
             break;
         if( __GrowSeg( seg, amt ) == 0 ) {

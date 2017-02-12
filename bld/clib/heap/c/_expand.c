@@ -40,7 +40,7 @@
 #define HEAP        XBPTR(miniheapblkp, seg)
 #define FRLPTR      XBPTR(freelistp, seg)
 
-int __HeapManager_expand( __segment seg, unsigned cstg, size_t req_size, size_t *growth_size )
+int __HeapManager_expand( __segment seg, VOID_BPTR cstg, size_t req_size, size_t *growth_size )
 {
     HEAP        heap;
     FRLPTR      p1;
