@@ -500,6 +500,7 @@ extern  void _CGAPI DBGenSym( cg_sym_handle sym, dbg_loc loc, int scoped )
             if( attr & FE_PROC ) {
                 CurrProc->state.attr |= ROUTINE_WANTS_DEBUGGING;
                 CurrProc->targ.debug = CGAlloc( sizeof( dbg_rtn ) );
+                memset( CurrProc->targ.debug, 0, sizeof( dbg_rtn ) );
                 CurrProc->targ.debug->parms = NULL;
                 CurrProc->targ.debug->reeturn = LocDupl( loc );
                 CurrProc->targ.debug->obj_type = DBG_NIL_TYPE;
