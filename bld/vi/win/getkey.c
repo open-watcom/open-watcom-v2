@@ -190,7 +190,7 @@ static vi_key ConvertWierdCharacter( WORD vk, WORD data )
 
     GetKeyboardState( keyboard_state );
     if( ToAscii( vk, scancode, keyboard_state, &newkey, 0 ) == 0 ) {
-        return( VI_KEY( NULL ) );
+        return( VI_KEY( DUMMY ) );
     }
 
     return( C2VIKEY( newkey ) );
@@ -221,10 +221,6 @@ vi_key MapVirtualKeyToVIKey( WORD vk, WORD data )
         t = vk - 'A';
         if( ctrldown && altdown ) {
             key = ConvertWierdCharacter( vk, data );
-            // check if found no translation:
-            if( key == 0 ) {
-                return( VI_KEY( DUMMY ) );
-            }
         } else if( ctrldown ) {
             key = VI_KEY( CTRL_A ) + t;
         } else if( shiftdown && capsdown ) {
