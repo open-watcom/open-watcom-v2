@@ -3132,14 +3132,13 @@ DECLARE_INTERFACE_( IDirectInputW, IUnknown ) {
 };
 typedef IDirectInputW           *LPDIRECTINPUTW;
 #ifdef UNICODE
-    #define LPDIRECTINPUT       LPDIRECTINPUTW
     #define IDirectInput        IDirectInputW
     #define IDirectInputVtbl    IDirectInputWVtbl
 #else
-    #define LPDIRECTINPUT       LPDIRECTINPUTA
     #define IDirectInput        IDirectInputA
     #define IDirectInputVtbl    IDirectInputAVtbl
 #endif
+typedef IDirectInput            *LPDIRECTINPUT;
 
 /* IDirectInput2 interface */
 #undef INTERFACE
