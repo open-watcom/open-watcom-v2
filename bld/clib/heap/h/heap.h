@@ -178,13 +178,13 @@ extern unsigned int     __LargestSizeB4MiniHeapRover;
 extern mheapptr         __MiniHeapFreeRover;
 
 extern size_t           __LastFree( void );
-extern int              __NHeapWalk( struct _heapinfo *entry, mheapptr heapbeg );
+extern int              __NHeapWalk( struct _heapinfo *entry, mheapptr start );
 extern int              __ExpandDGROUP( unsigned int __amt );
 #if defined( _M_I86 )
 extern __segment        __AllocSeg( unsigned int __amt );
 extern int              __GrowSeg( __segment __seg, unsigned int __amt );
 extern int              __FreeSeg( __segment __seg );
-extern int              __HeapWalk( struct _heapinfo *entry, __segment __seg, __segment one_heap );
+extern int              __HeapWalk( struct _heapinfo *entry, __segment seg, __segment one_heap );
 extern int              __HeapMin( __segment __seg, __segment one_heap );
 extern int              __HeapSet( __segment __seg, unsigned fill );
 #endif

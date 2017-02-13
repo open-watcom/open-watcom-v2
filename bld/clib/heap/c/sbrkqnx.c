@@ -79,9 +79,9 @@ _WCRTLINK void_nptr sbrk( int increment )
 
 #ifdef __386__
 
-_WCRTLINK int brk( void *endds )
+_WCRTLINK int brk( void_nptr endds )
 {
-    return( __brk( (unsigned)endds ) == (void *)-1 ? -1 : 0 );
+    return( __brk( (unsigned)endds ) == (void_nptr)-1 ? -1 : 0 );
 }
 
 #endif

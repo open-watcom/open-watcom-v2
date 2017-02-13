@@ -81,7 +81,7 @@ extern void _mymemcpy( void_fptr, void_fptr, size_t );
     parm caller [es edi] [dx esi] [ecx] value [esi] modify exact [esi edi ecx]
 #endif
 #else
-// 32-bit non-Intel targets
+// non-Intel targets
 #define _mymemcpy   memcpy
 #endif
 

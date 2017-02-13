@@ -45,7 +45,7 @@ _WCRTLINK void_bptr _bmalloc( __segment seg, size_t amt )
     if( amt == 0 )
         return( _NULLOFF );
     if( seg == _DGroup() ) {
-        cstg = _nmalloc( amt );
+        cstg = (void_bptr)_nmalloc( amt );
         return( ( cstg == NULL ) ? _NULLOFF : cstg );
     }
     _AccessFHeap();

@@ -54,8 +54,8 @@
 
 
 #define HEAP(s)             ((XBPTR(heapblk, s))0)
-#define FIRST_FRL(s)        ((XBPTR(freelist, s))sizeof(heapblk))
-#define SET_HEAP_END(s,p)   ((XBPTR(freelistp, s))(p))->len = END_TAG; ((XBPTR(freelistp, s))(p))->prev = 0
+#define FIRST_FRL(s)        ((XBPTR(freelist, s))(HEAP(s) + 1))
+#define SET_HEAP_END(s,p)   ((XBPTR(freelistp, s))(p))->len=END_TAG;((XBPTR(freelistp, s))(p))->prev=0
 
 #if defined(__QNX__)
 extern unsigned         __qnx_alloc_flags;

@@ -61,6 +61,7 @@
 #endif
 
 #define FIRST_FRL(h)    ((frlptr)(h + 1))
+#define FRLPTRADD(p,o)  (frlptr)((PTR)(p)+(o))
 
 #if defined( __DOS_EXT__ )
 extern  int SegmentLimit( void );
@@ -164,7 +165,7 @@ void __FreeDPMIBlocks( void )
     }
 }
 
-void *__ReAllocDPMIBlock( frlptr frl_old, unsigned req_size )
+void_nptr __ReAllocDPMIBlock( frlptr frl_old, unsigned req_size )
 {
     mheapptr        heap;
     dpmi_hdr        *dpmi;
@@ -173,7 +174,7 @@ void *__ReAllocDPMIBlock( frlptr frl_old, unsigned req_size )
     frlptr          frl_new, frl2;
 
     if( !__heap_enabled )
-        return( 0 );
+        return( NULL );
     __FreeDPMIBlocks();
     prev_dpmi = NULL;
     for( heap = __nheapbeg; heap != NULL; heap = heap->next ) {
@@ -202,7 +203,7 @@ void *__ReAllocDPMIBlock( frlptr frl_old, unsigned req_size )
             if( size >= FRL_SIZE ) {    // Enough to spare a free block
                 SET_BLK_SIZE_INUSE( frl_new, req_size );// adjust size and set allocated bit
                 // Make up a free block at the end
-                frl2 = (frlptr)( (PTR)frl_new + req_size );
+                frl2 = FRLPTRADD( frl_new, req_size );
                 SET_BLK_SIZE_INUSE( frl2, size );
                 heap->numalloc++;
                 heap->largest_blk = 0;
@@ -240,7 +241,7 @@ size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
 #endif
 
 #if defined( __DOS_EXT__ ) && !defined( __CALL21__ )
-static void *RationalAlloc( size_t size )
+static void_nptr RationalAlloc( size_t size )
 {
     dpmi_hdr        *dpmi;
     mheapptr        heap;
@@ -254,7 +255,7 @@ static void *RationalAlloc( size_t size )
         heap = (mheapptr)( dpmi + 1 );
         heap->len = size - sizeof( dpmi_hdr );
         dpmi->dos_seg_value = 0;        // indicate DPMI block
-        return( (void *)heap );
+        return( (void_nptr)heap );
     }
     if( __minreal & 0xfff00000 ) {
         /* checks for users that want >1M real memory saved */
@@ -273,7 +274,7 @@ static void *RationalAlloc( size_t size )
             dpmi->dos_seg_value = DOS_block;
             heap = (mheapptr)( dpmi + 1 );
             heap->len = size - sizeof( dpmi_hdr );
-            return( (void *)heap );
+            return( (void_nptr)heap );
         }
     }
     return( NULL );
@@ -416,7 +417,7 @@ static int __CreateNewNHeap( unsigned amount )
   #elif defined( __DOS_EXT__ )
     // if( !__IsCtsNHeap() ) {
     {
-        tag         *tmp_tag;
+        tag         _WCNEAR *tmp_tag;
 
         if( _IsRational() ) {
             tmp_tag = RationalAlloc( amount );
@@ -444,8 +445,7 @@ static int __CreateNewNHeap( unsigned amount )
     }
     amount -= TAG_SIZE;
     if( amount < sizeof( miniheapblkp ) + sizeof( freelistp ) ) {
-        /* there isn't enough for a heap block (struct miniheapblkp) and
-           one free block (frl) */
+        /* there isn't enough for a heap block (struct miniheapblkp) and one free block (frl) */
         return( 0 );
     }
     /* we've got a new heap block */
