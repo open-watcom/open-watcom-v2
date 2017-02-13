@@ -238,7 +238,7 @@ extern  void            __MemFree( void_bptr __cstg, __segment __seg, void_bptr 
 #endif
 #define FRL_SIZE        __ROUND_UP_SIZE( sizeof( freelistp ), ROUND_SIZE )
 
-#define GET_BLK_SIZE(p)             __ROUND_DOWN_SIZE( (p)->len, 2 )
+#define GET_BLK_SIZE(p)             ((p)->len & ~1U)
 #define IS_BLK_INUSE(p)             (((p)->len & 1) != 0)
 #define SET_BLK_SIZE_INUSE(p,s)     (p)->len = ((s) | 1)
 #define SET_BLK_INUSE(p)            (p)->len |= 1
@@ -257,4 +257,8 @@ extern  void            __MemFree( void_bptr __cstg, __segment __seg, void_bptr 
 #if defined( __WARP__ )
 extern unsigned char    _os2_use_obj_any;           // Prefer high memory heap block
 extern unsigned char    _os2_obj_any_supported;     // DosAllocMem supports OBJ_ANY
+#endif
+
+#if defined( __QNX__ )
+extern void __setcbrk( unsigned offset );
 #endif
