@@ -37,7 +37,7 @@
 #include "heap.h"
 
 
-extern void _mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
+extern void _mymemcpy( void_fptr, void_fptr, size_t );
 #if defined(__SMALL_DATA__) || defined(__WINDOWS__)
 #pragma aux _mymemcpy = \
         "push ds"       \
@@ -51,9 +51,9 @@ extern void _mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
     parm caller [es di] [ds si] [cx] modify exact [si di cx]
 #endif
 
-_WCRTLINK VOID_BPTR _brealloc( __segment seg, VOID_BPTR cstg_old, size_t size )
+_WCRTLINK void_bptr _brealloc( __segment seg, void_bptr cstg_old, size_t size )
 {
-    VOID_BPTR   cstg_new;
+    void_bptr   cstg_new;
     size_t      old_size;
 
     if( cstg_old == _NULLOFF )

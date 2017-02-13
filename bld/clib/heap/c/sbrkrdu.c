@@ -33,8 +33,10 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <rdos.h>
+#include "heap.h"
 
-_WCRTLINK void _WCNEAR *sbrk( int increment )
+
+_WCRTLINK void_nptr sbrk( int increment )
 {
     void *cstg;
 
@@ -45,5 +47,5 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
             return( cstg );
         }
     }
-    return( (void *)-1 );
+    return( (void_nptr)-1 );
 }

@@ -159,12 +159,12 @@ _WCRTLINK int _nheapshrink( void )
   #if defined(__DOS_EXT__)
     if( !__IsCtsNHeap() ) {
   #endif
-        if( __nheapbeg == NEAR_NULL ) {
+        if( __nheapbeg == NULL ) {
             _ReleaseNHeap();
             return( 0 ); // No near heap, can't shrink
         }
         /* Goto the end of miniheaplist (if there's more than 1 blk) */
-        for( heap = __nheapbeg; heap->next != NEAR_NULL; heap = heap->next )
+        for( heap = __nheapbeg; heap->next != NULL; heap = heap->next )
             ;
         /* check that last free block is at end of heap */
         last_free = heap->freehead.prev;
@@ -190,7 +190,7 @@ _WCRTLINK int _nheapshrink( void )
         }
   #endif
         /* make sure there hasn't been an external change in _curbrk */
-        if( sbrk( 0 ) != (void _WCNEAR *)BLK2CPTR( end_tag ) ) {
+        if( sbrk( 0 ) != (void_nptr)BLK2CPTR( end_tag ) ) {
             _ReleaseNHeap();
             return( 0 );
         }
@@ -225,11 +225,11 @@ _WCRTLINK int _nheapshrink( void )
         } else {
             // we can remove this miniheapblk
             if( heap->prev ) { // Not the first miniheapblk
-                heap->prev->next = NEAR_NULL;
+                heap->prev->next = NULL;
                 new_brk = (unsigned)heap;//->prev + (unsigned)heap->prev->len;
             } else { // Is the first miniheapblk
                 new_brk = (unsigned)__nheapbeg;
-                __nheapbeg = NEAR_NULL;
+                __nheapbeg = NULL;
             }
             // Update rover info
             if( __MiniHeapRover == heap ) {
@@ -238,7 +238,7 @@ _WCRTLINK int _nheapshrink( void )
             }
         }
 
-        if( __brk( new_brk ) == (void _WCNEAR *)-1 ) {
+        if( __brk( new_brk ) == (void_nptr)-1 ) {
             _ReleaseNHeap();
             return( -1 );
         }

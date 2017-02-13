@@ -43,7 +43,7 @@ _WCRTLINK size_t _msize( void *cstg )
 }
 #endif
 
-_WCRTLINK size_t _nmsize( void _WCNEAR *cstg )
+_WCRTLINK size_t _nmsize( void_nptr cstg )
 {
     return( GET_BLK_SIZE( (freelist _WCNEAR *)CPTR2BLK( cstg ) ) - TAG_SIZE );
 }

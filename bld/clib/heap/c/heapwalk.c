@@ -38,7 +38,7 @@
 
 
 #define HEAP(s)     ((XBPTR(heapblkp, s))0)
-#define FRLPTR      XBPTR( freelistp, seg )
+#define FRLPTR(s)   XBPTR(freelistp, s)
 
 static int verifyHeapList( __segment start )
 {
@@ -76,10 +76,10 @@ static int verifyHeapList( __segment start )
 
 int __HeapWalk( struct _heapinfo *entry, __segment seg, __segment one_heap )
 {
-    __segment   next_seg;
-    __segment   prev_seg;
-    FRLPTR      frl;
-    FRLPTR      frl_next;
+    __segment       next_seg;
+    __segment       prev_seg;
+    FRLPTR( seg )   frl;
+    FRLPTR( seg )   frl_next;
 
     if( seg == _NULLSEG )
         return( _HEAPEMPTY );
@@ -108,9 +108,9 @@ int __HeapWalk( struct _heapinfo *entry, __segment seg, __segment one_heap )
         if( frl == NULL ) {
             if( HEAP( seg )->freehead.len != 0 )
                 return( _HEAPBADBEGIN );
-            frl = (FRLPTR)sizeof( heapblk );
+            frl = (FRLPTR( seg ))sizeof( heapblk );
         } else {    /* advance to next entry */
-            frl_next = (FRLPTR)NEXT_BLK_A( frl );
+            frl_next = (FRLPTR( seg ))NEXT_BLK_A( frl );
             if( frl_next <= frl )
                 return( _HEAPBADNODE );
             frl = frl_next;

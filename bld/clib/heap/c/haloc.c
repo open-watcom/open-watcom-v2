@@ -46,7 +46,7 @@ extern long _dosalloc( unsigned );
         "sbb dx,dx"     \
     parm caller [bx] value [dx ax] modify [dx ax]
 
-extern void _dosfree( void _WCHUGE * );
+extern void _dosfree( void_hptr );
 #pragma aux _dosfree =  \
         "mov ah,49h"    \
         "int 21h"       \
@@ -65,7 +65,7 @@ static int only_one_bit( size_t x )
     return 1;
 }
 
-_WCRTLINK void _WCHUGE *halloc( long numb, unsigned size )
+_WCRTLINK void_hptr halloc( long numb, unsigned size )
 {
     unsigned long   amount;
 #if defined(__WINDOWS__)
@@ -74,12 +74,12 @@ _WCRTLINK void _WCHUGE *halloc( long numb, unsigned size )
 
     amount = (unsigned long)numb * size;
     if( amount == 0 )
-        return( HUGE_NULL );
+        return( NULL );
     if( amount > 65536 && ! only_one_bit( size ) )
-        return( HUGE_NULL );
+        return( NULL );
     hmem = GlobalAlloc( GMEM_MOVEABLE | GMEM_ZEROINIT, amount );
     if( hmem == NULL )
-        return( HUGE_NULL );
+        return( NULL );
     cstg = GlobalLock( hmem );
     return( cstg );
 #else
@@ -89,13 +89,13 @@ _WCRTLINK void _WCHUGE *halloc( long numb, unsigned size )
 
     amount = (unsigned long)numb * size;
     if( amount == 0  || amount >= 0x100000 )
-        return( HUGE_NULL );
+        return( NULL );
     if( amount > 65536 && ! only_one_bit( size ) )
-        return( HUGE_NULL );
+        return( NULL );
     num_of_paras = __ROUND_UP_SIZE_TO_PARA( amount );
     rc = _dosalloc( num_of_paras );
     if( rc < 0 )
-        return( HUGE_NULL );  /* allocation failed */
+        return( NULL );  /* allocation failed */
     hp = (char _WCHUGE *)MK_FP( (unsigned short)rc, 0 );
     for( ;; ) {
         size = 0x8000;
@@ -107,11 +107,11 @@ _WCRTLINK void _WCHUGE *halloc( long numb, unsigned size )
         hp = hp + size;
         num_of_paras -= 0x0800;
     }
-    return( (void _WCHUGE *)MK_FP( (unsigned short)rc, 0 ) );
+    return( (void_hptr)MK_FP( (unsigned short)rc, 0 ) );
 #endif
 }
 
-_WCRTLINK void hfree( void _WCHUGE *cstg )
+_WCRTLINK void hfree( void_hptr cstg )
 {
 #if defined(__WINDOWS__)
     __FreeSeg( FP_SEG( cstg ) );

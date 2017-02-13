@@ -45,7 +45,7 @@
 
 #ifdef _M_I86
 
-void _WCNEAR *__brk( unsigned brk_value )
+_WCRTLINK void_nptr __brk( unsigned brk_value )
 {
     unsigned    old_brk_value;
     unsigned    seg_size;
@@ -53,7 +53,7 @@ void _WCNEAR *__brk( unsigned brk_value )
 
     if( brk_value < _STACKTOP ) {
         _RWD_errno = ENOMEM;
-        return( (void _WCNEAR *)-1 );
+        return( (void_nptr)-1 );
     }
     seg_size = __ROUND_UP_SIZE_TO_PARA( brk_value );
     if( seg_size == 0 ) {
@@ -65,24 +65,24 @@ void _WCNEAR *__brk( unsigned brk_value )
     if( DosReallocSeg( seg_size << 4, segment ) != 0 ) {
         _RWD_errno = ENOMEM;
         _ReleaseNHeap();
-        return( (void _WCNEAR *)-1 );
+        return( (void_nptr)-1 );
     }
 
     old_brk_value = _curbrk;        /* return old value of _curbrk */
     _curbrk = brk_value;            /* set new break value */
 
     _ReleaseNHeap();
-    return( (void _WCNEAR *)old_brk_value );
+    return( (void_nptr)old_brk_value );
 }
 
-_WCRTLINK void _WCNEAR *sbrk( int increment )
+_WCRTLINK void_nptr sbrk( int increment )
 {
     return( __brk( _curbrk + increment ) );
 }
 
 #else
 
-_WCRTLINK void _WCNEAR *sbrk( int increment )
+_WCRTLINK void_nptr sbrk( int increment )
 {
     if( increment > 0 ) {
         PBYTE       p;
@@ -95,7 +95,7 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
     } else {
         _RWD_errno = EINVAL;
     }
-    return( (void _WCNEAR *)-1 );
+    return( (void_nptr)-1 );
 }
 
 #endif

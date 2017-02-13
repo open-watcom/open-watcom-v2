@@ -40,7 +40,7 @@
 
 #if defined( _M_I86 )
 // 16-bit Intel all models
-extern  void    _mymemset(void _WCFAR *,unsigned,unsigned);
+extern  void    _mymemset(void_fptr,unsigned,unsigned);
 #pragma aux     _mymemset =     \
         memset_i86              \
     parm caller [es di] [ax] [cx] modify exact [ax di cx]
@@ -48,13 +48,13 @@ extern  void    _mymemset(void _WCFAR *,unsigned,unsigned);
 // 32-bit Intel
 #if defined( __FLAT__ )
 // flat model
-extern  void    _mymemset(void *,unsigned,unsigned);
+extern  void    _mymemset(void_nptr,unsigned,unsigned);
 #pragma aux     _mymemset =     \
         memset_386              \
     parm caller [edi] [eax] [ecx] modify exact [ax edi ecx]
 #else
 // all segmented models
-extern  void    _mymemset(void _WCFAR *,unsigned,unsigned);
+extern  void    _mymemset(void_fptr,unsigned,unsigned);
 #pragma aux     _mymemset =     \
         memset_386              \
     parm caller [es edi] [eax] [ecx] modify exact [ax edi ecx]

@@ -37,9 +37,10 @@
 #include "rterrno.h"
 #include "rtdata.h"
 #include "thread.h"
+#include "heap.h"
 
 
-_WCRTLINK void _WCNEAR *sbrk( int increment )
+_WCRTLINK void_nptr sbrk( int increment )
 {
     if( increment > 0 ) {
         LPVOID      cstg;
@@ -53,5 +54,5 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
     } else {
         _RWD_errno = EINVAL;
     }
-    return( (void *)-1 );
+    return( (void_nptr)-1 );
 }

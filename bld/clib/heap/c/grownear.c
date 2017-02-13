@@ -206,7 +206,7 @@ void *__ReAllocDPMIBlock( frlptr frl_old, unsigned req_size )
                 SET_BLK_SIZE_INUSE( frl2, size );
                 heap->numalloc++;
                 heap->largest_blk = 0;
-                _nfree( (void _WCNEAR *)BLK2CPTR( frl2 ) );
+                _nfree( (void_nptr)BLK2CPTR( frl2 ) );
             } else {
                 SET_BLK_INUSE( frl_new );   // set allocated bit
             }
@@ -461,7 +461,7 @@ static int __CreateNewNHeap( unsigned amount )
     SET_BLK_INUSE( frl );
     heap->numalloc++;
     heap->largest_blk = 0;
-    _nfree( (void _WCNEAR *)BLK2CPTR( frl ) );
+    _nfree( (void_nptr)BLK2CPTR( frl ) );
     return( 1 );
 }
 #endif
@@ -548,7 +548,7 @@ int __ExpandDGROUP( unsigned amount )
     SET_BLK_INUSE( frl );
     heap->numalloc++;
     heap->largest_blk = /*0x....ffff*/ ~0U;     /* set to largest value to be safe */
-    _nfree( (void _WCNEAR *)BLK2CPTR( frl ) );
+    _nfree( (void_nptr)BLK2CPTR( frl ) );
     return( 1 );
 #endif
 }

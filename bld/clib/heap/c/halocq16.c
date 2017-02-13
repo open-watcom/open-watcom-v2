@@ -53,29 +53,29 @@ static int only_one_bit( size_t x )
     return( 1 );
 }
 
-_WCRTLINK void _WCHUGE * (halloc)( long n, size_t size )
+_WCRTLINK void_hptr (halloc)( long n, size_t size )
 {
     short           seg;
     unsigned long   len;
 
     len = (unsigned long)n * size;
     if( len == 0 )
-        return( HUGE_NULL );
+        return( NULL );
     if( len > 65536 && !only_one_bit( size ) )
-        return( HUGE_NULL );
+        return( NULL );
     seg = qnx_segment_huge( len );
     if( seg == -1 )
         seg = 0;
-    return( (void _WCHUGE *)MK_FP( seg , 0 ) );
+    return( (void_hptr)MK_FP( seg , 0 ) );
 }
 
-_WCRTLINK void (hfree)( void _WCHUGE *cstg )
+_WCRTLINK void (hfree)( void_hptr cstg )
 {
     unsigned            seg;
     unsigned            incr;
     struct _seginfo     info;
 
-    if( cstg != HUGE_NULL ) {
+    if( cstg != NULL ) {
         incr = 1 << _HShift;
         seg = FP_SEG( cstg );
         for( ;; ) {

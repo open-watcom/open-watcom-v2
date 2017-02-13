@@ -36,20 +36,20 @@
 #include <string.h>
 #include "heap.h"
 
-_WCRTLINK void _WCNEAR *_ncalloc( size_t n, size_t el_size )
+_WCRTLINK void_nptr _ncalloc( size_t n, size_t el_size )
 {
-    void            _WCNEAR *cstg;
+    void_nptr       cstg;
     unsigned long   chk_size;
 
     chk_size = (unsigned long)n * el_size;
     el_size = chk_size;
 #if defined( _M_I86 )
     if( el_size != chk_size ) {
-        return( NEAR_NULL );
+        return( NULL );
     }
 #endif
     cstg = _nmalloc( el_size );
-    if( cstg != NEAR_NULL ) {
+    if( cstg != NULL ) {
         memset( cstg, 0, el_size );
     }
     return( cstg );

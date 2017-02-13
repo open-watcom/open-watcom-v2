@@ -38,7 +38,7 @@
 #include "heap.h"
 
 
-extern void _mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
+extern void _mymemcpy( void_fptr, void_fptr, size_t );
 #if defined(__SMALL_DATA__) || defined(__WINDOWS__)
 #pragma aux _mymemcpy = \
         "push ds"       \
@@ -62,35 +62,35 @@ _WCRTLINK void *realloc( void *cstg, size_t amount )
 #endif
 
 
-_WCRTLINK void _WCFAR *_frealloc( void _WCFAR *cstg_old, size_t req_size )
+_WCRTLINK void_fptr _frealloc( void_fptr cstg_old, size_t req_size )
 {
-    size_t  old_size;
-    void    _WCFAR *cstg_new;
+    size_t      old_size;
+    void_fptr   cstg_new;
 
-    if( cstg_old == FAR_NULL ) {
+    if( cstg_old == NULL ) {
         return( _fmalloc( req_size ) );
     }
     if( req_size == 0 ) {
         _ffree( cstg_old );
-        return( FAR_NULL );
+        return( NULL );
     }
     old_size = _fmsize( cstg_old );
     if( FP_SEG( cstg_old ) == _DGroup() ) {
         cstg_new = cstg_old;
-        if( _nexpand( (void _WCNEAR *)cstg_old, req_size ) == NEAR_NULL ) {
-            cstg_new = FAR_NULL;
+        if( _nexpand( (void_nptr)cstg_old, req_size ) == NULL ) {
+            cstg_new = NULL;
         }
     } else {
         cstg_new = _fexpand( cstg_old, req_size );
     }
-    if( cstg_new == FAR_NULL ) {        /* couldn't be expanded inline */
+    if( cstg_new == NULL ) {        /* couldn't be expanded inline */
         cstg_new = _fmalloc( req_size );
-        if( cstg_new != FAR_NULL ) {
+        if( cstg_new != NULL ) {
             _mymemcpy( cstg_new, cstg_old, old_size );
             _ffree( cstg_old );
         } else {
             if( FP_SEG( cstg_old ) == _DGroup() ) {
-                _nexpand( (void _WCNEAR *)FP_OFF( cstg_old ), old_size );
+                _nexpand( (void_nptr)cstg_old, old_size );
             } else {
                 _fexpand( cstg_old, old_size );
             }

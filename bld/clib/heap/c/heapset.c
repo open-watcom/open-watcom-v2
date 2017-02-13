@@ -40,16 +40,16 @@
 
 
 #define HEAP(s)     ((XBPTR(heapblkp, s))0)
-#define FRLPTR      XBPTR( freelistp, seg )
+#define FRLPTR(s)   XBPTR(freelistp, s)
 
-extern  void    _mymemset(void _WCFAR *,unsigned,unsigned);
+extern  void    _mymemset(void_fptr,unsigned,unsigned);
 #pragma aux     _mymemset = \
         memset_i86          \
     parm caller [es di] [ax] [cx] modify exact [ax di cx]
 
 int __HeapSet( __segment seg, unsigned int fill )
 {
-    FRLPTR      frl;
+    FRLPTR( seg )   frl;
 
     _AccessFHeap();
     for( ; seg != _NULLSEG; seg = HEAP( seg )->nextseg ) {

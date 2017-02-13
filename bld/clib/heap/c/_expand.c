@@ -37,19 +37,19 @@
 #include "heapacc.h"
 
 
-#define HEAP        XBPTR(miniheapblkp, seg)
-#define FRLPTR      XBPTR(freelistp, seg)
+#define HEAP(s)     XBPTR(miniheapblkp, s)
+#define FRLPTR(s)   XBPTR(freelistp, s)
 
-int __HeapManager_expand( __segment seg, VOID_BPTR cstg, size_t req_size, size_t *growth_size )
+int __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t *growth_size )
 {
-    HEAP        heap;
-    FRLPTR      p1;
-    FRLPTR      p2;
-    FRLPTR      pnext;
-    FRLPTR      pprev;
-    size_t      new_size;
-    size_t      old_size;
-    size_t      free_size;
+    HEAP( seg )     heap;
+    FRLPTR( seg )   p1;
+    FRLPTR( seg )   p2;
+    FRLPTR( seg )   pnext;
+    FRLPTR( seg )   pprev;
+    size_t          new_size;
+    size_t          old_size;
+    size_t          free_size;
 
     /* round (new_size + tag) to multiple of pointer size */
     new_size = __ROUND_UP_SIZE( req_size + TAG_SIZE, ROUND_SIZE );
@@ -58,11 +58,11 @@ int __HeapManager_expand( __segment seg, VOID_BPTR cstg, size_t req_size, size_t
     if( new_size < FRL_SIZE ) {
         new_size = FRL_SIZE;
     }
-    p1 = (FRLPTR)CPTR2BLK( cstg );
+    p1 = (FRLPTR( seg ))CPTR2BLK( cstg );
     old_size = GET_BLK_SIZE( p1 );
     if( new_size > old_size ) {
         /* enlarging the current allocation */
-        p2 = (FRLPTR)( (PTR)p1 + old_size );
+        p2 = (FRLPTR( seg ))( (PTR)p1 + old_size );
         *growth_size = new_size - old_size;
         for( ;; ) {
             if( IS_BLK_END( p2 ) )
@@ -93,9 +93,9 @@ int __HeapManager_expand( __segment seg, VOID_BPTR cstg, size_t req_size, size_t
                     return( __HM_SUCCESS );
                 }
                 *growth_size -= free_size;
-                p2 = (FRLPTR)( (PTR)p2 + free_size );
+                p2 = (FRLPTR( seg ))( (PTR)p2 + free_size );
             } else {
-                p2 = (FRLPTR)( (PTR)p2 + *growth_size );
+                p2 = (FRLPTR( seg ))( (PTR)p2 + *growth_size );
                 p2->len = free_size - *growth_size;
                 p2->prev = pprev;
                 p2->next = pnext;
@@ -113,7 +113,7 @@ int __HeapManager_expand( __segment seg, VOID_BPTR cstg, size_t req_size, size_t
         heap = 0;                   // for based heap
         /* block big enough to split */
         SET_BLK_SIZE_INUSE( p1, new_size );
-        p2 = (FRLPTR)( (PTR)p1 + new_size );
+        p2 = (FRLPTR( seg ))( (PTR)p1 + new_size );
         SET_BLK_SIZE_INUSE( p2, old_size - new_size );
         if( seg == _DGroup() ) {    // near heap
             for( heap = __nheapbeg; heap->next != NULL; heap = heap->next ) {
@@ -125,10 +125,10 @@ int __HeapManager_expand( __segment seg, VOID_BPTR cstg, size_t req_size, size_t
         /* _bfree will decrement 'numalloc' */
         heap->numalloc++;
 #if defined( _M_I86 )
-        _bfree( seg, (VOID_BPTR)BLK2CPTR( p2 ) );
+        _bfree( seg, (void_bptr)BLK2CPTR( p2 ) );
         /* free the top portion */
 #else
-        _nfree( (void _WCNEAR *)BLK2CPTR( p2 ) );
+        _nfree( (void_nptr)BLK2CPTR( p2 ) );
 #endif
     }
     return( __HM_SUCCESS );

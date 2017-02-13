@@ -56,19 +56,19 @@ _WCRTLINK void free( void *cstg )
 #if defined( __RDOS__ ) && defined( __ALLOC_DEBUG )
 
 
-_WCRTLINK void _nfree( void _WCNEAR *cstg )
+_WCRTLINK void _nfree( void_nptr cstg )
 {
     RdosFreeDebugMem( cstg );
 }
 
 #else
 
-_WCRTLINK void _nfree( void _WCNEAR *cstg )
+_WCRTLINK void _nfree( void_nptr cstg )
 {
     mheapptr        heap;
     mheapptr        heap2;
 
-    if( cstg == NEAR_NULL )
+    if( cstg == NULL )
         return;
 
 #if defined( __RDOS__ )

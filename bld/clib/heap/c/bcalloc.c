@@ -36,9 +36,9 @@
 #include <string.h>
 #include "heap.h"
 
-_WCRTLINK VOID_BPTR _bcalloc( __segment seg, size_t n, size_t el_size )
+_WCRTLINK void_bptr _bcalloc( __segment seg, size_t n, size_t el_size )
 {
-    VOID_BPTR       cstg;
+    void_bptr       cstg;
     unsigned long   chk_size;
 
     chk_size = (unsigned long)n * el_size;
@@ -48,7 +48,7 @@ _WCRTLINK VOID_BPTR _bcalloc( __segment seg, size_t n, size_t el_size )
     }
     cstg = _bmalloc( seg, el_size );
     if( cstg != _NULLOFF ) {
-        _fmemset( (void _WCFAR *)(seg :> cstg), 0, el_size );
+        _fmemset( (void_fptr)(seg :> cstg), 0, el_size );
     }
     return( cstg );
 }

@@ -67,15 +67,15 @@ _WCRTLINK void *malloc( size_t amount )
 
 #endif
 
-_WCRTLINK void _WCFAR *_fmalloc( size_t amt )
+_WCRTLINK void_fptr _fmalloc( size_t amt )
 {
     unsigned    size;
-    VOID_BPTR   cstg;
+    void_bptr   cstg;
     __segment   seg;
     __segment   prev_seg;
 
     if( amt == 0 || amt > - ( sizeof( heapblk ) + TAG_SIZE * 2 ) ) {
-        return( FAR_NULL );
+        return( NULL );
     }
 
     // Try to determine which segment to begin allocating from.

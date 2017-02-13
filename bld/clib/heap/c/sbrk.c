@@ -104,15 +104,15 @@ extern  int SegmentLimit( void );
 
 #if defined(__WINDOWS_386__)
 
-_WCRTLINK void _WCNEAR *sbrk( int increment )
+_WCRTLINK void_nptr sbrk( int increment )
 {
     increment = __ROUND_UP_SIZE_4K( increment );
-    return( (void _WCNEAR *)DPMIAlloc( increment ) );
+    return( (void_nptr)DPMIAlloc( increment ) );
 }
 
 #elif defined(__WINDOWS__)
 
-_WCRTLINK void _WCNEAR *sbrk( int increment )
+_WCRTLINK void_nptr sbrk( int increment )
 {
     HANDLE h;
 
@@ -126,20 +126,20 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
         _RWD_errno = EINVAL;
         h = (HANDLE)-1;
     }
-    return( (void _WCNEAR *)h );
+    return( (void_nptr)h );
 }
 
 #elif defined(__OSI__)
 
-_WCRTLINK void _WCNEAR *sbrk( int increment )
+_WCRTLINK void_nptr sbrk( int increment )
 {
     increment = __ROUND_UP_SIZE_4K( increment );
-    return( (void _WCNEAR *)TinyMemAlloc( increment ) );
+    return( (void_nptr)TinyMemAlloc( increment ) );
 }
 
 #else
 
-void _WCNEAR *__brk( unsigned brk_value )
+_WCRTLINK void_nptr __brk( unsigned brk_value )
 {
     unsigned        old_brk_value;
     unsigned short  segm;
@@ -147,7 +147,7 @@ void _WCNEAR *__brk( unsigned brk_value )
 
     if( brk_value < _STACKTOP ) {
         _RWD_errno = ENOMEM;
-        return( (void _WCNEAR *)-1 );
+        return( (void_nptr)-1 );
     }
     segm = _DGroup();
 #ifdef _M_I86
@@ -171,7 +171,7 @@ void _WCNEAR *__brk( unsigned brk_value )
         if( parent < 0 ) {
             if( SetBlock( parent & 0xffff, segm_size ) < 0 ) {
                 _RWD_errno = ENOMEM;
-                return( (void _WCNEAR *)-1 );
+                return( (void_nptr)-1 );
             }
         }
     } else {        /* _IsPharLap() || IsRationalNonZeroBase() */
@@ -186,19 +186,19 @@ void _WCNEAR *__brk( unsigned brk_value )
 #endif
     if( SetBlock( segm, segm_size ) < 0 ) {
         _RWD_errno = ENOMEM;
-        return( (void _WCNEAR *)-1 );
+        return( (void_nptr)-1 );
     }
     old_brk_value = _curbrk;        /* return old value of _curbrk */
     _curbrk = brk_value;            /* set new break value */
 
-    return( (void _WCNEAR *)old_brk_value );
+    return( (void_nptr)old_brk_value );
 }
 
-_WCRTLINK void _WCNEAR *sbrk( int increment )
+_WCRTLINK void_nptr sbrk( int increment )
 {
 #ifdef __386__
     if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
-        void _WCNEAR *cstg;
+        void_nptr   cstg;
 
         if( increment > 0 ) {
             increment = __ROUND_UP_SIZE_4K( increment );
@@ -209,11 +209,11 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
             }
             if( cstg == NULL ) {
                 _RWD_errno = ENOMEM;
-                cstg = (void _WCNEAR *)-1;
+                cstg = (void_nptr)-1;
             }
         } else {
             _RWD_errno = EINVAL;
-            cstg = (void _WCNEAR *)-1;
+            cstg = (void_nptr)-1;
         }
         return( cstg );
     } else if( _IsPharLap() ) {

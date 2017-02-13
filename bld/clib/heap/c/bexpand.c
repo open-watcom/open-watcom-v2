@@ -36,7 +36,7 @@
 #include "heap.h"
 #include "heapacc.h"
 
-_WCRTLINK VOID_BPTR _bexpand( __segment seg, VOID_BPTR cstg, size_t req_size )
+_WCRTLINK void_bptr _bexpand( __segment seg, void_bptr cstg, size_t req_size )
 {
     struct {
         unsigned expanded : 1;

@@ -58,9 +58,9 @@
 #include "heap.h"
 
 
-#define HEAP                ((XBPTR(heapblkp, seg))0)
-#define SET_HEAP_END(p)     ((XBPTR(freelistp, seg))(p))->len = END_TAG; ((XBPTR(freelistp, seg))(p))->prev = 0
-#define FRLPTR              XBPTR(freelistp, seg)
+#define HEAP(s)             ((XBPTR(heapblkp, s))0)
+#define FRLPTR(s)           XBPTR(freelistp, s)
+#define SET_HEAP_END(s,p)   ((FRLPTR(s))(p))->len = END_TAG; ((FRLPTR(s))(p))->prev = 0
 
 int __GrowSeg( __segment seg, unsigned int amount )
 {
@@ -68,12 +68,12 @@ int __GrowSeg( __segment seg, unsigned int amount )
     unsigned        new_heaplen;
     unsigned int    old_heaplen;
     unsigned int    old_heap_paras;
-    FRLPTR          pfree;
-    FRLPTR          pnew;
+    FRLPTR( seg )   pfree;
+    FRLPTR( seg )   pnew;
 
     if( !__heap_enabled )
         return( 0 );
-    old_heaplen = HEAP->heaplen;
+    old_heaplen = HEAP( seg )->heaplen;
     if( old_heaplen != 0 ) {                /* if not already 64K */
         amount += TAG_SIZE;
         if( amount < TAG_SIZE )
@@ -139,23 +139,23 @@ int __GrowSeg( __segment seg, unsigned int amount )
             return( 0 );
 #endif
         new_heaplen = num_of_paras << 4;
-        HEAP->heaplen = new_heaplen;        /* put in new heap length */
-        pfree = HEAP->freehead.prev;
+        HEAP( seg )->heaplen = new_heaplen;        /* put in new heap length */
+        pfree = HEAP( seg )->freehead.prev;
         if( NEXT_BLK( pfree ) != old_heaplen - TAG_SIZE * 2 ) {
             /* last free entry not at end of the heap */
             /* add a new free entry to end of list */
-            pnew = (FRLPTR)( old_heaplen - TAG_SIZE * 2 );
+            pnew = (FRLPTR( seg ))( old_heaplen - TAG_SIZE * 2 );
             pnew->prev = pfree;
             pnew->next = pfree->next;
             pfree->next = pnew;
-            HEAP->freehead.prev = pnew;
-            HEAP->numfree++;
+            HEAP( seg )->freehead.prev = pnew;
+            HEAP( seg )->numfree++;
             pfree = pnew;
         }
         pfree->len = new_heaplen - FP_OFF( pfree ) - TAG_SIZE * 2;
-        if( HEAP->largest_blk < pfree->len )
-            HEAP->largest_blk = pfree->len;
-        SET_HEAP_END( new_heaplen - 2 * TAG_SIZE );
+        if( HEAP( seg )->largest_blk < pfree->len )
+            HEAP( seg )->largest_blk = pfree->len;
+        SET_HEAP_END( seg, new_heaplen - 2 * TAG_SIZE );
         return( 1 );                /* indicate segment was grown */
     }
     return( 0 );    /* indicate failed to grow the segment */

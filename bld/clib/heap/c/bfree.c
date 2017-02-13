@@ -37,7 +37,7 @@
 #include "heapacc.h"
 
 
-_WCRTLINK void _bfree( __segment seg, VOID_BPTR cstg )
+_WCRTLINK void _bfree( __segment seg, void_bptr cstg )
 {
     _AccessFHeap();
     if( cstg != _NULLOFF ) {

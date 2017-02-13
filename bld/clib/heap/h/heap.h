@@ -37,15 +37,11 @@
 
 #ifdef _M_I86
 #define XBPTR(t,s)      t __based(s) *
-#define VOID_BPTR       void __based(void) *
+#define BASED           __based(void)
 #else
 #define XBPTR(t,s)      t _WCNEAR *
-#define VOID_BPTR       void _WCNEAR *
+#define BASED           _WCNEAR
 #endif
-
-#define HUGE_NULL       ((void _WCHUGE *)NULL)
-#define FAR_NULL        ((void _WCFAR *)NULL)
-#define NEAR_NULL       ((void _WCNEAR *)NULL)
 
 #define BLK2CPTR(f)     ((unsigned)((unsigned)(f) + TAG_SIZE))
 #define CPTR2BLK(p)     ((unsigned)((unsigned)(p) - TAG_SIZE))
@@ -55,6 +51,11 @@
 
 #define memset_i86      "mov ah,al" "shr cx,1"  "rep stosw" "adc cx,cx"   "rep stosb"
 #define memset_386      "mov ah,al" "shr ecx,1" "rep stosw" "adc ecx,ecx" "rep stosb"
+
+typedef void            BASED *void_bptr;
+typedef void            _WCNEAR *void_nptr;
+typedef void            _WCFAR *void_fptr;
+typedef void            _WCHUGE *void_hptr;
 
 typedef unsigned int    tag;
 typedef unsigned char   _WCNEAR *PTR;
@@ -194,7 +195,7 @@ extern void             *__ReAllocDPMIBlock( frlptr p1, unsigned req_size );
 extern void             *__ExpandDPMIBlock( frlptr, unsigned );
 #endif
 
-extern int              __HeapManager_expand( __segment seg, VOID_BPTR cstg, size_t req_size, size_t *growth_size );
+extern int              __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t *growth_size );
 
 #if defined( _M_I86 )
 extern void             _WCFAR __HeapInit( mheapptr start, unsigned int amount );
@@ -216,8 +217,8 @@ extern void             _WCFAR __HeapInit( mheapptr start, unsigned int amount )
  #define __IsCtsNHeap() (1)
 #endif
 
-extern  VOID_BPTR       __MemAllocator( unsigned __size, __segment __seg, VOID_BPTR __heap );
-extern  void            __MemFree( VOID_BPTR __cstg, __segment __seg, VOID_BPTR __heap );
+extern  void_bptr       __MemAllocator( unsigned __size, __segment __seg, void_bptr __heap );
+extern  void            __MemFree( void_bptr __cstg, __segment __seg, void_bptr __heap );
 #if defined( _M_I86 )
   #pragma aux __MemAllocator "*" parm [ax] [dx] [bx]
   #pragma aux __MemFree      "*" parm [ax] [dx] [bx]

@@ -64,7 +64,7 @@ static int only_one_bit( size_t x )
     return( 1 );
 }
 
-_WCRTLINK void _WCHUGE *halloc( long n, unsigned size )
+_WCRTLINK void_hptr halloc( long n, unsigned size )
 {
     unsigned long len;
     USHORT      error, tseg;
@@ -74,20 +74,20 @@ _WCRTLINK void _WCHUGE *halloc( long n, unsigned size )
 
     len = (unsigned long)n * size;
     if( len == 0 )
-        return( HUGE_NULL );
+        return( NULL );
     if( (unsigned long)n > 65536 && !only_one_bit( size ) )
-        return( HUGE_NULL );
+        return( NULL );
     error = DosGetHugeShift( &increment );
     if( error ) {
         __set_errno_dos( error );
-        return( HUGE_NULL );
+        return( NULL );
     }
     number_segments = len >> 16;
     remaining_bytes = len & 0xffff;
     error = DosAllocHuge( number_segments, remaining_bytes, &seg, 0, 0 );
     if( error ) {
         __set_errno_dos( error );
-        return( HUGE_NULL );    /* allocation failed */
+        return( NULL );     /* allocation failed */
     }
     tseg = seg;
     increment = 1 << increment;
@@ -98,10 +98,10 @@ _WCRTLINK void _WCHUGE *halloc( long n, unsigned size )
     if( remaining_bytes != 0 ) {
         _os2zero_rest( 0, remaining_bytes, tseg, 0 );
     }
-    return( (void _WCHUGE *)((unsigned long)seg << 16) );
+    return( (void_hptr)((unsigned long)seg << 16) );
 }
 
-_WCRTLINK void hfree( void _WCHUGE *cstg )
+_WCRTLINK void hfree( void_hptr cstg )
 {
     __FreeSeg( FP_SEG( cstg ) );
 }

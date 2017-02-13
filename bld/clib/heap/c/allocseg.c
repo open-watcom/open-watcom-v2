@@ -53,8 +53,9 @@
 #include "heap.h"
 
 
-#define HEAP                ((XBPTR(heapstart, seg))0)
-#define SET_HEAP_END(p)     ((XBPTR(freelistp, seg))(p))->len = END_TAG; ((XBPTR(freelistp, seg))(p))->prev = 0
+#define HEAP(s)             ((XBPTR(heapblk, s))0)
+#define FIRST_FRL(s)        ((XBPTR(freelist, s))sizeof(heapblk))
+#define SET_HEAP_END(s,p)   ((XBPTR(freelistp, s))(p))->len = END_TAG; ((XBPTR(freelistp, s))(p))->prev = 0
 
 #if defined(__QNX__)
 extern unsigned         __qnx_alloc_flags;
@@ -76,11 +77,11 @@ __segment __AllocSeg( unsigned int amount )
     if( !__heap_enabled )
         return( _NULLSEG );
     /*             heapinfo + frl + frl,     end tags */
-    if( amount > - ( sizeof( heapstart ) + TAG_SIZE * 2 ) ) {
+    if( amount > - ( sizeof( heapblk ) + sizeof( freelist ) + TAG_SIZE * 2 ) ) {
         return( _NULLSEG );
     }
     /*        heapinfo + frl,  allocated blk,  end tags */
-    amount += offsetof( heapstart, first ) + TAG_SIZE + TAG_SIZE * 2;
+    amount += sizeof( heapblk ) + TAG_SIZE + TAG_SIZE * 2;
     if( amount < _amblksiz )
         amount = _amblksiz;
     num_of_paras = __ROUND_UP_SIZE_TO_PARA( amount );
@@ -126,20 +127,20 @@ __segment __AllocSeg( unsigned int amount )
     seg = TINY_INFO( rc );
 #endif
     heaplen = num_of_paras << 4;
-    HEAP->h.heaplen = heaplen;
-    HEAP->h.prevseg = _NULLSEG;
-    HEAP->h.nextseg = _NULLSEG;
-    HEAP->h.rover = offsetof( heapstart, first );
-    HEAP->h.b4rover = 0;
-    HEAP->h.numalloc = 0;
-    HEAP->h.numfree = 1;
-    HEAP->h.freehead.len = 0;
-    HEAP->h.freehead.prev = offsetof( heapstart, first );
-    HEAP->h.freehead.next = offsetof( heapstart, first );
-    HEAP->h.largest_blk = heaplen - offsetof( heapstart, first ) - 2 * TAG_SIZE;
-    HEAP->first.len = heaplen - offsetof( heapstart, first ) - 2 * TAG_SIZE;
-    HEAP->first.prev = offsetof( heapstart, h.freehead );
-    HEAP->first.next = offsetof( heapstart, h.freehead );
-    SET_HEAP_END( heaplen - 2 * TAG_SIZE );
+    HEAP( seg )->heaplen = heaplen;
+    HEAP( seg )->prevseg = _NULLSEG;
+    HEAP( seg )->nextseg = _NULLSEG;
+    HEAP( seg )->rover = sizeof( heapblk );
+    HEAP( seg )->b4rover = 0;
+    HEAP( seg )->numalloc = 0;
+    HEAP( seg )->numfree = 1;
+    HEAP( seg )->freehead.len = 0;
+    HEAP( seg )->freehead.prev = sizeof( heapblk );
+    HEAP( seg )->freehead.next = sizeof( heapblk );
+    HEAP( seg )->largest_blk = heaplen - sizeof( heapblk ) - 2 * TAG_SIZE;
+    FIRST_FRL( seg )->len = heaplen - sizeof( heapblk ) - 2 * TAG_SIZE;
+    FIRST_FRL( seg )->prev = offsetof( heapblk, freehead );
+    FIRST_FRL( seg )->next = offsetof( heapblk, freehead );
+    SET_HEAP_END( seg, heaplen - 2 * TAG_SIZE );
     return( seg );          /* return allocated segment */
 }

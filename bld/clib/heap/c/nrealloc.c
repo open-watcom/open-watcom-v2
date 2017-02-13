@@ -42,13 +42,13 @@
 // 16-bit Intel
 #if defined(__SMALL_DATA__) || defined(__WINDOWS__)
 // small data models
-extern void _mymemcpy( void _WCFAR *, void _WCNEAR *, size_t );
+extern void _mymemcpy( void_fptr, void_nptr, size_t );
 #pragma aux _mymemcpy = \
         memcpy_i86      \
     parm caller [es di] [si] [cx] modify exact [si di cx]
 #else
 // big data models
-extern void _mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
+extern void _mymemcpy( void_fptr, void_fptr, size_t );
 #pragma aux _mymemcpy = \
         "push ds"       \
         "mov ds,dx"     \
@@ -60,19 +60,19 @@ extern void _mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
 // 32-bit Intel
 #if defined( __FLAT__ )
 // flat model
-extern void _mymemcpy( void _WCNEAR *, void _WCNEAR *, size_t );
+extern void _mymemcpy( void_nptr, void_nptr, size_t );
 #pragma aux _mymemcpy = \
         memcpy_386      \
     parm caller [edi] [esi] [ecx] modify exact [esi edi ecx]
 #elif defined(__SMALL_DATA__)
 // small data models
-extern void _mymemcpy( void _WCFAR *, void _WCNEAR *, size_t );
+extern void _mymemcpy( void_fptr, void_nptr, size_t );
 #pragma aux _mymemcpy = \
         memcpy_386      \
     parm caller [es edi] [esi] [ecx] modify exact [esi edi ecx]
 #else
 // big data models
-extern void _mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
+extern void _mymemcpy( void_fptr, void_fptr, size_t );
 #pragma aux _mymemcpy = \
         "push ds"       \
         "mov ds,edx"    \
@@ -94,9 +94,9 @@ _WCRTLINK void *realloc( void *cstg, size_t amount )
 
 #endif
 
-_WCRTLINK void _WCNEAR *_nrealloc( void _WCNEAR *cstg_old, size_t req_size )
+_WCRTLINK void_nptr _nrealloc( void_nptr cstg_old, size_t req_size )
 {
-    void        _WCNEAR *cstg_new;
+    void_nptr   cstg_new;
     size_t      old_size;
 
     if( cstg_old == NULL ) {
@@ -104,11 +104,11 @@ _WCRTLINK void _WCNEAR *_nrealloc( void _WCNEAR *cstg_old, size_t req_size )
     }
     if( req_size == 0 ) {
         _nfree( cstg_old );
-        return( NEAR_NULL );
+        return( NULL );
     }
     old_size = _nmsize( cstg_old );
     cstg_new = _nexpand( cstg_old, req_size );  /* try to expand it in place */
-    if( cstg_new == NEAR_NULL ) {               /* if couldn't be expanded in place */
+    if( cstg_new == NULL ) {                    /* if couldn't be expanded in place */
 #if defined(__DOS_EXT__)
         if( _IsRational() ) {
             frlptr  flp, newflp;
@@ -116,7 +116,7 @@ _WCRTLINK void _WCNEAR *_nrealloc( void _WCNEAR *cstg_old, size_t req_size )
             flp = (frlptr)CPTR2BLK( cstg_old );
             newflp = __ReAllocDPMIBlock( flp, req_size + TAG_SIZE );
             if( newflp ) {
-                return( (void _WCNEAR *)BLK2CPTR( newflp ) );
+                return( (void_nptr)BLK2CPTR( newflp ) );
             }
         }
 #endif
@@ -136,7 +136,7 @@ _WCRTLINK void _WCNEAR *_nrealloc( void _WCNEAR *cstg_old, size_t req_size )
 #else // !__WARP__
         cstg_new = _nmalloc( req_size );        /* - allocate a new block */
 #endif
-        if( cstg_new != NEAR_NULL ) {           /* - if we got one */
+        if( cstg_new != NULL ) {                /* - if we got one */
             _mymemcpy( cstg_new, cstg_old, old_size );  /* copy it */
             _nfree( cstg_old );                 /* and free old one */
         } else {

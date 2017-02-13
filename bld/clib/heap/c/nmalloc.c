@@ -77,8 +77,8 @@ _WCRTLINK int _use_os2_high_mem( int fUseHighMem )
 
 _WCRTLINK void *_os2lmalloc( size_t amount )
 {
-    int     prior;
-    void    _WCNEAR *cstg;
+    int         prior;
+    void_nptr   cstg;
 
     _AccessNHeap();
     prior = _use_os2_high_mem( 0 );
@@ -94,8 +94,8 @@ _WCRTLINK void *_os2lmalloc( size_t amount )
 
 _WCRTLINK void *_os2hmalloc( size_t amount )
 {
-    int     prior;
-    void    _WCNEAR *cstg;
+    int         prior;
+    void_nptr   cstg;
 
     _AccessNHeap();
     prior = _use_os2_high_mem( 1 );
@@ -123,22 +123,22 @@ _WCRTLINK void *malloc( size_t amount )
 
 #if defined( __RDOS__ ) && defined( __ALLOC_DEBUG )
 
-_WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
+_WCRTLINK void_nptr _nmalloc( size_t amt )
 {
     void *cstg;
 
     cstg = RdosAllocateDebugMem( amt );
 
-    return( (void _WCNEAR *)cstg );
+    return( (void_nptr)cstg );
 }
 
 #else
 
-_WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
+_WCRTLINK void_nptr _nmalloc( size_t amt )
 {
     unsigned        largest;
     unsigned        size;
-    VOID_BPTR       cstg;
+    void_bptr       cstg;
     unsigned char   expanded;
     mheapptr        heap;
 
@@ -151,12 +151,12 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
 
     if( RdosIsForked() ) {
         v_cstg = RdosAllocateMem( amt );
-        return( (void _WCNEAR *)v_cstg );
+        return( (void_nptr)v_cstg );
     }
 #endif
 
     if( (amt == 0) || (amt > -sizeof( heapblk )) ) {
-        return( NEAR_NULL );
+        return( NULL );
     }
 
     // Try to determine which miniheap to begin allocating from.

@@ -46,7 +46,7 @@ _WCRTLINK void *_expand( void *cstg, size_t amount )
 
 #endif
 
-_WCRTLINK void _WCNEAR *_nexpand( void _WCNEAR *cstg, size_t req_size )
+_WCRTLINK void_nptr _nexpand( void_nptr cstg, size_t req_size )
 {
     struct {
         unsigned expanded : 1;
@@ -74,5 +74,5 @@ _WCRTLINK void _WCNEAR *_nexpand( void _WCNEAR *cstg, size_t req_size )
         }
     }
     _ReleaseNHeap();
-    return( NEAR_NULL );
+    return( NULL );
 }

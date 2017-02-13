@@ -36,18 +36,18 @@
 #include <string.h>
 #include "heap.h"
 
-_WCRTLINK void _WCFAR *_fcalloc( size_t n, size_t el_size )
+_WCRTLINK void_fptr _fcalloc( size_t n, size_t el_size )
 {
-    void            _WCFAR *cstg;
+    void_fptr       cstg;
     unsigned long   chk_size;
 
     chk_size = (unsigned long)n * el_size;
     el_size = chk_size;
     if( el_size != chk_size ) {
-        return( FAR_NULL );
+        return( NULL );
     }
     cstg = _fmalloc( el_size );
-    if( cstg != FAR_NULL ) {
+    if( cstg != NULL ) {
         _fmemset( cstg, 0, el_size );
     }
     return( cstg );
