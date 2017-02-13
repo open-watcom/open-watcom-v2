@@ -37,15 +37,12 @@
 #include "heap.h"
 
 
-void _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount )
-{
-    mheapptr heap;
-    frlptr   frl;
+#define FIRST_FRL(h)    ((frlptr)(h + 1))
 
-    heap = start;
-    amount -= sizeof( miniheapblkp ) + TAG_SIZE;
+void _WCFAR __HeapInit( mheapptr heap, unsigned int amount )
+{
     __nheapbeg = heap;
-    heap->len  = amount + sizeof( miniheapblkp );
+    heap->len  = amount - TAG_SIZE;
     heap->prev = NULL;
     heap->next = NULL;
     heap->rover = &heap->freehead;
@@ -53,12 +50,12 @@ void _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount )
     heap->freehead.next = &heap->freehead;
     heap->numalloc = 0;
     heap->numfree = 0;
-    frl = (frlptr)( heap + 1 );
+    FIRST_FRL( heap )->len = amount - TAG_SIZE - sizeof( miniheapblkp );
     /* fix up end of heap links */
-    SET_BLK_END( (frlptr)( (PTR)frl + amount ) );
+    SET_BLK_END( (frlptr)NEXT_BLK( FIRST_FRL( heap ) ) );
     /* build a block for _nfree() */
-    SET_BLK_SIZE_INUSE( frl, amount );
+    SET_BLK_INUSE( FIRST_FRL( heap ) );
     __nheapbeg->numalloc++;
-    __nheapbeg->largest_blk = ~0;    /* set to largest value to be safe */
-    _nfree( (void _WCNEAR *)BLK2CPTR( frl ) );
+    __nheapbeg->largest_blk = /*0x....ffff*/ ~0U;   /* set to largest value to be safe */
+    _nfree( (void _WCNEAR *)BLK2CPTR( FIRST_FRL( heap ) ) );
 }

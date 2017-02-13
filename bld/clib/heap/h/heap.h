@@ -197,7 +197,7 @@ extern void             *__ExpandDPMIBlock( frlptr, unsigned );
 extern int              __HeapManager_expand( __segment seg, VOID_BPTR cstg, size_t req_size, size_t *growth_size );
 
 #if defined( _M_I86 )
-extern void             _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount );
+extern void             _WCFAR __HeapInit( mheapptr start, unsigned int amount );
 #endif
 
 #if defined( _M_IX86 )
@@ -227,7 +227,7 @@ extern  void            __MemFree( VOID_BPTR __cstg, __segment __seg, VOID_BPTR 
 #endif
 
 #define PARAS_IN_64K    (0x1000)
-#define END_TAG         (~0)
+#define END_TAG         (/*0x....ffff*/ ~0U)
 
 #define TAG_SIZE        (sizeof( tag ))
 #if defined( _M_I86 )

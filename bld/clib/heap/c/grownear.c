@@ -60,59 +60,56 @@
 #define BLKSIZE_ALIGN           0x1000  // 4kB
 #endif
 
+#define FIRST_FRL(h)    ((frlptr)(h + 1))
+
 #if defined( __DOS_EXT__ )
 extern  int SegmentLimit( void );
-#pragma aux SegmentLimit        = \
-        "xor    eax,eax"        \
-        "mov    ax,ds"          \
-        "lsl    eax,ax"         \
-        "inc    eax"            \
-        value                   [eax] \
-        modify exact            [eax]
+#pragma aux SegmentLimit =  \
+        "xor    eax,eax"    \
+        "mov    ax,ds"      \
+        "lsl    eax,ax"     \
+        "inc    eax"        \
+    value [eax] modify exact [eax]
 #endif
 
-static frlptr __LinkUpNewMHeap( mheapptr heap1 ) // originally __AddNewHeap()
+static frlptr __LinkUpNewNHeap( mheapptr heap )
 {
     mheapptr    heap2;
     mheapptr    prev_heap2;
-    frlptr      frl;
-    unsigned    amount;
 
     /* insert into ordered heap list */
     /* logic wasn't inserting heaps in proper ascending order */
     prev_heap2 = NULL;
     for( heap2 = __nheapbeg; heap2 != NULL; heap2 = heap2->next ) {
-        if( heap1 < heap2 )
+        if( heap < heap2 )
             break;
         prev_heap2 = heap2;
     }
-    /* ascending order should be: prev_heap2 < heap1 < heap2  */
+    /* ascending order should be: prev_heap2 < heap < heap2  */
     /* except for special cases when prev_heap2 and/or heap2 are NULL */
-    heap1->prev = prev_heap2;
-    heap1->next = heap2;
+    heap->prev = prev_heap2;
+    heap->next = heap2;
     if( prev_heap2 != NULL ) {
-        prev_heap2->next = heap1;
-    } else {            /* add heap1 to beginning of heap */
-        __nheapbeg = heap1;
+        prev_heap2->next = heap;
+    } else {            /* add heap to beginning of heap */
+        __nheapbeg = heap;
     }
     if( heap2 != NULL ) {
         /* insert before 'heap2' (list is non-empty) */
-        heap2->prev = heap1;
+        heap2->prev = heap;
     }
-    amount = heap1->len - sizeof( miniheapblkp );
     /* Fill out the new miniheap descriptor */
-    heap1->freehead.len = 0;
-    heap1->freehead.prev = &heap1->freehead;
-    heap1->freehead.next = &heap1->freehead;
-    heap1->rover = &heap1->freehead;
-    heap1->b4rover = 0;
-    heap1->numalloc = 0;
-    heap1->numfree  = 0;
-    frl = (frlptr)( heap1 + 1 );
-    frl->len = amount;
+    heap->freehead.len = 0;
+    heap->freehead.prev = &heap->freehead;
+    heap->freehead.next = &heap->freehead;
+    heap->rover = &heap->freehead;
+    heap->b4rover = 0;
+    heap->numalloc = 0;
+    heap->numfree  = 0;
+    FIRST_FRL( heap )->len = heap->len - sizeof( miniheapblkp );
     /* fix up end of heap links */
-    SET_BLK_END( (frlptr)NEXT_BLK( frl ) );
-    return( frl );
+    SET_BLK_END( (frlptr)NEXT_BLK( FIRST_FRL( heap ) ) );
+    return( FIRST_FRL( heap ) );
 }
 
 #if defined( __DOS_EXT__ )
@@ -167,26 +164,26 @@ void __FreeDPMIBlocks( void )
     }
 }
 
-void *__ReAllocDPMIBlock( frlptr old_frl, unsigned req_size )
+void *__ReAllocDPMIBlock( frlptr frl_old, unsigned req_size )
 {
     mheapptr        heap;
     dpmi_hdr        *dpmi;
     dpmi_hdr        *prev_dpmi;
     unsigned        size;
-    frlptr          new_frl, frl2;
+    frlptr          frl_new, frl2;
 
     if( !__heap_enabled )
         return( 0 );
     __FreeDPMIBlocks();
     prev_dpmi = NULL;
     for( heap = __nheapbeg; heap != NULL; heap = heap->next ) {
-        if( ((PTR)heap + sizeof( miniheapblkp ) == (PTR)old_frl) && (heap->numalloc == 1) ) {
+        if( ((PTR)heap + sizeof( miniheapblkp ) == (PTR)frl_old) && (heap->numalloc == 1) ) {
             // The mini-heap contains only this memblk
             __unlink( heap );
             dpmi = ((dpmi_hdr *)heap) - 1;
             if( dpmi->dos_seg_value != 0 )
                 return( NULL );
-            size = __ROUND_UP_SIZE( heap->len + sizeof( dpmi_hdr ) + TAG_SIZE + req_size - old_frl->len + TAG_SIZE, BLKSIZE_ALIGN );
+            size = __ROUND_UP_SIZE( heap->len + sizeof( dpmi_hdr ) + TAG_SIZE + req_size - frl_old->len + TAG_SIZE, BLKSIZE_ALIGN );
             prev_dpmi = dpmi;
             dpmi = TinyDPMIRealloc( dpmi, size );
             if( dpmi == NULL ) {
@@ -196,24 +193,24 @@ void *__ReAllocDPMIBlock( frlptr old_frl, unsigned req_size )
             dpmi->dos_seg_value = 0;
             heap = (mheapptr)( dpmi + 1 );
             heap->len = size - sizeof( dpmi_hdr ) - TAG_SIZE;
-            new_frl = __LinkUpNewMHeap( heap );
+            frl_new = __LinkUpNewNHeap( heap );
             heap->numalloc = 1;
 
             // round up to even number
             req_size = __ROUND_UP_SIZE( req_size, 2 );
-            size = new_frl->len - req_size;
+            size = frl_new->len - req_size;
             if( size >= FRL_SIZE ) {    // Enough to spare a free block
-                SET_BLK_SIZE_INUSE( new_frl, req_size );// adjust size and set allocated bit
+                SET_BLK_SIZE_INUSE( frl_new, req_size );// adjust size and set allocated bit
                 // Make up a free block at the end
-                frl2 = (frlptr)( (PTR)new_frl + req_size );
+                frl2 = (frlptr)( (PTR)frl_new + req_size );
                 SET_BLK_SIZE_INUSE( frl2, size );
                 heap->numalloc++;
                 heap->largest_blk = 0;
                 _nfree( (void _WCNEAR *)BLK2CPTR( frl2 ) );
             } else {
-                SET_BLK_INUSE( new_frl );   // set allocated bit
+                SET_BLK_INUSE( frl_new );   // set allocated bit
             }
-            return( new_frl );
+            return( frl_new );
         }
     }
     return( NULL );
@@ -223,20 +220,20 @@ void *__ReAllocDPMIBlock( frlptr old_frl, unsigned req_size )
 #if !( defined( __WINDOWS__ ) || defined( __WARP__ ) || defined( __NT__ ) )
 size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
 {
-    frlptr      last_frl;
+    frlptr      frl_last;
     unsigned    brk_value;
 
     if( __nheapbeg == NULL ) {      /* no heap? can't have free blocks */
         return( 0 );
     }
-    last_frl = __nheapbeg->freehead.prev; /* point to last free block */
-    brk_value = BLK2CPTR( NEXT_BLK( last_frl ) );
+    frl_last = __nheapbeg->freehead.prev; /* point to last free block */
+    brk_value = BLK2CPTR( NEXT_BLK( frl_last ) );
   #if defined( __DOS_EXT__ )
     if( _IsPharLap() && !_IsFlashTek() )
         _curbrk = SegmentLimit();
   #endif
     if( brk_value == _curbrk ) {    /* if last free block is at the end */
-        return( last_frl->len );
+        return( frl_last->len );
     }
     return( 0 );
 }
@@ -368,7 +365,7 @@ static int __CreateNewNHeap( unsigned amount )
 
     if( !__heap_enabled )
         return( 0 );
-    if( _curbrk == ~1u )
+    if( _curbrk == /*0x....fffe*/ ~1U )
         return( 0 );
     if( __AdjustAmount( &amount ) == 0 )
         return( 0 );
@@ -459,10 +456,9 @@ static int __CreateNewNHeap( unsigned amount )
     heap->used_obj_any = ( _os2_obj_any_supported && _os2_use_obj_any );
   #endif
     // Now link it up
-    frl = __LinkUpNewMHeap( heap );
-    amount = frl->len;
+    frl = __LinkUpNewNHeap( heap );
     /* build a block for _nfree() */
-    SET_BLK_SIZE_INUSE( frl, amount );
+    SET_BLK_INUSE( frl );
     heap->numalloc++;
     heap->largest_blk = 0;
     _nfree( (void _WCNEAR *)BLK2CPTR( frl ) );
@@ -482,7 +478,6 @@ int __ExpandDGROUP( unsigned amount )
     frlptr      frl;
     unsigned    brk_value;
     unsigned    new_brk_value;
-    void        _WCNEAR *brk_ret;
 
   #if defined( __DOS_EXT__ )
     if( !__IsCtsNHeap() ) {
@@ -492,7 +487,7 @@ int __ExpandDGROUP( unsigned amount )
   #endif
     if( !__heap_enabled )
         return( 0 );
-    if( _curbrk == ~1u )
+    if( _curbrk == /*0x....fffe*/ ~1U )
         return( 0 );
     if( __AdjustAmount( &amount ) == 0 )
         return( 0 );
@@ -503,14 +498,13 @@ int __ExpandDGROUP( unsigned amount )
   #endif
     new_brk_value = amount + _curbrk;
     if( new_brk_value < _curbrk ) {
-        new_brk_value = ~1u;
+        new_brk_value = /*0x....fffe*/ ~1U;
     }
-    brk_ret = __brk( new_brk_value );
-    if( brk_ret == (void _WCNEAR *)-1 ) {
+    brk_value = (unsigned)__brk( new_brk_value );
+    if( brk_value == /*0x....ffff*/ ~0U ) {
         return( 0 );
     }
-    brk_value = (unsigned)brk_ret;
-    if( brk_value >  /*0xfff8*/ ~7u ) {
+    if( brk_value >  /*0x....fff8*/ ~7U ) {
         return( 0 );
     }
     if( new_brk_value <= brk_value ) {
@@ -536,7 +530,8 @@ int __ExpandDGROUP( unsigned amount )
         heap->len += amount;
         /* fix up end of heap links */
         frl = (frlptr)CPTR2BLK( brk_value );
-        SET_BLK_END( (frlptr)( (PTR)frl + amount ) );
+        frl->len = amount;
+        SET_BLK_END( (frlptr)NEXT_BLK( frl ) );
     } else {
         if( amount < sizeof( miniheapblkp ) + sizeof( freelistp ) ) {
             /*  there isn't enough for a heap block (struct miniheapblkp) and
@@ -547,13 +542,12 @@ int __ExpandDGROUP( unsigned amount )
         // otherwise, a new mini-heap is getting linked up
         heap = (mheapptr)brk_value;
         heap->len = amount;
-        frl = __LinkUpNewMHeap( heap );
-        amount = frl->len;
+        frl = __LinkUpNewNHeap( heap );
     }
     /* build a block for _nfree() */
-    SET_BLK_SIZE_INUSE( frl, amount );
+    SET_BLK_INUSE( frl );
     heap->numalloc++;
-    heap->largest_blk = ~0;    /* set to largest value to be safe */
+    heap->largest_blk = /*0x....ffff*/ ~0U;     /* set to largest value to be safe */
     _nfree( (void _WCNEAR *)BLK2CPTR( frl ) );
     return( 1 );
 #endif

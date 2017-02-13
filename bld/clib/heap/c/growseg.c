@@ -77,7 +77,7 @@ int __GrowSeg( __segment seg, unsigned int amount )
     if( old_heaplen != 0 ) {                /* if not already 64K */
         amount += TAG_SIZE;
         if( amount < TAG_SIZE )
-            amount = ~0;
+            amount = /*0x....ffff*/ ~0U;
         if( amount < _amblksiz )
             amount = _amblksiz;
         num_of_paras = __ROUND_UP_SIZE_TO_PARA( amount );

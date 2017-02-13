@@ -37,6 +37,9 @@
 #include "heap.h"
 #include "heapacc.h"
 
+
+#define FIRST_FRL(h)    ((frlptr)(h + 1))
+
 #if defined(__SMALL_DATA__)
 _WCRTLINK int _heapwalk( struct _heapinfo *entry )
 {
@@ -54,9 +57,9 @@ int __NHeapWalk( struct _heapinfo *entry, mheapptr heap )
     }
     frl = (frlptr)(entry->_pentry);
     if( frl == NULL ) {
-        frl = (frlptr)( heap + 1 );
+        frl = FIRST_FRL( heap );
     } else {    /* advance to next entry */
-        for( heap = __nheapbeg; heap->next != NULL; heap = heap->next ) {
+        for( ; heap->next != NULL; heap = heap->next ) {
             if( IS_IN_HEAP( frl, heap ) ) {
                 break;
             }
@@ -67,20 +70,16 @@ int __NHeapWalk( struct _heapinfo *entry, mheapptr heap )
         }
         frl = frl_next;
     }
-    for( ;; ) {
-        if( IS_BLK_END( frl ) ) {
-            if( heap->next == NULL ) {
-                entry->_useflag = _USEDENTRY;
-                entry->_size    = 0;
-                entry->_pentry  = NULL;
-                return( _HEAPEND );
-            }
-            // We advance to next miniheapblk
-            heap = heap->next;
-            frl = (frlptr)( heap + 1 );
-        } else {
-            break;
+    for( ; IS_BLK_END( frl ); ) {
+        if( heap->next == NULL ) {
+            entry->_useflag = _USEDENTRY;
+            entry->_size    = 0;
+            entry->_pentry  = NULL;
+            return( _HEAPEND );
         }
+        // We advance to next miniheapblk
+        heap = heap->next;
+        frl = FIRST_FRL( heap );
     }
     entry->_pentry  = frl;
     entry->_useflag = _FREEENTRY;
