@@ -76,7 +76,7 @@ __segment __AllocSeg( unsigned int amount )
 
     if( !__heap_enabled )
         return( _NULLSEG );
-    /*             heapinfo + frl + frl,     end tags */
+    /*               heapinfo + frl + frl,                    end tags */
     if( amount > - ( sizeof( heapblk ) + sizeof( freelist ) + TAG_SIZE * 2 ) ) {
         return( _NULLSEG );
     }
