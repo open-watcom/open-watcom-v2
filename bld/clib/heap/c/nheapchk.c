@@ -51,7 +51,7 @@ static int checkFreeList( size_t *free_size )
         /* check that the free list is a doubly linked ring */
         __nheapchk_current = frl = heap->freehead.next;
         /* make sure we start off on the right track */
-        if( (frl->prev == NULL) || (frl->prev < &(heap->freehead)) || (PTR)frl->prev > (PTR)NEXT_BLK( heap )) ) {
+        if( frl->prev == NULL || frl->prev < &(heap->freehead) || (PTR)frl->prev > (PTR)NEXT_BLK( heap ) ) {
             return( _HEAPBADNODE );
         }
         if( frl->prev->next != frl ) {
@@ -62,7 +62,7 @@ static int checkFreeList( size_t *free_size )
             /* loop invariant: frl->prev->next == frl */
             /* are we still in a ring if we move to frl->next? */
             /* nb. this check is sufficient to ensure that we will never cycle */
-            if( (frl->next == NULL) || (frl->next < &(heap->freehead)) || (((PTR)frl->next) > (PTR)NEXT_BLK( heap )) ) {
+            if( frl->next == NULL || frl->next < &(heap->freehead) || (PTR)frl->next > (PTR)NEXT_BLK( heap ) ) {
                 return( _HEAPBADNODE );
             }
             if( frl->next->prev != frl ) {
