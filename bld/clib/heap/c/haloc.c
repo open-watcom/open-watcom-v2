@@ -90,7 +90,7 @@ _WCRTLINK void_hptr halloc( long numb, unsigned size )
     amount = (unsigned long)numb * size;
     if( amount == 0  || amount >= 0x100000 )
         return( NULL );
-    if( amount > 65536 && ! only_one_bit( size ) )
+    if( amount > 65536 && !only_one_bit( size ) )
         return( NULL );
     num_of_paras = __ROUND_UP_SIZE_TO_PARA( amount );
     rc = _dosalloc( num_of_paras );

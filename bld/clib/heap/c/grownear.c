@@ -117,8 +117,8 @@ static frlptr __LinkUpNewNHeap( mheapptr heap )
 
 static void __unlink( mheapptr heap )
 {
-    mheapptr            prev_heap;
-    mheapptr            next_heap;
+    mheapptr            prev;
+    mheapptr            next;
 
     if( __nheapbeg == heap ) {
         __nheapbeg = heap->next;
@@ -133,12 +133,12 @@ static void __unlink( mheapptr heap )
     if( heap == __MiniHeapFreeRover ) {
         __MiniHeapFreeRover = NULL;
     }
-    prev_heap = heap->prev;
-    next_heap = heap->next;
-    if( prev_heap != NULL )
-        prev_heap->next = next_heap;
-    if( next_heap != NULL ) {
-        next_heap->prev = prev_heap;
+    prev = heap->prev;
+    next = heap->next;
+    if( prev != NULL )
+        prev->next = next;
+    if( next != NULL ) {
+        next->prev = prev;
     }
 }
 
