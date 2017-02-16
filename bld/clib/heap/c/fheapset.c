@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  far heap check and fill free space by fill byte
+*               (16-bit code only)
 *
 ****************************************************************************/
 

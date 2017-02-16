@@ -180,15 +180,12 @@ _WCRTLINK int _nheapshrink( void )
   #if defined(__DOS_EXT__)
         // only shrink if we can shave off at least 4k
         if( last_free->len < 0x1000 ) {
-            _ReleaseNHeap();
-            return( 0 );
-        }
   #else
         if( last_free->len <= sizeof( freelistp ) ) {
+  #endif
             _ReleaseNHeap();
             return( 0 );
         }
-  #endif
         /* make sure there hasn't been an external change in _curbrk */
         if( sbrk( 0 ) != (void_nptr)BLK2CPTR( end_tag ) ) {
             _ReleaseNHeap();

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  near heap initialization (now unused) similar to nheapgrow
+*               (16-bit code only)
 *
 ****************************************************************************/
 
