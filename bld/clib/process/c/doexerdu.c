@@ -45,7 +45,6 @@
 #include "_process.h"
 #include "_rdos.h"
 
-
 int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
              CHAR_TYPE *envpar, 
              const CHAR_TYPE * const argv[] )
@@ -63,6 +62,8 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     int pid;
     char *drive;
     char *dir;
+    int wait;
+    int res;
 
     __F_NAME(__ccmdline,__wccmdline)( pgmname, argv, cmdline, 0 );
 
@@ -108,7 +109,15 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
         } else {
             pid = RdosFork();
             if( pid ) {
-                rc = waitpid( pid, NULL, 0 );
+                wait = RdosCreateWait();
+                RdosAddWaitForProcessEnd( wait, pid, (void *)pid );
+                res = RdosWaitForever( wait );
+                RdosCloseWait( wait );
+                if( res == 0 ) {
+                    rc = -1;
+                } else {
+                    rc = RdosGetExitCode();
+                }
             } else {
                 RdosExec( pgmname, cmdline, 0, envpar );
             }
