@@ -42,17 +42,17 @@ __segment __bheapbeg = _NULLSEG;
 
 _WCRTLINK __segment _bheapseg( size_t size )
 {
-    __segment       curr_seg;
+    __segment       seg;
     __segment       prev_seg;
 
-    curr_seg = __AllocSeg( size );
-    if( curr_seg == _NULLSEG )
+    seg = __AllocSeg( size );
+    if( seg == _NULLSEG )
         return( _NULLSEG );
     prev_seg = __bheapbeg;
-    __bheapbeg = curr_seg;
-    HEAP( curr_seg )->nextseg = prev_seg;
+    __bheapbeg = seg;
+    HEAP( seg )->nextseg = prev_seg;
     if( prev_seg != _NULLSEG ) {
-        HEAP( prev_seg )->prevseg = curr_seg;
+        HEAP( prev_seg )->prevseg = seg;
     }
-    return( __bheapbeg );
+    return( seg );
 }
