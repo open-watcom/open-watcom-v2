@@ -678,6 +678,8 @@ void RDOSAPI RdosClearText();
 void RDOSAPI RdosGetTextSize(int *Rows, int *Cols);
 void RDOSAPI RdosGetCursorPosition(int *Row, int *Col);
 void RDOSAPI RdosSetCursorPosition(int Row, int Col);
+void RDOSAPI RdosGetConsoleCursorPosition(int *Row, int *Col);
+void RDOSAPI RdosSetConsoleCursorPosition(int Row, int Col);
 void RDOSAPI RdosWriteChar(char ch);
 void RDOSAPI RdosWriteSizeString(const char *Buf, int Size);
 void RDOSAPI RdosWriteAttributeString(int Row, int Col, const short int *Buf, int Size);

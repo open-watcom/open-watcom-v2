@@ -2547,6 +2547,19 @@
     CallGate_set_cursor_position \
     parm [edx] [ecx];
 
+#pragma aux RdosGetConsoleCursorPosition = \
+    CallGate_get_console_cursor_position \
+    "movzx ecx,cx" \
+    "mov [esi],ecx" \
+    "movzx edx,dx" \
+    "mov [edi],edx" \
+    parm [edi] [esi] \
+    modify [ecx edx];
+
+#pragma aux RdosSetConsoleCursorPosition = \
+    CallGate_set_console_cursor_position \
+    parm [edx] [ecx];
+
 #pragma aux RdosWriteChar = \
     CallGate_write_char \
     parm [al];

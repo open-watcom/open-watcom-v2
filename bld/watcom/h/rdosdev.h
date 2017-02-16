@@ -51,7 +51,7 @@ extern "C" {
 #define AUDIO_OUT_HANDLE   0xCEDA
 #define HID_HANDLE         0xD736
 #define BITMAP_HANDLE      0xDB57
-#define INI_HANDLE         0xEAF3
+#define INI_HANDLE             0xEAF3
 #define USB_PIPE_HANDLE    0xFA3E
 
 // special user-mode gates
@@ -642,9 +642,6 @@ void RdosHookTerminateProcess(__rdos_hook_callback *callb_proc);
 void RdosHookCreateThread(__rdos_hook_callback *callb_proc);
 void RdosHookTerminateThread(__rdos_hook_callback *callb_proc);
 void RdosHookInitPci(__rdos_hook_callback *callb_proc);
-
-void RdosHookOpenApp(__rdos_hook_callback *callb_proc);
-void RdosHookCloseApp(__rdos_hook_callback *callb_proc);
 
 void RdosHookEnableFocus(__rdos_hook_callback *callb_proc);
 
@@ -1482,24 +1479,12 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     OsGate_hook_create_process \
     parm [es edi];
 
-#pragma aux RdosHookTerminateProcess = \
-    OsGate_hook_terminate_process \
-    parm [es edi];
-
 #pragma aux RdosHookCreateThread = \
     OsGate_hook_create_thread \
     parm [es edi];
 
 #pragma aux RdosHookTerminateThread = \
     OsGate_hook_terminate_thread \
-    parm [es edi];
-
-#pragma aux RdosHookOpenApp = \
-    OsGate_hook_open_app \
-    parm [es edi];
-
-#pragma aux RdosHookCloseApp = \
-    OsGate_hook_close_app \
     parm [es edi];
 
 #pragma aux RdosHookEnableFocus = \

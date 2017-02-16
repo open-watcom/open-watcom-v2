@@ -54,8 +54,6 @@
 #define osgate_write_thread_selector 38
 #define osgate_read_thread_segment 39
 #define osgate_write_thread_segment 40
-#define osgate_install_device_file 41
-#define osgate_check_device_file 42
 #define osgate_set_page_emulate 43
 #define osgate_invalid_os 44
 #define osgate_hook_page 45
@@ -109,7 +107,6 @@
 #define osgate_hook_create_thread 93
 #define osgate_hook_create_process 94
 #define osgate_hook_terminate_thread 95
-#define osgate_hook_terminate_process 96
 #define osgate_hook_init_tasking 97
 #define osgate_hook_state 98
 
@@ -193,12 +190,7 @@
 #define osgate_register_dos_device 173
 #define osgate_check_dos_device 174
 
-#define osgate_hook_open_app 177
-#define osgate_hook_close_app 178
 #define osgate_hook_load_exe 179
-#define osgate_open_app 180
-#define osgate_close_app 181
-
 #define osgate_hook_enable_focus 182
 #define osgate_get_focus_thread 185
 #define osgate_get_thread_focus_key 186
@@ -530,11 +522,6 @@
 
 #define osgate_notify_init_process 452
 #define osgate_notify_create_process 453
-#define osgate_notify_init_tasking 454
-#define osgate_notify_thread_created 455
-#define osgate_notify_thread_exit 456
-#define osgate_notify_process_created 457
-#define osgate_notify_process_exit 458
 
 #define osgate_get_scheduler_lock_counter 459
 #define osgate_flush_tlb 460
@@ -580,14 +567,6 @@
 
 #define osgate_read_thread64 494
 #define osgate_write_thread64 495
-
-#define osgate_allocate_program_linear 496
-#define osgate_allocate_fixed_program_mem 497
-
-#define osgate_hook_start_program 498
-#define osgate_hook_end_program 499
-#define osgate_notify_start_program 500
-#define osgate_notify_end_program 501
 
 #define osgate_allocate_long_buf 502
 #define osgate_free_long_buf 503
@@ -706,9 +685,6 @@
 #define osgate_notify_core_dump 580
 #define osgate_setup_nmi_core_dump 581
 
-#define osgate_create_app_handle 582
-#define osgate_create_c_handle 583
-
 #define osgate_allocate_c_handle 584
 #define osgate_open_c_file 585
 #define osgate_close_c_file 586
@@ -724,9 +700,20 @@
 #define osgate_open_kernel_file 596
 
 #define osgate_fork_process 597
-#define osgate_notify_process_forked 598
 #define osgate_clone_app 599
-#define osgate_clone_console 600
+
+#define osgate_reset_process 601
+#define osgate_exec_app 602
+
+#define osgate_app_notify_create 603
+#define osgate_app_notify_start 604
+#define osgate_app_notify_forked 605
+#define osgate_app_notify_exec 606
+#define osgate_app_notify_spawn 607
+#define osgate_app_notify_terminate 608
+#define osgate_hook_app_activity 609
+
+#define osgate_notify_clone_process 610
 
 
 
@@ -774,8 +761,6 @@
 #define OsGate_write_thread_selector 0x3E 0x67 0x9a 38 0 0 0 2 0
 #define OsGate_read_thread_segment 0x3E 0x67 0x9a 39 0 0 0 2 0
 #define OsGate_write_thread_segment 0x3E 0x67 0x9a 40 0 0 0 2 0
-#define OsGate_install_device_file 0x3E 0x67 0x9a 41 0 0 0 2 0
-#define OsGate_check_device_file 0x3E 0x67 0x9a 42 0 0 0 2 0
 #define OsGate_set_page_emulate 0x3E 0x67 0x9a 43 0 0 0 2 0
 #define OsGate_invalid_os 0x3E 0x67 0x9a 44 0 0 0 2 0
 #define OsGate_hook_page 0x3E 0x67 0x9a 45 0 0 0 2 0
@@ -829,7 +814,6 @@
 #define OsGate_hook_create_thread 0x3E 0x67 0x9a 93 0 0 0 2 0
 #define OsGate_hook_create_process 0x3E 0x67 0x9a 94 0 0 0 2 0
 #define OsGate_hook_terminate_thread 0x3E 0x67 0x9a 95 0 0 0 2 0
-#define OsGate_hook_terminate_process 0x3E 0x67 0x9a 96 0 0 0 2 0
 #define OsGate_hook_init_tasking 0x3E 0x67 0x9a 97 0 0 0 2 0
 #define OsGate_hook_state 0x3E 0x67 0x9a 98 0 0 0 2 0
 
@@ -913,12 +897,7 @@
 #define OsGate_register_dos_device 0x3E 0x67 0x9a 173 0 0 0 2 0
 #define OsGate_check_dos_device 0x3E 0x67 0x9a 174 0 0 0 2 0
 
-#define OsGate_hook_open_app 0x3E 0x67 0x9a 177 0 0 0 2 0
-#define OsGate_hook_close_app 0x3E 0x67 0x9a 178 0 0 0 2 0
 #define OsGate_hook_load_exe 0x3E 0x67 0x9a 179 0 0 0 2 0
-#define OsGate_open_app 0x3E 0x67 0x9a 180 0 0 0 2 0
-#define OsGate_close_app 0x3E 0x67 0x9a 181 0 0 0 2 0
-
 #define OsGate_hook_enable_focus 0x3E 0x67 0x9a 182 0 0 0 2 0
 #define OsGate_get_focus_thread 0x3E 0x67 0x9a 185 0 0 0 2 0
 #define OsGate_get_thread_focus_key 0x3E 0x67 0x9a 186 0 0 0 2 0
@@ -1250,11 +1229,6 @@
 
 #define OsGate_notify_init_process 0x3E 0x67 0x9a 196 1 0 0 2 0
 #define OsGate_notify_create_process 0x3E 0x67 0x9a 197 1 0 0 2 0
-#define OsGate_notify_init_tasking 0x3E 0x67 0x9a 198 1 0 0 2 0
-#define OsGate_notify_thread_created 0x3E 0x67 0x9a 199 1 0 0 2 0
-#define OsGate_notify_thread_exit 0x3E 0x67 0x9a 200 1 0 0 2 0
-#define OsGate_notify_process_created 0x3E 0x67 0x9a 201 1 0 0 2 0
-#define OsGate_notify_process_exit 0x3E 0x67 0x9a 202 1 0 0 2 0
 
 #define OsGate_get_scheduler_lock_counter 0x3E 0x67 0x9a 203 1 0 0 2 0
 #define OsGate_flush_tlb 0x3E 0x67 0x9a 204 1 0 0 2 0
@@ -1300,14 +1274,6 @@
 
 #define OsGate_read_thread64 0x3E 0x67 0x9a 238 1 0 0 2 0
 #define OsGate_write_thread64 0x3E 0x67 0x9a 239 1 0 0 2 0
-
-#define OsGate_allocate_program_linear 0x3E 0x67 0x9a 240 1 0 0 2 0
-#define OsGate_allocate_fixed_program_mem 0x3E 0x67 0x9a 241 1 0 0 2 0
-
-#define OsGate_hook_start_program 0x3E 0x67 0x9a 242 1 0 0 2 0
-#define OsGate_hook_end_program 0x3E 0x67 0x9a 243 1 0 0 2 0
-#define OsGate_notify_start_program 0x3E 0x67 0x9a 244 1 0 0 2 0
-#define OsGate_notify_end_program 0x3E 0x67 0x9a 245 1 0 0 2 0
 
 #define OsGate_allocate_long_buf 0x3E 0x67 0x9a 246 1 0 0 2 0
 #define OsGate_free_long_buf 0x3E 0x67 0x9a 247 1 0 0 2 0
@@ -1426,9 +1392,6 @@
 #define OsGate_notify_core_dump 0x3E 0x67 0x9a 68 2 0 0 2 0
 #define OsGate_setup_nmi_core_dump 0x3E 0x67 0x9a 69 2 0 0 2 0
 
-#define OsGate_create_app_handle 0x3E 0x67 0x9a 70 2 0 0 2 0
-#define OsGate_create_c_handle 0x3E 0x67 0x9a 71 2 0 0 2 0
-
 #define OsGate_allocate_c_handle 0x3E 0x67 0x9a 72 2 0 0 2 0
 #define OsGate_open_c_file 0x3E 0x67 0x9a 73 2 0 0 2 0
 #define OsGate_close_c_file 0x3E 0x67 0x9a 74 2 0 0 2 0
@@ -1444,7 +1407,18 @@
 #define OsGate_open_kernel_file 0x3E 0x67 0x9a 84 2 0 0 2 0
 
 #define OsGate_fork_process 0x3E 0x67 0x9a 85 2 0 0 2 0
-#define OsGate_notify_process_forked 0x3E 0x67 0x9a 86 2 0 0 2 0
 #define OsGate_clone_app 0x3E 0x67 0x9a 87 2 0 0 2 0
-#define OsGate_clone_console 0x3E 0x67 0x9a 88 2 0 0 2 0
+
+#define OsGate_reset_process 0x3E 0x67 0x9a 89 2 0 0 2 0
+#define OsGate_exec_app 0x3E 0x67 0x9a 90 2 0 0 2 0
+
+#define OsGate_app_notify_create 0x3E 0x67 0x9a 91 2 0 0 2 0
+#define OsGate_app_notify_start 0x3E 0x67 0x9a 92 2 0 0 2 0
+#define OsGate_app_notify_forked 0x3E 0x67 0x9a 93 2 0 0 2 0
+#define OsGate_app_notify_exec 0x3E 0x67 0x9a 94 2 0 0 2 0
+#define OsGate_app_notify_spawn 0x3E 0x67 0x9a 95 2 0 0 2 0
+#define OsGate_app_notify_terminate 0x3E 0x67 0x9a 96 2 0 0 2 0
+#define OsGate_hook_app_activity 0x3E 0x67 0x9a 97 2 0 0 2 0
+
+#define OsGate_notify_clone_process 0x3E 0x67 0x9a 98 2 0 0 2 0
 

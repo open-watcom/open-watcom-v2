@@ -108,7 +108,7 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
         } else {
             pid = RdosFork();
             if( pid ) {
-                rc = RdosWaitForExec( pid );
+                rc = waitpid( pid, NULL, 0 );
             } else {
                 RdosExec( pgmname, cmdline, 0, envpar );
             }
