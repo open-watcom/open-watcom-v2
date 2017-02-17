@@ -256,9 +256,8 @@ bool WRAPI WRmbcs2unicodeBuf( const char *src, char *dest, size_t len )
     }
 
     if( src != NULL ) {
-        len1 = MultiByteToWideChar( CP_OEMCP, MB_ERR_INVALID_CHARS,
-                                    src, -1, NULL, 0 );
-        if( len1 == 0 || len1 == ERROR_NO_UNICODE_TRANSLATION ) {
+        len1 = MultiByteToWideChar( CP_OEMCP, MB_ERR_INVALID_CHARS, src, -1, NULL, 0 );
+        if( len1 == 0 ) {
             return( false );
         }
     } else {
@@ -273,9 +272,7 @@ bool WRAPI WRmbcs2unicodeBuf( const char *src, char *dest, size_t len )
     new = (uint_16 *)dest;
 
     if( src != NULL ) {
-        len2 = MultiByteToWideChar( CP_OEMCP, MB_ERR_INVALID_CHARS,
-                                    src, -1, (LPWSTR)new, len1 );
-        len2 *= sizeof( WCHAR );
+        len2 = MultiByteToWideChar( CP_OEMCP, MB_ERR_INVALID_CHARS, src, -1, (LPWSTR)new, len1 );
         if( len2 != len1 ) {
             return( false );
         }
@@ -295,8 +292,7 @@ bool WRAPI WRunicode2mbcsBuf( const char *src, char *dest, size_t len )
     }
 
     if( src != NULL ) {
-        len1 = WideCharToMultiByte( CP_OEMCP, 0L,
-                    (LPCWSTR)src, -1, NULL, 0, NULL, NULL );
+        len1 = WideCharToMultiByte( CP_OEMCP, 0L, (LPCWSTR)src, -1, NULL, 0, NULL, NULL );
         if( len1 == 0 ) {
             return( false );
         }
@@ -310,8 +306,7 @@ bool WRAPI WRunicode2mbcsBuf( const char *src, char *dest, size_t len )
     }
 
     if( src != NULL ) {
-        len2 = WideCharToMultiByte( CP_OEMCP, 0L,
-                    (LPCWSTR)src, -1, dest, len1, NULL, NULL );
+        len2 = WideCharToMultiByte( CP_OEMCP, 0L, (LPCWSTR)src, -1, dest, len1, NULL, NULL );
         if( len2 != len1 ) {
             return( false );
         }
@@ -332,9 +327,8 @@ bool WRAPI WRmbcs2unicode( const char *src, char **dest, size_t *len )
     }
 
     if( src != NULL ) {
-        len1 = MultiByteToWideChar( CP_OEMCP, MB_ERR_INVALID_CHARS,
-                                    src, -1, NULL, 0 );
-        if( len1 == 0 || len1 == ERROR_NO_UNICODE_TRANSLATION ) {
+        len1 = MultiByteToWideChar( CP_OEMCP, MB_ERR_INVALID_CHARS, src, -1, NULL, 0 );
+        if( len1 == 0 ) {
             return( false );
         }
     } else {
@@ -353,8 +347,7 @@ bool WRAPI WRmbcs2unicode( const char *src, char **dest, size_t *len )
     }
 
     if( src != NULL ) {
-        len2 = MultiByteToWideChar( CP_OEMCP, MB_ERR_INVALID_CHARS,
-                                    src, -1, (LPWSTR)new, len1 );
+        len2 = MultiByteToWideChar( CP_OEMCP, MB_ERR_INVALID_CHARS, src, -1, (LPWSTR)new, len1 );
         if( len2 != len1 ) {
             MemFree( new );
             return( false );
@@ -378,8 +371,7 @@ bool WRAPI WRunicode2mbcs( const char *src, char **dest, size_t *len )
     }
 
     if( src != NULL ) {
-        len1 = WideCharToMultiByte( CP_OEMCP, 0L,
-                    (LPCWSTR)src, -1, NULL, 0, NULL, NULL );
+        len1 = WideCharToMultiByte( CP_OEMCP, 0L, (LPCWSTR)src, -1, NULL, 0, NULL, NULL );
         if( len1 == 0 ) {
             return( false );
         }
@@ -399,8 +391,7 @@ bool WRAPI WRunicode2mbcs( const char *src, char **dest, size_t *len )
     }
 
     if( src != NULL ) {
-        len2 = WideCharToMultiByte( CP_OEMCP, 0L,
-                    (LPCWSTR)src, -1, new, len1, NULL, NULL );
+        len2 = WideCharToMultiByte( CP_OEMCP, 0L, (LPCWSTR)src, -1, new, len1, NULL, NULL );
         if( len2 != len1 ) {
             MemFree( new );
             return( false );
