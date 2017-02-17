@@ -113,8 +113,7 @@ WResFileID res_open( const char *name, wres_open_mode omode )
         setmode( fd, O_BINARY );
     }
 #else
-    mode |= O_BINARY;
-    fd = open( name, mode );
+    fd = open( name, mode | O_BINARY );
     if( fd == -1 ) {
         WRES_ERROR( WRS_OPEN_FAILED );
     }

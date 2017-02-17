@@ -198,14 +198,17 @@ bool WRSaveResourceToEXE( WRInfo *info, bool backup, WRFileType ttype )
         } else {
             CmdLineParms.TargetOS = RC_TARGET_OS_WIN16;
         }
-        strcpy( CmdLineParms.InFileName, tmp_res );
-        strcpy( CmdLineParms.InExeFileName, info->file_name );
+        CmdLineParms.InFileName = tmp_res;
+        CmdLineParms.InExeFileName = info->file_name;
         if( stricmp( sname, info->file_name ) ) {
-            strcpy( CmdLineParms.OutExeFileName, sname );
+            CmdLineParms.OutExeFileName = sname;
         } else {
-            strcpy( CmdLineParms.OutExeFileName, info->file_name );
+            CmdLineParms.OutExeFileName = info->file_name;
         }
         ok = WRExecRCPass2();
+        CmdLineParms.InFileName = NULL;
+        CmdLineParms.InExeFileName = NULL;
+        CmdLineParms.OutExeFileName = NULL;
     }
 
     if( tmp_res != NULL ) {
