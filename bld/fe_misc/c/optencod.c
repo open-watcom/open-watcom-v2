@@ -560,7 +560,8 @@ static void procCmdLine( int argc, char **argv )
     }
     if( strcmp( argv[1], "-u" ) == 0 ) {
         mfp = fopen( argv[2], "wb" );
-        if( !mfp ) fail( "cannot open '%s' for output", argv[2] );
+        if( mfp == NULL )
+            fail( "cannot open '%s' for output", argv[2] );
         argc -= 2;
         argv += 2;
     }
@@ -570,27 +571,34 @@ static void procCmdLine( int argc, char **argv )
     }
     ++argv;
     gfp = fopen( argv[0], "r" );
-    if( !gfp ) fail( "cannot open '%s' for input", argv[0] );
+    if( gfp == NULL )
+        fail( "cannot open '%s' for input", argv[0] );
     ++argv;
     if( strcmp( argv[0], "." ) == 0 ) {
         ofp = NULL;
     } else {
         ofp = fopen( argv[0], "w+" );
-        if( ofp == NULL ) fail( "cannot open '%s' for output", argv[0] );
+        if( ofp == NULL ) {
+            fail( "cannot open '%s' for output", argv[0] );
+        }
     }
     ++argv;
     if( strcmp( argv[0], "." ) == 0 ) {
         pfp = NULL;
     } else {
         pfp = fopen( argv[0], "w+" );
-        if( pfp == NULL ) fail( "cannot open '%s' for output", argv[0] );
+        if( pfp == NULL ) {
+            fail( "cannot open '%s' for output", argv[0] );
+        }
     }
     ++argv;
     if( strcmp( argv[0], "." ) == 0 ) {
         ufp = NULL;
     } else {
         ufp = fopen( argv[0], "w+" );
-        if( ufp == NULL ) fail( "cannot open '%s' for output", argv[0] );
+        if( ufp == NULL ) {
+            fail( "cannot open '%s' for output", argv[0] );
+        }
     }
     ++argv;
     for( t = validTargets; *t != NULL; ++t ) {
@@ -1349,7 +1357,8 @@ static void makeFieldName( char *n, char *f )
             if( c == '\\' ) {
                 sensitive = true;
                 continue;
-            } else if( isalnum( c ) ) {
+            }
+            if( isalnum( c ) ) {
                 if( special && *( f - 1 ) != '_' )
                     *f++ = '_';
                 if( !sensitive )
@@ -1448,7 +1457,7 @@ static void finishParserH( void )
 
     if( ofp != NULL ) {
         value = 0;
-        for( e = enumeratorList; e != NULL; e= e->next ) {
+        for( e = enumeratorList; e != NULL; e = e->next ) {
             ++value;
             fprintf( ofp, "#define %s %u\n", e->name, value );
         }
@@ -1462,9 +1471,7 @@ static CODESEQ *newCode( OPTION *o, char c, bool sensitive )
     p = calloc( 1, sizeof( *p ) );
     p->option = o;
     p->c = c;
-    if( sensitive ) {
-        p->sensitive = true;
-    }
+    p->sensitive = sensitive;
     return( p );
 }
 
