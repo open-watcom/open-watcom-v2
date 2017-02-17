@@ -1,13 +1,16 @@
 .func sbrk
 .synop begin
 #include <stdlib.h>
-void *sbrk( int increment );
+int brk( void __near *addr );
+void __near *sbrk( int increment );
 .ixfunc2 '&Memory' &funcb
 .synop end
 .desc begin
+Change data segment size, the "break" value.
 .if '&machsys' ne 'QNX' .do begin
-Under 16-bit DOS and Phar Lap's 386|DOS-Extender, the data segment is
-grown contiguously.
+Under 16-bit DOS, Phar Lap's 386|DOS-Extender and Linux, the data
+segment is grown contiguously. Under other systems, heap allocation
+is discontiguous.
 .do end
 The "break" value is the address of the first byte of unallocated
 memory.
