@@ -50,7 +50,7 @@ typedef enum {
 
 typedef struct ResFileInfo {
     struct ResFileInfo  *next;
-    char                *name;
+    const char          *name;
     bool                IsOpen;
     WResFileID          fid;
     WResDir             Dir;
@@ -83,7 +83,7 @@ typedef struct LXExeInfo {
 typedef struct ExeFileInfo {
     bool                IsOpen;
     WResFileID          fid;
-    char                *name;
+    const char          *name;
     uint_32             WinHeadOffset;      /* wlink doesn't initialize this */
     ExeType             Type;
     union {

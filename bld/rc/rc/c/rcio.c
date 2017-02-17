@@ -470,8 +470,8 @@ static bool OpenResFileInfo( ExeType type )
 } /* OpenResFileInfo */
 
 
-static bool openExeFileInfoRO( char *filename, ExeFileInfo *info )
-/***************************************************************/
+static bool openExeFileInfoRO( const char *filename, ExeFileInfo *info )
+/**********************************************************************/
 {
     RcStatus        status;
     exe_pe_header   *pehdr;

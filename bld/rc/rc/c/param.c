@@ -123,12 +123,14 @@ static bool scanStringCheck( const char *str, unsigned *len )
     return( have_quote );
 }
 
-static bool scanString( char *buf, const char *str, unsigned len )
-/****************************************************************/
+static char *scanString( char *buf, const char *str, unsigned len )
+/*****************************************************************/
 {
     bool        have_quote;
     char        c;
+    char        *start;
 
+    start = buf;
     have_quote = false;
     while( isspace( *str ) )
         ++str;
@@ -136,12 +138,14 @@ static bool scanString( char *buf, const char *str, unsigned len )
         if( c == '\"' ) {
             have_quote = !have_quote;
         } else {
-            *buf++ = c;
+            if( buf != NULL )
+                *buf++ = c;
             len--;
         }
     }
-    *buf = '\0';
-    return( have_quote );
+    if( buf != NULL )
+        *buf = '\0';
+    return( start );
 }
 
 static bool ScanMultiOptArg( const char * arg )
@@ -226,8 +230,7 @@ static bool ScanOptionsArg( const char *arg )
             if( scanStringCheck( arg, &len ) ) {
                 RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
             }
-            CmdLineParms.PrependString = RcMemMalloc( len + 1 );
-            scanString( CmdLineParms.PrependString, arg, len );
+            CmdLineParms.PrependString = scanString( RcMemMalloc( len + 1 ), arg, len );
             CmdLineParms.Prepend = true;
             break;
         } else {
@@ -278,8 +281,7 @@ static bool ScanOptionsArg( const char *arg )
         if( scanStringCheck( arg, &len ) ) {
             RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
         }
-        CmdLineParms.CodePageFile = RcMemMalloc( len + 1 );
-        scanString( CmdLineParms.CodePageFile, arg, len  );
+        CmdLineParms.CodePageFile = scanString( RcMemMalloc( len + 1 ), arg, len  );
         break;
     case 'd':
         /* temporary until preprocessing done inline */
@@ -297,8 +299,7 @@ static bool ScanOptionsArg( const char *arg )
             if( scanStringCheck( arg, &len ) ) {
                 RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
             }
-            CmdLineParms.OutResFileName = RcMemMalloc( len + 1 );
-            scanString( CmdLineParms.OutResFileName, arg, len );
+            CmdLineParms.OutResFileName = scanString( RcMemMalloc( len + 1 ), arg, len );
             break;
         case 'r':
             arg++;
@@ -320,8 +321,7 @@ static bool ScanOptionsArg( const char *arg )
             if( scanStringCheck( arg, &len ) ) {
                 RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
             }
-            CmdLineParms.OutExeFileName = RcMemMalloc( len + 1 );
-            scanString( CmdLineParms.OutExeFileName, arg, len );
+            CmdLineParms.OutExeFileName = scanString( RcMemMalloc( len + 1 ), arg, len );
             break;
         default:
             RcError( ERR_UNKNOWN_MULT_OPTION, arg - 1 );
@@ -336,8 +336,7 @@ static bool ScanOptionsArg( const char *arg )
         if( scanStringCheck( arg, &len ) ) {
             RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
         }
-        temp = RcMemMalloc( len + 1 );
-        scanString( temp, arg, len );
+        temp = scanString( RcMemMalloc( len + 1 ), arg, len );
         frStrings = RcMemMalloc( sizeof( FRStrings ) + len + 2 );
         p = strtok( temp, delims );
         if( p != NULL ) {
@@ -369,8 +368,7 @@ static bool ScanOptionsArg( const char *arg )
         if( scanStringCheck( arg, &len ) ) {
             RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
         }
-        temp = RcMemMalloc( len + 1 );
-        scanString( temp, arg, len );
+        temp = scanString( RcMemMalloc( len + 1 ), arg, len );
         PP_AddIncludePath( temp );
         RcMemFree( temp );
         break;
@@ -526,8 +524,8 @@ static bool ScanOptionsArg( const char *arg )
     return( contok );
 } /* ScanOptionsArg */
 
-static char *MakeFileName( char *infilename, const char *ext )
-/************************************************************/
+static char *MakeFileName( const char *infilename, const char *ext )
+/******************************************************************/
 {
     char    name[_MAX_FNAME];
     char    dir[_MAX_DIR];
@@ -548,7 +546,7 @@ static char *MakeFileName( char *infilename, const char *ext )
     return( out );
 } /* MakeFileName */
 
-static char *CheckExtension( char *filename, const char *defext )
+static void CheckExtension( char **filename, const char *defext )
 /***************************************************************/
 {
     char    name[_MAX_FNAME];
@@ -556,17 +554,14 @@ static char *CheckExtension( char *filename, const char *defext )
     char    dir[_MAX_DIR];
     char    ext[_MAX_EXT];
     size_t  len;
-    char    *out;
 
-    out = filename;
-    _splitpath( filename, drive, dir, name, ext );
+    _splitpath( *filename, drive, dir, name, ext );
     if( *ext == '\0' ) {
-        len = strlen( filename ) + strlen( defext ) + 1;
-        RcMemFree( filename );
-        out = RcMemMalloc( len );
-        _makepath( out, drive, dir, name, defext );
+        len = strlen( *filename ) + strlen( defext ) + 1;
+        RcMemFree( *filename );
+        *filename = RcMemMalloc( len );
+        _makepath( *filename, drive, dir, name, defext );
     }
-    return( out );
 } /* CheckExtension */
 
 /* extensions for Windows executables */
@@ -606,7 +601,7 @@ static void CheckParms( void )
 {
     const char  *defext;
 
-    CmdLineParms.InFileName = CheckExtension( CmdLineParms.InFileName, "rc" );
+    CheckExtension( &CmdLineParms.InFileName, "rc" );
     CheckPass2Only();
 
     /* was an EXE file name given */
@@ -617,7 +612,7 @@ static void CheckParms( void )
             CmdLineParms.InExeFileName = MakeFileName( CmdLineParms.InFileName, "exe" );
         }
     } else {
-        CmdLineParms.InExeFileName = CheckExtension( CmdLineParms.InExeFileName, "exe" );
+        CheckExtension( &CmdLineParms.InExeFileName, "exe" );
     }
 
     /* was an output RES file name given */
@@ -629,14 +624,14 @@ static void CheckParms( void )
     if( CmdLineParms.OutResFileName == NULL ) {
         CmdLineParms.OutResFileName = MakeFileName( CmdLineParms.InFileName, defext );
     } else {
-        CmdLineParms.OutResFileName = CheckExtension( CmdLineParms.OutResFileName, defext );
+        CheckExtension( &CmdLineParms.OutResFileName, defext );
     }
 
     /* was an output EXE file name given */
     if( CmdLineParms.OutExeFileName == NULL ) {
         CmdLineParms.OutExeFileName = MakeFileName( CmdLineParms.InExeFileName, NULL );
     } else {
-        CmdLineParms.OutExeFileName = CheckExtension( CmdLineParms.OutExeFileName, "exe" );
+        CheckExtension( &CmdLineParms.OutExeFileName, "exe" );
     }
 
     /* check for the existance of the input files */
@@ -865,15 +860,13 @@ static bool doScanParams( int argc, char *argv[], int *nofilenames )
             if( scanStringCheck( arg, &len ) ) {
                 RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
             }
-            CmdLineParms.InFileName = RcMemMalloc( len + 1 );
-            scanString( CmdLineParms.InFileName, arg, len );
+            CmdLineParms.InFileName = scanString( RcMemMalloc( len + 1 ), arg, len );
             (*nofilenames)++;
         } else if( *nofilenames == 1 ) {
             if( scanStringCheck( arg, &len ) ) {
                 RcError( ERR_UNMATCHED_QUOTE_ON_CMD_LINE );
             }
-            CmdLineParms.InExeFileName = RcMemMalloc( len + 1 );
-            scanString( CmdLineParms.InExeFileName, arg, len );
+            CmdLineParms.InExeFileName = scanString( RcMemMalloc( len + 1 ), arg, len );
             (*nofilenames)++;
         } else {
             RcError( ERR_TOO_MANY_ARGS, arg );
