@@ -95,18 +95,26 @@ static int              ref_count = 0;
 WResFileID res_open( const char *name, wres_open_mode omode )
 {
     int     fd;
+    int     mode;
 
-    omode=omode;
+    if( omode == WRES_OPEN_NEW ) {
+        mode = O_WRONLY | O_CREAT | O_TRUNC;
+    } else if( omode == WRES_OPEN_RW ) {
+        mode = O_RDWR | O_CREAT;
+    } else {
+        mode = O_RDONLY;
+    }
 #if defined( __WATCOMC__ ) && defined( __QNX__ )
     /* This is a kludge fix to avoid turning on the O_TRUNC bit under QNX */
-    fd = open( name, O_RDONLY );
+    fd = open( name, mode );
     if( fd == -1 ) {
         WRES_ERROR( WRS_OPEN_FAILED );
     } else {
         setmode( fd, O_BINARY );
     }
 #else
-    fd = open( name, O_RDONLY | O_BINARY );
+    mode |= O_BINARY;
+    fd = open( name, mode );
     if( fd == -1 ) {
         WRES_ERROR( WRS_OPEN_FAILED );
     }
