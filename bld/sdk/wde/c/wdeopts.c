@@ -128,7 +128,7 @@ static bool WdeWriteIntOpt( char *entry, int i )
 
     ltoa( i, str, 10 );
 
-    ret = WritePrivateProfileString( WdeSectionName, entry, str, WdeProfileName );
+    ret = ( WritePrivateProfileString( WdeSectionName, entry, str, WdeProfileName ) != 0 );
 
     return( ret );
 }
@@ -169,7 +169,7 @@ static bool WdeWriteRectOpt( char *entry, RECT *r )
     ret = FALSE;
     str = WdeRectToStr( r );
     if( str != NULL ) {
-        ret = WritePrivateProfileString( WdeSectionName, entry, str, WdeProfileName );
+        ret = ( WritePrivateProfileString( WdeSectionName, entry, str, WdeProfileName ) != 0 );
         WRMemFree( str );
     }
 

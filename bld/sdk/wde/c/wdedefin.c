@@ -279,11 +279,11 @@ void WdeGetObjectStyle( HWND hDlg, DialogStyle *style )
 WINEXPORT BOOL CALLBACK WdeGenericDefineProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static WdeDefineObjectInfo  *info = NULL;
-    BOOL                        ret;
+    bool                        ret;
     bool                        use_id;
     uint_16                     id;
 
-    ret = FALSE;
+    ret = false;
 
     if( info != NULL ) {
         if( info->hook_func != NULL ) {
@@ -295,7 +295,7 @@ WINEXPORT BOOL CALLBACK WdeGenericDefineProc( HWND hDlg, UINT message, WPARAM wP
                 use_id = info->info.d.use_id;
             } else {
                 id = GETCTL_ID( info->info.c.info );
-                use_id = TRUE;
+                use_id = true;
             }
             ret = WdeProcessSymbolCombo( hDlg, message, wParam, lParam,
                                          info->res_info->hash_table, id, use_id );
@@ -315,7 +315,7 @@ WINEXPORT BOOL CALLBACK WdeGenericDefineProc( HWND hDlg, UINT message, WPARAM wP
         if( !WdeGenericSetDefineInfo( info, hDlg ) ) {
             EndDialog( hDlg, FALSE );
         }
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_COMMAND:
@@ -330,13 +330,13 @@ WINEXPORT BOOL CALLBACK WdeGenericDefineProc( HWND hDlg, UINT message, WPARAM wP
             }
             EndDialog( hDlg, TRUE );
             info = NULL;
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDCANCEL:
             EndDialog( hDlg, FALSE );
             info = NULL;
-            ret = TRUE;
+            ret = true;
             break;
         }
     }

@@ -74,7 +74,7 @@ static BOOL     WdeHtKyGetWindowClass( WdeHtKyObject *, char **, void * );
 static BOOL     WdeHtKyDefine( WdeHtKyObject *, POINT *, void * );
 static void     WdeHtKySetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeHtKyGetDefineInfo( WdeDefineObjectInfo *, HWND );
-static BOOL     WdeHtKyDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+static bool     WdeHtKyDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -383,7 +383,7 @@ void WdeHtKyGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     WdeEXGetDefineInfo( o_info, hDlg );
 }
 
-BOOL WdeHtKyDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
+bool WdeHtKyDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( hDlg );
@@ -392,7 +392,7 @@ BOOL WdeHtKyDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
     _wde_touch( lParam );
     _wde_touch( mask );
 
-    return( FALSE );
+    return( false );
 }
 
 WINEXPORT LRESULT CALLBACK WdeHtKySuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )

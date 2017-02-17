@@ -76,7 +76,7 @@ static BOOL     WdeScrollGetWindowClass( WdeScrollObject *, char **, void * );
 static BOOL     WdeScrollDefine( WdeScrollObject *, POINT *, void * );
 static void     WdeScrollSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeScrollGetDefineInfo( WdeDefineObjectInfo *, HWND );
-static BOOL     WdeScrollDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+static bool     WdeScrollDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -582,16 +582,16 @@ void WdeScrollGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeScrollDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
+bool WdeScrollDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
-    BOOL    processed;
+    bool    processed;
     WORD    wp;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( mask );
     _wde_touch( lParam );
 
-    processed = FALSE;
+    processed = false;
 
     if( message == WM_COMMAND && GET_WM_COMMAND_CMD( wParam, lParam ) == BN_CLICKED ) {
         wp = LOWORD( wParam );
@@ -600,42 +600,42 @@ BOOL WdeScrollDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam,
             if( IsDlgButtonChecked( hDlg, wp ) ) {
                 CheckDlgButton( hDlg, IDB_SBS_BOTTOMALIGN, BST_UNCHECKED );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_SBS_LEFTALIGN:
             if( IsDlgButtonChecked( hDlg, wp ) ) {
                 CheckDlgButton( hDlg, IDB_SBS_RIGHTALIGN, BST_UNCHECKED );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_SBS_BOTTOMALIGN:
             if( IsDlgButtonChecked( hDlg, wp ) ) {
                 CheckDlgButton( hDlg, IDB_SBS_TOPALIGN, BST_UNCHECKED );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_SBS_SIZEBOXBOTTOMRIGHTALIGN:
             if( IsDlgButtonChecked( hDlg, wp ) ) {
                 CheckDlgButton( hDlg, IDB_SBS_SIZEBOXTOPLEFTALIGN, BST_UNCHECKED );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_SBS_SIZEBOXTOPLEFTALIGN:
             if( IsDlgButtonChecked( hDlg, wp ) ) {
                 CheckDlgButton( hDlg, IDB_SBS_SIZEBOXBOTTOMRIGHTALIGN, BST_UNCHECKED );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_SBS_RIGHTALIGN:
             if( IsDlgButtonChecked( hDlg, wp ) ) {
                 CheckDlgButton( hDlg, IDB_SBS_LEFTALIGN, BST_UNCHECKED );
             }
-            processed = TRUE;
+            processed = true;
             break;
         }
     }

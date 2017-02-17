@@ -74,7 +74,7 @@ static BOOL     WdeTabCGetWindowClass( WdeTabCObject *, char **, void * );
 static BOOL     WdeTabCDefine( WdeTabCObject *, POINT *, void * );
 static void     WdeTabCSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeTabCGetDefineInfo( WdeDefineObjectInfo *, HWND );
-static BOOL     WdeTabCDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+static bool     WdeTabCDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -486,17 +486,17 @@ void WdeTabCGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeTabCDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
+bool WdeTabCDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
 #ifdef __NT__XX
-    BOOL processed;
+    bool processed;
     WORD wp;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( mask );
     _wde_touch( lParam );
 
-    processed = FALSE;
+    processed = false;
 
     if( message == WM_COMMAND && GET_WM_COMMAND_CMD( wParam, lParam ) == BN_CLICKED ) {
         wp = LOWORD( wParam );
@@ -521,7 +521,7 @@ BOOL WdeTabCDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                 EnableWindow( GetDlgItem( hDlg, IDB_TCS_FORCEICONLEFT ), FALSE );
                 EnableWindow( GetDlgItem( hDlg, IDB_TCS_FORCELABELLEFT ), FALSE );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
        case IDB_TCS_FORCELABELLEFT:
@@ -533,7 +533,7 @@ BOOL WdeTabCDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                 // enable the FORCEICONLEFT control
                 EnableWindow( GetDlgItem( hDlg, IDB_TCS_FORCEICONLEFT ), TRUE );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
        case IDB_TCS_MULTILINE:
@@ -551,7 +551,7 @@ BOOL WdeTabCDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                     EnableWindow( GetDlgItem( hDlg, IDB_TCS_RIGHTJUSTIFY ), FALSE );
                 }
             }
-            processed = TRUE;
+            processed = true;
             break;
         }
     }

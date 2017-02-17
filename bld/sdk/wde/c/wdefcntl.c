@@ -1901,7 +1901,7 @@ BOOL WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
     _wde_touch( p1 );
     _wde_touch( p2 );
 
-    ok = true;
+    ok = TRUE;
 
     if( obj->parent_handle == (HWND)NULL ) {
         ok = (Forward( obj->parent, GET_WINDOW_HANDLE, &obj->parent_handle, NULL ) &&
@@ -1918,7 +1918,7 @@ BOOL WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
 
     if( ok ) {
         width = 0;
-        ok = false;
+        ok = FALSE;
         switch( id ) {
         case PBUTTON_OBJ:
             SetRectEmpty( &pos );
@@ -1926,7 +1926,7 @@ BOOL WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
             width = size.cx + (WDE_SIZE_TO_TEXT_PAD * 2);
             if( width < pos.right )
                 width = pos.right;
-            ok = true;
+            ok = TRUE;
             break;
 
         case RBUTTON_OBJ:
@@ -1938,14 +1938,14 @@ BOOL WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
         case TEXT_OBJ:
         case EDIT_OBJ:
             width += size.cx + (WDE_SIZE_TO_TEXT_PAD * 2);
-            ok = true;
+            ok = TRUE;
             break;
         }
     }
 
     if( ok ) {
         height = 0;
-        ok = false;
+        ok = FALSE;
         switch( id ) {
         case RBUTTON_OBJ:
         case CBUTTON_OBJ:
@@ -1956,7 +1956,7 @@ BOOL WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
             /* fall through */
         case PBUTTON_OBJ:
             height = pos.bottom;
-            ok = true;
+            ok = TRUE;
             break;
         }
     }

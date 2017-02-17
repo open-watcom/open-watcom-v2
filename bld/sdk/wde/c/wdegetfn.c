@@ -186,7 +186,7 @@ char *WdeGetFileName( WdeGetFileStruct *gf, DWORD flags, WdeGetFileNameAction ac
     HINSTANCE           app_inst;
     int                 len;
     int                 filter;
-    bool                ret;
+    BOOL                ret;
 
     if( gf == NULL ) {
         return( NULL );

@@ -74,7 +74,7 @@ static BOOL     WdeAniCGetWindowClass( WdeAniCObject *, char **, void * );
 static BOOL     WdeAniCDefine( WdeAniCObject *, POINT *, void * );
 static void     WdeAniCSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeAniCGetDefineInfo( WdeDefineObjectInfo *, HWND );
-static BOOL     WdeAniCDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+static bool     WdeAniCDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -418,8 +418,7 @@ void WdeAniCGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeAniCDefineHook( HWND hDlg, UINT message,
-                        WPARAM wParam, LPARAM lParam, DialogStyle mask )
+bool WdeAniCDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( hDlg );
@@ -428,7 +427,7 @@ BOOL WdeAniCDefineHook( HWND hDlg, UINT message,
     _wde_touch( lParam );
     _wde_touch( mask );
 
-    return( FALSE );
+    return( false );
 }
 
 WINEXPORT LRESULT CALLBACK WdeAniCSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )

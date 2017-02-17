@@ -334,14 +334,14 @@ uint_32 WdeHammingDistance( uint_32 x1, uint_32 x2 )
 bool WdeIsClassDefined( char *class )
 {
     WNDCLASS  wc;
-    BOOL      ret;
+    bool      ret;
     HINSTANCE app_inst;
 
     if( class != NULL && *class != '\0' ) {
         app_inst = WdeGetAppInstance();
-        ret = GetClassInfo( app_inst, class, &wc );
+        ret = ( GetClassInfo( app_inst, class, &wc ) != 0 );
     } else {
-        ret = FALSE;
+        ret = false;
     }
 
     return( ret );
@@ -425,7 +425,7 @@ bool WdeFindObjectsAtPt( POINT *pt, LIST **obj_list, LIST *olist )
     do {
         child = ListElement( ol );
         is_clear = Forward( child, IS_OBJECT_CLEAR, &b, NULL ) && b;
-        can_move = ValidateAction( child, PICK, &req.p.pt );
+        can_move = ( ValidateAction( child, PICK, &req.p.pt ) != 0 );
         if( can_move ) {
             sel = child;
             break;
@@ -620,18 +620,16 @@ void WdeSetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
                 WRMemFree( str1 );
             }
             o_info->info.d.id = 0;
-            o_info->info.d.use_id = FALSE;
+            o_info->info.d.use_id = false;
         } else {
             if( o_info->symbol != NULL ) {
                 WdeSetComboWithStr( o_info->symbol, hDlg, IDB_SYMBOL );
             } else {
-                WdeSetEditWithSINT16( (int_16)o_info->info.d.name->ID.Num,
-                                      10, hDlg, IDB_SYMBOL );
+                WdeSetEditWithSINT16( (int_16)o_info->info.d.name->ID.Num, 10, hDlg, IDB_SYMBOL );
             }
             o_info->info.d.id = (uint_16)o_info->info.d.name->ID.Num;
-            o_info->info.d.use_id = TRUE;
-            WdeSetEditWithSINT16( (int_16) o_info->info.d.name->ID.Num,
-                                  10, hDlg, IDB_ID );
+            o_info->info.d.use_id = true;
+            WdeSetEditWithSINT16( (int_16) o_info->info.d.name->ID.Num, 10, hDlg, IDB_ID );
         }
 
         /* JPK - added for help id */
@@ -1050,9 +1048,9 @@ WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wP
 {
     static WdeDefineObjectInfo  *o_info = NULL;
     static BOOL                 init_done = FALSE;
-    BOOL                        ret;
+    bool                        ret;
 
-    ret = FALSE;
+    ret = false;
 
     if( init_done && o_info != NULL ) {
         if( o_info->hook_func != NULL ) {
@@ -1062,7 +1060,7 @@ WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wP
         if( !ret ) {
             ret = WdeProcessSymbolCombo( hDlg, message, wParam, lParam,
                                          o_info->res_info->hash_table,
-                                         GETCTL_ID( o_info->info.c.info ), TRUE );
+                                         GETCTL_ID( o_info->info.c.info ), true );
         }
 
         /* JPK - added for help id support */
@@ -1070,7 +1068,7 @@ WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wP
             ret = WdeProcessHelpSymbolCombo( hDlg, message, wParam, lParam,
                                              o_info->res_info->hash_table,
                                              GETCTL_HELPID( o_info->info.c.info ),
-                                             TRUE );
+                                             true );
         }
 
         if( ret ) {
@@ -1089,11 +1087,11 @@ WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wP
         if( o_info == NULL ) {
             EndDialog( hDlg, FALSE );
             init_done = FALSE;
-            ret = TRUE;
+            ret = true;
         } else {
             WdeSetDefineControlInfo( o_info, hDlg );
         }
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_COMMAND:
@@ -1105,14 +1103,14 @@ WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wP
         case IDOK:
             WdeGetDefineControlInfo( o_info, hDlg );
             EndDialog( hDlg, TRUE );
-            ret = TRUE;
+            ret = true;
             init_done = FALSE;
             o_info = NULL;
             break;
 
         case IDCANCEL:
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
+            ret = true;
             init_done = FALSE;
             o_info = NULL;
             break;
@@ -1123,16 +1121,15 @@ WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wP
 }
 
 
-BOOL WdeWinStylesHook( HWND hDlg, UINT message,
-                       WPARAM wParam, LPARAM lParam, DialogStyle mask )
+bool WdeWinStylesHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
     DialogStyle  tstyle;
-    BOOL         ret;
+    bool         ret;
     bool         overlapped;
 
     _wde_touch( lParam );
 
-    ret = FALSE;
+    ret = false;
 
     if( message == WM_COMMAND && GET_WM_COMMAND_CMD( wParam, lParam ) == BN_CLICKED ) {
         switch( LOWORD( wParam ) ) {
@@ -1140,14 +1137,14 @@ BOOL WdeWinStylesHook( HWND hDlg, UINT message,
             if( IsDlgButtonChecked( hDlg, IDB_WS_CHILD ) ) {
                 CheckDlgButton( hDlg, IDB_WS_POPUP, BST_UNCHECKED );
             }
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDB_WS_POPUP:
             if( IsDlgButtonChecked( hDlg, IDB_WS_POPUP ) ) {
                 CheckDlgButton( hDlg, IDB_WS_CHILD, BST_UNCHECKED );
             }
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDB_WS_CAPTION:
@@ -1158,7 +1155,7 @@ BOOL WdeWinStylesHook( HWND hDlg, UINT message,
                 CheckDlgButton( hDlg, IDB_WS_BORDER, BST_UNCHECKED );
                 CheckDlgButton( hDlg, IDB_WS_DLGFRAME, BST_UNCHECKED );
             }
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDB_WS_DLGFRAME:
@@ -1172,7 +1169,7 @@ BOOL WdeWinStylesHook( HWND hDlg, UINT message,
             } else {
                 CheckDlgButton( hDlg, IDB_WS_CAPTION, BST_UNCHECKED );
             }
-            ret = TRUE;
+            ret = true;
             break;
 
 #if __NT__XX
@@ -1275,13 +1272,13 @@ bool WdeProcessSymbolCombo( HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
     _wde_touch( id );
     _wde_touch( use_id );
 
-    processed = FALSE;
+    processed = false;
 
     if ( message == WM_COMMAND && LOWORD( wParam ) == IDB_SYMBOL ) {
         hw = GET_WM_COMMAND_CMD( wParam, lParam );
         if( hw == CBN_EDITCHANGE || hw == CBN_SELCHANGE ) {
             WdeDefineObjectLookupComboEntry( hDlg, hw, table );
-            processed = TRUE;
+            processed = true;
         }
     }
 
@@ -1353,13 +1350,13 @@ bool WdeProcessHelpSymbolCombo( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
     _wde_touch( id );
     _wde_touch( use_id );
 
-    processed = FALSE;
+    processed = false;
 
     if( message == WM_COMMAND && LOWORD( wParam ) == IDB_HELPSYMBOL ) {
         hw = GET_WM_COMMAND_CMD( wParam, lParam );
         if( hw == CBN_EDITCHANGE || hw == CBN_SELCHANGE ) {
             WdeDefineObjectLookupHelpComboEntry( hDlg, hw, table );
-            processed = TRUE;
+            processed = true;
         }
     }
 

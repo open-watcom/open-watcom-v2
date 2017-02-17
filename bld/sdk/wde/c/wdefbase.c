@@ -445,7 +445,7 @@ BOOL WdeBaseDraw( WdeBaseObject *obj, RECT *area, HDC *dc )
     for( olist = obj->children; olist; olist = ListNext( olist ) ) {
         child = ListElement( olist );
         Location( child, &child_rect );
-        show_child = IntersectRect( &intersect, &child_rect, &client_rect );
+        show_child = ( IntersectRect( &intersect, &child_rect, &client_rect ) != 0 );
         Forward( child, SHOW_WIN, &show_child, NULL );
         if( !show_child ) {
             child = NULL;

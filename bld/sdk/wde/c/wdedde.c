@@ -383,7 +383,7 @@ bool WdeUpdateDDEEditSession( void )
     }
 
     if( ok ) {
-        ok = DdeClientTransaction( (LPBYTE)hdata, -1, WdeClientConv,
+        ok = DdeClientTransaction( (LPBYTE)hdata, (DWORD)-1L, WdeClientConv,
                                          hDataItem, WdeDataClipbdFormat,
                                          XTYP_POKE, TIME_OUT, NULL ) != 0;
     }
@@ -398,7 +398,7 @@ bool WdeUpdateDDEEditSession( void )
     }
 
     if( ok ) {
-        ok = DdeClientTransaction( (LPBYTE)hdata, -1, WdeClientConv,
+        ok = DdeClientTransaction( (LPBYTE)hdata, (DWORD)-1L, WdeClientConv,
                                          hNameItem, WdeDataClipbdFormat,
                                          XTYP_POKE, TIME_OUT, NULL ) != 0;
     }

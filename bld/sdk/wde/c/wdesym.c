@@ -138,7 +138,7 @@ bool WdeResourceHashTableAction( WdeResInfo *info, int action )
 bool WdeResourceViewHash( WdeResInfo *info )
 {
     BOOL    no_hash;
-    BOOL    ret;
+    bool    ret;
     OBJPTR  obj;
 
     if( info->hash_table == NULL ) {

@@ -158,7 +158,7 @@ bool WdeToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 
     switch( msg ) {
     case WM_USER:
-        WdeHandleToolHint( LOWORD( wParam ), (BOOL)lParam );
+        WdeHandleToolHint( (ctl_id)LOWORD( wParam ), lParam != 0 );
         WdeHandleStickyToolPress( tbar, wParam, lParam );
         break;
 
@@ -193,7 +193,7 @@ bool WdeToolBarHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 }
 #endif
 
-void WdeHandleToolHint( ctl_id id, BOOL pressed )
+void WdeHandleToolHint( ctl_id id, bool pressed )
 {
     if( pressed ) {
         WdeDisplayHint( id );

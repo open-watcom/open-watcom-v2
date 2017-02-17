@@ -74,7 +74,7 @@ static BOOL     WdeHdrGetWindowClass( WdeHdrObject *, char **, void * );
 static BOOL     WdeHdrDefine( WdeHdrObject *, POINT *, void * );
 static void     WdeHdrSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeHdrGetDefineInfo( WdeDefineObjectInfo *, HWND );
-static BOOL     WdeHdrDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+static bool     WdeHdrDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -407,10 +407,10 @@ void WdeHdrGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeHdrDefineHook( HWND hDlg, UINT message,
+bool WdeHdrDefineHook( HWND hDlg, UINT message,
                        WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
-    BOOL processed;
+    bool processed;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( hDlg );
@@ -419,7 +419,7 @@ BOOL WdeHdrDefineHook( HWND hDlg, UINT message,
     _wde_touch( lParam );
     _wde_touch( mask );
 
-    processed = FALSE;
+    processed = false;
 
     return( processed );
 }

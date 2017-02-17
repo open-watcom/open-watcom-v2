@@ -95,8 +95,7 @@ bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
         if( save_into ) {
             ok = WdeSaveObjectInto( rinfo, dbi, rname, rdata, size, &lang );
         } else {
-            ok = WdeSaveObjectAs( rinfo, dbi, fname, rname, rdata, size,
-                                  &lang, get_name );
+            ok = WdeSaveObjectAs( rinfo, dbi, fname, rname, rdata, size, &lang, get_name );
         }
     }
 
@@ -157,7 +156,7 @@ bool WdeSaveObjectAs( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
         ditem.dialog_info = dbi;
         ditem.dialog_name = name;
         if( is_rc ) {
-            ok = WdeSaveObjectToRC( fname, rinfo, &ditem, FALSE );
+            ok = WdeSaveObjectToRC( fname, rinfo, &ditem, false );
         }
     }
 
@@ -167,7 +166,7 @@ bool WdeSaveObjectAs( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
             ftype == WR_WINNTM_RES || ftype == WR_WINNTW_RES ) {
             char        dlgName[_MAX_PATH];
             if( WdeCreateDLGName( fname, dlgName ) ) {
-                ok = WdeSaveObjectToRC( dlgName, rinfo, &ditem, FALSE );
+                ok = WdeSaveObjectToRC( dlgName, rinfo, &ditem, false );
             }
         }
     }
@@ -240,7 +239,7 @@ bool WdeSaveObjectInto( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
             memset( &ditem, 0, sizeof( WdeResDlgItem ) );
             ditem.dialog_info = dbi;
             ditem.dialog_name = name;
-            ok = WdeSaveObjectToRC( fname, rinfo, &ditem, TRUE );
+            ok = WdeSaveObjectToRC( fname, rinfo, &ditem, true );
         } else {
             idata.next = NULL;
             idata.name = name;

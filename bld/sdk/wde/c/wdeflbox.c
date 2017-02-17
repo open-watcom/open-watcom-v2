@@ -73,7 +73,7 @@ static BOOL     WdeLBoxGetWindowClass( WdeLBoxObject *, char **, void * );
 static BOOL     WdeLBoxDefine( WdeLBoxObject *, POINT *, void * );
 static void     WdeLBoxSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeLBoxGetDefineInfo( WdeDefineObjectInfo *, HWND );
-static BOOL     WdeLBoxDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+static bool     WdeLBoxDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -574,15 +574,15 @@ void WdeLBoxGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeLBoxDefineHook ( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
+bool WdeLBoxDefineHook ( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
-    BOOL processed;
+    bool processed;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( mask );
     _wde_touch( lParam );
 
-    processed = FALSE;
+    processed = false;
 
     if( message == WM_COMMAND && GET_WM_COMMAND_CMD( wParam, lParam ) == BN_CLICKED ) {
         switch( LOWORD( wParam ) ) {
@@ -598,7 +598,7 @@ BOOL WdeLBoxDefineHook ( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, 
             } else {
                 CheckDlgButton( hDlg, IDB_LBS_STANDARD, BST_UNCHECKED );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_LBS_STANDARD:
@@ -613,7 +613,7 @@ BOOL WdeLBoxDefineHook ( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, 
                 CheckDlgButton( hDlg, IDB_WS_VSCROLL, BST_UNCHECKED );
                 CheckDlgButton( hDlg, IDB_WS_BORDER, BST_UNCHECKED );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_LBS_OWNERDRAWFIXED:
@@ -628,7 +628,7 @@ BOOL WdeLBoxDefineHook ( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, 
                 CheckDlgButton( hDlg, IDB_LBS_HASSTRINGS, BST_CHECKED );
                 EnableWindow( GetDlgItem( hDlg, IDB_LBS_HASSTRINGS ), FALSE );
             }
-            processed = TRUE;
+            processed = true;
             break;
         }
     }

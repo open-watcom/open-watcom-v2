@@ -73,7 +73,7 @@ static BOOL     WdeEditGetWindowClass( WdeEditObject *, char **, void * );
 static BOOL     WdeEditDefine( WdeEditObject *, POINT *, void * );
 static void     WdeEditSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeEditGetDefineInfo( WdeDefineObjectInfo *, HWND );
-static BOOL     WdeEditDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+static bool     WdeEditDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -547,15 +547,15 @@ void WdeEditGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
+bool WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
-    BOOL processed;
+    bool processed;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( mask );
     _wde_touch( lParam );
 
-    processed = FALSE;
+    processed = false;
 
     if( message == WM_COMMAND && GET_WM_COMMAND_CMD( wParam, lParam ) == BN_CLICKED ) {
         switch( LOWORD( wParam ) ) {
@@ -564,7 +564,7 @@ BOOL WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                 CheckDlgButton( hDlg, IDB_ES_RIGHT, BST_UNCHECKED );
                 CheckDlgButton( hDlg, IDB_ES_CENTER, BST_UNCHECKED );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_ES_CENTER:
@@ -572,21 +572,21 @@ BOOL WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                 CheckDlgButton( hDlg, IDB_ES_LEFT, BST_UNCHECKED );
                 CheckDlgButton( hDlg, IDB_ES_RIGHT, BST_UNCHECKED );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_ES_UPPERCASE:
             if( IsDlgButtonChecked( hDlg, IDB_ES_UPPERCASE ) ) {
                 CheckDlgButton( hDlg, IDB_ES_LOWERCASE, BST_UNCHECKED );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_ES_LOWERCASE:
             if( IsDlgButtonChecked( hDlg, IDB_ES_LOWERCASE ) ) {
                 CheckDlgButton( hDlg, IDB_ES_UPPERCASE, BST_UNCHECKED );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_ES_RIGHT:
@@ -594,7 +594,7 @@ BOOL WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                 CheckDlgButton( hDlg, IDB_ES_LEFT, BST_UNCHECKED );
                 CheckDlgButton( hDlg, IDB_ES_CENTER, BST_UNCHECKED );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_ES_MULTILINE:
@@ -617,7 +617,7 @@ BOOL WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                 EnableWindow( GetDlgItem( hDlg, IDB_ES_CENTER ), FALSE );
                 EnableWindow( GetDlgItem( hDlg, IDB_ES_RIGHT ), FALSE );
             }
-            processed = TRUE;
+            processed = true;
             break;
         }
     }

@@ -121,7 +121,7 @@ bool WdeReorderObjectWindows( LIST *l )
     int     count;
 
     if( l == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     count = ListCount( l );
@@ -129,7 +129,7 @@ bool WdeReorderObjectWindows( LIST *l )
     h = BeginDeferWindowPos( count );
 
     if( h == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     last_win = HWND_TOP;
@@ -140,13 +140,13 @@ bool WdeReorderObjectWindows( LIST *l )
             h = DeferWindowPos( h, win, last_win, 0, 0, 0, 0,
                                 SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE );
             if( h == NULL ) {
-                return( FALSE );
+                return( false );
             }
             last_win = win;
         }
     }
 
-    return( EndDeferWindowPos( h ) );
+    return( EndDeferWindowPos( h ) != 0 );
 }
 
 bool WdeFindObjectsInRect( RECT *r, LIST **obj_list, LIST *olist )

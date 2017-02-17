@@ -74,7 +74,7 @@ static BOOL     WdeUpDnGetWindowClass( WdeUpDnObject *, char **, void * );
 static BOOL     WdeUpDnDefine( WdeUpDnObject *, POINT *, void * );
 static void     WdeUpDnSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeUpDnGetDefineInfo( WdeDefineObjectInfo *, HWND );
-static BOOL     WdeUpDnDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+static bool     WdeUpDnDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -446,9 +446,9 @@ void WdeUpDnGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeUpDnDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
+bool WdeUpDnDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
-    BOOL processed;
+    bool processed;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( hDlg );
@@ -457,7 +457,7 @@ BOOL WdeUpDnDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
     _wde_touch( lParam );
     _wde_touch( mask );
 
-    processed = FALSE;
+    processed = false;
 
     return( processed );
 }

@@ -76,7 +76,7 @@ static BOOL     WdeSBarGetWindowClass( WdeSBarObject *, char **, void * );
 static BOOL     WdeSBarDefine( WdeSBarObject *, POINT *, void * );
 static void     WdeSBarSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeSBarGetDefineInfo( WdeDefineObjectInfo *, HWND );
-static BOOL     WdeSBarDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+static bool     WdeSBarDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -467,9 +467,9 @@ void WdeSBarGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeSBarDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
+bool WdeSBarDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
-    BOOL processed;
+    bool processed;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( hDlg );
@@ -478,7 +478,7 @@ BOOL WdeSBarDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
     _wde_touch( lParam );
     _wde_touch( mask );
 
-    processed = FALSE;
+    processed = false;
 
     return( processed );
 }

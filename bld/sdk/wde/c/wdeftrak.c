@@ -74,7 +74,7 @@ static BOOL     WdeTrakGetWindowClass( WdeTrakObject *, char **, void * );
 static BOOL     WdeTrakDefine( WdeTrakObject *, POINT *, void * );
 static void     WdeTrakSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeTrakGetDefineInfo( WdeDefineObjectInfo *, HWND );
-static BOOL     WdeTrakDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+static bool     WdeTrakDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -476,10 +476,10 @@ void WdeTrakGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
+bool WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
 #ifdef __NT__XX
-    BOOL    processed;
+    bool    processed;
     BOOL    flag;
     WORD    wp;
 
@@ -487,7 +487,7 @@ BOOL WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
     _wde_touch( mask );
     _wde_touch( lParam );
 
-    processed = FALSE;
+    processed = false;
 
     if( message == WM_COMMAND && GET_WM_COMMAND_CMD( wParam, lParam ) == BN_CLICKED ) {
         wp = LOWORD( wParam );
@@ -504,7 +504,7 @@ BOOL WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                 EnableWindow( GetDlgItem( hDlg, IDB_TBS_TOP ), TRUE );
                 EnableWindow( GetDlgItem( hDlg, IDB_TBS_BOTTOM ), TRUE );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_TBS_BOTH:
@@ -518,7 +518,7 @@ BOOL WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
             EnableWindow( GetDlgItem( hDlg, IDB_TBS_LEFT ), flag );
             EnableWindow( GetDlgItem( hDlg, IDB_TBS_TOP ), flag );
             EnableWindow( GetDlgItem( hDlg, IDB_TBS_BOTTOM ), flag );
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_TBS_VERT:
@@ -532,7 +532,7 @@ BOOL WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                 EnableWindow( GetDlgItem( hDlg, IDB_TBS_TOP ), !flag );
                 EnableWindow( GetDlgItem( hDlg, IDB_TBS_BOTTOM ), !flag );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
        case IDB_TBS_HORZ:
@@ -546,7 +546,7 @@ BOOL WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                 EnableWindow( GetDlgItem( hDlg, IDB_TBS_TOP ), !flag );
                 EnableWindow( GetDlgItem( hDlg, IDB_TBS_BOTTOM ), !flag );
             }
-            processed = TRUE;
+            processed = true;
             break;
         }
     }

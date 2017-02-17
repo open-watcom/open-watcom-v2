@@ -75,7 +75,7 @@ static BOOL     WdeCBoxGetWindowClass( WdeCBoxObject *, char **, void * );
 static BOOL     WdeCBoxDefine( WdeCBoxObject *, POINT *, void * );
 static void     WdeCBoxSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeCBoxGetDefineInfo( WdeDefineObjectInfo *, HWND );
-static BOOL     WdeCBoxDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+static bool     WdeCBoxDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -562,17 +562,16 @@ void WdeCBoxGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeCBoxDefineHook ( HWND hDlg, UINT message,
-                         WPARAM wParam, LPARAM lParam, DialogStyle mask )
+bool WdeCBoxDefineHook ( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
-    BOOL processed;
+    bool processed;
     WORD wp;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( mask );
     _wde_touch( lParam );
 
-    processed = FALSE;
+    processed = false;
 
     if( message == WM_COMMAND && GET_WM_COMMAND_CMD( wParam, lParam ) == BN_CLICKED ) {
         wp = LOWORD( wParam );
@@ -589,12 +588,12 @@ BOOL WdeCBoxDefineHook ( HWND hDlg, UINT message,
                 CheckDlgButton( hDlg, IDB_CBS_HASSTRINGS, BST_CHECKED );
                 EnableWindow( GetDlgItem( hDlg, IDB_CBS_HASSTRINGS ), FALSE );
             }
-            processed = TRUE;
+            processed = true;
             break;
         }
     }
 
-    return ( processed );
+    return( processed );
 }
 
 

@@ -1293,8 +1293,7 @@ bool WdeSaveResInfoToRC( char *filename, WdeResInfo *rinfo, bool append )
     return( ok );
 }
 
-bool WdeSaveObjectToRC( char *filename, WdeResInfo *rinfo,
-                        WdeResDlgItem *ditem, bool append )
+bool WdeSaveObjectToRC( char *filename, WdeResInfo *rinfo, WdeResDlgItem *ditem, bool append )
 {
     FILE                *fp;
     bool                ok;

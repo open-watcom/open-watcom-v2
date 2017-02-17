@@ -129,7 +129,7 @@ static bool WdeTestCurrentObject( void )
     ret = ((obj = WdeGetCurrentDialog()) != NULL);
 
     if( ret ) {
-        ret = Forward( obj, GET_ORDER_MODE, &mode, NULL );
+        ret = ( Forward( obj, GET_ORDER_MODE, &mode, NULL ) != 0 );
     }
 
     if( ret ) {
@@ -139,7 +139,7 @@ static bool WdeTestCurrentObject( void )
     }
 
     if( ret ) {
-        ret = Forward( obj, TEST, NULL, NULL );
+        ret = ( Forward( obj, TEST, NULL, NULL ) != 0 );
     }
 
     return( ret );
@@ -153,7 +153,7 @@ bool WdeSetTestControlDefaults( HWND dialog )
     if( dialog != NULL ) {
         child_proc = (WNDENUMPROC)MakeProcInstance( (FARPROC)WdeSetControlEnumProc,
                                                     WdeGetAppInstance() );
-        ret = EnumChildWindows( dialog, child_proc, 0 );
+        ret = ( EnumChildWindows( dialog, child_proc, 0 ) != 0 );
         FreeProcInstance( (FARPROC)child_proc );
     }
 

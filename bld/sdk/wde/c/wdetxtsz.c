@@ -91,7 +91,7 @@ static bool WdeGetTextSize( HWND win, HFONT font, char *text, SIZE *size )
 
     if( ok ) {
         old_font = SelectObject( dc, font );
-        ok = GetTextExtentPoint( dc, str, pos, size );
+        ok = ( GetTextExtentPoint( dc, str, pos, size ) != 0 );
     }
 
     if( str != NULL ) {
@@ -118,11 +118,11 @@ bool WdeGetNameOrOrdSize( OBJPTR parent, ResNameOrOrdinal *name, SIZE *size )
     ok = (parent != NULL && name != NULL && size != NULL);
 
     if( ok ) {
-         ok = Forward( parent, GET_WINDOW_HANDLE, &win, NULL );
+         ok = ( Forward( parent, GET_WINDOW_HANDLE, &win, NULL ) != 0 );
     }
 
     if( ok ) {
-         ok = Forward( parent, GET_FONT, &font, NULL );
+         ok = ( Forward( parent, GET_FONT, &font, NULL ) != 0 );
     }
 
     if( ok ) {

@@ -74,7 +74,7 @@ static BOOL     WdeTViewGetWindowClass( WdeTViewObject *, char **, void * );
 static BOOL     WdeTViewDefine( WdeTViewObject *, POINT *, void * );
 static void     WdeTViewSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeTViewGetDefineInfo( WdeDefineObjectInfo *, HWND );
-static BOOL     WdeTViewDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+static bool     WdeTViewDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -436,9 +436,9 @@ void WdeTViewGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeTViewDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
+bool WdeTViewDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
-    BOOL processed;
+    bool processed;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( hDlg );
@@ -447,7 +447,7 @@ BOOL WdeTViewDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, 
     _wde_touch( lParam );
     _wde_touch( mask );
 
-    processed = FALSE;
+    processed = false;
 
     return( processed );
 }

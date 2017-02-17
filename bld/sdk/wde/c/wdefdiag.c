@@ -491,8 +491,7 @@ bool WdeKludgeDialogSize( WdeDialogObject *obj, bool adjust_for_nc,
         SETHDR_SIZEY( obj->dialog_info, pt.y );
     }
 
-    if( !WdeDialogToScreen( obj, &obj->resizer,
-                            GETHDR_PSIZE( obj->dialog_info ), &new_rect ) ) {
+    if( !WdeDialogToScreen( obj, &obj->resizer, GETHDR_PSIZE( obj->dialog_info ), &new_rect ) ) {
         WdeWriteTrail( "WdeKludgeDialogSize: WdeDialogToScreen failed!" );
         return( FALSE );
     }
@@ -1217,13 +1216,13 @@ bool WdeIsDialogRestorable( void *_obj )
 BOOL WdeDialogSaveObject( WdeDialogObject *obj, WORD *id, void *p2 )
 {
     WdeDialogBoxInfo    *dbi;
-    uint_8              ret;
+    bool                ret;
     WResLangType        lang;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
-    ret = FALSE;
+    ret = false;
 
     if( WdeIsHashTableDirty( obj->res_info->hash_table ) ) {
         Forward( obj->object_handle, RESOLVE_SYMBOL, NULL, NULL );
@@ -1249,18 +1248,15 @@ BOOL WdeDialogSaveObject( WdeDialogObject *obj, WORD *id, void *p2 )
 
     switch( *id ) {
     case IDM_DIALOG_SAVE:
-        ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name,
-                             obj->name, &lang, FALSE, FALSE );
+        ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name, obj->name, &lang, false, false );
         break;
 
     case IDM_DIALOG_SAVEAS:
-        ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name,
-                             obj->name, &lang, FALSE, TRUE );
+        ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name, obj->name, &lang, false, true );
         break;
 
     case IDM_DIALOG_SAVEINTO:
-        ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name,
-                             obj->name, &lang, TRUE, TRUE );
+        ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name, obj->name, &lang, true, true );
         break;
     }
 
@@ -2197,8 +2193,7 @@ bool WdeUpdateDialogUnits( WdeDialogObject *obj, RECT *new, RECT *nc_size )
     /* save the old dialog units */
     dsize = GETHDR_SIZE( obj->dialog_info );
 
-    if( !WdeScreenToDialog( obj, &obj->resizer, &size,
-                            GETHDR_PSIZE( obj->dialog_info ) ) ) {
+    if( !WdeScreenToDialog( obj, &obj->resizer, &size, GETHDR_PSIZE( obj->dialog_info ) ) ) {
         /* restore the old dialog units */
         SETHDR_SIZE( obj->dialog_info, dsize );
         return( FALSE );
@@ -2417,7 +2412,7 @@ BOOL WdeDialogPasteObject( WdeDialogObject *obj, OBJPTR parent, POINT *pnt )
         obj->ochildren = oc;
         for( ; oc != NULL; oc = ListNext( oc ) ) {
             oentry = (WdeOrderedEntry *)ListElement( oc );
-            ok = Forward( oentry->obj, PASTE, obj->object_handle, NULL );
+            ok = ( Forward( oentry->obj, PASTE, obj->object_handle, NULL ) != 0 );
             if( !ok ) {
                 WdeWriteTrail( "WdeDialogPasteObject: A PASTE failed!" );
             }
@@ -2425,7 +2420,7 @@ BOOL WdeDialogPasteObject( WdeDialogObject *obj, OBJPTR parent, POINT *pnt )
     }
 
     if( ok ) {
-        ok = WdeDialogFirstChild( obj, NULL, NULL );
+        ok = ( WdeDialogFirstChild( obj, NULL, NULL ) != 0 );
         if( !ok ) {
             WdeWriteTrail( "WdeDialogPasteObject: FIRST_CHILD falied!" );
         }
@@ -2805,7 +2800,7 @@ WINEXPORT BOOL CALLBACK WdeDialogDefineProc( HWND hDlg, UINT message, WPARAM wPa
             ret = WdeProcessHelpSymbolCombo( hDlg, message, wParam, lParam,
                                              o_info->res_info->hash_table,
                                              o_info->info.d.header->HelpId,
-                                             TRUE );
+                                             true );
         }
 
         if( !ret && o_info->hook_func != NULL ) {

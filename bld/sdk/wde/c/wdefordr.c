@@ -367,7 +367,7 @@ bool WdeRegisterTagClass( HINSTANCE inst )
     WdeOriginalButtonProc = wc.lpfnWndProc;
     wc.lpfnWndProc = WdeTagProc;
 
-    return( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) != (ATOM)0 );
 }
 
 void WdeDestroyTag ( HWND tag )
