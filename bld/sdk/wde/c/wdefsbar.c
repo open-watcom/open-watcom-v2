@@ -67,16 +67,19 @@ WINEXPORT LRESULT CALLBACK WdeSBarSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 static OBJPTR   WdeMakeSBar( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
 static OBJPTR   WdeSBCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
-static BOOL     WdeSBarDestroy( WdeSBarObject *, BOOL *, void * );
-static BOOL     WdeSBarValidateAction( WdeSBarObject *, ACTION *, void * );
-static BOOL     WdeSBarCopyObject( WdeSBarObject *, WdeSBarObject **, WdeSBarObject * );
-static BOOL     WdeSBarIdentify( WdeSBarObject *, OBJ_ID *, void * );
-static BOOL     WdeSBarGetWndProc( WdeSBarObject *, WNDPROC *, void * );
-static BOOL     WdeSBarGetWindowClass( WdeSBarObject *, char **, void * );
-static BOOL     WdeSBarDefine( WdeSBarObject *, POINT *, void * );
 static void     WdeSBarSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeSBarGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeSBarDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+
+#define pick(e,n,c) BOOL WdeSBar ## n ## c
+static pick_ACT_DESTROY( WdeSBarObject );
+static pick_ACT_COPY( WdeSBarObject );
+static pick_ACT_VALIDATE_ACTION( WdeSBarObject );
+static pick_ACT_IDENTIFY( WdeSBarObject );
+static pick_ACT_GET_WINDOW_CLASS( WdeSBarObject );
+static pick_ACT_DEFINE( WdeSBarObject );
+static pick_ACT_GET_WND_PROC( WdeSBarObject );
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -91,13 +94,15 @@ static WNDPROC                  WdeOriginalSBarProc;
 #define WSTATUSCLASSNAME        STATUSCLASSNAME
 
 static DISPATCH_ITEM WdeSBarActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeSBarDestroy          },
-    { COPY,             (DISPATCH_RTN *)WdeSBarCopyObject       },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeSBarValidateAction   },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeSBarIdentify         },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeSBarGetWindowClass   },
-    { DEFINE,           (DISPATCH_RTN *)WdeSBarDefine           },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeSBarGetWndProc       }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeSBar ## n},
+    pick_ACT_DESTROY( WdeSBarObject )
+    pick_ACT_COPY( WdeSBarObject )
+    pick_ACT_VALIDATE_ACTION( WdeSBarObject )
+    pick_ACT_IDENTIFY( WdeSBarObject )
+    pick_ACT_GET_WINDOW_CLASS( WdeSBarObject )
+    pick_ACT_DEFINE( WdeSBarObject )
+    pick_ACT_GET_WND_PROC( WdeSBarObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS     (sizeof( WdeSBarActions ) / sizeof( DISPATCH_ITEM ))
@@ -291,7 +296,7 @@ void WdeSBarFini( void )
     FreeProcInstance( WdeSBarDispatch );
 }
 
-BOOL WdeSBarDestroy( WdeSBarObject *obj, BOOL *flag, void *p2 )
+BOOL WdeSBarDestroy( WdeSBarObject *obj, BOOL *flag, BOOL *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );

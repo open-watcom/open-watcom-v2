@@ -65,16 +65,19 @@ WINEXPORT LRESULT CALLBACK WdeUpDnSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 static OBJPTR   WdeMakeUpDn( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
 static OBJPTR   WdeUDCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
-static BOOL     WdeUpDnDestroy( WdeUpDnObject *, BOOL *, void * );
-static BOOL     WdeUpDnValidateAction( WdeUpDnObject *, ACTION *, void * );
-static BOOL     WdeUpDnCopyObject( WdeUpDnObject *, WdeUpDnObject **, WdeUpDnObject * );
-static BOOL     WdeUpDnIdentify( WdeUpDnObject *, OBJ_ID *, void * );
-static BOOL     WdeUpDnGetWndProc( WdeUpDnObject *, WNDPROC *, void * );
-static BOOL     WdeUpDnGetWindowClass( WdeUpDnObject *, char **, void * );
-static BOOL     WdeUpDnDefine( WdeUpDnObject *, POINT *, void * );
 static void     WdeUpDnSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeUpDnGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeUpDnDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+
+#define pick(e,n,c) BOOL WdeUpDn ## n ## c
+static pick_ACT_DESTROY( WdeUpDnObject );
+static pick_ACT_COPY( WdeUpDnObject );
+static pick_ACT_VALIDATE_ACTION( WdeUpDnObject );
+static pick_ACT_IDENTIFY( WdeUpDnObject );
+static pick_ACT_GET_WINDOW_CLASS( WdeUpDnObject );
+static pick_ACT_DEFINE( WdeUpDnObject );
+static pick_ACT_GET_WND_PROC( WdeUpDnObject );
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -89,13 +92,15 @@ static WNDPROC                  WdeOriginalUpDnProc;
 #define WUPDOWN_CLASS    UPDOWN_CLASS
 
 static DISPATCH_ITEM WdeUpDnActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeUpDnDestroy          },
-    { COPY,             (DISPATCH_RTN *)WdeUpDnCopyObject       },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeUpDnValidateAction   },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeUpDnIdentify         },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeUpDnGetWindowClass   },
-    { DEFINE,           (DISPATCH_RTN *)WdeUpDnDefine           },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeUpDnGetWndProc       }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeUpDn ## n},
+    pick_ACT_DESTROY( WdeUpDnObject )
+    pick_ACT_COPY( WdeUpDnObject )
+    pick_ACT_VALIDATE_ACTION( WdeUpDnObject )
+    pick_ACT_IDENTIFY( WdeUpDnObject )
+    pick_ACT_GET_WINDOW_CLASS( WdeUpDnObject )
+    pick_ACT_DEFINE( WdeUpDnObject )
+    pick_ACT_GET_WND_PROC( WdeUpDnObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS     (sizeof( WdeUpDnActions ) / sizeof( DISPATCH_ITEM ))
@@ -253,7 +258,7 @@ void WdeUpDnFini( void )
     FreeProcInstance( WdeUpDnDispatch );
 }
 
-BOOL WdeUpDnDestroy( WdeUpDnObject *obj, BOOL *flag, void *p2 )
+BOOL WdeUpDnDestroy( WdeUpDnObject *obj, BOOL *flag, BOOL *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );

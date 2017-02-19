@@ -65,16 +65,19 @@ WINEXPORT LRESULT CALLBACK WdeTViewSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 static OBJPTR   WdeMakeTView( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
 static OBJPTR   WdeTVCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
-static BOOL     WdeTViewDestroy( WdeTViewObject *, BOOL *, void * );
-static BOOL     WdeTViewValidateAction( WdeTViewObject *, ACTION *, void * );
-static BOOL     WdeTViewCopyObject( WdeTViewObject *, WdeTViewObject **, WdeTViewObject * );
-static BOOL     WdeTViewIdentify( WdeTViewObject *, OBJ_ID *, void * );
-static BOOL     WdeTViewGetWndProc( WdeTViewObject *, WNDPROC *, void * );
-static BOOL     WdeTViewGetWindowClass( WdeTViewObject *, char **, void * );
-static BOOL     WdeTViewDefine( WdeTViewObject *, POINT *, void * );
 static void     WdeTViewSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeTViewGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeTViewDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+
+#define pick(e,n,c) BOOL WdeTView ## n ## c
+static pick_ACT_DESTROY( WdeTViewObject );
+static pick_ACT_COPY( WdeTViewObject );
+static pick_ACT_VALIDATE_ACTION( WdeTViewObject );
+static pick_ACT_IDENTIFY( WdeTViewObject );
+static pick_ACT_GET_WINDOW_CLASS( WdeTViewObject );
+static pick_ACT_DEFINE( WdeTViewObject );
+static pick_ACT_GET_WND_PROC( WdeTViewObject );
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -89,13 +92,15 @@ static WNDPROC                  WdeOriginalTViewProc;
 #define WWC_TREEVIEW     WC_TREEVIEW
 
 static DISPATCH_ITEM WdeTViewActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeTViewDestroy         },
-    { COPY,             (DISPATCH_RTN *)WdeTViewCopyObject      },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeTViewValidateAction  },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeTViewIdentify        },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeTViewGetWindowClass  },
-    { DEFINE,           (DISPATCH_RTN *)WdeTViewDefine          },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeTViewGetWndProc      }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeTView ## n},
+    pick_ACT_DESTROY( WdeTViewObject )
+    pick_ACT_COPY( WdeTViewObject )
+    pick_ACT_VALIDATE_ACTION( WdeTViewObject )
+    pick_ACT_IDENTIFY( WdeTViewObject )
+    pick_ACT_GET_WINDOW_CLASS( WdeTViewObject )
+    pick_ACT_DEFINE( WdeTViewObject )
+    pick_ACT_GET_WND_PROC( WdeTViewObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS     (sizeof( WdeTViewActions ) / sizeof( DISPATCH_ITEM ))
@@ -253,7 +258,7 @@ void WdeTViewFini( void )
     FreeProcInstance( WdeTViewDispatch );
 }
 
-BOOL WdeTViewDestroy( WdeTViewObject *obj, BOOL *flag, void *p2 )
+BOOL WdeTViewDestroy( WdeTViewObject *obj, BOOL *flag, BOOL *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );

@@ -83,18 +83,21 @@ static void     WdeChooseCustControlFromList( LIST *, WdeDialogBoxControl *, Wde
 static BOOL     WdeChooseCustControlType( LPCCINFO, WdeDialogBoxControl *, WdeCustLib **, UINT *, uint_32 * );
 static OBJPTR   WdeMakeCustom( OBJPTR, RECT *, OBJPTR, int );
 static OBJPTR   WdeCustomCreater( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *, WdeCustLib *, UINT );
-static BOOL     WdeCustomDestroy( WdeCustomObject *, BOOL *, void * );
-static BOOL     WdeCustomValidateAction( WdeCustomObject *, ACTION *, void * );
-static BOOL     WdeCustomCopyObject( WdeCustomObject *, WdeCustomObject **, WdeCustomObject * );
-static BOOL     WdeCustomIdentify( WdeCustomObject *, OBJ_ID *, void * );
-static BOOL     WdeCustomGetWndProc( WdeCustomObject *, WNDPROC *, void * );
-static BOOL     WdeCustomGetWindowClass( WdeCustomObject *, char **, void * );
-static BOOL     WdeCustomDefine( WdeCustomObject *, POINT *, void * );
 static bool     WdeAddNewClassToList( char *, char *, int, WNDPROC );
 static LIST     *WdeFindClassInList( char * );
 static bool     WdeCustomRegisterClass( char *, HINSTANCE, char **, int *, WNDPROC * );
 static void     WdeFreeClassList( void );
 static void     WdeFreeClassNode( WdeCustClassNode * );
+
+#define pick(e,n,c) BOOL WdeCustom ## n ## c
+static pick_ACT_DESTROY( WdeCustomObject );
+static pick_ACT_COPY( WdeCustomObject );
+static pick_ACT_VALIDATE_ACTION( WdeCustomObject );
+static pick_ACT_IDENTIFY( WdeCustomObject );
+static pick_ACT_GET_WINDOW_CLASS( WdeCustomObject );
+static pick_ACT_DEFINE( WdeCustomObject );
+static pick_ACT_GET_WND_PROC( WdeCustomObject );
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -106,13 +109,15 @@ static LIST                     *WdeCustClassList = NULL;
 static char                     WdeClassName[MAX_NAME];
 
 static DISPATCH_ITEM WdeCustomActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeCustomDestroy        },
-    { COPY,             (DISPATCH_RTN *)WdeCustomCopyObject     },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeCustomValidateAction },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeCustomIdentify       },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeCustomGetWindowClass },
-    { DEFINE,           (DISPATCH_RTN *)WdeCustomDefine         },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeCustomGetWndProc     }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeCustom ## n},
+    pick_ACT_DESTROY( WdeCustomObject )
+    pick_ACT_COPY( WdeCustomObject )
+    pick_ACT_VALIDATE_ACTION( WdeCustomObject )
+    pick_ACT_IDENTIFY( WdeCustomObject )
+    pick_ACT_GET_WINDOW_CLASS( WdeCustomObject )
+    pick_ACT_DEFINE( WdeCustomObject )
+    pick_ACT_GET_WND_PROC( WdeCustomObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS     (sizeof( WdeCustomActions ) / sizeof( DISPATCH_ITEM ))
@@ -557,7 +562,7 @@ void WdeCustomFini( void )
     FreeProcInstance( WdeCustomDispatch );
 }
 
-BOOL WdeCustomDestroy( WdeCustomObject *obj, BOOL *flag, void *p2 )
+BOOL WdeCustomDestroy( WdeCustomObject *obj, BOOL *flag, BOOL *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );

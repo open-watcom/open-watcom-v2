@@ -41,22 +41,7 @@ extern void         StartCurrObjMod( void );
 
 /* editor actions */
 
-#define EDITOR_ACTIONS      100
 #define EDITOR_NOTE_IDS     100
-
-enum {
-    RECREATE = EDITOR_ACTIONS,
-    GET_OBJECT,
-    ADD_OBJECT,
-    DELETE_OBJECT,
-    GET_PRIMARY,
-    UNDO_MOVE,
-    REMOVE_FROM_PARENT,
-    GET_OBJPTR,
-    GET_ANCHOR,
-    SHOW_SEL_BOXES,
-    FORCE_REDRAW
-};
 
 enum {
     CURR_OBJ_MOD_BEGIN = EDITOR_NOTE_IDS,   // wraped around multiple

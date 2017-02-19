@@ -34,9 +34,9 @@ typedef struct eatom {
     FARPROC         invoke;
     RECT            rect;
     POINT           anchor;
-    OBJPTR          obj;
-    OBJPTR          parent;
-    OBJPTR          handle;
+    ANYOBJ          *obj;
+    ANYOBJ          *parent;
+    ANYOBJ          *handle;
     POINT           offset;
     HWND            hwnd;
     BOOL            displayed;

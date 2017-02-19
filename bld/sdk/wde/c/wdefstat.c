@@ -64,15 +64,18 @@ WINEXPORT BOOL    CALLBACK WdeStaticDispatcher( ACTION, WdeStaticObject *, void 
 /****************************************************************************/
 static OBJPTR   WdeMakeStatic( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
 static OBJPTR   WdeStatCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
-static BOOL     WdeStaticDestroy( WdeStaticObject *, BOOL *, void * );
-static BOOL     WdeStaticValidateAction( WdeStaticObject *, ACTION *, void * );
-static BOOL     WdeStaticCopyObject( WdeStaticObject *, WdeStaticObject **, WdeStaticObject * );
-static BOOL     WdeStaticIdentify( WdeStaticObject *, OBJ_ID *, void * );
-static BOOL     WdeStaticGetWndProc( WdeStaticObject *, WNDPROC *, void * );
-static BOOL     WdeStaticGetWindowClass( WdeStaticObject *, char **, void * );
-static BOOL     WdeStaticDefine( WdeStaticObject *, POINT *, void * );
 static void     WdeStaticSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeStaticGetDefineInfo( WdeDefineObjectInfo *, HWND );
+
+#define pick(e,n,c) BOOL WdeStatic ## n ## c
+static pick_ACT_DESTROY( WdeStaticObject );
+static pick_ACT_COPY( WdeStaticObject );
+static pick_ACT_VALIDATE_ACTION( WdeStaticObject );
+static pick_ACT_IDENTIFY( WdeStaticObject );
+static pick_ACT_GET_WINDOW_CLASS( WdeStaticObject );
+static pick_ACT_DEFINE( WdeStaticObject );
+static pick_ACT_GET_WND_PROC( WdeStaticObject );
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -85,13 +88,15 @@ static WNDPROC                  WdeOriginalStaticProc;
 //static WNDPROC                WdeStaticProc;
 
 static DISPATCH_ITEM WdeStaticActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeStaticDestroy        },
-    { COPY,             (DISPATCH_RTN *)WdeStaticCopyObject     },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeStaticValidateAction },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeStaticIdentify       },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeStaticGetWindowClass },
-    { DEFINE,           (DISPATCH_RTN *)WdeStaticDefine         },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeStaticGetWndProc     }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeStatic ## n},
+    pick_ACT_DESTROY( WdeStaticObject )
+    pick_ACT_COPY( WdeStaticObject )
+    pick_ACT_VALIDATE_ACTION( WdeStaticObject )
+    pick_ACT_IDENTIFY( WdeStaticObject )
+    pick_ACT_GET_WINDOW_CLASS( WdeStaticObject )
+    pick_ACT_DEFINE( WdeStaticObject )
+    pick_ACT_GET_WND_PROC( WdeStaticObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS     (sizeof( WdeStaticActions ) / sizeof( DISPATCH_ITEM ))
@@ -271,7 +276,7 @@ void WdeStaticFini( void )
     FreeProcInstance( WdeStaticDispatch );
 }
 
-BOOL WdeStaticDestroy( WdeStaticObject *obj, BOOL *flag, void *p2 )
+BOOL WdeStaticDestroy( WdeStaticObject *obj, BOOL *flag, BOOL *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );

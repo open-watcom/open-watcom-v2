@@ -65,16 +65,19 @@ WINEXPORT LRESULT CALLBACK WdeHtKySuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 static OBJPTR   WdeMakeHtKy( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
 static OBJPTR   WdeHKCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
-static BOOL     WdeHtKyDestroy( WdeHtKyObject *, BOOL *, void * );
-static BOOL     WdeHtKyValidateAction( WdeHtKyObject *, ACTION *, void * );
-static BOOL     WdeHtKyCopyObject( WdeHtKyObject *, WdeHtKyObject **, WdeHtKyObject * );
-static BOOL     WdeHtKyIdentify( WdeHtKyObject *, OBJ_ID *, void * );
-static BOOL     WdeHtKyGetWndProc( WdeHtKyObject *, WNDPROC *, void * );
-static BOOL     WdeHtKyGetWindowClass( WdeHtKyObject *, char **, void * );
-static BOOL     WdeHtKyDefine( WdeHtKyObject *, POINT *, void * );
 static void     WdeHtKySetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeHtKyGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeHtKyDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+
+#define pick(e,n,c) BOOL WdeHtKy ## n ## c
+static pick_ACT_DESTROY( WdeHtKyObject );
+static pick_ACT_COPY( WdeHtKyObject );
+static pick_ACT_VALIDATE_ACTION( WdeHtKyObject );
+static pick_ACT_IDENTIFY( WdeHtKyObject );
+static pick_ACT_GET_WINDOW_CLASS( WdeHtKyObject );
+static pick_ACT_DEFINE( WdeHtKyObject );
+static pick_ACT_GET_WND_PROC( WdeHtKyObject );
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -89,13 +92,15 @@ static WNDPROC                  WdeOriginalHtKyProc;
 #define WHOTKEY_CLASS    HOTKEY_CLASS
 
 static DISPATCH_ITEM WdeHtKyActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeHtKyDestroy              },
-    { COPY,             (DISPATCH_RTN *)WdeHtKyCopyObject           },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeHtKyValidateAction       },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeHtKyIdentify             },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeHtKyGetWindowClass       },
-    { DEFINE,           (DISPATCH_RTN *)WdeHtKyDefine               },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeHtKyGetWndProc           }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeHtKy ## n},
+    pick_ACT_DESTROY( WdeHtKyObject )
+    pick_ACT_COPY( WdeHtKyObject )
+    pick_ACT_VALIDATE_ACTION( WdeHtKyObject )
+    pick_ACT_IDENTIFY( WdeHtKyObject )
+    pick_ACT_GET_WINDOW_CLASS( WdeHtKyObject )
+    pick_ACT_DEFINE( WdeHtKyObject )
+    pick_ACT_GET_WND_PROC( WdeHtKyObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS      (sizeof( WdeHtKyActions ) / sizeof( DISPATCH_ITEM ))
@@ -253,7 +258,7 @@ void WdeHtKyFini( void )
     FreeProcInstance( WdeHtKyDispatch );
 }
 
-BOOL WdeHtKyDestroy( WdeHtKyObject *obj, BOOL *flag, void *p2 )
+BOOL WdeHtKyDestroy( WdeHtKyObject *obj, BOOL *flag, BOOL *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );

@@ -89,31 +89,34 @@ WINEXPORT BOOL   CALLBACK WdeBaseDispatcher( ACTION, WdeBaseObject *, void *, vo
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static BOOL WdeBaseDraw( WdeBaseObject *, RECT *, HDC * );
-static BOOL WdeBaseDestroy( WdeBaseObject *, BOOL *, void * );
-static BOOL WdeBaseIsMarkValid( WdeBaseObject *, BOOL *, void * );
-static BOOL WdeBaseGetResizeInfo( WdeBaseObject *, RESIZE_ID *, void * );
-static BOOL WdeBaseValidateAction( WdeBaseObject *, ACTION *, void * );
-static BOOL WdeBaseGetWindowHandle( WdeBaseObject *, HWND *, void * );
-static BOOL WdeBaseAddSubObject( WdeBaseObject *, OBJPTR, void * );
-static BOOL WdeBaseFindSubObjects( WdeBaseObject *, SUBOBJ_REQUEST *, LIST **objlist );
-static BOOL WdeBaseFindObjectsPt( WdeBaseObject *, POINT *, LIST ** );
-static BOOL WdeBaseRemoveSubObject( WdeBaseObject *, OBJPTR, void * );
-static BOOL WdeBaseFirstChild( WdeBaseObject *, void *, void * );
-static BOOL WdeBasePutChildFirst( WdeBaseObject *, OBJPTR, void * );
-static BOOL WdeBaseGetFirstChild( WdeBaseObject *, OBJPTR *, void * );
-static BOOL WdeBaseNotify( WdeBaseObject *, NOTE_ID *, void * );
-static BOOL WdeBaseLocation( WdeBaseObject *, RECT *, void * );
-static BOOL WdeBaseIdentify( WdeBaseObject *, OBJ_ID *, void * );
-static BOOL WdeBaseGetSubObjectList( WdeBaseObject *, LIST **, void * );
-static BOOL WdeBaseGetFont( WdeBaseObject *, HFONT *, void * );
-static BOOL WdeBaseGetResizer( WdeBaseObject *, WdeResizeRatio *, OBJPTR * );
-static BOOL WdeBaseGetNCSize( WdeBaseObject *, RECT *, void * );
-static BOOL WdeBaseGetScrollRect( WdeBaseObject *, RECT *, void * );
-static BOOL WdeBaseGetResizeInc( WdeBaseObject *, POINT *, void * );
-static BOOL WdeBaseGetNextChild( WdeBaseObject *, OBJPTR *, bool * );
-static BOOL WdeBaseResolveSymbol( WdeBaseObject *, bool *, bool * );
-static BOOL WdeBaseResolveHelpSymbol( WdeBaseObject *, bool *, bool * );
+
+#define pick(e,n,c) BOOL WdeBase ## n ## c
+static pick_ACT_DRAW( WdeBaseObject );
+static pick_ACT_LOCATE( WdeBaseObject );
+static pick_ACT_DESTROY( WdeBaseObject );
+static pick_ACT_VALIDATE_ACTION( WdeBaseObject );
+static pick_ACT_NOTIFY( WdeBaseObject );
+static pick_ACT_RESIZE_INFO( WdeBaseObject );
+static pick_ACT_FIND_SUBOBJECTS( WdeBaseObject );
+static pick_ACT_FIND_OBJECTS_PT( WdeBaseObject );
+static pick_ACT_ADD_SUBOBJECT( WdeBaseObject );
+static pick_ACT_REMOVE_SUBOBJECT( WdeBaseObject );
+static pick_ACT_GET_WINDOW_HANDLE( WdeBaseObject );
+static pick_ACT_GET_SUBOBJ_LIST( WdeBaseObject );
+static pick_ACT_IDENTIFY( WdeBaseObject );
+static pick_ACT_GET_FONT( WdeBaseObject );
+static pick_ACT_GET_RESIZER( WdeBaseObject );
+static pick_ACT_GET_NC_SIZE( WdeBaseObject );
+static pick_ACT_BECOME_FIRST_CHILD( WdeBaseObject );
+static pick_ACT_GET_FIRST_CHILD( WdeBaseObject );
+static pick_ACT_PUT_ME_FIRST( WdeBaseObject );
+static pick_ACT_GET_SCROLL_RECT( WdeBaseObject );
+static pick_ACT_GET_RESIZE_INC( WdeBaseObject );
+static pick_ACT_IS_MARK_VALID( WdeBaseObject );
+static pick_ACT_RESOLVE_SYMBOL( WdeBaseObject );
+static pick_ACT_RESOLVE_HELPSYMBOL( WdeBaseObject );
+static pick_ACT_GET_NEXT_CHILD( WdeBaseObject );
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -121,31 +124,33 @@ static BOOL WdeBaseResolveHelpSymbol( WdeBaseObject *, bool *, bool * );
 static FARPROC WdeBaseDispatch;
 
 static DISPATCH_ITEM WdeBaseActions[] = {
-    { DRAW,                 (DISPATCH_RTN *)WdeBaseDraw              },
-    { LOCATE,               (DISPATCH_RTN *)WdeBaseLocation          },
-    { DESTROY,              (DISPATCH_RTN *)WdeBaseDestroy           },
-    { VALIDATE_ACTION,      (DISPATCH_RTN *)WdeBaseValidateAction    },
-    { NOTIFY,               (DISPATCH_RTN *)WdeBaseNotify            },
-    { RESIZE_INFO,          (DISPATCH_RTN *)WdeBaseGetResizeInfo     },
-    { FIND_SUBOBJECTS,      (DISPATCH_RTN *)WdeBaseFindSubObjects    },
-    { FIND_OBJECTS_PT,      (DISPATCH_RTN *)WdeBaseFindObjectsPt     },
-    { ADD_SUBOBJECT,        (DISPATCH_RTN *)WdeBaseAddSubObject      },
-    { REMOVE_SUBOBJECT,     (DISPATCH_RTN *)WdeBaseRemoveSubObject   },
-    { GET_WINDOW_HANDLE,    (DISPATCH_RTN *)WdeBaseGetWindowHandle   },
-    { GET_SUBOBJ_LIST,      (DISPATCH_RTN *)WdeBaseGetSubObjectList  },
-    { IDENTIFY,             (DISPATCH_RTN *)WdeBaseIdentify          },
-    { GET_FONT,             (DISPATCH_RTN *)WdeBaseGetFont           },
-    { GET_RESIZER,          (DISPATCH_RTN *)WdeBaseGetResizer        },
-    { GET_NC_SIZE,          (DISPATCH_RTN *)WdeBaseGetNCSize         },
-    { BECOME_FIRST_CHILD,   (DISPATCH_RTN *)WdeBaseFirstChild        },
-    { GET_FIRST_CHILD,      (DISPATCH_RTN *)WdeBaseGetFirstChild     },
-    { PUT_ME_FIRST,         (DISPATCH_RTN *)WdeBasePutChildFirst     },
-    { GET_SCROLL_RECT,      (DISPATCH_RTN *)WdeBaseGetScrollRect     },
-    { GET_RESIZE_INC,       (DISPATCH_RTN *)WdeBaseGetResizeInc      },
-    { IS_MARK_VALID,        (DISPATCH_RTN *)WdeBaseIsMarkValid       },
-    { RESOLVE_SYMBOL,       (DISPATCH_RTN *)WdeBaseResolveSymbol     },
-    { RESOLVE_HELPSYMBOL,   (DISPATCH_RTN *)WdeBaseResolveHelpSymbol },
-    { GET_NEXT_CHILD,       (DISPATCH_RTN *)WdeBaseGetNextChild      }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeBase ## n},
+    pick_ACT_DRAW( WdeBaseObject )
+    pick_ACT_LOCATE( WdeBaseObject )
+    pick_ACT_DESTROY( WdeBaseObject )
+    pick_ACT_VALIDATE_ACTION( WdeBaseObject )
+    pick_ACT_NOTIFY( WdeBaseObject )
+    pick_ACT_RESIZE_INFO( WdeBaseObject )
+    pick_ACT_FIND_SUBOBJECTS( WdeBaseObject )
+    pick_ACT_FIND_OBJECTS_PT( WdeBaseObject )
+    pick_ACT_ADD_SUBOBJECT( WdeBaseObject )
+    pick_ACT_REMOVE_SUBOBJECT( WdeBaseObject )
+    pick_ACT_GET_WINDOW_HANDLE( WdeBaseObject )
+    pick_ACT_GET_SUBOBJ_LIST( WdeBaseObject )
+    pick_ACT_IDENTIFY( WdeBaseObject )
+    pick_ACT_GET_FONT( WdeBaseObject )
+    pick_ACT_GET_RESIZER( WdeBaseObject )
+    pick_ACT_GET_NC_SIZE( WdeBaseObject )
+    pick_ACT_BECOME_FIRST_CHILD( WdeBaseObject )
+    pick_ACT_GET_FIRST_CHILD( WdeBaseObject )
+    pick_ACT_PUT_ME_FIRST( WdeBaseObject )
+    pick_ACT_GET_SCROLL_RECT( WdeBaseObject )
+    pick_ACT_GET_RESIZE_INC( WdeBaseObject )
+    pick_ACT_IS_MARK_VALID( WdeBaseObject )
+    pick_ACT_RESOLVE_SYMBOL( WdeBaseObject )
+    pick_ACT_RESOLVE_HELPSYMBOL( WdeBaseObject )
+    pick_ACT_GET_NEXT_CHILD( WdeBaseObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS      (sizeof( WdeBaseActions ) / sizeof ( DISPATCH_ITEM ))
@@ -295,7 +300,7 @@ BOOL WdeBaseResolveHelpSymbol( WdeBaseObject *obj, bool *b, bool *from_id )
     return( TRUE );
 }
 
-BOOL WdeBaseDestroy( WdeBaseObject *obj, BOOL *flag, void *p2 )
+BOOL WdeBaseDestroy( WdeBaseObject *obj, BOOL *flag, BOOL *p2 )
 {
     OBJPTR  sub_obj;
     LIST    *clist;

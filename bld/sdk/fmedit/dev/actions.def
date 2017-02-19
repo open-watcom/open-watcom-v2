@@ -1,33 +1,87 @@
 #ifndef _ACTIONS_INCLUDE
-#define _ACTIONS_INCLUDE 
+#define _ACTIONS_INCLUDE
 
 #define APP_ACTIONS  256
-#define APP_NOTE_IDS 256 
+#define APP_NOTE_IDS 256
+
+#define pick_ACT_REGISTER(o)           pick( REGISTER,           Register,         (o *, void *, void *) )
+#define pick_ACT_MOVE(o)               pick( MOVE,               Move,             (o *, POINT *, BOOL *) )
+#define pick_ACT_RESIZE(o)             pick( RESIZE,             Resize,           (o *, RECT *, BOOL *) )
+#define pick_ACT_LOCATE(o)             pick( LOCATE,             Location,         (o *, RECT *, void *) )
+#define pick_ACT_FIND_SUBOBJECTS(o)    pick( FIND_SUBOBJECTS,    FindSubObjects,   (o *, SUBOBJ_REQUEST *, LIST **) )
+#define pick_ACT_DESTROY(o)            pick( DESTROY,            Destroy,          (o *, BOOL *, BOOL *) )
+#define pick_ACT_DRAW(o)               pick( DRAW,               Draw,             (o *, RECT *, HDC *) )
+#define pick_ACT_DEFINE(o)             pick( DEFINE,             Define,           (o *, POINT *, void *) )
+#define pick_ACT_NOTIFY(o)             pick( NOTIFY,             Notify,           (o *, NOTE_ID *, void *) )
+#define pick_ACT_FORWARD(o)            pick( FORWARD,            Forward,          (o *, void *, void *) )
+#define pick_ACT_VALIDATE_ACTION(o)    pick( VALIDATE_ACTION,    ValidateAction,   (o *, ACTION *, void *) )
+#define pick_ACT_ADD_SUBOBJECT(o)      pick( ADD_SUBOBJECT,      AddSubObject,     (o *, ANYOBJ *, void *) )
+#define pick_ACT_REMOVE_SUBOBJECT(o)   pick( REMOVE_SUBOBJECT,   RemoveSubObject,  (o *, ANYOBJ *, void *) )
+#define pick_ACT_RESIZE_INFO(o)        pick( RESIZE_INFO,        GetResizeInfo,    (o *, RESIZE_ID *, void *) )
+#define pick_ACT_CUT(o)                pick( CUT,                CutObject,        (o *, o **, void *) )
+#define pick_ACT_COPY(o)               pick( COPY,               CopyObject,       (o *, o **, o *) )
+#define pick_ACT_PASTE(o)              pick( PASTE,              PasteObject,      (o *, ANYOBJ *, POINT *) )
+#define pick_ACT_GET_PARENT(o)         pick( GET_PARENT,         GetObjectParent,  (o *, ANYOBJ **, void *) )
+#define pick_ACT_GET_PRIORITY(o)       pick( GET_PRIORITY,       GetPriority,      (o *, int *, void *) )
+#define pick_ACT_GET_RESIZE_INC(o)     pick( GET_RESIZE_INC,     GetResizeInc,     (o *, POINT *, void *) )
+#define pick_ACT_GET_SCROLL_RECT(o)    pick( GET_SCROLL_RECT,    GetScrollRect,    (o *, RECT *, void *) )
+#define pick_ACT_IS_MARK_VALID(o)      pick( IS_MARK_VALID,      IsMarkValid,      (o *, BOOL *, void *) )
+#define pick_ACT_FIND_OBJECTS_PT(o)    pick( FIND_OBJECTS_PT,    FindObjectsPt,    (o *, POINT *, LIST **) )
+
+/* editor actions */
+
+#define pick_ACT_RECREATE(o)           pick( RECREATE,           Recreate,         (o *, POINT *, void *) )
+#define pick_ACT_GET_OBJECT(o)         pick( GET_OBJECT,         GetObject,        (o *, ANYOBJ **, ANYOBJ *) )
+#define pick_ACT_ADD_OBJECT(o)         pick( ADD_OBJECT,         AddObject,        (o *, ANYOBJ *, BOOL *) )
+#define pick_ACT_DELETE_OBJECT(o)      pick( DELETE_OBJECT,      DeleteObject,     (o *, ANYOBJ *, BOOL *) )
+#define pick_ACT_GET_PRIMARY(o)        pick( GET_PRIMARY,        GetPrimary,       (o *, ANYOBJ **, BOOL *) )
+#define pick_ACT_UNDO_MOVE(o)          pick( UNDO_MOVE,          UndoMove,         (o *, void *, void *) )
+#define pick_ACT_REMOVE_FROM_PARENT(o) pick( REMOVE_FROM_PARENT, RemoveFromParent, (o *, void *, void *) )
+#define pick_ACT_GET_OBJPTR(o)         pick( GET_OBJPTR,         GetObjptr,        (o *, ANYOBJ **, void *) )
+#define pick_ACT_GET_ANCHOR(o)         pick( GET_ANCHOR,         GetAnchor,        (o *, POINT *, void *) )
+#define pick_ACT_SHOW_SEL_BOXES(o)     pick( SHOW_SEL_BOXES,     ShowSelBoxes,     (o *, BOOL *, void *) )
+//#define pick_ACT_FORCE_REDRAW(o)       pick( FORCE_REDRAW,       ForceRedraw,      (o *, void *, void *) )
 
 enum {
-    REGISTER,
-    MOVE,
-    RESIZE,
-    LOCATE,
-    FIND_SUBOBJECTS,
-    DESTROY,
-    DRAW,
-    DEFINE,
-    NOTIFY,
-    FORWARD,
-    VALIDATE_ACTION,
-    ADD_SUBOBJECT,
-    REMOVE_SUBOBJECT,
-    RESIZE_INFO,
-    CUT,
-    COPY,
-    PASTE,
-    GET_PARENT,
-    GET_PRIORITY,
-    GET_RESIZE_INC,
-    GET_SCROLL_RECT,
-    IS_MARK_VALID,
-    FIND_OBJECTS_PT
+#define pick(e,n,c)     e,
+    pick_ACT_REGISTER( void )
+    pick_ACT_MOVE( void )
+    pick_ACT_RESIZE( void )
+    pick_ACT_LOCATE( void )
+    pick_ACT_FIND_SUBOBJECTS( void )
+    pick_ACT_DESTROY( void )
+    pick_ACT_DRAW( void )
+    pick_ACT_DEFINE( void )
+    pick_ACT_NOTIFY( void )
+    pick_ACT_FORWARD( void )
+    pick_ACT_VALIDATE_ACTION( void )
+    pick_ACT_ADD_SUBOBJECT( void )
+    pick_ACT_REMOVE_SUBOBJECT( void )
+    pick_ACT_RESIZE_INFO( void )
+    pick_ACT_CUT( void )
+    pick_ACT_COPY( void )
+    pick_ACT_PASTE( void )
+    pick_ACT_GET_PARENT( void )
+    pick_ACT_GET_PRIORITY( void )
+    pick_ACT_GET_RESIZE_INC( void )
+    pick_ACT_GET_SCROLL_RECT( void )
+    pick_ACT_IS_MARK_VALID( void )
+    pick_ACT_FIND_OBJECTS_PT( void )
+
+/* editor actions */
+
+    pick_ACT_RECREATE( void )
+    pick_ACT_GET_OBJECT( void )
+    pick_ACT_ADD_OBJECT( void )
+    pick_ACT_DELETE_OBJECT( void )
+    pick_ACT_GET_PRIMARY( void )
+    pick_ACT_UNDO_MOVE( void )
+    pick_ACT_REMOVE_FROM_PARENT( void )
+    pick_ACT_GET_OBJPTR( void )
+    pick_ACT_GET_ANCHOR( void )
+    pick_ACT_SHOW_SEL_BOXES( void )
+//    pick_ACT_FORCE_REDRAW( void )
+#undef pick
 };
 
 typedef enum {
@@ -47,7 +101,7 @@ typedef enum {
     R_LEFT      = 4,
     R_RIGHT     = 8,
     R_ALL       = 15
-} RESIZE_ID;    
+} RESIZE_ID;
 
 typedef BOOL DISPATCH_RTN( OBJPTR, void *, void * );
 

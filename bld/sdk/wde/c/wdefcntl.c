@@ -97,34 +97,6 @@ WINEXPORT BOOL CALLBACK WdeControlDispatcher( ACTION, WdeControlObject *, void *
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static BOOL WdeControlTest( WdeControlObject *, GLOBALHANDLE *, void * );
-static BOOL WdeControlTestEX( WdeControlObject *, GLOBALHANDLE *, void * );
-static BOOL WdeControlDraw( WdeControlObject *, RECT *, HDC * );
-static BOOL WdeControlResolveSymbol( WdeControlObject *, bool *, bool * );
-static BOOL WdeControlResolveHelpSymbol( WdeControlObject *, bool *, bool * );
-static BOOL WdeControlOnTop( WdeControlObject *, void *, void * );
-static BOOL WdeControlCreateWindow( WdeControlObject *, void *, void * );
-static BOOL WdeControlDestroyWindow( WdeControlObject *, bool *, bool * );
-static BOOL WdeControlShowWindow( WdeControlObject *, bool *, void * );
-static BOOL WdeControlIsMarkValid( WdeControlObject *, BOOL *, void * );
-static BOOL WdeControlDestroy( WdeControlObject *, BOOL *, void * );
-static BOOL WdeControlSetFont( WdeControlObject *, HFONT *, WdeResizeRatio * );
-static BOOL WdeControlGetResizeInfo( WdeControlObject *, RESIZE_ID *, void * );
-static BOOL WdeControlValidateAction( WdeControlObject *, ACTION *, void * );
-static BOOL WdeControlGetWindowHandle( WdeControlObject *, HWND *, void * );
-static BOOL WdeControlResize( WdeControlObject *, RECT *, BOOL * );
-static BOOL WdeControlMove( WdeControlObject *, POINT *, BOOL * );
-static BOOL WdeControlNotify( WdeControlObject *, NOTE_ID*, void * );
-static BOOL WdeControlFirstChild( WdeControlObject *, void *, void * );
-static BOOL WdeControlPasteObject( WdeControlObject *, OBJPTR, POINT * );
-static BOOL WdeControlCutObject( WdeControlObject *, WdeControlObject **, void * );
-static BOOL WdeControlCopyObject( WdeControlObject *, WdeControlObject **, WdeControlObject * );
-static BOOL WdeControlGetObjectInfo( WdeControlObject *, WdeDialogBoxControl **, char ** );
-static BOOL WdeControlSetObjectInfo( WdeControlObject *, WdeDialogBoxControl *, char * );
-static BOOL WdeControlSetObjectHelpInfo( WdeControlObject *, WdeDialogBoxControl *, char * );
-static BOOL WdeControlGetObjectHelpInfo( WdeControlObject *, WdeDialogBoxControl **, char ** );
-static BOOL WdeControlSetClearInt( WdeControlObject *, BOOL *, void * );
-static BOOL WdeControlGetClearInt( WdeControlObject *, BOOL *, void * );
 static BOOL WdeChangeControlSize( WdeControlObject *, BOOL, BOOL );
 static BOOL WdeOffsetDialogUnits( WdeControlObject *, WdeResizeRatio * );
 static void WdeBringControlToTop( WdeControlObject * );
@@ -132,9 +104,48 @@ static void WdeSetClearObjectPos( WdeControlObject * );
 static void WdeFreeControlObject( WdeControlObject * );
 static void WdeWriteControlToInfo( WdeControlObject * );
 static BOOL WdeControlModifyInfo( WdeControlObject *, WdeInfoStruct *, void * );
-static BOOL WdeControlSetOrderMode( WdeControlObject *, WdeOrderMode *, WdeSetOrderLists ** );
-static BOOL WdeControlGetOrderMode( WdeControlObject *, WdeOrderMode *, void * );
 static BOOL WdeControlSizeToText( WdeControlObject *, void *, void * );
+
+#define pick(e,n,c) BOOL WdeControl ## n ## c
+static pick_ACT_MOVE( WdeControlObject );
+static pick_ACT_NOTIFY( WdeControlObject );
+static pick_ACT_RESIZE( WdeControlObject );
+static pick_ACT_DRAW( WdeControlObject );
+static pick_ACT_ADD_SUBOBJECT( WdeControlObject );
+static pick_ACT_DESTROY( WdeControlObject );
+static pick_ACT_COPY( WdeControlObject );
+static pick_ACT_CUT( WdeControlObject );
+static pick_ACT_PASTE( WdeControlObject );
+static pick_ACT_VALIDATE_ACTION( WdeControlObject );
+static pick_ACT_RESIZE_INFO( WdeControlObject );
+static pick_ACT_GET_WINDOW_HANDLE( WdeControlObject );
+static pick_ACT_CREATE_WINDOW( WdeControlObject );
+static pick_ACT_DESTROY_WINDOW( WdeControlObject );
+static pick_ACT_SHOW_WIN( WdeControlObject );
+static pick_ACT_GET_OBJECT_INFO( WdeControlObject );
+static pick_ACT_SET_OBJECT_INFO( WdeControlObject );
+static pick_ACT_GET_OBJECT_HELPINFO( WdeControlObject );
+static pick_ACT_SET_OBJECT_HELPINFO( WdeControlObject );
+static pick_ACT_SET_FONT( WdeControlObject );
+static pick_ACT_GET_FONT( WdeControlObject );
+static pick_ACT_GET_NC_SIZE( WdeControlObject );
+static pick_ACT_ON_TOP( WdeControlObject );
+static pick_ACT_TEST( WdeControlObject );
+static pick_ACT_TESTEX( WdeControlObject );
+static pick_ACT_BECOME_FIRST_CHILD( WdeControlObject );
+static pick_ACT_GET_RESIZE_INC( WdeControlObject );
+static pick_ACT_GET_SCROLL_RECT( WdeControlObject );
+static pick_ACT_SET_CLEAR_INT( WdeControlObject );
+static pick_ACT_IS_OBJECT_CLEAR( WdeControlObject );
+static pick_ACT_IS_MARK_VALID( WdeControlObject );
+static pick_ACT_RESOLVE_SYMBOL( WdeControlObject );
+static pick_ACT_RESOLVE_HELPSYMBOL( WdeControlObject );
+static pick_ACT_MODIFY_INFO( WdeControlObject );
+static pick_ACT_SET_ORDER_MODE( WdeControlObject );
+static pick_ACT_GET_ORDER_MODE( WdeControlObject );
+static pick_ACT_SIZE_TO_TEXT( WdeControlObject );
+static pick_ACT_GET_RESIZER( WdeControlObject );
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -143,45 +154,61 @@ static FARPROC           WdeControlDispatch;
 static HINSTANCE         WdeAppInst;
 
 static DISPATCH_ITEM WdeControlActions[] = {
-    { MOVE,                 (DISPATCH_RTN *)WdeControlMove              },
-    { NOTIFY,               (DISPATCH_RTN *)WdeControlNotify            },
-    { RESIZE,               (DISPATCH_RTN *)WdeControlResize            },
-    { DRAW,                 (DISPATCH_RTN *)WdeControlDraw              },
-    { ADD_SUBOBJECT,        (DISPATCH_RTN *)NULL                        },
-    { DESTROY,              (DISPATCH_RTN *)WdeControlDestroy           },
-    { COPY,                 (DISPATCH_RTN *)WdeControlCopyObject        },
-    { CUT,                  (DISPATCH_RTN *)WdeControlCutObject         },
-    { PASTE,                (DISPATCH_RTN *)WdeControlPasteObject       },
-    { VALIDATE_ACTION,      (DISPATCH_RTN *)WdeControlValidateAction    },
-    { RESIZE_INFO,          (DISPATCH_RTN *)WdeControlGetResizeInfo     },
-    { GET_WINDOW_HANDLE,    (DISPATCH_RTN *)WdeControlGetWindowHandle   },
-    { CREATE_WINDOW,        (DISPATCH_RTN *)WdeControlCreateWindow      },
-    { DESTROY_WINDOW,       (DISPATCH_RTN *)WdeControlDestroyWindow     },
-    { SHOW_WIN,             (DISPATCH_RTN *)WdeControlShowWindow        },
-    { GET_OBJECT_INFO,      (DISPATCH_RTN *)WdeControlGetObjectInfo     },
-    { SET_OBJECT_INFO,      (DISPATCH_RTN *)WdeControlSetObjectInfo     },
-    { GET_OBJECT_HELPINFO,  (DISPATCH_RTN *)WdeControlGetObjectHelpInfo },
-    { SET_OBJECT_HELPINFO,  (DISPATCH_RTN *)WdeControlSetObjectHelpInfo },
-    { SET_FONT,             (DISPATCH_RTN *)WdeControlSetFont           },
-    { GET_FONT,             (DISPATCH_RTN *)NULL                        },
-    { GET_NC_SIZE,          (DISPATCH_RTN *)NULL                        },
-    { GET_NC_SIZE,          (DISPATCH_RTN *)NULL                        },
-    { ON_TOP,               (DISPATCH_RTN *)WdeControlOnTop             },
-    { TEST,                 (DISPATCH_RTN *)WdeControlTest              },
-    { TESTEX,               (DISPATCH_RTN *)WdeControlTestEX            },
-    { BECOME_FIRST_CHILD,   (DISPATCH_RTN *)WdeControlFirstChild        },
-    { GET_RESIZE_INC,       (DISPATCH_RTN *)NULL                        },
-    { GET_SCROLL_RECT,      (DISPATCH_RTN *)NULL                        },
-    { SET_CLEAR_INT,        (DISPATCH_RTN *)WdeControlSetClearInt       },
-    { IS_OBJECT_CLEAR,      (DISPATCH_RTN *)WdeControlGetClearInt       },
-    { IS_MARK_VALID,        (DISPATCH_RTN *)WdeControlIsMarkValid       },
-    { RESOLVE_SYMBOL,       (DISPATCH_RTN *)WdeControlResolveSymbol     },
-    { RESOLVE_HELPSYMBOL,   (DISPATCH_RTN *)WdeControlResolveHelpSymbol },
-    { MODIFY_INFO,          (DISPATCH_RTN *)WdeControlModifyInfo        },
-    { SET_ORDER_MODE,       (DISPATCH_RTN *)WdeControlSetOrderMode      },
-    { GET_ORDER_MODE,       (DISPATCH_RTN *)WdeControlGetOrderMode      },
-    { SIZE_TO_TEXT,         (DISPATCH_RTN *)WdeControlSizeToText        },
-    { GET_RESIZER,          (DISPATCH_RTN *)NULL                        }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeControl ## n},
+    pick_ACT_MOVE( WdeControlObject )
+    pick_ACT_NOTIFY( WdeControlObject )
+    pick_ACT_RESIZE( WdeControlObject )
+    pick_ACT_DRAW( WdeControlObject )
+    #undef pick
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)NULL},
+    pick_ACT_ADD_SUBOBJECT( WdeControlObject )
+    #undef pick
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeControl ## n},
+    pick_ACT_DESTROY( WdeControlObject )
+    pick_ACT_COPY( WdeControlObject )
+    pick_ACT_CUT( WdeControlObject )
+    pick_ACT_PASTE( WdeControlObject )
+    pick_ACT_VALIDATE_ACTION( WdeControlObject )
+    pick_ACT_RESIZE_INFO( WdeControlObject )
+    pick_ACT_GET_WINDOW_HANDLE( WdeControlObject )
+    pick_ACT_CREATE_WINDOW( WdeControlObject )
+    pick_ACT_DESTROY_WINDOW( WdeControlObject )
+    pick_ACT_SHOW_WIN( WdeControlObject )
+    pick_ACT_GET_OBJECT_INFO( WdeControlObject )
+    pick_ACT_SET_OBJECT_INFO( WdeControlObject )
+    pick_ACT_GET_OBJECT_HELPINFO( WdeControlObject )
+    pick_ACT_SET_OBJECT_HELPINFO( WdeControlObject )
+    pick_ACT_SET_FONT( WdeControlObject )
+    #undef pick
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)NULL},
+    pick_ACT_GET_FONT( WdeControlObject )
+    pick_ACT_GET_NC_SIZE( WdeControlObject )
+    pick_ACT_GET_NC_SIZE( WdeControlObject )
+    #undef pick
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeControl ## n},
+    pick_ACT_ON_TOP( WdeControlObject )
+    pick_ACT_TEST( WdeControlObject )
+    pick_ACT_TESTEX( WdeControlObject )
+    pick_ACT_BECOME_FIRST_CHILD( WdeControlObject )
+    #undef pick
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)NULL},
+    pick_ACT_GET_RESIZE_INC( WdeControlObject )
+    pick_ACT_GET_SCROLL_RECT( WdeControlObject )
+    #undef pick
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeControl ## n},
+    pick_ACT_SET_CLEAR_INT( WdeControlObject )
+    pick_ACT_IS_OBJECT_CLEAR( WdeControlObject )
+    pick_ACT_IS_MARK_VALID( WdeControlObject )
+    pick_ACT_RESOLVE_SYMBOL( WdeControlObject )
+    pick_ACT_RESOLVE_HELPSYMBOL( WdeControlObject )
+    pick_ACT_MODIFY_INFO( WdeControlObject )
+    pick_ACT_SET_ORDER_MODE( WdeControlObject )
+    pick_ACT_GET_ORDER_MODE( WdeControlObject )
+    pick_ACT_SIZE_TO_TEXT( WdeControlObject )
+    #undef pick
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)NULL},
+    pick_ACT_GET_RESIZER( WdeControlObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS      (sizeof( WdeControlActions ) / sizeof( DISPATCH_ITEM ))
@@ -473,7 +500,7 @@ BOOL WdeControlIsMarkValid( WdeControlObject *obj, BOOL *flag, void *p2 )
     return( TRUE );
 }
 
-BOOL WdeControlDestroy( WdeControlObject *obj, BOOL *flag, void *p2 )
+BOOL WdeControlDestroy( WdeControlObject *obj, BOOL *flag, BOOL *p2 )
 {
     RECT        rect;
     OBJPTR      next;
@@ -708,7 +735,7 @@ BOOL WdeControlGetClearInt( WdeControlObject *obj, BOOL *b, void *p2 )
     return( TRUE );
 }
 
-BOOL WdeControlCreateWindow( WdeControlObject *obj, void *p1, void *p2 )
+BOOL WdeControlCreateWindow( WdeControlObject *obj, bool *p1, void *p2 )
 {
     ResNameOrOrdinal    *rname;
     char                *name;
@@ -1585,23 +1612,24 @@ BOOL WdeControlMove ( WdeControlObject *obj, POINT *off, BOOL *forms_called )
     return( ok );
 }
 
-BOOL WdeControlGetObjectInfo( WdeControlObject *obj,
-                              WdeDialogBoxControl **info, char **s )
+BOOL WdeControlGetObjectInfo( WdeControlObject *obj, void **_info, void **s )
 {
+    WdeDialogBoxControl **info = (WdeDialogBoxControl **)_info;
+
     if( info != NULL ) {
         *info = obj->control_info;
     }
 
-    if( s ) {
+    if( s != NULL ) {
         *s = obj->symbol;
     }
 
     return( TRUE );
 }
 
-BOOL WdeControlSetObjectInfo( WdeControlObject *obj,
-                              WdeDialogBoxControl *info, char *s )
+BOOL WdeControlSetObjectInfo( WdeControlObject *obj, void *_info, void *s )
 {
+    WdeDialogBoxControl *info = _info;
     RECT                size;
     POINT               origin;
     WdeResizeRatio      resizer;
@@ -1658,9 +1686,9 @@ BOOL WdeControlSetObjectInfo( WdeControlObject *obj,
     return( TRUE );
 }
 
-BOOL WdeControlSetObjectHelpInfo( WdeControlObject *obj,
-                                  WdeDialogBoxControl *info, char *hs )
+BOOL WdeControlSetObjectHelpInfo( WdeControlObject *obj, void *info, char *hs )
 {
+//    WdeDialogBoxControl *info = _info;
     _wde_touch( info );
 
     if( obj->helpsymbol != NULL ) {
@@ -1671,9 +1699,10 @@ BOOL WdeControlSetObjectHelpInfo( WdeControlObject *obj,
     return( TRUE );
 }
 
-BOOL WdeControlGetObjectHelpInfo( WdeControlObject *obj,
-                                  WdeDialogBoxControl **info, char **hs )
+BOOL WdeControlGetObjectHelpInfo( WdeControlObject *obj, void **_info, char **hs )
 {
+    WdeDialogBoxControl **info = (WdeDialogBoxControl **)_info;
+
     // this is redundant
     if( info != NULL ) {
         *info = obj->control_info;
@@ -1816,7 +1845,7 @@ BOOL WdeControlModifyInfo( WdeControlObject *obj, WdeInfoStruct *in, void *p2 )
     return( TRUE );
 }
 
-BOOL WdeControlGetOrderMode( WdeControlObject *obj, WdeOrderMode *mode, void *p2 )
+BOOL WdeControlGetOrderMode( WdeControlObject *obj, WdeOrderMode *mode, WdeSetOrderLists *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
@@ -1826,8 +1855,7 @@ BOOL WdeControlGetOrderMode( WdeControlObject *obj, WdeOrderMode *mode, void *p2
     return( TRUE );
 }
 
-BOOL WdeControlSetOrderMode( WdeControlObject *obj, WdeOrderMode *mode,
-                             WdeSetOrderLists **l )
+BOOL WdeControlSetOrderMode( WdeControlObject *obj, WdeOrderMode *mode, WdeSetOrderLists **l )
 {
     WdeSetOrderStruct   *o;
     DialogStyle         style;

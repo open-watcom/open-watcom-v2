@@ -65,16 +65,19 @@ WINEXPORT LRESULT CALLBACK WdeTrakSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 static OBJPTR   WdeMakeTrak( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
 static OBJPTR   WdeTrackCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
-static BOOL     WdeTrakDestroy( WdeTrakObject *, BOOL *, void * );
-static BOOL     WdeTrakValidateAction( WdeTrakObject *, ACTION *, void * );
-static BOOL     WdeTrakCopyObject( WdeTrakObject *, WdeTrakObject **, WdeTrakObject * );
-static BOOL     WdeTrakIdentify( WdeTrakObject *, OBJ_ID *, void * );
-static BOOL     WdeTrakGetWndProc( WdeTrakObject *, WNDPROC *, void * );
-static BOOL     WdeTrakGetWindowClass( WdeTrakObject *, char **, void * );
-static BOOL     WdeTrakDefine( WdeTrakObject *, POINT *, void * );
 static void     WdeTrakSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeTrakGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeTrakDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+
+#define pick(e,n,c) BOOL WdeTrak ## n ## c
+static pick_ACT_DESTROY( WdeTrakObject );
+static pick_ACT_COPY( WdeTrakObject );
+static pick_ACT_VALIDATE_ACTION( WdeTrakObject );
+static pick_ACT_IDENTIFY( WdeTrakObject );
+static pick_ACT_GET_WINDOW_CLASS( WdeTrakObject );
+static pick_ACT_DEFINE( WdeTrakObject );
+static pick_ACT_GET_WND_PROC( WdeTrakObject );
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -89,13 +92,15 @@ static WNDPROC                  WdeOriginalTrakProc;
 #define WTRACKBAR_CLASS  TRACKBAR_CLASS
 
 static DISPATCH_ITEM WdeTrakActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeTrakDestroy          },
-    { COPY,             (DISPATCH_RTN *)WdeTrakCopyObject       },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeTrakValidateAction   },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeTrakIdentify         },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeTrakGetWindowClass   },
-    { DEFINE,           (DISPATCH_RTN *)WdeTrakDefine           },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeTrakGetWndProc       }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeTrak ## n},
+    pick_ACT_DESTROY( WdeTrakObject )
+    pick_ACT_COPY( WdeTrakObject )
+    pick_ACT_VALIDATE_ACTION( WdeTrakObject )
+    pick_ACT_IDENTIFY( WdeTrakObject )
+    pick_ACT_GET_WINDOW_CLASS( WdeTrakObject )
+    pick_ACT_DEFINE( WdeTrakObject )
+    pick_ACT_GET_WND_PROC( WdeTrakObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS     (sizeof( WdeTrakActions ) / sizeof( DISPATCH_ITEM ))
@@ -253,7 +258,7 @@ void WdeTrakFini( void )
     FreeProcInstance( WdeTrakDispatch );
 }
 
-BOOL WdeTrakDestroy( WdeTrakObject *obj, BOOL *flag, void *p2 )
+BOOL WdeTrakDestroy( WdeTrakObject *obj, BOOL *flag, BOOL *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );

@@ -65,16 +65,19 @@ WINEXPORT LRESULT CALLBACK WdeTabCSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 static OBJPTR   WdeMakeTabC( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
 static OBJPTR   WdeTCCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
-static BOOL     WdeTabCDestroy( WdeTabCObject *, BOOL *, void * );
-static BOOL     WdeTabCValidateAction( WdeTabCObject *, ACTION *, void * );
-static BOOL     WdeTabCCopyObject( WdeTabCObject *, WdeTabCObject **, WdeTabCObject * );
-static BOOL     WdeTabCIdentify( WdeTabCObject *, OBJ_ID *, void * );
-static BOOL     WdeTabCGetWndProc( WdeTabCObject *, WNDPROC *, void * );
-static BOOL     WdeTabCGetWindowClass( WdeTabCObject *, char **, void * );
-static BOOL     WdeTabCDefine( WdeTabCObject *, POINT *, void * );
 static void     WdeTabCSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeTabCGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeTabCDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+
+#define pick(e,n,c) BOOL WdeTabC ## n ## c
+static pick_ACT_DESTROY( WdeTabCObject );
+static pick_ACT_COPY( WdeTabCObject );
+static pick_ACT_VALIDATE_ACTION( WdeTabCObject );
+static pick_ACT_IDENTIFY( WdeTabCObject );
+static pick_ACT_GET_WINDOW_CLASS( WdeTabCObject );
+static pick_ACT_DEFINE( WdeTabCObject );
+static pick_ACT_GET_WND_PROC( WdeTabCObject );
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -89,13 +92,15 @@ static WNDPROC                  WdeOriginalTabCProc;
 #define WWC_TABCONTROL   WC_TABCONTROL
 
 static DISPATCH_ITEM WdeTabCActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeTabCDestroy          },
-    { COPY,             (DISPATCH_RTN *)WdeTabCCopyObject       },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeTabCValidateAction   },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeTabCIdentify         },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeTabCGetWindowClass   },
-    { DEFINE,           (DISPATCH_RTN *)WdeTabCDefine           },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeTabCGetWndProc       }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeTabC ## n},
+    pick_ACT_DESTROY( WdeTabCObject )
+    pick_ACT_COPY( WdeTabCObject )
+    pick_ACT_VALIDATE_ACTION( WdeTabCObject )
+    pick_ACT_IDENTIFY( WdeTabCObject )
+    pick_ACT_GET_WINDOW_CLASS( WdeTabCObject )
+    pick_ACT_DEFINE( WdeTabCObject )
+    pick_ACT_GET_WND_PROC( WdeTabCObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS     (sizeof( WdeTabCActions ) / sizeof( DISPATCH_ITEM ))
@@ -252,7 +257,7 @@ void WdeTabCFini( void )
     FreeProcInstance( WdeTabCDispatch );
 }
 
-BOOL WdeTabCDestroy( WdeTabCObject *obj, BOOL *flag, void *p2 )
+BOOL WdeTabCDestroy( WdeTabCObject *obj, BOOL *flag, BOOL *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );

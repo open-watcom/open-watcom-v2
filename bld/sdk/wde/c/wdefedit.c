@@ -64,16 +64,19 @@ WINEXPORT LRESULT CALLBACK WdeEditSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 static OBJPTR   WdeMakeEdit( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
 static OBJPTR   WdeEdCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
-static BOOL     WdeEditDestroy( WdeEditObject *, BOOL *, void * );
-static BOOL     WdeEditValidateAction( WdeEditObject *, ACTION *, void * );
-static BOOL     WdeEditCopyObject( WdeEditObject *, WdeEditObject **, WdeEditObject * );
-static BOOL     WdeEditIdentify( WdeEditObject *, OBJ_ID *, void * );
-static BOOL     WdeEditGetWndProc( WdeEditObject *, WNDPROC *, void * );
-static BOOL     WdeEditGetWindowClass( WdeEditObject *, char **, void * );
-static BOOL     WdeEditDefine( WdeEditObject *, POINT *, void * );
 static void     WdeEditSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeEditGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeEditDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+
+#define pick(e,n,c) BOOL WdeEdit ## n ## c
+static pick_ACT_DESTROY( WdeEditObject );
+static pick_ACT_COPY( WdeEditObject );
+static pick_ACT_VALIDATE_ACTION( WdeEditObject );
+static pick_ACT_IDENTIFY( WdeEditObject );
+static pick_ACT_GET_WINDOW_CLASS( WdeEditObject );
+static pick_ACT_DEFINE( WdeEditObject );
+static pick_ACT_GET_WND_PROC( WdeEditObject );
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -86,13 +89,15 @@ static WNDPROC                  WdeOriginalEditProc;
 //static WNDPROC                WdeEditProc;
 
 static DISPATCH_ITEM WdeEditActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeEditDestroy              },
-    { COPY,             (DISPATCH_RTN *)WdeEditCopyObject           },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeEditValidateAction       },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeEditIdentify             },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeEditGetWindowClass       },
-    { DEFINE,           (DISPATCH_RTN *)WdeEditDefine               },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeEditGetWndProc           }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeEdit ## n},
+    pick_ACT_DESTROY( WdeEditObject )
+    pick_ACT_COPY( WdeEditObject )
+    pick_ACT_VALIDATE_ACTION( WdeEditObject )
+    pick_ACT_IDENTIFY( WdeEditObject )
+    pick_ACT_GET_WINDOW_CLASS( WdeEditObject )
+    pick_ACT_DEFINE( WdeEditObject )
+    pick_ACT_GET_WND_PROC( WdeEditObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS      (sizeof( WdeEditActions ) / sizeof( DISPATCH_ITEM ))
@@ -253,7 +258,7 @@ void WdeEditFini( void )
     FreeProcInstance( WdeEditDispatch );
 }
 
-BOOL WdeEditDestroy( WdeEditObject *obj, BOOL *flag, void *p2 )
+BOOL WdeEditDestroy( WdeEditObject *obj, BOOL *flag, BOOL *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );

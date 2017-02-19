@@ -45,18 +45,23 @@ WINEXPORT LRESULT CALLBACK CurrItemWndProc( HWND, UINT, WPARAM, LPARAM );
 /* forward references */
 
 static BOOL CALLBACK CurrItemDispatch( ACTION, CURRITEM *, void *, void * );
-static BOOL CurrItemDelete( OBJPTR, void *, void * );
-static BOOL CurrItemDestroy( OBJPTR, void *, void * );
-static BOOL CurrItemValidateAction( OBJPTR, void *, void * );
-static BOOL CurrItemGetObjptr( OBJPTR, void *, void * );
-static BOOL CurrItemShowSelBoxes( OBJPTR, void *, void * );
+
+#define pick(e,n,c) BOOL CurrItem ## n ## c
+static pick_ACT_DELETE_OBJECT( CURRITEM );
+static pick_ACT_DESTROY( CURRITEM );
+static pick_ACT_VALIDATE_ACTION( CURRITEM );
+static pick_ACT_GET_OBJPTR( CURRITEM );
+static pick_ACT_SHOW_SEL_BOXES( CURRITEM );
+#undef pick
 
 static DISPATCH_ITEM CurrItemActions[] = {
-    { DELETE_OBJECT,    CurrItemDelete          },
-    { DESTROY,          CurrItemDestroy         },
-    { VALIDATE_ACTION,  CurrItemValidateAction  },
-    { GET_OBJPTR,       CurrItemGetObjptr       },
-    { SHOW_SEL_BOXES,   CurrItemShowSelBoxes    }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)CurrItem ## n},
+    pick_ACT_DELETE_OBJECT( CURRITEM )
+    pick_ACT_DESTROY( CURRITEM )
+    pick_ACT_VALIDATE_ACTION( CURRITEM )
+    pick_ACT_GET_OBJPTR( CURRITEM )
+    pick_ACT_SHOW_SEL_BOXES( CURRITEM )
+    #undef pick
 };
 
 #define MAX_ACTIONS (sizeof( CurrItemActions ) / sizeof( DISPATCH_ITEM ))
@@ -81,12 +86,10 @@ static BOOL CALLBACK CurrItemDispatch( ACTION id, CURRITEM *ci, void *p1, void *
     return( Forward( ci->obj, id, p1, p2 ) );
 }
 
-static BOOL CurrItemValidateAction( OBJPTR _ci, void *_idptr, void *p2 )
-/**********************************************************************/
+static BOOL CurrItemValidateAction( CURRITEM *ci, ACTION *idptr, void *p2 )
+/*************************************************************************/
 {
     /* check if the desired action is valid for and CURRITEM */
-    CURRITEM    *ci = _ci;
-    ACTION      *idptr = _idptr;
     int         i;
 
     ci = ci;           /* ref'd to avoid warning */
@@ -100,25 +103,23 @@ static BOOL CurrItemValidateAction( OBJPTR _ci, void *_idptr, void *p2 )
     return( Forward( ci->obj, VALIDATE_ACTION, idptr, p2 ) );
 }
 
-static BOOL CurrItemDestroy( OBJPTR _ci, void *first, void *p2 )
-/**************************************************************/
+static BOOL CurrItemDestroy( CURRITEM *ci, BOOL *first, BOOL *p2 )
+/****************************************************************/
 {
     /* destroy the CURRITEM - the object was destroyed while it was current */
-    CURRITEM    *ci = _ci;
     OBJPTR      obj;
 
     p2 = p2;          /* ref'd to avoid warning */
     obj = ci->obj;
     DeleteCurrObject( ci );
-    Destroy( obj, *(BOOL *)first );
+    Destroy( obj, *first );
     return( TRUE );
 }
 
-static BOOL CurrItemDelete( OBJPTR _ci, void *p1, void *p2 )
-/**********************************************************/
+static BOOL CurrItemDeleteObject( CURRITEM *ci, ANYOBJ *p1, BOOL *p2 )
+/********************************************************************/
 {
     /* delete the CURRITEM but do not destroy the object */
-    CURRITEM    *ci = _ci;
     p1 = p1;          /* ref'd to avoid warning */
     p2 = p2;          /* ref'd to avoid warning */
 
@@ -130,11 +131,9 @@ static BOOL CurrItemDelete( OBJPTR _ci, void *p1, void *p2 )
     return( TRUE );
 }
 
-static BOOL CurrItemShowSelBoxes( OBJPTR _ci, void *_show, void *p2 )
-/*******************************************************************/
+static BOOL CurrItemShowSelBoxes( CURRITEM *ci, BOOL *show, void *p2 )
+/********************************************************************/
 {
-    CURRITEM    *ci = _ci;
-    BOOL        *show = _show;
     p2 = p2;    // unused
 
     if( !_eq_bool( *show, ci->show_sel_boxes ) ) {
@@ -146,8 +145,8 @@ static BOOL CurrItemShowSelBoxes( OBJPTR _ci, void *_show, void *p2 )
     return( TRUE );
 }
 
-OBJPTR CurrItemCreate( OBJPTR parent, RECT *loc, OBJPTR obj )
-/***********************************************************/
+ANYOBJ *CurrItemCreate( ANYOBJ *parent, RECT *loc, ANYOBJ *obj )
+/**************************************************************/
 {
     /* Create a CURRITEM object */
     CURRITEM *new;
@@ -180,12 +179,10 @@ OBJPTR CurrItemCreate( OBJPTR parent, RECT *loc, OBJPTR obj )
     return( new );
 }
 
-static BOOL CurrItemGetObjptr( OBJPTR _ci, void *_newobj, void *p2 )
-/******************************************************************/
+static BOOL CurrItemGetObjptr( CURRITEM *ci, ANYOBJ **newobj, void *p2 )
+/**********************************************************************/
 {
     /* return the objptr of the object associated with this curritem */
-    CURRITEM    *ci = _ci;
-    OBJPTR      *newobj = _newobj;
     p2 = p2;    /* ref'd to avoid warning */
 
     if( newobj != NULL ) {

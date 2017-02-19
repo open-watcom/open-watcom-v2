@@ -72,15 +72,18 @@ WINEXPORT LRESULT CALLBACK WdeButtonSuperClassProc( HWND, UINT, WPARAM, LPARAM )
 /****************************************************************************/
 static OBJPTR   WdeMakeButton( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
 static OBJPTR   WdeButtonCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
-static BOOL     WdeButtonDestroy( WdeButtonObject *, BOOL *, void * );
-static BOOL     WdeButtonValidateAction( WdeButtonObject *, ACTION *, void * );
-static BOOL     WdeButtonCopyObject( WdeButtonObject *, WdeButtonObject **, WdeButtonObject * );
-static BOOL     WdeButtonIdentify( WdeButtonObject *, OBJ_ID *, void * );
-static BOOL     WdeButtonGetWndProc( WdeButtonObject *, WNDPROC *, void * );
-static BOOL     WdeButtonGetWindowClass( WdeButtonObject *, char **, void * );
-static BOOL     WdeButtonDefine( WdeButtonObject *, POINT *, void * );
 static void     WdeButtonSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeButtonGetDefineInfo( WdeDefineObjectInfo *, HWND );
+
+#define pick(e,n,c) BOOL WdeButton ## n ## c
+static pick_ACT_DESTROY( WdeButtonObject );
+static pick_ACT_COPY( WdeButtonObject );
+static pick_ACT_VALIDATE_ACTION( WdeButtonObject );
+static pick_ACT_IDENTIFY( WdeButtonObject );
+static pick_ACT_GET_WINDOW_CLASS( WdeButtonObject );
+static pick_ACT_DEFINE( WdeButtonObject );
+static pick_ACT_GET_WND_PROC( WdeButtonObject );
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -93,13 +96,15 @@ static WNDPROC                  WdeOriginalButtonProc;
 //static WNDPROC                WdeButtonProc;
 
 static DISPATCH_ITEM WdeButtonActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeButtonDestroy            },
-    { COPY,             (DISPATCH_RTN *)WdeButtonCopyObject         },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeButtonValidateAction     },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeButtonIdentify           },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeButtonGetWindowClass     },
-    { DEFINE,           (DISPATCH_RTN *)WdeButtonDefine             },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeButtonGetWndProc         }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeButton ## n},
+    pick_ACT_DESTROY( WdeButtonObject )
+    pick_ACT_COPY( WdeButtonObject )
+    pick_ACT_VALIDATE_ACTION( WdeButtonObject )
+    pick_ACT_IDENTIFY( WdeButtonObject )
+    pick_ACT_GET_WINDOW_CLASS( WdeButtonObject )
+    pick_ACT_DEFINE( WdeButtonObject )
+    pick_ACT_GET_WND_PROC( WdeButtonObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS      (sizeof( WdeButtonActions ) / sizeof( DISPATCH_ITEM ))
@@ -305,7 +310,7 @@ void WdeButtonFini( void )
     FreeProcInstance( WdeButtonDispatch );
 }
 
-BOOL WdeButtonDestroy( WdeButtonObject *obj, BOOL *flag, void *p2 )
+BOOL WdeButtonDestroy( WdeButtonObject *obj, BOOL *flag, BOOL *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );

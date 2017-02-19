@@ -65,16 +65,19 @@ WINEXPORT LRESULT CALLBACK WdeHdrSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 static OBJPTR   WdeMakeHdr( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
 static OBJPTR   WdeHCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
-static BOOL     WdeHdrDestroy( WdeHdrObject *, BOOL *, void * );
-static BOOL     WdeHdrValidateAction( WdeHdrObject *, ACTION *, void * );
-static BOOL     WdeHdrCopyObject( WdeHdrObject *, WdeHdrObject **, WdeHdrObject * );
-static BOOL     WdeHdrIdentify( WdeHdrObject *, OBJ_ID *, void * );
-static BOOL     WdeHdrGetWndProc( WdeHdrObject *, WNDPROC *, void * );
-static BOOL     WdeHdrGetWindowClass( WdeHdrObject *, char **, void * );
-static BOOL     WdeHdrDefine( WdeHdrObject *, POINT *, void * );
 static void     WdeHdrSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeHdrGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeHdrDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+
+#define pick(e,n,c) BOOL WdeHdr ## n ## c
+static pick_ACT_DESTROY( WdeHdrObject );
+static pick_ACT_COPY( WdeHdrObject );
+static pick_ACT_VALIDATE_ACTION( WdeHdrObject );
+static pick_ACT_IDENTIFY( WdeHdrObject );
+static pick_ACT_GET_WINDOW_CLASS( WdeHdrObject );
+static pick_ACT_DEFINE( WdeHdrObject );
+static pick_ACT_GET_WND_PROC( WdeHdrObject );
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -89,13 +92,15 @@ static WNDPROC                  WdeOriginalHdrProc;
 #define WWC_HEADER       WC_HEADER
 
 static DISPATCH_ITEM WdeHdrActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeHdrDestroy        },
-    { COPY,             (DISPATCH_RTN *)WdeHdrCopyObject     },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeHdrValidateAction },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeHdrIdentify       },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeHdrGetWindowClass },
-    { DEFINE,           (DISPATCH_RTN *)WdeHdrDefine         },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeHdrGetWndProc     }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeHdr ## n},
+    pick_ACT_DESTROY( WdeHdrObject )
+    pick_ACT_COPY( WdeHdrObject )
+    pick_ACT_VALIDATE_ACTION( WdeHdrObject )
+    pick_ACT_IDENTIFY( WdeHdrObject )
+    pick_ACT_GET_WINDOW_CLASS( WdeHdrObject )
+    pick_ACT_DEFINE( WdeHdrObject )
+    pick_ACT_GET_WND_PROC( WdeHdrObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS      (sizeof( WdeHdrActions ) / sizeof( DISPATCH_ITEM ))
@@ -254,7 +259,7 @@ void WdeHdrFini( void )
     FreeProcInstance( WdeHdrDispatch );
 }
 
-BOOL WdeHdrDestroy( WdeHdrObject *obj, BOOL *flag, void *p2 )
+BOOL WdeHdrDestroy( WdeHdrObject *obj, BOOL *flag, BOOL *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );

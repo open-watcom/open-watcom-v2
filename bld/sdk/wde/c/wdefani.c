@@ -65,16 +65,19 @@ WINEXPORT LRESULT CALLBACK WdeAniCSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 static OBJPTR   WdeMakeAniC( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
 static OBJPTR   WdeAniCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
-static BOOL     WdeAniCDestroy( WdeAniCObject *, BOOL *, void * );
-static BOOL     WdeAniCValidateAction( WdeAniCObject *, ACTION *, void * );
-static BOOL     WdeAniCCopyObject( WdeAniCObject *, WdeAniCObject **, WdeAniCObject * );
-static BOOL     WdeAniCIdentify( WdeAniCObject *, OBJ_ID *, void * );
-static BOOL     WdeAniCGetWndProc( WdeAniCObject *, WNDPROC *, void * );
-static BOOL     WdeAniCGetWindowClass( WdeAniCObject *, char **, void * );
-static BOOL     WdeAniCDefine( WdeAniCObject *, POINT *, void * );
 static void     WdeAniCSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeAniCGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeAniCDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+
+#define pick(e,n,c)     BOOL WdeAniC ## n ## c
+static pick_ACT_DESTROY( WdeAniCObject );
+static pick_ACT_COPY( WdeAniCObject );
+static pick_ACT_VALIDATE_ACTION( WdeAniCObject );
+static pick_ACT_IDENTIFY( WdeAniCObject );
+static pick_ACT_GET_WINDOW_CLASS( WdeAniCObject );
+static pick_ACT_DEFINE( WdeAniCObject );
+static pick_ACT_GET_WND_PROC( WdeAniCObject );
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -88,13 +91,15 @@ static WNDPROC                  WdeOriginalAniCProc;
 #define WANIMATE_CLASS   ANIMATE_CLASS
 
 static DISPATCH_ITEM WdeAniCActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeAniCDestroy          },
-    { COPY,             (DISPATCH_RTN *)WdeAniCCopyObject       },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeAniCValidateAction   },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeAniCIdentify         },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeAniCGetWindowClass   },
-    { DEFINE,           (DISPATCH_RTN *)WdeAniCDefine           },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeAniCGetWndProc       }
+#define pick(e,n,c)     {e, (DISPATCH_RTN *)WdeAniC ## n},
+    pick_ACT_DESTROY( WdeAniCObject )
+    pick_ACT_COPY( WdeAniCObject )
+    pick_ACT_VALIDATE_ACTION( WdeAniCObject )
+    pick_ACT_IDENTIFY( WdeAniCObject )
+    pick_ACT_GET_WINDOW_CLASS( WdeAniCObject )
+    pick_ACT_DEFINE( WdeAniCObject )
+    pick_ACT_GET_WND_PROC( WdeAniCObject )
+#undef pick
 };
 
 #define MAX_ACTIONS      (sizeof( WdeAniCActions ) / sizeof( DISPATCH_ITEM ))
@@ -108,8 +113,7 @@ WINEXPORT OBJPTR CALLBACK WdeAniCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR h
     }
 }
 
-OBJPTR WdeMakeAniC( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                    DialogStyle style, char *text, OBJ_ID id )
+OBJPTR WdeMakeAniC( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -129,8 +133,7 @@ OBJPTR WdeMakeAniC( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-OBJPTR WdeAniCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                     OBJ_ID id, WdeDialogBoxControl *info )
+OBJPTR WdeAniCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, WdeDialogBoxControl *info )
 {
     WdeAniCObject *new;
 
@@ -252,7 +255,7 @@ void WdeAniCFini( void )
     FreeProcInstance( WdeAniCDispatch );
 }
 
-BOOL WdeAniCDestroy( WdeAniCObject *obj, BOOL *flag, void *p2 )
+BOOL WdeAniCDestroy( WdeAniCObject *obj, BOOL *flag, BOOL *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
@@ -407,8 +410,7 @@ void WdeAniCGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         mask |= ACS_AUTOPLAY;
     }
 
-    SETCTL_STYLE( o_info->info.c.info,
-                  (GETCTL_STYLE( o_info->info.c.info ) & 0xffff0000) | mask );
+    SETCTL_STYLE( o_info->info.c.info, (GETCTL_STYLE( o_info->info.c.info ) & 0xffff0000) | mask );
 
     // get the extended control settings
     WdeEXGetDefineInfo( o_info, hDlg );

@@ -65,18 +65,21 @@ WINEXPORT LRESULT CALLBACK WdeScrollSuperClassProc( HWND, UINT, WPARAM, LPARAM )
 /****************************************************************************/
 static OBJPTR   WdeMakeScroll( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
 static OBJPTR   WdeScrollCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
-static BOOL     WdeScrollDestroy( WdeScrollObject *, BOOL *, void * );
-static BOOL     WdeScrollResize( WdeScrollObject *, RECT *, BOOL * );
-static BOOL     WdeScrollMove( WdeScrollObject *, POINT *, BOOL * );
-static BOOL     WdeScrollValidateAction( WdeScrollObject *, ACTION *, void * );
-static BOOL     WdeScrollCopyObject( WdeScrollObject *, WdeScrollObject **, WdeScrollObject * );
-static BOOL     WdeScrollIdentify( WdeScrollObject *, OBJ_ID *, void * );
-static BOOL     WdeScrollGetWndProc( WdeScrollObject *, WNDPROC *, void * );
-static BOOL     WdeScrollGetWindowClass( WdeScrollObject *, char **, void * );
-static BOOL     WdeScrollDefine( WdeScrollObject *, POINT *, void * );
 static void     WdeScrollSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeScrollGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeScrollDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+
+#define pick(e,n,c) BOOL WdeScroll ## n ## c
+static pick_ACT_DESTROY( WdeScrollObject );
+static pick_ACT_MOVE( WdeScrollObject );
+static pick_ACT_RESIZE( WdeScrollObject );
+static pick_ACT_COPY( WdeScrollObject );
+static pick_ACT_VALIDATE_ACTION( WdeScrollObject );
+static pick_ACT_IDENTIFY( WdeScrollObject );
+static pick_ACT_GET_WINDOW_CLASS( WdeScrollObject );
+static pick_ACT_DEFINE( WdeScrollObject );
+static pick_ACT_GET_WND_PROC( WdeScrollObject );
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -89,15 +92,17 @@ static WNDPROC                  WdeOriginalScrollProc;
 //static WNDPROC                WdeScrollProc;
 
 static DISPATCH_ITEM WdeScrollActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeScrollDestroy        },
-    { MOVE,             (DISPATCH_RTN *)WdeScrollMove           },
-    { RESIZE,           (DISPATCH_RTN *)WdeScrollResize         },
-    { COPY,             (DISPATCH_RTN *)WdeScrollCopyObject     },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeScrollValidateAction },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeScrollIdentify       },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeScrollGetWindowClass },
-    { DEFINE,           (DISPATCH_RTN *)WdeScrollDefine         },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeScrollGetWndProc     }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeScroll ## n},
+    pick_ACT_DESTROY( WdeScrollObject )
+    pick_ACT_MOVE( WdeScrollObject )
+    pick_ACT_RESIZE( WdeScrollObject )
+    pick_ACT_COPY( WdeScrollObject )
+    pick_ACT_VALIDATE_ACTION( WdeScrollObject )
+    pick_ACT_IDENTIFY( WdeScrollObject )
+    pick_ACT_GET_WINDOW_CLASS( WdeScrollObject )
+    pick_ACT_DEFINE( WdeScrollObject )
+    pick_ACT_GET_WND_PROC( WdeScrollObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS     (sizeof( WdeScrollActions ) / sizeof( DISPATCH_ITEM ))
@@ -273,7 +278,7 @@ void WdeScrollFini( void )
     FreeProcInstance( WdeScrollDispatch );
 }
 
-BOOL WdeScrollDestroy( WdeScrollObject *obj, BOOL *flag, void *p2 )
+BOOL WdeScrollDestroy( WdeScrollObject *obj, BOOL *flag, BOOL *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );

@@ -32,8 +32,8 @@
 
 typedef struct oitem {
     FARPROC invoke;
-    OBJPTR  parent;
-    OBJPTR  handle;
+    ANYOBJ  *parent;
+    ANYOBJ  *handle;
     RECT    rect;
     int     priority;
 } OITEM;

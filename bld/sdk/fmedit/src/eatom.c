@@ -52,38 +52,43 @@ WINEXPORT LRESULT CALLBACK EAtomWndProc( HWND, UINT, WPARAM, LPARAM );
 /* forward references */
 
 static BOOL CALLBACK EAtomDispatch( ACTION, EATOM *, void *, void * );
-static BOOL EAtomLocation( OBJPTR, void *, void * );
-static BOOL EAtomMove( OBJPTR, void *, void * );
-static BOOL EAtomResize( OBJPTR, void *, void * );
-static BOOL EAtomRegister( OBJPTR, void *, void * );
-static BOOL EAtomRecreate( OBJPTR, void *, void * );
-static BOOL EAtomDestroy( OBJPTR, void *, void * );
-static BOOL EAtomValidateAction( OBJPTR, void *, void * );
-static BOOL EAtomDraw( OBJPTR, void *, void * );
-static BOOL EAtomGetObjptr( OBJPTR, void *, void * );
-static BOOL EAtomUndoMove( OBJPTR, void *, void * );
-static BOOL EAtomRemoveFromParent( OBJPTR, void *, void * );
-static BOOL EAtomGetAnchor( OBJPTR, void *, void * );
-static BOOL EAtomNotify( OBJPTR, void *, void * );
-static BOOL EAtomIsMarkValid( OBJPTR, void *, void * );
 
 static void ShowEAtomRect( EATOM * obj );
 
+#define pick(e,n,c) BOOL EAtom ## n ## c
+static pick_ACT_LOCATE( EATOM );
+static pick_ACT_MOVE( EATOM );
+static pick_ACT_RESIZE( EATOM );
+static pick_ACT_REGISTER( EATOM );
+static pick_ACT_RECREATE( EATOM );
+static pick_ACT_DESTROY( EATOM );
+static pick_ACT_VALIDATE_ACTION( EATOM );
+static pick_ACT_DRAW( EATOM );
+static pick_ACT_GET_OBJPTR( EATOM );
+static pick_ACT_UNDO_MOVE( EATOM );
+static pick_ACT_REMOVE_FROM_PARENT( EATOM );
+static pick_ACT_GET_ANCHOR( EATOM );
+static pick_ACT_NOTIFY( EATOM );
+static pick_ACT_IS_MARK_VALID( EATOM );
+#undef pick
+
 static DISPATCH_ITEM EAtomActions[] = {
-    { LOCATE,               EAtomLocation           },
-    { MOVE,                 EAtomMove               },
-    { RESIZE,               EAtomResize             },
-    { REGISTER,             EAtomRegister           },
-    { RECREATE,             EAtomRecreate           },
-    { DESTROY,              EAtomDestroy            },
-    { VALIDATE_ACTION,      EAtomValidateAction     },
-    { DRAW,                 EAtomDraw               },
-    { GET_OBJPTR,           EAtomGetObjptr          },
-    { UNDO_MOVE,            EAtomUndoMove           },
-    { REMOVE_FROM_PARENT,   EAtomRemoveFromParent   },
-    { GET_ANCHOR,           EAtomGetAnchor          },
-    { NOTIFY,               EAtomNotify             },
-    { IS_MARK_VALID,        EAtomIsMarkValid        }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)EAtom ## n},
+    pick_ACT_LOCATE( EATOM )
+    pick_ACT_MOVE( EATOM )
+    pick_ACT_RESIZE( EATOM )
+    pick_ACT_REGISTER( EATOM )
+    pick_ACT_RECREATE( EATOM )
+    pick_ACT_DESTROY( EATOM )
+    pick_ACT_VALIDATE_ACTION( EATOM )
+    pick_ACT_DRAW( EATOM )
+    pick_ACT_GET_OBJPTR( EATOM )
+    pick_ACT_UNDO_MOVE( EATOM )
+    pick_ACT_REMOVE_FROM_PARENT( EATOM )
+    pick_ACT_GET_ANCHOR( EATOM )
+    pick_ACT_NOTIFY( EATOM )
+    pick_ACT_IS_MARK_VALID( EATOM )
+    #undef pick
 };
 
 #define MAX_ACTIONS (sizeof( EAtomActions ) / sizeof( DISPATCH_ITEM ))
@@ -106,12 +111,10 @@ static BOOL CALLBACK EAtomDispatch( ACTION id, EATOM *obj, void *p1, void *p2 )
     return( FALSE );
 }
 
-static BOOL EAtomValidateAction( OBJPTR _obj, void *_idptr, void *p2 )
+static BOOL EAtomValidateAction( EATOM *obj, ACTION *idptr, void *p2 )
 /********************************************************************/
 {
     /* check if the desired action is valid for and EATOM */
-    EATOM   *obj = _obj;
-    ACTION  *idptr = _idptr;
     int     i;
 
     obj = obj;        /* ref'd to avoid warning */
@@ -180,12 +183,10 @@ OBJPTR EAtomCreate( OBJPTR parent, RECT *loc, OBJPTR handle )
 }
 
 
-static BOOL EAtomLocation( OBJPTR _obj, void *_rect, void *p2 )
-/*************************************************************/
+static BOOL EAtomLocation( EATOM *obj, RECT *rect, void *p2 )
+/***********************************************************/
 {
     /* return the location of the atom */
-    EATOM   *obj = _obj;
-    RECT    *rect = _rect;
     p2 = p2;          /* ref'd to avoid warning */
     *rect = obj->rect;
     return( TRUE );
@@ -249,14 +250,12 @@ static void HideEAtomRect( EATOM *obj )
     }
 }
 
-static BOOL EAtomMove( OBJPTR _obj, void *_offset, void *p2 )
-/***********************************************************/
+static BOOL EAtomMove( EATOM *obj, POINT *offset, BOOL *p2 )
+/**********************************************************/
 {
     /*  Do the move operation.  The amount to move is stored in the left and
      *  top values of the passed rect.
      */
-    EATOM   *obj = _obj;
-    POINT   *offset = _offset;
     POINT   scrolloffset;
 
     p2 = p2;          /* ref'd to avoid warning */
@@ -280,14 +279,12 @@ static BOOL EAtomMove( OBJPTR _obj, void *_offset, void *p2 )
 }
 
 
-static BOOL EAtomResize( OBJPTR _obj, void *_info, void *p2 )
-/***********************************************************/
+static BOOL EAtomResize( EATOM *obj, RECT *info, BOOL *p2 )
+/*********************************************************/
 {
     /*  Do the resize operation.  The amount to resize is stored in the left and
      *  top values of the passed rect.
      */
-    EATOM   *obj = _obj;
-    RECT    *info = _info;
     POINT   point;
     POINT   scrolloffset;
     RECT    drawrect;
@@ -348,14 +345,12 @@ static BOOL EAtomResize( OBJPTR _obj, void *_info, void *p2 )
 }
 
 
-static BOOL EAtomRecreate( OBJPTR _obj, void *_pt, void *p2 )
-/***********************************************************/
+static BOOL EAtomRecreate( EATOM *obj, POINT *pt, void *p2 )
+/**********************************************************/
 {
     /*  Recreate the passed object by using the point in anchor as one
      *  corner and the passed point as the other
      */
-    EATOM   *obj = _obj;
-    POINT   *pt = _pt;
     POINT   scrolloffset;
     RECT    drawrect;
     RECT    newrect;
@@ -407,11 +402,10 @@ static BOOL EAtomRecreate( OBJPTR _obj, void *_pt, void *p2 )
 }
 
 
-static BOOL EAtomRegister( OBJPTR _obj, void *p1, void *p2 )
-/**********************************************************/
+static BOOL EAtomRegister( EATOM *obj, void *p1, void *p2 )
+/*********************************************************/
 {
     /* register the object */
-    EATOM       *obj = _obj;
     BOOL        ret;
     OBJPTR      new;
     CURROBJPTR  currobj;
@@ -479,11 +473,10 @@ static BOOL EAtomRegister( OBJPTR _obj, void *p1, void *p2 )
     return( ret );
 }
 
-static BOOL EAtomDestroy( OBJPTR _obj, void *p1, void *p2 )
-/*********************************************************/
+static BOOL EAtomDestroy( EATOM *obj, BOOL *p1, BOOL *p2 )
+/********************************************************/
 {
     /* destroy the EATOM */
-    EATOM   *obj = _obj;
     p1 = p1;          /* ref'd to avoid warning */
     p2 = p2;          /* ref'd to avoid warning */
 
@@ -499,12 +492,9 @@ static BOOL EAtomDestroy( OBJPTR _obj, void *p1, void *p2 )
     return( TRUE );
 }
 
-static BOOL EAtomDraw( OBJPTR _obj, void *_rect, void *_hdc )
-/***********************************************************/
+static BOOL EAtomDraw( EATOM *obj, RECT *rect, HDC *hdc )
+/*******************************************************/
 {
-    EATOM   *obj = _obj;
-    RECT    *rect = _rect;
-    HDC     *hdc = _hdc;
     RECT    intersect;
 
     hdc = hdc;            /* ref'd to avoid warning */
@@ -515,12 +505,10 @@ static BOOL EAtomDraw( OBJPTR _obj, void *_rect, void *_hdc )
     return( TRUE );
 }
 
-static BOOL EAtomGetObjptr( OBJPTR _obj, void *_newobj, void *p2 )
-/****************************************************************/
+static BOOL EAtomGetObjptr( EATOM *obj, ANYOBJ **newobj, void *p2 )
+/*****************************************************************/
 {
     /* Get the OBJPTR of the object associated with this EATOM */
-    EATOM   *obj = _obj;
-    OBJPTR  *newobj = _newobj;
     p2 = p2;          /* ref'd to avoid warning */
 
     if( newobj != NULL ) {
@@ -529,10 +517,9 @@ static BOOL EAtomGetObjptr( OBJPTR _obj, void *_newobj, void *p2 )
     return( TRUE );
 }
 
-static BOOL EAtomUndoMove( OBJPTR _obj, void *p1, void *p2 )
-/**********************************************************/
+static BOOL EAtomUndoMove( EATOM *obj, void *p1, void *p2 )
+/*********************************************************/
 {
-    EATOM   *obj = _obj;
     p1 = p1;          /* ref'd to avoid warning */
     p2 = p2;          /* ref'd to avoid warning */
 
@@ -547,10 +534,9 @@ static BOOL EAtomUndoMove( OBJPTR _obj, void *p1, void *p2 )
     }
 }
 
-static BOOL EAtomRemoveFromParent( OBJPTR _obj, void *p1, void *p2 )
-/******************************************************************/
+static BOOL EAtomRemoveFromParent( EATOM *obj, void *p1, void *p2 )
+/*****************************************************************/
 {
-    EATOM   *obj = _obj;
     p1 = p1;          /* ref'd to avoid warning */
     p2 = p2;          /* ref'd to avoid warning */
 
@@ -564,37 +550,32 @@ static BOOL EAtomRemoveFromParent( OBJPTR _obj, void *p1, void *p2 )
 }
 
 
-static BOOL EAtomGetAnchor( OBJPTR _obj, void *_pt, void *p2 )
-/************************************************************/
+static BOOL EAtomGetAnchor( EATOM *obj, POINT *pt, void *p2 )
+/***********************************************************/
 {
-    EATOM   *obj = _obj;
-    POINT   *pt = _pt;
     p2 = p2;
     *pt = obj->anchor;
     return( TRUE );
 }
 
-static BOOL EAtomIsMarkValid( OBJPTR obj, void *valid, void *p2 )
+static BOOL EAtomIsMarkValid( EATOM *obj, BOOL *valid, void *p2 )
 /***************************************************************/
 {
     obj = obj;
     p2 = p2;
 
-    *(BOOL *)valid = FALSE;
+    *valid = FALSE;
     return( TRUE );
 }
 
-static BOOL EAtomNotify( OBJPTR _obj, void *_id, void *p2 )
-/*********************************************************/
+static BOOL EAtomNotify( EATOM *obj, NOTE_ID *note, void *p2 )
+/************************************************************/
 {
-    EATOM   *obj = _obj;
-    NOTE_ID *id = _id;
-
-    switch( *id ) {
+    switch( *note ) {
     case MOVE_START:
     case MOVE_END:
         if( obj->obj != NULL ) {
-            return( Forward( obj->obj, NOTIFY, id, p2 ) );
+            return( Forward( obj->obj, NOTIFY, note, p2 ) );
         }
         return( FALSE );
     default:

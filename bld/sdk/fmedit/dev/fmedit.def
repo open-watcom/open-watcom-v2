@@ -3,6 +3,8 @@
 #ifndef _FMEDIT_INCLUDE
 #define _FMEDIT_INCLUDE
 
+#include "bool.h"
+
 #define FMEDITAPI   WINAPI
 
 #if defined( FMEDITDLL )
@@ -24,6 +26,7 @@ typedef enum {
    SCROLL_BOTH
 } SCR_CONFIG;
 
+typedef void                ANYOBJ;
 typedef void                *OBJPTR;
 typedef union object_defn   *OBJHANDLE;
 typedef union object_defn   OBJECT_DEFN;

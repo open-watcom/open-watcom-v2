@@ -66,16 +66,19 @@ WINEXPORT LRESULT CALLBACK WdeCBoxSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 static OBJPTR   WdeMakeCBox( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
 static OBJPTR   WdeCBCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
-static BOOL     WdeCBoxDestroy( WdeCBoxObject *, BOOL *, void * );
-static BOOL     WdeCBoxValidateAction( WdeCBoxObject *, ACTION *, void * );
-static BOOL     WdeCBoxCopyObject( WdeCBoxObject *, WdeCBoxObject **, WdeCBoxObject * );
-static BOOL     WdeCBoxIdentify( WdeCBoxObject *, OBJ_ID *, void * );
-static BOOL     WdeCBoxGetWndProc( WdeCBoxObject *, WNDPROC *, void * );
-static BOOL     WdeCBoxGetWindowClass( WdeCBoxObject *, char **, void * );
-static BOOL     WdeCBoxDefine( WdeCBoxObject *, POINT *, void * );
 static void     WdeCBoxSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeCBoxGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeCBoxDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+
+#define pick(e,n,c) BOOL WdeCBox ## n ## c
+static pick_ACT_DESTROY( WdeCBoxObject );
+static pick_ACT_COPY( WdeCBoxObject );
+static pick_ACT_VALIDATE_ACTION( WdeCBoxObject );
+static pick_ACT_IDENTIFY( WdeCBoxObject );
+static pick_ACT_GET_WINDOW_CLASS( WdeCBoxObject );
+static pick_ACT_DEFINE( WdeCBoxObject );
+static pick_ACT_GET_WND_PROC( WdeCBoxObject );
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -88,13 +91,15 @@ static WNDPROC                  WdeOriginalCBoxProc;
 //static WNDPROC                WdeCBoxProc;
 
 static DISPATCH_ITEM WdeCBoxActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeCBoxDestroy              },
-    { COPY,             (DISPATCH_RTN *)WdeCBoxCopyObject           },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeCBoxValidateAction       },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeCBoxIdentify             },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeCBoxGetWindowClass       },
-    { DEFINE,           (DISPATCH_RTN *)WdeCBoxDefine               },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeCBoxGetWndProc           }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeCBox ## n},
+    pick_ACT_DESTROY( WdeCBoxObject )
+    pick_ACT_COPY( WdeCBoxObject )
+    pick_ACT_VALIDATE_ACTION( WdeCBoxObject )
+    pick_ACT_IDENTIFY( WdeCBoxObject )
+    pick_ACT_GET_WINDOW_CLASS( WdeCBoxObject )
+    pick_ACT_DEFINE( WdeCBoxObject )
+    pick_ACT_GET_WND_PROC( WdeCBoxObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS      (sizeof( WdeCBoxActions ) / sizeof( DISPATCH_ITEM ))
@@ -253,7 +258,7 @@ void WdeCBoxFini( void )
     FreeProcInstance( WdeCBoxDispatch );
 }
 
-BOOL WdeCBoxDestroy( WdeCBoxObject *obj, BOOL *flag, void *p2 )
+BOOL WdeCBoxDestroy( WdeCBoxObject *obj, BOOL *flag, BOOL *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
