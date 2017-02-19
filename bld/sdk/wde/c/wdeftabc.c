@@ -44,6 +44,20 @@
 #include "wdecctl.h"
 #include "wdeftabc.h"
 
+
+/****************************************************************************/
+/* macro definitions                                                        */
+/****************************************************************************/
+
+#define pick_ACTS(o) \
+    pick_ACT_DESTROY(o,pick) \
+    pick_ACT_COPY(o,pick) \
+    pick_ACT_VALIDATE_ACTION(o,pick) \
+    pick_ACT_IDENTIFY(o,pick) \
+    pick_ACT_GET_WINDOW_CLASS(o,pick) \
+    pick_ACT_DEFINE(o,pick) \
+    pick_ACT_GET_WND_PROC(o,pick)
+
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
@@ -57,7 +71,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL    CALLBACK WdeTabCDispatcher( ACTION, WdeTabCObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeTabCDispatcher( ACTION, WdeTabCObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeTabCSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -69,14 +83,8 @@ static void     WdeTabCSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeTabCGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeTabCDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
-#define pick(e,n,c) BOOL WdeTabC ## n ## c
-static pick_ACT_DESTROY( WdeTabCObject );
-static pick_ACT_COPY( WdeTabCObject );
-static pick_ACT_VALIDATE_ACTION( WdeTabCObject );
-static pick_ACT_IDENTIFY( WdeTabCObject );
-static pick_ACT_GET_WINDOW_CLASS( WdeTabCObject );
-static pick_ACT_DEFINE( WdeTabCObject );
-static pick_ACT_GET_WND_PROC( WdeTabCObject );
+#define pick(e,n,c) static bool WdeTabC ## n ## c;
+    pick_ACTS( WdeTabCObject )
 #undef pick
 
 /****************************************************************************/
@@ -93,13 +101,7 @@ static WNDPROC                  WdeOriginalTabCProc;
 
 static DISPATCH_ITEM WdeTabCActions[] = {
     #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeTabC ## n},
-    pick_ACT_DESTROY( WdeTabCObject )
-    pick_ACT_COPY( WdeTabCObject )
-    pick_ACT_VALIDATE_ACTION( WdeTabCObject )
-    pick_ACT_IDENTIFY( WdeTabCObject )
-    pick_ACT_GET_WINDOW_CLASS( WdeTabCObject )
-    pick_ACT_DEFINE( WdeTabCObject )
-    pick_ACT_GET_WND_PROC( WdeTabCObject )
+    pick_ACTS( WdeTabCObject )
     #undef pick
 };
 
@@ -110,13 +112,11 @@ WINEXPORT OBJPTR CALLBACK WdeTabCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR h
     if( handle == NULL ) {
         return( WdeMakeTabC( parent, obj_rect, handle, 0, "", TABCNTL_OBJ ) );
     } else {
-        return( WdeTCCreate( parent, obj_rect, NULL, TABCNTL_OBJ,
-                             (WdeDialogBoxControl *)handle ) );
+        return( WdeTCCreate( parent, obj_rect, NULL, TABCNTL_OBJ, (WdeDialogBoxControl *)handle ) );
     }
 }
 
-OBJPTR WdeMakeTabC( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                    DialogStyle style, char *text, OBJ_ID id )
+OBJPTR WdeMakeTabC( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -187,7 +187,7 @@ OBJPTR WdeTCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-WINEXPORT BOOL CALLBACK WdeTabCDispatcher( ACTION act, WdeTabCObject *obj, void *p1, void *p2 )
+WINEXPORT bool CALLBACK WdeTabCDispatcher( ACTION act, WdeTabCObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -233,7 +233,7 @@ bool WdeTabCInit( bool first )
     WdeDefaultTabC = WdeAllocDialogBoxControl();
     if( WdeDefaultTabC == NULL ) {
         WdeWriteTrail( "WdeTabCInit: Alloc of control failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* set up the default control structure */
@@ -248,7 +248,7 @@ bool WdeTabCInit( bool first )
     SETCTL_CLASSID( WdeDefaultTabC, WdeStrToControlClass( WWC_TABCONTROL ) );
 
     WdeTabCDispatch = MakeProcInstance( (FARPROC)WdeTabCDispatcher, WdeGetAppInstance() );
-    return( TRUE );
+    return( true );
 }
 
 void WdeTabCFini( void )
@@ -257,22 +257,22 @@ void WdeTabCFini( void )
     FreeProcInstance( WdeTabCDispatch );
 }
 
-BOOL WdeTabCDestroy( WdeTabCObject *obj, bool *flag, bool *p2 )
+bool WdeTabCDestroy( WdeTabCObject *obj, bool *flag, bool *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeTabCDestroy: Control DESTROY failed" );
-        return( FALSE );
+        return( false );
     }
 
     WRMemFree( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTabCValidateAction( WdeTabCObject *obj, ACTION *act, void *p2 )
+bool WdeTabCValidateAction( WdeTabCObject *obj, ACTION *act, void *p2 )
 {
     int     i;
 
@@ -281,25 +281,25 @@ BOOL WdeTabCValidateAction( WdeTabCObject *obj, ACTION *act, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeTabCActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-BOOL WdeTabCCopyObject( WdeTabCObject *obj, WdeTabCObject **new, WdeTabCObject *handle )
+bool WdeTabCCopyObject( WdeTabCObject *obj, WdeTabCObject **new, WdeTabCObject *handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeTabCCopyObject: Invalid new object!" );
-        return( FALSE );
+        return( false );
     }
 
     *new = (WdeTabCObject *)WRMemAlloc( sizeof( WdeTabCObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeTabCCopyObject: Object malloc failed" );
-        return( FALSE );
+        return( false );
     }
 
     (*new)->dispatcher = obj->dispatcher;
@@ -314,23 +314,23 @@ BOOL WdeTabCCopyObject( WdeTabCObject *obj, WdeTabCObject **new, WdeTabCObject *
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeTabCCopyObject: Control not created!" );
         WRMemFree( *new );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTabCIdentify( WdeTabCObject *obj, OBJ_ID *id, void *p2 )
+bool WdeTabCIdentify( WdeTabCObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTabCGetWndProc( WdeTabCObject *obj, WNDPROC *proc, void *p2 )
+bool WdeTabCGetWndProc( WdeTabCObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -338,10 +338,10 @@ BOOL WdeTabCGetWndProc( WdeTabCObject *obj, WNDPROC *proc, void *p2 )
 
     *proc = WdeTabCSuperClassProc;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTabCGetWindowClass( WdeTabCObject *obj, char **class, void *p2 )
+bool WdeTabCGetWindowClass( WdeTabCObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -349,10 +349,10 @@ BOOL WdeTabCGetWindowClass( WdeTabCObject *obj, char **class, void *p2 )
 
     *class = WWC_TABCONTROL;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTabCDefine( WdeTabCObject *obj, POINT *pnt, void *p2 )
+bool WdeTabCDefine( WdeTabCObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 

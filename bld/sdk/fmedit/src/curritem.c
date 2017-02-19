@@ -39,27 +39,26 @@
 #include "memory.def"
 
 
+#define pick_ACTS(o) \
+    pick_ACT_DELETE_OBJECT(o,pick) \
+    pick_ACT_DESTROY(o,pick) \
+    pick_ACT_VALIDATE_ACTION(o,pick) \
+    pick_ACT_GET_OBJPTR(o,pick) \
+    pick_ACT_SHOW_SEL_BOXES(o,pick)
+
 WINEXPORT LRESULT CALLBACK CurrItemWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /* forward references */
 
 static bool CALLBACK CurrItemDispatch( ACTION, CURRITEM *, void *, void * );
 
-#define pick(e,n,c) bool CurrItem ## n ## c
-static pick_ACT_DELETE_OBJECT( CURRITEM );
-static pick_ACT_DESTROY( CURRITEM );
-static pick_ACT_VALIDATE_ACTION( CURRITEM );
-static pick_ACT_GET_OBJPTR( CURRITEM );
-static pick_ACT_SHOW_SEL_BOXES( CURRITEM );
+#define pick(e,n,c) static bool CurrItem ## n ## c;
+    pick_ACTS( CURRITEM )
 #undef pick
 
 static DISPATCH_ITEM CurrItemActions[] = {
     #define pick(e,n,c) {e, (DISPATCH_RTN *)CurrItem ## n},
-    pick_ACT_DELETE_OBJECT( CURRITEM )
-    pick_ACT_DESTROY( CURRITEM )
-    pick_ACT_VALIDATE_ACTION( CURRITEM )
-    pick_ACT_GET_OBJPTR( CURRITEM )
-    pick_ACT_SHOW_SEL_BOXES( CURRITEM )
+    pick_ACTS( CURRITEM )
     #undef pick
 };
 
@@ -96,7 +95,7 @@ static bool CurrItemValidateAction( CURRITEM *ci, ACTION *idptr, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( CurrItemActions[i].id == *idptr ) {
-            return( TRUE );
+            return( true );
         }
     }
     return( Forward( ci->obj, VALIDATE_ACTION, idptr, p2 ) );

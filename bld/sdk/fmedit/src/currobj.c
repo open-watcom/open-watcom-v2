@@ -36,31 +36,28 @@
 #include "currobj.h"
 #include "memory.def"
 
+
+#define pick_ACTS(o) \
+    pick_ACT_DESTROY(o,pick) \
+    pick_ACT_VALIDATE_ACTION(o,pick) \
+    pick_ACT_GET_OBJECT(o,pick) \
+    pick_ACT_ADD_OBJECT(o,pick) \
+    pick_ACT_DELETE_OBJECT(o,pick) \
+    pick_ACT_GET_PRIMARY(o,pick) \
+    pick_ACT_SHOW_SEL_BOXES(o,pick) \
+    pick_ACT_NOTIFY(o,pick)
+
 /* forward references */
 
 static bool CALLBACK CurrObjDispatch( ACTION, CURROBJ *, void *, void * );
 
-#define pick(e,n,c)    bool CurrObj ## n ## c
-static pick_ACT_DESTROY( CURROBJ );
-static pick_ACT_VALIDATE_ACTION( CURROBJ );
-static pick_ACT_GET_OBJECT( CURROBJ );
-static pick_ACT_ADD_OBJECT( CURROBJ );
-static pick_ACT_DELETE_OBJECT( CURROBJ );
-static pick_ACT_GET_PRIMARY( CURROBJ );
-static pick_ACT_SHOW_SEL_BOXES( CURROBJ );
-static pick_ACT_NOTIFY( CURROBJ );
+#define pick(e,n,c)    static bool CurrObj ## n ## c;
+    pick_ACTS( CURROBJ )
 #undef pick
 
 static DISPATCH_ITEM CurrObjActions[] = {
     #define pick(e,n,c)    {e, (DISPATCH_RTN *)CurrObj ## n},
-    pick_ACT_DESTROY( CURROBJ )
-    pick_ACT_VALIDATE_ACTION( CURROBJ )
-    pick_ACT_GET_OBJECT( CURROBJ )
-    pick_ACT_ADD_OBJECT( CURROBJ )
-    pick_ACT_DELETE_OBJECT( CURROBJ )
-    pick_ACT_GET_PRIMARY( CURROBJ )
-    pick_ACT_SHOW_SEL_BOXES( CURROBJ )
-    pick_ACT_NOTIFY( CURROBJ )
+    pick_ACTS( CURROBJ )
     #undef pick
 };
 
@@ -96,7 +93,7 @@ static bool CurrObjValidateAction( CURROBJ *c, ACTION *idptr, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( CurrObjActions[i].id == *idptr ) {
-            return( TRUE );
+            return( true );
         }
     }
     return( false );
@@ -134,7 +131,7 @@ static bool CurrObjDestroy( CURROBJ *c, bool *p1, bool *p2 )
     return( true );
 }
 
-static void NotifyCurrObj( CURROBJ *c, ANYOBJ *obj, BOOL add_obj )
+static void NotifyCurrObj( CURROBJ *c, ANYOBJ *obj, bool add_obj )
 /****************************************************************/
 {
     Notify( obj, CURRENT_OBJECT, &add_obj );
@@ -177,7 +174,7 @@ static bool CurrObjAddObject( CURROBJ *c, ANYOBJ *obj, bool *reset )
         ObjMark( c->prevprimary );
     }
     Forward( new, SHOW_SEL_BOXES, &c->show_sel_boxes, NULL );
-    NotifyCurrObj( c, new, TRUE );
+    NotifyCurrObj( c, new, true );
     return( true );
 }
 
@@ -189,7 +186,7 @@ static bool CurrObjDeleteObject( CURROBJ *c, ANYOBJ *obj, bool *curritem )
 
     if( *curritem ) {
         if( ListFindElt( c->currobjlist, obj ) != NULL ) {
-            NotifyCurrObj( c, obj, FALSE );
+            NotifyCurrObj( c, obj, false );
             ListRemoveElt( &c->currobjlist, obj );
             if( c->primaryobj == obj ) {
                 if( c->currobjlist != NULL ) {
@@ -213,7 +210,7 @@ static bool CurrObjDeleteObject( CURROBJ *c, ANYOBJ *obj, bool *curritem )
             clist = ListNext( clist );
             if( GetObjptr( currobj ) == obj ) {
                 clist = NULL;
-                NotifyCurrObj( c, obj, FALSE );
+                NotifyCurrObj( c, obj, false );
                 ListRemoveElt( &c->currobjlist, currobj );
                 if( c->primaryobj == currobj ) {
                     if( c->currobjlist != NULL ) {
@@ -279,7 +276,7 @@ static bool CurrObjGetPrimary( CURROBJ *c, ANYOBJ **primary, bool *get )
                     ObjMark( c->prevprimary );
                 }
                 ObjMark( *primary );
-                NotifyCurrObj( c, *primary, TRUE );
+                NotifyCurrObj( c, *primary, true );
             }
         }
         return( true );

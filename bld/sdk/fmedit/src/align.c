@@ -106,7 +106,7 @@ extern void Align( WPARAM wparam )
                 offset.y = primrect.bottom - rect.bottom;
                 break;
             }
-            Move( currobj, &offset, TRUE );
+            Move( currobj, &offset, true );
         }
         currobj = GetNextECurrObject( currobj );
     }

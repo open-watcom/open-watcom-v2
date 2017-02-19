@@ -68,7 +68,7 @@ bool WdeSetEditMode( WdeResInfo *info, bool new_mode )
         old_mode = info->editting;
         info->editting = new_mode;
     } else {
-        old_mode = FALSE;
+        old_mode = false;
     }
 
     return( old_mode );
@@ -118,7 +118,7 @@ void WdeInitEditClass( void )
     WdeFormsBrush = CreateBrushIndirect( &lbrush );
 
     if( WdeEditFont == NULL ) {
-        use_default = TRUE;
+        use_default = true;
         text = WdeAllocRCString( WDE_EDITWINDOWFONT );
         if( text != NULL ) {
             cp = (char *)_mbschr( (unsigned char const *)text, '.' );
@@ -126,7 +126,7 @@ void WdeInitEditClass( void )
                 *cp = '\0';
                 cp++;
                 point_size = atoi( cp );
-                use_default = FALSE;
+                use_default = false;
             }
         }
 
@@ -171,7 +171,7 @@ bool WdeRegisterEditClass( HINSTANCE app_inst )
     /* register the edit window class */
     if( !RegisterClass( &wc ) ) {
         WdeDisplayErrorMsg( WDE_EDITREGISTERCLASSFAILED );
-        return( FALSE );
+        return( false );
     }
 
     /* fill in the window class structure for the edit window */
@@ -189,10 +189,10 @@ bool WdeRegisterEditClass( HINSTANCE app_inst )
     /* register the edit window class */
     if( !RegisterClass( &wc ) ) {
         WdeDisplayErrorMsg( WDE_EDITREGISTERCLASSFAILED );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeDestroyEditWindows( WdeResInfo *info )
@@ -220,7 +220,7 @@ bool WdeCreateEditWindows( WdeResInfo *info )
     HINSTANCE app_inst;
 
     if( info == NULL || info->res_win == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     app_inst = WdeGetAppInstance();
@@ -233,7 +233,7 @@ bool WdeCreateEditWindows( WdeResInfo *info )
 
     if( info->forms_win == NULL ) {
         WdeWriteTrail( "WdeCreateEditWindow: failed to create forms window!" );
-        return( FALSE );
+        return( false );
     }
 
     GetClientRect( info->forms_win, &rect );
@@ -244,7 +244,7 @@ bool WdeCreateEditWindows( WdeResInfo *info )
 
     if( info->edit_win == NULL ) {
         WdeWriteTrail( "WdeCreateEditWindow: failed to create forms window!" );
-        return( FALSE );
+        return( false );
     }
 
     SET_WNDINFO( info->edit_win, (LONG_PTR)info );
@@ -252,7 +252,7 @@ bool WdeCreateEditWindows( WdeResInfo *info )
 
     SetWindowPos( info->forms_win, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeResizeEditWindows( WdeResInfo *info )
@@ -261,7 +261,7 @@ bool WdeResizeEditWindows( WdeResInfo *info )
 
     if( info == NULL || info->res_win == NULL ||
         info->forms_win == NULL || info->edit_win == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     GetClientRect( info->res_win, &rect );
@@ -274,7 +274,7 @@ bool WdeResizeEditWindows( WdeResInfo *info )
 
     MoveWindow( info->edit_win, 0, 0, rect.right - rect.left, rect.bottom - rect.top, TRUE );
 
-    return( TRUE );
+    return( true );
 }
 
 HFONT WdeGetEditFont( void )
@@ -292,7 +292,7 @@ LRESULT WdePassToEdit( UINT message, WPARAM wParam, LPARAM lParam )
         return( SendMessage( info->forms_win, message, wParam, lParam ) );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 WINEXPORT LRESULT CALLBACK WdeEditWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )

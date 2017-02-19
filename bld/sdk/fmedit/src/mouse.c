@@ -149,7 +149,6 @@ static void ResizeBegin( POINT pt, WORD ks, OBJPTR d )
     OBJPTR         object;
     RECT           rect;
     RECT           offrect;
-    NOTE_ID        noteid;
     POINT          rgrid;
 
     pt = pt;    /* ref'd to avoid warning */
@@ -159,8 +158,7 @@ static void ResizeBegin( POINT pt, WORD ks, OBJPTR d )
     object = GetPrimaryObject();
     if( object != NULL ) {
         if( GetState() == EDITING ) {
-            noteid = TERMINATE_EDIT;
-            Notify( object, noteid, NULL );
+            Notify( object, TERMINATE_EDIT, NULL );
         }
         SetDefState();
         if( !ValidateAction( object, RESIZE, NULL ) ) {
@@ -195,14 +193,12 @@ static void ResetEdit( POINT pt, WORD keystate, OBJPTR d )
     /*  Reset the previous editing operation and proceed with the default
      *  action for a mouse press.
      */
-    NOTE_ID noteid;
     OBJPTR  currobj;
 
     d = d;
-    noteid = TERMINATE_EDIT;
     currobj = GetECurrObject();
     if( currobj != NULL ) {
-        Notify( currobj, noteid, NULL );
+        Notify( currobj, TERMINATE_EDIT, NULL );
     }
     SetBaseState( DORMANT );
     SetDefState();

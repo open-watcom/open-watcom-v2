@@ -38,43 +38,35 @@
 #include "oitem.def"
 #include "state.def"
 
+
+#define pick_ACTS(o) \
+    pick_ACT_REGISTER(o,pick) \
+    pick_ACT_LOCATE(o,pick) \
+    pick_ACT_MOVE(o,pick) \
+    pick_ACT_RESIZE(o,pick) \
+    pick_ACT_NOTIFY(o,pick) \
+    pick_ACT_DESTROY(o,pick) \
+    pick_ACT_VALIDATE_ACTION(o,pick) \
+    pick_ACT_CUT(o,pick) \
+    pick_ACT_COPY(o,pick) \
+    pick_ACT_PASTE(o,pick) \
+    pick_ACT_GET_PARENT(o,pick) \
+    pick_ACT_GET_PRIORITY(o,pick) \
+    pick_ACT_FIND_OBJECTS_PT(o,pick)
+
 /* forward references */
 
 static bool CALLBACK OItemDispatch( ACTION, OITEM *, void *, void * );
 
 static void OItemSetNewParent( OITEM *, ANYOBJ * );
 
-#define pick(e,n,c) bool OItem ## n ## c
-static pick_ACT_REGISTER( OITEM );
-static pick_ACT_LOCATE( OITEM );
-static pick_ACT_MOVE( OITEM );
-static pick_ACT_RESIZE( OITEM );
-static pick_ACT_NOTIFY( OITEM );
-static pick_ACT_DESTROY( OITEM );
-static pick_ACT_VALIDATE_ACTION( OITEM );
-static pick_ACT_CUT( OITEM );
-static pick_ACT_COPY( OITEM );
-static pick_ACT_PASTE( OITEM );
-static pick_ACT_GET_PARENT( OITEM );
-static pick_ACT_GET_PRIORITY( OITEM );
-static pick_ACT_FIND_OBJECTS_PT( OITEM );
+#define pick(e,n,c) static bool OItem ## n ## c;
+    pick_ACTS( OITEM )
 #undef pick
 
 static DISPATCH_ITEM OItemActions[] = {
     #define pick(e,n,c) {e, (DISPATCH_RTN *)OItem ## n},
-    pick_ACT_REGISTER( OITEM )
-    pick_ACT_LOCATE( OITEM )
-    pick_ACT_MOVE( OITEM )
-    pick_ACT_RESIZE( OITEM )
-    pick_ACT_NOTIFY( OITEM )
-    pick_ACT_DESTROY( OITEM )
-    pick_ACT_VALIDATE_ACTION( OITEM )
-    pick_ACT_CUT( OITEM )
-    pick_ACT_COPY( OITEM )
-    pick_ACT_PASTE( OITEM )
-    pick_ACT_GET_PARENT( OITEM )
-    pick_ACT_GET_PRIORITY( OITEM )
-    pick_ACT_FIND_OBJECTS_PT( OITEM )
+    pick_ACTS( OITEM )
     #undef pick
 };
 
@@ -239,11 +231,11 @@ static bool OItemResize( OITEM *oitem, RECT *rect, bool *user_action )
     return( true );
 }
 
-static void OItemSetNewParent( OITEM *oitem, OBJPTR p )
-/*****************************************************/
+static void OItemSetNewParent( OITEM *oitem, OBJPTR parent )
+/**********************************************************/
 {
     /* set the oitem parent pointer to the new parent */
-    oitem->parent = p;
+    oitem->parent = parent;
 }
 
 static bool OItemDestroy( OITEM *oitem, bool *user_action, bool *p2 )

@@ -44,6 +44,20 @@
 #include "wdecctl.h"
 #include "wdefhtky.h"
 
+
+/****************************************************************************/
+/* macro definitions                                                        */
+/****************************************************************************/
+
+#define pick_ACTS(o) \
+    pick_ACT_DESTROY(o,pick) \
+    pick_ACT_COPY(o,pick) \
+    pick_ACT_VALIDATE_ACTION(o,pick) \
+    pick_ACT_IDENTIFY(o,pick) \
+    pick_ACT_GET_WINDOW_CLASS(o,pick) \
+    pick_ACT_DEFINE(o,pick) \
+    pick_ACT_GET_WND_PROC(o,pick)
+
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
@@ -57,7 +71,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL    CALLBACK WdeHtKyDispatcher( ACTION, WdeHtKyObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeHtKyDispatcher( ACTION, WdeHtKyObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeHtKySuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -69,14 +83,8 @@ static void     WdeHtKySetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeHtKyGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeHtKyDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
-#define pick(e,n,c) BOOL WdeHtKy ## n ## c
-static pick_ACT_DESTROY( WdeHtKyObject );
-static pick_ACT_COPY( WdeHtKyObject );
-static pick_ACT_VALIDATE_ACTION( WdeHtKyObject );
-static pick_ACT_IDENTIFY( WdeHtKyObject );
-static pick_ACT_GET_WINDOW_CLASS( WdeHtKyObject );
-static pick_ACT_DEFINE( WdeHtKyObject );
-static pick_ACT_GET_WND_PROC( WdeHtKyObject );
+#define pick(e,n,c) static bool WdeHtKy ## n ## c;
+    pick_ACTS( WdeHtKyObject )
 #undef pick
 
 /****************************************************************************/
@@ -93,13 +101,7 @@ static WNDPROC                  WdeOriginalHtKyProc;
 
 static DISPATCH_ITEM WdeHtKyActions[] = {
     #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeHtKy ## n},
-    pick_ACT_DESTROY( WdeHtKyObject )
-    pick_ACT_COPY( WdeHtKyObject )
-    pick_ACT_VALIDATE_ACTION( WdeHtKyObject )
-    pick_ACT_IDENTIFY( WdeHtKyObject )
-    pick_ACT_GET_WINDOW_CLASS( WdeHtKyObject )
-    pick_ACT_DEFINE( WdeHtKyObject )
-    pick_ACT_GET_WND_PROC( WdeHtKyObject )
+    pick_ACTS( WdeHtKyObject )
     #undef pick
 };
 
@@ -110,8 +112,7 @@ WINEXPORT OBJPTR CALLBACK WdeHtKyCreate( OBJPTR parent, RECT *obj_rect, OBJPTR h
     if( handle == NULL ) {
         return( WdeMakeHtKy( parent, obj_rect, handle, 0, "", HOTKEY_OBJ ) );
     } else {
-        return( WdeHKCreate( parent, obj_rect, NULL, HOTKEY_OBJ,
-                             (WdeDialogBoxControl *)handle ) );
+        return( WdeHKCreate( parent, obj_rect, NULL, HOTKEY_OBJ, (WdeDialogBoxControl *)handle ) );
     }
 }
 
@@ -188,7 +189,7 @@ OBJPTR WdeHKCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-WINEXPORT BOOL CALLBACK WdeHtKyDispatcher( ACTION act, WdeHtKyObject *obj, void *p1, void *p2 )
+WINEXPORT bool CALLBACK WdeHtKyDispatcher( ACTION act, WdeHtKyObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -234,7 +235,7 @@ bool WdeHtKyInit( bool first )
     WdeDefaultHtKy = WdeAllocDialogBoxControl();
     if( WdeDefaultHtKy == NULL ) {
         WdeWriteTrail( "WdeHtKyInit: Alloc of control failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* set up the default control structure */
@@ -249,7 +250,7 @@ bool WdeHtKyInit( bool first )
     SETCTL_CLASSID( WdeDefaultHtKy, WdeStrToControlClass( WHOTKEY_CLASS ) );
 
     WdeHtKyDispatch = MakeProcInstance( (FARPROC)WdeHtKyDispatcher, WdeGetAppInstance() );
-    return( TRUE );
+    return( true );
 }
 
 void WdeHtKyFini( void )
@@ -258,22 +259,22 @@ void WdeHtKyFini( void )
     FreeProcInstance( WdeHtKyDispatch );
 }
 
-BOOL WdeHtKyDestroy( WdeHtKyObject *obj, bool *flag, bool *p2 )
+bool WdeHtKyDestroy( WdeHtKyObject *obj, bool *flag, bool *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeHtKyDestroy: Control DESTROY failed" );
-        return( FALSE );
+        return( false );
     }
 
     WRMemFree( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeHtKyValidateAction( WdeHtKyObject *obj, ACTION *act, void *p2 )
+bool WdeHtKyValidateAction( WdeHtKyObject *obj, ACTION *act, void *p2 )
 {
     int     i;
 
@@ -282,25 +283,25 @@ BOOL WdeHtKyValidateAction( WdeHtKyObject *obj, ACTION *act, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeHtKyActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-BOOL WdeHtKyCopyObject( WdeHtKyObject *obj, WdeHtKyObject **new, WdeHtKyObject *handle )
+bool WdeHtKyCopyObject( WdeHtKyObject *obj, WdeHtKyObject **new, WdeHtKyObject *handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeHtKyCopyObject: Invalid new object!" );
-        return( FALSE );
+        return( false );
     }
 
     *new = (WdeHtKyObject *)WRMemAlloc( sizeof( WdeHtKyObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeHtKyCopyObject: Object malloc failed" );
-        return( FALSE );
+        return( false );
     }
 
     (*new)->dispatcher = obj->dispatcher;
@@ -315,23 +316,23 @@ BOOL WdeHtKyCopyObject( WdeHtKyObject *obj, WdeHtKyObject **new, WdeHtKyObject *
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeHtKyCopyObject: Control not created!" );
         WRMemFree( *new );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeHtKyIdentify( WdeHtKyObject *obj, OBJ_ID *id, void *p2 )
+bool WdeHtKyIdentify( WdeHtKyObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeHtKyGetWndProc( WdeHtKyObject *obj, WNDPROC *proc, void *p2 )
+bool WdeHtKyGetWndProc( WdeHtKyObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -339,10 +340,10 @@ BOOL WdeHtKyGetWndProc( WdeHtKyObject *obj, WNDPROC *proc, void *p2 )
 
     *proc = WdeHtKySuperClassProc;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeHtKyGetWindowClass( WdeHtKyObject *obj, char **class, void *p2 )
+bool WdeHtKyGetWindowClass( WdeHtKyObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -350,10 +351,10 @@ BOOL WdeHtKyGetWindowClass( WdeHtKyObject *obj, char **class, void *p2 )
 
     *class = WHOTKEY_CLASS;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeHtKyDefine( WdeHtKyObject *obj, POINT *pnt, void *p2 )
+bool WdeHtKyDefine( WdeHtKyObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 

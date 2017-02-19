@@ -65,7 +65,7 @@ extern bool     WdeFindObjectsAtPt( POINT *, LIST **, LIST * );
 extern bool     WdeFindSubObjects( SUBOBJ_REQUEST *, LIST **, LIST * );
 extern void     WdeDisableChildWindows( HWND );
 extern bool     WdeProcessMouse( HWND, UINT, WPARAM, LPARAM );
-extern BOOL     WdeControlDefine( WdeDefineObjectInfo * );
+extern bool     WdeControlDefine( WdeDefineObjectInfo * );
 extern bool     WdeProcessSymbolCombo( HWND, UINT, WPARAM, LPARAM, WdeHashTable *, uint_16, bool );
 extern bool     WdeProcessHelpSymbolCombo( HWND, UINT, WPARAM, LPARAM, WdeHashTable *, uint_32, bool );
 extern void     WdeSetDefineObjectSymbolInfo( WdeDefineObjectInfo *, HWND );

@@ -111,20 +111,20 @@ bool WdeChangeSizeToDefIfSmallRect( OBJPTR parent, OBJ_ID id, RECT *size )
     POINT           *dim;
 
     if( parent == NULL || size == NULL || id == 0 ) {
-        return( FALSE );
+        return( false );
     }
 
     /* check if the objects size is greater than min allowed */
     if( size->right - size->left >= MIN_X || size->bottom - size->top >= MIN_Y ) {
-        return( TRUE );
+        return( true );
     }
 
     if( (dim = WdeGetDefaultSizeFromOBJID( id )) == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     if( !Forward( parent, GET_RESIZER, &r, NULL ) ) {
-        return( FALSE );
+        return( false );
     }
 
     dsize.x = 0;
@@ -133,11 +133,11 @@ bool WdeChangeSizeToDefIfSmallRect( OBJPTR parent, OBJ_ID id, RECT *size )
     dsize.height = dim->y;
 
     if( !WdeDialogToScreen( NULL, &r, &dsize, &new_size ) ) {
-        return( FALSE );
+        return( false );
     }
 
     size->right = size->left + (new_size.right - new_size.left);
     size->bottom = size->top + (new_size.bottom - new_size.top);
 
-    return( TRUE );
+    return( true );
 }

@@ -51,6 +51,15 @@
 /****************************************************************************/
 #define WDE_GBOX_BORDER_SIZE WDE_BORDER_SIZE
 
+#define pick_ACTS(o) \
+    pick_ACT_DESTROY(o,pick) \
+    pick_ACT_COPY(o,pick) \
+    pick_ACT_VALIDATE_ACTION(o,pick) \
+    pick_ACT_IDENTIFY(o,pick) \
+    pick_ACT_GET_WINDOW_CLASS(o,pick) \
+    pick_ACT_DEFINE(o,pick) \
+    pick_ACT_GET_WND_PROC(o,pick)
+
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
@@ -64,7 +73,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL    CALLBACK WdeButtonDispatcher( ACTION, WdeButtonObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeButtonDispatcher( ACTION, WdeButtonObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeButtonSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -75,14 +84,8 @@ static OBJPTR   WdeButtonCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxCon
 static void     WdeButtonSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeButtonGetDefineInfo( WdeDefineObjectInfo *, HWND );
 
-#define pick(e,n,c) bool WdeButton ## n ## c
-static pick_ACT_DESTROY( WdeButtonObject );
-static pick_ACT_COPY( WdeButtonObject );
-static pick_ACT_VALIDATE_ACTION( WdeButtonObject );
-static pick_ACT_IDENTIFY( WdeButtonObject );
-static pick_ACT_GET_WINDOW_CLASS( WdeButtonObject );
-static pick_ACT_DEFINE( WdeButtonObject );
-static pick_ACT_GET_WND_PROC( WdeButtonObject );
+#define pick(e,n,c) static bool WdeButton ## n ## c;
+    pick_ACTS( WdeButtonObject )
 #undef pick
 
 /****************************************************************************/
@@ -97,13 +100,7 @@ static WNDPROC                  WdeOriginalButtonProc;
 
 static DISPATCH_ITEM WdeButtonActions[] = {
     #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeButton ## n},
-    pick_ACT_DESTROY( WdeButtonObject )
-    pick_ACT_COPY( WdeButtonObject )
-    pick_ACT_VALIDATE_ACTION( WdeButtonObject )
-    pick_ACT_IDENTIFY( WdeButtonObject )
-    pick_ACT_GET_WINDOW_CLASS( WdeButtonObject )
-    pick_ACT_DEFINE( WdeButtonObject )
-    pick_ACT_GET_WND_PROC( WdeButtonObject )
+    pick_ACTS( WdeButtonObject )
     #undef pick
 };
 
@@ -231,7 +228,7 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-WINEXPORT BOOL CALLBACK WdeButtonDispatcher( ACTION act, WdeButtonObject *obj, void *p1, void *p2 )
+WINEXPORT bool CALLBACK WdeButtonDispatcher( ACTION act, WdeButtonObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -467,7 +464,7 @@ bool WdeButtonDefine( WdeButtonObject *obj, POINT *pnt, void *p2 )
 
 void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 {
-    BOOL        check_lefttext;
+    bool        check_lefttext;
     OBJ_ID      id;
     DialogStyle mask;
 
@@ -475,7 +472,7 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     mask = GETCTL_STYLE( o_info->info.c.info ) & (0x0000ffff ^ BS_LEFTTEXT);
 
-    check_lefttext = FALSE;
+    check_lefttext = false;
 
     if( id == PBUTTON_OBJ ) {
 #if __NT__XX
@@ -563,7 +560,7 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         }
 #endif
     } else if( id  == CBUTTON_OBJ ) {
-        check_lefttext = TRUE;
+        check_lefttext = true;
 
 #if __NT__XX
         EnableWindow( GetDlgItem( hDlg, IDB_BS_NOTIFY ), TRUE );
@@ -620,7 +617,7 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         }
 #endif
     } else if( id  == RBUTTON_OBJ ) {
-        check_lefttext = TRUE;
+        check_lefttext = true;
 
 #if __NT__XX
         EnableWindow( GetDlgItem( hDlg, IDB_BS_NOTIFY ), TRUE );
@@ -706,14 +703,14 @@ void WdeButtonSetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
 void WdeButtonGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 {
-    BOOL        check_lefttext;
+    bool        check_lefttext;
     BOOL        auto_checked;
     OBJ_ID      id;
     DialogStyle mask;
 
     id = o_info->obj_id;
     mask = 0;
-    check_lefttext = FALSE;
+    check_lefttext = false;
     auto_checked = FALSE;
 
     if( id == PBUTTON_OBJ ) {
@@ -779,7 +776,7 @@ void WdeButtonGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     } else if( id == CBUTTON_OBJ ) {
 
-        check_lefttext = TRUE;
+        check_lefttext = true;
 
         auto_checked = IsDlgButtonChecked( hDlg, IDB_BS_AUTOCHECKBOX );
 
@@ -819,7 +816,7 @@ void WdeButtonGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 
     } else if( id == RBUTTON_OBJ ) {
 
-        check_lefttext = TRUE;
+        check_lefttext = true;
 
         auto_checked = IsDlgButtonChecked( hDlg, IDB_BS_AUTORADIOBUTTON );
 

@@ -137,13 +137,14 @@ bool WdeResourceHashTableAction( WdeResInfo *info, int action )
 
 bool WdeResourceViewHash( WdeResInfo *info )
 {
-    BOOL    no_hash;
+    bool    no_hash;
     bool    ret;
     OBJPTR  obj;
 
+    no_hash = false;
     if( info->hash_table == NULL ) {
         InitState( info->forms_win );
-        no_hash = TRUE;
+        no_hash = true;
         info->hash_table = WdeInitHashTable();
     }
 
@@ -179,7 +180,7 @@ bool WdeResourceLoadHash( WdeResInfo *info )
 
     include = WdeLoadSymbols( &info->hash_table, NULL, TRUE );
     if( include == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( info->sym_name != NULL ) {
@@ -188,8 +189,8 @@ bool WdeResourceLoadHash( WdeResInfo *info )
     info->sym_name = include;
 
     if( (obj = GetMainObject()) != NULL ) {
-        b = TRUE;
-        from_id = TRUE;
+        b = true;
+        from_id = true;
         Forward( obj, RESOLVE_HELPSYMBOL, &b, &from_id ); /* JPK */
         Forward( obj, RESOLVE_SYMBOL, &b, &from_id );
     }
@@ -201,7 +202,7 @@ bool WdeResourceLoadHash( WdeResInfo *info )
 
     WdeSetResModified( info, TRUE );
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeResourceWriteHash( WdeResInfo *info )
@@ -395,7 +396,7 @@ bool WdeFindAndLoadSymbols( WdeResInfo *rinfo )
         prompt = FALSE;
     }
 
-    ret = TRUE;
+    ret = true;
 
     if( WdeFileExists( fn_path ) ) {
         include = WdeLoadSymbols( &rinfo->hash_table, fn_path, prompt );
@@ -434,7 +435,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
     ok = (table != NULL);
 
     if( ok ) {
-        WdeSetStatusText( NULL, " ", FALSE );
+        WdeSetStatusText( NULL, " ", false );
         WdeSetStatusByID( WDE_LOADINGSYMBOLS, WDE_NONE );
     }
 
@@ -486,7 +487,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
             if( pp_count == MAX_PP_CHARS ) {
                 busy_count++;
                 busy_str[0] = WdeBusyChars[busy_count % 4];
-                WdeSetStatusText( NULL, busy_str, TRUE );
+                WdeSetStatusText( NULL, busy_str, true );
                 pp_count = 0;
             }
         } while( c != EOF );
@@ -495,7 +496,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
         }
         WdeAddSymbols( *table );
         WdeMakeHashTableClean( *table );
-        WdeSetStatusText( NULL, " ", TRUE );
+        WdeSetStatusText( NULL, " ", true );
         PP_Fini();
     }
 
@@ -530,7 +531,7 @@ bool WdeWriteSymbols( WdeHashTable *table, char **file_name, bool prompt )
         return( TRUE );
     }
 
-    WdeSetStatusText( NULL, "", FALSE );
+    WdeSetStatusText( NULL, "", false );
     WdeSetStatusByID( WDE_WRITINGSYMBOLS, WDE_NONE );
 
     if( prompt || *file_name == '\0' ) {
@@ -596,7 +597,7 @@ void WdeAddSymbols( WdeHashTable *table )
                         if( add_count == MAX_SYM_ADDS ) {
                             busy_count++;
                             busy_str[0] = WdeBusyChars[busy_count % 4];
-                            WdeSetStatusText( NULL, busy_str, TRUE );
+                            WdeSetStatusText( NULL, busy_str, true );
                             add_count = 0;
                         }
                     }

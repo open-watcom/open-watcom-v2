@@ -198,7 +198,7 @@ void WdeHandleToolHint( ctl_id id, bool pressed )
     if( pressed ) {
         WdeDisplayHint( id );
     } else {
-        WdeSetStatusText( NULL, "", TRUE );
+        WdeSetStatusText( NULL, "", true );
     }
 }
 

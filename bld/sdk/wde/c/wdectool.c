@@ -230,7 +230,7 @@ bool WdeSetStickyMode( bool mode )
         CheckMenuItem( menu, IDM_STICKY_TOOLS, MF_BYCOMMAND | MF_UNCHECKED );
     }
 
-    WdeSetStatusText( NULL, "", TRUE );
+    WdeSetStatusText( NULL, "", true );
 
     return( old_mode );
 }
@@ -262,7 +262,7 @@ void WdeSetBaseObject( int menu_selection )
             SetBaseObjType( obj_id );
             CheckMenuItem( menu, menu_selection, MF_BYCOMMAND | MF_CHECKED );
             WdeSetToolBarItemState( tbar, menu_selection, BUTTON_DOWN );
-            WdeSetStatusText( NULL, "", TRUE );
+            WdeSetStatusText( NULL, "", true );
         }
     }
 }
@@ -304,7 +304,7 @@ bool WdeCreateControlsToolBar( void )
         return ( true );
     }
 
-    WdeSetStatusText( NULL, "", FALSE );
+    WdeSetStatusText( NULL, "", false );
     WdeSetStatusByID( WDE_CREATINGTOOLBOX, WDE_NONE );
 
     parent = WdeGetMainWindowHandle();

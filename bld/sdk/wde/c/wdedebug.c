@@ -175,7 +175,7 @@ static void WdeDebugInterpretParam( WdeDebugParamTypes, void *, char * );
 /* static variables                                                         */
 /****************************************************************************/
 #if defined( WDE_DEBUG )
-static bool WdeTrailOpen = FALSE;
+static bool WdeTrailOpen = false;
 static FILE *WdeTrailFile = NULL;
 #if defined( WDE_DEBUG_DISPATCH ) || defined( WDE_DEBUG_CREATE )
 static char WdeDebugString[512];
@@ -365,18 +365,18 @@ bool WdeWriteTrail( const char * msg )
 {
     if( !WdeTrailOpen ) {
         WdeTrailFile = fopen( "d:\\src\\wde\\wde.trl", "wa" );
-        WdeTrailOpen = TRUE;
+        WdeTrailOpen = true;
     } else {
         WdeTrailFile = fopen( "d:\\src\\wde\\wde.trl", "a" );
     }
 
     if( WdeTrailFile == NULL ) {
-        WdeTrailOpen = FALSE;
-        return( FALSE );
+        WdeTrailOpen = false;
+        return( false );
     } else {
         if( setvbuf( WdeTrailFile, NULL, _IONBF, 0 ) ) {
-            WdeTrailOpen = FALSE;
-            return( FALSE );
+            WdeTrailOpen = false;
+            return( false );
         }
     }
 
@@ -389,7 +389,7 @@ bool WdeWriteTrail( const char * msg )
 #if defined( WDE_DEBUG_ON_STATUS )
     return( WdeWriteStatus ( msg ) );
 #else
-    return( TRUE );
+    return( true );
 #endif
 }
 
@@ -397,18 +397,18 @@ bool WdeWriteTrailn( const char * msg, int len )
 {
     if( !WdeTrailOpen ) {
         WdeTrailFile = fopen( "d:\\src\\wde\\wde.trl", "wa" );
-        WdeTrailOpen = TRUE;
+        WdeTrailOpen = true;
     } else {
         WdeTrailFile = fopen( "d:\\src\\wde\\wde.trl", "a" );
     }
 
     if( WdeTrailFile == NULL ) {
-        WdeTrailOpen = FALSE;
-        return( FALSE );
+        WdeTrailOpen = false;
+        return( false );
     } else {
         if( setvbuf( WdeTrailFile, NULL, _IONBF, 0 ) ) {
-            WdeTrailOpen = FALSE;
-            return( FALSE );
+            WdeTrailOpen = false;
+            return( false );
         }
     }
 
@@ -418,12 +418,12 @@ bool WdeWriteTrailn( const char * msg, int len )
 
     fclose( WdeTrailFile );
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeWriteStatus( const char * msg )
 {
-    WdeSetStatusText( NULL, msg, TRUE );
-    return( TRUE );
+    WdeSetStatusText( NULL, msg, true );
+    return( true );
 }
 #endif

@@ -43,6 +43,20 @@
 #include "wdecctl.h"
 #include "wdeflbox.h"
 
+
+/****************************************************************************/
+/* macro definitions                                                        */
+/****************************************************************************/
+
+#define pick_ACTS(o) \
+    pick_ACT_DESTROY(o,pick) \
+    pick_ACT_COPY(o,pick) \
+    pick_ACT_VALIDATE_ACTION(o,pick) \
+    pick_ACT_IDENTIFY(o,pick) \
+    pick_ACT_GET_WINDOW_CLASS(o,pick) \
+    pick_ACT_DEFINE(o,pick) \
+    pick_ACT_GET_WND_PROC(o,pick)
+
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
@@ -56,7 +70,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL    CALLBACK WdeLBoxDispatcher( ACTION, WdeLBoxObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeLBoxDispatcher( ACTION, WdeLBoxObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeLBoxSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -68,14 +82,8 @@ static void     WdeLBoxSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeLBoxGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeLBoxDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
-#define pick(e,n,c) BOOL WdeLBox ## n ## c
-static pick_ACT_DESTROY( WdeLBoxObject );
-static pick_ACT_COPY( WdeLBoxObject );
-static pick_ACT_VALIDATE_ACTION( WdeLBoxObject );
-static pick_ACT_IDENTIFY( WdeLBoxObject );
-static pick_ACT_GET_WINDOW_CLASS( WdeLBoxObject );
-static pick_ACT_DEFINE( WdeLBoxObject );
-static pick_ACT_GET_WND_PROC( WdeLBoxObject );
+#define pick(e,n,c) static bool WdeLBox ## n ## c;
+    pick_ACTS( WdeLBoxObject )
 #undef pick
 
 /****************************************************************************/
@@ -90,13 +98,7 @@ static WNDPROC                  WdeOriginalLBoxProc;
 
 static DISPATCH_ITEM WdeLBoxActions[] = {
     #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeLBox ## n},
-    pick_ACT_DESTROY( WdeLBoxObject )
-    pick_ACT_COPY( WdeLBoxObject )
-    pick_ACT_VALIDATE_ACTION( WdeLBoxObject )
-    pick_ACT_IDENTIFY( WdeLBoxObject )
-    pick_ACT_GET_WINDOW_CLASS( WdeLBoxObject )
-    pick_ACT_DEFINE( WdeLBoxObject )
-    pick_ACT_GET_WND_PROC( WdeLBoxObject )
+    pick_ACTS( WdeLBoxObject )
     #undef pick
 };
 
@@ -105,11 +107,9 @@ static DISPATCH_ITEM WdeLBoxActions[] = {
 WINEXPORT OBJPTR CALLBACK WdeLBoxCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
-        return( WdeMakeLBox( parent, obj_rect, handle,
-                             LBS_STANDARD, "", LISTBOX_OBJ ) );
+        return( WdeMakeLBox( parent, obj_rect, handle, LBS_STANDARD, "", LISTBOX_OBJ ) );
     } else {
-        return( WdeLBCreate( parent, obj_rect, NULL,
-                             LISTBOX_OBJ, (WdeDialogBoxControl *)handle ) );
+        return( WdeLBCreate( parent, obj_rect, NULL, LISTBOX_OBJ, (WdeDialogBoxControl *)handle ) );
     }
 }
 
@@ -133,8 +133,7 @@ OBJPTR WdeMakeLBox( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-OBJPTR WdeLBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                    OBJ_ID id, WdeDialogBoxControl *info )
+OBJPTR WdeLBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, WdeDialogBoxControl *info )
 {
     WdeLBoxObject *new;
 
@@ -186,7 +185,7 @@ OBJPTR WdeLBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-WINEXPORT BOOL CALLBACK WdeLBoxDispatcher( ACTION act, WdeLBoxObject *obj, void *p1, void *p2 )
+WINEXPORT bool CALLBACK WdeLBoxDispatcher( ACTION act, WdeLBoxObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -232,7 +231,7 @@ bool WdeLBoxInit( bool first )
     WdeDefaultLBox = WdeAllocDialogBoxControl();
     if( WdeDefaultLBox == NULL ) {
         WdeWriteTrail( "WdeLBoxInit: Alloc of control failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* set up the default control structure */
@@ -248,7 +247,7 @@ bool WdeLBoxInit( bool first )
 
     WdeLBoxDispatch = MakeProcInstance( (FARPROC)WdeLBoxDispatcher, WdeGetAppInstance() );
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeLBoxFini( void )
@@ -257,22 +256,22 @@ void WdeLBoxFini( void )
     FreeProcInstance( WdeLBoxDispatch );
 }
 
-BOOL WdeLBoxDestroy( WdeLBoxObject *obj, bool *flag, bool *p2 )
+bool WdeLBoxDestroy( WdeLBoxObject *obj, bool *flag, bool *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeLBoxDestroy: Control DESTROY failed" );
-        return( FALSE );
+        return( false );
     }
 
     WRMemFree( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeLBoxValidateAction( WdeLBoxObject *obj, ACTION *act, void *p2 )
+bool WdeLBoxValidateAction( WdeLBoxObject *obj, ACTION *act, void *p2 )
 {
     int     i;
 
@@ -281,25 +280,25 @@ BOOL WdeLBoxValidateAction( WdeLBoxObject *obj, ACTION *act, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeLBoxActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-BOOL WdeLBoxCopyObject( WdeLBoxObject *obj, WdeLBoxObject **new, WdeLBoxObject *handle )
+bool WdeLBoxCopyObject( WdeLBoxObject *obj, WdeLBoxObject **new, WdeLBoxObject *handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeLBoxCopyObject: Invalid new object!" );
-        return( FALSE );
+        return( false );
     }
 
     *new = (WdeLBoxObject *)WRMemAlloc( sizeof( WdeLBoxObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeLBoxCopyObject: Object malloc failed" );
-        return( FALSE );
+        return( false );
     }
 
     (*new)->dispatcher = obj->dispatcher;
@@ -314,23 +313,23 @@ BOOL WdeLBoxCopyObject( WdeLBoxObject *obj, WdeLBoxObject **new, WdeLBoxObject *
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeLBoxCopyObject: Control not created!" );
         WRMemFree( *new );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeLBoxIdentify( WdeLBoxObject *obj, OBJ_ID *id, void *p2 )
+bool WdeLBoxIdentify( WdeLBoxObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeLBoxGetWndProc( WdeLBoxObject *obj, WNDPROC *proc, void *p2 )
+bool WdeLBoxGetWndProc( WdeLBoxObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -338,10 +337,10 @@ BOOL WdeLBoxGetWndProc( WdeLBoxObject *obj, WNDPROC *proc, void *p2 )
 
     *proc = WdeLBoxSuperClassProc;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeLBoxGetWindowClass( WdeLBoxObject *obj, char **class, void *p2 )
+bool WdeLBoxGetWindowClass( WdeLBoxObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -349,10 +348,10 @@ BOOL WdeLBoxGetWindowClass( WdeLBoxObject *obj, char **class, void *p2 )
 
     *class = "listbox";
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeLBoxDefine( WdeLBoxObject *obj, POINT *pnt, void *p2 )
+bool WdeLBoxDefine( WdeLBoxObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 

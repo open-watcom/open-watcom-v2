@@ -45,6 +45,21 @@
 
 
 /****************************************************************************/
+/* macro definitions                                                        */
+/****************************************************************************/
+
+#define pick_ACTS(o) \
+    pick_ACT_DESTROY(o,pick) \
+    pick_ACT_MOVE(o,pick) \
+    pick_ACT_RESIZE(o,pick) \
+    pick_ACT_COPY(o,pick) \
+    pick_ACT_VALIDATE_ACTION(o,pick) \
+    pick_ACT_IDENTIFY(o,pick) \
+    pick_ACT_GET_WINDOW_CLASS(o,pick) \
+    pick_ACT_DEFINE(o,pick) \
+    pick_ACT_GET_WND_PROC(o,pick)
+
+/****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
@@ -57,7 +72,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL    CALLBACK WdeScrollDispatcher( ACTION, WdeScrollObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeScrollDispatcher( ACTION, WdeScrollObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeScrollSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -69,16 +84,8 @@ static void     WdeScrollSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeScrollGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeScrollDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
-#define pick(e,n,c) BOOL WdeScroll ## n ## c
-static pick_ACT_DESTROY( WdeScrollObject );
-static pick_ACT_MOVE( WdeScrollObject );
-static pick_ACT_RESIZE( WdeScrollObject );
-static pick_ACT_COPY( WdeScrollObject );
-static pick_ACT_VALIDATE_ACTION( WdeScrollObject );
-static pick_ACT_IDENTIFY( WdeScrollObject );
-static pick_ACT_GET_WINDOW_CLASS( WdeScrollObject );
-static pick_ACT_DEFINE( WdeScrollObject );
-static pick_ACT_GET_WND_PROC( WdeScrollObject );
+#define pick(e,n,c) static bool WdeScroll ## n ## c;
+    pick_ACTS( WdeScrollObject )
 #undef pick
 
 /****************************************************************************/
@@ -93,15 +100,7 @@ static WNDPROC                  WdeOriginalScrollProc;
 
 static DISPATCH_ITEM WdeScrollActions[] = {
     #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeScroll ## n},
-    pick_ACT_DESTROY( WdeScrollObject )
-    pick_ACT_MOVE( WdeScrollObject )
-    pick_ACT_RESIZE( WdeScrollObject )
-    pick_ACT_COPY( WdeScrollObject )
-    pick_ACT_VALIDATE_ACTION( WdeScrollObject )
-    pick_ACT_IDENTIFY( WdeScrollObject )
-    pick_ACT_GET_WINDOW_CLASS( WdeScrollObject )
-    pick_ACT_DEFINE( WdeScrollObject )
-    pick_ACT_GET_WND_PROC( WdeScrollObject )
+    pick_ACTS( WdeScrollObject )
     #undef pick
 };
 
@@ -112,8 +111,7 @@ WINEXPORT OBJPTR CALLBACK WdeHScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPT
     if( handle == NULL ) {
         return( WdeMakeScroll( parent, obj_rect, handle, SBS_HORZ, "", HSCROLL_OBJ ) );
     } else {
-        return( WdeScrollCreate( parent, obj_rect, NULL, HSCROLL_OBJ,
-                                 (WdeDialogBoxControl *)handle ) );
+        return( WdeScrollCreate( parent, obj_rect, NULL, HSCROLL_OBJ, (WdeDialogBoxControl *)handle ) );
     }
 }
 
@@ -122,8 +120,7 @@ WINEXPORT OBJPTR CALLBACK WdeVScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPT
     if( handle == NULL ) {
         return( WdeMakeScroll( parent, obj_rect, handle, SBS_VERT, "", VSCROLL_OBJ ) );
     } else {
-        return( WdeScrollCreate( parent, obj_rect, NULL, VSCROLL_OBJ,
-                                 (WdeDialogBoxControl *)handle ) );
+        return( WdeScrollCreate( parent, obj_rect, NULL, VSCROLL_OBJ, (WdeDialogBoxControl *)handle ) );
     }
 }
 
@@ -132,13 +129,11 @@ WINEXPORT OBJPTR CALLBACK WdeSizeBoxCreate( OBJPTR parent, RECT *obj_rect, OBJPT
     if( handle == NULL ) {
         return( WdeMakeScroll( parent, obj_rect, handle, SBS_SIZEBOX, "", SIZEBOX_OBJ ) );
     } else {
-        return( WdeScrollCreate( parent, obj_rect, NULL, SIZEBOX_OBJ,
-                                 (WdeDialogBoxControl *)handle ) );
+        return( WdeScrollCreate( parent, obj_rect, NULL, SIZEBOX_OBJ, (WdeDialogBoxControl *)handle ) );
     }
 }
 
-OBJPTR WdeMakeScroll( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                      DialogStyle style, char *text, OBJ_ID id )
+OBJPTR WdeMakeScroll( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -157,8 +152,7 @@ OBJPTR WdeMakeScroll( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-OBJPTR WdeScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                        OBJ_ID id, WdeDialogBoxControl *info )
+OBJPTR WdeScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, WdeDialogBoxControl *info )
 {
     WdeScrollObject *new;
 
@@ -208,7 +202,7 @@ OBJPTR WdeScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-WINEXPORT BOOL CALLBACK WdeScrollDispatcher( ACTION act, WdeScrollObject *obj, void *p1, void *p2 )
+WINEXPORT bool CALLBACK WdeScrollDispatcher( ACTION act, WdeScrollObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -254,7 +248,7 @@ bool WdeScrollInit( bool first )
     WdeDefaultScroll = WdeAllocDialogBoxControl();
     if( WdeDefaultScroll == NULL ) {
         WdeWriteTrail( "WdeScrollInit: Alloc of control failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* set up the default control structure */
@@ -269,7 +263,7 @@ bool WdeScrollInit( bool first )
     SETCTL_CLASSID( WdeDefaultScroll, ResNumToControlClass( CLASS_SCROLLBAR ) );
 
     WdeScrollDispatch = MakeProcInstance( (FARPROC)WdeScrollDispatcher, WdeGetAppInstance() );
-    return( TRUE );
+    return( true );
 }
 
 void WdeScrollFini( void )
@@ -278,68 +272,68 @@ void WdeScrollFini( void )
     FreeProcInstance( WdeScrollDispatch );
 }
 
-BOOL WdeScrollDestroy( WdeScrollObject *obj, bool *flag, bool *p2 )
+bool WdeScrollDestroy( WdeScrollObject *obj, bool *flag, bool *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeScrollDestroy: Control DESTROY failed" );
-        return( FALSE );
+        return( false );
     }
 
     WRMemFree( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeScrollResize( WdeScrollObject *obj, RECT *new_pos, bool *flag )
+bool WdeScrollResize( WdeScrollObject *obj, RECT *new_pos, bool *flag )
 {
     WdeOrderMode        mode;
 
     if( Forward( (OBJPTR)obj, GET_ORDER_MODE, &mode, NULL ) && mode != WdeSelect ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !Forward( obj->control, RESIZE, new_pos, flag ) ) {
         WdeWriteTrail( "WdeScrollResize: control RESIZE failed!" );
-        return( FALSE );
+        return( false );
     }
 
     if( !Forward( obj->object_handle, DESTROY_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeScrollResize: DESTROY_WINDOW failed!" );
-        return( FALSE );
+        return( false );
     }
 
     if( !Forward( obj->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeScrollResize: CREATE_WINDOW failed!" );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeScrollMove( WdeScrollObject *obj, POINT *offset, bool *forms_called )
+bool WdeScrollMove( WdeScrollObject *obj, POINT *offset, bool *forms_called )
 {
     if( !Forward( obj->control, MOVE, offset, forms_called ) ) {
         WdeWriteTrail( "WdeScrollResize: control MOVE failed!" );
-        return( FALSE );
+        return( false );
     }
 
     if( !Forward( obj->object_handle, DESTROY_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeScrollResize: DESTROY_WINDOW failed!" );
-        return( FALSE );
+        return( false );
     }
 
     if( !Forward( obj->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeScrollResize: CREATE_WINDOW failed!" );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeScrollValidateAction( WdeScrollObject *obj, ACTION *act, void *p2 )
+bool WdeScrollValidateAction( WdeScrollObject *obj, ACTION *act, void *p2 )
 {
     int                 i;
     WdeOrderMode        mode;
@@ -349,32 +343,32 @@ BOOL WdeScrollValidateAction( WdeScrollObject *obj, ACTION *act, void *p2 )
 
     if( *act == MOVE || *act == RESIZE ) {
         if( Forward( (OBJPTR)obj, GET_ORDER_MODE, &mode, NULL ) && mode != WdeSelect ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeScrollActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
     return( ValidateAction( (OBJPTR) obj->control, *act, p2 ) );
 }
 
-BOOL WdeScrollCopyObject( WdeScrollObject *obj, WdeScrollObject **new,
+bool WdeScrollCopyObject( WdeScrollObject *obj, WdeScrollObject **new,
                           WdeScrollObject *handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeScrollCopyObject: Invalid new object!" );
-        return( FALSE );
+        return( false );
     }
 
     *new = (WdeScrollObject *)WRMemAlloc( sizeof( WdeScrollObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeScrollCopyObject: Object malloc failed" );
-        return( FALSE );
+        return( false );
     }
 
     (*new)->dispatcher = obj->dispatcher;
@@ -389,23 +383,23 @@ BOOL WdeScrollCopyObject( WdeScrollObject *obj, WdeScrollObject **new,
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeScrollCopyObject: Control not created!" );
         WRMemFree( *new );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeScrollIdentify( WdeScrollObject *obj, OBJ_ID *id, void *p2 )
+bool WdeScrollIdentify( WdeScrollObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeScrollGetWndProc( WdeScrollObject *obj, WNDPROC *proc, void *p2 )
+bool WdeScrollGetWndProc( WdeScrollObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -413,10 +407,10 @@ BOOL WdeScrollGetWndProc( WdeScrollObject *obj, WNDPROC *proc, void *p2 )
 
     *proc = WdeScrollSuperClassProc;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeScrollGetWindowClass( WdeScrollObject *obj, char **class, void *p2 )
+bool WdeScrollGetWindowClass( WdeScrollObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -424,10 +418,10 @@ BOOL WdeScrollGetWindowClass( WdeScrollObject *obj, char **class, void *p2 )
 
     *class = "scrollbar";
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeScrollDefine( WdeScrollObject *obj, POINT *pnt, void *p2 )
+bool WdeScrollDefine( WdeScrollObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 

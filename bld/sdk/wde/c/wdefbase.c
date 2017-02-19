@@ -61,6 +61,33 @@
 #define WDE_WORLD_WIDTH   1024
 #define WDE_WORLD_HEIGHT  WDE_WORLD_WIDTH
 
+#define pick_ACTS(o) \
+    pick_ACT_DRAW(o,pick) \
+    pick_ACT_LOCATE(o,pick) \
+    pick_ACT_DESTROY(o,pick) \
+    pick_ACT_VALIDATE_ACTION(o,pick) \
+    pick_ACT_NOTIFY(o,pick) \
+    pick_ACT_RESIZE_INFO(o,pick) \
+    pick_ACT_FIND_SUBOBJECTS(o,pick) \
+    pick_ACT_FIND_OBJECTS_PT(o,pick) \
+    pick_ACT_ADD_SUBOBJECT(o,pick) \
+    pick_ACT_REMOVE_SUBOBJECT(o,pick) \
+    pick_ACT_GET_WINDOW_HANDLE(o,pick) \
+    pick_ACT_GET_SUBOBJ_LIST(o,pick) \
+    pick_ACT_IDENTIFY(o,pick) \
+    pick_ACT_GET_FONT(o,pick) \
+    pick_ACT_GET_RESIZER(o,pick) \
+    pick_ACT_GET_NC_SIZE(o,pick) \
+    pick_ACT_BECOME_FIRST_CHILD(o,pick) \
+    pick_ACT_GET_FIRST_CHILD(o,pick) \
+    pick_ACT_PUT_ME_FIRST(o,pick) \
+    pick_ACT_GET_SCROLL_RECT(o,pick) \
+    pick_ACT_GET_RESIZE_INC(o,pick) \
+    pick_ACT_IS_MARK_VALID(o,pick) \
+    pick_ACT_RESOLVE_SYMBOL(o,pick) \
+    pick_ACT_RESOLVE_HELPSYMBOL(o,pick) \
+    pick_ACT_GET_NEXT_CHILD(o,pick)
+
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
@@ -84,38 +111,14 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL   CALLBACK WdeBaseDispatcher( ACTION, WdeBaseObject *, void *, void * );
+WINEXPORT bool   CALLBACK WdeBaseDispatcher( ACTION, WdeBaseObject *, void *, void * );
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
 
-#define pick(e,n,c) bool WdeBase ## n ## c
-static pick_ACT_DRAW( WdeBaseObject );
-static pick_ACT_LOCATE( WdeBaseObject );
-static pick_ACT_DESTROY( WdeBaseObject );
-static pick_ACT_VALIDATE_ACTION( WdeBaseObject );
-static pick_ACT_NOTIFY( WdeBaseObject );
-static pick_ACT_RESIZE_INFO( WdeBaseObject );
-static pick_ACT_FIND_SUBOBJECTS( WdeBaseObject );
-static pick_ACT_FIND_OBJECTS_PT( WdeBaseObject );
-static pick_ACT_ADD_SUBOBJECT( WdeBaseObject );
-static pick_ACT_REMOVE_SUBOBJECT( WdeBaseObject );
-static pick_ACT_GET_WINDOW_HANDLE( WdeBaseObject );
-static pick_ACT_GET_SUBOBJ_LIST( WdeBaseObject );
-static pick_ACT_IDENTIFY( WdeBaseObject );
-static pick_ACT_GET_FONT( WdeBaseObject );
-static pick_ACT_GET_RESIZER( WdeBaseObject );
-static pick_ACT_GET_NC_SIZE( WdeBaseObject );
-static pick_ACT_BECOME_FIRST_CHILD( WdeBaseObject );
-static pick_ACT_GET_FIRST_CHILD( WdeBaseObject );
-static pick_ACT_PUT_ME_FIRST( WdeBaseObject );
-static pick_ACT_GET_SCROLL_RECT( WdeBaseObject );
-static pick_ACT_GET_RESIZE_INC( WdeBaseObject );
-static pick_ACT_IS_MARK_VALID( WdeBaseObject );
-static pick_ACT_RESOLVE_SYMBOL( WdeBaseObject );
-static pick_ACT_RESOLVE_HELPSYMBOL( WdeBaseObject );
-static pick_ACT_GET_NEXT_CHILD( WdeBaseObject );
+#define pick(e,n,c) static bool WdeBase ## n ## c;
+    pick_ACTS( WdeBaseObject )
 #undef pick
 
 /****************************************************************************/
@@ -125,31 +128,7 @@ static FARPROC WdeBaseDispatch;
 
 static DISPATCH_ITEM WdeBaseActions[] = {
     #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeBase ## n},
-    pick_ACT_DRAW( WdeBaseObject )
-    pick_ACT_LOCATE( WdeBaseObject )
-    pick_ACT_DESTROY( WdeBaseObject )
-    pick_ACT_VALIDATE_ACTION( WdeBaseObject )
-    pick_ACT_NOTIFY( WdeBaseObject )
-    pick_ACT_RESIZE_INFO( WdeBaseObject )
-    pick_ACT_FIND_SUBOBJECTS( WdeBaseObject )
-    pick_ACT_FIND_OBJECTS_PT( WdeBaseObject )
-    pick_ACT_ADD_SUBOBJECT( WdeBaseObject )
-    pick_ACT_REMOVE_SUBOBJECT( WdeBaseObject )
-    pick_ACT_GET_WINDOW_HANDLE( WdeBaseObject )
-    pick_ACT_GET_SUBOBJ_LIST( WdeBaseObject )
-    pick_ACT_IDENTIFY( WdeBaseObject )
-    pick_ACT_GET_FONT( WdeBaseObject )
-    pick_ACT_GET_RESIZER( WdeBaseObject )
-    pick_ACT_GET_NC_SIZE( WdeBaseObject )
-    pick_ACT_BECOME_FIRST_CHILD( WdeBaseObject )
-    pick_ACT_GET_FIRST_CHILD( WdeBaseObject )
-    pick_ACT_PUT_ME_FIRST( WdeBaseObject )
-    pick_ACT_GET_SCROLL_RECT( WdeBaseObject )
-    pick_ACT_GET_RESIZE_INC( WdeBaseObject )
-    pick_ACT_IS_MARK_VALID( WdeBaseObject )
-    pick_ACT_RESOLVE_SYMBOL( WdeBaseObject )
-    pick_ACT_RESOLVE_HELPSYMBOL( WdeBaseObject )
-    pick_ACT_GET_NEXT_CHILD( WdeBaseObject )
+    pick_ACTS( WdeBaseObject )
     #undef pick
 };
 
@@ -227,7 +206,7 @@ WINEXPORT OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR h
     return( new );
 }
 
-WINEXPORT BOOL CALLBACK WdeBaseDispatcher( ACTION act, WdeBaseObject *obj, void *p1, void *p2 )
+WINEXPORT bool CALLBACK WdeBaseDispatcher( ACTION act, WdeBaseObject *obj, void *p1, void *p2 )
 {
     int i;
 
@@ -314,7 +293,7 @@ bool WdeBaseDestroy( WdeBaseObject *obj, bool *flag, bool *p2 )
         return( false );
     }
 
-    obj->in_destroy = TRUE;
+    obj->in_destroy = true;
 
     /* destroy all children */
     clist = WdeListCopy( obj->children );
@@ -680,13 +659,13 @@ bool WdeBaseGetSubObjectList( WdeBaseObject *base_obj, LIST **l, void *p2 )
     return( true );
 }
 
-static void isWorldInBaseClient( WdeBaseObject *base_obj, BOOL *x_in, BOOL *y_in )
+static void isWorldInBaseClient( WdeBaseObject *base_obj, bool *x_in, bool *y_in )
 {
     RECT        client_rect;
     RECT        bounding_rect;
 
-    *x_in = FALSE;
-    *y_in = FALSE;
+    *x_in = false;
+    *y_in = false;
 
     if( base_obj->res_info->edit_win == NULL ) {
         return;
@@ -702,15 +681,15 @@ static void isWorldInBaseClient( WdeBaseObject *base_obj, BOOL *x_in, BOOL *y_in
     InflateRect( &bounding_rect, WDE_WORLD_PAD, WDE_WORLD_PAD );
 
     if( bounding_rect.left < client_rect.left || bounding_rect.right > client_rect.right ) {
-        *x_in = TRUE;
+        *x_in = true;
     }
 
     if( bounding_rect.top < client_rect.top || bounding_rect.bottom > client_rect.bottom ) {
-        *y_in = TRUE;
+        *y_in = true;
     }
 }
 
-static bool enableFormsScrollbars( WdeBaseObject *base_obj, BOOL enablex, BOOL enabley )
+static bool enableFormsScrollbars( WdeBaseObject *base_obj, bool enablex, bool enabley )
 {
     STATE_HDL   state_handle;
     SCR_CONFIG  scroll_config;
@@ -730,8 +709,7 @@ static bool enableFormsScrollbars( WdeBaseObject *base_obj, BOOL enablex, BOOL e
         scroll_config |= SCROLL_VERT;
     }
 
-    SetFormEditWnd( state_handle, base_obj->res_info->forms_win,
-                    MENU_NONE, scroll_config );
+    SetFormEditWnd( state_handle, base_obj->res_info->forms_win, MENU_NONE, scroll_config );
 
     return( true );
 }
@@ -739,8 +717,8 @@ static bool enableFormsScrollbars( WdeBaseObject *base_obj, BOOL enablex, BOOL e
 bool WdeCheckBaseScrollbars( bool in_resize )
 {
     WdeBaseObject       *base_obj;
-    BOOL                enablex;
-    BOOL                enabley;
+    bool                enablex;
+    bool                enabley;
     RECT                rect;
 
     if( WdeInCleanup() ) {
@@ -757,8 +735,8 @@ bool WdeCheckBaseScrollbars( bool in_resize )
         return( true );
     }
 
-    enablex = FALSE;
-    enabley = FALSE;
+    enablex = false;
+    enabley = false;
 
     isWorldInBaseClient( base_obj, &enablex, &enabley );
 
@@ -791,8 +769,8 @@ bool WdeCheckBaseScrollbars( bool in_resize )
 
     UpdateScroll();
 
-    base_obj->has_hscroll = ( enablex != 0 );
-    base_obj->has_vscroll = ( enabley != 0 );
+    base_obj->has_hscroll = enablex;
+    base_obj->has_vscroll = enabley;
 
     return( true );
 }

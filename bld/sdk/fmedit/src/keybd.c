@@ -103,7 +103,7 @@ static void MoveCurrObj( LPPOINT pt )
 
     curr = GetECurrObject();
     while( curr != NULL ) {
-        Move( curr, pt, TRUE );
+        Move( curr, pt, true );
         curr = GetNextECurrObject( curr );
     }
 }
@@ -144,12 +144,12 @@ static void DoKbdMove( LPPOINT pt )
     LIST    *list;
 
     list = GetCurrObjectList();
-    SetShowEatoms( FALSE );
+    SetShowEatoms( false );
     BeginMoveOperation( list );
     ListFree( list );
     MoveCurrObj( pt );
     FinishMoveOperation( false );
-    SetShowEatoms( TRUE );
+    SetShowEatoms( true );
 }
 
 static void SetKbdMoveGrid( void )

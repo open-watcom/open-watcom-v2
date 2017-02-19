@@ -47,7 +47,7 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern int  WdeGetStatusDepth( void );
-extern bool WdeSetStatusText( const char *, const char *, int );
+extern bool WdeSetStatusText( const char *, const char *, bool );
 extern void WdeDestroyStatusLine( void );
 extern bool WdeCreateStatusLine( HWND, HINSTANCE );
 extern void WdeResizeStatusWindows( RECT * );

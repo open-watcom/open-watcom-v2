@@ -35,7 +35,7 @@ extern bool         GetAnchor( OBJECT *, POINT * );
 extern void         InitEditMenu( HWND, int );
 extern void         InitEditMenu( HWND, int );
 extern bool         RequestScrollRect( RECT * );
-extern BOOL         IsMarkValid( OBJECT * );
+extern bool         IsMarkValid( OBJECT * );
 extern void         EndCurrObjMod( void );
 extern void         StartCurrObjMod( void );
 

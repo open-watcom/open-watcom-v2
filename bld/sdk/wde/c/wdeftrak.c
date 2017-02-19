@@ -44,6 +44,20 @@
 #include "wdecctl.h"
 #include "wdeftrak.h"
 
+
+/****************************************************************************/
+/* macro definitions                                                        */
+/****************************************************************************/
+
+#define pick_ACTS(o) \
+    pick_ACT_DESTROY(o,pick) \
+    pick_ACT_COPY(o,pick) \
+    pick_ACT_VALIDATE_ACTION(o,pick) \
+    pick_ACT_IDENTIFY(o,pick) \
+    pick_ACT_GET_WINDOW_CLASS(o,pick) \
+    pick_ACT_DEFINE(o,pick) \
+    pick_ACT_GET_WND_PROC(o,pick)
+
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
@@ -57,7 +71,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL    CALLBACK WdeTrakDispatcher( ACTION, WdeTrakObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeTrakDispatcher( ACTION, WdeTrakObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeTrakSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -69,14 +83,8 @@ static void     WdeTrakSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeTrakGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeTrakDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
-#define pick(e,n,c) BOOL WdeTrak ## n ## c
-static pick_ACT_DESTROY( WdeTrakObject );
-static pick_ACT_COPY( WdeTrakObject );
-static pick_ACT_VALIDATE_ACTION( WdeTrakObject );
-static pick_ACT_IDENTIFY( WdeTrakObject );
-static pick_ACT_GET_WINDOW_CLASS( WdeTrakObject );
-static pick_ACT_DEFINE( WdeTrakObject );
-static pick_ACT_GET_WND_PROC( WdeTrakObject );
+#define pick(e,n,c) static bool WdeTrak ## n ## c;
+    pick_ACTS( WdeTrakObject )
 #undef pick
 
 /****************************************************************************/
@@ -93,13 +101,7 @@ static WNDPROC                  WdeOriginalTrakProc;
 
 static DISPATCH_ITEM WdeTrakActions[] = {
     #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeTrak ## n},
-    pick_ACT_DESTROY( WdeTrakObject )
-    pick_ACT_COPY( WdeTrakObject )
-    pick_ACT_VALIDATE_ACTION( WdeTrakObject )
-    pick_ACT_IDENTIFY( WdeTrakObject )
-    pick_ACT_GET_WINDOW_CLASS( WdeTrakObject )
-    pick_ACT_DEFINE( WdeTrakObject )
-    pick_ACT_GET_WND_PROC( WdeTrakObject )
+    pick_ACTS( WdeTrakObject )
     #undef pick
 };
 
@@ -188,7 +190,7 @@ OBJPTR WdeTrackCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-WINEXPORT BOOL CALLBACK WdeTrakDispatcher( ACTION act, WdeTrakObject *obj, void *p1, void *p2 )
+WINEXPORT bool CALLBACK WdeTrakDispatcher( ACTION act, WdeTrakObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -234,7 +236,7 @@ bool WdeTrakInit( bool first )
     WdeDefaultTrak = WdeAllocDialogBoxControl();
     if( WdeDefaultTrak == NULL ) {
         WdeWriteTrail( "WdeTrakInit: Alloc of control failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* set up the default control structure */
@@ -249,7 +251,7 @@ bool WdeTrakInit( bool first )
     SETCTL_CLASSID( WdeDefaultTrak, WdeStrToControlClass( WTRACKBAR_CLASS ) );
 
     WdeTrakDispatch = MakeProcInstance( (FARPROC)WdeTrakDispatcher, WdeGetAppInstance() );
-    return( TRUE );
+    return( true );
 }
 
 void WdeTrakFini( void )
@@ -258,22 +260,22 @@ void WdeTrakFini( void )
     FreeProcInstance( WdeTrakDispatch );
 }
 
-BOOL WdeTrakDestroy( WdeTrakObject *obj, bool *flag, bool *p2 )
+bool WdeTrakDestroy( WdeTrakObject *obj, bool *flag, bool *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeTrakDestroy: Control DESTROY failed" );
-        return( FALSE );
+        return( false );
     }
 
     WRMemFree( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTrakValidateAction( WdeTrakObject *obj, ACTION *act, void *p2 )
+bool WdeTrakValidateAction( WdeTrakObject *obj, ACTION *act, void *p2 )
 {
     int     i;
 
@@ -282,25 +284,25 @@ BOOL WdeTrakValidateAction( WdeTrakObject *obj, ACTION *act, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeTrakActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-BOOL WdeTrakCopyObject( WdeTrakObject *obj, WdeTrakObject **new, WdeTrakObject *handle )
+bool WdeTrakCopyObject( WdeTrakObject *obj, WdeTrakObject **new, WdeTrakObject *handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeTrakCopyObject: Invalid new object!" );
-        return( FALSE );
+        return( false );
     }
 
     *new = (WdeTrakObject *)WRMemAlloc( sizeof( WdeTrakObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeTrakCopyObject: Object malloc failed" );
-        return( FALSE );
+        return( false );
     }
 
     (*new)->dispatcher = obj->dispatcher;
@@ -315,23 +317,23 @@ BOOL WdeTrakCopyObject( WdeTrakObject *obj, WdeTrakObject **new, WdeTrakObject *
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeTrakCopyObject: Control not created!" );
         WRMemFree( *new );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTrakIdentify( WdeTrakObject *obj, OBJ_ID *id, void *p2 )
+bool WdeTrakIdentify( WdeTrakObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTrakGetWndProc( WdeTrakObject *obj, WNDPROC *proc, void *p2 )
+bool WdeTrakGetWndProc( WdeTrakObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -339,10 +341,10 @@ BOOL WdeTrakGetWndProc( WdeTrakObject *obj, WNDPROC *proc, void *p2 )
 
     *proc = WdeTrakSuperClassProc;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTrakGetWindowClass( WdeTrakObject *obj, char **class, void *p2 )
+bool WdeTrakGetWindowClass( WdeTrakObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -350,10 +352,10 @@ BOOL WdeTrakGetWindowClass( WdeTrakObject *obj, char **class, void *p2 )
 
     *class = WTRACKBAR_CLASS;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTrakDefine( WdeTrakObject *obj, POINT *pnt, void *p2 )
+bool WdeTrakDefine( WdeTrakObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
@@ -434,7 +436,7 @@ void WdeTrakGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 {
 #ifdef __NT__XX
     DialogStyle mask = 0;
-    BOOL        vert = FALSE;
+    bool        vert = false;
 
     // get the track bar settings
     if( IsDlgButtonChecked( hDlg, IDB_TBS_AUTOTICKS ) ) {
@@ -448,7 +450,7 @@ void WdeTrakGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     }
     if( IsDlgButtonChecked( hDlg, IDB_TBS_VERT ) ) {
         mask |= TBS_VERT;
-        vert = TRUE;
+        vert = true;
     }
     if( IsDlgButtonChecked( hDlg, IDB_TBS_TOP ) ) {
         if( !vert ) {
@@ -470,8 +472,7 @@ void WdeTrakGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         mask |= TBS_NOTHUMB;
     }
 
-    SETCTL_STYLE( o_info->info.c.info,
-                  (GETCTL_STYLE( o_info->info.c.info ) & 0xffff0000) | mask );
+    SETCTL_STYLE( o_info->info.c.info, (GETCTL_STYLE( o_info->info.c.info ) & 0xffff0000) | mask );
 
     // get the extended control settings
     WdeEXGetDefineInfo( o_info, hDlg );

@@ -44,6 +44,20 @@
 #include "wdecctl.h"
 #include "wdeflvw.h"
 
+
+/****************************************************************************/
+/* macro definitions                                                        */
+/****************************************************************************/
+
+#define pick_ACTS(o) \
+    pick_ACT_DESTROY(o,pick) \
+    pick_ACT_COPY(o,pick) \
+    pick_ACT_VALIDATE_ACTION(o,pick) \
+    pick_ACT_IDENTIFY(o,pick) \
+    pick_ACT_GET_WINDOW_CLASS(o,pick) \
+    pick_ACT_DEFINE(o,pick) \
+    pick_ACT_GET_WND_PROC(o,pick)
+
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
@@ -57,7 +71,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL    CALLBACK WdeLViewDispatcher( ACTION, WdeLViewObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeLViewDispatcher( ACTION, WdeLViewObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeLViewSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -69,14 +83,8 @@ static void     WdeLViewSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeLViewGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeLViewDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
-#define pick(e,n,c) BOOL WdeLView ## n ## c
-static pick_ACT_DESTROY( WdeLViewObject );
-static pick_ACT_COPY( WdeLViewObject );
-static pick_ACT_VALIDATE_ACTION( WdeLViewObject );
-static pick_ACT_IDENTIFY( WdeLViewObject );
-static pick_ACT_GET_WINDOW_CLASS( WdeLViewObject );
-static pick_ACT_DEFINE( WdeLViewObject );
-static pick_ACT_GET_WND_PROC( WdeLViewObject );
+#define pick(e,n,c) static bool WdeLView ## n ## c;
+    pick_ACTS( WdeLViewObject )
 #undef pick
 
 /****************************************************************************/
@@ -93,13 +101,7 @@ static WNDPROC                  WdeOriginalLViewProc;
 
 static DISPATCH_ITEM WdeLViewActions[] = {
     #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeLView ## n},
-    pick_ACT_DESTROY( WdeLViewObject )
-    pick_ACT_COPY( WdeLViewObject )
-    pick_ACT_VALIDATE_ACTION( WdeLViewObject )
-    pick_ACT_IDENTIFY( WdeLViewObject )
-    pick_ACT_GET_WINDOW_CLASS( WdeLViewObject )
-    pick_ACT_DEFINE( WdeLViewObject )
-    pick_ACT_GET_WND_PROC( WdeLViewObject )
+    pick_ACTS( WdeLViewObject )
     #undef pick
 };
 
@@ -110,13 +112,11 @@ WINEXPORT OBJPTR CALLBACK WdeLViewCreate( OBJPTR parent, RECT *obj_rect, OBJPTR 
     if( handle == NULL ) {
         return( WdeMakeLView( parent, obj_rect, handle, 0, "", LVIEW_OBJ ) );
     } else {
-        return( WdeLVCreate( parent, obj_rect, NULL, LVIEW_OBJ,
-                             (WdeDialogBoxControl *)handle ) );
+        return( WdeLVCreate( parent, obj_rect, NULL, LVIEW_OBJ, (WdeDialogBoxControl *)handle ) );
     }
 }
 
-OBJPTR WdeMakeLView( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                     DialogStyle style, char *text, OBJ_ID id )
+OBJPTR WdeMakeLView( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -189,7 +189,7 @@ OBJPTR WdeLVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-WINEXPORT BOOL CALLBACK WdeLViewDispatcher( ACTION act, WdeLViewObject *obj, void *p1, void *p2 )
+WINEXPORT bool CALLBACK WdeLViewDispatcher( ACTION act, WdeLViewObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -235,7 +235,7 @@ bool WdeLViewInit( bool first )
     WdeDefaultLView = WdeAllocDialogBoxControl();
     if( WdeDefaultLView == NULL ) {
         WdeWriteTrail( "WdeLViewInit: Alloc of control failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* set up the default control structure */
@@ -250,7 +250,7 @@ bool WdeLViewInit( bool first )
     SETCTL_CLASSID( WdeDefaultLView, WdeStrToControlClass( WWC_LISTVIEW ) );
 
     WdeLViewDispatch = MakeProcInstance( (FARPROC)WdeLViewDispatcher, WdeGetAppInstance() );
-    return( TRUE );
+    return( true );
 }
 
 void WdeLViewFini( void )
@@ -259,22 +259,22 @@ void WdeLViewFini( void )
     FreeProcInstance( WdeLViewDispatch );
 }
 
-BOOL WdeLViewDestroy( WdeLViewObject *obj, bool *flag, bool *p2 )
+bool WdeLViewDestroy( WdeLViewObject *obj, bool *flag, bool *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeLViewDestroy: Control DESTROY failed" );
-        return( FALSE );
+        return( false );
     }
 
     WRMemFree( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeLViewValidateAction( WdeLViewObject *obj, ACTION *act, void *p2 )
+bool WdeLViewValidateAction( WdeLViewObject *obj, ACTION *act, void *p2 )
 {
     int     i;
 
@@ -283,25 +283,25 @@ BOOL WdeLViewValidateAction( WdeLViewObject *obj, ACTION *act, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeLViewActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-BOOL WdeLViewCopyObject( WdeLViewObject *obj, WdeLViewObject **new, WdeLViewObject *handle )
+bool WdeLViewCopyObject( WdeLViewObject *obj, WdeLViewObject **new, WdeLViewObject *handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeLViewCopyObject: Invalid new object!" );
-        return( FALSE );
+        return( false );
     }
 
     *new = (WdeLViewObject *)WRMemAlloc( sizeof( WdeLViewObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeLViewCopyObject: Object malloc failed" );
-        return( FALSE );
+        return( false );
     }
 
     (*new)->dispatcher = obj->dispatcher;
@@ -316,23 +316,23 @@ BOOL WdeLViewCopyObject( WdeLViewObject *obj, WdeLViewObject **new, WdeLViewObje
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeLViewCopyObject: Control not created!" );
         WRMemFree( *new );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeLViewIdentify( WdeLViewObject *obj, OBJ_ID *id, void *p2 )
+bool WdeLViewIdentify( WdeLViewObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeLViewGetWndProc( WdeLViewObject *obj, WNDPROC *proc, void *p2 )
+bool WdeLViewGetWndProc( WdeLViewObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -340,10 +340,10 @@ BOOL WdeLViewGetWndProc( WdeLViewObject *obj, WNDPROC *proc, void *p2 )
 
     *proc = WdeLViewSuperClassProc;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeLViewGetWindowClass( WdeLViewObject *obj, char **class, void *p2 )
+bool WdeLViewGetWindowClass( WdeLViewObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -351,10 +351,10 @@ BOOL WdeLViewGetWindowClass( WdeLViewObject *obj, char **class, void *p2 )
 
     *class = WWC_LISTVIEW;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeLViewDefine( WdeLViewObject *obj, POINT *pnt, void *p2 )
+bool WdeLViewDefine( WdeLViewObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 

@@ -45,6 +45,19 @@
 #include "wdefani.h"
 
 /****************************************************************************/
+/* macro definitions                                                        */
+/****************************************************************************/
+
+#define pick_ACTS(o) \
+    pick_ACT_DESTROY(o,pick) \
+    pick_ACT_COPY(o,pick) \
+    pick_ACT_VALIDATE_ACTION(o,pick) \
+    pick_ACT_IDENTIFY(o,pick) \
+    pick_ACT_GET_WINDOW_CLASS(o,pick) \
+    pick_ACT_DEFINE(o,pick) \
+    pick_ACT_GET_WND_PROC(o,pick)
+
+/****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
@@ -57,7 +70,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL    CALLBACK WdeAniCDispatcher( ACTION, WdeAniCObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeAniCDispatcher( ACTION, WdeAniCObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeAniCSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -69,14 +82,8 @@ static void     WdeAniCSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeAniCGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeAniCDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
-#define pick(e,n,c)     bool WdeAniC ## n ## c
-static pick_ACT_DESTROY( WdeAniCObject );
-static pick_ACT_COPY( WdeAniCObject );
-static pick_ACT_VALIDATE_ACTION( WdeAniCObject );
-static pick_ACT_IDENTIFY( WdeAniCObject );
-static pick_ACT_GET_WINDOW_CLASS( WdeAniCObject );
-static pick_ACT_DEFINE( WdeAniCObject );
-static pick_ACT_GET_WND_PROC( WdeAniCObject );
+#define pick(e,n,c)     static bool WdeAniC ## n ## c;
+    pick_ACTS( WdeAniCObject )
 #undef pick
 
 /****************************************************************************/
@@ -92,13 +99,7 @@ static WNDPROC                  WdeOriginalAniCProc;
 
 static DISPATCH_ITEM WdeAniCActions[] = {
 #define pick(e,n,c)     {e, (DISPATCH_RTN *)WdeAniC ## n},
-    pick_ACT_DESTROY( WdeAniCObject )
-    pick_ACT_COPY( WdeAniCObject )
-    pick_ACT_VALIDATE_ACTION( WdeAniCObject )
-    pick_ACT_IDENTIFY( WdeAniCObject )
-    pick_ACT_GET_WINDOW_CLASS( WdeAniCObject )
-    pick_ACT_DEFINE( WdeAniCObject )
-    pick_ACT_GET_WND_PROC( WdeAniCObject )
+    pick_ACTS( WdeAniCObject )
 #undef pick
 };
 
@@ -185,7 +186,7 @@ OBJPTR WdeAniCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wd
     return( new );
 }
 
-WINEXPORT BOOL CALLBACK WdeAniCDispatcher( ACTION act, WdeAniCObject *obj, void *p1, void *p2 )
+WINEXPORT bool CALLBACK WdeAniCDispatcher( ACTION act, WdeAniCObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -231,7 +232,7 @@ bool WdeAniCInit( bool first )
     WdeDefaultAniC = WdeAllocDialogBoxControl();
     if( WdeDefaultAniC == NULL ) {
         WdeWriteTrail( "WdeAniCInit: Alloc of control failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* set up the default control structure */
@@ -246,7 +247,7 @@ bool WdeAniCInit( bool first )
     SETCTL_CLASSID( WdeDefaultAniC, WdeStrToControlClass( WANIMATE_CLASS ) );
 
     WdeAniCDispatch = MakeProcInstance( (FARPROC)WdeAniCDispatcher, WdeGetAppInstance() );
-    return( TRUE );
+    return( true );
 }
 
 void WdeAniCFini( void )

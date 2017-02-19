@@ -90,7 +90,7 @@ bool WdeHandleTestModeMenu( WdeResInfo *info )
         }
         ret = TRUE;
     } else {
-        WdeSetStatusText( NULL, "", FALSE );
+        WdeSetStatusText( NULL, "", false );
         WdeSetStatusByID( WDE_TESTMODE, -1 );
         ret = WdeTestCurrentObject();
         if( ret ) {
@@ -106,12 +106,12 @@ bool WdeHandleTestModeMenu( WdeResInfo *info )
     return( ret );
 }
 
-BOOL WdeIsTestMessage( MSG *msg )
+bool WdeIsTestMessage( MSG *msg )
 {
     if( WdeTestMode && WdeTestDialogHandle != NULL ) {
-        return( IsDialogMessage( WdeTestDialogHandle, msg ) );
+        return( IsDialogMessage( WdeTestDialogHandle, msg ) != 0 );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 

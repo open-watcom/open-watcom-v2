@@ -50,6 +50,6 @@ WINEXPORT extern OBJPTR CALLBACK WdeControlCreate( OBJPTR, RECT *, OBJPTR );
 extern bool              WdeControlInit( bool );
 extern void              WdeControlFini( void );
 
-extern BOOL WdeUpdateCDialogUnits( OBJPTR, RECT *, WdeResizeRatio * );
+extern bool WdeUpdateCDialogUnits( OBJPTR, RECT *, WdeResizeRatio * );
 
 #endif

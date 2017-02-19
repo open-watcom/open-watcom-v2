@@ -69,6 +69,6 @@ extern void WdeWriteObjectDimensions( int, int, int, int );
 extern void WdeWriteInfo( WdeInfoStruct * );
 extern void WdeDestroyInfoWindow( void );
 extern void WdeShowInfoWindow( bool );
-extern BOOL WdeIsInfoMessage( MSG *msg );
+extern bool WdeIsInfoMessage( MSG *msg );
 
 #endif

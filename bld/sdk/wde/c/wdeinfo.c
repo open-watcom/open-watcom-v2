@@ -135,12 +135,12 @@ void WdeSetFocusToInfo( void )
     }
 }
 
-BOOL WdeIsInfoMessage( MSG *msg )
+bool WdeIsInfoMessage( MSG *msg )
 {
     if ( WdeInfoWindowDepth != 0 && WdeInfoWindow != (HWND)NULL ) {
-        return( IsDialogMessage( WdeInfoWindow, msg ) );
+        return( IsDialogMessage( WdeInfoWindow, msg ) != 0 );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 

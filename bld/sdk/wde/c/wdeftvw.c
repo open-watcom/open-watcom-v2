@@ -44,6 +44,20 @@
 #include "wdecctl.h"
 #include "wdeftvw.h"
 
+
+/****************************************************************************/
+/* macro definitions                                                        */
+/****************************************************************************/
+
+#define pick_ACTS(o) \
+    pick_ACT_DESTROY(o,pick) \
+    pick_ACT_COPY(o,pick) \
+    pick_ACT_VALIDATE_ACTION(o,pick) \
+    pick_ACT_IDENTIFY(o,pick) \
+    pick_ACT_GET_WINDOW_CLASS(o,pick) \
+    pick_ACT_DEFINE(o,pick) \
+    pick_ACT_GET_WND_PROC(o,pick)
+
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
@@ -57,7 +71,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL    CALLBACK WdeTViewDispatcher( ACTION, WdeTViewObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeTViewDispatcher( ACTION, WdeTViewObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeTViewSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -69,14 +83,8 @@ static void     WdeTViewSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeTViewGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeTViewDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
-#define pick(e,n,c) BOOL WdeTView ## n ## c
-static pick_ACT_DESTROY( WdeTViewObject );
-static pick_ACT_COPY( WdeTViewObject );
-static pick_ACT_VALIDATE_ACTION( WdeTViewObject );
-static pick_ACT_IDENTIFY( WdeTViewObject );
-static pick_ACT_GET_WINDOW_CLASS( WdeTViewObject );
-static pick_ACT_DEFINE( WdeTViewObject );
-static pick_ACT_GET_WND_PROC( WdeTViewObject );
+#define pick(e,n,c) static bool WdeTView ## n ## c;
+    pick_ACTS( WdeTViewObject )
 #undef pick
 
 /****************************************************************************/
@@ -93,13 +101,7 @@ static WNDPROC                  WdeOriginalTViewProc;
 
 static DISPATCH_ITEM WdeTViewActions[] = {
     #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeTView ## n},
-    pick_ACT_DESTROY( WdeTViewObject )
-    pick_ACT_COPY( WdeTViewObject )
-    pick_ACT_VALIDATE_ACTION( WdeTViewObject )
-    pick_ACT_IDENTIFY( WdeTViewObject )
-    pick_ACT_GET_WINDOW_CLASS( WdeTViewObject )
-    pick_ACT_DEFINE( WdeTViewObject )
-    pick_ACT_GET_WND_PROC( WdeTViewObject )
+    pick_ACTS( WdeTViewObject )
     #undef pick
 };
 
@@ -187,7 +189,7 @@ OBJPTR WdeTVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-WINEXPORT BOOL CALLBACK WdeTViewDispatcher( ACTION act, WdeTViewObject *obj, void *p1, void *p2 )
+WINEXPORT bool CALLBACK WdeTViewDispatcher( ACTION act, WdeTViewObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -233,7 +235,7 @@ bool WdeTViewInit( bool first )
     WdeDefaultTView = WdeAllocDialogBoxControl();
     if( WdeDefaultTView == NULL ) {
         WdeWriteTrail( "WdeTViewInit: Alloc of control failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* set up the default control structure */
@@ -247,9 +249,8 @@ bool WdeTViewInit( bool first )
     SETCTL_TEXT( WdeDefaultTView, NULL );
     SETCTL_CLASSID( WdeDefaultTView, WdeStrToControlClass( WWC_TREEVIEW ) );
 
-    WdeTViewDispatch = MakeProcInstance( (FARPROC)WdeTViewDispatcher,
-                                         WdeGetAppInstance() );
-    return( TRUE );
+    WdeTViewDispatch = MakeProcInstance( (FARPROC)WdeTViewDispatcher, WdeGetAppInstance() );
+    return( true );
 }
 
 void WdeTViewFini( void )
@@ -258,22 +259,22 @@ void WdeTViewFini( void )
     FreeProcInstance( WdeTViewDispatch );
 }
 
-BOOL WdeTViewDestroy( WdeTViewObject *obj, bool *flag, bool *p2 )
+bool WdeTViewDestroy( WdeTViewObject *obj, bool *flag, bool *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeTViewDestroy: Control DESTROY failed" );
-        return( FALSE );
+        return( false );
     }
 
     WRMemFree( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTViewValidateAction( WdeTViewObject *obj, ACTION *act, void *p2 )
+bool WdeTViewValidateAction( WdeTViewObject *obj, ACTION *act, void *p2 )
 {
     int     i;
 
@@ -282,25 +283,25 @@ BOOL WdeTViewValidateAction( WdeTViewObject *obj, ACTION *act, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeTViewActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-BOOL WdeTViewCopyObject( WdeTViewObject *obj, WdeTViewObject **new, WdeTViewObject *handle )
+bool WdeTViewCopyObject( WdeTViewObject *obj, WdeTViewObject **new, WdeTViewObject *handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeTViewCopyObject: Invalid new object!" );
-        return( FALSE );
+        return( false );
     }
 
     *new = (WdeTViewObject *)WRMemAlloc( sizeof( WdeTViewObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeTViewCopyObject: Object malloc failed" );
-        return( FALSE );
+        return( false );
     }
 
     (*new)->dispatcher = obj->dispatcher;
@@ -314,23 +315,23 @@ BOOL WdeTViewCopyObject( WdeTViewObject *obj, WdeTViewObject **new, WdeTViewObje
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeTViewCopyObject: Control not created!" );
         WRMemFree( *new );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTViewIdentify( WdeTViewObject *obj, OBJ_ID *id, void *p2 )
+bool WdeTViewIdentify( WdeTViewObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTViewGetWndProc( WdeTViewObject *obj, WNDPROC *proc, void *p2 )
+bool WdeTViewGetWndProc( WdeTViewObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -338,10 +339,10 @@ BOOL WdeTViewGetWndProc( WdeTViewObject *obj, WNDPROC *proc, void *p2 )
 
     *proc = WdeTViewSuperClassProc;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTViewGetWindowClass( WdeTViewObject *obj, char **class, void *p2 )
+bool WdeTViewGetWindowClass( WdeTViewObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -349,10 +350,10 @@ BOOL WdeTViewGetWindowClass( WdeTViewObject *obj, char **class, void *p2 )
 
     *class = WWC_TREEVIEW;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTViewDefine( WdeTViewObject *obj, POINT *pnt, void *p2 )
+bool WdeTViewDefine( WdeTViewObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 

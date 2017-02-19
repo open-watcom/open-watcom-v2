@@ -47,6 +47,22 @@
 /* use the app window. */
 #define USE_OWN_WINDOW 1
 
+#define pick_ACTS(o) \
+    pick_ACT_LOCATE(o,pick) \
+    pick_ACT_MOVE(o,pick) \
+    pick_ACT_RESIZE(o,pick) \
+    pick_ACT_REGISTER(o,pick) \
+    pick_ACT_RECREATE(o,pick) \
+    pick_ACT_DESTROY(o,pick) \
+    pick_ACT_VALIDATE_ACTION(o,pick) \
+    pick_ACT_DRAW(o,pick) \
+    pick_ACT_GET_OBJPTR(o,pick) \
+    pick_ACT_UNDO_MOVE(o,pick) \
+    pick_ACT_REMOVE_FROM_PARENT(o,pick) \
+    pick_ACT_GET_ANCHOR(o,pick) \
+    pick_ACT_NOTIFY(o,pick) \
+    pick_ACT_IS_MARK_VALID(o,pick)
+
 WINEXPORT LRESULT CALLBACK EAtomWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /* forward references */
@@ -55,39 +71,13 @@ static bool CALLBACK EAtomDispatch( ACTION, EATOM *, void *, void * );
 
 static void ShowEAtomRect( EATOM * obj );
 
-#define pick(e,n,c) bool EAtom ## n ## c
-static pick_ACT_LOCATE( EATOM );
-static pick_ACT_MOVE( EATOM );
-static pick_ACT_RESIZE( EATOM );
-static pick_ACT_REGISTER( EATOM );
-static pick_ACT_RECREATE( EATOM );
-static pick_ACT_DESTROY( EATOM );
-static pick_ACT_VALIDATE_ACTION( EATOM );
-static pick_ACT_DRAW( EATOM );
-static pick_ACT_GET_OBJPTR( EATOM );
-static pick_ACT_UNDO_MOVE( EATOM );
-static pick_ACT_REMOVE_FROM_PARENT( EATOM );
-static pick_ACT_GET_ANCHOR( EATOM );
-static pick_ACT_NOTIFY( EATOM );
-static pick_ACT_IS_MARK_VALID( EATOM );
+#define pick(e,n,c) static bool EAtom ## n ## c;
+    pick_ACTS( EATOM )
 #undef pick
 
 static DISPATCH_ITEM EAtomActions[] = {
     #define pick(e,n,c) {e, (DISPATCH_RTN *)EAtom ## n},
-    pick_ACT_LOCATE( EATOM )
-    pick_ACT_MOVE( EATOM )
-    pick_ACT_RESIZE( EATOM )
-    pick_ACT_REGISTER( EATOM )
-    pick_ACT_RECREATE( EATOM )
-    pick_ACT_DESTROY( EATOM )
-    pick_ACT_VALIDATE_ACTION( EATOM )
-    pick_ACT_DRAW( EATOM )
-    pick_ACT_GET_OBJPTR( EATOM )
-    pick_ACT_UNDO_MOVE( EATOM )
-    pick_ACT_REMOVE_FROM_PARENT( EATOM )
-    pick_ACT_GET_ANCHOR( EATOM )
-    pick_ACT_NOTIFY( EATOM )
-    pick_ACT_IS_MARK_VALID( EATOM )
+    pick_ACTS( EATOM )
     #undef pick
 };
 
@@ -125,7 +115,7 @@ static bool EAtomValidateAction( EATOM *obj, ACTION *idptr, void *p2 )
     }
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( EAtomActions[i].id == *idptr ) {
-            return( TRUE );
+            return( true );
         }
     }
     return( false );
@@ -528,7 +518,7 @@ static bool EAtomUndoMove( EATOM *obj, void *p1, void *p2 )
         RemoveObject( obj->parent, obj->obj );
         obj->offset.x = -obj->offset.x;
         obj->offset.y = -obj->offset.y;
-        return( Move( obj->obj, &obj->offset, true ));
+        return( Move( obj->obj, &obj->offset, true ) );
     } else {
         return( false );
     }

@@ -44,6 +44,20 @@
 #include "wdecctl.h"
 #include "wdefprog.h"
 
+
+/****************************************************************************/
+/* macro definitions                                                        */
+/****************************************************************************/
+
+#define pick_ACTS(o) \
+    pick_ACT_DESTROY(o,pick) \
+    pick_ACT_COPY(o,pick) \
+    pick_ACT_VALIDATE_ACTION(o,pick) \
+    pick_ACT_IDENTIFY(o,pick) \
+    pick_ACT_GET_WINDOW_CLASS(o,pick) \
+    pick_ACT_DEFINE(o,pick) \
+    pick_ACT_GET_WND_PROC(o,pick)
+
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
@@ -57,7 +71,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL    CALLBACK WdeProgDispatcher( ACTION, WdeProgObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeProgDispatcher( ACTION, WdeProgObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeProgSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -69,14 +83,8 @@ static void     WdeProgSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeProgGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeProgDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
-#define pick(e,n,c) BOOL WdeProg ## n ## c
-static pick_ACT_DESTROY( WdeProgObject );
-static pick_ACT_COPY( WdeProgObject );
-static pick_ACT_VALIDATE_ACTION( WdeProgObject );
-static pick_ACT_IDENTIFY( WdeProgObject );
-static pick_ACT_GET_WINDOW_CLASS( WdeProgObject );
-static pick_ACT_DEFINE( WdeProgObject );
-static pick_ACT_GET_WND_PROC( WdeProgObject );
+#define pick(e,n,c) static bool WdeProg ## n ## c;
+    pick_ACTS( WdeProgObject )
 #undef pick
 
 /****************************************************************************/
@@ -93,13 +101,7 @@ static WNDPROC                  WdeOriginalProgProc;
 
 static DISPATCH_ITEM WdeProgActions[] = {
     #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeProg ## n},
-    pick_ACT_DESTROY( WdeProgObject )
-    pick_ACT_COPY( WdeProgObject )
-    pick_ACT_VALIDATE_ACTION( WdeProgObject )
-    pick_ACT_IDENTIFY( WdeProgObject )
-    pick_ACT_GET_WINDOW_CLASS( WdeProgObject )
-    pick_ACT_DEFINE( WdeProgObject )
-    pick_ACT_GET_WND_PROC( WdeProgObject )
+    pick_ACTS( WdeProgObject )
     #undef pick
 };
 
@@ -110,13 +112,11 @@ WINEXPORT OBJPTR CALLBACK WdeProgCreate( OBJPTR parent, RECT *obj_rect, OBJPTR h
     if( handle == NULL ) {
         return( WdeMakeProg( parent, obj_rect, handle, 0, "", PROGRESS_OBJ ) );
     } else {
-        return( WdeProgressCreate( parent, obj_rect, NULL, PROGRESS_OBJ,
-                                   (WdeDialogBoxControl *)handle ) );
+        return( WdeProgressCreate( parent, obj_rect, NULL, PROGRESS_OBJ, (WdeDialogBoxControl *)handle ) );
     }
 }
 
-OBJPTR WdeMakeProg( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                    DialogStyle style, char *text, OBJ_ID id )
+OBJPTR WdeMakeProg( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -187,7 +187,7 @@ OBJPTR WdeProgressCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-WINEXPORT BOOL CALLBACK WdeProgDispatcher( ACTION act, WdeProgObject *obj, void *p1, void *p2 )
+WINEXPORT bool CALLBACK WdeProgDispatcher( ACTION act, WdeProgObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -233,7 +233,7 @@ bool WdeProgInit( bool first )
     WdeDefaultProg = WdeAllocDialogBoxControl();
     if( !WdeDefaultProg ) {
         WdeWriteTrail( "WdeProgInit: Alloc of control failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* set up the default control structure */
@@ -248,7 +248,7 @@ bool WdeProgInit( bool first )
     SETCTL_CLASSID( WdeDefaultProg, WdeStrToControlClass( WPROGRESS_CLASS ) );
 
     WdeProgDispatch = MakeProcInstance( (FARPROC)WdeProgDispatcher, WdeGetAppInstance() );
-    return( TRUE );
+    return( true );
 }
 
 void WdeProgFini( void )
@@ -257,22 +257,22 @@ void WdeProgFini( void )
     FreeProcInstance( WdeProgDispatch );
 }
 
-BOOL WdeProgDestroy( WdeProgObject *obj, bool *flag, bool *p2 )
+bool WdeProgDestroy( WdeProgObject *obj, bool *flag, bool *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeProgDestroy: Control DESTROY failed" );
-        return( FALSE );
+        return( false );
     }
 
     WRMemFree( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeProgValidateAction( WdeProgObject *obj, ACTION *act, void *p2 )
+bool WdeProgValidateAction( WdeProgObject *obj, ACTION *act, void *p2 )
 {
     int     i;
 
@@ -281,25 +281,25 @@ BOOL WdeProgValidateAction( WdeProgObject *obj, ACTION *act, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeProgActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-BOOL WdeProgCopyObject( WdeProgObject *obj, WdeProgObject **new, WdeProgObject *handle )
+bool WdeProgCopyObject( WdeProgObject *obj, WdeProgObject **new, WdeProgObject *handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeProgCopyObject: Invalid new object!" );
-        return( FALSE );
+        return( false );
     }
 
     *new = (WdeProgObject *)WRMemAlloc( sizeof( WdeProgObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeProgCopyObject: Object malloc failed" );
-        return( FALSE );
+        return( false );
     }
 
     (*new)->dispatcher = obj->dispatcher;
@@ -314,23 +314,23 @@ BOOL WdeProgCopyObject( WdeProgObject *obj, WdeProgObject **new, WdeProgObject *
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeProgCopyObject: Control not created!" );
         WRMemFree( *new );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeProgIdentify( WdeProgObject *obj, OBJ_ID *id, void *p2 )
+bool WdeProgIdentify( WdeProgObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeProgGetWndProc( WdeProgObject *obj, WNDPROC *proc, void *p2 )
+bool WdeProgGetWndProc( WdeProgObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -338,10 +338,10 @@ BOOL WdeProgGetWndProc( WdeProgObject *obj, WNDPROC *proc, void *p2 )
 
     *proc = WdeProgSuperClassProc;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeProgGetWindowClass( WdeProgObject *obj, char **class, void *p2 )
+bool WdeProgGetWindowClass( WdeProgObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -349,10 +349,10 @@ BOOL WdeProgGetWindowClass( WdeProgObject *obj, char **class, void *p2 )
 
     *class = WPROGRESS_CLASS;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeProgDefine( WdeProgObject *obj, POINT *pnt, void *p2 )
+bool WdeProgDefine( WdeProgObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 

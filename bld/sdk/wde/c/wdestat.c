@@ -108,7 +108,7 @@ bool WdeCreateStatusLine( HWND main, HINSTANCE inst )
     memset( &lf, 0, sizeof( LOGFONT ) );
     dc = GetDC( main );
     lf.lfWeight = FW_BOLD;
-    use_default = TRUE;
+    use_default = true;
 
     status_font = WdeAllocRCString( WDE_STATUSFONT );
     if( status_font != NULL ) {
@@ -118,7 +118,7 @@ bool WdeCreateStatusLine( HWND main, HINSTANCE inst )
             strcpy( lf.lfFaceName, status_font );
             cp++;
             point_size = atoi( cp );
-            use_default = FALSE;
+            use_default = false;
         }
         WdeFreeRCString( status_font );
     }
@@ -147,8 +147,8 @@ bool WdeCreateStatusLine( HWND main, HINSTANCE inst )
 
     sbd.separator_width = STATUS_LINE_PAD;
     sbd.width = STATUS1_WIDTH;
-    sbd.width_is_percent = FALSE;
-    sbd.width_is_pixels = TRUE;
+    sbd.width_is_percent = false;
+    sbd.width_is_pixels = true;
 
     StatusWndSetSeparators( WdeStatusBar, 1, &sbd );
 
@@ -183,7 +183,7 @@ void WdeResizeStatusWindows( RECT *rect )
 
 bool WdeSetStatusReadyText( void )
 {
-    WdeSetStatusText( NULL, "", FALSE );
+    WdeSetStatusText( NULL, "", false );
     return( WdeSetStatusByID( WDE_READYMSG, WDE_NONE ) );
 }
 
@@ -205,7 +205,7 @@ bool WdeSetStatusByID( DWORD id1, DWORD id2 )
         str2 = WdeAllocRCString( id2 );
     }
 
-    ret = WdeSetStatusText( str1, str2, TRUE );
+    ret = WdeSetStatusText( str1, str2, true );
 
     if( str1 != NULL ) {
         WdeFreeRCString( str1 );
@@ -218,7 +218,7 @@ bool WdeSetStatusByID( DWORD id1, DWORD id2 )
     return( ret );
 }
 
-bool WdeSetStatusText( const char *status1, const char *status2, int redisplay )
+bool WdeSetStatusText( const char *status1, const char *status2, bool redisplay )
 {
     int len;
     int pos;

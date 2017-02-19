@@ -631,7 +631,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
         return( DefFrameProc( hWnd, hWinWdeMDIClient, message, wParam, lParam ) );
     }
 
-    pass_to_def = TRUE;
+    pass_to_def = true;
     ret = FALSE;
     res_info = WdeGetCurrentRes();
     menu = WdeGetMenuHandle();
@@ -652,13 +652,13 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
     case WM_MEASUREITEM:
         WdeHandleMeasureItem( (MEASUREITEMSTRUCT *)lParam );
         ret = TRUE;
-        pass_to_def = FALSE;
+        pass_to_def = false;
         break;
 
     case WM_DRAWITEM:
         WdeHandleDrawItem( (DRAWITEMSTRUCT *)lParam );
         ret = TRUE;
-        pass_to_def = FALSE;
+        pass_to_def = false;
         break;
 
     case WM_MOVE:
@@ -682,7 +682,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
             WdeResizeWindows();
         }
 
-        pass_to_def = FALSE;
+        pass_to_def = false;
         break;
 
     case WM_COMMAND:
@@ -719,12 +719,12 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
         case IDM_CUSTOM1_TOOL:
         case IDM_CUSTOM2_TOOL:
             WdeSetBaseObject( wp );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_STICKY_TOOLS:
             WdeToggleStickyTools();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_FMLEFT:
@@ -738,42 +738,42 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
         case IDM_SPACE_HORZ:
         case IDM_SPACE_VERT:
             ret = WdePassToEdit( message, wParam, lParam );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SELECT_DIALOG:
             WdeSelectDialog( res_info );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_OPTIONS:
             WdeDisplayOptions ();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_NEW_RES:
             WdeCreateNewResource( NULL );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_DDE_CLEAR:
             WdeClearCurrentResource();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_OPEN_RES:
             WdeOpenResource( NULL );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SAVE_RES:
             WdeSaveResource( res_info, FALSE );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SAVEAS_RES:
             WdeSaveResource( res_info, TRUE );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_DDE_UPDATE_PRJ:
@@ -784,93 +784,93 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
             if( FMPasteValid() ) {
                 ret = WdePassToEdit( message, wParam, lParam );
             }
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_CUTOBJECT:
         case IDM_COPYOBJECT:
             ret = WdePassToEdit( message, wParam, lParam );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SAME_WIDTH:
             WdeSameSize( R_RIGHT );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SAME_HEIGHT:
             WdeSameSize( R_BOTTOM );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SAME_SIZE:
             WdeSameSize( R_BOTTOM | R_RIGHT );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SIZETOTEXT:
             WdeHandleSizeToText();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_GOTO_INFOBAR:
             WdeSetFocusToInfo();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_GOTO_OBJECT:
             WdeHandleGotoCurrentObject();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_DIALOG_RESTORE:
             WdeRestoreCurrentDialog();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_TAB:
         case IDM_STAB:
             WdeHandleTabEvent( wp == IDM_TAB );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
 #if 0
         /* this strategy has been rejected in favor of the hide option */
         case IDM_REMOVE_DIALOG:
             WdeRemoveDialog( res_info );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 #endif
 
         case IDM_HIDE_DIALOG:
             WdeHideCurrentDialog();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_TEST_MODE:
             WdeHandleTestModeMenu( res_info );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_DIALOG_NEW:
             if( WdeCreateNewDialog( NULL, res_info->is32bit ) ) {
                 WdeHandleGotoCurrentObject();
             }
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_DIALOG_SAVE:
         case IDM_DIALOG_SAVEAS:
         case IDM_DIALOG_SAVEINTO:
             WdeSaveCurrentDialog( wp );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SET_ORDER:
         case IDM_SET_TABS:
         case IDM_SET_GROUPS:
             WdeSetDialogMode( wp );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_DEFINEOBJECT:
@@ -878,7 +878,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
             if( !WdeDefineCurrentObject( wp ) ) {
                 WdeWriteTrail( "WdeResWndProc: Define failed!" );
             }
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MDI_CASCADE:
@@ -886,7 +886,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
         case IDM_MDI_TILEH:
         case IDM_MDI_ARRANGE:
             WdeHandleMDIArrangeEvents( wp );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_EXIT:
@@ -900,64 +900,64 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
                 WdeWriteTrail( "WdeMainWndProc: WdeSetCurrentCustControl failed!" );
                 WdeSetStatusByID( WDE_NONE, WDE_SETFAILED );
             }
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MS_CUSTOM:
-            WdeLoadCustomLib( TRUE, FALSE );
-            pass_to_def = FALSE;
+            WdeLoadCustomLib( true, false );
+            pass_to_def = false;
             break;
 
 #ifndef __NT__
         case IDM_BOR_CUSTOM:
-            WdeLoadCustomLib( FALSE, FALSE );
-            pass_to_def = FALSE;
+            WdeLoadCustomLib( false, false );
+            pass_to_def = false;
             break;
 #endif
 
         case IDM_LOADLIB:
-            WdeLoadCustomLib( FALSE, TRUE );
-            pass_to_def = FALSE;
+            WdeLoadCustomLib( false, true );
+            pass_to_def = false;
             break;
 
         case IDM_WRITE_SYMBOLS:
             WdeResourceHashTableAction( res_info, WRITE_HASH );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_LOAD_SYMBOLS:
             WdeResourceHashTableAction( res_info, LOAD_HASH );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_VIEW_SYMBOLS:
             WdeResourceHashTableAction( res_info, VIEW_HASH );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SHOW_TOOLS:
             WdeHandleShowToolsMenu();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SHOW_RIBBON:
             WdeShowRibbon();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_HELP:
             WdeHelpRoutine();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
        case IDM_HELP_SEARCH:
             WdeHelpSearchRoutine();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
        case IDM_HELP_ON_HELP:
             WdeHelpOnHelpRoutine();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
        case IDM_ABOUT:
@@ -970,7 +970,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
             FreeRCString( ai.name );
             FreeRCString( ai.version );
             FreeRCString( ai.title );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
         }
         break;
@@ -996,7 +996,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
         ret = WdeQueryKillApp( FALSE );
         if( ret ) {
             WdeFatalExit = TRUE;
-            pass_to_def = FALSE;
+            pass_to_def = false;
         }
         break;
 
@@ -1015,7 +1015,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
         }
         if( !WdeCleanup( res_info, WdeFatalExit ) ) {
             WdeCleanupStarted = FALSE;
-            pass_to_def = FALSE;
+            pass_to_def = false;
         }
     }
 

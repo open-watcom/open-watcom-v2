@@ -53,7 +53,7 @@ static bool WdeQueryClearRes( void )
 
     ret = MessageBox( WdeGetMainWindowHandle(), text, title, style );
     if( ret == IDYES ) {
-        return( TRUE );
+        return( true );
     }
 
     if( title ) {
@@ -63,7 +63,7 @@ static bool WdeQueryClearRes( void )
         WdeFreeRCString( text );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 bool WdeDeleteAllObjects( void )
@@ -72,13 +72,13 @@ bool WdeDeleteAllObjects( void )
     OBJPTR      child;
 
     if( !WdeGetNumRes() ) {
-        return( FALSE );
+        return( false );
     }
 
     child = NULL;
     base = GetMainObject();
     if( base == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     Forward( base, GET_FIRST_CHILD, &child, NULL );
@@ -90,7 +90,7 @@ bool WdeDeleteAllObjects( void )
 
     MakeObjectCurrent( base );
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeClearCurrentResource( void )
@@ -106,9 +106,9 @@ bool WdeClearCurrentResource( void )
 
     if( ok && WdeIsDDE() ) {
 #ifdef __NT__
-        is32bit = TRUE;
+        is32bit = true;
 #else
-        is32bit = FALSE;
+        is32bit = false;
 #endif
         ok = (WdeCreateNewDialog( NULL, is32bit ) != NULL);
     }

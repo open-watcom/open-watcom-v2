@@ -210,12 +210,12 @@ void WdeHandleMenuSelect( WPARAM wParam, LPARAM lParam )
     WORD    flags;
 
     if( MENU_CLOSED( wParam, lParam ) ) {
-        WdeSetStatusText( NULL, "", TRUE );
+        WdeSetStatusText( NULL, "", true );
     } else {
         menu = WdeGetMenuHandle();
         flags = GET_WM_MENUSELECT_FLAGS( wParam, lParam );
         if( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
-            WdeSetStatusText( NULL, "", TRUE );
+            WdeSetStatusText( NULL, "", true );
         } else if( flags & MF_POPUP ) {
 #ifdef __NT__
             popup = GetSubMenu( (HMENU)lParam, GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
@@ -246,7 +246,7 @@ void WdeDisplayHint( ctl_id id )
             buf = WRMemAlloc( strlen( mditext ) + 20 + 1 );
             if( buf != NULL ) {
                 sprintf( buf, mditext, WDE_MDI_FIRST + 1 - id );
-                WdeSetStatusText( NULL, buf, TRUE );
+                WdeSetStatusText( NULL, buf, true );
                 WRMemFree( buf );
             }
             WdeFreeRCString( mditext );
@@ -312,7 +312,7 @@ void WdeHandlePopupHint( HMENU menu, HMENU popup )
     }
 
     if( hint == -1 ) {
-        WdeSetStatusText( NULL, "", TRUE );
+        WdeSetStatusText( NULL, "", true );
     }
 }
 

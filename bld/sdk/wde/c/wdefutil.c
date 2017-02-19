@@ -936,7 +936,7 @@ bool WdeProcessMouse( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
     return( ret );
 }
 
-BOOL WdeControlDefine( WdeDefineObjectInfo *o_info )
+bool WdeControlDefine( WdeDefineObjectInfo *o_info )
 {
     char                *symbol;
     char                *helpsymbol;
@@ -947,18 +947,18 @@ BOOL WdeControlDefine( WdeDefineObjectInfo *o_info )
     WdeOrderMode        mode;
 
     if( Forward( o_info->obj, GET_ORDER_MODE, &mode, NULL ) && mode != WdeSelect ) {
-        return( TRUE );
+        return( true );
     }
 
     if( !Forward( o_info->obj, GET_OBJECT_INFO, &o_info->info.c.info, &symbol ) ) {
         WdeWriteTrail( "WdeControlDefine: GET_OBJECT_INFO failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* JPK - added for help id */
     if( !Forward( o_info->obj, GET_OBJECT_HELPINFO, &o_info->info.c.info, &helpsymbol ) ) {
         WdeWriteTrail( "WdeControlDefine: GET_OBJECT_HELPINFO failed!" );
-        return( FALSE );
+        return( false );
     }
 
     o_info->symbol = WdeStrDup( symbol );
@@ -968,7 +968,7 @@ BOOL WdeControlDefine( WdeDefineObjectInfo *o_info )
     if( o_info->win == NULL ) {
         if( !Forward( o_info->obj, GET_WINDOW_HANDLE, &o_info->win, NULL ) ) {
             WdeWriteTrail( "WdeControlDefine: GET_WINDOW_HANDLE failed!" );
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -976,7 +976,7 @@ BOOL WdeControlDefine( WdeDefineObjectInfo *o_info )
         return( WdeGenericDefine( o_info ) );
     }
 
-    WdeSetStatusText( NULL, "", FALSE );
+    WdeSetStatusText( NULL, "", false );
     WdeSetStatusByID( WDE_DEFININGCONTROL, WDE_NONE );
 
     app_inst = WdeGetAppInstance();
@@ -984,7 +984,7 @@ BOOL WdeControlDefine( WdeDefineObjectInfo *o_info )
     dlg_template = WdeGetDefineProcFromOBJID( o_info->obj_id );
     if( dlg_template == NULL ) {
         WdeWriteTrail( "WdeControlDefine: Invalid OBJECT_ID!" );
-        return( FALSE );
+        return( false );
     }
 
     redraw = -1;
@@ -992,23 +992,22 @@ BOOL WdeControlDefine( WdeDefineObjectInfo *o_info )
     def_proc = MakeProcInstance( (FARPROC)WdeControlDefineProc, app_inst );
 
     if( def_proc != NULL ) {
-        redraw = JDialogBoxParam( app_inst, dlg_template, o_info->win,
-                                  (DLGPROC)def_proc, (LPARAM)o_info );
+        redraw = JDialogBoxParam( app_inst, dlg_template, o_info->win, (DLGPROC)def_proc, (LPARAM)o_info );
         FreeProcInstance( def_proc );
     }
 
     if( redraw == -1 ) {
         WdeWriteTrail( "WdeControlDefine: Dialog not created!" );
-        return( FALSE );
+        return( false );
     } else if( redraw ) {
         if( !Forward( o_info->obj, SET_OBJECT_INFO, NULL, o_info->symbol ) ) {
             WdeWriteTrail( "WdeControlDefine: SET_OBJECT_INFO failed!" );
-            return( FALSE );
+            return( false );
         }
         /* JPK - added this for help id */
         if( !Forward( o_info->obj, SET_OBJECT_HELPINFO, NULL, o_info->helpsymbol ) ) {
             WdeWriteTrail( "WdeControlDefine: SET_OBJECT_HELPINFO failed!" );
-            return( FALSE );
+            return( false );
         }
         if( o_info->symbol != NULL ) {
             WdeAddSymbolToObjectHashTable( o_info->res_info, o_info->symbol,
@@ -1020,11 +1019,11 @@ BOOL WdeControlDefine( WdeDefineObjectInfo *o_info )
         }
         if( !Forward( o_info->obj, DESTROY_WINDOW, NULL, NULL ) ) {
             WdeWriteTrail( "WdeControlDefine: DESTROY_WINDOW failed!" );
-            return( FALSE );
+            return( false );
         }
         if( !Forward( o_info->obj, CREATE_WINDOW, NULL, NULL ) ) {
             WdeWriteTrail( "WdeControlDefine: CREATE_WINDOW failed!" );
-            return( FALSE );
+            return( false );
         }
         Notify( o_info->obj, PRIMARY_OBJECT, NULL );
     }
@@ -1041,13 +1040,13 @@ BOOL WdeControlDefine( WdeDefineObjectInfo *o_info )
 
     WdeSetStatusReadyText();
 
-    return( TRUE );
+    return( true );
 }
 
 WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static WdeDefineObjectInfo  *o_info = NULL;
-    static BOOL                 init_done = FALSE;
+    static bool                 init_done = false;
     bool                        ret;
 
     ret = false;
@@ -1082,11 +1081,11 @@ WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wP
         break;
 
     case WM_INITDIALOG:
-        init_done = TRUE;
+        init_done = true;
         o_info = (WdeDefineObjectInfo *)lParam;
         if( o_info == NULL ) {
             EndDialog( hDlg, FALSE );
-            init_done = FALSE;
+            init_done = false;
             ret = true;
         } else {
             WdeSetDefineControlInfo( o_info, hDlg );
@@ -1104,14 +1103,14 @@ WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wP
             WdeGetDefineControlInfo( o_info, hDlg );
             EndDialog( hDlg, TRUE );
             ret = true;
-            init_done = FALSE;
+            init_done = false;
             o_info = NULL;
             break;
 
         case IDCANCEL:
             EndDialog( hDlg, FALSE );
             ret = true;
-            init_done = FALSE;
+            init_done = false;
             o_info = NULL;
             break;
         }

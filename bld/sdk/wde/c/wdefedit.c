@@ -43,6 +43,20 @@
 #include "wdecctl.h"
 #include "wdefedit.h"
 
+
+/****************************************************************************/
+/* macro definitions                                                        */
+/****************************************************************************/
+
+#define pick_ACTS(o) \
+    pick_ACT_DESTROY(o,pick) \
+    pick_ACT_COPY(o,pick) \
+    pick_ACT_VALIDATE_ACTION(o,pick) \
+    pick_ACT_IDENTIFY(o,pick) \
+    pick_ACT_GET_WINDOW_CLASS(o,pick) \
+    pick_ACT_DEFINE(o,pick) \
+    pick_ACT_GET_WND_PROC(o,pick)
+
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
@@ -56,7 +70,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL    CALLBACK WdeEditDispatcher( ACTION, WdeEditObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeEditDispatcher( ACTION, WdeEditObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeEditSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -68,14 +82,8 @@ static void     WdeEditSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeEditGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeEditDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
-#define pick(e,n,c) BOOL WdeEdit ## n ## c
-static pick_ACT_DESTROY( WdeEditObject );
-static pick_ACT_COPY( WdeEditObject );
-static pick_ACT_VALIDATE_ACTION( WdeEditObject );
-static pick_ACT_IDENTIFY( WdeEditObject );
-static pick_ACT_GET_WINDOW_CLASS( WdeEditObject );
-static pick_ACT_DEFINE( WdeEditObject );
-static pick_ACT_GET_WND_PROC( WdeEditObject );
+#define pick(e,n,c) static bool WdeEdit ## n ## c;
+    pick_ACTS( WdeEditObject )
 #undef pick
 
 /****************************************************************************/
@@ -90,13 +98,7 @@ static WNDPROC                  WdeOriginalEditProc;
 
 static DISPATCH_ITEM WdeEditActions[] = {
     #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeEdit ## n},
-    pick_ACT_DESTROY( WdeEditObject )
-    pick_ACT_COPY( WdeEditObject )
-    pick_ACT_VALIDATE_ACTION( WdeEditObject )
-    pick_ACT_IDENTIFY( WdeEditObject )
-    pick_ACT_GET_WINDOW_CLASS( WdeEditObject )
-    pick_ACT_DEFINE( WdeEditObject )
-    pick_ACT_GET_WND_PROC( WdeEditObject )
+    pick_ACTS( WdeEditObject )
     #undef pick
 };
 
@@ -105,16 +107,13 @@ static DISPATCH_ITEM WdeEditActions[] = {
 WINEXPORT OBJPTR CALLBACK WdeEditCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
-        return( WdeMakeEdit( parent, obj_rect, handle,
-                             ES_LEFT | ES_AUTOHSCROLL, "", EDIT_OBJ ) );
+        return( WdeMakeEdit( parent, obj_rect, handle, ES_LEFT | ES_AUTOHSCROLL, "", EDIT_OBJ ) );
     } else {
-        return( WdeEdCreate( parent, obj_rect, NULL, EDIT_OBJ,
-                             (WdeDialogBoxControl *)handle ) );
+        return( WdeEdCreate( parent, obj_rect, NULL, EDIT_OBJ, (WdeDialogBoxControl *)handle ) );
     }
 }
 
-OBJPTR WdeMakeEdit( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                    DialogStyle style, char *text, OBJ_ID id )
+OBJPTR WdeMakeEdit( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -187,7 +186,7 @@ OBJPTR WdeEdCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-WINEXPORT BOOL CALLBACK WdeEditDispatcher( ACTION act, WdeEditObject *obj, void *p1, void *p2 )
+WINEXPORT bool CALLBACK WdeEditDispatcher( ACTION act, WdeEditObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -233,7 +232,7 @@ bool WdeEditInit( bool first )
     WdeDefaultEdit = WdeAllocDialogBoxControl();
     if( WdeDefaultEdit == NULL ) {
         WdeWriteTrail( "WdeEditInit: Alloc of control failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* set up the default control structure */
@@ -249,7 +248,7 @@ bool WdeEditInit( bool first )
 
     WdeEditDispatch = MakeProcInstance( (FARPROC)WdeEditDispatcher, WdeGetAppInstance() );
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeEditFini( void )
@@ -258,22 +257,22 @@ void WdeEditFini( void )
     FreeProcInstance( WdeEditDispatch );
 }
 
-BOOL WdeEditDestroy( WdeEditObject *obj, bool *flag, bool *p2 )
+bool WdeEditDestroy( WdeEditObject *obj, bool *flag, bool *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeEditDestroy: Control DESTROY failed" );
-        return( FALSE );
+        return( false );
     }
 
     WRMemFree( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeEditValidateAction( WdeEditObject *obj, ACTION *act, void *p2 )
+bool WdeEditValidateAction( WdeEditObject *obj, ACTION *act, void *p2 )
 {
     int     i;
 
@@ -282,26 +281,26 @@ BOOL WdeEditValidateAction( WdeEditObject *obj, ACTION *act, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeEditActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-BOOL WdeEditCopyObject( WdeEditObject *obj, WdeEditObject **new,
+bool WdeEditCopyObject( WdeEditObject *obj, WdeEditObject **new,
                         WdeEditObject *handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeEditCopyObject: Invalid new object!" );
-        return( FALSE );
+        return( false );
     }
 
     *new = (WdeEditObject *)WRMemAlloc( sizeof( WdeEditObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeEditCopyObject: Object malloc failed" );
-        return( FALSE );
+        return( false );
     }
 
     (*new)->dispatcher = obj->dispatcher;
@@ -316,23 +315,23 @@ BOOL WdeEditCopyObject( WdeEditObject *obj, WdeEditObject **new,
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeEditCopyObject: Control not created!" );
         WRMemFree( *new );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeEditIdentify( WdeEditObject *obj, OBJ_ID *id, void *p2 )
+bool WdeEditIdentify( WdeEditObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeEditGetWndProc( WdeEditObject *obj, WNDPROC *proc, void *p2 )
+bool WdeEditGetWndProc( WdeEditObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -340,10 +339,10 @@ BOOL WdeEditGetWndProc( WdeEditObject *obj, WNDPROC *proc, void *p2 )
 
     *proc = WdeEditSuperClassProc;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeEditGetWindowClass( WdeEditObject *obj, char **class, void *p2 )
+bool WdeEditGetWindowClass( WdeEditObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -351,10 +350,10 @@ BOOL WdeEditGetWindowClass( WdeEditObject *obj, char **class, void *p2 )
 
     *class = "Edit";
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeEditDefine( WdeEditObject *obj, POINT *pnt, void *p2 )
+bool WdeEditDefine( WdeEditObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 

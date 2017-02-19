@@ -57,7 +57,7 @@ WINEXPORT int  CALLBACK WdeEnumFontsProc( ENUMLOGFONT *, TEXTMETRIC *, int, LPAR
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static BOOL     WdeAddFontFamilyMember( WdeFontNames *, ENUMLOGFONT *, TEXTMETRIC *, int );
+static bool WdeAddFontFamilyMember( WdeFontNames *, ENUMLOGFONT *, TEXTMETRIC *, int );
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -185,8 +185,7 @@ void WdeSetFontList( HWND main )
     FreeProcInstance( (FARPROC)enum_callback );
 }
 
-BOOL WdeAddFontFamilyMember( WdeFontNames *font_element, ENUMLOGFONT *lpelf,
-                             TEXTMETRIC *lpntm, int fonttype )
+bool WdeAddFontFamilyMember( WdeFontNames *font_element, ENUMLOGFONT *lpelf, TEXTMETRIC *lpntm, int fonttype )
 {
     uint_32     mod10;
     WdeFontData *font_data;
@@ -196,7 +195,7 @@ BOOL WdeAddFontFamilyMember( WdeFontNames *font_element, ENUMLOGFONT *lpelf,
     font_data = (WdeFontData *)WRMemAlloc( sizeof( WdeFontData ) );
     if( font_data == NULL ) {
         WdeWriteTrail( "Could not allocate font data" );
-        return( FALSE );
+        return( false );
     }
 
     memcpy( &font_data->elf, lpelf, sizeof( ENUMLOGFONT ) );
@@ -219,13 +218,13 @@ BOOL WdeAddFontFamilyMember( WdeFontNames *font_element, ENUMLOGFONT *lpelf,
         font_sibling = ListElement( olist );
         if( font_sibling->pointsize == font_data->pointsize ) {
             WRMemFree( font_data );
-            return( TRUE );
+            return( true );
         }
     }
 
     WdeInsertObject( &font_element->family_list, (void *)font_data );
 
-    return( TRUE );
+    return( true );
 }
 
 WINEXPORT int CALLBACK WdeEnumFontsProc( ENUMLOGFONT *lpelf, TEXTMETRIC *lpntm, int fonttype, LPARAM lParam )

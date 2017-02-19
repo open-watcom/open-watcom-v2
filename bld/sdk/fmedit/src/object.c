@@ -509,16 +509,16 @@ extern void DeleteCurrObjptr( OBJPTR obj )
     }
 }
 
-extern CURROBJPTR GetPrimaryObject( void )
-/****************************************/
+CURROBJPTR GetPrimaryObject( void )
+/*********************************/
 {
     /* return a pointer to the primary object */
     CURROBJPTR  primary;
     OBJECT      *currobj;
-    BOOL        flag;
+    bool        flag;
 
     currobj = GetCurrObj();
-    flag = TRUE;
+    flag = true;
     (*currobj)( GET_PRIMARY, currobj, &primary, &flag );
     return( primary );
 }
@@ -528,11 +528,11 @@ extern void SetPrimaryObject( CURROBJPTR obj )
 {
     /* return a pointer to the primary object */
     OBJECT  *currobj;
-    BOOL    flag;
+    bool    flag;
 
     currobj = GetCurrObj();
 
-    flag = FALSE;
+    flag = false;
     (*currobj)( GET_PRIMARY, currobj, &obj, &flag );
 }
 
@@ -762,12 +762,12 @@ bool RequestScrollRect( RECT *r )
 }
 
 
-extern BOOL IsMarkValid( OBJECT *obj )
-/************************************/
+bool IsMarkValid( OBJECT *obj )
+/*****************************/
 {
-    BOOL     isvalid;
+    bool     isvalid;
 
-    isvalid = TRUE;
+    isvalid = true;
     if( ValidateAction( obj,  IS_MARK_VALID, NULL ) ) {
         (*obj)( IS_MARK_VALID, obj, &isvalid, NULL );
     }

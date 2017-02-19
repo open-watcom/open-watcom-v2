@@ -223,7 +223,7 @@ GLOBALHANDLE AddControlEX( GLOBALHANDLE data, int dtilx, int dtily,
     char                _ISFAR *ditstr;
 #if defined( __NT__ ) && !defined( __DEC__ )
     MyControlClass      cclass;
-    BOOL                textClass;
+    bool                textClass;
 #endif
 
     /*
@@ -231,7 +231,7 @@ GLOBALHANDLE AddControlEX( GLOBALHANDLE data, int dtilx, int dtily,
      */
 #if defined( __NT__ ) && !defined( __DEC__ )
 
-    textClass = FALSE;
+    textClass = false;
     classlen = sizeof( cclass );
     cclass.crap = 0xffff;
     cclass.class[0] = 0;
@@ -256,7 +256,7 @@ GLOBALHANDLE AddControlEX( GLOBALHANDLE data, int dtilx, int dtily,
 
         if( cclass.class[0] == 0 ) {
             classlen = stringLength( class );
-            textClass = TRUE;
+            textClass = true;
         }
     }
 
