@@ -425,12 +425,12 @@ extern void LoadAccel( int bitmap )
 
 bool GetShift( void )
 {
-    return( State->keystate & MK_SHIFT );
+    return( (State->keystate & MK_SHIFT) != 0 );
 }
 
 bool GetControl( void )
 {
-    return( State->keystate & MK_CONTROL );
+    return( (State->keystate & MK_CONTROL) != 0 );
 }
 
 void SetKeyState( WORD keystate )

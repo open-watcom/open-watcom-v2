@@ -473,7 +473,7 @@ static void MarkBoxes( LPRECT currect, HDC hdc, RESIZE_ID sizeid )
 }
 
 WINEXPORT LRESULT CALLBACK CurrItemWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lparam )
-/**************************************************************************************/
+/************************************************************************************************/
 {
     /* processes messages */
     HDC             hdc;
