@@ -39,6 +39,6 @@ typedef struct eatom {
     ANYOBJ          *handle;
     POINT           offset;
     HWND            hwnd;
-    BOOL            displayed;
-    BOOL            show;           // show the outline for this eatom
+    bool            displayed;
+    bool            show;           // show the outline for this eatom
 } EATOM;

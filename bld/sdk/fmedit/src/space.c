@@ -45,7 +45,7 @@ extern void Space( WPARAM wparam )
     OBJPTR  primary;
     RECT    rect;
     RECT    totalrect;
-    BOOL    atleasttwo;
+    bool    atleasttwo;
     POINT   offset;
     LIST    *objlist;
     int     totalsize;
@@ -59,10 +59,10 @@ extern void Space( WPARAM wparam )
         return;
     }
     currobj = GetECurrObject();
-    atleasttwo = FALSE;
+    atleasttwo = false;
     while( currobj != NULL && !atleasttwo ) {
         if( currobj != primary ) {
-            atleasttwo = TRUE;
+            atleasttwo = true;
         } else {
             currobj = GetNextECurrObject( currobj );
         }
@@ -123,8 +123,8 @@ extern void Space( WPARAM wparam )
             currpos += rect.bottom - rect.top;
         }
         currpos += spacesize;
-        Move( currobj, &offset, TRUE );
+        Move( currobj, &offset, true );
         currobj = GetNextECurrObject( currobj );
     }
-    FinishMoveOperation( TRUE );
+    FinishMoveOperation( true );
 }

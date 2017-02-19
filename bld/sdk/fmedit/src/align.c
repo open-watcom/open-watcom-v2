@@ -47,7 +47,7 @@ extern void Align( WPARAM wparam )
     OBJPTR   primary;
     RECT     primrect;
     RECT     rect;
-    BOOL     atleasttwo;
+    bool     atleasttwo;
     POINT    offset;
     LIST     *objlist;
 
@@ -55,11 +55,11 @@ extern void Align( WPARAM wparam )
     if( primary == NULL ) {
         return;
     }
-    atleasttwo = FALSE;
+    atleasttwo = false;
     currobj = GetECurrObject();
     while( currobj != NULL && !atleasttwo ) {
         if( currobj != primary ) {
-            atleasttwo = TRUE;
+            atleasttwo = true;
         } else {
             currobj = GetNextECurrObject( currobj );
         }
@@ -110,5 +110,5 @@ extern void Align( WPARAM wparam )
         }
         currobj = GetNextECurrObject( currobj );
     }
-    FinishMoveOperation( TRUE );
+    FinishMoveOperation( true );
 }

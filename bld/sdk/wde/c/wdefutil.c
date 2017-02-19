@@ -232,7 +232,7 @@ OBJPTR WdeCloneObject( OBJPTR obj, POINT *offset )
 
     if( !ok ) {
         if( new != NULL ) {
-            Destroy( new, FALSE );
+            Destroy( new, false );
             new = NULL;
         }
     }

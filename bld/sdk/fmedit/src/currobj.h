@@ -37,7 +37,7 @@ typedef struct {
     LIST *  currobjlist;
     OBJPTR  primaryobj;
     OBJPTR  prevprimary;
-    BOOL    show_sel_boxes;
-    BOOL    no_prim_notify;
-    BOOL    prim_notify_pending;
+    bool    show_sel_boxes;
+    bool    no_prim_notify;
+    bool    prim_notify_pending;
 } CURROBJ;

@@ -84,7 +84,7 @@ bool WdeDeleteAllObjects( void )
     Forward( base, GET_FIRST_CHILD, &child, NULL );
     while( child != NULL ) {
         MakeObjectCurrent( child );
-        Destroy( child, FALSE );
+        Destroy( child, false );
         Forward( base, GET_FIRST_CHILD, &child, NULL );
     }
 

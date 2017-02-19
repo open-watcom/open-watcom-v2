@@ -40,11 +40,11 @@
 
 /* forward references */
 
-static BOOL CALLBACK OItemDispatch( ACTION, OITEM *, void *, void * );
+static bool CALLBACK OItemDispatch( ACTION, OITEM *, void *, void * );
 
 static void OItemSetNewParent( OITEM *, ANYOBJ * );
 
-#define pick(e,n,c) BOOL OItem ## n ## c
+#define pick(e,n,c) bool OItem ## n ## c
 static pick_ACT_REGISTER( OITEM );
 static pick_ACT_LOCATE( OITEM );
 static pick_ACT_MOVE( OITEM );
@@ -80,7 +80,7 @@ static DISPATCH_ITEM OItemActions[] = {
 
 #define MAX_ACTIONS (sizeof( OItemActions ) / sizeof( DISPATCH_ITEM ))
 
-static BOOL CALLBACK OItemDispatch( ACTION id, OITEM *obj, void *p1, void *p2 )
+static bool CALLBACK OItemDispatch( ACTION id, OITEM *obj, void *p1, void *p2 )
 /*****************************************************************************/
 {
     /* dispatch the desired operation to the correct place */
@@ -91,10 +91,10 @@ static BOOL CALLBACK OItemDispatch( ACTION id, OITEM *obj, void *p1, void *p2 )
             return( (OItemActions[i].rtn)( obj, p1, p2) );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
-static BOOL OItemValidateAction( OITEM *obj, ACTION *idptr, void *p2 )
+static bool OItemValidateAction( OITEM *obj, ACTION *idptr, void *p2 )
 /********************************************************************/
 {
     /* check if the desired action is valid for and OITEM */
@@ -107,14 +107,14 @@ static BOOL OItemValidateAction( OITEM *obj, ACTION *idptr, void *p2 )
     }
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( OItemActions[i].id == *idptr ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
-static BOOL OItemMove( OITEM *oitem, POINT *offset, BOOL *user_action )
+static bool OItemMove( OITEM *oitem, POINT *offset, bool *user_action )
 /*********************************************************************/
 {
     /* Do the move operation  */
@@ -133,29 +133,29 @@ static BOOL OItemMove( OITEM *oitem, POINT *offset, BOOL *user_action )
              *  so that the operation will be undone.
              */
             oitem->rect = temp;
-            return( FALSE );
+            return( false );
         }
     }
     MarkInvalid( &temp );
     MarkInvalid( &oitem->rect );
-    return( TRUE );
+    return( true );
 }
 
 
-static BOOL OItemNotify( OITEM *oitem, NOTE_ID *note, void *p2 )
+static bool OItemNotify( OITEM *oitem, NOTE_ID *note, void *p2 )
 /**************************************************************/
 {
     /* process notify message for an OITEM */
-    BOOL    ret;
+    bool    ret;
 
-    ret = FALSE;
+    ret = false;
     switch( *note ) {
     case NEW_PARENT:
         OItemSetNewParent( oitem, p2 );
-        ret = TRUE;
+        ret = true;
         break;
     default:
-        ret = FALSE;
+        ret = false;
         break;
     }
     return( ret );
@@ -187,7 +187,7 @@ OBJPTR OItemCreate( OBJPTR parent, RECT *rect, OBJPTR handle )
 }
 
 
-static BOOL OItemRegister( OITEM *oitem, void *p1, void *p2 )
+static bool OItemRegister( OITEM *oitem, void *p1, void *p2 )
 /***********************************************************/
 {
     /* register the oitem by adding it to the structures */
@@ -196,23 +196,23 @@ static BOOL OItemRegister( OITEM *oitem, void *p1, void *p2 )
 
     if( AddObject( oitem->parent, oitem->handle ) ) {
         MarkInvalid( (LPRECT) &oitem->rect );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
-static BOOL OItemLocation( OITEM *oitem, RECT *rect, void *p2 )
+static bool OItemLocation( OITEM *oitem, RECT *rect, void *p2 )
 /*************************************************************/
 {
     /* return the location of the atom */
     p2 = p2;          /* ref'd to avoid warning */
 
     *rect = oitem->rect;
-    return( TRUE );
+    return( true );
 }
 
-static BOOL OItemResize( OITEM *oitem, RECT *rect, BOOL *user_action )
+static bool OItemResize( OITEM *oitem, RECT *rect, bool *user_action )
 /********************************************************************/
 {
     /*  Resize the OITEM */
@@ -229,14 +229,14 @@ static BOOL OItemResize( OITEM *oitem, RECT *rect, BOOL *user_action )
              */
             oitem->rect = temp;
             AddObject( oitem->parent, oitem->handle );
-            return( FALSE );
+            return( false );
         }
     } else {
         oitem->rect = *rect;
     }
     MarkInvalid( &temp );
     MarkInvalid( &oitem->rect );
-    return( TRUE );
+    return( true );
 }
 
 static void OItemSetNewParent( OITEM *oitem, OBJPTR p )
@@ -246,7 +246,7 @@ static void OItemSetNewParent( OITEM *oitem, OBJPTR p )
     oitem->parent = p;
 }
 
-static BOOL OItemDestroy( OITEM *oitem, BOOL *user_action, BOOL *p2 )
+static bool OItemDestroy( OITEM *oitem, bool *user_action, bool *p2 )
 /*******************************************************************/
 {
     /* destroy the OITEM */
@@ -256,20 +256,20 @@ static BOOL OItemDestroy( OITEM *oitem, BOOL *user_action, BOOL *p2 )
         RemoveObject( oitem->parent, oitem->handle );
     }
     EdFree( oitem );
-    return( TRUE );
+    return( true );
 }
 
-static BOOL OItemCutObject( OITEM *oitem, OITEM **newitem, void *p2 )
+static bool OItemCutObject( OITEM *oitem, OITEM **newitem, void *p2 )
 /*******************************************************************/
 {
     p2 = p2;
     RemoveObject( oitem->parent, oitem->handle );
     Notify( oitem->handle, NEW_PARENT, NULL );
     *newitem = oitem->handle;
-    return( TRUE );
+    return( true );
 }
 
-static BOOL OItemCopyObject( OITEM *oitem, OITEM **newitem, OITEM *handle )
+static bool OItemCopyObject( OITEM *oitem, OITEM **newitem, OITEM *handle )
 /*************************************************************************/
 {
     OITEM   *no;
@@ -285,12 +285,12 @@ static BOOL OItemCopyObject( OITEM *oitem, OITEM **newitem, OITEM *handle )
         }
         no->priority = oitem->priority;
         CopyRect( &no->rect, &oitem->rect );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
-static BOOL OItemPasteObject( OITEM *oitem, OBJPTR parent, POINT *pt )
+static bool OItemPasteObject( OITEM *oitem, OBJPTR parent, POINT *pt )
 /*********************************************************************/
 {
     POINT   offset;
@@ -301,27 +301,27 @@ static BOOL OItemPasteObject( OITEM *oitem, OBJPTR parent, POINT *pt )
     return( AddObject( parent, oitem->handle ) );
 }
 
-static BOOL OItemGetObjectParent( OITEM *oitem, ANYOBJ **parent, void *p2 )
+static bool OItemGetObjectParent( OITEM *oitem, ANYOBJ **parent, void *p2 )
 /*************************************************************************/
 {
     p2 = p2;
     if( parent != NULL ) {
         *parent = oitem->parent;
     }
-    return( TRUE );
+    return( true );
 }
 
-static BOOL OItemGetPriority( OITEM *oitem, int *pri, void *p2 )
+static bool OItemGetPriority( OITEM *oitem, int *pri, void *p2 )
 /**************************************************************/
 {
     p2 = p2;          /* ref'd to avoid warning */
     if( pri != NULL ) {
         *pri = oitem->priority;
     }
-    return( TRUE );
+    return( true );
 }
 
-static BOOL PointInRect( LPRECT rect, POINT pt )
+static bool PointInRect( LPRECT rect, POINT pt )
 /**********************************************/
 {
     /* Check if pt is inside rect. Window's function PtInRect doesn't consider */
@@ -336,14 +336,14 @@ static BOOL PointInRect( LPRECT rect, POINT pt )
 #endif
 }
 
-static BOOL OItemFindObjectsPt( OITEM *oitem, LPPOINT pt, LIST **list )
+static bool OItemFindObjectsPt( OITEM *oitem, LPPOINT pt, LIST **list )
 /*********************************************************************/
 {
     if( PointInRect( &(oitem->rect), *pt ) ) {
         ListAddElt( list, oitem->handle );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 

@@ -129,7 +129,7 @@ extern void InitEditMenu( HWND wnd, int bitmap )
     int         nummenus;
     char        menuname[MAX_MENU + 1];
     int         i;
-    BOOL        editfound;
+    bool        editfound;
     int         len;
     HMENU       mainmenu;
 
@@ -140,12 +140,12 @@ extern void InitEditMenu( HWND wnd, int bitmap )
         }
         nummenus = GetMenuItemCount( mainmenu );
         if( bitmap & EDIT_MENU_FLAGS ) {
-            editfound = FALSE;
+            editfound = false;
             for( i = 0; i < nummenus; ++i ) {
                 len = GetMenuString( mainmenu, i, menuname, MAX_MENU, MF_BYPOSITION );
                 FixMenuName( menuname, len );
                 if( !editfound && stricmp( menuname, "EDIT" ) == 0 ) {
-                    editfound = TRUE;
+                    editfound = true;
                     AddFMEditMenus( GetSubMenu( mainmenu, i ), bitmap );
                 }
             }
@@ -193,7 +193,7 @@ OBJPTR FMEDITAPI Create( OBJ_ID id, OBJPTR parent, RECT *rect, OBJPTR handle )
 }
 
 
-BOOL FMEDITAPI Move( OBJECT *obj, POINT *p, BOOL user_action )
+bool FMEDITAPI Move( OBJECT *obj, POINT *p, bool user_action )
 /************************************************************/
 {
     /* perform a move operation on the object */
@@ -201,7 +201,7 @@ BOOL FMEDITAPI Move( OBJECT *obj, POINT *p, BOOL user_action )
 }
 
 
-BOOL FMEDITAPI Location( OBJECT *obj, RECT *rect )
+bool FMEDITAPI Location( OBJECT *obj, RECT *rect )
 /************************************************/
 {
     /* return the location of the object */
@@ -209,7 +209,7 @@ BOOL FMEDITAPI Location( OBJECT *obj, RECT *rect )
 }
 
 
-BOOL FMEDITAPI Resize( OBJECT *obj, RECT *r, BOOL user_action )
+bool FMEDITAPI Resize( OBJECT *obj, RECT *r, bool user_action )
 /*************************************************************/
 {
     /* perform a resize operation on the object */
@@ -217,7 +217,7 @@ BOOL FMEDITAPI Resize( OBJECT *obj, RECT *r, BOOL user_action )
 }
 
 
-BOOL FMEDITAPI Register( OBJECT *obj )
+bool FMEDITAPI Register( OBJECT *obj )
 /************************************/
 {
     /* perform a register operation on the object */
@@ -225,7 +225,7 @@ BOOL FMEDITAPI Register( OBJECT *obj )
 }
 
 
-BOOL FMEDITAPI Recreate( OBJECT *obj, POINT *pt )
+bool FMEDITAPI Recreate( OBJECT *obj, POINT *pt )
 /***********************************************/
 {
     /* perform a register operation on the object */
@@ -233,7 +233,7 @@ BOOL FMEDITAPI Recreate( OBJECT *obj, POINT *pt )
 }
 
 
-BOOL FMEDITAPI Draw( OBJECT *obj, RECT *rect, HDC hdc )
+bool FMEDITAPI Draw( OBJECT *obj, RECT *rect, HDC hdc )
 /*****************************************************/
 {
     /* perform a draw operation on the object */
@@ -241,7 +241,7 @@ BOOL FMEDITAPI Draw( OBJECT *obj, RECT *rect, HDC hdc )
 }
 
 
-BOOL FMEDITAPI Destroy( OBJECT *obj, BOOL first )
+bool FMEDITAPI Destroy( OBJECT *obj, bool first )
 /***********************************************/
 {
     /* destroy the object */
@@ -249,7 +249,7 @@ BOOL FMEDITAPI Destroy( OBJECT *obj, BOOL first )
     return( (*obj)( DESTROY, obj, &first, NULL ) );
 }
 
-BOOL FMEDITAPI Notify( OBJECT *obj, NOTE_ID n, void *p )
+bool FMEDITAPI Notify( OBJECT *obj, NOTE_ID n, void *p )
 /******************************************************/
 {
     /* notify an object about it's new parent */
@@ -257,7 +257,7 @@ BOOL FMEDITAPI Notify( OBJECT *obj, NOTE_ID n, void *p )
 }
 
 
-BOOL FMEDITAPI Define( OBJECT *obj, POINT *pt, void *init )
+bool FMEDITAPI Define( OBJECT *obj, POINT *pt, void *init )
 /*********************************************************/
 {
     /* define the characeristics of the object */
@@ -268,7 +268,7 @@ BOOL FMEDITAPI Define( OBJECT *obj, POINT *pt, void *init )
 
 
 
-BOOL FMEDITAPI FindObjList( OBJECT *obj, SUBOBJ_REQUEST *req, LIST **lst )
+bool FMEDITAPI FindObjList( OBJECT *obj, SUBOBJ_REQUEST *req, LIST **lst )
 /************************************************************************/
 {
     /*  Find the list of objects within the parent object contained within the
@@ -278,7 +278,7 @@ BOOL FMEDITAPI FindObjList( OBJECT *obj, SUBOBJ_REQUEST *req, LIST **lst )
 }
 
 
-BOOL FMEDITAPI Forward( OBJECT *obj, ACTION id, void *p1, void *p2 )
+bool FMEDITAPI Forward( OBJECT *obj, ACTION id, void *p1, void *p2 )
 /******************************************************************/
 {
     /* foward the specified action to the specified object */
@@ -286,18 +286,18 @@ BOOL FMEDITAPI Forward( OBJECT *obj, ACTION id, void *p1, void *p2 )
 }
 
 
-BOOL FMEDITAPI ValidateAction( OBJECT *obj, ACTION id, void *p2 )
+bool FMEDITAPI ValidateAction( OBJECT *obj, ACTION id, void *p2 )
 /***************************************************************/
 {
     /* find out if action id is valid for object obj */
     return( (*obj)( VALIDATE_ACTION, obj, &id, p2 ) );
 }
 
-BOOL FMEDITAPI AddObject( OBJPTR obj, OBJPTR member )
+bool FMEDITAPI AddObject( OBJPTR obj, OBJPTR member )
 /***************************************************/
 {
     /*  Update the position of the passed member with in the given object. */
-    BOOL ret;
+    bool ret;
 
     ret = Forward( obj, ADD_SUBOBJECT, member, NULL );
     UpdateScroll();
@@ -305,39 +305,39 @@ BOOL FMEDITAPI AddObject( OBJPTR obj, OBJPTR member )
 }
 
 
-BOOL FMEDITAPI RemoveObject( OBJPTR obj, OBJPTR member )
+bool FMEDITAPI RemoveObject( OBJPTR obj, OBJPTR member )
 /******************************************************/
 {
     /*  Update the position of the passed member with in the given object. */
-    BOOL ret;
+    bool ret;
 
     ret = Forward( obj, REMOVE_SUBOBJECT, member, NULL );
     UpdateScroll();
     return( ret );
 }
 
-BOOL FMEDITAPI GetResizeInfo( OBJECT *obj, RESIZE_ID *info )
+bool FMEDITAPI GetResizeInfo( OBJECT *obj, RESIZE_ID *info )
 /**********************************************************/
 {
     /* Get information about what types of resizing are valid for the object */
     return( (*obj)( RESIZE_INFO, obj, info, NULL ) );
 }
 
-BOOL FMEDITAPI CutObject( OBJECT *obj, OBJPTR *copy )
+bool FMEDITAPI CutObject( OBJECT *obj, OBJPTR *copy )
 /***************************************************/
 {
     /* Ask the application to cut obj and supply a copy of obj at address copy */
     return( (*obj)( CUT, obj, copy, NULL ) );
 }
 
-BOOL FMEDITAPI CopyObject( OBJECT *obj, OBJPTR *copy, OBJPTR handle )
+bool FMEDITAPI CopyObject( OBJECT *obj, OBJPTR *copy, OBJPTR handle )
 /*******************************************************************/
 {
     /* Ask the application to supply a copy of obj at address copy */
     return( (*obj)( COPY, obj, copy, handle ) );
 }
 
-BOOL FMEDITAPI PasteObject( OBJECT *obj, OBJPTR parent, POINT pt )
+bool FMEDITAPI PasteObject( OBJECT *obj, OBJPTR parent, POINT pt )
 /****************************************************************/
 {
     /* Paste object obj with parent parent */
@@ -367,7 +367,7 @@ OBJPTR FMEDITAPI FindObject( SUBOBJ_REQUEST *req )
     return( obj );
 }
 
-BOOL FMEDITAPI FindObjectsPt( POINT pt, LIST **list )
+bool FMEDITAPI FindObjectsPt( POINT pt, LIST **list )
 /***************************************************/
 {
     OBJECT *obj;
@@ -453,23 +453,23 @@ void SetCurrObject( OBJPTR obj )
 /*************************************/
 {
     /* make obj the only current object */
-    BOOL    reset;
+    bool    reset;
     OBJECT  *currobj;
 
-    reset = TRUE;
+    reset = true;
     currobj = GetCurrObj();
     (*currobj)( ADD_OBJECT, currobj, obj, &reset );
 }
 
-extern void AddCurrObject( OBJPTR obj )
-/*************************************/
+void AddCurrObject( OBJPTR obj )
+/******************************/
 {
     /* add obj to the list of current objects */
-    BOOL        reset;
+    bool        reset;
     OBJECT      *currobj;
     CURROBJPTR  main_currobj;
 
-    reset = FALSE;
+    reset = false;
     currobj = GetCurrObj();
     (*currobj)( ADD_OBJECT, currobj, obj, &reset );
 
@@ -486,9 +486,9 @@ extern void DeleteCurrObject( OBJPTR obj )
 {
     /* remove obj from the list of current objects */
     OBJECT  *currobj;
-    BOOL    curritem;
+    bool    curritem;
 
-    curritem = TRUE;
+    curritem = true;
     currobj = GetCurrObj();
     (*currobj)( DELETE_OBJECT, currobj, obj, &curritem );
 }
@@ -500,9 +500,9 @@ extern void DeleteCurrObjptr( OBJPTR obj )
      * objects
      */
     OBJECT  *currobj;
-    BOOL    curritem;
+    bool    curritem;
 
-    curritem = FALSE;
+    curritem = false;
     currobj = GetCurrObj();
     if( currobj != NULL ) {
         (*currobj)( DELETE_OBJECT, currobj, obj, &curritem );
@@ -579,8 +579,8 @@ extern CURROBJPTR GetCurrObjptr( OBJPTR obj )
     return( NULL );
 }
 
-extern BOOL DeleteCurrItem( OBJECT *obj )
-/***************************************/
+bool DeleteCurrItem( OBJECT *obj )
+/********************************/
 {
     /* Delete the current item obj.  That is, destroy the current object window
      * but don't destroy the object associated with that current object
@@ -588,7 +588,7 @@ extern BOOL DeleteCurrItem( OBJECT *obj )
     return( (*obj)( DELETE_OBJECT, obj, NULL, NULL ) );
 }
 
-static BOOL CurrObjExist( CURROBJPTR findobj )
+static bool CurrObjExist( CURROBJPTR findobj )
 /********************************************/
 {
     CURROBJPTR currobj;
@@ -596,14 +596,14 @@ static BOOL CurrObjExist( CURROBJPTR findobj )
     currobj = GetECurrObject();
     while( currobj != NULL ) {
         if( currobj == findobj ) {
-            return( TRUE );
+            return( true );
         }
         currobj = GetNextECurrObject( currobj );
     }
-    return( FALSE );
+    return( false );
 }
 
-BOOL FMEDITAPI ExecuteCurrObject( ACTION id, void *p1, void *p2 )
+bool FMEDITAPI ExecuteCurrObject( ACTION id, void *p1, void *p2 )
 /***************************************************************/
 {
     /* Perform action id on each of the objects in the current object list.
@@ -627,7 +627,7 @@ BOOL FMEDITAPI ExecuteCurrObject( ACTION id, void *p1, void *p2 )
         }
         currobj = nextobj;
     }
-    return( TRUE );
+    return( true );
 }
 
 extern void ObjMark( CURROBJPTR obj )
@@ -654,7 +654,7 @@ extern void ObjMark( CURROBJPTR obj )
     DeleteObject( little );
 }
 
-void FMEDITAPI ResetCurrObject( BOOL draw )
+void FMEDITAPI ResetCurrObject( bool draw )
 /*****************************************/
 {
     /* reset the current object */
@@ -695,37 +695,37 @@ void FMEDITAPI ObjectDestroyed( OBJPTR obj )
     DeleteCurrObjptr( obj );
 }
 
-BOOL FMEDITAPI GetObjectParent( OBJECT *obj, OBJPTR *parent )
+bool FMEDITAPI GetObjectParent( OBJECT *obj, OBJPTR *parent )
 /***********************************************************/
 {
     return( (*obj)( GET_PARENT, obj, parent, NULL ) );
 }
 
-extern void UndoMove( OBJECT *obj )
+void UndoMove( OBJECT *obj )
 /*********************************/
 {
     (*obj)( UNDO_MOVE, obj, NULL, NULL );
 }
 
-extern void RemoveFromParent( OBJECT *obj )
-/*****************************************/
+void RemoveFromParent( OBJECT *obj )
+/**********************************/
 {
     (*obj)( REMOVE_FROM_PARENT, obj, NULL, NULL );
 }
 
-BOOL FMEDITAPI GetPriority( OBJECT *obj, int *pri )
+bool FMEDITAPI GetPriority( OBJECT *obj, int *pri )
 /*************************************************/
 {
     return( (*obj)( GET_PRIORITY, obj, pri, NULL ) );
 }
 
-BOOL FMEDITAPI ResizeIncrements( OBJECT *obj, POINT *pt )
+bool FMEDITAPI ResizeIncrements( OBJECT *obj, POINT *pt )
 /*******************************************************/
 {
     if( ValidateAction( obj,  GET_RESIZE_INC, pt ) ) {
         return( (*obj)( GET_RESIZE_INC, obj, pt, NULL ) );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -733,7 +733,7 @@ void FMEDITAPI MakeObjectCurrent( OBJPTR obj )
 /********************************************/
 {
     /* make the passes object current */
-    ResetCurrObject( FALSE );
+    ResetCurrObject( false );
     SetCurrObject( obj );
 }
 
@@ -745,15 +745,15 @@ void FMEDITAPI AddCurrentObject( OBJPTR obj )
     AddCurrObject( obj );
 }
 
-extern BOOL GetAnchor( OBJECT *obj, POINT *p )
-/********************************************/
+bool GetAnchor( OBJECT *obj, POINT *p )
+/*************************************/
 {
     return( (*obj)( GET_ANCHOR, obj, p, NULL ) );
 }
 
 
-extern BOOL RequestScrollRect( RECT *r )
-/**************************************/
+bool RequestScrollRect( RECT *r )
+/*******************************/
 {
     OBJECT  *obj;
 

@@ -408,7 +408,7 @@ WdeResInfo *WdeCreateNewResource( char *title )
     }
 
     if( ok ) {
-        WdeCheckBaseScrollbars( FALSE );
+        WdeCheckBaseScrollbars( false );
     }
 
     if( res_info ) {
@@ -513,7 +513,7 @@ bool WdeOpenResource( char *fn )
         }
         ListAddElt( &WdeResList, (void *)res_info );
         WdeSetResModified( res_info, FALSE );
-        WdeCheckBaseScrollbars( FALSE );
+        WdeCheckBaseScrollbars( false );
     }
 
     if( !ok ) {

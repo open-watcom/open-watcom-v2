@@ -1,4 +1,4 @@
-extern BOOL SnapRectToGrid( RECT * );
+extern bool SnapRectToGrid( RECT * );
 extern void SnapPointToGrid( POINT * );
 extern void SnapPointToResizeGrid( POINT * );
 

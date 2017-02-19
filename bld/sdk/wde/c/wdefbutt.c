@@ -75,7 +75,7 @@ static OBJPTR   WdeButtonCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxCon
 static void     WdeButtonSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeButtonGetDefineInfo( WdeDefineObjectInfo *, HWND );
 
-#define pick(e,n,c) BOOL WdeButton ## n ## c
+#define pick(e,n,c) bool WdeButton ## n ## c
 static pick_ACT_DESTROY( WdeButtonObject );
 static pick_ACT_COPY( WdeButtonObject );
 static pick_ACT_VALIDATE_ACTION( WdeButtonObject );
@@ -112,49 +112,40 @@ static DISPATCH_ITEM WdeButtonActions[] = {
 WINEXPORT OBJPTR CALLBACK WdePButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
-        return( WdeMakeButton( parent, obj_rect, handle,
-                               BS_PUSHBUTTON, "Push", PBUTTON_OBJ ) );
+        return( WdeMakeButton( parent, obj_rect, handle, BS_PUSHBUTTON, "Push", PBUTTON_OBJ ) );
     } else {
-        return( WdeButtonCreate( parent, obj_rect, NULL, PBUTTON_OBJ,
-                                 (WdeDialogBoxControl *)handle ) );
+        return( WdeButtonCreate( parent, obj_rect, NULL, PBUTTON_OBJ, (WdeDialogBoxControl *)handle ) );
     }
 }
 
 WINEXPORT OBJPTR CALLBACK WdeCButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
-        return( WdeMakeButton( parent, obj_rect, handle,
-                               BS_AUTOCHECKBOX, "Check", CBUTTON_OBJ ) );
+        return( WdeMakeButton( parent, obj_rect, handle, BS_AUTOCHECKBOX, "Check", CBUTTON_OBJ ) );
     } else {
-        return( WdeButtonCreate( parent, obj_rect, NULL, CBUTTON_OBJ,
-                                 (WdeDialogBoxControl *)handle ) );
+        return( WdeButtonCreate( parent, obj_rect, NULL, CBUTTON_OBJ, (WdeDialogBoxControl *)handle ) );
     }
 }
 
 WINEXPORT OBJPTR CALLBACK WdeRButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
-        return( WdeMakeButton( parent, obj_rect, handle,
-                               BS_AUTORADIOBUTTON, "Radio", RBUTTON_OBJ ) );
+        return( WdeMakeButton( parent, obj_rect, handle, BS_AUTORADIOBUTTON, "Radio", RBUTTON_OBJ ) );
     } else {
-        return( WdeButtonCreate( parent, obj_rect, NULL, RBUTTON_OBJ,
-                                 (WdeDialogBoxControl *)handle ) );
+        return( WdeButtonCreate( parent, obj_rect, NULL, RBUTTON_OBJ, (WdeDialogBoxControl *)handle ) );
     }
 }
 
 WINEXPORT OBJPTR CALLBACK WdeGButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
-        return( WdeMakeButton( parent, obj_rect, handle,
-                               BS_GROUPBOX, "Group", GBUTTON_OBJ ) );
+        return( WdeMakeButton( parent, obj_rect, handle, BS_GROUPBOX, "Group", GBUTTON_OBJ ) );
     } else {
-        return( WdeButtonCreate( parent, obj_rect, NULL, GBUTTON_OBJ,
-                                 (WdeDialogBoxControl *)handle ) );
+        return( WdeButtonCreate( parent, obj_rect, NULL, GBUTTON_OBJ, (WdeDialogBoxControl *)handle ) );
     }
 }
 
-OBJPTR WdeMakeButton( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                      DialogStyle style, char *text, OBJ_ID id )
+OBJPTR WdeMakeButton( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -214,10 +205,10 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     }
 
     if( id == GBUTTON_OBJ ) {
-        b = TRUE;
+        b = true;
         if( !Forward( new->object_handle, SET_CLEAR_INT, &b, NULL ) ) {
             WdeWriteTrail( "WdeButtonCreate: SET_CLEAR_INT failed!" );
-            Destroy( new->control, FALSE );
+            Destroy( new->control, false );
             WRMemFree( new );
             return( NULL );
         }
@@ -225,14 +216,14 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeButtonCreate: SET_OBJECT_INFO failed!" );
-        Destroy( new->control, FALSE );
+        Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeButtonCreate: CREATE_WINDOW failed!" );
-        Destroy( new->control, FALSE );
+        Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
@@ -286,7 +277,7 @@ bool WdeButtonInit( bool first )
     WdeDefaultButton = WdeAllocDialogBoxControl();
     if( WdeDefaultButton == NULL ) {
         WdeWriteTrail( "WdeButtonInit: Alloc of control failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* set up the default control structure */
@@ -301,7 +292,7 @@ bool WdeButtonInit( bool first )
     SETCTL_CLASSID( WdeDefaultButton, ResNumToControlClass( CLASS_BUTTON ) );
 
     WdeButtonDispatch = MakeProcInstance( (FARPROC)WdeButtonDispatcher, WdeGetAppInstance() );
-    return( TRUE );
+    return( true );
 }
 
 void WdeButtonFini( void )
@@ -310,22 +301,22 @@ void WdeButtonFini( void )
     FreeProcInstance( WdeButtonDispatch );
 }
 
-BOOL WdeButtonDestroy( WdeButtonObject *obj, BOOL *flag, BOOL *p2 )
+bool WdeButtonDestroy( WdeButtonObject *obj, bool *flag, bool *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeButtonDestroy: Control DESTROY failed" );
-        return( FALSE );
+        return( false );
     }
 
     WRMemFree( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-static BOOL WdeValidateGroupBoxMove( WdeButtonObject *obj, POINT *pnt )
+static bool WdeValidateGroupBoxMove( WdeButtonObject *obj, POINT *pnt )
 {
     RECT                obj_rect;
     RECT                text_rect;
@@ -336,7 +327,7 @@ static BOOL WdeValidateGroupBoxMove( WdeButtonObject *obj, POINT *pnt )
     WdeOrderMode        mode;
 
     if( Forward( (OBJPTR)obj, GET_ORDER_MODE, &mode, NULL ) && mode != WdeSelect ) {
-        return( FALSE );
+        return( false );
     }
 
     Location( (OBJPTR)obj, &obj_rect );
@@ -357,7 +348,7 @@ static BOOL WdeValidateGroupBoxMove( WdeButtonObject *obj, POINT *pnt )
     }
 
     if( PtInRect( &text_rect, *pnt ) ) {
-        return( TRUE );
+        return( true );
     }
 
     obj_rect.left += WDE_GBOX_BORDER_SIZE;
@@ -366,13 +357,13 @@ static BOOL WdeValidateGroupBoxMove( WdeButtonObject *obj, POINT *pnt )
     obj_rect.bottom -= WDE_GBOX_BORDER_SIZE;
 
     if( PtInRect( &obj_rect, *pnt ) ) {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeButtonValidateAction( WdeButtonObject *obj, ACTION *act, void *p2 )
+bool WdeButtonValidateAction( WdeButtonObject *obj, ACTION *act, void *p2 )
 {
     int     i;
 
@@ -382,26 +373,26 @@ BOOL WdeButtonValidateAction( WdeButtonObject *obj, ACTION *act, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeButtonActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-BOOL WdeButtonCopyObject( WdeButtonObject *obj, WdeButtonObject **new,
+bool WdeButtonCopyObject( WdeButtonObject *obj, WdeButtonObject **new,
                           WdeButtonObject *handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeButtonCopyObject: Invalid new object!" );
-        return( FALSE );
+        return( false );
     }
 
     *new = (WdeButtonObject *)WRMemAlloc( sizeof( WdeButtonObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeButtonCopyObject: Object malloc failed" );
-        return( FALSE );
+        return( false );
     }
 
     (*new)->dispatcher = obj->dispatcher;
@@ -416,23 +407,23 @@ BOOL WdeButtonCopyObject( WdeButtonObject *obj, WdeButtonObject **new,
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle) ) {
         WdeWriteTrail( "WdeButtonCopyObject: Control not created!" );
         WRMemFree( *new );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeButtonIdentify( WdeButtonObject *obj, OBJ_ID *id, void *p2 )
+bool WdeButtonIdentify( WdeButtonObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeButtonGetWndProc( WdeButtonObject *obj, WNDPROC *proc, void *p2 )
+bool WdeButtonGetWndProc( WdeButtonObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -440,10 +431,10 @@ BOOL WdeButtonGetWndProc( WdeButtonObject *obj, WNDPROC *proc, void *p2 )
 
     *proc = WdeButtonSuperClassProc;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeButtonGetWindowClass( WdeButtonObject *obj, char **class, void *p2 )
+bool WdeButtonGetWindowClass( WdeButtonObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -452,10 +443,10 @@ BOOL WdeButtonGetWindowClass( WdeButtonObject *obj, char **class, void *p2 )
     //*class = "wdebutton";
     *class = "button";
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeButtonDefine( WdeButtonObject *obj, POINT *pnt, void *p2 )
+bool WdeButtonDefine( WdeButtonObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
@@ -882,8 +873,7 @@ void WdeButtonGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         }
     }
 
-    SETCTL_STYLE( o_info->info.c.info,
-                  (GETCTL_STYLE( o_info->info.c.info ) & 0xffff0000) | mask );
+    SETCTL_STYLE( o_info->info.c.info, (GETCTL_STYLE( o_info->info.c.info ) & 0xffff0000) | mask );
 
     // Set the extended mask - same for PushButton, RadioButton
     // CheckBox and GroupBox.

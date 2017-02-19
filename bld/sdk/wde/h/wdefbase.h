@@ -48,6 +48,6 @@ WINEXPORT extern OBJPTR CALLBACK WdeBaseCreate( OBJPTR, RECT *, OBJPTR );
 extern bool              WdeBaseInit( bool );
 extern void              WdeBaseFini( void );
 
-extern BOOL WdeCheckBaseScrollbars( BOOL in_resize );
+extern bool WdeCheckBaseScrollbars( bool in_resize );
 
 #endif

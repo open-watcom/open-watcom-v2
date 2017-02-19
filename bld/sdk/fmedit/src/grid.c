@@ -36,8 +36,8 @@
 #include "grid.def"
 #include "fmdlgs.h"
 
-extern BOOL SnapRectToGrid( RECT *rec )
-/*************************************/
+bool SnapRectToGrid( RECT *rec )
+/******************************/
 {
     /*  Make sure the passed rectangle aligns with the user-specified
      *  resize grid.
@@ -45,16 +45,16 @@ extern BOOL SnapRectToGrid( RECT *rec )
     int     inc;
     int     rnd;
     int     size;
-    BOOL    changed;
+    bool    changed;
     int     new;
 
-    changed = FALSE;
+    changed = false;
     inc = GetResizeVInc();
     rnd = inc - 1;
     size = rec->bottom - rec->top - 1;    /* exclude borders */
     new = ((size + rnd) / inc) * inc;
     if( new != size ) {
-        changed = TRUE;
+        changed = true;
         rec->bottom = rec->top + new;
     }
     inc = GetResizeHInc();
@@ -62,7 +62,7 @@ extern BOOL SnapRectToGrid( RECT *rec )
     size = rec->right - rec->left - 1;
     new = ((size + rnd) / inc) * inc;
     if( new != size ) {
-        changed = TRUE;
+        changed = true;
         rec->right = rec->left + new;
     }
     return( changed );

@@ -150,7 +150,7 @@ bool WdeSameSize( RESIZE_ID resize_id )
             if( resize_id & R_RIGHT ) {
                 rect.right = rect.left + (primrect.right - primrect.left);
             }
-            if( !Resize( currobj, &rect, TRUE ) ) {
+            if( !Resize( currobj, &rect, true ) ) {
                 WdeWriteTrail( "WdeSameSize: Resize failed!");
             }
         }

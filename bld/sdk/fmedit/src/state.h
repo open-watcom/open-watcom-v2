@@ -53,13 +53,13 @@ typedef struct state {
     RECT            scrollrect;     /* The rect than can be scrolled within     */
     SCR_CONFIG      scrollconfig;   /* Scrolling attributes from application    */
     WORD            keystate;       /* Was shift pressed on mouse down?         */
-    BOOL            showerror;      /* Show error message when we get it?       */
+    bool            showerror;      /* Show error message when we get it?       */
     char            *error;         /* Pending error string                     */
     MOUSEACTION     *mouseaction;
                                     /* Rtn to call on significant mouse actions */
     unsigned        vresizegrid;    /* vertical resize grid increment           */
     unsigned        hresizegrid;    /* horizontal resize grid increment         */
-    BOOL            show_eatoms;    /* new eatoms will show their movement rect */
+    bool            show_eatoms;    /* new eatoms will show their movement rect */
     STATE_HDL       id;             /* state id                                 */
 };
 

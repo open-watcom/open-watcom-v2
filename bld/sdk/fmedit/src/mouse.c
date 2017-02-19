@@ -55,27 +55,6 @@ static void ResetEdit( POINT, WORD, OBJPTR );
 static void IgnoreMousePress( POINT, WORD, OBJPTR );
 static void UnexpectedPressStateRecover( POINT, WORD, OBJPTR );
 
-// mouse move and release actions
-static void CheckMousePosn( POINT );
-static void DoObjectMove( POINT );
-static void DoObjectResize( POINT );
-static void DoObjectRecreate( POINT );
-static void UnexpectedStateRecover( POINT );
-static void BeginMove( POINT );
-static void MovePendingBegin( BOOL, OBJPTR );
-static void DoPasteMove( POINT );
-static void DoSelectRecreate( POINT );
-static void IgnoreMouse( POINT );
-static void FinishMove( POINT );
-static void FinishResize( POINT );
-static void FinishCreate( POINT );
-static void FinishPaste( POINT );
-static void FinishSelect( POINT );
-static void FinishMovePending( POINT );
-static void FinishActionAborted( POINT pt );
-static DLIST * OrderList( LIST * );
-static DLIST_ELT GetNextElement( DLIST * );
-
 static void (*MousePressActions[])( POINT, WORD, OBJPTR ) = {
     ActionBegin,                    /* DORMANT          */
     ResizeBegin,                    /* OVERBOX          */
@@ -92,6 +71,23 @@ static void (*MousePressActions[])( POINT, WORD, OBJPTR ) = {
     IgnoreMousePress                /* KBD_MOVING       */
 };
 
+// mouse move and release actions
+static void CheckMousePosn( POINT );
+static void DoObjectMove( POINT );
+static void DoObjectResize( POINT );
+static void DoObjectRecreate( POINT );
+static void UnexpectedStateRecover( POINT );
+static void BeginMove( POINT );
+static void DoPasteMove( POINT );
+static void DoSelectRecreate( POINT );
+static void IgnoreMouse( POINT );
+static void FinishMove( POINT );
+static void FinishResize( POINT );
+static void FinishCreate( POINT );
+static void FinishPaste( POINT );
+static void FinishSelect( POINT );
+static void FinishMovePending( POINT );
+static void FinishActionAborted( POINT pt );
 
 static void (*MouseMoveActions[])( POINT ) = {
     CheckMousePosn,                 /* DORMANT          */
@@ -109,7 +105,6 @@ static void (*MouseMoveActions[])( POINT ) = {
     IgnoreMouse                     /* KBD_MOVING       */
 };
 
-
 static void (*MouseReleaseActions[])( POINT ) = {
     UnexpectedStateRecover,         /* DORMANT          */
     UnexpectedStateRecover,         /* OVERBOX          */
@@ -126,9 +121,12 @@ static void (*MouseReleaseActions[])( POINT ) = {
     IgnoreMouse                     /* KBD_MOVING       */
 };
 
+static void MovePendingBegin( WORD, OBJPTR );
+static DLIST *OrderList( LIST * );
+static DLIST_ELT GetNextElement( DLIST * );
 
-extern void ProcessDBLCLK( POINT point )
-/**************************************/
+void ProcessDBLCLK( POINT point )
+/*******************************/
 {
     /*  Process a double click on the current object.  This implies a request
      *  to define/redefine the characteristics of the object.
@@ -176,7 +174,7 @@ static void ResizeBegin( POINT pt, WORD ks, OBJPTR d )
         SetResizeGrid( rgrid.x, rgrid.y );
         SaveObject();
         object = GetObjptr( object );
-        ResetCurrObject( FALSE );
+        ResetCurrObject( false );
         object = Create( O_EATOM, object, &rect, NULL );
         SetCurrObject( object );
         offrect = rect;
@@ -185,7 +183,7 @@ static void ResizeBegin( POINT pt, WORD ks, OBJPTR d )
             offrect.left -= rect.left;
             offrect.right -= rect.right;
             offrect.bottom -= rect.bottom;
-            Resize( object, &offrect, TRUE );
+            Resize( object, &offrect, true );
         }
     }
 }
@@ -252,12 +250,12 @@ static void CreateBegin( POINT pt, OBJPTR parent )
     origin.left = pt.x;
     origin.right = pt.x;
     SaveObject();
-    ResetCurrObject( FALSE );
+    ResetCurrObject( false );
     SetCurrObject( Create( O_EATOM, parent, &origin, NULL ) );
 }
 
 
-static void MovePendingBegin( BOOL keystate, OBJPTR object )
+static void MovePendingBegin( WORD keystate, OBJPTR object )
 /**********************************************************/
 {
     /* begin a move operation */
@@ -268,7 +266,7 @@ static void MovePendingBegin( BOOL keystate, OBJPTR object )
 
     if( GetCurrObjptr( object ) == NULL ) {
         if( !(keystate & MK_SHIFT) && !(keystate & MK_CONTROL) ) {
-            ResetCurrObject( FALSE );
+            ResetCurrObject( false );
         }
         AddCurrObject( object );
 
@@ -283,8 +281,8 @@ static void MovePendingBegin( BOOL keystate, OBJPTR object )
     SetState( MOVE_PENDING );
 }
 
-extern BOOL CheckMoveOperation( LIST **objlist )
-/**********************************************/
+bool CheckMoveOperation( LIST **objlist )
+/***************************************/
 {
     LIST    *clist;
     OBJPTR  obj;
@@ -304,10 +302,10 @@ extern BOOL CheckMoveOperation( LIST **objlist )
 
             ListFree( *objlist );
             *objlist = NULL;
-            return( FALSE );
+            return( false );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 
@@ -343,7 +341,7 @@ static void SelectBegin( POINT pt, WORD keystate )
     SetSelectEatom( Create( O_EATOM, NULL, &origin, NULL ) );
 }
 
-static BOOL InVicinity( OBJPTR *obj, short y, short x )
+static bool InVicinity( OBJPTR *obj, short y, short x )
 /*****************************************************/
 {
     /* See if we're in the vicinity of an object that can be moved */
@@ -354,28 +352,28 @@ static BOOL InVicinity( OBJPTR *obj, short y, short x )
     pt.y = y;
     closeobj = FindOneObjPt( pt );
     if( closeobj == *obj || !ValidateAction( closeobj, MOVE, &pt ) ) {
-        return( FALSE );
+        return( false );
     } else {
         *obj = closeobj;
     }
-    return( TRUE );
+    return( true );
 }
 
 
 
-static BOOL IsMoveOperation( OBJPTR obj, POINT point, WORD keystate )
+static bool IsMoveOperation( OBJPTR obj, POINT point, WORD keystate )
 /*******************************************************************/
 {
-    BOOL   ret;
+    bool   ret;
 
-    ret = FALSE;
+    ret = false;
     if( ValidateAction( obj, MOVE, &point ) ||
         InVicinity( &obj, point.y - OBJ_VICINITY, point.x ) ||
         InVicinity( &obj, point.y + OBJ_VICINITY, point.x ) ||
         InVicinity( &obj, point.y, point.x - OBJ_VICINITY ) ||
         InVicinity( &obj, point.y, point.x + OBJ_VICINITY ) ) {
         MovePendingBegin( keystate, obj );
-        ret = TRUE;
+        ret = true;
     }
     return( ret );
 }
@@ -396,8 +394,8 @@ static void ActionBegin( POINT point, WORD keystate, OBJPTR obj )
 }
 
 
-extern void ProcessButtonDown( POINT point, WORD keystate, OBJPTR obj )
-/*********************************************************************/
+void ProcessButtonDown( POINT point, WORD keystate, OBJPTR obj )
+/**************************************************************/
 {
     /* responds to a button down message from the mouse */
     STATE_ID st;
@@ -416,7 +414,7 @@ static void FinishMove( POINT pt )
 {
     /* Finish the movement operation */
     pt = pt;
-    FinishMoveOperation( TRUE );
+    FinishMoveOperation( true );
 }
 
 
@@ -454,15 +452,15 @@ static void FinishResize( POINT pt )
     SetDefState();
 }
 
-extern void AbortResize( void )
-/*****************************/
+void AbortResize( void )
+/**********************/
 {
     OBJPTR  eobj;
 
     eobj = GetECurrObject();
 
     if( eobj != NULL ) {
-        Destroy( eobj, FALSE );
+        Destroy( eobj, false );
         RestorePrevObject();
     }
     MarkCurrObject();
@@ -519,7 +517,7 @@ static void FinishCreate( POINT pt )
 }
 
 
-static BOOL SignificantMove( POINT pt )
+static bool SignificantMove( POINT pt )
 /*************************************/
 {
     POINT prev;
@@ -528,8 +526,8 @@ static BOOL SignificantMove( POINT pt )
     return( !(pt.x == prev.x && pt.y == prev.y) );
 }
 
-extern void ProcessButtonUp( POINT point )
-/****************************************/
+void ProcessButtonUp( POINT point )
+/*********************************/
 {
     /* responds to a button up message from the mouse */
     ProcessMouseMove( point );
@@ -541,7 +539,7 @@ extern void ProcessButtonUp( POINT point )
 }
 
 
-static BOOL Close( int cursor, int corner )
+static bool Close( int cursor, int corner )
 /*****************************************/
 {
     /* decides if the cursor position is within half of the width of a sizing
@@ -552,22 +550,22 @@ static BOOL Close( int cursor, int corner )
 }
 
 
-static BOOL CheckForSquare( RECT *rect, int x, char sizeid )
+static bool CheckForSquare( RECT *rect, int x, char sizeid )
 /**********************************************************/
 {
     /* checks if the cursor is near any of the sizing squares */
     if( Close( x, rect->left ) && (sizeid & R_LEFT) ) {
         SetSize( R_LEFT );
-        return( TRUE );
+        return( true );
     }
     if( Close( x, rect->right ) && (sizeid & R_RIGHT) ) {
         SetSize( R_RIGHT );
-        return( TRUE );
+        return( true );
     }
     if( Close( x, (rect->left + rect->right) / 2 ) )  {
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 
@@ -634,7 +632,7 @@ static void DoObjectMove( POINT pt )
     currobj = GetECurrObject();
     while( currobj != NULL ) {
         if( GetObjptr( GetObjptr( currobj ) ) != NULL ) {
-            Move( currobj, &offset, TRUE );
+            Move( currobj, &offset, true );
         }
         currobj = GetNextECurrObject( currobj );
     }
@@ -663,15 +661,15 @@ static void DoObjectResize( POINT pt )
         newloc.right = offset.x;
         currobj = GetECurrObject();
         if( currobj != NULL ) {
-            Resize( currobj, &newloc, TRUE );
+            Resize( currobj, &newloc, true );
         }
         SetPrevMouse( pt );
     }
 }
 
 
-extern void ProcessMouseMove( POINT point )
-/*****************************************/
+void ProcessMouseMove( POINT point )
+/**********************************/
 {
     /* responds to a button down message from the mouse */
     STATE_ID st;
@@ -722,7 +720,7 @@ static void BeginPaste( POINT pt, WORD keystate, OBJPTR d )
     d = d;
     SetState( PASTEING );
     FindPasteOffset( &offset, pt );
-    ResetCurrObject( FALSE );
+    ResetCurrObject( false );
     StartCurrObjMod();
     for( clist = GetClipList(); clist != NULL; clist = NextClipList( clist ) ) {
         object = GetClipObject( clist );
@@ -741,12 +739,12 @@ static void DoPasteMove( POINT pt )
     /* move the current object based on the mouse movement */
     POINT  lastmouse;
     POINT  offset;
-    BOOL   flag;
+    bool   flag;
 
     lastmouse = GetPrevMouse();
     offset.x = pt.x - lastmouse.x;
     offset.y = pt.y - lastmouse.y;
-    flag = TRUE;
+    flag = true;
     ExecuteCurrObject( MOVE, &offset, &flag );
     SetPrevMouse( pt );
 }
@@ -778,7 +776,7 @@ static void FinishPaste( POINT pt )
         if( PasteObject( object, parent, loc_pt ) ) {
             ListAddElt( &newcurrobj, object );
         }
-        Destroy( eatom, FALSE );
+        Destroy( eatom, false );
         DeleteCurrObject( currobj );
         MarkCurrObject();
         currobj = GetECurrObject();
@@ -861,11 +859,11 @@ static OBJPTR FindBSelectRoot( LPRECT rect )
     LIST            *list;       // children of root
     SUBOBJ_REQUEST  req;
     compare_rect_rc rc;
-    BOOL            done;
+    bool            done;
 
     root = GetMainObject();
     req.a.ty = ALL;
-    done = FALSE;
+    done = false;
     while( !done ) {
         list = NULL;
         FindObjList( root, &req, &list );
@@ -883,7 +881,7 @@ static OBJPTR FindBSelectRoot( LPRECT rect )
         }
         if( list == NULL ) {
             /* we made it down the list without finding further containment */
-            done = TRUE;
+            done = true;
         } else {
             ListFree( list );
         }
@@ -910,24 +908,24 @@ static void FindBSelectChildren( OBJPTR root, LIST **child, LIST **gchild )
     }
 }
 
-static BOOL BuildBSelectList( LPRECT rect, LIST *child, LIST **sel )
+static bool BuildBSelectList( LPRECT rect, LIST *child, LIST **sel )
 /******************************************************************/
 {
     /* returns TRUE if at least one of the objects in sel was contained */
-    BOOL        contained;
+    bool        contained;
     RECT        obj_loc;
     LIST        *curr;
     OBJPTR      currobj;
 
     *sel = NULL;
-    contained = FALSE;
+    contained = false;
     for( curr = child; curr != NULL; curr = ListNext( curr ) ) {
         currobj = ListElement( curr );
         Location( currobj, &obj_loc );
         switch( CompareRect( rect, &obj_loc ) ) {
         case RECT_EQUAL:
         case RECT_B_IN_A:
-            contained = TRUE;
+            contained = true;
             /* fall through */
         case RECT_A_IN_B:
         case RECT_INTERSECT:
@@ -953,8 +951,8 @@ static void BandedSelect( LPRECT rect )
     LIST        *child_sel;
     LIST        *gchild_sel;
     LIST        *sel_list;
-    BOOL        child_cont;     // some children were fully contained in rect
-    BOOL        gchild_cont;    // some gchildren were fully contained in rect
+    bool        child_cont;     // some children were fully contained in rect
+    bool        gchild_cont;    // some gchildren were fully contained in rect
     OBJPTR      currobj;
     CURROBJPTR  currptr;
 
@@ -985,7 +983,7 @@ static void BandedSelect( LPRECT rect )
     /* select the objects if there are any */
     if( sel_list != NULL ) {
         if( !GetShift() ) {
-            ResetCurrObject( FALSE );
+            ResetCurrObject( false );
         }
         StartCurrObjMod();
         for( ; sel_list != NULL; sel_list = ListNext( sel_list ) ) {
@@ -1020,7 +1018,7 @@ static void FinishSelect( POINT fin_pt )
     if( eatom != NULL ) {
         GetAnchor( eatom, &pt );
         Location( eatom, &rect );
-        Destroy( eatom, FALSE );
+        Destroy( eatom, false );
         SetSelectEatom( NULL );
         if( IsRectEmpty( &rect ) ) {
             PointSelect( pt );
@@ -1045,15 +1043,15 @@ static void FinishMovePending( POINT pt )
     MarkCurrObject();
 }
 
-extern void FinishMoveOperation( BOOL change_state )
-/**************************************************/
+void FinishMoveOperation( bool change_state )
+/*******************************************/
 {
     /* Finish the move operation */
     CURROBJPTR  currobj;
     LIST        *mycurrobjlist;
     LIST        *clist;
     DLIST       *movedlist;
-    BOOL        success;
+    bool        success;
     OBJPTR      eatom;
     OBJPTR      obj;
     OBJPTR      primary;
@@ -1062,15 +1060,16 @@ extern void FinishMoveOperation( BOOL change_state )
     DLIST       *newmovedlist;
     RECT        rect;
 
-    if( change_state ) SetState( MOVING );
+    if( change_state )
+        SetState( MOVING );
     primary = GetObjptr( GetCurrObject() );
     mycurrobjlist = GetCurrObjectList();
     for( clist = mycurrobjlist; clist != NULL; clist = ListNext( clist ) ) {
         RemoveFromParent( ListElement( clist ) );
     }
-    SetShowError( FALSE ); /* Don't want error message in the middle of
+    SetShowError( false ); /* Don't want error message in the middle of
                               multiple moves - paint won't work properly */
-    success = TRUE;        /* Flag to indicate whether or not any move failed */
+    success = true;        /* Flag to indicate whether or not any move failed */
     movedlist = NULL;      /* List of objects that have been moved */
     dlist = OrderList( mycurrobjlist );
     /* Move all objects until done or a move fails.  Move in correct order */
@@ -1110,7 +1109,7 @@ extern void FinishMoveOperation( BOOL change_state )
     /* Register all of the objects that got removed from the parent but
      * never got moved or moved back.  Use correct order.
      */
-    ResetCurrObject( FALSE );
+    ResetCurrObject( false );
     while( dlist != NULL ) {
         elt = DListElement( dlist );
         eatom = elt.original;
@@ -1124,7 +1123,7 @@ extern void FinishMoveOperation( BOOL change_state )
     for( clist = mycurrobjlist; clist != NULL; clist = ListConsume( clist ) ) {
         obj = ListElement( clist );
         AddCurrObject( GetObjptr( obj ) );
-        Destroy( obj, FALSE );
+        Destroy( obj, false );
     }
     DListFree( movedlist );
     DListFree( dlist );
@@ -1136,8 +1135,9 @@ extern void FinishMoveOperation( BOOL change_state )
         }
     }
     EndCurrObjMod();
-    SetShowError( TRUE );  /* Set flag saying it's okay to show errors now */
-    if( change_state ) SetDefState();
+    SetShowError( true );  /* Set flag saying it's okay to show errors now */
+    if( change_state )
+        SetDefState();
     /* Any error shown will cause repainting, so be sure */
     /* that we repaint the current object markers */
     UpdateWindow( GetAppWnd() );
@@ -1200,8 +1200,8 @@ static DLIST_ELT GetNextElement( DLIST *dlist )
     return( curr );
 }
 
-extern void BeginMoveOperation( LIST *mycurrobjlist )
-/***************************************************/
+void BeginMoveOperation( LIST *mycurrobjlist )
+/********************************************/
 {
     /* Prepare for the move operation */
     POINT          init;
@@ -1212,7 +1212,7 @@ extern void BeginMoveOperation( LIST *mycurrobjlist )
 
     /* Remember the primary object so that it's eatom can be set to primary */
     primary = GetCurrObject();
-    ResetCurrObject( FALSE );
+    ResetCurrObject( false );
     currobj = ListElement( mycurrobjlist );
     StartCurrObjMod();
     while( currobj != NULL ) {
@@ -1229,7 +1229,7 @@ extern void BeginMoveOperation( LIST *mycurrobjlist )
         init.x -= rect.left;
         init.y -= rect.top;
         if( init.x != 0 || init.y != 0 ) {
-            Move( eatom, &init, TRUE );
+            Move( eatom, &init, true );
         }
         mycurrobjlist = ListNext( mycurrobjlist );
         if( mycurrobjlist != NULL ) {
@@ -1251,8 +1251,8 @@ extern void BeginMoveOperation( LIST *mycurrobjlist )
     }
 }
 
-extern void AbortMoveOperation( void )
-/************************************/
+void AbortMoveOperation( void )
+/*****************************/
 {
     LIST    *objlist;
     OBJPTR  obj;
@@ -1270,14 +1270,14 @@ extern void AbortMoveOperation( void )
         obj = GetNextECurrObject( obj );
     }
 
-    ResetCurrObject( FALSE );
+    ResetCurrObject( false );
 
     StartCurrObjMod();
     for( ; objlist != NULL; objlist = ListConsume( objlist ) ) {
         eatom = ListElement( objlist );
         currobj = GetObjptr( eatom );
         AddCurrObject( currobj );
-        Destroy( eatom, FALSE );
+        Destroy( eatom, false );
     }
 
     /* Set correct object to be primary */

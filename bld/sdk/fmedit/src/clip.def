@@ -2,4 +2,4 @@ extern void     InitClipboard( void );
 extern void     *NextClipList( void * );
 extern void     *GetClipList( void );
 extern OBJPTR   GetClipObject( void * );
-extern BOOL     GetClipContents( void );
+//extern bool     GetClipContents( void );

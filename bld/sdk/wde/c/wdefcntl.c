@@ -483,7 +483,7 @@ BOOL WdeControlTestEX( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
     return( *template != NULL );
 }
 
-BOOL WdeControlIsMarkValid( WdeControlObject *obj, BOOL *flag, void *p2 )
+BOOL WdeControlIsMarkValid( WdeControlObject *obj, bool *flag, void *p2 )
 {
     uint_32 s;
 
@@ -500,7 +500,7 @@ BOOL WdeControlIsMarkValid( WdeControlObject *obj, BOOL *flag, void *p2 )
     return( TRUE );
 }
 
-BOOL WdeControlDestroy( WdeControlObject *obj, BOOL *flag, BOOL *p2 )
+BOOL WdeControlDestroy( WdeControlObject *obj, bool *flag, bool *p2 )
 {
     RECT        rect;
     OBJPTR      next;
@@ -553,7 +553,7 @@ BOOL WdeControlDestroy( WdeControlObject *obj, BOOL *flag, BOOL *p2 )
     MarkInvalid( &rect );
 
     if( check_scroll ) {
-        WdeCheckBaseScrollbars( FALSE );
+        WdeCheckBaseScrollbars( false );
     }
 
     return( TRUE );
@@ -616,7 +616,7 @@ BOOL WdeChangeControlSize( WdeControlObject *obj, BOOL widths_only, BOOL snap_to
     }
 
     if( !EqualRect( &size, &obj_rect ) ) {
-        if( !Resize( obj->object_handle, &size, FALSE ) ) {
+        if( !Resize( obj->object_handle, &size, false ) ) {
             WdeWriteTrail( "WdeChangeControlSize: RESIZE failed!" );
             return( FALSE );
         }
@@ -1163,7 +1163,7 @@ BOOL WdeControlCutObject( WdeControlObject *obj, WdeControlObject **new, void *p
     WdeControlModified( obj );
 
     if( check_scroll ) {
-        WdeCheckBaseScrollbars( FALSE );
+        WdeCheckBaseScrollbars( false );
     }
 
     return( TRUE );
@@ -1372,7 +1372,7 @@ BOOL WdeUpdateCDialogUnits( OBJPTR obj, RECT *new, WdeResizeRatio *r )
     return( TRUE );
 }
 
-BOOL WdeControlResize( WdeControlObject *obj, RECT *new_pos, BOOL *flag )
+BOOL WdeControlResize( WdeControlObject *obj, RECT *new_pos, bool *flag )
 {
     RECT           object_rect;
     RECT           nc_size;
@@ -1440,7 +1440,7 @@ BOOL WdeControlResize( WdeControlObject *obj, RECT *new_pos, BOOL *flag )
             }
         }
         if( error ) {
-            if( !Resize( obj->o_item, &object_rect, FALSE ) ) {
+            if( !Resize( obj->o_item, &object_rect, false ) ) {
                 WdeWriteTrail( "WdeControlResize: O_ITEM RESIZE undo failed!" );
             }
             return( FALSE );
@@ -1476,14 +1476,14 @@ BOOL WdeControlResize( WdeControlObject *obj, RECT *new_pos, BOOL *flag )
             return( FALSE );
         }
         if( obj->parent == obj->base_obj ) {
-            WdeCheckBaseScrollbars( FALSE );
+            WdeCheckBaseScrollbars( false );
         }
     }
 
     return( TRUE );
 }
 
-BOOL WdeControlMove ( WdeControlObject *obj, POINT *off, BOOL *forms_called )
+BOOL WdeControlMove( WdeControlObject *obj, POINT *off, bool *forms_called )
 {
     RECT           parent_rect;
     RECT           object_rect;
@@ -1599,13 +1599,13 @@ BOOL WdeControlMove ( WdeControlObject *obj, POINT *off, BOOL *forms_called )
         if( *forms_called ) {
             RemoveObject( obj->parent, obj->object_handle );
         }
-        if( !Resize( obj->o_item, &old_pos, FALSE ) ) {
+        if( !Resize( obj->o_item, &old_pos, false ) ) {
             WdeWriteTrail( "WdeControlMove: O_ITEM RESIZE undo failed!" );
         }
     } else if( ok && *forms_called ) {
         WdeControlModified( obj );
         if( old_parent == obj->base_obj || obj->parent == obj->base_obj ) {
-            WdeCheckBaseScrollbars( FALSE );
+            WdeCheckBaseScrollbars( false );
         }
     }
 
@@ -1994,7 +1994,7 @@ BOOL WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
         pos.right = pos.left + width;
         pos.bottom = pos.top + height;
         HideSelectBoxes();
-        ok = Resize( obj->object_handle, &pos, TRUE );
+        ok = Resize( obj->object_handle, &pos, true );
         ShowSelectBoxes();
     }
 

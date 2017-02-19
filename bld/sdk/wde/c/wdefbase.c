@@ -90,7 +90,7 @@ WINEXPORT BOOL   CALLBACK WdeBaseDispatcher( ACTION, WdeBaseObject *, void *, vo
 /* static function prototypes                                               */
 /****************************************************************************/
 
-#define pick(e,n,c) BOOL WdeBase ## n ## c
+#define pick(e,n,c) bool WdeBase ## n ## c
 static pick_ACT_DRAW( WdeBaseObject );
 static pick_ACT_LOCATE( WdeBaseObject );
 static pick_ACT_DESTROY( WdeBaseObject );
@@ -202,7 +202,7 @@ WINEXPORT OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR h
 
     new->o_item = Create( OBJ_ITEM, parent, &rect, new->object_handle );
 
-    use_default = TRUE;
+    use_default = true;
     text = WdeAllocRCString( WDE_BASEOBJECTFONT );
     if( text != NULL ) {
         cp = (char *)_mbschr( (unsigned char const *)text, '.' );
@@ -210,7 +210,7 @@ WINEXPORT OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR h
             *cp = '\0';
             cp++;
             point_size = atoi( cp );
-            use_default = FALSE;
+            use_default = false;
         }
     }
 
@@ -246,7 +246,7 @@ bool WdeBaseInit( bool first )
 {
     _wde_touch( first );
     WdeBaseDispatch = MakeProcInstance( (FARPROC)WdeBaseDispatcher, WdeGetAppInstance() );
-    return( TRUE );
+    return( true );
 }
 
 void WdeBaseFini( void )
@@ -254,23 +254,23 @@ void WdeBaseFini( void )
     FreeProcInstance( WdeBaseDispatch );
 }
 
-BOOL WdeBaseIsMarkValid( WdeBaseObject *obj, BOOL *flag, void *p2 )
+bool WdeBaseIsMarkValid( WdeBaseObject *obj, bool *flag, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
     _wde_touch( obj );
 
-    *flag = FALSE;
+    *flag = false;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBaseGetNextChild( WdeBaseObject *obj, OBJPTR *o, bool *up )
+bool WdeBaseGetNextChild( WdeBaseObject *obj, OBJPTR *o, bool *up )
 {
     return( WdeGetNextChild( &obj->ochildren, o, *up ) );
 }
 
-BOOL WdeBaseResolveSymbol( WdeBaseObject *obj, bool *b, bool *from_id )
+bool WdeBaseResolveSymbol( WdeBaseObject *obj, bool *b, bool *from_id )
 {
     LIST    *olist;
     OBJPTR  child;
@@ -282,10 +282,10 @@ BOOL WdeBaseResolveSymbol( WdeBaseObject *obj, bool *b, bool *from_id )
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBaseResolveHelpSymbol( WdeBaseObject *obj, bool *b, bool *from_id )
+bool WdeBaseResolveHelpSymbol( WdeBaseObject *obj, bool *b, bool *from_id )
 {
     LIST    *olist;
     OBJPTR  child;
@@ -297,10 +297,10 @@ BOOL WdeBaseResolveHelpSymbol( WdeBaseObject *obj, bool *b, bool *from_id )
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBaseDestroy( WdeBaseObject *obj, BOOL *flag, BOOL *p2 )
+bool WdeBaseDestroy( WdeBaseObject *obj, bool *flag, bool *p2 )
 {
     OBJPTR  sub_obj;
     LIST    *clist;
@@ -311,7 +311,7 @@ BOOL WdeBaseDestroy( WdeBaseObject *obj, BOOL *flag, BOOL *p2 )
 
     /* if the user initiated this destroy then don't do it! */
     if( *flag ) {
-        return( FALSE );
+        return( false );
     }
 
     obj->in_destroy = TRUE;
@@ -329,15 +329,15 @@ BOOL WdeBaseDestroy( WdeBaseObject *obj, BOOL *flag, BOOL *p2 )
 
     WRMemFree( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBaseGetScrollRect( WdeBaseObject *obj, RECT *r, void *p2 )
+bool WdeBaseGetScrollRect( WdeBaseObject *obj, RECT *r, void *p2 )
 {
     return( WdeBaseLocation( obj, r, p2 ) );
 }
 
-BOOL WdeBaseGetResizeInc( WdeBaseObject *obj, POINT *p, void *p2 )
+bool WdeBaseGetResizeInc( WdeBaseObject *obj, POINT *p, void *p2 )
 {
     DialogSizeInfo      dsize;
     RECT                r;
@@ -358,20 +358,20 @@ BOOL WdeBaseGetResizeInc( WdeBaseObject *obj, POINT *p, void *p2 )
         p->y = r.bottom;
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBaseGetResizer( WdeBaseObject *obj, WdeResizeRatio *resizer, OBJPTR *o )
+bool WdeBaseGetResizer( WdeBaseObject *obj, WdeResizeRatio *resizer, OBJPTR *o )
 {
     *resizer = obj->resizer;
     if( o != NULL ) {
         *o = obj;
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBaseGetFont( WdeBaseObject *obj, HFONT *font, void *p2 )
+bool WdeBaseGetFont( WdeBaseObject *obj, HFONT *font, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -379,10 +379,10 @@ BOOL WdeBaseGetFont( WdeBaseObject *obj, HFONT *font, void *p2 )
 
     *font = obj->font;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBaseGetNCSize( WdeBaseObject *obj, RECT *size, void *p2 )
+bool WdeBaseGetNCSize( WdeBaseObject *obj, RECT *size, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -390,20 +390,20 @@ BOOL WdeBaseGetNCSize( WdeBaseObject *obj, RECT *size, void *p2 )
 
     memset( size, 0, sizeof( RECT ) );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBaseFirstChild( WdeBaseObject *obj, void *p1, void *p2 )
+bool WdeBaseFirstChild( WdeBaseObject *obj, void *p1, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
     _wde_touch( p1 );
     _wde_touch( p2 );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBaseGetFirstChild( WdeBaseObject *obj, OBJPTR *first, void *p2 )
+bool WdeBaseGetFirstChild( WdeBaseObject *obj, OBJPTR *first, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
@@ -414,10 +414,10 @@ BOOL WdeBaseGetFirstChild( WdeBaseObject *obj, OBJPTR *first, void *p2 )
         *first = ListElement( obj->children );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBaseDraw( WdeBaseObject *obj, RECT *area, HDC *dc )
+bool WdeBaseDraw( WdeBaseObject *obj, RECT *area, HDC *dc )
 {
     POINT   origin;
     RECT    client_rect;
@@ -470,14 +470,14 @@ BOOL WdeBaseDraw( WdeBaseObject *obj, RECT *area, HDC *dc )
                       RDW_INTERNALPAINT | RDW_INVALIDATE | RDW_NOERASE | RDW_UPDATENOW );
         if( child && !Forward( tops, ON_TOP, NULL, NULL ) ) {
             WdeWriteTrail( "WdeBaseDraw: child ON_TOP failed!" );
-            return( FALSE );
+            return( false );
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBaseGetResizeInfo( WdeBaseObject *obj, RESIZE_ID *info, void *p2 )
+bool WdeBaseGetResizeInfo( WdeBaseObject *obj, RESIZE_ID *info, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -485,20 +485,20 @@ BOOL WdeBaseGetResizeInfo( WdeBaseObject *obj, RESIZE_ID *info, void *p2 )
 
     *info = R_NONE;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBaseIdentify( WdeBaseObject *obj, OBJ_ID *id, void *p2 )
+bool WdeBaseIdentify( WdeBaseObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBaseValidateAction( WdeBaseObject *obj, ACTION *act, void *p2 )
+bool WdeBaseValidateAction( WdeBaseObject *obj, ACTION *act, void *p2 )
 {
     int     i;
 
@@ -506,29 +506,29 @@ BOOL WdeBaseValidateAction( WdeBaseObject *obj, ACTION *act, void *p2 )
     _wde_touch( p2 );
 
     if( *act == MOVE ) {
-        return( FALSE );
+        return( false );
     }
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeBaseActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
     return( ValidateAction( (OBJPTR) obj->o_item, *act, p2 ) );
 }
 
-BOOL WdeBaseGetWindowHandle( WdeBaseObject *obj, HWND *hwin, void *p2 )
+bool WdeBaseGetWindowHandle( WdeBaseObject *obj, HWND *hwin, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *hwin = obj->res_info->edit_win;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBaseAddSubObject( WdeBaseObject *base_obj, OBJPTR obj, void *p2 )
+bool WdeBaseAddSubObject( WdeBaseObject *base_obj, OBJPTR obj, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
@@ -538,17 +538,17 @@ BOOL WdeBaseAddSubObject( WdeBaseObject *base_obj, OBJPTR obj, void *p2 )
     WdeAddOrderedEntry( &base_obj->ochildren, obj );
     base_obj->num_children++;
     Notify( obj, NEW_PARENT, base_obj->object_handle );
-    WdeCheckBaseScrollbars( FALSE );
+    WdeCheckBaseScrollbars( false );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBaseFindSubObjects( WdeBaseObject *obj, SUBOBJ_REQUEST *req, LIST **obj_list )
+bool WdeBaseFindSubObjects( WdeBaseObject *obj, SUBOBJ_REQUEST *req, LIST **obj_list )
 {
     return( WdeFindSubObjects( req, obj_list, obj->children ) );
 }
 
-BOOL WdeBaseFindObjectsPt( WdeBaseObject *obj, POINT *pt, LIST **obj_list )
+bool WdeBaseFindObjectsPt( WdeBaseObject *obj, POINT *pt, LIST **obj_list )
 {
     LIST    *subobjs;
     OBJPTR  child;
@@ -565,10 +565,10 @@ BOOL WdeBaseFindObjectsPt( WdeBaseObject *obj, POINT *pt, LIST **obj_list )
         ListAddElt( obj_list, obj );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBaseRemoveSubObject( WdeBaseObject *base_obj, OBJPTR obj, void *p2 )
+bool WdeBaseRemoveSubObject( WdeBaseObject *base_obj, OBJPTR obj, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
@@ -582,13 +582,13 @@ BOOL WdeBaseRemoveSubObject( WdeBaseObject *base_obj, OBJPTR obj, void *p2 )
             base_obj->res_info->next_current = NULL;
         }
     } else {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBasePutChildFirst( WdeBaseObject *obj, OBJPTR child, void *p2 )
+bool WdeBasePutChildFirst( WdeBaseObject *obj, OBJPTR child, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
@@ -596,17 +596,17 @@ BOOL WdeBasePutChildFirst( WdeBaseObject *obj, OBJPTR child, void *p2 )
     if( obj->num_children ) {
         if( !WdePutObjFirst( child, &obj->children ) ) {
             WdeWriteTrail( "WdeBasePutChildFirst: WdePutObjFirst failed!" );
-            return( FALSE );
+            return( false );
         }
     } else {
         WdeWriteTrail( "WdeBasePutChildFirst: No children!" );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBaseNotify( WdeBaseObject *base_obj, NOTE_ID *id, void *p2 )
+bool WdeBaseNotify( WdeBaseObject *base_obj, NOTE_ID *id, void *p2 )
 {
     OBJPTR           obj;
     WdeInfoStruct    is;
@@ -634,13 +634,13 @@ BOOL WdeBaseNotify( WdeBaseObject *base_obj, NOTE_ID *id, void *p2 )
 
             WdeWriteInfo( &is );
         }
-        return ( TRUE );
+        return ( true );
     }
 
     return( Notify( (OBJPTR)base_obj->o_item, *id, p2 ) );
 }
 
-BOOL WdeBaseLocation( WdeBaseObject *base_obj, RECT *obj_rect, void *p2 )
+bool WdeBaseLocation( WdeBaseObject *base_obj, RECT *obj_rect, void *p2 )
 {
     RECT onion;
     RECT rect1;
@@ -667,17 +667,17 @@ BOOL WdeBaseLocation( WdeBaseObject *base_obj, RECT *obj_rect, void *p2 )
 
     *obj_rect = onion;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeBaseGetSubObjectList( WdeBaseObject *base_obj, LIST **l, void *p2 )
+bool WdeBaseGetSubObjectList( WdeBaseObject *base_obj, LIST **l, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *l = base_obj->children;
 
-    return( TRUE );
+    return( true );
 }
 
 static void isWorldInBaseClient( WdeBaseObject *base_obj, BOOL *x_in, BOOL *y_in )
@@ -710,14 +710,14 @@ static void isWorldInBaseClient( WdeBaseObject *base_obj, BOOL *x_in, BOOL *y_in
     }
 }
 
-static BOOL enableFormsScrollbars( WdeBaseObject *base_obj, BOOL enablex, BOOL enabley )
+static bool enableFormsScrollbars( WdeBaseObject *base_obj, BOOL enablex, BOOL enabley )
 {
     STATE_HDL   state_handle;
     SCR_CONFIG  scroll_config;
 
     state_handle = GetCurrFormID();
     if( state_handle == 0 ) {
-        return( FALSE );
+        return( false );
     }
 
     scroll_config = SCROLL_NONE;
@@ -733,10 +733,10 @@ static BOOL enableFormsScrollbars( WdeBaseObject *base_obj, BOOL enablex, BOOL e
     SetFormEditWnd( state_handle, base_obj->res_info->forms_win,
                     MENU_NONE, scroll_config );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeCheckBaseScrollbars( BOOL in_resize )
+bool WdeCheckBaseScrollbars( bool in_resize )
 {
     WdeBaseObject       *base_obj;
     BOOL                enablex;
@@ -744,17 +744,17 @@ BOOL WdeCheckBaseScrollbars( BOOL in_resize )
     RECT                rect;
 
     if( WdeInCleanup() ) {
-        return( TRUE );
+        return( true );
     }
 
     base_obj = (WdeBaseObject *)GetMainObject();
 
     if( !base_obj || !base_obj->res_info ) {
-        return( FALSE );
+        return( false );
     }
 
     if( base_obj->in_destroy ) {
-        return( TRUE );
+        return( true );
     }
 
     enablex = FALSE;
@@ -763,15 +763,14 @@ BOOL WdeCheckBaseScrollbars( BOOL in_resize )
     isWorldInBaseClient( base_obj, &enablex, &enabley );
 
     if( enablex == base_obj->has_hscroll && enabley == base_obj->has_vscroll ) {
-        return( TRUE );
+        return( true );
     }
 
     if( enablex != base_obj->has_hscroll ) {
         if( !enablex ) {
             SetScrollPos( base_obj->res_info->forms_win, SB_HORZ, 0, FALSE );
         }
-        SetScrollRange( base_obj->res_info->forms_win, SB_HORZ, 0,
-                        enablex ? 100 : 0, FALSE );
+        SetScrollRange( base_obj->res_info->forms_win, SB_HORZ, 0, enablex ? 100 : 0, FALSE );
         ShowScrollBar( base_obj->res_info->forms_win, SB_HORZ, enablex );
     }
 
@@ -779,8 +778,7 @@ BOOL WdeCheckBaseScrollbars( BOOL in_resize )
         if( !enabley ) {
             SetScrollPos( base_obj->res_info->forms_win, SB_VERT, 0, FALSE );
         }
-        SetScrollRange( base_obj->res_info->forms_win, SB_VERT, 0,
-                        enabley ? 100 : 0, FALSE );
+        SetScrollRange( base_obj->res_info->forms_win, SB_VERT, 0, enabley ? 100 : 0, FALSE );
         ShowScrollBar( base_obj->res_info->forms_win, SB_VERT, enabley );
     }
 
@@ -788,8 +786,7 @@ BOOL WdeCheckBaseScrollbars( BOOL in_resize )
 
     if( !in_resize ) {
         GetClientRect( base_obj->res_info->forms_win, &rect );
-        MoveWindow( base_obj->res_info->edit_win, 0, 0,
-                    rect.right - rect.left, rect.bottom - rect.top, TRUE );
+        MoveWindow( base_obj->res_info->edit_win, 0, 0, rect.right - rect.left, rect.bottom - rect.top, TRUE );
     }
 
     UpdateScroll();
@@ -797,5 +794,5 @@ BOOL WdeCheckBaseScrollbars( BOOL in_resize )
     base_obj->has_hscroll = ( enablex != 0 );
     base_obj->has_vscroll = ( enabley != 0 );
 
-    return( TRUE );
+    return( true );
 }

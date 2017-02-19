@@ -83,7 +83,7 @@ void FMEDITAPI ResetFormEdit( HWND wnd )
 {
     /* close the editing window */
     if( InitState( wnd ) ) {
-        ResetCurrObject( FALSE );
+        ResetCurrObject( false );
         DestroyMainObject();
         CreateMainObject();
         SetCurrObject( GetMainObject() );
@@ -201,7 +201,7 @@ WINEXPORT BOOL CALLBACK FMEditWndProc( HWND wnd, UINT message, WPARAM wparam, LP
     HANDLE         inst;
     POINT          point;
     POINT          offset;
-    BOOL           frommenu;
+    bool           frommenu;
 
     if( !InitState( wnd ) ) {
         return( FALSE );
@@ -211,7 +211,7 @@ WINEXPORT BOOL CALLBACK FMEditWndProc( HWND wnd, UINT message, WPARAM wparam, LP
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case IDM_DELETEOBJECT:
-            frommenu = TRUE;
+            frommenu = true;
             ExecuteCurrObject( DESTROY, &frommenu, NULL );
             SetCurrObject( GetMainObject() );
             break;
@@ -384,7 +384,7 @@ int WINAPI WEP( int parm )
 
 #endif
 
-BOOL FMEDITAPI ObjectPress( OBJPTR obj, POINT *pt, WORD wparam, HWND wnd )
+bool FMEDITAPI ObjectPress( OBJPTR obj, POINT *pt, WORD wparam, HWND wnd )
 /************************************************************************/
 {
     /* The application is telling us that the object obj got a button down
@@ -392,7 +392,7 @@ BOOL FMEDITAPI ObjectPress( OBJPTR obj, POINT *pt, WORD wparam, HWND wnd )
      */
     if( InitState( wnd ) ) {
         ProcessButtonDown( *pt, wparam & MK_SHIFT, obj );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }

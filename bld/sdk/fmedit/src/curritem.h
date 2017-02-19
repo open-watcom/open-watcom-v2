@@ -38,7 +38,7 @@ typedef struct {
     HWND        hwnd;
     POINT       offset;
     RECT        rect;
-    BOOL        show_sel_boxes;
+    bool        show_sel_boxes;
     STATE_HDL   fmstate;            // handle to fmedit state
 } CURRITEM;
 

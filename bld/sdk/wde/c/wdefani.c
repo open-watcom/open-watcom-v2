@@ -69,7 +69,7 @@ static void     WdeAniCSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeAniCGetDefineInfo( WdeDefineObjectInfo *, HWND );
 static bool     WdeAniCDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 
-#define pick(e,n,c)     BOOL WdeAniC ## n ## c
+#define pick(e,n,c)     bool WdeAniC ## n ## c
 static pick_ACT_DESTROY( WdeAniCObject );
 static pick_ACT_COPY( WdeAniCObject );
 static pick_ACT_VALIDATE_ACTION( WdeAniCObject );
@@ -170,14 +170,14 @@ OBJPTR WdeAniCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wd
 
     if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeAniCCreate: SET_OBJECT_INFO failed!" );
-        Destroy( new->control, FALSE );
+        Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeAniCCreate: CREATE_WINDOW failed!" );
-        Destroy( new->control, FALSE );
+        Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
@@ -255,22 +255,22 @@ void WdeAniCFini( void )
     FreeProcInstance( WdeAniCDispatch );
 }
 
-BOOL WdeAniCDestroy( WdeAniCObject *obj, BOOL *flag, BOOL *p2 )
+bool WdeAniCDestroy( WdeAniCObject *obj, bool *flag, bool *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeAniCDestroy: Control DESTROY failed" );
-        return( FALSE );
+        return( false );
     }
 
     WRMemFree( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeAniCValidateAction( WdeAniCObject *obj, ACTION *act, void *p2 )
+bool WdeAniCValidateAction( WdeAniCObject *obj, ACTION *act, void *p2 )
 {
     int     i;
 
@@ -279,25 +279,25 @@ BOOL WdeAniCValidateAction( WdeAniCObject *obj, ACTION *act, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeAniCActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
     return( ValidateAction( (OBJPTR) obj->control, *act, p2 ) );
 }
 
-BOOL WdeAniCCopyObject( WdeAniCObject *obj, WdeAniCObject **new, WdeAniCObject *handle )
+bool WdeAniCCopyObject( WdeAniCObject *obj, WdeAniCObject **new, WdeAniCObject *handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeAniCCopyObject: Invalid new object!" );
-        return( FALSE );
+        return( false );
     }
 
     *new = (WdeAniCObject *)WRMemAlloc( sizeof( WdeAniCObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeAniCCopyObject: Object malloc failed" );
-        return( FALSE );
+        return( false );
     }
 
     (*new)->dispatcher = obj->dispatcher;
@@ -312,23 +312,23 @@ BOOL WdeAniCCopyObject( WdeAniCObject *obj, WdeAniCObject **new, WdeAniCObject *
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeAniCCopyObject: Control not created!" );
         WRMemFree( *new );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeAniCIdentify( WdeAniCObject *obj, OBJ_ID *id, void *p2 )
+bool WdeAniCIdentify( WdeAniCObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeAniCGetWndProc( WdeAniCObject *obj, WNDPROC *proc, void *p2 )
+bool WdeAniCGetWndProc( WdeAniCObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -336,10 +336,10 @@ BOOL WdeAniCGetWndProc( WdeAniCObject *obj, WNDPROC *proc, void *p2 )
 
     *proc = WdeAniCSuperClassProc;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeAniCGetWindowClass( WdeAniCObject *obj, char **class, void *p2 )
+bool WdeAniCGetWindowClass( WdeAniCObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -347,10 +347,10 @@ BOOL WdeAniCGetWindowClass( WdeAniCObject *obj, char **class, void *p2 )
 
     *class = WANIMATE_CLASS;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeAniCDefine( WdeAniCObject *obj, POINT *pnt, void *p2 )
+bool WdeAniCDefine( WdeAniCObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 

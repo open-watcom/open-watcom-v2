@@ -401,7 +401,7 @@ bool WdeOpenDialogFromResInfo ( WdeResInfo *res_info, WdeResDlgItem *ditem )
             return( FALSE );
         }
         if( !WdeAddControlsToDialog( res_info, ditem->object, ditem->dialog_info ) ) {
-            Destroy( ditem->object, FALSE );
+            Destroy( ditem->object, false );
             ditem->object = NULL;
             return( FALSE );
         }
@@ -486,7 +486,7 @@ bool WdeAddControlToDialog( WdeResInfo *res_info, OBJPTR dialog,
 
     if( !Register( new ) ) {
         WdeWriteTrail( "WdeAddControlToDialog: Register failed!" );
-        Destroy( new, FALSE );
+        Destroy( new, false );
         return( FALSE );
     }
 

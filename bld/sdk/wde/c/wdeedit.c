@@ -266,15 +266,13 @@ bool WdeResizeEditWindows( WdeResInfo *info )
 
     GetClientRect( info->res_win, &rect );
 
-    MoveWindow( info->forms_win, 0, 0, rect.right - rect.left,
-                rect.bottom - rect.top, TRUE );
+    MoveWindow( info->forms_win, 0, 0, rect.right - rect.left, rect.bottom - rect.top, TRUE );
 
-    WdeCheckBaseScrollbars( TRUE );
+    WdeCheckBaseScrollbars( true );
 
     GetClientRect( info->forms_win, &rect );
 
-    MoveWindow( info->edit_win, 0, 0, rect.right - rect.left,
-                rect.bottom - rect.top, TRUE );
+    MoveWindow( info->edit_win, 0, 0, rect.right - rect.left, rect.bottom - rect.top, TRUE );
 
     return( TRUE );
 }

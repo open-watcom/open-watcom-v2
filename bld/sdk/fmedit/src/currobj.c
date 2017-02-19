@@ -38,9 +38,9 @@
 
 /* forward references */
 
-static BOOL CALLBACK CurrObjDispatch( ACTION, CURROBJ *, void *, void * );
+static bool CALLBACK CurrObjDispatch( ACTION, CURROBJ *, void *, void * );
 
-#define pick(e,n,c)    BOOL CurrObj ## n ## c
+#define pick(e,n,c)    bool CurrObj ## n ## c
 static pick_ACT_DESTROY( CURROBJ );
 static pick_ACT_VALIDATE_ACTION( CURROBJ );
 static pick_ACT_GET_OBJECT( CURROBJ );
@@ -66,7 +66,7 @@ static DISPATCH_ITEM CurrObjActions[] = {
 
 #define MAX_ACTIONS (sizeof( CurrObjActions ) / sizeof( DISPATCH_ITEM ))
 
-static BOOL CALLBACK CurrObjDispatch( ACTION id, CURROBJ *c, void *p1, void *p2 )
+static bool CALLBACK CurrObjDispatch( ACTION id, CURROBJ *c, void *p1, void *p2 )
 /*******************************************************************************/
 {
     /* dispatch the desired operation to the correct place */
@@ -77,10 +77,10 @@ static BOOL CALLBACK CurrObjDispatch( ACTION id, CURROBJ *c, void *p1, void *p2 
             return( (CurrObjActions[i].rtn)( c, p1, p2 ) );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
-static BOOL CurrObjValidateAction( CURROBJ *c, ACTION *idptr, void *p2 )
+static bool CurrObjValidateAction( CURROBJ *c, ACTION *idptr, void *p2 )
 /**********************************************************************/
 {
     /* check if the desired action is valid for and CURROBJ */
@@ -91,8 +91,7 @@ static BOOL CurrObjValidateAction( CURROBJ *c, ACTION *idptr, void *p2 )
 
     if( *idptr == NOTIFY ) {
         note = p2;
-        return( note != NULL &&
-                (*note == CURR_OBJ_MOD_BEGIN || *note == CURR_OBJ_MOD_END) );
+        return( note != NULL && (*note == CURR_OBJ_MOD_BEGIN || *note == CURR_OBJ_MOD_END) );
     }
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
@@ -100,7 +99,7 @@ static BOOL CurrObjValidateAction( CURROBJ *c, ACTION *idptr, void *p2 )
             return( TRUE );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 ANYOBJ *CurrObjCreate( ANYOBJ *obj, RECT *loc, ANYOBJ *handle )
@@ -117,11 +116,11 @@ ANYOBJ *CurrObjCreate( ANYOBJ *obj, RECT *loc, ANYOBJ *handle )
     new->currobjlist = NULL;
     new->primaryobj = NULL;
     new->prevprimary = NULL;
-    new->show_sel_boxes = TRUE;
+    new->show_sel_boxes = true;
     return( new );
 }
 
-static BOOL CurrObjDestroy( CURROBJ *c, BOOL *p1, BOOL *p2 )
+static bool CurrObjDestroy( CURROBJ *c, bool *p1, bool *p2 )
 /**********************************************************/
 {
     /* destroy the CURROBJ */
@@ -132,7 +131,7 @@ static BOOL CurrObjDestroy( CURROBJ *c, BOOL *p1, BOOL *p2 )
         ListFree( c->currobjlist );
     }
     EdFree( c );
-    return( TRUE );
+    return( true );
 }
 
 static void NotifyCurrObj( CURROBJ *c, ANYOBJ *obj, BOOL add_obj )
@@ -141,7 +140,7 @@ static void NotifyCurrObj( CURROBJ *c, ANYOBJ *obj, BOOL add_obj )
     Notify( obj, CURRENT_OBJECT, &add_obj );
     if( add_obj ) {
         if( c->no_prim_notify ) {
-            c->prim_notify_pending = TRUE;
+            c->prim_notify_pending = true;
         } else {
             if( c->primaryobj == obj ) {
                 Notify( obj, PRIMARY_OBJECT, NULL );
@@ -150,7 +149,7 @@ static void NotifyCurrObj( CURROBJ *c, ANYOBJ *obj, BOOL add_obj )
     }
 }
 
-static BOOL CurrObjAddObject( CURROBJ *c, ANYOBJ *obj, BOOL *reset )
+static bool CurrObjAddObject( CURROBJ *c, ANYOBJ *obj, bool *reset )
 /******************************************************************/
 {
     ANYOBJ  *new;
@@ -179,10 +178,10 @@ static BOOL CurrObjAddObject( CURROBJ *c, ANYOBJ *obj, BOOL *reset )
     }
     Forward( new, SHOW_SEL_BOXES, &c->show_sel_boxes, NULL );
     NotifyCurrObj( c, new, TRUE );
-    return( TRUE );
+    return( true );
 }
 
-static BOOL CurrObjDeleteObject( CURROBJ *c, ANYOBJ *obj, BOOL *curritem )
+static bool CurrObjDeleteObject( CURROBJ *c, ANYOBJ *obj, bool *curritem )
 /************************************************************************/
 {
     LIST        *clist;
@@ -233,10 +232,10 @@ static BOOL CurrObjDeleteObject( CURROBJ *c, ANYOBJ *obj, BOOL *curritem )
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
-static BOOL CurrObjGetObject( CURROBJ *c, ANYOBJ **newobj, ANYOBJ *prevobj )
+static bool CurrObjGetObject( CURROBJ *c, ANYOBJ **newobj, ANYOBJ *prevobj )
 /**************************************************************************/
 {
     LIST    *newlist;
@@ -258,10 +257,10 @@ static BOOL CurrObjGetObject( CURROBJ *c, ANYOBJ **newobj, ANYOBJ *prevobj )
             }
         }
     }
-    return( TRUE );
+    return( true );
 }
 
-static BOOL CurrObjGetPrimary( CURROBJ *c, ANYOBJ **primary, BOOL *get )
+static bool CurrObjGetPrimary( CURROBJ *c, ANYOBJ **primary, bool *get )
 /**********************************************************************/
 {
     if( primary != NULL && get != NULL ) {
@@ -283,13 +282,13 @@ static BOOL CurrObjGetPrimary( CURROBJ *c, ANYOBJ **primary, BOOL *get )
                 NotifyCurrObj( c, *primary, TRUE );
             }
         }
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
-static BOOL CurrObjShowSelBoxes( CURROBJ *obj, BOOL *show, void *p2 )
+static bool CurrObjShowSelBoxes( CURROBJ *obj, bool *show, void *p2 )
 /*******************************************************************/
 {
     LIST    *item;
@@ -300,27 +299,27 @@ static BOOL CurrObjShowSelBoxes( CURROBJ *obj, BOOL *show, void *p2 )
         cobj = ListElement( item );
         (*cobj)( SHOW_SEL_BOXES, cobj, show, p2 );
     }
-    return( TRUE );
+    return( true );
 }
 
-static BOOL CurrObjNotify( CURROBJ *c, NOTE_ID *note, void *p2 )
+static bool CurrObjNotify( CURROBJ *c, NOTE_ID *note, void *p2 )
 /**************************************************************/
 {
     p2 = p2;        // unused
 
     switch( *note ) {
     case CURR_OBJ_MOD_BEGIN:
-        c->no_prim_notify = TRUE;
-        c->prim_notify_pending = FALSE;
-        return( TRUE );
+        c->no_prim_notify = true;
+        c->prim_notify_pending = false;
+        return( true );
     case CURR_OBJ_MOD_END:
-        c->no_prim_notify = FALSE;
+        c->no_prim_notify = false;
         if( c->prim_notify_pending ) {
             Notify( c->primaryobj, PRIMARY_OBJECT, NULL );
         }
-        c->prim_notify_pending = FALSE;
-        return( TRUE );
+        c->prim_notify_pending = false;
+        return( true );
     default:
-        return( FALSE );
+        return( false );
     }
 }

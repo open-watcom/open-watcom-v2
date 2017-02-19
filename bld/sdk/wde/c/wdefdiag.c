@@ -481,7 +481,7 @@ bool WdeKludgeDialogSize( WdeDialogObject *obj, bool adjust_for_nc, bool snap_to
 {
     RECT        old_rect;
     RECT        new_rect;
-    BOOL        user_action;
+    bool        user_action;
     POINT       pt;
 
     Location( (OBJPTR)obj, &old_rect );
@@ -496,7 +496,7 @@ bool WdeKludgeDialogSize( WdeDialogObject *obj, bool adjust_for_nc, bool snap_to
 
     if( !WdeDialogToScreen( obj, &obj->resizer, GETHDR_PSIZE( obj->dialog_info ), &new_rect ) ) {
         WdeWriteTrail( "WdeKludgeDialogSize: WdeDialogToScreen failed!" );
-        return( FALSE );
+        return( false );
     }
 
     if( adjust_for_nc ) {
@@ -507,17 +507,17 @@ bool WdeKludgeDialogSize( WdeDialogObject *obj, bool adjust_for_nc, bool snap_to
         new_rect.bottom += obj->nc_size.bottom;
     }
 
-    user_action = FALSE;
+    user_action = false;
 
     /* YIKES!!! what a kludge */
     if( !EqualRect( &new_rect, &old_rect ) ) {
         if( !WdeDialogResize( obj, &new_rect, &user_action ) ) {
             WdeWriteTrail( "WdeKludgeDialogSize: Resize failed!" );
-            return( FALSE );
+            return( false );
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 OBJPTR WdeCreateNewDialog( WResID *name, bool is32bit )
@@ -591,7 +591,7 @@ OBJPTR WdeCreateNewDialog( WResID *name, bool is32bit )
         MakeObjectCurrent( new );
     } else {
         if( new ) {
-            Destroy( (OBJPTR)new, FALSE );
+            Destroy( (OBJPTR)new, false );
             new = NULL;
         }
     }
@@ -645,7 +645,7 @@ OBJPTR WdeCreateDialogFromRes( WdeResInfo *res_info, WdeResDlgItem *ditem )
     }
 
     if( !ok ) {
-        Destroy( (OBJPTR)new, FALSE );
+        Destroy( (OBJPTR)new, false );
         new = NULL;
     }
 
@@ -681,13 +681,13 @@ WINEXPORT OBJPTR CALLBACK WdeDialogCreate( OBJPTR parent, RECT *obj_rect, OBJPTR
     new->name = WdeCreateDialogTitle();
     if( new->name == NULL ) {
         WdeWriteTrail( "WdeDialogCreate: WdeCreateDialogTitle failed!" );
-        Destroy( (OBJPTR)new, FALSE );
+        Destroy( (OBJPTR)new, false );
         return( NULL );
     }
 
     if( !WdeSetObjectInfo( new, &new->res_info, &new->dlg_item, new->name ) ) {
         WdeWriteTrail( "WdeDialogCreate: WdeSetObjectInfo failed!" );
-        Destroy( (OBJPTR)new, FALSE );
+        Destroy( (OBJPTR)new, false );
         return( NULL );
     }
 
@@ -696,13 +696,13 @@ WINEXPORT OBJPTR CALLBACK WdeDialogCreate( OBJPTR parent, RECT *obj_rect, OBJPTR
     new->dialog_info = WdeCopyDialogBoxHeader( WdeDefaultDialog );
     if( new->dialog_info == NULL ) {
         WdeWriteTrail( "WdeDialogCreate: CopyDBH failed!" );
-        Destroy( (OBJPTR)new, FALSE );
+        Destroy( (OBJPTR)new, false );
         return( NULL );
     }
 
     if( !WdeDialogCreateWindow( new, NULL, NULL ) ) {
         WdeWriteTrail( "WdeDialogCreate: CREATE_WINDOW failed!" );
-        Destroy( (OBJPTR)new, FALSE );
+        Destroy( (OBJPTR)new, false );
         return( NULL );
     }
 
@@ -1200,7 +1200,7 @@ BOOL WdeDialogRestore( WdeDialogObject *obj, void *p1, void *p2 )
             return( FALSE );
         }
         MakeObjectCurrent( obj->dlg_item->object );
-        Destroy( (OBJPTR)obj, FALSE );
+        Destroy( (OBJPTR)obj, false );
     } else {
         return( FALSE );
     }
@@ -1405,7 +1405,7 @@ BOOL WdeDialogDefine( WdeDialogObject *obj, POINT *pnt, void *p2 )
     return( TRUE );
 }
 
-BOOL WdeDialogIsMarkValid( WdeDialogObject *obj, BOOL *flag, void *p2 )
+BOOL WdeDialogIsMarkValid( WdeDialogObject *obj, bool *flag, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
@@ -1419,7 +1419,7 @@ BOOL WdeDialogIsMarkValid( WdeDialogObject *obj, BOOL *flag, void *p2 )
     return( TRUE );
 }
 
-BOOL WdeDialogDestroy( WdeDialogObject *obj, BOOL *flag, BOOL *hide )
+BOOL WdeDialogDestroy( WdeDialogObject *obj, bool *flag, bool *hide )
 {
     LIST        *clist;
     OBJPTR      sub_obj;
@@ -1502,7 +1502,7 @@ BOOL WdeDialogDestroy( WdeDialogObject *obj, BOOL *flag, BOOL *hide )
 
     MarkInvalid( &rect );
 
-    WdeCheckBaseScrollbars( FALSE );
+    WdeCheckBaseScrollbars( false );
 
     return( TRUE );
 }
@@ -2089,7 +2089,7 @@ BOOL WdeDialogNotify( WdeDialogObject *obj, NOTE_ID *id, void *p2 )
     return( FALSE );
 }
 
-BOOL WdeDialogResize( WdeDialogObject *obj, RECT *new_pos, BOOL *flag )
+BOOL WdeDialogResize( WdeDialogObject *obj, RECT *new_pos, bool *flag )
 {
     LIST    *olist;
     OBJPTR  child;
@@ -2134,7 +2134,7 @@ BOOL WdeDialogResize( WdeDialogObject *obj, RECT *new_pos, BOOL *flag )
                      new_location.top - origin.y, new_location.right - new_location.left,
                      new_location.bottom - new_location.top, TRUE ) ) {
         WdeWriteTrail( "WdeDialogResize: MoveWindow failed!" );
-        if( !Resize( obj->o_item, &old_location, FALSE ) ) {
+        if( !Resize( obj->o_item, &old_location, false ) ) {
             WdeWriteTrail( "WdeDialogResize: O_ITEM RESIZE undo failed!" );
         }
         return( FALSE );
@@ -2171,7 +2171,7 @@ BOOL WdeDialogResize( WdeDialogObject *obj, RECT *new_pos, BOOL *flag )
     }
 
     if( *flag ) {
-        WdeCheckBaseScrollbars( FALSE );
+        WdeCheckBaseScrollbars( false );
     }
 
     return( TRUE );
@@ -2205,7 +2205,7 @@ bool WdeUpdateDialogUnits( WdeDialogObject *obj, RECT *new, RECT *nc_size )
     return( TRUE );
 }
 
-BOOL WdeDialogMove( WdeDialogObject *obj, POINT *off, BOOL *forms_called )
+BOOL WdeDialogMove( WdeDialogObject *obj, POINT *off, bool *forms_called )
 {
     LIST    *olist;
     OBJPTR  child;
@@ -2284,12 +2284,12 @@ BOOL WdeDialogMove( WdeDialogObject *obj, POINT *off, BOOL *forms_called )
         if( *forms_called ) {
             RemoveObject( obj->parent, obj->object_handle );
         }
-        if( !Resize( obj->o_item, &old_location, FALSE ) ) {
+        if( !Resize( obj->o_item, &old_location, false ) ) {
             WdeWriteTrail( "WdeDialogMove: O_ITEM RESIZE undo failed!" );
         }
     } else if( ok && *forms_called )  {
         WdeDialogModified( obj );
-        WdeCheckBaseScrollbars( FALSE );
+        WdeCheckBaseScrollbars( false );
     }
 
     return( ok );
@@ -2557,7 +2557,7 @@ BOOL WdeDialogCutObject( WdeDialogObject *obj, WdeDialogObject **new, void *p2 )
 
     *new = obj->object_handle;
 
-    WdeCheckBaseScrollbars( FALSE );
+    WdeCheckBaseScrollbars( false );
 
     return( TRUE );
 }

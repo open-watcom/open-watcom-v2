@@ -31,13 +31,13 @@
 
 
 #include <windows.h>
-#include "bool.h"
 
 /* imports */
 
 #include "fmedit.def"
 #include "state.def"
 #include "object.def"
+#include "paint.def"
 
 /* colour constants */
 
@@ -170,8 +170,8 @@ static void DrawCurr( STATE_ID st, RECT *rect, HDC *hdc )
 }
 
 
-extern BOOL DoPainting( void )
-/****************************/
+bool DoPainting( void )
+/*********************/
 {
     /* repaint the areas of the screen which require updating */
     PAINTSTRUCT ps;
@@ -180,7 +180,7 @@ extern BOOL DoPainting( void )
     HDC         hdc;
     OBJPTR      obj;
     STATE_ID    st;
-    BOOL        ret;
+    bool        ret;
 
     wnd = GetAppWnd();
     BeginPaint( wnd, &ps );
@@ -203,9 +203,9 @@ extern BOOL DoPainting( void )
             Draw( obj, &ps.rcPaint, hdc );
         }
         DrawCurr( st, &ps.rcPaint, &hdc );
-        ret = TRUE;
+        ret = true;
     } else {
-        ret = FALSE;
+        ret = false;
     }
     EndPaint( wnd, &ps );
     return( ret );

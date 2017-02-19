@@ -45,15 +45,15 @@ static STATE        *StateList = NULL;
 static STATE_HDL    StateID = 1;
 
 /* forward declaration */
-extern BOOL ShowError( void );
+bool ShowError( void );
 
-extern void SetInst( HANDLE inst )
+void SetInst( HANDLE inst )
 {
     /* save the DLL instance */
     FMEditInst = inst;
 }
 
-extern void NewState( void )
+void NewState( void )
 {
     /* initialize state info */
     State = EdAlloc( sizeof( STATE ) );
@@ -74,17 +74,17 @@ extern void NewState( void )
     State->hAccel[2] = NULL;
     State->hAccel[3] = NULL;
     State->hAccel[4] = NULL;
-    State->showerror = TRUE;
+    State->showerror = true;
     State->error = NULL;
     State->mouseaction = NULL;
-    State->show_eatoms = TRUE;
+    State->show_eatoms = true;
     State->id = StateID;
     ++StateID;
     State->next = StateList;
     StateList = State;
 }
 
-extern void SetStateWnd( HWND wnd )
+void SetStateWnd( HWND wnd )
 {
     RECT   rect;
 
@@ -98,7 +98,7 @@ extern void SetStateWnd( HWND wnd )
 }
 
 
-extern void FreeState( void )
+void FreeState( void )
 {
     STATE *s;
     STATE *last;
@@ -119,7 +119,7 @@ extern void FreeState( void )
     State = NULL;
 }
 
-extern HWND InheritState( HWND newwnd )
+HWND InheritState( HWND newwnd )
 {
     /* replace the window of the current state with the passed window */
     HWND old;
@@ -129,7 +129,7 @@ extern HWND InheritState( HWND newwnd )
     return( old );
 }
 
-BOOL FMEDITAPI InitState( HWND wnd )
+bool FMEDITAPI InitState( HWND wnd )
 {
     /* initialize the state from the window */
     STATE *s;
@@ -143,7 +143,7 @@ BOOL FMEDITAPI InitState( HWND wnd )
     return( State != NULL );
 }
 
-extern void SetState( STATE_ID state )
+void SetState( STATE_ID state )
 {
     /* set to the specified state */
     State->currstate = state;
@@ -187,7 +187,7 @@ extern unsigned char GetSizing( void )
     return( State->sizeinfo );
 }
 
-extern BOOL Sizing( char op )
+bool Sizing( char op )
 {
     /* check to see if a sizing operation is valid */
     return( (State->sizeinfo & op) != R_NONE );
@@ -229,7 +229,7 @@ extern void DestroyMainObject( void )
     OBJPTR temp;
 
     temp = State->mainobject;
-    Destroy( temp, FALSE );
+    Destroy( temp, false );
     State->mainobject = NULL;
 }
 
@@ -242,7 +242,7 @@ extern void CreateCurrObject( void )
 extern void DestroyCurrObject( void )
 {
     /* Destroy the current object */
-    Destroy( State->currobj, FALSE );
+    Destroy( State->currobj, false );
 }
 
 OBJPTR FMEDITAPI GetMainObject( void )
@@ -374,12 +374,12 @@ extern void SetSelectEatom( OBJPTR eatom )
     State->selecteatom = eatom;
 }
 
-extern void SetShowEatoms( BOOL show )
+void SetShowEatoms( bool show )
 {
     State->show_eatoms = show;
 }
 
-extern BOOL GetShowEatoms( void )
+bool GetShowEatoms( void )
 {
     return( State->show_eatoms );
 }
@@ -423,17 +423,17 @@ extern void LoadAccel( int bitmap )
     }
 }
 
-extern BOOL GetShift( void )
+bool GetShift( void )
 {
     return( State->keystate & MK_SHIFT );
 }
 
-extern BOOL GetControl( void )
+bool GetControl( void )
 {
     return( State->keystate & MK_CONTROL );
 }
 
-extern void SetKeyState( WORD keystate )
+void SetKeyState( WORD keystate )
 {
     State->keystate = keystate;
 }
@@ -471,17 +471,17 @@ void FMEDITAPI ClearError( void )
 }
 
 
-BOOL ShowError( void )
+bool ShowError( void )
 {
     return( State->showerror );
 }
 
-void FMEDITAPI SetShowError( BOOL show )
+void FMEDITAPI SetShowError( bool show )
 {
     State->showerror = show;
 }
 
-BOOL FMEDITAPI IsEditting( HWND wnd )
+bool FMEDITAPI IsEditting( HWND wnd )
 {
     InitState( wnd );
     return( State->currstate == EDITING );
@@ -522,7 +522,7 @@ unsigned GetResizeVInc( void )
     return( State->vresizegrid );
 }
 
-BOOL FMEDITAPI InitStateFormID( STATE_HDL st )
+bool FMEDITAPI InitStateFormID( STATE_HDL st )
 {
     STATE *s;
 
@@ -546,19 +546,19 @@ STATE_HDL FMEDITAPI GetCurrFormID( void )
 void FMEDITAPI HideSelectBoxes( void )
 {
     OBJECT      *currobj;
-    BOOL        show;
+    bool        show;
 
     currobj = GetCurrObj();
-    show = FALSE;
+    show = false;
     (*currobj)( SHOW_SEL_BOXES, currobj, &show, NULL );
 }
 
 void FMEDITAPI ShowSelectBoxes( void )
 {
     OBJECT      *currobj;
-    BOOL        show;
+    bool        show;
 
     currobj = GetCurrObj();
-    show = TRUE;
+    show = true;
     (*currobj)( SHOW_SEL_BOXES, currobj, &show, NULL );
 }

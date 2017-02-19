@@ -35,7 +35,7 @@ extern void       FreeState( void );
 extern void       SetBaseState( STATE_ID );
 
 extern void       SetSize( RESIZE_ID );
-extern BOOL       Sizing( char );
+extern bool       Sizing( char );
 extern void       ResetSize( void );
 
 extern void       SetPrevMouse( POINT );
@@ -73,8 +73,8 @@ extern SCR_CONFIG GetScrollConfig( void );
 extern OBJPTR     GetSelectEatom( void );
 extern void       SetSelectEatom( OBJPTR );
 
-extern BOOL       GetShift( void );
-extern BOOL       GetControl( void );
+extern bool       GetShift( void );
+extern bool       GetControl( void );
 extern void       SetKeyState( WORD );
 
 extern void       ReportPending( void );
@@ -85,7 +85,7 @@ extern void       MouseAction( RECT * );
 extern void       SetResizeGrid( unsigned, unsigned );
 extern unsigned   GetResizeVInc( void );
 extern unsigned   GetResizeHInc( void );
-extern BOOL       GetShowEatoms( void );
-extern void       SetShowEatoms( BOOL show );
+extern bool       GetShowEatoms( void );
+extern void       SetShowEatoms( bool show );
 
 #endif

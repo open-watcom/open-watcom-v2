@@ -193,14 +193,14 @@ OBJPTR WdeScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
 
     if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeScrollCreate: SET_OBJECT_INFO failed!" );
-        Destroy( new->control, FALSE );
+        Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
 
     if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeScrollCreate: CREATE_WINDOW failed!" );
-        Destroy( new->control, FALSE );
+        Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
@@ -278,7 +278,7 @@ void WdeScrollFini( void )
     FreeProcInstance( WdeScrollDispatch );
 }
 
-BOOL WdeScrollDestroy( WdeScrollObject *obj, BOOL *flag, BOOL *p2 )
+BOOL WdeScrollDestroy( WdeScrollObject *obj, bool *flag, bool *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
@@ -293,7 +293,7 @@ BOOL WdeScrollDestroy( WdeScrollObject *obj, BOOL *flag, BOOL *p2 )
     return( TRUE );
 }
 
-BOOL WdeScrollResize( WdeScrollObject *obj, RECT *new_pos, BOOL *flag )
+BOOL WdeScrollResize( WdeScrollObject *obj, RECT *new_pos, bool *flag )
 {
     WdeOrderMode        mode;
 
@@ -319,7 +319,7 @@ BOOL WdeScrollResize( WdeScrollObject *obj, RECT *new_pos, BOOL *flag )
     return( TRUE );
 }
 
-BOOL WdeScrollMove( WdeScrollObject *obj, POINT *offset, BOOL *forms_called )
+BOOL WdeScrollMove( WdeScrollObject *obj, POINT *offset, bool *forms_called )
 {
     if( !Forward( obj->control, MOVE, offset, forms_called ) ) {
         WdeWriteTrail( "WdeScrollResize: control MOVE failed!" );
