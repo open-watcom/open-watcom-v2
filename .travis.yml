@@ -1,6 +1,9 @@
 language:
  - c
 
+compiler:
+ - clang
+
 before_install:
 # install DOSEMU
  - sudo apt-get update
