@@ -197,7 +197,7 @@ WINEXPORT BOOL CALLBACK FMEditWndProc( HWND wnd, UINT message, WPARAM wparam, LP
 /*******************************************************************************************/
 {
     /* processes messages */
-    FARPROC        procaddr;
+    DLGPROC        dlg_proc;
     HANDLE         inst;
     POINT          point;
     POINT          offset;
@@ -245,9 +245,9 @@ WINEXPORT BOOL CALLBACK FMEditWndProc( HWND wnd, UINT message, WPARAM wparam, LP
             CopyObjects();
             break;
         case IDM_GRID:
-            procaddr = MakeProcInstance( (FARPROC)FMGrid, inst );
-            DialogBox( inst, "GridBox", wnd, (DLGPROC)procaddr );
-            FreeProcInstance( procaddr );
+            dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)FMGridDlgProc, inst );
+            DialogBox( inst, "GridBox", wnd, dlg_proc );
+            FreeProcInstance( (FARPROC)dlg_proc );
             InheritState( wnd );
             break;
         case IDM_FMLEFT:
