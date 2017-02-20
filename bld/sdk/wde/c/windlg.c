@@ -342,7 +342,7 @@ void DoneAddingControls( GLOBALHANDLE data )
  */
 INT_PTR DynamicDialogBox( DLGPROC dlg_fn, HANDLE inst, HWND hwnd, GLOBALHANDLE data )
 {
-    FARPROC     dlg_proc;
+    DLGPROC     dlg_proc;
     INT_PTR     rc;
 #ifdef __NT__
     LPVOID      ptr;
