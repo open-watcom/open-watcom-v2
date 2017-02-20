@@ -86,8 +86,8 @@ typedef struct WRAddSymInfo {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
-WINEXPORT BOOL CALLBACK WRAddSymProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
+WINEXPORT INT_PTR CALLBACK WREditSymbolsDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
+WINEXPORT INT_PTR CALLBACK WRAddSymDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -971,7 +971,7 @@ bool WRAPI WREditSym( HWND parent, WRHashTable **table,
     WREditSymInfo       info;
     WRHashTable         *tmp;
     HINSTANCE           inst;
-    FARPROC             proc;
+    DLGPROC             dlg_proc;
     INT_PTR             ret;
     bool                ok;
 
@@ -985,8 +985,8 @@ bool WRAPI WREditSym( HWND parent, WRHashTable **table,
 
     if( ok ) {
         inst = WRGetInstance();
-        proc = MakeProcInstance( (FARPROC)WREditSymbolsProc, inst );
-        ok = (proc != NULL);
+        dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WREditSymbolsDlgProc, inst );
+        ok = (dlg_proc != NULL);
     }
 
     if( ok ) {
@@ -994,8 +994,8 @@ bool WRAPI WREditSym( HWND parent, WRHashTable **table,
         info.table = tmp;
         info.modified = false;
         info.flags = *flags;
-        ret = JDialogBoxParam( inst, "WRSymbols", parent, (DLGPROC)proc, (LPARAM)(LPVOID)&info );
-        FreeProcInstance( proc );
+        ret = JDialogBoxParam( inst, "WRSymbols", parent, dlg_proc, (LPARAM)(LPVOID)&info );
+        FreeProcInstance( (FARPROC)dlg_proc );
         ok = false;
         if( ret ) {
             UpdateWindow( parent );
@@ -1133,7 +1133,7 @@ static bool WRAddNewSymbol( HWND hDlg, WRHashTable *table, FARPROC hcb, bool mod
 {
     WRAddSymInfo        info;
     WRHashEntry         *entry;
-    DLGPROC             proc_inst;
+    DLGPROC             dlg_proc;
     HINSTANCE           inst;
     INT_PTR             modified;
     bool                ret;
@@ -1158,9 +1158,9 @@ static bool WRAddNewSymbol( HWND hDlg, WRHashTable *table, FARPROC hcb, bool mod
     ret = false;
 
     inst = WRGetInstance();
-    proc_inst = (DLGPROC)MakeProcInstance( (FARPROC)WRAddSymProc, inst );
-    modified = JDialogBoxParam( inst, "WRAddSymbol", hDlg, proc_inst, (LPARAM)(LPVOID)&info );
-    FreeProcInstance( (FARPROC)proc_inst );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WRAddSymDlgProc, inst );
+    modified = JDialogBoxParam( inst, "WRAddSymbol", hDlg, dlg_proc, (LPARAM)(LPVOID)&info );
+    FreeProcInstance( (FARPROC)dlg_proc );
 
     if( modified == IDOK ) {
         ret = WRAddSymbol( hDlg, table, modify, info.symbol, info.value );
@@ -1367,13 +1367,13 @@ static bool WRHandleDELKey( HWND hDlg, WREditSymInfo *info )
     return( false );
 }
 
-WINEXPORT BOOL CALLBACK WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WREditSymbolsDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WREditSymInfo       *info;
-    BOOL                ret;
+    bool                ret;
     WORD                wp, cmd;
 
-    ret = FALSE;
+    ret = false;
 
     switch( message ) {
     case WM_SYSCOLORCHANGE:
@@ -1388,23 +1388,22 @@ WINEXPORT BOOL CALLBACK WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wPara
             break;
         }
         WRSetupEditSymDialog( hDlg, info, TRUE );
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_DRAWITEM:
         WRDrawHashListBoxItem( hDlg, (DRAWITEMSTRUCT *)lParam );
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_VKEYTOITEM:
-        ret = -1;
         info = (WREditSymInfo *)GET_DLGDATA( hDlg );
         if( info != NULL && LOWORD( wParam ) == VK_DELETE ) {
             if( WRHandleDELKey( hDlg, info ) ) {
-                ret = -2;
+                return( (INT_PTR)-2 );
             }
         }
-        break;
+        return( (INT_PTR)-1 );
 
     case WM_COMMAND:
         info = (WREditSymInfo *)GET_DLGDATA( hDlg );
@@ -1430,11 +1429,11 @@ WINEXPORT BOOL CALLBACK WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wPara
                 info->flags = WRGetEditSymEntryFlags( hDlg );
             }
             EndDialog( hDlg, TRUE );
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDCANCEL:
-            ret = TRUE;
+            ret = true;
             if( info != NULL && info->modified ) {
                 if( !WRDiscardChangesQuery() ) {
                     break;
@@ -1551,11 +1550,11 @@ static void WRSetAddSymOK( HWND hDlg )
     EnableWindow( GetDlgItem( hDlg, IDOK ), enable );
 }
 
-WINEXPORT BOOL CALLBACK WRAddSymProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WRAddSymDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WRAddSymInfo        *info;
     WORD                cmd;
-    BOOL                ret;
+    INT_PTR             ret;
 
     ret = FALSE;
 

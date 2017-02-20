@@ -94,7 +94,7 @@
 /* external function prototypes                                             */
 /****************************************************************************/
 WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT INT_PTR CALLBACK WdeSplash( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WdeSplashDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -1316,12 +1316,12 @@ void WdeDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
 {
     DLGPROC     dlg_proc;
 
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WdeSplash, hInstWde );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WdeSplashDlgProc, hInstWde );
     JDialogBoxParam( inst, "WdeSplashScreen", parent, dlg_proc, (LPARAM)&msecs );
     FreeProcInstance( (FARPROC)dlg_proc );
 }
 
-WINEXPORT INT_PTR CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WdeSplashDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     UINT        msecs, start;
     UINT_PTR    timer;
@@ -1397,7 +1397,7 @@ WINEXPORT INT_PTR CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LP
         if( brush != NULL ) {
             dc = (HDC)wParam;
             SetBkColor( dc, color );
-            ret =  true;
+            return( (INT_PTR)brush );
         }
         break;
 #else
@@ -1407,7 +1407,7 @@ WINEXPORT INT_PTR CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LP
             if( HIWORD( lParam ) == CTLCOLOR_STATIC ) {
                 SetBkColor( dc, color );
             }
-            ret = true;
+            return( (INT_PTR)brush );
         }
         break;
 #endif
