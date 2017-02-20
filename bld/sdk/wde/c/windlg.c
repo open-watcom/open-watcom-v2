@@ -340,23 +340,23 @@ void DoneAddingControls( GLOBALHANDLE data )
 /*
  * DynamicDialogBox - create a dynamic dialog box
  */
-INT_PTR DynamicDialogBox( DLGPROC fn, HANDLE inst, HWND hwnd, GLOBALHANDLE data )
+INT_PTR DynamicDialogBox( DLGPROC dlg_fn, HANDLE inst, HWND hwnd, GLOBALHANDLE data )
 {
-    FARPROC     fp;
+    FARPROC     dlg_proc;
     INT_PTR     rc;
 #ifdef __NT__
     LPVOID      ptr;
 #endif
 
-    fp = MakeProcInstance( (FARPROC)fn, inst );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)dlg_fn, inst );
 #ifndef __NT__
-    rc = DialogBoxIndirect( inst, data, hwnd, (DLGPROC)fp );
+    rc = DialogBoxIndirect( inst, data, hwnd, dlg_proc );
 #else
     ptr = GlobalLock( data );
-    rc = DialogBoxIndirect( inst, ptr, hwnd, (DLGPROC)fp );
+    rc = DialogBoxIndirect( inst, ptr, hwnd, dlg_proc );
     GlobalUnlock( data );
 #endif
-    FreeProcInstance( fp );
+    FreeProcInstance( (FARPROC)dlg_proc );
     GlobalFree( data );
     return( rc );
 

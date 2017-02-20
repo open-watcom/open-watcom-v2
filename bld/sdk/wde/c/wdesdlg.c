@@ -66,7 +66,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WdeSelectDialogProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WdeSelectDialogDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -145,7 +145,7 @@ LIST *WdeSelectDialogs( WdeResInfo *res_info, bool remove )
 {
     INT_PTR             ret;
     HINSTANCE           inst;
-    FARPROC             proc;
+    DLGPROC             dlg_proc;
     WdeDialogSelectInfo si;
 
     if( res_info == NULL ) {
@@ -154,9 +154,9 @@ LIST *WdeSelectDialogs( WdeResInfo *res_info, bool remove )
 
     inst = WdeGetAppInstance();
 
-    proc = MakeProcInstance( (FARPROC)WdeSelectDialogProc, inst );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WdeSelectDialogDlgProc, inst );
 
-    if( proc == NULL ) {
+    if( dlg_proc == NULL ) {
         return( FALSE );
     }
 
@@ -164,10 +164,9 @@ LIST *WdeSelectDialogs( WdeResInfo *res_info, bool remove )
     si.selection = NULL;
     si.remove = remove;
 
-    ret = JDialogBoxParam( inst, "WdeSelectDialog", res_info->res_win,
-                           (DLGPROC)proc, (LPARAM)&si );
+    ret = JDialogBoxParam( inst, "WdeSelectDialog", res_info->res_win, dlg_proc, (LPARAM)&si );
 
-    FreeProcInstance( proc );
+    FreeProcInstance( (FARPROC)dlg_proc );
 
     /* if the window could not be created return FALSE */
     if( ret == -1 ) {
@@ -629,12 +628,12 @@ OBJ_ID WdeGetOBJIDFromControl( WdeDialogBoxControl *control )
     return( id );
 }
 
-WINEXPORT BOOL CALLBACK WdeSelectDialogProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WdeSelectDialogDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WdeDialogSelectInfo *si;
-    BOOL                ret;
+    bool                ret;
 
-    ret = FALSE;
+    ret = false;
 
     switch( message ) {
     case WM_SYSCOLORCHANGE:
@@ -647,7 +646,7 @@ WINEXPORT BOOL CALLBACK WdeSelectDialogProc( HWND hDlg, UINT message, WPARAM wPa
         if( !WdeSetSelectInfo( hDlg, si ) ) {
             EndDialog( hDlg, FALSE );
         }
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_COMMAND:
@@ -660,17 +659,15 @@ WINEXPORT BOOL CALLBACK WdeSelectDialogProc( HWND hDlg, UINT message, WPARAM wPa
             if( GET_WM_COMMAND_CMD( wParam, lParam ) != LBN_DBLCLK ) {
                 break;
             }
+            /* fall throught */
         case IDOK:
-            if( !WdeGetSelectInfo( hDlg, si ) ) {
-                EndDialog( hDlg, FALSE );
-            }
-            EndDialog( hDlg, TRUE );
-            ret = TRUE;
+            EndDialog( hDlg, WdeGetSelectInfo( hDlg, si ) );
+            ret = true;
             break;
 
         case IDCANCEL:
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
+            ret = true;
             break;
         }
         break;

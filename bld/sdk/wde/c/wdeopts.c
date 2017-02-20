@@ -79,7 +79,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WdeOptionsProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WdeOptionsDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -437,7 +437,7 @@ int WdeSetOption( WdeOptReq req, int val )
 bool WdeDisplayOptions( void )
 {
     HWND      dialog_owner;
-    DLGPROC   proc_inst;
+    DLGPROC   dlg_proc;
     HINSTANCE app_inst;
     INT_PTR   modified;
 
@@ -446,9 +446,9 @@ bool WdeDisplayOptions( void )
 
     dialog_owner = WdeGetMainWindowHandle();
     app_inst = WdeGetAppInstance();
-    proc_inst = (DLGPROC)MakeProcInstance ( (FARPROC)WdeOptionsProc, app_inst );
-    modified = JDialogBoxParam( app_inst, "WdeOptions", dialog_owner, proc_inst, (LPARAM)NULL );
-    FreeProcInstance( (FARPROC)proc_inst );
+    dlg_proc = (DLGPROC)MakeProcInstance ( (FARPROC)WdeOptionsDlgProc, app_inst );
+    modified = JDialogBoxParam( app_inst, "WdeOptions", dialog_owner, dlg_proc, (LPARAM)NULL );
+    FreeProcInstance( (FARPROC)dlg_proc );
 
     if( modified == -1 ) {
         WdeWriteTrail( "WdeDisplayOptions: Dialog not created!" );
@@ -530,14 +530,14 @@ static void WdeGetOptInfo( HWND hDlg )
     }
 }
 
-WINEXPORT BOOL CALLBACK WdeOptionsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WdeOptionsDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    BOOL ret;
+    bool ret;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( lParam );
 
-    ret = FALSE;
+    ret = false;
 
     switch( message ) {
     case WM_SYSCOLORCHANGE:
@@ -547,7 +547,7 @@ WINEXPORT BOOL CALLBACK WdeOptionsProc( HWND hDlg, UINT message, WPARAM wParam, 
     case WM_INITDIALOG:
         WdeOptWin = hDlg;
         WdeSetOptInfo( hDlg, &WdeCurrentState );
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_DESTROY:
@@ -563,12 +563,12 @@ WINEXPORT BOOL CALLBACK WdeOptionsProc( HWND hDlg, UINT message, WPARAM wParam, 
         case IDOK:
             WdeGetOptInfo( hDlg );
             EndDialog( hDlg, TRUE );
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDCANCEL:
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
+            ret = true;
             break;
 
 #if 0

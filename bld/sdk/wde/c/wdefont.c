@@ -51,8 +51,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WdeDummyProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT int  CALLBACK WdeEnumFontsProc( ENUMLOGFONT *, TEXTMETRIC *, int, LPARAM );
+WINEXPORT INT_PTR CALLBACK WdeDummyDlgProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT int     CALLBACK WdeEnumFontsProc( ENUMLOGFONT *, TEXTMETRIC *, int, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -363,7 +363,7 @@ bool WdeGetResizerFromFont( WdeResizeRatio *r, char *face, int ptsz )
     uint_8          *ldlg;
     HWND            hDlg;
     HINSTANCE       inst;
-    DLGPROC         proc;
+    DLGPROC         dlg_proc;
     RECT            rect;
     bool            ok;
 
@@ -376,8 +376,8 @@ bool WdeGetResizerFromFont( WdeResizeRatio *r, char *face, int ptsz )
                                       NULL, NULL, NULL, ptsz, face );
     DoneAddingControls( dialog_template );
     ldlg = (uint_8 *)GlobalLock ( dialog_template );
-    proc = (DLGPROC)MakeProcInstance ( (FARPROC)WdeDummyProc, inst );
-    hDlg = CreateDialogIndirect( inst, WDEDLGTEMPLATE ldlg, (HWND)NULL, proc );
+    dlg_proc = (DLGPROC)MakeProcInstance ( (FARPROC)WdeDummyDlgProc, inst );
+    hDlg = CreateDialogIndirect( inst, WDEDLGTEMPLATE ldlg, (HWND)NULL, dlg_proc );
     GlobalUnlock( dialog_template );
     GlobalFree( dialog_template );
 
@@ -392,12 +392,12 @@ bool WdeGetResizerFromFont( WdeResizeRatio *r, char *face, int ptsz )
         ok = false;
     }
 
-    FreeProcInstance( (FARPROC)proc );
+    FreeProcInstance( (FARPROC)dlg_proc );
 
     return( ok );
 }
 
-WINEXPORT BOOL CALLBACK WdeDummyProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WdeDummyDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( hDlg );

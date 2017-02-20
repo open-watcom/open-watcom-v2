@@ -61,8 +61,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL      CALLBACK WdeSelectCustProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT BOOL      CALLBACK WdeLoadCustProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR   CALLBACK WdeSelectCustDlgProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR   CALLBACK WdeLoadCustDlgProc( HWND, UINT, WPARAM, LPARAM );
 WINEXPORT HGLOBAL   CALLBACK WdeCustLOADRES( LPCSTR, LPCSTR );
 WINEXPORT BOOL      CALLBACK WdeCustEDITRES( LPCSTR, LPCSTR );
 
@@ -169,7 +169,7 @@ bool WdeSetCurrentCustControl( int which )
 {
     INT_PTR   ret;
     HINSTANCE inst;
-    FARPROC   proc;
+    DLGPROC   dlg_proc;
 
     if( WdeCustomLibList == NULL ) {
         WdeSetStatusByID( WDE_NONE, WDE_NOCUSTLOADED );
@@ -183,17 +183,16 @@ bool WdeSetCurrentCustControl( int which )
 
     inst = WdeGetAppInstance();
 
-    proc = MakeProcInstance( (FARPROC)WdeSelectCustProc, inst );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WdeSelectCustDlgProc, inst );
 
-    if( proc == NULL ) {
+    if( dlg_proc == NULL ) {
         WdeWriteTrail( "WdeSetCurrentCustomControl: MakeProcInstance failed!" );
         return( false );
     }
 
-    ret = JDialogBoxParam( inst, "WdeSelectCustom", WdeGetMainWindowHandle(),
-                           (DLGPROC)proc, (LPARAM)(LPVOID)&which );
+    ret = JDialogBoxParam( inst, "WdeSelectCustom", WdeGetMainWindowHandle(), dlg_proc, (LPARAM)(LPVOID)&which );
 
-    FreeProcInstance( proc );
+    FreeProcInstance( (FARPROC)dlg_proc );
 
     /* if the window could not be created return FALSE */
     if( ret == -1 ) {
@@ -275,16 +274,15 @@ bool WdeLoadMSCustomControls( WdeCustLib *lib )
     WdeCustStyleProc style_proc;
     WdeCustFlagsProc flags_proc;
     HWND             dialog_owner;
-    FARPROC          proc_inst;
+    DLGPROC          dlg_proc;
     HINSTANCE        app_inst;
     INT_PTR          ok;
 
     dialog_owner = WdeGetMainWindowHandle();
     app_inst = WdeGetAppInstance();
-    proc_inst = MakeProcInstance ( (FARPROC)WdeLoadCustProc, app_inst );
-    ok = JDialogBoxParam( app_inst, "WdeLoadCustom", dialog_owner,
-                          (DLGPROC)proc_inst, (LPARAM)(LPVOID)lib );
-    FreeProcInstance ( proc_inst );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WdeLoadCustDlgProc, app_inst );
+    ok = JDialogBoxParam( app_inst, "WdeLoadCustom", dialog_owner, dlg_proc, (LPARAM)(LPVOID)lib );
+    FreeProcInstance ( (FARPROC)dlg_proc );
 
     if( ok == -1 ) {
         WdeWriteTrail( "WdeLoadMSCustomControls: Dialog not created!" );
@@ -1098,12 +1096,12 @@ bool WdePreviewSelected( HWND win )
     return( true );
 }
 
-WINEXPORT BOOL CALLBACK WdeSelectCustProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WdeSelectCustDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static int which = 0;
-    BOOL       ret;
+    bool       ret;
 
-    ret = FALSE;
+    ret = false;
 
     switch( message ) {
     case WM_SETFONT:
@@ -1130,13 +1128,13 @@ WINEXPORT BOOL CALLBACK WdeSelectCustProc( HWND hDlg, UINT message, WPARAM wPara
             WdeSetCurrentControl( hDlg, which );
             WdeFreeSelectWinCBox( hDlg );
             EndDialog( hDlg, TRUE );
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDCANCEL:
             WdeFreeSelectWinCBox( hDlg );
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDB_CUST_DESC:
@@ -1253,13 +1251,13 @@ bool WdeGetLoadCustInfo( HWND hDlg, WdeCustLib *lib )
     return( ok );
 }
 
-WINEXPORT BOOL CALLBACK WdeLoadCustProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WdeLoadCustDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static WdeCustLib   *lib;
     bool                checked;
-    BOOL                ret;
+    bool                ret;
 
-    ret = FALSE;
+    ret = false;
 
     switch( message ) {
     case WM_INITDIALOG:
@@ -1277,13 +1275,13 @@ WINEXPORT BOOL CALLBACK WdeLoadCustProc( HWND hDlg, UINT message, WPARAM wParam,
         case IDOK:
             if( WdeGetLoadCustInfo( hDlg, lib ) ) {
                 EndDialog( hDlg, TRUE );
-                ret = TRUE;
+                ret = true;
             }
             break;
 
         case IDCANCEL:
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDB_CUST_NONSTANDARD:

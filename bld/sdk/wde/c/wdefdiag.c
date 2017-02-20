@@ -191,8 +191,8 @@ typedef struct {
 /* external function prototypes                                             */
 /****************************************************************************/
 WINEXPORT bool       CALLBACK WdeDialogDispatcher( ACTION, WdeDialogObject *, void *, void * );
-WINEXPORT BOOL       CALLBACK WdeDialogProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT BOOL       CALLBACK WdeDialogDefineProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR    CALLBACK WdeDialogDlgProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR    CALLBACK WdeDialogDefineDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -226,9 +226,9 @@ static void WdeWriteDialogToInfo( WdeDialogObject * );
 /* static variables                                                         */
 /****************************************************************************/
 static FARPROC                  WdeDialogDispatch;
-static FARPROC                  WdeDialogDefineProcInst;
-static DLGPROC                  WdeDialogProcInst;
-static DLGPROC                  WdeTestProcInst;
+static DLGPROC                  WdeDialogDefineDlgProcInst;
+static DLGPROC                  WdeDialogDlgProcInst;
+static DLGPROC                  WdeTestDlgProcInst;
 static HINSTANCE                WdeAppInst;
 static WdeDialogBoxHeader       *WdeDefaultDialog;
 
@@ -857,9 +857,9 @@ bool WdeDialogInit( bool first )
     }
 
     WdeDialogDispatch = MakeProcInstance( (FARPROC)WdeDialogDispatcher, WdeAppInst );
-    WdeDialogDefineProcInst = MakeProcInstance( (FARPROC)WdeDialogDefineProc, WdeAppInst );
-    WdeTestProcInst = (DLGPROC)MakeProcInstance( (FARPROC)WdeTestDlgProc, WdeAppInst );
-    WdeDialogProcInst = (DLGPROC)MakeProcInstance ( (FARPROC)WdeDialogProc, WdeAppInst );
+    WdeDialogDefineDlgProcInst = (DLGPROC)MakeProcInstance( (FARPROC)WdeDialogDefineDlgProc, WdeAppInst );
+    WdeTestDlgProcInst = (DLGPROC)MakeProcInstance( (FARPROC)WdeTestDlgProc, WdeAppInst );
+    WdeDialogDlgProcInst = (DLGPROC)MakeProcInstance ( (FARPROC)WdeDialogDlgProc, WdeAppInst );
 
     return( true );
 }
@@ -867,9 +867,9 @@ bool WdeDialogInit( bool first )
 void WdeDialogFini( void )
 {
     WdeFreeDialogBoxHeader( &WdeDefaultDialog );
-    FreeProcInstance( WdeDialogDefineProcInst);
-    FreeProcInstance( (FARPROC)WdeTestProcInst );
-    FreeProcInstance( (FARPROC)WdeDialogProcInst );
+    FreeProcInstance( (FARPROC)WdeDialogDefineDlgProcInst);
+    FreeProcInstance( (FARPROC)WdeTestDlgProcInst );
+    FreeProcInstance( (FARPROC)WdeDialogDlgProcInst );
     FreeProcInstance( WdeDialogDispatch );
 }
 
@@ -1125,7 +1125,7 @@ bool WdeDialogTest( WdeDialogObject *obj, GLOBALHANDLE *p1, void *p2 )
     }
 
     hwin = CreateDialogIndirectParam( WdeAppInst, WDEDLGTEMPLATE locked_global_mem,
-                                      obj->res_info->forms_win, WdeTestProcInst,
+                                      obj->res_info->forms_win, WdeTestDlgProcInst,
                                       (LPARAM)obj );
 
     GlobalUnlock( dialog_template );
@@ -1330,7 +1330,7 @@ bool WdeDialogDefine( WdeDialogObject *obj, POINT *pnt, void *p2 )
         WdeSetStatusByID( WDE_DEFININGDIALOG, WDE_NONE );
 
         redraw = JDialogBoxParam( WdeAppInst, "WdeDefineDIALOG", obj->window_handle,
-                                  (DLGPROC)WdeDialogDefineProcInst, (LPARAM)&o_info ) != 0;
+                                  WdeDialogDefineDlgProcInst, (LPARAM)&o_info ) != 0;
 
         if( redraw != 0 ) {
             quick = true;
@@ -1529,7 +1529,7 @@ bool WdeDialogCreateWindow( WdeDialogObject *obj, bool *show, void *p2 )
     }
 
     obj->window_handle = CreateDialogIndirect( WdeAppInst, WDEDLGTEMPLATE locked_global_mem,
-                                               obj->parent_handle, WdeDialogProcInst );
+                                               obj->parent_handle, WdeDialogDlgProcInst );
 
     GlobalUnlock( hglobal_mem );
 
@@ -2683,12 +2683,12 @@ bool WdeBuildDialogTemplate ( WdeDialogBoxHeader *dialog_header, HGLOBAL *hgloba
     return( ok );
 }
 
-WINEXPORT BOOL CALLBACK WdeDialogProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WdeDialogDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     LPARAM  new_lparam;
-    int     msg_processed;
+    bool    ret;
 
-    msg_processed = FALSE;
+    ret = false;
 
     if( WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( TRUE );
@@ -2699,9 +2699,9 @@ WINEXPORT BOOL CALLBACK WdeDialogProc( HWND hWnd, UINT message, WPARAM wParam, L
     case WM_SETTEXT:
     case WM_NCPAINT:
     case WM_NCACTIVATE:
-        SetWindowLong( hWnd, DWL_MSGRESULT,
-                       WdeCtl3dDlgFramePaint( hWnd, message, wParam, lParam ) );
-        return( TRUE );
+        SET_DLGRESULT( hWnd, WdeCtl3dDlgFramePaint( hWnd, message, wParam, lParam ) );
+        ret = true;
+        break;
 #endif
 #if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     case WM_DLGBORDER:
@@ -2711,7 +2711,7 @@ WINEXPORT BOOL CALLBACK WdeDialogProc( HWND hWnd, UINT message, WPARAM wParam, L
                 *((int *)lParam) = CTL3D_NOBORDER;
             }
         }
-        msg_processed = TRUE;
+        ret = true;
         break;
     case WM_DLGSUBCLASS:
         if( lParam ) {
@@ -2720,7 +2720,7 @@ WINEXPORT BOOL CALLBACK WdeDialogProc( HWND hWnd, UINT message, WPARAM wParam, L
                 *((int *)lParam) = CTL3D_NOSUBCLASS;
             }
         }
-        msg_processed = TRUE;
+        ret = true;
         break;
 #endif
     case WM_INITDIALOG:
@@ -2739,7 +2739,7 @@ WINEXPORT BOOL CALLBACK WdeDialogProc( HWND hWnd, UINT message, WPARAM wParam, L
             new_lparam = MAKELONG( HTCLIENT, HIWORD( lParam ) );
             SendMessage( hWnd, message, wParam, new_lparam );
         }
-        msg_processed = TRUE;
+        ret = true;
         break;
 
     case WM_SETFONT:
@@ -2747,13 +2747,13 @@ WINEXPORT BOOL CALLBACK WdeDialogProc( HWND hWnd, UINT message, WPARAM wParam, L
         break;
     }
 
-    return( msg_processed );
+    return( ret );
 }
 
-WINEXPORT BOOL CALLBACK WdeDialogDefineProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WdeDialogDefineDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    static WdeDefineObjectInfo *o_info;
-    static uint_8              init_done;
+    static WdeDefineObjectInfo *o_info = NULL;
+    static bool                init_done = false;
     bool                       ret;
     int                        font_index;
 
@@ -2787,11 +2787,11 @@ WINEXPORT BOOL CALLBACK WdeDialogDefineProc( HWND hDlg, UINT message, WPARAM wPa
         break;
 
     case WM_INITDIALOG:
-        init_done = FALSE;
+        init_done = false;
         o_info = (WdeDefineObjectInfo *)lParam;
         WdeDialogSetDefineDialogInfo( o_info, hDlg );
-        init_done = TRUE;
-        ret = TRUE;
+        init_done = true;
+        ret = true;
         break;
 
     case WM_COMMAND:
@@ -2804,16 +2804,16 @@ WINEXPORT BOOL CALLBACK WdeDialogDefineProc( HWND hDlg, UINT message, WPARAM wPa
             break;
 
         case IDOK:
-            init_done = FALSE;
+            init_done = false;
             EndDialog( hDlg, TRUE );
             WdeDialogGetDefineDialogInfo( o_info, hDlg );
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDCANCEL:
-            init_done = FALSE;
+            init_done = false;
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDB_FONTNAME:

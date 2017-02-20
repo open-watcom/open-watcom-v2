@@ -216,15 +216,15 @@ static bool WdeSetDefaultTestControlEntries( HWND win )
     return( TRUE );
 }
 
-WINEXPORT BOOL CALLBACK WdeTestDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WdeTestDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    int msg_processed;
+    bool ret;
 
     /* touch unused var to get rid of warning */
     _wde_touch( wParam );
     _wde_touch( lParam );
 
-    msg_processed = FALSE;
+    ret = false;
 
     switch( message ) {
 #if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
@@ -235,7 +235,7 @@ WINEXPORT BOOL CALLBACK WdeTestDlgProc( HWND hWnd, UINT message, WPARAM wParam, 
                 *((int *)lParam) = CTL3D_NOBORDER;
             }
         }
-        msg_processed = TRUE;
+        ret = true;
         break;
     case WM_DLGSUBCLASS:
         if( lParam ) {
@@ -244,7 +244,7 @@ WINEXPORT BOOL CALLBACK WdeTestDlgProc( HWND hWnd, UINT message, WPARAM wParam, 
                 *((int *)lParam) = CTL3D_NOSUBCLASS;
             }
         }
-        msg_processed = TRUE;
+        ret = true;
         break;
 #endif
     case WM_INITDIALOG:
@@ -252,7 +252,6 @@ WINEXPORT BOOL CALLBACK WdeTestDlgProc( HWND hWnd, UINT message, WPARAM wParam, 
             WdeCtl3dSubclassDlgAll( hWnd );
         }
         WdeTestDialogHandle = hWnd;
-        msg_processed = FALSE;
         break;
 
     case WM_DESTROY:
@@ -276,5 +275,5 @@ WINEXPORT BOOL CALLBACK WdeTestDlgProc( HWND hWnd, UINT message, WPARAM wParam, 
         break;
     }
 
-    return( msg_processed );
+    return( ret );
 }

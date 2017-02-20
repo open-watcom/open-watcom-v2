@@ -94,7 +94,7 @@
 /* external function prototypes                                             */
 /****************************************************************************/
 WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT BOOL    CALLBACK WdeSplash( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WdeSplash( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -1314,14 +1314,14 @@ bool WdeProcessArgs( char **argv, int argc )
 
 void WdeDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
 {
-    FARPROC     lpProcAbout;
+    DLGPROC     dlg_proc;
 
-    lpProcAbout = MakeProcInstance( (FARPROC)WdeSplash, hInstWde );
-    JDialogBoxParam( inst, "WdeSplashScreen", parent, (DLGPROC)lpProcAbout, (LPARAM)&msecs );
-    FreeProcInstance( lpProcAbout );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WdeSplash, hInstWde );
+    JDialogBoxParam( inst, "WdeSplashScreen", parent, dlg_proc, (LPARAM)&msecs );
+    FreeProcInstance( (FARPROC)dlg_proc );
 }
 
-WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     UINT        msecs, start;
     UINT_PTR    timer;
@@ -1334,6 +1334,7 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
     HINSTANCE   hInstUser;
     PFNLI       pfnLoadImage;
 #endif
+    bool        ret;
 
     static BITMAP    bm;
     static HBITMAP   logo;
@@ -1341,6 +1342,8 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
     static COLORREF  color;
 
     wParam=wParam;
+
+    ret = false;
 
     switch( message ) {
     case WM_SYSCOLORCHANGE:
@@ -1369,8 +1372,7 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
         hInstUser = GetModuleHandle( "USER32.DLL" );
         pfnLoadImage = (PFNLI)GetProcAddress( hInstUser, "LoadImageA" );
         if( pfnLoadImage != NULL ) {
-            logo = pfnLoadImage( hInstWde, "AboutLogo", IMAGE_BITMAP, 0, 0,
-                                 LR_LOADMAP3DCOLORS );
+            logo = pfnLoadImage( hInstWde, "AboutLogo", IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS );
         } else {
 #endif
             logo = LoadBitmap( hInstWde, "AboutLogo" );
@@ -1386,7 +1388,8 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
         brush = CreateSolidBrush( color );
 
         GetObject( logo, sizeof( BITMAP ), &bm );
-        return( TRUE );
+        ret = true;
+        break;
 
 #if 0
 #ifdef __NT__
@@ -1394,7 +1397,7 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
         if( brush != NULL ) {
             dc = (HDC)wParam;
             SetBkColor( dc, color );
-            return( (LRESULT)brush );
+            ret =  true;
         }
         break;
 #else
@@ -1404,7 +1407,7 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
             if( HIWORD( lParam ) == CTLCOLOR_STATIC ) {
                 SetBkColor( dc, color );
             }
-            return( (LRESULT)brush );
+            ret = true;
         }
         break;
 #endif
@@ -1414,7 +1417,7 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
             GetClientRect( hDlg, &rect );
             UnrealizeObject( brush );
             FillRect( (HDC)wParam, &rect, brush );
-            return( TRUE );
+            ret = true;
         }
         break;
 #endif
@@ -1442,10 +1445,11 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
             KillTimer( hDlg, timer );
         }
         EndDialog( hDlg, TRUE );
-        return( TRUE );
+        ret = true;
+        break;
     }
 
-    return( FALSE );
+    return( ret );
 }
 
 WINEXPORT void CALLBACK WdeHelpRoutine( void )

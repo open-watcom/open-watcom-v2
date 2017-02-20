@@ -51,7 +51,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WdeGenericDefineProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WdeGenericDefineDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -106,7 +106,7 @@ bool WdeGenericDefine( WdeDefineObjectInfo *info )
     INT_PTR              redraw;
     bool                 quick;
     bool                 destroy_children;
-    FARPROC              proc_inst;
+    DLGPROC              dlg_proc;
     HINSTANCE            app_inst;
 
     if( info->obj == NULL ) {
@@ -126,11 +126,11 @@ bool WdeGenericDefine( WdeDefineObjectInfo *info )
 
     app_inst = WdeGetAppInstance();
 
-    proc_inst = MakeProcInstance ( (FARPROC)WdeGenericDefineProc, app_inst );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WdeGenericDefineDlgProc, app_inst );
 
-    redraw = JDialogBoxParam( app_inst, "WdeDefineGeneric", info->win, (DLGPROC)proc_inst, (LPARAM)info );
+    redraw = JDialogBoxParam( app_inst, "WdeDefineGeneric", info->win, dlg_proc, (LPARAM)info );
 
-    FreeProcInstance ( proc_inst );
+    FreeProcInstance ( (FARPROC)dlg_proc );
 
     if( redraw == -1 ) {
         WdeWriteTrail( "WdeGenericDefine: Dialog not created!" );
@@ -275,7 +275,7 @@ void WdeGetObjectStyle( HWND hDlg, DialogStyle *style )
     *style = (uint_16)WdeGetUINT32FromEdit( hDlg, IDB_STYLES, NULL );
 }
 
-WINEXPORT BOOL CALLBACK WdeGenericDefineProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WdeGenericDefineDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static WdeDefineObjectInfo  *info = NULL;
     bool                        ret;
@@ -324,10 +324,7 @@ WINEXPORT BOOL CALLBACK WdeGenericDefineProc( HWND hDlg, UINT message, WPARAM wP
             break;
 
         case IDOK:
-            if( !WdeGenericGetDefineInfo( info, hDlg ) ) {
-                EndDialog( hDlg, FALSE );
-            }
-            EndDialog( hDlg, TRUE );
+            EndDialog( hDlg, WdeGenericGetDefineInfo( info, hDlg ) );
             info = NULL;
             ret = true;
             break;

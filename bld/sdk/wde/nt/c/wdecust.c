@@ -58,7 +58,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WdeSelectCustProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WdeSelectCustDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -127,7 +127,7 @@ bool WdeSetCurrentCustControl( int which )
 {
     INT_PTR   ret;
     HINSTANCE inst;
-    FARPROC   proc;
+    DLGPROC   dlg_proc;
 
     if( WdeCustomLibList == NULL ) {
         WdeSetStatusByID( WDE_NONE, WDE_NOCUSTLOADED );
@@ -140,14 +140,14 @@ bool WdeSetCurrentCustControl( int which )
     }
 
     inst = WdeGetAppInstance();
-    proc = MakeProcInstance( (FARPROC)WdeSelectCustProc, inst );
-    if( proc == NULL ) {
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WdeSelectCustDlgProc, inst );
+    if( dlg_proc == NULL ) {
         WdeWriteTrail( "WdeSetCurrentCustomControl: MakeProcInstance failed!" );
         return( false );
     }
-    ret = JDialogBoxParam( inst, "WdeSelectCustom", WdeGetMainWindowHandle(),
-                           (DLGPROC)proc, (LPARAM)(LPVOID)&which );
-    FreeProcInstance( proc );
+    ret = JDialogBoxParam( inst, "WdeSelectCustom", WdeGetMainWindowHandle(), dlg_proc, (LPARAM)(LPVOID)&which );
+
+    FreeProcInstance( (FARPROC)dlg_proc );
 
     /* if the window could not be created return FALSE */
     if( ret == -1 ) {
@@ -597,12 +597,12 @@ bool WdePreviewSelected( HWND win )
     return( true );
 }
 
-WINEXPORT BOOL CALLBACK WdeSelectCustProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WdeSelectCustDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static int which = 0;
-    BOOL       ret;
+    bool   ret;
 
-    ret = FALSE;
+    ret = false;
 
     switch( message ) {
     case WM_SETFONT:
@@ -629,13 +629,13 @@ WINEXPORT BOOL CALLBACK WdeSelectCustProc( HWND hDlg, UINT message, WPARAM wPara
             WdeSetCurrentControl( hDlg, which );
             WdeFreeSelectWinCBox( hDlg );
             EndDialog( hDlg, TRUE );
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDCANCEL:
             WdeFreeSelectWinCBox( hDlg );
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDB_CUST_DESC:

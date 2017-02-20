@@ -68,7 +68,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WdeControlDefineDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -942,7 +942,7 @@ bool WdeControlDefine( WdeDefineObjectInfo *o_info )
     char                *helpsymbol;
     char                *dlg_template;
     INT_PTR             redraw;
-    FARPROC             def_proc;
+    DLGPROC             dlg_proc;
     HINSTANCE           app_inst;
     WdeOrderMode        mode;
 
@@ -989,11 +989,11 @@ bool WdeControlDefine( WdeDefineObjectInfo *o_info )
 
     redraw = -1;
 
-    def_proc = MakeProcInstance( (FARPROC)WdeControlDefineProc, app_inst );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WdeControlDefineDlgProc, app_inst );
 
-    if( def_proc != NULL ) {
-        redraw = JDialogBoxParam( app_inst, dlg_template, o_info->win, (DLGPROC)def_proc, (LPARAM)o_info );
-        FreeProcInstance( def_proc );
+    if( dlg_proc != NULL ) {
+        redraw = JDialogBoxParam( app_inst, dlg_template, o_info->win, dlg_proc, (LPARAM)o_info );
+        FreeProcInstance( (FARPROC)dlg_proc );
     }
 
     if( redraw == -1 ) {
@@ -1043,7 +1043,7 @@ bool WdeControlDefine( WdeDefineObjectInfo *o_info )
     return( true );
 }
 
-WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WdeControlDefineDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static WdeDefineObjectInfo  *o_info = NULL;
     static bool                 init_done = false;
@@ -1062,7 +1062,7 @@ WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wP
                                          GETCTL_ID( o_info->info.c.info ), true );
         }
 
-        /* JPK - added for help id support */
+        /* added for help id support */
         if( !ret ) {
             ret = WdeProcessHelpSymbolCombo( hDlg, message, wParam, lParam,
                                              o_info->res_info->hash_table,
@@ -1086,7 +1086,6 @@ WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wP
         if( o_info == NULL ) {
             EndDialog( hDlg, FALSE );
             init_done = false;
-            ret = true;
         } else {
             WdeSetDefineControlInfo( o_info, hDlg );
         }
