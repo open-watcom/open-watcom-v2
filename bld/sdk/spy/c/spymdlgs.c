@@ -39,9 +39,9 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-WINEXPORT BOOL CALLBACK MessageDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-WINEXPORT BOOL CALLBACK MessageSelectDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK SpyMsgDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK MessageDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK MessageSelectDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static int      currBit;
 static bool     *savedBits;
@@ -49,9 +49,9 @@ static bool     *savedBits;
 #define SDM_SETPAGE (WM_USER + 1)
 
 /*
- * SpyMsgDialog - process message range dialogs
+ * SpyMsgDialogDlgProc - process message range dialogs
  */
-BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK SpyMsgDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i, j, k, max;
     static int  which, firstmsg, pages;
@@ -60,10 +60,14 @@ BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     ctl_id      cmdid;
     const char  *fmtstr;
     char        title[100];
+    bool        ret;
+
+    ret = false;
 
     switch( msg ) {
     case WM_INITDIALOG:
         SendMessage( hwnd, SDM_SETPAGE, 0, lparam );
+        ret = true;
         break;
     case SDM_SETPAGE:
         which = lparam;
@@ -107,10 +111,12 @@ BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             SetDlgItemText( hwnd, DLGMSG1 + i, ClassMessages[j].message_array[k + i].str );
             CheckDlgButton( hwnd, DLGMSG1 + i, ( savedBits[firstmsg + i] ) ? BST_CHECKED : BST_UNCHECKED );
         }
+        ret = true;
         break;
 #ifndef NOUSE3D
     case WM_SYSCOLORCHANGE:
         CvrCtl3dColorChange();
+        ret = true;
         break;
 #endif
     case WM_COMMAND:
@@ -119,59 +125,59 @@ BOOL CALLBACK SpyMsgDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             fl = (savedBits[cmdid - DLGMSG1 + firstmsg]) ? FALSE : TRUE;
             savedBits[cmdid - DLGMSG1 + firstmsg] = fl;
             CheckDlgButton( hwnd, cmdid, ( fl ) ? BST_CHECKED : BST_UNCHECKED );
-            break;
-        }
-        switch( cmdid ) {
-        case DLGMSG_CLEARALL:
-        case DLGMSG_SETALL:
-            fl = (cmdid == DLGMSG_SETALL);
-            if( which == pages ) {
-                max = TotalMessageArraySize % NUM_DLGMSGS;
-            } else {
-                max = NUM_DLGMSGS;
+        } else {
+            switch( cmdid ) {
+            case DLGMSG_CLEARALL:
+            case DLGMSG_SETALL:
+                fl = (cmdid == DLGMSG_SETALL);
+                if( which == pages ) {
+                    max = TotalMessageArraySize % NUM_DLGMSGS;
+                } else {
+                    max = NUM_DLGMSGS;
+                }
+                for( i = 0; i < max; i++ ) {
+                    savedBits[firstmsg + i] = fl;
+                    CheckDlgButton( hwnd, DLGMSG1 + i, ( fl ) ? BST_CHECKED : BST_UNCHECKED );
+                }
+                break;
+            case DLGMSG_NEXT:
+                SendMessage( hwnd, SDM_SETPAGE, 0, which + 1 );
+                break;
+            case DLGMSG_PREV:
+                SendMessage( hwnd, SDM_SETPAGE, 0, which - 1 );
+                break;
+            case IDCANCEL:
+                EndDialog( hwnd, -1 );
+                break;
+            case IDOK:
+                EndDialog( hwnd, 0 );
+                break;
             }
-            for( i = 0; i < max; i++ ) {
-                savedBits[firstmsg + i] = fl;
-                CheckDlgButton( hwnd, DLGMSG1 + i, ( fl ) ? BST_CHECKED : BST_UNCHECKED );
-            }
-            break;
-        case DLGMSG_NEXT:
-            SendMessage( hwnd, SDM_SETPAGE, 0, which + 1 );
-            break;
-        case DLGMSG_PREV:
-            SendMessage( hwnd, SDM_SETPAGE, 0, which - 1 );
-            break;
-        case IDCANCEL:
-            EndDialog( hwnd, -1 );
-            break;
-        case IDOK:
-            EndDialog( hwnd, 0 );
-            break;
         }
+        ret = true;
         break;
     case WM_CLOSE:
         EndDialog( hwnd, 0 );
+        ret = true;
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 
-} /* SysMsgDialog */
+} /* SpyMsgDialogDlgProc */
 
 /*
  * DoSpyMsgDialog
  */
 static void DoSpyMsgDialog( HWND hwnd, int which )
 {
-    FARPROC     fp;
+    DLGPROC     dlg_proc;
     bool        *savewatch;
     INT_PTR     rc;
 
     savewatch = CloneBitState( savedBits );
-    fp = MakeProcInstance( (FARPROC)SpyMsgDialog, Instance );
-    rc = JDialogBoxParam( ResInstance, "SPYMSGS", hwnd, (DLGPROC)fp, which );
-    FreeProcInstance( fp );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)SpyMsgDialogDlgProc, Instance );
+    rc = JDialogBoxParam( ResInstance, "SPYMSGS", hwnd, dlg_proc, which );
+    FreeProcInstance( (FARPROC)dlg_proc );
     if( rc == -1 ) {
         CopyBitState( savedBits, savewatch );
     }
@@ -180,17 +186,20 @@ static void DoSpyMsgDialog( HWND hwnd, int which )
 } /* DoSpyMsgDialog */
 
 /*
- * MessageDialog - process messages required dialog
+ * MessageDialogDlgProc - process messages required dialog
  */
-BOOL CALLBACK MessageDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK MessageDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i;
     bool        fl;
     ctl_id      cmdid;
     const char  *rcstr;
     int         id;
+    bool        ret;
 
     lparam = lparam;
+
+    ret = false;
 
     switch( msg ) {
     case WM_INITDIALOG:
@@ -205,10 +214,12 @@ BOOL CALLBACK MessageDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             rcstr = GetRCString( STR_MSGS_TO_STOP );
         }
         SetWindowText( hwnd, rcstr );
+        ret = true;
         break;
 #ifndef NOUSE3D
     case WM_SYSCOLORCHANGE:
         CvrCtl3dColorChange();
+        ret = true;
         break;
 #endif
     case WM_COMMAND:
@@ -219,49 +230,49 @@ BOOL CALLBACK MessageDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             CheckDlgButton( hwnd, cmdid, ( fl ) ? BST_CHECKED : BST_UNCHECKED );
             Filters[i].flag[currBit] = fl;
             SetFilterSaveBitsMsgs( i, fl, savedBits );
-            break;
-        }
+        } else {
         switch( cmdid ) {
-        case SPYMSG_ALLCLEAR:
-        case SPYMSG_ALLSET:
-            fl = (cmdid == SPYMSG_ALLSET);
-            for( id = SPYMSG_CLIPBOARD; id <= SPYMSG_CONTROLS; id++ ) {
-                i = id - SPYMSG_CLIPBOARD;
-                Filters[i].flag[currBit] = fl;
-                CheckDlgButton( hwnd, id, ( fl ) ? BST_CHECKED : BST_UNCHECKED );
-                SetFilterSaveBitsMsgs( i, fl, savedBits );
+            case SPYMSG_ALLCLEAR:
+            case SPYMSG_ALLSET:
+                fl = (cmdid == SPYMSG_ALLSET);
+                for( id = SPYMSG_CLIPBOARD; id <= SPYMSG_CONTROLS; id++ ) {
+                    i = id - SPYMSG_CLIPBOARD;
+                    Filters[i].flag[currBit] = fl;
+                    CheckDlgButton( hwnd, id, ( fl ) ? BST_CHECKED : BST_UNCHECKED );
+                    SetFilterSaveBitsMsgs( i, fl, savedBits );
+                }
+                break;
+            case IDOK:
+                EndDialog( hwnd, 0 );
+                break;
+            case IDCANCEL:
+                EndDialog( hwnd, 1 );
+                break;
+            case SPYMSG_DLG1:
+            case SPYMSG_DLG2:
+            case SPYMSG_DLG3:
+            case SPYMSG_DLG4:
+                DoSpyMsgDialog( hwnd, cmdid - SPYMSG_DLG1 + 1 );
+                break;
             }
-            break;
-        case IDOK:
-            EndDialog( hwnd, 0 );
-            break;
-        case IDCANCEL:
-            EndDialog( hwnd, 1 );
-            break;
-        case SPYMSG_DLG1:
-        case SPYMSG_DLG2:
-        case SPYMSG_DLG3:
-        case SPYMSG_DLG4:
-            DoSpyMsgDialog( hwnd, cmdid - SPYMSG_DLG1 + 1 );
-            break;
         }
+        ret = true;
         break;
     case WM_CLOSE:
         EndDialog( hwnd, 0 );
+        ret = true;
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 
-} /* MessageDialog */
+} /* MessageDialogDlgProc */
 
 /*
  * DoMessageDialog
  */
 void DoMessageDialog( HWND hwnd, ctl_id cmdid )
 {
-    FARPROC     fp;
+    DLGPROC     dlg_proc;
     INT_PTR     rc;
     bool        filts[SPYMSG_CONTROLS - SPYMSG_CLIPBOARD + 1];
     int         i;
@@ -277,8 +288,8 @@ void DoMessageDialog( HWND hwnd, ctl_id cmdid )
         filts[i] = Filters[i].flag[currBit];
     }
     savedBits = SaveBitState( currBit );
-    fp = MakeProcInstance( (FARPROC)MessageDialog, Instance );
-    rc = JDialogBox( ResInstance, "SPYMSGDIALOG", hwnd, (DLGPROC)fp );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)MessageDialogDlgProc, Instance );
+    rc = JDialogBox( ResInstance, "SPYMSGDIALOG", hwnd, dlg_proc );
     if( rc ) {
         for( id = SPYMSG_CLIPBOARD; id <= SPYMSG_CONTROLS; id++ ) {
             i = id - SPYMSG_CLIPBOARD;
@@ -287,7 +298,7 @@ void DoMessageDialog( HWND hwnd, ctl_id cmdid )
     } else {
         RestoreBitState( savedBits, currBit );
     }
-    FreeProcInstance( fp );
+    FreeProcInstance( (FARPROC)dlg_proc );
 
 } /* DoMessageDialog */
 
@@ -335,9 +346,9 @@ static void setMessageName( HWND hwnd, char *str ) {
 }
 
 /*
- * MessageSelectDialog - a single message item selected
+ * MessageSelectDialogDlgProc - a single message item selected
  */
-BOOL CALLBACK MessageSelectDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK MessageSelectDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i;
     WORD        id;
@@ -350,6 +361,9 @@ BOOL CALLBACK MessageSelectDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
     const char  *warnmsg;
     char        *strptr;
     bool        fl;
+    bool        ret;
+
+    ret = false;
 
     switch( msg ) {
     case WM_INITDIALOG:
@@ -369,17 +383,20 @@ BOOL CALLBACK MessageSelectDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
         id = strtol( &str[SPYOUT_MSG], &endptr, 16 );
         if( endptr != str + SPYOUT_MSG + SPYOUT_MSG_LEN ) {
             EndDialog( hwnd, 0 );
+            ret = true;
             break;
         }
         currHwnd = (HWND)(pointer_int)strtol( &str[SPYOUT_HWND], &endptr, 16 );
         if( endptr != str + SPYOUT_MSG - 1 ) {
             EndDialog( hwnd, 0 );
+            ret = true;
             break;
         }
         GetClassName( currHwnd, class_name, 80 );
         msgPtr = GetMessageDataFromID( id, class_name );
         if( msgPtr == NULL ) {
             EndDialog( hwnd, 0 );
+            ret = true;
             break;
         }
         oldBits[M_WATCH] = msgPtr->bits[M_WATCH];
@@ -399,6 +416,7 @@ BOOL CALLBACK MessageSelectDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
         if( !IsWindow( currHwnd ) || currHwnd == hwnd ) {
             WindowIsDestroyed( hwnd );
         }
+        ret = true;
         break;
     case WM_COMMAND:
         cmdid = LOWORD( wparam );
@@ -457,38 +475,39 @@ BOOL CALLBACK MessageSelectDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
             PostMessage( hwnd, WM_CLOSE, 0, 0L );
             break;
         }
+        ret = true;
         break;
     case WM_CLOSE:
         if( doHilite ) {
             FrameAWindow( currHwnd );
         }
         EndDialog( hwnd, 0 );
+        ret = true;
         break;
     case WM_DESTROY:
         strptr = (char *)GET_DLGDATA( hwnd );
         MemFree( strptr );
+        ret = true;
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 
-} /* MessageSelectDialog */
+} /* MessageSelectDialogDlgProc */
 
 /*
  * DoMessageSelDialog
  */
 void DoMessageSelDialog( HWND hwnd )
 {
-    FARPROC     fp;
+    DLGPROC     dlg_proc;
     char        str[80];
 
     if( !GetSpyBoxSelection( str ) ) {
         return;
     }
-    fp = MakeProcInstance( (FARPROC)MessageSelectDialog, Instance );
-    JDialogBoxParam( ResInstance, "MSGSELECT", hwnd, (DLGPROC)fp, (LPARAM)(LPSTR)str );
-    FreeProcInstance( fp );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)MessageSelectDialogDlgProc, Instance );
+    JDialogBoxParam( ResInstance, "MSGSELECT", hwnd, dlg_proc, (LPARAM)(LPSTR)str );
+    FreeProcInstance( (FARPROC)dlg_proc );
 
 } /* DoMessageSelDialog */
 
