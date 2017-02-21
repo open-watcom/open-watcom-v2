@@ -55,7 +55,7 @@ typedef struct WRMFInfo {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT extern BOOL CALLBACK WRMemFlagsDlgProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT extern INT_PTR CALLBACK WRMemFlagsDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
