@@ -47,6 +47,7 @@
 #else
 #include "wi163264.h"
 #endif
+#include "winexprt.h"
 
 #include "pushpck1.h"
 
@@ -54,6 +55,8 @@
 #define WPI_SIZEWINBMPINFOHDR           40
 #define WPI_SIZEOS2BMPFILEHDR           78
 #define WPI_SIZEOS2BMPINFOHDR           64
+
+#define WPI_EXPORT                      WINEXPORT
 
 /*************************/
 /* new types - both ways */
