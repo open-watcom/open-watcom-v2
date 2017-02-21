@@ -267,7 +267,7 @@ extern char             *AppName;
 WINEXPORT extern LRESULT    CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 WINEXPORT extern HDDEDATA   CALLBACK DDEMsgProc( UINT type, UINT fmt, HCONV hconv, HSZ hsz1, HSZ hsz2, HDDEDATA hdata, ULONG_PTR data1, ULONG_PTR data2 );
 WINEXPORT extern LRESULT    CALLBACK DDETrackingWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-WINEXPORT extern BOOL       CALLBACK FilterDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT extern INT_PTR    CALLBACK FilterDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 /* ddeproc.c */
 void    SetMainWndDefault( void );

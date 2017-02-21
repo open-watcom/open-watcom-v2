@@ -194,7 +194,7 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 {
     DDEWndInfo          *info;
     char                *alias_title;
-    FARPROC             fp;
+    DLGPROC             dlg_proc;
     RECT                area;
     HMENU               mh;
     UINT                flag;
@@ -386,14 +386,14 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             LogConfigure();
             break;
         case DDEMENU_MSG_FILTER:
-            fp = MakeProcInstance( (FARPROC)FilterDlgProc, Instance );
-            JDialogBoxParam( Instance, "MSG_FILTER_DLG", DDEMainWnd, (DLGPROC)fp, 1 );
-            FreeProcInstance( fp );
+            dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)FilterDlgProc, Instance );
+            JDialogBoxParam( Instance, "MSG_FILTER_DLG", DDEMainWnd, dlg_proc, 1 );
+            FreeProcInstance( (FARPROC)dlg_proc );
             break;
         case DDEMENU_CB_FILTER:
-            fp = MakeProcInstance( (FARPROC)FilterDlgProc, Instance );
-            JDialogBoxParam( Instance, "CB_FILTER_DLG", DDEMainWnd, (DLGPROC)fp, 0 );
-            FreeProcInstance( fp );
+            dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)FilterDlgProc, Instance );
+            JDialogBoxParam( Instance, "CB_FILTER_DLG", DDEMainWnd, dlg_proc, 0 );
+            FreeProcInstance( (FARPROC)dlg_proc );
             break;
         case DDEMENU_ABOUT:
             ai.owner = hwnd;

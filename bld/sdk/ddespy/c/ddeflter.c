@@ -189,10 +189,13 @@ bool DoFilter( UINT msg, WORD filter_type )
  * FilterDlgProc - handle the dialogs to set message and callback
  *                 filters
  */
-BOOL CALLBACK FilterDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK FilterDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     unsigned            i;
     WORD                cmd;
+    bool                ret;
+
+    ret = false;
 
     switch( msg ) {
     case WM_INITDIALOG:
@@ -216,10 +219,12 @@ BOOL CALLBACK FilterDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
                 CheckDlgButton( hwnd, i, BST_CHECKED );
             }
         }
+        ret = true;
         break;
 #ifndef NOUSE3D
     case WM_SYSCOLORCHANGE:
         CvrCtl3dColorChange();
+        ret = true;
         break;
 #endif
     case WM_COMMAND:
@@ -233,30 +238,30 @@ BOOL CALLBACK FilterDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
                     FilterDlgInfo.filter[i - FilterDlgInfo.first] = false;
                 }
             }
+            ret = true;
             EndDialog( hwnd, -1 );
             break;
         case IDCANCEL:
             EndDialog( hwnd, -1 );
+            ret = true;
             break;
         case CFILTER_ALL:
         case MFILTER_ALL:
             for( i = FilterDlgInfo.first; i <= FilterDlgInfo.last; i++ ) {
                 CheckDlgButton( hwnd, i, BST_CHECKED );
             }
+            ret = true;
             break;
         case CFILTER_NONE:
         case MFILTER_NONE:
             for( i = FilterDlgInfo.first; i <= FilterDlgInfo.last; i++ ) {
                 CheckDlgButton( hwnd, i, BST_UNCHECKED );
             }
+            ret = true;
             break;
-        default:
-            return( FALSE );
         }
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 
 } /* FilterDlgProc */
