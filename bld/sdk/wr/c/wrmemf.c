@@ -55,7 +55,7 @@ typedef struct WRMFInfo {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT extern BOOL CALLBACK WRMemFlagsProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT extern BOOL CALLBACK WRMemFlagsDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -83,7 +83,7 @@ bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, FARPROC h
     info.mflags = *mflags;
     inst = WRGetInstance();
 
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)WRMemFlagsProc, inst );
+    proc = (DLGPROC)MakeProcInstance( (FARPROC)WRMemFlagsDlgProc, inst );
 
     modified = JDialogBoxParam( inst, "WRMemFlags", parent, proc, (LPARAM)&info );
 
@@ -145,12 +145,12 @@ void WRGetWinInfo( HWND hDlg, WRMFInfo *info )
     }
 }
 
-WINEXPORT BOOL CALLBACK WRMemFlagsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WRMemFlagsDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WRMFInfo    *info;
-    BOOL        ret;
+    bool        ret;
 
-    ret = FALSE;
+    ret = false;
 
     switch( message ) {
     case WM_DESTROY:
@@ -162,7 +162,7 @@ WINEXPORT BOOL CALLBACK WRMemFlagsProc( HWND hDlg, UINT message, WPARAM wParam, 
         SET_DLGDATA( hDlg, info );
         WRRegisterDialog( hDlg );
         WRSetWinInfo( hDlg, info );
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_SYSCOLORCHANGE:
@@ -186,12 +186,12 @@ WINEXPORT BOOL CALLBACK WRMemFlagsProc( HWND hDlg, UINT message, WPARAM wParam, 
             } else {
                 EndDialog( hDlg, FALSE );
             }
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDCANCEL:
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
+            ret = true;
             break;
         }
         break;

@@ -1554,9 +1554,9 @@ WINEXPORT INT_PTR CALLBACK WRAddSymDlgProc( HWND hDlg, UINT message, WPARAM wPar
 {
     WRAddSymInfo        *info;
     WORD                cmd;
-    INT_PTR             ret;
+    bool                ret;
 
-    ret = FALSE;
+    ret = false;
 
     switch( message ) {
     case WM_INITDIALOG:
@@ -1564,7 +1564,7 @@ WINEXPORT INT_PTR CALLBACK WRAddSymDlgProc( HWND hDlg, UINT message, WPARAM wPar
         SET_DLGDATA( hDlg, info );
         WRSetAddSymInfo( hDlg, info );
         WRSetAddSymOK( hDlg );
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_SYSCOLORCHANGE:
@@ -1594,12 +1594,12 @@ WINEXPORT INT_PTR CALLBACK WRAddSymDlgProc( HWND hDlg, UINT message, WPARAM wPar
             if( WRGetAddSymInfo( hDlg, info ) ) {
                 EndDialog( hDlg, TRUE );
             }
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDCANCEL:
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
+            ret = true;
             break;
         }
         break;

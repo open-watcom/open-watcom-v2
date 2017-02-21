@@ -51,7 +51,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT extern BOOL CALLBACK WRSelectImageProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT extern INT_PTR CALLBACK WRSelectImageDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -97,7 +97,7 @@ WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, FARPROC hcb
 
     inst = WRGetInstance();
 
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)WRSelectImageProc, inst );
+    proc = (DLGPROC)MakeProcInstance( (FARPROC)WRSelectImageDlgProc, inst );
 
     modified = JDialogBoxParam( inst, "WRSelectImage", parent, proc, (LPARAM)info );
 
@@ -220,12 +220,12 @@ static bool WRGetWinInfo( HWND hdlg, WRSelectImageInfo *info )
     return( true );
 }
 
-WINEXPORT BOOL CALLBACK WRSelectImageProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WRSelectImageDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WRSelectImageInfo   *info;
-    BOOL                ret;
+    bool                ret;
 
-    ret = FALSE;
+    ret = false;
 
     switch( message ) {
     case WM_DESTROY:
@@ -242,7 +242,7 @@ WINEXPORT BOOL CALLBACK WRSelectImageProc( HWND hDlg, UINT message, WPARAM wPara
         if( !WRSetWinInfo( hDlg, info ) ) {
             EndDialog( hDlg, FALSE );
         }
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_SYSCOLORCHANGE:
@@ -261,16 +261,16 @@ WINEXPORT BOOL CALLBACK WRSelectImageProc( HWND hDlg, UINT message, WPARAM wPara
         case IDOK:
             if( info == NULL ) {
                 EndDialog( hDlg, FALSE );
-                ret = TRUE;
+                ret = true;
             } else if( WRGetWinInfo( hDlg, info ) ) {
                 EndDialog( hDlg, TRUE );
-                ret = TRUE;
+                ret = true;
             }
             break;
 
         case IDCANCEL:
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDM_SELIMGBMP:

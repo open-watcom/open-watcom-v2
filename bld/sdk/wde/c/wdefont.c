@@ -405,5 +405,5 @@ WINEXPORT INT_PTR CALLBACK WdeDummyDlgProc( HWND hDlg, UINT message, WPARAM wPar
     _wde_touch( wParam );
     _wde_touch( lParam );
 
-    return( FALSE );
+    return( false );
 }

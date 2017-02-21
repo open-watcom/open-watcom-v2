@@ -2691,7 +2691,7 @@ WINEXPORT INT_PTR CALLBACK WdeDialogDlgProc( HWND hWnd, UINT message, WPARAM wPa
     ret = false;
 
     if( WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
-        return( TRUE );
+        return( true );
     }
 
     switch( message ) {

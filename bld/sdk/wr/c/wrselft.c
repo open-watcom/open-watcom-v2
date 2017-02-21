@@ -60,7 +60,7 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT extern BOOL CALLBACK WRSelectFileTypeProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT extern INT_PTR CALLBACK WRSelectFileTypeDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -147,7 +147,7 @@ WRFileType WRAPI WRSelectFileType( HWND parent, const char *name, bool is32bit,
     sft.use_wres  = use_wres;
     inst = WRGetInstance();
 
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)WRSelectFileTypeProc, inst );
+    proc = (DLGPROC)MakeProcInstance( (FARPROC)WRSelectFileTypeDlgProc, inst );
 
     modified = JDialogBoxParam( inst, "WRSelectFileType", parent, proc, (LPARAM)&sft );
 
@@ -294,12 +294,12 @@ bool WRGetWinInfo( HWND hDlg, WRSFT *sft )
     return( true );
 }
 
-WINEXPORT BOOL CALLBACK WRSelectFileTypeProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WRSelectFileTypeDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WRSFT       *sft;
-    BOOL        ret;
+    bool        ret;
 
-    ret = FALSE;
+    ret = false;
 
     switch( message ) {
     case WM_DESTROY:
@@ -311,7 +311,7 @@ WINEXPORT BOOL CALLBACK WRSelectFileTypeProc( HWND hDlg, UINT message, WPARAM wP
         SET_DLGDATA( hDlg, sft );
         WRRegisterDialog( hDlg );
         WRSetWinInfo( hDlg, sft );
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_SYSCOLORCHANGE:
@@ -331,10 +331,10 @@ WINEXPORT BOOL CALLBACK WRSelectFileTypeProc( HWND hDlg, UINT message, WPARAM wP
             sft = (WRSFT *)GET_DLGDATA( hDlg );
             if( sft == NULL ) {
                 EndDialog( hDlg, FALSE );
-                ret = TRUE;
+                ret = true;
             } else if( WRGetWinInfo( hDlg, sft ) ) {
                 EndDialog( hDlg, TRUE );
-                ret = TRUE;
+                ret = true;
             } else {
                 WRDisplayErrorMsg( WR_INVALIDSELECTION );
             }
@@ -342,7 +342,7 @@ WINEXPORT BOOL CALLBACK WRSelectFileTypeProc( HWND hDlg, UINT message, WPARAM wP
 
         case IDCANCEL:
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDM_TSWINNT:
