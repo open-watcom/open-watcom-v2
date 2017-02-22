@@ -37,10 +37,10 @@
 
 
 /* Local Window callback functions prototypes */
-BOOL __export FAR PASCAL DialogDispProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+WINEXPORT INT_PTR CALLBACK DialogDispDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
 
 
-static FARPROC  DialProc;
+static DLGPROC  DialogDisp;
 static WORD     DialCount = 0;
 
 static unsigned ColorCount( WORD bitcount, WORD clrused ) {
@@ -190,31 +190,36 @@ static HWND ShowMenuHeapItem( heap_list *hl, HWND parent ) {
     return( hdl );
 }
 
-BOOL FAR PASCAL DialogDispProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+INT_PTR CALLBACK DialogDispDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 {
+    bool    ret;
+
     wparam = wparam;
     lparam = lparam;
+
+    ret = false;
+
     switch( msg ) {
     case WM_INITDIALOG:
-        DialCount ++;
+        DialCount++;
+        ret = true;
         break;
     case WM_SYSCOLORCHANGE:
         CvrCtl3dColorChange();
+        ret = true;
         break;
     case WM_CLOSE:
         DestroyWindow( hwnd );
+        ret = true;
         break;
     case WM_NCDESTROY:
         DialCount --;
         if( DialCount == 0 ) {
-            FreeProcInstance( DialProc );
+            FreeProcInstance( (FARPROC)DialogDisp );
         }
-        return( FALSE ); /* we need to let WINDOWS see this message or
-                            fonts are left undeleted */
-    default:
-        return( FALSE );
+        break;  /* we need to let WINDOWS see this message or fonts are left undeleted */
     }
-    return( TRUE );
+    return( ret );
 }
 
 static HWND ShowDialogHeapItem( heap_list *hl, HWND hwnd ) {
@@ -245,7 +250,7 @@ static HWND ShowDialogHeapItem( heap_list *hl, HWND hwnd ) {
     SetWindowLong( hdl, 0, (DWORD)info );
     ShowWindow( hdl, SW_HIDE );
     if( DialCount == 0 ) {
-        DialProc = MakeProcInstance( (FARPROC)DialogDispProc, Instance );
+        DialogDisp = (DLGPROC)MakeProcInstance( (FARPROC)DialogDispDlgProc, Instance );
     }
 
     /*
@@ -255,8 +260,7 @@ static HWND ShowDialogHeapItem( heap_list *hl, HWND hwnd ) {
      */
 
     GetDGroupItem( hl->szModule, &tmp );
-    dial = CreateDialogIndirect( (HANDLE) tmp.info.ge.hBlock,
-                                 ptr, hdl, (DLGPROC)DialProc );
+    dial = CreateDialogIndirect( (HANDLE) tmp.info.ge.hBlock, ptr, hdl, DialogDisp );
     if( dial == NULL ) {
         rcstr = HWAllocRCString( STR_SHOW );
         RCMessageBox( HeapWalkMainWindow, STR_CANT_CREATE_DLG,
@@ -506,9 +510,9 @@ BOOL FAR PASCAL ItemDisplayProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam 
                 DestroyWindow( info->menu_const );
             }
             if( DialCount == 0 ) {
-                DialProc = MakeProcInstance( (FARPROC)DialogDispProc, Instance );
+                DialogDisp = (DLGPROC)MakeProcInstance( (FARPROC)DialogDispDlgProc, Instance );
             }
-            info->menu_const = JCreateDialog( Instance, "MENU_CONST", hwnd, (DLGPROC)DialProc );
+            info->menu_const = JCreateDialog( Instance, "MENU_CONST", hwnd, DialogDisp );
             menu = GetMenu( hwnd );
             GetMenuString( menu, wparam, buf, 40, MF_BYCOMMAND );
             SetStaticText( info->menu_const, MENU_ITEM, buf );

@@ -220,7 +220,7 @@ typedef struct lstinfo {
 typedef struct gblwndinfo {
     HWND        add_dialog;
     HWND        alloc_dialog;
-    FARPROC     alloc_proc;
+    DLGPROC     alloc_dlg_proc;
     ListBoxInfo list;
     BOOL        doing_add:1;
     BOOL        need_refresh:1;
@@ -318,9 +318,8 @@ void ShowSelector( HWND list );
 BOOL GlobDiscardObj( HWND list );
 BOOL GlobSetObjPos( HWND list, BOOL oldest );
 void RefreshAdd( HWND dialog, HWND lbhwnd );
-BOOL __export FAR PASCAL AllocDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
-//BOOL __export FAR PASCAL FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
-BOOL __export FAR PASCAL SetCodeDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+WINEXPORT INT_PTR CALLBACK AllocDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+WINEXPORT INT_PTR CALLBACK SetCodeDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
 void SetMenusForAdd( HWND hwnd, BOOL start );
 HWND StartAdd( HWND parent, ListBoxInfo *info );
 

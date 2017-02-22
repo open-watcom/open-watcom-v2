@@ -38,10 +38,10 @@
 
 
 /* Local Window callback functions prototypes */
-BOOL __export FAR PASCAL AddDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+WINEXPORT INT_PTR CALLBACK AddDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
 
 /* static variables used by the add function */
-static FARPROC  DialProc;
+static DLGPROC  AddDlgProcInst;
 static WORD     AddCount;
 static DWORD    AddTotal;
 
@@ -155,13 +155,17 @@ BOOL GlobSetObjPos( HWND list, BOOL oldest ) {
 }
 
 
-BOOL FAR PASCAL AddDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+INT_PTR CALLBACK AddDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 {
     HWND        parent;
     RECT        area;
+    bool        ret;
 
     wparam = wparam;
     lparam = lparam;
+
+    ret = false;
+
     switch( msg ) {
     case WM_INITDIALOG:
         SetStaticText( hwnd, ADD_CNT, "0" );
@@ -170,29 +174,29 @@ BOOL FAR PASCAL AddDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
         GetClientRect( parent, &area );
         SetWindowPos( hwnd, NULL, -area.left, -area.top, 0, 0,
                       SWP_NOSIZE | SWP_NOZORDER );
+        ret = true;
         break;
     case WM_SYSCOLORCHANGE:
         CvrCtl3dColorChange();
+        ret = true;
         break;
     case WM_COMMAND:
         if( wparam == ADD_OK && HIWORD( lparam ) == BN_CLICKED ) {
             SendMessage( hwnd, WM_CLOSE, 0, 0L );
-        } else {
-            return( FALSE );
+            ret = true;
         }
         break;
     case WM_CLOSE:
         DestroyWindow( hwnd );
+        ret = true;
         break;
     case WM_NCDESTROY:
         EndAdd();
-        FreeProcInstance( DialProc );
-        return( FALSE ); /* we need to let WINDOWS see this message or
-                            fonts are left undeleted */
-    default:
-        return( FALSE );
+        FreeProcInstance( (FARPROC)AddDlgProcInst );
+        break; /* we need to let WINDOWS see this message or fonts are left undeleted */
     }
-    return( TRUE );
+    return( ret );
+
 } /* AddDlgProc */
 
 void SetMenusForAdd( HWND hwnd, BOOL start ) {
@@ -237,9 +241,9 @@ HWND StartAdd( HWND parent, ListBoxInfo *info ) {
 
     AddCount = 0;
     AddTotal = 0;
-    DialProc = MakeProcInstance( (FARPROC)AddDlgProc, Instance );
-    if( DialProc != NULL ) {
-        dialog = JCreateDialog( Instance, "ADD_DLG", parent , (DLGPROC)DialProc );
+    AddDlgProcInst = (DLGPROC)MakeProcInstance( (FARPROC)AddDlgProc, Instance );
+    if( AddDlgProcInst != NULL ) {
+        dialog = JCreateDialog( Instance, "ADD_DLG", parent , AddDlgProcInst );
         if( dialog != NULL ) {
             SetMenusForAdd( parent, TRUE );
             SetListBoxForAdd( info->box, TRUE );

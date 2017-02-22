@@ -38,7 +38,7 @@
 
 
 /* Local Window callback functions prototypes */
-BOOL __export FAR PASCAL ConfigDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+WINEXPORT INT_PTR CALLBACK ConfigDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
 
 #define         SECT_NAME       "WATCOM heapwalker"
 #define         LSORT           "LSortType"
@@ -292,36 +292,46 @@ static void doFileBrowse( HWND hwnd, WORD id ) {
 /*
  * ConfigDlgProc - handle messages from the configure dialog
  */
-BOOL FAR PASCAL ConfigDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+INT_PTR CALLBACK ConfigDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 {
     MemWndConfig        info;
     HeapConfigInfo      heapdef;
     char                buf[_MAX_PATH];
+    bool                ret;
 
     lparam = lparam;
+
+    ret = false;
+
     switch( msg ) {
     case WM_INITDIALOG:
         GetMemWndConfig( &info );
         SetupConfigDlg( &Config, &info, hwnd );
+        ret = true;
         break;
     case WM_SYSCOLORCHANGE:
         CvrCtl3dColorChange();
+        ret = true;
         break;
     case WM_COMMAND:
         switch( wparam ) {
         case CONFIG_GLOB_BROWSE:
             doFileBrowse( hwnd, CONFIG_GNAME );
+            ret = true;
             break;
         case CONFIG_LOCAL_BROWSE:
             doFileBrowse( hwnd, CONFIG_LNAME );
+            ret = true;
             break;
         case CONFIG_MEM_BROWSE:
             doFileBrowse( hwnd, CONFIG_MNAME );
+            ret = true;
             break;
         case CONFIG_DEFAULT:
             GetMemWndDefault( &info );
             GetDefaults( &heapdef );
             SetupConfigDlg( &heapdef, &info, hwnd );
+            ret = true;
             break;
         case CONFIG_OK:
             GetDlgItemText( hwnd, CONFIG_GNAME, buf, _MAX_PATH );
@@ -329,6 +339,7 @@ BOOL FAR PASCAL ConfigDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
                 GetWindowText( hwnd, buf, sizeof( buf ) );
                 RCMessageBox( hwnd, STR_INVALID_GLOB_FNAME,
                               buf, MB_OK | MB_ICONEXCLAMATION );
+                ret = true;
                 break;
             }
             GetDlgItemText( hwnd, CONFIG_LNAME, buf, _MAX_PATH );
@@ -336,6 +347,7 @@ BOOL FAR PASCAL ConfigDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
                 GetWindowText( hwnd, buf, sizeof( buf ) );
                 RCMessageBox( hwnd, STR_INVALID_LCL_FNAME, buf,
                             MB_OK | MB_ICONEXCLAMATION );
+                ret = true;
                 break;
             }
             GetDlgItemText( hwnd, CONFIG_MNAME, buf, _MAX_PATH );
@@ -343,6 +355,7 @@ BOOL FAR PASCAL ConfigDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
                 GetWindowText( hwnd, buf, sizeof( buf ) );
                 RCMessageBox( hwnd, STR_INVALID_MEM_FNAME, buf,
                             MB_OK | MB_ICONEXCLAMATION );
+                ret = true;
                 break;
             }
             GetMemWndConfig( &info );
@@ -362,21 +375,21 @@ BOOL FAR PASCAL ConfigDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
             GetDlgItemText( hwnd, CONFIG_LNAME, Config.lfname, _MAX_PATH );
             GetDlgItemText( hwnd, CONFIG_MNAME, info.fname, _MAX_PATH );
             SetMemWndConfig( &info );
-            /* fall through */
+            EndDialog( hwnd, TRUE );
+            ret = true;
+            break;
         case CONFIG_CANCEL:
             EndDialog( hwnd, FALSE );
+            ret = true;
             break;
-        default:
-            return( FALSE );
         }
         break;
     case WM_CLOSE:
-        EndDialog( hwnd, 0 );
+        EndDialog( hwnd, FALSE );
+        ret = true;
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 } /* ConfigDlgProc */
 
 /*
@@ -384,9 +397,9 @@ BOOL FAR PASCAL ConfigDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
  */
 void HWConfigure( void ) {
 
-    FARPROC             fp;
+    DLGPROC         dlg_proc;
 
-    fp = MakeProcInstance( (FARPROC)ConfigDlgProc, Instance );
-    JDialogBox( Instance, "HEAP_CONFIG", HeapWalkMainWindow, (DLGPROC)fp );
-    FreeProcInstance( fp );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)ConfigDlgProc, Instance );
+    JDialogBox( Instance, "HEAP_CONFIG", HeapWalkMainWindow, dlg_proc );
+    FreeProcInstance( (FARPROC)dlg_proc );
 } /* HWConfigure */

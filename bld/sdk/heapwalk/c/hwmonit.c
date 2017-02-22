@@ -219,7 +219,7 @@ BOOL FAR PASCAL LocalMonitorProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam
     case WM_CREATE:
         info = (LocalMonInfo *)( ( (CREATESTRUCT *)lparam )->lpCreateParams );
         SetWindowLong( hwnd, 0, (DWORD)info );
-        if( !SetTimer( hwnd, MONITOR_TIMER, REFRESH_TIME, NULL ) ) {
+        if( SetTimer( hwnd, MONITOR_TIMER, REFRESH_TIME, NULL ) == 0 ) {
             msgtitle = HWAllocRCString( STR_MONITOR_LCL_HEAP );
             RCMessageBox( NULL, STR_CANT_OPEN_LCL_MONITOR, msgtitle,
                         MB_OK | MB_TASKMODAL | MB_ICONINFORMATION );
