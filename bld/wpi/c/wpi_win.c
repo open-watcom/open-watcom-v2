@@ -72,11 +72,11 @@ void _wpi_setpoint( WPI_POINT *pt, int x, int y )
     pt->y = (LONG)y;
 } /* _wpi_setpoint */
 
-WPI_PROC _wpi_subclasswindow( HWND hwnd, WPI_PROC new )
+WPI_WNDPROC _wpi_subclasswindow( HWND hwnd, WPI_WNDPROC new )
 {
-    WPI_PROC    old;
+    WPI_WNDPROC    old;
 
-    old = (WPI_PROC)GET_WNDPROC( hwnd );
+    old = (WPI_WNDPROC)GET_WNDPROC( hwnd );
     SET_WNDPROC( hwnd, (LONG_PTR)new );
     return( old );
 }

@@ -1304,8 +1304,7 @@ extern BOOL _wpi_iszoomed( HWND hwnd );
 
     #define _wpi_getupdaterect( hwnd, prect ) WinQueryUpdateRect( hwnd, prect )
 
-    #define _wpi_subclasswindow( hwnd, new ) \
-        ( (WPI_PROC) WinSubclassWindow( hwnd, new ) )
+    #define _wpi_subclasswindow( hwnd, new ) WinSubclassWindow( hwnd, new )
 
 extern BOOL _wpi_insertmenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
                              unsigned attr_flags, unsigned new_id,

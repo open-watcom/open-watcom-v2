@@ -279,21 +279,21 @@ TEMPLATE_HANDLE DoneAddingControls( TEMPLATE_HANDLE data )
  */
 INT_PTR DynamicDialogBox( DLGPROCx fn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE data, LPARAM lparam )
 {
-    WPI_PROC    fp;
+    WPI_DLGPROC dlg_proc;
     INT_PTR     rc;
 
-    fp = _wpi_makeprocinstance( (WPI_PROCx)fn, inst );
+    dlg_proc = (WPI_DLGPROC)_wpi_makeprocinstance( (WPI_PROCx)fn, inst );
 #if defined(__NT__)
     {
         LPCSTR  ptr;
         ptr = GlobalLock( data );
-        rc = DialogBoxIndirectParam( (HINSTANCE)inst, (LPCDLGTEMPLATE)ptr, hwnd, (DLGPROC)fp, lparam );
+        rc = DialogBoxIndirectParam( (HINSTANCE)inst, (LPCDLGTEMPLATE)ptr, hwnd, dlg_proc, lparam );
         GlobalUnlock( data );
     }
 #else
-    rc = DialogBoxIndirectParam( inst, data, hwnd, (DLGPROC)fp, lparam );
+    rc = DialogBoxIndirectParam( inst, data, hwnd, dlg_proc, lparam );
 #endif
-    FreeProcInstance( fp );
+    FreeProcInstance( (WPI_PROC)dlg_proc );
     GlobalFree( data );
     return( rc );
 

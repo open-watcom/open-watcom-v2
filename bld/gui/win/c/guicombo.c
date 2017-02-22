@@ -47,7 +47,7 @@ extern  controls_struct GUIControls[];
 
 typedef struct {
     bool        success;
-    WPI_PROC    old;
+    WPI_WNDPROC old;
 } enum_info;
 
 BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
@@ -74,7 +74,7 @@ BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
     return( TRUE );
 }
 
-WPI_PROC GUISubClassEditCombobox( HWND hwnd )
+WPI_WNDPROC GUISubClassEditCombobox( HWND hwnd )
 {
     enum_info           e_info;
     WPI_ENUMPROC        fp;

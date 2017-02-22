@@ -159,7 +159,7 @@ control_item * GUIGetControlByHwnd( gui_window *parent, HWND control )
 
 control_item *GUIControlInsert( gui_window *parent, gui_control_class control_class,
                                 HWND hwnd, gui_control_info *ctl_info,
-                                WPI_PROC win_call_back )
+                                WPI_WNDPROC win_call_back )
 {
     control_item        *item;
 
@@ -266,7 +266,7 @@ void GUIControlDeleteAll( gui_window *wnd )
 WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     control_item        *info;
-    WPI_PROC            win_call_back;
+    WPI_WNDPROC         win_call_back;
     HWND                parent;
     HWND                grand_parent;
     gui_window          *wnd;
@@ -368,7 +368,7 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
         _wpi_subclasswindow( hwnd, win_call_back );
         break;
     }
-    return( (WPI_MRESULT)_wpi_callwindowproc( (WPI_WNDPROC)win_call_back, hwnd, message, wparam, lparam ) );
+    return( (WPI_MRESULT)_wpi_callwindowproc( win_call_back, hwnd, message, wparam, lparam ) );
 }
 
 /*
@@ -378,7 +378,7 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
 WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     control_item        *info;
-    WPI_PROC            win_call_back;
+    WPI_WNDPROC         win_call_back;
     WPI_PRES            hdc;
     WPI_RECT            rect;
     HWND                parent;
@@ -402,13 +402,13 @@ WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
         _wpi_releasepres( hwnd, hdc );
         break;
     }
-    return( (WPI_MRESULT)_wpi_callwindowproc( (WPI_WNDPROC)win_call_back, hwnd, message, wparam, lparam ) );
+    return( (WPI_MRESULT)_wpi_callwindowproc( win_call_back, hwnd, message, wparam, lparam ) );
 }
 
-WPI_PROC GUIDoSubClass( HWND hwnd, gui_control_class control_class )
+WPI_WNDPROC GUIDoSubClass( HWND hwnd, gui_control_class control_class )
 {
-    WPI_PROC old;
-    WPI_PROC new;
+    WPI_WNDPROC old;
+    WPI_WNDPROC new;
 
     //CvrCtl3dSubclassCtl( hwnd );
 
@@ -417,11 +417,11 @@ WPI_PROC GUIDoSubClass( HWND hwnd, gui_control_class control_class )
         return( GUISubClassEditCombobox( hwnd ) );
     case GUI_EDIT:
     case GUI_EDIT_MLE:
-        new = _wpi_makeprocinstance( (WPI_PROC)GUIEditFunc, GUIMainHInst );
+        new = (WPI_WNDPROC)_wpi_makeprocinstance( (WPI_PROC)GUIEditFunc, GUIMainHInst );
         old = _wpi_subclasswindow( hwnd, new );
         return( old );
     case GUI_GROUPBOX:
-        new = _wpi_makeprocinstance( (WPI_PROC)GUIGroupBoxFunc, GUIMainHInst );
+        new = (WPI_WNDPROC)_wpi_makeprocinstance( (WPI_PROC)GUIGroupBoxFunc, GUIMainHInst );
         old = _wpi_subclasswindow( hwnd, new );
         return( old );
     default :

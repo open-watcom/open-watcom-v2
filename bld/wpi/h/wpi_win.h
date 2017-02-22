@@ -1113,7 +1113,7 @@ extern void _wpi_setrestoredrect( HWND hwnd, WPI_RECT *prect );
 
     #define _wpi_getupdaterect( hwnd, prect ) GetUpdateRect(hwnd, prect, FALSE)
 
-extern WPI_PROC _wpi_subclasswindow( HWND hwnd, WPI_PROC newproc );
+extern WPI_WNDPROC _wpi_subclasswindow( HWND hwnd, WPI_WNDPROC newproc );
 
 extern BOOL _wpi_insertmenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
                              unsigned attr_flags, unsigned new_id,

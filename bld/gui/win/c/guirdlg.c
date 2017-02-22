@@ -205,17 +205,17 @@ bool GUIInsertResDialogControls( gui_window *wnd )
 
 bool GUIDoCreateResDialog( res_name_or_id dlg_id, HWND parent, void *data )
 {
-    WPI_PROC    fp;
+    WPI_DLGPROC     dlg_proc;
 
-    fp = _wpi_makeprocinstance( (WPI_PROC)GUIDialogFunc, GUIMainHInst );
-    if( !fp ) {
+    dlg_proc = (WPI_DLGPROC)_wpi_makeprocinstance( (WPI_PROC)GUIDialogFunc, GUIMainHInst );
+    if( dlg_proc == NULL ) {
         return( false );
     }
-    if( _wpi_dialogbox( parent, (WPI_DLGPROC)fp, GUIResHInst, dlg_id, data ) == -1 ) {
-        _wpi_freeprocinstance( fp );
+    if( _wpi_dialogbox( parent, dlg_proc, GUIResHInst, dlg_id, data ) == -1 ) {
+        _wpi_freeprocinstance( (WPI_PROC)dlg_proc );
         return( false );
     }
-    _wpi_freeprocinstance( fp );
+    _wpi_freeprocinstance( (WPI_PROC)dlg_proc );
 
     return( true );
 }
