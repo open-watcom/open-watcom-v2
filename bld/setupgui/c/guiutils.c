@@ -201,7 +201,7 @@ bool SetupInit( void )
     init.menu = NULL;
     init.num_attrs = WND_NUMBER_OF_COLORS;
     init.colours = MainColours;
-    init.call_back = WndMainEventProc;
+    init.gui_call_back = WndMainEventProc;
     init.extra = NULL;
 
     GUIInitHotSpots( 1, WndGadgetArray );
