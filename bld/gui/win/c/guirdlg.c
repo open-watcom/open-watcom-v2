@@ -194,11 +194,11 @@ BOOL CALLBACK InsertResDlgCntlFunc( HWND hwnd, LPARAM lparam )
 
 bool GUIInsertResDialogControls( gui_window *wnd )
 {
-    WPI_ENUMPROC        enum_func;
+    WPI_ENUMPROC        enum_proc;
 
-    enum_func = _wpi_makeenumprocinstance( (WPI_PROC)InsertResDlgCntlFunc, GUIMainHInst );
-    _wpi_enumchildwindows( wnd->hwnd, enum_func, (LPARAM)wnd );
-    _wpi_freeprocinstance( (WPI_PROC)enum_func );
+    enum_proc = _wpi_makeenumprocinstance( (WPI_PROC)InsertResDlgCntlFunc, GUIMainHInst );
+    _wpi_enumchildwindows( wnd->hwnd, enum_proc, (LPARAM)wnd );
+    _wpi_freeprocinstance( (WPI_PROC)enum_proc );
 
     return( true );
 }
