@@ -215,7 +215,7 @@ void    IEFiniGlobalStrings( void );
 BOOL    IEInitGlobalStrings( void );
 
 /* ieproc.c */
-WINEXPORT extern WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT extern WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 void CALLBACK       IEHelpCallBack( void );
 void                IEEnableMenuInput( BOOL enable );
 void                IEHelpRoutine( void );
@@ -223,14 +223,14 @@ void                IEHelpSearchRoutine( void );
 void                IEHelpOnHelpRoutine( void );
 
 /* ieclrpal.c */
-WINEXPORT extern WPI_MRESULT CALLBACK ColorPalWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT extern WPI_MRESULT CALLBACK ColorPalWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 void                CreateColorPal( void );
 void                CheckPaletteItem( HMENU hmenu );
 void                SetRGBValues( RGBQUAD *argbvals, int upperlimit );
 
 /* clrcntls.c */
-WINEXPORT extern WPI_MRESULT CALLBACK    ColorsWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
-WINEXPORT extern WPI_MRESULT CALLBACK    ScreenWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT extern WPI_MRESULT CALLBACK    ColorsWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT extern WPI_MRESULT CALLBACK    ScreenWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 void                CreateColorControls( HWND hparent );
 void                DisplayScreenClrs( BOOL fdisplay );
 void                SetNumColors( int number_of_colors );
@@ -239,7 +239,7 @@ void                ShowNewColor( int index, COLORREF newcolor, BOOL repaint );
 void                SetInitScreenColor( COLORREF color );
 
 /* curclr.c */
-WINEXPORT extern WPI_MRESULT CALLBACK CurrentWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT extern WPI_MRESULT CALLBACK CurrentWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 void            CreateCurrentWnd( HWND hparent );
 void            SetColor( int mousebutton, COLORREF color, COLORREF solid, wie_clrtype type );
 COLORREF        GetSelectedColor( int mousebutton, COLORREF *solid, wie_clrtype *type );
@@ -248,7 +248,7 @@ void            SetCurrentNumColors( int colour_count );
 void            ChangeCurrentColor( void );
 
 /* ieviewin.c */
-WINEXPORT extern WPI_MRESULT CALLBACK ViewWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT extern WPI_MRESULT CALLBACK ViewWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 HWND            CreateViewWin( int width, int height );
 void            CheckViewItem( HMENU hmenu );
 COLORREF        GetViewBkColor( void );
@@ -303,12 +303,12 @@ void    SetInitialSaveDir( char *new_dir );
 char    *GetInitSaveDir( void );
 
 /* ienew.c */
-WINEXPORT extern WPI_DLGRESULT CALLBACK  SelImgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
-WINEXPORT extern WPI_DLGRESULT CALLBACK  SelBitmapProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT extern WPI_DLGRESULT CALLBACK  SelImgDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT extern WPI_DLGRESULT CALLBACK  SelBitmapDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 #ifndef __OS2_PM__
-WINEXPORT extern BOOL CALLBACK SelCursorProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT extern INT_PTR CALLBACK SelCursorDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 #endif
-int                     NewImage( int img_type, char *filename );
+int         NewImage( int img_type, char *filename );
 
 /* iedraw.c */
 void        CalculateDims( short img_width, short img_height, short *area_width, short *area_height );
@@ -336,7 +336,7 @@ void        DrawSinglePoint( HWND hwnd, WPI_POINT *pt, short mousebutton );
 void        Paint( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mousebutton );
 
 /* drawproc.c */
-WINEXPORT extern WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT extern WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 int                 SetToolType( int toolid );
 void                InitializeCursors( void );
 void                CleanupCursors( void );

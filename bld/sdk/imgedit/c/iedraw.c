@@ -38,7 +38,7 @@
 
 /* Local Window callback functions prototypes */
 WINEXPORT BOOL CALLBACK GridEnumProc( HWND hwnd, LONG lparam );
-WINEXPORT void CALLBACK DrawPt( int xpos, int ypos, WPI_PARAM2 lparam );
+WPI_EXPORT void CALLBACK DrawPt( int xpos, int ypos, WPI_PARAM2 lparam );
 
 #define MIN_DRAW_WIN_WIDTH      150
 

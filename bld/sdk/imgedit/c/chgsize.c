@@ -34,21 +34,24 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT WPI_DLGRESULT CALLBACK ChangeSizeProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT WPI_DLGRESULT CALLBACK ChangeSizeDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
 static int      imgHeight;
 static int      imgWidth;
 static BOOL     stretchImage;
 
 /*
- * ChangeSizeProc - change the size of the image being edited
+ * ChangeSizeDlgProc - change the size of the image being edited
  */
-WPI_DLGRESULT CALLBACK ChangeSizeProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_DLGRESULT CALLBACK ChangeSizeDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     BOOL        trnslate;
     char        *title;
     char        *text;
     char        *msg_text;
+    bool        ret;
+
+    ret = false;
 
     if( _wpi_dlg_command( hwnd, &msg, &wparam, &lparam ) ) {
         switch( LOWORD( wparam ) ) {
@@ -56,7 +59,7 @@ WPI_DLGRESULT CALLBACK ChangeSizeProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam
             imgHeight = _wpi_getdlgitemint( hwnd, SIZE_HEIGHT, &trnslate, TRUE );
             imgWidth = _wpi_getdlgitemint( hwnd, SIZE_WIDTH, &trnslate, TRUE );
             if( !trnslate ) {
-                return( FALSE );
+                break;
             }
             if( imgHeight > MAX_DIM || imgHeight < MIN_DIM ||
                 imgWidth > MAX_DIM || imgWidth < MIN_DIM ) {
@@ -74,7 +77,7 @@ WPI_DLGRESULT CALLBACK ChangeSizeProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam
                 if( title != NULL ) {
                     IEFreeRCString( title );
                 }
-                return( FALSE );
+                break;
             }
 
             if( _wpi_isbuttonchecked( hwnd, SIZE_STRETCH ) ) {
@@ -91,10 +94,7 @@ WPI_DLGRESULT CALLBACK ChangeSizeProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam
 
         case IDB_HELP:
             IEHelpRoutine();
-            return( FALSE );
-
-        default:
-            return( FALSE );
+            break;
         }
     } else {
         switch( msg ) {
@@ -106,7 +106,8 @@ WPI_DLGRESULT CALLBACK ChangeSizeProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam
             } else {
                 _wpi_checkradiobutton( hwnd, SIZE_STRETCH, SIZE_CLIP, SIZE_CLIP );
             }
-            return( TRUE );
+            ret = true;
+            break;
 
 #ifndef __OS2_PM__
         case WM_SYSCOLORCHANGE:
@@ -121,9 +122,9 @@ WPI_DLGRESULT CALLBACK ChangeSizeProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam
             return( _wpi_defdlgproc( hwnd, msg, wparam, lparam ) );
         }
     }
-    _wpi_dlgreturn( FALSE );
+    _wpi_dlgreturn( ret );
 
-} /* ChangeSizeProc */
+} /* ChangeSizeDlgProc */
 
 /*
  * ChangeImageSize - changes the size of the current image being edited
@@ -131,7 +132,7 @@ WPI_DLGRESULT CALLBACK ChangeSizeProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam
 void ChangeImageSize( void )
 {
     img_node        *node;
-    WPI_PROC        fp;
+    WPI_DLGPROC     dlg_proc;
     WPI_DLGRESULT   button_type;
     img_node        new_node;
     WPI_PRES        pres;
@@ -163,9 +164,9 @@ void ChangeImageSize( void )
     imgHeight = node->height;
     imgWidth = node->width;
 
-    fp = _wpi_makeprocinstance( (WPI_PROC)ChangeSizeProc, Instance );
-    button_type = _wpi_dialogbox( HMainWindow, (WPI_DLGPROC)fp, Instance, IMAGESIZE, 0L );
-    _wpi_freeprocinstance( fp );
+    dlg_proc = (WPI_DLGPROC)_wpi_makeprocinstance( (WPI_PROC)ChangeSizeDlgProc, Instance );
+    button_type = _wpi_dialogbox( HMainWindow, dlg_proc, Instance, IMAGESIZE, 0L );
+    _wpi_freeprocinstance( (WPI_PROC)dlg_proc );
 
     if( button_type == DLGID_CANCEL ) {
         return;

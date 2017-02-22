@@ -35,8 +35,8 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT WPI_DLGRESULT CALLBACK SelNonExistingProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
-WINEXPORT WPI_DLGRESULT CALLBACK SelExistingProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT WPI_DLGRESULT CALLBACK SelNonExistingDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT WPI_DLGRESULT CALLBACK SelExistingDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
 static icon_info_struct iconInfo[NUM_OF_ICONS];
 static int              iconType;
@@ -263,14 +263,17 @@ static short getIconIndex( int icon_type )
 } /* getIconIndex */
 
 /*
- * SelNonExistingProc - select an icon that does not exist (i.e. for ADD or NEW)
+ * SelNonExistingDlgProc - select an icon that does not exist (i.e. for ADD or NEW)
  */
-WPI_DLGRESULT CALLBACK SelNonExistingProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_DLGRESULT CALLBACK SelNonExistingDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     int         index;
     WPI_MRESULT mresult;
     int         i;
     static int  lbindex[NUM_OF_ICONS];
+    bool        ret;
+
+    ret = false;
 
     if( _wpi_dlg_command( hwnd, &msg, &wparam, &lparam ) ) {
         switch( LOWORD( wparam ) ) {
@@ -287,7 +290,7 @@ WPI_DLGRESULT CALLBACK SelNonExistingProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wp
 
         case IDB_HELP:
             IEHelpRoutine();
-            return( FALSE );
+            break;
 
         case TARGETLISTBOX:
             if( HIWORD( wparam ) == LBN_DBLCLK ) {
@@ -298,9 +301,6 @@ WPI_DLGRESULT CALLBACK SelNonExistingProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wp
                 _wpi_enddialog( hwnd, DLGID_OK );
             }
             break;
-
-        default:
-            return( FALSE );
         }
     } else {
         switch( msg ) {
@@ -317,7 +317,8 @@ WPI_DLGRESULT CALLBACK SelNonExistingProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wp
                 }
             }
             _wpi_senddlgitemmessage( hwnd, TARGETLISTBOX, LB_SETCURSEL, 0, 0L );
-            return( TRUE );
+            ret = true;
+            break;
 
 #ifndef __OS2_PM__
         case WM_SYSCOLORCHANGE:
@@ -331,19 +332,22 @@ WPI_DLGRESULT CALLBACK SelNonExistingProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wp
             return( _wpi_defdlgproc( hwnd, msg, wparam, lparam ) );
         }
     }
-    _wpi_dlgreturn( FALSE );
+    _wpi_dlgreturn( ret );
 
-} /* SelNonExistingProc */
+} /* SelNonExistingDlgProc */
 
 /*
- * SelExistingProc - select an existing icon (i.e. for edit or delete)
+ * SelExistingDlgProc - select an existing icon (i.e. for edit or delete)
  */
-WPI_DLGRESULT CALLBACK SelExistingProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_DLGRESULT CALLBACK SelExistingDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     WPI_MRESULT mresult;
     int         index;
     int         i;
     static int  lbindex[NUM_OF_ICONS];
+    bool        ret;
+
+    ret = false;
 
     if( _wpi_dlg_command( hwnd, &msg, &wparam, &lparam ) ) {
         switch( LOWORD( wparam ) ) {
@@ -360,7 +364,7 @@ WPI_DLGRESULT CALLBACK SelExistingProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wpara
 
         case IDB_HELP:
             IEHelpRoutine();
-            return( FALSE );
+            break;
 
         case TARGETLISTBOX:
             if( HIWORD( wparam ) == LBN_DBLCLK ) {
@@ -371,9 +375,6 @@ WPI_DLGRESULT CALLBACK SelExistingProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wpara
                 _wpi_enddialog( hwnd, DLGID_OK );
             }
             break;
-
-        default:
-            return( FALSE );
         }
     } else {
         switch( msg ) {
@@ -390,7 +391,8 @@ WPI_DLGRESULT CALLBACK SelExistingProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wpara
                 }
             }
             _wpi_senddlgitemmessage( hwnd, TARGETLISTBOX, LB_SETCURSEL, 0, 0L );
-            return( TRUE );
+            ret = true;
+            break;
 
 #ifndef __OS2_PM__
         case WM_SYSCOLORCHANGE:
@@ -405,9 +407,9 @@ WPI_DLGRESULT CALLBACK SelExistingProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wpara
             return( _wpi_defdlgproc( hwnd, msg, wparam, lparam ) );
         }
     }
-    _wpi_dlgreturn( FALSE );
+    _wpi_dlgreturn( ret );
 
-} /* SelExistingProc */
+} /* SelExistingDlgProc */
 
 /*
  * CreateNewIcon - select the icon from the listbox (used by FILE.NEW)
@@ -415,19 +417,19 @@ WPI_DLGRESULT CALLBACK SelExistingProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wpara
  */
 BOOL CreateNewIcon( short *width, short *height, short *bitcount, BOOL is_icon )
 {
-    WPI_PROC            fp;
+    WPI_DLGPROC         dlg_proc;
     WPI_DLGRESULT       button_type;
 
     iconOperation = NEW_ICON_OP;
     resetIconInfo();
 
-    fp = _wpi_makeprocinstance( (WPI_PROC)SelNonExistingProc, Instance );
+    dlg_proc = (WPI_DLGPROC)_wpi_makeprocinstance( (WPI_PROC)SelNonExistingDlgProc, Instance );
     if( is_icon ) {
-        button_type = _wpi_dialogbox( HMainWindow, (WPI_DLGPROC)fp, Instance, ICONTYPE, 0L );
+        button_type = _wpi_dialogbox( HMainWindow, dlg_proc, Instance, ICONTYPE, 0L );
     } else {
-        button_type = _wpi_dialogbox( HMainWindow, (WPI_DLGPROC)fp, Instance, CURSORTYPE, 0L );
+        button_type = _wpi_dialogbox( HMainWindow, dlg_proc, Instance, CURSORTYPE, 0L );
     }
-    _wpi_freeprocinstance( fp );
+    _wpi_freeprocinstance( (WPI_PROC)dlg_proc );
 
     if( button_type == DLGID_CANCEL ) {
         return( FALSE );
@@ -449,7 +451,7 @@ BOOL CreateNewIcon( short *width, short *height, short *bitcount, BOOL is_icon )
  */
 void AddNewIcon( void )
 {
-    WPI_PROC            fp;
+    WPI_DLGPROC         dlg_proc;
     WPI_DLGRESULT       button_type;
     img_node            *currentnode;
     img_node            *node;
@@ -467,9 +469,9 @@ void AddNewIcon( void )
     node = GetImageNode( currentnode->hwnd );
 
     iconOperation = ADD_ICON_OP;
-    fp = _wpi_makeprocinstance( (WPI_PROC)SelNonExistingProc, Instance );
-    button_type = _wpi_dialogbox( HMainWindow, (WPI_DLGPROC)fp, Instance, ICONTYPE, 0L );
-    _wpi_freeprocinstance( fp );
+    dlg_proc = (WPI_DLGPROC)_wpi_makeprocinstance( (WPI_PROC)SelNonExistingDlgProc, Instance );
+    button_type = _wpi_dialogbox( HMainWindow, dlg_proc, Instance, ICONTYPE, 0L );
+    _wpi_freeprocinstance( (WPI_PROC)dlg_proc );
 
     if( button_type == DLGID_CANCEL ) {
         return;
@@ -517,7 +519,7 @@ void AddNewIcon( void )
  */
 void DeleteIconImg( void )
 {
-    WPI_PROC            fp;
+    WPI_DLGPROC         dlg_proc;
     WPI_DLGRESULT       button_type;
     int                 icon_index;
     img_node            *currentnode;
@@ -535,9 +537,9 @@ void DeleteIconImg( void )
     node = GetImageNode( currentnode->hwnd );
     iconOperation = DELETE_ICON_OP;
 
-    fp = _wpi_makeprocinstance( (WPI_PROC)SelExistingProc, Instance );
-    button_type = _wpi_dialogbox( HMainWindow, (WPI_DLGPROC)fp, Instance, ICONTYPE, 0L );
-    _wpi_freeprocinstance( fp );
+    dlg_proc = (WPI_DLGPROC)_wpi_makeprocinstance( (WPI_PROC)SelExistingDlgProc, Instance );
+    button_type = _wpi_dialogbox( HMainWindow, dlg_proc, Instance, ICONTYPE, 0L );
+    _wpi_freeprocinstance( (WPI_PROC)dlg_proc );
 
     if( button_type == DLGID_CANCEL ) {
         return;
@@ -580,7 +582,7 @@ void DeleteIconImg( void )
  */
 void SelectIconImg( void )
 {
-    WPI_PROC            fp;
+    WPI_DLGPROC         dlg_proc;
     WPI_DLGRESULT       button_type;
     int                 icon_index;
     img_node            *currentnode;
@@ -595,9 +597,9 @@ void SelectIconImg( void )
     node = GetImageNode( currentnode->hwnd );
     iconOperation = SEL_ICON_OP;
 
-    fp = _wpi_makeprocinstance( (WPI_PROC)SelExistingProc, Instance );
-    button_type = _wpi_dialogbox( HMainWindow, (WPI_DLGPROC)fp, Instance, ICONTYPE, 0L );
-    _wpi_freeprocinstance( fp );
+    dlg_proc = (WPI_DLGPROC)_wpi_makeprocinstance( (WPI_PROC)SelExistingDlgProc, Instance );
+    button_type = _wpi_dialogbox( HMainWindow, dlg_proc, Instance, ICONTYPE, 0L );
+    _wpi_freeprocinstance( (WPI_PROC)dlg_proc );
 
     if( button_type == DLGID_CANCEL ) {
         return;
