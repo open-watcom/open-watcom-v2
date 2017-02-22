@@ -140,9 +140,9 @@ bool WEXPORT WDialog::processMsg( gui_event msg, void *parm ) {
 }
 
 
-extern "C" bool DlgProc( gui_window *hwin, gui_event msg, void *parm ) {
-/**********************************************************************/
-
+extern "C" bool DlgProc( gui_window *hwin, gui_event msg, void *parm )
+/********************************************************************/
+{
     WDialog* win = (WDialog*)GUIGetExtra( hwin );
     if( msg == GUI_INIT_DIALOG ) {
         win->setHandle( hwin );
@@ -183,7 +183,7 @@ void WDialog::doDialog( WWindow *parent ) {
     create_info.menu = NULL;
     create_info.num_attrs = 0;
     create_info.colours = NULL;
-    create_info.call_back = DlgProc;
+    create_info.gui_call_back = DlgProc;
     create_info.extra = this;
     create_info.icon = NULL;
     GUICreateDialog( &create_info, 0, NULL );

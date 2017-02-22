@@ -98,7 +98,7 @@ void WStatDialog::doDialog( WWindow *parent ) {
     create_info.menu = NULL;
     create_info.num_attrs = 0;
     create_info.colours = NULL;
-    create_info.call_back = DlgProc;
+    create_info.gui_call_back = DlgProc;
     create_info.extra = this;
     create_info.icon = NULL;
 
