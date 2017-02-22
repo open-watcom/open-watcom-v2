@@ -36,11 +36,11 @@
 
 
 /* Local Window callback functions prototypes */
-BOOL __export CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #define BUF_SIZE        100
 
-BOOL CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
     int         linecnt;
@@ -50,10 +50,14 @@ BOOL CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
     LRESULT     len;
     WORD        *wptr;
     void        (*fn)(char *);
+    bool        ret;
+
+    ret = false;
 
     switch( msg ) {
     case WM_INITDIALOG:
         SetWindowLong( hwnd, DWL_USER, lparam );
+        ret = true;
         break;
     case WM_COMMAND:
         cmd = LOWORD( wparam );
@@ -77,21 +81,21 @@ BOOL CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             SendMessage( hwnd, WM_CLOSE, 0, 0L );
             break;
         }
+        ret = true;
         break;
     case WM_CLOSE:
         EndDialog( hwnd, 0 );
+        ret = true;
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 }
 
 void AnotateLog( HWND hwnd, HANDLE Instance, void (*fn)(char *)  ) {
 
-    FARPROC     fp;
+    DLGPROC     dlg_proc;
 
-    fp = MakeProcInstance( (FARPROC)NoteLogDlgProc, Instance );
-    JDialogBoxParam( Instance, "NOTE_LOG", hwnd, (DLGPROC)fp, (LPARAM)fn );
-    FreeProcInstance( fp );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)NoteLogDlgProc, Instance );
+    JDialogBoxParam( Instance, "NOTE_LOG", hwnd, dlg_proc, (LPARAM)fn );
+    FreeProcInstance( (FARPROC)dlg_proc );
 }

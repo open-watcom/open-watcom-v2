@@ -41,7 +41,7 @@
 #ifndef CHICAGO
 
 /* Local Window callback functions prototypes */
-WINEXPORT BOOL CALLBACK MemInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK MemInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 typedef struct {
     DWORD       procid;
@@ -209,10 +209,13 @@ static void fillMemInfo( HWND hwnd, DWORD procid, BOOL first_time ) {
 /*
  * MemInfoDlgProc
  */
-BOOL CALLBACK MemInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK MemInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
     MemDlgInfo  *info;
+    bool        ret;
+
+    ret = false;
 
     info = (MemDlgInfo *)GetWindowLong( hwnd, DWL_USER );
     switch( msg ) {
@@ -221,6 +224,7 @@ BOOL CALLBACK MemInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
         info->procid = lparam;
         SetWindowLong( hwnd, DWL_USER, (DWORD)info );
         fillMemInfo( hwnd, info->procid, TRUE );
+        ret = true;
         break;
     case WM_COMMAND:
         cmd = LOWORD( wparam );
@@ -238,18 +242,19 @@ BOOL CALLBACK MemInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             }
             break;
         }
+        ret = true;
         break;
     case WM_CLOSE:
         MemFree( info );
         EndDialog( hwnd, 0 );
+        ret = true;
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 }
 
-void DoMemDlg( HWND hwnd, DWORD procid ) {
+void DoMemDlg( HWND hwnd, DWORD procid )
+{
     RefreshCostlyInfo();
     JDialogBoxParam( Instance, "MEMORY_DLG", hwnd, MemInfoDlgProc, procid );
 }

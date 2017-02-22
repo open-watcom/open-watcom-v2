@@ -42,7 +42,7 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT BOOL CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 typedef struct {
     char        *loadmsg;
@@ -68,12 +68,16 @@ static void initDipMsgs( void )
     theLoadInfo = MemAlloc( dipCnt * sizeof( LoadInfo ) );
 }
 
-BOOL CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
     WORD        i;
+    bool        ret;
 
     lparam = lparam;
+
+    ret = false;
+
     switch( msg ) {
     case WM_INITDIALOG:
         for( i = 0; i < dipCnt; i++ ) {
@@ -82,31 +86,31 @@ BOOL CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
             SendDlgItemMessage( hwnd, DIPLD_LIST, LB_ADDSTRING, 0,
                                 (LPARAM)(LPSTR)theLoadInfo[i].loadmsg );
         }
+        ret = true;
         break;
     case WM_COMMAND:
         cmd = LOWORD( wparam );
         switch( cmd ) {
         case IDOK:
             SendMessage( hwnd, WM_CLOSE, 0, 0L );
-            break;
         }
+        ret = true;
         break;
     case WM_CLOSE:
         EndDialog( hwnd, 0 );
+        ret = true;
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 }
 
 void ShowDIPStatus( HWND hwnd )
 {
-    FARPROC     fp;
+    DLGPROC     dlg_proc;
 
-    fp = MakeProcInstance( (FARPROC)ShowDipStatDlgProc, Instance );
-    JDialogBox( Instance, "DIP_STATUS_DLG", hwnd, (DLGPROC)fp );
-    FreeProcInstance( fp );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)ShowDipStatDlgProc, Instance );
+    JDialogBox( Instance, "DIP_STATUS_DLG", hwnd, dlg_proc );
+    FreeProcInstance( (FARPROC)dlg_proc );
 }
 
 BOOL LoadTheDips( void )

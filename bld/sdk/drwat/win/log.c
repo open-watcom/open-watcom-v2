@@ -43,6 +43,10 @@
 #include "commdlg.h"
 #include "jdlg.h"
 
+
+/* Local Window callback functions prototypes */
+WINEXPORT INT_PTR CALLBACK LogDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
 static void logPrint( char *str, ... );
 
 BOOL    notesAdded;
@@ -79,13 +83,16 @@ static BOOL getNewLogName( HWND parent ) {
 }
 
 /*
- * LogDialog - show task status
+ * LogDialogDlgProc - show task status
  */
-WINEXPORT BOOL FAR PASCAL LogDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK LogDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i;
+    bool        ret;
 
     lparam = lparam;
+
+    ret = false;
 
     switch( msg ) {
     case WM_INITDIALOG:
@@ -96,12 +103,12 @@ WINEXPORT BOOL FAR PASCAL LogDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
         for( i=0;i<LOGFL_MAX;i++ ) {
             CheckDlgButton( hwnd, LOG_STACK_TRACE+i, ( logInfo.flags[i] == '1' ) ? BST_CHECKED : BST_UNCHECKED );
         }
-        #if 0
-            SetCourierFont( hwnd, LOG_FILE_NAME );
-            SetCourierFont( hwnd, LOG_MAX_FILE_SIZE );
-            SetCourierFont( hwnd, LOG_DISASM_BACKUP );
-            SetCourierFont( hwnd, LOG_DISASM_LINES );
-        #endif
+    #if 0
+        SetCourierFont( hwnd, LOG_FILE_NAME );
+        SetCourierFont( hwnd, LOG_MAX_FILE_SIZE );
+        SetCourierFont( hwnd, LOG_DISASM_BACKUP );
+        SetCourierFont( hwnd, LOG_DISASM_LINES );
+    #endif
         SetDlgItemText( hwnd, LOG_FILE_NAME, strlwr( logInfo.filename ) );
         ltoa( logInfo.maxlogsize, tmp, 10 );
         SetDlgItemText( hwnd, LOG_MAX_FILE_SIZE, tmp );
@@ -109,11 +116,13 @@ WINEXPORT BOOL FAR PASCAL LogDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
         SetDlgItemText( hwnd, LOG_DISASM_BACKUP, tmp );
         itoa( logInfo.disasmlines, tmp, 10 );
         SetDlgItemText( hwnd, LOG_DISASM_LINES, tmp );
-        return( TRUE );
+        ret = true;
+        break;
     }
     case WM_CLOSE:
         PostMessage( hwnd, WM_COMMAND, IDCANCEL, 0L );
-        return( TRUE );
+        ret = true;
+        break;
     case WM_COMMAND:
         if( wparam >= LOG_STACK_TRACE && wparam <= LOG_MAXFL ) {
             i = wparam - LOG_STACK_TRACE;
@@ -132,7 +141,8 @@ WINEXPORT BOOL FAR PASCAL LogDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
                 logInfo.flags[ LOGFL_MOD_SEGMENTS ] = '0';
                 CheckDlgButton( hwnd, LOG_STACK_TRACE + LOGFL_MOD_SEGMENTS, BST_UNCHECKED );
             }
-            return( TRUE );
+            ret = true;
+            break;
         }
         switch( wparam ) {
         case IDOK:
@@ -149,33 +159,37 @@ WINEXPORT BOOL FAR PASCAL LogDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
             logInfo.disasmlines = atoi( tmp );
             LogInfo = logInfo;
             EndDialog( hwnd, 0 );
-            return( TRUE );
+            ret = true;
+            break;
         }
         case IDCANCEL:
             EndDialog( hwnd, 0 );
-            return( TRUE );
+            ret = true;
+            break;
         case LOG_BROWSE:
             if( getNewLogName( hwnd ) ) {
                 strlwr( logInfo.filename );
                 SetDlgItemText( hwnd, LOG_FILE_NAME, logInfo.filename );
             }
-            return( TRUE );
+            ret = true;
+            break;
         }
+        break;
     }
-    return( FALSE );
+    return( ret );
 
-} /* LogDialog */
+} /* LogDialogDlgProc */
 
 /*
  * DoLogDialog - start log info dialog
  */
 void DoLogDialog( HWND hwnd )
 {
-    FARPROC     fp;
+    DLGPROC     dlg_proc;
 
-    fp = MakeProcInstance( (FARPROC)LogDialog, Instance );
-    JDialogBox( Instance, "LOG", hwnd, (DLGPROC)fp );
-    FreeProcInstance( fp );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)LogDialogDlgProc, Instance );
+    JDialogBox( Instance, "LOG", hwnd, dlg_proc );
+    FreeProcInstance( (FARPROC)dlg_proc );
 
 } /* DoLogDialog */
 

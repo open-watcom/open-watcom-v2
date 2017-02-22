@@ -47,9 +47,9 @@
 
 /* Local Window callback functions prototypes */
 #ifndef __NT__
-BOOL __export FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 #endif
-BOOL __export FAR PASCAL StatDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK StatDialogDlgProc( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam );
 
 typedef struct{
     address curr_addr;
@@ -290,13 +290,17 @@ static void InitStatDialog( HWND hwnd )
 } /* InitStatDialog */
 
 #ifndef __NT__
-BOOL FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        buff[128];
     WORD        i;
     WORD        seg;
+    bool        ret;
 
     lparam = lparam;
+
+    ret = false;
+
     switch( msg ) {
     case WM_INITDIALOG:
         /*
@@ -312,11 +316,13 @@ BOOL FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
                                 (LPARAM)(LPSTR)buff );
             }
         }
+        ret = true;
         break;
     case WM_COMMAND:
         switch( wparam ) {
         case IDOK:
             EndDialog( hwnd, 0 );
+            ret = true;
             break;
         case SEGMAP_LIST:
             if( HIWORD( lparam ) == LBN_DBLCLK ) {
@@ -333,15 +339,11 @@ BOOL FAR PASCAL SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
                     DispMem( Instance, hwnd, ge.hBlock, (ge.dwSize == 1) );
                 }
             }
+            ret = true;
             break;
-        default:
-            return( FALSE );
-        }
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 }
 #endif
 static void SwitchRegSets( HWND hwnd, StatData *statdata )
@@ -372,16 +374,19 @@ static void DoUpdateWalk( HWND hwnd, mad_reg_set_data * reg_set )
 }
 
 /*
- * StatDialog - show task status
+ * StatDialogDlgProc - show task status
  */
-BOOL CALLBACK StatDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK StatDialogDlgProc( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam )
 {
     WORD        cmd;
-    FARPROC     fp;
     StatData    *statdata;
+#ifndef __NT__
+    DLGPROC     dlg_proc;
+#endif
+    bool        ret;
 
+    ret = false;
     statdata = (StatData *)GetWindowLong( hwnd, DWL_USER );
-    fp = fp;
     switch( msg ) {
     case STAT_FOREGROUND:
 #ifdef __NT__
@@ -392,7 +397,7 @@ BOOL CALLBACK StatDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam )
         break;
     case WM_INITDIALOG:
         InitStatDialog( hwnd );
-        return( FALSE );
+        break;
     case STAT_MAD_NOTIFY:
         switch( wparam ) {
         case MNT_REDRAW_REG:
@@ -410,7 +415,8 @@ BOOL CALLBACK StatDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam )
         break;
     case WM_CLOSE:
         PostMessage( hwnd, WM_COMMAND, IDCANCEL, 0L );
-        return( TRUE );
+        ret = true;
+        break;
     case WM_DESTROY:
         StatHdl = NULL;
         MemFree( statdata );
@@ -424,9 +430,9 @@ BOOL CALLBACK StatDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam )
         switch( cmd ) {
 #ifndef __NT__
         case STAT_SEG_MAP:
-            fp = MakeProcInstance( SegMapDlgProc, Instance );
-            JDialogBox( Instance, "SEG_MAP_DLG", hwnd, fp );
-            FreeProcInstance( fp );
+            dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)SegMapDlgProc, Instance );
+            JDialogBox( Instance, "SEG_MAP_DLG", hwnd, dlg_proc );
+            FreeProcInstance( (FARPROC)dlg_proc );
             break;
         case STAT_STACK_TRACE:
             StartStackTraceDialog( hwnd );
@@ -457,15 +463,17 @@ BOOL CALLBACK StatDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam )
             break;
         case IDCANCEL:
             EndDialog( hwnd, 0 );
-            return( TRUE );
+            ret = true;
+            break;
         case IDOK:
             EndDialog( hwnd, 1 );
-            return( TRUE );
+            ret = true;
+            break;
         }
     }
-    return( FALSE );
+    return( ret );
 
-} /* StatDialog */
+} /* StatDialogDlgProc */
 
 
 /*
@@ -473,11 +481,11 @@ BOOL CALLBACK StatDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam )
  */
 int DoStatDialog( HWND hwnd )
 {
-    DLGPROC     fp;
+    DLGPROC     dlg_proc;
     INT_PTR     ret;
 
-    fp = (DLGPROC)MakeProcInstance( StatDialog, Instance );
-    ret = JDialogBox( Instance, "TASKSTATUS", hwnd, fp );
-    FreeProcInstance( fp );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)StatDialogDlgProc, Instance );
+    ret = JDialogBox( Instance, "TASKSTATUS", hwnd, dlg_proc );
+    FreeProcInstance( (FARPROC)dlg_proc );
     return( ret );
 } /* DoStatDialog */

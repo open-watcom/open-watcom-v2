@@ -41,20 +41,24 @@
 
 
 /* Local Window callback functions prototypes */
-BOOL __export FAR PASCAL IntDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK IntDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 WORD __cdecl FAR FaultHandler( fault_frame ff );
 
 static BOOL doLog;
 
 /*
- * IntDialog - handles input from user when a fault is received
+ * IntDialogDlgProc - handles input from user when a fault is received
  */
-BOOL FAR PASCAL IntDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK IntDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        buff[256];
     WORD        tmp;
+    bool        ret;
 
     lparam = lparam;
+
+    ret = false;
+
     switch( msg ) {
     case WM_INITDIALOG:
         doLog = FALSE;
@@ -67,8 +71,7 @@ BOOL FAR PASCAL IntDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         SetDlgCourierFont( hwnd, INT_CS_IP );
         SetDlgCourierFont( hwnd, INT_SOURCE_INFO );
         SetDlgCourierFont( hwnd, INT_SOURCE_INFO2 );
-        RCsprintf( buff, STR_FAULT_X_ENCOUNTERED, AppName,
-                    IntData.InterruptNumber );
+        RCsprintf( buff, STR_FAULT_X_ENCOUNTERED, AppName, IntData.InterruptNumber );
         SetWindowText( hwnd, buff );
         SetDlgItemText( hwnd, INT_TASK_NAME, DTTaskEntry.szModule );
         SetDlgItemText( hwnd, INT_TASK_PATH, DTModuleEntry.szExePath );
@@ -101,13 +104,15 @@ BOOL FAR PASCAL IntDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
                 FreeRCString( na );
             }
         }
-        return( TRUE );
+        ret = true;
+        break;
     case WM_CLOSE:
         tmp = ExceptionAction;
         CheckDlgButton( hwnd, INT_TERMINATE, BST_CHECKED );
         SendMessage( hwnd, WM_COMMAND, INT_ACT, 0L );
         ExceptionAction = tmp;
-        return( TRUE );
+        ret = true;
+        break;
     case WM_COMMAND:
         switch( wparam ) {
         case INT_ACT_AND_LOG:
@@ -117,35 +122,36 @@ BOOL FAR PASCAL IntDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             if( IsDlgButtonChecked( hwnd, INT_TERMINATE ) ) {
                 ExceptionAction = INT_TERMINATE;
                 EndDialog( hwnd, KILL_APP );
-                return( TRUE );
+                ret = true;
             } else if( IsDlgButtonChecked( hwnd, INT_CHAIN_TO_NEXT ) ) {
                 ExceptionAction = INT_CHAIN_TO_NEXT;
                 EndDialog( hwnd, CHAIN );
-                return( TRUE );
+                ret = true;
             } else if( IsDlgButtonChecked( hwnd, INT_RESTART ) ) {
                 ExceptionAction = INT_RESTART;
                 EndDialog( hwnd, RESTART_APP );
-                return( TRUE );
+                ret = true;
             }
             break;
         case INT_LOG_OPTIONS:
             DoLogDialog( hwnd );
-            return( TRUE );
+            ret = true;
+            break;
         case INT_REGISTERS:
             DoStatDialog( hwnd );
             break;
         }
     }
-    return( FALSE );
+    return( ret );
 
-} /* IntDialog */
+} /* IntDialogDlgProc */
 
 /*
  * FaultHandler - C handler for a fault
  */
 WORD __cdecl FAR FaultHandler( fault_frame ff )
 {
-    FARPROC     fp;
+    DLGPROC     dlg_proc;
     INT_PTR     rc;
     char        *fault_str;
     DWORD       faultid;
@@ -216,9 +222,9 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
 
     LoadDbgInfo( );
     if( LogInfo.flags[LOGFL_AUTOLOG] != '1' ) {
-        fp = MakeProcInstance( (FARPROC)IntDialog, Instance );
-        rc = JDialogBox( Instance, "INTERRUPT", NULL, (DLGPROC)fp );
-        FreeProcInstance( fp );
+        dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)IntDialogDlgProc, Instance );
+        rc = JDialogBox( Instance, "INTERRUPT", NULL, dlg_proc );
+        FreeProcInstance( (FARPROC)dlg_proc );
     } else {
         rc = KILL_APP;
     }

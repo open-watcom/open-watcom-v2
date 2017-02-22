@@ -49,7 +49,7 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT BOOL CALLBACK ChangeRegisterDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam);
+WINEXPORT INT_PTR CALLBACK ChangeRegisterDialogDlgProc( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam);
 WINEXPORT LRESULT CALLBACK RegStringProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 
@@ -346,36 +346,44 @@ static void CheckForRegisterChange( HWND hwnd )
     }
 }
 
-BOOL CALLBACK ChangeRegisterDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam)
+BOOL CALLBACK ChangeRegisterDialogDlgProc( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam)
 {
     WORD        cmd;
+    bool        ret;
+
+    ret = false;
+
     switch( msg ){
     case WM_INITDIALOG:
         InitChangeRegisterDialog( hwnd, lparam );
-        return( TRUE );
+        ret = true;
+        break;
 
     case WM_CLOSE:
         PostMessage( hwnd, WM_COMMAND, IDCANCEL, 0L );
-        return( TRUE );
+        ret = true;
+        break;
 
     case WM_COMMAND:
         cmd = LOWORD( wparam );
         switch( cmd ) {
         case IDCANCEL:
             EndDialog( hwnd, 0 );
-            return( TRUE );
+            ret = true;
+            break;
         case IDOK:
             CheckForRegisterChange( hwnd );
-            return( TRUE );
+            ret = true;
+            break;
         }
    }
-   return( FALSE );
+   return( ret );
 }
 
 static void GetNewRegValue( HWND hwnd )
 {
     HWND            owner;
-    DLGPROC         fp;
+    DLGPROC         dlg_proc;
     INT_PTR         reg_modified;
     RegModifyData   modify_data;
     const char      *descript;
@@ -408,14 +416,14 @@ static void GetNewRegValue( HWND hwnd )
         reg_modified = 1;
         break;
     case 1:
-        fp = (DLGPROC)MakeProcInstance( ChangeRegisterDialog, Instance );
-        reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_EDIT", owner, fp, (LPARAM)( &modify_data ) );
-        FreeProcInstance( fp );
+        dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)ChangeRegisterDialogDlgProc, Instance );
+        reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_EDIT", owner, dlg_proc, (LPARAM)( &modify_data ) );
+        FreeProcInstance( (FARPROC)dlg_proc );
         break;
     default:
-        fp = (DLGPROC)MakeProcInstance( ChangeRegisterDialog, Instance );
-        reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_COMBO", owner, fp, (LPARAM)( &modify_data ) );
-        FreeProcInstance( fp );
+        dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)ChangeRegisterDialogDlgProc, Instance );
+        reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_COMBO", owner, dlg_proc, (LPARAM)( &modify_data ) );
+        FreeProcInstance( (FARPROC)dlg_proc );
     }
     if( reg_modified == 1 ) {
         MADRegUpdateStart( regs, modify_data.curr_info->flags, modify_data.curr_info->bit_start, modify_data.curr_info->bit_size );

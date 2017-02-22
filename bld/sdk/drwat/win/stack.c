@@ -40,7 +40,7 @@
 
 
 /* Local Window callback functions prototypes */
-BOOL __export FAR PASCAL STDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK STDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 typedef struct x {
     ADDRESS dispaddr;
@@ -51,13 +51,17 @@ typedef struct x {
 stdata  std;
 
 /*
- * STDialog - show a stack frame
+ * STDialogDlgProc - show a stack frame
  */
-BOOL FAR PASCAL STDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK STDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i;
+    bool        ret;
 
     lparam = lparam;
+
+    ret = false;
+
     switch( msg ) {
     case WM_INITDIALOG:
         {
@@ -100,12 +104,13 @@ BOOL FAR PASCAL STDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         }
         DisplayAsmLines( hwnd, &std.dispaddr, &std.faddr, ST_DISASM1,
                           ST_DISASM8, ST_SCROLL );
-        return( TRUE );
+        ret = true;
         break;
 
     case WM_CLOSE:
         PostMessage( hwnd, WM_COMMAND, ST_CANCEL, 0L );
-        return( TRUE );
+        ret = true;
+        break;
 
     case WM_COMMAND:
         switch( wparam ) {
@@ -115,24 +120,25 @@ BOOL FAR PASCAL STDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             EndDialog( hwnd, wparam );
             break;
         }
-        return( TRUE );
+        ret = true;
+        break;
 
     case WM_VSCROLL:
         ScrollAsmDisplay( hwnd, wparam, &std.dispaddr, &std.faddr,
                                 ST_DISASM1, ST_DISASM8, ST_SCROLL );
-        return( TRUE );
+        ret = true;
         break;
     }
-    return( FALSE );
+    return( ret );
 
-} /* STDialog */
+} /* STDialogDlgProc */
 
 /*
  * StartStackTraceDialog - do the stack trace dialog
  */
 void StartStackTraceDialog( HWND hwnd )
 {
-    FARPROC     fp;
+    DLGPROC     dlg_proc;
     BOOL        first_try;
     INT_PTR     rc;
     int         currframe=0;
@@ -164,9 +170,9 @@ void StartStackTraceDialog( HWND hwnd )
             }
             first_try = FALSE;
         }
-        fp = MakeProcInstance( (FARPROC)STDialog, Instance );
-        rc = JDialogBox( Instance, "STACKTRACE", hwnd, (DLGPROC)fp );
-        FreeProcInstance( fp );
+        dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)STDialogDlgProc, Instance );
+        rc = JDialogBox( Instance, "STACKTRACE", hwnd, dlg_proc );
+        FreeProcInstance( (FARPROC)dlg_proc );
         oldcurrframe = currframe;
         if( rc == ST_NEXT ) {
             currframe++;
