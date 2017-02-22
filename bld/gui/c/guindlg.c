@@ -204,15 +204,15 @@ static void DlgSetSize( gui_window *parent, gui_create_info *dlg_info, int rows,
 }
 
 static void DlgOpen( gui_window *parent, const char *title, int rows, int cols,
-                     gui_control_info *controls_info, int num_controls, GUICALLBACK *rtn,
-                     void *extra, bool sys )
+                     gui_control_info *controls_info, int num_controls,
+                     GUICALLBACK *gui_call_back, void *extra, bool sys )
 {
     gui_coord           charuse;
     gui_coord           charspace;
     gui_text_metrics    metrics;
 
     DlgControl.title = title;
-    DlgControl.call_back = rtn;
+    DlgControl.gui_call_back = gui_call_back;
     DlgControl.extra = extra;
     DlgControl.parent = parent;
     GUIGetDlgTextMetrics( &metrics );
@@ -242,21 +242,21 @@ void GUISetModalDlgs( bool modal )
 }
 
 void GUIDlgOpen( const char *title, int rows, int cols, gui_control_info *controls_info,
-                 int num_controls, GUICALLBACK *rtn, void *extra )
+                 int num_controls, GUICALLBACK *gui_call_back, void *extra )
 {
-    DlgOpen( NULL, title, rows, cols, controls_info, num_controls, rtn, extra, false );
+    DlgOpen( NULL, title, rows, cols, controls_info, num_controls, gui_call_back, extra, false );
 }
 
 void GUIModalDlgOpen( gui_window *parent, const char *title, int rows, int cols,
                       gui_control_info *controls_info, int num_controls,
-                      GUICALLBACK *rtn, void *extra )
+                      GUICALLBACK *gui_call_back, void *extra )
 {
-    DlgOpen( parent, title, rows, cols, controls_info, num_controls, rtn, extra, false );
+    DlgOpen( parent, title, rows, cols, controls_info, num_controls, gui_call_back, extra, false );
 }
 
 void GUISysModalDlgOpen( const char *title, int rows, int cols,
                          gui_control_info *controls_info, int num_controls,
-                         GUICALLBACK *rtn, void *extra )
+                         GUICALLBACK *gui_call_back, void *extra )
 {
-    DlgOpen( NULL, title, rows, cols, controls_info, num_controls, rtn, extra, true );
+    DlgOpen( NULL, title, rows, cols, controls_info, num_controls, gui_call_back, extra, true );
 }

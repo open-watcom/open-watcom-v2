@@ -352,7 +352,7 @@ typedef struct gui_create_info {
     gui_menu_struct     *menu;
     int                 num_attrs;
     gui_colour_set      *colours;      /* array of num_attrs gui_attrs */
-    GUICALLBACK         *call_back;
+    GUICALLBACK         *gui_call_back;
     void                *extra;
     gui_resource        *icon;
     res_name_or_id      resource_menu;

@@ -127,7 +127,7 @@ struct gui_window {
     SAREA               prev_area;      // location for restore after max/min
     SAREA               dirty;          // area that is dirty
     gui_flags           flags;          // flags to keep state
-    GUICALLBACK         *call_back;     // app's callback routine
+    GUICALLBACK         *gui_call_back; // app's callback routine
     gui_control         *controls;      // list of controls in window
     void                *extra;         // extra pointer for app to use
     gui_window          *child;         // pointer to first child window

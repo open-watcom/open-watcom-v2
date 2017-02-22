@@ -34,4 +34,4 @@
 
 #include "bool.h"
 
-#define GUIEVENTWND( wnd, event, param ) ((*wnd->call_back)(wnd, event,param ))
+#define GUIEVENTWND( wnd, event, param ) ((*wnd->gui_call_back)(wnd, event,param ))

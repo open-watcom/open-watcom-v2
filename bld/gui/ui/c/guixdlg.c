@@ -795,7 +795,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
 
     if( dlg_id != NULL ) {
         if( !GUICreateDialogFromRes( dlg_id, dlg_info->parent,
-                                     dlg_info->call_back, dlg_info->extra ) ) {
+                                     dlg_info->gui_call_back, dlg_info->extra ) ) {
             return( false );
         }
         GUIMemFree( wnd );

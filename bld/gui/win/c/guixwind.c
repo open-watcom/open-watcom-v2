@@ -192,13 +192,13 @@ void GUIDestroyWnd( gui_window *wnd )
 }
 
 static bool DoRegisterClass( WPI_INST hinst, char *class_name,
-                             WPI_CLASSPROC call_back, UINT style, int extra )
+                             WPI_CLASSPROC win_call_back, UINT style, int extra )
 {
 #ifndef __OS2_PM__
     WNDCLASS    wc;
 
     wc.style = style;
-    wc.lpfnWndProc = call_back;
+    wc.lpfnWndProc = win_call_back;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = extra;
     wc.hInstance = hinst;
@@ -210,7 +210,7 @@ static bool DoRegisterClass( WPI_INST hinst, char *class_name,
 
     return( RegisterClass( &wc ) != 0 );
 #else
-    return( WinRegisterClass( hinst.hab, class_name, call_back,
+    return( WinRegisterClass( hinst.hab, class_name, win_call_back,
                               CS_CLIPCHILDREN | CS_SIZEREDRAW | CS_MOVENOTIFY |
                               style, extra ) );
 #endif

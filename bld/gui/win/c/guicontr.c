@@ -159,7 +159,7 @@ control_item * GUIGetControlByHwnd( gui_window *parent, HWND control )
 
 control_item *GUIControlInsert( gui_window *parent, gui_control_class control_class,
                                 HWND hwnd, gui_control_info *ctl_info,
-                                WPI_PROC call_back )
+                                WPI_PROC win_call_back )
 {
     control_item        *item;
 
@@ -174,7 +174,7 @@ control_item *GUIControlInsert( gui_window *parent, gui_control_class control_cl
     item->id = ctl_info->id;
     item->next = NULL;
     item->hwnd = hwnd;
-    item->call_back = call_back;
+    item->win_call_back = win_call_back;
     item->next = parent->controls;
     parent->controls = item;
     return( item );
@@ -266,7 +266,7 @@ void GUIControlDeleteAll( gui_window *wnd )
 WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     control_item        *info;
-    WPI_PROC            call_back;
+    WPI_PROC            win_call_back;
     HWND                parent;
     HWND                grand_parent;
     gui_window          *wnd;
@@ -291,7 +291,7 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
     if( info == NULL ) {
         return( 0L );
     }
-    call_back = info->call_back;
+    win_call_back = info->win_call_back;
     switch( message ) {
 #ifndef __OS2_PM__
     case WM_SETFOCUS :
@@ -365,10 +365,10 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
         break;
     case WM_NCDESTROY:
         GUIControlDelete( wnd, info->id );
-        _wpi_subclasswindow( hwnd, call_back );
+        _wpi_subclasswindow( hwnd, win_call_back );
         break;
     }
-    return( (WPI_MRESULT)_wpi_callwindowproc( (WPI_WNDPROC)call_back, hwnd, message, wparam, lparam ) );
+    return( (WPI_MRESULT)_wpi_callwindowproc( (WPI_WNDPROC)win_call_back, hwnd, message, wparam, lparam ) );
 }
 
 /*
@@ -378,7 +378,7 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
 WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     control_item        *info;
-    WPI_PROC            call_back;
+    WPI_PROC            win_call_back;
     WPI_PRES            hdc;
     WPI_RECT            rect;
     HWND                parent;
@@ -393,7 +393,7 @@ WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
     if( info == NULL ) {
         return( 0L );
     }
-    call_back = info->call_back;
+    win_call_back = info->win_call_back;
     switch( message ) {
     case WM_ERASEBKGND:
         hdc = _wpi_getpres( hwnd );
@@ -402,7 +402,7 @@ WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
         _wpi_releasepres( hwnd, hdc );
         break;
     }
-    return( (WPI_MRESULT)_wpi_callwindowproc( (WPI_WNDPROC)call_back, hwnd, message, wparam, lparam ) );
+    return( (WPI_MRESULT)_wpi_callwindowproc( (WPI_WNDPROC)win_call_back, hwnd, message, wparam, lparam ) );
 }
 
 WPI_PROC GUIDoSubClass( HWND hwnd, gui_control_class control_class )

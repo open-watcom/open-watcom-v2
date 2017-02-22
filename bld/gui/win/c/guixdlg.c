@@ -106,7 +106,7 @@ void GUIInitControl( control_item *item, gui_window *wnd, gui_ctl_id *focus_id )
         *focus_id = item->id;
     }
     /* will subclass if required */
-    item->call_back = GUIDoSubClass( ctrl, item->control_class );
+    item->win_call_back = GUIDoSubClass( ctrl, item->control_class );
     (void)CvrCtl3dSubclassCtl( ctrl );
     switch( item->control_class ) {
     case GUI_CHECK_BOX :

@@ -411,7 +411,7 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
     return( dlg_info );
 }
 
-bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK *cb, void *extra )
+bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK *gui_call_back, void *extra )
 {
     DialogBoxHeader     *hdr;
     DialogBoxControl    *cntls;
@@ -426,7 +426,7 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
     dlg_info = NULL;
     controls_info = NULL;
 
-    ok = ( cb != NULL );
+    ok = ( gui_call_back != NULL );
 
     if( ok ) {
         ok = GUISeekDialogTemplate( dlg_id );
@@ -469,7 +469,7 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
 
     if( ok ) {
         dlg_info->parent = parent;
-        dlg_info->call_back = cb;
+        dlg_info->gui_call_back = gui_call_back;
         dlg_info->extra = extra;
         ok = GUICreateDialog( dlg_info, hdr->NumOfItems, controls_info );
     }
