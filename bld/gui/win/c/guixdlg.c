@@ -245,14 +245,18 @@ bool GUIProcessControlNotification( gui_ctl_id id, int wNotify, gui_window *wnd 
  * GUIProcessControlMsg
  */
 
-bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam, gui_window *wnd, WPI_DLGRESULT *ret )
+bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam, gui_window *wnd, bool *pret )
 {
     gui_ctl_id  id;
+    bool        ret;
 #ifndef __OS2_PM__
-    bool        my_ret;
+    bool        rc;
     int         notify_code;
 
     lparam=lparam;
+
+    ret = false;
+
     id = LOWORD( wparam );
     notify_code = GET_WM_COMMAND_CMD( wparam, lparam );
     switch( notify_code ) {
@@ -262,36 +266,39 @@ bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam, gui_window *wnd
     case BN_DOUBLECLICKED :  /* same as LBN_KILLFOCUS */
     case LBN_SELCHANGE :     /* same as CBN_SELCHANGE */
     case LBN_DBLCLK :        /* same as CBN_DCLICK */
-        my_ret = GUIProcessControlNotification( id, notify_code, wnd );
-        if( ret != NULL ) {
-            *ret = my_ret;
+        rc = GUIProcessControlNotification( id, notify_code, wnd );
+        if( pret != NULL ) {
+            *pret = rc;
         }
-        return( true );
+        ret = true;
         break;
     }
 #else
-    ret = ret;
+    pret = pret;
+
+    ret = false;
+
     id = _wpi_getid( wparam );
     if( SHORT1FROMMP( lparam ) == CMDSRC_PUSHBUTTON ) {
         GUIEVENTWND( wnd, GUI_CONTROL_CLICKED, &id );
-        return( true );
+        ret = true;
     }
 #endif
-    return( false );
+    return( ret );
 }
 
 /*
- * GUIDialogFunc - callback function for all dynamically created dialog
+ * GUIDialogDlgProc - callback function for all dynamically created dialog
  *                 boxes
  */
 
-WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     gui_ctl_id          id;
     bool                escape_pressed;
     gui_window          *wnd;
     bool                msg_processed;
-    WPI_DLGRESULT       ret;
+    bool                ret;
     gui_coord           size;
     WPI_POINT           pnt;
     HWND                child;
@@ -362,14 +369,14 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
         InitDialog( wnd );
 #ifdef __OS2_PM__
         if( hfocus != _wpi_getfocus() ) {
-            ret = (WPI_DLGRESULT)true;
+            ret = true;
         }
 #endif
         if( wnd->flags & IS_RES_DIALOG ) {
             if( hfocus == _wpi_getfocus() ) {
                 // if the focus did not change then let the
                 // windowing system set the focus
-                ret = (WPI_DLGRESULT)true;
+                ret = true;
             }
         }
         break;
@@ -478,11 +485,11 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
 #ifndef __OS2_PM__
     case WM_VKEYTOITEM :
         msg_processed = true;
-        ret = -1;
         GUIGetKeyState( &key_state.state );
-        if( ( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) ) {
-            ret = GUIEVENTWND( wnd, GUI_KEYTOITEM, &key_state );
+        if( !GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
+            return( -1 );
         }
+        ret = GUIEVENTWND( wnd, GUI_KEYTOITEM, &key_state );
         break;
 #endif
     // the following code allows GUI dialogs to receive key msgs
@@ -498,7 +505,7 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
             gui_ev = GUI_KEYDOWN;
         }
         GUIGetKeyState( &key_state.state );
-        if( ( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) ) {
+        if( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
             if( GUIEVENTWND( wnd, gui_ev, &key_state ) ) {
                 return( false );
             }
@@ -699,7 +706,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         data = new;
     }
     data = DoneAddingControls( data );
-    DynamicDialogBox( GUIDialogFunc, GUIMainHInst, parent_hwnd, data, (WPI_PARAM2)wnd );
+    DynamicDialogBox( GUIDialogDlgProc, GUIMainHInst, parent_hwnd, data, (WPI_PARAM2)wnd );
     return( true );
 }
 

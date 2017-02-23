@@ -207,7 +207,7 @@ bool GUIDoCreateResDialog( res_name_or_id dlg_id, HWND parent, void *data )
 {
     WPI_DLGPROC     dlg_proc;
 
-    dlg_proc = (WPI_DLGPROC)_wpi_makeprocinstance( (WPI_PROC)GUIDialogFunc, GUIMainHInst );
+    dlg_proc = (WPI_DLGPROC)_wpi_makeprocinstance( (WPI_PROC)GUIDialogDlgProc, GUIMainHInst );
     if( dlg_proc == NULL ) {
         return( false );
     }
@@ -220,11 +220,11 @@ bool GUIDoCreateResDialog( res_name_or_id dlg_id, HWND parent, void *data )
     return( true );
 }
 
-bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK *cb, void *extra )
+bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK *gui_call_back, void *extra )
 {
     dlg_id=dlg_id;
     parent=parent;
-    cb=cb;
+    gui_call_back=gui_call_back;
     extra=extra;
     return( false );
 }

@@ -339,7 +339,7 @@ typedef void (CONTRENUMCALLBACK)( gui_window *parent, gui_ctl_id id, void *param
 typedef void (GUIPICKCALLBACK)( gui_window *, gui_ctl_id id );
 typedef void (PICKDLGOPEN)( const char *title, int rows, int cols,
                              gui_control_info *controls_info, int num_controls,
-                             GUICALLBACK *rtn, void *extra );
+                             GUICALLBACK *gui_call_back, void *extra );
 typedef const char *(GUIPICKGETTEXT)( const void *data_handle, int item );
 
 typedef struct gui_create_info {
@@ -877,7 +877,7 @@ extern gui_ctl_idx GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickin
 extern bool GUICreateDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info );
 extern bool GUICreateSysModalDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info );
 extern bool GUICreateResDialog( gui_create_info *dlg_info, res_name_or_id dlg_id );
-extern bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK *cb, void *extra );
+extern bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK *gui_call_back, void *extra );
 extern void GUICloseDialog( gui_window * wnd );
 extern void GUISetModalDlgs( bool );
 
