@@ -31,24 +31,28 @@
 
 #if !defined( __OS2__ )
 
+#include "wprocmap.h"
+
 #if defined( __WINDOWS_386__ )
 #define GetPtrGlobalLock(data) MK_FP32( GlobalLock( data ) )
 #else
 #define GetPtrGlobalLock(data) GlobalLock( data )
 #endif
 
+#define _AdjustUp( size, word ) ( ((size)+((word)-1)) & ~((word)-1) )
+
 typedef GLOBALHANDLE    TEMPLATE_HANDLE;
 
 #if defined(__NT__)
 
-#define ADJUST_ITEMLEN( a )     a = (((a)+7) & ~7)
-#define ADJUST_BLOCKLEN( a )    a = (((a)+3) & ~3)
-#define ROUND_CLASSLEN( a )     (((a)+1) & ~1)
+#define ADJUST_ITEMLEN( a )     (a) = _AdjustUp( a, 8 )
+#define ADJUST_BLOCKLEN( a )    (a) = _AdjustUp( a, 4 )
+#define ADJUST_CLASSLEN( a )    (a) = _AdjustUp( a, 2 )
 #define _FARmemcpy              memcpy
 #define _ISFAR
 //#define SLEN( a )               (strlen((a))*2+2)
 // fixed to handle DBCS strings properly - rnk 3/1/96
-#define SLEN( a )               (2*MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, (a), -1, NULL, 0 ))
+#define SLEN( a )               (2 * MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, (a), -1, NULL, 0 ))
 typedef WORD INFOTYPE;
 
 #else
@@ -56,7 +60,7 @@ typedef WORD INFOTYPE;
 #define SLEN( a )               (strlen((a))+1)
 #define ADJUST_ITEMLEN( a )
 #define ADJUST_BLOCKLEN( a )
-#define ROUND_CLASSLEN( a )     a
+#define ADJUST_CLASSLEN( a )
 #define _ISFAR                  __far
 #define _FARmemcpy              _fmemcpy
 typedef BYTE INFOTYPE;
@@ -68,13 +72,13 @@ typedef BYTE INFOTYPE;
 extern TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty,
                                        int dtcx, int dtcy, const char *menuname,
                                        const char *classname, const char *captiontext,
-                                       int pointsize, const char *typeface );
+                                       int pointsize, const char *typeface, size_t *datalen );
 extern TEMPLATE_HANDLE DoneAddingControls( TEMPLATE_HANDLE data );
 extern TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int dtilx,
                                        int dtily, int dtilcx, int dtilcy,
                                        int id, long style, const char *class,
                                        const char *text, BYTE infolen,
-                                       const char *infodata );
+                                       const char *infodata, size_t *datalen );
 INT_PTR DynamicDialogBox( DLGPROCx fn, HINSTANCE inst, HWND hwnd,
                                        TEMPLATE_HANDLE data, LPARAM lparam );
 

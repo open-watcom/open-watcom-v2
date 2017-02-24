@@ -622,6 +622,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
 #ifdef __OS2_PM__
     ENTRYFDATA          edata;
 #endif
+    size_t              datalen;
 
     wnd->flags |= IS_DIALOG;
     wnd->parent = dlg_info->parent;
@@ -656,7 +657,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     data = DialogTemplate( dlg_style | DS_SETFONT,
                            parent_pos.x, parent_pos.y, size.x, size.y,
                            LIT( Empty ), LIT( Empty ), dlg_info->title,
-                           PointSize, Font );
+                           PointSize, Font, &datalen );
     if( data == NULL ) {
         return( false );
     }
@@ -694,7 +695,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         }
         new = AddControl( data, pos.x, pos.y, size.x, size.y, ctl_info->id,
                           style, GUIControls[ctl_info->control_class].classname,
-                          text, (BYTE)pctldatalen, (const char *)pctldata );
+                          text, (BYTE)pctldatalen, (const char *)pctldata, &datalen );
         if( new == NULL  ) {
             GlobalFree( data );
             return( false );
@@ -783,6 +784,7 @@ void GUIInitDialog( void )
     TEMPLATE_HANDLE     data;
     char                *cp;
     bool                font_set;
+    size_t              datalen;
 
     font_set = false;
 #ifdef __OS2_PM__
@@ -813,7 +815,7 @@ void GUIInitDialog( void )
     data = DialogTemplate( MODAL_STYLE | DS_SETFONT,
                            SizeDialog.x, SizeDialog.y,
                            SizeDialog.x, SizeDialog.y, LIT( Empty ),
-                           LIT( Empty ), LIT( Empty ), PointSize, Font );
+                           LIT( Empty ), LIT( Empty ), PointSize, Font, &datalen );
     if( data != NULL ) {
         data = DoneAddingControls( data );
         DynamicDialogBox( GUIInitDialogFuncDlgProc, GUIMainHInst, NULLHANDLE, data, 0 );

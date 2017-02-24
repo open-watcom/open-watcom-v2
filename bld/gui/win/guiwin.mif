@@ -92,11 +92,7 @@ sysobjs +=             &
           os2mem.obj
 !else ifeq host_os nt
 sysobjs +=             &
-          guisystr.obj &
-          windlg.obj
-!else
-sysobjs +=             &
-          windlg.obj
+          guisystr.obj
 !endif
 
 # memory tracker cover routines

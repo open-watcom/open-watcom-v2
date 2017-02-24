@@ -34,7 +34,6 @@
 #include "wpi.h"
 #include <string.h>
 #include <stdlib.h>
-#include "wprocmap.h"
 #include "windlg.h"
 
 /*
@@ -70,17 +69,19 @@ static char _ISFAR *copyString( char _ISFAR *mem, const char _ISFAR *str, int le
 TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
                                 int dtcy, const char *menuname, const char *classname,
                                 const char *captiontext, int pointsize,
-                                const char *typeface )
+                                const char *typeface, size_t *datalen )
 {
     TEMPLATE_HANDLE     data;
-    UINT                blocklen,menulen, classlen, captionlen, typefacelen;
-    UINT                _ISFAR *numbytes;
+    size_t              blocklen;
+    UINT                menulen, classlen, captionlen, typefacelen;
+    char                _ISFAR *databytes;
     char                _ISFAR *dlgtemp;
     char                _ISFAR *dlgtypeface;
     _DLGTEMPLATE        _ISFAR *dt;
     FONTINFO            _ISFAR *fi;
 
 
+    *datalen = 0;
     /*
      * get size of block and allocate memory
      */
@@ -88,28 +89,28 @@ TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
     classlen = SLEN( classname );
     captionlen = SLEN( captiontext );
 
-    blocklen = sizeof( UINT ) + sizeof( _DLGTEMPLATE ) + menulen + classlen +
-              captionlen;
+    blocklen = sizeof( UINT ) + sizeof( _DLGTEMPLATE ) + menulen + classlen + captionlen;
 
     if( dtStyle & DS_SETFONT ) {
-      typefacelen = SLEN( typeface );
-      blocklen += sizeof(short) + typefacelen;
+        typefacelen = SLEN( typeface );
+        blocklen += sizeof( short ) + typefacelen;
     } else {
-      typefacelen = 0;
+        typefacelen = 0;
     }
 
     ADJUST_BLOCKLEN( blocklen );
     data = GlobalAlloc( GMEM_MOVEABLE | GMEM_ZEROINIT, blocklen );
-    if( data == NULL ) return( NULL );
+    if( data == NULL )
+        return( NULL );
 
-    numbytes = GetPtrGlobalLock( data );
-    *numbytes = (UINT)blocklen;
+    databytes = GetPtrGlobalLock( data );
+    *datalen = blocklen;
 
     /*
      * set up template
      */
 
-    dt = (_DLGTEMPLATE _ISFAR *)( numbytes + 1 );
+    dt = (_DLGTEMPLATE _ISFAR *)databytes;
 
     dt->dtStyle = dtStyle;
     dt->dtItemCount = 0;
@@ -131,7 +132,7 @@ TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
     /*
      * add font data (if needed)
      */
-    if (dtStyle & DS_SETFONT) {
+    if( dtStyle & DS_SETFONT ) {
 #ifdef ALIGN_WORDS
         fi = (FONTINFO _ISFAR *)( (u_int)dlgtemp + 4 - ( (u_int)dlgtemp % 4 ) );
 #else
@@ -153,11 +154,12 @@ TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
 TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int dtilx, int dtily,
                              int dtilcx, int dtilcy, int id, long style,
                              const char *class, const char *text, BYTE infolen,
-                             const char *infodata )
+                             const char *infodata, size_t *datalen )
 {
     TEMPLATE_HANDLE     new;
-    UINT                blocklen, classlen, textlen;
-    UINT                _ISFAR *numbytes;
+    size_t              blocklen;
+    UINT                classlen, textlen;
+    char                _ISFAR *databytes;
     _DLGTEMPLATE        _ISFAR *dt;
     _DLGITEMTEMPLATE    _ISFAR *dit;
     char                _ISFAR * ditstr;
@@ -195,26 +197,26 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int dtilx, int dtily,
     blocklen = sizeof( _DLGITEMTEMPLATE ) + classlen + textlen + sizeof( INFOTYPE ) + infolen;
     ADJUST_ITEMLEN( blocklen );
 
-    blocklen += *(UINT _ISFAR *)GetPtrGlobalLock( data );
+    blocklen += *datalen;
     GlobalUnlock( data );
 
     new = GlobalReAlloc( data, blocklen, GMEM_MOVEABLE | GMEM_ZEROINIT );
     if( new == NULL )
         return( NULL );
 
-    numbytes = GetPtrGlobalLock( new );
+    databytes = GetPtrGlobalLock( new );
 
     /*
      * one more item...
      */
-    dt = (_DLGTEMPLATE _ISFAR *) (numbytes + 1);
+    dt = (_DLGTEMPLATE _ISFAR *)databytes;
     dt->dtItemCount++;
 
 
     /*
      * point to start of item template, and set up values
      */
-    dit = (_DLGITEMTEMPLATE _ISFAR *) (((char _ISFAR *) numbytes) + *numbytes);
+    dit = (_DLGITEMTEMPLATE _ISFAR *)( databytes + *datalen );
     dit->dtilStyle = style;
     dit->dtilX = (WORD)dtilx;
     dit->dtilY = (WORD)dtily;
@@ -225,21 +227,23 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int dtilx, int dtily,
     dit->crap = 0xffff;
 #endif
 
-    ditstr = (char _ISFAR *) (dit + 1);
+    ditstr = (char _ISFAR *)( dit + 1 );
 
     /*
      * append extra data
      */
     _FARmemcpy( ditstr, class, classlen );
-    ditstr += ROUND_CLASSLEN( classlen );
+    ADJUST_CLASSLEN( classlen );
+    ditstr += classlen;
     ditstr = copyString( ditstr, text, textlen );
     *((INFOTYPE *)ditstr) = infolen;
     ditstr += sizeof( INFOTYPE );
     _FARmemcpy( ditstr, infodata, infolen );
     ditstr += infolen;
 
-    *numbytes = (UINT) ( ditstr - (char _ISFAR *) numbytes);
-    ADJUST_BLOCKLEN( *numbytes );
+    blocklen = (size_t)( ditstr - databytes );
+    ADJUST_BLOCKLEN( blocklen );
+    *datalen = blocklen;
 
     GlobalUnlock( new );
     return( new );
@@ -251,25 +255,6 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int dtilx, int dtily,
  */
 TEMPLATE_HANDLE DoneAddingControls( TEMPLATE_HANDLE data )
 {
-    UINT       _ISFAR *numbytes;
-
-    numbytes = GetPtrGlobalLock( data );
-
-    // This next line is dangerous, for a couple of reasons.
-    // 1. The 2 at the end should be sizeof( UINT ).
-    // 2. There should be parentheses around the *numbytes, for code readability.
-    // 3. memcpy is not guaranteed to work if the buffers are overlapping. In
-    //    this case, we are assuming that the implementation of memcpy is that
-    //    it copies byte by byte starting from the beginning of the src and
-    //    the beginning of the destination. If the implementation of memcpy
-    //    changes to copy words or dwords, or starts at the end of the buffer
-    //    and moves backwards, this code will cease to work.
-    // I am not going to change this, since it has been like this for several
-    // years now, but I'm leaving this comment as a warning.
-    //
-    // Graeme Perrow
-    // June 4, 1998
-    _FARmemcpy( numbytes, numbytes + 1, *numbytes - 2 );
     GlobalUnlock( data );
     return( data );
 } /* DoneAddingControls */
@@ -282,7 +267,7 @@ INT_PTR DynamicDialogBox( DLGPROCx dlgfn, HINSTANCE inst, HWND hwnd, TEMPLATE_HA
     FARPROC     fp;
     INT_PTR     rc;
 
-    fp = MakeDlgProcInstance( dlgfn, inst );
+    fp = MakeDlgProcInstance( (DLGPROCx)dlgfn, inst );
 #if defined(__NT__)
     {
         LPCSTR  ptr;

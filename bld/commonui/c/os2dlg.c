@@ -38,8 +38,7 @@
 
 #include "os2dlg.h"
 
-static TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage,
-                                             USHORT focus );
+static TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus );
 static TEMPLATE_HANDLE PMDoneAddingControls( TEMPLATE_HANDLE data );
 static TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, long style,
                                              USHORT dtx, USHORT dty,
@@ -305,7 +304,7 @@ int PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE data, PVOID dlgdata
 TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
                                 int dtcy, const char *menuname, const char *classname,
                                 const char *captiontext, int pointsize,
-                                const char *typeface )
+                                const char *typeface, size_t *datalen )
 {
     TEMPLATE_HANDLE     data;
     TEMPLATE_HANDLE     new;
@@ -315,6 +314,7 @@ TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
     int                 bufsize;
     ULONG               psize;
 
+    datalen = datalen;
     menuname = menuname;
     classname = classname;
 
@@ -373,7 +373,7 @@ TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
 TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int dtx, int dty,
                              int dtcx, int dtcy, int id, long style,
                              const char *class, const char *text,
-                             BYTE infolen, const char *infodata )
+                             BYTE infolen, const char *infodata, size_t *datalen )
 {
     TEMPLATE_HANDLE     new;
     ULONG               nclass;
