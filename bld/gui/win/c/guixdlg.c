@@ -57,7 +57,7 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT WPI_DLGRESULT CALLBACK GUIInitDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WINEXPORT WPI_DLGRESULT CALLBACK GUIInitDialogFuncDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
 extern  bool            EditControlHasFocus;
 
@@ -533,7 +533,7 @@ WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 
         return( _wpi_defdlgproc( hwnd, message, wparam, lparam ) );
     }
 #endif
-    return( ret );
+    _wpi_dlgreturn( ret );
 }
 
 /*
@@ -726,16 +726,16 @@ void GUICloseDialog( gui_window * wnd )
 static WPI_FONT         DlgFont;
 
 /*
- * GUIInitDialogFunc - callback function the test dialog box used to get the
+ * GUIInitDialogFuncDlgProc - callback function the test dialog box used to get the
  *                     dialog box font info and client size info
  *
  */
 
-WPI_DLGRESULT CALLBACK GUIInitDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_DLGRESULT CALLBACK GUIInitDialogFuncDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     WPI_PRES            hdc;
     WPI_RECT            rect;
-    WPI_DLGRESULT       ret;
+    bool                ret;
 
     lparam = lparam;
     ret    = false;
@@ -767,7 +767,7 @@ WPI_DLGRESULT CALLBACK GUIInitDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1
 #endif
     }
 
-    return( ret );
+    _wpi_dlgreturn( ret );
 }
 
 void GUIFiniDialog( void )
@@ -816,7 +816,7 @@ void GUIInitDialog( void )
                            LIT( Empty ), LIT( Empty ), PointSize, Font );
     if( data != NULL ) {
         data = DoneAddingControls( data );
-        DynamicDialogBox( GUIInitDialogFunc, GUIMainHInst, NULLHANDLE, data, 0 );
+        DynamicDialogBox( GUIInitDialogFuncDlgProc, GUIMainHInst, NULLHANDLE, data, 0 );
     }
 }
 
