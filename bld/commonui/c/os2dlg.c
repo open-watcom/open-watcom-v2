@@ -60,9 +60,10 @@ static ULONG            dataSegLen;
  */
 static char _ISFAR *copyString( char _ISFAR *mem, const char _ISFAR *str, int len )
 {
-    if ( !mem || !str ) return( mem );
+    if( mem == NULL || str == NULL )
+        return( mem );
     _FARmemcpy( mem, str, len );
-    return( mem+len );
+    return( mem + len );
 
 } /* copyString */
 
@@ -71,7 +72,8 @@ static char _ISFAR *copyString( char _ISFAR *mem, const char _ISFAR *str, int le
  */
 static long safeStrLen( const char _ISFAR *str )
 {
-    if ( !str ) return( 0 );
+    if( str == NULL )
+        return( 0 );
     return( strlen( str ) );
 
 } /* safeStrLen */
@@ -95,7 +97,8 @@ TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus
     dataSeg = NULL;
 
     data = PMmalloc( blocklen );
-    if( !data ) return( NULL );
+    if( data == NULL )
+        return( NULL );
 
     /*
      * set up template
@@ -135,12 +138,12 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, long style, USHORT dtx,
      * compute size of block, reallocate block to hold this stuff
      */
     classlen = SLEN( class );
-    if ( classlen ) {
+    if( classlen ) {
         classlen++;
     }
     textlen  = SLEN( new_text ) + 1;
 
-    if ( ctldata == NULL ) {
+    if( ctldata == NULL ) {
         ctldatalen = 0;
     }
 
@@ -151,13 +154,15 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, long style, USHORT dtx,
     new = PMrealloc( data, blocklen );
     dataSeg = PMrealloc( dataSeg, ddatalen );
 
-    if( !new || ( !dataSeg && ddatalen ) ) {
-        if ( dataSeg ) PMfree( dataSeg );
-        if ( new ) PMfree( new );
-        if ( new_text ) _wpi_freemenutext( new_text );
+    if( new == NULL || ( dataSeg == NULL && ddatalen ) ) {
+        if( dataSeg != NULL )
+            PMfree( dataSeg );
+        if( new != NULL )
+            PMfree( new );
+        if( new_text != NULL )
+            _wpi_freemenutext( new_text );
         return( NULL );
     }
-
 
     dt = new;
 
@@ -178,7 +183,7 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, long style, USHORT dtx,
     dit->cchText = textlen - 1;
     dit->offText = dataSegLen;
     dit->cchClassName = classlen;
-    if ( classlen ) {
+    if( classlen ) {
         dit->offClassName = dataSegLen + textlen;
     } else {
         dit->offClassName = nclass & 0xffff;
@@ -193,44 +198,44 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, long style, USHORT dtx,
     dit->cx = dtcx;
     dit->cy = dtcy;
     dit->id = id;
-    if ( presparmslen ) {
+    if( presparmslen ) {
         dit->offPresParams = dataSegLen + textlen + classlen;
     } else {
         dit->offPresParams = 0xffff;
     }
-    if ( ctldatalen ) {
+    if( ctldatalen ) {
         dit->offCtlData = dataSegLen + textlen + classlen + presparmslen;
     } else {
         dit->offCtlData = 0xffff;
     }
 
-    if( dataSeg ) {
+    if( dataSeg != NULL ) {
         dlgtemp = (char *)dataSeg + dataSegLen;
 
         /*
          * add extra strings to block
          */
-        if ( textlen == 1 ) {
+        if( textlen == 1 ) {
             *dlgtemp = '\0';
             dlgtemp++;
         } else {
             dlgtemp = copyString( dlgtemp, new_text, textlen );
         }
-        if ( classlen ) {
+        if( classlen ) {
             dlgtemp = copyString( dlgtemp, class, classlen );
         }
-        if ( presparmslen ) {
+        if( presparmslen ) {
             dlgtemp = copyString( dlgtemp, presparms, presparmslen );
         }
-        if ( ctldatalen ) {
-            if ( ctldata != NULL ) {
+        if( ctldatalen ) {
+            if( ctldata != NULL ) {
                  dlgtemp = (char *)_FARmemcpy( dlgtemp, ctldata, ctldatalen ) + ctldatalen;
             }
         }
         dataSegLen = ddatalen;
     }
 
-    if( new_text ) {
+    if( new_text != NULL ) {
         _wpi_freemenutext( new_text );
     }
 
@@ -244,32 +249,31 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, long style, USHORT dtx,
 TEMPLATE_HANDLE PMDoneAddingControls( TEMPLATE_HANDLE data )
 {
     DLGITEMTEMPLATE     *temp;
-    DLGTEMPLATE *dt;
+    DLGTEMPLATE         *dt;
     int                 record;
     int                 max;
 
-    if( !data || ( !dataSeg && dataSegLen ) ) {
+    if( data == NULL || ( dataSeg == NULL && dataSegLen ) ) {
         return( NULL );
     }
     temp = (DLGITEMTEMPLATE *)( (char *)data + ( sizeof( DLGTEMPLATE ) - sizeof( DLGITEMTEMPLATE ) ) );
     dt = data;
-    max = ( dt->cbTemplate - sizeof( DLGTEMPLATE ) +
-            sizeof( DLGITEMTEMPLATE ) ) / sizeof( DLGITEMTEMPLATE );
+    max = ( dt->cbTemplate - sizeof( DLGTEMPLATE ) + sizeof( DLGITEMTEMPLATE ) ) / sizeof( DLGITEMTEMPLATE );
 
     for( record = 0; record < max; record++ ) {
         temp[record].offText += dt->cbTemplate;
-        if ( temp[record].offCtlData != 0xffff ) {
+        if( temp[record].offCtlData != 0xffff ) {
             temp[record].offCtlData += dt->cbTemplate;
         }
-        if ( temp[record].cchClassName ) {
+        if( temp[record].cchClassName ) {
             temp[record].offClassName += dt->cbTemplate;
         }
-        if ( temp[record].offPresParams != 0xffff ) {
+        if( temp[record].offPresParams != 0xffff ) {
             temp[record].offPresParams += dt->cbTemplate;
         }
     }
 
-    if( dataSeg ) {
+    if( dataSeg != NULL ) {
         data= PMrealloc( data, dt->cbTemplate + dataSegLen );
         dt = data;
         memcpy( (DLGITEMTEMPLATE *)( (char *)data + dt->cbTemplate ), dataSeg, dataSegLen );
@@ -290,9 +294,8 @@ int PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE data, PVOID dlgdata
     long rc;
     HWND handle;
 
-    handle = WinCreateDlg( HWND_DESKTOP, hwnd, fn, (PDLGTEMPLATE)data,
-                           dlgdata );
-    if ( !handle ) {
+    handle = WinCreateDlg( HWND_DESKTOP, hwnd, fn, (PDLGTEMPLATE)data, dlgdata );
+    if( !handle ) {
         return( 0 );
     }
     rc = WinProcessDlg( handle );
@@ -320,22 +323,22 @@ TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
 
     pdata = NULL;
     psize = 0;
-    if( typeface ) {
+    if( typeface != NULL ) {
         bufsize = strlen( typeface ) + 10 + 1;
         buf = (char *)PMmalloc( bufsize );
-        if( buf ) {
+        if( buf != NULL ) {
             buf[0] = '\0';
             sprintf( buf, "%d.%s", pointsize, typeface );
             bufsize = strlen(buf);
             /* This convoluted calculation makes sure we get the right size
              * regardless of structure packing.
              */
-            psize = sizeof(PRESPARAMS) - sizeof(PARAM)
-                    + sizeof(BYTE) + 2 * sizeof(ULONG)
+            psize = sizeof( PRESPARAMS ) - sizeof( PARAM )
+                    + sizeof( BYTE ) + 2 * sizeof( ULONG )
                     + bufsize;
-            pdata = (PRESPARAMS *) PMmalloc( psize );
-            if( pdata ) {
-                pdata->cb = psize - sizeof(ULONG);
+            pdata = (PRESPARAMS *)PMmalloc( psize );
+            if( pdata != NULL ) {
+                pdata->cb = psize - sizeof( ULONG );
                 pdata->aparam[0].id = PP_FONTNAMESIZE;
                 pdata->aparam[0].cb = bufsize + 1;
                 memcpy( pdata->aparam[0].ab, buf, bufsize + 1 );
@@ -347,17 +350,16 @@ TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
     }
 
     data = PMDialogTemplate( TEMPLATE_TYPE, CODE_PAGE, 0xffff );
-    if( !data ) {
+    if( data == NULL ) {
         return( NULL );
     }
 
     frame_flags = dtStyle & 0x0000ffff;
-    dtStyle = ( dtStyle & 0xffff0000 ) | WS_SAVEBITS |
-                FS_NOBYTEALIGN | FS_DLGBORDER;
+    dtStyle = (dtStyle & 0xffff0000) | WS_SAVEBITS | FS_NOBYTEALIGN | FS_DLGBORDER;
 
     new = PMAddControl( data, dtStyle, dtx, dty, dtcx, dtcy,
                         0, 1, (ULONG)WC_FRAME, NULL, captiontext, pdata,
-                        psize, &frame_flags, sizeof(ULONG) );
+                        psize, &frame_flags, sizeof( ULONG ) );
 
     if( pdata != NULL ) {
         PMfree( pdata );
@@ -378,8 +380,9 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int dtx, int dty,
     TEMPLATE_HANDLE     new;
     ULONG               nclass;
 
+    datalen = datalen;
     nclass = 0;
-    if( ( (ULONG)class & 0xffff0000 ) == 0xffff0000 ) {
+    if( ((ULONG)class & 0xffff0000) == 0xffff0000 ) {
         nclass = (ULONG)class;
         class = NULL;
     }

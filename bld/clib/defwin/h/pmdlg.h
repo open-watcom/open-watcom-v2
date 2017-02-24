@@ -50,7 +50,7 @@
 #define SLEN( a ) (safeStrLen((a))+0)
 #define ADJUST_ITEMLEN( a )
 #define ADJUST_BLOCKLEN( a )
-#define ROUND_CLASSLEN( a ) a
+#define ADJUST_CLASSLEN( a )
 typedef BYTE INFOTYPE;
 
 /*
@@ -74,12 +74,12 @@ typedef void *          LPVOID;
 #endif
 
 extern GLOBALHANDLE _DialogTemplate( USHORT temptype, USHORT codepage, USHORT focus );
-extern GLOBALHANDLE _DoneAddingControls( GLOBALHANDLE data );
 GLOBALHANDLE _AddControl( GLOBALHANDLE data, long style, USHORT dtx,
                         USHORT dty, USHORT dtcx, USHORT dtcy, USHORT id,
                         USHORT children, ULONG nclass, const char *class,
                         const char *text, const char *presparms, const char *ctldata,
                         ULONG *ctldatlen );
+extern GLOBALHANDLE _DoneAddingControls( GLOBALHANDLE data );
 int _DynamicDialogBox( PFNWP fn, HWND hwnd, GLOBALHANDLE data );
 
 #endif

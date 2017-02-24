@@ -35,9 +35,9 @@
 
 #ifdef __NT__
 
-#define ADJUST_ITEMLEN( a )     a = __ROUND_UP_SIZE(a, 8)
-#define ADJUST_BLOCKLEN( a )    a = __ROUND_UP_SIZE(a, 4)
-#define ROUND_CLASSLEN( a )     __ROUND_UP_SIZE(a, 2)
+#define ADJUST_ITEMLEN( a )     (a) = __ROUND_UP_SIZE(a, 8)
+#define ADJUST_BLOCKLEN( a )    (a) = __ROUND_UP_SIZE(a, 4)
+#define ADJUST_CLASSLEN( a )    (a) = __ROUND_UP_SIZE(a, 2)
 #define _FARmemcpy              memcpy
 #define _ISFAR
 #define SLEN( a )               (strlen((a))*2+2)
@@ -48,7 +48,7 @@ typedef WORD INFOTYPE;
 #define SLEN( a )               (strlen((a))+1)
 #define ADJUST_ITEMLEN( a )
 #define ADJUST_BLOCKLEN( a )
-#define ROUND_CLASSLEN( a )     a
+#define ADJUST_CLASSLEN( a )
 #define _ISFAR                  __far
 #define _FARmemcpy              _fmemcpy
 typedef BYTE INFOTYPE;
@@ -59,11 +59,11 @@ typedef BYTE INFOTYPE;
 
 extern GLOBALHANDLE _DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
                        int dtcy, const char *menuname, const char *classname,
-                       const char *captiontext, int pointsize, const char *typeface );
-extern void _DoneAddingControls( GLOBALHANDLE data );
+                       const char *captiontext, int pointsize, const char *typeface, size_t *datalen );
 extern GLOBALHANDLE _AddControl( GLOBALHANDLE data, int dtilx, int dtily,
                    int dtilcx, int dtilcy, int id, long style, const char *class,
-                   const char *text, BYTE infolen, const char *infodata );
+                   const char *text, BYTE infolen, const char *infodata, size_t *datalen );
+extern void _DoneAddingControls( GLOBALHANDLE data );
 INT_PTR _DynamicDialogBox( DLGPROCx fn, HANDLE inst, HWND hwnd, GLOBALHANDLE data );
 
 #endif

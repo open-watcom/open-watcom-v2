@@ -64,10 +64,10 @@ extern TEMPLATE_HANDLE  DialogTemplate( LONG dtStyle, int dtx, int dty,
                                         int dtcx, int dtcy, const char *menuname,
                                         const char *classname, const char *captiontext,
                                         int pointsize, const char *typeface, size_t *datalen );
-extern TEMPLATE_HANDLE  DoneAddingControls ( TEMPLATE_HANDLE data );
 extern TEMPLATE_HANDLE  AddControl( TEMPLATE_HANDLE data, int dtilx,
                                         int dtily, int dtilcx, int dtilcy,
                                         int id, long style, const char *class,
                                         const char *text, BYTE infolen,
                                         const char *infodata, size_t *datalen );
+extern TEMPLATE_HANDLE  DoneAddingControls ( TEMPLATE_HANDLE data );
 extern int DynamicDialogBox( PFNWP fn, WPI_INST inst, HWND hwnd, TEMPLATE_HANDLE data, MPARAM lparam );
