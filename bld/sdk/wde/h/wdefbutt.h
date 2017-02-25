@@ -36,11 +36,11 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WINEXPORT extern OBJPTR  CALLBACK WdePButtonCreate( OBJPTR, RECT *, OBJPTR );
-WINEXPORT extern OBJPTR  CALLBACK WdeTButtonCreate( OBJPTR, RECT *, OBJPTR );
-WINEXPORT extern OBJPTR  CALLBACK WdeCButtonCreate( OBJPTR, RECT *, OBJPTR );
-WINEXPORT extern OBJPTR  CALLBACK WdeRButtonCreate( OBJPTR, RECT *, OBJPTR );
-WINEXPORT extern OBJPTR  CALLBACK WdeGButtonCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern CREATE_RTN WdePButtonCreate;
+WINEXPORT extern CREATE_RTN WdeTButtonCreate;
+WINEXPORT extern CREATE_RTN WdeCButtonCreate;
+WINEXPORT extern CREATE_RTN WdeRButtonCreate;
+WINEXPORT extern CREATE_RTN WdeGButtonCreate;
 extern bool              WdeButtonInit( bool );
 extern void              WdeButtonFini( void );
 

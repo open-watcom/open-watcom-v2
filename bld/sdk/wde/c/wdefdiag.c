@@ -488,7 +488,7 @@ OBJPTR WdeCreateNewDialog( WResID *name, bool is32bit )
     RECT            new_rect;
     bool            ok;
 
-
+    new = NULL;
     ok = ((base_obj = GetMainObject()) != NULL);
 
     if( ok ) {
@@ -568,6 +568,8 @@ OBJPTR WdeCreateDialogFromRes( WdeResInfo *res_info, WdeResDlgItem *ditem )
     bool            ok;
     bool            show;
 
+    new = NULL;
+    base_obj = NULL;
     ok = (res_info != NULL && ditem != NULL);
 
     if( ok ) {
@@ -692,6 +694,7 @@ OBJPTR WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
         return( new );
     }
     memset( new, 0, sizeof( WdeDialogObject ) );
+    memset( &parent_rect, 0, sizeof( parent_rect ) );
 
     /* make sure we are setting the correct parent */
     ancestor = parent;
@@ -2544,6 +2547,8 @@ bool WdeDialogSetOrderMode( WdeDialogObject *obj, WdeOrderMode *mode, WdeSetOrde
 
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
+
+    sol = NULL;
 
     if( obj->ochildren == NULL ) {
         return( false );

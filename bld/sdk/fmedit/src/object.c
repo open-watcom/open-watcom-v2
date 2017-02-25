@@ -44,15 +44,15 @@
 #define EDIT_MENU_FLAGS (MENU_DELETE | MENU_COPY | MENU_CUT | MENU_PASTE | MENU_ALIGN)
 
 
-static OBJPTR  (*InternalCreate[])(OBJPTR, RECT *, OBJPTR) = {
+static INT_CREATE_RTN *InternalCreate[] = {
     NULL,                       /* O_NONE     */
     EAtomCreate,                /* O_EATOM    */
     OItemCreate,                /* O_ITEM     */
     CurrObjCreate,              /* O_CURROBJ  */
     CurrItemCreate,             /* O_CURRITEM */
-    NULL,                       /* O_UNUSED_4 */
     NULL,                       /* O_UNUSED_5 */
-    NULL                        /* O_UNUSED_6 */
+    NULL,                       /* O_UNUSED_6 */
+    NULL                        /* O_UNUSED_7 */
 };
 
 void FMEDITAPI AddFMEditMenus( HMENU submenu, int bitmap )

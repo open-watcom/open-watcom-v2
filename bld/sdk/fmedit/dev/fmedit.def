@@ -45,6 +45,8 @@ typedef struct {
    DISPATCH_RTN *rtn;
 } DISPATCH_ITEM;
 
+typedef OBJPTR INT_CREATE_RTN( OBJPTR, RECT *, OBJPTR );
+
 #include "constant.def"
 #include "fmmenu.def"
 #include "list.def"

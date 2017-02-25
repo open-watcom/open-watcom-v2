@@ -44,7 +44,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WINEXPORT extern OBJPTR CALLBACK WdeBaseCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern CREATE_RTN WdeBaseCreate;
 extern bool              WdeBaseInit( bool );
 extern void              WdeBaseFini( void );
 

@@ -1,2 +1,2 @@
-extern OBJPTR   EAtomCreate( OBJPTR, RECT *, OBJPTR );
+extern INT_CREATE_RTN EAtomCreate;
 extern void     InitEAtom( void );

@@ -1,2 +1,2 @@
-extern OBJPTR   CurrItemCreate( OBJPTR, RECT *, OBJPTR );
+extern INT_CREATE_RTN CurrItemCreate;
 extern void     InitCurrItem( void );
