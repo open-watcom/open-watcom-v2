@@ -412,8 +412,8 @@ LIST *FMEDITAPI GetCurrObjectList( void )
     LIST    *objlist;
 
     objlist = NULL;
-    for( currobj = GetECurrObject(); currobj != NULL;
-         currobj = GetNextECurrObject( currobj ) ) {
+    for( currobj = GetEditCurrObject(); currobj != NULL;
+         currobj = GetNextEditCurrObject( currobj ) ) {
         userobj = NULL;
         (*currobj)( GET_OBJPTR, currobj, &userobj, NULL );
         if( userobj != NULL ) {
@@ -424,7 +424,7 @@ LIST *FMEDITAPI GetCurrObjectList( void )
 }
 
 
-CURROBJPTR GetECurrObject( void )
+CURROBJPTR GetEditCurrObject( void )
 /*******************************/
 {
     /* return pointer to the current object */
@@ -437,7 +437,7 @@ CURROBJPTR GetECurrObject( void )
 }
 
 
-CURROBJPTR GetNextECurrObject( CURROBJPTR obj )
+CURROBJPTR GetNextEditCurrObject( CURROBJPTR obj )
 /*********************************************/
 {
     /* return pointer to the next current object in the list, after obj */
@@ -570,8 +570,8 @@ extern CURROBJPTR GetCurrObjptr( OBJPTR obj )
 {
     CURROBJPTR currobj;
 
-    for( currobj = GetECurrObject(); currobj != NULL;
-         currobj = GetNextECurrObject( currobj ) ) {
+    for( currobj = GetEditCurrObject(); currobj != NULL;
+         currobj = GetNextEditCurrObject( currobj ) ) {
         if( GetObjptr( currobj ) == obj ) {
             return( currobj );
         }
@@ -593,12 +593,12 @@ static bool CurrObjExist( CURROBJPTR findobj )
 {
     CURROBJPTR currobj;
 
-    currobj = GetECurrObject();
+    currobj = GetEditCurrObject();
     while( currobj != NULL ) {
         if( currobj == findobj ) {
             return( true );
         }
-        currobj = GetNextECurrObject( currobj );
+        currobj = GetNextEditCurrObject( currobj );
     }
     return( false );
 }
@@ -615,14 +615,14 @@ bool FMEDITAPI ExecuteCurrObject( ACTION id, void *p1, void *p2 )
     CURROBJPTR currobj;
     CURROBJPTR nextobj;
 
-    currobj = GetECurrObject();
+    currobj = GetEditCurrObject();
     while( currobj != NULL ) {
-        nextobj = GetNextECurrObject( currobj );
+        nextobj = GetNextEditCurrObject( currobj );
         if( nextobj == NULL && !CurrObjExist( currobj ) ) {
-            currobj = GetECurrObject();
-            nextobj = GetNextECurrObject( currobj );
+            currobj = GetEditCurrObject();
+            nextobj = GetNextEditCurrObject( currobj );
         }
-        if( GetECurrObject() != NULL ) {
+        if( GetEditCurrObject() != NULL ) {
             Forward( currobj, id, p1, p2 );
         }
         currobj = nextobj;
@@ -661,9 +661,9 @@ void FMEDITAPI ResetCurrObject( bool draw )
     CURROBJPTR currobj;
     CURROBJPTR nextobj;
 
-    currobj = GetECurrObject();
+    currobj = GetEditCurrObject();
     while( currobj != NULL ) {
-        nextobj = GetNextECurrObject( currobj );
+        nextobj = GetNextEditCurrObject( currobj );
         if( draw ) {
             if( GetObjptr( currobj ) != GetMainObject() ) {
                 ObjMark( currobj );

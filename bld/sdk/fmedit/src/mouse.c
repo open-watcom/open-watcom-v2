@@ -196,7 +196,7 @@ static void ResetEdit( POINT pt, WORD keystate, OBJPTR d )
     OBJPTR  currobj;
 
     d = d;
-    currobj = GetECurrObject();
+    currobj = GetEditCurrObject();
     if( currobj != NULL ) {
         Notify( currobj, TERMINATE_EDIT, NULL );
     }
@@ -438,7 +438,7 @@ static void FinishResize( POINT pt )
     OBJPTR currobj;
 
     pt = pt;
-    currobj = GetECurrObject();
+    currobj = GetEditCurrObject();
     if( currobj != NULL ) {
         if( !Register( currobj ) ) {
             RestorePrevObject();
@@ -453,7 +453,7 @@ void AbortResize( void )
 {
     OBJPTR  eobj;
 
-    eobj = GetECurrObject();
+    eobj = GetEditCurrObject();
 
     if( eobj != NULL ) {
         Destroy( eobj, false );
@@ -472,7 +472,7 @@ static void DoObjectRecreate( POINT pt )
 
     point = pt;
     SnapPointToGrid( &point );
-    currobj = GetECurrObject();
+    currobj = GetEditCurrObject();
     if( currobj != NULL ) {
         Recreate( currobj, &point );
     }
@@ -502,7 +502,7 @@ static void FinishCreate( POINT pt )
     OBJPTR currobj;
 
     pt = pt;
-    currobj = GetECurrObject();
+    currobj = GetEditCurrObject();
     if( currobj != NULL ) {
         if( !Register( currobj ) ) {
             RestorePrevObject();
@@ -625,12 +625,12 @@ static void DoObjectMove( POINT pt )
     lastmouse = GetPrevMouse();
     offset.x = pt.x - lastmouse.x;
     offset.y = pt.y - lastmouse.y;
-    currobj = GetECurrObject();
+    currobj = GetEditCurrObject();
     while( currobj != NULL ) {
         if( GetObjptr( GetObjptr( currobj ) ) != NULL ) {
             Move( currobj, &offset, true );
         }
-        currobj = GetNextECurrObject( currobj );
+        currobj = GetNextEditCurrObject( currobj );
     }
     SetPrevMouse( pt );
 }
@@ -655,7 +655,7 @@ static void DoObjectResize( POINT pt )
         newloc.bottom = offset.y;
         newloc.left = offset.x;
         newloc.right = offset.x;
-        currobj = GetECurrObject();
+        currobj = GetEditCurrObject();
         if( currobj != NULL ) {
             Resize( currobj, &newloc, true );
         }
@@ -760,7 +760,7 @@ static void FinishPaste( POINT pt )
 
     newcurrobj = NULL;
     SnapPointToGrid( &pt );
-    currobj = GetECurrObject();
+    currobj = GetEditCurrObject();
     while( currobj != NULL ) {
         Location( currobj, &rect );
         loc_pt.x = rect.left;
@@ -775,7 +775,7 @@ static void FinishPaste( POINT pt )
         Destroy( eatom, false );
         DeleteCurrObject( currobj );
         MarkCurrObject();
-        currobj = GetECurrObject();
+        currobj = GetEditCurrObject();
     }
     StartCurrObjMod();
     while( newcurrobj != NULL ) {
@@ -1097,10 +1097,10 @@ void FinishMoveOperation( bool change_state )
         }
     }
     /* Notify all objects that the move operation is done */
-    obj = GetECurrObject();
+    obj = GetEditCurrObject();
     while( obj != NULL ) {
         Notify( obj, MOVE_END, NULL );
-        obj = GetNextECurrObject( obj );
+        obj = GetNextEditCurrObject( obj );
     }
     /* Register all of the objects that got removed from the parent but
      * never got moved or moved back.  Use correct order.
@@ -1240,10 +1240,10 @@ void BeginMoveOperation( LIST *mycurrobjlist )
     }
     EndCurrObjMod();
     /* notify the objects of the move start */
-    currobj = GetECurrObject();
+    currobj = GetEditCurrObject();
     while( currobj != NULL ) {
         Notify( currobj, MOVE_START, NULL );
-        currobj = GetNextECurrObject( currobj );
+        currobj = GetNextEditCurrObject( currobj );
     }
 }
 
@@ -1260,10 +1260,10 @@ void AbortMoveOperation( void )
     primary = GetObjptr( GetCurrObject() );
 
     /* Notify all objects that the move operation is done */
-    obj = GetECurrObject();
+    obj = GetEditCurrObject();
     while( obj != NULL ) {
         Notify( obj, MOVE_END, NULL );
-        obj = GetNextECurrObject( obj );
+        obj = GetNextEditCurrObject( obj );
     }
 
     ResetCurrObject( false );

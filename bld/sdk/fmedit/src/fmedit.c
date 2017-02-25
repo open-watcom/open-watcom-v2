@@ -152,10 +152,10 @@ static void CutObjects( void )
     OBJPTR      appobj;
 
     FMNewClipboard();
-    nextobj = GetECurrObject();
+    nextobj = GetEditCurrObject();
     while( nextobj != NULL ) {
         currobj = nextobj;
-        nextobj = GetNextECurrObject( currobj );
+        nextobj = GetNextEditCurrObject( currobj );
         appobj = GetObjptr( currobj );
         if( appobj != GetMainObject() ) {
             if( !FMClipObjExists( appobj ) ) {
@@ -177,7 +177,7 @@ static void CopyObjects( void )
     OBJPTR      appobj;
 
     FMNewClipboard();
-    currobj = GetECurrObject();
+    currobj = GetEditCurrObject();
     while( currobj != NULL ) {
         appobj = GetObjptr( currobj );
         if( appobj != GetMainObject() ) {
@@ -188,7 +188,7 @@ static void CopyObjects( void )
                 }
             }
         }
-        currobj = GetNextECurrObject( currobj );
+        currobj = GetNextEditCurrObject( currobj );
     }
 }
 

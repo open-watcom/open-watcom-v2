@@ -58,13 +58,13 @@ extern void Space( WPARAM wparam )
     if( primary == NULL ) {
         return;
     }
-    currobj = GetECurrObject();
+    currobj = GetEditCurrObject();
     atleasttwo = false;
     while( currobj != NULL && !atleasttwo ) {
         if( currobj != primary ) {
             atleasttwo = true;
         } else {
-            currobj = GetNextECurrObject( currobj );
+            currobj = GetNextEditCurrObject( currobj );
         }
     }
     if( !atleasttwo ) {
@@ -79,7 +79,7 @@ extern void Space( WPARAM wparam )
     totalrect.right = totalrect.bottom = 0;
     objsize = 0;
     objcount = 0;
-    currobj = GetECurrObject();
+    currobj = GetEditCurrObject();
     while( currobj != NULL ) {
         Location( currobj, &rect );
         if( rect.left < totalrect.left ) {
@@ -100,7 +100,7 @@ extern void Space( WPARAM wparam )
             objsize += rect.bottom - rect.top;
         }
         objcount++;
-        currobj = GetNextECurrObject( currobj );
+        currobj = GetNextEditCurrObject( currobj );
     }
     if( LOWORD( wparam ) == IDM_SPACE_HORZ ) {
         totalsize = totalrect.right - totalrect.left;
@@ -110,7 +110,7 @@ extern void Space( WPARAM wparam )
         currpos = totalrect.top;
     }
     spacesize = (totalsize - objsize) / (objcount - 1);
-    currobj = GetECurrObject();
+    currobj = GetEditCurrObject();
     while( currobj != NULL ) {
         Location( currobj, &rect );
         if( LOWORD( wparam ) == IDM_SPACE_HORZ ) {
@@ -124,7 +124,7 @@ extern void Space( WPARAM wparam )
         }
         currpos += spacesize;
         Move( currobj, &offset, true );
-        currobj = GetNextECurrObject( currobj );
+        currobj = GetNextEditCurrObject( currobj );
     }
     FinishMoveOperation( true );
 }

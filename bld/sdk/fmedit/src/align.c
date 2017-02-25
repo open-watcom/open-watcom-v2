@@ -56,12 +56,12 @@ extern void Align( WPARAM wparam )
         return;
     }
     atleasttwo = false;
-    currobj = GetECurrObject();
+    currobj = GetEditCurrObject();
     while( currobj != NULL && !atleasttwo ) {
         if( currobj != primary ) {
             atleasttwo = true;
         } else {
-            currobj = GetNextECurrObject( currobj );
+            currobj = GetNextEditCurrObject( currobj );
         }
     }
     if( !atleasttwo ) {
@@ -72,7 +72,7 @@ extern void Align( WPARAM wparam )
     }
     BeginMoveOperation( objlist );
     ListFree( objlist );
-    currobj = GetECurrObject();
+    currobj = GetEditCurrObject();
     primary = GetPrimaryObject();
     Location( primary, &primrect );
     while( currobj != NULL ) {
@@ -108,7 +108,7 @@ extern void Align( WPARAM wparam )
             }
             Move( currobj, &offset, true );
         }
-        currobj = GetNextECurrObject( currobj );
+        currobj = GetNextEditCurrObject( currobj );
     }
     FinishMoveOperation( true );
 }

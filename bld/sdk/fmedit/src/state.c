@@ -304,7 +304,7 @@ void SaveObject( void )
     /* remember the previous object */
     CURROBJPTR currobj;
 
-    currobj = GetECurrObject();
+    currobj = GetEditCurrObject();
     if( currobj != NULL ) {
         State->prevobject = GetObjptr( currobj );
     }
