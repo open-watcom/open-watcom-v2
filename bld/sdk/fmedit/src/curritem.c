@@ -151,7 +151,7 @@ ANYOBJ *CurrItemCreate( ANYOBJ *parent, RECT *loc, ANYOBJ *obj )
 
     parent = parent;         /* ref'd to avoid warning */
     new = EdAlloc( sizeof( CURRITEM ) );
-    new->invoke = (FARPROC)&CurrItemDispatch;
+    new->dispatcher = (DISPATCH_FN *)CurrItemDispatch;
     new->obj = obj;
     GetOffset( &new->offset );
     new->rect = *loc;

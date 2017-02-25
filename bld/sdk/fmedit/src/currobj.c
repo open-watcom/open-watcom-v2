@@ -109,7 +109,7 @@ ANYOBJ *CurrObjCreate( ANYOBJ *obj, RECT *loc, ANYOBJ *handle )
     obj = obj;           /* ref'd to avoid warning */
     loc = loc;           /* ref'd to avoid warning */
     new = EdAlloc( sizeof( CURROBJ ) );
-    new->invoke = (FARPROC)&CurrObjDispatch;
+    new->dispatcher = (DISPATCH_FN *)CurrObjDispatch;
     new->currobjlist = NULL;
     new->primaryobj = NULL;
     new->prevprimary = NULL;

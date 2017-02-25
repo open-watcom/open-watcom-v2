@@ -33,11 +33,11 @@
 #include "currobj.def"
 
 typedef struct {
-    FARPROC invoke;
-    LIST *  currobjlist;
-    OBJPTR  primaryobj;
-    OBJPTR  prevprimary;
-    bool    show_sel_boxes;
-    bool    no_prim_notify;
-    bool    prim_notify_pending;
+    DISPATCH_FN *dispatcher;
+    LIST        *currobjlist;
+    OBJPTR      primaryobj;
+    OBJPTR      prevprimary;
+    bool        show_sel_boxes;
+    bool        no_prim_notify;
+    bool        prim_notify_pending;
 } CURROBJ;

@@ -33,7 +33,7 @@
 #include "curritem.def"
 
 typedef struct {
-    FARPROC     invoke;
+    DISPATCH_FN *dispatcher;
     OBJPTR      obj;
     HWND        hwnd;
     POINT       offset;

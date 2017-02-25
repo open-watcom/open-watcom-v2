@@ -61,7 +61,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC     dispatcher;
+    DISPATCH_FN *dispatcher;
     OBJPTR      object_handle;
     OBJ_ID      object_id;
     OBJPTR      control;
@@ -174,7 +174,7 @@ OBJPTR WdeStatCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new->dispatcher = WdeStaticDispatch;
+    new->dispatcher = (DISPATCH_FN *)WdeStaticDispatch;
     new->object_id = id;
     if( handle == NULL ) {
         new->object_handle = new;

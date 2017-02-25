@@ -62,7 +62,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC     dispatcher;
+    DISPATCH_FN *dispatcher;
     OBJPTR      object_handle;
     OBJ_ID      object_id;
     OBJPTR      control;
@@ -154,7 +154,7 @@ OBJPTR WdeProgressCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new->dispatcher = WdeProgDispatch;
+    new->dispatcher = (DISPATCH_FN *)WdeProgDispatch;
     new->object_id = id;
     if( handle == NULL ) {
         new->object_handle = new;

@@ -62,7 +62,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC     dispatcher;
+    DISPATCH_FN *dispatcher;
     OBJPTR      object_handle;
     OBJ_ID      object_id;
     OBJPTR      control;
@@ -154,7 +154,7 @@ OBJPTR WdeLVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new->dispatcher = WdeLViewDispatch;
+    new->dispatcher = (DISPATCH_FN *)WdeLViewDispatch;
 
     new->object_id = id;
 

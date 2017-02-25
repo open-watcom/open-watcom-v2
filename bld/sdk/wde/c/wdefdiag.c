@@ -150,7 +150,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC             dispatcher;
+    DISPATCH_FN         *dispatcher;
     HWND                window_handle;
     HWND                parent_handle;
     OBJ_ID              object_id;
@@ -225,7 +225,7 @@ static void WdeWriteDialogToInfo( WdeDialogObject * );
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static FARPROC                  WdeDialogDispatch;
+static DISPATCH_FN              *WdeDialogDispatch;
 static DLGPROC                  WdeDialogDefineDlgProcInst;
 static DLGPROC                  WdeDialogDlgProcInst;
 static DLGPROC                  WdeTestDlgProcInst;
@@ -859,7 +859,7 @@ bool WdeDialogInit( bool first )
         }
     }
 
-    WdeDialogDispatch = MakeProcInstance( (FARPROC)WdeDialogDispatcher, WdeAppInst );
+    WdeDialogDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeDialogDispatcher, WdeAppInst );
     WdeDialogDefineDlgProcInst = (DLGPROC)MakeProcInstance( (FARPROC)WdeDialogDefineDlgProc, WdeAppInst );
     WdeTestDlgProcInst = (DLGPROC)MakeProcInstance( (FARPROC)WdeTestDlgProc, WdeAppInst );
     WdeDialogDlgProcInst = (DLGPROC)MakeProcInstance ( (FARPROC)WdeDialogDlgProc, WdeAppInst );
@@ -873,7 +873,7 @@ void WdeDialogFini( void )
     FreeProcInstance( (FARPROC)WdeDialogDefineDlgProcInst);
     FreeProcInstance( (FARPROC)WdeTestDlgProcInst );
     FreeProcInstance( (FARPROC)WdeDialogDlgProcInst );
-    FreeProcInstance( WdeDialogDispatch );
+    FreeProcInstance( (FARPROC)WdeDialogDispatch );
 }
 
 bool WdeDialogResolveSymbol( WdeDialogObject *obj, bool *b, bool *from_id )

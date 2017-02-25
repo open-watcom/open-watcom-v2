@@ -62,7 +62,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC     dispatcher;
+    DISPATCH_FN *dispatcher;
     OBJPTR      object_handle;
     OBJ_ID      object_id;
     OBJPTR      control;
@@ -91,7 +91,7 @@ static bool     WdeHdrDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeHdrDispatch;
+static DISPATCH_FN              *WdeHdrDispatch;
 static WdeDialogBoxControl      *WdeDefaultHdr = NULL;
 static int                      WdeHdrWndExtra;
 static WNDPROC                  WdeOriginalHdrProc;
@@ -249,14 +249,14 @@ bool WdeHdrInit( bool first )
     SETCTL_TEXT( WdeDefaultHdr, NULL );
     SETCTL_CLASSID( WdeDefaultHdr, WdeStrToControlClass( WWC_HEADER ) );
 
-    WdeHdrDispatch = MakeProcInstance( (FARPROC)WdeHdrDispatcher, WdeGetAppInstance() );
+    WdeHdrDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeHdrDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeHdrFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultHdr );
-    FreeProcInstance( WdeHdrDispatch );
+    FreeProcInstance( (FARPROC)WdeHdrDispatch );
 }
 
 bool WdeHdrDestroy( WdeHdrObject *obj, bool *flag, bool *p2 )

@@ -92,7 +92,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC             dispatcher;
+    DISPATCH_FN         *dispatcher;
     OBJPTR              object_handle;
     OBJ_ID              object_id;
     OBJPTR              parent;
@@ -124,7 +124,7 @@ WINEXPORT bool   CALLBACK WdeBaseDispatcher( ACTION, WdeBaseObject *, void *, vo
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static FARPROC WdeBaseDispatch;
+static DISPATCH_FN  *WdeBaseDispatch;
 
 static DISPATCH_ITEM WdeBaseActions[] = {
     #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeBase ## n},
@@ -224,13 +224,13 @@ WINEXPORT bool CALLBACK WdeBaseDispatcher( ACTION act, WdeBaseObject *obj, void 
 bool WdeBaseInit( bool first )
 {
     _wde_touch( first );
-    WdeBaseDispatch = MakeProcInstance( (FARPROC)WdeBaseDispatcher, WdeGetAppInstance() );
+    WdeBaseDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeBaseDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeBaseFini( void )
 {
-    FreeProcInstance( WdeBaseDispatch );
+    FreeProcInstance( (FARPROC)WdeBaseDispatch );
 }
 
 bool WdeBaseIsMarkValid( WdeBaseObject *obj, bool *flag, void *p2 )

@@ -31,14 +31,14 @@
 
 
 typedef struct eatom {
-    FARPROC         invoke;
-    RECT            rect;
-    POINT           anchor;
-    ANYOBJ          *obj;
-    ANYOBJ          *parent;
-    ANYOBJ          *handle;
-    POINT           offset;
-    HWND            hwnd;
-    bool            displayed;
-    bool            show;           // show the outline for this eatom
+    DISPATCH_FN *dispatcher;
+    RECT        rect;
+    POINT       anchor;
+    ANYOBJ      *obj;
+    ANYOBJ      *parent;
+    ANYOBJ      *handle;
+    POINT       offset;
+    HWND        hwnd;
+    bool        displayed;
+    bool        show;           // show the outline for this eatom
 } EATOM;

@@ -61,7 +61,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC     dispatcher;
+    DISPATCH_FN *dispatcher;
     OBJPTR      object_handle;
     OBJ_ID      object_id;
     OBJPTR      control;
@@ -90,7 +90,7 @@ static bool     WdeAniCDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeAniCDispatch;
+static DISPATCH_FN              *WdeAniCDispatch;
 static WdeDialogBoxControl      *WdeDefaultAniC = NULL;
 static int                      WdeAniCWndExtra;
 static WNDPROC                  WdeOriginalAniCProc;
@@ -246,14 +246,14 @@ bool WdeAniCInit( bool first )
     SETCTL_TEXT( WdeDefaultAniC, NULL );
     SETCTL_CLASSID( WdeDefaultAniC, WdeStrToControlClass( WANIMATE_CLASS ) );
 
-    WdeAniCDispatch = MakeProcInstance( (FARPROC)WdeAniCDispatcher, WdeGetAppInstance() );
+    WdeAniCDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeAniCDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeAniCFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultAniC );
-    FreeProcInstance( WdeAniCDispatch );
+    FreeProcInstance( (FARPROC)WdeAniCDispatch );
 }
 
 bool WdeAniCDestroy( WdeAniCObject *obj, bool *flag, bool *p2 )

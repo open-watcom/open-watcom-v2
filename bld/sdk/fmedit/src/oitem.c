@@ -161,7 +161,7 @@ OBJPTR OItemCreate( OBJPTR parent, RECT *rect, OBJPTR handle )
     OITEM *new;
 
     new = EdAlloc( sizeof( OITEM ) );
-    new->invoke = (FARPROC)&OItemDispatch;
+    new->dispatcher = (DISPATCH_FN *)OItemDispatch;
     new->parent = parent;
     if( parent != NULL ) {
         GetPriority( parent, &new->priority );
@@ -269,7 +269,7 @@ static bool OItemCopyObject( OITEM *oitem, OITEM **newitem, OITEM *handle )
     if( newitem != NULL ) {
         no = EdAlloc( sizeof( OITEM ) );
         *newitem = no;
-        no->invoke = oitem->invoke;
+        no->dispatcher = oitem->dispatcher;
         if( handle != NULL ) {
             no->handle = handle;
         } else {

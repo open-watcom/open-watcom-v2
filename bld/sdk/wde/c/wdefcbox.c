@@ -63,7 +63,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC     dispatcher;
+    DISPATCH_FN *dispatcher;
     OBJPTR      object_handle;
     OBJ_ID      object_id;
     OBJPTR      control;
@@ -92,7 +92,7 @@ static bool     WdeCBoxDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeCBoxDispatch;
+static DISPATCH_FN              *WdeCBoxDispatch;
 static WdeDialogBoxControl      *WdeDefaultCBox = NULL;
 static int                      WdeCBoxWndExtra;
 static WNDPROC                  WdeOriginalCBoxProc;
@@ -250,14 +250,14 @@ bool WdeCBoxInit( bool first )
     SETCTL_TEXT( WdeDefaultCBox, NULL );
     SETCTL_CLASSID( WdeDefaultCBox, ResNumToControlClass( CLASS_COMBOBOX ) );
 
-    WdeCBoxDispatch = MakeProcInstance( (FARPROC)WdeCBoxDispatcher, WdeGetAppInstance());
+    WdeCBoxDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeCBoxDispatcher, WdeGetAppInstance());
     return( true );
 }
 
 void WdeCBoxFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultCBox );
-    FreeProcInstance( WdeCBoxDispatch );
+    FreeProcInstance( (FARPROC)WdeCBoxDispatch );
 }
 
 bool WdeCBoxDestroy( WdeCBoxObject *obj, bool *flag, bool *p2 )

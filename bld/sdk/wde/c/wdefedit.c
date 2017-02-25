@@ -61,7 +61,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC     dispatcher;
+    DISPATCH_FN *dispatcher;
     OBJPTR      object_handle;
     OBJ_ID      object_id;
     OBJPTR      control;
@@ -90,7 +90,7 @@ static bool     WdeEditDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeEditDispatch;
+static DISPATCH_FN              *WdeEditDispatch;
 static WdeDialogBoxControl      *WdeDefaultEdit = NULL;
 static int                      WdeEditWndExtra;
 static WNDPROC                  WdeOriginalEditProc;
@@ -246,7 +246,7 @@ bool WdeEditInit( bool first )
     SETCTL_TEXT( WdeDefaultEdit, NULL );
     SETCTL_CLASSID( WdeDefaultEdit, ResNumToControlClass( CLASS_EDIT ) );
 
-    WdeEditDispatch = MakeProcInstance( (FARPROC)WdeEditDispatcher, WdeGetAppInstance() );
+    WdeEditDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeEditDispatcher, WdeGetAppInstance() );
 
     return( true );
 }
@@ -254,7 +254,7 @@ bool WdeEditInit( bool first )
 void WdeEditFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultEdit );
-    FreeProcInstance( WdeEditDispatch );
+    FreeProcInstance( (FARPROC)WdeEditDispatch );
 }
 
 bool WdeEditDestroy( WdeEditObject *obj, bool *flag, bool *p2 )

@@ -62,7 +62,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC     dispatcher;
+    DISPATCH_FN *dispatcher;
     OBJPTR      object_handle;
     OBJ_ID      object_id;
     OBJPTR      control;
@@ -91,7 +91,7 @@ static bool     WdeHtKyDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeHtKyDispatch;
+static DISPATCH_FN              *WdeHtKyDispatch;
 static WdeDialogBoxControl      *WdeDefaultHtKy = NULL;
 static int                      WdeHtKyWndExtra;
 static WNDPROC                  WdeOriginalHtKyProc;
@@ -249,14 +249,14 @@ bool WdeHtKyInit( bool first )
     SETCTL_TEXT( WdeDefaultHtKy, NULL );
     SETCTL_CLASSID( WdeDefaultHtKy, WdeStrToControlClass( WHOTKEY_CLASS ) );
 
-    WdeHtKyDispatch = MakeProcInstance( (FARPROC)WdeHtKyDispatcher, WdeGetAppInstance() );
+    WdeHtKyDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeHtKyDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeHtKyFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultHtKy );
-    FreeProcInstance( WdeHtKyDispatch );
+    FreeProcInstance( (FARPROC)WdeHtKyDispatch );
 }
 
 bool WdeHtKyDestroy( WdeHtKyObject *obj, bool *flag, bool *p2 )

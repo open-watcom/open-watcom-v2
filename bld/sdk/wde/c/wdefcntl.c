@@ -109,7 +109,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC             dispatcher;
+    DISPATCH_FN         *dispatcher;
     HWND                window_handle;
     HWND                parent_handle;
     OBJPTR              object_handle;
@@ -155,7 +155,7 @@ static bool WdeControlSizeToText( WdeControlObject *, void *, void * );
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static FARPROC           WdeControlDispatch;
+static DISPATCH_FN       *WdeControlDispatch;
 static HINSTANCE         WdeAppInst;
 
 static DISPATCH_ITEM WdeControlActions[] = {
@@ -324,13 +324,13 @@ bool WdeControlInit( bool first )
 {
     _wde_touch( first );
     WdeAppInst = WdeGetAppInstance();
-    WdeControlDispatch = MakeProcInstance( (FARPROC)WdeControlDispatcher, WdeAppInst );
+    WdeControlDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeControlDispatcher, WdeAppInst );
     return( true );
 }
 
 void WdeControlFini( void )
 {
-    FreeProcInstance( WdeControlDispatch );
+    FreeProcInstance( (FARPROC)WdeControlDispatch );
 }
 
 bool WdeControlTest( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )

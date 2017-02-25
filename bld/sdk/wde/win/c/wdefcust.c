@@ -65,7 +65,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC         dispatcher;
+    DISPATCH_FN     *dispatcher;
     WNDPROC         win_proc;
     int             win_extra;
     char            *win_class;
@@ -520,7 +520,7 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new->dispatcher = WdeCustomDispatch;
+    new->dispatcher = (DISPATCH_FN *)WdeCustomDispatch;
     new->object_id = id;
     new->cust_info = cust_info;
     new->cust_type = cust_type;

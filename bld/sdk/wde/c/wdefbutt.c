@@ -64,7 +64,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC     dispatcher;
+    DISPATCH_FN *dispatcher;
     OBJPTR      object_handle;
     OBJ_ID      object_id;
     OBJPTR      control;
@@ -92,7 +92,7 @@ static void     WdeButtonGetDefineInfo( WdeDefineObjectInfo *, HWND );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeButtonDispatch;
+static DISPATCH_FN              *WdeButtonDispatch;
 static WdeDialogBoxControl      *WdeDefaultButton = NULL;
 static int                      WdeButtonWndExtra;
 static WNDPROC                  WdeOriginalButtonProc;
@@ -288,14 +288,14 @@ bool WdeButtonInit( bool first )
     SETCTL_TEXT( WdeDefaultButton, NULL );
     SETCTL_CLASSID( WdeDefaultButton, ResNumToControlClass( CLASS_BUTTON ) );
 
-    WdeButtonDispatch = MakeProcInstance( (FARPROC)WdeButtonDispatcher, WdeGetAppInstance() );
+    WdeButtonDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeButtonDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeButtonFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultButton );
-    FreeProcInstance( WdeButtonDispatch );
+    FreeProcInstance( (FARPROC)WdeButtonDispatch );
 }
 
 bool WdeButtonDestroy( WdeButtonObject *obj, bool *flag, bool *p2 )
