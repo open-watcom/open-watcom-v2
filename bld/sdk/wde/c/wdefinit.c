@@ -124,7 +124,7 @@ bool WdeInitCreateTable( void )
                     return( FALSE );
                 }
             }
-            WdeCreateTable[i] = (CREATE_RTN)MakeProcInstance( (FARPROC)WdeObjectRoutines[i].create, inst );
+            WdeCreateTable[i] = (CREATE_RTN *)MakeProcInstance( (FARPROC)WdeObjectRoutines[i].create, inst );
         }
     }
 
