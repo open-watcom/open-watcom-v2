@@ -56,12 +56,10 @@ extern void Align( WPARAM wparam )
         return;
     }
     atleasttwo = false;
-    currobj = GetEditCurrObject();
-    while( currobj != NULL && !atleasttwo ) {
+    for( currobj = GetEditCurrObject(); currobj != NULL; currobj = GetNextEditCurrObject( currobj ) ) {
         if( currobj != primary ) {
             atleasttwo = true;
-        } else {
-            currobj = GetNextEditCurrObject( currobj );
+            break;
         }
     }
     if( !atleasttwo ) {

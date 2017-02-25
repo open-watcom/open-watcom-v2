@@ -1192,8 +1192,7 @@ bool WdeSaveDlgItemToRC( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
         // find the longest control text
         nlen = 0;
         ctext = NULL;
-        clist = ditem->dialog_info->control_list;
-        while( clist != NULL ) {
+        for( clist = ditem->dialog_info->control_list; clist != NULL; clist = ListNext( clist ) ) {
             control = (WdeDialogBoxControl *)ListElement( clist );
             if( GETCTL_TEXT( control ) != NULL ) {
                 ctext = WdeResNameOrOrdinalToStr( GETCTL_TEXT( control ), 10 );
@@ -1205,18 +1204,13 @@ bool WdeSaveDlgItemToRC( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
                     ctext = NULL;
                 }
             }
-            clist = ListNext( clist );
         }
 
         fwrite( "BEGIN\n", sizeof( char ), 6, fp );
         wrote_begin = TRUE;
-        clist = ditem->dialog_info->control_list;
-        while( ok && clist != NULL ) {
+        for( clist = ditem->dialog_info->control_list; ok && clist != NULL; clist = ListNext( clist ) ) {
             control = (WdeDialogBoxControl *)ListElement( clist );
-            ok = WdeWriteDlgControl( rinfo, control,
-                                     ditem->dialog_info->dialog_header->is32bitEx,
-                                     fp, nlen );
-            clist = ListNext( clist );
+            ok = WdeWriteDlgControl( rinfo, control, ditem->dialog_info->dialog_header->is32bitEx, fp, nlen );
         }
     }
 

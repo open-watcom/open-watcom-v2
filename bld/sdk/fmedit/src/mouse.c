@@ -625,12 +625,10 @@ static void DoObjectMove( POINT pt )
     lastmouse = GetPrevMouse();
     offset.x = pt.x - lastmouse.x;
     offset.y = pt.y - lastmouse.y;
-    currobj = GetEditCurrObject();
-    while( currobj != NULL ) {
+    for( currobj = GetEditCurrObject(); currobj != NULL; currobj = GetNextEditCurrObject( currobj ) ) {
         if( GetObjptr( GetObjptr( currobj ) ) != NULL ) {
             Move( currobj, &offset, true );
         }
-        currobj = GetNextEditCurrObject( currobj );
     }
     SetPrevMouse( pt );
 }
@@ -760,8 +758,7 @@ static void FinishPaste( POINT pt )
 
     newcurrobj = NULL;
     SnapPointToGrid( &pt );
-    currobj = GetEditCurrObject();
-    while( currobj != NULL ) {
+    for( currobj = GetEditCurrObject(); currobj != NULL; currobj = GetEditCurrObject() ) {
         Location( currobj, &rect );
         loc_pt.x = rect.left;
         loc_pt.y = rect.top;
@@ -775,7 +772,6 @@ static void FinishPaste( POINT pt )
         Destroy( eatom, false );
         DeleteCurrObject( currobj );
         MarkCurrObject();
-        currobj = GetEditCurrObject();
     }
     StartCurrObjMod();
     while( newcurrobj != NULL ) {
@@ -855,12 +851,10 @@ static OBJPTR FindBSelectRoot( LPRECT rect )
     LIST            *list;       // children of root
     SUBOBJ_REQUEST  req;
     compare_rect_rc rc;
-    bool            done;
 
     root = GetMainObject();
     req.a.ty = ALL;
-    done = false;
-    while( !done ) {
+    for( ;; ) {
         list = NULL;
         FindObjList( root, &req, &list );
         for( ; list != NULL; list = ListConsume( list ) ) {
@@ -877,10 +871,9 @@ static OBJPTR FindBSelectRoot( LPRECT rect )
         }
         if( list == NULL ) {
             /* we made it down the list without finding further containment */
-            done = true;
-        } else {
-            ListFree( list );
+            break;
         }
+        ListFree( list );
     }
     return( root );
 }
@@ -1072,12 +1065,11 @@ void FinishMoveOperation( bool change_state )
     while( dlist != NULL ) {
         elt = GetNextElement( dlist );
         success = Register( elt.original );
-        if( success ) {
-            DListRemoveElt( &dlist, elt );
-            DListAddElt( &movedlist, elt );
-        } else {
+        if( !success ) {
             break;
         }
+        DListRemoveElt( &dlist, elt );
+        DListAddElt( &movedlist, elt );
     }
     /* If a move failed, first remove all objects from their parents and
      * then undo all moves that already happened, including the
@@ -1097,10 +1089,8 @@ void FinishMoveOperation( bool change_state )
         }
     }
     /* Notify all objects that the move operation is done */
-    obj = GetEditCurrObject();
-    while( obj != NULL ) {
+    for( obj = GetEditCurrObject(); obj != NULL; obj = GetNextEditCurrObject( obj ) ) {
         Notify( obj, MOVE_END, NULL );
-        obj = GetNextEditCurrObject( obj );
     }
     /* Register all of the objects that got removed from the parent but
      * never got moved or moved back.  Use correct order.
@@ -1162,7 +1152,7 @@ static DLIST *OrderList( LIST *list )
         elt.copy = 0;
         obj = GetObjptr( currobj );
         GetPriority( obj, &priority );
-        elt.copy = (OBJPTR) priority;
+        elt.copy = (OBJPTR)priority;
         DListAddElt( &dlist, elt );
     }
     return( dlist );
@@ -1228,11 +1218,10 @@ void BeginMoveOperation( LIST *mycurrobjlist )
             Move( eatom, &init, true );
         }
         mycurrobjlist = ListNext( mycurrobjlist );
-        if( mycurrobjlist != NULL ) {
-            currobj = ListElement( mycurrobjlist );
-        } else {
-            currobj = NULL;
+        if( mycurrobjlist == NULL ) {
+            break;
         }
+        currobj = ListElement( mycurrobjlist );
     }
     /* Set correct eatom to be primary */
     if( primary != NULL ) {
@@ -1240,10 +1229,8 @@ void BeginMoveOperation( LIST *mycurrobjlist )
     }
     EndCurrObjMod();
     /* notify the objects of the move start */
-    currobj = GetEditCurrObject();
-    while( currobj != NULL ) {
+    for( currobj = GetEditCurrObject(); currobj != NULL; currobj = GetNextEditCurrObject( currobj ) ) {
         Notify( currobj, MOVE_START, NULL );
-        currobj = GetNextEditCurrObject( currobj );
     }
 }
 
@@ -1260,10 +1247,8 @@ void AbortMoveOperation( void )
     primary = GetObjptr( GetCurrObject() );
 
     /* Notify all objects that the move operation is done */
-    obj = GetEditCurrObject();
-    while( obj != NULL ) {
+    for( obj = GetEditCurrObject(); obj != NULL; obj = GetNextEditCurrObject( obj ) ) {
         Notify( obj, MOVE_END, NULL );
-        obj = GetNextEditCurrObject( obj );
     }
 
     ResetCurrObject( false );

@@ -504,10 +504,8 @@ void WdeDisableChildWindows( HWND hWnd )
 {
     HWND win;
 
-    win = GetWindow( hWnd, GW_CHILD );
-    while( win != NULL ) {
+    for( win = GetWindow( hWnd, GW_CHILD ); win != NULL; win = GetWindow( win, GW_HWNDNEXT ) ) {
         EnableWindow( win, FALSE );
-        win = GetWindow( win, GW_HWNDNEXT );
     }
 }
 

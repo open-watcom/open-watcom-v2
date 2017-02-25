@@ -101,10 +101,8 @@ static void MoveCurrObj( LPPOINT pt )
 {
     CURROBJPTR  curr;
 
-    curr = GetEditCurrObject();
-    while( curr != NULL ) {
+    for( curr = GetEditCurrObject(); curr != NULL; curr = GetNextEditCurrObject( curr ) ) {
         Move( curr, pt, true );
-        curr = GetNextEditCurrObject( curr );
     }
 }
 
@@ -162,14 +160,12 @@ static void SetKbdMoveGrid( void )
 
     hinc = 0;
     vinc = 0;
-    curr = GetEditCurrObject();
-    while( curr != NULL ) {
+    for( curr = GetEditCurrObject(); curr != NULL; curr = GetNextEditCurrObject( curr ) ) {
         if( ResizeIncrements( curr, &pt ) ) {
             if( hinc < pt.x )
                 hinc = pt.x;
             vinc = max( vinc, pt.y );
         }
-        curr = GetNextEditCurrObject( curr );
     }
     if( hinc != 0 && vinc != 0 ) {
         SetResizeGrid( hinc, vinc );
