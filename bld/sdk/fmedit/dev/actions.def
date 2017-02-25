@@ -103,11 +103,4 @@ typedef enum {
     R_ALL       = 15
 } RESIZE_ID;
 
-typedef bool DISPATCH_RTN( OBJPTR, void *, void * );
-
-typedef struct {
-   ACTION       id;
-   DISPATCH_RTN *rtn;
-} DISPATCH_ITEM;
-
 #endif

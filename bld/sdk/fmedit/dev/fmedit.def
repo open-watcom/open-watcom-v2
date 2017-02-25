@@ -4,6 +4,7 @@
 #define _FMEDIT_INCLUDE
 
 #include "bool.h"
+#include "actions.def"
 
 #define FMEDITAPI   WINAPI
 
@@ -37,10 +38,16 @@ typedef bool (CALLBACK *OBJECT)( ACTION, OBJPTR, void *, void * );
 
 typedef void MOUSEACTION( HWND, RECT * );
 
+typedef bool DISPATCH_RTN( OBJPTR, void *, void * );
+
+typedef struct {
+   ACTION       id;
+   DISPATCH_RTN *rtn;
+} DISPATCH_ITEM;
+
 #include "constant.def"
 #include "fmmenu.def"
 #include "list.def"
-#include "actions.def"
 #include "subreq.def"
 
 extern unsigned     fmedit_version_check( void );
