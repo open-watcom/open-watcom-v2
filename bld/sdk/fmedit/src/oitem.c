@@ -75,7 +75,7 @@ static bool CALLBACK OItemDispatch( ACTION id, OITEM *obj, void *p1, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( OItemActions[i].id == id ) {
-            return( (OItemActions[i].rtn)( (OBJPTR)obj, p1, p2) );
+            return( OItemActions[i].rtn( (OBJPTR)obj, p1, p2) );
         }
     }
     return( false );

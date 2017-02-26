@@ -75,7 +75,7 @@ static bool CALLBACK CurrItemDispatch( ACTION id, CURRITEM *ci, void *p1, void *
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( CurrItemActions[i].id == id ) {
-            return( (CurrItemActions[i].rtn)( (OBJPTR)ci, p1, p2 ) );
+            return( CurrItemActions[i].rtn( (OBJPTR)ci, p1, p2 ) );
         }
     }
     return( Forward( ci->obj, id, p1, p2 ) );

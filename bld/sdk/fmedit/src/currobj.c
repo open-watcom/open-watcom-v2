@@ -68,7 +68,7 @@ static bool CALLBACK CurrObjDispatch( ACTION id, CURROBJ *cobj, void *p1, void *
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( CurrObjActions[i].id == id ) {
-            return( (CurrObjActions[i].rtn)( (OBJPTR)cobj, p1, p2 ) );
+            return( CurrObjActions[i].rtn( (OBJPTR)cobj, p1, p2 ) );
         }
     }
     return( false );

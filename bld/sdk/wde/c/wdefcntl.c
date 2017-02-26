@@ -309,7 +309,7 @@ WINEXPORT bool CALLBACK WdeControlDispatcher( ACTION act, WdeControlObject *obj,
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeControlActions[i].id == act ) {
-            if( WdeControlActions[i].rtn ) {
+            if( WdeControlActions[i].rtn != NULL ) {
                 return( WdeControlActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
             } else {
                 return( Forward( obj->parent, act, p1, p2 ) );

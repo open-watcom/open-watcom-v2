@@ -791,7 +791,7 @@ WINEXPORT bool CALLBACK WdeDialogDispatcher( ACTION act, WdeDialogObject *obj, v
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeDialogActions[i].id == act ) {
-            if( WdeDialogActions[i].rtn ) {
+            if( WdeDialogActions[i].rtn != NULL ) {
                 return( WdeDialogActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
             } else {
                 return( Forward( obj->parent, act, p1, p2 ) );
@@ -1197,34 +1197,32 @@ bool WdeDialogSaveObject( WdeDialogObject *obj, WORD *id, void *p2 )
     }
 
     dbi = WdeDBIFromObject( obj );
-    if( dbi == NULL ) {
-        return( false );
-    }
+    if( dbi != NULL ) {
+        if( obj->dlg_item->dialog_info != NULL ) {
+            WdeFreeDialogBoxInfo( obj->dlg_item->dialog_info );
+        }
+        obj->dlg_item->dialog_info = dbi;
 
-    if( obj->dlg_item->dialog_info != NULL ) {
-        WdeFreeDialogBoxInfo( obj->dlg_item->dialog_info );
-    }
-    obj->dlg_item->dialog_info = dbi;
+        if( obj->dlg_item->lnode != NULL ) {
+            lang = obj->dlg_item->lnode->Info.lang;
+        } else {
+            lang.lang = DEF_LANG;
+            lang.sublang = DEF_SUBLANG;
+        }
 
-    if( obj->dlg_item->lnode != NULL ) {
-        lang = obj->dlg_item->lnode->Info.lang;
-    } else {
-        lang.lang = DEF_LANG;
-        lang.sublang = DEF_SUBLANG;
-    }
+        switch( *id ) {
+        case IDM_DIALOG_SAVE:
+            ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name, obj->name, &lang, false, false );
+            break;
 
-    switch( *id ) {
-    case IDM_DIALOG_SAVE:
-        ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name, obj->name, &lang, false, false );
-        break;
+        case IDM_DIALOG_SAVEAS:
+            ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name, obj->name, &lang, false, true );
+            break;
 
-    case IDM_DIALOG_SAVEAS:
-        ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name, obj->name, &lang, false, true );
-        break;
-
-    case IDM_DIALOG_SAVEINTO:
-        ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name, obj->name, &lang, true, true );
-        break;
+        case IDM_DIALOG_SAVEINTO:
+            ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name, obj->name, &lang, true, true );
+            break;
+        }
     }
 
     return( ret );

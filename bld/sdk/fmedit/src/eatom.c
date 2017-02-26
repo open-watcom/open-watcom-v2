@@ -90,7 +90,7 @@ static bool CALLBACK EAtomDispatch( ACTION id, EATOM *obj, void *p1, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( EAtomActions[i].id == id ) {
-            return( (EAtomActions[i].rtn)( (OBJPTR)obj, p1, p2 ) );
+            return( EAtomActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
         }
     }
     return( false );
