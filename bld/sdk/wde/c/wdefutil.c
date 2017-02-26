@@ -204,9 +204,9 @@ OBJPTR WdeCloneObject( OBJPTR obj, POINT *offset )
     if( ok ) {
         state = (WORD)GetKeyState( VK_CONTROL );
 #ifdef __NT__
-        ok = ((state & 0x8000) != 0x00);
+        ok = ( (state & 0x8000) != 0 );
 #else
-        ok = ((state & 0x80) != 0x00);
+        ok = ( (state & 0x80) != 0 );
 #endif
     }
 

@@ -304,7 +304,7 @@ bool WdeHtKyCopyObject( WdeHtKyObject *obj, WdeHtKyObject **new, OBJPTR handle )
         return( false );
     }
 
-    OBJ_DISPATCHER_SET( *new, obj );
+    OBJ_DISPATCHER_COPY( *new, obj );
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {

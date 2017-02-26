@@ -447,9 +447,9 @@ void WdeTagPressed( WdeSetOrderStruct *o )
         case WdeSetOrder:
             state = (WORD)GetKeyState( VK_SHIFT );
 #ifdef __NT__
-            shift = ((state & 0x8000) != 0x00);
+            shift = ( (state & 0x8000) != 0 );
 #else
-            shift = ((state & 0x80) != 0x00 );
+            shift = ( (state & 0x80) != 0 );
 #endif
             if( shift ) {
                 WdeOrderPrevTags( o );

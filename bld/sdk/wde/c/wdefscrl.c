@@ -370,7 +370,7 @@ bool WdeScrollCopyObject( WdeScrollObject *obj, WdeScrollObject **new, OBJPTR ha
         return( false );
     }
 
-    OBJ_DISPATCHER_SET( *new, obj );
+    OBJ_DISPATCHER_COPY( *new, obj );
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {
