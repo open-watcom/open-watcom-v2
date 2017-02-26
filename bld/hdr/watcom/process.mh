@@ -93,6 +93,14 @@ _WCRTDATA extern int __p_overlay;
 
 #define _OLD_P_OVERLAY  _P_OVERLAY
 
+/* Equivalent mode flags for _spawnxxx routines */
+#define _P_WAIT      P_WAIT
+#define _P_NOWAIT    P_NOWAIT
+#define _P_OVERLAY   P_OVERLAY
+#define _P_NOWAITO   P_NOWAITO
+
+#define	_OLD_P_OVERLAY	_P_OVERLAY
+
 /*
  *  Prototypes for non-POSIX functions
  */
@@ -191,6 +199,16 @@ _WCRTLINK extern int    _spawnv( int __mode, const char *__path, const char * co
 _WCRTLINK extern int    _spawnve( int __mode, const char *__path, const char * const *__argv, const char * const *__envp );
 _WCRTLINK extern int    _spawnvp( int __mode, const char *__path, const char * const *__argv );
 _WCRTLINK extern int    _spawnvpe( int __mode, const char *__path, const char * const *__argv, const char * const *__envp );
+
+/* ISO standard calls for the above */
+#define _putenv     putenv
+#define _spawnl     spawnl
+#define _spawnle    spawnle
+#define _spawnlp    spawnlp
+#define _spawnlpe   spawnlpe
+#define _spawnv     spawnv
+#define _spawnvp    spawnvp
+#define _spawnvpe   spawnvpe
 
 _WCRTLINK extern wchar_t *_wgetenv( const wchar_t *__name );
 _WCRTLINK extern int    _wsetenv( const wchar_t *__name, const wchar_t *__newvalue, int __overwrite );
