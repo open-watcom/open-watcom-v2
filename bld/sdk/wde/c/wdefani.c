@@ -156,7 +156,7 @@ OBJPTR WdeAniCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wd
     new->object_id = id;
 
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -183,7 +183,7 @@ OBJPTR WdeAniCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wd
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
 WINEXPORT bool CALLBACK WdeAniCDispatcher( ACTION act, WdeAniCObject *obj, void *p1, void *p2 )
@@ -194,7 +194,7 @@ WINEXPORT bool CALLBACK WdeAniCDispatcher( ACTION act, WdeAniCObject *obj, void 
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeAniCActions[i].id == act ) {
-            return( WdeAniCActions[i].rtn( obj, p1, p2 ) );
+            return( WdeAniCActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
         }
     }
 
@@ -287,7 +287,7 @@ bool WdeAniCValidateAction( WdeAniCObject *obj, ACTION *act, void *p2 )
     return( ValidateAction( (OBJPTR) obj->control, *act, p2 ) );
 }
 
-bool WdeAniCCopyObject( WdeAniCObject *obj, WdeAniCObject **new, WdeAniCObject *handle )
+bool WdeAniCCopyObject( WdeAniCObject *obj, WdeAniCObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeAniCCopyObject: Invalid new object!" );
@@ -305,7 +305,7 @@ bool WdeAniCCopyObject( WdeAniCObject *obj, WdeAniCObject **new, WdeAniCObject *
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }

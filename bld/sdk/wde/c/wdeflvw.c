@@ -159,7 +159,7 @@ OBJPTR WdeLVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     new->object_id = id;
 
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -186,7 +186,7 @@ OBJPTR WdeLVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
 WINEXPORT bool CALLBACK WdeLViewDispatcher( ACTION act, WdeLViewObject *obj, void *p1, void *p2 )
@@ -197,7 +197,7 @@ WINEXPORT bool CALLBACK WdeLViewDispatcher( ACTION act, WdeLViewObject *obj, voi
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeLViewActions[i].id == act ) {
-            return( WdeLViewActions[i].rtn( obj, p1, p2 ) );
+            return( WdeLViewActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
         }
     }
 
@@ -290,7 +290,7 @@ bool WdeLViewValidateAction( WdeLViewObject *obj, ACTION *act, void *p2 )
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-bool WdeLViewCopyObject( WdeLViewObject *obj, WdeLViewObject **new, WdeLViewObject *handle )
+bool WdeLViewCopyObject( WdeLViewObject *obj, WdeLViewObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeLViewCopyObject: Invalid new object!" );
@@ -308,7 +308,7 @@ bool WdeLViewCopyObject( WdeLViewObject *obj, WdeLViewObject **new, WdeLViewObje
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }

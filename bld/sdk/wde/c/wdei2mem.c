@@ -309,7 +309,7 @@ bool WdeDBI2Mem( WdeDialogBoxInfo *info, uint_8 **pdata, uint_32 *psize )
 
     if( ok ) {
         for( l = info->control_list; l != NULL; l = ListNext( l ) ) {
-            ci = ListElement( l );
+            ci = (WdeDialogBoxControl *)ListElement( l );
             if( ci == NULL ) {
                 ok = false;
                 break;

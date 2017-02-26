@@ -318,7 +318,7 @@ void WdeShutdownToolBars( void )
 
     tlist = WdeListCopy( WdeToolBarList );
     for( ; tlist != NULL; tlist = ListConsume( tlist ) ) {
-        tbar = ListElement( tlist );
+        tbar = (WdeToolBar *)ListElement( tlist );
         ToolBarDestroy( tbar->tbar );
     }
     ToolBarFini( NULL );

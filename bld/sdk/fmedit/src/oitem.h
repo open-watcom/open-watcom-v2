@@ -32,8 +32,8 @@
 
 typedef struct oitem {
     DISPATCH_FN *dispatcher;
-    ANYOBJ      *parent;
-    ANYOBJ      *handle;
+    OBJPTR      parent;
+    OBJPTR      handle;
     RECT        rect;
     int         priority;
 } OITEM;

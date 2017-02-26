@@ -71,7 +71,7 @@ static bool CALLBACK CurrObjDispatch( ACTION id, CURROBJ *c, void *p1, void *p2 
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( CurrObjActions[i].id == id ) {
-            return( (CurrObjActions[i].rtn)( c, p1, p2 ) );
+            return( (CurrObjActions[i].rtn)( (OBJPTR)c, p1, p2 ) );
         }
     }
     return( false );
@@ -99,8 +99,8 @@ static bool CurrObjValidateAction( CURROBJ *c, ACTION *idptr, void *p2 )
     return( false );
 }
 
-ANYOBJ *CurrObjCreate( ANYOBJ *obj, RECT *loc, ANYOBJ *handle )
-/*************************************************************/
+OBJPTR CurrObjCreate( OBJPTR obj, RECT *loc, OBJPTR handle )
+/**********************************************************/
 {
     /* create an CURROBJ object */
     CURROBJ *new;
@@ -114,7 +114,7 @@ ANYOBJ *CurrObjCreate( ANYOBJ *obj, RECT *loc, ANYOBJ *handle )
     new->primaryobj = NULL;
     new->prevprimary = NULL;
     new->show_sel_boxes = true;
-    return( new );
+    return( (OBJPTR)new );
 }
 
 static bool CurrObjDestroy( CURROBJ *c, bool *p1, bool *p2 )
@@ -131,7 +131,7 @@ static bool CurrObjDestroy( CURROBJ *c, bool *p1, bool *p2 )
     return( true );
 }
 
-static void NotifyCurrObj( CURROBJ *c, ANYOBJ *obj, bool add_obj )
+static void NotifyCurrObj( CURROBJ *c, OBJPTR obj, bool add_obj )
 /****************************************************************/
 {
     Notify( obj, CURRENT_OBJECT, &add_obj );
@@ -146,12 +146,12 @@ static void NotifyCurrObj( CURROBJ *c, ANYOBJ *obj, bool add_obj )
     }
 }
 
-static bool CurrObjAddObject( CURROBJ *c, ANYOBJ *obj, bool *reset )
+static bool CurrObjAddObject( CURROBJ *c, OBJPTR obj, bool *reset )
 /******************************************************************/
 {
-    ANYOBJ  *new;
+    OBJPTR  new;
     RECT    rect;
-    ANYOBJ  *currobj;
+    OBJPTR  currobj;
 
     if( c->primaryobj != NULL ) {
         c->prevprimary = c->primaryobj;
@@ -167,7 +167,7 @@ static bool CurrObjAddObject( CURROBJ *c, ANYOBJ *obj, bool *reset )
         c->prevprimary = NULL;
     }
     Location( obj, &rect );
-    new = Create( O_CURRITEM, c, &rect, obj );
+    new = Create( O_CURRITEM, (OBJPTR)c, &rect, obj );
     ListAddElt( &c->currobjlist, new );
     c->primaryobj = new;
     if( c->prevprimary != NULL ) {
@@ -178,7 +178,7 @@ static bool CurrObjAddObject( CURROBJ *c, ANYOBJ *obj, bool *reset )
     return( true );
 }
 
-static bool CurrObjDeleteObject( CURROBJ *c, ANYOBJ *obj, bool *curritem )
+static bool CurrObjDeleteObject( CURROBJ *c, OBJPTR obj, bool *curritem )
 /************************************************************************/
 {
     LIST        *clist;
@@ -232,7 +232,7 @@ static bool CurrObjDeleteObject( CURROBJ *c, ANYOBJ *obj, bool *curritem )
     return( true );
 }
 
-static bool CurrObjGetObject( CURROBJ *c, ANYOBJ **newobj, ANYOBJ *prevobj )
+static bool CurrObjGetObject( CURROBJ *c, OBJPTR *newobj, OBJPTR prevobj )
 /**************************************************************************/
 {
     LIST    *newlist;
@@ -257,7 +257,7 @@ static bool CurrObjGetObject( CURROBJ *c, ANYOBJ **newobj, ANYOBJ *prevobj )
     return( true );
 }
 
-static bool CurrObjGetPrimary( CURROBJ *c, ANYOBJ **primary, bool *get )
+static bool CurrObjGetPrimary( CURROBJ *c, OBJPTR *primary, bool *get )
 /**********************************************************************/
 {
     if( primary != NULL && get != NULL ) {
@@ -294,7 +294,7 @@ static bool CurrObjShowSelBoxes( CURROBJ *obj, bool *show, void *p2 )
     obj->show_sel_boxes = *show;
     for( item = obj->currobjlist; item != NULL; item = ListNext( item ) ) {
         cobj = ListElement( item );
-        (*cobj)( SHOW_SEL_BOXES, cobj, show, p2 );
+        OBJ_DISPATCHER( cobj )( SHOW_SEL_BOXES, cobj, show, p2 );
     }
     return( true );
 }

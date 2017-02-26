@@ -550,7 +550,7 @@ void FMEDITAPI HideSelectBoxes( void )
 
     currobj = GetCurrObj();
     show = false;
-    (*currobj)( SHOW_SEL_BOXES, currobj, &show, NULL );
+    OBJ_DISPATCHER( currobj )( SHOW_SEL_BOXES, currobj, &show, NULL );
 }
 
 void FMEDITAPI ShowSelectBoxes( void )
@@ -560,5 +560,5 @@ void FMEDITAPI ShowSelectBoxes( void )
 
     currobj = GetCurrObj();
     show = true;
-    (*currobj)( SHOW_SEL_BOXES, currobj, &show, NULL );
+    OBJ_DISPATCHER( currobj )( SHOW_SEL_BOXES, currobj, &show, NULL );
 }

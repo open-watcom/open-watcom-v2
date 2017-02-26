@@ -155,7 +155,7 @@ OBJPTR WdeLBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wde
     new->object_id = id;
 
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -182,7 +182,7 @@ OBJPTR WdeLBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wde
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
 WINEXPORT bool CALLBACK WdeLBoxDispatcher( ACTION act, WdeLBoxObject *obj, void *p1, void *p2 )
@@ -193,7 +193,7 @@ WINEXPORT bool CALLBACK WdeLBoxDispatcher( ACTION act, WdeLBoxObject *obj, void 
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeLBoxActions[i].id == act ) {
-            return( WdeLBoxActions[i].rtn( obj, p1, p2 ) );
+            return( WdeLBoxActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
         }
     }
 
@@ -287,7 +287,7 @@ bool WdeLBoxValidateAction( WdeLBoxObject *obj, ACTION *act, void *p2 )
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-bool WdeLBoxCopyObject( WdeLBoxObject *obj, WdeLBoxObject **new, WdeLBoxObject *handle )
+bool WdeLBoxCopyObject( WdeLBoxObject *obj, WdeLBoxObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeLBoxCopyObject: Invalid new object!" );
@@ -305,7 +305,7 @@ bool WdeLBoxCopyObject( WdeLBoxObject *obj, WdeLBoxObject **new, WdeLBoxObject *
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }

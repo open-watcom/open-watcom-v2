@@ -177,7 +177,7 @@ OBJPTR WdeStatCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     new->dispatcher = (DISPATCH_FN *)WdeStaticDispatch;
     new->object_id = id;
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -204,7 +204,7 @@ OBJPTR WdeStatCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
 WINEXPORT bool CALLBACK WdeStaticDispatcher( ACTION act, WdeStaticObject *obj, void *p1, void *p2 )
@@ -215,7 +215,7 @@ WINEXPORT bool CALLBACK WdeStaticDispatcher( ACTION act, WdeStaticObject *obj, v
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeStaticActions[i].id == act ) {
-            return( WdeStaticActions[i].rtn( obj, p1, p2 ) );
+            return( WdeStaticActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
         }
     }
 
@@ -308,8 +308,7 @@ bool WdeStaticValidateAction( WdeStaticObject *obj, ACTION *act, void *p2 )
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-bool WdeStaticCopyObject( WdeStaticObject *obj, WdeStaticObject **new,
-                          WdeStaticObject *handle )
+bool WdeStaticCopyObject( WdeStaticObject *obj, WdeStaticObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeStaticCopyObject: Invalid new object!" );
@@ -327,7 +326,7 @@ bool WdeStaticCopyObject( WdeStaticObject *obj, WdeStaticObject **new,
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }

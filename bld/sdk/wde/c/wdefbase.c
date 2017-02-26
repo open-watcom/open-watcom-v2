@@ -151,7 +151,7 @@ WINEXPORT OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR h
     new = (WdeBaseObject *)WRMemAlloc( sizeof( WdeBaseObject ) );
     if( new == NULL ) {
         WdeWriteTrail( "WdeBaseCreate: Malloc failed" );
-        return( new );
+        return( (OBJPTR)new );
     }
     memset( new, 0, sizeof( WdeBaseObject ) );
 
@@ -174,7 +174,7 @@ WINEXPORT OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR h
     InflateRect( &rect, WDE_WORLD_PAD, WDE_WORLD_PAD );
 
     if( handle ==  NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -203,7 +203,7 @@ WINEXPORT OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR h
         WdeFreeRCString( text );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
 WINEXPORT bool CALLBACK WdeBaseDispatcher( ACTION act, WdeBaseObject *obj, void *p1, void *p2 )
@@ -214,7 +214,7 @@ WINEXPORT bool CALLBACK WdeBaseDispatcher( ACTION act, WdeBaseObject *obj, void 
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeBaseActions[i].id == act ) {
-            return( WdeBaseActions[i].rtn( obj, p1, p2 ) );
+            return( WdeBaseActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
         }
     }
 
@@ -344,7 +344,7 @@ bool WdeBaseGetResizer( WdeBaseObject *obj, WdeResizeRatio *resizer, OBJPTR *o )
 {
     *resizer = obj->resizer;
     if( o != NULL ) {
-        *o = obj;
+        *o = (OBJPTR)obj;
     }
 
     return( true );
@@ -541,7 +541,7 @@ bool WdeBaseFindObjectsPt( WdeBaseObject *obj, POINT *pt, LIST **obj_list )
         }
         ListFree( subobjs );
     } else {
-        ListAddElt( obj_list, obj );
+        ListAddElt( obj_list, (OBJPTR)obj );
     }
 
     return( true );
@@ -596,7 +596,7 @@ bool WdeBaseNotify( WdeBaseObject *base_obj, NOTE_ID *id, void *p2 )
     switch( *id ) {
     case PRIMARY_OBJECT:
         obj = base_obj->res_info->next_current;
-        if( obj != NULL && obj != base_obj ) {
+        if( obj != NULL && obj != (OBJPTR)base_obj ) {
             MakeObjectCurrent( obj );
         } else if( base_obj->num_children != 0 ) {
             obj = ListElement( base_obj->children );

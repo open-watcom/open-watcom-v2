@@ -159,7 +159,7 @@ OBJPTR WdeHCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     new->object_id = id;
 
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -186,7 +186,7 @@ OBJPTR WdeHCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
 WINEXPORT bool CALLBACK WdeHdrDispatcher( ACTION act, WdeHdrObject *obj, void *p1, void *p2 )
@@ -197,7 +197,7 @@ WINEXPORT bool CALLBACK WdeHdrDispatcher( ACTION act, WdeHdrObject *obj, void *p
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeHdrActions[i].id == act ) {
-            return( WdeHdrActions[i].rtn( obj, p1, p2 ) );
+            return( WdeHdrActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
         }
     }
 
@@ -290,7 +290,7 @@ bool WdeHdrValidateAction( WdeHdrObject *obj, ACTION *act, void *p2 )
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-bool WdeHdrCopyObject( WdeHdrObject *obj, WdeHdrObject **new, WdeHdrObject *handle )
+bool WdeHdrCopyObject( WdeHdrObject *obj, WdeHdrObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeHdrCopyObject: Invalid new object!" );
@@ -308,7 +308,7 @@ bool WdeHdrCopyObject( WdeHdrObject *obj, WdeHdrObject **new, WdeHdrObject *hand
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }

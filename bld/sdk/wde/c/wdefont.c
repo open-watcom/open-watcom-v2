@@ -215,7 +215,7 @@ bool WdeAddFontFamilyMember( WdeFontNames *font_element, ENUMLOGFONT *lpelf, TEX
 
     /* lets make sure the font is not already in the list */
     for( olist = font_element->family_list; olist != NULL; olist = ListNext( olist ) ) {
-        font_sibling = ListElement( olist );
+        font_sibling = (WdeFontData *)ListElement( olist );
         if( font_sibling->pointsize == font_data->pointsize ) {
             WRMemFree( font_data );
             return( true );
@@ -238,7 +238,7 @@ WINEXPORT int CALLBACK WdeEnumFontsProc( ENUMLOGFONT *lpelf, TEXTMETRIC *lpntm, 
 
     /* let's make sure the font is not already in the list */
     for( olist = *list; olist != NULL; olist = ListNext( olist ) ) {
-        font_element = ListElement( olist );
+        font_element = (WdeFontNames *)ListElement( olist );
         if( strcmp( font_element->name, lpelf->elfLogFont.lfFaceName ) == 0 ) {
             /* do not recursively add TRUE TYPE FONTS */
             if( !(fonttype & TRUETYPE_FONTTYPE) ) {

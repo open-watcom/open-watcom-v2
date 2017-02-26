@@ -112,13 +112,11 @@ WINEXPORT OBJPTR CALLBACK WdeTViewCreate( OBJPTR parent, RECT *obj_rect, OBJPTR 
     if( handle == NULL ) {
         return( WdeMakeTView( parent, obj_rect, handle, 0, "", TVIEW_OBJ ) );
     } else {
-        return( WdeTVCreate( parent, obj_rect, NULL, TVIEW_OBJ,
-                             (WdeDialogBoxControl *)handle ) );
+        return( WdeTVCreate( parent, obj_rect, NULL, TVIEW_OBJ, (WdeDialogBoxControl *)handle ) );
     }
 }
 
-OBJPTR WdeMakeTView( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                     DialogStyle style, char *text, OBJ_ID id )
+OBJPTR WdeMakeTView( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -138,8 +136,7 @@ OBJPTR WdeMakeTView( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( new );
 }
 
-OBJPTR WdeTVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                    OBJ_ID id, WdeDialogBoxControl *info )
+OBJPTR WdeTVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, WdeDialogBoxControl *info )
 {
     WdeTViewObject *new;
 
@@ -159,7 +156,7 @@ OBJPTR WdeTVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     new->dispatcher = (DISPATCH_FN *)WdeTViewDispatch;
     new->object_id = id;
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -186,7 +183,7 @@ OBJPTR WdeTVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
 WINEXPORT bool CALLBACK WdeTViewDispatcher( ACTION act, WdeTViewObject *obj, void *p1, void *p2 )
@@ -197,7 +194,7 @@ WINEXPORT bool CALLBACK WdeTViewDispatcher( ACTION act, WdeTViewObject *obj, voi
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeTViewActions[i].id == act ) {
-            return( WdeTViewActions[i].rtn( obj, p1, p2 ) );
+            return( WdeTViewActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
         }
     }
 
@@ -290,7 +287,7 @@ bool WdeTViewValidateAction( WdeTViewObject *obj, ACTION *act, void *p2 )
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-bool WdeTViewCopyObject( WdeTViewObject *obj, WdeTViewObject **new, WdeTViewObject *handle )
+bool WdeTViewCopyObject( WdeTViewObject *obj, WdeTViewObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeTViewCopyObject: Invalid new object!" );
@@ -307,7 +304,7 @@ bool WdeTViewCopyObject( WdeTViewObject *obj, WdeTViewObject **new, WdeTViewObje
     (*new)->dispatcher = obj->dispatcher;
     (*new)->object_id = obj->object_id;
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }

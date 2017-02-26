@@ -27,14 +27,14 @@ typedef enum {
    SCROLL_BOTH
 } SCR_CONFIG;
 
-typedef void                ANYOBJ;
-typedef void                *OBJPTR;
+typedef struct object       OBJECT;
+typedef OBJECT              *OBJPTR;
 //typedef union object_defn   *OBJHANDLE;
 //typedef union object_defn   OBJECT_DEFN;
 typedef OBJPTR CALLBACK CREATE_RTN( OBJPTR, RECT *, OBJPTR );
 typedef CREATE_RTN          **CREATE_TABLE;
 typedef unsigned            STATE_HDL;
-typedef bool (CALLBACK *OBJECT)( ACTION, OBJPTR, void *, void * );
+//typedef bool (CALLBACK *OBJECT)( ACTION, OBJPTR, void *, void * );
 
 typedef void MOUSEACTION( HWND, RECT * );
 
@@ -48,6 +48,14 @@ typedef struct {
 typedef bool CALLBACK DISPATCH_FN( ACTION, OBJPTR, void *, void * );
 
 typedef OBJPTR INT_CREATE_RTN( OBJPTR, RECT *, OBJPTR );
+
+typedef struct object {
+   DISPATCH_FN  *dispatcher;
+} OBJECT;
+
+#define OBJ_DISPATCHER(o)           ((OBJECT *)(o))->dispatcher
+#define OBJ_DISPATCHER_SET(o,s)     OBJ_DISPATCHER(o) = (DISPATCHER_FN *)(s)
+#define OBJ_DISPATCHER_COPY(o,s)    OBJ_DISPATCHER(o) = OBJ_DISPATCHER(s)
 
 #include "constant.def"
 #include "fmmenu.def"

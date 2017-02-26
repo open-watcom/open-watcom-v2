@@ -99,7 +99,7 @@ bool WdeSelectDialog( WdeResInfo *res_info )
     bool            last;
 
     if( ListCount( res_info->dlg_item_list ) == 1 ) {
-        ok = WdeOpenSelectedDialog( res_info, ListElement( res_info->dlg_item_list ), TRUE );
+        ok = WdeOpenSelectedDialog( res_info, (WdeResDlgItem *)ListElement( res_info->dlg_item_list ), TRUE );
         return( ok );
     }
 
@@ -250,7 +250,7 @@ bool WdeGetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
                 ok = false;
                 break;
             }
-            ListAddElt( &si->selection, ditem );
+            ListAddElt( &si->selection, (OBJPTR)ditem );
         }
     }
 

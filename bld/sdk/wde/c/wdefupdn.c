@@ -159,7 +159,7 @@ OBJPTR WdeUDCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     new->dispatcher = (DISPATCH_FN *)WdeUpDnDispatch;
     new->object_id = id;
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -186,7 +186,7 @@ OBJPTR WdeUDCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
 WINEXPORT bool CALLBACK WdeUpDnDispatcher( ACTION act, WdeUpDnObject *obj, void *p1, void *p2 )
@@ -197,7 +197,7 @@ WINEXPORT bool CALLBACK WdeUpDnDispatcher( ACTION act, WdeUpDnObject *obj, void 
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeUpDnActions[i].id == act ) {
-            return( WdeUpDnActions[i].rtn( obj, p1, p2 ) );
+            return( WdeUpDnActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
         }
     }
 
@@ -287,10 +287,10 @@ bool WdeUpDnValidateAction( WdeUpDnObject *obj, ACTION *act, void *p2 )
         }
     }
 
-    return( ValidateAction( (OBJPTR) obj->control, *act, p2 ) );
+    return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-bool WdeUpDnCopyObject( WdeUpDnObject *obj, WdeUpDnObject **new, WdeUpDnObject *handle )
+bool WdeUpDnCopyObject( WdeUpDnObject *obj, WdeUpDnObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeUpDnCopyObject: Invalid new object!" );
@@ -307,7 +307,7 @@ bool WdeUpDnCopyObject( WdeUpDnObject *obj, WdeUpDnObject **new, WdeUpDnObject *
     (*new)->dispatcher = obj->dispatcher;
     (*new)->object_id = obj->object_id;
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }

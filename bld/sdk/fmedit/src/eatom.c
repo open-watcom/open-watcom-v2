@@ -95,7 +95,7 @@ static bool CALLBACK EAtomDispatch( ACTION id, EATOM *obj, void *p1, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( EAtomActions[i].id == id ) {
-            return( (EAtomActions[i].rtn)( obj, p1, p2 ) );
+            return( (EAtomActions[i].rtn)( (OBJPTR)obj, p1, p2 ) );
         }
     }
     return( false );
@@ -135,7 +135,7 @@ OBJPTR EAtomCreate( OBJPTR parent, RECT *loc, OBJPTR handle )
     new->obj = parent;
     new->parent = NULL;
     if( handle == NULL ) {
-        new->handle = new;
+        new->handle = (OBJPTR)new;
     } else {
         new->handle = handle;
     }
@@ -169,7 +169,7 @@ OBJPTR EAtomCreate( OBJPTR parent, RECT *loc, OBJPTR handle )
         MouseAction( &new->rect );
     }
     ShowEAtomRect( new );
-    return( new );
+    return( (OBJPTR)new );
 }
 
 
@@ -405,7 +405,7 @@ static bool EAtomRegister( EATOM *obj, void *p1, void *p2 )
     p1 = p1;          /* ref'd to avoid warning */
     p2 = p2;          /* ref'd to avoid warning */
     ret = true;
-    currobj = GetCurrObjptr( obj );
+    currobj = GetCurrObjptr( (OBJPTR)obj );
     state = GetState();
     if( !IsRectEmpty( (LPRECT)&obj->rect ) || state == CREATING ) {
         /* register the completed action with the appropriate object */
@@ -495,7 +495,7 @@ static bool EAtomDraw( EATOM *obj, RECT *rect, HDC *hdc )
     return( true );
 }
 
-static bool EAtomGetObjptr( EATOM *obj, ANYOBJ **newobj, void *p2 )
+static bool EAtomGetObjptr( EATOM *obj, OBJPTR *newobj, void *p2 )
 /*****************************************************************/
 {
     /* Get the OBJPTR of the object associated with this EATOM */

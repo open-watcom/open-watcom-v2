@@ -157,7 +157,7 @@ OBJPTR WdeTCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     new->dispatcher = (DISPATCH_FN *)WdeTabCDispatch;
     new->object_id = id;
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -184,7 +184,7 @@ OBJPTR WdeTCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
 WINEXPORT bool CALLBACK WdeTabCDispatcher( ACTION act, WdeTabCObject *obj, void *p1, void *p2 )
@@ -195,7 +195,7 @@ WINEXPORT bool CALLBACK WdeTabCDispatcher( ACTION act, WdeTabCObject *obj, void 
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeTabCActions[i].id == act ) {
-            return( WdeTabCActions[i].rtn( obj, p1, p2 ) );
+            return( WdeTabCActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
         }
     }
 
@@ -288,7 +288,7 @@ bool WdeTabCValidateAction( WdeTabCObject *obj, ACTION *act, void *p2 )
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-bool WdeTabCCopyObject( WdeTabCObject *obj, WdeTabCObject **new, WdeTabCObject *handle )
+bool WdeTabCCopyObject( WdeTabCObject *obj, WdeTabCObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeTabCCopyObject: Invalid new object!" );
@@ -306,7 +306,7 @@ bool WdeTabCCopyObject( WdeTabCObject *obj, WdeTabCObject **new, WdeTabCObject *
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }

@@ -160,7 +160,7 @@ OBJPTR WdeCBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     new->object_id = id;
 
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -187,7 +187,7 @@ OBJPTR WdeCBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
 WINEXPORT bool CALLBACK WdeCBoxDispatcher( ACTION act, WdeCBoxObject *obj, void *p1, void *p2 )
@@ -198,7 +198,7 @@ WINEXPORT bool CALLBACK WdeCBoxDispatcher( ACTION act, WdeCBoxObject *obj, void 
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeCBoxActions[i].id == act ) {
-            return( WdeCBoxActions[i].rtn( obj, p1, p2 ) );
+            return( WdeCBoxActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
         }
     }
 
@@ -288,7 +288,7 @@ bool WdeCBoxValidateAction( WdeCBoxObject *obj, ACTION *act, void *p2 )
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-bool WdeCBoxCopyObject( WdeCBoxObject *obj, WdeCBoxObject **new, WdeCBoxObject *handle )
+bool WdeCBoxCopyObject( WdeCBoxObject *obj, WdeCBoxObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeCBoxCopyObject: Invalid new object!" );
@@ -306,7 +306,7 @@ bool WdeCBoxCopyObject( WdeCBoxObject *obj, WdeCBoxObject **new, WdeCBoxObject *
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }

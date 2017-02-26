@@ -58,7 +58,7 @@
 
 static bool CALLBACK OItemDispatch( ACTION, OITEM *, void *, void * );
 
-static void OItemSetNewParent( OITEM *, ANYOBJ * );
+static void OItemSetNewParent( OITEM *, OBJPTR );
 
 #define pick(e,n,c) static bool OItem ## n ## c;
     pick_ACTS( OITEM )
@@ -80,7 +80,7 @@ static bool CALLBACK OItemDispatch( ACTION id, OITEM *obj, void *p1, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( OItemActions[i].id == id ) {
-            return( (OItemActions[i].rtn)( obj, p1, p2) );
+            return( (OItemActions[i].rtn)( (OBJPTR)obj, p1, p2) );
         }
     }
     return( false );
@@ -170,12 +170,12 @@ OBJPTR OItemCreate( OBJPTR parent, RECT *rect, OBJPTR handle )
         new->priority = 0;
     }
     if( handle == NULL ) {
-        new->handle = new;
+        new->handle = (OBJPTR)new;
     } else {
         new->handle = handle;
     }
     new->rect = *rect;
-    return( new );
+    return( (OBJPTR)new );
 }
 
 
@@ -251,7 +251,7 @@ static bool OItemDestroy( OITEM *oitem, bool *user_action, bool *p2 )
     return( true );
 }
 
-static bool OItemCutObject( OITEM *oitem, OITEM **newitem, void *p2 )
+static bool OItemCutObject( OITEM *oitem, OBJPTR *newitem, void *p2 )
 /*******************************************************************/
 {
     p2 = p2;
@@ -261,7 +261,7 @@ static bool OItemCutObject( OITEM *oitem, OITEM **newitem, void *p2 )
     return( true );
 }
 
-static bool OItemCopyObject( OITEM *oitem, OITEM **newitem, OITEM *handle )
+static bool OItemCopyObject( OITEM *oitem, OITEM **newitem, OBJPTR handle )
 /*************************************************************************/
 {
     OITEM   *no;
@@ -270,10 +270,10 @@ static bool OItemCopyObject( OITEM *oitem, OITEM **newitem, OITEM *handle )
         no = EdAlloc( sizeof( OITEM ) );
         *newitem = no;
         no->dispatcher = oitem->dispatcher;
-        if( handle != NULL ) {
-            no->handle = handle;
+        if( handle == NULL ) {
+            no->handle = (OBJPTR)no;
         } else {
-            no->handle = no;
+            no->handle = handle;
         }
         no->priority = oitem->priority;
         CopyRect( &no->rect, &oitem->rect );
@@ -293,7 +293,7 @@ static bool OItemPasteObject( OITEM *oitem, OBJPTR parent, POINT *pt )
     return( AddObject( parent, oitem->handle ) );
 }
 
-static bool OItemGetObjectParent( OITEM *oitem, ANYOBJ **parent, void *p2 )
+static bool OItemGetObjectParent( OITEM *oitem, OBJPTR *parent, void *p2 )
 /*************************************************************************/
 {
     p2 = p2;

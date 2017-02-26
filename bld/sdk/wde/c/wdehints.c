@@ -362,7 +362,7 @@ bool WdeCreateWdePopupListItem( int num, HMENU menu, WdePopupHintItem *hint_item
         p->menu = menu;
         p->hint_items = hint_items;
         if( WdeInitHintItems( num, menu, hint_items ) ) {
-            ListAddElt( &WdePopupList, p );
+            ListAddElt( &WdePopupList, (OBJPTR)p );
         } else {
             WRMemFree( p );
             return( FALSE );

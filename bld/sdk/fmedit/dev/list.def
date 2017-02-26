@@ -1,19 +1,19 @@
 #ifndef _LIST_INCLUDE
-#define _LIST_INCLUDE 
+#define _LIST_INCLUDE
 
 typedef struct list LIST;
 
-FMEDLLENTRY extern void * FMEDITAPI ListElement( LIST * );
+FMEDLLENTRY extern OBJPTR FMEDITAPI ListElement( LIST * );
 FMEDLLENTRY extern void   FMEDITAPI ListFree( LIST * );
 FMEDLLENTRY extern LIST * FMEDITAPI ListNext( LIST * );
 FMEDLLENTRY extern LIST * FMEDITAPI ListPrev( LIST * );
-FMEDLLENTRY extern void   FMEDITAPI ListAddElt( LIST **, void * );
-FMEDLLENTRY extern void   FMEDITAPI ListRemoveElt( LIST **, void * );
+FMEDLLENTRY extern void   FMEDITAPI ListAddElt( LIST **, OBJPTR );
+FMEDLLENTRY extern void   FMEDITAPI ListRemoveElt( LIST **, OBJPTR );
 FMEDLLENTRY extern LIST * FMEDITAPI ListConsume( LIST * );
-FMEDLLENTRY extern LIST * FMEDITAPI ListFindElt( LIST *, void * );
+FMEDLLENTRY extern LIST * FMEDITAPI ListFindElt( LIST *, OBJPTR );
 FMEDLLENTRY extern LIST * FMEDITAPI ListCopy( LIST * );
 FMEDLLENTRY extern int    FMEDITAPI ListCount( LIST * );
-FMEDLLENTRY extern void   FMEDITAPI ListInsertElt( LIST *, void * );
+FMEDLLENTRY extern void   FMEDITAPI ListInsertElt( LIST *, OBJPTR );
 FMEDLLENTRY extern void   FMEDITAPI ListMerge( LIST **, LIST * );
 
 #endif

@@ -78,7 +78,7 @@ static bool CALLBACK CurrItemDispatch( ACTION id, CURRITEM *ci, void *p1, void *
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( CurrItemActions[i].id == id ) {
-            return( (CurrItemActions[i].rtn)( ci, p1, p2 ) );
+            return( (CurrItemActions[i].rtn)( (OBJPTR)ci, p1, p2 ) );
         }
     }
     return( Forward( ci->obj, id, p1, p2 ) );
@@ -109,12 +109,12 @@ static bool CurrItemDestroy( CURRITEM *ci, bool *first, bool *p2 )
 
     p2 = p2;          /* ref'd to avoid warning */
     obj = ci->obj;
-    DeleteCurrObject( ci );
+    DeleteCurrObject( (OBJPTR)ci );
     Destroy( obj, *first );
     return( true );
 }
 
-static bool CurrItemDeleteObject( CURRITEM *ci, ANYOBJ *p1, bool *p2 )
+static bool CurrItemDeleteObject( CURRITEM *ci, OBJPTR p1, bool *p2 )
 /********************************************************************/
 {
     /* delete the CURRITEM but do not destroy the object */
@@ -143,7 +143,7 @@ static bool CurrItemShowSelBoxes( CURRITEM *ci, bool *show, void *p2 )
     return( true );
 }
 
-ANYOBJ *CurrItemCreate( ANYOBJ *parent, RECT *loc, ANYOBJ *obj )
+OBJPTR CurrItemCreate( OBJPTR parent, RECT *loc, OBJPTR obj )
 /**************************************************************/
 {
     /* Create a CURRITEM object */
@@ -174,10 +174,10 @@ ANYOBJ *CurrItemCreate( ANYOBJ *parent, RECT *loc, ANYOBJ *obj )
     } else {
         new->hwnd = NULL;
     }
-    return( new );
+    return( (OBJPTR)new );
 }
 
-static bool CurrItemGetObjptr( CURRITEM *ci, ANYOBJ **newobj, void *p2 )
+static bool CurrItemGetObjptr( CURRITEM *ci, OBJPTR *newobj, void *p2 )
 /**********************************************************************/
 {
     /* return the objptr of the object associated with this curritem */

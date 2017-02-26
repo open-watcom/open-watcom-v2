@@ -47,7 +47,7 @@
 #define pick_ACT_GET_FONT(o,x)               x##( GET_FONT,             GetFont,            (o *, HFONT *, void *) )
 #define pick_ACT_SET_FONT(o,x)               x##( SET_FONT,             SetFont,            (o *, HFONT *, WdeResizeRatio *) )
 #define pick_ACT_BECOME_FIRST_CHILD(o,x)     x##( BECOME_FIRST_CHILD,   FirstChild,         (o *, void *, void *) )
-#define pick_ACT_PUT_ME_FIRST(o,x)           x##( PUT_ME_FIRST,         PutChildFirst,      (o *, void *, void *) )
+#define pick_ACT_PUT_ME_FIRST(o,x)           x##( PUT_ME_FIRST,         PutChildFirst,      (o *, OBJPTR, void *) )
 #define pick_ACT_GET_FIRST_CHILD(o,x)        x##( GET_FIRST_CHILD,      GetFirstChild,      (o *, OBJPTR *, void *) )
 #define pick_ACT_GET_NC_SIZE(o,x)            x##( GET_NC_SIZE,          GetNCSize,          (o *, RECT *, void *) )
 #define pick_ACT_GET_RES_SIZE(o,x)           x##( GET_RES_SIZE,         GetResSize,         (o *, void *, void *) )

@@ -122,7 +122,7 @@ static void WdeSetTagText( WdeOrderedEntry *oe )
 static void WdeSetTagOrder( WdeSetOrderStruct *o, bool reorder )
 {
     if( o->new_oe ) {
-        ListRemoveElt( &o->lists->newlist, o->new_oe );
+        ListRemoveElt( &o->lists->newlist, (OBJPTR)o->new_oe );
         WRMemFree( o->new_oe );
         o->new_oe = NULL;
         o->old_oe->present = TRUE;
@@ -298,7 +298,7 @@ bool WdeCleanOrderedList( LIST **l )
     for( olist = tlist; olist != NULL; olist = ListNext( olist ) ) {
         oentry = (WdeOrderedEntry *)ListElement( olist );
         if( !oentry->present ) {
-            ListRemoveElt( l, oentry );
+            ListRemoveElt( l, (OBJPTR)oentry );
             WRMemFree( oentry );
         }
     }
@@ -330,7 +330,7 @@ bool WdeGetNextChild( LIST **l, OBJPTR *obj, bool up )
                 WdeListLastElt( *l, &o );
             }
         }
-        oentry = ListElement( o );
+        oentry = (WdeOrderedEntry *)ListElement( o );
         *obj = oentry->obj;
         return( TRUE );
     }

@@ -156,7 +156,7 @@ OBJPTR WdeEdCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     new->object_id = id;
 
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -183,7 +183,7 @@ OBJPTR WdeEdCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
 WINEXPORT bool CALLBACK WdeEditDispatcher( ACTION act, WdeEditObject *obj, void *p1, void *p2 )
@@ -194,7 +194,7 @@ WINEXPORT bool CALLBACK WdeEditDispatcher( ACTION act, WdeEditObject *obj, void 
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeEditActions[i].id == act ) {
-            return( WdeEditActions[i].rtn( obj, p1, p2 ) );
+            return( WdeEditActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
         }
     }
 
@@ -288,8 +288,7 @@ bool WdeEditValidateAction( WdeEditObject *obj, ACTION *act, void *p2 )
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-bool WdeEditCopyObject( WdeEditObject *obj, WdeEditObject **new,
-                        WdeEditObject *handle )
+bool WdeEditCopyObject( WdeEditObject *obj, WdeEditObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeEditCopyObject: Invalid new object!" );
@@ -307,7 +306,7 @@ bool WdeEditCopyObject( WdeEditObject *obj, WdeEditObject **new,
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }

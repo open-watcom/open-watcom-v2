@@ -34,9 +34,9 @@ typedef struct eatom {
     DISPATCH_FN *dispatcher;
     RECT        rect;
     POINT       anchor;
-    ANYOBJ      *obj;
-    ANYOBJ      *parent;
-    ANYOBJ      *handle;
+    OBJPTR      obj;
+    OBJPTR      parent;
+    OBJPTR      handle;
     POINT       offset;
     HWND        hwnd;
     bool        displayed;

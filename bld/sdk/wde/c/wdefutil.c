@@ -259,7 +259,7 @@ WdeNextIDStruct *WdeFindNextIDStruct( OBJPTR base )
     WdeNextIDStruct *ids;
 
     for( olist = WdeNextIDList; olist != NULL; olist = ListPrev( olist ) ) {
-        ids = ListElement( olist );
+        ids = (WdeNextIDStruct *)ListElement( olist );
         if( ids->base == base ) {
             return( ids );
         }
@@ -288,7 +288,7 @@ uint_16 WdeGetNextControlID( void )
             if( ids != NULL ) {
                 ids->base = base;
                 ids->id = WDE_START_CONTROL_ID;
-                ListAddElt( &WdeNextIDList, ids );
+                ListAddElt( &WdeNextIDList, (OBJPTR)ids );
             } else {
                 WdeWriteTrail( "WdeGetNextControlID: ids alloc failed!" );
                 return( WDE_START_CONTROL_ID );

@@ -482,7 +482,7 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     new->cust_index = cust_index;
 
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -509,7 +509,7 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
 WINEXPORT bool CALLBACK WdeCustomDispatcher( ACTION act, WdeCustomObject *obj, void *p1, void *p2 )
@@ -522,7 +522,7 @@ WINEXPORT bool CALLBACK WdeCustomDispatcher( ACTION act, WdeCustomObject *obj, v
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeCustomActions[i].id == act ) {
-            return( WdeCustomActions[i].rtn( obj, p1, p2 ) );
+            return( WdeCustomActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
         }
     }
 
@@ -595,8 +595,7 @@ bool WdeCustomValidateAction( WdeCustomObject *obj, ACTION *act, void *p2 )
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-bool WdeCustomCopyObject( WdeCustomObject *obj, WdeCustomObject **new,
-                          WdeCustomObject *handle )
+bool WdeCustomCopyObject( WdeCustomObject *obj, WdeCustomObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeCustomCopyObject: Invalid new object!" );
@@ -625,7 +624,7 @@ bool WdeCustomCopyObject( WdeCustomObject *obj, WdeCustomObject **new,
     }
 
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }

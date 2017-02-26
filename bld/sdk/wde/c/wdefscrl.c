@@ -172,7 +172,7 @@ OBJPTR WdeScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id,
     new->dispatcher = (DISPATCH_FN *)WdeScrollDispatch;
     new->object_id = id;
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -199,7 +199,7 @@ OBJPTR WdeScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id,
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
 WINEXPORT bool CALLBACK WdeScrollDispatcher( ACTION act, WdeScrollObject *obj, void *p1, void *p2 )
@@ -210,7 +210,7 @@ WINEXPORT bool CALLBACK WdeScrollDispatcher( ACTION act, WdeScrollObject *obj, v
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeScrollActions[i].id == act ) {
-            return( WdeScrollActions[i].rtn( obj, p1, p2 ) );
+            return( WdeScrollActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
         }
     }
 
@@ -356,8 +356,7 @@ bool WdeScrollValidateAction( WdeScrollObject *obj, ACTION *act, void *p2 )
     return( ValidateAction( (OBJPTR) obj->control, *act, p2 ) );
 }
 
-bool WdeScrollCopyObject( WdeScrollObject *obj, WdeScrollObject **new,
-                          WdeScrollObject *handle )
+bool WdeScrollCopyObject( WdeScrollObject *obj, WdeScrollObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeScrollCopyObject: Invalid new object!" );
@@ -375,7 +374,7 @@ bool WdeScrollCopyObject( WdeScrollObject *obj, WdeScrollObject **new,
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }

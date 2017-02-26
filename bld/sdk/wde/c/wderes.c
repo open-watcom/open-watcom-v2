@@ -1004,7 +1004,7 @@ bool WdeRemoveResource( WdeResInfo *res_info )
         return( FALSE );
     }
 
-    if( (node = ListFindElt( WdeResList, res_info )) != NULL ) {
+    if( (node = ListFindElt( WdeResList, (OBJPTR)res_info )) != NULL ) {
         ListRemoveElt( &WdeResList, (void *)ListElement( node ) );
     } else {
         WdeWriteTrail( "WdeRemoveResource: res_info not found!" );
@@ -1042,7 +1042,7 @@ bool WdeRemoveDialogFromResInfo( WdeResInfo *res_info, WdeResDlgItem *ditem,
     rnode = ditem->rnode;
     lnode = ditem->lnode;
 
-    ListRemoveElt( &res_info->dlg_item_list, ditem );
+    ListRemoveElt( &res_info->dlg_item_list, (OBJPTR)ditem );
     WdeFreeResDlgItem( &ditem, destroy_object );
 
     if( rnode != NULL || lnode != NULL ) {

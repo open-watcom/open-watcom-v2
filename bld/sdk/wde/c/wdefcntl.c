@@ -52,10 +52,10 @@
 #include "wdeopts.h"
 #include "wdedebug.h"
 #include "wde_rc.h"
-#include "wdefcntl.h"
 #include "wdefbase.h"
 #include "windlg.h"
 #include "windlg32.h"
+#include "wdefcntl.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -238,10 +238,10 @@ WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPT
         new->dispatcher = WdeControlDispatch;
         new->sizeable = true;
         new->mode = WdeSelect;
-        if( handle ) {
-            new->object_handle = handle;
+        if( handle == NULL ) {
+            new->object_handle = (OBJPTR)new;
         } else {
-            new->object_handle = new;
+            new->object_handle = handle;
         }
         new->base_obj = GetMainObject();
         new->res_info = WdeGetCurrentRes();
@@ -298,7 +298,7 @@ WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPT
         }
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
 WINEXPORT bool CALLBACK WdeControlDispatcher( ACTION act, WdeControlObject *obj, void *p1, void *p2 )
@@ -310,7 +310,7 @@ WINEXPORT bool CALLBACK WdeControlDispatcher( ACTION act, WdeControlObject *obj,
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeControlActions[i].id == act ) {
             if( WdeControlActions[i].rtn ) {
-                return( WdeControlActions[i].rtn( obj, p1, p2 ) );
+                return( WdeControlActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
             } else {
                 return( Forward( obj->parent, act, p1, p2 ) );
             }
@@ -1015,8 +1015,7 @@ bool WdeControlPasteObject( WdeControlObject *obj, OBJPTR parent, POINT *pnt )
     return( ok );
 }
 
-bool WdeControlCopyObject( WdeControlObject *obj, WdeControlObject **new,
-                           WdeControlObject *handle )
+bool WdeControlCopyObject( WdeControlObject *obj, WdeControlObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeControlCopyObject: Invalid new object!" );
@@ -1067,7 +1066,7 @@ bool WdeControlCopyObject( WdeControlObject *obj, WdeControlObject **new,
     }
 
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }
@@ -1081,7 +1080,7 @@ bool WdeControlCopyObject( WdeControlObject *obj, WdeControlObject **new,
     return( true );
 }
 
-bool WdeControlCutObject( WdeControlObject *obj, WdeControlObject **new, void *p2 )
+bool WdeControlCutObject( WdeControlObject *obj, OBJPTR *new, void *p2 )
 {
     NOTE_ID     note_id;
     bool        check_scroll;
@@ -1308,19 +1307,16 @@ static bool WdeOffsetDialogUnits ( WdeControlObject *obj, WdeResizeRatio *r )
     return( false );
 }
 
-bool WdeUpdateCDialogUnits( OBJPTR obj, RECT *new, WdeResizeRatio *r )
+bool WdeUpdateCDialogUnits( OBJPTR cobj, RECT *new, WdeResizeRatio *r )
 {
-    WdeControlObject    *cobj;
     DialogSizeInfo      dsize;
 
-    cobj = (WdeControlObject *)obj;
-
     /* save the old dialog units */
-    dsize = GETCTL_SIZE( cobj->control_info );
+    dsize = GETCTL_SIZE( ((WdeControlObject *)cobj)->control_info );
 
-    if( !WdeScreenToDialog( cobj, r, new, GETCTL_PSIZE( cobj->control_info ) ) ) {
+    if( !WdeScreenToDialog( cobj, r, new, GETCTL_PSIZE( ((WdeControlObject *)cobj)->control_info ) ) ) {
         /* restore the old dialog units */
-        SETCTL_SIZE( cobj->control_info, dsize );
+        SETCTL_SIZE( ((WdeControlObject *)cobj)->control_info, dsize );
         return( false );
     }
 
@@ -1425,7 +1421,7 @@ bool WdeControlResize( WdeControlObject *obj, RECT *new_pos, bool *flag )
         if( obj->parent == obj->base_obj ) {
             rect = *new_pos;
         }
-        WdeUpdateCDialogUnits( obj, &rect, &resizer );
+        WdeUpdateCDialogUnits( (OBJPTR)obj, &rect, &resizer );
         if( !WdeChangeControlSize( obj, false, false ) ) {
             WdeWriteTrail( "WdeControlResize: WdeChangeControlSize failed!" );
             return( false );
@@ -1822,8 +1818,7 @@ bool WdeControlSetOrderMode( WdeControlObject *obj, WdeOrderMode *mode, WdeSetOr
         if( o == NULL ) {
             return( false );
         }
-        o->old_oe = ListElement( WdeFindOrderedEntry( (*l)->oldlist,
-                                                      obj->object_handle ) );
+        o->old_oe = (WdeOrderedEntry *)ListElement( WdeFindOrderedEntry( (*l)->oldlist, obj->object_handle ) );
         o->new_oe = NULL;
         o->lists = *l;
         o->old_oe->mode = *mode;

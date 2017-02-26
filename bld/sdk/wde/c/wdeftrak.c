@@ -160,7 +160,7 @@ OBJPTR WdeTrackCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     new->object_id = id;
 
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -187,7 +187,7 @@ OBJPTR WdeTrackCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
 WINEXPORT bool CALLBACK WdeTrakDispatcher( ACTION act, WdeTrakObject *obj, void *p1, void *p2 )
@@ -198,7 +198,7 @@ WINEXPORT bool CALLBACK WdeTrakDispatcher( ACTION act, WdeTrakObject *obj, void 
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeTrakActions[i].id == act ) {
-            return( WdeTrakActions[i].rtn( obj, p1, p2 ) );
+            return( WdeTrakActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
         }
     }
 
@@ -291,7 +291,7 @@ bool WdeTrakValidateAction( WdeTrakObject *obj, ACTION *act, void *p2 )
     return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
 }
 
-bool WdeTrakCopyObject( WdeTrakObject *obj, WdeTrakObject **new, WdeTrakObject *handle )
+bool WdeTrakCopyObject( WdeTrakObject *obj, WdeTrakObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeTrakCopyObject: Invalid new object!" );
@@ -309,7 +309,7 @@ bool WdeTrakCopyObject( WdeTrakObject *obj, WdeTrakObject **new, WdeTrakObject *
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }
