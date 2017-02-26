@@ -17,7 +17,7 @@
 /* Monitor handle data type */
 #if (WINVER < 0x0500) && !defined(HMONITOR_DECLARED)
 DECLARE_HANDLE( HMONITOR );
-#define HMONITOR_DECLARED 1
+#define HMONITOR_DECLARED
 #endif
 
 /* DirectDraw interface pointers */
