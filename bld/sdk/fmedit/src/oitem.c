@@ -95,7 +95,7 @@ static bool OItemValidateAction( OITEM *obj, ACTION *idptr, void *p2 )
     obj = obj;        /* ref'd to avoid warning */
     p2 = p2;          /* ref'd to avoid warning */
     if( *idptr == NOTIFY ) {
-        return( *((NOTE_ID *)p2) == NEW_PARENT );
+        return( *(NOTE_ID *)p2 == NEW_PARENT );
     }
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( OItemActions[i].id == *idptr ) {
@@ -134,14 +134,14 @@ static bool OItemMove( OITEM *oitem, POINT *offset, bool *user_action )
 }
 
 
-static bool OItemNotify( OITEM *oitem, NOTE_ID *note, void *p2 )
-/**************************************************************/
+static bool OItemNotify( OITEM *oitem, NOTE_ID *noteid, void *p2 )
+/****************************************************************/
 {
     /* process notify message for an OITEM */
     bool    ret;
 
     ret = false;
-    switch( *note ) {
+    switch( *noteid ) {
     case NEW_PARENT:
         OItemSetNewParent( oitem, p2 );
         ret = true;

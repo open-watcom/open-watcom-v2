@@ -585,7 +585,7 @@ bool WdeBasePutChildFirst( WdeBaseObject *obj, OBJPTR child, void *p2 )
     return( true );
 }
 
-bool WdeBaseNotify( WdeBaseObject *base_obj, NOTE_ID *id, void *p2 )
+bool WdeBaseNotify( WdeBaseObject *base_obj, NOTE_ID *noteid, void *p2 )
 {
     OBJPTR           obj;
     WdeInfoStruct    is;
@@ -593,7 +593,7 @@ bool WdeBaseNotify( WdeBaseObject *base_obj, NOTE_ID *id, void *p2 )
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
-    switch( *id ) {
+    switch( *noteid ) {
     case PRIMARY_OBJECT:
         obj = base_obj->res_info->next_current;
         if( obj != NULL && obj != (OBJPTR)base_obj ) {
@@ -616,7 +616,7 @@ bool WdeBaseNotify( WdeBaseObject *base_obj, NOTE_ID *id, void *p2 )
         return ( true );
     }
 
-    return( Notify( (OBJPTR)base_obj->o_item, *id, p2 ) );
+    return( Notify( (OBJPTR)base_obj->o_item, *noteid, p2 ) );
 }
 
 bool WdeBaseLocation( WdeBaseObject *base_obj, RECT *obj_rect, void *p2 )

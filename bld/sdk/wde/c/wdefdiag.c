@@ -2001,14 +2001,14 @@ void WdeWriteDialogToInfo( WdeDialogObject *obj )
     }
 }
 
-bool WdeDialogNotify( WdeDialogObject *obj, NOTE_ID *id, void *p2 )
+bool WdeDialogNotify( WdeDialogObject *obj, NOTE_ID *noteid, void *p2 )
 {
     HWND        handle;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
-    switch( *id ) {
+    switch( *noteid ) {
     case MOVE_START:
         HideSelectBoxes();
         break;
@@ -2047,7 +2047,7 @@ bool WdeDialogNotify( WdeDialogObject *obj, NOTE_ID *id, void *p2 )
                 obj->parent_handle = handle;
             }
         }
-        return( Notify( (OBJPTR)obj->o_item, *id, obj->parent ) );
+        return( Notify( (OBJPTR)obj->o_item, *noteid, obj->parent ) );
     }
 
     return( false );
@@ -2479,7 +2479,7 @@ bool WdeDialogCopyObject( WdeDialogObject *obj, WdeDialogObject **new, OBJPTR ha
 
 bool WdeDialogCutObject( WdeDialogObject *obj, OBJPTR *new, void *p2 )
 {
-    NOTE_ID   note_id;
+    NOTE_ID   noteid;
     bool      quick;
     bool      destroy_children;
 
@@ -2502,8 +2502,8 @@ bool WdeDialogCutObject( WdeDialogObject *obj, OBJPTR *new, void *p2 )
         return( false );
     }
 
-    note_id = NEW_PARENT;
-    if( !WdeDialogNotify( obj, &note_id, NULL ) ) {
+    noteid = NEW_PARENT;
+    if( !WdeDialogNotify( obj, &noteid, NULL ) ) {
         WdeWriteTrail( "WdeDialogCutObject: New parent notify failed!" );
         if( !AddObject( obj->parent, obj->object_handle ) ) {
             WdeWriteTrail( "WdeDialogCutObject: Add to parent failed!" );

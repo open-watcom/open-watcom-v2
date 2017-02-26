@@ -249,11 +249,11 @@ bool FMEDITAPI Destroy( OBJECT *obj, bool first )
     return( OBJ_DISPATCHER( obj )( DESTROY, obj, &first, NULL ) );
 }
 
-bool FMEDITAPI Notify( OBJECT *obj, NOTE_ID n, void *p )
-/******************************************************/
+bool FMEDITAPI Notify( OBJECT *obj, NOTE_ID noteid, void *p2 )
+/************************************************************/
 {
     /* notify an object about it's new parent */
-    return( OBJ_DISPATCHER( obj )( NOTIFY, obj, &n, p ) );
+    return( OBJ_DISPATCHER( obj )( NOTIFY, obj, &noteid, p2 ) );
 }
 
 

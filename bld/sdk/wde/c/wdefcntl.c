@@ -1082,7 +1082,7 @@ bool WdeControlCopyObject( WdeControlObject *obj, WdeControlObject **new, OBJPTR
 
 bool WdeControlCutObject( WdeControlObject *obj, OBJPTR *new, void *p2 )
 {
-    NOTE_ID     note_id;
+    NOTE_ID     noteid;
     bool        check_scroll;
 
     /* touch unused vars to get rid of warning */
@@ -1097,8 +1097,8 @@ bool WdeControlCutObject( WdeControlObject *obj, OBJPTR *new, void *p2 )
         return( false );
     }
 
-    note_id = NEW_PARENT;
-    if( !WdeControlNotify( obj, &note_id, NULL ) ) {
+    noteid = NEW_PARENT;
+    if( !WdeControlNotify( obj, &noteid, NULL ) ) {
         WdeWriteTrail( "WdeControlCutObject: New parent notify failed!" );
         if( !AddObject( obj->parent, obj->object_handle ) ) {
             WdeWriteTrail( "WdeControlCutObject: Add to parent failed!" );
@@ -1169,7 +1169,7 @@ void WdeWriteControlToInfo( WdeControlObject *obj )
 //  }
 }
 
-bool WdeControlNotify( WdeControlObject *obj, NOTE_ID *id, void *p2 )
+bool WdeControlNotify( WdeControlObject *obj, NOTE_ID *noteid, void *p2 )
 {
     HWND   handle;
     bool   new_parent;
@@ -1178,7 +1178,7 @@ bool WdeControlNotify( WdeControlObject *obj, NOTE_ID *id, void *p2 )
     new_parent = false;
     parent_changed = false;
 
-    switch( *id ) {
+    switch( *noteid ) {
     case MOVE_START:
         HideSelectBoxes();
         break;
@@ -1219,7 +1219,7 @@ bool WdeControlNotify( WdeControlObject *obj, NOTE_ID *id, void *p2 )
         if( p2 == NULL ) {
             obj->parent = NULL;
             obj->parent_handle = NULL;
-            return( Notify( obj->o_item, *id, obj->parent ) );
+            return( Notify( obj->o_item, *noteid, obj->parent ) );
         }
 
         if( obj->parent != p2 ) {
@@ -1257,7 +1257,7 @@ bool WdeControlNotify( WdeControlObject *obj, NOTE_ID *id, void *p2 )
                 }
             }
         }
-        return( Notify( obj->o_item, *id, obj->parent ) );
+        return( Notify( obj->o_item, *noteid, obj->parent ) );
 
     case SET_LOCATION:
         if( obj->clear_interior ) {

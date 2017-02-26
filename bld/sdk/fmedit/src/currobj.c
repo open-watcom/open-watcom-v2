@@ -82,13 +82,13 @@ static bool CurrObjValidateAction( CURROBJ *c, ACTION *idptr, void *p2 )
 {
     /* check if the desired action is valid for and CURROBJ */
     int         i;
-    NOTE_ID     *note;
+    NOTE_ID     *noteid;
 
     c = c;            /* ref'd to avoid warning */
 
     if( *idptr == NOTIFY ) {
-        note = p2;
-        return( note != NULL && (*note == CURR_OBJ_MOD_BEGIN || *note == CURR_OBJ_MOD_END) );
+        noteid = p2;
+        return( noteid != NULL && (*noteid == CURR_OBJ_MOD_BEGIN || *noteid == CURR_OBJ_MOD_END) );
     }
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
@@ -299,12 +299,12 @@ static bool CurrObjShowSelBoxes( CURROBJ *obj, bool *show, void *p2 )
     return( true );
 }
 
-static bool CurrObjNotify( CURROBJ *c, NOTE_ID *note, void *p2 )
+static bool CurrObjNotify( CURROBJ *c, NOTE_ID *noteid, void *p2 )
 /**************************************************************/
 {
     p2 = p2;        // unused
 
-    switch( *note ) {
+    switch( *noteid ) {
     case CURR_OBJ_MOD_BEGIN:
         c->no_prim_notify = true;
         c->prim_notify_pending = false;

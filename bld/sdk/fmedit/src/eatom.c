@@ -558,14 +558,14 @@ static bool EAtomIsMarkValid( EATOM *obj, bool *valid, void *p2 )
     return( true );
 }
 
-static bool EAtomNotify( EATOM *obj, NOTE_ID *note, void *p2 )
-/************************************************************/
+static bool EAtomNotify( EATOM *obj, NOTE_ID *noteid, void *p2 )
+/**************************************************************/
 {
-    switch( *note ) {
+    switch( *noteid ) {
     case MOVE_START:
     case MOVE_END:
         if( obj->obj != NULL ) {
-            return( Forward( obj->obj, NOTIFY, note, p2 ) );
+            return( Forward( obj->obj, NOTIFY, noteid, p2 ) );
         }
         return( false );
     default:
