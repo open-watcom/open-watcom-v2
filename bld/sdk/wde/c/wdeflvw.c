@@ -154,7 +154,7 @@ OBJPTR WdeLVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new->dispatcher = (DISPATCH_FN *)WdeLViewDispatch;
+    OBJ_DISPATCHER_SET( new, WdeLViewDispatch );
 
     new->object_id = id;
 
@@ -304,7 +304,7 @@ bool WdeLViewCopyObject( WdeLViewObject *obj, WdeLViewObject **new, OBJPTR handl
         return( false );
     }
 
-    (*new)->dispatcher = obj->dispatcher;
+    OBJ_DISPATCHER_COPY( *new, obj );
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {

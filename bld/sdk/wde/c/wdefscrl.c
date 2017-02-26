@@ -169,7 +169,7 @@ OBJPTR WdeScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id,
         return( NULL );
     }
 
-    new->dispatcher = (DISPATCH_FN *)WdeScrollDispatch;
+    OBJ_DISPATCHER_SET( new, WdeScrollDispatch );
     new->object_id = id;
     if( handle == NULL ) {
         new->object_handle = (OBJPTR)new;
@@ -370,7 +370,7 @@ bool WdeScrollCopyObject( WdeScrollObject *obj, WdeScrollObject **new, OBJPTR ha
         return( false );
     }
 
-    (*new)->dispatcher = obj->dispatcher;
+    OBJ_DISPATCHER_SET( *new, obj );
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {

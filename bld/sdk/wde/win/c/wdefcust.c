@@ -520,7 +520,7 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new->dispatcher = (DISPATCH_FN *)WdeCustomDispatch;
+    OBJ_DISPATCHER_SET( new, WdeCustomDispatch );
     new->object_id = id;
     new->cust_info = cust_info;
     new->cust_type = cust_type;
@@ -658,7 +658,7 @@ bool WdeCustomCopyObject( WdeCustomObject *obj, WdeCustomObject **new, OBJPTR ha
         return( false );
     }
 
-    (*new)->dispatcher = obj->dispatcher;
+    OBJ_DISPATCHER_COPY( *new, obj );
     (*new)->win_proc = obj->win_proc;
     (*new)->win_extra = obj->win_extra;
     (*new)->object_id = obj->object_id;

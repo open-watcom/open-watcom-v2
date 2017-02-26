@@ -48,9 +48,6 @@
     pick_ACT_NOTIFY(o,pick)
 
 /* forward references */
-
-static bool CALLBACK CurrObjDispatch( ACTION, CURROBJ *, void *, void * );
-
 #define pick(e,n,c)    static bool CurrObj ## n ## c;
     pick_ACTS( CURROBJ )
 #undef pick
@@ -63,28 +60,28 @@ static DISPATCH_ITEM CurrObjActions[] = {
 
 #define MAX_ACTIONS (sizeof( CurrObjActions ) / sizeof( DISPATCH_ITEM ))
 
-static bool CALLBACK CurrObjDispatch( ACTION id, CURROBJ *c, void *p1, void *p2 )
-/*******************************************************************************/
+static bool CALLBACK CurrObjDispatch( ACTION id, CURROBJ *cobj, void *p1, void *p2 )
+/**********************************************************************************/
 {
     /* dispatch the desired operation to the correct place */
     int i;
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( CurrObjActions[i].id == id ) {
-            return( (CurrObjActions[i].rtn)( (OBJPTR)c, p1, p2 ) );
+            return( (CurrObjActions[i].rtn)( (OBJPTR)cobj, p1, p2 ) );
         }
     }
     return( false );
 }
 
-static bool CurrObjValidateAction( CURROBJ *c, ACTION *idptr, void *p2 )
-/**********************************************************************/
+static bool CurrObjValidateAction( CURROBJ *cobj, ACTION *idptr, void *p2 )
+/*************************************************************************/
 {
     /* check if the desired action is valid for and CURROBJ */
     int         i;
     NOTE_ID     *noteid;
 
-    c = c;            /* ref'd to avoid warning */
+    cobj = cobj;            /* ref'd to avoid warning */
 
     if( *idptr == NOTIFY ) {
         noteid = p2;
@@ -109,7 +106,7 @@ OBJPTR CurrObjCreate( OBJPTR obj, RECT *loc, OBJPTR handle )
     obj = obj;           /* ref'd to avoid warning */
     loc = loc;           /* ref'd to avoid warning */
     new = EdAlloc( sizeof( CURROBJ ) );
-    new->dispatcher = (DISPATCH_FN *)CurrObjDispatch;
+    OBJ_DISPATCHER_SET( new, CurrObjDispatch );
     new->currobjlist = NULL;
     new->primaryobj = NULL;
     new->prevprimary = NULL;
@@ -117,133 +114,122 @@ OBJPTR CurrObjCreate( OBJPTR obj, RECT *loc, OBJPTR handle )
     return( (OBJPTR)new );
 }
 
-static bool CurrObjDestroy( CURROBJ *c, bool *p1, bool *p2 )
-/**********************************************************/
+static bool CurrObjDestroy( CURROBJ *cobj, bool *p1, bool *p2 )
+/*************************************************************/
 {
     /* destroy the CURROBJ */
     p1 = p1;          /* ref'd to avoid warning */
     p2 = p2;          /* ref'd to avoid warning */
 
-    if( c->currobjlist != NULL ) {
-        ListFree( c->currobjlist );
+    if( cobj->currobjlist != NULL ) {
+        ListFree( cobj->currobjlist );
     }
-    EdFree( c );
+    EdFree( cobj );
     return( true );
 }
 
-static void NotifyCurrObj( CURROBJ *c, OBJPTR obj, bool add_obj )
-/****************************************************************/
+static void NotifyCurrObj( CURROBJ *cobj, OBJPTR obj, bool add_obj )
+/******************************************************************/
 {
     Notify( obj, CURRENT_OBJECT, &add_obj );
     if( add_obj ) {
-        if( c->no_prim_notify ) {
-            c->prim_notify_pending = true;
+        if( cobj->no_prim_notify ) {
+            cobj->prim_notify_pending = true;
         } else {
-            if( c->primaryobj == obj ) {
+            if( cobj->primaryobj == obj ) {
                 Notify( obj, PRIMARY_OBJECT, NULL );
             }
         }
     }
 }
 
-static bool CurrObjAddObject( CURROBJ *c, OBJPTR obj, bool *reset )
-/******************************************************************/
+static bool CurrObjAddObject( CURROBJ *cobj, OBJPTR obj, bool *reset )
+/********************************************************************/
 {
     OBJPTR  new;
     RECT    rect;
-    OBJPTR  currobj;
+    OBJPTR  o;
 
-    if( c->primaryobj != NULL ) {
-        c->prevprimary = c->primaryobj;
+    if( cobj->primaryobj != NULL ) {
+        cobj->prevprimary = cobj->primaryobj;
     } else {
-        c->prevprimary = NULL;
+        cobj->prevprimary = NULL;
     }
     if( *reset ) {
-        while( c->currobjlist != NULL ) {
-            currobj = ListElement( c->currobjlist );
-            DeleteCurrObject( currobj );
-            ListRemoveElt( &c->currobjlist, currobj );
+        while( cobj->currobjlist != NULL ) {
+            o = ListElement( cobj->currobjlist );
+            ListRemoveElt( &cobj->currobjlist, o );
+            DeleteCurrObject( o );
         }
-        c->prevprimary = NULL;
+        cobj->prevprimary = NULL;
     }
     Location( obj, &rect );
-    new = Create( O_CURRITEM, (OBJPTR)c, &rect, obj );
-    ListAddElt( &c->currobjlist, new );
-    c->primaryobj = new;
-    if( c->prevprimary != NULL ) {
-        ObjMark( c->prevprimary );
+    new = Create( O_CURRITEM, (OBJPTR)cobj, &rect, obj );
+    ListAddElt( &cobj->currobjlist, new );
+    cobj->primaryobj = new;
+    if( cobj->prevprimary != NULL ) {
+        ObjMark( cobj->prevprimary );
     }
-    Forward( new, SHOW_SEL_BOXES, &c->show_sel_boxes, NULL );
-    NotifyCurrObj( c, new, true );
+    Forward( new, SHOW_SEL_BOXES, &cobj->show_sel_boxes, NULL );
+    NotifyCurrObj( cobj, new, true );
     return( true );
 }
 
-static bool CurrObjDeleteObject( CURROBJ *c, OBJPTR obj, bool *curritem )
-/************************************************************************/
+static void deleteItem( CURROBJ *cobj, OBJPTR obj )
+{
+    ListRemoveElt( &cobj->currobjlist, obj );
+    if( cobj->primaryobj == obj ) {
+        if( cobj->currobjlist != NULL ) {
+            cobj->primaryobj = cobj->prevprimary;
+            cobj->prevprimary = NULL;
+        } else {
+            cobj->primaryobj = NULL;
+            cobj->prevprimary = NULL;
+        }
+        ObjMark( obj );
+    }
+    if( cobj->prevprimary == obj ) {
+        cobj->prevprimary = NULL;
+    }
+    DeleteCurrItem( obj );
+}
+
+static bool CurrObjDeleteObject( CURROBJ *cobj, OBJPTR obj, bool *curritem )
+/**************************************************************************/
 {
     LIST        *clist;
-    CURROBJPTR  currobj;
+    CURROBJPTR  o;
 
     if( *curritem ) {
-        if( ListFindElt( c->currobjlist, obj ) != NULL ) {
-            NotifyCurrObj( c, obj, false );
-            ListRemoveElt( &c->currobjlist, obj );
-            if( c->primaryobj == obj ) {
-                if( c->currobjlist != NULL ) {
-                    c->primaryobj = c->prevprimary;
-                    c->prevprimary = NULL;
-                } else {
-                    c->primaryobj = NULL;
-                    c->prevprimary = NULL;
-                }
-                ObjMark( obj );
-            }
-            if( c->prevprimary == obj ) {
-                c->prevprimary = NULL;
-            }
-            DeleteCurrItem( obj );
+        if( ListFindElt( cobj->currobjlist, obj ) != NULL ) {
+            NotifyCurrObj( cobj, obj, false );
+            deleteItem( cobj, obj );
         }
     } else {
-        clist = c->currobjlist;
-        while( clist != NULL ) {
-            currobj = ListElement( clist );
-            clist = ListNext( clist );
-            if( GetObjptr( currobj ) == obj ) {
-                clist = NULL;
-                NotifyCurrObj( c, obj, false );
-                ListRemoveElt( &c->currobjlist, currobj );
-                if( c->primaryobj == currobj ) {
-                    if( c->currobjlist != NULL ) {
-                        c->primaryobj = c->prevprimary;
-                        c->prevprimary = NULL;
-                    } else {
-                        c->primaryobj = NULL;
-                        c->prevprimary = NULL;
-                    }
-                    ObjMark( currobj );
-                }
-                if( c->prevprimary == currobj ) {
-                    c->prevprimary = NULL;
-                }
-                DeleteCurrItem( currobj );
+        for( clist = cobj->currobjlist; clist != NULL; clist = ListNext( clist ) ) {
+            o = ListElement( clist );
+            if( GetObjptr( o ) == obj ) {
+                NotifyCurrObj( cobj, obj, false );
+                deleteItem( cobj, o );
+                break;
             }
         }
     }
     return( true );
 }
 
-static bool CurrObjGetObject( CURROBJ *c, OBJPTR *newobj, OBJPTR prevobj )
-/**************************************************************************/
+static bool CurrObjGetObject( CURROBJ *cobj, OBJPTR *newobj, OBJPTR prevobj )
+/***************************************************************************/
 {
     LIST    *newlist;
 
-    if( c->currobjlist == NULL ) {
+    if( cobj->currobjlist == NULL ) {
         *newobj = NULL;
     } else {
         if( prevobj == NULL ) {
-            *newobj = ListElement( c->currobjlist );
+            *newobj = ListElement( cobj->currobjlist );
         } else {
-            newlist = ListFindElt( c->currobjlist, prevobj );
+            newlist = ListFindElt( cobj->currobjlist, prevobj );
             if( newlist != NULL ) {
                 newlist = ListNext( newlist );
             }
@@ -257,26 +243,26 @@ static bool CurrObjGetObject( CURROBJ *c, OBJPTR *newobj, OBJPTR prevobj )
     return( true );
 }
 
-static bool CurrObjGetPrimary( CURROBJ *c, OBJPTR *primary, bool *get )
-/**********************************************************************/
+static bool CurrObjGetPrimary( CURROBJ *cobj, OBJPTR *primary, bool *get )
+/************************************************************************/
 {
     if( primary != NULL && get != NULL ) {
         if( *get ) {
             /* check if the primary object is still in the list */
-            if( ListFindElt( c->currobjlist, c->primaryobj ) != NULL ) {
-                *primary = c->primaryobj;
+            if( ListFindElt( cobj->currobjlist, cobj->primaryobj ) != NULL ) {
+                *primary = cobj->primaryobj;
             } else {
                 *primary = NULL;
             }
         } else {
-            if( c->primaryobj != *primary ) {
-                c->prevprimary = c->primaryobj;
-                c->primaryobj = *primary;
-                if( c->prevprimary != NULL ) {
-                    ObjMark( c->prevprimary );
+            if( cobj->primaryobj != *primary ) {
+                cobj->prevprimary = cobj->primaryobj;
+                cobj->primaryobj = *primary;
+                if( cobj->prevprimary != NULL ) {
+                    ObjMark( cobj->prevprimary );
                 }
                 ObjMark( *primary );
-                NotifyCurrObj( c, *primary, true );
+                NotifyCurrObj( cobj, *primary, true );
             }
         }
         return( true );
@@ -285,36 +271,36 @@ static bool CurrObjGetPrimary( CURROBJ *c, OBJPTR *primary, bool *get )
     }
 }
 
-static bool CurrObjShowSelBoxes( CURROBJ *obj, bool *show, void *p2 )
-/*******************************************************************/
+static bool CurrObjShowSelBoxes( CURROBJ *cobj, bool *show, void *p2 )
+/********************************************************************/
 {
     LIST    *item;
-    OBJECT  *cobj;
+    OBJECT  *o;
 
-    obj->show_sel_boxes = *show;
-    for( item = obj->currobjlist; item != NULL; item = ListNext( item ) ) {
-        cobj = ListElement( item );
-        OBJ_DISPATCHER( cobj )( SHOW_SEL_BOXES, cobj, show, p2 );
+    cobj->show_sel_boxes = *show;
+    for( item = cobj->currobjlist; item != NULL; item = ListNext( item ) ) {
+        o = ListElement( item );
+        OBJ_DISPATCHER( o )( SHOW_SEL_BOXES, o, show, p2 );
     }
     return( true );
 }
 
-static bool CurrObjNotify( CURROBJ *c, NOTE_ID *noteid, void *p2 )
-/**************************************************************/
+static bool CurrObjNotify( CURROBJ *cobj, NOTE_ID *noteid, void *p2 )
+/*******************************************************************/
 {
     p2 = p2;        // unused
 
     switch( *noteid ) {
     case CURR_OBJ_MOD_BEGIN:
-        c->no_prim_notify = true;
-        c->prim_notify_pending = false;
+        cobj->no_prim_notify = true;
+        cobj->prim_notify_pending = false;
         return( true );
     case CURR_OBJ_MOD_END:
-        c->no_prim_notify = false;
-        if( c->prim_notify_pending ) {
-            Notify( c->primaryobj, PRIMARY_OBJECT, NULL );
+        cobj->no_prim_notify = false;
+        if( cobj->prim_notify_pending ) {
+            Notify( cobj->primaryobj, PRIMARY_OBJECT, NULL );
         }
-        c->prim_notify_pending = false;
+        cobj->prim_notify_pending = false;
         return( true );
     default:
         return( false );

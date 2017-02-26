@@ -150,7 +150,7 @@ OBJPTR WdeLBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wde
         return( NULL );
     }
 
-    new->dispatcher = WdeLBoxDispatch;
+    OBJ_DISPATCHER_SET( new, WdeLBoxDispatch );
 
     new->object_id = id;
 
@@ -301,7 +301,7 @@ bool WdeLBoxCopyObject( WdeLBoxObject *obj, WdeLBoxObject **new, OBJPTR handle )
         return( false );
     }
 
-    (*new)->dispatcher = obj->dispatcher;
+    OBJ_DISPATCHER_SET( *new, obj );
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {

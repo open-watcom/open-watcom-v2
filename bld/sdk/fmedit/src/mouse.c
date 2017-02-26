@@ -1143,12 +1143,10 @@ static DLIST *OrderList( LIST *list )
     OBJPTR      obj;
     LIST        *mylist;
 
-    mylist = list;
     dlist = NULL;
-    while( mylist != NULL ) {
+    for( mylist = list; mylist != NULL; mylist = ListNext( mylist ) ) {
         currobj = ListElement( mylist );
         elt.original = currobj;
-        mylist = ListNext( mylist );
         elt.copy = 0;
         obj = GetObjptr( currobj );
         GetPriority( obj, &priority );
@@ -1169,19 +1167,15 @@ static DLIST_ELT GetNextElement( DLIST *dlist )
     elt.original = NULL;
     elt.copy = NULL;
     mydlist = dlist;
-    if( mydlist == NULL ) {
+    if( mydlist == NULL )
         return( elt );
-    } else {
-        curr = DListElement( mydlist );
-        mydlist = DListNext( mydlist );
-    }
-    while( mydlist != NULL ) {
+    curr = DListElement( mydlist );
+    for( mydlist = DListNext( mydlist ); mydlist != NULL; mydlist = DListNext( mydlist ) ) {
         elt = DListElement( mydlist );
-        if( elt.copy < curr.copy ) {
+        if( curr.copy > elt.copy ) {
             curr.copy = elt.copy;
             curr.original = elt.original;
         }
-        mydlist = DListNext( mydlist );
     }
     return( curr );
 }

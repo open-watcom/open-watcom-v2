@@ -174,7 +174,7 @@ OBJPTR WdeStatCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new->dispatcher = (DISPATCH_FN *)WdeStaticDispatch;
+    OBJ_DISPATCHER_SET( new, WdeStaticDispatch );
     new->object_id = id;
     if( handle == NULL ) {
         new->object_handle = (OBJPTR)new;
@@ -322,7 +322,7 @@ bool WdeStaticCopyObject( WdeStaticObject *obj, WdeStaticObject **new, OBJPTR ha
         return( false );
     }
 
-    (*new)->dispatcher = obj->dispatcher;
+    OBJ_DISPATCHER_COPY( *new, obj );
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {

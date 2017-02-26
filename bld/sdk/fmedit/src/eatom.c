@@ -66,11 +66,6 @@
 WINEXPORT LRESULT CALLBACK EAtomWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /* forward references */
-
-static bool CALLBACK EAtomDispatch( ACTION, EATOM *, void *, void * );
-
-static void ShowEAtomRect( EATOM * obj );
-
 #define pick(e,n,c) static bool EAtom ## n ## c;
     pick_ACTS( EATOM )
 #undef pick
@@ -119,57 +114,6 @@ static bool EAtomValidateAction( EATOM *obj, ACTION *idptr, void *p2 )
         }
     }
     return( false );
-}
-
-
-OBJPTR EAtomCreate( OBJPTR parent, RECT *loc, OBJPTR handle )
-/***********************************************************/
-{
-    /* create an EATOM object */
-    EATOM       *new;
-    POINT       offset;
-    STATE_ID    st;
-
-    new = EdAlloc( sizeof( EATOM ) );
-    new->dispatcher = (DISPATCH_FN *)EAtomDispatch;
-    new->obj = parent;
-    new->parent = NULL;
-    if( handle == NULL ) {
-        new->handle = (OBJPTR)new;
-    } else {
-        new->handle = handle;
-    }
-    new->rect = *loc;
-    new->anchor.x = new->rect.left;
-    new->anchor.y = new->rect.top;
-    new->show = GetShowEatoms();
-    GetOffset( &offset );
-    if( new->show ) {
-#if USE_OWN_WINDOW
-        new->hwnd = CreateWindow( "EAtomClass",
-                                  NULL,
-                                  WS_VISIBLE | WS_CHILD | WS_DISABLED,
-                                  new->rect.left - offset.x,
-                                  new->rect.top - offset.y,
-                                  new->rect.right - new->rect.left,
-                                  new->rect.bottom - new->rect.top,
-                                  GetAppWnd(),
-                                  NULL,
-                                  GetInst(),
-                                  NULL );
-#else
-        new->hwnd = GetAppWnd();
-#endif
-    } else {
-        new->hwnd = NULL;
-    }
-    new->displayed = false;
-    st = GetState();
-    if( st != SELECTING ) {
-        MouseAction( &new->rect );
-    }
-    ShowEAtomRect( new );
-    return( (OBJPTR)new );
 }
 
 
@@ -238,6 +182,57 @@ static void HideEAtomRect( EATOM *obj )
         DrawEAtomRect( obj );
         obj->displayed = false;
     }
+}
+
+
+OBJPTR EAtomCreate( OBJPTR parent, RECT *loc, OBJPTR handle )
+/***********************************************************/
+{
+    /* create an EATOM object */
+    EATOM       *new;
+    POINT       offset;
+    STATE_ID    st;
+
+    new = EdAlloc( sizeof( EATOM ) );
+    OBJ_DISPATCHER_SET( new, EAtomDispatch );
+    new->obj = parent;
+    new->parent = NULL;
+    if( handle == NULL ) {
+        new->handle = (OBJPTR)new;
+    } else {
+        new->handle = handle;
+    }
+    new->rect = *loc;
+    new->anchor.x = new->rect.left;
+    new->anchor.y = new->rect.top;
+    new->show = GetShowEatoms();
+    GetOffset( &offset );
+    if( new->show ) {
+#if USE_OWN_WINDOW
+        new->hwnd = CreateWindow( "EAtomClass",
+                                  NULL,
+                                  WS_VISIBLE | WS_CHILD | WS_DISABLED,
+                                  new->rect.left - offset.x,
+                                  new->rect.top - offset.y,
+                                  new->rect.right - new->rect.left,
+                                  new->rect.bottom - new->rect.top,
+                                  GetAppWnd(),
+                                  NULL,
+                                  GetInst(),
+                                  NULL );
+#else
+        new->hwnd = GetAppWnd();
+#endif
+    } else {
+        new->hwnd = NULL;
+    }
+    new->displayed = false;
+    st = GetState();
+    if( st != SELECTING ) {
+        MouseAction( &new->rect );
+    }
+    ShowEAtomRect( new );
+    return( (OBJPTR)new );
 }
 
 static bool EAtomMove( EATOM *obj, POINT *offset, bool *p2 )
@@ -591,8 +586,8 @@ WINEXPORT LRESULT CALLBACK EAtomWndProc( HWND wnd, UINT message, WPARAM wparam, 
     return( 0L );
 }
 
-extern void InitEAtom( void )
-/***************************/
+void InitEAtom( void )
+/********************/
 {
     /* Initialization for EATOM objects - register the EAtomClass */
     WNDCLASS wc;

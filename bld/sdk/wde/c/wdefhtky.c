@@ -154,7 +154,7 @@ OBJPTR WdeHKCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new->dispatcher = WdeHtKyDispatch;
+    OBJ_DISPATCHER_SET( new, WdeHtKyDispatch );
 
     new->object_id = id;
 
@@ -304,7 +304,7 @@ bool WdeHtKyCopyObject( WdeHtKyObject *obj, WdeHtKyObject **new, OBJPTR handle )
         return( false );
     }
 
-    (*new)->dispatcher = obj->dispatcher;
+    OBJ_DISPATCHER_SET( *new, obj );
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {

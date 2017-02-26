@@ -707,7 +707,7 @@ WdeDialogObject *WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle 
     new->parent = ancestor;
     new->object_id  = DIALOG_OBJ;
     new->mode = WdeSelect;
-    new->dispatcher = WdeDialogDispatch;
+    OBJ_DISPATCHER_SET( new, WdeDialogDispatch );
     new->mem_flags = DEFAULT_MEMFLAGS;
 
     resize_dialog_height = false;
@@ -2429,7 +2429,7 @@ bool WdeDialogCopyObject( WdeDialogObject *obj, WdeDialogObject **new, OBJPTR ha
     }
     memset( *new, 0, sizeof( WdeDialogObject ) );
 
-    (*new)->dispatcher = obj->dispatcher;
+    OBJ_DISPATCHER_COPY( *new, obj );
     (*new)->object_id = obj->object_id;
     (*new)->font = obj->font;
     (*new)->mem_flags = obj->mem_flags;

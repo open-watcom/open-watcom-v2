@@ -154,7 +154,7 @@ OBJPTR WdeProgressCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new->dispatcher = (DISPATCH_FN *)WdeProgDispatch;
+    OBJ_DISPATCHER_SET( new, WdeProgDispatch );
     new->object_id = id;
     if( handle == NULL ) {
         new->object_handle = (OBJPTR)new;
@@ -302,7 +302,7 @@ bool WdeProgCopyObject( WdeProgObject *obj, WdeProgObject **new, OBJPTR handle )
         return( false );
     }
 
-    (*new)->dispatcher = obj->dispatcher;
+    OBJ_DISPATCHER_SET( *new, obj );
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {

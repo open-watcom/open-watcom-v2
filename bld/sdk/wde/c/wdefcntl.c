@@ -235,7 +235,7 @@ WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPT
             Forward( (OBJPTR)ancestor, IDENTIFY, &id, NULL );
         }
         new->parent = ancestor;
-        new->dispatcher = WdeControlDispatch;
+        OBJ_DISPATCHER_SET( new, WdeControlDispatch );
         new->sizeable = true;
         new->mode = WdeSelect;
         if( handle == NULL ) {
@@ -1030,7 +1030,7 @@ bool WdeControlCopyObject( WdeControlObject *obj, WdeControlObject **new, OBJPTR
     }
     memset( *new, 0, sizeof( WdeControlObject ) );
 
-    (*new)->dispatcher = obj->dispatcher;
+    OBJ_DISPATCHER_COPY( *new, obj );
     (*new)->window_class = obj->window_class;
     (*new)->font = obj->font;
     (*new)->sizeable = obj->sizeable;

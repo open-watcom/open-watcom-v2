@@ -55,11 +55,6 @@
     pick_ACT_FIND_OBJECTS_PT(o,pick)
 
 /* forward references */
-
-static bool CALLBACK OItemDispatch( ACTION, OITEM *, void *, void * );
-
-static void OItemSetNewParent( OITEM *, OBJPTR );
-
 #define pick(e,n,c) static bool OItem ## n ## c;
     pick_ACTS( OITEM )
 #undef pick
@@ -134,6 +129,13 @@ static bool OItemMove( OITEM *oitem, POINT *offset, bool *user_action )
 }
 
 
+static void OItemSetNewParent( OITEM *oitem, OBJPTR parent )
+/**********************************************************/
+{
+    /* set the oitem parent pointer to the new parent */
+    oitem->parent = parent;
+}
+
 static bool OItemNotify( OITEM *oitem, NOTE_ID *noteid, void *p2 )
 /****************************************************************/
 {
@@ -161,7 +163,7 @@ OBJPTR OItemCreate( OBJPTR parent, RECT *rect, OBJPTR handle )
     OITEM *new;
 
     new = EdAlloc( sizeof( OITEM ) );
-    new->dispatcher = (DISPATCH_FN *)OItemDispatch;
+    OBJ_DISPATCHER_SET( new, OItemDispatch );
     new->parent = parent;
     if( parent != NULL ) {
         GetPriority( parent, &new->priority );
@@ -231,13 +233,6 @@ static bool OItemResize( OITEM *oitem, RECT *rect, bool *user_action )
     return( true );
 }
 
-static void OItemSetNewParent( OITEM *oitem, OBJPTR parent )
-/**********************************************************/
-{
-    /* set the oitem parent pointer to the new parent */
-    oitem->parent = parent;
-}
-
 static bool OItemDestroy( OITEM *oitem, bool *user_action, bool *p2 )
 /*******************************************************************/
 {
@@ -264,19 +259,19 @@ static bool OItemCutObject( OITEM *oitem, OBJPTR *newitem, void *p2 )
 static bool OItemCopyObject( OITEM *oitem, OITEM **newitem, OBJPTR handle )
 /*************************************************************************/
 {
-    OITEM   *no;
+    OITEM   *new;
 
     if( newitem != NULL ) {
-        no = EdAlloc( sizeof( OITEM ) );
-        *newitem = no;
-        no->dispatcher = oitem->dispatcher;
+        new = EdAlloc( sizeof( OITEM ) );
+        *newitem = new;
+        OBJ_DISPATCHER_COPY( new, oitem );
         if( handle == NULL ) {
-            no->handle = (OBJPTR)no;
+            new->handle = (OBJPTR)new;
         } else {
-            no->handle = handle;
+            new->handle = handle;
         }
-        no->priority = oitem->priority;
-        CopyRect( &no->rect, &oitem->rect );
+        new->priority = oitem->priority;
+        CopyRect( &new->rect, &oitem->rect );
         return( true );
     }
     return( false );
@@ -339,7 +334,7 @@ static bool OItemFindObjectsPt( OITEM *oitem, LPPOINT pt, LIST **list )
     }
 }
 
-extern void InitOItem( void )
-/***************************/
+void InitOItem( void )
+/********************/
 {
 }

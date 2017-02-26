@@ -158,7 +158,7 @@ WINEXPORT OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR h
     new->object_id = BASE_OBJ;
     new->parent = parent;
     new->font = WdeGetEditFont();
-    new->dispatcher = WdeBaseDispatch;
+    OBJ_DISPATCHER_SET( new, WdeBaseDispatch );
     new->res_info = WdeGetCurrentRes();
 
     if( new->font == NULL || new->res_info == NULL ) {

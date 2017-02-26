@@ -49,9 +49,6 @@
 WINEXPORT LRESULT CALLBACK CurrItemWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /* forward references */
-
-static bool CALLBACK CurrItemDispatch( ACTION, CURRITEM *, void *, void * );
-
 #define pick(e,n,c) static bool CurrItem ## n ## c;
     pick_ACTS( CURRITEM )
 #undef pick
@@ -151,7 +148,7 @@ OBJPTR CurrItemCreate( OBJPTR parent, RECT *loc, OBJPTR obj )
 
     parent = parent;         /* ref'd to avoid warning */
     new = EdAlloc( sizeof( CURRITEM ) );
-    new->dispatcher = (DISPATCH_FN *)CurrItemDispatch;
+    OBJ_DISPATCHER_SET( new, CurrItemDispatch );
     new->obj = obj;
     GetOffset( &new->offset );
     new->rect = *loc;
@@ -560,8 +557,8 @@ WINEXPORT LRESULT CALLBACK CurrItemWndProc( HWND wnd, UINT message, WPARAM wpara
     return( 0L );
 }
 
-extern void InitCurrItem( void )
-/******************************/
+void InitCurrItem( void )
+/***********************/
 {
     /* Initialization for CURRITEM objects - register the CurrItemClass */
     WNDCLASS wc;
