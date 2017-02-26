@@ -25,6 +25,7 @@ output_redirect()
 rm -f $OWBUILDER_BOOTX_OUTPUT
 cd $OWSRCDIR/wmake
 if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
+if [ ! -d $OWBINDIR ]; then mkdir $OWBINDIR; fi
 cd $OWOBJDIR
 rm -f $OWBINDIR/wmake
 if [ "$OWTOOLS" = "WATCOM" ]; then
