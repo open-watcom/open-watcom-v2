@@ -3,14 +3,19 @@
 
 #include "list.def"
 
-/* there are a maximum of 16 internal objects currently reserved */
+/* there are a maximum of 16 internal objects currently reserved, see constant.def file */
+
+#define pick_OBJECTS() \
+    pick( NONE,     NULL ) \
+    pick( EATOM,    EAtomCreate ) \
+    pick( ITEM,     OItemCreate ) \
+    pick( CURROBJ,  CurrObjCreate ) \
+    pick( CURRITEM, CurrItemCreate )
 
 enum {
-    O_NONE,
-    O_EATOM,
-    O_ITEM,
-    O_CURROBJ,
-    O_CURRITEM,
+    #define pick(e,p) O_##e,
+    pick_OBJECTS()
+    #undef pick
 };
 
 typedef void *CURROBJPTR;

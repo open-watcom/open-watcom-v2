@@ -45,14 +45,9 @@
 
 
 static INT_CREATE_RTN *InternalCreate[] = {
-    NULL,                       /* O_NONE     */
-    EAtomCreate,                /* O_EATOM    */
-    OItemCreate,                /* O_ITEM     */
-    CurrObjCreate,              /* O_CURROBJ  */
-    CurrItemCreate,             /* O_CURRITEM */
-    NULL,                       /* O_UNUSED_5 */
-    NULL,                       /* O_UNUSED_6 */
-    NULL                        /* O_UNUSED_7 */
+    #define pick(e,p) p,
+    pick_OBJECTS()
+    #undef pick
 };
 
 void FMEDITAPI AddFMEditMenus( HMENU submenu, int bitmap )

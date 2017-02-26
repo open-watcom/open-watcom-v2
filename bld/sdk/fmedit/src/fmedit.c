@@ -56,7 +56,6 @@
 #include "space.def"
 #include "clip.def"
 
-WINEXPORT BOOL CALLBACK FMEditWndProc( HWND, UINT, WPARAM, LPARAM );
 
 void FMEDITAPI CloseFormEdit( HWND wnd )
 /**************************************/
@@ -189,8 +188,8 @@ static void CopyObjects( void )
 }
 
 
-WINEXPORT BOOL CALLBACK FMEditWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lparam )
-/*******************************************************************************************/
+BOOL CALLBACK FMEditWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lparam )
+/*********************************************************************************/
 {
     /* processes messages */
     DLGPROC        dlg_proc;
