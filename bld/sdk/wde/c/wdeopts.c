@@ -79,6 +79,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT INT_PTR CALLBACK WdeOptionsDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -530,7 +532,7 @@ static void WdeGetOptInfo( HWND hDlg )
     }
 }
 
-WINEXPORT INT_PTR CALLBACK WdeOptionsDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeOptionsDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     bool ret;
 

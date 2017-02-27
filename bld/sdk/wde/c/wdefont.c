@@ -51,6 +51,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT INT_PTR CALLBACK WdeDummyDlgProc( HWND, UINT, WPARAM, LPARAM );
 WINEXPORT int     CALLBACK WdeEnumFontsProc( ENUMLOGFONT *, TEXTMETRIC *, int, LPARAM );
 
@@ -227,7 +229,7 @@ bool WdeAddFontFamilyMember( WdeFontNames *font_element, ENUMLOGFONT *lpelf, TEX
     return( true );
 }
 
-WINEXPORT int CALLBACK WdeEnumFontsProc( ENUMLOGFONT *lpelf, TEXTMETRIC *lpntm, int fonttype, LPARAM lParam )
+int CALLBACK WdeEnumFontsProc( ENUMLOGFONT *lpelf, TEXTMETRIC *lpntm, int fonttype, LPARAM lParam )
 {
     LIST            *olist;
     LIST            **list;
@@ -397,7 +399,7 @@ bool WdeGetResizerFromFont( WdeResizeRatio *r, char *face, int ptsz )
     return( ok );
 }
 
-WINEXPORT INT_PTR CALLBACK WdeDummyDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeDummyDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( hDlg );

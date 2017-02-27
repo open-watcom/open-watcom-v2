@@ -70,6 +70,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT LRESULT CALLBACK WdeStaticSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 WINEXPORT bool    CALLBACK WdeStaticDispatcher( ACTION, WdeStaticObject *, void *, void * );
 
@@ -103,7 +105,7 @@ static DISPATCH_ITEM WdeStaticActions[] = {
 
 #define MAX_ACTIONS     (sizeof( WdeStaticActions ) / sizeof( DISPATCH_ITEM ))
 
-WINEXPORT OBJPTR CALLBACK WdeFrameCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeFrameCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeStatic( parent, obj_rect, handle,
@@ -114,7 +116,7 @@ WINEXPORT OBJPTR CALLBACK WdeFrameCreate( OBJPTR parent, RECT *obj_rect, OBJPTR 
     }
 }
 
-WINEXPORT OBJPTR CALLBACK WdeTextCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeTextCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeStatic( parent, obj_rect, handle,
@@ -125,7 +127,7 @@ WINEXPORT OBJPTR CALLBACK WdeTextCreate( OBJPTR parent, RECT *obj_rect, OBJPTR h
     }
 }
 
-WINEXPORT OBJPTR CALLBACK WdeIconCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeIconCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeStatic( parent, obj_rect, handle,
@@ -207,7 +209,7 @@ OBJPTR WdeStatCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-WINEXPORT bool CALLBACK WdeStaticDispatcher( ACTION act, WdeStaticObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeStaticDispatcher( ACTION act, WdeStaticObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -644,7 +646,7 @@ void WdeStaticGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     WdeEXSetDefineInfo( o_info, hDlg );
 }
 
-WINEXPORT LRESULT CALLBACK WdeStaticSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeStaticSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalStaticProc, hWnd, message, wParam, lParam ) );

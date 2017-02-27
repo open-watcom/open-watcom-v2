@@ -52,6 +52,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT BOOL CALLBACK WdeInfoWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -679,7 +681,7 @@ void WdeInfoLookupComboEntry( HWND hWnd, WORD hw )
     WRMemFree( str );
 }
 
-WINEXPORT BOOL CALLBACK WdeInfoWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+BOOL CALLBACK WdeInfoWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WORD    w;
     RECT    r;

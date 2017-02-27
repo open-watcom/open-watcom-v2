@@ -52,6 +52,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT LRESULT CALLBACK WdeTagProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -494,7 +496,7 @@ WdeSetOrderStruct *WdeGetTagInfo( HWND tag )
     return( NULL );
 }
 
-WINEXPORT LRESULT CALLBACK WdeTagProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeTagProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WdeSetOrderStruct   *o;
     bool                pass_to_def;

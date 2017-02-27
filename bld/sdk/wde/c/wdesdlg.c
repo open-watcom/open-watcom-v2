@@ -66,6 +66,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT INT_PTR CALLBACK WdeSelectDialogDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -628,7 +630,7 @@ OBJ_ID WdeGetOBJIDFromControl( WdeDialogBoxControl *control )
     return( id );
 }
 
-WINEXPORT INT_PTR CALLBACK WdeSelectDialogDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeSelectDialogDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WdeDialogSelectInfo *si;
     bool                ret;

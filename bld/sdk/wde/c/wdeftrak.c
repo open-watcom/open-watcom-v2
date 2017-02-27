@@ -71,6 +71,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT bool    CALLBACK WdeTrakDispatcher( ACTION, WdeTrakObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeTrakSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
@@ -107,7 +109,7 @@ static DISPATCH_ITEM WdeTrakActions[] = {
 
 #define MAX_ACTIONS     (sizeof( WdeTrakActions ) / sizeof( DISPATCH_ITEM ))
 
-WINEXPORT OBJPTR CALLBACK WdeTrakCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeTrakCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeTrak( parent, obj_rect, handle, 0, "", TRACKBAR_OBJ ) );
@@ -190,7 +192,7 @@ OBJPTR WdeTrackCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-WINEXPORT bool CALLBACK WdeTrakDispatcher( ACTION act, WdeTrakObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeTrakDispatcher( ACTION act, WdeTrakObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -568,7 +570,7 @@ bool WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
 #endif
 }
 
-WINEXPORT LRESULT CALLBACK WdeTrakSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeTrakSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalTrakProc, hWnd, message, wParam, lParam ) );

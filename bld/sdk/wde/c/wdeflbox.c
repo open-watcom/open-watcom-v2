@@ -70,6 +70,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT bool    CALLBACK WdeLBoxDispatcher( ACTION, WdeLBoxObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeLBoxSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
@@ -104,7 +106,7 @@ static DISPATCH_ITEM WdeLBoxActions[] = {
 
 #define MAX_ACTIONS      (sizeof( WdeLBoxActions ) / sizeof( DISPATCH_ITEM ))
 
-WINEXPORT OBJPTR CALLBACK WdeLBoxCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeLBoxCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeLBox( parent, obj_rect, handle, LBS_STANDARD, "", LISTBOX_OBJ ) );
@@ -185,7 +187,7 @@ OBJPTR WdeLBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wde
     return( (OBJPTR)new );
 }
 
-WINEXPORT bool CALLBACK WdeLBoxDispatcher( ACTION act, WdeLBoxObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeLBoxDispatcher( ACTION act, WdeLBoxObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -640,7 +642,7 @@ bool WdeLBoxDefineHook ( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, 
     return( processed );
 }
 
-WINEXPORT LRESULT CALLBACK WdeLBoxSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeLBoxSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalLBoxProc, hWnd, message, wParam, lParam ) );

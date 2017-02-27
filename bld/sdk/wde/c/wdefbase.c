@@ -111,6 +111,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT bool   CALLBACK WdeBaseDispatcher( ACTION, WdeBaseObject *, void *, void * );
 
 /****************************************************************************/
@@ -134,7 +136,7 @@ static DISPATCH_ITEM WdeBaseActions[] = {
 
 #define MAX_ACTIONS      (sizeof( WdeBaseActions ) / sizeof ( DISPATCH_ITEM ))
 
-WINEXPORT OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     RECT                rect;
     WdeBaseObject       *new;
@@ -206,7 +208,7 @@ WINEXPORT OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR h
     return( (OBJPTR)new );
 }
 
-WINEXPORT bool CALLBACK WdeBaseDispatcher( ACTION act, WdeBaseObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeBaseDispatcher( ACTION act, WdeBaseObject *obj, void *p1, void *p2 )
 {
     int i;
 

@@ -69,6 +69,8 @@ void WdeInt3( void );
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
                                        HSZ hsz1, HSZ hsz2, HDDEDATA hdata,
                                        ULONG_PTR lData1, ULONG_PTR lData2 );
@@ -582,7 +584,7 @@ void WdeHandlePokedData( HDDEDATA hdata )
     WRMemFree( cmd );
 }
 
-WINEXPORT HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
+HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
                                 HSZ hsz1, HSZ hsz2, HDDEDATA hdata,
                                 ULONG_PTR lData1, ULONG_PTR lData2 )
 {

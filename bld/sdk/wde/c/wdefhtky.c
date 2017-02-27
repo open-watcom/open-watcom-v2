@@ -71,6 +71,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT bool    CALLBACK WdeHtKyDispatcher( ACTION, WdeHtKyObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeHtKySuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
@@ -107,7 +109,7 @@ static DISPATCH_ITEM WdeHtKyActions[] = {
 
 #define MAX_ACTIONS      (sizeof( WdeHtKyActions ) / sizeof( DISPATCH_ITEM ))
 
-WINEXPORT OBJPTR CALLBACK WdeHtKyCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeHtKyCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeHtKy( parent, obj_rect, handle, 0, "", HOTKEY_OBJ ) );
@@ -189,7 +191,7 @@ OBJPTR WdeHKCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-WINEXPORT bool CALLBACK WdeHtKyDispatcher( ACTION act, WdeHtKyObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeHtKyDispatcher( ACTION act, WdeHtKyObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -401,7 +403,7 @@ bool WdeHtKyDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
     return( false );
 }
 
-WINEXPORT LRESULT CALLBACK WdeHtKySuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeHtKySuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalHtKyProc, hWnd, message, wParam, lParam ) );

@@ -93,6 +93,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
 WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND, UINT, WPARAM, LPARAM );
 WINEXPORT INT_PTR CALLBACK WdeSplashDlgProc( HWND, UINT, WPARAM, LPARAM );
 
@@ -615,7 +616,7 @@ static void handleInitMenu( HMENU menu )
     }
 }
 
-WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     HMENU       menu;
     LRESULT     ret;
@@ -1321,7 +1322,7 @@ void WdeDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
     FreeProcInstance( (FARPROC)dlg_proc );
 }
 
-WINEXPORT INT_PTR CALLBACK WdeSplashDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeSplashDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     UINT        msecs, start;
     UINT_PTR    timer;
@@ -1452,21 +1453,21 @@ WINEXPORT INT_PTR CALLBACK WdeSplashDlgProc( HWND hDlg, UINT message, WPARAM wPa
     return( ret );
 }
 
-WINEXPORT void CALLBACK WdeHelpRoutine( void )
+void CALLBACK WdeHelpRoutine( void )
 {
     if( !WHtmlHelp( hWinWdeMain, "resdlg.chm", HELP_CONTENTS, 0 ) ) {
         WWinHelp( hWinWdeMain, "resdlg.hlp", HELP_CONTENTS, 0 );
     }
 }
 
-WINEXPORT void CALLBACK WdeHelpSearchRoutine( void )
+void CALLBACK WdeHelpSearchRoutine( void )
 {
     if( !WHtmlHelp( hWinWdeMain, "resdlg.chm", HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
         WWinHelp( hWinWdeMain, "resdlg.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
     }
 }
 
-WINEXPORT void CALLBACK WdeHelpOnHelpRoutine( void )
+void CALLBACK WdeHelpOnHelpRoutine( void )
 {
     WWinHelp( hWinWdeMain, "winhelp.hlp", HELP_HELPONHELP, 0 );
 }

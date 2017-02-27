@@ -51,6 +51,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT INT_PTR CALLBACK WdeGenericDefineDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -275,7 +277,7 @@ void WdeGetObjectStyle( HWND hDlg, DialogStyle *style )
     *style = (uint_16)WdeGetUINT32FromEdit( hDlg, IDB_STYLES, NULL );
 }
 
-WINEXPORT INT_PTR CALLBACK WdeGenericDefineDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeGenericDefineDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static WdeDefineObjectInfo  *info = NULL;
     bool                        ret;

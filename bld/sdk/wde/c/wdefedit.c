@@ -70,6 +70,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT bool    CALLBACK WdeEditDispatcher( ACTION, WdeEditObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeEditSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
@@ -104,7 +106,7 @@ static DISPATCH_ITEM WdeEditActions[] = {
 
 #define MAX_ACTIONS      (sizeof( WdeEditActions ) / sizeof( DISPATCH_ITEM ))
 
-WINEXPORT OBJPTR CALLBACK WdeEditCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeEditCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeEdit( parent, obj_rect, handle, ES_LEFT | ES_AUTOHSCROLL, "", EDIT_OBJ ) );
@@ -186,7 +188,7 @@ OBJPTR WdeEdCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-WINEXPORT bool CALLBACK WdeEditDispatcher( ACTION act, WdeEditObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeEditDispatcher( ACTION act, WdeEditObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -628,7 +630,7 @@ bool WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
     return( processed );
 }
 
-WINEXPORT LRESULT CALLBACK WdeEditSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeEditSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalEditProc, hWnd, message, wParam, lParam ) );

@@ -46,6 +46,7 @@
     pick_ACT_GET_OBJPTR(o,pick) \
     pick_ACT_SHOW_SEL_BOXES(o,pick)
 
+/* Local Window callback functions prototypes */
 WINEXPORT LRESULT CALLBACK CurrItemWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /* forward references */
@@ -469,8 +470,8 @@ static void MarkBoxes( LPRECT currect, HDC hdc, RESIZE_ID sizeid )
     }
 }
 
-WINEXPORT LRESULT CALLBACK CurrItemWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lparam )
-/************************************************************************************************/
+LRESULT CALLBACK CurrItemWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lparam )
+/**************************************************************************************/
 {
     /* processes messages */
     HDC             hdc;

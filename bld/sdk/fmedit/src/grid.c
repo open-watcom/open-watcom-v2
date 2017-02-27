@@ -92,8 +92,8 @@ extern void SnapPointToResizeGrid( POINT *pt )
 }
 
 
-WINEXPORT INT_PTR CALLBACK FMGridDlgProc( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
-/***********************************************************************************************/
+INT_PTR CALLBACK FMGridDlgProc( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
+/*************************************************************************************/
 {
     /* Processes messages for "Grid" dialog box */
     RECT        rect;

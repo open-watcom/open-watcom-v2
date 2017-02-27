@@ -68,6 +68,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT INT_PTR CALLBACK WdeControlDefineDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -1041,7 +1043,7 @@ bool WdeControlDefine( WdeDefineObjectInfo *o_info )
     return( true );
 }
 
-WINEXPORT INT_PTR CALLBACK WdeControlDefineDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeControlDefineDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static WdeDefineObjectInfo  *o_info = NULL;
     static bool                 init_done = false;

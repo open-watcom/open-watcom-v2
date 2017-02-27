@@ -72,6 +72,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT bool    CALLBACK WdeCBoxDispatcher( ACTION, WdeCBoxObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeCBoxSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
@@ -106,7 +108,7 @@ static DISPATCH_ITEM WdeCBoxActions[] = {
 
 #define MAX_ACTIONS      (sizeof( WdeCBoxActions ) / sizeof( DISPATCH_ITEM ))
 
-WINEXPORT OBJPTR CALLBACK WdeCBoxCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeCBoxCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeCBox( parent, obj_rect, handle,
@@ -190,7 +192,7 @@ OBJPTR WdeCBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-WINEXPORT bool CALLBACK WdeCBoxDispatcher( ACTION act, WdeCBoxObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeCBoxDispatcher( ACTION act, WdeCBoxObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -604,7 +606,7 @@ bool WdeCBoxDefineHook ( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, 
 }
 
 
-WINEXPORT LRESULT CALLBACK WdeCBoxSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeCBoxSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     LRESULT            ret;
 

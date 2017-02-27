@@ -71,6 +71,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT bool    CALLBACK WdeUpDnDispatcher( ACTION, WdeUpDnObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeUpDnSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
@@ -107,7 +109,7 @@ static DISPATCH_ITEM WdeUpDnActions[] = {
 
 #define MAX_ACTIONS     (sizeof( WdeUpDnActions ) / sizeof( DISPATCH_ITEM ))
 
-WINEXPORT OBJPTR CALLBACK WdeUpDnCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeUpDnCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeUpDn( parent, obj_rect, handle, 0, "", UPDOWN_OBJ ) );
@@ -189,7 +191,7 @@ OBJPTR WdeUDCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-WINEXPORT bool CALLBACK WdeUpDnDispatcher( ACTION act, WdeUpDnObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeUpDnDispatcher( ACTION act, WdeUpDnObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -468,7 +470,7 @@ bool WdeUpDnDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
     return( processed );
 }
 
-WINEXPORT LRESULT CALLBACK WdeUpDnSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeUpDnSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalUpDnProc, hWnd, message, wParam, lParam ) );

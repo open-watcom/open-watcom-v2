@@ -70,6 +70,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT bool    CALLBACK WdeAniCDispatcher( ACTION, WdeAniCObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeAniCSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
@@ -105,7 +107,7 @@ static DISPATCH_ITEM WdeAniCActions[] = {
 
 #define MAX_ACTIONS      (sizeof( WdeAniCActions ) / sizeof( DISPATCH_ITEM ))
 
-WINEXPORT OBJPTR CALLBACK WdeAniCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeAniCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeAniC( parent, obj_rect, handle, 0, "", ANIMATE_OBJ ) );
@@ -186,7 +188,7 @@ OBJPTR WdeAniCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wd
     return( (OBJPTR)new );
 }
 
-WINEXPORT bool CALLBACK WdeAniCDispatcher( ACTION act, WdeAniCObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeAniCDispatcher( ACTION act, WdeAniCObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -433,7 +435,7 @@ bool WdeAniCDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
     return( false );
 }
 
-WINEXPORT LRESULT CALLBACK WdeAniCSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeAniCSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalAniCProc, hWnd, message, wParam, lParam ) );

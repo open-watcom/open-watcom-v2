@@ -71,6 +71,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT bool    CALLBACK WdeTViewDispatcher( ACTION, WdeTViewObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeTViewSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
@@ -107,7 +109,7 @@ static DISPATCH_ITEM WdeTViewActions[] = {
 
 #define MAX_ACTIONS     (sizeof( WdeTViewActions ) / sizeof( DISPATCH_ITEM ))
 
-WINEXPORT OBJPTR CALLBACK WdeTViewCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeTViewCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeTView( parent, obj_rect, handle, 0, "", TVIEW_OBJ ) );
@@ -186,7 +188,7 @@ OBJPTR WdeTVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wde
     return( (OBJPTR)new );
 }
 
-WINEXPORT bool CALLBACK WdeTViewDispatcher( ACTION act, WdeTViewObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeTViewDispatcher( ACTION act, WdeTViewObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -455,7 +457,7 @@ bool WdeTViewDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, 
     return( processed );
 }
 
-WINEXPORT LRESULT CALLBACK WdeTViewSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeTViewSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalTViewProc, hWnd, message, wParam, lParam ) );

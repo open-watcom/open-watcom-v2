@@ -58,6 +58,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT INT_PTR CALLBACK WdeSelectCustDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -597,7 +599,7 @@ bool WdePreviewSelected( HWND win )
     return( true );
 }
 
-WINEXPORT INT_PTR CALLBACK WdeSelectCustDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeSelectCustDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static int which = 0;
     bool   ret;

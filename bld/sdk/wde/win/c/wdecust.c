@@ -61,6 +61,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT INT_PTR   CALLBACK WdeSelectCustDlgProc( HWND, UINT, WPARAM, LPARAM );
 WINEXPORT INT_PTR   CALLBACK WdeLoadCustDlgProc( HWND, UINT, WPARAM, LPARAM );
 WINEXPORT HGLOBAL   CALLBACK WdeCustLOADRES( LPCSTR, LPCSTR );
@@ -749,7 +751,7 @@ bool WdeQueryAssumeMS( void )
     return( true );
 }
 
-WINEXPORT HGLOBAL CALLBACK WdeCustLOADRES( LPCSTR type_name, LPCSTR res_name )
+HGLOBAL CALLBACK WdeCustLOADRES( LPCSTR type_name, LPCSTR res_name )
 {
     HGLOBAL     res;
     HRSRC       hres;
@@ -833,7 +835,7 @@ WINEXPORT HGLOBAL CALLBACK WdeCustLOADRES( LPCSTR type_name, LPCSTR res_name )
     return( res );
 }
 
-WINEXPORT BOOL CALLBACK WdeCustEDITRES( LPCSTR type_name, LPCSTR res_name )
+BOOL CALLBACK WdeCustEDITRES( LPCSTR type_name, LPCSTR res_name )
 {
     char      out[160];
 
@@ -1096,7 +1098,7 @@ bool WdePreviewSelected( HWND win )
     return( true );
 }
 
-WINEXPORT INT_PTR CALLBACK WdeSelectCustDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeSelectCustDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static int which = 0;
     bool       ret;
@@ -1251,7 +1253,7 @@ bool WdeGetLoadCustInfo( HWND hDlg, WdeCustLib *lib )
     return( ok );
 }
 
-WINEXPORT INT_PTR CALLBACK WdeLoadCustDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeLoadCustDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static WdeCustLib   *lib;
     bool                checked;

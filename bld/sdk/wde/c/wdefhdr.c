@@ -71,6 +71,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT bool    CALLBACK WdeHdrDispatcher( ACTION, WdeHdrObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeHdrSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
@@ -107,7 +109,7 @@ static DISPATCH_ITEM WdeHdrActions[] = {
 
 #define MAX_ACTIONS      (sizeof( WdeHdrActions ) / sizeof( DISPATCH_ITEM ))
 
-WINEXPORT OBJPTR CALLBACK WdeHdrCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeHdrCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeHdr( parent, obj_rect, handle, 0, "", HEADER_OBJ ) );
@@ -189,7 +191,7 @@ OBJPTR WdeHCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-WINEXPORT bool CALLBACK WdeHdrDispatcher( ACTION act, WdeHdrObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeHdrDispatcher( ACTION act, WdeHdrObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -429,7 +431,7 @@ bool WdeHdrDefineHook( HWND hDlg, UINT message,
     return( processed );
 }
 
-WINEXPORT LRESULT CALLBACK WdeHdrSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeHdrSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalHdrProc, hWnd, message, wParam, lParam ) );

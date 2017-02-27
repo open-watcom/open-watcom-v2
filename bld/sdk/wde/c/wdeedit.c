@@ -46,6 +46,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT LRESULT CALLBACK WdeEditWndProc( HWND, UINT, WPARAM, LPARAM );
 WINEXPORT LRESULT CALLBACK WdeFormsWndProc( HWND, UINT, WPARAM, LPARAM );
 
@@ -295,7 +297,7 @@ LRESULT WdePassToEdit( UINT message, WPARAM wParam, LPARAM lParam )
     return( false );
 }
 
-WINEXPORT LRESULT CALLBACK WdeEditWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeEditWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     HWND        hwin;
     uint_32     styles;
@@ -356,7 +358,7 @@ WINEXPORT LRESULT CALLBACK WdeEditWndProc( HWND hWnd, UINT message, WPARAM wPara
     return( DefWindowProc( hWnd, message, wParam, lParam ) );
 }
 
-WINEXPORT LRESULT CALLBACK WdeFormsWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeFormsWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WdeResInfo *info;
     LRESULT     result;

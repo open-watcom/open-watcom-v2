@@ -73,6 +73,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT bool    CALLBACK WdeSBarDispatcher( ACTION, WdeSBarObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeSBarSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
@@ -146,7 +148,7 @@ bool WdeSBNoodleSize( OBJPTR obj, bool recreate )
     return( true );
 }
 
-WINEXPORT OBJPTR CALLBACK WdeSBarCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeSBarCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeSBar( parent, obj_rect, handle, 0, "", SBAR_OBJ ) );
@@ -232,7 +234,7 @@ OBJPTR WdeSBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-WINEXPORT bool CALLBACK WdeSBarDispatcher( ACTION act, WdeSBarObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeSBarDispatcher( ACTION act, WdeSBarObject *obj, void *p1, void *p2 )
 {
     int     i;
 

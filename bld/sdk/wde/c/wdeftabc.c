@@ -71,6 +71,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT bool    CALLBACK WdeTabCDispatcher( ACTION, WdeTabCObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeTabCSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
@@ -107,7 +109,7 @@ static DISPATCH_ITEM WdeTabCActions[] = {
 
 #define MAX_ACTIONS     (sizeof( WdeTabCActions ) / sizeof( DISPATCH_ITEM ))
 
-WINEXPORT OBJPTR CALLBACK WdeTabCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeTabCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeTabC( parent, obj_rect, handle, 0, "", TABCNTL_OBJ ) );
@@ -187,7 +189,7 @@ OBJPTR WdeTCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-WINEXPORT bool CALLBACK WdeTabCDispatcher( ACTION act, WdeTabCObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeTabCDispatcher( ACTION act, WdeTabCObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -572,7 +574,7 @@ bool WdeTabCDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
 #endif
 }
 
-WINEXPORT LRESULT CALLBACK WdeTabCSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeTabCSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalTabCProc, hWnd, message, wParam, lParam ) );

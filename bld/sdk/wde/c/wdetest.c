@@ -49,6 +49,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT bool CALLBACK WdeSetControlEnumProc( HWND, LPARAM );
 
 /****************************************************************************/
@@ -160,7 +162,7 @@ bool WdeSetTestControlDefaults( HWND dialog )
     return( ret );
 }
 
-WINEXPORT bool CALLBACK WdeSetControlEnumProc( HWND win, LPARAM ret )
+bool CALLBACK WdeSetControlEnumProc( HWND win, LPARAM ret )
 {
     /* touch unused var to get rid of warning */
     _wde_touch( ret );
@@ -216,7 +218,7 @@ static bool WdeSetDefaultTestControlEntries( HWND win )
     return( TRUE );
 }
 
-WINEXPORT INT_PTR CALLBACK WdeTestDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeTestDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     bool ret;
 

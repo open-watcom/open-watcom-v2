@@ -63,6 +63,7 @@
     pick_ACT_NOTIFY(o,pick) \
     pick_ACT_IS_MARK_VALID(o,pick)
 
+/* Local Window callback functions prototypes */
 WINEXPORT LRESULT CALLBACK EAtomWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /* forward references */
@@ -569,8 +570,8 @@ static bool EAtomNotify( EATOM *obj, NOTE_ID *noteid, void *p2 )
 }
 
 
-WINEXPORT LRESULT CALLBACK EAtomWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lparam )
-/*********************************************************************************************/
+LRESULT CALLBACK EAtomWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lparam )
+/***********************************************************************************/
 {
     /* processes messages */
     PAINTSTRUCT    ps;

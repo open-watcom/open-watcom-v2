@@ -73,6 +73,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT bool    CALLBACK WdeButtonDispatcher( ACTION, WdeButtonObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeButtonSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
@@ -106,7 +108,7 @@ static DISPATCH_ITEM WdeButtonActions[] = {
 
 #define MAX_ACTIONS      (sizeof( WdeButtonActions ) / sizeof( DISPATCH_ITEM ))
 
-WINEXPORT OBJPTR CALLBACK WdePButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdePButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeButton( parent, obj_rect, handle, BS_PUSHBUTTON, "Push", PBUTTON_OBJ ) );
@@ -115,7 +117,7 @@ WINEXPORT OBJPTR CALLBACK WdePButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPT
     }
 }
 
-WINEXPORT OBJPTR CALLBACK WdeCButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeCButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeButton( parent, obj_rect, handle, BS_AUTOCHECKBOX, "Check", CBUTTON_OBJ ) );
@@ -124,7 +126,7 @@ WINEXPORT OBJPTR CALLBACK WdeCButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPT
     }
 }
 
-WINEXPORT OBJPTR CALLBACK WdeRButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeRButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeButton( parent, obj_rect, handle, BS_AUTORADIOBUTTON, "Radio", RBUTTON_OBJ ) );
@@ -133,7 +135,7 @@ WINEXPORT OBJPTR CALLBACK WdeRButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPT
     }
 }
 
-WINEXPORT OBJPTR CALLBACK WdeGButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeGButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeButton( parent, obj_rect, handle, BS_GROUPBOX, "Group", GBUTTON_OBJ ) );
@@ -228,7 +230,7 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-WINEXPORT bool CALLBACK WdeButtonDispatcher( ACTION act, WdeButtonObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeButtonDispatcher( ACTION act, WdeButtonObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -876,7 +878,7 @@ void WdeButtonGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     WdeEXGetDefineInfo( o_info, hDlg );
 }
 
-WINEXPORT LRESULT CALLBACK WdeButtonSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeButtonSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalButtonProc, hWnd, message, wParam, lParam ) );

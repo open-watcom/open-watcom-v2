@@ -132,6 +132,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT bool CALLBACK WdeControlDispatcher( ACTION, WdeControlObject *, void *, void * );
 
 /****************************************************************************/
@@ -187,7 +189,7 @@ void WdeSetClearObjectPos( WdeControlObject *obj )
     //WdeSOP( obj, obj->parent );
 }
 
-WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     OBJPTR              ancestor;
     OBJ_ID              id;
@@ -301,7 +303,7 @@ WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPT
     return( (OBJPTR)new );
 }
 
-WINEXPORT bool CALLBACK WdeControlDispatcher( ACTION act, WdeControlObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeControlDispatcher( ACTION act, WdeControlObject *obj, void *p1, void *p2 )
 {
     int     i;
 

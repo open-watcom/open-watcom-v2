@@ -46,6 +46,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT UINT CALLBACK WdeOpenHookProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -325,7 +327,7 @@ char *WdeGetFileName( WdeGetFileStruct *gf, DWORD flags, WdeGetFileNameAction ac
     return( WdeStrDup( wde_file_name ) );
 }
 
-WINEXPORT UINT CALLBACK WdeOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+UINT CALLBACK WdeOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char    *title;
 

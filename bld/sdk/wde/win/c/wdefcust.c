@@ -86,6 +86,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT LRESULT   CALLBACK WdeCustomSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 WINEXPORT bool      CALLBACK WdeCustomDispatcher( ACTION, WdeCustomObject *, void *, void * );
 WINEXPORT WORD      CALLBACK WdeIDToStr( WORD, LPSTR, WORD );
@@ -207,12 +209,12 @@ bool WdeChooseCustControlType( WdeCustControl *info, WdeDialogBoxControl *contro
     return( found );
 }
 
-WINEXPORT OBJPTR CALLBACK WdeCustomCreate1( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeCustomCreate1( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     return( WdeMakeCustom( parent, obj_rect, handle, 0 ) );
 }
 
-WINEXPORT OBJPTR CALLBACK WdeCustomCreate2( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeCustomCreate2( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     return( WdeMakeCustom( parent, obj_rect, handle, 1 ) );
 }
@@ -556,7 +558,7 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-WINEXPORT bool CALLBACK WdeCustomDispatcher( ACTION act, WdeCustomObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeCustomDispatcher( ACTION act, WdeCustomObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -860,7 +862,7 @@ bool WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
     return( true );
 }
 
-WINEXPORT WORD CALLBACK WdeIDToStr( WORD id, LPSTR str, WORD len )
+WORD CALLBACK WdeIDToStr( WORD id, LPSTR str, WORD len )
 {
     char s[11];
     WORD slen;
@@ -875,7 +877,7 @@ WINEXPORT WORD CALLBACK WdeIDToStr( WORD id, LPSTR str, WORD len )
     return( slen );
 }
 
-WINEXPORT DWORD CALLBACK WdeStrToID( LPSTR str )
+DWORD CALLBACK WdeStrToID( LPSTR str )
 {
     uint_32 num;
     DWORD   ret;
@@ -891,7 +893,7 @@ WINEXPORT DWORD CALLBACK WdeStrToID( LPSTR str )
     return( ret );
 }
 
-WINEXPORT LRESULT CALLBACK WdeCustomSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeCustomSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WNDPROC             wnd_proc;
     uint_16             extra;

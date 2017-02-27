@@ -190,6 +190,8 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT bool       CALLBACK WdeDialogDispatcher( ACTION, WdeDialogObject *, void *, void * );
 WINEXPORT INT_PTR    CALLBACK WdeDialogDlgProc( HWND, UINT, WPARAM, LPARAM );
 WINEXPORT INT_PTR    CALLBACK WdeDialogDefineDlgProc( HWND, UINT, WPARAM, LPARAM );
@@ -615,7 +617,7 @@ OBJPTR WdeCreateDialogFromRes( WdeResInfo *res_info, WdeResDlgItem *ditem )
     return( (OBJPTR)new );
 }
 
-WINEXPORT OBJPTR CALLBACK WdeDialogCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeDialogCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     WdeDialogObject *new;
     RECT            *def_nc_size;
@@ -783,7 +785,7 @@ WdeDialogObject *WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle 
     return( new );
 }
 
-WINEXPORT bool CALLBACK WdeDialogDispatcher( ACTION act, WdeDialogObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeDialogDispatcher( ACTION act, WdeDialogObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -2685,7 +2687,7 @@ bool WdeBuildDialogTemplate ( WdeDialogBoxHeader *dialog_header, HGLOBAL *hgloba
     return( ok );
 }
 
-WINEXPORT INT_PTR CALLBACK WdeDialogDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeDialogDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     LPARAM  new_lparam;
     bool    ret;
@@ -2752,7 +2754,7 @@ WINEXPORT INT_PTR CALLBACK WdeDialogDlgProc( HWND hWnd, UINT message, WPARAM wPa
     return( ret );
 }
 
-WINEXPORT INT_PTR CALLBACK WdeDialogDefineDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeDialogDefineDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static WdeDefineObjectInfo *o_info = NULL;
     static bool                init_done = false;

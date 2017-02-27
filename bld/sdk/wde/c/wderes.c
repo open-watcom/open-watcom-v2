@@ -66,6 +66,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT LRESULT CALLBACK WdeResWndProc( HWND, UINT, WPARAM, LPARAM );
 
 void    WdeMouseRtn( HWND, RECT * );
@@ -1053,7 +1055,7 @@ bool WdeRemoveDialogFromResInfo( WdeResInfo *res_info, WdeResDlgItem *ditem,
     return( TRUE );
 }
 
-WINEXPORT LRESULT CALLBACK WdeResWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeResWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WdeResInfo  *res_info;
     int         msg_processed;
