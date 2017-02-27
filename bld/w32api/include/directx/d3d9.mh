@@ -41,8 +41,9 @@ typedef interface IDirect3DCryptoSession9           IDirect3DCryptoSession9;
 #define D3DAPI  WINAPI
 
 /* Monitor handle data type for older versions of Windows */
-#if (WINVER < 0x0500)
+#if (WINVER < 0x0500) && !defined(HMONITOR_DECLARED)
 DECLARE_HANDLE( HMONITOR );
+#define HMONITOR_DECLARED
 #endif
 
 /* SetPrivateData() flags */
