@@ -92,7 +92,7 @@ static bool     WdeScrollDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeScrollDispatch;
+static DISPATCH_FN              *WdeScrollDispatch;
 static WdeDialogBoxControl      *WdeDefaultScroll = NULL;
 static int                      WdeScrollWndExtra;
 static WNDPROC                  WdeOriginalScrollProc;
@@ -262,14 +262,14 @@ bool WdeScrollInit( bool first )
     SETCTL_TEXT( WdeDefaultScroll, NULL );
     SETCTL_CLASSID( WdeDefaultScroll, ResNumToControlClass( CLASS_SCROLLBAR ) );
 
-    WdeScrollDispatch = MakeProcInstance( (FARPROC)WdeScrollDispatcher, WdeGetAppInstance() );
+    WdeScrollDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeScrollDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeScrollFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultScroll );
-    FreeProcInstance( WdeScrollDispatch );
+    FreeProcInstance( (FARPROC)WdeScrollDispatch );
 }
 
 bool WdeScrollDestroy( WdeScrollObject *obj, bool *flag, bool *p2 )

@@ -91,7 +91,7 @@ static bool     WdeProgDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeProgDispatch;
+static DISPATCH_FN              *WdeProgDispatch;
 static WdeDialogBoxControl      *WdeDefaultProg = NULL;
 static int                      WdeProgWndExtra;
 static WNDPROC                  WdeOriginalProgProc;
@@ -247,14 +247,14 @@ bool WdeProgInit( bool first )
     SETCTL_TEXT( WdeDefaultProg, NULL );
     SETCTL_CLASSID( WdeDefaultProg, WdeStrToControlClass( WPROGRESS_CLASS ) );
 
-    WdeProgDispatch = MakeProcInstance( (FARPROC)WdeProgDispatcher, WdeGetAppInstance() );
+    WdeProgDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeProgDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeProgFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultProg );
-    FreeProcInstance( WdeProgDispatch );
+    FreeProcInstance( (FARPROC)WdeProgDispatch );
 }
 
 bool WdeProgDestroy( WdeProgObject *obj, bool *flag, bool *p2 )

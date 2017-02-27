@@ -91,7 +91,7 @@ static bool     WdeTabCDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeTabCDispatch;
+static DISPATCH_FN              *WdeTabCDispatch;
 static WdeDialogBoxControl      *WdeDefaultTabC = NULL;
 static int                      WdeTabCWndExtra;
 static WNDPROC                  WdeOriginalTabCProc;
@@ -247,14 +247,14 @@ bool WdeTabCInit( bool first )
     SETCTL_TEXT( WdeDefaultTabC, NULL );
     SETCTL_CLASSID( WdeDefaultTabC, WdeStrToControlClass( WWC_TABCONTROL ) );
 
-    WdeTabCDispatch = MakeProcInstance( (FARPROC)WdeTabCDispatcher, WdeGetAppInstance() );
+    WdeTabCDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeTabCDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeTabCFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultTabC );
-    FreeProcInstance( WdeTabCDispatch );
+    FreeProcInstance( (FARPROC)WdeTabCDispatch );
 }
 
 bool WdeTabCDestroy( WdeTabCObject *obj, bool *flag, bool *p2 )

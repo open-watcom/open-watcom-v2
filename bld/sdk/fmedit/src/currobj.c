@@ -60,15 +60,15 @@ static DISPATCH_ITEM CurrObjActions[] = {
 
 #define MAX_ACTIONS (sizeof( CurrObjActions ) / sizeof( DISPATCH_ITEM ))
 
-static bool CALLBACK CurrObjDispatch( ACTION id, CURROBJ *cobj, void *p1, void *p2 )
-/**********************************************************************************/
+static bool CALLBACK CurrObjDispatch( ACTION id, OBJPTR cobj, void *p1, void *p2 )
+/********************************************************************************/
 {
     /* dispatch the desired operation to the correct place */
     int i;
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( CurrObjActions[i].id == id ) {
-            return( CurrObjActions[i].rtn( (OBJPTR)cobj, p1, p2 ) );
+            return( CurrObjActions[i].rtn( cobj, p1, p2 ) );
         }
     }
     return( false );

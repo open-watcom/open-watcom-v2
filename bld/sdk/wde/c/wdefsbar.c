@@ -93,7 +93,7 @@ static bool     WdeSBarDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeSBarDispatch;
+static DISPATCH_FN              *WdeSBarDispatch;
 static WdeDialogBoxControl      *WdeDefaultSBar = NULL;
 static int                      WdeSBarWndExtra;
 static WNDPROC                  WdeOriginalSBarProc;
@@ -292,14 +292,14 @@ bool WdeSBarInit( bool first )
     SETCTL_TEXT( WdeDefaultSBar, NULL );
     SETCTL_CLASSID( WdeDefaultSBar, WdeStrToControlClass( WSTATUSCLASSNAME ) );
 
-    WdeSBarDispatch = MakeProcInstance( (FARPROC)WdeSBarDispatcher, WdeGetAppInstance() );
+    WdeSBarDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeSBarDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeSBarFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultSBar );
-    FreeProcInstance( WdeSBarDispatch );
+    FreeProcInstance( (FARPROC)WdeSBarDispatch );
 }
 
 bool WdeSBarDestroy( WdeSBarObject *obj, bool *flag, bool *p2 )

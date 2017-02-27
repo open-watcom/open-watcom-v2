@@ -78,19 +78,19 @@ static DISPATCH_ITEM EAtomActions[] = {
 
 #define MAX_ACTIONS (sizeof( EAtomActions ) / sizeof( DISPATCH_ITEM ))
 
-static bool CALLBACK EAtomDispatch( ACTION id, EATOM *obj, void *p1, void *p2 )
+static bool CALLBACK EAtomDispatch( ACTION id, OBJPTR obj, void *p1, void *p2 )
 /*****************************************************************************/
 {
     /* dispatch the desired operation to the correct place */
     int i;
 
     if( id >= APP_ACTIONS ) {
-        return( Forward( obj->obj, id, p1, p2 ) );
+        return( Forward( ((EATOM *)obj)->obj, id, p1, p2 ) );
     }
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( EAtomActions[i].id == id ) {
-            return( EAtomActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( EAtomActions[i].rtn( obj, p1, p2 ) );
         }
     }
     return( false );

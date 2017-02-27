@@ -91,7 +91,7 @@ static bool     WdeLViewDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeLViewDispatch;
+static DISPATCH_FN              *WdeLViewDispatch;
 static WdeDialogBoxControl      *WdeDefaultLView = NULL;
 static int                      WdeLViewWndExtra;
 static WNDPROC                  WdeOriginalLViewProc;
@@ -249,14 +249,14 @@ bool WdeLViewInit( bool first )
     SETCTL_TEXT( WdeDefaultLView, NULL );
     SETCTL_CLASSID( WdeDefaultLView, WdeStrToControlClass( WWC_LISTVIEW ) );
 
-    WdeLViewDispatch = MakeProcInstance( (FARPROC)WdeLViewDispatcher, WdeGetAppInstance() );
+    WdeLViewDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeLViewDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeLViewFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultLView );
-    FreeProcInstance( WdeLViewDispatch );
+    FreeProcInstance( (FARPROC)WdeLViewDispatch );
 }
 
 bool WdeLViewDestroy( WdeLViewObject *obj, bool *flag, bool *p2 )

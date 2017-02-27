@@ -91,7 +91,7 @@ static bool     WdeUpDnDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeUpDnDispatch;
+static DISPATCH_FN              *WdeUpDnDispatch;
 static WdeDialogBoxControl      *WdeDefaultUpDn = NULL;
 static int                      WdeUpDnWndExtra;
 static WNDPROC                  WdeOriginalUpDnProc;
@@ -249,14 +249,14 @@ bool WdeUpDnInit( bool first )
     SETCTL_TEXT( WdeDefaultUpDn, NULL );
     SETCTL_CLASSID( WdeDefaultUpDn, WdeStrToControlClass( WUPDOWN_CLASS ) );
 
-    WdeUpDnDispatch = MakeProcInstance( (FARPROC)WdeUpDnDispatcher, WdeGetAppInstance() );
+    WdeUpDnDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeUpDnDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeUpDnFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultUpDn );
-    FreeProcInstance( WdeUpDnDispatch );
+    FreeProcInstance( (FARPROC)WdeUpDnDispatch );
 }
 
 bool WdeUpDnDestroy( WdeUpDnObject *obj, bool *flag, bool *p2 )

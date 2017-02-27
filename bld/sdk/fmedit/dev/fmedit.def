@@ -17,7 +17,7 @@
 #endif
 
 #define OBJ_DISPATCHER(o)           ((OBJECT *)(o))->dispatcher
-#define OBJ_DISPATCHER_SET(o,s)     OBJ_DISPATCHER(o) = (DISPATCH_FN *)(s)
+#define OBJ_DISPATCHER_SET(o,s)     OBJ_DISPATCHER(o) = s
 #define OBJ_DISPATCHER_COPY(o,s)    OBJ_DISPATCHER(o) = OBJ_DISPATCHER(s)
 
 typedef int OBJ_ID;

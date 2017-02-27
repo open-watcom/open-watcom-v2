@@ -89,7 +89,7 @@ static void     WdeStaticGetDefineInfo( WdeDefineObjectInfo *, HWND );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeStaticDispatch;
+static DISPATCH_FN              *WdeStaticDispatch;
 static WdeDialogBoxControl      *WdeDefaultStatic = NULL;
 static int                      WdeStaticWndExtra;
 static WNDPROC                  WdeOriginalStaticProc;
@@ -267,14 +267,14 @@ bool WdeStaticInit( bool first )
     SETCTL_TEXT( WdeDefaultStatic, NULL );
     SETCTL_CLASSID( WdeDefaultStatic, ResNumToControlClass( CLASS_STATIC ) );
 
-    WdeStaticDispatch = MakeProcInstance( (FARPROC)WdeStaticDispatcher, WdeGetAppInstance() );
+    WdeStaticDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeStaticDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeStaticFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultStatic );
-    FreeProcInstance( WdeStaticDispatch );
+    FreeProcInstance( (FARPROC)WdeStaticDispatch );
 }
 
 bool WdeStaticDestroy( WdeStaticObject *obj, bool *flag, bool *p2 )

@@ -91,7 +91,7 @@ static bool     WdeTViewDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeTViewDispatch;
+static DISPATCH_FN              *WdeTViewDispatch;
 static WdeDialogBoxControl      *WdeDefaultTView = NULL;
 static int                      WdeTViewWndExtra;
 static WNDPROC                  WdeOriginalTViewProc;
@@ -246,14 +246,14 @@ bool WdeTViewInit( bool first )
     SETCTL_TEXT( WdeDefaultTView, NULL );
     SETCTL_CLASSID( WdeDefaultTView, WdeStrToControlClass( WWC_TREEVIEW ) );
 
-    WdeTViewDispatch = MakeProcInstance( (FARPROC)WdeTViewDispatcher, WdeGetAppInstance() );
+    WdeTViewDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeTViewDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeTViewFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultTView );
-    FreeProcInstance( WdeTViewDispatch );
+    FreeProcInstance( (FARPROC)WdeTViewDispatch );
 }
 
 bool WdeTViewDestroy( WdeTViewObject *obj, bool *flag, bool *p2 )

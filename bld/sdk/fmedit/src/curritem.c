@@ -67,18 +67,18 @@ static DISPATCH_ITEM CurrItemActions[] = {
     #define MOVE_TO( hdc, x, y, lppoint ) MoveTo( (hdc), (x), (y) );
 #endif
 
-static bool CALLBACK CurrItemDispatch( ACTION id, CURRITEM *ci, void *p1, void *p2 )
-/**********************************************************************************/
+static bool CALLBACK CurrItemDispatch( ACTION id, OBJPTR ci, void *p1, void *p2 )
+/*******************************************************************************/
 {
     /* dispatch the desired operation to the correct place */
     int i;
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( CurrItemActions[i].id == id ) {
-            return( CurrItemActions[i].rtn( (OBJPTR)ci, p1, p2 ) );
+            return( CurrItemActions[i].rtn( ci, p1, p2 ) );
         }
     }
-    return( Forward( ci->obj, id, p1, p2 ) );
+    return( Forward( ((CURRITEM *)ci)->obj, id, p1, p2 ) );
 }
 
 static bool CurrItemValidateAction( CURRITEM *ci, ACTION *idptr, void *p2 )

@@ -112,7 +112,7 @@ static void     WdeFreeClassNode( WdeCustClassNode * );
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeCustomDispatch;
+static DISPATCH_FN              *WdeCustomDispatch;
 static FARPROC                  WdeStr2ID;
 static FARPROC                  WdeID2Str;
 static WdeDialogBoxControl      *WdeDefaultCustom = NULL;
@@ -595,7 +595,7 @@ bool WdeCustomInit( bool first )
     SETCTL_TEXT( WdeDefaultCustom, NULL );
     SETCTL_CLASSID( WdeDefaultCustom, NULL );
 
-    WdeCustomDispatch = MakeProcInstance( (FARPROC)WdeCustomDispatcher, WdeGetAppInstance() );
+    WdeCustomDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeCustomDispatcher, WdeGetAppInstance() );
 
     WdeStr2ID = MakeProcInstance ( (FARPROC)WdeStrToID, WdeApplicationInstance );
     WdeID2Str = MakeProcInstance ( (FARPROC)WdeIDToStr, WdeApplicationInstance );
@@ -607,7 +607,7 @@ void WdeCustomFini( void )
 {
     WdeFreeClassList();
     WdeFreeDialogBoxControl( &WdeDefaultCustom );
-    FreeProcInstance( WdeCustomDispatch );
+    FreeProcInstance( (FARPROC)WdeCustomDispatch );
     FreeProcInstance( WdeStr2ID );
     FreeProcInstance( WdeID2Str );
 }
