@@ -150,38 +150,38 @@ void SetState( STATE_ID state )
     SetStateCursor( state );
 }
 
-extern STATE_ID GetState( void )
+STATE_ID GetState( void )
 {
     /* return the current state */
     return( State->currstate );
 }
 
-extern void SetBaseState( STATE_ID st )
+void SetBaseState( STATE_ID st )
 {
     /* set the state that the system goes to when nothing is actively happening */
     State->basestate = st;
 }
 
-extern void SetDefState( void )
+void SetDefState( void )
 {
     /* reset to base state */
     State->currstate = State->basestate;
     SetStateCursor( State->basestate );
 }
 
-extern void SetSize( RESIZE_ID id )
+void SetSize( RESIZE_ID id )
 {
     /* set the sizing state based on the passed sizing operation */
     State->sizeinfo |= id;
 }
 
-extern void ResetSize( void )
+void ResetSize( void )
 {
     /* reset the sizing state info */
     State->sizeinfo = R_NONE;
 }
 
-extern unsigned char GetSizing( void )
+unsigned char GetSizing( void )
 {
     /* return the sizing info */
     return( State->sizeinfo );
@@ -193,37 +193,37 @@ bool Sizing( char op )
     return( (State->sizeinfo & op) != R_NONE );
 }
 
-extern void SetPrevMouse( POINT pt )
+void SetPrevMouse( POINT pt )
 {
     /* save the mouse position */
     State->prevmouse = pt;
 }
 
-extern POINT GetPrevMouse( void )
+POINT GetPrevMouse( void )
 {
     /* Return the last significant the mouse position. */
     return( State->prevmouse );
 }
 
-extern HANDLE GetAppWnd( void )
+HANDLE GetAppWnd( void )
 {
     /* save the application window handle */
     return( State->appwnd );
 }
 
-extern HANDLE GetInst( void )
+HANDLE GetInst( void )
 {
     /* save the instance handle */
     return( FMEditInst );
 }
 
-extern void CreateMainObject( void )
+void CreateMainObject( void )
 {
     /* create the main object */
     State->mainobject = Create( USER_OBJ, NULL, NULL, NULL );
 }
 
-extern void DestroyMainObject( void )
+void DestroyMainObject( void )
 {
     /* destroy the main object */
     OBJPTR temp;
@@ -233,13 +233,13 @@ extern void DestroyMainObject( void )
     State->mainobject = NULL;
 }
 
-extern void CreateCurrObject( void )
+void CreateCurrObject( void )
 {
     /* Create the current object */
     State->currobj = Create( O_CURROBJ, NULL, NULL, NULL );
 }
 
-extern void DestroyCurrObject( void )
+void DestroyCurrObject( void )
 {
     /* Destroy the current object */
     Destroy( State->currobj, false );
@@ -316,7 +316,7 @@ void RestorePrevObject( void )
     AddCurrObject( State->prevobject );
 }
 
-extern OBJPTR GetCurrObj( void )
+OBJPTR GetCurrObj( void )
 {
     /* get the current object */
     if( State == NULL ) {
@@ -326,49 +326,49 @@ extern OBJPTR GetCurrObj( void )
     }
 }
 
-extern void FMEDITAPI GetOffset( POINT *point )
+void FMEDITAPI GetOffset( POINT *point )
 {
     /* return the offset point */
     *point = State->offset;
 }
 
-extern void SetOffset( POINT point )
+void SetOffset( POINT point )
 {
     /* set the offset point */
     State->offset = point;
 }
 
-extern RECT GetScrollRect( void )
+RECT GetScrollRect( void )
 {
     /* return the scroll rect */
     return( State->scrollrect );
 }
 
-extern void SetScrollRect( RECT rect )
+void SetScrollRect( RECT rect )
 {
     /* set the scroll rect */
     State->scrollrect = rect;
 }
 
-extern void SetScrollConfig( SCR_CONFIG flag )
+void SetScrollConfig( SCR_CONFIG flag )
 {
     /* Set the scroll configuration */
     State->scrollconfig = flag;
 }
 
-extern SCR_CONFIG GetScrollConfig( void )
+SCR_CONFIG GetScrollConfig( void )
 {
     /* Get the scroll configuration */
     return( State->scrollconfig );
 }
 
-extern OBJPTR GetSelectEatom( void )
+OBJPTR GetSelectEatom( void )
 {
     /* return the banded select eatom */
     return( State->selecteatom );
 }
 
-extern void SetSelectEatom( OBJPTR eatom )
+void SetSelectEatom( OBJPTR eatom )
 {
     /* set the banded select eatom */
     State->selecteatom = eatom;
@@ -407,7 +407,7 @@ int FMEDITAPI FMTranslateAccelerator( HWND wnd, LPMSG message )
     return( ret );
 }
 
-extern void LoadAccel( int bitmap )
+void LoadAccel( int bitmap )
 {
     if( bitmap & MENU_DELETE ) {
         State->hAccel[1] = LoadAccelerators( GetInst(), "DeleteAccelTable" );
@@ -452,7 +452,7 @@ void FMEDITAPI DisplayError( char * msg )
     }
 }
 
-extern void ReportPending( void )
+void ReportPending( void )
 {
     if( ShowError() && State->error != NULL ) {
         MessageBox( GetAppWnd(), (LPSTR) State->error, NULL,

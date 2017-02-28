@@ -97,7 +97,7 @@
 
 #define DEFAULT_FONT            "Helv"
 #define DEFAULT_POINT_SIZE      8
-#define DEFAULT_JFONT           "‚l‚r –¾’©"
+#define DEFAULT_JFONT           "ï¿½lï¿½r ï¿½ï¿½ï¿½ï¿½"
 #define DEFAULT_JPOINT_SIZE     10
 #define DEFAULT_MEMFLAGS        (MEMFLAG_DISCARDABLE | MEMFLAG_PURE | MEMFLAG_MOVEABLE)
 
@@ -380,8 +380,7 @@ WdeDialogBoxInfo *WdeDBIFromObject( void *_obj )
 
     dh = info->dialog_header;
     if( obj->dialog_info->is32bit ) {
-        if( dh->HelpId != 0 || dh->ExtendedStyle != 0 ||
-            dh->FontWeightDefined || dh->FontItalicDefined || dh->FontCharsetDefined ) {
+        if( dh->HelpId != 0 || dh->ExtendedStyle != 0 || dh->FontWeightDefined || dh->FontItalicDefined || dh->FontCharsetDefined ) {
             is32bitEx = true;
         }
     } else {
@@ -425,8 +424,7 @@ RECT *WdeGetDefaultDialogNCSize( void )
     static bool nc_size_set = false;
 
     if ( !nc_size_set ) {
-        nc_size.left = GetSystemMetrics( SM_CXDLGFRAME ) +
-                       GetSystemMetrics( SM_CXBORDER );
+        nc_size.left = GetSystemMetrics( SM_CXDLGFRAME ) + GetSystemMetrics( SM_CXBORDER );
         nc_size.right = nc_size.left;
 
         nc_size.bottom = GetSystemMetrics( SM_CYDLGFRAME );
@@ -823,8 +821,7 @@ bool WdeDialogInit( bool first )
 #endif
 
     /* set up the default control structure */
-    SETHDR_STYLE( WdeDefaultDialog, WS_CAPTION | WS_SYSMENU |
-                                    WS_VISIBLE | DS_MODALFRAME | DS_SETFONT );
+    SETHDR_STYLE( WdeDefaultDialog, WS_CAPTION | WS_SYSMENU | WS_VISIBLE | DS_MODALFRAME | DS_SETFONT );
 
     // the following assumes the same memory allocation scheme is
     // being used for regular stuff and RC strings
@@ -897,8 +894,7 @@ bool WdeDialogResolveSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
 
     if( !obj->name->IsName ) {
         if( from_id != NULL && *from_id ) {
-            vp = WdeResolveValue( obj->res_info->hash_table,
-                                  (WdeHashValue)obj->name->ID.Num );
+            vp = WdeResolveValue( obj->res_info->hash_table, (WdeHashValue)obj->name->ID.Num );
             if( vp != NULL ) {
                 if( obj->symbol != NULL ) {
                     WRMemFree( obj->symbol );
@@ -944,8 +940,7 @@ bool WdeDialogResolveHelpSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
     }
 
     if( from_id != NULL && *from_id ) {
-        vp = WdeResolveValue( obj->res_info->hash_table,
-                              (WdeHashValue)GETHDR_HELPID( obj->dialog_info ) );
+        vp = WdeResolveValue( obj->res_info->hash_table, (WdeHashValue)GETHDR_HELPID( obj->dialog_info ) );
         if( vp != NULL ) {
             if( obj->helpsymbol != NULL ) {
                 WRMemFree( obj->helpsymbol );
@@ -956,8 +951,7 @@ bool WdeDialogResolveHelpSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
         }
     } else {
         if( obj->helpsymbol ) {
-            val = WdeLookupName( obj->res_info->hash_table,
-                                 obj->helpsymbol, &found );
+            val = WdeLookupName( obj->res_info->hash_table, obj->helpsymbol, &found );
             if( found ) {
                 SETHDR_HELPID( obj->dialog_info, val );
                 WdeDialogModified( obj );
@@ -1545,8 +1539,7 @@ bool WdeDialogCreateWindow( WdeDialogObject *obj, bool *show, void *p2 )
 
     // get the expected location of the dialog
     Location( (OBJPTR)obj, &rect );
-    SetWindowPos( obj->window_handle, (HWND)NULL,
-                  rect.left, rect.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE );
+    SetWindowPos( obj->window_handle, (HWND)NULL, rect.left, rect.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE );
 
     if( !WdeCalcDialogNCSize( obj, &obj->nc_size ) ) {
         WdeWriteTrail( "WdeDialogCreateWindow: WdeCalcDialogNCSize failed!" );
@@ -1778,8 +1771,7 @@ bool WdeDialogDraw( WdeDialogObject *obj, RECT *area, HDC *dc )
     if( dc != NULL && IntersectRect( &trect, area, &rect ) ) {
         OffsetRect( &trect, -origin.x, -origin.y );
         RedrawWindow( obj->res_info->edit_win, &trect, (HRGN)NULL,
-                      RDW_INTERNALPAINT | //RDW_INVALIDATE |
-                      RDW_UPDATENOW );
+                      RDW_INTERNALPAINT /* | RDW_INVALIDATE */ | RDW_UPDATENOW );
         //SendMessage( obj->window_handle, WM_NCACTIVATE, (WPARAM)TRUE, NULL );
     }
 

@@ -561,8 +561,7 @@ bool WdeChangeControlSize( WdeControlObject *obj, bool widths_only, bool snap_to
         WdeMapWindowRect( obj->parent_handle, obj->res_info->edit_win, &size );
         OffsetRect( &size, origin.x, origin.y );
     } else {
-        WdeDialogToScreen( obj->object_handle, NULL,
-                           GETCTL_PSIZE( obj->control_info ), &size );
+        WdeDialogToScreen( obj->object_handle, NULL, GETCTL_PSIZE( obj->control_info ), &size );
     }
 
     if( widths_only ) {
@@ -606,8 +605,7 @@ bool WdeControlSetFont( WdeControlObject *obj, HFONT *font, WdeResizeRatio *resi
 
     if( obj->window_handle != NULL ) {
         control_class = GETCTL_CLASSID( obj->control_info );
-        if( control_class->Class == CLASS_STATIC &&
-            (GETCTL_STYLE( obj->control_info ) & 0x0000000f) == SS_ICON ) {
+        if( control_class->Class == CLASS_STATIC && (GETCTL_STYLE( obj->control_info ) & 0x0000000f) == SS_ICON ) {
             return( true );
         }
 
@@ -644,8 +642,7 @@ bool WdeControlDraw( WdeControlObject *obj, RECT *area, HDC *dc )
     if( dc != NULL && IntersectRect( &trect, area, &rect ) ) {
         OffsetRect( &trect, -origin.x, -origin.y );
         MapWindowPoints( obj->res_info->edit_win, obj->window_handle, (POINT *)&trect, 2 );
-        RedrawWindow( obj->window_handle, (RECT *)&trect, (HRGN)NULL,
-                      RDW_INTERNALPAINT | RDW_UPDATENOW );
+        RedrawWindow( obj->window_handle, (RECT *)&trect, (HRGN)NULL, RDW_INTERNALPAINT | RDW_UPDATENOW );
     }
 
     OffsetRect( &rect, -origin.x, -origin.y );
@@ -725,8 +722,7 @@ bool WdeControlCreateWindow( WdeControlObject *obj, bool *p1, void *p2 )
     }
 
     new_proc = (WNDPROC)NULL;
-    if( !Forward( obj->object_handle, GET_WND_PROC, &new_proc, NULL ) ||
-        new_proc == (WNDPROC)NULL ) {
+    if( !Forward( obj->object_handle, GET_WND_PROC, &new_proc, NULL ) || new_proc == (WNDPROC)NULL ) {
         WdeWriteTrail( "WdeControlCreateWindow: Could not get new wnd proc!" );
         return( false );
     }
@@ -1005,8 +1001,7 @@ bool WdeControlPasteObject( WdeControlObject *obj, OBJPTR parent, POINT *pnt )
     if( ok ) {
         WdeControlModified( obj );
         if( obj->symbol != NULL ) {
-            WdeAddSymbolToObjectHashTable( obj->res_info, obj->symbol,
-                                           GETCTL_ID( obj->control_info ) );
+            WdeAddSymbolToObjectHashTable( obj->res_info, obj->symbol, GETCTL_ID( obj->control_info ) );
         }
         WdeControlOnTop( obj, NULL, NULL );
     } else {
@@ -1386,8 +1381,7 @@ bool WdeControlResize( WdeControlObject *obj, RECT *new_pos, bool *flag )
             pnt.y = new_pos->top;
 
             if( pnt.x < parent_rect.left || pnt.y < parent_rect.top ) {
-                WdeWriteTrail( "WdeControlResize: "
-                               "control not contained by dialog top left!" );
+                WdeWriteTrail( "WdeControlResize: control not contained by dialog top left!" );
                 //error = true;
                 error = false; // experiment -- don't cause a failure
             }
@@ -1677,8 +1671,7 @@ bool WdeControlResolveSymbol( WdeControlObject *obj, bool *b, bool *from_id )
 
     if( obj->control_info != NULL && obj->res_info != NULL ) {
         if( from_id != NULL && *from_id ) {
-            vp = WdeResolveValue( obj->res_info->hash_table,
-                                  (WdeHashValue)GETCTL_ID( obj->control_info ) );
+            vp = WdeResolveValue( obj->res_info->hash_table, (WdeHashValue)GETCTL_ID( obj->control_info ) );
             if( vp != NULL ) {
                 if( obj->symbol != NULL ) {
                     WRMemFree( obj->symbol );
@@ -1688,8 +1681,7 @@ bool WdeControlResolveSymbol( WdeControlObject *obj, bool *b, bool *from_id )
             }
         } else {
             if( obj->symbol != NULL ) {
-                val = WdeLookupName( obj->res_info->hash_table,
-                                     obj->symbol, &found );
+                val = WdeLookupName( obj->res_info->hash_table, obj->symbol, &found );
                 if( found ) {
                     SETCTL_ID( obj->control_info, (uint_16)val );
                     WdeControlModified( obj );
@@ -1717,8 +1709,7 @@ bool WdeControlResolveHelpSymbol( WdeControlObject *obj, bool *b, bool *from_id 
 
     if( obj->control_info != NULL && obj->res_info != NULL ) {
         if( from_id != NULL && *from_id ) {
-            vp = WdeResolveValue( obj->res_info->hash_table,
-                                  (WdeHashValue)GETCTL_HELPID( obj->control_info ) );
+            vp = WdeResolveValue( obj->res_info->hash_table, (WdeHashValue)GETCTL_HELPID( obj->control_info ) );
             if( vp != NULL ) {
                 if( obj->helpsymbol != NULL ) {
                     WRMemFree( obj->helpsymbol );
@@ -1884,8 +1875,7 @@ bool WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
     ok = true;
 
     if( obj->parent_handle == (HWND)NULL ) {
-        ok = (Forward( obj->parent, GET_WINDOW_HANDLE, &obj->parent_handle, NULL ) &&
-              obj->parent_handle != (HWND)NULL);
+        ok = (Forward( obj->parent, GET_WINDOW_HANDLE, &obj->parent_handle, NULL ) && obj->parent_handle != (HWND)NULL);
     }
 
     if( ok ) {

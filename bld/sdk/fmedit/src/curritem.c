@@ -537,7 +537,7 @@ LRESULT CALLBACK CurrItemWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM 
                 if( !IsRectEmpty( &rect ) ) {
                     if( ci == GetPrimaryObject() ) {
                         sizeid = R_ALL;
-                        GetResizeInfo( (OBJECT *)ci, &sizeid );
+                        GetResizeInfo( (OBJPTR)ci, &sizeid );
                         MarkBoxes( &rect, hdc, sizeid );
                     } else {
                         OutlineBoxes( &rect, hdc );

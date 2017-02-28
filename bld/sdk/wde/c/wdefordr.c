@@ -67,7 +67,6 @@ WINEXPORT LRESULT CALLBACK WdeTagProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* external variables                                                       */
 /****************************************************************************/
-extern char WdeTagClass[] = "wdetag";
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -76,6 +75,7 @@ static int        WdeTagExtra           = 0;
 static WNDPROC    WdeOriginalButtonProc = NULL;
 static HINSTANCE  WdeAppInst            = NULL;
 static HFONT      WdeTagFont            = NULL;
+static char       WdeTagClass[]         = "wdetag";
 
 static void WdeSetTagState( WdeOrderedEntry *oe )
 {
@@ -251,13 +251,13 @@ bool WdeAddOrderedEntry( LIST **l, OBJPTR obj )
     LIST            *olist;
 
     if( l == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( (olist = WdeFindOrderedEntry( *l, obj )) != NULL ) {
         oentry = (WdeOrderedEntry *)ListElement ( olist );
         oentry->present = TRUE;
-        return( TRUE );
+        return( true );
     }
 
     oentry = (WdeOrderedEntry *)WRMemAlloc( sizeof( WdeOrderedEntry ) );
@@ -279,10 +279,10 @@ bool WdeRemoveOrderedEntry( LIST *l, OBJPTR obj )
     if( (olist = WdeFindOrderedEntry( l, obj )) != NULL ) {
         oentry = (WdeOrderedEntry *)ListElement( olist );
         oentry->present = FALSE;
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 bool WdeCleanOrderedList( LIST **l )
@@ -292,7 +292,7 @@ bool WdeCleanOrderedList( LIST **l )
     LIST            *olist;
 
     if( l == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     tlist = WdeListCopy( *l );
@@ -309,7 +309,7 @@ bool WdeCleanOrderedList( LIST **l )
         ListFree( tlist );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeGetNextChild( LIST **l, OBJPTR *obj, bool up )
@@ -334,10 +334,10 @@ bool WdeGetNextChild( LIST **l, OBJPTR *obj, bool up )
         }
         oentry = (WdeOrderedEntry *)ListElement( o );
         *obj = oentry->obj;
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 void WdeFiniOrderStuff( void )
@@ -502,7 +502,7 @@ LRESULT CALLBACK WdeTagProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
     bool                pass_to_def;
     LRESULT             ret;
 
-    pass_to_def = TRUE;
+    pass_to_def = true;
     ret = FALSE;
     o = (WdeSetOrderStruct *)GET_WNDLONGPTR( hWnd, WdeTagExtra );
 
@@ -514,7 +514,7 @@ LRESULT CALLBACK WdeTagProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
         break;
 
     case WM_ERASEBKGND:
-        pass_to_def = FALSE;
+        pass_to_def = false;
         ret = TRUE;
         break;
 
@@ -522,7 +522,7 @@ LRESULT CALLBACK WdeTagProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
     case WM_MBUTTONDBLCLK:
     case WM_RBUTTONDBLCLK:
         WdeTagDblClicked( o );
-        pass_to_def = FALSE;
+        pass_to_def = false;
         ret = TRUE;
         break;
 
@@ -532,7 +532,7 @@ LRESULT CALLBACK WdeTagProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
         if( o != NULL ) {
             Notify( o->old_oe->obj, PRIMARY_OBJECT, NULL );
         }
-        pass_to_def = FALSE;
+        pass_to_def = false;
         ret = TRUE;
         break;
 
@@ -542,7 +542,7 @@ LRESULT CALLBACK WdeTagProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
         if( o != NULL ) {
             Notify( o->old_oe->obj, PRIMARY_OBJECT, NULL );
         }
-        pass_to_def = FALSE;
+        pass_to_def = false;
         ret = TRUE;
         break;
 
@@ -557,7 +557,7 @@ LRESULT CALLBACK WdeTagProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
     case WM_NCRBUTTONDBLCLK:
     case WM_NCMOUSEMOVE:
     case WM_MOUSEMOVE:
-        pass_to_def = FALSE;
+        pass_to_def = false;
         ret = TRUE;
         break;
     }
