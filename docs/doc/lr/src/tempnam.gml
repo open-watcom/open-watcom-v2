@@ -1,10 +1,10 @@
 .func _tempnam _wtempnam
 .synop begin
 #include <stdio.h>
-char *_tempnam( char *dir, char *prefix );
+char *_tempnam( const char *dir, const char *prefix );
 .ixfunc2 '&FileOp' &funcb
 .if &'length(&wfunc.) ne 0 .do begin
-wchar_t *_wtempnam( wchar_t *dir, wchar_t *prefix );
+wchar_t *_wtempnam( const wchar_t *dir, const wchar_t *prefix );
 .ixfunc2 '&FileOp' &wfunc
 .ixfunc2 '&Wide' &wfunc
 .do end
