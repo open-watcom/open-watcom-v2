@@ -144,11 +144,11 @@ _WCRTLINK int spawnve( int mode, const CHAR_TYPE * path,
             __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".com" ) );
             _RWD_errno = 0;
             retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envptr, argv );
-            if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
+            if( retval == -1 || _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
                 _RWD_errno = 0;
                 __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".exe" ) );
                 retval = __F_NAME(_dospawn,_wdospawn)( mode, p, cmdline, envptr, argv );
-                if( _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
+                if( retval == -1 || _RWD_errno == ENOENT || _RWD_errno == EINVAL ) {
                     /* try for a .BAT file */
                     _RWD_errno = 0;
                     __F_NAME(strcpy,wcscpy)( end_of_p, STRING( ".bat" ) );
