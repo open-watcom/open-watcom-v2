@@ -2,8 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2016 Open Watcom Contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2017 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,78 +24,44 @@
 *
 *  ========================================================================
 *
-* Description:  Linux atomic functions
+* Description:  POSIX thread kill signal implementation
+*
+* Author: J. Armstrong
 *
 ****************************************************************************/
 
 #include "variety.h"
-#include "atomic.h"
+#include <sys/types.h>
+#include <signal.h>
+#include <unistd.h>
 
-#ifdef __386__
+#include "thread.h"
+#include "rterrno.h"
 
-/* Simple wrapper around Intel CMPXCHG */
-static unsigned cmpxchg( volatile int *i, int j, int k );
-#pragma aux cmpxchg = \
-    "lock cmpxchg [edx], ecx" \
-    "jnz noxchg" \
-    "mov eax,1" \
-    "jmp donexchg" \
-    "noxchg:" \
-    "mov eax,0" \
-    "donexchg:" \
-    parm [edx] [eax] [ecx] \
-    value [eax];
+#include "_ptint.h"
 
-static void increment( volatile int *i );
-#pragma aux increment = \
-    "lock inc dword ptr [eax]" \
-    parm [eax];
-
-static void decrement( volatile int *i );
-#pragma aux decrement = \
-    "lock dec dword ptr [eax]" \
-    parm [eax];
-    
+#ifdef __LINUX__
+extern int __tgkill( pid_t __tgid, pid_t __tid, int __signal );
 #endif
 
-int __atomic_compare_and_swap( volatile int *dest, int expected, int source )
+_WCRTLINK int pthread_kill(pthread_t thread, int sig)
 {
-unsigned ret;
-#ifdef __386__
-    ret = cmpxchg( dest, expected, source );
+pid_t tpid;
+pid_t ppid;
+
+    tpid = __get_thread_id( thread );
+    ppid = getpid();
+    if(tpid != 0 && ppid != 0) {
+#ifdef __LINUX__
+        return( __tgkill(ppid, tpid, sig) );
 #else
-    ret = (unsigned)0;
+        _RWD_errno = ENOSYS;
+        return( -1 );
 #endif
-    return( ret == (unsigned)1 );
-}
-
-int __atomic_add( volatile int *dest, int delta )
-{
-    int value;
-
-    for( ;; ) {
-        value = *dest;
-        if( __atomic_compare_and_swap( dest, value, value + delta ) ) {
-            return( 1 );
-        }
     }
-    return( 0 );
-}
+    
+    _RWD_errno = EINVAL;
+    
+    return( -1 );
+}    
 
-void __atomic_increment( volatile int *i )
-{
-#ifdef __386__
-    increment(i);
-#else
-    *i = *i + 1;
-#endif
-}
-
-void __atomic_decrement( volatile int *i )
-{
-#ifdef __386__
-    decrement(i);
-#else
-    *i = *i - 1;
-#endif
-}

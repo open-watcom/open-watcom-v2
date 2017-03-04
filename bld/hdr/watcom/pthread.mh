@@ -192,8 +192,8 @@ _WCRTLINK extern int pthread_once( pthread_once_t *__once_control, void (*__init
 /* NOTE: These utilize internal values and must be synced with
  *       the definitions in sys/types.h
  */
-#define PTHREAD_MUTEX_INITIALIZER   { { 1 }, { 1 }, 100, (pid_t)(-1), PTHREAD_MUTEX_DEFAULT }
-#define PTHREAD_COND_INITIALIZER    { { 1 }, PTHREAD_MUTEX_INITIALIZER, 0 }
+#define PTHREAD_MUTEX_INITIALIZER   { { 1, 1 }, (pid_t)(-1), PTHREAD_MUTEX_DEFAULT }
+#define PTHREAD_COND_INITIALIZER    { { 1, 0 }, { 1, 1 }, 0 }
 #define PTHREAD_RWLOCK_INITIALIZER  { PTHREAD_MUTEX_INITIALIZER, 0 }
 #define PTHREAD_ONCE_INIT           { PTHREAD_MUTEX_INITIALIZER, 0 }
 

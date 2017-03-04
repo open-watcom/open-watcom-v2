@@ -34,7 +34,7 @@ include mdef.inc
 include struct.inc
 include exitwmsg.inc
 
-ifdef __MT__
+ifdef __SW_BM
         extrn   "C",__GetThreadPtr : dword
 else
         extrn   "C",_STACKLOW : dword
@@ -77,7 +77,7 @@ hextab  db      "0123456789ABCDEF"
           _quif ae                      ; - . . .
           sub   eax,esp                 ; - calculate new low point
           neg   eax                     ; - calc what new SP would be
-ifdef __MT__
+ifdef __SW_BM
           push  esi                     ; - save registers
           push  eax                     ; - save eax
           call  __GetThreadPtr          ; - get thread data address

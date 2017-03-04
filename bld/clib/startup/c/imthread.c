@@ -48,17 +48,16 @@
         if( !__LibCThreadInit() )
             return;
     #elif defined(__QNX__)
-    #elif defined(__LINUX__)
     #elif defined(__WARP__)
+    #elif defined(__LINUX__)
         if( __InitThreadProcessing() == 0 )
             return;
     #elif defined(__RDOS__)            
         if( !__RdosThreadInit() )
             return;
     #endif
-    #if !defined(__LINUX__)
-        __InitMultipleThread();
-    #endif
+
+    __InitMultipleThread();
     }
 
     _WCRTDATA XI( __imthread, __imthread_fn, INIT_PRIORITY_RUNTIME + 1 )

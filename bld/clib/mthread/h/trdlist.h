@@ -59,6 +59,7 @@
   #include <sys/types.h>
   #include <process.h>
   #include <unistd.h>
+  extern sem_t                  __tls_sem;
   #define TID                   pid_t
   #define GetCurrentThreadId()  (gettid())
 #elif defined( __RDOS__ )

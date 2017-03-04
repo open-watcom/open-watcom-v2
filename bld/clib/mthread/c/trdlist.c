@@ -115,6 +115,10 @@ thread_data *__GetThreadData( void )
             tdata = NULL;
         }
     }
+#elif defined(__LINUX__)
+    if( __LinuxAddThread( tdata ) ) {
+        tdata = (thread_data *)__LinuxGetThreadData( );
+    }
 #elif defined(__RDOS__)
     if( __RdosAddThread( tdata ) ) {
         tdata = (thread_data *)__tls_get_value( __TlsIndex );
@@ -216,8 +220,9 @@ thread_data *__ReallocThreadData( void )
     tdata->__resize = 0;
 #if defined(__NT__)
     TlsSetValue( __TlsIndex, tdata );
-#endif
-#if defined(_NETWARE_LIBC)
+#elif defined (__LINUX__)
+    __LinuxSetThreadData( tdata );
+#elif defined(_NETWARE_LIBC)
     if( NXKeySetValue( __NXSlotID, tdata ) ) {
         lib_free( tdata );
         tdata = NULL;

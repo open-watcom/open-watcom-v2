@@ -25,78 +25,21 @@
 *
 *  ========================================================================
 *
-* Description:  Linux atomic functions
+* Description:  Private implementation of the thread group kill system call
 *
 ****************************************************************************/
 
+
 #include "variety.h"
-#include "atomic.h"
+#include <sys/types.h>
+#include "linuxsys.h"
 
-#ifdef __386__
-
-/* Simple wrapper around Intel CMPXCHG */
-static unsigned cmpxchg( volatile int *i, int j, int k );
-#pragma aux cmpxchg = \
-    "lock cmpxchg [edx], ecx" \
-    "jnz noxchg" \
-    "mov eax,1" \
-    "jmp donexchg" \
-    "noxchg:" \
-    "mov eax,0" \
-    "donexchg:" \
-    parm [edx] [eax] [ecx] \
-    value [eax];
-
-static void increment( volatile int *i );
-#pragma aux increment = \
-    "lock inc dword ptr [eax]" \
-    parm [eax];
-
-static void decrement( volatile int *i );
-#pragma aux decrement = \
-    "lock dec dword ptr [eax]" \
-    parm [eax];
-    
-#endif
-
-int __atomic_compare_and_swap( volatile int *dest, int expected, int source )
+_WCRTLINK int __tgkill( pid_t __tgid, pid_t __tid, int __signal )
 {
-unsigned ret;
-#ifdef __386__
-    ret = cmpxchg( dest, expected, source );
-#else
-    ret = (unsigned)0;
-#endif
-    return( ret == (unsigned)1 );
-}
+syscall_res res;
 
-int __atomic_add( volatile int *dest, int delta )
-{
-    int value;
+    res = sys_call3( SYS_tgkill, (u_long)__tgid, (u_long)__tid, 
+                     (u_long)__signal );
 
-    for( ;; ) {
-        value = *dest;
-        if( __atomic_compare_and_swap( dest, value, value + delta ) ) {
-            return( 1 );
-        }
-    }
-    return( 0 );
-}
-
-void __atomic_increment( volatile int *i )
-{
-#ifdef __386__
-    increment(i);
-#else
-    *i = *i + 1;
-#endif
-}
-
-void __atomic_decrement( volatile int *i )
-{
-#ifdef __386__
-    decrement(i);
-#else
-    *i = *i - 1;
-#endif
+    __syscall_return( int, res );
 }
