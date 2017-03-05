@@ -419,7 +419,7 @@ static bool EAtomRegister( EATOM *obj, void *p1, void *p2 )
             } else {
                 ret = false;
             }
-            Destroy( (OBJECT *)obj, false );
+            Destroy( (OBJPTR)obj, false );
             break;
         case MOVING:
             off.x = obj->rect.left;
@@ -442,7 +442,7 @@ static bool EAtomRegister( EATOM *obj, void *p1, void *p2 )
             DeleteCurrObject( currobj );
             Resize( obj->obj, &obj->rect, true );
             AddCurrObject( obj->obj );
-            Destroy( (OBJECT *)obj, false );
+            Destroy( (OBJPTR)obj, false );
             break;
 #ifdef DEBUG_ON
         default :
@@ -454,7 +454,7 @@ static bool EAtomRegister( EATOM *obj, void *p1, void *p2 )
     } else {
         /* a single click on the object implies making it current */
         AddCurrObject( obj->obj );
-        Destroy( (OBJECT *)obj, false );
+        Destroy( (OBJPTR)obj, false );
     }
     return( ret );
 }

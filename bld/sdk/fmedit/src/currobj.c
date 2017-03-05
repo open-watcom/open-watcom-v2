@@ -275,7 +275,7 @@ static bool CurrObjShowSelBoxes( CURROBJ *cobj, bool *show, void *p2 )
 /********************************************************************/
 {
     LIST    *item;
-    OBJECT  *o;
+    OBJPTR  o;
 
     cobj->show_sel_boxes = *show;
     for( item = cobj->currobjlist; item != NULL; item = ListNext( item ) ) {
