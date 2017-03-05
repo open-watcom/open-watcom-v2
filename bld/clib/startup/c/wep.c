@@ -42,7 +42,7 @@ int _WCFAR __pascal WEP( int arg )
 
 #else
 
-int __export _WCFAR __pascal WEP( int arg )
+int _WCFAR __pascal WEP( int arg )
 {
     return( _WEP( arg ) );
 }
