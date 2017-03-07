@@ -14,7 +14,7 @@
 #define pick_ACT_DEFINE(o,x)             x##( DEFINE,             Define,           (o *, POINT *, void *) )
 #define pick_ACT_NOTIFY(o,x)             x##( NOTIFY,             Notify,           (o *, NOTE_ID *, void *) )
 #define pick_ACT_FORWARD(o,x)            x##( FORWARD,            Forward,          (o *, void *, void *) )
-#define pick_ACT_VALIDATE_ACTION(o,x)    x##( VALIDATE_ACTION,    ValidateAction,   (o *, ACTION *, void *) )
+#define pick_ACT_VALIDATE_ACTION(o,x)    x##( VALIDATE_ACTION,    ValidateAction,   (o *, ACTION_ID *, void *) )
 #define pick_ACT_ADD_SUBOBJECT(o,x)      x##( ADD_SUBOBJECT,      AddSubObject,     (o *, OBJPTR, void *) )
 #define pick_ACT_REMOVE_SUBOBJECT(o,x)   x##( REMOVE_SUBOBJECT,   RemoveSubObject,  (o *, OBJPTR, void *) )
 #define pick_ACT_RESIZE_INFO(o,x)        x##( RESIZE_INFO,        GetResizeInfo,    (o *, RESIZE_ID *, void *) )

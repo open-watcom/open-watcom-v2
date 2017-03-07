@@ -67,8 +67,8 @@ static DISPATCH_ITEM OItemActions[] = {
 
 #define MAX_ACTIONS (sizeof( OItemActions ) / sizeof( DISPATCH_ITEM ))
 
-static bool CALLBACK OItemDispatch( ACTION id, OBJPTR obj, void *p1, void *p2 )
-/*****************************************************************************/
+static bool CALLBACK OItemDispatch( ACTION_ID id, OBJPTR obj, void *p1, void *p2 )
+/********************************************************************************/
 {
     /* dispatch the desired operation to the correct place */
     int i;
@@ -81,8 +81,8 @@ static bool CALLBACK OItemDispatch( ACTION id, OBJPTR obj, void *p1, void *p2 )
     return( false );
 }
 
-static bool OItemValidateAction( OITEM *obj, ACTION *idptr, void *p2 )
-/********************************************************************/
+static bool OItemValidateAction( OITEM *obj, ACTION_ID *idptr, void *p2 )
+/***********************************************************************/
 {
     /* check if the desired action is valid for and OITEM */
     int     i;

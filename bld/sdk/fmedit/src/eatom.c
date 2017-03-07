@@ -79,8 +79,8 @@ static DISPATCH_ITEM EAtomActions[] = {
 
 #define MAX_ACTIONS (sizeof( EAtomActions ) / sizeof( DISPATCH_ITEM ))
 
-static bool CALLBACK EAtomDispatch( ACTION id, OBJPTR obj, void *p1, void *p2 )
-/*****************************************************************************/
+static bool CALLBACK EAtomDispatch( ACTION_ID id, OBJPTR obj, void *p1, void *p2 )
+/********************************************************************************/
 {
     /* dispatch the desired operation to the correct place */
     int i;
@@ -97,8 +97,8 @@ static bool CALLBACK EAtomDispatch( ACTION id, OBJPTR obj, void *p1, void *p2 )
     return( false );
 }
 
-static bool EAtomValidateAction( EATOM *obj, ACTION *idptr, void *p2 )
-/********************************************************************/
+static bool EAtomValidateAction( EATOM *obj, ACTION_ID *idptr, void *p2 )
+/***********************************************************************/
 {
     /* check if the desired action is valid for and EATOM */
     int     i;

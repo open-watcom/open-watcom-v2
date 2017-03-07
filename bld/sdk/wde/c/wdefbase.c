@@ -113,7 +113,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool   CALLBACK WdeBaseDispatcher( ACTION, WdeBaseObject *, void *, void * );
+WINEXPORT bool   CALLBACK WdeBaseDispatcher( ACTION_ID, WdeBaseObject *, void *, void * );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -208,7 +208,7 @@ OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeBaseDispatcher( ACTION act, WdeBaseObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeBaseDispatcher( ACTION_ID act, WdeBaseObject *obj, void *p1, void *p2 )
 {
     int i;
 
@@ -479,7 +479,7 @@ bool WdeBaseIdentify( WdeBaseObject *obj, OBJ_ID *id, void *p2 )
     return( true );
 }
 
-bool WdeBaseValidateAction( WdeBaseObject *obj, ACTION *act, void *p2 )
+bool WdeBaseValidateAction( WdeBaseObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 

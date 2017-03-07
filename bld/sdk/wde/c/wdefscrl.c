@@ -74,7 +74,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeScrollDispatcher( ACTION, WdeScrollObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeScrollDispatcher( ACTION_ID, WdeScrollObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeScrollSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -204,7 +204,7 @@ OBJPTR WdeScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeScrollDispatcher( ACTION act, WdeScrollObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeScrollDispatcher( ACTION_ID act, WdeScrollObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -335,7 +335,7 @@ bool WdeScrollMove( WdeScrollObject *obj, POINT *offset, bool *forms_called )
     return( true );
 }
 
-bool WdeScrollValidateAction( WdeScrollObject *obj, ACTION *act, void *p2 )
+bool WdeScrollValidateAction( WdeScrollObject *obj, ACTION_ID *act, void *p2 )
 {
     int                 i;
     WdeOrderMode        mode;

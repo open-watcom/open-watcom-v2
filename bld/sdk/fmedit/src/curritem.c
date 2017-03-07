@@ -68,8 +68,8 @@ static DISPATCH_ITEM CurrItemActions[] = {
     #define MOVE_TO( hdc, x, y, lppoint ) MoveTo( (hdc), (x), (y) );
 #endif
 
-static bool CALLBACK CurrItemDispatch( ACTION id, OBJPTR ci, void *p1, void *p2 )
-/*******************************************************************************/
+static bool CALLBACK CurrItemDispatch( ACTION_ID id, OBJPTR ci, void *p1, void *p2 )
+/**********************************************************************************/
 {
     /* dispatch the desired operation to the correct place */
     int i;
@@ -82,8 +82,8 @@ static bool CALLBACK CurrItemDispatch( ACTION id, OBJPTR ci, void *p1, void *p2 
     return( Forward( ((CURRITEM *)ci)->obj, id, p1, p2 ) );
 }
 
-static bool CurrItemValidateAction( CURRITEM *ci, ACTION *idptr, void *p2 )
-/*************************************************************************/
+static bool CurrItemValidateAction( CURRITEM *ci, ACTION_ID *idptr, void *p2 )
+/****************************************************************************/
 {
     /* check if the desired action is valid for and CURRITEM */
     int         i;

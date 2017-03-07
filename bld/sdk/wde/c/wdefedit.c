@@ -72,7 +72,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeEditDispatcher( ACTION, WdeEditObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeEditDispatcher( ACTION_ID, WdeEditObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeEditSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -188,7 +188,7 @@ OBJPTR WdeEdCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeEditDispatcher( ACTION act, WdeEditObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeEditDispatcher( ACTION_ID act, WdeEditObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -274,7 +274,7 @@ bool WdeEditDestroy( WdeEditObject *obj, bool *flag, bool *p2 )
     return( true );
 }
 
-bool WdeEditValidateAction( WdeEditObject *obj, ACTION *act, void *p2 )
+bool WdeEditValidateAction( WdeEditObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 

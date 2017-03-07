@@ -192,7 +192,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool       CALLBACK WdeDialogDispatcher( ACTION, WdeDialogObject *, void *, void * );
+WINEXPORT bool       CALLBACK WdeDialogDispatcher( ACTION_ID, WdeDialogObject *, void *, void * );
 WINEXPORT INT_PTR    CALLBACK WdeDialogDlgProc( HWND, UINT, WPARAM, LPARAM );
 WINEXPORT INT_PTR    CALLBACK WdeDialogDefineDlgProc( HWND, UINT, WPARAM, LPARAM );
 
@@ -783,7 +783,7 @@ WdeDialogObject *WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle 
     return( new );
 }
 
-bool CALLBACK WdeDialogDispatcher( ACTION act, WdeDialogObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeDialogDispatcher( ACTION_ID act, WdeDialogObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -1872,7 +1872,7 @@ bool WdeDialogGetResizeInfo( WdeDialogObject *obj, RESIZE_ID *info, void *p2 )
     return( true );
 }
 
-static bool WdeDialogValidateMove( WdeDialogObject *obj, POINT *pnt, ACTION act )
+static bool WdeDialogValidateMove( WdeDialogObject *obj, POINT *pnt, ACTION_ID act )
 {
     RECT obj_rect;
     RECT nc_size;
@@ -1908,7 +1908,7 @@ static bool WdeDialogValidateMove( WdeDialogObject *obj, POINT *pnt, ACTION act 
     return( true );
 }
 
-bool WdeDialogValidateAction( WdeDialogObject *obj, ACTION *act, void *p2 )
+bool WdeDialogValidateAction( WdeDialogObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 

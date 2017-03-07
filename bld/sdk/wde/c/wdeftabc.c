@@ -73,7 +73,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeTabCDispatcher( ACTION, WdeTabCObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeTabCDispatcher( ACTION_ID, WdeTabCObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeTabCSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -189,7 +189,7 @@ OBJPTR WdeTCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeTabCDispatcher( ACTION act, WdeTabCObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeTabCDispatcher( ACTION_ID act, WdeTabCObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -274,7 +274,7 @@ bool WdeTabCDestroy( WdeTabCObject *obj, bool *flag, bool *p2 )
     return( true );
 }
 
-bool WdeTabCValidateAction( WdeTabCObject *obj, ACTION *act, void *p2 )
+bool WdeTabCValidateAction( WdeTabCObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 

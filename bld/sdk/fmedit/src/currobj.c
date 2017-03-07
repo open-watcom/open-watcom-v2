@@ -60,8 +60,8 @@ static DISPATCH_ITEM CurrObjActions[] = {
 
 #define MAX_ACTIONS (sizeof( CurrObjActions ) / sizeof( DISPATCH_ITEM ))
 
-static bool CALLBACK CurrObjDispatch( ACTION id, OBJPTR cobj, void *p1, void *p2 )
-/********************************************************************************/
+static bool CALLBACK CurrObjDispatch( ACTION_ID id, OBJPTR cobj, void *p1, void *p2 )
+/***********************************************************************************/
 {
     /* dispatch the desired operation to the correct place */
     int i;
@@ -74,8 +74,8 @@ static bool CALLBACK CurrObjDispatch( ACTION id, OBJPTR cobj, void *p1, void *p2
     return( false );
 }
 
-static bool CurrObjValidateAction( CURROBJ *cobj, ACTION *idptr, void *p2 )
-/*************************************************************************/
+static bool CurrObjValidateAction( CURROBJ *cobj, ACTION_ID *idptr, void *p2 )
+/****************************************************************************/
 {
     /* check if the desired action is valid for and CURROBJ */
     int         i;

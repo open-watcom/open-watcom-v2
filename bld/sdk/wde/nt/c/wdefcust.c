@@ -90,7 +90,7 @@ typedef struct {
 
 /* Local Window callback functions prototypes */
 WINEXPORT LRESULT    CALLBACK WdeCustomSuperClassProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT bool       CALLBACK WdeCustomDispatcher( ACTION, WdeCustomObject *, void *, void * );
+WINEXPORT bool       CALLBACK WdeCustomDispatcher( ACTION_ID, WdeCustomObject *, void *, void * );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -514,7 +514,7 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeCustomDispatcher( ACTION act, WdeCustomObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeCustomDispatcher( ACTION_ID act, WdeCustomObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -584,7 +584,7 @@ bool WdeCustomDestroy( WdeCustomObject *obj, bool *flag, bool *p2 )
     return( true );
 }
 
-bool WdeCustomValidateAction( WdeCustomObject *obj, ACTION *act, void *p2 )
+bool WdeCustomValidateAction( WdeCustomObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 

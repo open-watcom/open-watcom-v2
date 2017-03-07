@@ -75,7 +75,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeButtonDispatcher( ACTION, WdeButtonObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeButtonDispatcher( ACTION_ID, WdeButtonObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeButtonSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -230,7 +230,7 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeButtonDispatcher( ACTION act, WdeButtonObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeButtonDispatcher( ACTION_ID act, WdeButtonObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -362,7 +362,7 @@ static bool WdeValidateGroupBoxMove( WdeButtonObject *obj, POINT *pnt )
     return( true );
 }
 
-bool WdeButtonValidateAction( WdeButtonObject *obj, ACTION *act, void *p2 )
+bool WdeButtonValidateAction( WdeButtonObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 

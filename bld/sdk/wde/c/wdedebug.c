@@ -97,7 +97,7 @@ char *WdeDebugParamNames[] = {
 };
 
 typedef struct {
-    ACTION              act;
+    ACTION_ID           act;
     char                *act_name;
     WdeDebugParamTypes  p1;
     WdeDebugParamTypes  p2;
@@ -166,7 +166,7 @@ static WdeDebugActionItem WdeDebugActions[] = {
 /****************************************************************************/
 #ifdef WDE_DEBUG
 #ifdef WDE_DEBUG_DISPATCH
-static WdeDebugActionItem *WdeDebugGetActionItem( ACTION );
+static WdeDebugActionItem *WdeDebugGetActionItem( ACTION_ID );
 static void WdeDebugInterpretParam( WdeDebugParamTypes, void *, char * );
 #endif
 #endif
@@ -185,7 +185,7 @@ static char WdeDebugString[512];
 #if defined( WDE_DEBUG ) && defined( WDE_DEBUG_DISPATCH )
 static WdeDebugActionItem WdeDebugDefaultAction = { -1 , "" , P1, P2 };
 
-static WdeDebugActionItem *WdeDebugGetActionItem( ACTION act )
+static WdeDebugActionItem *WdeDebugGetActionItem( ACTION_ID act )
 {
     int i;
 
@@ -291,7 +291,7 @@ static void WdeDebugInterpretParam( WdeDebugParamTypes type, void *param, char *
 #endif
 
 #if defined( WDE_DEBUG ) && defined( WDE_DEBUG_DISPATCH )
-void WdeDebugDispatch( char *name, ACTION act, void * obj, void *p1, void *p2 )
+void WdeDebugDispatch( char *name, ACTION_ID act, void * obj, void *p1, void *p2 )
 {
     WdeDebugActionItem  *act_item;
     char                temp[512];

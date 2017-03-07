@@ -267,16 +267,16 @@ bool FMEDITAPI FindObjList( OBJPTR obj, SUBOBJ_REQUEST *req, LIST **lst )
 }
 
 
-bool FMEDITAPI Forward( OBJPTR obj, ACTION id, void *p1, void *p2 )
-/*****************************************************************/
+bool FMEDITAPI Forward( OBJPTR obj, ACTION_ID id, void *p1, void *p2 )
+/********************************************************************/
 {
     /* foward the specified action to the specified object */
     return( OBJ_DISPATCHER( obj )( id, obj, p1, p2 ) );
 }
 
 
-bool FMEDITAPI ValidateAction( OBJPTR obj, ACTION id, void *p2 )
-/**************************************************************/
+bool FMEDITAPI ValidateAction( OBJPTR obj, ACTION_ID id, void *p2 )
+/*****************************************************************/
 {
     /* find out if action id is valid for object obj */
     return( OBJ_DISPATCHER( obj )( VALIDATE_ACTION, obj, &id, p2 ) );
@@ -588,8 +588,8 @@ static bool CurrObjExist( CURROBJPTR findobj )
     return( false );
 }
 
-bool FMEDITAPI ExecuteCurrObject( ACTION id, void *p1, void *p2 )
-/***************************************************************/
+bool FMEDITAPI ExecuteCurrObject( ACTION_ID id, void *p1, void *p2 )
+/******************************************************************/
 {
     /* Perform action id on each of the objects in the current object list.
      * Always ensure that each object about to have the action performed

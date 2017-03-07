@@ -52,7 +52,7 @@
 #ifdef WDE_DEBUG
 
 #ifdef WDE_DEBUG_DISPATCH
-extern void WdeDebugDispatch( char *, ACTION, void *, void *, void * );
+extern void WdeDebugDispatch( char *, ACTION_ID, void *, void *, void * );
 #else
 #define WdeDebugDispatch( cp, a, obj, p1, p2 ) {}
 #endif /* WDE_DEBUG_DISPATCH */

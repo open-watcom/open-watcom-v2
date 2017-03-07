@@ -73,7 +73,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeLViewDispatcher( ACTION, WdeLViewObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeLViewDispatcher( ACTION_ID, WdeLViewObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeLViewSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -191,7 +191,7 @@ OBJPTR WdeLVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeLViewDispatcher( ACTION act, WdeLViewObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeLViewDispatcher( ACTION_ID act, WdeLViewObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -276,7 +276,7 @@ bool WdeLViewDestroy( WdeLViewObject *obj, bool *flag, bool *p2 )
     return( true );
 }
 
-bool WdeLViewValidateAction( WdeLViewObject *obj, ACTION *act, void *p2 )
+bool WdeLViewValidateAction( WdeLViewObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 

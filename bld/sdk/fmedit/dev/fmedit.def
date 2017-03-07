@@ -21,7 +21,7 @@
 #define OBJ_DISPATCHER_COPY(o,s)    OBJ_DISPATCHER(o) = OBJ_DISPATCHER(s)
 
 typedef int OBJ_ID;
-typedef int ACTION;
+typedef int ACTION_ID;
 typedef int NOTE_ID;
 
 typedef enum {
@@ -37,13 +37,13 @@ typedef void                MOUSEACTION( HWND, RECT * );
 typedef struct object       OBJECT;
 typedef OBJECT              *OBJPTR;
 typedef bool                DISPATCH_RTN( OBJPTR, void *, void * );
-typedef bool                CALLBACK DISPATCH_FN( ACTION, OBJPTR, void *, void * );
+typedef bool                CALLBACK DISPATCH_FN( ACTION_ID, OBJPTR, void *, void * );
 typedef OBJPTR              CALLBACK CREATE_RTN( OBJPTR, RECT *, OBJPTR );
 typedef CREATE_RTN          **CREATE_TABLE;
 typedef OBJPTR              INT_CREATE_RTN( OBJPTR, RECT *, OBJPTR );
 
 typedef struct {
-    ACTION          id;
+    ACTION_ID       id;
     DISPATCH_RTN    *rtn;
 } DISPATCH_ITEM;
 
@@ -90,14 +90,14 @@ FMEDLLENTRY extern bool         FMEDITAPI Draw( OBJPTR, RECT *, HDC );
 FMEDLLENTRY extern bool         FMEDITAPI Destroy( OBJPTR, bool );
 FMEDLLENTRY extern bool         FMEDITAPI Define( OBJPTR, POINT *, void * );
 FMEDLLENTRY extern bool         FMEDITAPI Notify( OBJPTR, NOTE_ID, void * );
-FMEDLLENTRY extern bool         FMEDITAPI Forward( OBJPTR, ACTION, void *, void * );
-FMEDLLENTRY extern bool         FMEDITAPI ValidateAction( OBJPTR, ACTION, void * );
+FMEDLLENTRY extern bool         FMEDITAPI Forward( OBJPTR, ACTION_ID, void *, void * );
+FMEDLLENTRY extern bool         FMEDITAPI ValidateAction( OBJPTR, ACTION_ID, void * );
 FMEDLLENTRY extern OBJPTR       FMEDITAPI FindObject( SUBOBJ_REQUEST * );
 FMEDLLENTRY extern bool         FMEDITAPI FindObjectsPt( POINT, LIST ** );
 FMEDLLENTRY extern OBJPTR       FMEDITAPI FindOneObjPt( POINT pt );
 FMEDLLENTRY extern bool         FMEDITAPI AddObject( OBJPTR, OBJPTR );
 FMEDLLENTRY extern bool         FMEDITAPI RemoveObject( OBJPTR, OBJPTR );
-FMEDLLENTRY extern bool         FMEDITAPI ExecuteCurrObject( ACTION, void *, void * );
+FMEDLLENTRY extern bool         FMEDITAPI ExecuteCurrObject( ACTION_ID, void *, void * );
 FMEDLLENTRY extern bool         FMEDITAPI GetResizeInfo( OBJPTR, RESIZE_ID * );
 FMEDLLENTRY extern bool         FMEDITAPI CutObject( OBJPTR, OBJPTR * );
 FMEDLLENTRY extern bool         FMEDITAPI CopyObject( OBJPTR, OBJPTR *, OBJPTR );

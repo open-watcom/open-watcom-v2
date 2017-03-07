@@ -73,7 +73,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeTrakDispatcher( ACTION, WdeTrakObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeTrakDispatcher( ACTION_ID, WdeTrakObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeTrakSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -192,7 +192,7 @@ OBJPTR WdeTrackCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeTrakDispatcher( ACTION act, WdeTrakObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeTrakDispatcher( ACTION_ID act, WdeTrakObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -277,7 +277,7 @@ bool WdeTrakDestroy( WdeTrakObject *obj, bool *flag, bool *p2 )
     return( true );
 }
 
-bool WdeTrakValidateAction( WdeTrakObject *obj, ACTION *act, void *p2 )
+bool WdeTrakValidateAction( WdeTrakObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 

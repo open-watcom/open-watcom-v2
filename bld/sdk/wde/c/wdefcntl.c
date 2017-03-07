@@ -134,7 +134,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool CALLBACK WdeControlDispatcher( ACTION, WdeControlObject *, void *, void * );
+WINEXPORT bool CALLBACK WdeControlDispatcher( ACTION_ID, WdeControlObject *, void *, void * );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -303,7 +303,7 @@ OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeControlDispatcher( ACTION act, WdeControlObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeControlDispatcher( ACTION_ID act, WdeControlObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -883,7 +883,7 @@ bool WdeControlGetResizeInfo( WdeControlObject *obj, RESIZE_ID *info, void *p2 )
     return( true );
 }
 
-static bool WdeControlValidateMove( WdeControlObject *obj, POINT *pnt, ACTION act )
+static bool WdeControlValidateMove( WdeControlObject *obj, POINT *pnt, ACTION_ID act )
 {
     RECT        obj_rect;
     RECT        win_rect;
@@ -929,7 +929,7 @@ static bool WdeControlValidateMove( WdeControlObject *obj, POINT *pnt, ACTION ac
     return( true );
 }
 
-bool WdeControlValidateAction( WdeControlObject *obj, ACTION *act, void *p2 )
+bool WdeControlValidateAction( WdeControlObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 

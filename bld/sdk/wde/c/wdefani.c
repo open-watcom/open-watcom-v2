@@ -72,7 +72,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeAniCDispatcher( ACTION, WdeAniCObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeAniCDispatcher( ACTION_ID, WdeAniCObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeAniCSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -188,7 +188,7 @@ OBJPTR WdeAniCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wd
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeAniCDispatcher( ACTION act, WdeAniCObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeAniCDispatcher( ACTION_ID act, WdeAniCObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -273,7 +273,7 @@ bool WdeAniCDestroy( WdeAniCObject *obj, bool *flag, bool *p2 )
     return( true );
 }
 
-bool WdeAniCValidateAction( WdeAniCObject *obj, ACTION *act, void *p2 )
+bool WdeAniCValidateAction( WdeAniCObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 

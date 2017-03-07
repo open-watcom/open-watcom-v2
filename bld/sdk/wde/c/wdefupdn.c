@@ -73,7 +73,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeUpDnDispatcher( ACTION, WdeUpDnObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeUpDnDispatcher( ACTION_ID, WdeUpDnObject *, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeUpDnSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -191,7 +191,7 @@ OBJPTR WdeUDCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeUpDnDispatcher( ACTION act, WdeUpDnObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeUpDnDispatcher( ACTION_ID act, WdeUpDnObject *obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -276,7 +276,7 @@ bool WdeUpDnDestroy( WdeUpDnObject *obj, bool *flag, bool *p2 )
     return( true );
 }
 
-bool WdeUpDnValidateAction( WdeUpDnObject *obj, ACTION *act, void *p2 )
+bool WdeUpDnValidateAction( WdeUpDnObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 
