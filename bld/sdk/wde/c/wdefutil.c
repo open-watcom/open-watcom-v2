@@ -167,7 +167,7 @@ void WdeSnapPointToGrid( POINT *pt )
     WdeSnapPoint( pt, vinc, hinc );
 }
 
-OBJPTR WdeGetNextObject( bool up, OBJPTR obj, OBJPTR p )
+OBJPTR WdeGetNextObject( bool up, OBJPTR obj, OBJPTR parent )
 {
     OBJPTR old_current;
 
@@ -177,11 +177,11 @@ OBJPTR WdeGetNextObject( bool up, OBJPTR obj, OBJPTR p )
 
     if( obj != NULL && obj != GetMainObject() ) {
         old_current = obj;
-        if( p == NULL ) {
-            GetObjectParent( obj, &p );
+        if( parent == NULL ) {
+            GetObjectParent( obj, &parent );
         }
-        if( p != NULL ) {
-            if( Forward( p, GET_NEXT_CHILD, &obj, &up ) && obj != old_current ) {
+        if( parent != NULL ) {
+            if( Forward( parent, GET_NEXT_CHILD, &obj, &up ) && obj != old_current ) {
                 return( obj );
             }
         }
