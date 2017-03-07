@@ -1308,7 +1308,7 @@ bool WdeSaveObjectToRC( char *filename, WdeResInfo *rinfo, WdeResDlgItem *ditem,
         ok = WdeSaveDlgItemToRC( rinfo, ditem, fp );
     }
 
-    if( fp ) {
+    if( fp != NULL ) {
         fclose( fp );
     }
 
