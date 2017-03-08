@@ -52,13 +52,13 @@
 #ifdef WDE_DEBUG
 
 #ifdef WDE_DEBUG_DISPATCH
-extern void WdeDebugDispatch( char *, ACTION_ID, void *, void *, void * );
+extern void WdeDebugDispatch( const char *, ACTION_ID, void *, void *, void * );
 #else
 #define WdeDebugDispatch( cp, a, obj, p1, p2 ) {}
 #endif /* WDE_DEBUG_DISPATCH */
 
 #ifdef WDE_DEBUG_CREATE
-extern void WdeDebugCreate( char *, void *, RECT *, void * );
+extern void WdeDebugCreate( const char *, void *, RECT *, void * );
 #else
 #define WdeDebugCreate( cp, obj, rect, handle ) {}
 #endif /* WDE_DEBUG_CREATE */
