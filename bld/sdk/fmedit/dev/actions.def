@@ -39,7 +39,7 @@
 #define pick_ACTION_SHOW_SEL_BOXES(o,x)     x##( SHOW_SEL_BOXES,     ShowSelBoxes,     (o *, bool *, void *) )
 //#define pick_ACTION_FORCE_REDRAW(o,x)       x##( FORCE_REDRAW,       ForceRedraw,      (o *, void *, void *) )
 
-enum {
+typedef enum {
 #define pick(e,n,c)     e,
     pick_ACTION_REGISTER(void,pick)
     pick_ACTION_MOVE(void,pick)
@@ -79,7 +79,8 @@ enum {
     pick_ACTION_SHOW_SEL_BOXES(void,pick)
 //    pick_ACTION_FORCE_REDRAW(void,pick)
 #undef pick
-};
+    LAST_USER_ACTION_ID = 0x7FFF
+} ACTION_ID;
 
 typedef enum {
     NEW_PARENT,

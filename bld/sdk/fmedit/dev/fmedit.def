@@ -4,6 +4,7 @@
 #define _FMEDIT_INCLUDE
 
 #include "bool.h"
+#include "constant.def"
 #include "actions.def"
 
 #define FMEDITAPI   WINAPI
@@ -21,7 +22,6 @@
 #define OBJ_DISPATCHER_COPY(o,s)    OBJ_DISPATCHER(o) = OBJ_DISPATCHER(s)
 
 typedef int OBJ_ID;
-typedef int ACTION_ID;
 typedef int NOTE_ID;
 
 typedef enum {
@@ -51,7 +51,6 @@ typedef struct object {
     DISPATCH_FN     *dispatcher;
 } OBJECT;
 
-#include "constant.def"
 #include "fmmenu.def"
 #include "list.def"
 #include "subreq.def"

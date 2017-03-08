@@ -68,6 +68,6 @@ typedef enum {
     LAST_USER_OBJ_ID
 } Wde_Objects;
 
-#define NUM_OBJECTS (LAST_USER_OBJ_ID - FIRST_USER_OBJ_ID)
+#define NUM_USER_OBJECTS    (LAST_USER_OBJ_ID - FIRST_USER_OBJ_ID)
 
 #endif
