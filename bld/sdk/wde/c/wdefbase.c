@@ -220,7 +220,7 @@ bool CALLBACK WdeBaseDispatcher( ACTION_ID act, WdeBaseObject *obj, void *p1, vo
         }
     }
 
-    return( Forward( (OBJPTR)obj->o_item, act, p1, p2 ) );
+    return( Forward( obj->o_item, act, p1, p2 ) );
 }
 
 bool WdeBaseInit( bool first )
@@ -496,7 +496,7 @@ bool WdeBaseValidateAction( WdeBaseObject *obj, ACTION_ID *act, void *p2 )
         }
     }
 
-    return( ValidateAction( (OBJPTR)obj->o_item, *act, p2 ) );
+    return( ValidateAction( obj->o_item, *act, p2 ) );
 }
 
 bool WdeBaseGetWindowHandle( WdeBaseObject *obj, HWND *hwin, void *p2 )
@@ -618,7 +618,7 @@ bool WdeBaseNotify( WdeBaseObject *base_obj, NOTE_ID *noteid, void *p2 )
         return ( true );
     }
 
-    return( Notify( (OBJPTR)base_obj->o_item, *noteid, p2 ) );
+    return( Notify( base_obj->o_item, *noteid, p2 ) );
 }
 
 bool WdeBaseLocation( WdeBaseObject *base_obj, RECT *obj_rect, void *p2 )

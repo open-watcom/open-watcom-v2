@@ -1922,7 +1922,7 @@ bool WdeDialogValidateAction( WdeDialogObject *obj, ACTION_ID *act, void *p2 )
         }
     }
 
-    return( ValidateAction( (OBJPTR)obj->o_item, *act, p2 ) );
+    return( ValidateAction( obj->o_item, *act, p2 ) );
 }
 
 bool WdeDialogGetWindowHandle( WdeDialogObject *obj, HWND *hwin, void *p2 )
@@ -2039,7 +2039,7 @@ bool WdeDialogNotify( WdeDialogObject *obj, NOTE_ID *noteid, void *p2 )
                 obj->parent_handle = handle;
             }
         }
-        return( Notify( (OBJPTR)obj->o_item, *noteid, obj->parent ) );
+        return( Notify( obj->o_item, *noteid, obj->parent ) );
     }
 
     return( false );

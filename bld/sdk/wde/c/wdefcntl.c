@@ -319,7 +319,7 @@ bool CALLBACK WdeControlDispatcher( ACTION_ID act, WdeControlObject *obj, void *
         }
     }
 
-    return( Forward( (OBJPTR)obj->o_item, act, p1, p2 ) );
+    return( Forward( obj->o_item, act, p1, p2 ) );
 }
 
 bool WdeControlInit( bool first )
@@ -943,7 +943,7 @@ bool WdeControlValidateAction( WdeControlObject *obj, ACTION_ID *act, void *p2 )
         }
     }
 
-    return( ValidateAction( (OBJPTR)obj->o_item, *act, p2 ) );
+    return( ValidateAction( obj->o_item, *act, p2 ) );
 }
 
 bool WdeControlGetWindowHandle( WdeControlObject *obj, HWND *hwin, void *p2 )
