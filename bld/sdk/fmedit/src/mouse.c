@@ -620,7 +620,7 @@ static void DoObjectMove( POINT pt )
     /* move the current object based on the mouse movement */
     POINT       lastmouse;
     POINT       offset;
-    CURROBJPTR  currobj;
+    OBJPTR      currobj;
 
     lastmouse = GetPrevMouse();
     offset.x = pt.x - lastmouse.x;
@@ -752,7 +752,7 @@ static void FinishPaste( POINT pt )
     POINT       loc_pt;
     OBJPTR      eatom;
     OBJPTR      object;
-    CURROBJPTR  currobj;
+    OBJPTR      currobj;
     RECT        rect;
     LIST        *newcurrobj;
 
@@ -786,7 +786,7 @@ static void PointSelect( POINT pt )
 /*********************************/
 {
     OBJPTR      currobj;
-    CURROBJPTR  currobjptr;
+    OBJPTR      currobjptr;
     LIST        *list;
 
     FindObjectsPt( pt, &list );
@@ -943,7 +943,7 @@ static void BandedSelect( LPRECT rect )
     bool        child_cont;     // some children were fully contained in rect
     bool        gchild_cont;    // some gchildren were fully contained in rect
     OBJPTR      currobj;
-    CURROBJPTR  currptr;
+    OBJPTR      currptr;
 
     root = FindBSelectRoot( rect );
     FindBSelectChildren( root, &child, &gchild );
@@ -1036,7 +1036,7 @@ void FinishMoveOperation( bool change_state )
 /*******************************************/
 {
     /* Finish the move operation */
-    CURROBJPTR  currobj;
+    OBJPTR      currobj;
     LIST        *mycurrobjlist;
     LIST        *clist;
     DLIST       *movedlist;
@@ -1138,7 +1138,7 @@ static DLIST *OrderList( LIST *list )
      */
     DLIST       *dlist;
     DLIST_ELT   elt;
-    CURROBJPTR  currobj;
+    OBJPTR      currobj;
     int         priority;
     OBJPTR      obj;
     LIST        *mylist;

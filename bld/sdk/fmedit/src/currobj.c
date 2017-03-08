@@ -198,7 +198,7 @@ static bool CurrObjDeleteObject( CURROBJ *cobj, OBJPTR obj, bool *curritem )
 /**************************************************************************/
 {
     LIST        *clist;
-    CURROBJPTR  o;
+    OBJPTR      o;
 
     if( *curritem ) {
         if( ListFindElt( cobj->currobjlist, obj ) != NULL ) {

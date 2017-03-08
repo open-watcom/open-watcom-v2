@@ -113,8 +113,8 @@ static void FixMenuName( char *name, int len )
 }
 
 
-extern void InitEditMenu( HWND wnd, int bitmap )
-/**********************************************/
+void InitEditMenu( HWND wnd, int bitmap )
+/***************************************/
 {
     HMENU       submenu;
     int         nummenus;
@@ -156,8 +156,8 @@ extern void InitEditMenu( HWND wnd, int bitmap )
 }
 
 
-extern void InitializeObjects( CREATE_TABLE objtable )
-/****************************************************/
+void InitializeObjects( CREATE_TABLE objtable )
+/*********************************************/
 {
     /* initialize the application specific objects */
     SetObjects( objtable );
@@ -412,8 +412,8 @@ LIST *FMEDITAPI GetCurrObjectList( void )
 }
 
 
-CURROBJPTR GetEditCurrObject( void )
-/*******************************/
+OBJPTR GetEditCurrObject( void )
+/******************************/
 {
     /* return pointer to the current object */
     OBJPTR  obj;
@@ -425,11 +425,11 @@ CURROBJPTR GetEditCurrObject( void )
 }
 
 
-CURROBJPTR GetNextEditCurrObject( CURROBJPTR obj )
-/*********************************************/
+OBJPTR GetNextEditCurrObject( OBJPTR obj )
+/****************************************/
 {
     /* return pointer to the next current object in the list, after obj */
-    CURROBJPTR  newobj;
+    OBJPTR      newobj;
     OBJPTR      currobj;
 
     currobj = GetCurrObj();
@@ -438,7 +438,7 @@ CURROBJPTR GetNextEditCurrObject( CURROBJPTR obj )
 }
 
 void SetCurrObject( OBJPTR obj )
-/*************************************/
+/******************************/
 {
     /* make obj the only current object */
     bool    reset;
@@ -455,7 +455,7 @@ void AddCurrObject( OBJPTR obj )
     /* add obj to the list of current objects */
     bool        reset;
     OBJPTR      currobj;
-    CURROBJPTR  main_currobj;
+    OBJPTR      main_currobj;
 
     reset = false;
     currobj = GetCurrObj();
@@ -469,8 +469,8 @@ void AddCurrObject( OBJPTR obj )
     }
 }
 
-extern void DeleteCurrObject( OBJPTR obj )
-/****************************************/
+void DeleteCurrObject( OBJPTR obj )
+/*********************************/
 {
     /* remove obj from the list of current objects */
     OBJPTR  currobj;
@@ -481,8 +481,8 @@ extern void DeleteCurrObject( OBJPTR obj )
     OBJ_DISPATCHER( currobj )( DELETE_OBJECT, currobj, obj, &curritem );
 }
 
-extern void DeleteCurrObjptr( OBJPTR obj )
-/****************************************/
+void DeleteCurrObjptr( OBJPTR obj )
+/*********************************/
 {
     /* Delete the current object associated with obj from the list of current
      * objects
@@ -497,11 +497,11 @@ extern void DeleteCurrObjptr( OBJPTR obj )
     }
 }
 
-CURROBJPTR GetPrimaryObject( void )
-/*********************************/
+OBJPTR GetPrimaryObject( void )
+/*****************************/
 {
     /* return a pointer to the primary object */
-    CURROBJPTR  primary;
+    OBJPTR      primary;
     OBJPTR      currobj;
     bool        flag;
 
@@ -511,8 +511,8 @@ CURROBJPTR GetPrimaryObject( void )
     return( primary );
 }
 
-extern void SetPrimaryObject( CURROBJPTR obj )
-/********************************************/
+void SetPrimaryObject( OBJPTR obj )
+/*********************************/
 {
     /* return a pointer to the primary object */
     OBJPTR  currobj;
@@ -524,8 +524,8 @@ extern void SetPrimaryObject( CURROBJPTR obj )
     OBJ_DISPATCHER( currobj )( GET_PRIMARY, currobj, &obj, &flag );
 }
 
-extern void StartCurrObjMod( void )
-/*********************************/
+void StartCurrObjMod( void )
+/**************************/
 {
     OBJPTR      currobj;
 
@@ -533,8 +533,8 @@ extern void StartCurrObjMod( void )
     Notify( currobj, CURR_OBJ_MOD_BEGIN, NULL );
 }
 
-extern void EndCurrObjMod( void )
-/*******************************/
+void EndCurrObjMod( void )
+/************************/
 {
     OBJPTR      currobj;
 
@@ -542,8 +542,8 @@ extern void EndCurrObjMod( void )
     Notify( currobj, CURR_OBJ_MOD_END, NULL );
 }
 
-extern OBJPTR GetObjptr( OBJPTR obj )
-/***********************************/
+OBJPTR GetObjptr( OBJPTR obj )
+/****************************/
 {
     /* Get a pointer to the object associated with the current object obj */
     OBJPTR newobj;
@@ -553,10 +553,10 @@ extern OBJPTR GetObjptr( OBJPTR obj )
     return( newobj );
 }
 
-extern CURROBJPTR GetCurrObjptr( OBJPTR obj )
-/*******************************************/
+OBJPTR GetCurrObjptr( OBJPTR obj )
+/********************************/
 {
-    CURROBJPTR currobj;
+    OBJPTR currobj;
 
     for( currobj = GetEditCurrObject(); currobj != NULL; currobj = GetNextEditCurrObject( currobj ) ) {
         if( GetObjptr( currobj ) == obj ) {
@@ -575,10 +575,10 @@ bool DeleteCurrItem( OBJPTR obj )
     return( OBJ_DISPATCHER( obj )( DELETE_OBJECT, obj, NULL, NULL ) );
 }
 
-static bool CurrObjExist( CURROBJPTR findobj )
-/********************************************/
+static bool CurrObjExist( OBJPTR findobj )
+/****************************************/
 {
-    CURROBJPTR currobj;
+    OBJPTR  currobj;
 
     for( currobj = GetEditCurrObject(); currobj != NULL; currobj = GetNextEditCurrObject( currobj ) ) {
         if( currobj == findobj ) {
@@ -597,8 +597,8 @@ bool FMEDITAPI ExecuteCurrObject( ACTION_ID id, void *p1, void *p2 )
      * which will make that object no longer in the current object list,
      * and can also affect other objects in that list (ie it's children).
      */
-    CURROBJPTR currobj;
-    CURROBJPTR nextobj;
+    OBJPTR  currobj;
+    OBJPTR  nextobj;
 
     for( currobj = GetEditCurrObject(); currobj != NULL; currobj = nextobj ) {
         nextobj = GetNextEditCurrObject( currobj );
@@ -613,8 +613,8 @@ bool FMEDITAPI ExecuteCurrObject( ACTION_ID id, void *p1, void *p2 )
     return( true );
 }
 
-extern void ObjMark( CURROBJPTR obj )
-/***********************************/
+void ObjMark( OBJPTR obj )
+/************************/
 {
     /* invalidate the objects location for painting */
     RECT   rect;
@@ -641,8 +641,8 @@ void FMEDITAPI ResetCurrObject( bool draw )
 /*****************************************/
 {
     /* reset the current object */
-    CURROBJPTR currobj;
-    CURROBJPTR nextobj;
+    OBJPTR  currobj;
+    OBJPTR  nextobj;
 
     for( currobj = GetEditCurrObject(); currobj != NULL; currobj = nextobj ) {
         nextobj = GetNextEditCurrObject( currobj );
@@ -658,11 +658,11 @@ void FMEDITAPI ResetCurrObject( bool draw )
     }
 }
 
-extern void MarkCurrObject( void )
-/********************************/
+void MarkCurrObject( void )
+/*************************/
 {
     /* mark the current object */
-    CURROBJPTR currobj;
+    OBJPTR  currobj;
 
     currobj = GetPrimaryObject();
     if( currobj != NULL ) {

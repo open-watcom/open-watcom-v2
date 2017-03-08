@@ -145,9 +145,9 @@ static void CutObjects( void )
 /****************************/
 {
     /* Cut the current objects */
-    CURROBJPTR  currobj;
+    OBJPTR      currobj;
     OBJPTR      saveobj;
-    CURROBJPTR  nextobj;
+    OBJPTR      nextobj;
     OBJPTR      appobj;
 
     FMNewClipboard();
@@ -169,7 +169,7 @@ static void CopyObjects( void )
 /*****************************/
 {
     /* Copy the current objects */
-    CURROBJPTR  currobj;
+    OBJPTR      currobj;
     OBJPTR      copyobj;
     OBJPTR      appobj;
 

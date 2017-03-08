@@ -535,7 +535,7 @@ LRESULT CALLBACK CurrItemWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM 
                 GetClientRect( wnd, &rect );
                 InflateRect( &rect, -SQUAREWIDTH / 2, -SQUAREWIDTH / 2 );
                 if( !IsRectEmpty( &rect ) ) {
-                    if( ci == GetPrimaryObject() ) {
+                    if( (OBJPTR)ci == GetPrimaryObject() ) {
                         sizeid = R_ALL;
                         GetResizeInfo( (OBJPTR)ci, &sizeid );
                         MarkBoxes( &rect, hdc, sizeid );

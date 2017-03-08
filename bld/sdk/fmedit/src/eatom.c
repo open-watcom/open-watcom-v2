@@ -394,7 +394,7 @@ static bool EAtomRegister( EATOM *obj, void *p1, void *p2 )
     /* register the object */
     bool        ret;
     OBJPTR      new;
-    CURROBJPTR  currobj;
+    OBJPTR      currobj;
     STATE_ID    state;
     POINT       off;
 

@@ -99,7 +99,7 @@ static bool IgnoreKbd( int keycode )
 static void MoveCurrObj( LPPOINT pt )
 /***********************************/
 {
-    CURROBJPTR  curr;
+    OBJPTR  curr;
 
     for( curr = GetEditCurrObject(); curr != NULL; curr = GetNextEditCurrObject( curr ) ) {
         Move( curr, pt, true );
@@ -153,7 +153,7 @@ static void DoKbdMove( LPPOINT pt )
 static void SetKbdMoveGrid( void )
 /********************************/
 {
-    CURROBJPTR  curr;
+    OBJPTR      curr;
     unsigned    hinc;
     unsigned    vinc;
     POINT       pt;

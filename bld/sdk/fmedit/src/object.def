@@ -18,8 +18,6 @@ enum {
     #undef pick
 };
 
-typedef void *CURROBJPTR;
-
 extern void         InitializeObjects( CREATE_TABLE );
 extern void         SetCurrObject( OBJPTR );
 extern void         AddCurrObject( OBJPTR );
@@ -27,14 +25,14 @@ extern void         DeleteCurrObject( OBJPTR );
 extern void         DeleteCurrObjptr( OBJPTR );
 extern bool         DeleteCurrItem( OBJPTR );
 extern void         MarkCurrObject( void );
-extern void         ObjMark( CURROBJPTR );
-extern CURROBJPTR   GetCurrObjptr( OBJPTR );
-extern void         SetPrimaryObject( CURROBJPTR );
-extern CURROBJPTR   GetPrimaryObject( void );
+extern void         ObjMark( OBJPTR );
+extern OBJPTR       GetCurrObjptr( OBJPTR );
+extern void         SetPrimaryObject( OBJPTR );
+extern OBJPTR       GetPrimaryObject( void );
 extern void         UndoMove( OBJPTR );
 extern void         RemoveFromParent( OBJPTR );
-extern CURROBJPTR   GetEditCurrObject( void );
-extern CURROBJPTR   GetNextEditCurrObject( CURROBJPTR );
+extern OBJPTR       GetEditCurrObject( void );
+extern OBJPTR       GetNextEditCurrObject( OBJPTR );
 extern OBJPTR       GetObjptr( OBJPTR );
 extern bool         GetAnchor( OBJPTR, POINT * );
 extern void         InitEditMenu( HWND, int );

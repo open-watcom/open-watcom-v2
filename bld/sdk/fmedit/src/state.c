@@ -302,7 +302,7 @@ void *GetObjects( void )
 void SaveObject( void )
 {
     /* remember the previous object */
-    CURROBJPTR currobj;
+    OBJPTR  currobj;
 
     currobj = GetEditCurrObject();
     if( currobj != NULL ) {
