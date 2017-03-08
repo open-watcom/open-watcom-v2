@@ -52,13 +52,13 @@
 #define WDE_GBOX_BORDER_SIZE WDE_BORDER_SIZE
 
 #define pick_ACTS(o) \
-    pick_ACT_DESTROY(o,pick) \
-    pick_ACT_COPY(o,pick) \
-    pick_ACT_VALIDATE_ACTION(o,pick) \
-    pick_ACT_IDENTIFY(o,pick) \
-    pick_ACT_GET_WINDOW_CLASS(o,pick) \
-    pick_ACT_DEFINE(o,pick) \
-    pick_ACT_GET_WND_PROC(o,pick)
+    pick_ACTION_DESTROY(o,pick) \
+    pick_ACTION_COPY(o,pick) \
+    pick_ACTION_VALIDATE_ACTION(o,pick) \
+    pick_ACTION_IDENTIFY(o,pick) \
+    pick_ACTION_GET_WINDOW_CLASS(o,pick) \
+    pick_ACTION_DEFINE(o,pick) \
+    pick_ACTION_GET_WND_PROC(o,pick)
 
 /****************************************************************************/
 /* type definitions                                                         */

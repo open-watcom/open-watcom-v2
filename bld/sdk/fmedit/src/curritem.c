@@ -40,11 +40,11 @@
 
 
 #define pick_ACTS(o) \
-    pick_ACT_DELETE_OBJECT(o,pick) \
-    pick_ACT_DESTROY(o,pick) \
-    pick_ACT_VALIDATE_ACTION(o,pick) \
-    pick_ACT_GET_OBJPTR(o,pick) \
-    pick_ACT_SHOW_SEL_BOXES(o,pick)
+    pick_ACTION_DELETE_OBJECT(o,pick) \
+    pick_ACTION_DESTROY(o,pick) \
+    pick_ACTION_VALIDATE_ACTION(o,pick) \
+    pick_ACTION_GET_OBJPTR(o,pick) \
+    pick_ACTION_SHOW_SEL_BOXES(o,pick)
 
 /* Local Window callback functions prototypes */
 WINEXPORT LRESULT CALLBACK CurrItemWndProc( HWND, UINT, WPARAM, LPARAM );

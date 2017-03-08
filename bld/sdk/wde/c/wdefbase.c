@@ -62,31 +62,31 @@
 #define WDE_WORLD_HEIGHT  WDE_WORLD_WIDTH
 
 #define pick_ACTS(o) \
-    pick_ACT_DRAW(o,pick) \
-    pick_ACT_LOCATE(o,pick) \
-    pick_ACT_DESTROY(o,pick) \
-    pick_ACT_VALIDATE_ACTION(o,pick) \
-    pick_ACT_NOTIFY(o,pick) \
-    pick_ACT_RESIZE_INFO(o,pick) \
-    pick_ACT_FIND_SUBOBJECTS(o,pick) \
-    pick_ACT_FIND_OBJECTS_PT(o,pick) \
-    pick_ACT_ADD_SUBOBJECT(o,pick) \
-    pick_ACT_REMOVE_SUBOBJECT(o,pick) \
-    pick_ACT_GET_WINDOW_HANDLE(o,pick) \
-    pick_ACT_GET_SUBOBJ_LIST(o,pick) \
-    pick_ACT_IDENTIFY(o,pick) \
-    pick_ACT_GET_FONT(o,pick) \
-    pick_ACT_GET_RESIZER(o,pick) \
-    pick_ACT_GET_NC_SIZE(o,pick) \
-    pick_ACT_BECOME_FIRST_CHILD(o,pick) \
-    pick_ACT_GET_FIRST_CHILD(o,pick) \
-    pick_ACT_PUT_ME_FIRST(o,pick) \
-    pick_ACT_GET_SCROLL_RECT(o,pick) \
-    pick_ACT_GET_RESIZE_INC(o,pick) \
-    pick_ACT_IS_MARK_VALID(o,pick) \
-    pick_ACT_RESOLVE_SYMBOL(o,pick) \
-    pick_ACT_RESOLVE_HELPSYMBOL(o,pick) \
-    pick_ACT_GET_NEXT_CHILD(o,pick)
+    pick_ACTION_DRAW(o,pick) \
+    pick_ACTION_LOCATE(o,pick) \
+    pick_ACTION_DESTROY(o,pick) \
+    pick_ACTION_VALIDATE_ACTION(o,pick) \
+    pick_ACTION_NOTIFY(o,pick) \
+    pick_ACTION_RESIZE_INFO(o,pick) \
+    pick_ACTION_FIND_SUBOBJECTS(o,pick) \
+    pick_ACTION_FIND_OBJECTS_PT(o,pick) \
+    pick_ACTION_ADD_SUBOBJECT(o,pick) \
+    pick_ACTION_REMOVE_SUBOBJECT(o,pick) \
+    pick_ACTION_GET_WINDOW_HANDLE(o,pick) \
+    pick_ACTION_GET_SUBOBJ_LIST(o,pick) \
+    pick_ACTION_IDENTIFY(o,pick) \
+    pick_ACTION_GET_FONT(o,pick) \
+    pick_ACTION_GET_RESIZER(o,pick) \
+    pick_ACTION_GET_NC_SIZE(o,pick) \
+    pick_ACTION_BECOME_FIRST_CHILD(o,pick) \
+    pick_ACTION_GET_FIRST_CHILD(o,pick) \
+    pick_ACTION_PUT_ME_FIRST(o,pick) \
+    pick_ACTION_GET_SCROLL_RECT(o,pick) \
+    pick_ACTION_GET_RESIZE_INC(o,pick) \
+    pick_ACTION_IS_MARK_VALID(o,pick) \
+    pick_ACTION_RESOLVE_SYMBOL(o,pick) \
+    pick_ACTION_RESOLVE_HELPSYMBOL(o,pick) \
+    pick_ACTION_GET_NEXT_CHILD(o,pick)
 
 /****************************************************************************/
 /* type definitions                                                         */

@@ -38,14 +38,14 @@
 
 
 #define pick_ACTS(o) \
-    pick_ACT_DESTROY(o,pick) \
-    pick_ACT_VALIDATE_ACTION(o,pick) \
-    pick_ACT_GET_OBJECT(o,pick) \
-    pick_ACT_ADD_OBJECT(o,pick) \
-    pick_ACT_DELETE_OBJECT(o,pick) \
-    pick_ACT_GET_PRIMARY(o,pick) \
-    pick_ACT_SHOW_SEL_BOXES(o,pick) \
-    pick_ACT_NOTIFY(o,pick)
+    pick_ACTION_DESTROY(o,pick) \
+    pick_ACTION_VALIDATE_ACTION(o,pick) \
+    pick_ACTION_GET_OBJECT(o,pick) \
+    pick_ACTION_ADD_OBJECT(o,pick) \
+    pick_ACTION_DELETE_OBJECT(o,pick) \
+    pick_ACTION_GET_PRIMARY(o,pick) \
+    pick_ACTION_SHOW_SEL_BOXES(o,pick) \
+    pick_ACTION_NOTIFY(o,pick)
 
 /* forward references */
 #define pick(e,n,c)    static bool CurrObj ## n ## c;

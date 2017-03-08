@@ -48,20 +48,20 @@
 #define USE_OWN_WINDOW 1
 
 #define pick_ACTS(o) \
-    pick_ACT_LOCATE(o,pick) \
-    pick_ACT_MOVE(o,pick) \
-    pick_ACT_RESIZE(o,pick) \
-    pick_ACT_REGISTER(o,pick) \
-    pick_ACT_RECREATE(o,pick) \
-    pick_ACT_DESTROY(o,pick) \
-    pick_ACT_VALIDATE_ACTION(o,pick) \
-    pick_ACT_DRAW(o,pick) \
-    pick_ACT_GET_OBJPTR(o,pick) \
-    pick_ACT_UNDO_MOVE(o,pick) \
-    pick_ACT_REMOVE_FROM_PARENT(o,pick) \
-    pick_ACT_GET_ANCHOR(o,pick) \
-    pick_ACT_NOTIFY(o,pick) \
-    pick_ACT_IS_MARK_VALID(o,pick)
+    pick_ACTION_LOCATE(o,pick) \
+    pick_ACTION_MOVE(o,pick) \
+    pick_ACTION_RESIZE(o,pick) \
+    pick_ACTION_REGISTER(o,pick) \
+    pick_ACTION_RECREATE(o,pick) \
+    pick_ACTION_DESTROY(o,pick) \
+    pick_ACTION_VALIDATE_ACTION(o,pick) \
+    pick_ACTION_DRAW(o,pick) \
+    pick_ACTION_GET_OBJPTR(o,pick) \
+    pick_ACTION_UNDO_MOVE(o,pick) \
+    pick_ACTION_REMOVE_FROM_PARENT(o,pick) \
+    pick_ACTION_GET_ANCHOR(o,pick) \
+    pick_ACTION_NOTIFY(o,pick) \
+    pick_ACTION_IS_MARK_VALID(o,pick)
 
 /* Local Window callback functions prototypes */
 WINEXPORT LRESULT CALLBACK EAtomWndProc( HWND, UINT, WPARAM, LPARAM );

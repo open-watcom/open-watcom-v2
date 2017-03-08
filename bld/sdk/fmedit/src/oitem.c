@@ -40,19 +40,19 @@
 
 
 #define pick_ACTS(o) \
-    pick_ACT_REGISTER(o,pick) \
-    pick_ACT_LOCATE(o,pick) \
-    pick_ACT_MOVE(o,pick) \
-    pick_ACT_RESIZE(o,pick) \
-    pick_ACT_NOTIFY(o,pick) \
-    pick_ACT_DESTROY(o,pick) \
-    pick_ACT_VALIDATE_ACTION(o,pick) \
-    pick_ACT_CUT(o,pick) \
-    pick_ACT_COPY(o,pick) \
-    pick_ACT_PASTE(o,pick) \
-    pick_ACT_GET_PARENT(o,pick) \
-    pick_ACT_GET_PRIORITY(o,pick) \
-    pick_ACT_FIND_OBJECTS_PT(o,pick)
+    pick_ACTION_REGISTER(o,pick) \
+    pick_ACTION_LOCATE(o,pick) \
+    pick_ACTION_MOVE(o,pick) \
+    pick_ACTION_RESIZE(o,pick) \
+    pick_ACTION_NOTIFY(o,pick) \
+    pick_ACTION_DESTROY(o,pick) \
+    pick_ACTION_VALIDATE_ACTION(o,pick) \
+    pick_ACTION_CUT(o,pick) \
+    pick_ACTION_COPY(o,pick) \
+    pick_ACTION_PASTE(o,pick) \
+    pick_ACTION_GET_PARENT(o,pick) \
+    pick_ACTION_GET_PRIORITY(o,pick) \
+    pick_ACTION_FIND_OBJECTS_PT(o,pick)
 
 /* forward references */
 #define pick(e,n,c) static bool OItem ## n ## c;
