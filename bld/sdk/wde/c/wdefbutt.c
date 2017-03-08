@@ -242,7 +242,7 @@ bool CALLBACK WdeButtonDispatcher( ACTION_ID act, WdeButtonObject *obj, void *p1
         }
     }
 
-    return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
+    return( Forward( obj->control, act, p1, p2 ) );
 }
 
 bool WdeButtonInit( bool first )
@@ -376,7 +376,7 @@ bool WdeButtonValidateAction( WdeButtonObject *obj, ACTION_ID *act, void *p2 )
         }
     }
 
-    return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
+    return( ValidateAction( obj->control, *act, p2 ) );
 }
 
 bool WdeButtonCopyObject( WdeButtonObject *obj, WdeButtonObject **new, OBJPTR handle )

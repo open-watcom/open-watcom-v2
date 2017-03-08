@@ -175,14 +175,14 @@ OBJPTR WdeCBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+    if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeCBoxCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
 
-    if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
+    if( !Forward( new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeCBoxCreate: CREATE_WINDOW failed!" );
         Destroy( new->control, false );
         WRMemFree( new );
@@ -204,7 +204,7 @@ bool CALLBACK WdeCBoxDispatcher( ACTION_ID act, WdeCBoxObject *obj, void *p1, vo
         }
     }
 
-    return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
+    return( Forward( obj->control, act, p1, p2 ) );
 }
 
 bool WdeCBoxInit( bool first )
@@ -287,7 +287,7 @@ bool WdeCBoxValidateAction( WdeCBoxObject *obj, ACTION_ID *act, void *p2 )
         }
     }
 
-    return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
+    return( ValidateAction( obj->control, *act, p2 ) );
 }
 
 bool WdeCBoxCopyObject( WdeCBoxObject *obj, WdeCBoxObject **new, OBJPTR handle )

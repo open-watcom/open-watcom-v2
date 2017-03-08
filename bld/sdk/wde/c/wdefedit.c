@@ -200,7 +200,7 @@ bool CALLBACK WdeEditDispatcher( ACTION_ID act, WdeEditObject *obj, void *p1, vo
         }
     }
 
-    return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
+    return( Forward( obj->control, act, p1, p2 ) );
 }
 
 bool WdeEditInit( bool first )
@@ -287,7 +287,7 @@ bool WdeEditValidateAction( WdeEditObject *obj, ACTION_ID *act, void *p2 )
         }
     }
 
-    return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
+    return( ValidateAction( obj->control, *act, p2 ) );
 }
 
 bool WdeEditCopyObject( WdeEditObject *obj, WdeEditObject **new, OBJPTR handle )
