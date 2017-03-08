@@ -63,16 +63,16 @@ WdeResInfo *WdeLoadResource( const char *file_name )
 
     WdeSetWaitCursor( TRUE );
 
-    ok = ((res_info = WdeAllocResInfo()) != NULL);
+    ok = ( (res_info = WdeAllocResInfo()) != NULL );
 
     if( ok ) {
         file_type = WRIdentifyFile( file_name );
-        ok = (file_type != WR_INVALID_FILE);
+        ok = ( file_type != WR_INVALID_FILE );
     }
 
     if( ok ) {
         res_info->info = WRLoadResource( file_name, file_type );
-        ok = (res_info->info != NULL);
+        ok = ( res_info->info != NULL );
     }
 
     if( ok ) {
@@ -118,24 +118,24 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
     dlg_info = NULL;
     fid = WRES_NIL_HANDLE;
 
-    ok = (res_info != NULL && lnode != NULL);
+    ok = ( res_info != NULL && lnode != NULL );
 
     if( ok ) {
         file_name = res_info->info->tmp_file;
         dlg_info = (WdeDialogBoxInfo *)WRMemAlloc( sizeof( WdeDialogBoxInfo ) );
-        ok = (dlg_info != NULL);
+        ok = ( dlg_info != NULL );
     }
 
     if( ok ) {
         dlg_info->dialog_header = WdeAllocDialogBoxHeader();
-        ok = (dlg_info->dialog_header != NULL);
+        ok = ( dlg_info->dialog_header != NULL );
     }
 
     if( ok ) {
         dlg_info->dialog_header->is32bit = is32bit;
         dlg_info->control_list = NULL;
         dlg_info->MemoryFlags = 0;
-        ok = ((fid = ResOpenFileRO( file_name )) != WRES_NIL_HANDLE);
+        ok = ( (fid = ResOpenFileRO( file_name )) != WRES_NIL_HANDLE );
     }
 
     if( ok ) {
@@ -166,9 +166,9 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
                 dlg_info->dialog_header->FontItalic = h32ex.FontItalic;
                 dlg_info->dialog_header->FontCharset = h32ex.FontCharset;
                 dlg_info->dialog_header->HelpId = h32ex.HelpId;
-                dlg_info->dialog_header->FontWeightDefined = (h32ex.FontWeightDefined != 0);
-                dlg_info->dialog_header->FontItalicDefined = (h32ex.FontItalicDefined != 0);
-                dlg_info->dialog_header->FontCharsetDefined = (h32ex.FontCharsetDefined != 0);
+                dlg_info->dialog_header->FontWeightDefined = ( h32ex.FontWeightDefined != 0 );
+                dlg_info->dialog_header->FontItalicDefined = ( h32ex.FontItalicDefined != 0 );
+                dlg_info->dialog_header->FontCharsetDefined = ( h32ex.FontCharsetDefined != 0 );
             }
             dlg_info->dialog_header->Style = h32.Style;
             dlg_info->dialog_header->ExtendedStyle = h32.ExtendedStyle;
