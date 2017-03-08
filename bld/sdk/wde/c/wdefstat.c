@@ -192,14 +192,14 @@ OBJPTR WdeStatCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+    if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeStaticCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
 
-    if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
+    if( !Forward( new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeStaticCreate: CREATE_WINDOW failed!" );
         Destroy( new->control, false );
         WRMemFree( new );
@@ -221,7 +221,7 @@ bool CALLBACK WdeStaticDispatcher( ACTION_ID act, WdeStaticObject *obj, void *p1
         }
     }
 
-    return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
+    return( Forward( obj->control, act, p1, p2 ) );
 }
 
 bool WdeStaticInit( bool first )
@@ -307,7 +307,7 @@ bool WdeStaticValidateAction( WdeStaticObject *obj, ACTION_ID *act, void *p2 )
         }
     }
 
-    return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
+    return( ValidateAction( obj->control, *act, p2 ) );
 }
 
 bool WdeStaticCopyObject( WdeStaticObject *obj, WdeStaticObject **new, OBJPTR handle )

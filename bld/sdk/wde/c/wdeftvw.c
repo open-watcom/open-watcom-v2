@@ -171,14 +171,14 @@ OBJPTR WdeTVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wde
         return( NULL );
     }
 
-    if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+    if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeTViewCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
 
-    if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
+    if( !Forward( new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeTViewCreate: CREATE_WINDOW failed!" );
         Destroy( new->control, false );
         WRMemFree( new );
@@ -200,7 +200,7 @@ bool CALLBACK WdeTViewDispatcher( ACTION_ID act, WdeTViewObject *obj, void *p1, 
         }
     }
 
-    return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
+    return( Forward( obj->control, act, p1, p2 ) );
 }
 
 bool WdeTViewInit( bool first )
@@ -286,7 +286,7 @@ bool WdeTViewValidateAction( WdeTViewObject *obj, ACTION_ID *act, void *p2 )
         }
     }
 
-    return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
+    return( ValidateAction( obj->control, *act, p2 ) );
 }
 
 bool WdeTViewCopyObject( WdeTViewObject *obj, WdeTViewObject **new, OBJPTR handle )

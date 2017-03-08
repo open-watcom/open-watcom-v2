@@ -1611,7 +1611,7 @@ bool WdeDialogAddSubObject( WdeDialogObject *dialog, OBJPTR obj, void *p2 )
     _wde_touch( p2 );
 
     /* make sure the object is not another dialog object */
-    Forward( (OBJPTR)obj, IDENTIFY, &id, NULL );
+    Forward( obj, IDENTIFY, &id, NULL );
     if( id == DIALOG_OBJ ) {
         return( Forward( dialog->parent, ADD_SUBOBJECT, obj, p2 ) );
     }

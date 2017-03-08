@@ -854,7 +854,7 @@ LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
             break;
 
         case IDM_DIALOG_NEW:
-            if( WdeCreateNewDialog( NULL, res_info->is32bit ) ) {
+            if( WdeCreateNewDialog( NULL, res_info->is32bit ) != NULL ) {
                 WdeHandleGotoCurrentObject();
             }
             pass_to_def = false;

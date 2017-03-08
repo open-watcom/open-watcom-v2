@@ -131,7 +131,7 @@ bool WdeSBNoodleSize( OBJPTR obj, bool recreate )
         Forward( obj, CREATE_WINDOW, &false_val, NULL );
     }
 
-    if( Forward( (OBJPTR)sb_obj->object_handle, GET_WINDOW_HANDLE, &hWnd, NULL ) ) {
+    if( Forward( sb_obj->object_handle, GET_WINDOW_HANDLE, &hWnd, NULL ) ) {
         WdeResInfo      *rinfo;
         rinfo = WdeGetCurrentRes();
         if( rinfo != NULL ) {
@@ -215,14 +215,14 @@ OBJPTR WdeSBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+    if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeSBarCreate: SET_OBJECT_INFO failed!" );
         Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
 
-    if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
+    if( !Forward( new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeSBarCreate: CREATE_WINDOW failed!" );
         Destroy( new->control, false );
         WRMemFree( new );
@@ -246,7 +246,7 @@ bool CALLBACK WdeSBarDispatcher( ACTION_ID act, WdeSBarObject *obj, void *p1, vo
         }
     }
 
-    return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
+    return( Forward( obj->control, act, p1, p2 ) );
 }
 
 bool WdeSBarInit( bool first )
@@ -342,7 +342,7 @@ bool WdeSBarValidateAction( WdeSBarObject *obj, ACTION_ID *act, void *p2 )
         }
     }
 
-    return( ValidateAction( (OBJPTR) obj->control, *act, p2 ) );
+    return( ValidateAction( obj->control, *act, p2 ) );
 }
 
 bool WdeSBarCopyObject( WdeSBarObject *obj, WdeSBarObject **new, OBJPTR handle )

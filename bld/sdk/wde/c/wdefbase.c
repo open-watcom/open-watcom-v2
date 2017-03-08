@@ -496,7 +496,7 @@ bool WdeBaseValidateAction( WdeBaseObject *obj, ACTION_ID *act, void *p2 )
         }
     }
 
-    return( ValidateAction( (OBJPTR) obj->o_item, *act, p2 ) );
+    return( ValidateAction( (OBJPTR)obj->o_item, *act, p2 ) );
 }
 
 bool WdeBaseGetWindowHandle( WdeBaseObject *obj, HWND *hwin, void *p2 )

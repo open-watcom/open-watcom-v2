@@ -231,10 +231,10 @@ OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     if( ok ) {
         /* make sure we are setting the correct parent */
         ancestor = parent;
-        Forward( (OBJPTR)ancestor, IDENTIFY, &id, NULL );
+        Forward( ancestor, IDENTIFY, &id, NULL );
         while( id != DIALOG_OBJ && id != BASE_OBJ ) {
             GetObjectParent( ancestor, &ancestor );
-            Forward( (OBJPTR)ancestor, IDENTIFY, &id, NULL );
+            Forward( ancestor, IDENTIFY, &id, NULL );
         }
         new->parent = ancestor;
         OBJ_DISPATCHER_SET( new, WdeControlDispatch );
@@ -1248,7 +1248,7 @@ bool WdeControlNotify( WdeControlObject *obj, NOTE_ID *noteid, void *p2 )
                     WdeWriteTrail( "WdeControlNotify: DESTROY_WINDOW failed!" );
                     return( false );
                 }
-                if( !Forward( (OBJPTR)obj->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
+                if( !Forward( obj->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
                     WdeWriteTrail("WdeControlNotify: CREATE_WINDOW failed!" );
                     return( false );
                 }
