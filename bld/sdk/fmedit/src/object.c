@@ -173,11 +173,11 @@ OBJPTR FMEDITAPI Create( OBJ_ID id, OBJPTR parent, RECT *rect, OBJPTR handle )
      */
     CREATE_TABLE    appobjs;
 
-    if( id < USER_OBJ ) {
+    if( id < FIRST_USER_OBJ_ID ) {
         return( InternalCreate[id]( parent, rect, handle ) );
     } else {
         appobjs = GetObjects();
-        return( appobjs[id - USER_OBJ]( parent, rect, handle ) );
+        return( appobjs[id - FIRST_USER_OBJ_ID]( parent, rect, handle ) );
     }
 }
 

@@ -37,7 +37,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef enum {
-    BASE_OBJ = USER_OBJ,
+    BASE_OBJ = FIRST_USER_OBJ_ID,
     DIALOG_OBJ,
     CONTROL_OBJ,
     PBUTTON_OBJ,

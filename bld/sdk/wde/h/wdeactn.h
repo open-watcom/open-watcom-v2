@@ -74,7 +74,7 @@
 /****************************************************************************/
 enum {
 #define pick(e,n,a)     e
-    pick_ACTION_GET_WINDOW_HANDLE(void,pick) = APP_ACTIONS,
+    pick_ACTION_GET_WINDOW_HANDLE(void,pick) = FIRST_USER_ACTION_ID,
     pick_ACTION_GET_WINDOW_CLASS(void,pick),
     pick_ACTION_GET_SUBOBJ_LIST(void,pick),
     pick_ACTION_GET_OBJECT_INFO(void,pick),
@@ -113,7 +113,7 @@ enum {
 };
 
 enum {
-    SET_LOCATION = APP_NOTE_IDS
+    SET_LOCATION = FIRST_USER_NOTE_ID
 };
 
 #endif

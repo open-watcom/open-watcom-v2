@@ -220,7 +220,7 @@ HANDLE GetInst( void )
 void CreateMainObject( void )
 {
     /* create the main object */
-    State->mainobject = Create( USER_OBJ, NULL, NULL, NULL );
+    State->mainobject = Create( FIRST_USER_OBJ_ID, NULL, NULL, NULL );
 }
 
 void DestroyMainObject( void )

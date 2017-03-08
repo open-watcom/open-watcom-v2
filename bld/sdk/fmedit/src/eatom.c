@@ -85,7 +85,7 @@ static bool CALLBACK EAtomDispatch( ACTION_ID id, OBJPTR obj, void *p1, void *p2
     /* dispatch the desired operation to the correct place */
     int i;
 
-    if( id >= APP_ACTIONS ) {
+    if( id >= FIRST_USER_ACTION_ID ) {
         return( Forward( ((EATOM *)obj)->obj, id, p1, p2 ) );
     }
 
@@ -106,7 +106,7 @@ static bool EAtomValidateAction( EATOM *obj, ACTION_ID *idptr, void *p2 )
     obj = obj;        /* ref'd to avoid warning */
     p2 = p2;          /* ref'd to avoid warning */
 
-    if( *idptr >= APP_ACTIONS ) {
+    if( *idptr >= FIRST_USER_ACTION_ID ) {
         return( Forward( obj->obj, VALIDATE_ACTION, idptr, p2 ) );
     }
     for( i = 0; i < MAX_ACTIONS; i++ ) {

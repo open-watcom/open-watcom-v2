@@ -1,9 +1,6 @@
 #ifndef _ACTIONS_INCLUDE
 #define _ACTIONS_INCLUDE
 
-#define APP_ACTIONS  256
-#define APP_NOTE_IDS 256
-
 #define pick_ACTION_REGISTER(o,x)           x##( REGISTER,           Register,         (o *, void *, void *) )
 #define pick_ACTION_MOVE(o,x)               x##( MOVE,               Move,             (o *, POINT *, bool *) )
 #define pick_ACTION_RESIZE(o,x)             x##( RESIZE,             Resize,           (o *, RECT *, bool *) )
