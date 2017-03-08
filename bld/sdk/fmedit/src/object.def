@@ -44,13 +44,4 @@ extern bool         IsMarkValid( OBJPTR );
 extern void         EndCurrObjMod( void );
 extern void         StartCurrObjMod( void );
 
-/* editor actions */
-
-#define EDITOR_NOTE_IDS     100
-
-enum {
-    CURR_OBJ_MOD_BEGIN = EDITOR_NOTE_IDS,   // wraped around multiple
-    CURR_OBJ_MOD_END                        // changed of the currobj
-};
-
 #endif

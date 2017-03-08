@@ -22,7 +22,23 @@
 #define OBJ_DISPATCHER_COPY(o,s)    OBJ_DISPATCHER(o) = OBJ_DISPATCHER(s)
 
 typedef int OBJ_ID;
-typedef int NOTE_ID;
+
+typedef enum {
+    NEW_PARENT,
+    PARENT_RESIZE,
+    TERMINATE_EDIT,
+    CURRENT_OBJECT,
+    MOVE_START,
+    MOVE_END,
+    PRIMARY_OBJECT,
+
+/* editor notes */
+
+    CURR_OBJ_MOD_BEGIN,     // wraped around multiple
+    CURR_OBJ_MOD_END,       // changed of the currobj
+
+    LAST_USER_NOTE_ID = 0x7FFF
+} NOTE_ID;
 
 typedef enum {
     SCROLL_NONE,

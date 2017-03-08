@@ -83,16 +83,6 @@ typedef enum {
 } ACTION_ID;
 
 typedef enum {
-    NEW_PARENT,
-    PARENT_RESIZE,
-    TERMINATE_EDIT,
-    CURRENT_OBJECT,
-    MOVE_START,
-    MOVE_END,
-    PRIMARY_OBJECT
-};
-
-typedef enum {
     R_NONE      = 0,
     R_TOP       = 1,
     R_BOTTOM    = 2,
