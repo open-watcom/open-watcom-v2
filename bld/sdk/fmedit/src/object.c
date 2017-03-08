@@ -381,7 +381,7 @@ OBJPTR FMEDITAPI GetCurrObject( void )
 /************************************/
 {
     /* return pointer to the current object */
-    OBJECT  *obj;
+    OBJPTR  obj;
     OBJPTR  userobj;
 
     obj = GetPrimaryObject();
@@ -396,7 +396,7 @@ LIST *FMEDITAPI GetCurrObjectList( void )
 /***************************************/
 {
     /* return pointer to the current object */
-    OBJECT  *currobj;
+    OBJPTR  currobj;
     OBJPTR  userobj;
     LIST    *objlist;
 
@@ -736,7 +736,7 @@ bool GetAnchor( OBJPTR obj, POINT *p )
 bool RequestScrollRect( RECT *r )
 /*******************************/
 {
-    OBJECT  *obj;
+    OBJPTR  obj;
 
     obj = GetMainObject();
     return( OBJ_DISPATCHER( obj )( GET_SCROLL_RECT, obj, r, NULL ) );

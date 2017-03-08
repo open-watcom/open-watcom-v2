@@ -545,7 +545,7 @@ STATE_HDL FMEDITAPI GetCurrFormID( void )
 
 void FMEDITAPI HideSelectBoxes( void )
 {
-    OBJECT      *currobj;
+    OBJPTR      currobj;
     bool        show;
 
     currobj = GetCurrObj();
@@ -555,7 +555,7 @@ void FMEDITAPI HideSelectBoxes( void )
 
 void FMEDITAPI ShowSelectBoxes( void )
 {
-    OBJECT      *currobj;
+    OBJPTR      currobj;
     bool        show;
 
     currobj = GetCurrObj();
