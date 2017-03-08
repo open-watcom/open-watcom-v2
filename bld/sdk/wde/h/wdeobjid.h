@@ -65,9 +65,9 @@ typedef enum {
     HEADER_OBJ,
     CUSTCNTL1_OBJ,
     CUSTCNTL2_OBJ,
-    LAST__OBJ
+    LAST_USER_OBJ_ID
 } Wde_Objects;
 
-#define NUM_OBJECTS (LAST__OBJ - USER_OBJ)
+#define NUM_OBJECTS (LAST_USER_OBJ_ID - FIRST_USER_OBJ_ID)
 
 #endif

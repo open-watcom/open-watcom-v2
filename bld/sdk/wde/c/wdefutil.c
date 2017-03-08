@@ -120,33 +120,33 @@ static WdeMouseMapStruct WdeMouseMapper[] = {
 };
 
 static WdeOBJIDToDefineProcItems WdeOBJIDToDefineProc[] = {
-    { DIALOG_OBJ,    "WdeDefineDIALOG"      },
-    { PBUTTON_OBJ,   "WdeDefinePUSH"        },
-    { CBUTTON_OBJ,   "WdeDefineCHECK"       },
-    { RBUTTON_OBJ,   "WdeDefineRADIO"       },
-    { GBUTTON_OBJ,   "WdeDefineGROUPBOX"    },
-    { FRAME_OBJ,     "WdeDefineFRAME"       },
-    { TEXT_OBJ,      "WdeDefineTEXT"        },
-    { ICON_OBJ,      "WdeDefineICON"        },
-    { EDIT_OBJ,      "WdeDefineEDIT"        },
-    { LISTBOX_OBJ,   "WdeDefineLISTBOX"     },
-    { COMBOBOX_OBJ,  "WdeDefineCOMBOBOX"    },
-    { HSCROLL_OBJ,   "WdeDefineHSCROLLBAR"  },
-    { VSCROLL_OBJ,   "WdeDefineVSCROLLBAR"  },
-    { SIZEBOX_OBJ,   "WdeDefineSIZEBOX"     },
-    { SBAR_OBJ,      "WdeDefineSTATUSBAR"   },
-    { LVIEW_OBJ,     "WdeDefineLISTVIEW"    },
-    { TVIEW_OBJ,     "WdeDefineTREEVIEW"    },
-    { TABCNTL_OBJ,   "WdeDefineTABCONTROL"  },
-    { ANIMATE_OBJ,   "WdeDefineANIMATE"     },
-    { UPDOWN_OBJ,    "WdeDefineUPDOWN"      },
-    { TRACKBAR_OBJ,  "WdeDefineTRACKBAR"    },
-    { PROGRESS_OBJ,  "WdeDefinePROGRESSBAR" },
-    { HOTKEY_OBJ,    "WdeDefineHOTKEY"      },
-    { HEADER_OBJ,    "WdeDefineHEADER"      },
-    { BASE_OBJ,      NULL                   },
-    { CONTROL_OBJ,   NULL                   },
-    { LAST__OBJ,     NULL                   }
+    { DIALOG_OBJ,       "WdeDefineDIALOG"      },
+    { PBUTTON_OBJ,      "WdeDefinePUSH"        },
+    { CBUTTON_OBJ,      "WdeDefineCHECK"       },
+    { RBUTTON_OBJ,      "WdeDefineRADIO"       },
+    { GBUTTON_OBJ,      "WdeDefineGROUPBOX"    },
+    { FRAME_OBJ,        "WdeDefineFRAME"       },
+    { TEXT_OBJ,         "WdeDefineTEXT"        },
+    { ICON_OBJ,         "WdeDefineICON"        },
+    { EDIT_OBJ,         "WdeDefineEDIT"        },
+    { LISTBOX_OBJ,      "WdeDefineLISTBOX"     },
+    { COMBOBOX_OBJ,     "WdeDefineCOMBOBOX"    },
+    { HSCROLL_OBJ,      "WdeDefineHSCROLLBAR"  },
+    { VSCROLL_OBJ,      "WdeDefineVSCROLLBAR"  },
+    { SIZEBOX_OBJ,      "WdeDefineSIZEBOX"     },
+    { SBAR_OBJ,         "WdeDefineSTATUSBAR"   },
+    { LVIEW_OBJ,        "WdeDefineLISTVIEW"    },
+    { TVIEW_OBJ,        "WdeDefineTREEVIEW"    },
+    { TABCNTL_OBJ,      "WdeDefineTABCONTROL"  },
+    { ANIMATE_OBJ,      "WdeDefineANIMATE"     },
+    { UPDOWN_OBJ,       "WdeDefineUPDOWN"      },
+    { TRACKBAR_OBJ,     "WdeDefineTRACKBAR"    },
+    { PROGRESS_OBJ,     "WdeDefinePROGRESSBAR" },
+    { HOTKEY_OBJ,       "WdeDefineHOTKEY"      },
+    { HEADER_OBJ,       "WdeDefineHEADER"      },
+    { BASE_OBJ,         NULL                   },
+    { CONTROL_OBJ,      NULL                   },
+    { LAST_USER_OBJ_ID, NULL                   }
 };
 
 
@@ -515,7 +515,7 @@ char *WdeGetDefineProcFromOBJID( Wde_Objects obj_id )
 {
     int i;
 
-    for( i = 0; WdeOBJIDToDefineProc[i].obj_id != LAST__OBJ; i++ ) {
+    for( i = 0; WdeOBJIDToDefineProc[i].obj_id != LAST_USER_OBJ_ID; i++ ) {
         if( WdeOBJIDToDefineProc[i].obj_id == obj_id ) {
             return( WdeOBJIDToDefineProc[i].proc_name );
         }
