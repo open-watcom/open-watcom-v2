@@ -207,7 +207,7 @@ OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     }
 
     if( ok ) {
-        ok = (!Forward( parent, GET_ORDER_MODE, &mode, NULL ) || mode == WdeSelect);
+        ok = ( !Forward( parent, GET_ORDER_MODE, &mode, NULL ) || mode == WdeSelect );
     }
 
     if( ok ) {
@@ -466,7 +466,7 @@ bool WdeControlDestroy( WdeControlObject *obj, bool *flag, bool *p2 )
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
-    check_scroll = (obj->parent == obj->base_obj);
+    check_scroll = ( obj->parent == obj->base_obj );
 
     if( *flag ) {
         if( obj->res_info ) {
@@ -901,7 +901,7 @@ static bool WdeControlValidateMove( WdeControlObject *obj, POINT *pnt, ACTION_ID
         Location( (OBJPTR)obj, &obj_rect );
         GetWindowRect( obj->window_handle, &win_rect );
         obj_rect.bottom = obj_rect.top + win_rect.bottom - win_rect.top;
-        return( PtInRect( &obj_rect, *pnt ) );
+        return( PtInRect( &obj_rect, *pnt ) != 0 );
     }
 
     clear = obj->clear_interior;
@@ -923,7 +923,7 @@ static bool WdeControlValidateMove( WdeControlObject *obj, POINT *pnt, ACTION_ID
         obj_rect.right -= WDE_BORDER_SIZE;
         obj_rect.top += WDE_BORDER_SIZE;
         obj_rect.bottom -= WDE_BORDER_SIZE;
-        return( !PtInRect( &obj_rect, *pnt ) );
+        return( PtInRect( &obj_rect, *pnt ) == 0 );
     }
 
     return( true );
@@ -963,7 +963,7 @@ bool WdeControlPasteObject( WdeControlObject *obj, OBJPTR parent, POINT *pnt )
     obj->base_obj = GetMainObject();
     obj->res_info = WdeGetCurrentRes();
 
-    ok = (obj->base_obj != NULL && obj->res_info != NULL);
+    ok = ( obj->base_obj != NULL && obj->res_info != NULL );
 
     if( ok ) {
         if( pnt != NULL ) {
@@ -1087,7 +1087,7 @@ bool WdeControlCutObject( WdeControlObject *obj, OBJPTR *new, void *p2 )
 
     *new = NULL;
 
-    check_scroll = (obj->parent == obj->base_obj);
+    check_scroll = ( obj->parent == obj->base_obj );
 
     if( !RemoveObject( obj->parent, obj->object_handle ) ) {
         WdeWriteTrail( "WdeControlCutObject: Remove from parent failed!" );
@@ -1816,8 +1816,8 @@ bool WdeControlSetOrderMode( WdeControlObject *obj, WdeOrderMode *mode, WdeSetOr
         o->lists = *l;
         o->old_oe->mode = *mode;
         o->old_oe->pos_set = FALSE;
-        o->old_oe->tab_set = ((style & WS_TABSTOP) != 0);
-        o->old_oe->grp_set = ((style & WS_GROUP) != 0);
+        o->old_oe->tab_set = ( (style & WS_TABSTOP) != 0 );
+        o->old_oe->grp_set = ( (style & WS_GROUP) != 0 );
         o->res_info = obj->res_info;
         obj->tag = WdeCreateTag( obj->window_handle, o );
         obj->mode = *mode;
@@ -1875,7 +1875,7 @@ bool WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
     ok = true;
 
     if( obj->parent_handle == (HWND)NULL ) {
-        ok = (Forward( obj->parent, GET_WINDOW_HANDLE, &obj->parent_handle, NULL ) && obj->parent_handle != (HWND)NULL);
+        ok = ( Forward( obj->parent, GET_WINDOW_HANDLE, &obj->parent_handle, NULL ) && obj->parent_handle != (HWND)NULL );
     }
 
     if( ok ) {

@@ -61,9 +61,9 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    bool    (*init)( bool );
-    void    (*fini)( void );
-    OBJPTR  (CALLBACK *create)( OBJPTR , RECT *, OBJPTR );
+    bool        (*init)( bool );
+    void        (*fini)( void );
+    CREATE_RTN  *create;
 } WdeObjectRoutinesType;
 
 /****************************************************************************/

@@ -102,7 +102,7 @@ static void FixMenuName( char *name, int len )
 /********************************************/
 {
     /* remove the '&' character from the menu name */
-    char *mark;
+    char        *mark;
 
     mark = strchr( name, '&' );
     if( mark == NULL ) {
@@ -286,7 +286,7 @@ bool FMEDITAPI AddObject( OBJPTR obj, OBJPTR member )
 /***************************************************/
 {
     /*  Update the position of the passed member with in the given object. */
-    bool ret;
+    bool        ret;
 
     ret = Forward( obj, ADD_SUBOBJECT, member, NULL );
     UpdateScroll();
@@ -298,7 +298,7 @@ bool FMEDITAPI RemoveObject( OBJPTR obj, OBJPTR member )
 /******************************************************/
 {
     /*  Update the position of the passed member with in the given object. */
-    bool ret;
+    bool        ret;
 
     ret = Forward( obj, REMOVE_SUBOBJECT, member, NULL );
     UpdateScroll();
@@ -339,8 +339,8 @@ OBJPTR FMEDITAPI FindObject( SUBOBJ_REQUEST *req )
     /*  Find an object at the specified point.  This is done by asking for the
      *  component item in the highest level object.
      */
-    OBJPTR  obj;
-    LIST    *subobj;
+    OBJPTR      obj;
+    LIST        *subobj;
 
     obj = GetMainObject();
     for( ;; ) {
@@ -359,7 +359,7 @@ OBJPTR FMEDITAPI FindObject( SUBOBJ_REQUEST *req )
 bool FMEDITAPI FindObjectsPt( POINT pt, LIST **list )
 /***************************************************/
 {
-    OBJPTR  obj;
+    OBJPTR      obj;
 
     obj = GetMainObject();
     *list = NULL;
@@ -369,7 +369,8 @@ bool FMEDITAPI FindObjectsPt( POINT pt, LIST **list )
 OBJPTR FMEDITAPI FindOneObjPt( POINT pt )
 /***************************************/
 {
-    LIST *list;
+    LIST        *list;
+
     if( FindObjectsPt( pt, &list ) ) {
         return( ListElement( list ) );
     } else {
@@ -381,8 +382,8 @@ OBJPTR FMEDITAPI GetCurrObject( void )
 /************************************/
 {
     /* return pointer to the current object */
-    OBJPTR  obj;
-    OBJPTR  userobj;
+    OBJPTR      obj;
+    OBJPTR      userobj;
 
     obj = GetPrimaryObject();
     userobj = NULL;
@@ -396,9 +397,9 @@ LIST *FMEDITAPI GetCurrObjectList( void )
 /***************************************/
 {
     /* return pointer to the current object */
-    OBJPTR  currobj;
-    OBJPTR  userobj;
-    LIST    *objlist;
+    OBJPTR      currobj;
+    OBJPTR      userobj;
+    LIST        *objlist;
 
     objlist = NULL;
     for( currobj = GetEditCurrObject(); currobj != NULL; currobj = GetNextEditCurrObject( currobj ) ) {
@@ -416,8 +417,8 @@ OBJPTR GetEditCurrObject( void )
 /******************************/
 {
     /* return pointer to the current object */
-    OBJPTR  obj;
-    OBJPTR  currobj;
+    OBJPTR      obj;
+    OBJPTR      currobj;
 
     currobj = GetCurrObj();
     OBJ_DISPATCHER( currobj )( GET_OBJECT, currobj, &obj, NULL );
@@ -441,8 +442,8 @@ void SetCurrObject( OBJPTR obj )
 /******************************/
 {
     /* make obj the only current object */
-    bool    reset;
-    OBJPTR  currobj;
+    bool        reset;
+    OBJPTR      currobj;
 
     reset = true;
     currobj = GetCurrObj();
@@ -473,8 +474,8 @@ void DeleteCurrObject( OBJPTR obj )
 /*********************************/
 {
     /* remove obj from the list of current objects */
-    OBJPTR  currobj;
-    bool    curritem;
+    OBJPTR      currobj;
+    bool        curritem;
 
     curritem = true;
     currobj = GetCurrObj();
@@ -487,8 +488,8 @@ void DeleteCurrObjptr( OBJPTR obj )
     /* Delete the current object associated with obj from the list of current
      * objects
      */
-    OBJPTR  currobj;
-    bool    curritem;
+    OBJPTR      currobj;
+    bool        curritem;
 
     curritem = false;
     currobj = GetCurrObj();
@@ -515,8 +516,8 @@ void SetPrimaryObject( OBJPTR obj )
 /*********************************/
 {
     /* return a pointer to the primary object */
-    OBJPTR  currobj;
-    bool    flag;
+    OBJPTR      currobj;
+    bool        flag;
 
     currobj = GetCurrObj();
 
@@ -546,7 +547,7 @@ OBJPTR GetObjptr( OBJPTR obj )
 /****************************/
 {
     /* Get a pointer to the object associated with the current object obj */
-    OBJPTR newobj;
+    OBJPTR      newobj;
 
     newobj = NULL;
     OBJ_DISPATCHER( obj )( GET_OBJPTR, obj, &newobj, NULL );
@@ -556,7 +557,7 @@ OBJPTR GetObjptr( OBJPTR obj )
 OBJPTR GetCurrObjptr( OBJPTR obj )
 /********************************/
 {
-    OBJPTR currobj;
+    OBJPTR      currobj;
 
     for( currobj = GetEditCurrObject(); currobj != NULL; currobj = GetNextEditCurrObject( currobj ) ) {
         if( GetObjptr( currobj ) == obj ) {
@@ -578,7 +579,7 @@ bool DeleteCurrItem( OBJPTR obj )
 static bool CurrObjExist( OBJPTR findobj )
 /****************************************/
 {
-    OBJPTR  currobj;
+    OBJPTR      currobj;
 
     for( currobj = GetEditCurrObject(); currobj != NULL; currobj = GetNextEditCurrObject( currobj ) ) {
         if( currobj == findobj ) {
@@ -597,8 +598,8 @@ bool FMEDITAPI ExecuteCurrObject( ACTION_ID id, void *p1, void *p2 )
      * which will make that object no longer in the current object list,
      * and can also affect other objects in that list (ie it's children).
      */
-    OBJPTR  currobj;
-    OBJPTR  nextobj;
+    OBJPTR      currobj;
+    OBJPTR      nextobj;
 
     for( currobj = GetEditCurrObject(); currobj != NULL; currobj = nextobj ) {
         nextobj = GetNextEditCurrObject( currobj );
@@ -617,10 +618,10 @@ void ObjMark( OBJPTR obj )
 /************************/
 {
     /* invalidate the objects location for painting */
-    RECT   rect;
-    HRGN   little;
-    HRGN   large;
-    POINT  offset;
+    RECT        rect;
+    HRGN        little;
+    HRGN        large;
+    POINT       offset;
 
     if( !IsMarkValid( obj )) {
         return;
@@ -641,8 +642,8 @@ void FMEDITAPI ResetCurrObject( bool draw )
 /*****************************************/
 {
     /* reset the current object */
-    OBJPTR  currobj;
-    OBJPTR  nextobj;
+    OBJPTR      currobj;
+    OBJPTR      nextobj;
 
     for( currobj = GetEditCurrObject(); currobj != NULL; currobj = nextobj ) {
         nextobj = GetNextEditCurrObject( currobj );
@@ -662,7 +663,7 @@ void MarkCurrObject( void )
 /*************************/
 {
     /* mark the current object */
-    OBJPTR  currobj;
+    OBJPTR      currobj;
 
     currobj = GetPrimaryObject();
     if( currobj != NULL ) {
@@ -736,7 +737,7 @@ bool GetAnchor( OBJPTR obj, POINT *p )
 bool RequestScrollRect( RECT *r )
 /*******************************/
 {
-    OBJPTR  obj;
+    OBJPTR      obj;
 
     obj = GetMainObject();
     return( OBJ_DISPATCHER( obj )( GET_SCROLL_RECT, obj, r, NULL ) );
@@ -746,7 +747,7 @@ bool RequestScrollRect( RECT *r )
 bool IsMarkValid( OBJPTR obj )
 /****************************/
 {
-    bool     isvalid;
+    bool        isvalid;
 
     isvalid = true;
     if( ValidateAction( obj,  IS_MARK_VALID, NULL ) ) {

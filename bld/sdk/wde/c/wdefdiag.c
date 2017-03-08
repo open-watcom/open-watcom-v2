@@ -345,7 +345,7 @@ WdeDialogBoxInfo *WdeDBIFromObject( void *_obj )
     WdeCleanOrderedList( &obj->ochildren );
 
     for( clist = obj->ochildren; clist; clist = ListNext( clist ) ) {
-        oentry = (WdeOrderedEntry  *)ListElement( clist );
+        oentry = (WdeOrderedEntry *)ListElement( clist );
         if( !Forward( oentry->obj, GET_OBJECT_INFO, &control, &symbol ) ) {
             WdeWriteTrail( "WdeDBIFromObject: GET_OBJECT_INFO failed!" );
             WdeFreeDialogBoxInfo( info );
@@ -489,14 +489,14 @@ OBJPTR WdeCreateNewDialog( WResID *name, bool is32bit )
     bool            ok;
 
     new = NULL;
-    ok = ((base_obj = GetMainObject()) != NULL);
+    ok = ( (base_obj = GetMainObject()) != NULL );
 
     if( ok ) {
         new_rect.left = WDE_NEW_DIALOG_X;
         new_rect.top = WDE_NEW_DIALOG_Y;
         new_rect.right = WDE_NEW_DIALOG_WIDTH;
         new_rect.bottom = WDE_NEW_DIALOG_HEIGHT;
-        ok = ((new = WdeDialogCreater( base_obj, &new_rect, NULL )) != NULL);
+        ok = ( (new = WdeDialogCreater( base_obj, &new_rect, NULL )) != NULL );
         if( !ok ) {
             WdeWriteTrail( "WdeCreateNewDialog: Create failed!" );
         }
@@ -510,7 +510,7 @@ OBJPTR WdeCreateNewDialog( WResID *name, bool is32bit )
         }
 //      new->helpname = NULL;
         new->helpsymbol = NULL;
-        ok = (new->name != NULL);
+        ok = ( new->name != NULL );
         if( !ok ) {
             WdeWriteTrail( "WdeDialogCreate: could not create dialog name!" );
         }
@@ -528,7 +528,7 @@ OBJPTR WdeCreateNewDialog( WResID *name, bool is32bit )
         SETHDR_SIZEH( WdeDefaultDialog, WDE_NEW_DIALOG_HEIGHT );
 
         new->dialog_info = WdeCopyDialogBoxHeader( WdeDefaultDialog );
-        ok = (new->dialog_info != NULL);
+        ok = ( new->dialog_info != NULL );
         if( !ok ) {
             WdeWriteTrail( "WdeDialogCreate: CopyDBH failed!" );
         }
@@ -570,10 +570,10 @@ OBJPTR WdeCreateDialogFromRes( WdeResInfo *res_info, WdeResDlgItem *ditem )
 
     new = NULL;
     base_obj = NULL;
-    ok = (res_info != NULL && ditem != NULL);
+    ok = ( res_info != NULL && ditem != NULL );
 
     if( ok ) {
-        ok = ((base_obj = GetMainObject()) != NULL);
+        ok = ( (base_obj = GetMainObject()) != NULL );
     }
 
     if( ok ) {
@@ -581,13 +581,13 @@ OBJPTR WdeCreateDialogFromRes( WdeResInfo *res_info, WdeResDlgItem *ditem )
         new_rect.top = WDE_NEW_DIALOG_Y;
         new_rect.right = WDE_NEW_DIALOG_WIDTH;
         new_rect.bottom = WDE_NEW_DIALOG_HEIGHT;
-        ok = ((new = WdeDialogCreater( base_obj, &new_rect, NULL )) != NULL);
+        ok = ( (new = WdeDialogCreater( base_obj, &new_rect, NULL )) != NULL );
     }
 
     if( ok ) {
         new->name = WdeCopyWResID( ditem->dialog_name );
 //      new->helpname = WdeCopyWResHelpID( ditem->helpname );
-        ok = (new->name != NULL);
+        ok = ( new->name != NULL );
     }
 
     if( ok ) {
@@ -595,7 +595,7 @@ OBJPTR WdeCreateDialogFromRes( WdeResInfo *res_info, WdeResDlgItem *ditem )
         new->dlg_item = ditem;
         new->mem_flags = ditem->dialog_info->MemoryFlags;
         new->dialog_info = WdeCopyDialogBoxHeader( ditem->dialog_info->dialog_header );
-        ok = (new->dialog_info != NULL);
+        ok = ( new->dialog_info != NULL );
     }
 
     if( ok ) {
@@ -1369,7 +1369,7 @@ bool WdeDialogIsMarkValid( WdeDialogObject *obj, bool *flag, void *p2 )
     _wde_touch( p2 );
 
     if( obj->mode == WdeSelect ) {
-        *flag = (obj->window_handle != NULL && IsWindowVisible( obj->window_handle ));
+        *flag = ( obj->window_handle != NULL && IsWindowVisible( obj->window_handle ) );
     } else {
         *flag = false;
     }
@@ -2033,7 +2033,7 @@ bool WdeDialogNotify( WdeDialogObject *obj, NOTE_ID *noteid, void *p2 )
         } else {
             if( obj->parent != (OBJPTR)p2 ) {
                 obj->parent = (OBJPTR)p2;
-                if( !Forward( (OBJPTR)obj->parent, GET_WINDOW_HANDLE, &handle, NULL ) ) {
+                if( !Forward( obj->parent, GET_WINDOW_HANDLE, &handle, NULL ) ) {
                     return ( false );
                 }
                 obj->parent_handle = handle;
@@ -2613,7 +2613,7 @@ bool WdeBuildDialogTemplate ( WdeDialogBoxHeader *dialog_header, HGLOBAL *hgloba
     MenuName = NULL;
     ClassName = NULL;
 
-    ok = (dialog_header != NULL && hglobal_mem != NULL);
+    ok = ( dialog_header != NULL && hglobal_mem != NULL );
 
     if( ok ) {
         style = GETHDR_STYLE( dialog_header );
@@ -2629,7 +2629,7 @@ bool WdeBuildDialogTemplate ( WdeDialogBoxHeader *dialog_header, HGLOBAL *hgloba
             WRMemFree( ClassName );
             ClassName = NULL;
         }
-        ok = (ClassName == NULL || (ClassName != NULL && WdeIsClassDefined( ClassName )));
+        ok = ( ClassName == NULL || (ClassName != NULL && WdeIsClassDefined( ClassName )) );
         if( !ok ) {
             //WdeDisplayErrorMsg( WDE_UNDEFINEDCLASS );
             WdeSetStatusByID( WDE_NONE, WDE_UNDEFINEDCLASS );
@@ -2658,7 +2658,7 @@ bool WdeBuildDialogTemplate ( WdeDialogBoxHeader *dialog_header, HGLOBAL *hgloba
             GETHDR_SIZEH( dialog_header ), MenuName, ClassName,
             GETHDR_CAPTION( dialog_header ), pointsize, fontname );
 
-        ok = (*hglobal_mem != NULL);
+        ok = ( *hglobal_mem != NULL );
         if( !ok ) {
             WdeWriteTrail( "Could not Alloc dialog template!" );
         }
@@ -2769,7 +2769,7 @@ INT_PTR CALLBACK WdeDialogDefineDlgProc( HWND hDlg, UINT message, WPARAM wParam,
         }
 
         if( !ret && o_info->hook_func != NULL ) {
-            ret = (*o_info->hook_func)( hDlg, message, wParam, lParam, o_info->mask );
+            ret = o_info->hook_func( hDlg, message, wParam, lParam, o_info->mask );
         }
 
         if( ret ) {

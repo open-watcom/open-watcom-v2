@@ -188,7 +188,7 @@ static WdeDebugActionItem WdeDebugDefaultAction = { -1 , "" , wdet_P1, wdet_P2 }
 
 static WdeDebugActionItem *WdeDebugGetActionItem( ACTION_ID act )
 {
-    int i;
+    int         i;
 
     for( i = 0; WdeDebugActions[i].act != -1; i++ ) {
         if( WdeDebugActions[i].act == act ) {
@@ -328,9 +328,9 @@ void WdeDebugDispatch( const char *name, ACTION_ID act, void * obj, void *p1, vo
 #endif
 
 #if defined( WDE_DEBUG ) && defined( WDE_DEBUG_CREATE )
-void WdeDebugCreate ( const char *name, void * parent, RECT *obj_rect, void * handle )
+void WdeDebugCreate( const char *name, OBJPTR parent, RECT *obj_rect, void * handle )
 {
-    char temp[512];
+    char        temp[512];
 
     sprintf( WdeDebugString, "%7s: Create: ", name );
 
