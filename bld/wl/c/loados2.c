@@ -472,8 +472,8 @@ unsigned long ResNonResNameTable( bool dores )
 
     size = 0;
     if( dores ) {
-        if( FmtData.u.os2.res_module_name != NULL ) {
-            name = FmtData.u.os2.res_module_name;
+        if( FmtData.u.os2.module_name != NULL ) {
+            name = FmtData.u.os2.module_name;
             len = strlen( name );
         } else {
             name = GetBaseName( Root->outfile->fname, 0, &len );
@@ -493,13 +493,16 @@ unsigned long ResNonResNameTable( bool dores )
         WriteLoadU16( 0 );
         size += 2;
     }
-    if( dores && FmtData.u.os2.res_module_name != NULL ) {
-        _LnkFree( FmtData.u.os2.res_module_name );
-        FmtData.u.os2.res_module_name = NULL;
-    }
-    if( !dores && FmtData.u.os2.description != NULL ) {
-        _LnkFree( FmtData.u.os2.description );
-        FmtData.u.os2.description = NULL;
+    if( dores ) {
+        if( FmtData.u.os2.module_name != NULL ) {
+            _LnkFree( FmtData.u.os2.module_name );
+            FmtData.u.os2.module_name = NULL;
+        }
+    } else {     /* in non-resident names table */
+        if( FmtData.u.os2.description != NULL ) {
+            _LnkFree( FmtData.u.os2.description );
+            FmtData.u.os2.description = NULL;
+        }
     }
     for( exp = FmtData.u.os2.exports; exp != NULL; exp = exp->next ) {
         if( !exp->isexported )

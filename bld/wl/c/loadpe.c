@@ -611,8 +611,8 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     dir.minor = 0;
     dir.name_rva = object->rva + sizeof( dir );
     dir.ordinal_base = FmtData.u.os2.exports->ordinal;
-    if( FmtData.u.os2.res_module_name != NULL ) {
-        name = FmtData.u.os2.res_module_name;
+    if( FmtData.u.os2.module_name != NULL ) {
+        name = FmtData.u.os2.module_name;
     } else {
         name = GetBaseName( Root->outfile->fname, 0, &namelen );
     }
