@@ -77,7 +77,7 @@ void WRAPI WRFreeSelectImageInfo( WRSelectImageInfo *info )
 
 WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, FARPROC hcb )
 {
-    DLGPROC             proc;
+    DLGPROC             dlg_proc;
     HINSTANCE           inst;
     INT_PTR             modified;
     WRSelectImageInfo   *info;
@@ -97,11 +97,11 @@ WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, FARPROC hcb
 
     inst = WRGetInstance();
 
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)WRSelectImageDlgProc, inst );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WRSelectImageDlgProc, inst );
 
-    modified = JDialogBoxParam( inst, "WRSelectImage", parent, proc, (LPARAM)info );
+    modified = JDialogBoxParam( inst, "WRSelectImage", parent, dlg_proc, (LPARAM)info );
 
-    FreeProcInstance( (FARPROC)proc );
+    FreeProcInstance( (FARPROC)dlg_proc );
 
     if( modified == -1 || modified == IDCANCEL ) {
         MemFree( info );
