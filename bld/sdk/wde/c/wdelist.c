@@ -35,7 +35,7 @@
 #include "wdelist.h"
 #include "wrdll.h"
 
-void WdeInsertObject( LIST **list, void *obj )
+void WdeInsertObject( LIST **list, OBJPTR obj )
 {
     LIST *end;
 
@@ -74,7 +74,7 @@ bool WdeListConcat( LIST **dest, LIST *src, uint_32 size )
 {
     LIST    *end;
     LIST    *olist;
-    void    *elt;
+    OBJPTR  elt;
 
     if( dest == NULL ) {
         return( TRUE );

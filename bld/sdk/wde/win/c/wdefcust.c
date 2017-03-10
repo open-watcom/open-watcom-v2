@@ -402,7 +402,7 @@ bool WdeAddNewClassToList( char *class, char *new_name,
     node->win_extra = win_extra;
     node->win_proc = win_proc;
 
-    WdeInsertObject( &WdeCustClassList, (void *)node );
+    WdeInsertObject( &WdeCustClassList, (OBJPTR)node );
 
     return( true );
 }

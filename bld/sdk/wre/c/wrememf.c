@@ -70,10 +70,10 @@ bool WREChangeMemFlags( void )
     char                *type_name;
     uint_16             type_id;
     uint_16             mflags;
-    FARPROC             cb;
+    HELP_CALLBACK       hcb;
     bool                ok;
 
-    cb = NULL;
+    hcb = (HELP_CALLBACK)NULL;
     type_name = NULL;
     mflags = 0;
     type_id = 0;
@@ -89,21 +89,21 @@ bool WREChangeMemFlags( void )
     }
 
     if( ok ) {
-        cb = MakeProcInstance( (FARPROC)WREHelpRoutine, WREGetAppInstance() );
-        ok = (cb != (FARPROC)NULL);
+        hcb = (HELP_CALLBACK)MakeProcInstance( (FARPROC)WREHelpRoutine, WREGetAppInstance() );
+        ok = (hcb != (HELP_CALLBACK)NULL);
     }
 
     if( ok ) {
         mflags = curr.lang->Info.MemoryFlags;
-        ok = WRChangeMemFlags( parent, type_name, &mflags, cb );
+        ok = WRChangeMemFlags( parent, type_name, &mflags, hcb );
     }
 
     if( ok ) {
         curr.lang->Info.MemoryFlags = mflags;
     }
 
-    if( cb != (FARPROC)NULL ) {
-        FreeProcInstance( (FARPROC)cb );
+    if( hcb != (HELP_CALLBACK)NULL ) {
+        FreeProcInstance( (FARPROC)hcb );
     }
 
     if( type_name != NULL ) {

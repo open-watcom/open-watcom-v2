@@ -224,7 +224,7 @@ bool WdeAddFontFamilyMember( WdeFontNames *font_element, ENUMLOGFONT *lpelf, TEX
         }
     }
 
-    WdeInsertObject( &font_element->family_list, (void *)font_data );
+    WdeInsertObject( &font_element->family_list, (OBJPTR)font_data );
 
     return( true );
 }
@@ -269,7 +269,7 @@ int CALLBACK WdeEnumFontsProc( ENUMLOGFONT *lpelf, TEXTMETRIC *lpntm, int fontty
     font_names->num_children = 0;
     WdeAddFontFamilyMember( font_names, lpelf, lpntm, fonttype );
 
-    WdeInsertObject( list, (void *)font_names );
+    WdeInsertObject( list, (OBJPTR)font_names );
 
     return( TRUE );
 }

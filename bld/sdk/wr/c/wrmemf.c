@@ -47,9 +47,9 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct WRMFInfo {
-    FARPROC     hcb;
-    uint_16     mflags;
-    char        *name;
+    HELP_CALLBACK   help_callback;
+    uint_16         mflags;
+    char            *name;
 } WRMFInfo;
 
 /****************************************************************************/
@@ -67,7 +67,7 @@ static void         WRGetWinInfo( HWND, WRMFInfo * );
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, FARPROC hcb )
+bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, HELP_CALLBACK help_callback )
 {
     WRMFInfo    info;
     DLGPROC     proc;
@@ -78,7 +78,7 @@ bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, FARPROC h
         return( false );
     }
 
-    info.hcb = hcb;
+    info.help_callback = help_callback;
     info.name = name;
     info.mflags = *mflags;
     inst = WRGetInstance();
@@ -173,8 +173,8 @@ WINEXPORT INT_PTR CALLBACK WRMemFlagsDlgProc( HWND hDlg, UINT message, WPARAM wP
         switch( LOWORD( wParam ) ) {
         case IDM_MFHELP:
             info = (WRMFInfo *)GET_DLGDATA( hDlg );
-            if( info != NULL && info->hcb != NULL ) {
-                (*info->hcb)();
+            if( info != NULL && info->help_callback != (HELP_CALLBACK)NULL ) {
+                info->help_callback();
             }
             break;
 

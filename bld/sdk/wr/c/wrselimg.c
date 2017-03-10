@@ -75,7 +75,7 @@ void WRAPI WRFreeSelectImageInfo( WRSelectImageInfo *info )
     }
 }
 
-WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, FARPROC hcb )
+WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, HELP_CALLBACK help_callback )
 {
     DLGPROC             dlg_proc;
     HINSTANCE           inst;
@@ -92,7 +92,7 @@ WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, FARPROC hcb
     }
     memset( info, 0, sizeof( WRSelectImageInfo ) );
 
-    info->hcb = hcb;
+    info->help_callback = help_callback;
     info->info = rinfo;
 
     inst = WRGetInstance();
@@ -253,8 +253,8 @@ WINEXPORT INT_PTR CALLBACK WRSelectImageDlgProc( HWND hDlg, UINT message, WPARAM
         info = (WRSelectImageInfo *)GET_DLGDATA( hDlg );
         switch( LOWORD( wParam ) ) {
         case IDM_SELIMGHELP:
-            if( info != NULL && info->hcb != NULL ) {
-                (*info->hcb)();
+            if( info != NULL && info->help_callback != (HELP_CALLBACK)NULL ) {
+                info->help_callback();
             }
             break;
 

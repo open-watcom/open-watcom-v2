@@ -44,7 +44,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void WdeInsertObject( LIST **, void * );
+extern void WdeInsertObject( LIST **, OBJPTR );
 extern void WdeListLastElt( LIST *, LIST ** );
 extern bool WdeListConcat( LIST **, LIST *, uint_32 );
 extern LIST *WdeListCopy( LIST * );

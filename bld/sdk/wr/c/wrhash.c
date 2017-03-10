@@ -60,23 +60,23 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct SymInitStruct {
-    char        *symbol;
-    int         value;
+    char            *symbol;
+    int             value;
 } SymInitStruct;
 
 typedef struct WREditSymInfo {
-    FARPROC             hcb;
+    HELP_CALLBACK       help_callback;
     WRHashTable         *table;
     bool                modified;
     WRHashEntryFlags    flags;
 } WREditSymInfo;
 
 typedef struct WRAddSymInfo {
-    FARPROC     hcb;
-    WRHashTable *table;
-    char        *symbol;
-    WRHashValue value;
-    bool        modify;
+    HELP_CALLBACK   help_callback;
+    WRHashTable     *table;
+    char            *symbol;
+    WRHashValue     value;
+    bool            modify;
 } WRAddSymInfo;
 
 /****************************************************************************/
@@ -966,7 +966,7 @@ bool WRAPI WRIsValidSymbol( const char *symbol )
 }
 
 bool WRAPI WREditSym( HWND parent, WRHashTable **table,
-                          WRHashEntryFlags *flags, FARPROC help_callback )
+                          WRHashEntryFlags *flags, HELP_CALLBACK help_callback )
 {
     WREditSymInfo       info;
     WRHashTable         *tmp;
@@ -990,7 +990,7 @@ bool WRAPI WREditSym( HWND parent, WRHashTable **table,
     }
 
     if( ok ) {
-        info.hcb = help_callback;
+        info.help_callback = help_callback;
         info.table = tmp;
         info.modified = false;
         info.flags = *flags;
@@ -1129,7 +1129,7 @@ static WRHashEntry *getHashEntry( HWND hDlg )
     return( entry );
 }
 
-static bool WRAddNewSymbol( HWND hDlg, WRHashTable *table, FARPROC hcb, bool modify )
+static bool WRAddNewSymbol( HWND hDlg, WRHashTable *table, HELP_CALLBACK help_callback, bool modify )
 {
     WRAddSymInfo        info;
     WRHashEntry         *entry;
@@ -1143,7 +1143,7 @@ static bool WRAddNewSymbol( HWND hDlg, WRHashTable *table, FARPROC hcb, bool mod
     }
 
     info.table = table;
-    info.hcb = hcb;
+    info.help_callback = help_callback;
     info.value = 0;
     info.modify = modify;
 
@@ -1419,8 +1419,8 @@ WINEXPORT INT_PTR CALLBACK WREditSymbolsDlgProc( HWND hDlg, UINT message, WPARAM
             break;
 
         case IDB_SYM_HELP:
-            if( info != NULL && info->hcb != NULL ) {
-                (*info->hcb)();
+            if( info != NULL && info->help_callback != (HELP_CALLBACK)NULL ) {
+                info->help_callback();
             }
             break;
 
@@ -1447,7 +1447,7 @@ WINEXPORT INT_PTR CALLBACK WREditSymbolsDlgProc( HWND hDlg, UINT message, WPARAM
             if( info == NULL || info->table == NULL ) {
                 break;
             }
-            if( WRAddNewSymbol( hDlg,info->table, info->hcb, wp == IDB_SYM_MODIFY ) ) {
+            if( WRAddNewSymbol( hDlg,info->table, info->help_callback, wp == IDB_SYM_MODIFY ) ) {
                 info->modified = true;
             }
             break;
@@ -1575,8 +1575,8 @@ WINEXPORT INT_PTR CALLBACK WRAddSymDlgProc( HWND hDlg, UINT message, WPARAM wPar
         info = (WRAddSymInfo *)GET_DLGDATA( hDlg );
         switch( LOWORD( wParam ) ) {
         case IDB_ADDSYM_HELP:
-            if( info != NULL && info->hcb != NULL ) {
-                (*info->hcb)();
+            if( info != NULL && info->help_callback != (HELP_CALLBACK)NULL ) {
+                info->help_callback();
             }
             break;
 

@@ -91,24 +91,24 @@ static char  WdeBusyChars[]         = "-\\|/";
 static bool WdeViewSymbols( WdeHashTable **table, HWND parent )
 {
     WRHashEntryFlags    flags;
-    FARPROC             cb;
+    HELP_CALLBACK       hcb;
     bool                ok;
 
-    cb = NULL;
+    hcb = (HELP_CALLBACK)NULL;
     ok = (table != NULL);
 
     if( ok ) {
-        cb = MakeProcInstance( (FARPROC)WdeHelpRoutine, WdeGetAppInstance() );
-        ok = (cb != (FARPROC)NULL);
+        hcb = (HELP_CALLBACK)MakeProcInstance( (FARPROC)WdeHelpRoutine, WdeGetAppInstance() );
+        ok = (hcb != (HELP_CALLBACK)NULL);
     }
 
     if( ok ) {
         flags = WR_HASHENTRY_ALL;
-        ok = WREditSym( parent, table, &flags, cb );
+        ok = WREditSym( parent, table, &flags, hcb );
     }
 
-    if( cb != (FARPROC)NULL ) {
-        FreeProcInstance( (FARPROC)cb );
+    if( hcb != (HELP_CALLBACK)NULL ) {
+        FreeProcInstance( (FARPROC)hcb );
     }
 
     return( ok );

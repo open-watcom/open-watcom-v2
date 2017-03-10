@@ -136,7 +136,7 @@ static void WdeSetTagOrder( WdeSetOrderStruct *o, bool reorder )
             memcpy( o->new_oe, o->old_oe, sizeof( WdeOrderedEntry ) );
             o->old_oe->present = FALSE;
             o->old_oe->pos = 0;
-            WdeInsertObject( &o->lists->newlist, o->new_oe );
+            WdeInsertObject( &o->lists->newlist, (OBJPTR)o->new_oe );
         }
     }
 
@@ -265,7 +265,7 @@ bool WdeAddOrderedEntry( LIST **l, OBJPTR obj )
         memset( oentry, 0, sizeof( WdeOrderedEntry ) );
         oentry->obj = obj;
         oentry->present = TRUE;
-        WdeInsertObject( l, oentry );
+        WdeInsertObject( l, (OBJPTR)oentry );
     }
 
     return( oentry != NULL );

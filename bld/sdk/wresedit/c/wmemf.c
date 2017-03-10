@@ -59,16 +59,16 @@
 /****************************************************************************/
 
 bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name,
-                      HINSTANCE inst, HELP_CALLBACK *hcb )
+                      HINSTANCE inst, HELP_CALLBACK help_callback )
 {
-    char        *name;
-    bool        ok;
-    FARPROC     cb;
+    char            *name;
+    bool            ok;
+    HELP_CALLBACK   hcb;
 
     _wtouch( inst );
 
     name = NULL;
-    cb = NULL;
+    hcb = NULL;
 
     ok = (mflags != NULL && res_name != NULL);
 
@@ -80,16 +80,16 @@ bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name,
     }
 
     if( ok ) {
-        cb = MakeProcInstance( (FARPROC)hcb, inst );
-        ok = (cb != (FARPROC)NULL);
+        hcb = (HELP_CALLBACK)MakeProcInstance( (FARPROC)help_callback, inst );
+        ok = ( hcb != (HELP_CALLBACK)NULL );
     }
 
     if( ok ) {
-        ok = WRChangeMemFlags( parent, name, mflags, cb );
+        ok = WRChangeMemFlags( parent, name, mflags, hcb );
     }
 
-    if( cb != (FARPROC)NULL ) {
-        FreeProcInstance( (FARPROC)cb );
+    if( hcb != (HELP_CALLBACK)NULL ) {
+        FreeProcInstance( (FARPROC)hcb );
     }
 
     if( name != NULL ) {

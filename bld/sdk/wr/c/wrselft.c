@@ -54,7 +54,7 @@ typedef struct {
     bool                is32bit;
     bool                use_wres;
     WRFileType          file_type;
-    FARPROC             hcb;
+    HELP_CALLBACK       help_callback;
 } WRSFT;
 
 /****************************************************************************/
@@ -122,7 +122,7 @@ static WRFileType educatedGuess( const char *name, bool is32bit, bool use_wres )
 }
 
 WRFileType WRAPI WRSelectFileType( HWND parent, const char *name, bool is32bit,
-                                       bool use_wres, FARPROC hcb )
+                                       bool use_wres, HELP_CALLBACK help_callback )
 {
     DLGPROC     proc;
     HINSTANCE   inst;
@@ -140,7 +140,7 @@ WRFileType WRAPI WRSelectFileType( HWND parent, const char *name, bool is32bit,
         return( guess );
     }
 
-    sft.hcb = hcb;
+    sft.help_callback = help_callback;
     sft.file_name = name;
     sft.file_type = WR_DONT_KNOW;
     sft.is32bit = is32bit;
@@ -322,8 +322,8 @@ WINEXPORT INT_PTR CALLBACK WRSelectFileTypeDlgProc( HWND hDlg, UINT message, WPA
         switch( LOWORD( wParam ) ) {
         case IDM_SFTHELP:
             sft = (WRSFT *)GET_DLGDATA( hDlg );
-            if( sft != NULL && sft->hcb != NULL ) {
-                (*(void (*)(void))sft->hcb)();
+            if( sft != NULL && sft->help_callback != (HELP_CALLBACK)NULL ) {
+                sft->help_callback();
             }
             break;
 

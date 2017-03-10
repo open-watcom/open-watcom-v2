@@ -55,7 +55,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct WResRenameInfo {
-    HELP_CALLBACK       *hcb;
+    HELP_CALLBACK       help_callback;
     WResID              *old_name;
     WResID              *new_name;
 } WResRenameInfo;
@@ -76,7 +76,7 @@ static bool WGetNewName( HWND, WResRenameInfo * );
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WRenameResource( HWND parent, WResID **name, HELP_CALLBACK *hcb )
+bool WRenameResource( HWND parent, WResID **name, HELP_CALLBACK help_callback )
 {
     WResRenameInfo  info;
     bool            ok;
@@ -88,7 +88,7 @@ bool WRenameResource( HWND parent, WResID **name, HELP_CALLBACK *hcb )
 
     if( ok )  {
         ok = false;
-        info.hcb = hcb;
+        info.help_callback = help_callback;
         info.old_name = *name;
         if( WGetNewName( parent, &info ) && info.new_name != NULL ) {
             if( *name != NULL ) {
@@ -159,8 +159,8 @@ WINEXPORT BOOL CALLBACK WResRenameProc( HWND hDlg, UINT message, WPARAM wParam, 
         info = (WResRenameInfo *)GET_DLGDATA( hDlg );
         switch( LOWORD( wParam ) ) {
         case IDM_HELP:
-            if( info != NULL && info->hcb != NULL ) {
-                (*info->hcb)();
+            if( info != NULL && info->help_callback != NULL ) {
+                info->help_callback();
             }
             break;
 

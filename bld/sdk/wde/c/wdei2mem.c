@@ -397,10 +397,10 @@ WdeDialogBoxInfo *WdeMem2DBI( const uint_8 *data, size_t size, bool is32bit )
                 break;
             }
             if( prev_control == NULL ) {
-                ListAddElt( &dbi->control_list, (void *)control );
+                ListAddElt( &dbi->control_list, (OBJPTR)control );
                 prev_control = dbi->control_list;
             } else {
-                ListInsertElt( prev_control, (void *)control );
+                ListInsertElt( prev_control, (OBJPTR)control );
                 prev_control = ListNext( prev_control );
             }
         }

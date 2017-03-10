@@ -676,7 +676,7 @@ static bool readInResourceFile( char *fullname )
     uint_32             dsize;
     WRInfo              *info;
     WRSelectImageInfo   *sii;
-    WPI_PROC            cb;
+    HELP_CALLBACK       hcb;
     bool                ok;
 
     info = NULL;
@@ -690,9 +690,9 @@ static bool readInResourceFile( char *fullname )
     }
 
     if( ok ) {
-        cb = _wpi_makeprocinstance( (WPI_PROC)IEHelpCallBack, Instance );
-        sii = WRSelectImage( HMainWindow, info, cb );
-        _wpi_freeprocinstance( cb );
+        hcb = (HELP_CALLBACK)_wpi_makeprocinstance( (WPI_PROC)IEHelpCallBack, Instance );
+        sii = WRSelectImage( HMainWindow, info, hcb );
+        _wpi_freeprocinstance( (WPI_PROC)hcb );
         ok = (sii != NULL && sii->lnode != NULL);
     }
 

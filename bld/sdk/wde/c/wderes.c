@@ -367,7 +367,7 @@ void WdeShowResourceWindows( int show )
 
 void WdeAddResDlgItemToResInfo( WdeResInfo *info, WdeResDlgItem *item )
 {
-    WdeInsertObject( &info->dlg_item_list, item );
+    WdeInsertObject( &info->dlg_item_list, (OBJPTR)item );
 }
 
 WdeResInfo *WdeCreateNewResource( char *title )
@@ -403,7 +403,7 @@ WdeResInfo *WdeCreateNewResource( char *title )
     }
 
     if( ok ) {
-        ListAddElt( &WdeResList, (void *)res_info );
+        ListAddElt( &WdeResList, (OBJPTR)res_info );
         if( !WdeIsDDE() || title == NULL ) {
             ok = (WdeCreateNewDialog( NULL, res_info->is32bit ) != NULL);
         }
@@ -513,7 +513,7 @@ bool WdeOpenResource( char *fn )
         } else {
             WdeDisplayErrorMsg( WDE_PRJHASNODIALOGS );
         }
-        ListAddElt( &WdeResList, (void *)res_info );
+        ListAddElt( &WdeResList, (OBJPTR)res_info );
         WdeSetResModified( res_info, FALSE );
         WdeCheckBaseScrollbars( false );
     }

@@ -216,9 +216,9 @@ bool WdeLoadCustomLib( bool nt_lib, bool load_only )
     }
 
     if( load_only ) {
-        WdeInsertObject( &WdeLibList, (void *)lib );
+        WdeInsertObject( &WdeLibList, (OBJPTR)lib );
     } else {
-        WdeInsertObject( &WdeCustomLibList, (void *)lib );
+        WdeInsertObject( &WdeCustomLibList, (OBJPTR)lib );
     }
 
     return( true );

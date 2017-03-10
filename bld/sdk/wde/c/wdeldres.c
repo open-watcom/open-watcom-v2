@@ -241,10 +241,10 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
                 control->ExtraBytes = c16.ExtraBytes;
             }
             if ( prev_control == NULL ) {
-                ListAddElt( &dlg_info->control_list, (void *)control );
+                ListAddElt( &dlg_info->control_list, (OBJPTR)control );
                 prev_control = dlg_info->control_list;
             } else {
-                ListInsertElt( prev_control, (void *)control );
+                ListInsertElt( prev_control, (OBJPTR)control );
                 prev_control = ListNext( prev_control );
             }
         }

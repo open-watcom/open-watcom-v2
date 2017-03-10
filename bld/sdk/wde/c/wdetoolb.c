@@ -298,7 +298,7 @@ void WdeFreeToolBar( WdeToolBar *tbar )
 
 void WdeAddToolBar( WdeToolBar *tbar )
 {
-    WdeInsertObject( &WdeToolBarList, (void *)tbar );
+    WdeInsertObject( &WdeToolBarList, (OBJPTR)tbar );
 }
 
 void WdeDestroyToolBar( WdeToolBar *tbar )

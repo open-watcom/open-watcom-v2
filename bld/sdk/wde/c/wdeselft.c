@@ -63,16 +63,16 @@
 
 WRFileType WdeSelectFileType( char *name, bool is32bit )
 {
-    WRFileType  file_type;
-    HWND        parent;
-    bool        use_wres;
-    FARPROC     cb;
+    WRFileType      file_type;
+    HWND            parent;
+    bool            use_wres;
+    HELP_CALLBACK   hcb;
 
-    cb = MakeProcInstance( (FARPROC)WdeHelpRoutine, WdeGetAppInstance() );
+    hcb = (HELP_CALLBACK)MakeProcInstance( (FARPROC)WdeHelpRoutine, WdeGetAppInstance() );
     use_wres = WdeGetOption( WdeOptIsWResFmt );
     parent  = WdeGetMainWindowHandle();
-    file_type = WRSelectFileType( parent, name, is32bit, use_wres, cb );
-    FreeProcInstance( (FARPROC)cb );
+    file_type = WRSelectFileType( parent, name, is32bit, use_wres, hcb );
+    FreeProcInstance( (FARPROC)hcb );
 
     return( file_type );
 }

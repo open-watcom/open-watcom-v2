@@ -912,15 +912,15 @@ static bool createNewImageLNODE( img_node *node, uint_16 type )
  */
 static bool saveResourceFile( img_node *node )
 {
-    BYTE        *data;
-    uint_32     size = 0;
-    uint_16     type;
-    WRFileType  save_type = 0;
-    BOOL        info_created;
-    bool        was32bit;
-    bool        is32bit;
-    bool        ok;
-    WPI_PROC    cb;
+    BYTE            *data;
+    uint_32         size = 0;
+    uint_16         type;
+    WRFileType      save_type = 0;
+    BOOL            info_created;
+    bool            was32bit;
+    bool            is32bit;
+    bool            ok;
+    HELP_CALLBACK   hcb;
 
     info_created = FALSE;
     data = NULL;
@@ -962,9 +962,9 @@ static bool saveResourceFile( img_node *node )
     if( ok ) {
         was32bit = WRIs32Bit( node->wrinfo->file_type );
         for( ;; ) {
-            cb = _wpi_makeprocinstance( (WPI_PROC)IEHelpCallBack, Instance );
-            save_type = WRSelectFileType( HMainWindow, node->fname, was32bit, TRUE, cb );
-            _wpi_freeprocinstance( cb );
+            hcb = (HELP_CALLBACK)_wpi_makeprocinstance( (WPI_PROC)IEHelpCallBack, Instance );
+            save_type = WRSelectFileType( HMainWindow, node->fname, was32bit, TRUE, hcb );
+            _wpi_freeprocinstance( (WPI_PROC)hcb );
             is32bit = WRIs32Bit( save_type );
             if( was32bit ) {
                 if( is32bit ) {
