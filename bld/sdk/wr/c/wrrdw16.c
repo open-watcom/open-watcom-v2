@@ -232,20 +232,18 @@ bool WRLoadWResDirFromWin16EXE( WResFileID fid, WResDir *dir )
 
     if( ok ) {
         (*dir)->NumResources = 0;
-        type_node = WRReadWResTypeNodeFromExe( fid, align_shift );
-        while( type_node != NULL ) {
+        for( type_node = WRReadWResTypeNodeFromExe( fid, align_shift ); type_node != NULL; type_node = WRReadWResTypeNodeFromExe ( fid, align_shift ) ) {
             type_node->Next = NULL;
             type_node->Prev = (*dir)->Tail;
             if( (*dir)->Tail != NULL ) {
                 (*dir)->Tail->Next = type_node;
             }
-            if ( (*dir)->Head == NULL ) {
+            if( (*dir)->Head == NULL ) {
                 (*dir)->Head = type_node;
             }
             (*dir)->Tail = type_node;
             (*dir)->NumTypes++;
             (*dir)->NumResources += type_node->Info.NumResources;
-            type_node = WRReadWResTypeNodeFromExe ( fid, align_shift );
         }
         name_offset = RESTELL( fid ) - offset - win_header.resource_off;
         ok = WRReadResourceNames( *dir, fid, name_offset );
@@ -579,9 +577,8 @@ uint_32 WRUseNameTable( WResDir dir, uint_8 *name_table, uint_32 len, uint_8 **l
     uint_32             name_pos;
     uint_32             num_leftover;
 
-    name_pos = 0;
     num_leftover = 0;
-    while( name_pos < len ) {
+    for( name_pos = 0; name_pos < len; name_pos += entry->length ) {
         entry = (WRNameTableEntry *)(name_table + name_pos);
         if( entry->length == 0 ) {
             break;
@@ -597,7 +594,6 @@ uint_32 WRUseNameTable( WResDir dir, uint_8 *name_table, uint_32 len, uint_8 **l
             break;
         }
         WRSetResNameFromNameTable( dir, entry );
-        name_pos += entry->length;
     }
 
     return( num_leftover );

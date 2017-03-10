@@ -212,7 +212,7 @@ bool WdeSetStickyMode( bool mode )
     HMENU   menu;
     bool    old_mode;
 
-    if( !WdeGetNumRes() ) {
+    if( WdeGetNumRes() == 0 ) {
         return( false );
     }
 
@@ -242,7 +242,7 @@ void WdeSetBaseObject( int menu_selection )
     int                 id;
     WdeToolBar          *tbar;
 
-    if( !WdeGetNumRes() ) {
+    if( WdeGetNumRes() == 0 ) {
         return;
     }
 
@@ -368,7 +368,7 @@ bool WdeCreateControlsToolBar( void )
         WdeFreeRCString( text );
     }
 
-    if( WdeGetNumRes() != 0 ) {
+    if( WdeGetNumRes() ) {
         id = WdeGetMenuFromOBJID( GetBaseObjType() );
         if( id != -1 ) {
             WdeSetToolBarItemState( WdeControls, id, BUTTON_DOWN );
@@ -413,7 +413,7 @@ static bool wdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 
     ignore_msg = FALSE;
 
-    if( WdeGetNumRes() != 0 && !WdeInCleanup() ) {
+    if( WdeGetNumRes() && !WdeInCleanup() ) {
         obj = WdeGetCurrentDialog();
         if( obj && Forward( obj, GET_ORDER_MODE, &mode, NULL ) && mode != WdeSelect ) {
             ignore_msg = TRUE;

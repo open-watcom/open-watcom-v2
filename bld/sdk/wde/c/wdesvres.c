@@ -87,7 +87,7 @@ bool WdeSaveResourceToFile( WdeResInfo *res_info )
     bool        ok;
     char        fn[_MAX_PATH];
 
-    WdeSetWaitCursor( TRUE );
+    WdeSetWaitCursor( true );
 
     ok = (res_info != NULL && res_info->info != NULL);
 
@@ -137,7 +137,7 @@ bool WdeSaveResourceToFile( WdeResInfo *res_info )
         WdeFreeInfoData( res_info );
     }
 
-    WdeSetWaitCursor( FALSE );
+    WdeSetWaitCursor( false );
 
     return( ok );
 }

@@ -59,7 +59,7 @@
 
 void WdeSetWaitCursor( bool use_wait )
 {
-    static bool     waiting = FALSE;
+    static bool     waiting = false;
     static HCURSOR  old_cursor = (HCURSOR)NULL;
 
     if( use_wait && !waiting ) {

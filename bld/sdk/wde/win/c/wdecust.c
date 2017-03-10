@@ -479,11 +479,11 @@ void WdeAddCustControlToCustLib( WdeCustLib *lib, WdeCustControl *control )
     LIST *end;
 
     if( lib->controls == NULL ) {
-        ListAddElt( &lib->controls, (void *)control );
+        ListAddElt( &lib->controls, (OBJPTR)control );
     } else {
         /* make sure item is inserted at end of list */
         WdeListLastElt( lib->controls, &end );
-        ListInsertElt( end, (void *)control );
+        ListInsertElt( end, (OBJPTR)control );
     }
 
     WRMemValidate( lib );
@@ -691,7 +691,7 @@ void WdeFindClassInCustLibControls( char *class, LIST **list, LIST *control_list
         for( clist = control_list; clist != NULL; clist = ListNext( clist ) ) {
             control = (WdeCustControl *)ListElement( clist );
             if( stricmp( class, control->control_info.ms.szClass ) == 0 ) {
-                ListAddElt( list, (void *)control );
+                ListAddElt( list, (OBJPTR)control );
             }
         }
     }

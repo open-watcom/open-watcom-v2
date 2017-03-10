@@ -252,7 +252,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
         WdeProcessArgs( _argv, _argc );
     }
 
-    if( !WdeGetNumRes() ) {
+    if( WdeGetNumRes() == 0 ) {
         WdeCreateNewResource( NULL );
     }
 
@@ -1137,7 +1137,7 @@ void WdeHandleTabEvent( bool up )
 {
     OBJPTR      obj;
 
-    if( !WdeGetNumRes() ) {
+    if( WdeGetNumRes() == 0 ) {
         return;
     }
 

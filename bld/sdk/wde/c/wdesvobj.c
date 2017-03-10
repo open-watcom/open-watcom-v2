@@ -77,7 +77,7 @@ bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
     WResLangType        lang;
 
 
-    WdeSetWaitCursor( TRUE );
+    WdeSetWaitCursor( true );
 
     ok = (rinfo != NULL && dbi != NULL);
 
@@ -103,7 +103,7 @@ bool WdeSaveObject( WdeResInfo *rinfo, WdeDialogBoxInfo *dbi,
         WRMemFree( rdata );
     }
 
-    WdeSetWaitCursor( FALSE );
+    WdeSetWaitCursor( false );
 
     return( ok );
 }

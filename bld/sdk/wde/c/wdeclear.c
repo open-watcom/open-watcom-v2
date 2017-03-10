@@ -71,7 +71,7 @@ bool WdeDeleteAllObjects( void )
     OBJPTR      base;
     OBJPTR      child;
 
-    if( !WdeGetNumRes() ) {
+    if( WdeGetNumRes() == 0 ) {
         return( false );
     }
 

@@ -201,19 +201,19 @@ static void WdeTagDblClicked( WdeSetOrderStruct *o )
     WdeReorderTags( o->lists, TRUE );
 }
 
-void WdeFreeOrderedList( LIST *l )
+void WdeFreeOrderedList( LIST *list )
 {
     LIST                *olist;
     WdeOrderedEntry     *oe;
 
-    for( olist = l; olist != NULL; olist = ListNext( olist ) ) {
+    for( olist = list; olist != NULL; olist = ListNext( olist ) ) {
         oe = (WdeOrderedEntry *)ListElement( olist );
         if( oe != NULL ) {
             WRMemFree( oe );
         }
     }
 
-    ListFree( l );
+    ListFree( list );
 }
 
 LIST *WdeCopyOrderedList( LIST *src )
@@ -230,12 +230,12 @@ LIST *WdeCopyOrderedList( LIST *src )
     return( dest );
 }
 
-LIST *WdeFindOrderedEntry( LIST *l, OBJPTR obj )
+LIST *WdeFindOrderedEntry( LIST *list, OBJPTR obj )
 {
     WdeOrderedEntry *oentry;
     LIST            *olist;
 
-    for( olist = l; olist != NULL; olist = ListNext( olist ) ) {
+    for( olist = list; olist != NULL; olist = ListNext( olist ) ) {
         oentry = (WdeOrderedEntry *)ListElement( olist );
         if( oentry->obj == obj ) {
             return( olist );
@@ -245,16 +245,16 @@ LIST *WdeFindOrderedEntry( LIST *l, OBJPTR obj )
     return( NULL );
 }
 
-bool WdeAddOrderedEntry( LIST **l, OBJPTR obj )
+bool WdeAddOrderedEntry( LIST **list, OBJPTR obj )
 {
     WdeOrderedEntry *oentry;
     LIST            *olist;
 
-    if( l == NULL ) {
+    if( list == NULL ) {
         return( false );
     }
 
-    if( (olist = WdeFindOrderedEntry( *l, obj )) != NULL ) {
+    if( (olist = WdeFindOrderedEntry( *list, obj )) != NULL ) {
         oentry = (WdeOrderedEntry *)ListElement ( olist );
         oentry->present = TRUE;
         return( true );
@@ -265,18 +265,18 @@ bool WdeAddOrderedEntry( LIST **l, OBJPTR obj )
         memset( oentry, 0, sizeof( WdeOrderedEntry ) );
         oentry->obj = obj;
         oentry->present = TRUE;
-        WdeInsertObject( l, (OBJPTR)oentry );
+        WdeInsertObject( list, (OBJPTR)oentry );
     }
 
     return( oentry != NULL );
 }
 
-bool WdeRemoveOrderedEntry( LIST *l, OBJPTR obj )
+bool WdeRemoveOrderedEntry( LIST *list, OBJPTR obj )
 {
     WdeOrderedEntry *oentry;
     LIST            *olist;
 
-    if( (olist = WdeFindOrderedEntry( l, obj )) != NULL ) {
+    if( (olist = WdeFindOrderedEntry( list, obj )) != NULL ) {
         oentry = (WdeOrderedEntry *)ListElement( olist );
         oentry->present = FALSE;
         return( true );
@@ -285,22 +285,22 @@ bool WdeRemoveOrderedEntry( LIST *l, OBJPTR obj )
     return( false );
 }
 
-bool WdeCleanOrderedList( LIST **l )
+bool WdeCleanOrderedList( LIST **list )
 {
     WdeOrderedEntry *oentry;
     LIST            *tlist;
     LIST            *olist;
 
-    if( l == NULL ) {
+    if( list == NULL ) {
         return( false );
     }
 
-    tlist = WdeListCopy( *l );
+    tlist = WdeListCopy( *list );
 
     for( olist = tlist; olist != NULL; olist = ListNext( olist ) ) {
         oentry = (WdeOrderedEntry *)ListElement( olist );
         if( !oentry->present ) {
-            ListRemoveElt( l, (OBJPTR)oentry );
+            ListRemoveElt( list, (OBJPTR)oentry );
             WRMemFree( oentry );
         }
     }
@@ -312,24 +312,24 @@ bool WdeCleanOrderedList( LIST **l )
     return( true );
 }
 
-bool WdeGetNextChild( LIST **l, OBJPTR *obj, bool up )
+bool WdeGetNextChild( LIST **list, OBJPTR *obj, bool up )
 {
     WdeOrderedEntry *oentry;
     LIST            *o;
 
-    WdeCleanOrderedList( l );
+    WdeCleanOrderedList( list );
 
-    if( l != NULL && *l != NULL && obj != NULL && *obj != NULL &&
-        (o = WdeFindOrderedEntry( *l, *obj )) != NULL ) {
+    if( list != NULL && *list != NULL && obj != NULL && *obj != NULL &&
+        (o = WdeFindOrderedEntry( *list, *obj )) != NULL ) {
         if( up ) {
             o = ListNext( o );
             if( o == NULL ) {
-                o = *l;
+                o = *list;
             }
         } else {
             o = ListPrev( o );
             if( o == NULL ) {
-                WdeListLastElt( *l, &o );
+                WdeListLastElt( *list, &o );
             }
         }
         oentry = (WdeOrderedEntry *)ListElement( o );

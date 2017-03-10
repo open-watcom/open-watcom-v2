@@ -67,7 +67,7 @@ static int      WRCalcObjTableOffset( WResFileID, exe_pe_header * );
 static int      WRReadNTObjectTable( WResFileID, exe_pe_header *, pe_object ** );
 static bool     WRLoadWResDirFromWinNTEXE( WResFileID, WResDir * );
 static bool     WRHandleWinNTTypeDir( WResFileID, WResDir *, uint_32 );
-static bool     WRHandleWinNTTypeEntry( WResFileID, WResDir *, resource_dir_entry *, int );
+static bool     WRHandleWinNTTypeEntry( WResFileID, WResDir *, resource_dir_entry *, bool );
 static bool     WRHandleWinNTNameDir( WResFileID, WResDir *, WResID *, uint_32 );
 static bool     WRHandleWinNTNameEntry( WResFileID, WResDir *, WResID *, resource_dir_entry *, bool );
 static bool     WRHandleWinNTLangIDDir( WResFileID, WResDir *, WResID *, WResID *, uint_32 );
@@ -326,10 +326,10 @@ bool WRHandleWinNTTypeDir( WResFileID fid, WResDir *dir, uint_32 offset )
 
     if( ok ) {
         for( i = 0; i < rd_hdr.num_name_entries; i++ ) {
-            WRHandleWinNTTypeEntry( fid, dir, &rd_entry[i], TRUE );
+            WRHandleWinNTTypeEntry( fid, dir, &rd_entry[i], true );
         }
         for( i = rd_hdr.num_name_entries; i < rd_hdr.num_name_entries + rd_hdr.num_id_entries; i++ ) {
-            WRHandleWinNTTypeEntry( fid, dir, &rd_entry[i], FALSE );
+            WRHandleWinNTTypeEntry( fid, dir, &rd_entry[i], false );
         }
         MemFree( rd_entry );
     }
@@ -337,15 +337,13 @@ bool WRHandleWinNTTypeDir( WResFileID fid, WResDir *dir, uint_32 offset )
     return( ok );
 }
 
-bool WRHandleWinNTTypeEntry( WResFileID fid, WResDir *dir,
-                            resource_dir_entry *rd_entry, int is_name )
+bool WRHandleWinNTTypeEntry( WResFileID fid, WResDir *dir, resource_dir_entry *rd_entry, bool is_name )
 {
     WResID  *type;
     bool    ok;
 
     /* verify the id_name */
-    if( ((rd_entry->id_name & PE_RESOURCE_MASK_ON) && !is_name) ||
-        (!(rd_entry->id_name & PE_RESOURCE_MASK_ON) && is_name) ) {
+    if( (rd_entry->id_name & PE_RESOURCE_MASK_ON) != 0 ^ is_name ) {
         WRDisplayErrorMsg( WR_BADIDDISCARDTYPE );
         return( FALSE );
     }
@@ -416,8 +414,7 @@ bool WRHandleWinNTNameEntry( WResFileID fid, WResDir *dir, WResID *type,
     def_lang.sublang = DEF_SUBLANG;
 
     /* verify the id_name */
-    if ( ((rd_entry->id_name & PE_RESOURCE_MASK_ON) && !is_name) ||
-         (!(rd_entry->id_name & PE_RESOURCE_MASK_ON) && is_name) ) {
+    if( (rd_entry->id_name & PE_RESOURCE_MASK_ON) != 0 ^ is_name ) {
         WRDisplayErrorMsg( WR_BADIDDISCARDNAME );
         return( FALSE );
     }
@@ -434,8 +431,7 @@ bool WRHandleWinNTNameEntry( WResFileID fid, WResDir *dir, WResID *type,
         /* is the entry_rva is a subdir */
         if( rd_entry->entry_rva & PE_RESOURCE_MASK_ON ) {
             add_now = false;
-            ok = WRHandleWinNTLangIDDir( fid, dir, type, name,
-                                         rd_entry->entry_rva & PE_RESOURCE_MASK );
+            ok = WRHandleWinNTLangIDDir( fid, dir, type, name, rd_entry->entry_rva & PE_RESOURCE_MASK );
         } else {
             /* will this to happen often ???? */
             add_now = true;
@@ -476,8 +472,7 @@ bool WRHandleWinNTLangIDDir( WResFileID fid, WResDir *dir,
         for( i = 0; i < rd_hdr.num_name_entries; i++ ) {
             WRHandleWinNTLangIDEntry( fid, dir, type, name, &rd_entry[i] );
         }
-        for( i = rd_hdr.num_name_entries;
-             i < rd_hdr.num_name_entries + rd_hdr.num_id_entries; i++ ) {
+        for( i = rd_hdr.num_name_entries; i < rd_hdr.num_name_entries + rd_hdr.num_id_entries; i++ ) {
             WRHandleWinNTLangIDEntry( fid, dir, type, name, &rd_entry[i] );
         }
         /* until more info is available only look for the first id entry */

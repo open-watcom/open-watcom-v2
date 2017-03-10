@@ -1255,7 +1255,7 @@ bool WdeSaveResInfoToRC( char *filename, WdeResInfo *rinfo, bool append )
     WdeResDlgItem       *ditem;
 
     fp = NULL;
-    ok = (rinfo != NULL && rinfo->info != NULL && filename != NULL);
+    ok = ( rinfo != NULL && rinfo->info != NULL && filename != NULL );
 
     if( ok ) {
         if( append ) {
@@ -1263,21 +1263,23 @@ bool WdeSaveResInfoToRC( char *filename, WdeResInfo *rinfo, bool append )
         } else {
             fp = fopen( filename, "wt" );
         }
-        ok = (fp != NULL);
-        dlist = rinfo->dlg_item_list;
+        ok = ( fp != NULL );
     }
 
 #if 0
     if( ok ) {
-      WdeWriteDLGInclude( rinfo, fp );
+        WdeWriteDLGInclude( rinfo, fp );
     }
 #endif
 
-    while( ok && dlist != NULL ) {
-        ditem = (WdeResDlgItem *)ListElement( dlist );
-        ok = WdeCreateItemDBI( rinfo, ditem );
-        ok = ok && WdeSaveDlgItemToRC( rinfo, ditem, fp );
-        dlist = ListNext( dlist );
+    if( ok ) {
+        for( dlist = rinfo->dlg_item_list; dlist != NULL; dlist = ListNext( dlist ) ) {
+            ditem = (WdeResDlgItem *)ListElement( dlist );
+            ok = WdeCreateItemDBI( rinfo, ditem ) && WdeSaveDlgItemToRC( rinfo, ditem, fp );
+            if( !ok ) {
+                break;
+            }
+        }
     }
 
     if( fp != NULL ) {
@@ -1293,7 +1295,7 @@ bool WdeSaveObjectToRC( char *filename, WdeResInfo *rinfo, WdeResDlgItem *ditem,
     bool                ok;
 
     fp = NULL;
-    ok = (rinfo != NULL && ditem != NULL && filename != NULL);
+    ok = ( rinfo != NULL && ditem != NULL && filename != NULL );
 
     if( ok ) {
         if( append ) {
@@ -1301,7 +1303,7 @@ bool WdeSaveObjectToRC( char *filename, WdeResInfo *rinfo, WdeResDlgItem *ditem,
         } else {
             fp = fopen( filename, "wt" );
         }
-        ok = (fp != NULL);
+        ok = ( fp != NULL );
     }
 
     if( ok ) {

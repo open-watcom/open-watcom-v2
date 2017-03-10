@@ -61,7 +61,7 @@ WdeResInfo *WdeLoadResource( const char *file_name )
     WRFileType  file_type;
     bool        ok;
 
-    WdeSetWaitCursor( TRUE );
+    WdeSetWaitCursor( true );
 
     ok = ( (res_info = WdeAllocResInfo()) != NULL );
 
@@ -86,7 +86,7 @@ WdeResInfo *WdeLoadResource( const char *file_name )
         }
     }
 
-    WdeSetWaitCursor( FALSE );
+    WdeSetWaitCursor( false );
 
     return( res_info );
 }

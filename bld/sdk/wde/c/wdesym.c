@@ -451,7 +451,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
         ok = (name != NULL);
     }
 
-    WdeSetWaitCursor( TRUE );
+    WdeSetWaitCursor( true );
 
     if( ok ) {
         flags = PPFLAG_EMIT_LINE;
@@ -511,7 +511,7 @@ char *WdeLoadSymbols( WdeHashTable **table, char *file_name, bool prompt )
         }
     }
 
-    WdeSetWaitCursor( FALSE );
+    WdeSetWaitCursor( false );
 
     WdeSetStatusReadyText();
 

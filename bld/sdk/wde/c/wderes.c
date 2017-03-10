@@ -322,10 +322,10 @@ bool WdeRegisterResClass( HINSTANCE app_inst )
     /* register the edit window class */
     if( !RegisterClass( &wc ) ) {
         WdeDisplayErrorMsg( WDE_REGISTEREDITFAILED );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 int WdeIncNumRes( void )
@@ -432,28 +432,25 @@ bool WdeAddDlgItems( WdeResInfo *res_info )
     WdeResDlgItem       *dlg_item;
 
     if( res_info == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( res_info->dlg_entry != NULL ) {
-        rnode = res_info->dlg_entry->Head;
-    } else {
-        rnode = NULL;
-    }
-    for( ; rnode != NULL; rnode = rnode->Next ) {
-        for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
-            dlg_item = WdeAllocResDlgItem();
-            if( dlg_item == NULL ) {
-                return( FALSE );
+        for( rnode = res_info->dlg_entry->Head; rnode != NULL; rnode = rnode->Next ) {
+            for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
+                dlg_item = WdeAllocResDlgItem();
+                if( dlg_item == NULL ) {
+                    return( false );
+                }
+                dlg_item->is32bit = res_info->is32bit;
+                dlg_item->rnode = rnode;
+                dlg_item->lnode = lnode;
+                WdeAddResDlgItemToResInfo( res_info, dlg_item );
             }
-            dlg_item->is32bit = res_info->is32bit;
-            dlg_item->rnode = rnode;
-            dlg_item->lnode = lnode;
-            WdeAddResDlgItemToResInfo( res_info, dlg_item );
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeOpenResource( char *fn )
@@ -463,7 +460,7 @@ bool WdeOpenResource( char *fn )
     WdeGetFileStruct    gf;
     bool                ok, got_name;
 
-    WdeSetWaitCursor( TRUE );
+    WdeSetWaitCursor( true );
 
     res_info = NULL;
     name = NULL;
@@ -474,7 +471,7 @@ bool WdeOpenResource( char *fn )
             name = WdeStrDup( fn );
             gf.fn_offset = WRFindFnOffset( name );
         } else {
-            return( FALSE );
+            return( false );
         }
     } else {
         gf.file_name = NULL;
@@ -532,7 +529,7 @@ bool WdeOpenResource( char *fn )
         WRMemFree( name );
     }
 
-    WdeSetWaitCursor( FALSE );
+    WdeSetWaitCursor( false );
 
     return( ok );
 }
@@ -642,8 +639,7 @@ bool WdeQuerySaveResOnDeleteRes( WdeResInfo *res_info, bool fatal_exit )
     char        *text;
     HWND        frame;
 
-    if( res_info != NULL && res_info->dlg_item_list != NULL &&
-        WdeIsResModified( res_info ) ) {
+    if( res_info != NULL && res_info->dlg_item_list != NULL && WdeIsResModified( res_info ) ) {
         WdeCheckIfActiveWindow();
         if( fatal_exit ) {
             style = MB_YESNO | MB_APPLMODAL | MB_ICONEXCLAMATION;
@@ -672,11 +668,11 @@ bool WdeQuerySaveResOnDeleteRes( WdeResInfo *res_info, bool fatal_exit )
                 return( WdeSaveResource( res_info, FALSE ) );
             }
         } else if( ret == IDCANCEL ) {
-            return( FALSE );
+            return( false );
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeQuerySaveSymOnDeleteRes( WdeResInfo *res_info, bool fatal_exit )
@@ -712,16 +708,16 @@ bool WdeQuerySaveSymOnDeleteRes( WdeResInfo *res_info, bool fatal_exit )
                 res_info->sym_name = WdeCreateSymName( file );
             }
             if( !WdeWriteSymbols( res_info->hash_table, &res_info->sym_name, FALSE ) ) {
-                return( FALSE );
+                return( false );
             }
         } else if( ret == IDCANCEL ) {
-            return( FALSE );
+            return( false );
         } else if( ret == IDNO ) {
             WdeHashSaveRejected( res_info->hash_table );
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeDestroyResourceWindow( WdeResInfo *res_info )
@@ -975,11 +971,11 @@ bool WdeQueryKillApp( bool fatal_exit )
             WdeHashClearSaveRejected( res_info->hash_table );
         }
         if( !fatal_exit && !kill_app ) {
-            return( FALSE );
+            return( false );
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeFreeResList( void )
@@ -1003,14 +999,14 @@ bool WdeRemoveResource( WdeResInfo *res_info )
     LIST *node;
 
     if( WdeResList == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( (node = ListFindElt( WdeResList, (OBJPTR)res_info )) != NULL ) {
         ListRemoveElt( &WdeResList, (void *)ListElement( node ) );
     } else {
         WdeWriteTrail( "WdeRemoveResource: res_info not found!" );
-        return( FALSE );
+        return( false );
     }
 
     if( WdeGetNumRes() == 1 ) {
@@ -1026,7 +1022,7 @@ bool WdeRemoveResource( WdeResInfo *res_info )
 
     WdeDecNumRes();
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeRemoveDialogFromResInfo( WdeResInfo *res_info, WdeResDlgItem *ditem,
@@ -1036,7 +1032,7 @@ bool WdeRemoveDialogFromResInfo( WdeResInfo *res_info, WdeResDlgItem *ditem,
     WResLangNode  *lnode;
 
     if( res_info == NULL || ditem == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     res_info->modified = true;
@@ -1048,11 +1044,10 @@ bool WdeRemoveDialogFromResInfo( WdeResInfo *res_info, WdeResDlgItem *ditem,
     WdeFreeResDlgItem( &ditem, destroy_object );
 
     if( rnode != NULL || lnode != NULL ) {
-        return( WRRemoveLangNodeFromDir( res_info->info->dir, &res_info->dlg_entry,
-                                         &rnode, &lnode ) );
+        return( WRRemoveLangNodeFromDir( res_info->info->dir, &res_info->dlg_entry, &rnode, &lnode ) );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 LRESULT CALLBACK WdeResWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
@@ -1276,12 +1271,12 @@ static bool WdeMouseRtnCreate( HWND win, RECT *r )
     }
 
     if( !Forward( obj, GET_RESIZER, &resizer, &ro ) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( adjust ) {
         if( !Forward( ro, GET_WINDOW_HANDLE, &win, NULL) ) {
-            return( FALSE );
+            return( false );
         }
         GetOffset( &pt );
         OffsetRect( &rect, -pt.x, -pt.y );
@@ -1295,7 +1290,7 @@ static bool WdeMouseRtnCreate( HWND win, RECT *r )
                                   (int_16)dsize.width, (int_16)dsize.height );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 static bool WdeMouseRtnResize( HWND win, RECT *r )
@@ -1325,7 +1320,7 @@ static bool WdeMouseRtnResize( HWND win, RECT *r )
 
     if( oid == DIALOG_OBJ ) {
         if( !Forward( curr_obj, GET_NC_SIZE, &nc, NULL ) ) {
-            return( FALSE );
+            return( false );
         }
         rect.left += nc.left;
         rect.top += nc.top;
@@ -1338,7 +1333,7 @@ static bool WdeMouseRtnResize( HWND win, RECT *r )
             rect.bottom = rect.top;
         }
         if( !Forward( curr_obj, GET_RESIZER, &resizer, &ro ) ) {
-            return( FALSE );
+            return( false );
         }
     } else {
         l = NULL;
@@ -1356,13 +1351,13 @@ static bool WdeMouseRtnResize( HWND win, RECT *r )
             obj = GetMainObject();
         }
         if( !Forward( obj, GET_RESIZER, &resizer, &ro ) ) {
-            return( FALSE );
+            return( false );
         }
     }
 
     if( adjust ) {
         if( !Forward( ro, GET_WINDOW_HANDLE, &win, NULL ) ) {
-            return( FALSE );
+            return( false );
         }
         GetOffset( &pt );
         OffsetRect( &rect, -pt.x, -pt.y );
@@ -1376,7 +1371,7 @@ static bool WdeMouseRtnResize( HWND win, RECT *r )
                                   (int_16)dsize.width, (int_16)dsize.height );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeMouseRtn( HWND win, RECT *r )

@@ -107,7 +107,7 @@ bool WdeSelectDialog( WdeResInfo *res_info )
 
     selection = WdeSelectDialogs( res_info, FALSE );
     ok = true;
-    WdeSetWaitCursor( TRUE );
+    WdeSetWaitCursor( true );
 
     for( slist = selection; slist != NULL; slist = ListConsume( slist ) ) {
         ditem = (WdeResDlgItem *)ListElement( slist );
@@ -118,7 +118,7 @@ bool WdeSelectDialog( WdeResInfo *res_info )
         }
     }
 
-    WdeSetWaitCursor( FALSE );
+    WdeSetWaitCursor( false );
 
     return( ok );
 }
@@ -276,10 +276,9 @@ bool WdeInitSelectListBox( WdeResInfo *res_info, HWND win )
         return( FALSE );
     }
 
-    dlist = res_info->dlg_item_list;
     SendMessage( win, WM_SETREDRAW, FALSE, 0 );
     count = 0;
-    while( dlist != NULL ) {
+    for( dlist = res_info->dlg_item_list; dlist != NULL; dlist = ListNext( dlist ) ) {
         ditem = (WdeResDlgItem *)ListElement( dlist );
         id = NULL;
 
@@ -310,8 +309,6 @@ bool WdeInitSelectListBox( WdeResInfo *res_info, HWND win )
         WRMemFree( name );
 
         count++;
-
-        dlist = ListNext( dlist );
     }
 
     SendMessage( win, WM_SETREDRAW, TRUE, 0 );
