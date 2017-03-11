@@ -136,7 +136,7 @@ static IETopic IETopics[NUM_FORMATS] =
 
 static IEEditFormat EditFormat = DDENone;
 static DWORD        IdInst = 0;
-static PFNCALLBACK  DdeProc = (PFNCALLBACK)NULL;
+static PFNCALLBACK  DdeProcInst = NULL;
 static HSZ          hFileItem = NULL;
 static HSZ          hNameItem = NULL;
 static HSZ          hDataItem = NULL;
@@ -167,8 +167,8 @@ BOOL IEDDEStart( HINSTANCE inst )
         }
     }
 
-    DdeProc = (PFNCALLBACK)MakeProcInstance( (FARPROC)DdeCallBack, inst );
-    if( DdeProc == (PFNCALLBACK)NULL ) {
+    DdeProcInst = (PFNCALLBACK)MakeProcInstance( (FARPROC)DdeCallBack, inst );
+    if( DdeProcInst == NULL ) {
         return( FALSE );
     }
 
@@ -176,16 +176,14 @@ BOOL IEDDEStart( HINSTANCE inst )
             CBF_FAIL_ADVISES | CBF_FAIL_SELFCONNECTIONS |
             CBF_SKIP_REGISTRATIONS | CBF_SKIP_UNREGISTRATIONS;
 
-    ret = DdeInitialize( &IdInst, DdeProc, flags, 0 );
+    ret = DdeInitialize( &IdInst, DdeProcInst, flags, 0 );
     if( ret != DMLERR_NO_ERROR ) {
         return( FALSE );
     }
 
     for( i = 0; i < NUM_FORMATS; i++ ) {
-        IEServices[i].hservice = DdeCreateStringHandle( IdInst, IEServices[i].service,
-                                                        CP_WINANSI );
-        IEServices[i].htopic = DdeCreateStringHandle( IdInst, IEServices[i].topic,
-                                                      CP_WINANSI );
+        IEServices[i].hservice = DdeCreateStringHandle( IdInst, IEServices[i].service, CP_WINANSI );
+        IEServices[i].htopic = DdeCreateStringHandle( IdInst, IEServices[i].topic, CP_WINANSI );
     }
 
     hFileItem = DdeCreateStringHandle( IdInst, WRE_FILE_ITEM, CP_WINANSI );
@@ -242,8 +240,8 @@ void IEDDEEnd( void )
         DdeUninitialize( IdInst );
         IdInst = 0;
     }
-    if( DdeProc != (PFNCALLBACK)NULL ) {
-        FreeProcInstance( (FARPROC)DdeProc );
+    if( DdeProcInst != NULL ) {
+        FreeProcInstance( (FARPROC)DdeProcInst );
     }
 
 } /* IEDDEEnd */

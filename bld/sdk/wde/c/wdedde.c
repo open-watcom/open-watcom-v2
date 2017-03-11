@@ -90,7 +90,7 @@ static void     WdeHandlePokedData( HDDEDATA hdata );
 /* static variables                                                         */
 /****************************************************************************/
 static  DWORD       IdInst = 0;
-static  PFNCALLBACK DdeProc = (PFNCALLBACK)NULL;
+static  PFNCALLBACK DdeProcInst = NULL;
 static  HSZ         hDialogService = NULL;
 static  HSZ         hDialogTopic = NULL;
 static  HSZ         hService = NULL;
@@ -119,8 +119,8 @@ bool WdeDDEStart( HINSTANCE inst )
         return( false );
     }
 
-    DdeProc = (PFNCALLBACK)MakeProcInstance( (FARPROC)DdeCallBack, inst );
-    if( DdeProc == (PFNCALLBACK)NULL ) {
+    DdeProcInst = (PFNCALLBACK)MakeProcInstance( (FARPROC)DdeCallBack, inst );
+    if( DdeProcInst == NULL ) {
         return( false );
     }
 
@@ -128,7 +128,7 @@ bool WdeDDEStart( HINSTANCE inst )
             CBF_FAIL_ADVISES | CBF_FAIL_SELFCONNECTIONS |
             CBF_SKIP_REGISTRATIONS | CBF_SKIP_UNREGISTRATIONS;
 
-    ret = DdeInitialize( &IdInst, DdeProc, flags, 0 );
+    ret = DdeInitialize( &IdInst, DdeProcInst, flags, 0 );
     if( ret != DMLERR_NO_ERROR ) {
         return( false );
     }
@@ -193,8 +193,8 @@ void WdeDDEEnd( void )
         DdeUninitialize( IdInst );
         IdInst = 0;
     }
-    if( DdeProc != (PFNCALLBACK)NULL ) {
-        FreeProcInstance( (FARPROC)DdeProc );
+    if( DdeProcInst != NULL ) {
+        FreeProcInstance( (FARPROC)DdeProcInst );
     }
 }
 

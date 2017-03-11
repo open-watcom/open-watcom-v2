@@ -780,9 +780,9 @@ static void processMsgStruct( char *buf, MONMSGSTRUCT *info, bool posted )
 } /* processMsgStruct */
 
 /*
- * DDEMsgProc - process DDE messages received from the DDE manager
+ * DDEProc - process DDE messages received from the DDE manager
  */
-HDDEDATA CALLBACK DDEMsgProc( UINT type, UINT fmt, HCONV hconv, HSZ hsz1, HSZ hsz2, HDDEDATA hdata, ULONG_PTR data1, ULONG_PTR data2 )
+HDDEDATA CALLBACK DDEProc( UINT type, UINT fmt, HCONV hconv, HSZ hsz1, HSZ hsz2, HDDEDATA hdata, ULONG_PTR data1, ULONG_PTR data2 )
 {
     char        buf[400];
     void        *info;
@@ -872,4 +872,4 @@ HDDEDATA CALLBACK DDEMsgProc( UINT type, UINT fmt, HCONV hconv, HSZ hsz1, HSZ hs
     DdeUnaccessData( hdata );
     return( NULL );
 
-} /* DDEMsgProc */
+} /* DDEProc */

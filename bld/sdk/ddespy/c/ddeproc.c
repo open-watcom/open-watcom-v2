@@ -38,7 +38,8 @@
 #include "wwinhelp.h"
 #include "jdlg.h"
 
-static FARPROC          DDEMsgFp;
+static PFNCALLBACK      DDEProcInst;
+
 static const MenuItemHint menuHints[] = {
     DDEMENU_SAVE,                   STR_HINT_SAVE,
     DDEMENU_SAVE_AS,                STR_HINT_SAVE_AS,
@@ -211,9 +212,9 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     case WM_CREATE:
         DDEMainWnd = hwnd;
         MainWndConfig.hwnd = hwnd;
-        DDEMsgFp = MakeProcInstance( (FARPROC)DDEMsgProc, Instance );
+        DDEProcInst = (PFNCALLBACK)MakeProcInstance( (FARPROC)DDEProc, Instance );
         initMonitoring( hwnd );
-        DdeInitialize( &DDEInstId, (PFNCALLBACK)DDEMsgFp,
+        DdeInitialize( &DDEInstId, DDEProcInst,
                        APPCLASS_MONITOR | MF_CALLBACKS | MF_CONV |
                        MF_ERRORS | MF_HSZ_INFO | MF_LINKS |
                        MF_POSTMSGS | MF_SENDMSGS, 0L );
@@ -480,7 +481,7 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         HintWndDestroy( info->hintbar );
         HintFini();
         SpyLogClose();
-        FreeProcInstance( DDEMsgFp );
+        FreeProcInstance( (FARPROC)DDEProcInst );
         SaveConfigFile();
         FiniTrackWnd();
         DDEToolBarFini();

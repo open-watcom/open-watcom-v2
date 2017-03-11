@@ -264,7 +264,7 @@ extern AliasHdl         TaskAlias;
 extern char             *AppName;
 
 /* window and dialog procedures */
-WINEXPORT extern FNCALLBACK DDEMsgProc;
+WINEXPORT extern FNCALLBACK DDEProc;
 WINEXPORT extern LRESULT    CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 WINEXPORT extern LRESULT    CALLBACK DDETrackingWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 WINEXPORT extern INT_PTR    CALLBACK FilterDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );

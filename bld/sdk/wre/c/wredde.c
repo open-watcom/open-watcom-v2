@@ -95,7 +95,7 @@ static WRETopic Topics[NUM_TOPICS] = {
 };
 
 static DWORD        IdInst          = 0;
-static PFNCALLBACK  DdeProc         = (PFNCALLBACK)NULL;
+static PFNCALLBACK  DdeProcInst     = NULL;
 static HSZ          hServiceName    = NULL;
 static HSZ          hFileItem       = NULL;
 static HSZ          hIs32BitItem    = NULL;
@@ -153,8 +153,8 @@ bool WREDDEStart( HINSTANCE inst )
         return( FALSE );
     }
 
-    DdeProc = (PFNCALLBACK)MakeProcInstance( (FARPROC)DdeCallBack, inst );
-    if( DdeProc == (PFNCALLBACK)NULL ) {
+    DdeProcInst = (PFNCALLBACK)MakeProcInstance( (FARPROC)DdeCallBack, inst );
+    if( DdeProcInst == NULL ) {
         return( FALSE );
     }
 
@@ -162,7 +162,7 @@ bool WREDDEStart( HINSTANCE inst )
             CBF_FAIL_ADVISES | CBF_FAIL_SELFCONNECTIONS |
             CBF_SKIP_REGISTRATIONS | CBF_SKIP_UNREGISTRATIONS;
 
-    ret = DdeInitialize( &IdInst, DdeProc, flags, 0 );
+    ret = DdeInitialize( &IdInst, DdeProcInst, flags, 0 );
     if( ret != DMLERR_NO_ERROR ) {
         return( FALSE );
     }
@@ -267,8 +267,8 @@ void WREDDEEnd( void )
         }
         DdeUninitialize( IdInst );
     }
-    if( DdeProc != (PFNCALLBACK)NULL ) {
-        FreeProcInstance( (FARPROC)DdeProc );
+    if( DdeProcInst != NULL ) {
+        FreeProcInstance( (FARPROC)DdeProcInst );
     }
 }
 
