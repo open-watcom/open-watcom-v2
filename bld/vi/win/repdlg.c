@@ -102,7 +102,7 @@ WINEXPORT BOOL CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
                 if( index == LB_ERR ) {
                     break;
                 }
-                SendDlgItemMessage( hwnd, REP_LISTBOX, LB_GETTEXT, index, (LPARAM)find );
+                SendDlgItemMessage( hwnd, REP_LISTBOX, LB_GETTEXT, index, (LPARAM)(LPSTR)find );
                 SetDlgItemText( hwnd, REP_FIND, find );
                 if( cmd == LBN_DBLCLK ) {
                     PostMessage( hwnd, WM_COMMAND, GET_WM_COMMAND_MPS( IDOK, 0, 0 ) );

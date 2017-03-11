@@ -341,7 +341,7 @@ UINT CALLBACK WdeOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
         // WdeCtl3dSubclassDlgAll( hwnd );
         title = WdeAllocRCString( WDE_GETFNCOMBOTITLE );
         if( title != NULL ) {
-            SendDlgItemMessage( hwnd, stc2, WM_SETTEXT, 0, (LPARAM)title );
+            SendDlgItemMessage( hwnd, stc2, WM_SETTEXT, 0, (LPARAM)(LPCSTR)title );
             WdeFreeRCString( title );
         }
         return( TRUE );

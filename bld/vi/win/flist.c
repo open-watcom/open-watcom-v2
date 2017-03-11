@@ -61,7 +61,7 @@ static bool applyToSelectedList( HWND list_box, bool (*func)( info * ) )
     for( i = 0; i < count; i++ ) {
         if( SendMessage( list_box, LB_GETSEL, i, 0L ) ) {
             name = MemAlloc( SendMessage( list_box, LB_GETTEXTLEN, i, 0L ) + 1 );
-            SendMessage( list_box, LB_GETTEXT, i, (LPARAM)name );
+            SendMessage( list_box, LB_GETTEXT, i, (LPARAM)(LPSTR)name );
             info = findInfo( name );
             MemFree( name );
             if( func( info ) ) {

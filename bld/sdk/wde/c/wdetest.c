@@ -204,9 +204,9 @@ static bool WdeSetDefaultTestControlEntries( HWND win )
         for( index = 1; index <= TEST_DEFAULT_ENTRIES; index++ ) {
             sprintf( str, text, index );
             if( class == CLASS_LISTBOX ) {
-                SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
+                SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
             } else {
-                SendMessage( win, CB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
+                SendMessage( win, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
             }
         }
         SendMessage( win, WM_SETREDRAW, TRUE, 0 );

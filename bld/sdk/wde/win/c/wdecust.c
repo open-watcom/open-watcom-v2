@@ -888,10 +888,10 @@ bool WdeSetSelectWinCBox( HWND cbox, WdeCustControl *control )
         current->type = type;
         if( control->ms_lib ) {
             index = (int)SendMessage( cbox, CB_ADDSTRING, 0,
-                (LPARAM)(LPSTR)control->control_info.ms.Type[type].szDescr );
+                (LPARAM)(LPCSTR)control->control_info.ms.Type[type].szDescr );
         } else {
             index = (int)SendMessage( cbox, CB_ADDSTRING, 0,
-                (LPARAM)(LPSTR)control->control_info.bor.Type[type].szDescr );
+                (LPARAM)(LPCSTR)control->control_info.bor.Type[type].szDescr );
         }
 
         if( index == CB_ERR || index == CB_ERRSPACE ) {
@@ -1068,7 +1068,7 @@ bool WdePreviewSelected( HWND win )
     p.x = 0;
     p.y = 0;
 
-    SendDlgItemMessage( win, IDB_CUST_CLASSNAME, WM_SETTEXT, 0, (LPARAM)(LPSTR)class );
+    SendDlgItemMessage( win, IDB_CUST_CLASSNAME, WM_SETTEXT, 0, (LPARAM)(LPCSTR)class );
 
     pstyle &= ~(WS_POPUP | WS_VISIBLE | WS_TABSTOP);
     pstyle |= WS_CHILD;

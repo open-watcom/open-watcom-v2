@@ -984,7 +984,7 @@ bool WdeDialogModifyInfo( WdeDialogObject *obj, WdeInfoStruct *in, void *p2 )
         }
         SETHDR_CAPTION( obj->dialog_info, in->u.dlg.caption );
         if( GETHDR_CAPTION( obj->dialog_info ) ) {
-            SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPSTR)GETHDR_CAPTION( obj->dialog_info ) );
+            SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPCSTR)GETHDR_CAPTION( obj->dialog_info ) );
         } else {
             SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPCSTR)"" );
         }
@@ -3299,15 +3299,13 @@ void WdeDialogSetDialogPntInfo( HWND hDlg, int index )
     if( font_name->fonttype & TRUETYPE_FONTTYPE ) {
         for( i = WDE_TT_FONT_MIN; i <= WDE_TT_FONT_MAX; i += 2 ) {
             ultoa( i, temp, 10 );
-            SendDlgItemMessage( hDlg, IDB_POINTSIZE, CB_ADDSTRING, 0,
-                                (LPARAM)(LPSTR)temp );
+            SendDlgItemMessage( hDlg, IDB_POINTSIZE, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)temp );
         }
     } else {
         for( olist = font_name->family_list; olist != NULL; olist = ListNext( olist ) ) {
             font_data = (WdeFontData *)ListElement( olist );
             ultoa( font_data->pointsize, temp, 10 );
-            SendDlgItemMessage( hDlg, IDB_POINTSIZE, CB_ADDSTRING, 0,
-                                (LPARAM)(LPSTR)temp );
+            SendDlgItemMessage( hDlg, IDB_POINTSIZE, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)temp );
         }
     }
 }
@@ -3326,8 +3324,7 @@ void WdeDialogSetDialogFontInfo( HWND hDlg, WdeDialogObject *obj )
     index = -1;
     for( olist = font_list; olist != NULL; olist = ListNext( olist ) ) {
         font_name = (WdeFontNames *)ListElement( olist );
-        SendDlgItemMessage( hDlg, IDB_FONTNAME, CB_ADDSTRING, 0,
-                            (LPARAM)(LPSTR)font_name->name );
+        SendDlgItemMessage( hDlg, IDB_FONTNAME, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)font_name->name );
         /* if the dialog has font info then find the index of
          * the font in the list
          */

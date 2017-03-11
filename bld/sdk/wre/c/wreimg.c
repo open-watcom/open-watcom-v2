@@ -393,7 +393,7 @@ bool WRESetImageSessionResName( HCONV server, HDDEDATA hdata )
     uint_32             size;
     bool                ok;
 
-    ok = (server != (HCONV)NULL && hdata != (HDDEDATA)NULL);
+    ok = (server != (HCONV)NULL && hdata != NULL);
 
     if( ok ) {
         session = WREFindImageSession( server );
@@ -504,7 +504,7 @@ bool WRESetImageSessionResData( HCONV server, HDDEDATA hdata )
     uint_32             size;
     bool                ok;
 
-    ok = (server != (HCONV)NULL && hdata != (HDDEDATA)NULL);
+    ok = (server != (HCONV)NULL && hdata != NULL);
 
     if( ok ) {
         session = WREFindImageSession( server );

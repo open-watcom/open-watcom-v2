@@ -143,7 +143,7 @@ void SpyOut( char *msg, LPMSG pmsg )
         }
     } else {
 #endif
-        i = (int)SendMessage( SpyListBox, LB_ADDSTRING, 0, (LPARAM)(LPSTR)res );
+        i = (int)SendMessage( SpyListBox, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)res );
         if( SpyMessagesAutoScroll ) {
             SendMessage( SpyListBox, LB_SETCURSEL, i, 0L );
         }

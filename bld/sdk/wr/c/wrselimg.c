@@ -99,7 +99,7 @@ WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, HELP_CALLBA
 
     dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WRSelectImageDlgProc, inst );
 
-    modified = JDialogBoxParam( inst, "WRSelectImage", parent, dlg_proc, (LPARAM)info );
+    modified = JDialogBoxParam( inst, "WRSelectImage", parent, dlg_proc, (LPARAM)(LPVOID)info );
 
     FreeProcInstance( (FARPROC)dlg_proc );
 

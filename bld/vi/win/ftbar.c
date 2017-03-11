@@ -258,13 +258,13 @@ static void fillInfoBoxes( HWND hwnd )
 
     index = (int)SendMessage( hwndStyle, LB_GETCURSEL, 0, 0L );
     if( index != LB_ERR ) {
-        SendMessage( hwndStyle, LB_GETTEXT, index, (LPARAM)oldStyle );
+        SendMessage( hwndStyle, LB_GETTEXT, index, (LPARAM)(LPSTR)oldStyle );
     } else {
         oldStyle[0] = '\0';
     }
     index = (int)SendMessage( hwndSize, CB_GETCURSEL, 0, 0L );
     if( index != CB_ERR ) {
-        SendMessage( hwndSize, CB_GETLBTEXT, index, (LPARAM)oldSize );
+        SendMessage( hwndSize, CB_GETLBTEXT, index, (LPARAM)(LPSTR)oldSize );
     } else {
         oldSize[0] = '\0';
     }
@@ -280,7 +280,7 @@ static void fillInfoBoxes( HWND hwnd )
 
     fillStyleBox();
 
-    SendMessage( hwndTypeface, LB_GETTEXT, index, (LPARAM)typeface );
+    SendMessage( hwndTypeface, LB_GETTEXT, index, (LPARAM)(LPSTR)typeface );
     fp = MakeFontEnumProcInstance( EnumFamInfo, InstanceHandle );
     hdc = GetDC( edit_container_id );
     EnumFontFamilies( hdc, typeface, (FONTENUMPROC)fp, (LPARAM)(&isTrueType) );
@@ -390,7 +390,7 @@ static int setCurLogfont( int overrideSize )
         if( index == CB_ERR ) {
             return( 0 );
         }
-        SendMessage( hwndSize, CB_GETLBTEXT, index, (LPARAM)size );
+        SendMessage( hwndSize, CB_GETLBTEXT, index, (LPARAM)(LPSTR)size );
         height = atoi( size );
     } else {
         height = overrideSize;
@@ -418,7 +418,7 @@ static int setCurLogfont( int overrideSize )
     if( index == LB_ERR ) {
         return( 0 );
     }
-    SendMessage( hwndTypeface, LB_GETTEXT, index, (LPARAM)CurLogfont.lfFaceName );
+    SendMessage( hwndTypeface, LB_GETTEXT, index, (LPARAM)(LPSTR)CurLogfont.lfFaceName );
 
     /* set up defaults for charset, etc. from info for 1st font of this type */
     hdc = GetDC( edit_container_id );

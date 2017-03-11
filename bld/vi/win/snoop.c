@@ -128,7 +128,7 @@ WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
                 if( index == LB_ERR ) {
                     break;
                 }
-                SendDlgItemMessage( hwnd, SNOOP_EXT, LB_GETTEXT, index, (LPARAM)snoop );
+                SendDlgItemMessage( hwnd, SNOOP_EXT, LB_GETTEXT, index, (LPARAM)(LPSTR)snoop );
                 SetDlgItemText( hwnd, SNOOP_STRING, snoop );
             }
             break;

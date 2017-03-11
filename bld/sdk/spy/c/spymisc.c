@@ -716,7 +716,7 @@ void DumpToComboBox( char *str, HWND cb )
         tmp[i] = 0;
         if( i != 0 ) {
             str++;
-            SendMessage( cb, CB_ADDSTRING, 0, (LPARAM)(LPSTR)tmp );
+            SendMessage( cb, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)tmp );
         }
     }
     SendMessage( cb, CB_SETCURSEL, 0, 0L );

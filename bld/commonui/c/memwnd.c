@@ -86,7 +86,7 @@ static  HFONT           CurFont;
 static  HWND            CurWindow;
 static  char            Buffer[MAX_BYTES * 4 + 20];
 #ifndef __NT__
-static  FARPROC         DialProc;
+static  DLGPROC         DialProc;
 static  unsigned        DialCount;
 #endif
 
@@ -899,7 +899,7 @@ LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     DWORD               state;
     DWORD               size;
     HBRUSH              wbrush;
-    FARPROC             fp;
+    DLGPROC             dlgproc;
     unsigned            cmd;
 
     info = WPI_GET_WNDINFO( hwnd );
@@ -1053,9 +1053,9 @@ LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             break;
         case MEMINFO_OFFSET:
             inst = GET_HINSTANCE( hwnd );
-            fp = MakeDlgProcInstance( OffsetProc, inst );
-            DialogBox( inst, "OFFSETDLG", hwnd, (DLGPROC)fp );
-            FreeProcInstance( fp );
+            dlgproc = (DLGPROC)MakeDlgProcInstance( OffsetProc, inst );
+            DialogBox( inst, "OFFSETDLG", hwnd, dlgproc );
+            FreeProcInstance( (FARPROC)dlgproc );
             break;
         }
         break;
@@ -1173,7 +1173,7 @@ INT_PTR CALLBACK SegInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
 #ifndef __NT__
         DialCount--;
         if( DialCount == 0 ) {
-            FreeProcInstance( DialProc );
+            FreeProcInstance( (FARPROC)DialProc );
         }
 #endif
         return( FALSE ); /* we need to let Windows see this message
@@ -1206,12 +1206,12 @@ static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info )
     mh = GetMenu( parent );
     EnableMenuItem( mh, MEMINFO_SHOW, MF_GRAYED );
     if( DialCount == 0 ) {
-        DialProc = MakeDlgProcInstance( SegInfoProc, instance );
+        DialProc = (DLGPROC)MakeDlgProcInstance( SegInfoProc, instance );
     }
     DialCount++;
     if( info->isdpmi ) {
         GetADescriptor( info->sel, &desc );
-        hwnd = CreateDialog( instance, "SEL_INFO", parent, (DLGPROC)DialProc );
+        hwnd = CreateDialog( instance, "SEL_INFO", parent, DialProc );
 
         sprintf( buf, "%04X", info->sel );
         SetDlgItemText( hwnd, SEL_INFO_SEL, buf );
@@ -1247,7 +1247,7 @@ static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info )
     } else {
         ge.dwSize = sizeof( GLOBALENTRY );
         GlobalEntryHandle( &ge, (HGLOBAL)info->sel );
-        hwnd = CreateDialog( instance, "HDL_INFO", parent, (DLGPROC)DialProc );
+        hwnd = CreateDialog( instance, "HDL_INFO", parent, DialProc );
 
         sprintf( buf, "%04X", ge.hBlock );
         SetDlgItemText( hwnd, HDL_INFO_HDL, buf );

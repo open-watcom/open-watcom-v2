@@ -261,7 +261,7 @@ INT_PTR CALLBACK ConfigLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
  */
 void LogConfigure( void )
 {
-    FARPROC     fp;
+    DLGPROC     dlgproc;
 
     if( !LogCurInfo.init ) {
         SetLogDef();
@@ -269,9 +269,9 @@ void LogConfigure( void )
     if( LogCurInfo.config.type == LOG_TYPE_BUFFER ) {
         flushLog( true );
     }
-    fp = MakeDlgProcInstance( ConfigLogDlgProc, LogCurInfo.instance );
-    DialogBox( LogCurInfo.instance, "LOG_CFG_DLG", LogCurInfo.hwnd, (DLGPROC)fp );
-    FreeProcInstance( fp );
+    dlgproc = (DLGPROC)MakeDlgProcInstance( ConfigLogDlgProc, LogCurInfo.instance );
+    DialogBox( LogCurInfo.instance, "LOG_CFG_DLG", LogCurInfo.hwnd, dlgproc );
+    FreeProcInstance( (FARPROC)dlgproc );
 
 } /* LogConfigure */
 
@@ -384,7 +384,7 @@ void SpyLogOut( char *res )
 bool SpyLogOpen( void )
 {
     FILE        *f;
-    FARPROC     fp;
+    DLGPROC     dlgproc;
     INT_PTR     ret;
     char        *msgtitle;
     char        *fmode = "wt";
@@ -406,9 +406,9 @@ bool SpyLogOpen( void )
         break;
     case LOG_ACTION_QUERY:
         if( !access( LogCurInfo.config.curname, F_OK ) ) {
-            fp = MakeDlgProcInstance( LogExistsDlgProc, LogCurInfo.instance );
-            ret = DialogBox( LogCurInfo.instance, "LOG_EXISTS_DLG", LogCurInfo.hwnd, (DLGPROC)fp );
-            FreeProcInstance( fp );
+            dlgproc = (DLGPROC)MakeDlgProcInstance( LogExistsDlgProc, LogCurInfo.instance );
+            ret = DialogBox( LogCurInfo.instance, "LOG_EXISTS_DLG", LogCurInfo.hwnd, dlgproc );
+            FreeProcInstance( (FARPROC)dlgproc );
             switch( ret ) {
             case LOG_APPEND:
                 fmode = "wt+";

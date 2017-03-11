@@ -321,7 +321,7 @@ UINT CALLBACK WREOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
         title = AllocRCString( WRE_GETFNCOMBOTITLE );
         if( title != NULL ) {
-            SendDlgItemMessage( hwnd, stc2, WM_SETTEXT, 0, (LPARAM)title );
+            SendDlgItemMessage( hwnd, stc2, WM_SETTEXT, 0, (LPARAM)(LPCSTR)title );
             FreeRCString( title );
         }
         return( TRUE );

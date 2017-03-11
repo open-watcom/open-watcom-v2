@@ -77,7 +77,7 @@ static bool writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND l
         return( false );
     }
     for( i = 0; i < count; i++ ) {
-        SendMessage( listbox, LB_GETTEXT, i, (LPARAM)str );
+        SendMessage( listbox, LB_GETTEXT, i, (LPARAM)(LPSTR)str );
         fprintf( f, "%s\n", str );
     }
     fclose( f );

@@ -442,7 +442,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
                 *id = (uint_16)new_entry->value;
                 if( !dup ) {
                     SendDlgItemMessage( dlg, IDM_ACCEDCMDID, CB_ADDSTRING,
-                                        0, (LPARAM)(LPSTR)new_entry->name );
+                                        0, (LPARAM)(LPCSTR)new_entry->name );
                     SendDlgItemMessage( dlg, IDM_ACCEDCMDID, CB_SETITEMDATA,
                                         0, (LPARAM)new_entry );
                 }

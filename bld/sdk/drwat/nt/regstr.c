@@ -255,7 +255,7 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
             }
             if( max_len < strlen( s ) )
                 max_len = strlen( s );
-            SendDlgItemMessage( hwnd, CH_REG_COMBO_LIST, CB_ADDSTRING, 0, (LPARAM)s );
+            SendDlgItemMessage( hwnd, CH_REG_COMBO_LIST, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)s );
             if( memcmp( data->curr_value, data->m_list[i].data, BITS2BYTES( cmp.b.bits ) ) == 0 ) {
                 SendDlgItemMessage( hwnd, CH_REG_COMBO_LIST, CB_SETCURSEL, (WPARAM)i, 0 );
             }

@@ -268,7 +268,7 @@ static void doReplace( HWND lb, WORD searchcnt, char **searchfor, char **replace
         }
 
         /* replace the listbox line */
-        SendMessage( lb, LB_INSERTSTRING, i, (LPARAM)(LPSTR)inbuf );
+        SendMessage( lb, LB_INSERTSTRING, i, (LPARAM)(LPCSTR)inbuf );
         SendMessage( lb, LB_DELETESTRING, i + 1, 0 );
     }
 
@@ -448,7 +448,7 @@ void RecordMsg( char *buf )
             *ptr = '\0';
             if( ConfigInfo.screen_out ) {
                 setHorzExtent( info, start );
-                SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPSTR)start );
+                SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)start );
             }
             SpyLogOut( start );
             *ptr = '\n';
@@ -459,7 +459,7 @@ void RecordMsg( char *buf )
     if( start != ptr ) {
         if( ConfigInfo.screen_out ) {
             setHorzExtent( info, start );
-            ret = (int)SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPSTR)start );
+            ret = (int)SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)start );
         }
         SpyLogOut( start );
     }
@@ -870,6 +870,6 @@ HDDEDATA CALLBACK DDEMsgProc( UINT type, UINT fmt, HCONV hconv, HSZ hsz1, HSZ hs
         break;
     }
     DdeUnaccessData( hdata );
-    return( (HDDEDATA)0 );
+    return( NULL );
 
 } /* DDEMsgProc */

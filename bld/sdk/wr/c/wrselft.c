@@ -149,7 +149,7 @@ WRFileType WRAPI WRSelectFileType( HWND parent, const char *name, bool is32bit,
 
     proc = (DLGPROC)MakeProcInstance( (FARPROC)WRSelectFileTypeDlgProc, inst );
 
-    modified = JDialogBoxParam( inst, "WRSelectFileType", parent, proc, (LPARAM)&sft );
+    modified = JDialogBoxParam( inst, "WRSelectFileType", parent, proc, (LPARAM)(LPVOID)&sft );
 
     FreeProcInstance( (FARPROC)proc );
 
@@ -206,8 +206,7 @@ void WRSetWinInfo( HWND hDlg, WRSFT *sft )
     no_exe = FALSE;
 
     if( sft->file_name != NULL ) {
-        SendDlgItemMessage( hDlg, IDM_FILENAME, WM_SETTEXT, 0,
-                            (LPARAM)(LPSTR)sft->file_name );
+        SendDlgItemMessage( hDlg, IDM_FILENAME, WM_SETTEXT, 0, (LPARAM)(LPCSTR)sft->file_name );
         _splitpath( sft->file_name, NULL, NULL, NULL, ext );
         if( stricmp( ext, ".res" ) == 0 ) {
             CheckDlgButton( hDlg, IDM_FTRES, BST_CHECKED );

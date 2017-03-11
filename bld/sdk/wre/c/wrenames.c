@@ -284,7 +284,7 @@ bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force, WResID 
             index = LB_ERR;
             str = WResIDToStr( name );
             if( str != NULL ) {
-                index = (int)SendMessage( resLbox, LB_FINDSTRING, 0, (LPARAM)str );
+                index = (int)SendMessage( resLbox, LB_FINDSTRING, 0, (LPARAM)(LPCSTR)str );
                 WRMemFree( str );
             }
             if( index == LB_ERR ) {
@@ -408,14 +408,14 @@ void WRESetTotalText( WREResInfo *info )
     }
 
     if( count == 0 ) {
-        SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPSTR)WRETotalTextNone );
+        SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPCSTR)WRETotalTextNone );
     } else if( count == 1 ) {
-        SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPSTR)WRETotalTextOne );
+        SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPCSTR)WRETotalTextOne );
     } else {
         buf = WRMemAlloc( strlen( WRETotalText ) + 20 + 1 );
         if( buf != NULL ) {
             sprintf( buf, WRETotalText, count );
-            SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPSTR)buf );
+            SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPCSTR)buf );
             WRMemFree( buf );
         }
     }

@@ -194,7 +194,7 @@ bool WdeSetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
 
     if( si->remove ) {
         text = WdeAllocRCString( WDE_REMOVEDIALOGS );
-        SendMessage( hDlg, WM_SETTEXT, 0, (LPARAM)text );
+        SendMessage( hDlg, WM_SETTEXT, 0, (LPARAM)(LPCSTR)text );
         if( text != NULL ) {
             WdeFreeRCString( text );
         }
@@ -303,7 +303,7 @@ bool WdeInitSelectListBox( WdeResInfo *res_info, HWND win )
         }
 
         /* add the name to the list box */
-        index = (int)SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPSTR)name );
+        index = (int)SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)name );
         SendMessage( win, LB_SETITEMDATA, index, (LPARAM)count );
 
         WRMemFree( name );

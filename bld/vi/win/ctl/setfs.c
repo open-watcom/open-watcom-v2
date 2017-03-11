@@ -440,7 +440,7 @@ static void updateDialogSettings( HWND hwndDlg, bool title )
         totallen += sizeof( FT_TITLE ) + 1;
         template = MemAlloc( totallen );
         strcpy( template, FT_TITLE );
-        SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)(template + sizeof( FT_TITLE ) - 1) );
+        SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)(LPSTR)( template + sizeof( FT_TITLE ) - 1 ) );
         template[totallen - 2] = ')';
         template[totallen - 1] = '\0';
         SetWindowText( hwndDlg, template );
@@ -497,7 +497,7 @@ static void writeSettings( HWND hwndDlg )
         // put back in order we got them
         len = SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L );
         template = MemAlloc( len + 1 );
-        SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)template );
+        SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)(LPSTR)template );
         FTSStart( template );
         dumpCommands( dlgDataArray + index );
         FTSEnd();
@@ -527,7 +527,7 @@ static long deleteSelectedFT( HWND hwndDlg )
     // get template in string form
     len = SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L );
     template = MemAlloc( len + 1 );
-    SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)template );
+    SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)(LPSTR)template );
     // can't delete *.* entry
     rc = IDYES;
     if( !strcmp( template, "*.*" ) ) {

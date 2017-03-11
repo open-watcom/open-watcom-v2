@@ -471,8 +471,7 @@ static HWND cdIndirectParam( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
         goto CDIP_DEFAULT_ACTION;
     }
 
-    ret = CreateDialogIndirectParam( hinst, GlobalLock( newtemplate ),
-                                     hwndOwner, dlgproc, lParamInit );
+    ret = CreateDialogIndirectParam( hinst, GlobalLock( newtemplate ), hwndOwner, dlgproc, lParamInit );
     GlobalUnlock( newtemplate );
 
     GlobalFree( newtemplate );
@@ -480,8 +479,7 @@ static HWND cdIndirectParam( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
     return( ret );
 
 CDIP_DEFAULT_ACTION:
-    ret = CreateDialogIndirectParam( hinst, GlobalLock( hglblDlgTemp ),
-                                     hwndOwner, dlgproc, lParamInit );
+    ret = CreateDialogIndirectParam( hinst, GlobalLock( hglblDlgTemp ), hwndOwner, dlgproc, lParamInit );
     GlobalUnlock( hglblDlgTemp );
 
     return( ret );
@@ -491,8 +489,7 @@ CDIP_DEFAULT_ACTION:
 /*
  * dbIndirect - helper for JDialogBoxIndirect
  */
-static INT_PTR dbIndirect( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
-                       HWND hwndOwner, DLGPROC dlgproc, DWORD size )
+static INT_PTR dbIndirect( HINSTANCE hinst, HGLOBAL hglblDlgTemp, HWND hwndOwner, DLGPROC dlgproc, DWORD size )
 {
     HGLOBAL     newtemplate;
     INT_PTR     ret;
@@ -507,8 +504,7 @@ static INT_PTR dbIndirect( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
     }
 
 #if defined( __NT__ )
-    ret = DialogBoxIndirect( hinst, GlobalLock( newtemplate ),
-                             hwndOwner, dlgproc );
+    ret = DialogBoxIndirect( hinst, GlobalLock( newtemplate ), hwndOwner, dlgproc );
     GlobalUnlock( newtemplate );
 #else
     ret = DialogBoxIndirect( hinst, newtemplate, hwndOwner, dlgproc );
@@ -542,12 +538,10 @@ static INT_PTR dbIndirectParam( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
     }
 
 #if defined( __NT__ )
-    ret = DialogBoxIndirectParam( hinst, GlobalLock( newtemplate ),
-                                  hwndOwner, dlgproc, lParamInit );
+    ret = DialogBoxIndirectParam( hinst, GlobalLock( newtemplate ), hwndOwner, dlgproc, lParamInit );
     GlobalUnlock( newtemplate );
 #else
-    ret = DialogBoxIndirectParam( hinst, newtemplate,
-                                  hwndOwner, dlgproc, lParamInit );
+    ret = DialogBoxIndirectParam( hinst, newtemplate, hwndOwner, dlgproc, lParamInit );
 #endif
 
     GlobalFree( newtemplate );
@@ -561,8 +555,7 @@ DBIP_DEFAULT_ACTION:
 /*
  * JDialogBoxIndirect - Japanese version of DialogBoxIndirect
  */
-INT_PTR JDialogBoxIndirect( HINSTANCE hinst, HGLOBAL hglblDlgTemp,
-                        HWND hwndOwner, DLGPROC dlgproc )
+INT_PTR JDialogBoxIndirect( HINSTANCE hinst, HGLOBAL hglblDlgTemp, HWND hwndOwner, DLGPROC dlgproc )
 {
     return( dbIndirect( hinst, hglblDlgTemp, hwndOwner, dlgproc, (DWORD)-1 ) );
 
@@ -632,8 +625,7 @@ JDB_DEFAULT_ACTION:
 /*
  * JDialogBoxParam - Japanese version of DialogBoxParam
  */
-INT_PTR JDialogBoxParam( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner,
-                     DLGPROC dlgproc, LPARAM lParamInit )
+INT_PTR JDialogBoxParam( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner, DLGPROC dlgproc, LPARAM lParamInit )
 {
     HGLOBAL     template;
     DWORD       size;
@@ -662,8 +654,7 @@ JDBP_DEFAULT_ACTION:
 /*
  * JCreateDialog - Japanese version of CreateDialog
  */
-HWND JCreateDialog( HINSTANCE hinst, LPCSTR lpszDlgTemp,
-                    HWND hwndOwner, DLGPROC dlgproc )
+HWND JCreateDialog( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner, DLGPROC dlgproc )
 {
     HGLOBAL     template;
     DWORD       size;

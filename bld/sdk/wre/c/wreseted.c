@@ -73,7 +73,7 @@ bool WRESetEditWithStr( HWND edit, char *str )
 
     ok = ( edit != (HWND)NULL && str != NULL );
     if( ok ) {
-        SendMessage( edit, WM_SETTEXT, 0, (LPARAM)(LPSTR)str );
+        SendMessage( edit, WM_SETTEXT, 0, (LPARAM)(LPCSTR)str );
     }
 
     return( ok );
@@ -87,7 +87,7 @@ bool WRESetLBoxWithStr( HWND lbox, char *str, void *data )
     ok = ( lbox != (HWND)NULL && str != NULL );
 
     if( ok ) {
-        index = (int)SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
+        index = (int)SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
         ok = ( index != LB_ERR && index != LB_ERRSPACE );
     }
 

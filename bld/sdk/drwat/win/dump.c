@@ -448,7 +448,7 @@ static void FillTaskList( HWND hwnd )
             csip = GetRealCSIP( te.hTask, NULL );
             RCsprintf( str, STR_TASK_LB_FMT_STR, te.szModule,
                        HIWORD( csip ), LOWORD( csip ), (WORD)te.hTask );
-            SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
+            SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
         }
     } while( MyTaskNext( &te ) );
     SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_SETCURSEL, 0, 0L );

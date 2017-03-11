@@ -36,7 +36,7 @@ extra_cpp_flags_nt  = -DNOUSE3D
 
 extra_c_flags     = -s -fh
 
-extra_c_flags_win = -zu-zw-zc
+extra_c_flags_win = -zw-zc
 
 !ifdef __WATCOM_TOOLS__
 extra_c_flags_preproc = -zm -fh=preproc.pch

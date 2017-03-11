@@ -310,7 +310,7 @@ WPI_DLGRESULT CALLBACK SelNonExistingDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1
             for( i = 0; i < NUM_OF_ICONS; i++ ) {
                 if( !iconInfo[i].exists ) {
                     mresult = _wpi_senddlgitemmessage( hwnd, TARGETLISTBOX, LB_INSERTSTRING, -1,
-                                                       (LPARAM)(LPSTR)iconInfo[i].text );
+                                                       (LPARAM)(LPCSTR)iconInfo[i].text );
                     index = _imgwpi_mresulttoint( mresult );
                     lbindex[index] = i;
                     ++index;
@@ -384,7 +384,7 @@ WPI_DLGRESULT CALLBACK SelExistingDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wp
             for( i = 0; i < numberOfIcons; i++ ) {
                 if( iconInfo[iconNumber[i]].exists ) {
                     mresult = _wpi_senddlgitemmessage( hwnd, TARGETLISTBOX, LB_INSERTSTRING,
-                        -1, (LPARAM)(LPSTR)iconInfo[iconNumber[i]].text );
+                        -1, (LPARAM)(LPCSTR)iconInfo[iconNumber[i]].text );
                     index = _imgwpi_mresulttoint( mresult );
                     lbindex[index] = iconNumber[i];
                     index++;

@@ -97,7 +97,7 @@ INT_PTR CALLBACK QueryEndDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
             } else {
                 RCsprintf( buf, STR_PROCESS_X, procinfo->procid );
             }
-            SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)buf );
+            SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)buf );
             procinfo = GetNextOwnedProc( procinfo );
         }
         ret = true;

@@ -91,13 +91,14 @@ typedef struct IEClipFormat {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-extern HDDEDATA CALLBACK DdeCallBack( WORD wType, WORD wFmt, HCONV hConv,
-                                      HSZ hsz1, HSZ hsz2, HDDEDATA hdata,
-                                      ULONG_PTR lData1, ULONG_PTR lData2 );
+
+/* Local Window callback functions prototypes */
+WINEXPORT FNCALLBACK DdeCallBack;
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
+
 extern BOOL     IEHData2Mem( HDDEDATA, void **, uint_32 * );
 extern BOOL     IEStartDDEEditSession( void );
 extern HDDEDATA IECreateResData( img_node *node );
@@ -135,7 +136,7 @@ static IETopic IETopics[NUM_FORMATS] =
 
 static IEEditFormat EditFormat = DDENone;
 static DWORD        IdInst = 0;
-static FARPROC      DdeProc;
+static PFNCALLBACK  DdeProc = (PFNCALLBACK)NULL;
 static HSZ          hFileItem = NULL;
 static HSZ          hNameItem = NULL;
 static HSZ          hDataItem = NULL;
@@ -166,8 +167,8 @@ BOOL IEDDEStart( HINSTANCE inst )
         }
     }
 
-    DdeProc = MakeProcInstance( (FARPROC)DdeCallBack, inst );
-    if( DdeProc == (FARPROC)NULL ) {
+    DdeProc = (PFNCALLBACK)MakeProcInstance( (FARPROC)DdeCallBack, inst );
+    if( DdeProc == (PFNCALLBACK)NULL ) {
         return( FALSE );
     }
 
@@ -175,7 +176,7 @@ BOOL IEDDEStart( HINSTANCE inst )
             CBF_FAIL_ADVISES | CBF_FAIL_SELFCONNECTIONS |
             CBF_SKIP_REGISTRATIONS | CBF_SKIP_UNREGISTRATIONS;
 
-    ret = DdeInitialize( &IdInst, (PFNCALLBACK)DdeProc, flags, 0 );
+    ret = DdeInitialize( &IdInst, DdeProc, flags, 0 );
     if( ret != DMLERR_NO_ERROR ) {
         return( FALSE );
     }
@@ -241,8 +242,8 @@ void IEDDEEnd( void )
         DdeUninitialize( IdInst );
         IdInst = 0;
     }
-    if( DdeProc != (FARPROC)NULL ) {
-        FreeProcInstance( DdeProc );
+    if( DdeProc != (PFNCALLBACK)NULL ) {
+        FreeProcInstance( (FARPROC)DdeProc );
     }
 
 } /* IEDDEEnd */
@@ -349,7 +350,7 @@ void IEDDEEndConversation( void )
  */
 BOOL IEHData2Mem( HDDEDATA hData, void **mem, uint_32 *size )
 {
-    if( hData == (HDDEDATA)NULL || mem == NULL || size == NULL ) {
+    if( hData == NULL || mem == NULL || size == NULL ) {
         return( FALSE );
     }
 
@@ -384,7 +385,7 @@ HDDEDATA IECreateResData( img_node *node )
     BOOL        ok;
 
     data = NULL;
-    hdata = (HDDEDATA)NULL;
+    hdata = NULL;
     ok = (node != NULL && EditFormat != DDENone);
 
     if( ok ) {
@@ -446,13 +447,13 @@ BOOL IEUpdateDDEEditSession( void )
     HDDEDATA            hdata;
     BOOL                ok;
 
-    hdata = (HDDEDATA)NULL;
+    hdata = NULL;
     node = IEGetCurrentImageNode();
     ok = (IEClientConv != (HCONV)NULL && node != NULL && EditFormat != DDENone);
 
     if( ok ) {
         hdata = IECreateResData( node );
-        ok = (hdata != (HDDEDATA)NULL);
+        ok = (hdata != NULL);
     }
 
     if( ok ) {
@@ -461,7 +462,7 @@ BOOL IEUpdateDDEEditSession( void )
                                          XTYP_POKE, TIME_OUT, NULL ) != 0;
     }
 
-    if( hdata != (HDDEDATA)NULL ) {
+    if( hdata != NULL ) {
         DdeFreeDataHandle( hdata );
     }
 
@@ -493,7 +494,7 @@ BOOL IEStartDDEEditSession( void )
         hData = DdeClientTransaction( NULL, 0, IEClientConv, hFileItem,
                                       IEClipFormats[EditFormat].format,
                                       XTYP_REQUEST, TIME_OUT, &ret );
-        ok = (hData != (HDDEDATA)NULL);
+        ok = (hData != NULL);
     }
 
     if( ok ) {
@@ -508,7 +509,7 @@ BOOL IEStartDDEEditSession( void )
     }
 
     if( ok ) {
-        if( hData != (HDDEDATA)NULL ) {
+        if( hData != NULL ) {
             ok = IEHData2Mem( hData, &data, &size );
             DdeFreeDataHandle( hData );
         }
@@ -563,7 +564,7 @@ static void IEHandlePokedData( HDDEDATA hdata )
     void        *cmd;
     uint_32     size;
 
-    if( hdata == (HDDEDATA)NULL ) {
+    if( hdata == NULL ) {
         return;
     }
 
@@ -605,7 +606,7 @@ static void IEHandlePokedData( HDDEDATA hdata )
 /*
  * DdeCallBack
  */
-HDDEDATA CALLBACK DdeCallBack( WORD wType, WORD wFmt, HCONV hConv, HSZ hsz1, HSZ hsz2,
+HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv, HSZ hsz1, HSZ hsz2,
                                HDDEDATA hdata, ULONG_PTR lData1, ULONG_PTR lData2 )
 {
     img_node            *node;
@@ -618,7 +619,7 @@ HDDEDATA CALLBACK DdeCallBack( WORD wType, WORD wFmt, HCONV hConv, HSZ hsz1, HSZ
     _imged_touch( lData1 );
     _imged_touch( lData2 );
 
-    ret = (HDDEDATA)NULL;
+    ret = NULL;
 
     switch( wType ) {
     case XTYP_CONNECT_CONFIRM:
@@ -653,7 +654,7 @@ HDDEDATA CALLBACK DdeCallBack( WORD wType, WORD wFmt, HCONV hConv, HSZ hsz1, HSZ
         hszpair[0].hszTopic = IEServices[i].htopic;
         hszpair[1].hszSvc = (HSZ)NULL;
         hszpair[1].hszTopic = (HSZ)NULL;
-        ret = (HDDEDATA)DdeCreateDataHandle( IdInst, (LPBYTE)&hszpair[0],
+        ret = DdeCreateDataHandle( IdInst, (LPBYTE)&hszpair[0],
                                              sizeof( hszpair ), 0L, 0, CF_TEXT, 0 );
         break;
 

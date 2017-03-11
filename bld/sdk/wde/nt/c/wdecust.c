@@ -421,7 +421,7 @@ bool WdeSetSelectWinCBox( HWND cbox, WdeCustLib *lib )
         }
         current->lib = lib;
         current->index = i;
-        index = (int)SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPSTR)lib->lpcci[i].szDesc );
+        index = (int)SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)lib->lpcci[i].szDesc );
 
         if( index == CB_ERR || index == CB_ERRSPACE ) {
             WdeWriteTrail( "WdeSetSelectWinCBox: CB_ADDSTRING failed!" );
@@ -568,7 +568,7 @@ bool WdePreviewSelected( HWND win )
     p.x = 0;
     p.y = 0;
 
-    SendDlgItemMessage( win, IDB_CUST_CLASSNAME, WM_SETTEXT, 0, (LPARAM)(LPSTR)class );
+    SendDlgItemMessage( win, IDB_CUST_CLASSNAME, WM_SETTEXT, 0, (LPARAM)(LPCSTR)class );
 
     pstyle &= ~(WS_POPUP | WS_VISIBLE | WS_TABSTOP);
     pstyle |= WS_CHILD;

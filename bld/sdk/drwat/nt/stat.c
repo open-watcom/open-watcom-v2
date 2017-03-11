@@ -186,7 +186,7 @@ static walk_result CreateAllRegLists( const mad_reg_set_data *data, void *_crld 
     }
     *p++ = '\0';
     combo = GetDlgItem( crld->parent, STAT_REGISTER_COMBO );
-    SendMessage( combo, CB_ADDSTRING, 0, (LPARAM)TxtBuff );
+    SendMessage( combo, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)TxtBuff );
     dc = GetDC( combo );
     GetTextExtentPoint( dc, TxtBuff, strlen( TxtBuff ), &size );
     ReleaseDC( combo, dc );
@@ -274,7 +274,7 @@ static void InitStatDialog( HWND hwnd )
     combo = GetDlgItem( hwnd, STAT_REGISTER_COMBO );
     MADRegSetWalk( MTK_ALL, CreateAllRegLists, &data );
     if( data.index == 1 ) {
-        SendMessage( combo, CB_GETLBTEXT, (WPARAM)0, (LPARAM)buff );
+        SendMessage( combo, CB_GETLBTEXT, (WPARAM)0, (LPARAM)(LPSTR)buff );
         SetDlgItemText( hwnd, STAT_REGISTER_SET, buff );
         DestroyWindow( combo );
     } else {
@@ -312,8 +312,7 @@ WINEXPORT INT_PTR CALLBACK SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LP
             seg = NumToAddr( DTTaskEntry.hModule, i );
             if( seg != 0 ) {
                 sprintf( buff,"%04d->%04x", i, seg );
-                SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_ADDSTRING, 0,
-                                (LPARAM)(LPSTR)buff );
+                SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)buff );
             }
         }
         ret = true;

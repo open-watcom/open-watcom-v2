@@ -283,7 +283,7 @@ WINEXPORT UINT CALLBACK WOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
 
         title = AllocRCString( W_GETFNCOMBOTITLE );
         if( title != NULL ) {
-            SendDlgItemMessage( hwnd, stc2, WM_SETTEXT, 0, (LPARAM)title );
+            SendDlgItemMessage( hwnd, stc2, WM_SETTEXT, 0, (LPARAM)(LPCSTR)title );
             FreeRCString( title );
         }
 

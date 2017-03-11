@@ -264,21 +264,21 @@ TEMPLATE_HANDLE DoneAddingControls( TEMPLATE_HANDLE data )
  */
 INT_PTR DynamicDialogBox( DLGPROCx dlgfn, HINSTANCE inst, HWND hwnd, TEMPLATE_HANDLE data, LPARAM lparam )
 {
-    FARPROC     fp;
+    DLGPROC     dlgproc;
     INT_PTR     rc;
 
-    fp = MakeDlgProcInstance( (DLGPROCx)dlgfn, inst );
+    dlgproc = (DLGPROC)MakeDlgProcInstance( (DLGPROCx)dlgfn, inst );
 #if defined(__NT__)
     {
         LPCSTR  ptr;
         ptr = GlobalLock( data );
-        rc = DialogBoxIndirectParam( inst, (LPCDLGTEMPLATE)ptr, hwnd, (DLGPROC)fp, lparam );
+        rc = DialogBoxIndirectParam( inst, (LPCDLGTEMPLATE)ptr, hwnd, dlgproc, lparam );
         GlobalUnlock( data );
     }
 #else
-    rc = DialogBoxIndirectParam( inst, data, hwnd, (DLGPROC)fp, lparam );
+    rc = DialogBoxIndirectParam( inst, data, hwnd, dlgproc, lparam );
 #endif
-    FreeProcInstance( fp );
+    FreeProcInstance( (FARPROC)dlgproc );
     GlobalFree( data );
     return( rc );
 

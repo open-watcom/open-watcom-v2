@@ -124,9 +124,9 @@ void WdeAddUniqueStringToCombo( HWND hdlg, int id, char *str )
     if( cbox == (HWND)NULL ) {
         return;
     }
-    pos = SendMessage( cbox, CB_FINDSTRINGEXACT, 0, (LPARAM)(LPSTR)str );
+    pos = SendMessage( cbox, CB_FINDSTRINGEXACT, 0, (LPARAM)(LPCSTR)str );
     if( pos == CB_ERR ) {
-        SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
+        SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
     }
 }
 

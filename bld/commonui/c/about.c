@@ -167,10 +167,10 @@ INT_PTR CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
  */
 void DoAbout( LPABOUTINFO ai )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
 
-    proc = MakeDlgProcInstance( AboutProc, ai->inst );
-    DialogBoxParam( ai->inst, "About", ai->owner, (DLGPROC)proc, (LPARAM)ai );
-    FreeProcInstance( proc );
+    dlgproc = (DLGPROC)MakeDlgProcInstance( AboutProc, ai->inst );
+    DialogBoxParam( ai->inst, "About", ai->owner, dlgproc, (LPARAM)ai );
+    FreeProcInstance( (FARPROC)dlgproc );
 
 } /* DoAbout */

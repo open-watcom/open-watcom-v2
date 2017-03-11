@@ -1092,10 +1092,9 @@ static bool WRAddSymbol( HWND hDlg, WRHashTable *table, bool force,
         if( dup ) {
             // this is neccessary if the value of the string was moified
             index = (int)SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_FINDSTRINGEXACT, 0,
-                                        (LPARAM)(LPSTR)symbol );
+                                        (LPARAM)(LPCSTR)symbol );
         } else {
-            index = (int)SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_ADDSTRING, 0,
-                                        (LPARAM)(LPSTR)symbol );
+            index = (int)SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)symbol );
             SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_SETITEMDATA,
                                 index, (LPARAM)(LPVOID)entry );
         }
@@ -1486,7 +1485,7 @@ static void WRSetAddSymInfo( HWND hDlg, WRAddSymInfo *info )
         if( info->modify ) {
             str = WRAllocRCString( WR_MODIFYSYMBOLTITLE );
             if( str != NULL ) {
-                SendMessage( hDlg, WM_SETTEXT, 0, (LPARAM)(LPSTR)str );
+                SendMessage( hDlg, WM_SETTEXT, 0, (LPARAM)(LPCSTR)str );
                 WRFreeRCString( str );
             }
             if( info->symbol != NULL ) {

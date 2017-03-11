@@ -334,16 +334,16 @@ static void fillThreadCtl( HWND hwnd, ProcStats *info, char *buf ) {
         strcpy( save, "bbbbbbbbbbbb" ); /* just some text that shouldn't
                                            match anything in the listbox */
     } else {
-        SendMessage( lb, LB_GETTEXT, index, (LPARAM)save );
+        SendMessage( lb, LB_GETTEXT, index, (LPARAM)(LPSTR)save );
     }
     SendMessage( lb, LB_RESETCONTENT, 0, 0L );
     rc = GetNextThread( &thdinfo, &place, info->pid, TRUE );
     while( rc ) {
         sprintf( buf, "tid = %08lX", thdinfo.tid );
-        SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)buf );
+        SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)buf );
         rc = GetNextThread( &thdinfo, &place, info->pid, FALSE );
     }
-    index = SendMessage( lb, LB_FINDSTRING, -1, (LPARAM)save );
+    index = SendMessage( lb, LB_FINDSTRING, -1, (LPARAM)(LPCSTR)save );
     if( index == LB_ERR ) {
         enableChoices( hwnd, FALSE );
     } else {
@@ -370,7 +370,7 @@ static void fillThreadInfo( HWND hwnd, ProcStats *info ) {
         SetDlgItemText( hwnd, THREAD_PRIORITY, "" );
     } else {
         enableChoices( hwnd, TRUE );
-        SendMessage( lb, LB_GETTEXT, index, (LPARAM)buf );
+        SendMessage( lb, LB_GETTEXT, index, (LPARAM)(LPSTR)buf );
         threadid = getThreadId( buf );
         sprintf( buf, "tid = %08lX", threadid );
         SetDlgItemText( hwnd, THREAD_TID, buf );
@@ -457,7 +457,7 @@ BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
                             MB_OK | MB_ICONEXCLAMATION );
                 break;
             }
-            SendDlgItemMessage( hwnd, THREAD_LIST, LB_GETTEXT, index, (LPARAM)buf );
+            SendDlgItemMessage( hwnd, THREAD_LIST, LB_GETTEXT, index, (LPARAM)(LPSTR)buf );
             threadid = getThreadId( buf );
             process = FindProcess( info->procinfo.pid );
             thread = FindThread( process, threadid );

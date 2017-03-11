@@ -550,7 +550,7 @@ INT_PTR CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             for( i = 0; i < info->list.used; i++ ) {
                 if( info->list.data[i]->mbi.State == MEM_COMMIT ) {
                     FormatMemListEntry( buf, info->list.data[i] );
-                    j = (int)SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)buf );
+                    j = (int)SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)buf );
                     SendMessage( lb, LB_SETITEMDATA, j, i );
                 }
             }

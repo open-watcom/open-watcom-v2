@@ -524,7 +524,7 @@ static void fillTaskListBox( HWND hwnd, char *buf )
         } else {
             sprintf( buf, "  Pid %08lX (%s)", info.pid, info.name );
         }
-        index = (int)SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)buf );
+        index = (int)SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)buf );
         SendMessage( lb, LB_SETITEMDATA, index, info.pid );
         if( info.pid == curproc ) {
             select = index;

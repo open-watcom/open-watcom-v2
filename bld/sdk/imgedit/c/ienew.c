@@ -219,7 +219,7 @@ INT_PTR CALLBACK SelCursorDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
         hlistbox = GetDlgItem( hwnd, TARGETLISTBOX );
         mono32x32 = IEAllocRCString( WIE_MONO32X32 );
         if( mono32x32 != NULL ) {
-            SendMessage( hlistbox, LB_INSERTSTRING, 0, (LPARAM)(LPSTR)mono32x32 );
+            SendMessage( hlistbox, LB_INSERTSTRING, 0, (LPARAM)(LPCSTR)mono32x32 );
             IEFreeRCString( mono32x32 );
         } else {
             SendMessage( hlistbox, LB_INSERTSTRING, 0, (LPARAM)(LPCSTR)"Monochrome, 32x32" );

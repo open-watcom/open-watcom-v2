@@ -271,7 +271,7 @@ static void displayServers( DDETrackInfo *info )
         strcpy( buf, cur->server );
         buf[len] = ' ';
         strcpy( buf + 20, cur->instname );
-        SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPSTR)buf );
+        SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)buf );
     }
 
 } /* displayServers */
@@ -488,7 +488,7 @@ static void redispStrTrk( DDETrackInfo *info )
         }
         sprintf( buf, "%0*lX    %4d    %s", HSZ_FMT_LEN, items[i]->hsz,
                  items[i]->cnt, items[i]->str );
-        SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPSTR)buf );
+        SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)buf );
     }
 
 } /* redispStrTrk */
@@ -723,7 +723,7 @@ static void redispLinkTrk( DDETrackInfo *info, bool islink )
             sprintf( buf, "%08lX %08lX %-20s %-s", items[i]->client,
                      items[i]->server, items[i]->service, items[i]->topic );
         }
-        SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPSTR)buf );
+        SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)buf );
     }
 
 } /* redispLinkTrk */

@@ -354,7 +354,7 @@ bool WdeCreateControlsToolBar( void )
     }
 
     text = WdeAllocRCString( WDE_TOOLBOXCAPTION );
-    SendMessage( WdeControls->win, WM_SETTEXT, 0, (LPARAM)(LPSTR)text );
+    SendMessage( WdeControls->win, WM_SETTEXT, 0, (LPARAM)(LPCSTR)text );
     if( text != NULL ) {
         WdeFreeRCString( text );
     }

@@ -69,7 +69,7 @@ bool WRAPI WRSetLBoxWithStr( HWND lbox, const char *str, void *data )
     ok = (lbox != (HWND)NULL && str != NULL);
 
     if( ok ) {
-        index = (int)SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
+        index = (int)SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
         ok = (index != LB_ERR && index != LB_ERRSPACE);
     }
 

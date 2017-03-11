@@ -54,8 +54,9 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
-                HSZ hsz1, HSZ hsz2, HDDEDATA hdata, ULONG_PTR lData1, ULONG_PTR lData2 );
+
+/* Local Window callback functions prototypes */
+WINEXPORT FNCALLBACK DdeCallBack;
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -93,16 +94,16 @@ static WRETopic Topics[NUM_TOPICS] = {
     { WRE_ICON_TOPIC,   NULL }
 };
 
-static DWORD    IdInst                  = 0;
-static FARPROC  DdeProc                 = NULL;
-static HSZ      hServiceName            = NULL;
-static HSZ      hFileItem               = NULL;
-static HSZ      hIs32BitItem            = NULL;
-static HSZ      hNameItem               = NULL;
-static HSZ      hDataItem               = NULL;
-static HSZ      hDialogDump             = NULL;
-static HSZ      hImageDump              = NULL;
-static WRESPT   PendingService          = NoServicePending;
+static DWORD        IdInst          = 0;
+static PFNCALLBACK  DdeProc         = (PFNCALLBACK)NULL;
+static HSZ          hServiceName    = NULL;
+static HSZ          hFileItem       = NULL;
+static HSZ          hIs32BitItem    = NULL;
+static HSZ          hNameItem       = NULL;
+static HSZ          hDataItem       = NULL;
+static HSZ          hDialogDump     = NULL;
+static HSZ          hImageDump      = NULL;
+static WRESPT       PendingService  = NoServicePending;
 
 WRESPT WREGetPendingService( void )
 {
@@ -118,7 +119,7 @@ bool WREHData2Mem( HDDEDATA hData, void **data, uint_32 *size )
 {
     DWORD   dde_size;
 
-    if( data == NULL || size == NULL || hData == (HDDEDATA)NULL ) {
+    if( data == NULL || size == NULL || hData == NULL ) {
         return( FALSE );
     }
 
@@ -152,8 +153,8 @@ bool WREDDEStart( HINSTANCE inst )
         return( FALSE );
     }
 
-    DdeProc = MakeProcInstance( (FARPROC)DdeCallBack, inst );
-    if( DdeProc == (FARPROC)NULL ) {
+    DdeProc = (PFNCALLBACK)MakeProcInstance( (FARPROC)DdeCallBack, inst );
+    if( DdeProc == (PFNCALLBACK)NULL ) {
         return( FALSE );
     }
 
@@ -161,7 +162,7 @@ bool WREDDEStart( HINSTANCE inst )
             CBF_FAIL_ADVISES | CBF_FAIL_SELFCONNECTIONS |
             CBF_SKIP_REGISTRATIONS | CBF_SKIP_UNREGISTRATIONS;
 
-    ret = DdeInitialize( &IdInst, (PFNCALLBACK)DdeProc, flags, 0 );
+    ret = DdeInitialize( &IdInst, DdeProc, flags, 0 );
     if( ret != DMLERR_NO_ERROR ) {
         return( FALSE );
     }
@@ -266,8 +267,8 @@ void WREDDEEnd( void )
         }
         DdeUninitialize( IdInst );
     }
-    if( DdeProc != (FARPROC)NULL ) {
-        FreeProcInstance( DdeProc );
+    if( DdeProc != (PFNCALLBACK)NULL ) {
+        FreeProcInstance( (FARPROC)DdeProc );
     }
 }
 
@@ -321,7 +322,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
     _wre_touch( lData1 );
     _wre_touch( lData2 );
 
-    ret = (HDDEDATA)FALSE;
+    ret = NULL;
 
     switch( wType ) {
     case XTYP_CONNECT:
@@ -383,7 +384,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
         hszpair[0].hszTopic = htopic;
         hszpair[1].hszSvc = (HSZ)NULL;
         hszpair[1].hszTopic = (HSZ)NULL;
-        ret = (HDDEDATA)DdeCreateDataHandle( IdInst, (LPBYTE)&hszpair[0], sizeof( hszpair ),
+        ret = DdeCreateDataHandle( IdInst, (LPBYTE)&hszpair[0], sizeof( hszpair ),
                                              0L, 0, CF_TEXT, 0 );
         break;
 

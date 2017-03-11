@@ -52,7 +52,7 @@
 void WRSetEditWithStr( const char *cp, HWND hDlg, int id )
 {
     if( cp != NULL ) {
-        SendDlgItemMessage( hDlg, id, WM_SETTEXT, 0, (LPARAM)(LPSTR)cp );
+        SendDlgItemMessage( hDlg, id, WM_SETTEXT, 0, (LPARAM)(LPCSTR)cp );
     }
 }
 

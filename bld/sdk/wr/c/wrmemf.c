@@ -70,7 +70,7 @@ static void         WRGetWinInfo( HWND, WRMFInfo * );
 bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, HELP_CALLBACK help_callback )
 {
     WRMFInfo    info;
-    DLGPROC     proc;
+    DLGPROC     dlg_proc;
     HINSTANCE   inst;
     INT_PTR     modified;
 
@@ -83,11 +83,11 @@ bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, HELP_CALL
     info.mflags = *mflags;
     inst = WRGetInstance();
 
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)WRMemFlagsDlgProc, inst );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WRMemFlagsDlgProc, inst );
 
-    modified = JDialogBoxParam( inst, "WRMemFlags", parent, proc, (LPARAM)&info );
+    modified = JDialogBoxParam( inst, "WRMemFlags", parent, dlg_proc, (LPARAM)(LPVOID)&info );
 
-    FreeProcInstance( (FARPROC)proc );
+    FreeProcInstance( (FARPROC)dlg_proc );
 
     if( modified == IDOK ) {
         *mflags = info.mflags;
@@ -99,7 +99,7 @@ bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, HELP_CALL
 void WRSetWinInfo( HWND hDlg, WRMFInfo *info )
 {
     if( info != NULL ) {
-        SendDlgItemMessage( hDlg, IDM_MFNAME, WM_SETTEXT, 0, (LPARAM)(LPSTR)info->name );
+        SendDlgItemMessage( hDlg, IDM_MFNAME, WM_SETTEXT, 0, (LPARAM)(LPCSTR)info->name );
 
         if( info->mflags & MEMFLAG_MOVEABLE ) {
             CheckDlgButton( hDlg, IDM_MFMV, BST_CHECKED );

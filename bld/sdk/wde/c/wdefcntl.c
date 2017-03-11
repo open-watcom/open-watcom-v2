@@ -622,7 +622,7 @@ bool WdeControlSetFont( WdeControlObject *obj, HFONT *font, WdeResizeRatio *resi
 
         SendMessage( obj->window_handle, WM_SETFONT, (WPARAM)*font, (LPARAM)TRUE );
 
-        SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)name );
+        SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPCSTR)name );
     }
 
     return( true );
@@ -833,7 +833,7 @@ bool WdeControlCreateWindow( WdeControlObject *obj, bool *p1, void *p2 )
     if( set_font ) {
         SendMessage( obj->window_handle, WM_SETFONT, (WPARAM)obj->font, (LPARAM)TRUE );
 
-        SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)name );
+        SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPCSTR)name );
     }
 
     WdeBringControlToTop( obj );
@@ -1759,10 +1759,10 @@ bool WdeControlModifyInfo( WdeControlObject *obj, WdeInfoStruct *in, void *p2 )
         SETCTL_TEXT( obj->control_info, in->u.ctl.text );
         text = WdeResNameOrOrdinalToStr( GETCTL_TEXT( obj->control_info ), 10 );
         if( text != NULL ) {
-            SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)text );
+            SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPCSTR)text );
             WRMemFree( text );
         } else {
-            SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)"" );
+            SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPCSTR)"" );
         }
     }
 

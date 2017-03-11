@@ -83,8 +83,7 @@ INT_PTR CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
         for( i = 0; i < dipCnt; i++ ) {
             SetDlgMonoFont( hwnd, DIPLD_LIST );
             SetDlgMonoFont( hwnd, DIPLD_HEADER );
-            SendDlgItemMessage( hwnd, DIPLD_LIST, LB_ADDSTRING, 0,
-                                (LPARAM)(LPSTR)theLoadInfo[i].loadmsg );
+            SendDlgItemMessage( hwnd, DIPLD_LIST, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)theLoadInfo[i].loadmsg );
         }
         ret = true;
         break;

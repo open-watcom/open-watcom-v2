@@ -195,9 +195,8 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
             return( 0 );
         }
 #ifndef __NT__
-    }
 #if 0
-    else if( IsDDE ) {
+    } else if( IsDDE ) {
         WdeDisplayErrorMsg( WDE_NOMULTIPLEINSTANCES );
         WdeDDEDumpConversation( hinstCurrent );
         return( 0 );
@@ -214,8 +213,8 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
             WdeDisplayErrorMsg( WDE_NOMULTIPLEINSTANCES );
         }
         return( 0 );
-    }
 #endif
+    }
 #endif
 
     if( !WdeInitInst( hinstCurrent ) ) {

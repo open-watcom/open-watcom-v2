@@ -117,7 +117,7 @@ static void WdeSetTagText( WdeOrderedEntry *oe )
             }
             break;
         }
-        SendMessage( oe->tag, WM_SETTEXT, 0, (LPARAM)(LPSTR)str );
+        SendMessage( oe->tag, WM_SETTEXT, 0, (LPARAM)(LPCSTR)str );
     }
 }
 

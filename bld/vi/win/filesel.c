@@ -92,7 +92,7 @@ WINEXPORT UINT_PTR CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
             len = SendDlgItemMessage( hwnd, edt1, WM_GETTEXTLENGTH, 0, 0 );
             if( len >= of->nMaxFile ) {
                 FileNameList = MemAlloc( len + 1 );
-                len = SendDlgItemMessage( hwnd, edt1, WM_GETTEXT, len + 1, (LPARAM)FileNameList );
+                len = SendDlgItemMessage( hwnd, edt1, WM_GETTEXT, len + 1, (LPARAM)(LPSTR)FileNameList );
             }
         }
         break;

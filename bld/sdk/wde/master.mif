@@ -31,7 +31,7 @@ extra_cpp_flags_nt = -DNOUSE3D
 
 extra_c_flags     = -s -fh
 
-extra_c_flags_win = -zu-zw-zc
+extra_c_flags_win = -zw-zc
 
 of_386  = -of+
 of_i86  = -of+

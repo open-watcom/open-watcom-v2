@@ -305,7 +305,7 @@ WINEXPORT INT_PTR CALLBACK SegMapDlgProc( HWND hwnd, UINT msg, UINT wparam, DWOR
             seg = NumToAddr( DTTaskEntry.hModule, i );
             if( seg != 0 ) {
                 sprintf( buff,"%04d->%04x", i, seg );
-                SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_ADDSTRING, 0, (LPARAM)(LPSTR)buff );
+                SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)buff );
             }
         }
         ret = true;

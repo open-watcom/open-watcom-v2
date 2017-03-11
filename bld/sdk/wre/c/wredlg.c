@@ -394,7 +394,7 @@ bool WRESetDlgSessionResName( HCONV server, HDDEDATA hdata )
     uint_32             size;
     bool                ok;
 
-    ok = (server != (HCONV)NULL && hdata != (HDDEDATA)NULL);
+    ok = (server != (HCONV)NULL && hdata != NULL);
 
     if( ok ) {
         session = WREFindDialogSession( server );
@@ -437,7 +437,7 @@ bool WRESetDlgSessionResData( HCONV server, HDDEDATA hdata )
     uint_32             size;
     bool                ok;
 
-    ok = (server != (HCONV)NULL && hdata != (HDDEDATA)NULL);
+    ok = (server != (HCONV)NULL && hdata != NULL);
 
     if( ok ) {
         session = WREFindDialogSession( server );

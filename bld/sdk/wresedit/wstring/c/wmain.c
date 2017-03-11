@@ -486,7 +486,7 @@ void WSetEditTitle( WStringEditInfo *einfo )
     }
 
     if( title != NULL ) {
-        SendMessage( einfo->win, WM_SETTEXT, 0, (LPARAM)title );
+        SendMessage( einfo->win, WM_SETTEXT, 0, (LPARAM)(LPCSTR)title );
         if( is_rc ) {
             FreeRCString( title );
         } else {
