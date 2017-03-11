@@ -76,7 +76,7 @@ void    WdeMouseRtn( HWND, RECT * );
 /* static function prototypes                                               */
 /****************************************************************************/
 static void         WdeSetCurrentRes( WdeResInfo * );
-static bool         WdeCreateResourceWindow( WdeResInfo *, int, char * );
+static bool         WdeCreateResourceWindow( WdeResInfo *, size_t, char * );
 static bool         WdeAddDlgItems( WdeResInfo * );
 static bool         WdeRemoveResource( WdeResInfo * );
 static char         *WdeGetQueryName( WdeResInfo * );
