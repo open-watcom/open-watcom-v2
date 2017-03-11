@@ -315,7 +315,7 @@ HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
     HSZ         htopic;
     HCONV       htconv;
     void        *data;
-    uint_32     size;
+    size_t      size;
     bool        ok;
 
     _wre_touch( hdata );

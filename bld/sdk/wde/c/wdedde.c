@@ -322,13 +322,12 @@ HDDEDATA WdeCreateResNameData( WResID *name, bool is32bit )
 {
     HDDEDATA    hdata;
     void        *data;
-    uint_32     size;
+    size_t      size;
 
     hdata = NULL;
 
     if( WRWResID2Mem( name, &data, &size, is32bit ) ) {
-        hdata = DdeCreateDataHandle( IdInst, (LPBYTE)data, size, 0,
-                                     hNameItem, WdeDataClipbdFormat, 0 );
+        hdata = DdeCreateDataHandle( IdInst, (LPBYTE)data, size, 0, hNameItem, WdeDataClipbdFormat, 0 );
         WRMemFree( data );
     }
 

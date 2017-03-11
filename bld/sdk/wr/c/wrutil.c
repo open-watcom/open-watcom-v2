@@ -600,9 +600,8 @@ size_t WRAPI WRStrlen( const char *str, bool is32bit )
     return( len );
 }
 
-int WRAPI WRFindFnOffset( const char *_name )
+size_t WRAPI WRFindFnOffset( const char *_name )
 {
-    int                 offset;
     const unsigned char *cp;
     const unsigned char *last;
     const unsigned char *name = (const unsigned char *)_name;
@@ -624,7 +623,5 @@ int WRAPI WRFindFnOffset( const char *_name )
         return( -1 );
     }
 
-    offset = last - name;
-
-    return( offset );
+    return( (size_t)( last - name ) );
 }

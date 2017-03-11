@@ -57,12 +57,12 @@ static int      WRFreeLangNodes( WResResNode *rnode );
 /* static variables                                                         */
 /****************************************************************************/
 
-int WRAPI WRRemoveLangNodeFromDir( WResDir dir, WResTypeNode **tnode,
+bool WRAPI WRRemoveLangNodeFromDir( WResDir dir, WResTypeNode **tnode,
                                        WResResNode **rnode, WResLangNode **lnode )
 {
     if( dir == NULL || tnode == NULL || *tnode == NULL || rnode == NULL ||
         *rnode == NULL || lnode == NULL || *lnode == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( (*rnode)->Head == (*rnode)->Tail ) {
@@ -132,13 +132,13 @@ int WRAPI WRRemoveLangNodeFromDir( WResDir dir, WResTypeNode **tnode,
 
     dir->NumResources--;
 
-    return( TRUE );
+    return( true );
 }
 
-int WRAPI WRRemoveTypeNodeFromDir( WResDir dir, WResTypeNode *tnode )
+bool WRAPI WRRemoveTypeNodeFromDir( WResDir dir, WResTypeNode *tnode )
 {
     if( dir == NULL || tnode == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( dir->Head == tnode ) {
@@ -160,7 +160,7 @@ int WRAPI WRRemoveTypeNodeFromDir( WResDir dir, WResTypeNode *tnode )
 
     dir->NumTypes--;
 
-    return( TRUE );
+    return( true );
 }
 
 int WRFreeResNodes( WResTypeNode *tnode )

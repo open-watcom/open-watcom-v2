@@ -100,7 +100,7 @@ typedef struct WREPasteData {
 /* static function prototypes                                               */
 /****************************************************************************/
 static WREClipData  *WRECreateClipData( WRECurrentResInfo *curr );
-static bool         WREGetClipData( WREClipFormat *fmt, void **data, uint_32 *dsize );
+static bool         WREGetClipData( WREClipFormat *fmt, void **data, size_t *dsize );
 static bool         WREClipBitmap( WRECurrentResInfo *curr, HWND main );
 static bool         WREClipResource( WRECurrentResInfo *curr, HWND main, UINT fmt );
 static bool         WREQueryPasteReplace( WResID *name, uint_16 type_id, bool *replace );
@@ -126,7 +126,7 @@ static WREClipFormat WREClipFormats[] = {
 
 static HBITMAP WPrivateFormat       = NULL;
 
-bool WREGetClipData( WREClipFormat *fmt, void **data, uint_32 *dsize )
+bool WREGetClipData( WREClipFormat *fmt, void **data, size_t *dsize )
 {
     bool        ok;
     HANDLE      hclipdata;
@@ -288,7 +288,7 @@ static bool WREGetAndPasteResource( WREClipFormat *fmt )
     WResID              *ctype;
     WResID              *cname;
     void                *data;
-    uint_32             dsize;
+    size_t              dsize;
     bool                dup;
     bool                new_type;
     bool                replace;
@@ -391,7 +391,7 @@ static bool WREGetAndPasteIconOrCursor( WREClipFormat *fmt )
     WResID              *ctype;
     WResID              *cname;
     void                *data;
-    uint_32             dsize;
+    size_t              dsize;
     bool                dup;
     bool                new_type;
     bool                replace;
@@ -568,7 +568,7 @@ static bool WREGetAndPasteBitmap( WREClipFormat *fmt, void *data, uint_32 dsize 
 static bool WREGetAndPasteDIB( WREClipFormat *fmt )
 {
     void                *data;
-    uint_32             dsize;
+    size_t              dsize;
     bool                ok;
 
     data = NULL;
@@ -596,7 +596,7 @@ static bool WREGetAndPasteHBITMAP( WREClipFormat *fmt )
 {
     HBITMAP             hbitmap;
     void                *data;
-    uint_32             dsize;
+    size_t              dsize;
     bool                ok;
 
     data = NULL;
@@ -696,11 +696,11 @@ void WRESetPasteMenuItem( HWND main )
 WREClipData *WRECreateClipData( WRECurrentResInfo *curr )
 {
     WREClipData *cdata;
-    uint_32     cdata_size;
+    size_t      cdata_size;
     BYTE        *rdata;
-    uint_32     rdata_size;
+    size_t      rdata_size;
     void        *name;
-    uint_32     name_size;
+    size_t      name_size;
     uint_16     type_id;
     bool        ok;
 
@@ -771,7 +771,7 @@ bool WREClipBitmap( WRECurrentResInfo *curr, HWND main )
 {
     HBITMAP     hbitmap;
     BYTE        *data;
-    uint_32     dsize;
+    size_t      dsize;
     bool        ok;
 
     data = NULL;

@@ -381,7 +381,7 @@ HDDEDATA IECreateResData( img_node *node )
 {
     HDDEDATA    hdata;
     BYTE        *data;
-    uint_32     size;
+    size_t      size;
     BOOL        ok;
 
     data = NULL;

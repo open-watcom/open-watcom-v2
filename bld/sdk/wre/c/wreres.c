@@ -889,7 +889,7 @@ bool WRESaveResource( WREResInfo *res_info, bool get_name )
 {
     char                *fn;
     WREGetFileStruct    gf;
-    int                 fn_offset;
+    size_t              fn_offset;
     bool                got_name;
     bool                ok;
 
@@ -962,7 +962,7 @@ bool WRESaveResource( WREResInfo *res_info, bool get_name )
 
     if( ok ) {
         //fn_offset = WRFindFnOffset( fn );
-        SendMessage( res_info->res_win, WM_SETTEXT, 0, (LPARAM)(LPCSTR)&fn[fn_offset] );
+        SendMessage( res_info->res_win, WM_SETTEXT, 0, (LPARAM)(LPCSTR)( fn + fn_offset ) );
     }
 
     return( ok );
@@ -1072,10 +1072,10 @@ bool WRECreateResourceWindow( WREResInfo *res_info )
     if( ok ) {
         WREIncNumRes();
         if( res_info->info->file_name != NULL ) {
-            //int     fn_offset;
+            //size_t  fn_offset;
             //perhaps I should make this an option
             //fn_offset = WRFindFnOffset( res_info->info->file_name );
-            //title = &res_info->info->file_name[fn_offset];
+            //title = res_info->info->file_name + fn_offset;
             mdics.szTitle = res_info->info->file_name;
         } else if( res_info->info->save_name != NULL ) {
             mdics.szTitle = res_info->info->save_name;

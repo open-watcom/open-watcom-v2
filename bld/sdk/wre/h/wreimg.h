@@ -53,9 +53,9 @@ extern bool     WREDumpPendingImageSession( void );
 extern bool     WREEndAllImageSessions( bool fatal_exit );
 extern void     WREEndLangImageSession( WResLangNode *lnode );
 extern void     WREEndResImageSessions( WREResInfo *rinfo );
-extern bool     WREGetImageSessionFileName( HCONV server, void **data, uint_32 *size );
-extern bool     WREGetImageSessionResName( HCONV server, void **data, uint_32 *size );
-extern bool     WREGetImageSessionData( HCONV server, void **data, uint_32 *size );
+extern bool     WREGetImageSessionFileName( HCONV server, void **data, size_t *size );
+extern bool     WREGetImageSessionResName( HCONV server, void **data, size_t *size );
+extern bool     WREGetImageSessionData( HCONV server, void **data, size_t *size );
 extern bool     WRESetImageSessionResName( HCONV server, HDDEDATA hdata );
 extern bool     WRESetImageSessionResData( HCONV server, HDDEDATA hdata );
 

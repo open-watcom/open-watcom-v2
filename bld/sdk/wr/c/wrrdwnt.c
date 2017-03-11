@@ -343,7 +343,7 @@ bool WRHandleWinNTTypeEntry( WResFileID fid, WResDir *dir, resource_dir_entry *r
     bool    ok;
 
     /* verify the id_name */
-    if( (rd_entry->id_name & PE_RESOURCE_MASK_ON) != 0 ^ is_name ) {
+    if( ( (rd_entry->id_name & PE_RESOURCE_MASK_ON) != 0 ) ^ is_name ) {
         WRDisplayErrorMsg( WR_BADIDDISCARDTYPE );
         return( FALSE );
     }
@@ -414,7 +414,7 @@ bool WRHandleWinNTNameEntry( WResFileID fid, WResDir *dir, WResID *type,
     def_lang.sublang = DEF_SUBLANG;
 
     /* verify the id_name */
-    if( (rd_entry->id_name & PE_RESOURCE_MASK_ON) != 0 ^ is_name ) {
+    if( ( (rd_entry->id_name & PE_RESOURCE_MASK_ON) != 0 ) ^ is_name ) {
         WRDisplayErrorMsg( WR_BADIDDISCARDNAME );
         return( FALSE );
     }

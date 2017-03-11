@@ -60,11 +60,12 @@ int WRAPI WRGetLastError( void )
     return( LastError );
 }
 
-bool WRAPI WRReadEntireFile( const char *fname, BYTE **data, uint_32 *size )
+bool WRAPI WRReadEntireFile( const char *fname, BYTE **data, size_t *size )
 {
     long int    s;
     bool        ok;
     FILE        *fh;
+    size_t      len;
 
     fh = NULL;
     ok = ( fname != NULL && data != NULL && size != NULL );
@@ -83,17 +84,18 @@ bool WRAPI WRReadEntireFile( const char *fname, BYTE **data, uint_32 *size )
     }
 
     if( ok ) {
-        *size = s;
-        *data = (BYTE *)MemAlloc( *size );
+        len = (size_t)s;
+        *size = len;
+        *data = (BYTE *)MemAlloc( len );
         ok = (*data != NULL);
     }
 
     if( ok ) {
         rewind( fh );
-        s = fread( *data, 1, s, fh );
-        if( *size != s ) {
+        len = fread( *data, 1, len, fh );
+        if( *size != len ) {
             if( feof( fh ) ) {
-                *size = s;
+                *size = len;
             } else {
                 ok = false;
             }

@@ -121,11 +121,11 @@ bool WRLoadBitmapFile( WRInfo *info )
 bool WRLoadIconFile( WRInfo *info )
 {
     BYTE                *data;
-    uint_32             data_size;
+    size_t              data_size;
     ICONHEADER          *pih;
-    uint_32             pihsize;
+    size_t              pihsize;
     RESICONHEADER       *rih;
-    uint_32             rihsize;
+    size_t              rihsize;
     WResID              *tname;
     WResID              *rname;
     WResLangType        lang;
@@ -171,8 +171,7 @@ bool WRLoadIconFile( WRInfo *info )
     }
 
     if ( ok ) {
-        ok = !WResAddResource( tname, rname, DEF_MEMFLAGS, 0, rihsize,
-                               info->dir, &lang, &dup );
+        ok = !WResAddResource( tname, rname, DEF_MEMFLAGS, 0, rihsize, info->dir, &lang, &dup );
     }
 
     if( ok ) {
@@ -211,11 +210,11 @@ bool WRLoadIconFile( WRInfo *info )
 bool WRLoadCursorFile( WRInfo *info )
 {
     BYTE                *data;
-    uint_32             data_size;
+    size_t              data_size;
     CURSORHEADER        *ch;
-    uint_32             chsize;
+    size_t              chsize;
     RESCURSORHEADER     *rch;
-    uint_32             rchsize;
+    size_t              rchsize;
     WResID              *tname;
     WResID              *rname;
     WResLangType        lang;
@@ -261,8 +260,7 @@ bool WRLoadCursorFile( WRInfo *info )
     }
 
     if ( ok ) {
-        ok = !WResAddResource( tname, rname, DEF_MEMFLAGS, 0, rchsize,
-                               info->dir, &lang, &dup );
+        ok = !WResAddResource( tname, rname, DEF_MEMFLAGS, 0, rchsize, info->dir, &lang, &dup );
     }
 
     if( ok ) {
@@ -367,7 +365,7 @@ bool WRSaveBitmapResource( WRInfo *info, bool backup )
     WResTypeNode        *tnode;
     WResLangNode        *lnode;
     BYTE                *data;
-    uint_32             dsize;
+    size_t              dsize;
 
     ok = ( info != NULL && info->dir != NULL );
 
@@ -434,7 +432,7 @@ bool WRSaveCursorResource( WRInfo *info, bool backup )
     WResLangNode        *lnode;
     WResLangType        lang;
     BYTE                *data;
-    uint_32             size;
+    size_t              size;
     bool                use_rename;
     bool                ok;
 
@@ -491,7 +489,7 @@ bool WRSaveIconResource( WRInfo *info, bool backup )
     WResLangNode        *lnode;
     WResLangType        lang;
     BYTE                *data;
-    uint_32             size;
+    size_t              size;
     bool                use_rename;
     bool                ok;
 

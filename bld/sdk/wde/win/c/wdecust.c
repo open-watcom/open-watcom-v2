@@ -278,20 +278,20 @@ bool WdeLoadMSCustomControls( WdeCustLib *lib )
     HWND             dialog_owner;
     DLGPROC          dlg_proc;
     HINSTANCE        app_inst;
-    INT_PTR          ok;
+    INT_PTR          rc;
 
     dialog_owner = WdeGetMainWindowHandle();
     app_inst = WdeGetAppInstance();
     dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WdeLoadCustDlgProc, app_inst );
-    ok = JDialogBoxParam( app_inst, "WdeLoadCustom", dialog_owner, dlg_proc, (LPARAM)(LPVOID)lib );
+    rc = JDialogBoxParam( app_inst, "WdeLoadCustom", dialog_owner, dlg_proc, (LPARAM)(LPVOID)lib );
     FreeProcInstance ( (FARPROC)dlg_proc );
 
-    if( ok == -1 ) {
+    if( rc == -1 ) {
         WdeWriteTrail( "WdeLoadMSCustomControls: Dialog not created!" );
         return( false );
     }
 
-    if( !ok ) {
+    if( rc == 0 ) {
         return( false );
     }
 

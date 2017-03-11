@@ -738,7 +738,7 @@ bool WdeDestroyResourceWindow( WdeResInfo *res_info )
     return( ret );
 }
 
-bool WdeCreateResourceWindow( WdeResInfo *res_info, int fn_offset, char *title )
+bool WdeCreateResourceWindow( WdeResInfo *res_info, size_t fn_offset, char *title )
 {
     MDICREATESTRUCT     mdics;
     LRESULT             ret;
@@ -773,7 +773,7 @@ bool WdeCreateResourceWindow( WdeResInfo *res_info, int fn_offset, char *title )
     if( title == NULL ) {
         if( res_info->info->file_name ) {
             // perhaps make this an option
-            //title = &res_info->info->file_name[fn_offset];
+            //title = res_info->info->file_name + fn_offset;
             mdics.szTitle = res_info->info->file_name;
         } else {
             WdeResCounter++;
@@ -874,7 +874,7 @@ bool WdeSaveResource( WdeResInfo *res_info, bool get_name )
     WdeGetFileStruct    gf;
     char                *filter;
     char                *fn;
-    int                 fn_offset;
+    size_t              fn_offset;
     bool                got_name;
     bool                ok;
     OBJPTR              main_obj;
@@ -949,7 +949,7 @@ bool WdeSaveResource( WdeResInfo *res_info, bool get_name )
 
     if( ok ) {
         //fn_offset = WRFindFnOffset( fn );
-        SendMessage( res_info->res_win, WM_SETTEXT, 0, (LPARAM)(LPCSTR)&fn[fn_offset] );
+        SendMessage( res_info->res_win, WM_SETTEXT, 0, (LPARAM)(LPCSTR)( fn + fn_offset ) );
     }
 
     return( ok );

@@ -30,5 +30,5 @@
 ****************************************************************************/
 
 
-WRDLLENTRY extern int WRAPI WRRemoveLangNodeFromDir( WResDir dir, WResTypeNode **tnode, WResResNode **rnode, WResLangNode **lnode );
-WRDLLENTRY extern int WRAPI WRRemoveTypeNodeFromDir( WResDir, WResTypeNode * );
+WRDLLENTRY extern bool WRAPI WRRemoveLangNodeFromDir( WResDir dir, WResTypeNode **tnode, WResResNode **rnode, WResLangNode **lnode );
+WRDLLENTRY extern bool WRAPI WRRemoveTypeNodeFromDir( WResDir, WResTypeNode * );

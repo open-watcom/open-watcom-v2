@@ -65,7 +65,7 @@ char *WRStrDup( const char *src )
     return( dest );
 }
 
-char *WRCopyString( char *mem, const char *str, int len )
+char *WRCopyString( char *mem, const char *str, size_t len )
 {
     memcpy( mem, str, len );
     return( mem + len );

@@ -106,8 +106,7 @@ static BOOL writeDataInPieces( BITMAPINFO *bmi, FILE *fp, img_node *node )
 /*
  * writeDataInPiecesData
  */
-static BOOL writeDataInPiecesData( BITMAPINFO *bmi, BYTE **data,
-                                   uint_32 *size, img_node *node )
+static BOOL writeDataInPiecesData( BITMAPINFO *bmi, BYTE **data, size_t *size, img_node *node )
 {
     HDC         hdc;
     HDC         memdc;
@@ -395,7 +394,7 @@ static BOOL saveBitmapFile( img_node *node )
 /*
  * SaveBitmapToData - get the bitmap data and save into a block of memory
  */
-BOOL SaveBitmapToData( img_node *node, BYTE **data, uint_32 *size )
+bool SaveBitmapToData( img_node *node, BYTE **data, size_t *size )
 {
     BITMAPFILEHEADER    bmfh;
     BITMAPINFO          *bmi;
@@ -404,7 +403,7 @@ BOOL SaveBitmapToData( img_node *node, BYTE **data, uint_32 *size )
     HDC                 hdc;
 
     if( data == NULL || size == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     bmi = GetDIBitmapInfo( node );
@@ -441,13 +440,13 @@ BOOL SaveBitmapToData( img_node *node, BYTE **data, uint_32 *size )
     // Make sure the bitmap can actually be malloc'd!!
     if( bmfh.bfSize > INT_MAX ) {
         FreeDIBitmapInfo( bmi );
-        return( FALSE );
+        return( false );
     }
 
     *data = MemAlloc( bmfh.bfSize );
     if( *data == NULL ) {
         FreeDIBitmapInfo( bmi );
-        return( FALSE );
+        return( false );
     }
     *size = 0;
 
@@ -459,12 +458,12 @@ BOOL SaveBitmapToData( img_node *node, BYTE **data, uint_32 *size )
 
     if( !writeDataInPiecesData( bmi, data, size, node ) ) {
         FreeDIBitmapInfo( bmi );
-        return( FALSE );
+        return( false );
     }
 
     FreeDIBitmapInfo( bmi );
 
-    return( TRUE );
+    return( true );
 
 } /* SaveBitmapToData */
 
@@ -694,7 +693,7 @@ static int getSaveImgDataLength( img_node *node, an_img_file *img_file,
 /*
  * SaveImgToData
  */
-BOOL SaveImgToData( img_node *node, BYTE **data, uint_32 *size )
+bool SaveImgToData( img_node *node, BYTE **data, size_t *size )
 {
     an_img_file         *img_file;
     an_img_resource     img_res;
@@ -710,7 +709,7 @@ BOOL SaveImgToData( img_node *node, BYTE **data, uint_32 *size )
     uint_32             data_length;
 
     if( data == NULL || size == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     count = node->num_of_images;                // Will be 1 for cursors
@@ -773,7 +772,7 @@ BOOL SaveImgToData( img_node *node, BYTE **data, uint_32 *size )
     if( data_length > INT_MAX ) {
         MemFree( img_file );
         MemFree( imginfo );
-        return( FALSE );
+        return( false );
     }
 
     // allocate the data for the image
@@ -781,7 +780,7 @@ BOOL SaveImgToData( img_node *node, BYTE **data, uint_32 *size )
     if( *data == NULL ) {
         MemFree( img_file );
         MemFree( imginfo );
-        return( FALSE );
+        return( false );
     }
     *size = 0;
 
@@ -845,7 +844,7 @@ BOOL SaveImgToData( img_node *node, BYTE **data, uint_32 *size )
     AllowRestoreOption( node );
     SetIsSaved( node->hwnd, TRUE );
 
-    return( TRUE );
+    return( true );
 
 } /* SaveImgToData */
 
@@ -913,7 +912,7 @@ static bool createNewImageLNODE( img_node *node, uint_16 type )
 static bool saveResourceFile( img_node *node )
 {
     BYTE            *data;
-    uint_32         size = 0;
+    size_t          size = 0;
     uint_16         type;
     WRFileType      save_type = 0;
     BOOL            info_created;

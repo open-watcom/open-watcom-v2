@@ -285,7 +285,7 @@ bool WRECommitDialogSession( HCONV server, HCONV client )
     return( ok );
 }
 
-bool WREGetDlgSessionFileName( HCONV server, void **data, uint_32 *size )
+bool WREGetDlgSessionFileName( HCONV server, void **data, size_t *size )
 {
     WREDialogSession *session;
 
@@ -300,13 +300,13 @@ bool WREGetDlgSessionFileName( HCONV server, void **data, uint_32 *size )
 
     *data = WREStrDup( session->info.file_name );
     if( *data != NULL ) {
-        *size = (uint_32)( strlen( *data ) + 1 );
+        *size = strlen( *data ) + 1;
     }
 
     return( TRUE );
 }
 
-bool WREGetDlgSessionResName( HCONV server, void **data, uint_32 *size )
+bool WREGetDlgSessionResName( HCONV server, void **data, size_t *size )
 {
     WREDialogSession *session;
 
@@ -319,15 +319,14 @@ bool WREGetDlgSessionResName( HCONV server, void **data, uint_32 *size )
         return( FALSE );
     }
 
-    if( !WRWResID2Mem( session->info.res_name, data, size,
-                       session->info.is32bit ) ) {
+    if( !WRWResID2Mem( session->info.res_name, data, size, session->info.is32bit ) ) {
         return( FALSE );
     }
 
     return( TRUE );
 }
 
-bool WREGetDlgSessionIs32Bit( HCONV server, void **data, uint_32 *size )
+bool WREGetDlgSessionIs32Bit( HCONV server, void **data, size_t *size )
 {
     WREDialogSession *session;
 
@@ -354,7 +353,7 @@ bool WREGetDlgSessionIs32Bit( HCONV server, void **data, uint_32 *size )
     return( TRUE );
 }
 
-bool WREGetDlgSessionData( HCONV server, void **data, uint_32 *size )
+bool WREGetDlgSessionData( HCONV server, void **data, size_t *size )
 {
     size_t  tsize;
 
@@ -376,7 +375,7 @@ bool WREGetDlgSessionData( HCONV server, void **data, uint_32 *size )
     }
 
     tsize = session->info.data_size;
-    *size = (uint_32)tsize;
+    *size = tsize;
     *data = WRMemAlloc( tsize );
     if( *data == NULL ) {
         return( FALSE );

@@ -394,7 +394,7 @@ static BITMAPINFO *WRGetDIBitmapInfo( HBITMAP hbitmap )
     return( bmi );
 }
 
-static bool WRWriteDataInPiecesData( BITMAPINFO *bmi, BYTE **data, uint_32 *size, HBITMAP hbitmap )
+static bool WRWriteDataInPiecesData( BITMAPINFO *bmi, BYTE **data, size_t *size, HBITMAP hbitmap )
 {
     HDC         hdc;
     HDC         memdc;
@@ -440,7 +440,7 @@ static bool WRWriteDataInPiecesData( BITMAPINFO *bmi, BYTE **data, uint_32 *size
     return( true );
 }
 
-int WRAPI WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data, uint_32 *size )
+int WRAPI WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data, size_t *size )
 {
     BITMAPFILEHEADER    bmfh;
     BITMAPINFO          *bmi;
@@ -507,7 +507,7 @@ int WRAPI WRWriteBitmapToData( HBITMAP hbitmap, BYTE **data, uint_32 *size )
     return( TRUE );
 }
 
-int WRAPI WRAddBitmapFileHeader( BYTE **data, uint_32 *size )
+int WRAPI WRAddBitmapFileHeader( BYTE **data, size_t *size )
 {
     BITMAPFILEHEADER    *bmfh;
     BITMAPINFO          *bmi;
@@ -546,7 +546,7 @@ int WRAPI WRAddBitmapFileHeader( BYTE **data, uint_32 *size )
     return( TRUE );
 }
 
-int WRAPI WRStripBitmapFileHeader( BYTE **data, uint_32 *size )
+int WRAPI WRStripBitmapFileHeader( BYTE **data, size_t *size )
 {
     int         bfhsize;
     if( data != NULL && size != NULL ) {

@@ -287,15 +287,15 @@ BOOL    LoadColorPalette( void );
 void    SetInitialOpenDir( char *new_dir );
 char    *GetInitOpenDir( void );
 void    OpenFileOnStart( char *fname );
-BOOL    ReadBitmapFromData( void *data, char *fullname, WRInfo *info, WResLangNode *lnode );
-BOOL    ReadIconFromData( void *data, char *fname, WRInfo *info, WResLangNode *lnode  );
-BOOL    ReadCursorFromData( void *data, char *fname, WRInfo *info, WResLangNode *lnode );
+bool    ReadBitmapFromData( void *data, char *fullname, WRInfo *info, WResLangNode *lnode );
+bool    ReadIconFromData( void *data, char *fname, WRInfo *info, WResLangNode *lnode  );
+bool    ReadCursorFromData( void *data, char *fname, WRInfo *info, WResLangNode *lnode );
 void    WriteIconLoadedText( char *filename, int num );
 
 /* iesave.c */
 WINEXPORT extern BOOL CALLBACK SaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-BOOL    SaveBitmapToData( img_node *node, BYTE **data, uint_32 *size );
-BOOL    SaveImgToData( img_node *node, BYTE **data, uint_32 *size );
+bool    SaveBitmapToData( img_node *node, BYTE **data, size_t *size );
+bool    SaveImgToData( img_node *node, BYTE **data, size_t *size );
 BOOL    SaveFile( int how );
 BOOL    SaveFileFromNode( img_node *node, int how );
 BOOL    SaveColorPalette( void );
