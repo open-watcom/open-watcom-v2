@@ -31,8 +31,9 @@
 
 #include "variety.h"
 #include <stddef.h>
-#include <string.h>
+#include <stdlib.h>
 #include <sys/types.h>
+#include <process.h>
 #include "rtdata.h"
 #include "rtstack.h"
 #include "stacklow.h"
