@@ -80,13 +80,6 @@
 If this message appears, please report the problem directly to the
 Open Watcom development team. See http://www.openwatcom.org/.
 
-:MSGSYM. ERR_CXX11_AUTO_STORAGE_SPECIFIER
-:MSGTXT. 'auto' is no longer a storage specifier in C++11 mode
-:MSGJTXT.
-When C++11 is enabled, the
-.kw auto
-can no longer appear as a storage specifier.
-
 :MSGSYM. WARN_ASSIGN_CONST_IN_BOOL_EXPR
 :MSGTXT. assignment of constant found in boolean expression
 :MSGJTXT. íËêîÇÃë„ì¸Ç™ò_óùéÆÇÃíÜÇ…Ç†ÇËÇ‹Ç∑
@@ -12212,3 +12205,10 @@ disables the specified warning message.
 :MSGJTXT.
 The specified option is not recognized by the compiler
 since there was no character after it (i.e., "-p#@" ).
+
+:MSGSYM. ERR_CXX11_AUTO_STORAGE_SPECIFIER
+:MSGTXT. 'auto' is no longer a storage specifier in C++11 mode
+:MSGJTXT.
+When C++11 is enabled, the
+.kw auto
+can no longer appear as a storage specifier.
