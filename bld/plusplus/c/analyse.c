@@ -1698,7 +1698,7 @@ static PTREE bld_ptr_adj(       // BUILD A POINTER ADJUSTMENT
     if( pted_size == 1 ) {
         return factor;
     }
-    new_node = NodeBinary( CO_TIMES, factor, NodeOffset( pted_size ) );
+    new_node = NodeMakeBinary( CO_TIMES, factor, NodeOffset( pted_size ) );
     new_node->type = factor->type;
     return FoldBinary( new_node );
 }
@@ -1962,7 +1962,7 @@ static PTREE initClass(         // INIT. A CLASS ( INIT OR RETURN )
             break;
           case CNV_IMPOSSIBLE :
             ConversionTypesSet( orig_right, left->type );
-            expr = NodeBinary( CO_CTOR, left, right_comma );
+            expr = NodeMakeBinary( CO_CTOR, left, right_comma );
             expr->locn = *init_locn;
             CtorDiagNoMatch( expr, diagnosis->msg_impossible, &fnov_diag );
             ConversionDiagnoseInf();
@@ -3200,7 +3200,7 @@ start_opac_string:
           case CONV_TO_PTR_DIFF :
             type = TypePointerDiff( type );
             expr->type = type;
-            expr = NodeBinary( CO_DIVIDE
+            expr = NodeMakeBinary( CO_DIVIDE
                               , expr
                               , bld_pted_size( left ) );
             expr = PTreeCopySrcLocation( expr, left );
@@ -4472,7 +4472,7 @@ PTREE AnalyseReturnExpr(    // ANALYSE A RETURN EXPRESSION
     if( expr != NULL ) {
         fun_type = SymFuncReturnType( func );
         right = expr;
-        expr = NodeBinary( CO_RETURN, PTreeType( fun_type ), right );
+        expr = NodeMakeBinary( CO_RETURN, PTreeType( fun_type ), right );
         expr = PTreeCopySrcLocation( expr, right );
         expr = run_traversals( expr );
         expr = NodeDone( expr );

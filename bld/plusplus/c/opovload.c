@@ -582,7 +582,7 @@ static PTREE transform_member(  // TRANSFORM TO CALL TO MEMBER FUNCTION
         caller = NodeDottedFunction( olinf->left.operand
                                    , build_fun_name( olinf->result_mem ) );
         caller = PTreeCopySrcLocation( caller, op );
-        caller = NodeBinary( CO_CALL, caller, NULL );
+        caller = NodeMakeBinary( CO_CALL, caller, NULL );
         caller = PTreeCopySrcLocation( caller, op );
         caller = AnalyseCall( caller, NULL );
         op->u.subtree[0] = caller;

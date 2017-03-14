@@ -1697,7 +1697,7 @@ PTREE PTreeIntrinsicOperator( PTREE expr, CGOP cgop )
         arg2 = arg1->u.subtree[0];
         op2 = arg2->u.subtree[1];
         arg2->u.subtree[1] = NULL;
-        expr = NodeBinary( cgop, op1, op2 );
+        expr = NodeMakeBinary( cgop, op1, op2 );
     }
     expr->type = expr_type;
     PTreeFreeSubtrees( old_expr );

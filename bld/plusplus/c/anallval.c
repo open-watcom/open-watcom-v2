@@ -202,7 +202,7 @@ bool AnalyseThisDataItem(       // ANALYSE "THIS" DATA ITEM IN PARSE TREE
             expr->flags |= PTF_PTR_NONZERO;
             NodeConvertToBasePtr( &expr, type, result, true );
             expr->flags |= PTF_LVALUE | PTF_LV_CHECKED;
-            expr = NodeBinary( CO_DOT, expr, NodeOffset( result->offset ) );
+            expr = NodeMakeBinary( CO_DOT, expr, NodeOffset( result->offset ) );
         }
         expr->type = type;
         expr->flags |= PTF_LVALUE;
@@ -247,7 +247,7 @@ static PTREE thisPointsNode(    // MAKE this->node
         PTreeErrorExpr( node, ERR_INVALID_NONSTATIC_ACCESS );
     } else {
         type = node->type;
-        node = NodeBinary( CO_ARROW, left, node );
+        node = NodeMakeBinary( CO_ARROW, left, node );
         node->type = type;
         node->flags |= PTF_LVALUE;
         node = PTreeCopySrcLocation( node, left );

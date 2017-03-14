@@ -213,7 +213,7 @@ static PTREE accessOp(          // ACCESS AN OPERAND
 {
     PTREE expr;                 // - resultant expression
 
-    expr = NodeBinary( CO_DOT, base, NodeOffset( offset ) );
+    expr = NodeMakeBinary( CO_DOT, base, NodeOffset( offset ) );
     expr->type = type;
     expr->flags |= PTF_LVALUE;
     return expr;
@@ -349,9 +349,9 @@ static PTREE computeNewDelta(   // COMPUTE NEW DELTA
         if( inf->test_reqd ) {
             node = addOffset( NodeDupExpr( &new_delta ), delta, type );
             node = FoldBinary( node );
-            node = NodeBinary( CO_COLON, new_delta, node );
+            node = NodeMakeBinary( CO_COLON, new_delta, node );
             node->type = type;
-            node = NodeBinary( CO_QUESTION
+            node = NodeMakeBinary( CO_QUESTION
                              , NodeCompareToZero( NodeDupExpr( new_index ) )
                              , node );
             node->type = type;
@@ -378,14 +378,14 @@ static PTREE computeNewIndex(   // COMPUTE NEW INDEX
             off_node = NodeOffset( inf->vb_index * TARGET_UINT );
             off_node->type = type;
             if( inf->single_mapping ) {
-                node = NodeBinary( (inf->vb_index == 0 ) ? CO_GT : CO_EQ
+                node = NodeMakeBinary( (inf->vb_index == 0 ) ? CO_GT : CO_EQ
                                  , NodeDupExpr( &new_index )
                                  , NodeOffset( inf->single_test * TARGET_UINT ) );
                 node = NodeSetBooleanType( node );
                 node = FoldBinary( node );
-                new_index = NodeBinary( CO_COLON, off_node, new_index );
+                new_index = NodeMakeBinary( CO_COLON, off_node, new_index );
                 new_index->type = type;
-                new_index = NodeBinary( CO_QUESTION
+                new_index = NodeMakeBinary( CO_QUESTION
                                       , node
                                       , new_index );
                 new_index->type = type;
@@ -396,7 +396,7 @@ static PTREE computeNewIndex(   // COMPUTE NEW INDEX
             }
         } else {
             node = MakeNodeSymbol( inf->mapping );
-            node = NodeBinary( CO_DOT, node, new_index );
+            node = NodeMakeBinary( CO_DOT, node, new_index );
             node->type = type;
             node->flags |= PTF_LVALUE;
             new_index = NodeFetch( node );
@@ -1057,9 +1057,9 @@ static PTREE doDereference(     // GENERATE DE-REFERENCING CODE
         expr->flags |= PTF_LVALUE;
         expr = NodeAddToLeft( temp, NodeFetch( expr ), type_cp );
         expr->flags &= ~ PTF_LVALUE;
-        expr = NodeBinary( CO_COLON, expr, lhs );
+        expr = NodeMakeBinary( CO_COLON, expr, lhs );
         expr->type = type_cp;
-        expr = NodeBinary( CO_QUESTION, NodeCompareToZero( index ), expr );
+        expr = NodeMakeBinary( CO_QUESTION, NodeCompareToZero( index ), expr );
         expr->type = type_cp;
     } else {
         expr = lhs;
@@ -1069,7 +1069,7 @@ static PTREE doDereference(     // GENERATE DE-REFERENCING CODE
     expr = NodeArg( expr );
     func = NodeUnaryCopy( CO_CALL_SETUP_IND, func );
     func->type = type_fn;
-    expr = NodeBinary( CO_CALL_EXEC_IND, func, expr );
+    expr = NodeMakeBinary( CO_CALL_EXEC_IND, func, expr );
     expr->type = type_mp->of;
     expr->flags |= PTF_LVALUE;
     if( FunctionDeclarationType( type_mp->of ) ) {

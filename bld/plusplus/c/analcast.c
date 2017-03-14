@@ -1319,7 +1319,7 @@ static PTREE doReintPtrToArith  // DO REINTERPRET: PTR -> ARITH
                 expr = NodeConvert( argument, ctl->expr );
                 argument = GetBasicType( TYP_ULONG );
                 expr = NodeConvert( argument, expr );
-                expr = NodeBinary( CO_RSHIFT, expr, NodeOffset( 16 ) );
+                expr = NodeMakeBinary( CO_RSHIFT, expr, NodeOffset( 16 ) );
                 expr->type = argument;
                 expr = NodeConvert( TypeSegmentShort(), expr );
                 expr->locn = locn;
@@ -2671,7 +2671,7 @@ PTREE AddCastNode               // ADD A CAST NODE
     PTF_FLAG flags;             // - flags for cast node
     flags = expr->flags & PTF_CONVERT;
     type = BindTemplateClass( type, &expr->locn, true );
-    expr = NodeBinary( CO_CONVERT, PTreeType( type ), expr );
+    expr = NodeMakeBinary( CO_CONVERT, PTreeType( type ), expr );
     expr = NodeSetType( expr, type, flags );
     expr = PTreeCopySrcLocation( expr, expr->u.subtree[1] );
     return CheckCharPromotion( expr );

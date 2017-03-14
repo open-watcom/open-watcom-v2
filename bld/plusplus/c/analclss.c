@@ -163,7 +163,7 @@ static void returnThis(         // RETURN "this" value
 
 static PTREE addOffset( PTREE node, target_offset_t offset, TYPE type )
 {
-    node = NodeBinary( CO_DOT, node, NodeOffset( offset ) );
+    node = NodeMakeBinary( CO_DOT, node, NodeOffset( offset ) );
     node->type = type;
     node->flags |= PTF_LVALUE;
     return( node );
@@ -291,7 +291,7 @@ static PTREE setThisFromOffset( // SET "THIS" BACK BY AN OFFSET
     }
     offset_node = NodeOffset( offset );
     offset_node->cgop = CO_IGNORE;
-    expr = NodeBinary( CO_RESET_THIS, expr, offset_node );
+    expr = NodeMakeBinary( CO_RESET_THIS, expr, offset_node );
     expr->type = this_type;
     return( expr );
 }
@@ -829,7 +829,7 @@ static PTREE doClassAssign(     // ASSIGN TO CLASS OBJECT
                 fun = PTreeCopySrcLocation( fun, expr );
                 tgt = NodeDottedFunction( tgt, fun );
                 tgt = PTreeCopySrcLocation( tgt, expr );
-                call_expr = NodeBinary( CO_CALL_NOOVLD, tgt, NodeArg( src ) );
+                call_expr = NodeMakeBinary( CO_CALL_NOOVLD, tgt, NodeArg( src ) );
                 call_expr = PTreeCopySrcLocation( call_expr, expr );
                 call_expr = AnalyseCall( call_expr, &diagAssign );
                 PTreeFree( expr );
@@ -945,9 +945,9 @@ static PTREE genDefaultCopyDiag(// GENERATE COPY TO CLASS OBJECT, WITH DIAGNOSIS
         fun->u.symcg.result = result;
         fun->cgop = CO_NAME_DOT;
         fun = PTreeCopySrcLocation( fun, src );
-        tgt = NodeBinary( CO_ARROW, tgt, fun );
+        tgt = NodeMakeBinary( CO_ARROW, tgt, fun );
         tgt = PTreeCopySrcLocation( tgt, src );
-        expr = NodeBinary( CO_CALL_NOOVLD, tgt, NodeArg( src ) );
+        expr = NodeMakeBinary( CO_CALL_NOOVLD, tgt, NodeArg( src ) );
         expr = PTreeCopySrcLocation( expr, src );
         expr = AnalyseCall( expr, diagnosis );
         if( expr->op == PT_ERROR ) {

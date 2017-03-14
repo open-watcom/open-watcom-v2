@@ -79,9 +79,9 @@ static PTREE adjust_base_ptr(   // ADJUST BASE PTR AS true/TESTING CONVERSION
     TYPE type )                 // - type, after conversion
 {
     if( orig->flags & PTF_PTR_NONZERO ) {
-        orig = NodeBinary( CO_DOT, orig, offset );
+        orig = NodeMakeBinary( CO_DOT, orig, offset );
     } else {
-        orig = NodeBinary( CO_PTR_DELTA, orig, offset );
+        orig = NodeMakeBinary( CO_PTR_DELTA, orig, offset );
     }
     orig->type = type;
     return orig;
@@ -100,7 +100,7 @@ PTREE NodeConvertVirtualPtr(    // EXECUTE A VIRTUAL BASE CAST
 
     vbptr_type = MakeVBTableFieldType( true );
     offset = NodeOffset( vb_offset );
-    expr = NodeBinary( CO_DOT, expr, offset );
+    expr = NodeMakeBinary( CO_DOT, expr, offset );
     expr->flags |= PTF_LVALUE | PTF_PTR_NONZERO;
     expr->type = vbptr_type;
     dup = NodeDupExpr( &expr );
@@ -111,13 +111,13 @@ PTREE NodeConvertVirtualPtr(    // EXECUTE A VIRTUAL BASE CAST
     expr->flags |= PTF_PTR_NONZERO;
     adjust_type = TypePointedAtModified( vbptr_type );
     offset = NodeOffset( vb_index * CgMemorySize( adjust_type ) );
-    expr = NodeBinary( CO_DOT, expr, offset );
+    expr = NodeMakeBinary( CO_DOT, expr, offset );
     expr->type = adjust_type;
     expr->flags |= PTF_LVALUE | PTF_PTR_NONZERO;
     expr = NodeFetch( expr );
     expr->type = adjust_type;
     expr->flags |= PTF_PTR_NONZERO;
-    expr = NodeBinary( CO_DOT, dup, expr );
+    expr = NodeMakeBinary( CO_DOT, dup, expr );
     expr->type = final_type;
     expr->flags |= PTF_LVALUE | PTF_PTR_NONZERO;
     return expr;
@@ -213,7 +213,7 @@ void NodeConvertToBasePtr(      // CONVERT TO A BASE PTR, USING SEARCH_RESULT
             node = NodeConvertVirtualPtr( node, base, vb_offset, vb_index );
             delta = result->delta;
             if( delta != 0 ) {
-                node = NodeBinary( CO_DOT, node, NodeOffset( delta ) );
+                node = NodeMakeBinary( CO_DOT, node, NodeOffset( delta ) );
                 node->type = base;
                 node->flags |= orig_prop;
             }

@@ -532,7 +532,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
             node = NodeConvert( base_type, initial );
         } else {
             if( base_type->id == TYP_MEMBER_POINTER ) {
-                node = NodeBinary( CO_INIT, this_node, initial );
+                node = NodeMakeBinary( CO_INIT, this_node, initial );
                 node->type = this_node->type;
                 retn = MembPtrAssign( &node );
                 /* value of expression is 'this_node' */
@@ -548,7 +548,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
                     this_node = NodeUnaryCopy( CO_BITFLD_CONVERT, this_node );
                     this_node->type = base_type->of;
                 }
-                node = NodeBinary( NULL == TypeReference( base_type )
+                node = NodeMakeBinary( NULL == TypeReference( base_type )
                                    ? CO_INIT : CO_INIT_REF
                                  , this_node
                                  , initial );

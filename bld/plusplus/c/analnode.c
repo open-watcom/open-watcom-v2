@@ -78,7 +78,7 @@ bool NodeIsBinaryOp(            // TEST IF BINARY OPERATION OF GIVEN TYPE
 #endif
 
 
-PTREE NodeBinary(               // MAKE A BINARY NODE
+PTREE NodeMakeBinary(               // MAKE A BINARY NODE
     CGOP op,                    // - operator
     PTREE left,                 // - left operand
     PTREE right )               // - right operand
@@ -364,7 +364,7 @@ static PTREE nodeMakeConvert(   // MAKE A CONVERSION NODE
     orig = expr;
     cast = PTreeType( type );
     cast = PTreeCopySrcLocation( cast, orig );
-    expr = NodeBinary( CO_CONVERT, cast, orig );
+    expr = NodeMakeBinary( CO_CONVERT, cast, orig );
     expr = PTreeCopySrcLocation( expr, orig );
     expr = NodeSetType( expr, type, orig->flags & PTF_CONVERT );
     if( flags & PTF_MEMORY_EXACT ) {
@@ -469,7 +469,7 @@ PTREE NodeCompareToZero(        // MAKE A COMPARE-TO-ZERO NODE, IF REQ'D
         }
         operand = expr;
         zero = NodeIntegralConstant( 0, type );
-        expr = NodeBinary( CO_NE, operand, zero );
+        expr = NodeMakeBinary( CO_NE, operand, zero );
         expr = PTreeCopySrcLocation( expr, operand );
         expr = NodeSetBooleanType( expr );
         expr = ConvertBoolean( expr );
@@ -508,7 +508,7 @@ PTREE NodeConvertToBool(        // MAKE A CONVERT-TO-BOOL NODE, IF REQ'D
     } else {
         operand = expr;
         zero = NodeIntegralConstant( 0, GetBasicType( TYP_SINT ) );
-        expr = NodeBinary( CO_NE, expr, zero );
+        expr = NodeMakeBinary( CO_NE, expr, zero );
         expr = PTreeCopySrcLocation( expr, operand );
         expr = AnalyseOperator( expr );
     }
@@ -1232,7 +1232,7 @@ PTREE NodeArgument(             // MAKE AN ARGUMENT NODE
 {
     PTREE arg;                  // - the argument
 
-    arg = NodeBinary( CO_LIST, left, right );
+    arg = NodeMakeBinary( CO_LIST, left, right );
     arg->type = right->type;
     arg->flags = right->flags;
     arg = PTreeCopySrcLocation( arg, right );
@@ -1379,7 +1379,7 @@ PTREE NodeComma(                // MAKE A COMMA PTREE NODE
     } else if( right == NULL ) {
         node = left;
     } else {
-        node = NodeBinary( CO_COMMA, left, right );
+        node = NodeMakeBinary( CO_COMMA, left, right );
         node = nodeCommaPropogate( node );
     }
     return node;
@@ -1398,7 +1398,7 @@ PTREE NodeCommaIfSideEffect(    // MAKE A COMMA PTREE NODE (IF LHS HAS side-effe
         node = left;
     } else {
         if( (left->flags & PTF_SIDE_EFF) != 0 ) {
-            node = NodeBinary( CO_COMMA, left, right );
+            node = NodeMakeBinary( CO_COMMA, left, right );
             node = nodeCommaPropogate( node );
         } else {
             NodeFreeDupedExpr( left );
@@ -1486,7 +1486,7 @@ static PTREE assignNode(        // CREATE ASSIGNMENT NODE
 {
     PTREE expr;                 // - result
 
-    expr = NodeBinary( opcode, tgt, src );
+    expr = NodeMakeBinary( opcode, tgt, src );
     expr->type = tgt->type;
     expr->flags |= PTF_LVALUE | PTF_LV_CHECKED;
     expr = PTreeCopySrcLocation( expr, src );
@@ -1605,7 +1605,7 @@ PTREE NodeCopyClassObject(      // COPY OBJECT W/O CTOR
 
     DbgVerify( (tgt->flags & PTF_LVALUE), "NodeCopyClassObject to non-lvalue" );
     tgt->flags |= PTF_MEMORY_EXACT;
-    expr = NodeBinary( CO_COPY_OBJECT, tgt, src );
+    expr = NodeMakeBinary( CO_COPY_OBJECT, tgt, src );
     expr->type = tgt->type;
     expr->flags |= PTF_LVALUE
                  | PTF_SIDE_EFF
@@ -1761,9 +1761,9 @@ PTREE NodeTestExpr(             // GENERATE A TERNARY TEST EXPRESSION
     TYPE type;
 
     type = t_expr->type;
-    expr = NodeBinary( CO_COLON, t_expr, f_expr );
+    expr = NodeMakeBinary( CO_COLON, t_expr, f_expr );
     expr->type = type;
-    expr = NodeBinary( CO_QUESTION, b_expr, expr );
+    expr = NodeMakeBinary( CO_QUESTION, b_expr, expr );
     expr->type = type;
     return expr;
 }
@@ -1809,7 +1809,7 @@ PTREE NodeDtorExpr(             // MARK FOR DTOR'ING AFTER EXPRESSION
             SymMarkRefed( dtor );
             dtored = MakeNodeSymbol( sym );
             dtored->cgop = CO_NAME_DTOR_SYM;
-            expr = NodeBinary( CO_DTOR, dtored, expr );
+            expr = NodeMakeBinary( CO_DTOR, dtored, expr );
             expr->locn = err_locn;
             expr->type = orig->type;
             expr->flags = orig->flags;
@@ -2306,7 +2306,7 @@ PTREE NodeTypeSig               // MAKE NODE FOR TYPE-SIG ADDRESS
     node = MakeNodeSymbol( sym );
     if( 0 != offset ) {
         PTREE snode = node;
-        node = NodeBinary( CO_DOT, snode, NodeOffset( offset ) );
+        node = NodeMakeBinary( CO_DOT, snode, NodeOffset( offset ) );
         node->type = snode->type;
         node->flags = snode->flags;
     }
@@ -2483,7 +2483,7 @@ PTREE NodeDottedFunction        // BUILD A DOT NODE FOR A FUNCTION
 {
     PTREE node;                 // - node
 
-    node = NodeBinary( CO_DOT, NodeForceLvalue( left ), right );
+    node = NodeMakeBinary( CO_DOT, NodeForceLvalue( left ), right );
     node->flags = right->flags | PTF_LVALUE | PTF_LV_CHECKED;
     node->type = right->type;
     return node;
@@ -2511,7 +2511,7 @@ PTREE NodeAddToLeft(            // FABRICATE AN ADDITION TO LEFT
 {
     PTREE expr;                 // - resultant expression
 
-    expr = NodeBinary( CO_PLUS, left, right );
+    expr = NodeMakeBinary( CO_PLUS, left, right );
     expr->type = type;
     return( expr );
 }

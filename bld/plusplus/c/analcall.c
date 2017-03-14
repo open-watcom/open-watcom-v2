@@ -102,10 +102,10 @@ static PTREE makeCall(          // MAKE A CALL OR INDIRECT CALL
 
     if( direct_call ) {
         node = NodeUnaryCopy( CO_CALL_SETUP, proc );
-        node = NodeBinary( CO_CALL_EXEC, node, args );
+        node = NodeMakeBinary( CO_CALL_EXEC, node, args );
     } else {
         node = VfunSetupCall( proc );
-        node = NodeBinary( CO_CALL_EXEC_IND, node, args );
+        node = NodeMakeBinary( CO_CALL_EXEC_IND, node, args );
     }
     return NodeSetType( node, type, PTF_MEANINGFUL | PTF_SIDE_EFF );
 }
@@ -565,7 +565,7 @@ static PTREE transformVaStart   // TRANSFORM TO CO_VASTART OPCODE
         offset -= TARGET_PACKING;
     }
     NodeFreeDupedExpr( expr );
-    expr = NodeBinary( CO_VASTART, valist, NodeOffset( offset ) );
+    expr = NodeMakeBinary( CO_VASTART, valist, NodeOffset( offset ) );
     return expr;
 }
 #endif

@@ -979,21 +979,21 @@ static PTREE convertFromPcPtr(  // CONVERT SPECIAL TO REGULAR PC PTR
           case PC_PTR_BASED_STRING :
           { PTREE bsym;         // - basing symbol
             bsym = findBasedStrSym( expr->type );
-            expr = NodeBinary( CO_SEG_OP, expr, bsym );
+            expr = NodeMakeBinary( CO_SEG_OP, expr, bsym );
             expr = NodeSetType( expr, tgt_type, PTF_PTR_NONZERO );
           } break;
           case PC_PTR_BASED_SELF :
-            expr = NodeBinary( CO_SEG_OP, expr, bself );
+            expr = NodeMakeBinary( CO_SEG_OP, expr, bself );
             expr = NodeSetType( expr, tgt_type, PTF_PTR_NONZERO );
             break;
           case PC_PTR_BASED_FETCH :
-            expr = NodeBinary( CO_SEG_OP
+            expr = NodeMakeBinary( CO_SEG_OP
                              , expr
                              , NodeRvalue( MakeNodeSymbol( baser ) ) );
             expr = NodeSetType( expr, tgt_type, PTF_PTR_NONZERO );
             break;
           case PC_PTR_BASED_ADD :
-            expr = NodeBinary( CO_PLUS
+            expr = NodeMakeBinary( CO_PLUS
                              , expr
                              , NodeRvalue( MakeNodeSymbol( baser ) ) );
             expr = NodeSetType( expr, tgt_type, PTF_PTR_NONZERO );
@@ -1033,7 +1033,7 @@ static PTREE convertToPcPtr(    // CONVERT REGULAR TO SPECIAL PC PTR
         baser = BasedPtrType( ptr_type )->u.m.base;
         temp = MakeNodeSymbol( baser );
         temp = NodeRvalue( temp );
-        expr = NodeBinary( CO_MINUS, expr, temp );
+        expr = NodeMakeBinary( CO_MINUS, expr, temp );
         expr = NodeSetType( expr, ptr_type, PTF_PTR_NONZERO );
       } break;
     }

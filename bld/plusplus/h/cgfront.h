@@ -919,7 +919,7 @@ PTREE NodeAssignTemporaryNode(  // ASSIGN NODE TO A TEMPORARY NODE
 PTREE NodeBasedStr(             // BUILD EXPRESSION FOR TF1_BASED_STRING TYPE
     TYPE expr_type )            // - TF1_BASED_STRING type
 ;
-PTREE NodeBinary(               // MAKE A BINARY NODE
+PTREE NodeMakeBinary(               // MAKE A BINARY NODE
     CGOP op,                    // - operator
     PTREE left,                 // - left operand
     PTREE right )               // - right operand
