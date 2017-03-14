@@ -579,7 +579,7 @@ static PTREE transform_member(  // TRANSFORM TO CALL TO MEMBER FUNCTION
             PTreeErrorExprSym( op, ERR_OPERATOR_ARROW_RETURN_BAD, op_sym );
             return op;
         }
-        caller = NodeDottedFunction( olinf->left.operand
+        caller = NodeMakeDottedFunction( olinf->left.operand
                                    , build_fun_name( olinf->result_mem ) );
         caller = PTreeCopySrcLocation( caller, op );
         caller = NodeMakeBinary( CO_CALL, caller, NULL );
@@ -605,7 +605,7 @@ static PTREE transform_member(  // TRANSFORM TO CALL TO MEMBER FUNCTION
                 param = NULL;
             }
         }
-        caller = NodeDottedFunction( olinf->left.operand
+        caller = NodeMakeDottedFunction( olinf->left.operand
                                    , build_fun_name( olinf->result_mem ) );
         caller = PTreeCopySrcLocation( caller, op );
         op = transform_to_call( op, caller, param );
@@ -637,7 +637,7 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
         oper = PTreeIdSym( fun );
         oper = NodeSymbolNoRef( oper, fun, olinf->result_mem );
         oper->cgop = CO_NAME_DOT;
-        olinf->expr->u.subtree[0] = NodeDottedFunction( olinf->left.operand
+        olinf->expr->u.subtree[0] = NodeMakeDottedFunction( olinf->left.operand
                                                       , oper );
 
         ScopeFreeResult( olinf->result_nonmem );

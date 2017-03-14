@@ -827,7 +827,7 @@ static PTREE doClassAssign(     // ASSIGN TO CLASS OBJECT
                 fun->u.symcg.result = result;
                 fun->cgop = CO_NAME_DOT;
                 fun = PTreeCopySrcLocation( fun, expr );
-                tgt = NodeDottedFunction( tgt, fun );
+                tgt = NodeMakeDottedFunction( tgt, fun );
                 tgt = PTreeCopySrcLocation( tgt, expr );
                 call_expr = NodeMakeBinary( CO_CALL_NOOVLD, tgt, NodeMakeArg( src ) );
                 call_expr = PTreeCopySrcLocation( call_expr, expr );

@@ -2477,7 +2477,7 @@ PTREE NodeUnComma(              // EXTRACT OUT UNCOMMA'D EXPR (rest is stashed)
 }
 
 
-PTREE NodeDottedFunction        // BUILD A DOT NODE FOR A FUNCTION
+PTREE NodeMakeDottedFunction        // BUILD A DOT NODE FOR A FUNCTION
     ( PTREE left                // - left operand
     , PTREE right )             // - right operand
 {
