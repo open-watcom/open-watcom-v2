@@ -1089,7 +1089,7 @@ PTREE NodeIcUnsigned(           // ADD A PTREE-IC NODE, UNSIGNED OPERAND
 PTREE NodeIntDummy              // BUILD A DUMMY INTEGRAL NODE
     ( void )
 ;
-PTREE NodeIntegralConstant      // BUILD AN INTEGRAL NODE FOR A VALUE
+PTREE NodeMakeIntegralConstant      // BUILD AN INTEGRAL NODE FOR A VALUE
     ( int val                   // - value
     , TYPE type )               // - node type (integral,enum,ptr)
 ;

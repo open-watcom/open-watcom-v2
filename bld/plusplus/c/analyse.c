@@ -1886,7 +1886,7 @@ static PTREE convertCtor(       // CONVERT CTOR EXPRESSION
                     expr = MembPtrZero( type );
                     break;
                 default:
-                    expr = NodeIntegralConstant( 0, type );
+                    expr = NodeMakeIntegralConstant( 0, type );
                 }
             }
             PTreeExtractLocn( old, &expr->locn );
@@ -3645,7 +3645,7 @@ start_opac_string:
             }
             expr = convertIncDec( new_op, expr, left );
             refed = TypedefModifierRemoveOnly( refed );
-            node = NodeIntegralConstant( 1, refed );
+            node = NodeMakeIntegralConstant( 1, refed );
             *PTreeRefRight( expr ) = node;
             type = expr->type;
           } continue;

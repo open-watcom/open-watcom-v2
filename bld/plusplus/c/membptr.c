@@ -463,7 +463,7 @@ static PTREE makeMembPtrCon(    // MAKE A MEMBER-PTR CONSTANT EXPRESSION
     PTREE deref;                // - expression for dereferencing function
 
     if( func == NULL ) {
-        deref = NodeIntegralConstant( 0, MembPtrDerefFnPtr() );
+        deref = NodeMakeIntegralConstant( 0, MembPtrDerefFnPtr() );
     } else {
         deref = MakeNodeSymbol( func );
     }

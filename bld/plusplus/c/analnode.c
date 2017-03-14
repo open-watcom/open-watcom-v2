@@ -468,7 +468,7 @@ PTREE NodeMakeZeroCompare(        // MAKE A COMPARE-TO-ZERO NODE, IF REQ'D
             type = GetBasicType( TYP_SINT );
         }
         operand = expr;
-        zero = NodeIntegralConstant( 0, type );
+        zero = NodeMakeIntegralConstant( 0, type );
         expr = NodeMakeBinary( CO_NE, operand, zero );
         expr = PTreeCopySrcLocation( expr, operand );
         expr = NodeSetBooleanType( expr );
@@ -507,7 +507,7 @@ PTREE NodeMakeBoolConversion(        // MAKE A CONVERT-TO-BOOL NODE, IF REQ'D
         expr = CastImplicit( expr, bool_type, CNV_EXPR, &diagConvertToBool );
     } else {
         operand = expr;
-        zero = NodeIntegralConstant( 0, GetBasicType( TYP_SINT ) );
+        zero = NodeMakeIntegralConstant( 0, GetBasicType( TYP_SINT ) );
         expr = NodeMakeBinary( CO_NE, expr, zero );
         expr = PTreeCopySrcLocation( expr, operand );
         expr = AnalyseOperator( expr );
@@ -1189,11 +1189,11 @@ PTREE NodeRvalueExactRight(     // SET RVALUE (EXACT) ON RIGHT
 PTREE NodeMakeCDtorArg(             // BUILD CONSTANT NODE FOR CDTOR EXTRA ARG
     target_offset_t code )      // - the code
 {
-    return NodeIntegralConstant( code, MakeCDtorExtraArgType() );
+    return NodeMakeIntegralConstant( code, MakeCDtorExtraArgType() );
 }
 
 
-PTREE NodeIntegralConstant      // BUILD AN INTEGRAL NODE FOR A VALUE
+PTREE NodeMakeIntegralConstant      // BUILD AN INTEGRAL NODE FOR A VALUE
     ( int val                   // - value
     , TYPE type )               // - node type (integral,enum,ptr)
 {
@@ -1222,7 +1222,7 @@ PTREE NodeOffset(               // BUILD CONSTANT NODE FOR AN OFFSET
     TYPE otype;
 
     otype = GetBasicType( TYP_UINT );
-    return NodeIntegralConstant( offset, otype );
+    return NodeMakeIntegralConstant( offset, otype );
 }
 
 
