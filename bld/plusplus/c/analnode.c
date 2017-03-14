@@ -2314,7 +2314,7 @@ PTREE NodeMakeTypeSignature               // MAKE NODE FOR TYPE-SIG ADDRESS
 }
 
 
-PTREE NodeTypeSigArg            // MAKE ARGUMENT NODE FOR TYPE-SIG ADDRESS
+PTREE NodeMakeTypeSignatureArg            // MAKE ARGUMENT NODE FOR TYPE-SIG ADDRESS
     ( TYPE_SIG* sig )           // - type signature
 {
     return NodeMakeArg( NodeMakeTypeSignature( sig ) );

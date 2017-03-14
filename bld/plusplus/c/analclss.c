@@ -1255,7 +1255,7 @@ static PTREE generateArrayClassCall( // CALL CTOR/DTOR FOR ARRAY OF CLASS OBJ.s
 {
     PTREE expr;                 // - generated expression
 
-    expr = classArrayRtCall( NodeTypeSigArg( sig )
+    expr = classArrayRtCall( NodeMakeTypeSignatureArg( sig )
                            , NULL
                            , sym
                            , artype
@@ -1753,7 +1753,7 @@ static PTREE ctorPrologueArray( // GENERATE INITIALIZATION FOR CTOR OF ARRAY
     sig = TypeSigFind( tsa, cltype, NULL, &errors );
     DbgVerify( ! errors, "ctorPrologueArray -- unexpected errors" );
     TypeSigReferenced( sig );
-    stmt = classArrayRtCall( NodeTypeSigArg( sig )
+    stmt = classArrayRtCall( NodeMakeTypeSignatureArg( sig )
                            , init_expr
                            , init_item
                            , init_type
