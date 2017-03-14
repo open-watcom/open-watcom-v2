@@ -704,7 +704,7 @@ static PTREE insertRetnCopy(    // INSERT COPY OF RETURN ON STACK
     if( temp != NULL ) {
         PTreeOpLeft( callexpr )->flags |= PTF_MEMORY_EXACT;
         callexpr->flags |= PTF_MEMORY_EXACT;
-        callexpr = NodeCopyClassObject( temp, callexpr );
+        callexpr = NodeMakeClassObjectCopy( temp, callexpr );
     }
     return callexpr;
 }

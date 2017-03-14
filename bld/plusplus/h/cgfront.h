@@ -1023,7 +1023,7 @@ PTREE NodeConvertVirtualPtr(    // EXECUTE A VIRTUAL BASE CAST
     target_offset_t vb_offset,  // - offset of vbptr
     vindex vb_index )           // - index in vbtable
 ;
-PTREE NodeCopyClassObject(      // COPY OBJECT W/O CTOR
+PTREE NodeMakeClassObjectCopy(      // COPY OBJECT W/O CTOR
     PTREE tgt,                  // - target object (LVALUE)
     PTREE src )                 // - source object (RVALUE)
 ;

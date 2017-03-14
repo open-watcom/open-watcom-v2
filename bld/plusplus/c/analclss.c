@@ -478,7 +478,7 @@ static void generateCopyObject( // GENERATE COPY OF OBJECT
     tgt = NodeMakeThis();
     tgt->type = TypedefModifierRemove( tgt->type )->of;
     tgt->flags |= PTF_LVALUE;
-    expr = NodeCopyClassObject( tgt, expr );
+    expr = NodeMakeClassObjectCopy( tgt, expr );
     EmitAnalysedStmt( expr );
 }
 
@@ -794,7 +794,7 @@ static PTREE doBinaryCopy(      // DO A BINARY COPY
         src = NodeMakeConversionFlags( tgt_type, src, PTF_MEMORY_EXACT );
     }
     tgt = NodeMakeConversionFlags( tgt_type, tgt, PTF_MEMORY_EXACT | PTF_LVALUE );
-    return NodeCopyClassObject( tgt, src );
+    return NodeMakeClassObjectCopy( tgt, src );
 }
 
 static PTREE doClassAssign(     // ASSIGN TO CLASS OBJECT

@@ -1597,13 +1597,13 @@ PTREE NodeFetchReference(       // FETCH A REFERENCE, IF REQ'D
 }
 
 
-PTREE NodeCopyClassObject(      // COPY OBJECT W/O CTOR
+PTREE NodeMakeClassObjectCopy(      // COPY OBJECT W/O CTOR
     PTREE tgt,                  // - target object (LVALUE)
     PTREE src )                 // - source object (RVALUE)
 {
     PTREE expr;                 // - created expression
 
-    DbgVerify( (tgt->flags & PTF_LVALUE), "NodeCopyClassObject to non-lvalue" );
+    DbgVerify( (tgt->flags & PTF_LVALUE), "NodeMakeClassObjectCopy to non-lvalue" );
     tgt->flags |= PTF_MEMORY_EXACT;
     expr = NodeMakeBinary( CO_COPY_OBJECT, tgt, src );
     expr->type = tgt->type;

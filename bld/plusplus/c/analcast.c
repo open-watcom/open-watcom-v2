@@ -265,7 +265,7 @@ static bool getLvalue           // GET LVALUE FOR EXPRESSION
         switch( obj_model ) {
           case OMR_CLASS_VAL :
             if( force_to_temp ) {
-                expr = NodeCopyClassObject( NodeMakeTemporary( type ), expr );
+                expr = NodeMakeClassObjectCopy( NodeMakeTemporary( type ), expr );
             } else {
                 expr = NodeForceLvalue( expr );
             }
@@ -771,7 +771,7 @@ static bool castCtor            // APPLY CTOR
                     inp_node = NodeGetRValue( inp_node->u.subtree[1] );
                     PTreeFree( ctl->expr->u.subtree[1] );
                     ctl->expr->u.subtree[1] = NULL;
-                    node = NodeCopyClassObject( temp, inp_node );
+                    node = NodeMakeClassObjectCopy( temp, inp_node );
                 } else {
                     temp = NodeMakeArg( temp );
                     node = NodeMakeCall( ctl->conv_fun
