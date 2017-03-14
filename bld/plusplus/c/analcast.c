@@ -1340,7 +1340,7 @@ static PTREE convertToBool          // CONVERT TO BOOL
     ( CONVCTL* ctl )                // - cast info
 {
     stripOffCastOrig( ctl );
-    return NodeConvertToBool( ctl->expr );
+    return NodeMakeBoolConversion( ctl->expr );
 }
 
 

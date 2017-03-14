@@ -3183,7 +3183,7 @@ start_opac_string:
             continue;
           case CONV_CMP_ZERO_LEFT :
             left = expr->u.subtree[0];
-            left = NodeConvertToBool( left );
+            left = NodeMakeBoolConversion( left );
             expr->u.subtree[0] = left;
             if( left->op != PT_ERROR )
                 continue;
@@ -3191,7 +3191,7 @@ start_opac_string:
             break;
           case CONV_CMP_ZERO_RIGHT :
             right = expr->u.subtree[1];
-            right = NodeConvertToBool( right );
+            right = NodeMakeBoolConversion( right );
             expr->u.subtree[1] = right;
             if( right->op != PT_ERROR )
                 continue;
@@ -4425,7 +4425,7 @@ PTREE AnalyseBoolExpr(      // ANALYZE A BOOLEAN EXPRESSION
             if( 0 == ( expr->flags & PTF_BOOLEAN ) ) {
                 warnBoolAssignment( expr );
             }
-            expr = NodeConvertToBool( expr );
+            expr = NodeMakeBoolConversion( expr );
         }
     }
     return expr;

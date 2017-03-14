@@ -485,7 +485,7 @@ static CNV_DIAG diagConvertToBool = // DIAGNOSIS FOR CONVERT-TO-BOOL NODE
 ,   ERR_CALL_WATCOM             // - private violation
 };
 
-PTREE NodeConvertToBool(        // MAKE A CONVERT-TO-BOOL NODE, IF REQ'D
+PTREE NodeMakeBoolConversion(        // MAKE A CONVERT-TO-BOOL NODE, IF REQ'D
     PTREE expr )
 {
     PTREE zero;                 // - constant node (contains zero)

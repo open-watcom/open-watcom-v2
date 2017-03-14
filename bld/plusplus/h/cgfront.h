@@ -977,7 +977,7 @@ PTREE NodeSetType               // SET NODE TYPE, FLAGS
 PTREE NodeMakeZeroCompare(        // MAKE A COMPARE-TO-ZERO NODE, IF REQ'D
     PTREE expr )
 ;
-PTREE NodeConvertToBool(        // MAKE A CONVERT-TO-BOOL NODE, IF REQ'D
+PTREE NodeMakeBoolConversion(        // MAKE A CONVERT-TO-BOOL NODE, IF REQ'D
     PTREE expr )
 ;
 int NodeConstantValue(          // GET CONSTANT VALUE FOR A NODE
