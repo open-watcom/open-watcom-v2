@@ -87,7 +87,7 @@ PTREE NodeMakeBinary(               // MAKE A BINARY NODE
 }
 
 
-PTREE NodeUnary(                // MAKE A UNARY NODE
+PTREE NodeMakeUnary(                // MAKE A UNARY NODE
     CGOP op,                    // - operator
     PTREE expr )                // - operand
 {
@@ -101,7 +101,7 @@ PTREE NodeUnaryCopy(            // MAKE A UNARY NODE, COPY ATTRIBUTES
 {
     PTREE node;                 // - new node
 
-    node = NodeUnary( op, expr );
+    node = NodeMakeUnary( op, expr );
     node->type = expr->type;
     node->flags = expr->flags;
     node->flags &= ~PTF_NEVER_PROPPED;
@@ -920,7 +920,7 @@ static PTREE nodeDoFetch(       // FETCH A VALUE
         ref = &curr;
     }
     old = *ref;
-    fet = NodeUnary( opcode, old );
+    fet = NodeMakeUnary( opcode, old );
     *ref = fet;
     result_type = TypeReferenced( old->type );
     fet->type = result_type;

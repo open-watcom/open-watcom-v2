@@ -1280,7 +1280,7 @@ PTREE NodeThisCopyLocation(     // MAKE A RVALUE "THIS" NODE WITH LOCATION
 TYPE NodeType(                  // GET TYPE FOR A NODE
     PTREE node )                // - the node
 ;
-PTREE NodeUnary(                // MAKE A UNARY NODE
+PTREE NodeMakeUnary(                // MAKE A UNARY NODE
     CGOP op,                    // - operator
     PTREE expr )                // - operand
 ;

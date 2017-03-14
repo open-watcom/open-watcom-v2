@@ -970,7 +970,7 @@ static PTREE convertFromPcPtr(  // CONVERT SPECIAL TO REGULAR PC PTR
                              , TC1_NOT_ENUM_CHAR );
         switch( ptr_class ) {
           case PC_PTR_FAR16 :
-            expr = NodeUnary( CO_FAR16_TO_POINTER, expr );
+            expr = NodeMakeUnary( CO_FAR16_TO_POINTER, expr );
             expr = NodeSetType( expr, ptr_type, PTF_PTR_NONZERO );
             break;
           case PC_PTR_BASED_VOID :
@@ -1018,7 +1018,7 @@ static PTREE convertToPcPtr(    // CONVERT REGULAR TO SPECIAL PC PTR
       case PC_PTR_NOT :
         break;
       case PC_PTR_FAR16 :
-        expr = NodeUnary( CO_POINTER_TO_FAR16, expr );
+        expr = NodeMakeUnary( CO_POINTER_TO_FAR16, expr );
         expr = NodeSetType( expr, ptr_type, PTF_PTR_NONZERO );
         break;
       case PC_PTR_BASED_SELF :

@@ -194,7 +194,7 @@ void NodeConvertToBasePtr(      // CONVERT TO A BASE PTR, USING SEARCH_RESULT
                 expr = NodeMakeCallee( ibp );
                 expr->cgop = CO_IGNORE;
             }
-            expr = NodeUnary( CO_VBASE_FETCH, expr );
+            expr = NodeMakeUnary( CO_VBASE_FETCH, expr );
             expr = PtdVbaseFetch( expr
                                 , result->vb_offset
                                 , result->vb_index

@@ -381,7 +381,7 @@ PTREE ThrowTypeSig(             // GET THROW ARGUMENT FOR TYPE SIGNATURE
 
     type = TypeCanonicalThr( type );
     if( throwCnvFront( type, expr ) ) {
-        node = NodeUnary( CO_TYPE_SIG, NULL );
+        node = NodeMakeUnary( CO_TYPE_SIG, NULL );
         node->type = type;
         node = NodeArg( node );
         node->type = type;

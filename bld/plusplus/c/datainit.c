@@ -288,7 +288,7 @@ static PTREE dataInitPadLeftSide( target_size_t start )
     type = TypeMergeForMember( type, currInit->base_type );
     tree->type = type;
     tree->flags |= PTF_LVALUE;
-    tree = NodeUnary( CO_INDIRECT, tree );
+    tree = NodeMakeUnary( CO_INDIRECT, tree );
     tree->type = type;
     tree->flags |= PTF_LVALUE;
     return( tree );

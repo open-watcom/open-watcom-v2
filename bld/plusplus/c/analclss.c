@@ -2424,7 +2424,7 @@ static void genDeleteVector(
         if( ! TypeAbstract( class_type ) ) {
             CgFrontCode( IC_DTOR_DAR_BEG );
             testExtraParm( DTOR_DELETE_VECTOR, false );
-            stmt = NodeUnary( CO_DELETE_ARRAY, NodeThis() );
+            stmt = NodeMakeUnary( CO_DELETE_ARRAY, NodeThis() );
             stmt->flags |= PTF_MEMORY_EXACT;
             stmt = AnalyseDelete( stmt, true );
             EmitAnalysedStmt( stmt );
@@ -2539,7 +2539,7 @@ static void genDeleteThis( SYMBOL dtor )
     if( ! TypeAbstract( SymClass( dtor ) ) && SymIsVirtual( dtor ) ) {
         CgFrontCode( IC_DTOR_DLT_BEG );
         testExtraParm( DTOR_DELETE_THIS, false );
-        stmt = NodeUnary( CO_DELETE, NodeThis() );
+        stmt = NodeMakeUnary( CO_DELETE, NodeThis() );
         stmt->flags |= PTF_MEMORY_EXACT;
         stmt = AnalyseDelete( stmt, true );
         EmitAnalysedStmt( stmt );

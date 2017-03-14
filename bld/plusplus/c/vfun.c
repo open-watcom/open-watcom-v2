@@ -193,7 +193,7 @@ static PTREE genVfunIcs(        // GENERATE IC'S FOR CG-GENERATION OF VFUN CALL
 
     expr = NodeMakeCallee( vfun );
     expr->cgop = CO_IGNORE;
-    expr = NodeUnary( CO_CALL_SETUP_VFUN, expr );
+    expr = NodeMakeUnary( CO_CALL_SETUP_VFUN, expr );
     expr->type = vfun->sym_type;
     expr->flags = node->flags;
     expr = PtdVfunAccess( expr, vf_index, vf_offset, baser );

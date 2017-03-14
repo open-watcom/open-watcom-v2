@@ -656,7 +656,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
         }
         break;
       case TYP_VOID :
-        node = NodeUnary( CO_TRASH_EXPR, node );
+        node = NodeMakeUnary( CO_TRASH_EXPR, node );
         node->type = base_type;
         break;
       default :
