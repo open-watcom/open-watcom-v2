@@ -487,7 +487,7 @@ void ConvCtlInit                // INITIALIZE CONVCTL
                 ref_type = TypeReference( ctl->tgt.unmod );
                 if( TypeIsConst( ref_type ) ) {
                     PTREE exp;
-                    exp = NodeAssignTemporary( ref_type, ctl->expr->u.subtree[1] );
+                    exp = NodeMakeAssignToNewTmp( ref_type, ctl->expr->u.subtree[1] );
                     ctl->expr->u.subtree[1] = exp;
                 } else {
                     diagnoseError( ctl, ERR_TEMP_AS_NONCONST_REF );

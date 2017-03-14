@@ -1450,7 +1450,7 @@ static CAST_RESULT analysePtrToPtr  // ANALYSE PTR --> PTR
                 }
             }
             if( result != CAST_ERR_NODE ) {
-                node = NodeAssignTemporary( tgt_type, node );
+                node = NodeMakeAssignToNewTmp( tgt_type, node );
                 ctl->expr->u.subtree[1] = node;
                 if( PT_ERROR == node->op ) {
                     result = CAST_ERR_NODE;

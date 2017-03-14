@@ -587,7 +587,7 @@ static bool adjustForVirtualCall(   // ADJUSTMENTS FOR POSSIBLE VIRTUAL CALL
     this_type = StructType( this_type );
     if( this_type != NULL ) {
         if( OMR_CLASS_VAL == ObjModelArgument( this_type ) ) {
-            expr = NodeAssignTemporary( this_type, expr );
+            expr = NodeMakeAssignToNewTmp( this_type, expr );
         } else {
             expr = NodeMakeConversion( MakePointerTo( expr->type ), expr );
         }

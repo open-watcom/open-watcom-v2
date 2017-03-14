@@ -261,7 +261,7 @@ void VfnReference(              // EMIT VIRTUAL FUNCTION REFERENCE
 
     around = CgFrontLabelCs();
     CgFrontGotoNear( IC_LABEL_CS, O_GOTO, around );
-    fake = NodeAssignTemporary( MakePointerTo( vfun->sym_type )
+    fake = NodeMakeAssignToNewTmp( MakePointerTo( vfun->sym_type )
                               , NodeMakeCallee( vfun ) );
     fake = NodeGetRValue( fake );
     fake = NodeUnaryCopy( CO_CALL_SETUP_IND, fake );

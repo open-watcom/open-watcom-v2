@@ -4068,7 +4068,7 @@ start_opac_string:
                     throw_exp = NodeGetRValue( throw_exp );
                     type = throw_exp->type;
                 } else if( NULL != MemberPtrType( type ) ) {
-                    throw_exp = NodeAssignTemporary( type, throw_exp );
+                    throw_exp = NodeMakeAssignToNewTmp( type, throw_exp );
                     type = NodeType( throw_exp );
                 } else if( NULL != FunctionDeclarationType( type ) ) {
                     type = TypeCanonicalThr( type );
@@ -4110,7 +4110,7 @@ start_opac_string:
                             rtcode = RTF_THROW_ZERO;
                         }
 //                      constant = NodeGetConstantNode( throw_exp );
-                        throw_exp = NodeAssignTemporary( throw_exp->type, throw_exp );
+                        throw_exp = NodeMakeAssignToNewTmp( throw_exp->type, throw_exp );
                         expr = PTreeOpLeft( throw_exp );
                         type = NodeType( expr );
                     }

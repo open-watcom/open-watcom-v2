@@ -941,7 +941,7 @@ PTREE AnalyseLvDot(             // ANALYSE LVALUE "."
                                           , left );
                         left->flags |= PTF_LVALUE;
                     } else {
-                        left = NodeAssignTemporary( left->type, left );
+                        left = NodeMakeAssignToNewTmp( left->type, left );
                     }
                     expr->u.subtree[0] = left;
 #else

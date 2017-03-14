@@ -907,7 +907,7 @@ PTREE NodeMakeRefAssignment(            // CREATE ASSIGNMENT NODE FOR REFERENCE
     PTREE tgt,                  // - target
     PTREE src )                 // - source
 ;
-PTREE NodeAssignTemporary(      // ASSIGN NODE TO A TEMPORARY
+PTREE NodeMakeAssignToNewTmp(      // ASSIGN NODE TO A TEMPORARY
     TYPE type,                  // - type of temporary
     PTREE expr )                // - the expression to be assigned to temp
 ;
