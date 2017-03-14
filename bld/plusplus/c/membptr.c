@@ -227,7 +227,7 @@ static PTREE addOffset(         // ADD AN OFFSET TO AN LVALUE
 {
     PTREE expr;                 // - resultant expression
 
-    expr = NodeAddToLeft( field, NodeMakeConstantOffset( offset ), type );
+    expr = NodeMakeLeftAddition( field, NodeMakeConstantOffset( offset ), type );
     expr->flags &= ~ PTF_LVALUE;
     return expr;
 }
@@ -258,7 +258,7 @@ static void generateOffsetFunc( // GENERATE CODE FOR OFFSET FUNCTION
     type_ret = SymFuncReturnType( func );
     ret = SymFunctionReturn();
     if( SymIsThisDataMember( refed ) ) {
-        expr = NodeAddToLeft( NodeMakeThis(), NodeMakeConstantOffset( refed->u.member_offset ), refed->sym_type );
+        expr = NodeMakeLeftAddition( NodeMakeThis(), NodeMakeConstantOffset( refed->u.member_offset ), refed->sym_type );
         expr = NodeFetchReference( expr );
     } else {
         if( SymIsVirtual( refed ) ) {
@@ -1051,11 +1051,11 @@ static PTREE doDereference(     // GENERATE DE-REFERENCING CODE
         temp = accessOp( NodeMakeExprDuplicate( &lhs )
                        , ScopeVBPtrOffset( scope )
                        , MakePointerTo( type_offset ) );
-        expr = NodeAddToLeft( NodeFetch( NodeMakeExprDuplicate( &temp ) )
+        expr = NodeMakeLeftAddition( NodeFetch( NodeMakeExprDuplicate( &temp ) )
                         , NodeMakeExprDuplicate( &index )
                         , type_offset );
         expr->flags |= PTF_LVALUE;
-        expr = NodeAddToLeft( temp, NodeFetch( expr ), type_cp );
+        expr = NodeMakeLeftAddition( temp, NodeFetch( expr ), type_cp );
         expr->flags &= ~ PTF_LVALUE;
         expr = NodeMakeBinary( CO_COLON, expr, lhs );
         expr->type = type_cp;
@@ -1065,7 +1065,7 @@ static PTREE doDereference(     // GENERATE DE-REFERENCING CODE
         expr = lhs;
     }
     NodeFreeDupedExpr( expr_root );
-    expr = NodeAddToLeft( delta, expr, type_cp );
+    expr = NodeMakeLeftAddition( delta, expr, type_cp );
     expr = NodeMakeArg( expr );
     func = NodeUnaryCopy( CO_CALL_SETUP_IND, func );
     func->type = type_fn;

@@ -2504,7 +2504,7 @@ PTREE NodeMakeIntDummy              // BUILD A DUMMY INTEGRAL NODE
 }
 
 
-PTREE NodeAddToLeft(            // FABRICATE AN ADDITION TO LEFT
+PTREE NodeMakeLeftAddition(            // FABRICATE AN ADDITION TO LEFT
     PTREE left,                 // - left operand
     PTREE right,                // - right operand
     TYPE type )                 // - type of result

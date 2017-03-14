@@ -360,7 +360,7 @@ static PTREE applyReturnThunk(  // GENERATE A RETURN THUNK
         expr = NodeConvertVirtualPtr( expr, ret_type, vb_offset, vb_index );
     }
     if( delta != 0 ) {
-        expr = NodeAddToLeft( expr, NodeMakeConstantOffset( delta ), ret_type );
+        expr = NodeMakeLeftAddition( expr, NodeMakeConstantOffset( delta ), ret_type );
     }
     if( dup1 != NULL ) {
         dup2 = NodeMakeExprDuplicate( &dup1 );
