@@ -1851,7 +1851,7 @@ static CNV_DIAG diag_deref =    // diagnosis for de-referencing
 };
 
 
-bool NodeDerefPtr(              // DEREFERENCE A POINTER
+bool NodeTryDerefPtr(              // DEREFERENCE A POINTER
     PTREE *a_ptr )              // - addr[ ptr operand ]
 {
     bool retb;                  // - true ==> all ok

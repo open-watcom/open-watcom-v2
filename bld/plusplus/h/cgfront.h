@@ -1027,7 +1027,7 @@ PTREE NodeMakeClassObjectCopy(      // COPY OBJECT W/O CTOR
     PTREE tgt,                  // - target object (LVALUE)
     PTREE src )                 // - source object (RVALUE)
 ;
-bool NodeDerefPtr(              // DEREFERENCE A POINTER
+bool NodeTryDerefPtr(              // DEREFERENCE A POINTER
     PTREE *a_ptr )              // - addr[ ptr operand ]
 ;
 PTREE NodeMakeDone(                 // MAKE A NODE-DONE

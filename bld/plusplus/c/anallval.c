@@ -718,7 +718,7 @@ static TYPE analyseClPtrLeft(   // ANALYSE A CLASS POINTER ON LEFT
                 InfClassDecl( type );
                 PTreeErrorNode( expr );
                 type = NULL;
-            } else if( ! NodeDerefPtr( &expr->u.subtree[0] ) ) {
+            } else if( ! NodeTryDerefPtr( &expr->u.subtree[0] ) ) {
                 PTreeErrorNode( expr );
                 type = NULL;
             }

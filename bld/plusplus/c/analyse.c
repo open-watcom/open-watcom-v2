@@ -4076,7 +4076,7 @@ start_opac_string:
                     throw_exp->flags &= ~ PTF_LVALUE;
                 }
                 if( BasedPtrType( type ) ) {
-                    if( ! NodeDerefPtr( &throw_exp ) ) {
+                    if( ! NodeTryDerefPtr( &throw_exp ) ) {
                         expr = throw_exp;
                         break;
                     }
@@ -4165,13 +4165,13 @@ start_opac_string:
             type = expr->type;
             continue;
           case DREF_PTR_LEFT :      // DE-REFERENCE PTR ON LEFT
-          { if( ! NodeDerefPtr( &expr->u.subtree[0] ) )
+          { if( ! NodeTryDerefPtr( &expr->u.subtree[0] ) )
                 break;
             left = PTreeOpLeft( expr );
             type = left->type;
           } continue;
           case DREF_PTR_RIGHT :     // DE-REFERENCE PTR ON RIGHT
-          { if( ! NodeDerefPtr( &expr->u.subtree[1] ) )
+          { if( ! NodeTryDerefPtr( &expr->u.subtree[1] ) )
                 break;
             right = PTreeOpRight( expr );
           } continue;
