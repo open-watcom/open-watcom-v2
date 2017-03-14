@@ -267,7 +267,7 @@ static bool getLvalue           // GET LVALUE FOR EXPRESSION
             if( force_to_temp ) {
                 expr = NodeMakeClassObjectCopy( NodeMakeTemporary( type ), expr );
             } else {
-                expr = NodeForceLvalue( expr );
+                expr = NodeForceLValue( expr );
             }
             break;
           case OMR_CLASS_REF :

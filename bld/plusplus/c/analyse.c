@@ -2516,7 +2516,7 @@ static bool allowClassCastAsLValue( PTREE *p_expr )
     if( class_type == NULL ) {
         retb = false;
     } else {
-        *p_expr = NodeForceLvalue( *p_expr );
+        *p_expr = NodeForceLValue( *p_expr );
         retb = true;
     }
     return( retb );
@@ -4117,7 +4117,7 @@ start_opac_string:
                     break;
                   case THROBJ_CLASS :
                   case THROBJ_CLASS_VIRT :
-                    throw_exp = NodeForceLvalue( throw_exp );
+                    throw_exp = NodeForceLValue( throw_exp );
                     expr = throw_exp;
                     type = NodeType( expr );
                     DbgVerify( NULL != TypeReference( type )

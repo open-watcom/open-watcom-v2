@@ -1053,7 +1053,7 @@ PTREE NodeFetchClassExact(      // FETCH AS "CLASS_EXACT"
 PTREE NodeFetchReference(       // FETCH A REFERENCE, IF REQ'D
     PTREE expr )                // - expression
 ;
-PTREE NodeForceLvalue           // FORCE EXPRESSION TO BE LVALUE
+PTREE NodeForceLValue           // FORCE EXPRESSION TO BE LVALUE
     ( PTREE expr )              // - expression
 ;
 void NodeFreeDupedExpr(         // FREE AN EXPRESSION WITH DUPLICATES

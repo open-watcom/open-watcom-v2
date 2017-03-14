@@ -2390,7 +2390,7 @@ PTREE NodeExtractLValue             // EXTRACT LVALUE, IF POSSIBLE
 }
 
 
-PTREE NodeForceLvalue           // FORCE EXPRESSION TO BE LVALUE
+PTREE NodeForceLValue           // FORCE EXPRESSION TO BE LVALUE
     ( PTREE expr )              // - expression
 {
     expr = NodeExtractLValue( expr );
@@ -2483,7 +2483,7 @@ PTREE NodeDottedFunction        // BUILD A DOT NODE FOR A FUNCTION
 {
     PTREE node;                 // - node
 
-    node = NodeMakeBinary( CO_DOT, NodeForceLvalue( left ), right );
+    node = NodeMakeBinary( CO_DOT, NodeForceLValue( left ), right );
     node->flags = right->flags | PTF_LVALUE | PTF_LV_CHECKED;
     node->type = right->type;
     return node;

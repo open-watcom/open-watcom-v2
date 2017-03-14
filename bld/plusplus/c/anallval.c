@@ -945,7 +945,7 @@ PTREE AnalyseLvDot(             // ANALYSE LVALUE "."
                     }
                     expr->u.subtree[0] = left;
 #else
-                    expr->u.subtree[0] = NodeForceLvalue( left );
+                    expr->u.subtree[0] = NodeForceLValue( left );
 #endif
                 }
             }
