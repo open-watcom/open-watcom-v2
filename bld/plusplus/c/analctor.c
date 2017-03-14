@@ -622,7 +622,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
                                           , node
                                           , node->u.subtree[1]
                                           , NodeMakeArg( this_node )
-                                          , CallArgumentExactCtor
+                                          , MakeArgCtorCall
                                               ( base_type
                                               , ( control & EFFECT_EXACT ) != 0 )
                                           , NULL );

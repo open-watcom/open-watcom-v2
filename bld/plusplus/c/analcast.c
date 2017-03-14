@@ -783,7 +783,7 @@ static bool castCtor            // APPLY CTOR
                                               , node
                                               , node->u.subtree[1]
                                               , temp
-                                              , CallArgumentExactCtor
+                                              , MakeArgCtorCall
                                                     ( ctl->tgt.class_type
                                                     , true )
                                               , NULL );

@@ -3691,7 +3691,7 @@ start_opac_string:
                 colon = PTreeOpRight( left );
                 opl = PTreeOpLeft( colon );
                 opr = PTreeOpRight( colon );
-                if( NodeIsBitField( opr ) && NodeBitField( opl ) ) {
+                if( NodeIsBitField( opr ) && NodeIsBitField( opl ) ) {
                     expr->type = type;
                     expr = NodeMakeBitQuestAssign( expr );
                     expr->flags |= PTF_SIDE_EFF | PTF_MEANINGFUL;
