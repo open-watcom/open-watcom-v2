@@ -1274,7 +1274,7 @@ PTREE NodeTemporary(            // CREATE TEMPORARY AND NODE FOR IT
 PTREE NodeMakeThis(                 // MAKE A RVALUE "THIS" NODE
     void )
 ;
-PTREE NodeThisCopyLocation(     // MAKE A RVALUE "THIS" NODE WITH LOCATION
+PTREE NodeMakeRVThisAtLoc(     // MAKE A RVALUE "THIS" NODE WITH LOCATION
     PTREE use_locn )            // - node to grab locn from
 ;
 TYPE NodeType(                  // GET TYPE FOR A NODE

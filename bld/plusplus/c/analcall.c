@@ -951,7 +951,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
           case FNOV_NO_MATCH :
             if( this_node == NULL ) {
                 if( SymIsThisFuncMember( orig ) ) {
-                    this_node = NodeThisCopyLocation( left );
+                    this_node = NodeMakeRVThisAtLoc( left );
                 }
             }
             if( this_node != NULL ) {
@@ -987,7 +987,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
         if( this_node == NULL ) {
             if( SymIsThisFuncMember( sym ) ) {
                 if( result->use_this ) {
-                    this_node = NodeThisCopyLocation( left );
+                    this_node = NodeMakeRVThisAtLoc( left );
                     if( this_node == NULL ) {
                         PTreeErrorExpr( expr, ERR_INVALID_NONSTATIC_ACCESS );
                         InfSymbolDeclaration( sym );
@@ -1026,7 +1026,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
         left->type = type;
         if( this_node == NULL ) {
             if( SymIsThisFuncMember( sym ) ) {
-                this_node = NodeThisCopyLocation( left );
+                this_node = NodeMakeRVThisAtLoc( left );
             }
         } else {
             if( SymIsStaticFuncMember( sym ) ) {

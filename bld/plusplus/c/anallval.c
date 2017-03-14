@@ -242,7 +242,7 @@ static PTREE thisPointsNode(    // MAKE this->node
     TYPE type;                  // - node type
     PTREE left;                 // - this node to left
 
-    left = NodeThisCopyLocation( node );
+    left = NodeMakeRVThisAtLoc( node );
     if( left == NULL ) {
         PTreeErrorExpr( node, ERR_INVALID_NONSTATIC_ACCESS );
     } else {
@@ -811,7 +811,7 @@ bool AnalyseLvalue(             // ANALYSE AN LVALUE
     switch( expr->op ) {
     case PT_ID :
         if( expr->cgop == CO_NAME_THIS ) {
-            right = NodeThisCopyLocation( expr );
+            right = NodeMakeRVThisAtLoc( expr );
             if( NULL == right ) {
                 PTreeErrorExpr( expr, ERR_NO_THIS_PTR_DEFINED );
             } else {

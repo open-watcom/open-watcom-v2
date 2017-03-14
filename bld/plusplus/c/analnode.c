@@ -1450,7 +1450,7 @@ PTREE NodeMakeThis(                 // MAKE A "THIS" NODE
     return node;
 }
 
-PTREE NodeThisCopyLocation(     // MAKE A RVALUE "THIS" NODE WITH LOCATION
+PTREE NodeMakeRVThisAtLoc(     // MAKE A RVALUE "THIS" NODE WITH LOCATION
     PTREE use_locn )            // - node to grab locn from
 {
     PTREE this_node;
