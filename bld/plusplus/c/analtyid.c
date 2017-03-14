@@ -133,7 +133,7 @@ PTREE AnalyseTypeidExpr( PTREE typeid_expr )
                 NodeFreeDupedExpr( kill );
             }
             info = GetWithinOffsetOfVFPtr( class_type, &expr );
-            expr = NodeComma( extra, expr );
+            expr = NodeMakeComma( extra, expr );
             args = NodeMakeArgList( NodeTypeid( class_type ),
                                   NodeMakeConstantOffset( info->vf_offset ),
                                   expr,

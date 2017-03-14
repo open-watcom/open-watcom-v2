@@ -341,7 +341,7 @@ PTREE NodeReplaceTop(           // REPLACE TOP EXPRESSION WITH ANOTHER
     if( old != NULL ) {
         old = PTreeCopySrcLocation( old, replace );
         old = NodePruneTop( old );
-        replace = NodeComma( old, replace );
+        replace = NodeMakeComma( old, replace );
     }
     return replace;
 }
@@ -1368,7 +1368,7 @@ bool NodeIsBitField(              // TEST IF NODE IS A BIT FIELD
 }
 
 
-PTREE NodeComma(                // MAKE A COMMA PTREE NODE
+PTREE NodeMakeComma(                // MAKE A COMMA PTREE NODE
     PTREE left,                 // - left operand
     PTREE right )               // - right operand
 {
@@ -2192,7 +2192,7 @@ PTREE NodeAddSideEffect(        // ADD A SIDE-EFFECT EXPRESSION
         orig = expr;
         if( top->op == PT_SYMBOL
          || NodeIsConstantInt( top ) ) {
-            *ref = NodeComma( side_effect, *ref );
+            *ref = NodeMakeComma( side_effect, *ref );
             expr = dup;
         } else {
             old = TemporaryClass( TEMP_TYPE_EXPR );
@@ -2210,13 +2210,13 @@ PTREE NodeAddSideEffect(        // ADD A SIDE-EFFECT EXPRESSION
                 temp = TemporaryAlloc( temp_type );
                 expr = NodeAssignRef( MakeNodeSymbol( temp ), expr );
             }
-            expr = NodeComma( expr, side_effect );
+            expr = NodeMakeComma( expr, side_effect );
             side_effect = NodeFetch( MakeNodeSymbol( temp ) );
             if( NULL != TypeReference( temp_type ) ) {
                 side_effect->flags |= PTF_LVALUE;
                 side_effect->type = TypeReferenced( temp_type );
             }
-            expr = NodeComma( expr, side_effect );
+            expr = NodeMakeComma( expr, side_effect );
             TemporaryClass( old );
         }
         side_effect = expr;
@@ -2432,7 +2432,7 @@ PTREE NodeLvForRefClass         // MAKE LVALUE FOR REF CLASS
 //      'expr'
 //      expr = NodeUnComma( expr, &extra );
 //      create/modify 'expr'
-//      expr = NodeComma( extra, expr );
+//      expr = NodeMakeComma( extra, expr );
 //
 PTREE NodeUnComma(              // EXTRACT OUT UNCOMMA'D EXPR (rest is stashed)
     PTREE expr,                 // - (possibly comma'd) expr

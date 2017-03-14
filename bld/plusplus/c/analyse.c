@@ -4000,15 +4000,15 @@ start_opac_string:
           } continue;
           #undef ExtractColonFlags
           case RESULT_COND_OPRS :
-            expr->u.subtree[0] = NodeComma( NodeIc( IC_COND_TRUE )
+            expr->u.subtree[0] = NodeMakeComma( NodeIc( IC_COND_TRUE )
                                           , expr->u.subtree[0] );
-            expr->u.subtree[1] = NodeComma( NodeIc( IC_COND_FALSE )
+            expr->u.subtree[1] = NodeMakeComma( NodeIc( IC_COND_FALSE )
                                           , expr->u.subtree[1] );
             left = expr->u.subtree[0];
             right = expr->u.subtree[1];
             continue;
           case RESULT_COND_OPR :
-            expr->u.subtree[1] = NodeComma( NodeIc( IC_COND_TRUE )
+            expr->u.subtree[1] = NodeMakeComma( NodeIc( IC_COND_TRUE )
                                           , expr->u.subtree[1] );
             continue;
           case RESULT_COND_EXPR :

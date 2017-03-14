@@ -459,7 +459,7 @@ static bool canCoaxVAStartSym( PTREE *parg )
     if( arg->op != PT_SYMBOL ) {
         return( false );
     }
-    *parg = NodeComma( orig_arg, PTreeAssign( NULL, arg ) );
+    *parg = NodeMakeComma( orig_arg, PTreeAssign( NULL, arg ) );
     return( true );
 }
 
@@ -883,7 +883,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
             expr->u.subtree[0] = NULL;
             NodeFreeDupedExpr( expr );
             expr = NodeMakeConversion( GetBasicType( TYP_VOID ), this_node );
-            expr = NodeComma( expr, left );
+            expr = NodeMakeComma( expr, left );
             return( expr );
         }
         break;

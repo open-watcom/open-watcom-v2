@@ -554,7 +554,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
                                  , initial );
                 node->type = this_node->type;
                 if( dup != NULL ) {
-                    node = NodeComma( node, dup );
+                    node = NodeMakeComma( node, dup );
                 }
             }
         }

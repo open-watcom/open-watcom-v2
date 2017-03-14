@@ -198,7 +198,7 @@ static PTREE genVfunIcs(        // GENERATE IC'S FOR CG-GENERATION OF VFUN CALL
     expr->flags = node->flags;
     expr = PtdVfunAccess( expr, vf_index, vf_offset, baser );
     node = NodeUnaryCopy( CO_VFUN_PTR, node );
-    return NodeComma( node, expr );
+    return NodeMakeComma( node, expr );
 }
 
 

@@ -958,7 +958,7 @@ CNV_RETN NodeCheckPtrTrunc(     // CHECK FOR POINTER TRUNCATION WARNING
     TYPE tgt,                   // - target type
     TYPE src )                  // - source type
 ;
-PTREE NodeComma(                // MAKE A COMMA PTREE NODE
+PTREE NodeMakeComma(                // MAKE A COMMA PTREE NODE
     PTREE left,                 // - left operand
     PTREE right )               // - right operand
 ;

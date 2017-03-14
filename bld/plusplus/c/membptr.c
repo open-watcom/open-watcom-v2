@@ -537,10 +537,10 @@ static PTREE storeMembPtrCon(   // STORE MEMBER-PTR CONSTANT
     left = PTreeOpLeft( expr );
     right = PTreeOpRight( expr );
     result = assignMembPtrArg( &left, &right );
-    result = NodeComma( result, assignMembPtrArg( &left, &right ) );
-    result = NodeComma( result, assignMembPtrArg( &left, &right ) );
+    result = NodeMakeComma( result, assignMembPtrArg( &left, &right ) );
+    result = NodeMakeComma( result, assignMembPtrArg( &left, &right ) );
     result = NodeReplace( expr , result );
-    result = NodeComma( result, tgt );
+    result = NodeMakeComma( result, tgt );
     result->flags |= PTF_SIDE_EFF;
     return result;
 }
@@ -1110,7 +1110,7 @@ PTREE MembPtrDereference(       // DO '.*' AND '->*' operations
         ref = &((*ref)->u.subtree[0]);
         right = *ref;
         *ref = NULL;
-        expr->u.subtree[1] = NodeComma( NodePruneTop( expr->u.subtree[1] )
+        expr->u.subtree[1] = NodeMakeComma( NodePruneTop( expr->u.subtree[1] )
                                       , right );
         sym = right->u.symcg.symbol;
         if( expr->cgop == CO_DOT_STAR ) {
