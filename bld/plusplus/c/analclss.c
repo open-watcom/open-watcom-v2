@@ -955,7 +955,7 @@ static PTREE genDefaultCopyDiag(// GENERATE COPY TO CLASS OBJECT, WITH DIAGNOSIS
         } else {
             this_arg = NodeGetCallExpr( expr )->u.subtree[1];
             this_arg->u.subtree[0]
-                = NodeArgumentExactCtor( this_arg->u.subtree[0]
+                = NodeMakeArgCtor( this_arg->u.subtree[0]
                                        , tgt_type
                                        , true );
             *a_ctor_used = ctor;

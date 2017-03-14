@@ -890,7 +890,7 @@ PTREE NodeMakeArgument(             // MAKE AN ARGUMENT NODE
     PTREE left,                 // - left subtree
     PTREE right )               // - right subtree
 ;
-PTREE NodeArgumentExactCtor(    // ADD EXACT CTOR ARG., IF REQUIRED
+PTREE NodeMakeArgCtor(    // ADD EXACT CTOR ARG., IF REQUIRED
     PTREE args,                 // - other arguments
     TYPE type,                  // - type for class
     bool exact )                // - true ==> exact CTORing of classes

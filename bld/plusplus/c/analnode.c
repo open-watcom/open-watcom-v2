@@ -1636,7 +1636,7 @@ PTREE MakeArgCtorCall(    // GET EXACT CTOR ARG., IF REQUIRED
 }
 
 
-PTREE NodeArgumentExactCtor(    // ADD EXACT CTOR ARG., IF REQUIRED
+PTREE NodeMakeArgCtor(    // ADD EXACT CTOR ARG., IF REQUIRED
     PTREE args,                 // - other arguments
     TYPE type,                  // - type for class
     bool exact )                // - true ==> exact CTORing of classes
