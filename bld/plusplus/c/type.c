@@ -2442,6 +2442,10 @@ DECL_SPEC *PTypeStgClass( stg_class_t val )
     DECL_SPEC *spec;
 
     spec = makeDeclSpec();
+
+    if( CompFlags.enable_std0x && val == STG_AUTO ) {
+        CErr1 ( ERR_CXX11_AUTO_STORAGE_SPECIFIER );
+    }
     spec->stg_class = val;
     return( spec );
 }
