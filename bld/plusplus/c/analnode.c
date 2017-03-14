@@ -1510,7 +1510,7 @@ PTREE NodeMakeRefAssignment(            // CREATE ASSIGNMENT NODE FOR REFERENCE
 }
 
 
-PTREE NodeTemporary(            // CREATE TEMPORARY AND NODE FOR IT
+PTREE NodeMakeTemporary(            // CREATE TEMPORARY AND NODE FOR IT
     TYPE type )                 // - type of temporary
 {
     return MakeNodeSymbol( TemporaryAlloc( type ) );
@@ -1554,7 +1554,7 @@ PTREE NodeAssignTemporary(      // ASSIGN NODE TO A TEMPORARY
     TYPE type,                  // - type of temporary
     PTREE expr )                // - the expression to be assigned to temp
 {
-    return NodeAssignTemporaryNode( type, expr, NodeTemporary( type ) );
+    return NodeAssignTemporaryNode( type, expr, NodeMakeTemporary( type ) );
 }
 
 

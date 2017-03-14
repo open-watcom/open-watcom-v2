@@ -265,7 +265,7 @@ static bool getLvalue           // GET LVALUE FOR EXPRESSION
         switch( obj_model ) {
           case OMR_CLASS_VAL :
             if( force_to_temp ) {
-                expr = NodeCopyClassObject( NodeTemporary( type ), expr );
+                expr = NodeCopyClassObject( NodeMakeTemporary( type ), expr );
             } else {
                 expr = NodeForceLvalue( expr );
             }
@@ -755,7 +755,7 @@ static bool castCtor            // APPLY CTOR
                     CAST_RESULT result = reqdConstRef( ctl );
                     if( result != CAST_TESTED_OK ) return false;
                 }
-                temp = NodeTemporary( ctl->tgt.class_type );
+                temp = NodeMakeTemporary( ctl->tgt.class_type );
                 ctl->destination = temp;
                 ctl->dtor_destination = true;
             }
@@ -1991,7 +1991,7 @@ static void allocClassDestination//ALLOCATE DESTINATION WHEN CLASS
     if( NULL == ctl->destination ) {
         if( ctl->tgt.class_operand
          && ! ctl->tgt.reference ) {
-            ctl->destination = NodeTemporary( ctl->tgt.orig );
+            ctl->destination = NodeMakeTemporary( ctl->tgt.orig );
             ctl->dtor_destination = true;
         }
     }

@@ -1181,7 +1181,7 @@ PTREE ClassCopyTemp(            // COPY A TEMPORARY
         expr->flags |= PTF_LVALUE;
     } else {
         if( NULL == temp_node ) {
-            temp_node = NodeTemporary( cl_type );
+            temp_node = NodeMakeTemporary( cl_type );
             temp_node = PTreeCopySrcLocation( temp_node, expr );
         }
 #if 0

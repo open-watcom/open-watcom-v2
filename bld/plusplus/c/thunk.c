@@ -439,7 +439,7 @@ void EmitVfunThunk(             // EMIT THUNK FOR VIRTUAL FUNCTION
     return_type = SymFuncReturnType( override_sym );
     return_node = NULL;
     if( OMR_CLASS_REF == ObjModelArgument( return_type ) ) {
-        return_node = NodeTemporary( return_type );
+        return_node = NodeMakeTemporary( return_type );
     }
     stmt = NodeMakeCall( override_sym, return_type, args );
     stmt = CallArgsArrange( override_sym->sym_type, stmt, args, this_arg, NULL, return_node );

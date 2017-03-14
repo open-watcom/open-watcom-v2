@@ -246,7 +246,7 @@ static bool passStructOnStack(  // PASS A STRUCT/CLASS ON STACK
     type = right->type;
     if( right->flags & PTF_CLASS_RVREF ) {
         if( right->op != PT_ERROR ) {
-            PTREE temp = NodeTemporary( type );
+            PTREE temp = NodeMakeTemporary( type );
             right = ClassDefaultCopyDiag( temp, right, &diagEllConv );
             if( right->op != PT_ERROR ) {
                 right = NodeDtorExpr( right, temp->u.symcg.symbol );
@@ -1160,7 +1160,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
             expr->flags |= PTF_LVALUE;
         }
         if( OMR_CLASS_REF == ObjModelArgument( type ) ) {
-            retnnode = NodeTemporary( type );
+            retnnode = NodeMakeTemporary( type );
             retnnode = PTreeCopySrcLocation( retnnode, expr );
         } else {
             retnnode = NULL;

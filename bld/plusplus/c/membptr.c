@@ -60,7 +60,7 @@ typedef enum                    // CLASSIFICATION OF MEMBER-PTR EXPRESSIONS
 static PTREE membPtrTemporary(  // PLACE MEMBER PTR IN TEMPORARY
     PTREE expr )                // - member-ptr expression
 {
-    expr = NodeMakeAssignment( NodeTemporary( expr->type ), expr );
+    expr = NodeMakeAssignment( NodeMakeTemporary( expr->type ), expr );
     expr->flags |= PTF_MEMORY_EXACT;
     return expr;
 }

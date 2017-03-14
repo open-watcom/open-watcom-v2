@@ -1902,7 +1902,7 @@ static PTREE convertCtor(       // CONVERT CTOR EXPRESSION
             expr = CastImplicit( expr, type, CNV_INIT, &diagInit );
 #endif
         } else {
-            PTREE temp = NodeTemporary( type );
+            PTREE temp = NodeMakeTemporary( type );
             expr = generateCtor( temp, expr );
             if( expr->op != PT_ERROR ) {
                 expr = NodeDtorExpr( expr, temp->u.symcg.symbol );

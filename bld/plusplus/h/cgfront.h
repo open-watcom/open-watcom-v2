@@ -1268,7 +1268,7 @@ PTREE NodeSymbolNoRef(          // FILL IN NODE FOR A SYMBOL, NO REF. SETTING
     SYMBOL sym,                 // - symbol
     SEARCH_RESULT *result )     // - search result
 ;
-PTREE NodeTemporary(            // CREATE TEMPORARY AND NODE FOR IT
+PTREE NodeMakeTemporary(            // CREATE TEMPORARY AND NODE FOR IT
     TYPE type )                 // - type of temporary
 ;
 PTREE NodeMakeThis(                 // MAKE A RVALUE "THIS" NODE

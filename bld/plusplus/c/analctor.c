@@ -569,7 +569,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
             PTREE bare;             // - bare source operand
             PTREE co_dtor;          // - CO_DTOR operand
             if( this_node == NULL ) {
-                this_node = NodeTemporary( base_type );
+                this_node = NodeMakeTemporary( base_type );
                 this_node = PTreeSetLocn( this_node, err_locn );
                 check_dtoring = true;
             } else {
