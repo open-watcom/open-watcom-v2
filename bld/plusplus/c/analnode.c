@@ -1047,7 +1047,7 @@ PTREE NodeGetRValue(               // GET RVALUE, IF LVALUE
                     curr->flags &= ~ PTF_LVALUE;
                 } else if( curr->cgop == CO_NAME_CDTOR_EXTRA ) {
                     orig = curr;
-                    curr = NodeIc( IC_CDARG_FETCH );
+                    curr = NodeMakeIc( IC_CDARG_FETCH );
                     curr->type = TypeReferenced( node_type );
                     curr = PTreeCopySrcLocation( curr, orig );
                     PTreeFree( orig );
@@ -2156,7 +2156,7 @@ PTREE NodeMakeIcUnsigned(           // ADD A PTREE-IC NODE, UNSIGNED OPERAND
 }
 
 
-PTREE NodeIc(                   // ADD A PTREE-IC NODE
+PTREE NodeMakeIc(                   // ADD A PTREE-IC NODE
     CGINTEROP opcode )          // - opcode
 {
     return NodeMakeIcUnsigned( opcode, 0 );

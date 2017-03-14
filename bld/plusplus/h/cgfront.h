@@ -1079,7 +1079,7 @@ bool NodeGetIbpSymbol(          // GET BOUND-REFERENCE SYMBOL, IF POSSIBLE
     SYMBOL* a_ibp,              // - bound parameter to use
     target_offset_t* a_offset ) // - addr[ offset to basing symbol ]
 ;
-PTREE NodeIc(                   // ADD A PTREE-IC NODE
+PTREE NodeMakeIc(                   // ADD A PTREE-IC NODE
     CGINTEROP opcode )          // - opcode
 ;
 PTREE NodeMakeIcUnsigned(           // ADD A PTREE-IC NODE, UNSIGNED OPERAND
