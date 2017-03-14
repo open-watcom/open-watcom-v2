@@ -1463,7 +1463,7 @@ PTREE NodeMakeRVThisAtLoc(     // MAKE A RVALUE "THIS" NODE WITH LOCATION
 }
 
 
-PTREE NodeCDtorExtra(           // MAKE A CTOR/DTOR EXTRA PARM NODE
+PTREE NodeMakeCDtorExtraParm(           // MAKE A CTOR/DTOR EXTRA PARM NODE
     void )
 {
     PTREE node;                 // - "this" node

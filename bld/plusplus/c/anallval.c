@@ -821,7 +821,7 @@ bool AnalyseLvalue(             // ANALYSE AN LVALUE
                 retb = true;
             }
         } else if( expr->cgop == CO_NAME_CDTOR_EXTRA ) {
-            *a_expr = NodeCDtorExtra();
+            *a_expr = NodeMakeCDtorExtraParm();
             PTreeFree( expr );
             retb = true;
         } else if( expr->cgop == CO_NAME_DTOR ) {

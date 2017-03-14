@@ -942,7 +942,7 @@ bool NodeCallsCtor(             // DETERMINE IF NODE CALLS CTOR
 PTREE NodeMakeCDtorArg(             // BUILD CONSTANT NODE FOR CDTOR EXTRA ARG
     target_offset_t code )      // - the code
 ;
-PTREE NodeCDtorExtra(           // MAKE A CTOR/DTOR EXTRA PARM NODE
+PTREE NodeMakeCDtorExtraParm(           // MAKE A CTOR/DTOR EXTRA PARM NODE
     void )
 ;
 CNV_RETN NodeCheckCnvPtrVoid(   // CHECK CONVERSION TO 'VOID*'
