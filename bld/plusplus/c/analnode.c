@@ -2145,7 +2145,7 @@ static PTREE nodeIcCgValue(     // ADD A PTREE NODE
 }
 
 
-PTREE NodeIcUnsigned(           // ADD A PTREE-IC NODE, UNSIGNED OPERAND
+PTREE NodeMakeIcUnsigned(           // ADD A PTREE-IC NODE, UNSIGNED OPERAND
     CGINTEROP opcode,           // - opcode
     unsigned operand )          // - operand
 {
@@ -2159,7 +2159,7 @@ PTREE NodeIcUnsigned(           // ADD A PTREE-IC NODE, UNSIGNED OPERAND
 PTREE NodeIc(                   // ADD A PTREE-IC NODE
     CGINTEROP opcode )          // - opcode
 {
-    return NodeIcUnsigned( opcode, 0 );
+    return NodeMakeIcUnsigned( opcode, 0 );
 }
 
 

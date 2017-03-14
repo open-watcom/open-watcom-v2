@@ -1082,7 +1082,7 @@ bool NodeGetIbpSymbol(          // GET BOUND-REFERENCE SYMBOL, IF POSSIBLE
 PTREE NodeIc(                   // ADD A PTREE-IC NODE
     CGINTEROP opcode )          // - opcode
 ;
-PTREE NodeIcUnsigned(           // ADD A PTREE-IC NODE, UNSIGNED OPERAND
+PTREE NodeMakeIcUnsigned(           // ADD A PTREE-IC NODE, UNSIGNED OPERAND
     CGINTEROP opcode,           // - opcode
     unsigned operand )          // - operand
 ;

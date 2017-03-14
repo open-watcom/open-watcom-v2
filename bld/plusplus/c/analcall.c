@@ -751,7 +751,7 @@ static PTREE insertCDtor(       // INSERT CDTOR NODE INTO CALL LIST
         r_val = PTreeRefRight( arg );
         val = *r_val;
         if( val->op == PT_INT_CONSTANT ) {
-            PTREE new_val = NodeIcUnsigned( IC_CDARG_VAL, val->u.uint_constant );
+            PTREE new_val = NodeMakeIcUnsigned( IC_CDARG_VAL, val->u.uint_constant );
             new_val->type = val->type;
             *r_val = new_val;
             PTreeFree( val );
