@@ -435,7 +435,7 @@ static bool massageStaticEnumAccess( // x.static, x.enum adjustments
     expr->u.subtree[1] = NULL;
     PTreeFree( expr );
     retb = analyseBareSymbol( &rhs );
-    *a_expr = NodeCommaIfSideEffect( lhs, rhs );
+    *a_expr = NodeMakeCommaIfLHSSideEffect( lhs, rhs );
 #endif
     return( retb );
 }

@@ -1386,7 +1386,7 @@ PTREE NodeMakeComma(                // MAKE A COMMA PTREE NODE
 }
 
 
-PTREE NodeCommaIfSideEffect(    // MAKE A COMMA PTREE NODE (IF LHS HAS side-effects)
+PTREE NodeMakeCommaIfLHSSideEffect(    // MAKE A COMMA PTREE NODE (IF LHS HAS side-effects)
     PTREE left,                 // - left operand
     PTREE right )               // - right operand
 {

@@ -1195,7 +1195,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
         }
     }
     if( static_fn_this != NULL ) {
-        expr = NodeCommaIfSideEffect( static_fn_this, expr );
+        expr = NodeMakeCommaIfLHSSideEffect( static_fn_this, expr );
     }
     ArgListTempFree( alist, count );
     PtListFree( ptlist, count );
