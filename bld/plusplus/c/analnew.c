@@ -54,7 +54,7 @@ static PTREE newCheckForNULL( PTREE value, PTREE t_expr )
     PTREE f_expr;
 
     f_expr = value;
-    value = NodeDupExpr( &f_expr );
+    value = NodeMakeExprDuplicate( &f_expr );
     b_expr = NodeMakeZeroCompare( value );
     return( NodeTestExpr( b_expr, t_expr, f_expr ) );
 }
@@ -495,7 +495,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
         /* calculate "nelem * sizeof( elem )" */
         dup = array_number;
         if( sym_ctor != NULL || flag.needs_count ) {
-            array_number = NodeDupExpr( &dup );
+            array_number = NodeMakeExprDuplicate( &dup );
             flag.free_array_no = true;
         }
         node = NodeMakeBinary( CO_TIMES, dup, elem_size );
@@ -597,7 +597,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
             node = RunTimeCall( args, new_expr_type, rt_code );
             if( placement != NULL ) {
                 dup = node;
-                node = NodeDupExpr( &dup );
+                node = NodeMakeExprDuplicate( &dup );
                 node = newCheckForNULL( dup, node );
             }
         } else {
@@ -605,7 +605,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
             /* no constructor req'd */
             if( flag.needs_count ) {
                 dup = node;
-                node = NodeDupExpr( &dup );
+                node = NodeMakeExprDuplicate( &dup );
                 expr = setupArrayStorage( dup, new_expr_type, array_number );
                 node = newCheckForNULL( node, expr );
             }
@@ -614,7 +614,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
         ScopeFreeResult( result_dlt );
         if( initial != NULL || sym_ctor != NULL ) {
             dup = node;
-            node = NodeDupExpr( &dup );
+            node = NodeMakeExprDuplicate( &dup );
 #if 0
             dup->type = type;
             dup->flags |= PTF_LVALUE;
@@ -780,7 +780,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
             }
             flag.test_null = true;
             dup = data;
-            data = NodeDupExpr( &dup );
+            data = NodeMakeExprDuplicate( &dup );
             expr = AnalyseDtorCall( cltype, data, dtor_code );
         } else {
             target_size_t elem_size;    // - size of an element
@@ -806,7 +806,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
                     if( flag.array_delete ) {
                         flag.test_null = true;
                         dup = data;
-                        data = NodeDupExpr( &dup );
+                        data = NodeMakeExprDuplicate( &dup );
                         expr = NodeMakeBinary( CO_MINUS, data, sizeOfUInt() );
                         expr->type = expr->u.subtree[0]->type;
                     } else {
@@ -834,7 +834,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
                     // handle case: 2
                     flag.test_null = true;
                     dup = data;
-                    data = NodeDupExpr( &dup );
+                    data = NodeMakeExprDuplicate( &dup );
                     if( num_args == 2 ) {
                         data = PtdDltDtorSize( data, elem_size );
                     }
@@ -858,7 +858,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
                     if( flag.adjust_for_num ) {
                         flag.test_null = true;
                         dup = data;
-                        data = NodeDupExpr( &dup );
+                        data = NodeMakeExprDuplicate( &dup );
                         expr = NodeMakeBinary( CO_MINUS, data, sizeOfUInt() );
                         expr->type = expr->u.subtree[0]->type;
                     } else {
@@ -875,7 +875,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
 
                     // 'expr' must already be adjusted down by sizeof(unsigned)
                     dup2 = expr;
-                    expr = NodeDupExpr( &dup2 );
+                    expr = NodeMakeExprDuplicate( &dup2 );
                     expr = NodeMakeConversion( MakeReferenceTo( GetBasicType( TYP_UINT ) ), expr );
                     args = NodeMakeBinary( CO_TIMES, NodeGetRValue( expr ), args );
                     offset_type = args->u.subtree[1]->type;
@@ -885,7 +885,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
                     if( ! flag.test_null ) {
                         flag.test_null = true;
                         dup = expr;
-                        expr = NodeDupExpr( &dup );
+                        expr = NodeMakeExprDuplicate( &dup );
                     }
                 }
             } else {

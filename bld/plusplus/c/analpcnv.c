@@ -103,7 +103,7 @@ PTREE NodeConvertVirtualPtr(    // EXECUTE A VIRTUAL BASE CAST
     expr = NodeMakeBinary( CO_DOT, expr, offset );
     expr->flags |= PTF_LVALUE | PTF_PTR_NONZERO;
     expr->type = vbptr_type;
-    dup = NodeDupExpr( &expr );
+    dup = NodeMakeExprDuplicate( &expr );
     expr->flags |= PTF_LVALUE | PTF_PTR_NONZERO;
     expr = NodeFetch( expr );
     expr->type = vbptr_type;
@@ -206,7 +206,7 @@ void NodeConvertToBasePtr(      // CONVERT TO A BASE PTR, USING SEARCH_RESULT
         } else {
             dup = NULL;
             if( ! NodePtrNonZero( node ) ) {
-                dup = NodeDupExpr( &node );
+                dup = NodeMakeExprDuplicate( &node );
             }
             vb_offset = result->vb_offset;
             vb_index = result->vb_index;
@@ -218,7 +218,7 @@ void NodeConvertToBasePtr(      // CONVERT TO A BASE PTR, USING SEARCH_RESULT
                 node->flags |= orig_prop;
             }
             if( dup != NULL ) {
-                orig = NodeDupExpr( &dup );
+                orig = NodeMakeExprDuplicate( &dup );
                 node = NodeTestExpr( NodeMakeZeroCompare( orig ), node, dup );
             }
         }

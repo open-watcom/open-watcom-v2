@@ -542,7 +542,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
 
                 dup = NULL;
                 if( control & EFFECT_VALUE_THIS ) {
-                    dup = NodeDupExpr( &this_node );
+                    dup = NodeMakeExprDuplicate( &this_node );
                 }
                 if( base_type->id == TYP_BITFIELD ) {
                     this_node = NodeUnaryCopy( CO_BITFLD_CONVERT, this_node );

@@ -1300,7 +1300,7 @@ static PTREE makeDupNode(       // DUPLICATE THE EXPRESSION
 }
 
 
-PTREE NodeDupExpr(              // DUPLICATE EXPRESSION
+PTREE NodeMakeExprDuplicate(              // DUPLICATE EXPRESSION
     PTREE *expr )               // - addr( expression )
 {
     PTREE node;                 // - new node (partner)
@@ -2107,7 +2107,7 @@ PTREE NodeBitQuestAssign(       // ASSIGN (expr?bit-fld:bit-fld) = expr
     expr->u.subtree[0] = NULL;
     expr->flags &= ~PTF_LVALUE;
     dup = PTreeAssign( NULL, expr );
-    dup->u.subtree[1] = NodeDupExpr( &expr->u.subtree[1] );
+    dup->u.subtree[1] = NodeMakeExprDuplicate( &expr->u.subtree[1] );
     colon = PTreeOpRight( PTreeOp( &result ) );
     assignBitDup( &colon->u.subtree[0], expr );
     assignBitDup( &colon->u.subtree[1], dup );

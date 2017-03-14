@@ -349,7 +349,7 @@ static PTREE applyReturnThunk(  // GENERATE A RETURN THUNK
         /* only need NULL checks for pointer casts */
         if( ptr_type->id == TYP_POINTER ) {
             if( (ptr_type->flag & TF1_REFERENCE) == 0 ) {
-                dup1 = NodeDupExpr( &expr );
+                dup1 = NodeMakeExprDuplicate( &expr );
             }
         }
     }
@@ -363,7 +363,7 @@ static PTREE applyReturnThunk(  // GENERATE A RETURN THUNK
         expr = NodeAddToLeft( expr, NodeMakeConstantOffset( delta ), ret_type );
     }
     if( dup1 != NULL ) {
-        dup2 = NodeDupExpr( &dup1 );
+        dup2 = NodeMakeExprDuplicate( &dup1 );
         dup1 = NodeMakeZeroCompare( dup1 );
         expr = NodeTestExpr( dup1, expr, dup2 );
     }

@@ -1041,7 +1041,7 @@ PTREE NodeDtorExpr(             // MARK FOR DTOR'ING AFTER EXPRESSION
     PTREE expr,                 // - expression computing symbol
     SYMBOL sym )                // - SYMBOL being computed
 ;
-PTREE NodeDupExpr(              // DUPLICATE EXPRESSION
+PTREE NodeMakeExprDuplicate(              // DUPLICATE EXPRESSION
     PTREE *expr )               // - addr( expression )
 ;
 PTREE NodeFetch(                // FETCH A VALUE

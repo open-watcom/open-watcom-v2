@@ -939,7 +939,7 @@ static PTREE nodeBasedSelfExpr( // FIND EXPR TO BE USED FOR BASED __SELF
     tgt = TypeRebuildPcPtr( umod, flags, TF1_FAR );
     expr->u.subtree[0] = NodeMakeConversion( tgt, expr->u.subtree[0] );
     expr->u.subtree[0]->flags &= ~ PTF_LVALUE;
-    return NodeDupExpr( &expr->u.subtree[0] );
+    return NodeMakeExprDuplicate( &expr->u.subtree[0] );
 }
 
 

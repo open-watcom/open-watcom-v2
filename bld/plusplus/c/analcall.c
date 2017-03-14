@@ -601,7 +601,7 @@ static bool adjustForVirtualCall(   // ADJUSTMENTS FOR POSSIBLE VIRTUAL CALL
     NodeConvertToBasePtr( this_node, this_type, result, true );
     sym = SymDefaultBase( sym );
     if( SymIsVirtual( sym ) && ((*routine)->flags & PTF_COLON_QUALED) == 0 && !exact_call ) {
-        expr = AccessVirtualFnAddress( NodeDupExpr( this_node )
+        expr = AccessVirtualFnAddress( NodeMakeExprDuplicate( this_node )
                                      , result
                                      , sym );
         expr->type = MakePointerTo( expr->type );
@@ -891,7 +891,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
         if( left->flags & PTF_CALLED_ONLY ) {
             /* member pointer dereference being called */
             deref_args = left->u.subtree[1];
-            this_node = NodeDupExpr( &(deref_args->u.subtree[1]) );
+            this_node = NodeMakeExprDuplicate( &(deref_args->u.subtree[1]) );
             membptr_deref = true;
         }
         break;

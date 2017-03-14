@@ -347,12 +347,12 @@ static PTREE computeNewDelta(   // COMPUTE NEW DELTA
     if( inf->delta_reqd ) {
         delta = ( inf->safe ) ? inf->delta : -inf->delta;
         if( inf->test_reqd ) {
-            node = addOffset( NodeDupExpr( &new_delta ), delta, type );
+            node = addOffset( NodeMakeExprDuplicate( &new_delta ), delta, type );
             node = FoldBinary( node );
             node = NodeMakeBinary( CO_COLON, new_delta, node );
             node->type = type;
             node = NodeMakeBinary( CO_QUESTION
-                             , NodeMakeZeroCompare( NodeDupExpr( new_index ) )
+                             , NodeMakeZeroCompare( NodeMakeExprDuplicate( new_index ) )
                              , node );
             node->type = type;
         } else {
@@ -379,7 +379,7 @@ static PTREE computeNewIndex(   // COMPUTE NEW INDEX
             off_node->type = type;
             if( inf->single_mapping ) {
                 node = NodeMakeBinary( (inf->vb_index == 0 ) ? CO_GT : CO_EQ
-                                 , NodeDupExpr( &new_index )
+                                 , NodeMakeExprDuplicate( &new_index )
                                  , NodeMakeConstantOffset( inf->single_test * TARGET_UINT ) );
                 node = NodeSetBooleanType( node );
                 node = FoldBinary( node );
@@ -916,9 +916,9 @@ static MP_TYPE classifyMpExpr(  // CLASSIFY A MEMBER-POINTER EXPRESSION
             }
         }
         type = MakePointerTo( dereferenceFnType( type_mp->of ) );
-        func = accessOp( NodeDupExpr( &expr ), 0, type );
+        func = accessOp( NodeMakeExprDuplicate( &expr ), 0, type );
         type = memberPtrLayout( &offset_delta, &offset_index );
-        delta = accessOp( NodeDupExpr( &expr ), offset_delta, type );
+        delta = accessOp( NodeMakeExprDuplicate( &expr ), offset_delta, type );
         index = accessOp( expr, offset_index, type );
         expr = makeMembPtrExpr( expr->type, func, delta, index );
         expr->flags |= PTF_LVALUE;
@@ -946,7 +946,7 @@ CNV_RETN MembPtrAssign(         // ASSIGNMENT/INITIALIZATION OF MEMBER POINTER
                          , expr->u.subtree[0]->type
                          , CNV_INIT_COPY );
     if( retn == CNV_OK ) {
-        tgt = NodeDupExpr( &expr->u.subtree[0] );
+        tgt = NodeMakeExprDuplicate( &expr->u.subtree[0] );
         classifyMpExpr( &expr->u.subtree[0] );
         switch( classifyMpExpr( &expr->u.subtree[1] ) ) {
           case MP_CONST :
@@ -1048,11 +1048,11 @@ static PTREE doDereference(     // GENERATE DE-REFERENCING CODE
         expr = expr->u.subtree[0];
         index = NodeGetRValue( expr->u.subtree[1] );
         expr->u.subtree[1] = NULL;
-        temp = accessOp( NodeDupExpr( &lhs )
+        temp = accessOp( NodeMakeExprDuplicate( &lhs )
                        , ScopeVBPtrOffset( scope )
                        , MakePointerTo( type_offset ) );
-        expr = NodeAddToLeft( NodeFetch( NodeDupExpr( &temp ) )
-                        , NodeDupExpr( &index )
+        expr = NodeAddToLeft( NodeFetch( NodeMakeExprDuplicate( &temp ) )
+                        , NodeMakeExprDuplicate( &index )
                         , type_offset );
         expr->flags |= PTF_LVALUE;
         expr = NodeAddToLeft( temp, NodeFetch( expr ), type_cp );
