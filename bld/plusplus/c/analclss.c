@@ -163,7 +163,7 @@ static void returnThis(         // RETURN "this" value
 
 static PTREE addOffset( PTREE node, target_offset_t offset, TYPE type )
 {
-    node = NodeMakeBinary( CO_DOT, node, NodeOffset( offset ) );
+    node = NodeMakeBinary( CO_DOT, node, NodeMakeConstantOffset( offset ) );
     node->type = type;
     node->flags |= PTF_LVALUE;
     return( node );
@@ -289,7 +289,7 @@ static PTREE setThisFromOffset( // SET "THIS" BACK BY AN OFFSET
         /* bit-fields do not have l-values that can be adjusted */
         return( expr );
     }
-    offset_node = NodeOffset( offset );
+    offset_node = NodeMakeConstantOffset( offset );
     offset_node->cgop = CO_IGNORE;
     expr = NodeMakeBinary( CO_RESET_THIS, expr, offset_node );
     expr->type = this_type;
@@ -450,7 +450,7 @@ static PTREE classArrayRtCall(  // GENERATE R/T CALL FOR ARRAY
     target_size_t nelem;        // - number of array elements
 
     nelem = ArrayTypeNumberItems( artype );
-    expr = NodeArgument( expr, NodeOffset( nelem ) );
+    expr = NodeArgument( expr, NodeMakeConstantOffset( nelem ) );
     if( src != NULL ) {
         expr = NodeArgument( expr, src );
     }
@@ -569,7 +569,7 @@ static void emitOpeqCall(       // EMIT AN ASSIGNMENT FOR DEFAULT OP=
                 assop = ClassFunMakeAddressable( assop );
                 assop->flag |= SF_ADDR_TAKEN;
                 expr = NodeArguments( MakeNodeSymbol( assop )
-                                    , NodeOffset( CgMemorySize( cltype ) )
+                                    , NodeMakeConstantOffset( CgMemorySize( cltype ) )
                                     , NULL );
                 expr = classArrayRtCall( expr
                                        , src
@@ -2103,7 +2103,7 @@ static void emitOffset( target_offset_t offset )
 {
     PTREE expr;
 
-    expr = NodeOffset( offset );
+    expr = NodeMakeConstantOffset( offset );
     DgStoreScalar( expr, 0, expr->type );
     PTreeFreeSubtrees( expr );
 }

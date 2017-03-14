@@ -45,7 +45,7 @@
 
 static PTREE sizeOfUInt( void )
 {
-    return NodeOffset( SizeTargetSizeT() );
+    return NodeMakeConstantOffset( SizeTargetSizeT() );
 }
 
 static PTREE newCheckForNULL( PTREE value, PTREE t_expr )
@@ -76,7 +76,7 @@ static TYPE figureOutNewType( PTREE *pnumber, TYPE *of_type )
     if( array_number == NULL ) {
         test_type = ArrayType( type );
         if( test_type != NULL ) {
-            array_number = NodeOffset( test_type->u.a.array_size );
+            array_number = NodeMakeConstantOffset( test_type->u.a.array_size );
             new_expr_type = PointerTypeForArray( type );
             type = test_type->of;
         } else {
@@ -91,7 +91,7 @@ static TYPE figureOutNewType( PTREE *pnumber, TYPE *of_type )
         size = CgTypeSize( type );
         base_type = ArrayBaseType( type );
         number = size / CgTypeSize( base_type );
-        extra_number = NodeOffset( number );
+        extra_number = NodeMakeConstantOffset( number );
         if( array_number != NULL ) {
             array_number = NodeGetRValue( array_number );
             array_number = NodeMakeBinary( CO_TIMES, array_number, extra_number );
@@ -419,7 +419,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
     NodeFreeDupedExpr( expr );
     /* 'type', 'placement', 'array_number', and 'initial' are set now */
     new_expr_type = figureOutNewType( &array_number, &type );
-    elem_size = NodeOffset( CgTypeSize( type ) );
+    elem_size = NodeMakeConstantOffset( CgTypeSize( type ) );
     offset_type = elem_size->type;
     base_type = ArrayBaseType( type );
     class_type = StructType( type );
@@ -654,7 +654,7 @@ static PTREE deleteCheckForNULL( PTREE value, PTREE t_expr )
     PTREE f_expr;
 
     b_expr = NodeMakeZeroCompare( value );
-    f_expr = NodeOffset( 0 );
+    f_expr = NodeMakeConstantOffset( 0 );
     return( NodeTestExpr( b_expr, t_expr, f_expr ) );
 }
 
@@ -869,7 +869,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
                 }
             }
             if( num_args == 2 ) {
-                args = NodeOffset( elem_size );
+                args = NodeMakeConstantOffset( elem_size );
                 if( flag.array_delete ) {
                     PTREE dup2;
 

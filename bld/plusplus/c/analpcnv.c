@@ -99,7 +99,7 @@ PTREE NodeConvertVirtualPtr(    // EXECUTE A VIRTUAL BASE CAST
     PTREE dup;
 
     vbptr_type = MakeVBTableFieldType( true );
-    offset = NodeOffset( vb_offset );
+    offset = NodeMakeConstantOffset( vb_offset );
     expr = NodeMakeBinary( CO_DOT, expr, offset );
     expr->flags |= PTF_LVALUE | PTF_PTR_NONZERO;
     expr->type = vbptr_type;
@@ -110,7 +110,7 @@ PTREE NodeConvertVirtualPtr(    // EXECUTE A VIRTUAL BASE CAST
     expr->flags &= ~ PTF_LVALUE;
     expr->flags |= PTF_PTR_NONZERO;
     adjust_type = TypePointedAtModified( vbptr_type );
-    offset = NodeOffset( vb_index * CgMemorySize( adjust_type ) );
+    offset = NodeMakeConstantOffset( vb_index * CgMemorySize( adjust_type ) );
     expr = NodeMakeBinary( CO_DOT, expr, offset );
     expr->type = adjust_type;
     expr->flags |= PTF_LVALUE | PTF_PTR_NONZERO;
@@ -135,7 +135,7 @@ static void adjust_by_delta(    // COMPUTE DELTA ADJUSTMENT
     if( delta == 0 ) {
         *a_expr = NodeMakeConversion( base, *a_expr );
     } else {
-        offset = NodeOffset( delta );
+        offset = NodeMakeConstantOffset( delta );
         if( ! positive ) {
             offset->u.int_constant = - delta;
         }
@@ -213,7 +213,7 @@ void NodeConvertToBasePtr(      // CONVERT TO A BASE PTR, USING SEARCH_RESULT
             node = NodeConvertVirtualPtr( node, base, vb_offset, vb_index );
             delta = result->delta;
             if( delta != 0 ) {
-                node = NodeMakeBinary( CO_DOT, node, NodeOffset( delta ) );
+                node = NodeMakeBinary( CO_DOT, node, NodeMakeConstantOffset( delta ) );
                 node->type = base;
                 node->flags |= orig_prop;
             }

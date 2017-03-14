@@ -135,7 +135,7 @@ PTREE AnalyseTypeidExpr( PTREE typeid_expr )
             info = GetWithinOffsetOfVFPtr( class_type, &expr );
             expr = NodeComma( extra, expr );
             args = NodeArguments( NodeTypeid( class_type ),
-                                  NodeOffset( info->vf_offset ),
+                                  NodeMakeConstantOffset( info->vf_offset ),
                                   expr,
                                   NULL );
             result_expr = RunTimeCall( args, type_info, RTF_GET_TYPEID );

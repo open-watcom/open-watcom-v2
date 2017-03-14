@@ -190,11 +190,11 @@ bool AnalyseThisDataItem(       // ANALYSE "THIS" DATA ITEM IN PARSE TREE
         right->u.symcg.result = NULL;
         if( expr->u.subtree[0]->flags & PTF_MEMORY_EXACT ) {
             offset = result->exact_delta + result->offset;
-            right = NodeReplace( right, NodeOffset( offset ) );
+            right = NodeReplace( right, NodeMakeConstantOffset( offset ) );
             *r_right = right;
         } else if( result->non_virtual ) {
             offset = result->delta + result->offset;
-            right = NodeReplace( right, NodeOffset( offset ) );
+            right = NodeReplace( right, NodeMakeConstantOffset( offset ) );
             *r_right = right;
         } else {
             expr = NodePruneRight( expr );
@@ -202,7 +202,7 @@ bool AnalyseThisDataItem(       // ANALYSE "THIS" DATA ITEM IN PARSE TREE
             expr->flags |= PTF_PTR_NONZERO;
             NodeConvertToBasePtr( &expr, type, result, true );
             expr->flags |= PTF_LVALUE | PTF_LV_CHECKED;
-            expr = NodeMakeBinary( CO_DOT, expr, NodeOffset( result->offset ) );
+            expr = NodeMakeBinary( CO_DOT, expr, NodeMakeConstantOffset( result->offset ) );
         }
         expr->type = type;
         expr->flags |= PTF_LVALUE;
@@ -1092,7 +1092,7 @@ PTREE AnalyseOffsetOf(          // ANALYSE OFFSETOF
     PTreeFreeSubtrees( field );
     if( curr == NULL ) {
         PTreeFreeSubtrees( expr );
-        expr = NodeOffset( offset );
+        expr = NodeMakeConstantOffset( offset );
     }
     return expr;
 }

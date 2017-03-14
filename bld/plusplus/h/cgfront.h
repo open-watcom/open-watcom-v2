@@ -1164,7 +1164,7 @@ bool NodeNonConstRefToTemp(     // CHECK IF TEMP. PASSED AS NON-CONST REF
     TYPE arg_type,              // - possible non-const reference
     PTREE node )                // - possible temporary
 ;
-PTREE NodeOffset(               // BUILD CONSTANT NODE FOR AN OFFSET
+PTREE NodeMakeConstantOffset(               // BUILD CONSTANT NODE FOR AN OFFSET
     target_offset_t offset )    // - the offset
 ;
 PTREE NodeTestExpr(             // GENERATE A TERNARY TEST EXPRESSION

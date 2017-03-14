@@ -565,7 +565,7 @@ static PTREE transformVaStart   // TRANSFORM TO CO_VASTART OPCODE
         offset -= TARGET_PACKING;
     }
     NodeFreeDupedExpr( expr );
-    expr = NodeMakeBinary( CO_VASTART, valist, NodeOffset( offset ) );
+    expr = NodeMakeBinary( CO_VASTART, valist, NodeMakeConstantOffset( offset ) );
     return expr;
 }
 #endif
@@ -1256,7 +1256,7 @@ PTREE MakeDeleteCall(   // MAKE A CALL TO 'OPERATOR DELETE'
     del_args = SymFuncArgList( del_sym );
     args = NULL;
     if( class_parm != NULL ) {
-        size_arg = NodeOffset( class_parm->u.c.info->size );
+        size_arg = NodeMakeConstantOffset( class_parm->u.c.info->size );
         size_arg = NodeMakeConversion( del_args->type_list[1], size_arg );
         args = NodeArgument( args, size_arg );
     }

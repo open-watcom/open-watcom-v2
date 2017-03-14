@@ -1655,7 +1655,7 @@ static bool is_ptr_constant(    // CHECK IF NODE IS TYPED AS PTR TO A CONSTANT
 static PTREE bld_type_size(     // BUILD CONSTANT NODE WITH SIZE OF TYPE
     TYPE type )                 // - type in question
 {
-    return NodeOffset( CgTypeSize( type ) );
+    return NodeMakeConstantOffset( CgTypeSize( type ) );
 }
 
 
@@ -1698,7 +1698,7 @@ static PTREE bld_ptr_adj(       // BUILD A POINTER ADJUSTMENT
     if( pted_size == 1 ) {
         return factor;
     }
-    new_node = NodeMakeBinary( CO_TIMES, factor, NodeOffset( pted_size ) );
+    new_node = NodeMakeBinary( CO_TIMES, factor, NodeMakeConstantOffset( pted_size ) );
     new_node->type = factor->type;
     return FoldBinary( new_node );
 }

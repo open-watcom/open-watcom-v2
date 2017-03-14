@@ -158,14 +158,14 @@ static PTREE genVfunCall(       // DIRECTLY GENERATE VFUN CALL
     TYPE vfptr_type;            // - type[ ptr to VF table ]
     TYPE vfn_type;              // - type[ ptr to VF ]
 
-    node = NodeMakeBinary( CO_DOT, node, NodeOffset( vf_offset ) );
+    node = NodeMakeBinary( CO_DOT, node, NodeMakeConstantOffset( vf_offset ) );
     vfptr_type = MakeVFTableFieldType( true );
     node->type = vfptr_type;
     node->flags |= PTF_LVALUE;
     node = PtdExprConst( node );
     node = NodeGetRValue( node );
     vfn_type = TypePointedAtModified( vfptr_type );
-    node = NodeMakeBinary( CO_DOT, node, NodeOffset( vf_index * CgMemorySize( vfn_type ) ) );
+    node = NodeMakeBinary( CO_DOT, node, NodeMakeConstantOffset( vf_index * CgMemorySize( vfn_type ) ) );
     node->type = vfn_type;
     node->flags |= PTF_LVALUE;
     node = NodeGetRValue( node );

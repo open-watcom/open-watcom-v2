@@ -1216,7 +1216,7 @@ PTREE NodeMakeIntegralConstant      // BUILD AN INTEGRAL NODE FOR A VALUE
 }
 
 
-PTREE NodeOffset(               // BUILD CONSTANT NODE FOR AN OFFSET
+PTREE NodeMakeConstantOffset(               // BUILD CONSTANT NODE FOR AN OFFSET
     target_offset_t offset )    // - the offset
 {
     TYPE otype;
@@ -2306,7 +2306,7 @@ PTREE NodeTypeSig               // MAKE NODE FOR TYPE-SIG ADDRESS
     node = MakeNodeSymbol( sym );
     if( 0 != offset ) {
         PTREE snode = node;
-        node = NodeMakeBinary( CO_DOT, snode, NodeOffset( offset ) );
+        node = NodeMakeBinary( CO_DOT, snode, NodeMakeConstantOffset( offset ) );
         node->type = snode->type;
         node->flags = snode->flags;
     }

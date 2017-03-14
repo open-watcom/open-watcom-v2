@@ -213,7 +213,7 @@ static PTREE accessOp(          // ACCESS AN OPERAND
 {
     PTREE expr;                 // - resultant expression
 
-    expr = NodeMakeBinary( CO_DOT, base, NodeOffset( offset ) );
+    expr = NodeMakeBinary( CO_DOT, base, NodeMakeConstantOffset( offset ) );
     expr->type = type;
     expr->flags |= PTF_LVALUE;
     return expr;
@@ -227,7 +227,7 @@ static PTREE addOffset(         // ADD AN OFFSET TO AN LVALUE
 {
     PTREE expr;                 // - resultant expression
 
-    expr = NodeAddToLeft( field, NodeOffset( offset ), type );
+    expr = NodeAddToLeft( field, NodeMakeConstantOffset( offset ), type );
     expr->flags &= ~ PTF_LVALUE;
     return expr;
 }
@@ -258,7 +258,7 @@ static void generateOffsetFunc( // GENERATE CODE FOR OFFSET FUNCTION
     type_ret = SymFuncReturnType( func );
     ret = SymFunctionReturn();
     if( SymIsThisDataMember( refed ) ) {
-        expr = NodeAddToLeft( NodeThis(), NodeOffset( refed->u.member_offset ), refed->sym_type );
+        expr = NodeAddToLeft( NodeThis(), NodeMakeConstantOffset( refed->u.member_offset ), refed->sym_type );
         expr = NodeFetchReference( expr );
     } else {
         if( SymIsVirtual( refed ) ) {
@@ -375,12 +375,12 @@ static PTREE computeNewIndex(   // COMPUTE NEW INDEX
     if( inf->mapping_reqd ) {
         type = TypeTargetSizeT();
         if( inf->mapping == NULL ) {
-            off_node = NodeOffset( inf->vb_index * TARGET_UINT );
+            off_node = NodeMakeConstantOffset( inf->vb_index * TARGET_UINT );
             off_node->type = type;
             if( inf->single_mapping ) {
                 node = NodeMakeBinary( (inf->vb_index == 0 ) ? CO_GT : CO_EQ
                                  , NodeDupExpr( &new_index )
-                                 , NodeOffset( inf->single_test * TARGET_UINT ) );
+                                 , NodeMakeConstantOffset( inf->single_test * TARGET_UINT ) );
                 node = NodeSetBooleanType( node );
                 node = FoldBinary( node );
                 new_index = NodeMakeBinary( CO_COLON, off_node, new_index );
@@ -469,8 +469,8 @@ static PTREE makeMembPtrCon(    // MAKE A MEMBER-PTR CONSTANT EXPRESSION
     }
     return makeMembPtrExpr( type
                           , deref
-                          , NodeOffset( delta )
-                          , NodeOffset( index ) );
+                          , NodeMakeConstantOffset( delta )
+                          , NodeMakeConstantOffset( index ) );
 }
 
 PTREE MembPtrZero(              // MAKE A NULL MEMBER POINTER CONSTANT

@@ -1319,7 +1319,7 @@ static PTREE doReintPtrToArith  // DO REINTERPRET: PTR -> ARITH
                 expr = NodeMakeConversion( argument, ctl->expr );
                 argument = GetBasicType( TYP_ULONG );
                 expr = NodeMakeConversion( argument, expr );
-                expr = NodeMakeBinary( CO_RSHIFT, expr, NodeOffset( 16 ) );
+                expr = NodeMakeBinary( CO_RSHIFT, expr, NodeMakeConstantOffset( 16 ) );
                 expr->type = argument;
                 expr = NodeMakeConversion( TypeSegmentShort(), expr );
                 expr->locn = locn;

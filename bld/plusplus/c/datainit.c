@@ -1294,7 +1294,7 @@ static void dataInitRunTimeCall( target_size_t start, target_size_t size )
         } else {
             sig = dataInitTypeSigFind( base_type, TSA_DEFAULT_CTOR | TSA_DTOR );
             node = NodeArguments( NodeTypeSig( sig )
-                                , NodeOffset( num_elem )
+                                , NodeMakeConstantOffset( num_elem )
                                 , dataInitPadLeftSide( start )
                                 , NULL );
             if( TypeHasVirtualBases( base_type ) ) {

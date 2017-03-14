@@ -575,7 +575,7 @@ static PTREE makeTrueFalse( PTREE expr, PTREE op, int value )
     if( anachronismFound( op ) ) {
         return( expr );
     }
-    node = NodeOffset( value );
+    node = NodeMakeConstantOffset( value );
     node = NodeSetBooleanType( node );
     node = PTreeCopySrcLocation( node, expr );
     NodeFreeDupedExpr( expr );
