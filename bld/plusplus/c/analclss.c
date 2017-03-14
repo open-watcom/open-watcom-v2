@@ -1033,7 +1033,7 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
         FnovFreeDiag( &fnov_diag );
         opt = CALL_OPT_NONE;
         if( is_ctor ) {
-            src = NodeLvExtract( src );
+            src = NodeExtractLValue( src );
             result = classResult( type, &ctor_udc, ctor_udc->name->name, NULL );
         } else {
             TYPE src_class = ClassTypeForType( type_right );
@@ -1172,11 +1172,11 @@ PTREE ClassCopyTemp(            // COPY A TEMPORARY
 #if 0
     SYMBOL ctor;                // - CTOR used
 #endif
-    expr = NodeLvExtract( expr );
+    expr = NodeExtractLValue( expr );
     if( NodeYieldsTemporary( expr )
      && cl_type == ClassTypeForType( expr->type ) ) {
         NodeFreeDupedExpr( temp_node );
-        expr = NodeLvExtract( expr );
+        expr = NodeExtractLValue( expr );
         expr->type = cl_type;
         expr->flags |= PTF_LVALUE;
     } else {

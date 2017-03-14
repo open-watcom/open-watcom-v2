@@ -1130,7 +1130,7 @@ bool NodeIsZeroConstant(        // TEST IF A ZERO CONSTANT
 bool NodeIsZeroIntConstant(     // TEST IF A ZERO INTEGER CONSTANT
     PTREE node )                // - node
 ;
-PTREE NodeLvExtract             // EXTRACT LVALUE, IF POSSIBLE
+PTREE NodeExtractLValue             // EXTRACT LVALUE, IF POSSIBLE
     ( PTREE expr )              // - expression
 ;
 PTREE NodeLvForRefClass         // MAKE LVALUE FOR REF CLASS

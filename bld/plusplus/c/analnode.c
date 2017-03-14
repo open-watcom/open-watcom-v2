@@ -2338,7 +2338,7 @@ PTREE NodeSetType               // SET NODE TYPE, FLAGS
 }
 
 
-PTREE NodeLvExtract             // EXTRACT LVALUE, IF POSSIBLE
+PTREE NodeExtractLValue             // EXTRACT LVALUE, IF POSSIBLE
     ( PTREE expr )              // - expression
 {
     TYPE expr_type;             // - expression type
@@ -2393,7 +2393,7 @@ PTREE NodeLvExtract             // EXTRACT LVALUE, IF POSSIBLE
 PTREE NodeForceLvalue           // FORCE EXPRESSION TO BE LVALUE
     ( PTREE expr )              // - expression
 {
-    expr = NodeLvExtract( expr );
+    expr = NodeExtractLValue( expr );
     if( ! ExprIsLvalue( expr ) ) {
         TYPE type = TypeReferenced( expr->type );
         TEMP_TYPE old = TemporaryClass( TEMP_TYPE_EXPR );
