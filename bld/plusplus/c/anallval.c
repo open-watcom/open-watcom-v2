@@ -399,7 +399,7 @@ static bool analyseBareSymbol(  // ANALYSE AN BARE SYMBOL
             if( SymIsEnumeration( sym ) ) {
                 sym = expr->u.symcg.symbol;
                 PTreeFree( expr );
-                expr = NodeFromConstSym( sym );
+                expr = NodeMakeFromConstSym( sym );
                 expr->type = sym->sym_type;
             } else {
                 expr = NodeSetMemoryExact( expr );

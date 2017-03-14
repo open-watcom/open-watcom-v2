@@ -1062,7 +1062,7 @@ void NodeFreeDupedExpr(         // FREE AN EXPRESSION WITH DUPLICATES
 void NodeFreeSearchResult(      // FREE SEARCH_RESULT FROM A NODE
     PTREE node )                // - the node
 ;
-PTREE NodeFromConstSym(         // BUILD CONSTANT NODE FROM CONSTANT SYMBOL
+PTREE NodeMakeFromConstSym(         // BUILD CONSTANT NODE FROM CONSTANT SYMBOL
     SYMBOL con )                // - constant symbol
 ;
 PTREE NodeFuncForCall(          // GET FUNCTION NODE FOR CALL

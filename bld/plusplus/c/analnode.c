@@ -800,7 +800,7 @@ bool NodeIsZeroIntConstant(     // TEST IF A ZERO INTEGER CONSTANT
 }
 
 
-PTREE NodeFromConstSym(         // BUILD CONSTANT NODE FROM CONSTANT SYMBOL
+PTREE NodeMakeFromConstSym(         // BUILD CONSTANT NODE FROM CONSTANT SYMBOL
     SYMBOL con )                // - constant symbol
 {
     INT_CONSTANT icon;          // - integral constant
@@ -1055,7 +1055,7 @@ PTREE NodeRvalue(               // GET RVALUE, IF LVALUE
                     SYMBOL con;     // constant symbol
                     con = curr->u.symcg.symbol;
                     orig = curr;
-                    curr = NodeFromConstSym( con );
+                    curr = NodeMakeFromConstSym( con );
                     curr = PTreeCopySrcLocation( curr, orig );
                     NodeFreeSearchResult( orig );
                     PTreeFree( orig );
