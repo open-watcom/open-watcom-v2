@@ -66,7 +66,7 @@ typedef enum                    // TYPE_SIG_ACCESS
 
 // PROTOTYPES:
 
-PTREE NodeTypeSig               // MAKE NODE FOR TYPE-SIG ADDRESS
+PTREE NodeMakeTypeSignature               // MAKE NODE FOR TYPE-SIG ADDRESS
     ( TYPE_SIG* sig )           // - type signature
 ;
 PTREE NodeTypeSigArg            // MAKE ARGUMENT NODE FOR TYPE-SIG ADDRESS

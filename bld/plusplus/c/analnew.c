@@ -591,7 +591,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
                 args = NodeMakeArg( MakeNodeSymbol( addr_op_del ) );
                 args = PtdScopeCall( args, op_dlt );
             }
-            args = NodeMakeArgument( args, NodeTypeSig( sig ) );
+            args = NodeMakeArgument( args, NodeMakeTypeSignature( sig ) );
             args = NodeMakeArgument( args, array_number );
             args = NodeMakeArgument( args, node );
             node = RunTimeCall( args, new_expr_type, rt_code );
@@ -823,7 +823,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
                         }
                         data = PtdDltDtorArr( data, sym );
                         TypeSigReferenced( sig );
-                        arg = NodeTypeSig( sig );
+                        arg = NodeMakeTypeSignature( sig );
                         args = NodeMakeArgList( arg, data, NULL );
                         expr = RunTimeCall( args, type, RTF_DTOR_AR_STORE );
                         expr = PtdDltDtorEnd( expr );

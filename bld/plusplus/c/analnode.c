@@ -2295,7 +2295,7 @@ bool NodeGetIbpSymbol(          // GET BOUND-REFERENCE SYMBOL, IF POSSIBLE
 }
 
 
-PTREE NodeTypeSig               // MAKE NODE FOR TYPE-SIG ADDRESS
+PTREE NodeMakeTypeSignature               // MAKE NODE FOR TYPE-SIG ADDRESS
     ( TYPE_SIG* sig )           // - type signature
 {
     SYMBOL sym;                 // - symbol
@@ -2317,7 +2317,7 @@ PTREE NodeTypeSig               // MAKE NODE FOR TYPE-SIG ADDRESS
 PTREE NodeTypeSigArg            // MAKE ARGUMENT NODE FOR TYPE-SIG ADDRESS
     ( TYPE_SIG* sig )           // - type signature
 {
-    return NodeMakeArg( NodeTypeSig( sig ) );
+    return NodeMakeArg( NodeMakeTypeSignature( sig ) );
 }
 
 

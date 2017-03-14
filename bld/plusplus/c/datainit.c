@@ -1293,7 +1293,7 @@ static void dataInitRunTimeCall( target_size_t start, target_size_t size )
             currInit->state = DS_ERROR;
         } else {
             sig = dataInitTypeSigFind( base_type, TSA_DEFAULT_CTOR | TSA_DTOR );
-            node = NodeMakeArgList( NodeTypeSig( sig )
+            node = NodeMakeArgList( NodeMakeTypeSignature( sig )
                                 , NodeMakeConstantOffset( num_elem )
                                 , dataInitPadLeftSide( start )
                                 , NULL );
