@@ -2211,7 +2211,7 @@ static void emitRttiRef( SYMBOL sym, target_offset_t offset )
         sym->flag |= SF_ADDR_TAKEN;
         expr = MakeNodeSymbol( sym );
     } else {
-        expr = NodeZero();
+        expr = NodeMakeZeroConstant();
     }
     type = TypePtrToVoid();
     DgStoreScalar( expr, offset, type );
@@ -2230,7 +2230,7 @@ static void emitVFNPointer( SYMBOL sym )
         }
         expr = NodeMakeCallee( sym );
     } else {
-        expr = NodeZero();
+        expr = NodeMakeZeroConstant();
     }
     type = TypeVoidFunOfVoid();
     type = MakePointerTo( type );

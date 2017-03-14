@@ -2490,7 +2490,7 @@ PTREE NodeMakeDottedFunction        // BUILD A DOT NODE FOR A FUNCTION
 }
 
 
-PTREE NodeZero                  // BUILD A ZERO NODE
+PTREE NodeMakeZeroConstant                  // BUILD A ZERO NODE
     ( void )
 {
     return PTreeIntConstant( 0, TYP_SINT );

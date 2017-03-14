@@ -526,7 +526,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
       case TYP_POINTER :
       case TYP_MEMBER_POINTER :
         if( initial == NULL ) {
-            initial = NodeZero();
+            initial = NodeMakeZeroConstant();
         }
         if( this_node == NULL ) {
             node = NodeMakeConversion( base_type, initial );

@@ -534,7 +534,7 @@ static PTREE transform_naked(   // TRANSFORM TO CALL TO NON-MEMBER FUNCTION
         }
     } else if( cgop == CO_POST_PLUS_PLUS
             || cgop == CO_POST_MINUS_MINUS ) {
-        param = NodeMakeArgument( param, NodeZero() );
+        param = NodeMakeArgument( param, NodeMakeZeroConstant() );
     }
     result = NULL;
     if( olinf->result_nonmem != NULL ) {
@@ -600,7 +600,7 @@ static PTREE transform_member(  // TRANSFORM TO CALL TO MEMBER FUNCTION
         } else {
             if( ( cgop == CO_POST_PLUS_PLUS   )
               ||( cgop == CO_POST_MINUS_MINUS ) ) {
-                param = NodeMakeArg( NodeZero() );
+                param = NodeMakeArg( NodeMakeZeroConstant() );
             } else {
                 param = NULL;
             }
@@ -664,7 +664,7 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
             count = 2;
         }
     } else if( olinf->mask & OPM_POST ) {
-        zero_node = NodeZero();
+        zero_node = NodeMakeZeroConstant();
         setupOVOP( olinf, zero_node, &olinf->right );
         ptlist[1] = olinf->right.operand;
         alist.base.type_list[ 1 ] = olinf->right.node_type;

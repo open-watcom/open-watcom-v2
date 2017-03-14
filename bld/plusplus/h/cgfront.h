@@ -1297,7 +1297,7 @@ void NodeWarnPtrTrunc(          // WARN FOR POINTER/REFERENCE TRUNCATION
 void NodeWarnPtrTruncCast(      // WARN FOR CAST POINTER/REFERENCE TRUNCATION
     PTREE node )                // - node for warning
 ;
-PTREE NodeZero                  // BUILD A ZERO NODE
+PTREE NodeMakeZeroConstant                  // BUILD A ZERO NODE
     ( void )
 ;
 PTREE OverloadOperator(         // HANDLE OPERATOR OVERLOADING, IF REQ'D
