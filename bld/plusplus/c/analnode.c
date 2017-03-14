@@ -2497,7 +2497,7 @@ PTREE NodeMakeZeroConstant                  // BUILD A ZERO NODE
 }
 
 
-PTREE NodeIntDummy              // BUILD A DUMMY INTEGRAL NODE
+PTREE NodeMakeIntDummy              // BUILD A DUMMY INTEGRAL NODE
     ( void )
 {
     return PTreeIntConstant( 12345, TYP_SINT );

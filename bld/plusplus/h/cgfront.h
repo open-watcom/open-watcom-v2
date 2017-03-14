@@ -1086,7 +1086,7 @@ PTREE NodeMakeIcUnsigned(           // ADD A PTREE-IC NODE, UNSIGNED OPERAND
     CGINTEROP opcode,           // - opcode
     unsigned operand )          // - operand
 ;
-PTREE NodeIntDummy              // BUILD A DUMMY INTEGRAL NODE
+PTREE NodeMakeIntDummy              // BUILD A DUMMY INTEGRAL NODE
     ( void )
 ;
 PTREE NodeMakeIntegralConstant      // BUILD AN INTEGRAL NODE FOR A VALUE
