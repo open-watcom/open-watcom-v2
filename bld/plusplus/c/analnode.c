@@ -1186,7 +1186,7 @@ PTREE NodeRvalueExactRight(     // SET RVALUE (EXACT) ON RIGHT
 }
 
 
-PTREE NodeCDtorArg(             // BUILD CONSTANT NODE FOR CDTOR EXTRA ARG
+PTREE NodeMakeCDtorArg(             // BUILD CONSTANT NODE FOR CDTOR EXTRA ARG
     target_offset_t code )      // - the code
 {
     return NodeIntegralConstant( code, MakeCDtorExtraArgType() );
@@ -1628,7 +1628,7 @@ PTREE CallArgumentExactCtor(    // GET EXACT CTOR ARG., IF REQUIRED
         } else {
             ctor_code = CTOR_COMPONENT;
         }
-        arg = NodeArg( NodeCDtorArg( ctor_code ) );
+        arg = NodeArg( NodeMakeCDtorArg( ctor_code ) );
     } else {
         arg = NULL;
     }

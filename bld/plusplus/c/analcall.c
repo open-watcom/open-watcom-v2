@@ -1129,7 +1129,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
                 this_node->flags |= PTF_ARG_THIS_VFUN;
             }
             if( sym != NULL && SymIsDtor( sym ) ) {
-                cdtor = NodeArg( NodeCDtorArg( DTOR_NULL ) );
+                cdtor = NodeArg( NodeMakeCDtorArg( DTOR_NULL ) );
             } else {
                 cdtor = NULL;
             }
@@ -1233,7 +1233,7 @@ PTREE AnalyseDtorCall(          // ANALYSIS FOR SPECIAL DTOR CALLS
                           , expr
                           , NULL
                           , this_node
-                          , NodeArg( NodeCDtorArg( extra ) )
+                          , NodeArg( NodeMakeCDtorArg( extra ) )
                           , NULL );
     if( virtual_call ) {
         expr->u.subtree[0] = VfnDecorateCall( expr->u.subtree[0], dtor_sym );

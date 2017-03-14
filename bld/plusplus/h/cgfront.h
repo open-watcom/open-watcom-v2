@@ -939,7 +939,7 @@ void NodeBuildArgList(          // BUILD ARGUMENT LIST FROM CALLER ARG.S
 bool NodeCallsCtor(             // DETERMINE IF NODE CALLS CTOR
     PTREE node )                // - a call node
 ;
-PTREE NodeCDtorArg(             // BUILD CONSTANT NODE FOR CDTOR EXTRA ARG
+PTREE NodeMakeCDtorArg(             // BUILD CONSTANT NODE FOR CDTOR EXTRA ARG
     target_offset_t code )      // - the code
 ;
 PTREE NodeCDtorExtra(           // MAKE A CTOR/DTOR EXTRA PARM NODE
