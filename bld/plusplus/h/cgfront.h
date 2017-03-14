@@ -927,7 +927,7 @@ PTREE NodeMakeBinary(               // MAKE A BINARY NODE
 bool NodeIsBitField(              // TEST IF NODE IS A BIT FIELD
     PTREE node )                // - the node
 ;
-PTREE NodeBitQuestAssign(       // ASSIGN (expr?bit-fld:bit-fld) = expr
+PTREE NodeMakeBitQuestAssign(       // ASSIGN (expr?bit-fld:bit-fld) = expr
     PTREE expr )                // - the expression
 ;
 void NodeBuildArgList(          // BUILD ARGUMENT LIST FROM CALLER ARG.S

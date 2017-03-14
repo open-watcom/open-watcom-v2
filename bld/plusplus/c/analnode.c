@@ -2096,7 +2096,7 @@ static void assignBitDup(      // ASSIGN DUPLICATED BIT FIELD EXPRESSION
 }
 
 
-PTREE NodeBitQuestAssign(       // ASSIGN (expr?bit-fld:bit-fld) = expr
+PTREE NodeMakeBitQuestAssign(       // ASSIGN (expr?bit-fld:bit-fld) = expr
     PTREE expr )                // - the expression
 {
     PTREE result;               // - result expression
