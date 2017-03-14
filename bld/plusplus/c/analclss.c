@@ -171,7 +171,7 @@ static PTREE addOffset( PTREE node, target_offset_t offset, TYPE type )
 
 static PTREE addOffsetToThis( target_offset_t offset, TYPE type )
 {
-    return( addOffset( NodeThis(), offset, type ) );
+    return( addOffset( NodeMakeThis(), offset, type ) );
 }
 
 static PTREE nodeFirstParm(     // GET FIRST PARM AS A NODE
@@ -219,7 +219,7 @@ static PTREE addVBOffsetToThis(
     BASE_CLASS *base,
     TYPE type )
 {
-    return addVBOffsetToExpr( scope, base, type, NodeThis() );
+    return addVBOffsetToExpr( scope, base, type, NodeMakeThis() );
 }
 
 static PTREE accessSourceBase( SCOPE scope, BASE_CLASS *base )
@@ -475,7 +475,7 @@ static void generateCopyObject( // GENERATE COPY OF OBJECT
     expr = NodeSetMemoryExact( expr );
     expr = NodeFetch( expr );
     expr->flags &= ~ PTF_LVALUE;
-    tgt = NodeThis();
+    tgt = NodeMakeThis();
     tgt->type = TypedefModifierRemove( tgt->type )->of;
     tgt->flags |= PTF_LVALUE;
     expr = NodeCopyClassObject( tgt, expr );
@@ -1512,7 +1512,7 @@ void RtnGenCallBackArrayDtor(   // GENERATE ARRAY DTOR
     scope = ScopeFunctionScopeInProgress();
     p1 = SymMakeDummy( MakeCDtorExtraArgType(), &name );
     p1 = ScopeInsert( scope, p1, name );
-    stmt = generateArrayDtorCall( ar_type, NodeThis() );
+    stmt = generateArrayDtorCall( ar_type, NodeMakeThis() );
     retn = SymFunctionReturn();
     stmt = NodeAssignRef( MakeNodeSymbol( retn ), stmt );
     EmitAnalysedStmt( stmt );
@@ -2424,7 +2424,7 @@ static void genDeleteVector(
         if( ! TypeAbstract( class_type ) ) {
             CgFrontCode( IC_DTOR_DAR_BEG );
             testExtraParm( DTOR_DELETE_VECTOR, false );
-            stmt = NodeMakeUnary( CO_DELETE_ARRAY, NodeThis() );
+            stmt = NodeMakeUnary( CO_DELETE_ARRAY, NodeMakeThis() );
             stmt->flags |= PTF_MEMORY_EXACT;
             stmt = AnalyseDelete( stmt, true );
             EmitAnalysedStmt( stmt );
@@ -2539,7 +2539,7 @@ static void genDeleteThis( SYMBOL dtor )
     if( ! TypeAbstract( SymClass( dtor ) ) && SymIsVirtual( dtor ) ) {
         CgFrontCode( IC_DTOR_DLT_BEG );
         testExtraParm( DTOR_DELETE_THIS, false );
-        stmt = NodeMakeUnary( CO_DELETE, NodeThis() );
+        stmt = NodeMakeUnary( CO_DELETE, NodeMakeThis() );
         stmt->flags |= PTF_MEMORY_EXACT;
         stmt = AnalyseDelete( stmt, true );
         EmitAnalysedStmt( stmt );

@@ -1271,7 +1271,7 @@ PTREE NodeSymbolNoRef(          // FILL IN NODE FOR A SYMBOL, NO REF. SETTING
 PTREE NodeTemporary(            // CREATE TEMPORARY AND NODE FOR IT
     TYPE type )                 // - type of temporary
 ;
-PTREE NodeThis(                 // MAKE A RVALUE "THIS" NODE
+PTREE NodeMakeThis(                 // MAKE A RVALUE "THIS" NODE
     void )
 ;
 PTREE NodeThisCopyLocation(     // MAKE A RVALUE "THIS" NODE WITH LOCATION

@@ -1422,7 +1422,7 @@ TYPE NodeSetReference(          // MAKE AN LVALUE IF REFERENCE TYPE
 }
 
 
-PTREE NodeThis(                 // MAKE A "THIS" NODE
+PTREE NodeMakeThis(                 // MAKE A "THIS" NODE
     void )
 {
     TYPE type;                  // - type of "this" node
@@ -1455,7 +1455,7 @@ PTREE NodeThisCopyLocation(     // MAKE A RVALUE "THIS" NODE WITH LOCATION
 {
     PTREE this_node;
 
-    this_node = NodeThis();
+    this_node = NodeMakeThis();
     if( this_node != NULL && use_locn != NULL ) {
         this_node = PTreeCopySrcLocation( this_node, use_locn );
     }

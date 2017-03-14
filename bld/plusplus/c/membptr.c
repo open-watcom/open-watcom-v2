@@ -258,13 +258,13 @@ static void generateOffsetFunc( // GENERATE CODE FOR OFFSET FUNCTION
     type_ret = SymFuncReturnType( func );
     ret = SymFunctionReturn();
     if( SymIsThisDataMember( refed ) ) {
-        expr = NodeAddToLeft( NodeThis(), NodeMakeConstantOffset( refed->u.member_offset ), refed->sym_type );
+        expr = NodeAddToLeft( NodeMakeThis(), NodeMakeConstantOffset( refed->u.member_offset ), refed->sym_type );
         expr = NodeFetchReference( expr );
     } else {
         if( SymIsVirtual( refed ) ) {
             VfnReference( refed );
             result = node->u.symcg.result;
-            expr = AccessVirtualFnAddress( NodeThis(), result, refed );
+            expr = AccessVirtualFnAddress( NodeMakeThis(), result, refed );
         } else {
             expr = MakeNodeSymbol( refed );
         }
