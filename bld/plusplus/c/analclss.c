@@ -1092,7 +1092,7 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
             } else {
                 src_type = SymFuncArgList( ctor_udc )->type_list[0];
             }
-            if( !temp_ok && NodeNonConstRefToTemp( src_type, right ) ) {
+            if( !temp_ok && NodeIsNonConstRefToTemp( src_type, right ) ) {
                 opt = CALL_OPT_ERR;
             }
         }

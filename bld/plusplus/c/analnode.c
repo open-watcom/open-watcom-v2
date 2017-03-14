@@ -2033,7 +2033,7 @@ static bool nodeMakesTemporary( // CHECK IF NODE PRODUCES A TEMPORARY
 }
 
 
-bool NodeNonConstRefToTemp(     // CHECK IF TEMP. PASSED AS NON-CONST REF
+bool NodeIsNonConstRefToTemp(     // CHECK IF TEMP. PASSED AS NON-CONST REF
     TYPE arg_type,              // - possible non-const reference
     PTREE node )                // - possible temporary
 {

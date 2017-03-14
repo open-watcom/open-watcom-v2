@@ -1160,7 +1160,7 @@ PTREE NodeMarkRvalue(           // SET TYPE, FLAGS FOR LVALUE
 PTREE NodeModInitTemporary(     // CREATE TEMP NODE (STATIC IF IN MODULE-INIT)
     TYPE type )                 // - type of temporary
 ;
-bool NodeNonConstRefToTemp(     // CHECK IF TEMP. PASSED AS NON-CONST REF
+bool NodeIsNonConstRefToTemp(     // CHECK IF TEMP. PASSED AS NON-CONST REF
     TYPE arg_type,              // - possible non-const reference
     PTREE node )                // - possible temporary
 ;
