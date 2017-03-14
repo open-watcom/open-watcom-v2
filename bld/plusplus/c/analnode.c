@@ -1226,7 +1226,7 @@ PTREE NodeMakeConstantOffset(               // BUILD CONSTANT NODE FOR AN OFFSET
 }
 
 
-PTREE NodeArgument(             // MAKE AN ARGUMENT NODE
+PTREE NodeMakeArgument(             // MAKE AN ARGUMENT NODE
     PTREE left,                 // - left subtree
     PTREE right )               // - right subtree
 {
@@ -1243,7 +1243,7 @@ PTREE NodeArgument(             // MAKE AN ARGUMENT NODE
 PTREE NodeArg(                  // MAKE A SINGLE ARGUMENT NODE
     PTREE argval )              // - value for argument
 {
-    return NodeArgument( NULL, argval );
+    return NodeMakeArgument( NULL, argval );
 }
 
 
@@ -1259,7 +1259,7 @@ PTREE NodeArguments(            // MAKE A LIST OF ARGUMENTS
     expr = NULL;
     argument = first;
     while( argument != NULL ) {
-        expr = NodeArgument( expr, argument );
+        expr = NodeMakeArgument( expr, argument );
         argument = va_arg( args, PTREE );
     }
     va_end( args );

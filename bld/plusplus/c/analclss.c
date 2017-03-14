@@ -450,11 +450,11 @@ static PTREE classArrayRtCall(  // GENERATE R/T CALL FOR ARRAY
     target_size_t nelem;        // - number of array elements
 
     nelem = ArrayTypeNumberItems( artype );
-    expr = NodeArgument( expr, NodeMakeConstantOffset( nelem ) );
+    expr = NodeMakeArgument( expr, NodeMakeConstantOffset( nelem ) );
     if( src != NULL ) {
-        expr = NodeArgument( expr, src );
+        expr = NodeMakeArgument( expr, src );
     }
-    expr = NodeArgument( expr, tgt );
+    expr = NodeMakeArgument( expr, tgt );
     expr = RunTimeCall( expr
                       , PointerTypeForArray( artype )
                       , rtn_code );

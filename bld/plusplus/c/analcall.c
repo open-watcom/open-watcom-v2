@@ -1258,10 +1258,10 @@ PTREE MakeDeleteCall(   // MAKE A CALL TO 'OPERATOR DELETE'
     if( class_parm != NULL ) {
         size_arg = NodeMakeConstantOffset( class_parm->u.c.info->size );
         size_arg = NodeMakeConversion( del_args->type_list[1], size_arg );
-        args = NodeArgument( args, size_arg );
+        args = NodeMakeArgument( args, size_arg );
     }
     ptr = NodeMakeConversion( del_args->type_list[0], ptr );
-    args = NodeArgument( args, ptr );
+    args = NodeMakeArgument( args, ptr );
     expr = NodeMakeCall( del_sym, GetBasicType( TYP_VOID ), NULL );
     expr = CallArgsArrange( del_sym->sym_type
                           , expr

@@ -527,14 +527,14 @@ static PTREE transform_naked(   // TRANSFORM TO CALL TO NON-MEMBER FUNCTION
             param->u.subtree[0] = olinf->right.operand;
         } else {
             if( olinf->right.operand != NULL ) {
-                param = NodeArgument( param, olinf->right.operand );
+                param = NodeMakeArgument( param, olinf->right.operand );
             } else {
                 PTreeErrorNode( param );
             }
         }
     } else if( cgop == CO_POST_PLUS_PLUS
             || cgop == CO_POST_MINUS_MINUS ) {
-        param = NodeArgument( param, NodeZero() );
+        param = NodeMakeArgument( param, NodeZero() );
     }
     result = NULL;
     if( olinf->result_nonmem != NULL ) {

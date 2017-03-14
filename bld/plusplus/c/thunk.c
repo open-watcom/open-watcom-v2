@@ -207,7 +207,7 @@ static PTREE thunkArgList(      // BUILD THUNK ARGUMENT LIST
             if( TypeReference( arg_type ) == NULL && arg_model != OMR_CLASS_REF ) {
                 expr = NodeGetRValue( expr );
             }
-            list = NodeArgument( list, expr );
+            list = NodeMakeArgument( list, expr );
         }
     }
     list = NodeReverseArgs( &count, list );

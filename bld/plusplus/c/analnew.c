@@ -512,7 +512,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
     // build call to appropriate operator new
     //
     node->locn = err_locn;
-    node = NodeArgument( placement, node );
+    node = NodeMakeArgument( placement, node );
     ++count_placement;
     node = buildNewCall( node
                        , opNewSearchScope( class_type, cgop )
@@ -591,9 +591,9 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
                 args = NodeArg( MakeNodeSymbol( addr_op_del ) );
                 args = PtdScopeCall( args, op_dlt );
             }
-            args = NodeArgument( args, NodeTypeSig( sig ) );
-            args = NodeArgument( args, array_number );
-            args = NodeArgument( args, node );
+            args = NodeMakeArgument( args, NodeTypeSig( sig ) );
+            args = NodeMakeArgument( args, array_number );
+            args = NodeMakeArgument( args, node );
             node = RunTimeCall( args, new_expr_type, rt_code );
             if( placement != NULL ) {
                 dup = node;
@@ -768,7 +768,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
     flag.test_null = false;
     if( cltype == NULL ) {
         // delete a simple type; call op del() or op del []()
-        args = NodeArgument( NULL, data );
+        args = NodeMakeArgument( NULL, data );
         expr = NodeMakeCall( sym, GetBasicType( TYP_VOID ), args );
     } else {
         if( ! flag.inside_dtor && info->needs_vdtor ) {
@@ -894,7 +894,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
             if( args != NULL ) {
                 args = NodeArg( args );
             }
-            args = NodeArgument( args, expr );
+            args = NodeMakeArgument( args, expr );
             expr = NodeMakeCall( sym, GetBasicType( TYP_VOID ), args );
         }
     }

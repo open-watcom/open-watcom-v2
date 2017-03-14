@@ -4136,7 +4136,7 @@ start_opac_string:
                     expr = PTreeErrorNode( throw_exp );
                     break;
                 }
-                expr = RunTimeCall( NodeArgument( expr, throw_exp )
+                expr = RunTimeCall( NodeMakeArgument( expr, throw_exp )
                                   , GetBasicType( TYP_VOID )
                                   , rtcode );
             }

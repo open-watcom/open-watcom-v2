@@ -886,7 +886,7 @@ addr_func_t NodeAddrOfFun(      // GET PTREE FOR &FUN (FUN IS OVERLOADED)
 PTREE NodeArg(                  // MAKE A SINGLE ARGUMENT NODE
     PTREE argval )              // - value for argument
 ;
-PTREE NodeArgument(             // MAKE AN ARGUMENT NODE
+PTREE NodeMakeArgument(             // MAKE AN ARGUMENT NODE
     PTREE left,                 // - left subtree
     PTREE right )               // - right subtree
 ;
