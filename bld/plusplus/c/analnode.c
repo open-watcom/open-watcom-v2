@@ -1494,7 +1494,7 @@ static PTREE assignNode(        // CREATE ASSIGNMENT NODE
 }
 
 
-PTREE NodeAssign(               // CREATE ASSIGNMENT NODE FOR VALUE
+PTREE NodeMakeAssignment(               // CREATE ASSIGNMENT NODE FOR VALUE
     PTREE tgt,                  // - target
     PTREE src )                 // - source
 {
@@ -1531,7 +1531,7 @@ PTREE NodeAssignTemporaryNode(  // ASSIGN NODE TO A TEMPORARY NODE
         expr = ClassCopyTemp( TypeReferenced( type ), expr, temp_node );
     } else {
         if( NULL == TypeReference( type ) ) {
-            expr = NodeAssign( temp_node, expr );
+            expr = NodeMakeAssignment( temp_node, expr );
             if( expr->op != PT_ERROR
              && NULL != MemberPtrType( type ) ) {
                 PTREE a_expr = expr;
@@ -2204,7 +2204,7 @@ PTREE NodeAddSideEffect(        // ADD A SIDE-EFFECT EXPRESSION
                     expr = NodeAssignRef( MakeNodeSymbol( temp ), expr );
                 } else {
                     temp = TemporaryAlloc( temp_type );
-                    expr = NodeAssign( MakeNodeSymbol( temp ), expr );
+                    expr = NodeMakeAssignment( MakeNodeSymbol( temp ), expr );
                 }
             } else {
                 temp = TemporaryAlloc( temp_type );
@@ -2398,7 +2398,7 @@ PTREE NodeForceLvalue           // FORCE EXPRESSION TO BE LVALUE
         TYPE type = TypeReferenced( expr->type );
         TEMP_TYPE old = TemporaryClass( TEMP_TYPE_EXPR );
         SYMBOL temp = TemporaryAllocNoStorage( type );
-        expr = NodeAssign( MakeNodeSymbol( temp ), expr );
+        expr = NodeMakeAssignment( MakeNodeSymbol( temp ), expr );
         TemporaryClass( old );
     }
     return expr;

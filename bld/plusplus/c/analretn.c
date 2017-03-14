@@ -218,7 +218,7 @@ PTREE AnalyseReturnSimpleVal    // RETURN A SIMPLE VALUE
             PTREE tgt = getReturnSym();
             if( NULL == TypeReference( retn_type ) ) {
                 expr = NodeGetRValue( expr );
-                expr = NodeAssign( tgt, expr );
+                expr = NodeMakeAssignment( tgt, expr );
                 if( NULL != MemberPtrType( retn_type ) ) {
                     PTREE new_expr = expr;
                     MembPtrAssign( &new_expr );

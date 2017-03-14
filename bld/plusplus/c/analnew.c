@@ -186,7 +186,7 @@ static PTREE setupArrayStorage( // STORE COUNT IN ARRAY_STORAGE,POINT TO ARRAY
     PTREE array_number )        // - expression for count
 {
     expr = NodeMakeConversionFlags( GetBasicType( TYP_UINT ), expr, PTF_LVALUE );
-    expr = NodeAssign( expr, array_number );
+    expr = NodeMakeAssignment( expr, array_number );
     expr = NodeMakeConversion( new_expr_type, expr );
     expr = NodeAddToLeft( expr, sizeOfUInt(), new_expr_type );
     return expr;

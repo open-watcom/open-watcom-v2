@@ -499,7 +499,7 @@ static PTREE bitFieldNodeAssign( PTREE tgt, PTREE src, PTREE (*fetch)( PTREE ) )
     src = bitFieldLValueAdjust( src );
     src = fetch( src );
     tgt = bitFieldLValueAdjust( tgt );
-    return( NodeAssign( tgt, src ) );
+    return( NodeMakeAssignment( tgt, src ) );
 }
 
 
@@ -540,7 +540,7 @@ static void emitOpeqCall(       // EMIT AN ASSIGNMENT FOR DEFAULT OP=
         if( NULL == StructType( cltype ) ) {
             expr = bitFieldNodeAssign( tgt, src, NodeGetRValue );
         } else {
-            expr = NodeAssign( tgt, src );
+            expr = NodeMakeAssignment( tgt, src );
             expr = ClassAssign( expr );
         }
         break;
@@ -584,7 +584,7 @@ static void emitOpeqCall(       // EMIT AN ASSIGNMENT FOR DEFAULT OP=
             tgt->type = artype;
 #endif
             src = NodeFetch( src );
-            expr = NodeAssign( tgt, src );
+            expr = NodeMakeAssignment( tgt, src );
         }
         break;
     }

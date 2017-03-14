@@ -899,7 +899,7 @@ PTREE NodeMakeArgList(            // MAKE A LIST OF ARGUMENTS
     PTREE arg,                  // - first arg
     ... )                       // - NULL terminated, in reverse order
 ;
-PTREE NodeAssign(               // CREATE ASSIGNMENT NODE
+PTREE NodeMakeAssignment(               // CREATE ASSIGNMENT NODE
     PTREE tgt,                  // - target
     PTREE src )                 // - source
 ;

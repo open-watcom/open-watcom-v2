@@ -324,7 +324,7 @@ static void dataInitEmitAutoAssign( SYMBOL dst, SYMBOL src )
 #if 0
     type = MakeTypeOf( type, GetBasicType( TYP_UCHAR ) );
     node = NodeFetch( refOfSym( type, src ) );
-    node = NodeAssign( refOfSym( type, dst ), node );
+    node = NodeMakeAssignment( refOfSym( type, dst ), node );
     node = NodeDone( node );
 
     _dump( "- Auto Assign Expression ------------------------------" );

@@ -60,7 +60,7 @@ typedef enum                    // CLASSIFICATION OF MEMBER-PTR EXPRESSIONS
 static PTREE membPtrTemporary(  // PLACE MEMBER PTR IN TEMPORARY
     PTREE expr )                // - member-ptr expression
 {
-    expr = NodeAssign( NodeTemporary( expr->type ), expr );
+    expr = NodeMakeAssignment( NodeTemporary( expr->type ), expr );
     expr->flags |= PTF_MEMORY_EXACT;
     return expr;
 }
@@ -270,7 +270,7 @@ static void generateOffsetFunc( // GENERATE CODE FOR OFFSET FUNCTION
         }
     }
     expr->type = ret->sym_type;
-    expr = NodeAssign( MakeNodeSymbol( ret ), expr );
+    expr = NodeMakeAssignment( MakeNodeSymbol( ret ), expr );
     expr->type = type_ret;
     expr->flags |= PTF_LVALUE;
     IcEmitExpr( NodeDone( expr ) );
@@ -522,7 +522,7 @@ static PTREE assignMembPtrArg(  // ASSIGN A MEMBER-PTR ARGUMENT
     PTREE *a_left,              // - addr[ left operand ]
     PTREE *a_right )            // - addr[ right operand ]
 {
-    return NodeAssign( nextArg( a_left ), NodeGetRValue( nextArg( a_right ) ) );
+    return NodeMakeAssignment( nextArg( a_left ), NodeGetRValue( nextArg( a_right ) ) );
 }
 
 

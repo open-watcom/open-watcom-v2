@@ -1947,7 +1947,7 @@ static PTREE forceToDestination // FORCE TO DESTINATION ON CAST, FUNC_ARG
                     if( ctl->tgt.reference ) {
                         expr = NodeAssignRef( ctl->destination, expr );
                     } else {
-                        expr = NodeAssign( ctl->destination, expr );
+                        expr = NodeMakeAssignment( ctl->destination, expr );
                     }
                     if( MemberPtrType( ctl->tgt.unmod ) ) {
                         PTREE dup = expr;
