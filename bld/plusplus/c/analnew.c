@@ -55,7 +55,7 @@ static PTREE newCheckForNULL( PTREE value, PTREE t_expr )
 
     f_expr = value;
     value = NodeDupExpr( &f_expr );
-    b_expr = NodeCompareToZero( value );
+    b_expr = NodeMakeZeroCompare( value );
     return( NodeTestExpr( b_expr, t_expr, f_expr ) );
 }
 
@@ -653,7 +653,7 @@ static PTREE deleteCheckForNULL( PTREE value, PTREE t_expr )
     PTREE b_expr;
     PTREE f_expr;
 
-    b_expr = NodeCompareToZero( value );
+    b_expr = NodeMakeZeroCompare( value );
     f_expr = NodeOffset( 0 );
     return( NodeTestExpr( b_expr, t_expr, f_expr ) );
 }

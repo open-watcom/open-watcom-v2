@@ -974,7 +974,7 @@ PTREE NodeSetType               // SET NODE TYPE, FLAGS
     , TYPE type                 // - new type for node
     , PTF_FLAG flags )          // - new flags
 ;
-PTREE NodeCompareToZero(        // MAKE A COMPARE-TO-ZERO NODE, IF REQ'D
+PTREE NodeMakeZeroCompare(        // MAKE A COMPARE-TO-ZERO NODE, IF REQ'D
     PTREE expr )
 ;
 PTREE NodeConvertToBool(        // MAKE A CONVERT-TO-BOOL NODE, IF REQ'D

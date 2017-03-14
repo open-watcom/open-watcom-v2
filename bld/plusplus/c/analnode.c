@@ -439,7 +439,7 @@ PTREE NodeSetBooleanType(       // SET NODE TO TYPE OF A REL-OP EXPR
 }
 
 
-PTREE NodeCompareToZero(        // MAKE A COMPARE-TO-ZERO NODE, IF REQ'D
+PTREE NodeMakeZeroCompare(        // MAKE A COMPARE-TO-ZERO NODE, IF REQ'D
     PTREE expr )
 {
     PTREE zero;                 // - constant node (contains zero)

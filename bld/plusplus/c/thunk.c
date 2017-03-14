@@ -364,7 +364,7 @@ static PTREE applyReturnThunk(  // GENERATE A RETURN THUNK
     }
     if( dup1 != NULL ) {
         dup2 = NodeDupExpr( &dup1 );
-        dup1 = NodeCompareToZero( dup1 );
+        dup1 = NodeMakeZeroCompare( dup1 );
         expr = NodeTestExpr( dup1, expr, dup2 );
     }
     return( expr );

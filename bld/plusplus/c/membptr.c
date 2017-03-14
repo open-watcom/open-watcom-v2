@@ -352,7 +352,7 @@ static PTREE computeNewDelta(   // COMPUTE NEW DELTA
             node = NodeMakeBinary( CO_COLON, new_delta, node );
             node->type = type;
             node = NodeMakeBinary( CO_QUESTION
-                             , NodeCompareToZero( NodeDupExpr( new_index ) )
+                             , NodeMakeZeroCompare( NodeDupExpr( new_index ) )
                              , node );
             node->type = type;
         } else {
@@ -1059,7 +1059,7 @@ static PTREE doDereference(     // GENERATE DE-REFERENCING CODE
         expr->flags &= ~ PTF_LVALUE;
         expr = NodeMakeBinary( CO_COLON, expr, lhs );
         expr->type = type_cp;
-        expr = NodeMakeBinary( CO_QUESTION, NodeCompareToZero( index ), expr );
+        expr = NodeMakeBinary( CO_QUESTION, NodeMakeZeroCompare( index ), expr );
         expr->type = type_cp;
     } else {
         expr = lhs;

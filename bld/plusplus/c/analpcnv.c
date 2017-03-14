@@ -219,7 +219,7 @@ void NodeConvertToBasePtr(      // CONVERT TO A BASE PTR, USING SEARCH_RESULT
             }
             if( dup != NULL ) {
                 orig = NodeDupExpr( &dup );
-                node = NodeTestExpr( NodeCompareToZero( orig ), node, dup );
+                node = NodeTestExpr( NodeMakeZeroCompare( orig ), node, dup );
             }
         }
         *a_expr = node;
