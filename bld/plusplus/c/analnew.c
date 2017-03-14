@@ -56,7 +56,7 @@ static PTREE newCheckForNULL( PTREE value, PTREE t_expr )
     f_expr = value;
     value = NodeMakeExprDuplicate( &f_expr );
     b_expr = NodeMakeZeroCompare( value );
-    return( NodeTestExpr( b_expr, t_expr, f_expr ) );
+    return( NodeMakeTernaryExpr( b_expr, t_expr, f_expr ) );
 }
 
 static TYPE figureOutNewType( PTREE *pnumber, TYPE *of_type )
@@ -655,7 +655,7 @@ static PTREE deleteCheckForNULL( PTREE value, PTREE t_expr )
 
     b_expr = NodeMakeZeroCompare( value );
     f_expr = NodeMakeConstantOffset( 0 );
-    return( NodeTestExpr( b_expr, t_expr, f_expr ) );
+    return( NodeMakeTernaryExpr( b_expr, t_expr, f_expr ) );
 }
 
 

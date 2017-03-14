@@ -1752,7 +1752,7 @@ bool NodeIsNonNullPtr(            // TEST IF A PTR NODE IS ALWAYS NON-ZERO
 }
 
 
-PTREE NodeTestExpr(             // GENERATE A TERNARY TEST EXPRESSION
+PTREE NodeMakeTernaryExpr(             // GENERATE A TERNARY TEST EXPRESSION
     PTREE b_expr,               // - bool expression
     PTREE t_expr,               // - true expression
     PTREE f_expr )              // - false expression
