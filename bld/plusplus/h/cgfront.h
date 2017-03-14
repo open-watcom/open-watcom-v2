@@ -924,7 +924,7 @@ PTREE NodeMakeBinary(               // MAKE A BINARY NODE
     PTREE left,                 // - left operand
     PTREE right )               // - right operand
 ;
-bool NodeBitField(              // TEST IF NODE IS A BIT FIELD
+bool NodeIsBitField(              // TEST IF NODE IS A BIT FIELD
     PTREE node )                // - the node
 ;
 PTREE NodeBitQuestAssign(       // ASSIGN (expr?bit-fld:bit-fld) = expr

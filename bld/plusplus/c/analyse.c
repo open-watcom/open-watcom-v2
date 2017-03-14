@@ -3676,7 +3676,7 @@ start_opac_string:
             continue;
           case RESULT_ASSIGN :
             expr->flags |= PTF_SIDE_EFF | PTF_MEANINGFUL;
-            if( NodeBitField( expr->u.subtree[0] ) )
+            if( NodeIsBitField( expr->u.subtree[0] ) )
                 continue;
             expr->flags |= PTF_LVALUE;
             if( CompFlags.plain_char_promotion ) {
@@ -3691,7 +3691,7 @@ start_opac_string:
                 colon = PTreeOpRight( left );
                 opl = PTreeOpLeft( colon );
                 opr = PTreeOpRight( colon );
-                if( NodeBitField( opr ) && NodeBitField( opl ) ) {
+                if( NodeIsBitField( opr ) && NodeBitField( opl ) ) {
                     expr->type = type;
                     expr = NodeBitQuestAssign( expr );
                     expr->flags |= PTF_SIDE_EFF | PTF_MEANINGFUL;

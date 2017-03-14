@@ -1333,7 +1333,7 @@ PTREE NodeMakeExprDuplicate(              // DUPLICATE EXPRESSION
 }
 
 
-bool NodeBitField(              // TEST IF NODE IS A BIT FIELD
+bool NodeIsBitField(              // TEST IF NODE IS A BIT FIELD
     PTREE node )                // - the node
 {
     bool retb;                  // - true ==> is a bit field
