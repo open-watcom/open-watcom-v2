@@ -1558,7 +1558,7 @@ PTREE NodeMakeAssignToNewTmp(      // ASSIGN NODE TO A TEMPORARY
 }
 
 
-PTREE NodeDone(                 // MAKE A NODE-DONE
+PTREE NodeMakeDone(                 // MAKE A NODE-DONE
     PTREE expr )                // - expression
 {
     if( expr->op != PT_ERROR ) {

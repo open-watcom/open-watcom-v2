@@ -4385,7 +4385,7 @@ PTREE AnalyseStmtExpr(      // ANALYZE A STATEMENT EXPRESSION
     if( expr != NULL ) {
         expr = run_traversals( expr );
         warnMeaningfulSideEffect( expr );
-        expr = NodeDone( expr );
+        expr = NodeMakeDone( expr );
     }
     return expr;
 }
@@ -4475,7 +4475,7 @@ PTREE AnalyseReturnExpr(    // ANALYSE A RETURN EXPRESSION
         expr = NodeMakeBinary( CO_RETURN, PTreeType( fun_type ), right );
         expr = PTreeCopySrcLocation( expr, right );
         expr = run_traversals( expr );
-        expr = NodeDone( expr );
+        expr = NodeMakeDone( expr );
         if( FnRetnOpt() ) {
             expr->flags |= PTF_RETN_OPT;
         }

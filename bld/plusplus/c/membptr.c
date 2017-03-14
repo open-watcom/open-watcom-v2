@@ -273,7 +273,7 @@ static void generateOffsetFunc( // GENERATE CODE FOR OFFSET FUNCTION
     expr = NodeMakeAssignment( MakeNodeSymbol( ret ), expr );
     expr->type = type_ret;
     expr->flags |= PTF_LVALUE;
-    IcEmitExpr( NodeDone( expr ) );
+    IcEmitExpr( NodeMakeDone( expr ) );
     CgFrontReturnSymbol( ret );
     FunctionBodyShutdown( func, &func_fd );
     ScopeEnd( SCOPE_FUNCTION );

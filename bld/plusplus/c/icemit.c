@@ -946,6 +946,6 @@ void EmitAnalysedStmt(          // EMIT ANALYSED STMT (IF IT EXISTS)
     PTREE stmt )                // - the statement
 {
     if( stmt != NULL ) {
-        IcEmitExpr( NodeDone( stmt ) );
+        IcEmitExpr( NodeMakeDone( stmt ) );
     }
 }

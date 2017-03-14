@@ -325,7 +325,7 @@ static void dataInitEmitAutoAssign( SYMBOL dst, SYMBOL src )
     type = MakeTypeOf( type, GetBasicType( TYP_UCHAR ) );
     node = NodeFetch( refOfSym( type, src ) );
     node = NodeMakeAssignment( refOfSym( type, dst ), node );
-    node = NodeDone( node );
+    node = NodeMakeDone( node );
 
     _dump( "- Auto Assign Expression ------------------------------" );
     _dumpPTree( node );
@@ -1234,7 +1234,7 @@ static void dataInitInvokeCtor( target_size_t start )
         return;
     }
     node = dtorableObjectCtored( currInit->nest, node, true );
-    node = NodeDone( node );
+    node = NodeMakeDone( node );
 
     _dump( "- Invoke Ctor Expression ------------------------------" );
     _dumpPTree( node );
@@ -1304,7 +1304,7 @@ static void dataInitRunTimeCall( target_size_t start, target_size_t size )
             }
             node = RunTimeCall( node, MakeReferenceTo( base_type ), fun_code );
             node = dtorableObjectCtored( currInit->nest, node, true );
-            node = NodeDone( node );
+            node = NodeMakeDone( node );
 
             _dump( "- RunTime Call Expression -----------------------------" );
             _dumpPTree( node );

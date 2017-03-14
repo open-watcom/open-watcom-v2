@@ -269,7 +269,7 @@ void VfnReference(              // EMIT VIRTUAL FUNCTION REFERENCE
     fake = NodeMakeBinary( CO_CALL_EXEC_IND, fake, NULL );
     fake->type = SymFuncReturnType( vfun );
     fake->flags |= PTF_MEANINGFUL | PTF_SIDE_EFF;
-    fake = NodeDone( fake );
+    fake = NodeMakeDone( fake );
     IcEmitExpr( fake );
     CgFrontLabdefCs( around );
     CgFrontLabfreeCs( 1 );

@@ -1030,7 +1030,7 @@ PTREE NodeCopyClassObject(      // COPY OBJECT W/O CTOR
 bool NodeDerefPtr(              // DEREFERENCE A POINTER
     PTREE *a_ptr )              // - addr[ ptr operand ]
 ;
-PTREE NodeDone(                 // MAKE A NODE-DONE
+PTREE NodeMakeDone(                 // MAKE A NODE-DONE
     PTREE expr )                // - expression
 ;
 PTREE NodeDottedFunction        // BUILD A DOT NODE FOR A FUNCTION
