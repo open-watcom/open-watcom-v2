@@ -946,7 +946,7 @@ static PTREE nodeBasedSelfExpr( // FIND EXPR TO BE USED FOR BASED __SELF
 static PTREE findBasedStrSym(   // FIND REFERENCE SYMBOL FOR TF1_BASED_STRING
     TYPE expr_type )            // - type of pointer expression
 {
-    return NodeBasedStr( BasedPtrType( expr_type ) );
+    return NodeMakeBasedStr( BasedPtrType( expr_type ) );
 }
 
 

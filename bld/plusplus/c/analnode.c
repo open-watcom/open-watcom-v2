@@ -1829,7 +1829,7 @@ PTREE NodeSetMemoryExact(       // SET PTF_MEMORY_EXACT, IF REQ'D
 }
 
 
-PTREE NodeBasedStr(             // BUILD EXPRESSION FOR TF1_BASED_STRING TYPE
+PTREE NodeMakeBasedStr(             // BUILD EXPRESSION FOR TF1_BASED_STRING TYPE
     TYPE expr_type )            // - TF1_BASED_STRING type
 {
     PTREE node;                 // - new node

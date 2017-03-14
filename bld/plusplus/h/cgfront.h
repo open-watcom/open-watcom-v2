@@ -916,7 +916,7 @@ PTREE NodeMakeAssignToTmp(  // ASSIGN NODE TO A TEMPORARY NODE
     PTREE expr,                 // - the expression to be assigned to temp
     PTREE temp_node )           // - node for temporary symbol
 ;
-PTREE NodeBasedStr(             // BUILD EXPRESSION FOR TF1_BASED_STRING TYPE
+PTREE NodeMakeBasedStr(             // BUILD EXPRESSION FOR TF1_BASED_STRING TYPE
     TYPE expr_type )            // - TF1_BASED_STRING type
 ;
 PTREE NodeMakeBinary(               // MAKE A BINARY NODE
