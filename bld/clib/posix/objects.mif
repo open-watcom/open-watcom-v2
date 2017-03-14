@@ -46,6 +46,7 @@
 !inject ptexit.obj                                                                      l32 lpc lmp
 !inject _ptint.obj                                                                      l32 lpc lmp
 !inject ptjoin.obj                                                                      l32 lpc lmp
+!inject ptkill.obj                                                                      l32 lpc lmp
 !inject ptkey.obj                                                                       l32 lpc lmp
 !inject ptmattr.obj                                                                     l32 lpc lmp
 !inject ptmutex.obj                                                                     l32 lpc lmp

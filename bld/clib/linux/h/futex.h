@@ -67,6 +67,6 @@
 #define FUTEX_CMP_REQUEUE_PI_PRIVATE    (FUTEX_CMP_REQUEUE_PI | \
                                          FUTEX_PRIVATE_FLAG)
 
-extern int __futex( volatile int *__address, int __operation, int __value, void *__timeout );
+extern int __futex( volatile int *__address, int __operation, int __value, void *__timeout, int id);
 
 #endif /* _FUTEX_H_INCLUDED */

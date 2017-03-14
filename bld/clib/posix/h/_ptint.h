@@ -37,6 +37,8 @@ extern int              __get_thread_waiters_count( pthread_t thread );
 extern pid_t            __get_thread_id( pthread_t thread );
 extern int              __set_thread_cancel_status( pthread_t thread, int status );
 extern int              __get_thread_cancel_status( pthread_t thread );
+extern int              __set_thread_detached( pthread_t thread );
+extern int              __get_thread_detached( pthread_t thread );
 
 /* Check if a mutex is owned by the current thread 
  * 0  = yes

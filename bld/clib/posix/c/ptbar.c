@@ -54,7 +54,7 @@ _WCRTLINK int pthread_barrier_init( pthread_barrier_t *__barrier,
     
     __barrier->cond = (pthread_cond_t *)malloc(sizeof(pthread_cond_t));
     if(__barrier->cond == NULL) {
-        free(__barrier->access);
+        free((void *)__barrier->access);
         return( ENOMEM );
     }
     pthread_cond_init(__barrier->cond, NULL);
@@ -83,6 +83,9 @@ int res;
     
     pthread_mutex_unlock(__barrier->access);
     pthread_mutex_destroy(__barrier->access);
+    
+    free((void *)__barrier->access);
+    free((void *)__barrier->cond);
     
     return( 0 );
 }

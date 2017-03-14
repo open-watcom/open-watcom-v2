@@ -75,11 +75,15 @@ _WCRTLINK int sem_init( sem_t *sem, int pshared, unsigned int value )
         _RWD_errno = EINVAL;
         return( -1 );
     }
+    
+    // Debugging...
     if( pshared != 0 ) {
         _RWD_errno = ENOSYS;
         return( -1 );
     }
+    
     sem->value = value;
+    sem->futex = 1;
     return( 0 );
 }
 
@@ -99,4 +103,4 @@ static void __check_cmpxchg( void )
     }
 }
 
-AXI( __check_cmpxchg, INIT_PRIORITY_RUNTIME )
+AXI( __check_cmpxchg, INIT_PRIORITY_THREAD )

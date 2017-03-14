@@ -33,9 +33,12 @@
 #ifndef _ATOMIC_H_INCLUDED
 #define _ATOMIC_H_INCLUDED
 
-#define __atomic_decrement(x)   __atomic_add(x, -1)
+extern void __atomic_increment( volatile int *i );
+extern void __atomic_decrement( volatile int *i );
 
 extern int __atomic_compare_and_swap( volatile int *__dest, int __expected, int __source );
+
+/* Returns 1 if successful, 0 if fails */
 extern int __atomic_add( volatile int *dest, int delta );
 
 #endif /* _ATOMIC_H_INCLUDED */

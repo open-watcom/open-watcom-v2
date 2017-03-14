@@ -248,6 +248,7 @@ _WCRTLINK extern int  siginterrupt( int __signo, int __flag );
 _WCRTLINK extern int  sigwait( const sigset_t *__set, int *__sig );
 _WCRTLINK extern int  sigwaitinfo( const sigset_t *__set, siginfo_t *__info );
 _WCRTLINK extern int  sigtimedwait( const sigset_t *__set, siginfo_t *__info, const struct timespec *__timeout );
+_WCRTLINK extern int  pthread_kill( pthread_t __thread, int __sig );
 :endsegment
 :include extepi.sp
 

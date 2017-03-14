@@ -33,14 +33,9 @@
 #include "variety.h"
 #include <sys/types.h>
 #include <pthread.h>
-
+#include "_ptint.h"
 
 _WCRTLINK int pthread_detach(pthread_t __thr)
 {
-    /* This routine is unnecessary with Open Watcom's
-     * thread implementation, but we'll implement a
-     * dummy function for completeness
-     */
-    
-    return( 0 );
+    return( __set_thread_detached( __thr ) );
 }

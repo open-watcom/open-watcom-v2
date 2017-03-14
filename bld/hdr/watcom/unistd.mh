@@ -49,6 +49,18 @@
 #define _POSIX_PROCESS_SCHEDULING   1
 #define _POSIX_TIMERS   1
 
+/* Open Watcom supports pthreads and semaphores on Linux now.
+ * QNX might not conform to the POSIX standards, though.
+ */
+#ifdef __LINUX__
+#define _POSIX_SEMAPHORES   200809L
+#define _POSIX_THREADS      200809L
+
+#define _POSIX_BARRIERS     200809L
+#define _POSIX_SPIN_LOCKS   200809L
+#define _POSIX_READER_WRITER_LOCKS  200809L
+#endif
+
 /* Symbolic constants for sysconf */
 /* caution: the module sysconf.c bound checks _SC_ARG_MAX ... _SC_PAGESIZE */
 #define _SC_ARG_MAX                         1
