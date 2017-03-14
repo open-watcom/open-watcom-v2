@@ -895,7 +895,7 @@ PTREE NodeArgumentExactCtor(    // ADD EXACT CTOR ARG., IF REQUIRED
     TYPE type,                  // - type for class
     bool exact )                // - true ==> exact CTORing of classes
 ;
-PTREE NodeArguments(            // MAKE A LIST OF ARGUMENTS
+PTREE NodeMakeArgList(            // MAKE A LIST OF ARGUMENTS
     PTREE arg,                  // - first arg
     ... )                       // - NULL terminated, in reverse order
 ;

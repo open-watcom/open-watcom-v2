@@ -448,7 +448,7 @@ static PTREE makeMembPtrExpr(   // MAKE A MEMBER-PTR EXPRESSION
     PTREE expr;                 // - resultant expression
 
     expr = NodeMakeUnary( CO_MEMPTR_CONST
-                    , NodeArguments( index, delta, func, NULL ) );
+                    , NodeMakeArgList( index, delta, func, NULL ) );
     expr->type = type;
     return expr;
 }

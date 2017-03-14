@@ -824,7 +824,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
                         data = PtdDltDtorArr( data, sym );
                         TypeSigReferenced( sig );
                         arg = NodeTypeSig( sig );
-                        args = NodeArguments( arg, data, NULL );
+                        args = NodeMakeArgList( arg, data, NULL );
                         expr = RunTimeCall( args, type, RTF_DTOR_AR_STORE );
                         expr = PtdDltDtorEnd( expr );
                     } else {

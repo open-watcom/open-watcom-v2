@@ -1247,7 +1247,7 @@ PTREE NodeMakeArg(                  // MAKE A SINGLE ARGUMENT NODE
 }
 
 
-PTREE NodeArguments(            // MAKE A LIST OF ARGUMENTS
+PTREE NodeMakeArgList(            // MAKE A LIST OF ARGUMENTS
     PTREE first,                // - first arg
     ... )                       // - NULL terminated, in reverse order
 {

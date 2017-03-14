@@ -51,7 +51,7 @@ static PTREE DynamicCastVoid           // DYNAMIC CAST CODE: VOID *
     expr->locn = locn;
     from = NodeTypeid( ctl->src.pted );
     info = GetWithinOffsetOfVFPtr( ctl->src.pted, &expr );
-    expr = NodeArguments( from
+    expr = NodeMakeArgList( from
                         , NodeMakeConstantOffset( info->vf_offset )
                         , expr
                         , NULL );
@@ -78,7 +78,7 @@ PTREE DynamicCast               // DYNAMIC CAST CODE
         from = NodeTypeid( ctl->src.pted );
         to = NodeTypeid( ctl->tgt.pted );
         info = GetWithinOffsetOfVFPtr( ctl->src.pted, &expr );
-        expr = NodeArguments( to
+        expr = NodeMakeArgList( to
                             , from
                             , NodeMakeConstantOffset( info->vf_offset )
                             , expr

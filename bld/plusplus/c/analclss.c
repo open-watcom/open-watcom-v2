@@ -568,7 +568,7 @@ static void emitOpeqCall(       // EMIT AN ASSIGNMENT FOR DEFAULT OP=
                 CDtorScheduleArgRemap( assop );
                 assop = ClassFunMakeAddressable( assop );
                 assop->flag |= SF_ADDR_TAKEN;
-                expr = NodeArguments( MakeNodeSymbol( assop )
+                expr = NodeMakeArgList( MakeNodeSymbol( assop )
                                     , NodeMakeConstantOffset( CgMemorySize( cltype ) )
                                     , NULL );
                 expr = classArrayRtCall( expr
