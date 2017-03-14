@@ -187,7 +187,7 @@ static PTREE setupArrayStorage( // STORE COUNT IN ARRAY_STORAGE,POINT TO ARRAY
 {
     expr = NodeConvertFlags( GetBasicType( TYP_UINT ), expr, PTF_LVALUE );
     expr = NodeAssign( expr, array_number );
-    expr = NodeConvert( new_expr_type, expr );
+    expr = NodeMakeConversion( new_expr_type, expr );
     expr = NodeAddToLeft( expr, sizeOfUInt(), new_expr_type );
     return expr;
 }
@@ -638,7 +638,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
                     FunctionHasRegistration();
                     expr = PtdNewCtor( expr, class_type );
                 }
-                expr = NodeConvert( new_expr_type, expr );
+                expr = NodeMakeConversion( new_expr_type, expr );
                 node = newCheckForNULL( node, expr );
             }
         }
@@ -876,7 +876,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
                     // 'expr' must already be adjusted down by sizeof(unsigned)
                     dup2 = expr;
                     expr = NodeDupExpr( &dup2 );
-                    expr = NodeConvert( MakeReferenceTo( GetBasicType( TYP_UINT ) ), expr );
+                    expr = NodeMakeConversion( MakeReferenceTo( GetBasicType( TYP_UINT ) ), expr );
                     args = NodeMakeBinary( CO_TIMES, NodeRvalue( expr ), args );
                     offset_type = args->u.subtree[1]->type;
                     args->type = offset_type;

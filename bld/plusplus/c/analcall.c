@@ -297,19 +297,19 @@ static bool convertEllipsisArg( // CONVERT AN ELLIPSIS (...) ARGUMENT
           case TYP_WCHAR :
           case TYP_USHORT :
             type = TypeUnArithResult( type );
-            right = NodeConvert( type, right );
+            right = NodeMakeConversion( type, right );
             arg_finish( right, arg );
             retb = true;
             break;
           case TYP_FLOAT :
             type = GetBasicType( TYP_DOUBLE );
-            right = NodeConvert( type, right );
+            right = NodeMakeConversion( type, right );
             arg_finish( right, arg );
             retb = true;
             break;
           case TYP_ARRAY :
             type = PointerTypeForArray( right->type );
-            right = NodeConvert( type, right );
+            right = NodeMakeConversion( type, right );
             arg_finish( right, arg );
             retb = true;
             break;
@@ -589,7 +589,7 @@ static bool adjustForVirtualCall(   // ADJUSTMENTS FOR POSSIBLE VIRTUAL CALL
         if( OMR_CLASS_VAL == ObjModelArgument( this_type ) ) {
             expr = NodeAssignTemporary( this_type, expr );
         } else {
-            expr = NodeConvert( MakePointerTo( expr->type ), expr );
+            expr = NodeMakeConversion( MakePointerTo( expr->type ), expr );
         }
         *this_node = expr;
     }
@@ -882,7 +882,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
             /* NYI: verify dtor call has no arguments */
             expr->u.subtree[0] = NULL;
             NodeFreeDupedExpr( expr );
-            expr = NodeConvert( GetBasicType( TYP_VOID ), this_node );
+            expr = NodeMakeConversion( GetBasicType( TYP_VOID ), this_node );
             expr = NodeComma( expr, left );
             return( expr );
         }
@@ -1257,10 +1257,10 @@ PTREE MakeDeleteCall(   // MAKE A CALL TO 'OPERATOR DELETE'
     args = NULL;
     if( class_parm != NULL ) {
         size_arg = NodeOffset( class_parm->u.c.info->size );
-        size_arg = NodeConvert( del_args->type_list[1], size_arg );
+        size_arg = NodeMakeConversion( del_args->type_list[1], size_arg );
         args = NodeArgument( args, size_arg );
     }
-    ptr = NodeConvert( del_args->type_list[0], ptr );
+    ptr = NodeMakeConversion( del_args->type_list[0], ptr );
     args = NodeArgument( args, ptr );
     expr = NodeMakeCall( del_sym, GetBasicType( TYP_VOID ), NULL );
     expr = CallArgsArrange( del_sym->sym_type

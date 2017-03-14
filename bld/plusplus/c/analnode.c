@@ -402,7 +402,7 @@ static PTREE nodeMakeConvert(   // MAKE A CONVERSION NODE
 }
 
 
-PTREE NodeConvert(              // MAKE A CONVERSION NODE IF REQ'D
+PTREE NodeMakeConversion(              // MAKE A CONVERSION NODE IF REQ'D
     TYPE type,                  // - type for conversion
     PTREE expr )                // - expression to be converted
 {
@@ -424,7 +424,7 @@ PTREE NodeConvertFlags(         // MAKE A CONVERSION NODE WITH FLAGS, IF REQ'D
             type = MakeReferenceTo( type );
         }
     }
-    expr = NodeConvert( type, expr );
+    expr = NodeMakeConversion( type, expr );
     expr = NodeSetType( expr, type, flags );
     return expr;
 }
@@ -2351,7 +2351,7 @@ PTREE NodeLvExtract             // EXTRACT LVALUE, IF POSSIBLE
     if( NULL == TypeReference( expr_type ) ) {
         TYPE cltype = StructType( expr_type );
         if( NULL != cltype && OMR_CLASS_REF == ObjModelArgument( cltype ) ) {
-            expr = NodeConvert( MakeReferenceTo( expr_type ), expr );
+            expr = NodeMakeConversion( MakeReferenceTo( expr_type ), expr );
         } else {
             for( last = NULL, curr = expr; ; ) {
                 if( NodeIsBinaryOp( curr, CO_CONVERT )

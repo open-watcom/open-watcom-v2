@@ -983,7 +983,7 @@ PTREE NodeConvertToBool(        // MAKE A CONVERT-TO-BOOL NODE, IF REQ'D
 int NodeConstantValue(          // GET CONSTANT VALUE FOR A NODE
     PTREE node )                // - a constant node
 ;
-PTREE NodeConvert(              // MAKE A CONVERSION NODE
+PTREE NodeMakeConversion(              // MAKE A CONVERSION NODE
     TYPE type,                  // - type for conversion
     PTREE expr )                // - expression to be converted
 ;

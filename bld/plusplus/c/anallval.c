@@ -378,7 +378,7 @@ static bool analyseBareSymbol(  // ANALYSE AN BARE SYMBOL
         alias = NodeSymbol( NULL, sym->u.alias, expr->u.symcg.result );
         alias = PTreeCopySrcLocation( alias, expr );
         if( PointerType( sym->sym_type ) != NULL ) {
-            alias = NodeConvert( sym->sym_type, alias );
+            alias = NodeMakeConversion( sym->sym_type, alias );
         }
         PTreeFree( expr );
         *a_expr = alias;
@@ -937,7 +937,7 @@ PTREE AnalyseLvDot(             // ANALYSE LVALUE "."
                 if( cl_type != NULL ) {
 #if 0
                     if( OMR_CLASS_REF == ObjModelArgument( cl_type ) ) {
-                        left = NodeConvert( MakeReferenceTo( left->type )
+                        left = NodeMakeConversion( MakeReferenceTo( left->type )
                                           , left );
                         left->flags |= PTF_LVALUE;
                     } else {

@@ -298,7 +298,7 @@ static PTREE dataInitPadLeftSide( target_size_t start )
 static PTREE refOfSym( TYPE type, SYMBOL var )
 /********************************************/
 {
-    return NodeConvert( MakeReferenceTo( type ), MakeNodeSymbol( var ) );
+    return NodeMakeConversion( MakeReferenceTo( type ), MakeNodeSymbol( var ) );
 }
 #endif
 

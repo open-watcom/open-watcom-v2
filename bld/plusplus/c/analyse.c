@@ -1693,7 +1693,7 @@ static PTREE bld_ptr_adj(       // BUILD A POINTER ADJUSTMENT
     target_size_t pted_size;    // - size of ptr object type
 
     ptr_type = ptr->type;
-    factor = NodeConvert( TypePointerDiff( ptr_type ), factor );
+    factor = NodeMakeConversion( TypePointerDiff( ptr_type ), factor );
     pted_size = CgTypeSize( TypePointedAtModified( ptr_type ) );
     if( pted_size == 1 ) {
         return factor;
@@ -3167,9 +3167,9 @@ start_opac_string:
                 break;
             continue;
           case CONV_AA_COMMON :
-            expr->u.subtree[0] = NodeConvert( type
+            expr->u.subtree[0] = NodeMakeConversion( type
                                             , expr->u.subtree[0] );
-            expr->u.subtree[1] = NodeConvert( type
+            expr->u.subtree[1] = NodeMakeConversion( type
                                             , expr->u.subtree[1] );
             left = PTreeOpLeft( expr );
             right = PTreeOpRight( expr );
@@ -4072,7 +4072,7 @@ start_opac_string:
                     type = NodeType( throw_exp );
                 } else if( NULL != FunctionDeclarationType( type ) ) {
                     type = TypeCanonicalThr( type );
-                    throw_exp = NodeConvert( type, throw_exp );
+                    throw_exp = NodeMakeConversion( type, throw_exp );
                     throw_exp->flags &= ~ PTF_LVALUE;
                 }
                 if( BasedPtrType( type ) ) {
@@ -4154,7 +4154,7 @@ start_opac_string:
             warnIntTrunc( right, segid_type, getConstBitsType( segid_type ) );
             left1 = expr->u.subtree[0];
             if( TypeIsBasedPtr( type ) ) {
-                left1 = NodeConvert( TypeSegAddr(), left1 );
+                left1 = NodeMakeConversion( TypeSegAddr(), left1 );
                 expr->u.subtree[0] = left1;
             }
             type = TypeSegOp( left1->type );

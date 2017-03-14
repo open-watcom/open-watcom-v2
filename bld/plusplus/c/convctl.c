@@ -937,7 +937,7 @@ static PTREE nodeBasedSelfExpr( // FIND EXPR TO BE USED FOR BASED __SELF
     pted = TypePointedAtModified( node_type );
     umod = TypeModExtract( pted, &flags, &baser, TC1_NOT_ENUM_CHAR );
     tgt = TypeRebuildPcPtr( umod, flags, TF1_FAR );
-    expr->u.subtree[0] = NodeConvert( tgt, expr->u.subtree[0] );
+    expr->u.subtree[0] = NodeMakeConversion( tgt, expr->u.subtree[0] );
     expr->u.subtree[0]->flags &= ~ PTF_LVALUE;
     return NodeDupExpr( &expr->u.subtree[0] );
 }
@@ -1313,7 +1313,7 @@ static CNV_RETN pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
 #endif
                 // fall thru
             case 2:       // truncate to __based pointer, except TF1_ADD
-                expr = NodeConvert( tgt_type, expr );
+                expr = NodeMakeConversion( tgt_type, expr );
                 break;
             case 3:       // convert to FAR16
             case 8:       // convert regular to TF1_ADD
@@ -1330,7 +1330,7 @@ static CNV_RETN pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
             case 6:       // convert from FAR16 to __based
             case 9:       // convert TF1_ADD to __based
                 expr = convertFromPcPtr( expr, type_src, bself );
-                expr = NodeConvert( tgt_type, expr );
+                expr = NodeMakeConversion( tgt_type, expr );
                 break;
             }
         }

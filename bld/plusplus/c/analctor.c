@@ -529,7 +529,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
             initial = NodeZero();
         }
         if( this_node == NULL ) {
-            node = NodeConvert( base_type, initial );
+            node = NodeMakeConversion( base_type, initial );
         } else {
             if( base_type->id == TYP_MEMBER_POINTER ) {
                 node = NodeMakeBinary( CO_INIT, this_node, initial );

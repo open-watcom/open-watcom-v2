@@ -863,7 +863,7 @@ static PTREE castUdcf           // APPLY USER-DEFINED CONVERSION FUNCTION
                 new_targ = MakeConstTypeOf( new_targ );
                 new_targ = MakeReferenceTo( new_targ );
                 if( NULL != ctl->destination ) {
-                    ctl->destination = NodeConvert( new_targ
+                    ctl->destination = NodeMakeConversion( new_targ
                                                   , ctl->destination ) ;
                 }
             } else {
@@ -1316,12 +1316,12 @@ static PTREE doReintPtrToArith  // DO REINTERPRET: PTR -> ARITH
                 stripOffCastOrig( ctl );
                 argument = MakeModifiedType( GetBasicType( TYP_VOID ), TF1_FAR );
                 argument = MakePointerTo( argument );
-                expr = NodeConvert( argument, ctl->expr );
+                expr = NodeMakeConversion( argument, ctl->expr );
                 argument = GetBasicType( TYP_ULONG );
-                expr = NodeConvert( argument, expr );
+                expr = NodeMakeConversion( argument, expr );
                 expr = NodeMakeBinary( CO_RSHIFT, expr, NodeOffset( 16 ) );
                 expr->type = argument;
-                expr = NodeConvert( TypeSegmentShort(), expr );
+                expr = NodeMakeConversion( TypeSegmentShort(), expr );
                 expr->locn = locn;
             #else
                 expr = doCgConversion( ctl );

@@ -133,7 +133,7 @@ static void adjust_by_delta(    // COMPUTE DELTA ADJUSTMENT
     PTREE offset;               // - node containing delta
 
     if( delta == 0 ) {
-        *a_expr = NodeConvert( base, *a_expr );
+        *a_expr = NodeMakeConversion( base, *a_expr );
     } else {
         offset = NodeOffset( delta );
         if( ! positive ) {
@@ -464,7 +464,7 @@ CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
                                 , TypePointedAtModified( tgt ) ) ) {
       case CTD_NO :
         if( ptr_to_void( tgt ) ) {
-            *expr = NodeConvert( tgt, *expr );
+            *expr = NodeMakeConversion( tgt, *expr );
             retn = check_result_cv( expr, src, tgt, reqd_cnvptr );
         } else {
             retn = CNV_IMPOSSIBLE;
