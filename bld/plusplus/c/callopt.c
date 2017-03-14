@@ -52,7 +52,7 @@ CALL_OPT AnalyseCallOpts        // ANALYSE CALL OPTIMIZATIONS
         } else if( NodeIsBinaryOp( right, CO_CALL_EXEC )
                 || NodeIsBinaryOp( right, CO_CALL_EXEC_IND ) ) {
             TYPE ftype;         // - function type
-            ftype = TypeFunctionCalled( NodeFuncForCall( right )->type );
+            ftype = TypeFunctionCalled( NodeGetFnForCall( right )->type );
             DbgVerify( ftype != NULL
                      , "AnalyseCLassCallOpts -- impossible parse tree" );
             if( OMR_CLASS_REF == ObjModelFunctionReturn( ftype ) ) {

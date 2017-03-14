@@ -129,7 +129,7 @@ static void checkAutoReturn(    // CHECK IF AUTOMATIC BEING RETURNED
                 }
                 break;
             } else if( NodeIsBinaryOp( node, CO_CALL_EXEC_IND ) ) {
-                func_ret = TypeFunctionCalled( NodeFuncForCall( node )->type );
+                func_ret = TypeFunctionCalled( NodeGetFnForCall( node )->type );
                 func_ret = func_ret->of;
                 if( NULL != StructType( func_ret ) ) {
                     PTreeErrorExpr( expr, ERR_RET_AUTO_REF );

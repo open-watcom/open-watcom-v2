@@ -1982,7 +1982,7 @@ static bool nodeMakesTemporary( // CHECK IF NODE PRODUCES A TEMPORARY
 
     fun = NULL;
     if( NodeIsBinaryOp( node, CO_CALL_EXEC ) ) {
-        fun = NodeFuncForCall( node )->u.symcg.symbol;
+        fun = NodeGetFnForCall( node )->u.symcg.symbol;
         if( SymIsCtor( fun ) ) {
             retb = true;
         } else {
@@ -2015,7 +2015,7 @@ static bool nodeMakesTemporary( // CHECK IF NODE PRODUCES A TEMPORARY
             }
         } else if( NodeIsBinaryOp( node, CO_CALL_EXEC_IND ) ) {
             TYPE ret_type;
-            node = NodeFuncForCall( node );
+            node = NodeGetFnForCall( node );
             ret_type = TypeFunctionCalled( node->type );
             DbgVerify( ret_type != NULL
                      , "nodeMakesTemporary -- not function type" );
@@ -2228,7 +2228,7 @@ PTREE NodeAddSideEffect(        // ADD A SIDE-EFFECT EXPRESSION
 }
 
 
-PTREE NodeFuncForCall(          // GET FUNCTION NODE FOR CALL
+PTREE NodeGetFnForCall(          // GET FUNCTION NODE FOR CALL
     PTREE call_node )           // - a call node
 {
     call_node = call_node->u.subtree[0];

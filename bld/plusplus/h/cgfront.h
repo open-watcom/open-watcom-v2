@@ -1065,7 +1065,7 @@ void NodeFreeSearchResult(      // FREE SEARCH_RESULT FROM A NODE
 PTREE NodeMakeFromConstSym(         // BUILD CONSTANT NODE FROM CONSTANT SYMBOL
     SYMBOL con )                // - constant symbol
 ;
-PTREE NodeFuncForCall(          // GET FUNCTION NODE FOR CALL
+PTREE NodeGetFnForCall(          // GET FUNCTION NODE FOR CALL
     PTREE call_node )           // - a call node
 ;
 PTREE NodeGetCallExpr(          // POINT AT CALL EXPRESSION
