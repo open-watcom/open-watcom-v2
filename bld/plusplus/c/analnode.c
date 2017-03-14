@@ -1172,7 +1172,7 @@ PTREE NodeSetRValueExact(          // SET RVALUE (EXACT)
 }
 
 
-PTREE NodeRvalueExactLeft(      // SET RVALUE (EXACT) ON LEFT
+PTREE NodeSetRValueExactLeft(      // SET RVALUE (EXACT) ON LEFT
     PTREE node )                // - current node
 {
     return NodeSetRValueExact( nodeRefedRvalue( &node->u.subtree[0] ) );

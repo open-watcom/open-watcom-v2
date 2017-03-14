@@ -3883,7 +3883,7 @@ start_opac_string:
                     force_rvalue = true;
                 }
                 if( force_rvalue ) {
-                    left = NodeRvalueExactLeft( expr );
+                    left = NodeSetRValueExactLeft( expr );
                     if( PT_ERROR == left->op )
                         break;
                     type = TypedefModifierRemoveOnly( left->type );
