@@ -1732,7 +1732,7 @@ addr_func_t NodeGetOverloadedFnAddr(      // GET PTREE FOR &FUN (FUN IS OVERLOAD
 }
 
 
-bool NodePtrNonZero(            // TEST IF A PTR NODE IS ALWAYS NON-ZERO
+bool NodeIsNonNullPtr(            // TEST IF A PTR NODE IS ALWAYS NON-ZERO
     PTREE node )                // - node to be tested
 {
     bool non_zero;              // - true ==> is non-zero

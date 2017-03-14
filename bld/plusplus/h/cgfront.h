@@ -1188,7 +1188,7 @@ PTREE NodePruneRight(            // PRUNE RIGHT OPERAND
 PTREE NodePruneTop(             // PRUNE TOP OPERAND
     PTREE expr )                // - expression
 ;
-bool NodePtrNonZero(            // TEST IF A PTR NODE IS ALWAYS NON-ZERO
+bool NodeIsNonNullPtr(            // TEST IF A PTR NODE IS ALWAYS NON-ZERO
     PTREE node )                // - node to be tested
 ;
 bool NodeReferencesTemporary(   // CHECK IF NODE PRODUCES OR IS TEMPORARY

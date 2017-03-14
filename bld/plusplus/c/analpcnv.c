@@ -205,7 +205,7 @@ void NodeConvertToBasePtr(      // CONVERT TO A BASE PTR, USING SEARCH_RESULT
             node = NodeReplace( node, expr );
         } else {
             dup = NULL;
-            if( ! NodePtrNonZero( node ) ) {
+            if( ! NodeIsNonNullPtr( node ) ) {
                 dup = NodeMakeExprDuplicate( &node );
             }
             vb_offset = result->vb_offset;
