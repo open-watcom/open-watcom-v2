@@ -2056,7 +2056,7 @@ bool NodeIsNonConstRefToTemp(     // CHECK IF TEMP. PASSED AS NON-CONST REF
 }
 
 
-bool NodeReferencesTemporary(   // CHECK IF NODE PRODUCES OR IS TEMPORARY
+bool NodeYieldsTemporary(   // CHECK IF NODE PRODUCES OR IS TEMPORARY
     PTREE node )                // - possible temporary
 {
     PTREE dtor;                 // - addr CO_DTOR ( not used )

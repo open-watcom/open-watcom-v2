@@ -1173,7 +1173,7 @@ PTREE ClassCopyTemp(            // COPY A TEMPORARY
     SYMBOL ctor;                // - CTOR used
 #endif
     expr = NodeLvExtract( expr );
-    if( NodeReferencesTemporary( expr )
+    if( NodeYieldsTemporary( expr )
      && cl_type == ClassTypeForType( expr->type ) ) {
         NodeFreeDupedExpr( temp_node );
         expr = NodeLvExtract( expr );

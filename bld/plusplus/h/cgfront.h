@@ -1191,7 +1191,7 @@ PTREE NodePruneTop(             // PRUNE TOP OPERAND
 bool NodeIsNonNullPtr(            // TEST IF A PTR NODE IS ALWAYS NON-ZERO
     PTREE node )                // - node to be tested
 ;
-bool NodeReferencesTemporary(   // CHECK IF NODE PRODUCES OR IS TEMPORARY
+bool NodeYieldsTemporary(   // CHECK IF NODE PRODUCES OR IS TEMPORARY
     PTREE node )                // - possible temporary
 ;
 PTREE NodeRemoveCasts(          // REMOVE CASTING FROM NODE

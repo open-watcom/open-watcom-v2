@@ -160,7 +160,7 @@ void NodeBuildArgList(          // BUILD ARGUMENT LIST FROM CALLER ARG.S
     for( ; count > 0; --count ) {
         arg->type = BindTemplateClass( arg->type, &arg->locn, true );
         if( ( arg->flags & PTF_LVALUE )
-         && NodeReferencesTemporary( arg->u.subtree[1] ) ) {
+         && NodeYieldsTemporary( arg->u.subtree[1] ) ) {
             // temporaries may only be bound to const references
             if( NULL == TypeReference( arg->type ) ) {
                 arg->type = MakeConstReferenceTo( arg->type );

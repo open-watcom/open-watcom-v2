@@ -338,7 +338,7 @@ static CAST_RESULT checkConstRef// CHECK FOR TEMP -> NON-CONST REFERENCE
         PTREE expr;
         expr = ctl->expr->u.subtree[1];
         if( ! ExprIsLvalue( expr )
-         || NodeReferencesTemporary( expr ) ) {
+         || NodeYieldsTemporary( expr ) ) {
             result = diagNonConstRefBinding( ctl );
         } else {
             // always an error if not a temp.
