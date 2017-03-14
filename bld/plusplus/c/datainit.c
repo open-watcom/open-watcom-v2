@@ -695,7 +695,7 @@ static PTREE emitDtorInitExpr(  // EMIT DTOR MARKING FOR AN EXPRESSION
             // end of scope-call optimization
             expr = PtdInitSymEnd( expr, sym );
         }
-        expr = NodeDtorExpr( expr, sym );
+        expr = NodeMarkDtorExpr( expr, sym );
         if( done != NULL ) {
             done->u.subtree[0] = expr;
             expr = done;

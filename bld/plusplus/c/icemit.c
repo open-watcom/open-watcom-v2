@@ -879,7 +879,7 @@ void IcEmitDtorAutoSym(         // EMIT EXPRESSION TO MARK AUTO AS DTOR'ED
 {
     PTREE node;                 // - expression to be emitted
 
-    node = NodeDtorExpr( NodeIntDummy(), sym );
+    node = NodeMarkDtorExpr( NodeIntDummy(), sym );
     node = PtdDtorScopeType( node, sym->sym_type );
     node = NodeUnaryCopy( CO_TRASH_EXPR, node );
     IcEmitExpr( node );
@@ -891,7 +891,7 @@ void IcEmitDtorStaticSym(       // EMIT EXPRESSION TO MARK STATIC AS DTOR'ED
 {
     PTREE node;                 // - expression to be emitted
 
-    node = NodeDtorExpr( NodeIntDummy(), sym );
+    node = NodeMarkDtorExpr( NodeIntDummy(), sym );
     node = NodeUnaryCopy( CO_TRASH_EXPR, node );
     IcEmitExpr( node );
 }

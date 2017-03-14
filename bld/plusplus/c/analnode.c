@@ -1782,7 +1782,7 @@ TYPE NodeType(                  // GET TYPE FOR A NODE
 }
 
 
-PTREE NodeDtorExpr(             // MARK FOR DTOR'ING AFTER EXPRESSION
+PTREE NodeMarkDtorExpr(             // MARK FOR DTOR'ING AFTER EXPRESSION
     PTREE expr,                 // - expression computing symbol
     SYMBOL sym )                // - SYMBOL being computed
 {

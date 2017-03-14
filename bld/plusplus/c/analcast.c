@@ -1957,7 +1957,7 @@ static PTREE forceToDestination // FORCE TO DESTINATION ON CAST, FUNC_ARG
                 }
             }
             if( ctl->dtor_destination && ctl->tgt.class_operand && PT_ERROR != expr->op ) {
-                expr = NodeDtorExpr( expr, ctl->destination->u.symcg.symbol );
+                expr = NodeMarkDtorExpr( expr, ctl->destination->u.symcg.symbol );
             }
             if( PT_ERROR != expr->op && !ctl->tgt.reference ) {
                 expr = NodeGetRValue( expr );

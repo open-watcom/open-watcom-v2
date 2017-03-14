@@ -249,7 +249,7 @@ static bool passStructOnStack(  // PASS A STRUCT/CLASS ON STACK
             PTREE temp = NodeMakeTemporary( type );
             right = ClassDefaultCopyDiag( temp, right, &diagEllConv );
             if( right->op != PT_ERROR ) {
-                right = NodeDtorExpr( right, temp->u.symcg.symbol );
+                right = NodeMarkDtorExpr( right, temp->u.symcg.symbol );
                 if( right->op != PT_ERROR ) {
                     right->type = type;
                     right = NodeFetch( right );
@@ -1172,7 +1172,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
                               , cdtor
                               , retnnode );
         if( retnnode != NULL ) {
-            expr = NodeDtorExpr( expr, retnnode->u.symcg.symbol );
+            expr = NodeMarkDtorExpr( expr, retnnode->u.symcg.symbol );
             if( SymRequiresDtoring( retnnode->u.symcg.symbol ) ) {
                 expr = PtdCtoredExprType( expr, NULL, type );
             }

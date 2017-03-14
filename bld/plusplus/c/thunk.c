@@ -444,7 +444,7 @@ void EmitVfunThunk(             // EMIT THUNK FOR VIRTUAL FUNCTION
     stmt = NodeMakeCall( override_sym, return_type, args );
     stmt = CallArgsArrange( override_sym->sym_type, stmt, args, this_arg, NULL, return_node );
     if( return_node != NULL ) {
-        stmt = NodeDtorExpr( stmt, return_node->u.symcg.symbol );
+        stmt = NodeMarkDtorExpr( stmt, return_node->u.symcg.symbol );
         stmt = PtdCtoredExprType( stmt, override_sym, return_type );
     }
     return_sym = SymFunctionReturn();

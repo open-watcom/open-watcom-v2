@@ -1186,13 +1186,13 @@ PTREE ClassCopyTemp(            // COPY A TEMPORARY
         }
 #if 0
         expr = defaultCopyDiag( temp_node, expr, &diagCopy, &ctor );
-        expr = NodeDtorExpr( expr, temp_node->u.symcg.symbol );
+        expr = NodeMarkDtorExpr( expr, temp_node->u.symcg.symbol );
         if( ctor != NULL ) {
             expr = PtdCtoredExprType( expr, ctor, cl_type );
         }
 #else
         expr = CopyInit( expr, temp_node, cl_type, &diagTempCopy );
-        expr = NodeDtorExpr( expr, temp_node->u.symcg.symbol );
+        expr = NodeMarkDtorExpr( expr, temp_node->u.symcg.symbol );
 #endif
     }
     return expr;

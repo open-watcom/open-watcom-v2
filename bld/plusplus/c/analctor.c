@@ -637,7 +637,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
             }
             if( node->op == PT_ERROR ) break;
             if( check_dtoring ) {
-                node = NodeDtorExpr( node, this_node->u.symcg.symbol );
+                node = NodeMarkDtorExpr( node, this_node->u.symcg.symbol );
                 if( node->op == PT_ERROR ) break;
             }
             if( control & EFFECT_EXACT ) {

@@ -1037,7 +1037,7 @@ PTREE NodeDottedFunction        // BUILD A DOT NODE FOR A FUNCTION
     ( PTREE left                // - left operand
     , PTREE right )             // - right operand
 ;
-PTREE NodeDtorExpr(             // MARK FOR DTOR'ING AFTER EXPRESSION
+PTREE NodeMarkDtorExpr(             // MARK FOR DTOR'ING AFTER EXPRESSION
     PTREE expr,                 // - expression computing symbol
     SYMBOL sym )                // - SYMBOL being computed
 ;

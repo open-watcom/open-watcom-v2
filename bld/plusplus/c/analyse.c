@@ -1905,7 +1905,7 @@ static PTREE convertCtor(       // CONVERT CTOR EXPRESSION
             PTREE temp = NodeMakeTemporary( type );
             expr = generateCtor( temp, expr );
             if( expr->op != PT_ERROR ) {
-                expr = NodeDtorExpr( expr, temp->u.symcg.symbol );
+                expr = NodeMarkDtorExpr( expr, temp->u.symcg.symbol );
             }
         }
         break;
