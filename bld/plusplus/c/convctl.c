@@ -1347,7 +1347,7 @@ CNV_RETN CastPtrToPtr           // IMPLICIT/EXPLICIT CAST PTR -> PTR
     PTREE expr;                 // - resultant expression
     PTREE dtor;                 // - dtoring operand
 
-    expr = *NodeReturnSrc( &ctl->expr, &dtor );
+    expr = *NodeGetReturnSrc( &ctl->expr, &dtor );
     if( expr->op == PT_SYMBOL ) {
         expr->u.symcg.symbol->flag |= SF_ADDR_TAKEN;
     }

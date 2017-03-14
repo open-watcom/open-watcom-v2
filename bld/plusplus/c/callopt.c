@@ -44,7 +44,7 @@ CALL_OPT AnalyseCallOpts        // ANALYSE CALL OPTIMIZATIONS
     CALL_OPT retn;              // - type of return
     PTREE right;                // - bare source operand
 
-    right = *NodeReturnSrc( &src, a_dtor );
+    right = *NodeGetReturnSrc( &src, a_dtor );
     *a_right = right;
     if( type == ClassTypeForType( right->type ) ) {
         if( NodeCallsCtor( right ) ) {

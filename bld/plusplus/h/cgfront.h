@@ -1208,7 +1208,7 @@ PTREE NodeReplaceTop(           // REPLACE TOP EXPRESSION WITH ANOTHER
     PTREE old,                  // - expression to be replaced
     PTREE replace )             // - replacement expression
 ;
-PTREE* NodeReturnSrc(           // GET ADDR OF SOURCE OPERAND RETURNED
+PTREE* NodeGetReturnSrc(           // GET ADDR OF SOURCE OPERAND RETURNED
     PTREE* src,                 // - addr[ operand ]
     PTREE* dtor )               // - addr[ CO_DTOR operand ]
 ;

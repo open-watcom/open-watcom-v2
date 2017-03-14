@@ -540,7 +540,7 @@ PTREE NodeRemoveCastsCommas(    // REMOVE COMMAS, DTORING, CASTING FROM NODE
 {
     PTREE not_used;             // - dtoring, not used
 
-    return *NodeReturnSrc( &node, &not_used );
+    return *NodeGetReturnSrc( &node, &not_used );
 }
 
 
@@ -1900,7 +1900,7 @@ PTREE NodeActualNonOverloaded(  // POSITION OVER DEFAULT-ARG SYMBOLS
 }
 
 
-PTREE* NodeReturnSrc(           // GET ADDR OF SOURCE OPERAND RETURNED
+PTREE* NodeGetReturnSrc(           // GET ADDR OF SOURCE OPERAND RETURNED
     PTREE* src,                 // - addr[ operand ]
     PTREE* dtor )               // - addr[ addr[ CO_DTOR operand ] ]
 {
