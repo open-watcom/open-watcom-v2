@@ -974,7 +974,7 @@ static PTREE convertFromPcPtr(  // CONVERT SPECIAL TO REGULAR PC PTR
             expr = NodeSetType( expr, ptr_type, PTF_PTR_NONZERO );
             break;
           case PC_PTR_BASED_VOID :
-            expr = NodeConvertFlags( tgt_type, expr, PTF_PTR_NONZERO );
+            expr = NodeMakeConversionFlags( tgt_type, expr, PTF_PTR_NONZERO );
             break;
           case PC_PTR_BASED_STRING :
           { PTREE bsym;         // - basing symbol
@@ -1025,7 +1025,7 @@ static PTREE convertToPcPtr(    // CONVERT REGULAR TO SPECIAL PC PTR
       case PC_PTR_BASED_VOID :
       case PC_PTR_BASED_FETCH :
       case PC_PTR_BASED_STRING :
-        expr = NodeConvertFlags( ptr_type, expr, PTF_PTR_NONZERO );
+        expr = NodeMakeConversionFlags( ptr_type, expr, PTF_PTR_NONZERO );
         break;
       case PC_PTR_BASED_ADD :
       { PTREE temp;             // - temp

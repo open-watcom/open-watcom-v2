@@ -1663,7 +1663,7 @@ static PTREE doCastResult           // DO CAST RESULT
         break;
       case CAST_TO_VOID :
         ctl->expr->type = ctl->tgt.orig;
-        ctl->expr->u.subtree[1] = NodeConvertFlags( ctl->tgt.orig
+        ctl->expr->u.subtree[1] = NodeMakeConversionFlags( ctl->tgt.orig
                                     , ctl->expr->u.subtree[1]
                                     , PTF_MEANINGFUL | PTF_SIDE_EFF );
         markUserCast( ctl );

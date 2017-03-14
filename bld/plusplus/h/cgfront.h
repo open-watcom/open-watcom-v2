@@ -991,7 +991,7 @@ bool NodeConvertArgument(       // CONVERT AN ARGUMENT VALUE
     PTREE *a_expr,              // - addr( argument value )
     TYPE proto )                // - prototype type
 ;
-PTREE NodeConvertFlags(         // MAKE A CONVERSION NODE WITH FLAGS, IF REQ'D
+PTREE NodeMakeConversionFlags(         // MAKE A CONVERSION NODE WITH FLAGS, IF REQ'D
     TYPE type,                  // - type for conversion
     PTREE expr,                 // - expression to be converted
     PTF_FLAG flags )            // - flags to be added

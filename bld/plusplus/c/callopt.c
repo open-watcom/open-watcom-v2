@@ -101,7 +101,7 @@ static PTREE doCopySubstitution( // EFFECT COPY SUBSTITUTION
     }
     repl->u.symcg.symbol->flag = 0;
     *a_repl = NodeReplace( *a_repl, tgt );
-    orig = NodeConvertFlags( ClassTypeForType( tgt->type )
+    orig = NodeMakeConversionFlags( ClassTypeForType( tgt->type )
                            , orig
                            , PTF_LVALUE
                            | PTF_MEMORY_EXACT

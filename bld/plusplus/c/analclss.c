@@ -547,8 +547,8 @@ static void emitOpeqCall(       // EMIT AN ASSIGNMENT FOR DEFAULT OP=
       case TITER_ARRAY_EXACT :
       case TITER_ARRAY_VBASE :
         if( NULL == StructType( cltype ) ) {
-            src = NodeConvertFlags( artype, src, PTF_MEMORY_EXACT | PTF_LVALUE );
-            tgt = NodeConvertFlags( artype, tgt, PTF_MEMORY_EXACT | PTF_LVALUE );
+            src = NodeMakeConversionFlags( artype, src, PTF_MEMORY_EXACT | PTF_LVALUE );
+            tgt = NodeMakeConversionFlags( artype, tgt, PTF_MEMORY_EXACT | PTF_LVALUE );
             expr = bitFieldNodeAssign( tgt, src, NodeFetch );
         } else if( ClassNeedsAssign( cltype, true ) ) {
             if( qualifier != 0 ) {
@@ -787,13 +787,13 @@ static PTREE doBinaryCopy(      // DO A BINARY COPY
     if( OMR_CLASS_REF == ObjModelArgument( tgt_type ) ) {
         src->flags &= ~PTF_CLASS_RVREF;
         src->flags |= PTF_LVALUE | PTF_MEMORY_EXACT;
-        src = NodeConvertFlags( tgt_type, src, PTF_MEMORY_EXACT | PTF_LVALUE );
+        src = NodeMakeConversionFlags( tgt_type, src, PTF_MEMORY_EXACT | PTF_LVALUE );
         src = NodeFetch( src );
         src->flags |= PTF_MEMORY_EXACT;
     } else {
-        src = NodeConvertFlags( tgt_type, src, PTF_MEMORY_EXACT );
+        src = NodeMakeConversionFlags( tgt_type, src, PTF_MEMORY_EXACT );
     }
-    tgt = NodeConvertFlags( tgt_type, tgt, PTF_MEMORY_EXACT | PTF_LVALUE );
+    tgt = NodeMakeConversionFlags( tgt_type, tgt, PTF_MEMORY_EXACT | PTF_LVALUE );
     return NodeCopyClassObject( tgt, src );
 }
 

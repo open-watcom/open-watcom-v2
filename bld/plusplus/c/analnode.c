@@ -414,7 +414,7 @@ PTREE NodeMakeConversion(              // MAKE A CONVERSION NODE IF REQ'D
 }
 
 
-PTREE NodeConvertFlags(         // MAKE A CONVERSION NODE WITH FLAGS, IF REQ'D
+PTREE NodeMakeConversionFlags(         // MAKE A CONVERSION NODE WITH FLAGS, IF REQ'D
     TYPE type,                  // - type for conversion
     PTREE expr,                 // - expression to be converted
     PTF_FLAG flags )            // - flags to be added
@@ -989,7 +989,7 @@ static PTREE nodeRvalueFetch(   // FETCH RVALUE IF REQUIRED
                 curr = NodeFetch( curr );
                 curr->flags &= ~ PTF_LVALUE;
             } else {
-                curr = NodeConvertFlags( unmod, curr, PTF_CLASS_RVREF );
+                curr = NodeMakeConversionFlags( unmod, curr, PTF_CLASS_RVREF );
             }
             break;
           case TYP_FUNCTION :
@@ -2411,7 +2411,7 @@ PTREE NodeRvForRefClass         // MAKE RVALUE FOR REF CLASS
     TYPE type = TypeForLvalue( expr );
     DbgVerify( OMR_CLASS_REF == ObjModelArgument( type )
              , "NodeRvForRefClass -- not reference class" );
-    expr = NodeConvertFlags( type, expr, PTF_CLASS_RVREF );
+    expr = NodeMakeConversionFlags( type, expr, PTF_CLASS_RVREF );
     return expr;
 }
 
@@ -2424,7 +2424,7 @@ PTREE NodeLvForRefClass         // MAKE LVALUE FOR REF CLASS
     DbgVerify( ! ExprIsLvalue( expr ), "NodeRvForRefClass -- not lvalue" );
     DbgVerify( OMR_CLASS_REF == ObjModelArgument( ClassTypeForType( type ) )
              , "NodeRvForRefClass -- not reference class" );
-    expr = NodeConvertFlags( type, expr, flags );
+    expr = NodeMakeConversionFlags( type, expr, flags );
     return expr;
 }
 

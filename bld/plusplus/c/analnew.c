@@ -185,7 +185,7 @@ static PTREE setupArrayStorage( // STORE COUNT IN ARRAY_STORAGE,POINT TO ARRAY
     TYPE new_expr_type,         // - TYPE of expression
     PTREE array_number )        // - expression for count
 {
-    expr = NodeConvertFlags( GetBasicType( TYP_UINT ), expr, PTF_LVALUE );
+    expr = NodeMakeConversionFlags( GetBasicType( TYP_UINT ), expr, PTF_LVALUE );
     expr = NodeAssign( expr, array_number );
     expr = NodeMakeConversion( new_expr_type, expr );
     expr = NodeAddToLeft( expr, sizeOfUInt(), new_expr_type );
@@ -619,7 +619,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
             dup->type = type;
             dup->flags |= PTF_LVALUE;
 #else
-            dup = NodeConvertFlags( type, dup, PTF_LVALUE );
+            dup = NodeMakeConversionFlags( type, dup, PTF_LVALUE );
 #endif
             if( sym_ctor != NULL && placement == NULL ) {
                 dup = PtdNewAlloc( dup );
@@ -661,7 +661,7 @@ static PTREE deleteCheckForNULL( PTREE value, PTREE t_expr )
 
 static PTREE setDeleteType( PTREE expr, TOKEN_LOCN *locn )
 {
-    expr = NodeConvertFlags( GetBasicType( TYP_VOID ), expr, PTF_MEANINGFUL | PTF_SIDE_EFF );
+    expr = NodeMakeConversionFlags( GetBasicType( TYP_VOID ), expr, PTF_MEANINGFUL | PTF_SIDE_EFF );
     PTreeSetLocn( expr, locn );
     return( expr );
 }
