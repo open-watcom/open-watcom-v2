@@ -459,7 +459,7 @@ PTREE NodeMakeZeroCompare(        // MAKE A COMPARE-TO-ZERO NODE, IF REQ'D
     } else {
         if( ( NULL == StructType( type ) )
           &&( NULL == MemberPtrType( type ) ) ) {
-            expr = NodeRvalue( expr );
+            expr = NodeGetRValue( expr );
             if( ! ArithType( type ) ) {
                 // may be &fn or array decay to a pointer
                 type = expr->type;
@@ -1011,7 +1011,7 @@ static PTREE nodeRvalueFetch(   // FETCH RVALUE IF REQUIRED
 }
 
 
-PTREE NodeRvalue(               // GET RVALUE, IF LVALUE
+PTREE NodeGetRValue(               // GET RVALUE, IF LVALUE
     PTREE curr )                // - node to be transformed
 {
     TYPE node_type;             // - type of node
@@ -1116,7 +1116,7 @@ static PTREE nodeRefedRvalue(   // PROPOGATE RVALUE RESULT
 
 //    src_type = (*r_start)->type;
     r_mod = PTreeRef( r_start );
-    mod = NodeRvalue( *r_mod );
+    mod = NodeGetRValue( *r_mod );
     *r_mod = mod;
     for( start = *r_start; start != mod; start = start->u.subtree[1] ) {
         start->flags = mod->flags;
@@ -1146,7 +1146,7 @@ PTREE NodeRvalueExact(          // SET RVALUE (EXACT)
     TYPE exact_type;            // - exact type
 
     exact_type = node->type;
-    node = NodeRvalue( node );
+    node = NodeGetRValue( node );
     switch( TypedefModifierRemove( exact_type )->id ) {
       case TYP_BOOL :
       case TYP_CHAR :
@@ -1439,7 +1439,7 @@ PTREE NodeThis(                 // MAKE A "THIS" NODE
         node->flags |= PTF_LVALUE | PTF_PTR_NONZERO | PTF_LV_CHECKED;
         node->u.symcg.symbol = NULL;
         node->u.symcg.result = NULL;
-        node = NodeRvalue( node );
+        node = NodeGetRValue( node );
         node->flags |= PTF_PTR_NONZERO | PTF_LV_CHECKED;
         cl_type = StructType( TypePointedAtModified( type ) );
         if( ! TypeHasVirtualBases( cl_type )
@@ -1474,7 +1474,7 @@ PTREE NodeCDtorExtra(           // MAKE A CTOR/DTOR EXTRA PARM NODE
     node->flags |= PTF_LVALUE | PTF_LV_CHECKED;
     node->u.symcg.symbol = NULL;
     node->u.symcg.result = NULL;
-    node = NodeRvalue( node );
+    node = NodeGetRValue( node );
     return node;
 }
 
@@ -1858,7 +1858,7 @@ bool NodeDerefPtr(              // DEREFERENCE A POINTER
     PTREE ptr;                  // - ptr operand
 
     ptr = *a_ptr;
-    ptr = NodeRvalue( ptr );
+    ptr = NodeGetRValue( ptr );
     if( TypeIsBasedPtr( ptr->type ) ) {
         ptr = CastImplicit( ptr
                           , TypeConvertFromPcPtr( ptr->type )

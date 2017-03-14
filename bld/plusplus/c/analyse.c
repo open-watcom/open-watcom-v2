@@ -2955,7 +2955,7 @@ start_opac_string:
 #if 0
             ConvertExpr( &expr->u.subtree[0], right->type, CNV_EXPR );
 #else
-            expr->u.subtree[1] = NodeRvalue( expr->u.subtree[1] );
+            expr->u.subtree[1] = NodeGetRValue( expr->u.subtree[1] );
             if( expr->u.subtree[1]->op == PT_ERROR ) {
                 PTreeErrorNode( expr );
                 break;
@@ -4065,7 +4065,7 @@ start_opac_string:
                     expr = throw_exp;
                     break;
                 } else if( NULL != ArrayType( type ) ) {
-                    throw_exp = NodeRvalue( throw_exp );
+                    throw_exp = NodeGetRValue( throw_exp );
                     type = throw_exp->type;
                 } else if( NULL != MemberPtrType( type ) ) {
                     throw_exp = NodeAssignTemporary( type, throw_exp );
@@ -4438,7 +4438,7 @@ PTREE AnalyseValueExpr(     // ANALYZE AN EXPRESSION, MAKE IT A VALUE
     if( expr != NULL ) {
         expr = run_traversals( expr );
         if( expr->op != PT_ERROR ) {
-            expr = NodeRvalue( expr );
+            expr = NodeGetRValue( expr );
         }
     }
     return expr;

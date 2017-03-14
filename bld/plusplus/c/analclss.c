@@ -538,7 +538,7 @@ static void emitOpeqCall(       // EMIT AN ASSIGNMENT FOR DEFAULT OP=
       case TITER_CLASS_DBASE :
       case TITER_NAKED_DTOR  :
         if( NULL == StructType( cltype ) ) {
-            expr = bitFieldNodeAssign( tgt, src, NodeRvalue );
+            expr = bitFieldNodeAssign( tgt, src, NodeGetRValue );
         } else {
             expr = NodeAssign( tgt, src );
             expr = ClassAssign( expr );
@@ -782,7 +782,7 @@ static PTREE doBinaryCopy(      // DO A BINARY COPY
     tgt_type = NodeType( tgt );
     tgt_type = TypeReferenced( tgt_type );
 
-    src = NodeRvalue( src );
+    src = NodeGetRValue( src );
 
     if( OMR_CLASS_REF == ObjModelArgument( tgt_type ) ) {
         src->flags &= ~PTF_CLASS_RVREF;
@@ -1277,7 +1277,7 @@ static PTREE generateArrayDtorCall( // CALL R/T ROUTINE TO DTOR ARRAY
     if( error_occurred ) {
         expr = NULL;
     } else {
-        node_this = NodeRvalue( node_this );
+        node_this = NodeGetRValue( node_this );
         TypeSigReferenced( base_sig );
         expr = generateArrayClassCall( array_type
                                      , base_sig

@@ -242,7 +242,7 @@ static bool passStructOnStack(  // PASS A STRUCT/CLASS ON STACK
     PTREE right;                // - right operand
     TYPE type;                  // - class type
 
-    right = NodeRvalue( arg->u.subtree[1] );
+    right = NodeGetRValue( arg->u.subtree[1] );
     type = right->type;
     if( right->flags & PTF_CLASS_RVREF ) {
         if( right->op != PT_ERROR ) {
@@ -286,7 +286,7 @@ static bool convertEllipsisArg( // CONVERT AN ELLIPSIS (...) ARGUMENT
         retb = false;
         break;
       default :
-        right = NodeRvalue( arg->u.subtree[1] );
+        right = NodeGetRValue( arg->u.subtree[1] );
         arg->u.subtree[1] = right;
         type =  TypedefModifierRemove( right->type );
         switch( type->id ) {

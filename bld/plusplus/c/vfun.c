@@ -163,12 +163,12 @@ static PTREE genVfunCall(       // DIRECTLY GENERATE VFUN CALL
     node->type = vfptr_type;
     node->flags |= PTF_LVALUE;
     node = PtdExprConst( node );
-    node = NodeRvalue( node );
+    node = NodeGetRValue( node );
     vfn_type = TypePointedAtModified( vfptr_type );
     node = NodeMakeBinary( CO_DOT, node, NodeOffset( vf_index * CgMemorySize( vfn_type ) ) );
     node->type = vfn_type;
     node->flags |= PTF_LVALUE;
-    node = NodeRvalue( node );
+    node = NodeGetRValue( node );
     node->type = sym->sym_type;
     return node;
 }
@@ -263,7 +263,7 @@ void VfnReference(              // EMIT VIRTUAL FUNCTION REFERENCE
     CgFrontGotoNear( IC_LABEL_CS, O_GOTO, around );
     fake = NodeAssignTemporary( MakePointerTo( vfun->sym_type )
                               , NodeMakeCallee( vfun ) );
-    fake = NodeRvalue( fake );
+    fake = NodeGetRValue( fake );
     fake = NodeUnaryCopy( CO_CALL_SETUP_IND, fake );
     fake = VfnDecorateCall( fake, vfun );
     fake = NodeMakeBinary( CO_CALL_EXEC_IND, fake, NULL );

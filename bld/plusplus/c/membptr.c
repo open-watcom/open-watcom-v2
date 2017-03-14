@@ -73,7 +73,7 @@ static PTREE membPtrStoreTemp(  // STORE MEMBER PTR EXPR IN TEMPORARY
 
     a_expr = membPtrTemporary( expr );
     MembPtrAssign( &a_expr );
-    return NodeRvalue( a_expr );
+    return NodeGetRValue( a_expr );
 }
 
 
@@ -419,8 +419,8 @@ static PTREE computeDeltaIndex( // COMPUTE NEW DELTA, INDEX
     original = expr;
     expr = PTreeOpLeft( original );
     expr = expr->u.subtree[0];
-    new_delta = NodeRvalue( expr->u.subtree[1] );
-    new_index = NodeRvalue( expr->u.subtree[0]->u.subtree[1] );
+    new_delta = NodeGetRValue( expr->u.subtree[1] );
+    new_index = NodeGetRValue( expr->u.subtree[0]->u.subtree[1] );
     if( inf->safe ) {
         new_delta = computeNewDelta( new_delta, &new_index, inf );
         new_index = computeNewIndex( new_index, inf );
@@ -522,7 +522,7 @@ static PTREE assignMembPtrArg(  // ASSIGN A MEMBER-PTR ARGUMENT
     PTREE *a_left,              // - addr[ left operand ]
     PTREE *a_right )            // - addr[ right operand ]
 {
-    return NodeAssign( nextArg( a_left ), NodeRvalue( nextArg( a_right ) ) );
+    return NodeAssign( nextArg( a_left ), NodeGetRValue( nextArg( a_right ) ) );
 }
 
 
@@ -1038,15 +1038,15 @@ static PTREE doDereference(     // GENERATE DE-REFERENCING CODE
     *r_rhs = NULL;
     expr = expr_root;
     expr = expr->u.subtree[0];
-    func = NodeRvalue( expr->u.subtree[1] );
+    func = NodeGetRValue( expr->u.subtree[1] );
     expr->u.subtree[1] = NULL;
     expr = expr->u.subtree[0];
-    delta = NodeRvalue( expr->u.subtree[1] );
+    delta = NodeGetRValue( expr->u.subtree[1] );
     expr->u.subtree[1] = NULL;
     type_offset = delta->type;
     if( ScopeHasVirtualBases( scope ) ) {
         expr = expr->u.subtree[0];
-        index = NodeRvalue( expr->u.subtree[1] );
+        index = NodeGetRValue( expr->u.subtree[1] );
         expr->u.subtree[1] = NULL;
         temp = accessOp( NodeDupExpr( &lhs )
                        , ScopeVBPtrOffset( scope )
@@ -1437,9 +1437,9 @@ static PTREE doCompare(         // DO A COMPARISON
                              );
     } else {
         expr->u.subtree[0] = NodeReplace( expr->u.subtree[0]
-                                        , NodeRvalue( left ) );
+                                        , NodeGetRValue( left ) );
         expr->u.subtree[1] = NodeReplace( expr->u.subtree[1]
-                                        , NodeRvalue( right ) );
+                                        , NodeGetRValue( right ) );
     }
     return expr;
 }
@@ -1647,7 +1647,7 @@ PTREE MembPtrFuncArg(           // EXPRESSION FOR FUNCTION ARGUMENT
 //      arg = NodeReplace( arg, MakeNodeSymbol( sym ) );
         arg = NodeReplace( arg, NodeMakeCallee( sym ) );
     }
-    return NodeRvalue( arg );
+    return NodeGetRValue( arg );
 }
 
 

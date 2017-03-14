@@ -93,7 +93,7 @@ static TYPE figureOutNewType( PTREE *pnumber, TYPE *of_type )
         number = size / CgTypeSize( base_type );
         extra_number = NodeOffset( number );
         if( array_number != NULL ) {
-            array_number = NodeRvalue( array_number );
+            array_number = NodeGetRValue( array_number );
             array_number = NodeMakeBinary( CO_TIMES, array_number, extra_number );
             array_number->type = extra_number->type;
             array_number = FoldBinary( array_number );
@@ -473,7 +473,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
         if( flag.needs_dtor || num_args == 2 ) {
             flag.needs_count = true;
         }
-        array_number = NodeRvalue( array_number );
+        array_number = NodeGetRValue( array_number );
         if( IntegralType( array_number->type ) == NULL ) {
             PTreeErrorExpr( array_number, ERR_NEW_ARRAY_EXPRESSION );
             ScopeFreeResult( result_dlt );
@@ -705,7 +705,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
     data = expr->u.subtree[0];
     PTreeExtractLocn( expr, &err_locn );
     PTreeFree( expr );
-    data = NodeRvalue( data );
+    data = NodeGetRValue( data );
     type = data->type;
     ptr_type = PointerType( type );
     if( ptr_type == NULL ) {
@@ -877,7 +877,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
                     dup2 = expr;
                     expr = NodeDupExpr( &dup2 );
                     expr = NodeMakeConversion( MakeReferenceTo( GetBasicType( TYP_UINT ) ), expr );
-                    args = NodeMakeBinary( CO_TIMES, NodeRvalue( expr ), args );
+                    args = NodeMakeBinary( CO_TIMES, NodeGetRValue( expr ), args );
                     offset_type = args->u.subtree[1]->type;
                     args->type = offset_type;
                     args = NodeAddToLeft( args, sizeOfUInt(), offset_type );

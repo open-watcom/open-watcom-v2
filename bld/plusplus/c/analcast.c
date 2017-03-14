@@ -242,7 +242,7 @@ static bool getClassRvalue      // GET RVALUE FOR CLASS EXPRESSION
 {
     PTREE expr = ctl->expr->u.subtree[1];
     if( OMR_CLASS_VAL == ObjModelArgument( ctl->tgt.class_type ) ) {
-        expr = NodeRvalue( expr );
+        expr = NodeGetRValue( expr );
     } else {
         expr = NodeRvForRefClass( expr );
     }
@@ -768,7 +768,7 @@ static bool castCtor            // APPLY CTOR
                 if( ctl->tgt.class_type == ClassTypeForType( inp_node->type )
                  && OMR_CLASS_VAL == ObjModelArgument( ctl->tgt.class_type ) ) {
                     ctl->conv_fun = NULL;
-                    inp_node = NodeRvalue( inp_node->u.subtree[1] );
+                    inp_node = NodeGetRValue( inp_node->u.subtree[1] );
                     PTreeFree( ctl->expr->u.subtree[1] );
                     ctl->expr->u.subtree[1] = NULL;
                     node = NodeCopyClassObject( temp, inp_node );
@@ -898,7 +898,7 @@ static PTREE castUdcf           // APPLY USER-DEFINED CONVERSION FUNCTION
                 if( ! ctl->tgt.reference
                  && okSoFar( ctl ) ) {
                     ctl->expr->u.subtree[1] =
-                        NodeRvalue( ctl->expr->u.subtree[1] );
+                        NodeGetRValue( ctl->expr->u.subtree[1] );
                 }
                 SetCurrScope(curr);
 
@@ -1436,7 +1436,7 @@ static CAST_RESULT analysePtrToPtr  // ANALYSE PTR --> PTR
             PTREE node = ctl->expr->u.subtree[1];
             TYPE tgt_type;
             if( ctl->src.reference ) {
-                node = NodeRvalue( node );
+                node = NodeGetRValue( node );
             }
             tgt_type = ctl->tgt.unmod->of;
             result = CAST_DO_CGCONV;
@@ -1960,7 +1960,7 @@ static PTREE forceToDestination // FORCE TO DESTINATION ON CAST, FUNC_ARG
                 expr = NodeDtorExpr( expr, ctl->destination->u.symcg.symbol );
             }
             if( PT_ERROR != expr->op && !ctl->tgt.reference ) {
-                expr = NodeRvalue( expr );
+                expr = NodeGetRValue( expr );
             }
             fold_it = false;
         }

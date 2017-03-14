@@ -1219,7 +1219,7 @@ PTREE NodeReverseArgs(          // REVERSE CALL ARGUMENTS
     unsigned *arg_count,        // - # args
     PTREE arg )                 // - start of arg. list (to be reversed)
 ;
-PTREE NodeRvalue(               // GET RVALUE, IF LVALUE
+PTREE NodeGetRValue(               // GET RVALUE, IF LVALUE
     PTREE curr )                // - node to be transformed
 ;
 PTREE NodeRvalueExact(          // SET RVALUE (EXACT)

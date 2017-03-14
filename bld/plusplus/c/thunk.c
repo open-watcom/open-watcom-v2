@@ -205,7 +205,7 @@ static PTREE thunkArgList(      // BUILD THUNK ARGUMENT LIST
             expr = NodeFetchReference( expr );
             arg_model = ObjModelArgument( TypeReferenced( arg_type ) );
             if( TypeReference( arg_type ) == NULL && arg_model != OMR_CLASS_REF ) {
-                expr = NodeRvalue( expr );
+                expr = NodeGetRValue( expr );
             }
             list = NodeArgument( list, expr );
         }
@@ -433,7 +433,7 @@ void EmitVfunThunk(             // EMIT THUNK FOR VIRTUAL FUNCTION
     override_class = ScopeClass( SymScope( override_sym ) );
     args = thunkArgList( fn_scope );
     /* make "this" arg */
-    this_arg = NodeRvalue( NodeThis() );
+    this_arg = NodeGetRValue( NodeThis() );
     this_arg = NodeMakeConversion( MakePointerTo( override_class ), this_arg );
     this_arg = NodeArg( this_arg );
     return_type = SymFuncReturnType( override_sym );

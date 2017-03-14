@@ -449,7 +449,7 @@ void ConvCtlInit                // INITIALIZE CONVCTL
                     checkSrcForError( ctl );
                 } else if( NodeIsUnaryOp( ctl->expr->u.subtree[1], CO_BITFLD_CONVERT ) ) {
                     if( TypeIsConst( ctl->tgt.unmod->of ) ) {
-                        ctl->expr->u.subtree[1] = NodeRvalue( ctl->expr->u.subtree[1] );
+                        ctl->expr->u.subtree[1] = NodeGetRValue( ctl->expr->u.subtree[1] );
                     } else {
                         ConversionInfDisable();
                         PTreeErrorExpr( ctl->expr->u.subtree[1], ERR_CANT_REFERENCE_A_BIT_FIELD );
@@ -500,7 +500,7 @@ void ConvCtlInit                // INITIALIZE CONVCTL
                     ctl->expr->u.subtree[1]->type = MakePointerTo( ref_type );
                     ctl->expr->u.subtree[1]->flags &= ~PTF_LVALUE;
                 } else {
-                    expr->u.subtree[1] = NodeRvalue( expr->u.subtree[1] );
+                    expr->u.subtree[1] = NodeGetRValue( expr->u.subtree[1] );
                     src = expr->u.subtree[1]->type;
                 }
             }
@@ -989,13 +989,13 @@ static PTREE convertFromPcPtr(  // CONVERT SPECIAL TO REGULAR PC PTR
           case PC_PTR_BASED_FETCH :
             expr = NodeMakeBinary( CO_SEG_OP
                              , expr
-                             , NodeRvalue( MakeNodeSymbol( baser ) ) );
+                             , NodeGetRValue( MakeNodeSymbol( baser ) ) );
             expr = NodeSetType( expr, tgt_type, PTF_PTR_NONZERO );
             break;
           case PC_PTR_BASED_ADD :
             expr = NodeMakeBinary( CO_PLUS
                              , expr
-                             , NodeRvalue( MakeNodeSymbol( baser ) ) );
+                             , NodeGetRValue( MakeNodeSymbol( baser ) ) );
             expr = NodeSetType( expr, tgt_type, PTF_PTR_NONZERO );
             break;
           default :
@@ -1032,7 +1032,7 @@ static PTREE convertToPcPtr(    // CONVERT REGULAR TO SPECIAL PC PTR
         SYMBOL baser;           // - based symbol
         baser = BasedPtrType( ptr_type )->u.m.base;
         temp = MakeNodeSymbol( baser );
-        temp = NodeRvalue( temp );
+        temp = NodeGetRValue( temp );
         expr = NodeMakeBinary( CO_MINUS, expr, temp );
         expr = NodeSetType( expr, ptr_type, PTF_PTR_NONZERO );
       } break;
