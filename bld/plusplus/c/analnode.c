@@ -1140,7 +1140,7 @@ PTREE NodeRvalueRight(          // SET RVALUE ON RIGHT
 }
 
 
-PTREE NodeRvalueExact(          // SET RVALUE (EXACT)
+PTREE NodeSetRValueExact(          // SET RVALUE (EXACT)
     PTREE node )                // - current node
 {
     TYPE exact_type;            // - exact type
@@ -1175,14 +1175,14 @@ PTREE NodeRvalueExact(          // SET RVALUE (EXACT)
 PTREE NodeRvalueExactLeft(      // SET RVALUE (EXACT) ON LEFT
     PTREE node )                // - current node
 {
-    return NodeRvalueExact( nodeRefedRvalue( &node->u.subtree[0] ) );
+    return NodeSetRValueExact( nodeRefedRvalue( &node->u.subtree[0] ) );
 }
 
 
 PTREE NodeRvalueExactRight(     // SET RVALUE (EXACT) ON RIGHT
     PTREE node )                // - current node
 {
-    return NodeRvalueExact( nodeRefedRvalue( &node->u.subtree[1] ) );
+    return NodeSetRValueExact( nodeRefedRvalue( &node->u.subtree[1] ) );
 }
 
 

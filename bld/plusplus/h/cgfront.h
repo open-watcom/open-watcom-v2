@@ -1222,7 +1222,7 @@ PTREE NodeReverseArgs(          // REVERSE CALL ARGUMENTS
 PTREE NodeGetRValue(               // GET RVALUE, IF LVALUE
     PTREE curr )                // - node to be transformed
 ;
-PTREE NodeRvalueExact(          // SET RVALUE (EXACT)
+PTREE NodeSetRValueExact(          // SET RVALUE (EXACT)
     PTREE node )                // - current node
 ;
 PTREE NodeRvalueExactLeft(      // SET RVALUE (EXACT) ON LEFT
