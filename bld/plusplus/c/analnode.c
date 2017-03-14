@@ -1240,7 +1240,7 @@ PTREE NodeMakeArgument(             // MAKE AN ARGUMENT NODE
 }
 
 
-PTREE NodeArg(                  // MAKE A SINGLE ARGUMENT NODE
+PTREE NodeMakeArg(                  // MAKE A SINGLE ARGUMENT NODE
     PTREE argval )              // - value for argument
 {
     return NodeMakeArgument( NULL, argval );
@@ -1628,7 +1628,7 @@ PTREE CallArgumentExactCtor(    // GET EXACT CTOR ARG., IF REQUIRED
         } else {
             ctor_code = CTOR_COMPONENT;
         }
-        arg = NodeArg( NodeMakeCDtorArg( ctor_code ) );
+        arg = NodeMakeArg( NodeMakeCDtorArg( ctor_code ) );
     } else {
         arg = NULL;
     }
@@ -2317,7 +2317,7 @@ PTREE NodeTypeSig               // MAKE NODE FOR TYPE-SIG ADDRESS
 PTREE NodeTypeSigArg            // MAKE ARGUMENT NODE FOR TYPE-SIG ADDRESS
     ( TYPE_SIG* sig )           // - type signature
 {
-    return NodeArg( NodeTypeSig( sig ) );
+    return NodeMakeArg( NodeTypeSig( sig ) );
 }
 
 

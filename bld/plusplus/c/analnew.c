@@ -582,13 +582,13 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
                     } else {
                         rt_code = RTF_CTAS_1M;
                     }
-                    args = NodeArg( MakeNodeSymbol( addr_op_del ) );
+                    args = NodeMakeArg( MakeNodeSymbol( addr_op_del ) );
                     args = PtdScopeCall( args, op_dlt );
                 }
             } else {
                 DbgVerify( flag.needs_count, "AnalyseNew -- flags mismatch" );
                 rt_code = RTF_CTAS_2S;
-                args = NodeArg( MakeNodeSymbol( addr_op_del ) );
+                args = NodeMakeArg( MakeNodeSymbol( addr_op_del ) );
                 args = PtdScopeCall( args, op_dlt );
             }
             args = NodeMakeArgument( args, NodeTypeSig( sig ) );
@@ -892,7 +892,7 @@ PTREE AnalyseDelete(            // ANALYSE DELETE OPERATOR
                 args = NULL;
             }
             if( args != NULL ) {
-                args = NodeArg( args );
+                args = NodeMakeArg( args );
             }
             args = NodeMakeArgument( args, expr );
             expr = NodeMakeCall( sym, GetBasicType( TYP_VOID ), args );

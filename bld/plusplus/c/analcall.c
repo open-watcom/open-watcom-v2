@@ -717,7 +717,7 @@ static PTREE insertCppRetnArg(  // INSERT C++ RETURN ARGUMENT
 {
     if( return_kind == OMR_CLASS_REF ) {
         retnnode->flags |= PTF_ARG_RETURN;
-        arglist = insertArg( arglist, NodeArg( retnnode ) );
+        arglist = insertArg( arglist, NodeMakeArg( retnnode ) );
     }
     return arglist;
 }
@@ -1124,12 +1124,12 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
         if( this_node == NULL ) {
             cdtor = NULL;
         } else {
-            this_node = NodeArg( this_node );
+            this_node = NodeMakeArg( this_node );
             if( virtual_call ) {
                 this_node->flags |= PTF_ARG_THIS_VFUN;
             }
             if( sym != NULL && SymIsDtor( sym ) ) {
-                cdtor = NodeArg( NodeMakeCDtorArg( DTOR_NULL ) );
+                cdtor = NodeMakeArg( NodeMakeCDtorArg( DTOR_NULL ) );
             } else {
                 cdtor = NULL;
             }
@@ -1225,7 +1225,7 @@ PTREE AnalyseDtorCall(          // ANALYSIS FOR SPECIAL DTOR CALLS
     virtual_call = adjustForVirtualCall( &this_node, &dtor_id, result );
     return_type = SymFuncReturnType( dtor_sym );
     expr = makeCall( dtor_id, return_type, NULL, ! virtual_call );
-    this_node = NodeArg( this_node );
+    this_node = NodeMakeArg( this_node );
     if( virtual_call ) {
         this_node->flags |= PTF_ARG_THIS_VFUN;
     }
@@ -1233,7 +1233,7 @@ PTREE AnalyseDtorCall(          // ANALYSIS FOR SPECIAL DTOR CALLS
                           , expr
                           , NULL
                           , this_node
-                          , NodeArg( NodeMakeCDtorArg( extra ) )
+                          , NodeMakeArg( NodeMakeCDtorArg( extra ) )
                           , NULL );
     if( virtual_call ) {
         expr->u.subtree[0] = VfnDecorateCall( expr->u.subtree[0], dtor_sym );

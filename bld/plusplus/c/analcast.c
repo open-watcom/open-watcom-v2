@@ -738,7 +738,7 @@ static bool castCtor            // APPLY CTOR
 
     retb = false;
     if( ctl->src.reference || getLvalue( ctl, false ) ) {
-        inp_node = NodeArg( ctl->expr->u.subtree[1] );
+        inp_node = NodeMakeArg( ctl->expr->u.subtree[1] );
         ctl->expr->u.subtree[1] = inp_node;
         NodeConvertCallArgList( ctl->expr
                               , 1
@@ -773,7 +773,7 @@ static bool castCtor            // APPLY CTOR
                     ctl->expr->u.subtree[1] = NULL;
                     node = NodeCopyClassObject( temp, inp_node );
                 } else {
-                    temp = NodeArg( temp );
+                    temp = NodeMakeArg( temp );
                     node = NodeMakeCall( ctl->conv_fun
                                        , SymFuncReturnType( ctl->conv_fun )
                                        , ctl->expr->u.subtree[1] );

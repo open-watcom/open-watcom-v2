@@ -883,7 +883,7 @@ addr_func_t NodeAddrOfFun(      // GET PTREE FOR &FUN (FUN IS OVERLOADED)
     PTREE oper,                 // - expression
     PTREE *addr_func )          // - addr[ &function ]
 ;
-PTREE NodeArg(                  // MAKE A SINGLE ARGUMENT NODE
+PTREE NodeMakeArg(                  // MAKE A SINGLE ARGUMENT NODE
     PTREE argval )              // - value for argument
 ;
 PTREE NodeMakeArgument(             // MAKE AN ARGUMENT NODE

@@ -621,7 +621,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
                     node = CallArgsArrange( ctor->sym_type
                                           , node
                                           , node->u.subtree[1]
-                                          , NodeArg( this_node )
+                                          , NodeMakeArg( this_node )
                                           , CallArgumentExactCtor
                                               ( base_type
                                               , ( control & EFFECT_EXACT ) != 0 )

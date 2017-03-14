@@ -829,7 +829,7 @@ static PTREE doClassAssign(     // ASSIGN TO CLASS OBJECT
                 fun = PTreeCopySrcLocation( fun, expr );
                 tgt = NodeDottedFunction( tgt, fun );
                 tgt = PTreeCopySrcLocation( tgt, expr );
-                call_expr = NodeMakeBinary( CO_CALL_NOOVLD, tgt, NodeArg( src ) );
+                call_expr = NodeMakeBinary( CO_CALL_NOOVLD, tgt, NodeMakeArg( src ) );
                 call_expr = PTreeCopySrcLocation( call_expr, expr );
                 call_expr = AnalyseCall( call_expr, &diagAssign );
                 PTreeFree( expr );
@@ -947,7 +947,7 @@ static PTREE genDefaultCopyDiag(// GENERATE COPY TO CLASS OBJECT, WITH DIAGNOSIS
         fun = PTreeCopySrcLocation( fun, src );
         tgt = NodeMakeBinary( CO_ARROW, tgt, fun );
         tgt = PTreeCopySrcLocation( tgt, src );
-        expr = NodeMakeBinary( CO_CALL_NOOVLD, tgt, NodeArg( src ) );
+        expr = NodeMakeBinary( CO_CALL_NOOVLD, tgt, NodeMakeArg( src ) );
         expr = PTreeCopySrcLocation( expr, src );
         expr = AnalyseCall( expr, diagnosis );
         if( expr->op == PT_ERROR ) {
@@ -2050,7 +2050,7 @@ static void ctorPrologueMember( // GENERATE PROLOGUE FOR MEMBER
                 if( NULL != TypeReference( sym->sym_type ) ) {
                     expr = NodeUnaryCopy( CO_FETCH, expr );
                 }
-                data->comp_expr = NodeArg( expr );
+                data->comp_expr = NodeMakeArg( expr );
             }
             data->comp_options = CI_NULL;
             ctorPrologueComponents( data );
@@ -2323,7 +2323,7 @@ static void ctorPrologueBaseGen(    // GENERATE FOR CTOR BASE CLASS
     data->comp_expr = extractBaseInit( data, base->type );
     if( data->comp_expr == NULL ) {
         if( data->gen_copy ) {
-            data->comp_expr = NodeArg( accessSourceBase( data->scope
+            data->comp_expr = NodeMakeArg( accessSourceBase( data->scope
                                                        , base ) );
         }
         data->comp_options = CI_NULL;

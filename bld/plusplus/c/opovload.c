@@ -521,7 +521,7 @@ static PTREE transform_naked(   // TRANSFORM TO CALL TO NON-MEMBER FUNCTION
     SEARCH_RESULT *result;
 
     cgop = olinf->expr->cgop;
-    param = NodeArg( olinf->left.operand );
+    param = NodeMakeArg( olinf->left.operand );
     if( olinf->flags & PTO_BINARY ) {
         if( cgop == CO_CALL ) {
             param->u.subtree[0] = olinf->right.operand;
@@ -595,12 +595,12 @@ static PTREE transform_member(  // TRANSFORM TO CALL TO MEMBER FUNCTION
         if( olinf->flags & PTO_BINARY ) {
             param = olinf->right.operand;
             if( cgop != CO_CALL ) {
-                param = NodeArg( param );
+                param = NodeMakeArg( param );
             }
         } else {
             if( ( cgop == CO_POST_PLUS_PLUS   )
               ||( cgop == CO_POST_MINUS_MINUS ) ) {
-                param = NodeArg( NodeZero() );
+                param = NodeMakeArg( NodeZero() );
             } else {
                 param = NULL;
             }

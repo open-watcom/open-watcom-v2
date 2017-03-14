@@ -383,7 +383,7 @@ PTREE ThrowTypeSig(             // GET THROW ARGUMENT FOR TYPE SIGNATURE
     if( throwCnvFront( type, expr ) ) {
         node = NodeMakeUnary( CO_TYPE_SIG, NULL );
         node->type = type;
-        node = NodeArg( node );
+        node = NodeMakeArg( node );
         node->type = type;
     } else {
         node = NULL;

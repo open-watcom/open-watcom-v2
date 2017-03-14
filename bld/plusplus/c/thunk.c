@@ -293,7 +293,7 @@ void RtnGenCallBackGenThunk(    // GENERATE THUNK CODE
             extra_arg = NULL;
         }
         if( SymIsThisMember( orig_sym ) ) {
-            this_arg = NodeArg( NodeThis() );
+            this_arg = NodeMakeArg( NodeThis() );
         } else {
             this_arg = NULL;
         }
@@ -435,7 +435,7 @@ void EmitVfunThunk(             // EMIT THUNK FOR VIRTUAL FUNCTION
     /* make "this" arg */
     this_arg = NodeGetRValue( NodeThis() );
     this_arg = NodeMakeConversion( MakePointerTo( override_class ), this_arg );
-    this_arg = NodeArg( this_arg );
+    this_arg = NodeMakeArg( this_arg );
     return_type = SymFuncReturnType( override_sym );
     return_node = NULL;
     if( OMR_CLASS_REF == ObjModelArgument( return_type ) ) {

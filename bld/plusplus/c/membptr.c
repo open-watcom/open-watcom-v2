@@ -1066,7 +1066,7 @@ static PTREE doDereference(     // GENERATE DE-REFERENCING CODE
     }
     NodeFreeDupedExpr( expr_root );
     expr = NodeAddToLeft( delta, expr, type_cp );
-    expr = NodeArg( expr );
+    expr = NodeMakeArg( expr );
     func = NodeUnaryCopy( CO_CALL_SETUP_IND, func );
     func->type = type_fn;
     expr = NodeMakeBinary( CO_CALL_EXEC_IND, func, expr );
