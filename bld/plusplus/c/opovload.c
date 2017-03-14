@@ -926,7 +926,7 @@ static bool isBadFun(           // DIAGNOSE IF MEMBER FUNC. OR OVERLOADED
     PTREE node;                 // - node to be examined
 
     node = PTreeOp( &operand );
-    switch( NodeAddrOfFun( node, &fnode ) ) {
+    switch( NodeGetOverloadedFnAddr( node, &fnode ) ) {
       default :
         retb = false;
         break;

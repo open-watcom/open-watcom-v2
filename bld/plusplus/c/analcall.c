@@ -279,7 +279,7 @@ static bool convertEllipsisArg( // CONVERT AN ELLIPSIS (...) ARGUMENT
     PTREE afun;                 // - &[ function ]
     TYPE type;                  // - node type
 
-    switch( NodeAddrOfFun( PTreeOpRight( arg ), &afun ) ) {
+    switch( NodeGetOverloadedFnAddr( PTreeOpRight( arg ), &afun ) ) {
       case ADDR_FN_MANY :
       case ADDR_FN_MANY_USED :
         PTreeErrorExpr( arg->u.subtree[1], ERR_ELLIPSE_ADDR_OVERLOAD );

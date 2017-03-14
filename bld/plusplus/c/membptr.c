@@ -670,7 +670,7 @@ static CNV_RETN analyseAddrOfNode( // ANALYSE NODE FOR (& item)
             retn = CNV_OK;
         }
     } else if( SymIsFunction( base_item ) ) {
-        if( ADDR_FN_ONE_USED == NodeAddrOfFun( item, &item ) ) {
+        if( ADDR_FN_ONE_USED == NodeGetOverloadedFnAddr( item, &item ) ) {
             item->u.symcg.symbol = ActualNonOverloadedFunc( base_item, item->u.symcg.result );
             retn = CNV_OK;
         } else {
@@ -799,7 +799,7 @@ static bool membPtrAddrOfNode(  // TEST IF (& class::member)
         if( NULL != mbrptr ) {
             return true;
         } else {
-            retn = NodeAddrOfFun( node, &fn );
+            retn = NodeGetOverloadedFnAddr( node, &fn );
             if( (retn != ADDR_FN_NONE )  &&
                 ( (fn->flags & PTF_COLON_QUALED) ||     // S::foo not just foo
                   ( CompFlags.extensions_enabled ) ) ) { // just foo (MFC ext)

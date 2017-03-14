@@ -1677,7 +1677,7 @@ static addr_func_t checkFunction(   // CHECK IF FUNCTION
 }
 
 
-addr_func_t NodeAddrOfFun(      // GET PTREE FOR &FUN (FUN IS OVERLOADED)
+addr_func_t NodeGetOverloadedFnAddr(      // GET PTREE FOR &FUN (FUN IS OVERLOADED)
     PTREE oper,                 // - expression
     PTREE *addr_func )          // - addr[ function ]
 {

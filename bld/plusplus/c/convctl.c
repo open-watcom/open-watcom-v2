@@ -266,7 +266,7 @@ static void adjustFnAddrPtr     // ADJUST FOR &FUNCTION --> PTR
     PTREE func;                 // - function node ( &class::func )
 
     addrof = PTreeOp( &ctl->expr->u.subtree[1] );
-    switch( NodeAddrOfFun( addrof, &func ) ) {
+    switch( NodeGetOverloadedFnAddr( addrof, &func ) ) {
       case ADDR_FN_ONE_USED :
       case ADDR_FN_ONE :
         func = NodeActualNonOverloaded( func );
@@ -311,7 +311,7 @@ static void adjustFnAddrMembPtr // ADJUST FOR &FUNCTION --> MEMB-PTR
     TYPE mptype;                // - member-ptr type
 
     addrof = PTreeOp( &ctl->expr->u.subtree[1] );
-    switch( NodeAddrOfFun( addrof, &func ) ) {
+    switch( NodeGetOverloadedFnAddr( addrof, &func ) ) {
       case ADDR_FN_ONE_USED :
         if( !CompFlags.extensions_enabled )
             break;

@@ -879,7 +879,7 @@ PTREE NodeAddSideEffect(        // ADD A SIDE-EFFECT EXPRESSION
 PTREE NodeActualNonOverloaded(  // POSITION OVER DEFAULT-ARG SYMBOLS
     PTREE node )                // - PT_SYMBOL for function
 ;
-addr_func_t NodeAddrOfFun(      // GET PTREE FOR &FUN (FUN IS OVERLOADED)
+addr_func_t NodeGetOverloadedFnAddr(      // GET PTREE FOR &FUN (FUN IS OVERLOADED)
     PTREE oper,                 // - expression
     PTREE *addr_func )          // - addr[ &function ]
 ;

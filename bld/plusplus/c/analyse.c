@@ -2182,7 +2182,7 @@ static bool analyseAddrOfFunc(  // ANALYSE '&func'
 
     expr = PTreeOp( a_expr );
     addrof = expr;
-    switch( NodeAddrOfFun( addrof, &fnode ) ) {
+    switch( NodeGetOverloadedFnAddr( addrof, &fnode ) ) {
       default  :
         retb = true;
         break;
