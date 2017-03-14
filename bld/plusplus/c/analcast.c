@@ -1945,7 +1945,7 @@ static PTREE forceToDestination // FORCE TO DESTINATION ON CAST, FUNC_ARG
                                                , ctl->diag_cast );
                 } else {
                     if( ctl->tgt.reference ) {
-                        expr = NodeAssignRef( ctl->destination, expr );
+                        expr = NodeMakeRefAssignment( ctl->destination, expr );
                     } else {
                         expr = NodeMakeAssignment( ctl->destination, expr );
                     }

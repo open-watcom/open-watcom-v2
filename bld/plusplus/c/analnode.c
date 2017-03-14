@@ -1502,7 +1502,7 @@ PTREE NodeMakeAssignment(               // CREATE ASSIGNMENT NODE FOR VALUE
 }
 
 
-PTREE NodeAssignRef(            // CREATE ASSIGNMENT NODE FOR REFERENCE
+PTREE NodeMakeRefAssignment(            // CREATE ASSIGNMENT NODE FOR REFERENCE
     PTREE tgt,                  // - target
     PTREE src )                 // - source
 {
@@ -1539,7 +1539,7 @@ PTREE NodeAssignTemporaryNode(  // ASSIGN NODE TO A TEMPORARY NODE
                 expr = a_expr;
             }
         } else {
-            expr = NodeAssignRef( temp_node, expr );
+            expr = NodeMakeRefAssignment( temp_node, expr );
         }
     }
     if( expr->op != PT_ERROR ) {
@@ -2201,14 +2201,14 @@ PTREE NodeAddSideEffect(        // ADD A SIDE-EFFECT EXPRESSION
             if( NULL == TypeReference( temp_type ) ) {
                 if( expr->flags & PTF_CLASS_RVREF ) {
                     temp = TemporaryAlloc( MakeReferenceTo( temp_type ) );
-                    expr = NodeAssignRef( MakeNodeSymbol( temp ), expr );
+                    expr = NodeMakeRefAssignment( MakeNodeSymbol( temp ), expr );
                 } else {
                     temp = TemporaryAlloc( temp_type );
                     expr = NodeMakeAssignment( MakeNodeSymbol( temp ), expr );
                 }
             } else {
                 temp = TemporaryAlloc( temp_type );
-                expr = NodeAssignRef( MakeNodeSymbol( temp ), expr );
+                expr = NodeMakeRefAssignment( MakeNodeSymbol( temp ), expr );
             }
             expr = NodeMakeComma( expr, side_effect );
             side_effect = NodeFetch( MakeNodeSymbol( temp ) );

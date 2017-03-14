@@ -1514,7 +1514,7 @@ void RtnGenCallBackArrayDtor(   // GENERATE ARRAY DTOR
     p1 = ScopeInsert( scope, p1, name );
     stmt = generateArrayDtorCall( ar_type, NodeMakeThis() );
     retn = SymFunctionReturn();
-    stmt = NodeAssignRef( MakeNodeSymbol( retn ), stmt );
+    stmt = NodeMakeRefAssignment( MakeNodeSymbol( retn ), stmt );
     EmitAnalysedStmt( stmt );
     CgFrontCodePtr( IC_PROC_RETURN, retn );
     finiClassFunction( dtor, &fn_data, &check );

@@ -903,7 +903,7 @@ PTREE NodeMakeAssignment(               // CREATE ASSIGNMENT NODE
     PTREE tgt,                  // - target
     PTREE src )                 // - source
 ;
-PTREE NodeAssignRef(            // CREATE ASSIGNMENT NODE FOR REFERENCE
+PTREE NodeMakeRefAssignment(            // CREATE ASSIGNMENT NODE FOR REFERENCE
     PTREE tgt,                  // - target
     PTREE src )                 // - source
 ;

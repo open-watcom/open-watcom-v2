@@ -225,7 +225,7 @@ PTREE AnalyseReturnSimpleVal    // RETURN A SIMPLE VALUE
                     expr = new_expr;
                 }
             } else {
-                expr = NodeAssignRef( tgt, expr );
+                expr = NodeMakeRefAssignment( tgt, expr );
             }
         }
     }
