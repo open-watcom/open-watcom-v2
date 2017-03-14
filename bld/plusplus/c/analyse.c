@@ -4161,7 +4161,7 @@ start_opac_string:
           } continue;
           case RESULT_SEGNAME :     // __segname( "..." )
             expr = NodeReplace( expr
-                              , NodeSegname( left->u.string->string ) );
+                              , NodeMakeSegname( left->u.string->string ) );
             type = expr->type;
             continue;
           case DREF_PTR_LEFT :      // DE-REFERENCE PTR ON LEFT

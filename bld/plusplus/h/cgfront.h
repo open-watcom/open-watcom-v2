@@ -1240,7 +1240,7 @@ PTREE NodeRvalueRight(          // SET RVALUE ON RIGHT
 PTREE NodeRvForRefClass         // MAKE RVALUE FOR REF CLASS
     ( PTREE expr )              // - LVALUE ref-class expression
 ;
-PTREE NodeSegname(              // BUILD EXPRESSION FOR __segname
+PTREE NodeMakeSegname(              // BUILD EXPRESSION FOR __segname
     char* segname )             // - name of segment
 ;
 PTREE NodeSetMemoryExact(       // SET PTF_MEMORY_EXACT, IF REQ'D

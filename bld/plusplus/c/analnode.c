@@ -2073,7 +2073,7 @@ bool NodeYieldsTemporary(   // CHECK IF NODE PRODUCES OR IS TEMPORARY
 }
 
 
-PTREE NodeSegname(              // BUILD EXPRESSION FOR __segname
+PTREE NodeMakeSegname(              // BUILD EXPRESSION FOR __segname
     char* segname )             // - name of segment
 {
     PTREE node;                 // - new node
