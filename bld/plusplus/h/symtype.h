@@ -1514,6 +1514,7 @@ extern DECL_SPEC *PTypeDone( DECL_SPEC *, bool );
 extern DECL_SPEC *PTypeDefault( void );
 extern DECL_SPEC *PTypeTypeid( PTREE );
 extern DECL_SPEC *PTypeExpr( PTREE );
+extern DECL_SPEC *PTypeDecltypeExpr( PTREE, bool );
 extern void PTypeRelease( DECL_SPEC * );
 extern void PTypePop( DECL_SPEC * );
 extern TYPE PTypeListOfTypes( type_id );

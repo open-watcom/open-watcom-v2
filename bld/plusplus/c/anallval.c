@@ -754,9 +754,14 @@ static TYPE analyseClassLeft(   // ANALYSE A CLASS ON LEFT
     return type;
 }
 
-
-static bool analyseClQual(      // ANALYSE :: operator
-    PTREE *a_expr )             // - addr( expression to be analysed )
+/*
+ * Analyse a qualified id-expression.
+ * \param a_expr a pointer to the qualified id
+ * \param out an optional out param to retrieve the SEARCH_RESULT
+ */
+bool AnalyseClQualRes(      // ANALYSE :: operator
+    PTREE *a_expr,          // - addr( expression to be analysed )
+    SEARCH_RESULT **out )   // optional          
 {
     bool retb;                  // - return: true ==> all ok
     PTREE expr;                 // - expression to be analysed
@@ -794,7 +799,17 @@ static bool analyseClQual(      // ANALYSE :: operator
         right->flags |= PTF_COLON_QUALED;
         retb = true;
     }
+
+    if( out ) {
+        *out = result;
+    }
     return( retb );
+}
+
+bool AnalyseClQual(
+    PTREE *a_expr )
+{
+    return AnalyseClQualRes(a_expr, NULL);
 }
 
 
@@ -841,7 +856,7 @@ bool AnalyseLvalue(             // ANALYSE AN LVALUE
         break;
     case PT_BINARY :
         if( CO_COLON_COLON == expr->cgop ){
-            retb = analyseClQual( a_expr );
+            retb = AnalyseClQual( a_expr );
             if( retb ) {
                 retb = analyseSymbol( a_expr );
             }
@@ -867,7 +882,7 @@ bool AnalyseLvalueAddrOf(       // ANALYSE LVALUE FOR "&"
     SYMBOL sym;                 // - symbol
 
     if( NodeIsBinaryOp( *a_expr, CO_COLON_COLON ) ) {
-        retb = analyseClQual( a_expr );
+        retb = AnalyseClQual( a_expr );
         if( retb ) {
             sym = (*a_expr)->u.symcg.symbol;
             if( SymIsFunction( sym ) ) {

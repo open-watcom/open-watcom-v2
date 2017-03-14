@@ -257,6 +257,15 @@ void AnalyseIntTrunc(           // ANALYSE INTEGRAL TRUNCATION
 bool AnalyseLvalue(             // ANALYSE AN LVALUE
     PTREE *a_expr )             // - addr( expression to be analysed )
 ;
+
+bool AnalyseClQual(             // ANALYSE :: operator
+    PTREE *a_expr               // - addr( expression to be analysed )
+    )
+;
+bool AnalyseClQualRes(          // ANALYSE :: operator
+    PTREE *a_expr,              // - addr( expression to be analysed )
+    SEARCH_RESULT **out )       // an optional out variable for the result. 
+;
 bool AnalyseLvalueAddrOf(       // ANALYSE LVALUE FOR "&"
     PTREE *a_expr )             // - addr[ expression to be analysed ]
 ;
