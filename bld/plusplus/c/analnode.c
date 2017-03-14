@@ -697,7 +697,7 @@ bool NodeIsConstant(            // TEST IF NODE IS A CONSTANT
 }
 
 
-int NodeConstantValue(  // GET CONSTANT VALUE FOR A NODE
+int NodeGetConstantValue(  // GET CONSTANT VALUE FOR A NODE
     PTREE node )        // - a constant node
 {
     SYMBOL sym;         // - symbol for node
@@ -712,7 +712,7 @@ int NodeConstantValue(  // GET CONSTANT VALUE FOR A NODE
         sym = node->u.symcg.symbol;
         retn = sym->u.sval;
         break;
-    DbgDefault( "non-constant node passed to NodeConstantValue" );
+    DbgDefault( "non-constant node passed to NodeGetConstantValue" );
     }
     return( retn );
 }

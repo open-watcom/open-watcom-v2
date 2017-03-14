@@ -980,7 +980,7 @@ PTREE NodeMakeZeroCompare(        // MAKE A COMPARE-TO-ZERO NODE, IF REQ'D
 PTREE NodeMakeBoolConversion(        // MAKE A CONVERT-TO-BOOL NODE, IF REQ'D
     PTREE expr )
 ;
-int NodeConstantValue(          // GET CONSTANT VALUE FOR A NODE
+int NodeGetConstantValue(          // GET CONSTANT VALUE FOR A NODE
     PTREE node )                // - a constant node
 ;
 PTREE NodeMakeConversion(              // MAKE A CONVERSION NODE
