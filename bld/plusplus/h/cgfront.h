@@ -1231,7 +1231,7 @@ PTREE NodeRvalueExactLeft(      // SET RVALUE (EXACT) ON LEFT
 PTREE NodeRvalueExactRight(     // SET RVALUE (EXACT) ON RIGHT
     PTREE node )                // - current node
 ;
-PTREE NodeRvalueLeft(           // SET RVALUE ON LEFT
+PTREE NodeSetRValueLeft(           // SET RVALUE ON LEFT
     PTREE node )                // - current node
 ;
 PTREE NodeRvalueRight(          // SET RVALUE ON RIGHT

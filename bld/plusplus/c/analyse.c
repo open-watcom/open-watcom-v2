@@ -3213,7 +3213,7 @@ start_opac_string:
             }
             continue;
           case CONV_RVALUE_LEFT :
-            left = NodeRvalueLeft( expr );
+            left = NodeSetRValueLeft( expr );
             left->type = BindTemplateClass( left->type, &left->locn, false );
             type = TypedefModifierRemoveOnly( left->type );
             continue;
@@ -3578,7 +3578,7 @@ start_opac_string:
           case RESULT_COMMA :
             warnMeaningfulSideEffect( expr->u.subtree[0] );
             if( NodeIsUnaryOp( expr->u.subtree[0], CO_BITFLD_CONVERT ) ) {
-                left = NodeRvalueLeft( expr );
+                left = NodeSetRValueLeft( expr );
             }
             right = expr->u.subtree[1];
             if( NodeIsUnaryOp( right, CO_BITFLD_CONVERT ) ) {
@@ -3778,7 +3778,7 @@ start_opac_string:
           } break;
           case RESULT_CALL :
             if( NULL == FunctionDeclarationType( type ) ) {
-                left = NodeRvalueLeft( expr );
+                left = NodeSetRValueLeft( expr );
             }
             type = TypedefModifierRemoveOnly( left->type );
             if( type->id == TYP_POINTER ) {
@@ -3945,7 +3945,7 @@ start_opac_string:
             if( expr->flags & PTF_LVALUE )
                 continue;
             NodeRvalueRight( expr );
-            NodeRvalueLeft( expr );
+            NodeSetRValueLeft( expr );
             expr = CastImplicitCommonPtrExpr( expr
                                             , &diagPtrConvCommon
                                             , true );

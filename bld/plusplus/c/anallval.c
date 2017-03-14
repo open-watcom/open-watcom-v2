@@ -702,7 +702,7 @@ static TYPE analyseClPtrLeft(   // ANALYSE A CLASS POINTER ON LEFT
     TYPE type;                  // - node type
 
     expr = *a_expr;
-    left = NodeRvalueLeft( expr );
+    left = NodeSetRValueLeft( expr );
     type = TypedefModifierRemove( left->type );
     if( ( type->id != TYP_POINTER ) || ( TF1_REFERENCE & type->flag ) ) {
         type = diagMember( left, expr, ERR_MUST_BE_PTR_TO_STRUCT_OR_UNION );

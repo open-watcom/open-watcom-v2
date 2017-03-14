@@ -1027,7 +1027,7 @@ PTREE NodeGetRValue(               // GET RVALUE, IF LVALUE
             PTREE new_right;    // - new right of colon
             PTREE new_left;     // - new left of colon
             colon = PTreeOpRight( curr );
-            new_left = NodeRvalueLeft( colon );
+            new_left = NodeSetRValueLeft( colon );
             new_right = NodeRvalueRight( colon );
             colon->flags &= ~ PTF_LVALUE;
             mod_flags = (new_right->flags | new_left->flags) & (PTF_FETCH & ~ PTF_MEANINGFUL);
@@ -1126,7 +1126,7 @@ static PTREE nodeRefedRvalue(   // PROPOGATE RVALUE RESULT
 }
 
 
-PTREE NodeRvalueLeft(           // SET RVALUE ON LEFT
+PTREE NodeSetRValueLeft(           // SET RVALUE ON LEFT
     PTREE node )                // - current node
 {
     return nodeRefedRvalue( &node->u.subtree[0] );
