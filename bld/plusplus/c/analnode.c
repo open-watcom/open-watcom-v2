@@ -1615,7 +1615,7 @@ PTREE NodeMakeClassObjectCopy(      // COPY OBJECT W/O CTOR
 }
 
 
-PTREE CallArgumentExactCtor(    // GET EXACT CTOR ARG., IF REQUIRED
+PTREE MakeArgCtorCall(    // GET EXACT CTOR ARG., IF REQUIRED
     TYPE type,                  // - type for class
     bool exact )                // - true ==> exact CTORing of classes
 {
@@ -1641,7 +1641,7 @@ PTREE NodeArgumentExactCtor(    // ADD EXACT CTOR ARG., IF REQUIRED
     TYPE type,                  // - type for class
     bool exact )                // - true ==> exact CTORing of classes
 {
-    PTREE arg = CallArgumentExactCtor( type, exact );
+    PTREE arg = MakeArgCtorCall( type, exact );
 
     if( arg != NULL ) {
         arg->u.subtree[0] = args;

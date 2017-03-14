@@ -323,7 +323,7 @@ PTREE AnalyseValueExpr(         // ANALYZE A EXPRESSION, MAKE IT A VALUE
 target_size_t ArrayTypeNumberItems( // GET ACTUAL NUMBER OF ITEMS FOR AN ARRAY
     TYPE artype )               // - an array type
 ;
-PTREE CallArgumentExactCtor(    // GET EXACT CTOR ARG., IF REQUIRED
+PTREE MakeArgCtorCall(    // GET EXACT CTOR ARG., IF REQUIRED
     TYPE type,                  // - type for class
     bool exact )                // - true ==> exact CTORing of classes
 ;
