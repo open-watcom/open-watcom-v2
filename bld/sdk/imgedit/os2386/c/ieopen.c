@@ -120,7 +120,7 @@ static BOOL readInImageFile( const char *fullname )
         }
         node[i].issaved = TRUE;
         node[i].next = NULL;
-        strcpy( node[i].fname, strupr( fullname ) );
+        strupr( strcpy( node[i].fname, fullname ) );
         FiniPMImage( image );
     }
     node[i-1].nexticon = NULL;

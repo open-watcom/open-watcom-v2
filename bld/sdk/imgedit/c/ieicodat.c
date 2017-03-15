@@ -114,7 +114,7 @@ static bool readIconFromData( BYTE *data, const char *fname  )
         }
         node[i].issaved = TRUE;
         node[i].next = NULL;
-        strcpy( node[i].fname, strupr( fname ) );
+        strupr( strcpy( node[i].fname, fname ) );
         ImageFini( icon );
     }
     node[i - 1].nexticon = NULL;

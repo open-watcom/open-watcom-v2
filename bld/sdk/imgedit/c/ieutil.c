@@ -374,8 +374,8 @@ void SetIsSaved( HWND hwnd, BOOL fissaved )
         }
         _splitpath( node->fname, drive, dir, fname, ext );
 
-        strcpy( title, strupr( fname ) );
-        strcat( title, strupr( ext ) );
+        strcpy( title, fname );
+        strupr( strcat( title, ext ) );
         _wpi_setwindowtext( _wpi_getframe( node->hwnd ), (LPSTR)title );
 
         main_title = (char *)MemAlloc( strlen( IEAppTitle ) + strlen( title ) + 3 + 1 );
@@ -454,8 +454,8 @@ void GetFnameFromPath( const char *fullpath, char *fname )
     }
     _splitpath( fullpath, NULL, NULL, filename, ext );
 
-    strcpy( fname, strupr( filename ) );
-    strcat( fname, strupr( ext ) );
+    strcpy( fname, filename );
+    strupr( strcat( fname, ext ) );
 
 } /* GetFnameFromPath */
 

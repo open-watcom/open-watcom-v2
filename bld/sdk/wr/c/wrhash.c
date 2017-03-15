@@ -730,8 +730,7 @@ WRHashEntry * WRAPI WRAddHashEntry( WRHashTable *table, const char *name, WRHash
         entry->value_next = table->values[vhash];
         table->names[nhash] = entry;
         table->values[vhash] = entry;
-        strcpy( entry->name, symbol );
-        strupr( entry->name );
+        strupr( strcpy( entry->name, symbol ) );
         entry->value = value;
         entry->ref_count = 0;
         entry->flags = WR_HASHENTRY_UNUSED;
