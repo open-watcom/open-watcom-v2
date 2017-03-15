@@ -235,12 +235,12 @@ bool WdeCheckResizeOperation( OBJPTR primary, LIST **objlist, RESIZE_ID id )
             pt.y = rect.top;
             if( !GetResizeInfo( obj, &obj_resize_id ) ) {
                 WdeWriteTrail( "WdeCheckResizeOperation: GetResizeInfo failed!" );
-                WdeSetStatusByID( WDE_NONE, WDE_OBJECTCANTBESIZED );
+                WdeSetStatusByID( 0, WDE_OBJECTCANTBESIZED );
                 ret = false;
             } else if( !(obj_resize_id & id) ) {
                 WdeWriteTrail( "WdeCheckResizeOperation: "
                                "One of the objects can't be sized" );
-                WdeSetStatusByID( WDE_NONE, WDE_OBJECTCANTBESIZED );
+                WdeSetStatusByID( 0, WDE_OBJECTCANTBESIZED );
                 ret = false;
             }
         }
@@ -276,7 +276,7 @@ bool WdeCheckAlignControl( LIST **objlist, OBJPTR *p )
         GetObjectParent( obj, &obj_parent );
         if( *p != NULL ) {
             if( obj_parent != *p ) {
-                WdeSetStatusByID( WDE_NONE, WDE_ALLMUSTHAVESAMEPARENT );
+                WdeSetStatusByID( 0, WDE_ALLMUSTHAVESAMEPARENT );
                 ret = false;
                 break;
             }
@@ -293,7 +293,7 @@ bool WdeCheckAlignControl( LIST **objlist, OBJPTR *p )
         pt.y = rect.top;
         if( !ValidateAction( obj, MOVE, &pt ) ) {
             WdeWriteTrail( "WdeCheckResizeOperation: ValidateAction failed!" );
-            WdeSetStatusByID( WDE_NONE, WDE_OBJECTCANTBEMOVED );
+            WdeSetStatusByID( 0, WDE_OBJECTCANTBEMOVED );
             ret = false;
         }
     }

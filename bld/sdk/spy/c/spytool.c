@@ -43,7 +43,7 @@ typedef struct {
     char        *name;
     int         id;
     HBITMAP     hbmp;
-    int         tip_id;
+    msg_id      tip_id;
 } button;
 
 static button toolList[] = {
@@ -72,7 +72,7 @@ static void addToolButton( button *tb )
     info.id = tb->id;
     info.flags = 0;
     info.depressed = 0;
-    if( tb->tip_id < 0 || LoadString( Instance, tb->tip_id, info.tip, MAX_TIP ) <= 0 ) {
+    if( !( tb->tip_id > 0 && LoadString( Instance, tb->tip_id, info.tip, MAX_TIP ) > 0 ) ) {
         info.tip[0] = '\0';
     }
     ToolBarAddItem( toolBar, &info );

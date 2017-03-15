@@ -40,62 +40,62 @@ static char     *ErrorMsgTitle  = NULL;
  *                 errno - determines the string to go with the error
  *                 fname - if a file name goes with the error message
  */
-void WImgEditError( UINT error, LPSTR fname )
+void WImgEditError( msg_id error, const char *fname )
 {
     switch( error ) {
     case WIE_ERR_BITMAP_TOO_BIG:
         PrintHintTextByID( WIE_ERR_BITMAPNOTOPENED, fname );
-        IEPrintErrorMsgByID( -1, error, NULL, MB_ICONSTOP | MB_OK );
+        IEPrintErrorMsgByID( 0, error, NULL, MB_ICONSTOP | MB_OK );
         break;
 
     case WIE_ERR_256CLR_BITMAP:
         PrintHintTextByID( WIE_ERR_BITMAPNOTOPENED, fname );
-        IEPrintErrorMsgByID( -1, error, NULL, MB_ICONSTOP | MB_OK );
+        IEPrintErrorMsgByID( 0, error, NULL, MB_ICONSTOP | MB_OK );
         break;
 
     case WIE_ERR_BAD_BITMAP_FILE:
         PrintHintTextByID( WIE_ERR_INVALIDBITMAPFILE, fname );
-        IEPrintErrorMsgByID( -1, error, fname, MB_ICONSTOP | MB_OK );
+        IEPrintErrorMsgByID( 0, error, fname, MB_ICONSTOP | MB_OK );
         break;
 
     case WIE_ERR_TOO_MANY_COLORS:
         PrintHintTextByID( WIE_ERR_INVALIDBITMAPFILE, fname );
-        IEPrintErrorMsgByID( -1, error, fname, MB_ICONSTOP | MB_OK );
+        IEPrintErrorMsgByID( 0, error, fname, MB_ICONSTOP | MB_OK );
         break;
 
     case WIE_ERR_BAD_BITMAP_DATA:
         PrintHintTextByID( WIE_ERR_INVALIDBITMAPDATA, fname );
-        IEPrintErrorMsgByID( -1, error, fname, MB_ICONSTOP | MB_OK );
+        IEPrintErrorMsgByID( 0, error, fname, MB_ICONSTOP | MB_OK );
         break;
 
     case WIE_ERR_BAD_ICON_CLR:
         PrintHintTextByID( WIE_ERR_ICONNOTOPENED, fname );
-        IEPrintErrorMsgByID( -1, error, NULL, MB_ICONSTOP | MB_OK );
+        IEPrintErrorMsgByID( 0, error, NULL, MB_ICONSTOP | MB_OK );
         break;
 
     case WIE_ERR_BAD_ICON_FILE:
         PrintHintTextByID( WIE_ERR_INVALIDICONFILE, fname );
-        IEPrintErrorMsgByID( -1, error, fname, MB_ICONSTOP | MB_OK );
+        IEPrintErrorMsgByID( 0, error, fname, MB_ICONSTOP | MB_OK );
         break;
 
     case WIE_ERR_BAD_ICON_DATA:
         PrintHintTextByID( WIE_ERR_INVALIDICONDATA, fname );
-        IEPrintErrorMsgByID( -1, error, fname, MB_ICONSTOP | MB_OK );
+        IEPrintErrorMsgByID( 0, error, fname, MB_ICONSTOP | MB_OK );
         break;
 
     case WIE_ERR_BAD_CURSOR_FILE:
         PrintHintTextByID( WIE_ERR_INVALIDCURSORFILE, fname );
-        IEPrintErrorMsgByID( -1, error, fname, MB_ICONSTOP | MB_OK );
+        IEPrintErrorMsgByID( 0, error, fname, MB_ICONSTOP | MB_OK );
         break;
 
     case WIE_ERR_BAD_CURSOR_DATA:
         PrintHintTextByID( WIE_ERR_INVALIDCURSORDATA, fname );
-        IEPrintErrorMsgByID( -1, error, fname, MB_ICONSTOP | MB_OK );
+        IEPrintErrorMsgByID( 0, error, fname, MB_ICONSTOP | MB_OK );
         break;
 
     case WIE_ERR_BAD_FILENAME:
         PrintHintTextByID( WIE_ERR_INVALIDFILENAME, fname );
-        IEPrintErrorMsgByID( -1, error, fname, MB_ICONSTOP | MB_OK );
+        IEPrintErrorMsgByID( 0, error, fname, MB_ICONSTOP | MB_OK );
         break;
 
     case WIE_ERR_FILE_NOT_OPENED:
@@ -108,22 +108,22 @@ void WImgEditError( UINT error, LPSTR fname )
 
     case WIE_ERR_BAD_FILE_EXT:
         PrintHintTextByID( WIE_ERR_FILENOTOPENED, fname );
-        IEPrintErrorMsgByID( -1, error, fname, MB_ICONSTOP | MB_OK );
+        IEPrintErrorMsgByID( 0, error, fname, MB_ICONSTOP | MB_OK );
         break;
 
     case WIE_ERR_SAVE_FAIL:
         PrintHintTextByID( WIE_ERR_FILENOTSAVED, fname );
-        IEPrintErrorMsgByID( -1, error, fname, MB_ICONSTOP | MB_OK );
+        IEPrintErrorMsgByID( 0, error, fname, MB_ICONSTOP | MB_OK );
         break;
 
     case WIE_ERR_PALETTE_NOT16:
         PrintHintTextByID( WIE_ERR_PALETTENOTSAVED, NULL );
-        IEPrintErrorMsgByID( -1, error, NULL, MB_ICONINFORMATION | MB_OK );
+        IEPrintErrorMsgByID( 0, error, NULL, MB_ICONINFORMATION | MB_OK );
         break;
 
     case WIE_ERR_BAD_HWND:
         SetHintText( fname );
-        IEPrintErrorMsgByID( -1, error, fname, MB_ICONEXCLAMATION | MB_OK );
+        IEPrintErrorMsgByID( 0, error, fname, MB_ICONEXCLAMATION | MB_OK );
         break;
 
     case WIE_ERR_BAD_IMAGE_TYPE:
@@ -136,22 +136,22 @@ void WImgEditError( UINT error, LPSTR fname )
 
     case WIE_ERR_BAD_FILLCASE:
         PrintHintTextByID( WIE_ERR_NOFILLREGION, NULL );
-        IEPrintErrorMsgByID( -1, error, fname, MB_ICONEXCLAMATION | MB_OK );
+        IEPrintErrorMsgByID( 0, error, fname, MB_ICONEXCLAMATION | MB_OK );
         break;
 
     case WIE_ERR_BAD_ICONINDEX:
         SetHintText( fname );
-        IEPrintErrorMsgByID( -1, error, fname, MB_ICONEXCLAMATION | MB_OK );
+        IEPrintErrorMsgByID( 0, error, fname, MB_ICONEXCLAMATION | MB_OK );
         break;
 
     case WIE_ERR_BAD_PALFILE:
         PrintHintTextByID( WIE_ERR_FILENOTOPENED, fname );
-        IEPrintErrorMsgByID( -1, error, fname, MB_ICONSTOP | MB_OK );
+        IEPrintErrorMsgByID( 0, error, fname, MB_ICONSTOP | MB_OK );
         break;
 
     case WIE_DDE_INIT_FAILED:
         PrintHintTextByID( error, NULL );
-        IEDisplayErrorMsg( -1, error, MB_ICONSTOP | MB_OK );
+        IEDisplayErrorMsg( 0, error, MB_ICONSTOP | MB_OK );
         break;
 
     default:
@@ -163,7 +163,7 @@ void WImgEditError( UINT error, LPSTR fname )
 /*
  * IEAllocRCString
  */
-char *IEAllocRCString( UINT id )
+char *IEAllocRCString( msg_id id )
 {
     return( AllocRCString( id ) );
 
@@ -181,7 +181,7 @@ void IEFreeRCString( char *str )
 /*
  * IECopyRCString
  */
-int IECopyRCString( UINT id, char *buf, int bufsize )
+int IECopyRCString( msg_id id, char *buf, int bufsize )
 {
     return( CopyRCString( id, buf, bufsize ) );
 
@@ -199,7 +199,7 @@ void IEInitDisplayError( HINSTANCE inst )
 /*
  * IEPrintErrorMsg
  */
-void IEPrintErrorMsg( char *title, char *msg, char *fname, UINT style )
+void IEPrintErrorMsg( const char *title, const char *msg, const char *fname, UINT style )
 {
     char        *text;
 
@@ -221,15 +221,15 @@ void IEPrintErrorMsg( char *title, char *msg, char *fname, UINT style )
 /*
  * IEPrintErrorMsgByID
  */
-void IEPrintErrorMsgByID( UINT title, UINT msg, char *fname, UINT style )
+void IEPrintErrorMsgByID( msg_id title, msg_id msg, const char *fname, UINT style )
 {
     char        *title_str;
     char        *msg_str;
 
-    if( title == -1 ) {
-        title_str = ErrorMsgTitle;
-    } else {
+    if( title > 0 ) {
         title_str = IEAllocRCString( title );
+    } else {
+        title_str = ErrorMsgTitle;
     }
 
     msg_str = IEAllocRCString( msg );
@@ -240,7 +240,7 @@ void IEPrintErrorMsgByID( UINT title, UINT msg, char *fname, UINT style )
         IEFreeRCString( msg_str );
     }
 
-    if( title != -1 && title_str != NULL ) {
+    if( title > 0 && title_str != NULL ) {
         IEFreeRCString( title_str );
     }
 
@@ -249,21 +249,21 @@ void IEPrintErrorMsgByID( UINT title, UINT msg, char *fname, UINT style )
 /*
  * IEDisplayErrorMsg
  */
-void IEDisplayErrorMsg( UINT title, UINT msg, UINT style )
+void IEDisplayErrorMsg( msg_id title, msg_id msg, UINT style )
 {
     char        *title_str;
 
-    if( title == -1 ) {
-        title_str = ErrorMsgTitle;
-    } else {
+    if( title > 0 ) {
         title_str = IEAllocRCString( title );
+    } else {
+        title_str = ErrorMsgTitle;
     }
 
     if( !RCMessageBox( HMainWindow, msg, title_str, style ) ) {
         MessageBeep( -1 );
     }
 
-    if( title != -1 && title_str != NULL ) {
+    if( title > 0 && title_str != NULL ) {
         IEFreeRCString( title_str );
     }
 

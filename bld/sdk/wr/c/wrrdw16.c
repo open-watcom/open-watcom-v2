@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
+#include "commonui.h"
 #include <string.h>
 #include <stdlib.h>
 #include "wio.h"

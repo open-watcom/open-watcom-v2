@@ -37,6 +37,6 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern void     WREDisplayMsg( const char * );
-extern void     WREDisplayErrorMsg( UINT msg );
+extern void     WREDisplayErrorMsg( msg_id msg );
 
 #endif

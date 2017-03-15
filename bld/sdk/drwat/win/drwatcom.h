@@ -143,7 +143,7 @@ extern WORD                     ExceptionAction;
 
 /* debug.c */
 WORD NumToAddr( HMODULE modhandle, WORD num );
-DWORD GetFaultString( int intnum, char *buff );
+msg_id GetFaultString( int intnum, char *buff );
 
 /* disasm.c */
 unsigned Disassemble( ADDRESS *addr, char *buff, int addbytes );
@@ -199,7 +199,7 @@ BOOL DoGlobalEntryHandle( GLOBALENTRY *ge, HANDLE hmem );
 
 /* winmain.c */
 #pragma aux Death aborts;
-void Death( DWORD msgid, ... );
+void Death( msg_id msgid, ... );
 
 /* winproc.c */
 extern LONG __export FAR PASCAL WindowProc( HWND, UINT, WPARAM, LPARAM );

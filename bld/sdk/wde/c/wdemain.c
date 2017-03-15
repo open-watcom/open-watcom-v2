@@ -643,7 +643,7 @@ LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
         break;
 
     case WM_USER:
-        WdeSetStatusByID( WDE_NONE, WDE_ONLYONEINSTANCE );
+        WdeSetStatusByID( 0, WDE_ONLYONEINSTANCE );
         break;
 
     case WM_MENUSELECT:
@@ -899,7 +899,7 @@ LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
         case IDM_SELCUST2:
             if( !WdeSetCurrentCustControl( wp - IDM_SELCUST1 ) ) {
                 WdeWriteTrail( "WdeMainWndProc: WdeSetCurrentCustControl failed!" );
-                WdeSetStatusByID( WDE_NONE, WDE_SETFAILED );
+                WdeSetStatusByID( 0, WDE_SETFAILED );
             }
             pass_to_def = false;
             break;
@@ -1307,7 +1307,7 @@ bool WdeProcessArgs( char **argv, int argc )
     }
 
     if( !ok ) {
-        WdeSetStatusByID( WDE_NONE, WDE_INPUTFILENOTFOUND );
+        WdeSetStatusByID( 0, WDE_INPUTFILENOTFOUND );
     }
 
     return( ok );

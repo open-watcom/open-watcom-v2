@@ -245,7 +245,7 @@ bool WREEndEditStringResource( WStringHandle hndl )
             curr.res = NULL;
             curr.lang = NULL;
             ret = WREDeleteStringResources( &curr, TRUE );
-            WRESetStatusByID( -1, WRE_EMPTYREMOVED );
+            WRESetStatusByID( 0, WRE_EMPTYREMOVED );
         }
         WRERemoveStringEditSession( session );
     }

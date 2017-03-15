@@ -1023,7 +1023,7 @@ void WHandleMemFlags( WStringEditInfo *einfo )
 
     ntext = AllocRCString( W_STRINGNAMES );
     if( einfo != NULL && einfo->current_block != NULL && ntext != NULL ) {
-        WSetStatusByID( einfo->wsb, W_CHANGESTRINGMEMFLAGS, -1 );
+        WSetStatusByID( einfo->wsb, W_CHANGESTRINGMEMFLAGS, 0 );
         // alloc space for ntext and two 16-bit ints
         rtext = (char *)WRMemAlloc( strlen( ntext ) + 20 );
         if( rtext != NULL ) {
@@ -1093,7 +1093,7 @@ void WHandleClear( WStringEditInfo *einfo )
             }
             einfo->info->modified = true;
             SetFocus( einfo->edit_dlg );
-            WSetStatusByID( einfo->wsb, W_STRINGCLEARMSG, -1 );
+            WSetStatusByID( einfo->wsb, W_STRINGCLEARMSG, 0 );
         }
     }
 }

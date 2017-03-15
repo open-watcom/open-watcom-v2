@@ -73,7 +73,7 @@ void WdeDisplayMsgBox( const char *msg )
     }
 }
 
-char *WdeAllocRCString( UINT id )
+char *WdeAllocRCString( msg_id id )
 {
     return( AllocRCString( id ) );
 }
@@ -83,7 +83,7 @@ void WdeFreeRCString( char *str )
     FreeRCString( str );
 }
 
-int WdeCopyRCString( UINT id, char *buf, int bufsize )
+int WdeCopyRCString( msg_id id, char *buf, int bufsize )
 {
     return( CopyRCString( id, buf, bufsize ) );
 }
@@ -93,14 +93,13 @@ void WdeInitDisplayError( HINSTANCE inst )
     SetInstance( inst );
 }
 
-void WdeDisplayErrorMsg( UINT msg )
+void WdeDisplayErrorMsg( msg_id msg )
 {
     char        *title;
 
     title = WdeAllocRCString( WDE_MSGBOXTITLE );
 
-    if( !RCMessageBox( (HWND)NULL, msg, title,
-                       MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
+    if( !RCMessageBox( (HWND)NULL, msg, title, MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
         MessageBeep( -1 );
     }
 

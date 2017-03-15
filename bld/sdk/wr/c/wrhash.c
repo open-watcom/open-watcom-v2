@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
+#include "commonui.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>

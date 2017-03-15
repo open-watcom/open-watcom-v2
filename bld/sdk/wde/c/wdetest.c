@@ -93,7 +93,7 @@ bool WdeHandleTestModeMenu( WdeResInfo *info )
         ret = TRUE;
     } else {
         WdeSetStatusText( NULL, "", false );
-        WdeSetStatusByID( WDE_TESTMODE, -1 );
+        WdeSetStatusByID( WDE_TESTMODE, 0 );
         ret = WdeTestCurrentObject();
         if( ret ) {
             WdeShowResourceWindows( SW_HIDE );

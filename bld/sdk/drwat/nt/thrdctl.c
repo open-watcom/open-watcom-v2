@@ -85,7 +85,7 @@ msglist ThreadWaitMsgs[] = {
     17,     (char *)(pointer_int)STR_WAIT_4_LPC_REPLY,
     18,     (char *)(pointer_int)STR_WAIT_4_VIRTUAL_MEMORY,
     19,     (char *)(pointer_int)STR_WAIT_4_PAGE_OUT,
-    0,      (char *)(pointer_int)-1
+    0,      NULL
 };
 
 msglist ThreadStateMsgs[] = {
@@ -97,7 +97,7 @@ msglist ThreadStateMsgs[] = {
     5,      (char *)(pointer_int)STR_WAITING,
     6,      (char *)(pointer_int)STR_TRANSITION,
     7,      (char *)(pointer_int)STR_UNKNOWN,
-    0,      (char *)(pointer_int)-1
+    0,      NULL
 };
 
 #define BUF_SIZE        100

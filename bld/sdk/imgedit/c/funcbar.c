@@ -116,9 +116,7 @@ static void addFunctionButton( button *tb )
         } else {
             tb->downbmp = tb->hbmp;
         }
-        if( tb->tip_id >= 0 ) {
-            _wpi_loadstring( Instance, tb->tip_id, info.tip, MAX_TIP );
-        } else {
+        if( !( tb->tip_id > 0 && _wpi_loadstring( Instance, tb->tip_id, info.tip, MAX_TIP ) > 0 ) ) {
             info.tip[0] = '\0';
         }
 

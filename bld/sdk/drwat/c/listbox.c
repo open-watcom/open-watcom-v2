@@ -179,7 +179,7 @@ static int doLBPrintf( LBoxHdl *lb, char *str, va_list al )
 } /* LBPrintf */
 
 
-int LBPrintf( LBoxHdl *lb, DWORD msgid, ... )
+int LBPrintf( LBoxHdl *lb, msg_id msgid, ... )
 {
     char        *str;
     int         ret;

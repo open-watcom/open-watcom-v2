@@ -94,7 +94,7 @@ msglist Actions[] = {
     INT_CHAIN_TO_NEXT,          (char *)(pointer_int)STR_FAULT_PASSED_ON,
     INT_TERMINATE,              (char *)(pointer_int)STR_PROCESS_TERMINATED,
     INT_RESTART,                (char *)(pointer_int)STR_INSTR_RESTARTED,
-    0,                          (char *)(pointer_int)-1
+    0,                          NULL
 };
 
 /*

@@ -154,7 +154,7 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
     DLGPROC     dlg_proc;
     INT_PTR     rc;
     char        *fault_str;
-    DWORD       faultid;
+    msg_id      faultid;
 
     WasFault32 = false;
     if( WDebug386 ) {

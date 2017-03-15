@@ -50,13 +50,13 @@
 /****************************************************************************/
 typedef struct {
     int         id;
-    DWORD       hint;
+    msg_id      hint;
 } WdeHintItem;
 
 typedef struct {
     int         loc[MAX_NESTED_POPUPS];
     HMENU       popup;
-    DWORD       hint;
+    msg_id      hint;
 } WdePopupHintItem;
 
 typedef struct {
@@ -70,7 +70,7 @@ typedef struct {
 /****************************************************************************/
 static WdeHintItem      *WdeGetHintItem( ctl_id id );
 static void             WdeHandlePopupHint( HMENU, HMENU );
-static DWORD            WdeGetPopupHint( WdePopupListItem *, HMENU );
+static msg_id           WdeGetPopupHint( WdePopupListItem *, HMENU );
 static WdePopupListItem *WdeFindPopupListItem( HMENU menu );
 static bool             WdeCreateWdePopupListItem( int, HMENU, WdePopupHintItem * );
 static bool             WdeInitHintItems( int, HMENU, WdePopupHintItem * );
@@ -238,7 +238,7 @@ void WdeDisplayHint( ctl_id id )
     if( id < WDE_MDI_FIRST ) {
         hint = WdeGetHintItem( id );
         if( hint != NULL ) {
-            WdeSetStatusByID( WDE_NONE, hint->hint );
+            WdeSetStatusByID( 0, hint->hint );
         }
     } else {
         mditext = WdeAllocRCString( WDE_HINT_MDIMSG );
@@ -282,7 +282,7 @@ WdePopupListItem *WdeFindPopupListItem( HMENU menu )
     return( NULL );
 }
 
-DWORD WdeGetPopupHint( WdePopupListItem *p, HMENU popup )
+msg_id WdeGetPopupHint( WdePopupListItem *p, HMENU popup )
 {
     int i;
 
@@ -292,26 +292,25 @@ DWORD WdeGetPopupHint( WdePopupListItem *p, HMENU popup )
         }
     }
 
-    return( -1 );
+    return( 0 );
 }
 
 void WdeHandlePopupHint( HMENU menu, HMENU popup )
 {
     WdePopupListItem    *p;
-    DWORD               hint;
+    msg_id              hint;
 
-    hint = -1;
+    hint = 0;
 
     p = WdeFindPopupListItem( menu );
 
     if( p != NULL ) {
         hint = WdeGetPopupHint( p, popup );
-        if( hint != -1 ) {
-            WdeSetStatusByID( WDE_NONE, hint );
-        }
     }
 
-    if( hint == -1 ) {
+    if( hint > 0 ) {
+        WdeSetStatusByID( 0, hint );
+    } else {
         WdeSetStatusText( NULL, "", true );
     }
 }

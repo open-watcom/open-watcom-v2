@@ -117,7 +117,7 @@ bool WdeGenericDefine( WdeDefineObjectInfo *info )
     }
 
     WdeSetStatusText( NULL, "", false );
-    WdeSetStatusByID( WDE_GENERICDEFINE, WDE_NONE );
+    WdeSetStatusByID( WDE_GENERICDEFINE, 0 );
 
     if( info->win == NULL && !Forward( info->obj, GET_WINDOW_HANDLE, &info->win, NULL ) ) {
         WdeWriteTrail( "WdeGenericDefine: GET_WINDOW_HANDLE failed!" );

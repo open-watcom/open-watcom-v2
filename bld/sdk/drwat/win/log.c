@@ -294,7 +294,7 @@ static void logPrint( char *str, ... )
 /*
  * rcLogPrint
  */
-static void rcLogPrint( DWORD msgid, ... )
+static void rcLogPrint( msg_id msgid, ... )
 {
     va_list     al;
     char        *str;

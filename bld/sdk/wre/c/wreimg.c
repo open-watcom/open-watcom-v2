@@ -128,7 +128,7 @@ static void DumpEmptyResource( WREImageSession *session )
         curr.res = session->rnode;
         curr.lang = session->lnode;
         WRERemoveEmptyResource( &curr );
-        WRESetStatusByID( -1, WRE_EMPTYREMOVED );
+        WRESetStatusByID( 0, WRE_EMPTYREMOVED );
     }
 }
 

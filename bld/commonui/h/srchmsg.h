@@ -44,14 +44,14 @@
  *          0,                  NULL
  *   };
  *
- * or for one to be used with InitSrchTable (here 0, -1 delimits the end)
+ * or for one to be used with InitSrchTable (here 0, NULL delimits the end)
  *
  *   static msglist StrActionMsgs[] = {
  *          MH_CLEANUP,         (char *)STR_DELETED,
  *          MH_CREATE,          (char *)STR_CREATED,
  *          MH_DELETE,          (char *)STR_DELETED,
  *          MH_KEEP,            (char *)STR_KEPT,
- *          0,                  (char *)-1
+ *          0,                  NULL
  *   };
  */
 

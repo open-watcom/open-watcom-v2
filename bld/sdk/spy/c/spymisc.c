@@ -820,8 +820,8 @@ bool GetFileName( char *ext, int type, char *fname )
 
 bool InitGblStrings( void ) {
 
-    DWORD       heading;
-    DWORD       heading_uline;
+    msg_id      heading;
+    msg_id      heading_uline;
 
     SpyName = AllocRCString( STR_APP_NAME );
     if( SpyName == NULL ) {

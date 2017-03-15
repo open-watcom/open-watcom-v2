@@ -64,7 +64,7 @@ typedef struct {
     char    *up;
     char    *down;
     UINT    menu_id;
-    int     tip_id;
+    msg_id  tip_id;
 } WRERibbonName;
 
 /****************************************************************************/
@@ -78,7 +78,7 @@ WRERibbonName WRERibbonNames[] = {
     { "New",    NULL, IDM_NEW,      WRE_TIP_NEW   },
     { "Open",   NULL, IDM_OPEN,     WRE_TIP_OPEN  },
     { "Save",   NULL, IDM_SAVE,     WRE_TIP_SAVE  },
-    { NULL,     NULL, BLANK_PAD,    -1            },
+    { NULL,     NULL, BLANK_PAD,    0             },
     { "Cut",    NULL, IDM_CUT,      WRE_TIP_CUT   },
     { "Copy",   NULL, IDM_COPY,     WRE_TIP_COPY  },
     { "Paste",  NULL, IDM_PASTE,    WRE_TIP_PASTE }
@@ -247,7 +247,7 @@ bool WREInitRibbon( HINSTANCE inst )
             } else {
                 WRERibbonInfo->items[i].depressed = WRERibbonInfo->items[i].u.bmp;
             }
-            if( WRERibbonNames[i].tip_id < 0 || LoadString( inst, WRERibbonNames[i].tip_id, WRERibbonInfo->items[i].tip, MAX_TIP ) <= 0 ) {
+            if( !( WRERibbonNames[i].tip_id > 0 && LoadString( inst, WRERibbonNames[i].tip_id, WRERibbonInfo->items[i].tip, MAX_TIP ) > 0 ) ) {
                 WRERibbonInfo->items[i].tip[0] = '\0';
             }
         } else {

@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
+#include "commonui.h"
 #include <stdio.h>
 #include <string.h>
 #include "watcom.h"

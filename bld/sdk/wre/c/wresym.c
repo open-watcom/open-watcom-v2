@@ -207,7 +207,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
 
     if( ok ) {
         WRESetStatusText( NULL, "", FALSE );
-        WRESetStatusByID( WRE_LOADINGSYMBOLS, -1 );
+        WRESetStatusByID( WRE_LOADINGSYMBOLS, 0 );
     }
 
     if( ok ) {
@@ -296,7 +296,7 @@ bool WRESaveSymbols( WRHashTable *table, char **file_name, bool prompt )
 
     ok = true;
     WRESetStatusText( NULL, "", FALSE );
-    WRESetStatusByID( WRE_SAVEINGSYMBOLS, -1 );
+    WRESetStatusByID( WRE_SAVEINGSYMBOLS, 0 );
 
     if( prompt || *file_name == NULL ) {
         gf.file_name = *file_name;

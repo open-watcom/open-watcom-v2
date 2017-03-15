@@ -227,7 +227,7 @@ bool WSetEditWindowKeyEntry( WAccelEditInfo *einfo, WAccelEntry *entry )
         }
         ok = WSetEditWindowKey( einfo->edit_dlg, key, flags );
         if( !ok ) {
-            WSetStatusByID( einfo->wsb, -1, W_INVALIDACCEL );
+            WSetStatusByID( einfo->wsb, 0, W_INVALIDACCEL );
             memcpy( entry, &DefaultEntry, sizeof( WAccelEntry ) );
             key = entry->u.entry.Ascii;
             flags = entry->u.entry.Flags;
@@ -268,7 +268,7 @@ bool WGetEditWindowKeyEntry( WAccelEditInfo *einfo, WAccelEntry *entry,
     if( ok ) {
         ok = WGetEditWindowKey( einfo->edit_dlg, &key, &flags, &force_ascii );
         if( !ok ) {
-            WSetStatusByID( einfo->wsb, -1, W_INVALIDACCELKEY );
+            WSetStatusByID( einfo->wsb, 0, W_INVALIDACCELKEY );
         }
     }
 

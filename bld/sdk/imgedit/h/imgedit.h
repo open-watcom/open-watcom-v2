@@ -455,11 +455,11 @@ void    ResizeStatusBar( WPI_PARAM2 lparam );
 void    FiniStatusLine( void );
 void    SetHotSpot( img_node *node );
 void    ClearImageText( void );
-void    SetHintText( char *msg );
-void    PrintHintTextByID( DWORD id, char *fname );
-void    PrintHintText( char *msg, char *fname );
-void    WriteSetSizeText( DWORD msg, int x, int y );
-void    IEPrintAmtText( DWORD message, int amt );
+void    SetHintText( const char *msg );
+void    PrintHintTextByID( msg_id id, const char *fname );
+void    PrintHintText( const char *msg, const char *fname );
+void    WriteSetSizeText( msg_id msg, int x, int y );
+void    IEPrintAmtText( msg_id message, int amt );
 
 /* iefonts.c */
 void    CreateStatusFont( void );
@@ -506,7 +506,7 @@ void    IECtl3dSubclassDlg( HWND, WORD );
 void    IECtl3dSubclassDlgAll( HWND );
 
 /* errors.c */
-void    WImgEditError( UINT error, char *fname );
+void    WImgEditError( msg_id error, const char *fname );
 
 #ifndef __OS2_PM__
 

@@ -184,10 +184,10 @@ void WdeResizeStatusWindows( RECT *rect )
 bool WdeSetStatusReadyText( void )
 {
     WdeSetStatusText( NULL, "", false );
-    return( WdeSetStatusByID( WDE_READYMSG, WDE_NONE ) );
+    return( WdeSetStatusByID( WDE_READYMSG, 0 ) );
 }
 
-bool WdeSetStatusByID( DWORD id1, DWORD id2 )
+bool WdeSetStatusByID( msg_id id1, msg_id id2 )
 {
     char        *str1;
     char        *str2;
@@ -197,11 +197,11 @@ bool WdeSetStatusByID( DWORD id1, DWORD id2 )
     str1 = NULL;
     str2 = NULL;
 
-    if( id1 != WDE_NONE ) {
+    if( id1 > 0 ) {
         str1 = WdeAllocRCString( id1 );
     }
 
-    if( id2 != WDE_NONE ) {
+    if( id2 > 0 ) {
         str2 = WdeAllocRCString( id2 );
     }
 

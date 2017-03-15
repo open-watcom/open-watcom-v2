@@ -196,7 +196,7 @@ WStatBar *WCreateStatusLine( HWND parent, HINSTANCE inst )
 bool WSetStatusReadyText( WStatBar *wsb )
 {
     WSetStatusText( wsb, NULL, "" );
-    return( WSetStatusByID( wsb, W_READYMSG, -1 ) );
+    return( WSetStatusByID( wsb, W_READYMSG, 0 ) );
 }
 
 bool WSetStatusByID( WStatBar *wsb, msg_id id1, msg_id id2 )
@@ -209,11 +209,11 @@ bool WSetStatusByID( WStatBar *wsb, msg_id id1, msg_id id2 )
     str1 = NULL;
     str2 = NULL;
 
-    if( id1 != -1 ) {
+    if( id1 > 0 ) {
         str1 = AllocRCString( id1 );
     }
 
-    if( id2 != -1 ) {
+    if( id2 > 0 ) {
         str2 = AllocRCString( id2 );
     }
 

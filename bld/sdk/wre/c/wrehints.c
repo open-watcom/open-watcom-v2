@@ -55,13 +55,13 @@
 /****************************************************************************/
 typedef struct {
     int         id;
-    DWORD       hint;
+    msg_id      hint;
 } WREHintItem;
 
 typedef struct {
     int         loc[MAX_NESTED_POPUPS];
     HMENU       popup;
-    DWORD       hint;
+    msg_id      hint;
 } WREPopupHintItem;
 
 typedef struct {
@@ -75,7 +75,7 @@ typedef struct {
 /****************************************************************************/
 static WREHintItem      *WREGetHintItem( int id );
 static void             WREHandlePopupHint( HMENU, HMENU );
-static DWORD            WREGetPopupHint( WREPopupListItem *, HMENU );
+static msg_id           WREGetPopupHint( WREPopupListItem *, HMENU );
 static WREPopupListItem *WREFindPopupListItem( HMENU menu );
 static bool             WRECreateWREPopupListItem( int, HMENU, WREPopupHintItem * );
 static bool             WREInitHintItems( int, HMENU, WREPopupHintItem * );
@@ -171,8 +171,8 @@ void WREDisplayHint( ctl_id id )
 
     if( id < WRE_MDI_FIRST ) {
         hint = WREGetHintItem ( id );
-        if( hint ) {
-            WRESetStatusByID( -1, hint->hint );
+        if( hint != NULL ) {
+            WRESetStatusByID( 0, hint->hint );
         }
     } else {
         mditext = AllocRCString( WRE_HINT_MDIMSG );
@@ -218,7 +218,7 @@ WREPopupListItem *WREFindPopupListItem ( HMENU menu )
     return ( NULL );
 }
 
-DWORD WREGetPopupHint( WREPopupListItem *p, HMENU popup )
+msg_id WREGetPopupHint( WREPopupListItem *p, HMENU popup )
 {
     int i;
 
@@ -228,30 +228,27 @@ DWORD WREGetPopupHint( WREPopupListItem *p, HMENU popup )
         }
     }
 
-    return( -1 );
+    return( 0 );
 }
 
 void WREHandlePopupHint( HMENU menu, HMENU popup )
 {
     WREPopupListItem    *p;
-    DWORD               hint;
+    msg_id              hint;
 
-    hint = -1;
+    hint = 0;
 
     p = WREFindPopupListItem( menu );
 
     if( p ) {
         hint = WREGetPopupHint( p, popup );
-        if( hint != -1 ) {
-            WRESetStatusByID( -1, hint );
-        }
     }
 
-    if( hint == -1 ) {
+    if( hint > 0 ) {
+        WRESetStatusByID( 0, hint );
+    } else {
         WRESetStatusText( NULL, "", TRUE );
     }
-
-    return;
 }
 
 bool WREInitHints( void )

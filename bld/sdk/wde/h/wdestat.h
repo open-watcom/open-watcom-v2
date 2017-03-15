@@ -37,8 +37,6 @@
 /* macro definitions                                                        */
 /****************************************************************************/
 
-#define WDE_NONE    ((DWORD)(-1))
-
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
@@ -52,6 +50,6 @@ extern void WdeDestroyStatusLine( void );
 extern bool WdeCreateStatusLine( HWND, HINSTANCE );
 extern void WdeResizeStatusWindows( RECT * );
 extern bool WdeSetStatusReadyText( void );
-extern bool WdeSetStatusByID( DWORD id1, DWORD id2 );
+extern bool WdeSetStatusByID( msg_id id1, msg_id id2 );
 
 #endif

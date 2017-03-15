@@ -44,7 +44,7 @@ msglist MADMsgs[] = {
     #define pick( r, e, j ) MAD_##r,(char *)(pointer_int)r,
     #include "mad.str"
     #undef pick
-    0 , (char *)(pointer_int)-1
+    0 , NULL
 };
 
 unsigned MADCLIENTRY( String )( mad_string mstr, char *buff, unsigned buff_len )

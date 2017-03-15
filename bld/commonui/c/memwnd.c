@@ -92,7 +92,7 @@ static  unsigned        DialCount;
 
 static MemWndConfig     MemConfigInfo;
 
-static DWORD Disp_Types[] = {
+static msg_id Disp_Types[] = {
     MWND_DISP_BYTES,
     MWND_DISP_WORDS,
     MWND_DISP_DWORDS,

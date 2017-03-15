@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include "wwindows.h"
+#include "commonui.h"
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>

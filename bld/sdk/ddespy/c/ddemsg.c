@@ -79,7 +79,7 @@ msglist DDEMsgs[] = {
     WM_DDE_REQUEST,             (char *)(pointer_int)STR_REQUEST,
     WM_DDE_TERMINATE,           (char *)(pointer_int)STR_TERMINATE,
     WM_DDE_UNADVISE,            (char *)(pointer_int)STR_UNADVISE,
-    0,                          (char *)(pointer_int)-1
+    0,                          NULL
 };
 
 static msglist FormatMsgs[] = {

@@ -174,7 +174,7 @@ bool WdeSetCurrentCustControl( int which )
     DLGPROC   dlg_proc;
 
     if( WdeCustomLibList == NULL ) {
-        WdeSetStatusByID( WDE_NONE, WDE_NOCUSTLOADED );
+        WdeSetStatusByID( 0, WDE_NOCUSTLOADED );
         return( true );
     }
 
@@ -246,7 +246,7 @@ bool WdeLoadCustomLib( bool ms_lib, bool load_only )
     lib->file_name = name;
 
     if( load_only ) {
-        WdeSetStatusByID( WDE_NONE, WDE_LIBRARYLOADED );
+        WdeSetStatusByID( 0, WDE_LIBRARYLOADED );
         ret = true;
     } else {
         if( ms_lib ) {

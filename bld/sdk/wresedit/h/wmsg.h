@@ -36,6 +36,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern void     WDisplayErrorMsg( UINT msg );
+extern void     WDisplayErrorMsg( msg_id msg );
 
 #endif

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include "commonui.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>

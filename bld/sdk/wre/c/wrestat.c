@@ -186,10 +186,10 @@ void WREResizeStatusWindows( RECT *rect )
 bool WRESetStatusReadyText( void )
 {
     WRESetStatusText( NULL, "", FALSE );
-    return( WRESetStatusByID( WRE_READYMSG, -1 ) );
+    return( WRESetStatusByID( WRE_READYMSG, 0 ) );
 }
 
-bool WRESetStatusByID( DWORD id1, DWORD id2 )
+bool WRESetStatusByID( msg_id id1, msg_id id2 )
 {
     char        *str1;
     char        *str2;
@@ -199,11 +199,11 @@ bool WRESetStatusByID( DWORD id1, DWORD id2 )
     str1 = NULL;
     str2 = NULL;
 
-    if( id1 != -1 ) {
+    if( id1 > 0 ) {
         str1 = AllocRCString( id1 );
     }
 
-    if( id2 != -1 ) {
+    if( id2 > 0 ) {
         str2 = AllocRCString( id2 );
     }
 

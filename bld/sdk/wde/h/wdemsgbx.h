@@ -46,9 +46,9 @@
 /****************************************************************************/
 extern void     WdeDisplayMsgBox( const char * );
 extern void     WdeInitDisplayError( HINSTANCE inst );
-extern void     WdeDisplayErrorMsg( UINT msg );
-extern char     *WdeAllocRCString( UINT id );
+extern void     WdeDisplayErrorMsg( msg_id msg );
+extern char     *WdeAllocRCString( msg_id id );
 extern void     WdeFreeRCString( char *str );
-extern int      WdeCopyRCString( UINT id, char *buf, int bufsize );
+extern int      WdeCopyRCString( msg_id id, char *buf, int bufsize );
 
 #endif

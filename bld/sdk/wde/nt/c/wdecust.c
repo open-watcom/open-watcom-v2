@@ -132,7 +132,7 @@ bool WdeSetCurrentCustControl( int which )
     DLGPROC   dlg_proc;
 
     if( WdeCustomLibList == NULL ) {
-        WdeSetStatusByID( WDE_NONE, WDE_NOCUSTLOADED );
+        WdeSetStatusByID( 0, WDE_NOCUSTLOADED );
         return( true );
     }
 
@@ -200,7 +200,7 @@ bool WdeLoadCustomLib( bool nt_lib, bool load_only )
     lib->file_name = name;
 
     if( load_only ) {
-        WdeSetStatusByID( WDE_NONE, WDE_LIBRARYLOADED );
+        WdeSetStatusByID( 0, WDE_LIBRARYLOADED );
         ret = true;
     } else {
         if( nt_lib ) {
@@ -236,7 +236,7 @@ bool WdeLoadMSCustomControls( WdeCustLib *lib )
         if( info_proc == NULL ) {
             WdeWriteTrail( "WdeLoadMSCustomControls: Info Proc not found!" );
         } else {
-            WdeSetStatusByID( WDE_NONE, WDE_UNICUSTNOTSUPPORTED );
+            WdeSetStatusByID( 0, WDE_UNICUSTNOTSUPPORTED );
         }
         return( false );
     }

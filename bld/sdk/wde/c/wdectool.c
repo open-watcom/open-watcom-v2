@@ -305,7 +305,7 @@ bool WdeCreateControlsToolBar( void )
     }
 
     WdeSetStatusText( NULL, "", false );
-    WdeSetStatusByID( WDE_CREATINGTOOLBOX, WDE_NONE );
+    WdeSetStatusByID( WDE_CREATINGTOOLBOX, 0 );
 
     parent = WdeGetMainWindowHandle();
 

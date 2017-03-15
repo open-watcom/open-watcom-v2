@@ -54,9 +54,9 @@ WORD NumToAddr( HMODULE modhandle, WORD num )
 /*
  * GetFaultString
  */
-DWORD GetFaultString( int intnum, char *buff )
+msg_id GetFaultString( int intnum, char *buff )
 {
-    DWORD       msgid;
+    msg_id      msgid;
 
     switch( intnum ) {
     case INT_DIV0:

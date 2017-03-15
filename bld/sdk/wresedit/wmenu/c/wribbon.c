@@ -66,7 +66,7 @@ typedef struct {
     char    *up;
     char    *down;
     UINT    menu_id;
-    int     tip_id;
+    msg_id  tip_id;
 } WRibbonName;
 
 /****************************************************************************/
@@ -79,20 +79,20 @@ typedef struct {
 WRibbonName WRibbonNames[] = {
     { "Clear",          NULL, IDM_MENU_CLEAR,           W_TIP_CLEAR        },
     { "Save",           NULL, IDM_MENU_UPDATE,          W_TIP_UPDATE       },
-    { NULL,             NULL, BLANK_PAD,                -1                 },
+    { NULL,             NULL, BLANK_PAD,                0                  },
     { "Cut",            NULL, IDM_MENU_CUT,             W_TIP_CUT          },
     { "Copy",           NULL, IDM_MENU_COPY,            W_TIP_COPY         },
     { "Paste",          NULL, IDM_MENU_PASTE,           W_TIP_PASTE        },
-    { NULL,             NULL, BLANK_PAD * 2,            -1                 },
+    { NULL,             NULL, BLANK_PAD * 2,            0                  },
     { "DeleteItem",     NULL, IDM_MENU_DELETE,          W_TIP_DELETE       },
-    { NULL,             NULL, BLANK_PAD * 2,            -1                 },
+    { NULL,             NULL, BLANK_PAD * 2,            0                  },
     { "InsertAfter",    NULL, IDM_MENU_INSERTTOGGLE,    W_TIP_INSERTTOGGLE },
-    { NULL,             NULL, BLANK_PAD,                -1                 },
-//  { "InsertNoSub",    NULL, IDM_MENU_INSERTSUBITEMS,  -1                 },
-//  { NULL,             NULL, BLANK_PAD * 2,            -1                 },
-//  { "InsertPopup",    NULL, IDM_MENU_NEWPOPUP,        -1                 },
+    { NULL,             NULL, BLANK_PAD,                0                  },
+//  { "InsertNoSub",    NULL, IDM_MENU_INSERTSUBITEMS,  0                  },
+//  { NULL,             NULL, BLANK_PAD * 2,            0                  },
+//  { "InsertPopup",    NULL, IDM_MENU_NEWPOPUP,        0                  },
     { "InsertItem",     NULL, IDM_MENU_NEWITEM,         W_TIP_NEWITEM      }
-//  { "InsertSep",      NULL, IDM_MENU_NEWSEPARATOR,    -1                 }
+//  { "InsertSep",      NULL, IDM_MENU_NEWSEPARATOR,    0                  }
 };
 #define NUM_TOOLS (sizeof( WRibbonNames ) / sizeof( WRibbonName ))
 
@@ -100,20 +100,20 @@ WRibbonName WSORibbonNames[] = {
     { "New",            NULL, IDM_MENU_CLEAR,           W_TIP_NEW          },
     { "Open",           NULL, IDM_MENU_OPEN,            W_TIP_OPEN         },
     { "Save",           NULL, IDM_MENU_SAVE,            W_TIP_SAVE         },
-    { NULL,             NULL, BLANK_PAD,                -1                 },
+    { NULL,             NULL, BLANK_PAD,                0                  },
     { "Cut",            NULL, IDM_MENU_CUT,             W_TIP_CUT          },
     { "Copy",           NULL, IDM_MENU_COPY,            W_TIP_COPY         },
     { "Paste",          NULL, IDM_MENU_PASTE,           W_TIP_PASTE        },
-    { NULL,             NULL, BLANK_PAD * 2,            -1                 },
+    { NULL,             NULL, BLANK_PAD * 2,            0                  },
     { "DeleteItem",     NULL, IDM_MENU_DELETE,          W_TIP_DELETE       },
-    { NULL,             NULL, BLANK_PAD * 2,            -1                 },
+    { NULL,             NULL, BLANK_PAD * 2,            0                  },
     { "InsertAfter",    NULL, IDM_MENU_INSERTTOGGLE,    W_TIP_INSERTTOGGLE },
-    { NULL,             NULL, BLANK_PAD,                -1                 },
-//  { "InsertNoSub",    NULL, IDM_MENU_INSERTSUBITEMS,  -1                 },
-//  { NULL,             NULL, BLANK_PAD * 2,            -1                 },
-//  { "InsertPopup",    NULL, IDM_MENU_NEWPOPUP,        -1                 },
+    { NULL,             NULL, BLANK_PAD,                0                  },
+//  { "InsertNoSub",    NULL, IDM_MENU_INSERTSUBITEMS,  0                  },
+//  { NULL,             NULL, BLANK_PAD * 2,            0                  },
+//  { "InsertPopup",    NULL, IDM_MENU_NEWPOPUP,        0                  },
     { "InsertItem",     NULL, IDM_MENU_NEWITEM,         W_TIP_NEWITEM      }
-//  { "InsertSep",      NULL, IDM_MENU_NEWSEPARATOR,    -1                 }
+//  { "InsertSep",      NULL, IDM_MENU_NEWSEPARATOR,    0                  }
 };
 #define NUM_SOTOOLS (sizeof( WSORibbonNames ) / sizeof( WRibbonName ))
 
@@ -226,11 +226,11 @@ void WShowRibbon( WMenuEditInfo *einfo, HMENU menu )
     if( einfo->show_ribbon ) {
         mtext = AllocRCString( W_SHOWTOOLBAR );
         ShowWindow( einfo->ribbon->win, SW_HIDE );
-        WSetStatusByID( einfo->wsb, -1, W_TOOLBARHIDDEN );
+        WSetStatusByID( einfo->wsb, 0, W_TOOLBARHIDDEN );
     } else {
         mtext = AllocRCString( W_HIDETOOLBAR );
         ShowWindow( einfo->ribbon->win, SW_SHOW );
-        WSetStatusByID( einfo->wsb, -1, W_TOOLBARSHOWN );
+        WSetStatusByID( einfo->wsb, 0, W_TOOLBARSHOWN );
     }
 
     einfo->show_ribbon = !einfo->show_ribbon;
@@ -311,7 +311,7 @@ bool WInitRibbons( HINSTANCE inst )
             } else {
                 WRibbonInfo->items[i].depressed = WRibbonInfo->items[i].u.bmp;
             }
-            if( WRibbonNames[i].tip_id < 0 || LoadString( inst, WRibbonNames[i].tip_id, WRibbonInfo->items[i].tip, MAX_TIP ) <= 0 ) {
+            if( !( WRibbonNames[i].tip_id > 0 && LoadString( inst, WRibbonNames[i].tip_id, WRibbonInfo->items[i].tip, MAX_TIP ) > 0 ) ) {
                 WRibbonInfo->items[i].tip[0] = '\0';
             }
         } else {
@@ -331,7 +331,7 @@ bool WInitRibbons( HINSTANCE inst )
             } else {
                 WSORibbonInfo->items[i].depressed = WSORibbonInfo->items[i].u.bmp;
             }
-            if( WSORibbonNames[i].tip_id < 0 || LoadString( inst, WSORibbonNames[i].tip_id, WSORibbonInfo->items[i].tip, MAX_TIP ) <= 0 ) {
+            if( !( WSORibbonNames[i].tip_id > 0 && LoadString( inst, WSORibbonNames[i].tip_id, WSORibbonInfo->items[i].tip, MAX_TIP ) > 0 ) ) {
                 WSORibbonInfo->items[i].tip[0] = '\0';
             }
         } else {

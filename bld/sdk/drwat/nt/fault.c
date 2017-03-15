@@ -62,7 +62,7 @@ msglist ExceptionMsgs[] = {
     EXCEPTION_INT_OVERFLOW,             (char *)(pointer_int)STR_INT_OVERFLOW,
     EXCEPTION_PRIV_INSTRUCTION,         (char *)(pointer_int)STR_INV_INSTRUCTION,
     STATUS_NONCONTINUABLE_EXCEPTION,    (char *)(pointer_int)STR_NADA,
-    0,                                  (char *)(pointer_int)-1
+    0,                                  NULL
 };
 
 #ifdef __NT__
