@@ -34,15 +34,13 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <unistd.h>
-
 #include "thread.h"
 #include "rterrno.h"
-
 #include "_ptint.h"
-
 #ifdef __LINUX__
-extern int __tgkill( pid_t __tgid, pid_t __tid, int __signal );
+#include "tgkill.h"
 #endif
+
 
 _WCRTLINK int pthread_kill(pthread_t thread, int sig)
 {
