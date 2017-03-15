@@ -79,7 +79,7 @@ static void checkRectBounds( RECT *rect )
 /*
  * SelectDynamicBitmap - let the user select the bitmap from the screen
  */
-BOOL SelectDynamicBitmap( img_node *node, int imgcount, char *filename )
+BOOL SelectDynamicBitmap( img_node *node, int imgcount, const char *filename )
 {
     HDC         hdc;
     HDC         memdc;

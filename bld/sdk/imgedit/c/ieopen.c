@@ -953,7 +953,7 @@ char *GetInitOpenDir( void )
 /*
  * OpenFileOnStart - open a file on program startup
  */
-void OpenFileOnStart( char *fname )
+void OpenFileOnStart( const char *fname )
 {
     int         namelen;
     char        ext[_MAX_EXT];

@@ -268,7 +268,7 @@ INT_PTR CALLBACK SelCursorDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 /*
  * initializeImage - initialize the bitmaps according to the image type
  */
-static void initializeImage( img_node *node, char *filename )
+static void initializeImage( img_node *node, const char *filename )
 {
     node->imgtype = imgType;
     node->width = imgWidth;
@@ -297,7 +297,7 @@ static void initializeImage( img_node *node, char *filename )
 /*
  * NewImage - create a new image and return the image type (bitmap, icon, or cursor)
  */
-int NewImage( int img_type, char *filename )
+int NewImage( int img_type, const char *filename )
 {
     WPI_DLGPROC         dlg_proc;
     INT_PTR             button_type;

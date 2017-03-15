@@ -43,7 +43,7 @@
 /*
  * readIconFromData - read the icon file and set up structures
  */
-static bool readIconFromData( BYTE *data, char *fname  )
+static bool readIconFromData( BYTE *data, const char *fname  )
 {
     an_img_file         *iconfile;
     img_node            *node;

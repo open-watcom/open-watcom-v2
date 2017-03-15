@@ -62,7 +62,7 @@ void SetupMenuAfterOpen( void )
 /*
  * readInImageFile - reads in an icon or cursor file (bitmaps too??!!)
  */
-static BOOL readInImageFile( char *fullname )
+static BOOL readInImageFile( const char *fullname )
 {
     FILE                *fp;
     a_pm_image_file     *imgfile;
@@ -144,7 +144,7 @@ static BOOL readInImageFile( char *fullname )
 /*
  * readInBitmapFile - reads in a bitmap file
  */
-static BOOL readInBitmapFile( char *fullname )
+static BOOL readInBitmapFile( const char *fullname )
 {
     HBITMAP             hrealbitmap;
     HBITMAP             hbitmap;
@@ -356,7 +356,7 @@ char *GetInitOpenDir( void )
 /*
  * OpenFileOnStart - opens a file on program startup
  */
-void OpenFileOnStart( char *fname )
+void OpenFileOnStart( const char *fname )
 {
     int         namelen;
     char        ext[ _MAX_EXT ];

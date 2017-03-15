@@ -286,7 +286,7 @@ int     OpenImage( HANDLE hDrop );
 BOOL    LoadColorPalette( void );
 void    SetInitialOpenDir( char *new_dir );
 char    *GetInitOpenDir( void );
-void    OpenFileOnStart( char *fname );
+void    OpenFileOnStart( const char *fname );
 bool    ReadBitmapFromData( void *data, const char *fullname, WRInfo *info, WResLangNode *lnode );
 bool    ReadIconFromData( void *data, const char *fname, WRInfo *info, WResLangNode *lnode  );
 bool    ReadCursorFromData( void *data, const char *fname, WRInfo *info, WResLangNode *lnode );
@@ -308,7 +308,7 @@ WPI_EXPORT extern WPI_DLGRESULT CALLBACK  SelBitmapDlgProc( HWND hwnd, WPI_MSG m
 #ifndef __OS2_PM__
 WINEXPORT extern INT_PTR CALLBACK SelCursorDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 #endif
-int         NewImage( int img_type, char *filename );
+int         NewImage( int img_type, const char *filename );
 
 /* iedraw.c */
 void        CalculateDims( short img_width, short img_height, short *area_width, short *area_height );
@@ -543,7 +543,7 @@ BITMAPINFO  *GetDIBitmapInfo( img_node *node );
 void        FreeDIBitmapInfo( BITMAPINFO *bmi );
 
 /* pickbmp.c */
-extern BOOL        SelectDynamicBitmap( img_node *node, int imgcount, char *filename );
+extern BOOL        SelectDynamicBitmap( img_node *node, int imgcount, const char *filename );
 WINEXPORT extern LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 /* hinttext.c */
