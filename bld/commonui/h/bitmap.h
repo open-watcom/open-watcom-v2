@@ -52,6 +52,6 @@ typedef struct {
     bool                is_core;
 } bitmap_info;
 
-extern HBITMAP  ReadBitmapFile( HWND, char *, bitmap_info * );
+extern HBITMAP  ReadBitmapFile( HWND, const char *, bitmap_info * );
 
 #endif /* _BITMAP_H_INCLUDED */

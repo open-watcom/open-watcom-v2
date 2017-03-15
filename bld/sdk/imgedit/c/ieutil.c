@@ -443,7 +443,7 @@ void OutlineRectangle( bool firsttime, WPI_PRES pres, WPI_RECT *prevrc, WPI_RECT
 /*
  * GetFnameFromPath - given a full pathname, return just the file name
  */
-void GetFnameFromPath( char *fullpath, char *fname )
+void GetFnameFromPath( const char *fullpath, char *fname )
 {
     char        filename[_MAX_FNAME];
     char        ext[_MAX_EXT];

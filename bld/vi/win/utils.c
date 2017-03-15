@@ -454,7 +454,7 @@ void MyDelay( int ms )
 void MyBeep( void )
 {
     if( EditFlags.BeepFlag ) {
-        MessageBeep( -1 );
+        MessageBeep( (UINT)-1 );
     }
 }
 

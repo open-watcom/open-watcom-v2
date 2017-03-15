@@ -43,7 +43,7 @@ void WDisplayErrorMsg( msg_id msg )
     title = AllocRCString( W_ERRMSG );
 
     if( !RCMessageBox( (HWND)NULL, msg, title, MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep( -1 );
+        MessageBeep( (UINT)-1 );
     }
 
     if( title != NULL ) {

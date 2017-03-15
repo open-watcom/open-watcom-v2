@@ -93,7 +93,7 @@ void SetupMenuAfterOpen( void )
 /*
  * doReadInBitmapFile
  */
-static bool doReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi, char *fullname,
+static bool doReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi, const char *fullname,
                                 WRInfo *info, WResLangNode *lnode )
 {
     HBITMAP             oldbmp1;
@@ -174,7 +174,7 @@ static bool doReadInBitmapFile( HBITMAP hbitmap, bitmap_info *bmi, char *fullnam
  * readInBitmapFile - read in the bitmap file, initialize the draw area and
  *                    the view window
  */
-static bool readInBitmapFile( char *fullname )
+static bool readInBitmapFile( const char *fullname )
 {
     bitmap_info         bmi;
     HBITMAP             hbitmap;
@@ -203,7 +203,7 @@ static bool readInBitmapFile( char *fullname )
 /*
  * ReadBitmapFromData
  */
-bool ReadBitmapFromData( void *data, char *fullname, WRInfo *info, WResLangNode *lnode )
+bool ReadBitmapFromData( void *data, const char *fullname, WRInfo *info, WResLangNode *lnode )
 {
     bitmap_info         bmi;
     HBITMAP             hbitmap;
@@ -248,7 +248,7 @@ void WriteIconLoadedText( char *filename, int num )
 /*
  * readInIconFile - read the icon file and set up structures
  */
-static bool readInIconFile( char *fname )
+static bool readInIconFile( const char *fname )
 {
     FILE                *fp;
     an_img_file         *iconfile;
@@ -332,7 +332,7 @@ static bool readInIconFile( char *fname )
         }
         node[i].issaved = TRUE;
         node[i].next = NULL;
-        strcpy( node[i].fname, strupr( fname ) );
+        strupr( strcpy( node[i].fname, fname ) );
         ImageFini( icon );
     }
     node[i - 1].nexticon = NULL;
@@ -352,7 +352,7 @@ static bool readInIconFile( char *fname )
 /*
  * ReadIconFromData - read the icon data and set up structures
  */
-bool ReadIconFromData( void *data, char *fname, WRInfo *info, WResLangNode *lnode )
+bool ReadIconFromData( void *data, const char *fname, WRInfo *info, WResLangNode *lnode )
 {
     unsigned            pos;
     an_img_file         *iconfile;
@@ -423,7 +423,7 @@ bool ReadIconFromData( void *data, char *fname, WRInfo *info, WResLangNode *lnod
         }
         node[i].issaved = TRUE;
         node[i].next = NULL;
-        strcpy( node[i].fname, strupr( fname ) );
+        strupr( strcpy( node[i].fname, fname ) );
         ImageFini( icon );
     }
     node[i - 1].nexticon = NULL;
@@ -445,7 +445,7 @@ bool ReadIconFromData( void *data, char *fname, WRInfo *info, WResLangNode *lnod
 /*
  * doReadCursor
  */
-static bool doReadCursor( char *fname, an_img_file *cursorfile, an_img *cursor,
+static bool doReadCursor( const char *fname, an_img_file *cursorfile, an_img *cursor,
                    WRInfo *info, WResLangNode *lnode )
 {
     img_node            node;
@@ -479,7 +479,7 @@ static bool doReadCursor( char *fname, an_img_file *cursorfile, an_img *cursor,
     node.hxorbitmap = ImgToXorBitmap( hdc, cursor );
     ReleaseDC( NULL, hdc );
 
-    strcpy( node.fname, strupr( fname ) );
+    strupr( strcpy( node.fname, fname ) );
     ImageFini( cursor );
     ImageClose( cursorfile );
 
@@ -494,7 +494,7 @@ static bool doReadCursor( char *fname, an_img_file *cursorfile, an_img *cursor,
 /*
  * readInCursorFile - read the cursor file and set up structures
  */
-static bool readInCursorFile( char *fname )
+static bool readInCursorFile( const char *fname )
 {
     FILE                *fp;
     an_img_file         *cursorfile;
@@ -522,7 +522,7 @@ static bool readInCursorFile( char *fname )
 /*
  * ReadCursorFromData - read the cursor data and set up structures
  */
-bool ReadCursorFromData( void *data, char *fname, WRInfo *info,
+bool ReadCursorFromData( void *data, const char *fname, WRInfo *info,
                          WResLangNode *lnode )
 {
     unsigned            pos;
@@ -670,7 +670,7 @@ static BOOL getOpenFName( char *fname )
 /*
  * readInResourceFile
  */
-static bool readInResourceFile( char *fullname )
+static bool readInResourceFile( const char *fullname )
 {
     BYTE                *data;
     size_t              dsize;
@@ -742,7 +742,7 @@ static bool readInResourceFile( char *fullname )
 /*
  * reallyOpenImage
  */
-static int reallyOpenImage( char *fname )
+static int reallyOpenImage( const char *fname )
 {
     char                filename[_MAX_FNAME + _MAX_EXT];
 

@@ -65,7 +65,7 @@ void WdeDisplayMsgBox( const char *msg )
 
     if( !MessageBox( (HWND)NULL, msg, title,
                      MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep( -1 );
+        MessageBeep( (UINT)-1 );
     }
 
     if( title != NULL ) {
@@ -100,7 +100,7 @@ void WdeDisplayErrorMsg( msg_id msg )
     title = WdeAllocRCString( WDE_MSGBOXTITLE );
 
     if( !RCMessageBox( (HWND)NULL, msg, title, MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep( -1 );
+        MessageBeep( (UINT)-1 );
     }
 
     if( title != NULL ) {

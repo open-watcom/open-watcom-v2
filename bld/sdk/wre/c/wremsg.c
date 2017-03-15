@@ -45,7 +45,7 @@ void WREDisplayMsg( const char *msg )
     title = AllocRCString( WRE_MSGBOXTITLE );
 
     if( !MessageBox( (HWND)NULL, msg, title, MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep( -1 );
+        MessageBeep( (UINT)-1 );
     }
 
     if( title != NULL ) {
@@ -60,7 +60,7 @@ void WREDisplayErrorMsg( msg_id msg )
     title = AllocRCString( WRE_MSGBOXTITLE );
 
     if( !RCMessageBox( (HWND)NULL, msg, title, MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep( -1 );
+        MessageBeep( (UINT)-1 );
     }
 
     if( title != NULL ) {

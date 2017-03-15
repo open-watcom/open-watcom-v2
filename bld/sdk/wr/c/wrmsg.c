@@ -42,7 +42,7 @@ void WRDisplayMsg( const char *msg )
     title = WRAllocRCString( WR_ERRMSG );
 
     if( !MessageBox( (HWND)NULL, msg, title, MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep( -1 );
+        MessageBeep( (UINT)-1 );
     }
 
     if( title != NULL ) {
@@ -77,7 +77,7 @@ void WRDisplayErrorMsg( msg_id msg )
     title = WRAllocRCString( WR_ERRMSG );
 
     if( !RCMessageBox( (HWND)NULL, msg, title, MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep( -1 );
+        MessageBeep( (UINT)-1 );
     }
 
     if( title != NULL ) {

@@ -267,7 +267,7 @@ HBITMAP         EnlargeImage( HWND hwnd );
 //void            ConvertToDIBitmap( HBITMAP hbitmap );
 void            SetIsSaved( HWND hwnd, BOOL fissaved );
 void            OutlineRectangle( bool firsttime, WPI_PRES pres, WPI_RECT *prevrc, WPI_RECT *newrc );
-void            GetFnameFromPath( char *fullpath, char *fname );
+void            GetFnameFromPath( const char *fullpath, char *fname );
 void            GrayEditOptions( void );
 void            FindOrigin( WPI_POINT *new_origin );
 void            SetMenus( img_node *node );
@@ -287,9 +287,9 @@ BOOL    LoadColorPalette( void );
 void    SetInitialOpenDir( char *new_dir );
 char    *GetInitOpenDir( void );
 void    OpenFileOnStart( char *fname );
-bool    ReadBitmapFromData( void *data, char *fullname, WRInfo *info, WResLangNode *lnode );
-bool    ReadIconFromData( void *data, char *fname, WRInfo *info, WResLangNode *lnode  );
-bool    ReadCursorFromData( void *data, char *fname, WRInfo *info, WResLangNode *lnode );
+bool    ReadBitmapFromData( void *data, const char *fullname, WRInfo *info, WResLangNode *lnode );
+bool    ReadIconFromData( void *data, const char *fname, WRInfo *info, WResLangNode *lnode  );
+bool    ReadCursorFromData( void *data, const char *fname, WRInfo *info, WResLangNode *lnode );
 void    WriteIconLoadedText( char *filename, int num );
 
 /* iesave.c */

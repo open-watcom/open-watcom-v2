@@ -260,7 +260,7 @@ void IEDisplayErrorMsg( msg_id title, msg_id msg, UINT style )
     }
 
     if( !RCMessageBox( HMainWindow, msg, title_str, style ) ) {
-        MessageBeep( -1 );
+        MessageBeep( (UINT)-1 );
     }
 
     if( title > 0 && title_str != NULL ) {
