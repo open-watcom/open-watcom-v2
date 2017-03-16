@@ -33,13 +33,54 @@
 /* Structure now declared in wresrtns.c */
 /* This file should be replace by a call to the WResSetRtns macro in projects */
 /* that define their own low level routines. */
+/* it can use POSIX or ISO C file I/O functions */
+/* this example uses POSIX functions */
+
 #if 0
 
-#include <io.h>
+#include "wio.h"
 #include <malloc.h>
 #include "layer0.h"
 
 
-WResSetRtns( open, close, posix_read, posix_write, lseek, tell, malloc, free );
+static WResFileID wres_open( const char *name, int omode )
+{
+    switch( omode ) {
+    default:
+    case WRES_OPEN_RO:
+        return( WRES_PH2FID( open( name, O_BINARY | O_RDONLY ) ) );
+    case WRES_OPEN_RW:
+        return( WRES_PH2FID( open( name, O_BINARY | O_RDWR | O_CREAT, PMODE_RW ) ) );
+    case WRES_OPEN_NEW:
+        return( WRES_PH2FID( open( name, O_BINARY | O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW ) ) );
+    }
+}
+
+static int wres_close( WResFileID fid )
+{
+    return( close( WRES_FID2PH( fid ) ) );
+}
+
+static WResFileSSize wres_read( WResFileID fid, void *buf, WResFileSize size )
+{
+    return( posix_read( WRES_FID2PH( fid ), buf, size ) );
+}
+
+static WResFileSSize wres_write( WResFileID fid, const void *buf, WResFileSize size )
+{
+    return( posix_write( WRES_FID2PH( fid ), buf, size ) );
+}
+
+static WResFileOffset wres_seek( WResFileID fid, WResFileOffset pos, int where )
+{
+    return( lseek( WRES_FID2PH( fid ), pos, where ) );
+}
+
+static WResFileOffset wres_tell( WResFileID fid )
+{
+    return( tell( WRES_FID2PH( fid ) ) );
+}
+
+WResSetRtns( wres_open, wres_close, wres_read, wres_write, wres_seek, wres_tell, malloc, free );
 
 #endif
