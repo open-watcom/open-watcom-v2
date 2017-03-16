@@ -35,12 +35,11 @@
 #include <string.h>
 #include <malloc.h>
 #include <conio.h>
-#include <io.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include "wio.h"
 #include "wic.h"
 #include "wressetr.h"
+#include "wresset2.h"
 #include "wreslang.h"
 #include "banner.h"
 #ifdef TRMEM
@@ -69,7 +68,6 @@ const char *FingerMsg[] = {
 
 /*--------------------- Resources --------------------------------*/
 
-#define NIL_HANDLE      ((int)-1)
 static  HANDLE_INFO     hInstance = { 0 };
 
 void initWicResources( char * fname )
@@ -103,13 +101,14 @@ void zapWicResources(void)
 static FILE* errorFile = NULL;
 static char errorFileName[_MAX_PATH];
 
-void initErrorFile(char *name)
+void initErrorFile( char *name )
 {
     assert(errorFile == NULL);
-    errorFile = wicFopen(setNewFileExt(errorFileName, name, "err"), "wt");
+    errorFile = wicFopen( setNewFileExt( errorFileName, name, "err" ), "wt" );
 }
 
-void zapErrorFile(void) {
+void zapErrorFile(void)
+{
     wicFclose(errorFile);
     errorFile = NULL;
 }
@@ -123,7 +122,8 @@ void logError(char *s) {
 }
 
 
-void reportError(WicErrors err, ...) {
+void reportError(WicErrors err, ...)
+{
     va_list arglist;
     static char errStr[MAX_TOKEN_SIZE];
     static char resStr[MAX_RESOURCE_SIZE];

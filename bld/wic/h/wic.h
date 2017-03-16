@@ -32,6 +32,7 @@
 
 /* WIC.H: Master include file. */
 
+#include "bool.h"
 #include "gentypes.h" /* Generic types */
 #include "forward.h"
 #include "cmdline.h"
