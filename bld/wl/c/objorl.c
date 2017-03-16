@@ -88,11 +88,10 @@ static readcache   *ReadCacheList;
 static void *ORLRead( orl_file_id fid, size_t len )
 /*************************************************/
 {
-    file_list   *list = ORL_FID2FL( fid );
     void        *result;
     readcache   *cache;
 
-    result = CachePermRead( list, ORLFilePos + ORLPos, len );
+    result = CachePermRead( ORL_FID2FL( fid ), ORLFilePos + ORLPos, len );
     ORLPos += len;
     _ChkAlloc( cache, sizeof( readcache ) );
     cache->next = ReadCacheList;
@@ -104,14 +103,12 @@ static void *ORLRead( orl_file_id fid, size_t len )
 static long ORLSeek( orl_file_id fid, long pos, int where )
 /*********************************************************/
 {
-    file_list *list = ORL_FID2FL( fid );
-
     if( where == SEEK_SET ) {
         ORLPos = pos;
     } else if( where == SEEK_CUR ) {
         ORLPos += pos;
     } else {
-        ORLPos = list->file->len - ORLFilePos - pos;
+        ORLPos = ORL_FID2FL( fid )->file->len - ORLFilePos - pos;
     }
     return( ORLPos );
 }
@@ -126,16 +123,14 @@ void InitObjORL( void )
 }
 
 void ObjORLFini( void )
-/****************************/
+/*********************/
 {
     ORLFini( ORLHandle );
 }
 
-static long ORLFileSeek( void *_list, long pos, int where )
-/*********************************************************/
+static long ORLFileSeek( file_list *list, long pos, int where )
+/*************************************************************/
 {
-    file_list *list = _list;
-
     if( where == SEEK_SET ) {
         ORLFilePos = pos;
         ORLPos = 0;
