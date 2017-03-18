@@ -211,9 +211,9 @@ void ClearAlert( void );
 /* lddips.c */
 
 void ShowDIPStatus( HWND hwnd );
-BOOL LoadTheDips( void );
+bool LoadTheDips( void );
 void FiniDipMsgs( void );
-BOOL IsDip( HINSTANCE );
+bool IsDip( HINSTANCE );
 
 /* lognote.c */
 void AnotateLog( HWND hwnd, HANDLE Instance, void (*fn)(char *)  );

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,10 +40,12 @@
 #include "dipimp.h"
 #include "dipcli.h"
 #include "dipsys.h"
+#include "diplasth.h"
+
 
 typedef void DIGENTRY dip_fini_func( void );
 
-HMODULE DIPLastHandle;  /* for Dr. WATCOM */
+HINSTANCE   DIPLastHandle;  /* for Dr. WATCOM */
 
 #ifdef DEBUGGING
 void Say( const char *buff )
@@ -51,19 +54,16 @@ void Say( const char *buff )
 }
 #endif
 
-
-
-void DIPSysUnload( dip_sys_handle *sys_hdl )
+void DIPSysUnload( dip_sys_handle sys_hdl )
 {
-    if( *sys_hdl != NULL_SYSHDL ) {
-        (*sys_hdl)();
+    if( sys_hdl != NULL_SYSHDL ) {
+        sys_hdl();
     }
 }
 
-
 dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
-    HANDLE              dll;
+    HINSTANCE           dip_dll;
     char                newpath[256];
     dip_status          status;
     char                parm[10];
@@ -102,17 +102,17 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     parm_block.show = &show_block;
     parm_block.reserved = 0;
     prev = SetErrorMode( SEM_NOOPENFILEERRORBOX );
-    dll = LoadModule( newpath, &parm_block );
-    DIPLastHandle = dll;
+    dip_dll = LoadModule( newpath, &parm_block );
+    DIPLastHandle = dip_dll;
     SetErrorMode( prev );
-    if( (UINT)dll < 32 ) {
-        return( DS_ERR|DS_FOPEN_FAILED );
+    if( dip_dll < HINSTANCE_ERROR ) {
+        return( DS_ERR | DS_FOPEN_FAILED );
     }
     status = DS_ERR|DS_INVALID_DIP;
     if( transfer_block.load != NULL && (*imp = transfer_block.load( &status, cli )) != NULL ) {
         *sys_hdl = transfer_block.unload;
         return( DS_OK );
     }
-    DIPSysUnload( &transfer_block.unload );
+    DIPSysUnload( transfer_block.unload );
     return( status );
 }

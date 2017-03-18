@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,6 +37,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <i64.h>
+#if defined( __WINDOWS__ )
+#elif defined( __NT__ )
+#include <windows.h>
+#elif defined( __OS2__ )
+#include <os2.h>
+#endif
 #include "bool.h"
 #include "mad.h"
 #include "madimp.h"
@@ -247,7 +253,7 @@ mad_status      MADRegister( dig_mad mad, const char *file, const char *desc )
                 curr->rtns = NULL;
             }
             if( curr->sys_hdl != NULL_SYSHDL ) {
-                MADSysUnload( &curr->sys_hdl );
+                MADSysUnload( curr->sys_hdl );
             }
             DIGCli( Free )( curr );
             break;
@@ -335,7 +341,7 @@ void            MADUnload( dig_mad mad )
             me->rtns = NULL;
         }
         if( me->sys_hdl != NULL_SYSHDL ) {
-            MADSysUnload( &me->sys_hdl );
+            MADSysUnload( me->sys_hdl );
         }
     }
 }

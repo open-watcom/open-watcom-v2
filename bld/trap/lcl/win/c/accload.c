@@ -226,8 +226,8 @@ trap_retval ReqProg_load( void )
         loadp.cmdshow->cmdshow = SW_NORMAL;
         loadp.reserved = 0L;
         DebuggerState = LOADING_DEBUGEE;
-        DebugeeInstance = LoadModule( exe_name, (LPVOID) &loadp );
-        if( (UINT)DebugeeInstance < 32 ) {
+        DebugeeInstance = LoadModule( exe_name, (LPVOID)&loadp );
+        if( DebugeeInstance < HINSTANCE_ERROR ) {
             Out((OUT_ERR,"Debugee did not load %d", DebugeeInstance));
             ret->err = WINERR_NOLOAD;
             LoadingDebugee = FALSE;

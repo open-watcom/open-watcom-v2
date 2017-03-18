@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +32,12 @@
 
 #include <string.h>
 #include <limits.h>
+#if defined( __WINDOWS__ )
+#elif defined( __NT__ )
+#include <windows.h>
+#elif defined( __OS2__ )
+#include <os2.h>
+#endif
 #include "bool.h"
 #include "walloca.h"
 #include "dip.h"
@@ -213,7 +219,7 @@ dip_status DIPLoad( const char *path )
     if( DIPClientInterface.major != LoadedDIPs[i].rtns->major
       || DIPClientInterface.minor > LoadedDIPs[i].rtns->minor ) {
         if( LoadedDIPs[i].sys_hdl != NULL_SYSHDL ) {
-            DIPSysUnload( &LoadedDIPs[i].sys_hdl );
+            DIPSysUnload( LoadedDIPs[i].sys_hdl );
         }
         LoadedDIPs[i].rtns = NULL;
         LoadedDIPs[i].sys_hdl = NULL_SYSHDL;
@@ -246,7 +252,7 @@ void DIPFiniLatest( void )
         if( LoadedDIPs[i].rtns != NULL ) {
             LoadedDIPs[i].rtns->Shutdown();
             if( LoadedDIPs[i].sys_hdl != NULL_SYSHDL ) {
-                DIPSysUnload( &LoadedDIPs[i].sys_hdl );
+                DIPSysUnload( LoadedDIPs[i].sys_hdl );
             }
             LoadedDIPs[i].rtns = NULL;
             LoadedDIPs[i].sys_hdl = NULL_SYSHDL;
@@ -263,7 +269,7 @@ void DIPFini( void )
         if( LoadedDIPs[i].rtns != NULL ) {
             LoadedDIPs[i].rtns->Shutdown();
             if( LoadedDIPs[i].sys_hdl != NULL_SYSHDL ) {
-                DIPSysUnload( &LoadedDIPs[i].sys_hdl );
+                DIPSysUnload( LoadedDIPs[i].sys_hdl );
             }
         }
         LoadedDIPs[i].rtns = NULL;

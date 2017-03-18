@@ -295,5 +295,5 @@ RVALUE FindWatSymbol( address *addr, syminfo *si, int getsrcinfo );
 
 /* lddips.c */
 void ShowDIPStatus( HWND hwnd );
-BOOL LoadTheDips( void );
+bool LoadTheDips( void );
 void FiniDipMsgs( void );

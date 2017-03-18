@@ -344,7 +344,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
         parm.lpCmdShow = (void __far *)&cmddat;
         parm.dwReserved = 0;
         newinst = LoadModule( "wsamplew.exe", (LPVOID)&parm );
-        if( (UINT)newinst < 32 ) {
+        if( newinst < HINSTANCE_ERROR ) {
             WinMessage( MsgArray[MSG_SAMPLE_12 - ERR_FIRST_MESSAGE] );
             CloseShop();
             return( FALSE );

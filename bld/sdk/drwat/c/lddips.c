@@ -35,6 +35,7 @@
 #include "drwatcom.h"
 #include "dip.h"
 #include "dipload.h"
+#include "diplasth.h"
 #include "ldstr.h"
 #include "rcstr.gh"
 #include "mem.h"
@@ -46,16 +47,14 @@ WINEXPORT INT_PTR CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wpara
 
 typedef struct {
     char        *loadmsg;
-    BOOL        loaded;
+    bool        loaded;
+#ifdef __WINDOWS__
     HINSTANCE   hinst;
+#endif
 } LoadInfo;
 
 static LoadInfo         *theLoadInfo;
-static unsigned         dipCnt;
-
-#ifdef __WINDOWS__
-extern HINSTANCE        DIPLastHandle;
-#endif
+static int              dipCnt;
 
 static void initDipMsgs( void )
 {
@@ -71,7 +70,7 @@ static void initDipMsgs( void )
 INT_PTR CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
-    WORD        i;
+    int         i;
     bool        ret;
 
     lparam = lparam;
@@ -112,16 +111,16 @@ void ShowDIPStatus( HWND hwnd )
     FreeProcInstance( (FARPROC)dlg_proc );
 }
 
-BOOL LoadTheDips( void )
+bool LoadTheDips( void )
 {
     int         rc;
     unsigned    i;
     char        *ptr;
     char        buf[256];
     char        status[80];
-    BOOL        diploaded;
+    bool        diploaded;
 
-    diploaded = FALSE;
+    diploaded = false;
     initDipMsgs();
     i = 0;
     for( ptr = DIPDefaults; *ptr != '\0'; ptr += strlen( ptr ) + 1 ) {
@@ -147,11 +146,11 @@ BOOL LoadTheDips( void )
             }
         } else {
             CopyRCString( STR_DIP_LOADED, status, sizeof( status) );
-            diploaded = TRUE;
+            diploaded = true;
         }
         sprintf( buf, "%-18s %s", ptr, status );
         theLoadInfo[i].loadmsg = MemAlloc( strlen( buf ) + 1 );
-        theLoadInfo[i].loaded = !( rc & DS_ERR );
+        theLoadInfo[i].loaded = ( (rc & DS_ERR) == 0 );
 #ifdef __WINDOWS__
         if( theLoadInfo[i].loaded ) {
             theLoadInfo[i].hinst = DIPLastHandle;
@@ -164,14 +163,13 @@ BOOL LoadTheDips( void )
         RCMessageBox( NULL, STR_NO_DIPS_LOADED, AppName, MB_OK | MB_ICONEXCLAMATION );
         ShowDIPStatus( NULL );
         DIPFini();
-        return( FALSE );
     }
-    return( TRUE );
+    return( diploaded );
 }
 
 void FiniDipMsgs( void )
 {
-    WORD        i;
+    int     i;
 
     for( i = 0; i < dipCnt; i++ ) {
         MemFree( theLoadInfo[i].loadmsg );
@@ -179,15 +177,15 @@ void FiniDipMsgs( void )
 }
 
 #ifdef __WINDOWS__
-BOOL IsDip( HINSTANCE hinst )
+bool IsDip( HINSTANCE hinst )
 {
-    WORD        i;
+    int     i;
 
     for( i = 0; i < dipCnt; i++ ) {
         if( theLoadInfo[i].loaded && theLoadInfo[i].hinst == hinst ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 #endif

@@ -72,7 +72,7 @@ extern HANDLE               InstanceHandle,PrevInstance;
 extern samp_save __far      * __near SampSave;
 extern WORD                 SleepTime;
 extern DWORD                TotalTime;
-extern HANDLE               SampledProg;
+extern HINSTANCE            SampledProg;
 extern interrupt_struct     __near IntData;
 extern seg_offset           CommonAddr;
 extern HANDLE               WaitForInt3;

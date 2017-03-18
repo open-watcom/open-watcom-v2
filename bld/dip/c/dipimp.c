@@ -144,11 +144,11 @@ DIG_DLLEXPORT dip_imp_routines * DIGENTRY DIPLOAD( dip_status *status, dip_clien
     DIPClient = client;
 #if defined( __WINDOWS__ )
     {
-        FARPROC start;
+        dip_status (DIGENTRY *start)(void);
 
-        start = MakeProcInstance( (FARPROC)DIPImp( Startup ), ThisInst );
-        *status = ((dip_status(DIGENTRY*)(void)) start)();
-        FreeProcInstance( start );
+        start = (dip_status (DIGENTRY *)(void))MakeProcInstance( (FARPROC)DIPImp( Startup ), ThisInst );
+        *status = start();
+        FreeProcInstance( (FARPROC)start );
     }
 #else
     *status = DIPImp( Startup )();
@@ -266,7 +266,7 @@ dig_mad DCCurrMAD( void )
     return( DIPClient->CurrMAD() );
 }
 
-unsigned        DCMachineData( address a, dig_info_type info_type,
+unsigned DCMachineData( address a, dig_info_type info_type,
                                 dig_elen in_size,  const void *in,
                                 dig_elen out_size, void *out )
 {

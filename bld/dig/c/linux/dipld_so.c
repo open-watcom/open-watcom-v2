@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,14 +42,14 @@
 #include "clibext.h"
 
 
-void DIPSysUnload( dip_sys_handle *sys_hdl )
+void DIPSysUnload( dip_sys_handle sys_hdl )
 {
-    dlclose( *sys_hdl );
+    dlclose( sys_hdl );
 }
 
 dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
-    void                *shlib;
+    dip_sys_handle      shlib;
     dip_init_func       *init_func;
     char                newpath[_MAX_PATH];
     char                full_path[_MAX_PATH];
