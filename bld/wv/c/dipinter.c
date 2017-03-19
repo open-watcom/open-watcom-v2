@@ -290,7 +290,7 @@ static dip_status WVIMPENTRY( MoreMem )( unsigned amount )
 }
 
 #if 0
-static dip_status WVIMPENTRY( Startup )( void )
+static dip_status WVImp( Startup )( void )
 {
     return( DS_OK );
 }

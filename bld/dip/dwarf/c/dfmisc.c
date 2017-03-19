@@ -117,7 +117,7 @@ dip_status DIPIMPENTRY( MoreMem )( unsigned size )
     return( ret );
 }
 
-dip_status DIPIMPENTRY( Startup )(void)
+dip_status DIPImp( Startup )(void)
 {
 /*
         Return DS_OK if startup initialization went OK, or a DS_ERR|DS_?
@@ -134,8 +134,8 @@ void DIPIMPENTRY( Shutdown )( void )
 /*
         Shutting down and unloading. Last chance to free up stuff.
 */
-        Images = NULL;
-        DRFini();
+    Images = NULL;
+    DRFini();
 }
 
 void DIPIMPENTRY( Cancel )( void )

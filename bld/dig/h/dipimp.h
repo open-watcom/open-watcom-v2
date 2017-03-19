@@ -81,7 +81,7 @@ typedef walk_result (DIGCLIENT DIP_IMP_CUE_WALKER)( imp_image_handle *, imp_cue_
 #include "_dipimp.h"
 #undef pick
 
-extern dip_status   DIPIMPENTRY( Startup )( void );
+extern dip_status   DIPImp( Startup )( void );
 
 extern const char   DIPImp( Name )[];
 

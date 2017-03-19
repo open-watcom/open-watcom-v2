@@ -142,17 +142,7 @@ const char __based( __segname( "_CODE" ) ) Signature[4] = "DIP";
 DIG_DLLEXPORT dip_imp_routines * DIGENTRY DIPLOAD( dip_status *status, dip_client_routines *client )
 {
     DIPClient = client;
-#if defined( __WINDOWS__ )
-    {
-        dip_status (DIGENTRY *start)(void);
-
-        start = (dip_status (DIGENTRY *)(void))MakeProcInstance( (FARPROC)DIPImp( Startup ), ThisInst );
-        *status = start();
-        FreeProcInstance( (FARPROC)start );
-    }
-#else
     *status = DIPImp( Startup )();
-#endif
     if( *status & DS_ERR )
         return( NULL );
     return( &ImpInterface );

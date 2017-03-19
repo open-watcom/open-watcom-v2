@@ -55,7 +55,7 @@ dip_status DIPIMPENTRY( MoreMem )( unsigned size )
     return( DS_FAIL );
 }
 
-dip_status DIPIMPENTRY( Startup )( void )
+dip_status DIPImp( Startup )( void )
 {
     /* nothing to do */
     return( DS_OK );

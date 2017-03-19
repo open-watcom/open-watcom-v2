@@ -71,7 +71,7 @@ dip_status DIPIMPENTRY( MoreMem )( unsigned size )
 /*
  * Module startup.
  */
-dip_status DIPIMPENTRY( Startup )(void)
+dip_status DIPImp( Startup )(void)
 {
     return( DS_OK );
 }
