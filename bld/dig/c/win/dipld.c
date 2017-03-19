@@ -108,7 +108,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     if( dip_dll < HINSTANCE_ERROR ) {
         return( DS_ERR | DS_FOPEN_FAILED );
     }
-    status = DS_ERR|DS_INVALID_DIP;
+    status = DS_ERR | DS_INVALID_DIP;
     if( transfer_block.load != NULL && (*imp = transfer_block.load( &status, cli )) != NULL ) {
         *sys_hdl = transfer_block.unload;
         return( DS_OK );

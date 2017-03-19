@@ -300,11 +300,10 @@ mad_status      MADLoad( dig_mad mad )
         me->rtns = NULL;
         return( MADStatus( ms ) );
     }
-    if( MADClientInterface.major != me->rtns->major
-     || MADClientInterface.minor > me->rtns->minor ) {
+    if( MADClientInterface.major != me->rtns->major || MADClientInterface.minor > me->rtns->minor ) {
         me->rtns = NULL;
         MADUnload( mad );
-        return( MADStatus( MS_ERR|MS_INVALID_MAD_VERSION ) );
+        return( MADStatus( MS_ERR | MS_INVALID_MAD_VERSION ) );
     }
     ms = me->rtns->Init();
     if( ms != MS_OK ) {
@@ -316,7 +315,7 @@ mad_status      MADLoad( dig_mad mad )
         me->sl = DIGCli( Alloc )( sizeof( *me->sl ) + me->rtns->StateSize() );
         if( me->sl == NULL ) {
             MADUnload( mad );
-            return( MADStatus( MS_ERR|MS_NO_MEM ) );
+            return( MADStatus( MS_ERR | MS_NO_MEM ) );
         }
         me->rtns->StateInit( (imp_mad_state_data *)&me->sl[1] );
         me->sl->next = NULL;
@@ -352,7 +351,7 @@ mad_status      MADLoaded( dig_mad mad )
 
     me = MADFind( mad );
     if( me == NULL )
-        return( MADStatus( MS_ERR|MS_UNREGISTERED_MAD ) );
+        return( MADStatus( MS_ERR | MS_UNREGISTERED_MAD ) );
     return( me->rtns != NULL ? MS_OK : MS_FAIL );
 }
 
@@ -421,7 +420,7 @@ mad_state_data  *MADStateSet( mad_state_data *msd )
                 return( curr );
             }
         }
-        MADStatus( MS_ERR|MS_NO_MEM );
+        MADStatus( MS_ERR | MS_NO_MEM );
     }
     return( Active->sl );
 }
@@ -443,7 +442,7 @@ void            MADStateDestroy( mad_state_data *msd )
             return;
         }
     }
-    MADStatus( MS_ERR|MS_INVALID_STATE );
+    MADStatus( MS_ERR | MS_INVALID_STATE );
 }
 
 void            MADFini( void )
@@ -474,7 +473,7 @@ size_t MADNameFile( dig_mad mad, char *buff, size_t buff_size )
 
     me = MADFind( mad );
     if( me == NULL ) {
-        MADStatus( MS_ERR|MS_UNREGISTERED_MAD );
+        MADStatus( MS_ERR | MS_UNREGISTERED_MAD );
         return( 0 );
     }
     len = strlen( me->file );
@@ -495,7 +494,7 @@ size_t MADNameDescription( dig_mad mad, char *buff, size_t buff_size )
 
     me = MADFind( mad );
     if( me == NULL ) {
-        MADStatus( MS_ERR|MS_UNREGISTERED_MAD );
+        MADStatus( MS_ERR | MS_UNREGISTERED_MAD );
         return( 0 );
     }
     len = strlen( me->desc );

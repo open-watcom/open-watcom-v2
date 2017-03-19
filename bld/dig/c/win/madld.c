@@ -106,9 +106,9 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli,
     MADLastHandle = dip_dll;
     SetErrorMode( prev );
     if( dip_dll < HINSTANCE_ERROR ) {
-        return( MS_ERR|MS_FOPEN_FAILED );
+        return( MS_ERR | MS_FOPEN_FAILED );
     }
-    status = MS_ERR|MS_INVALID_MAD;
+    status = MS_ERR | MS_INVALID_MAD;
     if( transfer_block.load != NULL && (*imp = transfer_block.load( &status, cli )) != NULL ) {
         *sys_hdl = transfer_block.unload;
         return( MS_OK );

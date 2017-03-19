@@ -55,9 +55,9 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     strcat( newpath, ".dll" );
     dip_dll = LoadLibrary( newpath );
     if( dip_dll == NULL ) {
-        return( DS_ERR|DS_FOPEN_FAILED );
+        return( DS_ERR | DS_FOPEN_FAILED );
     }
-    status = DS_ERR|DS_INVALID_DIP;
+    status = DS_ERR | DS_INVALID_DIP;
     init_func = (dip_init_func *)GetProcAddress( dip_dll, "DIPLOAD" );
     if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
         *sys_hdl = dip_dll;

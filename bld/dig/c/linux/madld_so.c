@@ -61,10 +61,10 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli, mad_imp_routi
         _searchenv( newpath, "PATH", full_path );
         shlib = dlopen( full_path, RTLD_NOW );
         if( shlib == NULL ) {
-            return( MS_ERR|MS_FOPEN_FAILED );
+            return( MS_ERR | MS_FOPEN_FAILED );
         }
     }
-    status = MS_ERR|MS_INVALID_MAD;
+    status = MS_ERR | MS_INVALID_MAD;
     init_func = (mad_init_func *)dlsym( shlib, "MADLOAD" );
     if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
         *sys_hdl = shlib;

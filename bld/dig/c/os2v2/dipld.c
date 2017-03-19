@@ -60,9 +60,9 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     strcat( dipname, ".D32" );
     _searchenv( dipname, "PATH", dippath );
     if( dippath[0] == '\0' || DosLoadModule( NULL, 0, dippath, &dip_mod ) != 0 ) {
-        return( DS_ERR|DS_FOPEN_FAILED );
+        return( DS_ERR | DS_FOPEN_FAILED );
     }
-    status = DS_ERR|DS_INVALID_DIP;
+    status = DS_ERR | DS_INVALID_DIP;
     if( DosQueryProcAddr( dip_mod, 0, "DIPLOAD", (PFN FAR *)&init_func ) == 0 && (*imp = init_func( &status, cli )) != NULL ) {
         *sys_hdl = dip_mod;
         return( DS_OK );

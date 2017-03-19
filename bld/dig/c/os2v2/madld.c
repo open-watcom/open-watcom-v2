@@ -61,9 +61,9 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli, mad_imp_routi
     strcat( madname, ".D32" );
     _searchenv( madname, "PATH", madpath );
     if( madpath[0] == '\0' || DosLoadModule( NULL, 0, madpath, &dip_mod ) != 0 ) {
-        return( MS_ERR|MS_FOPEN_FAILED );
+        return( MS_ERR | MS_FOPEN_FAILED );
     }
-    status = MS_ERR|MS_INVALID_MAD;
+    status = MS_ERR | MS_INVALID_MAD;
     if( DosQueryProcAddr( dip_mod, 0, "MADLOAD", (PFN FAR *)&init_func ) == 0 && (*imp = init_func( &status, cli )) != NULL ) {
         *sys_hdl = dip_mod;
         return( MS_OK );
