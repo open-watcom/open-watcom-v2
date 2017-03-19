@@ -272,7 +272,7 @@ dip_status DIPIMPENTRY( OldTypeBase )(imp_image_handle *ii, imp_type_handle *it,
 
 #if defined( __WINDOWS__ )
 
-typedef void (DIGENTRY INTER_FUNC)();
+typedef void (DIGENTRY *INTERPROC)();
 
 #ifdef DEBUGGING
 void Say( const char *buff )
@@ -293,7 +293,7 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
 */
 {
     MSG                 msg;
-    INTER_FUNC          **func;
+    INTERPROC           *func;
     unsigned            count;
     struct {
         dip_init_func   *load;
@@ -311,10 +311,10 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     link = MK_FP( seg, off );
     TaskId = GetCurrentTask();
     ThisInst = this_inst;
-    func = (INTER_FUNC **)&ImpInterface.HandleSize;
-    count = ( sizeof( dip_imp_routines ) - offsetof( dip_imp_routines, HandleSize ) ) / sizeof( INTER_FUNC * );
+    func = (INTERPROC *)&ImpInterface.HandleSize;
+    count = ( sizeof( dip_imp_routines ) - offsetof( dip_imp_routines, HandleSize ) ) / sizeof( INTERPROC );
     while( count != 0 ) {
-        *func = (INTER_FUNC *)MakeProcInstance( (FARPROC)*func, this_inst );
+        *func = (INTERPROC)MakeProcInstance( (FARPROC)*func, this_inst );
         ++func;
         --count;
     }
