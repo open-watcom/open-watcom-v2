@@ -30,24 +30,25 @@
 ****************************************************************************/
 
 
+#include <windows.h>
+#include "bool.h"
 #include "i64.h"
 #include "ctype.h"
-#include <windows.h>
 #include "strcnv.h"
 
 
-static char * eatSpace( char *str )
+static char *eatSpace( char *str )
 {
     while( *str != '\0' ) {
         if( !isspace(*str) ) {
             break;
         }
-    str++;
+        str++;
     }
     return( str );
 }
 
-BOOL StrToU64( char *str, unsigned_64 *u64, BOOL neg )
+bool StrToU64( char *str, unsigned_64 *u64, bool neg )
 {
     unsigned_64 r64;
     unsigned_64 v64;
@@ -56,20 +57,20 @@ BOOL StrToU64( char *str, unsigned_64 *u64, BOOL neg )
 
     str = eatSpace( str );
     U32ToU64( 0, u64 );
-    if( neg == TRUE ) {
+    if( neg ) {
         if( *str == '-') {
             str++;
         } else {
             if( *str == '+' ) {
                 str++;
-                neg = FALSE;
+                neg = false;
             }
         }
     }
     str = eatSpace( str );
     switch( *str ){
     case '\0':
-        return( FALSE );
+        return( false );
     case '0':
         str++;
         if( tolower(*str) == 'x' ) {
@@ -90,15 +91,15 @@ BOOL StrToU64( char *str, unsigned_64 *u64, BOOL neg )
             value = 10 + tolower( *str ) - 'a';
         }
         if( value < 0 || value >= radix ) {
-            return ( FALSE );
+            return( false );
         }
         U32ToU64( value, &v64 );
         U64Mul( u64, &r64, u64 );
         U64Add( &v64, u64, u64 );
         str++;
     }
-    if( neg == TRUE) {
+    if( neg ) {
         U64Neg( u64, u64 );
     }
-    return( TRUE );
+    return( true );
 }

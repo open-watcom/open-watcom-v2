@@ -143,7 +143,7 @@ static HSZ          hDataItem = NULL;
 static HSZ          hService = NULL;
 static HCONV        IEClientConv = NULL;
 static HCONV        IEServerConv = NULL;
-static BOOL         GotEndSession = FALSE;
+static bool         GotEndSession = false;
 
 /*
  * IEDDEStart
@@ -578,8 +578,8 @@ static void IEHandlePokedData( HDDEDATA hdata )
         ShowWindow( HMainWindow, SW_SHOWMINNOACTIVE );
         ShowWindow( HMainWindow, SW_HIDE );
     } else if( stricmp( cmd, "endsession" ) == 0 ) {
-        if( GotEndSession == FALSE ) {
-            GotEndSession = TRUE;
+        if( !GotEndSession ) {
+            GotEndSession = true;
             CloseAllImages();
         }
     } else if( stricmp( cmd, "bringtofront" ) == 0 ) {

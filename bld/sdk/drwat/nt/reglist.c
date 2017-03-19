@@ -214,7 +214,7 @@ static void AddRegisters(HWND list,mad_reg_set_data *reg_set )
         if( extra < j ) {
             x++;
         }
-        if( IsEmptyString( reg_create[i].buffer ) == FALSE ) {
+        if( !IsEmptyString( reg_create[i].buffer ) ) {
             CreateRegString( list, x, y, reg_create[j].length, height, reg_create[i].buffer, id );
         }
         x += reg_create[j].length + space;
@@ -390,14 +390,13 @@ static void UpdateRegList(HWND list, RegListData *list_data)
         if( extra < j ){
             x++;
         }
-        if( IsEmptyString( reg_create[i].buffer ) == FALSE ) {
+        if( !IsEmptyString( reg_create[i].buffer ) ) {
             string = GetDlgItem( list, id );
             if( string == NULL ) {
                 CreateRegString( list, x, y, reg_create[j].length, height, reg_create[i].buffer, id );
             } else {
                 UpdateRegString( string, list, x, y, reg_create[j].length, height, reg_create[i].buffer );
             }
-
         }
         x += reg_create[j].length + space;
         id++;
@@ -411,7 +410,7 @@ static void UpdateRegList(HWND list, RegListData *list_data)
 
     string = GetWindow( list, GW_CHILD );
     while( string ) {
-        if( GetRegStringDestroyFlag( string ) == TRUE ) {
+        if( GetRegStringDestroyFlag( string ) ) {
             if( list_data->curr_reg == string ) {
                 list_data->curr_reg = NULL;
             }

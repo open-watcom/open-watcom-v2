@@ -534,6 +534,7 @@ bool WdeStartDDEEditSession( void )
 }
 
 static bool GotEndSession = false;
+
 void WdeHandlePokedData( HDDEDATA hdata )
 {
     HWND        main;

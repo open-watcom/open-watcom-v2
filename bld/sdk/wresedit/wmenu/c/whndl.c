@@ -148,10 +148,10 @@ int WIsMenuDialogMessage( MSG *msg, HACCEL accel_table )
                     ret = IsDialogMessage( hinfo->info->edit_dlg, msg );
                 }
                 if( !ret ) {
-                    ret = TranslateAccelerator( hinfo->info->win, accel_table, msg );
+                    ret = ( TranslateAccelerator( hinfo->info->win, accel_table, msg ) != 0 );
                 }
             } else {
-                ret = TranslateAccelerator( hinfo->info->win, accel_table, msg );
+                ret = ( TranslateAccelerator( hinfo->info->win, accel_table, msg ) != 0 );
                 if( !ret && hinfo->info->edit_dlg != (HWND)NULL ) {
                     ret = IsDialogMessage( hinfo->info->edit_dlg, msg );
                 }

@@ -103,14 +103,11 @@ void SetRegStringDestroyFlag(HWND hwnd)
     SetWindowLong( hwnd, 0, flags );
 }
 
-BOOL GetRegStringDestroyFlag(HWND hwnd)
+bool GetRegStringDestroyFlag(HWND hwnd)
 {
     LONG flags;
     flags = GetWindowLong( hwnd, 0 );
-    if( flags & REG_DESTROY ) {
-        return( TRUE );
-    }
-    return( FALSE );
+    return( (flags & REG_DESTROY) != 0 );
 }
 
 static void RegStrPaint(HWND hwnd)
@@ -150,24 +147,24 @@ static void RegStrPaint(HWND hwnd)
     EndPaint( hwnd, &ps );
 }
 
-static BOOL SetRegSelectFlag(HWND hwnd,BOOL setting)
+static bool SetRegSelectFlag( HWND hwnd, bool setting )
 {
     LONG flags;
 
     flags = GetWindowLong( hwnd, 0 );
-    if( ( setting == TRUE ) && !( flags & REG_SELECTED ) ) {
+    if( setting && (flags & REG_SELECTED) == 0 ) {
         flags |= REG_SELECTED;
         InvalidateRect( hwnd, NULL, FALSE );
         SetWindowLong( hwnd, 0, flags );
-        return ( TRUE );
+        return( true );
     }
-    if( ( setting == FALSE ) && ( flags & REG_SELECTED ) ) {
+    if( !setting && (flags & REG_SELECTED) ) {
         flags &= ~REG_SELECTED;
         InvalidateRect( hwnd, NULL, FALSE );
         SetWindowLong( hwnd, 0, flags );
-        return ( TRUE );
+        return( true );
     }
-    return ( FALSE );
+    return( false );
 }
 
 void GetChildPos( HWND parent, HWND child, RECT *c_rect )
@@ -189,6 +186,7 @@ void GetChildPos( HWND parent, HWND child, RECT *c_rect )
     c_rect->bottom -= c_rect->top;
     c_rect->top -= p_rect.top;
 }
+
 static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
 {
     RegModifyData   *data;
@@ -448,10 +446,10 @@ LRESULT CALLBACK RegStringProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         SendMessage( list, CHILD_L_CLICK, (WPARAM) hwnd, lparam );
         break;
     case REG_STRING_DESELECTED:
-        SetRegSelectFlag( hwnd, FALSE );
+        SetRegSelectFlag( hwnd, false );
         break;
     case REG_STRING_SELECTED:
-        SetRegSelectFlag( hwnd, TRUE );
+        SetRegSelectFlag( hwnd, true );
         break;
     case WM_LBUTTONDBLCLK:
         GetNewRegValue( hwnd );

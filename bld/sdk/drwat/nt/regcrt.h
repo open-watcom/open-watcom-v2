@@ -38,7 +38,7 @@ typedef struct {
     char    *buffer;
 } RegStringCreateData;
 
-BOOL IsEmptyString( const char *s );
+bool IsEmptyString( const char *s );
 void GetRegStringCreate( mad_registers *regs, mad_reg_set_data *reg_set,
 int width, RegStringCreateData **rc, int *nregs, int *ncols );
 

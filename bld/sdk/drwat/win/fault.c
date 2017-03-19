@@ -220,7 +220,7 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
         LBPrintf( ListBox, STR_ADDRESS_EQ_16, IntData.CS, (WORD)IntData.EIP );
     }
 
-    LoadDbgInfo( );
+    LoadDbgInfo();
     if( LogInfo.flags[LOGFL_AUTOLOG] != '1' ) {
         dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)IntDialogDlgProc, Instance );
         rc = JDialogBox( Instance, "INTERRUPT", NULL, dlg_proc );

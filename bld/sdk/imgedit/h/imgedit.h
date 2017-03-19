@@ -470,7 +470,7 @@ void    ChangeImageSize( void );
 
 /* settings.c */
 void    SelectOptions( void );
-BOOL    StretchPastedImage( void );
+int     StretchPastedImage( void );
 int     GetRotateType( void );
 BOOL    DoKeepRect( void );
 void    SetSettingsDlg( settings_info *info );

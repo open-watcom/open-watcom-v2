@@ -231,7 +231,7 @@ void SetDisasmInfo( HANDLE hdl, ModuleNode *mod );
 int InstructionFoward(int cnt, address *addr);
 int InstructionBackward( int cnt, address *addr);
 void Disassemble( address *addr, char *buff, int addbytes,unsigned max );
-BOOL AllocMadDisasmData(void);
+bool AllocMadDisasmData(void);
 void DeAllocMadDisasmData(void);
 
 /* log.c */
@@ -266,10 +266,10 @@ BOOL GetImageMemInfo( DWORD procid, char *imagename, MemByType *imageinfo );
 #endif
 
 /* sym.c */
-BOOL InitDip( void );
-BOOL GetLineNum( address *addr, char *fname, DWORD bufsize, DWORD *line );
-BOOL GetSymbolName( address *addr, char *name, DWORD *symoff );
-BOOL LoadDbgInfo( ModuleNode *mod );
+bool InitDip( void );
+bool GetLineNum( address *addr, char *fname, DWORD bufsize, DWORD *line );
+bool GetSymbolName( address *addr, char *name, DWORD *symoff );
+bool LoadDbgInfo( ModuleNode *mod );
 void UnloadDbgInfo( ModuleNode *mod );
 
 /* memory.c */
@@ -278,7 +278,7 @@ void DoMemDlg( HWND hwnd, DWORD procid );
 #endif
 
 /* memview.c */
-BOOL RegisterMemWalker( void );
+bool RegisterMemWalker( void );
 void WalkMemory( HWND parent, HANDLE hdl, DWORD procid );
 void FormatMemListEntry( char *buf, MemListItem *item );
 void RefreshMemList( DWORD procid, HANDLE prochdl, MemListData *proclist );

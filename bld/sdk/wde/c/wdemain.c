@@ -469,11 +469,10 @@ bool WdeInitInst( HINSTANCE app_inst )
 
 bool WdeWasAcceleratorHandled( MSG *msg )
 {
-    if( !TranslateMDISysAccel( hWinWdeMDIClient, msg ) &&
-        !TranslateAccelerator( hWinWdeMain, WdeAccel, msg ) ) {
-        return( FALSE );
+    if( TranslateMDISysAccel( hWinWdeMDIClient, msg ) == 0 && TranslateAccelerator( hWinWdeMain, WdeAccel, msg ) == 0 ) {
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 void WdeSetAppMenuToRes( bool set_to_res_menu )

@@ -220,12 +220,13 @@ static void EnableLocalMenu( BOOL enable )
  * AddToLocalHeapList - add an entry the the local heap list
  */
 
-static BOOL AddToLocalHeapList( LOCALENTRY *item, unsigned i ) {
+static bool AddToLocalHeapList( LOCALENTRY *item, unsigned i ) {
 
     LocalHeapList[i] = MemAlloc( sizeof( LOCALENTRY ) );
-    if( LocalHeapList[i] == NULL ) return( FALSE );
+    if( LocalHeapList[i] == NULL )
+        return( false );
     *LocalHeapList[i] = *item;
-    return( TRUE );
+    return( true );
 } /* AddToLocalHeapList */
 
 /*
@@ -283,7 +284,7 @@ static BOOL InitLocalHeapList( HWND hwnd, HWND listhdl, BOOL keeppos )
     LocalStateStruct    state;
     unsigned            size;
     unsigned            lim;
-    BOOL                ret;
+    bool                ret;
 
     /* get number of elements */
     info.dwSize = sizeof( LOCALINFO );
@@ -293,23 +294,31 @@ static BOOL InitLocalHeapList( HWND hwnd, HWND listhdl, BOOL keeppos )
     }
     FreeLocalList();
     for( ;; ) {
-        if( LocalInfo( &info, LocalHeapHandle ) == 0 ) break;
+        if( LocalInfo( &info, LocalHeapHandle ) == 0 )
+            break;
         lim = info.wcItems;
         size = lim * sizeof( LOCALENTRY * );
         LocalHeapList = MemAlloc( size );
-        if( LocalHeapList == NULL ) break;
+        if( LocalHeapList == NULL )
+            break;
         memset( &item, 0, sizeof( LOCALENTRY ) );
         item.dwSize = sizeof( LOCALENTRY );
         LocalHeapCount = 0;
-        if( LocalFirst( &item, LocalHeapHandle ) == 0 ) break;
+        if( LocalFirst( &item, LocalHeapHandle ) == 0 )
+            break;
         for( ;; ) {
             ret = AddToLocalHeapList( &item, LocalHeapCount );
-            if( ret == FALSE ) break;
+            if( !ret )
+                break;
             LocalHeapCount ++;
-            if( LocalHeapCount == lim ) break;
-            if( LocalNext( &item ) == 0 ) break;
+            if( LocalHeapCount == lim )
+                break;
+            if( LocalNext( &item ) == 0 ) {
+                break;
+            }
         }
-        if( ret == FALSE ) break;
+        if( !ret )
+            break;
         SortLocalHeapList( hwnd, LSortType );
         ReDisplayLocalHeapList( listhdl, keeppos ? &state:NULL );
         return( TRUE );

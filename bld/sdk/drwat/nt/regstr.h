@@ -52,6 +52,6 @@ typedef union {
 HWND CreateRegString( HWND parent, int x, int y, int width, int height, char *text, int id );
 void UpdateRegString( HWND string, HWND list, int x, int y, int width, int height, char *text );
 void SetRegStringDestroyFlag( HWND hwnd );
-BOOL GetRegStringDestroyFlag( HWND hwnd );
+bool GetRegStringDestroyFlag( HWND hwnd );
 void InitRegString(void);
 void GetChildPos( HWND parent, HWND child, RECT *c_rect );

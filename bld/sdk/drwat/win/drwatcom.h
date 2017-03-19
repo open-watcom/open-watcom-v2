@@ -188,14 +188,14 @@ void DoStatDialog( HWND );
 BOOL FindSymbol( ADDRESS *addr, syminfo *si );
 void SymFileClose( void );
 RVALUE FindWatSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo );
-BOOL InitSymbols( void );
+bool InitSymbols( void );
 void FiniSymbols( void );
-BOOL LoadDbgInfo( void );
+bool LoadDbgInfo( void );
 
 /* win32app.c */
 bool CheckIsWin32App( HANDLE );
-BOOL DoGlobalEntryModule( GLOBALENTRY *ge, HMODULE hmod, WORD seg );
-BOOL DoGlobalEntryHandle( GLOBALENTRY *ge, HANDLE hmem );
+bool DoGlobalEntryModule( GLOBALENTRY *ge, HMODULE hmod, WORD seg );
+bool DoGlobalEntryHandle( GLOBALENTRY *ge, HANDLE hmem );
 
 /* winmain.c */
 #pragma aux Death aborts;

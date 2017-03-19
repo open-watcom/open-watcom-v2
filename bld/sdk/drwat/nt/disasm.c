@@ -54,34 +54,34 @@ RVALUE FindWatSymbol( address *addr, syminfo *si, int getsrcinfo )
 {
     DWORD       symoff;
     DWORD       line;
-    BOOL        ret;
+
     if( !GetSymbolName( addr, si->name, &symoff ) ) {
         return( NOT_FOUND );
     }
     si->symoff = symoff;
     if( getsrcinfo ) {
-        ret = GetLineNum( addr, si->filename, MAX_FILE_NAME, &line );
-        if( !ret ) return( NOT_FOUND );
+        if( !GetLineNum( addr, si->filename, MAX_FILE_NAME, &line ) )
+            return( NOT_FOUND );
         si->linenum = line;
     }
     return( FOUND );
 }
 
-int AllocMadDisasmData(void)
+bool AllocMadDisasmData(void)
 {
     unsigned    new;
 
     new = MADDisasmDataSize();
     MDData = MemAlloc( new );
-    if (MDData == NULL){
-        return FALSE;
+    if( MDData == NULL ) {
+        return( false );
     }
-    return TRUE;
+    return( true );
 }
 
-void DeAllocMadDisasmData(void)
+void DeAllocMadDisasmData( void )
 {
-    MemFree(MDData);
+    MemFree( MDData );
 }
 
 static unsigned FormatAddr( address *a, char *buffer, unsigned max )

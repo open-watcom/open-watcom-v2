@@ -65,7 +65,8 @@ static BOOL initRCStrings( void ) {
     return( TRUE );
 }
 
-static BOOL initClass( void ) {
+static bool initClass( void )
+{
     WNDCLASS            wc;
 
     wc.style = 0L;
@@ -79,9 +80,9 @@ static BOOL initClass( void ) {
     wc.lpszMenuName = "APPLMENU";
     wc.lpszClassName = className;
     if( !RegisterClass( &wc ) ) {
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow)
@@ -169,15 +170,15 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
     MemStart();
     GetProfileInfo();
     InitRegList();
-    if ( JDialogInit() == FALSE ){
+    if( !JDialogInit() ) {
         return ( 0 );
     }
-    if ( InitMADInfo() == FALSE ){
+    if( !InitMADInfo() ) {
         JDialogFini();
         return ( 0 );
     }
 
-    if( InitDip() == FALSE ) {
+    if( !InitDip() ) {
         FiniMADInfo();
         JDialogFini();
         return ( 0 );
@@ -188,7 +189,7 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
      * initialize
      */
 
-    if( initClass() == FALSE ) {
+    if( !initClass() ) {
         FiniMADInfo();
         JDialogFini();
         return ( 0 );
@@ -198,7 +199,7 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
         FiniMADInfo();
         JDialogFini();
         return( 0 );
-   }
+    }
 
     /*
      * set up the memory window

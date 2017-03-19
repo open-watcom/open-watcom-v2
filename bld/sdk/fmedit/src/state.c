@@ -387,21 +387,19 @@ bool GetShowEatoms( void )
 
 int FMEDITAPI FMTranslateAccelerator( HWND wnd, LPMSG message )
 {
-    int ret;
-    int i;
+    bool    ret;
+    int     i;
 
     if( !InitState( wnd ) ) {
-        return( FALSE );
+        return( false );
     }
-
-    ret = FALSE;
-
     if( State->currstate == EDITING ) {
-        return( ret );
+        return( false );
     }
-    for( i = 0; i < ACCELS && ret == FALSE; i++ ) {
+    ret = false;
+    for( i = 0; i < ACCELS && !ret; i++ ) {
         if( State->hAccel[i] != NULL ) {
-            ret |= TranslateAccelerator( wnd, State->hAccel[i], message );
+            ret |= ( TranslateAccelerator( wnd, State->hAccel[i], message ) != 0 );
         }
     }
     return( ret );

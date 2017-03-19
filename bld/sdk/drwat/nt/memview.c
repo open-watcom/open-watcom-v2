@@ -447,8 +447,8 @@ LONG CALLBACK MemWalkerProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     return( 0L );
 }
 
-BOOL RegisterMemWalker( void ) {
-
+bool RegisterMemWalker( void )
+{
     WNDCLASS            wc;
 
     wc.style = 0L;
@@ -461,7 +461,7 @@ BOOL RegisterMemWalker( void ) {
     wc.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
     wc.lpszMenuName = NULL;
     wc.lpszClassName = MEM_WALKER_CLASS;
-    return( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) != 0 );
 }
 
 void WalkMemory( HWND parent, HANDLE hdl, DWORD procid ) {

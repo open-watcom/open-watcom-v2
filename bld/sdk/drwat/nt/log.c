@@ -683,8 +683,7 @@ static void logFaultInfo( ExceptDlgInfo *info ) {
     logModules( info->procinfo->procid, INDENT );
     logRegisters( info );
     logPrintf( STR_SOURCE_INFORMATION );
-    if( info->got_dbginfo && GetLineNum( &info->init_ip, fname,
-            FNAME_BUFLEN, &line ) ) {
+    if( info->got_dbginfo && GetLineNum( &info->init_ip, fname, FNAME_BUFLEN, &line ) ) {
         logPrintf( STR_LOG_LINE_X_OF_FILE, INDENT, "", line, fname );
     } else {
         logPrintf( STR_LOG_N_A, INDENT, "" );

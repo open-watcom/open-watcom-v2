@@ -199,12 +199,12 @@ void SelectOptions( void )
  * StretchPastedImage - return whether we should stretch the pasted image or
  *                      not (not => clip the image)
  */
-BOOL StretchPastedImage( void )
+int StretchPastedImage( void )
 {
     if( stretchClipPaste == STRETCH_PASTE ) {
-        return( TRUE );
+        return( 1 );
     } else {
-        return( FALSE );
+        return( 0 );
     }
 
 } /* StretchPastedImage */

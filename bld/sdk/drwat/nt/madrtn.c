@@ -157,23 +157,23 @@ size_t MADCLIENTRY( WriteMem )( address a, size_t size, const void *buff )
     return( byteswritten );
 }
 
-BOOL InitMADInfo(void)
+bool InitMADInfo( void )
 {
     GetSysConfig();
     if( MADInit() != MS_OK ) {
-        return( FALSE );
+        return( false );
     }
     if ( MADActiveSet( SysConfig.mad ) != MS_OK ){
-        return( FALSE );
+        return( false );
     }
     if( MADLoad(SysConfig.mad) != MS_OK  ) {
-        return( FALSE );
+        return( false );
     }
-    if( AllocMadDisasmData() == FALSE ) {
+    if( !AllocMadDisasmData() ) {
         MADFini();
-        return( FALSE );
+        return( false );
     }
-    return TRUE;
+    return( true );
 }
 
 void FiniMADInfo( void )
