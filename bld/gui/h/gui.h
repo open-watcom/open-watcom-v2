@@ -36,7 +36,7 @@ typedef int         gui_ord;
 
 typedef unsigned    gui_ctl_id;
 typedef int         gui_ctl_idx;
-typedef int         gui_res_id;
+typedef unsigned    gui_res_id;
 typedef unsigned    gui_hlp_id;
 
 #if defined( _M_I86 )
