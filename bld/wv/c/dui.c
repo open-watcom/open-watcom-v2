@@ -291,9 +291,9 @@ void DUIArrowCursor( void )
     WndArrowCursor();
 }
 
-char *DUILoadString( int i )
+char *DUILoadString( dui_res_id id )
 {
-    return( WndLoadString( i ) );
+    return( WndLoadString( id ) );
 }
 
 bool DUIAskIfAsynchOk( void )

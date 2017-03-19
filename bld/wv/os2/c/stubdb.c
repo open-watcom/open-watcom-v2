@@ -364,7 +364,7 @@ int main( int argc, char **argv )
 
 // Minimalist DUI callback routines
 
-extern char *DUILoadString( int id )
+extern char *DUILoadString( dui_res_id id )
 {
     char        buff[256];
     char        *ret;

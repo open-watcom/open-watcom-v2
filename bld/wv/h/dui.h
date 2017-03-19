@@ -29,6 +29,8 @@
 ****************************************************************************/
 
 
+typedef unsigned    dui_res_id;
+
 extern void     DUIUpdate( update_list flags );
 extern void     DUIStatusText( const char *text );
 extern void     DUIMsgBox( const char *text );
@@ -53,7 +55,7 @@ extern int      DUIScreenSizeY( void );
 extern void     DUIRedrawSources( void );
 extern void     DUIErrorBox( const char *buff );
 extern void     DUIArrowCursor( void );
-extern char     *DUILoadString( int i );
+extern char     *DUILoadString( dui_res_id id );
 extern bool     DUIAskIfAsynchOk( void );
 extern void     DUIFlushKeys( void );
 extern void     DUIPlayDead( bool );

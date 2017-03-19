@@ -1520,7 +1520,7 @@ void DlgCmd( void )
     } while (1);
 }
 
-extern char *DUILoadString( int id )
+extern char *DUILoadString( dui_res_id id )
 {
     char        buff[256];
     char        *ret;
