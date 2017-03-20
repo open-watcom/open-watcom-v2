@@ -333,7 +333,7 @@ extern void DWRVMSwap( drmem_hdl base, unsigned_32 size, bool *ret )
             vm.l += MAX_NODE_SIZE;
         }
     }
-    if( !ret_val ) {
+    if( ret_val ) {
         *ret = ret_val;
     }
 }
