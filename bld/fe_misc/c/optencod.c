@@ -213,24 +213,24 @@ static unsigned     nextTargetMask = 1;
 
 static tag_id getsUsage = TAG_NULL;
 
-static char *tagNames[] = {
+static const char *tagNames[] = {
 #define TAG( s )        #s ,
 #include "opttags.h"
 #undef TAG
     NULL
 };
 
-#define TAG( s )        static void do##s( char * );
+#define TAG( s )        static void do##s( const char * );
 #include "opttags.h"
 #undef TAG
 
-static void (*processTag[])( char * ) = {
+static void (*processTag[])( const char * ) = {
 #define TAG( s )        do##s ,
 #include "opttags.h"
 #undef TAG
     NULL };
 
-static char *validTargets[] = {
+static const char *validTargets[] = {
     "any",
     "dbg",
     "i86",
@@ -262,7 +262,7 @@ static uint_8 const langMaxChar[] = {
     #undef LANG_DEF
 };
 
-static char *usageMsg[] = {
+static const char *usageMsg[] = {
     "optencod [-i] [-l <lang-n>] [-n] [-q] [-u <usage-u>] <gml-file> <option-h> <parse-c> <usage-h> <target>*",
     "where:",
     "    <gml-file> is the tagged input GML file",
@@ -299,7 +299,7 @@ static void emitCode( CODESEQ *h, unsigned depth, flow_control control );
 #if defined( __WATCOMC__ )
 #pragma abort   fail
 #endif
-static void fail( char *msg, ... )
+static void fail( const char *msg, ... )
 {
     va_list args;
 
@@ -314,7 +314,7 @@ static void fail( char *msg, ... )
 
 static void dumpUsage( void )
 {
-    char **p;
+    const char **p;
 
     for( p = usageMsg; *p != NULL; ++p ) {
         fprintf( stderr, "%s\n", *p );
@@ -326,7 +326,7 @@ static void dumpUsage( void )
     fprintf( stderr, "\n" );
 }
 
-static void emitPrintf( unsigned depth, char *msg, ... )
+static void emitPrintf( unsigned depth, const char *msg, ... )
 {
     va_list args;
     unsigned i;
@@ -344,7 +344,7 @@ static void emitPrintf( unsigned depth, char *msg, ... )
     }
 }
 
-static void cvtName( char *dst, char *src, cvt_name cvt )
+static void cvtName( char *dst, const char *src, cvt_name cvt )
 {
     char c;
 
@@ -362,7 +362,7 @@ static void cvtName( char *dst, char *src, cvt_name cvt )
     *dst = c;
 }
 
-static bool cmpOptName( char *n1, char *n2 )
+static bool cmpOptName( const char *n1, const char *n2 )
 {
     char    c1;
     char    c2;
@@ -390,7 +390,7 @@ static bool cmpOptName( char *n1, char *n2 )
     return( true );
 }
 
-static bool cmpChainName( char *n1, char *n2, size_t len )
+static bool cmpChainName( const char *n1, const char *n2, size_t len )
 {
     size_t  i;
     char    c1;
@@ -416,7 +416,7 @@ static bool cmpChainName( char *n1, char *n2, size_t len )
     return( true );
 }
 
-static void addTarget( char *t )
+static void addTarget( const char *t )
 {
     size_t len;
     TARGET *p;
@@ -445,7 +445,7 @@ static unsigned findTarget( char const *t )
     return( 0 );
 }
 
-static NAME *findName( NAME **h, char *n )
+static NAME *findName( NAME **h, const char *n )
 {
     NAME *p;
 
@@ -457,7 +457,7 @@ static NAME *findName( NAME **h, char *n )
     return( NULL );
 }
 
-static NAME *addName( NAME **h, char *n )
+static NAME *addName( NAME **h, const char *n )
 {
     size_t len;
     NAME *p;
@@ -470,7 +470,7 @@ static NAME *addName( NAME **h, char *n )
     return( p );
 }
 
-static NAME *addEnumerator( char *enumerate, char *field_name )
+static NAME *addEnumerator( const char *enumerate, const char *field_name )
 {
     NAME *n;
 
@@ -485,7 +485,7 @@ static NAME *addEnumerator( char *enumerate, char *field_name )
     return( n );
 }
 
-static CHAIN *findChain( char *n )
+static CHAIN *findChain( const char *n )
 {
     CHAIN *cn;
 
@@ -530,9 +530,9 @@ static CHAIN *addChain( char *n, bool chain )
 
 static void procCmdLine( int argc, char **argv )
 {
-    char **t;
-    unsigned mask;
-    char const *p;
+    const char  **t;
+    unsigned    mask;
+    char const  *p;
 
     if( argc < 5 ) {
         dumpUsage();
@@ -622,17 +622,23 @@ static void procCmdLine( int argc, char **argv )
     }
 }
 
-static char *skipSpace( char *p )
+static size_t skipSpace( const char *start )
 {
-    while( *p != '\0' && isspace( *p ) ) {
-        ++p;
+    const char  *p;
+
+    for( p = start; *p != '\0'; ++p ) {
+        if( !isspace( *p ) ) {
+            break;
+        }
     }
-    return( p );
+    return( p - start );
 }
 
-static char *copyNonSpaceUntil( char *i, char *o, char t )
+static size_t copyNonSpaceUntil( const char *start, char *o, char t )
 {
-    for( ; *i != '\0'; ++i ) {
+    const char  *i;
+
+    for( i = start; *i != '\0'; ++i ) {
         if( isspace( *i ) )
             break;
         if( *i == t ) {
@@ -643,12 +649,12 @@ static char *copyNonSpaceUntil( char *i, char *o, char t )
         ++o;
     }
     *o = '\0';
-    return( i );
+    return( i - start );
 }
 
 static tag_id findTag( char const *t )
 {
-    char **c;
+    const char **c;
 
     for( c = tagNames; *c != NULL; ++c ) {
         if( stricmp( t, *c ) == 0 ) {
@@ -658,16 +664,16 @@ static tag_id findTag( char const *t )
     return( TAG_UNKNOWN );
 }
 
-static tag_id isTag( char **eot )
+static tag_id isTag( const char **eot )
 {
     tag_id tag;
     char *p;
 
     p = ibuff;
-    p = skipSpace( p );
+    p += skipSpace( p );
     if( *p == ':' ) {
         ++p;
-        p = copyNonSpaceUntil( p, tagbuff, '.' );
+        p += copyNonSpaceUntil( p, tagbuff, '.' );
         if( (tag = findTag( tagbuff )) == TAG_UNKNOWN )
             fail( "unknown tag: %s\n", tagbuff );
         *eot = p;
@@ -696,23 +702,26 @@ static OPTION *pushNewOption( char *name, OPTION *o )
     return( newo );
 }
 
-static char *pickUpRest( char *p )
+static char *pickUpRest( const char *p )
 {
-    size_t len;
+    size_t  len;
+    char    *dst;
 
     len = strlen( p );
-    if( len != 0 ) {
+    if( len > 0 ) {
         if( p[len - 1] == '\n' ) {
-            p[len - 1] = '\0';
+            --len;
         }
     }
-    return( strdup( p ) );
+    dst = malloc( len + 1 );
+    dst[len] = '\0';
+    return( memcpy( dst, p, len ) );
 }
 
 // :argequal. <char>
-static void doARGEQUAL( char *p )
+static void doARGEQUAL( const char *p )
 {
-    p = skipSpace( p );
+    p += skipSpace( p );
     if( *p == '\0' ) {
         fail( ":argequal. must have <char> specified\n" );
     } else {
@@ -722,13 +731,13 @@ static void doARGEQUAL( char *p )
 }
 
 // :cmt comment text
-static void doCMT( char *p )
+static void doCMT( const char *p )
 {
     p = p;
 }
 
 // :internal.
-static void doINTERNAL( char *p )
+static void doINTERNAL( const char *p )
 {
     OPTION *o;
 
@@ -739,33 +748,33 @@ static void doINTERNAL( char *p )
 }
 
 // :option. <option> <synonym> ...
-static void doOPTION( char *p )
+static void doOPTION( const char *p )
 {
     OPTION *synonym;
 
     targetTitle = NULL;
     synonym = NULL;
     while( *p != '\0' ) {
-        p = skipSpace( p );
+        p += skipSpace( p );
         if( *p == '\0' )
             break;
-        p = copyNonSpaceUntil( p, tokbuff, '\0' );
+        p += copyNonSpaceUntil( p, tokbuff, '\0' );
         synonym = pushNewOption( tokbuff, synonym );
     }
     getsUsage = TAG_OPTION;
 }
 
 // :target. <targ> <targ> ...
-static void doTARGET( char *p )
+static void doTARGET( const char *p )
 {
     unsigned mask;
     OPTION *o;
 
     while( *p != '\0' ) {
-        p = skipSpace( p );
+        p += skipSpace( p );
         if( *p == '\0' )
             break;
-        p = copyNonSpaceUntil( p, tokbuff, '\0' );
+        p += copyNonSpaceUntil( p, tokbuff, '\0' );
         if( (mask = findTarget( tokbuff )) == 0 ) {
             fail( "invalid target name '%s'\n", tokbuff );
         }
@@ -780,16 +789,16 @@ static void doTARGET( char *p )
 }
 
 // :ntarget. <targ> <targ> ...
-static void doNTARGET( char *p )
+static void doNTARGET( const char *p )
 {
     unsigned mask;
     OPTION *o;
 
     while( *p != '\0' ) {
-        p = skipSpace( p );
+        p += skipSpace( p );
         if( *p == '\0' )
             break;
-        p = copyNonSpaceUntil( p, tokbuff, '\0' );
+        p += copyNonSpaceUntil( p, tokbuff, '\0' );
         if( (mask = findTarget( tokbuff )) == 0 ) {
             fail( "invalid target name '%s'\n", tokbuff );
         }
@@ -804,7 +813,7 @@ static void doNTARGET( char *p )
 }
 
 // :number. [<fn>] [<default>]
-static void doNUMBER( char *p )
+static void doNUMBER( const char *p )
 {
     OPTION *o;
 
@@ -812,15 +821,15 @@ static void doNUMBER( char *p )
         o->is_number = true;
         o->is_simple = false;
     }
-    p = skipSpace( p );
+    p += skipSpace( p );
     if( *p != '\0' ) {
-        p = copyNonSpaceUntil( p, tokbuff, '\0' );
+        p += copyNonSpaceUntil( p, tokbuff, '\0' );
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->check = strdup( tokbuff );
         }
-        p = skipSpace( p );
+        p += skipSpace( p );
         if( *p != '\0' ) {
-            p = copyNonSpaceUntil( p, tokbuff, '\0' );
+            p += copyNonSpaceUntil( p, tokbuff, '\0' );
             for( o = optionList; o != NULL; o = o->synonym ) {
                 o->number_default = atoi( tokbuff );
                 o->default_specified = true;
@@ -830,7 +839,7 @@ static void doNUMBER( char *p )
 }
 
 // :multiple.
-static void doMULTIPLE( char *p )
+static void doMULTIPLE( const char *p )
 {
     OPTION *o;
 
@@ -841,7 +850,7 @@ static void doMULTIPLE( char *p )
 }
 
 // :nochain.
-static void doNOCHAIN( char *p )
+static void doNOCHAIN( const char *p )
 {
     OPTION *o;
 
@@ -852,7 +861,7 @@ static void doNOCHAIN( char *p )
 }
 
 // :id. [<fn>]
-static void doID( char *p )
+static void doID( const char *p )
 {
     OPTION *o;
 
@@ -860,9 +869,9 @@ static void doID( char *p )
         o->is_id = true;
         o->is_simple = false;
     }
-    p = skipSpace( p );
+    p += skipSpace( p );
     if( *p != '\0' ) {
-        p = copyNonSpaceUntil( p, tokbuff, '\0' );
+        p += copyNonSpaceUntil( p, tokbuff, '\0' );
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->check = strdup( tokbuff );
         }
@@ -870,7 +879,7 @@ static void doID( char *p )
 }
 
 // :char. [<fn>]
-static void doCHAR( char *p )
+static void doCHAR( const char *p )
 {
     OPTION *o;
 
@@ -878,9 +887,9 @@ static void doCHAR( char *p )
         o->is_char = true;
         o->is_simple = false;
     }
-    p = skipSpace( p );
+    p += skipSpace( p );
     if( *p != '\0' ) {
-        p = copyNonSpaceUntil( p, tokbuff, '\0' );
+        p += copyNonSpaceUntil( p, tokbuff, '\0' );
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->check = strdup( tokbuff );
         }
@@ -888,7 +897,7 @@ static void doCHAR( char *p )
 }
 
 // :immediate. <fn>
-static void doIMMEDIATE( char *p )
+static void doIMMEDIATE( const char *p )
 {
     OPTION *o;
 
@@ -896,9 +905,9 @@ static void doIMMEDIATE( char *p )
         o->is_immediate = true;
         o->is_simple = false;
     }
-    p = skipSpace( p );
+    p += skipSpace( p );
     if( *p != '\0' ) {
-        p = copyNonSpaceUntil( p, tokbuff, '\0' );
+        p += copyNonSpaceUntil( p, tokbuff, '\0' );
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->immediate = strdup( tokbuff );
         }
@@ -908,7 +917,7 @@ static void doIMMEDIATE( char *p )
 }
 
 // :code. <source-code>
-static void doCODE( char *p )
+static void doCODE( const char *p )
 {
     OPTION *o;
 
@@ -916,7 +925,7 @@ static void doCODE( char *p )
         o->is_code = true;
         o->is_simple = false;
     }
-    p = skipSpace( p );
+    p += skipSpace( p );
     if( *p != '\0' ) {
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->code = strdup( p );
@@ -927,7 +936,7 @@ static void doCODE( char *p )
 }
 
 // :file.
-static void doFILE( char *p )
+static void doFILE( const char *p )
 {
     OPTION *o;
 
@@ -939,7 +948,7 @@ static void doFILE( char *p )
 }
 
 // :optional.
-static void doOPTIONAL( char *p )
+static void doOPTIONAL( const char *p )
 {
     OPTION *o;
 
@@ -949,7 +958,7 @@ static void doOPTIONAL( char *p )
     }
 }
 // :negate.
-static void doNEGATE( char *p )
+static void doNEGATE( const char *p )
 {
     OPTION *o;
 
@@ -964,14 +973,14 @@ static void doNEGATE( char *p )
 
 
 // :noequal.
-static void doNOEQUAL( char *p )
+static void doNOEQUAL( const char *p )
 {
     p = p;
     optFlag.no_equal = true;
 }
 
 // :page. <text>
-static void doPAGE( char *p )
+static void doPAGE( const char *p )
 {
     // skip leading ':' character used to specify spaces on the beginning
     SKIP_BEG_MARK( p );
@@ -980,7 +989,7 @@ static void doPAGE( char *p )
 }
 
 // :path.
-static void doPATH( char *p )
+static void doPATH( const char *p )
 {
     OPTION *o;
 
@@ -995,17 +1004,17 @@ static void doPATH( char *p )
 //
 // mark options that start with <option> as chainable
 // i.e., -oa -ox == -oax
-static void doCHAIN( char *p )
+static void doCHAIN( const char *p )
 {
     CHAIN *cn;
 
-    p = skipSpace( p );
+    p += skipSpace( p );
     if( *p == '\0' ) {
         fail( "missing <option> in :chain. tag\n" );
     }
-    p = copyNonSpaceUntil( p, tokbuff, '\0' );
+    p += copyNonSpaceUntil( p, tokbuff, '\0' );
     cn = addChain( tokbuff, true );
-    p = skipSpace( p );
+    p += skipSpace( p );
     // skip leading ':' character used to specify spaces on the beginning
     SKIP_BEG_MARK( p );
     cn->Usage[LANG_English] = pickUpRest( p );
@@ -1014,24 +1023,24 @@ static void doCHAIN( char *p )
 }
 
 // :enumerate. <name> <option>
-static void doENUMERATE( char *p )
+static void doENUMERATE( const char *p )
 {
     NAME *n;
     OPTION *o;
 
-    p = skipSpace( p );
+    p += skipSpace( p );
     if( *p == '\0' ) {
         fail( "missing <name> in :enumerate. tag\n" );
     }
-    p = copyNonSpaceUntil( p, tokbuff, '\0' );
+    p += copyNonSpaceUntil( p, tokbuff, '\0' );
     n = findName( &enumList, tokbuff );
     if( n == NULL ) {
         n = addName( &enumList, tokbuff );
     }
     tokbuff[0] = '\0';
-    p = skipSpace( p );
+    p += skipSpace( p );
     if( *p != '\0' ) {
-        p = copyNonSpaceUntil( p, tokbuff, '\0' );
+        p += copyNonSpaceUntil( p, tokbuff, '\0' );
         addEnumerator( n->name, tokbuff );
     }
     addEnumerator( n->name, "default" );
@@ -1047,7 +1056,7 @@ static void doENUMERATE( char *p )
 }
 
 // :special. <fn>
-static void doSPECIAL( char *p )
+static void doSPECIAL( const char *p )
 {
     OPTION *o;
 
@@ -1055,17 +1064,17 @@ static void doSPECIAL( char *p )
         o->is_special = true;
         o->is_simple = false;
     }
-    p = skipSpace( p );
+    p += skipSpace( p );
     if( *p == '\0' ) {
         fail( "missing <fn> in :special. tag\n" );
     }
-    p = copyNonSpaceUntil( p, tokbuff, '\0' );
+    p += copyNonSpaceUntil( p, tokbuff, '\0' );
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->special = strdup( tokbuff );
     }
-    p = skipSpace( p );
+    p += skipSpace( p );
     if( *p != '\0' ) {
-        p = copyNonSpaceUntil( p, tokbuff, '\0' );
+        p += copyNonSpaceUntil( p, tokbuff, '\0' );
         for( o = optionList; o != NULL; o = o->synonym ) {
             o->special_arg_usage = strdup( tokbuff );
         }
@@ -1073,7 +1082,7 @@ static void doSPECIAL( char *p )
 }
 
 // :prefix.
-static void doPREFIX( char *p )
+static void doPREFIX( const char *p )
 {
     OPTION *o;
 
@@ -1085,7 +1094,7 @@ static void doPREFIX( char *p )
 }
 
 // :usage. <usage-text>
-static void doUSAGE( char *p )
+static void doUSAGE( const char *p )
 {
     OPTION *o;
 
@@ -1097,7 +1106,7 @@ static void doUSAGE( char *p )
 }
 
 // :jusage. <kanji-usage-text>
-static void doJUSAGE( char *p )
+static void doJUSAGE( const char *p )
 {
     char *usage;
     OPTION *o;
@@ -1127,7 +1136,7 @@ static void doJUSAGE( char *p )
 }
 
 // :title. <text>
-static void doTITLE( char *p )
+static void doTITLE( const char *p )
 {
     TITLE **i;
     TITLE *t;
@@ -1148,7 +1157,7 @@ static void doTITLE( char *p )
 }
 
 // :jtitle. <text>
-static void doJTITLE( char *p )
+static void doJTITLE( const char *p )
 {
     TITLE *t;
 
@@ -1162,7 +1171,7 @@ static void doJTITLE( char *p )
 }
 
 // :timestamp.
-static void doTIMESTAMP( char *p )
+static void doTIMESTAMP( const char *p )
 {
     OPTION *o;
 
@@ -1180,17 +1189,17 @@ static void doTIMESTAMP( char *p )
 //
 // mark options that start with <option> as group in usage text
 // i.e., -fp0 -fp1 ==> -fp{0,1}
-static void doUSAGEGRP( char *p )
+static void doUSAGEGRP( const char *p )
 {
     CHAIN *cn;
 
-    p = skipSpace( p );
+    p += skipSpace( p );
     if( *p == '\0' ) {
         fail( "missing <option> in :usagegrp. tag\n" );
     }
-    p = copyNonSpaceUntil( p, tokbuff, '\0' );
+    p += copyNonSpaceUntil( p, tokbuff, '\0' );
     cn = addChain( tokbuff, false );
-    p = skipSpace( p );
+    p += skipSpace( p );
     // skip leading ':' character used to specify spaces on the beginning
     SKIP_BEG_MARK( p );
     cn->Usage[LANG_English] = pickUpRest( p );
@@ -1198,7 +1207,7 @@ static void doUSAGEGRP( char *p )
     getsUsage = TAG_CHAIN;
 }
 
-static void checkForGMLEscape( char *p )
+static void checkForGMLEscape( const char *p )
 {
     bool is_escape;
     char c1, c2;
@@ -1234,15 +1243,15 @@ static void checkForGMLEscapeSequences( void )
 
 static void readInputFile( void )
 {
-    char *eot;
-    tag_id tag;
+    const char  *eot;
+    tag_id      tag;
 
-    for( ; fgets( ibuff, sizeof(ibuff), gfp ) != NULL; ) {
+    for( ; fgets( ibuff, sizeof( ibuff ), gfp ) != NULL; ) {
         ++line;
         checkForGMLEscapeSequences();
         tag = isTag( &eot );
         if( tag != TAG_NULL ) {
-            eot = skipSpace( eot );
+            eot += skipSpace( eot );
             (*processTag[tag])( eot );
         }
     }
@@ -1305,7 +1314,7 @@ static void stripUselessOptions( void )
     }
 }
 
-static char *strpcpy( char *d, char *s )
+static char *strpcpy( char *d, const char *s )
 {
     size_t len;
 
@@ -1330,7 +1339,7 @@ static char *special_char( char *f, char c )
     return( f );
 }
 
-static void makeFieldName( char *n, char *f )
+static void makeFieldName( const char *n, char *f )
 {
     char c;
     bool sensitive;
@@ -2142,14 +2151,14 @@ static void clearChainUsage( void )
 
 static void processUsage( unsigned language, process_line_fn *process_line )
 {
-    unsigned count;
-    unsigned i;
-    size_t max;
-    size_t len;
-    OPTION *o;
-    OPTION **t;
-    OPTION **c;
-    char *page;
+    unsigned    count;
+    unsigned    i;
+    size_t      max;
+    size_t      len;
+    OPTION      *o;
+    OPTION      **t;
+    OPTION      **c;
+    const char  *page;
 
     maxUsageLen = 0;
     max = 0;
@@ -2263,11 +2272,11 @@ static void closeFiles( void )
 
 int main( int argc, char **argv )
 {
-    int defs_ok = _LANG_DEFS_OK();
+    bool    langs_ok;
 
-    if( ! defs_ok ) {
+    langs_ok = _LANG_DEFS_OK();
+    if( !langs_ok )
         fail( "language index mismatch\n" );
-    }
     procCmdLine( argc, argv );
     readInputFile();
     assignChainToOptions();
