@@ -34,7 +34,7 @@
 #include "drstack.h"
 #include "drpriv.h"
 
-extern void DWRStackCreate(                 // INITIALIZE A STACK
+void DWRStackCreate(                        // INITIALIZE A STACK
     dr_stack *stk,                          // -- stack to initialize
     uint start_size )                       // -- initial size guess
 /*************************/
@@ -44,7 +44,7 @@ extern void DWRStackCreate(                 // INITIALIZE A STACK
     stk->size = start_size;
 }
 
-extern void DWRStackCopy(                   // COPY A STACK FROM ANOTHER
+void DWRStackCopy(                          // COPY A STACK FROM ANOTHER
     dr_stack *dest,                         // -- destination of copy
     const dr_stack *src )                   // -- source of copy
 /************************/
@@ -55,7 +55,7 @@ extern void DWRStackCopy(                   // COPY A STACK FROM ANOTHER
     memcpy( dest->stack, src->stack, dest->size * sizeof( uint_32 ) );
 }
 
-extern void DWRStackFree(                   // DESTRUCT A STACK
+void DWRStackFree(                          // DESTRUCT A STACK
     dr_stack *stk )                         // -- stack to trash
 /***********************/
 {
@@ -65,7 +65,7 @@ extern void DWRStackFree(                   // DESTRUCT A STACK
     stk->free = 0;
 }
 
-extern void DWRStackPush(                   // PUSH ITEM ON THE STACK
+void DWRStackPush(                          // PUSH ITEM ON THE STACK
     dr_stack *stk,                          // -- stack to push on
     uint_32 val )                           // -- value to push
 /***********************/
@@ -79,7 +79,7 @@ extern void DWRStackPush(                   // PUSH ITEM ON THE STACK
     stk->free += 1;
 }
 
-extern uint_32 DWRStackPop(                 // POP ITEM OFF THE STACK
+uint_32 DWRStackPop(                        // POP ITEM OFF THE STACK
     dr_stack *stk )                         // -- stack to pop off of
 /*************************/
 {
@@ -91,7 +91,7 @@ extern uint_32 DWRStackPop(                 // POP ITEM OFF THE STACK
     return stk->stack[stk->free];
 }
 
-extern uint_32 DWRStackTop(                 // RETURN TOP ELEMENT OF STACK
+uint_32 DWRStackTop(                        // RETURN TOP ELEMENT OF STACK
     dr_stack *stk )                         // -- stack to use
 /*************************/
 {
@@ -102,7 +102,7 @@ extern uint_32 DWRStackTop(                 // RETURN TOP ELEMENT OF STACK
     }
 }
 
-extern bool DWRStackEmpty(                  // IS A STACK EMPTY?
+bool DWRStackEmpty(                         // IS A STACK EMPTY?
     dr_stack *stk )                         // -- stack to check
 /*************************/
 {

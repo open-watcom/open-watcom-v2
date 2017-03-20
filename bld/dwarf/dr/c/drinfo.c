@@ -275,8 +275,8 @@ long DRGetLine( drmem_hdl entry )
     return( retval );
 }
 
-extern char *DRGetFileName( drmem_hdl entry )
-/*******************************************/
+char *DRGetFileName( drmem_hdl entry )
+/************************************/
 {
     drmem_hdl           abbrev;
     char *              name;

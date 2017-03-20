@@ -50,11 +50,11 @@ int main( int argc, char * argv[] )
     FILE * in;
 
     if( argc != 2 ) {
-        fprintf( stderr, "Usage: %s <filename>", argv[ 0 ] );
+        fprintf( stderr, "Usage: %s <filename>", argv[0] );
         exit( 1 );
     }
 
-    in = fopen( argv[ 1 ], "wb" );
+    in = fopen( argv[1], "wb" );
     assert( in != NULL );
 
     createBrowseFile( in, "info.dw", "ref.dw", "abbrev.dw", "line.dw",

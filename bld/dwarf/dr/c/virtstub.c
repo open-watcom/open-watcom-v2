@@ -35,26 +35,26 @@
 
 typedef struct alloc_struct {
     struct alloc_struct *next;
-    char                data[ 1 ];
+    char                data[1];
 } alloc_struct;
 
 static alloc_struct *AllocHead;       /* head of list of allocated chunks */
 
-extern void DWRVMInit( void )
-/***************************/
+void DWRVMInit( void )
+/********************/
 {
     /* no action */
     AllocHead = NULL;
 }
 
-extern void DWRVMReset( void )
-/***************************/
+void DWRVMReset( void )
+/*********************/
 {
     /* nothing to do here */
 }
 
-extern drmem_hdl DWRVMAlloc( unsigned long len, int sect )
-/********************************************************/
+drmem_hdl DWRVMAlloc( unsigned long len, int sect )
+/*************************************************/
 {
     alloc_struct *nChunk;
 
@@ -100,8 +100,8 @@ bool DWRVMSectDone( drmem_hdl base, unsigned_32 size )
 }
 
 
-extern void DWRVMDestroy( void )
-/******************************/
+void DWRVMDestroy( void )
+/***********************/
 {
     alloc_struct    *walk;
     alloc_struct    *prev;
@@ -192,8 +192,8 @@ size_t DWRVMGetStrBuff( drmem_hdl str, char *buf, size_t max )
     return( len );
 }
 
-extern unsigned_16 DWRVMReadWord( drmem_hdl hdl )
-/***********************************************/
+unsigned_16 DWRVMReadWord( drmem_hdl hdl )
+/****************************************/
 {
     unsigned_16     word = *((unsigned_16 _WCUNALIGNED *)(hdl));
 
@@ -203,8 +203,8 @@ extern unsigned_16 DWRVMReadWord( drmem_hdl hdl )
     return( word );
 }
 
-extern unsigned_32 DWRVMReadDWord( drmem_hdl hdl )
-/************************************************/
+unsigned_32 DWRVMReadDWord( drmem_hdl hdl )
+/*****************************************/
 {
     unsigned_32    dword = *((unsigned_32 _WCUNALIGNED *)(hdl));
 

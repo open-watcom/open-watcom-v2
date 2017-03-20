@@ -64,8 +64,8 @@ typedef uint_32                 debug_ref;
 struct handles_private {
     uint_32             num_handles;
     uint_32             forward;  // number of forward refs out
-    struct handle_blk * block_head[ MAX_HANDLE_HEIGHT ];
-    struct handle_blk **block_tail[ MAX_HANDLE_HEIGHT ];
+    struct handle_blk * block_head[MAX_HANDLE_HEIGHT];
+    struct handle_blk **block_tail[MAX_HANDLE_HEIGHT];
     union handle_extra *extra_list;
     carve_t             extra_carver;
     carve_t             chain_carver;
@@ -84,7 +84,7 @@ struct debug_line_private {
 };
 
 struct debug_abbrev_private {
-    uint_8              emitted[ AB_BITVECT_SIZE ];
+    uint_8              emitted[AB_BITVECT_SIZE];
 };
 
 struct types_private {
@@ -124,7 +124,7 @@ struct dw_client {
     char *              producer_name;
     uint_8              compiler_options;
     uint_8              language;
-    debug_ref           section_base[ DW_DEBUG_MAX ];
+    debug_ref           section_base[DW_DEBUG_MAX];
     struct handles_private      handles;
     struct debug_line_private   debug_line;
     struct debug_abbrev_private debug_abbrev;

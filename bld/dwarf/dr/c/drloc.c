@@ -624,8 +624,8 @@ bool DRParmEntryAT( drmem_hdl var, dr_loc_callbck *callbck, void *d )
     return( ret );
 }
 
-extern drmem_hdl DRStringLengthAT( drmem_hdl str )
-/************************************************/
+drmem_hdl DRStringLengthAT( drmem_hdl str )
+/*****************************************/
 {
     drmem_hdl   abbrev;
 

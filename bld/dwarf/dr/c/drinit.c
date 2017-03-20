@@ -153,8 +153,8 @@ bool  DRDbgClear( dr_dbg_handle dbg )
     return( ret );
 }
 
-extern void DRDbgDone( dr_dbg_handle dbg )
-/****************************************/
+void DRDbgDone( dr_dbg_handle dbg )
+/*********************************/
 {
     int                 i;
 
@@ -165,8 +165,8 @@ extern void DRDbgDone( dr_dbg_handle dbg )
     }
 }
 
-extern void DRDbgWatProducerVer( dr_dbg_handle dbg, df_ver wat_producer_ver )
-/***************************************************************************/
+void DRDbgWatProducerVer( dr_dbg_handle dbg, df_ver wat_producer_ver )
+/********************************************************************/
 {
     dbg->wat_producer_ver = wat_producer_ver;
 }

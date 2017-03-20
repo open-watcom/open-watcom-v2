@@ -131,9 +131,9 @@ static void References( ReferWhich which, drmem_hdl entry, void *data1,
     bool        quit = false;
     bool        inScope = false;
 
-    loc = DWRCurrNode->sections[ DR_DEBUG_REF ].base;
-    end = loc + DWRCurrNode->sections[ DR_DEBUG_REF ].size;
-    infoOffset = DWRCurrNode->sections[ DR_DEBUG_INFO ].base;
+    loc = DWRCurrNode->sections[DR_DEBUG_REF].base;
+    end = loc + DWRCurrNode->sections[DR_DEBUG_REF].size;
+    infoOffset = DWRCurrNode->sections[DR_DEBUG_INFO].base;
 
     loc += sizeof( unsigned_32 );   /* skip size */
     while( loc < end && !quit ) {

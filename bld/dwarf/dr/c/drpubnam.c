@@ -45,8 +45,8 @@ typedef struct pubname_header {
 } _WCUNALIGNED pubname_header;
 #include "poppck.h"
 
-extern void DRWalkPubName( DRPUBWLK callback, void *data )
-/********************************************************/
+void DRWalkPubName( DRPUBWLK callback, void *data )
+/*************************************************/
 {
     dr_pubname_data     pubname;
     pubname_header      header;

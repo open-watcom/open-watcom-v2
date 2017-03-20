@@ -271,8 +271,8 @@ static void FiniProgInfo( prog_rdr *rdr )
     DWRFREE( rdr->op_lens );
 }
 
-extern drmem_hdl  DRGetStmtList( drmem_hdl ccu )
-/**********************************************/
+drmem_hdl  DRGetStmtList( drmem_hdl ccu )
+/***************************************/
 // Return the start of the statement list or 0 if no lines
 {
     drmem_hdl   abbrev;
