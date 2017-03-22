@@ -4273,6 +4273,106 @@ DECL_SPEC *PTypeExpr( PTREE expr )
     return( PTypeActualType( type ) );
 }
 
+static SYMBOL_DIAG diagMemb =   // diagnosis for member
+{   ERR_INVALID_NONSTATIC_ACCESS// - no "this"
+,   ERR_EXTRA_THIS_FOR_DATA     // - extra "this" for data element
+,   ERR_ENCLOSING_THIS_DATA     // - accessing enclosing class member
+};
+
+/*
+ * Return the type of the expression according 
+ * to the decltype rules [dcl.type.simple] 4
+ *
+ * NOTE: There seems to be no way to discriminate between
+ * an id-expression and a parenthesized id-expression.
+ * We thus require support from the lexer (plusplus.y)
+ * via the additional parameter idexpr.
+ */
+DECL_SPEC *PTypeDecltypeExpr( PTREE expr, bool idexpr )
+/********************************/
+{
+    TYPE type;
+    SEARCH_RESULT *result;
+
+    type = TypeError;
+
+    expr = PTreeTraversePostfix( expr, &AnalyseNode );
+
+    if( expr->op == PT_ERROR ) {
+        // Early fail.
+        goto EXIT;
+    }
+
+    /* For an expression e, the type denoted by decltype(e) 
+     * is defined as follows:
+     */
+
+    /*(4.1) — if e is an unparenthesized id-expression or 
+     * an unparenthesized class member access (5.2.5), decltype(e)
+     * is the type of the entity named by e. If there is no such entity, 
+     * or if e names a set of overloaded functions, the program is ill-formed;
+    */
+
+    if( idexpr ) {
+        SYMBOL sym;
+        bool is_qualified = NodeIsBinaryOp( expr, CO_COLON_COLON );
+        if ( is_qualified ) {
+            if( !AnalyseClQualRes( &expr, &result ) ) goto EXIT;
+            if( !AnalyseSymbolAccess( expr, expr, NULL, &diagMemb ) ) goto EXIT;
+            sym = expr->u.symcg.symbol;
+        } else {
+
+            // We know that an id-expression is modelled by a symbol.
+            result = ScopeFindNaked(GetCurrScope(), expr->u.id.name );
+            if( result == NULL ) {
+                CErr2p( ERR_UNDECLARED_SYM, expr->u.id.name );
+                goto EXIT;
+            }
+
+            sym = result->sym_name->name_syms;
+        }
+
+        // Get the type of the symbol.
+        type = sym->sym_type;
+
+        // Ill-formed if id-expression is overloaded function
+        if( IsActualOverloadedFunc( sym, result ) ) {
+            CErr1( ERR_ADDR_OF_OVERLOADED_FUN );
+            type = TypeError;
+        }
+
+    }
+
+    else if( AnalyseLvalue( &expr ) ) { // Successul Analysis
+
+        /* (4.2) — otherwise, if e is an xvalue, decltype(e) is T&&, 
+         * where T is the type of e;
+         */
+
+        // TODO: We cannot fully implement decltype until we have rvalue references.
+        if( false ) {
+        }
+
+        /* (4.3) — otherwise, if e is an lvalue, decltype(e) is T&, 
+         * where T is the type of e;
+         */
+        else if( expr->flags & PTF_LVALUE ) {
+            // NodeType always returns a refererence type for an lvalue.
+            type = NodeType( expr );
+
+        }
+        
+        /* (4.4) — otherwise, decltype(e) is the type of e. */
+        else {
+            type = expr->type;
+        }
+    }
+
+EXIT:
+    PTreeFreeSubtrees( expr );
+    return( PTypeActualType( type ) );
+}
+
 DECL_SPEC *PTypeDefault( void )
 /*****************************/
 {
