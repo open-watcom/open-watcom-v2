@@ -156,12 +156,10 @@ extern void _wpi_getpaintrect( PAINTSTRUCT *ps, WPI_RECT *rect );
                         SendDlgItemMessage( hwnd, item, msgid, parm1, parm2 )
 
     #define _wpi_getdlgitemcbtext( hwnd, item, selection, len, text ) \
-        _wpi_senddlgitemmessage( hwnd, item, CB_GETLBTEXT, \
-                        selection, (DWORD)(LPSTR) text )
+                        SendDlgItemMessage( hwnd, item, CB_GETLBTEXT, selection, (LPARAM)(LPSTR)text )
 
     #define _wpi_getdlgitemlbtext( hwnd, item, selection, len, text ) \
-        _wpi_senddlgitemmessage( hwnd, item, LB_GETTEXT, \
-                        selection, (DWORD)(LPSTR) text )
+                        SendDlgItemMessage( hwnd, item, LB_GETTEXT, selection, (LPARAM)(LPSTR)text )
 
     #define _wpi_setdlgitemtext( hwnd, item, text ) \
                                             SetDlgItemText( hwnd, item, text )

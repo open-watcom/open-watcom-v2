@@ -90,8 +90,7 @@
                 (WPI_MSG) msgid, (WPI_PARAM1) parm1, (WPI_PARAM2) parm2 )
 
     #define SendDlgItemMessage( hwnd, item, msgid, parm1, parm2 ) \
-        WinSendDlgItemMsg( hwnd, (ULONG)item, (ULONG)msgid, \
-                                        (WPI_PARAM1)parm1, (WPI_PARAM2)parm2 )
+        WinSendDlgItemMsg( hwnd, item, msgid, (WPI_PARAM1)parm1, (WPI_PARAM2)parm2 )
 
     #define SetDlgItemText( hwnd, item, text ) \
         WinSetDlgItemText( hwnd, item, (PSZ)text )
@@ -392,16 +391,13 @@ extern void _wpi_setwpiinst( HINSTANCE hinst, HMODULE module, WPI_INST *inst );
         WinSendMsg( hwnd, (WPI_MSG)msgid, (WPI_PARAM1)parm1, (WPI_PARAM2)parm2 )
 
     #define _wpi_senddlgitemmessage( hwnd, item, msgid, parm1, parm2 ) \
-        WinSendDlgItemMsg( hwnd, (ULONG)item, (ULONG)msgid, (WPI_PARAM1)parm1, \
-                                                            (WPI_PARAM2) parm2 )
+        WinSendDlgItemMsg( hwnd, item, msgid, (MPARAM)parm1, (MPARAM)parm2 )
 
     #define _wpi_getdlgitemcbtext( hwnd, item, selection, len, text ) \
-        _wpi_senddlgitemmessage( hwnd, item, CB_GETLBTEXT, \
-                        MPFROM2SHORT( selection, len ), (DWORD)(LPSTR) text )
+        WinSendDlgItemMsg( hwnd, item, CB_GETLBTEXT, MPFROM2SHORT( selection, len ), (MPARAM)(LPSTR)text )
 
     #define _wpi_getdlgitemlbtext( hwnd, item, selection, len, text ) \
-        _wpi_senddlgitemmessage( hwnd, item, LB_GETTEXT, \
-                        MPFROM2SHORT( selection, len ), (DWORD)(LPSTR) text )
+        WinSendDlgItemMsg( hwnd, item, LB_GETTEXT, MPFROM2SHORT( selection, len ), (MPARAM)(LPSTR)text )
 
     #define _wpi_setdlgitemtext( hwnd, item, text ) \
                                 WinSetDlgItemText( hwnd, item, (PSZ)text )
