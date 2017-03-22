@@ -55,7 +55,7 @@ longjmpDtoring                  // longjmp INTERFACE
     DISPATCH_EXC dispatch;      // - dispatch control
     RW_DTREG* rw;               // - R/W block: search block
     RW_DTREG* last;             // - R/W block: last block
-    auto FsExcRec excrec;       // - system exception record
+    FsExcRec excrec;            // - system exception record
 
     // locate the R/W block for the corresponding setjmp
     //  last == NULL: all must be popped (setjmp is before everything)

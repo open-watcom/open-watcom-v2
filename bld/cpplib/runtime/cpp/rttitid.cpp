@@ -52,8 +52,8 @@ static void foundNoTypeid( void )
 extern "C"
 _WPRTLINK
 void const * CPPLIB( gettid )( void *p, unsigned delta, type_info const *from ) {
-    auto rtti_leap leap_storage;
-    auto rtti_exec data;
+    rtti_leap leap_storage;
+    rtti_exec data;
 
     if( p == NULL ) {
         foundNoTypeid();

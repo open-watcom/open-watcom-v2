@@ -70,7 +70,7 @@ namespace std {
     int                 len;
     char                *x;
     CVT_INFO            cvt;
-    auto char           stkbuf[ LONGEST_FLOAT + 1 ];
+    char                stkbuf[ LONGEST_FLOAT + 1 ];
     std::ios::fmtflags  format_flags;
 #ifdef _LONG_DOUBLE_
     double              double_value;

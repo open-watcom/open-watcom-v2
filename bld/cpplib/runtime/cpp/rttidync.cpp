@@ -47,7 +47,7 @@ void *__DoDynamicCast( rtti_exec *data ) {
     type_info const *to_tid;
     rtti_bad throw_except;
     char *return_value;
-    auto rtti_leap leap_storage;
+    rtti_leap leap_storage;
 
     data->ok = 0;
     if( __CalcMostDerived( data ) != NULL ) {

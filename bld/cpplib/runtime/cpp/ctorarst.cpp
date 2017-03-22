@@ -256,7 +256,7 @@ void* CPPLIB( ctor_array_storage_gm )( // CTOR ARRAY MEMORY, default
     RT_TYPE_SIG sig )               // - type signature for array type
 {
 #ifdef RT_EXC_ENABLED
-    auto void (*op_del)();          // - operator delete[] to be used
+    void (*op_del)();               // - operator delete[] to be used
 
     op_del = ( __typeof(op_del) )&operator delete[];
     return ctor_array_memory( array
@@ -279,7 +279,7 @@ void* CPPLIB( ctor_array_storage_gs )( // CTOR ARRAY_STORAGE, default
     RT_TYPE_SIG sig )               // - type signature for array type
 {
 #ifdef RT_EXC_ENABLED
-    auto void (*op_del)();          // - operator delete[] to be used
+    void (*op_del)();               // - operator delete[] to be used
 
     op_del = ( __typeof(op_del) )&operator delete[];
 #endif
