@@ -1198,7 +1198,7 @@ bool Child1EventWnd( gui_window *gui, gui_event gui_ev, void *param )
         case GUI_KEY_RIGHT :
         case GUI_KEY_UP :
         case GUI_KEY_DOWN :
-            GUILoadString( 1041, Buffer, 80 );
+            GUILoadString( 1041, Buffer, sizeof( Buffer ) );
             GUIDisplayMessage( gui, Buffer, "Load String", GUI_INFORMATION );
             ProcessCursor( gui, key );
             break;

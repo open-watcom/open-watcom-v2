@@ -89,7 +89,7 @@ bool GUILoadStrFini( void )
 
 bool GUILoadString( gui_res_id id, char *buffer, int buffer_length )
 {
-    if( buffer != NULL && buffer_length != 0 ) {
+    if( buffer != NULL && buffer_length > 0 ) {
         if( hInstance.status && WResLoadString( &hInstance, id, (lpstr)buffer, buffer_length ) > 0 ) {
             return( true );
         }
