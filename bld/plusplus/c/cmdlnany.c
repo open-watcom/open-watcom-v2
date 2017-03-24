@@ -1092,6 +1092,11 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.no_alternative_tokens = true;
     }
     if( data->za0x ) {
+        // Make as standard compliant as we can.
+        CompFlags.extensions_enabled = false;
+        CompFlags.oldmacros_enabled = false;
+        CompFlags.unique_functions = true;
+
         CompFlags.enable_std0x = true;
     }
     if( data->zf ) {
