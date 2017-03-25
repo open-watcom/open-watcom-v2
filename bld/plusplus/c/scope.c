@@ -1880,18 +1880,11 @@ bool ScopeEquivalent( SCOPE scope, scope_type_t scope_type )
 NAME ScopeUnnamedNamespaceName( TOKEN_LOCN *locn )
 /************************************************/
 {
-    NAME ns_name;
-
-    if( !CompFlags.extensions_enabled ) {
-        ns_name = uniqueNameSpaceName;
-        if( ns_name == NULL ) {
-            ns_name = CppNameUniqueNS( locn );
-            uniqueNameSpaceName = ns_name;
-        }
-    } else {
-        ns_name = CppNameUniqueNS( locn );
+    if( uniqueNameSpaceName == NULL ) {
+        uniqueNameSpaceName = CppNameUniqueNS( locn );
     }
-    return( ns_name );
+
+    return( uniqueNameSpaceName );
 }
 
 NAME ScopeNameSpaceName( SCOPE scope )
