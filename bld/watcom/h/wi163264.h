@@ -43,6 +43,10 @@
 #define SET_WNDLONGPTR(hwnd, offs, data)        SetWindowLongPtr( hwnd, offs, data )
 #define GET_WNDINFO(hwnd)                       GetWindowLongPtr( hwnd, 0 )
 #define SET_WNDINFO(hwnd, data)                 SetWindowLongPtr( hwnd, 0, data )
+#define GET_WNDSTYLE(hwnd)                      (DWORD)GetWindowLongPtr( hwnd, GWL_STYLE )
+#define SET_WNDSTYLE(hwnd, data)                SetWindowLongPtr( hwnd, GWL_STYLE, (DWORD)data )
+#define GET_WNDEXSTYLE(hwnd)                    (DWORD)GetWindowLongPtr( hwnd, GWL_EXSTYLE )
+#define SET_WNDEXSTYLE(hwnd, data)              SetWindowLongPtr( hwnd, GWL_EXSTYLE, (DWORD)data )
 #define SET_HICON( hw, ic )                     (HICON)SetClassLongPtr( hw, GCLP_HICON, (LONG_PTR)ic )
 #define SET_HBRBACKGROUND( hw, br )             (HBRUSH) SetClassLongPtr( hw, GCLP_HBRBACKGROUND, (LONG_PTR)br )
 #define SET_CLASSCURSOR(hwnd, cur)              (HCURSOR)SetClassLongPtr( hwnd, GCLP_HCURSOR, (LONG_PTR)cur )
@@ -58,6 +62,10 @@
 #define SET_WNDLONGPTR(hwnd, offs, data)        SetWindowLong( hwnd, offs, data )
 #define GET_WNDINFO(hwnd)                       GetWindowLong( hwnd, 0 )
 #define SET_WNDINFO(hwnd, data)                 SetWindowLong( hwnd, 0, data )
+#define GET_WNDSTYLE(hwnd)                      (DWORD)GetWindowLong( hwnd, GWL_STYLE )
+#define SET_WNDSTYLE(hwnd, data)                SetWindowLong( hwnd, GWL_STYLE, (DWORD)data )
+#define GET_WNDEXSTYLE(hwnd)                    (DWORD)GetWindowLong( hwnd, GWL_EXSTYLE )
+#define SET_WNDEXSTYLE(hwnd, data)              SetWindowLong( hwnd, GWL_EXSTYLE, (DWORD)data )
 #define SET_HICON( hw, ic )                     (HICON)SetClassLong( hw, GCL_HICON, (LONG)ic )
 #define SET_HBRBACKGROUND( hw, br )             (HBRUSH)SetClassLong( hw, GCL_HBRBACKGROUND, (LONG)br )
 #define SET_CLASSCURSOR(hwnd, cur)              (HCURSOR)SetClassLong( hwnd, GCL_HCURSOR, (LONG)cur )
@@ -100,6 +108,13 @@
 
 #else /* !defined(__NT__) */
 
+#ifndef APIENTRY
+#define APIENTRY        FAR PASCAL
+#endif
+#ifndef __FAR
+#define __FAR           __far
+#endif
+
 #ifdef __WINDOWS_386__
 #define INT_PTR                                 short
 #define UINT_PTR                                unsigned short
@@ -117,17 +132,23 @@
 #define SET_WNDLONGPTR(hwnd, offs, data)        SetWindowLong( hwnd, offs, data )
 #define GET_WNDINFO(hwnd)                       GetWindowLong( hwnd, 0 )
 #define SET_WNDINFO(hwnd, data)                 SetWindowLong( hwnd, 0, data )
+#define GET_WNDSTYLE(hwnd)                      (DWORD)GetWindowLong( hwnd, GWL_STYLE )
+#define SET_WNDSTYLE(hwnd, data)                SetWindowLong( hwnd, GWL_STYLE, (DWORD)data )
+#define GET_WNDEXSTYLE(hwnd)                    (DWORD)GetWindowLong( hwnd, GWL_EXSTYLE )
+#define SET_WNDEXSTYLE(hwnd, data)              SetWindowLong( hwnd, GWL_EXSTYLE, (DWORD)data )
+#define SET_HICON( hw, ic ) (HICON)             SetClassWord( hw, GCW_HICON, (WORD)ic )
+#define SET_HBRBACKGROUND( hw, br )             (HBRUSH)SetClassWord( hw, GCW_HBRBACKGROUND, (WORD)br )
+#define SET_CLASSCURSOR(hwnd, cur)              (WORD)SetClassWord( hwnd, GCW_HCURSOR, (WORD)cur )
+#define GET_DLGDATA(hwnd)                       GetWindowLong( hwnd, DWL_USER )
+#define SET_DLGDATA(hwnd, data)                 SetWindowLong( hwnd, DWL_USER, (LONG)data )
+#define GET_DLGRESULT(hwnd)                     GetWindowLong( hwnd, DWL_MSGRESULT )
+#define SET_DLGRESULT(hwnd, data)               SetWindowLong( hwnd, DWL_MSGRESULT, (LONG)data )
+
 #define GET_ID(hwnd)                            (WORD)GetWindowWord( hwnd, GWW_ID )
 #define GET_CBWNDEXTRA(hwnd)                    (WORD)GetClassWord( hwnd, GCW_CBWNDEXTRA )
 #define GET_CLASS_STYLE(hwnd)                   GetClassWord( hwnd, GCW_STYLE )
 
-#ifndef APIENTRY
-#define APIENTRY        FAR PASCAL
-#endif
-#ifndef __FAR
-#define __FAR           __far
-#endif
-#define WINMAINENTRY    PASCAL
+#define WINMAINENTRY                            PASCAL
 #define GET_EM_SETSEL_MPS(iStart, iEnd)         0, MAKELONG(iStart, iEnd)
 #define GET_WM_COMMAND_CMD(wp, lp)              HIWORD(lp)
 #define GET_WM_COMMAND_HWND(wp, lp)             (HWND)LOWORD(lp)
@@ -144,9 +165,6 @@
 #define GET_WM_HSCROLL_POS( wp, lp )            LOWORD(lp)
 #define GET_WM_HSCROLL_HWND( wp, lp )           (HWND)HIWORD(lp)
 #define GET_WM_HSCROLL_CODE( wp, lp )           (wp)
-#define SET_HBRBACKGROUND( hw, br )             (HBRUSH)SetClassWord( hw, GCW_HBRBACKGROUND, (WORD)br )
-#define SET_HICON( hw, ic ) (HICON)             SetClassWord( hw, GCW_HICON, (WORD)ic )
-#define SET_CLASSCURSOR(hwnd, cur)              (WORD)SetClassWord( hwnd, GCW_HCURSOR, (WORD)cur )
 #define MAKE_POINT( p, pnt )                    p = MAKEPOINT( pnt )
 #define GET_WM_MENUSELECT_HMENU(wp,lp)          (HMENU)HIWORD(lp)
 #define GET_WM_MENUSELECT_ITEM(wp,lp)           (wp)
@@ -155,10 +173,6 @@
 #define GET_WM_PARENTNOTIFY_ID(wp,lp)           HIWORD(lp)
 #define GET_WM_PARENTNOTIFY_HANDLE(wp,lp)       LOWORD(lp)
 #define GET_WM_PARENTNOTIFY_POINT(wp,lp)        (lp)
-#define GET_DLGDATA(hwnd)                       GetWindowLong( hwnd, DWL_USER )
-#define SET_DLGDATA(hwnd, data)                 SetWindowLong( hwnd, DWL_USER, (LONG)data )
-#define GET_DLGRESULT(hwnd)                     GetWindowLong( hwnd, DWL_MSGRESULT )
-#define SET_DLGRESULT(hwnd, data)               SetWindowLong( hwnd, DWL_MSGRESULT, (LONG)data )
 
 #define BST_UNCHECKED   0
 #define BST_CHECKED     1
