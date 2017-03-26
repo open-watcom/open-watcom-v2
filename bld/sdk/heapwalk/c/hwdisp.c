@@ -51,7 +51,9 @@ static unsigned ColorCount( WORD bitcount, WORD clrused ) {
         color_count = 2;
     } else if( clrused == 0 ) {
         color_count = 1 << bitcount;
-        if( bitcount == 24 ) color_count = 0;
+        if( bitcount == 24 ) {
+            color_count = 0;
+        }
     } else {
         color_count = clrused;
     }
@@ -83,8 +85,8 @@ static HWND MkDisplayWin( msg_id captionid, HWND parent )
         return( hdl );
 }
 
-static HWND ShowBitmapHeapItem( heap_list *hl, HWND parent ) {
-
+static HWND ShowBitmapHeapItem( heap_list *hl, HWND parent )
+{
     HWND                hdl;
     ResInfo             *info;
     WORD                width;
@@ -92,13 +94,15 @@ static HWND ShowBitmapHeapItem( heap_list *hl, HWND parent ) {
     BITMAPINFOHEADER    *bmheader;
 
     info = MemAlloc( sizeof( ResInfo ) );
-    if( info == NULL ) return( NULL );
+    if( info == NULL )
+        return( NULL );
     info->type = GD_BITMAP;
     info->hdl = hl->info.ge.hBlock;
-    info->res = LockResource( hl->info.ge.hBlock );
+    info->res = LockResource( info->hdl );
     bmheader = (BITMAPINFOHEADER *)info->res;
     if( bmheader->biSize != sizeof( BITMAPINFOHEADER ) ) {
         UnlockResource( info->hdl );
+        MemFree( info );
         return( NULL );
     }
     hdl = MkDisplayWin( STR_BITMAP, parent );
@@ -113,8 +117,8 @@ static HWND ShowBitmapHeapItem( heap_list *hl, HWND parent ) {
     return( hdl );
 }
 
-static HWND ShowIconHeapItem( heap_list *hl, HWND parent ) {
-
+static HWND ShowIconHeapItem( heap_list *hl, HWND parent )
+{
     HWND                hdl;
     ResInfo             *info;
     BITMAPINFOHEADER    *btinfo;
@@ -123,13 +127,17 @@ static HWND ShowIconHeapItem( heap_list *hl, HWND parent ) {
     WORD                height;
 
     info = MemAlloc( sizeof( ResInfo ) );
-    if( info == NULL ) return( NULL );
+    if( info == NULL )
+        return( NULL );
     btinfo = (BITMAPINFOHEADER *)LockResource( hl->info.ge.hBlock );
     if( btinfo->biSize == sizeof( BITMAPINFOHEADER ) ) {
         req_size = sizeof( BITMAPINFOHEADER );
         req_size += ColorCount( btinfo->biBitCount, btinfo->biClrUsed ) * sizeof( RGBQUAD );
         req_size += ( btinfo->biWidth * btinfo->biHeight ) / ( 8 / btinfo->biBitCount );
-        if( req_size > hl->info.ge.dwBlockSize ) return( NULL );
+        if( req_size > hl->info.ge.dwBlockSize ) {
+            MemFree( info );
+            return( NULL );
+        }
     }
     info->type = GD_ICON;
     info->hdl = hl->info.ge.hBlock;
@@ -137,46 +145,44 @@ static HWND ShowIconHeapItem( heap_list *hl, HWND parent ) {
     hdl = MkDisplayWin( STR_ICON, parent );
     SetWindowLong( hdl, 0, (DWORD)info );
     width = GetSystemMetrics( SM_CXICON );
-    height = GetSystemMetrics( SM_CYICON ) +
-             2 * GetSystemMetrics( SM_CYFRAME ) +
-             GetSystemMetrics( SM_CYCAPTION );
+    height = GetSystemMetrics( SM_CYICON ) + 2 * GetSystemMetrics( SM_CYFRAME ) + GetSystemMetrics( SM_CYCAPTION );
     SetWindowPos( hdl, NULL, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER );
     ShowWindow( hdl, SW_SHOWNORMAL );
     return( hdl );
 }
 
-static HWND ShowCursorHeapItem( heap_list *hl, HWND parent ) {
-
+static HWND ShowCursorHeapItem( heap_list *hl, HWND parent )
+{
     HWND        hdl;
     ResInfo     *info;
     WORD        width;
     WORD        height;
 
     info = MemAlloc( sizeof( ResInfo ) );
-    if( info == NULL ) return( NULL );
+    if( info == NULL )
+        return( NULL );
     hdl = MkDisplayWin( STR_CURSOR, parent );
     info->type = GD_CURSOR;
     info->hdl = hl->info.ge.hBlock;
     info->res = LockResource( info->hdl );
     SetWindowLong( hdl, 0, (DWORD)info );
     width = 2 * GetSystemMetrics( SM_CXCURSOR );
-    height = GetSystemMetrics( SM_CYCURSOR ) +
-             2 * GetSystemMetrics( SM_CYFRAME ) +
-             GetSystemMetrics( SM_CYCAPTION );
+    height = GetSystemMetrics( SM_CYCURSOR ) + 2 * GetSystemMetrics( SM_CYFRAME ) + GetSystemMetrics( SM_CYCAPTION );
     SetWindowPos( hdl, NULL, 0, 0, width, height, SWP_NOMOVE | SWP_NOZORDER );
     ShowWindow( hdl, SW_SHOWNORMAL );
     return( hdl );
 }
 
-static HWND ShowMenuHeapItem( heap_list *hl, HWND parent ) {
-
+static HWND ShowMenuHeapItem( heap_list *hl, HWND parent )
+{
     HWND        hdl;
     HMENU       menu;
     void __far  *ptr;
     ResInfo     *info;
 
     info = MemAlloc( sizeof( ResInfo ) );
-    if( info == NULL ) return( NULL );
+    if( info == NULL )
+        return( NULL );
     info->type = GD_MENU;
     ptr = LockResource( hl->info.ge.hBlock );
     info->hdl = hl->info.ge.hBlock;
@@ -222,9 +228,9 @@ INT_PTR CALLBACK DialogDispDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lpar
     return( ret );
 }
 
-static HWND ShowDialogHeapItem( heap_list *hl, HWND hwnd ) {
-
-    LPSTR       ptr;
+static HWND ShowDialogHeapItem( heap_list *hl, HWND hwnd )
+{
+    LPSTR       dialog_template_mem;
     HWND        dial;
     HWND        hdl;
     heap_list   tmp;
@@ -232,18 +238,19 @@ static HWND ShowDialogHeapItem( heap_list *hl, HWND hwnd ) {
     char        *rcstr;
 
     info = MemAlloc( sizeof( ResInfo ) );
-    if( info == NULL ) return( NULL );
+    if( info == NULL )
+        return( NULL );
     info->type = GD_DIALOG;
-    ptr = LockResource( hl->info.ge.hBlock );
-    if( ptr == NULL ) {
+    info->hdl = hl->info.ge.hBlock;
+    dialog_template_mem = LockResource( info->hdl );
+    if( dialog_template_mem == NULL ) {
         rcstr = HWAllocRCString( STR_SHOW );
-        RCMessageBox( HeapWalkMainWindow, STR_CANT_LOCK_MEM,
-                    rcstr, MB_OK | MB_ICONINFORMATION );
+        RCMessageBox( HeapWalkMainWindow, STR_CANT_LOCK_MEM, rcstr, MB_OK | MB_ICONINFORMATION );
         HWFreeRCString( rcstr );
+        MemFree( info );
         return( NULL );
     }
-    info->hdl = hl->info.ge.hBlock;
-    info->res = ptr;
+    info->res = dialog_template_mem;
     /* this window remains invisible.  it is created only to ensure
        that system resource get freed */
     hdl = MkDisplayWin( STR_NADA, hwnd );
@@ -260,12 +267,14 @@ static HWND ShowDialogHeapItem( heap_list *hl, HWND hwnd ) {
      */
 
     GetDGroupItem( hl->szModule, &tmp );
-    dial = CreateDialogIndirect( (HANDLE) tmp.info.ge.hBlock, ptr, hdl, DialogDisp );
+    dial = CreateDialogIndirect( (HANDLE)tmp.info.ge.hBlock, dialog_template_mem, hdl, DialogDisp );
     if( dial == NULL ) {
         rcstr = HWAllocRCString( STR_SHOW );
-        RCMessageBox( HeapWalkMainWindow, STR_CANT_CREATE_DLG,
-                        rcstr, MB_OK | MB_ICONINFORMATION );
+        RCMessageBox( HeapWalkMainWindow, STR_CANT_CREATE_DLG, rcstr, MB_OK | MB_ICONINFORMATION );
         HWFreeRCString( rcstr );
+    	SetWindowLong( hdl, 0, 0 );
+        UnlockResource( info->hdl );
+        MemFree( info );
         return( NULL );
     }
     ShowWindow( dial, SW_SHOW );
@@ -288,9 +297,9 @@ static HPALETTE CreateDIBPalette( BITMAPINFO *info )
     palette_handle = (HPALETTE)0;
 
     if( num_colours ) {
-        palette = malloc( sizeof( LOGPALETTE ) +
-                num_colours * sizeof( PALETTEENTRY ) );
-        if( palette == NULL ) return( (HPALETTE)0 );
+        palette = malloc( sizeof( LOGPALETTE ) + num_colours * sizeof( PALETTEENTRY ) );
+        if( palette == NULL )
+            return( (HPALETTE)0 );
         palette->palNumEntries = num_colours;
         palette->palVersion = 0x300;
 
@@ -308,8 +317,8 @@ static HPALETTE CreateDIBPalette( BITMAPINFO *info )
 }
 
 
-static void PaintBitMap( BITMAPINFOHEADER *hdr, HDC dc ) {
-
+static void PaintBitMap( BITMAPINFOHEADER *hdr, HDC dc )
+{
     HDC                 mdc;
     HANDLE              oldhdl;
     HBITMAP             map;
@@ -324,8 +333,7 @@ static void PaintBitMap( BITMAPINFOHEADER *hdr, HDC dc ) {
     palette = CreateDIBPalette( (BITMAPINFO *)hdr );
     oldpalette = SelectPalette( dc, palette, FALSE );
     RealizePalette( dc );
-    map = CreateDIBitmap( dc, (LPBITMAPINFOHEADER)hdr,
-      CBM_INIT, bytes, (LPBITMAPINFO)hdr, DIB_RGB_COLORS );
+    map = CreateDIBitmap( dc, (LPBITMAPINFOHEADER)hdr, CBM_INIT, bytes, (LPBITMAPINFO)hdr, DIB_RGB_COLORS );
     mdc = CreateCompatibleDC( dc );
     oldhdl = SelectObject( mdc, map );
     BitBlt( dc, 0, 0, hdr->biWidth, hdr->biHeight, mdc, 0, 0, SRCCOPY );
@@ -353,8 +361,8 @@ typedef struct cursorheader {
  *               displays it
  */
 
-static void PaintCursor( HWND hwnd, HDC dc, CursorHeader *cursor ) {
-
+static void PaintCursor( HWND hwnd, HDC dc, CursorHeader *cursor )
+{
     char                *and_mask;
     char                *xor_mask;
     HICON               icon;
@@ -367,16 +375,13 @@ static void PaintCursor( HWND hwnd, HDC dc, CursorHeader *cursor ) {
 
     tmp = (BITMAPINFOHEADER *) ( (char *)cursor + 4 );
     if( tmp->biSize == sizeof( BITMAPINFOHEADER ) ) {
-        and_mask = (char *) cursor + 4 + sizeof( BITMAPINFOHEADER ) +
-                   2 * sizeof( RGBQUAD );
+        and_mask = (char *) cursor + 4 + sizeof( BITMAPINFOHEADER ) + 2 * sizeof( RGBQUAD );
         xor_mask =  and_mask + ( tmp->biWidth * tmp->biHeight ) / 16;
-        icon = CreateIcon( Instance, tmp->biWidth, tmp->biHeight/2,
-                        1, 1, and_mask, xor_mask );
+        icon = CreateIcon( Instance, tmp->biWidth, tmp->biHeight / 2, 1, 1, and_mask, xor_mask );
     } else {
         and_mask = (char *) cursor + sizeof( CursorHeader );
         xor_mask = and_mask + ( cursor->width * cursor->height ) / 8;
-        icon = CreateIcon( Instance, cursor->width, cursor->height,
-                            1, 1, and_mask, xor_mask );
+        icon = CreateIcon( Instance, cursor->width, cursor->height, 1, 1, and_mask, xor_mask );
     }
     GetClientRect( hwnd, &area );
     cursor_width = GetSystemMetrics( SM_CXCURSOR );
@@ -399,8 +404,8 @@ static void PaintCursor( HWND hwnd, HDC dc, CursorHeader *cursor ) {
     DestroyIcon( icon );
 }
 
-static void PaintIcon( HDC dc, ResInfo *info ) {
-
+static void PaintIcon( HDC dc, ResInfo *info )
+{
     BITMAPINFO          *btinfo;
     HICON               icon;
     unsigned            clr_cnt;
@@ -412,13 +417,10 @@ static void PaintIcon( HDC dc, ResInfo *info ) {
 
     btinfo = (BITMAPINFO *) (info->res);
     if( btinfo->bmiHeader.biSize == sizeof( BITMAPINFOHEADER ) ) {
-        clr_cnt = ColorCount( btinfo->bmiHeader.biBitCount,
-                  btinfo->bmiHeader.biClrUsed );
-        and_mask = (char *)btinfo + sizeof( BITMAPINFOHEADER ) +
-                   clr_cnt * sizeof( RGBQUAD );
+        clr_cnt = ColorCount( btinfo->bmiHeader.biBitCount, btinfo->bmiHeader.biClrUsed );
+        and_mask = (char *)btinfo + sizeof( BITMAPINFOHEADER ) + clr_cnt * sizeof( RGBQUAD );
         xor_mask = and_mask +
-                   ( btinfo->bmiHeader.biWidth * btinfo->bmiHeader.biHeight )
-                   / ( 2 * ( 8 / btinfo->bmiHeader.biBitCount ) );
+                   ( btinfo->bmiHeader.biWidth * btinfo->bmiHeader.biHeight ) / ( 2 * ( 8 / btinfo->bmiHeader.biBitCount ) );
         icon = CreateIcon( Instance, btinfo->bmiHeader.biWidth,
                btinfo->bmiHeader.biHeight/2, 1, 1, and_mask, xor_mask );
         SetMapMode( dc, MM_TEXT );
@@ -443,8 +445,8 @@ static void PaintIcon( HDC dc, ResInfo *info ) {
     }
 }
 
-static void AddRes( HWND hwnd ) {
-
+static void AddRes( HWND hwnd )
+{
     WORD        i;
 
     for( i = 0; i < MAX_RES; i++ ){
@@ -454,11 +456,11 @@ static void AddRes( HWND hwnd ) {
     }
 } /* AddRes */
 
-static void DeleteRes( HWND hwnd ) {
-
+static void DeleteRes( HWND hwnd )
+{
     WORD        i;
 
-    for( i=0; i < MAX_RES; i++ ) {
+    for( i = 0; i < MAX_RES; i++ ) {
         if( ResHwnd[i] == hwnd ) {
             ResHwnd[i] = NULL;
             break;
@@ -547,8 +549,7 @@ void ShowHeapObject( HWND lbhandle )
     index = (int)SendMessage( lbhandle, LB_GETCURSEL, 0 , 0L );
     if( index == LB_ERR ) {
         rcstr = HWAllocRCString( STR_SHOW );
-        RCMessageBox( HeapWalkMainWindow, STR_NO_ITEM_SELECTED,
-                        rcstr, MB_OK | MB_ICONEXCLAMATION );
+        RCMessageBox( HeapWalkMainWindow, STR_NO_ITEM_SELECTED, rcstr, MB_OK | MB_ICONEXCLAMATION );
         HWFreeRCString( rcstr );
         return;
     }
@@ -558,10 +559,10 @@ void ShowHeapObject( HWND lbhandle )
     } else if( hl->info.ge.hBlock != NULL ) {
         memhdl = DispMem( Instance, HeapWalkMainWindow, (WORD)hl->info.ge.hBlock, FALSE );
     }
-    if( memhdl == NULL ) return;
+    if( memhdl == NULL )
+        return;
     is_res = TRUE;
-    if( !hl->is_dpmi && hl->info.ge.wType == GT_RESOURCE &&
-                Config.disp_res ) {
+    if( !hl->is_dpmi && hl->info.ge.wType == GT_RESOURCE && Config.disp_res ) {
         switch( hl->info.ge.wData ) {
         case GD_CURSORCOMPONENT:
             dispwnd = ShowCursorHeapItem( hl, memhdl );
@@ -584,8 +585,7 @@ void ShowHeapObject( HWND lbhandle )
         }
         if( is_res ) {
             if( dispwnd == NULL ) {
-                ErrorBox( HeapWalkMainWindow, STR_UNABLE_TO_DISP_GRAPHIC,
-                          MB_OK | MB_ICONINFORMATION );
+                ErrorBox( HeapWalkMainWindow, STR_UNABLE_TO_DISP_GRAPHIC, MB_OK | MB_ICONINFORMATION );
             } else {
                 AddRes( dispwnd );
             }
