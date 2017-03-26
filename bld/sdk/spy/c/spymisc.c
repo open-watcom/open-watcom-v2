@@ -260,16 +260,14 @@ static style_info _NEAR AnimateStyleArray[] = {
 static WORD AnimateStyleArraySize = sizeof( AnimateStyleArray ) / sizeof( style_info );
 
 static style_info _NEAR DateTimeStyleArray[] = {
-    { "DTS_UPDOWN",             DTS_UPDOWN,         DTS_UPDOWN         },
-    { "DTS_SHOWNONE",           DTS_SHOWNONE,       DTS_SHOWNONE       },
-    { "DTS_SHORTDATECENTURYFORMAT", DTS_SHORTDATECENTURYFORMAT,
-      DTS_SHORTDATECENTURYFORMAT },
-    { "DTS_LONGDATEFORMAT",     DTS_LONGDATEFORMAT, DTS_LONGDATEFORMAT },
-    { "DTS_TIMEFORMAT",         DTS_TIMEFORMAT,     DTS_TIMEFORMAT     },
-    { "DTS_SHORTDATEFORMAT",    DTS_SHORTDATEFORMAT,
-      DTS_SHORTDATECENTURYFORMAT | DTS_LONGDATEFORMAT | DTS_TIMEFORMAT },
-    { "DTS_APPCANPARSE",        DTS_APPCANPARSE,    DTS_APPCANPARSE    },
-    { "DTS_RIGHTALIGN",         DTS_RIGHTALIGN,     DTS_RIGHTALIGN     }
+    { "DTS_UPDOWN",                 DTS_UPDOWN,                 DTS_UPDOWN         },
+    { "DTS_SHOWNONE",               DTS_SHOWNONE,               DTS_SHOWNONE       },
+    { "DTS_SHORTDATECENTURYFORMAT", DTS_SHORTDATECENTURYFORMAT, DTS_SHORTDATECENTURYFORMAT },
+    { "DTS_LONGDATEFORMAT",         DTS_LONGDATEFORMAT,         DTS_LONGDATEFORMAT },
+    { "DTS_TIMEFORMAT",             DTS_TIMEFORMAT,             DTS_TIMEFORMAT     },
+    { "DTS_SHORTDATEFORMAT",        DTS_SHORTDATEFORMAT,        DTS_SHORTDATECENTURYFORMAT | DTS_LONGDATEFORMAT | DTS_TIMEFORMAT },
+    { "DTS_APPCANPARSE",            DTS_APPCANPARSE,            DTS_APPCANPARSE    },
+    { "DTS_RIGHTALIGN",             DTS_RIGHTALIGN,             DTS_RIGHTALIGN     }
 };
 
 static WORD DateTimeStyleArraySize = sizeof( DateTimeStyleArray ) / sizeof( style_info );
@@ -294,8 +292,7 @@ static style_info _NEAR ProgressBarStyleArray[] = {
     { "PBS_SMOOTHREVERSE",  PBS_SMOOTHREVERSE,  PBS_SMOOTHREVERSE }
 };
 
-static WORD ProgressBarStyleArraySize = sizeof( ProgressBarStyleArray ) /
-                                        sizeof( style_info );
+static WORD ProgressBarStyleArraySize = sizeof( ProgressBarStyleArray ) / sizeof( style_info );
 
 static style_info _NEAR RebarStyleArray[] = {
     { "RBS_TOOLTIPS",           RBS_TOOLTIPS,           RBS_TOOLTIPS        },
@@ -315,8 +312,7 @@ static style_info _NEAR StatusBarStyleArray[] = {
     { "SBARS_TOOLTIPS", SBARS_TOOLTIPS, SBARS_TOOLTIPS }
 };
 
-static WORD StatusBarStyleArraySize = sizeof( StatusBarStyleArray ) /
-                                      sizeof( style_info );
+static WORD StatusBarStyleArraySize = sizeof( StatusBarStyleArray ) / sizeof( style_info );
 
 static style_info _NEAR ToolbarStyleArray[] = {
     { "TBSTYLE_TOOLTIPS",       TBSTYLE_TOOLTIPS,       TBSTYLE_TOOLTIPS     },
@@ -347,12 +343,10 @@ static style_info _NEAR TrackBarStyleArray[] = {
     { "TBS_AUTOTICKS",          TBS_AUTOTICKS,          TBS_AUTOTICKS        },
     { "TBS_VERT",               TBS_VERT,               TBS_VERT             },
     { "TBS_LEFT",               TBS_VERT | TBS_LEFT,    TBS_VERT | TBS_LEFT  },
-    { "TBS_RIGHT",              TBS_VERT,
-      TBS_VERT | TBS_LEFT | TBS_BOTH | TBS_NOTICKS },
+    { "TBS_RIGHT",              TBS_VERT,               TBS_VERT | TBS_LEFT | TBS_BOTH | TBS_NOTICKS },
     { "TBS_HORZ",               TBS_HORZ,               TBS_VERT             },
     { "TBS_TOP",                TBS_TOP,                TBS_VERT | TBS_TOP   },
-    { "TBS_BOTTOM",             TBS_HORZ,
-      TBS_VERT | TBS_TOP | TBS_BOTH | TBS_NOTICKS },
+    { "TBS_BOTTOM",             TBS_HORZ,               TBS_VERT | TBS_TOP | TBS_BOTH | TBS_NOTICKS },
     { "TBS_BOTH",               TBS_BOTH,               TBS_BOTH             },
     { "TBS_NOTICKS",            TBS_NOTICKS,            TBS_NOTICKS          },
     { "TBS_ENABLESELRANGE",     TBS_ENABLESELRANGE,     TBS_ENABLESELRANGE   },
@@ -434,8 +428,7 @@ static style_info _NEAR TabControlStyleArray[] = {
     { "TCS_TABS",               TCS_TABS,                   TCS_BUTTONS               },
     { "TCS_MULTILINE",          TCS_MULTILINE,              TCS_MULTILINE             },
     { "TCS_SINGLELINE",         TCS_SINGLELINE,             TCS_MULTILINE             },
-    { "TCS_RIGHTJUSTIFY",       TCS_MULTILINE,
-      TCS_MULTILINE | TCS_FIXEDWIDTH | TCS_RAGGEDRIGHT },
+    { "TCS_RIGHTJUSTIFY",       TCS_MULTILINE,              TCS_MULTILINE | TCS_FIXEDWIDTH | TCS_RAGGEDRIGHT },
     { "TCS_FIXEDWIDTH",         TCS_FIXEDWIDTH,             TCS_FIXEDWIDTH            },
     { "TCS_RAGGEDRIGHT",        TCS_RAGGEDRIGHT,            TCS_RAGGEDRIGHT           },
     { "TCS_FOCUSONBUTTONDOWN",  TCS_FOCUSONBUTTONDOWN,      TCS_FOCUSONBUTTONDOWN     },
@@ -444,8 +437,7 @@ static style_info _NEAR TabControlStyleArray[] = {
     { "TCS_FOCUSNEVER",         TCS_FOCUSNEVER,             TCS_FOCUSNEVER            }
 };
 
-static WORD TabControlStyleArraySize = sizeof( TabControlStyleArray ) /
-                                       sizeof( style_info );
+static WORD TabControlStyleArraySize = sizeof( TabControlStyleArray ) / sizeof( style_info );
 
 static style_info _NEAR TreeViewStyleArray[] = {
     { "TVS_HASBUTTONS",         TVS_HASBUTTONS,         TVS_HASBUTTONS      },
@@ -466,8 +458,7 @@ static style_info _NEAR TreeViewStyleArray[] = {
     { "TVS_NOHSCROLL",          TVS_NOHSCROLL,          TVS_NOHSCROLL       }
 };
 
-static WORD TreeViewStyleArraySize = sizeof( TreeViewStyleArray ) /
-                                     sizeof( style_info );
+static WORD TreeViewStyleArraySize = sizeof( TreeViewStyleArray ) / sizeof( style_info );
 #endif
 
 static class_styles _NEAR ClassStyles[] = {
@@ -573,7 +564,6 @@ void GetHexStr( LPSTR res, DWORD num, size_t padlen )
  */
 bool IsMyWindow( HWND hwnd )
 {
-
     if( hwnd == NULL ) {
         return( false );
     }
@@ -624,8 +614,8 @@ void GetWindowStyleString( HWND hwnd, char *str, char *sstr )
     int         i;
     int         j;
 
-    style = GetWindowLong( hwnd, GWL_STYLE );
-    exstyle = GetWindowLong( hwnd, GWL_EXSTYLE );
+    style = GET_WNDSTYLE( hwnd );
+    exstyle = GET_WNDEXSTYLE( hwnd );
 
     GetHexStr( str, style, 8 );
     str[8] = 0;
@@ -667,7 +657,7 @@ void GetWindowStyleString( HWND hwnd, char *str, char *sstr )
 
 } /* GetWindowStyleString */
 
-#ifndef __NT__
+#ifdef __WINDOWS__
     #define STYLE_TYPE          WORD
     #define STYLE_HEX_LEN       4
 #else
@@ -731,10 +721,10 @@ void FormatSpyMessage( char *msg, LPMSG pmsg, char *res )
     memset( res,' ', SPYOUT_LENGTH );
     strcpy( res, msg );
     res[strlen( msg )] = ' ';
-    GetHexStr( &res[SPYOUT_HWND], (DWORD)(pointer_int)pmsg->hwnd, SPYOUT_HWND_LEN );
-    GetHexStr( &res[SPYOUT_MSG], pmsg->message, SPYOUT_MSG_LEN );
-    GetHexStr( &res[SPYOUT_WPARAM], pmsg->wParam, SPYOUT_WPARAM_LEN );
-    GetHexStr( &res[SPYOUT_LPARAM], pmsg->lParam, SPYOUT_LPARAM_LEN );
+    GetHexStr( res + SPYOUT_HWND,   (DWORD)(pointer_int)pmsg->hwnd, SPYOUT_HWND_LEN );
+    GetHexStr( res + SPYOUT_MSG,    pmsg->message, SPYOUT_MSG_LEN );
+    GetHexStr( res + SPYOUT_WPARAM, pmsg->wParam, SPYOUT_WPARAM_LEN );
+    GetHexStr( res + SPYOUT_LPARAM, pmsg->lParam, SPYOUT_LPARAM_LEN );
     res[SPYOUT_LENGTH] = 0;
 
 } /* FormatSpyMessage */
@@ -749,35 +739,32 @@ void SetSpyState( spystate ss )
     int         len;
 
     SpyState = ss;
-    len = GetWindowText( SpyMainWindow, &str[1], sizeof( str ) - 2 );
+    len = GetWindowText( SpyMainWindow, str + 1, sizeof( str ) - 2 );
     switch( ss ) {
     case OFF:
-        if( str[ 1 ] != '<' ) {
-            str[ 0 ] = '<';
-            str[ len + 1 ] = '>';
-            str[ len + 2 ] = 0;
+        if( str[1] != '<' ) {
+            str[0] = '<';
+            str[len + 1] = '>';
+            str[len + 2] = 0;
             SetWindowText( SpyMainWindow, str );
         }
         rcstr = GetRCString( STR_SPY_ON );
-        ModifyMenu( SpyMenu, SPY_OFFON, MF_BYCOMMAND | MF_ENABLED | MF_STRING,
-                    SPY_OFFON, rcstr );
+        ModifyMenu( SpyMenu, SPY_OFFON, MF_BYCOMMAND | MF_ENABLED | MF_STRING, SPY_OFFON, rcstr );
         break;
     case ON:
         rcstr = GetRCString( STR_SPY_OFF );
-        ModifyMenu( SpyMenu, SPY_OFFON, MF_BYCOMMAND | MF_ENABLED | MF_STRING,
-                    SPY_OFFON, rcstr );
-        if( str[ 1 ] == '<' ) {
-            str[ len ] = 0;
-            SetWindowText( SpyMainWindow, &str[ 2 ] );
+        ModifyMenu( SpyMenu, SPY_OFFON, MF_BYCOMMAND | MF_ENABLED | MF_STRING, SPY_OFFON, rcstr );
+        if( str[1] == '<' ) {
+            str[len] = 0;
+            SetWindowText( SpyMainWindow, str + 2 );
         }
         break;
     case NEITHER:
         rcstr = GetRCString( STR_SPY_OFF );
-        ModifyMenu( SpyMenu, SPY_OFFON, MF_BYCOMMAND | MF_GRAYED | MF_STRING,
-                    SPY_OFFON, rcstr );
-        if( str[ 1 ] == '<' ) {
-            str[ len ] = 0;
-            SetWindowText( SpyMainWindow, &str[ 2 ] );
+        ModifyMenu( SpyMenu, SPY_OFFON, MF_BYCOMMAND | MF_GRAYED | MF_STRING, SPY_OFFON, rcstr );
+        if( str[1] == '<' ) {
+            str[len] = 0;
+            SetWindowText( SpyMainWindow, str + 2 );
         }
         break;
     }
@@ -818,8 +805,8 @@ bool GetFileName( char *ext, int type, char *fname )
 
 } /* GetFileName */
 
-bool InitGblStrings( void ) {
-
+bool InitGblStrings( void )
+{
     msg_id      heading;
     msg_id      heading_uline;
 
@@ -846,4 +833,3 @@ bool InitGblStrings( void ) {
     return( true );
 
 } /* InitGblStrings */
-
