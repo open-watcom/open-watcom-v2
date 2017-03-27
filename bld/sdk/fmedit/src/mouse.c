@@ -1147,7 +1147,6 @@ static DLIST *OrderList( LIST *list )
     for( mylist = list; mylist != NULL; mylist = ListNext( mylist ) ) {
         currobj = ListElement( mylist );
         elt.original = currobj;
-        elt.copy = 0;
         obj = GetObjptr( currobj );
         GetPriority( obj, &priority );
         elt.copy = (OBJPTR)priority;
@@ -1161,23 +1160,23 @@ static DLIST_ELT GetNextElement( DLIST *dlist )
 {
     /* Return the lowest priority element in the list */
     DLIST_ELT   elt;
-    DLIST_ELT   curr;
+    DLIST_ELT   curr_elt;
     DLIST       *mydlist;
 
     elt.original = NULL;
-    elt.copy = NULL;
+    elt.copy = 0;
     mydlist = dlist;
     if( mydlist == NULL )
         return( elt );
-    curr = DListElement( mydlist );
+    curr_elt = DListElement( mydlist );
     for( mydlist = DListNext( mydlist ); mydlist != NULL; mydlist = DListNext( mydlist ) ) {
         elt = DListElement( mydlist );
-        if( curr.copy > elt.copy ) {
-            curr.copy = elt.copy;
-            curr.original = elt.original;
+        if( (int)curr_elt.copy > (int)elt.copy ) {
+            curr_elt.copy = elt.copy;
+            curr_elt.original = elt.original;
         }
     }
-    return( curr );
+    return( curr_elt );
 }
 
 void BeginMoveOperation( LIST *mycurrobjlist )
