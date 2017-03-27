@@ -32,38 +32,28 @@
 #ifndef __OS2__
 
 #include "wclbproc.h"
+#include "_windlg.h"
 
-#ifdef __NT__
+#ifdef __WINDOWS__
 
-#define ADJUST_ITEMLEN( a )     (a) = __ROUND_UP_SIZE(a, 8)
-#define ADJUST_BLOCKLEN( a )    (a) = __ROUND_UP_SIZE(a, 4)
-#define ADJUST_CLASSLEN( a )    (a) = __ROUND_UP_SIZE(a, 2)
-#define _FARmemcpy              memcpy
-#define _ISFAR
-#define SLEN( a )               (strlen((a))*2+2)
-typedef WORD INFOTYPE;
+#define _FARmemcpy              _fmemcpy
+#define _ISFAR                  __far
+#define SLEN( a )               (strlen((a))+1)
 
 #else
 
-#define SLEN( a )               (strlen((a))+1)
-#define ADJUST_ITEMLEN( a )
-#define ADJUST_BLOCKLEN( a )
-#define ADJUST_CLASSLEN( a )
-#define _ISFAR                  __far
-#define _FARmemcpy              _fmemcpy
-typedef BYTE INFOTYPE;
+#define _FARmemcpy              memcpy
+#define _ISFAR
+#define SLEN( a )               (strlen((a))*2+2)
 
 #endif
 
-#include "_windlg.h"
-
-extern GLOBALHANDLE _DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
-                       int dtcy, const char *menuname, const char *classname,
-                       const char *captiontext, int pointsize, const char *typeface, size_t *datalen );
-extern GLOBALHANDLE _AddControl( GLOBALHANDLE data, int dtilx, int dtily,
-                   int dtilcx, int dtilcy, int id, long style, const char *class,
-                   const char *text, BYTE infolen, const char *infodata, size_t *datalen );
-extern void _DoneAddingControls( GLOBALHANDLE data );
-INT_PTR _DynamicDialogBox( DLGPROCx fn, HANDLE inst, HWND hwnd, GLOBALHANDLE data );
+extern GLOBALHANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
+                        const char *menuname, const char *classname, const char *captiontext,
+                        int pointsize, const char *typeface, size_t *datalen );
+extern GLOBALHANDLE _AddControl( GLOBALHANDLE data, int x, int y, int cx, int cy, int id, DWORD style,
+                        const char *class, const char *text, BYTE infolen, const char *infodata, size_t *datalen );
+extern void     _DoneAddingControls( GLOBALHANDLE data );
+extern INT_PTR  _DynamicDialogBox( DLGPROCx fn, HANDLE inst, HWND hwnd, GLOBALHANDLE data );
 
 #endif
