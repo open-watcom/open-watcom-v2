@@ -264,7 +264,7 @@ bool WGetKeyPressProc( WAccelEditInfo *einfo, UINT message, WPARAM wParam, LPARA
         if( w != VK_MENU && w != VK_CONTROL && w != VK_SHIFT ) {
             einfo->key_info.key = w;
             einfo->key_info.extended = ((lParam & EXTENDED_MASK) != 0);
-            scan_code = (uint_16)((uint_32)lParam >> 16) & 0x00ff;
+            scan_code = HIWORD( lParam ) & 0xFF;
             WSetKey( einfo, scan_code );
             ret = true;
         }
