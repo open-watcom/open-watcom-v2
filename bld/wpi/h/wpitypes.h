@@ -90,10 +90,10 @@
     #define WPI_HACCEL                  HACCEL
     #define WPI_MSG                     PM1632_WINDOW_MSG
     #define WPI_QMSG                    QMSG
-    #define WPI_DLGPROC                 PFNWP 
+    #define WPI_DLGPROC                 PFNWP
     #define WPI_ENUMPROCx               WPI_ENUMPROC
-    #define WPI_WNDPROC                 PFNWP 
-    #define WPI_WNDPROCx                PFNWP 
+    #define WPI_WNDPROC                 PFNWP
+    #define WPI_WNDPROCx                PFNWP
     #define WPI_PROC                    PFNWP
     #define WPI_PROCx                   PFNWP
     #define WPI_PRES                    HPS
