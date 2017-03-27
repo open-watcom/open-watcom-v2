@@ -58,16 +58,13 @@ typedef DLGTITEM                DLGITEMTEMPLATE;
  * I am not about to change this in ALL the code, and since I am not including
  * windows.h, I have defined it as such
  */
-typedef PVOID           TEMPLATE_HANDLE;
+#define TEMPLATE_HANDLE PVOID
 
-extern TEMPLATE_HANDLE  DialogTemplate( LONG dtStyle, int dtx, int dty,
-                                        int dtcx, int dtcy, const char *menuname,
-                                        const char *classname, const char *captiontext,
-                                        int pointsize, const char *typeface, size_t *datalen );
-extern TEMPLATE_HANDLE  AddControl( TEMPLATE_HANDLE data, int dtilx,
-                                        int dtily, int dtilcx, int dtilcy,
-                                        int id, long style, const char *class,
-                                        const char *text, BYTE infolen,
-                                        const char *infodata, size_t *datalen );
+extern TEMPLATE_HANDLE  DialogTemplate( DWORD dtStyle, int x, int y, int cx, int cy,
+                                const char *menuname, const char *classname, const char *captiontext,
+                                int pointsize, const char *typeface, size_t *datalen );
+extern TEMPLATE_HANDLE  AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, int id, DWORD style,
+                                const char *class, const char *text,
+                                BYTE infolen, const char *infodata, size_t *datalen );
 extern TEMPLATE_HANDLE  DoneAddingControls ( TEMPLATE_HANDLE data );
-extern int DynamicDialogBox( PFNWP fn, WPI_INST inst, HWND hwnd, TEMPLATE_HANDLE data, MPARAM lparam );
+extern int              DynamicDialogBox( PFNWP fn, WPI_INST inst, HWND hwnd, TEMPLATE_HANDLE data, MPARAM lparam );

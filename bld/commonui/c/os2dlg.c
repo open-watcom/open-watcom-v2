@@ -38,19 +38,13 @@
 
 #include "os2dlg.h"
 
-static TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus );
-static TEMPLATE_HANDLE PMDoneAddingControls( TEMPLATE_HANDLE data );
-static TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, long style,
-                                             USHORT dtx, USHORT dty,
-                                             USHORT dtcx, USHORT dtcy,
-                                             USHORT id, USHORT children,
-                                             ULONG nclass, const char *class,
-                                             const char *text, PVOID presparms,
-                                             ULONG presparmslen,
-                                             const void *ctldata, ULONG ctldatlen );
-static int          PMDynamicDialogBox( PFNWP fn, HWND hwnd,
-                                             TEMPLATE_HANDLE data,
-                                             PVOID dlgdata );
+static TEMPLATE_HANDLE  PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus );
+static TEMPLATE_HANDLE  PMDoneAddingControls( TEMPLATE_HANDLE data );
+static TEMPLATE_HANDLE  PMAddControl( TEMPLATE_HANDLE data, DWORD style, USHORT x, USHORT y, USHORT cx, USHORT cy,
+                            USHORT id, USHORT children, ULONG nclass, const char *class,
+                            const char *text, PVOID presparms, ULONG presparmslen,
+                            const void *ctldata, ULONG ctldatlen );
+static int              PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE data, PVOID dlgdata );
 
 static TEMPLATE_HANDLE  dataSeg;
 static ULONG            dataSegLen;
@@ -85,7 +79,7 @@ TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus
 {
     TEMPLATE_HANDLE     data;
     UINT                blocklen;
-    DLGTEMPLATE _ISFAR *dt;
+    DLGTEMPLATE         _ISFAR *dt;
 
 
     /*
@@ -119,8 +113,8 @@ TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus
 /*
  * PMAddControl - add a control to a dialog
  */
-TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, long style, USHORT dtx,
-                              USHORT dty, USHORT dtcx, USHORT dtcy, USHORT id,
+TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, DWORD style, USHORT x,
+                              USHORT y, USHORT cx, USHORT cy, USHORT id,
                               USHORT children, ULONG nclass, const char *class,
                               const char *text, PVOID presparms, ULONG presparmslen,
                               const void *ctldata, ULONG ctldatalen )
@@ -190,13 +184,13 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, long style, USHORT dtx,
     }
 
     if( !children ) {
-        dty = dt->adlgti[0].cy - dty - dtcy;
+        y = dt->adlgti[0].cy - y - cy;
     }
 
-    dit->x = dtx;
-    dit->y = dty;
-    dit->cx = dtcx;
-    dit->cy = dtcy;
+    dit->x = x;
+    dit->y = y;
+    dit->cx = cx;
+    dit->cy = cy;
     dit->id = id;
     if( presparmslen ) {
         dit->offPresParams = dataSegLen + textlen + classlen;
@@ -304,8 +298,8 @@ int PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE data, PVOID dlgdata
 
 } /* PMDynamicDialogBox */
 
-TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
-                                int dtcy, const char *menuname, const char *classname,
+TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx,
+                                int cy, const char *menuname, const char *classname,
                                 const char *captiontext, int pointsize,
                                 const char *typeface, size_t *datalen )
 {
@@ -354,10 +348,10 @@ TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
         return( NULL );
     }
 
-    frame_flags = dtStyle & 0x0000ffff;
-    dtStyle = (dtStyle & 0xffff0000) | WS_SAVEBITS | FS_NOBYTEALIGN | FS_DLGBORDER;
+    frame_flags = style & 0x0000ffff;
+    style = (style & 0xffff0000) | WS_SAVEBITS | FS_NOBYTEALIGN | FS_DLGBORDER;
 
-    new = PMAddControl( data, dtStyle, dtx, dty, dtcx, dtcy,
+    new = PMAddControl( data, style, x, y, cx, cy,
                         0, 1, (ULONG)WC_FRAME, NULL, captiontext, pdata,
                         psize, &frame_flags, sizeof( ULONG ) );
 
@@ -372,8 +366,8 @@ TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx,
     return( new );
 }
 
-TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int dtx, int dty,
-                             int dtcx, int dtcy, int id, long style,
+TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y,
+                             int cx, int cy, int id, DWORD style,
                              const char *class, const char *text,
                              BYTE infolen, const char *infodata, size_t *datalen )
 {
@@ -387,8 +381,7 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int dtx, int dty,
         class = NULL;
     }
 
-    new = PMAddControl( data, style, dtx, dty, dtcx, dtcy, id,
-                        0, nclass, class, text, NULL, 0, infodata, infolen );
+    new = PMAddControl( data, style, x, y, cx, cy, id, 0, nclass, class, text, NULL, 0, infodata, infolen );
 
     if( new == NULL ) {
         PMfree( data );
