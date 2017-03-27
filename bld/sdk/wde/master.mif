@@ -3,7 +3,7 @@ name = wde
 
 !ifndef wde_autodepends
 wde_autodepends = .AUTODEPEND
-!endif 
+!endif
 
 .EXTENSIONS: .res .rc
 
@@ -55,7 +55,7 @@ objs =  wde_wres.obj wdealign.obj wdecsize.obj wdecust.obj  wdedebug.obj &
         wdefcntl.obj wdefcust.obj wdefdiag.obj wdefdlg.obj  wdefedit.obj &
         wdefinit.obj wdeflbox.obj wdefmenu.obj wdefont.obj  wdefordr.obj &
         wdefscrl.obj wdefstat.obj wdefutil.obj wdegeted.obj wdegetfn.obj &
-        wdehash.obj  wdehints.obj wdeinfo.obj  wdelist.obj  &
+        wdehash.obj  wdehints.obj wdeinfo.obj  wdelist.obj  wdedlgut.obj &
         wdemain.obj  wdemsgbx.obj wdeopts.obj  &
         wderes.obj   wderesin.obj wdesdlg.obj  wdesdup.obj  &
         wdestat.obj  wdestyle.obj &
