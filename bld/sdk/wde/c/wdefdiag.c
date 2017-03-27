@@ -1033,7 +1033,7 @@ bool WdeDialogTest( WdeDialogObject *obj, GLOBALHANDLE *p1, void *p2 )
     LIST            *clist;
     WdeOrderedEntry *oentry;
     HWND            hwin;
-    uint_16         flag;
+    ACTION_ID       act;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( p1 );
@@ -1099,14 +1099,14 @@ bool WdeDialogTest( WdeDialogObject *obj, GLOBALHANDLE *p1, void *p2 )
     WdeCleanOrderedList( &obj->ochildren );
 
     if( obj->dialog_info->is32bitEx ) {
-        flag = TESTEX;
+        act = TESTEX;
     } else {
-        flag = TEST;
+        act = TEST;
     }
     /* add all the children */
     for( clist = obj->ochildren; clist != NULL; clist = ListNext( clist ) ) {
         oentry = (WdeOrderedEntry *)ListElement( clist );
-        if( !Forward( oentry->obj, flag, &dialog_template, NULL ) ) {
+        if( !Forward( oentry->obj, act, &dialog_template, NULL ) ) {
             WdeWriteTrail( "WdeDialogTest: control TEST failed!" );
             GlobalFree( dialog_template );
             return( false );
