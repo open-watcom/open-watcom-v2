@@ -569,7 +569,7 @@ BOOL CALLBACK ProcPriorityDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
     BOOL                ret;
     HANDLE              hdl;
 
-    info = (ProcPriorityInfo *)GetWindowLong( hwnd, DWL_USER );
+    info = (ProcPriorityInfo *)GET_DLGDATA( hwnd );
     switch( msg ) {
     case WM_INITDIALOG:
         info = (ProcPriorityInfo *)lparam;
@@ -580,7 +580,7 @@ BOOL CALLBACK ProcPriorityDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
              FreeRCString( action );
              SendMessage( hwnd, WM_CLOSE, 0, 0 );
         }
-        SetWindowLong( hwnd, DWL_USER, lparam );
+        SET_DLGDATA( hwnd, lparam );
         sprintf( buf, "Pid = %08lX", info->procid );
         SetDlgItemText( hwnd, PRIORITY_INFO, buf );
         sprintf( buf, "(%s)", info->stats.name );

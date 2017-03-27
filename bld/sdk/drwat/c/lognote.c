@@ -56,14 +56,14 @@ WINEXPORT INT_PTR CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
 
     switch( msg ) {
     case WM_INITDIALOG:
-        SetWindowLong( hwnd, DWL_USER, lparam );
+        SET_DLGDATA( hwnd, lparam );
         ret = true;
         break;
     case WM_COMMAND:
         cmd = LOWORD( wparam );
         switch( cmd ) {
         case IDOK:
-            fn = (void *)GetWindowLong( hwnd, DWL_USER );
+            fn = (void *)GET_DLGDATA( hwnd );
             edithwnd = GetDlgItem( hwnd, LOG_TEXT );
             linecnt = (int)SendMessage( edithwnd, EM_GETLINECOUNT, 0, 0L );
             for( i = 0; i < linecnt; i++ ) {

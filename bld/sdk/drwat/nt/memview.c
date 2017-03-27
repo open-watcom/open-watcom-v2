@@ -371,11 +371,11 @@ LONG CALLBACK MemWalkerProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     HDC                 dc;
     char                buf[150];
 
-    info = (MemWalkerInfo *)GetWindowLong( hwnd, 0 );
+    info = (MemWalkerInfo *)GET_WNDINFO( hwnd );
     switch ( msg ) {
     case WM_CREATE:
         info = (MemWalkerInfo *)( (CREATESTRUCT *)lparam )->lpCreateParams;
-        SetWindowLong( hwnd, 0, (DWORD)info );
+        SET_WNDINFO( hwnd, (LONG_PTR)info );
         info->listdata.data = NULL;
         info->listdata.allocated = 0;
         info->listdata.used = 0;

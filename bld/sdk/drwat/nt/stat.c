@@ -286,7 +286,7 @@ static void InitStatDialog( HWND hwnd )
     }
     SetFocus( GetDlgItem( hwnd, IDOK ) );
     statdata->reg_set_index = 0;
-    SetWindowLong(hwnd,DWL_USER,(LONG)statdata);
+    SET_DLGDATA( hwnd, statdata );
 } /* InitStatDialog */
 
 #ifndef __NT__
@@ -385,7 +385,7 @@ WINEXPORT INT_PTR CALLBACK StatDialogDlgProc( HWND hwnd, UINT msg,WPARAM  wparam
     bool        ret;
 
     ret = false;
-    statdata = (StatData *)GetWindowLong( hwnd, DWL_USER );
+    statdata = (StatData *)GET_DLGDATA( hwnd );
     switch( msg ) {
     case STAT_FOREGROUND:
 #ifdef __NT__

@@ -533,7 +533,7 @@ INT_PTR CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 
     ret = false;
 
-    info = (SelMemDlgInfo *)GetWindowLong( hwnd, DWL_USER );
+    info = (SelMemDlgInfo *)GET_DLGDATA( hwnd );
     switch( msg ) {
     case WM_INITDIALOG:
         {
@@ -542,7 +542,7 @@ INT_PTR CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             int     j;
 
             info = (SelMemDlgInfo *)lparam;
-            SetWindowLong( hwnd, DWL_USER, lparam );
+            SET_DLGDATA( hwnd, lparam );
             lb = GetDlgItem( hwnd, DMP_BOX );
             SetDlgMonoFont( hwnd, DMP_BOX );
             SetDlgMonoFont( hwnd, DMP_LABEL );

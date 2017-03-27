@@ -54,7 +54,7 @@ mad_registers * RegListGetMadRegisters( HWND list )
 mad_reg_set_data * RegListGetMadRegSetData( HWND list )
 {
     RegListData *data;
-    data = (RegListData *)GetWindowLong( list, 0 );
+    data = (RegListData *)GET_WNDINFO( list );
     return( data->reg_set );
 }
 
@@ -279,7 +279,7 @@ HWND CreateRegList( CreateRegListData *data )
         Instance,
         NULL );
     list_data = MemAlloc( sizeof( RegListData ) );
-    SetWindowLong( list, 0, (LONG)list_data );
+    SET_WNDINFO( list, (LONG_PTR)list_data );
     AddRegisters( list, data->reg_set );
     list_data->curr_reg = GetWindow( list, GW_CHILD );
     list_data->reg_set = data->reg_set;
@@ -455,7 +455,7 @@ static LRESULT ProcessKeyEvent(HWND hwnd,UINT msg, WPARAM wparam,LPARAM lparam)
     WORD        repeat;
 
     repeat = LOWORD( lparam );
-    data = (RegListData *)GetWindowLong( hwnd, 0 );
+    data = (RegListData *)GET_WNDINFO( hwnd );
     direction = GW_HWNDNEXT;
     string = data->curr_reg;
 
@@ -511,7 +511,7 @@ LRESULT CALLBACK RegListProc(HWND hwnd, UINT msg,WPARAM wparam, LPARAM lparam)
     RECT        rect;
     WORD        item;
 
-    data = (RegListData *)GetWindowLong( hwnd, 0 );
+    data = (RegListData *)GET_WNDINFO( hwnd );
     switch( msg ){
     case CHILD_R_CLICK:
         SetFocus( hwnd );

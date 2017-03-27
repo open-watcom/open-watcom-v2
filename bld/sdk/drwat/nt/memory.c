@@ -213,12 +213,12 @@ INT_PTR CALLBACK MemInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 
     ret = false;
 
-    info = (MemDlgInfo *)GetWindowLong( hwnd, DWL_USER );
+    info = (MemDlgInfo *)GET_DLGDATA( hwnd );
     switch( msg ) {
     case WM_INITDIALOG:
         info = MemAlloc( sizeof( MemDlgInfo ) );
         info->procid = lparam;
-        SetWindowLong( hwnd, DWL_USER, (DWORD)info );
+        SET_DLGDATA( hwnd, info );
         fillMemInfo( hwnd, info->procid, TRUE );
         ret = true;
         break;

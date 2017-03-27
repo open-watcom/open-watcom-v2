@@ -70,15 +70,15 @@ HWND CreateRegString( HWND parent, int x, int y, int width, int height, char *te
         NULL );
     MoveWindow( ret, x, y, width, height, FALSE );
 
-    SetWindowLong( ret, 0, 0 );
+    SET_WNDINFO( ret, 0 );
     return( ret );
 }
 
 void UpdateRegString( HWND string, HWND list, int x, int y, int width, int height, char *text )
 {
-    int len;
-    char *cmp;
-    LONG flags;
+    int     len;
+    char    *cmp;
+    DWORD   flags;
 
     len = GetWindowTextLength( string ) + 1;
     cmp = alloca( len );
@@ -89,24 +89,25 @@ void UpdateRegString( HWND string, HWND list, int x, int y, int width, int heigh
     }
     MoveWindow( string, x, y, width, height, TRUE );
 
-    flags = GetWindowLong( string, 0 );
+    flags = GET_WNDINFO( string );
     flags &= ~REG_DESTROY;
-    SetWindowLong( string, 0, flags );
+    SET_WNDINFO( string, flags );
 }
 
 void SetRegStringDestroyFlag(HWND hwnd)
 {
-    LONG flags;
+    DWORD   flags;
 
-    flags = GetWindowLong( hwnd, 0 );
+    flags = GET_WNDINFO( hwnd );
     flags |= REG_DESTROY;
-    SetWindowLong( hwnd, 0, flags );
+    SET_WNDINFO( hwnd, flags );
 }
 
 bool GetRegStringDestroyFlag(HWND hwnd)
 {
-    LONG flags;
-    flags = GetWindowLong( hwnd, 0 );
+    DWORD   flags;
+
+    flags = GET_WNDINFO( hwnd );
     return( (flags & REG_DESTROY) != 0 );
 }
 
@@ -121,9 +122,9 @@ static void RegStrPaint(HWND hwnd)
     int         top;
     COLORREF    fground;
     COLORREF    bground;
-    LONG        flags;
+    DWORD       flags;
 
-    flags = GetWindowLong( hwnd, 0);
+    flags = GET_WNDINFO( hwnd );
     hdc = BeginPaint( hwnd, &ps );
 
     SelectObject( hdc, GetMonoFont() );
@@ -134,8 +135,7 @@ static void RegStrPaint(HWND hwnd)
     if( flags & REG_SELECTED ){
         fground = GetSysColor( COLOR_HIGHLIGHTTEXT );
         bground = GetSysColor( COLOR_HIGHLIGHT );
-    }
-    else{
+    } else {
         fground = GetSysColor( COLOR_WINDOWTEXT );
         bground = GetSysColor( COLOR_WINDOW );
     }
@@ -149,19 +149,19 @@ static void RegStrPaint(HWND hwnd)
 
 static bool SetRegSelectFlag( HWND hwnd, bool setting )
 {
-    LONG flags;
+    DWORD   flags;
 
-    flags = GetWindowLong( hwnd, 0 );
+    flags = GET_WNDINFO( hwnd );
     if( setting && (flags & REG_SELECTED) == 0 ) {
         flags |= REG_SELECTED;
         InvalidateRect( hwnd, NULL, FALSE );
-        SetWindowLong( hwnd, 0, flags );
+        SET_WNDINFO( hwnd, flags );
         return( true );
     }
     if( !setting && (flags & REG_SELECTED) ) {
         flags &= ~REG_SELECTED;
         InvalidateRect( hwnd, NULL, FALSE );
-        SetWindowLong( hwnd, 0, flags );
+        SET_WNDINFO( hwnd, flags );
         return( true );
     }
     return( false );
@@ -169,14 +169,14 @@ static bool SetRegSelectFlag( HWND hwnd, bool setting )
 
 void GetChildPos( HWND parent, HWND child, RECT *c_rect )
 {
-    LONG            style;
-    LONG            ex_style;
+    DWORD           style;
+    DWORD           ex_style;
     RECT            p_rect;
 
     GetWindowRect( parent, &p_rect );
     GetClientRect( parent, c_rect );
-    style = GetWindowLong( parent, GWL_STYLE );
-    ex_style = GetWindowLong( parent, GWL_EXSTYLE );
+    style = GET_WNDSTYLE( parent );
+    ex_style = GET_WNDEXSTYLE( parent );
     AdjustWindowRectEx( c_rect, style, FALSE, ex_style );
     p_rect.left -= c_rect->left;
     p_rect.top -= c_rect->top;
@@ -205,7 +205,7 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
     TEXTMETRIC      tm;
     HWND            cancel;
 
-    SetWindowLong( hwnd, DWL_USER, (LONG)lparam);
+    SET_DLGDATA( hwnd, lparam );
     data = (RegModifyData *)lparam;
     len = MADRegFullName( data->curr_info, ".", NULL, 0 );
     if( len > 0 ) {
@@ -291,7 +291,7 @@ static void CheckForRegisterChange( HWND hwnd )
     addr_seg        seg;
     InputUnion      in;
 
-    data = ( RegModifyData * )GetWindowLong( hwnd, DWL_USER );
+    data = (RegModifyData *)GET_DLGDATA( hwnd );
     MADTypeInfo( data->curr_info->type, &mti_target );
     if( data->num_possible == 1 ) {
         size = SendDlgItemMessage( hwnd, REG_EDIT_FIELD, WM_GETTEXTLENGTH, 0, 0 ) + 1 ;

@@ -142,12 +142,12 @@ INT_PTR CALLBACK RetCodeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 
     ret = false;
 
-    info = (RetCodeInfo *)GetWindowLong( hwnd, DWL_USER );
+    info = (RetCodeInfo *)GET_DLGDATA( hwnd );
     switch( msg ) {
     case WM_INITDIALOG:
         info = (RetCodeInfo *)lparam;
         info->really_kill = FALSE;
-        SetWindowLong( hwnd, DWL_USER, lparam );
+        SET_DLGDATA( hwnd, lparam );
         if( info->type == RETCD_THREAD ) {
             title = AllocRCString( STR_THREAD_RETURN_CODE );
             info_str_id = STR_THREAD_X;
@@ -230,7 +230,7 @@ BOOL CALLBACK ThreadPriorityDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
     char                buf[100];
     bool                ret;
 
-    info = (ThreadPriorityInfo *)GetWindowLong( hwnd, DWL_USER );
+    info = (ThreadPriorityInfo *)GET_DLGDATA( hwnd );
     switch( msg ) {
     case WM_INITDIALOG:
         info = (ThreadPriorityInfo *)lparam;
@@ -262,7 +262,7 @@ BOOL CALLBACK ThreadPriorityDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
             CheckDlgButton( hwnd, PRIORITY_TIME_CRITICAL, BST_CHECKED );
             break;
         }
-        SetWindowLong( hwnd, DWL_USER, lparam );
+        SET_DLGDATA( hwnd, lparam );
         ret = true;
         break;
     case WM_COMMAND:
@@ -423,7 +423,7 @@ BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     DWORD               rc;
     char                *action;
 
-    info = (ThreadCtlInfo *)GetWindowLong( hwnd, DWL_USER );
+    info = (ThreadCtlInfo *)GET_DLGDATA( hwnd );
     switch( msg ) {
     case WM_INITDIALOG:
         info = MemAlloc( sizeof( ThreadCtlInfo ) );
@@ -434,7 +434,7 @@ BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         }
         info->procid = lparam;
         ThreadDlg = hwnd;
-        SetWindowLong( hwnd, DWL_USER, (DWORD)info );
+        SET_DLGDATA( hwnd, info );
         fillThreadCtl( hwnd, &info->procinfo, buf );
         RCsprintf( buf, STR_THREAD_4_PROC_X, lparam );
         SetDlgItemText( hwnd, THREAD_PROC_NAME, buf );
