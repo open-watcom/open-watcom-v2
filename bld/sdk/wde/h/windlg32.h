@@ -32,22 +32,11 @@
 
 #if !defined( __OS2__ )
 
-#ifdef __NT__
-    #define ADJUST_ITEMLEN_DWORD( a )   a = (((a) + 3) & ~3)    // DWORD align
-    #define ADJUST_BLOCKLEN_DWORD( a )  a = (((a) + 3) & ~3)    // DWORD align
+#if defined( __WINDOWS__ )
+  #include "pushpck1.h"
 #else
-    #define ADJUST_ITEMLEN_DWORD( a )
-    #define ADJUST_BLOCKLEN_DWORD( a )
+  #include "pushpck2.h"
 #endif
-
-#if defined( __NT__ )
-//#if defined( __ALPHA__ )
-//    #include "pushpck1.h"
-//#else
-    #include "pushpck2.h"
-//#endif
-#endif
-
 typedef struct {
     WORD        dtVer;
     WORD        dtSignature;
@@ -62,12 +51,12 @@ typedef struct {
 } _DLGEXTEMPLATE;
 
 typedef struct {
-    short       PointSize;
-    short       weight;
-    char        bItalic;
-    char        bCharset;
+    WORD        PointSize;
+    WORD        weight;
+    BYTE        bItalic;
+    BYTE        bCharset;
 //  char        fontName[];
-} FONTEXINFO;
+} _FONTEXINFO;
 
 typedef struct {
     DWORD       dtilhelpID;
@@ -79,12 +68,9 @@ typedef struct {
     short       dtilCY;
     DWORD       dtilID;
 } _DLGEXITEMTEMPLATE;
+#include "poppck.h"
 
-#if defined( __NT__ )
-    #include "poppck.h"
-#endif
-
-extern GLOBALHANDLE DialogEXTemplate( DWORD dtStyle, DWORD dtExStyle, DWORD dthelpID, int dtx, int dty, int dtcx, int dtcy, const char *menuname, const char *classname, const char *captiontext, short pointsize, const char *typeface, short FontWeight, char FontItalic, char FontCharset );
-extern GLOBALHANDLE AddControlEX( GLOBALHANDLE data, int dtilx, int dtily, int dtilcx, int dtilcy, DWORD id, DWORD style, DWORD exstyle, DWORD helpID, const char *class, const char *text, BYTE infolen, const char *infodata );
+extern GLOBALHANDLE DialogEXTemplate( DWORD dtStyle, DWORD dtExStyle, DWORD dthelpID, int dtx, int dty, int dtcx, int dtcy, const char *menuname, const char *classname, const char *captiontext, short pointsize, const char *typeface, short FontWeight, char FontItalic, char FontCharset, size_t *datalen );
+extern GLOBALHANDLE AddControlEX( GLOBALHANDLE data, int dtilx, int dtily, int dtilcx, int dtilcy, DWORD id, DWORD style, DWORD exstyle, DWORD helpID, const char *class, const char *text, BYTE infolen, const char *infodata, size_t *datalen );
 
 #endif

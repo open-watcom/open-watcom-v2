@@ -335,15 +335,12 @@ void WdeControlFini( void )
     FreeProcInstance( (FARPROC)WdeControlDispatch );
 }
 
-bool WdeControlTest( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
+bool WdeControlTest( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size_t *datalen )
 {
     char        *Text;
     char        *Class;
     uint_32     style;
     uint_16     ID;
-
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
 
     Text = WdeResNameOrOrdinalToStr( GETCTL_TEXT( obj->control_info ), 10 );
     if( Text == NULL ) {
@@ -373,28 +370,25 @@ bool WdeControlTest( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
         }
     }
 
-    *template = AddControl( *template,
+    *dlgtemplate = AddControl( *dlgtemplate,
                             GETCTL_SIZEX( obj->control_info ),
                             GETCTL_SIZEY( obj->control_info ),
                             GETCTL_SIZEW( obj->control_info ),
                             GETCTL_SIZEH( obj->control_info ),
-                            ID, style, Class, Text, 0, NULL );
+                            ID, style, Class, Text, 0, NULL, datalen );
 
     WRMemFree( Text );
     WRMemFree( Class );
 
-    return( *template != NULL );
+    return( *dlgtemplate != NULL );
 }
 
-bool WdeControlTestEX( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
+bool WdeControlTestEX( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size_t *datalen )
 {
     char        *Text;
     char        *Class;
     uint_32     style;
     uint_16     ID;
-
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
 
     Text = WdeResNameOrOrdinalToStr( GETCTL_TEXT( obj->control_info ), 10 );
     if( Text == NULL ) {
@@ -424,7 +418,7 @@ bool WdeControlTestEX( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
         }
     }
 
-    *template = AddControlEX( *template,
+    *dlgtemplate = AddControlEX( *dlgtemplate,
                               GETCTL_SIZEX( obj->control_info ),
                               GETCTL_SIZEY( obj->control_info ),
                               GETCTL_SIZEW( obj->control_info ),
@@ -432,12 +426,12 @@ bool WdeControlTestEX( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
                               ID, style,
                               GETCTL_EXSTYLE( obj->control_info ),
                               GETCTL_HELPID( obj->control_info ),
-                              Class, Text, 0, NULL );
+                              Class, Text, 0, NULL, datalen );
 
     WRMemFree( Text );
     WRMemFree( Class );
 
-    return( *template != NULL );
+    return( *dlgtemplate != NULL );
 }
 
 bool WdeControlIsMarkValid( WdeControlObject *obj, bool *flag, void *p2 )

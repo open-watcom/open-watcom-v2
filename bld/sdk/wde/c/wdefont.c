@@ -42,9 +42,9 @@
 /* macro definitions                                                        */
 /****************************************************************************/
 #ifdef __NT__
-    #define WDEDLGTEMPLATE (LPCDLGTEMPLATE)
+  #define DLGTEMPLATE_PTR LPCDLGTEMPLATE
 #else
-    #define WDEDLGTEMPLATE
+  #define DLGTEMPLATE_PTR LPSTR
 #endif
 
 
@@ -166,8 +166,7 @@ void WdeSetFontList( HWND main )
 
     logpixelsy = (uint_32)GetDeviceCaps( hDc, LOGPIXELSY );
 
-    enum_callback = (FONTENUMPROC)MakeProcInstance ( (FARPROC)WdeEnumFontsProc,
-                                                     WdeGetAppInstance() );
+    enum_callback = (FONTENUMPROC)MakeProcInstance( (FARPROC)WdeEnumFontsProc, WdeGetAppInstance() );
 
     WdeFontList = NULL;
     WdeFontFamiliesList = NULL;
@@ -176,8 +175,7 @@ void WdeSetFontList( HWND main )
 
     for( olist = WdeFontFamiliesList; olist != NULL; olist = ListNext( olist ) ) {
         font_names = (WdeFontNames *)ListElement( olist );
-        if( !EnumFontFamilies( hDc, font_names->name, enum_callback,
-                               (LPARAM)&WdeFontList ) ) {
+        if( !EnumFontFamilies( hDc, font_names->name, enum_callback, (LPARAM)&WdeFontList ) ) {
             WdeWriteTrail( "Getting font names: Enum Failed." );
         }
     }
@@ -361,28 +359,25 @@ HFONT WdeGetFont( char *face, int pointsize, int weight )
 
 bool WdeGetResizerFromFont( WdeResizeRatio *r, char *face, int ptsz )
 {
-    GLOBALHANDLE    dialog_template;
-    uint_8          *ldlg;
+    TEMPLATE_HANDLE dlgtemplate;
     HWND            hDlg;
     HINSTANCE       inst;
     DLGPROC         dlg_proc;
     RECT            rect;
     bool            ok;
+    size_t          datalen;
 
     if( r == NULL ) {
         return( false );
     }
 
     inst = WdeGetAppInstance();
-    dialog_template = DialogTemplate( WS_POPUP | DS_SETFONT, 4, 8, 4, 8,
-                                      NULL, NULL, NULL, ptsz, face );
-    DoneAddingControls( dialog_template );
-    ldlg = (uint_8 *)GlobalLock ( dialog_template );
-    dlg_proc = (DLGPROC)MakeProcInstance ( (FARPROC)WdeDummyDlgProc, inst );
-    hDlg = CreateDialogIndirect( inst, WDEDLGTEMPLATE ldlg, (HWND)NULL, dlg_proc );
-    GlobalUnlock( dialog_template );
-    GlobalFree( dialog_template );
-
+    dlgtemplate = DialogTemplate( WS_POPUP | DS_SETFONT, 4, 8, 4, 8, NULL, NULL, NULL, ptsz, face, &datalen );
+    DoneAddingControls( dlgtemplate );
+    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WdeDummyDlgProc, inst );
+    hDlg = CreateDialogIndirect( inst, GlobalLock( dlgtemplate ), (HWND)NULL, dlg_proc );
+    GlobalUnlock( dlgtemplate );
+    GlobalFree( dlgtemplate );
     if( hDlg != (HWND)NULL ) {
         SetRect( &rect, 4, 8, 0, 0 );
         MapDialogRect( hDlg, &rect );

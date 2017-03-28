@@ -37,6 +37,8 @@
   #define ADJUST_DLGLEN( a )    (a) = _AdjustUp( a, 4 )
 #endif
 
+#define TEMPLATE_HANDLE     GLOBALHANDLE
+
 #ifdef __WINDOWS__
   #include "pushpck1.h"
 #else

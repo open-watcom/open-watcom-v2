@@ -77,9 +77,9 @@
 /* macro definitions                                                        */
 /****************************************************************************/
 #ifdef __NT__
-    #define WDEDLGTEMPLATE (LPCDLGTEMPLATE)
+  #define DLGTEMPLATE_PTR       LPCDLGTEMPLATE
 #else
-    #define WDEDLGTEMPLATE
+  #define DLGTEMPLATE_PTR       LPSTR
 #endif
 
 #define WDE_NEW_DIALOG_X        20
@@ -206,19 +206,19 @@ static WdeDialogObject *WdeDialogCreater( OBJPTR, RECT *, OBJPTR );
 static WResID   *WdeCreateDialogTitle( void );
 static bool     WdeOffsetDialogUnits( WdeDialogObject *, RECT *, RECT * );
 static bool     WdeUpdateDialogUnits( WdeDialogObject *, RECT *, RECT * );
-static bool WdeBuildDialogTemplate( WdeDialogBoxHeader *, HGLOBAL * );
-static void WdeDialogSetDefineDialogInfo( WdeDefineObjectInfo *, HWND );
-static void WdeDialogGetDefineDialogInfo( WdeDefineObjectInfo *, HWND );
-static void WdeDialogSetDialogStyles( HWND, DialogStyle );
-static void WdeDialogGetDialogStyles( HWND, DialogStyle * );
-static void WdeDialogSetDialogEXStyles( HWND, uint_32 );
-static void WdeDialogGetDialogEXStyles( HWND, uint_32 * );
-static void WdeDialogSetDialogMemFlags( HWND, uint_16 );
-static void WdeDialogGetDialogMemFlags( HWND, uint_16 * );
-static void WdeDialogSetDialogFontInfo( HWND, WdeDialogObject * );
-static void WdeDialogSetDialogPntInfo( HWND, int );
-static void WdeFreeDialogObject( WdeDialogObject * );
-static void WdeWriteDialogToInfo( WdeDialogObject * );
+static bool     WdeBuildDialogTemplate( WdeDialogBoxHeader *, TEMPLATE_HANDLE *, size_t * );
+static void     WdeDialogSetDefineDialogInfo( WdeDefineObjectInfo *, HWND );
+static void     WdeDialogGetDefineDialogInfo( WdeDefineObjectInfo *, HWND );
+static void     WdeDialogSetDialogStyles( HWND, DialogStyle );
+static void     WdeDialogGetDialogStyles( HWND, DialogStyle * );
+static void     WdeDialogSetDialogEXStyles( HWND, uint_32 );
+static void     WdeDialogGetDialogEXStyles( HWND, uint_32 * );
+static void     WdeDialogSetDialogMemFlags( HWND, uint_16 );
+static void     WdeDialogGetDialogMemFlags( HWND, uint_16 * );
+static void     WdeDialogSetDialogFontInfo( HWND, WdeDialogObject * );
+static void     WdeDialogSetDialogPntInfo( HWND, int );
+static void     WdeFreeDialogObject( WdeDialogObject * );
+static void     WdeWriteDialogToInfo( WdeDialogObject * );
 
 #define pick(e,n,c) static bool WdeDialog ## n ## c;
     pick_ACTS( WdeDialogObject )
@@ -1023,10 +1023,10 @@ bool WdeDialogModifyInfo( WdeDialogObject *obj, WdeInfoStruct *in, void *p2 )
     return( true );
 }
 
-bool WdeDialogTest( WdeDialogObject *obj, GLOBALHANDLE *p1, void *p2 )
+bool WdeDialogTest( WdeDialogObject *obj, GLOBALHANDLE *p1, size_t *p2 )
 {
-    GLOBALHANDLE    dialog_template;
-    uint_8          *locked_global_mem;
+    TEMPLATE_HANDLE dlgtemplate;
+    DLGTEMPLATE_PTR dlgtemplate_mem;
     char            *MenuName;
     char            *ClassName;
     DWORD           style;
@@ -1034,11 +1034,13 @@ bool WdeDialogTest( WdeDialogObject *obj, GLOBALHANDLE *p1, void *p2 )
     WdeOrderedEntry *oentry;
     HWND            hwin;
     ACTION_ID       act;
+    size_t          datalen;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( p1 );
     _wde_touch( p2 );
 
+    datalen = 0;
     SETHDR_NUMITEMS( obj->dialog_info, obj->num_children );
 
     MenuName = WdeResNameOrOrdinalToStr( GETHDR_MENUNAME( obj->dialog_info ), 10 );
@@ -1068,19 +1070,19 @@ bool WdeDialogTest( WdeDialogObject *obj, GLOBALHANDLE *p1, void *p2 )
     }
 
     if( obj->dialog_info->is32bitEx ) {
-        dialog_template = DialogEXTemplate( (DWORD)style, GETHDR_EXSTYLE( obj->dialog_info ),
+        dlgtemplate = DialogEXTemplate( style, GETHDR_EXSTYLE( obj->dialog_info ),
             GETHDR_HELPID( obj->dialog_info ), GETHDR_SIZEX( obj->dialog_info ),
             GETHDR_SIZEY( obj->dialog_info ), GETHDR_SIZEW( obj->dialog_info ),
             GETHDR_SIZEH( obj->dialog_info ), MenuName, ClassName,
             GETHDR_CAPTION( obj->dialog_info ), GETHDR_POINTSIZE( obj->dialog_info ),
             GETHDR_FONTNAME( obj->dialog_info ), GETHDR_FONTWEIGHT( obj->dialog_info ),
-            GETHDR_FONTITALIC( obj->dialog_info ), GETHDR_FONTCHARSET( obj->dialog_info ) );
+            GETHDR_FONTITALIC( obj->dialog_info ), GETHDR_FONTCHARSET( obj->dialog_info ), &datalen );
     } else {
-        dialog_template = DialogTemplate( style, GETHDR_SIZEX( obj->dialog_info ),
+        dlgtemplate = DialogTemplate( style, GETHDR_SIZEX( obj->dialog_info ),
             GETHDR_SIZEY( obj->dialog_info ), GETHDR_SIZEW( obj->dialog_info ),
             GETHDR_SIZEH( obj->dialog_info ), MenuName, ClassName,
             GETHDR_CAPTION( obj->dialog_info ), GETHDR_POINTSIZE( obj->dialog_info ),
-            GETHDR_FONTNAME( obj->dialog_info ) );
+            GETHDR_FONTNAME( obj->dialog_info ), &datalen );
     }
 
     if( MenuName != NULL ) {
@@ -1091,7 +1093,7 @@ bool WdeDialogTest( WdeDialogObject *obj, GLOBALHANDLE *p1, void *p2 )
         WRMemFree( ClassName );
     }
 
-    if( dialog_template == NULL ) {
+    if( dlgtemplate == NULL ) {
         WdeWriteTrail( "WdeDialogTest: DialogTemplate failed!" );
         return( false );
     }
@@ -1106,30 +1108,27 @@ bool WdeDialogTest( WdeDialogObject *obj, GLOBALHANDLE *p1, void *p2 )
     /* add all the children */
     for( clist = obj->ochildren; clist != NULL; clist = ListNext( clist ) ) {
         oentry = (WdeOrderedEntry *)ListElement( clist );
-        if( !Forward( oentry->obj, act, &dialog_template, NULL ) ) {
+        if( !Forward( oentry->obj, act, &dlgtemplate, &datalen ) ) {
             WdeWriteTrail( "WdeDialogTest: control TEST failed!" );
-            GlobalFree( dialog_template );
+            GlobalFree( dlgtemplate );
             return( false );
         }
     }
 
-    DoneAddingControls( dialog_template );
+    DoneAddingControls( dlgtemplate );
 
-    locked_global_mem = (uint_8 *)GlobalLock( dialog_template );
+    dlgtemplate_mem = (DLGTEMPLATE_PTR)GlobalLock( dlgtemplate );
 
-    if( locked_global_mem == NULL ) {
+    if( dlgtemplate_mem == NULL ) {
         WdeWriteTrail( "WdeDialogTest: Could not Lock template!" );
-        GlobalFree( dialog_template );
+        GlobalFree( dlgtemplate );
         return( false );
     }
 
-    hwin = CreateDialogIndirectParam( WdeAppInst, WDEDLGTEMPLATE locked_global_mem,
-                                      obj->res_info->forms_win, WdeTestDlgProcInst,
-                                      (LPARAM)obj );
+    hwin = CreateDialogIndirectParam( WdeAppInst, dlgtemplate_mem, obj->res_info->forms_win, WdeTestDlgProcInst, (LPARAM)obj );
 
-    GlobalUnlock( dialog_template );
-
-    GlobalFree( dialog_template );
+    GlobalUnlock( dlgtemplate );
+    GlobalFree( dlgtemplate );
 
     if( hwin == NULL ) {
         WdeWriteTrail( "WdeDialogTest: Could not create window!" );
@@ -1496,41 +1495,41 @@ void WdeFreeDialogObject( WdeDialogObject *obj  )
 
 bool WdeDialogCreateWindow( WdeDialogObject *obj, bool *show, void *p2 )
 {
-    HGLOBAL             hglobal_mem;
-    uint_8              *locked_global_mem;
-    RECT                rect;
-    LIST                *olist;
-    OBJPTR              child;
+    TEMPLATE_HANDLE dlgtemplate;
+    DLGTEMPLATE_PTR dlgtemplate_mem;
+    RECT            rect;
+    LIST            *olist;
+    OBJPTR          child;
+    size_t          datalen;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
+    datalen = 0;
     //SETHDR_STYLE( obj->dialog_info, GETHDR_STYLE( obj->dialog_info ) & ~WS_VISIBLE );
 
-    if( !WdeBuildDialogTemplate( obj->dialog_info, &hglobal_mem ) ) {
+    if( !WdeBuildDialogTemplate( obj->dialog_info, &dlgtemplate, &datalen ) ) {
         return( false );
     }
 
-    locked_global_mem = (uint_8 *)GlobalLock( hglobal_mem );
+    dlgtemplate_mem = (DLGTEMPLATE_PTR)GlobalLock( dlgtemplate );
 
-    if( locked_global_mem == NULL ) {
+    if( dlgtemplate_mem == NULL ) {
         WdeWriteTrail( "WdeDialogCreateWindow: Could not lock template!" );
-        GlobalFree( hglobal_mem );
+        GlobalFree( dlgtemplate );
         return( false );
     }
 
     if( !Forward( obj->parent, GET_FONT, &WdeLastFont, NULL ) ) {
         WdeWriteTrail( "WdeDialogCreateWindow: Couldn't get parent font!" );
-        GlobalFree( hglobal_mem );
+        GlobalFree( dlgtemplate );
         return( false );
     }
 
-    obj->window_handle = CreateDialogIndirect( WdeAppInst, WDEDLGTEMPLATE locked_global_mem,
-                                               obj->parent_handle, WdeDialogDlgProcInst );
+    obj->window_handle = CreateDialogIndirect( WdeAppInst, dlgtemplate_mem, obj->parent_handle, WdeDialogDlgProcInst );
 
-    GlobalUnlock( hglobal_mem );
-
-    GlobalFree( hglobal_mem );
+    GlobalUnlock( dlgtemplate );
+    GlobalFree( dlgtemplate );
 
     if( obj->window_handle == NULL ) {
         WdeWriteTrail( "WdeDialogCreateWindow: Could not create window!" );
@@ -2601,7 +2600,7 @@ bool WdeDialogSetOrderMode( WdeDialogObject *obj, WdeOrderMode *mode, WdeSetOrde
     return( true );
 }
 
-bool WdeBuildDialogTemplate ( WdeDialogBoxHeader *dialog_header, HGLOBAL *hglobal_mem )
+bool WdeBuildDialogTemplate( WdeDialogBoxHeader *dialog_header, TEMPLATE_HANDLE *dlgtemplate, size_t *datalen )
 {
     char        *MenuName;
     char        *ClassName;
@@ -2613,7 +2612,7 @@ bool WdeBuildDialogTemplate ( WdeDialogBoxHeader *dialog_header, HGLOBAL *hgloba
     MenuName = NULL;
     ClassName = NULL;
 
-    ok = ( dialog_header != NULL && hglobal_mem != NULL );
+    ok = ( dialog_header != NULL && dlgtemplate != NULL );
 
     if( ok ) {
         style = GETHDR_STYLE( dialog_header );
@@ -2653,19 +2652,19 @@ bool WdeBuildDialogTemplate ( WdeDialogBoxHeader *dialog_header, HGLOBAL *hgloba
 
     /* Allocate global block of memory for Dialog template */
     if( ok ) {
-        *hglobal_mem = DialogTemplate( style, GETHDR_SIZEX( dialog_header ),
+        *dlgtemplate = DialogTemplate( style, GETHDR_SIZEX( dialog_header ),
             GETHDR_SIZEY( dialog_header ), GETHDR_SIZEW( dialog_header ),
             GETHDR_SIZEH( dialog_header ), MenuName, ClassName,
-            GETHDR_CAPTION( dialog_header ), pointsize, fontname );
+            GETHDR_CAPTION( dialog_header ), pointsize, fontname, datalen );
 
-        ok = ( *hglobal_mem != NULL );
+        ok = ( *dlgtemplate != NULL );
         if( !ok ) {
             WdeWriteTrail( "Could not Alloc dialog template!" );
         }
     }
 
     if( ok ) {
-        DoneAddingControls( *hglobal_mem );
+        DoneAddingControls( *dlgtemplate );
     }
 
     if( MenuName != NULL ) {
