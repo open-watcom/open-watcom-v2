@@ -39,14 +39,10 @@
 
 #define TEMPLATE_HANDLE     GLOBALHANDLE
 
-#ifdef __WINDOWS__
-  #include "pushpck1.h"
-#else
-  #include "pushpck2.h"
-#endif
+#include "pushpck1.h"
 typedef struct {
     DWORD   dtStyle;
-#ifdef __NT__
+#ifndef __WINDOWS__
     DWORD   dtExtendedStyle;
 #endif
 #ifdef __WINDOWS__
@@ -64,21 +60,21 @@ typedef struct {
 } _DLGTEMPLATE;
 
 typedef struct {
-#ifdef __NT__
-    DWORD   dtilStyle;
-    DWORD   dtExtendedStyle;
+#ifndef __WINDOWS__
+    DWORD   ditStyle;
+    DWORD   ditExtendedStyle;
 #endif
-    short   dtilX;
-    short   dtilY;
-    short   dtilCX;
-    short   dtilCY;
-    WORD    dtilID;
+    short   ditX;
+    short   ditY;
+    short   ditCX;
+    short   ditCY;
+    WORD    ditID;
 #ifdef __WINDOWS__
-    DWORD   dtilStyle;
+    DWORD   ditStyle;
 #endif
-//  char    dtilClass[];
-//  char    dtilText[];
-//  BYTE    dtilInfo;
-//  BYTE    dtilData;
+//  char    ditClass[];
+//  char    ditText[];
+//  BYTE    ditInfo;
+//  BYTE    ditData;
 } _DLGITEMTEMPLATE;
 #include "poppck.h"

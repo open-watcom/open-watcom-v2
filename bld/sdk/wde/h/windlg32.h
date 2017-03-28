@@ -32,15 +32,11 @@
 
 #if !defined( __OS2__ )
 
-#if defined( __WINDOWS__ )
-  #include "pushpck1.h"
-#else
-  #include "pushpck2.h"
-#endif
+#include "pushpck1.h"
 typedef struct {
     WORD        dtVer;
     WORD        dtSignature;
-    DWORD       dthelpID;
+    DWORD       dtHelpID;
     DWORD       dtExtendedStyle;
     DWORD       dtStyle;
     WORD        dtItemCount;
@@ -59,18 +55,18 @@ typedef struct {
 } _FONTEXINFO;
 
 typedef struct {
-    DWORD       dtilhelpID;
-    DWORD       dtilExtendedStyle;
-    DWORD       dtilStyle;
-    short       dtilX;
-    short       dtilY;
-    short       dtilCX;
-    short       dtilCY;
-    DWORD       dtilID;
+    DWORD       ditHelpID;
+    DWORD       ditExtendedStyle;
+    DWORD       ditStyle;
+    short       ditX;
+    short       ditY;
+    short       ditCX;
+    short       ditCY;
+    DWORD       ditID;
 } _DLGEXITEMTEMPLATE;
 #include "poppck.h"
 
-extern GLOBALHANDLE DialogEXTemplate( DWORD dtStyle, DWORD dtExStyle, DWORD dthelpID, int dtx, int dty, int dtcx, int dtcy, const char *menuname, const char *classname, const char *captiontext, short pointsize, const char *typeface, short FontWeight, char FontItalic, char FontCharset, size_t *datalen );
-extern GLOBALHANDLE AddControlEX( GLOBALHANDLE data, int dtilx, int dtily, int dtilcx, int dtilcy, DWORD id, DWORD style, DWORD exstyle, DWORD helpID, const char *class, const char *text, BYTE infolen, const char *infodata, size_t *datalen );
+extern GLOBALHANDLE DialogEXTemplate( DWORD style, DWORD exstyle, DWORD helpid, int x, int y, int cx, int cy, const char *menuname, const char *classname, const char *captiontext, WORD pointsize, const char *typeface, WORD fontweight, BYTE fontitalic, BYTE fontcharset, size_t *datalen );
+extern GLOBALHANDLE AddControlEX( GLOBALHANDLE data, int x, int y, int cx, int cy, DWORD id, DWORD style, DWORD exstyle, DWORD helpid, const char *class, const char *text, BYTE infolen, const char *infodata, size_t *datalen );
 
 #endif

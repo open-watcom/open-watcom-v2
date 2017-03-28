@@ -41,8 +41,8 @@
  */
 TEMPLATE_HANDLE DialogEXTemplate( DWORD style, DWORD exstyle, DWORD helpid,
                                int x, int y, int cx, int cy, const char *menuname,
-                               const char *classname, const char *captiontext, short pointsize,
-                               const char *typeface, short fontweight, char fontitalic, char fontcharset, size_t *datalen )
+                               const char *classname, const char *captiontext, WORD pointsize,
+                               const char *typeface, WORD fontweight, BYTE fontitalic, BYTE fontcharset, size_t *datalen )
 {
     TEMPLATE_HANDLE     data;
     UINT                blocklen, menulen, classlen, captionlen, typefacelen;
@@ -84,7 +84,7 @@ TEMPLATE_HANDLE DialogEXTemplate( DWORD style, DWORD exstyle, DWORD helpid,
 
     dt->dtVer = 0x0001;                 // signature dword is 0xffff0001
     dt->dtSignature = 0xffff;
-    dt->dthelpID = helpid;
+    dt->dtHelpID = helpid;
     dt->dtExtendedStyle = exstyle;
     dt->dtStyle = style;
     dt->dtItemCount = 0;
@@ -178,14 +178,14 @@ TEMPLATE_HANDLE AddControlEX( TEMPLATE_HANDLE data, int x, int y, int cx, int cy
      * point to start of item template, and set up values
      */
     dit = (_DLGEXITEMTEMPLATE _ISFAR *)( databytes + item_start );
-    dit->dtilhelpID = helpid;
-    dit->dtilExtendedStyle = exstyle;
-    dit->dtilStyle = style;
-    dit->dtilX = x;
-    dit->dtilY = y;
-    dit->dtilCX = cx;
-    dit->dtilCY = cy;
-    dit->dtilID = id;
+    dit->ditHelpID = helpid;
+    dit->ditExtendedStyle = exstyle;
+    dit->ditStyle = style;
+    dit->ditX = x;
+    dit->ditY = y;
+    dit->ditCX = cx;
+    dit->ditCY = cy;
+    dit->ditID = id;
 
     ditstr = (char _ISFAR *)( dit + 1 );
 

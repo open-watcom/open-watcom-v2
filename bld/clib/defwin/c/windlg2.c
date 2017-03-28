@@ -223,12 +223,12 @@ GLOBALHANDLE _AddControl( GLOBALHANDLE data, int x, int y, int cx, int cy, int i
      * point to start of item template, and set up values
      */
     dit = (_DLGITEMTEMPLATE _ISFAR *)( databytes + item_start );
-    dit->dtilStyle = style;
-    dit->dtilX = (short)x;
-    dit->dtilY = (short)y;
-    dit->dtilCX = (short)cx;
-    dit->dtilCY = (short)cy;
-    dit->dtilID = (WORD)id;
+    dit->ditStyle = style;
+    dit->ditX = (short)x;
+    dit->ditY = (short)y;
+    dit->ditCX = (short)cx;
+    dit->ditCY = (short)cy;
+    dit->ditID = (WORD)id;
 
     ditstr = (char _ISFAR *)( dit + 1 );
 

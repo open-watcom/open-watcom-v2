@@ -166,12 +166,12 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, 
      * point to start of item template, and set up values
      */
     dit = (_DLGITEMTEMPLATE _ISFAR *)( databytes + item_start );
-    dit->dtilStyle = style;
-    dit->dtilX = x;
-    dit->dtilY = y;
-    dit->dtilCX = cx;
-    dit->dtilCY = cy;
-    dit->dtilID = id;
+    dit->ditStyle = style;
+    dit->ditX = x;
+    dit->ditY = y;
+    dit->ditCX = cx;
+    dit->ditCY = cy;
+    dit->ditID = id;
 
     ditstr = (char _ISFAR *)( dit + 1 );
 
