@@ -217,7 +217,7 @@ static bool getSystemFontTypeface( char **typeface, WORD *pointsize )
     hDC = GetDC( (HWND)NULL );
     logpixelsy = GetDeviceCaps( hDC, LOGPIXELSY );
     ReleaseDC( (HWND)NULL, hDC );
-    *pointsize = ( ( lf.lfHeight * 720L ) / (long)logpixelsy + 5 ) / 10;
+    *pointsize = ( ( lf.lfHeight * 720L ) / (LONG)logpixelsy + 5 ) / 10;
 
     return( true );
 #endif
@@ -444,18 +444,24 @@ static INT_PTR dbIndirect( HINSTANCE hinst, TEMPLATE_HANDLE dlgtemplate, HWND hw
         goto DBI_DEFAULT_ACTION;
     }
 
-#if defined( __NT__ )
+#ifdef __WINDOWS__
+    ret = DialogBoxIndirect( hinst, jdlgtemplate, hwndOwner, dlgproc );
+#else
     ret = DialogBoxIndirect( hinst, GlobalLock( jdlgtemplate ), hwndOwner, dlgproc );
     GlobalUnlock( jdlgtemplate );
-#else
-    ret = DialogBoxIndirect( hinst, jdlgtemplate, hwndOwner, dlgproc );
 #endif
     GlobalFree( jdlgtemplate );
 
     return( ret );
 
 DBI_DEFAULT_ACTION:
-    return( DialogBoxIndirect( hinst, dlgtemplate, hwndOwner, dlgproc ) );
+#if defined( __WINDOWS__ )
+    ret = DialogBoxIndirect( hinst, dlgtemplate, hwndOwner, dlgproc );
+#else
+    ret = DialogBoxIndirect( hinst, GlobalLock( dlgtemplate ), hwndOwner, dlgproc );
+    GlobalUnlock( dlgtemplate );
+#endif
+    return( ret );
 }
 
 /*
@@ -477,18 +483,24 @@ static INT_PTR dbIndirectParam( HINSTANCE hinst, TEMPLATE_HANDLE dlgtemplate,
         goto DBIP_DEFAULT_ACTION;
     }
 
-#if defined( __NT__ )
+#ifdef __WINDOWS__
+    ret = DialogBoxIndirectParam( hinst, jdlgtemplate, hwndOwner, dlgproc, lParamInit );
+#else
     ret = DialogBoxIndirectParam( hinst, GlobalLock( jdlgtemplate ), hwndOwner, dlgproc, lParamInit );
     GlobalUnlock( jdlgtemplate );
-#else
-    ret = DialogBoxIndirectParam( hinst, jdlgtemplate, hwndOwner, dlgproc, lParamInit );
 #endif
     GlobalFree( jdlgtemplate );
 
     return( ret );
 
 DBIP_DEFAULT_ACTION:
-    return( DialogBoxIndirectParam( hinst, dlgtemplate, hwndOwner, dlgproc, lParamInit ) );
+#if defined( __WINDOWS__ )
+    ret = DialogBoxIndirectParam( hinst, dlgtemplate, hwndOwner, dlgproc, lParamInit );
+#else
+    ret = DialogBoxIndirectParam( hinst, GlobalLock( dlgtemplate ), hwndOwner, dlgproc, lParamInit );
+    GlobalUnlock( dlgtemplate );
+#endif
+    return( ret );
 }
 
 /*

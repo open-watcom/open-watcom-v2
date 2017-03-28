@@ -99,13 +99,25 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     char                _ISFAR *databytes;
     char                _ISFAR *dlgtemp;
     _DLGTEMPLATE        _ISFAR *dt;
+#if !defined( __WINDOWS__ )
+    unsigned char       class_ordinal;
+#endif
 
     *datalen = 0;
     /*
      * get size of block and allocate memory
      */
     menulen = SLEN( menuname );
+#if defined( __WINDOWS__ )
     classlen = SLEN( classname );
+#else
+    class_ordinal = getClassOrdinal( classname );
+    if( class_ordinal > 0 ) {
+        classlen = 4;
+    } else {
+        classlen = SLEN( classname );
+    }
+#endif
     captionlen = SLEN( captiontext );
 
     blocklen = sizeof( _DLGTEMPLATE ) + menulen + classlen + captionlen;
@@ -121,15 +133,14 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     if( data == NULL )
         return( NULL );
 
-    databytes = GetPtrGlobalLock( data );
     *datalen = blocklen;
+    databytes = GetPtrGlobalLock( data );
 
     /*
      * set up template
      */
 
     dt = (_DLGTEMPLATE _ISFAR *)databytes;
-
     dt->dtStyle = style;
     dt->dtItemCount = 0;
     dt->dtX = (short)x;
@@ -137,13 +148,22 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     dt->dtCX = (short)cx;
     dt->dtCY = (short)cy;
 
-    dlgtemp = (char _ISFAR *)( dt + 1 );
-
     /*
      * add extra strings to block
      */
+
+    dlgtemp = (char _ISFAR *)( dt + 1 );
     dlgtemp = copyString( dlgtemp, menuname, menulen );
+#if defined( __WINDOWS__ )
     dlgtemp = copyString( dlgtemp, classname, classlen );
+#else
+    if( class_ordinal > 0 ) {
+        dlgtemp = copyWord( dlgtemp, -1 );
+        dlgtemp = copyWord( dlgtemp, class_ordinal );
+    } else {
+        dlgtemp = copyString( dlgtemp, classname, classlen );
+    }
+#endif
     dlgtemp = copyString( dlgtemp, captiontext, captionlen );
 
     /*
@@ -203,7 +223,6 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, 
 #endif
 
     GlobalUnlock( data );
-
     new = GlobalReAlloc( data, blocklen, GMEM_MOVEABLE | GMEM_ZEROINIT );
     if( new == NULL )
         return( NULL );
@@ -213,6 +232,7 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, 
     /*
      * one more item...
      */
+
     dt = (_DLGTEMPLATE _ISFAR *)databytes;
     dt->dtItemCount++;
 
@@ -233,6 +253,7 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, 
      * append extra data
      */
 
+    ditstr = (char _ISFAR *)( dit + 1 );
     if( class_ordinal > 0 ) {
 #if defined( __WINDOWS__ )
         *ditstr++ = class_ordinal;
@@ -244,6 +265,7 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, 
         ditstr = copyString( ditstr, class, classlen );
     }
     ditstr = copyString( ditstr, text, textlen );
+
 #if defined( __WINDOWS__ )
     *ditstr++ = infolen;
 #else
