@@ -40,7 +40,7 @@
  */
 static char _ISFAR *copyString( char _ISFAR *mem, const char _ISFAR *str, int len )
 {
-#if defined( __WINDOWS__ )
+#ifdef __WINDOWS__
     _FARmemcpy( mem, str, len );
     return( mem + len );
 #else
@@ -94,11 +94,11 @@ static unsigned char getClassOrdinal( const char *class )
 /*
  * _DialogTemplate - build a dialog template
  */
-GLOBALHANDLE _DialogTemplate( DWORD style, int x, int y, int cx,
-                       int cy, const char *menuname, const char *classname,
-                       const char *captiontext, int pointsize, const char *typeface, size_t *datalen )
+TEMPLATE_HANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
+                              const char *menuname, const char *classname, const char *captiontext,
+                              WORD pointsize, const char *typeface, size_t *datalen )
 {
-    GLOBALHANDLE        data;
+    TEMPLATE_HANDLE     data;
     size_t              blocklen;
     UINT                menulen, classlen, captionlen, typefacelen;
     char                _ISFAR *databytes;
@@ -166,10 +166,10 @@ GLOBALHANDLE _DialogTemplate( DWORD style, int x, int y, int cx,
 /*
  * _AddControl - add a control to a dialog
  */
-GLOBALHANDLE _AddControl( GLOBALHANDLE data, int x, int y, int cx, int cy, int id, DWORD style,
+TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, WORD id, DWORD style,
         const char *class, const char *text, BYTE infolen, const char *infodata, size_t *datalen )
 {
-    GLOBALHANDLE        new;
+    TEMPLATE_HANDLE     new;
     size_t              blocklen;
     UINT                classlen, textlen;
     char                _ISFAR *databytes;
@@ -187,7 +187,7 @@ GLOBALHANDLE _AddControl( GLOBALHANDLE data, int x, int y, int cx, int cy, int i
 
     class_ordinal = getClassOrdinal( class );
     if( class_ordinal > 0 ) {
-#if defined( __WINDOWS__ )
+#ifdef __WINDOWS__
         classlen = 1;
 #else
         classlen = 4;
@@ -199,7 +199,7 @@ GLOBALHANDLE _AddControl( GLOBALHANDLE data, int x, int y, int cx, int cy, int i
 
     item_start = *datalen;
     ADJUST_DLGLEN( item_start );
-#if defined( __WINDOWS__ )
+#ifdef __WINDOWS__
     blocklen = item_start + sizeof( _DLGITEMTEMPLATE ) + classlen + textlen + sizeof( BYTE ) + infolen;
 #else
     blocklen = item_start + sizeof( _DLGITEMTEMPLATE ) + classlen + textlen + sizeof( WORD ) + infolen;
@@ -209,7 +209,7 @@ GLOBALHANDLE _AddControl( GLOBALHANDLE data, int x, int y, int cx, int cy, int i
 
     new = GlobalReAlloc( data, blocklen, GMEM_MOVEABLE | GMEM_ZEROINIT );
     if( new == NULL )
-        return( (GLOBALHANDLE)NULL );
+        return( (TEMPLATE_HANDLE)NULL );
 
     databytes = GetPtrGlobalLock( new );
 
@@ -237,7 +237,7 @@ GLOBALHANDLE _AddControl( GLOBALHANDLE data, int x, int y, int cx, int cy, int i
      */
 
     if( class_ordinal > 0 ) {
-#if defined( __WINDOWS__ )
+#ifdef __WINDOWS__
         *ditstr++ = class_ordinal;
 #else
         ditstr = copyWord( ditstr, -1 );
@@ -247,7 +247,7 @@ GLOBALHANDLE _AddControl( GLOBALHANDLE data, int x, int y, int cx, int cy, int i
         ditstr = copyString( ditstr, class, classlen );
     }
     ditstr = copyString( ditstr, text, textlen );
-#if defined( __WINDOWS__ )
+#ifdef __WINDOWS__
     *ditstr++ = infolen;
 #else
     ditstr = copyWord( ditstr, infolen );
@@ -265,7 +265,7 @@ GLOBALHANDLE _AddControl( GLOBALHANDLE data, int x, int y, int cx, int cy, int i
 /*
  * _DoneAddingControls - called when there are no more controls
  */
-void _DoneAddingControls( GLOBALHANDLE data )
+void _DoneAddingControls( TEMPLATE_HANDLE data )
 {
     GlobalUnlock( data );
 
@@ -274,13 +274,13 @@ void _DoneAddingControls( GLOBALHANDLE data )
 /*
  * _DynamicDialogBox - create a dynamic dialog box
  */
-INT_PTR _DynamicDialogBox( DLGPROCx fn, HANDLE inst, HWND hwnd, GLOBALHANDLE data )
+INT_PTR _DynamicDialogBox( DLGPROCx fn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE data )
 {
     DLGPROC     dlgproc;
     INT_PTR     rc;
 
     dlgproc = (DLGPROC)MakeProcInstance( (FARPROCx)fn, inst );
-#if defined( __WINDOWS__ )
+#ifdef __WINDOWS__
     rc = DialogBoxIndirect( inst, data, hwnd, dlgproc );
 #else
     rc = DialogBoxIndirect( inst, GlobalLock( data ), hwnd, dlgproc );

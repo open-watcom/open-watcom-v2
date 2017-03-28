@@ -66,7 +66,7 @@ typedef struct {
 } _DLGEXITEMTEMPLATE;
 #include "poppck.h"
 
-extern GLOBALHANDLE DialogEXTemplate( DWORD style, DWORD exstyle, DWORD helpid, int x, int y, int cx, int cy, const char *menuname, const char *classname, const char *captiontext, WORD pointsize, const char *typeface, WORD fontweight, BYTE fontitalic, BYTE fontcharset, size_t *datalen );
-extern GLOBALHANDLE AddControlEX( GLOBALHANDLE data, int x, int y, int cx, int cy, DWORD id, DWORD style, DWORD exstyle, DWORD helpid, const char *class, const char *text, BYTE infolen, const char *infodata, size_t *datalen );
+extern TEMPLATE_HANDLE  DialogEXTemplate( DWORD style, DWORD exstyle, DWORD helpid, int x, int y, int cx, int cy, const char *menuname, const char *classname, const char *captiontext, WORD pointsize, const char *typeface, WORD fontweight, BYTE fontitalic, BYTE fontcharset, size_t *datalen );
+extern TEMPLATE_HANDLE  AddControlEX( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, DWORD id, DWORD style, DWORD exstyle, DWORD helpid, const char *class, const char *text, BYTE infolen, const char *infodata, size_t *datalen );
 
 #endif

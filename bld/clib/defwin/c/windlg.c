@@ -39,7 +39,7 @@
 
 typedef struct {
    int x, y, cx, cy, id;
-   long style;
+   DWORD style;
    char *class, *text;
    BYTE info;
    BYTE data[MAXDLGITEMDATA];
@@ -48,15 +48,11 @@ typedef struct {
 static itemdata _getint[] = {
 {  4,  10, 50, 24, -1, SS_LEFT, "STATIC", "&Enter Number of Lines:", 0, { 0 } },
 
-{ 55,  14, 68, 12, DLG1_EDIT,
-  ES_LEFT | WS_BORDER | WS_TABSTOP | WS_GROUP,
-  "EDIT", "", 0, { 0 } },
+{ 55,  14, 68, 12, DLG1_EDIT, ES_LEFT | WS_BORDER | WS_TABSTOP | WS_GROUP, "EDIT", "", 0, { 0 } },
 
-{ 30,  38, 36, 12, IDOK, BS_DEFPUSHBUTTON | WS_TABSTOP | WS_GROUP,
-  "BUTTON", "&OK", 0, { 0 } },
+{ 30,  38, 36, 12, IDOK, BS_DEFPUSHBUTTON | WS_TABSTOP | WS_GROUP, "BUTTON", "&OK", 0, { 0 } },
 
-{ 84,  38, 36, 12, IDCANCEL, BS_PUSHBUTTON | WS_TABSTOP | WS_GROUP,
-  "BUTTON", "&Cancel", 0, { 0 } }
+{ 84,  38, 36, 12, IDCANCEL, BS_PUSHBUTTON | WS_TABSTOP | WS_GROUP, "BUTTON", "&Cancel", 0, { 0 } }
 };
 
 #define MAX_INT_ITEMS sizeof( _getint ) / sizeof( itemdata )
@@ -102,7 +98,7 @@ BOOL CALLBACK _GetIntervalBox( HWND hwnd, UINT message, WPARAM wparam, LPARAM lp
  */
 void _GetClearInterval( void )
 {
-    GLOBALHANDLE        data,new;
+    TEMPLATE_HANDLE     data, new;
     int                 i;
     size_t              datalen;
 
@@ -112,7 +108,7 @@ void _GetClearInterval( void )
                 "Set Number of Lines Between Auto-Clears",
                 0, "", &datalen );
 
-    if( data == NULL ) 
+    if( data == NULL )
         return;
     for( i = 0; i < MAX_INT_ITEMS; i++ ) {
         new = _AddControl( data,
@@ -131,4 +127,3 @@ void _GetClearInterval( void )
     _DynamicDialogBox( _GetIntervalBox, _MainWindowData->inst, _MainWindow, data );
 
 } /* _GetClearInterval */
-

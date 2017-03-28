@@ -40,7 +40,7 @@
  */
 TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
                              const char *menuname, const char *classname, const char *captiontext,
-                             int pointsize, const char *typeface, size_t *datalen )
+                             WORD pointsize, const char *typeface, size_t *datalen )
 {
     TEMPLATE_HANDLE     data;
     UINT                blocklen, menulen, classlen, captionlen, typefacelen;
@@ -109,7 +109,7 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
 /*
  * AddControl - add a control to a dialog
  */
-TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, int id, DWORD style,
+TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, WORD id, DWORD style,
                          const char *class, const char *text,
                          BYTE infolen, const char *infodata, size_t *datalen )
 {

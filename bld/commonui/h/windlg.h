@@ -40,9 +40,7 @@
 #define GetPtrGlobalLock(data) GlobalLock( data )
 #endif
 
-#define TEMPLATE_HANDLE GLOBALHANDLE
-
-#if defined( __WINDOWS__ )
+#ifdef __WINDOWS__
 
 #define SLEN( a )       (strlen((a))+1)
 #define _ISFAR          __far
@@ -58,8 +56,8 @@
 
 extern TEMPLATE_HANDLE  DialogTemplate( DWORD style, int x, int y, int cx, int cy,
                             const char *menuname, const char *classname, const char *captiontext,
-                            int pointsize, const char *typeface, size_t *datalen );
-extern TEMPLATE_HANDLE  AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, int id, DWORD style,
+                            WORD pointsize, const char *typeface, size_t *datalen );
+extern TEMPLATE_HANDLE  AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, WORD id, DWORD style,
                             const char *class, const char *text, BYTE infolen, const char *infodata, size_t *datalen );
 extern TEMPLATE_HANDLE  DoneAddingControls( TEMPLATE_HANDLE data );
 extern INT_PTR          DynamicDialogBox( DLGPROCx fn, HINSTANCE inst, HWND hwnd, TEMPLATE_HANDLE data, LPARAM lparam );
