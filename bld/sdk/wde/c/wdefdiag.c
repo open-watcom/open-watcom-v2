@@ -887,7 +887,7 @@ bool WdeDialogResolveSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
         return( false );
     }
 
-    for( olist = obj->children; olist; olist = ListNext( olist ) ) {
+    for( olist = obj->children; olist != NULL; olist = ListNext( olist ) ) {
         child =  ListElement( olist );
         Forward( child, RESOLVE_SYMBOL, b, from_id );
     }
@@ -1561,7 +1561,7 @@ bool WdeDialogCreateWindow( WdeDialogObject *obj, bool *show, void *p2 )
         olist = NULL;
     }
 
-    for( ; olist; olist = ListPrev( olist ) ) {
+    for( ; olist != NULL; olist = ListPrev( olist ) ) {
         OBJ_ID  id;
         child = ListElement( olist );
         if( !Forward( child, CREATE_WINDOW, NULL, NULL ) ) {

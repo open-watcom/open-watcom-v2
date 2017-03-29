@@ -66,7 +66,7 @@ static bool WdeAddFontFamilyMember( WdeFontNames *, ENUMLOGFONT *, TEXTMETRIC *,
 /****************************************************************************/
 static LIST             *WdeFontList;
 static LIST             *WdeFontFamiliesList;
-static uint_32          logpixelsy;
+static int              logpixelsy;
 
 LIST *WdeGetFontList( void )
 {
@@ -164,7 +164,7 @@ void WdeSetFontList( HWND main )
 
     hDc = GetDC( main );
 
-    logpixelsy = (uint_32)GetDeviceCaps( hDc, LOGPIXELSY );
+    logpixelsy = GetDeviceCaps( hDc, LOGPIXELSY );
 
     enum_callback = (FONTENUMPROC)MakeProcInstance( (FARPROC)WdeEnumFontsProc, WdeGetAppInstance() );
 
@@ -187,7 +187,6 @@ void WdeSetFontList( HWND main )
 
 bool WdeAddFontFamilyMember( WdeFontNames *font_element, ENUMLOGFONT *lpelf, TEXTMETRIC *lpntm, int fonttype )
 {
-    uint_32     mod10;
     WdeFontData *font_data;
     WdeFontData *font_sibling;
     LIST        *olist;
@@ -204,15 +203,7 @@ bool WdeAddFontFamilyMember( WdeFontNames *font_element, ENUMLOGFONT *lpelf, TEX
     font_element->num_children++;
 
     /* get the point size (times 10 to check out how to round) */
-    font_data->pointsize = ((uint_32)(lpntm->tmHeight - lpntm->tmInternalLeading) *
-                            (uint_32)720) / logpixelsy;
-    mod10 = font_data->pointsize % 10;
-    font_data->pointsize /= 10;
-    /* round the point size up if necessary */
-    if( mod10 > 4 ) {
-        font_data->pointsize++;
-    }
-
+    font_data->pointsize = ( ( (LONG)( lpntm->tmHeight - lpntm->tmInternalLeading ) * 720 ) / (LONG)logpixelsy + 5 ) / 10;
     /* lets make sure the font is not already in the list */
     for( olist = font_element->family_list; olist != NULL; olist = ListNext( olist ) ) {
         font_sibling = (WdeFontData *)ListElement( olist );
