@@ -108,9 +108,6 @@
 /* type definitions                                                         */
 /****************************************************************************/
 
-#ifdef __ALPHA__
-    #pragma pack( 1 );
-#endif
 typedef struct WdeResInfoStruct {
     WRInfo              *info;
     char                *sym_name;
@@ -167,10 +164,6 @@ typedef struct WdeDialogBoxControl {
     char                *symbol;
     char                *helpsymbol;
 } WdeDialogBoxControl;
-
-#ifdef __ALPHA__
-    #pragma pack();
-#endif
 
 typedef struct WdeDialogBoxInfoStruct {
     WdeDialogBoxHeader  *dialog_header;
