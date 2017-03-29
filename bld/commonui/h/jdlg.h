@@ -32,6 +32,9 @@
 #ifndef _JDLG_H_INCLUDED
 #define _JDLG_H_INCLUDED
 
+#include "_windlg.h"
+
+
 extern bool JDialogInit( void );
 extern void JDialogFini( void );
 extern INT_PTR JDialogBox( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner, DLGPROC dlgproc );

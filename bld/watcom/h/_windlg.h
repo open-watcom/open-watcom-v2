@@ -29,6 +29,9 @@
 ****************************************************************************/
 
 
+#ifndef __WINDLG_H_INCLUDED
+#define __WINDLG_H_INCLUDED
+
 #define _AdjustUp( size, word ) ( ((size)+((word)-1)) & ~((word)-1) )
 
 #if defined( __WINDOWS__ )
@@ -78,3 +81,5 @@ typedef struct {
 //  BYTE    ditData;
 } _DLGITEMTEMPLATE;
 #include "poppck.h"
+
+#endif
