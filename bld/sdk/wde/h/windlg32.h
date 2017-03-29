@@ -32,40 +32,6 @@
 
 #if !defined( __OS2__ )
 
-#include "pushpck1.h"
-typedef struct {
-    WORD        dtVer;
-    WORD        dtSignature;
-    DWORD       dtHelpID;
-    DWORD       dtExtendedStyle;
-    DWORD       dtStyle;
-    WORD        dtItemCount;
-    short       dtX;
-    short       dtY;
-    short       dtCX;
-    short       dtCY;
-} _DLGEXTEMPLATE;
-
-typedef struct {
-    WORD        PointSize;
-    WORD        weight;
-    BYTE        bItalic;
-    BYTE        bCharset;
-//  char        fontName[];
-} _FONTEXINFO;
-
-typedef struct {
-    DWORD       ditHelpID;
-    DWORD       ditExtendedStyle;
-    DWORD       ditStyle;
-    short       ditX;
-    short       ditY;
-    short       ditCX;
-    short       ditCY;
-    DWORD       ditID;
-} _DLGEXITEMTEMPLATE;
-#include "poppck.h"
-
 extern TEMPLATE_HANDLE  DialogEXTemplate( DWORD style, DWORD exstyle, DWORD helpid, int x, int y, int cx, int cy, const char *menuname, const char *classname, const char *captiontext, WORD pointsize, const char *typeface, WORD fontweight, BYTE fontitalic, BYTE fontcharset, size_t *datalen );
 extern TEMPLATE_HANDLE  AddControlEX( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, DWORD id, DWORD style, DWORD exstyle, DWORD helpid, const char *class, const char *text, BYTE infolen, const char *infodata, size_t *datalen );
 

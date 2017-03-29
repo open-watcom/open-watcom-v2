@@ -80,6 +80,38 @@ typedef struct {
 //  BYTE    ditInfo;
 //  BYTE    ditData;
 } _DLGITEMTEMPLATE;
+
+typedef struct {
+    WORD        dtVer;
+    WORD        dtSignature;
+    DWORD       dtHelpID;
+    DWORD       dtExtendedStyle;
+    DWORD       dtStyle;
+    WORD        dtItemCount;
+    short       dtX;
+    short       dtY;
+    short       dtCX;
+    short       dtCY;
+} _DLGEXTEMPLATE;
+
+typedef struct {
+    WORD        PointSize;
+    WORD        weight;
+    BYTE        bItalic;
+    BYTE        bCharset;
+//  char        fontName[];
+} _FONTEXINFO;
+
+typedef struct {
+    DWORD       ditHelpID;
+    DWORD       ditExtendedStyle;
+    DWORD       ditStyle;
+    short       ditX;
+    short       ditY;
+    short       ditCX;
+    short       ditCY;
+    DWORD       ditID;
+} _DLGEXITEMTEMPLATE;
 #include "poppck.h"
 
 #endif
