@@ -41,8 +41,8 @@
 static TEMPLATE_HANDLE  PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus );
 static TEMPLATE_HANDLE  PMDoneAddingControls( TEMPLATE_HANDLE data );
 static TEMPLATE_HANDLE  PMAddControl( TEMPLATE_HANDLE data, DWORD style, USHORT x, USHORT y, USHORT cx, USHORT cy,
-                            USHORT id, USHORT children, ULONG nclass, const char *class,
-                            const char *text, PVOID presparms, ULONG presparmslen,
+                            USHORT id, USHORT children, ULONG nclass, const char *classname,
+                            const char *captiontext, PVOID presparms, ULONG presparmslen,
                             const void *ctldata, ULONG ctldatlen );
 static int              PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE data, PVOID dlgdata );
 
@@ -52,7 +52,7 @@ static ULONG            dataSegLen;
 /*
  * copyString - copy from string to memory
  */
-static char _ISFAR *copyString( char _ISFAR *mem, const char _ISFAR *str, int len )
+static WPCHAR copyString( WPCHAR mem, const char *str, int len )
 {
     if( mem == NULL || str == NULL )
         return( mem );
@@ -64,7 +64,7 @@ static char _ISFAR *copyString( char _ISFAR *mem, const char _ISFAR *str, int le
 /*
  * safeStrLen - measure sizeof string (even NULL );
  */
-static long safeStrLen( const char _ISFAR *str )
+static long safeStrLen( const char *str )
 {
     if( str == NULL )
         return( 0 );
@@ -79,14 +79,14 @@ TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus
 {
     TEMPLATE_HANDLE     data;
     UINT                blocklen;
-    DLGTEMPLATE         _ISFAR *dt;
+    WPDLGTEMPLATE       dt;
 
 
     /*
      * get size of block and allocate memory
      */
 
-    blocklen = sizeof( DLGTEMPLATE );
+    blocklen = sizeof( WDLGTEMPLATE );
     dataSegLen = 0;
     dataSeg = NULL;
 
@@ -98,7 +98,7 @@ TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus
      * set up template
      */
     dt = data;
-    dt->cbTemplate  = blocklen - sizeof( DLGITEMTEMPLATE );
+    dt->cbTemplate  = blocklen - sizeof( WDLGITEMTEMPLATE );
     dt->type = temptype;
     dt->codepage = codepage;
     dt->offadlgti = dt->cbTemplate;
@@ -115,23 +115,23 @@ TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus
  */
 TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, DWORD style, USHORT x,
                               USHORT y, USHORT cx, USHORT cy, USHORT id,
-                              USHORT children, ULONG nclass, const char *class,
-                              const char *text, PVOID presparms, ULONG presparmslen,
+                              USHORT children, ULONG nclass, const char *classname,
+                              const char *captiontext, PVOID presparms, ULONG presparmslen,
                               const void *ctldata, ULONG ctldatalen )
 {
     TEMPLATE_HANDLE     new;
     UINT                blocklen, classlen, textlen, ddatalen;
-    DLGTEMPLATE         _ISFAR *dt;
-    DLGITEMTEMPLATE     _ISFAR *dit;
-    char                _ISFAR *dlgtemp;
+    WPDLGTEMPLATE       dt;
+    WPDLGITEMTEMPLATE   dit;
+    WPCHAR              dlgtemp;
     char                *new_text;
 
-    new_text = _wpi_menutext2pm( text );
+    new_text = _wpi_menutext2pm( captiontext );
 
     /*
      * compute size of block, reallocate block to hold this stuff
      */
-    classlen = SLEN( class );
+    classlen = SLEN( classname );
     if( classlen ) {
         classlen++;
     }
@@ -142,7 +142,7 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, DWORD style, USHORT x,
     }
 
     dt = data;
-    blocklen = sizeof( DLGITEMTEMPLATE ) + dt->cbTemplate;
+    blocklen = sizeof( WDLGITEMTEMPLATE ) + dt->cbTemplate;
     ddatalen =  classlen + textlen + ctldatalen + dataSegLen + presparmslen;
 
     new = PMrealloc( data, blocklen );
@@ -163,8 +163,8 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, DWORD style, USHORT x,
     /*
      * point to start of item template, and set up values
      */
-    dit = ( DLGITEMTEMPLATE *)( (char *)dt + dt->cbTemplate );
-    dt->cbTemplate += sizeof( DLGITEMTEMPLATE );
+    dit = (WPDLGITEMTEMPLATE)( (WPCHAR)dt + dt->cbTemplate );
+    dt->cbTemplate += sizeof( WDLGITEMTEMPLATE );
 
     dit->fsItemStatus = RESERVED;
     if( children ) {
@@ -216,7 +216,7 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, DWORD style, USHORT x,
             dlgtemp = copyString( dlgtemp, new_text, textlen );
         }
         if( classlen ) {
-            dlgtemp = copyString( dlgtemp, class, classlen );
+            dlgtemp = copyString( dlgtemp, classname, classlen );
         }
         if( presparmslen ) {
             dlgtemp = copyString( dlgtemp, presparms, presparmslen );
@@ -242,17 +242,17 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, DWORD style, USHORT x,
  */
 TEMPLATE_HANDLE PMDoneAddingControls( TEMPLATE_HANDLE data )
 {
-    DLGITEMTEMPLATE     *temp;
-    DLGTEMPLATE         *dt;
+    WPDLGITEMTEMPLATE   temp;
+    WPDLGTEMPLATE       dt;
     int                 record;
     int                 max;
 
     if( data == NULL || ( dataSeg == NULL && dataSegLen ) ) {
         return( NULL );
     }
-    temp = (DLGITEMTEMPLATE *)( (char *)data + ( sizeof( DLGTEMPLATE ) - sizeof( DLGITEMTEMPLATE ) ) );
+    temp = (WPDLGITEMTEMPLATE)( (WPCHAR)data + ( sizeof( WDLGTEMPLATE ) - sizeof( WDLGITEMTEMPLATE ) ) );
     dt = data;
-    max = ( dt->cbTemplate - sizeof( DLGTEMPLATE ) + sizeof( DLGITEMTEMPLATE ) ) / sizeof( DLGITEMTEMPLATE );
+    max = ( dt->cbTemplate - sizeof( WDLGTEMPLATE ) + sizeof( WDLGITEMTEMPLATE ) ) / sizeof( WDLGITEMTEMPLATE );
 
     for( record = 0; record < max; record++ ) {
         temp[record].offText += dt->cbTemplate;
@@ -270,7 +270,7 @@ TEMPLATE_HANDLE PMDoneAddingControls( TEMPLATE_HANDLE data )
     if( dataSeg != NULL ) {
         data= PMrealloc( data, dt->cbTemplate + dataSegLen );
         dt = data;
-        memcpy( (DLGITEMTEMPLATE *)( (char *)data + dt->cbTemplate ), dataSeg, dataSegLen );
+        memcpy( (WPDLGITEMTEMPLATE)( (WPCHAR)data + dt->cbTemplate ), dataSeg, dataSegLen );
         dt->cbTemplate += dataSegLen;
         PMfree( dataSeg );
         dataSeg = NULL;
@@ -288,7 +288,7 @@ int PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE data, PVOID dlgdata
     long rc;
     HWND handle;
 
-    handle = WinCreateDlg( HWND_DESKTOP, hwnd, fn, (PDLGTEMPLATE)data, dlgdata );
+    handle = WinCreateDlg( HWND_DESKTOP, hwnd, fn, (WPDLGTEMPLATE)data, dlgdata );
     if( !handle ) {
         return( 0 );
     }
@@ -367,21 +367,21 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
 }
 
 TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y,
-                             int cx, int cy, int id, DWORD style,
-                             const char *class, const char *text,
-                             BYTE infolen, const char *infodata, size_t *datalen )
+                             int cx, int cy, WORD id, DWORD style,
+                             const char *classname, const char *captiontext,
+                             BYTE infolen, const BYTE *infodata, size_t *datalen )
 {
     TEMPLATE_HANDLE     new;
     ULONG               nclass;
 
     datalen = datalen;
     nclass = 0;
-    if( ((ULONG)class & 0xffff0000) == 0xffff0000 ) {
-        nclass = (ULONG)class;
-        class = NULL;
+    if( ((ULONG)classname & 0xffff0000) == 0xffff0000 ) {
+        nclass = (ULONG)classname;
+        classname = NULL;
     }
 
-    new = PMAddControl( data, style, x, y, cx, cy, id, 0, nclass, class, text, NULL, 0, infodata, infolen );
+    new = PMAddControl( data, style, x, y, cx, cy, id, 0, nclass, classname, captiontext, NULL, 0, infodata, infolen );
 
     if( new == NULL ) {
         PMfree( data );

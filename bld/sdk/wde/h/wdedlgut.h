@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-extern size_t           DlgStringLength( const char _ISFAR *str );
-extern char             _ISFAR *DlgCopyString( char _ISFAR *mem, const char _ISFAR *str, int len );
-extern char             _ISFAR *DlgCopyMBString( char _ISFAR *mem, const char _ISFAR *str, int len );
-extern char             _ISFAR *DlgCopyWord( char _ISFAR *mem, WORD word );
-extern unsigned char    DlgGetClassOrdinal( const char *class );
+extern size_t           DlgStringLength( const char *str );
+extern WPCHAR           DlgCopyString( WPCHAR mem, const char *str, int len );
+extern WPCHAR           DlgCopyMBString( WPCHAR mem, const char *str, int len );
+extern WPCHAR           DlgCopyWord( WPCHAR mem, WORD word );
+extern unsigned char    DlgGetClassOrdinal( const char *classname );

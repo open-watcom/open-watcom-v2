@@ -35,10 +35,23 @@
 #define _AdjustUp( size, word ) ( ((size)+((word)-1)) & ~((word)-1) )
 
 #if defined( __WINDOWS__ )
-  #define ADJUST_DLGLEN( a )
+  #define ADJUST_DLGLEN(a)
+  #define TEMPLATE_LOCK(t)      t
+  #define TEMPLATE_UNLOCK(t)
+  #define WPTR                  __far *
 #else
-  #define ADJUST_DLGLEN( a )    (a) = _AdjustUp( a, 4 )
+  #define ADJUST_DLGLEN(a)      (a) = _AdjustUp( a, 4 )
+  #define TEMPLATE_LOCK(t)      GlobalLock(t)
+  #define TEMPLATE_UNLOCK(t)    GlobalUnlock(t)
+  #define WPTR                  *
 #endif
+
+#define WPCHAR                char WPTR
+#define WPDLGTEMPLATE         WDLGTEMPLATE WPTR
+#define WPDLGTEMPLATEEX       WDLGTEMPLATEEX WPTR
+#define WPDLGITEMTEMPLATE     WDLGITEMTEMPLATE WPTR
+#define WPDLGITEMTEMPLATEEX   WDLGITEMTEMPLATEEX WPTR
+#define WPFONTINFOEX          WFONTINFOEX WPTR
 
 #define TEMPLATE_HANDLE     GLOBALHANDLE
 
@@ -60,7 +73,7 @@ typedef struct {
 //  char    dtMenuName[];
 //  char    dtClassName[];
 //  char    dtCaptionText[];
-} _DLGTEMPLATE;
+} WDLGTEMPLATE;
 
 typedef struct {
 #ifndef __WINDOWS__
@@ -79,7 +92,7 @@ typedef struct {
 //  char    ditText[];
 //  BYTE    ditInfo;
 //  BYTE    ditData;
-} _DLGITEMTEMPLATE;
+} WDLGITEMTEMPLATE;
 
 typedef struct {
     WORD        dtVer;
@@ -92,7 +105,7 @@ typedef struct {
     short       dtY;
     short       dtCX;
     short       dtCY;
-} _DLGEXTEMPLATE;
+} WDLGTEMPLATEEX;
 
 typedef struct {
     WORD        PointSize;
@@ -100,7 +113,7 @@ typedef struct {
     BYTE        bItalic;
     BYTE        bCharset;
 //  char        fontName[];
-} _FONTEXINFO;
+} WFONTINFOEX;
 
 typedef struct {
     DWORD       ditHelpID;
@@ -111,7 +124,7 @@ typedef struct {
     short       ditCX;
     short       ditCY;
     DWORD       ditID;
-} _DLGEXITEMTEMPLATE;
+} WDLGITEMTEMPLATEEX;
 #include "poppck.h"
 
 #endif

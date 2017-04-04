@@ -38,11 +38,11 @@
 #define MAXDLGITEMDATA  (1)
 
 typedef struct {
-   int x, y, cx, cy, id;
-   DWORD style;
-   char *class, *text;
-   BYTE info;
-   BYTE data[MAXDLGITEMDATA];
+   int      x, y, cx, cy, id;
+   DWORD    style;
+   char     *classname, *captiontext;
+   BYTE     info;
+   BYTE     data[MAXDLGITEMDATA];
 } itemdata;
 
 static itemdata _getint[] = {
@@ -100,13 +100,12 @@ void _GetClearInterval( void )
 {
     TEMPLATE_HANDLE     data, new;
     int                 i;
-    size_t              datalen;
+    size_t              templatelen;
 
-    data = _DialogTemplate( DS_LOCALEDIT | DS_MODALFRAME | WS_CAPTION
-                | WS_SYSMENU,
+    data = _DialogTemplate( DS_LOCALEDIT | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU,
                 22, 25, 150, 60, "", "",
                 "Set Number of Lines Between Auto-Clears",
-                0, "", &datalen );
+                0, "", &templatelen );
 
     if( data == NULL )
         return;
@@ -114,8 +113,8 @@ void _GetClearInterval( void )
         new = _AddControl( data,
                 _getint[i].x, _getint[i].y, _getint[i].cx, _getint[i].cy,
                 _getint[i].id, _getint[i].style | WS_VISIBLE,
-                _getint[i].class, _getint[i].text,
-                _getint[i].info, (const char *)_getint[i].data, &datalen );
+                _getint[i].classname, _getint[i].captiontext,
+                _getint[i].info, _getint[i].data, &templatelen );
         if( new == NULL  ) {
             GlobalFree( data );
             return;

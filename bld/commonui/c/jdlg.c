@@ -141,9 +141,9 @@ static BYTE *skipString( BYTE *template )
  */
 static bool hasFontInfo( const BYTE *template )
 {
-    const _DLGTEMPLATE  *dt;
+    const WPDLGTEMPLATE  dt;
 
-    dt = (const _DLGTEMPLATE *)template;
+    dt = (const WPDLGTEMPLATE)template;
 
     return( (dt->dtStyle & DS_SETFONT) != 0 );
 
@@ -155,7 +155,7 @@ static bool hasFontInfo( const BYTE *template )
 static BYTE *findFontInfo( BYTE *template )
 {
     /* skip to the menu name */
-    template = template + sizeof( _DLGTEMPLATE );
+    template = template + sizeof( WDLGTEMPLATE );
 
     /* skip the menu name */
     template = skipString( template );
@@ -444,23 +444,15 @@ static INT_PTR dbIndirect( HINSTANCE hinst, TEMPLATE_HANDLE dlgtemplate, HWND hw
         goto DBI_DEFAULT_ACTION;
     }
 
-#ifdef __WINDOWS__
-    ret = DialogBoxIndirect( hinst, jdlgtemplate, hwndOwner, dlgproc );
-#else
-    ret = DialogBoxIndirect( hinst, GlobalLock( jdlgtemplate ), hwndOwner, dlgproc );
-    GlobalUnlock( jdlgtemplate );
-#endif
+    ret = DialogBoxIndirect( hinst, TEMPLATE_LOCK( jdlgtemplate ), hwndOwner, dlgproc );
+    TEMPLATE_UNLOCK( jdlgtemplate );
     GlobalFree( jdlgtemplate );
 
     return( ret );
 
 DBI_DEFAULT_ACTION:
-#if defined( __WINDOWS__ )
-    ret = DialogBoxIndirect( hinst, dlgtemplate, hwndOwner, dlgproc );
-#else
-    ret = DialogBoxIndirect( hinst, GlobalLock( dlgtemplate ), hwndOwner, dlgproc );
-    GlobalUnlock( dlgtemplate );
-#endif
+    ret = DialogBoxIndirect( hinst, TEMPLATE_LOCK( dlgtemplate ), hwndOwner, dlgproc );
+    TEMPLATE_UNLOCK( dlgtemplate );
     return( ret );
 }
 
@@ -483,23 +475,14 @@ static INT_PTR dbIndirectParam( HINSTANCE hinst, TEMPLATE_HANDLE dlgtemplate,
         goto DBIP_DEFAULT_ACTION;
     }
 
-#ifdef __WINDOWS__
-    ret = DialogBoxIndirectParam( hinst, jdlgtemplate, hwndOwner, dlgproc, lParamInit );
-#else
-    ret = DialogBoxIndirectParam( hinst, GlobalLock( jdlgtemplate ), hwndOwner, dlgproc, lParamInit );
-    GlobalUnlock( jdlgtemplate );
-#endif
+    ret = DialogBoxIndirectParam( hinst, TEMPLATE_LOCK( jdlgtemplate ), hwndOwner, dlgproc, lParamInit );
+    TEMPLATE_UNLOCK( jdlgtemplate );
     GlobalFree( jdlgtemplate );
-
     return( ret );
 
 DBIP_DEFAULT_ACTION:
-#if defined( __WINDOWS__ )
-    ret = DialogBoxIndirectParam( hinst, dlgtemplate, hwndOwner, dlgproc, lParamInit );
-#else
-    ret = DialogBoxIndirectParam( hinst, GlobalLock( dlgtemplate ), hwndOwner, dlgproc, lParamInit );
-    GlobalUnlock( dlgtemplate );
-#endif
+    ret = DialogBoxIndirectParam( hinst, TEMPLATE_LOCK( dlgtemplate ), hwndOwner, dlgproc, lParamInit );
+    TEMPLATE_UNLOCK( dlgtemplate );
     return( ret );
 }
 

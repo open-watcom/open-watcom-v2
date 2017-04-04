@@ -42,16 +42,16 @@
 TEMPLATE_HANDLE DialogEXTemplate( DWORD style, DWORD exstyle, DWORD helpid,
                                int x, int y, int cx, int cy, const char *menuname,
                                const char *classname, const char *captiontext, WORD pointsize,
-                               const char *typeface, WORD fontweight, BYTE fontitalic, BYTE fontcharset, size_t *datalen )
+                               const char *typeface, WORD fontweight, BYTE fontitalic, BYTE fontcharset, size_t *templatelen )
 {
     TEMPLATE_HANDLE     data;
     UINT                blocklen, menulen, classlen, captionlen, typefacelen;
-    char                _ISFAR *databytes;
-    char                _ISFAR *dlgtemp;
-    _DLGEXTEMPLATE      _ISFAR *dt;
-    _FONTEXINFO         _ISFAR *fi;
+    WPCHAR              databytes;
+    WPCHAR              dlgtemp;
+    WPDLGTEMPLATEEX     dt;
+    WPFONTINFOEX        fi;
 
-    *datalen = 0;
+    *templatelen = 0;
 
     /*
      * get size of block and allocate memory
@@ -60,11 +60,11 @@ TEMPLATE_HANDLE DialogEXTemplate( DWORD style, DWORD exstyle, DWORD helpid,
     classlen = DlgStringLength( classname );
     captionlen = DlgStringLength( captiontext );
 
-    blocklen = sizeof( _DLGEXTEMPLATE ) + menulen + classlen + captionlen;
+    blocklen = sizeof( WDLGTEMPLATEEX ) + menulen + classlen + captionlen;
 
     if( style & DS_SETFONT ) {
         typefacelen = DlgStringLength( typeface );
-        blocklen += sizeof( _FONTEXINFO ) + typefacelen;
+        blocklen += sizeof( WFONTINFOEX ) + typefacelen;
     } else {
         typefacelen = 0;
     }
@@ -75,12 +75,12 @@ TEMPLATE_HANDLE DialogEXTemplate( DWORD style, DWORD exstyle, DWORD helpid,
     }
 
     databytes = GetPtrGlobalLock( data );
-    *datalen = blocklen;
+    *templatelen = blocklen;
 
     /*
      * set up template
      */
-    dt = (_DLGEXTEMPLATE _ISFAR *)databytes;
+    dt = (WPDLGTEMPLATEEX)databytes;
 
     dt->dtVer = 0x0001;                 // signature dword is 0xffff0001
     dt->dtSignature = 0xffff;
@@ -94,7 +94,7 @@ TEMPLATE_HANDLE DialogEXTemplate( DWORD style, DWORD exstyle, DWORD helpid,
     dt->dtCX = cx;
     dt->dtCY = cy;
 
-    dlgtemp = (char _ISFAR *)( dt + 1 );
+    dlgtemp = (WPCHAR)( dt + 1 );
 
     /*
      * add extra strings to block
@@ -107,12 +107,12 @@ TEMPLATE_HANDLE DialogEXTemplate( DWORD style, DWORD exstyle, DWORD helpid,
      * add font data (if needed)
      */
     if( style & DS_SETFONT ) {
-        fi = (_FONTEXINFO _ISFAR *)dlgtemp;
+        fi = (WPFONTINFOEX)dlgtemp;
         fi->PointSize = pointsize;
         fi->weight = fontweight;
         fi->bItalic = fontitalic;
         fi->bCharset = fontcharset;
-        dlgtemp = (char _ISFAR *)( fi + 1 );
+        dlgtemp = (WPCHAR)( fi + 1 );
         dlgtemp = DlgCopyMBString( dlgtemp, typeface, typefacelen );
     }
 
@@ -126,14 +126,14 @@ TEMPLATE_HANDLE DialogEXTemplate( DWORD style, DWORD exstyle, DWORD helpid,
  */
 TEMPLATE_HANDLE AddControlEX( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, DWORD id, DWORD style,
                            DWORD exstyle, DWORD helpid, const char *class, const char *text,
-                           BYTE infolen, const char *infodata, size_t *datalen )
+                           BYTE infolen, const BYTE *infodata, size_t *templatelen )
 {
     TEMPLATE_HANDLE     new;
     UINT                blocklen, classlen, textlen;
-    char                _ISFAR *databytes;
-    _DLGEXTEMPLATE      _ISFAR *dt;
-    _DLGEXITEMTEMPLATE  _ISFAR *dit;
-    char                _ISFAR *ditstr;
+    WPCHAR              databytes;
+    WPDLGTEMPLATEEX     dt;
+    WPDLGITEMTEMPLATEEX dit;
+    WPCHAR              ditstr;
     unsigned char       class_ordinal;
     size_t              item_start;
 
@@ -153,12 +153,12 @@ TEMPLATE_HANDLE AddControlEX( TEMPLATE_HANDLE data, int x, int y, int cx, int cy
     }
     textlen = DlgStringLength( text );
 
-    item_start = *datalen;
+    item_start = *templatelen;
     ADJUST_DLGLEN( item_start );
 #if defined( __WINDOWS__ )
-    blocklen = item_start + sizeof( _DLGEXITEMTEMPLATE ) + classlen + textlen + sizeof( BYTE ) + infolen;
+    blocklen = item_start + sizeof( WDLGITEMTEMPLATEEX ) + classlen + textlen + sizeof( BYTE ) + infolen;
 #else
-    blocklen = item_start + sizeof( _DLGEXITEMTEMPLATE ) + classlen + textlen + sizeof( WORD ) + infolen;
+    blocklen = item_start + sizeof( WDLGITEMTEMPLATEEX ) + classlen + textlen + sizeof( WORD ) + infolen;
 #endif
     GlobalUnlock( data );
     new = GlobalReAlloc( data, blocklen, GMEM_MOVEABLE | GMEM_ZEROINIT );
@@ -171,13 +171,13 @@ TEMPLATE_HANDLE AddControlEX( TEMPLATE_HANDLE data, int x, int y, int cx, int cy
     /*
      * one more item...
      */
-    dt = (_DLGEXTEMPLATE _ISFAR *)databytes;
+    dt = (WPDLGTEMPLATEEX)databytes;
     dt->dtItemCount++;
 
     /*
      * point to start of item template, and set up values
      */
-    dit = (_DLGEXITEMTEMPLATE _ISFAR *)( databytes + item_start );
+    dit = (WPDLGITEMTEMPLATEEX)( databytes + item_start );
     dit->ditHelpID = helpid;
     dit->ditExtendedStyle = exstyle;
     dit->ditStyle = style;
@@ -187,7 +187,7 @@ TEMPLATE_HANDLE AddControlEX( TEMPLATE_HANDLE data, int x, int y, int cx, int cy
     dit->ditCY = cy;
     dit->ditID = id;
 
-    ditstr = (char _ISFAR *)( dit + 1 );
+    ditstr = (WPCHAR)( dit + 1 );
 
     /*
      * append extra data
@@ -212,7 +212,7 @@ TEMPLATE_HANDLE AddControlEX( TEMPLATE_HANDLE data, int x, int y, int cx, int cy
     _FARmemcpy( ditstr, infodata, infolen );
     ditstr += infolen;
 
-    *datalen = (size_t)( ditstr - databytes );
+    *templatelen = (size_t)( ditstr - databytes );
 
     GlobalUnlock( new );
     return( new );

@@ -50,9 +50,9 @@
 
 extern TEMPLATE_HANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
                         const char *menuname, const char *classname, const char *captiontext,
-                        WORD pointsize, const char *typeface, size_t *datalen );
+                        WORD pointsize, const char *typeface, size_t *templatelen );
 extern TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, WORD id, DWORD style,
-                        const char *class, const char *text, BYTE infolen, const char *infodata, size_t *datalen );
+                        const char *classname, const char *captiontext, BYTE infolen, const BYTE *infodata, size_t *templatelen );
 extern void     _DoneAddingControls( TEMPLATE_HANDLE data );
 extern INT_PTR  _DynamicDialogBox( DLGPROCx fn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE data );
 

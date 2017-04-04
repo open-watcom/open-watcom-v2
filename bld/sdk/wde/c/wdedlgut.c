@@ -37,7 +37,7 @@
 /*
  * DlgStringLength - get length of string
  */
-size_t DlgStringLength( const char _ISFAR *str )
+size_t DlgStringLength( const char *str )
 {
 #if defined( __WINDOWS__ )
     return( SLEN( str ) );
@@ -59,7 +59,7 @@ size_t DlgStringLength( const char _ISFAR *str )
 /*
  * DlgCopyString - copy from string to memory
  */
-char _ISFAR *DlgCopyString( char _ISFAR *mem, const char _ISFAR *str, int len )
+WPCHAR DlgCopyString( WPCHAR mem, const char *str, int len )
 {
 #if defined( __WINDOWS__ )
     if( mem != NULL && str != NULL ) {
@@ -86,7 +86,7 @@ char _ISFAR *DlgCopyString( char _ISFAR *mem, const char _ISFAR *str, int len )
 /*
  * DlgCopyMBString - copy from string to memory
  */
-char _ISFAR *DlgCopyMBString( char _ISFAR *mem, const char _ISFAR *str, int len )
+WPCHAR DlgCopyMBString( WPCHAR mem, const char *str, int len )
 {
 #if defined( __WINDOWS__ )
     return( DlgCopyString( mem, str, len ) );
@@ -110,7 +110,7 @@ char _ISFAR *DlgCopyMBString( char _ISFAR *mem, const char _ISFAR *str, int len 
 /*
  * DlgCopyWord - copy from Word to memory
  */
-char _ISFAR *DlgCopyWord( char _ISFAR *mem, WORD word )
+WPCHAR DlgCopyWord( WPCHAR mem, WORD word )
 {
     *mem++ = word;
     *mem++ = word >> 8;

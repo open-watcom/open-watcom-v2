@@ -32,7 +32,6 @@
 
 #define ADJUST_DLGLEN( a )
 
-#define _ISFAR
 #define _FARmemcpy              memcpy
 #define SLEN( a )               (safeStrLen((a))+0)
 
@@ -46,7 +45,12 @@
 /*
  * the pm data structures
  */
-typedef DLGTITEM                DLGITEMTEMPLATE;
+#define WDLGTEMPLATE            DLGTEMPLATE
+#define WDLGITEMTEMPLATE        DLGTITEM
+
+#define WPCHAR                  char *
+#define WPDLGTEMPLATE           WDLGTEMPLATE *
+#define WPDLGITEMTEMPLATE       WDLGITEMTEMPLATE *
 
 /*
  * I am not about to change this in ALL the code, and since I am not including
@@ -54,15 +58,15 @@ typedef DLGTITEM                DLGITEMTEMPLATE;
  */
 #define TEMPLATE_HANDLE PVOID
 
-extern void         PMfree( void * ptr );
+extern void         PMfree( void *ptr );
 extern void         *PMmalloc( size_t size );
-extern void         *PMrealloc( void * ptr, size_t size );
+extern void         *PMrealloc( void *ptr, size_t size );
 
 extern TEMPLATE_HANDLE  DialogTemplate( DWORD dtStyle, int x, int y, int cx, int cy,
                                 const char *menuname, const char *classname, const char *captiontext,
-                                WORD pointsize, const char *typeface, size_t *datalen );
-extern TEMPLATE_HANDLE  AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, int id, DWORD style,
-                                const char *class, const char *text,
-                                BYTE infolen, const char *infodata, size_t *datalen );
+                                WORD pointsize, const char *typeface, size_t *templatelen );
+extern TEMPLATE_HANDLE  AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, WORD id, DWORD style,
+                                const char *classname, const char *captiontext,
+                                BYTE infolen, const BYTE *infodata, size_t *templatelen );
 extern TEMPLATE_HANDLE  DoneAddingControls ( TEMPLATE_HANDLE data );
 extern int              DynamicDialogBox( PFNWP fn, WPI_INST inst, HWND hwnd, TEMPLATE_HANDLE data, MPARAM lparam );

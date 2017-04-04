@@ -38,7 +38,7 @@
 /*
  * copyString - copy from string to memory
  */
-static char _ISFAR *copyString( char _ISFAR *mem, const char _ISFAR *str, int len )
+static WPCHAR copyString( WPCHAR mem, const char *str, int len )
 {
 #ifdef __WINDOWS__
     _FARmemcpy( mem, str, len );
@@ -60,7 +60,7 @@ static char _ISFAR *copyString( char _ISFAR *mem, const char _ISFAR *str, int le
 /*
  * copyWord - copy from word to memory
  */
-static char _ISFAR *copyWord( char _ISFAR *mem, WORD word )
+static WPCHAR copyWord( WPCHAR mem, WORD word )
 {
     *mem++ = word;
     *mem++ = word >> 8;
@@ -69,21 +69,21 @@ static char _ISFAR *copyWord( char _ISFAR *mem, WORD word )
 } /* copyWord */
 
 
-static unsigned char getClassOrdinal( const char *class )
+static unsigned char getClassOrdinal( const char *classname )
 {
     unsigned char   class_ordinal;
 
-    if( stricmp( class, "combobox" ) == 0 ) {
+    if( stricmp( classname, "combobox" ) == 0 ) {
         class_ordinal = 0x85;
-    } else if( stricmp( class, "scrollbar" ) == 0 ) {
+    } else if( stricmp( classname, "scrollbar" ) == 0 ) {
         class_ordinal = 0x84;
-    } else if( stricmp( class, "listbox" ) == 0 ) {
+    } else if( stricmp( classname, "listbox" ) == 0 ) {
         class_ordinal = 0x83;
-    } else if( stricmp( class, "static" ) == 0 ) {
+    } else if( stricmp( classname, "static" ) == 0 ) {
         class_ordinal = 0x82;
-    } else if( stricmp( class, "edit" ) == 0 ) {
+    } else if( stricmp( classname, "edit" ) == 0 ) {
         class_ordinal = 0x81;
-    } else if( stricmp( class, "button" ) == 0 ) {
+    } else if( stricmp( classname, "button" ) == 0 ) {
         class_ordinal = 0x80;
     } else {
         class_ordinal = 0;
@@ -96,16 +96,16 @@ static unsigned char getClassOrdinal( const char *class )
  */
 TEMPLATE_HANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
                               const char *menuname, const char *classname, const char *captiontext,
-                              WORD pointsize, const char *typeface, size_t *datalen )
+                              WORD pointsize, const char *typeface, size_t *templatelen )
 {
     TEMPLATE_HANDLE     data;
     size_t              blocklen;
     UINT                menulen, classlen, captionlen, typefacelen;
-    char                _ISFAR *databytes;
-    char                _ISFAR *dlgtemp;
-    _DLGTEMPLATE        _ISFAR *dt;
+    WPCHAR              databytes;
+    WPCHAR              dlgtemp;
+    WPDLGTEMPLATE       dt;
 
-    *datalen = 0;
+    *templatelen = 0;
     /*
      * get size of block and allocate memory
      */
@@ -113,7 +113,7 @@ TEMPLATE_HANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     classlen = SLEN( classname );
     captionlen = SLEN( captiontext );
 
-    blocklen = sizeof( _DLGTEMPLATE ) + menulen + classlen + captionlen;
+    blocklen = sizeof( WDLGTEMPLATE ) + menulen + classlen + captionlen;
 
     if( style & DS_SETFONT ) {
         typefacelen = SLEN( typeface );
@@ -127,12 +127,12 @@ TEMPLATE_HANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
         return( (GLOBALHANDLE)NULL );
 
     databytes = GetPtrGlobalLock( data );
-    *datalen = blocklen;
+    *templatelen = blocklen;
 
     /*
      * set up template
      */
-    dt = (_DLGTEMPLATE _ISFAR *)databytes;
+    dt = (WPDLGTEMPLATE)databytes;
 
     dt->dtStyle = style;
     dt->dtItemCount = 0;
@@ -141,7 +141,7 @@ TEMPLATE_HANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     dt->dtCX = (short)cx;
     dt->dtCY = (short)cy;
 
-    dlgtemp = (char _ISFAR *)( dt + 1 );
+    dlgtemp = (WPCHAR)( dt + 1 );
 
     /*
      * add extra strings to block
@@ -167,15 +167,15 @@ TEMPLATE_HANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
  * _AddControl - add a control to a dialog
  */
 TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, WORD id, DWORD style,
-        const char *class, const char *text, BYTE infolen, const char *infodata, size_t *datalen )
+        const char *classname, const char *captiontext, BYTE infolen, const BYTE *infodata, size_t *templatelen )
 {
     TEMPLATE_HANDLE     new;
     size_t              blocklen;
     UINT                classlen, textlen;
-    char                _ISFAR *databytes;
-    _DLGTEMPLATE        _ISFAR *dt;
-    _DLGITEMTEMPLATE    _ISFAR *dit;
-    char                _ISFAR *ditstr;
+    WPCHAR              databytes;
+    WPDLGTEMPLATE       dt;
+    WPDLGITEMTEMPLATE   dit;
+    WPCHAR              ditstr;
     unsigned char       class_ordinal;
     size_t              item_start;
 
@@ -185,7 +185,7 @@ TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy,
      * compute size of block, reallocate block to hold this stuff
      */
 
-    class_ordinal = getClassOrdinal( class );
+    class_ordinal = getClassOrdinal( classname );
     if( class_ordinal > 0 ) {
 #ifdef __WINDOWS__
         classlen = 1;
@@ -193,16 +193,16 @@ TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy,
         classlen = 4;
 #endif
     } else {
-        classlen = SLEN( class );
+        classlen = SLEN( classname );
     }
-    textlen  = SLEN( text );
+    textlen  = SLEN( captiontext );
 
-    item_start = *datalen;
+    item_start = *templatelen;
     ADJUST_DLGLEN( item_start );
 #ifdef __WINDOWS__
-    blocklen = item_start + sizeof( _DLGITEMTEMPLATE ) + classlen + textlen + sizeof( BYTE ) + infolen;
+    blocklen = item_start + sizeof( WDLGITEMTEMPLATE ) + classlen + textlen + sizeof( BYTE ) + infolen;
 #else
-    blocklen = item_start + sizeof( _DLGITEMTEMPLATE ) + classlen + textlen + sizeof( WORD ) + infolen;
+    blocklen = item_start + sizeof( WDLGITEMTEMPLATE ) + classlen + textlen + sizeof( WORD ) + infolen;
 #endif
 
     GlobalUnlock( data );
@@ -216,13 +216,13 @@ TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy,
     /*
      * one more item...
      */
-    dt = (_DLGTEMPLATE _ISFAR *)databytes;
+    dt = (WPDLGTEMPLATE)databytes;
     dt->dtItemCount++;
 
     /*
      * point to start of item template, and set up values
      */
-    dit = (_DLGITEMTEMPLATE _ISFAR *)( databytes + item_start );
+    dit = (WPDLGITEMTEMPLATE)( databytes + item_start );
     dit->ditStyle = style;
     dit->ditX = (short)x;
     dit->ditY = (short)y;
@@ -230,7 +230,7 @@ TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy,
     dit->ditCY = (short)cy;
     dit->ditID = (WORD)id;
 
-    ditstr = (char _ISFAR *)( dit + 1 );
+    ditstr = (WPCHAR)( dit + 1 );
 
     /*
      * append extra data
@@ -244,9 +244,9 @@ TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy,
         ditstr = copyWord( ditstr, class_ordinal );
 #endif
     } else {
-        ditstr = copyString( ditstr, class, classlen );
+        ditstr = copyString( ditstr, classname, classlen );
     }
-    ditstr = copyString( ditstr, text, textlen );
+    ditstr = copyString( ditstr, captiontext, textlen );
 #ifdef __WINDOWS__
     *ditstr++ = infolen;
 #else
@@ -255,7 +255,7 @@ TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy,
     _FARmemcpy( ditstr, infodata, infolen );
     ditstr += infolen;
 
-    *datalen = (size_t)( ditstr - databytes );
+    *templatelen = (size_t)( ditstr - databytes );
 
     GlobalUnlock( new );
     return( new );
@@ -280,12 +280,8 @@ INT_PTR _DynamicDialogBox( DLGPROCx fn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE 
     INT_PTR     rc;
 
     dlgproc = (DLGPROC)MakeProcInstance( (FARPROCx)fn, inst );
-#ifdef __WINDOWS__
-    rc = DialogBoxIndirect( inst, data, hwnd, dlgproc );
-#else
-    rc = DialogBoxIndirect( inst, GlobalLock( data ), hwnd, dlgproc );
-    GlobalUnlock( data );
-#endif
+    rc = DialogBoxIndirect( inst, TEMPLATE_LOCK( data ), hwnd, dlgproc );
+    TEMPLATE_UNLOCK( data );
     FreeProcInstance( (FARPROC)dlgproc );
     GlobalFree( data );
     return( rc );

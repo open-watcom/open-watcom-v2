@@ -40,12 +40,12 @@
  */
 TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
                              const char *menuname, const char *classname, const char *captiontext,
-                             WORD pointsize, const char *typeface, size_t *datalen )
+                             WORD pointsize, const char *typeface, size_t *templatelen )
 {
     TEMPLATE_HANDLE     data;
     UINT                blocklen, menulen, classlen, captionlen, typefacelen;
-    char                _ISFAR *dlgtemp;
-    _DLGTEMPLATE        _ISFAR *dt;
+    WPCHAR              dlgtemp;
+    WPDLGTEMPLATE       dt;
 
     /*
      * get size of block and allocate memory
@@ -54,7 +54,7 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     classlen = DlgStringLength( classname );
     captionlen = DlgStringLength( captiontext );
 
-    blocklen = sizeof( _DLGTEMPLATE ) + menulen + classlen + captionlen;
+    blocklen = sizeof( WDLGTEMPLATE ) + menulen + classlen + captionlen;
 
     if( style & DS_SETFONT ) {
         typefacelen = DlgStringLength( typeface );
@@ -69,12 +69,12 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     }
 
     dlgtemp = GetPtrGlobalLock( data );
-    *datalen = blocklen;
+    *templatelen = blocklen;
 
     /*
      * set up template
      */
-    dt = (_DLGTEMPLATE _ISFAR *)dlgtemp;
+    dt = (WPDLGTEMPLATE)dlgtemp;
 
     dt->dtStyle = style;
     dt->dtItemCount = 0;
@@ -83,7 +83,7 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     dt->dtCX = cx;
     dt->dtCY = cy;
 
-    dlgtemp = (char _ISFAR *)( dt + 1 );
+    dlgtemp = (WPCHAR)( dt + 1 );
 
     /*
      * add extra strings to block
@@ -110,15 +110,15 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
  * AddControl - add a control to a dialog
  */
 TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, WORD id, DWORD style,
-                         const char *class, const char *text,
-                         BYTE infolen, const char *infodata, size_t *datalen )
+                         const char *classname, const char *captiontext,
+                         BYTE infolen, const BYTE *infodata, size_t *templatelen )
 {
     TEMPLATE_HANDLE     new;
     UINT                blocklen, classlen, textlen;
-    char                _ISFAR *databytes;
-    _DLGTEMPLATE        _ISFAR *dt;
-    _DLGITEMTEMPLATE    _ISFAR *dit;
-    char                _ISFAR *ditstr;
+    WPCHAR              databytes;
+    WPDLGTEMPLATE       dt;
+    WPDLGITEMTEMPLATE   dit;
+    WPCHAR              ditstr;
     unsigned char       class_ordinal;
     size_t              item_start;
 
@@ -126,7 +126,7 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, 
      * compute size of block, reallocate block to hold this stuff
      */
 
-    class_ordinal = DlgGetClassOrdinal( class );
+    class_ordinal = DlgGetClassOrdinal( classname );
     if( class_ordinal > 0 ) {
 #if defined( __WINDOWS__ )
         classlen = 1;
@@ -134,17 +134,17 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, 
         classlen = 4;
 #endif
     } else {
-        classlen = DlgStringLength( class );
+        classlen = DlgStringLength( classname );
     }
 
-    textlen = DlgStringLength( text );
+    textlen = DlgStringLength( captiontext );
 
-    item_start = *datalen;
+    item_start = *templatelen;
     ADJUST_DLGLEN( item_start );
 #if defined( __WINDOWS__ )
-    blocklen = item_start + sizeof( _DLGITEMTEMPLATE ) + classlen + textlen + sizeof( BYTE ) + infolen;
+    blocklen = item_start + sizeof( WDLGITEMTEMPLATE ) + classlen + textlen + sizeof( BYTE ) + infolen;
 #else
-    blocklen = item_start + sizeof( _DLGITEMTEMPLATE ) + classlen + textlen + sizeof( WORD ) + infolen;
+    blocklen = item_start + sizeof( WDLGITEMTEMPLATE ) + classlen + textlen + sizeof( WORD ) + infolen;
 #endif
 
     GlobalUnlock( data );
@@ -159,13 +159,13 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, 
     /*
      * one more item...
      */
-    dt = (_DLGTEMPLATE _ISFAR *)databytes;
+    dt = (WPDLGTEMPLATE)databytes;
     dt->dtItemCount++;
 
     /*
      * point to start of item template, and set up values
      */
-    dit = (_DLGITEMTEMPLATE _ISFAR *)( databytes + item_start );
+    dit = (WPDLGITEMTEMPLATE)( databytes + item_start );
     dit->ditStyle = style;
     dit->ditX = x;
     dit->ditY = y;
@@ -173,7 +173,7 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, 
     dit->ditCY = cy;
     dit->ditID = id;
 
-    ditstr = (char _ISFAR *)( dit + 1 );
+    ditstr = (WPCHAR)( dit + 1 );
 
     /*
      * append extra data
@@ -187,10 +187,10 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, 
         ditstr = DlgCopyWord( ditstr, class_ordinal );
 #endif
     } else {
-        ditstr = DlgCopyMBString( ditstr, class, classlen );
+        ditstr = DlgCopyMBString( ditstr, classname, classlen );
     }
 
-    ditstr = DlgCopyMBString( ditstr, text, textlen );
+    ditstr = DlgCopyMBString( ditstr, captiontext, textlen );
 #if defined( __WINDOWS__ )
         *ditstr++ = infolen;
 #else
@@ -199,7 +199,7 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, 
     _FARmemcpy( ditstr, infodata, infolen );
     ditstr += infolen;
 
-    *datalen = (size_t)( ditstr - databytes );
+    *templatelen = (size_t)( ditstr - databytes );
 
     GlobalUnlock( new );
     return( new );
@@ -224,12 +224,8 @@ INT_PTR DynamicDialogBox( DLGPROC dlg_fn, HANDLE inst, HWND hwnd, TEMPLATE_HANDL
     INT_PTR     rc;
 
     dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)dlg_fn, inst );
-#ifdef __WINDOWS__
-    rc = DialogBoxIndirect( inst, data, hwnd, dlg_proc );
-#else
-    rc = DialogBoxIndirect( inst, GlobalLock( data ), hwnd, dlg_proc );
-    GlobalUnlock( data );
-#endif
+    rc = DialogBoxIndirect( inst, TEMPLATE_LOCK( data ), hwnd, dlg_proc );
+    TEMPLATE_UNLOCK( data );
     FreeProcInstance( (FARPROC)dlg_proc );
     GlobalFree( data );
     return( rc );
