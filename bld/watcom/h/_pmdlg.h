@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,34 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  Dynamic dialogs for Windows.
+* Description:  16/32- bit OS/2 Windows Dialog template macros
 *
 ****************************************************************************/
 
 
-#ifndef __OS2__
+#ifndef __PMDLG_H_INCLUDED
+#define __PMDLG_H_INCLUDED
 
-#include "wclbproc.h"
-#include "_windlg.h"
+#define ADJUST_DLGLEN(a)
 
-#ifdef __WINDOWS__
+#define WPCHAR                  char FAR *
+#define WDLGTEMPLATE            DLGTEMPLATE
+#define WPDLGTEMPLATE           PDLGTEMPLATE
+#define WDLGITEMTEMPLATE        DLGTITEM
+#define WPDLGITEMTEMPLATE       PDLGTITEM
 
-#define _FARmemcpy              _fmemcpy
-#define SLEN( a )               (strlen((a))+1)
-
-#else
-
-#define _FARmemcpy              memcpy
-#define SLEN( a )               (strlen((a))*2+2)
-
-#endif
-
-extern TEMPLATE_HANDLE  _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
-                            const char *menuname, const char *classname, const char *captiontext,
-                            WORD pointsize, const char *typeface, size_t *templatelen );
-extern TEMPLATE_HANDLE  _AddControl( TEMPLATE_HANDLE dlgtemplate, int x, int y, int cx, int cy, WORD id, DWORD style,
-                            const char *classname, const char *captiontext, const void *infodata, BYTE infodatalen, size_t *templatelen );
-extern void             _DoneAddingControls( TEMPLATE_HANDLE dlgtemplate );
-extern INT_PTR          _DynamicDialogBox( DLGPROCx dlgfn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate );
+#define TEMPLATE_HANDLE         PCHAR
 
 #endif

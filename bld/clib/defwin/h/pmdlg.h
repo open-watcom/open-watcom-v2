@@ -32,6 +32,8 @@
 
 #if defined( __OS2__ )
 
+#include "_pmdlg.h"
+
 /*
  * Below are the general memory manager defines, using these
  * you can specify a different memory manager without
@@ -47,10 +49,8 @@
  * minor differences.
  */
 #define _FARmemcpy      memcpy
-#define SLEN( a ) (safeStrLen((a))+0)
-#define ADJUST_ITEMLEN( a )
-#define ADJUST_BLOCKLEN( a )
-#define ADJUST_CLASSLEN( a )
+#define SLEN( a )       (safeStrLen((a))+0)
+
 typedef BYTE INFOTYPE;
 
 /*
@@ -60,26 +60,16 @@ typedef BYTE INFOTYPE;
 #define TEMP_TYPE       0
 #define RESERVED        0
 
-/*
- * the pm data structures
- */
-typedef DLGTITEM                DLGITEMTEMPLATE;
-
-/*
- * these are normally defined in windows.h
- */
-typedef void *          GLOBALHANDLE;
 #if !defined( WPI_INTERFAC )
 typedef void *          LPVOID;
 #endif
 
-extern GLOBALHANDLE _DialogTemplate( USHORT temptype, USHORT codepage, USHORT focus );
-GLOBALHANDLE _AddControl( GLOBALHANDLE data, long style, USHORT dtx,
-                        USHORT dty, USHORT dtcx, USHORT dtcy, USHORT id,
-                        USHORT children, ULONG nclass, const char *class,
-                        const char *text, const char *presparms, const char *ctldata,
-                        ULONG *ctldatlen );
-extern GLOBALHANDLE _DoneAddingControls( GLOBALHANDLE data );
-int _DynamicDialogBox( PFNWP fn, HWND hwnd, GLOBALHANDLE data );
+extern TEMPLATE_HANDLE  _DialogTemplate( USHORT temptype, USHORT codepage, USHORT focus );
+extern TEMPLATE_HANDLE  _AddControl( TEMPLATE_HANDLE dlgtemplate, long style,
+                            int x, int y, int cx, int cy, USHORT id, USHORT children, ULONG nclass,
+                            const char *classname, const char *captiontext, const char *presparms,
+                            const void *ctldata, ULONG ctldatalen );
+extern TEMPLATE_HANDLE  _DoneAddingControls( TEMPLATE_HANDLE dlgtemplate );
+extern int              _DynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate );
 
 #endif

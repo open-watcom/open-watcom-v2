@@ -39,12 +39,12 @@
 #include "os2dlg.h"
 
 static TEMPLATE_HANDLE  PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus );
-static TEMPLATE_HANDLE  PMDoneAddingControls( TEMPLATE_HANDLE data );
-static TEMPLATE_HANDLE  PMAddControl( TEMPLATE_HANDLE data, DWORD style, USHORT x, USHORT y, USHORT cx, USHORT cy,
+static TEMPLATE_HANDLE  PMDoneAddingControls( TEMPLATE_HANDLE dlgtemplate );
+static TEMPLATE_HANDLE  PMAddControl( TEMPLATE_HANDLE dlgtemplate, DWORD style, USHORT x, USHORT y, USHORT cx, USHORT cy,
                             USHORT id, USHORT children, ULONG nclass, const char *classname,
                             const char *captiontext, PVOID presparms, ULONG presparmslen,
                             const void *ctldata, ULONG ctldatlen );
-static int              PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE data, PVOID dlgdata );
+static int              PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate, PVOID dlgdata );
 
 static TEMPLATE_HANDLE  dataSeg;
 static ULONG            dataSegLen;
@@ -77,7 +77,7 @@ static long safeStrLen( const char *str )
  */
 TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus )
 {
-    TEMPLATE_HANDLE     data;
+    TEMPLATE_HANDLE     dlgtemplate;
     UINT                blocklen;
     WPDLGTEMPLATE       dt;
 
@@ -90,15 +90,15 @@ TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus
     dataSegLen = 0;
     dataSeg = NULL;
 
-    data = PMmalloc( blocklen );
-    if( data == NULL )
+    dlgtemplate = PMmalloc( blocklen );
+    if( dlgtemplate == NULL )
         return( NULL );
 
     /*
      * set up template
      */
-    dt = data;
-    dt->cbTemplate  = blocklen - sizeof( WDLGITEMTEMPLATE );
+    dt = (WPDLGTEMPLATE)dlgtemplate;
+    dt->cbTemplate = blocklen - sizeof( WDLGITEMTEMPLATE );
     dt->type = temptype;
     dt->codepage = codepage;
     dt->offadlgti = dt->cbTemplate;
@@ -106,20 +106,20 @@ TEMPLATE_HANDLE PMDialogTemplate( USHORT temptype, USHORT codepage, USHORT focus
     dt->iItemFocus = focus;
     dt->coffPresParams = RESERVED;
     dt->adlgti[0].cChildren = 0; // set the number of children to zero
-    return( data );
+    return( dlgtemplate );
 
 } /* PMDialogTemplate */
 
 /*
  * PMAddControl - add a control to a dialog
  */
-TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, DWORD style, USHORT x,
+TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE old_dlgtemplate, DWORD style, USHORT x,
                               USHORT y, USHORT cx, USHORT cy, USHORT id,
                               USHORT children, ULONG nclass, const char *classname,
                               const char *captiontext, PVOID presparms, ULONG presparmslen,
                               const void *ctldata, ULONG ctldatalen )
 {
-    TEMPLATE_HANDLE     new;
+    TEMPLATE_HANDLE     new_dlgtemplate;
     UINT                blocklen, classlen, textlen, ddatalen;
     WPDLGTEMPLATE       dt;
     WPDLGITEMTEMPLATE   dit;
@@ -141,29 +141,28 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, DWORD style, USHORT x,
         ctldatalen = 0;
     }
 
-    dt = data;
+    dt = (WPDLGTEMPLATE)old_dlgtemplate;
     blocklen = sizeof( WDLGITEMTEMPLATE ) + dt->cbTemplate;
     ddatalen =  classlen + textlen + ctldatalen + dataSegLen + presparmslen;
 
-    new = PMrealloc( data, blocklen );
+    new_dlgtemplate = PMrealloc( old_dlgtemplate, blocklen );
     dataSeg = PMrealloc( dataSeg, ddatalen );
 
-    if( new == NULL || ( dataSeg == NULL && ddatalen ) ) {
+    if( new_dlgtemplate == NULL || ( dataSeg == NULL && ddatalen ) ) {
         if( dataSeg != NULL )
             PMfree( dataSeg );
-        if( new != NULL )
-            PMfree( new );
+        if( new_dlgtemplate != NULL )
+            PMfree( new_dlgtemplate );
         if( new_text != NULL )
             _wpi_freemenutext( new_text );
         return( NULL );
     }
 
-    dt = new;
-
     /*
      * point to start of item template, and set up values
      */
-    dit = (WPDLGITEMTEMPLATE)( (WPCHAR)dt + dt->cbTemplate );
+    dt = (WPDLGTEMPLATE)new_dlgtemplate;
+    dit = (WPDLGITEMTEMPLATE)( (WPCHAR)new_dlgtemplate + dt->cbTemplate );
     dt->cbTemplate += sizeof( WDLGITEMTEMPLATE );
 
     dit->fsItemStatus = RESERVED;
@@ -210,8 +209,7 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, DWORD style, USHORT x,
          * add extra strings to block
          */
         if( textlen == 1 ) {
-            *dlgtemp = '\0';
-            dlgtemp++;
+            *dlgtemp++ = '\0';
         } else {
             dlgtemp = copyString( dlgtemp, new_text, textlen );
         }
@@ -233,62 +231,66 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE data, DWORD style, USHORT x,
         _wpi_freemenutext( new_text );
     }
 
-    return( new );
+    return( new_dlgtemplate );
 
 } /* PMAddControl */
 
 /*
  * PMDoneAddingControls - called when there are no more controls
  */
-TEMPLATE_HANDLE PMDoneAddingControls( TEMPLATE_HANDLE data )
+TEMPLATE_HANDLE PMDoneAddingControls( TEMPLATE_HANDLE old_dlgtemplate )
 {
-    WPDLGITEMTEMPLATE   temp;
+    WPDLGITEMTEMPLATE   dit;
     WPDLGTEMPLATE       dt;
     int                 record;
     int                 max;
+    TEMPLATE_HANDLE     new_dlgtemplate;
 
-    if( data == NULL || ( dataSeg == NULL && dataSegLen ) ) {
+    if( old_dlgtemplate == NULL || ( dataSeg == NULL && dataSegLen ) ) {
         return( NULL );
     }
-    temp = (WPDLGITEMTEMPLATE)( (WPCHAR)data + ( sizeof( WDLGTEMPLATE ) - sizeof( WDLGITEMTEMPLATE ) ) );
-    dt = data;
+    dt = (WPDLGTEMPLATE)old_dlgtemplate;
+    dit = (WPDLGITEMTEMPLATE)( (WPCHAR)old_dlgtemplate + ( sizeof( WDLGTEMPLATE ) - sizeof( WDLGITEMTEMPLATE ) ) );
     max = ( dt->cbTemplate - sizeof( WDLGTEMPLATE ) + sizeof( WDLGITEMTEMPLATE ) ) / sizeof( WDLGITEMTEMPLATE );
 
     for( record = 0; record < max; record++ ) {
-        temp[record].offText += dt->cbTemplate;
-        if( temp[record].offCtlData != 0xffff ) {
-            temp[record].offCtlData += dt->cbTemplate;
+        dit[record].offText += dt->cbTemplate;
+        if( dit[record].offCtlData != 0xffff ) {
+            dit[record].offCtlData += dt->cbTemplate;
         }
-        if( temp[record].cchClassName ) {
-            temp[record].offClassName += dt->cbTemplate;
+        if( dit[record].cchClassName ) {
+            dit[record].offClassName += dt->cbTemplate;
         }
-        if( temp[record].offPresParams != 0xffff ) {
-            temp[record].offPresParams += dt->cbTemplate;
+        if( dit[record].offPresParams != 0xffff ) {
+            dit[record].offPresParams += dt->cbTemplate;
         }
     }
 
     if( dataSeg != NULL ) {
-        data= PMrealloc( data, dt->cbTemplate + dataSegLen );
-        dt = data;
-        memcpy( (WPDLGITEMTEMPLATE)( (WPCHAR)data + dt->cbTemplate ), dataSeg, dataSegLen );
+        new_dlgtemplate = PMrealloc( old_dlgtemplate, dt->cbTemplate + dataSegLen );
+        dt = (WPDLGTEMPLATE)new_dlgtemplate;
+        dit = (WPDLGITEMTEMPLATE)( (WPCHAR)new_dlgtemplate + dt->cbTemplate );
+        memcpy( dit, dataSeg, dataSegLen );
         dt->cbTemplate += dataSegLen;
         PMfree( dataSeg );
         dataSeg = NULL;
+    } else {
+        new_dlgtemplate = old_dlgtemplate;
     }
 
-    return( data );
+    return( new_dlgtemplate );
 
 } /* PMDoneAddingControls */
 
 /*
  * PMDynamicDialogBox - create a dynamic dialog box
  */
-int PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE data, PVOID dlgdata )
+int PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate, PVOID dlgdata )
 {
     long rc;
     HWND handle;
 
-    handle = WinCreateDlg( HWND_DESKTOP, hwnd, fn, (WPDLGTEMPLATE)data, dlgdata );
+    handle = WinCreateDlg( HWND_DESKTOP, hwnd, fn, (WPDLGTEMPLATE)dlgtemplate, dlgdata );
     if( !handle ) {
         return( 0 );
     }
@@ -303,8 +305,8 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
                                 const char *captiontext, WORD pointsize,
                                 const char *typeface, size_t *datalen )
 {
-    TEMPLATE_HANDLE     data;
-    TEMPLATE_HANDLE     new;
+    TEMPLATE_HANDLE     old_dlgtemplate;
+    TEMPLATE_HANDLE     new_dlgtemplate;
     ULONG               frame_flags;
     char                *buf;
     PRESPARAMS          *pdata;
@@ -343,15 +345,15 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
         }
     }
 
-    data = PMDialogTemplate( TEMPLATE_TYPE, CODE_PAGE, 0xffff );
-    if( data == NULL ) {
+    old_dlgtemplate = PMDialogTemplate( TEMPLATE_TYPE, CODE_PAGE, 0xffff );
+    if( old_dlgtemplate == NULL ) {
         return( NULL );
     }
 
     frame_flags = style & 0x0000ffff;
     style = (style & 0xffff0000) | WS_SAVEBITS | FS_NOBYTEALIGN | FS_DLGBORDER;
 
-    new = PMAddControl( data, style, x, y, cx, cy,
+    new_dlgtemplate = PMAddControl( old_dlgtemplate, style, x, y, cx, cy,
                         0, 1, (ULONG)WC_FRAME, NULL, captiontext, pdata,
                         psize, &frame_flags, sizeof( ULONG ) );
 
@@ -359,19 +361,19 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
         PMfree( pdata );
     }
 
-    if( new == NULL ) {
-        PMfree( data );
+    if( new_dlgtemplate == NULL ) {
+        PMfree( old_dlgtemplate );
     }
 
-    return( new );
+    return( new_dlgtemplate );
 }
 
-TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y,
+TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y,
                              int cx, int cy, WORD id, DWORD style,
                              const char *classname, const char *captiontext,
-                             BYTE infolen, const BYTE *infodata, size_t *datalen )
+                             const void *infodata, BYTE infodatalen, size_t *datalen )
 {
-    TEMPLATE_HANDLE     new;
+    TEMPLATE_HANDLE     new_dlgtemplate;
     ULONG               nclass;
 
     datalen = datalen;
@@ -381,22 +383,22 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y,
         classname = NULL;
     }
 
-    new = PMAddControl( data, style, x, y, cx, cy, id, 0, nclass, classname, captiontext, NULL, 0, infodata, infolen );
+    new_dlgtemplate = PMAddControl( old_dlgtemplate, style, x, y, cx, cy, id, 0, nclass, classname, captiontext, NULL, 0, infodata, infodatalen );
 
-    if( new == NULL ) {
-        PMfree( data );
+    if( new_dlgtemplate == NULL ) {
+        PMfree( old_dlgtemplate );
     }
 
-    return( new );
+    return( new_dlgtemplate );
 }
 
-TEMPLATE_HANDLE DoneAddingControls( TEMPLATE_HANDLE data )
+TEMPLATE_HANDLE DoneAddingControls( TEMPLATE_HANDLE dlgtemplate )
 {
-    return( PMDoneAddingControls( data ) );
+    return( PMDoneAddingControls( dlgtemplate ) );
 }
 
-int DynamicDialogBox( PFNWP fn, WPI_INST inst, HWND hwnd, TEMPLATE_HANDLE data, LPARAM lparam )
+int DynamicDialogBox( PFNWP fn, WPI_INST inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate, LPARAM lparam )
 {
     inst = inst;
-    return( PMDynamicDialogBox( fn, hwnd, data, (PVOID)lparam ) );
+    return( PMDynamicDialogBox( fn, hwnd, dlgtemplate, (PVOID)lparam ) );
 }

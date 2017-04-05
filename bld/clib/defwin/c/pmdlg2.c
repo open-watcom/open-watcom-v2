@@ -37,7 +37,7 @@
 #include <ctype.h>
 #include "win.h"
 
-static GLOBALHANDLE     dataSeg;
+static void             *dataSeg;
 static ULONG            dataSegLen;
 
 #define DISPLAY(x)      WinMessageBox( HWND_DESKTOP, NULL, x, "Error", 0, MB_APPLMODAL | MB_NOICON | MB_OK | MB_MOVEABLE );
@@ -45,20 +45,22 @@ static ULONG            dataSegLen;
 /*
  * copyString - copy from string to memory
  */
-static char _WCI86FAR *copyString( char _WCI86FAR *mem, const char _WCI86FAR *str, int len )
+static WPCHAR copyString( WPCHAR mem, const char *str, int len )
 {
-    if ( !mem || !str ) return( mem );
+    if( !mem || !str )
+        return( mem );
     _FARmemcpy( mem, str, len );
-    return( mem+len );
+    return( mem + len );
 
 } /* copyString */
 
 /*
  * safeStrLen - measure sizeof string (even NULL );
  */
-static long safeStrLen( const char _WCI86FAR *str )
+static long safeStrLen( const char *str )
 {
-    if ( !str ) return( 0 );
+    if ( !str )
+        return( 0 );
     return( strlen( str ) );
 
 } /* safeStrLen */
@@ -66,194 +68,195 @@ static long safeStrLen( const char _WCI86FAR *str )
 /*
  * _DialogTemplate - build a dialog template
  */
-GLOBALHANDLE _DialogTemplate( USHORT temptype, USHORT codepage, USHORT focus )
+TEMPLATE_HANDLE _DialogTemplate( USHORT temptype, USHORT codepage, USHORT focus )
 {
-    GLOBALHANDLE        data;
+    TEMPLATE_HANDLE     dlgtemplate;
     UINT                blocklen;
-    DLGTEMPLATE _WCI86FAR *dt;
+    WPDLGTEMPLATE       dt;
 
 
     /*
      * get size of block and allocate memory
      */
 
-    blocklen = sizeof( DLGTEMPLATE );
+    blocklen = sizeof( WDLGTEMPLATE );
     dataSegLen = 0;
     dataSeg = NULL;
 
-    data = PMmalloc( blocklen );
-    if( !data ) return( NULL );
+    dlgtemplate = PMmalloc( blocklen );
+    if( dlgtemplate == NULL )
+        return( NULL );
 
     /*
      * set up template
      */
-    dt = data;
-    dt->cbTemplate  = blocklen - sizeof( DLGITEMTEMPLATE );
+    dt = (WPDLGTEMPLATE)dlgtemplate;
+    dt->cbTemplate = blocklen - sizeof( WDLGITEMTEMPLATE );
     dt->type = temptype;
     dt->codepage = codepage;
     dt->offadlgti = dt->cbTemplate;
     dt->fsTemplateStatus = 1; //RESERVED;
     dt->iItemFocus = focus;
     dt->coffPresParams = RESERVED;
-    return( data );
+    return( dlgtemplate );
 
 } /* _DialogTemplate */
 
 /*
  * _AddControl - add a control to a dialog
  */
-GLOBALHANDLE _AddControl( GLOBALHANDLE data, long style, USHORT dtx,
-                        USHORT dty, USHORT dtcx, USHORT dtcy, USHORT id,
-                        USHORT children, ULONG nclass, const char *class,
-                        const char *text, const char *presparms, const char *ctldata,
-                        ULONG *ctldatlen )
+TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE old_dlgtemplate, long style, USHORT x,
+                        USHORT y, USHORT cx, USHORT cy, USHORT id,
+                        USHORT children, ULONG nclass,
+                        const char *class, const char *text, const char *presparms,
+                        const void *ctldata, ULONG ctldatalen )
 {
-    GLOBALHANDLE        new;
-    UINT                blocklen, classlen, textlen, ctldatalen, ddatalen;
-    DLGTEMPLATE         _WCI86FAR *dt;
-    DLGITEMTEMPLATE     _WCI86FAR *dit;
-    char                _WCI86FAR *dlgtemp;
+    TEMPLATE_HANDLE     new_dlgtemplate;
+    UINT                blocklen, classlen, textlen, ddatalen;
+    WPDLGTEMPLATE       dt;
+    WPDLGITEMTEMPLATE   dit;
+    WPCHAR              dlgtemp;
+    ULONG               _ctldata;
 
     presparms = presparms;
     /*
      * compute size of block, reallocate block to hold this stuff
      */
     classlen = SLEN( class );
-    if ( classlen ) {
+    if( classlen ) {
         classlen++;
     }
     textlen  = SLEN( text );
-    if ( textlen ) {
+    if( textlen ) {
         textlen++;
     }
 
-    if ( !ctldata ) {
-        if ( ctldatlen ) {
-            ctldatalen = sizeof( ULONG );
-        } else {
-            ctldatalen = 0;
-        }
-    } else {
-        ctldatalen = (UINT)ctldatlen;
+    if( ctldata == NULL ) {
+        _ctldata = ctldatalen;
+        ctldatalen = sizeof( ULONG );
     }
 
-    dt = data;
-    blocklen = sizeof( DLGITEMTEMPLATE ) + dt->cbTemplate;
+    dt = (WPDLGTEMPLATE)old_dlgtemplate;
+    blocklen = sizeof( WDLGITEMTEMPLATE ) + dt->cbTemplate;
     ddatalen =  classlen + textlen + ctldatalen + dataSegLen;
 
-    new = PMrealloc( data, blocklen );
+    new_dlgtemplate = PMrealloc( old_dlgtemplate, blocklen );
     dataSeg = PMrealloc( dataSeg, ddatalen );
-    if( !new || !dataSeg ) {
-        if ( dataSeg ) PMfree( dataSeg );
-        if ( new ) PMfree( new );
+    if( new_dlgtemplate == NULL || !dataSeg ) {
+        if( dataSeg )
+            PMfree( dataSeg );
+        if( new_dlgtemplate != NULL )
+            PMfree( new_dlgtemplate );
         return( NULL );
     }
-    dt = new;
 
     /*
      * point to start of item template, and set up values
      */
-    dit = ( DLGITEMTEMPLATE *)( (char *)dt + dt->cbTemplate );
-    dt->cbTemplate += sizeof( DLGITEMTEMPLATE );
+    dt = (WPDLGTEMPLATE)new_dlgtemplate;
+    dit = (WPDLGITEMTEMPLATE)( (WPCHAR)new_dlgtemplate + dt->cbTemplate );
+    dt->cbTemplate += sizeof( WDLGITEMTEMPLATE );
 
     dit->fsItemStatus = RESERVED;
     dit->cChildren  = children;
     dit->flStyle = style | WS_VISIBLE;
     dit->cchText = textlen;
-    if ( textlen ) {
+    if( textlen ) {
         dit->offText = dataSegLen;
     } else {
         dit->offText = RESERVED;
     }
     dit->cchClassName = classlen;
-    if ( classlen ) {
+    if( classlen ) {
         dit->offClassName = dataSegLen + textlen;
     } else {
         dit->offClassName = nclass & 0xffff;
     }
-    dit->x = dtx;
-    dit->y = dty;
-    dit->cx = dtcx;
-    dit->cy = dtcy;
+    dit->x = x;
+    dit->y = y;
+    dit->cx = cx;
+    dit->cy = cy;
     dit->id = id;
     dit->offPresParams = 0xffff; //RESERVED;
-    if ( ctldatalen ) {
+    if( ctldatalen ) {
         dit->offCtlData = dataSegLen + textlen + classlen;
     } else {
         dit->offCtlData = RESERVED;
     }
 
-    dlgtemp = (char *)dataSeg + dataSegLen;
+    dlgtemp = (WPCHAR)dataSeg + dataSegLen;
 
     /*
      * add extra strings to block
      */
-    if ( textlen ) {
+    if( textlen ) {
         dlgtemp = copyString( dlgtemp, text, textlen );
     }
-    if ( classlen ) {
+    if( classlen ) {
         dlgtemp = copyString( dlgtemp, class, classlen );
     }
-    if ( ctldatalen ) {
-        if ( ctldata != NULL ) {
-             dlgtemp = copyString( dlgtemp, ctldata, ctldatalen );
+    if( ctldatalen ) {
+        if( ctldata != NULL ) {
+             dlgtemp = (WPCHAR)_FARmemcpy( dlgtemp, ctldata, ctldatalen );
         } else {
-             dlgtemp = (char*)_FARmemcpy( dlgtemp, &ctldatlen, ctldatlen ) + ctldatlen;
+             dlgtemp = (WPCHAR)_FARmemcpy( dlgtemp, &_ctldata, ctldatalen );
         }
+        dlgtemp += ctldatalen;
     }
     dataSegLen = ddatalen;
 
-    return( new );
+    return( new_dlgtemplate );
 
 } /* _AddControl */
 
 /*
  * _DoneAddingControls - called when there are no more controls
  */
-GLOBALHANDLE _DoneAddingControls( GLOBALHANDLE data )
+TEMPLATE_HANDLE _DoneAddingControls( TEMPLATE_HANDLE old_dlgtemplate )
 {
-    DLGITEMTEMPLATE     *temp;
-    DLGTEMPLATE *dt;
+    WPDLGITEMTEMPLATE   dit;
+    WPDLGTEMPLATE       dt;
     int                 record;
     int                 max;
+    TEMPLATE_HANDLE     new_dlgtemplate;
 
-    if ( !data || !dataSeg ) {
+    if ( old_dlgtemplate == NULL || !dataSeg ) {
         return( NULL );
     }
-    temp = (DLGITEMTEMPLATE *)( (char *)data + ( sizeof( DLGTEMPLATE ) - sizeof( DLGITEMTEMPLATE ) ) );
-    dt = data;
-    max = ( dt->cbTemplate - sizeof( DLGTEMPLATE ) + sizeof( DLGITEMTEMPLATE ) )
-                / sizeof( DLGITEMTEMPLATE );
+    dt = (WPDLGTEMPLATE)old_dlgtemplate;
+    dit = (WPDLGITEMTEMPLATE)( (WPCHAR)old_dlgtemplate + ( sizeof( WDLGTEMPLATE ) - sizeof( WDLGITEMTEMPLATE ) ) );
+    max = ( dt->cbTemplate - sizeof( WDLGTEMPLATE ) + sizeof( WDLGITEMTEMPLATE ) ) / sizeof( WDLGITEMTEMPLATE );
     for( record = 0; record < max; record++ ) {
-        if ( temp[record].cchText ) {
-            temp[record].offText += dt->cbTemplate;
+        if( dit[record].cchText ) {
+            dit[record].offText += dt->cbTemplate;
         }
-        if ( temp[record].offCtlData ) {
-            temp[record].offCtlData += dt->cbTemplate;
+        if( dit[record].offCtlData ) {
+            dit[record].offCtlData += dt->cbTemplate;
         }
-        if ( temp[record].cchClassName ) {
-            temp[record].offClassName += dt->cbTemplate;
+        if( dit[record].cchClassName ) {
+            dit[record].offClassName += dt->cbTemplate;
         }
     }
-    data= PMrealloc( data, dt->cbTemplate + dataSegLen );
-    dt = data;
-    memcpy( (DLGITEMTEMPLATE *)( (char *)data + dt->cbTemplate ), dataSeg, dataSegLen );
+    new_dlgtemplate = PMrealloc( old_dlgtemplate, dt->cbTemplate + dataSegLen );
+    dt = new_dlgtemplate;
+    dit = (WPDLGITEMTEMPLATE)( (WPCHAR)new_dlgtemplate + dt->cbTemplate );
+    memcpy( dit, dataSeg, dataSegLen );
     dt->cbTemplate += dataSegLen;
     PMfree( dataSeg );
     dataSeg = NULL;
-    return( data );
+    return( new_dlgtemplate );
 
 } /* _DoneAddingControls */
 
 /*
  * _DynamicDialogBox - create a dynamic dialog box
  */
-int _DynamicDialogBox( PFNWP fn, HWND hwnd, GLOBALHANDLE data )
+int _DynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate )
 {
     long rc;
     HWND handle;
 
-    handle = WinCreateDlg( HWND_DESKTOP, hwnd, fn, (PDLGTEMPLATE)data, NULL );
+    handle = WinCreateDlg( HWND_DESKTOP, hwnd, fn, (WPDLGTEMPLATE)dlgtemplate, NULL );
     if ( !handle ) {
         DISPLAY("Window Creation Error Occurred");
         return( 0 );

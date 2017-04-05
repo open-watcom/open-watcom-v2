@@ -30,9 +30,14 @@
 ****************************************************************************/
 
 
-#define ADJUST_DLGLEN( a )
+#include "_pmdlg.h"
 
+#ifdef _M_I86
+#define _FARmemcpy              _fmemcpy
+#else
 #define _FARmemcpy              memcpy
+#endif
+
 #define SLEN( a )               (safeStrLen((a))+0)
 
 /*
@@ -43,20 +48,9 @@
 #define RESERVED                0
 
 /*
- * the pm data structures
- */
-#define WDLGTEMPLATE            DLGTEMPLATE
-#define WDLGITEMTEMPLATE        DLGTITEM
-
-#define WPCHAR                  char *
-#define WPDLGTEMPLATE           WDLGTEMPLATE *
-#define WPDLGITEMTEMPLATE       WDLGITEMTEMPLATE *
-
-/*
  * I am not about to change this in ALL the code, and since I am not including
  * windows.h, I have defined it as such
  */
-#define TEMPLATE_HANDLE PVOID
 
 extern void         PMfree( void *ptr );
 extern void         *PMmalloc( size_t size );
@@ -65,8 +59,8 @@ extern void         *PMrealloc( void *ptr, size_t size );
 extern TEMPLATE_HANDLE  DialogTemplate( DWORD dtStyle, int x, int y, int cx, int cy,
                                 const char *menuname, const char *classname, const char *captiontext,
                                 WORD pointsize, const char *typeface, size_t *templatelen );
-extern TEMPLATE_HANDLE  AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, WORD id, DWORD style,
+extern TEMPLATE_HANDLE  AddControl( TEMPLATE_HANDLE dlgtemplate, int x, int y, int cx, int cy, WORD id, DWORD style,
                                 const char *classname, const char *captiontext,
-                                BYTE infolen, const BYTE *infodata, size_t *templatelen );
-extern TEMPLATE_HANDLE  DoneAddingControls ( TEMPLATE_HANDLE data );
-extern int              DynamicDialogBox( PFNWP fn, WPI_INST inst, HWND hwnd, TEMPLATE_HANDLE data, MPARAM lparam );
+                                const void *infodata, BYTE infodatalen, size_t *templatelen );
+extern TEMPLATE_HANDLE  DoneAddingControls ( TEMPLATE_HANDLE dlgtemplate );
+extern int              DynamicDialogBox( PFNWP fn, WPI_INST inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate, MPARAM lparam );

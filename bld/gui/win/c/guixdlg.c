@@ -79,7 +79,7 @@ void GUISetJapanese( void )
         newfont = "";
         PointSize = 0;
   #else
-        newfont = "‚l‚r –¾’©";
+        newfont = "ï¿½lï¿½r ï¿½ï¿½ï¿½ï¿½";
         PointSize = 10;
   #endif
         if( Font != NULL ) {
@@ -607,19 +607,19 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
 {
     gui_coord           pos, size;
     gui_coord           parent_pos;
-    TEMPLATE_HANDLE     data;
-    TEMPLATE_HANDLE     new;
+    TEMPLATE_HANDLE     old_dlgtemplate;
+    TEMPLATE_HANDLE     new_dlgtemplate;
     int                 i;
-    const char          *text;
+    const char          *captiontext;
     long                style;
     HWND                parent_hwnd;
     gui_control_info    *ctl_info;
     bool                got_first_focus;
     bool                in_group;
     LONG                dlg_style;
+#ifdef __OS2_PM__
     void                *pctldata;
     int                 pctldatalen;
-#ifdef __OS2_PM__
     ENTRYFDATA          edata;
 #endif
     size_t              datalen;
@@ -654,23 +654,23 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         dlg_style = MODAL_STYLE;
     }
 
-    data = DialogTemplate( dlg_style | DS_SETFONT,
+    old_dlgtemplate = DialogTemplate( dlg_style | DS_SETFONT,
                            parent_pos.x, parent_pos.y, size.x, size.y,
                            LIT( Empty ), LIT( Empty ), dlg_info->title,
                            PointSize, Font, &datalen );
-    if( data == NULL ) {
+    if( old_dlgtemplate == NULL ) {
         return( false );
     }
 
     got_first_focus = false;
     in_group = false;
     for( i = 0; i < num_controls; i++ ) {
-        pctldata = NULL;
-        pctldatalen = 0;
         ctl_info = &controls_info[i];
 #ifdef __OS2_PM__
+        pctldata = NULL;
+        pctldatalen = 0;
         if( ctl_info->control_class == GUI_EDIT ) {
-            edata.cb = sizeof(ENTRYFDATA);
+            edata.cb = sizeof( ENTRYFDATA );
             edata.cchEditLimit = 2048;
             edata.ichMinSel = 0;
             edata.ichMaxSel = 0;
@@ -682,9 +682,9 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         AdjustToDialogUnits( &pos );
         AdjustToDialogUnits( &size );
         if( ctl_info->text == NULL ) {
-            text = LIT( Empty );
+            captiontext = LIT( Empty );
         } else {
-            text = ctl_info->text;
+            captiontext = ctl_info->text;
         }
         style = GUISetControlStyle( ctl_info );
         if( !in_group ) {
@@ -693,21 +693,27 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         if( style & GUI_GROUP ) {
             in_group = !in_group;
         }
-        new = AddControl( data, pos.x, pos.y, size.x, size.y, ctl_info->id,
-                          style, GUIControls[ctl_info->control_class].classname,
-                          text, (BYTE)pctldatalen, pctldata, &datalen );
-        if( new == NULL  ) {
-            GlobalFree( data );
+#ifdef __OS2_PM__
+        new_dlgtemplate = AddControl( old_dlgtemplate, pos.x, pos.y, size.x, size.y, ctl_info->id,
+                          style, GUIControls[ctl_info->control_class].classname, captiontext,
+                          pctldata, (BYTE)pctldatalen, &datalen );
+#else
+        new_dlgtemplate = AddControl( old_dlgtemplate, pos.x, pos.y, size.x, size.y, ctl_info->id,
+                          style, GUIControls[ctl_info->control_class].classname, captiontext,
+                          NULL, 0, &datalen );
+#endif
+        if( new_dlgtemplate == NULL  ) {
+            GlobalFree( old_dlgtemplate );
             return( false );
         }
         if( GUIControlInsert( wnd, ctl_info->control_class, NULLHANDLE, ctl_info, NULL ) == NULL ) {
-            GlobalFree( data );
+            GlobalFree( old_dlgtemplate );
             return( false );
         }
-        data = new;
+        old_dlgtemplate = new_dlgtemplate;
     }
-    data = DoneAddingControls( data );
-    DynamicDialogBox( GUIDialogDlgProc, GUIMainHInst, parent_hwnd, data, (WPI_PARAM2)wnd );
+    new_dlgtemplate = DoneAddingControls( old_dlgtemplate );
+    DynamicDialogBox( GUIDialogDlgProc, GUIMainHInst, parent_hwnd, new_dlgtemplate, (WPI_PARAM2)wnd );
     return( true );
 }
 
@@ -781,7 +787,8 @@ void GUIFiniDialog( void )
 
 void GUIInitDialog( void )
 {
-    TEMPLATE_HANDLE     data;
+    TEMPLATE_HANDLE     old_dlgtemplate;
+    TEMPLATE_HANDLE     new_dlgtemplate;
     char                *cp;
     bool                font_set;
     size_t              datalen;
@@ -812,13 +819,13 @@ void GUIInitDialog( void )
 
     // create a dialog of known dialog units and use the resulting
     // size of the client area to scale subsequent screen units
-    data = DialogTemplate( MODAL_STYLE | DS_SETFONT,
+    old_dlgtemplate = DialogTemplate( MODAL_STYLE | DS_SETFONT,
                            SizeDialog.x, SizeDialog.y,
                            SizeDialog.x, SizeDialog.y, LIT( Empty ),
                            LIT( Empty ), LIT( Empty ), PointSize, Font, &datalen );
-    if( data != NULL ) {
-        data = DoneAddingControls( data );
-        DynamicDialogBox( GUIInitDialogFuncDlgProc, GUIMainHInst, NULLHANDLE, data, 0 );
+    if( old_dlgtemplate != NULL ) {
+        new_dlgtemplate = DoneAddingControls( old_dlgtemplate );
+        DynamicDialogBox( GUIInitDialogFuncDlgProc, GUIMainHInst, NULLHANDLE, new_dlgtemplate, 0 );
     }
 }
 
