@@ -37,33 +37,10 @@
 #include <ctype.h>
 #include "win.h"
 
-static void             *dataSeg;
+static char             *dataSeg;
 static ULONG            dataSegLen;
 
 #define DISPLAY(x)      WinMessageBox( HWND_DESKTOP, NULL, x, "Error", 0, MB_APPLMODAL | MB_NOICON | MB_OK | MB_MOVEABLE );
-
-/*
- * copyString - copy from string to memory
- */
-static WPCHAR copyString( WPCHAR mem, const char *str, int len )
-{
-    if( !mem || !str )
-        return( mem );
-    _FARmemcpy( mem, str, len );
-    return( mem + len );
-
-} /* copyString */
-
-/*
- * safeStrLen - measure sizeof string (even NULL );
- */
-static long safeStrLen( const char *str )
-{
-    if ( !str )
-        return( 0 );
-    return( strlen( str ) );
-
-} /* safeStrLen */
 
 /*
  * _DialogTemplate - build a dialog template
@@ -105,28 +82,28 @@ TEMPLATE_HANDLE _DialogTemplate( USHORT temptype, USHORT codepage, USHORT focus 
 /*
  * _AddControl - add a control to a dialog
  */
-TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE old_dlgtemplate, long style, USHORT x,
-                        USHORT y, USHORT cx, USHORT cy, USHORT id,
-                        USHORT children, ULONG nclass,
-                        const char *class, const char *text, const char *presparms,
+TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE old_dlgtemplate, ULONG style,
+                        int x, int y, int cx, int cy,
+                        USHORT id, USHORT children, ULONG nclass,
+                        const char *classname, const char *captiontext, const char *presparms,
                         const void *ctldata, ULONG ctldatalen )
 {
     TEMPLATE_HANDLE     new_dlgtemplate;
     UINT                blocklen, classlen, textlen, ddatalen;
     WPDLGTEMPLATE       dt;
     WPDLGITEMTEMPLATE   dit;
-    WPCHAR              dlgtemp;
+    char                *dataSegPtr;
     ULONG               _ctldata;
 
     presparms = presparms;
     /*
      * compute size of block, reallocate block to hold this stuff
      */
-    classlen = SLEN( class );
+    classlen = SLEN( classname );
     if( classlen ) {
         classlen++;
     }
-    textlen  = SLEN( text );
+    textlen = SLEN( captiontext );
     if( textlen ) {
         textlen++;
     }
@@ -142,8 +119,8 @@ TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE old_dlgtemplate, long style, USHORT
 
     new_dlgtemplate = PMrealloc( old_dlgtemplate, blocklen );
     dataSeg = PMrealloc( dataSeg, ddatalen );
-    if( new_dlgtemplate == NULL || !dataSeg ) {
-        if( dataSeg )
+    if( new_dlgtemplate == NULL || dataSeg == NULL ) {
+        if( dataSeg != NULL )
             PMfree( dataSeg );
         if( new_dlgtemplate != NULL )
             PMfree( new_dlgtemplate );
@@ -172,10 +149,10 @@ TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE old_dlgtemplate, long style, USHORT
     } else {
         dit->offClassName = nclass & 0xffff;
     }
-    dit->x = x;
-    dit->y = y;
-    dit->cx = cx;
-    dit->cy = cy;
+    dit->x = (short)x;
+    dit->y = (short)y;
+    dit->cx = (short)cx;
+    dit->cy = (short)cy;
     dit->id = id;
     dit->offPresParams = 0xffff; //RESERVED;
     if( ctldatalen ) {
@@ -184,24 +161,25 @@ TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE old_dlgtemplate, long style, USHORT
         dit->offCtlData = RESERVED;
     }
 
-    dlgtemp = (WPCHAR)dataSeg + dataSegLen;
-
     /*
      * add extra strings to block
      */
+    dataSegPtr = dataSeg + dataSegLen;
     if( textlen ) {
-        dlgtemp = copyString( dlgtemp, text, textlen );
+        memcpy( dataSegPtr, captiontext, textlen );
+        dataSegPtr += textlen;
     }
     if( classlen ) {
-        dlgtemp = copyString( dlgtemp, class, classlen );
+        memcpy( dataSegPtr, classname, classlen );
+        dataSegPtr += classlen;
     }
     if( ctldatalen ) {
         if( ctldata != NULL ) {
-             dlgtemp = (WPCHAR)_FARmemcpy( dlgtemp, ctldata, ctldatalen );
+             memcpy( dataSegPtr, ctldata, ctldatalen );
         } else {
-             dlgtemp = (WPCHAR)_FARmemcpy( dlgtemp, &_ctldata, ctldatalen );
+             memcpy( dataSegPtr, &_ctldata, ctldatalen );
         }
-        dlgtemp += ctldatalen;
+        dataSegPtr += ctldatalen;
     }
     dataSegLen = ddatalen;
 
@@ -220,7 +198,7 @@ TEMPLATE_HANDLE _DoneAddingControls( TEMPLATE_HANDLE old_dlgtemplate )
     int                 max;
     TEMPLATE_HANDLE     new_dlgtemplate;
 
-    if ( old_dlgtemplate == NULL || !dataSeg ) {
+    if ( old_dlgtemplate == NULL || dataSeg == NULL ) {
         return( NULL );
     }
     dt = (WPDLGTEMPLATE)old_dlgtemplate;
@@ -240,7 +218,7 @@ TEMPLATE_HANDLE _DoneAddingControls( TEMPLATE_HANDLE old_dlgtemplate )
     new_dlgtemplate = PMrealloc( old_dlgtemplate, dt->cbTemplate + dataSegLen );
     dt = new_dlgtemplate;
     dit = (WPDLGITEMTEMPLATE)( (WPCHAR)new_dlgtemplate + dt->cbTemplate );
-    memcpy( dit, dataSeg, dataSegLen );
+    _FARmemcpy( dit, dataSeg, dataSegLen );
     dt->cbTemplate += dataSegLen;
     PMfree( dataSeg );
     dataSeg = NULL;
@@ -257,7 +235,7 @@ int _DynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate )
     HWND handle;
 
     handle = WinCreateDlg( HWND_DESKTOP, hwnd, fn, (WPDLGTEMPLATE)dlgtemplate, NULL );
-    if ( !handle ) {
+    if ( handle == NULLHANDLE ) {
         DISPLAY("Window Creation Error Occurred");
         return( 0 );
     }

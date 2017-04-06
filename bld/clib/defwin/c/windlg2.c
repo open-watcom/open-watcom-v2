@@ -102,20 +102,20 @@ TEMPLATE_HANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
 {
     TEMPLATE_HANDLE     dlgtemplate;
     size_t              blocklen;
-    UINT                menulen, classlen, captionlen, typefacelen;
+    UINT                menulen, classlen, textlen, typefacelen;
     WPCHAR              template;
-    WPCHAR              dlgtemp;
     WPDLGTEMPLATE       dt;
 
     *templatelen = 0;
+
     /*
      * get size of block and allocate memory
      */
     menulen = SLEN( menuname );
     classlen = SLEN( classname );
-    captionlen = SLEN( captiontext );
+    textlen = SLEN( captiontext );
 
-    blocklen = sizeof( WDLGTEMPLATE ) + menulen + classlen + captionlen;
+    blocklen = sizeof( WDLGTEMPLATE ) + menulen + classlen + textlen;
 
     if( style & DS_SETFONT ) {
         typefacelen = SLEN( typeface );
@@ -126,10 +126,10 @@ TEMPLATE_HANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
 
     dlgtemplate = GlobalAlloc( GMEM_MOVEABLE | GMEM_ZEROINIT, blocklen );
     if( dlgtemplate == NULL )
-        return( (GLOBALHANDLE)NULL );
+        return( (TEMPLATE_HANDLE)NULL );
 
-    template = GetPtrGlobalLock( dlgtemplate );
     *templatelen = blocklen;
+    template = GetPtrGlobalLock( dlgtemplate );
 
     /*
      * set up template
@@ -145,17 +145,17 @@ TEMPLATE_HANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     /*
      * add extra strings to block
      */
-    dlgtemp = (WPCHAR)( dt + 1 );
-    dlgtemp = copyString( dlgtemp, menuname, menulen );
-    dlgtemp = copyString( dlgtemp, classname, classlen );
-    dlgtemp = copyString( dlgtemp, captiontext, captionlen );
+    template = (WPCHAR)( dt + 1 );
+    template = copyString( template, menuname, menulen );
+    template = copyString( template, classname, classlen );
+    template = copyString( template, captiontext, textlen );
 
     /*
      * add font data (if needed)
      */
     if( style & DS_SETFONT ) {
-        dlgtemp = copyWord( dlgtemp, pointsize );
-        dlgtemp = copyString( dlgtemp, typeface, typefacelen );
+        template = copyWord( template, pointsize );
+        template = copyString( template, typeface, typefacelen );
     }
 
     GlobalUnlock( dlgtemplate );
@@ -171,7 +171,8 @@ TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y, int 
 {
     TEMPLATE_HANDLE     new_dlgtemplate;
     size_t              blocklen;
-    UINT                classlen, textlen;
+    UINT                classlen;
+    UINT                textlen;
     WPCHAR              template;
     WPDLGTEMPLATE       dt;
     WPDLGITEMTEMPLATE   dit;
@@ -228,10 +229,10 @@ TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y, int 
     dit->ditY = (short)y;
     dit->ditCX = (short)cx;
     dit->ditCY = (short)cy;
-    dit->ditID = (WORD)id;
+    dit->ditID = id;
 
     /*
-     * append extra data
+     * append string data
      */
 
     ditstr = (WPCHAR)( dit + 1 );
@@ -246,6 +247,11 @@ TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y, int 
         ditstr = copyString( ditstr, classname, classlen );
     }
     ditstr = copyString( ditstr, captiontext, textlen );
+
+    /*
+     * append extra data
+     */
+
 #ifdef __WINDOWS__
     *ditstr++ = infodatalen;
 #else

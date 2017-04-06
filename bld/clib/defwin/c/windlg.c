@@ -38,7 +38,8 @@
 #define MAXDLGITEMDATA  (1)
 
 typedef struct {
-   int      x, y, cx, cy, id;
+   int      x, y, cx, cy;
+   WORD     id;
    DWORD    style;
    char     *classname, *captiontext;
    BYTE     infodata[MAXDLGITEMDATA];
@@ -97,7 +98,8 @@ BOOL CALLBACK _GetIntervalBox( HWND hwnd, UINT message, WPARAM wparam, LPARAM lp
  */
 void _GetClearInterval( void )
 {
-    TEMPLATE_HANDLE     old_dlgtemplate, new_dlgtemplate;
+    TEMPLATE_HANDLE     old_dlgtemplate;
+    TEMPLATE_HANDLE     new_dlgtemplate;
     int                 i;
     size_t              templatelen;
 

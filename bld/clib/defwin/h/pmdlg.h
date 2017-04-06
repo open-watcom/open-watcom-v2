@@ -48,10 +48,14 @@
  * not to make to many modifcations.  The following macros handle some
  * minor differences.
  */
-#define _FARmemcpy      memcpy
-#define SLEN( a )       (safeStrLen((a))+0)
 
-typedef BYTE INFOTYPE;
+#ifdef _M_I86
+#define _FARmemcpy      _fmemcpy
+#else
+#define _FARmemcpy      memcpy
+#endif
+
+#define SLEN( a )       (((a)!=NULL)?strlen((a)):0)
 
 /*
  * OS/2 PM defaults,
@@ -60,12 +64,8 @@ typedef BYTE INFOTYPE;
 #define TEMP_TYPE       0
 #define RESERVED        0
 
-#if !defined( WPI_INTERFAC )
-typedef void *          LPVOID;
-#endif
-
 extern TEMPLATE_HANDLE  _DialogTemplate( USHORT temptype, USHORT codepage, USHORT focus );
-extern TEMPLATE_HANDLE  _AddControl( TEMPLATE_HANDLE dlgtemplate, long style,
+extern TEMPLATE_HANDLE  _AddControl( TEMPLATE_HANDLE dlgtemplate, ULONG style,
                             int x, int y, int cx, int cy, USHORT id, USHORT children, ULONG nclass,
                             const char *classname, const char *captiontext, const char *presparms,
                             const void *ctldata, ULONG ctldatalen );

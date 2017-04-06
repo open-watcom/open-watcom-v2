@@ -74,39 +74,37 @@ typedef struct {
  */
 
 static itemdata _getint[] = {
-{  12,  45, 215, 45, DID_SLBC_DLG, 6,
-   FS_DLGBORDER | WS_CLIPSIBLINGS | WS_VISIBLE | WS_SAVEBITS,
-   (ULONG)WC_FRAME, NULL , "Set Number Of Lines Between Clears", "",
-   NULL, FCF_SYSMENU | FCF_TITLEBAR },
-{  4,  29, 150, 8, 101, 0,
+{   12,  45, 215, 45, DID_SLBC_DLG, 6,
+    FS_DLGBORDER | WS_CLIPSIBLINGS | WS_VISIBLE | WS_SAVEBITS,
+    (ULONG)WC_FRAME, NULL , "Set Number Of Lines Between Clears", "",
+    NULL, FCF_SYSMENU | FCF_TITLEBAR },
+{   4,  29, 150, 8, 101, 0,
     SS_TEXT | DT_LEFT,
     (ULONG)WC_STATIC, NULL, "Number Of Lines Between Clears:", "" ,
     "", 0 },
-{  157,  29, 47, 8, DID_SLBC_FIELD, 0,
+{   157,  29, 47, 8, DID_SLBC_FIELD, 0,
     ES_RIGHT | ES_MARGIN | WS_TABSTOP,
     (ULONG)WC_ENTRYFIELD, NULL, "10000", "" ,
     "", 0 },
-{  4,  4, 40, 14, DID_OK, 0,
+{   4,  4, 40, 14, DID_OK, 0,
     BS_PUSHBUTTON | BS_AUTOSIZE | WS_TABSTOP,
     (ULONG)WC_BUTTON, NULL, "~OK", "" ,
     "", 0 },
-{  58,  4, 40, 14, DID_DEFAULT, 0,
+{   58,  4, 40, 14, DID_DEFAULT, 0,
     BS_PUSHBUTTON | BS_AUTOSIZE | WS_TABSTOP,
     (ULONG)WC_BUTTON, NULL, "~Default", "" ,
     "", 0 },
-{  112,  4, 40, 14, DID_CANCEL, 0,
+{   112,  4, 40, 14, DID_CANCEL, 0,
     BS_PUSHBUTTON | BS_AUTOSIZE | WS_TABSTOP,
     (ULONG)WC_BUTTON, NULL, "Cancel", "" ,
     "", 0 },
-{  166,  4, 40, 14, DID_HELP, 0,
+{   166,  4, 40, 14, DID_HELP, 0,
     BS_HELP | BS_NOPOINTERFOCUS | WS_TABSTOP,
     (ULONG)WC_BUTTON, NULL, "Help", "" ,
     "", 0 },
 };
 
 #define MAX_INT_ITEMS sizeof( _getint ) / sizeof( itemdata )
-
-char *ultoa( unsigned long int __value, char *__buf, int __radix );
 
 static char *titleName = "Open Watcom Default Windowing System";
 static char *helpMsg = "Enter the number of lines of text you would like to keep in the window at any time";
