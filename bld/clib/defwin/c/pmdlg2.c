@@ -115,7 +115,7 @@ TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE old_dlgtemplate, ULONG style,
 
     dt = (WPDLGTEMPLATE)old_dlgtemplate;
     blocklen = sizeof( WDLGITEMTEMPLATE ) + dt->cbTemplate;
-    ddatalen =  classlen + textlen + ctldatalen + dataSegLen;
+    ddatalen = classlen + textlen + ctldatalen + dataSegLen;
 
     new_dlgtemplate = PMrealloc( old_dlgtemplate, blocklen );
     dataSeg = PMrealloc( dataSeg, ddatalen );
@@ -175,8 +175,10 @@ TEMPLATE_HANDLE _AddControl( TEMPLATE_HANDLE old_dlgtemplate, ULONG style,
     }
     if( ctldatalen ) {
         if( ctldata != NULL ) {
+             // copy data array
              memcpy( dataSegPtr, ctldata, ctldatalen );
         } else {
+             // copy ULONG value
              memcpy( dataSegPtr, &_ctldata, ctldatalen );
         }
         dataSegPtr += ctldatalen;
@@ -198,7 +200,7 @@ TEMPLATE_HANDLE _DoneAddingControls( TEMPLATE_HANDLE old_dlgtemplate )
     int                 max;
     TEMPLATE_HANDLE     new_dlgtemplate;
 
-    if ( old_dlgtemplate == NULL || dataSeg == NULL ) {
+    if( old_dlgtemplate == NULL || dataSeg == NULL ) {
         return( NULL );
     }
     dt = (WPDLGTEMPLATE)old_dlgtemplate;
@@ -216,7 +218,7 @@ TEMPLATE_HANDLE _DoneAddingControls( TEMPLATE_HANDLE old_dlgtemplate )
         }
     }
     new_dlgtemplate = PMrealloc( old_dlgtemplate, dt->cbTemplate + dataSegLen );
-    dt = new_dlgtemplate;
+    dt = (WPDLGTEMPLATE)new_dlgtemplate;
     dit = (WPDLGITEMTEMPLATE)( (WPCHAR)new_dlgtemplate + dt->cbTemplate );
     _FARmemcpy( dit, dataSeg, dataSegLen );
     dt->cbTemplate += dataSegLen;

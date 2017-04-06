@@ -37,12 +37,13 @@
 #ifdef __WINDOWS__
 
 #define _FARmemcpy              _fmemcpy
-#define SLEN( a )               (strlen((a))+1)
+#define SLEN( a )               (((a)!=NULL)?strlen((a))+1:1)
 
 #else
 
 #define _FARmemcpy              memcpy
-#define SLEN( a )               (strlen((a))*2+2)
+#define SLEN( a )               (((a)!=NULL)?strlen((a))*2+2:2)
+//#define SLEN( a )               (((a)!=NULL)?2 * MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, (a), -1, NULL, 0 ):2)
 
 #endif
 

@@ -40,6 +40,8 @@
  */
 static WPCHAR copyString( WPCHAR mem, const char *str, int len )
 {
+    if( str == NULL )
+        str = "";
 #ifdef __WINDOWS__
     _FARmemcpy( mem, str, len );
     return( mem + len );
@@ -52,6 +54,9 @@ static WPCHAR copyString( WPCHAR mem, const char *str, int len )
         str++;
     }
     return( mem );
+//    // convert ANSI or DBCS string to Unicode properly
+//    MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, str, -1, (LPWSTR)mem, len );
+//    return( mem + len );
 #endif
 
 } /* copyString */
@@ -105,6 +110,9 @@ TEMPLATE_HANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     UINT                menulen, classlen, textlen, typefacelen;
     WPCHAR              template;
     WPDLGTEMPLATE       dt;
+#ifndef __WINDOWS__
+    unsigned char       class_ordinal;
+#endif
 
     *templatelen = 0;
 
@@ -112,7 +120,16 @@ TEMPLATE_HANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
      * get size of block and allocate memory
      */
     menulen = SLEN( menuname );
+#ifdef __WINDOWS__
     classlen = SLEN( classname );
+#else
+    class_ordinal = getClassOrdinal( classname );
+    if( class_ordinal > 0 ) {
+        classlen = 4;
+    } else {
+        classlen = SLEN( classname );
+    }
+#endif
     textlen = SLEN( captiontext );
 
     blocklen = sizeof( WDLGTEMPLATE ) + menulen + classlen + textlen;
@@ -147,7 +164,16 @@ TEMPLATE_HANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
      */
     template = (WPCHAR)( dt + 1 );
     template = copyString( template, menuname, menulen );
+#ifdef __WINDOWS__
     template = copyString( template, classname, classlen );
+#else
+    if( class_ordinal > 0 ) {
+        template = copyWord( template, -1 );
+        template = copyWord( template, class_ordinal );
+    } else {
+        template = copyString( template, classname, classlen );
+    }
+#endif
     template = copyString( template, captiontext, textlen );
 
     /*

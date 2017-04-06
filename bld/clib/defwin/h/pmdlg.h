@@ -34,6 +34,14 @@
 
 #include "_pmdlg.h"
 
+#ifdef _M_I86
+#define _FARmemcpy      _fmemcpy
+#else
+#define _FARmemcpy      memcpy
+#endif
+
+#define SLEN( a )       (((a)!=NULL)?strlen((a)):0)
+
 /*
  * Below are the general memory manager defines, using these
  * you can specify a different memory manager without
@@ -42,20 +50,6 @@
 #define PMmalloc        malloc
 #define PMrealloc       realloc
 #define PMfree          free
-
-/*
- * The conversion of the default windowing system from WINDOWS to PM tried
- * not to make to many modifcations.  The following macros handle some
- * minor differences.
- */
-
-#ifdef _M_I86
-#define _FARmemcpy      _fmemcpy
-#else
-#define _FARmemcpy      memcpy
-#endif
-
-#define SLEN( a )       (((a)!=NULL)?strlen((a)):0)
 
 /*
  * OS/2 PM defaults,

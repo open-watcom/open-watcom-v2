@@ -335,8 +335,8 @@ extern void     _Error( HWND hwndDlg, char *caption, char *msg );
 #endif
 extern int      _MessageLoop( BOOL );
 extern int      _BlockingMessageLoop( BOOL );
-extern void _WCI86FAR *_MemAlloc( unsigned );
-extern void _WCI86FAR *_MemReAlloc( void _WCI86FAR *ptr, unsigned size );
+extern void     _WCI86FAR *_MemAlloc( unsigned );
+extern void     _WCI86FAR *_MemReAlloc( void _WCI86FAR *ptr, unsigned size );
 extern void     _MemFree( void _WCI86FAR * );
 extern void     _NewCursor( LPWDATA, cursors );
 extern void     _DisplayCursor( LPWDATA w );

@@ -41,7 +41,8 @@ typedef struct {
    int      x, y, cx, cy;
    WORD     id;
    DWORD    style;
-   char     *classname, *captiontext;
+   char     *classname;
+   char     *captiontext;
    BYTE     infodata[MAXDLGITEMDATA];
    BYTE     infodatalen;
 } itemdata;
@@ -53,7 +54,7 @@ static itemdata _getint[] = {
 
 { 30,  38, 36, 12, IDOK, BS_DEFPUSHBUTTON | WS_TABSTOP | WS_GROUP, "BUTTON", "&OK", { 0 }, 0 },
 
-{ 84,  38, 36, 12, IDCANCEL, BS_PUSHBUTTON | WS_TABSTOP | WS_GROUP, "BUTTON", "&Cancel", { 0 }, 0 },
+{ 84,  38, 36, 12, IDCANCEL, BS_PUSHBUTTON | WS_TABSTOP | WS_GROUP, "BUTTON", "&Cancel", { 0 }, 0 }
 };
 
 #define MAX_INT_ITEMS sizeof( _getint ) / sizeof( itemdata )
