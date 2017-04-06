@@ -39,21 +39,23 @@
   #define TEMPLATE_LOCK(t)      t
   #define TEMPLATE_UNLOCK(t)
   #define WPTR                  __far *
+  #define WPTEMPLATE            LPCSTR
 #else
   #define ADJUST_DLGLEN(a)      (a) = _AdjustUp( a, 4 )
   #define TEMPLATE_LOCK(t)      GlobalLock(t)
   #define TEMPLATE_UNLOCK(t)    GlobalUnlock(t)
   #define WPTR                  *
+  #define WPTEMPLATE            const void *
 #endif
 
-#define WPCHAR                char WPTR
-#define WPDLGTEMPLATE         WDLGTEMPLATE WPTR
-#define WPDLGTEMPLATEEX       WDLGTEMPLATEEX WPTR
-#define WPDLGITEMTEMPLATE     WDLGITEMTEMPLATE WPTR
-#define WPDLGITEMTEMPLATEEX   WDLGITEMTEMPLATEEX WPTR
-#define WPFONTINFOEX          WFONTINFOEX WPTR
+#define WPCHAR                  char WPTR
+#define WPDLGTEMPLATE           WDLGTEMPLATE WPTR
+#define WPDLGTEMPLATEEX         WDLGTEMPLATEEX WPTR
+#define WPDLGITEMTEMPLATE       WDLGITEMTEMPLATE WPTR
+#define WPDLGITEMTEMPLATEEX     WDLGITEMTEMPLATEEX WPTR
+#define WPFONTINFOEX            WFONTINFOEX WPTR
 
-#define TEMPLATE_HANDLE     GLOBALHANDLE
+#define TEMPLATE_HANDLE         GLOBALHANDLE
 
 #include "pushpck1.h"
 typedef struct {
