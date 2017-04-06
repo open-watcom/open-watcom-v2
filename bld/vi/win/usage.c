@@ -32,7 +32,7 @@
 
 #include "vi.h"
 #include "usage.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -83,14 +83,14 @@ WINEXPORT BOOL CALLBACK UsageProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
  */
 void UsageDialog( char **list, char *msg, int cnt )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
 
     usageList = list;
     usageStr = msg;
     usageCnt = cnt;
 
-    proc = MakeDlgProcInstance( UsageProc, InstanceHandle );
-    DialogBox( InstanceHandle, "Usage", root_window_id, (DLGPROC)proc );
-    FreeProcInstance( proc );
+    dlgproc = MakeProcInstance_DLG( UsageProc, InstanceHandle );
+    DialogBox( InstanceHandle, "Usage", root_window_id, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 
 } /* UsageDialog */

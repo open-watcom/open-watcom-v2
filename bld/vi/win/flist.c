@@ -33,7 +33,7 @@
 
 #include "vi.h"
 #include "filelist.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -153,11 +153,11 @@ WINEXPORT BOOL CALLBACK FileListProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM 
 
 vi_rc EditFileFromList( void )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
     vi_rc       rc;
 
-    proc = MakeDlgProcInstance( FileListProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "FILELIST", root_window_id, (DLGPROC)proc );
-    FreeProcInstance( proc );
+    dlgproc = MakeProcInstance_DLG( FileListProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "FILELIST", root_window_id, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
     return( rc );
 }

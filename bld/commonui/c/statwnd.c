@@ -38,7 +38,7 @@
 #include "statwnd.h"
 #include "mem.h"
 #include "loadcc.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Window callback functions prototypes */

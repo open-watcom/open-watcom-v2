@@ -45,7 +45,7 @@
 #endif
 #include "ldstr.h"
 #include "uistr.gh"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Window callback functions prototypes */
@@ -110,11 +110,11 @@ static bool getLogName( char *buf, HWND hwnd )
     of.Flags = OFN_HIDEREADONLY;
 #ifndef NOUSE3D
     of.Flags |= OFN_ENABLEHOOK;
-    of.lpfnHook = (LPOFNHOOKPROC)MakeOpenFileHookProcInstance( LogSaveHook, LogCurInfo.instance );
+    of.lpfnHook = MakeProcInstance_OFNHOOK( LogSaveHook, LogCurInfo.instance );
 #endif
     rc = GetSaveFileName( &of );
 #ifndef NOUSE3D
-    FreeProcInstance( (FARPROC)of.lpfnHook );
+    FreeProcInstance_OFNHOOK( of.lpfnHook );
 #endif
     FreeRCString( (char *)of.lpstrTitle );
     if( !rc ) {
@@ -269,9 +269,9 @@ void LogConfigure( void )
     if( LogCurInfo.config.type == LOG_TYPE_BUFFER ) {
         flushLog( true );
     }
-    dlgproc = (DLGPROC)MakeDlgProcInstance( ConfigLogDlgProc, LogCurInfo.instance );
+    dlgproc = MakeProcInstance_DLG( ConfigLogDlgProc, LogCurInfo.instance );
     DialogBox( LogCurInfo.instance, "LOG_CFG_DLG", LogCurInfo.hwnd, dlgproc );
-    FreeProcInstance( (FARPROC)dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 
 } /* LogConfigure */
 
@@ -406,9 +406,9 @@ bool SpyLogOpen( void )
         break;
     case LOG_ACTION_QUERY:
         if( !access( LogCurInfo.config.curname, F_OK ) ) {
-            dlgproc = (DLGPROC)MakeDlgProcInstance( LogExistsDlgProc, LogCurInfo.instance );
+            dlgproc = MakeProcInstance_DLG( LogExistsDlgProc, LogCurInfo.instance );
             ret = DialogBox( LogCurInfo.instance, "LOG_EXISTS_DLG", LogCurInfo.hwnd, dlgproc );
-            FreeProcInstance( (FARPROC)dlgproc );
+            FreeProcInstance_DLG( dlgproc );
             switch( ret ) {
             case LOG_APPEND:
                 fmode = "wt+";

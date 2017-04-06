@@ -38,7 +38,7 @@
 #include "subclass.h"
 #include "wstatus.h"
 #include <assert.h>
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -347,13 +347,13 @@ static void addSubclasses( HWND hwnd )
 {
     int     i;
     for( i = SS_FIRST_CONTENT; i <= SS_LAST_CONTENT; i++ ) {
-        SubclassGenericAdd( GetDlgItem( hwnd, i ), (WNDPROC)MakeWndProcInstance( StaticSubclassProc, InstanceHandle ) );
+        SubclassGenericAdd( GetDlgItem( hwnd, i ), MakeProcInstance_WND( StaticSubclassProc, InstanceHandle ) );
     }
     for( i = SS_FIRST_ALIGNMENT; i <= SS_LAST_ALIGNMENT; i++ ) {
-        SubclassGenericAdd( GetDlgItem( hwnd, i ), (WNDPROC)MakeWndProcInstance( StaticSubclassProc, InstanceHandle ) );
+        SubclassGenericAdd( GetDlgItem( hwnd, i ), MakeProcInstance_WND( StaticSubclassProc, InstanceHandle ) );
     }
     for( i = SS_FIRST_COMMAND; i <= SS_LAST_COMMAND; i++ ) {
-        SubclassGenericAdd( GetDlgItem( hwnd, i ), (WNDPROC)MakeWndProcInstance( StaticSubclassProc, InstanceHandle ) );
+        SubclassGenericAdd( GetDlgItem( hwnd, i ), MakeProcInstance_WND( StaticSubclassProc, InstanceHandle ) );
     }
 }
 
@@ -402,20 +402,20 @@ WINEXPORT BOOL CALLBACK SSDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
  */
 void RefreshSSbar( void )
 {
-    static FARPROC      proc = NULL;
+    static DLGPROC      dlgproc = NULL;
 
     if( EditFlags.SSbar ) {
         if( !BAD_ID( hSSbar ) ) {
             return;
         }
-        proc = MakeDlgProcInstance( SSDlgProc, InstanceHandle );
-        hSSbar = CreateDialog( InstanceHandle, "SSBAR", root_window_id, (DLGPROC)proc );
+        dlgproc = MakeProcInstance_DLG( SSDlgProc, InstanceHandle );
+        hSSbar = CreateDialog( InstanceHandle, "SSBAR", root_window_id, dlgproc );
     } else {
         if( BAD_ID( hSSbar ) ) {
             return;
         }
         SendMessage( hSSbar, WM_CLOSE, 0, 0L );
-        FreeProcInstance( proc );
+        FreeProcInstance_DLG( dlgproc );
     }
     UpdateStatusWindow();
 

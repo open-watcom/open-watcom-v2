@@ -298,10 +298,10 @@ INT_PTR DynamicDialogBox( DLGPROCx dlgfn, HINSTANCE inst, HWND hwnd, TEMPLATE_HA
     DLGPROC     dlgproc;
     INT_PTR     rc;
 
-    dlgproc = (DLGPROC)MakeDlgProcInstance( (DLGPROCx)dlgfn, inst );
+    dlgproc = MakeProcInstance_DLG( dlgfn, inst );
     rc = DialogBoxIndirectParam( inst, TEMPLATE_LOCK( dlgtemplate ), hwnd, dlgproc, lparam );
     TEMPLATE_UNLOCK( dlgtemplate );
-    FreeProcInstance( (FARPROC)dlgproc );
+    FreeProcInstance_DLG( dlgproc );
     GlobalFree( dlgtemplate );
     return( rc );
 

@@ -37,7 +37,7 @@
 #ifdef __NT__
     #include <shlobj.h>
 #endif
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -181,7 +181,7 @@ WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
  */
 bool GetSnoopStringDialog( fancy_find **ff )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
     bool        rc;
 
 #ifdef __NT__
@@ -198,17 +198,17 @@ bool GetSnoopStringDialog( fancy_find **ff )
     snoopData.case_ignore = EditFlags.CaseIgnore;
     ReplaceString( &snoopData.ext, EditVars.GrepDefault );
     *ff = &snoopData; /* data is no longer copied */
-    proc = MakeDlgProcInstance( SnoopDlgProc, InstanceHandle );
+    dlgproc = MakeProcInstance_DLG( SnoopDlgProc, InstanceHandle );
 #ifdef __NT__
     if( pfnSHBrowseForFolder != NULL ) {
-        rc = DialogBox( InstanceHandle, "SNOOPDLG95", root_window_id, (DLGPROC)proc );
+        rc = DialogBox( InstanceHandle, "SNOOPDLG95", root_window_id, dlgproc );
     } else {
 #endif
-        rc = DialogBox( InstanceHandle, "SNOOPDLG", root_window_id, (DLGPROC)proc );
+        rc = DialogBox( InstanceHandle, "SNOOPDLG", root_window_id, dlgproc );
 #ifdef __NT__
     }
 #endif
-    FreeProcInstance( proc );
+    FreeProcInstance_DLG( dlgproc );
     SetWindowCursor();
     return( rc );
 

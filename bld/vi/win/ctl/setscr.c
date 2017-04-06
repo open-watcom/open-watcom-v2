@@ -35,7 +35,7 @@
 #include "stddef.h"
 #include "ctltype.h"
 #include "util.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 #include "winctl.h"
 
 
@@ -179,12 +179,12 @@ WINEXPORT BOOL CALLBACK SetScrProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARA
  */
 bool GetSetScrDialog( void )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
     bool        rc;
 
-    proc = MakeDlgProcInstance( SetScrProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "SETSCR", root_window_id, (DLGPROC)proc );
-    FreeProcInstance( proc );
+    dlgproc = MakeProcInstance_DLG( SetScrProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "SETSCR", root_window_id, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 
     // redisplay all files to ensure screen completely correct
     ReDisplayBuffers( false );

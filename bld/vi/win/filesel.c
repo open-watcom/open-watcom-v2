@@ -34,7 +34,7 @@
 #include <dlgs.h>
 #include <cderr.h>
 #include <assert.h>
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -136,12 +136,12 @@ vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool wan
         of.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER;
     } else {
         of.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_ENABLEHOOK;
-        of.lpfnHook = (LPOFNHOOKPROC)MakeOpenFileHookProcInstance( OpenHook, InstanceHandle );
+        of.lpfnHook = MakeProcInstance_OFNHOOK( OpenHook, InstanceHandle );
     }
     rc = GetOpenFileName( &of ) != 0;
     filemask = of.nFilterIndex;
     if( !is_chicago ) {
-        (void)FreeProcInstance( (FARPROC)of.lpfnHook );
+        FreeProcInstance_OFNHOOK( of.lpfnHook );
     }
     if( !rc && CommDlgExtendedError() == FNERR_BUFFERTOOSMALL ) {
         if( !is_chicago ) {
@@ -188,11 +188,11 @@ vi_rc SelectFileSave( char *result )
         of.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY | OFN_NOREADONLYRETURN | OFN_EXPLORER;
     } else {
         of.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY | OFN_NOREADONLYRETURN | OFN_ENABLEHOOK;
-        of.lpfnHook = (LPOFNHOOKPROC)MakeOpenFileHookProcInstance( OpenHook, InstanceHandle );
+        of.lpfnHook = MakeProcInstance_OFNHOOK( OpenHook, InstanceHandle );
     }
     doit = GetSaveFileName( &of );
     if( !is_chicago ) {
-        (void)FreeProcInstance( (FARPROC)of.lpfnHook );
+        FreeProcInstance_OFNHOOK( of.lpfnHook );
     }
     if( doit != 0 ) {
         UpdateCurrentDirectory();

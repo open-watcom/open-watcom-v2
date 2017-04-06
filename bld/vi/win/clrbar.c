@@ -33,7 +33,7 @@
 #include "vi.h"
 #include "clrbar.h"
 #include "utils.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -79,24 +79,24 @@ WINEXPORT BOOL CALLBACK ClrDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
  */
 void RefreshColorbar( void )
 {
-    static FARPROC      proc = NULL;
+    static DLGPROC      dlgproc = NULL;
 
     if( EditFlags.Colorbar ) {
         if( !BAD_ID( hColorbar ) ) {
             return;
         }
-        // if( proc ){
-        //     proc = NULL;
+        // if( dlgproc != NULL ){
+        //     dlgproc = NULL;
         // }
-        proc = MakeDlgProcInstance( ClrDlgProc, InstanceHandle );
-        hColorbar = CreateDialog( InstanceHandle, "CLRBAR", root_window_id, (DLGPROC)proc );
+        dlgproc = MakeProcInstance_DLG( ClrDlgProc, InstanceHandle );
+        hColorbar = CreateDialog( InstanceHandle, "CLRBAR", root_window_id, dlgproc );
         SetMenuHelpString( "Left button = foreground, right button = background.  Ctrl affects all syntax elements" );
     } else {
         if( BAD_ID( hColorbar ) ) {
             return;
         }
         SendMessage( hColorbar, WM_CLOSE, 0, 0L );
-        FreeProcInstance( proc );
+        FreeProcInstance_DLG( dlgproc );
         SetMenuHelpString( "" );
     }
     UpdateStatusWindow();

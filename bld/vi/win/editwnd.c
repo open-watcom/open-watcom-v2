@@ -37,7 +37,7 @@
 #include "font.h"
 #include "color.h"
 #include "utils.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 #include "winifini.h"
 // #include "mdisim.h"
 
@@ -929,12 +929,12 @@ WINEXPORT BOOL CALLBACK ResizeExtra( window_id wid, LPARAM l )
  */
 void ResetExtraRects( void )
 {
-    FARPROC     proc;
+    WNDENUMPROC     wndenumproc;
 
     if( !BAD_ID( edit_container_id ) ) {
-        proc = MakeWndEnumProcInstance( ResizeExtra, InstanceHandle );
-        EnumChildWindows( edit_container_id, (WNDENUMPROC)proc, 0L );
-        FreeProcInstance( proc );
+        wndenumproc = MakeProcInstance_WNDENUM( ResizeExtra, InstanceHandle );
+        EnumChildWindows( edit_container_id, wndenumproc, 0L );
+        FreeProcInstance_WNDENUM( wndenumproc );
     }
 
 } /* ResetExtraRects */

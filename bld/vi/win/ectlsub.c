@@ -31,14 +31,14 @@
 
 
 #include "vi.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT LRESULT CALLBACK EditSubClassProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static WNDPROC      oldEditProc;
-static FARPROC      editProc;
+static WNDPROC      editProc;
 static history_data *hData;
 static int          currHist;
 
@@ -170,7 +170,7 @@ void EditSubClass( HWND hwnd, int id, history_data *h )
     currHist = h->curr;
     edit = GetDlgItem( hwnd, id );
     oldEditProc = (WNDPROC)GET_WNDPROC( edit );
-    editProc = MakeWndProcInstance( EditSubClassProc, InstanceHandle );
+    editProc = MakeProcInstance_WND( EditSubClassProc, InstanceHandle );
     SET_WNDPROC( edit, (LONG_PTR)editProc );
     SendMessage( edit, EM_LIMITTEXT, MAX_INPUT_LINE, 0L );
 
@@ -185,7 +185,7 @@ void RemoveEditSubClass( HWND hwnd, int id )
 
     edit = GetDlgItem( hwnd, id );
     SET_WNDPROC( edit, (LONG_PTR)oldEditProc );
-    (void)FreeProcInstance( editProc );
+    FreeProcInstance_WND( editProc );
     FinishFileComplete();
 
 } /* RemoveEditSubClass */

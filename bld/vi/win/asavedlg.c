@@ -32,7 +32,7 @@
 
 #include "vi.h"
 #include "asavedlg.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -76,12 +76,12 @@ WINEXPORT BOOL CALLBACK ASaveDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
  */
 vi_key GetAutosaveResponse( void )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
     vi_key      key;
 
-    proc = MakeDlgProcInstance( ASaveDlgProc, InstanceHandle );
-    key = (vi_key)DialogBox( InstanceHandle, "ASaveDlg", NO_WINDOW, (DLGPROC)proc );
-    FreeProcInstance( proc );
+    dlgproc = MakeProcInstance_DLG( ASaveDlgProc, InstanceHandle );
+    key = (vi_key)DialogBox( InstanceHandle, "ASaveDlg", NO_WINDOW, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 
     return( key );
 

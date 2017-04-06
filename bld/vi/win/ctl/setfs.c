@@ -38,7 +38,7 @@
 #include "fts.h"
 #include "rcstr.gh"
 #include <assert.h>
-#include "wprocmap.h"
+#include "wclbproc.h"
 #include "winctl.h"
 
 
@@ -654,12 +654,12 @@ WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM
  */
 bool GetSetFSDialog( void )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
     bool        rc;
 
-    proc = MakeDlgProcInstance( SetFSProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "SETFS", root_window_id, (DLGPROC)proc );
-    FreeProcInstance( proc );
+    dlgproc = MakeProcInstance_DLG( SetFSProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "SETFS", root_window_id, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 
     // redisplay all files to ensure screen completely correct
     ReDisplayBuffers( true );

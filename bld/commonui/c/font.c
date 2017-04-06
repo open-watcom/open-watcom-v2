@@ -34,7 +34,7 @@
 #include <string.h>
 #include "bool.h"
 #include "font.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Window callback functions prototypes */
@@ -110,19 +110,19 @@ int CALLBACK EnumFontsEnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm,
  */
 static void getCourierFont( HANDLE inst )
 {
-    LOGFONT     logfont;
-    FARPROC     fp;
-    HDC         hdc;
+    LOGFONT         logfont;
+    FONTENUMPROC    fontenumproc;
+    HDC             hdc;
 
     inst = inst;        /* shut up the compiler for NT */
     hdc = GetDC( HWND_DESKTOP );
-    fp = MakeFontEnumProcInstance( EnumFontsEnumFunc, inst );
+    fontenumproc = MakeProcInstance_FONTENUM( EnumFontsEnumFunc, inst );
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
-    EnumFonts( hdc, NULL, (OLDFONTENUMPROC)fp, 0 );
+    EnumFonts( hdc, NULL, (OLDFONTENUMPROC)fontenumproc, 0 );
 #else
-    EnumFonts( hdc, NULL, (FONTENUMPROC)fp, 0 );
+    EnumFonts( hdc, NULL, fontenumproc, 0 );
 #endif
-    FreeProcInstance( fp );
+    FreeProcInstance_FONTENUM( fontenumproc );
     ReleaseDC( (HWND)NULL, hdc );
 
     if( courierFont == NULL ) {

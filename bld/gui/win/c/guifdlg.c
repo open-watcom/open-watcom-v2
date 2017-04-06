@@ -52,7 +52,7 @@
 #include "guistr.h"
 //#include "guixhook.h"
 #include "ctl3dcvr.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 #include "guixwind.h"
 
 #include "clibext.h"
@@ -342,7 +342,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     wofn.lpstrInitialDir = ofn->initial_dir;
     wofn.lpfnHook = (LPOFNHOOKPROC)NULL;
     if( hookFileDlg ) {
-        wofn.lpfnHook = (LPOFNHOOKPROC)MakeOpenFileHookProcInstance( OpenHook, GUIMainHInst );
+        wofn.lpfnHook = MakeProcInstance_OFNHOOK( OpenHook, GUIMainHInst );
     }
 
 #if defined( HAVE_DRIVES )
@@ -358,7 +358,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     }
 
     if( hookFileDlg ) {
-        (void)FreeProcInstance( (FARPROC)wofn.lpfnHook );
+        FreeProcInstance_OFNHOOK( wofn.lpfnHook );
     }
 
     if( LastPath && ( !rc || !( ofn->flags & FN_WANT_LAST_PATH ) ) ) {

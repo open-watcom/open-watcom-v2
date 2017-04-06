@@ -43,7 +43,7 @@
     #ifdef __NT__
         #include <commctrl.h>
     #endif
-    #include "wprocmap.h"
+    #include "wclbproc.h"
 #endif
 #include <assert.h>
 
@@ -399,21 +399,21 @@ WINEXPORT BOOL CALLBACK GrepListProc95( HWND dlg, UINT msg, WPARAM wparam, LPARA
 
 static vi_rc doGREP( const char *dirlist )
 {
-    FARPROC     fp;
+    DLGPROC     dlgproc;
     vi_rc       rc;
 
   #ifdef __NT__
     if( LoadCommCtrl() ) {
-        fp = MakeDlgProcInstance( GrepListProc95, InstanceHandle );
-        rc = DialogBoxParam( InstanceHandle, "GREPLIST95", root_window_id, (DLGPROC)fp, (LPARAM)dirlist );
+        dlgproc = MakeProcInstance_DLG( GrepListProc95, InstanceHandle );
+        rc = DialogBoxParam( InstanceHandle, "GREPLIST95", root_window_id, dlgproc, (LPARAM)dirlist );
     } else {
   #endif
-        fp = MakeDlgProcInstance( GrepListProc, InstanceHandle );
-        rc = DialogBoxParam( InstanceHandle, "GREPLIST", root_window_id, (DLGPROC)fp, (LPARAM)dirlist );
+        dlgproc = MakeProcInstance_DLG( GrepListProc, InstanceHandle );
+        rc = DialogBoxParam( InstanceHandle, "GREPLIST", root_window_id, dlgproc, (LPARAM)dirlist );
   #ifdef __NT__
     }
   #endif
-    FreeProcInstance( fp );
+    FreeProcInstance_DLG( dlgproc );
     return( rc );
 }
 #else

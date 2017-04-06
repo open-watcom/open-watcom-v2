@@ -33,7 +33,7 @@
 
 #include "vi.h"
 #include "finddlg.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -149,14 +149,14 @@ WINEXPORT BOOL CALLBACK FindDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
  */
 bool GetFindStringDialog( fancy_find *ff )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
     bool        rc;
 
     findData.find = ff->find;
     findData.findlen = ff->findlen;
-    proc = MakeDlgProcInstance( FindDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "FINDDLG", root_window_id, (DLGPROC)proc );
-    FreeProcInstance( proc );
+    dlgproc = MakeProcInstance_DLG( FindDlgProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "FINDDLG", root_window_id, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
     SetWindowCursor();
     if( rc ) {
         ff->case_ignore = findData.case_ignore;

@@ -33,9 +33,6 @@
 #include "rcscli.h"
 #include "rcs.h"
 #include "winexprt.h"
-#ifdef __WIN__
-#include "wprocmap.h"
-#endif
 
 
 /* Local Windows CALLBACK function prototypes */

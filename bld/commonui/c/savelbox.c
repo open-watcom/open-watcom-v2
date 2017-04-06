@@ -46,7 +46,7 @@
 #endif
 #include "ldstr.h"
 #include "uistr.gh"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 #include "clibext.h"
 
@@ -136,11 +136,11 @@ bool GetSaveFName( HWND mainhwnd, char *fname )
     of.Flags = OFN_HIDEREADONLY;
 #ifndef NOUSE3D
     of.Flags |= OFN_ENABLEHOOK;
-    of.lpfnHook = (LPOFNHOOKPROC)MakeOpenFileHookProcInstance( LBSaveHook, GET_HINSTANCE( mainhwnd ) );
+    of.lpfnHook = MakeProcInstance_OFNHOOK( LBSaveHook, GET_HINSTANCE( mainhwnd ) );
 #endif
     rc = GetSaveFileName( &of );
 #ifndef NOUSE3D
-    FreeProcInstance( (FARPROC)of.lpfnHook );
+    FreeProcInstance_OFNHOOK( of.lpfnHook );
 #endif
     return( rc != 0 );
 

@@ -43,7 +43,7 @@
 #endif
 #include "ldstr.h"
 #include "uistr.gh"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Window callback functions prototypes */
@@ -314,14 +314,14 @@ void Query4Aliases( AliasHdl hdl, HANDLE instance, HWND hwnd, char *title )
     INT_PTR     ret;
 
     CurHdl = hdl;
-    dlgproc = (DLGPROC)MakeDlgProcInstance( AliasDlgProc, instance );
+    dlgproc = MakeProcInstance_DLG( AliasDlgProc, instance );
     for( ;; ) {
         ret = DialogBoxParam( instance, "ALIAS_DLG", hwnd, dlgproc, (LPARAM)(LPCSTR)title );
         if( ret != ALIAS_DO_MORE ) {
             break;
         }
     }
-    FreeProcInstance( (FARPROC)dlgproc );
+    FreeProcInstance_DLG( dlgproc );
     CurHdl = NULL;
 
 } /* Query4Aliases */

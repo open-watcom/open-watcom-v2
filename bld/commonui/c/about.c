@@ -42,7 +42,7 @@
 #endif
 #include "ldstr.h"
 #include "uistr.gh"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 #if defined( _M_I86 ) && defined( __WINDOWS__ )
     #pragma library( "toolhelp.lib" )   /* For SystemHeapInfo */
@@ -169,8 +169,8 @@ void DoAbout( LPABOUTINFO ai )
 {
     DLGPROC     dlgproc;
 
-    dlgproc = (DLGPROC)MakeDlgProcInstance( AboutProc, ai->inst );
+    dlgproc = MakeProcInstance_DLG( AboutProc, ai->inst );
     DialogBoxParam( ai->inst, "About", ai->owner, dlgproc, (LPARAM)ai );
-    FreeProcInstance( (FARPROC)dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 
 } /* DoAbout */

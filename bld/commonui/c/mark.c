@@ -36,7 +36,7 @@
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
 #endif
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Window callback functions prototypes */
@@ -122,9 +122,9 @@ void ProcessMark( HWND owner, HANDLE instance, void (*func)( char * ) )
         return;
     }
     WriteFn = func;
-    dlgproc = (DLGPROC)MakeDlgProcInstance( MarkDlgProc, instance );
+    dlgproc = MakeProcInstance_DLG( MarkDlgProc, instance );
     DialogBox( instance, "MARK_DLG", owner, dlgproc );
-    FreeProcInstance( (FARPROC)dlgproc );
+    FreeProcInstance_DLG( dlgproc );
     WriteFn = NULL;
 
 } /* ProcessMark */

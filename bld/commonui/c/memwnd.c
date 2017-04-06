@@ -54,7 +54,7 @@
 #include "deasm.h"
 #include "ldstr.h"
 #include "uistr.gh"
-#include "wprocmap.h"
+#include "wclbproc.h"
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
 #endif
@@ -1053,9 +1053,9 @@ LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             break;
         case MEMINFO_OFFSET:
             inst = GET_HINSTANCE( hwnd );
-            dlgproc = (DLGPROC)MakeDlgProcInstance( OffsetProc, inst );
+            dlgproc = MakeProcInstance_DLG( OffsetProc, inst );
             DialogBox( inst, "OFFSETDLG", hwnd, dlgproc );
-            FreeProcInstance( (FARPROC)dlgproc );
+            FreeProcInstance_DLG( dlgproc );
             break;
         }
         break;
@@ -1173,7 +1173,7 @@ INT_PTR CALLBACK SegInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
 #ifndef __NT__
         DialCount--;
         if( DialCount == 0 ) {
-            FreeProcInstance( (FARPROC)DialProc );
+            FreeProcInstance_DLG( DialProc );
         }
 #endif
         return( FALSE ); /* we need to let Windows see this message
@@ -1206,7 +1206,7 @@ static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info )
     mh = GetMenu( parent );
     EnableMenuItem( mh, MEMINFO_SHOW, MF_GRAYED );
     if( DialCount == 0 ) {
-        DialProc = (DLGPROC)MakeDlgProcInstance( SegInfoProc, instance );
+        DialProc = MakeProcInstance_DLG( SegInfoProc, instance );
     }
     DialCount++;
     if( info->isdpmi ) {

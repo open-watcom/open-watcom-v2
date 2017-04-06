@@ -37,7 +37,7 @@
 #include "font.h"
 #include "subclass.h"
 #include "hotkey.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* NB: In Win386 mode, the FAR pointers passed to callback procs are
@@ -209,17 +209,17 @@ WINEXPORT int CALLBACK SetupFontData( const LOGFONT FAR *lf, const TEXTMETRIC FA
 
 static void fillTypefaceBox( HWND hwnd )
 {
-    FARPROC     fp;
-    HDC         hdc;
+    FONTENUMPROC    fontenumproc;
+    HDC             hdc;
 
     hwnd = hwnd;
 
     /* put typefaces in combo box
     */
     hdc = GetDC( edit_container_id );
-    fp = MakeFontEnumProcInstance( EnumFamTypefaces, InstanceHandle );
-    EnumFontFamilies( hdc, NULL, (FONTENUMPROC)fp, 0L );
-    FreeProcInstance( fp );
+    fontenumproc = MakeProcInstance_FONTENUM( EnumFamTypefaces, InstanceHandle );
+    EnumFontFamilies( hdc, NULL, fontenumproc, 0L );
+    FreeProcInstance_FONTENUM( fontenumproc );
     ReleaseDC( edit_container_id, hdc );
 
     SendMessage( hwndTypeface, LB_SETCURSEL, 0, 0L );
@@ -244,7 +244,7 @@ static void fillStyleBox( void )
 
 static void fillInfoBoxes( HWND hwnd )
 {
-    FARPROC         fp;
+    FONTENUMPROC    fontenumproc;
     int             index;
     HDC             hdc;
     char            typeface[LF_FACESIZE + 1];
@@ -281,11 +281,11 @@ static void fillInfoBoxes( HWND hwnd )
     fillStyleBox();
 
     SendMessage( hwndTypeface, LB_GETTEXT, index, (LPARAM)(LPSTR)typeface );
-    fp = MakeFontEnumProcInstance( EnumFamInfo, InstanceHandle );
+    fontenumproc = MakeProcInstance_FONTENUM( EnumFamInfo, InstanceHandle );
     hdc = GetDC( edit_container_id );
-    EnumFontFamilies( hdc, typeface, (FONTENUMPROC)fp, (LPARAM)(&isTrueType) );
+    EnumFontFamilies( hdc, typeface, fontenumproc, (LPARAM)(&isTrueType) );
     ReleaseDC( edit_container_id, hdc );
-    FreeProcInstance( fp );
+    FreeProcInstance_FONTENUM( fontenumproc );
 
     if( isTrueType ) {
         /* suggest a few truetype point values
@@ -363,10 +363,10 @@ static void initHwnds( HWND hwndDlg )
         hwndSizeEdit = GetWindow( hwndSizeEdit, GW_HWNDNEXT );
     }
 
-    SubclassGenericAdd( hwndTypeface, (WNDPROC)MakeWndProcInstance( HotkeyProc, InstanceHandle ) );
-    SubclassGenericAdd( hwndStyle,    (WNDPROC)MakeWndProcInstance( HotkeyProc, InstanceHandle ) );
-    SubclassGenericAdd( hwndSize,     (WNDPROC)MakeWndProcInstance( HotkeyProc, InstanceHandle ) );
-    SubclassGenericAdd( hwndSizeEdit, (WNDPROC)MakeWndProcInstance( HotkeyProc, InstanceHandle ) );
+    SubclassGenericAdd( hwndTypeface, MakeProcInstance_WND( HotkeyProc, InstanceHandle ) );
+    SubclassGenericAdd( hwndStyle,    MakeProcInstance_WND( HotkeyProc, InstanceHandle ) );
+    SubclassGenericAdd( hwndSize,     MakeProcInstance_WND( HotkeyProc, InstanceHandle ) );
+    SubclassGenericAdd( hwndSizeEdit, MakeProcInstance_WND( HotkeyProc, InstanceHandle ) );
 }
 
 static void doneWithHwnds( void )
@@ -383,7 +383,7 @@ static int setCurLogfont( int overrideSize )
     char                size[8];
     int                 height;
     HDC                 hdc;
-    FARPROC             fp;
+    FONTENUMPROC        fontenumproc;
 
     if( overrideSize == 0 ) {
         index = (int)SendMessage( hwndSize, CB_GETCURSEL, 0, 0L );
@@ -422,9 +422,9 @@ static int setCurLogfont( int overrideSize )
 
     /* set up defaults for charset, etc. from info for 1st font of this type */
     hdc = GetDC( edit_container_id );
-    fp = MakeFontEnumProcInstance( SetupFontData, InstanceHandle );
-    EnumFontFamilies( hdc, CurLogfont.lfFaceName, (FONTENUMPROC)fp, 0L );
-    FreeProcInstance( fp );
+    fontenumproc = MakeProcInstance_FONTENUM( SetupFontData, InstanceHandle );
+    EnumFontFamilies( hdc, CurLogfont.lfFaceName, fontenumproc, 0L );
+    FreeProcInstance_FONTENUM( fontenumproc );
     ReleaseDC( edit_container_id, hdc );
 
     return( 1 );
@@ -527,21 +527,21 @@ WINEXPORT INT_PTR CALLBACK FtDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
  */
 void RefreshFontbar( void )
 {
-    static FARPROC  proc = NULL;
+    static DLGPROC  dlgproc = NULL;
 
     if( EditFlags.Fontbar ) {
         if( !BAD_ID( hFontbar ) ) {
             return;
         }
-        proc = MakeDlgProcInstance( FtDlgProc, InstanceHandle );
-        hFontbar = CreateDialog( InstanceHandle, "FTBAR", root_window_id, (DLGPROC)proc );
+        dlgproc = MakeProcInstance_DLG( FtDlgProc, InstanceHandle );
+        hFontbar = CreateDialog( InstanceHandle, "FTBAR", root_window_id, dlgproc );
         SetMenuHelpString( "Ctrl affects all syntax elements" );
     } else {
         if( BAD_ID( hFontbar ) ) {
             return;
         }
         SendMessage( hFontbar, WM_CLOSE, 0, 0L );
-        FreeProcInstance( proc );
+        FreeProcInstance_DLG( dlgproc );
         SetMenuHelpString( "" );
     }
     UpdateStatusWindow();

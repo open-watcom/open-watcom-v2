@@ -34,7 +34,7 @@
 #include "vi.h"
 #include <stddef.h>
 #include "ddedef.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */

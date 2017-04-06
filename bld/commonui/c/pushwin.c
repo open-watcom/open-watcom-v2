@@ -37,7 +37,7 @@
 #include "bool.h"
 #include "mem.h"
 #include "pushwin.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Window callback functions prototypes */

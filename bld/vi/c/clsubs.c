@@ -33,6 +33,9 @@
 #include "walloca.h"
 #include "rxsupp.h"
 #include "win.h"
+#ifdef __WIN__
+#include "wclbproc.h"
+#endif
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -55,8 +58,6 @@ int LastLineCount;
 
 
 #ifdef __WIN__
-
-#include "wprocmap.h"
 
 static HHOOK    hhookMB = 0;
 static int      MB_posx = -1;
@@ -89,18 +90,18 @@ WINEXPORT LRESULT CALLBACK MyMessageBoxWndFunc( int ncode, WPARAM wparam, LPARAM
 
 static int MyMessageBox( window_id wid, char _FAR *lpText, char _FAR *lpCaption, unsigned uType )
 {
-    FARPROC     fp;
+    HOOKPROC    hookproc;
     int         rc;
 
-    fp = MakeHookProcInstance( MyMessageBoxWndFunc, InstanceHandle );
+    hookproc = MakeProcInstance_HOOK( MyMessageBoxWndFunc, InstanceHandle );
 #if defined(__NT__)
-    hhookMB = SetWindowsHookEx( WH_CBT, (HOOKPROC)fp, 0, GetCurrentThreadId() );
+    hhookMB = SetWindowsHookEx( WH_CBT, hookproc, 0, GetCurrentThreadId() );
 #else
-    hhookMB = SetWindowsHookEx( WH_CBT, (HOOKPROC)fp, InstanceHandle, GetCurrentTask() );
+    hhookMB = SetWindowsHookEx( WH_CBT, hookproc, InstanceHandle, GetCurrentTask() );
 #endif
     rc = MessageBox( wid, lpText, lpCaption, uType );
     UnhookWindowsHookEx( hhookMB );
-    FreeProcInstance( fp );
+    FreeProcInstance_HOOK( hookproc );
     return( rc );
 }
 #endif
