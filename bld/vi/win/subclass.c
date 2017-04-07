@@ -62,7 +62,7 @@ void SubclassGenericRemove( HWND hwnd )
     assert( findProc != NULL );
 
     SET_WNDPROC( hwnd, (LONG_PTR)findProc->oldProc );
-    (void)FreeProcInstance( (FARPROC)findProc->newProc );
+    FreeProcInstance_WND( findProc->newProc );
 
     DeleteLLItem( (ss **)&procHead, (ss **)&procTail, (ss *)findProc );
     MemFree( findProc );
