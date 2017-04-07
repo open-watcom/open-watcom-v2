@@ -186,8 +186,8 @@ bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID fid )
     return( error );
 }
 
-bool ResReadDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead, WResFileID fid )
-/***********************************************************************************************/
+bool ResReadDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32short *exhead, WResFileID fid )
+/**********************************************************************************************************/
 {
     bool            error;
     uint_16         tmp16;
@@ -424,8 +424,8 @@ bool ResReadDialogBoxControl32( DialogBoxControl32 *control, WResFileID fid )
     return( error );
 }
 
-bool ResReadDialogExControl32( DialogBoxExControl32 *control, WResFileID fid )
-/****************************************************************************/
+bool ResReadDialogBoxExControl32( DialogBoxExControl32 *control, WResFileID fid )
+/*******************************************************************************/
 {
     bool            error;
     uint_32         tmp32;

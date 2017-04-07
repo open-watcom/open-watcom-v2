@@ -160,8 +160,8 @@ bool ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID fid )
 }
 
 
-bool ResWriteDialogExHeader32( DialogBoxHeader32 *head, DialogExHeader32 *exhead, WResFileID fid )
-/************************************************************************************************/
+bool ResWriteDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32short *exhead, WResFileID fid )
+/***********************************************************************************************************/
 {
     bool            error;
 
@@ -301,8 +301,8 @@ bool ResWriteDialogBoxControl32( DialogBoxControl32 *control, WResFileID fid )
     return( error );
 }
 
-bool ResWriteDialogExControl32( DialogBoxExControl32 *control, WResFileID fid )
-/*****************************************************************************/
+bool ResWriteDialogBoxExControl32( DialogBoxExControl32 *control, WResFileID fid )
+/********************************************************************************/
 {
     bool            error;
 

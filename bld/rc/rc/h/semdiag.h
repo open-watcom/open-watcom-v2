@@ -33,8 +33,8 @@
 #define SEMDIAG_INCLUDED
 
 typedef struct DlgHeader32 {
-    DialogBoxHeader32    Head;
-    DialogExHeader32     ExHead;
+    DialogBoxHeader32           Head;
+    DialogBoxExHeader32short    ExHead;
 } DlgHeader32;
 
 typedef struct FullDialogBoxHeader {

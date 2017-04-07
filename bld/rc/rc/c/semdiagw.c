@@ -604,7 +604,7 @@ static bool SemWriteDiagCtrlList( FullDiagCtrlList *list, int *err_code, YYTOKEN
                 controlex.ClassID = ctrl->u.ctrl32.ClassID;
                 controlex.Text = ctrl->u.ctrl32.Text;
                 controlex.ExtraBytes = ctrl->u.ctrl32.ExtraBytes;
-                error = ResWriteDialogExControl32( &controlex, CurrResFile.fid);
+                error = ResWriteDialogBoxExControl32( &controlex, CurrResFile.fid);
                 if( ctrl->dataListHead != NULL ) {
                     SemFlushDataElemList( ctrl->dataListHead, false );
                 }
@@ -728,7 +728,7 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
                     error = 1;
                 }
             } else if( tokentype == Y_DIALOG_EX ) {
-                if( ResWriteDialogExHeader32( &(head->u.Head32.Head), &(head->u.Head32.ExHead), CurrResFile.fid ) ) {
+                if( ResWriteDialogBoxExHeader32( &(head->u.Head32.Head), &(head->u.Head32.ExHead), CurrResFile.fid ) ) {
                     error = 1;
                 }
             }

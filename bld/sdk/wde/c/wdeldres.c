@@ -92,28 +92,27 @@ WdeResInfo *WdeLoadResource( const char *file_name )
 }
 
 
-WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
-                                        WResLangNode *lnode, bool is32bit )
+WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnode, bool is32bit )
 {
-    DialogExHeader32        h32ex;
-    DialogBoxHeader32       h32;
-    DialogBoxHeader         h16;
+    DialogBoxExHeader32short    h32ex;
+    DialogBoxHeader32           h32;
+    DialogBoxHeader             h16;
 
-    DialogBoxControl        c16;
-    DialogBoxControl32      c32;
-    DialogBoxExControl32    c32ex;
+    DialogBoxControl            c16;
+    DialogBoxControl32          c32;
+    DialogBoxExControl32        c32ex;
 
-    WdeDialogBoxInfo        *dlg_info;
-    WResFileID              fid;
-    WdeDialogBoxControl     *control;
-    LIST                    *prev_control;
+    WdeDialogBoxInfo            *dlg_info;
+    WResFileID                  fid;
+    WdeDialogBoxControl         *control;
+    LIST                        *prev_control;
 #if 0
-    WdeDialogBoxControl     *nc;
-    LIST                    *clist;
+    WdeDialogBoxControl         *nc;
+    LIST                        *clist;
 #endif
-    int                     index;
-    char                    *file_name;
-    bool                    ok;
+    int                         index;
+    char                        *file_name;
+    bool                        ok;
 
     dlg_info = NULL;
     fid = WRES_NIL_HANDLE;
@@ -150,7 +149,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
             ResSeek( fid, lnode->Info.Offset, SEEK_SET );
 
             if( dlg_info->dialog_header->is32bitEx ) {
-                ok = !ResReadDialogExHeader32( &h32, &h32ex, fid );
+                ok = !ResReadDialogBoxExHeader32( &h32, &h32ex, fid );
             } else {
                 ok = !ResReadDialogBoxHeader32( &h32, fid );
             }
@@ -203,7 +202,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info,
                  *       whether this an extended dialog or not
                 */
                 if( dlg_info->dialog_header->is32bitEx ) {
-                    if( ResReadDialogExControl32( &c32ex, fid ) ) {
+                    if( ResReadDialogBoxExControl32( &c32ex, fid ) ) {
                         ok = false;
                         break;
                     }
