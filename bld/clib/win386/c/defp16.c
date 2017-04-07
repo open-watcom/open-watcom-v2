@@ -48,7 +48,7 @@ int DefineUserProc16( int entnum, PROCPTR routine, ... )
     }
     entnum -= GETPROC_USERDEFINED_1;
     va_start( al, routine );
-    UserProcs[ entnum] = vGetCallbackRoutine( routine, al );
+    UserProcs[entnum] = vGetCallbackRoutine( routine, al );
     va_end( al );
     return( 0 );
 

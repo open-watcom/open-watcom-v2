@@ -42,9 +42,9 @@ LONG PASCAL _Cover_SendMessage(HWND hwnd, WORD msg, WORD wp, LONG lp)
 
 
     if( msg == WM_MDICREATE ) {
-        mcs = (MDICREATESTRUCT *) lp;
-        oldclass = (LPSTR) mcs->szClass;
-        oldtitle = (LPSTR) mcs->szTitle;
+        mcs = (MDICREATESTRUCT *)lp;
+        oldclass = (LPSTR)mcs->szClass;
+        oldtitle = (LPSTR)mcs->szTitle;
     }
     olp = lp;
     alias = TryAlias( hwnd, msg, &lp );
@@ -52,9 +52,9 @@ LONG PASCAL _Cover_SendMessage(HWND hwnd, WORD msg, WORD wp, LONG lp)
     if( alias ) {
         FreeAlias16( lp );
         if( msg == WM_MDICREATE ) {
-            mcs = (MDICREATESTRUCT *) olp;
-            FreeAlias16( (DWORD) mcs->szClass );
-            FreeAlias16( (DWORD) mcs->szTitle );
+            mcs = (MDICREATESTRUCT *)olp;
+            FreeAlias16( (DWORD)mcs->szClass );
+            FreeAlias16( (DWORD)mcs->szTitle );
             mcs->szClass = oldclass;
             mcs->szTitle = oldtitle;
         }

@@ -67,7 +67,8 @@ void Ole32InitObjectVtbl( LPOLEOBJECTVTBL povt, BOOL srvronly )
         povt->SetColorScheme = SetProc( povt->SetColorScheme, GETPROC_OLE_OV_SETCOLORSCHEME );
     }
 
-    if( srvronly ) return;
+    if( srvronly )
+        return;
 
     if( povt->Delete != NULL ) {
         povt->Delete = SetProc( povt->Delete, GETPROC_OLE_OV_DELETE );

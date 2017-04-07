@@ -62,6 +62,5 @@ UINT PASCAL _Cover_waveInOpen( HWAVEIN *lphWaveIn,
         CallBackFunc = dwCallback;
         dwCallback = GetWaveInCallBack( __WaveInCallBack );
     }
-    return( waveInOpen( lphWaveIn, uDeviceID, lpFormat,
-                         dwCallback, dwInstance, dwFlags ) );
+    return( waveInOpen( lphWaveIn, uDeviceID, lpFormat, dwCallback, dwInstance, dwFlags ) );
 }

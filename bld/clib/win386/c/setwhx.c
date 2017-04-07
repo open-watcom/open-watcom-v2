@@ -33,9 +33,7 @@
 #include "variety.h"
 #include "cover.h"
 
-HHOOK PASCAL _Cover_SetWindowsHookEx(short idHook, HOOKPROC lpfn,
-                                        HINSTANCE hInstance, HTASK hTask)
+HHOOK PASCAL _Cover_SetWindowsHookEx(short idHook, HOOKPROC lpfn, HINSTANCE hInstance, HTASK hTask)
 {
-    return( SetWindowsHookEx( idHook, SetProc( (FARPROC)lpfn, GETPROC_SETWINDOWSHOOK ),
-                                hInstance, hTask ) );
+    return( SetWindowsHookEx( idHook, SetProc( (FARPROC)lpfn, GETPROC_SETWINDOWSHOOK ), hInstance, hTask ) );
 }

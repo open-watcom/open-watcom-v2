@@ -33,8 +33,7 @@
 #include "variety.h"
 #include "cover.h"
 
-BOOL PASCAL _Cover_EnumMetaFile( HDC dc, LOCALHANDLE hmf, FARPROC p,
-                                LPSTR data )
+BOOL PASCAL _Cover_EnumMetaFile( HDC dc, LOCALHANDLE hmf, FARPROC p, LPSTR data )
 {
     return( EnumMetaFile( dc, hmf, SetProc( p, GETPROC_ENUMMETAFILE ), (DWORD)data ) );
 }

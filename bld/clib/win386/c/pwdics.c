@@ -33,8 +33,7 @@
 #include "variety.h"
 #include "cover.h"
 
-BOOL PASCAL _Cover_DictionarySearch( LPRC lprc, LPSYE lpsye, int i1,
-                        LPSYV lpsyv, int i2 )
+BOOL PASCAL _Cover_DictionarySearch( LPRC lprc, LPSYE lpsye, int i1, LPSYV lpsyv, int i2 )
 {
     __InitPenWinRC( lprc );
     return( DictionarySearch( lprc, lpsye, i1, lpsyv, i2 ) );

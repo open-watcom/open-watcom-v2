@@ -33,8 +33,7 @@
 #include "variety.h"
 #include "cover.h"
 
-BOOL PASCAL _Cover_CorrectWriting( HWND hwnd, LPSTR lpstr, UINT cb,
-                        LPRC lprc, DWORD dw1, DWORD dw2 )
+BOOL PASCAL _Cover_CorrectWriting( HWND hwnd, LPSTR lpstr, UINT cb, LPRC lprc, DWORD dw1, DWORD dw2 )
 {
     __InitPenWinRC( lprc );
     return( CorrectWriting( hwnd, lpstr, cb, lprc, dw1, dw2 ) );

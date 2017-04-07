@@ -227,7 +227,8 @@ static CALLBACKPTR DoEmitCode( int argcnt, int bytecnt, char *array,
     _CBJumpTable[i] = (DWORD)emitWhere  - *_DataSelectorBaseAddr
                                         + *_CodeSelectorBaseAddr;
     _CBRefsTable[i]++;  /* increase reference count */
-    if( i > MaxCBIndex )  MaxCBIndex = i;
+    if( i > MaxCBIndex )
+        MaxCBIndex = i;
     *__32BitCallBackAddr = &__32BitCallBack;
     return( (char *)__16BitCallBackAddr - (i+1) * CB_CODE_SIZE );
 
@@ -248,8 +249,11 @@ CALLBACKPTR vGetCallbackRoutine( PROCPTR fn, va_list vl )
             continue;
         }
         array[argcnt] = type;
-        if( type == GCB_DWORD ) bytecnt += 4;
-        else bytecnt += 2;
+        if( type == GCB_DWORD ) {
+            bytecnt += 4;
+        } else {
+            bytecnt += 2;
+        }
         argcnt++;
         if( argcnt >= MAX_CB_PARMS ) {
             return( NULL );
@@ -289,7 +293,8 @@ void *SetProc( FARPROC fp, int type )
     int         i;
     char        *cbp;
 
-    if( fp == NULL )  return( NULL );
+    if( fp == NULL )
+        return( NULL );
     for( i = 0; i <= MaxCBIndex; i++ ) {
         cbp = (char *)(_CBJumpTable[i] - *_CodeSelectorBaseAddr
                                        + *_DataSelectorBaseAddr);
@@ -320,7 +325,7 @@ void PASCAL FreeProcInstance( FARPROC fp )
     int         i;
     char        *cbp;
 
-    for( i = 0; i <= MaxCBIndex  &&  _CBJumpTable[i] != 0L; i++ ) {
+    for( i = 0; i <= MaxCBIndex && _CBJumpTable[i] != 0L; i++ ) {
         cbp = (char *)(_CBJumpTable[i] - *_CodeSelectorBaseAddr + *_DataSelectorBaseAddr);
         if( *(FARPROC *)(cbp+1) == fp ) {
             _CBRefsTable[i]--;  /* decrease reference count */

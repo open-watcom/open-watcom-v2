@@ -62,12 +62,16 @@ int DefineDLLEntry( int entnum, void *routine, ... )
         return( -1 );
     }
     va_start( al, routine );
-    for(;;) {
+    for( ;; ) {
         len = va_arg( al, int );
-        if( len == DLL_ENDLIST ) break;
+        if( len == DLL_ENDLIST )
+            break;
         if( len == DLL_WORD || len == DLL_DWORD ) {
-            if( len == DLL_DWORD ) bytecount += 4;
-            else bytecount += 2;
+            if( len == DLL_DWORD ) {
+                bytecount += 4;
+            } else {
+                bytecount += 2;
+            }
             num++;
         } else {
             return( -1 );
@@ -98,7 +102,7 @@ int DefineDLLEntry( int entnum, void *routine, ... )
     }
     free( __DLLEntries[entnum] );       // free old entry
     __DLLEntries[entnum] = curr;        // set new entry
-    *_DLLEntryAddr = (DWORD) &__DLLEntries[0];
+    *_DLLEntryAddr = (DWORD)&__DLLEntries[0];
 
     va_end( al );
     return( 0 );

@@ -39,7 +39,7 @@ BOOL  PASCAL _Cover_RegisterClass( LPWNDCLASS cl )
     BOOL        rc;
 
     tmp = cl->lpfnWndProc;
-    cl->lpfnWndProc = GetProc16( (PROCPTR) tmp, GETPROC_CALLBACK );
+    cl->lpfnWndProc = GetProc16( (PROCPTR)tmp, GETPROC_CALLBACK );
     rc = RegisterClass( cl );
     cl->lpfnWndProc = tmp;
     return( rc );
