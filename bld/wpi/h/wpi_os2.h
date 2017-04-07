@@ -223,6 +223,9 @@ extern void _wpi_releasepres( HWND hwnd, WPI_PRES pres );
     #define _wpi_unregisterclass( name, inst ) \
         // nothing
 
+    #define _wpi_freeenumprocinstance( proc ) \
+        // nothing
+
     #define _wpi_freeprocinstance( proc ) \
         // nothing
 

@@ -310,6 +310,8 @@ extern void _wpi_getbitmapdim( HBITMAP bmp, int *pwidth, int *pheight );
 
     #define _wpi_defdlgproc( hwnd, msg, mp1, mp2 ) FALSE
 
+    #define _wpi_freeenumprocinstance( proc ) FreeProcInstance( (FARPROC)proc )
+
     #define _wpi_freeprocinstance( proc ) FreeProcInstance( (FARPROC)proc )
 
     #define _wpi_getclassproc( class ) (class)->lpfnWndProc
