@@ -377,7 +377,7 @@ WPI_MRESULT CALLBACK ViewWindowProc( HWND hwnd, WPI_MSG msg,
  */
 void CheckViewItem( HMENU hmenu )
 {
-    WPI_ENUMPROC        fp_enum;
+    WPI_ENUMPROC        enumproc;
 
     if( _wpi_isitemchecked( hmenu, IMGED_VIEW ) ) {
         _wpi_checkmenuitem( hmenu, IMGED_VIEW, MF_UNCHECKED, FALSE );
@@ -395,9 +395,9 @@ void CheckViewItem( HMENU hmenu )
 
     ShowWindow( _wpi_getframe( hViewWindow ), showState );
     if( _wpi_iswindow( Instance, ClientWindow ) ) {
-        fp_enum = _wpi_makeenumprocinstance( ViewEnumProc, Instance );
-        _wpi_enumchildwindows( ClientWindow, fp_enum, 0L );
-        _wpi_freeprocinstance( fp_enum );
+        enumproc = _wpi_makeenumprocinstance( ViewEnumProc, Instance );
+        _wpi_enumchildwindows( ClientWindow, enumproc, 0L );
+        _wpi_freeenumprocinstance( enumproc );
     }
 
 } /* CheckViewItem */
@@ -445,7 +445,7 @@ BOOL CALLBACK BkColorEnumProc( HWND hwnd, LONG lparam )
  */
 void SetViewBkColor( COLORREF color )
 {
-    WPI_ENUMPROC        fp_enum;
+    WPI_ENUMPROC        enumproc;
 
     if( color == bkgroundColor ) {
         return;
@@ -457,9 +457,9 @@ void SetViewBkColor( COLORREF color )
     }
     InvalidateRect( hViewWindow, NULL, TRUE );
 
-    fp_enum = _wpi_makeenumprocinstance( BkColorEnumProc, Instance );
-    _wpi_enumchildwindows( ClientWindow, fp_enum, 0L );
-    _wpi_freeprocinstance( fp_enum );
+    enumproc = _wpi_makeenumprocinstance( BkColorEnumProc, Instance );
+    _wpi_enumchildwindows( ClientWindow, enumproc, 0L );
+    _wpi_freeenumprocinstance( enumproc );
 
 } /* SetViewBkColor */
 
@@ -572,24 +572,24 @@ void RePositionViewWnd( img_node *node )
  */
 void SetViewWindow( BOOL justone )
 {
-    WPI_ENUMPROC        fp_enum;
+    WPI_ENUMPROC        enumproc;
     int                 prev_show_state;
 
     fOneViewWindow = justone;
 
     if( !justone ) {
         if( _wpi_iswindow( Instance, ClientWindow ) ) {
-            fp_enum = _wpi_makeenumprocinstance( ViewEnumProc, Instance );
-            _wpi_enumchildwindows( ClientWindow, fp_enum, 0L );
-            _wpi_freeprocinstance( fp_enum );
+            enumproc = _wpi_makeenumprocinstance( ViewEnumProc, Instance );
+            _wpi_enumchildwindows( ClientWindow, enumproc, 0L );
+            _wpi_freeenumprocinstance( enumproc );
         }
     } else {
         prev_show_state = showState;
         showState = SW_HIDE;
         if( _wpi_iswindow( Instance, ClientWindow ) ) {
-            fp_enum = _wpi_makeenumprocinstance( ViewEnumProc, Instance );
-            _wpi_enumchildwindows( ClientWindow, fp_enum, 0L );
-            _wpi_freeprocinstance( fp_enum );
+            enumproc = _wpi_makeenumprocinstance( ViewEnumProc, Instance );
+            _wpi_enumchildwindows( ClientWindow, enumproc, 0L );
+            _wpi_freeenumprocinstance( enumproc );
         }
         showState = prev_show_state;
         if( _wpi_iswindow( Instance, hViewWindow ) ) {

@@ -318,13 +318,13 @@ void _wpi_deletepres( WPI_PRES pres, HDC hdc )
     DevCloseDC( hdc );
 } /* _wpi_deletepres */
 
-int _wpi_dialogbox( HWND parent, WPI_DLGPROC proc, WPI_INST inst, LPCSTR res_id, void *data )
-/*******************************************************************************************/
+int _wpi_dialogbox( HWND parent, WPI_DLGPROC dlgproc, WPI_INST inst, LPCSTR res_id, void *data )
+/**********************************************************************************************/
 {
     HWND                new_dlg;
     int                 ret;
 
-    new_dlg = WinLoadDlg( HWND_DESKTOP, parent, proc, inst.mod_handle, (ULONG)res_id, (PVOID)data );
+    new_dlg = WinLoadDlg( HWND_DESKTOP, parent, dlgproc, inst.mod_handle, (ULONG)res_id, (PVOID)data );
     if( new_dlg == (HWND)NULL ) {
         return( -1 );
     }
@@ -334,7 +334,7 @@ int _wpi_dialogbox( HWND parent, WPI_DLGPROC proc, WPI_INST inst, LPCSTR res_id,
 }
 
 void _wpi_drawfocusrect( WPI_PRES pres, WPI_RECT *rect )
-/**********************************************************************/
+/******************************************************/
 {
     POINTL      pt;
     LONG        old_mix;

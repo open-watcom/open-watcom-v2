@@ -132,7 +132,7 @@ WPI_DLGRESULT CALLBACK ChangeSizeDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wpa
 void ChangeImageSize( void )
 {
     img_node        *node;
-    WPI_DLGPROC     dlg_proc;
+    WPI_DLGPROC     dlgproc;
     WPI_DLGRESULT   button_type;
     img_node        new_node;
     WPI_PRES        pres;
@@ -164,9 +164,9 @@ void ChangeImageSize( void )
     imgHeight = node->height;
     imgWidth = node->width;
 
-    dlg_proc = (WPI_DLGPROC)_wpi_makeprocinstance( (WPI_PROC)ChangeSizeDlgProc, Instance );
-    button_type = _wpi_dialogbox( HMainWindow, dlg_proc, Instance, IMAGESIZE, 0L );
-    _wpi_freeprocinstance( (WPI_PROC)dlg_proc );
+    dlgproc = _wpi_makedlgprocinstance( ChangeSizeDlgProc, Instance );
+    button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, IMAGESIZE, 0L );
+    _wpi_freedlgprocinstance( dlgproc );
 
     if( button_type == DLGID_CANCEL ) {
         return;

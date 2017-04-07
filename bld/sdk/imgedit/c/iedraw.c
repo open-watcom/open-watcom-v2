@@ -1004,7 +1004,7 @@ void CreateDrawnImage( img_node *node )
  */
 void CheckGridItem( HMENU hmenu )
 {
-    WPI_ENUMPROC        fp_enum;
+    WPI_ENUMPROC        enumproc;
     HCURSOR             prevcursor;
 
     prevcursor = _wpi_setcursor( _wpi_getsyscursor( IDC_WAIT ) );
@@ -1022,9 +1022,9 @@ void CheckGridItem( HMENU hmenu )
     PressGridButton();
 
     if( DoImagesExist() ) {
-        fp_enum = _wpi_makeenumprocinstance( GridEnumProc, Instance );
-        _wpi_enumchildwindows( ClientWindow, fp_enum, 0L );
-        _wpi_freeprocinstance( fp_enum );
+        enumproc = _wpi_makeenumprocinstance( GridEnumProc, Instance );
+        _wpi_enumchildwindows( ClientWindow, enumproc, 0L );
+        _wpi_freeenumprocinstance( enumproc );
     }
     _wpi_setcursor( prevcursor );
 

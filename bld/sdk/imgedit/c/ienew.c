@@ -299,7 +299,7 @@ static void initializeImage( img_node *node, const char *filename )
  */
 int NewImage( int img_type, const char *filename )
 {
-    WPI_DLGPROC         dlg_proc;
+    WPI_DLGPROC         dlgproc;
     INT_PTR             button_type;
     short               width;
     short               height;
@@ -321,9 +321,9 @@ int NewImage( int img_type, const char *filename )
     }
 
     if( img_type == UNDEF_IMG ) {
-        dlg_proc = (WPI_DLGPROC)_wpi_makeprocinstance( (WPI_PROC)SelImgDlgProc, Instance );
-        button_type = _wpi_dialogbox( HMainWindow, dlg_proc, Instance, SELECTIMAGE, 0L );
-        _wpi_freeprocinstance( (WPI_PROC)dlg_proc );
+        dlgproc = _wpi_makedlgprocinstance( SelImgDlgProc, Instance );
+        button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, SELECTIMAGE, 0L );
+        _wpi_freedlgprocinstance( dlgproc );
 
         if( button_type == DLGID_CANCEL ) {
             return( FALSE );
@@ -336,9 +336,9 @@ int NewImage( int img_type, const char *filename )
 
     switch( imgType ) {
     case BITMAP_IMG:
-        dlg_proc = (WPI_DLGPROC)_wpi_makeprocinstance( (WPI_PROC)SelBitmapDlgProc, Instance );
-        button_type = _wpi_dialogbox( HMainWindow, dlg_proc, Instance, BITMAPTYPE, 0L );
-        _wpi_freeprocinstance( (WPI_PROC)dlg_proc );
+        dlgproc = _wpi_makedlgprocinstance( SelBitmapDlgProc, Instance );
+        button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, BITMAPTYPE, 0L );
+        _wpi_freedlgprocinstance( dlgproc );
         if( button_type == DLGID_CANCEL ) {
             imgType = UNDEF_IMG;
             imageCount--;
@@ -378,9 +378,9 @@ int NewImage( int img_type, const char *filename )
         imgHeight = height;
         bitCount = bcount;
 #else
-        dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)SelCursorDlgProc, Instance );
-        button_type = JDialogBox( Instance, "CURSORTYPE", HMainWindow, dlg_proc );
-        FreeProcInstance( (FARPROC)dlg_proc );
+        dlgproc = (DLGPROC)MakeProcInstance( (FARPROC)SelCursorDlgProc, Instance );
+        button_type = JDialogBox( Instance, "CURSORTYPE", HMainWindow, dlgproc );
+        FreeProcInstance( (FARPROC)dlgproc );
         if( button_type == IDCANCEL ) {
             imgType = UNDEF_IMG;
             return( imgType );

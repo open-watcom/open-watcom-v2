@@ -194,28 +194,28 @@ BOOL CALLBACK InsertResDlgCntlFunc( HWND hwnd, LPARAM lparam )
 
 bool GUIInsertResDialogControls( gui_window *wnd )
 {
-    WPI_ENUMPROC        enum_proc;
+    WPI_ENUMPROC        enumproc;
 
-    enum_proc = _wpi_makeenumprocinstance( (WPI_PROC)InsertResDlgCntlFunc, GUIMainHInst );
-    _wpi_enumchildwindows( wnd->hwnd, enum_proc, (LPARAM)wnd );
-    _wpi_freeprocinstance( (WPI_PROC)enum_proc );
+    enumproc = _wpi_makeenumprocinstance( (WPI_PROC)InsertResDlgCntlFunc, GUIMainHInst );
+    _wpi_enumchildwindows( wnd->hwnd, enumproc, (LPARAM)wnd );
+    _wpi_freeenumprocinstance( enumproc );
 
     return( true );
 }
 
 bool GUIDoCreateResDialog( res_name_or_id dlg_id, HWND parent, void *data )
 {
-    WPI_DLGPROC     dlg_proc;
+    WPI_DLGPROC     dlgproc;
 
-    dlg_proc = (WPI_DLGPROC)_wpi_makeprocinstance( (WPI_PROC)GUIDialogDlgProc, GUIMainHInst );
-    if( dlg_proc == NULL ) {
+    dlgproc = _wpi_makedlgprocinstance( GUIDialogDlgProc, GUIMainHInst );
+    if( dlgproc == NULL ) {
         return( false );
     }
-    if( _wpi_dialogbox( parent, dlg_proc, GUIResHInst, dlg_id, data ) == -1 ) {
-        _wpi_freeprocinstance( (WPI_PROC)dlg_proc );
+    if( _wpi_dialogbox( parent, dlgproc, GUIResHInst, dlg_id, data ) == -1 ) {
+        _wpi_freedlgprocinstance( dlgproc );
         return( false );
     }
-    _wpi_freeprocinstance( (WPI_PROC)dlg_proc );
+    _wpi_freedlgprocinstance( dlgproc );
 
     return( true );
 }

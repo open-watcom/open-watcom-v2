@@ -184,13 +184,13 @@ WPI_DLGRESULT CALLBACK SelColorDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wpara
  */
 void ChooseBkColor( void )
 {
-    WPI_DLGPROC         dlg_proc;
+    WPI_DLGPROC         dlgproc;
     WPI_DLGRESULT       button_type;
 
     screenColor.color = GetViewBkColor();
-    dlg_proc = (WPI_DLGPROC)_wpi_makeprocinstance( (WPI_PROC)SelColorDlgProc, Instance );
-    button_type = _wpi_dialogbox( HMainWindow, dlg_proc, Instance, SELBKCOLOR, 0L );
-    _wpi_freeprocinstance( (WPI_PROC)dlg_proc );
+    dlgproc = _wpi_makedlgprocinstance( SelColorDlgProc, Instance );
+    button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, SELBKCOLOR, 0L );
+    _wpi_freedlgprocinstance( dlgproc );
 
     if( button_type == IDCANCEL ) {
         return;

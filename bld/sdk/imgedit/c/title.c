@@ -178,7 +178,7 @@ INT_PTR CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM l
  */
 void DisplayTitleScreen( HINSTANCE inst, HWND parent, UINT msecs, char *app_name )
 {
-    DLGPROC     dlg_proc;
+    DLGPROC     dlgproc;
     int         len;
 
     len = strlen( app_name );
@@ -186,9 +186,9 @@ void DisplayTitleScreen( HINSTANCE inst, HWND parent, UINT msecs, char *app_name
     strcpy( appName, app_name );
 
     wMainInst = inst;
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)wTitleDlgProc, inst );
-    JDialogBoxParam( inst, "WTitleScreen", parent, dlg_proc, (LPARAM)&msecs );
-    FreeProcInstance( (FARPROC)dlg_proc );
+    dlgproc = (DLGPROC)MakeProcInstance( (FARPROC)wTitleDlgProc, inst );
+    JDialogBoxParam( inst, "WTitleScreen", parent, dlgproc, (LPARAM)&msecs );
+    FreeProcInstance( (FARPROC)dlgproc );
     MemFree( appName );
 
 } /* DisplayTitleScreen */

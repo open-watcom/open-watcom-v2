@@ -302,6 +302,9 @@ extern void _wpi_getbitmapdim( HBITMAP bmp, int *pwidth, int *pheight );
 
     #define _wpi_makeprocinstance( proc, inst ) MakeProcInstance( proc, inst )
 
+    #define _wpi_makedlgprocinstance( proc, inst ) \
+                                    (WPI_DLGPROC)MakeProcInstance( (FARPROC)proc, inst )
+
     #define _wpi_makeenumprocinstance( proc, inst ) \
                                     (WPI_ENUMPROC)MakeProcInstance( (FARPROC)proc, inst )
 
@@ -309,6 +312,8 @@ extern void _wpi_getbitmapdim( HBITMAP bmp, int *pwidth, int *pheight );
                                     (WPI_LINEDDAPROC)MakeProcInstance( (FARPROC)proc, inst )
 
     #define _wpi_defdlgproc( hwnd, msg, mp1, mp2 ) FALSE
+
+    #define _wpi_freedlgprocinstance( proc ) FreeProcInstance( (FARPROC)proc )
 
     #define _wpi_freeenumprocinstance( proc ) FreeProcInstance( (FARPROC)proc )
 

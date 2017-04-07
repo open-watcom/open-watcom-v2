@@ -80,13 +80,13 @@ BOOL CALLBACK GUIEnumChildWindowsEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
 
 void GUIEnumChildWindows( gui_window *wnd, ENUMCALLBACK *func, void *param )
 {
-    WPI_ENUMPROC    enum_proc;
+    WPI_ENUMPROC    enumproc;
     enum_info       info;
 
-    enum_proc = _wpi_makeenumprocinstance( GUIEnumChildWindowsEnumFunc, GUIMainHInst );
+    enumproc = _wpi_makeenumprocinstance( GUIEnumChildWindowsEnumFunc, GUIMainHInst );
     info.parent = wnd;
     info.func = func;
     info.param = param;
-    _wpi_enumchildwindows( wnd->hwnd, enum_proc, (LPARAM)&info );
-    _wpi_freeprocinstance( (WPI_PROC)enum_proc );
+    _wpi_enumchildwindows( wnd->hwnd, enumproc, (LPARAM)&info );
+    _wpi_freeenumprocinstance( enumproc );
 }

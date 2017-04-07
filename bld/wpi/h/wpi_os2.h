@@ -223,6 +223,9 @@ extern void _wpi_releasepres( HWND hwnd, WPI_PRES pres );
     #define _wpi_unregisterclass( name, inst ) \
         // nothing
 
+    #define _wpi_freedlgprocinstance( proc ) \
+        // nothing
+
     #define _wpi_freeenumprocinstance( proc ) \
         // nothing
 
@@ -514,12 +517,13 @@ extern HWND _wpi_createobjwindow( LPSTR class, LPSTR name, ULONG style, int x,
 
     #define _wpi_makeprocinstance( proc, inst ) ( (WPI_PROC) proc )
 
-    #define _wpi_makeenumprocinstance( proc, inst ) ( (WPI_ENUMPROC) proc )
+    #define _wpi_makedlgprocinstance( proc, inst ) ( proc )
+
+    #define _wpi_makeenumprocinstance( proc, inst ) ( proc )
 
     #define _wpi_makelineddaprocinstance( proc, inst ) ((WPI_LINEDDAPROC)proc)
 
-    #define _wpi_defdlgproc( hwnd, msg, mp1, mp2 ) \
-                                            WinDefDlgProc(hwnd, msg, mp1, mp2)
+    #define _wpi_defdlgproc( hwnd, msg, mp1, mp2 ) WinDefDlgProc(hwnd, msg, mp1, mp2)
 
     #define _wpi_callwindowproc( proc, hwnd, msg, parm1, parm2 ) \
         ((proc)( hwnd, msg, (WPI_PARAM1) parm1, (WPI_PARAM2) parm2 ))

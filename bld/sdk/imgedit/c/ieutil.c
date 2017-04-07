@@ -548,7 +548,7 @@ BOOL CALLBACK GetPosProc( HWND hwnd, LONG lparam )
  */
 void FindOrigin( WPI_POINT *new_origin )
 {
-    WPI_ENUMPROC    fp;
+    WPI_ENUMPROC    enumproc;
     int             image_count;
     int             i, j;
     WPI_POINT       temp;
@@ -568,9 +568,9 @@ void FindOrigin( WPI_POINT *new_origin )
     windowCoords = MemAlloc( image_count * sizeof( WPI_POINT ) );
     windowIndex = 0;
 
-    fp = _wpi_makeenumprocinstance( GetPosProc, Instance );
-    _wpi_enumchildwindows( ClientWindow, fp, 0L );
-    _wpi_freeprocinstance( fp );
+    enumproc = _wpi_makeenumprocinstance( GetPosProc, Instance );
+    _wpi_enumchildwindows( ClientWindow, enumproc, 0L );
+    _wpi_freeenumprocinstance( enumproc );
 
     /*
      * I'm just using a simple bubble sort ... we're using small amounts of data

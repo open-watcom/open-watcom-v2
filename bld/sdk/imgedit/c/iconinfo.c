@@ -417,19 +417,19 @@ WPI_DLGRESULT CALLBACK SelExistingDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wp
  */
 BOOL CreateNewIcon( short *width, short *height, short *bitcount, BOOL is_icon )
 {
-    WPI_DLGPROC         dlg_proc;
+    WPI_DLGPROC         dlgproc;
     WPI_DLGRESULT       button_type;
 
     iconOperation = NEW_ICON_OP;
     resetIconInfo();
 
-    dlg_proc = (WPI_DLGPROC)_wpi_makeprocinstance( (WPI_PROC)SelNonExistingDlgProc, Instance );
+    dlgproc = _wpi_makedlgprocinstance( SelNonExistingDlgProc, Instance );
     if( is_icon ) {
-        button_type = _wpi_dialogbox( HMainWindow, dlg_proc, Instance, ICONTYPE, 0L );
+        button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, ICONTYPE, 0L );
     } else {
-        button_type = _wpi_dialogbox( HMainWindow, dlg_proc, Instance, CURSORTYPE, 0L );
+        button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, CURSORTYPE, 0L );
     }
-    _wpi_freeprocinstance( (WPI_PROC)dlg_proc );
+    _wpi_freedlgprocinstance( dlgproc );
 
     if( button_type == DLGID_CANCEL ) {
         return( FALSE );
@@ -451,7 +451,7 @@ BOOL CreateNewIcon( short *width, short *height, short *bitcount, BOOL is_icon )
  */
 void AddNewIcon( void )
 {
-    WPI_DLGPROC         dlg_proc;
+    WPI_DLGPROC         dlgproc;
     WPI_DLGRESULT       button_type;
     img_node            *currentnode;
     img_node            *node;
@@ -469,9 +469,9 @@ void AddNewIcon( void )
     node = GetImageNode( currentnode->hwnd );
 
     iconOperation = ADD_ICON_OP;
-    dlg_proc = (WPI_DLGPROC)_wpi_makeprocinstance( (WPI_PROC)SelNonExistingDlgProc, Instance );
-    button_type = _wpi_dialogbox( HMainWindow, dlg_proc, Instance, ICONTYPE, 0L );
-    _wpi_freeprocinstance( (WPI_PROC)dlg_proc );
+    dlgproc = _wpi_makedlgprocinstance( SelNonExistingDlgProc, Instance );
+    button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, ICONTYPE, 0L );
+    _wpi_freedlgprocinstance( dlgproc );
 
     if( button_type == DLGID_CANCEL ) {
         return;
@@ -519,7 +519,7 @@ void AddNewIcon( void )
  */
 void DeleteIconImg( void )
 {
-    WPI_DLGPROC         dlg_proc;
+    WPI_DLGPROC         dlgproc;
     WPI_DLGRESULT       button_type;
     int                 icon_index;
     img_node            *currentnode;
@@ -537,9 +537,9 @@ void DeleteIconImg( void )
     node = GetImageNode( currentnode->hwnd );
     iconOperation = DELETE_ICON_OP;
 
-    dlg_proc = (WPI_DLGPROC)_wpi_makeprocinstance( (WPI_PROC)SelExistingDlgProc, Instance );
-    button_type = _wpi_dialogbox( HMainWindow, dlg_proc, Instance, ICONTYPE, 0L );
-    _wpi_freeprocinstance( (WPI_PROC)dlg_proc );
+    dlgproc = _wpi_makedlgprocinstance( SelExistingDlgProc, Instance );
+    button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, ICONTYPE, 0L );
+    _wpi_freedlgprocinstance( dlgproc );
 
     if( button_type == DLGID_CANCEL ) {
         return;
@@ -582,7 +582,7 @@ void DeleteIconImg( void )
  */
 void SelectIconImg( void )
 {
-    WPI_DLGPROC         dlg_proc;
+    WPI_DLGPROC         dlgproc;
     WPI_DLGRESULT       button_type;
     int                 icon_index;
     img_node            *currentnode;
@@ -597,9 +597,9 @@ void SelectIconImg( void )
     node = GetImageNode( currentnode->hwnd );
     iconOperation = SEL_ICON_OP;
 
-    dlg_proc = (WPI_DLGPROC)_wpi_makeprocinstance( (WPI_PROC)SelExistingDlgProc, Instance );
-    button_type = _wpi_dialogbox( HMainWindow, dlg_proc, Instance, ICONTYPE, 0L );
-    _wpi_freeprocinstance( (WPI_PROC)dlg_proc );
+    dlgproc = _wpi_makedlgprocinstance( SelExistingDlgProc, Instance );
+    button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, ICONTYPE, 0L );
+    _wpi_freedlgprocinstance( dlgproc );
 
     if( button_type == DLGID_CANCEL ) {
         return;
