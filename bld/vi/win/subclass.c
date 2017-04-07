@@ -34,10 +34,11 @@
 #include "subclass.h"
 #include <assert.h>
 
+
 proc_entry  *procHead;
 proc_entry  *procTail;
 
-void SubclassGenericAdd( HWND hwnd, WNDPROC proc )
+void SubclassGenericAdd( HWND hwnd, WNDPROCx wndproc, HINSTANCE inst )
 {
     proc_entry *newProc;
 
@@ -45,7 +46,7 @@ void SubclassGenericAdd( HWND hwnd, WNDPROC proc )
 
     newProc->hwnd = hwnd;
     newProc->oldProc = (WNDPROC)GET_WNDPROC( hwnd );
-    newProc->newProc = proc;
+    newProc->newProc = MakeProcInstance_WND( wndproc, inst );
     SET_WNDPROC( hwnd, (LONG_PTR)newProc->newProc );
 
     AddLLItemAtEnd( (ss **)&procHead, (ss **)&procTail, (ss *)newProc );

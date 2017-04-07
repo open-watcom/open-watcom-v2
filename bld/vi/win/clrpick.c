@@ -361,7 +361,7 @@ WINEXPORT LRESULT CALLBACK ClrPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
         initRGBValues();
         // our subclass slows things down - force a paint before we subclass
         UpdateWindow( hwnd );
-        // SubclassGenericAdd( hwnd, MakeProcInstance_WND( HotkeyProc, InstanceHandle ) );
+        // SubclassGenericAdd( hwnd, HotkeyProc, InstanceHandle );
         return( 0 );
     case WM_PAINT:
         paintBlocks( hwnd );

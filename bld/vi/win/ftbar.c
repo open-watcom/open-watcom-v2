@@ -363,10 +363,10 @@ static void initHwnds( HWND hwndDlg )
         hwndSizeEdit = GetWindow( hwndSizeEdit, GW_HWNDNEXT );
     }
 
-    SubclassGenericAdd( hwndTypeface, MakeProcInstance_WND( HotkeyProc, InstanceHandle ) );
-    SubclassGenericAdd( hwndStyle,    MakeProcInstance_WND( HotkeyProc, InstanceHandle ) );
-    SubclassGenericAdd( hwndSize,     MakeProcInstance_WND( HotkeyProc, InstanceHandle ) );
-    SubclassGenericAdd( hwndSizeEdit, MakeProcInstance_WND( HotkeyProc, InstanceHandle ) );
+    SubclassGenericAdd( hwndTypeface, HotkeyProc, InstanceHandle );
+    SubclassGenericAdd( hwndStyle,    HotkeyProc, InstanceHandle );
+    SubclassGenericAdd( hwndSize,     HotkeyProc, InstanceHandle );
+    SubclassGenericAdd( hwndSizeEdit, HotkeyProc, InstanceHandle );
 }
 
 static void doneWithHwnds( void )

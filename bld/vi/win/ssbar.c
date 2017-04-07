@@ -347,13 +347,13 @@ static void addSubclasses( HWND hwnd )
 {
     int     i;
     for( i = SS_FIRST_CONTENT; i <= SS_LAST_CONTENT; i++ ) {
-        SubclassGenericAdd( GetDlgItem( hwnd, i ), MakeProcInstance_WND( StaticSubclassProc, InstanceHandle ) );
+        SubclassGenericAdd( GetDlgItem( hwnd, i ), StaticSubclassProc, InstanceHandle );
     }
     for( i = SS_FIRST_ALIGNMENT; i <= SS_LAST_ALIGNMENT; i++ ) {
-        SubclassGenericAdd( GetDlgItem( hwnd, i ), MakeProcInstance_WND( StaticSubclassProc, InstanceHandle ) );
+        SubclassGenericAdd( GetDlgItem( hwnd, i ), StaticSubclassProc, InstanceHandle );
     }
     for( i = SS_FIRST_COMMAND; i <= SS_LAST_COMMAND; i++ ) {
-        SubclassGenericAdd( GetDlgItem( hwnd, i ), MakeProcInstance_WND( StaticSubclassProc, InstanceHandle ) );
+        SubclassGenericAdd( GetDlgItem( hwnd, i ), StaticSubclassProc, InstanceHandle );
     }
 }
 
