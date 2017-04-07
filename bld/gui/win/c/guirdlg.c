@@ -196,7 +196,7 @@ bool GUIInsertResDialogControls( gui_window *wnd )
 {
     WPI_ENUMPROC        enumproc;
 
-    enumproc = _wpi_makeenumprocinstance( (WPI_PROC)InsertResDlgCntlFunc, GUIMainHInst );
+    enumproc = _wpi_makeenumprocinstance( InsertResDlgCntlFunc, GUIMainHInst );
     _wpi_enumchildwindows( wnd->hwnd, enumproc, (LPARAM)wnd );
     _wpi_freeenumprocinstance( enumproc );
 
