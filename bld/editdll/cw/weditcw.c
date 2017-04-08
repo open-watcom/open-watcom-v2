@@ -297,24 +297,20 @@ BOOL CALLBACK EnumWnd( HWND hwnd, LPARAM lParam )
 int extern __export FAR PASCAL EDITDisconnect( void )
 {
 //    DWORD       idTransaction;
-    WNDENUMPROC lpEnumWnd;
+    WNDENUMPROC wndenumproc;
     HWND        hwndCodewright = NULL;
-
 
     if( !bConnected ) {
         return( TRUE );
     }
-
     // kill our dde connection
     DdeUninitialize( idInstance );
     idInstance = 0;
-
     if( bAppSpawned ) {
         // look for a window with class name szClassName
-        lpEnumWnd = (WNDENUMPROC) MakeProcInstance( (FARPROC) EnumWnd,
-                                                     hInstance );
-        EnumWindows( lpEnumWnd, (LPARAM)&hwndCodewright );
-        FreeProcInstance( (FARPROC) lpEnumWnd );
+        wndenumproc = MakeProcInstance_WNDENUM( EnumWnd, hInstance );
+        EnumWindows( wndenumproc, (LPARAM)&hwndCodewright );
+        FreeProcInstance_WNDENUM( wndenumproc );
 
         if( hwndCodewright != NULL ) {
             // found a window called CodeWright - make a half-hearted
