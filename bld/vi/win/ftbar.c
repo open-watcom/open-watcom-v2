@@ -37,7 +37,6 @@
 #include "font.h"
 #include "subclass.h"
 #include "hotkey.h"
-#include "wclbproc.h"
 
 
 /* NB: In Win386 mode, the FAR pointers passed to callback procs are
@@ -52,9 +51,9 @@
 
 /* Local Windows CALLBACK function prototypes */
 #if defined( __WINDOWS_386__ )
-WINEXPORT int CALLBACK EnumFamTypefaces( const LOGFONT *_lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam );
-WINEXPORT int CALLBACK EnumFamInfo( const LOGFONT *_lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam );
-WINEXPORT int CALLBACK SetupFontData( const LOGFONT *_lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam );
+WINEXPORT int CALLBACK EnumFamTypefaces( const LOGFONT *lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam );
+WINEXPORT int CALLBACK EnumFamInfo( const LOGFONT *lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam );
+WINEXPORT int CALLBACK SetupFontData( const LOGFONT *lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam );
 #elif defined( __WINDOWS__ )
 WINEXPORT int CALLBACK EnumFamTypefaces( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int FontType, LPARAM lparam );
 WINEXPORT int CALLBACK EnumFamInfo( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int FontType, LPARAM lparam );
@@ -93,7 +92,7 @@ int     YPIXELS_PER_INCH = 96;
 
 
 #if defined( __WINDOWS_386__ )
-WINEXPORT int CALLBACK EnumFamTypefaces( const LOGFONT *_lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam )
+WINEXPORT int CALLBACK EnumFamTypefaces( const LOGFONT *lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam )
 #elif defined( __WINDOWS__ )
 WINEXPORT int CALLBACK EnumFamTypefaces( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int FontType, LPARAM lparam )
 #else
@@ -101,17 +100,15 @@ WINEXPORT int CALLBACK EnumFamTypefaces( const LOGFONT FAR *lf, const TEXTMETRIC
 #endif
 {
 #ifdef __WINDOWS_386__
-    char                   faceName[LF_FACESIZE];
-    const LOGFONT __far    *lf = MK_FP32( (void *)_lf );
+    char                faceName[LF_FACESIZE];
+    const ENUMLOGFONT   __far *elf = MK_FP32( (void *)lf );
     tm = tm;
 #elif defined( __WINDOWS__ )
-    const LOGFONT FAR      *lf = (const LOGFONT FAR *)elf;
-//    const TEXTMETRIC FAR *tm = (const TEXTMETRIC FAR *)ntm;
     ntm = ntm;
 #else
+    const ENUMLOGFONT   FAR *elf = (const ENUMLOGFONT FAR *)lf;
     tm = tm;
 #endif
-
     lparam = lparam;
     FontType = FontType;
 
@@ -120,34 +117,33 @@ WINEXPORT int CALLBACK EnumFamTypefaces( const LOGFONT FAR *lf, const TEXTMETRIC
      * but we get a far pointer from Windows. Hence the shenanigans with
      * a temp buffer in the flat address space.
      */
-    _fstrcpy( faceName, lf->lfFaceName );
+    _fstrcpy( faceName, elf->elfLogFont.lfFaceName );
     SendMessage( hwndTypeface, LB_ADDSTRING, 0, (LPARAM)faceName );
 #else
-    SendMessage( hwndTypeface, LB_ADDSTRING, 0, (LPARAM)(lf->lfFaceName) );
+    SendMessage( hwndTypeface, LB_ADDSTRING, 0, (LPARAM)(elf->elfLogFont.lfFaceName) );
 #endif
 
     return( TRUE );
 }
 
 #if defined( __WINDOWS_386__ )
-WINEXPORT int CALLBACK EnumFamInfo( const LOGFONT *_lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam )
+WINEXPORT int CALLBACK EnumFamInfo( const LOGFONT *lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam )
 #elif defined( __WINDOWS__ )
 WINEXPORT int CALLBACK EnumFamInfo( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int FontType, LPARAM lparam )
 #else
 WINEXPORT int CALLBACK EnumFamInfo( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD FontType, LPARAM lparam )
 #endif
 {
-    char                   sbuf[40];
-    int                    height;
-    long                   *isTrueType = (long *)lparam;
+    char                    sbuf[40];
+    int                     height;
+    long                    *isTrueType = (long *)lparam;
 #ifdef __WINDOWS_386__
-    const LOGFONT __far    *lf = MK_FP32( (void *)_lf );
+    const ENUMLOGFONT       __far *elf = MK_FP32( (void *)lf );
     tm = tm;
 #elif defined( __WINDOWS__ )
-    const LOGFONT FAR      *lf = (const LOGFONT FAR *)elf;
-//    const TEXTMETRIC FAR *tm = (const TEXTMETRIC FAR *)ntm;
     ntm = ntm;
 #else
+    const ENUMLOGFONT       FAR *elf = (const ENUMLOGFONT FAR *)lf;
     tm = tm;
 #endif
 
@@ -165,7 +161,7 @@ WINEXPORT int CALLBACK EnumFamInfo( const LOGFONT FAR *lf, const TEXTMETRIC FAR 
     } else {
         /* add size to list
         */
-        height = abs( lf->lfHeight );
+        height = abs( elf->elfLogFont.lfHeight );
         sprintf( sbuf, "%d", height );
         if( SendMessage( hwndSize, CB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)sbuf ) == CB_ERR ) {
             SendMessage( hwndSize, CB_INSERTSTRING, NSizes, (LPARAM)sbuf );
@@ -175,7 +171,7 @@ WINEXPORT int CALLBACK EnumFamInfo( const LOGFONT FAR *lf, const TEXTMETRIC FAR 
 }
 
 #if defined( __WINDOWS_386__ )
-WINEXPORT int CALLBACK SetupFontData( const LOGFONT *_lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam )
+WINEXPORT int CALLBACK SetupFontData( const LOGFONT *lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam )
 #elif defined( __WINDOWS__ )
 WINEXPORT int CALLBACK SetupFontData( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int FontType, LPARAM lparam )
 #else
@@ -183,13 +179,12 @@ WINEXPORT int CALLBACK SetupFontData( const LOGFONT FAR *lf, const TEXTMETRIC FA
 #endif
 {
 #ifdef __WINDOWS_386__
-    const LOGFONT __far    *lf = MK_FP32( (void *)_lf );
+    const ENUMLOGFONT       __far *elf = MK_FP32( (void *)lf );
     tm = tm;
 #elif defined( __WINDOWS__ )
-    const LOGFONT FAR      *lf = (const LOGFONT FAR *)elf;
-//    const TEXTMETRIC FAR *tm = (const TEXTMETRIC FAR *)ntm;
     ntm = ntm;
 #else
+    const ENUMLOGFONT       FAR *elf = (const ENUMLOGFONT FAR *)lf;
     tm = tm;
 #endif
 
@@ -197,11 +192,11 @@ WINEXPORT int CALLBACK SetupFontData( const LOGFONT FAR *lf, const TEXTMETRIC FA
     lparam = lparam;
 
     /* start setting up CurLogfont based on the font data */
-    CurLogfont.lfCharSet = lf->lfCharSet;
-    CurLogfont.lfOutPrecision = lf->lfOutPrecision;
-    CurLogfont.lfClipPrecision = lf->lfClipPrecision;
-    CurLogfont.lfQuality = lf->lfQuality;
-    CurLogfont.lfPitchAndFamily = lf->lfPitchAndFamily;
+    CurLogfont.lfCharSet = elf->elfLogFont.lfCharSet;
+    CurLogfont.lfOutPrecision = elf->elfLogFont.lfOutPrecision;
+    CurLogfont.lfClipPrecision = elf->elfLogFont.lfClipPrecision;
+    CurLogfont.lfQuality = elf->elfLogFont.lfQuality;
+    CurLogfont.lfPitchAndFamily = elf->elfLogFont.lfPitchAndFamily;
 
     /* only do this for the 1st font - we just want defaults */
     return( FALSE );

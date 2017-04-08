@@ -38,7 +38,6 @@
 #include "subclass.h"
 #include "wstatus.h"
 #include <assert.h>
-#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */

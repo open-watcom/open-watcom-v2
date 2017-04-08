@@ -39,7 +39,6 @@
 #include "toolbr.h"
 #include "sstyle.h"
 #include "subclass.h"
-#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */

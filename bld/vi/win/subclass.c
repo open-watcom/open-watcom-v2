@@ -40,7 +40,7 @@ proc_entry  *procTail;
 
 void SubclassGenericAdd( HWND hwnd, WNDPROCx wndproc, HINSTANCE inst )
 {
-    proc_entry *newProc;
+    proc_entry  *newProc;
 
     newProc = MemAlloc( sizeof( proc_entry ) );
 
@@ -56,9 +56,10 @@ void SubclassGenericRemove( HWND hwnd )
 {
     proc_entry  *findProc;
 
-    findProc = procHead;
-    while( findProc && findProc->hwnd != hwnd ) {
-        findProc = findProc->next;
+    for( findProc = procHead; findProc != NULL; findProc = findProc->next ) {
+        if( findProc->hwnd == hwnd ) {
+            break;
+        }
     }
     assert( findProc != NULL );
 
@@ -88,9 +89,10 @@ WNDPROC SubclassGenericFindOldProc( HWND hwnd )
     // for the old window... /*BW*/
     proc_entry  *findProc;
 
-    findProc = procHead;
-    while( findProc && findProc->hwnd != hwnd ) {
-        findProc = findProc->next;
+    for( findProc = procHead; findProc != NULL; findProc = findProc->next ) {
+        if( findProc->hwnd == hwnd ) {
+            break;
+        }
     }
     assert( findProc != NULL );
     return( findProc->oldProc );
