@@ -38,56 +38,65 @@
 
 DLGPROC MakeProcInstance_DLG( DLGPROCx fn, HINSTANCE instance )
 {
-#if defined( __WINDOWS_386__ )
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
+    return( (DLGPROC)MakeProcInstance( (FARPROC)fn, instance ) );
+#else
     instance = instance;
     return( (DLGPROC)fn );
-#else
-    return( (DLGPROC)MakeProcInstance( (FARPROC)fn, instance ) );
 #endif
 }
 FONTENUMPROC MakeProcInstance_FONTENUM( FONTENUMPROCx fn, HINSTANCE instance )
 {
-#if defined( __WINDOWS_386__ )
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
+    return( (FONTENUMPROC)MakeProcInstance( (FARPROC)fn, instance ) );
+#else
     instance = instance;
     return( (FONTENUMPROC)fn );
+#endif
+}
+OLDFONTENUMPROC MakeProcInstance_OLDFONTENUM( OLDFONTENUMPROCx fn, HINSTANCE instance )
+{
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
+    return( (OLDFONTENUMPROC)MakeProcInstance( (FARPROC)fn, instance ) );
 #else
-    return( (FONTENUMPROC)MakeProcInstance( (FARPROC)fn, instance ) );
+    instance = instance;
+    return( (OLDFONTENUMPROC)fn );
 #endif
 }
 HOOKPROC MakeProcInstance_HOOK( HOOKPROCx fn, HINSTANCE instance )
 {
-#if defined( __WINDOWS_386__ )
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
+    return( (HOOKPROC)MakeProcInstance( (FARPROC)fn, instance ) );
+#else
     instance = instance;
     return( (HOOKPROC)fn );
-#else
-    return( (HOOKPROC)MakeProcInstance( (FARPROC)fn, instance ) );
 #endif
 }
 LPOFNHOOKPROC MakeProcInstance_OFNHOOK( LPOFNHOOKPROCx fn, HINSTANCE instance )
 {
-#if defined( __WINDOWS_386__ )
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
+    return( (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)fn, instance ) );
+#else
     instance = instance;
     return( (LPOFNHOOKPROC)fn );
-#else
-    return( (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)fn, instance ) );
 #endif
 }
 WNDENUMPROC MakeProcInstance_WNDENUM( WNDENUMPROCx fn, HINSTANCE instance )
 {
-#if defined( __WINDOWS_386__ )
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
+    return( (WNDENUMPROC)MakeProcInstance( (FARPROC)fn, instance ) );
+#else
     instance = instance;
     return( (WNDENUMPROC)fn );
-#else
-    return( (WNDENUMPROC)MakeProcInstance( (FARPROC)fn, instance ) );
 #endif
 }
 WNDPROC MakeProcInstance_WND( WNDPROCx fn, HINSTANCE instance )
 {
-#if defined( __WINDOWS_386__ )
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
+    return( (WNDPROC)MakeProcInstance( (FARPROC)fn, instance ) );
+#else
     instance = instance;
     return( (WNDPROC)fn );
-#else
-    return( (WNDPROC)MakeProcInstance( (FARPROC)fn, instance ) );
 #endif
 }
 WNDPROC GetWndProc( WNDPROCx fn )
@@ -95,53 +104,65 @@ WNDPROC GetWndProc( WNDPROCx fn )
     return( (WNDPROC)fn );
 }
 
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
+
 void FreeProcInstance_DLG( DLGPROC fn )
 {
-#if defined( __WINDOWS_386__ )
-    fn = fn;
-#else
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
     FreeProcInstance( (FARPROC)fn );
+#else
+    fn = fn;
 #endif
 }
 void FreeProcInstance_FONTENUM( FONTENUMPROC fn )
 {
-#if defined( __WINDOWS_386__ )
-    fn = fn;
-#else
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
     FreeProcInstance( (FARPROC)fn );
+#else
+    fn = fn;
+#endif
+}
+void FreeProcInstance_OLDFONTENUM( OLDFONTENUMPROC fn )
+{
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
+    FreeProcInstance( (FARPROC)fn );
+#else
+    fn = fn;
 #endif
 }
 void FreeProcInstance_HOOK( HOOKPROC fn )
 {
-#if defined( __WINDOWS_386__ )
-    fn = fn;
-#else
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
     FreeProcInstance( (FARPROC)fn );
+#else
+    fn = fn;
 #endif
 }
 void FreeProcInstance_OFNHOOK( LPOFNHOOKPROC fn )
 {
-#if defined( __WINDOWS_386__ )
-    fn = fn;
-#else
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
     FreeProcInstance( (FARPROC)fn );
+#else
+    fn = fn;
 #endif
 }
 void FreeProcInstance_WNDENUM( WNDENUMPROC fn )
 {
-#if defined( __WINDOWS_386__ )
-    fn = fn;
-#else
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
     FreeProcInstance( (FARPROC)fn );
+#else
+    fn = fn;
 #endif
 }
 void FreeProcInstance_WND( WNDPROC fn )
 {
-#if defined( __WINDOWS_386__ )
-    fn = fn;
-#else
+#if defined( __WINDOWS__ ) && defined( _M_I86 )
     FreeProcInstance( (FARPROC)fn );
+#else
+    fn = fn;
 #endif
 }
+
+#endif
 
 #endif
