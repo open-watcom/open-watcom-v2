@@ -50,6 +50,7 @@
 #include "wresall.h"
 #include "jdlg.h"
 #include "wresdefn.h"
+#include "wclbproc.h"
 
 
 /****************************************************************************/
@@ -63,7 +64,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WREResRenameProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WREResRenameProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -195,18 +196,18 @@ WResResNode *WREAllocResNodeFromWResID( WResID *id )
 bool WREGetNewName( WREResRenameInfo *info )
 {
     HWND        dialog_owner;
-    DLGPROC     proc_inst;
+    DLGPROC     dlgproc;
     HINSTANCE   app_inst;
     INT_PTR     modified;
 
     dialog_owner = WREGetMainWindowHandle();
     app_inst = WREGetAppInstance();
 
-    proc_inst = (DLGPROC)MakeProcInstance( (FARPROC)WREResRenameProc, app_inst );
+    dlgproc = MakeProcInstance_DLG( WREResRenameProc, app_inst );
 
-    modified = JDialogBoxParam( app_inst, "WRERenameResource", dialog_owner, proc_inst, (LPARAM)info );
+    modified = JDialogBoxParam( app_inst, "WRERenameResource", dialog_owner, dlgproc, (LPARAM)info );
 
-    FreeProcInstance( (FARPROC)proc_inst );
+    FreeProcInstance_DLG( dlgproc );
 
     return( modified != -1 && modified == IDOK );
 }
@@ -227,7 +228,7 @@ void WREGetWinInfo( HWND hDlg, WREResRenameInfo *info )
     }
 }
 
-BOOL CALLBACK WREResRenameProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WREResRenameProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WREResRenameInfo    *info;
     BOOL                ret;

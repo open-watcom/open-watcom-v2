@@ -35,12 +35,13 @@
 #include <string.h>
 #include <ctype.h>
 #include "wzoom.h"
+#include "wclbproc.h"
 #include "watini.h"
 #include "inipath.h"
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT BOOL CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #define SECT_NAME       "WATCOM Zoom Utility"
 
@@ -86,7 +87,7 @@ static BOOL ParseNumeric( char *buf, BOOL signed_val, DWORD *val ) {
 /*
  * ConfigDlgProc
  */
-BOOL CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD                cmd;
     HWND                ctl;
@@ -198,11 +199,11 @@ BOOL CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
  */
 void DoConfig( HWND hwnd ) {
 
-    FARPROC     fp;
+    DLGPROC     dlgproc;
 
-    fp = MakeProcInstance( (FARPROC)ConfigDlgProc, Instance );
-    DialogBox( Instance, "ZOOM_CONFIGURE", hwnd, (DLGPROC)fp );
-    FreeProcInstance( fp );
+    dlgproc = MakeProcInstance_DLG( ConfigDlgProc, Instance );
+    DialogBox( Instance, "ZOOM_CONFIGURE", hwnd, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 }
 
 /*
@@ -213,17 +214,13 @@ void LoadConfig( void ) {
     GetConfigFilePath( iniPath, sizeof(iniPath) );
     strcat( iniPath, "\\" WATCOM_INI );
 #ifndef __NT__
-    ConfigInfo.stickymagnifier = GetPrivateProfileInt( SECT_NAME, STICKY_ID,
-                                             FALSE, iniPath );
+    ConfigInfo.stickymagnifier = GetPrivateProfileInt( SECT_NAME, STICKY_ID, FALSE, iniPath );
 #else
     ConfigInfo.stickymagnifier = FALSE;
 #endif
-    ConfigInfo.topmost = GetPrivateProfileInt( SECT_NAME, ON_TOP,
-                                             TRUE, iniPath );
-    ConfigInfo.refresh_interval = GetPrivateProfileInt( SECT_NAME, INTERVAL,
-                                                         10, iniPath );
-    ConfigInfo.autorefresh = GetPrivateProfileInt( SECT_NAME, AUTOREFRESH,
-                                                         FALSE, iniPath );
+    ConfigInfo.topmost = GetPrivateProfileInt( SECT_NAME, ON_TOP, TRUE, iniPath );
+    ConfigInfo.refresh_interval = GetPrivateProfileInt( SECT_NAME, INTERVAL, 10, iniPath );
+    ConfigInfo.autorefresh = GetPrivateProfileInt( SECT_NAME, AUTOREFRESH, FALSE, iniPath );
 }
 
 /*

@@ -293,7 +293,6 @@ bool    ReadCursorFromData( void *data, const char *fname, WRInfo *info, WResLan
 void    WriteIconLoadedText( char *filename, int num );
 
 /* iesave.c */
-WINEXPORT extern BOOL CALLBACK SaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 bool    SaveBitmapToData( img_node *node, BYTE **data, size_t *size );
 bool    SaveImgToData( img_node *node, BYTE **data, size_t *size );
 BOOL    SaveFile( int how );

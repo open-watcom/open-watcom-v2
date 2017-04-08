@@ -35,12 +35,13 @@
 #include <string.h>
 #include <ctype.h>
 #include "spy.h"
+#include "wclbproc.h"
 
 
 /* Local Window callback functions prototypes */
 WINEXPORT BOOL CALLBACK EnumWindowsFunc( HWND hwnd, LPARAM lparam );
-WINEXPORT BOOL CALLBACK ShowInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-WINEXPORT BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK ShowInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static HWND     *tmpWndList;
 static WORD     tmpWndCnt;
@@ -116,7 +117,7 @@ static HWND     hWndDialog;
  */
 BOOL CALLBACK EnumWindowsFunc( HWND hwnd, LPARAM lparam )
 {
-    FARPROC     fp;
+    WNDENUMPROC wndenumproc;
 
     if( lparam != 0 ) {
         if( GetParent( hwnd ) != (HWND)lparam ) {
@@ -126,9 +127,9 @@ BOOL CALLBACK EnumWindowsFunc( HWND hwnd, LPARAM lparam )
     addFormattedWindow( hwnd );
 
     indentLevel += 3;
-    fp = MakeProcInstance( (FARPROC)EnumWindowsFunc, Instance );
-    EnumChildWindows( hwnd, (WNDENUMPROC)fp, (LPARAM)hwnd );
-    FreeProcInstance( fp );
+    wndenumproc = MakeProcInstance_WNDENUM( EnumWindowsFunc, Instance );
+    EnumChildWindows( hwnd, wndenumproc, (LPARAM)hwnd );
+    FreeProcInstance_WNDENUM( wndenumproc );
     indentLevel -= 3;
     return( 1 );
 
@@ -176,13 +177,13 @@ static void addFormattedWindow( HWND hwnd )
  */
 static void setUpWindows( void )
 {
-    FARPROC     fp;
+    WNDENUMPROC wndenumproc;
 
     indentLevel = 0;
     SendDlgItemMessage( hWndDialog, SELWIN_LISTBOX, LB_RESETCONTENT, 0, 0L );
-    fp = MakeProcInstance( (FARPROC)EnumWindowsFunc, Instance);
-    EnumWindows( (WNDENUMPROC)fp, (LPARAM)NULL );
-    FreeProcInstance( fp );
+    wndenumproc = MakeProcInstance_WNDENUM( EnumWindowsFunc, Instance);
+    EnumWindows( wndenumproc, (LPARAM)NULL );
+    FreeProcInstance_WNDENUM( wndenumproc );
     addFormattedWindow( GetDesktopWindow() );
 
 } /* setUpWindows */
@@ -191,7 +192,7 @@ static void setUpWindows( void )
 /*
  * ShowInfoProc - show info for framed window dialog
  */
-BOOL CALLBACK ShowInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK ShowInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_INITDIALOG:
@@ -223,18 +224,18 @@ BOOL CALLBACK ShowInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
  */
 void ShowFramedInfo( HWND hwnd, HWND framed )
 {
-    DLGPROC     fp;
+    DLGPROC     dlgproc;
 
-    fp = (DLGPROC)MakeProcInstance( (FARPROC)ShowInfoProc, Instance );
-    JDialogBoxParam( Instance, "PEEKWIN", (HWND)hwnd, (DLGPROC)fp, (LPARAM)framed );
-    FreeProcInstance( (FARPROC)fp );
+    dlgproc = MakeProcInstance_DLG( ShowInfoProc, Instance );
+    JDialogBoxParam( Instance, "PEEKWIN", (HWND)hwnd, dlgproc, (LPARAM)framed );
+    FreeProcInstance_DLG( dlgproc );
 
 } /* ShowFramedInfo */
 
 /*
  * ShowSelectedDialog - show all selected windows
  */
-BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        resdata[256], ch;
     const char  *errstr;
@@ -370,7 +371,7 @@ BOOL CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
  */
 void DoShowSelectedDialog( HWND hwnd, BOOL *spyall )
 {
-    FARPROC     fp;
+    DLGPROC     dlgproc;
     INT_PTR     rc;
 
     tmpWndCnt = WindowCount;
@@ -380,8 +381,8 @@ void DoShowSelectedDialog( HWND hwnd, BOOL *spyall )
         tmpWndList = MemAlloc( WindowCount * sizeof( HWND ) );
         memcpy( tmpWndList, WindowList, WindowCount * sizeof( HWND ) );
     }
-    fp = MakeProcInstance( (FARPROC)ShowSelectedDialog, Instance );
-    rc = JDialogBox( ResInstance, "SELECTEDWINS", hwnd, (DLGPROC)fp );
+    dlgproc = MakeProcInstance_DLG( ShowSelectedDialog, Instance );
+    rc = JDialogBox( ResInstance, "SELECTEDWINS", hwnd, dlgproc );
     if( rc ) {
         *spyall = tmpSpyAll;
         WindowCount = tmpWndCnt;
@@ -390,7 +391,7 @@ void DoShowSelectedDialog( HWND hwnd, BOOL *spyall )
     } else {
         MemFree( tmpWndList );
     }
-    FreeProcInstance( fp );
+    FreeProcInstance_DLG( dlgproc );
 
 } /* DoShowSelectedDialog */
 

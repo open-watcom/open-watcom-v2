@@ -32,6 +32,7 @@
 #include <malloc.h>
 #include <string.h>
 #include <stdlib.h>
+#define INCLUDE_COMMDLG_H
 #include <wwindows.h>
 #include "global.h"
 #include "dllmain.h"
@@ -55,6 +56,7 @@
 #include "align.def"
 #include "space.def"
 #include "clip.def"
+#include "wclbproc.h"
 
 
 void FMEDITAPI CloseFormEdit( HWND wnd )
@@ -192,7 +194,7 @@ BOOL CALLBACK FMEditWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lpara
 /*********************************************************************************/
 {
     /* processes messages */
-    DLGPROC        dlg_proc;
+    DLGPROC        dlgproc;
     HANDLE         inst;
     POINT          point;
     POINT          offset;
@@ -240,9 +242,9 @@ BOOL CALLBACK FMEditWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lpara
             CopyObjects();
             break;
         case IDM_GRID:
-            dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)FMGridDlgProc, inst );
-            DialogBox( inst, "GridBox", wnd, dlg_proc );
-            FreeProcInstance( (FARPROC)dlg_proc );
+            dlgproc = MakeProcInstance_DLG( FMGridDlgProc, inst );
+            DialogBox( inst, "GridBox", wnd, dlgproc );
+            FreeProcInstance_DLG( dlgproc );
             InheritState( wnd );
             break;
         case IDM_FMLEFT:

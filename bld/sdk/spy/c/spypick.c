@@ -33,12 +33,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "wclbproc.h"
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT BOOL CALLBACK PickDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK PickDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
-static FARPROC  SpyPickInst;
+static DLGPROC  SpyPickInst;
 static HWND     LastFramed;
 static BOOL     Cancelled;
 static BOOL     Picking;
@@ -160,7 +161,7 @@ static void GetWindowID( HWND hwnd, HWND *who, DWORD lparam )
 /*
  * PickDialog - select a window
  */
-BOOL CALLBACK PickDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK PickDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     RECT    rect;
     RECT    client_rect;
@@ -273,14 +274,14 @@ HWND DoPickDialog( ctl_id cmdid )
     LastFramed = NULL;
     Cancelled = FALSE;
 
-    SpyPickInst = MakeProcInstance( (FARPROC)PickDialog, Instance );
+    SpyPickInst = MakeProcInstance_DLG( PickDialog, Instance );
     if( cmdid == SPY_PEEK_WINDOW ) {
-        JDialogBox( ResInstance, "PEEKMSGS", SpyMainWindow, (DLGPROC)SpyPickInst );
+        JDialogBox( ResInstance, "PEEKMSGS", SpyMainWindow, SpyPickInst );
     } else {
-        JDialogBox( ResInstance, "WINDOWPICK", SpyMainWindow, (DLGPROC)SpyPickInst );
+        JDialogBox( ResInstance, "WINDOWPICK", SpyMainWindow, SpyPickInst );
     }
 
-    FreeProcInstance( SpyPickInst );
+    FreeProcInstance_DLG( SpyPickInst );
     ShowWindow( SpyMainWindow, SW_NORMAL );
     if( !Cancelled ) {
         return( LastFramed );

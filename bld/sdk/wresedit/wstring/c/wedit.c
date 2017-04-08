@@ -51,6 +51,8 @@
 #include "wclip.h"
 #include "sys_rc.h"
 #include "jdlg.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -64,8 +66,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WStringEditProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT BOOL CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
+WINEXPORT INT_PTR CALLBACK WStringEditProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 
 extern UINT WClipbdFormat;
 extern UINT WItemClipbdFormat;
@@ -93,7 +95,7 @@ void WInitEditWindows( HINSTANCE inst )
 
     WEditWinColor = GetSysColor( COLOR_BTNFACE );
     WEditWinBrush = CreateSolidBrush( WEditWinColor );
-    WStringEditWinProc = (DLGPROC)MakeProcInstance( (FARPROC)WStringEditProc, inst );
+    WStringEditWinProc = MakeProcInstance_DLG( WStringEditProc, inst );
 }
 
 void WFiniEditWindows( void )
@@ -101,7 +103,7 @@ void WFiniEditWindows( void )
     if( WEditWinBrush != NULL ) {
         DeleteObject( WEditWinBrush );
     }
-    FreeProcInstance( (FARPROC)WStringEditWinProc );
+    FreeProcInstance_DLG( WStringEditWinProc );
 }
 
 
@@ -772,7 +774,7 @@ void WHandleSelChange( WStringEditInfo *einfo )
     WDoHandleSelChange( einfo, FALSE, FALSE );
 }
 
-WINEXPORT BOOL CALLBACK WStringEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WStringEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WStringEditInfo     *einfo;
     BOOL                ret;
@@ -876,7 +878,7 @@ WINEXPORT BOOL CALLBACK WStringEditProc( HWND hDlg, UINT message, WPARAM wParam,
     return( ret );
 }
 
-WINEXPORT BOOL CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     RECT        r;
 
@@ -896,9 +898,9 @@ WINEXPORT BOOL CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 void WInitEditDlg( HINSTANCE inst, HWND parent )
 {
-    FARPROC     lpProc;
+    DLGPROC     dlgproc;
 
-    lpProc = MakeProcInstance( (FARPROC) WTestProc, inst );
-    JCreateDialog( inst, "WStringEditDLG", parent, (DLGPROC)lpProc );
-    FreeProcInstance( lpProc );
+    dlgproc = MakeProcInstance_DLG( WTestProc, inst );
+    JCreateDialog( inst, "WStringEditDLG", parent, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 }

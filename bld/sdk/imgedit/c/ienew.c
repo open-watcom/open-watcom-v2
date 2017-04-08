@@ -34,6 +34,8 @@
 #include "imgedit.h"
 #include "iconinfo.h"
 #include "jdlg.h"
+#include "wclbproc.h"
+
 
 static int              imgType = UNDEF_IMG;
 static short            imgHeight = DIM_DEFAULT;
@@ -44,8 +46,7 @@ static int              imageCount = 0;
 /*
  * SelImgDlgProc - select the image type to edit.
  */
-WPI_DLGRESULT CALLBACK SelImgDlgProc( HWND hwnd, WPI_MSG msg,
-                                   WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_DLGRESULT CALLBACK SelImgDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     bool    ret;
 
@@ -103,8 +104,7 @@ WPI_DLGRESULT CALLBACK SelImgDlgProc( HWND hwnd, WPI_MSG msg,
 /*
  * SelBitmapDlgProc - select options for the bitmap (size and color scheme)
  */
-WPI_DLGRESULT CALLBACK SelBitmapDlgProc( HWND hwnd, WPI_MSG msg,
-                                      WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_DLGRESULT CALLBACK SelBitmapDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     char        *title;
     char        *text;
@@ -378,9 +378,9 @@ int NewImage( int img_type, const char *filename )
         imgHeight = height;
         bitCount = bcount;
 #else
-        dlgproc = (DLGPROC)MakeProcInstance( (FARPROC)SelCursorDlgProc, Instance );
+        dlgproc = MakeProcInstance_DLG( SelCursorDlgProc, Instance );
         button_type = JDialogBox( Instance, "CURSORTYPE", HMainWindow, dlgproc );
-        FreeProcInstance( (FARPROC)dlgproc );
+        FreeProcInstance_DLG( dlgproc );
         if( button_type == IDCANCEL ) {
             imgType = UNDEF_IMG;
             return( imgType );

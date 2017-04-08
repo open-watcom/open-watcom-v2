@@ -39,11 +39,15 @@ objs =  align.obj       &
         keybd.obj       &
         verdll.obj
 
+objs_win = wclbproc.obj
+
+objs = $(objs) $(objs_$(host_os))
+
 #
 # Source info
 #
 
-.c:   ../src;$(version_dir)
+.c:   ../src;$(version_dir);$(watcom_dir)/c
 
 inc_dirs = -I"../src" -I"../dev" -I"../res"
 

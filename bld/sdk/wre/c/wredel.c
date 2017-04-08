@@ -60,6 +60,7 @@
 #include "wreimg.h"
 #include "jdlg.h"
 #include "wresdefn.h"
+#include "wclbproc.h"
 
 
 /****************************************************************************/
@@ -73,7 +74,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WREResDeleteProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WREResDeleteProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -279,18 +280,18 @@ bool WRERemoveEmptyResource( WRECurrentResInfo *curr )
 bool WREQueryDeleteName( char *name )
 {
     HWND        dialog_owner;
-    DLGPROC     proc_inst;
+    DLGPROC     dlgproc;
     HINSTANCE   app_inst;
     INT_PTR     modified;
 
     dialog_owner = WREGetMainWindowHandle();
     app_inst = WREGetAppInstance();
 
-    proc_inst = (DLGPROC)MakeProcInstance( (FARPROC)WREResDeleteProc, app_inst );
+    dlgproc = MakeProcInstance_DLG( WREResDeleteProc, app_inst );
 
-    modified = JDialogBoxParam( app_inst, "WREDeleteResource", dialog_owner, proc_inst, (LPARAM)name );
+    modified = JDialogBoxParam( app_inst, "WREDeleteResource", dialog_owner, dlgproc, (LPARAM)name );
 
-    FreeProcInstance( (FARPROC)proc_inst );
+    FreeProcInstance_DLG( dlgproc );
 
     return( modified != -1 && modified == IDOK );
 }
@@ -300,7 +301,7 @@ void WRESetWinInfo( HWND hDlg, char *name )
     WRESetEditWithStr( GetDlgItem( hDlg, IDM_DELNAME ), name );
 }
 
-BOOL CALLBACK WREResDeleteProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WREResDeleteProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     char    *name;
     BOOL    ret;

@@ -37,6 +37,8 @@
 #include "aboutdlg.h"
 #include "wwinhelp.h"
 #include "jdlg.h"
+#include "wclbproc.h"
+
 
 static PFNCALLBACK      DDEProcInst;
 
@@ -195,7 +197,7 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 {
     DDEWndInfo          *info;
     char                *alias_title;
-    DLGPROC             dlg_proc;
+    DLGPROC             dlgproc;
     RECT                area;
     HMENU               mh;
     UINT                flag;
@@ -387,14 +389,14 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             LogConfigure();
             break;
         case DDEMENU_MSG_FILTER:
-            dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)FilterDlgProc, Instance );
-            JDialogBoxParam( Instance, "MSG_FILTER_DLG", DDEMainWnd, dlg_proc, 1 );
-            FreeProcInstance( (FARPROC)dlg_proc );
+            dlgproc = MakeProcInstance_DLG( FilterDlgProc, Instance );
+            JDialogBoxParam( Instance, "MSG_FILTER_DLG", DDEMainWnd, dlgproc, 1 );
+            FreeProcInstance_DLG( dlgproc );
             break;
         case DDEMENU_CB_FILTER:
-            dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)FilterDlgProc, Instance );
-            JDialogBoxParam( Instance, "CB_FILTER_DLG", DDEMainWnd, dlg_proc, 0 );
-            FreeProcInstance( (FARPROC)dlg_proc );
+            dlgproc = MakeProcInstance_DLG( FilterDlgProc, Instance );
+            JDialogBoxParam( Instance, "CB_FILTER_DLG", DDEMainWnd, dlgproc, 0 );
+            FreeProcInstance_DLG( dlgproc );
             break;
         case DDEMENU_ABOUT:
             ai.owner = hwnd;

@@ -41,11 +41,14 @@
 #include "wrselft.h"
 #include "iemem.h"
 #include "wresdefn.h"
+#include "wclbproc.h"
 
 
 #define DEF_MEMFLAGS    (MEMFLAG_MOVEABLE | MEMFLAG_PURE)
 #define SCANLINE_SIZE   32
 #define MAX_CHUNK       32768
+
+WINEXPORT extern UINT_PTR CALLBACK SaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static char     initialDir[_MAX_PATH];
 
@@ -215,7 +218,7 @@ static void checkForPalExt( char *filename )
 /*
  * SaveHook - hook used called by common dialog for 3D controls
  */
-BOOL CALLBACK SaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+UINT_PTR CALLBACK SaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     wparam = wparam;
     lparam = lparam;
@@ -283,13 +286,13 @@ static BOOL getSaveFName( char *fname, int imgtype )
     of.lpstrInitialDir = initialDir;
 #if !defined( __NT__ )
     /* Important! Do not use hook in WIN32, you will not get the nice dialog! */
-    of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)SaveHook, Instance );
+    of.lpfnHook = MakeProcInstance_OFNHOOK( SaveHook, Instance );
     of.Flags = OFN_ENABLEHOOK;
 #endif
     of.Flags |= OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
     ret_val = GetSaveFileName( &of );
 #ifndef __NT__
-    FreeProcInstance( (FARPROC)of.lpfnHook );
+    FreeProcInstance_OFNHOOK( of.lpfnHook );
 #endif
 
     if( ret_val ) {
@@ -1174,11 +1177,11 @@ static BOOL getSavePalName( char *fname )
     of.Flags = OFN_SHOWHELP | OFN_OVERWRITEPROMPT;
 #if !defined( __NT__ )
     of.Flags |= OFN_ENABLEHOOK;
-    of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)SaveHook, Instance );
+    of.lpfnHook = MakeProcInstance_OFNHOOK( SaveHook, Instance );
 #endif
     rc = GetSaveFileName( &of );
 #ifndef __NT__
-    FreeProcInstance( (FARPROC)of.lpfnHook );
+    FreeProcInstance_OFNHOOK( of.lpfnHook );
 #endif
     return( rc );
 

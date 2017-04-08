@@ -68,6 +68,7 @@
 #include "jdlg.h"
 #include "wreres.h"
 #include "wresdefn.h"
+#include "wclbproc.h"
 
 
 /****************************************************************************/
@@ -80,7 +81,7 @@
 /* external function prototypes                                             */
 /****************************************************************************/
 WINEXPORT LRESULT CALLBACK WREResWndProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT LRESULT CALLBACK WREResInfoProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WREResInfoProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -1202,7 +1203,7 @@ bool WREInitResources( HINSTANCE inst )
 {
     WREResInfoBrush = CreateSolidBrush( GetSysColor( COLOR_BTNFACE ) );
     WREAppInst = inst;
-    WREResInfoWinProc = (DLGPROC)MakeProcInstance( (FARPROC)WREResInfoProc, inst );
+    WREResInfoWinProc = MakeProcInstance_DLG( WREResInfoProc, inst );
     return( WREInitStaticVars() );
 }
 
@@ -1211,7 +1212,7 @@ void WREFiniResources( void )
     if( WREResInfoBrush != NULL ) {
         DeleteObject( WREResInfoBrush );
     }
-    FreeProcInstance( (FARPROC)WREResInfoWinProc );
+    FreeProcInstance_DLG( WREResInfoWinProc );
     WREFiniStaticVars();
 }
 
@@ -1226,10 +1227,10 @@ bool WRECreateResInfoWindow( WREResInfo *info )
     return( TRUE );
 }
 
-LRESULT CALLBACK WREResInfoProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WREResInfoProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WREResInfo  *info;
-    LRESULT     ret;
+    BOOL        ret;
     WORD        wp;
     UINT        cmd;
 

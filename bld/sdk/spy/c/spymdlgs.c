@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dde.h>
+#include "wclbproc.h"
 #include "wwinhelp.h"
 
 
@@ -170,14 +171,14 @@ INT_PTR CALLBACK SpyMsgDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
  */
 static void DoSpyMsgDialog( HWND hwnd, int which )
 {
-    DLGPROC     dlg_proc;
+    DLGPROC     dlgproc;
     bool        *savewatch;
     INT_PTR     rc;
 
     savewatch = CloneBitState( savedBits );
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)SpyMsgDialogDlgProc, Instance );
-    rc = JDialogBoxParam( ResInstance, "SPYMSGS", hwnd, dlg_proc, which );
-    FreeProcInstance( (FARPROC)dlg_proc );
+    dlgproc = MakeProcInstance_DLG( SpyMsgDialogDlgProc, Instance );
+    rc = JDialogBoxParam( ResInstance, "SPYMSGS", hwnd, dlgproc, which );
+    FreeProcInstance_DLG( dlgproc );
     if( rc == -1 ) {
         CopyBitState( savedBits, savewatch );
     }
@@ -272,7 +273,7 @@ INT_PTR CALLBACK MessageDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
  */
 void DoMessageDialog( HWND hwnd, ctl_id cmdid )
 {
-    DLGPROC     dlg_proc;
+    DLGPROC     dlgproc;
     INT_PTR     rc;
     bool        filts[SPYMSG_CONTROLS - SPYMSG_CLIPBOARD + 1];
     int         i;
@@ -288,8 +289,8 @@ void DoMessageDialog( HWND hwnd, ctl_id cmdid )
         filts[i] = Filters[i].flag[currBit];
     }
     savedBits = SaveBitState( currBit );
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)MessageDialogDlgProc, Instance );
-    rc = JDialogBox( ResInstance, "SPYMSGDIALOG", hwnd, dlg_proc );
+    dlgproc = MakeProcInstance_DLG( MessageDialogDlgProc, Instance );
+    rc = JDialogBox( ResInstance, "SPYMSGDIALOG", hwnd, dlgproc );
     if( rc ) {
         for( id = SPYMSG_CLIPBOARD; id <= SPYMSG_CONTROLS; id++ ) {
             i = id - SPYMSG_CLIPBOARD;
@@ -298,7 +299,7 @@ void DoMessageDialog( HWND hwnd, ctl_id cmdid )
     } else {
         RestoreBitState( savedBits, currBit );
     }
-    FreeProcInstance( (FARPROC)dlg_proc );
+    FreeProcInstance_DLG( dlgproc );
 
 } /* DoMessageDialog */
 
@@ -499,15 +500,15 @@ INT_PTR CALLBACK MessageSelectDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
  */
 void DoMessageSelDialog( HWND hwnd )
 {
-    DLGPROC     dlg_proc;
+    DLGPROC     dlgproc;
     char        str[80];
 
     if( !GetSpyBoxSelection( str ) ) {
         return;
     }
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)MessageSelectDialogDlgProc, Instance );
-    JDialogBoxParam( ResInstance, "MSGSELECT", hwnd, dlg_proc, (LPARAM)(LPSTR)str );
-    FreeProcInstance( (FARPROC)dlg_proc );
+    dlgproc = MakeProcInstance_DLG( MessageSelectDialogDlgProc, Instance );
+    JDialogBoxParam( ResInstance, "MSGSELECT", hwnd, dlgproc, (LPARAM)(LPSTR)str );
+    FreeProcInstance_DLG( dlgproc );
 
 } /* DoMessageSelDialog */
 

@@ -41,6 +41,8 @@
 #include "selft.h"
 #include "jdlg.h"
 #include "winexprt.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -124,7 +126,7 @@ static WRFileType educatedGuess( const char *name, bool is32bit, bool use_wres )
 WRFileType WRAPI WRSelectFileType( HWND parent, const char *name, bool is32bit,
                                        bool use_wres, HELP_CALLBACK help_callback )
 {
-    DLGPROC     proc;
+    DLGPROC     dlgproc;
     HINSTANCE   inst;
     INT_PTR     modified;
     WRSFT       sft;
@@ -147,11 +149,11 @@ WRFileType WRAPI WRSelectFileType( HWND parent, const char *name, bool is32bit,
     sft.use_wres  = use_wres;
     inst = WRGetInstance();
 
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)WRSelectFileTypeDlgProc, inst );
+    dlgproc = MakeProcInstance_DLG( WRSelectFileTypeDlgProc, inst );
 
-    modified = JDialogBoxParam( inst, "WRSelectFileType", parent, proc, (LPARAM)(LPVOID)&sft );
+    modified = JDialogBoxParam( inst, "WRSelectFileType", parent, dlgproc, (LPARAM)(LPVOID)&sft );
 
-    FreeProcInstance( (FARPROC)proc );
+    FreeProcInstance_DLG( dlgproc );
 
     if( modified == -1 ) {
         return( WR_DONT_KNOW );

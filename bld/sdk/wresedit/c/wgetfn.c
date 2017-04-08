@@ -44,6 +44,8 @@
 #include "wctl3d.h"
 #include "wstrdup.h"
 #include "wgetfn.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* external function prototypes                                             */
@@ -211,7 +213,7 @@ char *WGetFileName( WGetFileStruct *gf, HWND owner, DWORD flags, WGetFileAction 
     wofn.lpstrTitle = WFnTitle;
     wofn.Flags = flags;
 #if !defined( __NT__ )
-    wofn.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)WOpenHookProc, app_inst );
+    wofn.lpfnHook = MakeProcInstance_OFNHOOK( WOpenHookProc, app_inst );
 #endif
 
 #if 0
@@ -233,7 +235,7 @@ char *WGetFileName( WGetFileStruct *gf, HWND owner, DWORD flags, WGetFileAction 
 
 #ifndef __NT__
     if( wofn.lpfnHook != NULL ) {
-        FreeProcInstance( (FARPROC)wofn.lpfnHook );
+        FreeProcInstance_OFNHOOK( wofn.lpfnHook );
     }
 #endif
 

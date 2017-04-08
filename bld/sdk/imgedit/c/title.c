@@ -35,6 +35,7 @@
 #include "iemem.h"
 #include "title.h"
 #include "jdlg.h"
+#include "wclbproc.h"
 
 
 /* Local Window callback functions prototypes */
@@ -186,9 +187,9 @@ void DisplayTitleScreen( HINSTANCE inst, HWND parent, UINT msecs, char *app_name
     strcpy( appName, app_name );
 
     wMainInst = inst;
-    dlgproc = (DLGPROC)MakeProcInstance( (FARPROC)wTitleDlgProc, inst );
+    dlgproc = MakeProcInstance_DLG( wTitleDlgProc, inst );
     JDialogBoxParam( inst, "WTitleScreen", parent, dlgproc, (LPARAM)&msecs );
-    FreeProcInstance( (FARPROC)dlgproc );
+    FreeProcInstance_DLG( dlgproc );
     MemFree( appName );
 
 } /* DisplayTitleScreen */

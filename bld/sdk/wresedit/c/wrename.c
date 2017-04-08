@@ -46,6 +46,8 @@
 #include "w_rc.h"
 #include "wresall.h"
 #include "jdlg.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -63,7 +65,7 @@ typedef struct WResRenameInfo {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WResRenameProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WResRenameProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -104,17 +106,17 @@ bool WRenameResource( HWND parent, WResID **name, HELP_CALLBACK help_callback )
 
 bool WGetNewName( HWND parent, WResRenameInfo *info )
 {
-    DLGPROC     proc_inst;
+    DLGPROC     dlgproc;
     HINSTANCE   app_inst;
     INT_PTR     modified;
 
     app_inst = WGetEditInstance();
 
-    proc_inst = (DLGPROC)MakeProcInstance( (FARPROC)WResRenameProc, app_inst );
+    dlgproc = MakeProcInstance_DLG( WResRenameProc, app_inst );
 
-    modified = JDialogBoxParam( app_inst, "WRenameResource", parent, proc_inst, (LPARAM)info );
+    modified = JDialogBoxParam( app_inst, "WRenameResource", parent, dlgproc, (LPARAM)info );
 
-    FreeProcInstance( (FARPROC)proc_inst );
+    FreeProcInstance_DLG( dlgproc );
 
     return( modified != -1 && modified == IDOK );
 }
@@ -136,7 +138,7 @@ void WGetWinInfo( HWND hDlg, WResRenameInfo *info )
     }
 }
 
-WINEXPORT BOOL CALLBACK WResRenameProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WResRenameProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WResRenameInfo  *info;
     BOOL            ret;

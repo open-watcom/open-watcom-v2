@@ -49,6 +49,7 @@
 #include "jdlg.h"
 #include "winexprt.h"
 #include "wresdefn.h"
+#include "wclbproc.h"
 
 
 /****************************************************************************/
@@ -970,7 +971,7 @@ bool WRAPI WREditSym( HWND parent, WRHashTable **table,
     WREditSymInfo       info;
     WRHashTable         *tmp;
     HINSTANCE           inst;
-    DLGPROC             dlg_proc;
+    DLGPROC             dlgproc;
     INT_PTR             ret;
     bool                ok;
 
@@ -984,8 +985,8 @@ bool WRAPI WREditSym( HWND parent, WRHashTable **table,
 
     if( ok ) {
         inst = WRGetInstance();
-        dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WREditSymbolsDlgProc, inst );
-        ok = (dlg_proc != NULL);
+        dlgproc = MakeProcInstance_DLG( WREditSymbolsDlgProc, inst );
+        ok = (dlgproc != NULL);
     }
 
     if( ok ) {
@@ -993,8 +994,8 @@ bool WRAPI WREditSym( HWND parent, WRHashTable **table,
         info.table = tmp;
         info.modified = false;
         info.flags = *flags;
-        ret = JDialogBoxParam( inst, "WRSymbols", parent, dlg_proc, (LPARAM)(LPVOID)&info );
-        FreeProcInstance( (FARPROC)dlg_proc );
+        ret = JDialogBoxParam( inst, "WRSymbols", parent, dlgproc, (LPARAM)(LPVOID)&info );
+        FreeProcInstance_DLG( dlgproc );
         ok = false;
         if( ret ) {
             UpdateWindow( parent );
@@ -1131,7 +1132,7 @@ static bool WRAddNewSymbol( HWND hDlg, WRHashTable *table, HELP_CALLBACK help_ca
 {
     WRAddSymInfo        info;
     WRHashEntry         *entry;
-    DLGPROC             dlg_proc;
+    DLGPROC             dlgproc;
     HINSTANCE           inst;
     INT_PTR             modified;
     bool                ret;
@@ -1156,9 +1157,9 @@ static bool WRAddNewSymbol( HWND hDlg, WRHashTable *table, HELP_CALLBACK help_ca
     ret = false;
 
     inst = WRGetInstance();
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WRAddSymDlgProc, inst );
-    modified = JDialogBoxParam( inst, "WRAddSymbol", hDlg, dlg_proc, (LPARAM)(LPVOID)&info );
-    FreeProcInstance( (FARPROC)dlg_proc );
+    dlgproc = MakeProcInstance_DLG( WRAddSymDlgProc, inst );
+    modified = JDialogBoxParam( inst, "WRAddSymbol", hDlg, dlgproc, (LPARAM)(LPVOID)&info );
+    FreeProcInstance_DLG( dlgproc );
 
     if( modified == IDOK ) {
         ret = WRAddSymbol( hDlg, table, modify, info.symbol, info.value );

@@ -50,6 +50,8 @@
 #include "wmsg.h"
 #include "sys_rc.h"
 #include "jdlg.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -63,8 +65,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WMenuEditProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT BOOL CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
+WINEXPORT INT_PTR CALLBACK WMenuEditProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 
 extern UINT WClipbdFormat;
 extern UINT WItemClipbdFormat;
@@ -91,7 +93,7 @@ void WInitEditWindows( HINSTANCE inst )
 
     WEditWinColor = GetSysColor( COLOR_BTNFACE );
     WEditWinBrush = CreateSolidBrush( WEditWinColor );
-    WMenuEditWinProc = (DLGPROC)MakeProcInstance( (FARPROC)WMenuEditProc, inst );
+    WMenuEditWinProc = MakeProcInstance_DLG( WMenuEditProc, inst );
 }
 
 void WFiniEditWindows( void )
@@ -99,14 +101,13 @@ void WFiniEditWindows( void )
     if( WEditWinBrush != NULL ) {
         DeleteObject( WEditWinBrush );
     }
-    FreeProcInstance( (FARPROC)WMenuEditWinProc );
+    FreeProcInstance_DLG( WMenuEditWinProc );
 }
 
 
 bool WCreateMenuEditWindow( WMenuEditInfo *einfo, HINSTANCE inst )
 {
-    einfo->edit_dlg = JCreateDialogParam( inst, "WMenuEditDLG", einfo->win,
-                                          WMenuEditWinProc, (LPARAM)einfo );
+    einfo->edit_dlg = JCreateDialogParam( inst, "WMenuEditDLG", einfo->win, WMenuEditWinProc, (LPARAM)einfo );
 
     if( einfo->edit_dlg == (HWND)NULL ) {
         return( FALSE );
@@ -116,8 +117,7 @@ bool WCreateMenuEditWindow( WMenuEditInfo *einfo, HINSTANCE inst )
         return( FALSE );
     }
 
-    SetWindowPos( einfo->edit_dlg, (HWND)NULL, 0, WGetRibbonHeight(), 0, 0,
-                  SWP_NOSIZE | SWP_NOZORDER );
+    SetWindowPos( einfo->edit_dlg, (HWND)NULL, 0, WGetRibbonHeight(), 0, 0, SWP_NOSIZE | SWP_NOZORDER );
 
     return( WInitEditWindow( einfo ) );
 }
@@ -144,8 +144,7 @@ bool WResizeMenuEditWindow( WMenuEditInfo *einfo, RECT *prect )
     /* change the size of the divider */
     win = GetDlgItem( einfo->edit_dlg, IDM_MENUEDBLACKLINE );
     GetWindowRect( win, &crect );
-    SetWindowPos( win, (HWND)NULL, 0, 0, width, crect.bottom - crect.top,
-                  SWP_NOMOVE | SWP_NOZORDER );
+    SetWindowPos( win, (HWND)NULL, 0, 0, width, crect.bottom - crect.top, SWP_NOMOVE | SWP_NOZORDER );
 
     // change the size of the resource name edit field
     win = GetDlgItem( einfo->edit_dlg, IDM_MENUEDRNAME );
@@ -155,8 +154,7 @@ bool WResizeMenuEditWindow( WMenuEditInfo *einfo, RECT *prect )
     win = GetDlgItem( einfo->edit_dlg, IDM_MENUEDLIST );
     WExpandEditWindowItem( einfo->edit_dlg, win, prect );
 
-    SetWindowPos( einfo->edit_dlg, (HWND)NULL, 0, ribbon_depth,
-                  width, height, SWP_NOZORDER );
+    SetWindowPos( einfo->edit_dlg, (HWND)NULL, 0, ribbon_depth, width, height, SWP_NOZORDER );
 
     // change the size of the preview window
     WExpandEditWindowItem( einfo->edit_dlg, einfo->preview_window, prect );
@@ -960,7 +958,7 @@ static bool WShiftEntry( WMenuEditInfo *einfo, bool left )
     return( ok );
 }
 
-WINEXPORT BOOL CALLBACK WMenuEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WMenuEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WMenuEditInfo       *einfo;
     HWND                win;
@@ -1096,7 +1094,7 @@ WINEXPORT BOOL CALLBACK WMenuEditProc( HWND hDlg, UINT message, WPARAM wParam, L
     return( ret );
 }
 
-WINEXPORT BOOL CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     RECT        r;
 
@@ -1116,9 +1114,9 @@ WINEXPORT BOOL CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARA
 
 void WInitEditDlg( HINSTANCE inst, HWND parent )
 {
-    FARPROC     lpProc;
+    DLGPROC     dlgproc;
 
-    lpProc = MakeProcInstance( (FARPROC)WTestProc, inst );
-    JCreateDialog( inst, "WMenuEditDLG", parent, (DLGPROC)lpProc );
-    FreeProcInstance( lpProc );
+    dlgproc = MakeProcInstance_DLG( WTestProc, inst );
+    JCreateDialog( inst, "WMenuEditDLG", parent, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 }

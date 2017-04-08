@@ -42,6 +42,7 @@
 #include "wrselimg.h"
 #include "iemem.h"
 #include "wresdefn.h"
+#include "wclbproc.h"
 
 
 #ifdef __WATCOMC__
@@ -54,7 +55,7 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT BOOL CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT UINT_PTR CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static signed short     imgType = BITMAP_IMG;
 static char             initialDir[_MAX_PATH + _MAX_DIR];
@@ -551,7 +552,7 @@ bool ReadCursorFromData( void *data, const char *fname, WRInfo *info,
 /*
  * OpenHook - hook used called by common dialog for 3D controls
  */
-BOOL CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+UINT_PTR CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     wparam = wparam;
     lparam = lparam;
@@ -649,13 +650,13 @@ static BOOL getOpenFName( char *fname )
     of.lpstrInitialDir = initialDir;
 #if !defined( __NT__ )
     /* Important! Do not use hook in Win32, you will not get the nice dialog! */
-    of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)OpenHook, Instance );
+    of.lpfnHook = MakeProcInstance_OFNHOOK( OpenHook, Instance );
     of.Flags = OFN_ENABLEHOOK;
 #endif
     of.Flags |= OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
     rc = GetOpenFileName( &of );
 #ifndef __NT__
-    FreeProcInstance( (FARPROC)of.lpfnHook );
+    FreeProcInstance_OFNHOOK( of.lpfnHook );
 #endif
 
     if( rc ) {
@@ -869,11 +870,11 @@ static BOOL getOpenPalName( char *fname )
                 OFN_HIDEREADONLY;
 #if !defined( __NT__ )
     of.Flags |= OFN_ENABLEHOOK;
-    of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)OpenHook, Instance );
+    of.lpfnHook = MakeProcInstance_OFNHOOK( OpenHook, Instance );
 #endif
     rc = GetOpenFileName( &of );
 #ifndef __NT__
-    FreeProcInstance( (FARPROC)of.lpfnHook );
+    FreeProcInstance_OFNHOOK( of.lpfnHook );
 #endif
     return( rc );
 

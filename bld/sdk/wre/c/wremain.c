@@ -78,6 +78,7 @@
 #include "aboutdlg.h"
 #include "ldstr.h"
 #include "wresdefn.h"
+#include "wclbproc.h"
 #include "clibint.h"
 
 #include "clibext.h"
@@ -95,7 +96,7 @@
 /* external function prototypes                                             */
 /****************************************************************************/
 WINEXPORT LRESULT CALLBACK WREMainWndProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT BOOL    CALLBACK WRESplash( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WRESplash( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -1037,14 +1038,14 @@ bool WREProcessArgs( char **argv, int argc )
 
 void WREDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
 {
-    FARPROC     lpProcAbout;
+    DLGPROC     dlgproc;
 
-    lpProcAbout = MakeProcInstance( (FARPROC)WRESplash, WREInst );
-    JDialogBoxParam( inst, "WRESplashScreen", parent, (DLGPROC)lpProcAbout, (LPARAM)&msecs );
-    FreeProcInstance( lpProcAbout );
+    dlgproc = MakeProcInstance_DLG( WRESplash, WREInst );
+    JDialogBoxParam( inst, "WRESplashScreen", parent, dlgproc, (LPARAM)&msecs );
+    FreeProcInstance_DLG( dlgproc );
 }
 
-BOOL CALLBACK WRESplash( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WRESplash( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     UINT        msecs, start;
     UINT_PTR    timer;

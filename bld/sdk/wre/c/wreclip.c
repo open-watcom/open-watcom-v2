@@ -60,6 +60,7 @@
 #include "wrbitmap.h"
 #include "jdlg.h"
 #include "wresdefn.h"
+#include "wclbproc.h"
 
 
 /****************************************************************************/
@@ -69,7 +70,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WREResPasteProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WREResPasteProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -958,7 +959,7 @@ bool WREQueryPasteReplace( WResID *name, uint_16 type_id, bool *replace )
 {
     WREPasteData        pdata;
     HWND                dialog_owner;
-    DLGPROC             proc_inst;
+    DLGPROC             dlgproc;
     HINSTANCE           inst;
     INT_PTR             ret;
 
@@ -972,11 +973,11 @@ bool WREQueryPasteReplace( WResID *name, uint_16 type_id, bool *replace )
     *replace = FALSE;
     dialog_owner  = WREGetMainWindowHandle();
     inst = WREGetAppInstance();
-    proc_inst = (DLGPROC)MakeProcInstance( (FARPROC)WREResPasteProc, inst );
+    dlgproc = MakeProcInstance_DLG( WREResPasteProc, inst );
 
-    ret = JDialogBoxParam( inst, "WREPaste", dialog_owner, proc_inst, (LPARAM)&pdata );
+    ret = JDialogBoxParam( inst, "WREPaste", dialog_owner, dlgproc, (LPARAM)&pdata );
 
-    FreeProcInstance( (FARPROC)proc_inst );
+    FreeProcInstance_DLG( dlgproc );
 
     if( ret == -1 || ret == IDCANCEL ) {
         return( FALSE );
@@ -1005,7 +1006,7 @@ static void WRESetPasteInfo( HWND hDlg, WREPasteData *pdata )
     WRESetEditWithWResID( GetDlgItem( hDlg, IDM_PASTE_NAME ), pdata->name );
 }
 
-BOOL CALLBACK WREResPasteProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WREResPasteProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WREPasteData        *pdata;
     BOOL                ret;
