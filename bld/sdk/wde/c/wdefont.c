@@ -51,11 +51,11 @@
 /* Local Window callback functions prototypes */
 WINEXPORT INT_PTR CALLBACK WdeDummyDlgProc( HWND, UINT, WPARAM, LPARAM );
 #if defined( __WINDOWS_386__ )
-WINEXPORT int CALLBACK WdeEnumFontsProc( const LOGFONT *lf, const TEXTMETRIC *tm, int ftype, LPARAM data );
+WINEXPORT int CALLBACK WdeEnumFontsProc( const LOGFONT *lf, const TEXTMETRIC *tm, int fonttype, LPARAM lparam );
 #elif defined( __WINDOWS__ )
-WINEXPORT int CALLBACK WdeEnumFontsProc( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int ftype, LPARAM data );
+WINEXPORT int CALLBACK WdeEnumFontsProc( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int fonttype, LPARAM lparam );
 #else
-WINEXPORT int CALLBACK WdeEnumFontsProc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD ftype, LPARAM data );
+WINEXPORT int CALLBACK WdeEnumFontsProc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD fonttype, LPARAM lparam );
 #endif
 
 /****************************************************************************/
@@ -221,11 +221,11 @@ bool WdeAddFontFamilyMember( WdeFontNames *font_element, const ENUMLOGFONT *elf,
 }
 
 #if defined( __WINDOWS_386__ )
-int CALLBACK WdeEnumFontsProc( const LOGFONT *lf, const TEXTMETRIC *tm, int ftype, LPARAM data );
+int CALLBACK WdeEnumFontsProc( const LOGFONT *lf, const TEXTMETRIC *tm, int fonttype, LPARAM lparam )
 #elif defined( __WINDOWS__ )
-int CALLBACK WdeEnumFontsProc( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int ftype, LPARAM data );
+int CALLBACK WdeEnumFontsProc( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int fonttype, LPARAM lparam )
 #else
-int CALLBACK WdeEnumFontsProc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD ftype, LPARAM data );
+int CALLBACK WdeEnumFontsProc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD fonttype, LPARAM lparam )
 #endif
 {
     LIST                    *olist;
@@ -241,14 +241,14 @@ int CALLBACK WdeEnumFontsProc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, 
     const NEWTEXTMETRIC     FAR *ntm = (const NEWTEXTMETRIC FAR *)tm;
 #endif
 
-    list = (LIST **)lParam;
+    list = (LIST **)lparam;
 
     /* let's make sure the font is not already in the list */
     for( olist = *list; olist != NULL; olist = ListNext( olist ) ) {
         font_element = (WdeFontNames *)ListElement( olist );
         if( strcmp( font_element->name, elf->elfLogFont.lfFaceName ) == 0 ) {
             /* do not recursively add TRUE TYPE FONTS */
-            if( !(fonttype & TRUETYPE_FONTTYPE) ) {
+            if( (fonttype & TRUETYPE_FONTTYPE) == 0 ) {
                 WdeAddFontFamilyMember( font_element, elf, ntm, fonttype );
             }
             return( TRUE );
