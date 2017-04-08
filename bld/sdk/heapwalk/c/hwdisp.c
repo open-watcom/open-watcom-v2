@@ -231,7 +231,7 @@ INT_PTR CALLBACK DialogDispDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
 
 static HWND ShowDialogHeapItem( heap_list *hl, HWND hwnd )
 {
-    LPSTR       dialog_template_mem;
+    LPSTR       template;
     HWND        dial;
     HWND        hdl;
     heap_list   tmp;
@@ -243,15 +243,15 @@ static HWND ShowDialogHeapItem( heap_list *hl, HWND hwnd )
         return( NULL );
     info->type = GD_DIALOG;
     info->hdl = hl->info.ge.hBlock;
-    dialog_template_mem = LockResource( info->hdl );
-    if( dialog_template_mem == NULL ) {
+    template = LockResource( info->hdl );
+    if( template == NULL ) {
         rcstr = HWAllocRCString( STR_SHOW );
         RCMessageBox( HeapWalkMainWindow, STR_CANT_LOCK_MEM, rcstr, MB_OK | MB_ICONINFORMATION );
         HWFreeRCString( rcstr );
         MemFree( info );
         return( NULL );
     }
-    info->res = dialog_template_mem;
+    info->res = template;
     /* this window remains invisible.  it is created only to ensure
        that system resource get freed */
     hdl = MkDisplayWin( STR_NADA, hwnd );
@@ -268,7 +268,7 @@ static HWND ShowDialogHeapItem( heap_list *hl, HWND hwnd )
      */
 
     GetDGroupItem( hl->szModule, &tmp );
-    dial = CreateDialogIndirect( (HANDLE)tmp.info.ge.hBlock, dialog_template_mem, hdl, DialogDisp );
+    dial = CreateDialogIndirect( (HANDLE)tmp.info.ge.hBlock, template, hdl, DialogDisp );
     if( dial == NULL ) {
         rcstr = HWAllocRCString( STR_SHOW );
         RCMessageBox( HeapWalkMainWindow, STR_CANT_CREATE_DLG, rcstr, MB_OK | MB_ICONINFORMATION );

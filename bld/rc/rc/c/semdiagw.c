@@ -604,7 +604,7 @@ static bool SemWriteDiagCtrlList( FullDiagCtrlList *list, int *err_code, YYTOKEN
                 controlex.ClassID = ctrl->u.ctrl32.ClassID;
                 controlex.Text = ctrl->u.ctrl32.Text;
                 controlex.ExtraBytes = ctrl->u.ctrl32.ExtraBytes;
-                error = ResWriteDialogBoxExControl32( &controlex, CurrResFile.fid);
+                error = ResWriteDialogBoxExControl32( &controlex, CurrResFile.fid );
                 if( ctrl->dataListHead != NULL ) {
                     SemFlushDataElemList( ctrl->dataListHead, false );
                 }

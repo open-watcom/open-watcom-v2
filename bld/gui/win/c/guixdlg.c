@@ -622,7 +622,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     int                 pctldatalen;
     ENTRYFDATA          edata;
 #endif
-    size_t              datalen;
+    size_t              templatelen;
 
     wnd->flags |= IS_DIALOG;
     wnd->parent = dlg_info->parent;
@@ -657,7 +657,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     old_dlgtemplate = DialogTemplate( dlg_style | DS_SETFONT,
                            parent_pos.x, parent_pos.y, size.x, size.y,
                            LIT( Empty ), LIT( Empty ), dlg_info->title,
-                           PointSize, Font, &datalen );
+                           PointSize, Font, &templatelen );
     if( old_dlgtemplate == NULL ) {
         return( false );
     }
@@ -696,11 +696,11 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
 #ifdef __OS2_PM__
         new_dlgtemplate = AddControl( old_dlgtemplate, pos.x, pos.y, size.x, size.y, ctl_info->id,
                           style, GUIControls[ctl_info->control_class].classname, captiontext,
-                          pctldata, (BYTE)pctldatalen, &datalen );
+                          pctldata, (BYTE)pctldatalen, &templatelen );
 #else
         new_dlgtemplate = AddControl( old_dlgtemplate, pos.x, pos.y, size.x, size.y, ctl_info->id,
                           style, GUIControls[ctl_info->control_class].classname, captiontext,
-                          NULL, 0, &datalen );
+                          NULL, 0, &templatelen );
 #endif
         if( new_dlgtemplate == NULL  ) {
             GlobalFree( old_dlgtemplate );
@@ -791,7 +791,7 @@ void GUIInitDialog( void )
     TEMPLATE_HANDLE     new_dlgtemplate;
     char                *cp;
     bool                font_set;
-    size_t              datalen;
+    size_t              templatelen;
 
     font_set = false;
 #ifdef __OS2_PM__
@@ -822,7 +822,7 @@ void GUIInitDialog( void )
     old_dlgtemplate = DialogTemplate( MODAL_STYLE | DS_SETFONT,
                            SizeDialog.x, SizeDialog.y,
                            SizeDialog.x, SizeDialog.y, LIT( Empty ),
-                           LIT( Empty ), LIT( Empty ), PointSize, Font, &datalen );
+                           LIT( Empty ), LIT( Empty ), PointSize, Font, &templatelen );
     if( old_dlgtemplate != NULL ) {
         new_dlgtemplate = DoneAddingControls( old_dlgtemplate );
         DynamicDialogBox( GUIInitDialogFuncDlgProc, GUIMainHInst, NULLHANDLE, new_dlgtemplate, 0 );

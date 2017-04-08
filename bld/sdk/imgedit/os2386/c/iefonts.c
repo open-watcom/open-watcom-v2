@@ -38,8 +38,7 @@ static WPI_LOGFONT      *currentLogFont = NULL;
 /*
  * EnumFontFunc - enumerate fonts
  */
-int CALLBACK EnumFontFunc( WPI_LOGFONT *lf, WPI_TEXTMETRIC *tm, UINT ftype,
-                                                                LPSTR data )
+int CALLBACK EnumFontFunc( WPI_LOGFONT *lf, WPI_TEXTMETRIC *tm, UINT ftype, LPSTR data )
 {
     char        *facename;
 

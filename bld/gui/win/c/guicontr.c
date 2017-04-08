@@ -541,21 +541,19 @@ LONG GUISetControlStyle( gui_control_info *ctl_info )
     return( ret_style );
 }
 
-static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
-                           gui_coord pos, gui_coord size )
+static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent, gui_coord pos, gui_coord size )
 {
     DWORD       style;
     HWND        hwnd;
     char        *new_text;
-    void        *pctldata;
 #ifdef __OS2_PM__
     ENTRYFDATA  edata;
-#endif
-#if defined(__NT__)
+    void        *pctldata;
+#elif defined( __WINDOWS__ )
+#else
     DWORD       xstyle;
 #endif
 
-    pctldata = NULL;
     new_text = _wpi_menutext2pm( ctl_info->text );
 
     style = GUISetControlStyle( ctl_info );
@@ -568,8 +566,9 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
     }
 
 #ifdef __OS2_PM__
+    pctldata = NULL;
     if( ctl_info->control_class == GUI_EDIT ) {
-        edata.cb = sizeof(ENTRYFDATA);
+        edata.cb = sizeof( ENTRYFDATA );
         edata.cchEditLimit = 2048;
         edata.ichMinSel = 0;
         edata.ichMaxSel = 0;
@@ -584,7 +583,16 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
         style |= WS_CHILD;
     }
 
-#if defined(__NT__)
+#if defined( __OS2_PM__ )
+    _wpi_createanywindow( GUIControls[ctl_info->control_class].classname,
+                  new_text, style, pos.x, pos.y, size.x, size.y,
+                  parent->hwnd, (HMENU)ctl_info->id, GUIMainHInst,
+                  pctldata, &hwnd, ctl_info->id, &hwnd );
+#elif defined( __WINDOWS__ )
+    hwnd = CreateWindow( GUIControls[ctl_info->control_class].classname,
+                  new_text, style, pos.x, pos.y, size.x, size.y,
+                  parent->hwnd, (HMENU)ctl_info->id, GUIMainHInst, NULL );
+#else
     // We do this crud to get 3d edges on edit controls, listboxes, and
     // comboboxes -rnk 07/07/95
     xstyle = 0L;
@@ -597,7 +605,7 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
 
     hwnd = CreateWindowEx( xstyle, GUIControls[ctl_info->control_class].classname,
         new_text, style, pos.x, pos.y, size.x, size.y, parent->hwnd,
-        (HMENU)ctl_info->id, GUIMainHInst, pctldata );
+        (HMENU)ctl_info->id, GUIMainHInst, NULL );
 
     /* From here to #else, new by RR 2003.12.05 */
 
@@ -611,7 +619,7 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
         if( LOBYTE(LOWORD(GetVersion())) >= 4 ) {
   #endif
             /* New shell active, Win95 or later */
-            setFont = (HFONT) GetStockObject( DEFAULT_GUI_FONT );
+            setFont = (HFONT)GetStockObject( DEFAULT_GUI_FONT );
   #if !defined( _WIN64 )
         } else {
             /* MSDN on net tells SYSTEM_FONT should be Tahoma on W2K    */
@@ -622,14 +630,9 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
 
         SendMessage( hwnd, WM_SETFONT, (WPARAM)setFont, (LPARAM)0 );
     }
-#else
-    _wpi_createanywindow( GUIControls[ctl_info->control_class].classname,
-                          new_text, style, pos.x, pos.y, size.x, size.y,
-                          parent->hwnd, (HMENU)ctl_info->id, GUIMainHInst,
-                          pctldata, &hwnd, ctl_info->id, &hwnd );
 #endif
 
-    if( new_text ) {
+    if( new_text != NULL ) {
         _wpi_freemenutext( new_text );
     }
 
@@ -640,8 +643,7 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
  * GUIAddControl - add the given control to the parent window
  */
 
-bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain,
-                    gui_colour_set *standout )
+bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain, gui_colour_set *standout )
 {
     gui_coord           pos;
     gui_coord           size;
@@ -673,7 +675,7 @@ bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain,
         GUISendMessage( parent->hwnd, DM_SETDEFID, ctl_info->id, 0 );
     }
 #endif
-    if( !( ctl_info->style & GUI_CONTROL_INIT_INVISIBLE ) ) {
+    if( (ctl_info->style & GUI_CONTROL_INIT_INVISIBLE) == 0 ) {
         _wpi_showwindow( hwnd, SW_SHOW );
     }
     return( true );

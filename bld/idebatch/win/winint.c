@@ -93,14 +93,14 @@ int CALLBACK EnumFunc( LPLOGFONT lf, LPTEXTMETRIC tm, UINT ftype, LPSTR data )
  */
 static void getMonoFont( HDC hdc, HANDLE inst )
 {
-    LOGFONT     logfont;
-    FARPROC     fp;
+    LOGFONT         logfont;
+    OLDFONTENUMPROC oldfontenumproc;
 
     inst = inst;
 
-    fp = MakeProcInstance( (FARPROC) EnumFunc, inst );
-    EnumFonts( hdc, NULL, (LPVOID) fp, NULL);
-    FreeProcInstance( fp );
+    oldfontenumproc = MakeProcInstance_OLDFONTENUM( EnumFunc, inst );
+    EnumFonts( hdc, NULL, oldfontenumproc, NULL);
+    FreeProcInstance_OLDFONTENUM( oldfontenumproc );
 
     if( fixedFont == NULL ) {
         fixedFont = GetStockObject( ANSI_FIXED_FONT );
