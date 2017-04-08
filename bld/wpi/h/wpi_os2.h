@@ -948,16 +948,15 @@ extern void _wpi_gettextface( WPI_PRES pres, int size, LPSTR buf );
 
     #define _wpi_metricoverhang( metric )       0
 
-extern int _wpi_getmetricpointsize( WPI_PRES pres, WPI_TEXTMETRIC *textmetric,
-                                            int *pix_size, int *match_num );
+extern int _wpi_getmetricpointsize( WPI_PRES pres, WPI_TEXTMETRIC *textmetric, int *pix_size, int *match_num );
 
     #define _wpi_metricmaxcharwidth( metric ) \
                 ((((metric).lAveCharWidth) > ((metric).lMaxCharInc)) ? ((metric).lAveCharWidth) : ((metric).lMaxCharInc))
 
     #define _wpi_metricileading( metric ) (metric).lInternalLeading
 
-extern void _wpi_enumfonts( WPI_PRES pres, char *facename,
-                                        WPI_FONTENUMPROC proc, char *data );
+extern void _wpi_enumfonts( WPI_PRES pres, char *facename, WPI_FONTENUMPROC proc, char *data );
+
 extern void _wpi_enumchildwindows( HWND hwnd, WPI_ENUMPROC proc, LPARAM data );
 
     #define _wpi_getnextwindow( hwnd ) WinGetNextWindow( hwnd )

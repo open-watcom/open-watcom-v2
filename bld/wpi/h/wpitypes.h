@@ -109,9 +109,7 @@
     #define WPI_DLGRESULT               MRESULT
     typedef void (APIENTRY *WPI_LINEDDAPROC) ( int, int, WPI_PARAM2 );
     typedef BOOL (APIENTRY *WPI_ENUMPROC) ( HWND, WPI_PARAM2 );
-    typedef int (APIENTRY *WPI_FONTENUMPROC) ( WPI_LPLOGFONT,
-                                                        WPI_LPTEXTMETRIC,
-                                                        unsigned int, PSZ );
+    typedef int (APIENTRY *WPI_FONTENUMPROC) ( WPI_LPLOGFONT, WPI_LPTEXTMETRIC, unsigned int, PSZ );
     typedef struct WPI_INST {
         HAB                     hab;
         HMODULE                 mod_handle;
