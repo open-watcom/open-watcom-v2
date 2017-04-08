@@ -40,10 +40,10 @@ typedef uint_32         DialogStyle;
 typedef uint_32         DialogExstyle;
 
 typedef struct DialogSizeInfo {
-    uint_16             x;
-    uint_16             y;
-    uint_16             width;
-    uint_16             height;
+    int                 x;
+    int                 y;
+    int                 width;
+    int                 height;
 } DialogSizeInfo;
 
 typedef struct DialogBoxHeader {
@@ -159,7 +159,7 @@ extern bool ResReadDialogBoxExHeader32( DialogBoxHeader32 *, DialogBoxExHeader32
 extern bool ResReadDialogBoxControl( DialogBoxControl *, WResFileID fid );
 extern bool ResReadDialogBoxControl32( DialogBoxControl32 *, WResFileID fid );
 extern bool ResReadDialogBoxExControl32( DialogBoxExControl32 *, WResFileID fid );
-extern bool ResIsDialogEx( WResFileID fid );
+extern bool ResIsDialogBoxEx( WResFileID fid );
 extern void ResFreeDialogBoxHeaderPtrs( DialogBoxHeader *head );
 extern void ResFreeDialogBoxHeader32Ptrs( DialogBoxHeader32 *head );
 

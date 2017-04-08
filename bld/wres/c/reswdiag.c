@@ -51,15 +51,15 @@ static bool ResWriteDialogSizeInfo( DialogSizeInfo *size, WResFileID fid )
 {
     bool    error;
 
-    error = ResWriteUint16( size->x, fid );
+    error = ResWriteUint16( (uint_16)size->x, fid );
     if( !error ) {
-        error = ResWriteUint16( size->y, fid );
+        error = ResWriteUint16( (uint_16)size->y, fid );
     }
     if( !error ) {
-        error = ResWriteUint16( size->width, fid );
+        error = ResWriteUint16( (uint_16)size->width, fid );
     }
     if( !error ) {
-        error = ResWriteUint16( size->height, fid );
+        error = ResWriteUint16( (uint_16)size->height, fid );
     }
     return( error );
 }

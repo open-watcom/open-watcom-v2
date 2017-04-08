@@ -72,7 +72,7 @@ bool ResReadMenuExtraBytes( MenuHeader *header, WResFileID fid, char *buf )
 }
 
 // NB: Anyone using this function will have to manually seek back after
-// calling ResIsMenuEx() (just as in ResIsDialogEx()).
+// calling ResIsMenuEx() (just as in ResIsDialogBoxEx()).
 // If you've already read the header, just call ResIsHeaderMenuEx().
 bool ResIsMenuEx( WResFileID fid )
 /********************************/

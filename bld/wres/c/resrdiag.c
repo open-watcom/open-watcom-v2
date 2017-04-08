@@ -111,8 +111,8 @@ bool ResReadDialogBoxHeader( DialogBoxHeader *head, WResFileID fid )
     return( error );
 }
 
-bool ResIsDialogEx( WResFileID fid )
-/**********************************/
+bool ResIsDialogBoxEx( WResFileID fid )
+/*************************************/
 {
     uint_16         sign0;
     uint_16         sign1;
@@ -194,7 +194,7 @@ bool ResReadDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sho
     uint_32         tmp32;
 
     /* Read in the miscellaneous two WORDs 0x0001, 0xFFFF */
-    error = !ResIsDialogEx( fid );
+    error = !ResIsDialogBoxEx( fid );
     if( !error ) {
         error = ResReadUint32( &tmp32, fid );
         exhead->HelpId = tmp32;
