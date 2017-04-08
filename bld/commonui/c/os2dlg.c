@@ -43,34 +43,11 @@ static TEMPLATE_HANDLE  PMDoneAddingControls( TEMPLATE_HANDLE dlgtemplate );
 static TEMPLATE_HANDLE  PMAddControl( TEMPLATE_HANDLE dlgtemplate, DWORD style, USHORT x, USHORT y, USHORT cx, USHORT cy,
                             USHORT id, USHORT children, ULONG nclass, const char *classname,
                             const char *captiontext, PVOID presparms, ULONG presparmslen,
-                            const void *ctldata, ULONG ctldatlen );
+                            const void *ctldata, ULONG ctldatalen );
 static int              PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate, PVOID dlgdata );
 
-static TEMPLATE_HANDLE  dataSeg;
+static char             *dataSeg;
 static ULONG            dataSegLen;
-
-/*
- * copyString - copy from string to memory
- */
-static WPCHAR copyString( WPCHAR mem, const char *str, int len )
-{
-    if( mem == NULL || str == NULL )
-        return( mem );
-    _FARmemcpy( mem, str, len );
-    return( mem + len );
-
-} /* copyString */
-
-/*
- * safeStrLen - measure sizeof string (even NULL );
- */
-static long safeStrLen( const char *str )
-{
-    if( str == NULL )
-        return( 0 );
-    return( strlen( str ) );
-
-} /* safeStrLen */
 
 /*
  * PMDialogTemplate - build a dialog template
@@ -123,7 +100,7 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE old_dlgtemplate, DWORD style, USHO
     UINT                blocklen, classlen, textlen, ddatalen;
     WPDLGTEMPLATE       dt;
     WPDLGITEMTEMPLATE   dit;
-    WPCHAR              dlgtemp;
+    char                *dataSegPtr;
     char                *new_text;
 
     new_text = _wpi_menutext2pm( captiontext );
@@ -203,25 +180,29 @@ TEMPLATE_HANDLE PMAddControl( TEMPLATE_HANDLE old_dlgtemplate, DWORD style, USHO
     }
 
     if( dataSeg != NULL ) {
-        dlgtemp = (char *)dataSeg + dataSegLen;
+        dataSegPtr = dataSeg + dataSegLen;
 
         /*
          * add extra strings to block
          */
         if( textlen == 1 ) {
-            *dlgtemp++ = '\0';
+            *dataSegPtr++ = '\0';
         } else {
-            dlgtemp = copyString( dlgtemp, new_text, textlen );
+            memcpy( dataSegPtr, new_text, textlen );
+            dataSegPtr += textlen;
         }
         if( classlen ) {
-            dlgtemp = copyString( dlgtemp, classname, classlen );
+            memcpy( dataSegPtr, classname, classlen );
+            dataSegPtr += classlen;
         }
         if( presparmslen ) {
-            dlgtemp = copyString( dlgtemp, presparms, presparmslen );
+            memcpy( dataSegPtr, presparms, presparmslen );
+            dataSegPtr += presparmslen;
         }
         if( ctldatalen ) {
             if( ctldata != NULL ) {
-                 dlgtemp = (char *)_FARmemcpy( dlgtemp, ctldata, ctldatalen ) + ctldatalen;
+                memcpy( dataSegPtr, ctldata, ctldatalen );
+                dataSegPtr += ctldatalen;
             }
         }
         dataSegLen = ddatalen;
@@ -270,7 +251,7 @@ TEMPLATE_HANDLE PMDoneAddingControls( TEMPLATE_HANDLE old_dlgtemplate )
         new_dlgtemplate = PMrealloc( old_dlgtemplate, dt->cbTemplate + dataSegLen );
         dt = (WPDLGTEMPLATE)new_dlgtemplate;
         dit = (WPDLGITEMTEMPLATE)( (WPCHAR)new_dlgtemplate + dt->cbTemplate );
-        memcpy( dit, dataSeg, dataSegLen );
+        _FARmemcpy( dit, dataSeg, dataSegLen );
         dt->cbTemplate += dataSegLen;
         PMfree( dataSeg );
         dataSeg = NULL;
@@ -291,7 +272,7 @@ int PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate, PVOID 
     HWND handle;
 
     handle = WinCreateDlg( HWND_DESKTOP, hwnd, fn, (WPDLGTEMPLATE)dlgtemplate, dlgdata );
-    if( !handle ) {
+    if( handle == NULLHANDLE ) {
         return( 0 );
     }
     rc = WinProcessDlg( handle );
@@ -303,7 +284,7 @@ int PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate, PVOID 
 TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
                                 const char *menuname, const char *classname,
                                 const char *captiontext, WORD pointsize,
-                                const char *typeface, size_t *datalen )
+                                const char *typeface, size_t *templatelen )
 {
     TEMPLATE_HANDLE     old_dlgtemplate;
     TEMPLATE_HANDLE     new_dlgtemplate;
@@ -313,7 +294,7 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     int                 bufsize;
     ULONG               psize;
 
-    datalen = datalen;
+    templatelen = templatelen;
     menuname = menuname;
     classname = classname;
 
@@ -355,7 +336,7 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
 
     new_dlgtemplate = PMAddControl( old_dlgtemplate, style, x, y, cx, cy,
                         0, 1, (ULONG)WC_FRAME, NULL, captiontext, pdata,
-                        psize, &frame_flags, sizeof( ULONG ) );
+                        psize, NULL, frame_flags );
 
     if( pdata != NULL ) {
         PMfree( pdata );
@@ -371,12 +352,12 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
 TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y,
                              int cx, int cy, WORD id, DWORD style,
                              const char *classname, const char *captiontext,
-                             const void *infodata, BYTE infodatalen, size_t *datalen )
+                             const void *infodata, BYTE infodatalen, size_t *templatelen )
 {
     TEMPLATE_HANDLE     new_dlgtemplate;
     ULONG               nclass;
 
-    datalen = datalen;
+    templatelen = templatelen;
     nclass = 0;
     if( ((ULONG)classname & 0xffff0000) == 0xffff0000 ) {
         nclass = (ULONG)classname;

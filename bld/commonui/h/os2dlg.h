@@ -33,28 +33,28 @@
 #include "_pmdlg.h"
 
 #ifdef _M_I86
-#define _FARmemcpy              _fmemcpy
+#define _FARmemcpy      _fmemcpy
 #else
-#define _FARmemcpy              memcpy
+#define _FARmemcpy      memcpy
 #endif
 
-#define SLEN( a )               (safeStrLen((a))+0)
+#define SLEN( a )       (((a)!=NULL)?strlen((a)):0)
 
 /*
  * OS/2 PM defaults,
  */
-#define CODE_PAGE               437
-#define TEMPLATE_TYPE           0
-#define RESERVED                0
+#define CODE_PAGE       437
+#define TEMPLATE_TYPE   0
+#define RESERVED        0
 
 /*
  * I am not about to change this in ALL the code, and since I am not including
  * windows.h, I have defined it as such
  */
 
-extern void         PMfree( void *ptr );
-extern void         *PMmalloc( size_t size );
-extern void         *PMrealloc( void *ptr, size_t size );
+extern void             PMfree( void *ptr );
+extern void             *PMmalloc( size_t size );
+extern void             *PMrealloc( void *ptr, size_t size );
 
 extern TEMPLATE_HANDLE  DialogTemplate( DWORD dtStyle, int x, int y, int cx, int cy,
                                 const char *menuname, const char *classname, const char *captiontext,

@@ -136,6 +136,18 @@ static BYTE *skipString( BYTE *template )
 
 } /* skipString */
 
+#ifndef __WINDOWS__
+static bool checkClassOrdinal( BYTE *template )
+{
+#ifdef __WINDOWS__
+    return( (*template & 0x80) != 0 );
+#else
+    return( *(WORD *)template == (WORD)-1 );
+#endif
+
+}
+#endif
+
 /*
  * hasFontInfo - check whether a dialog template has the DS_SETFONT style
  */
@@ -160,8 +172,16 @@ static BYTE *findFontInfo( BYTE *template )
     /* skip the menu name */
     template = skipString( template );
 
-    /* skip the class name */
+    /* skip the class name or ordinal */
+#ifdef __WINDOWS__
     template = skipString( template );
+#else
+    if( checkClassOrdinal( template ) ) {
+        template += 4;
+    } else {
+        template = skipString( template );
+    }
+#endif
 
     /* skip the caption text */
     template = skipString( template );

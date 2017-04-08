@@ -41,14 +41,15 @@
  */
 static WPCHAR copyString( WPCHAR mem, const char *str, int len )
 {
+    if( str == NULL )
+        str = "";
 #ifdef __WINDOWS__
     _FARmemcpy( mem, str, len );
-    return( mem + len );
 #else
     // convert ANSI or DBCS string to Unicode properly
     MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, str, -1, (LPWSTR)mem, len );
-    return( mem + len );
 #endif
+    return( mem + len );
 
 } /* copyString */
 
@@ -58,8 +59,8 @@ static WPCHAR copyString( WPCHAR mem, const char *str, int len )
  */
 static WPCHAR copyWord( WPCHAR mem, WORD word )
 {
-    *mem++ = word;
-    *mem++ = word >> 8;
+    *mem++ = (char)word;
+    *mem++ = (char)( word >> 8 );
     return( mem );
 
 } /* copyWord */
@@ -97,9 +98,8 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
 {
     TEMPLATE_HANDLE     dlgtemplate;
     size_t              blocklen;
-    UINT                menulen, classlen, captionlen, typefacelen;
+    UINT                menulen, classlen, textlen, typefacelen;
     WPCHAR              template;
-    WPCHAR              dlgtemp;
     WPDLGTEMPLATE       dt;
 #if !defined( __WINDOWS__ )
     unsigned char       class_ordinal;
@@ -120,9 +120,9 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
         classlen = SLEN( classname );
     }
 #endif
-    captionlen = SLEN( captiontext );
+    textlen = SLEN( captiontext );
 
-    blocklen = sizeof( WDLGTEMPLATE ) + menulen + classlen + captionlen;
+    blocklen = sizeof( WDLGTEMPLATE ) + menulen + classlen + textlen;
 
     if( style & DS_SETFONT ) {
         typefacelen = SLEN( typeface );
@@ -154,26 +154,26 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
      * add extra strings to block
      */
 
-    dlgtemp = (WPCHAR)( dt + 1 );
-    dlgtemp = copyString( dlgtemp, menuname, menulen );
+    template = (WPCHAR)( dt + 1 );
+    template = copyString( template, menuname, menulen );
 #if defined( __WINDOWS__ )
-    dlgtemp = copyString( dlgtemp, classname, classlen );
+    template = copyString( template, classname, classlen );
 #else
     if( class_ordinal > 0 ) {
-        dlgtemp = copyWord( dlgtemp, -1 );
-        dlgtemp = copyWord( dlgtemp, class_ordinal );
+        template = copyWord( template, (WORD)-1 );
+        template = copyWord( template, class_ordinal );
     } else {
-        dlgtemp = copyString( dlgtemp, classname, classlen );
+        template = copyString( template, classname, classlen );
     }
 #endif
-    dlgtemp = copyString( dlgtemp, captiontext, captionlen );
+    template = copyString( template, captiontext, textlen );
 
     /*
      * add font data (if needed)
      */
     if( style & DS_SETFONT ) {
-        dlgtemp = copyWord( dlgtemp, pointsize );
-        dlgtemp = copyString( dlgtemp, typeface, typefacelen );
+        template = copyWord( template, pointsize );
+        template = copyString( template, typeface, typefacelen );
     }
 
     GlobalUnlock( dlgtemplate );
@@ -184,7 +184,7 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
 /*
  * AddControl - add a control to a dialog
  */
-TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE dlgtemplate, int x, int y, int cx, int cy, WORD id, DWORD style,
+TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y, int cx, int cy, WORD id, DWORD style,
                             const char *classname, const char *captiontext,
                             const void *infodata, BYTE infodatalen, size_t *templatelen )
 {
@@ -224,8 +224,8 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE dlgtemplate, int x, int y, int cx, i
     blocklen = item_start + sizeof( WDLGITEMTEMPLATE ) + classlen + textlen + sizeof( WORD ) + infodatalen;
 #endif
 
-    GlobalUnlock( dlgtemplate );
-    new_dlgtemplate = GlobalReAlloc( dlgtemplate, blocklen, GMEM_MOVEABLE | GMEM_ZEROINIT );
+    GlobalUnlock( old_dlgtemplate );
+    new_dlgtemplate = GlobalReAlloc( old_dlgtemplate, blocklen, GMEM_MOVEABLE | GMEM_ZEROINIT );
     if( new_dlgtemplate == NULL )
         return( NULL );
 
@@ -258,7 +258,7 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE dlgtemplate, int x, int y, int cx, i
 #if defined( __WINDOWS__ )
         *ditstr++ = class_ordinal;
 #else
-        ditstr = copyWord( ditstr, -1 );
+        ditstr = copyWord( ditstr, (WORD)-1 );
         ditstr = copyWord( ditstr, class_ordinal );
 #endif
     } else {

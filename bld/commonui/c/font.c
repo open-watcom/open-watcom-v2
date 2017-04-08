@@ -39,7 +39,7 @@
 
 /* Window callback functions prototypes */
 #if defined( __WINDOWS_386__ )
-WINEXPORT int CALLBACK EnumFontsEnumFunc( const LOGFONT *_lf, const TEXTMETRIC *tm, int ftype, LPARAM data );
+WINEXPORT int CALLBACK EnumFontsEnumFunc( const LOGFONT *lf, const TEXTMETRIC *tm, int ftype, LPARAM data );
 #elif defined( __WINDOWS__ )
 WINEXPORT int CALLBACK EnumFontsEnumFunc( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int ftype, LPARAM data );
 #else
@@ -59,7 +59,7 @@ static char     *fontKey = "Font";
  * EnumFunc - enumerate fonts
  */
 #if defined( __WINDOWS_386__ )
-int CALLBACK EnumFontsEnumFunc( const LOGFONT *_lf, const TEXTMETRIC *tm, int ftype, LPARAM data )
+int CALLBACK EnumFontsEnumFunc( const LOGFONT *lf, const TEXTMETRIC *tm, int ftype, LPARAM data )
 #elif defined( __WINDOWS__ )
 int CALLBACK EnumFontsEnumFunc( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int ftype, LPARAM data )
 #else
@@ -67,13 +67,12 @@ int CALLBACK EnumFontsEnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm,
 #endif
 {
 #ifdef __WINDOWS_386__
-    const LOGFONT __far    *lf = MK_FP32( (void *)_lf );
+    const ENUMLOGFONT   __far *elf = MK_FP32( (void *)lf );
     tm = tm;
 #elif defined( __WINDOWS__ )
-    const LOGFONT FAR      *lf = (const LOGFONT FAR *)elf;
-//    const TEXTMETRIC FAR *tm = (const TEXTMETRIC FAR *)ntm;
     ntm = ntm;
 #else
+    const ENUMLOGFONT   FAR *elf = (const ENUMLOGFONT FAR *)lf;
     tm = tm;
 #endif
     ftype = ftype;
@@ -87,18 +86,18 @@ int CALLBACK EnumFontsEnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm,
      * Changed the test to == 0, because it is easier to read and understand.
      */
 #if defined( __NT__ )
-    if( FARstricmp( lf->lfFaceName, "andale mono" ) == 0 ||
-        FARstricmp( lf->lfFaceName, "lucida console" ) == 0 ||
-        FARstricmp( lf->lfFaceName, "vera sans mono" ) == 0 ||
-        FARstricmp( lf->lfFaceName, "courier new" ) == 0 ||
-        FARstricmp( lf->lfFaceName, "courier" ) == 0 ) {
+    if( FARstricmp( elf->elfLogFont.lfFaceName, "andale mono" ) == 0 ||
+        FARstricmp( elf->elfLogFont.lfFaceName, "lucida console" ) == 0 ||
+        FARstricmp( elf->elfLogFont.lfFaceName, "vera sans mono" ) == 0 ||
+        FARstricmp( elf->elfLogFont.lfFaceName, "courier new" ) == 0 ||
+        FARstricmp( elf->elfLogFont.lfFaceName, "courier" ) == 0 ) {
 #else
-    if( FARstricmp( lf->lfFaceName, "courier new" ) == 0 ||
-        FARstricmp( lf->lfFaceName, "courier" ) == 0 ) {
+    if( FARstricmp( elf->elfLogFont.lfFaceName, "courier new" ) == 0 ||
+        FARstricmp( elf->elfLogFont.lfFaceName, "courier" ) == 0 ) {
 #endif
-        courierFont = CreateFont( 13, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, lf->lfCharSet,
+        courierFont = CreateFont( 13, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, elf->elfLogFont.lfCharSet,
                                   OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-                                  lf->lfPitchAndFamily, lf->lfFaceName );
+                                  elf->elfLogFont.lfPitchAndFamily, elf->elfLogFont.lfFaceName );
         return( 0 );
     }
     return( 1 );
@@ -117,11 +116,7 @@ static void getCourierFont( HANDLE inst )
     inst = inst;        /* shut up the compiler for NT */
     hdc = GetDC( HWND_DESKTOP );
     fontenumproc = MakeProcInstance_FONTENUM( EnumFontsEnumFunc, inst );
-#if defined( __WINDOWS__ ) && defined( _M_I86 )
-    EnumFonts( hdc, NULL, (OLDFONTENUMPROC)fontenumproc, 0 );
-#else
-    EnumFonts( hdc, NULL, fontenumproc, 0 );
-#endif
+    EnumFontFamilies( hdc, NULL, fontenumproc, 0 );
     FreeProcInstance_FONTENUM( fontenumproc );
     ReleaseDC( (HWND)NULL, hdc );
 

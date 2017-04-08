@@ -43,13 +43,13 @@
 
 #ifdef __WINDOWS__
 
-#define SLEN( a )       (strlen((a))+1)
 #define _FARmemcpy      _fmemcpy
+#define SLEN( a )       ((a != NULL) ? strlen((a)) + 1 : 1)
 
 #else
 
 #define _FARmemcpy      memcpy
-#define SLEN( a )       (2 * MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, (a), -1, NULL, 0 ))
+#define SLEN( a )       ((a != NULL) ? 2 * MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, (a), -1, NULL, 0 ) : 2)
 
 #endif
 
@@ -57,7 +57,7 @@ extern TEMPLATE_HANDLE  DialogTemplate( DWORD style, int x, int y, int cx, int c
                             const char *menuname, const char *classname, const char *captiontext,
                             WORD pointsize, const char *typeface, size_t *templatelen );
 extern TEMPLATE_HANDLE  AddControl( TEMPLATE_HANDLE dlgtemplate, int x, int y, int cx, int cy, WORD id, DWORD style,
-                            const char *classname, const char *captiontext, const void *infodata, BYTE infolen, size_t *templatelen );
+                            const char *classname, const char *captiontext, const void *infodata, BYTE infodatalen, size_t *templatelen );
 extern TEMPLATE_HANDLE  DoneAddingControls( TEMPLATE_HANDLE dlgtemplate );
 extern INT_PTR          DynamicDialogBox( DLGPROCx fn, HINSTANCE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate, LPARAM lparam );
 
