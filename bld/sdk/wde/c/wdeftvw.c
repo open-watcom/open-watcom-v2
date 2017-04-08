@@ -43,6 +43,7 @@
 #include "wdesdup.h"
 #include "wdecctl.h"
 #include "wdeftvw.h"
+#include "wdedispa.h"
 
 
 /****************************************************************************/
@@ -73,7 +74,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeTViewDispatcher( ACTION_ID, WdeTViewObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeTViewDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeTViewSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -188,7 +189,7 @@ OBJPTR WdeTVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wde
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeTViewDispatcher( ACTION_ID act, WdeTViewObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeTViewDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -196,11 +197,11 @@ bool CALLBACK WdeTViewDispatcher( ACTION_ID act, WdeTViewObject *obj, void *p1, 
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeTViewActions[i].id == act ) {
-            return( WdeTViewActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( WdeTViewActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return( Forward( obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeTViewObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeTViewInit( bool first )
@@ -248,14 +249,14 @@ bool WdeTViewInit( bool first )
     SETCTL_TEXT( WdeDefaultTView, NULL );
     SETCTL_CLASSID( WdeDefaultTView, WdeStrToControlClass( WWC_TREEVIEW ) );
 
-    WdeTViewDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeTViewDispatcher, WdeGetAppInstance() );
+    WdeTViewDispatch = MakeProcInstance_DISPATCHER( WdeTViewDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeTViewFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultTView );
-    FreeProcInstance( (FARPROC)WdeTViewDispatch );
+    FreeProcInstance_DISPATCHER( WdeTViewDispatch );
 }
 
 bool WdeTViewDestroy( WdeTViewObject *obj, bool *flag, bool *p2 )

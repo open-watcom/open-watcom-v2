@@ -47,6 +47,8 @@
 #include "wde_rc.h"
 #include "jdlg.h"
 #include "wrdll.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -129,7 +131,7 @@ bool WdeSetCurrentCustControl( int which )
 {
     INT_PTR   ret;
     HINSTANCE inst;
-    DLGPROC   dlg_proc;
+    DLGPROC   dlgproc;
 
     if( WdeCustomLibList == NULL ) {
         WdeSetStatusByID( 0, WDE_NOCUSTLOADED );
@@ -142,14 +144,14 @@ bool WdeSetCurrentCustControl( int which )
     }
 
     inst = WdeGetAppInstance();
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WdeSelectCustDlgProc, inst );
-    if( dlg_proc == NULL ) {
+    dlgproc = MakeProcInstance_DLG( WdeSelectCustDlgProc, inst );
+    if( dlgproc == NULL ) {
         WdeWriteTrail( "WdeSetCurrentCustomControl: MakeProcInstance failed!" );
         return( false );
     }
-    ret = JDialogBoxParam( inst, "WdeSelectCustom", WdeGetMainWindowHandle(), dlg_proc, (LPARAM)(LPVOID)&which );
+    ret = JDialogBoxParam( inst, "WdeSelectCustom", WdeGetMainWindowHandle(), dlgproc, (LPARAM)(LPVOID)&which );
 
-    FreeProcInstance( (FARPROC)dlg_proc );
+    FreeProcInstance_DLG( dlgproc );
 
     /* if the window could not be created return FALSE */
     if( ret == -1 ) {

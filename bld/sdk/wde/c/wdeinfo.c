@@ -48,13 +48,15 @@
 #include "wdeinfo.h"
 #include "wrdll.h"
 #include "jdlg.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT BOOL CALLBACK WdeInfoWndProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WdeInfoWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* external variables                                                       */
@@ -170,7 +172,7 @@ bool WdeCreateInfoWindow( HWND main_window, HINSTANCE inst )
         return( FALSE );
     }
 
-    WdeInfoWinProc = (DLGPROC)MakeProcInstance ( (FARPROC)WdeInfoWndProc, inst );
+    WdeInfoWinProc = MakeProcInstance_DLG( WdeInfoWndProc, inst );
 
     WdeInfoColor = GetSysColor( COLOR_BTNFACE );
     WdeInfoBrush = CreateSolidBrush( WdeInfoColor );
@@ -194,7 +196,7 @@ void WdeInfoFini( void )
 {
     WdeFiniInfoText();
     if( WdeInfoWinProc != NULL ) {
-        FreeProcInstance( (FARPROC)WdeInfoWinProc );
+        FreeProcInstance_DLG( WdeInfoWinProc );
     }
     if( WdeInfoBrush != NULL ) {
         DeleteObject( WdeInfoBrush );
@@ -681,7 +683,7 @@ void WdeInfoLookupComboEntry( HWND hWnd, WORD hw )
     WRMemFree( str );
 }
 
-BOOL CALLBACK WdeInfoWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeInfoWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WORD    w;
     RECT    r;

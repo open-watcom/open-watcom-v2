@@ -47,6 +47,8 @@
 #include "wde_rc.h"
 #include "wdedefin.h"
 #include "jdlg.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* external function prototypes                                             */
@@ -108,7 +110,7 @@ bool WdeGenericDefine( WdeDefineObjectInfo *info )
     INT_PTR              redraw;
     bool                 quick;
     bool                 destroy_children;
-    DLGPROC              dlg_proc;
+    DLGPROC              dlgproc;
     HINSTANCE            app_inst;
 
     if( info->obj == NULL ) {
@@ -128,11 +130,11 @@ bool WdeGenericDefine( WdeDefineObjectInfo *info )
 
     app_inst = WdeGetAppInstance();
 
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WdeGenericDefineDlgProc, app_inst );
+    dlgproc = MakeProcInstance_DLG( WdeGenericDefineDlgProc, app_inst );
 
-    redraw = JDialogBoxParam( app_inst, "WdeDefineGeneric", info->win, dlg_proc, (LPARAM)info );
+    redraw = JDialogBoxParam( app_inst, "WdeDefineGeneric", info->win, dlgproc, (LPARAM)info );
 
-    FreeProcInstance ( (FARPROC)dlg_proc );
+    FreeProcInstance_DLG( dlgproc );
 
     if( redraw == -1 ) {
         WdeWriteTrail( "WdeGenericDefine: Dialog not created!" );

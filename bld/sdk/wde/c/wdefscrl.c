@@ -42,6 +42,7 @@
 #include "wde_rc.h"
 #include "wdecctl.h"
 #include "wdefscrl.h"
+#include "wdedispa.h"
 
 
 /****************************************************************************/
@@ -74,7 +75,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeScrollDispatcher( ACTION_ID, WdeScrollObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeScrollDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeScrollSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -204,7 +205,7 @@ OBJPTR WdeScrollCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeScrollDispatcher( ACTION_ID act, WdeScrollObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeScrollDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -212,11 +213,11 @@ bool CALLBACK WdeScrollDispatcher( ACTION_ID act, WdeScrollObject *obj, void *p1
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeScrollActions[i].id == act ) {
-            return( WdeScrollActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( WdeScrollActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return( Forward( obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeScrollObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeScrollInit( bool first )
@@ -264,14 +265,14 @@ bool WdeScrollInit( bool first )
     SETCTL_TEXT( WdeDefaultScroll, NULL );
     SETCTL_CLASSID( WdeDefaultScroll, ResNumToControlClass( CLASS_SCROLLBAR ) );
 
-    WdeScrollDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeScrollDispatcher, WdeGetAppInstance() );
+    WdeScrollDispatch = MakeProcInstance_DISPATCHER( WdeScrollDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeScrollFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultScroll );
-    FreeProcInstance( (FARPROC)WdeScrollDispatch );
+    FreeProcInstance_DISPATCHER( WdeScrollDispatch );
 }
 
 bool WdeScrollDestroy( WdeScrollObject *obj, bool *flag, bool *p2 )

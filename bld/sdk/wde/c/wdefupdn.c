@@ -43,6 +43,7 @@
 #include "wdesdup.h"
 #include "wdecctl.h"
 #include "wdefupdn.h"
+#include "wdedispa.h"
 
 
 /****************************************************************************/
@@ -73,7 +74,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeUpDnDispatcher( ACTION_ID, WdeUpDnObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeUpDnDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeUpDnSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -191,7 +192,7 @@ OBJPTR WdeUDCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeUpDnDispatcher( ACTION_ID act, WdeUpDnObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeUpDnDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -199,11 +200,11 @@ bool CALLBACK WdeUpDnDispatcher( ACTION_ID act, WdeUpDnObject *obj, void *p1, vo
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeUpDnActions[i].id == act ) {
-            return( WdeUpDnActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( WdeUpDnActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return( Forward( obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeUpDnObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeUpDnInit( bool first )
@@ -251,14 +252,14 @@ bool WdeUpDnInit( bool first )
     SETCTL_TEXT( WdeDefaultUpDn, NULL );
     SETCTL_CLASSID( WdeDefaultUpDn, WdeStrToControlClass( WUPDOWN_CLASS ) );
 
-    WdeUpDnDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeUpDnDispatcher, WdeGetAppInstance() );
+    WdeUpDnDispatch = MakeProcInstance_DISPATCHER( WdeUpDnDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeUpDnFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultUpDn );
-    FreeProcInstance( (FARPROC)WdeUpDnDispatch );
+    FreeProcInstance_DISPATCHER( WdeUpDnDispatch );
 }
 
 bool WdeUpDnDestroy( WdeUpDnObject *obj, bool *flag, bool *p2 )

@@ -43,6 +43,7 @@
 #include "wdesdup.h"
 #include "wdecctl.h"
 #include "wdeftabc.h"
+#include "wdedispa.h"
 
 
 /****************************************************************************/
@@ -73,7 +74,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeTabCDispatcher( ACTION_ID, WdeTabCObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeTabCDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeTabCSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -189,7 +190,7 @@ OBJPTR WdeTCCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeTabCDispatcher( ACTION_ID act, WdeTabCObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeTabCDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -197,11 +198,11 @@ bool CALLBACK WdeTabCDispatcher( ACTION_ID act, WdeTabCObject *obj, void *p1, vo
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeTabCActions[i].id == act ) {
-            return( WdeTabCActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( WdeTabCActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return( Forward( obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeTabCObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeTabCInit( bool first )
@@ -249,14 +250,14 @@ bool WdeTabCInit( bool first )
     SETCTL_TEXT( WdeDefaultTabC, NULL );
     SETCTL_CLASSID( WdeDefaultTabC, WdeStrToControlClass( WWC_TABCONTROL ) );
 
-    WdeTabCDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeTabCDispatcher, WdeGetAppInstance() );
+    WdeTabCDispatch = MakeProcInstance_DISPATCHER( WdeTabCDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeTabCFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultTabC );
-    FreeProcInstance( (FARPROC)WdeTabCDispatch );
+    FreeProcInstance_DISPATCHER( WdeTabCDispatch );
 }
 
 bool WdeTabCDestroy( WdeTabCObject *obj, bool *flag, bool *p2 )

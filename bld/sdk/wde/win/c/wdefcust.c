@@ -46,6 +46,7 @@
 #include "wdefutil.h"
 #include "wdedefsz.h"
 #include "wdefcust.h"
+#include "wdedispa.h"
 
 
 /****************************************************************************/
@@ -89,7 +90,7 @@ typedef struct {
 
 /* Local Window callback functions prototypes */
 WINEXPORT LRESULT   CALLBACK WdeCustomSuperClassProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT bool      CALLBACK WdeCustomDispatcher( ACTION_ID, WdeCustomObject *, void *, void * );
+WINEXPORT bool      CALLBACK WdeCustomDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT WORD      CALLBACK WdeIDToStr( WORD, LPSTR, WORD );
 WINEXPORT DWORD     CALLBACK WdeStrToID( LPSTR );
 
@@ -558,7 +559,7 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeCustomDispatcher( ACTION_ID act, WdeCustomObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeCustomDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -568,11 +569,11 @@ bool CALLBACK WdeCustomDispatcher( ACTION_ID act, WdeCustomObject *obj, void *p1
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeCustomActions[i].id == act ) {
-            return( WdeCustomActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( WdeCustomActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return( Forward( obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeCustomObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeCustomInit( bool first )
@@ -597,7 +598,7 @@ bool WdeCustomInit( bool first )
     SETCTL_TEXT( WdeDefaultCustom, NULL );
     SETCTL_CLASSID( WdeDefaultCustom, NULL );
 
-    WdeCustomDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeCustomDispatcher, WdeGetAppInstance() );
+    WdeCustomDispatch = MakeProcInstance_DISPATCHER( WdeCustomDispatcher, WdeGetAppInstance() );
 
     WdeStr2ID = MakeProcInstance ( (FARPROC)WdeStrToID, WdeApplicationInstance );
     WdeID2Str = MakeProcInstance ( (FARPROC)WdeIDToStr, WdeApplicationInstance );
@@ -609,7 +610,7 @@ void WdeCustomFini( void )
 {
     WdeFreeClassList();
     WdeFreeDialogBoxControl( &WdeDefaultCustom );
-    FreeProcInstance( (FARPROC)WdeCustomDispatch );
+    FreeProcInstance_DISPATCHER( WdeCustomDispatch );
     FreeProcInstance( WdeStr2ID );
     FreeProcInstance( WdeID2Str );
 }

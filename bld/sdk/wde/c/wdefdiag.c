@@ -72,6 +72,9 @@
 #include "windlg.h"
 #include "windlg32.h"
 #include "jdlg.h"
+#include "wclbproc.h"
+#include "wdedispa.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -192,7 +195,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool       CALLBACK WdeDialogDispatcher( ACTION_ID, WdeDialogObject *, void *, void * );
+WINEXPORT bool       CALLBACK WdeDialogDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT INT_PTR    CALLBACK WdeDialogDlgProc( HWND, UINT, WPARAM, LPARAM );
 WINEXPORT INT_PTR    CALLBACK WdeDialogDefineDlgProc( HWND, UINT, WPARAM, LPARAM );
 
@@ -783,7 +786,7 @@ WdeDialogObject *WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle 
     return( new );
 }
 
-bool CALLBACK WdeDialogDispatcher( ACTION_ID act, WdeDialogObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeDialogDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -792,14 +795,14 @@ bool CALLBACK WdeDialogDispatcher( ACTION_ID act, WdeDialogObject *obj, void *p1
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeDialogActions[i].id == act ) {
             if( WdeDialogActions[i].rtn != NULL ) {
-                return( WdeDialogActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+                return( WdeDialogActions[i].rtn( obj, p1, p2 ) );
             } else {
-                return( Forward( obj->parent, act, p1, p2 ) );
+                return( Forward( ((WdeDialogObject *)obj)->parent, act, p1, p2 ) );
             }
         }
     }
 
-    return( Forward( obj->o_item, act, p1, p2 ) );
+    return( Forward( ((WdeDialogObject *)obj)->o_item, act, p1, p2 ) );
 }
 
 bool WdeDialogInit( bool first )
@@ -858,10 +861,10 @@ bool WdeDialogInit( bool first )
         }
     }
 
-    WdeDialogDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeDialogDispatcher, WdeAppInst );
-    WdeDialogDefineDlgProcInst = (DLGPROC)MakeProcInstance( (FARPROC)WdeDialogDefineDlgProc, WdeAppInst );
-    WdeTestDlgProcInst = (DLGPROC)MakeProcInstance( (FARPROC)WdeTestDlgProc, WdeAppInst );
-    WdeDialogDlgProcInst = (DLGPROC)MakeProcInstance ( (FARPROC)WdeDialogDlgProc, WdeAppInst );
+    WdeDialogDispatch = MakeProcInstance_DISPATCHER( WdeDialogDispatcher, WdeAppInst );
+    WdeDialogDefineDlgProcInst = MakeProcInstance_DLG( WdeDialogDefineDlgProc, WdeAppInst );
+    WdeTestDlgProcInst = MakeProcInstance_DLG( WdeTestDlgProc, WdeAppInst );
+    WdeDialogDlgProcInst = MakeProcInstance_DLG( WdeDialogDlgProc, WdeAppInst );
 
     return( true );
 }
@@ -869,10 +872,10 @@ bool WdeDialogInit( bool first )
 void WdeDialogFini( void )
 {
     WdeFreeDialogBoxHeader( &WdeDefaultDialog );
-    FreeProcInstance( (FARPROC)WdeDialogDefineDlgProcInst);
-    FreeProcInstance( (FARPROC)WdeTestDlgProcInst );
-    FreeProcInstance( (FARPROC)WdeDialogDlgProcInst );
-    FreeProcInstance( (FARPROC)WdeDialogDispatch );
+    FreeProcInstance_DLG( WdeDialogDefineDlgProcInst);
+    FreeProcInstance_DLG( WdeTestDlgProcInst );
+    FreeProcInstance_DLG( WdeDialogDlgProcInst );
+    FreeProcInstance_DISPATCHER( WdeDialogDispatch );
 }
 
 bool WdeDialogResolveSymbol( WdeDialogObject *obj, bool *b, bool *from_id )

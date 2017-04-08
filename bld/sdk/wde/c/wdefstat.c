@@ -42,6 +42,7 @@
 #include "wde_rc.h"
 #include "wdecctl.h"
 #include "wdefstat.h"
+#include "wdedispa.h"
 
 
 /****************************************************************************/
@@ -73,7 +74,7 @@ typedef struct {
 
 /* Local Window callback functions prototypes */
 WINEXPORT LRESULT CALLBACK WdeStaticSuperClassProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT bool    CALLBACK WdeStaticDispatcher( ACTION_ID, WdeStaticObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeStaticDispatcher( ACTION_ID, OBJPTR, void *, void * );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -209,7 +210,7 @@ OBJPTR WdeStatCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeStaticDispatcher( ACTION_ID act, WdeStaticObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeStaticDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -217,11 +218,11 @@ bool CALLBACK WdeStaticDispatcher( ACTION_ID act, WdeStaticObject *obj, void *p1
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeStaticActions[i].id == act ) {
-            return( WdeStaticActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( WdeStaticActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return( Forward( obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeStaticObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeStaticInit( bool first )
@@ -269,14 +270,14 @@ bool WdeStaticInit( bool first )
     SETCTL_TEXT( WdeDefaultStatic, NULL );
     SETCTL_CLASSID( WdeDefaultStatic, ResNumToControlClass( CLASS_STATIC ) );
 
-    WdeStaticDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeStaticDispatcher, WdeGetAppInstance() );
+    WdeStaticDispatch = MakeProcInstance_DISPATCHER( WdeStaticDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeStaticFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultStatic );
-    FreeProcInstance( (FARPROC)WdeStaticDispatch );
+    FreeProcInstance_DISPATCHER( WdeStaticDispatch );
 }
 
 bool WdeStaticDestroy( WdeStaticObject *obj, bool *flag, bool *p2 )

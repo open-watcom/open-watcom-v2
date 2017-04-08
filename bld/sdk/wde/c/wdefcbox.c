@@ -44,6 +44,7 @@
 #include "wde_rc.h"
 #include "wdecctl.h"
 #include "wdefcbox.h"
+#include "wdedispa.h"
 
 
 /****************************************************************************/
@@ -74,7 +75,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeCBoxDispatcher( ACTION_ID, WdeCBoxObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeCBoxDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeCBoxSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -192,7 +193,7 @@ OBJPTR WdeCBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeCBoxDispatcher( ACTION_ID act, WdeCBoxObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeCBoxDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -200,11 +201,11 @@ bool CALLBACK WdeCBoxDispatcher( ACTION_ID act, WdeCBoxObject *obj, void *p1, vo
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeCBoxActions[i].id == act ) {
-            return( WdeCBoxActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( WdeCBoxActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return( Forward( obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeCBoxObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeCBoxInit( bool first )
@@ -252,14 +253,14 @@ bool WdeCBoxInit( bool first )
     SETCTL_TEXT( WdeDefaultCBox, NULL );
     SETCTL_CLASSID( WdeDefaultCBox, ResNumToControlClass( CLASS_COMBOBOX ) );
 
-    WdeCBoxDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeCBoxDispatcher, WdeGetAppInstance());
+    WdeCBoxDispatch = MakeProcInstance_DISPATCHER( WdeCBoxDispatcher, WdeGetAppInstance());
     return( true );
 }
 
 void WdeCBoxFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultCBox );
-    FreeProcInstance( (FARPROC)WdeCBoxDispatch );
+    FreeProcInstance_DISPATCHER( WdeCBoxDispatch );
 }
 
 bool WdeCBoxDestroy( WdeCBoxObject *obj, bool *flag, bool *p2 )

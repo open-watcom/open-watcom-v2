@@ -42,6 +42,7 @@
 #include "wde_rc.h"
 #include "wdecctl.h"
 #include "wdeflbox.h"
+#include "wdedispa.h"
 
 
 /****************************************************************************/
@@ -72,7 +73,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeLBoxDispatcher( ACTION_ID, WdeLBoxObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeLBoxDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeLBoxSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -187,7 +188,7 @@ OBJPTR WdeLBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wde
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeLBoxDispatcher( ACTION_ID act, WdeLBoxObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeLBoxDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -195,11 +196,11 @@ bool CALLBACK WdeLBoxDispatcher( ACTION_ID act, WdeLBoxObject *obj, void *p1, vo
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeLBoxActions[i].id == act ) {
-            return( WdeLBoxActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( WdeLBoxActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return( Forward( obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeLBoxObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeLBoxInit( bool first )
@@ -247,7 +248,7 @@ bool WdeLBoxInit( bool first )
     SETCTL_TEXT( WdeDefaultLBox, NULL );
     SETCTL_CLASSID( WdeDefaultLBox, ResNumToControlClass( CLASS_LISTBOX ) );
 
-    WdeLBoxDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeLBoxDispatcher, WdeGetAppInstance() );
+    WdeLBoxDispatch = MakeProcInstance_DISPATCHER( WdeLBoxDispatcher, WdeGetAppInstance() );
 
     return( true );
 }
@@ -255,7 +256,7 @@ bool WdeLBoxInit( bool first )
 void WdeLBoxFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultLBox );
-    FreeProcInstance( (FARPROC)WdeLBoxDispatch );
+    FreeProcInstance_DISPATCHER( WdeLBoxDispatch );
 }
 
 bool WdeLBoxDestroy( WdeLBoxObject *obj, bool *flag, bool *p2 )

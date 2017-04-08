@@ -59,6 +59,8 @@
 #include "wdefutil.h"
 #include "wrstrdup.h"
 #include "jdlg.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -942,7 +944,7 @@ bool WdeControlDefine( WdeDefineObjectInfo *o_info )
     char                *helpsymbol;
     char                *dlg_template;
     INT_PTR             redraw;
-    DLGPROC             dlg_proc;
+    DLGPROC             dlgproc;
     HINSTANCE           app_inst;
     WdeOrderMode        mode;
 
@@ -989,11 +991,10 @@ bool WdeControlDefine( WdeDefineObjectInfo *o_info )
 
     redraw = -1;
 
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WdeControlDefineDlgProc, app_inst );
-
-    if( dlg_proc != NULL ) {
-        redraw = JDialogBoxParam( app_inst, dlg_template, o_info->win, dlg_proc, (LPARAM)o_info );
-        FreeProcInstance( (FARPROC)dlg_proc );
+    dlgproc = MakeProcInstance_DLG( WdeControlDefineDlgProc, app_inst );
+    if( dlgproc != NULL ) {
+        redraw = JDialogBoxParam( app_inst, dlg_template, o_info->win, dlgproc, (LPARAM)o_info );
+        FreeProcInstance_DLG( dlgproc );
     }
 
     if( redraw == -1 ) {

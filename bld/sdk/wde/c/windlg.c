@@ -33,6 +33,7 @@
 #include "wdeglbl.h"
 #include "windlg.h"
 #include "wdedlgut.h"
+#include "wclbproc.h"
 
 
 /*
@@ -218,15 +219,15 @@ void DoneAddingControls( TEMPLATE_HANDLE data )
 /*
  * DynamicDialogBox - create a dynamic dialog box
  */
-INT_PTR DynamicDialogBox( DLGPROC dlg_fn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE data )
+INT_PTR DynamicDialogBox( DLGPROC dlgfn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE data )
 {
-    DLGPROC     dlg_proc;
+    DLGPROC     dlgproc;
     INT_PTR     rc;
 
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)dlg_fn, inst );
-    rc = DialogBoxIndirect( inst, TEMPLATE_LOCK( data ), hwnd, dlg_proc );
+    dlgproc = MakeProcInstance_DLG( dlgfn, inst );
+    rc = DialogBoxIndirect( inst, TEMPLATE_LOCK( data ), hwnd, dlgproc );
     TEMPLATE_UNLOCK( data );
-    FreeProcInstance( (FARPROC)dlg_proc );
+    FreeProcInstance_DLG( dlgproc );
     GlobalFree( data );
     return( rc );
 

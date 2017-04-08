@@ -43,6 +43,8 @@
 #include "wdesdup.h"
 #include "wdecctl.h"
 #include "wdefani.h"
+#include "wdedispa.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -72,7 +74,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeAniCDispatcher( ACTION_ID, WdeAniCObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeAniCDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeAniCSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -188,7 +190,7 @@ OBJPTR WdeAniCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle, OBJ_ID id, Wd
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeAniCDispatcher( ACTION_ID act, WdeAniCObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeAniCDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -196,11 +198,11 @@ bool CALLBACK WdeAniCDispatcher( ACTION_ID act, WdeAniCObject *obj, void *p1, vo
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeAniCActions[i].id == act ) {
-            return( WdeAniCActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( WdeAniCActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return( Forward( obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeAniCObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeAniCInit( bool first )
@@ -248,14 +250,14 @@ bool WdeAniCInit( bool first )
     SETCTL_TEXT( WdeDefaultAniC, NULL );
     SETCTL_CLASSID( WdeDefaultAniC, WdeStrToControlClass( WANIMATE_CLASS ) );
 
-    WdeAniCDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeAniCDispatcher, WdeGetAppInstance() );
+    WdeAniCDispatch = MakeProcInstance_DISPATCHER( WdeAniCDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeAniCFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultAniC );
-    FreeProcInstance( (FARPROC)WdeAniCDispatch );
+    FreeProcInstance_DISPATCHER( WdeAniCDispatch );
 }
 
 bool WdeAniCDestroy( WdeAniCObject *obj, bool *flag, bool *p2 )

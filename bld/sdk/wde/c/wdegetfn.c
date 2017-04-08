@@ -42,6 +42,8 @@
 #include "wdectl3d.h"
 #include "wdegetfn.h"
 #include "wrdll.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* external function prototypes                                             */
@@ -265,7 +267,7 @@ char *WdeGetFileName( WdeGetFileStruct *gf, DWORD flags, WdeGetFileNameAction ac
     wdeofn.lpstrTitle = wdefntitle;
     wdeofn.Flags = flags;
 #if !defined( __NT__ )
-    wdeofn.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)WdeOpenHookProc, app_inst );
+    wdeofn.lpfnHook = MakeProcInstance_OFNHOOK( WdeOpenHookProc, app_inst );
 #endif
 
 #if 0
@@ -287,7 +289,7 @@ char *WdeGetFileName( WdeGetFileStruct *gf, DWORD flags, WdeGetFileNameAction ac
 
 #ifndef __NT__
     if( wdeofn.lpfnHook != NULL ) {
-        FreeProcInstance( (FARPROC)wdeofn.lpfnHook );
+        FreeProcInstance_OFNHOOK( wdeofn.lpfnHook );
     }
 #endif
 

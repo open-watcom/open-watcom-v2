@@ -45,13 +45,15 @@
 #include "wdectl3d.h"
 #include "wde_rc.h"
 #include "wdetest.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool CALLBACK WdeSetControlEnumProc( HWND, LPARAM );
+WINEXPORT BOOL CALLBACK WdeSetControlEnumProc( HWND, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -149,20 +151,18 @@ static bool WdeTestCurrentObject( void )
 
 bool WdeSetTestControlDefaults( HWND dialog )
 {
-    WNDENUMPROC child_proc;
+    WNDENUMPROC wndenumproc;
     bool        ret;
 
     if( dialog != NULL ) {
-        child_proc = (WNDENUMPROC)MakeProcInstance( (FARPROC)WdeSetControlEnumProc,
-                                                    WdeGetAppInstance() );
-        ret = ( EnumChildWindows( dialog, child_proc, 0 ) != 0 );
-        FreeProcInstance( (FARPROC)child_proc );
+        wndenumproc = MakeProcInstance_WNDENUM( WdeSetControlEnumProc, WdeGetAppInstance() );
+        ret = ( EnumChildWindows( dialog, wndenumproc, 0 ) != 0 );
+        FreeProcInstance_WNDENUM( wndenumproc );
     }
-
     return( ret );
 }
 
-bool CALLBACK WdeSetControlEnumProc( HWND win, LPARAM ret )
+BOOL CALLBACK WdeSetControlEnumProc( HWND win, LPARAM ret )
 {
     /* touch unused var to get rid of warning */
     _wde_touch( ret );

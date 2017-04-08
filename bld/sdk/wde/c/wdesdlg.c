@@ -53,6 +53,8 @@
 #include "wdei2mem.h"
 #include "wdesdlg.h"
 #include "jdlg.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -147,7 +149,7 @@ LIST *WdeSelectDialogs( WdeResInfo *res_info, bool remove )
 {
     INT_PTR             ret;
     HINSTANCE           inst;
-    DLGPROC             dlg_proc;
+    DLGPROC             dlgproc;
     WdeDialogSelectInfo si;
 
     if( res_info == NULL ) {
@@ -156,9 +158,9 @@ LIST *WdeSelectDialogs( WdeResInfo *res_info, bool remove )
 
     inst = WdeGetAppInstance();
 
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WdeSelectDialogDlgProc, inst );
+    dlgproc = MakeProcInstance_DLG( WdeSelectDialogDlgProc, inst );
 
-    if( dlg_proc == NULL ) {
+    if( dlgproc == NULL ) {
         return( FALSE );
     }
 
@@ -166,9 +168,9 @@ LIST *WdeSelectDialogs( WdeResInfo *res_info, bool remove )
     si.selection = NULL;
     si.remove = remove;
 
-    ret = JDialogBoxParam( inst, "WdeSelectDialog", res_info->res_win, dlg_proc, (LPARAM)&si );
+    ret = JDialogBoxParam( inst, "WdeSelectDialog", res_info->res_win, dlgproc, (LPARAM)&si );
 
-    FreeProcInstance( (FARPROC)dlg_proc );
+    FreeProcInstance_DLG( dlgproc );
 
     /* if the window could not be created return FALSE */
     if( ret == -1 ) {

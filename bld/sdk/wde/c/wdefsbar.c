@@ -45,6 +45,7 @@
 #include "wdecctl.h"
 #include "wdefcntl.h"
 #include "wdefsbar.h"
+#include "wdedispa.h"
 
 
 /****************************************************************************/
@@ -75,7 +76,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeSBarDispatcher( ACTION_ID, WdeSBarObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeSBarDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeSBarSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -234,7 +235,7 @@ OBJPTR WdeSBCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeSBarDispatcher( ACTION_ID act, WdeSBarObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeSBarDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -242,11 +243,11 @@ bool CALLBACK WdeSBarDispatcher( ACTION_ID act, WdeSBarObject *obj, void *p1, vo
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeSBarActions[i].id == act ) {
-            return( WdeSBarActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( WdeSBarActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return( Forward( obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeSBarObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeSBarInit( bool first )
@@ -294,14 +295,14 @@ bool WdeSBarInit( bool first )
     SETCTL_TEXT( WdeDefaultSBar, NULL );
     SETCTL_CLASSID( WdeDefaultSBar, WdeStrToControlClass( WSTATUSCLASSNAME ) );
 
-    WdeSBarDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeSBarDispatcher, WdeGetAppInstance() );
+    WdeSBarDispatch = MakeProcInstance_DISPATCHER( WdeSBarDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeSBarFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultSBar );
-    FreeProcInstance( (FARPROC)WdeSBarDispatch );
+    FreeProcInstance_DISPATCHER( WdeSBarDispatch );
 }
 
 bool WdeSBarDestroy( WdeSBarObject *obj, bool *flag, bool *p2 )

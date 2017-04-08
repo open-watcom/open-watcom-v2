@@ -43,6 +43,7 @@
 #include "wdesdup.h"
 #include "wdecctl.h"
 #include "wdeftrak.h"
+#include "wdedispa.h"
 
 
 /****************************************************************************/
@@ -73,7 +74,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeTrakDispatcher( ACTION_ID, WdeTrakObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeTrakDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeTrakSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -192,7 +193,7 @@ OBJPTR WdeTrackCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeTrakDispatcher( ACTION_ID act, WdeTrakObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeTrakDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -200,11 +201,11 @@ bool CALLBACK WdeTrakDispatcher( ACTION_ID act, WdeTrakObject *obj, void *p1, vo
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeTrakActions[i].id == act ) {
-            return( WdeTrakActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( WdeTrakActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return( Forward( obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeTrakObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeTrakInit( bool first )
@@ -252,14 +253,14 @@ bool WdeTrakInit( bool first )
     SETCTL_TEXT( WdeDefaultTrak, NULL );
     SETCTL_CLASSID( WdeDefaultTrak, WdeStrToControlClass( WTRACKBAR_CLASS ) );
 
-    WdeTrakDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeTrakDispatcher, WdeGetAppInstance() );
+    WdeTrakDispatch = MakeProcInstance_DISPATCHER( WdeTrakDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeTrakFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultTrak );
-    FreeProcInstance( (FARPROC)WdeTrakDispatch );
+    FreeProcInstance_DISPATCHER( WdeTrakDispatch );
 }
 
 bool WdeTrakDestroy( WdeTrakObject *obj, bool *flag, bool *p2 )

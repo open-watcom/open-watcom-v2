@@ -49,6 +49,7 @@
 #include "wrdll.h"
 #include "commonui.h"
 #include "wresdefn.h"
+#include "wclbproc.h"
 
 
 /****************************************************************************/
@@ -171,7 +172,7 @@ bool WdeSetCurrentCustControl( int which )
 {
     INT_PTR   ret;
     HINSTANCE inst;
-    DLGPROC   dlg_proc;
+    DLGPROC   dlgproc;
 
     if( WdeCustomLibList == NULL ) {
         WdeSetStatusByID( 0, WDE_NOCUSTLOADED );
@@ -185,16 +186,16 @@ bool WdeSetCurrentCustControl( int which )
 
     inst = WdeGetAppInstance();
 
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WdeSelectCustDlgProc, inst );
+    dlgproc = MakeProcInstance_DLG( WdeSelectCustDlgProc, inst );
 
-    if( dlg_proc == NULL ) {
+    if( dlgproc == NULL ) {
         WdeWriteTrail( "WdeSetCurrentCustomControl: MakeProcInstance failed!" );
         return( false );
     }
 
-    ret = JDialogBoxParam( inst, "WdeSelectCustom", WdeGetMainWindowHandle(), dlg_proc, (LPARAM)(LPVOID)&which );
+    ret = JDialogBoxParam( inst, "WdeSelectCustom", WdeGetMainWindowHandle(), dlgproc, (LPARAM)(LPVOID)&which );
 
-    FreeProcInstance( (FARPROC)dlg_proc );
+    FreeProcInstance_DLG( dlgproc );
 
     /* if the window could not be created return FALSE */
     if( ret == -1 ) {
@@ -276,15 +277,15 @@ bool WdeLoadMSCustomControls( WdeCustLib *lib )
     WdeCustStyleProc style_proc;
     WdeCustFlagsProc flags_proc;
     HWND             dialog_owner;
-    DLGPROC          dlg_proc;
+    DLGPROC          dlgproc;
     HINSTANCE        app_inst;
     INT_PTR          rc;
 
     dialog_owner = WdeGetMainWindowHandle();
     app_inst = WdeGetAppInstance();
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)WdeLoadCustDlgProc, app_inst );
-    rc = JDialogBoxParam( app_inst, "WdeLoadCustom", dialog_owner, dlg_proc, (LPARAM)(LPVOID)lib );
-    FreeProcInstance ( (FARPROC)dlg_proc );
+    dlgproc = MakeProcInstance_DLG( WdeLoadCustDlgProc, app_inst );
+    rc = JDialogBoxParam( app_inst, "WdeLoadCustom", dialog_owner, dlgproc, (LPARAM)(LPVOID)lib );
+    FreeProcInstance_DLG( dlgproc );
 
     if( rc == -1 ) {
         WdeWriteTrail( "WdeLoadMSCustomControls: Dialog not created!" );
@@ -354,11 +355,9 @@ bool WdeLoadBorCustomControls( WdeCustLib *lib )
     }
 
 #if 0
-    list_global = (*list_proc)( "WdeMainClass", WDE_VERSION, (LPFNLOADRES)WdeCustLOADRES,
-                                (LPFNEDITRES)WdeCustEDITRES );
+    list_global = (*list_proc)( "WdeMainClass", WDE_VERSION, (LPFNLOADRES)WdeCustLOADRES, (LPFNEDITRES)WdeCustEDITRES );
 #else
-    list_global = (*list_proc)( "WdeMainClass", WDE_VERSION, (LPFNLOADRES)WdeCustLOADRESInst,
-                                (LPFNEDITRES)WdeCustEDITRESInst );
+    list_global = (*list_proc)( "WdeMainClass", WDE_VERSION, (LPFNLOADRES)WdeCustLOADRESInst, (LPFNEDITRES)WdeCustEDITRESInst );
 #endif
 
     if( list_global == NULL ) {

@@ -47,6 +47,8 @@
 #include "jdlg.h"
 #include "watini.h"
 #include "inipath.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -439,7 +441,7 @@ int WdeSetOption( WdeOptReq req, int val )
 bool WdeDisplayOptions( void )
 {
     HWND      dialog_owner;
-    DLGPROC   dlg_proc;
+    DLGPROC   dlgproc;
     HINSTANCE app_inst;
     INT_PTR   modified;
 
@@ -448,9 +450,9 @@ bool WdeDisplayOptions( void )
 
     dialog_owner = WdeGetMainWindowHandle();
     app_inst = WdeGetAppInstance();
-    dlg_proc = (DLGPROC)MakeProcInstance ( (FARPROC)WdeOptionsDlgProc, app_inst );
-    modified = JDialogBoxParam( app_inst, "WdeOptions", dialog_owner, dlg_proc, (LPARAM)NULL );
-    FreeProcInstance( (FARPROC)dlg_proc );
+    dlgproc = MakeProcInstance_DLG( WdeOptionsDlgProc, app_inst );
+    modified = JDialogBoxParam( app_inst, "WdeOptions", dialog_owner, dlgproc, (LPARAM)NULL );
+    FreeProcInstance_DLG( dlgproc );
 
     if( modified == -1 ) {
         WdeWriteTrail( "WdeDisplayOptions: Dialog not created!" );

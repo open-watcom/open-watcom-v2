@@ -43,6 +43,7 @@
 #include "wdesdup.h"
 #include "wdecctl.h"
 #include "wdefprog.h"
+#include "wdedispa.h"
 
 
 /****************************************************************************/
@@ -73,7 +74,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeProgDispatcher( ACTION_ID, WdeProgObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeProgDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeProgSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -189,7 +190,7 @@ OBJPTR WdeProgressCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeProgDispatcher( ACTION_ID act, WdeProgObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeProgDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -197,11 +198,11 @@ bool CALLBACK WdeProgDispatcher( ACTION_ID act, WdeProgObject *obj, void *p1, vo
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeProgActions[i].id == act ) {
-            return( WdeProgActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( WdeProgActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return( Forward( obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeProgObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeProgInit( bool first )
@@ -249,14 +250,14 @@ bool WdeProgInit( bool first )
     SETCTL_TEXT( WdeDefaultProg, NULL );
     SETCTL_CLASSID( WdeDefaultProg, WdeStrToControlClass( WPROGRESS_CLASS ) );
 
-    WdeProgDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeProgDispatcher, WdeGetAppInstance() );
+    WdeProgDispatch = MakeProcInstance_DISPATCHER( WdeProgDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeProgFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultProg );
-    FreeProcInstance( (FARPROC)WdeProgDispatch );
+    FreeProcInstance_DISPATCHER( WdeProgDispatch );
 }
 
 bool WdeProgDestroy( WdeProgObject *obj, bool *flag, bool *p2 )

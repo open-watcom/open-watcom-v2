@@ -42,6 +42,7 @@
 #include "wde_rc.h"
 #include "wdecctl.h"
 #include "wdefedit.h"
+#include "wdedispa.h"
 
 
 /****************************************************************************/
@@ -72,7 +73,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeEditDispatcher( ACTION_ID, WdeEditObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeEditDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeEditSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -188,7 +189,7 @@ OBJPTR WdeEdCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeEditDispatcher( ACTION_ID act, WdeEditObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeEditDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -196,11 +197,11 @@ bool CALLBACK WdeEditDispatcher( ACTION_ID act, WdeEditObject *obj, void *p1, vo
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeEditActions[i].id == act ) {
-            return( WdeEditActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( WdeEditActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return( Forward( obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeEditObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeEditInit( bool first )
@@ -248,7 +249,7 @@ bool WdeEditInit( bool first )
     SETCTL_TEXT( WdeDefaultEdit, NULL );
     SETCTL_CLASSID( WdeDefaultEdit, ResNumToControlClass( CLASS_EDIT ) );
 
-    WdeEditDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeEditDispatcher, WdeGetAppInstance() );
+    WdeEditDispatch = MakeProcInstance_DISPATCHER( WdeEditDispatcher, WdeGetAppInstance() );
 
     return( true );
 }
@@ -256,7 +257,7 @@ bool WdeEditInit( bool first )
 void WdeEditFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultEdit );
-    FreeProcInstance( (FARPROC)WdeEditDispatch );
+    FreeProcInstance_DISPATCHER( WdeEditDispatch );
 }
 
 bool WdeEditDestroy( WdeEditObject *obj, bool *flag, bool *p2 )

@@ -43,6 +43,7 @@
 #include "wdesdup.h"
 #include "wdecctl.h"
 #include "wdefhtky.h"
+#include "wdedispa.h"
 
 
 /****************************************************************************/
@@ -73,7 +74,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeHtKyDispatcher( ACTION_ID, WdeHtKyObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeHtKyDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeHtKySuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -191,7 +192,7 @@ OBJPTR WdeHKCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeHtKyDispatcher( ACTION_ID act, WdeHtKyObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeHtKyDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -199,11 +200,11 @@ bool CALLBACK WdeHtKyDispatcher( ACTION_ID act, WdeHtKyObject *obj, void *p1, vo
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeHtKyActions[i].id == act ) {
-            return( WdeHtKyActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( WdeHtKyActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return( Forward( obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeHtKyObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeHtKyInit( bool first )
@@ -251,14 +252,14 @@ bool WdeHtKyInit( bool first )
     SETCTL_TEXT( WdeDefaultHtKy, NULL );
     SETCTL_CLASSID( WdeDefaultHtKy, WdeStrToControlClass( WHOTKEY_CLASS ) );
 
-    WdeHtKyDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeHtKyDispatcher, WdeGetAppInstance() );
+    WdeHtKyDispatch = MakeProcInstance_DISPATCHER( WdeHtKyDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeHtKyFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultHtKy );
-    FreeProcInstance( (FARPROC)WdeHtKyDispatch );
+    FreeProcInstance_DISPATCHER( WdeHtKyDispatch );
 }
 
 bool WdeHtKyDestroy( WdeHtKyObject *obj, bool *flag, bool *p2 )

@@ -43,6 +43,7 @@
 #include "wdesdup.h"
 #include "wdecctl.h"
 #include "wdeflvw.h"
+#include "wdedispa.h"
 
 
 /****************************************************************************/
@@ -73,7 +74,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeLViewDispatcher( ACTION_ID, WdeLViewObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeLViewDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeLViewSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -191,7 +192,7 @@ OBJPTR WdeLVCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeLViewDispatcher( ACTION_ID act, WdeLViewObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeLViewDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -199,11 +200,11 @@ bool CALLBACK WdeLViewDispatcher( ACTION_ID act, WdeLViewObject *obj, void *p1, 
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeLViewActions[i].id == act ) {
-            return( WdeLViewActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( WdeLViewActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return( Forward( obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeLViewObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeLViewInit( bool first )
@@ -251,14 +252,14 @@ bool WdeLViewInit( bool first )
     SETCTL_TEXT( WdeDefaultLView, NULL );
     SETCTL_CLASSID( WdeDefaultLView, WdeStrToControlClass( WWC_LISTVIEW ) );
 
-    WdeLViewDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeLViewDispatcher, WdeGetAppInstance() );
+    WdeLViewDispatch = MakeProcInstance_DISPATCHER( WdeLViewDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeLViewFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultLView );
-    FreeProcInstance( (FARPROC)WdeLViewDispatch );
+    FreeProcInstance_DISPATCHER( WdeLViewDispatch );
 }
 
 bool WdeLViewDestroy( WdeLViewObject *obj, bool *flag, bool *p2 )

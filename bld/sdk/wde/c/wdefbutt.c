@@ -45,6 +45,8 @@
 #include "wde_wres.h"
 #include "wdecctl.h"
 #include "wdefbutt.h"
+#include "wdedispa.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -75,7 +77,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeButtonDispatcher( ACTION_ID, WdeButtonObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeButtonDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeButtonSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -230,7 +232,7 @@ OBJPTR WdeButtonCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeButtonDispatcher( ACTION_ID act, WdeButtonObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeButtonDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -238,11 +240,11 @@ bool CALLBACK WdeButtonDispatcher( ACTION_ID act, WdeButtonObject *obj, void *p1
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeButtonActions[i].id == act ) {
-            return( WdeButtonActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( WdeButtonActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return( Forward( obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeButtonObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeButtonInit( bool first )
@@ -290,14 +292,14 @@ bool WdeButtonInit( bool first )
     SETCTL_TEXT( WdeDefaultButton, NULL );
     SETCTL_CLASSID( WdeDefaultButton, ResNumToControlClass( CLASS_BUTTON ) );
 
-    WdeButtonDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeButtonDispatcher, WdeGetAppInstance() );
+    WdeButtonDispatch = MakeProcInstance_DISPATCHER( WdeButtonDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeButtonFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultButton );
-    FreeProcInstance( (FARPROC)WdeButtonDispatch );
+    FreeProcInstance_DISPATCHER( WdeButtonDispatch );
 }
 
 bool WdeButtonDestroy( WdeButtonObject *obj, bool *flag, bool *p2 )

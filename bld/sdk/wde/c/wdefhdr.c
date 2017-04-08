@@ -43,6 +43,7 @@
 #include "wdesdup.h"
 #include "wdecctl.h"
 #include "wdefhdr.h"
+#include "wdedispa.h"
 
 
 /****************************************************************************/
@@ -73,7 +74,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool    CALLBACK WdeHdrDispatcher( ACTION_ID, WdeHdrObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeHdrDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeHdrSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -191,7 +192,7 @@ OBJPTR WdeHCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeHdrDispatcher( ACTION_ID act, WdeHdrObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeHdrDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -199,11 +200,11 @@ bool CALLBACK WdeHdrDispatcher( ACTION_ID act, WdeHdrObject *obj, void *p1, void
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeHdrActions[i].id == act ) {
-            return( WdeHdrActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( WdeHdrActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return( Forward( obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeHdrObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeHdrInit( bool first )
@@ -251,14 +252,14 @@ bool WdeHdrInit( bool first )
     SETCTL_TEXT( WdeDefaultHdr, NULL );
     SETCTL_CLASSID( WdeDefaultHdr, WdeStrToControlClass( WWC_HEADER ) );
 
-    WdeHdrDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeHdrDispatcher, WdeGetAppInstance() );
+    WdeHdrDispatch = MakeProcInstance_DISPATCHER( WdeHdrDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeHdrFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultHdr );
-    FreeProcInstance( (FARPROC)WdeHdrDispatch );
+    FreeProcInstance_DISPATCHER( WdeHdrDispatch );
 }
 
 bool WdeHdrDestroy( WdeHdrObject *obj, bool *flag, bool *p2 )

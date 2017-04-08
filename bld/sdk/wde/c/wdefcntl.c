@@ -56,6 +56,8 @@
 #include "windlg.h"
 #include "windlg32.h"
 #include "wdefcntl.h"
+#include "wdedispa.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -134,7 +136,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool CALLBACK WdeControlDispatcher( ACTION_ID, WdeControlObject *, void *, void * );
+WINEXPORT bool CALLBACK WdeControlDispatcher( ACTION_ID, OBJPTR, void *, void * );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -303,7 +305,7 @@ OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeControlDispatcher( ACTION_ID act, WdeControlObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeControlDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -312,27 +314,27 @@ bool CALLBACK WdeControlDispatcher( ACTION_ID act, WdeControlObject *obj, void *
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeControlActions[i].id == act ) {
             if( WdeControlActions[i].rtn != NULL ) {
-                return( WdeControlActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+                return( WdeControlActions[i].rtn( obj, p1, p2 ) );
             } else {
-                return( Forward( obj->parent, act, p1, p2 ) );
+                return( Forward( ((WdeControlObject *)obj)->parent, act, p1, p2 ) );
             }
         }
     }
 
-    return( Forward( obj->o_item, act, p1, p2 ) );
+    return( Forward( ((WdeControlObject *)obj)->o_item, act, p1, p2 ) );
 }
 
 bool WdeControlInit( bool first )
 {
     _wde_touch( first );
     WdeAppInst = WdeGetAppInstance();
-    WdeControlDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeControlDispatcher, WdeAppInst );
+    WdeControlDispatch = MakeProcInstance_DISPATCHER( WdeControlDispatcher, WdeAppInst );
     return( true );
 }
 
 void WdeControlFini( void )
 {
-    FreeProcInstance( (FARPROC)WdeControlDispatch );
+    FreeProcInstance_DISPATCHER( WdeControlDispatch );
 }
 
 bool WdeControlTest( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size_t *datalen )

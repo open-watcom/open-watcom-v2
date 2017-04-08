@@ -53,6 +53,8 @@
 #include "wde_rc.h"
 #include "wdedebug.h"
 #include "wdefbase.h"
+#include "wdedispa.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -113,7 +115,7 @@ typedef struct {
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT bool   CALLBACK WdeBaseDispatcher( ACTION_ID, WdeBaseObject *, void *, void * );
+WINEXPORT bool   CALLBACK WdeBaseDispatcher( ACTION_ID, OBJPTR, void *, void * );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -208,7 +210,7 @@ OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     return( (OBJPTR)new );
 }
 
-bool CALLBACK WdeBaseDispatcher( ACTION_ID act, WdeBaseObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeBaseDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int i;
 
@@ -216,23 +218,23 @@ bool CALLBACK WdeBaseDispatcher( ACTION_ID act, WdeBaseObject *obj, void *p1, vo
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeBaseActions[i].id == act ) {
-            return( WdeBaseActions[i].rtn( (OBJPTR)obj, p1, p2 ) );
+            return( WdeBaseActions[i].rtn( obj, p1, p2 ) );
         }
     }
 
-    return( Forward( obj->o_item, act, p1, p2 ) );
+    return( Forward( ((WdeBaseObject *)obj)->o_item, act, p1, p2 ) );
 }
 
 bool WdeBaseInit( bool first )
 {
     _wde_touch( first );
-    WdeBaseDispatch = (DISPATCH_FN *)MakeProcInstance( (FARPROC)WdeBaseDispatcher, WdeGetAppInstance() );
+    WdeBaseDispatch = MakeProcInstance_DISPATCHER( WdeBaseDispatcher, WdeGetAppInstance() );
     return( true );
 }
 
 void WdeBaseFini( void )
 {
-    FreeProcInstance( (FARPROC)WdeBaseDispatch );
+    FreeProcInstance_DISPATCHER( WdeBaseDispatch );
 }
 
 bool WdeBaseIsMarkValid( WdeBaseObject *obj, bool *flag, void *p2 )
