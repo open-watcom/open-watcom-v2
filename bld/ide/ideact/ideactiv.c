@@ -30,10 +30,12 @@
 ****************************************************************************/
 
 
+#define INCLUDE_COMMDLG_H
 #include <windows.h>
 #include <string.h>
 #include "winexprt.h"
 #include "ideactiv.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -43,17 +45,17 @@ WINEXPORT BOOL CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam );
 #define IDE_WIN_CAP_LEN         15
 #define IDE_WINDOW_CAPTION      "Open Watcom IDE"
 
-WINEXPORT BOOL CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam ) {
+WINEXPORT BOOL CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam )
+{
     char        buf[256];
     BOOL        *found;
 
     lparam = lparam;
     GetClassName( hwnd, buf, sizeof( buf ) );
-    if( !strcmp( buf, "GUIClass" ) ) {
+    if( strcmp( buf, "GUIClass" ) == 0 ) {
         GetWindowText( hwnd, buf, sizeof( buf ) );
-        if( !strncmp( buf, IDE_WINDOW_CAPTION, IDE_WIN_CAP_LEN ) ) {
-            SetWindowPos( hwnd, HWND_TOP, 0, 0, 0, 0,
-                          SWP_NOMOVE | SWP_NOSIZE );
+        if( strncmp( buf, IDE_WINDOW_CAPTION, IDE_WIN_CAP_LEN ) == 0 ) {
+            SetWindowPos( hwnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
             found = (BOOL *)lparam;
             *found = TRUE;
             return( FALSE );
@@ -62,15 +64,16 @@ WINEXPORT BOOL CALLBACK FindWatIDEHwnd( HWND hwnd, LPARAM lparam ) {
     return( TRUE );
 }
 
-void StartIDE( HANDLE instance, BOOL dospawn ) {
+void StartIDE( HANDLE instance, BOOL dospawn )
+{
     BOOL        found;
-    FARPROC     fp;
+    WNDENUMPROC wndenumproc;
 
     found = FALSE;
     instance = instance;
-    fp = MakeProcInstance( (FARPROC)FindWatIDEHwnd, instance );
-    EnumWindows( (WNDENUMPROC)FindWatIDEHwnd, (LPARAM)&found );
-    FreeProcInstance( fp );
+    wndenumproc = MakeProcInstance_WNDENUM( FindWatIDEHwnd, instance );
+    EnumWindows( wndenumproc, (LPARAM)&found );
+    FreeProcInstance_WNDENUM( wndenumproc );
     if( !found && dospawn ) {
         WinExec( "IDE.EXE", SW_SHOW );
     }
