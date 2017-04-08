@@ -44,14 +44,34 @@ char Caption[256];
 WORD CaptionLen;
 HWND TheWindow;
 
-BOOL CALLBACK EnumProc( HWND hwnd, LPARAM lparam ) {
+#ifdef __WINDOWS__
+
+static WNDENUMPROC MakeProcInstance_WNDENUM( WNDENUMPROC fn, HINSTANCE instance )
+{
+    return( (WNDENUMPROC)MakeProcInstance( (FARPROC)fn, instance ) );
+}
+
+static void FreeProcInstance_WNDENUM( WNDENUMPROC fn )
+{
+    FreeProcInstance( (FARPROC)fn );
+}
+
+#else
+
+#define MakeProcInstance_WNDENUM(f,i)
+#define FreeProcInstance_WNDENUM(f)
+
+#endif
+
+BOOL CALLBACK EnumProc( HWND hwnd, LPARAM lparam )
+{
     char        buf[256];
 
     lparam = lparam;
     GetClassName( hwnd, buf, sizeof( buf ) );
-    if( !strcmp( buf, ClassName ) ) {
+    if( strcmp( buf, ClassName ) == 0 ) {
         GetWindowText( hwnd, buf, sizeof( buf ) );
-        if( !strncmp( buf, Caption, CaptionLen ) ) {
+        if( strncmp( buf, Caption, CaptionLen ) == 0 ) {
             TheWindow = hwnd;
             return( FALSE );
         }
@@ -59,11 +79,11 @@ BOOL CALLBACK EnumProc( HWND hwnd, LPARAM lparam ) {
     return( TRUE );
 }
 
-int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow)
+int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow )
 {
-    char        *ptr;
+    const char  *ptr;
     char        *dst;
-    FARPROC     enumproc;
+    WNDENUMPROC wndenumproc;
 
     currinst = currinst;
     previnst = previnst;
@@ -72,55 +92,53 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
     ptr = cmdline;
 
     // read the path
-//    while( isspace( *ptr ) ) ptr++;
+//    while( isspace( *ptr ) )
+//        ptr++;
 //    dst = AppName;
 //    while( !isspace( *ptr ) ) {
-//      *dst = *ptr;
-//      dst++;
-//      ptr++;
+//      *dst++ = *ptr++;
 //    }
 //    *dst = '\0';
 
     // read the classname
-    while( isspace( *ptr ) ) ptr++;
+    while( isspace( *ptr ) )
+        ptr++;
     dst = ClassName;
     while( !isspace( *ptr ) ) {
-        *dst = *ptr;
-        dst++;
-        ptr++;
+        *dst++ = *ptr++;
     }
     *dst = '\0';
 
     // read the Window Caption
-    while( isspace( *ptr ) ) ptr++;
+    while( isspace( *ptr ) )
+        ptr++;
     if( *ptr == '"' ) {
         ptr++;
         dst = Caption;
         while( *ptr != '"' ) {
-            *dst = *ptr;
-            dst++;
-            ptr++;
+            *dst++ = *ptr++;
         }
         *dst = '\0';
     }
     ptr++;
     CaptionLen = strlen( Caption );
-    while( isspace( *ptr ) ) ptr++;
+    while( isspace( *ptr ) )
+        ptr++;
 
     TheWindow = NULL;
-    enumproc = MakeProcInstance( (FARPROC)EnumProc, currinst );
-    EnumWindows( (WNDENUMPROC)enumproc, 0 );
-    FreeProcInstance( enumproc );
+    wndenumproc = MakeProcInstance_WNDENUM( EnumProc, currinst );
+    EnumWindows( wndenumproc, 0 );
+    FreeProcInstance_WNDENUM( wndenumproc );
 
     if( TheWindow == NULL ) {
         WinExec( ptr, SW_SHOW );
     } else {
-        #ifdef __NT__
-            SetForegroundWindow( TheWindow );
-        #else
-            ShowWindow( TheWindow, SW_RESTORE );
-            SetWindowPos( TheWindow, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
-        #endif
+#ifdef __NT__
+        SetForegroundWindow( TheWindow );
+#else
+        ShowWindow( TheWindow, SW_RESTORE );
+        SetWindowPos( TheWindow, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
+#endif
     }
     return( 1 );
 }
