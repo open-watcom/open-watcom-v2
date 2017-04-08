@@ -36,6 +36,7 @@
 #include <dos.h>
 #include <sys/stat.h>
 #include "drwatcom.h"
+#include "wclbproc.h"
 #include "wdebug.h"
 #include "dump.h"
 #include "tinyio.h"
@@ -400,11 +401,11 @@ INT_PTR CALLBACK DumpDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
  */
 void DumpTask( HWND hwnd )
 {
-    DLGPROC     dlg_proc;
+    DLGPROC     dlgproc;
 
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)DumpDialogDlgProc, Instance );
-    JDialogBox( Instance, "DMPTASK", hwnd, dlg_proc );
-    FreeProcInstance( (FARPROC)dlg_proc );
+    dlgproc = MakeProcInstance_DLG( DumpDialogDlgProc, Instance );
+    JDialogBox( Instance, "DMPTASK", hwnd, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 
 } /* DumpTask */
 
@@ -496,7 +497,7 @@ INT_PTR CALLBACK DumpAnyDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
 {
     char        str[128];
     int         i, j;
-    DLGPROC     dlg_proc;
+    DLGPROC     dlgproc;
     bool        ret;
 
     lparam = lparam;
@@ -540,9 +541,9 @@ INT_PTR CALLBACK DumpAnyDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
             }
             break;
         case TASKCTL_DEBUG:
-            dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)DebuggerOptDlgProc, Instance );
-            JDialogBox( Instance, "DEBUGGER_OPTS", hwnd, dlg_proc );
-            FreeProcInstance( (FARPROC)dlg_proc );
+            dlgproc = MakeProcInstance_DLG( DebuggerOptDlgProc, Instance );
+            JDialogBox( Instance, "DEBUGGER_OPTS", hwnd, dlgproc );
+            FreeProcInstance_DLG( dlgproc );
             break;
 #if( 0 )
         case TASKCTL_DUMP:
@@ -572,11 +573,11 @@ INT_PTR CALLBACK DumpAnyDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
  */
 void DumpATask( HWND hwnd )
 {
-    DLGPROC     dlg_proc;
+    DLGPROC     dlgproc;
 
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)DumpAnyDialogDlgProc, Instance );
-    JDialogBox( Instance, "TASKCTL", hwnd, dlg_proc );
+    dlgproc = MakeProcInstance_DLG( DumpAnyDialogDlgProc, Instance );
+    JDialogBox( Instance, "TASKCTL", hwnd, dlgproc );
     DumpDialogHwnd = 0;
-    FreeProcInstance( (FARPROC)dlg_proc );
+    FreeProcInstance_DLG( dlgproc );
 
 } /* DumpATask */

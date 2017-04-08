@@ -206,7 +206,7 @@ static void PaintMonitor( HWND hwnd, HDC dc, LocalMonInfo *info ) {
  * LocalMonitorProc - handle messages while monitoring a local heap
  */
 
-BOOL FAR PASCAL LocalMonitorProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+BOOL FAR PASCAL LocalMonitorProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     LocalMonInfo        *info;
     HDC                 dc;

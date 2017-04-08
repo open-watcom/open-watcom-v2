@@ -35,6 +35,7 @@
 #include <string.h>
 #include <dos.h>
 #include "drwatcom.h"
+#include "wclbproc.h"
 #include "wdebug.h"
 #include "intdata.h"
 #include "jdlg.h"
@@ -151,7 +152,7 @@ INT_PTR CALLBACK IntDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
  */
 WORD __cdecl FAR FaultHandler( fault_frame ff )
 {
-    DLGPROC     dlg_proc;
+    DLGPROC     dlgproc;
     INT_PTR     rc;
     char        *fault_str;
     msg_id      faultid;
@@ -222,9 +223,9 @@ WORD __cdecl FAR FaultHandler( fault_frame ff )
 
     LoadDbgInfo();
     if( LogInfo.flags[LOGFL_AUTOLOG] != '1' ) {
-        dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)IntDialogDlgProc, Instance );
-        rc = JDialogBox( Instance, "INTERRUPT", NULL, dlg_proc );
-        FreeProcInstance( (FARPROC)dlg_proc );
+        dlgproc = MakeProcInstance_DLG( IntDialogDlgProc, Instance );
+        rc = JDialogBox( Instance, "INTERRUPT", NULL, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
     } else {
         rc = KILL_APP;
     }

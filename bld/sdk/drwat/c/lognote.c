@@ -31,6 +31,7 @@
 
 
 #include "drwatcom.h"
+#include "wclbproc.h"
 #include "notelog.h"
 #include "jdlg.h"
 
@@ -93,9 +94,9 @@ WINEXPORT INT_PTR CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
 
 void AnotateLog( HWND hwnd, HANDLE Instance, void (*fn)(char *)  ) {
 
-    DLGPROC     dlg_proc;
+    DLGPROC     dlgproc;
 
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)NoteLogDlgProc, Instance );
-    JDialogBoxParam( Instance, "NOTE_LOG", hwnd, dlg_proc, (LPARAM)fn );
-    FreeProcInstance( (FARPROC)dlg_proc );
+    dlgproc = MakeProcInstance_DLG( NoteLogDlgProc, Instance );
+    JDialogBoxParam( Instance, "NOTE_LOG", hwnd, dlgproc, (LPARAM)fn );
+    FreeProcInstance_DLG( dlgproc );
 }

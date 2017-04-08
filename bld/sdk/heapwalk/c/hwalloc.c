@@ -32,11 +32,12 @@
 #include <ctype.h>
 #include "heapwalk.h"
 #include <stress.h>
+#include "wclbproc.h"
 #include "jdlg.h"
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT INT_PTR CALLBACK FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+WINEXPORT INT_PTR CALLBACK FreeNDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static DWORD    FreeAmt;
 static DWORD    AllocAmt;
@@ -134,7 +135,7 @@ static BOOL MyAllocAllBut( DWORD amt ) {
     return( TRUE );
 } /* MyAllocAllBut */
 
-INT_PTR CALLBACK AllocDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+INT_PTR CALLBACK AllocDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HWND        parent;
     RECT        area;
@@ -195,7 +196,7 @@ static DWORD ParseAmount( char *buf ) {
 } /* ParseAmount */
 
 
-INT_PTR CALLBACK FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+INT_PTR CALLBACK FreeNDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        buf[256];
     DWORD       amt;
@@ -296,24 +297,24 @@ INT_PTR CALLBACK FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
 
 void DoNBytes( HWND parent, WORD type ) {
 
-    DLGPROC             dlg_proc;
+    DLGPROC             dlgproc;
     INT_PTR             ret;
 
     DialMode = type;
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)FreeNDlgProc, Instance );
-    if( dlg_proc != NULL ) {
-        ret = JDialogBox( Instance, "FREE_N_DLG", parent, dlg_proc );
+    dlgproc = MakeProcInstance_DLG( FreeNDlgProc, Instance );
+    if( dlgproc != NULL ) {
+        ret = JDialogBox( Instance, "FREE_N_DLG", parent, dlgproc );
         if( ret != -1 ) {
-            FreeProcInstance( (FARPROC)dlg_proc );
+            FreeProcInstance_DLG( dlgproc );
             return;
         }
     }
     /* there's not enough memory to do the dialog
        so free some memory so we can do it */
     FreeAllMem();
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)FreeNDlgProc, Instance );
-    ret = JDialogBox( Instance, "FREE_N_DLG", parent, dlg_proc );
-    FreeProcInstance( (FARPROC)dlg_proc );
+    dlgproc = MakeProcInstance_DLG( FreeNDlgProc, Instance );
+    ret = JDialogBox( Instance, "FREE_N_DLG", parent, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
     AllocMem( FreeAmt );
 }
 

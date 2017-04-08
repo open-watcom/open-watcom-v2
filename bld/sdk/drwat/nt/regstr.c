@@ -32,6 +32,7 @@
 
 
 #include "drwatcom.h"
+#include "wclbproc.h"
 #include "regstr.h"
 #include "mad.h"
 #include <string.h>
@@ -381,7 +382,7 @@ BOOL CALLBACK ChangeRegisterDialogDlgProc( HWND hwnd, UINT msg,WPARAM  wparam, L
 static void GetNewRegValue( HWND hwnd )
 {
     HWND            owner;
-    DLGPROC         dlg_proc;
+    DLGPROC         dlgproc;
     INT_PTR         reg_modified;
     RegModifyData   modify_data;
     const char      *descript;
@@ -414,14 +415,14 @@ static void GetNewRegValue( HWND hwnd )
         reg_modified = 1;
         break;
     case 1:
-        dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)ChangeRegisterDialogDlgProc, Instance );
-        reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_EDIT", owner, dlg_proc, (LPARAM)( &modify_data ) );
-        FreeProcInstance( (FARPROC)dlg_proc );
+        dlgproc = MakeProcInstance_DLG( ChangeRegisterDialogDlgProc, Instance );
+        reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_EDIT", owner, dlgproc, (LPARAM)( &modify_data ) );
+        FreeProcInstance_DLG( dlgproc );
         break;
     default:
-        dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)ChangeRegisterDialogDlgProc, Instance );
-        reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_COMBO", owner, dlg_proc, (LPARAM)( &modify_data ) );
-        FreeProcInstance( (FARPROC)dlg_proc );
+        dlgproc = MakeProcInstance_DLG( ChangeRegisterDialogDlgProc, Instance );
+        reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_COMBO", owner, dlgproc, (LPARAM)( &modify_data ) );
+        FreeProcInstance_DLG( dlgproc );
     }
     if( reg_modified == 1 ) {
         MADRegUpdateStart( regs, modify_data.curr_info->flags, modify_data.curr_info->bit_start, modify_data.curr_info->bit_size );

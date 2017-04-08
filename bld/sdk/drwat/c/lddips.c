@@ -33,6 +33,7 @@
 
 #include <string.h>
 #include "drwatcom.h"
+#include "wclbproc.h"
 #include "dip.h"
 #include "dipload.h"
 #include "diplasth.h"
@@ -104,11 +105,11 @@ INT_PTR CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
 
 void ShowDIPStatus( HWND hwnd )
 {
-    DLGPROC     dlg_proc;
+    DLGPROC     dlgproc;
 
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)ShowDipStatDlgProc, Instance );
-    JDialogBox( Instance, "DIP_STATUS_DLG", hwnd, dlg_proc );
-    FreeProcInstance( (FARPROC)dlg_proc );
+    dlgproc = MakeProcInstance_DLG( ShowDipStatDlgProc, Instance );
+    JDialogBox( Instance, "DIP_STATUS_DLG", hwnd, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 }
 
 bool LoadTheDips( void )

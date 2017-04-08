@@ -38,6 +38,7 @@
 #include <dos.h>
 #include <sys/stat.h>
 #include "drwatcom.h"
+#include "wclbproc.h"
 #include "tinyio.h"
 #include "wdebug.h"
 #include "commdlg.h"
@@ -185,11 +186,11 @@ WINEXPORT INT_PTR CALLBACK LogDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
  */
 void DoLogDialog( HWND hwnd )
 {
-    DLGPROC     dlg_proc;
+    DLGPROC     dlgproc;
 
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)LogDialogDlgProc, Instance );
-    JDialogBox( Instance, "LOG", hwnd, dlg_proc );
-    FreeProcInstance( (FARPROC)dlg_proc );
+    dlgproc = MakeProcInstance_DLG( LogDialogDlgProc, Instance );
+    JDialogBox( Instance, "LOG", hwnd, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 
 } /* DoLogDialog */
 

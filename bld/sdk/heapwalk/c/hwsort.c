@@ -193,11 +193,11 @@ BOOL FAR PASCAL ExtendedSortProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam
 
 static ExtendedSort() {
 
-    FARPROC     dialproc;
+    DLGPROC     dialproc;
 
-    dialproc = MakeProcInstance( ExtendedSortProc, Instance );
+    dialproc = MakeProcInstance_DLG( ExtendedSortProc, Instance );
     JDialogBox( Instance, "EXTEND_SORT", HeapWalkMainWindow, dialproc );
-    FreeProcInstance( dialproc );
+    FreeProcInstance_DLG( dialproc );
 } /* ExtendedSort */
 #endif
 

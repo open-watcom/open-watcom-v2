@@ -31,12 +31,13 @@
 
 
 #include "heapwalk.h"
+#include "wclbproc.h"
 
 
 /* Local Window callback functions prototypes */
 BOOL __export FAR PASCAL PaintAll( HWND hwnd, LPARAM lparam );
 
-static FARPROC  PaintFP;
+static WNDENUMPROC  PaintEnumProc;
 
 /* position of the list window within the main window */
 
@@ -114,13 +115,14 @@ BOOL FAR PASCAL PaintAll( HWND hwnd, LPARAM lparam )
  *                 to allow it to be created on the fly
  */
 
-void InitPaintProc( void ) {
-
-    PaintFP = MakeProcInstance( (FARPROC)PaintAll, Instance );
+void InitPaintProc( void )
+{
+    PaintEnumProc = MakeProcInstance_WNDENUM( PaintAll, Instance );
 }
 
-void FiniPaintProc( void ) {
-    FreeProcInstance( PaintFP );
+void FiniPaintProc( void )
+{
+    FreeProcInstance_WNDENUM( PaintEnumProc );
 }
 
 /*
@@ -133,5 +135,5 @@ void PaintAllWindows( void ) {
     HTASK       task;
 
     task = GetCurrentTask();
-    EnumTaskWindows( task, (WNDENUMPROC)PaintFP, 0 );
+    EnumTaskWindows( task, PaintEnumProc, 0 );
 }

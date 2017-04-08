@@ -36,6 +36,7 @@
 #include <string.h>
 #include <time.h>
 #include "heapwalk.h"
+#include "wclbproc.h"
 
 
 typedef struct {
@@ -343,7 +344,7 @@ static HWND *CreateLocalPushWin( HWND hwnd ) {
  * LocalHeapProc - process messages from the local heap window
  */
 
-BOOL FAR PASCAL LocalHeapProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+BOOL FAR PASCAL LocalHeapProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     LclWndInfo          *info;
     LocalStateStruct    state;
@@ -438,7 +439,7 @@ BOOL FAR PASCAL LocalHeapProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
     return( TRUE );
 }
 
-void ResetLocalFont() {
+void ResetLocalFont( void ) {
 
     LclWndInfo          *info;
 

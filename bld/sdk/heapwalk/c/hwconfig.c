@@ -33,12 +33,13 @@
 #include <direct.h>
 #include <string.h>
 #include "heapwalk.h"
+#include "wclbproc.h"
 #include "watini.h"
 #include "jdlg.h"
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT INT_PTR CALLBACK ConfigDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+WINEXPORT INT_PTR CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #define         SECT_NAME       "WATCOM heapwalker"
 #define         LSORT           "LSortType"
@@ -292,7 +293,7 @@ static void doFileBrowse( HWND hwnd, WORD id ) {
 /*
  * ConfigDlgProc - handle messages from the configure dialog
  */
-INT_PTR CALLBACK ConfigDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+INT_PTR CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     MemWndConfig        info;
     HeapConfigInfo      heapdef;
@@ -397,9 +398,9 @@ INT_PTR CALLBACK ConfigDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
  */
 void HWConfigure( void ) {
 
-    DLGPROC         dlg_proc;
+    DLGPROC         dlgproc;
 
-    dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)ConfigDlgProc, Instance );
-    JDialogBox( Instance, "HEAP_CONFIG", HeapWalkMainWindow, dlg_proc );
-    FreeProcInstance( (FARPROC)dlg_proc );
+    dlgproc = MakeProcInstance_DLG( ConfigDlgProc, Instance );
+    JDialogBox( Instance, "HEAP_CONFIG", HeapWalkMainWindow, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 } /* HWConfigure */

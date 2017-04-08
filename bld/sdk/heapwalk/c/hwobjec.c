@@ -34,11 +34,12 @@
 #include <string.h>
 #include <ctype.h>
 #include "heapwalk.h"
+#include "wclbproc.h"
 #include "jdlg.h"
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT INT_PTR CALLBACK AddDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+WINEXPORT INT_PTR CALLBACK AddDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 /* static variables used by the add function */
 static DLGPROC  AddDlgProcInst;
@@ -155,7 +156,7 @@ BOOL GlobSetObjPos( HWND list, BOOL oldest ) {
 }
 
 
-INT_PTR CALLBACK AddDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+INT_PTR CALLBACK AddDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HWND        parent;
     RECT        area;
@@ -192,7 +193,7 @@ INT_PTR CALLBACK AddDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
         break;
     case WM_NCDESTROY:
         EndAdd();
-        FreeProcInstance( (FARPROC)AddDlgProcInst );
+        FreeProcInstance_DLG( AddDlgProcInst );
         break; /* we need to let WINDOWS see this message or fonts are left undeleted */
     }
     return( ret );
@@ -241,7 +242,7 @@ HWND StartAdd( HWND parent, ListBoxInfo *info ) {
 
     AddCount = 0;
     AddTotal = 0;
-    AddDlgProcInst = (DLGPROC)MakeProcInstance( (FARPROC)AddDlgProc, Instance );
+    AddDlgProcInst = MakeProcInstance_DLG( AddDlgProc, Instance );
     if( AddDlgProcInst != NULL ) {
         dialog = JCreateDialog( Instance, "ADD_DLG", parent , AddDlgProcInst );
         if( dialog != NULL ) {
@@ -253,7 +254,8 @@ HWND StartAdd( HWND parent, ListBoxInfo *info ) {
     return( NULL );
 } /* StartAdd */
 
-void RefreshAdd( HWND dialog, HWND lbhwnd ) {
+void RefreshAdd( HWND dialog, HWND lbhwnd )
+{
     int         *items;
     int         cnt;
     DWORD       total;
@@ -279,7 +281,7 @@ void RefreshAdd( HWND dialog, HWND lbhwnd ) {
     SetStaticText( dialog, ADD_TOTAL, buf );
 }
 
-BOOL FAR PASCAL SetCodeDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+BOOL FAR PASCAL SetCodeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     DWORD       size;
     DWORD       info;

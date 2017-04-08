@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <dos.h>
 #include "drwatcom.h"
+#include "wclbproc.h"
 #include "wdebug.h"
 #include "jdlg.h"
 
@@ -138,7 +139,7 @@ INT_PTR CALLBACK STDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
  */
 void StartStackTraceDialog( HWND hwnd )
 {
-    DLGPROC     dlg_proc;
+    DLGPROC     dlgproc;
     BOOL        first_try;
     INT_PTR     rc;
     int         currframe=0;
@@ -158,21 +159,19 @@ void StartStackTraceDialog( HWND hwnd )
         for( i=0;i<=currframe;i++ ) {
             if( !MyStackTraceNext( &std.ste ) || !IsValidSelector( std.ste.wCS ) ) {
                 if( first_try ) {
-                    RCMessageBox( hwnd, STR_NO_STACK_FRAMES_FOUND,
-                                  AppName, MB_OK );
+                    RCMessageBox( hwnd, STR_NO_STACK_FRAMES_FOUND, AppName, MB_OK );
                     return;
                 } else {
-                    RCMessageBox( hwnd, STR_NO_MORE_STACK_FRAMES,
-                                  AppName, MB_OK );
+                    RCMessageBox( hwnd, STR_NO_MORE_STACK_FRAMES, AppName, MB_OK );
                     currframe = oldcurrframe;
                     continue;
                 }
             }
             first_try = FALSE;
         }
-        dlg_proc = (DLGPROC)MakeProcInstance( (FARPROC)STDialogDlgProc, Instance );
-        rc = JDialogBox( Instance, "STACKTRACE", hwnd, dlg_proc );
-        FreeProcInstance( (FARPROC)dlg_proc );
+        dlgproc = MakeProcInstance_DLG( STDialogDlgProc, Instance );
+        rc = JDialogBox( Instance, "STACKTRACE", hwnd, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
         oldcurrframe = currframe;
         if( rc == ST_NEXT ) {
             currframe++;
@@ -180,8 +179,7 @@ void StartStackTraceDialog( HWND hwnd )
             currframe--;
             if( currframe < 0 ) {
                 currframe = 0;
-                RCMessageBox( hwnd, STR_NO_MORE_STACK_FRAMES,
-                              AppName, MB_OK );
+                RCMessageBox( hwnd, STR_NO_MORE_STACK_FRAMES, AppName, MB_OK );
             }
         } else {
             break;

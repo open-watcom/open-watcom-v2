@@ -33,11 +33,12 @@
 #include <string.h>
 #include "heapwalk.h"
 #include <windows.h>
+#include "wclbproc.h"
 #include "jdlg.h"
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT INT_PTR CALLBACK DialogDispDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+WINEXPORT INT_PTR CALLBACK DialogDispDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 
 static DLGPROC  DialogDisp;
@@ -196,7 +197,7 @@ static HWND ShowMenuHeapItem( heap_list *hl, HWND parent )
     return( hdl );
 }
 
-INT_PTR CALLBACK DialogDispDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+INT_PTR CALLBACK DialogDispDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     bool    ret;
 
@@ -221,7 +222,7 @@ INT_PTR CALLBACK DialogDispDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lpar
     case WM_NCDESTROY:
         DialCount --;
         if( DialCount == 0 ) {
-            FreeProcInstance( (FARPROC)DialogDisp );
+            FreeProcInstance_DLG( DialogDisp );
         }
         break;  /* we need to let WINDOWS see this message or fonts are left undeleted */
     }
@@ -257,7 +258,7 @@ static HWND ShowDialogHeapItem( heap_list *hl, HWND hwnd )
     SetWindowLong( hdl, 0, (DWORD)info );
     ShowWindow( hdl, SW_HIDE );
     if( DialCount == 0 ) {
-        DialogDisp = (DLGPROC)MakeProcInstance( (FARPROC)DialogDispDlgProc, Instance );
+        DialogDisp = MakeProcInstance_DLG( DialogDispDlgProc, Instance );
     }
 
     /*
@@ -272,7 +273,7 @@ static HWND ShowDialogHeapItem( heap_list *hl, HWND hwnd )
         rcstr = HWAllocRCString( STR_SHOW );
         RCMessageBox( HeapWalkMainWindow, STR_CANT_CREATE_DLG, rcstr, MB_OK | MB_ICONINFORMATION );
         HWFreeRCString( rcstr );
-    	SetWindowLong( hdl, 0, 0 );
+        SetWindowLong( hdl, 0, 0 );
         UnlockResource( info->hdl );
         MemFree( info );
         return( NULL );
@@ -468,7 +469,7 @@ static void DeleteRes( HWND hwnd )
     }
 } /* DeleteRes */
 
-BOOL FAR PASCAL ItemDisplayProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+BOOL FAR PASCAL ItemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     ResInfo             *info;
     HDC                 dc;
@@ -512,7 +513,7 @@ BOOL FAR PASCAL ItemDisplayProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam 
                 DestroyWindow( info->menu_const );
             }
             if( DialCount == 0 ) {
-                DialogDisp = (DLGPROC)MakeProcInstance( (FARPROC)DialogDispDlgProc, Instance );
+                DialogDisp = MakeProcInstance_DLG( DialogDispDlgProc, Instance );
             }
             info->menu_const = JCreateDialog( Instance, "MENU_CONST", hwnd, DialogDisp );
             menu = GetMenu( hwnd );

@@ -32,11 +32,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include "heapwalk.h"
+#include "wclbproc.h"
 #include "jdlg.h"
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT INT_PTR CALLBACK SummaryInfoDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+WINEXPORT INT_PTR CALLBACK SummaryInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static  DLGPROC         dialProc;
 static  unsigned        dialCount = 0;
@@ -141,7 +142,7 @@ static void fillLclInfoDialog( HWND hwnd ) {
 /*
  * SummaryInfoDlgProc - process messages from summary information dialogs
  */
-INT_PTR CALLBACK SummaryInfoDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+INT_PTR CALLBACK SummaryInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     bool    ret;
 
@@ -198,7 +199,7 @@ INT_PTR CALLBACK SummaryInfoDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lpa
     case WM_NCDESTROY:
         dialCount --;
         if( dialCount == 0 ) {
-            FreeProcInstance( (FARPROC)dialProc );
+            FreeProcInstance_DLG( dialProc );
         }
         break; /* we need to let WINDOWS see this message or fonts are left undeleted */
     }
@@ -214,7 +215,7 @@ INT_PTR CALLBACK SummaryInfoDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lpa
 static void initProcInst( void ) {
 
     if( dialCount == 0 ) {
-        dialProc = (DLGPROC)MakeProcInstance( (FARPROC)SummaryInfoDlgProc, Instance );
+        dialProc = MakeProcInstance_DLG( SummaryInfoDlgProc, Instance );
     }
     dialCount ++;
 } /* initProcInst */
