@@ -43,12 +43,6 @@
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#ifdef __NT__
-  #define DLGTEMPLATE_PTR LPCDLGTEMPLATE
-#else
-  #define DLGTEMPLATE_PTR LPSTR
-#endif
-
 
 /****************************************************************************/
 /* external function prototypes                                             */
@@ -56,10 +50,12 @@
 
 /* Local Window callback functions prototypes */
 WINEXPORT INT_PTR CALLBACK WdeDummyDlgProc( HWND, UINT, WPARAM, LPARAM );
-#if defined( __WINDOWS__ ) && defined( _M_I86 )
-WINEXPORT int     CALLBACK WdeEnumFontsProc( const ENUMLOGFONT FAR *, const NEWTEXTMETRIC FAR *, int, LPARAM );
+#if defined( __WINDOWS_386__ )
+WINEXPORT int CALLBACK WdeEnumFontsProc( const LOGFONT *lf, const TEXTMETRIC *tm, int ftype, LPARAM data );
+#elif defined( __WINDOWS__ )
+WINEXPORT int CALLBACK WdeEnumFontsProc( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int ftype, LPARAM data );
 #else
-WINEXPORT int     CALLBACK WdeEnumFontsProc( const LOGFONT *, const TEXTMETRIC *, DWORD, LPARAM );
+WINEXPORT int CALLBACK WdeEnumFontsProc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD ftype, LPARAM data );
 #endif
 
 /****************************************************************************/
@@ -224,21 +220,27 @@ bool WdeAddFontFamilyMember( WdeFontNames *font_element, const ENUMLOGFONT *elf,
     return( true );
 }
 
-#if defined( __WINDOWS__ ) && defined( _M_I86 )
-int CALLBACK WdeEnumFontsProc( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int fonttype, LPARAM lParam )
+#if defined( __WINDOWS_386__ )
+int CALLBACK WdeEnumFontsProc( const LOGFONT *lf, const TEXTMETRIC *tm, int ftype, LPARAM data );
+#elif defined( __WINDOWS__ )
+int CALLBACK WdeEnumFontsProc( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int ftype, LPARAM data );
 #else
-int CALLBACK WdeEnumFontsProc( const LOGFONT *lf, const TEXTMETRIC *tm, DWORD fonttype, LPARAM lParam )
+int CALLBACK WdeEnumFontsProc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD ftype, LPARAM data );
 #endif
 {
-    LIST            *olist;
-    LIST            **list;
-    WdeFontNames    *font_names;
-    WdeFontNames    *font_element;
-#if defined( __WINDOWS__ ) && defined( _M_I86 )
+    LIST                    *olist;
+    LIST                    **list;
+    WdeFontNames            *font_names;
+    WdeFontNames            *font_element;
+#ifdef __WINDOWS_386__
+    const ENUMLOGFONT       __far *elf = MK_FP32( (void *)lf );
+    const NEWTEXTMETRIC     *ntm = (const NEWTEXTMETRIC *)tm;
+#elif defined( __WINDOWS__ )
 #else
-    const ENUMLOGFONT *elf = (const ENUMLOGFONT *)lf;
-    const NEWTEXTMETRIC *ntm = (const NEWTEXTMETRIC *)tm;
+    const ENUMLOGFONT       FAR *elf = (const ENUMLOGFONT FAR *)lf;
+    const NEWTEXTMETRIC     FAR *ntm = (const NEWTEXTMETRIC FAR *)tm;
 #endif
+
     list = (LIST **)lParam;
 
     /* let's make sure the font is not already in the list */
@@ -298,10 +300,10 @@ bool WdeDialogToScreen( void *obj, WdeResizeRatio *r, DialogSizeInfo *dsize, REC
         }
     }
 
-    s->left = MulDiv( (int_16)dsize->x, resizer.xmap, 4 );
-    s->top = MulDiv( (int_16)dsize->y, resizer.ymap, 8 );
-    s->right = MulDiv( (int_16)dsize->width, resizer.xmap, 4 );
-    s->bottom = MulDiv( (int_16)dsize->height, resizer.ymap, 8 );
+    s->left = MulDiv( dsize->x, resizer.xmap, 4 );
+    s->top = MulDiv( dsize->y, resizer.ymap, 8 );
+    s->right = MulDiv( dsize->width, resizer.xmap, 4 );
+    s->bottom = MulDiv( dsize->height, resizer.ymap, 8 );
     s->right += s->left;
     s->bottom += s->top;
 
@@ -336,10 +338,10 @@ bool WdeScreenToDialog( void *obj, WdeResizeRatio *r, RECT *s, DialogSizeInfo *d
         Location( obj, &screen );
     }
 
-    dsize->x = (uint_16)MulDiv( screen.left, 4, resizer.xmap );
-    dsize->y = (uint_16)MulDiv( screen.top, 8, resizer.ymap );
-    dsize->width = (uint_16)MulDiv( screen.right - screen.left, 4, resizer.xmap );
-    dsize->height = (uint_16)MulDiv( screen.bottom - screen.top, 8, resizer.ymap );
+    dsize->x = MulDiv( screen.left, 4, resizer.xmap );
+    dsize->y = MulDiv( screen.top, 8, resizer.ymap );
+    dsize->width = MulDiv( screen.right - screen.left, 4, resizer.xmap );
+    dsize->height = MulDiv( screen.bottom - screen.top, 8, resizer.ymap );
 
     return( TRUE );
 }
@@ -370,14 +372,14 @@ bool WdeGetResizerFromFont( WdeResizeRatio *r, char *face, int ptsz )
     DLGPROC         dlgproc;
     RECT            rect;
     bool            ok;
-    size_t          datalen;
+    size_t          templatelen;
 
     if( r == NULL ) {
         return( false );
     }
 
     inst = WdeGetAppInstance();
-    dlgtemplate = DialogTemplate( WS_POPUP | DS_SETFONT, 4, 8, 4, 8, NULL, NULL, NULL, ptsz, face, &datalen );
+    dlgtemplate = DialogTemplate( WS_POPUP | DS_SETFONT, 4, 8, 4, 8, NULL, NULL, NULL, ptsz, face, &templatelen );
     DoneAddingControls( dlgtemplate );
     dlgproc = MakeProcInstance_DLG( WdeDummyDlgProc, inst );
     hDlg = CreateDialogIndirect( inst, GlobalLock( dlgtemplate ), (HWND)NULL, dlgproc );

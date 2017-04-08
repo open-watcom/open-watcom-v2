@@ -30,7 +30,6 @@
 
 
 extern size_t           DlgStringLength( const char *str );
-extern WPCHAR           DlgCopyString( WPCHAR mem, const char *str, int len );
 extern WPCHAR           DlgCopyMBString( WPCHAR mem, const char *str, int len );
 extern WPCHAR           DlgCopyWord( WPCHAR mem, WORD word );
 extern unsigned char    DlgGetClassOrdinal( const char *classname );

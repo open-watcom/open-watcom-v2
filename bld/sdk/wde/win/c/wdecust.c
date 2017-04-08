@@ -961,12 +961,12 @@ bool WdeSetCurrentControl( HWND win, int which )
     return( true );
 }
 
-void WdeMapCustomSize( uint_32 *w, uint_32 *h, WdeResizeRatio *r )
+void WdeMapCustomSize( int *w, int *h, WdeResizeRatio *r )
 {
     DialogSizeInfo      dsize;
     RECT                trect;
 
-    if( !(*w & 0x8000) && !(*h & 0x8000) ) {
+    if( *w >= 0 && *h >= 0 ) {
         dsize.x = 0;
         dsize.y = 0;
         dsize.width = *w;
@@ -974,14 +974,14 @@ void WdeMapCustomSize( uint_32 *w, uint_32 *h, WdeResizeRatio *r )
         WdeDialogToScreen( NULL, r, &dsize, &trect );
         *w = trect.right;
         *h = trect.bottom;
-    } else if( !(*w & 0x8000) ) {
+    } else if( *w >= 0 ) {
         dsize.x = 0;
         dsize.y = 0;
         dsize.width = *w;
         dsize.height = 0;
         WdeDialogToScreen( NULL, r, &dsize, &trect );
         *w = trect.right;
-    } else if( !(*h & 0x8000) ) {
+    } else if( *h >= 0 ) {
         dsize.x = 0;
         dsize.y = 0;
         dsize.width = 0;
@@ -989,11 +989,11 @@ void WdeMapCustomSize( uint_32 *w, uint_32 *h, WdeResizeRatio *r )
         WdeDialogToScreen( NULL, r, &dsize, &trect );
         *h = trect.bottom;
     }
-    if( *w & 0x8000 ) {
-        *w &= ~0x8000;
+    if( *w < 0 ) {
+        *w *= -1;
     }
-    if( *h & 0x8000 ) {
-        *h &= ~0x8000;
+    if( *h < 0 ) {
+        *h *= -1;
     }
 }
 
@@ -1009,8 +1009,8 @@ bool WdePreviewSelected( HWND win )
     RECT                trect;
     uint_32             pstyle;
     POINT               p;
-    uint_32             pwidth;
-    uint_32             pheight;
+    int                 pwidth;
+    int                 pheight;
     WdeResizeRatio      resizer;
 
     index = (int)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCOUNT, 0, 0L );

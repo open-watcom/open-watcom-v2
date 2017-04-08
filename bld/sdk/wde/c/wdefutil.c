@@ -353,19 +353,19 @@ bool WdeIsClassDefined( char *class )
 
 void WdeShowObjectWindow( HWND win, bool flag )
 {
-    uint_32 s;
+    DWORD   style;
 
     if( win != NULL ) {
-        s = (uint_32)GetWindowLong( win, GWL_STYLE );
+        style = GET_WNDSTYLE( win );
         if( flag ) {
-            if( !(s & WS_VISIBLE) ) {
-                s |= WS_VISIBLE;
-                SetWindowLong( win, GWL_STYLE, s );
+            if( !(style & WS_VISIBLE) ) {
+                style |= WS_VISIBLE;
+                SET_WNDSTYLE( win, style );
             }
         } else {
-            if( s & WS_VISIBLE ) {
-                s ^= WS_VISIBLE;
-                SetWindowLong( win, GWL_STYLE, s );
+            if( style & WS_VISIBLE ) {
+                style ^= WS_VISIBLE;
+                SET_WNDSTYLE( win, style );
             }
         }
     }

@@ -337,7 +337,7 @@ void WdeControlFini( void )
     FreeProcInstance_DISPATCHER( WdeControlDispatch );
 }
 
-bool WdeControlTest( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size_t *datalen )
+bool WdeControlTest( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size_t *templatelen )
 {
     char        *Text;
     char        *Class;
@@ -368,7 +368,7 @@ bool WdeControlTest( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size_t
         style &= 0xffffffff ^ (CBS_OWNERDRAWFIXED | CBS_OWNERDRAWVARIABLE);
     } else if( stricmp( obj->window_class, "wde_borbtn" ) == 0 ) {
         if( !WdeIsBorBtnIDSupported( GETCTL_ID( obj->control_info ) ) ) {
-            ID = WDE_PREVIEW_ID;
+            ID = (uint_16)WDE_PREVIEW_ID;
         }
     }
 
@@ -377,7 +377,7 @@ bool WdeControlTest( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size_t
                             GETCTL_SIZEY( obj->control_info ),
                             GETCTL_SIZEW( obj->control_info ),
                             GETCTL_SIZEH( obj->control_info ),
-                            ID, style, Class, Text, 0, NULL, datalen );
+                            ID, style, Class, Text, NULL, 0, templatelen );
 
     WRMemFree( Text );
     WRMemFree( Class );
@@ -385,7 +385,7 @@ bool WdeControlTest( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size_t
     return( *dlgtemplate != NULL );
 }
 
-bool WdeControlTestEX( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size_t *datalen )
+bool WdeControlTestEX( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size_t *templatelen )
 {
     char        *Text;
     char        *Class;
@@ -416,7 +416,7 @@ bool WdeControlTestEX( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size
         style &= 0xffffffff ^ (CBS_OWNERDRAWFIXED | CBS_OWNERDRAWVARIABLE);
     } else if( stricmp( obj->window_class, "wde_borbtn" ) == 0 ) {
         if( !WdeIsBorBtnIDSupported( GETCTL_ID( obj->control_info ) ) ) {
-            ID = WDE_PREVIEW_ID;
+            ID = (uint_16)WDE_PREVIEW_ID;
         }
     }
 
@@ -428,7 +428,7 @@ bool WdeControlTestEX( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size
                               ID, style,
                               GETCTL_EXSTYLE( obj->control_info ),
                               GETCTL_HELPID( obj->control_info ),
-                              Class, Text, 0, NULL, datalen );
+                              Class, Text, NULL, 0, templatelen );
 
     WRMemFree( Text );
     WRMemFree( Class );
@@ -438,14 +438,14 @@ bool WdeControlTestEX( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size
 
 bool WdeControlIsMarkValid( WdeControlObject *obj, bool *flag, void *p2 )
 {
-    uint_32 s;
+    DWORD   style;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( obj->mode == WdeSelect && obj->window_handle != NULL ) {
-        s = (uint_32)GetWindowLong( obj->window_handle, GWL_STYLE );
-        *flag = ((s & WS_VISIBLE) != 0);
+        style = GET_WNDSTYLE( obj->window_handle );
+        *flag = ((style & WS_VISIBLE) != 0);
     } else {
         *flag = false;
     }
@@ -695,7 +695,7 @@ bool WdeControlCreateWindow( WdeControlObject *obj, bool *p1, void *p2 )
     POINT               pnt;
     RECT                obj_rect;
     DialogStyle         style;
-    uint_32             exstyle;
+    DWORD               exstyle;
     bool                set_font;
     bool                set_crt_params;
     POINT               origin;
@@ -774,7 +774,7 @@ bool WdeControlCreateWindow( WdeControlObject *obj, bool *p1, void *p2 )
     ID = GETCTL_ID( obj->control_info );
     if( stricmp( obj->window_class, "wde_borbtn" ) == 0 ) {
         if( !WdeIsBorBtnIDSupported( GETCTL_ID( obj->control_info ) ) ) {
-            ID = WDE_PREVIEW_ID;
+            ID = (uint_16)WDE_PREVIEW_ID;
         }
         set_font = false;
         set_crt_params = false;
@@ -1500,10 +1500,8 @@ bool WdeControlMove( WdeControlObject *obj, POINT *off, bool *forms_called )
                     WdeMapWindowRect( obj->res_info->edit_win,
                                       obj->parent_handle, &object_rect );
                 }
-                SETCTL_SIZEX( obj->control_info,
-                              (uint_16)MulDiv( object_rect.left, 4, resizer.xmap ) );
-                SETCTL_SIZEY( obj->control_info,
-                              (uint_16)MulDiv( object_rect.top, 8, resizer.ymap ) );
+                SETCTL_SIZEX( obj->control_info, MulDiv( object_rect.left, 4, resizer.xmap ) );
+                SETCTL_SIZEY( obj->control_info, MulDiv( object_rect.top, 8, resizer.ymap ) );
             }
 
             if( obj->symbol != NULL ) {
@@ -1772,7 +1770,7 @@ bool WdeControlModifyInfo( WdeControlObject *obj, WdeInfoStruct *in, void *p2 )
         dup = false;
         entry = WdeDefAddHashEntry( obj->res_info->hash_table, obj->symbol, &dup );
         if( entry != NULL ) {
-            SETCTL_ID( obj->control_info, entry->value );
+            SETCTL_ID( obj->control_info, (uint_16)entry->value );
         }
     } else {
         SETCTL_ID( obj->control_info, in->u.ctl.id );
@@ -1869,6 +1867,12 @@ bool WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
     _wde_touch( p2 );
 
     ok = true;
+    id = 0;
+    size.cx = 0;
+    size.cy = 0;
+    width = 0;
+    height = 0;
+    SetRectEmpty( &pos );
 
     if( obj->parent_handle == (HWND)NULL ) {
         ok = ( Forward( obj->parent, GET_WINDOW_HANDLE, &obj->parent_handle, NULL ) && obj->parent_handle != (HWND)NULL );
@@ -1883,7 +1887,6 @@ bool WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
     }
 
     if( ok ) {
-        width = 0;
         ok = false;
         switch( id ) {
         case PBUTTON_OBJ:
@@ -1910,7 +1913,6 @@ bool WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
     }
 
     if( ok ) {
-        height = 0;
         ok = false;
         switch( id ) {
         case RBUTTON_OBJ:

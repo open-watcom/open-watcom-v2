@@ -41,18 +41,16 @@
 #endif
 
 #ifdef __WINDOWS__
-  #define _ISFAR        __far
   #define _FARmemcpy    _fmemcpy
-  #define SLEN( a )     ((a) ? strlen( a ) + 1 : 1)
+  #define SLEN( a )     ((a != NULL) ? strlen( a ) + 1 : 1)
 #else
-  #define _ISFAR
   #define _FARmemcpy    memcpy
-  #define SLEN( a )     ((a) ? strlen( a ) * 2 + 2 : 2)
+  #define SLEN( a )     ((a != NULL) ? strlen( a ) * 2 + 2 : 2)
 #endif
 
 extern TEMPLATE_HANDLE  DialogTemplate( DWORD dtStyle, int x, int y, int cx, int cy, const char *menuname, const char *classname, const char *captiontext, WORD pointsize, const char *typeface, size_t *templatelen );
 extern void             DoneAddingControls( TEMPLATE_HANDLE data );
-extern TEMPLATE_HANDLE  AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, WORD id, DWORD style, const char *classname, const char *captiontext, BYTE infolen, const BYTE *infodata, size_t *templatelen );
+extern TEMPLATE_HANDLE  AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, WORD id, DWORD style, const char *classname, const char *captiontext, const void *infodata, BYTE infodatalen, size_t *templatelen );
 extern INT_PTR          DynamicDialogBox( DLGPROC fn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE data );
 
 #endif

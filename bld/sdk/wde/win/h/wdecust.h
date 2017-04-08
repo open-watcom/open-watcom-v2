@@ -161,6 +161,6 @@ extern bool WdeFreeAllCustLibs( void );
 extern void WdeFindClassInAllCustLibs( char *, LIST ** );
 extern void WdeFreeCustRESProcs( void );
 extern bool WdeIsBorBtnIDSupported( uint_16 );
-extern void WdeMapCustomSize( uint_32 *w, uint_32 *h, WdeResizeRatio *r );
+extern void WdeMapCustomSize( int *w, int *h, WdeResizeRatio *r );
 
 #endif

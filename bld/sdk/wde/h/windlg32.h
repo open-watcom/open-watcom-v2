@@ -33,6 +33,6 @@
 #if !defined( __OS2__ )
 
 extern TEMPLATE_HANDLE  DialogEXTemplate( DWORD style, DWORD exstyle, DWORD helpid, int x, int y, int cx, int cy, const char *menuname, const char *classname, const char *captiontext, WORD pointsize, const char *typeface, WORD fontweight, BYTE fontitalic, BYTE fontcharset, size_t *templatelen );
-extern TEMPLATE_HANDLE  AddControlEX( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, DWORD id, DWORD style, DWORD exstyle, DWORD helpid, const char *classname, const char *captiontext, BYTE infolen, const BYTE *infodata, size_t *templatelen );
+extern TEMPLATE_HANDLE  AddControlEX( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, DWORD id, DWORD style, DWORD exstyle, DWORD helpid, const char *classname, const char *captiontext, const void *infodata, BYTE infodatalen, size_t *templatelen );
 
 #endif

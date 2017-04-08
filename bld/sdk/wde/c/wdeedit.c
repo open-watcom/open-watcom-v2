@@ -300,7 +300,7 @@ LRESULT WdePassToEdit( UINT message, WPARAM wParam, LPARAM lParam )
 LRESULT CALLBACK WdeEditWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     HWND        hwin;
-    uint_32     styles;
+    DWORD       style;
     LRESULT     result;
 
 #if 0
@@ -317,8 +317,8 @@ LRESULT CALLBACK WdeEditWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
 #ifdef __NT__
     case WM_CTLCOLORSTATIC:
         hwin = (HWND)lParam;
-        styles = GetWindowLong( hwin, GWL_STYLE );
-        if ( (styles & SS_SIMPLE) == SS_SIMPLE ) {
+        style = GET_WNDSTYLE( hwin );
+        if ( (style & SS_SIMPLE) == SS_SIMPLE ) {
             break;
         }
     case WM_CTLCOLORLISTBOX:
@@ -336,8 +336,8 @@ LRESULT CALLBACK WdeEditWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
         switch( HIWORD( lParam ) ) {
         case CTLCOLOR_STATIC:
             hwin = (HWND)LOWORD( lParam );
-            styles = GetWindowLong( hwin, GWL_STYLE );
-            if( (styles & SS_SIMPLE) == SS_SIMPLE ) {
+            style = GET_WNDSTYLE( hwin );
+            if( (style & SS_SIMPLE) == SS_SIMPLE ) {
                 break;
             }
         case CTLCOLOR_LISTBOX:

@@ -201,8 +201,8 @@ OBJPTR CALLBACK WdeCustomCreate2( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 static bool WdeCheckForSmallRect( OBJPTR parent, WdeCustLib *cust_lib,
                            UINT cust_index, RECT *obj_rect )
 {
-    UINT                width;
-    UINT                height;
+    int                 width;
+    int                 height;
     WdeResizeRatio      r;
 
     if( parent == NULL || cust_lib == NULL || obj_rect == NULL ) {

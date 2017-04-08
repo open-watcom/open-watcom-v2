@@ -61,6 +61,7 @@ WdeResInfo *WdeLoadResource( const char *file_name )
     WRFileType  file_type;
     bool        ok;
 
+    file_type = 0;
     WdeSetWaitCursor( true );
 
     ok = ( (res_info = WdeAllocResInfo()) != NULL );
@@ -116,6 +117,10 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
 
     dlg_info = NULL;
     fid = WRES_NIL_HANDLE;
+    file_name = NULL;
+    memset( &h32ex, 0, sizeof( h32ex ) );
+    memset( &h32, 0, sizeof( h32 ) );
+    memset( &h16, 0, sizeof( h16 ) );
 
     ok = ( res_info != NULL && lnode != NULL );
 
@@ -145,7 +150,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
     if( ok ) {
         if( is32bit ) {
             /* JPK - check if its an extended dialog */
-            dlg_info->dialog_header->is32bitEx = ResIsDialogEx( fid );
+            dlg_info->dialog_header->is32bitEx = ResIsDialogBoxEx( fid );
             ResSeek( fid, lnode->Info.Offset, SEEK_SET );
 
             if( dlg_info->dialog_header->is32bitEx ) {
@@ -210,7 +215,7 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
                     control->ExtendedStyle = c32ex.ExtendedStyle;
                     control->Style = c32ex.Style;
                     control->Size = c32ex.Size;
-                    control->ID = c32ex.ID;
+                    control->ID = (uint_16)c32ex.ID;
                     control->ClassID = c32ex.ClassID;
                     control->Text = c32ex.Text;
                     control->ExtraBytes = c32ex.ExtraBytes;

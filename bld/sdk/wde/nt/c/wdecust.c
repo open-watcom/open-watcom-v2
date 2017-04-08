@@ -486,7 +486,7 @@ bool WdeSetCurrentControl( HWND win, int which )
     return( true );
 }
 
-void WdeMapCustomSize( UINT *w, UINT *h, WdeResizeRatio *r )
+void WdeMapCustomSize( int *w, int *h, WdeResizeRatio *r )
 {
     RECT                trect;
     DialogSizeInfo      dsize;
@@ -513,8 +513,8 @@ bool WdePreviewSelected( HWND win )
     DWORD               pstyle;
     DWORD               pestyle;
     POINT               p;
-    UINT                pwidth;
-    UINT                pheight;
+    int                 pwidth;
+    int                 pheight;
     WdeResizeRatio      resizer;
 
     index = (int)SendDlgItemMessage( win, IDB_CUST_DESC, CB_GETCOUNT, 0, 0L );

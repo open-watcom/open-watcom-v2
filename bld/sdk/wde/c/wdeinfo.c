@@ -694,7 +694,7 @@ INT_PTR CALLBACK WdeInfoWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM 
     switch( message ) {
 #if defined( __NT__ )
     case WM_INITDIALOG:
-        SetWindowLong( hWnd, GWL_STYLE, WS_CHILD );
+        SET_WNDSTYLE( hWnd, WS_CHILD );
         break;
 #endif
     case WM_SYSCOLORCHANGE:

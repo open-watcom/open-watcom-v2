@@ -43,19 +43,31 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
                              const char *menuname, const char *classname, const char *captiontext,
                              WORD pointsize, const char *typeface, size_t *templatelen )
 {
-    TEMPLATE_HANDLE     data;
-    UINT                blocklen, menulen, classlen, captionlen, typefacelen;
-    WPCHAR              dlgtemp;
+    TEMPLATE_HANDLE     dlgtemplate;
+    UINT                blocklen, menulen, classlen, textlen, typefacelen;
+    WPCHAR              template;
     WPDLGTEMPLATE       dt;
+#ifndef __WINDOWS__
+    unsigned char       class_ordinal;
+#endif
 
     /*
      * get size of block and allocate memory
      */
     menulen = DlgStringLength( menuname );
+#ifdef __WINDOWS__
     classlen = DlgStringLength( classname );
-    captionlen = DlgStringLength( captiontext );
+#else
+    class_ordinal = DlgGetClassOrdinal( classname );
+    if( class_ordinal > 0 ) {
+        classlen = 4;
+    } else {
+        classlen = DlgStringLength( classname );
+    }
+#endif
+    textlen = DlgStringLength( captiontext );
 
-    blocklen = sizeof( WDLGTEMPLATE ) + menulen + classlen + captionlen;
+    blocklen = sizeof( WDLGTEMPLATE ) + menulen + classlen + textlen;
 
     if( style & DS_SETFONT ) {
         typefacelen = DlgStringLength( typeface );
@@ -64,45 +76,55 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
         typefacelen = 0;
     }
 
-    data = GlobalAlloc( GMEM_MOVEABLE | GMEM_ZEROINIT, blocklen );
-    if( data == NULL ) {
+    dlgtemplate = GlobalAlloc( GMEM_MOVEABLE | GMEM_ZEROINIT, blocklen );
+    if( dlgtemplate == NULL ) {
         return( NULL );
     }
 
-    dlgtemp = GetPtrGlobalLock( data );
     *templatelen = blocklen;
+    template = GetPtrGlobalLock( dlgtemplate );
 
     /*
      * set up template
      */
-    dt = (WPDLGTEMPLATE)dlgtemp;
+    dt = (WPDLGTEMPLATE)template;
 
     dt->dtStyle = style;
     dt->dtItemCount = 0;
-    dt->dtX = x;
-    dt->dtY = y;
-    dt->dtCX = cx;
-    dt->dtCY = cy;
+    dt->dtX = (short)x;
+    dt->dtY = (short)y;
+    dt->dtCX = (short)cx;
+    dt->dtCY = (short)cy;
 
-    dlgtemp = (WPCHAR)( dt + 1 );
+    template = (WPCHAR)( dt + 1 );
 
     /*
      * add extra strings to block
      */
-    dlgtemp = DlgCopyMBString( dlgtemp, menuname, menulen );
-    dlgtemp = DlgCopyMBString( dlgtemp, classname, classlen );
-    dlgtemp = DlgCopyMBString( dlgtemp, captiontext, captionlen );
+    template = DlgCopyMBString( template, menuname, menulen );
+#ifdef __WINDOWS__
+    template = DlgCopyMBString( template, classname, classlen );
+#else
+    class_ordinal = DlgGetClassOrdinal( classname );
+    if( class_ordinal > 0 ) {
+        template = DlgCopyWord( template, -1 );
+        template = DlgCopyWord( template, class_ordinal );
+    } else {
+        template = DlgCopyMBString( template, classname, classlen );
+    }
+#endif
+    template = DlgCopyMBString( template, captiontext, textlen );
 
     /*
      * add font data (if needed)
      */
     if( style & DS_SETFONT ) {
-        dlgtemp = DlgCopyWord( dlgtemp, pointsize );
-        dlgtemp = DlgCopyMBString( dlgtemp, typeface, typefacelen );
+        template = DlgCopyWord( template, pointsize );
+        template = DlgCopyMBString( template, typeface, typefacelen );
     }
 
-    GlobalUnlock( data );
-    return( data );
+    GlobalUnlock( dlgtemplate );
+    return( dlgtemplate );
 
 } /* DialogTemplate */
 
@@ -110,13 +132,13 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
 /*
  * AddControl - add a control to a dialog
  */
-TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, WORD id, DWORD style,
+TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y, int cx, int cy, WORD id, DWORD style,
                          const char *classname, const char *captiontext,
-                         BYTE infolen, const BYTE *infodata, size_t *templatelen )
+                         const void *infodata, BYTE infodatalen, size_t *templatelen )
 {
-    TEMPLATE_HANDLE     new;
+    TEMPLATE_HANDLE     new_dlgtemplate;
     UINT                blocklen, classlen, textlen;
-    WPCHAR              databytes;
+    WPCHAR              template;
     WPDLGTEMPLATE       dt;
     WPDLGITEMTEMPLATE   dit;
     WPCHAR              ditstr;
@@ -129,7 +151,7 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, 
 
     class_ordinal = DlgGetClassOrdinal( classname );
     if( class_ordinal > 0 ) {
-#if defined( __WINDOWS__ )
+#ifdef __WINDOWS__
         classlen = 1;
 #else
         classlen = 4;
@@ -142,46 +164,44 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, 
 
     item_start = *templatelen;
     ADJUST_DLGLEN( item_start );
-#if defined( __WINDOWS__ )
-    blocklen = item_start + sizeof( WDLGITEMTEMPLATE ) + classlen + textlen + sizeof( BYTE ) + infolen;
+#ifdef __WINDOWS__
+    blocklen = item_start + sizeof( WDLGITEMTEMPLATE ) + classlen + textlen + sizeof( BYTE ) + infodatalen;
 #else
-    blocklen = item_start + sizeof( WDLGITEMTEMPLATE ) + classlen + textlen + sizeof( WORD ) + infolen;
+    blocklen = item_start + sizeof( WDLGITEMTEMPLATE ) + classlen + textlen + sizeof( WORD ) + infodatalen;
 #endif
 
-    GlobalUnlock( data );
-
-    new = GlobalReAlloc( data, blocklen, GMEM_MOVEABLE | GMEM_ZEROINIT );
-    if( new == NULL ) {
+    GlobalUnlock( old_dlgtemplate );
+    new_dlgtemplate = GlobalReAlloc( old_dlgtemplate, blocklen, GMEM_MOVEABLE | GMEM_ZEROINIT );
+    if( new_dlgtemplate == NULL ) {
         return( NULL );
     }
 
-    databytes = GetPtrGlobalLock( new );
+    template = GetPtrGlobalLock( new_dlgtemplate );
 
     /*
      * one more item...
      */
-    dt = (WPDLGTEMPLATE)databytes;
+    dt = (WPDLGTEMPLATE)template;
     dt->dtItemCount++;
 
     /*
      * point to start of item template, and set up values
      */
-    dit = (WPDLGITEMTEMPLATE)( databytes + item_start );
+    dit = (WPDLGITEMTEMPLATE)( template + item_start );
     dit->ditStyle = style;
-    dit->ditX = x;
-    dit->ditY = y;
-    dit->ditCX = cx;
-    dit->ditCY = cy;
+    dit->ditX = (short)x;
+    dit->ditY = (short)y;
+    dit->ditCX = (short)cx;
+    dit->ditCY = (short)cy;
     dit->ditID = id;
-
-    ditstr = (WPCHAR)( dit + 1 );
 
     /*
      * append extra data
      */
 
+    ditstr = (WPCHAR)( dit + 1 );
     if( class_ordinal > 0 ) {
-#if defined( __WINDOWS__ )
+#ifdef __WINDOWS__
         *ditstr++ = class_ordinal;
 #else
         ditstr = DlgCopyWord( ditstr, -1 );
@@ -192,43 +212,43 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, 
     }
 
     ditstr = DlgCopyMBString( ditstr, captiontext, textlen );
-#if defined( __WINDOWS__ )
-        *ditstr++ = infolen;
+#ifdef __WINDOWS__
+    *ditstr++ = infodatalen;
 #else
-        ditstr = DlgCopyWord( ditstr, infolen );
+    ditstr = DlgCopyWord( ditstr, infodatalen );
 #endif
-    _FARmemcpy( ditstr, infodata, infolen );
-    ditstr += infolen;
+    _FARmemcpy( ditstr, infodata, infodatalen );
+    ditstr += infodatalen;
 
-    *templatelen = (size_t)( ditstr - databytes );
+    *templatelen = (size_t)( ditstr - template );
 
-    GlobalUnlock( new );
-    return( new );
+    GlobalUnlock( new_dlgtemplate );
+    return( new_dlgtemplate );
 
 } /* AddControl */
 
 /*
  * DoneAddingControls - called when there are no more controls
  */
-void DoneAddingControls( TEMPLATE_HANDLE data )
+void DoneAddingControls( TEMPLATE_HANDLE dlgtemplate )
 {
-    GlobalUnlock( data );
+    GlobalUnlock( dlgtemplate );
 
 } /* DoneAddingControls */
 
 /*
  * DynamicDialogBox - create a dynamic dialog box
  */
-INT_PTR DynamicDialogBox( DLGPROC dlgfn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE data )
+INT_PTR DynamicDialogBox( DLGPROC dlgfn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate )
 {
     DLGPROC     dlgproc;
     INT_PTR     rc;
 
     dlgproc = MakeProcInstance_DLG( dlgfn, inst );
-    rc = DialogBoxIndirect( inst, TEMPLATE_LOCK( data ), hwnd, dlgproc );
-    TEMPLATE_UNLOCK( data );
+    rc = DialogBoxIndirect( inst, TEMPLATE_LOCK( dlgtemplate ), hwnd, dlgproc );
+    TEMPLATE_UNLOCK( dlgtemplate );
     FreeProcInstance_DLG( dlgproc );
-    GlobalFree( data );
+    GlobalFree( dlgtemplate );
     return( rc );
 
 } /* DynamicDialogBox */

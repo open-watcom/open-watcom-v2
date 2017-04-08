@@ -35,6 +35,33 @@
 
 
 /*
+ * copyString - copy from string to memory
+ */
+static WPCHAR copyString( WPCHAR mem, const char *str, int len )
+{
+#if defined( __WINDOWS__ )
+    if( mem != NULL ) {
+        _FARmemcpy( mem, str, len );
+    }
+    return( mem + len );
+#else
+    int i;
+
+    if( mem != NULL ) {
+        for( i = 0; i < len / 2; i++ ) {
+            *(short *)mem = *(unsigned char *)str;
+            mem += 2;
+            str++;
+        }
+        return( mem );
+    } else {
+        return( mem + len );
+    }
+#endif
+
+} /* copyString */
+
+/*
  * DlgStringLength - get length of string
  */
 size_t DlgStringLength( const char *str )
@@ -57,50 +84,25 @@ size_t DlgStringLength( const char *str )
 } /* DlgStringLength */
 
 /*
- * DlgCopyString - copy from string to memory
- */
-WPCHAR DlgCopyString( WPCHAR mem, const char *str, int len )
-{
-#if defined( __WINDOWS__ )
-    if( mem != NULL && str != NULL ) {
-        _FARmemcpy( mem, str, len );
-    }
-    return( mem + len );
-#else
-    int i;
-
-    if( mem != NULL && str != NULL ) {
-        for( i = 0; i < len / 2; i++ ) {
-            *(short *)mem = *(unsigned char *)str;
-            mem += 2;
-            str++;
-        }
-        return( mem );
-    } else {
-        return( mem + len );
-    }
-#endif
-
-} /* DlgCopyString */
-
-/*
  * DlgCopyMBString - copy from string to memory
  */
 WPCHAR DlgCopyMBString( WPCHAR mem, const char *str, int len )
 {
+    if( str == NULL )
+        str = "";
 #if defined( __WINDOWS__ )
-    return( DlgCopyString( mem, str, len ) );
+    return( copyString( mem, str, len ) );
 #else
-    if( mem != NULL && str != NULL ) {
+    if( mem != NULL ) {
         int     len2;
         len2 = MultiByteToWideChar( CP_OEMCP, MB_ERR_INVALID_CHARS, str, -1, (LPWSTR)mem, len );
         len2 *= sizeof( WCHAR );
         if( len2 != len ) {
-            return( DlgCopyString( mem, str, len ) );
+            return( copyString( mem, str, len ) );
         }
         return( mem + len );
     } else {
-        return( DlgCopyString( mem, str, len ) );
+        return( copyString( mem, str, len ) );
     }
 #endif
 
@@ -118,21 +120,23 @@ WPCHAR DlgCopyWord( WPCHAR mem, WORD word )
 
 } /* DlgCopyWord */
 
-unsigned char DlgGetClassOrdinal( const char *class )
+unsigned char DlgGetClassOrdinal( const char *classname )
 {
     unsigned char   class_ordinal;
 
-    if( stricmp( class, "combobox" ) == 0 ) {
+    if( classname == NULL ) {
+        class_ordinal = 0;
+    } else if( stricmp( classname, "combobox" ) == 0 ) {
         class_ordinal = 0x85;
-    } else if( stricmp( class, "scrollbar" ) == 0 ) {
+    } else if( stricmp( classname, "scrollbar" ) == 0 ) {
         class_ordinal = 0x84;
-    } else if( stricmp( class, "listbox" ) == 0 ) {
+    } else if( stricmp( classname, "listbox" ) == 0 ) {
         class_ordinal = 0x83;
-    } else if( stricmp( class, "static" ) == 0 ) {
+    } else if( stricmp( classname, "static" ) == 0 ) {
         class_ordinal = 0x82;
-    } else if( stricmp( class, "edit" ) == 0 ) {
+    } else if( stricmp( classname, "edit" ) == 0 ) {
         class_ordinal = 0x81;
-    } else if( stricmp( class, "button" ) == 0 ) {
+    } else if( stricmp( classname, "button" ) == 0 ) {
         class_ordinal = 0x80;
     } else {
         class_ordinal = 0;
