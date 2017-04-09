@@ -85,7 +85,7 @@ void RefreshColorbar( void )
         if( !BAD_ID( hColorbar ) ) {
             return;
         }
-        // if( dlgproc != NULL ){
+        // if( dlgproc != NULL ) {
         //     dlgproc = NULL;
         // }
         dlgproc = MakeProcInstance_DLG( ClrDlgProc, InstanceHandle );

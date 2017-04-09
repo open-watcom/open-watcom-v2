@@ -48,7 +48,6 @@
     #pragma library( "toolhelp.lib" )   /* For SystemHeapInfo */
 #endif
 
-
 /* Window callback functions prototypes */
 WINEXPORT INT_PTR CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
