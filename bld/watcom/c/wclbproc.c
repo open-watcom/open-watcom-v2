@@ -36,6 +36,10 @@
 #include <windows.h>
 #include "wclbproc.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 DLGPROC MakeProcInstance_DLG( DLGPROCx fn, HINSTANCE instance )
 {
 #if defined( __WINDOWS__ ) && defined( _M_I86 )
@@ -163,6 +167,10 @@ void FreeProcInstance_WND( WNDPROC fn )
 #endif
 }
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif

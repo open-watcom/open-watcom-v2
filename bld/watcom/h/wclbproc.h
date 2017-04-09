@@ -30,6 +30,10 @@
 ****************************************************************************/
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #if defined( __WINDOWS_386__ )
 typedef BOOL                (CALLBACK *DLGPROCx)(HWND,UINT,WPARAM,LPARAM);
 typedef void                (CALLBACK *FARPROCx)(void);
@@ -87,4 +91,8 @@ void FreeProcInstance_WND( WNDPROC f );
 #define FreeProcInstance_OFNHOOK(f)
 #define FreeProcInstance_WNDENUM(f)
 #define FreeProcInstance_WND(f)
+#endif
+
+#ifdef __cplusplus
+}
 #endif
