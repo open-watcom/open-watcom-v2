@@ -40,10 +40,10 @@ typedef uint_32         DialogStyle;
 typedef uint_32         DialogExstyle;
 
 typedef struct DialogSizeInfo {
-    int                 x;
-    int                 y;
-    int                 width;
-    int                 height;
+    uint_16             x;
+    uint_16             y;
+    uint_16             width;
+    uint_16             height;
 } DialogSizeInfo;
 
 typedef struct DialogBoxHeader {
