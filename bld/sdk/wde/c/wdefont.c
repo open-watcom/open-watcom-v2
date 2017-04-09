@@ -37,7 +37,6 @@
 #include "wdefutil.h"
 #include "wdefont.h"
 #include "windlg.h"
-#include "wclbproc.h"
 
 
 /****************************************************************************/

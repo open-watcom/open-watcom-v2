@@ -33,6 +33,8 @@
 #if !defined( __OS2__ )
 
 #include "_windlg.h"
+#include "wclbproc.h"
+
 
 #if defined( __WINDOWS_386__ )
 #define GetPtrGlobalLock(data) MK_FP32( GlobalLock( data ) )

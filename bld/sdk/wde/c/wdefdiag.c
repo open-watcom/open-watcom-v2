@@ -72,7 +72,6 @@
 #include "windlg.h"
 #include "windlg32.h"
 #include "jdlg.h"
-#include "wclbproc.h"
 #include "wdedispa.h"
 
 

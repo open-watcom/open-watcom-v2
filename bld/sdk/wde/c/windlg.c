@@ -33,7 +33,6 @@
 #include "wdeglbl.h"
 #include "windlg.h"
 #include "wdedlgut.h"
-#include "wclbproc.h"
 
 
 /*
