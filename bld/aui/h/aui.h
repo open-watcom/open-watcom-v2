@@ -310,7 +310,7 @@ typedef struct wnd_info {
 
 
 extern int              DlgPickWithRtn( const char *title, const void *data_handle, int def, GUIPICKGETTEXT *getstring, int items );
-extern int              DlgPickWithRtn2( const char *title, const void *data_handle, int def, GUIPICKGETTEXT *getstring, int items, WNDPICKER * );
+extern int              DlgPickWithRtn2( const char *title, const void *data_handle, int def, GUIPICKGETTEXT *getstring, int items, WNDPICKER *pickfn );
 extern int              DlgPick( const char *title, const void *data_handle, int def, int items );
 extern bool             DlgNew( const char *title, char *buff, unsigned buff_len );
 extern void             DlgOpen( const char *title, int, int, gui_control_info *, int, GUICALLBACK *, void * );
