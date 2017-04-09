@@ -155,8 +155,7 @@ static bool Template2Dlg( DialogBoxHeader **hdr, DialogBoxControl **cntls )
     return( ok );
 }
 
-static gui_control_styles GetControlStyles( DialogBoxControl *ctl,
-                                            gui_control_class control_class )
+static gui_control_styles GetControlStyles( DialogBoxControl *ctl, gui_control_class control_class )
 {
     gui_control_styles  styles;
 
@@ -278,8 +277,7 @@ static gui_control_class GetControlClass( DialogBoxControl *ctl )
     return( control_class );
 }
 
-static bool DialogBoxControl2GUI( DialogBoxControl *ctl,
-                                  gui_control_info *ctl_info )
+static bool DialogBoxControl2GUI( DialogBoxControl *ctl, gui_control_info *ctl_info )
 {
     SAREA               area;
     bool                ok;
@@ -497,4 +495,3 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
     }
     return( ok );
 }
-
