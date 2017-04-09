@@ -33,7 +33,7 @@
 #if defined( __WINDOWS__ )
 
 #define INCLUDE_COMMDLG_H
-#include <windows.h>
+#include <wwindows.h>
 #include "wclbproc.h"
 
 #ifdef __cplusplus
