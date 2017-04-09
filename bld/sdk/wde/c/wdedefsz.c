@@ -34,6 +34,7 @@
 #include "wderesiz.h"
 #include "wdeobjid.h"
 #include "wdeactn.h"
+#include "wdeinfo.h"
 #include "wdefont.h"
 #include "wdedefsz.h"
 #include "wresall.h"
@@ -105,10 +106,10 @@ POINT *WdeGetDefaultSizeFromOBJID( OBJ_ID id )
 
 bool WdeChangeSizeToDefIfSmallRect( OBJPTR parent, OBJ_ID id, RECT *size )
 {
-    WdeResizeRatio  r;
-    DialogSizeInfo  dsize;
-    RECT            new_size;
-    POINT           *dim;
+    WdeResizeRatio      r;
+    WdeDialogSizeInfo   sizeinfo;
+    RECT                new_size;
+    POINT               *dim;
 
     if( parent == NULL || size == NULL || id == 0 ) {
         return( false );
@@ -127,12 +128,12 @@ bool WdeChangeSizeToDefIfSmallRect( OBJPTR parent, OBJ_ID id, RECT *size )
         return( false );
     }
 
-    dsize.x = 0;
-    dsize.y = 0;
-    dsize.width = dim->x;
-    dsize.height = dim->y;
+    sizeinfo.x = 0;
+    sizeinfo.y = 0;
+    sizeinfo.width = dim->x;
+    sizeinfo.height = dim->y;
 
-    if( !WdeDialogToScreen( NULL, &r, &dsize, &new_size ) ) {
+    if( !WdeDialogToScreen( NULL, &r, &sizeinfo, &new_size ) ) {
         return( false );
     }
 

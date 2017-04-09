@@ -39,6 +39,7 @@
 #include "wdemsgbx.h"
 #include "rcstr.gh"
 #include "wdemain.h"
+#include "wdeinfo.h"
 #include "wdefont.h"
 #include "wdegetfn.h"
 #include "wdestat.h"
@@ -489,13 +490,13 @@ bool WdeSetCurrentControl( HWND win, int which )
 void WdeMapCustomSize( int *w, int *h, WdeResizeRatio *r )
 {
     RECT                trect;
-    DialogSizeInfo      dsize;
+    WdeDialogSizeInfo   sizeinfo;
 
-    dsize.x = 0;
-    dsize.y = 0;
-    dsize.width = *w;
-    dsize.height = *h;
-    WdeDialogToScreen( NULL, r, &dsize, &trect );
+    sizeinfo.x = 0;
+    sizeinfo.y = 0;
+    sizeinfo.width = *w;
+    sizeinfo.height = *h;
+    WdeDialogToScreen( NULL, r, &sizeinfo, &trect );
     *w = trect.right;
     *h = trect.bottom;
 }

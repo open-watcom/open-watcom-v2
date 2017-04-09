@@ -46,20 +46,20 @@
 
 #define IS_STR_IGNORE_CASE(s,c) ( WresMemicmp( s, c, sizeof( c ) ) == 0 )
 
-static bool ResWriteDialogSizeInfo( DialogSizeInfo *size, WResFileID fid )
-/************************************************************************/
+static bool ResWriteDialogSizeInfo( DialogSizeInfo *sizeinfo, WResFileID fid )
+/****************************************************************************/
 {
     bool    error;
 
-    error = ResWriteUint16( (uint_16)size->x, fid );
+    error = ResWriteUint16( sizeinfo->x, fid );
     if( !error ) {
-        error = ResWriteUint16( (uint_16)size->y, fid );
+        error = ResWriteUint16( sizeinfo->y, fid );
     }
     if( !error ) {
-        error = ResWriteUint16( (uint_16)size->width, fid );
+        error = ResWriteUint16( sizeinfo->width, fid );
     }
     if( !error ) {
-        error = ResWriteUint16( (uint_16)size->height, fid );
+        error = ResWriteUint16( sizeinfo->height, fid );
     }
     return( error );
 }
@@ -74,7 +74,7 @@ bool ResWriteDialogBoxHeader( DialogBoxHeader *head, WResFileID fid )
         error = ResWriteUint8( head->NumOfItems, fid );
     }
     if( !error ) {
-        error = ResWriteDialogSizeInfo( &(head->Size), fid );
+        error = ResWriteDialogSizeInfo( &(head->SizeInfo), fid );
     }
     if( !error ) {
         error = ResWriteNameOrOrdinal( head->MenuName, false, fid );
@@ -139,7 +139,7 @@ bool ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID fid )
         error = ResWriteUint16( head->NumOfItems, fid );
     }
     if( !error ) {
-        error = ResWriteDialogSizeInfo( &(head->Size), fid );
+        error = ResWriteDialogSizeInfo( &(head->SizeInfo), fid );
     }
     if( !error ) {
         error = ResWriteDialogHeaderCommon32( head, fid, false );
@@ -184,7 +184,7 @@ bool ResWriteDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sh
         error = ResWriteUint16( head->NumOfItems, fid );
     }
     if( !error ) {
-        error = ResWriteDialogSizeInfo( &(head->Size), fid );
+        error = ResWriteDialogSizeInfo( &(head->SizeInfo), fid );
     }
     if( !error ) {
         error = ResWriteDialogHeaderCommon32( head, fid, true );
@@ -218,7 +218,7 @@ bool ResWriteDialogBoxControl( DialogBoxControl *control, WResFileID fid )
 {
     bool            error;
 
-    error = ResWriteDialogSizeInfo( &(control->Size), fid );
+    error = ResWriteDialogSizeInfo( &(control->SizeInfo), fid );
     if( !error ) {
         error = ResWriteUint16( control->ID, fid );
     }
@@ -285,7 +285,7 @@ bool ResWriteDialogBoxControl32( DialogBoxControl32 *control, WResFileID fid )
         error = ResWriteUint32( control->ExtendedStyle, fid );
     }
     if( !error ) {
-        error = ResWriteDialogSizeInfo( &(control->Size), fid );
+        error = ResWriteDialogSizeInfo( &(control->SizeInfo), fid );
     }
     if( !error ) {
         error = ResWriteUint16( control->ID, fid );
@@ -314,7 +314,7 @@ bool ResWriteDialogBoxExControl32( DialogBoxExControl32 *control, WResFileID fid
         error = ResWriteUint32( control->Style, fid );
     }
     if( !error ) {
-        error = ResWriteDialogSizeInfo( &(control->Size), fid );
+        error = ResWriteDialogSizeInfo( &(control->SizeInfo), fid );
     }
     if( !error ) {
         error = ResWriteUint32( control->ID, fid );

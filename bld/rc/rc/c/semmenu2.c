@@ -204,7 +204,7 @@ static bool SemOS2WriteSubMenu( FullMenuOS2 *submenu, int *err_code, uint_32 cod
         return( false );
     }
 
-    head.Size     = SemOS2CalcSubMenuSize( submenu, &count );
+    head.Size = SemOS2CalcSubMenuSize( submenu, &count );
     head.Codepage = codepage;
     head.Class    = 4;
     head.NumItems = count;

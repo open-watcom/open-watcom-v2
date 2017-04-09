@@ -60,8 +60,8 @@ extern void     WdeDumpFontList( void );
 extern void     WdeFreeFontList( void );
 extern LIST     *WdeGetFontList( void );
 extern void     WdeSetFontList( HWND );
-extern bool     WdeDialogToScreen( void *, WdeResizeRatio *, DialogSizeInfo *, RECT * );
-extern bool     WdeScreenToDialog( void *, WdeResizeRatio *, RECT *, DialogSizeInfo * );
+extern bool     WdeDialogToScreen( void *, WdeResizeRatio *, WdeDialogSizeInfo *, RECT * );
+extern bool     WdeScreenToDialog( void *, WdeResizeRatio *, RECT *, WdeDialogSizeInfo * );
 extern HFONT    WdeGetFont( char *, int, int );
 extern bool     WdeGetResizerFromFont( WdeResizeRatio *, char *, int );
 

@@ -1220,17 +1220,17 @@ static OBJPTR WdeIsDialogInList( LIST *l )
 
 static bool WdeMouseRtnCreate( HWND win, RECT *r )
 {
-    RECT            *ncp;
-    RECT            rect;
-    LIST            *l;
-    SUBOBJ_REQUEST  req;
-    OBJPTR          obj;
-    OBJPTR          ro;
-    bool            adjust;
-    POINT           pt;
-    WdeResizeRatio  resizer;
-    WdeResInfo      *info;
-    DialogSizeInfo  dsize;
+    RECT                *ncp;
+    RECT                rect;
+    LIST                *l;
+    SUBOBJ_REQUEST      req;
+    OBJPTR              obj;
+    OBJPTR              ro;
+    bool                adjust;
+    POINT               pt;
+    WdeResizeRatio      resizer;
+    WdeResInfo          *info;
+    WdeDialogSizeInfo   sizeinfo;
 
     rect = *r;
 
@@ -1285,9 +1285,8 @@ static bool WdeMouseRtnCreate( HWND win, RECT *r )
         }
     }
 
-    if( WdeScreenToDialog( NULL, &resizer, &rect, &dsize ) ) {
-        WdeWriteObjectDimensions( (int_16)dsize.x, (int_16)dsize.y,
-                                  (int_16)dsize.width, (int_16)dsize.height );
+    if( WdeScreenToDialog( NULL, &resizer, &rect, &sizeinfo ) ) {
+        WdeWriteObjectDimensions( &sizeinfo );
     }
 
     return( true );
@@ -1295,19 +1294,19 @@ static bool WdeMouseRtnCreate( HWND win, RECT *r )
 
 static bool WdeMouseRtnResize( HWND win, RECT *r )
 {
-    POINT           pt;
-    LIST            *l;
-    OBJPTR          curr_obj;
-    OBJ_ID          oid;
-    OBJPTR          obj;
-    OBJPTR          ro;
-    RECT            rect;
-    RECT            nc;
-    WdeResizeRatio  resizer;
-    bool            adjust;
-    WdeResInfo      *info;
-    DialogSizeInfo  dsize;
-    SUBOBJ_REQUEST  req;
+    POINT               pt;
+    LIST                *l;
+    OBJPTR              curr_obj;
+    OBJ_ID              oid;
+    OBJPTR              obj;
+    OBJPTR              ro;
+    RECT                rect;
+    RECT                nc;
+    WdeResizeRatio      resizer;
+    bool                adjust;
+    WdeResInfo          *info;
+    WdeDialogSizeInfo   sizeinfo;
+    SUBOBJ_REQUEST      req;
 
     rect = *r;
     adjust = FALSE;
@@ -1366,9 +1365,8 @@ static bool WdeMouseRtnResize( HWND win, RECT *r )
         }
     }
 
-    if( WdeScreenToDialog( NULL, &resizer, &rect, &dsize ) ) {
-        WdeWriteObjectDimensions( (int_16)dsize.x, (int_16)dsize.y,
-                                  (int_16)dsize.width, (int_16)dsize.height );
+    if( WdeScreenToDialog( NULL, &resizer, &rect, &sizeinfo ) ) {
+        WdeWriteObjectDimensions( &sizeinfo );
     }
 
     return( true );

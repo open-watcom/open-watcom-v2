@@ -43,25 +43,25 @@
 #include "wresrtns.h"
 
 
-static bool ResReadDialogSizeInfo( DialogSizeInfo *size, WResFileID fid )
-/***********************************************************************/
+static bool ResReadDialogSizeInfo( DialogSizeInfo *sizeinfo, WResFileID fid )
+/***************************************************************************/
 {
     bool        error;
     uint_16     tmp16;
 
     error = ResReadUint16( &tmp16, fid );
-    size->x = tmp16;
+    sizeinfo->x = tmp16;
     if( !error ) {
         error = ResReadUint16( &tmp16, fid );
-        size->y = tmp16;
+        sizeinfo->y = tmp16;
     }
     if( !error ) {
         error = ResReadUint16( &tmp16, fid );
-        size->width = tmp16;
+        sizeinfo->width = tmp16;
     }
     if( !error ) {
         error = ResReadUint16( &tmp16, fid );
-        size->height = tmp16;
+        sizeinfo->height = tmp16;
     }
     return( error );
 }
@@ -81,7 +81,7 @@ bool ResReadDialogBoxHeader( DialogBoxHeader *head, WResFileID fid )
         head->NumOfItems = tmp8;
     }
     if( !error ) {
-        error = ResReadDialogSizeInfo( &(head->Size), fid );
+        error = ResReadDialogSizeInfo( &(head->SizeInfo), fid );
     }
     if( !error ) {
         head->MenuName = ResReadNameOrOrdinal( fid );
@@ -161,7 +161,7 @@ bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID fid )
         head->NumOfItems = tmp16;
     }
     if( !error ) {
-        error = ResReadDialogSizeInfo( &(head->Size), fid );
+        error = ResReadDialogSizeInfo( &(head->SizeInfo), fid );
     }
     if( !error ) {
         error = ResReadDialogHeaderCommon32( head, fid );
@@ -212,7 +212,7 @@ bool ResReadDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32sho
         head->NumOfItems = tmp16;
     }
     if( !error ) {
-        error = ResReadDialogSizeInfo( &(head->Size), fid );
+        error = ResReadDialogSizeInfo( &(head->SizeInfo), fid );
     }
     if( !error ) {
         error = ResReadDialogHeaderCommon32( head, fid );
@@ -351,7 +351,7 @@ bool ResReadDialogBoxControl( DialogBoxControl *control, WResFileID fid )
     uint_16         tmp16;
     uint_8          tmp8;
 
-    error = ResReadDialogSizeInfo( &(control->Size), fid );
+    error = ResReadDialogSizeInfo( &(control->SizeInfo), fid );
     if( !error ) {
         error = ResReadUint16( &tmp16, fid );
         control->ID = tmp16;
@@ -407,7 +407,7 @@ bool ResReadDialogBoxControl32( DialogBoxControl32 *control, WResFileID fid )
         control->ExtendedStyle = tmp32;
     }
     if( !error ) {
-        error = ResReadDialogSizeInfo( &(control->Size), fid );
+        error = ResReadDialogSizeInfo( &(control->SizeInfo), fid );
     }
     if( !error ) {
         error = ResReadUint16( &tmp16, fid );
@@ -441,7 +441,7 @@ bool ResReadDialogBoxExControl32( DialogBoxExControl32 *control, WResFileID fid 
         control->Style = tmp32;
     }
     if( !error ) {
-        error = ResReadDialogSizeInfo( &(control->Size), fid );
+        error = ResReadDialogSizeInfo( &(control->SizeInfo), fid );
     }
     if( !error ) {
         error = ResReadUint32( &tmp32, fid );

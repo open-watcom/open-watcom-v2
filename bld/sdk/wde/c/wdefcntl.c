@@ -1143,10 +1143,10 @@ void WdeWriteControlToInfo( WdeControlObject *obj )
     is.obj_id = CONTROL_OBJ;
     is.res_info = obj->res_info;
     is.obj = obj->object_handle;
-    is.dsize.x = GETCTL_SIZEX( obj->control_info );
-    is.dsize.y = GETCTL_SIZEY( obj->control_info );
-    is.dsize.width = GETCTL_SIZEW( obj->control_info );
-    is.dsize.height = GETCTL_SIZEH( obj->control_info );
+    is.sizeinfo.x = GETCTL_SIZEX( obj->control_info );
+    is.sizeinfo.y = GETCTL_SIZEY( obj->control_info );
+    is.sizeinfo.width = GETCTL_SIZEW( obj->control_info );
+    is.sizeinfo.height = GETCTL_SIZEH( obj->control_info );
     is.u.ctl.text = GETCTL_TEXT( obj->control_info );
     is.u.ctl.id = GETCTL_ID( obj->control_info );
     is.symbol = WdeStrDup( obj->symbol );
@@ -1265,11 +1265,11 @@ bool WdeControlNotify( WdeControlObject *obj, NOTE_ID *noteid, void *p2 )
 /* NOTE: This function assumes that there was no change of parent */
 static bool WdeOffsetDialogUnits ( WdeControlObject *obj, WdeResizeRatio *r )
 {
-    RECT           parent_pos;
-    RECT           new_pos;
-    RECT           nc_size;
-    RECT           win_pos;
-    DialogSizeInfo dsize;
+    RECT                parent_pos;
+    RECT                new_pos;
+    RECT                nc_size;
+    RECT                win_pos;
+    WdeDialogSizeInfo   sizeinfo;
 
     Location( obj->object_handle, &new_pos );
 
@@ -1291,9 +1291,9 @@ static bool WdeOffsetDialogUnits ( WdeControlObject *obj, WdeResizeRatio *r )
     win_pos.right = win_pos.left + (new_pos.right - new_pos.left);
     win_pos.bottom = win_pos.top + (new_pos.bottom - new_pos.top);
 
-    if( WdeScreenToDialog( obj, r, &win_pos, &dsize ) ) {
-        SETCTL_SIZEX( obj->control_info, dsize.x );
-        SETCTL_SIZEY( obj->control_info, dsize.y );
+    if( WdeScreenToDialog( obj, r, &win_pos, &sizeinfo ) ) {
+        SETCTL_SIZEX( obj->control_info, sizeinfo.x );
+        SETCTL_SIZEY( obj->control_info, sizeinfo.y );
         return( true );
     }
 
@@ -1302,14 +1302,14 @@ static bool WdeOffsetDialogUnits ( WdeControlObject *obj, WdeResizeRatio *r )
 
 bool WdeUpdateCDialogUnits( OBJPTR cobj, RECT *new, WdeResizeRatio *r )
 {
-    DialogSizeInfo      dsize;
+    WdeDialogSizeInfo   sizeinfo;
 
     /* save the old dialog units */
-    dsize = GETCTL_SIZE( ((WdeControlObject *)cobj)->control_info );
+    sizeinfo = GETCTL_SIZE( ((WdeControlObject *)cobj)->control_info );
 
     if( !WdeScreenToDialog( cobj, r, new, GETCTL_PSIZE( ((WdeControlObject *)cobj)->control_info ) ) ) {
         /* restore the old dialog units */
-        SETCTL_SIZE( ((WdeControlObject *)cobj)->control_info, dsize );
+        SETCTL_SIZE( ((WdeControlObject *)cobj)->control_info, sizeinfo );
         return( false );
     }
 

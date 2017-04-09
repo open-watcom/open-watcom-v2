@@ -279,11 +279,11 @@ FullDialogBoxControlOS2 *SemOS2NewDiagCtrl( YYTOKENTYPE token,
     style_value = opts.Style.Value;
     style = (style_mask & style_value) | (~style_mask & defstyle);
 
-    newctrl->ctrl.ID      = opts.ID;
-    newctrl->ctrl.Size    = opts.Size;
-    newctrl->ctrl.Text    = opts.Text;
-    newctrl->ctrl.ClassID = cont_class;
-    newctrl->ctrl.Style   = style;
+    newctrl->ctrl.ID         = opts.ID;
+    newctrl->ctrl.SizeInfo   = opts.SizeInfo;
+    newctrl->ctrl.Text       = opts.Text;
+    newctrl->ctrl.ClassID    = cont_class;
+    newctrl->ctrl.Style      = style;
     /* ExtraBytes is 0 for all predefined controls */
     newctrl->ctrl.ExtraBytes = 0;
     newctrl->presParams      = presparams;
@@ -541,10 +541,10 @@ static char *SemOS2BuildTemplateArray( char *ptr, FullDiagCtrlListOS2 *ctrls )
         tmpl->offClassName  = 0;
         tmpl->offText       = 0;
         tmpl->flStyle       = control->Style;
-        tmpl->x             = control->Size.x;
-        tmpl->y             = control->Size.y;
-        tmpl->cx            = control->Size.width;
-        tmpl->cy            = control->Size.height;
+        tmpl->x             = control->SizeInfo.x;
+        tmpl->y             = control->SizeInfo.y;
+        tmpl->cx            = control->SizeInfo.width;
+        tmpl->cy            = control->SizeInfo.height;
         tmpl->id            = control->ID;
         tmpl->offPresParams = (uint_16)-1;
         tmpl->offCtlData    = (uint_16)-1;
@@ -703,7 +703,7 @@ void SemOS2WriteDialogTemplate( WResID *name, ResMemFlags flags,
 
 
 FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name,
-                    uint_16 id, DialogSizeInfo size, ResNameOrOrdinal *ctlclassname,
+                    uint_16 id, DialogSizeInfo sizeinfo, ResNameOrOrdinal *ctlclassname,
                     IntMask style, FullDiagCtrlListOS2 *childctls,
                     PresParamListOS2 *presparams )
 /**********************************************************************************/
@@ -713,7 +713,7 @@ FullDialogBoxControlOS2 *SemOS2SetControlData( ResNameOrOrdinal *name,
     control = SemOS2InitDiagCtrl();
 
     control->ctrl.ID         = id;
-    control->ctrl.Size       = size;
+    control->ctrl.SizeInfo   = sizeinfo;
     control->ctrl.Text       = name;
     control->ctrl.ClassID    = ResNameOrOrdToControlClass( ctlclassname );
     control->ctrl.Style      = style.Value;
@@ -753,7 +753,7 @@ FullDialogBoxControlOS2 *SemOS2SetWindowData( FullDiagCtrlOptionsOS2 opts,
         style &= ~OS2_FS_DLGBORDER;
 
     control->ctrl.ID         = opts.ID;
-    control->ctrl.Size       = opts.Size;
+    control->ctrl.SizeInfo   = opts.SizeInfo;
     control->ctrl.Text       = opts.Text;
     control->ctrl.ClassID    = ResNumToControlClass( OS2_WC_FRAME );
     control->ctrl.Style      = style;

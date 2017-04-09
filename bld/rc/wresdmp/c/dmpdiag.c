@@ -45,8 +45,8 @@ static void PrintDialogBoxHeader( DialogBoxHeader * head )
     puts( "Dialog Header:" );
     printf("\tStyle: 0x%08lx  No. of items: %d\n",
                 head->Style, head->NumOfItems );
-    printf( "\tx: %d   y: %d   w: %d   h: %d\n", head->Size.x, head->Size.y,
-                head->Size.width, head->Size.height );
+    printf( "\tx: %d   y: %d   w: %d   h: %d\n", head->SizeInfo.x, head->SizeInfo.y,
+                head->SizeInfo.width, head->SizeInfo.height );
     printf( "\tMenu Name: %-10.10s    ClassName: %-10.10s\n",
                 (char *)head->MenuName, (char *)head->ClassName );
     printf( "\tCaption: %-.40s\n", (char *)head->Caption );
@@ -101,8 +101,8 @@ static void PrintDialogBoxControl( DialogBoxControl * control )
 /*************************************************************/
 {
     printf( "x: %d   y: %d   w: %d   h: %d\n",
-            control->Size.x, control->Size.y, control->Size.width,
-            control->Size.height );
+            control->SizeInfo.x, control->SizeInfo.y, control->SizeInfo.width,
+            control->SizeInfo.height );
     printf( "\tId: %d   Style: 0x%08lx\n", control->ID, control->Style );
     PrintControlClass( control->ClassID );
     printf( "Extra bytes: %d\n", control->ExtraBytes );

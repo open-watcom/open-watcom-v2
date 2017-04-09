@@ -429,12 +429,12 @@ static bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp
 static bool WdeSaveDlgItemToRC( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp );
 static bool WdeCreateItemDBI( WdeResInfo *rinfo, WdeResDlgItem *ditem );
 
-bool WdeSetMemFlagsText( uint_16 flags, char **text )
+static bool WdeSetMemFlagsText( uint_16 flags, char **text )
 {
     int         tlen;
 
     if( text == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     tlen = 0;
@@ -456,33 +456,30 @@ bool WdeSetMemFlagsText( uint_16 flags, char **text )
         tlen += 7; // size of the string IMPURE and a space
     }
 
-    if( tlen == 0 ) {
-        return( TRUE );
-    }
-
     *text = (char *)WRMemAlloc( tlen + 1 );
     if( *text == NULL ) {
-        return( FALSE );
+        return( false );
     }
     (*text)[0] = '\0';
 
-    if( flags & MEMFLAG_PRELOAD ) {
-        strcat( *text, "PRELOAD " );
+    if( tlen > 0 ) {
+        if( flags & MEMFLAG_PRELOAD ) {
+            strcat( *text, "PRELOAD " );
+        }
+    
+        if( !(flags & MEMFLAG_MOVEABLE) ) {
+            strcat( *text, "FIXED " );
+        }
+    
+        if( flags & MEMFLAG_DISCARDABLE ) {
+            strcat( *text, "DISCARDABLE " );
+        }
+    
+        if( !(flags & MEMFLAG_PURE) ) {
+            strcat( *text, "IMPURE " );
+        }
     }
-
-    if( !(flags & MEMFLAG_MOVEABLE) ) {
-        strcat( *text, "FIXED " );
-    }
-
-    if( flags & MEMFLAG_DISCARDABLE ) {
-        strcat( *text, "DISCARDABLE " );
-    }
-
-    if( !(flags & MEMFLAG_PURE) ) {
-        strcat( *text, "IMPURE " );
-    }
-
-    return( TRUE );
+    return( true );
 }
 
 static bool WdeSetFlagText( flag_map *map, flag_style fs, unsigned long flags, char **text )
@@ -981,7 +978,7 @@ bool WdeWriteDlgControl( WdeResInfo *rinfo, WdeDialogBoxControl *control,
 
 bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
 {
-    DialogSizeInfo      dsize;
+    WdeDialogSizeInfo   sizeinfo;
     DialogStyle         style;
     ResNameOrOrdinal    *rname;
     char                *name;
@@ -1008,12 +1005,11 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
     }
 
     if( ok ) {
-        str = NULL;
         ok = WdeSetMemFlagsText( ditem->dialog_info->MemoryFlags, &str );
     }
 
     if( ok ) {
-        dsize = GETHDR_SIZE( dhptr );
+        sizeinfo = GETHDR_SIZE( dhptr );
         /* check if this is a 32 bit extended dialog */
         if( dhptr->is32bitEx ) {
             char *helpsymbol;
@@ -1030,15 +1026,10 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
                 }
             }
 
-            if( str != NULL ) {
-                fprintf( fp, "%s DIALOGEX %s %d, %d, %d, %d",
-                         name, str, dsize.x, dsize.y, dsize.width, dsize.height );
-                WRMemFree( str );
-                str = NULL;
-            } else {
-                fprintf( fp, "%s DIALOGEX %d, %d, %d, %d",
-                         name, dsize.x, dsize.y, dsize.width, dsize.height );
-            }
+            fprintf( fp, "%s DIALOGEX %s %d, %d, %d, %d", name, str,
+                sizeinfo.x, sizeinfo.y, sizeinfo.width, sizeinfo.height );
+            WRMemFree( str );
+            str = NULL;
             if( *helpsymbol != '\0' ) {
                 fprintf( fp, ", %s", helpsymbol );
             }
@@ -1049,15 +1040,10 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
 
         } else {
             /* standard dialog */
-            if( str != NULL ) {
-                fprintf( fp, "%s DIALOG %s %d, %d, %d, %d\n",
-                         name, str, dsize.x, dsize.y, dsize.width, dsize.height );
-                WRMemFree( str );
-                str = NULL;
-            } else {
-                fprintf( fp, "%s DIALOG %d, %d, %d, %d\n",
-                         name, dsize.x, dsize.y, dsize.width, dsize.height );
-            }
+            fprintf( fp, "%s DIALOG %s %d, %d, %d, %d\n", name, str,
+                sizeinfo.x, sizeinfo.y, sizeinfo.width, sizeinfo.height );
+            WRMemFree( str );
+            str = NULL;
         }
         style = GETHDR_STYLE( ditem->dialog_info->dialog_header );
         ok = (WdeSetDialogFlagText( style, &str ) && str != NULL);

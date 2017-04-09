@@ -50,7 +50,7 @@ bool ResReadMenuHeader( MenuHeader *currhead, WResFileID fid )
     currhead->Version = val16;
     if( !error ) {
         error = ResReadUint16( &val16, fid );
-        currhead->HeaderSize = val16;
+        currhead->Size = val16;
     }
     return( error );
 }
@@ -60,7 +60,7 @@ bool ResReadMenuExtraBytes( MenuHeader *header, WResFileID fid, char *buf )
 {
     unsigned        size;
 
-    size = header->HeaderSize;
+    size = header->Size;
     if( buf != NULL ) {
         if( WRESREAD( fid, buf, size ) != size ) {
             return( true );

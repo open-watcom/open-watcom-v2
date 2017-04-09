@@ -301,13 +301,13 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
     if( !ErrorHasOccured ) {
         if( tokentype == Y_MENU ) {
             head.Version = 0;    /* currently these fields are both 0 */
-            head.HeaderSize = 0;
+            head.Size = 0;
             loc.start = SemStartResource();
             error = ResWriteMenuHeader( &head, CurrResFile.fid );
         } else if( tokentype == Y_MENU_EX ) {
             head.Version = RES_HEADER_VERSION;
-            head.HeaderSize = RES_HEADER_SIZE;
-            memset( headerdata, 0, head.HeaderSize );
+            head.Size = RES_HEADER_SIZE;
+            memset( headerdata, 0, head.Size );
             ResWritePadDWord( CurrResFile.fid );
             loc.start = SemStartResource();
             error = ResWriteMenuExHeader( &head, CurrResFile.fid, headerdata );

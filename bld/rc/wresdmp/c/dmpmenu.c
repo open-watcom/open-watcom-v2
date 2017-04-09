@@ -99,8 +99,7 @@ static void PrintNormalItem( MenuItemNormal * item )
 static void PrintHeader( MenuHeader * head )
 /******************************************/
 {
-    printf( "\tMenu Header.   Version: %d  Header size: %d\n", head->Version,
-                head->HeaderSize );
+    printf( "\tMenu Header.   Version: %d  Header size: %d\n", head->Version, head->Size );
 }
 
 bool DumpMenu( uint_32 offset, uint_32 length, WResFileID fid )

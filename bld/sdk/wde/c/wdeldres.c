@@ -177,7 +177,10 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
             dlg_info->dialog_header->Style = h32.Style;
             dlg_info->dialog_header->ExtendedStyle = h32.ExtendedStyle;
             dlg_info->dialog_header->NumOfItems = h32.NumOfItems;
-            dlg_info->dialog_header->Size = h32.Size;
+            dlg_info->dialog_header->SizeInfo.x = h32.SizeInfo.x;
+            dlg_info->dialog_header->SizeInfo.y = h32.SizeInfo.y;
+            dlg_info->dialog_header->SizeInfo.width = h32.SizeInfo.width;
+            dlg_info->dialog_header->SizeInfo.height = h32.SizeInfo.height;
             dlg_info->dialog_header->MenuName = h32.MenuName;
             dlg_info->dialog_header->ClassName = h32.ClassName;
             dlg_info->dialog_header->Caption = h32.Caption;
@@ -186,7 +189,10 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
         } else {
             dlg_info->dialog_header->Style = h16.Style;
             dlg_info->dialog_header->NumOfItems = h16.NumOfItems;
-            dlg_info->dialog_header->Size = h16.Size;
+            dlg_info->dialog_header->SizeInfo.x = h16.SizeInfo.x;
+            dlg_info->dialog_header->SizeInfo.y = h16.SizeInfo.y;
+            dlg_info->dialog_header->SizeInfo.width = h16.SizeInfo.width;
+            dlg_info->dialog_header->SizeInfo.height = h16.SizeInfo.height;
             dlg_info->dialog_header->MenuName = h16.MenuName;
             dlg_info->dialog_header->ClassName = h16.ClassName;
             dlg_info->dialog_header->Caption = h16.Caption;
@@ -214,7 +220,10 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
                     control->HelpId = c32ex.HelpId;
                     control->ExtendedStyle = c32ex.ExtendedStyle;
                     control->Style = c32ex.Style;
-                    control->Size = c32ex.Size;
+                    control->SizeInfo.x = c32ex.SizeInfo.x;
+                    control->SizeInfo.y = c32ex.SizeInfo.y;
+                    control->SizeInfo.width = c32ex.SizeInfo.width;
+                    control->SizeInfo.height = c32ex.SizeInfo.height;
                     control->ID = (uint_16)c32ex.ID;
                     control->ClassID = c32ex.ClassID;
                     control->Text = c32ex.Text;
@@ -226,7 +235,10 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
                     }
                     control->Style = c32.Style;
                     control->ExtendedStyle = c32.ExtendedStyle;
-                    control->Size = c32.Size;
+                    control->SizeInfo.x = c32.SizeInfo.x;
+                    control->SizeInfo.y = c32.SizeInfo.y;
+                    control->SizeInfo.width = c32.SizeInfo.width;
+                    control->SizeInfo.height = c32.SizeInfo.height;
                     control->ID = c32.ID;
                     control->ClassID = c32.ClassID;
                     control->Text = c32.Text;
@@ -237,7 +249,10 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
                     ok = false;
                     break;
                 }
-                control->Size = c16.Size;
+                control->SizeInfo.x = c16.SizeInfo.x;
+                control->SizeInfo.y = c16.SizeInfo.y;
+                control->SizeInfo.width = c16.SizeInfo.width;
+                control->SizeInfo.height = c16.SizeInfo.height;
                 control->ID = c16.ID;
                 control->Style = c16.Style;
                 control->ClassID = c16.ClassID;
@@ -253,45 +268,6 @@ WdeDialogBoxInfo *WdeLoadDialogFromRes( WdeResInfo *res_info, WResLangNode *lnod
             }
         }
     }
-
-#if 0
-    /*
-     * JPK - if the dialog is 32 bit but not EX, then convert the dialog
-     *       header and the control list to EX; this will force all
-     *       dialogs to EX, for now
-    */
-    if( is32bit && !dlg_info->dialog_header->is32bitEx ) {
-        /* deal with the dialog header first */
-        dlg_info->dialog_header->is32bitEx = TRUE;
-
-        dlg_info->dialog_header->FontWeight = 0;
-        dlg_info->dialog_header->FontItalic = 0;
-        dlg_info->dialog_header->FontCharset = DEFAULT_CHARSET;
-        dlg_info->dialog_header->HelpId = 0;
-        dlg_info->dialog_header->FontWeightDefined = FALSE;
-        dlg_info->dialog_header->FontItalicDefined = FALSE;
-        dlg_info->dialog_header->FontCharsetDefined = FALSE;
-
-        /* now deal with the list of controls */
-        nc = (WdeDialogBoxControl *)WRMemAlloc( sizeof( WdeDialogBoxControl ) );
-        for( clist = dlg_info->control_list; clist != NULL; clist = ListNext( clist ) ) {
-            control = (WdeDialogBoxControl *)ListElement( clist );
-            memcpy( nc, control, sizeof( WdeDialogBoxControl ) );
-
-            nc->HelpId = 0;
-            nc->ExtendedStyle = control->ExtendedStyle;
-            nc->Style = control->Style;
-            memcpy( &nc->Size, &control->Size, sizeof( DialogSizeInfo ) );
-            nc->ID = control->ID;
-            nc->ClassID = control->ClassID;
-            nc->Text = control->Text;
-            nc->ExtraBytes = control->ExtraBytes;
-
-            memcpy( control, nc, sizeof( WdeDialogBoxControl ) );
-        }
-        WRMemFree( nc );
-    }
-#endif
 
     if( !ok ) {
         if( dlg_info != NULL ) {

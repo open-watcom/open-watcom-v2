@@ -278,11 +278,11 @@ int CALLBACK WdeEnumFontsProc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, 
     return( TRUE );
 }
 
-bool WdeDialogToScreen( void *obj, WdeResizeRatio *r, DialogSizeInfo *dsize, RECT *s )
+bool WdeDialogToScreen( void *obj, WdeResizeRatio *r, WdeDialogSizeInfo *sizeinfo, RECT *s )
 {
     WdeResizeRatio  resizer;
 
-    if( dsize == NULL || s == NULL ) {
+    if( sizeinfo == NULL || s == NULL ) {
         return( FALSE );
     }
 
@@ -299,22 +299,22 @@ bool WdeDialogToScreen( void *obj, WdeResizeRatio *r, DialogSizeInfo *dsize, REC
         }
     }
 
-    s->left = MulDiv( dsize->x, resizer.xmap, 4 );
-    s->top = MulDiv( dsize->y, resizer.ymap, 8 );
-    s->right = MulDiv( dsize->width, resizer.xmap, 4 );
-    s->bottom = MulDiv( dsize->height, resizer.ymap, 8 );
+    s->left = MulDiv( sizeinfo->x, resizer.xmap, 4 );
+    s->top = MulDiv( sizeinfo->y, resizer.ymap, 8 );
+    s->right = MulDiv( sizeinfo->width, resizer.xmap, 4 );
+    s->bottom = MulDiv( sizeinfo->height, resizer.ymap, 8 );
     s->right += s->left;
     s->bottom += s->top;
 
     return( TRUE );
 }
 
-bool WdeScreenToDialog( void *obj, WdeResizeRatio *r, RECT *s, DialogSizeInfo *dsize )
+bool WdeScreenToDialog( void *obj, WdeResizeRatio *r, RECT *s, WdeDialogSizeInfo *sizeinfo )
 {
     WdeResizeRatio  resizer;
     RECT            screen;
 
-    if( dsize == NULL ) {
+    if( sizeinfo == NULL ) {
         return( FALSE );
     }
 
@@ -337,10 +337,10 @@ bool WdeScreenToDialog( void *obj, WdeResizeRatio *r, RECT *s, DialogSizeInfo *d
         Location( obj, &screen );
     }
 
-    dsize->x = MulDiv( screen.left, 4, resizer.xmap );
-    dsize->y = MulDiv( screen.top, 8, resizer.ymap );
-    dsize->width = MulDiv( screen.right - screen.left, 4, resizer.xmap );
-    dsize->height = MulDiv( screen.bottom - screen.top, 8, resizer.ymap );
+    sizeinfo->x = MulDiv( screen.left, 4, resizer.xmap );
+    sizeinfo->y = MulDiv( screen.top, 8, resizer.ymap );
+    sizeinfo->width = MulDiv( screen.right - screen.left, 4, resizer.xmap );
+    sizeinfo->height = MulDiv( screen.bottom - screen.top, 8, resizer.ymap );
 
     return( TRUE );
 }

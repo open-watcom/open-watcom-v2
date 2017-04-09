@@ -42,12 +42,12 @@
 /****************************************************************************/
 #define GETHDR_STYLE( ph )          ((ph)->Style)
 #define GETHDR_NUMITEMS( ph )       ((ph)->NumOfItems)
-#define GETHDR_SIZE( ph )           ((ph)->Size)
-#define GETHDR_PSIZE( ph )          (&(ph)->Size)
-#define GETHDR_SIZEX( ph )          ((ph)->Size.x)
-#define GETHDR_SIZEY( ph )          ((ph)->Size.y)
-#define GETHDR_SIZEW( ph )          ((ph)->Size.width)
-#define GETHDR_SIZEH( ph )          ((ph)->Size.height)
+#define GETHDR_SIZE( ph )           ((ph)->SizeInfo)
+#define GETHDR_PSIZE( ph )          (&(ph)->SizeInfo)
+#define GETHDR_SIZEX( ph )          ((ph)->SizeInfo.x)
+#define GETHDR_SIZEY( ph )          ((ph)->SizeInfo.y)
+#define GETHDR_SIZEW( ph )          ((ph)->SizeInfo.width)
+#define GETHDR_SIZEH( ph )          ((ph)->SizeInfo.height)
 #define GETHDR_MENUNAME( ph )       ((ph)->MenuName)
 #define GETHDR_CLASSNAME( ph )      ((ph)->ClassName)
 #define GETHDR_CAPTION( ph )        ((ph)->Caption)
@@ -61,11 +61,11 @@
 
 #define SETHDR_STYLE( ph, s )       ((ph)->Style = (s))
 #define SETHDR_NUMITEMS( ph, s )    ((ph)->NumOfItems = (s))
-#define SETHDR_SIZE( ph, s )        ((ph)->Size = (s))
-#define SETHDR_SIZEX( ph, s )       ((ph)->Size.x = (s))
-#define SETHDR_SIZEY( ph, s )       ((ph)->Size.y = (s))
-#define SETHDR_SIZEW( ph, s )       ((ph)->Size.width = (s))
-#define SETHDR_SIZEH( ph, s )       ((ph)->Size.height = (s))
+#define SETHDR_SIZE( ph, s )        ((ph)->SizeInfo = (s))
+#define SETHDR_SIZEX( ph, s )       ((ph)->SizeInfo.x = (s))
+#define SETHDR_SIZEY( ph, s )       ((ph)->SizeInfo.y = (s))
+#define SETHDR_SIZEW( ph, s )       ((ph)->SizeInfo.width = (s))
+#define SETHDR_SIZEH( ph, s )       ((ph)->SizeInfo.height = (s))
 #define SETHDR_MENUNAME( ph, s )    ((ph)->MenuName = (s))
 #define SETHDR_CLASSNAME( ph, s )   ((ph)->ClassName = (s))
 #define SETHDR_CAPTION( ph, s )     ((ph)->Caption = (s))
@@ -77,12 +77,12 @@
 #define SETHDR_HELPID( ph, s )      ((ph)->HelpId = (s))
 #define SETHDR_EXSTYLE( ph, s )     ((ph)->ExtendedStyle = (s))
 
-#define GETCTL_SIZE( pc )           ((pc)->Size)
-#define GETCTL_PSIZE( pc )          (&(pc)->Size)
-#define GETCTL_SIZEX( pc )          ((pc)->Size.x)
-#define GETCTL_SIZEY( pc )          ((pc)->Size.y)
-#define GETCTL_SIZEW( pc )          ((pc)->Size.width)
-#define GETCTL_SIZEH( pc )          ((pc)->Size.height)
+#define GETCTL_SIZE( pc )           ((pc)->SizeInfo)
+#define GETCTL_PSIZE( pc )          (&(pc)->SizeInfo)
+#define GETCTL_SIZEX( pc )          ((pc)->SizeInfo.x)
+#define GETCTL_SIZEY( pc )          ((pc)->SizeInfo.y)
+#define GETCTL_SIZEW( pc )          ((pc)->SizeInfo.width)
+#define GETCTL_SIZEH( pc )          ((pc)->SizeInfo.height)
 #define GETCTL_ID( pc )             ((pc)->ID)
 #define GETCTL_STYLE( pc )          ((pc)->Style)
 #define GETCTL_CLASSID( pc )        ((pc)->ClassID)
@@ -91,11 +91,11 @@
 #define GETCTL_HELPID( pc )         ((pc)->HelpId)
 #define GETCTL_EXSTYLE( pc )        ((pc)->ExtendedStyle)
 
-#define SETCTL_SIZE( pc, s )        ((pc)->Size = (s))
-#define SETCTL_SIZEX( pc, s )       ((pc)->Size.x = (s))
-#define SETCTL_SIZEY( pc, s )       ((pc)->Size.y = (s))
-#define SETCTL_SIZEW( pc, s )       ((pc)->Size.width = (s))
-#define SETCTL_SIZEH( pc, s )       ((pc)->Size.height = (s))
+#define SETCTL_SIZE( pc, s )        ((pc)->SizeInfo = (s))
+#define SETCTL_SIZEX( pc, s )       ((pc)->SizeInfo.x = (s))
+#define SETCTL_SIZEY( pc, s )       ((pc)->SizeInfo.y = (s))
+#define SETCTL_SIZEW( pc, s )       ((pc)->SizeInfo.width = (s))
+#define SETCTL_SIZEH( pc, s )       ((pc)->SizeInfo.height = (s))
 #define SETCTL_ID( pc, s )          ((pc)->ID = (s))
 #define SETCTL_STYLE( pc, s )       ((pc)->Style = (s))
 #define SETCTL_CLASSID( pc, s )     ((pc)->ClassID = (s))
@@ -107,6 +107,13 @@
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
+
+typedef struct {
+    int             x;
+    int             y;
+    int             width;
+    int             height;
+} WdeDialogSizeInfo;
 
 typedef struct WdeResInfoStruct {
     WRInfo              *info;
@@ -130,7 +137,7 @@ typedef struct WdeDialogBoxHeader {
     uint_32             ExtendedStyle;
     DialogStyle         Style;
     uint_16             NumOfItems;
-    DialogSizeInfo      Size;
+    WdeDialogSizeInfo   SizeInfo;
     ResNameOrOrdinal    *MenuName;          // NameOrOrdinal
     ResNameOrOrdinal    *ClassName;         // NameOrOrdinal
     char                *Caption;           // String
@@ -155,7 +162,7 @@ typedef struct WdeDialogBoxControl {
     uint_32             HelpId;
     uint_32             ExtendedStyle;
     uint_32             Style;
-    DialogSizeInfo      Size;
+    WdeDialogSizeInfo   SizeInfo;
     uint_16             ID;
     ControlClass        *ClassID;
     ResNameOrOrdinal    *Text;

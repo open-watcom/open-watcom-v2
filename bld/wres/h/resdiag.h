@@ -49,7 +49,7 @@ typedef struct DialogSizeInfo {
 typedef struct DialogBoxHeader {
     DialogStyle         Style;
     uint_8              NumOfItems;
-    DialogSizeInfo      Size;
+    DialogSizeInfo      SizeInfo;
     ResNameOrOrdinal    *MenuName;
     ResNameOrOrdinal    *ClassName;
     char                *Caption;       /* '\0' terminated */
@@ -61,7 +61,7 @@ typedef struct DialogBoxHeader32 {
     DialogStyle         Style;
     DialogExstyle       ExtendedStyle;
     uint_16             NumOfItems;
-    DialogSizeInfo      Size;
+    DialogSizeInfo      SizeInfo;
     ResNameOrOrdinal    *MenuName;
     ResNameOrOrdinal    *ClassName;
     char                *Caption;       /* '\0' terminated */
@@ -76,7 +76,7 @@ typedef struct DialogBoxExHeader32 {
     DialogExstyle       ExtendedStyle;
     DialogStyle         Style;
     uint_16             NumOfItems;
-    DialogSizeInfo      Size;
+    DialogSizeInfo      SizeInfo;
     ResNameOrOrdinal    *MenuName;
     ResNameOrOrdinal    *ClassName;
     char                *Caption;       /* '\0' terminated */
@@ -103,7 +103,7 @@ typedef union ControlClass {
 } ControlClass;
 
 typedef struct DialogBoxControl {
-    DialogSizeInfo      Size;
+    DialogSizeInfo      SizeInfo;
     uint_16             ID;
     DialogStyle         Style;
     ControlClass        *ClassID;
@@ -114,7 +114,7 @@ typedef struct DialogBoxControl {
 typedef struct DialogBoxControl32 {
     DialogStyle         Style;
     DialogExstyle       ExtendedStyle;
-    DialogSizeInfo      Size;
+    DialogSizeInfo      SizeInfo;
     uint_16             ID;
     ControlClass        *ClassID;
     ResNameOrOrdinal    *Text;
@@ -125,7 +125,7 @@ typedef struct DialogBoxExControl32 {
     uint_32             HelpId;
     DialogExstyle       ExtendedStyle;
     DialogStyle         Style;
-    DialogSizeInfo      Size;
+    DialogSizeInfo      SizeInfo;
     uint_32             ID;
     ControlClass        *ClassID;
     ResNameOrOrdinal    *Text;
@@ -142,25 +142,25 @@ typedef struct DialogBoxExControl32 {
 
 /* reswdiag.c */
 
-extern bool ResWriteDialogBoxHeader( DialogBoxHeader *, WResFileID fid );
-extern bool ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID fid );
-extern bool ResWriteDialogBoxControl( DialogBoxControl *, WResFileID fid );
-extern bool ResWriteDialogBoxControl32( DialogBoxControl32 *control, WResFileID fid );
-extern bool ResWriteDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32short *exhead, WResFileID fid );
-extern bool ResWriteDialogBoxExControl32( DialogBoxExControl32 *control, WResFileID fid );
-extern ControlClass *ResNameOrOrdToControlClass( const ResNameOrOrdinal *);
+extern bool         ResWriteDialogBoxHeader( DialogBoxHeader *, WResFileID fid );
+extern bool         ResWriteDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID fid );
+extern bool         ResWriteDialogBoxControl( DialogBoxControl *, WResFileID fid );
+extern bool         ResWriteDialogBoxControl32( DialogBoxControl32 *control, WResFileID fid );
+extern bool         ResWriteDialogBoxExHeader32( DialogBoxHeader32 *head, DialogBoxExHeader32short *exhead, WResFileID fid );
+extern bool         ResWriteDialogBoxExControl32( DialogBoxExControl32 *control, WResFileID fid );
+extern ControlClass *ResNameOrOrdToControlClass( const ResNameOrOrdinal * );
 extern ControlClass *ResNumToControlClass( uint_16 classnum );
 
 /* resrdiag.c */
 
-extern bool ResReadDialogBoxHeader( DialogBoxHeader *head, WResFileID fid );
-extern bool ResReadDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID fid );
-extern bool ResReadDialogBoxExHeader32( DialogBoxHeader32 *, DialogBoxExHeader32short *, WResFileID fid );
-extern bool ResReadDialogBoxControl( DialogBoxControl *, WResFileID fid );
-extern bool ResReadDialogBoxControl32( DialogBoxControl32 *, WResFileID fid );
-extern bool ResReadDialogBoxExControl32( DialogBoxExControl32 *, WResFileID fid );
-extern bool ResIsDialogBoxEx( WResFileID fid );
-extern void ResFreeDialogBoxHeaderPtrs( DialogBoxHeader *head );
-extern void ResFreeDialogBoxHeader32Ptrs( DialogBoxHeader32 *head );
+extern bool         ResReadDialogBoxHeader( DialogBoxHeader *head, WResFileID fid );
+extern bool         ResReadDialogBoxHeader32( DialogBoxHeader32 *head, WResFileID fid );
+extern bool         ResReadDialogBoxExHeader32( DialogBoxHeader32 *, DialogBoxExHeader32short *, WResFileID fid );
+extern bool         ResReadDialogBoxControl( DialogBoxControl *, WResFileID fid );
+extern bool         ResReadDialogBoxControl32( DialogBoxControl32 *, WResFileID fid );
+extern bool         ResReadDialogBoxExControl32( DialogBoxExControl32 *, WResFileID fid );
+extern bool         ResIsDialogBoxEx( WResFileID fid );
+extern void         ResFreeDialogBoxHeaderPtrs( DialogBoxHeader *head );
+extern void         ResFreeDialogBoxHeader32Ptrs( DialogBoxHeader32 *head );
 
 #endif

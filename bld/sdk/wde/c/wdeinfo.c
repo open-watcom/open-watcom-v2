@@ -35,7 +35,6 @@
 #include <mbstring.h>
 #include "wdemsgbx.h"
 #include "rcstr.gh"
-#include "wderesin.h"
 #include "wdegeted.h"
 #include "wdeobjid.h"
 #include "wde_wres.h"
@@ -327,8 +326,7 @@ void WdeWriteInfo( WdeInfoStruct *is )
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_IDSTR );
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_IDNUM );
     } else {
-        WdeWriteObjectDimensions( (int_16)is->dsize.x, (int_16)is->dsize.y,
-                                  (int_16)is->dsize.width, (int_16)is->dsize.height );
+        WdeWriteObjectDimensions( &(is->sizeinfo) );
         WdeEnableInfoWindowInput( TRUE );
         if( is->obj_id == DIALOG_OBJ ) {
             WdeDisplayDialogInfo( is );
@@ -622,12 +620,14 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
     *is = c_is;
 }
 
-void WdeWriteObjectDimensions( int x, int y, int width, int height )
+void WdeWriteObjectDimensions( WdeDialogSizeInfo *sizeinfo )
 {
     char str[56];
 
     sprintf( str, "(%d,%d) (%d,%d) %dx%d",
-             x, y, x + width, y + height, width, height );
+             sizeinfo->x, sizeinfo->y,
+             sizeinfo->x + sizeinfo->width, sizeinfo->y + sizeinfo->height,
+             sizeinfo->width, sizeinfo->height );
 
     WdeSetEditWithStr( str, WdeInfoWindow, IDB_INFO_SIZE );
 }

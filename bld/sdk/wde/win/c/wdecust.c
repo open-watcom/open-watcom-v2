@@ -36,6 +36,7 @@
 #include <ctype.h>
 #include "wdecust.h"
 #include "wdemain.h"
+#include "wdeinfo.h"
 #include "wdefont.h"
 #include "wdegetfn.h"
 #include "wdegeted.h"
@@ -963,30 +964,30 @@ bool WdeSetCurrentControl( HWND win, int which )
 
 void WdeMapCustomSize( int *w, int *h, WdeResizeRatio *r )
 {
-    DialogSizeInfo      dsize;
+    WdeDialogSizeInfo   sizeinfo;
     RECT                trect;
 
     if( *w >= 0 && *h >= 0 ) {
-        dsize.x = 0;
-        dsize.y = 0;
-        dsize.width = *w;
-        dsize.height = *h;
-        WdeDialogToScreen( NULL, r, &dsize, &trect );
+        sizeinfo.x = 0;
+        sizeinfo.y = 0;
+        sizeinfo.width = *w;
+        sizeinfo.height = *h;
+        WdeDialogToScreen( NULL, r, &sizeinfo, &trect );
         *w = trect.right;
         *h = trect.bottom;
     } else if( *w >= 0 ) {
-        dsize.x = 0;
-        dsize.y = 0;
-        dsize.width = *w;
-        dsize.height = 0;
-        WdeDialogToScreen( NULL, r, &dsize, &trect );
+        sizeinfo.x = 0;
+        sizeinfo.y = 0;
+        sizeinfo.width = *w;
+        sizeinfo.height = 0;
+        WdeDialogToScreen( NULL, r, &sizeinfo, &trect );
         *w = trect.right;
     } else if( *h >= 0 ) {
-        dsize.x = 0;
-        dsize.y = 0;
-        dsize.width = 0;
-        dsize.height = *h;
-        WdeDialogToScreen( NULL, r, &dsize, &trect );
+        sizeinfo.x = 0;
+        sizeinfo.y = 0;
+        sizeinfo.width = 0;
+        sizeinfo.height = *h;
+        WdeDialogToScreen( NULL, r, &sizeinfo, &trect );
         *h = trect.bottom;
     }
     if( *w < 0 ) {

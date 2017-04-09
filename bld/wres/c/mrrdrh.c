@@ -63,7 +63,7 @@ M32ResResourceHeader *M32ResReadResourceHeader( WResFileID fid )
     }
     if( !error ) {
         error = ResReadUint32( &tmp32, fid );
-        newhead->HeaderSize = tmp32;
+        newhead->Size = tmp32;
     }
     if( !error ) {
         newhead->head16->Type = ResRead32NameOrOrdinal( fid );

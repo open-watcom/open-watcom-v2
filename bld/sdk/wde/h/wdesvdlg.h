@@ -47,7 +47,6 @@
 extern bool WdeSaveRC( char *filename, WdeResInfo *res_info );
 extern bool WdeSaveObjectToRC( char *filename, WdeResInfo *rinfo, WdeResDlgItem *ditem, bool append );
 extern bool WdeSaveResInfoToRC( char *filename, WdeResInfo *rinfo, bool append );
-extern bool WdeSetMemFlagsText( uint_16 flags, char **text );
 extern bool WdeSetWindowFlagText( unsigned long flags, char **text );
 extern bool WdeSetDialogFlagText( unsigned long flags, char **text );
 extern bool WdeSetControlFlagText( uint_8 class, unsigned long flags, char **text );

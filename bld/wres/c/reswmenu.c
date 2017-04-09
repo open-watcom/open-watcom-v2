@@ -45,7 +45,7 @@ bool ResWriteMenuHeader( MenuHeader *currhead, WResFileID fid )
 {
     if( ResWriteUint16( currhead->Version, fid ) )
         return( true );
-    if( ResWriteUint16( currhead->HeaderSize, fid ) )
+    if( ResWriteUint16( currhead->Size, fid ) )
         return( true );
     return( false );
 }
@@ -56,7 +56,7 @@ bool ResWriteMenuExHeader( MenuHeader *currhead, WResFileID fid, uint_8 *headerd
     if( ResWriteMenuHeader( currhead, fid ) )
         return( true );
     if( headerdata != NULL ) {
-        if( WRESWRITE( fid, headerdata, currhead->HeaderSize ) != currhead->HeaderSize ) {
+        if( WRESWRITE( fid, headerdata, currhead->Size ) != currhead->Size ) {
             return( WRES_ERROR( WRS_WRITE_FAILED ) );
         }
     }

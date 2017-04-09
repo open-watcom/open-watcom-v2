@@ -66,7 +66,7 @@ extern FullDialogBoxControlOS2  *SemOS2NewDiagCtrl( YYTOKENTYPE token, FullDiagC
 extern FullDialogBoxControlOS2  *SemOS2SetWindowData( FullDiagCtrlOptionsOS2, IntMask,
                                     PresParamListOS2 *, FullDiagCtrlListOS2 *, YYTOKENTYPE );
 extern FullDialogBoxControlOS2  *SemOS2SetControlData( ResNameOrOrdinal *name, uint_16 id,
-                                    DialogSizeInfo size, ResNameOrOrdinal *ctlclass,
+                                    DialogSizeInfo sizeinfo, ResNameOrOrdinal *ctlclass,
                                     IntMask style, FullDiagCtrlListOS2 *, PresParamListOS2 * );
 extern PresParamListOS2         *SemOS2NewPresParamList( PresParamsOS2 presparam );
 extern PresParamListOS2         *SemOS2AppendPresParam( PresParamListOS2 *list,

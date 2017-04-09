@@ -91,10 +91,10 @@ static FullDialogBoxHeader *NewDialogBoxHeader( void )
         newheader->Win32 = false;
         newheader->u.Head.Style = 0L;
         newheader->u.Head.NumOfItems = 0;
-        newheader->u.Head.Size.x = 0;
-        newheader->u.Head.Size.y = 0;
-        newheader->u.Head.Size.width = 0;
-        newheader->u.Head.Size.height = 0;
+        newheader->u.Head.SizeInfo.x = 0;
+        newheader->u.Head.SizeInfo.y = 0;
+        newheader->u.Head.SizeInfo.width = 0;
+        newheader->u.Head.SizeInfo.height = 0;
         newheader->u.Head.MenuName = NULL;
         newheader->u.Head.ClassName = NULL;
         newheader->u.Head.Caption = NULL;
@@ -105,10 +105,10 @@ static FullDialogBoxHeader *NewDialogBoxHeader( void )
         newheader->u.Head32.Head.Style = 0L;
         newheader->u.Head32.Head.ExtendedStyle = 0L;
         newheader->u.Head32.Head.NumOfItems = 0;
-        newheader->u.Head32.Head.Size.x = 0;
-        newheader->u.Head32.Head.Size.y = 0;
-        newheader->u.Head32.Head.Size.width = 0;
-        newheader->u.Head32.Head.Size.height = 0;
+        newheader->u.Head32.Head.SizeInfo.x = 0;
+        newheader->u.Head32.Head.SizeInfo.y = 0;
+        newheader->u.Head32.Head.SizeInfo.width = 0;
+        newheader->u.Head32.Head.SizeInfo.height = 0;
         newheader->u.Head32.Head.MenuName = NULL;
         newheader->u.Head32.Head.ClassName = NULL;
         newheader->u.Head32.Head.Caption = NULL;
@@ -486,7 +486,7 @@ FullDialogBoxControl *SemWINNewDiagCtrl( YYTOKENTYPE token, FullDiagCtrlOptions 
 
     if( newctrl->Win32 ) {
         newctrl->u.ctrl32.ID = opts.ID;
-        newctrl->u.ctrl32.Size = opts.Size;
+        newctrl->u.ctrl32.SizeInfo = opts.SizeInfo;
         newctrl->u.ctrl32.Text = opts.Text;
         newctrl->u.ctrl32.ClassID = cont_class;
         newctrl->u.ctrl32.Style = (style_lo & LO_WORD) | (style_hi & HI_WORD);
@@ -499,7 +499,7 @@ FullDialogBoxControl *SemWINNewDiagCtrl( YYTOKENTYPE token, FullDiagCtrlOptions 
         newctrl->u.ctrl32.HelpIdDefined = opts.HelpIdDefined;
     } else {
         newctrl->u.ctrl.ID = opts.ID;
-        newctrl->u.ctrl.Size = opts.Size;
+        newctrl->u.ctrl.SizeInfo = opts.SizeInfo;
         newctrl->u.ctrl.Text = opts.Text;
         newctrl->u.ctrl.ClassID = cont_class;
         newctrl->u.ctrl.Style = (style_lo & LO_WORD) | (style_hi & HI_WORD);
@@ -589,7 +589,7 @@ static bool SemWriteDiagCtrlList( FullDiagCtrlList *list, int *err_code, YYTOKEN
             if( tokentype == Y_DIALOG ) {
                 control.Style = ctrl->u.ctrl32.Style;
                 control.ExtendedStyle = ctrl->u.ctrl32.ExtendedStyle;
-                control.Size = ctrl->u.ctrl32.Size;
+                control.SizeInfo = ctrl->u.ctrl32.SizeInfo;
                 control.ID = ctrl->u.ctrl32.ID;
                 control.ClassID = ctrl->u.ctrl32.ClassID;
                 control.Text = ctrl->u.ctrl32.Text;
@@ -599,7 +599,7 @@ static bool SemWriteDiagCtrlList( FullDiagCtrlList *list, int *err_code, YYTOKEN
                 controlex.HelpId = ctrl->u.ctrl32.HelpId;
                 controlex.ExtendedStyle = ctrl->u.ctrl32.ExtendedStyle;
                 controlex.Style = ctrl->u.ctrl32.Style;
-                controlex.Size = ctrl->u.ctrl32.Size;
+                controlex.SizeInfo = ctrl->u.ctrl32.SizeInfo;
                 controlex.ID = ctrl->u.ctrl32.ID;
                 controlex.ClassID = ctrl->u.ctrl32.ClassID;
                 controlex.Text = ctrl->u.ctrl32.Text;
@@ -673,7 +673,7 @@ static void SemCheckDialogBox( FullDialogBoxHeader *head, YYTOKENTYPE tokentype,
 }
 
 void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
-                    DialogSizeInfo size, FullDialogBoxHeader *head,
+                    DialogSizeInfo sizeinfo, FullDialogBoxHeader *head,
                     FullDiagCtrlList *ctrls, DlgHelpId dlghelp,
                     YYTOKENTYPE tokentype )
 /******************************************************************/
@@ -701,7 +701,7 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
         }
 
         head->u.Head32.Head.NumOfItems = ctrls->numctrls;
-        head->u.Head32.Head.Size = size;
+        head->u.Head32.Head.SizeInfo = sizeinfo;
         /* pad the start of the resource so that padding within the resource */
         /* is easier */
         if( ResWritePadDWord( CurrResFile.fid ) ) {
@@ -717,7 +717,7 @@ void SemWINWriteDialogBox( WResID *name, ResMemFlags flags,
             error = 2;
         } else {
             head->u.Head.NumOfItems = ctrls->numctrls & 0xFF;
-            head->u.Head.Size = size;
+            head->u.Head.SizeInfo = sizeinfo;
         }
     }
     if( !error && !ErrorHasOccured ) {
@@ -779,7 +779,7 @@ FullDialogBoxControl *SemWINSetControlData( IntMask ctrlstyle,
     control = semInitDiagCtrl();
     if( control->Win32 ) {
         control->u.ctrl32.ID = cntlid;
-        control->u.ctrl32.Size = sizeinfo;
+        control->u.ctrl32.SizeInfo = sizeinfo;
         control->u.ctrl32.Text = WResIDToNameOrOrd( cntltext );
         RESFREE( cntltext );
         control->u.ctrl32.ClassID = ResNameOrOrdToControlClass( ctlclassname );
@@ -801,7 +801,7 @@ FullDialogBoxControl *SemWINSetControlData( IntMask ctrlstyle,
         RESFREE( ctlclassname );
     } else {
         control->u.ctrl.ID = cntlid;
-        control->u.ctrl.Size = sizeinfo;
+        control->u.ctrl.SizeInfo = sizeinfo;
         control->u.ctrl.Text = WResIDToNameOrOrd( cntltext );
         RESFREE( cntltext );
         control->u.ctrl.ClassID = ResNameOrOrdToControlClass( ctlclassname );
