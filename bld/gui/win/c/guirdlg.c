@@ -117,8 +117,7 @@ gui_control_class GUIGetControlClassFromHWND( HWND cntl )
     return( control_class );
 }
 
-gui_control_styles GUIGetControlStylesFromHWND( HWND cntl,
-                                                gui_control_class control_class )
+gui_control_styles GUIGetControlStylesFromHWND( HWND cntl, gui_control_class control_class )
 {
     gui_control_styles  styles;
     DWORD               style;
@@ -131,56 +130,56 @@ gui_control_styles GUIGetControlStylesFromHWND( HWND cntl,
     }
 
     switch( control_class ) {
-        case GUI_CHECK_BOX:
-            if( ( style & BS_3STATE ) == BS_3STATE ) {
-                styles |= GUI_CONTROL_3STATE;
-            }
-            break;
-        case GUI_LISTBOX:
-            if( style & LBS_NOINTEGRALHEIGHT ) {
-                styles |= GUI_CONTROL_NOINTEGRALHEIGHT;
-            }
-            if( style & LBS_SORT ) {
-                styles |= GUI_CONTROL_SORTED;
-            }
-            break;
-        case GUI_STATIC:
-            if( style & SS_NOPREFIX ) {
-                styles |= GUI_CONTROL_NOPREFIX;
-            }
-            if( ( style & SS_CENTER ) == SS_CENTER ) {
-                styles |= GUI_CONTROL_CENTRE;
-            }
-            if( ( style & SS_LEFTNOWORDWRAP ) == SS_LEFTNOWORDWRAP ) {
-                styles |= GUI_CONTROL_LEFTNOWORDWRAP;
-            }
-            break;
-        case GUI_EDIT_COMBOBOX:
-        case GUI_COMBOBOX:
-            if( style & CBS_NOINTEGRALHEIGHT ) {
-                styles |= GUI_CONTROL_NOINTEGRALHEIGHT;
-            }
-            if( style & CBS_SORT ) {
-                styles |= GUI_CONTROL_SORTED;
-            }
-            break;
-        case GUI_EDIT:
-        case GUI_EDIT_MLE:
-            if( style & ES_MULTILINE ) {
-                styles |= GUI_CONTROL_MULTILINE;
-            }
-            if( style & ES_WANTRETURN ) {
-                styles |= GUI_CONTROL_WANTRETURN;
-            }
-            if( style & ES_READONLY ) {
-                styles |= GUI_CONTROL_READONLY;
-            }
+    case GUI_CHECK_BOX:
+        if( ( style & BS_3STATE ) == BS_3STATE ) {
+            styles |= GUI_CONTROL_3STATE;
+        }
+        break;
+    case GUI_LISTBOX:
+        if( style & LBS_NOINTEGRALHEIGHT ) {
+            styles |= GUI_CONTROL_NOINTEGRALHEIGHT;
+        }
+        if( style & LBS_SORT ) {
+            styles |= GUI_CONTROL_SORTED;
+        }
+        break;
+    case GUI_STATIC:
+        if( style & SS_NOPREFIX ) {
+            styles |= GUI_CONTROL_NOPREFIX;
+        }
+        if( ( style & SS_CENTER ) == SS_CENTER ) {
+            styles |= GUI_CONTROL_CENTRE;
+        }
+        if( ( style & SS_LEFTNOWORDWRAP ) == SS_LEFTNOWORDWRAP ) {
+            styles |= GUI_CONTROL_LEFTNOWORDWRAP;
+        }
+        break;
+    case GUI_EDIT_COMBOBOX:
+    case GUI_COMBOBOX:
+        if( style & CBS_NOINTEGRALHEIGHT ) {
+            styles |= GUI_CONTROL_NOINTEGRALHEIGHT;
+        }
+        if( style & CBS_SORT ) {
+            styles |= GUI_CONTROL_SORTED;
+        }
+        break;
+    case GUI_EDIT:
+    case GUI_EDIT_MLE:
+        if( style & ES_MULTILINE ) {
+            styles |= GUI_CONTROL_MULTILINE;
+        }
+        if( style & ES_WANTRETURN ) {
+            styles |= GUI_CONTROL_WANTRETURN;
+        }
+        if( style & ES_READONLY ) {
+            styles |= GUI_CONTROL_READONLY;
+        }
 #ifdef __OS2_PM__
-            if( style & MLS_READONLY ) {
-                styles |= GUI_CONTROL_READONLY;
-            }
+        if( style & MLS_READONLY ) {
+            styles |= GUI_CONTROL_READONLY;
+        }
 #endif
-            break;
+        break;
     }
 
     return( styles );

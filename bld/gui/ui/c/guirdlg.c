@@ -317,12 +317,12 @@ static bool DialogBoxControl2GUI( DialogBoxControl *ctl,
         }
 
         // set the control postion
-        area.row = ctl->Size.y / DLG_Y_MULT;
-        area.col = ctl->Size.x / DLG_X_MULT;
-        area.width = ( ( ctl->Size.width + DLG_X_MULT/2 ) / DLG_X_MULT );
+        area.row = ctl->SizeInfo.y / DLG_Y_MULT;
+        area.col = ctl->SizeInfo.x / DLG_X_MULT;
+        area.width = ( ( ctl->SizeInfo.width + DLG_X_MULT/2 ) / DLG_X_MULT );
         if( area.width < 1 )
             area.width = 1;
-        area.height = ( ( ctl->Size.height + DLG_Y_MULT/2 ) / DLG_Y_MULT );
+        area.height = ( ( ctl->SizeInfo.height + DLG_Y_MULT/2 ) / DLG_Y_MULT );
         if( area.height < 1 )
             area.height = 1;
         ok = GUIScreenToScaleRectR( &area, &ctl_info->rect );
@@ -360,8 +360,8 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
 
     // set the dialog postion remembering to add the size of the frame
     GUIGetScreenArea( &bounding );
-    area.width = hdr->Size.width / DLG_X_MULT + 2;
-    area.height = hdr->Size.height / DLG_Y_MULT + 2;
+    area.width = hdr->SizeInfo.width / DLG_X_MULT + 2;
+    area.height = hdr->SizeInfo.height / DLG_Y_MULT + 2;
     area.row = 0;
     if( bounding.height > area.height )
         area.row = ( bounding.height - area.height ) / 2;
