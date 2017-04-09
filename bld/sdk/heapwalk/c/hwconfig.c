@@ -396,8 +396,8 @@ INT_PTR CALLBACK ConfigDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
 /*
  * HWConfigure - get configuration information from the user
  */
-void HWConfigure( void ) {
-
+void HWConfigure( void )
+{
     DLGPROC         dlgproc;
 
     dlgproc = MakeProcInstance_DLG( ConfigDlgProc, Instance );

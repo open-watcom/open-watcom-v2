@@ -159,7 +159,6 @@ LIST *WdeSelectDialogs( WdeResInfo *res_info, bool remove )
     inst = WdeGetAppInstance();
 
     dlgproc = MakeProcInstance_DLG( WdeSelectDialogDlgProc, inst );
-
     if( dlgproc == NULL ) {
         return( FALSE );
     }
@@ -169,7 +168,6 @@ LIST *WdeSelectDialogs( WdeResInfo *res_info, bool remove )
     si.remove = remove;
 
     ret = JDialogBoxParam( inst, "WdeSelectDialog", res_info->res_win, dlgproc, (LPARAM)&si );
-
     FreeProcInstance_DLG( dlgproc );
 
     /* if the window could not be created return FALSE */

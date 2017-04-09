@@ -34,6 +34,7 @@
 #include <stress.h>
 #include "wclbproc.h"
 #include "jdlg.h"
+#include "winexprt.h"
 
 
 /* Local Window callback functions prototypes */
@@ -45,8 +46,8 @@ static WORD     DialMode;
 
 static char AmtTable[] = { 1, 2, 5, 10, 25, 50, 0 };
 
-static void UpdateAllocMenu( void ) {
-
+static void UpdateAllocMenu( void )
+{
     HMENU       mh;
     WORD        i;
     WORD        cmd;
@@ -90,8 +91,8 @@ static void UpdateAllocMenu( void ) {
 } /* UpdateAllocMenu */
 
 
-void UpdateAllocInfo( HWND hwnd ) {
-
+void UpdateAllocInfo( HWND hwnd )
+{
     char        buf[20];
 
     sprintf( buf, "%lu", FreeAmt / 1024L );
@@ -103,7 +104,8 @@ void UpdateAllocInfo( HWND hwnd ) {
     UpdateAllocMenu();
 } /* UpdateAllocInfo */
 
-static BOOL MyFreeMem( DWORD amt ) {
+static BOOL MyFreeMem( DWORD amt )
+{
     FreeAmt += amt;
     if( !AllocMem( FreeAmt ) ) {
         FreeAmt -= amt;
@@ -113,7 +115,8 @@ static BOOL MyFreeMem( DWORD amt ) {
     return( TRUE );
 } /* MyFreeMem */
 
-static BOOL MyAllocMem( DWORD amt ) {
+static BOOL MyAllocMem( DWORD amt )
+{
     if( amt > FreeAmt ) return( FALSE );
     AllocAmt += amt;
     FreeAmt -= amt;
@@ -168,8 +171,8 @@ INT_PTR CALLBACK AllocDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
     return( ret );
 } /* AllocDlgProc */
 
-static DWORD ParseAmount( char *buf ) {
-
+static DWORD ParseAmount( char *buf )
+{
     char        *ptr;
     BOOL        in_k;
     char        *end;
@@ -295,8 +298,8 @@ INT_PTR CALLBACK FreeNDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 /***************** interface routines ****************************/
 
-void DoNBytes( HWND parent, WORD type ) {
-
+void DoNBytes( HWND parent, WORD type )
+{
     DLGPROC             dlgproc;
     INT_PTR             ret;
 
@@ -304,8 +307,8 @@ void DoNBytes( HWND parent, WORD type ) {
     dlgproc = MakeProcInstance_DLG( FreeNDlgProc, Instance );
     if( dlgproc != NULL ) {
         ret = JDialogBox( Instance, "FREE_N_DLG", parent, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
         if( ret != -1 ) {
-            FreeProcInstance_DLG( dlgproc );
             return;
         }
     }
@@ -319,8 +322,8 @@ void DoNBytes( HWND parent, WORD type ) {
 }
 
 
-void AllocAllBut( WORD type ) {
-
+void AllocAllBut( WORD type )
+{
     DWORD       amt;
 
     if( type == HEAPMENU_ALLOC_ALL ) {
@@ -331,23 +334,24 @@ void AllocAllBut( WORD type ) {
     MyAllocAllBut( amt );
 }
 
-void AllocMore( WORD type ) {
-
+void AllocMore( WORD type )
+{
     DWORD       amt;
 
     amt = AmtTable[type - HEAPMENU_ALLOC_FIRST] * 1024L;
     MyAllocMem( amt );
 }
 
-void FreeSomeMem( WORD type ) {
-
+void FreeSomeMem( WORD type )
+{
     DWORD       amt;
 
     amt = AmtTable[type - HEAPMENU_FREE_FIRST] * 1024L;
     MyFreeMem( amt );
 }
 
-void MyFreeAllMem( void ) {
+void MyFreeAllMem( void )
+{
     FreeAllMem();
     FreeAmt = GetFreeSpace( 0 );
     AllocAmt = 0;

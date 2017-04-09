@@ -88,7 +88,6 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
      * set up template
      */
     dt = (WPDLGTEMPLATE)template;
-
     dt->dtStyle = style;
     dt->dtItemCount = 0;
     dt->dtX = (short)x;
@@ -96,18 +95,17 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     dt->dtCX = (short)cx;
     dt->dtCY = (short)cy;
 
-    template = (WPCHAR)( dt + 1 );
-
     /*
      * add extra strings to block
      */
+    template = (WPCHAR)( dt + 1 );
     template = DlgCopyMBString( template, menuname, menulen );
 #ifdef __WINDOWS__
     template = DlgCopyMBString( template, classname, classlen );
 #else
     class_ordinal = DlgGetClassOrdinal( classname );
     if( class_ordinal > 0 ) {
-        template = DlgCopyWord( template, -1 );
+        template = DlgCopyWord( template, (WORD)-1 );
         template = DlgCopyWord( template, class_ordinal );
     } else {
         template = DlgCopyMBString( template, classname, classlen );
@@ -239,7 +237,7 @@ void DoneAddingControls( TEMPLATE_HANDLE dlgtemplate )
 /*
  * DynamicDialogBox - create a dynamic dialog box
  */
-INT_PTR DynamicDialogBox( DLGPROC dlgfn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate )
+INT_PTR DynamicDialogBox( DLGPROCx dlgfn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate )
 {
     DLGPROC     dlgproc;
     INT_PTR     rc;

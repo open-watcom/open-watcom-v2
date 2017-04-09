@@ -131,9 +131,7 @@ bool WdeGenericDefine( WdeDefineObjectInfo *info )
     app_inst = WdeGetAppInstance();
 
     dlgproc = MakeProcInstance_DLG( WdeGenericDefineDlgProc, app_inst );
-
     redraw = JDialogBoxParam( app_inst, "WdeDefineGeneric", info->win, dlgproc, (LPARAM)info );
-
     FreeProcInstance_DLG( dlgproc );
 
     if( redraw == -1 ) {

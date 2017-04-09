@@ -38,6 +38,7 @@
 #include "aboutdlg.h"
 #include "wwinhelp.h"
 #include "jdlg.h"
+#include "wclbproc.h"
 
 
 static  BOOL    NoRefresh = FALSE;
