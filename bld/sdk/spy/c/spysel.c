@@ -40,8 +40,8 @@
 
 /* Local Window callback functions prototypes */
 WINEXPORT BOOL CALLBACK EnumWindowsFunc( HWND hwnd, LPARAM lparam );
-WINEXPORT INT_PTR CALLBACK ShowInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-WINEXPORT INT_PTR CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK ShowInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static HWND     *tmpWndList;
 static WORD     tmpWndCnt;
@@ -190,9 +190,9 @@ static void setUpWindows( void )
 
 
 /*
- * ShowInfoProc - show info for framed window dialog
+ * ShowInfoDlgProc - show info for framed window dialog
  */
-INT_PTR CALLBACK ShowInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK ShowInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_INITDIALOG:
@@ -217,7 +217,7 @@ INT_PTR CALLBACK ShowInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
     }
     return( FALSE );
 
-} /* ShowInfoProc */
+} /* ShowInfoDlgProc */
 
 /*
  * ShowFramedInfo - create the dialog to show info for our framed proc
@@ -226,16 +226,16 @@ void ShowFramedInfo( HWND hwnd, HWND framed )
 {
     DLGPROC     dlgproc;
 
-    dlgproc = MakeProcInstance_DLG( ShowInfoProc, Instance );
+    dlgproc = MakeProcInstance_DLG( ShowInfoDlgProc, Instance );
     JDialogBoxParam( Instance, "PEEKWIN", (HWND)hwnd, dlgproc, (LPARAM)framed );
     FreeProcInstance_DLG( dlgproc );
 
 } /* ShowFramedInfo */
 
 /*
- * ShowSelectedDialog - show all selected windows
+ * ShowSelectedDialogDlgProc - show all selected windows
  */
-INT_PTR CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        resdata[256], ch;
     const char  *errstr;
@@ -364,7 +364,7 @@ INT_PTR CALLBACK ShowSelectedDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
     }
     return( TRUE );
 
-} /* ShowSelectedDialog */
+} /* ShowSelectedDialogDlgProc */
 
 /*
  * DoShowSelectedDialog - start SELETEDWINS dialog
@@ -381,7 +381,7 @@ void DoShowSelectedDialog( HWND hwnd, BOOL *spyall )
         tmpWndList = MemAlloc( WindowCount * sizeof( HWND ) );
         memcpy( tmpWndList, WindowList, WindowCount * sizeof( HWND ) );
     }
-    dlgproc = MakeProcInstance_DLG( ShowSelectedDialog, Instance );
+    dlgproc = MakeProcInstance_DLG( ShowSelectedDialogDlgProc, Instance );
     rc = JDialogBox( ResInstance, "SELECTEDWINS", hwnd, dlgproc );
     if( rc ) {
         *spyall = tmpSpyAll;

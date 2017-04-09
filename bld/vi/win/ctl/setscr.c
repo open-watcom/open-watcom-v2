@@ -40,7 +40,7 @@
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK SetScrProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK SetScrDlgProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #define FILEENDSTRINGWIDTH      200
 
@@ -137,9 +137,9 @@ static void setdlgDataDefaults( void )
 }
 
 /*
- * SetScrProc - processes messages for the Data Control Dialog
+ * SetScrDlgProc - processes messages for the Data Control Dialog
  */
-WINEXPORT BOOL CALLBACK SetScrProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK SetScrDlgProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_INITDIALOG:
@@ -182,7 +182,7 @@ bool GetSetScrDialog( void )
     DLGPROC     dlgproc;
     bool        rc;
 
-    dlgproc = MakeProcInstance_DLG( SetScrProc, InstanceHandle );
+    dlgproc = MakeProcInstance_DLG( SetScrDlgProc, InstanceHandle );
     rc = DialogBox( InstanceHandle, "SETSCR", root_window_id, dlgproc );
     FreeProcInstance_DLG( dlgproc );
 

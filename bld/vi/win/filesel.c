@@ -38,9 +38,7 @@
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT UINT_PTR CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-
-typedef UINT (CALLBACK *OPENHOOKTYPE)( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static char *filterList = "C/C++ Files (*.c;*.h;*.cpp;*.hpp;*.cxx;*.hxx;*.inl)\0*.c;*.h;*.cpp;*.hpp;*.cxx;*.hxx;*.inl\0"
                           "C Files (*.c;*.h)\0*.c;*.h\0"
@@ -63,7 +61,7 @@ static char *filterList = "C/C++ Files (*.c;*.h;*.cpp;*.hpp;*.cxx;*.hxx;*.inl)\0
                           "\0";
 static char *FileNameList;
 
-WINEXPORT UINT_PTR CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     unsigned                    len;
 #ifdef __WINDOWS_386__
@@ -136,7 +134,7 @@ vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool wan
         of.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER;
     } else {
         of.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_ENABLEHOOK;
-        of.lpfnHook = MakeProcInstance_OFNHOOK( OpenHook, InstanceHandle );
+        of.lpfnHook = MakeProcInstance_OFNHOOK( OpenOFNHookProc, InstanceHandle );
     }
     rc = GetOpenFileName( &of ) != 0;
     filemask = of.nFilterIndex;
@@ -188,7 +186,7 @@ vi_rc SelectFileSave( char *result )
         of.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY | OFN_NOREADONLYRETURN | OFN_EXPLORER;
     } else {
         of.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY | OFN_NOREADONLYRETURN | OFN_ENABLEHOOK;
-        of.lpfnHook = MakeProcInstance_OFNHOOK( OpenHook, InstanceHandle );
+        of.lpfnHook = MakeProcInstance_OFNHOOK( OpenOFNHookProc, InstanceHandle );
     }
     doit = GetSaveFileName( &of );
     if( !is_chicago ) {

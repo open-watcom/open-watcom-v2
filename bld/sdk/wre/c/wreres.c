@@ -81,7 +81,7 @@
 /* external function prototypes                                             */
 /****************************************************************************/
 WINEXPORT LRESULT CALLBACK WREResWndProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT INT_PTR CALLBACK WREResInfoProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WREResInfoDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -1203,7 +1203,7 @@ bool WREInitResources( HINSTANCE inst )
 {
     WREResInfoBrush = CreateSolidBrush( GetSysColor( COLOR_BTNFACE ) );
     WREAppInst = inst;
-    WREResInfoWinProc = MakeProcInstance_DLG( WREResInfoProc, inst );
+    WREResInfoWinProc = MakeProcInstance_DLG( WREResInfoDlgProc, inst );
     return( WREInitStaticVars() );
 }
 
@@ -1227,7 +1227,7 @@ bool WRECreateResInfoWindow( WREResInfo *info )
     return( TRUE );
 }
 
-INT_PTR CALLBACK WREResInfoProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WREResInfoDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WREResInfo  *info;
     BOOL        ret;

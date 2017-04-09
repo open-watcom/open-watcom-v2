@@ -52,9 +52,9 @@
 
 /* Local Windows CALLBACK function prototypes */
 #ifdef __WIN__
-WINEXPORT BOOL CALLBACK GrepListProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK GrepListDlgProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam );
 #ifdef __NT__
-WINEXPORT BOOL CALLBACK GrepListProc95( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam );
 #endif
 #endif
 
@@ -269,7 +269,7 @@ static void getAllFiles( HWND dlg, char **files, int *count )
 
 } /* editFiles */
 
-WINEXPORT BOOL CALLBACK GrepListProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK GrepListDlgProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     static char         **fileList;
     static int          fileCount;
@@ -321,11 +321,11 @@ WINEXPORT BOOL CALLBACK GrepListProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM 
     }
     return( FALSE );
 
-} /* GrepListProc */
+} /* GrepListDlgProc */
 
   #ifdef __NT__
 
-WINEXPORT BOOL CALLBACK GrepListProc95( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     static char         **fileList;
     static int          fileCount;
@@ -393,7 +393,7 @@ WINEXPORT BOOL CALLBACK GrepListProc95( HWND dlg, UINT msg, WPARAM wparam, LPARA
     }
     return( FALSE );
 
-} /* GrepListProc95 */
+} /* GrepListDlgProc95 */
 
   #endif
 
@@ -404,11 +404,11 @@ static vi_rc doGREP( const char *dirlist )
 
   #ifdef __NT__
     if( LoadCommCtrl() ) {
-        dlgproc = MakeProcInstance_DLG( GrepListProc95, InstanceHandle );
+        dlgproc = MakeProcInstance_DLG( GrepListDlgProc95, InstanceHandle );
         rc = DialogBoxParam( InstanceHandle, "GREPLIST95", root_window_id, dlgproc, (LPARAM)dirlist );
     } else {
   #endif
-        dlgproc = MakeProcInstance_DLG( GrepListProc, InstanceHandle );
+        dlgproc = MakeProcInstance_DLG( GrepListDlgProc, InstanceHandle );
         rc = DialogBoxParam( InstanceHandle, "GREPLIST", root_window_id, dlgproc, (LPARAM)dirlist );
   #ifdef __NT__
     }

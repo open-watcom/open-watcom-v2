@@ -49,6 +49,7 @@
 #include "wstrlist.hpp"
 #include "wfilenam.hpp"
 #include "wwindow.hpp"
+#include "wclbproc.h"
 
 #include "clibext.h"
 
@@ -539,20 +540,16 @@ UINT_PTR CALLBACK AddSrcDlgProc95( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
                     const char *caption, const char *filters  )
 {
-    static DWORD        last_filter_index = 1L;
-    OPENFILENAME        of;
-    int                 rc;
-    char                fname[256];
-    char                 drive[_MAX_DRIVE];
-    char                 dir[_MAX_DIR];
-    char                 newpath[_MAX_PATH];
+    static DWORD    last_filter_index = 1L;
+    OPENFILENAME    of;
+    int             rc;
+    char            fname[256];
+    char            drive[_MAX_DRIVE];
+    char            dir[_MAX_DIR];
+    char            newpath[_MAX_PATH];
 
     _splitpath( info->tgt_file, drive, dir, NULL, NULL );
     _makepath( newpath, drive, dir, NULL, NULL );
-
-    typedef UINT    (CALLBACK *CallbackFnType)(HWND, UINT, WPARAM, LPARAM);
-
-
     fname[0] = 0;
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
@@ -566,9 +563,9 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
     of.lpstrTitle = caption;
     of.Flags = OFN_HIDEREADONLY | OFN_ENABLETEMPLATE | OFN_ENABLEHOOK;
 #ifdef __WINDOWS__
-    of.lpfnHook = (CallbackFnType)MakeProcInstance( (FARPROC)AddSrcDlgProc, hinst );
+    of.lpfnHook = MakeProcInstance_OFNHOOK( AddSrcDlgProc, hinst );
 #else
-    of.lpfnHook = (LPOFNHOOKPROC)AddSrcDlgProc;
+    of.lpfnHook = AddSrcDlgProc;
 #endif
 #if defined( __NT__ )
   #if !defined( _WIN64 )
@@ -578,7 +575,7 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
   #endif
         of.lpTemplateName = "ADD_SRC_DLG_95";
         of.Flags |= OFN_EXPLORER;
-        of.lpfnHook = (LPOFNHOOKPROC)AddSrcDlgProc95;
+        of.lpfnHook = AddSrcDlgProc95;
   #if !defined( _WIN64 )
     }
   #endif
@@ -616,5 +613,3 @@ int GetNewFiles( WWindow *parent, WString *results, const char *caption,
     info.tgt_file = tgt_file;
     return( fileSelectDlg( hinst, owner, &info, caption, filters ) );
 }
-
-

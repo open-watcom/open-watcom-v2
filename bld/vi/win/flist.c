@@ -37,7 +37,7 @@
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK FileListProc( HWND dlg, UINT msg, WPARAM w, LPARAM l );
+WINEXPORT INT_PTR CALLBACK FileListDlgProc( HWND dlg, UINT msg, WPARAM w, LPARAM l );
 
 static info *findInfo( char *file_name )
 {
@@ -105,7 +105,7 @@ static int fillBox( HWND list_box )
     return( count );
 }
 
-WINEXPORT BOOL CALLBACK FileListProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK FileListDlgProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HWND    list_box;
     bool    (*func)( info * );
@@ -156,7 +156,7 @@ vi_rc EditFileFromList( void )
     DLGPROC     dlgproc;
     vi_rc       rc;
 
-    dlgproc = MakeProcInstance_DLG( FileListProc, InstanceHandle );
+    dlgproc = MakeProcInstance_DLG( FileListDlgProc, InstanceHandle );
     rc = DialogBox( InstanceHandle, "FILELIST", root_window_id, dlgproc );
     FreeProcInstance_DLG( dlgproc );
     return( rc );

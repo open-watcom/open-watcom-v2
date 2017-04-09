@@ -65,8 +65,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT INT_PTR CALLBACK WMenuEditProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT INT_PTR CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
+WINEXPORT INT_PTR CALLBACK WMenuEditDlgProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WTestDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 
 extern UINT WClipbdFormat;
 extern UINT WItemClipbdFormat;
@@ -93,7 +93,7 @@ void WInitEditWindows( HINSTANCE inst )
 
     WEditWinColor = GetSysColor( COLOR_BTNFACE );
     WEditWinBrush = CreateSolidBrush( WEditWinColor );
-    WMenuEditWinProc = MakeProcInstance_DLG( WMenuEditProc, inst );
+    WMenuEditWinProc = MakeProcInstance_DLG( WMenuEditDlgProc, inst );
 }
 
 void WFiniEditWindows( void )
@@ -958,7 +958,7 @@ static bool WShiftEntry( WMenuEditInfo *einfo, bool left )
     return( ok );
 }
 
-WINEXPORT INT_PTR CALLBACK WMenuEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WMenuEditDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WMenuEditInfo       *einfo;
     HWND                win;
@@ -1094,7 +1094,7 @@ WINEXPORT INT_PTR CALLBACK WMenuEditProc( HWND hDlg, UINT message, WPARAM wParam
     return( ret );
 }
 
-WINEXPORT INT_PTR CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WTestDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     RECT        r;
 
@@ -1116,7 +1116,7 @@ void WInitEditDlg( HINSTANCE inst, HWND parent )
 {
     DLGPROC     dlgproc;
 
-    dlgproc = MakeProcInstance_DLG( WTestProc, inst );
+    dlgproc = MakeProcInstance_DLG( WTestDlgProc, inst );
     JCreateDialog( inst, "WMenuEditDLG", parent, dlgproc );
     FreeProcInstance_DLG( dlgproc );
 }

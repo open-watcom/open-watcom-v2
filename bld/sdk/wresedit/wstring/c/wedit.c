@@ -66,8 +66,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT INT_PTR CALLBACK WStringEditProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT INT_PTR CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
+WINEXPORT INT_PTR CALLBACK WStringEditDlgProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WTestDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 
 extern UINT WClipbdFormat;
 extern UINT WItemClipbdFormat;
@@ -95,7 +95,7 @@ void WInitEditWindows( HINSTANCE inst )
 
     WEditWinColor = GetSysColor( COLOR_BTNFACE );
     WEditWinBrush = CreateSolidBrush( WEditWinColor );
-    WStringEditWinProc = MakeProcInstance_DLG( WStringEditProc, inst );
+    WStringEditWinProc = MakeProcInstance_DLG( WStringEditDlgProc, inst );
 }
 
 void WFiniEditWindows( void )
@@ -774,7 +774,7 @@ void WHandleSelChange( WStringEditInfo *einfo )
     WDoHandleSelChange( einfo, FALSE, FALSE );
 }
 
-WINEXPORT INT_PTR CALLBACK WStringEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WStringEditDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WStringEditInfo     *einfo;
     BOOL                ret;
@@ -878,7 +878,7 @@ WINEXPORT INT_PTR CALLBACK WStringEditProc( HWND hDlg, UINT message, WPARAM wPar
     return( ret );
 }
 
-WINEXPORT INT_PTR CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WTestDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     RECT        r;
 
@@ -900,7 +900,7 @@ void WInitEditDlg( HINSTANCE inst, HWND parent )
 {
     DLGPROC     dlgproc;
 
-    dlgproc = MakeProcInstance_DLG( WTestProc, inst );
+    dlgproc = MakeProcInstance_DLG( WTestDlgProc, inst );
     JCreateDialog( inst, "WStringEditDLG", parent, dlgproc );
     FreeProcInstance_DLG( dlgproc );
 }

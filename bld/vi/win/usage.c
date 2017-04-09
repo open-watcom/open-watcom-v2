@@ -36,16 +36,16 @@
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK UsageProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK UsageDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static char     **usageList;
 static int      usageCnt;
 static char     *usageStr;
 
 /*
- * UsageProc - callback routine for usage dialog
+ * UsageDlgProc - callback routine for usage dialog
  */
-WINEXPORT BOOL CALLBACK UsageProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK UsageDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i;
     HFONT       font;
@@ -76,7 +76,7 @@ WINEXPORT BOOL CALLBACK UsageProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
     }
     return( FALSE );
 
-} /* UsageProc */
+} /* UsageDlgProc */
 
 /*
  * UsageDialog - show the startup dialog
@@ -89,7 +89,7 @@ void UsageDialog( char **list, char *msg, int cnt )
     usageStr = msg;
     usageCnt = cnt;
 
-    dlgproc = MakeProcInstance_DLG( UsageProc, InstanceHandle );
+    dlgproc = MakeProcInstance_DLG( UsageDlgProc, InstanceHandle );
     DialogBox( InstanceHandle, "Usage", root_window_id, dlgproc );
     FreeProcInstance_DLG( dlgproc );
 

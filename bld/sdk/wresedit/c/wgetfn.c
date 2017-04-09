@@ -50,7 +50,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT UINT CALLBACK WOpenHookProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT UINT_PTR CALLBACK WOpenOFNHookProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -213,7 +213,7 @@ char *WGetFileName( WGetFileStruct *gf, HWND owner, DWORD flags, WGetFileAction 
     wofn.lpstrTitle = WFnTitle;
     wofn.Flags = flags;
 #if !defined( __NT__ )
-    wofn.lpfnHook = MakeProcInstance_OFNHOOK( WOpenHookProc, app_inst );
+    wofn.lpfnHook = MakeProcInstance_OFNHOOK( WOpenOFNHookProc, app_inst );
 #endif
 
 #if 0
@@ -270,7 +270,7 @@ char *WGetFileName( WGetFileStruct *gf, HWND owner, DWORD flags, WGetFileAction 
 }
 
 #ifndef __NT__
-WINEXPORT UINT CALLBACK WOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT UINT_PTR CALLBACK WOpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char    *title;
 

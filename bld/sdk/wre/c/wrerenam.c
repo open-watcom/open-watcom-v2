@@ -64,7 +64,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT INT_PTR CALLBACK WREResRenameProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WREResRenameDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -203,7 +203,7 @@ bool WREGetNewName( WREResRenameInfo *info )
     dialog_owner = WREGetMainWindowHandle();
     app_inst = WREGetAppInstance();
 
-    dlgproc = MakeProcInstance_DLG( WREResRenameProc, app_inst );
+    dlgproc = MakeProcInstance_DLG( WREResRenameDlgProc, app_inst );
 
     modified = JDialogBoxParam( app_inst, "WRERenameResource", dialog_owner, dlgproc, (LPARAM)info );
 
@@ -228,7 +228,7 @@ void WREGetWinInfo( HWND hDlg, WREResRenameInfo *info )
     }
 }
 
-INT_PTR CALLBACK WREResRenameProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WREResRenameDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WREResRenameInfo    *info;
     BOOL                ret;

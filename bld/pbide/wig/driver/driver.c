@@ -40,7 +40,7 @@ static char     sruName[ _MAX_PATH ];
 static char     dllName[ _MAX_PATH ];
 static char     parentName[ _MAX_PATH ];
 
-BOOL CALLBACK DriverDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK DriverDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WatIDEErrInfo       *errinfo;
     char                buffer[256];
@@ -112,21 +112,21 @@ BOOL CALLBACK DriverDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 
 int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow)
 {
-    FARPROC             fp;
+    DLGPROC             dlgproc;
     unsigned            ver;
 
     currinst = currinst;
     previnst = previnst;
     cmdshow = cmdshow;
     cmdline = cmdline;
-    
+
     ver = WatIDE_GetVersion();
     if( ver != WAT_IDE_DLL_CUR_VER ) {
         MessageBox( NULL, "Wrong DLL version", "Error", MB_OK );
     } else {
-        fp = MakeProcInstance( (FARPROC)DriverDlgProc, currinst );
-        DialogBox( currinst, "DRIVER_DLG", NULL, (DLGPROC)fp );
-        FreeProcInstance( fp );
+        dlgproc = (DLGPROC)MakeProcInstance( (FARPROC)DriverDlgProc, currinst );
+        DialogBox( currinst, "DRIVER_DLG", NULL, dlgproc );
+        FreeProcInstance( (FARPROC)dlgproc );
     }
     return( 0 );
 }

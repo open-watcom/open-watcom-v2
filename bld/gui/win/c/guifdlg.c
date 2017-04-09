@@ -59,7 +59,9 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT UINT CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+#ifndef __OS2_PM__
+WINEXPORT UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+#endif
 
 #ifndef __OS2_PM__
 static  char    *LastPath; // this is set in NT for the sake of viper
@@ -255,7 +257,7 @@ static char *GetStrFromEdit( HWND hDlg, gui_ctl_id id )
 #define PATH_STATIC_CONTROL 1088
 #endif
 
-UINT CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     UINT        ret;
 
@@ -342,7 +344,7 @@ int GUIGetFileName( gui_window *wnd, open_file_name *ofn )
     wofn.lpstrInitialDir = ofn->initial_dir;
     wofn.lpfnHook = (LPOFNHOOKPROC)NULL;
     if( hookFileDlg ) {
-        wofn.lpfnHook = MakeProcInstance_OFNHOOK( OpenHook, GUIMainHInst );
+        wofn.lpfnHook = MakeProcInstance_OFNHOOK( OpenOFNHookProc, GUIMainHInst );
     }
 
 #if defined( HAVE_DRIVES )

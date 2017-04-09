@@ -43,7 +43,7 @@
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK SetFSDlgProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #define VI_LANG_FIRST   VI_LANG_LANG0
 #define VI_LANG_LAST    VI_LANG_LANG0 + LANG_MAX - 1
@@ -589,9 +589,9 @@ static long insertFT( HWND hwndDlg )
 }
 
 /*
- * SetFSProc - processes messages for the Data Control Dialog
+ * SetFSDlgProc - processes messages for the Data Control Dialog
  */
-WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK SetFSDlgProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         index;
     HWND        ctlhwnd;
@@ -657,7 +657,7 @@ bool GetSetFSDialog( void )
     DLGPROC     dlgproc;
     bool        rc;
 
-    dlgproc = MakeProcInstance_DLG( SetFSProc, InstanceHandle );
+    dlgproc = MakeProcInstance_DLG( SetFSDlgProc, InstanceHandle );
     rc = DialogBox( InstanceHandle, "SETFS", root_window_id, dlgproc );
     FreeProcInstance_DLG( dlgproc );
 

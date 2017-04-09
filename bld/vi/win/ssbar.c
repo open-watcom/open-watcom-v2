@@ -42,7 +42,7 @@
 
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT LRESULT CALLBACK StaticSubclassProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-WINEXPORT BOOL CALLBACK SSDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK SSDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #define NARRAY( a )             (sizeof( a ) / sizeof( a[0] ))
 
@@ -373,7 +373,7 @@ static void removeSubclasses( HWND hwnd )
 /*
  * SSDlgProc - callback routine for status bar settings drag & drop dialog
  */
-WINEXPORT BOOL CALLBACK SSDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK SSDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     wparam = wparam;

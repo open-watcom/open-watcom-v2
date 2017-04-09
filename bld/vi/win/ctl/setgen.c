@@ -42,7 +42,7 @@
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK SetGenDlgProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #define WORDWIDTH               30
 #define TMPDIRWIDTH             129
@@ -280,9 +280,9 @@ static void setdlgDataDefaults( void )
 }
 
 /*
- * SetGenProc - processes messages for the Data Control Dialog
+ * SetGenDlgProc - processes messages for the Data Control Dialog
  */
-WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK SetGenDlgProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_INITDIALOG:
@@ -328,7 +328,7 @@ bool GetSetGenDialog( void )
     DLGPROC     dlgproc;
     bool        rc;
 
-    dlgproc = MakeProcInstance_DLG( SetGenProc, InstanceHandle );
+    dlgproc = MakeProcInstance_DLG( SetGenDlgProc, InstanceHandle );
     rc = DialogBox( InstanceHandle, "SETGEN", root_window_id, dlgproc );
     FreeProcInstance_DLG( dlgproc );
 

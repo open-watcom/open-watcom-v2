@@ -415,8 +415,7 @@ void WdeHdrGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-bool WdeHdrDefineHook( HWND hDlg, UINT message,
-                       WPARAM wParam, LPARAM lParam, DialogStyle mask )
+bool WdeHdrDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
     bool processed;
 

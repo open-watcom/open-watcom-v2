@@ -44,7 +44,7 @@
 #ifdef __NT__
 WINEXPORT int CALLBACK BrowseCallbackProc( HWND hwnd, UINT msg, LPARAM lparam, LPARAM data );
 #endif
-WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #ifdef __NT__
 typedef LPITEMIDLIST    (CALLBACK *PFNSHBFF)( LPBROWSEINFO );
@@ -80,7 +80,7 @@ WINEXPORT int CALLBACK BrowseCallbackProc( HWND hwnd, UINT msg, LPARAM lparam, L
 /*
  * snoopDlgProc - callback routine for snoop dialog
  */
-WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     // int                 i;
     int                 cmd;

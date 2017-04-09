@@ -42,12 +42,12 @@
 #ifndef NOSPLASH
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK StartupProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK StartupDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 /*
- * StartupProc - callback routine for startup modeless dialog
+ * StartupDlgProc - callback routine for startup modeless dialog
  */
-WINEXPORT BOOL CALLBACK StartupProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK StartupDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     wparam = wparam;
@@ -74,7 +74,7 @@ WINEXPORT BOOL CALLBACK StartupProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
     }
     return( FALSE );
 
-} /* StartupProc */
+} /* StartupDlgProc */
 
 static HWND     startDlgWindow;
 static DLGPROC  startDlgProc;
@@ -87,7 +87,7 @@ static DLGPROC  startDlgProc;
 void ShowStartupDialog( void )
 {
 #ifndef NOSPLASH
-    startDlgProc = MakeProcInstance_DLG( StartupProc, InstanceHandle );
+    startDlgProc = MakeProcInstance_DLG( StartupDlgProc, InstanceHandle );
     startDlgWindow = CreateDialog( InstanceHandle, "Startup", (HWND)NULLHANDLE, startDlgProc );
 #endif
 

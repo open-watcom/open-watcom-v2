@@ -223,7 +223,7 @@ static void enableChoices( HWND hwnd, BOOL enable ) {
 /*
  * ThreadCtlProc
  */
-BOOL CALLBACK ThreadPriorityDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK ThreadPriorityDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD                cmd;
     ThreadPriorityInfo  *info;

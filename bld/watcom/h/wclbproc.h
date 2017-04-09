@@ -35,13 +35,13 @@ extern "C" {
 #endif
 
 #if defined( __WINDOWS_386__ )
-typedef BOOL                (CALLBACK *DLGPROCx)(HWND,UINT,WPARAM,LPARAM);
+typedef INT_PTR             (CALLBACK *DLGPROCx)(HWND,UINT,WPARAM,LPARAM);
 typedef void                (CALLBACK *FARPROCx)(void);
 typedef int                 (CALLBACK *FONTENUMPROCx)(const LOGFONT *,const TEXTMETRIC *,int,LPARAM);
 typedef int                 (CALLBACK *OLDFONTENUMPROCx)(const ENUMLOGFONT *,const NEWTEXTMETRIC *,int,LPARAM);
 typedef LRESULT             (CALLBACK *HOOKPROCx)(int,WPARAM,LPARAM);
 typedef BOOL                (CALLBACK *WNDENUMPROCx)(HWND,LPARAM);
-typedef UINT                (CALLBACK *__CDHOOKPROCx)(HWND,UINT,WPARAM,LPARAM);
+typedef UINT_PTR            (CALLBACK *__CDHOOKPROCx)(HWND,UINT,WPARAM,LPARAM);
 typedef LRESULT             (CALLBACK *WNDPROCx)(HWND,UINT,WPARAM,LPARAM);
 typedef __CDHOOKPROCx       LPOFNHOOKPROCx;
 #else

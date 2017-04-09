@@ -281,7 +281,7 @@ void RefreshAdd( HWND dialog, HWND lbhwnd )
     SetStaticText( dialog, ADD_TOTAL, buf );
 }
 
-BOOL FAR PASCAL SetCodeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR FAR PASCAL SetCodeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     DWORD       size;
     DWORD       info;

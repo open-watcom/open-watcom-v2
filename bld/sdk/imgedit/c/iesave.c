@@ -48,7 +48,7 @@
 #define SCANLINE_SIZE   32
 #define MAX_CHUNK       32768
 
-WINEXPORT extern UINT_PTR CALLBACK SaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT UINT_PTR CALLBACK SaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static char     initialDir[_MAX_PATH];
 
@@ -216,9 +216,9 @@ static void checkForPalExt( char *filename )
 } /* checkForPalExt */
 
 /*
- * SaveHook - hook used called by common dialog for 3D controls
+ * SaveOFNHookProc - hook used called by common dialog for 3D controls
  */
-UINT_PTR CALLBACK SaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+UINT_PTR CALLBACK SaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     wparam = wparam;
     lparam = lparam;
@@ -241,7 +241,7 @@ UINT_PTR CALLBACK SaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     }
     return( FALSE );
 
-} /* SaveHook */
+} /* SaveOFNHookProc */
 
 /*
  * getSaveFName - get the name of the file to be saved
@@ -286,7 +286,7 @@ static BOOL getSaveFName( char *fname, int imgtype )
     of.lpstrInitialDir = initialDir;
 #if !defined( __NT__ )
     /* Important! Do not use hook in WIN32, you will not get the nice dialog! */
-    of.lpfnHook = MakeProcInstance_OFNHOOK( SaveHook, Instance );
+    of.lpfnHook = MakeProcInstance_OFNHOOK( SaveOFNHookProc, Instance );
     of.Flags = OFN_ENABLEHOOK;
 #endif
     of.Flags |= OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
@@ -1177,7 +1177,7 @@ static BOOL getSavePalName( char *fname )
     of.Flags = OFN_SHOWHELP | OFN_OVERWRITEPROMPT;
 #if !defined( __NT__ )
     of.Flags |= OFN_ENABLEHOOK;
-    of.lpfnHook = MakeProcInstance_OFNHOOK( SaveHook, Instance );
+    of.lpfnHook = MakeProcInstance_OFNHOOK( SaveOFNHookProc, Instance );
 #endif
     rc = GetSaveFileName( &of );
 #ifndef __NT__

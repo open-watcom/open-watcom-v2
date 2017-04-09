@@ -74,7 +74,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT INT_PTR CALLBACK WREResDeleteProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WREResDeleteDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -287,7 +287,7 @@ bool WREQueryDeleteName( char *name )
     dialog_owner = WREGetMainWindowHandle();
     app_inst = WREGetAppInstance();
 
-    dlgproc = MakeProcInstance_DLG( WREResDeleteProc, app_inst );
+    dlgproc = MakeProcInstance_DLG( WREResDeleteDlgProc, app_inst );
 
     modified = JDialogBoxParam( app_inst, "WREDeleteResource", dialog_owner, dlgproc, (LPARAM)name );
 
@@ -301,7 +301,7 @@ void WRESetWinInfo( HWND hDlg, char *name )
     WRESetEditWithStr( GetDlgItem( hDlg, IDM_DELNAME ), name );
 }
 
-INT_PTR CALLBACK WREResDeleteProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WREResDeleteDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     char    *name;
     BOOL    ret;

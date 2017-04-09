@@ -36,7 +36,7 @@
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK GotoLineDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK GotoLineDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static char     lineStr[20];
 static char     lineLen = sizeof( lineStr ) - 1;
@@ -45,7 +45,7 @@ static linenum  *lineVal;
 /*
  * GotoLineDlgProc - callback routine for goto line dialog
  */
-WINEXPORT BOOL CALLBACK GotoLineDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK GotoLineDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     switch( msg ) {

@@ -36,10 +36,10 @@
 #include "jdlg.h"
 
 
+#define BUF_SIZE        100
+
 /* Local Window callback functions prototypes */
 WINEXPORT INT_PTR CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-
-#define BUF_SIZE        100
 
 WINEXPORT INT_PTR CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {

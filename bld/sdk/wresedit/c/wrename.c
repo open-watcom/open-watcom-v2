@@ -65,7 +65,7 @@ typedef struct WResRenameInfo {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT INT_PTR CALLBACK WResRenameProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WResRenameDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -112,7 +112,7 @@ bool WGetNewName( HWND parent, WResRenameInfo *info )
 
     app_inst = WGetEditInstance();
 
-    dlgproc = MakeProcInstance_DLG( WResRenameProc, app_inst );
+    dlgproc = MakeProcInstance_DLG( WResRenameDlgProc, app_inst );
 
     modified = JDialogBoxParam( app_inst, "WRenameResource", parent, dlgproc, (LPARAM)info );
 
@@ -138,7 +138,7 @@ void WGetWinInfo( HWND hDlg, WResRenameInfo *info )
     }
 }
 
-WINEXPORT INT_PTR CALLBACK WResRenameProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WResRenameDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WResRenameInfo  *info;
     BOOL            ret;

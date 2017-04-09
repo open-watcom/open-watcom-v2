@@ -37,15 +37,15 @@
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK TagListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK TagListDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static int      tagCnt;
 static char     **tagList;
 
 /*
- * TagListProc - handle the tag selection dialog
+ * TagListDlgProc - handle the tag selection dialog
  */
-WINEXPORT BOOL CALLBACK TagListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK TagListDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i;
 
@@ -85,7 +85,7 @@ WINEXPORT BOOL CALLBACK TagListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
     }
     return( FALSE );
 
-} /* TagListProc */
+} /* TagListDlgProc */
 
 /*
  * PickATag - create dialog to select a specific tag
@@ -98,7 +98,7 @@ int PickATag( int clist, char **list, const char *tagname )
     tagCnt = clist;
     tagList = list;
 
-    dlgproc = MakeProcInstance_DLG( TagListProc, InstanceHandle );
+    dlgproc = MakeProcInstance_DLG( TagListDlgProc, InstanceHandle );
     rc = DialogBoxParam( InstanceHandle, "TAGS", root_window_id, dlgproc, (LPARAM)tagname );
     FreeProcInstance_DLG( dlgproc );
     return( rc );

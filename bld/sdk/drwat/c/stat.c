@@ -436,7 +436,7 @@ void DoStatDialog( HWND hwnd )
 {
     DLGPROC     dlgproc;
 
-    dlgproc = MakeProcInstance_DLG( StatDialog, Instance );
+    dlgproc = MakeProcInstance_DLG( StatDialogDlgProc, Instance );
     JDialogBox( Instance, "TASKSTATUS", hwnd, dlgproc );
     FreeProcInstance_DLG( dlgproc );
 

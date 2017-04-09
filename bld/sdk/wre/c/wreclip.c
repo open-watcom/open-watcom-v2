@@ -70,7 +70,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT INT_PTR CALLBACK WREResPasteProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WREResPasteDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -973,7 +973,7 @@ bool WREQueryPasteReplace( WResID *name, uint_16 type_id, bool *replace )
     *replace = FALSE;
     dialog_owner  = WREGetMainWindowHandle();
     inst = WREGetAppInstance();
-    dlgproc = MakeProcInstance_DLG( WREResPasteProc, inst );
+    dlgproc = MakeProcInstance_DLG( WREResPasteDlgProc, inst );
 
     ret = JDialogBoxParam( inst, "WREPaste", dialog_owner, dlgproc, (LPARAM)&pdata );
 
@@ -1006,7 +1006,7 @@ static void WRESetPasteInfo( HWND hDlg, WREPasteData *pdata )
     WRESetEditWithWResID( GetDlgItem( hDlg, IDM_PASTE_NAME ), pdata->name );
 }
 
-INT_PTR CALLBACK WREResPasteProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WREResPasteDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WREPasteData        *pdata;
     BOOL                ret;

@@ -50,7 +50,7 @@
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT UINT CALLBACK WdeOpenHookProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT UINT_PTR CALLBACK WdeOpenOFNHookProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -267,7 +267,7 @@ char *WdeGetFileName( WdeGetFileStruct *gf, DWORD flags, WdeGetFileNameAction ac
     wdeofn.lpstrTitle = wdefntitle;
     wdeofn.Flags = flags;
 #if !defined( __NT__ )
-    wdeofn.lpfnHook = MakeProcInstance_OFNHOOK( WdeOpenHookProc, app_inst );
+    wdeofn.lpfnHook = MakeProcInstance_OFNHOOK( WdeOpenOFNHookProc, app_inst );
 #endif
 
 #if 0
@@ -329,7 +329,7 @@ char *WdeGetFileName( WdeGetFileStruct *gf, DWORD flags, WdeGetFileNameAction ac
     return( WdeStrDup( wde_file_name ) );
 }
 
-UINT CALLBACK WdeOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+UINT_PTR CALLBACK WdeOpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char    *title;
 

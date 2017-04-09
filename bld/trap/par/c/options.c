@@ -39,7 +39,7 @@
 extern int              NumPrinters(void);
 extern unsigned         PrnAddress(int);
 
-WINEXPORT BOOL CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HWND edit;
     int num = NumPrinters();

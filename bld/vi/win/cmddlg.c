@@ -37,7 +37,7 @@
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static char     *cmdStr;
 static int      cmdLen;
@@ -45,7 +45,7 @@ static int      cmdLen;
 /*
  * CmdDlgProc - callback routine for command dialog
  */
-WINEXPORT BOOL CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int                 curr;
     int                 i;

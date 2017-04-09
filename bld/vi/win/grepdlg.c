@@ -36,7 +36,7 @@
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK GrepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK GrepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static DLGPROC  grepProc;
 static HWND     grepHwnd;
@@ -45,7 +45,7 @@ static bool     cancelPressed;
 /*
  * GrepDlgProc - callback routine for grep dialog
  */
-WINEXPORT BOOL CALLBACK GrepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK GrepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     switch( msg ) {

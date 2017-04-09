@@ -345,7 +345,7 @@ static void CheckForRegisterChange( HWND hwnd )
     }
 }
 
-BOOL CALLBACK ChangeRegisterDialogDlgProc( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam)
+INT_PTR CALLBACK ChangeRegisterDialogDlgProc( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam)
 {
     WORD        cmd;
     bool        ret;

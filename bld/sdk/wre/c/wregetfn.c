@@ -51,7 +51,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT UINT_PTR CALLBACK WREOpenHookProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT UINT_PTR CALLBACK WREOpenOFNHookProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -250,7 +250,7 @@ char *WREGetFileName( WREGetFileStruct *gf, DWORD flags, WREGetFileAction action
     wreofn.lpstrInitialDir = wre_initial_dir;
     wreofn.lpstrTitle = wrefntitle;
     wreofn.Flags = flags;
-    wreofn.lpfnHook = MakeProcInstance_OFNHOOK( WREOpenHookProc, app_inst );
+    wreofn.lpfnHook = MakeProcInstance_OFNHOOK( WREOpenOFNHookProc, app_inst );
 
 #if 0
     wreofn.nFileOffset = 0L;
@@ -308,7 +308,7 @@ char *WREGetFileName( WREGetFileStruct *gf, DWORD flags, WREGetFileAction action
     return( WREStrDup( wre_file_name ) );
 }
 
-UINT_PTR CALLBACK WREOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+UINT_PTR CALLBACK WREOpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char    *title;
 

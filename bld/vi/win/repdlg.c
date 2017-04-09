@@ -37,7 +37,7 @@
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static fancy_find findData =
     { -1, -1, NULL, 0, NULL, 0, NULL, 0, NULL, 0, true, false, true, true, false, false };
@@ -45,7 +45,7 @@ static fancy_find findData =
 /*
  * RepDlgProc - callback routine for find & replace dialog
  */
-WINEXPORT BOOL CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int                 curr;
     int                 i;

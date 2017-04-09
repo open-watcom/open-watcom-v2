@@ -49,7 +49,7 @@
 
 
 /* Window callback functions prototypes */
-WINEXPORT UINT_PTR CALLBACK LogSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT UINT_PTR CALLBACK LogSaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 WINEXPORT INT_PTR  CALLBACK LogExistsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 WINEXPORT INT_PTR  CALLBACK ConfigLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
@@ -62,7 +62,7 @@ static WORD             LinesUsed;
 /*
  * LogSaveHook - hook used called by common dialog - for 3D controls
  */
-UINT_PTR CALLBACK LogSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+UINT_PTR CALLBACK LogSaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     wparam = wparam;
     lparam = lparam;
@@ -80,7 +80,7 @@ UINT_PTR CALLBACK LogSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
     }
     return( FALSE );
 
-} /* LogSaveHook */
+} /* LogSaveOFNHookProc */
 
 #endif
 
@@ -110,7 +110,7 @@ static bool getLogName( char *buf, HWND hwnd )
     of.Flags = OFN_HIDEREADONLY;
 #ifndef NOUSE3D
     of.Flags |= OFN_ENABLEHOOK;
-    of.lpfnHook = MakeProcInstance_OFNHOOK( LogSaveHook, LogCurInfo.instance );
+    of.lpfnHook = MakeProcInstance_OFNHOOK( LogSaveOFNHookProc, LogCurInfo.instance );
 #endif
     rc = GetSaveFileName( &of );
 #ifndef NOUSE3D

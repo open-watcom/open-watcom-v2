@@ -55,7 +55,7 @@
 /****************************************************************************/
 
 /* Local Window callback functions prototypes */
-WINEXPORT INT_PTR CALLBACK WdeInfoWndProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WdeInfoWndDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* external variables                                                       */
@@ -171,7 +171,7 @@ bool WdeCreateInfoWindow( HWND main_window, HINSTANCE inst )
         return( FALSE );
     }
 
-    WdeInfoWinProc = MakeProcInstance_DLG( WdeInfoWndProc, inst );
+    WdeInfoWinProc = MakeProcInstance_DLG( WdeInfoWndDlgProc, inst );
 
     WdeInfoColor = GetSysColor( COLOR_BTNFACE );
     WdeInfoBrush = CreateSolidBrush( WdeInfoColor );
@@ -683,7 +683,7 @@ void WdeInfoLookupComboEntry( HWND hWnd, WORD hw )
     WRMemFree( str );
 }
 
-INT_PTR CALLBACK WdeInfoWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeInfoWndDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WORD    w;
     RECT    r;

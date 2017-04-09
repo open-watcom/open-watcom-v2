@@ -111,8 +111,7 @@ static change_resp ChangePrompt( void )
 #ifdef __WIN__
     int     i;
 
-    i = MyMessageBox( root_window_id, "Change this occurence?", "Replace Text",
-                      MB_ICONQUESTION | MB_YESNOCANCEL );
+    i = MyMessageBox( root_window_id, "Change this occurence?", "Replace Text", MB_ICONQUESTION | MB_YESNOCANCEL );
     if( i == IDNO ) {
         return( CHANGE_NO );
     } else if( i == IDCANCEL ) {

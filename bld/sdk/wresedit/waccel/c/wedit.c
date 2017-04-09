@@ -66,8 +66,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT INT_PTR CALLBACK WAcccelEditProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT INT_PTR CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
+WINEXPORT INT_PTR CALLBACK WAcccelEditDlgProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WTestDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -106,7 +106,7 @@ void WInitEditWindows( HINSTANCE inst )
 
     WEditWinColor = GetSysColor( COLOR_BTNFACE );
     WEditWinBrush = CreateSolidBrush( WEditWinColor );
-    WAccelEditWinProc = MakeProcInstance_DLG( WAcccelEditProc, inst );
+    WAccelEditWinProc = MakeProcInstance_DLG( WAcccelEditDlgProc, inst );
 }
 
 void WFiniEditWindows( void )
@@ -798,7 +798,7 @@ void WHandleSelChange( WAccelEditInfo *einfo )
     WDoHandleSelChange( einfo, FALSE, FALSE );
 }
 
-WINEXPORT INT_PTR CALLBACK WAcccelEditProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WAcccelEditDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WAccelEditInfo      *einfo;
     HWND                win;
@@ -919,7 +919,7 @@ WINEXPORT INT_PTR CALLBACK WAcccelEditProc( HWND hDlg, UINT message, WPARAM wPar
     return( ret );
 }
 
-WINEXPORT INT_PTR CALLBACK WTestProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WTestDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     RECT        r;
 
@@ -941,7 +941,7 @@ void WInitEditDlg( HINSTANCE inst, HWND parent )
 {
     DLGPROC     dlgproc;
 
-    dlgproc = MakeProcInstance_DLG( WTestProc, inst );
+    dlgproc = MakeProcInstance_DLG( WTestDlgProc, inst );
     JCreateDialog( inst, "WAccelEditDLG", parent, dlgproc );
     FreeProcInstance_DLG( dlgproc );
 }

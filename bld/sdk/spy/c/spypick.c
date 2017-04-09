@@ -37,9 +37,8 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT INT_PTR CALLBACK PickDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK PickDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
-static DLGPROC  SpyPickInst;
 static HWND     LastFramed;
 static BOOL     Cancelled;
 static BOOL     Picking;
@@ -159,9 +158,9 @@ static void GetWindowID( HWND hwnd, HWND *who, DWORD lparam )
 } /* GetWindowID */
 
 /*
- * PickDialog - select a window
+ * PickDialogDlgProc - select a window
  */
-INT_PTR CALLBACK PickDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK PickDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     RECT    rect;
     RECT    client_rect;
@@ -261,27 +260,28 @@ INT_PTR CALLBACK PickDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     }
     return( TRUE );
 
-} /* PickDialog */
+} /* PickDialogDlgProc */
 
 /*
  * DoPickDialog - start dialog for window selection
  */
 HWND DoPickDialog( ctl_id cmdid )
 {
+    DLGPROC dlgproc;
+
     pickProcCmdId = cmdid;
     ShowWindow( SpyMainWindow, SW_MINIMIZE );
 
     LastFramed = NULL;
     Cancelled = FALSE;
 
-    SpyPickInst = MakeProcInstance_DLG( PickDialog, Instance );
+    dlgproc = MakeProcInstance_DLG( PickDialogDlgProc, Instance );
     if( cmdid == SPY_PEEK_WINDOW ) {
-        JDialogBox( ResInstance, "PEEKMSGS", SpyMainWindow, SpyPickInst );
+        JDialogBox( ResInstance, "PEEKMSGS", SpyMainWindow, dlgproc );
     } else {
-        JDialogBox( ResInstance, "WINDOWPICK", SpyMainWindow, SpyPickInst );
+        JDialogBox( ResInstance, "WINDOWPICK", SpyMainWindow, dlgproc );
     }
-
-    FreeProcInstance_DLG( SpyPickInst );
+    FreeProcInstance_DLG( dlgproc );
     ShowWindow( SpyMainWindow, SW_NORMAL );
     if( !Cancelled ) {
         return( LastFramed );

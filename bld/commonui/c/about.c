@@ -49,12 +49,12 @@
 #endif
 
 /* Window callback functions prototypes */
-WINEXPORT INT_PTR CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 /*
- * AboutProc - callback routine for settings dialog
+ * AboutDlgProc - callback routine for settings dialog
  */
-INT_PTR CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        buff[256];
     LPABOUTINFO pai;
@@ -159,7 +159,7 @@ INT_PTR CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     }
     return( FALSE );
 
-} /* AboutProc */
+} /* AboutDlgProc */
 
 /*
  * DoAbout - show the startup dialog
@@ -168,7 +168,7 @@ void DoAbout( LPABOUTINFO ai )
 {
     DLGPROC     dlgproc;
 
-    dlgproc = MakeProcInstance_DLG( AboutProc, ai->inst );
+    dlgproc = MakeProcInstance_DLG( AboutDlgProc, ai->inst );
     DialogBoxParam( ai->inst, "About", ai->owner, dlgproc, (LPARAM)ai );
     FreeProcInstance_DLG( dlgproc );
 

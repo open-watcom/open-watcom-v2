@@ -220,8 +220,7 @@ void resizeChildWindows( WORD width, WORD height )
 
 } /* resizeChildWindows */
 
-BOOL __export FAR PASCAL AboutDlgProc( HWND hwnd, UINT msg,
-                                UINT wparam, LONG lparam )
+INT_PTR __export FAR PASCAL AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
 

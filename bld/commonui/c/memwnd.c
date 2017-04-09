@@ -61,9 +61,9 @@
 
 
 /* Window callback functions prototypes */
-WINEXPORT INT_PTR CALLBACK OffsetProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK OffsetDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 WINEXPORT LRESULT CALLBACK MemDisplayProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT INT_PTR CALLBACK SegInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK SegInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #define ISCODE( x )     ((x)->disp_type == MEMINFO_CODE_16 || \
                         (x)->disp_type == MEMINFO_CODE_32)
@@ -808,9 +808,9 @@ static void scrollData( HWND hwnd, WORD wparam, WORD pos, MemWndInfo *info )
 
 
 /*
- * OffsetProc
+ * OffsetDlgProc
  */
-INT_PTR CALLBACK OffsetProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK OffsetDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char                buf[41];
     unsigned long       offset;
@@ -882,7 +882,7 @@ INT_PTR CALLBACK OffsetProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     }
     return( TRUE );
 
-} /* OffsetProc */
+} /* OffsetDlgProc */
 
 
 /*
@@ -1053,7 +1053,7 @@ LRESULT CALLBACK MemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             break;
         case MEMINFO_OFFSET:
             inst = GET_HINSTANCE( hwnd );
-            dlgproc = MakeProcInstance_DLG( OffsetProc, inst );
+            dlgproc = MakeProcInstance_DLG( OffsetDlgProc, inst );
             DialogBox( inst, "OFFSETDLG", hwnd, dlgproc );
             FreeProcInstance_DLG( dlgproc );
             break;
@@ -1143,9 +1143,9 @@ static void positionSegInfo( HWND hwnd )
 } /* positionSegInfo */
 
 /*
- * SegInfoProc
+ * SegInfoDlgProc
  */
-INT_PTR CALLBACK SegInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK SegInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HWND        parent;
     HMENU       mh;
@@ -1183,7 +1183,7 @@ INT_PTR CALLBACK SegInfoProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
     }
     return( TRUE );
 
-} /* SegInfoProc */
+} /* SegInfoDlgProc */
 
 /*
  * displaySegInfo
@@ -1206,7 +1206,7 @@ static void displaySegInfo( HWND parent, HANDLE instance, MemWndInfo *info )
     mh = GetMenu( parent );
     EnableMenuItem( mh, MEMINFO_SHOW, MF_GRAYED );
     if( DialCount == 0 ) {
-        DialProc = MakeProcInstance_DLG( SegInfoProc, instance );
+        DialProc = MakeProcInstance_DLG( SegInfoDlgProc, instance );
     }
     DialCount++;
     if( info->isdpmi ) {

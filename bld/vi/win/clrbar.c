@@ -37,14 +37,14 @@
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK ClrDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK ClrDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 HWND        hColorbar;
 
 /*
  * ClrDlgProc - callback routine for colour drag & drop dialog
  */
-WINEXPORT BOOL CALLBACK ClrDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK ClrDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
 #ifdef __NT__
     lparam = lparam;
