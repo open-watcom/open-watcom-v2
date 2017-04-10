@@ -31,9 +31,8 @@
 
 
 #define INCLUDE_COMMDLG_H
-#include <windows.h>
+#include <wwindows.h>
 #include <string.h>
-#include "winexprt.h"
 #include "ideactiv.h"
 #include "wclbproc.h"
 
