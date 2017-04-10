@@ -46,6 +46,7 @@
 #include "dbgupdt.h"
 #include "dlgexpr.h"
 #include "dlgbreak.h"
+#include "dlgscomp.h"
 
 
 typedef struct {
@@ -58,8 +59,6 @@ typedef struct {
     bool            cmd_error       : 1;
     bool            cond_error      : 1;
 } dlg_brk;
-
-extern void             SymComplete( gui_window *gui, gui_ctl_id id );
 
 static  bool    GetAddr( dlg_brk *dlg, gui_window *gui )
 {

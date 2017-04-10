@@ -38,6 +38,7 @@
 #include "strutil.h"
 #include "wndsys.h"
 #include "symcomp.h"
+#include "dlgscomp.h"
 
 
 static name_list *SortedNames;
@@ -51,7 +52,7 @@ static const char *SymGetName( const void *data_handle, int item )
     return( TxtBuff );
 }
 
-extern char *DlgGetMatchString( gui_window *gui, gui_ctl_id id, size_t *matchoff )
+char *DlgGetMatchString( gui_window *gui, gui_ctl_id id, size_t *matchoff )
 {
     char        *p;
     char        *match;
@@ -70,7 +71,7 @@ extern char *DlgGetMatchString( gui_window *gui, gui_ctl_id id, size_t *matchoff
 }
 
 
-extern void SymComplete( gui_window *gui, gui_ctl_id id )
+void SymComplete( gui_window *gui, gui_ctl_id id )
 {
     char                *match;
     int                 new;
