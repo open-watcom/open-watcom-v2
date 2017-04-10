@@ -40,11 +40,11 @@
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#define STATUS_FONTNAME   "Helv"
-#define STATUS_POINTSIZE  8
-#define MAX_STATUS_TEXT   MAX_NAME
-#define STATUS_LINE_PAD   4
-#define STATUS1_WIDTH     160
+#define STATUS_FONTNAME         "Helv"
+#define STATUS_FONTPOINTSIZE    8
+#define MAX_STATUS_TEXT         MAX_NAME
+#define STATUS_LINE_PAD         4
+#define STATUS1_WIDTH           160
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -125,7 +125,7 @@ bool WdeCreateStatusLine( HWND main, HINSTANCE inst )
 
     if( use_default ) {
         strcpy( lf.lfFaceName, STATUS_FONTNAME );
-        point_size = STATUS_POINTSIZE;
+        point_size = STATUS_FONTPOINTSIZE;
     }
 
     lf.lfHeight = -MulDiv( point_size, GetDeviceCaps( dc, LOGPIXELSY ), 72 );

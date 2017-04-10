@@ -62,7 +62,7 @@ WINEXPORT WPI_DLGRESULT CALLBACK GUIInitDialogFuncDlgProc( HWND hwnd, WPI_MSG me
 extern  bool            EditControlHasFocus;
 
 static  char            *Font           = NULL;         /* name of font used in dialogs  */
-static  int             PointSize       = 0;            /* point size of fonts used in dialogs   */
+static  int             FontPointSize   = 0;            /* point size of fonts used in dialogs   */
 static  WPI_TEXTMETRIC  GUIDialogtm;                    /* tm of dialog font */
 static  gui_coord       SizeDialog      = { 128, 128 }; /* of test dialog        */
 static  gui_coord       SizeScreen      = { 0, 0 };     /* of test dialog        */
@@ -77,10 +77,10 @@ void GUISetJapanese( void )
     if( GUIIsDBCS() ) {
   #if 0
         newfont = "";
-        PointSize = 0;
+        FontPointSize = 0;
   #else
         newfont = "�l�r ����";
-        PointSize = 10;
+        FontPointSize = 10;
   #endif
         if( Font != NULL ) {
             GUIMemFree( Font );
@@ -657,7 +657,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
     old_dlgtemplate = DialogTemplate( dlg_style | DS_SETFONT,
                            parent_pos.x, parent_pos.y, size.x, size.y,
                            LIT( Empty ), LIT( Empty ), dlg_info->title,
-                           PointSize, Font, &templatelen );
+                           FontPointSize, Font, &templatelen );
     if( old_dlgtemplate == NULL ) {
         return( false );
     }
@@ -804,13 +804,13 @@ void GUIInitDialog( void )
         if( cp ) {
             *cp = '\0';
             cp++;
-            PointSize = atoi( cp );
+            FontPointSize = atoi( cp );
             font_set = true;
         }
     }
 
     if( !font_set ) {
-        PointSize = 0;
+        FontPointSize = 0;
         if( Font != NULL ) {
             GUIMemFree( Font );
         }
@@ -822,7 +822,7 @@ void GUIInitDialog( void )
     old_dlgtemplate = DialogTemplate( MODAL_STYLE | DS_SETFONT,
                            SizeDialog.x, SizeDialog.y,
                            SizeDialog.x, SizeDialog.y, LIT( Empty ),
-                           LIT( Empty ), LIT( Empty ), PointSize, Font, &templatelen );
+                           LIT( Empty ), LIT( Empty ), FontPointSize, Font, &templatelen );
     if( old_dlgtemplate != NULL ) {
         new_dlgtemplate = DoneAddingControls( old_dlgtemplate );
         DynamicDialogBox( GUIInitDialogFuncDlgProc, GUIMainHInst, NULLHANDLE, new_dlgtemplate, 0 );

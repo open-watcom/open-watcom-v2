@@ -92,9 +92,9 @@
 #define DIALOG_MIN_HEIGHT       DIALOG_MIN_WIDTH
 
 #define DEFAULT_FONT            "Helv"
-#define DEFAULT_POINT_SIZE      8
+#define DEFAULT_FONT_POINTSIZE  8
 #define DEFAULT_JFONT           "�l�r ����"
-#define DEFAULT_JPOINT_SIZE     10
+#define DEFAULT_JFONT_POINTSIZE 10
 #define DEFAULT_MEMFLAGS        (MEMFLAG_DISCARDABLE | MEMFLAG_PURE | MEMFLAG_MOVEABLE)
 
 #define pick_ACTS(o) \
@@ -837,7 +837,7 @@ bool WdeDialogInit( bool first )
             SETHDR_FONTNAME( WdeDefaultDialog, WdeStrDup( text ) );
             cp++;
             point_size = atoi( cp );
-            SETHDR_POINTSIZE( WdeDefaultDialog, point_size );
+            SETHDR_FONTPOINTSIZE( WdeDefaultDialog, point_size );
             use_default = false;
         }
         WdeFreeRCString( text );
@@ -847,10 +847,10 @@ bool WdeDialogInit( bool first )
     if( use_default ) {
         if( GetSystemMetrics( SM_DBCSENABLED ) ) {
             SETHDR_FONTNAME( WdeDefaultDialog, WdeStrDup( DEFAULT_JFONT ) );
-            SETHDR_POINTSIZE( WdeDefaultDialog, DEFAULT_JPOINT_SIZE );
+            SETHDR_FONTPOINTSIZE( WdeDefaultDialog, DEFAULT_JFONT_POINTSIZE );
         } else {
             SETHDR_FONTNAME( WdeDefaultDialog, WdeStrDup( DEFAULT_FONT ) );
-            SETHDR_POINTSIZE( WdeDefaultDialog, DEFAULT_POINT_SIZE );
+            SETHDR_FONTPOINTSIZE( WdeDefaultDialog, DEFAULT_FONT_POINTSIZE );
         }
     }
 
@@ -1070,14 +1070,14 @@ bool WdeDialogTest( WdeDialogObject *obj, TEMPLATE_HANDLE *p1, size_t *p2 )
             GETHDR_HELPID( obj->dialog_info ), GETHDR_SIZEX( obj->dialog_info ),
             GETHDR_SIZEY( obj->dialog_info ), GETHDR_SIZEW( obj->dialog_info ),
             GETHDR_SIZEH( obj->dialog_info ), MenuName, ClassName,
-            GETHDR_CAPTION( obj->dialog_info ), GETHDR_POINTSIZE( obj->dialog_info ),
+            GETHDR_CAPTION( obj->dialog_info ), GETHDR_FONTPOINTSIZE( obj->dialog_info ),
             GETHDR_FONTNAME( obj->dialog_info ), GETHDR_FONTWEIGHT( obj->dialog_info ),
             GETHDR_FONTITALIC( obj->dialog_info ), GETHDR_FONTCHARSET( obj->dialog_info ), &templatelen );
     } else {
         dlgtemplate = DialogTemplate( style, GETHDR_SIZEX( obj->dialog_info ),
             GETHDR_SIZEY( obj->dialog_info ), GETHDR_SIZEW( obj->dialog_info ),
             GETHDR_SIZEH( obj->dialog_info ), MenuName, ClassName,
-            GETHDR_CAPTION( obj->dialog_info ), GETHDR_POINTSIZE( obj->dialog_info ),
+            GETHDR_CAPTION( obj->dialog_info ), GETHDR_FONTPOINTSIZE( obj->dialog_info ),
             GETHDR_FONTNAME( obj->dialog_info ), &templatelen );
     }
 
@@ -2635,7 +2635,7 @@ bool WdeBuildDialogTemplate( WdeDialogBoxHeader *dialog_header, TEMPLATE_HANDLE 
     }
 
     fontname = GETHDR_FONTNAME( dialog_header );
-    pointsize = GETHDR_POINTSIZE( dialog_header );
+    pointsize = GETHDR_FONTPOINTSIZE( dialog_header );
 
     // hokey kanji stuff
 #ifndef __NT__
@@ -2820,7 +2820,7 @@ INT_PTR CALLBACK WdeDialogDefineDlgProc( HWND hDlg, UINT message, WPARAM wParam,
 
                 WdeDialogSetDialogPntInfo( hDlg, font_index );
 
-                SendDlgItemMessage( hDlg, IDB_POINTSIZE, CB_SETCURSEL, 0, 0L );
+                SendDlgItemMessage( hDlg, IDB_FONTPOINTSIZE, CB_SETCURSEL, 0, 0L );
 
                 break;
             }
@@ -2946,11 +2946,11 @@ void WdeDialogGetDefineDialogInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     }
 
     if( GETHDR_FONTNAME( obj->dialog_info ) ) {
-        SETHDR_POINTSIZE( obj->dialog_info,
-                          (uint_16)WdeGetUINT32FromCombo( hDlg, IDB_POINTSIZE ) );
+        SETHDR_FONTPOINTSIZE( obj->dialog_info,
+                          (uint_16)WdeGetUINT32FromCombo( hDlg, IDB_FONTPOINTSIZE ) );
         style |= DS_SETFONT;
     } else {
-        SETHDR_POINTSIZE( obj->dialog_info, 0 );
+        SETHDR_FONTPOINTSIZE( obj->dialog_info, 0 );
         style &= ~DS_SETFONT;
     }
 
@@ -3283,7 +3283,7 @@ void WdeDialogSetDialogPntInfo( HWND hDlg, int index )
         olist = ListNext( olist );
     }
 
-    SendDlgItemMessage( hDlg, IDB_POINTSIZE, CB_RESETCONTENT, 0, 0 );
+    SendDlgItemMessage( hDlg, IDB_FONTPOINTSIZE, CB_RESETCONTENT, 0, 0 );
 
     if( olist == NULL ) {
         return;
@@ -3294,13 +3294,13 @@ void WdeDialogSetDialogPntInfo( HWND hDlg, int index )
     if( font_name->fonttype & TRUETYPE_FONTTYPE ) {
         for( i = WDE_TT_FONT_MIN; i <= WDE_TT_FONT_MAX; i += 2 ) {
             ultoa( i, temp, 10 );
-            SendDlgItemMessage( hDlg, IDB_POINTSIZE, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)temp );
+            SendDlgItemMessage( hDlg, IDB_FONTPOINTSIZE, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)temp );
         }
     } else {
         for( olist = font_name->family_list; olist != NULL; olist = ListNext( olist ) ) {
             font_data = (WdeFontData *)ListElement( olist );
             ultoa( font_data->pointsize, temp, 10 );
-            SendDlgItemMessage( hDlg, IDB_POINTSIZE, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)temp );
+            SendDlgItemMessage( hDlg, IDB_FONTPOINTSIZE, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)temp );
         }
     }
 }
@@ -3343,8 +3343,8 @@ void WdeDialogSetDialogFontInfo( HWND hDlg, WdeDialogObject *obj )
             WdeSetEditWithStr( GETHDR_FONTNAME( obj->dialog_info ), hDlg, IDB_FONTNAME );
 
             /* set the point size of the font */
-            WdeSetEditWithUINT32( (uint_32)GETHDR_POINTSIZE( obj->dialog_info ),
-                                  10, hDlg, IDB_POINTSIZE );
+            WdeSetEditWithUINT32( (uint_32)GETHDR_FONTPOINTSIZE( obj->dialog_info ),
+                                  10, hDlg, IDB_FONTPOINTSIZE );
         }
     }
 }

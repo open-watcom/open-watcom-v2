@@ -1105,7 +1105,7 @@ bool WdeWriteDlgHeader( WdeResInfo *rinfo, WdeResDlgItem *ditem, FILE *fp )
         if( (style & DS_SETFONT) &&
             GETHDR_FONTNAME( ditem->dialog_info->dialog_header ) != NULL ) {
             fprintf( fp, "FONT %d, \"%s\"\n",
-                     GETHDR_POINTSIZE( ditem->dialog_info->dialog_header ),
+                     GETHDR_FONTPOINTSIZE( ditem->dialog_info->dialog_header ),
                      GETHDR_FONTNAME( ditem->dialog_info->dialog_header ) );
         }
     }
