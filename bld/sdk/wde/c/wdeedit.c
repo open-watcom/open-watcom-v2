@@ -107,9 +107,9 @@ HWND WdeGetEditWindowHandle( WdeResInfo *info )
 void WdeInitEditClass( void )
 {
     LOGBRUSH    lbrush;
-    char        *text;
+    char        *font_facename;
     char        *cp;
-    int         point_size;
+    int         font_pointsize;
     bool        use_default;
 
     WdeEditBrush = GetStockObject( WHITE_BRUSH );
@@ -121,13 +121,13 @@ void WdeInitEditClass( void )
 
     if( WdeEditFont == NULL ) {
         use_default = true;
-        text = WdeAllocRCString( WDE_EDITWINDOWFONT );
-        if( text != NULL ) {
-            cp = (char *)_mbschr( (unsigned char const *)text, '.' );
+        font_facename = WdeAllocRCString( WDE_EDITWINDOWFONT );
+        if( font_facename != NULL ) {
+            cp = (char *)_mbschr( (unsigned char const *)font_facename, '.' );
             if( cp != NULL ) {
                 *cp = '\0';
                 cp++;
-                point_size = atoi( cp );
+                font_pointsize = atoi( cp );
                 use_default = false;
             }
         }
@@ -135,11 +135,11 @@ void WdeInitEditClass( void )
         if( use_default ) {
             WdeEditFont = WdeGetFont( "Helv", 8, FW_BOLD );
         } else {
-            WdeEditFont = WdeGetFont( text, point_size, FW_BOLD );
+            WdeEditFont = WdeGetFont( font_facename, font_pointsize, FW_BOLD );
         }
 
-        if( text != NULL ) {
-            WdeFreeRCString( text );
+        if( font_facename != NULL ) {
+            WdeFreeRCString( font_facename );
         }
     }
 }

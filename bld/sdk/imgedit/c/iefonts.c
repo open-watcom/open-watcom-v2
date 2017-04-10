@@ -35,8 +35,8 @@
 #include <mbstring.h>
 #include "iemem.h"
 
-#define STATUS_FONTNAME         "Helv"
-#define STATUS_POINTSIZE        8
+#define STATUS_FONTFACENAME     "Helv"
+#define STATUS_FONTPOINTSIZE    8
 
 /*
  * CreateStatusFont - create the font used in the status window
@@ -45,35 +45,35 @@ void CreateStatusFont( void )
 {
     LOGFONT             lf;
     HDC                 dc;
-    char                *status_font;
+    char                *font_facename;
     char                *cp;
-    int                 point_size;
-    BOOL                use_default;
+    int                 font_pointsize;
+    bool                use_default;
 
     memset( &lf, 0, sizeof( LOGFONT ) );
     dc = GetDC( (HWND)NULL );
     lf.lfWeight = FW_NORMAL;
-    use_default = TRUE;
+    use_default = true;
 
-    status_font = IEAllocRCString( WIE_STATUSFONT );
-    if( status_font != NULL ) {
-        cp = (char *)_mbschr( (unsigned char *)status_font, '.' );
+    font_facename = IEAllocRCString( WIE_STATUSFONT );
+    if( font_facename != NULL ) {
+        cp = (char *)_mbschr( (unsigned char *)font_facename, '.' );
         if( cp != NULL ) {
             *cp = '\0';
-            strcpy( lf.lfFaceName, status_font );
+            strcpy( lf.lfFaceName, font_facename );
             cp++;
-            point_size = atoi( cp );
-            use_default = FALSE;
+            font_pointsize = atoi( cp );
+            use_default = false;
         }
-        IEFreeRCString( status_font );
+        IEFreeRCString( font_facename );
     }
 
     if( use_default ) {
-        strcpy( lf.lfFaceName, STATUS_FONTNAME );
-        point_size = STATUS_POINTSIZE;
+        strcpy( lf.lfFaceName, STATUS_FONTFACENAME );
+        font_pointsize = STATUS_FONTPOINTSIZE;
     }
 
-    lf.lfHeight = -MulDiv( point_size, GetDeviceCaps( dc, LOGPIXELSY ), 72 );
+    lf.lfHeight = -MulDiv( font_pointsize, GetDeviceCaps( dc, LOGPIXELSY ), 72 );
     SmallFont = CreateFontIndirect( &lf );
     ReleaseDC( (HWND)NULL, dc );
 

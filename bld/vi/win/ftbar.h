@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#define FT_TYPEFACE     101
+#define FT_FACENAME     101
 #define FT_STYLE        102
 #define FT_SIZE         103
 #define FT_FTPICK       104

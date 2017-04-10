@@ -40,7 +40,7 @@
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#define STATUS_FONTNAME         "Helv"
+#define STATUS_FONTFACENAME     "Helv"
 #define STATUS_FONTPOINTSIZE    8
 #define MAX_STATUS_TEXT         MAX_NAME
 #define STATUS_LINE_PAD         4
@@ -100,9 +100,9 @@ bool WdeCreateStatusLine( HWND main, HINSTANCE inst )
     HFONT               old_font;
     HDC                 dc;
     status_block_desc   sbd;
-    char                *status_font;
+    char                *font_facename;
     char                *cp;
-    int                 point_size;
+    int                 font_pointsize;
     bool                use_default;
 
     memset( &lf, 0, sizeof( LOGFONT ) );
@@ -110,25 +110,25 @@ bool WdeCreateStatusLine( HWND main, HINSTANCE inst )
     lf.lfWeight = FW_BOLD;
     use_default = true;
 
-    status_font = WdeAllocRCString( WDE_STATUSFONT );
-    if( status_font != NULL ) {
-        cp = (char *)_mbschr( (unsigned char *)status_font, '.' );
+    font_facename = WdeAllocRCString( WDE_STATUSFONT );
+    if( font_facename != NULL ) {
+        cp = (char *)_mbschr( (unsigned char *)font_facename, '.' );
         if( cp != NULL ) {
             *cp = '\0';
-            strcpy( lf.lfFaceName, status_font );
+            strcpy( lf.lfFaceName, font_facename );
             cp++;
-            point_size = atoi( cp );
+            font_pointsize = atoi( cp );
             use_default = false;
         }
-        WdeFreeRCString( status_font );
+        WdeFreeRCString( font_facename );
     }
 
     if( use_default ) {
-        strcpy( lf.lfFaceName, STATUS_FONTNAME );
-        point_size = STATUS_FONTPOINTSIZE;
+        strcpy( lf.lfFaceName, STATUS_FONTFACENAME );
+        font_pointsize = STATUS_FONTPOINTSIZE;
     }
 
-    lf.lfHeight = -MulDiv( point_size, GetDeviceCaps( dc, LOGPIXELSY ), 72 );
+    lf.lfHeight = -MulDiv( font_pointsize, GetDeviceCaps( dc, LOGPIXELSY ), 72 );
     WdeStatusFont = CreateFontIndirect( &lf );
     old_font = SelectObject( dc, WdeStatusFont );
     GetTextMetrics( dc, &tm );

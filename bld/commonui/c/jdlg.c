@@ -80,29 +80,29 @@ static bool mbcs2unicode( const char *src, LPWSTR *dest, int *len )
 /*
  * createFontInfoData - allocate and fill the font information data
  */
-static bool createFontInfoData( const char *typeface, WORD pointsize, BYTE **fidata, size_t *size )
+static bool createFontInfoData( const char *facename, WORD pointsize, BYTE **fidata, size_t *size )
 {
     BYTE        *data;
     int         slen;
 #ifndef __WINDOWS__
-    LPWSTR      unitypeface;
+    LPWSTR      uni_facename;
 #endif
 
 #ifdef __WINDOWS__
-    slen = strlen( typeface ) + 1;
+    slen = strlen( facename ) + 1;
     data = (BYTE *)MemAlloc( sizeof( WORD ) + slen );
     if( data != NULL ) {
         *(WORD *)data = pointsize;
-        memcpy( data + sizeof( WORD ), typeface, slen );
+        memcpy( data + sizeof( WORD ), facename, slen );
     }
 #else
     data = NULL;
-    if( mbcs2unicode( typeface, &unitypeface, &slen ) ) {
+    if( mbcs2unicode( facename, &uni_facename, &slen ) ) {
         slen *= sizeof( WCHAR );
         data = (BYTE *)MemAlloc( sizeof( WORD ) + slen );
         if( data != NULL ) {
             *(WORD *)data = pointsize;
-            memcpy( data + sizeof( WORD ), unitypeface, slen );
+            memcpy( data + sizeof( WORD ), uni_facename, slen );
         }
     }
 #endif
@@ -204,12 +204,12 @@ static size_t getFontInfoSize( BYTE *fontinfo )
 } /* getFontInfoSize */
 
 /*
- * getSystemFontTypeface - get the system font face name and size
+ * getSystemFontFaceName - get the system font face name and size
  */
-static bool getSystemFontTypeface( char **typeface, WORD *pointsize )
+static bool getSystemFontFaceName( char **facename, WORD *pointsize )
 {
 #ifndef USE_SYSTEM_FONT
-    *typeface = "‚l‚r –¾’©";
+    *facename = "‚l‚r –¾’©";
     *pointsize = 10;
 
     return( true );
@@ -228,11 +228,11 @@ static bool getSystemFontTypeface( char **typeface, WORD *pointsize )
         return( false );
     }
 
-    *typeface = (char *)MemAlloc( strlen( lf.lfFaceName ) + 1 );
-    if( *typeface == NULL ) {
+    *facename = (char *)MemAlloc( strlen( lf.lfFaceName ) + 1 );
+    if( *facename == NULL ) {
         return( false );
     }
-    strcpy( *typeface, lf.lfFaceName );
+    strcpy( *facename, lf.lfFaceName );
 
     hDC = GetDC( (HWND)NULL );
     logpixelsy = GetDeviceCaps( hDC, LOGPIXELSY );
@@ -242,7 +242,7 @@ static bool getSystemFontTypeface( char **typeface, WORD *pointsize )
     return( true );
 #endif
 
-} /* getSystemFontTypeface */
+} /* getSystemFontFaceName */
 
 /*
  * loadDialogTemplate - load a dialog template
@@ -358,18 +358,18 @@ static TEMPLATE_HANDLE createJTemplate( TEMPLATE_HANDLE dlgtemplate, DWORD size 
  */
 bool JDialogInit( void )
 {
-    char        *typeface;
+    char        *facename;
     WORD        pointsize;
 
     if( !GetSystemMetrics( SM_DBCSENABLED ) ) {
         return( true );
     }
 
-    if( !getSystemFontTypeface( &typeface, &pointsize ) ) {
+    if( !getSystemFontFaceName( &facename, &pointsize ) ) {
         return( false );
     }
 
-    return( createFontInfoData( typeface, pointsize, &JFontInfo, &JFontInfoLen ) );
+    return( createFontInfoData( facename, pointsize, &JFontInfo, &JFontInfoLen ) );
 }
 
 /*
@@ -659,8 +659,8 @@ JCDP_DEFAULT_ACTION:
 /*
  * JDialogGetJFont - get the font used for Japanese dialogs
  */
-bool JDialogGetJFont( char **typeface, WORD *pointsize )
+bool JDialogGetJFont( char **facename, WORD *pointsize )
 {
-    return( getSystemFontTypeface( typeface, pointsize ) );
+    return( getSystemFontFaceName( facename, pointsize ) );
 
 } /* JDialogGetJFont */

@@ -15,7 +15,7 @@ BEGIN
     COMBOBOX        FT_SIZE, 108, 83, 43, 53, CBS_SIMPLE | CBS_SORT |
                     CBS_DISABLENOSCROLL | WS_VSCROLL | WS_TABSTOP
     LTEXT           "&Typeface:", -1, 5, 4, 35, 8
-    LISTBOX         FT_TYPEFACE, 5, 16, 83, 54, LBS_SORT |
+    LISTBOX         FT_FACENAME, 5, 16, 83, 54, LBS_SORT |
                     LBS_DISABLENOSCROLL | WS_VSCROLL | WS_TABSTOP
     LTEXT           "&Style:", -1, 97, 4, 19, 8
     LISTBOX         FT_STYLE, 97, 16, 49, 54, LBS_DISABLENOSCROLL |

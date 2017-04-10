@@ -8,8 +8,7 @@ BEGIN
         LTEXT           "Select the background colour ...", -1, 84, 64, 107, 8, DT_MNEMONIC
         LTEXT           "Current Selection:", -1, 7, 64, 60, 8, DT_MNEMONIC
         RTEXT           "Screen:", -1, 5, 50, 30, 8, DT_MNEMONIC
-        RTEXT           "Inverse:", -1, 5, 41, 30, 8, NOT
-                 WS_GROUP | DT_MNEMONIC
+        RTEXT           "Inverse:", -1, 5, 41, 30, 8, NOT WS_GROUP | DT_MNEMONIC
         DEFPUSHBUTTON   "~OK", DID_OK, 26, 6, 40, 14, WS_GROUP
         PUSHBUTTON      "~Cancel", DID_CANCEL, 82, 6, 40, 14
         PUSHBUTTON      "~Help", DID_HELP_BUTTON, 138, 6, 40, 14

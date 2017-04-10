@@ -102,11 +102,11 @@ static unsigned char getClassOrdinal( const char *classname )
  */
 TEMPLATE_HANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
                               const char *menuname, const char *classname, const char *captiontext,
-                              WORD pointsize, const char *typeface, size_t *templatelen )
+                              WORD pointsize, const char *facename, size_t *templatelen )
 {
     TEMPLATE_HANDLE     dlgtemplate;
     size_t              blocklen;
-    UINT                menulen, classlen, textlen, typefacelen;
+    UINT                menulen, classlen, textlen, facenamelen;
     WPCHAR              template;
     WPDLGTEMPLATE       dt;
 #ifndef __WINDOWS__
@@ -134,10 +134,10 @@ TEMPLATE_HANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     blocklen = sizeof( WDLGTEMPLATE ) + menulen + classlen + textlen;
 
     if( style & DS_SETFONT ) {
-        typefacelen = SLEN( typeface );
-        blocklen += sizeof( WORD ) + typefacelen;
+        facenamelen = SLEN( facename );
+        blocklen += sizeof( WORD ) + facenamelen;
     } else {
-        typefacelen = 0;
+        facenamelen = 0;
     }
 
     dlgtemplate = GlobalAlloc( GMEM_MOVEABLE | GMEM_ZEROINIT, blocklen );
@@ -180,7 +180,7 @@ TEMPLATE_HANDLE _DialogTemplate( DWORD style, int x, int y, int cx, int cy,
      */
     if( style & DS_SETFONT ) {
         template = copyWord( template, pointsize );
-        template = copyString( template, typeface, typefacelen );
+        template = copyString( template, facename, facenamelen );
     }
 
     GlobalUnlock( dlgtemplate );

@@ -284,7 +284,7 @@ int PMDynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate, PVOID 
 TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
                                 const char *menuname, const char *classname,
                                 const char *captiontext, WORD pointsize,
-                                const char *typeface, size_t *templatelen )
+                                const char *facename, size_t *templatelen )
 {
     TEMPLATE_HANDLE     old_dlgtemplate;
     TEMPLATE_HANDLE     new_dlgtemplate;
@@ -300,12 +300,12 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
 
     pdata = NULL;
     psize = 0;
-    if( typeface != NULL ) {
-        bufsize = strlen( typeface ) + 10 + 1;
+    if( facename != NULL ) {
+        bufsize = strlen( facename ) + 10 + 1;
         buf = (char *)PMmalloc( bufsize );
         if( buf != NULL ) {
             buf[0] = '\0';
-            sprintf( buf, "%u.%s", pointsize, typeface );
+            sprintf( buf, "%u.%s", pointsize, facename );
             bufsize = strlen(buf);
             /* This convoluted calculation makes sure we get the right size
              * regardless of structure packing.

@@ -196,7 +196,7 @@ static size_t WdeDialogBoxHeader2Mem( WdeDialogBoxHeader *head, uint_8 *data )
                 U8ToMem( data, GETHDR_FONTITALIC( head ) );
                 U8ToMem( data, GETHDR_FONTCHARSET( head ) );
             }
-            size = WdeString2Mem( GETHDR_FONTNAME( head ), head->is32bit, data );
+            size = WdeString2Mem( GETHDR_FONTFACENAME( head ), head->is32bit, data );
             data += size;
             ok = (size != 0);
         }
@@ -486,11 +486,11 @@ WdeDialogBoxHeader *WdeMem2DialogBoxHeader( const uint_8 **pdata, bool is32bit, 
                 U8FromMem( data, GETHDR_FONTITALIC( dbh ) );
                 U8FromMem( data, GETHDR_FONTCHARSET( dbh ) );
             }
-            SETHDR_FONTNAME( dbh, WdeMem2String( &data, is32bit ) );
-            ok = (GETHDR_FONTNAME( dbh ) != NULL);
+            SETHDR_FONTFACENAME( dbh, WdeMem2String( &data, is32bit ) );
+            ok = (GETHDR_FONTFACENAME( dbh ) != NULL);
         } else {
             SETHDR_FONTPOINTSIZE( dbh, 0 );
-            SETHDR_FONTNAME( dbh, NULL );
+            SETHDR_FONTFACENAME( dbh, NULL );
         }
     }
 

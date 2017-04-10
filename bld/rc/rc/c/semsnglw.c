@@ -45,12 +45,10 @@
 
 
 /**** forward references ****/
-static void AddIconResource( WResID * name, ResMemFlags flags,
-                        ResMemFlags group_flags, const char * filename );
-static void AddCursorResource( WResID * name, ResMemFlags flags,
-                        ResMemFlags group_flags, const char * filename );
-static void AddBitmapResource( WResID * name, ResMemFlags, const char * filename );
-static void AddFontResources( WResID * name, ResMemFlags, const char * filename );
+static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_flags, const char *filename );
+static void AddCursorResource( WResID *name, ResMemFlags flags, ResMemFlags group_flags, const char *filename );
+static void AddBitmapResource( WResID *name, ResMemFlags, const char *filename );
+static void AddFontResources( WResID *name, ResMemFlags, const char *filename );
 
 /* MS changed the default purity for ICON and CURSOR resources from rc */
 /* version 30 to 31. Note: the ICON_GROUP and CURSOR_GROUP resources */
@@ -78,9 +76,8 @@ void SemWINAddMessageTable( WResID *name, ScanString *filename ) {
     }
 }
 
-void SemWINAddSingleLineResource( WResID * name, YYTOKENTYPE type,
-                      FullMemFlags * fullflags, char * filename )
-/***************************************************************/
+void SemWINAddSingleLineResource( WResID *name, YYTOKENTYPE type, FullMemFlags *fullflags, char *filename )
+/*********************************************************************************************************/
 {
     ResMemFlags flags;
     ResMemFlags group_flags;
@@ -178,8 +175,8 @@ HANDLE_ERROR:
  * ReadBitmapInfoHeader-
  * NB when an error occurs this func must return without altering errno
  */
-static RcStatus ReadBitmapInfoHeader( BitmapInfoHeader * head, WResFileID fid )
-/*****************************************************************************/
+static RcStatus ReadBitmapInfoHeader( BitmapInfoHeader *head, WResFileID fid )
+/****************************************************************************/
 {
     size_t      numread;
 
@@ -189,8 +186,8 @@ static RcStatus ReadBitmapInfoHeader( BitmapInfoHeader * head, WResFileID fid )
     return( RESIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
 }
 
-static RcStatus readIcoCurFileDirHeader( IconCurDirHeader * head, WResFileID fid, int *err_code )
-/***********************************************************************************************/
+static RcStatus readIcoCurFileDirHeader( IconCurDirHeader *head, WResFileID fid, int *err_code )
+/**********************************************************************************************/
 {
     size_t      numread;
 
@@ -202,8 +199,8 @@ static RcStatus readIcoCurFileDirHeader( IconCurDirHeader * head, WResFileID fid
     return( RS_OK );
 } /* readIcoCurFileDirHeader */
 
-static RcStatus readIcoFileDirEntry( IcoFileDirEntry * entry, WResFileID fid, int *err_code )
-/*******************************************************************************************/
+static RcStatus readIcoFileDirEntry( IcoFileDirEntry *entry, WResFileID fid, int *err_code )
+/******************************************************************************************/
 {
     size_t      numread;
 
@@ -221,7 +218,7 @@ static RcStatus readIcoFileDir( WResFileID fid, FullIconDir *dir, int *err_code 
 {
     RcStatus            ret;
     int                 currentry;
-    FullIconDirEntry *  entry;
+    FullIconDirEntry    *entry;
 
     ret = readIcoCurFileDirHeader( &(dir->Header), fid, err_code );
     /* type 1 is a icon file */
@@ -290,8 +287,8 @@ static RcStatus copyIcons( FullIconDir *dir, WResFileID fid, ResMemFlags flags, 
 /*********************************************************************************************/
 {
     RcStatus            ret;
-    char *              buffer;
-    FullIconDirEntry *  entry;
+    char                *buffer;
+    FullIconDirEntry    *entry;
     BitmapInfoHeader    dibhead;
     ResLocation         loc;
 
@@ -324,8 +321,8 @@ static RcStatus copyIcons( FullIconDir *dir, WResFileID fid, ResMemFlags flags, 
     return( ret );
 } /* copyIcons */
 
-static void FreeIconDir( FullIconDir * dir )
-/******************************************/
+static void FreeIconDir( FullIconDir *dir )
+/*****************************************/
 {
     FullIconDirEntry    *currentry;
     FullIconDirEntry    *nextentry;
@@ -336,12 +333,11 @@ static void FreeIconDir( FullIconDir * dir )
     }
 } /* FreeIconDir */
 
-static bool writeIconDir( FullIconDir * dir, WResID * name, ResMemFlags flags,
-                         int *err_code )
-/****************************************************************************/
+static bool writeIconDir( FullIconDir *dir, WResID *name, ResMemFlags flags, int *err_code )
+/******************************************************************************************/
 {
     bool                error;
-    FullIconDirEntry *  entry;
+    FullIconDirEntry    *entry;
     ResLocation         loc;
 
     loc.start = SemStartResource();
@@ -361,9 +357,8 @@ static bool writeIconDir( FullIconDir * dir, WResID * name, ResMemFlags flags,
     return( error );
 } /* writeIconDir */
 
-static void AddIconResource( WResID * name, ResMemFlags flags,
-                  ResMemFlags group_flags, const char * filename )
-/****************************************************************/
+static void AddIconResource( WResID *name, ResMemFlags flags, ResMemFlags group_flags, const char *filename )
+/***********************************************************************************************************/
 {
     WResFileID      fid;
     RcStatus        ret;
@@ -435,7 +430,7 @@ static bool writeCurDir( FullCurDir *dir, WResID *name, ResMemFlags flags,
 /****************************************************************************/
 {
     bool                error;
-    FullCurDirEntry *   entry;
+    FullCurDirEntry     *entry;
     ResLocation         loc;
 
     loc.start = SemStartResource();
@@ -500,8 +495,8 @@ static RcStatus copyCursors( FullCurDir *dir, WResFileID fid, ResMemFlags flags,
 /* This function uses the same size of buffers to copy info as for icons */
 {
     RcStatus            ret = RS_OK; // should this be RS_PARAM_ERROR ??
-    char *              buffer;
-    FullCurDirEntry *   entry;
+    char                *buffer;
+    FullCurDirEntry     *entry;
     CurFileDirEntry     fileentry;
     CurHotspot          hotspot;
     BitmapInfoHeader    dibhead;
@@ -549,8 +544,8 @@ static RcStatus copyCursors( FullCurDir *dir, WResFileID fid, ResMemFlags flags,
     return( ret );
 } /* copyCursors */
 
-static RcStatus readCurFileDirEntry( CurFileDirEntry * entry, WResFileID fid, int *err_code )
-/*******************************************************************************************/
+static RcStatus readCurFileDirEntry( CurFileDirEntry *entry, WResFileID fid, int *err_code )
+/******************************************************************************************/
 {
     size_t      numread;
 
@@ -568,7 +563,7 @@ static RcStatus readCurFileDir( WResFileID fid, FullCurDir *dir, int *err_code )
 {
     RcStatus            ret;
     int                 currentry;
-    FullCurDirEntry *   entry;
+    FullCurDirEntry     *entry;
 
     ret = readIcoCurFileDirHeader( &(dir->Header), fid, err_code );
     /* type 2 is a cursor file */
@@ -593,8 +588,8 @@ static RcStatus readCurFileDir( WResFileID fid, FullCurDir *dir, int *err_code )
 
 } /* readCurFileDir */
 
-static void FreeCurDir( FullCurDir * dir )
-/****************************************/
+static void FreeCurDir( FullCurDir *dir )
+/***************************************/
 {
     FullCurDirEntry     *currentry;
     FullCurDirEntry     *nextentry;
@@ -605,9 +600,8 @@ static void FreeCurDir( FullCurDir * dir )
     }
 } /* FreeCurDir */
 
-static void AddCursorResource( WResID * name, ResMemFlags flags,
-                      ResMemFlags group_flags, const char * filename )
-/********************************************************************/
+static void AddCursorResource( WResID *name, ResMemFlags flags, ResMemFlags group_flags, const char *filename )
+/*************************************************************************************************************/
 {
     WResFileID      fid;
     RcStatus        ret;
@@ -694,7 +688,7 @@ static RcStatus copyBitmap( BitmapFileHeader *head, WResFileID fid,
 /**************************************************************************/
 {
     RcStatus            ret;
-    char *              buffer;
+    char                *buffer;
     ResLocation         loc;
     WResFileOffset      pos;
 
@@ -720,9 +714,8 @@ static RcStatus copyBitmap( BitmapFileHeader *head, WResFileID fid,
     return( ret );
 } /* copyBitmap */
 
-static void AddBitmapResource( WResID * name, ResMemFlags flags,
-                            const char * filename )
-/**************************************************************/
+static void AddBitmapResource( WResID *name, ResMemFlags flags, const char *filename )
+/************************************************************************************/
 {
     BitmapFileHeader    head;
     WResFileID          fid;
@@ -796,7 +789,7 @@ static RcStatus copyFont( FontInfo *info, WResFileID fid, WResID *name,
 /**************************************************************************/
 {
     RcStatus            ret;
-    char *              buffer;
+    char                *buffer;
     ResLocation         loc;
     WResFileOffset      pos;
 
@@ -831,8 +824,8 @@ typedef struct {
     int         err_code;
 }ReadStrErrInfo;
 
-static void * readString( WResFileID fid, long offset, ReadStrErrInfo *err )
-/**************************************************************************/
+static void *readString( WResFileID fid, long offset, ReadStrErrInfo *err )
+/*************************************************************************/
 {
     char    *retstr;
 
@@ -856,10 +849,10 @@ static void * readString( WResFileID fid, long offset, ReadStrErrInfo *err )
     }
 }
 
-static FullFontDir * NewFontDir( void )
-/*************************************/
+static FullFontDir *NewFontDir( void )
+/************************************/
 {
-    FullFontDir *   newdir;
+    FullFontDir     *newdir;
 
     newdir = RESALLOC( sizeof( FullFontDir ) );
     newdir->Head = NULL;
@@ -869,11 +862,10 @@ static FullFontDir * NewFontDir( void )
     return( newdir );
 }
 
-static FullFontDirEntry * NewFontDirEntry( FontInfo * info, char * devicename,
-                        char * facename, WResID * fontid )
-/****************************************************************************/
+static FullFontDirEntry *NewFontDirEntry( FontInfo *info, char *devicename, char *facename, WResID *fontid )
+/**********************************************************************************************************/
 {
-    FullFontDirEntry *      entry;
+    FullFontDirEntry        *entry;
     size_t                  structextra;
     size_t                  devicelen;
     size_t                  facelen;
@@ -900,11 +892,10 @@ static FullFontDirEntry * NewFontDirEntry( FontInfo * info, char * devicename,
     return( entry );
 }
 
-static void AddFontToDir( FontInfo * info, char * devicename, char * facename,
-                WResID * fontid )
-/****************************************************************************/
+static void AddFontToDir( FontInfo *info, char *devicename, char *facename, WResID *fontid )
+/******************************************************************************************/
 {
-    FullFontDirEntry *      entry;
+    FullFontDirEntry        *entry;
 
     entry = NewFontDirEntry( info, devicename, facename, fontid );
 
@@ -917,13 +908,12 @@ static void AddFontToDir( FontInfo * info, char * devicename, char * facename,
     CurrResFile.FontDir->NumOfFonts += 1;
 }
 
-static void AddFontResources( WResID * name, ResMemFlags flags,
-                              const char * filename )
-/**************************************************************/
+static void AddFontResources( WResID *name, ResMemFlags flags, const char *filename )
+/***********************************************************************************/
 {
     FontInfo            info;
-    char *              devicename;
-    char *              facename;
+    char                *devicename;
+    char                *facename;
     WResFileID          fid;
     RcStatus            ret;
     int                 err_code;
@@ -991,8 +981,8 @@ COPY_FONT_ERROR:
     return;
 }
 
-static void FreeFontDir( FullFontDir * olddir )
-/*********************************************/
+static void FreeFontDir( FullFontDir *olddir )
+/********************************************/
 {
     FullFontDirEntry    *currentry;
     FullFontDirEntry    *nextentry;
@@ -1011,7 +1001,7 @@ static void FreeFontDir( FullFontDir * olddir )
 void SemWINWriteFontDir( void )
 /*****************************/
 {
-    FullFontDirEntry *  currentry;
+    FullFontDirEntry    *currentry;
     ResLocation         loc;
     bool                error;
 

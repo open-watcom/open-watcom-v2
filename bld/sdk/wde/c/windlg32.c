@@ -41,11 +41,11 @@
  */
 TEMPLATE_HANDLE DialogEXTemplate( DWORD style, DWORD exstyle, DWORD helpid,
                                int x, int y, int cx, int cy, const char *menuname,
-                               const char *classname, const char *captiontext, WORD pointsize,
-                               const char *typeface, WORD fontweight, BYTE fontitalic, BYTE fontcharset, size_t *templatelen )
+                               const char *classname, const char *captiontext, WORD font_pointsize,
+                               const char *font_facename, WORD fontweight, BYTE fontitalic, BYTE fontcharset, size_t *templatelen )
 {
     TEMPLATE_HANDLE     dlgtemplate;
-    UINT                blocklen, menulen, classlen, textlen, typefacelen;
+    UINT                blocklen, menulen, classlen, textlen, facenamelen;
     WPCHAR              template;
     WPDLGTEMPLATEEX     dt;
     WPFONTINFOEX        fi;
@@ -62,10 +62,10 @@ TEMPLATE_HANDLE DialogEXTemplate( DWORD style, DWORD exstyle, DWORD helpid,
     blocklen = sizeof( WDLGTEMPLATEEX ) + menulen + classlen + textlen;
 
     if( style & DS_SETFONT ) {
-        typefacelen = DlgStringLength( typeface );
-        blocklen += sizeof( WFONTINFOEX ) + typefacelen;
+        facenamelen = DlgStringLength( font_facename );
+        blocklen += sizeof( WFONTINFOEX ) + facenamelen;
     } else {
-        typefacelen = 0;
+        facenamelen = 0;
     }
 
     dlgtemplate = GlobalAlloc( GMEM_MOVEABLE | GMEM_ZEROINIT, blocklen );
@@ -107,12 +107,12 @@ TEMPLATE_HANDLE DialogEXTemplate( DWORD style, DWORD exstyle, DWORD helpid,
      */
     if( style & DS_SETFONT ) {
         fi = (WPFONTINFOEX)template;
-        fi->PointSize = pointsize;
+        fi->PointSize = font_pointsize;
         fi->weight = fontweight;
         fi->bItalic = fontitalic;
         fi->bCharset = fontcharset;
         template = (WPCHAR)( fi + 1 );
-        template = DlgCopyMBString( template, typeface, typefacelen );
+        template = DlgCopyMBString( template, font_facename, facenamelen );
     }
 
     GlobalUnlock( dlgtemplate );

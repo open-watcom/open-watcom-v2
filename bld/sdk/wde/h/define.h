@@ -42,7 +42,7 @@
 #define IDB_ID              202
 #define IDB_CLASS           203
 #define IDB_MENU            204
-#define IDB_FONTNAME        205
+#define IDB_FONTFACENAME    205
 #define IDB_FONTPOINTSIZE   206
 #define IDB_DLGNAME         207
 #define IDB_STYLES          208

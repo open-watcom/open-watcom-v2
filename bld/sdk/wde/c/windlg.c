@@ -40,10 +40,10 @@
  */
 TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
                              const char *menuname, const char *classname, const char *captiontext,
-                             WORD pointsize, const char *typeface, size_t *templatelen )
+                             WORD font_pointsize, const char *font_facename, size_t *templatelen )
 {
     TEMPLATE_HANDLE     dlgtemplate;
-    UINT                blocklen, menulen, classlen, textlen, typefacelen;
+    UINT                blocklen, menulen, classlen, textlen, facenamelen;
     WPCHAR              template;
     WPDLGTEMPLATE       dt;
 #ifndef __WINDOWS__
@@ -69,10 +69,10 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
     blocklen = sizeof( WDLGTEMPLATE ) + menulen + classlen + textlen;
 
     if( style & DS_SETFONT ) {
-        typefacelen = DlgStringLength( typeface );
-        blocklen += sizeof( WORD ) + typefacelen;
+        facenamelen = DlgStringLength( font_facename );
+        blocklen += sizeof( WORD ) + facenamelen;
     } else {
-        typefacelen = 0;
+        facenamelen = 0;
     }
 
     dlgtemplate = GlobalAlloc( GMEM_MOVEABLE | GMEM_ZEROINIT, blocklen );
@@ -116,8 +116,8 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
      * add font data (if needed)
      */
     if( style & DS_SETFONT ) {
-        template = DlgCopyWord( template, pointsize );
-        template = DlgCopyMBString( template, typeface, typefacelen );
+        template = DlgCopyWord( template, font_pointsize );
+        template = DlgCopyMBString( template, font_facename, facenamelen );
     }
 
     GlobalUnlock( dlgtemplate );

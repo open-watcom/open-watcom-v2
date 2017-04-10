@@ -45,11 +45,11 @@
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#define STATUS_FONTNAME   "Helv"
-#define STATUS_POINTSIZE  8
-#define MAX_STATUS_TEXT   _MAX_PATH
-#define STATUS_LINE_PAD   4
-#define STATUS1_WIDTH     160
+#define STATUS_FONTFACENAME     "Helv"
+#define STATUS_FONTPOINTSIZE    8
+#define MAX_STATUS_TEXT         _MAX_PATH
+#define STATUS_LINE_PAD         4
+#define STATUS1_WIDTH           160
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -105,35 +105,35 @@ bool WRECreateStatusLine( HWND main, HINSTANCE inst )
     HFONT               old_font;
     HDC                 dc;
     status_block_desc   sbd;
-    char                *status_font;
+    char                *font_facename;
     char                *cp;
-    int                 point_size;
+    int                 font_pointsize;
     bool                use_default;
 
     memset( &lf, 0, sizeof( LOGFONT ) );
     dc = GetDC( main );
     lf.lfWeight = FW_BOLD;
-    use_default = TRUE;
+    use_default = true;
 
-    status_font = AllocRCString( WRE_STATUSFONT );
-    if( status_font != NULL ) {
-        cp = (char *)_mbschr( (unsigned char const *)status_font, '.' );
+    font_facename = AllocRCString( WRE_STATUSFONT );
+    if( font_facename != NULL ) {
+        cp = (char *)_mbschr( (unsigned char const *)font_facename, '.' );
         if( cp != NULL ) {
             *cp = '\0';
-            strcpy( lf.lfFaceName, status_font );
+            strcpy( lf.lfFaceName, font_facename );
             cp++;
-            point_size = atoi( cp );
-            use_default = FALSE;
+            font_pointsize = atoi( cp );
+            use_default = false;
         }
-        FreeRCString( status_font );
+        FreeRCString( font_facename );
     }
 
     if( use_default ) {
-        strcpy( lf.lfFaceName, STATUS_FONTNAME );
-        point_size = STATUS_POINTSIZE;
+        strcpy( lf.lfFaceName, STATUS_FONTFACENAME );
+        font_pointsize = STATUS_FONTPOINTSIZE;
     }
 
-    lf.lfHeight = -MulDiv( point_size, GetDeviceCaps( dc, LOGPIXELSY ), 72 );
+    lf.lfHeight = -MulDiv( font_pointsize, GetDeviceCaps( dc, LOGPIXELSY ), 72 );
     WREStatusFont = CreateFontIndirect( &lf );
     old_font = SelectObject( dc, WREStatusFont );
     GetTextMetrics( dc, &tm );

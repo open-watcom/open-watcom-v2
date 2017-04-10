@@ -233,7 +233,7 @@ static void * readString( WResFileID fid, long offset, ReadStrErrInfo *err )
 static FullFontDir * NewFontDir( void )
 /*************************************/
 {
-    FullFontDir *   newdir;
+    FullFontDir     *newdir;
 
     newdir = RESALLOC( sizeof( FullFontDir ) );
     newdir->Head = NULL;
@@ -243,11 +243,10 @@ static FullFontDir * NewFontDir( void )
     return( newdir );
 }
 
-static FullFontDirEntry * NewFontDirEntry( FontInfo * info, char * devicename,
-                        char * facename, WResID * fontid )
-/****************************************************************************/
+static FullFontDirEntry *NewFontDirEntry( FontInfo *info, char *devicename, char *facename, WResID *fontid )
+/**********************************************************************************************************/
 {
-    FullFontDirEntry *      entry;
+    FullFontDirEntry        *entry;
     int                     structextra;
     int                     devicelen;
     int                     facelen;
@@ -274,11 +273,10 @@ static FullFontDirEntry * NewFontDirEntry( FontInfo * info, char * devicename,
     return( entry );
 }
 
-static void AddFontToDir( FontInfo * info, char * devicename, char * facename,
-                WResID * fontid )
-/****************************************************************************/
+static void AddFontToDir( FontInfo *info, char *devicename, char *facename, WResID *fontid )
+/******************************************************************************************/
 {
-    FullFontDirEntry *      entry;
+    FullFontDirEntry        *entry;
 
     entry = NewFontDirEntry( info, devicename, facename, fontid );
 
@@ -291,9 +289,8 @@ static void AddFontToDir( FontInfo * info, char * devicename, char * facename,
     CurrResFile.FontDir->NumOfFonts += 1;
 }
 
-static void AddFontResources( WResID *name, ResMemFlags flags,
-                              const char *filename )
-/**************************************************************/
+static void AddFontResources( WResID *name, ResMemFlags flags, const char *filename )
+/***********************************************************************************/
 {
     FontInfo            info;
     char *              devicename;

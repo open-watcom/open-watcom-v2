@@ -142,9 +142,9 @@ OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     RECT                rect;
     WdeBaseObject       *new;
-    char                *text;
+    char                *font_facename;
     char                *cp;
-    int                 point_size;
+    int                 font_pointsize;
     bool                use_default;
 
     /* touch unused vars to get rid of warning */
@@ -186,13 +186,13 @@ OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     new->o_item = Create( OBJ_ITEM, parent, &rect, new->object_handle );
 
     use_default = true;
-    text = WdeAllocRCString( WDE_BASEOBJECTFONT );
-    if( text != NULL ) {
-        cp = (char *)_mbschr( (unsigned char const *)text, '.' );
+    font_facename = WdeAllocRCString( WDE_BASEOBJECTFONT );
+    if( font_facename != NULL ) {
+        cp = (char *)_mbschr( (unsigned char const *)font_facename, '.' );
         if( cp ) {
             *cp = '\0';
             cp++;
-            point_size = atoi( cp );
+            font_pointsize = atoi( cp );
             use_default = false;
         }
     }
@@ -200,11 +200,11 @@ OBJPTR CALLBACK WdeBaseCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     if( use_default ) {
         WdeGetResizerFromFont( &new->resizer, "Helv", 8 );
     } else {
-        WdeGetResizerFromFont( &new->resizer, text, point_size );
+        WdeGetResizerFromFont( &new->resizer, font_facename, font_pointsize );
     }
 
-    if( text != NULL ) {
-        WdeFreeRCString( text );
+    if( font_facename != NULL ) {
+        WdeFreeRCString( font_facename );
     }
 
     return( (OBJPTR)new );

@@ -47,6 +47,6 @@ extern HWND JCreateDialogIndirectParam( HINSTANCE hinst, TEMPLATE_HANDLE dlgtemp
 extern HWND JCreateDialog( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner, DLGPROC dlgproc );
 extern HWND JCreateDialogParam( HINSTANCE hinst, LPCSTR lpszDlgTemp, HWND hwndOwner, DLGPROC dlgproc, LPARAM lParamInit );
 
-extern bool JDialogGetJFont( char **typeface, WORD *pointsize );
+extern bool JDialogGetJFont( char **facename, WORD *pointsize );
 
 #endif /* _JDLG_H_INCLUDED */

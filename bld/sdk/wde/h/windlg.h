@@ -50,7 +50,7 @@
   #define SLEN( a )     ((a != NULL) ? strlen( a ) * 2 + 2 : 2)
 #endif
 
-extern TEMPLATE_HANDLE  DialogTemplate( DWORD dtStyle, int x, int y, int cx, int cy, const char *menuname, const char *classname, const char *captiontext, WORD pointsize, const char *typeface, size_t *templatelen );
+extern TEMPLATE_HANDLE  DialogTemplate( DWORD dtStyle, int x, int y, int cx, int cy, const char *menuname, const char *classname, const char *captiontext, WORD font_pointsize, const char *font_facename, size_t *templatelen );
 extern void             DoneAddingControls( TEMPLATE_HANDLE dlgtemplate );
 extern TEMPLATE_HANDLE  AddControl( TEMPLATE_HANDLE dlgtemplate, int x, int y, int cx, int cy, WORD id, DWORD style, const char *classname, const char *captiontext, const void *infodata, BYTE infodatalen, size_t *templatelen );
 extern INT_PTR          DynamicDialogBox( DLGPROCx fn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate );

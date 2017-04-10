@@ -345,7 +345,7 @@ bool WdeScreenToDialog( void *obj, WdeResizeRatio *r, RECT *s, WdeDialogSizeInfo
     return( TRUE );
 }
 
-HFONT WdeGetFont( char *face, int pointsize, int weight )
+HFONT WdeGetFont( char *facename, int pointsize, int weight )
 {
     LOGFONT   lf;
     HDC       dc;
@@ -353,7 +353,7 @@ HFONT WdeGetFont( char *face, int pointsize, int weight )
     dc = GetDC( (HWND)NULL );
     if( dc != (HDC)NULL ) {
         memset( &lf, 0, sizeof( LOGFONT ) );
-        strcpy( lf.lfFaceName, face );
+        strcpy( lf.lfFaceName, facename );
         lf.lfWeight = weight;
         lf.lfHeight = -MulDiv( pointsize, GetDeviceCaps( dc, LOGPIXELSY ), 72);
         ReleaseDC( (HWND)NULL, dc );
@@ -363,7 +363,7 @@ HFONT WdeGetFont( char *face, int pointsize, int weight )
     return( (HFONT)NULL );
 }
 
-bool WdeGetResizerFromFont( WdeResizeRatio *r, char *face, int ptsz )
+bool WdeGetResizerFromFont( WdeResizeRatio *r, char *facename, int pointsize )
 {
     TEMPLATE_HANDLE dlgtemplate;
     HWND            hDlg;
@@ -378,7 +378,7 @@ bool WdeGetResizerFromFont( WdeResizeRatio *r, char *face, int ptsz )
     }
 
     inst = WdeGetAppInstance();
-    dlgtemplate = DialogTemplate( WS_POPUP | DS_SETFONT, 4, 8, 4, 8, NULL, NULL, NULL, ptsz, face, &templatelen );
+    dlgtemplate = DialogTemplate( WS_POPUP | DS_SETFONT, 4, 8, 4, 8, NULL, NULL, NULL, pointsize, facename, &templatelen );
     DoneAddingControls( dlgtemplate );
     dlgproc = MakeProcInstance_DLG( WdeDummyDlgProc, inst );
     hDlg = CreateDialogIndirect( inst, GlobalLock( dlgtemplate ), (HWND)NULL, dlgproc );

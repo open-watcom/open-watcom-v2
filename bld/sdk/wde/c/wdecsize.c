@@ -161,7 +161,7 @@ size_t WdeCalcSizeOfWdeDialogBoxInfo( WdeDialogBoxInfo *info )
     is32bit = h->is32bit;
     is32bitEx = h->is32bitEx;
     size = WdeCalcSizeOfDialogBoxHeader( GETHDR_MENUNAME( h ), GETHDR_CLASSNAME( h ),
-                                        GETHDR_CAPTION( h ), GETHDR_FONTNAME( h ), is32bit, is32bitEx );
+                                        GETHDR_CAPTION( h ), GETHDR_FONTFACENAME( h ), is32bit, is32bitEx );
     for( clist = info->control_list; clist != NULL; clist = ListNext( clist ) ) {
         csize = WdeCalcSizeOfDialogBoxControl( GETCTL_CLASSID( c ), GETCTL_TEXT( c ), is32bit, is32bitEx );
         if( csize == 0 ) {

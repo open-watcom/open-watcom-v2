@@ -215,7 +215,7 @@ WdeDialogBoxHeader *WdeCopyDialogBoxHeader( WdeDialogBoxHeader *src )
     SETHDR_MENUNAME( dest, WdeCopyResNameOr( GETHDR_MENUNAME( src ) ) );
     SETHDR_CLASSNAME( dest, WdeCopyResNameOr( GETHDR_CLASSNAME( src ) ) );
     SETHDR_CAPTION( dest, WdeStrDup( GETHDR_CAPTION( src ) ) );
-    SETHDR_FONTNAME( dest,  WdeStrDup( GETHDR_FONTNAME( src ) ) );
+    SETHDR_FONTFACENAME( dest,  WdeStrDup( GETHDR_FONTFACENAME( src ) ) );
 
     dest->symbol = WdeStrDup( src->symbol );
     dest->helpsymbol = WdeStrDup( src->helpsymbol );
@@ -351,8 +351,8 @@ void WdeFreeDialogBoxHeader( WdeDialogBoxHeader **c )
         if( GETHDR_CAPTION( *c ) ) {
             WRMemFree( GETHDR_CAPTION( *c ) );
         }
-        if( GETHDR_FONTNAME( *c ) ) {
-            WRMemFree( GETHDR_FONTNAME( *c ) );
+        if( GETHDR_FONTFACENAME( *c ) ) {
+            WRMemFree( GETHDR_FONTFACENAME( *c ) );
         }
         if( (*c)->symbol ) {
             WRMemFree( (*c)->symbol );
