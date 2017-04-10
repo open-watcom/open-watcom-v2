@@ -568,7 +568,7 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent, gui_c
 #ifdef __OS2_PM__
     pctldata = NULL;
     if( ctl_info->control_class == GUI_EDIT ) {
-        edata.cb = sizeof( ENTRYFDATA );
+        edata.cb = sizeof( edata );
         edata.cchEditLimit = 2048;
         edata.ichMinSel = 0;
         edata.ichMaxSel = 0;

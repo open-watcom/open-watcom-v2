@@ -245,7 +245,7 @@ static bool convert_keytable( WORD vk, gui_key *key )
 {
     int         i;
 
-    for( i = 0; i < ( sizeof( vk_table ) / sizeof( vk_table[0] ) ); i++ ) {
+    for( i = 0; i < ARRAY_SIZE( vk_table ); i++ ) {
         if( vk == vk_table[i].value ) {
             if( CHK_KS_SHIFT ) {
                 *key = vk_table[i].shifted;
@@ -597,26 +597,24 @@ bool GUIWindowsMapKey( WPI_PARAM1 p1, WPI_PARAM2 p2, gui_key *key )
         return( convert_ascii( ch, key ) );
     } else if( flags & KC_SCANCODE ) {
         if( CHK_KS_CTRL ) {
-            if( convert_table( pm_scan, key, ctrl_table,
-                               sizeof(ctrl_table) / sizeof(ctrl_table[0]) ) ) {
+            if( convert_table( pm_scan, key, ctrl_table, ARRAY_SIZE( ctrl_table ) ) ) {
                 return( true );
             }
-            if( convert_alpha( ch, key ) ) return( true );
+            if( convert_alpha( ch, key ) )
+                return( true );
             return( false );
         } else {
-            if( convert_table( ch, key, alt_table,
-                               sizeof(alt_table) / sizeof(alt_table[0]) ) ) {
+            if( convert_table( ch, key, alt_table, ARRAY_SIZE( alt_table ) ) ) {
                 return( true );
             }
-            *key = (gui_key ) ( pm_scan + GUI_SCAN_OFFSET ) ;
+            *key = (gui_key)( pm_scan + GUI_SCAN_OFFSET ) ;
             return( true );
         }
     }
     return( false );
 }
 
-WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
-                           WPI_PARAM2 lparam )
+WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     WORD                key_flags;
     gui_key_state       key_state;

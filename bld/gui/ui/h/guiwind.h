@@ -34,10 +34,9 @@
 #ifndef _GUIWIND_H_
 #define _GUIWIND_H_
 
-#include "stdui.h"
-
-#include "guitypes.h"
 #include "gui.h"
+#include "stdui.h"
+#include "guitypes.h"
 #include "uivedit.h"
 #include "uiledit.h"
 #include "uidialog.h"

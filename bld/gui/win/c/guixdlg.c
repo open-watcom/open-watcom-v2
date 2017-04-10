@@ -675,7 +675,7 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
             edata.ichMinSel = 0;
             edata.ichMaxSel = 0;
             pctldata = &edata;
-            pctldatalen = edata.cb;
+            pctldatalen = sizeof( edata );
         }
 #endif
         GUIDlgCalcLocation( &ctl_info->rect, &pos, &size );

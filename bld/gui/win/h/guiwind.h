@@ -49,12 +49,11 @@
     #include <commdlg.h>
 #endif
 
+#include "gui.h"
 #include "commonui.h"
 #include "wpi.h"
 #include "guiwpi.h"
 #include "guitypes.h"
-
-#include "gui.h"
 #include "toolbr.h"
 #include "guihint.h"
 

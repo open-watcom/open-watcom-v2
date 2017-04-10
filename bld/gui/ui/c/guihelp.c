@@ -33,7 +33,6 @@
 #include "guiwind.h"
 #include "guicolor.h"
 #include "watcom.h"
-#include "bool.h"
 #include "help.h"
 #include "guistr.h"
 #include "guievent.h"

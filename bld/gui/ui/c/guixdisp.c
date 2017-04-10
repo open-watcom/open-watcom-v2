@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -96,7 +97,6 @@ static control_pairs MessageControls[] = {
  {  DLG_STRING( "i",                            0, 0, 1 ),              INFORMATION },
  {  DLG_STRING( NULL,                           0, 0, 5 ),              STOP        }
 };
-#define NUM_CONTROL_TYPES ( sizeof( MessageControls ) / sizeof( control_pairs ) )
 
 /* static text controls used for displaying message */
 static gui_control_info StaticMessage = DLG_STRING( NULL, TEXT_START_COL, TEXT_ROW, 0 );
@@ -115,7 +115,6 @@ static message_types ControlsNeeded[] = {
   { GUI_YES_NO_CANCEL,          3,      YES | NO | CANCEL       },
   { GUI_SYSTEMMODAL,            0,      NO_CONTROL                      }
 };
-#define NUM_STYLES ( sizeof( ControlsNeeded ) / sizeof( message_types ) )
 
 static bool MessagesInitialized = false;
 
@@ -123,34 +122,34 @@ static void InitMessageControls( void )
 {
     int j;
 
-    for( j = 0; j < NUM_CONTROL_TYPES; j++ ) {
+    for( j = 0; j < ARRAY_SIZE( MessageControls ); j++ ) {
         switch( MessageControls[j].type ) {
-            case ABORT:
-                MessageControls[j].ctl_info.text = LIT( XAbort );
-                break;
-            case CANCEL:
-                MessageControls[j].ctl_info.text = LIT( Cancel );
-                break;
-            case IGNORE:
-                MessageControls[j].ctl_info.text = LIT( XIgnore );
-                break;
-            case NO:
-                MessageControls[j].ctl_info.text = LIT( XNo );
-                break;
-            case OK:
-                MessageControls[j].ctl_info.text = LIT( OK );
-                break;
-            case RETRY:
-                MessageControls[j].ctl_info.text = LIT( XRetry );
-                break;
-            case YES:
-                MessageControls[j].ctl_info.text = LIT( XYes );
-                break;
-            case STOP:
-                MessageControls[j].ctl_info.text = LIT( Stop_Bang );
-                break;
-            default :
-                break;
+        case ABORT:
+            MessageControls[j].ctl_info.text = LIT( XAbort );
+            break;
+        case CANCEL:
+            MessageControls[j].ctl_info.text = LIT( Cancel );
+            break;
+        case IGNORE:
+            MessageControls[j].ctl_info.text = LIT( XIgnore );
+            break;
+        case NO:
+            MessageControls[j].ctl_info.text = LIT( XNo );
+            break;
+        case OK:
+            MessageControls[j].ctl_info.text = LIT( OK );
+            break;
+        case RETRY:
+            MessageControls[j].ctl_info.text = LIT( XRetry );
+            break;
+        case YES:
+            MessageControls[j].ctl_info.text = LIT( XYes );
+            break;
+        case STOP:
+            MessageControls[j].ctl_info.text = LIT( Stop_Bang );
+            break;
+        default :
+            break;
         }
     }
 }
@@ -179,7 +178,6 @@ static bool DisplayMessage( gui_window *gui, gui_event gui_ev, void *param )
             *ret = (gui_message_return)id;
             GUICloseDialog( gui );
             return( true );
-            break;
         default :
             break;
         }
@@ -347,7 +345,7 @@ static int AdjustVert( int *cols, control_types controls_to_use,
 
     i = num_string_controls;
     num_buttons = 0;
-    for( j = 0; j < NUM_CONTROL_TYPES; j++ ) {
+    for( j = 0; j < ARRAY_SIZE( MessageControls ); j++ ) {
         if( ( i < num_controls ) && ( controls_to_use & MessageControls[j].type ) ) {
             memcpy( &controls_info[i], &MessageControls[j].ctl_info, sizeof( gui_control_info ) );
             switch( controls_info[i].control_class ) {
@@ -435,7 +433,7 @@ gui_message_return GUIDisplayMessage( gui_window *wnd, const char *message,
     /* figure out the number of icon and button controls and which ones */
     num_controls = 0;
     controls_to_use = 0;
-    for( i = 0; i < NUM_STYLES; i++ ) {
+    for( i = 0; i < ARRAY_SIZE( ControlsNeeded ); i++ ) {
         if( type & ControlsNeeded[i].type ) {
             num_controls += ControlsNeeded[i].num_controls;
             controls_to_use |= ControlsNeeded[i].controls;
