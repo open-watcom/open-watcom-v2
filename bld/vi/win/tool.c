@@ -37,6 +37,7 @@
 #include "toolbr.h"
 #include "color.h"
 #include "bitmap.h"
+#include "wresdefn.h"
 #include "rcstr.gh"
 
 typedef struct tool_item {
@@ -45,14 +46,15 @@ typedef struct tool_item {
     HBITMAP             bmp;
     char                *name;
     char                *help;
+    const char          FAR *tip;
     bool                is_blank    : 1;
     bool                dont_save   : 1;
     char                cmd[1];
 } tool_item;
 
 typedef struct tool_tip {
-    char    *name;
-    int     tip_id;
+    const char      *name;
+    int             tip_id;
 } tool_tip;
 
 static const tool_tip tips[] = {
@@ -105,8 +107,7 @@ static void nukeButtons( void )
     ss          *p;
     tool_item   *tool;
 
-    p = toolBarHead;
-    while( p != NULL ) {
+    for( p = toolBarHead; p != NULL; ) {
         tool = (tool_item *)p;
         p = p->next;
         if( tool->bmp ) {
@@ -128,14 +129,12 @@ static void toolBarHelp( HWND hwnd, ctl_id id, bool isdown )
     hwnd = hwnd;
     SetMenuHelpString( NULL );
     if( isdown ) {
-        p = toolBarHead;
-        while( p != NULL ) {
+        for( p = toolBarHead; p != NULL; p = p->next ) {
             tool_item *item = (tool_item *)p;
             if( item->id == id ) {
                 SetMenuHelpString( item->help );
                 break;
             }
-            p = p->next;
         }
     }
     UpdateStatusWindow();
@@ -235,7 +234,7 @@ static bool myToolBarProc( HWND hwnd, UINT msg, WPARAM w, LPARAM l )
 /*
  * getTip - get the string identifier of the tooltip for a given item
  */
-static int getTip( char *name )
+static int getTip( const char *name )
 {
     int count = sizeof( tips ) / sizeof( tips[0] );
     int i;
@@ -256,7 +255,8 @@ static int getTip( char *name )
 static void addToolBarItem( tool_item *item )
 {
     TOOLITEMINFO        info;
-    int                 id;
+    size_t              len;
+    const char          *src;
 
     if( item->is_blank ) {
         info.u.blank_space = 8;
@@ -266,9 +266,19 @@ static void addToolBarItem( tool_item *item )
         info.u.bmp = item->bmp;
         info.flags = 0;
     }
-    id = getTip( item->name );
-    if( id < 0 || LoadString( InstanceHandle, id, info.tip, MAX_TIP ) <= 0 ) {
+    if( item->tip == NULL ) {
         info.tip[0] = '\0';
+    } else if( IS_INTRESOURCE( item->tip ) ) {
+        if( LoadString( InstanceHandle, RESOURCE2INT( item->tip ), info.tip, MAX_TIP ) <= 0 ) {
+            info.tip[0] = '\0';
+        }
+    } else {
+        for( len = 0, src = info.tip; len < MAX_TIP - 1; ++src, ++len ) {
+            if( *src == '\0' )
+                break;
+            info.tip[len] = *src;
+        }
+        info.tip[len] = '\0';
     }
     info.depressed = false;
     ToolBarAddItem( toolBar, &info );
@@ -287,6 +297,7 @@ vi_rc AddBitmapToToolBar( const char *data )
     tool_item           *item;
     int                 cmd_len;
     int                 name_len;
+    int                 tip_id;
 
     dont_save[0] = '\0';
 
@@ -310,7 +321,8 @@ vi_rc AddBitmapToToolBar( const char *data )
         item->is_blank = true;
     }
     item->dont_save = ( strlen( dont_save ) != 0 );
-
+    item->tip = NULL;
+    item->bmp = HNULL;
     if( file[0] != '\0' && item->cmd[0] != '\0' ) {
         item->bmp = LoadBitmap( InstanceHandle, file );
         if( item->bmp == HNULL ) {
@@ -320,10 +332,12 @@ vi_rc AddBitmapToToolBar( const char *data )
         strcpy( item->name, file );
         item->help = &item->name[name_len + 1];
         strcpy( item->help, help );
-    } else {
-        item->bmp = HNULL;
+        tip_id = getTip( item->name );
+        if( tip_id > 0 ) {
+            item->tip = MAKEINTRESOURCE( tip_id );
+        }
     }
-    if( toolBar ) {
+    if( toolBar != NULL ) {
         addToolBarItem( item );
     }
     AddLLItemAtEnd( &toolBarHead, &toolBarTail, &item->tool_head );
@@ -344,13 +358,11 @@ vi_rc DeleteFromToolBar( const char *data )
     index = atoi( buffer );
     // index should be (base 1) index of tool in list
     if( index > 0 ) {
-        p = toolBarHead;
-        while( p != NULL ) {
+        for( p = toolBarHead; p != NULL; p = p->next ) {
             index -= 1;
             if( index == 0 ) {
                 break;
             }
-            p = p->next;
         }
         if( p != NULL ) {
             tool_item *item = (tool_item *)p;
@@ -408,8 +420,7 @@ void BarfToolBarData( FILE *f )
     ss          *p;
     tool_item   *citem;
 
-    p = toolBarHead;
-    while( p != NULL ) {
+    for( p = toolBarHead; p != NULL; p = p->next ) {
         citem = (tool_item *)p;
         if( citem->dont_save ) {
             /* do nothing */
@@ -418,7 +429,6 @@ void BarfToolBarData( FILE *f )
         } else {
             MyFprintf( f, "addtoolbaritem %s \"%s\" %s\n", citem->name, citem->help, citem->cmd );
         }
-        p = p->next;
     }
 
 } /* BarfToolBarData */
@@ -477,7 +487,7 @@ void NewToolBar( RECT *rect )
     ss          *curr;
     RECT        covered;
 
-    if( toolBar ) {
+    if( toolBar != NULL ) {
         userClose = false;
         CloseToolBar();
         userClose = true;
@@ -486,10 +496,8 @@ void NewToolBar( RECT *rect )
         return;
     }
     createToolBar( rect );
-    curr = toolBarHead;
-    while( curr != NULL ) {
+    for( curr = toolBarHead; curr != NULL; curr = curr->next ) {
         addToolBarItem( (tool_item *)curr );
-        curr = curr->next;
     }
     UpdateToolBar( toolBar );
     covered = *rect;
