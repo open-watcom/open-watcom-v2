@@ -40,13 +40,18 @@
 #include "wresdefn.h"
 #include "rcstr.gh"
 
+
+#define BORDER_X( x )           ((x) / 4)
+#define BORDER_Y( y )           ((y) / 8)
+#define TOOLBAR_HEIGHT( y )     ((y) + 2 * BORDER_Y( y ) + 3)
+
 typedef struct tool_item {
     ss                  tool_head;
     int                 id;
     HBITMAP             bmp;
-    char                *name;
-    char                *help;
-    const char          FAR *tip;
+    const char          *name;
+    const char          *help;
+    const char          *tooltip;
     bool                is_blank    : 1;
     bool                dont_save   : 1;
     char                cmd[1];
@@ -97,10 +102,6 @@ vi_rc HandleToolCommand( int id )
     }
     return( MENU_COMMAND_NOT_HANDLED );
 }
-
-#define BORDER_X( x )           ((x) / 4)
-#define BORDER_Y( y )           ((y) / 8)
-#define TOOLBAR_HEIGHT( y )     ((y) + 2 * BORDER_Y( y ) + 3)
 
 static void nukeButtons( void )
 {
@@ -255,8 +256,6 @@ static int getTip( const char *name )
 static void addToolBarItem( tool_item *item )
 {
     TOOLITEMINFO        info;
-    size_t              len;
-    const char          *src;
 
     if( item->is_blank ) {
         info.u.blank_space = 8;
@@ -266,19 +265,14 @@ static void addToolBarItem( tool_item *item )
         info.u.bmp = item->bmp;
         info.flags = 0;
     }
-    if( item->tip == NULL ) {
+    if( item->tooltip == NULL ) {
         info.tip[0] = '\0';
-    } else if( IS_INTRESOURCE( item->tip ) ) {
-        if( LoadString( InstanceHandle, RESOURCE2INT( item->tip ), info.tip, MAX_TIP ) <= 0 ) {
+    } else if( IS_INTRESOURCE( item->tooltip ) ) {
+        if( LoadString( InstanceHandle, (unsigned)item->tooltip, info.tip, MAX_TIP ) <= 0 ) {
             info.tip[0] = '\0';
         }
     } else {
-        for( len = 0, src = info.tip; len < MAX_TIP - 1; ++src, ++len ) {
-            if( *src == '\0' )
-                break;
-            info.tip[len] = *src;
-        }
-        info.tip[len] = '\0';
+        strcpy( info.tip, item->tooltip );
     }
     info.depressed = false;
     ToolBarAddItem( toolBar, &info );
@@ -287,54 +281,74 @@ static void addToolBarItem( tool_item *item )
 } /* addToolBarItem */
 
 /*
- * AddBitmapToToolBar - add a toolbar item ([temp], bitmap, help & command)
+ * AddBitmapToToolBar - add a toolbar item ([temp], bitmap, help, [tooltip] and command)
  */
-vi_rc AddBitmapToToolBar( const char *data )
+vi_rc AddBitmapToToolBar( const char *data, bool tip )
 {
     char                file[FILENAME_MAX];
     char                help[MAX_STR];
-    char                dont_save[MAX_STR];
+    char                tooltip[MAX_STR];
     tool_item           *item;
     int                 cmd_len;
     int                 name_len;
+    int                 help_len;
+    int                 tooltip_len;
     int                 tip_id;
+    bool                dont_save;
+    char                *p;
 
-    dont_save[0] = '\0';
-
+    help[0] = '\0';
     data = SkipLeadingSpaces( data );
+    dont_save = false;
     if( strnicmp( data, "temp", 4 ) == 0 ) {
         /* get to the command */
-        GetStringWithPossibleQuote( &data, dont_save );
+        GetStringWithPossibleQuote( &data, help );
+        dont_save = true;
     }
 
     GetStringWithPossibleQuote( &data, file );
     GetStringWithPossibleQuote( &data, help );
+    if( tip ) {
+        GetStringWithPossibleQuote( &data, tooltip );
+    } else {
+        tooltip[0] = '\0';
+    }
 
     data = SkipLeadingSpaces( data );
     cmd_len = strlen( data );
     name_len = strlen( file );
-    item = MemAlloc( sizeof( tool_item ) + cmd_len + name_len + strlen( help ) + 2 );
+    help_len = strlen( help );
+    tooltip_len = strlen( tooltip );
+    if( tooltip_len > MAX_TIP - 1 )
+        tooltip_len = MAX_TIP - 1;
+    item = MemAlloc( sizeof( tool_item ) + cmd_len + name_len + help_len + tooltip_len + 3 );
     strcpy( item->cmd, data );
     if( name_len != 0 ) {
         item->id = NextMenuId();
     } else {
         item->is_blank = true;
     }
-    item->dont_save = ( strlen( dont_save ) != 0 );
-    item->tip = NULL;
+    item->dont_save = dont_save;
+    item->name = p = &item->cmd[cmd_len + 1];
+    strcpy( p, file );
+    p += name_len + 1;
+    item->help = p;
+    strcpy( p, help );
+    p += help_len + 1;
+    item->tooltip = p;
+    memcpy( p, tooltip, tooltip_len );
+    p[tooltip_len] = '\0';
     item->bmp = HNULL;
     if( file[0] != '\0' && item->cmd[0] != '\0' ) {
         item->bmp = LoadBitmap( InstanceHandle, file );
         if( item->bmp == HNULL ) {
             item->bmp = ReadBitmapFile( ToolBarWindow( toolBar ), file, NULL );
         }
-        item->name = &item->cmd[cmd_len + 1];
-        strcpy( item->name, file );
-        item->help = &item->name[name_len + 1];
-        strcpy( item->help, help );
-        tip_id = getTip( item->name );
-        if( tip_id > 0 ) {
-            item->tip = MAKEINTRESOURCE( tip_id );
+        if( tooltip_len == 0 ) {
+            tip_id = getTip( item->name );
+            if( tip_id > 0 ) {
+                item->tooltip = MAKEINTRESOURCE( tip_id );
+            }
         }
     }
     if( toolBar != NULL ) {
@@ -419,15 +433,19 @@ void BarfToolBarData( FILE *f )
 {
     ss          *p;
     tool_item   *citem;
+    const char  *tooltip;
 
     for( p = toolBarHead; p != NULL; p = p->next ) {
         citem = (tool_item *)p;
         if( citem->dont_save ) {
             /* do nothing */
         } else if( citem->is_blank ) {
-            MyFprintf( f, "addtoolbaritem\n" );
+            MyFprintf( f, "addtoolbaritem2\n" );
         } else {
-            MyFprintf( f, "addtoolbaritem %s \"%s\" %s\n", citem->name, citem->help, citem->cmd );
+            tooltip = citem->tooltip;
+            if( IS_INTRESOURCE( citem->tooltip ) )
+                tooltip = "";
+            MyFprintf( f, "addtoolbaritem2 %s \"%s\" \"%s\" %s\n", citem->name, citem->help, tooltip, citem->cmd );
         }
     }
 

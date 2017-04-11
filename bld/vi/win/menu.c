@@ -1143,7 +1143,7 @@ vi_rc MenuItemLastFiles( void )
 
 } /* MenuItemLastFiles */
 
-static char *currMenuHelpString;
+static const char *currMenuHelpString;
 
 /*
  * HandleMenuSelect - handle a WM_MENUSELECT message (display help)
@@ -1218,7 +1218,7 @@ void GetMenuHelpString( char *res )
 /*
  * SetMenuHelpString - set the current menu help string
  */
-void SetMenuHelpString( char *str )
+void SetMenuHelpString( const char *str )
 {
     currMenuHelpString = str;
 

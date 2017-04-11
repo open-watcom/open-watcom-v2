@@ -214,7 +214,12 @@ vi_rc TryCompileableToken( int token, const char *data, bool iscmdline )
         break;
     case PCL_T_ADDTOOLBARITEM:
 #ifdef __WIN__
-        rc = AddBitmapToToolBar( data );
+        rc = AddBitmapToToolBar( data, false );
+#endif
+        break;
+    case PCL_T_ADDTOOLBARITEM2:
+#ifdef __WIN__
+        rc = AddBitmapToToolBar( data, true );
 #endif
         break;
     case PCL_T_DELETETOOLBARITEM:
@@ -222,7 +227,7 @@ vi_rc TryCompileableToken( int token, const char *data, bool iscmdline )
         rc = DeleteFromToolBar( data );
 #endif
         break;
-    case PCL_T_ACTIVATE_IDE:
+    case PCL_T_ACTIVATEIDE:
 #ifdef __WIN__
         StartIDE( InstanceHandle, TRUE );
         rc = ERR_NO_ERR;

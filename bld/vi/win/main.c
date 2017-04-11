@@ -93,7 +93,7 @@ void FiniInstance( void )
     // OLE2Fini();
 }
 
-#if defined( __WATCOMC__ ) && !defined( NDEBUG )
+#if defined( __WINDOWS__ ) && defined( __WATCOMC__ ) && !defined( NDEBUG )
 void _WCFAR *HeapWalker( void )
 {
     struct _heapinfo    info;
