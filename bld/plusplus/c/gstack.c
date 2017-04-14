@@ -45,13 +45,15 @@ static carve_t carveGLOBAL_STACK;
 
 static void gstackInit( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carveGLOBAL_STACK = CarveCreate( sizeof(GLOBAL_STACK), BLOCK_GLOBAL_STACK );
 }
 
 static void gstackFini( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     DbgStmt( CarveVerifyAllGone( carveGLOBAL_STACK, "GLOBAL_STACK" ) );
     CarveDestroy( carveGLOBAL_STACK );
 }

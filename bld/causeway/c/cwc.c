@@ -99,7 +99,8 @@ static char padding[ 16 ] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 static bool InitOutFileBuffer( FILE *fo )
 /***************************************/
 {
-    fo = fo;
+    /* unused parameters */ (void)fo;
+
     OutTotal = 0;
     OutCtrl = 0;
     OutBitCount = 0;
@@ -398,7 +399,7 @@ static int EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size )
                 } else {
                     len = EncodeLit;
                 }
-                if( len > xlen1 ) 
+                if( len > xlen1 )
                     len = xlen1;
 
                 WriteByte( len );
@@ -443,7 +444,7 @@ static int EncodeFile( FILE *fo, unsigned_8 *data, unsigned_32 data_size )
                 CodeFree.head = new->next;
                 new->next = NULL;
                 new->data = data - 1;
-                code = CodeHeads + CodeLast; 
+                code = CodeHeads + CodeLast;
                 last = code->tail;
                 if( last != NULL ) {
                     last->next = new;

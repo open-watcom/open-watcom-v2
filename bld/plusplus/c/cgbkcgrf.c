@@ -1093,7 +1093,8 @@ static bool procStaticFunction( // PROCESS STATIC FUNCTIONS IN CALL GRAPH
         unsigned oe_static : 1; // - static function is called once
     } flags;
 
-    ctl = ctl;
+    /* unused parameters */ (void)ctl;
+
     ExtraRptIncrementCtr( ctr_nodes_visited );
 //  if( node->inlineable && node->addrs == 0 ) {
     if( node->inlineable ) {
@@ -1173,7 +1174,8 @@ static bool procFunction(       // POST-PROCESS FUNCTION IN CALL GRAPH
     SYMBOL func;                // - function
     CGFILE* cgfile;             // - for function
 
-    ctl = ctl;
+    /* unused parameters */ (void)ctl;
+
     ExtraRptIncrementCtr( ctr_nodes_visited );
     if( node->state_table ) {
         callGraphFlags.any_state_tables = true;

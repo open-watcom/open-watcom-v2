@@ -54,7 +54,8 @@ static char *sectionName( owl_file_handle file, owl_symbol_handle sym ) {
 
     char        *name = "UNDEFINED";
 
-    file = file;
+    /* unused parameters */ (void)file;
+
     if( sym->section != NULL ) {
         name = &sym->section->name->text[ 0 ];
     }

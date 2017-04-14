@@ -733,7 +733,7 @@ static void doARGEQUAL( const char *p )
 // :cmt comment text
 static void doCMT( const char *p )
 {
-    p = p;
+    /* unused parameters */ (void)p;
 }
 
 // :internal.
@@ -741,7 +741,8 @@ static void doINTERNAL( const char *p )
 {
     OPTION *o;
 
-    p = p;
+    /* unused parameters */ (void)p;
+
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_internal = true;
     }
@@ -843,7 +844,8 @@ static void doMULTIPLE( const char *p )
 {
     OPTION *o;
 
-    p = p;
+    /* unused parameters */ (void)p;
+
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_multiple = true;
     }
@@ -854,7 +856,8 @@ static void doNOCHAIN( const char *p )
 {
     OPTION *o;
 
-    p = p;
+    /* unused parameters */ (void)p;
+
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->chain = NOCHAIN;
     }
@@ -940,7 +943,8 @@ static void doFILE( const char *p )
 {
     OPTION *o;
 
-    p = p;
+    /* unused parameters */ (void)p;
+
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_file = true;
         o->is_simple = false;
@@ -952,7 +956,8 @@ static void doOPTIONAL( const char *p )
 {
     OPTION *o;
 
-    p = p;
+    /* unused parameters */ (void)p;
+
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_optional = true;
     }
@@ -962,7 +967,8 @@ static void doNEGATE( const char *p )
 {
     OPTION *o;
 
-    p = p;
+    /* unused parameters */ (void)p;
+
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_negate = true;
         if( o->enumerate != NULL ){
@@ -975,7 +981,8 @@ static void doNEGATE( const char *p )
 // :noequal.
 static void doNOEQUAL( const char *p )
 {
-    p = p;
+    /* unused parameters */ (void)p;
+
     optFlag.no_equal = true;
 }
 
@@ -993,7 +1000,8 @@ static void doPATH( const char *p )
 {
     OPTION *o;
 
-    p = p;
+    /* unused parameters */ (void)p;
+
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_path = true;
         o->is_simple = false;
@@ -1086,7 +1094,8 @@ static void doPREFIX( const char *p )
 {
     OPTION *o;
 
-    p = p;
+    /* unused parameters */ (void)p;
+
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_prefix = true;
         o->is_simple = false;
@@ -1175,7 +1184,8 @@ static void doTIMESTAMP( const char *p )
 {
     OPTION *o;
 
-    p = p;
+    /* unused parameters */ (void)p;
+
     for( o = optionList; o != NULL; o = o->synonym ) {
         o->is_timestamp = true;
         o->is_simple = false;
@@ -2224,7 +2234,8 @@ static void emitUsageB( bool page_flag )
 {
     size_t len;
 
-    page_flag = page_flag;
+    /* unused parameters */ (void)page_flag;
+
     len = strlen( tokbuff ) + 1;
     fwrite( tokbuff, len, 1, bfp );
     if( len > maxUsageLen ) {

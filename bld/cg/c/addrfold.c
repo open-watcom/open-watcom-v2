@@ -526,7 +526,8 @@ static  bool    ShiftConst( an r_addr ) {
 extern  bool    CypAddrShift( an l_addr, an r_addr, type_def *tipe ) {
 /********************************************************************/
 
-    tipe = tipe;
+    /* unused parameters */ (void)tipe;
+
     CheckPointer( l_addr );
     if( l_addr->format == NF_NAME )
         return( false );

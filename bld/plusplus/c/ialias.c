@@ -55,7 +55,7 @@ void IAliasFini( void )
 /*********************/
 {
     IALIASPTR   aliaslist;
-    
+
     while( (aliaslist = IAliasNames) != NULL ) {
         IAliasNames = aliaslist->next;
         CMemFree( aliaslist );
@@ -66,7 +66,7 @@ const char *IAliasLookup( const char *filename, bool is_lib )
 /***********************************************************/
 {
     IALIASPTR   alias;
-    
+
     for( alias = IAliasNames; alias != NULL; alias = alias->next ) {
         if( (alias->is_lib == is_lib) && !strcmp( filename, alias->alias_name ) ) {
             return( alias->real_name );
@@ -129,7 +129,7 @@ pch_status PCHWriteIncAlias( void )
 {
     unsigned    alias_len, real_name_len;
     IALIASPTR   alias;
-    
+
     for( alias = IAliasNames; alias != NULL; alias = alias->next ) {
         alias_len = strlen( alias->alias_name ) + 1;
         real_name_len = strlen( alias->real_name ) + 1;
@@ -146,13 +146,15 @@ pch_status PCHWriteIncAlias( void )
 
 pch_status PCHInitIncAlias( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniIncAlias( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 

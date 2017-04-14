@@ -135,7 +135,7 @@ static bool printableChar( char c )
 static bool printableString( char *s )
 {
     size_t  i;
-    
+
     for( i = 0; i < strlen( s ); i++ ){
         if( !printableChar( s[i] ) ) {
             return( false );
@@ -504,7 +504,7 @@ static void printOut( char *string, size_t offset, size_t size )
     size_t              curr_pos = 0;
     int                 ascii;
 
-    offset = offset;
+    /* unused parameters */ (void)offset;
 
     ascii = !IsMasmOutput();
     for( ;; ) {
@@ -537,7 +537,7 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
     int         raw;
     int         is_masm;
 
-    end = end;
+    /* unused parameters */ (void)end;
 
     raw = buffer && contents;
 

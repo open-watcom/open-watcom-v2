@@ -123,7 +123,8 @@ static int reScanGetCharCheck( int c )
 
 static void reScanGetNextCharUndo( int c )
 {
-    c = c;
+    /* unused parameters */ (void)c;
+
     --SrcFile->src_ptr;
     CompFlags.rescan_buffer_done = false;
 }
@@ -171,7 +172,8 @@ id_hash_idx CalcHash( const char *id, size_t len )
 {
     unsigned    hash;
 
-    len = len;
+    /* unused parameters */ (void)len;
+
     hash = hashpjw( id );
     HashValue = hash % ID_HASH_SIZE;
 #if ( MACRO_HASH_SIZE > 0x0ff0 ) && ( MACRO_HASH_SIZE < 0x0fff )

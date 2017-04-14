@@ -265,7 +265,7 @@
                 if( _GBitOverlap( conf->id.out_of_block, flow->need_store ) ) {
                     _SuffixStore( final_defn, reg_name, opnd, class );
 #ifndef _InRegAssgn
-                    final_defn = final_defn;
+                    /* unused parameters */ (void)final_defn;
 #endif
                 }
                 if( _GBitOverlap( conf->id.out_of_block, flow->need_load ) ) {

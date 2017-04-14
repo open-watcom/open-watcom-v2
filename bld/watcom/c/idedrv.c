@@ -243,13 +243,14 @@ typedef int (*USER_DLL_FUN_ARGV)( int, char ** );
 
 static IDEBool IDEAPI stubPrintMsgFn( IDECBHdl hdl, char const *msg )
 {
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
 #ifndef NDEBUG
     fputs( "stubPrintMsgFn called!\n", errout );
     fputs( msg, errout );
     fputc( '\n', errout );
 #else
-    msg = msg;
+    /* unused parameters */ (void)msg;
 #endif
     return( false );
 }
@@ -257,7 +258,8 @@ static IDEBool IDEAPI stubPrintMsgFn( IDECBHdl hdl, char const *msg )
 #ifndef NDEBUG
 static void IDEAPI printProgressIndex( IDECBHdl hdl, unsigned index )
 {
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     fprintf( errout, "progress: %u\n", index );
 }
 #else
@@ -266,7 +268,8 @@ static void IDEAPI printProgressIndex( IDECBHdl hdl, unsigned index )
 
 static IDEBool IDEAPI printMessage( IDECBHdl hdl, char const *msg )
 {
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     fputs( msg, errout );
     fputc( '\n', errout );
     return( false );
@@ -277,7 +280,8 @@ static IDEBool IDEAPI printWithInfo( IDECBHdl hdl, IDEMsgInfo *inf )
     FILE    *fp;
     char    prt_buffer[ 512 ];
 
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     IdeMsgFormat( hdl
                 , inf
                 , prt_buffer
@@ -303,7 +307,8 @@ static IDEBool IDEAPI printWithInfo( IDECBHdl hdl, IDEMsgInfo *inf )
 
 static IDEBool IDEAPI printWithCrLf( IDECBHdl hdl, const char *message )
 {
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     fputs( message, errout );
     fflush( errout );
     return( false );
@@ -313,8 +318,8 @@ static IDEBool IDEAPI getInfoCB( IDECBHdl hdl, IDEInfoType type, IDEGetInfoWPara
 {
     IDEBool retn;
 
-    extra = extra;
-    hdl = hdl;
+    /* unused parameters */ (void)hdl; (void)extra;
+
     switch( type ) {
     default:
         retn = true;
@@ -405,7 +410,8 @@ static void StopRunning( void )
 #ifndef NO_CTRL_HANDLERS
 static void intHandler( int sig_num )
 {
-    sig_num = sig_num;
+    /* unused parameters */ (void)sig_num;
+
     StopRunning();
 }
 #endif // NO_CTRL_HANDLERS
@@ -479,13 +485,13 @@ static int ensureLoaded( IDEDRV *inf, int *p_runcode )
         if( 0 == runcode ) {
             if( NULL == inf->ent_name ) {
                 InitDllFn initdll;
-                runcode = sysdepDLLgetProc( inf, IDETOOL_INITDLL, 
+                runcode = sysdepDLLgetProc( inf, IDETOOL_INITDLL,
                                                           (P_FUN *)&initdll );
                 if( 0 == runcode ) {
                     runcode = initdll( NULL , CBPtr, &inf->ide_handle );
                     if( 0 == runcode ) {
                         PassInitInfo initinfo;
-                        runcode = sysdepDLLgetProc( inf, IDETOOL_INITINFO, 
+                        runcode = sysdepDLLgetProc( inf, IDETOOL_INITINFO,
                                                           (P_FUN *)&initinfo );
                         if( 0 == runcode ) {
                             if( NULL == InfoPtr ) {

@@ -693,10 +693,11 @@ static orl_return       applyBakpats( omf_file_handle ofh )
         ofh->bakpat->first_fixup = tbf->next;
 
         assert( tbf->segidx || tbf->symidx );
-        if( tbf->segidx )
+        if( tbf->segidx ) {
             sh = findSegment( ofh, tbf->segidx );
-        else 
+        } else {
             sh = findComDatByName( ofh, tbf->symidx );
+        }
         if( !sh ) {
             err = ORL_ERROR;
             break;
@@ -858,7 +859,8 @@ static orl_sec_flags    getSegSecFlags( omf_file_handle ofh, omf_idx name,
     omf_string_struct   *str;
     int                 slen;
 
-    align = align; combine = combine;
+    /* unused parameters */ (void)align; (void)combine;
+
     assert( ofh );
 
     str = OmfGetLName( ofh->lnames, class );
@@ -991,7 +993,8 @@ orl_return              OmfAddLEData( omf_file_handle ofh, int is32,
     omf_sec_handle      sh;
     orl_return          err;
 
-    is32 = is32;
+    /* unused parameters */ (void)is32;
+
     assert( ofh );
     assert( buffer );
     assert( seg );
@@ -1027,7 +1030,8 @@ orl_return  OmfAddLName( omf_file_handle ofh, char *buffer, omf_string_len len, 
     assert( ofh );
     assert( buffer );
 
-    typ = typ;
+    /* unused parameters */ (void)typ;
+
     if( !ofh->lnames ) {
         ofh->lnames = newStringTable( ofh, OMF_SEC_LNAME_INDEX );
         if( !ofh->lnames )
@@ -1044,7 +1048,8 @@ orl_return  OmfAddExtName( omf_file_handle ofh, char *buffer, omf_string_len len
     assert( ofh );
     assert( buffer );
 
-    typ = typ;
+    /* unused parameters */ (void)typ;
+
     if( !ofh->extdefs ) {
         ofh->extdefs = newStringTable( ofh, OMF_SEC_IMPORT_INDEX );
         if( !ofh->extdefs )
@@ -1080,7 +1085,7 @@ orl_return              OmfAddBakpat( omf_file_handle ofh, uint_8 loctype,
      */
     if( !ofh->bakpat ) {
         ofh->bakpat = _ClientAlloc( ofh, sizeof( omf_tmp_bakpat_struct ) );
-        if( ofh->bakpat == NULL ) 
+        if( ofh->bakpat == NULL )
             return( ORL_OUT_OF_MEMORY );
         memset( ofh->bakpat, 0, sizeof( omf_tmp_bakpat_struct ) );
         ofh->status |= OMF_STATUS_ADD_BAKPAT;
@@ -1314,7 +1319,6 @@ orl_return  OmfAddExtDef( omf_file_handle ofh, omf_string_struct *extname, omf_r
     assert( ofh );
     assert( extname );
 
-    typ = typ;
     styp = ORL_SYM_TYPE_OBJECT;
     if( ( typ == CMD_COMDEF ) || ( typ == CMD_LCOMDEF ) ) {
         styp |= ORL_SYM_TYPE_COMMON;
@@ -1359,7 +1363,8 @@ orl_return              OmfAddComDat( omf_file_handle ofh, int is32, int flags,
     orl_sec_offset      size;
     omf_string_struct   *comname;
 
-    typ = typ;
+    /* unused parameters */ (void)typ;
+
     assert( ofh );
     assert( buffer );
 
@@ -1580,7 +1585,8 @@ orl_return              OmfAddPubDef( omf_file_handle ofh, int is32,
     omf_symbol_handle   sym;
     orl_symbol_type     styp;
 
-    is32 = is32;
+    /* unused parameters */ (void)is32;
+
     assert( ofh );
     assert( buffer );
 

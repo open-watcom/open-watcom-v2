@@ -907,7 +907,8 @@ void WriteLoad3( void *dummy, const char *buff, size_t size )
 /***********************************************************/
 /* write a buffer out to the load file (useful as a callback) */
 {
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     WriteLoad( buff, size );
 }
 

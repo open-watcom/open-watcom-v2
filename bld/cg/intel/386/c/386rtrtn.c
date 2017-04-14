@@ -148,7 +148,8 @@ bool    RTLeaveOp2( instruction *ins )
     gonna take the bugger's address in rMAKECALL.
 */
 {
-    ins = ins;
+    /* unused parameters */ (void)ins;
+
     return( false );
 }
 

@@ -52,20 +52,21 @@ void CharsAndShortsToInts( void )
 
 void FixCallIns( instruction * ins )
 {
-    ins = ins;
+    /* unused parameters */ (void)ins;
 }
 
 void FixMemBases( void )
 {
 }
 
-hw_reg_set ScratchReg( void ) {
+hw_reg_set ScratchReg( void )
+{
     _Zoiks( ZOIKS_091 );
     return( HW_SI );
 }
 
-hw_reg_set ParmRegConflicts( hw_reg_set r ) {
-
+hw_reg_set ParmRegConflicts( hw_reg_set r )
+{
     return( r );
 }
 
@@ -74,8 +75,8 @@ type_length TempLocation( name *temp )
     return( temp->t.location + CurrProc->locals.size );
 }
 
-hw_reg_set      VarargsHomePtr( void ) {
-
+hw_reg_set      VarargsHomePtr( void )
+{
     _Zoiks( ZOIKS_078 );
     return( HW_EAX );
 }

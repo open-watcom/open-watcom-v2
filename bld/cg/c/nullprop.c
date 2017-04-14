@@ -249,7 +249,8 @@ static  int             BlockSearch( block *blk, instruction *ins, name *op, boo
 {
     instruction         *curr;
 
-    blk = blk;
+    /* unused parameters */ (void)blk;
+
     for( curr = ins; curr->head.opcode != OP_BLOCK; curr = NextIns( curr, forward ) ) {
         // if we are going forward, the dereferences take precedence over the
         // redefinitions, the reverse is true when backpeddling

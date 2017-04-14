@@ -93,7 +93,7 @@ static void checkTabWidth( unsigned *p )
 
 static void checkOENumber( unsigned *p )
 {
-    p = p;
+    /* unused parameters */ (void)p;
 }
 
 static void checkPrologSize( unsigned *p )
@@ -103,14 +103,15 @@ static void checkPrologSize( unsigned *p )
 
 static void checkErrorLimit( unsigned *p )
 {
-    p = p;
+    /* unused parameters */ (void)p;
 }
 
 static bool scanDefine( OPT_STRING **p )
 {
     MEPTR cmdln_mac;
 
-    p = p;
+    /* unused parameters */ (void)p;
+
     cmdln_mac = DefineCmdLineMacro( CompFlags.extended_defines );
     if( cmdln_mac != NULL ) {
         cmdln_mac->macro_flags |= MFLAG_USER_DEFINED;
@@ -122,7 +123,8 @@ static bool scanDefinePlus( OPT_STRING **p )
 {
     MEPTR cmdln_mac;
 
-    p = p;
+    /* unused parameters */ (void)p;
+
     if( CmdScanSwEnd() ) {
         CompFlags.extended_defines = true;
     } else {
@@ -136,7 +138,8 @@ static bool scanDefinePlus( OPT_STRING **p )
 
 static bool scanUndefine( OPT_STRING **p )
 {
-    p = p;
+    /* unused parameters */ (void)p;
+
     AddUndefName();
     return( true );
 }
@@ -209,7 +212,8 @@ static bool scanFBX( OPT_STRING **p )
     bool retb;                  // - return: 1 ==> ok, 0 ==> error
     FBI_KIND options;           // - options scanned
 
-    p = p;
+    /* unused parameters */ (void)p;
+
     if( scanFBIopts( &options, FBI_DEFAULT_OFF ) ) {
         if( options & FBI_VAR ) {
             CompFlags.optbr_v = false;
@@ -232,7 +236,8 @@ static bool scanFBX( OPT_STRING **p )
     }
     return( retb );
 #else
-    p = p;
+    /* unused parameters */ (void)p;
+
     BadCmdLine( ERR_INVALID_OPTION );
     return( false );
 #endif
@@ -244,7 +249,8 @@ static bool scanFBI( OPT_STRING **p )
     bool retb;                  // - return: 1 ==> ok, 0 ==> error
     FBI_KIND options;           // - options scanned
 
-    p = p;
+    /* unused parameters */ (void)p;
+
     if( scanFBIopts( &options, FBI_DEFAULT_ON ) ) {
         if( options & FBI_VAR ) {
             CompFlags.optbr_v = true;
@@ -267,7 +273,8 @@ static bool scanFBI( OPT_STRING **p )
     }
     return( retb );
 #else
-    p = p;
+    /* unused parameters */ (void)p;
+
     BadCmdLine( ERR_INVALID_OPTION );
     return( false );
 #endif
@@ -396,7 +403,8 @@ static void procOptions(        // PROCESS AN OPTIONS LINE
 
 static void handleOptionFC( OPT_STORAGE *data, int value )
 {
-    value = value;
+    /* unused parameters */ (void)value;
+
     if( data->fc ) {
         data->fc = false;
         if( CompFlags.batch_file_primary ) {
@@ -425,13 +433,15 @@ static void handleOptionFC( OPT_STORAGE *data, int value )
 
 static void handleOptionEQ( OPT_STORAGE *data, bool value )
 {
-    data = data;
+    /* unused parameters */ (void)data;
+
     CompFlags.eq_switch_used = value;
 }
 
 static void handleOptionEW( OPT_STORAGE *data, bool value )
 {
-    data = data;
+    /* unused parameters */ (void)data;
+
     CompFlags.ew_switch_used = value;
 }
 
@@ -1219,7 +1229,8 @@ void GenCOptions(               // PROCESS ALL OPTIONS
 static void fini(               // FINALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CMemFreePtr( &ObjectFileName );
     CmdSysFini();
 }

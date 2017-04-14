@@ -106,7 +106,8 @@ int             DoneFlag = 0;
 
 static void SetDoneFlag( int dummy )
 {
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     DoneFlag = 1;
 }
 

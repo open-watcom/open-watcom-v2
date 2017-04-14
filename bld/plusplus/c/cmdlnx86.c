@@ -611,7 +611,8 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
 static void setIntelArchitecture( OPT_STORAGE *data, mem_model_control control )
 {
 #if _CPU == 8086
-    control = control;
+    /* unused parameters */ (void)control;
+
     switch( data->arch_i86 ) {
     case OPT_arch_i86__0:
         SET_CPU( CpuSwitches, CPU_86 );

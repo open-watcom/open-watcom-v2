@@ -151,8 +151,8 @@ orl_file_format GetFormat( void )
 
 static orl_return nopCallBack( const char *str, void *cookie  )
 {
-    str = str;
-    cookie = cookie;
+    /* unused parameters */ (void)str; (void)cookie;
+
     return( ORL_OKAY );
 }
 
@@ -165,7 +165,8 @@ static orl_return scanTabCallBack( orl_sec_handle sh, orl_sec_offset start,
     scantab_ptr         tmp;
     scantab_struct      senitel;
 
-    cookie = cookie;
+    /* unused parameters */ (void)cookie;
+
     if( !sh ) return( ORL_OKAY );
     if( start >= end ) return( ORL_OKAY );
     dp = HashTableQuery( HandleToSectionTable, (hash_value) sh );

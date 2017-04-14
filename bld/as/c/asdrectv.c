@@ -77,7 +77,8 @@ static bool dirFuncAlign ( directive_t *dir, dir_table_enum parm )
 {
     int_32      val;
 
-    parm = parm;
+    /* unused parameters */ (void)parm;
+
     if( !dirNumOperandsVerify( dir->num_operands, 1 ) ) {
         return( true );
     }
@@ -111,7 +112,7 @@ static bool dirFuncErr( directive_t *dir, dir_table_enum parm )
 {
     char    *str;
 
-    parm = parm;
+    /* unused parameters */ (void)parm;
 
     if( dirHasOperand( dir ) ) {
         assert( dir->num_operands == 1 );
@@ -130,8 +131,8 @@ static bool dirFuncIgnore( directive_t *dir, dir_table_enum parm )
 //****************************************************************
 // Silently ignore this directive...
 {
-    dir = dir;
-    parm = parm;
+    /* unused parameters */ (void)dir; (void)parm;
+
     return( true );
 }
 
@@ -141,7 +142,8 @@ static bool dirFuncNop( directive_t *dir, dir_table_enum parm )
 {
     uint_32     opcode = INS_NOP;
 
-    dir = dir;
+    /* unused parameters */ (void)dir;
+
     if( parm == DT_NOP_NOP ) {
 #ifdef _STANDALONE_
         ObjEmitData( CurrentSection, (char *)&opcode, sizeof( opcode ), true );
@@ -220,7 +222,8 @@ static bool dirFuncSetOption( directive_t *dir, dir_table_enum parm )
 {
     char    *str;
 
-    parm = parm;
+    /* unused parameters */ (void)parm;
+
     if( dirHasOperand( dir ) ) {
         assert( dir->num_operands == 1 );
         assert( dir->operand_list->type == DIROP_LINE );
@@ -263,7 +266,8 @@ static bool dirFuncSpace( directive_t *dir, dir_table_enum parm )
     dir_operand                 *dirop;
     int_32                      count;
 
-    parm = parm;
+    /* unused parameters */ (void)parm;
+
     if( !dirNumOperandsVerify( dir->num_operands, 1 ) ) {
         return( true );
     }
@@ -454,7 +458,7 @@ static bool dirFuncSwitchSection( directive_t *dir, dir_table_enum parm )
 {
     reserved_section    as_section = 0;
 
-    dir = dir;
+    /* unused parameters */ (void)dir;
 
     switch( parm ) {
     case DT_SEC_TEXT:
@@ -513,6 +517,8 @@ static bool dirFuncSwitchSection( directive_t *dir, dir_table_enum parm )
 static bool dirFuncUnsupported( directive_t *dir, dir_table_enum parm )
 //*********************************************************************
 {
+    /* unused parameters */ (void)parm;
+
     Error( DIRECTIVE_NOT_SUPPORTED, SymName( dir->dir_sym ) );
     return( true );
 }

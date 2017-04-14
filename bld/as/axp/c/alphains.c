@@ -305,18 +305,16 @@ static void addInstructionSymbol( qualifier_flags flags, ins_table *table_entry 
 static void enum_NONE( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, ins_table * ), void *parm ) {
 //********************************************************************************************************************************
 
-    method = method;
-    level = level;
-    mask = mask;
+    /* unused parameters */ (void)method; (void)level; (void)mask;
+
     func( QF_NONE, parm );
 }
 
 static void enum_OF_ADDL( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, ins_table * ), void *parm ) {
 //***********************************************************************************************************************************
 
-    method = method;
-    level = level;
-    mask = mask;
+    /* unused parameters */ (void)method; (void)level; (void)mask;
+
     func( QF_NONE, parm );
     func( QF_V, parm );
 }
@@ -324,9 +322,8 @@ static void enum_OF_ADDL( ins_enum_method method, uint_32 mask, uint_8 level, vo
 static void enum_DTI_CVTQL( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, ins_table * ), void *parm ) {
 //*************************************************************************************************************************************
 
-    method = method;
-    level = level;
-    mask = mask;
+    /* unused parameters */ (void)method; (void)level; (void)mask;
+
     func( QF_NONE, parm );
     func( QF_V, parm );
     func( QF_S | QF_V, parm );
@@ -335,9 +332,8 @@ static void enum_DTI_CVTQL( ins_enum_method method, uint_32 mask, uint_8 level, 
 static void enum_IEEE_CMPTEQ( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, ins_table * ), void *parm ) {
 //***************************************************************************************************************************************
 
-    method = method;
-    level = level;
-    mask = mask;
+    /* unused parameters */ (void)method; (void)level; (void)mask;
+
     func( QF_NONE, parm );
     func( QF_S | QF_U, parm );
 }
@@ -392,9 +388,8 @@ static void enum_VAX_ADDF_or_CVTGQ( ins_enum_method method, uint_32 mask, uint_8
 static void enum_VAX_CMPGEQ( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, ins_table * ), void *parm ) {
 //**************************************************************************************************************************************
 
-    method = method;
-    level = level;
-    mask = mask;
+    /* unused parameters */ (void)method; (void)level; (void)mask;
+
     func( QF_NONE, parm );
     func( QF_S, parm );
 }
@@ -402,9 +397,8 @@ static void enum_VAX_CMPGEQ( ins_enum_method method, uint_32 mask, uint_8 level,
 static void enum_VAX_CVTQF( ins_enum_method method, uint_32 mask, uint_8 level, void (*func)( qualifier_flags, ins_table * ), void *parm ) {
 //*************************************************************************************************************************************
 
-    method = method;
-    level = level;
-    mask = mask;
+    /* unused parameters */ (void)method; (void)level; (void)mask;
+
     func( QF_NONE, parm );
     func( QF_C, parm );
 }

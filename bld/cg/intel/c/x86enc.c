@@ -478,7 +478,6 @@ static  bool    LayOpndSize( instruction *ins, gentype gen ) {
 */
 
 #if _TARGET & _TARG_IAPX86
-    gen = gen;
     switch( ins->head.opcode ) {
     case OP_PUSH:
         if( ( gen == G_C1 || gen == G_M1 ) && ins->type_class == I4 ) {
@@ -1547,7 +1546,7 @@ extern  void    GenTouchStack( bool sp_might_point_at_something ) {
 */
 
 #if _TARGET & _TARG_IAPX86
-    sp_might_point_at_something=sp_might_point_at_something;
+    /* unused parameters */ (void)sp_might_point_at_something;
 #else
     if( sp_might_point_at_something || OptForSize == 100 ) {
         QuickSave( HW_EAX, OP_PUSH );
@@ -1609,7 +1608,8 @@ extern  void    GenUnkMov( hw_reg_set dst, pointer value ) {
 /***********************************************************
     MOV         dst,??? - to be patched
 */
-    dst = dst;
+    /* unused parameters */ (void)dst;
+
     _Code;
     LayOpbyte( 0xb8 );
     OpndSize( dst );

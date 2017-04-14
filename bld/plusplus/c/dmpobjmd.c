@@ -240,7 +240,8 @@ static DUMP_INFO* dumpStruct(   // DUMP A STRUCTURE
     CLASSINFO* info;            // - class information
     NAME *parent;               // - where parent ptr is stored
 
-    control = control;
+    /* unused parameters */ (void)control;
+
     type = StructType( type );
     info = type->u.c.info;
     parent = VstkPush( &di->stack );

@@ -310,7 +310,8 @@ unsigned TypeidSize( unsigned len )
 
 static void init( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     rttiClasses = NULL;
     rttiTypeids = NULL;
     carveRTTI_CLASS = CarveCreate( sizeof( RTTI_CLASS ), BLOCK_RTTI_CLASS );
@@ -320,7 +321,8 @@ static void init( INITFINI* defn )
 
 static void fini( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CarveDestroy( carveRTTI_CLASS );
     CarveDestroy( carveRTTI_TYPEID );
     CarveDestroy( carveRTTI_VFPTR );

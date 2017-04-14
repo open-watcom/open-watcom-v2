@@ -44,7 +44,8 @@ int BuildQuotedFName( char *dst, size_t maxlen, const char *path, const char *fi
 {
     int has_space = 0;
 
-    maxlen = maxlen;
+    /* unused parameters */ (void)maxlen;
+
     if( strchr( path, ' ' ) != NULL )
         has_space = 1;
     if( strchr( filename, ' ' ) != NULL )

@@ -161,7 +161,8 @@ void ThrowRoGen(                // GENERATE A THROW R/O BLOCK
 static void throwInit(          // INITIALIZE CGBKTHRW
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     ring_throw_ro = NULL;
     carveTHROW_RO = CarveCreate( sizeof( THROW_RO ), 4 );
 }
@@ -170,7 +171,8 @@ static void throwInit(          // INITIALIZE CGBKTHRW
 static void throwFini(          // COMPLETE CGBKTHRW
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CarveDestroy( carveTHROW_RO );
 }
 

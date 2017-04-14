@@ -154,7 +154,8 @@ void SymTransFuncEnd(           // COMPLETE FUNCTION TRANSLATION
 static void symTransInit(       // INITIALIZE CGBKSTRN
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     sym_trans_id = 0;
     VstkOpen( &stack_sym_trans, sizeof( SYM_TRANS ), 16 );
 }
@@ -163,7 +164,8 @@ static void symTransInit(       // INITIALIZE CGBKSTRN
 static void symTransFini(       // COMPLETE CGBKSTRN
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     VstkClose( &stack_sym_trans );
 }
 

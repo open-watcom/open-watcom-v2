@@ -583,8 +583,8 @@ char *IdentifyObject( file_list *list, unsigned long *loc, unsigned long *size )
 static void BadSkip( file_list *list, unsigned long *loc )
 /********************************************************/
 {
-    list = list;
-    loc = loc;
+    /* unused parameters */ (void)list; (void)loc;
+
     BadObjFormat();
 }
 

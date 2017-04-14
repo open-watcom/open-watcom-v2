@@ -93,7 +93,8 @@ static AUX_INFO *getLangInfo(   // GET LANGUAGE INFO. FOR SYMBOL
 static void init(               // MODULE INITIALIZATION
     INITFINI* def )             // - definition
 {
-    def = def;
+    /* unused parameters */ (void)def;
+
     CompFlags.low_on_memory_printed = false;
 }
 
@@ -390,7 +391,8 @@ segment_id FESegID(             // GET SEGMENT ID FOR SYMBOL
 int FELexLevel(                 // GET LEXICAL LEVEL OF SYMBOL
     cg_sym_handle sym )         // - the symbol
 {
-    sym = sym;
+    /* unused parameters */ (void)sym;
+
     return( 0 );
 }
 
@@ -402,8 +404,8 @@ cg_type FEParmType(             // ARGUMENT PROMOTION ?
 {
     SYMBOL func = _func;
 
-    func = func;
-    parm = parm;
+    /* unused parameters */ (void)parm;
+
     switch( type ) {
 #if _CPU == _AXP
     case TY_INT_1:
@@ -1600,6 +1602,7 @@ const char *FEGetEnv(           // GET VALUE FOR ENV-VAR
 int FEMoreMem( unsigned size )
 /****************************/
 {
-    size = size;
+    /* unused parameters */ (void)size;
+
     return( 0 );
 }

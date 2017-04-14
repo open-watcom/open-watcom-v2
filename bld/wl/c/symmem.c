@@ -98,7 +98,9 @@ static bool ShrinkBlock( block_data *block )
     return( true );
 #else
     /* There is no guarantee realloc() won't move memory - just don't do it */
-    block = block;
+
+    /* unused parameters */ (void)block;
+
     return( false );
 #endif
 }

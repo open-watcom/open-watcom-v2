@@ -283,7 +283,8 @@ void CVAddModule( mod_entry *obj, section *sect )
     unsigned_32         size;
     size_t              namelen;
 
-    sect = sect;
+    /* unused parameters */ (void)sect;
+
     if( obj->d.cv->pubsize > 0 ) {
         GenSubSection( sstPublicSym, obj->d.cv->pubsize );
         DumpInfoU32( CVSECT_MISC, 1 );
@@ -401,7 +402,8 @@ void CVAddLocal( seg_leader *seg, offset length )
 /***********************************************/
 // called during pass 1 final segment processing.
 {
-    length = length;
+    /* unused parameters */ (void)length;
+
     if( IS_DBG_INFO( seg ) ) {
         AddSubSection( false );
     }
@@ -437,7 +439,8 @@ void CVGenGlobal( symbol *sym, section *sect )
     unsigned_32 buf;
     size_t      namelen;
 
-    sect = sect;
+    /* unused parameters */ (void)sect;
+
     if( sym->info & SYM_STATIC )
         return;
     namelen = strlen( sym->name );
@@ -546,16 +549,14 @@ void CVGenLines( lineinfo *info )
 static void CVAddAddrInit( segdata *sdata, void *cookie )
 /*******************************************************/
 {
-    sdata = sdata;
-    cookie = cookie;
+    /* unused parameters */ (void)sdata; (void)cookie;
 }
 
 static void CVAddAddrAdd( segdata *sdata, offset delta, offset size, void *cookie, bool isnewmod )
 /************************************************************************************************/
 {
-    delta = delta;
-    size = size;
-    cookie = cookie;
+    /* unused parameters */ (void)delta; (void)size; (void)cookie;
+
     if( isnewmod ) {
         sdata->o.mod->d.cv->numsegs++;
         SectAddrs[CVSECT_MODULE].u.vm_offs += sizeof( cv_seginfo );

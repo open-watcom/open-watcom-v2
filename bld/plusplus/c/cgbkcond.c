@@ -222,9 +222,12 @@ void CondInfoPush(              // PUSH COND_INFO STACK
 void CondInfoPop(               // POP COND_INFO STACK
     void )
 {
+#ifndef NDEBUG
     COND_STK* stk = PstkPopElement( &stack_cond_blks );
-    stk = stk;
     _Dump( stk, "POP" );
+#else
+    PstkPopElement( &stack_cond_blks );
+#endif
 }
 
 
@@ -235,7 +238,8 @@ void CondInfoSetup(             // SETUP UP CONDITIONAL INFORMATION
 {
     unsigned flag_offset;       // - offset within flags vector
 
-    fctl = fctl;
+    /* unused parameters */ (void)fctl;
+
     flag_offset = index >> 3;
     cond->mask = 0x01 << ( index & 7 );
     cond->sym = FstabRw();
@@ -391,7 +395,7 @@ const char *CallbackName( void *f )
     if( f == callBackNewCtorEnd )
         return( "callBackNewCtorEnd" );
 #else
-    f = f;
+    /* unused parameters */ (void)f;
 #endif
     return( NULL );
 }
@@ -403,7 +407,8 @@ const char *CallbackName( void *f )
 static void init(               // CGBKCOND INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     PstkOpen( &stack_cond_blks );
     carveInfo = CarveCreate( sizeof( COND_STK ), 32 );
 }
@@ -412,7 +417,8 @@ static void init(               // CGBKCOND INITIALIZATION
 static void fini(               // CGBKCOND COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     PstkClose( &stack_cond_blks );
     CarveDestroy( carveInfo );
 }

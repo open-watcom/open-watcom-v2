@@ -123,7 +123,7 @@ FullDiagCtrlListOS2 *SemOS2AddDiagCtrlList( FullDiagCtrlListOS2 *list,
                     PresParamListOS2 *presparams )
 /***************************************************************************/
 {
-    presparams = presparams;
+    /* unused parameters */ (void)presparams;
 
     if( ctrl != NULL ) {
         ctrl->dataListHead = dataList;

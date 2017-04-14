@@ -593,7 +593,8 @@ void LabelSwitchLabel(          // PROCESSING FOR A BLOCK OF SWITCH LABELS
     SCOPE defn,                 // - scope for switch
     bool deadcode )             // - true==> state is dead-code
 {
-    deadcode = deadcode;
+    /* unused parameters */ (void)deadcode;
+
     checkSwitchState( defn );
 }
 
@@ -850,7 +851,8 @@ void LabelTempDtored(           // ENSURE DTOR OF TEMP IS OK
 {
     BLK_INIT *blk;              // - current initialization block
 
-    expr = expr;                // ***** later, use for a better message *****
+    /* unused parameters */ (void)expr; // ***** later, use for a better message *****
+
     ClassAccessDtor( temp->sym_type );
     blk = labelFindBlk( SymScope( temp ) );
     labelMarkDtorSym( blk, temp );
@@ -905,7 +907,8 @@ void LabelCondEnd(              // END OF CONDITIONAL BLOCK
 static void labelInit(          // INITIALIZE LABELS (PGM)
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carveLAB_DEF = CarveCreate( sizeof( LAB_DEF ), BLOCK_LAB_DEF );
     carveLAB_REF = CarveCreate( sizeof( LAB_REF ), BLOCK_LAB_REF );
     VstkOpen( &stack_cond, sizeof( COND_BLK ), 16 );
@@ -915,7 +918,8 @@ static void labelInit(          // INITIALIZE LABELS (PGM)
 static void labelFini(          // COMPLETION OF LABLES (PGM)
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CarveDestroy( carveLAB_DEF );
     CarveDestroy( carveLAB_REF );
     VstkClose( &stack_cond );

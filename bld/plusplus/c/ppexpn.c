@@ -211,7 +211,7 @@ bool ( *CExpr[] )(void) = { // table of functions to reduce expressions
 static void ppexpnInit(         // INITIALIZATION FOR MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
 
     carve_ppoperand_stack = CarveCreate( sizeof( PPEXPN_OPERAND_STACK ), 16 );
     HeadOperand = NULL;
@@ -223,7 +223,7 @@ static void ppexpnInit(         // INITIALIZATION FOR MODULE
 static void ppexpnFini( // COMPLETION FOR MODULE
     INITFINI* defn ) // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
 
     CarveDestroy( carve_ppoperand_stack );
     HeadOperand = NULL;
@@ -499,7 +499,7 @@ static void PrecedenceParse( ppvalue *p ) // main precedence parse algorithm
                        "Operator on stack with back precedence " );
             if( CurToken < LAST_TOKEN_PREC ) {
                 prec_token = Prec[CurToken];
-                if( prec_token < prec_operator 
+                if( prec_token < prec_operator
                   || ( ( prec_token == prec_operator ) && ( prec_token != PREC_UNARY ) ) ) {
                     done = CExpr[prec_operator](); // reduce
                 } else {

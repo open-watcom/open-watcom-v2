@@ -835,7 +835,8 @@ static OV_RESULT compareScalar( FNOV_SCALAR *first, TYPE *first_type,
 {
     OV_RESULT   retn;
 
-    isUDC = isUDC;
+    /* unused parameters */ (void)isUDC;
+
     if( first->udcnv != second->udcnv ) {
         retn = compareInt( first->udcnv, second->udcnv );
     } else if( first->standard != second->standard ) {
@@ -2204,7 +2205,8 @@ bool IsActualOverloadedFunc(            // TEST IF ACTUAL (IGNORE SC_DEFAULT) OV
 static void fnovInit( INITFINI* defn )
 /************************************/
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carveFNOVLIST = CarveCreate( sizeof( FNOV_LIST ), BLOCK_FNOVLIST );
     carveManyFNOVRANK = CarveCreate( CACHE_FNOVRANK_SIZE * sizeof( FNOV_RANK ),
                                      BLOCK_ManyFNOVRANK );
@@ -2213,7 +2215,8 @@ static void fnovInit( INITFINI* defn )
 static void fnovFini( INITFINI* defn )
 /************************************/
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     DbgStmt( CarveVerifyAllGone( carveFNOVLIST, "FNOVLIST" ) );
     DbgStmt( CarveVerifyAllGone( carveManyFNOVRANK, "ManyFNOVRANK" ) );
     CarveDestroy( carveFNOVLIST );

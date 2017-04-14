@@ -170,8 +170,9 @@ static bool DgStoreMemberPointer( TYPE type, PTREE expr )
 void DgStoreConstScalar( PTREE expr, TYPE type, SYMBOL sym )
 /**********************************************************/
 {
-//  symbol_flag added;
-    type = type;
+    /* unused parameters */ (void)type;
+
+    //  symbol_flag added;
     switch( expr->op ) {
     case PT_INT_CONSTANT:
         sym = SymBindConstant( sym, expr->u.int64_constant );

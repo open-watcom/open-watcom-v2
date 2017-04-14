@@ -357,7 +357,7 @@ static void dataInitCheckHugeSegment( target_size_t position )
         DgSegmentIncrement();
     }
 #else
-    position = position;
+    /* unused parameters */ (void)position;
 #endif
 }
 
@@ -825,7 +825,8 @@ static void dataInitPushStack( INITIALIZE_ENTRY entry, INITIALIZE_INFO *prev )
 static void dataInitInit( INITFINI* defn )
 /****************************************/
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     _dump( "DataInitInit" );
     code_file_save_scope = NULL;
     code_file_save_handle = NULL;
@@ -839,7 +840,8 @@ static void dataInitInit( INITFINI* defn )
 static void dataInitFini( INITFINI* defn )
 /****************************************/
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     _dump( "DataInitFini" );
     while( currInit != NULL ) {
         // last initialization didn't get finished, just abandon it

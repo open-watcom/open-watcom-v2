@@ -1165,8 +1165,9 @@ static TOKEN scanDelim1( bool expanding )
 {
     TOKEN token;
 
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
-    expanding = expanding;
     token = TokValue[ CurrChar ];
     Buffer[0] = CurrChar;
     Buffer[1] = '\0';
@@ -1182,7 +1183,8 @@ static TOKEN scanDelim12( bool expanding )       // @ or @@ token
     TOKEN tok;
     int token_len;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     c = CurrChar;
     Buffer[0] = c;
@@ -1207,7 +1209,8 @@ static TOKEN scanDelim12EQ( bool expanding )     // @, @@, or @= token
     TOKEN tok;
     int token_len;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     c = CurrChar;
     Buffer[0] = c;
@@ -1236,7 +1239,8 @@ static TOKEN scanDelim12EQ2EQ( bool expanding )  // @, @@, @=, or @@= token
     TOKEN tok;
     int token_len;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     c = CurrChar;
     Buffer[0] = c;
@@ -1270,7 +1274,8 @@ static TOKEN scanDelim1EQ( bool expanding )      // @ or @= token
     TOKEN tok;
     int token_len;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     c = CurrChar;
     Buffer[0] = c;
@@ -1328,7 +1333,8 @@ static TOKEN scanLT( bool expanding )    // <, <=, <<, <<=, <%, <:
     TOKEN tok;
     int token_len;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     Buffer[0] = '<';
     tok = T_LT;
@@ -1368,7 +1374,8 @@ static TOKEN scanPercent( bool expanding )   // %, %=, %>, %:, %:%:
     TOKEN tok;
     int token_len;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     Buffer[0] = '%';
     tok = T_PERCENT;
@@ -1411,7 +1418,8 @@ static TOKEN scanColon( bool expanding ) // :, ::, or :>
     TOKEN tok;
     int token_len;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     Buffer[0] = ':';
     nc = NextChar();
@@ -1441,7 +1449,8 @@ static TOKEN scanMinus( bool expanding ) // -, -=, --, ->, or ->*
     TOKEN tok;
     int token_len;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     Buffer[0] = '-';
     nc = NextChar();
@@ -1475,7 +1484,8 @@ static TOKEN scanMinus( bool expanding ) // -, -=, --, ->, or ->*
 
 static TOKEN scanFloat( bool expanding )
 {
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     if( PPControl & PPCTL_ASM )
         return( doScanAsmToken() );
@@ -1540,7 +1550,8 @@ static TOKEN scanPPNumber( void )
 
 static TOKEN scanPPDigit( bool expanding )
 {
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     Buffer[0] = CurrChar;
     TokenLen = 1;
@@ -1551,7 +1562,8 @@ static TOKEN scanPPDot( bool expanding )
 {
     int         c;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     Buffer[0] = '.';
     TokenLen = 1;
@@ -1625,8 +1637,6 @@ static TOKEN scanInvalid( bool expanding )
         }
         return( T_EOF );
     }
-#else
-    expanding = expanding;
 #endif
     if( diagnose_lex_error( expanding ) ) {
         CErr2( WARN_WEIRD_CHARACTER, CurrChar );
@@ -1638,7 +1648,9 @@ static TOKEN scanInvalid( bool expanding )
 static TOKEN scanEof( bool expanding )
 {
     DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
-    expanding = expanding;
+
+    /* unused parameters */ (void)expanding;
+
     return( T_EOF );
 }
 

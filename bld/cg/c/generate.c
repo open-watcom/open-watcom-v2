@@ -230,7 +230,8 @@ static  void            PreOptimize( void )
 static  block           *NextBlock( block *blk, void *parm )
 /**********************************************************/
 {
-    parm = parm;
+    /* unused parameters */ (void)parm;
+
     return( blk->next_block );
 }
 

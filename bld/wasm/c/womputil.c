@@ -59,9 +59,7 @@ void PObjRegList( const pobj_list *list, size_t len )
 void PObjUnRegList( const pobj_list *list, size_t len )
 /*****************************************************/
 {
-
-    list = list;
-    len = len;
+    /* unused parameters */ (void)list; (void)len;
 }
 
 #ifndef NDEBUG

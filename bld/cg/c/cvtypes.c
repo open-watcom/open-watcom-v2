@@ -410,7 +410,8 @@ extern  dbg_type    CVFtnType( const char *name, dbg_ftn_type tipe )
     unsigned        size;
     cv_primitive    index;
 
-    name = name;
+    /* unused parameters */ (void)name;
+
     index.s = 0;
     index.f.mode = CV_DIRECT;
     index.f.type = CV_COMPLEX;
@@ -838,8 +839,8 @@ extern  dbg_type    CVFtnArray( back_handle dims, cg_type lo_bound_tipe,
     lf_values       ret;
     type_def        *tipe_addr;
 
+    /* unused parameters */ (void)num_elts_tipe;
 
-    num_elts_tipe = num_elts_tipe;
     tipe_addr = TypeAddress( lo_bound_tipe );
     itipe = LFIntType( tipe_addr->length );
     symref[0] = OutBckSym( dims, off, itipe );
@@ -996,7 +997,8 @@ extern  dbg_type   CVSubRange( signed_32 lo, signed_32 hi, dbg_type base )
 /************************************************************************/
 /* not supported by CV */
 {
-    base = base;
+    /* unused parameters */ (void)base;
+
     return( ArrayDimL( lo, hi ) );
 }
 
@@ -1103,12 +1105,13 @@ static  dbg_type    CVBasedPtrK( cg_type ptr_type, dbg_type base,
     void            *ptr1;
     void            *ptr2;
 
+    /* unused parameters */ (void)ptr_type;
+
     //TODO: Need to do somthing about segments
     //TODO: Need to do somthing about BasePtr
     NewTypeString( out );
     ret = ++TypeIdx;
 //    ptype = PtrClass( ptr_type );
-    ptr_type = ptr_type;
     cvptr = StartType( out, LFG_POINTER );
     cvptr->attr.s = 0;
     cvptr->attr.f.mode = CV_PTR;

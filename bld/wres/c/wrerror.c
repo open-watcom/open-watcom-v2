@@ -35,6 +35,7 @@
 
 bool WresRecordError( WResStatus status )
 {
-    status = status;
+    /* unused parameters */ (void)status;
+
     return( true );
 }

@@ -584,7 +584,8 @@ bool ExpandTheWorld( token_idx start_pos, bool early_only, bool flag_msg )
 {
     token_idx   val;
 
-    early_only = early_only;
+    /* unused parameters */ (void)early_only;
+
     val = EvalExpr( Token_Count, start_pos, Token_Count, flag_msg );
     if( val == INVALID_IDX )
         return( RC_ERROR );

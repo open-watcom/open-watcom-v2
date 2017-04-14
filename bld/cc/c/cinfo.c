@@ -109,7 +109,10 @@ void SetFarHuge( SYMPTR sym, bool report )
     type_modifiers      attrib;
     target_size         size;
 
-    report = report; /* in case not used */
+#if _CPU != 8086
+    /* unused parameters */ (void)report;
+#endif
+
 #if _CPU == 8086
     if( sym->attribs.declspec == DECLSPEC_DLLIMPORT
       || sym->attribs.declspec == DECLSPEC_DLLEXPORT ) {
@@ -229,7 +232,8 @@ void    FEGenProc( CGSYM_HANDLE hdl, call_handle call_list )
 {
     SYM_HANDLE      sym_handle = (SYM_HANDLE)hdl;
 
-    call_list = call_list;
+    /* unused parameters */ (void)call_list;
+
     GenInLineFunc( sym_handle );
 }
 
@@ -871,7 +875,8 @@ BACK_HANDLE FEBack( CGSYM_HANDLE cgsym_handle )
 int FELexLevel( CGSYM_HANDLE cgsym_handle )
 /*****************************************/
 {
-    cgsym_handle = cgsym_handle;
+    /* unused parameters */ (void)cgsym_handle;
+
     return( 0 );
 }
 
@@ -913,10 +918,10 @@ cg_type FEParmType( CGSYM_HANDLE func, CGSYM_HANDLE parm, cg_type tipe )
     SYM_HANDLE  sym_handle = (SYM_HANDLE)func;
     SYMPTR      sym;
 #else
-    func = func;
+    /* unused parameters */ (void)func;
 #endif
+    /* unused parameters */ (void)parm;
 
-    parm = parm;
     switch( tipe ) {
 #if _CPU == 386 || _CPU == 370 || _CPU == _PPC || _CPU == _MIPS
     case TY_UINT_2:

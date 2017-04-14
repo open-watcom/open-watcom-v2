@@ -40,7 +40,8 @@ static WResFileID res_open( const char *name, wres_open_mode omode )
 {
     FILE    *fp;
 
-    omode=omode;
+    /* unused parameters */ (void)omode;
+
     fp = fopen( name, "rb" );
     if( fp == NULL )
         WRES_ERROR( WRS_OPEN_FAILED );
@@ -78,7 +79,8 @@ static WResFileOffset res_tell( WResFileID fid )
 
 static bool res_ioerr( WResFileID fid, size_t rc )
 {
-    rc = rc;
+    /* unused parameters */ (void)rc;
+
     return( ferror( WRES_FID2FH( fid ) ) != 0 );
 }
 

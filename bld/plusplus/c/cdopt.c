@@ -1361,7 +1361,8 @@ static SYMBOL defAssFind(       // GET DEFAULT OP= (OR NULL IF SCALAR )
 static bool defAssBasePushable( // TEST IF BASE CLASS PUSHABLE FOR OP=
     BASE_CLASS *bcl )           // - base class
 {
-    bcl = bcl;
+    /* unused parameters */ (void)bcl;
+
     return true;
 }
 
@@ -1369,7 +1370,8 @@ static bool defAssBasePushable( // TEST IF BASE CLASS PUSHABLE FOR OP=
 static bool defAssMembPushable( // TEST IF MEMBER PUSHABLE FOR OP=
     SYMBOL sym )                // - symbol for ctor
 {
-    sym = sym;
+    /* unused parameters */ (void)sym;
+
     return true;
 }
 
@@ -1419,8 +1421,7 @@ void RtnGenCallBackCdoptAccOpEq(// CHECK ACCESS FROM OP=, IF REQ'D
     CLASSINFO* ci = TypeClassInfo( type );
     if( ci->assign_defined ) {
         CD_DESCR* descr = CDoptDefOpeqBuild( type );
-        cdoptChkAccFunGen( ClassDefaultOpEq( type, descr->orig_type )
-                         , descr );
+        cdoptChkAccFunGen( ClassDefaultOpEq( type, descr->orig_type ), descr );
     }
 }
 
@@ -1906,7 +1907,8 @@ void CDoptBackEnd(              // START OF BACK-END PROCESSING
 static void cdoptInit(          // INITIALIZATION FOR CDOPT
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     allDescriptors.cdopt_ctor = NULL;
     allDescriptors.cdopt_dtor = NULL;
     allDescriptors.cdopt_opeq = NULL;
@@ -1932,7 +1934,8 @@ static void cdoptInit(          // INITIALIZATION FOR CDOPT
 static void cdoptFini(          // COMPLETION FOR CDOPT
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     cacheEmpty( &allDescriptors );
     CarveDestroy( carveCD_DESCR );
     CarveDestroy( carveCL_ELEM );
@@ -1965,12 +1968,14 @@ pch_status PCHReadCdOptData( void )
 
 pch_status PCHInitCdOptData( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniCdOptData( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }

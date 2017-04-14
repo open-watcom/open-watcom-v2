@@ -193,7 +193,8 @@ static vi_rc writeScript( const char *fn, sfile *sf, vlist *vl, srcline *sline, 
     char        tmp[MAX_SRC_LINE];
     int         token;
 
-    vl = vl;
+    /* unused parameters */ (void)vl;
+
     /*
      * get compiled file name, and make error file
      */
@@ -322,7 +323,8 @@ int main( int argc, char **argv )
 {
     vi_rc   rc;
 
-    argc = argc;
+    /* unused parameters */ (void)argc;
+
     rc = Compile( argv[1], argv[2] );
     return( (rc == ERR_NO_ERR) ? 0 : -1 );
 }

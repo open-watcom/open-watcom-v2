@@ -149,11 +149,12 @@ void _CGAPI BEUnload( void )
 bool _CGAPI BELoad( const char *name )
 /************************************/
 {
-    name = name;
+    /* unused parameters */ (void)name;
+
     return( true );
 }
 
-void _CGAPI BEUnload( void ) 
+void _CGAPI BEUnload( void )
 /**************************/
 {
 }

@@ -50,7 +50,8 @@ static VSTK_CTL expressions;    // expressions stack
 static void init(               // INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     VstkOpen( &expressions, sizeof( CGEXPR ), 128 );
 }
 
@@ -58,7 +59,8 @@ static void init(               // INITIALIZATION
 static void fini(               // COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     VstkClose( &expressions );
 }
 

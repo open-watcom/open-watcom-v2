@@ -317,7 +317,8 @@ static TWO_OP LRShift;
 static bool LRShift( instruction *a, instruction *b )
 /*************************************************/
 {
-    a=a;b=b;
+    /* unused parameters */ (void)a; (void)b;
+
     return( false );
 }
 
@@ -326,7 +327,8 @@ static TWO_OP RLShift;
 static bool RLShift( instruction *a, instruction *b )
 /*************************************************/
 {
-    a=a;b=b;
+    /* unused parameters */ (void)a; (void)b;
+
     return( false );
 }
 
@@ -335,7 +337,8 @@ static THREE_OP Nop3;
 static bool Nop3( instruction *a, instruction *b )
 /****************************************************/
 {
-    a=a;b=b;
+    /* unused parameters */ (void)a; (void)b;
+
     return( false );
 }
 
@@ -538,7 +541,8 @@ static bool DoConversionOps( instruction *ins, bool *change, instruction **n )
 {
     instruction *next;
 
-    n = n;
+    /* unused parameters */ (void)n;
+
     switch( ins->head.opcode ) {
     case OP_CONVERT:
     case OP_PTR_TO_NATIVE:
@@ -624,7 +628,8 @@ static bool DoMemWrites( instruction *ins, bool *change, instruction **n ) {
 /**************************************************************************/
     instruction *next;
 
-    n = n;
+    /* unused parameters */ (void)n;
+
     if( ins->result != NULL ) {
         switch( ins->result->n.class ) {
         case N_TEMP:

@@ -95,5 +95,5 @@ void InitDecl(
 void FiniDecl(
     dw_client                   cli )
 {
-    cli = cli;
+    /* unused parameters */ (void)cli;
 }

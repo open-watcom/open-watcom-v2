@@ -3261,7 +3261,8 @@ static void process_thunk(      // PROCESS THUNK AFTER VIRTUAL FILES
 static void cgbackInit(         // INITIALIZATION FOR MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     state_tables_obj = NULL;
     fun_try_impls = NULL;
     data_file = NULL;
@@ -3295,7 +3296,8 @@ static void cgbackInit(         // INITIALIZATION FOR MODULE
 static void cgbackFini(         // COMPLETION FOR MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     VstkClose( &stack_labs_cs );
     VstkClose( &stack_goto_near );
     CarveDestroy( carveTRY_IMPL );

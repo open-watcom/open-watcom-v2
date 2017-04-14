@@ -518,7 +518,8 @@ static void ODBIGenAddrAdd( segdata *sdata, offset delta, offset size, void *_di
     addrinfo    addr;
     debug_info  *dptr = _dinfo;
 
-    delta = delta;
+    /* unused parameters */ (void)delta;
+
     if( isnewmod ) {
         addr.size = size;
         addr.mod_idx = sdata->o.mod->d.o->modnum;
@@ -702,7 +703,8 @@ void ODBIGenLines( lineinfo *info )
 static void ODBIAddAddrInit( segdata *sdata, void *cookie )
 /*********************************************************/
 {
-    cookie = cookie;
+    /* unused parameters */ (void)cookie;
+
     sdata->u.leader->num = 0;
 }
 
@@ -710,8 +712,8 @@ static void ODBIAddAddrAdd( segdata *sdata, offset delta, offset size,
                             void *_dinfo, bool isnewmod )
 /*******************************************************/
 {
-    delta = delta;
-    size = size;
+    /* unused parameters */ (void)delta; (void)size;
+
     if( !isnewmod )
         return;
     ((debug_info *)_dinfo)->addr.size += sizeof( addrinfo );
@@ -789,7 +791,8 @@ void ODBIGenModule( void )
 void ODBISectCleanup( section *sect )
 /***********************************/
 {
-    sect = sect;
+    /* unused parameters */ (void)sect;
+
     _PermFree( sect->dbg_info );
 }
 

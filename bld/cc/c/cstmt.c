@@ -361,7 +361,7 @@ static void UnWindTry( tryindex_t try_scope )
     tree->op.u2.st.u.try_index = try_scope;
     AddStmt( tree );
 #else
-    try_scope = try_scope;
+    /* unused parameters */ (void)try_scope;
 #endif
 }
 

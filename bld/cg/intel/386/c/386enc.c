@@ -264,7 +264,8 @@ extern  byte    DoMDisp( name *op, bool alt_encoding )
 {
     hw_reg_set          regs;
 
-    alt_encoding = alt_encoding;
+    /* unused parameters */ (void)alt_encoding;
+
     regs = CalcSegment( op->v.symbol, op->m.memory_type );
     if( HW_COvlap( regs, HW_SEGS ) ) {
         GenSeg( regs );
@@ -826,7 +827,8 @@ extern  void    GFld10( type_length where )
 
 extern  void    Do4Shift( instruction *ins ) {
 /********************************************/
-/* NOT NEEDED */ ins = ins;
+
+    /* unused parameters */ (void)ins;
 }
 
 
@@ -834,7 +836,7 @@ extern  void    Do4RShift( instruction *ins )
 /*******************************************/
 /* NOT NEEDED ON 386 */
 {
-    ins = ins;
+    /* unused parameters */ (void)ins;
 }
 
 
@@ -842,7 +844,7 @@ extern  void    Gen4RNeg( instruction *ins )
 /******************************************/
 /* NOT NEEDED ON 386 */
 {
-    ins = ins;
+    /* unused parameters */ (void)ins;
 }
 
 
@@ -916,7 +918,7 @@ extern  void    Gen4Neg( instruction *ins )
 /*****************************************/
 /* NOT NEEDED ON 386 */
 {
-    ins = ins;
+    /* unused parameters */ (void)ins;
 }
 
 
@@ -924,7 +926,7 @@ extern  void    Do4CXShift( instruction *ins, void (*rtn)(instruction *) )
 /************************************************************************/
 /* NOT NEEDED ON 386 */
 {
-    ins = ins; rtn = rtn;
+    /* unused parameters */ (void)ins; (void)rtn;
 }
 
 

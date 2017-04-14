@@ -49,7 +49,8 @@ static  bool            OnExitFlag = true;
 static void SigIntFunc( int sig_num )
 /****************************/
 {
-    sig_num = sig_num;
+    /* unused parameters */ (void)sig_num;
+
     BrkFlag = true;
 }
 

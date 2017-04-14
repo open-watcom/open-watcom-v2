@@ -179,7 +179,8 @@ void PragmaAuxInfoInit( int flag_stdatnum )
         StdcallInfo.objname = AUX_STRALLOC( "_*" );
     }
 #else
-    flag_stdatnum = flag_stdatnum;
+    /* unused parameters */ (void)flag_stdatnum;
+
     StdcallInfo.objname = AUX_STRALLOC( "_*" );
 #endif
 

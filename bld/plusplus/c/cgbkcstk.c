@@ -143,7 +143,8 @@ void CallIndirectVirtual(       // MARK INDIRECT CALL AS VIRTUAL
     CALL_STK* cstk;             // - top of call stack
     SYMBOL virt_fun;            // - dummy symbol for virtual call
 
-    vfunc = vfunc;
+    /* unused parameters */ (void)vfunc;
+
     if( is_virtual ) {
         virt_fun = ind_call_stack;
         virt_fun->id = SC_VIRTUAL_FUNCTION;
@@ -173,7 +174,7 @@ void CgBackFreeIndCall(         // FREE INDIRECT-CALL SYMBOL
     SYMBOL sym )                // - symbol to be freed
 {
 #if 1
-    sym = sym;
+    /* unused parameters */ (void)sym;
 #else
     SYMBOL curr;                // - current symbol in free list
     SYMBOL prev;                // - previous symbol
@@ -211,7 +212,8 @@ void CgBackFreeIndCalls(        // FREE ALL INDIRECT-CALL SYMBOLS
 static void callStackInit(      // INITIALIZE CGBKCSTK
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     ind_call_stack = NULL;
     ind_call_free = NULL;
     VstkOpen( &stack_calls, sizeof( CALL_STK ), 4 );
@@ -221,7 +223,8 @@ static void callStackInit(      // INITIALIZE CGBKCSTK
 static void callStackFini(      // COMPLETE CGBKCSTK
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     VstkClose( &stack_calls );
 }
 

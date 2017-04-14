@@ -201,7 +201,8 @@ extern  type_def        *TypeDef( cg_type refno, type_length length, type_length
 */
     type_list   *list;
 
-    align = align;
+    /* unused parameters */ (void)align;
+
     list = CGAlloc( sizeof( type_list ) );
     list->link = TypeList;
     TypeList = list;

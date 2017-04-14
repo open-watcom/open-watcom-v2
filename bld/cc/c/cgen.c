@@ -715,7 +715,7 @@ static cg_name ConvertPointer( OPNODE *node, cg_name name )
         name = CGUnary( O_PTR_TO_FOREIGN, name, TY_POINTER );
     }
 #else
-    node = node;
+    /* unused parameters */ (void)node;
 #endif
     return( name );
 }

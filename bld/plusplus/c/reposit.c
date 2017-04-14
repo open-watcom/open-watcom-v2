@@ -43,7 +43,8 @@ static REPO_REC_FUN *funRepository; // repository for functions
 static void init(               // INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     funRepository = NULL;
     carveFunRepository = CarveCreate( sizeof( REPO_REC_FUN ), 16 );
 }
@@ -52,7 +53,8 @@ static void init(               // INITIALIZATION
 static void fini(               // COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CarveDestroy( carveFunRepository );
 }
 
@@ -94,5 +96,5 @@ REPO_REC_FUN* RepoFunRead(      // GET FUNCTION RECORD FROM REPOSITORY
 void RepoFunRelease(            // RELEASE FUNCTION RECORD
     REPO_REC_FUN* rec )         // - record to be released
 {
-    rec = rec;
+    /* unused parameters */ (void)rec;
 }

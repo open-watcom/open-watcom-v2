@@ -143,8 +143,8 @@ extern  void    DFDumpName( dbg_name name, dbg_type tipe )
 extern void DFBackRefType( dbg_name name, dbg_type tipe )
 /*******************************************************/
 {
-    name = name;
-    tipe = tipe;
+    /* unused parameters */ (void)name; (void)tipe;
+
     Zoiks( ZOIKS_108 );
 }
 
@@ -326,18 +326,18 @@ extern  dbg_type        DFFtnArray( back_handle dims, cg_type lo_bound_tipe,
 }
 
 
-extern  dbg_type        DFSubRange( signed_32 lo, signed_32 hi,
-                                    dbg_type base ) {
+extern  dbg_type DFSubRange( signed_32 lo, signed_32 hi, dbg_type base )
 /***************************************************/
 /* need some dwarflib support */
-    lo = lo;
-    hi = hi;
-    base = base;
+{
+    /* unused parameters */ (void)lo; (void)hi; (void)base;
+
     return( 0 );
 }
 
-static  uint   DFPtrClass( cg_type ptr_type ){
-/*******************************************************************/
+static  uint   DFPtrClass( cg_type ptr_type )
+/*******************************************/
+{
     type_def    *tipe_addr;
     uint        flags;
 

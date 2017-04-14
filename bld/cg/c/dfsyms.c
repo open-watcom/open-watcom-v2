@@ -951,7 +951,8 @@ extern  void    DFProEnd( dbg_rtn *rtn, offset lc ) {
     dw_handle           obj;
     sym_access          *access;
 
-    lc = lc;
+    /* unused parameters */ (void)lc;
+
     sym = AskForLblSym( CurrProc->label );
     tipe = FEDbgRetType( sym );
     flags = 0;
@@ -1038,7 +1039,8 @@ extern  void    DFBlkBeg( dbg_block *blk, offset lc ) {
 /****************************************************/
     back_handle bck;
 
-    lc = lc;
+    /* unused parameters */ (void)lc;
+
     bck = MakeLabel();
     blk->end_lbl = MakeLabel();
     OutLabel( bck->lbl );
@@ -1053,7 +1055,8 @@ extern  void    DFBlkEnd( dbg_block *blk, offset lc ) {
 /****************************************************/
     back_handle bck;
 
-    lc = lc;
+    /* unused parameters */ (void)lc;
+
     bck = blk->end_lbl;
     OutLabel( bck->lbl );
     BEFreeBack( bck );

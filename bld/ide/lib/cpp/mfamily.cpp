@@ -114,7 +114,7 @@ MSwitch* WEXPORT MFamily::findSwitch( MTool *tool, WString& switchtag, long fixe
     // there vere no change to version number of project files
     //
 #if CUR_CFG_VERSION < 5
-    tool = tool;
+    /* unused parameters */ (void)tool;
 #endif
     int icount = _switches.count();
     bool isSetable = ( switchtag.size() > MASK_SIZE && switchtag[(size_t)MASK_SIZE] != ' ' );
@@ -168,7 +168,7 @@ void MFamily::addSwitches( WVList& list, const char* mask, bool setable )
 {
     MSwitch* lastSw = NULL;
     int icount = _switches.count();
-    for( int i=0; i<icount; i++ ) {
+    for( int i = 0; i < icount; i++ ) {
         MSwitch* sw = (MSwitch*)_switches[i];
         bool hasText = sw->hasText();
         if( !setable || hasText ) {

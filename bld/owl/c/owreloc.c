@@ -317,6 +317,7 @@ owl_offset OWLENTRY OWLRelocTargetDisp( owl_section_handle section, owl_offset f
 uint_8 OWLENTRY OWLRelocIsRelative( owl_file_handle file, owl_reloc_info *reloc ) {
 //*********************************************************************************
 
-    file = file;
+    /* unused parameters */ (void)file;
+
     return( reloc->type == OWL_RELOC_BRANCH_REL || reloc->type == OWL_RELOC_JUMP_REL );
 }

@@ -165,7 +165,8 @@ bool FiniResources2( WResDir dir, PHANDLE_INFO hinfo )
 /****************************************************/
 /* return true if error */
 {
-    hinfo=hinfo;
+    /* unused parameters */ (void)hinfo;
+
     WResFreeDir( dir );
     return( false );
 }

@@ -147,7 +147,7 @@ static dis_inst_flags_mips MIPSFloatFmt( unsigned_32 fmt )
 
 dis_handler_return MIPSNull( dis_handle *h, void *d, dis_dec_ins *ins )
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->num_ops = 0;
     return( DHR_DONE );
@@ -157,7 +157,7 @@ dis_handler_return MIPSJType( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_ABSOLUTE;
@@ -172,7 +172,7 @@ dis_handler_return MIPSCode( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_IMMED;
@@ -188,7 +188,7 @@ dis_handler_return MIPSImmed1( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -203,7 +203,7 @@ dis_handler_return MIPSImmed2( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -220,7 +220,7 @@ dis_handler_return MIPSImmed2U( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -237,7 +237,7 @@ dis_handler_return MIPSShift( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -254,7 +254,7 @@ dis_handler_return MIPSTrap1( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -269,7 +269,7 @@ dis_handler_return MIPSTrap2( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -288,7 +288,7 @@ dis_handler_return MIPSRegD( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -301,7 +301,7 @@ dis_handler_return MIPSRegS( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -314,7 +314,7 @@ dis_handler_return MIPSReg2( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -329,7 +329,7 @@ dis_handler_return MIPSReg3( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -346,7 +346,7 @@ dis_handler_return MIPSMulDiv( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -361,7 +361,7 @@ dis_handler_return MIPSCache( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_IMMED;
@@ -379,7 +379,7 @@ dis_handler_return MIPSMemory( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -410,7 +410,7 @@ dis_handler_return MIPSJump1( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -423,7 +423,7 @@ dis_handler_return MIPSJump2( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -439,7 +439,7 @@ dis_handler_return MIPSBranch1( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -458,7 +458,7 @@ dis_handler_return MIPSBranch2( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -477,7 +477,7 @@ dis_handler_return MIPSBranch3( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -494,7 +494,7 @@ dis_handler_return MIPSFGMove( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -509,7 +509,7 @@ dis_handler_return MIPSFPUOp2( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -525,7 +525,7 @@ dis_handler_return MIPSFPUOp3( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -543,7 +543,7 @@ dis_handler_return MIPSFPUCmp( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -559,7 +559,7 @@ dis_handler_return MIPSFPUMemory( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_REG;
@@ -579,7 +579,7 @@ dis_handler_return MIPSBranchCop( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mips_ins    code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->op[0].type = DO_RELATIVE;
@@ -595,7 +595,7 @@ static size_t MIPSInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
 {
     const char  *new;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     if( !(flags & DFF_PSEUDO) )
         return( 0 );
@@ -660,7 +660,7 @@ static size_t MIPSFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
 {
     char        *p;
 
-    h = h; d = d; flags = flags;
+    /* unused parameters */ (void)h; (void)d; (void)flags;
 
     p = name;
     if( ins->flags.u.mips & DIF_MIPS_FF_FLAGS ) {
@@ -680,7 +680,7 @@ static size_t MIPSOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
 {
     dis_operand *op;
 
-    h = h; d = d; op_buff = op_buff; buff_len = buff_len;
+    /* unused parameters */ (void)h; (void)d; (void)op_buff; (void)buff_len;
 
     if( flags & DFF_SYMBOLIC_REG ) {
         op = &ins->op[op_num];
@@ -705,14 +705,14 @@ static size_t MIPSOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
 
 static dis_handler_return MIPSDecodeTableCheck( int page, dis_dec_ins *ins )
 {
-    page = page; ins = ins;
+    /* unused parameters */ (void)page; (void)ins;
 
     return( DHR_DONE );
 }
 
 static void ByteSwap( dis_handle *h, void *d, dis_dec_ins *ins )
 {
-    d = d;
+    /* unused parameters */ (void)d;
 
     if( h->need_bswap ) {
         SWAP_32( ins->opcode );
@@ -727,8 +727,9 @@ static void MIPSPreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
 static size_t MIPSPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
 {
+    /* unused parameters */ (void)h; (void)d; (void)ins; (void)flags; (void)op_num; (void)op_buff; (void)buff_len;
+
     // Nothing to do
-    h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff; buff_len = buff_len;
     return( 0 );
 }
 

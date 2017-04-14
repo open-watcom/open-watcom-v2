@@ -130,7 +130,8 @@ static void CheckUninit( void *_seg, void *dummy )
 {
     segnode *seg = _seg;
 
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     if( (seg->info & SEG_LXDATA_SEEN) == 0 ) {
         seg->entry->isuninit = true;
         if( seg->entry->u1.vm_ptr ) {

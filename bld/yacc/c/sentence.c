@@ -381,7 +381,8 @@ static size_t symHasMinLen( a_sym *sym, a_pro *pro, a_sym *disallow_error )
     size_t      len;
     an_item     *p;
 
-    sym = sym;
+    /* unused parameters */ (void)sym;
+
     for( p = pro->items; p->p.sym != NULL; ++p ) {
         if( p->p.sym == disallow_error ) {
             // derivations using the error sym are not desirable

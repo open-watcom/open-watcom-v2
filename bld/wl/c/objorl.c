@@ -283,7 +283,8 @@ static orl_return NullFunc( orl_sec_handle dummy )
 /************************************************/
 // section type is ignored
 {
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     return( ORL_OKAY );
 }
 
@@ -292,7 +293,8 @@ static orl_return ExportCallback( const char *name, void *dummy )
 {
     length_name lname;
 
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     lname.name = name;
     lname.len = strlen( name );
     HandleExport( &lname, &lname, 0, 0 );
@@ -302,7 +304,8 @@ static orl_return ExportCallback( const char *name, void *dummy )
 static orl_return EntryCallback( const char *name, void *dummy )
 /**************************************************************/
 {
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     if( !StartInfo.user_specd ) {
         SetStartSym( name );
     }
@@ -312,7 +315,8 @@ static orl_return EntryCallback( const char *name, void *dummy )
 static orl_return DeflibCallback( const char *name, void *dummy )
 /***************************************************************/
 {
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     AddCommentLib( name, strlen( name ), LIB_PRIORITY_MAX - 2 );
     return( ORL_OKAY );
 }
@@ -334,7 +338,8 @@ static orl_return Unsupported( orl_sec_handle dummy )
 /***************************************************/
 // NYI
 {
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     return( ORL_OKAY );
 }
 
@@ -348,7 +353,8 @@ static void AllocSeg( void *_snode, void *dummy )
     group_entry         *group;
     bool                isdbi;
 
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     sdata = snode->entry;
     if( sdata == NULL )
         return;
@@ -424,7 +430,8 @@ static void DefNosymComdats( void *_snode, void *dummy )
     segnode             *snode = _snode;
     segdata             *sdata;
 
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     sdata = snode->entry;
     if( sdata == NULL || (snode->info & SEG_DEAD) )
         return;

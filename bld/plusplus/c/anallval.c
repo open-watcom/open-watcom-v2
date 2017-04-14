@@ -554,7 +554,8 @@ static bool simpleTypeDtor(     // TEST IF DTOR OF A SIMPLE TYPE
     bool retb;                  // - return: true ==> is DTOR of simple type
     PTREE right;                // - right  operand
 
-    type = type;                // may have to check some day
+    /* unused parameters */ (void)type;
+
     right = PTreeOpRight( expr );
     if( ( right->op == PT_ID )
       &&( right->cgop == CO_NAME_DTOR ) ) {
@@ -761,7 +762,7 @@ static TYPE analyseClassLeft(   // ANALYSE A CLASS ON LEFT
  */
 bool AnalyseClQualRes(      // ANALYSE :: operator
     PTREE *a_expr,          // - addr( expression to be analysed )
-    SEARCH_RESULT **out )   // optional          
+    SEARCH_RESULT **out )   // optional
 {
     bool retb;                  // - return: true ==> all ok
     PTREE expr;                 // - expression to be analysed

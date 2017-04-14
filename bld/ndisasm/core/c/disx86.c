@@ -229,7 +229,7 @@ dis_handler_return X86PrefixFwait( dis_handle *h, void *d, dis_dec_ins *ins )
     unsigned    code;
     unsigned    instruct_size;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     ins->size += 1;
     instruct_size = ins->size;
@@ -265,7 +265,7 @@ dis_handler_return X86PrefixOpnd( dis_handle *h, void *d, dis_dec_ins *ins )
  * Operand Size Override
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     if( ( ins->flags.u.x86 & DIF_X86_OPND_SIZE ) == 0 ) {
@@ -280,7 +280,7 @@ dis_handler_return X86PrefixAddr( dis_handle *h, void *d, dis_dec_ins *ins )
  * Address Size Override
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     if( ( ins->flags.u.x86 & DIF_X86_ADDR_SIZE ) == 0 ) {
@@ -295,7 +295,7 @@ dis_handler_return X86PrefixRepe( dis_handle *h, void *d, dis_dec_ins *ins )
  * REP/REPE/REPZ Override
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     ins->flags.u.x86 |= DIF_X86_REPE;
@@ -307,7 +307,7 @@ dis_handler_return X86PrefixRepne( dis_handle *h, void *d, dis_dec_ins *ins )
  * REPNE/REPNZ
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     ins->flags.u.x86 |= DIF_X86_REPNE;
@@ -319,7 +319,7 @@ dis_handler_return X86PrefixLock( dis_handle *h, void *d, dis_dec_ins *ins )
  * Lock Prefix
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     ins->flags.u.x86 |= DIF_X86_LOCK;
@@ -331,7 +331,7 @@ dis_handler_return X86PrefixCS( dis_handle *h, void *d, dis_dec_ins *ins )
  * CS Segment Override
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     ins->flags.u.x86 |= DIF_X86_CS;
@@ -343,7 +343,7 @@ dis_handler_return X86PrefixSS( dis_handle *h, void *d, dis_dec_ins *ins )
  * SS Segment Override
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     ins->flags.u.x86 |= DIF_X86_SS;
@@ -355,7 +355,7 @@ dis_handler_return X86PrefixDS( dis_handle *h, void *d, dis_dec_ins *ins )
  * DS Segment Override
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     ins->flags.u.x86 |= DIF_X86_DS;
@@ -367,7 +367,7 @@ dis_handler_return X86PrefixES( dis_handle *h, void *d, dis_dec_ins *ins )
  * ES Segment Override
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     ins->flags.u.x86 |= DIF_X86_ES;
@@ -379,7 +379,7 @@ dis_handler_return X86PrefixFS( dis_handle *h, void *d, dis_dec_ins *ins )
  * FS Segment Override
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     ins->flags.u.x86 |= DIF_X86_FS;
@@ -391,7 +391,7 @@ dis_handler_return X86PrefixGS( dis_handle *h, void *d , dis_dec_ins *ins )
  * GS Segment Override
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     ins->flags.u.x86 |= DIF_X86_GS;
@@ -414,7 +414,7 @@ dis_handler_return X86PrefixGS( dis_handle *h, void *d , dis_dec_ins *ins )
 
 static dis_register X86GetRegister_D( WBIT w, RM reg, dis_dec_ins *ins )
 {
-    w = w; ins = ins;
+    /* unused parameters */ (void)w; (void)ins;
 
     switch( reg ) {
     case REG_AX: return( DR_X86_eax );
@@ -431,7 +431,7 @@ static dis_register X86GetRegister_D( WBIT w, RM reg, dis_dec_ins *ins )
 
 static dis_register X86GetRegister_W( WBIT w, RM reg, dis_dec_ins *ins )
 {
-    w = w; ins = ins;
+    /* unused parameters */ (void)w; (void)ins;
 
     switch( reg ) {
     case REG_AX: return( DR_X86_ax );
@@ -448,7 +448,7 @@ static dis_register X86GetRegister_W( WBIT w, RM reg, dis_dec_ins *ins )
 
 static dis_register X86GetRegister_B( WBIT w, RM reg, dis_dec_ins *ins )
 {
-    w = w; ins = ins;
+    /* unused parameters */ (void)w; (void)ins;
 
     switch( reg ) {
     case REG_AX: return( DR_X86_al );
@@ -468,7 +468,7 @@ static dis_register X86FGetSTReg(WBIT w, RM reg, dis_dec_ins *ins )
  *  Get ST  (Floating Point) Register  w - not used
  */
 {
-    w = w; ins = ins;
+    /* unused parameters */ (void)w; (void)ins;
 
     switch( reg ) {
     case RM_0: return( DR_X86_st  );
@@ -488,7 +488,7 @@ static dis_register X86GetMMReg(WBIT w, RM reg, dis_dec_ins *ins )
  *  Get MM  (Multimedia) Register  w - not used
  */
 {
-    w = w; ins = ins;
+    /* unused parameters */ (void)w; (void)ins;
 
     switch( reg ) {
     case RM_0: return( DR_X86_mm0 );
@@ -508,7 +508,7 @@ static dis_register X86GetXMMReg(WBIT w, RM reg, dis_dec_ins *ins )
  *  Get SSE  (Streaming SIMD Extensions) Register  w - not used
  */
 {
-    w = w; ins = ins;
+    /* unused parameters */ (void)w; (void)ins;
 
     switch( reg ) {
     case RM_0: return( DR_X86_xmm0 );
@@ -528,7 +528,7 @@ static dis_register X86GetCRegister( WBIT w, RM reg, dis_dec_ins *ins )
  *  Get Control Register
  */
 {
-    w = w; ins = ins;
+    /* unused parameters */ (void)w; (void)ins;
 
     switch( reg ) {
     case REG_CR0: return( DR_X86_cr0 );
@@ -544,7 +544,7 @@ static dis_register X86GetDRegister( WBIT w, RM reg, dis_dec_ins *ins )
  *  Get Debug Register
  */
 {
-    w = w; ins = ins;
+    /* unused parameters */ (void)w; (void)ins;
 
     switch( reg ) {
     case REG_DR0: return( DR_X86_dr0 );
@@ -562,7 +562,7 @@ static dis_register X86GetTRegister( WBIT w, RM reg, dis_dec_ins *ins )
  *  Get Test Register 80486
  */
 {
-    w = w; ins = ins;
+    /* unused parameters */ (void)w; (void)ins;
 
     switch( reg ) {
     case REG_TR3: return( DR_X86_tr3 );
@@ -579,7 +579,7 @@ static dis_register X86GetSRegister( WBIT w, RM reg, dis_dec_ins *ins )
  *  Get Segment Register
  */
 {
-    w = w; ins = ins;
+    /* unused parameters */ (void)w; (void)ins;
 
     switch( reg ) {
     case REG_ES: return( DR_X86_es );
@@ -1260,7 +1260,7 @@ static dis_ref_type X86FGetRefType( MF_BITS mf, dis_dec_ins * ins )
  * Get Reference Type - Floating Point Instructions
  */
 {
-    ins = ins;
+    /* unused parameters */ (void)ins;
 
     switch( mf ) {
     case MF_0: return( DRT_X86_DWORDF );
@@ -1428,7 +1428,7 @@ dis_handler_return X86SReg_8( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_8 code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->size    += 1;
@@ -1488,7 +1488,7 @@ dis_handler_return X86NoOp_8( dis_handle *h, void *d, dis_dec_ins *ins )
 {
 //    code_8 code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
 //    code.full = ins->opcode;
     ins->size    += 1;
@@ -1556,7 +1556,7 @@ dis_handler_return X86String_8( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_8 code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->size += 1;
@@ -1622,7 +1622,7 @@ dis_handler_return X86ImmAcc_8( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_8 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->num_ops = 0;
@@ -1652,7 +1652,7 @@ dis_handler_return X86MemAbsAcc_8( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_8 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->num_ops = 0;
@@ -1691,7 +1691,7 @@ dis_handler_return X86MemAbsAcc_8( dis_handle *h, void *d, dis_dec_ins *ins )
 dis_handler_return X86Abs_8( dis_handle *h, void *d, dis_dec_ins *ins )
 /**********************************************************************/
 {
-    h = h;
+    /* unused parameters */ (void)h;
 
     ins->size   += 1;
     ins->num_ops = 0;
@@ -1703,7 +1703,7 @@ dis_handler_return X86Abs_8( dis_handle *h, void *d, dis_dec_ins *ins )
 dis_handler_return X86Rel_8( dis_handle *h, void *d, dis_dec_ins *ins )
 /**********************************************************************/
 {
-    h = h;
+    /* unused parameters */ (void)h;
 
     ins->size   += 1;
     ins->num_ops = 0;
@@ -1717,7 +1717,7 @@ dis_handler_return X86Imm_8( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_8 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
 
@@ -1790,7 +1790,7 @@ dis_handler_return X86ImmReg_8( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_8 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -1804,7 +1804,7 @@ dis_handler_return X86ImmImm_8( dis_handle *h, void *d, dis_dec_ins *ins )
 /**********************************************************************/
 //  8-bit   OOOO OOOO : Imm16 Imm8
 {
-    h = h;
+    /* unused parameters */ (void)h;
 
     ins->num_ops = 2;
     ins->size   += 1;
@@ -1825,7 +1825,7 @@ dis_handler_return X86Reg_8( dis_handle *h, void *d , dis_dec_ins *ins )
 {
     code_8 code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size      += 1;
     ins->num_ops    = 0;
@@ -1898,7 +1898,7 @@ dis_handler_return X86AccAcc_8( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_8 code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full    = ins->opcode;
     ins->size   += 1;
@@ -1930,7 +1930,7 @@ dis_handler_return X86JmpCC_8( dis_handle *h, void *d, dis_dec_ins *ins )
 {
 //    code_8 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
 //    code.full = ins->opcode;
     ins->size += 1;
@@ -2026,7 +2026,7 @@ dis_handler_return X86Shift_16 ( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_16 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->size    += 2;
@@ -2056,7 +2056,7 @@ dis_handler_return X86SReg_16( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_16 code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->size    += 2;
@@ -2129,7 +2129,7 @@ dis_handler_return X86NoOp_16( dis_handle *h, void *d , dis_dec_ins *ins )
  *  OOOO OOOO : OOOO OOOO
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 2;
     ins->num_ops = 0;
@@ -2143,7 +2143,7 @@ dis_handler_return X86ModRM_16( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_16 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -2205,7 +2205,7 @@ dis_handler_return X86ModRMImm_16( dis_handle *h, void *d, dis_dec_ins *ins )
 
     code_16 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full     = ins->opcode;
     ins->num_ops = 0;
@@ -2240,7 +2240,7 @@ dis_handler_return X86ModRMAcc_16( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_16 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->num_ops = 0;
@@ -2257,7 +2257,7 @@ dis_handler_return X86RegModRM_16( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_16 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->num_ops = 0;
@@ -2273,7 +2273,7 @@ dis_handler_return X86RegModRM_test( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_16 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->num_ops = 0;
@@ -2290,7 +2290,7 @@ dis_handler_return X86RegModRM_bound( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_16 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->num_ops = 0;
@@ -2308,7 +2308,7 @@ dis_handler_return X86RegModRM_16B( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_16 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full     = ins->opcode;
     ins->num_ops  = 0;
@@ -2358,7 +2358,7 @@ dis_handler_return X86Reg_16( dis_handle *h, void *d , dis_dec_ins *ins )
 {
     code_16 code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full       = ins->opcode;
     ins->num_ops    = 0;
@@ -2375,7 +2375,7 @@ dis_handler_return X86JmpCC_16( dis_handle *h, void *d, dis_dec_ins *ins )
 {
 //    code_16 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
 //    code.full = ins->opcode;
     ins->size += 2;
@@ -2389,7 +2389,7 @@ dis_handler_return X86SRegModRM_16( dis_handle *h, void * d, dis_dec_ins *ins )
 {
     code_16 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full     = ins->opcode;
     ins->size    += 2;
@@ -2444,7 +2444,7 @@ dis_handler_return X86SetCC( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_24 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -2460,7 +2460,7 @@ dis_handler_return X86MovCC_24( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_24 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->size += 3;
@@ -2478,9 +2478,7 @@ dis_handler_return X86CRegReg_24( dis_handle *h, void * d, dis_dec_ins *ins )
 {
     code_24 code;
 
-    h = h; d = d;
-
-    h = h;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full     = ins->opcode;
     ins->size    += 3;
@@ -2511,7 +2509,7 @@ dis_handler_return X86DRegReg_24( dis_handle *h, void * d, dis_dec_ins *ins )
 {
     code_24 code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full     = ins->opcode;
     ins->size    += 3;
@@ -2541,7 +2539,7 @@ dis_handler_return X86TRegReg_24( dis_handle *h, void * d, dis_dec_ins *ins )
 {
     code_24 code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full     = ins->opcode;
     ins->size    += 3;
@@ -2574,7 +2572,7 @@ dis_handler_return X86ModRMImm_24( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_24 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full     = ins->opcode;
     ins->size    += 3;
@@ -2590,7 +2588,7 @@ dis_handler_return X86NoOp_24( dis_handle *h, void *d , dis_dec_ins *ins )
  *  OOOO OOOO : OOOO OOOO : OOOO OOOO
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 3;
     ins->num_ops = 0;
@@ -2605,7 +2603,7 @@ dis_handler_return X86ModRM_24( dis_handle *h, void *d, dis_dec_ins *ins )
 
     code_24 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -2636,7 +2634,7 @@ dis_handler_return X86RegModRM_24( dis_handle *h, void *d, dis_dec_ins *ins )
 
     code_24 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->size    += 3;
@@ -2653,7 +2651,7 @@ dis_handler_return X86RegModRM_24B( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_24 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->size    += 3;
@@ -2718,7 +2716,7 @@ dis_handler_return X86RegModRM_24C( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_24 code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->size += 3;
@@ -2806,7 +2804,7 @@ dis_handler_return X86FTypeCond( dis_handle *h, void *d, dis_dec_ins * ins )
 {
     fl_pt code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->size += 2;
@@ -2828,7 +2826,7 @@ dis_handler_return X86FType3( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     fl_pt code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->size += 2;
@@ -2887,7 +2885,7 @@ dis_handler_return X86FType3B( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     fl_pt code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
 
@@ -2905,7 +2903,7 @@ dis_handler_return X86FType3C( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     fl_pt code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->size += 2;
@@ -2926,7 +2924,7 @@ dis_handler_return X86FType2( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     fl_pt code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->flags.u.x86 |= DIF_X86_FP_INS;
@@ -2945,7 +2943,7 @@ dis_handler_return X86FType2( dis_handle *h, void *d, dis_dec_ins *ins )
 dis_handler_return X86FTypeFSTSWAX( dis_handle *h, void *d, dis_dec_ins *ins )
 /*****************************************************************************/
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 2;
     ins->num_ops = 0;
@@ -2965,7 +2963,7 @@ dis_handler_return X86FType4( dis_handle *h, void *d, dis_dec_ins *ins )
  *  Type 4 and 5 are the same
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 2;
     ins->num_ops = 0;
@@ -3000,7 +2998,7 @@ dis_handler_return X86FType1( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     fl_pt code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     ins->size += 2;
     ins->num_ops = 0;
@@ -3075,7 +3073,7 @@ dis_handler_return X86FTypeEnv( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     fl_pt code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     ins->num_ops = 0;
 
@@ -3198,7 +3196,7 @@ dis_handler_return X86MMRegModRM( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3214,7 +3212,7 @@ dis_handler_return X86MMRegModRMImm( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3231,7 +3229,7 @@ dis_handler_return X86MMRegModRM_Rev( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3247,7 +3245,7 @@ dis_handler_return X86MMRegImm( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3269,7 +3267,7 @@ dis_handler_return X86XMMRegModRM( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3286,7 +3284,7 @@ dis_handler_return X86XMMRegModRMImm( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3304,7 +3302,7 @@ dis_handler_return X86XMMRegModRM_Rev( dis_handle *h, void *d, dis_dec_ins *ins 
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3321,7 +3319,7 @@ dis_handler_return X86XMMRegImm( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3339,7 +3337,7 @@ dis_handler_return X86XMMRegModRM64( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3356,7 +3354,7 @@ dis_handler_return X86XMMRegModRM64Imm( dis_handle *h, void *d, dis_dec_ins *ins
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3374,7 +3372,7 @@ dis_handler_return X86XMMRegModRM64_Rev( dis_handle *h, void *d, dis_dec_ins *in
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3391,7 +3389,7 @@ dis_handler_return X86XMMRegModRM32( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3408,7 +3406,7 @@ dis_handler_return X86XMMRegModRM32Imm( dis_handle *h, void *d, dis_dec_ins *ins
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3426,7 +3424,7 @@ dis_handler_return X86XMMRegModRM32_Rev( dis_handle *h, void *d, dis_dec_ins *in
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3443,7 +3441,7 @@ dis_handler_return X86RegModRM32_Rev( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3461,7 +3459,7 @@ dis_handler_return X86MMRegModRMMixed( dis_handle *h, void *d, dis_dec_ins *ins 
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3495,7 +3493,7 @@ dis_handler_return X86MMRegModRMMixedImm( dis_handle *h, void *d, dis_dec_ins *i
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3526,7 +3524,7 @@ dis_handler_return X86MMRegModRMMixed_Rev( dis_handle *h, void *d, dis_dec_ins *
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3551,7 +3549,7 @@ dis_handler_return X86XMMRegModRMMixed( dis_handle *h, void *d, dis_dec_ins *ins
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3583,7 +3581,7 @@ dis_handler_return X86XMMRegModRMMixedImm( dis_handle *h, void *d, dis_dec_ins *
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3614,7 +3612,7 @@ dis_handler_return X86XMMRegModRMMixed_Rev( dis_handle *h, void *d, dis_dec_ins 
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3639,7 +3637,7 @@ dis_handler_return X86RegModRMMixed( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3675,7 +3673,7 @@ dis_handler_return X86RegModRMMixedImm( dis_handle *h, void *d, dis_dec_ins *ins
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3709,7 +3707,7 @@ dis_handler_return X86_3DNow( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     mm code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -3947,7 +3945,7 @@ static size_t X86InsHook( dis_handle *h, void *d, dis_dec_ins *ins,
     dis_operand save;
     char        temp_buff[40];
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     if( name == NULL ) name = temp_buff;
     p = name;
@@ -4032,7 +4030,8 @@ static size_t X86FlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, char *name )
 /**********************************************************************/
 {
-    h = h; d = d; ins = ins; flags = flags; name = name;
+    /* unused parameters */ (void)h; (void)d; (void)ins; (void)flags; (void)name;
+
     return( 0 );
 }
 
@@ -4146,7 +4145,7 @@ static bool NeedSizing( dis_dec_ins *ins, dis_format_flags flags, unsigned op_nu
 {
     unsigned    i;
 
-    op_num = op_num;
+    /* unused parameters */ (void)op_num;
 
     if( flags & DFF_UNIX )
         return( false );
@@ -4189,7 +4188,7 @@ static size_t X86OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
     dis_inst_flags  ins_flags;
     char            *end = op_buff + buff_len;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     ins_flags.u.x86 = ins->flags.u.x86;
     p = op_buff;
@@ -4334,9 +4333,9 @@ static void process87EMUIns( dis_dec_ins *ins )
 static void ByteSwap( dis_handle *h, void *d, dis_dec_ins *ins )
 /**************************************************************/
 {
-    // Nothing to do here - instruction will be decoded byte by byte
+    /* unused parameters */ (void)h; (void)d; (void)ins;
 
-    h = h; d = d; ins = ins;
+    // Nothing to do here - instruction will be decoded byte by byte
 }
 
 static void X86PreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
@@ -4356,7 +4355,7 @@ static size_t X86PostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
 {
     size_t      len = 0;
 
-    h = h; op_num = op_num;
+    /* unused parameters */ (void)h; (void)op_num;
 
     if( ins->flags.u.x86 & DIF_X86_EMU_INT ) {
         len = sizeof( EMU_INT ) - 1;

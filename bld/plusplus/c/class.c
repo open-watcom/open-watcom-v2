@@ -693,7 +693,7 @@ static void newClassType( CLASS_DATA *data, CLASS_DECL declaration )
         info = class_type->u.c.info;
         data->info = info;
         data->scope = class_type->u.c.scope;
-        
+
         /*
          * A declspec modifier has been applied to the class
          * definition/declaration. Store the information into the
@@ -702,10 +702,10 @@ static void newClassType( CLASS_DATA *data, CLASS_DECL declaration )
         if( data->member_mod_adjust ) {
             info->class_mod = data->class_mod_type;
             info->fn_pragma = data->fn_pragma;
-            info->fn_flags = data->fn_flags;    
+            info->fn_flags = data->fn_flags;
             info->mod_flags = data->mod_flags;
         }
-        
+
         if( declaration == CLASS_DEFINITION ) {
             if( ScopeType( data->scope->enclosing, SCOPE_TEMPLATE_INST ) ) {
                 TYPE unbound_class =
@@ -731,7 +731,7 @@ static void setClassType( CLASS_DATA *data, TYPE type, CLASS_DECL declaration )
     info = class_type->u.c.info;
     data->info = info;
     data->scope = class_type->u.c.scope;
-    
+
     /*
      * A declspec modifier has been applied to the class
      * definition/declaration. If the definition is not consistent
@@ -1873,8 +1873,9 @@ static void propagateKnowledge( CLASSINFO *from, CLASSINFO *to, prop_type what )
 bool ClassIsDefaultCtor( SYMBOL sym, TYPE class_type )
 /****************************************************/
 {
+    /* unused parameters */ (void)class_type;
+
     /* name has already been checked */
-    class_type = class_type;
     return TypeHasNumArgs( sym->sym_type, 0 );
 }
 
@@ -3534,8 +3535,8 @@ void ClassDtorNullBody( SYMBOL dtor )
                 // DO NOT complain at any warning level that defining it inside class definition
                 //    "may improve code quality"
                 // as there is no way to define at the same time
-                // function body and "pure virtuality" 
-                // 
+                // function body and "pure virtuality"
+                //
                 // class X {
                 //      virtual ~X() = 0;           // OK
                 //      virtual ~X() { } = 0;       // impossible
@@ -3560,7 +3561,7 @@ void ClassDtorNullBody( SYMBOL dtor )
 void ClassAssignNullBody( SYMBOL op_eq )
 /**************************************/
 {
-    op_eq = op_eq;
+    /* unused parameters */ (void)op_eq;
 }
 
 

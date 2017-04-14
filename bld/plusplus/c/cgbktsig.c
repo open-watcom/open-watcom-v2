@@ -334,7 +334,8 @@ void BeGenTypeSigEnts(          // EMIT TYPE_SIG_ENT RING
 static void typesigInit(        // INITIALIZATION FOR MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carveTYPE_SIG_ENT = CarveCreate( sizeof( TYPE_SIG_ENT ), 32 );
 }
 
@@ -342,7 +343,8 @@ static void typesigInit(        // INITIALIZATION FOR MODULE
 static void typesigFini(        // COMPLETION FOR MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CarveDestroy( carveTYPE_SIG_ENT );
 }
 

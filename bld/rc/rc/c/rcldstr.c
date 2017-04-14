@@ -56,7 +56,8 @@ bool InitRcMsgs( void )
 
 bool GetRcMsg( unsigned resid, char *buff, int buff_len )
 {
-    buff_len = buff_len;
+    /* unused parameters */ (void)buff_len;
+
     strcpy( buff, StringTable[resid] );
     return( true );
 }

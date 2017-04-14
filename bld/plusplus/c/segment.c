@@ -1478,20 +1478,23 @@ pch_status PCHWriteSegments( void )
 
 pch_status PCHInitSegments( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniSegments( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 static void fini(               // FINALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     SegmentFini();
 }
 

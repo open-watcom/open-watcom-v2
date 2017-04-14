@@ -361,7 +361,8 @@ void TypeSigSymOffset(          // GET SYMBOL,OFFSET FOR TYPE-SIG REFERENCE
 static void typeSigFini(        // COMPLETION OF TYPE SIGNATURING
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CarveDestroy( carveTYPE_SIG );
 }
 
@@ -369,7 +370,8 @@ static void typeSigFini(        // COMPLETION OF TYPE SIGNATURING
 static void typeSigInit(        // INITIALIZATION OF TYPE SIGNATURING
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     type_sigs = NULL;
     carveTYPE_SIG = CarveCreate( sizeof( TYPE_SIG ), 16 );
 }

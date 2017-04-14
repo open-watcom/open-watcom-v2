@@ -425,7 +425,8 @@ static orl_return       doMODEND( omf_file_handle ofh, omf_rectyp typ )
 {
     orl_return  err;
 
-    typ = typ;
+    /* unused parameters */ (void)typ;
+
     assert( ofh );
 
     err = loadRecord( ofh );
@@ -781,7 +782,7 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
     combine = ( datum >> 2 ) & 7;
     if( ( datum >> 5 ) == ALIGN_ABS ) {
         if( ofh->status & OMF_STATUS_EASY_OMF ) {
-            // FIXME !!! it looks bugy, frame should be 16-bit and offset ? 
+            // FIXME !!! it looks bugy, frame should be 16-bit and offset ?
             // I can not found any information about it
             frame = (orl_sec_frame)getUWord( buffer, 2 );
         } else {

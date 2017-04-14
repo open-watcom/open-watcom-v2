@@ -477,7 +477,8 @@ static  block   *DoUnroll( block *tail, signed_32 reps, bool replace_vars )
     signed_32           i;
     signed_32           size;
 
-    replace_vars = replace_vars;
+    /* unused parameters */ (void)replace_vars;
+
     size = sizeof( loop_abstract ) * reps;
 
     // allocate an array of these abstract loop thingies

@@ -36,7 +36,8 @@
 extern  bool    ValidLbl( label_handle lbl )
 /******************************************/
 {
-    lbl=lbl;
+    /* unused parameters */ (void)lbl;
+
     return( true );
 #if 0
     label_handle    chk;

@@ -145,7 +145,8 @@ void CondLabelsEmit(            // EMIT ANY REMAINING CONDITIONAL LABELS
 static void condLabelInit(      // INITIALIZATION FOR CGBKCLAB
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carveCOND_LABEL     = CarveCreate( sizeof( COND_LABEL ),        16 );
 }
 
@@ -153,7 +154,8 @@ static void condLabelInit(      // INITIALIZATION FOR CGBKCLAB
 static void condLabelFini(      // COMPLETION FOR CGBKCLAB
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CarveDestroy( carveCOND_LABEL );
 }
 

@@ -337,7 +337,8 @@ void DwarfAddModule( mod_entry *mod, section *sect )
     char *              buff;
     unsigned_32         stmt_list;
 
-    sect = sect;
+    /* unused parameters */ (void)sect;
+
     if( (mod->modinfo & MOD_DBI_SEEN) == 0 ) {
         if( mod->d.d->arange.size > 0 ) {
             mod->d.d->arange.u.vm_ptr = SectionTable[SECT_DEBUG_ARANGE].vm_ptr + mod->d.d->arange.u.vm_offs;
@@ -462,7 +463,8 @@ void DwarfDefClass( class_entry *cl, unsigned_32 size )
 // go through the list of dwarf segments, and make sure VM is allocated for
 // all of them.
 {
-    size = size;        // to avoid a warning
+    /* unused parameters */ (void)size;
+
     if( (cl->flags & CLASS_DEBUG_INFO) != CLASS_DWARF )
         return;
     DBIClass = cl;
@@ -472,7 +474,8 @@ void DwarfDefClass( class_entry *cl, unsigned_32 size )
 void DwarfAddGlobal( symbol *sym )
 /***************************************/
 {
-    sym = sym;
+    /* unused parameters */ (void)sym;
+
     CurrMod->d.d->pubsym.size += strlen( sym->name ) + sizeof( symbol_die ) + 1;
     if( FmtData.type & MK_SEGMENTED ) {
         CurrMod->d.d->pubsym.size += sizeof( symbol_seg );
@@ -508,7 +511,8 @@ void DwarfGenGlobal( symbol *sym, section *sect )
     virt_mem    vmem_addr;
     size_t      len;
 
-    sect = sect;
+    /* unused parameters */ (void)sect;
+
     if( (CurrMod->modinfo & MOD_DBI_SEEN) == 0 ) {
         if( ( sym->p.seg == NULL ) || ( sym->p.seg->iscode ) ) {
             die.abbrev_code = LABEL_ABBREV_CODE;
@@ -617,17 +621,15 @@ void DwarfGenLines( lineinfo *info )
 static void DwarfAddAddrInit( segdata *sdata, void *cookie )
 /**********************************************************/
 {
-    sdata = sdata;
-    cookie = cookie;
+    /* unused parameters */ (void)sdata; (void)cookie;
 }
 
 static void DwarfAddAddrAdd( segdata *sdata, offset delta, offset size,
                              void *cookie, bool isnewmod )
 /********************************************************/
 {
-    delta = delta;
-    size = size;
-    cookie = cookie;
+    /* unused parameters */ (void)delta; (void)size; (void)cookie;
+
     if( isnewmod && (sdata->o.mod->modinfo & MOD_DBI_SEEN) == 0 ) {
         if( FmtData.type & MK_SEGMENTED ) {
             sdata->o.mod->d.d->arange.size += sizeof( segmented_arange_tuple );

@@ -36,7 +36,8 @@
 WResDirWindow WResNextResource( WResDirWindow currwind, WResDir currdir )
 /***********************************************************************/
 {
-    currdir = currdir;
+    /* unused parameters */ (void)currdir;
+
     if( !WResIsEmptyWindow( currwind ) ) {
         if( currwind.CurrLang->Next != NULL ) {
             currwind.CurrLang = currwind.CurrLang->Next;

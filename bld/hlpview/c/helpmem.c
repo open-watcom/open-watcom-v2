@@ -50,7 +50,7 @@ extern void HelpMemInit( void )
     TRMemOpen();
     TRMemRedirect( memFHdl );
 #else
-    memFHdl = memFHdl;
+    /* unused parameters */ (void)memFHdl;
 #endif
 }
 

@@ -59,7 +59,8 @@ IDEBool IDEAPI IDEInitDLL( IDECBHdl cbhdl, IDECallBacks *cb, IDEDllHdl *hdl )
 
 IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 {
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     ideInfo = info;
     return( false );
 }
@@ -68,7 +69,8 @@ IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fataler
 {
     char        *argv[3];
 
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     *fatalerr = false;
     argv[0] = "";
     argv[1] = (char *)opts;
@@ -82,7 +84,8 @@ IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     char **argv,                // - argument vector
     IDEBool* fatal_error )      // - addr[fatality indication]
 {
-    hdl = hdl; argc = argc;
+    /* unused parameters */ (void)hdl; (void)argc;
+
     *fatal_error = false;
     return( WlibMainLine( argv ) != 0 );
 }
@@ -105,7 +108,8 @@ void IDEAPI IDEFreeHeap( void )
 
 void IDEAPI IDEFiniDLL( IDEDllHdl hdl )
 {
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     FiniSubSystems();
 }
 

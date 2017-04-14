@@ -410,7 +410,7 @@ static RcStatus SortDirEntry( PEResEntry * entry, void * dummy )
 {
     int     num_entries;
 
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
 
     if( entry->IsDirEntry ) {
         num_entries = entry->u.Dir.Head.num_name_entries + entry->u.Dir.Head.num_id_entries;

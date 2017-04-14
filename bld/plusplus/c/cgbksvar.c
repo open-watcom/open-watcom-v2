@@ -391,7 +391,8 @@ SE* StabCtlPosnGened(           // GET GENERATED POSITION IF REQUIRED
     SE* src,                    // - source entry
     SE* tgt )                   // - target entry
 {
-    sctl = sctl;
+    /* unused parameters */ (void)sctl;
+
     if( tgt != NULL && src->base.gen && ! tgt->base.gen ) {
         STATE_VAR sv = tgt->base.state_var;
         if( 0 == sv ) {
@@ -680,7 +681,7 @@ STATE_VAR SeStateOptimal(       // GET STATE VALUE FOR POSITION (OPTIMAL)
 static void stabInit(           // INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
 
     #define pick(e,se,cmd,ring) carveSE_ ## e = CarveCreate( sizeof( SE_ ## e ), se );
     #include "_dtccarv.h"
@@ -694,7 +695,7 @@ static void stabInit(           // INITIALIZATION
 static void stabFini(           // COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
 
     #define pick(e,se,cmd,ring) CarveDestroy( carveSE_ ## e );
     #include "_dtccarv.h"

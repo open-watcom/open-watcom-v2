@@ -78,7 +78,8 @@ static void WriteLoadRec( void )
 static void ZeroLoad( virt_mem dummy, unsigned long length )
 /**********************************************************/
 {
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     PadLoad( length );
 }
 
@@ -120,7 +121,8 @@ static void CopyVerify( char *targ, virt_mem src, unsigned long size )
 static void ZeroVerify( char *targ, virt_mem dummy, unsigned long size )
 /**********************************************************************/
 {
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     memset( targ, 0, size );
 }
 

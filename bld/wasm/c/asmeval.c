@@ -574,7 +574,7 @@ static void fix_struct_value( expr_list *token )
         }
     }
 #else
-    token = token;
+    /* unused parameters */ (void)token;
 #endif
 }
 

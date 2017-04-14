@@ -107,7 +107,8 @@ static carve_t carveSRCFILE_HANDLE;
 
 static void rewriteInit( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     currRewrite = NULL;
     carveREWRITE = CarveCreate( sizeof( REWRITE ), BLOCK_REWRITE );
     carveREWRITE_TOKENS = CarveCreate( sizeof( REWRITE_TOKENS ), BLOCK_REWRITE_TOKENS );
@@ -116,7 +117,8 @@ static void rewriteInit( INITFINI* defn )
 
 static void rewriteFini( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     RewriteFree( currRewrite );
     currRewrite = NULL;
     DbgStmt( CarveVerifyAllGone( carveREWRITE, "REWRITE" ) );

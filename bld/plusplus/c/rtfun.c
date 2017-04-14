@@ -265,7 +265,8 @@ const char *RunTimeCodeString(  // GET IMPORT STRING FOR RUN-TIME FUNCTION FROM 
 static void rtfInit(            // INITIALIZE NAMES FOR NAMES PROCESSING
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     if( CompFlags.dll_subsequent ) {
         memset( (void *)runTimeCodeName, 0, sizeof( runTimeCodeName ) );
     }
@@ -295,12 +296,14 @@ pch_status PCHWriteRTFNames( void )
 
 pch_status PCHInitRTFNames( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniRTFNames( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }

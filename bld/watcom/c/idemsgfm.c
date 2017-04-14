@@ -186,8 +186,9 @@ void IdeMsgFormat               // FORMAT A MESSAGE
 {
     CONSTRUCTION ct;            // - construction info
 
-    handle = handle;
-    displayer = displayer;  // ********** CAN BE REMOVED **********
+    /* unused parameters */ (void)handle; (void)displayer;
+    // ********** displayer CAN BE REMOVED **********
+
     ct.buffer = buffer;
     ct.bsize = bsize;
     ct.used = 0;

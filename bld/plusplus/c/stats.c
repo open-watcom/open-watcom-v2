@@ -42,7 +42,8 @@
 static void statsInit(          // INITIALIZE STATISTICS GATHERING
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CompFlags.stats_printed = false;
     CompFlags.extra_stats_wanted = false;
     SrcLineCount = 0;
@@ -77,7 +78,8 @@ static void intPrint            // PRINT INT LINE SEGMENT
 static void statsPrint(         // PRINT STATISTICS
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     if( CompFlags.stats_printed ) {
         return;
     }
@@ -126,14 +128,16 @@ pch_status PCHWriteStats( void )
 
 pch_status PCHInitStats( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 
 pch_status PCHFiniStats( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 

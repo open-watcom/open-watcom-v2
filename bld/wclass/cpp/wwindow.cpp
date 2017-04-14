@@ -272,7 +272,7 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
         bool dummy;
         GUI_GET_ENDSESSION( parm, ending, dummy );
         endSession( ending );
-        dummy = dummy;
+        /* unused parameters */ (void)dummy;
     case GUI_ACTIVATEAPP:
         bool activated;
         GUI_GET_BOOL( parm, activated );

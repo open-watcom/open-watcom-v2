@@ -456,7 +456,8 @@ WResFileOffset res_tell( WResFileID fid )
 bool res_ioerr( WResFileID fid, size_t rc )
 /*****************************************/
 {
-    fid=fid;
+    /* unused parameters */ (void)fid;
+
     return( rc == RESIOERROR );
 }
 

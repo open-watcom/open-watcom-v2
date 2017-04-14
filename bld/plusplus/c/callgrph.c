@@ -93,7 +93,8 @@ static DIRGRAPH_NODE *cgrfInitNode( // INIT A NODE
     CALLGRAPH *ctl,             // - control information
     CALLNODE *node )            // - node to be initialized
 {
-    ctl = ctl;
+    /* unused parameters */ (void)ctl;
+
     node->refs = 0;
     node->depth = 0;
     node->opcodes = 0;
@@ -163,8 +164,7 @@ static void cgrfPruneNode(      // PRUNE A NODE
     CALLGRAPH *ctl,             // - control information
     DIRGRAPH_NODE *node )       // - node to be pruned
 {
-    ctl = ctl;
-    node = node;
+    /* unused parameters */ (void)ctl; (void)node;
 }
 
 
@@ -172,7 +172,8 @@ static void cgrfPruneEdge(      // PRUNE AN EDGE
     CALLGRAPH *ctl,             // - control information
     CALLEDGE *edge )            // - edge to be pruned
 {
-    ctl = ctl;
+    /* unused parameters */ (void)ctl;
+
     changeNodeReference( -edge->refs, -edge->addrs, edge );
 }
 

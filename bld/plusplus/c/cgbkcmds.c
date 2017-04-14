@@ -672,7 +672,7 @@ void CgCmdsGenerate(            // GENERATE DTOR CMD.S
 static void cgCmdInit(          // INITIALIZATION FOR CGBKCMDS.C
     INITFINI* def )             // - init/fini definition
 {
-    def = def;
+    /* unused parameters */ (void)def;
 
     #define pick(e,se,cmd,ring) ringCmds ## ring = NULL;
     #include "_dtccarv.h"
@@ -687,7 +687,7 @@ static void cgCmdInit(          // INITIALIZATION FOR CGBKCMDS.C
 static void cgCmdFini(          // COMPLETION FOR CGBKCMDS.C
     INITFINI* def )             // - init/fini definition
 {
-    def = def;
+    /* unused parameters */ (void)def;
 
     #define pick(e,se,cmd,ring) CarveDestroy( carveCMD_ ## e );
     #include "_dtccarv.h"

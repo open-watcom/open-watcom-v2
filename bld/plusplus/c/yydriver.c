@@ -311,7 +311,8 @@ static void parserSuicideHandler( void )
 static void parseInit(          // PARSER INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carveRESTART_PARSE = CarveCreate( sizeof( RESTART_PARSE ), BLOCK_RESTART_PARSE );
     carveVALUE_STACK = CarveCreate( STACK_DEPTH * sizeof( YYSTYPE ), BLOCK_VALUE_STACK );
     carveSTATE_STACK = CarveCreate( STACK_DEPTH * sizeof( YYACTIONTYPE ), BLOCK_STATE_STACK );
@@ -331,7 +332,8 @@ static void parseInit(          // PARSER INITIALIZATION
 static void parseFini(          // PARSER INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     ParseFlush();
     DbgStmt( CarveVerifyAllGone( carveRESTART_PARSE, "RESTART_PARSE" ) );
     DbgStmt( CarveVerifyAllGone( carveVALUE_STACK, "VALUE_STACK" ) );
@@ -1735,7 +1737,7 @@ static void lookAheadShift( PARSE_STACK *state, YYACTIONTYPE new_state, YYTOKENT
         puts( yytoknames[t] );
     }
 #else
-    t = t;
+    /* unused parameters */ (void)t;
 #endif
     /* NYI: should push S::operator qualification but we can't pop it yet */
     state->ssp++;
@@ -1839,7 +1841,7 @@ static void lookAheadUnsaveToken( PARSE_STACK *state, YYTOKENTYPE tok )
         CFatal( "trying to unsave an unaligned saved token" );
     }
 #else
-    tok = tok;
+    /* unused parameters */ (void)tok;
 #endif
     state->look_ahead_count--;
 }
@@ -2859,12 +2861,14 @@ pch_status PCHReadParserData( void )
 
 pch_status PCHInitParserData( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniParserData( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }

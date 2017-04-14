@@ -294,7 +294,7 @@ static void alignPCH( unsigned i, bool writing )
         }
     }
 #else
-    i = i;
+    /* unused parameters */ (void)i;
 #endif
 }
 
@@ -997,14 +997,16 @@ pch_status PCHWriteVerify( void )
 pch_status PCHInitVerify( bool writing )
 /**************************************/
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniVerify( bool writing )
 /**************************************/
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
@@ -1102,7 +1104,8 @@ static void pchInit( INITFINI* defn )
 {
     pch_reloc_info *cri;
 
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     pchName = NULL;
     pchDebugInfoName = NULL;
     for( cri = relocInfo; cri < &relocInfo[ PCHRELOC_MAX ]; ++cri ) {
@@ -1120,7 +1123,8 @@ static void pchInit( INITFINI* defn )
 
 static void pchFini( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CMemFreePtr( &pchName );
 }
 

@@ -1441,7 +1441,7 @@ static bool endOfStmt(          // PROCESS END-OF-STATEMENT
                  * "else" part. BTW, re-declaring that name is not
                  * allowed by the standard, but the current code
                  * doesn't catch that.
-                 */ 
+                 */
                 return recog;
             }
             if( ! top_block->expr_true ) {
@@ -2261,7 +2261,8 @@ static void functionSuicideHandler( void )
 
 static void functionInit( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     functionSuicide.call_back = functionSuicideHandler;
     RegisterSuicideCallback( &functionSuicide );
     carveCSTACK = CarveCreate( sizeof( CSTACK ), BLOCK_CSTACK );
@@ -2272,7 +2273,8 @@ static void functionInit( INITFINI* defn )
 
 static void functionFini( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     DbgStmt( CarveVerifyAllGone( carveCSTACK, "CSTACK" ) );
     DbgStmt( CarveVerifyAllGone( carveSWCASE, "SWCASE" ) );
     DbgStmt( CarveVerifyAllGone( carveFNLABEL, "FNLABEL" ) );
@@ -2393,7 +2395,8 @@ void FunctionBodyDefargStartup(
 void FunctionBodyDefargShutdown(
     FUNCTION_DATA *f )          // - data
 {
-    f = f;
+    /* unused parameters */ (void)f;
+
     DbgAssert( f->is_defarg == true );
     currFunction = currFunction->next;
 }

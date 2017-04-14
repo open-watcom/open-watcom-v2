@@ -784,7 +784,8 @@ static void scopeBeginFileScope( void )
 static void scopeInit(          // SCOPES INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     PCHActivate();
     carveSYM_REGION = CarveCreate( sizeof( SYM_REGION ), BLOCK_SYM_REGION );
     carveUSING_NS = CarveCreate( sizeof( USING_NS ), BLOCK_USING_NS );
@@ -842,7 +843,8 @@ static void scopeInit(          // SCOPES INITIALIZATION
 static void scopeFini(          // SCOPES COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     DbgStmt( CarveVerifyAllGone( carveBASE_STACK, "BASE_STACK" ) );
     DbgStmt( CarveVerifyAllGone( carveBASE_PATH, "BASE_PATH" ) );
     DbgStmt( CarveVerifyAllGone( carvePATH_CAP, "PATH_CAP" ) );
@@ -1624,7 +1626,7 @@ SCOPE ScopeEnd( scope_type_t scope_type )
         CFatal( "scope terminated incorrectly" );
     }
 #else
-    scope_type = scope_type;
+    /* unused parameters */ (void)scope_type;
 #endif
     return( ScopeClose() );
 }
@@ -2663,7 +2665,8 @@ static walk_status clearLeapOf( BASE_STACK *top, void *parm )
     SCOPE scope;
     TYPE base_type;
 
-    parm = parm;
+    /* unused parameters */ (void)parm;
+
     scope = top->scope;
     base_type = ScopeClass( scope );
     base_type->of = NULL;
@@ -4515,7 +4518,8 @@ static bool tryDisambigLookup( lookup_walk *data, SCOPE scope,
     SCOPE edge_scope;
     SCOPE *top;
 
-    scope = scope;
+    /* unused parameters */ (void)scope;
+
     DbgAssert( PstkTopElement( to_stack ) == NULL );
     PstkPopAll( to_stack );
     for( ; (top = (SCOPE *)PstkPop( from_stack )) != NULL; ) {
@@ -4605,7 +4609,7 @@ static bool simpleNSLookup( lookup_walk *data, SCOPE scope )
             top_scope = *top;
             RingIterBeg( top_scope->using_list, curr ) {
                 trigger_scope = curr->trigger;
-                if( data->member_lookup ? 
+                if( data->member_lookup ?
                     ( trigger_scope != NULL ) :
                     ( trigger_scope == scope || trigger_scope == top_scope ) ) {
                     edge_scope = curr->using_scope;
@@ -7096,13 +7100,13 @@ void ScopeAuxName( char *id, AUX_INFO *auxinfo )
     RingIterBeg( syms, sym ) {
 
         /*
-         *  Check to see if we are defining code and we already have a symbol 
+         *  Check to see if we are defining code and we already have a symbol
          *  defined that has code attached ( a function body )
-         */ 
+         */
         if( auxinfo && auxinfo->code && SymIsInitialized( sym ) && SymIsFunction( sym ) ){
             CErr2p( ERR_FUNCTION_REDEFINITION, sym );   //ERR_SYM_ALREADY_DEFINED, sym );
         }
-        
+
         fn_type = FunctionDeclarationType( sym->sym_type );
         if( fn_type == NULL ) {
             changeNonFunction( sym, auxinfo );
@@ -7153,7 +7157,8 @@ static walk_status markNotVisited( BASE_STACK *top, void *parm )
     SCOPE scope;
     TYPE class_type;
 
-    parm = parm;
+    /* unused parameters */ (void)parm;
+
     scope = top->scope;
     class_type = ScopeClass( scope );
     class_type->flag &= ~TF1_VISITED;

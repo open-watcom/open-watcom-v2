@@ -181,7 +181,8 @@ static void initSectionHeader( Elf32_Shdr *header, Elf32_Word type, Elf32_Word f
 static void formatBogusUndefHeader( owl_file_handle file, Elf32_Shdr *header ) {
 //******************************************************************************
 
-    file = file;
+    /* unused parameters */ (void)file;
+
     initSectionHeader( header, SHT_NULL, 0 );
 }
 

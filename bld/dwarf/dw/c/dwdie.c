@@ -48,7 +48,8 @@ void InitDIE( dw_client cli )
 
 void FiniDIE( dw_client cli )
 {
-    cli = cli;
+    /* unused parameters */ (void)cli;
+
     _Assert( cli->die.tree == NULL );
 }
 
@@ -127,5 +128,5 @@ void StartDIE( dw_client cli, abbrev_code abbrev )
 
 void EndDIE( dw_client cli )
 {
-    cli = cli;
+    /* unused parameters */ (void)cli;
 }

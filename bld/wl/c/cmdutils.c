@@ -73,8 +73,9 @@ static bool WildCard( bool (*rtn)( void ), tokcontrol ctrl )
 /**********************************************************/
 {
 #if defined( __UNIX__ ) || defined( __ZDOS__ )
+    /* unused parameters */ (void)ctrl;
+
     //opendir - readdir wildcarding not supported here.
-    ctrl = ctrl;
     return( rtn() );
 #else
     char                *p;
@@ -236,7 +237,8 @@ bool MatchOne( parse_entry *entry, sep_type req, const char *match, size_t match
     const char          *ptr;
     size_t              len;
 
-    req = req;
+    /* unused parameters */ (void)req;
+
     for( ; entry->keyword != NULL; ++entry ) {
         key = entry->keyword;
         ptr = match;

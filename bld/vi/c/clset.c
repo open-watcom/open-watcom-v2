@@ -357,9 +357,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
     const char  *value;
 
 #ifdef VICOMP
-    winflag = winflag;
-    isbool = isbool;
-    new = new;
+    /* unused parameters */ (void)winflag; (void)isbool; (void)new;
 #endif
     /*
      * set up value for boolean set commands

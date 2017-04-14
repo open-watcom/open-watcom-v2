@@ -200,7 +200,8 @@ IDEBool IDEAPI IDEInitDLL   // DLL INITIALIZATION
 void IDEAPI IDEFiniDLL   // DLL COMPLETION
     ( IDEDllHdl hdl )           // - handle
 {
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     DbgVerify( hdl == CompInfo.idehdl
              , "FiniDLL -- handle mismatch" );
 }
@@ -252,7 +253,8 @@ IDEBool IDEAPI IDERunYourSelf // COMPILE A PROGRAM
     auto char input[1+_MAX_PATH+1]; // - input file name ("<fname>")
     auto char output[4+1+_MAX_PATH+1];//- output file name (-fo="<fname>")
 
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     DbgVerify( hdl == CompInfo.idehdl
              , "RunYourSelf -- handle mismatch" );
     TBreak();   // clear any pending IDEStopRunning's
@@ -275,7 +277,8 @@ IDEBool IDEAPI IDERunYourSelfArgv(// COMPILE A PROGRAM (ARGV ARGS)
     auto char input[1+_MAX_PATH+1]; // - input file name ("<fname>")
     auto char output[4+1+_MAX_PATH+1];//- output file name (-fo="<fname>")
 
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     DbgVerify( hdl == CompInfo.idehdl
              , "RunYourSelf -- handle mismatch" );
     TBreak();   // clear any pending IDEStopRunning's
@@ -551,7 +554,8 @@ IDEBool IDEAPI IDEParseMessage // PARSE A MESSAGE
 
 IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 {
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     DbgVerify( hdl == CompInfo.idehdl
              , "PassInitInfo -- handle mismatch" );
     if( info->ver < 2 ) {
@@ -613,6 +617,6 @@ void CppStartFuncMessage( SYMBOL sym )
         VbufFree( &buff );
     }
 #else
-    sym = sym;
+    /* unused parameters */ (void)sym;
 #endif
 }

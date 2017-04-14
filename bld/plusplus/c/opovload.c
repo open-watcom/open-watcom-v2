@@ -1059,7 +1059,8 @@ static void overloadOperatorInit( // INITIALIZATION
     SYMBOL fun;                 // - dummy symbol for function
     OP_MASK mask;               // - mask for function
 
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     for( arg = 0; arg < MAX_FUN_PROTOS; ++arg ) {
         mask = opfun_mask[arg];
         if( ( mask == 0 ) || ( mask & OPM_RR ) ) {
@@ -1147,7 +1148,8 @@ static void overloadOperatorFini( // COMPLETION
 {
     unsigned arg;               // - current basic argument
 
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     for( arg = 0; arg < MAX_FUN_PROTOS; ++arg ) {
         if( ovfuns[ arg ] != NULL ) {
             FreeSymbol( ovfuns[ arg ] );
@@ -1193,13 +1195,15 @@ pch_status PCHReadOperatorOverloadData( void )
 
 pch_status PCHInitOperatorOverloadData( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniOperatorOverloadData( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 

@@ -1310,10 +1310,9 @@ static void opError( instruction *ins, op_type actual, op_type wanted, int i ) {
 //******************************************************************************
 // Stuff out an error message.
 
-    ins = ins;
-    actual = actual;
-    wanted = wanted;    // it's a set of flags
-    if( ( wanted & OP_NOTHING ) != OP_NOTHING ) {
+    /* unused parameters */ (void)ins; (void)actual;
+
+    if( (wanted & OP_NOTHING) != OP_NOTHING ) {
         Error( OPERAND_INCORRECT, i );
     } else {
         Error( OPERAND_UNEXPECTED, i );

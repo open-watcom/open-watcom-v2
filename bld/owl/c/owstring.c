@@ -149,7 +149,7 @@ static void patEmit( owl_string_table *table, patricia *tree, char **buffer, owl
     patricia            *child;
     unsigned            len;
 
-    table = table;
+    /* unused parameters */ (void)table;
 
     tree->offset = *offset;
     len = strlen( tree->text ) + 1;

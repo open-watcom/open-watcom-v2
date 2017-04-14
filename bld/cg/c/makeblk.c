@@ -357,7 +357,8 @@ static void *LinkReturns( void *arg )
     label_handle        link_to;
     label_handle        to_search;
 
-    arg = arg;
+    /* unused parameters */ (void)arg;
+
     link_to = LinkReturnsParms[0];
     to_search = LinkReturnsParms[1];
     blk = FindBlockWithLbl( to_search );

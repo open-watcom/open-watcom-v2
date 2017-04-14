@@ -137,8 +137,9 @@ static void extrefClassVisit(   // VISIT ANCESTRAL CLASS
     SYMBOL csym,                // - corresponding class symbol
     void * _rinfo )              // - resolution information
 {
+    /* unused parameters */ (void)sym;
+
     EXTRF *rinfo = _rinfo;
-    sym = sym;
     extrefPruneOvfn( &rinfo->syms, csym );
     extrefAddOvfn( &rinfo->syms, csym );
 }
@@ -278,7 +279,7 @@ void *ExtrefResolve(            // DETERMINE RESOLUTION FOR A SYMBOL
             // TODO!!!!!!!!!!!!!!
             // there are allocated memory blocks by virtualListBuild
             // which are not freed
-            // 
+            //
             virtualListBuild( sym, rinfo );
             if( pureSymCanBeUndefd( sym ) ) {
                 rinfo->type = EXTRF_PURE_VFN_CONDITIONAL;
@@ -330,7 +331,9 @@ static void extrefVfunRegister( // REGISTER AN ANCESTRAL FUNCTION
     void * _orig )              // - ring of functions
 {
     OVFN **orig = _orig;
-    sym = sym;
+
+    /* unused parameters */ (void)sym;
+
     extrefPruneOvfn( orig, csym );
     extrefAddOvfn( orig, csym );
 }
@@ -412,7 +415,8 @@ void *ExtrefNextVfunSym(         // MOVE TO NEXT ORIGNATING FUN. FOR VIRTUAL CAL
 static void extrefInit(         // INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carveOVFN = CarveCreate( sizeof( OVFN ), 32 );
     carveRingHead = CarveCreate( sizeof( OVFN* ), 8 );
     ExtraRptRegisterCtr( &ctr_cgfiles, "number of CGFILE lookups (extref)" );
@@ -422,11 +426,12 @@ static void extrefInit(         // INITIALIZATION
 static void extrefFini(         // COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
 // TODO!!!!!!!!!!!!!!
 // there are allocated memory blocks by virtualListBuild
 // which are not freed
-// 
+//
     DbgStmt( CarveVerifyAllGone( carveOVFN, "OVFN" ) );
     DbgStmt( CarveVerifyAllGone( carveRingHead, "OVFN* ring heads" ) );
     CarveDestroy( carveOVFN );

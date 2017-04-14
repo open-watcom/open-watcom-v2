@@ -116,9 +116,9 @@ static size_t fix_cd( FILE *f, void *buffer, size_t buffer_len, long offset )
     long                                header_pos;
     unsigned_32                         i;
 
-    buffer_len = buffer_len;
-    eocd = buffer;
+    /* unused parameters */ (void)buffer_len;
 
+    eocd = buffer;
     header_pos = offset + eocd->cd_offset;
 
     // fixup all files in central directory

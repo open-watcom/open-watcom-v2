@@ -54,7 +54,8 @@ static void         TRPrintLine( void *, const char * buff, size_t len );
 extern void TRMemRedirect( int handle )
 /*************************************/
 {
-    handle=handle;
+    /* unused parameters */ (void)handle;
+
 #ifdef TRMEM
     TRFileHandle = handle;
 #endif

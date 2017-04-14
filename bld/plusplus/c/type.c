@@ -3121,7 +3121,8 @@ static void checkDestructor( TYPE return_type, int status, unsigned arg_count )
 
 static void checkOperator( TYPE return_type, int status, NAME name )
 {
-    return_type = return_type;
+    /* unused parameters */ (void)return_type;
+
     if( status & SM_NOT_A_FUNCTION ) {
         CErr2p( ERR_OPERATOR_BAD_DECL, name );
     }
@@ -4221,7 +4222,7 @@ DECL_SPEC *PTypeClassInstantiation( TYPE typ, PTREE id )
     } else {
         spec = NULL;
     }
-    
+
     return( spec );
 }
 
@@ -4280,7 +4281,7 @@ static SYMBOL_DIAG diagMemb =   // diagnosis for member
 };
 
 /*
- * Return the type of the expression according 
+ * Return the type of the expression according
  * to the decltype rules [dcl.type.simple] 4
  *
  * NOTE: There seems to be no way to discriminate between
@@ -4303,13 +4304,13 @@ DECL_SPEC *PTypeDecltypeExpr( PTREE expr, bool idexpr )
         goto EXIT;
     }
 
-    /* For an expression e, the type denoted by decltype(e) 
+    /* For an expression e, the type denoted by decltype(e)
      * is defined as follows:
      */
 
-    /*(4.1) — if e is an unparenthesized id-expression or 
+    /*(4.1) — if e is an unparenthesized id-expression or
      * an unparenthesized class member access (5.2.5), decltype(e)
-     * is the type of the entity named by e. If there is no such entity, 
+     * is the type of the entity named by e. If there is no such entity,
      * or if e names a set of overloaded functions, the program is ill-formed;
     */
 
@@ -4345,7 +4346,7 @@ DECL_SPEC *PTypeDecltypeExpr( PTREE expr, bool idexpr )
 
     else if( AnalyseLvalue( &expr ) ) { // Successul Analysis
 
-        /* (4.2) — otherwise, if e is an xvalue, decltype(e) is T&&, 
+        /* (4.2) — otherwise, if e is an xvalue, decltype(e) is T&&,
          * where T is the type of e;
          */
 
@@ -4353,7 +4354,7 @@ DECL_SPEC *PTypeDecltypeExpr( PTREE expr, bool idexpr )
         if( false ) {
         }
 
-        /* (4.3) — otherwise, if e is an lvalue, decltype(e) is T&, 
+        /* (4.3) — otherwise, if e is an lvalue, decltype(e) is T&,
          * where T is the type of e;
          */
         else if( expr->flags & PTF_LVALUE ) {
@@ -4361,7 +4362,7 @@ DECL_SPEC *PTypeDecltypeExpr( PTREE expr, bool idexpr )
             type = NodeType( expr );
 
         }
-        
+
         /* (4.4) — otherwise, decltype(e) is the type of e. */
         else {
             type = expr->type;
@@ -6963,7 +6964,8 @@ bool VerifyPureFunction( DECL_INFO *dinfo )
 void VerifyMemberFunction( DECL_SPEC *dspec, DECL_INFO *dinfo )
 /*************************************************************/
 {
-    dspec = dspec;
+    /* unused parameters */ (void)dspec;
+
     FreeDeclInfo( dinfo );
 }
 
@@ -8254,7 +8256,7 @@ int BindExplicitTemplateArguments( SCOPE parm_scope, PTREE templ_args )
                     something_went_wrong = true;
                     break;
                 }
-                
+
                 typ = parm->type;
                 curr->sym_type->of->of = typ;
             } else if( parm->op == PT_INT_CONSTANT ) {
@@ -8510,6 +8512,8 @@ TYPE MakeNamespaceType( void )
 static void typesInit(          // TYPES INITIALIZATION
     INITFINI* defn )            // - definition
 {
+    /* unused parameters */ (void)defn;
+
     if( CompFlags.dll_subsequent ) {
         typeHashCtr = 0;
         uniqueTypes = NULL;
@@ -8528,7 +8532,6 @@ static void typesInit(          // TYPES INITIALIZATION
     typeHashTables[ TYP_BITFIELD ] = bitfieldHashTable;
     typeHashTables[ TYP_ARRAY ] = arrayHashTable;
     typeHashTables[ TYP_MODIFIER ] = modifierHashTable;
-    defn = defn;
     carveDECL_SPEC = CarveCreate( sizeof( DECL_SPEC ), BLOCK_DECL_SPEC );
     carveTYPE = CarveCreate( sizeof( struct type ), BLOCK_TYPE );
     carveCLASSINFO = CarveCreate( sizeof( CLASSINFO ), BLOCK_CLASSINFO );
@@ -8677,7 +8680,8 @@ static void freeTypeName( void *e, carve_walk_base *d )
 {
     TYPE t = e;
 
-    d = d;
+    /* unused parameters */ (void)d;
+
     if( t->id == TYP_TYPENAME ) {
         CMemFreePtr( &t->u.n.name );
     }
@@ -8689,7 +8693,8 @@ static void typesFini(          // COMPLETION OF TYPES PROCESSING
 {
     auto carve_walk_base data;
 
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     ClassFini();
     //DbgStmt( DumpOfRefs() );
     DbgStmt( CarveVerifyAllGone( carveDECL_SPEC, "DECL_SPEC" ) );

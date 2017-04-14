@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Optimize x87 FPU instruction sequences. 
+* Description:  Optimize x87 FPU instruction sequences.
 *
 ****************************************************************************/
 
@@ -200,7 +200,7 @@ static  instruction     *PushDelayed( instruction *ins, an addr, call_state *sta
     addr->format = NF_ADDR; /* so instruction doesn't get freed! */
     BGDone( addr );
 #if _TARGET & _TARG_IAPX86
-    state = state;
+    /* unused parameters */ (void)state;
 #else
     if( state->attr & ROUTINE_STACK_RESERVE ) {
         ReserveStack( state, ins, addr->tipe->length );

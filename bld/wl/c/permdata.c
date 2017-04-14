@@ -292,7 +292,9 @@ static void PrepSegData( void *_sdata, void *info )
 /*************************************************/
 {
     segdata *sdata = _sdata;
-    info = info;
+
+    /* unused parameters */ (void)info;
+
     if( sdata->isfree ) {
         *((unsigned_32 *)sdata) = CARVE_INVALID_INDEX;
         return;
@@ -681,7 +683,8 @@ static void RebuildModEntry( void *_mod, void *info )
 {
     mod_entry *mod = _mod;
 
-    info = info;
+    /* unused parameters */ (void)info;
+
     if( *((unsigned_32 *)mod) == CARVE_INVALID_INDEX ) {
         CarveInsertFree( CarveModEntry, mod );
         return;
@@ -698,7 +701,8 @@ static void RebuildSegData( void *_sdata, void *info )
 {
     segdata *sdata = _sdata;
 
-    info = info;
+    /* unused parameters */ (void)info;
+
     if( *((unsigned_32 *)sdata) == CARVE_INVALID_INDEX ) {
         CarveInsertFree( CarveSegData, sdata );
         return;
@@ -714,7 +718,8 @@ static void RebuildSymbol( void *_sym, void *info )
 {
     symbol *sym = _sym;
 
-    info = info;
+    /* unused parameters */ (void)info;
+
     if( *((unsigned_32 *)sym) == CARVE_INVALID_INDEX ) {
         CarveInsertFree( CarveSymbol, sym );
         return;

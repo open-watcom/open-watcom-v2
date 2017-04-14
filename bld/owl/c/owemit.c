@@ -47,19 +47,19 @@ void OWLENTRY OWLWeakExt( owl_file_handle file, owl_symbol_handle wk_sym, owl_sy
 //****************************************************************************************************************************
 
 #ifdef NDEBUG
-    file = file;
+    /* unused parameters */ (void)file;
 #endif
     _Log(( file, "OWLWeakExt( %x, %x, %x, %x )\n", file, wk_sym, alt_sym, flags ));
     assert( alt_sym->linkage != OWL_SYM_WEAK );
     wk_sym->linkage = OWL_SYM_WEAK;
     wk_sym->x.alt_sym = alt_sym;
     switch( flags ) {
-    case OWL_WKSYM_NORMAL:  
+    case OWL_WKSYM_NORMAL:
         break;
-    case OWL_WKSYM_LAZY:  
+    case OWL_WKSYM_LAZY:
         wk_sym->flags |= OWL_SYM_LAZY;
         break;
-    case OWL_WKSYM_ALIAS:  
+    case OWL_WKSYM_ALIAS:
         wk_sym->flags |= OWL_SYM_ALIAS;
         break;
     default:
@@ -157,17 +157,18 @@ void OWLENTRY OWLEmitImport( owl_file_handle file, const char *name ) {
     OWLSymbolDefine( file->symbol_table, sym, NULL, 0, OWL_TYPE_OBJECT, OWL_SYM_UNDEFINED );
 }
 
-void OWLENTRY OWLEmitExport( owl_file_handle file, owl_symbol_handle sym ) {
-//**************************************************************************
+void OWLENTRY OWLEmitExport( owl_file_handle file, owl_symbol_handle sym )
+//************************************************************************
+{
+    /* unused parameters */ (void)file;
 
     assert( sym != NULL );
-    file = file;
     sym->flags |= OWL_SYM_EXPORT;
 }
 
-void OWLENTRY OWLSetLocation( owl_section_handle section, owl_offset loc ) {
-//**************************************************************************
-
+void OWLENTRY OWLSetLocation( owl_section_handle section, owl_offset loc )
+//************************************************************************
+{
     _Log(( section->file, "OWLSetLocation( %x, %x )\n", section, loc ));
     section->location = loc;
     if( section->location > section->size ) {
@@ -198,10 +199,11 @@ owl_section_type OWLENTRY OWLTellSectionType( owl_section_handle section ) {
     return( section->type );
 }
 
-owl_sym_linkage OWLENTRY OWLTellSymbolLinkage( owl_file_handle file, owl_symbol_handle symbol ) {
-//***********************************************************************************************
+owl_sym_linkage OWLENTRY OWLTellSymbolLinkage( owl_file_handle file, owl_symbol_handle symbol )
+//*********************************************************************************************
+{
+    /* unused parameters */ (void)file;
 
-    file = file;
     if( symbol != NULL ) {
         return( symbol->linkage );
     }

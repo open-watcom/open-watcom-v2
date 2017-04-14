@@ -228,7 +228,8 @@ arg_list *MakeMockArgList( TYPE type, int num_args )
 static void init(               // MODULE INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     tempList = NULL;
 }
 
@@ -236,7 +237,8 @@ static void init(               // MODULE INITIALIZATION
 static void fini(               // MODULE COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     tempList = NULL;
 }
 

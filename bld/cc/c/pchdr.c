@@ -582,7 +582,8 @@ static void SetTypeIndex( TYPEPTR typ )
 
 static void SetFuncTypeIndex( TYPEPTR typ, int index )
 {
-    index = index;      /* unused */
+    /* unused parameters */ (void)index;
+
     SetTypeIndex( typ );
 }
 
@@ -713,7 +714,8 @@ static void OutPutFuncParmList( TYPEPTR typ, int index )
     bool        rc;
     TYPEPTR     parm_type;
 
-    index = index;      /* unused */
+    /* unused parameters */ (void)index;
+
     if( typ->u.fn.parms != NULL ) {
         for( parm_types = typ->u.fn.parms; (parm_type = *parm_types) != NULL; ++parm_types ) {
             parm_type = PCHSetUInt( parm_type->u1.type_index );
@@ -1128,12 +1130,12 @@ static bool VerifyIncludes( const char *filename )
     for( flist = FNameList; flist != NULL; flist = flist->next ) {
         if( fnew != NULL ) {
             if( FNAMECMPSTR( fnew->name, flist->name ) != 0 ) {
-                return( true );                
+                return( true );
             }
             fnew = fnew->next;
         } else if( filename != NULL ) {
             if( FNAMECMPSTR( filename, flist->name ) != 0 ) {
-                return( true );                
+                return( true );
             }
             filename = NULL;
         }
@@ -1842,7 +1844,8 @@ static void SetDebugType( TYPEPTR typ )
 
 static void SetFuncDebugType( TYPEPTR typ, int index )
 {
-    index = index;  /* unused */
+    /* unused parameters */ (void)index;
+
     typ->u1.debug_type = DBG_NIL_TYPE;
 }
 

@@ -515,7 +515,8 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff
     dis_operand         *op;
     ref_flags           rf;
 
-    buff_len = buff_len;
+    /* unused parameters */ (void)buff_len;
+
     buff[0] = '\0';
 
     rf = RFLAG_DEFAULT;

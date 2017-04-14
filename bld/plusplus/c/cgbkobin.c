@@ -351,7 +351,8 @@ SE* ObjInitDtorAuto(            // UPDATE OBJ_INIT FOR AUTO DTOR
 static void init(               // INITIALIZATION FOR MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     ringDtregObj = NULL;
     ringDtregObjMod = NULL;
     VstkOpen( &stack_object_init, sizeof( OBJ_INIT ), 4 );
@@ -362,7 +363,8 @@ static void init(               // INITIALIZATION FOR MODULE
 static void fini(               // COMPLETION FOR MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     VstkClose( &stack_object_init );
     RingCarveFree( carveDTREG_OBJ, &ringDtregObjMod );
     CarveDestroy( carveDTREG_OBJ );

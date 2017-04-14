@@ -183,7 +183,8 @@ void FreeNodes( nodearray *nodes )
 static void ReleaseNamelist( void *node, void *dummy )
 /****************************************************/
 {
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     _LnkFree( *((void **)node) );
 }
 
@@ -229,7 +230,8 @@ static void CollapseLazy( void *node, void *dummy )
 {
     extnode *   curr;
 
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     curr = node;
     if( IS_SYM_A_REF( curr->entry ) && !curr->isweak ) {
         ClearSymUnion( curr->entry );

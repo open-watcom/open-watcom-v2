@@ -202,7 +202,8 @@ char * OMFENTRY OmfSecGetName( omf_sec_handle sh )
 
 orl_sec_offset OMFENTRY OmfSecGetBase( omf_sec_handle sh )
 {
-    sh = sh;
+    /* unused parameters */ (void)sh;
+
     assert( sh );
 
     // Ask Jim
@@ -547,7 +548,8 @@ orl_symbol_type OMFENTRY OmfSymbolGetType( omf_symbol_handle sym )
 
 unsigned char OMFENTRY OmfSymbolGetRawInfo( omf_symbol_handle sym )
 {
-    sym = sym;
+    /* unused parameters */ (void)sym;
+
     assert( sym );
 
     return( 0 );

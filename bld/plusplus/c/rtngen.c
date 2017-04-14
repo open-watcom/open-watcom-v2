@@ -154,7 +154,8 @@ void RtnGenerate( void )
 static void rtnGenInit(         // INITIALIZE FOR ROUTINE GENERATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     useSYMBOL = NULL;
     useTYPE = NULL;
     carveRTN_GEN = CarveCreate( sizeof( RTN_GEN ), BLOCK_RTN_GEN );
@@ -164,7 +165,8 @@ static void rtnGenInit(         // INITIALIZE FOR ROUTINE GENERATION
 static void rtnGenFini(         // COMPLETE ROUTINE GENERATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CarveDestroy( carveRTN_GEN );
 }
 
@@ -207,12 +209,14 @@ pch_status PCHWriteGenerators( void )
 
 pch_status PCHInitGenerators( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniGenerators( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }

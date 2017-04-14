@@ -359,7 +359,8 @@ IDEBool IDEAPI IDEInitDLL( IDECBHdl cbhdl, IDECallBacks *cb, IDEDllHdl *hdl )
 IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 /****************************************************************/
 {
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     if( info == NULL || info->ver < 2 ) {
         return( true );
     }
@@ -395,7 +396,8 @@ IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fataler
 {
     int         rc;
 
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     StopInvoked = false;
     if( fatalerr != NULL )
         *fatalerr = false;
@@ -410,11 +412,12 @@ IDEBool IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool
 {
     int         rc;
 
+    /* unused parameters */ (void)hdl;
+
 #if !defined( __WATCOMC__ )
     _argc = argc;
     _argv = argv;
 #endif
-    hdl = hdl;
     StopInvoked = false;
     if( fatalerr != NULL )
         *fatalerr = false;
@@ -435,6 +438,7 @@ void IDEAPI IDEFreeHeap( void )
 void IDEAPI IDEFiniDLL( IDEDllHdl hdl )
 /*************************************/
 {
+    /* unused parameters */ (void)hdl;
+
     // fini wrc
-    hdl = hdl;
 }

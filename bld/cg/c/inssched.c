@@ -253,7 +253,8 @@ static bool OkToSlide( instruction *ins, name *op )
     int             i;
 #endif
 
-    ins = ins;
+    /* unused parameters */ (void)ins;
+
     if( op->i.base != NULL )
         return( true );
     if( op->i.constant != 0 )

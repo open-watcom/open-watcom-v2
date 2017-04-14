@@ -549,7 +549,6 @@ extern  void _CGAPI     BEFreeBack( back_handle bck )
 extern  void _CGAPI     BEDefType( cg_type what, uint align, unsigned_32 len )
 /****************************************************************************/
 {
-    align = align;
 #ifndef NDEBUG
     EchoAPI( "BEDefType( %t, %x, %i )\n", what, align, len );
 #endif
@@ -587,7 +586,8 @@ extern  uint _CGAPI     BETypeAlign( cg_type tipe )
     retn = 1;
     return EchoAPIIntReturn( retn );
 #else
-    tipe = tipe;
+    /* unused parameters */ (void)tipe;
+
     return( 1 );
 #endif
 }
@@ -828,7 +828,8 @@ extern  cg_name _CGAPI CGTempName( temp_handle temp, cg_type tipe )
     hdlAdd( CG_NAMES, retn );
     return EchoAPICgnameReturn( retn );
 #else
-    tipe = tipe;
+    /* unused parameters */ (void)tipe;
+
     return( TGLeaf( BGTempName( (name *)temp, TypeAddress( TY_POINTER ) ) ) );
 #endif
 }

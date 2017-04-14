@@ -389,7 +389,8 @@ static pointer  GetFromFrl( size_t amount, int frl_class )
 {
     frl     *free;
 
-    amount = amount;
+    /* unused parameters */ (void)amount;
+
     free = _FreeList[frl_class];
     if( free != NULL ) {
         assert( (free->length & ALLOCATED) == 0 );

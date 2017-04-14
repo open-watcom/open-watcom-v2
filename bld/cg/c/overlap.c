@@ -52,14 +52,16 @@ static  bool    Conflicts( type_length start,  type_length end,
 static  bool    ovNo( name *op1, name *op2 )
 /******************************************/
 {
-    op1 = op2;
+    /* unused parameters */ (void)op1; (void)op2;
+
     return( false );
 }
 
 static  bool    ovYes( name *op1, name *op2 )
 /*******************************************/
 {
-    op1 = op2;
+    /* unused parameters */ (void)op1; (void)op2;
+
     return( true );
 }
 
@@ -82,8 +84,9 @@ static  bool    ovReg( name *op1, name *op2 )
 static  bool    ovIndex( name *op1, name *op2 )
 /*********************************************/
 {
+    /* unused parameters */ (void)op1; (void)op2;
+
     /* this is overly pessimistic, but we shouldn't see mem->mem moves anyway */
-    op1 = op2;
     return( true );
 }
 

@@ -111,7 +111,8 @@ static void macroInit(          // MACRO PROCESSING -- INITIALIZATION
 {
     SPECIAL_MACRO_NAME *mac;
 
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     DirectiveInit();
     nestedMacros = NULL;
     scannerTokenList = NULL;
@@ -128,7 +129,8 @@ static void macroInit(          // MACRO PROCESSING -- INITIALIZATION
 static void macroFini(          // MACRO PROCESSING -- COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     DirectiveFini();
     MacroStorageFini();
     DbgStmt( CarveVerifyAllGone( carveNESTED_MACRO, "NESTED_MACRO" ) );

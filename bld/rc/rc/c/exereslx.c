@@ -265,7 +265,7 @@ bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
     unsigned_32     curr_total;
     unsigned_32     curr_offset;
 
-    res_obj = res_obj; rva = rva; offset = offset; writebyfile = writebyfile;
+    /* unused parameters */ (void)res_obj; (void)rva; (void)offset; (void)writebyfile;
 
     dir = &exeinfo->u.LXInfo.Res;
 

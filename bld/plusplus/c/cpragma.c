@@ -69,14 +69,16 @@ extern  void    PragAux();
 static void init                // MODULE INITIALIZATION
     ( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     pragmaExtrefs = NULL;
 }
 
 static void fini                // MODULE COMPLETION
     ( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     RingFree( &pragmaExtrefs );
 }
 
@@ -1762,12 +1764,14 @@ pch_status PCHWritePragmaData( void )
 
 pch_status PCHInitPragmaData( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniPragmaData( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }

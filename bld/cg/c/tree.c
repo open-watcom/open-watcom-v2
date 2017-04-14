@@ -515,7 +515,8 @@ static  type_def  *BinResult( cg_op op, tn *l, tn *r, type_def *tipe,
     tn          temp;
     type_def    *otipe;
 
-    commie = commie; /* shut up the compiler */
+    /* unused parameters */ (void)commie;
+
     rite = *r;
     left = *l;
     switch( op ) {
@@ -2315,8 +2316,9 @@ static  an  TNCall( tn what, bool ignore_return )
     cg_sym_handle   sym;
     aux_handle      aux;
 
+    /* unused parameters */ (void)ignore_return;
+
     call = NULL;
-    ignore_return=ignore_return;
     addr = what->u.left; /* address to call*/
     sym = (cg_sym_handle)addr->u2.t.rite;
     aux = FEAuxInfo( sym, AUX_LOOKUP );

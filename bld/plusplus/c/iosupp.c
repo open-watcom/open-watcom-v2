@@ -480,7 +480,7 @@ static const char *openSrcExts( // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
         if( ( ext == NULL ) && doExt ) {
             for( ;; ) {
                 ext = *exts++;
-                if( ext == NULL ) 
+                if( ext == NULL )
                     break;
                 ext = openSrcExt( ext, nd, typ );
                 if( ext != NULL ) {
@@ -926,7 +926,8 @@ static void setPaths(           // SET PATHS (IF THEY EXIST)
 static void ioSuppInit(         // INITIALIZE IO SUPPORT
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     outFileChecked = 0;
     tempBlock = 0;
     tempname = NULL;
@@ -943,7 +944,8 @@ static void ioSuppInit(         // INITIALIZE IO SUPPORT
 static void ioSuppFini(         // FINALIZE IO SUPPORT
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     if( temphandle != -1 ) {
         close( temphandle );
         if( tempname != NULL ) {

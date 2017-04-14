@@ -534,10 +534,11 @@ extern  void    _CGAPI DBModSym( cg_sym_handle sym, cg_type indirect )
     fe_attr     attr;
     dbg_loc     loc;
 
+    /* unused parameters */ (void)indirect;
+
 #ifndef NDEBUG
     EchoAPI( "DBModSym( %s, %t )\n",  sym, indirect );
 #endif
-    indirect = indirect;
     if( _IsModel( DBG_LOCALS ) ) {
         attr = FEAttr( sym );
         if( (attr & FE_IMPORT) == 0 ) {
@@ -557,10 +558,11 @@ extern  void    _CGAPI DBModSym( cg_sym_handle sym, cg_type indirect )
 extern  void _CGAPI DBObject( dbg_type tipe, dbg_loc loc, cg_type ptr_type )
 /**************************************************************************/
 {
+    /* unused parameters */ (void)ptr_type;
+
 #ifndef NDEBUG
     EchoAPI( "DBObject( %i, %i, %t )\n", tipe, loc, ptr_type );
 #endif
-    ptr_type = ptr_type;
     CurrProc->targ.debug->obj_type = tipe;
     CurrProc->targ.debug->obj_loc = LocDupl( loc );
     if( _IsModel( DBG_DF ) ) {
@@ -579,8 +581,7 @@ extern  void _CGAPI DBObject( dbg_type tipe, dbg_loc loc, cg_type ptr_type )
 extern  void    DBAllocReg( name *reg, name *temp )
 /*************************************************/
 {
-    temp = temp;
-    reg = reg;
+    /* unused parameters */ (void)reg; (void)temp;
 }
 
 extern void _CGAPI DBTypeDef( cchar_ptr nm, dbg_type tipe )
@@ -603,10 +604,11 @@ extern  void    _CGAPI DBLocalSym( cg_sym_handle sym, cg_type indirect )
     fe_attr     attr;
     dbg_loc     loc;
 
+    /* unused parameters */ (void)indirect;
+
 #ifndef NDEBUG
     EchoAPI( "DBLocalSym( %s, %t )\n", sym, indirect );
 #endif
-    indirect = indirect;
     if( CurrProc->targ.debug != NULL ) {
         attr = FEAttr( sym );
         if( (attr & FE_IMPORT) == 0 ) {

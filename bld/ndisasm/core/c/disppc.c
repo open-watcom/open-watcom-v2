@@ -270,7 +270,8 @@ dis_handler_return PPCMath( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
+
     code.full = ins->opcode;
 
     ins->num_ops = 3;
@@ -362,7 +363,7 @@ dis_handler_return PPCImmediate( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
 
@@ -443,7 +444,7 @@ dis_handler_return PPCFloat( dis_handle *h, void *d, dis_dec_ins *ins )
     // note silly ordering of operands
     const int order[5] = {1, 2, 4, 3, 0};
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     PPCDoFloat( ins, order );
 
@@ -453,7 +454,7 @@ dis_handler_return PPCFloatdab( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     const int order[4] = {1, 2, 3, 0};
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     PPCDoFloat( ins, order );
 
@@ -463,7 +464,7 @@ dis_handler_return PPCFloatdac( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     const int order[4] = {1, 2, 4, 0};
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     PPCDoFloat( ins, order );
 
@@ -474,7 +475,7 @@ dis_handler_return PPCFloatCmpab( dis_handle *h, void *d, dis_dec_ins *ins )
     const int order[4] = {1, 2, 3, 0};
     ppc_ins     code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     PPCDoFloat( ins, order );
 
@@ -488,7 +489,7 @@ dis_handler_return PPCFloatdb( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     const int order[3] = {1, 3, 0};
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     PPCDoFloat( ins, order );
 
@@ -521,7 +522,7 @@ dis_handler_return PPCMem1( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
 
@@ -564,7 +565,7 @@ dis_handler_return PPCMemD1( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
 
@@ -581,7 +582,7 @@ dis_handler_return PPCMem2( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
 
@@ -645,7 +646,7 @@ dis_handler_return PPCMemD2( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
 
@@ -664,7 +665,7 @@ dis_handler_return PPCMem3( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
 
@@ -699,7 +700,7 @@ dis_handler_return PPCBranch( dis_handle *h, void *d, dis_dec_ins *ins )
     ppc_ins     code;
     unsigned_8  magic;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
 
@@ -752,7 +753,7 @@ dis_handler_return PPCCompare( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
 
@@ -786,7 +787,7 @@ dis_handler_return PPCCondition( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
 
@@ -816,7 +817,7 @@ dis_handler_return PPCConditionField( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
 
@@ -849,7 +850,7 @@ dis_handler_return PPCSpecial( dis_handle *h, void *d, dis_dec_ins *ins )
     ppc_ins     code;
     unsigned_8  magic = 0;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
 
@@ -989,7 +990,7 @@ dis_handler_return PPCTrap( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ppc_ins     code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
 
@@ -1019,7 +1020,7 @@ dis_handler_return PPCTrap( dis_handle *h, void *d, dis_dec_ins *ins )
 }
 dis_handler_return PPCNull( dis_handle *h, void *d, dis_dec_ins *ins )
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->num_ops = 0;
     return( DHR_DONE );
@@ -1031,7 +1032,7 @@ static size_t PPCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
     const char *new;
     const char *more;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     if( !(flags & DFF_PSEUDO) )
         return( 0 );
@@ -1384,7 +1385,7 @@ static size_t PPCFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
 {
     char *p;
 
-    h = h; d = d; flags = flags;
+    /* unused parameters */ (void)h; (void)d; (void)flags;
 
     p = name;
     if( ins->flags.u.ppc & DIF_PPC_OE ) *p++ = 'o';
@@ -1408,7 +1409,7 @@ static size_t PPCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
     const char  *src;
     dis_operand *op;
 
-    h = h; d = d; buff_len = buff_len;
+    /* unused parameters */ (void)h; (void)d; (void)buff_len;
 
     p = op_buff;
     switch( ins->op[op_num].type ) {
@@ -1488,14 +1489,14 @@ static size_t PPCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
 
 static dis_handler_return PPCDecodeTableCheck( int page, dis_dec_ins *ins )
 {
-    page = page; ins = ins;
+    /* unused parameters */ (void)page; (void)ins;
 
     return( DHR_DONE );
 }
 
 static void ByteSwap( dis_handle *h, void *d, dis_dec_ins *ins )
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     if( h->need_bswap ) {
         SWAP_32( ins->opcode );
@@ -1510,8 +1511,9 @@ static void PPCPreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
 static size_t PPCPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
 {
+    /* unused parameters */ (void)h; (void)d; (void)ins; (void)flags; (void)op_num; (void)op_buff; (void)buff_len;
+
     // Nothing to do
-    h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff; buff_len = buff_len;
     return( 0 );
 }
 

@@ -112,7 +112,8 @@ void DbgAddrTaken( SYMBOL sym )
 static void init(               // INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     DefaultCodeSymbol = NULL;
     DefaultDataSymbol = NULL;
 }

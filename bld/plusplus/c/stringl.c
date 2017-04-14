@@ -82,7 +82,8 @@ static void stringUnique( bool yes )
 static void stringInit(         // INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     uniqueStrings = NULL;
     trashedStrings = NULL;
     stringCount = 0;
@@ -397,7 +398,8 @@ pch_status PCHInitStringPool( bool writing )
 
 pch_status PCHFiniStringPool( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     CMemFreePtr( &stringTranslateTable );
     return( PCHCB_OK );
 }

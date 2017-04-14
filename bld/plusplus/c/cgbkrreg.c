@@ -49,7 +49,7 @@ typedef struct {                // OPT_DEFN -- optimization definition
 
 
 static struct {
-    SYMBOL sym; 
+    SYMBOL sym;
     char name[];
 } optFuncReg = {   // OPT_DEFN for function registration
      NULL, "_wint_thread_data"
@@ -227,7 +227,8 @@ void CgCtorTestTempsRegister(   // REGISTER DTORING TEMPS FOR CTOR
 static void init(               // MODULE INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
 #if _CPU != _AXP
     optFuncReg.sym = NULL;
 #endif

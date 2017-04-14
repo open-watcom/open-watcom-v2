@@ -140,7 +140,8 @@ void CgSwitchEnd                // GENERATE CODE FOR END OF SWITCH STMT
 static void init(               // INITIALIZATION FOR MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     VstkOpen( &stack_switches, sizeof( SW_CTL ), 4 );
     VstkOpen( &stack_labs_sw, sizeof( label_handle ), 32 );
 }
@@ -149,7 +150,8 @@ static void init(               // INITIALIZATION FOR MODULE
 static void fini(               // COMPLETION FOR MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     VstkClose( &stack_switches );
     VstkClose( &stack_labs_sw );
 }

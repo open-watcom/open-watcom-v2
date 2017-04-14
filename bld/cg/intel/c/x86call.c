@@ -316,8 +316,7 @@ extern  name    *StReturn( an retval, type_def *tipe, instruction **pins ) {
 
     if( CurrProc->state.attr & ROUTINE_ALLOCS_RETURN ) {
         retp = CurrProc->targ.return_points;
-        AddIns( MakeUnary( OP_LA, retp,
-                      AllocRegName( CurrProc->state.return_reg ), WD ) );
+        AddIns( MakeUnary( OP_LA, retp, AllocRegName( CurrProc->state.return_reg ), WD ) );
         *pins = NULL;
     } else {
         if( _IsTargetModel( FLOATING_SS ) || _IsTargetModel( FLOATING_DS ) ) {
@@ -330,11 +329,9 @@ extern  name    *StReturn( an retval, type_def *tipe, instruction **pins ) {
             off = ptr;
         }
         AddIns( MakeMove( CurrProc->targ.return_points, off, WD ) );
-        retp = SAllocIndex( ptr, NULL,
-                           0, TypeClass( retval->tipe ), tipe->length );
+        retp = SAllocIndex( ptr, NULL, 0, TypeClass( retval->tipe ), tipe->length );
         reg = ReturnReg( WD, false );
-        *pins = MakeMove( CurrProc->targ.return_points,
-                          AllocRegName( reg ), WD );
+        *pins = MakeMove( CurrProc->targ.return_points, AllocRegName( reg ), WD );
         CurrProc->state.return_reg = reg;
     }
     return( retp );
@@ -412,7 +409,7 @@ extern  void    PushInSameBlock( instruction *ins ) {
 /***************************************************/
 
 #if ( _TARGET & _TARG_IAPX86 )
-    ins = ins;
+    /* unused parameters */ (void)ins;
 #else
     while( ins->head.opcode != OP_BLOCK ) {
         ins = ins->head.next;
@@ -433,8 +430,8 @@ extern  instruction *   PushOneParm( instruction *ins, name *curr,
     instruction *new;
 //    int         size;
 
-    state = state;
-    offset = offset;
+    /* unused parameters */ (void)state; (void)offset;
+
     new = MakeUnary( OP_PUSH, curr, NULL, class );
     SuffixIns( ins, new );
 #if 0
@@ -451,14 +448,14 @@ extern  instruction *   PushOneParm( instruction *ins, name *curr,
 extern  void    PreCall( cn call ) {
 /**********************************/
 
-    call = call;
+    /* unused parameters */ (void)call;
 }
 
 
 extern  void    PostCall( cn call ) {
 /***********************************/
 
-    call = call;
+    /* unused parameters */ (void)call;
 }
 
 extern  type_def        *PassParmType( cg_sym_handle func, type_def* tipe, call_class class ) {

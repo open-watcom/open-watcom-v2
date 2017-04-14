@@ -194,7 +194,7 @@ static void displayActiveInstantiations( NESTED_POST_CONTEXT *blk )
         CFatal( "registered call-back for template locations incorrect" );
     }
 #else
-    blk = blk;
+    /* unused parameters */ (void)blk;
 #endif
     Stack_forall( activeInstantiations.inst_stack, ctx ) {
         if( ctx->locn != NULL ) {
@@ -236,7 +236,8 @@ void TemplateSetDepth( unsigned depth )
 
 static void templateInit( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     if( CompFlags.dll_subsequent ) {
         currentTemplate = NULL;
         allClassTemplates = NULL;
@@ -256,7 +257,8 @@ static void templateInit( INITFINI* defn )
 
 static void templateFini( INITFINI *defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CarveDestroy( carveTEMPLATE_INFO );
     CarveDestroy( carveCLASS_INST );
     CarveDestroy( carveTEMPLATE_MEMBER );
@@ -721,7 +723,7 @@ static TEMPLATE_SPECIALIZATION *findMatchingTemplateSpecialization(
             }
         } else {
             if( ( curr_arg->op == PT_TYPE )
-             && ( curr_arg->type->id == TYP_TYPEDEF ) 
+             && ( curr_arg->type->id == TYP_TYPEDEF )
              && ( curr_arg->type->of->id == TYP_GENERIC ) ) {
                 if ( curr_arg->type->of->u.g.index != ( i + 1 ) ) {
                     is_primary = false;
@@ -905,7 +907,7 @@ static TEMPLATE_SPECIALIZATION *mergeClassTemplates( TEMPLATE_DATA *data,
     REWRITE *defn;
     REWRITE **defarg_list;
     bool primary_specialization;
- 
+
     tinfo = old_sym->u.tinfo;
     args = data->args;
 
@@ -1266,7 +1268,8 @@ static FN_TEMPLATE *newTemplateFunction( SYMBOL sym )
 void TemplateFunctionCheck( SYMBOL sym, DECL_INFO *dinfo )
 /********************************************************/
 {
-    dinfo = dinfo;
+    /* unused parameters */ (void)dinfo;
+
     if( ! SymIsFunction( sym ) ) {
         CErr1( ERR_NO_VARIABLE_TEMPLATES );
         return;
@@ -1383,7 +1386,8 @@ static DECL_INFO *attemptGen( arg_list *args, SYMBOL fn_templ,
     unsigned num_parms, num_args;
     int num_explicit;
 
-    pcontrol = pcontrol;
+    /* unused parameters */ (void)pcontrol;
+
     *templ_parm_scope = NULL;
     num_args = ( args != NULL ) ? args->num_args : 0;
     fn_type = FunctionDeclarationType( fn_templ->sym_type );
@@ -1946,7 +1950,7 @@ static PTREE processClassTemplateParms( TEMPLATE_INFO *tinfo, PTREE parms, bool 
         for( i = 0; ; list = list->u.subtree[0] ) {
             arg_type = TypedefRemove( tprimary->type_list[i] );
             if( arg_type->id == TYP_GENERIC ) {
-                if( ! inside_decl_scope 
+                if( ! inside_decl_scope
                  && ( arg_type->u.g.index - 1 != i ) ) {
                     /* a generic type might have already been bound - we
                      * should take that into account */
@@ -3293,7 +3297,8 @@ void TemplateSpecificDefnStart( PTREE tid, TYPE type )
     SCOPE parm_scope;
     PTREE parms;
 
-    tid = tid;
+    /* unused parameters */ (void)tid;
+
     tinfo = classUnboundTemplateInfo( type );
     tprimary = RingFirst( tinfo->specializations );
     if( tprimary->corrupted ) {

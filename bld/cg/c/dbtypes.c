@@ -384,10 +384,11 @@ extern  dbg_array _CGAPI DBBegArray(  dbg_type base, cg_type tipe, bool is_col_m
     dbg_array   ar;
 //  type_def   *tipe_addr;
 
+    /* unused parameters */ (void)tipe;
+
 #ifndef NDEBUG
     EchoAPI( "DBBegArray( %i,%t,%i)", base, tipe, is_col_major );
 #endif
-    tipe = tipe;
     ar = CGAlloc( sizeof( *ar ) );
     ar->num = 0;
 //  tipe_addr = TypeAddress( tipe );

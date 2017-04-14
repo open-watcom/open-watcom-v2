@@ -62,7 +62,7 @@ static  bool    LineLabel( ins_entry *label )
         return( true );
     }
 #else
-    label = label;
+    /* unused parameters */ (void)label;
 #endif
     return( false );
 }

@@ -200,11 +200,13 @@ void IDEAPI IDEFreeHeap( void ) {
 #endif
 }
 
-void IDEAPI IDEFiniDLL( IDEDllHdl hdl ) {
+void IDEAPI IDEFiniDLL( IDEDllHdl hdl )
 //*********************************************
 //DLL COMPLETION
 //********************************************
-    hdl = hdl;
+{
+    /* unused parameters */ (void)hdl;
+
     FrontEndFini();
 }
 
@@ -285,7 +287,7 @@ IDEBool IDEAPI IDERunYourSelf   // COMPILE A PROGRAM
     ( IDEDllHdl hdl             // - handle for this instantiation
     , const char* opts          // - options
     , IDEBool* fatal_error ) {  // - addr[fatality indication]
-    
+
     //****************************
     // Do a compile of a file
     //****************************
@@ -295,7 +297,8 @@ IDEBool IDEAPI IDERunYourSelf   // COMPILE A PROGRAM
     char        *argv[4];
     int         ret;
 
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     TBreak();   // clear any pending IDEStopRunning's
     *fatal_error = false;
     FatalEnv = &env;
@@ -392,7 +395,7 @@ IDEBool IDEAPI IDEProvideHelp   // PROVIDE HELP INFORMATION
 
 IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 {
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
 
 //    DbgVerify( hdl == CompInfo.dll_handle, "PassInitInfo -- handle mismatch" );
     if( info->ver < 2 ) {

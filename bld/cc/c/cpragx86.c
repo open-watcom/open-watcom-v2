@@ -1039,7 +1039,8 @@ void AsmSysMakeInlineAsmFunc( bool too_many_bytes )
     bool                uses_auto;
     char                name[8];
 
-    too_many_bytes = too_many_bytes;
+    /* unused parameters */ (void)too_many_bytes;
+
     code_length = AsmCodeAddress;
     if( code_length != 0 ) {
         sprintf( name, "F.%d", AsmFuncNum );

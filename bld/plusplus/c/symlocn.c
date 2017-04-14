@@ -46,16 +46,17 @@ static carve_t carveSYMBOL_LOCN;
 static void init(               // INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
-    carveSYMBOL_LOCN = CarveCreate( sizeof( SYM_TOKEN_LOCN )
-                                  , BLOCK_SYMBOL_LOCN );
+    /* unused parameters */ (void)defn;
+
+    carveSYMBOL_LOCN = CarveCreate( sizeof( SYM_TOKEN_LOCN ), BLOCK_SYMBOL_LOCN );
 }
 
 
 static void fini(               // COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CarveDestroy( carveSYMBOL_LOCN );
 }
 

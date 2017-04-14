@@ -216,7 +216,8 @@ size_t res_read( WResFileID fid, void *buf, size_t len )
 
 size_t res_write( WResFileID fid, const void *buf, size_t len )
 {
-    fid = fid;
+    /* unused parameters */ (void)fid;
+
     WriteLoad( buf, len );
     return( len );
 }
@@ -263,14 +264,14 @@ WResFileOffset res_tell( WResFileID fid )
 
     DbgAssert( WRES_FID2PH( fid ) == Root->outfile->handle );
 
-    fid = fid;
     return( PosLoad() );
 }
 
 bool res_ioerr( WResFileID fid, size_t rc )
 /*****************************************/
 {
-    fid=fid;
+    /* unused parameters */ (void)fid;
+
     return( rc == -1 );
 }
 

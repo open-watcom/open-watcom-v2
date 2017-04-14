@@ -363,14 +363,16 @@ bool TypesIdentical( TYPE type1, TYPE type2 )
 static void typeCompareInit(    // INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carveTC_DATA = CarveCreate( sizeof( TC_DATA ), BLOCK_TC_DATA );
 }
 
 static void typeCompareFini(    // COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     DbgStmt( CarveVerifyAllGone( carveTC_DATA, "TC_DATA" ) );
     CarveDestroy( carveTC_DATA );
 }

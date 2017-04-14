@@ -339,7 +339,8 @@ static  byte    SegmentAttr( byte align, seg_attr tipe, bool use_16 )
 {
     byte        attr;
 
-    use_16 = use_16;
+    /* unused parameters */ (void)use_16;
+
     if( align <= 1 ) {
         attr = SEG_ALGN_BYTE;
     } else if( align <= 2 ) {
@@ -523,7 +524,8 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
     object      *obj;
     cmd_omf     cmd;
 
-    use_16 = use_16;
+    /* unused parameters */ (void)use_16;
+
     obj = CGAlloc( sizeof( object ) );
     rec->obj = obj;
     obj->index = rec->sidx;
@@ -2220,7 +2222,8 @@ void    OutDLLExport( uint words, cg_sym_handle sym )
 {
     object      *obj;
 
-    words = words;
+    /* unused parameters */ (void)words;
+
     SetUpObj( false );
     EjectLEData();
     obj = CurrSeg->obj;

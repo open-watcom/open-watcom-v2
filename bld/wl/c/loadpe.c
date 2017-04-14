@@ -769,20 +769,22 @@ bool RcPadFile( WResFileID fid, size_t pad )
 {
     DbgAssert( WRES_FID2PH( fid ) == Root->outfile->handle );
 
-    fid = fid;
+    /* unused parameters */ (void)fid;
+
     PadLoad( pad );
     return( false );
 }
 
 void CheckDebugOffset( ExeFileInfo *info )
 {
-    info = info;
+    /* unused parameters */ (void)info;
 }
 
 RcStatus CopyExeData( WResFileID in_fid, WResFileID out_fid, unsigned_32 length )
 /****************************************************************************/
 {
-    out_fid = out_fid;
+    /* unused parameters */ (void)out_fid;
+
     for( ; length > MAX_HEADROOM; length -= MAX_HEADROOM ) {
         QRead( WRES_FID2PH( in_fid ), TokBuff, MAX_HEADROOM, "resource file" );
         WriteLoad( TokBuff, MAX_HEADROOM );

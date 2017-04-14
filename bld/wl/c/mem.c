@@ -186,7 +186,8 @@ void *LnkExpand( void *src, size_t size )
 // try to expand a block of memory
 {
 #ifdef _ZDOS
-    src = src; size = size;
+    /* unused parameters */ (void)src; (void)size;
+
     return ( NULL );
 #else
   #ifdef TRMEM
@@ -289,7 +290,8 @@ bool FreeUpMemory( void )
 int __nmemneed( size_t amount )
 /*****************************/
 {
-    amount = amount;
+    /* unused parameters */ (void)amount;
+
     return( FreeUpMemory() );
 }
 
@@ -297,7 +299,8 @@ int __nmemneed( size_t amount )
 int __fmemneed( size_t amount )
 /*****************************/
 {
-    amount = amount;
+    /* unused parameters */ (void)amount;
+
     return( FreeUpMemory() );
 }
 #endif

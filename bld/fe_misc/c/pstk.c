@@ -225,13 +225,15 @@ void PstkPopAll( PSTK_CTL *h )
 
 static void pstkInit( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carvePSTK_BLK = CarveCreate( sizeof( PSTK_BLK ), BLOCK_PSTK_BLK );
 }
 
 static void pstkFini( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
 #ifndef NDEBUG
     CarveVerifyAllGone( carvePSTK_BLK, "PSTK_BLK" );
 #endif

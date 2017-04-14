@@ -62,7 +62,8 @@ static  hw_reg_set          asmRegsSaved = HW_D( HW_FULL );
 static void pragmaInit(         // INITIALIZATION FOR PRAGMAS
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     PragInit();
 
     PragmaAuxInfoInit( CompFlags.use_stdcall_at_number );
@@ -106,7 +107,8 @@ static void pragmaFini(         // FINISH PRAGMAS
     AUX_ENTRY       *curr;
     AUX_INFO        *info;
 
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     for( curr = AuxList; curr != NULL; curr = next ) {
         next = curr->next;
         info = curr->info;
@@ -157,7 +159,8 @@ static void assemblerInit(      // INITIALIZATION OF ASSEMBLER
     int         cpu;
     int         fpu;
 
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     switch( GET_CPU( CpuSwitches ) ) {
     case CPU_86:    cpu = 0; break;
     case CPU_186:   cpu = 1; break;

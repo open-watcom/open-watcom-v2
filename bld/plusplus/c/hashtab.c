@@ -119,7 +119,8 @@ static void hashInit( INITFINI *defn )
     unsigned size;
     unsigned blocking;
 
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carveHASHTAB = CarveCreate( sizeof( struct hash_tab ), BLOCK_HASHTAB );
     size = (1 << MIN_HASHTAB_SIZE ) * sizeof( SYMBOL_NAME );
     for( i = 0; i < CARVE_TABLE_SIZE; i++ ) {
@@ -145,7 +146,8 @@ static void hashFini( INITFINI* defn )
 {
     unsigned i;
 
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CarveDestroy( carveHASHTAB );
     for( i = 0; i < CARVE_TABLE_SIZE; i++ ) {
         CarveDestroy( carveTable[i] );

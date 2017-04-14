@@ -191,7 +191,8 @@ void LinkageReset( void )
 
 static void linkageInit( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     validLinkages = NULL;
     nestedLinkages = NULL;
     carveSTACK = CarveCreate( sizeof( struct linkage_stack ), BLOCK_STACK );
@@ -206,7 +207,8 @@ static void linkageInit( INITFINI* defn )
 
 static void linkageFini( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     while( nestedLinkages != NULL ) {
         LinkagePop();
     }

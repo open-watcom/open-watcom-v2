@@ -70,7 +70,7 @@ void HFileListNext(             // GET NEXT H-FILE PREFIX
     if( hfile_ptr != NULL ) {
         while( (c = *hfile_ptr) != '\0' ) {
             ++hfile_ptr;
-            if( IS_PATH_LIST_SEP( c ) ) 
+            if( IS_PATH_LIST_SEP( c ) )
                 break;
             *prefix++ = c;
         }
@@ -112,7 +112,8 @@ void HFileAppend(               // APPEND HFILE TO LIST
 static void hfileInit(          // INITIALIZE FOR H-FILE SUPPORT
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     hfile_list = NULL;
 }
 
@@ -120,7 +121,8 @@ static void hfileInit(          // INITIALIZE FOR H-FILE SUPPORT
 static void hfileFini(          // FREE HFILE LIST
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CMemFreePtr( &hfile_list );
 }
 

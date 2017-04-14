@@ -493,31 +493,35 @@ static void yesActive( err_type check )
 
 static void do_errbad( const char *p )
 {
-    p = p;
+    /* unused parameters */ (void)p;
+
     noActive( EK_BAD );
 }
 
 static void do_eerrbad( const char *p )
 {
-    p = p;
+    /* unused parameters */ (void)p;
+
     yesActive( EK_BAD );
 }
 
 static void do_errgood( const char *p )
 {
-    p = p;
+    /* unused parameters */ (void)p;
+
     noActive( EK_GOOD );
 }
 
 static void do_eerrgood( const char *p )
 {
-    p = p;
+    /* unused parameters */ (void)p;
+
     yesActive( EK_GOOD );
 }
 
 static void do_msggrptxt( const char *p )
 {
-    p = p;
+    /* unused parameters */ (void)p;
 }
 
 static void do_msggrpstr( const char *p )
@@ -552,7 +556,8 @@ static void do_emsggrp( const char *p )
 {
     MSGGROUP *grp;
 
-    p = p;
+    /* unused parameters */ (void)p;
+
     grp = currGroup;
     if( !flags.grouped ) {
         error( "missing :msggroup\n" );
@@ -693,7 +698,8 @@ static void do_info( const char *p )
 {
     MSGSYM *m = mustBeProceededByMSGSYM();
 
-    p = p;
+    /* unused parameters */ (void)p;
+
     m->mtype = MSG_TYPE_INFO;
 }
 
@@ -701,7 +707,8 @@ static void do_style( const char *p )
 {
     MSGSYM *m = mustBeProceededByMSGSYM();
 
-    p = p;
+    /* unused parameters */ (void)p;
+
     if( m->mtype != MSG_TYPE_WARNING ) {
         error( ":style. can only be used with :warning.\n" );
     } else {
@@ -721,7 +728,8 @@ static void do_ansierr( const char *p )
 {
     MSGSYM *m = mustBeProceededByMSGSYM();
 
-    p = p;
+    /* unused parameters */ (void)p;
+
     m->mtype = MSG_TYPE_ANSIERR;
 }
 

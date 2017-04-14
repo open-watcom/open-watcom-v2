@@ -274,7 +274,8 @@ AUX_INFO *PragmaMapIndex( AUX_INFO *i )
 
 pch_status PCHInitPragmas( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 

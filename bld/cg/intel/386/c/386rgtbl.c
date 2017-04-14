@@ -763,20 +763,21 @@ reg_set_index   IndexIntersect( reg_set_index curr,
     registers of type "class"
 */
 {
-    is_temp_index = is_temp_index;
+    /* unused parameters */ (void)is_temp_index;
+
     return( RegIntersect( curr, IndexSets[class] ) );
 }
 
 
-bool    IsIndexReg( hw_reg_set reg, type_class_def class,
-                            bool is_temp_index )
-/****************************************************************
+bool    IsIndexReg( hw_reg_set reg, type_class_def class, bool is_temp_index )
+/*****************************************************************************
     return true if "reg" can be used as an index of type "class"
 */
 {
     hw_reg_set  *list;
 
-    is_temp_index = is_temp_index;
+    /* unused parameters */ (void)is_temp_index;
+
     for( list = RegSets[IndexSets[class]]; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
         if( HW_Equal( *list, reg ) ) {
             break;
@@ -837,7 +838,8 @@ bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
 {
     hw_reg_set  *list;
 
-    is_temp_index = is_temp_index;
+    /* unused parameters */ (void)is_temp_index;
+
     if( RegClass( reg ) == U4 ) {
         list = RegSets[RL_DOUBLE];
     } else {

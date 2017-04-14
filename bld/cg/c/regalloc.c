@@ -454,7 +454,8 @@ static  signed_32     CountRegMoves( conflict_node *conf,
     conflict_node       *other_conf;
     name                *other_opnd;
 
-    levels = levels;
+    /* unused parameters */ (void)levels;
+
     if( tree == NULL )
         return( 0 );
     reg_name = AllocRegName( reg );

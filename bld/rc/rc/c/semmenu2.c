@@ -274,7 +274,7 @@ void SemOS2WriteMenu( WResID *name, ResMemFlags flags, FullMenuOS2 *menu,
     bool            error;
     int             err_code;
 
-    tokentype = tokentype;
+    /* unused parameters */ (void)tokentype;
 
     if( !ErrorHasOccured ) {
         loc.start = SemStartResource();

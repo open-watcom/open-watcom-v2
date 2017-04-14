@@ -601,7 +601,7 @@ void    ParmIns( pn parm, call_state *state ) {
                 ReserveStack( state, ins, addr->tipe->length );
             }
 #else
-            state = state;
+            /* unused parameters */ (void)state;
 #endif
             addr->format = NF_ADDR; /* so instruction doesn't get freed! */
             BGDone( addr );

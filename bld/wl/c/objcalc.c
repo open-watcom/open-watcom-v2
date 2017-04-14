@@ -115,7 +115,8 @@ static bool CheckLxdataSeen( void *_seg, void *dummy )
 {
     seg_leader  *seg = _seg;
 
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     if( seg->info & SEG_LXDATA_SEEN ) {
         seg->class->flags |= CLASS_LXDATA_SEEN;
         return( true );

@@ -1649,7 +1649,8 @@ static  bool    IsAddressMode( induction *var )
     }
     return( true );
 #else
-    var=var;
+    /* unused parameters */ (void)var;
+
     return( false );
 #endif
 }
@@ -2755,7 +2756,8 @@ static  bool    PointerOk( name *op )
 /***********************************/
 {
 #ifdef _POINTER_GETS_NEAR_BOUNDS
-    op = op;
+    /* unused parameters */ (void)op;
+
     return( false );
 #else
     if( op->n.name_class == PT )

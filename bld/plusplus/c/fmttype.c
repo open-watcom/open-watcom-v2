@@ -166,13 +166,15 @@ FMT_CONTROL FormatTypeDefault = FF_USE_VOID;
 
 static void formatTypeInit( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carveFMT = CarveCreate( sizeof( FMT_INFO ), BLOCK_FMT );
 }
 
 static void formatTypeFini( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     DbgStmt( CarveVerifyAllGone( carveFMT, "FMT" ) );
     CarveDestroy( carveFMT );
 }

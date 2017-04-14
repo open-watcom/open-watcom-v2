@@ -201,7 +201,8 @@ static void cleanupOpenFiles(   // CLEAN UP ON MEMORY FAILURE
 static void srcFileInit(        // INITIALIZE SOURCE FILING
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     traced_back = NULL;
     freeFiles = NULL;
     srcFilesUnique = NULL;
@@ -219,7 +220,8 @@ static void srcFileInit(        // INITIALIZE SOURCE FILING
 static void srcFileFini(        // COMPLETE SOURCE FILING
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     if( srcFile != NULL ) {
         if( activeSrc() != NULL ) {
             while( NULL != srcFile ) {
@@ -1297,7 +1299,8 @@ void SrcFileScanWhiteSpace( bool expanding )
     OPEN_FILE       *act;
     int             c;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     if( NextChar == GetNextChar ) {
         for( ;; ) {
             // codegen can't do this optimization so we have to

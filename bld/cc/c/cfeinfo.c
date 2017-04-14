@@ -115,7 +115,7 @@ static const char *VarParmFuncs[] = {
 
 extern const alt_inline_funcs FlatAlternates[];
 
-static struct STRUCT_BYTE_SEQ( 1 ) FinallyCode = { 
+static struct STRUCT_BYTE_SEQ( 1 ) FinallyCode = {
     1, false, { 0xc3 }   /* ret */
 };
 
@@ -124,7 +124,7 @@ static hw_reg_set TryFiniParms[] = {
     HW_D( HW_EMPTY )
 };
 
-static struct STRUCT_BYTE_SEQ( 6 ) TryFiniCode = { 
+static struct STRUCT_BYTE_SEQ( 6 ) TryFiniCode = {
     6, false, { 0x64, 0xA3, 0, 0, 0, 0 }  /* mov fs:[0],eax */
 };
 
@@ -175,7 +175,7 @@ bool VarFunc( SYMPTR sym )
         len = strlen( p );
         hash = (len + VarFuncWeights[p[0] - 'a'] + VarFuncWeights[p[len - 1] -'a']) & 31;
 
-        if( memcmp( p, VarParmFuncs[hash], len + 1 ) == 0 
+        if( memcmp( p, VarParmFuncs[hash], len + 1 ) == 0
             && ( CompFlags.extensions_enabled || ( ( 1 << hash ) & VAR_PARM_FUNCS_ANSI ) ) )
             return( true );
 
@@ -322,8 +322,7 @@ bool ParmsToBeReversed( int flags, aux_info *inf )
         }
     }
 #else
-    flags = flags;
-    inf = inf;
+    /* unused parameters */ (void)flags; (void)inf;
 #endif
     return( false );
 }

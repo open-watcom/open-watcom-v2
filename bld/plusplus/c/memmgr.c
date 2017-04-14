@@ -272,7 +272,8 @@ void *CPermAlloc( size_t size )
 static void cmemInit(           // INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
 #ifdef TRACKER
     {
         unsigned trmem_flags;
@@ -298,7 +299,8 @@ static void cmemInit(           // INITIALIZATION
 static void cmemFini(           // COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     RingFree( &permList );
 #ifndef NDEBUG
     RingFree( &deferredFreeList );
@@ -327,7 +329,8 @@ INITDEFN( memmgr, cmemInit, cmemFini )
 static void cleanupInit(        // INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     cleanupList = NULL;
 #if 0
     BEMemInit();
@@ -338,7 +341,8 @@ static void cleanupInit(        // INITIALIZATION
 static void cleanupFini(        // COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     RingFree( &cleanupList );
 }
 

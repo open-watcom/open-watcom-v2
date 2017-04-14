@@ -985,7 +985,8 @@ unsigned ErrPCHVersion(         // PROVIDE A VERSION NUMBER FOR THE ERROR MESSAG
 static void errFileInit(        // INITIALIZE FOR NO ERROR FILE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     errLimitExceeded = false;
     err_file = NULL;
     err_locn.src_file = NULL;
@@ -1001,7 +1002,8 @@ static void errFileInit(        // INITIALIZE FOR NO ERROR FILE
 static void errFileFini(        // CLOSE ERROR FILE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     if( IoSuppCloseFile( &err_file ) ) {
         if( !CompFlags.errfile_written ) {
             fileErase( IoSuppOutFileName( OFT_ERR ) );
@@ -1055,12 +1057,14 @@ pch_status PCHWriteErrWarnData( void )
 
 pch_status PCHInitErrWarnData( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniErrWarnData( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }

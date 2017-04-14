@@ -816,7 +816,8 @@ int main( int argc, char *argv[] )
     ctl_file    *next;
     char        *p;
 
-    argc = argc;
+    /* unused parameters */ (void)argc;
+
     Product_ver[0] = '\0';
     ProcessOptions( argv + 1 );
     if( Product == NULL ) {

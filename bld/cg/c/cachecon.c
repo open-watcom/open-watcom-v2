@@ -134,7 +134,8 @@ static  bool    ReplaceConst( name *cons, name *temp, type_class_def tmp_class )
     bool                change;
     int                 num_operands;
 
-    tmp_class = tmp_class;
+    /* unused parameters */ (void)tmp_class;
+
     change = false;
     for( blk = Head; blk != NULL; blk = Next( blk ) ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
