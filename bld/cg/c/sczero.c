@@ -299,11 +299,12 @@ extern  bool    ScoreZero( score *sc, instruction **pins ) {
         return( change );
     if( ins2 != NULL ) {
         SuffixIns( ins, ins2 );
+        *pins = ins2;
     }
     if( ins1 != NULL ) {
         SuffixIns( ins, ins1 );
+        *pins = ins1;
     }
     FreeIns( ins );
-    *pins = ins1;
     return( true );
 }
