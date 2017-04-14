@@ -563,7 +563,7 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
     FlushNames();
     obj->segfix = AskObjHandle();
     if( ++SegsDefd > 32000 ) {
-        FEMessage( MSG_FATAL, "too many segments" );
+        FatalError( "too many segments" );
     }
 #ifdef _OMF_32
     cmd = PickOMF( CMD_SEGDEF );
