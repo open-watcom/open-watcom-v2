@@ -318,12 +318,11 @@ void    AxeDeadCode( void )
             break;
         FreeConflicts();
         /* Now it's safe to free instructions without problems with edges */
-        while ( kill ) {
+        for( ; kill != NULL; kill = next ) {
             next = _INS_KILL_LINK( kill );
             FreeIns( kill );
-            kill = next;
         }
-        NullConflicts(EMPTY);
+        NullConflicts( EMPTY );
         FindReferences();
         MakeConflicts();
         MakeLiveInfo();

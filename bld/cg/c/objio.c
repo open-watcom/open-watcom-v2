@@ -121,7 +121,7 @@ static void cleanupLastBuffer( buf *pbuf )
 static  void    ObjError( int errcode )
 /*************************************/
 {
-    FatalError( strerror(  errcode ) );
+    FatalError( strerror( errcode ) );
 }
 
 
