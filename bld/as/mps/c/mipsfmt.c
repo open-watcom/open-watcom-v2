@@ -1205,6 +1205,8 @@ static void ITPseudoLAddr( ins_table *table, instruction *ins, uint_32 *buffer, 
 //    op_const            val;
     uint_8              s_reg;
 
+    /* unused parameters */ (void)table;
+
     assert( ins->num_operands == 2 );
     op = ins->operands[1];
     // If op is IMMED foo, it's actually REG_INDIRECT that we want: foo($zero)
