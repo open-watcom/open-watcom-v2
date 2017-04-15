@@ -356,6 +356,8 @@ void convert_parm_table( char *keyword, char *parms[], control_type control, int
 {
     int i;
 
+    /* unused parameters */ (void)keyword;
+
     for( i = 0; i < tab_cnt; ++i ) {
         if( strcmp( str, win_tab[i] ) == 0 ) {
             if(( win_tab == control_style_win ) && !check_control_style( i, control ) ) {
