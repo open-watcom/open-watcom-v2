@@ -143,7 +143,8 @@ void            GEndSList( sym_id sym ) {
 
     unsigned_16 warp_size;
 
-    sym = sym;
+    /* unused parameters */ (void)sym;
+
     EmitOp( FC_WARP_RETURN );
     warp_size = ObjOffset( WarpLabel ) - sizeof( unsigned_16 );
     WarpLabel = ObjSeek( WarpLabel );
@@ -155,5 +156,5 @@ void            GEndSList( sym_id sym ) {
 void            FreeWarpLabel( warp_label warp ) {
 //================================================
 
-    warp = warp;
+    /* unused parameters */ (void)warp;
 }

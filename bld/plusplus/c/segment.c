@@ -822,7 +822,8 @@ fe_seg_id SegmentAddComdatData( // ADD SEGMENT FOR A COMDAT DATA SYMBOL
     char const * name;          // - segment name
     PC_SEGMENT* seg;            // - allocated segment
 
-    sym = sym;
+    /* unused parameters */ (void)sym;
+
     if( control & SI_ALL_ZERO ) {
         attrs = SGAT_DATA_COMMON_ZERO;
         name = TS_SEG_BSS;

@@ -254,7 +254,7 @@ static void setMemoryModel( OPT_STORAGE *data )
 
 static void miscAnalysis( OPT_STORAGE *data )
 {
-    data = data;
+    /* unused parameters */ (void)data;
 }
 
 void CmdSysAnalyse( OPT_STORAGE *data )

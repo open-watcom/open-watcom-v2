@@ -57,5 +57,5 @@ void    UpdateNode( itnode *new, itnode *old ) {
 
 // Update an itnode with register information of another itnode.
 
-    new = new; old = old;
+    /* unused parameters */ (void)new; (void)old;
 }

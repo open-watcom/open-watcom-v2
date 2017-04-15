@@ -136,8 +136,7 @@ static  void            CheckAutoSize( sym_id sym, cg_type typ ) {
         FCMessage( FCMSG_VARIABLE_TOO_LARGE, sym );
     }
 #else
-    sym = sym;
-    typ = typ;
+    /* unused parameters */ (void)sym; (void)typ;
 #endif
 
 }

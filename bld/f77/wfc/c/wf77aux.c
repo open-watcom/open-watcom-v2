@@ -1219,7 +1219,8 @@ void    *AsmQuerySymbol( const char *name )
 enum    sym_state       AsmQueryState( void *handle ) {
 //=====================================================
 
-    handle = handle;
+    /* unused parameters */ (void)handle;
+
     return( SYM_UNDEFINED );
 }
 
@@ -1228,7 +1229,8 @@ enum    sym_state       AsmQueryState( void *handle ) {
 enum    sym_type        AsmQueryType( void *handle ) {
 //====================================================
 
-    handle = handle;
+    /* unused parameters */ (void)handle;
+
     return( SYM_INT1 );
 }
 

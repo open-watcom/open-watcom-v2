@@ -588,7 +588,8 @@ static  void    OpenListingFile( bool reopen ) {
     char        errmsg[81];
     char        name[_MAX_PATH];
 
-    reopen = reopen;
+    /* unused parameters */ (void)reopen;
+
     if( ( Options & OPT_LIST ) == 0 ) {
         // no listing file
         // ignore other listing file options

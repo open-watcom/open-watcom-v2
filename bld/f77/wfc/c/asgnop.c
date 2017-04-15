@@ -50,7 +50,8 @@ void    AsgnOp( TYPE typ1, TYPE typ2, OPTR opr ) {
 
 // Generate code to perform an assign operation.
 
-    typ1 = typ1; typ2 = typ2; opr = opr;
+    /* unused parameters */ (void)typ1; (void)typ2; (void)opr;
+
     if( ResultType == FT_CHAR ) {
         AsgnChar();
     } else {

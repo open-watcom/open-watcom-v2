@@ -62,7 +62,7 @@ void    GDataEpilog( label_id label ) {
 
 // Finish off data statement code.
 
-    label = label;
+    /* unused parameters */ (void)label;
 }
 
 

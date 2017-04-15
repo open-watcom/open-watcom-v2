@@ -524,8 +524,12 @@ void CgResScBlkScanBegin        // START SCANNING OF A BLOCK SCOPE
     , CALLNODE* caller          // - caller
     , DT_METHOD dtm )           // - dtor method for function
 {
+#ifndef NDEBUG
     SCOPE_RES* sr = newScope( scope, caller, dtm );
     _printScopeRes( sr, "Start scanning block scope" );
+#else
+    newScope( scope, caller, dtm );
+#endif
 }
 
 

@@ -398,13 +398,11 @@ int FELexLevel(                 // GET LEXICAL LEVEL OF SYMBOL
 
 
 cg_type FEParmType(             // ARGUMENT PROMOTION ?
-    cg_sym_handle _func,        // function being called
+    cg_sym_handle func,         // function being called
     cg_sym_handle parm,         // parameter being passed
     cg_type type )              // - original type
 {
-    SYMBOL func = _func;
-
-    /* unused parameters */ (void)parm;
+    /* unused parameters */ (void)parm; (void)func;
 
     switch( type ) {
 #if _CPU == _AXP
@@ -431,7 +429,7 @@ cg_type FEParmType(             // ARGUMENT PROMOTION ?
   #if _CPU != 8086
         if( func != NULL ) {
             type_flag fn_flags;
-            TypeModFlags( func->sym_type, &fn_flags );
+            TypeModFlags( ((SYMBOL)func)->sym_type, &fn_flags );
             if( fn_flags & TF1_FAR16 ) {
                 return( TY_INT_2 );
             }
@@ -582,7 +580,8 @@ static AUX_INFO *IntrinsicAuxLookup(
 #else
     AUX_INFO *inf;
 
-    sym = sym;
+    /* unused parameters */ (void)sym;
+
     inf = NULL;
 #endif
     return( inf );

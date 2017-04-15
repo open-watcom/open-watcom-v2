@@ -89,7 +89,8 @@ void    RelOp( TYPE typ1, TYPE typ2, OPTR optr ) {
     OPR         opr_code;
     FCODE       op_code;
 
-    optr = optr;
+    /* unused parameters */ (void)optr;
+
     // must check for "flip" before we call "CharLength" since they may
     // call "PushOpn"
     flip = false;

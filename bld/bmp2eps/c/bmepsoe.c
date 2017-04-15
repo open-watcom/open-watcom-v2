@@ -102,7 +102,7 @@ static char ascii85_char( unsigned long x )
 static void ascii85_output( Output_Encoder *o )
 {
     int i;
-    char buffer[6], c, *ptr;
+    char buffer[6], *ptr;
     unsigned long value;
 
     value = o->a85_value;
