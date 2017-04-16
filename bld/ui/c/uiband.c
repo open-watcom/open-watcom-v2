@@ -41,7 +41,8 @@ static ATTR             Attr;
 
 static void drawband( SAREA area, void *dummy )
 {
-    area=area;dummy=dummy;
+    /* unused parameters */ (void)area; (void)dummy;
+
     drawbox( &UIData->screen, BandArea, SBOX_CHARS(), Attr, false );
 }
 

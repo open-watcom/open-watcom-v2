@@ -47,7 +47,8 @@ int ck_unevent( EVENT ev )
 // is pressed).
 
 {
-    ev = ev;
+    /* unused parameters */ (void)ev;
+
 #if 0 //Don't think this does anything under QNX
     switch( ev ) {
     case EV_SHIFT_RELEASE:

@@ -398,7 +398,7 @@ static void VarMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     bool                need_reset;
     var_window          *var;
 
-    piece=piece;
+    /* unused parameters */ (void)piece;
 
     var = WndVar( wnd );
     need_reset = VarErrState();
@@ -736,7 +736,8 @@ static  void    VarBegPaint( a_window *wnd, int row, int num )
 {
     var_window  *var = WndVar( wnd );
 
-    row=row;num=num;
+    /* unused parameters */ (void)row; (void)num;
+
     VarOkToCache( &var->i, true );
 }
 
@@ -745,7 +746,8 @@ static  void    VarEndPaint( a_window *wnd, int row, int piece )
 {
     var_window  *var = WndVar( wnd );
 
-    row=row;piece=piece;
+    /* unused parameters */ (void)row; (void)piece;
+
     VarOkToCache( &var->i, false );
 }
 
@@ -816,7 +818,8 @@ static bool VarEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     gui_ord     old_width;
     int         delta;
 
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         VarInitInfo( &var->i );

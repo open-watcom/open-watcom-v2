@@ -143,7 +143,8 @@ dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ex
     char        *filename;
     int         fd;
 
-    max_result = max_result;
+    /* unused parameters */ (void)max_result;
+
     memcpy( realname, name, name_len );
     realname[name_len] = '\0';
     if( ext != NULL && *ext != NULLCHAR ) {

@@ -688,8 +688,7 @@ void InitCFlags( linenum line_no )
 
 void GetCBlock( ss_block *ss_new, char *start, line *line, linenum line_no )
 {
-    line = line;
-    line_no = line_no;
+    /* unused parameters */ (void)line; (void)line_no;
 
     if( start[0] == '\0' ) {
         flags.inIfDir = false;

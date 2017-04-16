@@ -64,7 +64,8 @@ extern  void    gml_include( gml_tag gtag )
 {
     char    *   p;
 
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     p = scan_start;
     p++;
     while( *p == ' ' ) {

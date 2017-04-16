@@ -38,7 +38,7 @@
 obj_length  OptInsSize( oc_class class, oc_dest_attr attr )
 /*********************************************************/
 {
-    class = class;
-    attr = attr;
+    /* unused parameters */ (void)class; (void)attr;
+
     return( 4 );
 }

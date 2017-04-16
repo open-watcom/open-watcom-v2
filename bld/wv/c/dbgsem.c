@@ -1303,7 +1303,7 @@ int SSLError( ssl_error_class class, ssl_value error )
 
 void SSLOutToken( tokens token )
 {
-    token = token;
+    /* unused parameters */ (void)token;
 }
 
 tokens SSLNextToken( void )

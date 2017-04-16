@@ -100,7 +100,7 @@ dip_status DIPIMPENTRY( MoreMem )( unsigned size )
     imp_image_handle *curr;
     dip_status ret;
 
-    size = size;
+    /* unused parameters */ (void)size;
 
     ret = DS_FAIL;
     for( curr = Images; curr != NULL; curr = curr->next ) {

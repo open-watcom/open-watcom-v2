@@ -89,8 +89,7 @@
         char path[_MAX_PATH];
         FILE *fp;
 
-        section=section;
-        key=key;
+        /* unused parameters */ (void)section; (void)key;
 
         if( dir == NULL ) {
             dir = getenv( "HOME" );
@@ -121,8 +120,8 @@
     {
         char path[_MAX_PATH];
         FILE *fp;
-        section=section;
-        key=key;
+
+        /* unused parameters */ (void)section; (void)key;
 
         if( dir == NULL ) {
             dir = getenv( "HOME" );

@@ -620,8 +620,7 @@ static void ChkFunction( SYMPTR sym, SYM_NAMEPTR name )
         }
     }
 #else
-    sym = sym;
-    name = name;
+    /* unused parameters */ (void)sym; (void)name;
 #endif
 }
 

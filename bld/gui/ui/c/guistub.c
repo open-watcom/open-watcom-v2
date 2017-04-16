@@ -35,27 +35,29 @@
 
 bool GUIChangeFont( gui_window *wnd )
 {
-    wnd = wnd;
+    /* unused parameters */ (void)wnd;
+
     return( false );
 }
 
 char *GUIGetFontInfo( gui_window *wnd )
 {
-    wnd = wnd;
+    /* unused parameters */ (void)wnd;
+
     return( NULL );
 }
 
 bool GUISetFontInfo( gui_window *wnd, char *info )
 {
-    wnd = wnd;
-    info = info;
+    /* unused parameters */ (void)wnd; (void)info;
+
     return( false );
 }
 
 bool GUISetSystemFont( gui_window *wnd, bool fixed )
 {
-    wnd = wnd;
-    fixed = fixed;
+    /* unused parameters */ (void)wnd; (void)fixed;
+
     return( false );
 }
 
@@ -66,19 +68,21 @@ bool GUIFontsSupported( void )
 
 char *GUIGetFontFromUser( char *fontinfo )
 {
-    fontinfo = fontinfo;
+    /* unused parameters */ (void)fontinfo;
+
     return( NULL );
 }
 
 void *GUISetMouseCursor( gui_mouse_cursor type )
 {
-    type = type;
+    /* unused parameters */ (void)type;
+
     return( NULL );
 }
 
 void GUIResetMouseCursor( void *old )
 {
-    old=old;
+    /* unused parameters */ (void)old;
 }
 
 bool GUI3DDialogInit( void )
@@ -92,59 +96,50 @@ void GUI3DDialogFini( void )
 
 bool GUISetHorizontalExtent( gui_window *wnd, gui_ctl_id id, int extent )
 {
-    wnd = wnd;
-    id = id;
-    extent = extent;
+    /* unused parameters */ (void)wnd; (void)id; (void)extent;
+
     return( false );
 }
 
 bool GUIEnableControl( gui_window *wnd, gui_ctl_id id, bool enable )
 {
-    wnd = wnd;
-    id = id;
-    enable = enable;
+    /* unused parameters */ (void)wnd; (void)id; (void)enable;
+
     return( false );
 }
 
 bool GUIIsControlEnabled( gui_window *wnd, gui_ctl_id id )
 {
-    wnd = wnd;
-    id = id;
+    /* unused parameters */ (void)wnd; (void)id;
+
     return( false );
 }
 
 void GUIHideControl( gui_window *wnd, gui_ctl_id id )
 {
-    wnd = wnd;
-    id = id;
+    /* unused parameters */ (void)wnd; (void)id;
 }
 
 void GUIShowControl( gui_window *wnd, gui_ctl_id id )
 {
-    wnd = wnd;
-    id = id;
+    /* unused parameters */ (void)wnd; (void)id;
 }
 
 bool GUISetEditSelect( gui_window *wnd, gui_ctl_id id, int start, int end )
 {
-    wnd = wnd;
-    id = id;
-    start = start;
-    end = end;
+    /* unused parameters */ (void)wnd; (void)id; (void)start; (void)end;
+
     return( false );
 }
 
 bool GUIGetEditSelect( gui_window *wnd, gui_ctl_id id, int *start, int *end )
 {
-    wnd = wnd;
-    id = id;
-    start = start;
-    end = end;
+    /* unused parameters */ (void)wnd; (void)id; (void)start; (void)end;
+
     return( false );
 }
 
 void GUIScrollCaret( gui_window *wnd, gui_ctl_id id )
 {
-    wnd = wnd;
-    id = id;
+    /* unused parameters */ (void)wnd; (void)id;
 }

@@ -453,7 +453,7 @@ bool PromptThisFileForSave( const char *filename )
         SetFocus( hwnd_old );
     }
 #else
-    filename = filename;
+    /* unused parameters */ (void)filename;
 #endif
     return( true );
 

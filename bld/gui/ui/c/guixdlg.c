@@ -802,7 +802,8 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         return( true );
     }
 
-    sys = sys;
+    /* unused parameters */ (void)sys;
+
     RadioGroup = NULL;
     Group = false;
     fields = NULL;

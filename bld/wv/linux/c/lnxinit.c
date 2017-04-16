@@ -76,7 +76,8 @@ void __sigabort( void ) {}
 
 static void BrkHandler( int signo )
 {
-    signo = signo;
+    /* unused parameters */ (void)signo;
+
     BrkPending = true;
 }
 
@@ -102,7 +103,8 @@ void GUImain( void )
 
 int GUISysInit( int param )
 {
-    param=param;
+    /* unused parameters */ (void)param;
+
     return( 1 );
 }
 
@@ -163,7 +165,7 @@ long _fork( const char *cmd, size_t len )
     const char  *argv[4];
     const char  *shell;
     pid_t       pid;
-    
+
     shell = getenv( "SHELL" );
     if( shell == NULL )
         shell = "/bin/sh";

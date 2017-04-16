@@ -37,5 +37,5 @@
 
 extern void uidialogchangefield( a_dialog *ui_dlg_info )
 {
-    ui_dlg_info = ui_dlg_info;
+    /* unused parameters */ (void)ui_dlg_info;
 }

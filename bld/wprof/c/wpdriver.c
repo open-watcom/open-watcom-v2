@@ -133,7 +133,8 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
     char *          sys_spec;
 #endif
 
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     active = WndFindActive();
     switch( id ) {
     case MENU_OPEN_SAMPLE:

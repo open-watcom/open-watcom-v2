@@ -277,7 +277,8 @@ static cg_type DataPointerType( OPNODE *node )
     }
     return( dtype );
 #else
-    node = node;
+    /* unused parameters */ (void)node;
+
     return( TY_POINTER );
 #endif
 }
@@ -1846,7 +1847,8 @@ static cg_type CodePtrType( type_modifiers flags )
     }
     return( dtype );
 #else
-    flags = flags;
+    /* unused parameters */ (void)flags;
+
     return( TY_CODE_PTR );
 #endif
 }

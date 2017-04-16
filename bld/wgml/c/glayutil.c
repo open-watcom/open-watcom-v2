@@ -233,7 +233,8 @@ bool    i_case( char * p, lay_att curr, case_t * tm )
 {
     bool        cvterr;
 
-    curr = curr;
+    /* unused parameters */ (void)curr;
+
     cvterr = false;
     if( !strnicmp( "mixed", p, 5 ) ) {
         *tm = case_mixed;
@@ -273,7 +274,8 @@ void    o_case( FILE * f, lay_att curr, case_t * tm )
 /***************************************************************************/
 bool    i_char( char * p, lay_att curr, char * tm )
 {
-    curr = curr;
+    /* unused parameters */ (void)curr;
+
     if( is_quote_char( *p ) && (*p == *(p + 2)) ) {
         *tm = *(p + 1);                 // 2. char if quoted
     } else {
@@ -297,7 +299,8 @@ bool    i_content( char * p, lay_att curr, content * tm )
     bool        cvterr;
     int         k;
 
-    curr = curr;
+    /* unused parameters */ (void)curr;
+
     cvterr = false;
     tm->content_type = no_content;
     for( k = no_content; k < max_content; ++k ) {
@@ -352,7 +355,8 @@ bool    i_default_frame( char * p, lay_att curr, def_frame * tm )
     bool        cvterr;
     int         len;
 
-    curr = curr;
+    /* unused parameters */ (void)curr;
+
     cvterr = false;
     if( !strnicmp( "none", p, 4 ) ) {
         tm->type = none;
@@ -419,7 +423,8 @@ bool    i_docsect( char * p, lay_att curr, ban_docsect * tm )
     bool        cvterr;
     int         k;
 
-    curr = curr;
+    /* unused parameters */ (void)curr;
+
     cvterr = false;
     *tm = no_ban;
     for( k = no_ban; k < max_ban; ++k ) {
@@ -458,7 +463,8 @@ bool    i_frame( char * p, lay_att curr, bool * tm )
 {
     bool        cvterr;
 
-    curr = curr;
+    /* unused parameters */ (void)curr;
+
     cvterr = false;
     if( !strnicmp( "none", p, 4 ) ) {
         *tm = false;
@@ -494,7 +500,7 @@ void    o_frame( FILE * f, lay_att curr, bool * tm )
 #if 0
 bool    i_int32( char * p, lay_att curr, int32_t * tm )
 {
-    curr = curr;
+    /* unused parameters */ (void)curr;
 
     *tm = strtol( p, NULL, 10 );
     return( false );
@@ -512,7 +518,8 @@ bool    i_int8( char * p, lay_att curr, int8_t * tm )
 {
     int32_t     wk;
 
-    curr = curr;
+    /* unused parameters */ (void)curr;
+
     wk = strtol( p, NULL, 10 );
     if( abs( wk ) > 255 ) {
         return( true );
@@ -534,7 +541,8 @@ bool    i_uint8( char *p, lay_att curr, uint8_t *tm )
 {
     int wk;
 
-    curr = curr;
+    /* unused parameters */ (void)curr;
+
     wk = strtol( p, NULL, 10 );
     if( wk < 0 || wk > 255 ) {
         return( true );
@@ -573,7 +581,8 @@ bool    i_number_form( char * p, lay_att curr, num_form * tm )
 {
     bool        cvterr;
 
-    curr = curr;
+    /* unused parameters */ (void)curr;
+
     cvterr = false;
     if( !strnicmp( "none", p, 4 ) ) {
         *tm = num_none;
@@ -617,7 +626,8 @@ bool    i_number_style( char * p, lay_att curr, num_style * tm )
     num_style   wk = 0;
     char        c;
 
-    curr = curr;
+    /* unused parameters */ (void)curr;
+
     cvterr = false;
     c = tolower( *p );
     switch( c ) {                       // first letter
@@ -736,7 +746,8 @@ bool    i_page_eject( char * p, lay_att curr, page_ej * tm )
 {
     bool        cvterr;
 
-    curr = curr;
+    /* unused parameters */ (void)curr;
+
     cvterr = false;
     if( !strnicmp( strno, p, 2 ) ) {
         *tm = ej_no;
@@ -782,7 +793,8 @@ bool    i_page_position( char * p, lay_att curr, page_pos * tm )
 {
     bool        cvterr;
 
-    curr = curr;
+    /* unused parameters */ (void)curr;
+
     cvterr = false;
     if( !strnicmp( "left", p, 4 ) ) {
         *tm = pos_left;
@@ -824,7 +836,8 @@ bool    i_place( char * p, lay_att curr, bf_place * tm )
 {
     bool        cvterr;
 
-    curr = curr;
+    /* unused parameters */ (void)curr;
+
     cvterr = false;
     if( !strnicmp( "topeven", p, 7 ) ) {
         *tm = topeven_place;
@@ -882,7 +895,8 @@ bool    i_pouring( char * p, lay_att curr, reg_pour * tm )
 {
     bool        cvterr;
 
-    curr = curr;
+    /* unused parameters */ (void)curr;
+
     cvterr = false;
     if( !strnicmp( "none", p, 4 ) ) {
         *tm = no_pour;
@@ -946,7 +960,8 @@ void    o_pouring( FILE * f, lay_att curr, reg_pour * tm )
 /***************************************************************************/
 bool    i_space_unit( char * p, lay_att curr, su * tm )
 {
-    p = p; curr = curr;
+    /* unused parameters */ (void)p; (void)curr;
+
     return( att_val_to_su( tm, true ) );    // no negative values allowed TBD
 }
 
@@ -972,7 +987,8 @@ bool    i_xx_string( char * p, lay_att curr, xx_str * tm )
 {
     bool        cvterr;
 
-    p = p; curr = curr;
+    /* unused parameters */ (void)p; (void)curr;
+
     cvterr = false;
     if( (val_start != NULL) && (val_len < str_size) ) {
         memcpy( tm, val_start, val_len );
@@ -1010,7 +1026,8 @@ bool    i_yes_no( char * p, lay_att curr, bool * tm )
 {
     bool        cvterr;
 
-    curr = curr;
+    /* unused parameters */ (void)curr;
+
     cvterr = false;
     if( !strnicmp( strno, p, 2 ) ) {
         *tm = false;

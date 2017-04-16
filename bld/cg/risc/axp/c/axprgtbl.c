@@ -367,8 +367,8 @@ reg_set_index   RegIntersect( reg_set_index s1, reg_set_index s2 )
 hw_reg_set      InLineParm( hw_reg_set regs, hw_reg_set used )
 /************************************************************/
 {
-    regs = regs;
-    used = used;
+    /* unused parameters */ (void)regs; (void)used;
+
     return( HW_EMPTY );
 }
 
@@ -506,21 +506,19 @@ reg_set_index   IndexIntersect( reg_set_index curr,
                                        bool is_temp_index )
 /***********************************************************/
 {
-    curr = curr;
-    class = class;
-    is_temp_index = is_temp_index;
+    /* unused parameters */ (void)curr; (void)class; (void)is_temp_index;
+
     return( RL_DWORD );
 }
 
 
-bool    IsIndexReg( hw_reg_set reg, type_class_def class,
-                            bool is_temp_index )
-/************************************************/
+bool    IsIndexReg( hw_reg_set reg, type_class_def class, bool is_temp_index )
+/****************************************************************************/
 {
     hw_reg_set          *dregs;
 
-    is_temp_index = is_temp_index;
-    class = class;
+    /* unused parameters */ (void)class; (void)is_temp_index;
+
     for( dregs = &DWordRegs[0]; !HW_CEqual( *dregs, HW_EMPTY ); ++dregs ) {
         if( HW_Equal( *dregs, reg ) ) {
             return( true );
@@ -533,8 +531,8 @@ bool    IsIndexReg( hw_reg_set reg, type_class_def class,
 bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
 /******************************************************/
 {
-    is_temp_index = is_temp_index;
-    reg = reg;
+    /* unused parameters */ (void)reg; (void)is_temp_index;
+
     return( false );
 }
 
@@ -542,7 +540,8 @@ bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
 bool    IsSegReg( hw_reg_set regs )
 /*********************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( false );
 }
 
@@ -550,7 +549,8 @@ bool    IsSegReg( hw_reg_set regs )
 hw_reg_set      Low16Reg( hw_reg_set regs )
 /*****************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( HW_EMPTY );
 }
 
@@ -558,7 +558,8 @@ hw_reg_set      Low16Reg( hw_reg_set regs )
 hw_reg_set      High16Reg( hw_reg_set regs )
 /******************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( HW_EMPTY );
 }
 
@@ -566,7 +567,8 @@ hw_reg_set      High16Reg( hw_reg_set regs )
 hw_reg_set      Low32Reg( hw_reg_set regs )
 /*****************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( HW_EMPTY );
 }
 
@@ -574,7 +576,8 @@ hw_reg_set      Low32Reg( hw_reg_set regs )
 hw_reg_set      High32Reg( hw_reg_set regs )
 /******************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( HW_EMPTY );
 }
 
@@ -582,7 +585,8 @@ hw_reg_set      High32Reg( hw_reg_set regs )
 hw_reg_set      High48Reg( hw_reg_set regs )
 /******************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( HW_EMPTY );
 }
 
@@ -590,7 +594,8 @@ hw_reg_set      High48Reg( hw_reg_set regs )
 hw_reg_set      Low48Reg( hw_reg_set regs )
 /*****************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( HW_EMPTY );
 }
 
@@ -598,7 +603,8 @@ hw_reg_set      Low48Reg( hw_reg_set regs )
 hw_reg_set      High64Reg( hw_reg_set regs )
 /******************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( HW_EMPTY );
 }
 
@@ -606,7 +612,8 @@ hw_reg_set      High64Reg( hw_reg_set regs )
 hw_reg_set      Low64Reg( hw_reg_set regs )
 /*****************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( HW_EMPTY );
 }
 
@@ -614,7 +621,8 @@ hw_reg_set      Low64Reg( hw_reg_set regs )
 hw_reg_set      HighReg( hw_reg_set regs )
 /****************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( HW_EMPTY );
 }
 
@@ -622,14 +630,16 @@ hw_reg_set      HighReg( hw_reg_set regs )
 hw_reg_set      LowReg( hw_reg_set regs )
 /***************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( HW_EMPTY );
 }
 
 hw_reg_set      FullReg( hw_reg_set regs )
 /****************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( regs );
 }
 

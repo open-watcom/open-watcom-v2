@@ -35,7 +35,8 @@
 
 void GUIGetTextMetrics( gui_window * wnd, gui_text_metrics * metrics )
 {
-    wnd = wnd;
+    /* unused parameters */ (void)wnd;
+
     if( metrics != NULL ) {
         metrics->avg.x = 1;
         metrics->avg.y = 1;

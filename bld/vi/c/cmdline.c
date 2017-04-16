@@ -109,6 +109,8 @@ static vi_rc doProcessCommandLine( bool is_fancy )
     vi_rc       rc;
     char        *st;
 
+    /* unused parameters */ (void)is_fancy;
+
     /*
      * open the window and get the string
      */
@@ -116,7 +118,6 @@ static vi_rc doProcessCommandLine( bool is_fancy )
     if( st == NULL ) {
         return( ERR_NO_MEMORY );
     }
-    is_fancy = is_fancy;
 #ifdef __WIN__
     if( is_fancy ) {
         if( !GetCmdDialog( st, EditVars.MaxLine ) ) {

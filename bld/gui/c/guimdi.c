@@ -460,14 +460,15 @@ static void DlgInit( gui_window *wnd, void *param )
 
 static void DlgCount( gui_window *wnd, void *param )
 {
-    param = param;
-    wnd = wnd;
+    /* unused parameters */ (void)param; (void)wnd;
+
     TotalWindows++;
 }
 
 static void IconCount( gui_window *wnd, void *param )
 {
-    param = param;
+    /* unused parameters */ (void)param;
+
     if( GUIIsMinimized( wnd ) ) {
         TotalWindows++;
     }

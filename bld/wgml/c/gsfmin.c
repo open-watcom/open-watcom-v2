@@ -58,7 +58,8 @@ condcode    scr_min( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resul
     getnum_block        gn;
     long                minimum;
 
-    ressize = ressize;
+    /* unused parameters */ (void)ressize;
+
     if( (parmcount < 2) || (parmcount > 6) ) {
         cc = neg;
         return( cc );

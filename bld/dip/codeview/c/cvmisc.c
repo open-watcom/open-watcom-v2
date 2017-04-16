@@ -50,7 +50,8 @@ unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
 
 dip_status DIPIMPENTRY( MoreMem )( unsigned size )
 {
-    size = size;
+    /* unused parameters */ (void)size;
+
     return( (VMShrink() != 0) ? DS_OK : DS_FAIL );
 }
 
@@ -209,7 +210,8 @@ dip_status DoIndirection( imp_image_handle *ii, dip_type_info *ti,
     location_list       dst;
     dip_status          ds;
 
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     LocationCreate( &dst, LT_INTERNAL, &tmp );
     ds = DCAssignLocation( &dst, ll, ti->size );
     if( ds != DS_OK ) return( ds );

@@ -40,7 +40,7 @@
 void StartBlockProfiling( block *blk )
 /************************************/
 {
-    blk = blk;
+    /* unused parameters */ (void)blk;
 }
 
 void EndBlockProfiling( void )
@@ -51,6 +51,7 @@ void EndBlockProfiling( void )
 segment_id GenProfileData( char *fe_name, label_handle *data, label_handle *stack )
 /*********************************************************************************/
 {
-    fe_name = fe_name; data = data; stack = stack;
+    /* unused parameters */ (void)fe_name; (void)data; (void)stack;
+
     return( 0 );
 }

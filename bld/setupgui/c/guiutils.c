@@ -89,7 +89,8 @@ bool WndMainEventProc( gui_window * gui, gui_event event, void *parm )
 {
     int                 i;
 
-    parm = parm;
+    /* unused parameters */ (void)parm;
+
     switch( event ) {
     case GUI_PAINT:
         if( GUIIsGUI() ) {

@@ -239,7 +239,7 @@ bool GUIXCreateToolBar( gui_window *wnd, bool fixed, gui_ord height,
     int         j;
     toolbarinfo *tbar;
 
-    float_pos = float_pos;
+    /* unused parameters */ (void)float_pos;
 
     if( ( wnd->parent != NULL ) || ( plain == NULL ) || ( standout == NULL ) ) {
         return( false );
@@ -294,7 +294,8 @@ bool GUIXCreateToolBarWithTips( gui_window *wnd, bool fixed, gui_ord height,
                                 gui_colour_set *plain, gui_colour_set *standout,
                                 gui_rect *float_pos, bool use_tips )
 {
-    use_tips = use_tips;
+    /* unused parameters */ (void)use_tips;
+
     return( GUIXCreateToolBar( wnd, fixed, height, num_items, toolinfo, excl, plain, standout, float_pos ) );
 }
 

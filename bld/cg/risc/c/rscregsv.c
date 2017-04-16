@@ -117,8 +117,8 @@ extern  bool    WorthProlog( conflict_node *conf, hw_reg_set reg ) {
     }
     return( savings >= cost );
 #else
-    reg = reg;
-    conf = conf;
+    /* unused parameters */ (void)reg; (void)conf;
+
     return( true );
 #endif
 }

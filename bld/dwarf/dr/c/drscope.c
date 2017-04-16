@@ -107,10 +107,11 @@ static bool AContainer( drmem_hdl enclose, int index, void *_df )
 //***************************************************************
 {
     dr_scope_entry     *new;
-    bool            cont;
+    bool               cont;
     dr_scope_trail     *df = _df;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     new = AllocScopeEntry( &df->ctl );
     new->next = df->head;
     df->head = new;

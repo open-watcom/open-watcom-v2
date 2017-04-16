@@ -86,7 +86,8 @@ mad_status MADIMPENTRY( CallBuildFrame )( mad_string call, address ret, address 
 
 const mad_reg_info *MADIMPENTRY( CallReturnReg )( mad_string call, address rtn )
 {
-    call = call;
+    /* unused parameters */ (void)call;
+
     if( BIG_SEG( rtn ) ) {
         return( &CPU_eax.info );
     } else {
@@ -101,7 +102,8 @@ const mad_reg_info **MADIMPENTRY( CallParmRegList )( mad_string call, address rt
     static const mad_reg_info *list16[] =
         { &CPU_ax.info,  &CPU_dx.info,  &CPU_bx.info,  &CPU_cx.info, NULL };
 
-    call = call;
+    /* unused parameters */ (void)call;
+
     if( BIG_SEG( rtn ) ) {
         return( list32 );
     } else {
@@ -565,8 +567,8 @@ unsigned MADIMPENTRY( CallUpStackSize )( void )
 
 mad_status MADIMPENTRY( CallUpStackInit )( mad_call_up_data *cud, const mad_registers *mr )
 {
-    cud = cud;
-    mr = mr;
+    /* unused parameters */ (void)cud; (void)mr;
+
     return( MS_OK );
 }
 
@@ -583,9 +585,8 @@ mad_status MADIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud,
     address             prev_sp_value;
     address             start;
 
+    /* unused parameters */ (void)cud; (void)in;
 
-    cud = cud;
-    in = in;
     *out = NULL;
     Is32BitSegment = BIG_SEG( *execution );
     start = *startp;

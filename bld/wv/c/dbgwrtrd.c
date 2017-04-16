@@ -72,7 +72,7 @@ void InitRunThreadInfo( void )
 
     PieceCount = 0;
     Indents[0] = 0;
-    
+
     for(i  = 0; i < MAX_PIECE_COUNT; i++ ) {
         ok = RemoteGetRunThreadInfo( i, &InfoType[PieceCount], &Width, HeaderArr[PieceCount], MAX_HEADER_SIZE );
         if( ok ) {
@@ -102,7 +102,8 @@ static int RunTrdNumRows( a_window *wnd )
     thread_state    *thd;
     unsigned        num;
 
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     num = 0;
     for( thd = HeadThd; thd != NULL; thd = thd->link ) ++num;
     return( num );
@@ -110,7 +111,8 @@ static int RunTrdNumRows( a_window *wnd )
 
 static bool RunTrdEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         RunThreadWnd = wnd;
@@ -126,7 +128,8 @@ static void     RunTrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece
 {
     thread_state        *thd = GetThreadRow( row );
 
-    piece=piece;
+    /* unused parameters */ (void)piece;
+
     switch( id ) {
     case MENU_INITIALIZE:
         if( thd == NULL ) {
@@ -156,7 +159,7 @@ static void     RunTrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece
             default:
                 WndMenuGrayAll( wnd );
                 break;
-            }                    
+            }
         }
         return;
     case MENU_RUN_THREAD_STOP:
@@ -237,19 +240,19 @@ static  bool    RunTrdGetLine( a_window *wnd, int row, int piece,
                     break;
                 case THD_WAIT:
                     line->text = LIT_ENG( Wait );
-                    break;  
+                    break;
                 case THD_SIGNAL:
                     line->text = LIT_ENG( Signal );
-                    break;  
+                    break;
                 case THD_KEYBOARD:
                     line->text = LIT_ENG( Keyboard );
-                    break;  
+                    break;
                 case THD_BLOCKED:
                     line->text = LIT_ENG( Blocked );
-                    break;  
+                    break;
                 case THD_RUN:
                     line->text = LIT_ENG( Executing );
-                    break;  
+                    break;
                 case THD_DEBUG:
                     line->text = LIT_ENG( Debug );
                     break;

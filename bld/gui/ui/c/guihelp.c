@@ -40,24 +40,22 @@
 
 gui_help_instance GUIHelpInit( gui_window *wnd, const char *file, const char *title )
 {
-    wnd=wnd;
-    file=file;
-    title=title;
+    /* unused parameters */ (void)wnd; (void)file; (void)title;
+
     return( (gui_help_instance)true );
 }
 
 void GUIHelpFini( gui_help_instance inst, gui_window *wnd, const char *file )
 {
-    wnd=wnd;
-    file=file;
-    inst=inst;
+    /* unused parameters */ (void)inst; (void)wnd; (void)file;
 }
 
 bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, const char *file, const char *topic )
 {
     bool        ret;
 
-    inst = inst;
+    /* unused parameters */ (void)inst;
+
     ret = false;
 
     switch( act ) {
@@ -81,7 +79,8 @@ bool GUIShowHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act,
 
 bool GUIShowHtmlHelp( gui_help_instance inst, gui_window *wnd, gui_help_actions act, const char *file, const char *topic )
 {
-    inst=inst;wnd=wnd;act=act;file=file;topic=topic;
+    /* unused parameters */ (void)inst; (void)wnd; (void)act; (void)file; (void)topic;
+
     return( false );
 }
 
@@ -89,7 +88,8 @@ bool GUIDisplayHelp( gui_window *wnd, const char *file, const char *topic )
 {
     const char *helpfiles[2] = { NULL, NULL };
 
-    wnd = wnd;
+    /* unused parameters */ (void)wnd;
+
     helpfiles[0] = file;
     GUISetDialColours();
     uipoplist( /* GUIAllEvents */ );
@@ -103,6 +103,7 @@ bool GUIDisplayHelp( gui_window *wnd, const char *file, const char *topic )
 
 bool GUIDisplayHelpId( gui_window *wnd, const char *file, gui_hlp_id id )
 {
-    wnd=wnd;file=file;id=id;
+    /* unused parameters */ (void)wnd; (void)file; (void)id;
+
     return( false );
 }

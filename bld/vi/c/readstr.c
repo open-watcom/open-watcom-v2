@@ -631,8 +631,8 @@ static window_id    thisWindow = NO_WINDOW;
 
 static bool mouseHandler( window_id wid, int x, int y )
 {
-    x = x;
-    y = y;
+    /* unused parameters */ (void)x; (void)y;
+
     if( wid != thisWindow ) {
         if( LastMouseEvent == MOUSE_PRESS ) {
             KeyAdd( VI_KEY( ESC ) );
@@ -670,7 +670,8 @@ static void initInput( input_buffer *input )
 
 static void finiInput( input_buffer *input )
 {
-    input = input;
+    /* unused parameters */ (void)input;
+
     thisWindow = NO_WINDOW;
     PopMouseEventHandler();
     if( !EditFlags.NoInputWindow ) {

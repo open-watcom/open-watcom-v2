@@ -296,9 +296,9 @@ char *MakeTmpPath( char *out, const char *in )
 void FileLower( char *str )
 {
 #ifndef __UNIX__
-        strlwr( str );
+    strlwr( str );
 #else
-        str = str;
+    /* unused parameters */ (void)str;
 #endif
 
 } /* FileLower */

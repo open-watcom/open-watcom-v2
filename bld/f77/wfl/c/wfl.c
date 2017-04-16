@@ -261,7 +261,7 @@ int     main( int argc, char *argv[] ) {
     char        *q;
     char        *cmd;
 
-    argc = argc;
+    /* unused parameters */ (void)argc;
 
     __InitResource();
     __ErrorInit( argv[0] );

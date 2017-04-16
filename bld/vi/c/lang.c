@@ -59,7 +59,7 @@ static char         *declspec_read_buf      = NULL;
 static int hashpjw( char *s, int entries )
 {
     unsigned long   h = 0, g;
-    
+
     for( ; *s != '\0'; ++s ) {
         h = (h << 4) + toupper( *s );
         if( (g = h & 0xf0000000) != 0 ) {
@@ -219,7 +219,8 @@ static bool lang_alloc( int cnt )
 
 static bool lang_save( int i, const char *buff )
 {
-    i = i; buff = buff;
+    /* unused parameters */ (void)i; (void)buff;
+
     return( true );
 }
 

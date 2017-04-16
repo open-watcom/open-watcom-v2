@@ -39,7 +39,7 @@ unsigned MADIMPENTRY( TraceSize )( void )
 
 void MADIMPENTRY( TraceInit )( mad_trace_data *td, const mad_registers *mr )
 {
-    mr = mr;
+    /* unused parameters */ (void)mr;
 
     td->prev_ins_type = -1;
     td->prev_ins_flags.u.x86 = DIF_X86_NONE;
@@ -263,7 +263,8 @@ static walk_result TouchesScreenBuff( address a, mad_type_handle th, mad_memref_
 {
     const mad_registers *mr = d;
 
-    th = th;
+    /* unused parameters */ (void)th;
+
     if( mk & MMK_IMPLICIT )
         return( WR_CONTINUE );
     switch( MCSystemConfig()->os ) {
@@ -335,7 +336,8 @@ mad_status MADIMPENTRY( TraceSimulate )( mad_trace_data *td, mad_disasm_data *dd
     address     sp;
     word        value;
 
-    td = td;
+    /* unused parameters */ (void)td;
+
     switch( dd->ins.type ) {
     case DI_X86_into:
         if( !( in->x86.cpu.efl & FLG_O ) ) {
@@ -368,7 +370,7 @@ mad_status MADIMPENTRY( TraceSimulate )( mad_trace_data *td, mad_disasm_data *dd
 
 void MADIMPENTRY( TraceFini )( mad_trace_data *td )
 {
-    td = td;
+    /* unused parameters */ (void)td;
 }
 
 #define JMP_SHORT        ((unsigned char)0XEB)

@@ -155,8 +155,8 @@ bool GUIDrawLine( gui_window *wnd, gui_point *start, gui_point *end,
     SAREA       area;
     char        to_use;
 
-    style = style;
-    thickness = thickness;
+    /* unused parameters */ (void)style; (void)thickness;
+
     my_start = *start;
     my_end = *end;
     GUIScaleToScreenRPt( &my_start );
@@ -184,28 +184,22 @@ bool GUIDrawLine( gui_window *wnd, gui_point *start, gui_point *end,
 
 bool GUIFillRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb )
 {
-    wnd = wnd;
-    rect = rect;
-    rgb = rgb;
+    /* unused parameters */ (void)wnd; (void)rect; (void)rgb;
+
     return( false );
 }
 
 bool GUIDrawRectRGB( gui_window *wnd, gui_rect *rect, gui_rgb rgb )
 {
-    wnd = wnd;
-    rect = rect;
-    rgb = rgb;
+    /* unused parameters */ (void)wnd; (void)rect; (void)rgb;
+
     return( false );
 }
 
 bool GUIDrawLineRGB( gui_window *wnd, gui_point *start, gui_point *end,
                      gui_line_styles style, gui_ord thickness, gui_rgb rgb )
 {
-     wnd = wnd;
-     start = start;
-     end = end;
-     style = style;
-     thickness = thickness;
-     rgb = rgb;
-     return( false );
+    /* unused parameters */ (void)wnd; (void)start; (void)end; (void)style; (void)thickness; (void)rgb;
+
+    return( false );
 }

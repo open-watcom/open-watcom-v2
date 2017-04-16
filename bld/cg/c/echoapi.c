@@ -464,7 +464,8 @@ void hdlAddUnary                // ADD A HANDLE AFTER A UNARY OPERATION
     , tn handle                 // - the handle
     , tn old )                  // - handle operated upon by unary oper'n
 {
-    old = old;
+    /* unused parameters */ (void)old;
+
     hdlAddReuse( hdltype, handle );
 }
 
@@ -474,8 +475,8 @@ void hdlAddBinary               // ADD A HANDLE AFTER A BINARY OPERATION
     , tn old_l                  // - handle operated upon by unary oper'n
     , tn old_r )                // - handle operated upon by unary oper'n
 {
-    old_l = old_l;
-    old_r = old_r;
+    /* unused parameters */ (void)old_l; (void)old_r;
+
     hdlAddReuse( hdltype, handle );
 }
 
@@ -486,19 +487,19 @@ void hdlAddTernary              // ADD A HANDLE AFTER A TERNARY OPERATION
     , tn old_l                  // - handle operated upon by unary oper'n
     , tn old_r )                // - handle operated upon by unary oper'n
 {
-    old_t = old_t;
-    old_l = old_l;
-    old_r = old_r;
+    /* unused parameters */ (void)old_t; (void)old_l; (void)old_r;
+
     hdlAddReuse( hdltype, handle );
 }
 
 void hdlAllUsed                 // VERIFY ALL HANDLES IN RING HAVE BEEN USED
     ( handle_type hdltype )
 {
+    /* unused parameters */ (void)hdltype;
+
     // check to ensure that all nodes of type hdltype are used LMW
     // create linked list of node when creating, and check all are empty
     // after tree is burned
-    hdltype = hdltype;
 }
 
 void EchoAPIInit( void )

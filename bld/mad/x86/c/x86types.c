@@ -208,7 +208,7 @@ mad_status MADIMPENTRY( TypeToString )( mad_radix radix, const mad_type_info *mt
 {
     size_t      buff_size;
 
-    radix = radix;
+    /* unused parameters */ (void)radix;
 
     switch( mti->b.handler_code ) {
     case X86T_UNKNOWN:
@@ -306,6 +306,7 @@ mad_type_handle MADIMPENTRY( TypeForDIPType )( const dip_type_info *ti )
 
 mad_status MADIMPENTRY( TypeConvert )( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
 {
-    in_t = in_t; in_d = in_d; out_t = out_t; out_d = out_d; seg = seg;
+    /* unused parameters */ (void)in_t; (void)in_d; (void)out_t; (void)out_d; (void)seg;
+
     return( MS_UNSUPPORTED );
 }

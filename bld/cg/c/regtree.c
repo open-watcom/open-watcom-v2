@@ -139,7 +139,7 @@ static  void    CheckBigPointer( reg_tree *tree )
         tree->hi->regs = NULL;
     }
 #else
-    tree = tree;
+    /* unused parameters */ (void)tree;
 #endif
 }
 

@@ -204,8 +204,8 @@ static walk_result FindMemRefs( address a, mad_type_handle th,
     memory_delta        *new;
     size_t              bytes;
 
+    /* unused parameters */ (void)d;
 
-    d = d;
     if( (mk & (MMK_VOLATILE | MMK_WRITE)) == 0 )
         return( WR_CONTINUE );
     MADTypeInfo( th, &mti );

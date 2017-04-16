@@ -205,7 +205,8 @@ static bool errmsg_alloc( int cnt )
 
 static bool errmsg_save( int i, const char *buff )
 {
-    i = i; buff = buff;
+    /* unused parameters */ (void)i; (void)buff;
+
     return( true );
 }
 

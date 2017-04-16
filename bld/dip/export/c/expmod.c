@@ -45,7 +45,8 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *ii,
                         imp_mod_handle im, char *buff, size_t buff_size )
 {
 
-    im = im;
+    /* unused parameters */ (void)im;
+
     if( buff_size > 0 ) {
         --buff_size;
         if( buff_size > ii->len )
@@ -58,21 +59,23 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *ii,
 
 char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *ii, imp_mod_handle im )
 {
-    ii = ii; im = im;
+    /* unused parameters */ (void)ii; (void)im;
+
     return( "c" );
 }
 
-dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *ii,
-                                imp_mod_handle im, handle_kind hk )
+dip_status DIPIMPENTRY( ModInfo )( imp_image_handle *ii, imp_mod_handle im, handle_kind hk )
 {
-    ii = ii; im = im; hk = hk;
+    /* unused parameters */ (void)ii; (void)im; (void)hk;
+
     return( DS_FAIL );
 }
 
 search_result DIPIMPENTRY( AddrMod )( imp_image_handle *ii, address a,
                 imp_mod_handle *im )
 {
-    ii = ii; a = a;
+    /* unused parameters */ (void)ii; (void)a;
+
     if( FindAddrBlock( ii, a.mach ) != NULL ) {
         *im = IMH_EXPORT;
         return( SR_CLOSEST );
@@ -86,7 +89,8 @@ address DIPIMPENTRY( ModAddr )( imp_image_handle *ii,
     address     addr;
     exp_block   *exp;
 
-    im = im;
+    /* unused parameters */ (void)im;
+
     for( exp = ii->addr; exp != NULL; exp = exp->next ) {
         if( exp->code ) {
             addr.mach = exp->start;
@@ -100,6 +104,7 @@ address DIPIMPENTRY( ModAddr )( imp_image_handle *ii,
 dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *ii,
                 imp_mod_handle im, default_kind dk, dip_type_info *ti )
 {
-     ii = ii; im = im; dk = dk; ti = ti;
-     return( DS_FAIL );
+    /* unused parameters */ (void)ii; (void)im; (void)dk; (void)ti;
+
+    return( DS_FAIL );
 }

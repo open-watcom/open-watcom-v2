@@ -631,7 +631,8 @@ static walk_result DIGCLIENT TypeGlue( imp_image_handle *iih,
 {
     walk_glue   *wd = d;
 
-    iih = iih;
+    /* unused parameters */ (void)iih;
+
     return( wd->walk.t( ITH2TH( ith ), wd->d ) );
 }
 
@@ -662,7 +663,8 @@ static walk_result DIGCLIENT SymGlue( imp_image_handle *iih,
     walk_glue   *wd = d;
     sym_handle  *sh;
 
-    iih = iih;
+    /* unused parameters */ (void)iih;
+
     sh = (ish == NULL) ? NULL: ISH2SH( ish );
     return( wd->walk.s( swi, sh, wd->d ) );
 }
@@ -756,7 +758,8 @@ static walk_result DIGCLIENT CueGlue( imp_image_handle *iih,
 {
     walk_glue   *wd = d;
 
-    iih = iih;
+    /* unused parameters */ (void)iih;
+
     return( wd->walk.c( ICH2CH( ich ), wd->d ) );
 }
 

@@ -572,9 +572,9 @@ static void wgml_tabs( void )
     /*  c_type contains the type of the prior input text                    */
     /************************************************************************/
 
-    for( i = i; i < in_count; i++ ) {
+    for( ; i < in_count; i++ ) {
         t_start = i;
-        for( i = i; i < in_count; i++ ) {   // get the text up to the next tab
+        for( ; i < in_count; i++ ) {   // get the text up to the next tab
             if( (in_text[i] == '\t') || (in_text[i] == tab_char) ) {
                 break;
             }

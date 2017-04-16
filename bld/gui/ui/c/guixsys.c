@@ -146,7 +146,7 @@ static bool LoadStrings( void )
         return( GUILoadStrInit( resource_file_name ) );
     } else {
         _cmdname( fname );
-        if( fname == NULL )
+        if( fname[0] == '\0' )
             return( false );
         return( GUILoadStrInit( fname ) );
     }

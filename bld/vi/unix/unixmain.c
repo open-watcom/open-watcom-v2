@@ -41,13 +41,13 @@ int main( int argc, char *argv[] )
 {
     static char buffer[FILENAME_MAX];
 
-    InitMem();
-
-    argc = argc;
+    /* unused parameters */ (void)argc;
 #ifndef __WATCOMC__
     _argc = argc;
     _argv = argv;
 #endif
+
+    InitMem();
     EXEName = _cmdname( buffer );
     VarAddGlobalStr( "OS", "unix" );
     Comspec = getenv( "SHELL" );

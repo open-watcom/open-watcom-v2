@@ -86,11 +86,12 @@ long MADIMPENTRY( AddrDiff )( const address *a, const address *b, mad_address_fo
     long        diff;
     addr_seg    seg;
 
-    af = af;
+    /* unused parameters */ (void)af;
+
     diff = a->mach.offset - b->mach.offset;
     if( !BIG_SEG( *a ) ) {
         seg = 0;
-        if( diff < 0 ) 
+        if( diff < 0 )
             seg = b->mach.segment + (1 << MCSystemConfig()->huge_shift);
         diff &= 0xffff;
         seg = a->mach.segment - seg;
@@ -123,7 +124,8 @@ mad_status MADIMPENTRY( AddrInterrupt )( const addr_ptr *a, unsigned size, const
     unsigned_32         start, end;
     address             addr;
 
-    mr = mr;
+    /* unused parameters */ (void)mr;
+
     memset( &addr, 0, sizeof( addr ) );
     addr.mach = *a;
     if( !REAL_SEG( addr ) )

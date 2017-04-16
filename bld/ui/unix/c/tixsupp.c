@@ -52,6 +52,7 @@ char ui_tix_path[] = "/usr/watcom/tix";
 
 int ui_tix_missing( const char *name )
 {
-    name = name;
+    /* unused parameters */ (void)name;
+
     return( 1 );
 }

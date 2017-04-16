@@ -139,7 +139,8 @@ unsigned long FLastOffset( browser *hndl )
 
 int FileIsRemote( browser *hndl )
 {
-    hndl = hndl;
+    /* unused parameters */ (void)hndl;
+
     return( SMFileRemote( hndl->fp ) );
 }
 

@@ -365,7 +365,8 @@ static int tm_set_speed( unsigned speed )
  * For now, 10 will be fastest and 1 will be slowest.
  */
 {
-    speed = speed;
+    /* unused parameters */ (void)speed;
+
     return 0;
 }
 
@@ -408,7 +409,7 @@ void tm_saveevent( void )
 #endif
     default :
         break;
-    }        
+    }
     new_sample = 1;
 }
 

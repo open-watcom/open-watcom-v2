@@ -885,8 +885,8 @@ int FELexLevel( CGSYM_HANDLE cgsym_handle )
 cg_type FEParmType( CGSYM_HANDLE func, CGSYM_HANDLE parm, cg_type tipe )
 /**********************************************************************/
 {
-    func = func;
-    parm = parm;
+    /* unused parameters */ (void)func; (void)parm;
+
     switch( tipe ) {
     case TY_INT_1:
     case TY_INT_2:

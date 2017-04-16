@@ -223,14 +223,16 @@ vi_rc SetGenericMark( linenum num, int col, vi_key key )
 
 vi_rc GoMark( range *r, long count )
 {
-    count = count;
+    /* unused parameters */ (void)count;
+
     r->line_based = false;
     return( goToMark( r ) );
 }
 
 vi_rc GoMarkLine( range *r, long count )
 {
-    count = count;
+    /* unused parameters */ (void)count;
+
     r->line_based = true;
     return( goToMark( r ) );
 }

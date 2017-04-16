@@ -55,192 +55,225 @@
 
 /* KLUDGEY crud for segment register */
 
-void    OptSegs() {
-/*************************/
+void    OptSegs( void )
+/*********************/
+{
 }
 
-void AddSegment( instruction *ins ) {
-/******************************************/
-    ins = ins;
+void AddSegment( instruction *ins )
+/*********************************/
+{
+    /* unused parameters */ (void)ins;
 }
 
-void MergeIndex() {
-/**********************************************/
+void MergeIndex( void )
+/*********************/
+{
 }
 
 /* KLUDGEY crud for the 8087 */
 
 
-bool            FPInsIntroduced( instruction *ins ) {
-/***********************************************************/
+bool FPInsIntroduced( instruction *ins )
+/**************************************/
+{
+    /* unused parameters */ (void)ins;
 
-    ins = ins;
     return( false );
 }
 
-bool            FPStackReg( name *n ) {
-/*********************************************/
+bool FPStackReg( name *n )
+/************************/
+{
+    /* unused parameters */ (void)n;
 
-    n = n;
     return( false );
 }
 
-bool            FPStackIns( instruction *ins ) {
-/******************************************************/
+bool FPStackIns( instruction *ins )
+/*********************************/
+{
+    /* unused parameters */ (void)ins;
 
-    ins = ins;
     return( false );
 }
 
-bool            FPFreeIns( instruction *ins ) {
-/*****************************************************/
+bool FPFreeIns( instruction *ins )
+/********************************/
+{
+    /* unused parameters */ (void)ins;
 
-    ins = ins;
     return( false );
 }
 
-void             FPRegAlloc(void) {
-/****************************************/
+void FPRegAlloc( void )
+/*********************/
+{
 }
 
-void             FPParms(void) {
-/*************************************/
+void FPParms( void )
+/******************/
+{
 }
 
 #if 0
-void             FPReloc(void) {
-/*************************************/
+void FPReloc( void )
+/******************/
+{
 }
 #endif
 
-bool    FPSideEffect( instruction *ins ) {
-/************************************************/
-    ins = ins;
+bool FPSideEffect( instruction *ins )
+/***********************************/
+{
+    /* unused parameters */ (void)ins;
+
     return( false );
 }
 
-void    FPSetStack( name *name ) {
-/****************************************/
-    name = name;
+void FPSetStack( name *name )
+/***************************/
+{
+    /* unused parameters */ (void)name;
 }
 
-type_class_def FPInsClass( instruction *ins ) {
-/*****************************************************/
-    ins = ins;
+type_class_def FPInsClass( instruction *ins )
+/*******************************************/
+{
+    /* unused parameters */ (void)ins;
+
     return( XX );
 }
 
-bool    FPIsConvert( instruction *ins ) {
-/***********************************************/
-    ins = ins;
+bool FPIsConvert( instruction *ins )
+/**********************************/
+{
+    /* unused parameters */ (void)ins;
+
     return( false );
 }
 
-void    FPNotStack( name *name ) {
-/****************************************/
-    name = name;
+void FPNotStack( name *name )
+/***************************/
+{
+    /* unused parameters */ (void)name;
 }
 
-bool    FPIsStack( name *name ) {
-/***************************************/
+bool FPIsStack( name *name )
+/**************************/
+{
+    /* unused parameters */ (void)name;
 
-    name = name;
     return( false );
 }
 
-bool    FPStackOp( name *name ) {
-/***************************************/
+bool FPStackOp( name *name )
+/**************************/
+{
+    /* unused parameters */ (void)name;
 
-    name = name;
     return( false );
 }
 
-int     FPStackExit( block *blk ) {
-/*****************************************/
-    blk = blk;
+int FPStackExit( block *blk )
+/***************************/
+{
+    /* unused parameters */ (void)blk;
+
     return( 0 );
 }
 
-int     FPStkOver( instruction *ins, int depth ) {
-/********************************************************/
-    ins = ins;
-    depth = depth;
+int FPStkOver( instruction *ins, int depth )
+/******************************************/
+{
+    /* unused parameters */ (void)ins; (void)depth;
+
     return( 0 );
 }
 
-void    FPCalcStk( instruction *ins, int *depth ) {
-/*********************************************************/
-    ins = ins;
+void FPCalcStk( instruction *ins, int *depth )
+/********************************************/
+{
+    /* unused parameters */ (void)ins;
+
     *depth = 0;
 }
 
-void    FPPreSched( block *blk ) {
-/****************************************/
-    blk = blk;
+void FPPreSched( block *blk )
+/***************************/
+{
+    /* unused parameters */ (void)blk;
 }
 
-void    FPPostSched( block *blk ) {
-/*****************************************/
-    blk = blk;
-}
-
-void    FPExpand() {
-/**************************/
-}
-
-void    FPOptimize() {
+void FPPostSched( block *blk )
 /****************************/
+{
+    /* unused parameters */ (void)blk;
 }
 
-void    InitFP() {
-/************************/
+void FPExpand( void )
+/*******************/
+{
 }
 
-void     FPPushParms( pn parm, call_state *state ) {
-/*********************************************************/
-    parm = parm;
-    state = state;
+void FPOptimize( void )
+/*********************/
+{
+}
+
+void InitFP( void )
+/*****************/
+{
+}
+
+void FPPushParms( pn parm, call_state *state )
+/********************************************/
+{
+    /* unused parameters */ (void)parm; (void)state;
 }
 
 
-void    InitZeroPage( void )
-/**************************/
+void InitZeroPage( void )
+/***********************/
 {
 }
 
 
-void    FiniZeroPage( void )
-/**************************/
+void FiniZeroPage( void )
+/***********************/
 {
 }
 
-void InitSegment() {
-/*****************************/
+void InitSegment( void )
+/**********************/
+{
 }
 
 
-void FiniSegment() {
-/*****************************/
+void FiniSegment( void )
+/**********************/
+{
 }
 
 
-cg_type NamePtrType( name *op ) {
-/*************************************/
+cg_type NamePtrType( name *op )
+/*****************************/
+{
+    /* unused parameters */ (void)op;
 
-    op = op;
     return( TY_NEAR_POINTER );
 }
 
 #if 0
-int     AdjustBase() {
-/****************************/
-
+int AdjustBase( void )
+/********************/
+{
     return( 0 );
 }
 
-void    ZeroMoves() {
-/***************************/
-
+void ZeroMoves( void )
+/********************/
+{
 }
 #endif
 
@@ -248,114 +281,127 @@ void    ZeroMoves() {
 /* Functions from 386setcc.c; MIPS has its own mipssetc.c, Alpha could
  * have own version as well. Not sure about PowerPC.
  */
-bool    SetOnCondition() {
-/********************************/
-
+bool SetOnCondition( void )
+/*************************/
+{
     return( false );
 }
 
-reg_set_index   SpecialPossible( instruction *ins ) {
-/***********************************************************/
-    ins = ins;
+reg_set_index SpecialPossible( instruction *ins )
+/***********************************************/
+{
+    /* unused parameters */ (void)ins;
+
     return( RL_ );
 }
 #endif
 
-void    BuildIndex() {
-
+void BuildIndex( void )
+{
 }
 
-bool    LdStAlloc( void )
+bool LdStAlloc( void )
+/********************/
+{
+    return( false );
+}
+
+void LdStCompress( void )
+/***********************/
+{
+}
+
+bool FreeObjCache( void )
 /***********************/
 {
     return( false );
 }
 
-void    LdStCompress( void ) {
-/******************************/
+void PreCall( cn call )
+/*********************/
+{
+    /* unused parameters */ (void)call;
 }
 
-bool    FreeObjCache() {
-/******************************/
-
-    return( false );
+void PostCall( cn call )
+/**********************/
+{
+    /* unused parameters */ (void)call;
 }
 
-void    PreCall( cn call ) {
-/**********************************/
-    call = call;
+void PushInSameBlock( instruction *ins )
+/**************************************/
+{
+    /* unused parameters */ (void)ins;
 }
 
-void    PostCall( cn call ) {
-/***********************************/
-    call = call;
+void CheckCC( instruction *ins, instruction *new_ins )
+/****************************************************/
+{
+    /* unused parameters */ (void)ins; (void)new_ins;
 }
 
-void    PushInSameBlock( instruction *ins ) {
-/***************************************************/
-    ins = ins;
-}
-
-void    CheckCC( instruction *ins, instruction *new_ins ) {
-/*****************************************************************/
-    new_ins = new_ins;
-    ins = ins;
-}
-
-bool    DivIsADog( type_class_def class ) {
-/*************************************************/
-
+bool DivIsADog( type_class_def class )
+/************************************/
+{
     return( _IsFloating( class ) );
 }
 
-bool    AskSegNear( segment_id id ) {
-/*******************************************/
+bool AskSegNear( segment_id id )
+/******************************/
+{
+    /* unused parameters */ (void)id;
 
-    id = id;
     return( true );
 }
 
-void    MemtoBaseTemp() {
-/*******************************/
+void MemtoBaseTemp( void )
+/************************/
+{
 }
 
-void    FixSegments() {
-/*****************************/
+void FixSegments( void )
+/**********************/
+{
 }
 
-void    FixMemBases() {
-/*****************************/
+void FixMemBases( void )
+/**********************/
+{
 }
 
-void    FixFPConsts( instruction *ins ) {
-/***********************************************/
-
-    ins = ins;
+void FixFPConsts( instruction *ins )
+/**********************************/
+{
+    /* unused parameters */ (void)ins;
 }
 
-bool    LoadAToMove( instruction *ins ) {
-/***********************************************/
+bool LoadAToMove( instruction *ins )
+/**********************************/
+{
+    /* unused parameters */ (void)ins;
 
-    ins = ins;
     return( false );
 }
 
-void    FixCallIns( instruction *ins ) {
-/**********************************************/
-
-    ins = ins;
+void FixCallIns( instruction *ins )
+/*********************************/
+{
+    /* unused parameters */ (void)ins;
 }
 
-void    GenSetCC( instruction *ins ) {
-/************************************/
+void GenSetCC( instruction *ins )
+/*******************************/
+{
+    /* unused parameters */ (void)ins;
 
-    ins = ins;
     _Zoiks( 102 );
 }
 
-bool    IsUncacheableMemory( name *opnd )
-/***************************************/
+bool IsUncacheableMemory( name *opnd )
+/************************************/
 {
-    opnd = opnd;
+    /* unused parameters */ (void)opnd;
+
     return( false );
 }

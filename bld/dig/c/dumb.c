@@ -205,7 +205,8 @@ static trap_retval TRAPENTRY DumbRequest( trap_elen num_in_mx, in_mx_entry_p mx_
 {
     trap_retval     result;
 
-    num_in_mx = num_in_mx; num_out_mx = num_out_mx;
+    /* unused parameters */ (void)num_in_mx; (void)num_out_mx;
+
     Out_Mx_Ptr = mx_out;
     result = DumbRequests[TRP_REQUEST( mx_in )]();
     return( result );

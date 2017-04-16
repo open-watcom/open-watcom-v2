@@ -1061,9 +1061,7 @@ static BrokenName_T *DecorateType( BrokenName_T *decname, Loc_T *loc, dw_tagnum 
             next_die = DWRReadReference( tmp_abbrev, tmp_entry );
             next_die = SkipPCH( next_die );
             if( next_die != DRMEM_HDL_NULL ) {
-                if( loc->tag == DW_TAG_WATCOM_address_class_type ) {
-                    prev_tag = prev_tag;
-                } else {
+                if( loc->tag != DW_TAG_WATCOM_address_class_type ) {
                     prev_tag = loc->tag;
                 }
                 FillLoc( loc, next_die );
@@ -1221,7 +1219,7 @@ static bool baseHook( dr_sym_type stype, drmem_hdl base, char *name,
     BaseSearchInfo  *data;
     String          namestr;
 
-    notused = notused;
+    /* unused parameters */ (void)notused;
 
     namestr.s = name;
     if( namestr.s == NULL ) {
@@ -1679,7 +1677,8 @@ static bool FORAddParam( drmem_hdl entry, int index, void *data )
 
     BrokenName_T  decstruct = Empty_Broken_Name;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     list = (List_T *)data;
 
     FillLoc( &loc, entry );
@@ -1822,7 +1821,8 @@ static bool FORAddNameListItem( drmem_hdl entry, int index, void *data )
     drmem_hdl       abbrev;
     drmem_hdl       item;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     abbrev = DWRSkipTag( &mod ) + 1;
     if( !DWRScanForAttrib( &abbrev, &mod, DW_AT_namelist_item ) ) {
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );

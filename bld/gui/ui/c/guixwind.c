@@ -66,8 +66,7 @@ static void DeleteChild( gui_window * parent, gui_window * child )
 
 void GUIWantPartialRows( gui_window *wnd, bool want )
 {
-    wnd=wnd;
-    want=want;
+    /* unused parameters */ (void)wnd; (void)want;
 }
 
 void GUIFreeWindowMemory( gui_window *wnd, bool from_parent, bool dialog )
@@ -176,7 +175,8 @@ gui_ord GUIGetRow( gui_window * wnd, gui_point * in_pt )
 {
     gui_point pt;
 
-    wnd = wnd;
+    /* unused parameters */ (void)wnd;
+
     pt = *in_pt;
     GUIScaleToScreenRPt( &pt );
     if( pt.y >=0 ) {
@@ -194,8 +194,8 @@ gui_ord GUIGetCol( gui_window *wnd, const char *text, gui_point *in_pt )
 {
     gui_point pt;
 
-    wnd = wnd;
-    text = text;
+    /* unused parameters */ (void)wnd; (void)text;
+
     pt = *in_pt;
     GUIScaleToScreenRPt( &pt );
     if( pt.x >=0 ) {

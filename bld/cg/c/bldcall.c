@@ -239,7 +239,8 @@ static  name    *DoAlphaParmDecl( hw_reg_set reg, cg_sym_handle sym, type_def *t
     instruction         *parm_def;
     type_length         len;
 
-    sym = sym;
+    /* unused parameters */ (void)sym;
+
     offset = 0;
     len = _RoundUp( tipe->length, BASE_SIZE );
     t2->n.size = len;
@@ -756,10 +757,12 @@ static void SplitStructParms( pn *parm_list, call_state *state )
         return;
     tipe = U4;
 #elif _TARGET & _TARG_AXP
-    state = state;
+    /* unused parameters */ (void)state;
+
     tipe = U8;
 #elif _TARGET & _TARG_MIPS
-    state = state;
+    /* unused parameters */ (void)state;
+
     tipe = U4;
 #else
     #error Unknown RISC CPU

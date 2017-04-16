@@ -145,7 +145,8 @@ bool  DRDbgClear( dr_dbg_handle dbg )
     bool                ret;
     int                 i;
 
-    dbg = dbg;
+    /* unused parameters */ (void)dbg;
+
     ret = false;
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i++ ) {
         DWRVMSwap( dbg->sections[i].base, dbg->sections[i].size, &ret );

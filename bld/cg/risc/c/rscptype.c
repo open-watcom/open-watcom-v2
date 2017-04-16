@@ -91,7 +91,8 @@ extern  type_class_def  MapFloat( cg_type type, call_attributes attr )
     floating point return values as floats or structs.
 */
 {
-    attr = attr;
+    /* unused parameters */ (void)attr;
+
     if( type == TY_SINGLE )
         return( FS );
     return( FD );
@@ -112,7 +113,7 @@ extern  type_class_def  MapStruct( type_length length, call_attributes attr ) {
     if( length == 4 )
         return( U4 );
 #else
-    length = length; attr = attr;
+    /* unused parameters */ (void)length; (void)attr;
 #endif
     return( XX );
 }

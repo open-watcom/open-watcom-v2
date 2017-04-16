@@ -71,7 +71,7 @@ typedef struct a_cue {
     char                name[1];
 } a_cue;
 
-typedef struct srch_window {
+struct srch_window {
     void        *rx;
     char        *expr;
     int         max_mod_name;
@@ -83,7 +83,7 @@ typedef struct srch_window {
     a_cue       *file_list;
     bool        ignore_case : 1;
     bool        use_rx      : 1;
-} srch_window;
+};
 
 #define WndSrch( wnd ) ( (srch_window *)WndExtra( wnd ) )
 
@@ -191,7 +191,7 @@ OVL_EXTERN void GlobalModWalker( srch_window *srch )
 
 OVL_EXTERN void NoModWalker( srch_window *srch )
 {
-    srch = srch;
+    /* unused parameters */ (void)srch;
 }
 
 
@@ -234,7 +234,8 @@ static void SrchMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     srch_window *srch = WndSrch( wnd );
     a_window    *new;
 
-    piece=piece;
+    /* unused parameters */ (void)piece;
+
     switch( id ) {
     case MENU_INITIALIZE:
         WndMenuEnable( wnd, MENU_SEARCH_SOURCE, ( row != WND_NO_ROW && row <= srch->num_rows ) );
@@ -314,7 +315,8 @@ static bool SrchEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     srch_window *srch = WndSrch( wnd );
 
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         SrchInit( wnd );

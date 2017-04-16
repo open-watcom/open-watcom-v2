@@ -52,7 +52,8 @@ static void WriteFile( file_handle fh, const char *buff )
 
 static void WriteLog( file_handle fh, const char *buff )
 {
-    fh = fh;
+    /* unused parameters */ (void)fh;
+
     WndDlgTxt( buff );
 }
 

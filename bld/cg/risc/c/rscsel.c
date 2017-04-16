@@ -49,7 +49,8 @@ extern  type_length     TypeClassLength[];
 cost_val ScanCost( sel_handle s_node )
 /************************************/
 {
-    s_node = s_node;
+    /* unused parameters */ (void)s_node;
+
     return( MAX_COST );
 }
 
@@ -57,7 +58,8 @@ cost_val ScanCost( sel_handle s_node )
 cost_val JumpCost( sel_handle s_node )
 /************************************/
 {
-    s_node = s_node;
+    /* unused parameters */ (void)s_node;
+
     return( MAX_COST );
 }
 
@@ -65,7 +67,8 @@ cost_val JumpCost( sel_handle s_node )
 cost_val IfCost( sel_handle s_node, int entries )
 /***********************************************/
 {
-    s_node = s_node; entries = entries;
+    /* unused parameters */ (void)s_node; (void)entries;
+
     return( 0 );
 }
 
@@ -73,11 +76,8 @@ cost_val IfCost( sel_handle s_node, int entries )
 tbl_control *MakeScanTab( select_list *list, signed_32 hi, label_handle other, cg_type tipe, cg_type real_tipe )
 /**************************************************************************************************************/
 {
-    list = list;
-    hi = hi;
-    tipe = tipe;
-    other = other;
-    real_tipe = real_tipe;
+    /* unused parameters */ (void)list; (void)hi; (void)tipe; (void)other; (void)real_tipe;
+
     return( NULL );
 }
 
@@ -85,10 +85,8 @@ tbl_control *MakeScanTab( select_list *list, signed_32 hi, label_handle other, c
 tbl_control *MakeJmpTab( select_list *list, signed_32 lo, signed_32 hi, label_handle other )
 /******************************************************************************************/
 {
-    list = list;
-    lo = lo;
-    hi = hi;
-    other = other;
+    /* unused parameters */ (void)list; (void)lo; (void)hi; (void)other;
+
     return( NULL );
 }
 
@@ -96,17 +94,16 @@ tbl_control *MakeJmpTab( select_list *list, signed_32 lo, signed_32 hi, label_ha
 name    *SelIdx( tbl_control *table, an node )
 /********************************************/
 {
-    node = node;
-    table = table;
+    /* unused parameters */ (void)node; (void)table;
+
     return( NULL );
 }
 
 name    *ScanCall( tbl_control* tbl, name* tmp, type_class_def class )
 /********************************************************************/
 {
-    tbl = tbl;
-    tmp = tmp;
-    class = class;
+    /* unused parameters */ (void)tbl; (void)tmp; (void)class;
+
     return( NULL );
 }
 

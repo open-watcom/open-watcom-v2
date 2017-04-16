@@ -41,6 +41,7 @@ double _matherr( why, who, arg1, arg2, result )
     char *who;
     double *arg1, *arg2, result;
 {
-    why = why; who = who; arg1 = arg1; arg2 = arg2;
+    /* unused parameters */ (void)why; (void)who; (void)arg1; (void)arg2;
+
     return( result );
 }

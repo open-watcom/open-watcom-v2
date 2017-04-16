@@ -55,7 +55,7 @@ unsigned MADIMPENTRY( TraceSize )( void )
 
 void MADIMPENTRY( TraceInit )( mad_trace_data *td, mad_registers const *mr )
 {
-    td = td; mr = mr;
+    /* unused parameters */ (void)td; (void)mr;
 
     /* nothing to do */
 }
@@ -116,7 +116,7 @@ mad_status MADIMPENTRY( TraceSimulate )( mad_trace_data *td, mad_disasm_data *dd
     addr_off            new;
     int                 base;
 
-    td = td;
+    /* unused parameters */ (void)td;
 
     dc = DisasmControl( dd, in );
     out->mips = in->mips;
@@ -169,7 +169,7 @@ mad_status MADIMPENTRY( TraceSimulate )( mad_trace_data *td, mad_disasm_data *dd
 
 void MADIMPENTRY( TraceFini )( mad_trace_data *td )
 {
-    td = td;
+    /* unused parameters */ (void)td;
 
     /* nothing to do */
 }

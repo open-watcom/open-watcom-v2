@@ -957,7 +957,8 @@ dip_status DIPIMPENTRY( TypeBase )(imp_image_handle *ii, imp_type_handle *it,
     dip_status  ret;
     typeinfo    typeld;
 
-    lc = lc; ll = ll;
+    /* unused parameters */ (void)lc; (void)ll;
+
     PushLoad( &typeld );
     *base = *it;
     ret = LoadType( ii, it->im, it->t.entry );
@@ -1258,7 +1259,8 @@ dip_status SymHdl2CstValue( imp_image_handle *ii, imp_sym_handle *is, void *d )
 dip_status SymHdl2CstType( imp_image_handle *ii, imp_sym_handle *is,
                         imp_type_handle *it )
 {
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     it->im = is->im;
     it->t = is->u.typ.h;
     it->f.all = 0;
@@ -1268,7 +1270,8 @@ dip_status SymHdl2CstType( imp_image_handle *ii, imp_sym_handle *is,
 dip_status SymHdl2TypType( imp_image_handle *ii, imp_sym_handle *is,
                         imp_type_handle *it )
 {
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     it->im = is->im;
     it->t = is->u.typ.t;
     it->f.all = 0;
@@ -1827,7 +1830,8 @@ do_walk:
 imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *ii,
                                 imp_type_handle *it )
 {
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     return( it->im );
 }
 
@@ -1873,7 +1877,8 @@ missing:
 int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *it1,
                         imp_type_handle *it2 )
 {
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     if( it1->im != it2->im )
         return( it1->im - it2->im );
     if( it1->t.entry != it2->t.entry )
@@ -1885,28 +1890,30 @@ int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *it1,
 size_t DIPIMPENTRY( TypeName )( imp_image_handle *ii, imp_type_handle *it,
                 unsigned num, symbol_type *tag, char *buff, size_t buff_size )
 {
+    /* unused parameters */ (void)ii; (void)it; (void)num; (void)tag; (void)buff; (void)buff_size;
+
     //NYI: stub implementation
-    ii = ii; it = it; num = num; tag = tag; buff = buff; buff_size = buff_size;
     return( 0 );
 }
 
 dip_status DIPIMPENTRY( TypeAddRef )( imp_image_handle *ii, imp_type_handle *it )
 {
-    ii=ii;
-    it=it;
+    /* unused parameters */ (void)ii; (void)it;
+
     return(DS_OK);
 }
 
 dip_status DIPIMPENTRY( TypeRelease )( imp_image_handle *ii, imp_type_handle *it )
 {
-    ii=ii;
-    it=it;
+    /* unused parameters */ (void)ii; (void)it;
+
     return(DS_OK);
 }
 
 dip_status DIPIMPENTRY( TypeFreeAll )( imp_image_handle *ii )
 {
-    ii=ii;
+    /* unused parameters */ (void)ii;
+
     return(DS_OK);
 }
 

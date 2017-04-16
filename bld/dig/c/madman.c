@@ -374,18 +374,17 @@ static unsigned DUMMYIMPENTRY( StateSize )( void )
 
 static void DUMMYIMPENTRY( StateInit )( imp_mad_state_data *msd )
 {
-    msd = msd;
+    /* unused parameters */ (void)msd;
 }
 
 static void DUMMYIMPENTRY( StateSet )( imp_mad_state_data *msd )
 {
-    msd = msd;
+    /* unused parameters */ (void)msd;
 }
 
 static void DUMMYIMPENTRY( StateCopy )( const imp_mad_state_data *src, imp_mad_state_data *dst )
 {
-    src = src;
-    dst = dst;
+    /* unused parameters */ (void)src; (void)dst;
 }
 
 mad_state_data  *MADStateCreate( void )
@@ -514,7 +513,8 @@ size_t MADNameDescription( dig_mad mad, char *buff, size_t buff_size )
 
 static void DUMMYIMPENTRY( AddrAdd )( address *a, long b, mad_address_format af )
 {
-    af = af;
+    /* unused parameters */ (void)af;
+
     a->mach.offset += b;
 }
 
@@ -525,7 +525,8 @@ void            MADAddrAdd( address *a, long b, mad_address_format af )
 
 static int DUMMYIMPENTRY( AddrComp )( const address *a, const address *b, mad_address_format af )
 {
-    af = af;
+    /* unused parameters */ (void)af;
+
     if( a->mach.offset < b->mach.offset )
         return( -1 );
     if( a->mach.offset >  b->mach.offset )
@@ -540,7 +541,8 @@ int MADAddrComp( const address *a, const address *b, mad_address_format af )
 
 static long DUMMYIMPENTRY( AddrDiff )( const address *a, const address *b, mad_address_format af )
 {
-    af = af;
+    /* unused parameters */ (void)af;
+
     return( a->mach.offset - b->mach.offset );
 }
 
@@ -551,10 +553,7 @@ long            MADAddrDiff( const address *a, const address *b, mad_address_for
 
 static mad_status DUMMYIMPENTRY( AddrMap )( addr_ptr *a, const addr_ptr *map, const addr_ptr *real, const mad_registers *mr )
 {
-    a = a;
-    map = map;
-    real = real;
-    mr = mr;
+    /* unused parameters */ (void)a; (void)map; (void)real; (void)mr;
     return( MS_FAIL );
 }
 
@@ -565,7 +564,8 @@ mad_status      MADAddrMap( addr_ptr *a, const addr_ptr *map, const addr_ptr *re
 
 static mad_status DUMMYIMPENTRY( AddrFlat )( const mad_registers *mr )
 {
-    mr = mr;
+    /* unused parameters */ (void)mr;
+
     return( MS_FAIL );
 }
 
@@ -576,9 +576,8 @@ mad_status      MADAddrFlat( const mad_registers *mr )
 
 static mad_status DUMMYIMPENTRY( AddrInterrupt )( const addr_ptr *a, unsigned size, const mad_registers *mr )
 {
-    a = a;
-    size = size;
-    mr = mr;
+    /* unused parameters */ (void)a; (void)size; (void)mr;
+
     return( MS_FAIL );
 }
 
@@ -593,9 +592,7 @@ mad_status      MADAddrInterrupt( const addr_ptr *a, unsigned size, const mad_re
 
 static walk_result DUMMYIMPENTRY( TypeWalk )( mad_type_kind tk, MI_TYPE_WALKER *wk, void *d )
 {
-    tk = tk;
-    wk = wk;
-    d  = d;
+    /* unused parameters */ (void)tk; (void)wk; (void)d;
     return( WR_CONTINUE );
 }
 
@@ -622,7 +619,8 @@ walk_result     MADTypeWalk( mad_type_kind tk, MAD_TYPE_WALKER *wk, void *d )
 
 static mad_string DUMMYIMPENTRY( TypeName )( mad_type_handle th )
 {
-    th = th;
+    /* unused parameters */ (void)th;
+
     return( MAD_MSTR_NIL );
 }
 
@@ -633,7 +631,8 @@ mad_string      MADTypeName( mad_type_handle th )
 
 static mad_radix DUMMYIMPENTRY( TypePreferredRadix )( mad_type_handle th )
 {
-    th = th;
+    /* unused parameters */ (void)th;
+
     return( 0 );
 }
 
@@ -644,7 +643,8 @@ mad_radix       MADTypePreferredRadix( mad_type_handle th )
 
 static mad_type_handle DUMMYIMPENTRY( TypeForDIPType )( const dip_type_info *ti )
 {
-    ti = ti;
+    /* unused parameters */ (void)ti;
+
     return( MAD_NIL_TYPE_HANDLE );
 }
 
@@ -655,7 +655,8 @@ mad_type_handle MADTypeForDIPType( const dip_type_info *ti )
 
 static void DUMMYIMPENTRY( TypeInfo )( mad_type_handle th, mad_type_info *ti )
 {
-    th = th;
+    /* unused parameters */ (void)th;
+
     ti->b.kind = MTK_CUSTOM;
     ti->b.bits = 0;
 }
@@ -728,10 +729,8 @@ mad_status      MADTypeInfoForHost( mad_type_kind tk, int size, mad_type_info *m
 
 static mad_type_handle DUMMYIMPENTRY( TypeDefault )( mad_type_kind tk, mad_address_format af, const mad_registers *mr, const address *a )
 {
-    tk = tk;
-    af = af;
-    mr = mr;
-    a  = a;
+    /* unused parameters */ (void)tk; (void)af; (void)mr; (void)a;
+
     return( 0 );
 }
 
@@ -743,7 +742,8 @@ mad_type_handle MADTypeDefault( mad_type_kind tk, mad_address_format af, const m
 
 static mad_status DUMMYIMPENTRY( TypeConvert )( const mad_type_info *ti_src, const void *src, const mad_type_info *ti_dst, void *dst, addr_seg seg )
 {
-    ti_src = ti_src; src = src; ti_dst = ti_dst; dst = dst; seg = seg;
+    /* unused parameters */ (void)ti_src; (void)src; (void)ti_dst; (void)dst; (void)seg;
+
     return( MS_UNSUPPORTED );
 }
 
@@ -960,7 +960,7 @@ static void ExtractBits( dig_size_bits pos, dig_size_bits len, const void *src, 
     int                 bit_shift;
 
 #if !defined( __BIG_ENDIAN__ )
-    dst_size = dst_size;
+    /* unused parameters */ (void)dst_size;
 #endif
     src = (unsigned_8 *)src + BYTEIDX( pos );
     bit_shift = BITIDX( pos );
@@ -1194,11 +1194,8 @@ mad_status      MADTypeConvert( const mad_type_info *in_t, const void *in_d, con
 
 static mad_status DUMMYIMPENTRY( TypeToString )( mad_radix radix, const mad_type_info *mti, const void *d, char *buff, size_t *buff_size_p )
 {
-    radix = radix;
-    mti = mti;
-    d = d;
-    buff_size_p = buff_size_p;
-    buff = buff;
+    /* unused parameters */ (void)radix; (void)mti; (void)d; (void)buff_size_p; (void)buff;
+
     return( MS_UNSUPPORTED );
 }
 
@@ -1490,7 +1487,8 @@ unsigned        MADRegistersSize( void )
 
 static mad_status DUMMYIMPENTRY( RegistersHost )( mad_registers *mr )
 {
-    mr = mr;
+    /* unused parameters */ (void)mr;
+
     return( MS_OK );
 }
 
@@ -1501,7 +1499,8 @@ mad_status      MADRegistersHost( mad_registers *mr )
 
 static mad_status DUMMYIMPENTRY( RegistersTarget )( mad_registers *mr )
 {
-    mr = mr;
+    /* unused parameters */ (void)mr;
+
     return( MS_OK );
 }
 
@@ -1512,9 +1511,8 @@ mad_status      MADRegistersTarget( mad_registers *mr )
 
 static walk_result DUMMYIMPENTRY( RegSetWalk )( mad_type_kind tk, MI_REG_SET_WALKER *wk, void *d )
 {
-    tk = tk;
-    wk = wk;
-    d  = d;
+    /* unused parameters */ (void)tk; (void)wk; (void)d;
+
     return( WR_CONTINUE );
 }
 
@@ -1541,7 +1539,8 @@ walk_result     MADRegSetWalk( mad_type_kind tk, MAD_REG_SET_WALKER *wk, void *d
 
 static mad_string DUMMYIMPENTRY( RegSetName )( const mad_reg_set_data *rsd )
 {
-    rsd = rsd;
+    /* unused parameters */ (void)rsd;
+
     return( MAD_MSTR_NIL );
 }
 
@@ -1552,7 +1551,8 @@ mad_string      MADRegSetName( const mad_reg_set_data *rsd )
 
 static size_t DUMMYIMPENTRY( RegSetLevel )( const mad_reg_set_data *rsd, char *buff, size_t buff_size )
 {
-    rsd = rsd;
+    /* unused parameters */ (void)rsd;
+
     if( buff_size > 0 )
         buff[0] = '\0';
     return( 0 );
@@ -1565,7 +1565,8 @@ size_t MADRegSetLevel( const mad_reg_set_data *rsd, char *buff, size_t buff_size
 
 static unsigned DUMMYIMPENTRY( RegSetDisplayGrouping )( const mad_reg_set_data *rsd )
 {
-    rsd = rsd;
+    /* unused parameters */ (void)rsd;
+
     return( 0 );
 }
 
@@ -1576,14 +1577,8 @@ unsigned        MADRegSetDisplayGrouping( const mad_reg_set_data *rsd )
 
 static mad_status DUMMYIMPENTRY( RegSetDisplayGetPiece )( const mad_reg_set_data *rsd, const mad_registers *mr, unsigned piece, const char **descript_p, size_t *max_descript_p, const mad_reg_info **reg, mad_type_handle *disp_type, size_t *max_value )
 {
-    rsd = rsd;
-    mr = mr;
-    piece = piece;
-    descript_p = descript_p;
-    max_descript_p = max_descript_p;
-    reg = reg;
-    disp_type = disp_type;
-    max_value = max_value;
+    /* unused parameters */ (void)rsd; (void)mr; (void)piece; (void)descript_p; (void)max_descript_p; (void)reg; (void)disp_type; (void)max_value;
+
     return( MS_FAIL );
 }
 
@@ -1595,8 +1590,8 @@ mad_status      MADRegSetDisplayGetPiece( const mad_reg_set_data *rsd, const mad
 
 static mad_status DUMMYIMPENTRY( RegSetDisplayModify )( const mad_reg_set_data *rsd, const mad_reg_info *reg, const mad_modify_list **possible, int *num_possible )
 {
-    rsd = rsd;
-    reg = reg;
+    /* unused parameters */ (void)rsd; (void)reg;
+
     *possible = NULL;
     *num_possible = 0;
     return( MS_FAIL );
@@ -1610,7 +1605,8 @@ mad_status      MADRegSetDisplayModify( const mad_reg_set_data *rsd, const mad_r
 
 static const mad_toggle_strings *DUMMYIMPENTRY( RegSetDisplayToggleList )( const mad_reg_set_data *rsd )
 {
-    rsd = rsd;
+    /* unused parameters */ (void)rsd;
+
     return( EmptyToggleList );
 }
 
@@ -1621,9 +1617,8 @@ const mad_toggle_strings *MADRegSetDisplayToggleList( const mad_reg_set_data *rs
 
 static unsigned DUMMYIMPENTRY( RegSetDisplayToggle )( const mad_reg_set_data *rsd, unsigned on, unsigned off )
 {
-    rsd = rsd;
-    on = on;
-    off = off;
+    /* unused parameters */ (void)rsd; (void)on; (void)off;
+
     return( 0 );
 }
 
@@ -1634,10 +1629,8 @@ unsigned        MADRegSetDisplayToggle( const mad_reg_set_data *rsd, unsigned on
 
 static mad_status DUMMYIMPENTRY( RegModified )( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_registers *old, const mad_registers *curr )
 {
-    rsd = rsd;
-    ri = ri;
-    old = old;
-    curr = curr;
+    /* unused parameters */ (void)rsd; (void)ri; (void)old; (void)curr;
+
     return( MS_OK );
 }
 
@@ -1648,9 +1641,8 @@ mad_status      MADRegModified( const mad_reg_set_data *rsd, const mad_reg_info 
 
 static mad_status DUMMYIMPENTRY( RegInspectAddr )( const mad_reg_info *ri, const mad_registers *mr, address *a )
 {
-    ri = ri;
-    mr = mr;
-    a = a;
+    /* unused parameters */ (void)ri; (void)mr; (void)a;
+
     return( MS_FAIL );
 }
 
@@ -1661,10 +1653,8 @@ mad_status      MADRegInspectAddr( const mad_reg_info *ri, const mad_registers *
 
 static walk_result DUMMYIMPENTRY( RegWalk )( const mad_reg_set_data *rsd, const mad_reg_info *ri, MI_REG_WALKER *wk, void *d )
 {
-    rsd = rsd;
-    ri = ri;
-    wk = wk;
-    d = d;
+    /* unused parameters */ (void)rsd; (void)ri; (void)wk; (void)d;
+
     return( WR_CONTINUE );
 }
 
@@ -1789,8 +1779,8 @@ size_t MADRegFullName( const mad_reg_info *ri, const char *op, char *buff, size_
 
 static void DUMMYIMPENTRY( RegSpecialGet )( mad_special_reg sr, const mad_registers *mr, addr_ptr *a )
 {
-    sr = sr;
-    mr = mr;
+    /* unused parameters */ (void)sr; (void)mr;
+
     a->segment = 0;
     a->offset = 0;
 }
@@ -1802,9 +1792,7 @@ void            MADRegSpecialGet( mad_special_reg sr, const mad_registers *mr, a
 
 static void DUMMYIMPENTRY( RegSpecialSet )( mad_special_reg sr, mad_registers *mr, const addr_ptr *a )
 {
-    sr = sr;
-    mr = mr;
-    a = a;
+    /* unused parameters */ (void)sr; (void)mr; (void)a;
 }
 
 void            MADRegSpecialSet( mad_special_reg sr, mad_registers *mr, const addr_ptr *a )
@@ -1814,11 +1802,8 @@ void            MADRegSpecialSet( mad_special_reg sr, mad_registers *mr, const a
 
 static size_t DUMMYIMPENTRY( RegSpecialName )( mad_special_reg sr, const mad_registers *mr, mad_address_format af, char *buff, size_t buff_size )
 {
-    sr = sr;
-    mr = mr;
-    af = af;
-    buff_size = buff_size;
-    buff = buff;
+    /* unused parameters */ (void)sr; (void)mr; (void)af; (void)buff_size; (void)buff;
+
     return( 0 );
 }
 
@@ -1829,7 +1814,8 @@ size_t MADRegSpecialName( mad_special_reg sr, const mad_registers *mr, mad_addre
 
 static const mad_reg_info *DUMMYIMPENTRY( RegFromContextItem )( context_item ci )
 {
-    ci = ci;
+    /* unused parameters */ (void)ci;
+
     return( NULL );
 }
 
@@ -1840,10 +1826,7 @@ const mad_reg_info *MADRegFromContextItem( context_item ci )
 
 static void DUMMYIMPENTRY( RegUpdateStart )( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
-    mr = mr;
-    flags = flags;
-    bit_start = bit_start;
-    bit_size = bit_size;
+    /* unused parameters */ (void)mr; (void)flags; (void)bit_start; (void)bit_size;
 }
 
 void            MADRegUpdateStart( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
@@ -1853,10 +1836,7 @@ void            MADRegUpdateStart( mad_registers *mr, unsigned flags, unsigned b
 
 static void DUMMYIMPENTRY( RegUpdateEnd )( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
-    mr = mr;
-    flags = flags;
-    bit_start = bit_start;
-    bit_size = bit_size;
+    /* unused parameters */ (void)mr; (void)flags; (void)bit_start; (void)bit_size;
 }
 
 void            MADRegUpdateEnd( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
@@ -1892,11 +1872,8 @@ const mad_string        *MADCallTypeList( void )
 
 static mad_status DUMMYIMPENTRY( CallBuildFrame )( mad_string ct, address ret, address rtn, const mad_registers *in, mad_registers *out )
 {
-    ct = ct;
-    ret = ret;
-    rtn = rtn;
-    in = in;
-    out = out;
+    /* unused parameters */ (void)ct; (void)ret; (void)rtn; (void)in; (void)out;
+
     return( MS_UNSUPPORTED );
 }
 
@@ -1907,8 +1884,8 @@ mad_status              MADCallBuildFrame( mad_string ct, address ret, address r
 
 static const mad_reg_info *DUMMYIMPENTRY( CallReturnReg )( mad_string ct, address a )
 {
-    ct = ct;
-    a = a;
+    /* unused parameters */ (void)ct; (void)a;
+
     return( NULL );
 }
 
@@ -1921,8 +1898,8 @@ static const mad_reg_info **DUMMYIMPENTRY( CallParmRegList )( mad_string ct, add
 {
     static const mad_reg_info *list[] = { NULL };
 
-    ct = ct;
-    a = a;
+    /* unused parameters */ (void)ct; (void)a;
+
     return( list );
 }
 
@@ -1943,8 +1920,8 @@ unsigned                MADCallUpStackSize( void )
 
 static mad_status DUMMYIMPENTRY( CallUpStackInit )( mad_call_up_data *cud, const mad_registers *mr )
 {
-    cud = cud;
-    mr = mr;
+    /* unused parameters */ (void)cud; (void)mr;
+
     return( MS_OK );
 }
 
@@ -1955,15 +1932,8 @@ mad_status              MADCallUpStackInit( mad_call_up_data *cud, const mad_reg
 
 static mad_status DUMMYIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud, address const *start, unsigned rtn_characteristics, long return_disp, mad_registers const *in, address *execution, address *frame, address *stack, mad_registers **out )
 {
-    cud = cud;
-    start = start;
-    rtn_characteristics = rtn_characteristics;
-    return_disp = return_disp;
-    in = in;
-    execution = execution;
-    frame = frame;
-    stack = stack;
-    out = out;
+    /* unused parameters */ (void)cud; (void)start; (void)rtn_characteristics; (void)return_disp; (void)in; (void)execution; (void)frame; (void)stack; (void)out;
+
     return( MS_FAIL );
 }
 
@@ -2001,7 +1971,8 @@ unsigned                MADDisasmNameMax( void )
 
 static mad_status DUMMYIMPENTRY( Disasm )( mad_disasm_data *dd, address *a, int adj )
 {
-    dd = dd;
+    /* unused parameters */ (void)dd;
+
     a->mach.offset += adj;
     return( MS_OK );
 }
@@ -2013,8 +1984,8 @@ mad_status              MADDisasm( mad_disasm_data *dd, address *a, int adj )
 
 static size_t DUMMYIMPENTRY( DisasmFormat )( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radix, char *buff, size_t buff_size )
 {
-    dd = dd;
-    radix = radix;
+    /* unused parameters */ (void)dd; (void)radix;
+
     if( (dp & MDP_INSTRUCTION) == 0 )
         return( 0 );
     if( buff_size > 0 ) {
@@ -2034,7 +2005,8 @@ size_t MADDisasmFormat( mad_disasm_data *dd, mad_disasm_piece dp, mad_radix radi
 
 static unsigned DUMMYIMPENTRY( DisasmInsSize )( mad_disasm_data *dd )
 {
-    dd = dd;
+    /* unused parameters */ (void)dd;
+
     return( 1 );
 }
 
@@ -2045,7 +2017,8 @@ unsigned    MADDisasmInsSize( mad_disasm_data *dd )
 
 static mad_status DUMMYIMPENTRY( DisasmInsUndoable )( mad_disasm_data *dd )
 {
-    dd = dd;
+    /* unused parameters */ (void)dd;
+
     return( MS_FAIL );
 }
 
@@ -2056,8 +2029,8 @@ mad_status  MADDisasmInsUndoable( mad_disasm_data *dd )
 
 static mad_disasm_control DUMMYIMPENTRY( DisasmControl )( mad_disasm_data *dd, const mad_registers *mr )
 {
-    dd = dd;
-    mr = mr;
+    /* unused parameters */ (void)dd; (void)mr;
+
     return( MDC_OPER | MDC_TAKEN );
 }
 
@@ -2068,9 +2041,8 @@ mad_disasm_control      MADDisasmControl( mad_disasm_data *dd, const mad_registe
 
 static mad_status DUMMYIMPENTRY( DisasmInsNext )( mad_disasm_data *dd, const mad_registers *mr, address *a )
 {
-    dd = dd;
-    mr = mr;
-    a = a;
+    /* unused parameters */ (void)dd; (void)mr; (void)a;
+
     return( MS_FAIL );
 }
 
@@ -2081,11 +2053,8 @@ mad_status              MADDisasmInsNext( mad_disasm_data *dd, const mad_registe
 
 static mad_status DUMMYIMPENTRY( DisasmInspectAddr )( const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a )
 {
-    start = start;
-    len = len;
-    radix = radix;
-    mr = mr;
-    a = a;
+    /* unused parameters */ (void)start; (void)len; (void)radix; (void)mr; (void)a;
+
     return( MS_FAIL );
 }
 
@@ -2096,10 +2065,8 @@ mad_status              MADDisasmInspectAddr( const char *start, unsigned len, m
 
 static walk_result DUMMYIMPENTRY( DisasmMemRefWalk )( mad_disasm_data *dd, MI_MEMREF_WALKER *wk, const mad_registers *mr, void *d )
 {
-    dd = dd;
-    wk = wk;
-    mr = mr;
-    d  = d;
+    /* unused parameters */ (void)dd; (void)wk; (void)mr; (void)d;
+
     return( WR_CONTINUE );
 }
 
@@ -2136,8 +2103,8 @@ const mad_toggle_strings        *MADDisasmToggleList( void )
 
 static unsigned DUMMYIMPENTRY( DisasmToggle )( unsigned on, unsigned off )
 {
-    on = on;
-    off = off;
+    /* unused parameters */ (void)on; (void)off;
+
     return( 0 );
 }
 
@@ -2163,8 +2130,7 @@ unsigned        MADTraceSize( void )
 
 static void DUMMYIMPENTRY( TraceInit )( mad_trace_data *td, const mad_registers *mr )
 {
-    td = td;
-    mr = mr;
+    /* unused parameters */ (void)td; (void)mr;
 }
 
 void            MADTraceInit( mad_trace_data *td, const mad_registers *mr )
@@ -2174,11 +2140,8 @@ void            MADTraceInit( mad_trace_data *td, const mad_registers *mr )
 
 static mad_trace_how DUMMYIMPENTRY( TraceOne )( mad_trace_data *td, mad_disasm_data *dd, mad_trace_kind tk, const mad_registers *mr, address *a )
 {
-    td = td;
-    dd = dd;
-    tk = tk;
-    mr = mr;
-    a  = a;
+    /* unused parameters */ (void)td; (void)dd; (void)tk; (void)mr; (void)a;
+
     return( MTRH_STOP );
 }
 
@@ -2189,8 +2152,8 @@ mad_trace_how   MADTraceOne( mad_trace_data *td, mad_disasm_data *dd, mad_trace_
 
 static mad_status DUMMYIMPENTRY( TraceHaveRecursed )( address a, const mad_registers *mr )
 {
-    a = a;
-    mr = mr;
+    /* unused parameters */ (void)a; (void)mr;
+
     return( MS_FAIL );
 }
 
@@ -2201,10 +2164,8 @@ mad_status      MADTraceHaveRecursed( address a, const mad_registers *mr )
 
 static mad_status DUMMYIMPENTRY( TraceSimulate )( mad_trace_data *td, mad_disasm_data *dd, const mad_registers *in, mad_registers *out )
 {
-    td = td;
-    dd = dd;
-    in = in;
-    out=out;
+    /* unused parameters */ (void)td; (void)dd; (void)in; (void)out;
+
     return( MS_OK );
 }
 
@@ -2215,7 +2176,7 @@ mad_status      MADTraceSimulate( mad_trace_data *td, mad_disasm_data *dd, const
 
 static void DUMMYIMPENTRY( TraceFini )( mad_trace_data *td )
 {
-    td = td;
+    /* unused parameters */ (void)td;
 }
 
 void            MADTraceFini( mad_trace_data *td )
@@ -2225,7 +2186,7 @@ void            MADTraceFini( mad_trace_data *td )
 
 static mad_status DUMMYIMPENTRY( UnexpectedBreak )( mad_registers *mr, char *buff, size_t *buff_size_p )
 {
-    mr = mr;
+    /* unused parameters */ (void)mr;
 
     if( *buff_size_p > 0 )
         *buff = '\0';

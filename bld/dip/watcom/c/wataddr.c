@@ -95,7 +95,7 @@ void AdjustAddrs( section_info *inf )
 
     AddrModCache.ii = NULL;
     SegBlockCache.ii = NULL;
-    if( inf->addr_info == NULL ) 
+    if( inf->addr_info == NULL )
         return;
     place.sect_id = inf->sect_id;
     place.mach.segment = 0xffff;
@@ -296,7 +296,8 @@ unsigned AddrInfoSplit( info_block *blk, section_info *inf )
     seg_info    *next;
     seg_info    *end;
 
-    inf = inf;
+    /* unused parameters */ (void)inf;
+
     start = GET_SEG_INFO( blk, 0 );
     end = GET_SEG_INFO( blk, blk->size );
     for( seg = start; ((byte *)end - (byte *)seg) >= sizeof( seg_info ); seg = next ) {
@@ -311,7 +312,8 @@ unsigned AddrInfoSplit( info_block *blk, section_info *inf )
 
 void AddrInfoFini( section_info *inf )
 {
-    inf = inf;
+    /* unused parameters */ (void)inf;
+
     AddrModCache.ii = NULL;
     SegBlockCache.ii = NULL;
 }

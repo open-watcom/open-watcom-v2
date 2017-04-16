@@ -48,8 +48,9 @@
 imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *ii, imp_sym_handle *is )
 /*******************************************************************************/
 {
+    /* unused parameters */ (void)ii;
+
     /* Return the module that the implementation symbol handle comes from. */
-    ii = ii;
     return( is->im );
 }
 
@@ -83,7 +84,8 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *ii,
     size_t      demangled_len;
     size_t      len = 0;
 
-    lc = lc;
+    /* unused parameters */ (void)lc;
+
 //TODO: what's lc for?
     DRSetDebug( ii->dwarf->handle ); /* must do at each call into dwarf */
     switch( sn ) {
@@ -204,7 +206,8 @@ static bool AMod( drmem_hdl sym, void *_d, dr_search_context *cont )
     addrsym_info    info;
     bool            is_segment;
 
-    cont = cont;
+    /* unused parameters */ (void)cont;
+
 //    ret = true;
     is_segment = IMH2MODI( d->ii, d->im )->is_segment;
     if( DRGetLowPc( sym, &offset) ) {
@@ -423,11 +426,12 @@ dip_status DIPIMPENTRY( SymValue )( imp_image_handle *ii,
 /********************************************************************/
 {
     uint_32     value;
+
+    /* unused parameters */ (void)ii; (void)ic;
+
     /* Copy the value of a constant symbol into 'buff'. You can get the
      * size required by doing a SymType followed by a TypeInfo.
      */
-    ii = ii;
-    ic = ic;
     if( is->sclass != SYM_ENUM ) {
         return( DS_FAIL );
     }
@@ -461,7 +465,8 @@ dip_status DIPIMPENTRY( SymInfo )( imp_image_handle *ii,
     uint_32         num2;
     dr_ptr          addr_class;
 
-    lc = lc;
+    /* unused parameters */ (void)lc;
+
     DRSetDebug( ii->dwarf->handle );    /* must do at each call into DWARF */
     if( is->state == DF_NOT ) {
         DRSetDebug( ii->dwarf->handle ); /* must do at each interface */
@@ -577,7 +582,8 @@ static bool ARet( drmem_hdl var, int index, void *_var_ptr )
     bool        cont;
     size_t      len;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     cont = true;
     if( DRIsArtificial( var ) ) {
         len = DRGetNameBuff( var, name, sizeof( name ) );
@@ -650,7 +656,8 @@ static bool AThis( drmem_hdl var, int index, void *_var_ptr )
     bool        ret;
     size_t      len;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     ret = true;
     len =  DRGetNameBuff( var, name, sizeof( name ) );
     if( len == sizeof( name ) ) {
@@ -847,7 +854,8 @@ static bool InBlk( drmem_hdl blk, int depth, void *_ctl )
     uint_32         hi;
     scope_node      *new;
 
-    depth = depth;
+    /* unused parameters */ (void)depth;
+
     lo = 0; //quick fix for labels
     hi = 0;
     DRGetLowPc( blk, &lo );
@@ -1134,7 +1142,8 @@ static bool ASym( drmem_hdl var, int index, void *_df )
     imp_sym_handle  *is;
     dr_dbg_handle   saved;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     is = df->is;
     is->sclass = SYM_VAR;
     is->im = df->com.im;
@@ -1180,7 +1189,8 @@ static bool AModSym( drmem_hdl var, int index, void *_df )
     dr_tag_type     sc;
     dr_dbg_handle   saved;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     sc = DRGetTagType( var );
     if( sc == DR_TAG_NAMESPACE ) {
         DRWalkBlock( var, df->com.what, AModSym, (void *)df );
@@ -1211,7 +1221,8 @@ static bool ASymLookup( drmem_hdl var, int index, void *_df )
     imp_sym_handle  *is;
     size_t          len;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     len = DRGetNameBuff( var, df->buff, df->len );
     if( len == df->len
       && df->comp( df->buff, df->li->name.start, df->li->name.len ) == 0 ) {
@@ -1408,7 +1419,8 @@ static walk_result  WalkMyLDSyms( imp_image_handle *ii, imp_mod_handle im, void 
 {
     blk_wlk     *df = _df;
 
-    ii=ii;
+    /* unused parameters */ (void)ii;
+
     df->wlk.com.im = im;
     WalkModSymList( df, &ASym, im );
     return( df->wlk.wr );
@@ -1493,7 +1505,8 @@ walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle      *ii,
                                            void                 *d )
 /******************************************************************/
 {
-    lc = lc;
+    /* unused parameters */ (void)lc;
+
     return( DFWalkSymList( ii, ss, source, wk, is, d ) );
 }
 
@@ -1667,7 +1680,8 @@ extern search_result   DoLookupSym( imp_image_handle *ii,
     char                buff[256];
     bool                cont;
 
-    lc = lc;
+    /* unused parameters */ (void)lc;
+
     if( *(unsigned_8 *)li->name.start == SH_ESCAPE ) {
         CollectSymHdl( li->name.start, DCSymCreate( ii, d ) );
         return( SR_EXACT );
@@ -1775,7 +1789,8 @@ int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
      */
     long    diff;
 
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     diff = is1->sym - is2->sym;
     return( diff );
 }
@@ -1784,8 +1799,8 @@ int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
 dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *ii, imp_sym_handle *is )
 /*****************************************************************************/
 {
-    ii = ii;
-    is = is;
+    /* unused parameters */ (void)ii; (void)is;
+
     return( DS_OK );
 }
 
@@ -1793,8 +1808,8 @@ dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *ii, imp_sym_handle *is )
 dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *ii, imp_sym_handle *is )
 /******************************************************************************/
 {
-    ii = ii;
-    is = is;
+    /* unused parameters */ (void)ii; (void)is;
+
     return( DS_OK );
 }
 
@@ -1802,6 +1817,7 @@ dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *ii, imp_sym_handle *is )
 dip_status DIPIMPENTRY( SymFreeAll )( imp_image_handle *ii )
 /**********************************************************/
 {
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     return( DS_OK );
 }

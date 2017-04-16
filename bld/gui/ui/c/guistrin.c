@@ -44,7 +44,8 @@ gui_ord GUIGetStringPos( gui_window *wnd, gui_ord indent, const char *string, gu
     gui_coord start;
     gui_coord mouse;
 
-    wnd = wnd;
+    /* unused parameters */ (void)wnd; (void)mouse_x;
+
     start.x = indent ;
     GUIScaleToScreenR( &start );
     mouse.x = mouse_x;

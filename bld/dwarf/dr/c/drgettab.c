@@ -52,7 +52,8 @@ static bool GrabLineAddr( drmem_hdl abbrev, drmem_hdl mod, mod_scan_info *x, voi
  * the start of a compile unit die.  This picks out the line number info.
  * offset, and stores it in data */
 {
-    x = x;      // to avoid a warning
+    /* unused parameters */ (void)x;
+
     if( DWRScanForAttrib( &abbrev, &mod, DW_AT_stmt_list ) ) {
         *((unsigned_32 *)data) = DWRReadConstant( abbrev, mod );
     }

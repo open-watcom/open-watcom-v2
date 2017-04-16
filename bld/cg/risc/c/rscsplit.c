@@ -557,10 +557,11 @@ extern  instruction     *rBIN2QUAD( instruction *ins ) {
     return( doPromote( ins, new ) );
 }
 
-extern  bool    UnChangeable( instruction *ins ) {
-/************************************************/
+extern  bool    UnChangeable( instruction *ins )
+/**********************************************/
+{
+    /* unused parameters */ (void)ins;
 
-    ins = ins;
     return( false );
 }
 

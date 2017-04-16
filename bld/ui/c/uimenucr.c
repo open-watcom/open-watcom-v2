@@ -35,5 +35,5 @@
 
 extern void uimenucurr( MENUITEM *menu )
 {
-    menu = menu;
+    /* unused parameters */ (void)menu;
 }

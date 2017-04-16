@@ -69,7 +69,7 @@ bool     IsTrickyPointerConv( instruction *ins )
         }
     }
 #else
-    ins = ins;
+    /* unused parameters */ (void)ins;
 #endif
     return( false );
 }
@@ -180,13 +180,13 @@ static  instruction *StraightLine( instruction *ins, tn fold, bool is_true )
     name        *result;
 
     result = TGetName( fold );
-    if( result == NULL ) 
+    if( result == NULL )
         return( NULL );
-    if( result->n.class != N_CONSTANT ) 
+    if( result->n.class != N_CONSTANT )
         return( NULL );
-    if( result->c.const_type != CONS_ABSOLUTE ) 
+    if( result->c.const_type != CONS_ABSOLUTE )
         return( NULL );
-    if( result->c.lo.int_value == 0 ) 
+    if( result->c.lo.int_value == 0 )
         is_true = !is_true;
     if( is_true ) {
         _SetBlockIndex( ins, _TrueIndex(ins), _TrueIndex(ins) );

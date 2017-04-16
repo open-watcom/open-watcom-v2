@@ -49,7 +49,8 @@ int FileSysNeedsCR( int handle )
  */
 void PushDirectory( const char *orig )
 {
-    orig = orig;
+    /* unused parameters */ (void)orig;
+
     oldPath[0] = '\0';
     GetCWD2( oldPath, FILENAME_MAX );
 
@@ -148,7 +149,8 @@ void ScreenPage( int page )
  */
 vi_rc ChangeDrive( int drive )
 {
-    drive = drive;
+    /* unused parameters */ (void)drive;
+
     return( ERR_NO_ERR );
 
 }/* ChangeDrive */
@@ -178,7 +180,8 @@ void TurnOffCapsLock( void )
  */
 drive_type DoGetDriveType( int drv )
 {
-    drv = drv;
+    /* unused parameters */ (void)drv;
+
     return( DRIVE_TYPE_NONE );
 
 } /* DoGetDriveType */

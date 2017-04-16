@@ -143,7 +143,8 @@ void DIGCLIENTRY( Close )( dig_fhandle fid )
 void DIGCLIENTRY( Remove )( const char * name, dig_open mode )
 /************************************************************/
 {
-    mode=mode;
+    /* unused parameters */ (void)mode;
+
     remove( name );
 }
 
@@ -154,7 +155,8 @@ unsigned DIGCLIENTRY( MachineData )( address addr, unsigned info_type,
 {
     enum x86_addr_characteristics       *d;
 
-    info_type = info_type; in_size = in_size; in = in; out_size = out_size;
+    /* unused parameters */ (void)info_type; (void)in_size; (void)in; (void)out_size;
+
     switch( CurrSIOData->config.mad ) {
     case MAD_X86:
         d = out;

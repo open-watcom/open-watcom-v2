@@ -51,7 +51,7 @@ void GUIInitGraphicsMouse( gui_window_styles style )
         GraphicsDlg = true;
     }
 #else
-    style = style;
+    /* unused parameters */ (void)style;
 #endif
 }
 

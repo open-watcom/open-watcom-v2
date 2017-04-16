@@ -151,7 +151,8 @@ void    lay_fn( lay_tag ltag )
     att_args        l_args;
     bool            cvterr;
 
-    ltag = ltag;
+    /* unused parameters */ (void)ltag;
+
     p = scan_start;
     cvterr = false;
 
@@ -238,7 +239,8 @@ void    lay_fnref( lay_tag ltag )
     att_args        l_args;
     int             cvterr;
 
-    ltag = ltag;
+    /* unused parameters */ (void)ltag;
+
     p = scan_start;
     cvterr = false;
 

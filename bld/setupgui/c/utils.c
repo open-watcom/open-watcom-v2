@@ -168,7 +168,7 @@ bool ModifyEnvironment( bool uninstall )
 
     if( ProgramGroups ) {
 #if defined( _UI ) || defined( __UNIX__ )
-        uninstall = uninstall;
+        /* unused parameters */ (void)uninstall;
 #else
         ret = CreatePMInfo( uninstall );
         if( !ret ) {                   // create folder and icons

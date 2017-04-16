@@ -46,8 +46,6 @@ void    proc_p_pc( p_lay_tag * p_pc )
     scr_process_break();
     if( nest_cb->gtag == GML_TAG_NONE ) {
         g_cur_left = g_page_left + g_indent;// left start    TBD
-    } else {
-        g_cur_left = g_cur_left;
     }
                                         // possibly indent first line
     g_cur_h_start = g_cur_left + conv_hor_unit( &(p_pc->line_indent) );
@@ -71,7 +69,8 @@ void    proc_p_pc( p_lay_tag * p_pc )
 /***************************************************************************/
 extern  void    gml_p( gml_tag gtag )
 {
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     proc_p_pc( &layout_work.p );
     ProcFlags.empty_doc_el = true;  // for next break, not this tag's break
 }
@@ -81,7 +80,8 @@ extern  void    gml_p( gml_tag gtag )
 /***************************************************************************/
 extern  void    gml_pc( gml_tag gtag )
 {
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     proc_p_pc( &layout_work.pc );
 }
 
@@ -95,7 +95,8 @@ extern  void    gml_note( gml_tag gtag )
     text_chars      *marker;
     uint32_t        spc_cnt;
 
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     scan_err = false;
     p = scan_start;
 
@@ -161,4 +162,3 @@ extern  void    gml_note( gml_tag gtag )
     scan_start = scan_stop;
     return;
 }
-

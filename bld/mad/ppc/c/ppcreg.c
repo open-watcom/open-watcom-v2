@@ -314,7 +314,7 @@ size_t MADIMPENTRY( RegSetLevel )( const mad_reg_set_data *rsd, char *buff, size
 
 unsigned MADIMPENTRY( RegSetDisplayGrouping )( const mad_reg_set_data *rsd )
 {
-    rsd = rsd;
+    /* unused parameters */ (void)rsd;
 
     return( 0 );
 }
@@ -427,7 +427,7 @@ mad_status MADIMPENTRY( RegSetDisplayGetPiece )( const mad_reg_set_data *rsd,
                                 mad_type_handle *disp_type,
                                 size_t *max_value )
 {
-    mr = mr;
+    /* unused parameters */ (void)mr;
 
     return( rsd->get_piece( piece, descript_p, max_descript_p, reg, disp_type, max_value ) );
 }
@@ -438,7 +438,7 @@ static const mad_modify_list    FltReg = { NULL, PPCT_H_DOUBLE, MAD_MSTR_NIL };
 
 mad_status MADIMPENTRY( RegSetDisplayModify )( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, int *num_possible_p )
 {
-    rsd = rsd;
+    /* unused parameters */ (void)rsd;
 
     *num_possible_p = 1;
     switch( ri->type ) {
@@ -464,7 +464,7 @@ mad_status MADIMPENTRY( RegModified )( const mad_reg_set_data *rsd, const mad_re
     unsigned    mask;
     unsigned    size;
 
-    rsd = rsd;
+    /* unused parameters */ (void)rsd;
 
     if( ri->bit_start == BIT_OFF( iar ) ) {
         new_ip = old->ppc.iar;
@@ -608,7 +608,7 @@ size_t MADIMPENTRY( RegSpecialName )( mad_special_reg sr, mad_registers const *m
     size_t      len;
     char const  *p;
 
-    af = af; mr = mr;
+    /* unused parameters */ (void)af; (void)mr;
 
     switch( sr ) {
     case MSR_IP:
@@ -673,7 +673,7 @@ const mad_reg_info *MADIMPENTRY( RegFromContextItem )( context_item ci )
 
 void MADIMPENTRY( RegUpdateStart )( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
-    mr = mr; flags = flags; bit_start = bit_start; bit_size = bit_size;
+    /* unused parameters */ (void)mr; (void)flags; (void)bit_start; (void)bit_size;
 }
 
 void MADIMPENTRY( RegUpdateEnd )( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
@@ -681,7 +681,7 @@ void MADIMPENTRY( RegUpdateEnd )( mad_registers *mr, unsigned flags, unsigned bi
     unsigned    i;
     unsigned    bit_end;
 
-    mr = mr; flags = flags;
+    /* unused parameters */ (void)mr; (void)flags;
 
     bit_end = bit_start + bit_size;
     #define IN_RANGE( i, bit )  \

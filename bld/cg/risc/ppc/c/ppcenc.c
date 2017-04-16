@@ -180,7 +180,8 @@ void EmitInsReloc( void *ins, pointer sym, owl_reloc_type type )
     oc.oc_rins.reloc = type;
     InputOC( &oc );
 #else
-    ins = ins; sym = sym; type = type;
+    /* unused parameters */ (void)ins; (void)sym; (void)type;
+
     _Zoiks( ZOIKS_091 );
 #endif
 }
@@ -931,7 +932,7 @@ void    GenKillLabel( label_handle lbl )
 void    GenCallLabel( pointer label )
 /***********************************/
 {
-    label = label;
+    /* unused parameters */ (void)label;
 }
 
 

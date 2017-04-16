@@ -275,23 +275,22 @@ int OSExecDLL( DLL_CMD* dll, char const* cmd_args )
 DLL_CMD *OSFindDLL( char const *cmd_name )
 /****************************************/
 {
-    cmd_name = cmd_name;
+    /* unused parameters */ (void)cmd_name;
+
     return( NULL );
 }
 
 void OSLoadDLL( char *cmd_name, char *dll_name, char *ent_name )
 /**************************************************************/
 {
-    cmd_name = cmd_name;
-    dll_name = dll_name;
-    ent_name = ent_name;
+    /* unused parameters */ (void)cmd_name; (void)dll_name; (void)ent_name;
 }
 
 int OSExecDLL( DLL_CMD* dll, char const* cmd_args )
 /*************************************************/
 {
-    dll = dll;
-    cmd_args = cmd_args;
+    /* unused parameters */ (void)dll; (void)cmd_args;
+
     return( -1 );
 }
 
@@ -355,12 +354,14 @@ static void passOnBreak( void )
 
 static void breakHandler( int sig_number )
 {
-    sig_number = sig_number;
+    /* unused parameters */ (void)sig_number;
+
     sig_count = 1;
     passOnBreak();
 }
 
-void InitSignals( void ) {
+void InitSignals( void )
+{
     sig_count = 0;
     DoingUpdate = false;
 #ifndef __UNIX__

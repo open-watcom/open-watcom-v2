@@ -236,7 +236,8 @@ condcode    scr_words( parm parms[MAX_FUN_PARMS], size_t parmcount, char **resul
     char            *pend;
     int             wc;
 
-    ressize = ressize;
+    /* unused parameters */ (void)ressize;
+
     if( parmcount != 1 ) {
         return( neg );
     }
@@ -307,7 +308,8 @@ condcode    scr_wordpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * r
     bool                inword;
     bool                found;
 
-    ressize = ressize;
+    /* unused parameters */ (void)ressize;
+
     if( (parmcount < 2) || (parmcount > 3) ) {
         return( neg );
     }

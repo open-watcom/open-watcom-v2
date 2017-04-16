@@ -204,7 +204,8 @@ static void sysadoddfun( symvar *e )
 
 static void sysapagefun( symvar *e )   // absolute page
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     utoa( apage, sysapagestr, 10 );
     return;
 };
@@ -223,7 +224,8 @@ static void sysbfontsfun( symvar *e )
 
 static void sysbmfun( symvar *e )
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     utoa( bm, sysbmstr, 10 );
     return;
 };
@@ -260,7 +262,8 @@ static void syscccfun( symvar *e )
 
 static void syscdfun( symvar *e )      // column count
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     ultoa( g_cd, syscdstr, 10 );
     return;
 };
@@ -279,14 +282,16 @@ static void syscharsfun( symvar *e )
 
 static void sysclfun( symvar *e )      // column length
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     ultoa( g_cl, sysclstr, 10 );
     return;
 };
 
 static void syscofun( symvar *e )      // .co status
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     if( ProcFlags.concat ) {
         sysco0.value = str[ju_on];
     } else {
@@ -321,7 +326,8 @@ static void syscpcfun( symvar *e )
 
 static void syscpifun( symvar *e )     // cpi chars per inch
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     utoa( CPI, syscpistr, 10 );
     return;
 };
@@ -352,7 +358,8 @@ static void sysduplexfun( symvar *e )
 
 static void sysenvfun( symvar *e )     // never seen another value TBD
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     sysenv0.value = "BODY";
     return;
 };
@@ -377,7 +384,8 @@ static void sysfbffun( symvar *e )
 
 static void sysfilefun( symvar *e )    // name of current input file/macro
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     if( input_cbs == NULL ) {
         sysfile0.value = NULL;
     } else {
@@ -404,14 +412,16 @@ static void sysfkcfun( symvar *e )
 
 static void sysflnestfun( symvar *e )  // include level file/macro
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     utoa( inc_level, sysflneststr, 10 );
     return;
 };
 
 static void sysfmfun( symvar *e )
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     utoa( fm, sysfmstr, 10 );
     return;
 };
@@ -426,7 +436,8 @@ static void sysfnamfun( symvar *e )  // name of current input file not macro
 {
     inputcb * wk;
 
-    e = e;
+    /* unused parameters */ (void)e;
+
     if( input_cbs == NULL ) {
         sysfnam0.value = NULL;
     } else {
@@ -481,7 +492,8 @@ static void sysfsfun( symvar *e )
 
 static void sysgutterfun( symvar *e )  // gutter
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     ultoa( g_gutter, sysgutterstr, 10 );
     return;
 };
@@ -494,7 +506,8 @@ static void syshifun( symvar *e )
 
 static void syshmfun( symvar *e )
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     utoa( hm, syshmstr, 10 );
     return;
 };
@@ -537,14 +550,16 @@ static void syshyphfun( symvar *e )
 
 static void sysinfun( symvar *e )      // .in indent value
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     ultoa( g_indent * CPI / g_resh, sysinstr, 10 ); // in chars
     return;
 };
 
 static void sysinrfun( symvar *e )     // .in indentr indent right value
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     ltoa( g_ll + g_indentr * CPI / g_resh, sysinrstr, 10 );
     return;
 };
@@ -569,14 +584,16 @@ static void sysixreffun( symvar *e )
 
 static void sysjufun( symvar *e )      // .ju status
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     sysju0.value = str[ProcFlags.justify];
     return;
 };
 
 static void syslayoutfun( symvar *e ) // LAYOUT cmdline option or :LAYOUT tag seen
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     if( ProcFlags.lay_specified ) {
         syslayout0.value = str[ju_on];
     } else {
@@ -587,14 +604,16 @@ static void syslayoutfun( symvar *e ) // LAYOUT cmdline option or :LAYOUT tag se
 
 static void syslcfun( symvar *e )      // remaining linecount on page
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     utoa( lc, syslcstr, 10 );
     return;
 };
 
 static void syslifun( symvar *e )      // SCRIPT control word start char
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     *syslistr = SCR_char;
     return;
 };
@@ -607,14 +626,16 @@ static void syslinbfun( symvar *e )
 
 static void syslinefun( symvar *e )    // current lineno on page
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     ultoa( line, syslinestr, 10 );
     return;
 };
 
 static void sysllfun( symvar *e )
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     ultoa( g_ll, sysllstr, 10 );
     return;
 };
@@ -698,42 +719,48 @@ static void sysoutfun( symvar *e )
 
 static void syspagefun( symvar *e )    // pageno in body
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     utoa( page, syspagestr, 10 );
     return;
 };
 
 static void syspagedfun( symvar *e )   // page depth
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     ultoa( g_page_depth, syspagedstr, 10 );
     return;
 };
 
 static void syspagelmfun( symvar *e )  // page left margin
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     ultoa( lm, syspagelmstr, 10 );
     return;
 };
 
 static void syspagermfun( symvar *e )  // page right margin
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     ultoa( rm, syspagermstr, 10 );
     return;
 };
 
 static void syspgnumafun( symvar *e )  // pagenumber
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     ultoa( page, syspgnumastr, 10 );
     return;
 };
 
 static void syspgnumadfun( symvar *e ) // pagenumber.
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     ultoa( page, syspgnumadstr, 10 );
     strcat( syspgnumadstr, "." );
     return;
@@ -741,7 +768,8 @@ static void syspgnumadfun( symvar *e ) // pagenumber.
 
 static void syspgnumcfun( symvar *e )  // roman page no UPPER
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     int_to_roman( page, syspgnumcstr, sizeof( syspgnumcstr ) );
     strupr( syspgnumcstr );
     return;
@@ -749,7 +777,8 @@ static void syspgnumcfun( symvar *e )  // roman page no UPPER
 
 static void syspgnumcdfun( symvar *e ) // roman page no UPPER.
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     int_to_roman( page, syspgnumcdstr, sizeof( syspgnumcdstr ) );
     strupr( syspgnumcdstr );
     strcat( syspgnumcdstr, "." );
@@ -758,14 +787,16 @@ static void syspgnumcdfun( symvar *e ) // roman page no UPPER.
 
 static void syspgnumrfun( symvar *e ) // roman page no
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     int_to_roman( page, syspgnumrstr, sizeof( syspgnumrstr ) );
     return;
 };
 
 static void syspgnumrdfun( symvar *e ) // roman page no.
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     int_to_roman( page, syspgnumrdstr, sizeof( syspgnumrdstr ) );
     strcat( syspgnumrdstr, "." );
     return;
@@ -797,14 +828,16 @@ static void sysplsfun( symvar *e )
 
 static void syspnfun( symvar *e )      // page no
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     ultoa( page, syspnstr, 10 );
     return;
 };
 
 static void sysppagefun( symvar *e )   // page no
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     ultoa( page, sysppagestr, 10 );
     return;
 };
@@ -841,7 +874,8 @@ static void sysquietfun( symvar *e )
 
 static void sysrbfun( symvar *e )      // required blank
 {                                       // can't get any functionality TBD
-    e = e;
+    /* unused parameters */ (void)e;
+
     *sysrbstr = sysrb0.value[0];
 //    var_wng( e->name, e );
     return;
@@ -855,14 +889,16 @@ static void sysrecnofun( symvar *e )   // recno current input file / macro
 
 static void sysreshfun( symvar *e )    // horiz base units
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     utoa( g_resh, sysreshstr, 10 );
     return;
 };
 
 static void sysresvfun( symvar *e )    // vert base units
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     utoa( g_resv, sysresvstr, 10 );
     return;
 };
@@ -940,14 +976,16 @@ static void syssysfun( symvar *e )
 
 static void systabfun( symvar *e )     // current user-defined tab character
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     *systabstr = tab_char;
     return;
 };
 
 static void systbfun( symvar *e )     // current user-defined tab character
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     *systbstr = tab_char;
     return;
 };
@@ -960,7 +998,8 @@ static void systermtfun( symvar *e )
 
 static void systmfun( symvar *e )
 {
-    e = e;
+    /* unused parameters */ (void)e;
+
     utoa( tm, systmstr, 10 );
     return;
 };

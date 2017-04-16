@@ -58,7 +58,7 @@ enum ll_flags {
     LLF_REG_FLAGS_SHIFT = 1
 };
 
-typedef struct location_context {
+struct location_context {
     address             frame;
     address             stack;
     address             execution;
@@ -73,7 +73,7 @@ typedef struct location_context {
     bool                maybe_have_frame        : 1;
     bool                maybe_have_object       : 1;
     bool                up_stack_level          : 1;
-} location_context;
+};
 
 typedef struct sym_list {
     struct sym_list     *next;

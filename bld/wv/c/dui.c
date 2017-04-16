@@ -405,21 +405,19 @@ void DUIRemoveBreak( brkp *bp )
 void DUICopySize( void *cookie, unsigned long size )
 /**************************************************/
 {
-    size = size;
-    cookie = cookie;
+    /* unused parameters */ (void)size; (void)cookie;
 }
 
 void DUICopyCopied( void *cookie, unsigned long size )
 /****************************************************/
 {
-    size = size;
-    cookie = cookie;
+    /* unused parameters */ (void)size; (void)cookie;
 }
 
 bool DUICopyCancelled( void * cookie )
 /************************************/
 {
-    cookie = cookie;
+    /* unused parameters */ (void)cookie;
     return( false );
 }
 
@@ -427,8 +425,8 @@ bool DUIImageLoaded( image_entry *image, bool load,
                      bool already_stopping, bool *force_stop )
 /************************************************************/
 {
-    already_stopping=already_stopping;
-    force_stop= force_stop;
+    /* unused parameters */ (void)already_stopping; (void)force_stop;
+
     if( load ) {
         Format( TxtBuff, "%s '%s'", LIT_ENG( DLL_Loaded ), image->image_name );
     } else {

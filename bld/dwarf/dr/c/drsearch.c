@@ -129,9 +129,8 @@ bool DRResumeSymSearch( dr_search_context *ctxt, dr_search search,
 static bool DRSearchMacro( regexp *name, void * data, DRSYMSRCH callback )
 /************************************************************************/
 {
-    name = name;            // just to avoid warnings.
-    data = data;
-    callback = callback;
+    /* unused parameters */ (void)name; (void)data; (void)callback;
+
     // NYI
 
     return( false );        // more info, in case anyone checks

@@ -84,7 +84,8 @@ bool DWRVMSectDone( drmem_hdl base, unsigned_32 size )
     alloc_struct    **lnk;
     bool            ret;
 
-    size = size;
+    /* unused parameters */ (void)size;
+
     lnk = &AllocHead;
     ret = false;
     while( (walk = *lnk) != NULL ) {

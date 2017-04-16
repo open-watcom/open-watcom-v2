@@ -416,7 +416,8 @@ gui_message_return GUIDisplayMessage( gui_window *wnd, const char *message,
     string_info         *strings;
     int                 num_buttons;
 
-    wnd = wnd;
+    /* unused parameters */ (void)wnd;
+
 /*
     if( message != NULL ) {
         mess_length = strlen( message );

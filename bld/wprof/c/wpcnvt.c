@@ -118,7 +118,8 @@ STATIC void countDIFData( char * image, char * module, char * file,
                                           char * routine, int count )
 /*******************************************************************/
 {
-    count=count;
+    /* unused parameters */ (void)count;
+
     convertEntryCount++;
     if( convertEntrySize[0] < strlen( image ) )
         convertEntrySize[0] = strlen( image );

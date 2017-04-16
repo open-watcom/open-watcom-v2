@@ -202,7 +202,8 @@ static void     FileMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     bool        has_popitem;
     file_window *file = WndFile( wnd );
 
-    piece=piece;
+    /* unused parameters */ (void)piece;
+
     addr = GetRowAddr( file, row, id != MENU_FILE_ASSEMBLY );
     has_addr = !IS_NIL_ADDR( addr );
     switch( id ) {
@@ -370,7 +371,8 @@ static void FileNotify( a_window *wnd, wnd_row row, int piece )
     file_window *file = WndFile( wnd );
     address     addr;
 
-    piece = piece;
+    /* unused parameters */ (void)piece;
+
     addr = GetRowAddr( file, row, false );
     if( IS_NIL_ADDR( addr ) )
         return;
@@ -771,7 +773,8 @@ static bool FileEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     file_window *file = WndFile( wnd );
 
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     switch( gui_ev ) {
     case GUI_NOW_ACTIVE:
         ActiveWindowLevel = SOURCE;

@@ -64,7 +64,8 @@ static dr_language GetLanguage( drmem_hdl abbrev, drmem_hdl mod )
 static bool CheckLanguage( drmem_hdl abbrev, drmem_hdl mod, mod_scan_info *x, void *data )
 /****************************************************************************************/
 {
-    x = x;
+    /* unused parameters */ (void)x;
+
     *(dr_language *)data = GetLanguage( abbrev, mod );
     return( false );        // do not continue processing
 }
@@ -138,7 +139,7 @@ static size_t GetNameBuffAttr( drmem_hdl entry, char *buff, size_t length, dw_at
             {
                 unsigned_32 offset;
                 drmem_hdl   dbgsec_str;
-    
+
                 offset = ReadConst( DW_FORM_data4, entry );
                 dbgsec_str = DWRCurrNode->sections[DR_DEBUG_STR].base + offset;
                 length = DWRVMGetStrBuff( dbgsec_str, buff, length );
@@ -509,7 +510,7 @@ static bool CheckAFunc( drmem_hdl abbrev, drmem_hdl mod, mod_scan_info *x, void 
 {
     struct  wlk_wlk     *d = _d;
 
-    abbrev = abbrev;
+    /* unused parameters */ (void)abbrev;
 
     mod = x->handle;
     return( d->wlk( mod, d->d, x->context ) );

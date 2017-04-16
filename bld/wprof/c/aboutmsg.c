@@ -104,7 +104,8 @@ STATIC int AboutNumRows( a_window * wnd )
 {
     int     ret_size;
 
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     if( aboutOn ) {
         ret_size = AboutSize;
 //        if( GUIIsGUI() ) {
@@ -123,7 +124,8 @@ STATIC bool aboutGetLine( a_window *wnd, wnd_row row, int piece,
 {
 //    gui_coord           size;
 
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     if( piece != 0 || !aboutOn )
         return( false );
     if( row >= AboutSize ) {
@@ -147,8 +149,8 @@ STATIC bool aboutGetLine( a_window *wnd, wnd_row row, int piece,
 STATIC bool aboutEventProc( a_window *wnd, gui_event gui_ev, void *parm )
 /***********************************************************************/
 {
-    wnd=wnd;
-    parm=parm;
+    /* unused parameters */ (void)wnd; (void)parm;
+
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         return( true );

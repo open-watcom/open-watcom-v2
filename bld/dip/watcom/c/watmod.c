@@ -330,7 +330,8 @@ unsigned ModInfoSplit( info_block *blk, section_info *inf )
     unsigned    prev;
     byte        *start;
 
-    inf = inf;
+    /* unused parameters */ (void)inf;
+
     start = blk->info;
     prev = 0;
     // following use check for 16-bit unsigned type overflow

@@ -49,7 +49,8 @@ extern void             RawScanInit( void );
 
 OVL_EXTERN void GetExprAny( void *value )
 {
-    value=value;
+    /* unused parameters */ (void)value;
+
     NormalExpr();
     ReqEOC();
 }
@@ -62,7 +63,8 @@ OVL_EXTERN void GetExprLong( void *value )
 
 OVL_EXTERN void GetExprSyntax( void *value )
 {
-    value = value;
+    /* unused parameters */ (void)value;
+
     ChkExpr();
     ReqEOC();
 }

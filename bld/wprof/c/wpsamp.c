@@ -317,7 +317,8 @@ STATIC bool sampleEventProc( a_window *wnd, gui_event gui_ev, void *parm )
 {
     sio_data        *curr_sio;
 
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         return( true );
@@ -388,9 +389,8 @@ STATIC bool sampleProcTopStatus( a_window *wnd, int row, int piece,
     gui_ord             client_width;
     gui_ord             cross_y;
 
-    row=row;
-    piece=piece;
-    line=line;
+    /* unused parameters */ (void)row; (void)piece; (void)line;
+
     if( piece > PIECE_DRAW_LINE )
         return( false );
     if( piece == PIECE_MOUSE_CATCHER ) {
@@ -434,9 +434,8 @@ STATIC bool sampleProcBotStatus( a_window *wnd, int row, int piece,
     gui_ord             client_width;
     gui_ord             cross_y;
 
-    row=row;
-    piece=piece;
-    line=line;
+    /* unused parameters */ (void)row; (void)piece; (void)line;
+
     if( piece > PIECE_DRAW_LINE )
         return( false );
     if( piece == PIECE_MOUSE_CATCHER ) {
@@ -477,7 +476,8 @@ STATIC bool sampleProcStatus( a_window *wnd, int row, int piece,
     clicks_t        rel_count;
     gui_ord         point_adjust;
 
-    row=row;
+    /* unused parameters */ (void)row;
+
     if( piece >= PIECE_HEADER_LAST ) {
         return( false );
     }
@@ -1210,7 +1210,8 @@ STATIC int srtnDetailLine( a_window *wnd, int row, bool multi_level )
     rtn_info        *curr_rtn;
     int             line;
 
-    multi_level = multi_level;
+    /* unused parameters */ (void)multi_level;
+
     curr_sio = WndExtra( wnd );
     curr_rtn = SRtnGetRoutine( wnd, row );
     curr_sio->curr_rtn = curr_rtn;
@@ -1285,8 +1286,8 @@ STATIC int ssrcDetailLine( a_window *wnd, int row, bool multi_level )
 STATIC int sasmDetailLine( a_window *wnd, int row, bool multi_level )
 /*******************************************************************/
 {
-    wnd=wnd;
-    multi_level=multi_level;
+    /* unused parameters */ (void)wnd; (void)multi_level;
+
     Ring();
     return( row );
 }
@@ -1453,7 +1454,8 @@ STATIC void sampleMenuItem( a_window * wnd, gui_ctl_id id, int row, int piece )
     sio_data *      curr_sio;
     int             sort_type;
 
-    piece=piece;
+    /* unused parameters */ (void)piece;
+
     curr_sio = WndExtra( wnd );
     row += STATUS_ROW + 1;
     switch( id ) {

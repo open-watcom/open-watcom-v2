@@ -592,7 +592,8 @@ void    GenEpilog( void )
 int     AskDisplaySize( int level )
 /*********************************/
 {
-    level = level;
+    /* unused parameters */ (void)level;
+
     return( 0 );
 }
 
@@ -600,7 +601,7 @@ int     AskDisplaySize( int level )
 void    InitStackDepth( block *blk )
 /**********************************/
 {
-    blk = blk;
+    /* unused parameters */ (void)blk;
 }
 
 

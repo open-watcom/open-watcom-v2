@@ -113,7 +113,8 @@ extern  void    IterBytes( offset len, byte pat )
 extern  void    BackPtr( back_handle bck, segment_id seg, offset plus, type_def *tipe )
 /*************************************************************************************/
 {
-    seg = seg; tipe = tipe;
+    /* unused parameters */ (void)seg; (void)tipe;
+
     assert( tipe->length == 4 );
     TellOptimizerByPassed();
     OutReloc( bck->lbl, OWL_RELOC_WORD, 0 );
@@ -124,7 +125,8 @@ extern  void    BackPtr( back_handle bck, segment_id seg, offset plus, type_def 
 extern  void    BackBigOffset( back_handle bck, segment_id seg, offset plus )
 /***************************************************************************/
 {
-    seg = seg;
+    /* unused parameters */ (void)seg;
+
     TellOptimizerByPassed();
     OutReloc( bck->lbl, OWL_RELOC_WORD, 0 );
     ObjBytes( &plus, 4 );
@@ -143,7 +145,8 @@ extern  void    BackPtrBase( back_handle bck, segment_id seg )
 extern  void    FEPtr( cg_sym_handle sym, type_def *tipe, offset plus ) {
 /*******************************************************************/
 
-    tipe = tipe;
+    /* unused parameters */  (void)tipe;
+
     assert( tipe->length == 4 );
     TellOptimizerByPassed();
     OutReloc( FEBack( sym )->lbl, OWL_RELOC_WORD, 0 );

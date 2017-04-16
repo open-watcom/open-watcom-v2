@@ -41,7 +41,8 @@
 bool    MultiIns( instruction *ins )
 /**********************************/
 {
-    ins = ins;
+    /* unused parameters */ (void)ins;
+
     return( false );
 }
 #endif
@@ -49,7 +50,7 @@ bool    MultiIns( instruction *ins )
 void    ScInitRegs( score *sc )
 /*****************************/
 {
-    sc = sc;
+    /* unused parameters */ (void)sc;
 }
 
 
@@ -62,15 +63,15 @@ void    AddRegs( void )
 void    ScoreSegments( score *sc )
 /********************************/
 {
-    sc = sc;
+    /* unused parameters */ (void)sc;
 }
 
 
 bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 )
 /*************************************************/
 {
-    reg1 = reg1;
-    reg2 = reg2;
+    /* unused parameters */ (void)reg1; (void)reg2;
+
     return( true );
 }
 
@@ -78,7 +79,8 @@ bool    ScAddOk( hw_reg_set reg1, hw_reg_set reg2 )
 bool    ScConvert( instruction *ins )
 /***********************************/
 {
-    ins = ins;
+    /* unused parameters */ (void)ins;
+
     return( false );
 }
 
@@ -86,7 +88,8 @@ bool    ScConvert( instruction *ins )
 bool    CanReplace( instruction *ins )
 /************************************/
 {
-    ins = ins;
+    /* unused parameters */ (void)ins;
+
     return( true );
 }
 

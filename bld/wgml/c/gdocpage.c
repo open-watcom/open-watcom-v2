@@ -304,7 +304,8 @@ static void do_doc_column_out( doc_column * a_column, spacing_bu v_start )
     int                 i;
     unsigned char       col_count;
 
-    v_start = v_start;
+    /* unused parameters */ (void)v_start;
+
     col_count = 0;
     for( cur_col = a_column; cur_col != NULL; cur_col = cur_col->next ) {
         col_count++;

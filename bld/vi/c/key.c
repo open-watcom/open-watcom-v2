@@ -137,7 +137,7 @@ vi_key GetVIKey( unsigned code, unsigned scan, bool shift )
     vi_key  key;
 
 #if !( defined( __DOS__ ) || defined( __OS2__ ) )
-    scan=scan; shift=shift;
+    /* unused parameters */ (void)scan; (void)shift;
 #endif
     if( EditFlags.EscapedInsertChar ) {
         return( code );

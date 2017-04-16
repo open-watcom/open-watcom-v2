@@ -100,7 +100,8 @@ wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
     int                 addr_cmp;
     clicks_t            addr_tick_index;
 
-    quiet=quiet;
+    /* unused parameters */ (void)quiet;
+
     ch = alloca( DIPHandleSize( HK_CUE, false ) );
     ch2 = alloca( DIPHandleSize( HK_CUE, false ) );
     curr_file = curr_sio->curr_file;

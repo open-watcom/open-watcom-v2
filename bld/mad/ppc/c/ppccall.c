@@ -62,7 +62,8 @@ const mad_string *MADIMPENTRY( CallTypeList )( void )
 
 mad_status MADIMPENTRY( CallBuildFrame )( mad_string call, address ret, address rtn, mad_registers const *in, mad_registers *out )
 {
-    call = call;
+    /* unused parameters */ (void)call;
+
     out->ppc = in->ppc;
     //NYI: 64 bit
     out->ppc.lr.u._32[I64LO32] = ret.mach.offset;
@@ -72,7 +73,7 @@ mad_status MADIMPENTRY( CallBuildFrame )( mad_string call, address ret, address 
 
 const mad_reg_info *MADIMPENTRY( CallReturnReg )( mad_string call, address rtn )
 {
-    call = call; rtn = rtn;
+    /* unused parameters */ (void)call; (void)rtn;
 
     return( &RegList[IDX_r3].info );
 }
@@ -85,7 +86,7 @@ const mad_reg_info **MADIMPENTRY( CallParmRegList )( mad_string call, address rt
         &RegList[IDX_r9].info, &RegList[IDX_r10].info,
         NULL };
 
-    call = call; rtn = rtn;
+    /* unused parameters */ (void)call; (void)rtn;
 
     return( list );
 }
@@ -191,10 +192,8 @@ mad_status MADIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud,
     addr_off            proc_end;
     dis_register        lr_save_gpr;
 
-    return_disp = return_disp;
+    /* unused parameters */ (void)return_disp; (void)rtn_characteristics; (void)in;
 
-    rtn_characteristics = rtn_characteristics;
-    in = in;
     *out = NULL;
     if( cud->lr == 0 ) return( MS_FAIL );
     if( cud->sp == 0 ) return( MS_FAIL );

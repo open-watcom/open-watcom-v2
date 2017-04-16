@@ -1034,7 +1034,9 @@ static bool Val( void *_d, uint_32 offset, uint_32 size, dr_loc_kind kind )
 {
 // Assume top of stack is value to get
     loc_handle  *d = _d;
-    size = size;
+
+    /* unused parameters */ (void)size;
+
     if( kind == DR_LOC_ADDR ) {
         if( ++d->val_count == 1 ) {
             d->base.mach.offset = offset;
@@ -1107,9 +1109,9 @@ typedef struct {
 
 static dr_loc_kind NOPInit( void *d, uint_32 *where )
 {
+    /* unused parameters */ (void)d; (void)where;
+
 // Set location expr initial value
-    d = d;
-    where = where;
     return( DR_LOC_NONE );
 }
 
@@ -1129,8 +1131,8 @@ static bool NOPDRef( void *_d, uint_32 *where, uint_32 offset, uint_32 size )
 // Dereference a value use default address space
     nop_loc_handle  *d = _d;
 
-    offset = offset;
-    size = size;
+    /* unused parameters */ (void)offset; (void)size;
+
     *where = 0;
     return( d->dref );
 }
@@ -1140,10 +1142,8 @@ static bool NOPDRefX( void *_d, uint_32 *where, uint_32 offset, uint_32 seg, uin
 // Dereference an extended address
     nop_loc_handle  *d = _d;
 
-    where = where;
-    offset = offset;
-    seg = seg;
-    size = size;
+    /* unused parameters */ (void)where; (void)offset; (void)seg; (void)size;
+
     return( d->drefx );
 }
 
@@ -1160,18 +1160,19 @@ static bool NOPReg( void *_d, uint_32 *where, uint_16 reg )
 {
     nop_loc_handle  *d = _d;
 
-    reg = reg;
+    /* unused parameters */ (void)reg;
+
     *where = 0;
     return( d->reg );
 }
 
 static bool NOPACon( void *_d, uint_32 *where, bool isfar )
 {
+    /* unused parameters */ (void)where; (void)isfar;
+
 // relocate a map address constant
     nop_loc_handle  *d = _d;
 
-    where = where;
-    isfar = isfar;
     return( d->acon );
 }
 

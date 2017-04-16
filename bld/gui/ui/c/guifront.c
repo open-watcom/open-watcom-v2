@@ -78,7 +78,6 @@ void GUIBringToFront( gui_window * wnd )
 
 void GUIActivateNC( gui_window *wnd, bool activate )
 {
-    wnd=wnd;
-    activate=activate;
+    /* unused parameters */ (void)wnd; (void)activate;
 }
 

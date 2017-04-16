@@ -136,7 +136,8 @@ static void DlgSetCtlSizes( gui_control_info *controls_info,
     gui_ord     char_ui_adjust;
     bool        reloc;
 
-    charspace=charspace;
+    /* unused parameters */ (void)charspace;
+
     GetHalfAndAdjust( charuse, &half, &char_ui_adjust );
     while( --num >= 0 ) {
         if( DlgRelocNum( &controls_info->rect.x, 1, charuse ) ) {

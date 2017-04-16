@@ -523,7 +523,8 @@ static bool goToDir( gui_window *gui, char *dir )
     size_t      len;
     int         rc;
 
-    gui = gui;
+    /* unused parameters */ (void)gui;
+
     if( dir == NULL ) {
         return( false );
     }
@@ -1239,5 +1240,5 @@ int GUIGetFileName( gui_window *gui, open_file_name *ofn )
 
 void GUIHookFileDlg( bool hook )
 {
-    hook = hook;
+    /* unused parameters */ (void)hook;
 }

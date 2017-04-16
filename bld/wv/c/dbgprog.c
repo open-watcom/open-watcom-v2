@@ -1133,6 +1133,7 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
     long                lcldate;
     bool                delete_file;
 
+    /* unused parameters */ (void)strip;
 #ifdef __NT__
     lcldate = LocalGetFileDate( local );
 #else
@@ -1141,7 +1142,6 @@ static bool CopyToRemote( const char *local, const char *remote, bool strip, voi
     remdate = RemoteGetFileDate( remote );
     if( remdate != -1 && lcldate != -1 && remdate == lcldate )
         return( true );
-    strip = strip; // nyi - strip debug info here
     fh_lcl = FileOpen( local, OP_READ );
     if( fh_lcl == NIL_HANDLE ) {
         Error( ERR_NONE, LIT_ENG( ERR_FILE_NOT_OPEN ), local );

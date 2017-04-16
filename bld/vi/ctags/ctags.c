@@ -118,7 +118,8 @@ static void Quit( const char **usage_msg, const char *str, ... )
     int         i;
     int         cnt;
 
-    usage_msg = usage_msg;
+    /* unused parameters */ (void)usage_msg;
+
     if( str != NULL ) {
         va_start( al, str );
         vfprintf( stderr, str, al );

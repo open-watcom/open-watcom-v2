@@ -184,13 +184,5 @@ void GUIXDrawTextRGB( gui_window *wnd, const char *text, size_t length, gui_coor
                       gui_rgb fore, gui_rgb back, gui_ord extentx,
                       bool draw_extent )
 {
-    wnd = wnd;
-    text = text;
-    length = length;
-    pos = pos;
-    fore = fore;
-    back = back;
-    extentx = extentx;
-    draw_extent = draw_extent;
+    /* unused parameters */ (void)wnd; (void)text; (void)length; (void)pos; (void)fore; (void)back; (void)extentx; (void)draw_extent;
 }
-

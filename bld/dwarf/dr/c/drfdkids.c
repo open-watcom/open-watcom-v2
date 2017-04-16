@@ -114,8 +114,7 @@ static bool baseHook( dr_sym_type notused1, drmem_hdl handle,
     dr_sym_type     symtype;
     int             index;
 
-    notused1 = notused1;
-    notused2 = notused2;
+    /* unused parameters */ (void)notused1; (void)notused2;
 
     if( name != NULL ) {
         DWRFREE( name );

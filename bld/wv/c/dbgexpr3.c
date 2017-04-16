@@ -611,16 +611,16 @@ OVL_EXTERN bool ConvFP4( stack_entry *entry, conv_class from )
 
 OVL_EXTERN bool ConvSTR( stack_entry *entry, conv_class from )
 {
-    entry = entry;
-    from = from;
+    /* unused parameters */ (void)entry; (void)from;
+
     /* everything has already been taken care of */
     return( true );
 }
 
 OVL_EXTERN bool ConvERR( stack_entry *entry, conv_class from )
 {
-    entry = entry;
-    from = from;
+    /* unused parameters */ (void)entry; (void)from;
+
     return( false );
 }
 

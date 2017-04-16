@@ -65,18 +65,18 @@ static gui_menu_struct ImgMenu[] = {
 
 static void CalcIndents( a_window *wnd )
 {
-    image_entry *img;
+    image_entry *image;
     gui_ord     max_image;
     gui_ord     max_symbol;
     gui_ord     curr;
 
     max_image = WndExtentX( wnd, LIT_DUI( Executable_File ) );
     max_symbol = WndExtentX( wnd, LIT_DUI( Debug_Information ) );
-    for( img = DbgImageList; img != NULL; img = img->link ) {
-        curr = WndExtentX( wnd, img->image_name );
+    for( image = DbgImageList; image != NULL; image = image->link ) {
+        curr = WndExtentX( wnd, image->image_name );
         if( max_image < curr )
             max_image = curr;
-        curr = WndExtentX( wnd, ImgSymFileName( img, false ) );
+        curr = WndExtentX( wnd, ImgSymFileName( image, false ) );
         if( max_symbol < curr ) {
             max_symbol = curr;
         }
@@ -87,17 +87,17 @@ static void CalcIndents( a_window *wnd )
 
 static image_entry      *ImgGetImage( int row )
 {
-    image_entry *img;
+    image_entry *image;
 
-    img = NULL;
+    image = NULL;
     if( row >= 0 ) {
-        for( img = DbgImageList; img != NULL; img = img->link ) {
+        for( image = DbgImageList; image != NULL; image = image->link ) {
             if( row-- == 0 ) {
                 break;
             }
         }
     }
-    return( img );
+    return( image );
 }
 
 static void     ImgInit( a_window *wnd )
@@ -109,17 +109,18 @@ static void     ImgInit( a_window *wnd )
 
 static void     ImgMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
-    image_entry *img;
+    image_entry *image;
     char        *new_name;
     char        *old_name;
 
-    piece=piece;
-    img = ImgGetImage( row );
+    /* unused parameters */ (void)piece;
+
+    image = ImgGetImage( row );
     switch( id ) {
     case MENU_INITIALIZE:
         WndMenuGrayAll( wnd );
-        if( img != NULL ) {
-            if( img->dip_handle == NO_MOD ) {
+        if( image != NULL ) {
+            if( image->dip_handle == NO_MOD ) {
                 WndMenuEnable( wnd, MENU_IMAGE_ADD_SYMBOLS, true );
             } else {
                 WndMenuEnableAll( wnd );
@@ -128,20 +129,20 @@ static void     ImgMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         break;
     case MENU_IMAGE_ADD_SYMBOLS:
         // nyi - change sym_file
-        if( img->deferred_symbols ) {
-            ReLoadImgSymInfo( img );
+        if( image->deferred_symbols ) {
+            ReLoadImgSymInfo( image );
         } else {
-            new_name = DupStr( ImgSymFileName( img, true ) );
+            new_name = DupStr( ImgSymFileName( image, true ) );
             if( !SymBrowse( &new_name ) ) {
                 _Free( new_name );
             } else {
-                UnLoadImgSymInfo( img, true );
-                old_name = img->symfile_name;
-                img->symfile_name = new_name;
-                if( ReLoadImgSymInfo( img ) ) {
+                UnLoadImgSymInfo( image, true );
+                old_name = image->symfile_name;
+                image->symfile_name = new_name;
+                if( ReLoadImgSymInfo( image ) ) {
                     _Free( old_name );
                 } else {
-                    img->symfile_name = old_name;
+                    image->symfile_name = old_name;
                     _Free( new_name );
                 }
             }
@@ -149,29 +150,30 @@ static void     ImgMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         ImgInit( wnd );
         break;
     case MENU_IMAGE_DEL_SYMBOLS:
-        UnLoadImgSymInfo( img, true );
+        UnLoadImgSymInfo( image, true );
         ImgInit( wnd );
         break;
     case MENU_IMAGE_SHOW_FUNCTIONS:
-        WndGblFuncInspect( img->dip_handle );
+        WndGblFuncInspect( image->dip_handle );
         break;
     case MENU_IMAGE_SHOW_MODULES:
-        WndModListInspect( img->dip_handle );
+        WndModListInspect( image->dip_handle );
         break;
     case MENU_IMAGE_SHOW_GLOBALS:
-        WndGblVarInspect( img->dip_handle );
+        WndGblVarInspect( image->dip_handle );
         break;
     }
 }
 
 static int ImgNumRows( a_window *wnd )
 {
-    image_entry *img;
+    image_entry *image;
     int         count;
 
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     count = 0;
-    for( img = DbgImageList; img != NULL; img = img->link ) {
+    for( image = DbgImageList; image != NULL; image = image->link ) {
         ++count;
     }
     return( count );
@@ -180,9 +182,10 @@ static int ImgNumRows( a_window *wnd )
 static  bool    ImgGetLine( a_window *wnd, int row, int piece,
                              wnd_line_piece *line )
 {
-    image_entry         *img;
+    image_entry         *image;
 
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     line->indent = Indents[piece];
     if( row < 0 ) {
         row += TITLE_SIZE;
@@ -214,23 +217,23 @@ static  bool    ImgGetLine( a_window *wnd, int row, int piece,
         line->tabstop = false;
         line->use_prev_attr = true;
         line->extent = WND_MAX_EXTEND;
-        img = ImgGetImage( row );
-        if( img == NULL )
+        image = ImgGetImage( row );
+        if( image == NULL )
             return( false );
         switch( piece ) {
         case PIECE_IMAGE:
-            line->text = img->image_name;
+            line->text = image->image_name;
             line->tabstop = true;
             line->use_prev_attr = false;
             return( true );
         case PIECE_SYMBOL:
-            line->text = ImgSymFileName( img, false );
+            line->text = ImgSymFileName( image, false );
             return( true );
         case PIECE_DIP:
-            if( img->dip_handle == NO_MOD ) {
+            if( image->dip_handle == NO_MOD ) {
                 line->text = " ";
             } else {
-                line->text = DIPImageName( img->dip_handle );
+                line->text = DIPImageName( image->dip_handle );
             }
             return( true );
         }
@@ -246,7 +249,8 @@ static void     ImgRefresh( a_window *wnd )
 
 static bool ImgEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         ImgInit( wnd );

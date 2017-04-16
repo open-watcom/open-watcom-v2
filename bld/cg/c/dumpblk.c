@@ -517,10 +517,11 @@ static  void    DumpBlkI( void )
 }
 
 
-extern  void    DumpRange(int first,int last)
-/*******************************************/
+extern  void    DumpRange( int first, int last )
+/**********************************************/
 {
-    first=first;last=last;
+    /* unused parameters */ (void)first; (void)last;
+
     DumpBlkI();
 }
 

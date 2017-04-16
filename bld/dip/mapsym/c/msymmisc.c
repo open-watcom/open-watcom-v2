@@ -47,7 +47,8 @@ unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
 
 dip_status DIPIMPENTRY( MoreMem )( unsigned size )
 {
-    size = size;
+    /* unused parameters */ (void)size;
+
     return( DS_FAIL );
 }
 

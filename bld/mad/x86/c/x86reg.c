@@ -1029,7 +1029,8 @@ static mad_status MMXGetPiece(
     unsigned            type;
     const x86_reg_info  **list;
 
-    mr = mr;
+    /* unused parameters */ (void)mr;
+
     /* in case we haven't got an MMX */
     *reg_p = NULL;
     *disp_type_p = X86T_UNKNOWN;
@@ -1186,8 +1187,8 @@ static mad_status XMMGetPiece(
     unsigned            type = 0;
     const x86_reg_info  **list = NULL;
 
+    /* unused parameters */ (void)mr;
 
-    mr = mr;
     /* in case we haven't got an XMM */
     *reg_p = NULL;
     *disp_type_p = X86T_UNKNOWN;
@@ -1302,7 +1303,8 @@ mad_status MADIMPENTRY( RegSetDisplayModify )(
     const mad_modify_list **possible_p,
     int *num_possible_p )
 {
-    rsd = rsd;
+    /* unused parameters */ (void)rsd;
+
     if( ri == &XXX_dummy.info )
         return( MS_FAIL );
     if( ri == &FPU_iptr.info )
@@ -1502,7 +1504,8 @@ mad_status MADIMPENTRY( RegModified )(
     mad_status      unchanged;
     mad_disasm_data dd;
 
-    rsd = rsd;
+    /* unused parameters */ (void)rsd;
+
     if( old == cur )
         return( MS_OK );
     cur_start = ri->bit_start;
@@ -1890,15 +1893,13 @@ const mad_reg_info *MADIMPENTRY( RegFromContextItem )( context_item ci )
 
 void MADIMPENTRY( RegUpdateStart )( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
-    mr = mr;
-    flags = flags;
-    bit_start = bit_start;
-    bit_size = bit_size;
+    /* unused parameters */ (void)mr; (void)flags; (void)bit_start; (void)bit_size;
 }
 
 void MADIMPENTRY( RegUpdateEnd )( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
-    bit_size = bit_size;
+    /* unused parameters */ (void)bit_size;
+
     if( flags & RF_GPREG )
         MCNotify( MNT_MODIFY_REG, (void *)&RegSet[CPU_REG_SET] );
     if( flags & (RF_FPREG|RF_MMREG) ) {

@@ -141,7 +141,10 @@ void InactiveWindow( window_id wid )
 
 } /* InactiveWindow */
 
-void ActiveWindow( window_id wid ) { wid = wid; }
+void ActiveWindow( window_id wid )
+{
+    /* unused parameters */ (void)wid;
+}
 
 /*
  * WindowTitleAOI - set the title of a window, active or inactive

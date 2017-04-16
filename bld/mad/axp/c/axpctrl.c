@@ -39,9 +39,11 @@ mad_status MADIMPENTRY( Init )( void )
     mad_status  ms;
 
     ms = RegInit();
-    if( ms != MS_OK ) return ( ms );
+    if( ms != MS_OK )
+        return ( ms );
     ms = DisasmInit();
-    if( ms == MS_OK ) return( ms );
+    if( ms == MS_OK )
+        return( ms );
     RegFini();
     return( ms );
 }

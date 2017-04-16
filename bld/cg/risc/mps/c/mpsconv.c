@@ -299,7 +299,8 @@ instruction     *DoConversion( instruction *ins )
 rt_class    LookupConvertRoutine( instruction *ins )
 /**************************************************/
 {
-    ins = ins;
+    /* unused parameters */ (void)ins;
+
     _Zoiks( ZOIKS_101 );
     return( RT_NOP );
 }

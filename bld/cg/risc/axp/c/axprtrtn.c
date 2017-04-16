@@ -52,6 +52,7 @@ const char  *AskRTName( rt_class rtindex )
 bool    RTLeaveOp2( instruction *ins )
 /************************************/
 {
-    ins = ins;
+    /* unused parameters */ (void)ins;
+
     return( false );
 }

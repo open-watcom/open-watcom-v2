@@ -507,7 +507,8 @@ static bool FreeSegOffsets( void *d, void *_curr )
     seg_info    *curr = (seg_info *)_curr;
     off_blk     *blk, *next;
 
-    d = d;
+    /* unused parameters */ (void)d;
+
     for( blk = curr->off.head; blk != NULL; blk = next ) {
         next = blk->next;
         DCFree( blk );

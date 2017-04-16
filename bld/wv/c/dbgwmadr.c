@@ -445,7 +445,8 @@ static bool RegEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     reg_window          *reg = WndReg( wnd );
 
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     switch( gui_ev ) {
     case GUI_RESIZE:
         if( RegResize( wnd ) ) {

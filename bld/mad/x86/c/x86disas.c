@@ -357,7 +357,7 @@ mad_disasm_control MADIMPENTRY( DisasmControl )( mad_disasm_data *dd, const mad_
 
 static walk_result FindCallTarget( address a, mad_type_handle th, mad_memref_kind mk, void *d )
 {
-    th = th; mk = mk;
+    /* unused parameters */ (void)th; (void)mk;
 
     *(address *)d = a;
     return( WR_STOP );
@@ -727,7 +727,8 @@ mad_status MADIMPENTRY( DisasmInspectAddr )( const char *start, unsigned len, ma
     unsigned    parens;
     char        c;
 
-    mr = mr;
+    /* unused parameters */ (void)mr;
+
     to = buff;
     parens = 0;
     for( ; len > 0; --len ) {
@@ -798,7 +799,7 @@ char *JmpLabel( unsigned long addr, addr_off off )
     mad_type_handle     th;
     char                *p;
 
-    off = off;
+    /* unused parameters */ (void)off;
 
     memaddr = DbgAddr;
     memaddr.mach.offset = addr;
@@ -822,7 +823,7 @@ char *ToSegStr( addr_off value, addr_seg seg, addr_off addr )
     address             memaddr;
     mad_type_handle     th;
 
-    addr = addr;
+    /* unused parameters */ (void)addr;
 
     memaddr.mach.segment = seg;
     memaddr.mach.offset = value;

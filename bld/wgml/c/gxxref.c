@@ -71,7 +71,7 @@ void    gml_hdref( gml_tag gtag )
     ref_entry   *   re;
     static char undefid[] = "\"Undefined Heading\" on page XXX";
 
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
 
     idseen = false;
     pageseen = false;

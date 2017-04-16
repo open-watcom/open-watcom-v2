@@ -37,6 +37,7 @@
 #include "rtrtn.h"
 #include "zoiks.h"
 
+
 rtn_info RTInfo[] = {
     #define PICK(e,name,op,class,left,right,result) {name, op, class, left, right, result},
     #include "_rtinfo.h"
@@ -52,6 +53,7 @@ const char  *AskRTName( rt_class rtindex )
 bool    RTLeaveOp2( instruction *ins )
 /************************************/
 {
-    ins = ins;
+    /* unused parameters */ (void)ins;
+
     return( false );
 }

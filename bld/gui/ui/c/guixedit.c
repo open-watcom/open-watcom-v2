@@ -158,9 +158,8 @@ bool GUIClearText( gui_window *wnd, gui_ctl_id id )
 
 bool GUISelectAll( gui_window *wnd, gui_ctl_id id, bool select )
 {
-    wnd = wnd;
-    id = id;
-    select = select;
+    /* unused parameters */ (void)wnd; (void)id, (void)select;
+
     return( false );
 }
 

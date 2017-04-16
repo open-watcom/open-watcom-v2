@@ -36,7 +36,8 @@
 extern  int     MulCost( unsigned_32 num )
 /****************************************/
 {
-    num = num;
+    /* unused parameters */ (void)num;
+
     if( OptForSize > 50 )
         return( 1 );
     return( 5 );
@@ -57,6 +58,7 @@ extern  int     SubCost( void )
 extern  int     ShiftCost( int count )
 /************************************/
 {
-    count = count;
+    /* unused parameters */ (void)count;
+
     return( 1 );
 }

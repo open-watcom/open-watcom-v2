@@ -1196,19 +1196,22 @@ static void ProcAlignment( const char *arg )
 static void ProcBatch( const char *arg )
 /**************************************/
 {
+    /* unused parameters */ (void)arg;
+
     /* This option disables prompting, but only when LINK asks for additional
      * information like missing libraries. It does not affect the standard
      * object file, run file, etc. prompts. For ms2wlink, it is effectively
      * always true.
      */
-    arg=arg;
+
     NotNecessary( "batch" );
 }
 
 static void ProcCodeview( const char *arg )
 /*****************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     DebugInfo = true;
 }
 
@@ -1222,14 +1225,16 @@ static void ProcCParMaxAlloc( const char *arg )
 static void ProcDosseg( const char *arg )
 /***************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     AddOption( "dosseg" );
 }
 
 static void ProcDSAllocate( const char *arg )
 /*******************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     NotSupported( "dsallocate" );
 }
 
@@ -1243,14 +1248,16 @@ static void ProcDynamic( const char *arg )
 static void ProcExePack( const char *arg )
 /****************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     NotSupported( "exepack" );
 }
 
 static void ProcFarCallTrans( const char *arg )
 /*********************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     Warning( "far call translation happens automatically for WATCOM .obj files", OPTION_SLOT );
     Warning( "use FCENABLE for far call translation on non-WATCOM .obj files", OPTION_SLOT );
 }
@@ -1269,7 +1276,7 @@ static void WriteOptions( switch_entry *entry )
         for( kw = entry->keyword; *kw != '\0'; ++kw ) {
             help_line[i++] = *kw;
         }
-        if( i < 31 ) {  
+        if( i < 31 ) {
             while( i < 31 ) {   // pad to second column
                 help_line[i++] = ' ';
             }
@@ -1288,7 +1295,8 @@ static void WriteOptions( switch_entry *entry )
 static void ProcHelp( const char *arg )
 /*************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     WriteHelp();
     WriteOptions( OptionsTable );
     Suicide();
@@ -1297,35 +1305,40 @@ static void ProcHelp( const char *arg )
 static void ProcHigh( const char *arg )
 /*************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     NotSupported( "high" );
 }
 
 static void ProcIncremental( const char *arg )
 /********************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     NotSupported( "incremental" );
 }
 
 static void ProcInformation( const char *arg )
 /********************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     NotNecessary( "information" );
 }
 
 static void ProcLineNumbers( const char *arg )
 /********************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     NotSupported( "linenumbers" );
 }
 
 static void ProcMap( const char *arg )
 /************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     MapOption = true;
     /* Argument is ignored. */
 }
@@ -1342,70 +1355,80 @@ static void ProcNoDefLibSearch( const char *arg )
 static void ProcNoExtDictSearch( const char *arg )
 /************************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     NotNecessary( "noextdictionary" );
 }
 
 static void ProcNoFarCallTrans( const char *arg )
 /***********************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     NotNecessary( "nofarcalltranslation" );
 }
 
 static void ProcNoGroupAssoc( const char *arg )
 /*********************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     NotSupported( "nogroupassociation" );
 }
 
 static void ProcNoIgnoreCase( const char *arg )
 /*********************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     AddOption( "caseexact" );
 }
 
 static void ProcNoLogo( const char *arg )
 /***************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     AddOption( "quiet" );
 }
 
 static void ProcNoNullsDosseg( const char *arg )
 /**********************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     NotSupported( "nonullsdosseg" );
 }
 
 static void ProcNoPackCode( const char *arg )
 /*******************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     AddNumOption( "packcode", 0 );    // option packcode=0 doesn't pack code.
 }
 
 static void ProcNoPackFunctions( const char *arg )
 /************************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     NotNecessary( "nopackfunctions" );
 }
 
 static void ProcOldOverlay( const char *arg )
 /*******************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     AddOption( "standard" );
 }
 
 static void ProcOnError( const char *arg )
 /****************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     Warning( "undefsok behaviour slightly different than onerror", OPTION_SLOT );
     AddOption( "undefsok" );
 }
@@ -1452,7 +1475,8 @@ static void ProcPadData( const char *arg )
 static void ProcPause( const char *arg )
 /**************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     NotSupported( "pause" );
 }
 
@@ -1511,21 +1535,24 @@ static void ProcStack( const char *arg )
 static void ProcQuickLibrary( const char *arg )
 /*********************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     NotSupported( "quicklibrary" );
 }
 
 static void ProcTiny( const char *arg )
 /*************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     FmtType = FMT_COM;
 }
 
 static void ProcWarnFixup( const char *arg )
 /******************************************/
 {
-    arg=arg;
+    /* unused parameters */ (void)arg;
+
     NotSupported( "warnfixup" );
 }
 

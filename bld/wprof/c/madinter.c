@@ -69,8 +69,9 @@ void MADCLIENTRY( AddrSection )( address *addr )
 
 mad_status MADCLIENTRY( AddrOvlReturn )( address *addr )
 {
+    /* unused parameters */ (void)addr;
+
     /* never called */
-    addr = addr;
     return( MS_FAIL );
 }
 
@@ -81,7 +82,8 @@ mad_status MADCLIENTRY( AddrToString )( address a, mad_type_handle th,
     addr_ptr            item;
     mad_type_info       host;
 
-    lk = lk;
+    /* unused parameters */ (void)lk;
+
     if( CnvAddr( a, buff, buff_len ) )
         return( MS_OK );
     MADTypeInfo( th, &mti );
@@ -93,8 +95,9 @@ mad_status MADCLIENTRY( AddrToString )( address a, mad_type_handle th,
 
 mad_status MADCLIENTRY( MemExpr )( const char *expr, mad_radix radix, address *a )
 {
+    /* unused parameters */ (void)expr; (void)radix; (void)a;
+
     /* never called */
-    expr = expr; radix = radix; a = a;
     return( MS_FAIL );
 }
 
@@ -114,7 +117,8 @@ size_t MADCLIENTRY( ReadMem )( address a, size_t size, void *buff )
 
 size_t MADCLIENTRY( WriteMem )( address a, size_t size, const void *buff )
 {
-    a = a; size = size; buff = buff;
+    /* unused parameters */ (void)a; (void)size; (void)buff;
+
     return( 0 );
 }
 
@@ -141,14 +145,16 @@ size_t MADCLIENTRY( String )( mad_string mstr, char *buff, size_t buff_len )
 
 mad_status MADCLIENTRY( AddString )( mad_string mstr, const char *str )
 {
+    /* unused parameters */ (void)mstr; (void)str;
+
     //MAD: NYI
-    mstr = mstr; str = str;
     return( MS_FAIL );
 }
 
 size_t MADCLIENTRY( RadixPrefix )( mad_radix radix, char *buff, size_t buff_len )
 {
-    radix=radix; buff = buff; buff_len = buff_len;
+    /* unused parameters */ (void)radix; (void)buff; (void)buff_len;
+
     return( 0 );
 }
 
