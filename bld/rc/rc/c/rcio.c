@@ -323,7 +323,7 @@ static bool ChangeTmpToOutFile( const char *tmpfile, const char *outfile )
     /* rename the temp file to the output file */
     fileerror = rename( tmpfile, outfile );
     if( fileerror ) {
-        RcError( ERR_RENAMEING_TMP_FILE, tmpfile, outfile, strerror( errno ) );
+        RcError( ERR_RENAMING_TMP_FILE, tmpfile, outfile, strerror( errno ) );
         remove( tmpfile );
         rc = true;
     }

@@ -106,7 +106,7 @@ static void RcMsgV( unsigned errornum, OutputSeverity sev, va_list arglist )
     case ERR_NOT_VALID_EXE:
     case ERR_OUT_OF_MEMORY:
     case ERR_PARSER_INTERNAL:
-    case ERR_RENAMEING_TMP_FILE:
+    case ERR_RENAMING_TMP_FILE:
     case ERR_TOO_MANY_ARGS:
     case ERR_UNKNOWN_MULT_OPTION:
     case ERR_UNKNOWN_OPTION:

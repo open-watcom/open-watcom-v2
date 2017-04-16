@@ -16,7 +16,7 @@ pick(   STR_APP_NAME,
 pick(   ERR_CANT_OPEN_FILE,
         "Unable to open file \"%s\": %s.",
         "ファイルをオ－プン出来ません \"%s\": %s." )
-pick(   ERR_RENAMEING_TMP_FILE,
+pick(   ERR_RENAMING_TMP_FILE,
         "Error renaming temporary file \"%s\" to \"%s\": %s.",
         "テンポラリ ファイル \"%s\" の \"%s\"への変更エラ－です: %s." )
 pick(   ERR_NOT_ICON_FILE,
