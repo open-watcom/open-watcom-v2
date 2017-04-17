@@ -137,9 +137,10 @@ static void extrefClassVisit(   // VISIT ANCESTRAL CLASS
     SYMBOL csym,                // - corresponding class symbol
     void * _rinfo )              // - resolution information
 {
+    EXTRF *rinfo = _rinfo;
+
     /* unused parameters */ (void)sym;
 
-    EXTRF *rinfo = _rinfo;
     extrefPruneOvfn( &rinfo->syms, csym );
     extrefAddOvfn( &rinfo->syms, csym );
 }
