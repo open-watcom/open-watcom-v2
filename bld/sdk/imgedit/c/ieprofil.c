@@ -112,6 +112,8 @@ static void loadPositionValues( HINI hini )
     int         sysbox_width;
     int         x, y;
 
+    /* unused parameters */ (void)hini;
+
     x = _wpi_getsystemmetrics( SM_CXSCREEN );
     y = _wpi_getsystemmetrics( SM_CYSCREEN );
     sysbox_width = _wpi_getsystemmetrics( SM_CYCAPTION );
@@ -183,6 +185,8 @@ static void loadSettings( settings_info *info, HINI hini )
     ImgedConfigInfo.show_state = _wpi_getprivateprofileint( hini,
         imgedSection, "show_state", ImgedConfigInfo.show_state, iniPath );
 
+    /* unused parameters */ (void)hini;
+
     info->paste = _wpi_getprivateprofileint( hini, imgedSection,
         "paste", info->paste, iniPath );
     info->rotate = _wpi_getprivateprofileint( hini, imgedSection,
@@ -219,7 +223,7 @@ void LoadImgedConfig( void )
 #ifdef __NT__
     GetConfigFilePath( iniPath, sizeof( iniPath ) );
     strcat( iniPath, "\\" WATCOM_INI );
-#endif    
+#endif
     setDefaultValues( &info );
 
     /*
@@ -253,6 +257,8 @@ void LoadImgedConfig( void )
 static void savePositionValues( HINI hini )
 {
     char        buf[10];
+
+    /* unused parameters */ (void)hini;
 
     itoa( ImgedConfigInfo.ismaximized, buf, 10 );
     _wpi_writeprivateprofilestring( hini, imgedSection, "ismaximized", buf, iniPath );
@@ -293,6 +299,8 @@ static void savePositionValues( HINI hini )
 static void saveSettings( settings_info *info, HINI hini )
 {
     char        buf[10];
+
+    /* unused parameters */ (void)hini;
 
     itoa( info->paste, buf, 10 );
     _wpi_writeprivateprofilestring( hini, imgedSection, "paste", buf, iniPath );

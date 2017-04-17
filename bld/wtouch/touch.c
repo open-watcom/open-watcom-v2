@@ -261,6 +261,8 @@ static void incFilesOwnTime( char *full_name, struct dirent *dir, struct utimbuf
     time_t      ftime;
     struct tm  *ptime;
 
+    /* unused parameters */ (void)full_name;
+
     /* check for the case of only specifying '/i' with nothing else */
     if( ! TouchFlags.increment_time ) {
         return;

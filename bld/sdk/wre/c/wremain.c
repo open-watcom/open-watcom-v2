@@ -1064,6 +1064,8 @@ INT_PTR CALLBACK WRESplashDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARA
     static HBRUSH    brush;
     static COLORREF  color;
 
+    /* unused parameters */ (void)wParam;
+
     switch( message ) {
     case WM_SYSCOLORCHANGE:
         WRECtl3dColorChange();

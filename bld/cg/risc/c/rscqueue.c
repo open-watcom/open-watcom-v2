@@ -151,6 +151,8 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
     offset              len;
     label_handle        lbl;
 
+    /* unused parameters */ (void)next_lbl;
+
     base = oc->oc_header.class & GET_BASE;
     if( base == OC_RET && (oc->oc_header.class & ATTR_NORET) )
         return;

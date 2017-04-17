@@ -43,6 +43,7 @@ void SemOS2WriteFontDir( void )
 
 void SemOS2WriteStringTable( FullStringTable *currtable, WResID *type )
 {
+    /* unused parameters */ (void)currtable; (void)type;
 }
 
 bool RcBuildLXResourceObjects( void )
@@ -67,16 +68,22 @@ RcStatus CopyOS2Resources( void )
 
 RcStatus InitOS2ResTable( int *err_code )
 {
+    /* unused parameters */ (void)err_code;
+
     return( RS_READ_ERROR );
 }
 
 RcStatus WriteOS2ResTable( WResFileID fid, OS2ResTable *restab, int *err_code )
 {
+    /* unused parameters */ (void)fid; (void)restab; (void)err_code;
+
     return( RS_READ_ERROR );
 }
 
 uint_32 ComputeOS2ResSegCount( WResDir dir )
 {
+    /* unused parameters */ (void)dir;
+
     return( 0 );
 }
 
