@@ -43,7 +43,8 @@ WINEXPORT INT_PTR CALLBACK ASaveDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
  */
 WINEXPORT INT_PTR CALLBACK ASaveDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    lparam = lparam;
+    /* unused parameters */ (void)lparam;
+
     switch( msg ) {
     case WM_INITDIALOG:
         CenterWindowInRoot( hwnd );

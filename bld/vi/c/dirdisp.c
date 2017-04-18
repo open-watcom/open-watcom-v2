@@ -79,8 +79,7 @@ static bool FileCompleteMouseHandler( window_id wid, int win_x, int win_y )
 /*
  * appendExtra - add extra to end
  */
-static vi_rc appendExtra( char *data, int start, int max, direct_ent *fi,
-                        int len )
+static vi_rc appendExtra( char *data, int start, int max, direct_ent *fi, int len )
 {
     int     i;
     vi_rc   rc;
@@ -91,7 +90,7 @@ static vi_rc appendExtra( char *data, int start, int max, direct_ent *fi,
         }
         data[i] = fi->name[i - start];
     }
-    if( fi->attr & _A_SUBDIR ) {
+    if( IS_SUBDIR( fi ) ) {
         rc = ERR_NO_ERR;
     } else {
         rc = FILE_COMPLETE;
@@ -251,7 +250,7 @@ static void parseFileName( int i, char *buffer )
     if( i >= DirFileCount ) {
         MySprintf( buffer, strFmt, ' ', SingleBlank );
     } else {
-        if( DirFiles[i]->attr & _A_SUBDIR ) {
+        if( IS_SUBDIR( DirFiles[i] ) ) {
             ch = FILE_SEP;
         } else {
             ch = ' ';
@@ -384,7 +383,7 @@ static void displayFiles( void )
         if( i >= DirFileCount ) {
             MySprintf( tmp2, strFmt, ' ', SingleBlank );
         } else {
-            if( DirFiles[i]->attr & _A_SUBDIR ) {
+            if( IS_SUBDIR( DirFiles[i] ) ) {
                 dirc = FILE_SEP;
             } else {
                 dirc = ' ';
@@ -398,7 +397,7 @@ static void displayFiles( void )
             DisplayLineInWindow( dir_wid, l++, tmp );
             if( hilite >= 0 ) {
                 j = hilite * NAMEWIDTH;
-                if( DirFiles[lastFilec]->attr & _A_SUBDIR ) {
+                if( IS_SUBDIR( DirFiles[lastFilec] ) ) {
                     dirc = FILE_SEP;
                 } else {
                     dirc = ' ';

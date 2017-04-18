@@ -40,25 +40,14 @@
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
-static char *filterList = "C/C++ Files (*.c;*.h;*.cpp;*.hpp;*.cxx;*.hxx;*.inl)\0*.c;*.h;*.cpp;*.hpp;*.cxx;*.hxx;*.inl\0"
-                          "C Files (*.c;*.h)\0*.c;*.h\0"
-                          "C++ Files (*.cpp;*.hpp;*.cxx;*.hxx;*.inl)\0*.cpp;*.hpp;*.cxx;*.hxx;*.inl\0"
-                          "Fortran Files (*.for;*.fi;*.f;*.inc)\0*.for;*.fi;*.f;*.inc\0"
-                          "Java(Script) Files (*.java;*.js)\0*.java;*.js\0"
-                          "SQL Files (*.sql)\0*.sql\0"
-                          "Batch Files (*.bat;*.cmd)\0*.bat;*.cmd\0"
-                          "Basic (*.bas;*.frm;*.cls)\0*.bas;*.frm;*.cls\0"
-                          "Perl Files (*.pl;*.cgi)\0*.pl;*.cgi\0"
-                          "HTML Files (*.htm;*.html;*.xhtml)\0*.htm;*.html;*.xhtml\0"
-                          "WML Files (*.wml)\0*.wml\0"
-                          "GML Files (*.gml)\0*.gml\0"
-                          "DBTest (*.tst)\0*.tst\0"
-                          "Makefiles (makefile;*.mk;*.mif;*.mak)\0makefile;*.mk;*.mif;*.mak\0"
-                          "Assembly Files (*.asm;*.inc)\0*.asm;*.inc\0"
-                          "Resource Files (*.rc;*.rh;*.dlg)\0*.rc;*.rh;*.dlg\0"
-                          "AWK Files (*.awk)\0*.awk\0"
-                          "All Files (*.*)\0*.*\0"
-                          "\0";
+static char *filterList = {
+    #define LANG_FILTER
+    #define pick_lang(enum,enumrc,name,namej,fname,desc,filter) desc " (" filter ")\0" filter "\0"
+    #include "langdef.h"
+    #undef pick_lang
+    "\0"
+};
+
 static char *FileNameList;
 
 WINEXPORT UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
@@ -108,6 +97,8 @@ vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool wan
     static long         filemask = 1;
     bool                is_chicago = false;
 
+    /* unused parameters */ (void)mask; (void)want_all_dirs;
+
 #if defined( __NT__ ) && !defined( _WIN64 )
     /* added to get around chicago crashing in the fileopen dlg */
     /* -------------------------------------------------------- */
@@ -117,8 +108,6 @@ vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool wan
     /* -------------------------------------------------------- */
 #endif
 
-    mask = mask;
-    want_all_dirs = want_all_dirs;
     *result[0] = '\0';
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );

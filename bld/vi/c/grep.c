@@ -164,6 +164,7 @@ static int initList( window_id wid, const char *dirlist, char **list )
 {
     char        dir[MAX_STR];
     int         clist;
+    size_t      len;
 
 #ifdef __WIN__
     InitGrepDialog();
@@ -179,6 +180,16 @@ static int initList( window_id wid, const char *dirlist, char **list )
         fileGrep( EditVars.GrepDefault, list, &clist, wid );
     } else {
         do {
+            len = strlen( dir ) - 1;
+            if( dir[len] == FILE_SEP ) {
+#ifdef __UNIX__
+                if( len > 0 ) {
+#else
+                if( len > 0 && ( len != 2 || dir[1] != DRV_SEP ) ) {
+#endif
+                        dir[len] = '\0';
+                }
+            }
             if( IsDirectory( dir ) ) {
                 strcat( dir, FILE_SEP_STR );
                 strcat( dir, EditVars.GrepDefault );
@@ -284,7 +295,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc( HWND dlg, UINT msg, WPARAM wparam, L
         MySprintf( tmp, "Files Containing \"%s\"", sString );
         SetWindowText( dlg, tmp );
         fileList = (char **)MemAlloc( sizeof( char * ) * MAX_FILES );
-        fileCount = initList( list_box, (char *)lparam, fileList );
+        fileCount = initList( list_box, (const char *)lparam, fileList );
         if( fileCount == 0 ) {
             /* tell him that there are no matches and close down? */
             Message1( "String \"%s\" not found", sString );
@@ -355,7 +366,7 @@ WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam,
         lvc.iSubItem = 1;
         SendMessage( list_box, LVM_INSERTCOLUMN, 1, (LPARAM)&lvc );
         fileList = (char **)MemAlloc( sizeof( char * ) * MAX_FILES );
-        fileCount = initList( list_box, (char *)lparam, fileList );
+        fileCount = initList( list_box, (const char *)lparam, fileList );
         if( fileCount == 0 ) {
             Message1( "String \"%s\" not found", sString );
             EndDialog( dlg, DO_NOT_CLEAR_MESSAGE_WINDOW );
@@ -583,7 +594,7 @@ static void fileGrep( const char *dir, char **list, int *clist, window_id wid )
         return;
     }
     for( i = 0; i < DirFileCount; i++ ) {
-        if( !(DirFiles[i]->attr & _A_SUBDIR ) ) {
+        if( !IS_SUBDIR( DirFiles[i] ) ) {
 
             strcpy( fn, path );
             strcat( fn, DirFiles[i]->name );

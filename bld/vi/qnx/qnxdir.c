@@ -55,7 +55,7 @@ void GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path )
     }
     tmp->attr = 0;
     if( nd->d_stat.st_mode & S_IFDIR ) {
-        tmp->attr |= _A_SUBDIR;
+        SET_SUBDIR( tmp );
     }
     tmp->fsize = nd->d_stat.st_size;
     tmp->time = nd->d_stat.st_mtime;
@@ -108,7 +108,7 @@ void FormatFileEntry( direct_ent *file, char *res )
 
     strcpy(buff,"----------");
     size = file->fsize;
-    if( file->attr & _A_SUBDIR ) {
+    if( IS_SUBDIR( file ) ) {
         MySprintf(tmp," " FILE_SEP_STR "%S", file->name);
         buff[0] = 'd';
         size = 0;

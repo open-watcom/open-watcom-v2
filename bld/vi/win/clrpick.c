@@ -273,8 +273,7 @@ static LRESULT gotoNewBlock( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HDC     hdc;
 
-    wparam = wparam;
-    msg = msg;
+    /* unused parameters */ (void)wparam; (void)msg;
 
     hdc = GetDC( hwnd );
     drawUnselected( hdc, cursx, cursy );

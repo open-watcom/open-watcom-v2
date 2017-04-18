@@ -876,7 +876,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                 SetNextAutoSaveTime();
                 break;
             case SETVAR_T_LANGUAGE:
-                if( lval < LANG_NONE || lval >= LANG_MAX ) {
+                if( lval < LANG_MIN || lval >= LANG_MAX ) {
                     return( ERR_INVALID_SET_COMMAND );
                 }
                 if( CurrentInfo != NULL ) {

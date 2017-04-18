@@ -133,7 +133,8 @@ void BIOSSetBlinkAttr( void )
 
 void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
 {
-    page = page;
+    /* unused parameters */ (void)page;
+
     VioSetCurPos( row, col, 0);
 
 } /* BIOSSetCursor */
@@ -142,7 +143,8 @@ unsigned short BIOSGetCursor( unsigned char page )
 {
     USHORT      r, c;
 
-    page = page;
+    /* unused parameters */ (void)page;
+
     VioGetCurPos( &r, &c, 0 );
     return( ( r << 8 ) + ( c & 0xFF ) );
 
@@ -152,7 +154,8 @@ void BIOSNewCursor( unsigned char top, unsigned char bottom )
 {
     VIOCURSORINFO       vioCursor;
 
-    bottom = bottom;
+    /* unused parameters */ (void)bottom;
+
     VioGetCurType( &vioCursor, 0 );
     vioCursor.yStart = top;
     VioSetCurType( &vioCursor, 0);
@@ -200,4 +203,3 @@ void  BIOSUpdateScreen( size_t offset, unsigned nchars )
     VioShowBuf( offset * sizeof( char_info ), nchars * sizeof( char_info ), 0 );
 
 } /* BIOSUpdateScreen */
-

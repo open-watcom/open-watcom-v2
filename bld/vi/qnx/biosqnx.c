@@ -206,7 +206,8 @@ void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
         struct _console_write_reply write_reply;
     } msg;
 
-    page = page;
+    /* unused parameters */ (void)page;
+
     _crow = row;
     _ccol = col;
 
@@ -232,7 +233,8 @@ void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
 
 unsigned short BIOSGetCursor( unsigned char page )
 {
-    page = page;
+    /* unused parameters */ (void)page;
+
     return( ( _crow << 8 ) + ( _crow & 0xFF ) );
 
 } /* BIOSGetCursor */
@@ -466,4 +468,3 @@ void BIOSUpdateScreen( size_t offset, unsigned nchars )
     Sendmx(QNXCon->driver, 2, 1, &sx, &rx );
 
 } /* BIOSUpdateScreen */
-

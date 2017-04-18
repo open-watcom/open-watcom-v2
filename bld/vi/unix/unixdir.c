@@ -58,7 +58,7 @@ void GetFileInfo( direct_ent *tmp, struct dirent *nd, const char *path )
     free( tmpname );
     tmp->attr = 0;
     if( S_ISDIR( st.st_mode ) ) {
-        tmp->attr |= _A_SUBDIR;
+        SET_SUBDIR( tmp );
     }
     tmp->fsize = st.st_size;
     tmp->time = st.st_mtime;
@@ -117,7 +117,7 @@ void FormatFileEntry( direct_ent *file, char *res )
 
     strcpy( buff, "----------" );
     size = file->fsize;
-    if( file->attr & _A_SUBDIR ) {
+    if( IS_SUBDIR( file ) ) {
         MySprintf( tmp, " " FILE_SEP_STR "%S", file->name );
         buff[0] = 'd';
         size = 0;
@@ -139,7 +139,7 @@ void FormatFileEntry( direct_ent *file, char *res )
         buff[2] = 'w';
     }
     if( file->st_mode & S_IXUSR ) {
-        if( (file->attr & _A_SUBDIR) == 0 ) {
+        if( !IS_SUBDIR( file ) ) {
             tmp[1] = '*';
         }
         buff[3] = 'x';
@@ -151,7 +151,7 @@ void FormatFileEntry( direct_ent *file, char *res )
         buff[5] = 'w';
     }
     if( file->st_mode & S_IXGRP ) {
-        if( (file->attr & _A_SUBDIR) == 0 ) {
+        if( !IS_SUBDIR( file ) ) {
             tmp[1] = '*';
         }
         buff[6] = 'x';
@@ -163,7 +163,7 @@ void FormatFileEntry( direct_ent *file, char *res )
         buff[8] = 'w';
     }
     if( file->st_mode & S_IXOTH ) {
-        if( (file->attr & _A_SUBDIR) == 0 ) {
+        if( !IS_SUBDIR( file ) ) {
             tmp[1] = '*';
         }
         buff[9] = 'x';

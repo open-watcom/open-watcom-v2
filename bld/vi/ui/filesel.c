@@ -101,7 +101,7 @@ vi_rc SelectFileOpen( const char *dir, char **result_ptr, const char *mask, bool
             break;
         }
         j = (int) sfd.sl - 1;
-        if( j >= DirFileCount || DirFiles[j]->attr & _A_SUBDIR ) {
+        if( j >= DirFileCount || IS_SUBDIR( DirFiles[j] ) ) {
             if( j >= DirFileCount ) {
                 GimmeLinePtr( j + 1, cfile, &cfcb, &cline );
                 dd[0] = cline->data[3];

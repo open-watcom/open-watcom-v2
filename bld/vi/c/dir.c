@@ -183,7 +183,7 @@ void FormatDirToFile( file *cfile, bool add_drives )
      * add directory data
      */
     for( i = 0; i < DirFileCount; i++ ) {
-        if( DirFiles[i]->attr & _A_SUBDIR ) {
+        if( IS_SUBDIR( DirFiles[i] ) ) {
             if( DirFiles[i]->name[0] == '.' && DirFiles[i]->name[1] == '\0' ) {
                 MemFree( DirFiles[i] );
                 for( j = i + 1; j < DirFileCount; j++ ) {

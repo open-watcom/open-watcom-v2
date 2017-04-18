@@ -55,9 +55,6 @@ WINEXPORT INT_PTR CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
     history_data        *h;
     char                *ptr;
 
-#ifdef __NT__
-    lparam = lparam;
-#endif
     switch( msg ) {
     case WM_INITDIALOG:
         CenterWindowInRoot( hwnd );

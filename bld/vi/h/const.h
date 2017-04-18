@@ -57,15 +57,12 @@ typedef enum {
     USE_UNDO_UNDO   = 0x02
 } linedel_flags;
 
-#if defined( __UNIX__ ) || defined( __IBMC__ )
-    #define _A_NORMAL       0x00    /* Normal file - read/write permitted */
-    #define _A_RDONLY       0x01    /* Read-only file */
-    #define _A_HIDDEN       0x02    /* Hidden file */
-    #define _A_SYSTEM       0x04    /* System file */
-    #define _A_VOLID        0x08    /* Volume-ID entry */
+#ifndef _A_SUBDIR
     #define _A_SUBDIR       0x10    /* Subdirectory */
-    #define _A_ARCH         0x20    /* Archive file */
 #endif
+
+#define IS_SUBDIR(f)        (((f)->attr & _A_SUBDIR) != 0)
+#define SET_SUBDIR(f)       (f)->attr |= _A_SUBDIR
 
 #if defined( __UNIX__ )
     #define FILE_SEP            '/'

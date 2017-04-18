@@ -37,7 +37,7 @@
 
 
 static lang_info    langInfo[] = {
-    #define pick_lang(enum,enumrc,name,namej,fname) { NULL, 0, 0, NULL },
+    #define pick_lang(enum,enumrc,name,namej,fname,desc,filter) { NULL, 0, 0, NULL },
     #include "langdef.h"
     #undef pick_lang
 };
@@ -232,7 +232,7 @@ void LangInit( lang_t newLanguage )
     vi_rc       rc;
     char        *buff;
     char        *fname[] = {
-        #define pick_lang(enum,enumrc,name,namej,fname) fname,
+        #define pick_lang(enum,enumrc,name,namej,fname,desc,filter) fname,
         #include "langdef.h"
         #undef pick_lang
     };
@@ -329,7 +329,7 @@ void LangFiniAll( void )
 {
     lang_t  i;
 
-    for( i = LANG_NONE; i < LANG_MAX; i++ ) {
+    for( i = LANG_MIN; i < LANG_MAX; i++ ) {
         while( langInfo[i].ref_count ) {
             LangFini( i );
         }

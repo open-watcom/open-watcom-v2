@@ -105,12 +105,13 @@ extern windim   CurrMouseRow;
 
 void BIOSGetColorPalette( void *a )
 {
-    a = a;
+    /* unused parameters */ (void)a;
 }
 
 uint_32 BIOSGetColorRegister( unsigned short a )
 {
-    a = a;
+    /* unused parameters */ (void)a;
+
     return( 0 );
 }
 
@@ -124,7 +125,7 @@ void BIOSSetBlinkAttr( void )
 
 void BIOSSetColorRegister( unsigned short reg, unsigned char r, unsigned char g, unsigned char b )
 {
-    reg = reg; r = r; g = g; b =b;
+    /* unused parameters */ (void)reg; (void)r; (void)g; (void)b;
 }
 
 static COORD    _cpos = { 0, 0 };
@@ -139,7 +140,8 @@ static int CompareEvents( const void *p1, const void *p2 )
  */
 void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
 {
-    page = page;
+    /* unused parameters */ (void)page;
+
     _cpos.X = col;
     _cpos.Y = row;
     SetConsoleCursorPosition( OutputHandle, _cpos );
@@ -151,7 +153,8 @@ void BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col )
  */
 unsigned short BIOSGetCursor( unsigned char page )
 {
-    page = page;
+    /* unused parameters */ (void)page;
+
     return( ( _cpos.Y << 8 ) + ( _cpos.X & 0xFF ) );
 
 } /* BIOSGetCursor */

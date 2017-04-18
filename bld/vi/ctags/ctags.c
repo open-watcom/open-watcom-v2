@@ -84,6 +84,26 @@ static char             *fileName = "tags";
 static char             tmpFileName[_MAX_PATH];
 static file_type        fileType = TYPE_NONE;
 
+static bool skipEntry( struct dirent *dire )
+{
+#ifdef __UNIX__
+    return( false );
+#else
+    return( (dire->d_attr & _A_VOLID) != 0 );
+#endif
+}
+
+static bool isDirectory( struct dirent *dire )
+{
+#ifdef __UNIX__
+    struct stat buf;
+    stat( dire->d_name, &buf );
+    return( S_ISDIR( buf.st_mode ) );
+#else
+    return( (dire->d_attr & _A_SUBDIR) != 0 );
+#endif
+}
+
 static void displayBanner( void )
 {
     if( quietFlag ) {
@@ -267,7 +287,7 @@ static void processFile( const char *arg )
 static void processFileList( const char *ptr )
 {
     DIR                 *dirp;
-    struct dirent       *dirent;
+    struct dirent       *dire;
     const char          *tmp;
     bool                has_wild = false;
     char                buff1[_MAX_PATH2];
@@ -297,24 +317,16 @@ static void processFileList( const char *ptr )
     if( dirp == NULL ) {
         return;
     }
-    while( (dirent = readdir( dirp )) != NULL ) {
-
-#ifdef __UNIX__
-        {
-            struct stat buf;
-            stat( dirent->d_name, &buf );
-            if ( S_ISDIR( buf.st_mode ) )
-                continue;
-        }
-#else
-        if( dirent->d_attr & (_A_SUBDIR | _A_VOLID) ) {
+    while( (dire = readdir( dirp )) != NULL ) {
+        if( skipEntry( dire ) )
             continue;
-        }
-#endif
-
-        _splitpath2( dirent->d_name, buff2, NULL, NULL, &fname, &ext );
+        if( isDirectory( dire ) )
+            continue;
+        _splitpath2( dire->d_name, buff2, NULL, NULL, &fname, &ext );
         _makepath( path, drive, dir, fname, ext );
+#ifndef __UNIX__
         strlwr( path );
+#endif
         processFile( path );
     }
     closedir( dirp );

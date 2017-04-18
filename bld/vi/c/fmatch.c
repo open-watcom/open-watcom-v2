@@ -57,7 +57,7 @@ vi_rc FileMatchInit( const char *wild )
     /*
      * compute required size
      */
-    j = 3;
+    j = 4;
     len = strlen( wild );
     for( i = 0; i < len; i++ ) {
         if( wild[i] == '?' ) {
@@ -73,8 +73,13 @@ vi_rc FileMatchInit( const char *wild )
     /*
      * build match string
      */
-    tomatch[0] = '^';
-    j = 1;
+    j = 0;
+    tomatch[j++] = '^';
+#ifdef __UNIX__
+    tomatch[j++] = '@';     // case sensitive compare
+#else
+    tomatch[j++] = '~';     // case insensitive compare
+#endif
     len = strlen( wild );
     for( i = 0; i < len; i++ ) {
         if( wild[i] == '?' ) {

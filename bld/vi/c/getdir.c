@@ -47,19 +47,40 @@ static int compare( const void *p1, const void *p2 )
 
 } /* compare */
 
+static bool skipEntry( struct dirent *dire )
+{
+#ifdef __UNIX__
+    return( false );
+#else
+    return( (dire->d_attr & _A_VOLID) != 0 );
+#endif
+}
+
+static bool isDirectory( struct dirent *dire )
+{
+#if defined( __QNX__ )
+    return( S_ISDIR( dire->d_stat.st_mode );
+#elif defined( __UNIX__ )
+    struct stat st;
+
+    stat( dire->d_name, &st );
+    return( S_ISDIR( st.st_mode ) );
+#else
+    return( (dire->d_attr & _A_SUBDIR) != 0 );
+#endif
+}
 /*
  * getDir - get current directory list (no sorting)
  */
 static vi_rc getDir( const char *dname, bool want_all_dirs )
 {
     DIR                 *d;
-    struct dirent       *nd;
+    struct dirent       *dire;
     direct_ent          *tmp;
     int                 i, j, len;
     char                wild[FILENAME_MAX];
     char                path[FILENAME_MAX];
     char                ch;
-    bool                is_subdir;
     vi_rc               rc;
 
     /*
@@ -116,48 +137,34 @@ static vi_rc getDir( const char *dname, bool want_all_dirs )
     /*
      * loop through all directory entries
      */
-    while( (nd = readdir( d )) != NULL ) {
+    while( (dire = readdir( d )) != NULL ) {
+
+        if( skipEntry( dire ) )
+            continue;
 
         if( DirFileCount >= MAX_FILES ) {
             break;
         }
-        is_subdir = false;
-#if defined( __QNX__ )
-        if( S_ISDIR( nd->d_stat.st_mode ) {
-            is_subdir = true;
-        }
-#elif defined( __UNIX__ )
-        {
-            struct stat st;
-
-            stat( nd->d_name, &st );
-            if( S_ISDIR( st.st_mode ) ) {
-                is_subdir = true;
-            }
-        }
-#else
-        if( nd->d_attr & _A_SUBDIR ) {
-            is_subdir = true;
-        }
-#endif
-        if( !(want_all_dirs && is_subdir) ) {
-            if( !FileMatch( nd->d_name ) ) {
+        if( isDirectory( dire ) ) {
+            if( !want_all_dirs ) {
                 continue;
             }
+        } else if( !FileMatch( dire->d_name ) ) {
+            continue;
         }
 
-        len = strlen( nd->d_name );
-        DirFiles[DirFileCount] = MemAlloc( offsetof( direct_ent, name ) + len + 1 );
-        tmp = DirFiles[DirFileCount];
-        GetFileInfo( tmp, nd, path );
-
-        memcpy( tmp->name, nd->d_name, len + 1 );
+        len = strlen( dire->d_name );
+        tmp = MemAlloc( offsetof( direct_ent, name ) + len + 1 );
+        GetFileInfo( tmp, dire, path );
+        memcpy( tmp->name, dire->d_name, len + 1 );
+#ifndef __UNIX__
         FileLower( tmp->name );
-        DirFileCount++;
+#endif
+        DirFiles[DirFileCount++] = tmp;
 
     }
-    FileMatchFini();
     closedir( d );
+    FileMatchFini();
     return( ERR_NO_ERR );
 
 } /* getDir */

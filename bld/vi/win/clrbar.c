@@ -46,9 +46,7 @@ HWND        hColorbar;
  */
 WINEXPORT INT_PTR CALLBACK ClrDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-#ifdef __NT__
-    lparam = lparam;
-#endif
+    /* unused parameters */ (void)lparam;
 
     switch( msg ) {
     case WM_INITDIALOG:
