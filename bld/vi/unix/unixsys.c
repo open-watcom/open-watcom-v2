@@ -49,10 +49,9 @@ int FileSysNeedsCR( int handle )
  */
 void PushDirectory( const char *orig )
 {
-    /* unused parameters */ (void)orig;
-
     oldPath[0] = '\0';
     GetCWD2( oldPath, FILENAME_MAX );
+    ChangeDirectory( orig );
 
 } /* PushDirectory */
 

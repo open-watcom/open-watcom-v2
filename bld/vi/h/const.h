@@ -73,6 +73,7 @@ typedef enum {
     #define ALL_FILES_WILD_CARD "*"
     #define TMP_NAME_LEN        18
 #else
+    #define DRV_SEP             ':'
     #define FILE_SEP            '\\'
     #define FILE_SEP_STR        "\\"
     #define ALL_FILES_WILD_CARD "*.*"

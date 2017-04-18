@@ -112,7 +112,11 @@ static vi_rc doFileComplete( char *data, int start, int max, bool getnew, vi_key
 
     newstart = -1;
     for( i = start; !isspace( data[i] ) && i >= 0; --i ) {
-        if( (data[i] == ':' || data[i] == '/' || data[i] == '\\') && newstart < 0 ) {
+#ifdef __UNIX__
+        if( data[i] == '/' && newstart < 0 ) {
+#else
+        if( (data[i] == DRV_SEP || data[i] == '/' || data[i] == '\\') && newstart < 0 ) {
+#endif
             newstart = i + 1;
         }
     }

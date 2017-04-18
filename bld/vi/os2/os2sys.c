@@ -64,10 +64,11 @@ void PushDirectory( const char *orig )
     oldPath[0] = '\0';
     DosQCurDisk( &c, &map );
     oldDisk = (char)c;
-    if( orig[1] == ':' ) {
+    if( orig[1] == DRV_SEP ) {
         ChangeDrive( orig[0] );
     }
     GetCWD2( oldPath, sizeof( oldPath ) );
+    ChangeDirectory( orig );
 
 } /* PushDirectory */
 

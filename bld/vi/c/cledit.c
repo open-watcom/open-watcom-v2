@@ -258,14 +258,23 @@ vi_rc EditFile( const char *name, bool dammit )
                     char dir[_MAX_DIR];
                     char fname[_MAX_FNAME];
                     char ext[_MAX_EXT];
+                    size_t path_len;
 
                     _splitpath( il->CurrentFile->name, drive, dir, fname, ext );
                     if( drive[0] == '\0' ) {
                         _splitpath( il->CurrentFile->home, drive, NULL, NULL, NULL );
                     }
                     strcpy( path, il->CurrentFile->home );
-                    if( path[0] != '\0' && path[strlen( path ) - 1] != ':' )
-                        strcat( path, FILE_SEP_STR );
+                    path_len = strlen( path );
+                    if( path_len-- > 0 ) {
+#ifdef __UNIX__
+                        if( path[path_len] != FILE_SEP ) {
+#else
+                        if( path[path_len] != DRV_SEP && path[path_len] != FILE_SEP ) {
+#endif
+                            strcat( path, FILE_SEP_STR );
+                        }
+                    }
                     if( dir[0] == '\0' ) {
                         _splitpath( path, NULL, dir, NULL, NULL );
                     } else if( dir[0] != FILE_SEP ) {

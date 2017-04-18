@@ -793,17 +793,6 @@ vi_rc CurFileExitOptionSaveChanges( void )
     return( ERR_NO_ERR );
 }
 
-/*
- * UpdateCurrentDirectory - update the current directory variable
- */
-void UpdateCurrentDirectory( void )
-{
-
-    MemFreePtr( (void **)&CurrentDirectory );
-    GetCWD1( &CurrentDirectory );
-
-} /* UpdateCurrentDirectory */
-
 #ifndef __WIN__
 /*
  * DoAboutBox - do an about box

@@ -67,13 +67,18 @@ void GetCWD2( char *str, int maxlen )
  */
 vi_rc ChangeDirectory( const char *dir )
 {
+#ifdef __UNIX__
+    if( chdir( dir ) )
+        return( ERR_DIRECTORY_OP_FAILED );
+    return( ERR_NO_ERR );
+#else
     vi_rc       rc;
     size_t      shift;
     const char  *tmp;
     int         i;
 
     shift = 0;
-    if( dir[1] == ':' ) {
+    if( dir[1] == DRV_SEP ) {
         rc = ChangeDrive( dir[0] );
         if( rc != ERR_NO_ERR || dir[2] == '\0' ) {
             return( rc );
@@ -86,7 +91,7 @@ vi_rc ChangeDirectory( const char *dir )
         return( ERR_DIRECTORY_OP_FAILED );
     }
     return( ERR_NO_ERR );
-
+#endif
 } /* ChangeDirectory */
 
 /*
@@ -104,6 +109,17 @@ vi_rc ConditionalChangeDirectory( const char *where )
 } /* ConditionalChangeDirectory */
 
 /*
+ * UpdateCurrentDirectory - update the current directory variable
+ */
+void UpdateCurrentDirectory( void )
+{
+
+    MemFreePtr( (void **)&CurrentDirectory );
+    GetCWD1( &CurrentDirectory );
+
+} /* UpdateCurrentDirectory */
+
+/*
  * SetCWD - set current working directory
  */
 vi_rc SetCWD( const char *str )
@@ -114,8 +130,7 @@ vi_rc SetCWD( const char *str )
     if( rc != ERR_NO_ERR ) {
         return( rc );
     }
-    MemFreePtr( (void **)&CurrentDirectory );
-    GetCWD1( &CurrentDirectory );
+    UpdateCurrentDirectory();
     return( ERR_NO_ERR );
 
 } /* SetCWD */

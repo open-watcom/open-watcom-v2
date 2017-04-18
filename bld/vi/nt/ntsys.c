@@ -54,9 +54,9 @@ int FileSysNeedsCR( int handle )
  */
 void PushDirectory( const char *orig )
 {
-    orig = orig;
     oldDir[0] = '\0';
     GetCWD2( oldDir, _MAX_PATH );
+    ChangeDirectory( orig );
 
 } /* PushDirectory */
 
@@ -187,7 +187,7 @@ vi_rc ChangeDrive( int drive )
     char        dir[4];
 
     dir[0] = drive;
-    dir[1] = ':';
+    dir[1] = DRV_SEP;
     dir[2] = '.';
     dir[3] = '\0';
 
@@ -234,7 +234,7 @@ drive_type DoGetDriveType( int drv )
     DWORD       type;
 
     path[0] = drv;
-    path[1] = ':';
+    path[1] = DRV_SEP;
     path[2] = '\\';
     path[3] = '\0';
     type = GetDriveType( path );
