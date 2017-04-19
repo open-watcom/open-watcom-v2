@@ -1115,3 +1115,5 @@ lstrcpynA@12
 lstrcpynW@12
 lstrlenA@4
 lstrlenW@4
+RtlLookupFunctionEntry@4
+RtlUnwindRfp@16
