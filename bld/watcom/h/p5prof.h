@@ -83,7 +83,7 @@ _WCRTLINK extern void __ProfEnable( void );
 _WCRTLINK extern void __ProfDisable( void );
 _WCRTLINK extern __int64 __P5_overhead( void );
 
-#if !defined( _M_I86 )
+#if defined( _M_IX86 ) && !defined( _M_I86 )
 #pragma aux __ProfProlog "__PON" parm routine [] modify []
 _WCRTLINK extern void __ProfProlog( new_P5_timing_info *block );
 #pragma aux __ProfEpilog "__POFF" parm routine [] modify []
