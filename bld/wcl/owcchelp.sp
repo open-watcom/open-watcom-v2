@@ -71,7 +71,7 @@ Usage:  owcc [options] file ...
 -fnostdlib                      remove default library information
 -ffunction-sections             functions in separate segments
 -fvoid-ptr-arithmetic           allow arithmetic operations on (void *)
-
+-fnonconst-initializers         allow non-constant initializers
 -fsyntax-only                   check syntax only
 -Wc,<option>                    pass any option to WCC
 

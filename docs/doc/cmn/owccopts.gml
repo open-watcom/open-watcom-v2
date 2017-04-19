@@ -370,6 +370,9 @@ inline floating point rounding code
 .note fomit-fp-rounding
 omit floating point rounding code
 .*
+.note fnonconst-initializers
+allow non-constant initializers
+.*
 .note fsyntax-only
 syntax check only
 .*
