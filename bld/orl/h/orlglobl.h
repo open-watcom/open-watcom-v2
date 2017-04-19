@@ -49,7 +49,7 @@
 
 #define ORL_NIL_HANDLE      ((orl_file_id)NULL)
 
-typedef long                            *orl_file_id;
+typedef void                            *orl_file_id;
 
 typedef uint_32                         orl_file_offset;
 typedef uint_32                         orl_file_size;
