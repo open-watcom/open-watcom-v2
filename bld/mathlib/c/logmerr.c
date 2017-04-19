@@ -36,8 +36,8 @@
 #include "mathlib.h"
 
 
-double __log87_err( double x, unsigned char code )
-/************************************************/
+double __log_matherr( double x, unsigned char code )
+/**************************************************/
 {
     unsigned int    err_code;
 
