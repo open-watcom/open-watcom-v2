@@ -44,7 +44,7 @@ include math87.inc
 
         modstart    atanh87
 
-        xrefp   "C",__log87_err
+        xrefp   "C",__log_matherr
 
         xdefp   "C",atanh       ; double atanh( double x )
 ;
@@ -84,7 +84,7 @@ endif
 ifdef __STACK__
           mov   sedx,EDX            ; - save EDX (-3s)
           mov   secx,ECX            ; - save ECX (-3s)
-          call  __log87_err         ; - log error
+          call  __log_matherr       ; - log error
           push  EDX                 ; - load result into 8087
           push  EAX                 ; - ...
           fld   qword ptr 0[ESP]    ; - ...
@@ -92,7 +92,7 @@ ifdef __STACK__
           mov   EDX,sedx            ; - restore EDX (-3s)
           fwait                     ; - ...
 else
-          call  __log87_err         ; - log error
+          call  __log_matherr       ; - log error
 endif
         _else                       ; else
           fld1                      ; - 1.0

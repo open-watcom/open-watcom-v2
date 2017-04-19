@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <stdlib.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -108,9 +108,9 @@ void __ZBuf2LD( buf_arg buf, ld_arg ld )
         low = low * 10 + (*ptr++ - '0');
     }
     if( high == 0 && low == 0 ) {
-        ld->value = 0.0;
+        ld->u.value = 0.0;
     } else {
-        ld->value = (double)high * 1e9 + (double)low;
+        ld->u.value = (double)high * 1e9 + (double)low;
     }
 }
 #endif
@@ -165,9 +165,9 @@ static void __ZXBuf2LD( char *buf, ld_arg ld, int *exponent )
         high |= 1;
     low <<= 1;
 
-    ld->word[I64LO32]  = (high << (32 - 12)) | (low >> 12);
-    ld->word[I64HI32]  = high >> 12;
-    ld->word[I64HI32] |= (0x3FF + exp) << (32 - 12); /* bias is 1023 (0x3FF) */
+    ld->u.word[I64LO32]  = (high << (32 - 12)) | (low >> 12);
+    ld->u.word[I64HI32]  = high >> 12;
+    ld->u.word[I64HI32] |= (0x3FF + exp) << (32 - 12); /* bias is 1023 (0x3FF) */
 #endif
     *exponent = exp;
 }
@@ -455,14 +455,14 @@ _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
         pld->high_word = 0;
         pld->low_word  = 0;
 #else
-        pld->word[I64LO32] = 0x7FF;
-        pld->word[I64HI32] = 0;
+        pld->u.word[I64LO32] = 0x7FF;
+        pld->u.word[I64HI32] = 0;
 #endif
         if( flags & NAN_FOUND ) {
 #ifdef _LONG_DOUBLE_
             pld->high_word |= 0x80000000;
 #else
-            pld->word[I64HI32] |= 0x00080000;
+            pld->u.word[I64HI32] |= 0x00080000;
 #endif
             rc = _ISNAN;
         } else {
@@ -473,7 +473,7 @@ _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
 #ifdef _LONG_DOUBLE_
             pld->exponent |= 0x8000;
 #else
-            pld->word[I64HI32] |= 0x80000000;
+            pld->u.word[I64HI32] |= 0x80000000;
 #endif
         }
         if( endptr != NULL )
@@ -496,8 +496,8 @@ _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
         pld->high_word = 0;
         pld->low_word  = 0;
 #else
-        pld->word[I64LO32] = 0;
-        pld->word[I64HI32] = 0;
+        pld->u.word[I64LO32] = 0;
+        pld->u.word[I64HI32] = 0;
 #endif
         return( _ZERO | neg );      /* indicate zero */
     } else {
@@ -524,7 +524,7 @@ _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
 #ifdef _LONG_DOUBLE_
             ld.exponent |= 0x8000;
 #else
-            ld.word[I64HI32] |= 0x80000000;
+            ld.u.word[I64HI32] |= 0x80000000;
 #endif
         }
     }
@@ -538,8 +538,8 @@ _WMRTLINK int __F_NAME(__Strtold,__wStrtold)( const CHAR_TYPE *bufptr,
         return( _UNDERFLOW | neg );
     }
 #else
-    pld->word[0] = ld.word[0];
-    pld->word[1] = ld.word[1];
+    pld->u.word[0] = ld.u.word[0];
+    pld->u.word[1] = ld.u.word[1];
     if(( exponent + sigdigits - 1 ) > 308 ) {          /* overflow */
         return( _OVERFLOW | neg );
     } else if(( exponent + sigdigits - 1 ) < -308 ) {  /* underflow */
@@ -625,17 +625,17 @@ _WMRTLINK double __F_NAME(strtod,wcstod)( const CHAR_TYPE *bufptr, CHAR_TYPE **e
 #else
         if( type == _OVERFLOW ) {               // if exponent too large
             __set_ERANGE();                     // - overflow
-            if( ld.word[1] & 0x80000000 ) {
+            if( ld.u.word[1] & 0x80000000 ) {
                 x = - HUGE_VAL;
             } else {
                 x = HUGE_VAL;
             }
-        } else if( (ld.word[1] & 0x7FFFFFFF) == 0 && ld.word[0] == 0 ) {
+        } else if( (ld.u.word[1] & 0x7FFFFFFF) == 0 && ld.u.word[0] == 0 ) {
             /* underflow */
             __set_ERANGE();
             x = 0.0;
         } else {
-            x = ld.value;
+            x = ld.u.value;
         }
 #endif
     }

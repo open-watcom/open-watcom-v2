@@ -33,7 +33,9 @@
 #include "mathlib.h"
 #include "ifprag.h"
 
+
 #define log2_of_e    1.44269504888963407
+
 
 _WMRTLINK double __log2( double x )
 {
@@ -44,7 +46,7 @@ _WMRTLINK double log2( double x )
 /*******************************/
 {
     if( x <= 0.0 ) {
-        x = __log87_err( x, FP_FUNC_LOG2 );
+        x = __log_matherr( x, FP_FUNC_LOG2 );
     } else {
         x =  log(x) * log2_of_e;
     }

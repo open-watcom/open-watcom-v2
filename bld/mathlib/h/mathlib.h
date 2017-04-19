@@ -63,7 +63,6 @@
 
     extern  double  __pow87_err( double, double, unsigned char );
     extern  double  __math87_err( double, unsigned char );
-    extern  double  __log87_err( double, unsigned char );
 
     _WMRTLINK extern int    __matherr( struct _exception * );
 
@@ -120,5 +119,7 @@ _WMRTLINK extern  complex  __zmath1err( unsigned int err_info, complex *arg1 );
 _WMRTLINK extern  complex  __zmath2err( unsigned int err_info, complex *arg1, complex *arg2 );
 _WMRTLINK extern  dcomplex __qmath1err( unsigned int err_info, dcomplex *arg1 );
 _WMRTLINK extern  dcomplex __qmath2err( unsigned int err_info, dcomplex *arg1, dcomplex *arg2 );
+
+extern  double  __log_matherr( double, unsigned char );
 
 #endif

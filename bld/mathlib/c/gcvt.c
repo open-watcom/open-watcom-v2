@@ -57,7 +57,7 @@ _WMRTLINK char *gcvt( double value, int digits, char *buf )
     double_value = value;
     __iFDLD( &double_value, &ld );
 #else
-    ld.value = value;
+    ld.u.value = value;
 #endif
     cvt.ndigits = digits;
     cvt.flags = G_FMT | NO_TRUNC;

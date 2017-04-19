@@ -53,7 +53,7 @@ char *__cvt( double value,
     double_value = value;
     __iFDLD( &double_value, &ld );
 #else
-    ld.value = value;
+    ld.u.value = value;
 #endif
     if( fmt == 'F' ) {          // fcvt passes in 'F'
         cvt.flags = F_FMT + F_CVT;

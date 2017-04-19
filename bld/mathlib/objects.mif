@@ -125,7 +125,7 @@
 !inject log87.obj         d16i      d32i      n32i     wni
 !inject log087_.obj  d16c                          wnc
 !inject log387_.obj            d32c      n32c
-!inject log87e.obj   d16c d16i d32c d32i n32c n32i wnc wni axp ntp op
+!inject logmerr.obj  d16c d16i d32c d32i n32c n32i wnc wni axp ntp op
 !inject logb.obj     d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
 !inject lrint.obj    d16c d16i d32c d32i n32c n32i wnc wni axp ntp op lpc lmp
 !inject math2err.obj d16c d16i d32c d32i n32c n32i wnc wni axp ntp op
