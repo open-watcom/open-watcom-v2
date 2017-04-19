@@ -38,12 +38,11 @@
  * Determine if we're building RISC versions of string/memory routines.
  */
 
-#if defined(__AXP__) || defined(__PPC__)
-    #define __RISCSTR__
-#endif
+#if defined(__AXP__) || defined(__PPC__)        /* do nothing if not RISC target */
 
-#ifdef __RISCSTR__              /* do nothing if not RISC target */
-
+#include "variety.h"
+#include "widechar.h"
+#include <string.h>
 #include <wchar.h>
 #include "watcom.h"
 
@@ -351,6 +350,6 @@ _WCRTLINK extern wchar_t *  __simple__wcsupr( wchar_t *str );
 #endif
 
 
-#endif          /* #ifdef __RISCSTR__ */
+#endif  /* #if defined(__AXP__) || defined(__PPC__) */
 
 #endif
