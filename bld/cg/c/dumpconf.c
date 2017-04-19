@@ -306,6 +306,7 @@ extern  void    DumpRegName( hw_reg_set regname ) {
             if( Check(&name,HW_ST6) ) { DumpLiteral( "ST(6)"); continue; }
             if( Check(&name,HW_ST7) ) { DumpLiteral( "ST(7)"); continue; }
 #endif
+ 	    DumpLiteral( "???");
             break;
         }
     }

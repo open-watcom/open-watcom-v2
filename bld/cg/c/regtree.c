@@ -89,9 +89,8 @@ static  hw_reg_set      *AllocRegSet( void )
     hw_reg_set  *curr;
 
     regs = AllocFrl( &RegFrl, REGSET_SIZE );
-    curr = regs;
-    for( i = REG_COUNT; i > 0; --i ) {
-        HW_CAsgn( *curr++, HW_EMPTY );
+    for( curr = regs, i = REG_COUNT; i > 0; --i, ++curr ) {
+        HW_CAsgn( *curr, HW_EMPTY );
     }
     return( regs );
 }
@@ -352,15 +351,13 @@ static  void    CompressSets( reg_tree *tree )
         CompressSets( tree->hi );
         if( tree->regs != NULL ) {
             dst = tree->regs;
-            src = dst;
-            for( i = REG_COUNT; i > 0; --i ) {
+            for( src = dst, i = REG_COUNT; i > 0; --i, ++src ) {
                 if( !HW_CEqual( *src, HW_EMPTY ) ) {
                     *dst++ = *src;
                 }
-                ++src;
             }
-            while( dst != src ) {
-                HW_CAsgn( *dst++, HW_EMPTY );
+            for( ; dst != src; ++dst ) {
+                HW_CAsgn( *dst, HW_EMPTY );
             }
         }
     }
