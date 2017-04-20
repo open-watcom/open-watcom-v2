@@ -154,7 +154,7 @@ extern CHAR_TYPE *__strcpy( CHAR_TYPE *dst, const CHAR_TYPE *src );
 /* copy string t to string s */
 
 #if defined(__RISCSTR__) && defined(__WIDECHAR__)
- _WCRTLINK CHAR_TYPE *__simple_wcscpy( CHAR_TYPE *s, const CHAR_TYPE *t )
+ CHAR_TYPE *__simple_wcscpy( CHAR_TYPE *s, const CHAR_TYPE *t )
 #else
  _WCRTLINK CHAR_TYPE *__F_NAME(strcpy,wcscpy)( CHAR_TYPE *s, const CHAR_TYPE *t )
 #endif

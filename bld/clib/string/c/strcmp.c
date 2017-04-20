@@ -41,7 +41,7 @@
 /* return <0 if s<t, 0 if s==t, >0 if s>t */
 
 #if defined(__RISCSTR__) && defined(__WIDECHAR__)
- _WCRTLINK int __simple_wcscmp( const CHAR_TYPE *s, const CHAR_TYPE *t )
+ int __simple_wcscmp( const CHAR_TYPE *s, const CHAR_TYPE *t )
 #else
  _WCRTLINK int __F_NAME(strcmp,wcscmp)( const CHAR_TYPE *s, const CHAR_TYPE *t )
 #endif

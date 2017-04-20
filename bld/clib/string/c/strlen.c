@@ -32,13 +32,13 @@
 #include "widechar.h"
 #include "variety.h"
 #include <stdio.h>
-#include "xstring.h"
 #include "riscstr.h"
+#include "xstring.h"
 #undef  strlen
 
 
 #if defined(__RISCSTR__) && defined(__WIDECHAR__)
- _WCRTLINK size_t __simple_wcslen( const CHAR_TYPE *s )    /* return length of s */
+ size_t __simple_wcslen( const CHAR_TYPE *s )    /* return length of s */
 #else
  _WCRTLINK size_t __F_NAME(strlen,wcslen)( const CHAR_TYPE *s )    /* return length of s */
 #endif

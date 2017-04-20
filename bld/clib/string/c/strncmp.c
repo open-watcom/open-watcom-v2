@@ -80,7 +80,7 @@ extern int _fast_strncmp( const char *, const char _WCFAR *, size_t );
 /* return <0 if s<t, 0 if s==t, >0 if s>t */
 
 #if defined(__RISCSTR__) && defined(__WIDECHAR__)
- _WCRTLINK int __simple_wcsncmp( const CHAR_TYPE *s, const CHAR_TYPE *t, size_t n )
+ int __simple_wcsncmp( const CHAR_TYPE *s, const CHAR_TYPE *t, size_t n )
 #else
  _WCRTLINK int __F_NAME(strncmp,wcsncmp)( const CHAR_TYPE *s, const CHAR_TYPE *t, size_t n )
 #endif

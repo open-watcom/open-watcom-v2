@@ -39,27 +39,26 @@ extern "C" {
 #endif
 
 #ifdef  __INLINE_FUNCTIONS__
- void *_inline_memchr( const void *__s, int __c, size_t __n );
- int   _inline_memcmp( const void *__s1, const void *__s2, size_t __n );
- void *_inline_memcpy( void *__s1, const void *__s2, size_t __n );
- void *_inline_memmove( void *__s1, const void *__s2, size_t __n );
- void *_inline_memset( void *__s, int __c, size_t __n );
- char *_inline_strcat( char *__s1, const char *__s2 );
- char *_inline_strchr( const char *__s, int __c );
- int  _inline_strcmp( const char *__s1, const char *__s2 );
- char *_inline_strcpy( char *__s1, const char *__s2 );
- size_t _inline_strlen( const char *__s );
- void _WCFAR *_inline__fmemchr( const void _WCFAR *__s, int __c, size_t __n );
- void _WCFAR *_inline__fmemcpy( void _WCFAR *__s1, const void _WCFAR *__s2, size_t __n );
- void _WCFAR *_inline__fmemset( void _WCFAR *__s, int __c, size_t __n );
- int  _inline__fmemcmp( const void _WCFAR *__s1, const void _WCFAR *__s2, size_t __n );
- char _WCFAR *_inline__fstrcat( char _WCFAR *__s1, const char _WCFAR *__s2 );
- char _WCFAR *_inline__fstrchr( const char _WCFAR *__s, int __c );
- int  _inline__fstrcmp( const char _WCFAR *__s1, const char _WCFAR *__s2 );
- char _WCFAR *_inline__fstrcpy( char _WCFAR *__s1, const char _WCFAR *__s2 );
- size_t _inline__fstrlen( const char _WCFAR *__s );
- void _inline_movedata( unsigned __srcseg, unsigned __srcoff,
-                unsigned __tgtseg, unsigned __tgtoff, unsigned __len );
+extern void     *_inline_memchr( const void *__s, int __c, size_t __n );
+extern int      _inline_memcmp( const void *__s1, const void *__s2, size_t __n );
+extern void     *_inline_memcpy( void *__s1, const void *__s2, size_t __n );
+extern void     *_inline_memmove( void *__s1, const void *__s2, size_t __n );
+extern void     *_inline_memset( void *__s, int __c, size_t __n );
+extern char     *_inline_strcat( char *__s1, const char *__s2 );
+extern char     *_inline_strchr( const char *__s, int __c );
+extern int      _inline_strcmp( const char *__s1, const char *__s2 );
+extern char     *_inline_strcpy( char *__s1, const char *__s2 );
+extern size_t   _inline_strlen( const char *__s );
+extern void     _WCFAR *_inline__fmemchr( const void _WCFAR *__s, int __c, size_t __n );
+extern void     _WCFAR *_inline__fmemcpy( void _WCFAR *__s1, const void _WCFAR *__s2, size_t __n );
+extern void     _WCFAR *_inline__fmemset( void _WCFAR *__s, int __c, size_t __n );
+extern int      _inline__fmemcmp( const void _WCFAR *__s1, const void _WCFAR *__s2, size_t __n );
+extern char     _WCFAR *_inline__fstrcat( char _WCFAR *__s1, const char _WCFAR *__s2 );
+extern char     _WCFAR *_inline__fstrchr( const char _WCFAR *__s, int __c );
+extern int      _inline__fstrcmp( const char _WCFAR *__s1, const char _WCFAR *__s2 );
+extern char     _WCFAR *_inline__fstrcpy( char _WCFAR *__s1, const char _WCFAR *__s2 );
+extern size_t   _inline__fstrlen( const char _WCFAR *__s );
+extern void     _inline_movedata( unsigned __srcseg, unsigned __srcoff, unsigned __tgtseg, unsigned __tgtoff, unsigned __len );
 #endif  /* __INLINE_FUNCTIONS__ */
 
 #ifdef __cplusplus

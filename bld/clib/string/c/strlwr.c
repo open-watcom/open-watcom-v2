@@ -37,7 +37,7 @@
 
 
 #if defined(__RISCSTR__) && defined(__WIDECHAR__)
- _WCRTLINK CHAR_TYPE *__simple__wcslwr( CHAR_TYPE *str ) {
+ CHAR_TYPE *__simple__wcslwr( CHAR_TYPE *str ) {
 #else
  _WCRTLINK CHAR_TYPE *__F_NAME(strlwr,_wcslwr)( CHAR_TYPE *str ) {
 #endif

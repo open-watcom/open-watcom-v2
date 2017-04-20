@@ -38,7 +38,7 @@
 
 _WCRTLINK int _fstrcmp( const char _WCFAR *s, const char _WCFAR *t )
 {
-#if /*defined( _M_I86 ) &&*/ defined(__INLINE_FUNCTIONS__)
+#if defined(__INLINE_FUNCTIONS__)
     return( _inline__fstrcmp( s, t ) );
 #else
     for( ; *s == *t; s++, t++ )

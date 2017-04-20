@@ -36,7 +36,7 @@
 
 
 #if defined(__RISCSTR__) && defined(__WIDECHAR__)
- _WCRTLINK CHAR_TYPE *__simple__wcsnset( CHAR_TYPE *str, int c, size_t len )
+ CHAR_TYPE *__simple__wcsnset( CHAR_TYPE *str, int c, size_t len )
 #else
  _WCRTLINK CHAR_TYPE *__F_NAME(strnset,_wcsnset)( CHAR_TYPE *str, int c, size_t len )
 #endif

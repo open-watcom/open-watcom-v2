@@ -39,7 +39,7 @@
 
 
 #if defined(__RISCSTR__) && defined(__WIDECHAR__)
- _WCRTLINK int __simple__wcsnicmp( const CHAR_TYPE *s, const CHAR_TYPE *t, size_t n )
+ int __simple__wcsnicmp( const CHAR_TYPE *s, const CHAR_TYPE *t, size_t n )
 #else
  _WCRTLINK int __F_NAME(strnicmp,_wcsnicmp)( const CHAR_TYPE *s, const CHAR_TYPE *t, size_t n )
 #endif
