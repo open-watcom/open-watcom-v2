@@ -16,6 +16,9 @@ static_objs = $+ &
     $(clib_dir)/startup/library/$(__cifx__)/seg386.obj &
     $(clib_dir)/startup/library/$(__cifx__)/segdefns.obj &
 !endif
+!ifeq processor axp
+    $(clib_dir)/startup/library/$(__cifx__)/dstrtaxp.obj &
+!endif
     $(clib_dir)/startup/library/$(__cifx__)/atexit.obj &
     $(clib_dir)/startup/library/$(__cifx__)/argcv.obj &
     $(clib_dir)/startup/library/$(__cifx__)/wargcv.obj &
@@ -40,6 +43,7 @@ static_objs = $+ &
     $(clib_dir)/mthread/library/$(__cifx__)/declthrd.obj &
     $(clib_dir)/startup/library/$(__cifx__)/cstrtwna.obj &
     $(clib_dir)/startup/library/$(__cifx__)/cstrwwna.obj &
+    $(clib_dir)/startup/library/$(__cifx__)/dstrtwna.obj &
     $(clib_dir)/startup/library/$(__cifx__)/wstrtwna.obj &
     $(clib_dir)/startup/library/$(__cifx__)/wstrwwna.obj &
 !endif
