@@ -16,7 +16,6 @@ dll_def = $+ &
 !ifdef profile
 dll_objs = $+ &
     $(clib_dir)/startup/library/$(__cifx__)/clibdwnt.obj &
-    $(clib_dir)/startup/library/$(__cifx__)/segdefns.obj &
     $-
 !else
 dll_objs = $+ &
