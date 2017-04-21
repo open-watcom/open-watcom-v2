@@ -1,0 +1,8 @@
+#pmake/150: build flat register 32bit winnt axp rtdll os_nt cpu_axp ntrtdll
+
+component  = clib
+processor  = axp
+subdir     = _s
+system     = winnt
+
+!include $(rtdll_dir)/master.mif
