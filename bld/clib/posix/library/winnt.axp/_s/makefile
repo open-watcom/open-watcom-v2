@@ -1,4 +1,4 @@
-#pmake: winnt threading dll posix axp dynamic os_nt cpu_axp
+#pmake: nobuild winnt threading dll posix axp dynamic os_nt cpu_axp
 processor=axp
 system=winnt
 linkage=dynamic
