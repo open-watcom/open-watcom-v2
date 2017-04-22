@@ -196,6 +196,11 @@ all : $(dirs) $(libs) .SYMBOLIC
     @%make echo_lib
     $(librarian) $(libflags) $[@
 
+!ifeq host_cpu axp
+kernel32.lbc: kernel32.def ../libaxp/kernel32.def
+    $(awk) -v cpu=$(host_cpu) -f ../def2lbc.awk -v OUTFILE=$^. $<
+!endif
+
 vfw32.lbc: $(vfw32_lbcs) vfwuuid.obj
     @for %i in ($(vfw32_lbcs)) do @%append $@ @ %i
     @%append $@ +vfwuuid.obj
