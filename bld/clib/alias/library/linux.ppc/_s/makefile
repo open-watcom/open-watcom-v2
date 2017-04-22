@@ -1,4 +1,4 @@
-#pmake: linux threading alias ppc static os_linux cpu_ppc
+#pmake: nobuild linux threading alias ppc static os_linux cpu_ppc
 
 processor = ppc
 system    = linux

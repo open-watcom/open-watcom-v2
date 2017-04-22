@@ -1,4 +1,4 @@
-#pmake: 32bit linux threading merge mips static os_linux cpu_mps
+#pmake: nobuild 32bit linux threading merge mips static os_linux cpu_mps
 
 processor = mps
 subdir    = _s

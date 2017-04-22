@@ -1,4 +1,4 @@
-#pmake: nomodel cpu_axp os_nt
+#pmake: nobuild nomodel cpu_axp os_nt
 #
 # iost -- 32-bit axp CONTAINER library
 #

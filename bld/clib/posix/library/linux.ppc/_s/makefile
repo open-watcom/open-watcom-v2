@@ -1,4 +1,4 @@
-#pmake: 32bit linux threading posix ppc static os_linux cpu_ppc
+#pmake: nobuild 32bit linux threading posix ppc static os_linux cpu_ppc
 
 processor = ppc
 system    = linux

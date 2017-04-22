@@ -1,4 +1,4 @@
-#pmake: linux threading alias mips static os_linux cpu_mps
+#pmake: nobuild linux threading alias mips static os_linux cpu_mps
 
 processor = mps
 system    = linux

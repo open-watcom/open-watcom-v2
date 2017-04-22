@@ -1,4 +1,4 @@
-#pmake: no_build 32bit linux inline mips static os_linux cpu_mps
+#pmake: nobuild 32bit linux inline mips static os_linux cpu_mps
 
 processor = mps
 model     =

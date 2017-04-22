@@ -1,4 +1,4 @@
-#pmake: os_qnx cpu_386 flat
+#pmake: nobuild os_qnx cpu_386 flat
 #
 # iostmt3r.lib -- register based multi-thread 32-bit IOSTREAM library
 #
