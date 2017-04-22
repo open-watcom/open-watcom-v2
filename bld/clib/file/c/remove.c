@@ -32,13 +32,8 @@
 
 #include "variety.h"
 #include "widechar.h"
-#ifndef __UNIX__
-    #include <io.h>
-#endif
 #include <stdio.h>
-#ifdef __UNIX__
-    #include <unistd.h>
-#endif
+#include <unistd.h>
 
 
 _WCRTLINK int __F_NAME(remove,_wremove)( CHAR_TYPE const *filename )

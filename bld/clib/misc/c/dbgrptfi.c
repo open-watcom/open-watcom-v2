@@ -36,11 +36,7 @@
 #ifdef __NT__
     #include <windows.h>
 #else
-    #ifdef __UNIX__
-        #include <unistd.h>
-    #else
-        #include <io.h>
-    #endif
+    #include <unistd.h>
 #endif
 #include "dbgdata.h"
 
