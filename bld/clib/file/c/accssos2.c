@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <io.h>
 #include <direct.h>
 #define INCL_DOSERRORS

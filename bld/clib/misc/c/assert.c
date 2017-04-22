@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include "enterdb.h"
 #include <malloc.h>
 #include <stdio.h>

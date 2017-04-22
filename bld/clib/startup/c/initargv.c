@@ -30,8 +30,8 @@
 
 
 #ifdef __NETWARE__
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include "initarg.h"
 
     void __Init_Argv( void ) { }
@@ -39,8 +39,8 @@
 #else
 
 #include "dll.h"        // needs to be first
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

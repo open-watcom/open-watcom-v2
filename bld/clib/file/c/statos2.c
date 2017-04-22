@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <stdlib.h>
 #undef __INLINE_FUNCTIONS__
 #include <stddef.h>

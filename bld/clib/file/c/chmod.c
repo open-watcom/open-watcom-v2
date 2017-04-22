@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <dos.h>

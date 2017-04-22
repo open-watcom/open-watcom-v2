@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
 #if defined(__WINDOWS__) || defined(__WINDOWS_386__)

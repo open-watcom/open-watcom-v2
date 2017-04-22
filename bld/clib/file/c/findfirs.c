@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <io.h>
 #include <string.h>
 #if defined( __OS2__ )

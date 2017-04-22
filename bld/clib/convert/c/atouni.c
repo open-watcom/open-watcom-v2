@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <string.h>
 #include <stdlib.h>
 /* we want to use strlen NOT _ustrlen here */

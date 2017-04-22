@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <io.h>
 #if defined( __NT__ )
     #include <windows.h>
