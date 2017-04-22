@@ -24,41 +24,35 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of longjmpex() for Win32 on Alpha.
+* Description:  Alpha exception processing helpers.
 *
 ****************************************************************************/
 
 
-#include <windows.h>
-#include <setjmpex.h>
-#include "pdreg.h"
-
-
-typedef struct
+#ifdef BROKEN
+typedef struct __PDATA
 {
-    void            *sp;
-    void            *pc;
-    unsigned long   seb;
-    unsigned long   type;
-    unsigned long   notused[2];
-    void            *fp;
-} _JUMPEXDATA;
+    unsigned long entry;
+    unsigned long end;
+    unsigned long handler;
+    unsigned long data;
+    unsigned long endProlog;
+} _PDATA;
 
-void longjmpex( jmp_buf jb, int ret )
-{
-    EXCEPTION_RECORD    er;
-    _JUMPEXDATA         *jd = (_JUMPEXDATA *)jb;
+typedef struct _EXCINFO {
+    pc
+    pdata
+    CONTEXT ContextRecord;
+    int     InFunction;
+    PVOID   EstablisherFrame;
+} _EXCINFO;
+#else
+#define _PDATA  IMAGE_RUNTIME_FUNCTION_ENTRY
+#endif
 
-    er.ExceptionCode           = 0xE5670123;
-    er.ExceptionFlags          = 0x00000002;
-    er.ExceptionRecord         = 0L;
-    er.ExceptionAddress        = 0L;
-    er.NumberParameters        = 1L;
-    er.ExceptionInformation[0] = (unsigned long)jd->sp;
-
-    if( !_ProcSetsFP( RtlLookupFunctionEntry( jd->pc ) ) ) {
-        RtlUnwind( jd->sp, jd->pc, &er, (void *)ret );
-    } else {
-        RtlUnwindRfp( jd->fp, jd->pc, &er, (void *)ret );
-    }
-} /* longjmp() */
+_WCRTLINK extern int _ProcSetsFP( _PDATA *pdata );
+#ifdef BROKEN
+_WCRTLINK extern _EXCINFO *_SetPData( _EXCINFO *info );
+_WCRTLINK extern void _NextExcInfo( _EXCINFO *info );
+_WCRTLINK extern void _InitExcInfo( _EXCINFO *info );
+#endif
