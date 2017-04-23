@@ -479,9 +479,10 @@ static void CopyParms( void )
         return;
     if( IsAuxParmsBuiltIn( CurrInfo->parms ) )
         return;
-    for( i = 1, regs = CurrInfo->parms;
-         !HW_CEqual( *regs, HW_EMPTY ); ++i, ++regs )
-        ;
+    i = 1;
+    for( regs = CurrInfo->parms; !HW_CEqual( *regs, HW_EMPTY ); ++regs ) {
+        ++i;
+    }
     i *= sizeof( hw_reg_set );
     regs = (hw_reg_set *)CMemAlloc( i );
     memcpy( regs, CurrInfo->parms, i );
@@ -684,8 +685,8 @@ hw_reg_set *PragManyRegSets( void )
         CErr1( ERR_TOO_MANY_PARM_SETS );
         i = MAXIMUM_PARMSETS;
     }
-    HW_CAsgn( buff[i++], HW_EMPTY );
-    i *= sizeof( hw_reg_set );
+    HW_CAsgn( buff[i], HW_EMPTY );
+    i = ( i + 1 ) * sizeof( hw_reg_set );
     sets = (hw_reg_set *)CMemAlloc( i );
     memcpy( sets, buff, i );
     return( sets );
