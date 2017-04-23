@@ -556,11 +556,11 @@ static void dumpPdata           // DUMP PDATA BLOCK
     ( PData* p )                // block
 {
     dump( FT_PTR,   "\nPDATA:", p
-        , FT_RTN,   "entry",    p->entry
-        , FT_RTN,   "end",      p->end
-        , FT_RTN,   "handler",  p->exc
-        , FT_PTR,   "data",     p->exc_data
-        , FT_RTN,   "endpr",    p->endpr
+        , FT_RTN,   "entry",    p->BeginAddress
+        , FT_RTN,   "end",      p->EndAddress
+        , FT_RTN,   "handler",  p->ExceptionHandler
+        , FT_PTR,   "data",     p->HandlerData
+        , FT_RTN,   "endpr",    p->PrologEndAddress
         , FT_END );
 }
 #endif
@@ -741,19 +741,19 @@ void __DumpPdata()
     PData* p = (PData*)0x430000;
     PData* l = 0;
     printf( "PDATA at 430000\n\n" );
-    for( ; p->entry < p->end; ++p ) {
+    for( ; p->BeginAddress < p->EndAddress; ++p ) {
         if( p <= l ) {
             printf( "Out of order\n" );
         }
         printf( "%8x %8x %8x %8x %8x %8x "
-              , p->entry
-              , p->end
-              , p->exc
-              , p->exc_data
-              , p->endpr
-              , (char*)p->endpr - (char*)p->entry );
-        if( p->endpr < p->entry
-         || p->endpr >= p->end ) {
+              , p->BeginAddress
+              , p->EndAddress
+              , p->ExceptionHandler
+              , p->HandlerData
+              , p->PrologEndAddress
+              , (char*)p->PrologEndAddress - (char*)p->BeginAddress );
+        if( p->PrologEndAddress < p->BeginAddress
+         || p->PrologEndAddress >= p->EndAddress ) {
             printf( "BAD" );
         }
         printf( "\n" );

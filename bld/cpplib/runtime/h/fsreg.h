@@ -73,9 +73,9 @@ struct FsExcRec;
     #define EXC_HAND_UNWOUND    ExceptionContinueExecution
 
     #define FS_UNWIND_GLOBAL( a, b, c )                             \
-                RtlUnwind( (CONTEXT*)(a)                            \
+                RtlUnwind( (PCONTEXT)(a)                            \
                          , (void*)(b)                               \
-                         , (EXCEPTION_RECORD*)(c)                   \
+                         , (PEXCEPTION_RECORD)(c)                   \
                          , 0 )
 
     #define FS_RAISE_EXCEPTION( a )                                 \
@@ -187,8 +187,6 @@ struct FsExcRec;
     extern "C" {
   #endif
 
-    struct PData;
-
     #include <windows.h>
     #include <excpt.h>
 
@@ -196,12 +194,13 @@ struct FsExcRec;
     #define EXC_HAND_CATCH      ExceptionContinueExecution
     #define EXC_HAND_UNWOUND    ExceptionContinueExecution
 
-    typedef IMAGE_RUNTIME_FUNCTION_ENTRY ProcDesc;
+    #define PData               IMAGE_RUNTIME_FUNCTION_ENTRY
+    #define ProcDesc            IMAGE_RUNTIME_FUNCTION_ENTRY
 
     #define FS_UNWIND_GLOBAL( a, b, c )                             \
-                RtlUnwind( (CONTEXT*)(a)                            \
+                RtlUnwind( (PCONTEXT)(a)                            \
                          , (void*)(b)                               \
-                         , (EXCEPTION_RECORD*)(c)                   \
+                         , (PEXCEPTION_RECORD)(c)                   \
                          , 0 )
 
     #define FS_RAISE_EXCEPTION( a )                                 \
@@ -215,28 +214,20 @@ struct FsExcRec;
 
     #define GetCtxReg( ctx, reg ) (*(void**)&((ctx)->Int##reg))
 
-    struct PData                // Procedure Descriptor
-    {   void* entry;            // - entry point
-        void* end;              // - end address
-        void* exc;              // - exception handler (or NULL)
-        void* exc_data;         // - exception data (or NULL)
-        void* endpr;            // - end of prologue
-    };
-
     typedef unsigned RISC_INS;              // risc instruction
     #define RISC_INS_SIZE sizeof(RISC_INS)  // size of risc instruction
     #define RISC_MOV_SP_FP 0x47FE040F       // mov sp,fp
     #define RISC_REG_SIZE 8                 // size of risc register
 
     struct PD_DISP_CTX          // Dispatcher context
-    {   void *pc;               // - program ctr.
-        PData* pdata;           // - PDATA ptr
-        void* fp_entry;         // - fp, on routine entry
-        _CONTEXT* ctx;          // - context registers
-        void* sp_actual;        // - sp, actual
-        void* fp_actual;        // - fp, actual
-        void* sp_entry;         // - ?guess?
-        void* fp_alternate;     // - ?guess?
+    {   void*    pc;            // - program ctr.
+        PData*   pdata;         // - PDATA ptr
+        void*    fp_entry;      // - fp, on routine entry
+        PCONTEXT ctx;           // - context registers
+        void*    sp_actual;     // - sp, actual
+        void*    fp_actual;     // - fp, actual
+        void*    sp_entry;      // - ?guess?
+        void*    fp_alternate;  // - ?guess?
     };
 
     #define ThreadLookup CPPLIB( pd_lookup )
@@ -266,18 +257,18 @@ struct FsExcRec;
 // System-independent definitions
 
 #ifndef __cplusplus
-    typedef struct FsCtxRec FsCtxRec;
+    typedef struct FsCtxRec   FsCtxRec;
     typedef struct FsEstFrame FsEstFrame;
-    typedef struct FsExcRec FsExcRec;
+    typedef struct FsExcRec   FsExcRec;
 #endif
 
 struct FsExcRec {               // Exception record
-    uint_32 code;               // - exception code
-    uint_32 flags;              // - exception flags
-    FsExcRec *rec;              // - stacked exception record
-    uint_32 addr;               // - exception address
-    uint_32 parm_count;         // - # parameters
-    void* object;               // - thrown object
+    uint_32       code;         // - exception code
+    uint_32       flags;        // - exception flags
+    FsExcRec*     rec;          // - stacked exception record
+    uint_32       addr;         // - exception address
+    uint_32       parm_count;   // - # parameters
+    void*         object;       // - thrown object
     DISPATCH_EXC* dispatch;     // - dispatching control
 };
 
@@ -308,7 +299,7 @@ FSREGAPI unsigned CPPLIB( fs_handler )   // HANDLER FOR FS REGISTRATIONS
 #if defined( FS_REGISTRATION )  // FS definitions
 
     extern RW_DTREG* FsLink( RW_DTREG* blk );   // link into fs stack
-    extern void  FsPop();                       // pop fs stack
+    extern void      FsPop();                   // pop fs stack
     extern RW_DTREG* FsPush( RW_DTREG* blk );   // push on fs stack
     extern RW_DTREG* FsTop();                   // top of fs stack
 

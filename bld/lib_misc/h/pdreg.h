@@ -30,25 +30,16 @@
 
 
 #ifdef BROKEN
-typedef struct __PDATA
-{
-    unsigned long entry;
-    unsigned long end;
-    unsigned long handler;
-    unsigned long data;
-    unsigned long endProlog;
-} _PDATA;
-
-typedef struct _EXCINFO {
-    pc
-    pdata
-    CONTEXT ContextRecord;
-    int     InFunction;
-    PVOID   EstablisherFrame;
+typedef struct _EXCINFO {       // EXCEPTION INFORMATION
+    PVOID   ControlPC;
+    PVOID   EstablisherFrame;   // - establisher frame
+    CONTEXT ContextRecord;      // - context for current function
+    int     InFunction;         // - used to figure if in function
+    _PDATA  *FunctionEntry;     // - PData for function
 } _EXCINFO;
-#else
-#define _PDATA  IMAGE_RUNTIME_FUNCTION_ENTRY
 #endif
+
+#define _PDATA  IMAGE_RUNTIME_FUNCTION_ENTRY
 
 _WCRTLINK extern int _ProcSetsFP( _PDATA *pdata );
 #ifdef BROKEN

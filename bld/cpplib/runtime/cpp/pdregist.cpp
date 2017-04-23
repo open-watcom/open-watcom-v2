@@ -35,6 +35,7 @@
 #include "exc_pr.h"
 #include <setjmp.h>
 
+
 typedef unsigned (*p_handler)
     ( FsExcRec*                 // - exception record
     , RW_DTREG*                 // - current R/W block
@@ -67,10 +68,10 @@ static int procSetsFP           // TEST IF PROCEDURE SETS FP
     int retn;                   // - return: 1 ==> fp used
     RISC_INS* ins;              // - an instruction
 
-    if( pdata->entry == pdata->endpr ) {
+    if( pdata->BeginAddress == pdata->PrologEndAddress ) {
         retn = 0;
     } else {
-        ins = (RISC_INS*)pdata->endpr;
+        ins = (RISC_INS*)pdata->PrologEndAddress;
         ins = (RISC_INS*)( (char*)ins - RISC_INS_SIZE );
         if( *ins == RISC_MOV_SP_FP ) {
             retn = 1;
@@ -108,17 +109,17 @@ static void* getProcFrame       // GET PROCEDURE FRAME
 
 
 static void getProcInfo         // GET EXCEPTION INFO FOR PROCEDURE
-    ( __EXC_INFO* inf           // - exception info
+    ( __EXC_INFO* info          // - exception info
     , PD_DISP_CTX* dctx )       // - dispatcher context for procedure
 {
     void* frame;                // - frame ptr.
 
     PData* pd = dctx->pdata;
-    inf->pd = pd;
-    inf->ro = (RO_DTREG*)pd->exc_data;
+    info->pd = pd;
+    info->ro = (RO_DTREG*)pd->HandlerData;
     frame = getProcFrame( pd, dctx );
-    inf->rw = (RW_DTREG*)( (char*)frame + inf->ro->fun.rw_offset );
-    if( inf->rw->base.ro != inf->ro ) {
+    info->rw = (RW_DTREG*)( (char*)frame + info->ro->fun.rw_offset );
+    if( info->rw->base.ro != info->ro ) {
         GOOF_EXC( "getProcInfo: rw->ro != ro" );
         // never return
     }
@@ -128,7 +129,7 @@ static void getProcInfo         // GET EXCEPTION INFO FOR PROCEDURE
 static __EXC_INFO* setPdata     // SET PDATA INFORMATION
     ( __EXC_INFO* info )        // - exception info
 {
-    info->dctx.pdata = (PData*)RtlLookupFunctionEntry( info->dctx.pc );
+    info->dctx.pdata = RtlLookupFunctionEntry( info->dctx.pc );
     return info;
 }
 
@@ -197,8 +198,7 @@ unsigned CPPLIB( pd_handler_rtn )  // HANDLER FOR FS REGISTRATIONS
                 == ( EXCREC_CODE_MASK & rec_exc->code ) ) {
             // WATCOM C++ Exception raised
 #if 0
-            DISPATCHABLE type = CPPLIB( dispatchable )( rec_exc->dispatch
-                                                      , info.rw );
+            DISPATCHABLE type = CPPLIB( dispatchable )( rec_exc->dispatch, info.rw );
             DISPATCH_EXC* dispatch = rec_exc->dispatch;
             if( DISPATCHABLE_NONE == type ) {
                 if( info.rw == dispatch->fs_last ) {
@@ -229,8 +229,7 @@ unsigned CPPLIB( pd_handler_rtn )  // HANDLER FOR FS REGISTRATIONS
                     switch( srch_ctl->_state ) {
                       case EXCSTATE_UNEXPECTED :
                       case EXCSTATE_BAD_EXC :
-                        dispatch->fnexc_skip
-                            = ((_EXC_PR_FNEXC*)srch_ctl)->_fnexc_skip;
+                        dispatch->fnexc_skip = ((_EXC_PR_FNEXC*)srch_ctl)->_fnexc_skip;
                         continue;
                     }
                     break;
@@ -299,12 +298,11 @@ static int isWatcomHandler      // FIGURE OUT IF WATCOM HANDLER
     ( __EXC_INFO* info )        // - exception info
 {
     int retn;
-    if( info->in_func
-     && 0 != info->dctx.pdata ) {
-        unsigned* hand = (unsigned*)info->dctx.pdata->exc;
-        if( 0 != hand
-         && hand[1] == 0x2B544157           // "WAT+"
-         && hand[2] == 0x4D4F432B ) {       // "+COM"
+    if( info->in_func && 0 != info->dctx.pdata ) {
+        unsigned* handler = (unsigned*)info->dctx.pdata->ExceptionHandler;
+        if( 0 != handler
+         && handler[1] == 0x2B544157           // "WAT+"
+         && handler[2] == 0x4D4F432B ) {       // "+COM"
 #if 1
             if( procSetsFP( info->dctx.pdata ) ) {
                 info->dctx.fp_actual = GetCtxReg( &info->ctx, Fp );
@@ -343,10 +341,9 @@ THREAD_CTL* CPPLIB( pd_lookup ) // LOOK THRU PD ENTRIES FOR LAST, THREAD_CTL
     for( ; ! lastPgmCtr( info.dctx.pc ); nextExcInfo( &info ) ) {
         if( isWatcomHandler( &info ) ) {
             last = info.rw;
-            p_handler handler = (p_handler)info.dctx.pdata->exc;
+            p_handler handler = (p_handler)info.dctx.pdata->ExceptionHandler;
             base = (THREAD_CTL*)handler( 0, 0, 0, 0 );
-            if( retn == 0
-             || base->flags.executable ) {
+            if( retn == 0 || base->flags.executable ) {
                 retn = base;
             }
         }
@@ -384,9 +381,10 @@ RW_DTREG* CPPLIB( pd_top )      // LOOK THRU PD ENTRIES FOR FIRST R/W ENTRY
 
 extern "C"
 void CPPLIB( pd_dump_rws )      // DEBUGGING -- DUMP R/W, R/O data structure
-    ( register void (*dump_rw)( RW_DTREG*// - watcom block
-                     , RO_DTREG* )
-    , void (*dump_pd)( PData* ) )// - non-watcom block
+                                // - watcom block
+    ( register void (*dump_rw)( RW_DTREG*, RO_DTREG* )
+    , void (*dump_pd)( PData* ) // - non-watcom block
+    )
 {
     __EXC_INFO info;            // - exception info. for frame
     RW_DTREG* first;            // - first entry
