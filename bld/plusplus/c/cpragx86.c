@@ -1268,15 +1268,9 @@ static bool parmSetsIdentical( hw_reg_set *parms1, hw_reg_set *parms2 )
         return( true );
     }
     if( parms1 != NULL && parms2 != NULL ) {
-        for(;;) {
-            if( HW_Equal( *parms1, *parms2 ) ) {
-                if( HW_CEqual( *parms1, HW_EMPTY ) ) {
-                    return( true );
-                }
-                ++parms1;
-                ++parms2;
-            } else {
-                break;
+        for( ; HW_Equal( *parms1, *parms2 ); ++parms1, ++parms2 ) {
+            if( HW_CEqual( *parms1, HW_EMPTY ) ) {
+                return( true );
             }
         }
     }

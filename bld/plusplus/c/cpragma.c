@@ -1546,24 +1546,21 @@ hw_reg_set PragRegList(         // GET PRAGMA REGISTER SET
 void PragManyRegSets(           // GET PRAGMA REGISTER SETS
     void )
 {
-    hw_reg_set buff[ MAXIMUM_PARMSETS ];
-    int i;
-    hw_reg_set list;
-    hw_reg_set *sets;
+    hw_reg_set  buff[ MAXIMUM_PARMSETS ];
+    int         i;
+    hw_reg_set  list;
+    hw_reg_set  *sets;
 
-    list = PragRegList();
-    i = 0;
-    while( !HW_CEqual( list, HW_EMPTY ) && ( i != MAXIMUM_PARMSETS ) ) {
-        buff[ i++ ] = list;
-        list = PragRegList();
-    }
-    if( !HW_CEqual( list, HW_EMPTY ) ) {
-        CErr1( ERR_TOO_MANY_PARM_SETS );
+    for( i = 0; !HW_CEqual( (list = PragRegList()), HW_EMPTY ); ++i ) {
+        if( i == MAXIMUM_PARMSETS ) {
+            CErr1( ERR_TOO_MANY_PARM_SETS );
+            break;
+        }
+        buff[i] = list;
     }
     HW_CAsgn( buff[i], HW_EMPTY );
-    i++;
-    i *= sizeof( hw_reg_set );
-    sets = ( hw_reg_set * ) CMemAlloc( i );
+    i = ( i + 1 ) * sizeof( hw_reg_set );
+    sets = ( hw_reg_set * )CMemAlloc( i );
     memcpy( sets, buff, i );
     if( !IsAuxParmsBuiltIn( CurrInfo->parms ) ) {
         CMemFree( CurrInfo->parms );

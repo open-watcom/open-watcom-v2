@@ -472,20 +472,19 @@ static void CopyLinkage( void )
 static void CopyParms( void )
 /**************************/
 {
-    int         i;
+    size_t      size;
     hw_reg_set  *regs;
 
     if( CurrInfo->parms != CurrAlias->parms )
         return;
     if( IsAuxParmsBuiltIn( CurrInfo->parms ) )
         return;
-    i = 1;
+    size = sizeof( hw_reg_set );
     for( regs = CurrInfo->parms; !HW_CEqual( *regs, HW_EMPTY ); ++regs ) {
-        ++i;
+        size += sizeof( hw_reg_set );
     }
-    i *= sizeof( hw_reg_set );
-    regs = (hw_reg_set *)CMemAlloc( i );
-    memcpy( regs, CurrInfo->parms, i );
+    regs = (hw_reg_set *)CMemAlloc( size );
+    memcpy( regs, CurrInfo->parms, size );
     CurrInfo->parms = regs;
 }
 
@@ -675,15 +674,12 @@ hw_reg_set *PragManyRegSets( void )
     hw_reg_set  *sets;
     hw_reg_set  buff[MAXIMUM_PARMSETS + 1];
 
-    for( i = 0; i < MAXIMUM_PARMSETS + 1; ++i ) {
-        list = PragRegList();
-        if( HW_CEqual( list, HW_EMPTY ) )
+    for( i = 0; !HW_CEqual( (list = PragRegList()), HW_EMPTY ); ++i ) {
+        if( i == MAXIMUM_PARMSETS ) {
+            CErr1( ERR_TOO_MANY_PARM_SETS );
             break;
+        }
         buff[i] = list;
-    }
-    if( i > MAXIMUM_PARMSETS ) {
-        CErr1( ERR_TOO_MANY_PARM_SETS );
-        i = MAXIMUM_PARMSETS;
     }
     HW_CAsgn( buff[i], HW_EMPTY );
     i = ( i + 1 ) * sizeof( hw_reg_set );
