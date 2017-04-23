@@ -72,12 +72,6 @@ struct FsExcRec;
     #define EXC_HAND_CATCH      ExceptionContinueExecution
     #define EXC_HAND_UNWOUND    ExceptionContinueExecution
 
-    extern "C" void __stdcall RtlUnwind // can't find def'n
-                    ( void *
-                    , void *
-                    , EXCEPTION_RECORD *
-                    , void * );
-
     #define FS_UNWIND_GLOBAL( a, b, c )                             \
                 RtlUnwind( (CONTEXT*)(a)                            \
                          , (void*)(b)                               \
@@ -202,33 +196,7 @@ struct FsExcRec;
     #define EXC_HAND_CATCH      ExceptionContinueExecution
     #define EXC_HAND_UNWOUND    ExceptionContinueExecution
 
-    void RtlUnwind              // can't find def'n
-            ( void *            // - frame ptr
-            , void *            // - target PC
-            , FsExcRec*         // - exception record
-            , void * );         // - return
-
-    void RtlUnwindRfp           // can't find def'n
-            ( void *            // - frame ptr
-            , void *            // - target PC
-            , FsExcRec*         // - exception record
-            , void * );         // - return
-
-    void RtlCaptureContext      // can't find def'n
-            ( _CONTEXT* );      // - context record
-
-    void* RtlVirtualUnwind      // can't find def'n
-            ( void *            // - control pc
-            , PData *           // - function entry
-            , _CONTEXT *        // - context record
-            , unsigned *        // - in-function ptr
-            , unsigned *        // - establisher frame
-            , unsigned * );     // - context ptrs.
-
     typedef IMAGE_RUNTIME_FUNCTION_ENTRY ProcDesc;
-
-    ProcDesc* RtlLookupFunctionEntry    // can't find def'n
-            ( void * );
 
     #define FS_UNWIND_GLOBAL( a, b, c )                             \
                 RtlUnwind( (CONTEXT*)(a)                            \

@@ -141,7 +141,7 @@ static void nextExcInfo         // MOVE AHEAD TO NEXT RTN. IN CALL CHAIN
                                     , &info->ctx
                                     , &info->in_func
                                     , info->est_frame
-                                    , 0 );
+                                    , NULL );
     setPdata( info );
 }
 
