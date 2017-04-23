@@ -14,6 +14,14 @@ additional_cleanup = *.u
 
 wasm_trmem = 1
 
+fpu_flags_dos_i86 = -fpc
+fpu_flags_dos_386 = -fpc
+fpu_flags_linux_386 = -fpc
+fpu_flags_nt_386 = -fpc
+fpu_flags_os2_386 = -fpc
+fpu_flags_osi_386 = -fpc
+fpu_flags_qnx_386 = -fpc
+
 !include cproj.mif
 !include defrule.mif
 !include deftarg.mif
@@ -21,8 +29,6 @@ wasm_trmem = 1
 
 !include wres.mif
 !include trmem.mif
-
-fpu_flags = -fpc
 
 inc_dirs  = -I. -I"../h" -I"$(womp_dir)/h" -I"$(fe_misc_dir)/h"
 
