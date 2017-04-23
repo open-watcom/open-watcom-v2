@@ -36,12 +36,13 @@
 #define ENVVAR          "WCALIGNOFF"
 #define ENVVAR_SIZE     256
 
-void __noalignfault( void ) {
+static void __noalignfault( void )
+{
     SetErrorMode( SEM_NOALIGNMENTFAULTEXCEPT );
 }
 
-void __aligncheck( void ) {
-
+static void __aligncheck( void )
+{
     char        buffer[ ENVVAR_SIZE ];
 
     if( GetEnvironmentVariable( ENVVAR, &buffer[ 0 ], ENVVAR_SIZE ) ) {
