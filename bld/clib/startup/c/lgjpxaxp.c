@@ -31,6 +31,7 @@
 
 #include <windows.h>
 #include <setjmpex.h>
+#include "lgjpxaxp.h"
 #include "pdreg.h"
 
 

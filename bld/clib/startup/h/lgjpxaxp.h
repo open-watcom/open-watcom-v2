@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2015 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,46 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  ....Main OS specific function declarations.
+* Description:  Implementation of longjmpex() for Win32 on Alpha.
 *
 ****************************************************************************/
 
 
-#if defined( __OS2__ )
-
-  #if defined( _M_I86 )
-    extern int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop, unsigned envseg, unsigned cmdoff );
-    #pragma aux _OS2Main "_*" parm caller [ dx ax ] [ cx bx ]
-  #else
-    extern void __OS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd );
-    extern void __wOS2Main( unsigned hmod, unsigned reserved, char *env, char *cmd );
-    #if defined(_M_IX86)
-      #pragma aux __wOS2Main "*" parm caller []
-      #pragma aux __OS2Main "*" parm caller []
-    #endif
-  #endif
-
-#elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
-
-  extern void __RdosMain( void );
-  #pragma aux __RdosMain  "*"
-
-#elif defined( __LINUX__ )
-
-  extern void __cdecl _LinuxMain( int argc, char **argv, char **arge );
-
-#elif defined( __NT__ )
-
-  extern void __NTMain( void );
-  extern void __wNTMain( void );
-  #if defined(_M_IX86)
-    #pragma aux __NTMain "*"
-    #pragma aux __wNTMain "*"
-  #endif
-
-  #if defined( _M_ALPHA )
-    void mainCRTStartup( void );
-    void wmainCRTStartup( void );
-  #endif
-
-#endif
+extern void longjmpex( jmp_buf jb, int ret );

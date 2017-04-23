@@ -41,6 +41,12 @@ extern int APIENTRY _LibMain( HANDLE hdll, DWORD reason, LPVOID reserved );
 #pragma aux _LibMain "_*"
 extern int APIENTRY LibMain( HANDLE hdll, DWORD reason, LPVOID reserved );
 
+#if defined( _M_ALPHA )
+extern int DllMainCRTStartup( HANDLE hdll, DWORD reason, LPVOID reserved );
+extern int _DllMainCRTStartup( HANDLE hdll, DWORD reason, LPVOID reserved );
+extern int wDllMainCRTStartup( HANDLE hdll, DWORD reason, LPVOID reserved );
+#endif
+
 #elif defined( __RDOS__ ) || defined( __RDOSDEV__ )
 
 extern int _LibMain( int hdll, int reason, void *reserved );
