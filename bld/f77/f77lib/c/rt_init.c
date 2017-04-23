@@ -33,6 +33,7 @@
 #if defined( __OS2__ ) && defined( __386__ )
   #define INCL_DOSPROCESS
 #endif
+#include "rtstack.h"
 #include "frtdata.h"
 #include "fthread.h"
 #include "xfflags.h"
