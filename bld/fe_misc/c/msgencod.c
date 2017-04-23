@@ -137,7 +137,7 @@ struct msggroup {
     unsigned    msgIndex;    //first msg in group
     unsigned    emsgIndex;   //last message + 1
     unsigned    num;
-    char        name[3];
+    char        name[1];
 };
 
 struct msgsym {
@@ -537,8 +537,8 @@ static void do_msggrpstr( const char *p )
         len = 2;
     }
     if( grp != NULL ) {
-        strncpy( grp->prefix, group, 2 ); //default
-        grp->prefix[2] = '\0';
+        strncpy( grp->prefix, group, len ); //default
+        grp->prefix[len] = '\0';
     }
 }
 
