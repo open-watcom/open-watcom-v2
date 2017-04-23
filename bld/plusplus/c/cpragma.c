@@ -1551,7 +1551,7 @@ void PragManyRegSets(           // GET PRAGMA REGISTER SETS
     hw_reg_set  list;
     hw_reg_set  *sets;
 
-    for( i = 0; !HW_CEqual( (list = PragRegList()), HW_EMPTY ); ++i ) {
+    for( i = 0, list = PragRegList(); !HW_CEqual( list, HW_EMPTY ); list = PragRegList(), ++i ) {
         if( i == MAXIMUM_PARMSETS ) {
             CErr1( ERR_TOO_MANY_PARM_SETS );
             break;
