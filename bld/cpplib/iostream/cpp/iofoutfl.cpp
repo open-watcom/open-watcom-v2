@@ -79,7 +79,7 @@ namespace std {
     double_value = f;
     __EFG_cnvd2ld( &double_value, &ld );
 #else
-    ld.value = f;
+    ld.u.value = f;
 #endif
     __lock_it( __i_lock );
     precision = this->precision();

@@ -35,10 +35,11 @@
 #include "exc_pr.h"
 
 #ifdef FS_REGISTRATION
-uint_8 *findHandler( uint_8 *h ) {
+uint_8 *findHandler( uint_8 *h )
+{
     while( h[0] == 0xff && h[1] == 0x25 ) {
         // skip jmp [0xhhhhhhhh] instructions (these are injected by the linker)
-        h = (uint_8*) ( **((void***)(h+2)) );
+        h = (uint_8*)( **((void***)(h + 2)) );
     }
     return( h );
 }

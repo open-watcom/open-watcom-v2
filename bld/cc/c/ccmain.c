@@ -1272,7 +1272,7 @@ void CloseFiles( void )
 
 int FrontEnd( char **cmdline )
 {
-#ifdef __WATCOMC__
+#if defined(__WATCOMC__) && defined( _M_IX86 )
     /* set to 0 in case 8087 is present */
     _real87 = 0;
     _8087 = 0;
