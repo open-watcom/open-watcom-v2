@@ -286,9 +286,9 @@ void CPPLIB( PdUnwind )         // UNWIND USING PROCEDURE DESCRIPTORS
         rw = dispatch->rw;
         frame = (void*)( (char*)rw - rw->base.ro->fun.rw_offset );
         if( procSetsFP( dispatch->pdata ) ) {
-            RtlUnwindRfp( frame, pc, exc_rec, save_area );
+            RtlUnwindRfp( frame, pc, (PEXCEPTION_RECORD)exc_rec, save_area );
         } else {
-            RtlUnwind( frame, pc, exc_rec, save_area );
+            RtlUnwind( frame, pc, (PEXCEPTION_RECORD)exc_rec, save_area );
         }
     }
 }
