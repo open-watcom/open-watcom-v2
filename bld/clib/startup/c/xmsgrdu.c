@@ -40,8 +40,14 @@
 
 _WCRTLINK _WCNORETURN void __exit_with_msg( char *msg, unsigned retcode )
 {
+    ThreadState state;
+    int handle = RdosGetThreadHandle();
+    RdosGetThreadState(handle, &state);
+    printf("Fatal error in thread: %04hX %s\r\n", handle, state.Name);
+
     printf( msg );
     printf( "\r\n" );
+    RdosFatalErrorExit();
     __exit( retcode );
 }
 

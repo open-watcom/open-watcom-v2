@@ -535,6 +535,7 @@ int RDOSAPI RdosSpawnDebug(const char *prog, const char *param, const char *star
 int RDOSAPI RdosFork();
 int RDOSAPI RdosIsForked();
 int RDOSAPI RdosWaitForExec(int ForkId);
+void RDOSAPI RdosFatalErrorExit();
 void RDOSAPI RdosUnloadExe(int ExitCode);
 int RDOSAPI RdosGetExitCode();
 void RDOSAPI RdosFreeProcessHandle(int handle);

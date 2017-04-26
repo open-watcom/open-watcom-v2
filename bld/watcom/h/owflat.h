@@ -1703,7 +1703,7 @@
     CallGate_terminate_thread;
 
 #pragma aux RdosGetThreadHandle = \
-    CallGate_get_thread \
+    CallGate_get_thread_handle \
     "movzx eax,ax"  \
     value [eax];
 
@@ -1726,6 +1726,9 @@
 #pragma aux RdosUnloadExe = \
     CallGate_unload_exe  \
     parm [eax];
+
+#pragma aux RdosFatalErrorExit = \
+    CallGate_fatal_error_exit;
 
 #pragma aux RdosWaitForExec = \
     CallGate_wait_for_exec  \

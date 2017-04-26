@@ -804,6 +804,9 @@
 #define usergate_get_console_cursor_position 0x00000276
 #define usergate_set_console_cursor_position 0x00000277
 
+#define usergate_fatal_error_exit 0x00000278
+#define usergate_get_thread_handle 0x00000279
+
 
 
 #ifdef __FLAT__
@@ -1613,6 +1616,9 @@
 #define CallGate_get_console_cursor_position 0x55 0x67 0x9a 118 2 0 0 3 0 0x5d
 #define CallGate_set_console_cursor_position 0x55 0x67 0x9a 119 2 0 0 3 0 0x5d
 
+#define CallGate_fatal_error_exit 0x55 0x67 0x9a 120 2 0 0 3 0 0x5d
+#define CallGate_get_thread_handle 0x55 0x67 0x9a 121 2 0 0 3 0 0x5d
+
 #else
 
 #define CallGate_allocate_dos_mem 0x3e 0x67 0x9a 0 0 0 0 3 0
@@ -2419,5 +2425,8 @@
 #define CallGate_wait_for_exec 0x3e 0x67 0x9a 117 2 0 0 3 0
 #define CallGate_get_console_cursor_position 0x3e 0x67 0x9a 118 2 0 0 3 0
 #define CallGate_set_console_cursor_position 0x3e 0x67 0x9a 119 2 0 0 3 0
+
+#define CallGate_fatal_error_exit 0x3e 0x67 0x9a 120 2 0 0 3 0
+#define CallGate_get_thread_handle 0x3e 0x67 0x9a 121 2 0 0 3 0
 
 #endif
