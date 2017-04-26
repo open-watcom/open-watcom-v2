@@ -32,6 +32,7 @@
 #include "variety.h"
 #include <rdos.h>
 #include <io.h>
+#include <stdio.h>
 #include "iomode.h"
 #include "exitwmsg.h"
 #include "rtdata.h"
@@ -39,8 +40,8 @@
 
 _WCRTLINK _WCNORETURN void __exit_with_msg( char *msg, unsigned retcode )
 {
-    RdosWriteString( msg );
-    RdosWriteString( "\r\n" );
+    printf( msg );
+    printf( "\r\n" );
     __exit( retcode );
 }
 

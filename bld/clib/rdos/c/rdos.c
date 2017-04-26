@@ -31,8 +31,15 @@
 #include <memory.h>
 #include <process.h>
 #include "rdos.h"
+#include "printf.h"
 
 #define FALSE 0
+
+struct TRdosPrintfCallback
+{
+    TRdosCallback *outproc;
+    void          *param;
+};
 
 typedef struct RdosPtr48
 {
@@ -531,3 +538,22 @@ int RdosSpawnDebug( const char *prog, const char *param, const char *startdir, c
         return( 0 );
 }
 
+static slib_callback_t mem_putc;
+static void __SLIB_CALLBACK mem_putc( SPECS __SLIB *specs, OUTC_PARM op_char )
+{
+    struct TRdosPrintfCallback  *callback = (struct TRdosPrintfCallback*) specs->_dest;
+
+    specs->_output_count++;
+    callback->outproc( callback->param, op_char );
+};
+
+_WCRTLINK int RdosPrintf( TRdosCallback *outproc, void *param, const char *format, va_list arg )
+{
+    struct TRdosPrintfCallback callback;
+
+    callback.outproc = outproc;
+    callback.param = param;
+
+
+    return( __prtf( (void *)&callback, format, arg, mem_putc ) );
+}

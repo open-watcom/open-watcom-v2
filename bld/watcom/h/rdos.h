@@ -15,6 +15,7 @@
 #define real_math   long double
 #endif
 
+#include <stdarg.h>
 #include "rdoshdr.h"
 #include "rdu.h"
 
@@ -50,6 +51,8 @@
 #define AUDIO_WIDGET_TYPE_PIN         5
 #define AUDIO_WIDGET_TYPE_POWER       6
 #define AUDIO_WIDGET_TYPE_BEEP        7
+
+typedef void (TRdosCallback)(void *param, char ch);
 
 typedef struct ThreadEntryPoint
 {
@@ -333,6 +336,8 @@ void RDOSAPI RdosDebugPace();
 void RDOSAPI RdosDebugGo();
 void RDOSAPI RdosDebugRun();
 void RDOSAPI RdosDebugNext();
+
+int RDOSAPI RdosPrintf(TRdosCallback *outproc, void *param, const char *format, va_list args); 
 
 #endif
 
