@@ -132,7 +132,7 @@ bool    __Sub( intstar4 *arg1, intstar4 *arg2 )
     return( ( result < arg1v ) && ( arg2v < 0 ) || ( result > arg1v ) && ( arg2v >= 0 ) );
 }
 
-static bool    __Mul( intstar4 *arg1, intstar4 *arg2 )
+bool    __Mul( intstar4 *arg1, intstar4 *arg2 )
 {
 #if _INTEGRAL_MAX_BITS >= 64
     long long arg1v = *arg1;

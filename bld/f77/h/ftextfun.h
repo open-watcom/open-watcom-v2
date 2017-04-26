@@ -37,6 +37,7 @@
 #include "symdefs.h"
 
 extern bool        __Add( intstar4 *arg1, intstar4 *arg2 );
+extern bool        __Mul( intstar4 *arg1, intstar4 *arg2 );
 extern bool        __Sub( intstar4 *arg1, intstar4 *arg2 );
 extern ftnfile     *_InitStandardInput( void );
 extern ftnfile     *_InitStandardOutput( void );
