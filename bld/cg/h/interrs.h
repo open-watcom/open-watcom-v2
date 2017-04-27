@@ -122,8 +122,8 @@ typedef enum {
     ZOIKS_089,  /*  BGSelRange -- illegal range given (signs do not match) */
     ZOIKS_090,  /*  BGSelect -- no valid switch types are allowed */
     ZOIKS_091,  /*  NYI - not yet implemeted */
-    ZOIKS_092,  /*  Assert failed */
-    ZOIKS_093,  /*  Bad Conversion attempted */
+    ZOIKS_092,  /*  Bad Conversion attempted */
+    ZOIKS_093,  /*  Assert failed */
     ZOIKS_094,  /*  No dominator found */
     ZOIKS_095,  /*  Made Windows prolog for a routine which had AX live on entry */
     ZOIKS_096,  /*  ALPHA - comparison of short or byte found */
