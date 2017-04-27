@@ -33,20 +33,26 @@
 #include <rdos.h>
 #include <io.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <string.h>
 #include "iomode.h"
 #include "exitwmsg.h"
 #include "rtdata.h"
 
+static ThreadState state;
+static char FatalErrorStr[256];
 
 _WCRTLINK _WCNORETURN void __exit_with_msg( char *msg, unsigned retcode )
 {
-    ThreadState state;
     int handle = RdosGetThreadHandle();
-    RdosGetThreadState(handle, &state);
-    printf("Fatal error in thread: %04hX %s\r\n", handle, state.Name);
+    RdosGetThreadState( handle, &state );
+    sprintf( FatalErrorStr, "Fatal error in thread: %04hX %s", handle, state.Name );
 
-    printf( msg );
-    printf( "\r\n" );
+    write( 2, FatalErrorStr, strlen( FatalErrorStr ) );
+    write( 2, "\r\n", 2 );
+    write( 2, msg, strlen( msg ) );
+    write( 2, "\r\n", 2 );
+
     RdosFatalErrorExit();
     __exit( retcode );
 }
