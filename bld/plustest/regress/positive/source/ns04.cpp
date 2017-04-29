@@ -3,32 +3,30 @@
 #ifdef __WATCOM_NAMESPACE__
 namespace A {
     namespace {
-	int x;
-	int a() {
-	    return x++;
-	}
+        int x;
+        int a() {
+            return x++;
+        }
     };
     namespace {
-	int x;
-	int b() {
-	    return x++;
-	}
+        int b() {
+            return x++;
+        }
     };
     namespace {
-	int x;
-	int c() {
-	    return x++;
-	}
+        int c() {
+            return x++;
+        }
     };
 };
 
 int main() {
     if( A::a() != 0 ) fail(__LINE__);
-    if( A::b() != 0 ) fail(__LINE__);
-    if( A::c() != 0 ) fail(__LINE__);
-    if( A::a() != 1 ) fail(__LINE__);
     if( A::b() != 1 ) fail(__LINE__);
-    if( A::c() != 1 ) fail(__LINE__);
+    if( A::c() != 2 ) fail(__LINE__);
+    if( A::a() != 3 ) fail(__LINE__);
+    if( A::b() != 4 ) fail(__LINE__);
+    if( A::c() != 5 ) fail(__LINE__);
     _PASS;
 }
 #else
