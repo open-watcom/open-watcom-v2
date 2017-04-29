@@ -31,7 +31,6 @@
 
 #include "variety.h"
 #include <rdos.h>
-#include <io.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -48,10 +47,10 @@ _WCRTLINK _WCNORETURN void __exit_with_msg( char *msg, unsigned retcode )
     RdosGetThreadState( handle, &state );
     sprintf( FatalErrorStr, "Fatal error in thread: %04hX %s", handle, state.Name );
 
-    write( 2, FatalErrorStr, strlen( FatalErrorStr ) );
-    write( 2, "\r\n", 2 );
-    write( 2, msg, strlen( msg ) );
-    write( 2, "\r\n", 2 );
+    write( STDERR_FILENO, FatalErrorStr, strlen( FatalErrorStr ) );
+    write( STDERR_FILENO, "\r\n", 2 );
+    write( STDERR_FILENO, msg, strlen( msg ) );
+    write( STDERR_FILENO, "\r\n", 2 );
 
     RdosFatalErrorExit();
     __exit( retcode );

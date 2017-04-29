@@ -33,6 +33,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include "rtdata.h"
 #include "rtinit.h"
 #include "tmpfname.h"
@@ -40,12 +41,12 @@
 
 
 _WCRTDATA FILE _WCDATA __iob[_NFILES] = {
-    { NULL, 0, NULL, _READ,         0, 0, 0  }  /* stdin */
-   ,{ NULL, 0, NULL, _WRITE,        1, 0, 0  }  /* stdout */
-   ,{ NULL, 0, NULL, _WRITE,        2, 0, 0  }  /* stderr */
+    { NULL, 0, NULL, _READ,         STDIN_FILENO,  0, 0  }  /* stdin */
+   ,{ NULL, 0, NULL, _WRITE,        STDOUT_FILENO, 0, 0  }  /* stdout */
+   ,{ NULL, 0, NULL, _WRITE,        STDERR_FILENO, 0, 0  }  /* stderr */
 #if defined( __DOS__ ) || defined( __WINDOWS__ ) || defined( __OSI__ )
-   ,{ NULL, 0, NULL, _READ|_WRITE,  3, 0, 0  }  /* stdaux */
-   ,{ NULL, 0, NULL, _WRITE,        4, 0, 0  }  /* stdprn */
+   ,{ NULL, 0, NULL, _READ|_WRITE,  STDAUX_FILENO, 0, 0  }  /* stdaux */
+   ,{ NULL, 0, NULL, _WRITE,        STDPRN_FILENO, 0, 0  }  /* stdprn */
 #endif
 };
 
