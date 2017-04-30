@@ -281,8 +281,7 @@ static void CLIReloc( dw_sectnum sect, dw_relocs reloc_type, ... )
         break;
       }
     default:
-        va_end( args );
-        abort();
+        Zoiks( ZOIKS_107 ); /* Unknown reloc */
         break;
     }
     SetOP( old );
@@ -321,7 +320,6 @@ void    DFInitDbgInfo( void )
     CcuDef = false;
     Client = NULL;
 }
-
 #define MAX_LANG 4
 struct lang_map{
      uint       lang;
