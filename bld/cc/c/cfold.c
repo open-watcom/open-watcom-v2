@@ -853,7 +853,7 @@ static int_32 LongValue( TREEPTR leaf )
 #ifdef _LONG_DOUBLE_
         value = __LDI4( &ld );
 #else
-        value = ld.u.value;
+        value = (int_32)ld.u.value;
 #endif
         break;
     default:
@@ -1182,9 +1182,9 @@ static void CheckOpndValues( TREEPTR tree )
     case OPR_LSHIFT_EQUAL:
     case OPR_RSHIFT_EQUAL:
         if( IsConstLeaf( tree->right ) ) {
-            bool    shift_too_big = false;
-            bool    shift_negative = false;
-            int     max_shift;
+            bool        shift_too_big = false;
+            bool        shift_negative = false;
+            unsigned    max_shift;
 
             opnd = tree->right;
             r_type = opnd->u.expr_type;
@@ -1198,29 +1198,28 @@ static void CheckOpndValues( TREEPTR tree )
             max_shift *= 8;
             switch( con ) {
             case SIGNED_INT: {
-                int_32      right;
-
-                right = opnd->op.u2.long_value;
-                if( right < 0 )
+                if( opnd->op.u2.long_value < 0 ) {
                     shift_negative = true;
-                else if( right >= max_shift )
+                } else if( opnd->op.u2.ulong_value >= max_shift ) {
                     shift_too_big = true;
-                break;
                 }
+                } break;
             case SIGNED_INT64: {
                 int64       right;
-                int64       big_shift;
+                uint64      big_shift;
 
                 right = LongValue64( opnd );
-                I32ToI64( max_shift, &big_shift );
-                if( I64Test( &right ) < 0 )
+                if( I64Test( &right ) < 0 ) {
                     shift_negative = true;
-                else if( I64Cmp( &right, &big_shift ) >= 0 )
-                    shift_too_big = true;
-                break;
+                } else {
+                    U32ToU64( max_shift, &big_shift );
+                    if( U64Cmp( &right, &big_shift ) >= 0 ) {
+                        shift_too_big = true;
+                    }
                 }
+                } break;
             case UNSIGNED_INT:
-                if( (uint_32)opnd->op.u2.long_value >= (uint_32)max_shift )
+                if( opnd->op.u2.ulong_value >= max_shift )
                     shift_too_big = true;
                 break;
             case UNSIGNED_INT64: {
@@ -1229,10 +1228,10 @@ static void CheckOpndValues( TREEPTR tree )
 
                 right = LongValue64( opnd );
                 U32ToU64( max_shift, &big_shift );
-                if( U64Cmp( &right, &big_shift ) >= 0 )
+                if( U64Cmp( &right, &big_shift ) >= 0 ) {
                     shift_too_big = true;
-                break;
                 }
+                } break;
             default:
                 // Not supposed to happen!
                 break;
