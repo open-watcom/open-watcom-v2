@@ -282,7 +282,7 @@ dbfiles += $(cg_objs)
 # platform specific files
 
 386files =
-axpfiles = intovfrt.obj
+#axpfiles = intovfrt.obj
 i86files = i4mul.obj
 
 comfiles = $(comroot) $(comovl1) $(comovl2)
