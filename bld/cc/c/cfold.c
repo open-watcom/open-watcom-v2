@@ -399,7 +399,7 @@ int64 LongValue64( TREEPTR leaf )
         value.u._64[0] = (uint_64)(int_64)ld.u.value;
         return( value );
 #else
-        val32 = ld.value;
+        val32 = ld.u.value;
 #endif
         break;
     default:
@@ -560,7 +560,7 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
 #else
 
     #error not implemented for compiler with integral max bits < 64
-            ld.value = 0;
+            ld.u.value = 0;
 #endif
             break;
         case TYPE_ULONG64:
@@ -572,7 +572,7 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
 #else
 
     #error not implemented for compiler with integral max bits < 64
-            ld.value = 0;
+            ld.u.value = 0;
 #endif
             break;
         //signed types
@@ -590,8 +590,10 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
         //unsigned types
 #ifdef _LONG_DOUBLE_
             __U4LD( leaf->op.u2.ulong_value, &ld );
-#else
+#elif ( _INTEGRAL_MAX_BITS >= 64 )
             ld.u.value = (double)(int_64)leaf->op.u2.ulong_value;
+#else
+            ld.u.value = (double)leaf->op.u2.ulong_value;
 #endif
             break;
         }
