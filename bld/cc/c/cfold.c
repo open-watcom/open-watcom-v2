@@ -396,7 +396,7 @@ int64 LongValue64( TREEPTR leaf )
         __LDI8( &ld, &value );
         return( value );
 #elif ( _INTEGRAL_MAX_BITS >= 64 )
-        value.u._64[0] = ld.u.value;
+        value.u._64[0] = (uint_64)(int_64)ld.u.value;
         return( value );
 #else
         val32 = ld.value;
@@ -556,7 +556,7 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
             value = leaf->op.u2.long64_value;
             __I8LD( &value, &ld );
 #elif ( _INTEGRAL_MAX_BITS >= 64 )
-            ld.u.value = (double)leaf->op.u2.long64_value.u._64[0];
+            ld.u.value = (double)(int_64)leaf->op.u2.long64_value.u._64[0];
 #else
 
     #error not implemented for compiler with integral max bits < 64
@@ -591,7 +591,7 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
 #ifdef _LONG_DOUBLE_
             __U4LD( leaf->op.u2.ulong_value, &ld );
 #else
-            ld.u.value = (double)leaf->op.u2.ulong_value;
+            ld.u.value = (double)(int_64)leaf->op.u2.ulong_value;
 #endif
             break;
         }
