@@ -50,34 +50,19 @@ enum {
     be OK for the 586, but we'll still get the floating/integer instruction
     intermixing that makes best use of the 486 F.P. asynchronous execution.
 */
+
 static const FU_entry FUnits486[] = {
-    /* units                    unit_stall  opnd_stall */
-   {F_NONE,                     0,          0},     /* NO */
-   {F_ALU1,                     1,          2},     /* ALU1 */
-   {F_ALU1 | F_ALU2,            1,          2},     /* ALUX */
-   {F_ALU1,                     11,         11},    /* IMUL */
-   {F_ALU1,                     24,         24},    /* IDIV */
-   {F_FOP,                      8,          8},     /* FOP */
-   {F_FOP,                      10,         10},    /* FADD */
-   {F_FOP,                      16,         16},    /* FMUL */
-   {F_FOP,                      73,         73},    /* FDIV */
-   {F_FOP,                      241,        241},   /* TRIG */
-   {F_NONE,                     0,          0},     /* CALL */
+    #define _F_(id,units,unit_stall,opnd_stall) {units, unit_stall, opnd_stall},
+    #include "f.h"
+    #undef _F_
 };
 
 static const FU_entry FUnits586[] = {
-    /* units                    unit_stall  opnd_stall */
-   {F_NONE,                     0,          0},     /* NO */
-   {F_ALU1,                     1,          2},     /* ALU1 */
-   {F_ALU1 | F_ALU2,            1,          2},     /* ALUX */
-   {F_ALU1,                     11,         11},    /* IMUL */
-   {F_ALU1,                     24,         24},    /* IDIV */
-   {F_ALU1,                     1,          1},     /* FOP */
-   {F_ALU1,                     1,          3},     /* FADD */
-   {F_ALU1,                     2,          3},     /* FMUL */
-   {F_FOP,                      32,         32},    /* FDIV */
-   {F_ALU1,                     69,         69},    /* TRIG */
-   {F_NONE,                     0,          0},     /* CALL */
+    #define FPU_586
+    #define _F_(id,units,unit_stall,opnd_stall) {units, unit_stall, opnd_stall},
+    #include "f.h"
+    #undef _F_
+    #undef FPU_586
 };
 
 

@@ -263,7 +263,7 @@ extern  instruction     *rDOCVT( instruction *ins ) {
     }
     ins->head.state = INS_NEEDS_WORK;
     if( src->n.class == N_CONSTANT && src->c.const_type == CONS_ABSOLUTE
-     && ins->type_class != XX ) {
+      && ins->type_class != XX ) {
         src = TrimConst( src, ins->base_type_class );
         how = OK;
     } else {

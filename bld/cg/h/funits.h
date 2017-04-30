@@ -31,11 +31,9 @@
 
 
 typedef enum {
-        FU_NO,
-
-#define _F_( x ) x
-#include "f.h"
-
-        FU_LAST
+    #define _F_(id,units,unit_stall,opnd_stall) id,
+    #include "f.h"
+    #undef _F_
+    FU_LAST
 } futype;
 

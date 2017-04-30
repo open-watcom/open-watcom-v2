@@ -31,5 +31,7 @@
 
 
 /* Any changes to this file must be reflected in FUNIT.C */
-_F_( FU_ALU ),
-_F_( FU_MEM ),
+/*   enum       units               unit_stall  opnd_stall          */
+_F_( FU_NO,     F_NONE,             0,          0       )   /* NO   */
+_F_( FU_ALU,    F_ALU,              1,          1       )   /* ALU  */
+_F_( FU_MEM,    F_ALU,              1,          1       )   /* LDSTR */
