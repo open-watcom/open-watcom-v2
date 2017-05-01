@@ -169,7 +169,7 @@ static void OpenFiles( bool verbose, char *path, char *out_file )
         ext = ".ssl";
     }
     _makepath( file_name, drive, dir, fname, ext );
-    PreProcChar = '!';
+    PP_PreProcChar = '!';
     if( PP_Init( file_name, PPFLAG_EMIT_LINE, NULL ) != 0 ) {
         Error( "Unable to open '%s'", file_name );
     }
@@ -306,13 +306,13 @@ void Scan( void )
             return;
         }
     }
-    if( TokenBuff[0] == PreProcChar && strcmp( &TokenBuff[1], "line" ) == 0 ) {
+    if( TokenBuff[0] == PP_PreProcChar && strcmp( &TokenBuff[1], "line" ) == 0 ) {
         Scan();
         LineNum = strtoul( TokenBuff, NULL, 0 ) - 1;
         Scan();
         strcpy( CurrFile, TokenBuff );
         Scan();
-    } else if( TokenBuff[0] == PreProcChar && strcmp( &TokenBuff[1], "error" ) == 0 ) {
+    } else if( TokenBuff[0] == PP_PreProcChar && strcmp( &TokenBuff[1], "error" ) == 0 ) {
         TokenLen = 0;
         for( ;; ) {
             ch = NextChar();

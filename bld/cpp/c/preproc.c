@@ -76,7 +76,7 @@ MACRO_TOKEN *PPCurToken;                    // pointer to current token
 char        PPSavedChar;                    // saved char at end of token
 char        PPLineBuf[4096 + 2];            // line buffer
 MACRO_ENTRY *PPHashTable[HASH_SIZE];
-char        PreProcChar = '#';              // preprocessor line intro
+char        PP_PreProcChar = '#';           // preprocessor line intro
 
 pp_callback *PP_CallBack;                   // mkmk dependency callback function
 
@@ -293,7 +293,7 @@ static void PP_GenLine( void )
 
     p = PPLineBuf + 1;
     if( PPFlags & PPFLAG_EMIT_LINE ) {
-        p += sprintf( p, "%cline %u \"", PreProcChar, PP_File->linenum );
+        p += sprintf( p, "%cline %u \"", PP_PreProcChar, PP_File->linenum );
         fname = PP_File->filename;
         while( *fname != '\0' ) {
 #ifndef __UNIX__
@@ -317,7 +317,7 @@ static void PP_GenLine( void )
 
 static void PP_GenError( const char *msg )
 {
-    sprintf( PPLineBuf + 1, "%cerror %s\n", PreProcChar, msg );
+    sprintf( PPLineBuf + 1, "%cerror %s\n", PP_PreProcChar, msg );
     PPNextTokenPtr = PPLineBuf + 1;
 }
 
@@ -597,7 +597,7 @@ static void open_include_file( const char *filename, const char *end, int incl_t
          * overwriten by sprintf function
          */
         buffer = str_dup( filename );
-        sprintf( PPLineBuf + 1, "%cerror Unable to open '%.*s'\n", PreProcChar, (int)len, buffer );
+        sprintf( PPLineBuf + 1, "%cerror Unable to open '%.*s'\n", PP_PreProcChar, (int)len, buffer );
         PP_Free( buffer );
         PPNextTokenPtr = PPLineBuf + 1;
     } else {
@@ -1068,7 +1068,7 @@ static int PP_Read( void )
     // don't look for preprocessor directives inside multi-line comments
     if( !line_generated && !(PPFlags & PPFLAG_SKIP_COMMENT) ) {
         p = PP_SkipSpace( PPNextTokenPtr, &white_space );
-        if( *p == PreProcChar ) {
+        if( *p == PP_PreProcChar ) {
             if( PP_Sharp( p + 1 ) ) {       // if recognized
                 PPLineBuf[1 + 0] = '\n';
                 PPLineBuf[1 + 1] = '\0';
@@ -1176,7 +1176,7 @@ static const char *PPScanOther( const char *p )
             break;
         if( *p == ','  )
             break;
-        if( *p == PreProcChar )
+        if( *p == PP_PreProcChar )
             break;
         if( *p == '('  )
             break;
@@ -1275,8 +1275,8 @@ const char *PP_ScanToken( const char *p, ppt_token *token )
         }
         // Fall through!
     default:
-        if( p[0] == PreProcChar ) {
-            if( p[1] == PreProcChar ) {
+        if( p[0] == PP_PreProcChar ) {
+            if( p[1] == PP_PreProcChar ) {
                 p += 2;
                 ctoken = PPT_SHARP_SHARP;
             } else {
@@ -1388,5 +1388,5 @@ extern void PreprocVarInit( void )
     PPTokenList = NULL;
     PPCurToken = NULL;
     memset( PPLineBuf, 0, sizeof( PPLineBuf ) );
-    PreProcChar = '#';
+    PP_PreProcChar = '#';
 }

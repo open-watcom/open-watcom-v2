@@ -163,5 +163,5 @@ extern  MACRO_TOKEN *PPTokenList;
 extern  MACRO_TOKEN *PPCurToken;
 extern  unsigned    PPFlags;
 extern  char        PPSavedChar;    // saved char at end of token
-extern  char        PreProcChar;
+extern  char        PP_PreProcChar;
 extern  MACRO_ENTRY *PPHashTable[HASH_SIZE];
