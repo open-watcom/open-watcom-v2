@@ -470,7 +470,7 @@ static bool ScanExprDelim( const char *table )
     const char  *ptr;
 
     for( ; *table != NULLCHAR; table += 3 ) {
-        for( ptr = ScanPtr; ( _IsOn( SW_CASE_SENSITIVE ) ?
+        for( ptr = ScanPtr; ( _IsOn( SW_SSL_CASE_SENSITIVE ) ?
                 *table == *ptr : toupper(*table) == toupper(*ptr) )
                 && *table != NULLCHAR; ptr++, table++ ) {
             ;
@@ -679,7 +679,7 @@ static bool ScanKeyword( const char *table )
     namelen = ScanPtr - TokenStart;
     for( ; *table != NULLCHAR; table += (keylen + 3) ) {
          keylen = strlen( table );
-         if( keylen == namelen && ( _IsOn( SW_CASE_SENSITIVE )  ?
+         if( keylen == namelen && ( _IsOn( SW_SSL_CASE_SENSITIVE )  ?
                 memcmp( table, TokenStart, namelen ) == 0 :
                 memicmp( table, TokenStart, namelen ) == 0 ) ) {
              table += (namelen + 1);

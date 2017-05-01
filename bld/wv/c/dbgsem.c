@@ -377,7 +377,7 @@ static ssl_value MechMisc( unsigned select, ssl_value parm )
     case 20:
         switch( parm ) { // nyi - begin temp
         case SSL_CASE_SENSITIVE:
-            _SwitchOn( SW_CASE_SENSITIVE );
+            _SwitchOn( SW_SSL_CASE_SENSITIVE );
             break;
         case SSL_SIDE_EFFECT:
             _SwitchOn( SW_SIDE_EFFECT );
@@ -390,7 +390,7 @@ static ssl_value MechMisc( unsigned select, ssl_value parm )
     case 21:
         switch( parm ) {
         case SSL_CASE_SENSITIVE:
-            _SwitchOff( SW_CASE_SENSITIVE );
+            _SwitchOff( SW_SSL_CASE_SENSITIVE );
             break;
         case SSL_SIDE_EFFECT:
             _SwitchOff( SW_SIDE_EFFECT );
@@ -403,7 +403,7 @@ static ssl_value MechMisc( unsigned select, ssl_value parm )
     case 22:
         switch( parm ) {
         case SSL_CASE_SENSITIVE:
-            result = _IsOn( SW_CASE_SENSITIVE );
+            result = _IsOn( SW_SSL_CASE_SENSITIVE );
             break;
         case SSL_SIDE_EFFECT:
             result = _IsOn( SW_SIDE_EFFECT );
@@ -1054,7 +1054,7 @@ static ssl_value MechGet( unsigned select, ssl_value parm )
     case 0: /* init */
         memset( &CurrGet, 0, sizeof( CurrGet ) );
         CurrGet.li.mod = NO_MOD;
-        CurrGet.li.case_sensitive = _IsOn( SW_CASE_SENSITIVE );
+        CurrGet.li.case_sensitive = _IsOn( SW_SSL_CASE_SENSITIVE );
         break;
     case 1: /* fini */
         switch( CurrGet.kind ) {
