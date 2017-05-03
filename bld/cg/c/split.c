@@ -70,68 +70,68 @@ type_class_def  HalfClass[] = {
 type_class_def  DoubleClass[] = {
 /*******************************/
 
-    U2,                 /* U1*/
-    I2,                 /* I1*/
-    U4,                 /* U2*/
-    I4,                 /* I2*/
-    U8,                 /* U4*/
-    I8,                 /* I4*/
-    XX,                 /* U8*/
-    XX,                 /* I8*/
-    0,                  /* CP*/
-    0,                  /* PT*/
-    0,                  /* FS*/
-    0,                  /* FD*/
-    0,                  /* FL*/
-    XX                  /* XX*/
+    U2,                 /* U1 */
+    I2,                 /* I1 */
+    U4,                 /* U2 */
+    I4,                 /* I2 */
+    U8,                 /* U4 */
+    I8,                 /* I4 */
+    XX,                 /* U8 */
+    XX,                 /* I8 */
+    0,                  /* CP */
+    0,                  /* PT */
+    0,                  /* FS */
+    0,                  /* FD */
+    0,                  /* FL */
+    XX                  /* XX */
 };
 
 type_class_def  Unsigned[] = {
 /****************************/
 
-    U1,                 /* U1*/
-    U1,                 /* I1*/
-    U2,                 /* U2*/
-    U2,                 /* I2*/
-    U4,                 /* U4*/
-    U4,                 /* I4*/
-    U8,                 /* U8*/
-    U8,                 /* U8*/
+    U1,                 /* U1 */
+    U1,                 /* I1 */
+    U2,                 /* U2 */
+    U2,                 /* I2 */
+    U4,                 /* U4 */
+    U4,                 /* I4 */
+    U8,                 /* U8 */
+    U8,                 /* U8 */
 #if _TARGET & _TARG_370
-    U4,                 /* CP*/
-    U4,                 /* PT*/
+    U4,                 /* CP */
+    U4,                 /* PT */
 #else
-    CP,                 /* CP*/
-    PT,                 /* PT*/
+    CP,                 /* CP */
+    PT,                 /* PT */
 #endif
-    FS,                 /* FS*/
-    FD,                 /* FD*/
-    FL,                 /* FL*/
-    XX                  /* XX*/
+    FS,                 /* FS */
+    FD,                 /* FD */
+    FL,                 /* FL */
+    XX                  /* XX */
 };
 
 type_class_def  Signed[] = {
 /**************************/
 
-    I1,                 /* U1*/
-    I1,                 /* I1*/
-    I2,                 /* U2*/
-    I2,                 /* I2*/
-    I4,                 /* U4*/
-    I4,                 /* I4*/
-    I8,                 /* U8*/
-    I8,                 /* I8*/
+    I1,                 /* U1 */
+    I1,                 /* I1 */
+    I2,                 /* U2 */
+    I2,                 /* I2 */
+    I4,                 /* U4 */
+    I4,                 /* I4 */
+    I8,                 /* U8 */
+    I8,                 /* I8 */
 #if _TARGET & _TARG_370
-    I4,                 /* CP*/
-    I4,                 /* PT*/
+    I4,                 /* CP */
+    I4,                 /* PT */
 #else
-    CP,                 /* CP*/
-    PT,                 /* PT*/
+    CP,                 /* CP */
+    PT,                 /* PT */
 #endif
-    FS,                 /* FS*/
-    FD,                 /* FD*/
-    FL,                 /* FL*/
-    XX                  /* XX*/
+    FS,                 /* FS */
+    FD,                 /* FD */
+    FL,                 /* FL */
+    XX                  /* XX */
 };
 
 static  reg_set_index   ResultPossible( instruction *ins )
