@@ -82,6 +82,7 @@ type_class_def  DoubleClass[] = {
     0,                  /* PT*/
     0,                  /* FS*/
     0,                  /* FD*/
+    0,                  /* FL*/
     XX                  /* XX*/
 };
 
