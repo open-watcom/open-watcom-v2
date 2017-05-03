@@ -36,7 +36,7 @@
 
 
 #if ( _INTEGRAL_MAX_BITS >= 64 )
-#define I64_MAX   9223372036854775807I64
+#define U64_DOUBLE_CORRECTION   (2.0 * ( (double)9223372036854775807LL + 1.0 ))
 #endif
 
 
@@ -579,8 +579,8 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
             /* temporary fix for missing uint_64 -> double conversion in OW code generator for RISC */
             /* it is valid for two's complement integers */
             ld.u.value = (double)(int_64)leaf->op.u2.ulong64_value.u._64[0];
-            if( leaf->op.u2.ulong64_value.u._64[0] > I64_MAX ) {
-                ld.u.value += 2.0 * ( (double)I64_MAX + 1.0 );
+            if( (int_64)leaf->op.u2.ulong64_value.u._64[0] < 0 ) {
+                ld.u.value += U64_DOUBLE_CORRECTION;
             }
   #endif
 #else
