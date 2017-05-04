@@ -419,11 +419,9 @@ static void do_alias( FILE *miffile, struct Alias *alias, char *outdir )
     for( syselem = alias->systems; syselem != NULL; syselem = syselem->next ) {
         if( !strcmp( syselem->system, "nta" ) ) {               /* AXP */
             add_system( &aliasaxp, syselem->system );
-        } else if( !strcmp( syselem->system, "axp" ) ) {        /* AXP */
-            add_system( &aliasaxp, syselem->system );
         } else if( !strcmp( syselem->system, "ntp" ) ) {        /* PPC */
             add_system( &aliasppc, syselem->system );
-        } else if( !strcmp( syselem->system, "op" ) ) {         /* PPC */
+        } else if( !strcmp( syselem->system, "opc" ) ) {        /* PPC */
             add_system( &aliasppc, syselem->system );
         } else if( !strcmp( syselem->system, "lpc" ) ) {        /* PPC */
             add_system( &aliasppc, syselem->system );
@@ -502,7 +500,7 @@ static int do_line( FILE *infile, FILE *miffile, char *outdir )
         words = (char **)AllocMem( ( numwords + 1 ) * sizeof( char * ) );
         if( words != NULL ) {
             numwords = parse_words( line, words );
-        
+
             /*** Construct an Alias structure and create the alias ***/
             alias.filename = words[0];
             alias.realname = words[1];

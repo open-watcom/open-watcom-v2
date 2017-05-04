@@ -3,13 +3,10 @@
 # the "real" symbol.
 
 # file  actual name     aliased name        systems
-#                                       d16c d16i d32c d32i n32c n32i winc wini nta ntp os2p lpc lmp
-#====================================================================================================
-wtof__  _wtof           _watof          d16c d16i d32c d32i n32c n32i winc wini nta ntp os2p
-_gcvt_  gcvt            _gcvt           d16c d16i d32c d32i n32c n32i winc wini nta ntp os2p
-__gcvt  gcvt            __gcvt          d16c d16i d32c d32i n32c n32i winc wini nta ntp os2p
-_ecvt_  ecvt            _ecvt           d16c d16i d32c d32i n32c n32i winc wini nta ntp os2p
-__ecvt  ecvt            __ecvt          d16c d16i d32c d32i n32c n32i winc wini nta ntp os2p
-_fcvt_  fcvt            _fcvt           d16c d16i d32c d32i n32c n32i winc wini nta ntp os2p
-__fcvt  fcvt            __fcvt          d16c d16i d32c d32i n32c n32i winc wini nta ntp os2p
-_finit  _finite         finite          d16c d16i d32c d32i n32c n32i winc wini nta ntp os2p
+#                                       d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
+#===================================================================================================
+wtof__  _wtof           _watof          d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
+_gcvt_  gcvt            _gcvt           d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
+_ecvt_  ecvt            _ecvt           d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
+_fcvt_  fcvt            _fcvt           d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
+_finit  _finite         finite          d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
