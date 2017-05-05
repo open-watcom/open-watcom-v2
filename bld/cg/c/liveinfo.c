@@ -260,7 +260,7 @@ static  void    FlowConflicts( instruction *first,
                 break;
             if( ins->operands[1]->n.class != N_REGISTER )
                 break;
-            i = NumOperands( ins ); /* ignore the register operands */
+            i = OpcodeNumOperands( ins ); /* ignore the register operands */
             break;
         }
         if( opcode != OP_BLOCK ) {

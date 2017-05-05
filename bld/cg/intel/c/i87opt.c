@@ -652,8 +652,8 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
 
                 next->result = ST( 0 );
                 next->operands[0] = ins->operands[0];
-                if( ins->num_operands > NumOperands( ins ) && next->num_operands <= NumOperands( next ) ) {
-                    next->operands[next->num_operands] = ins->operands[NumOperands( ins )];
+                if( ins->num_operands > OpcodeNumOperands( ins ) && next->num_operands <= OpcodeNumOperands( next ) ) {
+                    next->operands[next->num_operands] = ins->operands[OpcodeNumOperands( ins )];
                     next->num_operands++;
                 }
                 FreeIns( ins );

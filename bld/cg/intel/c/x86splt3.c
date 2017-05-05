@@ -67,7 +67,7 @@ static  void    MoveSeg( instruction *ins, instruction *new_ins,
 
     if( ins->head.opcode == OP_BLOCK )
         return;
-    if( ins->num_operands <= NumOperands( ins ) )
+    if( ins->num_operands <= OpcodeNumOperands( ins ) )
         return;
     if( !SegMemLoc( op ) )
         return;
@@ -88,7 +88,7 @@ static  void    MoveSeg( instruction *ins, instruction *new_ins,
 void    DelSeg( instruction *ins )
 /********************************/
 {
-    if( NumOperands( ins ) < ins->num_operands ) {
+    if( OpcodeNumOperands( ins ) < ins->num_operands ) {
         ins->num_operands--;
     }
 }
@@ -99,9 +99,9 @@ void    DupSeg( instruction *ins, instruction *new_ins )
 {
     if( ins->head.opcode == OP_BLOCK )
         return;
-    if( ins->num_operands <= NumOperands( ins ) )
+    if( ins->num_operands <= OpcodeNumOperands( ins ) )
         return;
-    if( new_ins->num_operands > NumOperands( new_ins ) )
+    if( new_ins->num_operands > OpcodeNumOperands( new_ins ) )
         return;
     new_ins->operands[new_ins->num_operands++] = ins->operands[ins->num_operands - 1];
     new_ins->t.index_needs = ins->t.index_needs;
@@ -141,7 +141,7 @@ void    DelSegRes( instruction *ins )
 {
     int         i;
 
-    if( ins->num_operands <= NumOperands( ins ) )
+    if( ins->num_operands <= OpcodeNumOperands( ins ) )
         return;
     if( !SegMemLoc( ins->result ) )
         return;
@@ -159,7 +159,7 @@ void    DelSegOp( instruction *ins, int i )
 {
     int         j;
 
-    if( ins->num_operands <= NumOperands( ins ) )
+    if( ins->num_operands <= OpcodeNumOperands( ins ) )
         return;
     if( !SegMemLoc( ins->operands[i] ) )
         return;

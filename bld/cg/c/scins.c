@@ -129,7 +129,7 @@ bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
                 || ((ins->u.gen_table->op_type & MASK_CC) ==
                     (gen_table->op_type & MASK_CC))) ) {
             if( to->n.class != N_INDEXED && old_op->n.class == N_INDEXED ) {
-                ins->num_operands = NumOperands( ins );
+                ins->num_operands = OpcodeNumOperands( ins );
             }
         } else {
             ok = false;
@@ -266,7 +266,7 @@ bool    FindRegOpnd( score *sc, instruction *ins )
     if( IsStackReg( ins->result ) )
         return( false );
     change = false;
-    for( i = NumOperands( ins ); i-- > 0; ) {
+    for( i = OpcodeNumOperands( ins ); i-- > 0; ) {
         if( TryRegOp( sc, ins, &ins->operands[i] ) ) {
             change = true;
         }

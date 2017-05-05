@@ -600,7 +600,7 @@ static void     CompressIns( instruction *ins )
         // Do not use ins->num_operands here, otherwise we'll falsely trigger
         // compression for segment operand of instruction which we shouldn't.
         // (bug #442)
-        num_operands = NumOperands( ins );
+        num_operands = OpcodeNumOperands( ins );
         for( i = 0; i < num_operands; ++i ) {
             if( prev->result == ins->operands[i] ) {
                 popnd = &ins->operands[i];

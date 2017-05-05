@@ -326,14 +326,14 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
                 new_off = op1->v.offset - backup;
                 if( new_off >= 0 )
                     return( true );
-                if( ins->num_operands > NumOperands( ins ) )
+                if( ins->num_operands > OpcodeNumOperands( ins ) )
                     return( false );
                 return( true );
             case N_INDEXED:
                 new_off = op1->i.constant - backup;
                 if( new_off >= 0 )
                     return( true );
-                if( ins->num_operands > NumOperands( ins ) )
+                if( ins->num_operands > OpcodeNumOperands( ins ) )
                     return( false );
                 if( op1->i.base == NULL )
                     return( false );

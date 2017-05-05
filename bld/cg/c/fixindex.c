@@ -57,11 +57,11 @@ static byte NumTab[LAST_OP - FIRST_OP + 1] = {
 };
 
 
-int     NumOperands( instruction *ins ) {
-/************************************************
+byte    OpcodeNumOperands( instruction *ins )
+/********************************************
     see NumTab
 */
-
+{
     return( NumTab[ins->head.opcode] );
 }
 

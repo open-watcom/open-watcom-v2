@@ -394,7 +394,7 @@ instruction     *rMAKEU2( instruction *ins )
             new_ins = ins;
         }
         ins->operands[0] = OffsetPart( ins->operands[0] );
-        if( NumOperands( ins ) >= 2 ) {
+        if( OpcodeNumOperands( ins ) >= 2 ) {
             ins->operands[1] = OffsetPart( ins->operands[1] );
         }
     }

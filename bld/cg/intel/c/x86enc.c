@@ -714,7 +714,7 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
     InputOC( &oc );
 
     seg = NULL;
-    if( ins->num_operands > NumOperands( ins ) ) {
+    if( ins->num_operands > OpcodeNumOperands( ins ) ) {
         seg = ins->operands[ins->num_operands - 1];
     }
 
@@ -1892,8 +1892,8 @@ void    GenObjCode( instruction *ins ) {
 
         _Code;
         LayInitial( ins, gen );
-        i = ins->num_operands - 1;
-        if( i >= NumOperands( ins ) ) {
+        if( ins->num_operands > OpcodeNumOperands( ins ) ) {
+            i = ins->num_operands - 1;
             if( ins->operands[i]->n.class == N_REGISTER ) {
                 GenSeg( ins->operands[i]->r.reg );
             } else {
@@ -1950,7 +1950,7 @@ void    GenObjCode( instruction *ins ) {
                 break;
             }
             LayACRegOp( left );
-            if( NumOperands( ins ) != 1 && right->c.lo.int_value == 2 ) {
+            if( OpcodeNumOperands( ins ) != 1 && right->c.lo.int_value == 2 ) {
                 /* never address*/
                 TransferIns();
                 if( opnd_size ) {

@@ -132,7 +132,7 @@ static  instruction *CmpRelocZero( instruction *ins, int c, int r ) {
     name        *rel;
     bool        truth;
 
-    if( NumOperands( ins ) != 2 )
+    if( OpcodeNumOperands( ins ) != 2 )
         return( NULL );
     cons = ins->operands[c];
     if( cons->n.class != N_CONSTANT )
@@ -216,7 +216,7 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
 
     tipe = ClassType( ins->type_class );
     left_tipe = ClassType( _OpClass( ins ) );
-    num_operands = NumOperands( ins );
+    num_operands = OpcodeNumOperands( ins );
     left = NULL;
     rite = NULL;
     if( num_operands != 0 ) {
@@ -397,7 +397,7 @@ instruction    *FoldIns( instruction *ins ) {
         }
     }
     if( have_const ) {
-        i = NumOperands( ins );
+        i = OpcodeNumOperands( ins );
         if( i > 1 ) {
             if( RelocConst( ins->operands[1] ) ) {
                 return( CmpRelocZero( ins, 0, 1 ) );

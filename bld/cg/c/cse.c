@@ -298,7 +298,7 @@ extern  bool    PropRegsOne( void )
             if( next->head.opcode == OP_CAREFUL_LA )
                 continue;
             if( next->num_operands != 1 ) {
-                if( next->num_operands <= NumOperands( next ) )
+                if( next->num_operands <= OpcodeNumOperands( next ) )
                     continue;
                 if( !IsSegReg( reg->r.reg ) )
                     continue;
@@ -1481,7 +1481,7 @@ static  bool    PropMoves( block *root, bool backward )
               && ins->head.opcode != OP_CALL_INDIRECT
               && ins->head.opcode != OP_LOAD_UNALIGNED
               && ins->head.opcode != OP_STORE_UNALIGNED ) {
-                for( i = NumOperands( ins ); i-- > 0; ) {
+                for( i = OpcodeNumOperands( ins ); i-- > 0; ) {
                     switch( ins->operands[i]->n.class ) {
                     case N_INDEXED:
                         idx = ins->operands[i]->i.index;

@@ -783,7 +783,7 @@ static  instruction     *DoExpand( instruction *ins ) {
     result_type         res_type;
 
     op1_type = OP_NONE;
-    for( i = NumOperands( ins ); i-- > 0; ) {
+    for( i = OpcodeNumOperands( ins ); i-- > 0; ) {
         op2_type = op1_type;
         reg_num = FPRegNum( ins->operands[i] );
         if( reg_num != -1 ) {

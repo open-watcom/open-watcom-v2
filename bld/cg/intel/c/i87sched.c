@@ -273,7 +273,7 @@ static  fp_attr FPAttr( instruction *ins ) {
     case G_RCOMP:
         return( NEEDS_ST0+POPS );
     case G_IFUNC:
-        if( NumOperands( ins ) == 2 ) {
+        if( OpcodeNumOperands( ins ) == 2 ) {
             return( NEEDS_ST0_ST1+POPS );
         } else {
             return( NEEDS_ST0 );
@@ -827,7 +827,7 @@ static  bool    OKToCache( temp_entry *temp ) {
     name                *seg;
 
     ins = temp->first;
-    if( ins->num_operands <= NumOperands( ins ) )
+    if( ins->num_operands <= OpcodeNumOperands( ins ) )
         return( true );
     seg = ins->operands[ins->num_operands - 1];
     for( ins = ins->head.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {

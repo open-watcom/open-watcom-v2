@@ -171,7 +171,7 @@ static  bool    MathOpsBlowStack( conflict_node *conf, int stk_level ) {
     if( ins == last )
         return( true );
     for( ins = ins->head.next; ins != last; ins = ins->head.next ) {
-        if( FPStkReq( ins ) + stk_level + NumOperands( ins ) >= Max87Stk ) {
+        if( FPStkReq( ins ) + stk_level + OpcodeNumOperands( ins ) >= Max87Stk ) {
             return( true );
         }
     }

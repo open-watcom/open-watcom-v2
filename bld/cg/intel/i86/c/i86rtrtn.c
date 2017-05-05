@@ -177,7 +177,7 @@ bool    RTLeaveOp2( instruction *ins )
     default:
         return( false );
     }
-    if( NumOperands( ins ) != 2 )
+    if( OpcodeNumOperands( ins ) != 2 )
         return( false );
     return( true );
 }
@@ -323,7 +323,7 @@ instruction     *rMAKECALL( instruction *ins )
             HW_TurnOn( all_regs, regs );
             PrefixIns( ins, new_ins );
         }
-    } else if( NumOperands( ins ) == 2 ) {
+    } else if( OpcodeNumOperands( ins ) == 2 ) {
         if( rtindex == RT_DPOWI ) {
             parm2_class = I4;
         } else {

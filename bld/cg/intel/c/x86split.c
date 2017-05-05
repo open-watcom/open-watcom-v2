@@ -470,7 +470,7 @@ static  instruction     *LoadStringOps( instruction *ins,
         new_op1 = CX;
     }
     /* careful here. Make sure we load DS last*/
-    if( ins->num_operands > NumOperands( ins ) ) {
+    if( ins->num_operands > OpcodeNumOperands( ins ) ) {
         if( (*op1)->n.class == N_INDEXED || (*op1)->n.class == N_MEMORY ) {
             load_op1 = MakeUnary( OP_LA, *op2, AllocRegName(ES_DI), LP );
             PrefixIns( ins, load_op1 );

@@ -74,7 +74,7 @@ instruction     *NeedIndex( instruction *ins ) {
     conflict_node       *conf;
     name                *name;
 
-    if( ins->num_operands > NumOperands( ins ) ) {
+    if( ins->num_operands > OpcodeNumOperands( ins ) ) {
         name = ins->operands[ins->num_operands - 1];
         conf = NameConflict( ins, name );
         if( conf != NULL && _Isnt( conf, CST_NEEDS_SEGMENT_SPLIT ) ) {
@@ -184,7 +184,7 @@ static  name    *FindSegment( instruction *ins ) {
     name        *index;
     int         i;
 
-    if( ins->num_operands > NumOperands( ins ) )
+    if( ins->num_operands > OpcodeNumOperands( ins ) )
         return( NULL );
     if( ins->type_class == XX ) {
         if( ins->head.opcode != OP_CALL_INDIRECT ) {
@@ -320,12 +320,12 @@ void    FixSegments( void ) {
              */
 #define ANY_FLOATING (FLOATING_DS|FLOATING_ES|FLOATING_FS|FLOATING_GS)
 #if _TARGET & _TARG_80386
-            if( _IsntTargetModel( ANY_FLOATING ) && ins->num_operands > NumOperands( ins )
+            if( _IsntTargetModel( ANY_FLOATING ) && ins->num_operands > OpcodeNumOperands( ins )
                  && !(_IsTargetModel( FLAT_MODEL ) &&
                 (ins->operands[ins->num_operands - 1]->n.class == N_REGISTER) &&
                 HW_CEqual( ins->operands[ins->num_operands - 1]->r.reg, HW_CS )) ) {
 #else
-            if( _IsntTargetModel( ANY_FLOATING ) && ins->num_operands > NumOperands( ins ) ) {
+            if( _IsntTargetModel( ANY_FLOATING ) && ins->num_operands > OpcodeNumOperands( ins ) ) {
 #endif
                 /* throw away override */
                 ins->num_operands--;
@@ -364,9 +364,9 @@ void    MergeIndex( void ) {
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            if( NumOperands( ins ) < ins->num_operands ) {
+            if( OpcodeNumOperands( ins ) < ins->num_operands ) {
                 dec = false;
-                for( i = NumOperands( ins ); i-- > 0; ) {
+                for( i = OpcodeNumOperands( ins ); i-- > 0; ) {
                     name = &ins->operands[i];
                     if( (*name)->n.class == N_INDEXED ) {
                         Merge( name, ins );

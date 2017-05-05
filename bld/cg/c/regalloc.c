@@ -612,7 +612,7 @@ static  bool    UnaryOpGetsReg( instruction *ins, hw_reg_set reg,
     given that the result or operand gets a register (a little machine specific
     but I don't know of any machines for which this isn't true).
 */
-     return( NumOperands( ins ) == 1 && ins->result != NULL &&
+     return( OpcodeNumOperands( ins ) == 1 && ins->result != NULL &&
             !IsSegReg( reg ) && ins->head.opcode != OP_CONVERT &&
             ( ins->operands[0] == op || ins->result == op ) );
 }
@@ -628,12 +628,10 @@ static  bool    StealsSeg( instruction *ins,
     hw_reg_set          *index_needs;
     name                *op;
     conflict_node       *new_conf;
-    int                 i;
 
-    i = ins->num_operands - 1;
-    if( i < NumOperands( ins ) )
+    if( ins->num_operands <= OpcodeNumOperands( ins ) )
         return( false );
-    op = ins->operands[i];
+    op = ins->operands[ins->num_operands - 1];
     new_conf = NameConflict( ins, op );
     if( new_conf == NULL )
         return( false );

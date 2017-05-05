@@ -67,7 +67,7 @@ static instruction  *DoReduce( instruction *ins, opcode_entry *try, bool has_ind
         HW_TurnOn( zap_all, *zap );
     }
     ins->zap = (register_name *)AllocRegName( zap_all );
-    if( has_index || ins->num_operands > NumOperands( ins ) ) {
+    if( has_index || ins->num_operands > OpcodeNumOperands( ins ) ) {
         ins = NeedIndex( ins );
     } else {
         ins->t.index_needs = RL_;
@@ -178,7 +178,7 @@ static  operand_types   ClassifyOps( instruction *ins, bool *has_index )
     operand_types       ops;
     int                 num_operands;
 
-    num_operands = NumOperands( ins );
+    num_operands = OpcodeNumOperands( ins );
     *has_index = false;
     ops = NONE;
     name = ins->result;

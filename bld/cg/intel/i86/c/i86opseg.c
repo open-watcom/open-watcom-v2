@@ -139,9 +139,9 @@ static  int     CountSegOvers( void )
     overs = 0;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            if( NumOperands( ins ) == ins->num_operands && ( ZPageType == ZP_USES_DS
+            if( OpcodeNumOperands( ins ) == ins->num_operands && ( ZPageType == ZP_USES_DS
                || ( G( ins ) != G_MOVAM && G( ins ) != G_MOVMA ) ) ) {
-                for( i = NumOperands( ins ); i-- > 0; ) {
+                for( i = OpcodeNumOperands( ins ); i-- > 0; ) {
                     overs += Overs( ins->operands[i] );
                 }
                 if( ins->result != NULL ) {
