@@ -49,7 +49,7 @@
 #include "split.h"
 #include "makeaddr.h"
 #include "expand.h"
-#include "conflict.h"
+#include "confldef.h"
 #include "regalloc.h"
 
 

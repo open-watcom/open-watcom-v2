@@ -37,7 +37,7 @@
 #include "system.h"
 #include "zoiks.h"
 #include "cfloat.h"
-#include "conflict.h"
+#include "confldef.h"
 #include "makeins.h"
 #include "namelist.h"
 #include "rgtbl.h"

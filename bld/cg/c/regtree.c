@@ -32,7 +32,7 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "conflict.h"
+#include "confldef.h"
 #include "regset.h"
 #include "freelist.h"
 #include "zoiks.h"

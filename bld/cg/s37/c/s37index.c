@@ -32,7 +32,7 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "conflict.h"
+#include "confldef.h"
 #include "pattern.h"
 #include "opcodes.h"
 #include "cgmem.h"

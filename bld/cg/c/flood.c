@@ -32,7 +32,7 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "conflict.h"
+#include "confldef.h"
 #include "cgdefs.h"
 #include "model.h"
 #include "stack.h"

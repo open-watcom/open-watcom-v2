@@ -33,7 +33,7 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "regset.h"
-#include "conflict.h"
+#include "confldef.h"
 #include "cfloat.h"
 #include "makeins.h"
 #include "namelist.h"
