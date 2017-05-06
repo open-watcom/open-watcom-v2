@@ -743,15 +743,15 @@ reg_set_index   SegIndex( void )
 }
 
 
-reg_set_index   NoSegments( reg_set_index idx )
-/**********************************************
+reg_set_index   NoSegments( reg_set_index regs_idx )
+/***************************************************
     return a register list like "idx" that doesn't include any segment regs
 */
 {
-    if( idx == RL_ANYWORD ) {
-        idx = RL_WORD;
+    if( regs_idx == RL_ANYWORD ) {
+        regs_idx = RL_WORD;
     }
-    return( idx );
+    return( regs_idx );
 }
 
 
@@ -1198,8 +1198,8 @@ hw_reg_set      *IdxRegs( void )
     return( DoubleRegs );
 }
 
-hw_reg_set      FirstReg( reg_set_index index )
-/**********************************************
+hw_reg_set      FirstReg( reg_set_index regs_idx )
+/*************************************************
     The table RTInfo[] uses reg_set_indexes instead of hw_reg_sets since
     they are only one byte long.  This retrieves the first hw_reg_set
     from the reg_set table "index".
@@ -1209,5 +1209,5 @@ hw_reg_set      FirstReg( reg_set_index index )
     register list and returns it.
 */
 {
-    return( *RegSets[index] );
+    return( *RegSets[regs_idx] );
 }

@@ -38,9 +38,10 @@
 #include "memout.h"
 #include "cgmem.h"
 #include "optmac.h"
-#include "dumpio.h"
 #include "memlimit.h"
 #include "onexit.h"
+#include "dumpio.h"
+
 
 /*  memory tracking levels */
 #define   _NO_TRACKING     0

@@ -1228,6 +1228,7 @@ const char *FEExtName( cg_sym_handle sym, int request ) {
         return( GetNamePattern( (sym_id)sym ) );
     case EXTN_PRMSIZE:
         return( (const char *)(pointer_int)GetParmsSize( (sym_id)sym ) );
+    case EXTN_CALLBACKNAME:
     default:
         return( NULL );
     }

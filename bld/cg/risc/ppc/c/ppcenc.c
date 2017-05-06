@@ -42,7 +42,6 @@
 #include "ppcgen.h"
 #include "data.h"
 #include "objout.h"
-#include "dumpio.h"
 #include "cgauxinf.h"
 #include "dbsyms.h"
 #include "object.h"
@@ -53,11 +52,11 @@
 #include "rscobj.h"
 #include "split.h"
 #include "namelist.h"
+#include "dumpio.h"
+#include "dumpins.h"
+#include "dumptab.h"
 #include "feprotos.h"
 
-
-extern void DumpInsOnly( instruction * );
-extern void DumpGen( opcode_entry * );
 
 extern label_handle     GetWeirdPPCDotDotLabel( label_handle );
 
@@ -949,15 +948,15 @@ byte    ReverseCondition( byte cond )
 }
 
 
-static label_handle LocateLabel( instruction *ins, int index )
-/************************************************************/
+static label_handle LocateLabel( instruction *ins, byte dst_idx )
+/***************************************************************/
 {
-    if( index == NO_JUMP )
+    if( dst_idx == NO_JUMP )
         return( NULL );
     for( ins = ins->head.next; ins->head.opcode != OP_BLOCK; ) {
         ins = ins->head.next;
     }
-    return( _BLOCK( ins )->edge[index].destination.u.lbl );
+    return( _BLOCK( ins )->edge[dst_idx].destination.u.lbl );
 }
 
 

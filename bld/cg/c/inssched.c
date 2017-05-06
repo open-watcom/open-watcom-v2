@@ -622,7 +622,7 @@ static void *AnnointADag( data_dag *dag )
         pred->anc_count++;
         if( !pred->visited )
             SafeRecurseCG( (func_sr)AnnointADag, pred );
-        if( pred->height > max_cycle_count ) {
+        if( max_cycle_count < pred->height ) {
             max_cycle_count = pred->height;
         }
     }
@@ -654,8 +654,8 @@ extern int StallCost( instruction *ins, instruction *top )
 {
     unsigned        avail_fu;
     unsigned        fu_overlap;
-    int             unit_stall;
-    int             opnd_stall;
+    byte            unit_stall;
+    byte            opnd_stall;
     const FU_entry  *entry;
     instruction     *curr;
     instruction     *last;
@@ -683,9 +683,7 @@ extern int StallCost( instruction *ins, instruction *top )
     opnd_stall = entry->opnd_stall;
     ins_stack = StackOp( ins );
     curr = top;
-    for( ;; ) {
-        if( unit_stall == 0 && opnd_stall == 0 )
-            return( 0 );
+    for( ; unit_stall > 0 || opnd_stall > 0; ) {
         if( opnd_stall > 0 ) {
             --opnd_stall;
             switch( DataDependant( ins, curr, false ) ) {
@@ -715,9 +713,10 @@ extern int StallCost( instruction *ins, instruction *top )
         }
         curr = curr->head.next;
         if( curr == last ) {
-            return( 0 );
+            break;
         }
     }
+    return( 0 );
 }
 
 

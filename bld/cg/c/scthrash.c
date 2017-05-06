@@ -160,7 +160,7 @@ static  bool    CantChange( instruction **pins, name *frm, name *to ) {
 /*********************************************************************/
 
     instruction         *new_ins;
-    int                 num_operands;
+    byte                num_operands;
 
     num_operands = (*pins)->num_operands;
     new_ins = NewIns( num_operands );
@@ -359,9 +359,9 @@ static  bool    ThrashUp( instruction *ins ) {
 }
 
 
-extern  bool    RegThrash( block *blk ) {
-/***************************************/
-
+bool    RegThrash( block *blk )
+/*****************************/
+{
     instruction *ins;
     instruction *next;
 

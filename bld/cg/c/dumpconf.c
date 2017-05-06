@@ -32,18 +32,18 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "dumpio.h"
 #include "data.h"
 #include "rgtbl.h"
+#include "dmpinc.h"
+#include "dumpio.h"
+#include "dumpconf.h"
+#include "dumpins.h"
+#include "dumpblk.h"
 
 
-extern  void            DumpOperand(name*);
-extern  void            DumpGBit(global_bit_set*);
-extern  void            DumpLBit(local_bit_set*);
-
-static  bool    Check( hw_reg_set *name, hw_reg_set test ) {
-/*********************************************************************/
-
+static  bool    Check( hw_reg_set *name, hw_reg_set test )
+/********************************************************/
+{
     if( !HW_Subset( *name, test ) )
         return( false );
     HW_TurnOff( *name, test );
@@ -51,9 +51,9 @@ static  bool    Check( hw_reg_set *name, hw_reg_set test ) {
 }
 
 
-extern  void    DumpRegName( hw_reg_set regname ) {
-/*************************************************/
-
+void    DumpRegName( hw_reg_set regname )
+/***************************************/
+{
     bool        first;
     hw_reg_set  name;
 
@@ -127,7 +127,7 @@ extern  void    DumpRegName( hw_reg_set regname ) {
             if( Check(&name,HW_R29) ) { DumpLiteral( "R29" ); continue; }
             if( Check(&name,HW_R30) ) { DumpLiteral( "R30" ); continue; }
             if( Check(&name,HW_R31) ) { DumpLiteral( "R31" ); continue; }
-    
+
             if( Check(&name,HW_D0) ) { DumpLiteral( "D0" ); continue; }
             if( Check(&name,HW_D1) ) { DumpLiteral( "D1" ); continue; }
             if( Check(&name,HW_D2) ) { DumpLiteral( "D2" ); continue; }
@@ -160,7 +160,7 @@ extern  void    DumpRegName( hw_reg_set regname ) {
             if( Check(&name,HW_D29) ) { DumpLiteral( "D29" ); continue; }
             if( Check(&name,HW_D30) ) { DumpLiteral( "D30" ); continue; }
             if( Check(&name,HW_D31) ) { DumpLiteral( "D31" ); continue; }
-    
+
             if( Check(&name,HW_W0) ) { DumpLiteral( "W0" ); continue; }
             if( Check(&name,HW_W1) ) { DumpLiteral( "W1" ); continue; }
             if( Check(&name,HW_W2) ) { DumpLiteral( "W2" ); continue; }
@@ -193,7 +193,7 @@ extern  void    DumpRegName( hw_reg_set regname ) {
             if( Check(&name,HW_W29) ) { DumpLiteral( "W29" ); continue; }
             if( Check(&name,HW_W30) ) { DumpLiteral( "W30" ); continue; }
             if( Check(&name,HW_W31) ) { DumpLiteral( "W31" ); continue; }
-    
+
             if( Check(&name,HW_B0) ) { DumpLiteral( "B0" ); continue; }
             if( Check(&name,HW_B1) ) { DumpLiteral( "B1" ); continue; }
             if( Check(&name,HW_B2) ) { DumpLiteral( "B2" ); continue; }
@@ -226,7 +226,7 @@ extern  void    DumpRegName( hw_reg_set regname ) {
             if( Check(&name,HW_B29) ) { DumpLiteral( "B29" ); continue; }
             if( Check(&name,HW_B30) ) { DumpLiteral( "B30" ); continue; }
             if( Check(&name,HW_B31) ) { DumpLiteral( "B31" ); continue; }
-    
+
             if( Check(&name,HW_F0) ) { DumpLiteral( "F0" ); continue; }
             if( Check(&name,HW_F1) ) { DumpLiteral( "F1" ); continue; }
             if( Check(&name,HW_F2) ) { DumpLiteral( "F2" ); continue; }
@@ -306,7 +306,7 @@ extern  void    DumpRegName( hw_reg_set regname ) {
             if( Check(&name,HW_ST6) ) { DumpLiteral( "ST(6)"); continue; }
             if( Check(&name,HW_ST7) ) { DumpLiteral( "ST(7)"); continue; }
 #endif
- 	    DumpLiteral( "???");
+        DumpLiteral( "???");
             break;
         }
     }
@@ -341,29 +341,28 @@ static  void    DumpInsRange( conflict_node *conf ) {
 }
 
 
-extern  void    DumpPossible( byte idx ) {
-/****************************************/
-
-
-    if( idx == RL_NUMBER_OF_SETS ) {
+void    DumpPossible( reg_set_index regs_idx )
+/********************************************/
+{
+    if( regs_idx == RL_NUMBER_OF_SETS ) {
         DumpLiteral( " Choices ANY" );
     } else {
-        DumpRgSet( RegSets[idx] );
+        DumpRgSet( RegSets[regs_idx] );
     }
 }
 
 
-extern  void    DumpRegSet( hw_reg_set reg ) {
-/********************************************/
-
+void    DumpRegSet( hw_reg_set reg )
+/**********************************/
+{
     DumpRegName( reg );
     DumpNL();
 }
 
 
-extern  void    DumpAConf( conflict_node *conf ) {
-/************************************************/
-
+void    DumpAConf( conflict_node *conf )
+/**************************************/
+{
     DumpOperand( conf->name );
     DumpLiteral( " id " );
     DumpGBit( &conf->id.out_of_block );
@@ -428,9 +427,9 @@ extern  void    DumpAConf( conflict_node *conf ) {
 }
 
 
-extern  void    DumpConflicts() {
-/*******************************/
-
+void    DumpConflicts( void )
+/***************************/
+{
     conflict_node       *conf;
 
     DumpLiteral( "Conflict graph" );

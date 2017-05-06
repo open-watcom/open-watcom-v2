@@ -451,9 +451,9 @@ extern  void    BGBigLabel( back_handle bck ) {
 }
 
 
-extern  void    BGBigGoto( label_handle lbl, int level ) {
-/********************************************************/
-
+extern  void    BGBigGoto( label_handle lbl, level_depth level )
+/**************************************************************/
+{
     GenBlock( BLK_BIG_JUMP, 1 ); // No longer supported!
     AddTarget( lbl, false );
     BigGoto( level );

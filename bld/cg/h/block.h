@@ -51,8 +51,6 @@
 /* aligned */
 #define MAX_INTERVAL_DEPTH      255U
 
-typedef unsigned_32             interval_depth;
-
 typedef unsigned_32             block_flags;
 
 typedef enum {
@@ -105,7 +103,7 @@ typedef struct block_edge {
         }                       destination;    /* target */
         struct block            *source;        /* source of edge */
         struct block_edge       *next_source;   /* next source to same target */
-        interval_depth          join_level;     /* interval levels joined */
+        level_depth             join_level;     /* interval levels joined */
         block_flags             flags;
 } block_edge;
 
@@ -116,7 +114,7 @@ typedef struct interval_def {
         struct interval_def     *sub_int;
         struct interval_def     *next_sub_int;
         struct interval_def     *link;
-        interval_depth          level;
+        level_depth             level;
 } interval_def;
 
 typedef struct data_flow_def {
@@ -157,7 +155,7 @@ typedef struct block {
         } v;
         label_handle            label;          /* front end identification */
         local_bit_set           available_bit;
-        interval_depth          depth;          /* loop nesting depth */
+        level_depth             depth;          /* loop nesting depth */
         block_num               id;             /* internal identification */
         block_num               gen_id;
         block_num               inputs;         /* number of input edges */

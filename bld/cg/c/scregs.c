@@ -203,11 +203,7 @@ extern  void    RegKill( score *scoreboard, hw_reg_set regs ) {
                 scoreboard->prev_reg = scoreboard;
                 scoreboard->generation = 0;
             } else {
-                owner = scoreboard->list;
-                for( ; ; ) {
-                    curr_list = *owner;
-                    if( curr_list == NULL )
-                        break;
+                for( owner = scoreboard->list; (curr_list = *owner) != NULL; ) {
                     if( curr_list->info.index_reg != NO_INDEX
                       && HW_Ovlap( ScoreList[curr_list->info.index_reg]->reg, regs ) ) {
                         *owner = curr_list->next;

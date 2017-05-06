@@ -218,8 +218,8 @@ extern  bool    AddrFrlFree( void )
 }
 
 
-static  name    *Display( cg_sym_handle symbol, int level )
-/******************************************************/
+static  name    *Display( cg_sym_handle symbol, level_depth level )
+/*****************************************************************/
 {
     proc_def    *old_currproc;
     name        *old_names;
@@ -550,7 +550,7 @@ extern  an      MakeAddrName( cg_class class, cg_sym_handle sym, type_def *tipe 
 {
     an          addr;
     fe_attr     attr;
-    int         level;
+    level_depth level;
     name        *op;
 
     addr = NewAddrName();

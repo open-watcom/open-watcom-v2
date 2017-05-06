@@ -47,12 +47,14 @@
 #include "utils.h"
 #include "stack.h"
 #include "stubdata.h"
+#include "dumptree.h"
 #include "feprotos.h"
 
-extern  void            DumpTree(n *);
+
 extern  void            BECloseFiles();
 extern  void            exit(int);
 extern  void            Action(char * str, ... );
+
 
 extern  char    *EnvVar( char *env ) {
 //====================================

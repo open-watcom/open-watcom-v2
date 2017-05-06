@@ -31,39 +31,38 @@
 
 #include "cgstd.h"
 #include "coderep.h"
+#include "dmpinc.h"
 #include "dumpio.h"
+#include "dumpins.h"
+#include "dumpfpu.h"
 
 #if ( _TARGET & ( _TARG_IAPX86 | _TARG_80386 ) )
 
 #include "i87sched.h"
 #include "gen8087.h"
 
-extern  void            DumpOperand(name*);
-extern  void            DumpFPInfo(instruction*);
-extern  void            DumpInsNoNL(instruction*);
-
-extern  void    DumpSeqs()
-/************************/
+void    DumpSeqs( void )
+/**********************/
 {
-    int i,j;
+    int         i, j;
     temp_entry  *temp;
 
     if( STLocations ) {
         DumpLiteral( "seq: " );
         for( i = 0; i < MaxSeq; ++i ) {
-            DumpChar( i+'a' );
+            DumpChar( (char)i + 'a' );
             DumpChar( ' ' );
         }
         DumpNL();
-        for( j = VIRTUAL_0; j < VIRTUAL_NONE; ++j ) {
+        for( j = VIRTUAL_0; j < VIRTUAL_NONE; ++j, ++c ) {
             DumpLiteral( "  " );
-            DumpChar( j+'0' );
+            DumpChar( (char)j + '0' );
             DumpLiteral( ": " );
             for( i = 0; i < MaxSeq; ++i ) {
                 if( RegSTLoc( i, j ) == ACTUAL_NONE ) {
                     DumpChar( 'X' );
                 } else {
-                    DumpChar( RegSTLoc( i, j ) + '0' );
+                    DumpChar( (char)RegSTLoc( i, j ) + '0' );
                 }
                 DumpChar( ' ' );
             }
@@ -77,7 +76,7 @@ extern  void    DumpSeqs()
         DumpOperand( temp->op );
         DumpNL();
         DumpLiteral( "Location: " );
-        DumpChar( temp->actual_locn == ACTUAL_NONE ? 'X': temp->actual_locn + '0' );
+        DumpChar( temp->actual_locn == ACTUAL_NONE ? 'X': (char)(temp->actual_locn) + '0' );
         DumpLiteral( " Savings: " );
         DumpInt( temp->savings );
         if( temp->cached )
@@ -97,10 +96,9 @@ extern  void    DumpSeqs()
 }
 
 
-static  void    DumpOpcode( instruction *ins ) {
-/**********************************************/
-
-
+static  void    DumpOpcode( instruction *ins )
+/********************************************/
+{
     switch( ins->head.opcode ) {
     case OP_ADD:
         DumpLiteral( "fadd" );
@@ -121,9 +119,9 @@ static  void    DumpOpcode( instruction *ins ) {
 }
 
 
-extern  bool    DumpFPUIns( instruction *ins ) {
-/*********************************************/
-
+bool    DumpFPUIns87( instruction *ins )
+/**************************************/
+{
     int         i;
 
     if( ins->u.gen_table == NULL || ins->table == NULL )
@@ -253,13 +251,14 @@ extern  bool    DumpFPUIns( instruction *ins ) {
     return( true );
 }
 
-
-#else
-extern  bool    DumpFPUIns( instruction *ins ) {
-/*********************************************/
-
-    ins = ins;
-    return( false );
-
-}
 #endif
+
+void    DumpFPUIns( instruction *ins )
+/************************************/
+{
+#if ( _TARGET & ( _TARG_IAPX86 | _TARG_80386 ) )
+    (void)DumpFPUIns87( ins );
+#else
+    /* unused parameters */ (void)ins;
+#endif
+}

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,26 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Instruction block/range dump.
 *
 ****************************************************************************/
 
 
-/* include dump routines */
-
-extern void DumpFPUIns();
-extern void Dumpan();
-extern void DumpBlk();
-extern void DumpConflicts();
-extern void DumpCurrLoop();
-extern void DumpIns();
-extern void DumpOpcodeName();
-extern void DumpRegTree();
-extern void DumpSc();
-extern void DumpGen();
-extern void DumpTree();
-extern void DumpIVList();
-extern void DumpInvariants();
-extern void DumpOpt();
-extern void DumpDataDag();
+extern void     DumpRefs( name *op );
+extern void     DumpBlkId( block *b );
+extern void     DumpLBit( local_bit_set *bit );
+extern void     DumpGBit( global_bit_set *bit );
+extern void     DumpLoops( void );
+extern void     DumpFlowGraph( block *blk );
+extern void     DumpSymTab( void );
+extern void     DumpEdge( block_num i, block_edge *edge );
+extern void     DumpEdges( block *b );
+extern void     DumpInputEdges( block *b );
+extern void     DumpRange( int first, int last );
+extern void     DumpABlk( block *b );
+extern void     DumpBlock( block *b );
+extern void     DumpBlk( void );

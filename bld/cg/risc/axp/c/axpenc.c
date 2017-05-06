@@ -44,7 +44,6 @@
 #include "cgaux.h"
 #include "data.h"
 #include "rtrtn.h"
-#include "dumpio.h"
 #include "cgauxinf.h"
 #include "dbsyms.h"
 #include "rscconst.h"
@@ -58,11 +57,12 @@
 #include "namelist.h"
 #include "fixindex.h"
 #include "revcond.h"
+#include "dmpinc.h"
+#include "dumpio.h"
+#include "dumpins.h"
+#include "dumptab.h"
 #include "feprotos.h"
 
-
-extern void         DumpInsOnly( instruction * );
-extern void         DumpGen( opcode_entry * );
 
 #define _NameReg( op )                  ( (op)->r.arch_index )
 

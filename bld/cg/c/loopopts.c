@@ -80,14 +80,14 @@ typedef struct block_list {
 extern bool             RepOp(name **,name *,name *);
 extern void             ConstToTemp(block *,block *,block *(*)(block *));
 
-static int              NumIndVars;
-static bool             LoopProtected;
-static bool             MemChangedInLoop;
-
 block                   *Head;
 block                   *PreHead;
 induction               *IndVarList;
 block                   *Loop;
+
+static int              NumIndVars;
+static bool             LoopProtected;
+static bool             MemChangedInLoop;
 
 static void     InitIndVars( void )
 /**********************************
@@ -97,17 +97,17 @@ static void     InitIndVars( void )
     IndVarList = NULL;                 /* initialize */
 }
 
-static interval_depth   MaxDepth( void )
+static level_depth      MaxDepth( void )
 /***************************************
     return the depth of the deepest nested loop in the procedure
 */
 {
-    interval_depth      depth;
-    block               *blk;
+    level_depth     depth;
+    block           *blk;
 
     depth = 0;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-        if( blk->depth > depth ) {
+        if( depth < blk->depth ) {
             depth = blk->depth;
         }
     }
@@ -2280,8 +2280,8 @@ instruction     *DupIns( instruction *blk_end, instruction *ins,
     int         num_operands;
     int         i;
 
+    new = NewIns( ins->num_operands );
     num_operands = ins->num_operands;
-    new = NewIns( num_operands );
     Copy( ins, new, offsetof( instruction, operands ) + num_operands * sizeof( name * ) );
     for( i = 0; i < num_operands; ++i ) {
         AdjustOp( blk_end, &new->operands[i], var, adjust );
@@ -2344,7 +2344,7 @@ static  bool    BlueMoonUnRoll( block *cond_blk, induction *var,
         return( false );
     if( var->ins->head.next != cond )
         return( false );
-    if( OptForSize != 0 )
+    if( OptForSize > 0 )
         return( false );
 
     if( know_bounds ) {
@@ -3015,16 +3015,16 @@ static  bool    DoLoopInvariant( bool(*rtn)(void) )
     loops with a minimum number of passes.
 */
 {
-    interval_depth      depth;
-    interval_depth      i;
+    level_depth         max_depth;
+    level_depth         depth;
     block               *blk;
     bool                change;
 
     change = false;
-    depth = MaxDepth();
-    for( i = 1; i <= depth; ++i ) { /* do loop invariant code motion from the outside in*/
+    max_depth = MaxDepth();
+    for( depth = 1; depth <= max_depth; ++depth ) { /* do loop invariant code motion from the outside in */
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            if( _IsBlkAttr( blk, BLK_LOOP_HEADER ) && blk->depth == i ) {
+            if( _IsBlkAttr( blk, BLK_LOOP_HEADER ) && blk->depth == depth ) {
                 LPBlip();
                 Head = blk;
                 MarkLoop();
@@ -3187,12 +3187,12 @@ bool    LoopRegInvariant( void )
 void    LoopEnregister( void )
 /****************************/
 {
-    interval_depth      i;
+    level_depth         depth;
     block               *blk;
 
-    for( i = MaxDepth(); i >= 1; --i ) { /* do loop enregistering from the inside out */
+    for( depth = MaxDepth(); depth >= 1; --depth ) { /* do loop enregistering from the inside out */
         for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
-            if( _IsBlkAttr( blk, BLK_LOOP_HEADER ) && blk->depth == i ) {
+            if( _IsBlkAttr( blk, BLK_LOOP_HEADER ) && blk->depth == depth ) {
                 Head = blk;
                 MarkLoop();
                 ConstToTemp( PreHead, Loop, NextInLoop );

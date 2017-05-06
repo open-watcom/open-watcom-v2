@@ -44,8 +44,8 @@ typedef struct data_dag {
     unsigned                    stallable       : 8;
     unsigned                    visited         : 1;
     unsigned                    scheduled       : 1;
-    instruction_id              height;
-    instruction_id              anc_count;
+    unsigned                    height;
+    unsigned                    anc_count;
 } data_dag;
 
 typedef struct dep_list_entry {

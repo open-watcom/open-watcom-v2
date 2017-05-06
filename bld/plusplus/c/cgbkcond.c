@@ -236,7 +236,7 @@ void CondInfoSetup(             // SETUP UP CONDITIONAL INFORMATION
     COND_INFO* cond,            // - conditional information
     FN_CTL* fctl )              // - function information
 {
-    unsigned flag_offset;       // - offset within flags vector
+    target_offset_t flag_offset;    // - offset within flags vector
 
     /* unused parameters */ (void)fctl;
 
@@ -384,15 +384,18 @@ void CondInfoNewCtorEnd(        // CTOR OF NEW'ED OBJECT: END
 const char *CallbackName( void *f )
 {
 #ifndef NDEBUG
-    if( f == callBackTrue )
+    cg_callback rtn;
+
+    rtn = *(cg_callback *)f;
+    if( rtn == callBackTrue )
         return( "callBackTrue" );
-    if( f == callBackFalse )
+    if( rtn == callBackFalse )
         return( "callBackFalse" );
-    if( f == callBackEnd )
+    if( rtn == callBackEnd )
         return( "callBackEnd" );
-    if( f == callBackNewCtorBeg )
+    if( rtn == callBackNewCtorBeg )
         return( "callBackNewCtorBeg" );
-    if( f == callBackNewCtorEnd )
+    if( rtn == callBackNewCtorEnd )
         return( "callBackNewCtorEnd" );
 #else
     /* unused parameters */ (void)f;

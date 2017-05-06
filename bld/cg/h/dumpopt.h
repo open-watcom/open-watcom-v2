@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,26 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dump internal optimizer data.
 *
 ****************************************************************************/
 
 
-/* include dump routines */
-
-extern void DumpFPUIns();
-extern void Dumpan();
-extern void DumpBlk();
-extern void DumpConflicts();
-extern void DumpCurrLoop();
-extern void DumpIns();
-extern void DumpOpcodeName();
-extern void DumpRegTree();
-extern void DumpSc();
-extern void DumpGen();
-extern void DumpTree();
-extern void DumpIVList();
-extern void DumpInvariants();
-extern void DumpOpt();
-extern void DumpDataDag();
+extern void     DumpOc( ins_entry *ins );
+extern void     DumpLbl( label_handle lbl );
+extern void     DownOpt( ins_entry *instr, uint num );
+extern void     UpOpt( ins_entry *ins, uint last );
+extern void     DumpOpt( void );

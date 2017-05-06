@@ -39,17 +39,17 @@
 #include "procdef.h"
 #include "freelist.h"
 #include "inssched.h"
-#include "dumpio.h"
-#include "dmpinc.h"
 #include "blktrim.h"
+#include "dmpinc.h"
+#include "dumpio.h"
+#include "dumpins.h"
 
-extern  void            DumpIns(instruction *);
 
 extern data_dag         *DataDag;
 
 
 static void DumpADataDag( data_dag *dag )
-/********************************/
+/***************************************/
 {
     int             i;
     dep_list_entry  *dep;

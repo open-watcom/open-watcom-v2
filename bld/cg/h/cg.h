@@ -94,6 +94,8 @@ typedef void                (*cg_callback)( callback_handle );
 
 typedef short               segment_id;         /* must be signed */
 
+typedef int                 level_depth;
+
 typedef unsigned_32         cg_linenum;
 
 typedef unsigned            objhandle;

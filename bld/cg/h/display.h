@@ -29,8 +29,8 @@
 ****************************************************************************/
 #include "offset.h"
 
-extern  name    *MakeDisplay( name *op, int level );
-extern  void    BigGoto( int level );
+extern  name    *MakeDisplay( name *op, level_depth level );
+extern  void    BigGoto( level_depth level );
 extern  void    BigLabel( void );
 extern  bool    AskIsFrameIndex( name *op );
 extern  abspatch_handle *NextFramePatch( void );

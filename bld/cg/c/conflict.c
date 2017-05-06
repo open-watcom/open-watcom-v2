@@ -293,8 +293,8 @@ reg_set_index   GetPossibleForTemp( conflict_node *conf, name *temp )
 }
 
 
-void    MarkPossible( instruction *ins, name *opnd, reg_set_index idx )
-/*********************************************************************/
+void    MarkPossible( instruction *ins, name *opnd, reg_set_index regs_idx )
+/**************************************************************************/
 {
     conflict_node       *conf;
     possible_for_alias  *aposs;
@@ -303,9 +303,9 @@ void    MarkPossible( instruction *ins, name *opnd, reg_set_index idx )
     if( conf != NULL ) {
         if( opnd->n.class == N_TEMP && ( opnd->t.temp_flags & ALIAS ) ) {
             aposs = MakePossibleForAlias( conf, opnd );
-            aposs->possible = RegIntersect( aposs->possible, idx );
+            aposs->possible = RegIntersect( aposs->possible, regs_idx );
         } else {
-            conf->possible = RegIntersect( conf->possible, idx );
+            conf->possible = RegIntersect( conf->possible, regs_idx );
         }
     }
 }

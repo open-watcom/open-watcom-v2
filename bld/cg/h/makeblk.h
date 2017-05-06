@@ -46,5 +46,5 @@ extern  bool            FixReturns( void );
 extern  void            UnFixEdges( void );
 extern  void            AddAnIns( block *blk, instruction *ins );
 extern  bool            BlkTooBig( void );
-extern  void            NewProc( int level );
+extern  void            NewProc( level_depth level );
 extern  void            FreeProc( void );

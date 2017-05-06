@@ -50,8 +50,8 @@ typedef struct frame_patch {
         abspatch_handle         patch;
 } frame_patch;
 
-static  name    *DisplayField( int level )
-/****************************************/
+static  name    *DisplayField( level_depth level )
+/************************************************/
 {
     name        *reg;
 
@@ -60,8 +60,8 @@ static  name    *DisplayField( int level )
 }
 
 
-extern  name    *MakeDisplay( name *op, int level )
-/*************************************************/
+extern  name    *MakeDisplay( name *op, level_depth level )
+/*********************************************************/
 {
     name        *temp;
     name        *reg;
@@ -74,8 +74,8 @@ extern  name    *MakeDisplay( name *op, int level )
 }
 
 
-extern  void    BigGoto( int level )
-/**********************************/
+extern  void    BigGoto( level_depth level )
+/******************************************/
 {
     name        *reg;
 
@@ -93,7 +93,7 @@ extern  void    BigLabel( void )
     name        *bp;
     name        *sp;
 
-    if( CurrProc->lex_level != 0 ) {
+    if( CurrProc->lex_level > 0 ) {
         bp = AllocRegName( DisplayReg() );
         sp = AllocRegName( StackReg() );
         ins = MakeUnary( OP_LA,

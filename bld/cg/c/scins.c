@@ -243,9 +243,9 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
             }
         }
         for( i = ScoreCount; i-- > 0; ) {
-            if( ScoreEqual( sc, i, &info )
-             && ChangeIns( ins, ScoreList[i]->reg_name, opp, CHANGE_GEN ) )
+            if( ScoreEqual( sc, i, &info ) && ChangeIns( ins, ScoreList[i]->reg_name, opp, CHANGE_GEN ) ) {
                 return( true );
+            }
         }
 
         /*% couldn't find a register operand, try for an older index*/

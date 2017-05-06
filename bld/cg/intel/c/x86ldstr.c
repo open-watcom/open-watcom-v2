@@ -358,7 +358,7 @@ static  bool    FixMem16Moves( void )
     bool        changed;
     instruction *next;
 
-    if( OptForSize != 0 )
+    if( OptForSize > 0 )
         return( false );
     if( !_CPULevel( CPU_586 ) )
         return( false );

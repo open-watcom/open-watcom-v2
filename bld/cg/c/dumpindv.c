@@ -32,18 +32,20 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "indvars.h"
-#include "dumpio.h"
 #include "data.h"
+#include "dmpinc.h"
+#include "dumpio.h"
+#include "dumpins.h"
+#include "dumpblk.h"
+#include "dumpindv.h"
+
 
 extern  induction       *IndVarList;
 
-extern  void            DumpOperand(name*);
-extern  void            DumpBlkId(block*);
-extern  void            DumpIns(instruction*);
 
-extern  void    DumpIV( induction *var ) {
-/****************************************/
-
+void    DumpIV( induction *var )
+/******************************/
+{
     induction   *alias;
     invariant   *invar;
 
@@ -135,9 +137,9 @@ extern  void    DumpIV( induction *var ) {
     DumpNL();
 }
 
-extern  void    DumpIVList() {
-/****************************/
-
+void    DumpIVList( void )
+/************************/
+{
     induction   *var;
 
     for( var = IndVarList; var != NULL; var = var->next ) {
@@ -157,21 +159,21 @@ static  void    DumpInv( name *name ) {
     DumpNL();
 }
 
-extern  void    DumpInvariants() {
-/********************************/
-
+void    DumpInvariants( void )
+/****************************/
+{
     DumpLiteral( "Temps: " );
     DumpInv( Names[N_TEMP] );
     DumpLiteral( "Memory: " );
     DumpInv( Names[N_MEMORY] );
 }
 
-extern  void    DumpCurrLoop() {
-/******************************/
-
-    block               *blk;
-    block               *header;
-    interval_depth      depth;
+void    DumpCurrLoop( void )
+/**************************/
+{
+    block           *blk;
+    block           *header;
+    level_depth     depth;
 
     DumpLiteral( "The Loop Is:" );
     DumpNL();

@@ -485,8 +485,8 @@ bool    BlkTooBig( void )
 }
 
 
-void    NewProc( int level )
-/**************************/
+void    NewProc( level_depth level )
+/**********************************/
 {
     proc_def    *new;
 

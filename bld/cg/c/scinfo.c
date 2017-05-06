@@ -192,15 +192,12 @@ static  void    ScoreInsert(  score *p,  int i,  score_info  *info ) {
     Copy( info, &new->info, sizeof( score_info ) );
     new->next = *p[i].list;
     *p[i].list = new;
-    j = ScoreCount;
-    for(;;) {
-       if( --j < 0 )
-           return;
-       if( ( j != i ) && ScoreEqual( p, j, info ) ) {
-           break;
-       }
+    for( j = ScoreCount; j-- > 0; ) {
+        if( ( j != i ) && ScoreEqual( p, j, info ) ) {
+            RegAdd( p, i, j );
+            break;
+        }
     }
-    RegAdd( p, i, j );
 }
 
 
@@ -334,7 +331,7 @@ extern  void    ScoreInfo( score_info *info, name *op ) {
         info->offset = op->i.constant;
         info->index_reg = op->i.index->r.reg_index;
         info->base = op->i.base;
-    info->scale = op->i.scale;
+        info->scale = op->i.scale;
         break;
     }
 }

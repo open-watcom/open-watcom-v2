@@ -136,7 +136,7 @@ extern  cg_init_info _CGAPI     BEInitCg( cg_switches switches,
 {
     cg_init_info        info;
 
-    OptForSize = optsize;
+    OptForSize = (byte)optsize;
     CGProcessorVersion = proc; /* so _CPULevel works */
 #if _TARGET & _TARG_IAPX86
     /* if it ain't a 386 or better, FS and GS aren't there */
