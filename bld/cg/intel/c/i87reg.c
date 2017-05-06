@@ -44,10 +44,9 @@
 #include "rgtbl.h"
 #include "inssegs.h"
 #include "fixindex.h"
+#include "conflict.h"
 
 
-extern  conflict_node   *NameConflict(instruction*,name*);
-extern  conflict_node   *FindConflictNode(name*,block*,instruction*);
 extern  void            LiveInfoUpdate(void);
 extern  void            UpdateLive(instruction*,instruction*);
 

@@ -42,12 +42,11 @@
 #include "insutil.h"
 #include "insdead.h"
 #include "score.h"
+#include "conflict.h"
 #include "optimize.h"
 
 
 extern  bool            PropagateMoves(void);
-extern  conflict_node*  FindConflictNode(name*,block*,instruction*);
-extern  void            FreeConflicts(void);
 extern  void            FindReferences(void);
 extern  void            MakeConflicts(void);
 extern  void            MakeLiveInfo(void);

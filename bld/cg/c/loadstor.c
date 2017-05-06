@@ -35,6 +35,7 @@
 #include "data.h"
 #include "redefby.h"
 #include "nullprop.h"
+#include "conflict.h"
 
 
 /* block flag usage                                                 */
@@ -45,7 +46,6 @@
 #define BLK_CONTAINS_CALL   BLK_LOOP_EXIT /* borrow. Only used during loop opts */
 /*                                                                  */
 
-extern  conflict_node   *NameConflict(instruction*,name*);
 
 static  bool    SameConf( name *op, instruction *ins, conflict_node *conf )
 /*************************************************************************/

@@ -39,19 +39,16 @@
 #include "data.h"
 #include "rgtbl.h"
 #include "namelist.h"
+#include "conflict.h"
 #include "feprotos.h"
 
 
 static  pointer         *ConfFrl;
 static  pointer         *ConfAliasVarsFrl;
 
-/* forward declarations */
-extern  void    MarkPossible( instruction *ins,
-                              name *opnd, reg_set_index idx );
-extern  void    FreeAConflict( conflict_node *conf );
 
-extern  conflict_node   *AddConflictNode( name *opnd )
-/****************************************************/
+conflict_node   *AddConflictNode( name *opnd )
+/********************************************/
 {
     conflict_node       *new;
     name                *scan;
@@ -155,9 +152,8 @@ static  conflict_node   *FindConf( name *opnd, block *blk, instruction *ins )
 }
 
 
-extern  conflict_node   *FindConflictNode( name *opnd,
-                                          block *blk, instruction *ins )
-/**********************************************************************/
+conflict_node   *FindConflictNode( name *opnd, block *blk, instruction *ins )
+/***************************************************************************/
 {
     conflict_node       *conf;
     name                *old;
@@ -203,15 +199,15 @@ extern  conflict_node   *FindConflictNode( name *opnd,
 }
 
 
-extern  void    MarkSegment( instruction *ins, name *opnd )
-/*********************************************************/
+void    MarkSegment( instruction *ins, name *opnd )
+/*************************************************/
 {
     MarkPossible( ins, opnd, SegIndex() );
 }
 
 
-extern  conflict_node   *NameConflict( instruction *ins, name *opnd )
-/*******************************************************************/
+conflict_node   *NameConflict( instruction *ins, name *opnd )
+/***********************************************************/
 {
     conflict_node       *conf;
 
@@ -276,7 +272,7 @@ static  possible_for_alias *MakePossibleForAlias( conflict_node *conf, name *opn
  * variable. For master variables, it's kept in "conf->possible", aliases
  * are stored in "conf->possible_for_alias_list" list.
  */
-extern  reg_set_index   GetPossibleForTemp(conflict_node *conf, name *temp)
+reg_set_index   GetPossibleForTemp( conflict_node *conf, name *temp )
 {
     reg_set_index       possible;
     possible_for_alias  *aposs;
@@ -297,9 +293,8 @@ extern  reg_set_index   GetPossibleForTemp(conflict_node *conf, name *temp)
 }
 
 
-extern  void    MarkPossible( instruction *ins,
-                              name *opnd, reg_set_index idx )
-/***********************************************************/
+void    MarkPossible( instruction *ins, name *opnd, reg_set_index idx )
+/*********************************************************************/
 {
     conflict_node       *conf;
     possible_for_alias  *aposs;
@@ -316,9 +311,8 @@ extern  void    MarkPossible( instruction *ins,
 }
 
 
-extern  reg_set_index   MarkIndex( instruction *ins,
-                                   name *opnd, bool is_temp_index )
-/*****************************************************************/
+reg_set_index   MarkIndex( instruction *ins, name *opnd, bool is_temp_index )
+/***************************************************************************/
 {
     conflict_node       *conf;
     reg_set_index       possible;
@@ -343,7 +337,7 @@ extern  reg_set_index   MarkIndex( instruction *ins,
 /*
  * Free list of "possible" records for aliased temp vars
  */
-extern  void    FreePossibleForAlias( conflict_node *conf )
+void    FreePossibleForAlias( conflict_node *conf )
 {
     possible_for_alias  *aposs, *next;
 
@@ -355,8 +349,8 @@ extern  void    FreePossibleForAlias( conflict_node *conf )
 }
 
 
-extern  void    FreeConflicts( void )
-/***********************************/
+void    FreeConflicts( void )
+/***************************/
 {
     while( ConfList != NULL ) {
         FreeAConflict( ConfList );
@@ -364,8 +358,8 @@ extern  void    FreeConflicts( void )
 }
 
 
-extern  void    FreeAConflict( conflict_node *conf )
-/**************************************************/
+void    FreeAConflict( conflict_node *conf )
+/******************************************/
 {
     name                *opnd;
     name                *scan;
@@ -420,8 +414,8 @@ extern  void    FreeAConflict( conflict_node *conf )
 }
 
 
-extern  void    InitConflict( void )
-/**********************************/
+void    InitConflict( void )
+/**************************/
 {
     InitFrl( &ConfFrl );
     InitFrl( &ConfAliasVarsFrl );
@@ -429,8 +423,8 @@ extern  void    InitConflict( void )
 }
 
 
-extern  bool    ConfFrlFree( void )
-/*********************************/
+bool    ConfFrlFree( void )
+/*************************/
 {
     bool    ret;
 

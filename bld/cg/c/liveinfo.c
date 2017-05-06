@@ -39,9 +39,7 @@
 #include "redefby.h"
 #include "insutil.h"
 #include "fixindex.h"
-
-
-extern  conflict_node   *FindConflictNode(name*,block*,instruction*);
+#include "conflict.h"
 
 
 static  void            GlobalConflictsFirst( void )

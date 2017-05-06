@@ -38,11 +38,11 @@
 #include "data.h"
 #include "cgsrtlst.h"
 #include "namelist.h"
+#include "conflict.h"
 #include "feprotos.h"
 
 
 extern  void            FindReferences( void );
-extern  conflict_node   *AddConflictNode(name*);
 extern  save_def        Weight( save_def value, block *blk );
 
 static  void            PropagateConflicts( void );

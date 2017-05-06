@@ -68,6 +68,7 @@
 #include "optimize.h"
 #include "index.h"
 #include "fixindex.h"
+#include "conflict.h"
 #include "generate.h"
 #include "feprotos.h"
 
@@ -77,11 +78,8 @@ extern  void            AssgnMoreTemps( block_num );
 extern  bool            CommonSex( bool );
 extern  void            MakeFlowGraph( void );
 extern  void            FindReferences( void );
-extern  void            FreeConflicts( void );
 extern  bool            SplitConflicts( void );
-extern  void            FreeAConflict( conflict_node * );
 extern  void            RegTreeInit( void );
-extern  void            InitConflict( void );
 extern  void            OptCloseMoves( void );
 extern  void            Conditions( void );
 extern  void            MakeConflicts( void );

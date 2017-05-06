@@ -45,10 +45,10 @@
 #include "index.h"
 #include "fixindex.h"
 #include "generate.h"
+#include "conflict.h"
 
 
 extern  bool            DoVerify(vertype,instruction*);
-extern  void            MarkPossible(instruction*,name*,reg_set_index);
 extern  void            MarkCallI(instruction);
 extern  reg_set_index   CallIPossible(instruction*);
 

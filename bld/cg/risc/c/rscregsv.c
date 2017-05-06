@@ -34,13 +34,14 @@
 #include "coderep.h"
 #include "data.h"
 #include "savings.h"
+#include "conflict.h"
+
 
 extern  savings         Save;
 
 extern  void            SetCost(save_def*,save_def);
 extern  void            SetLoopCost(uint);
 extern  void            AdjTimeSize(uint*,uint*);
-extern  conflict_node   *NameConflict(instruction*,name*);
 extern  save_def        Weight(save_def,block*);
 
 static  save_def        MaxConstSave;

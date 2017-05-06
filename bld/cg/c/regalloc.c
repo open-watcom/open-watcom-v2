@@ -49,6 +49,7 @@
 #include "inssegs.h"
 #include "optimize.h"
 #include "fixindex.h"
+#include "conflict.h"
 
 
 enum allocation_state {
@@ -59,27 +60,23 @@ enum allocation_state {
 
 extern  void            NowDead(name *,conflict_node *,name_set *,block *);
 extern  void            BurnRegTree(reg_tree *);
-extern  conflict_node   *NameConflict(instruction *,name *);
 extern  void            BuildNameTree(conflict_node *);
 extern  void            BurnNameTree(reg_tree *);
 extern  bool            WorthProlog(conflict_node *,hw_reg_set);
 extern  void            FindReferences(void);
 extern  void            NowAlive(name *,conflict_node *,name_set *,block *);
 extern  void            BuildRegTree(conflict_node *);
-extern  void            FreeAConflict(conflict_node *);
 extern  void            LiveInfoUpdate(void);
 extern  void            MakeLiveInfo(void);
-extern  void            FreeConflicts(void);
 extern  void            MakeConflicts(void);
 extern  void            AddSegment(instruction *);
 extern  void            CalcSavings(conflict_node *);
 extern  bool            PropagateMoves(void);
 extern  bool            PropRegsOne(void);
-extern  conflict_node   *FindConflictNode(name *,block *,instruction *);
 extern  bool            MoreConflicts(void);
 extern  void            MemConstTemp(conflict_node *);
 extern  void            ConstSavings(void);
-extern  void            FreePossibleForAlias( conflict_node * );
+
 
 static  bool    ContainedIn( name *name1, name *name2 ) {
 /********************************************************

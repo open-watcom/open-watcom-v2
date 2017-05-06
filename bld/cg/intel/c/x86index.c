@@ -41,18 +41,16 @@
 #include "insutil.h"
 #include "index.h"
 #include "fixindex.h"
+#include "conflict.h"
 #include "feprotos.h"
 
 
 extern  opcode_entry    String[];
 
 extern  bool            SegOver(name*);
-extern  conflict_node   *NameConflict(instruction*,name*);
 extern  name            *Addressable(name*,type_class_def);
 extern  name            *GetSegment(name*);
 extern  name            *NearSegment(void);
-extern  reg_set_index   MarkIndex(instruction*,name*,bool);
-extern  void            MarkSegment(instruction*,name*);
 extern  void            NoMemIndex(instruction*);
 extern  bool            FPCInCode( void );
 extern  void            ExpandThreadDataRef(instruction*);

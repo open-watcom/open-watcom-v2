@@ -44,11 +44,10 @@
 #include "optab.h"
 #include "inssegs.h"
 #include "revcond.h"
+#include "conflict.h"
 
 
-extern  conflict_node   *NameConflict(instruction*,name*);
 extern  void            CheckCC(instruction*,instruction*);
-extern  void            MarkPossible(instruction*,name*,reg_set_index);
 
 type_class_def  HalfClass[] = {
     0,                  /* U1 */

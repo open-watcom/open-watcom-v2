@@ -50,9 +50,9 @@
 #include "inssegs.h"
 #include "fixindex.h"
 #include "revcond.h"
+#include "conflict.h"
 
 
-extern  conflict_node   *NameConflict(instruction*,name*);
 extern  instruction     *ByteShift(instruction*);
 extern  instruction     *CheapShift(instruction*);
 extern  instruction     *ClrHighDbl(instruction*);
@@ -71,7 +71,6 @@ extern  instruction     *SplitFDPush(instruction*);
 extern  name            *Addressable(name*,type_class_def);
 extern  name            *NearSegment(void);
 extern  name            *SegName(name*);
-extern  void            MarkPossible(instruction*,name*,reg_set_index);
 extern  instruction     *SplitLoadAddr(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  opcode_entry    *GetMoveNoCCEntry( void );

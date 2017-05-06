@@ -38,9 +38,9 @@
 #include "namelist.h"
 #include "regalloc.h"
 #include "insdead.h"
+#include "conflict.h"
 
 
-extern  void            FreeConflicts( void );
 extern  void            FindReferences( void );
 extern  void            MakeConflicts( void );
 extern  bool            MoreConflicts( void );

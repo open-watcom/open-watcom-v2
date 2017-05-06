@@ -41,6 +41,7 @@
 #include "namelist.h"
 #include "optmkins.h"
 #include "makeins.h"
+#include "conflict.h"
 #include "feprotos.h"
 
 
@@ -50,7 +51,6 @@ static    bool          IckyWicky;
 extern    pointer       MemStart;
 extern    pointer       MemFinish;
 
-extern  bool            ConfFrlFree( void );
 extern  bool            RegTreeFrlFree( void );
 extern  bool            ScoreFrlFree( void );
 extern  bool            RegTreeFrlFree( void );

@@ -37,9 +37,8 @@
 #include "freelist.h"
 #include "zoiks.h"
 #include "rgtbl.h"
+#include "conflict.h"
 
-
-extern  reg_set_index   GetPossibleForTemp(conflict_node *, name *);
 
 static  pointer         *RegFrl;
 static  pointer         *TreeFrl;
