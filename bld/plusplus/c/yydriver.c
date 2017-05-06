@@ -1084,6 +1084,8 @@ static YYTOKENTYPE yylex( PARSE_STACK *state )
         yylval.tree = PTreeBoolConstant( 1 );
         setLocation( yylval.tree, &yylocation );
         break;
+    /* TEST ONLY. REMOVE */
+    case T_NULLPTR:
     case T_FALSE:
         token = Y_FALSE;
         yylval.tree = PTreeBoolConstant( 0 );
