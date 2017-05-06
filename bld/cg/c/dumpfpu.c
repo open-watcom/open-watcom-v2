@@ -54,7 +54,7 @@ void    DumpSeqs( void )
             DumpChar( ' ' );
         }
         DumpNL();
-        for( j = VIRTUAL_0; j < VIRTUAL_NONE; ++j, ++c ) {
+        for( j = VIRTUAL_0; j < VIRTUAL_NONE; ++j ) {
             DumpLiteral( "  " );
             DumpChar( (char)j + '0' );
             DumpLiteral( ": " );
