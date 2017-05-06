@@ -200,7 +200,7 @@ struct _src_file {                          // SOURCE FILE (PERMANENT)
     char                *name;              // - file name
     char                *full_name;         // - absolute pathname for file
     char                *ifndef_name;       // - name used when #ifndef
-    unsigned            ifndef_len;         // - length of name used when #ifndef
+    size_t              ifndef_len;         // - length of name used when #ifndef
     unsigned            guard_state;        // - guard state
     MACRO_STATE         macro_state;        // - state of macro table when opened
     time_t              time_stamp;         // - time stamp for file

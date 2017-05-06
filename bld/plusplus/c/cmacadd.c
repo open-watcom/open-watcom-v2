@@ -58,7 +58,7 @@ struct pch_delmac {
     char                name[1];
 };
 
-static unsigned         macroSegmentLimit;  // last free byte in MacroSegment
+static size_t           macroSegmentLimit;  // last free byte in MacroSegment
 static MEPTR            *macroHashTable;    // hash table [ MACRO_HASH_SIZE ]
 static MEPTR            beforeIncludeChecks;// #undef macros defined before first #include
 static MACRO_SEG_LIST   *macroSegmentList;  // pointer to list of macro segments
@@ -74,7 +74,7 @@ ExtraRptSpace( macro_space );
 #define macroSizeAlign( s )     _RoundUp((s), sizeof( int ))
 
 static void *macroAllocateInSeg( // ALLOCATE WITHIN A SEGMENT
-    unsigned size )             // - size
+    size_t size )               // - size
 {
     void *retn;                 // - return location
 
@@ -403,7 +403,7 @@ pch_status PCHReadMacros( void )
     MEPTR prev;
     MEPTR pch_prev;
     MEPTR pch_curr;
-    unsigned mlen;
+    size_t mlen;
     unsigned hash;
     MACRO_SEG_LIST *old_seglist;
     MEPTR *old_hashtab;
@@ -492,8 +492,8 @@ static MEPTR macroFind(         // LOOK UP A HASHED MACRO
 
 
 void MacroOverflow(             // OVERFLOW SEGMENT IF REQUIRED
-    unsigned amount_needed,     // - amount for macro
-    unsigned amount_used )      // - amount used in segment
+    size_t amount_needed,       // - amount for macro
+    size_t amount_used )        // - amount used in segment
 {
     char    *old_offset;
 

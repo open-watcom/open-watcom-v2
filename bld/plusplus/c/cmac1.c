@@ -163,10 +163,10 @@ static void deleteNestedMacro( void )
     }
 }
 
-static unsigned copyMTokToBuffer( MACRO_TOKEN *mtok )
+static size_t copyMTokToBuffer( MACRO_TOKEN *mtok )
 {
-    char *s;
-    unsigned len;
+    const char  *s;
+    size_t      len;
 
     s = mtok->data;
     len = strlen( s );
@@ -179,9 +179,9 @@ static MACRO_TOKEN *doGetMacroToken(// GET NEXT TOKEN
     MACRO_TOKEN *list,              // - list of tokens
     bool doing_macro_expansion )    // - true ==> doing an expansion
 {
-    char *token_end;
+    char        *token_end;
     MACRO_TOKEN *mtok;
-    unsigned i;
+    size_t      i;
     struct {
         unsigned keep_token : 1;
         unsigned next_token : 1;
@@ -218,13 +218,13 @@ static MACRO_TOKEN *doGetMacroToken(// GET NEXT TOKEN
         case T_CONSTANT:
             ReScanInit( Buffer );
             ReScanToken();
-            DbgAssert( mtok->data[ TokenLen ] == '\0' || CurToken == T_BAD_TOKEN );
+            DbgAssert( mtok->data[TokenLen] == '\0' || CurToken == T_BAD_TOKEN );
             break;
         case T_PPNUMBER:
             ReScanInit( Buffer );
             ReScanToken();
             DbgAssert( CurToken != T_STRING && CurToken != T_LSTRING );
-            token_end = &(mtok->data[ TokenLen ]);
+            token_end = &(mtok->data[TokenLen]);
             if( *token_end != '\0' ) {
                 // ppnumber is quite general so it may absorb multiple tokens
                 strcpy( mtok->data, token_end );
@@ -262,9 +262,9 @@ void GetMacroToken(                 // GET NEXT TOKEN
     scannerTokenList = doGetMacroToken( scannerTokenList, doing_macro_expansion );
 }
 
-static unsigned copySafe( unsigned i, const char *m )
+static size_t copySafe( size_t i, const char *m )
 {
-    for(;;) {
+    for( ;; ) {
         if( i >= ( BUF_SIZE - 4 ) ) {
             CErr1( ERR_TOKEN_TRUNCATED );
             macroDiagNesting();
@@ -283,7 +283,7 @@ static unsigned copySafe( unsigned i, const char *m )
     return( i );
 }
 
-static unsigned expandMacroToken( unsigned i, MACRO_TOKEN *m )
+static size_t expandMacroToken( size_t i, MACRO_TOKEN *m )
 {
     switch( m->token ) {
     case T_CONSTANT:
@@ -309,12 +309,12 @@ static unsigned expandMacroToken( unsigned i, MACRO_TOKEN *m )
 }
 
 
-static int file_name_copy(       // COPY STRING, ESCAPING ANY BACKSLASHES
+static size_t file_name_copy(   // COPY STRING, ESCAPING ANY BACKSLASHES
     char *dst,                  // - destination
-    char const *src )           // - source
+    const char *src )           // - source
 {
     char *org = dst;
-    while( *src ) {
+    while( *src != '\0' ) {
         if( *src == '\\' ) {
             *dst++ = '\\';
         }
@@ -329,10 +329,10 @@ static int file_name_copy(       // COPY STRING, ESCAPING ANY BACKSLASHES
 static TOKEN genFUNCTION(
     special_macros spec_macro )
 {
-    SYMBOL sym;
-    size_t len;
-    VBUF buff;
-    char *name;
+    SYMBOL  sym;
+    size_t  len;
+    VBUF    buff;
+    char    *name;
 
     DbgAssert( ( spec_macro == MACRO_FUNCTION ) || ( spec_macro == MACRO_FUNC ) );
 
@@ -639,7 +639,7 @@ void DumpNestedMacros( void )
 
 static MACRO_TOKEN *buildAToken( TOKEN token, const char *p )
 {
-    size_t nbytes;
+    size_t      nbytes;
     MACRO_TOKEN *mtok;
 
     nbytes = strlen( p ) + 1;
@@ -891,9 +891,9 @@ static MACRO_TOKEN *glue2Tokens( MACRO_TOKEN *first, MACRO_TOKEN *second )
 {
     MACRO_TOKEN *head;
     MACRO_TOKEN **ptail;
-    unsigned i;
-    bool ppscan_mode;
-    int finished;
+    size_t      i;
+    bool        ppscan_mode;
+    bool        finished;
 
     i = 10;
     Buffer[i] = '\0';
@@ -1014,7 +1014,7 @@ static MACRO_TOKEN *glueTokens( MACRO_TOKEN *head )
     return( head );
 }
 
-static MACRO_TOKEN **snapString( MACRO_TOKEN **ptail, unsigned i )
+static MACRO_TOKEN **snapString( MACRO_TOKEN **ptail, size_t i )
 {
     Buffer[i] = '\0';
     TokenLen = i + 1;
@@ -1026,12 +1026,12 @@ static MACRO_TOKEN **snapString( MACRO_TOKEN **ptail, unsigned i )
 static MACRO_TOKEN **buildString( MACRO_TOKEN **ptail, const char *p )
 {
     MACRO_TOKEN **old_ptail;
-    const char *token_str;
-    unsigned len;
-    int i;
-    int last_non_ws;
-    char c;
-    TOKEN tok;
+    const char  *token_str;
+    size_t      len;
+    size_t      i;
+    size_t      last_non_ws;
+    char        c;
+    TOKEN       tok;
 
     old_ptail = ptail;
     i = 0;
@@ -1193,13 +1193,13 @@ static bool SharpSharp( MACRO_TOKEN *mtok )
 
 static MACRO_TOKEN *substituteParms( MACRO_TOKEN *head, MACRO_ARG *macro_parms )
 {
-    TOKEN prev_non_ws;
+    TOKEN       prev_non_ws;
     MACRO_TOKEN *mtok;
     MACRO_TOKEN *list;
     MACRO_TOKEN *dummy_list;
     MACRO_TOKEN **ptail;
-    char empty_var[sizeof( TOKEN ) + 1 + sizeof( TOKEN )];
-    char *p;
+    char        empty_var[sizeof( TOKEN ) + 1 + sizeof( TOKEN )];
+    const char  *p;
 
     ptail = &head;
     prev_non_ws = T_NULL;
@@ -1239,7 +1239,8 @@ static MACRO_TOKEN *substituteParms( MACRO_TOKEN *head, MACRO_ARG *macro_parms )
             CMemFree( mtok );
             mtok = list;
         }
-        if( mtok == NULL ) break;
+        if( mtok == NULL )
+            break;
         ptail = &(mtok->next);
         if( mtok->token != T_WHITE_SPACE ) {
             prev_non_ws = mtok->token;
@@ -1250,14 +1251,14 @@ static MACRO_TOKEN *substituteParms( MACRO_TOKEN *head, MACRO_ARG *macro_parms )
 
 static void markUnexpandableIds( MACRO_TOKEN *head )
 {
-    NESTED_MACRO *nested;
-    MACRO_TOKEN *mtok;
+    NESTED_MACRO    *nested;
+    MACRO_TOKEN     *mtok;
 
     for( mtok = head; mtok != NULL; mtok = mtok->next ) {
         if( mtok->token == T_ID ) {
             for( nested = nestedMacros; nested != NULL; nested = nested->next ) {
                 if( strcmp( nested->fmentry->macro_name, mtok->data ) == 0 ) {
-                    if( ! nested->substituting_parms ) {
+                    if( !nested->substituting_parms ) {
                         // change token so it won't be considered a
                         // candidate as a macro
                         mtok->token = T_UNEXPANDABLE_ID;
@@ -1271,11 +1272,11 @@ static void markUnexpandableIds( MACRO_TOKEN *head )
 
 static MACRO_TOKEN *macroExpansion( MEPTR fmentry, bool rescanning )
 {
-    MACRO_ARG *macro_parms;
-    MACRO_TOKEN *head;
-    MACRO_TOKEN **ptail;
-    NESTED_MACRO *nested;
-    char *tokens;
+    MACRO_ARG       *macro_parms;
+    MACRO_TOKEN     *head;
+    MACRO_TOKEN     **ptail;
+    NESTED_MACRO    *nested;
+    const char      *tokens;
 
     nested = CarveAlloc( carveNESTED_MACRO );
     nested->fmentry = fmentry;
@@ -1321,11 +1322,7 @@ void DoMacroExpansion(          // EXPAND A MACRO
     scannerTokenList = nestedMacroExpansion( fmentry, true );
     // GetMacroToken will feed back tokens from the tokenList
     // when the tokenList is exhausted, then revert back to normal scanning
-    if( scannerTokenList == NULL ) {
-        CompFlags.use_macro_tokens = false;
-    } else {
-        CompFlags.use_macro_tokens = true;
-    }
+    CompFlags.use_macro_tokens = ( scannerTokenList != NULL );
 }
 
 void DefineAlternativeTokens(   // DEFINE ALTERNATIVE TOKENS

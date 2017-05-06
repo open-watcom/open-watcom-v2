@@ -83,7 +83,7 @@ typedef enum ppctl_t {
 global  ppctl_t     PPControl;          // pre-processor control bits
 global  TOKEN       CurToken;           // current token
 global  MSG_NUM     BadTokenInfo;       // error message that describes why T_BAD_TOKEN is bad
-global  int         TokenLen;           // length of current token
+global  size_t      TokenLen;           // length of current token
 global  LINE_NO     TokenLine;          // line # of current token
 global  COLUMN_NO   TokenColumn;        // column # of current token
 global  int         CurrChar;           // current character
@@ -284,8 +284,8 @@ MEPTR MacroLookup(              // LOOKUP NAME AS A MACRO
     size_t len )                // - length of name
 ;
 void MacroOverflow(             // OVERFLOW SEGMENT IF REQUIRED
-    unsigned amount_needed,     // - amount for macro
-    unsigned amount_used )      // - amount used in segment
+    size_t amount_needed,       // - amount for macro
+    size_t amount_used )        // - amount used in segment
 ;
 void MacroStorageInit(          // INITIALIZE FOR MACRO STORAGE
     void )
@@ -321,7 +321,7 @@ void PrtToken(                  // PRINT PREPROC TOKEN IF REQ'D
 void ReScanInit(                // RE-SCAN TOKEN INITIALIZATION
     char *buf )
 ;
-int ReScanToken(                // RE-SCAN TOKEN FROM BUFFER
+bool ReScanToken(               // RE-SCAN TOKEN FROM BUFFER
     void )
 ;
 bool ScanOptionalComment(       // SCAN AN OPTIONAL COMMENT

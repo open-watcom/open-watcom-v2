@@ -471,10 +471,10 @@ static void processMacroValue       // PROCESS MACRO VALUE
     ( MACVALUE const * mptr         // - macro ptr
     , BRI_GuardTypes   gtype )      // - id
 {
-    char const *     string = BrinfMacValueName( mptr );
-    unsigned         num_parms = BrinfMacValueParmCount( mptr );
-    unsigned         length;
-    uint_8 const *   defn = BrinfMacValueDefn( mptr, &length );
+    const char      *string = BrinfMacValueName( mptr );
+    unsigned        num_parms = BrinfMacValueParmCount( mptr );
+    size_t          length;
+    const uint_8    *defn = BrinfMacValueDefn( mptr, &length );
 
     BRIAddGuard( bri_handle
                , gtype
@@ -797,14 +797,14 @@ static void brinfWriteFileContents  // WRITE OUT BROWSE INFORMATION CONTENTS
             case IC_BR_DCL_MACRO :      // DECLARE: MACRO
                                         // - saved MACVALUE
             {
-                MACVALUE const   *mptr = ins->value.pvalue;
-                char const       *string = BrinfMacValueName( mptr );
-                unsigned         num_parms = BrinfMacValueParmCount( mptr );
-                unsigned         length;
-                uint_8 const     *defn = BrinfMacValueDefn( mptr, &length );
-                TOKEN_LOCN const *locn = BrinfMacValueLocn( mptr );
-                LINE_NO          line;
-                COLUMN_NO        column;
+                const MACVALUE      *mptr = ins->value.pvalue;
+                const char          *string = BrinfMacValueName( mptr );
+                unsigned            num_parms = BrinfMacValueParmCount( mptr );
+                size_t              length;
+                const uint_8        *defn = BrinfMacValueDefn( mptr, &length );
+                const TOKEN_LOCN    *locn = BrinfMacValueLocn( mptr );
+                LINE_NO             line;
+                COLUMN_NO           column;
 
                 if( defn != NULL ){
                     line = locn->line;

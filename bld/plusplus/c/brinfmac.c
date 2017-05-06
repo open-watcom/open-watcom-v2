@@ -121,11 +121,11 @@ INITDEFN (browse_macros, brinfMacInit, brinfMacFini );
 static MACVALUE* findValue      // LOOKUP VALUE IN SAVED VALUES
     ( MEPTR src )               // - source value
 {
-    MACVALUE* retn;             // - found value
-    MACVALUE* srch;             // - value during the search
-    unsigned src_defn;          // - src->macro_defn
-    unsigned src_len;           // - src->macro_len
-    unsigned src_dsize;         // - size of source definition
+    MACVALUE    *retn;          // - found value
+    MACVALUE    *srch;          // - value during the search
+    size_t      src_defn;       // - src->macro_defn
+    size_t      src_len;        // - src->macro_len
+    size_t      src_dsize;      // - size of source definition
 
     retn = NULL;
     src_defn = src->macro_defn;
@@ -145,9 +145,7 @@ static MACVALUE* findValue      // LOOKUP VALUE IN SAVED VALUES
                  && curr->macro_name[0] == src->macro_name[0]
                  && 0 == strcmp( curr->macro_name, src->macro_name )
                  && ( curr->macro_defn == 0
-                   || 0 == memcmp( (char*)curr + src_defn
-                                 , (char*)src  + src_defn
-                                 , src_dsize ) )
+                   || 0 == memcmp( (char *)curr + src_defn, (char *)src + src_defn, src_dsize ) )
                  ) {
                     retn = srch;
                     break;
@@ -279,13 +277,13 @@ unsigned BrinfMacValueParmCount // GET # PARAMETERS FOR MACVALUE DECLARATION
 }
 
 
-uint_8 const * BrinfMacValueDefn // GET LOCATION FOR MACVALUE DECLARATION
+uint_8 const *BrinfMacValueDefn // GET LOCATION FOR MACVALUE DECLARATION
     ( MACVALUE const *mv        // - the MACVALUE
-    , unsigned* a_length )      // - addr[ length of definition ]
+    , size_t *a_length )        // - addr[ length of definition ]
 {
-    MEPTR mdef;                 // - macro definition
-    unsigned length;            // - length of definition
-    uint_8 const *defn;         // - definition
+    MEPTR           mdef;       // - macro definition
+    size_t          length;     // - length of definition
+    const uint_8    *defn;      // - definition
 
     DbgVerify( mv->type == MVT_VALUE, "Cannot get definition for non-value" );
     mdef = mv->value;
@@ -298,7 +296,7 @@ uint_8 const * BrinfMacValueDefn // GET LOCATION FOR MACVALUE DECLARATION
         defn = (uint_8 const *)mdef + mdef->macro_defn;
     }
     *a_length = length;
-    return defn;
+    return( defn );
 }
 
 

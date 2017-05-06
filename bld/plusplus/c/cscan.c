@@ -145,8 +145,8 @@ static int rescanBuffer( void )
     return( CurrChar );
 }
 
-int ReScanToken( void )
-/*********************/
+bool ReScanToken( void )
+/**********************/
 {
     int saved_currchar;
     int (*saved_nextchar)(void);
@@ -213,8 +213,7 @@ static int saveNextChar( void )
 
     c = NextChar();
     if( TokenLen < BUF_SIZE - 2 ) {
-        Buffer[TokenLen] = c;
-        ++TokenLen;
+        Buffer[TokenLen++] = c;
     } else if( TokenLen == BUF_SIZE - 2 ) {
         if( NestLevel == SkipLevel ) {
             CErr1( ERR_TOKEN_TRUNCATED );
@@ -451,7 +450,7 @@ static TOKEN charConst( type_id char_type, bool expanding )
     value = 0;
     for( ;; ) {
         if( c == '\r' || c == '\n' ) {
-            DbgAssert( Buffer[TokenLen-1] == c );
+            DbgAssert( Buffer[TokenLen - 1] == c );
             --TokenLen;
             token = T_BAD_TOKEN;
             break;
@@ -682,12 +681,10 @@ static TOKEN doScanFloat( void )
             c = saveNextChar();
             if( (CharSet[c] & (C_AL | C_DI)) == 0 ) break;
         }
-        --TokenLen;
-        Buffer[TokenLen] = '\0';
+        Buffer[--TokenLen] = '\0';
         return( T_BAD_TOKEN );
     } else {
-        --TokenLen;
-        Buffer[TokenLen] = '\0';
+        Buffer[--TokenLen] = '\0';
         return( CurToken );
     }
 }
@@ -750,7 +747,7 @@ static TOKEN doScanString( type_id string_type, bool expanding )
         }
     }
     SrcFileSetSwEnd( false );
-    Buffer[TokenLen-1] = '\0';
+    Buffer[TokenLen - 1] = '\0';
     if( ok ) {
         if( ok == 2 ) {
             NextChar();
@@ -762,7 +759,7 @@ static TOKEN doScanString( type_id string_type, bool expanding )
     }
     // '\n' or LCHR_EOF don't print nicely
     --TokenLen;
-    Buffer[TokenLen-1] = '\0';
+    Buffer[TokenLen - 1] = '\0';
     BadTokenInfo = ERR_MISSING_QUOTE;
     return( T_BAD_TOKEN );
 }
@@ -1151,12 +1148,10 @@ static TOKEN scanNum( bool expanding )
             c = saveNextChar();
             if( (CharSet[c] & (C_AL | C_DI)) == 0 ) break;
         }
-        --TokenLen;
-        Buffer[TokenLen] = '\0';
+        Buffer[--TokenLen] = '\0';
         return( T_BAD_TOKEN );
     } else {
-        --TokenLen;
-        Buffer[TokenLen] = '\0';
+        Buffer[--TokenLen] = '\0';
         return( T_CONSTANT );
     }
 }
@@ -1181,7 +1176,7 @@ static TOKEN scanDelim12( bool expanding )       // @ or @@ token
     int c;
     int chr2;
     TOKEN tok;
-    int token_len;
+    size_t token_len;
 
     /* unused parameters */ (void)expanding;
 
@@ -1197,7 +1192,7 @@ static TOKEN scanDelim12( bool expanding )       // @ or @@ token
         ++token_len;
         NextChar();
     }
-    Buffer[ token_len ] = '\0';
+    Buffer[token_len] = '\0';
     TokenLen = token_len;
     return( tok );
 }
@@ -1207,7 +1202,7 @@ static TOKEN scanDelim12EQ( bool expanding )     // @, @@, or @= token
     int c;
     int chr2;
     TOKEN tok;
-    int token_len;
+    size_t token_len;
 
     /* unused parameters */ (void)expanding;
 
@@ -1227,7 +1222,7 @@ static TOKEN scanDelim12EQ( bool expanding )     // @, @@, or @= token
         ++token_len;
         NextChar();
     }
-    Buffer[ token_len ] = '\0';
+    Buffer[token_len] = '\0';
     TokenLen = token_len;
     return( tok );
 }
@@ -1237,7 +1232,7 @@ static TOKEN scanDelim12EQ2EQ( bool expanding )  // @, @@, @=, or @@= token
     int c;
     int chr2;
     TOKEN tok;
-    int token_len;
+    size_t token_len;
 
     /* unused parameters */ (void)expanding;
 
@@ -1262,7 +1257,7 @@ static TOKEN scanDelim12EQ2EQ( bool expanding )  // @, @@, @=, or @@= token
             NextChar();
         }
     }
-    Buffer[ token_len ] = '\0';
+    Buffer[token_len] = '\0';
     TokenLen = token_len;
     return( tok );
 }
@@ -1272,7 +1267,7 @@ static TOKEN scanDelim1EQ( bool expanding )      // @ or @= token
     int c;
     int chr2;
     TOKEN tok;
-    int token_len;
+    size_t token_len;
 
     /* unused parameters */ (void)expanding;
 
@@ -1288,7 +1283,7 @@ static TOKEN scanDelim1EQ( bool expanding )      // @ or @= token
         ++token_len;
         NextChar();
     }
-    Buffer[ token_len ] = '\0';
+    Buffer[token_len] = '\0';
     TokenLen = token_len;
     return( tok );
 }
@@ -1297,7 +1292,7 @@ static TOKEN scanSlash( bool expanding ) // /, /=, // comment, or /*comment*/
 {
     int nc;
     int tok;
-    int token_len;
+    size_t token_len;
 
     SrcFileCurrentLocation();
     Buffer[0] = '/';
@@ -1322,7 +1317,7 @@ static TOKEN scanSlash( bool expanding ) // /, /=, // comment, or /*comment*/
             tok = T_WHITE_SPACE;
         }
     }
-    Buffer[ token_len ] = '\0';
+    Buffer[token_len] = '\0';
     TokenLen = token_len;
     return( tok );
 }
@@ -1331,7 +1326,7 @@ static TOKEN scanLT( bool expanding )    // <, <=, <<, <<=, <%, <:
 {
     int nc;
     TOKEN tok;
-    int token_len;
+    size_t token_len;
 
     /* unused parameters */ (void)expanding;
 
@@ -1363,7 +1358,7 @@ static TOKEN scanLT( bool expanding )    // <, <=, <<, <<=, <%, <:
         ++token_len;
         NextChar();
     }
-    Buffer[ token_len ] = '\0';
+    Buffer[token_len] = '\0';
     TokenLen = token_len;
     return( tok );
 }
@@ -1372,7 +1367,7 @@ static TOKEN scanPercent( bool expanding )   // %, %=, %>, %:, %:%:
 {
     int nc;
     TOKEN tok;
-    int token_len;
+    size_t token_len;
 
     /* unused parameters */ (void)expanding;
 
@@ -1407,7 +1402,7 @@ static TOKEN scanPercent( bool expanding )   // %, %=, %>, %:, %:%:
             }
         }
     }
-    Buffer[ token_len ] = '\0';
+    Buffer[token_len] = '\0';
     TokenLen = token_len;
     return( tok );
 }
@@ -1416,7 +1411,7 @@ static TOKEN scanColon( bool expanding ) // :, ::, or :>
 {
     int nc;
     TOKEN tok;
-    int token_len;
+    size_t token_len;
 
     /* unused parameters */ (void)expanding;
 
@@ -1437,7 +1432,7 @@ static TOKEN scanColon( bool expanding ) // :, ::, or :>
         NextChar();
         ++token_len;
     }
-    Buffer[ token_len ] = '\0';
+    Buffer[token_len] = '\0';
     TokenLen = token_len;
     return( tok );
 }
@@ -1447,7 +1442,7 @@ static TOKEN scanMinus( bool expanding ) // -, -=, --, ->, or ->*
     int nc;
     int nnc;
     TOKEN tok;
-    int token_len;
+    size_t token_len;
 
     /* unused parameters */ (void)expanding;
 
@@ -1477,7 +1472,7 @@ static TOKEN scanMinus( bool expanding ) // -, -=, --, ->, or ->*
             tok = T_ARROW;
         }
     }
-    Buffer[ token_len ] = '\0';
+    Buffer[token_len] = '\0';
     TokenLen = token_len;
     return( tok );
 }
@@ -1543,8 +1538,7 @@ static TOKEN scanPPNumber( void )
         }
         break;
     }
-    --TokenLen;
-    Buffer[TokenLen] = '\0';
+    Buffer[--TokenLen] = '\0';
     return( T_PPNUMBER );
 }
 

@@ -44,11 +44,11 @@
 #define DEFINE_UNICODE
 #include "unicode.h"
 
-static STRING_CONSTANT uniqueStrings;
-static STRING_CONSTANT trashedStrings;
+static STRING_CONSTANT  uniqueStrings;
+static STRING_CONSTANT  trashedStrings;
 
-static unsigned stringCount;
-static STRING_CONSTANT *stringTranslateTable;
+static unsigned         stringCount;
+static STRING_CONSTANT  *stringTranslateTable;
 
 static struct {
     unsigned            unique : 1;
@@ -103,7 +103,7 @@ static STRING_CONSTANT initLiteral( STRING_CONSTANT literal )
     return( literal );
 }
 
-static STRING_CONSTANT findLiteral( unsigned len )
+static STRING_CONSTANT findLiteral( size_t len )
 {
     STRING_CONSTANT literal;
     STRING_CONSTANT prev;
@@ -129,15 +129,15 @@ static STRING_CONSTANT findLiteral( unsigned len )
     return( initLiteral( literal ) );
 }
 
-static unsigned compressLiteral( char *tgt, char *s, unsigned len )
-/********************************************************************/
+static size_t compressLiteral( char *tgt, char *s, size_t len )
+/*************************************************************/
 {
     unsigned char   *str = (unsigned char *)s;
     int             chr;               // - current character
     int             chr_1;             // - one char ahead of current char
     int             classification;    // - escape classification
     int             max_digs;          // - max digits remaining
-    unsigned        new_len;           // - length after escapes processed
+    size_t          new_len;           // - length after escapes processed
     struct {
         unsigned wide_string : 1;
     } flags;
@@ -227,11 +227,11 @@ static unsigned compressLiteral( char *tgt, char *s, unsigned len )
 }
 
 
-static STRING_CONSTANT makeLiteral( char *s, unsigned len )
-/*********************************************************/
+static STRING_CONSTANT makeLiteral( char *s, size_t len )
+/*******************************************************/
 {
     STRING_CONSTANT literal;
-    unsigned        new_len;
+    size_t          new_len;
 
     new_len = len;
     if( CurToken == T_LSTRING ) {
@@ -275,8 +275,8 @@ static STRING_CONSTANT stringAdd(// ADD LITERAL TO STRING
 }
 
 
-STRING_CONSTANT StringCreate( char *s, unsigned len )
-/***************************************************/
+STRING_CONSTANT StringCreate( char *s, size_t len )
+/*************************************************/
 {
     ++stringCount;
     return( stringAdd( makeLiteral( s, len ), &uniqueStrings ) );
@@ -292,7 +292,7 @@ STRING_CONSTANT StringConcat( STRING_CONSTANT v1, STRING_CONSTANT v2 )
 /********************************************************************/
 {
     STRING_CONSTANT literal;
-    unsigned        len;        // - length
+    size_t          len;        // - length
 
     if( v1->wide_string != v2->wide_string ) {
         // an error has already been diagnosed
@@ -385,9 +385,9 @@ pch_status PCHInitStringPool( bool writing )
     qsort( stringTranslateTable, stringCount, sizeof( STRING_CONSTANT ), cmpString );
 #ifndef NDEBUG
     {
-        int i;
+        unsigned i;
         for( i = 1; i < stringCount; ++i ) {
-            if( stringTranslateTable[i-1] == stringTranslateTable[i] ) {
+            if( stringTranslateTable[i -1 ] == stringTranslateTable[i] ) {
                 CFatal( "two identical strings in translation table" );
             }
         }
@@ -429,8 +429,8 @@ pch_status PCHReadStringPool( void )
 
 pch_status PCHWriteStringPool( void )
 {
-    unsigned len;
-    int i;
+    size_t len;
+    unsigned i;
     STRING_CONSTANT str;
     STRING_CONSTANT *p;
 

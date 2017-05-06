@@ -202,7 +202,7 @@ void SrcFileGuardPpIf(          // #IF DETECTED IN SOURCE FILE
 ;
 void SrcFileGuardPpIfndef(      // SUPPLY #IFNDEF NAME
     const char *name,           // - macro name
-    unsigned len )              // - length of name
+    size_t len )                // - length of name
 ;
 void SrcFileGuardStateSig(      // SIGNAL SIGNIFICANCE (TOKEN, ETC) IN FILE
     void )

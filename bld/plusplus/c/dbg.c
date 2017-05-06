@@ -140,7 +140,7 @@ void DumpMacPush(               // DUMP PUSH OF MACRO
     unsigned count;
     if( PragDbgToggle.dump_mtokens ) {
         printf( "Macro Push: %s", mac->macro_name );
-        if( ( mac->macro_defn != 0 ) && ( args != NULL ) ) {
+        if( ( mac->macro_defn > 0 ) && ( args != NULL ) ) {
             count = mac->parm_count;
             if( count == 1 ) {
                 printf( " = %s", *args );

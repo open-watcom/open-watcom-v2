@@ -276,13 +276,13 @@ static bool skipEqualOrSharpOK( void )
 }
 
 
-static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
-    MAC_PARM **parm_names,  // - macro parm names
-    int parm_cnt,           // - parameter count
-    macro_scanning defn,    // - scanning definition
-    unsigned name_len,      // - length of macro name
-    unsigned mlen,          // - length of macro def'n (so far)
-    TOKEN_LOCN* locn )      // - definition point
+static MEPTR grabTokens(            // SAVE TOKENS IN A MACRO DEFINITION
+    MAC_PARM        **parm_names,   // - macro parm names
+    int             parm_cnt,       // - parameter count
+    macro_scanning  defn,           // - scanning definition
+    size_t          name_len,       // - length of macro name
+    size_t          mlen,           // - length of macro def'n (so far)
+    TOKEN_LOCN      *locn )         // - definition point
 {
     MEPTR mptr;
     MEPTR mentry;
@@ -292,7 +292,7 @@ static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
     unsigned has_var_args = 0;
 
     // MacroOverflow was called for the name of the macro + mentry already
-    mentry = (MEPTR) MacroOffset;
+    mentry = (MEPTR)MacroOffset;
     DbgAssert( ( MacroOverflow( mlen, 0 ), MacroOffset == (void*) mentry ) );
     if( parm_cnt < 0 )
     {
@@ -423,13 +423,14 @@ static MEPTR grabTokens(    // SAVE TOKENS IN A MACRO DEFINITION
 MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     macro_scanning defn )       // - scanning definition
 {
-    int parm_cnt, parm_end;     // - parameter count, end found
-    unsigned name_len;          // - length of macro name
-    MEPTR mptr;                 // - final macro defn
-    MAC_PARM *parm_names;       // - macro parm names
-    bool ppscan_mode;           // - previous ppnumber scan mode
-    unsigned mlen;              // - current length of macro def'n
-    TOKEN_LOCN locn;            // - location for definition
+    int         parm_cnt;       // - parameter count, end found
+    int         parm_end;       // - parameter count, end found
+    size_t      name_len;       // - length of macro name
+    MEPTR       mptr;           // - final macro defn
+    MAC_PARM    *parm_names;    // - macro parm names
+    bool        ppscan_mode;    // - previous ppnumber scan mode
+    size_t      mlen;           // - current length of macro def'n
+    TOKEN_LOCN  locn;           // - location for definition
 
     SrcFileGuardStateSig();
     NextToken();
@@ -450,8 +451,7 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
         NextToken();
         parm_cnt = 0;               /* 0 ==> () following */
         parm_end = 0;
-        for( ;; ) {
-            if( CurToken == T_RIGHT_PAREN ) break;
+        for( ; CurToken != T_RIGHT_PAREN; ) {
             if( parm_end ) {
                 ExpectingToken( T_RIGHT_PAREN );
                 return( NULL );
@@ -468,7 +468,8 @@ MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
                 MacroOffsetAddMem( &mlen, Buffer, TokenLen + 1 );
             }
             NextToken();
-            if( CurToken == T_RIGHT_PAREN ) break;
+            if( CurToken == T_RIGHT_PAREN )
+                break;
             if( CurToken == T_NULL ) {
                 CErr1( ERR_INVALID_MACRO_DEFN );
                 break;
@@ -715,8 +716,8 @@ static void preProcStmt( void )
     NextChar();
     NextToken();
     if( CurToken == T_ID ) {
-        hash = (TokenLen + preprocWeights[ Buffer[0] - 'a' ]
-                 + preprocWeights[ Buffer[TokenLen-1] - 'a' ]) & 15;
+        hash = (TokenLen + preprocWeights[Buffer[0] - 'a']
+                 + preprocWeights[Buffer[TokenLen - 1] - 'a']) & 15;
         pp = &controlTable[hash];
         if( strcmp( pp->directive, Buffer ) == 0 ) {
             if( NestLevel == SkipLevel ) {

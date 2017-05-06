@@ -1196,7 +1196,7 @@ int GetNextChar( void )
 
 void SrcFileScanName( int e )   // CALLED FROM CSCAN TO SCAN AN IDENTIFIER
 {
-    unsigned        len;
+    size_t          len;
     unsigned char   *p;
     OPEN_FILE       *act;
     int             c;
@@ -1693,7 +1693,7 @@ void SrcFileGuardPpIf(          // #IF DETECTED IN SOURCE FILE
 
 void SrcFileGuardPpIfndef(      // SUPPLY #IFNDEF NAME
     const char *name,           // - macro name
-    unsigned len )              // - length of name
+    size_t len )                // - length of name
 {
     SRCFILE src;
 
@@ -2006,10 +2006,10 @@ static void saveSrcFile( void *e, carve_walk_base *d )
     s->ifndef_name = PCHSetUInt( ifndef_len );
     PCHWriteCVIndex( d->index );
     PCHWriteVar( *s );
-    if( name_len != 0 ) {
+    if( name_len > 0 ) {
         PCHWrite( name_save, name_len );
     }
-    if( ifndef_len != 0 ) {
+    if( ifndef_len > 0 ) {
         PCHWrite( ifndef_save, ifndef_len );
     }
     s->sister = sister_save;
@@ -2093,7 +2093,7 @@ pch_status PCHReadSrcFiles( void )
             s->name = NULL;
         }
         ifndef_len = PCHGetUInt( s->ifndef_name );
-        if( ifndef_len != 0 ) {
+        if( ifndef_len > 0 ) {
             if( ifndef_len > buff_len ) {
                 CMemFree( buff );
                 buff_len = ifndef_len;

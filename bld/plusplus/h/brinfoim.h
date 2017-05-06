@@ -63,41 +63,41 @@ void BrinfDepFini               // MODULE COMPLETION
 ;
 void BrinfDepMacAdd             // ADD A MACRO DEPENDENCY
     ( MEPTR macro               // - the macro
-    , MACVALUE* value           // - value
+    , MACVALUE *value           // - value
     , MAC_VTYPE type )          // - dependency type
 ;
 void BrinfDepRestart            // MODULE RESTART DURING PCH READ
     ( void )
 ;
-SRCDEP* BrinfDepSrcBeg          // BEGIN SOURCE-FILE DEPENDENCIES
+SRCDEP *BrinfDepSrcBeg          // BEGIN SOURCE-FILE DEPENDENCIES
     ( SRCFILE srcfile )         // - source file
 ;
 void BrinfDepSrcEnd             // END OF SOURCE-FILE DEPENDENCIES
     ( void )
 ;
 SRCFILE BrinfDepSrcfile         // GET SRCFILE FOR DEPENDENCY
-    ( SRCDEP const * sd )       // - dependency
+    ( const SRCDEP *sd )        // - dependency
 ;
-char const * BrinfDepSrcFname   // GET FILE NAME FOR SOURCE-DEPENDENCY
-    ( SRCDEP const *sd )        // - dependency
+const char *BrinfDepSrcFname    // GET FILE NAME FOR SOURCE-DEPENDENCY
+    ( const SRCDEP *sd )        // - dependency
 ;
 void BrinfDepWrite              // WRITE DEPENDENCY INFORMATION
-    ( SRCDEP const *sd )        // - dependency for source file
+    ( const SRCDEP *sd )        // - dependency for source file
 ;
 void BrinfIcReference           // WRITE OUT A REFERENCE
     ( CGINTEROP opcode          // - opcode
-    , void const *ptr           // - operand
-    , TOKEN_LOCN const* locn )  // - location
+    , const void *ptr           // - operand
+    , const TOKEN_LOCN *locn )  // - location
 ;
-MACVALUE* BrinfMacAddDefin      // ADD A defined(name) VALUE
-    ( char const* name          // - macro name
+MACVALUE *BrinfMacAddDefin      // ADD A defined(name) VALUE
+    ( const char *name          // - macro name
     , unsigned nlen )           // - name length
 ;
-MACVALUE* BrinfMacAddUndef      // ADD A !defined(name) VALUE
-    ( char const* name          // - macro name
+MACVALUE *BrinfMacAddUndef      // ADD A !defined(name) VALUE
+    ( const char *name          // - macro name
     , unsigned nlen )           // - name length
 ;
-MACVALUE* BrinfMacAddValue      // ADD A VALUE
+MACVALUE *BrinfMacAddValue      // ADD A VALUE
     ( MEPTR mac )               // - the macro
 ;
 void BrinfMacRestart            // RESTART DURING PCH READ
@@ -108,29 +108,29 @@ void BrinfMacUndef              // RECORD UNDEFINE OF MACRO
     , SRCFILE src )             // - source file in which it occurred
 ;
 SRCFILE BrinfMacUndefSource     // GET SOURCE OF AN UNDEF
-    ( char const *name )        // - macro name
+    ( const char *name )        // - macro name
 ;
-uint_8 const * BrinfMacValueDefn // GET DEFINITION FOR MACVALUE DECLARATION
-    ( MACVALUE const *mv        // - the MACVALUE
-    , unsigned* a_length )      // - addr[ length of definition ]
+const uint_8 *BrinfMacValueDefn // GET DEFINITION FOR MACVALUE DECLARATION
+    ( const MACVALUE *mv        // - the MACVALUE
+    , size_t *a_length )        // - addr[ length of definition ]
 ;
-TOKEN_LOCN const* BrinfMacValueLocn // GET LOCATION FOR MACVALUE DECLARATION
-    ( MACVALUE const *mv )      // - the MACVALUE
+const TOKEN_LOCN *BrinfMacValueLocn // GET LOCATION FOR MACVALUE DECLARATION
+    ( const MACVALUE *mv )      // - the MACVALUE
 ;
-char const *BrinfMacValueName   // GET NAME FROM MACVALUE
-    ( MACVALUE const *mv )      // - the MACVALUE
+const char *BrinfMacValueName   // GET NAME FROM MACVALUE
+    ( const MACVALUE *mv )      // - the MACVALUE
 ;
 unsigned BrinfMacValueParmCount // GET # PARAMETERS FOR MACVALUE DECLARATION
-    ( MACVALUE const *mv )      // - the MACVALUE
+    ( const MACVALUE *mv )      // - the MACVALUE
 ;
 void BrinfWriteDepMacDefed      // WRITE DEPENDENCY ON MACRO DEFINED
-    ( MACVALUE const * value )  // - value
+    ( const MACVALUE *value )   // - value
 ;
 void BrinfWriteDepMacUndefed    // WRITE DEPENDENCY ON MACRO UNDEFINED
-    ( MACVALUE const * value )  // - value
+    ( const MACVALUE *value )   // - value
 ;
 void BrinfWriteDepMacVal        // WRITE DEPENDENCY ON MACRO VALUE
-    ( MACVALUE const * value )  // - value
+    ( const MACVALUE *value )   // - value
 ;
 void BrinfSrcBeg                // START OF SOURCE (DEPENDENCY)
     ( SRCFILE srcfile )         // - source file
@@ -145,51 +145,51 @@ void BrinfSrcFini               // BrinfSrc COMPLETION
     ( void )
 ;
 void BrinfSrcInc                // START OF SRC-INCLUDE
-    ( void* short_name          // - short name
-    , TOKEN_LOCN const* locn )  // - location
+    ( void *short_name          // - short name
+    , const TOKEN_LOCN *locn )  // - location
 ;
 void BrinfSrcInit               // BrinfSrc INITIALIZATION
     ( void )
 ;
 void BrinfSrcMacDecl            // MACRO DECLARATION
-    ( MACVALUE const * defn )   // - definition value
+    ( const MACVALUE *defn )    // - definition value
 ;
 void BrinfSrcMacReference       // MACRO REFERENCE
-    ( MACVALUE const * val )    // - reference value
+    ( const MACVALUE *val )     // - reference value
 ;
 void BrinfSrcSync               // SYNCHONIZE THE OPEN/CLOSE DIRECTIVES
-    ( TOKEN_LOCN const* locn )  // - synchronizing location
+    ( const TOKEN_LOCN *locn )  // - synchronizing location
 ;
 void BrinfWriteFile             // WRITE BROWSE INFORMATION TO FILE
-    ( CGFILE* intermediate      // - intermediate file
-    , BRI_Routines const * rtns // - call-back routines
-    , void * file_handle        // - file handle
-    , BRI_Handle* b_handle )    // - browse handle
+    ( CGFILE *intermediate      // - intermediate file
+    , const BRI_Routines *rtns  // - call-back routines
+    , void *file_handle         // - file handle
+    , BRI_Handle *b_handle )    // - browse handle
 ;
-void* BrinfCreateFile           // CREATE A BROWSE HANDLE FOR LATER WRITING
-    ( BRI_Routines const *rtns )// - call-back routines
+void *BrinfCreateFile           // CREATE A BROWSE HANDLE FOR LATER WRITING
+    ( const BRI_Routines *rtns )// - call-back routines
 ;
 void BrinfWriteIns              // WRITE IC, PTR OPERAND
     ( CGINTEROP opcode          // - opcode
-    , void const *ptr )         // - operand
+    , const void *ptr )         // - operand
 ;
-void* BrinfWritePchFile         // WRITE OUT BROWSE INFORMATION TO PCH
+void *BrinfWritePchFile         // WRITE OUT BROWSE INFORMATION TO PCH
     ( CGFILE *virtual_file
-    , BRI_Routines const *rtns
-    , void * file_handle
+    , const BRI_Routines *rtns
+    , void *file_handle
     , unsigned long start )
 ;
 void BrinfReadPchFile           // READ BROWSE INFORMATION FROM A PCH FILE
-    ( BRI_PCHRtns const *rtns
-    , void * file_handle )
+    ( const BRI_PCHRtns *rtns
+    , void *file_handle )
 ;
 void BrinfWriteSrcClose         // WRITE IC'S FOR SOURCE CLOSE
     ( void )
 ;
 void BrinfWriteSrcOpen          // WRITE IC'S FOR SOURCE OPEN
-    ( char const * fname        // - file name (as entered)
-    , TOKEN_LOCN const* locn    // - location
-    , SRCDEP const *dep )       // - dependency entry
+    ( const char *fname         // - file name (as entered)
+    , const TOKEN_LOCN *locn    // - location
+    , const SRCDEP *dep )       // - dependency entry
 ;
 
 

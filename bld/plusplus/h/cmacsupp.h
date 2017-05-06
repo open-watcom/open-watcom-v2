@@ -32,22 +32,22 @@
 #ifndef _CMACSUPP_H
 #define _CMACSUPP_H
 
-void MacroOffsetAddChar(           // MacroOffset: ADD A CHARACTER
-    unsigned *mlen,                // - Macro Offset Length
-    char chr )                     // - character to be added
+void MacroOffsetAddChar(        // MacroOffset: ADD A CHARACTER
+    size_t *mlen,               // - Macro Offset Length
+    char chr )                  // - character to be added
 ;
-void MacroOffsetAddToken(          // MacroOffset: ADD A TOKEN
-    unsigned *mlen,                // - Macro Offset Length
-    TOKEN token )                  // - token to be added
+void MacroOffsetAddToken(       // MacroOffset: ADD A TOKEN
+    size_t *mlen,               // - Macro Offset Length
+    TOKEN token )               // - token to be added
 ;
-void MacroOffsetAddMem(            // MacroOffset: ADD A SEQUENCE OF BYTES
-    unsigned *mlen,                // - Macro Offset Length
-    const char *buff,              // - bytes to be added
-    unsigned len )                 // - number of bytes
+void MacroOffsetAddMem(         // MacroOffset: ADD A SEQUENCE OF BYTES
+    size_t *mlen,               // - Macro Offset Length
+    const char *buff,           // - bytes to be added
+    size_t len )                // - number of bytes
 ;
-void MacroOffsetAddMemNoCopy(      // As above, but no copy from old macro
-    unsigned *mlen,                // - Macro Offset Length
-    const char *buff,              // - bytes to be added
-    unsigned len )                 // - number of bytes
+void MacroOffsetAddMemNoCopy(   // As above, but no copy from old macro
+    size_t *mlen,               // - Macro Offset Length
+    const char *buff,           // - bytes to be added
+    size_t len )                // - number of bytes
 ;
 #endif
