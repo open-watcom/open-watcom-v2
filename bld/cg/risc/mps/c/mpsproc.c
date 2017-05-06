@@ -618,8 +618,8 @@ void GenEpilog( void )
 }
 
 
-int AskDisplaySize( int level )
-/*****************************/
+int AskDisplaySize( level_depth level )
+/*************************************/
 {
     /* unused parameters */ (void)level;
 

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,26 +24,13 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dump conflicts.
 *
 ****************************************************************************/
 
 
-/* include dump routines */
-
-extern void DumpFPUIns();
-extern void Dumpan();
-extern void DumpBlk();
-extern void DumpConflicts();
-extern void DumpCurrLoop();
-extern void DumpIns();
-extern void DumpOpcodeName();
-extern void DumpRegTree();
-extern void DumpSc();
-extern void DumpGen();
-extern void DumpTree();
-extern void DumpIVList();
-extern void DumpInvariants();
-extern void DumpOpt();
-extern void DumpDataDag();
+extern void     DumpRegName( hw_reg_set regname );
+extern void     DumpPossible( reg_set_index regs_idx );
+extern void     DumpRegSet( hw_reg_set reg );
+extern void     DumpAConf( conflict_node *conf );
+extern void     DumpConflicts( void );

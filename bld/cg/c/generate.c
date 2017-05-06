@@ -69,6 +69,7 @@
 #include "index.h"
 #include "fixindex.h"
 #include "conflict.h"
+#include "scmain.h"
 #include "generate.h"
 #include "feprotos.h"
 
@@ -88,10 +89,7 @@ extern  void            LiveInfoUpdate( void );
 extern  void            FixIndex( void );
 extern  void            FixSegments( void );
 extern  void            FixMemRefs( void );
-extern  void            Score( void );
 extern  void            MergeIndex( void );
-extern  void            ScoreInit( void );
-extern  void            ScoreFini( void );
 extern  void            AllocALocal( name * );
 extern  void            ParmPropagate( void );
 extern  void            InitStackMap( void );

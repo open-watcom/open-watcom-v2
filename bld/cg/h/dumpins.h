@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,26 +24,32 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Dump instruction.
 *
 ****************************************************************************/
 
 
-/* include dump routines */
-
-extern void DumpFPUIns();
-extern void Dumpan();
-extern void DumpBlk();
-extern void DumpConflicts();
-extern void DumpCurrLoop();
-extern void DumpIns();
-extern void DumpOpcodeName();
-extern void DumpRegTree();
-extern void DumpSc();
-extern void DumpGen();
-extern void DumpTree();
-extern void DumpIVList();
-extern void DumpInvariants();
-extern void DumpOpt();
-extern void DumpDataDag();
+extern void     DumpInsOffsets( void );
+extern void     DumpInOut( instruction *ins );
+extern void     DumpITab( instruction *ins );
+extern void     DumpClass( type_class_def tipe );
+extern void     DumpOperand( name *operand );
+extern void     DoDumpIInfo( instruction *ins, bool fp );
+extern void     DumpFPInfo( instruction *ins );
+extern void     DumpIInfo( instruction *ins );
+extern void     DumpInsOnly( instruction *ins );
+extern void     DumpLineNum( instruction *ins );
+extern void     DumpInsNoNL( instruction *ins );
+extern void     DumpIns( instruction *ins );
+extern void     DumpInstrsOnly( block *blk );
+extern void     DumpCond( instruction *ins, block *blk );
+extern void     DumpVUsage( name *v );
+extern void     DumpSym( name *sym );
+extern void     DumpTempWId( int id );
+extern void     DumpSymList( name *sym );
+extern void     DumpNTemp( void );
+extern void     DumpNMemory( void );
+extern void     DumpNIndexed( void );
+extern void     DumpNConst( void );
+extern void     DumpNRegister( void );
+extern void     DumpInsList( block *blk );

@@ -44,7 +44,6 @@
 #include "data.h"
 #include "rtrtn.h"
 #include "cgauxinf.h"
-#include "dumpio.h"
 #include "dbsyms.h"
 #include "rscconst.h"
 #include "object.h"
@@ -55,11 +54,12 @@
 #include "split.h"
 #include "namelist.h"
 #include "revcond.h"
+#include "dmpinc.h"
+#include "dumpio.h"
+#include "dumpins.h"
+#include "dumptab.h"
 #include "feprotos.h"
 
-
-extern void DumpInsOnly( instruction * );
-extern void DumpGen( opcode_entry * );
 
 extern void             GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed );
 

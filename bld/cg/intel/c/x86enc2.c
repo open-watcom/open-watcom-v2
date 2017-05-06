@@ -147,7 +147,7 @@ unsigned DepthAlign( unsigned depth )
         unsigned char *align_info_bytes = FEAuxInfo( NULL, CODE_LABEL_ALIGNMENT );
         Copy( align_info_bytes, AlignArray, align_info_bytes[0] + 1 );
     }
-    if( OptForSize )
+    if( OptForSize > 0 )
         return( 1 );
     if( _CPULevel( CPU_486 ) ) {
         if( depth == PROC_ALIGN || depth == DEEP_LOOP_ALIGN )

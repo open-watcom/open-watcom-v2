@@ -48,7 +48,7 @@ extern  void    BG3WayControl( an node, label_handle lt, label_handle eq, label_
 extern  void    BGControl( cg_op op, an expr, label_handle lbl );
 extern  void    BGGenCtrl( cg_op op, an expr, label_handle lbl, bool gen );
 extern  void    BGBigLabel( back_handle bck );
-extern  void    BGBigGoto( label_handle lbl, int level );
+extern  void    BGBigGoto( label_handle lbl, level_depth level );
 extern  unsigned_32 BGUnrollCount( unsigned_32 unroll_count );
 extern  unsigned_32 BGUnrollCount( unsigned_32 unroll_count );
 extern  an      BGUnary( cg_op op, an left, type_def *tipe );

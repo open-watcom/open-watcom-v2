@@ -91,7 +91,7 @@ typedef struct proc_def {
         bool                    block_by_block;
         bool                    untrimmed;
         bool                    contains_call;
-        byte                    lex_level;
+        level_depth             lex_level;
         prolog_state_def        prolog_state;
         union  name             *lasttemp;
         union  name             *dummy_index;

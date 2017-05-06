@@ -31,11 +31,12 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "dumpio.h"
 #include "data.h"
+#include "dmpinc.h"
+#include "dumpio.h"
+#include "dumpins.h"
+#include "dumpan.h"
 
-extern  void            DumpOperand(name*);
-extern  void            DumpIns(instruction*);
 
 static const char *Classes[] = {
     "CL_ADDR_GLOBAL",
@@ -153,9 +154,9 @@ static  void    DumpAnName( an node ) {
     DumpOperand( node->u.n.name );
 }
 
-extern  void    Dumpan( an node ) {
-/*********************************/
-
+void    Dumpan( an node )
+/***********************/
+{
     DumpString( Formats[node->format] );
     DumpChar( ' ' );
     switch( node->format ) {

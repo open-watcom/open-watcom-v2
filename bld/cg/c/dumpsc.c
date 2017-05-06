@@ -33,18 +33,24 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "score.h"
+#include "regset.h"
+#include "confldef.h"
+#include "conflict.h"
+#include "dmpinc.h"
 #include "dumpio.h"
+#include "dumpconf.h"
+#include "dumpins.h"
+#include "dumpsc.h"
 #include "feprotos.h"
 
-extern  void            DumpRegName(hw_reg_set);
-extern  void            DumpOperand(name *);
 
 extern  int             ScoreCount;
 extern  score_reg       **ScoreList;
 
-static  void    DumpScList( score_list *curr ) {
-/**********************************************/
 
+static  void    DumpScList( score_list *curr )
+/********************************************/
+{
     DumpLiteral( "    " );
     switch( curr->info.class ) {
     case N_CONSTANT:
@@ -96,16 +102,15 @@ static  void    DumpScList( score_list *curr ) {
 }
 
 
-extern  void    DumpSc( score *sc ) {
-/***********************************/
-
+void    DumpSc( score *sc )
+/*************************/
+{
     score_reg   *entry;
     score_list  *curr;
     score       *reg;
     int         i;
 
-    i = 0;
-    while( i < ScoreCount ) {
+    for( i = 0; i < ScoreCount; ++i ) {
         entry = ScoreList[i];
         DumpInt( i );
         DumpLiteral( " reg " );
@@ -124,7 +129,6 @@ extern  void    DumpSc( score *sc ) {
         for( curr = *sc->list; curr != NULL; curr = curr->next ) {
             DumpScList( curr );
         }
-        ++ sc;
-        ++ i;
+        ++sc;
     }
 }

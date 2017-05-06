@@ -32,7 +32,10 @@
 
 #include "cgstd.h"
 #include "coderep.h"
+#include "dmpinc.h"
 #include "dumpio.h"
+#include "dumptab.h"
+
 
 static char *opRegTab[] = {
     #define RG( a,b,c,d,e,f ) #f
@@ -114,14 +117,15 @@ static  void    PrtOps( operand_types ops ) {
     DumpChar( ')' );
 }
 
-extern  void    DumpGen( opcode_entry *try ) {
-/********************************************/
-
+void    DumpGen( opcode_entry *try )
+/**********************************/
+{
     DumpPadString( GenTab[try->generate], 15 );
 }
 
-extern  void    DumpTab( opcode_entry *try ) {
-/********************************************/
+void    DumpTab( opcode_entry *try )
+/**********************************/
+{
     vertype     verify;
 
     PrtOps( try->op_type );

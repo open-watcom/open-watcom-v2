@@ -42,8 +42,8 @@
 #include "model.h"
 #include "cgmem.h"
 #include "useinfo.h"
-#include "dumpio.h"
 #include "onexit.h"
+#include "dumpio.h"
 #include "feprotos.h"
 
 #include "clibext.h"
@@ -518,7 +518,7 @@ static char *callBackName       // MAKE CALL-BACK NAME FOR PRINTING
 {
     const char  *name;          // - name to be used
 
-    name = FEExtName( (cg_sym_handle)rtn, EXTN_CALLBACKNAME );
+    name = FEExtName( (cg_sym_handle)&rtn, EXTN_CALLBACKNAME );
     if( name == NULL ) {
         sprintf( buffer, "%p", rtn );
     } else {

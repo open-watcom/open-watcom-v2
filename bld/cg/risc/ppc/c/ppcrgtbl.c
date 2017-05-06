@@ -466,10 +466,10 @@ reg_set_index   SegIndex( void )
 }
 
 
-reg_set_index   NoSegments( reg_set_index idx )
-/*********************************************/
+reg_set_index   NoSegments( reg_set_index regs_idx )
+/**************************************************/
 {
-    return( idx );
+    return( regs_idx );
 }
 
 
@@ -835,8 +835,8 @@ void SetArchIndex( name *new_r, hw_reg_set regs )
 }
 
 
-hw_reg_set      FirstReg( reg_set_index index )
-/**********************************************
+hw_reg_set      FirstReg( reg_set_index regs_idx )
+/*************************************************
     The table RTInfo[] uses reg_set_indexes instead of hw_reg_sets since
     they are only one byte long.  This retrieves the first hw_reg_set
     from the reg_set table "index".
@@ -846,5 +846,5 @@ hw_reg_set      FirstReg( reg_set_index index )
     register list and returns it.
 */
 {
-    return( *RegSets[index] );
+    return( *RegSets[regs_idx] );
 }

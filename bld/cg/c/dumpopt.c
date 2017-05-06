@@ -30,11 +30,12 @@
 
 
 #include "optwif.h"
-#include "dumpio.h"
-#include "dmpinc.h"
 #include "typedef.h"
 #include "inslist.h"
 #include "rtrtn.h"
+#include "dmpinc.h"
+#include "dumpio.h"
+#include "dumpopt.h"
 #include "feprotos.h"
 
 
@@ -208,9 +209,9 @@ static  void    DoInfo( any_oc *oc ) {
 }
 
 
-extern  void    DumpOc( ins_entry *ins ) {
-/****************************************/
-
+void    DumpOc( ins_entry *ins )
+/******************************/
+{
     DumpPtr( ins );
     DumpChar( ' ' );
     DumpString(  CNames[_Class( ins )] );
@@ -330,9 +331,9 @@ static  void    DoRef( oc_handle *instr )
 }
 
 
-extern  void    DumpLbl( label_handle lbl ) {
-/****************************************/
-
+void    DumpLbl( label_handle lbl )
+/*********************************/
+{
     ins_entry   *ref;
 
     if( !ValidLbl( lbl ) )
@@ -398,19 +399,19 @@ extern  void    DumpLbl( label_handle lbl ) {
 }
 
 
-extern  void    DownOpt( ins_entry *instr, uint num )
-/***************************************************/
+void    DownOpt( ins_entry *instr, uint num )
+/*******************************************/
 {
     DumpLiteral( "--------<Queue>-------" );
     DumpNL();
-    for( ; instr != NULL && num > 0; instr = instr->ins.next, --num ) {
+    for( ; instr != NULL && num-- > 0; instr = instr->ins.next ) {
         DumpOc( instr );
     }
 }
 
 
-extern  void    UpOpt( ins_entry *ins, uint last )
-/************************************************/
+void    UpOpt( ins_entry *ins, uint last )
+/****************************************/
 {
     uint        size;
 
@@ -427,5 +428,5 @@ extern  void    UpOpt( ins_entry *ins, uint last )
 void    DumpOpt( void )
 /*********************/
 {
-    DownOpt( FirstIns, -1 );
+    DownOpt( FirstIns, ~0 );
 }

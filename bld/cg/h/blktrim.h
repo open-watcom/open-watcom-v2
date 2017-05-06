@@ -34,6 +34,6 @@ extern int      CountIns( block *blk );
 extern void     RemoveBlock( block *blk );
 extern void     RemoveInputEdge( block_edge *edge );
 extern void     MoveHead( block *old, block *new );
-extern void     KillCondBlk( block *blk, instruction *ins, int dest );
+extern void     KillCondBlk( block *blk, instruction *ins, byte dest_idx );
 extern bool     DeadBlocks( void );
 extern bool     BlockTrim( void );

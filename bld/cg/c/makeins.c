@@ -88,12 +88,12 @@ void    FreeIns( instruction *ins ) {
 }
 
 
-instruction     *NewIns( int num ) {
-/*******************************************
+instruction     *NewIns( byte num )
+/**********************************
     Allocate a new instruction (with "num" operands) and initialize its
     fields to sensible defaults.
 */
-
+{
     instruction *new;
 
     if( num > MAX_OPS_PER_INS ) {
@@ -142,11 +142,11 @@ instruction     *MakeNary( opcode_defs opcode, name *left,
                                      name *right, name *result,
                                      type_class_def class,
                                      type_class_def base_class,
-                                     int num_operands ) {
+                                     byte num_operands )
 /************************************************************
     Make a N-ary instruction (OPCODE left, right => result)
 */
-
+{
     instruction *ins;
 
     ins = NewIns( num_operands );
@@ -217,7 +217,7 @@ instruction     *MakeBinary( opcode_defs opcode, name *left,
 
 
 instruction     *MakeCondition( opcode_defs opcode, name *left,
-                                        name *right, int t, int f,
+                                        name *right, byte t, byte f,
                                         type_class_def class ) {
 /***************************************************************
     Make a conditional (IF ( left opcode right ) goto "t" else goto "f")

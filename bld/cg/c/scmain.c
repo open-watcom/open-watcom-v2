@@ -41,6 +41,7 @@
 #include "stack.h"
 #include "nullprop.h"
 #include "generate.h"
+#include "scmain.h"
 
 
 extern  void            MakeLiveInfo(void);
@@ -48,27 +49,27 @@ extern  mem_out_action  SetMemOut(mem_out_action);
 extern  void            UpdateLive(instruction*,instruction*);
 
 
-extern  void    ScoreInit( void )
-/*******************************/
+void    ScoreInit( void )
+/***********************/
 {
     InitFrl( &ScListFrl );
 }
 
-extern  void    ScoreFini( void )
-/*******************************/
+void    ScoreFini( void )
+/***********************/
 {
 }
 
 
-static  void    ScoreSeed( block *blk, block *son, unsigned index )
-/******************************************************************
+static  void    ScoreSeed( block *blk, block *son, byte index )
+/**************************************************************
     If block ends with a single comparison for == or !=, then the
     one of the sons (true index for ==, false index for !=) knows
     that the two operands are in fact equal.
 */
 {
     instruction     *cmp;
-    unsigned        which;
+    byte            which;
 
     if( !_IsBlkAttr( blk, BLK_CONDITIONAL ) )
         return;
@@ -107,7 +108,7 @@ static  void    CopyList( score *frm, score *to,
         *to[i].list = NULL;
         for( next = to[i].next_reg; next->list == NULL; next = next->next_reg ) {
             next->list = next->prev_reg->list;
-        }
+         }
     }
     if( *to[i].list == NULL ) {
         next = to[i].next_reg;
@@ -129,28 +130,18 @@ static  void    ScoreCopy( score *other_sc, score *sc )
 
     FreeScoreBoard( sc );
     sc_heads = (list_head **)&sc[ScoreCount];
-    i = ScoreCount;
-    for( ;; ) {
-        --i;
+    for( i = ScoreCount; i-- > 0; ) {
         sc[i].next_reg = &sc[other_sc[i].next_reg->index];
         sc[i].prev_reg = &sc[other_sc[i].prev_reg->index];
         sc[i].generation = other_sc[i].generation;
         sc[i].list = NULL;
         *sc_heads = (list_head *)sc_heads + 1;
         ++sc_heads;
-        if( i == 0 ) {
-            break;
-        }
     }
     *sc_heads = NULL;
-    i = ScoreCount;
     sc_heads = (list_head **)&sc[ScoreCount];
-    for( ;; ) {
-        --i;
+    for( i = ScoreCount; i-- > 0; ) {
         CopyList( other_sc, sc, sc_heads, i );
-        if( i == 0 ) {
-            break;
-        }
     }
 }
 
@@ -167,7 +158,7 @@ static  void *ScoreDescendants( block *blk )
         if( ( son->inputs == 1 ) && !_IsBlkVisited( son ) ) {
             son->cc = ScAlloc( ScoreCount * ( sizeof( score ) + sizeof( list_head ) ) + sizeof( list_head ) );
             ScoreClear( son->cc );
-            for(;;) {
+            for( ;; ) {
                 ScoreCopy( blk->cc, son->cc );
                 ScoreSeed( blk, son, i );
                 if( !DoScore( son ) )
@@ -276,8 +267,8 @@ static  void    ConstSizes( void )
 }
 
 
-extern  void    Score( void )
-/***************************/
+void    Score( void )
+/*******************/
 {
     mem_out_action      old_memout;
     block               *blk;

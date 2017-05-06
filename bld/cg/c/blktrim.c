@@ -415,8 +415,8 @@ static  bool    DoBlockTrim( void )
     return( any_change );
 }
 
-void KillCondBlk( block *blk, instruction *ins, int dest )
-/********************************************************/
+void KillCondBlk( block *blk, instruction *ins, byte dest_idx )
+/*************************************************************/
 // Assume blk is a conditional with compare ins
 // Make dest the destination and delete the unused edge
 // Change blk to a JMP to dest edge
@@ -429,9 +429,9 @@ void KillCondBlk( block *blk, instruction *ins, int dest )
     _MarkBlkAttrNot( blk, BLK_CONDITIONAL );
     _MarkBlkAttr( blk, BLK_JUMP );
     blk->targets = 1;
-    dest_blk = blk->edge[dest].destination.u.blk;
+    dest_blk = blk->edge[dest_idx].destination.u.blk;
     edge = &blk->edge[0];
-    edge->flags = blk->edge[dest].flags;
+    edge->flags = blk->edge[dest_idx].flags;
     edge->source = blk;
     edge->destination.u.blk = dest_blk;
     edge->next_source = dest_blk->input_edges;
@@ -445,7 +445,7 @@ bool    DeadBlocks( void )
 {
     block       *blk;
     instruction *ins;
-    int         dest;
+    byte        dest_idx;
     bool        change;
 
     change = false;
@@ -456,10 +456,10 @@ bool    DeadBlocks( void )
                 continue;
             if( ins->result != NULL )
                 continue;
-            dest = _TrueIndex( ins );
-            if( dest != _FalseIndex( ins ) )
+            dest_idx = _TrueIndex( ins );
+            if( dest_idx != _FalseIndex( ins ) )
                 continue;
-            KillCondBlk( blk, ins, dest );
+            KillCondBlk( blk, ins, dest_idx );
             change = true;
         }
     }
