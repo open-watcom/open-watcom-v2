@@ -56,7 +56,7 @@ static void dmp_exe( void )
     Form = FORM_NE;
     Data_count = 0;
     Sizeleft = 0;
-    Num_buff = -1;
+    Num_buff = FORCE_SEEK;
     Byte_swap = false;
     if( Options_dmp & EXE_INFO ) {
         dos_dmp = Dmp_dos_head();

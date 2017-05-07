@@ -341,9 +341,8 @@ void Dmp_seg_data( unsigned long seg_off, unsigned long seg_len )
     Wdputslc( "\n" );
 }
 
-extern void dmp_mult_data_line( char *buf, unsigned_16 address,
-                                unsigned_16 amount )
-/*************************************************************/
+void dmp_mult_data_line( char *buf, unsigned_16 address, unsigned_16 amount )
+/***************************************************************************/
 {
     unsigned chunk;
 
@@ -360,8 +359,8 @@ extern void dmp_mult_data_line( char *buf, unsigned_16 address,
     }
 }
 
-extern void dmp_data_line( char *data, unsigned_16 address, unsigned_16 amount )
-/******************************************************************************/
+void dmp_data_line( char *data, unsigned_16 address, unsigned_16 amount )
+/***********************************************************************/
 {
     unsigned_16     idx;
     char            *buf;

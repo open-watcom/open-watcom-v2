@@ -591,10 +591,11 @@ static void dump_cv_sstSrcLnSeg( unsigned_32 base, unsigned_32 offset )
  * dump_hll_sstHLLSrc - dump HLL sstHLLSrc at 'offset' from 'base'
  * containing 'size' bytes
  */
-static void dump_hll_sstHLLSrc( unsigned_32 base, unsigned_32 offset,
-                                                  unsigned_32 size )
-/*******************************************************************/
+static void dump_hll_sstHLLSrc( unsigned_32 base, unsigned_32 offset, unsigned_32 size )
+/**************************************************************************************/
 {
+    /* unused parameters */ (void)size;
+
     Wlseek( base + offset );
     Wdputs( "==== sstHLLSrc at offset " );
     Puthex( offset, 8 );
@@ -783,7 +784,7 @@ static void dump_hll( unsigned_32 base )
     hll_trailer                 header;
     hll_dirinfo                 dir_info;
     hll_dir_entry               dir_entry;
-    int                         i;
+    unsigned_32                 i;
 
     Wlseek( base );
     Wread( &header, sizeof( header ) );

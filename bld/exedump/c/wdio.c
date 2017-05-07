@@ -77,14 +77,14 @@ void Wread( void *buf, unsigned_32 amount )
     errno = 0;
     if( amount > Sizeleft ) {
         if( Sizeleft ) {
-            memcpy( buffer, &Read_buff[Num_read-Sizeleft], Sizeleft );
+            memcpy( buffer, &Read_buff[Num_read - Sizeleft], Sizeleft );
             amount -= Sizeleft;
         }
         if( amount/BSIZE >= 1 ) {
             Num_read = read( Handle, &buffer[Sizeleft], amount );
             chkread( amount );
             Sizeleft = 0;
-            Num_buff = -1;      // must read in new buffer on next seek
+            Num_buff = FORCE_SEEK;  // must read in new buffer on next seek
         } else {
             Num_read = read( Handle, Read_buff, BSIZE );
             chkread( amount );
@@ -93,7 +93,7 @@ void Wread( void *buf, unsigned_32 amount )
             Num_buff++;
         }
     } else {
-        memcpy( buffer, &Read_buff[Num_read-Sizeleft], amount );
+        memcpy( buffer, &Read_buff[Num_read - Sizeleft], amount );
         Sizeleft -= amount;
     }
 }
@@ -213,9 +213,8 @@ void Dump_header( void *data_ptr, const_string_table *msg )
 
 #define MAX_FLAG_SIZE   256
 
-extern void DumpFlags( unsigned_32 flags, unsigned_32 ignore,
-                       const_string_table *msg, const char *prefix )
-/****************************************************************/
+void DumpFlags( unsigned_32 flags, unsigned_32 ignore, const_string_table *msg, const char *prefix )
+/**************************************************************************************************/
 {
     char            name[MAX_FLAG_SIZE];
     char            *currpos;
