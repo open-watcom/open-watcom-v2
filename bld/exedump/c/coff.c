@@ -75,8 +75,8 @@ static void load_string_table( coff_file_header *header )
     }
 }
 
-extern const char *Coff_obj_name( const char *id )
-/************************************************/
+const char *Coff_obj_name( const char *id )
+/*****************************************/
 {
     unsigned_32 offset;
 
@@ -89,7 +89,7 @@ extern const char *Coff_obj_name( const char *id )
             offset = offset * 10 + ( *id - '0' );
             id += 1;
         }
-        return( &String_table[ offset-4 ] );
+        return( &String_table[offset - 4] );
     }
     return( id );
 }
@@ -119,12 +119,12 @@ static void dmp_symtab( unsigned long offset, unsigned long num_syms )
     }
     Wlseek( Coff_off + offset );
     Banner( "Symbol Table" );
-    start = Wmalloc( num_syms * sizeof(coff_symbol) );
+    start = Wmalloc( num_syms * sizeof( coff_symbol ) );
     symtab = start;
-    Wread( start, num_syms * sizeof(coff_symbol) );
-    Wread( &strsize, sizeof(unsigned_32) );
+    Wread( start, num_syms * sizeof( coff_symbol ) );
+    Wread( &strsize, sizeof( unsigned_32 ) );
     if( strsize != 0 ) {
-        strsize -= sizeof(unsigned_32);
+        strsize -= sizeof( unsigned_32 );
     }
     if( strsize != 0 ) {
         strtab = Wmalloc( strsize );
@@ -161,7 +161,7 @@ static void dmp_symtab( unsigned long offset, unsigned long num_syms )
         num_aux = symtab->num_aux;
         symtab++;
         if( num_aux > 0 ) {
-            dmp_mult_data_line((char *)symtab, 0, num_aux * sizeof(coff_symbol));
+            dmp_mult_data_line( (char *)symtab, 0, num_aux * sizeof( coff_symbol ) );
             symtab += num_aux;
             symidx += num_aux;
         }

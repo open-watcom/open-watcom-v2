@@ -109,7 +109,7 @@ static void get_standard_op( uint_8 value )
 /*****************************************/
 {
     const char      *result;
-    int             i;
+    size_t          i;
 
     result = Getname( value, readableStandardOps, NUM_STANDARD_OPS );
     if( result == NULL ) {

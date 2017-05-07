@@ -121,7 +121,7 @@ static res_name get_name( unsigned_32 offset )
 /********************************************/
 {
     unsigned_16             i;
-    char                    name[2*SLEN];
+    char                    name[2 * SLEN];
     unsigned_16             uniname[SLEN];
     res_name                lname;
 
@@ -130,9 +130,9 @@ static res_name get_name( unsigned_32 offset )
     if( lname.len > SLEN ) {
         lname.len = SLEN;
     }
-    Wread( uniname, lname.len*2 );
+    Wread( uniname, lname.len * 2 );
     for( i = 0; i < lname.len; i++ ) {
-        name[i] = uniname[i];
+        name[i] = (char)uniname[i];
     }
     lname.rname = name;
     lname.rname[lname.len] = '\0';
@@ -152,7 +152,7 @@ static void dmp_name_id( unsigned_32 offset, bool is_name )
 
     Wlseek( offset );
     Wread( &pe_res_dir, sizeof( resource_dir_entry ) );
-    offset = Res_off +( pe_res_dir.id_name & PE_RESOURCE_MASK );
+    offset = Res_off + (pe_res_dir.id_name & PE_RESOURCE_MASK);
     if( is_name ) {
         name = get_name( offset );
         Wdputs( name.rname );
@@ -163,12 +163,13 @@ static void dmp_name_id( unsigned_32 offset, bool is_name )
         Puthex( pe_res_dir.id_name, 8 );
         Wdputs( "                       " );
     }
-    offset = Res_off +( pe_res_dir.entry_rva & PE_RESOURCE_MASK );
+    offset = Res_off + (pe_res_dir.entry_rva & PE_RESOURCE_MASK);
     if( pe_res_dir.entry_rva & PE_RESOURCE_MASK_ON ) {
         Wlseek( offset );
         Wread( &pe_res_lang, sizeof( resource_dir_header ) );
         offset += sizeof( resource_dir_header );
         Wlseek( offset );
+        tmp_dir.entry_rva = 0;
         cnt = pe_res_lang.num_id_entries;
         for( i = 0; i < cnt; i++ ) {
             Wread( &tmp_dir, sizeof( resource_dir_entry ) );
@@ -177,7 +178,7 @@ static void dmp_name_id( unsigned_32 offset, bool is_name )
                 Wdputslc( "\n                                                             " );
             }
         }
-        offset = Res_off +( tmp_dir.entry_rva & PE_RESOURCE_MASK );
+        offset = Res_off + (tmp_dir.entry_rva & PE_RESOURCE_MASK);
     }
     if( Data_off == 0 ) {
         Data_off = offset;

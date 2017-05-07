@@ -127,7 +127,7 @@ static bool os2_debug( void )
 static void dmp_master( master_dbg_header mdh )
 /*********************************************/
 {
-    int                     i;
+    size_t          i;
 
     Banner( "Master Debug Info" );
     Dump_header( (char *)&mdh.exe_major_ver, mdh_msg );

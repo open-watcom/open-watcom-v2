@@ -175,8 +175,7 @@ static void dmp_reloc_info( unsigned_32 reloc_off )
     Wdputslc( "\n  === ==== ====" );
     for( reloc = reloc_tab; num_relocs-- != 0; ++reloc ) {
         Wdputslc( "\n  " );
-        if( (reloc->addr_type > REL_SEGMENT_OFFSET + 2)
-            || reloc->addr_type == 0  ) {
+        if( (reloc->addr_type > REL_SEGMENT_OFFSET + 2) || reloc->addr_type == 0  ) {
             Wdputc( '?' );
             Puthex( reloc->addr_type, 2 );
         } else {
@@ -371,14 +370,18 @@ void dmp_data_line( char *data, unsigned_16 address, unsigned_16 amount )
     Wdputc( ':' );
     for( idx = 0; idx < amount; ++idx ) {
         Wdputc( ' ' );
-        if( (idx & 0x0007) == 0 )  Wdputc( ' ' );
-            Puthex( buf[ idx ], 2 );
-        if( !isprint( buf[ idx ] ) )  buf[ idx ] = ' ';
+        if( (idx & 0x0007) == 0 )
+            Wdputc( ' ' );
+        Puthex( buf[ idx ], 2 );
+        if( !isprint( buf[ idx ] ) ) {
+            buf[ idx ] = ' ';
+        }
     }
     buf[ idx ] = '\0';
     while( idx < 16 ) {
         Wdputs( "   " );
-        if( (idx & 0x0007) == 0 )  Wdputc( ' ' );
+        if( (idx & 0x0007) == 0 )
+            Wdputc( ' ' );
         ++idx;
     }
     Wdputs( "    " );

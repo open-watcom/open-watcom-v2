@@ -180,7 +180,7 @@ extern bool             Weof( void );
 extern void             Wread( void *, unsigned_32 );
 extern void             Wlseek( unsigned long );
 extern unsigned long    WFileSize( void );
-extern void             Wdputc( char );
+extern void             Wdputc( int );
 extern void             Wdputs( const char * );
 extern void             Wdputslc( const char * );
 extern void             Dump_header( void *, const char * const * );
