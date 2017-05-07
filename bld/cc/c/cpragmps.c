@@ -56,8 +56,9 @@ void *AsmQuerySymbol( const char *name )
 uint_32 AsmQuerySPOffsetOf( void *handle )
 /****************************************/
 {
-    handle = handle;
-// CC provides this
+    /* unused parameters */ (void)handle;
+
+    // CC provides this
     return( 0 );
 }
 

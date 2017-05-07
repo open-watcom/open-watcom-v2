@@ -438,7 +438,8 @@ static void GenVaStart( cg_name op1, cg_name offset )
 {
     cg_name     name;
 
-    offset = offset;
+    /* unused parameters */ (void)offset;
+
     name = CGUnary( O_VA_START, op1, TY_POINTER );
     CGDone( name );
 }
