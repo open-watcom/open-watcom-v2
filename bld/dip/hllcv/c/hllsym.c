@@ -43,6 +43,8 @@
 dip_status hllSymFillIn( imp_image_handle *ii, imp_sym_handle *is, unsigned_16 seg,
                          virt_mem h, unsigned len )
 {
+    /* unused parameters */ (void)ii;
+
     is->type = HLL_SYM_TYPE_HLL_SSR;
     is->segment = seg;
     is->containing_type = 0;
@@ -54,10 +56,11 @@ dip_status hllSymFillIn( imp_image_handle *ii, imp_sym_handle *is, unsigned_16 s
     return( DS_OK );
 }
 
+#if 0
 /*
  * Fill in a symbol handle for a symbol scope record.
  */
-dip_status cv3SymFillIn( imp_image_handle *ii, imp_sym_handle *is, virt_mem h, unsigned len )
+static dip_status cv3SymFillIn( imp_image_handle *ii, imp_sym_handle *is, virt_mem h, unsigned len )
 {
     is->type = HLL_SYM_TYPE_CV3_SSR;
     is->segment = 0; //FIXME
@@ -69,12 +72,15 @@ dip_status cv3SymFillIn( imp_image_handle *ii, imp_sym_handle *is, virt_mem h, u
     is->len = len;
     return( DS_OK );
 }
+#endif
+
+#define GET_NAME_PTR(x) ((char *)&(x) + sizeof( x ))
 
 /*
  * Get the name in a SSR record.
  */
 static dip_status hllSymGetName( imp_image_handle *ii, imp_sym_handle *is,
-                                 const char **name_p, unsigned *name_len_p )
+                                 const char **name_p, size_t *name_len_p )
 {
     hll_ssr_all        *ssr;
 
@@ -89,98 +95,98 @@ static dip_status hllSymGetName( imp_image_handle *ii, imp_sym_handle *is,
     switch( ssr->common.code ) {
     case HLL_SSR_BEGIN:
         *name_len_p = ssr->begin.name_len;
-        *name_p = ssr->begin.name;
+        *name_p = GET_NAME_PTR( ssr->begin );
         break;
     case HLL_SSR_PROC:
     case HLL_SSR_ENTRY:
         *name_len_p = ssr->proc.name_len;
-        *name_p = ssr->proc.name;
+        *name_p = GET_NAME_PTR( ssr->proc );
         break;
     case HLL_SSR_PROC2:
     case HLL_SSR_MEM_FUNC:
         *name_len_p = ssr->proc.name_len;
-        *name_p = ssr->proc.name;
+        *name_p = GET_NAME_PTR( ssr->proc );
         if( *name_len_p & 0x80 ) {
             *name_len_p = ((*name_len_p & 0x7f) << 8) | *(unsigned_8 *)name_p++;
         }
         break;
     case HLL_SSR_CODE_LABEL:
         *name_len_p = ssr->code_lable.name_len;
-        *name_p = ssr->code_lable.name;
+        *name_p = GET_NAME_PTR( ssr->code_lable );
         break;
     case HLL_SSR_PUBLIC:
         *name_len_p = ssr->public_.name_len;
-        *name_p = ssr->public_.name;
+        *name_p = GET_NAME_PTR( ssr->public_ );
         break;
     case HLL_SSR_STATIC:
         *name_len_p = ssr->static_.name_len;
-        *name_p = ssr->static_.name;
+        *name_p = GET_NAME_PTR( ssr->static_ );
         break;
     case HLL_SSR_STATIC2:
         *name_len_p = ssr->static2.name_len;
-        *name_p = ssr->static2.name;
+        *name_p = GET_NAME_PTR( ssr->static2 );
         if( *name_len_p & 0x80 ) {
             *name_len_p = ((*name_len_p & 0x7f) << 8) | *(unsigned_8 *)name_p++;
         }
         break;
     case HLL_SSR_STATIC_SCOPED:
         *name_len_p = ssr->static_scoped.name_len;
-        *name_p = ssr->static_scoped.name;
+        *name_p = GET_NAME_PTR( ssr->static_scoped );
         break;
     case HLL_SSR_TLS:
         *name_len_p = ssr->tls.name_len;
-        *name_p = ssr->tls.name;
+        *name_p = GET_NAME_PTR( ssr->tls );
         break;
     case HLL_SSR_AUTO:
         *name_len_p = ssr->auto_.name_len;
-        *name_p = ssr->auto_.name;
+        *name_p = GET_NAME_PTR( ssr->auto_ );
         break;
     case HLL_SSR_AUTO_SCOPED:
         *name_len_p = ssr->auto_scoped.name_len;
-        *name_p = ssr->auto_scoped.name;
+        *name_p = GET_NAME_PTR( ssr->auto_scoped );
         break;
     case HLL_SSR_REG:
         *name_len_p = ssr->reg.name_len;
-        *name_p = ssr->reg.name;
+        *name_p = GET_NAME_PTR( ssr->reg );
         break;
     case HLL_SSR_REG_RELATIVE:
         *name_len_p = ssr->reg_relative.name_len;
-        *name_p = ssr->reg_relative.name;
+        *name_p = GET_NAME_PTR( ssr->reg_relative );
         break;
     case HLL_SSR_TAG:
         *name_len_p = ssr->tag.name_len;
-        *name_p = ssr->tag.name;
+        *name_p = GET_NAME_PTR( ssr->tag );
         break;
     case HLL_SSR_TAG2:
         *name_len_p = ssr->tag2.name_len;
-        *name_p = ssr->tag2.name;
+        *name_p = GET_NAME_PTR( ssr->tag2 );
         if( *name_len_p & 0x80 ) {
             *name_len_p = ((*name_len_p & 0x7f) << 8) | *(unsigned_8 *)name_p++;
         }
         break;
     case HLL_SSR_TYPEDEF:
         *name_len_p = ssr->typedef_.name_len;
-        *name_p = ssr->typedef_.name;
+        *name_p = GET_NAME_PTR( ssr->typedef_ );
         break;
     case HLL_SSR_MEMBER:
         *name_len_p = ssr->member.name_len;
-        *name_p = ssr->member.name;
+        *name_p = GET_NAME_PTR( ssr->member );
         break;
     case HLL_SSR_BASED:
         *name_len_p = ssr->based.name_len;
-        *name_p = ssr->based.name;
+        *name_p = GET_NAME_PTR( ssr->based );
         break;
     case HLL_SSR_TABLE:
         *name_len_p = ssr->table.name_len;
-        *name_p = ssr->table.name;
+        *name_p = GET_NAME_PTR( ssr->table );
         break;
     case HLL_SSR_MAP:
         *name_len_p = ssr->map.name_len;
-        *name_p = ssr->map.name;
+        *name_p = GET_NAME_PTR( ssr->map );
         break;
     case HLL_SSR_BASED_MEMBER:
         *name_len_p = ssr->based_member.name_len;
-        *name_p = ssr->based_member.name;
+        *name_p = GET_NAME_PTR( ssr->based_member );
         break;
 
     case HLL_SSR_ARRAY_SYM:
@@ -209,6 +215,8 @@ static unsigned hllSymTypeIdx( imp_image_handle *ii, hll_ssr_all *p )
     unsigned    idx;
 
 #define DEFTYPE( t ) if( idx == 0 ) idx = t;
+
+    /* unused parameters */ (void)ii;
 
     switch( p->common.code ) {
     case HLL_SSR_BEGIN:
@@ -626,7 +634,6 @@ dip_status hllSymLocation( imp_image_handle *ii, imp_sym_handle *is,
     }
     return( DS_OK );
 #endif
-    return( DS_FAIL );
 }
 
 typedef struct {
@@ -1071,7 +1078,7 @@ static search_result TableSearchForName( imp_image_handle *ii,
     virt_mem                    sym_base;
     unsigned long               count;
     const char                  *curr;
-    unsigned                    curr_len;
+    size_t                      curr_len;
     s_all                       *sp;
     search_result               sr;
 
@@ -1151,6 +1158,8 @@ dip_status hllSymFindMatchingSym( imp_image_handle *ii,
                                   const char *name, size_t len, unsigned idx,
                                   imp_sym_handle *is )
 {
+    /* unused parameters */ (void)ii; (void)name; (void)len; (void)idx; (void)is;
+
 #if 0
     unsigned long       hash;
     search_result       sr;
@@ -1338,7 +1347,7 @@ static walk_result hllWalkModuleGlobals( imp_image_handle *ii,
  *      }
  *  }
  */
-walk_result hllWalkSymList( imp_image_handle *ii, symbol_source ss,
+static walk_result hllWalkSymList( imp_image_handle *ii, symbol_source ss,
                             void *source, DIP_IMP_SYM_WALKER *wk,
                             imp_sym_handle *is, void *d )
 {
@@ -1479,6 +1488,9 @@ static size_t hllSymName( imp_image_handle *ii, imp_sym_handle *is,
     const char  *name = NULL;
     size_t      name_len;
 
+    /* unused parameters */ (void)lc;
+
+    name_len = 0;
     if( is->type == HLL_SYM_TYPE_PUB ) {
         unsigned off_name;
 
@@ -1622,6 +1634,8 @@ dip_status hllSymValue( imp_image_handle *ii, imp_sym_handle *is,
                         location_context *lc, void *buff )
 {
     void    *p;
+
+    /* unused parameters */ (void)lc; (void)buff;
 
     /* Doesn't apply to publics. */
     if( is->type == HLL_SYM_TYPE_PUB ) {
@@ -1898,6 +1912,8 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *ii,
                     imp_sym_handle *is, location_context *lc,
                     location_list *ll, unsigned n )
 {
+    /* unused parameters */ (void)ii; (void)is; (void)lc; (void)ll; (void)n;
+
 #if 0
     s_all               *p;
     unsigned            type;
@@ -2037,6 +2053,8 @@ dip_status DIPIMPENTRY( SymParmLocation )( imp_image_handle *ii,
 dip_status DIPIMPENTRY( SymObjType )( imp_image_handle *ii,
                     imp_sym_handle *is, imp_type_handle *it, dip_type_info *ti )
 {
+    /* unused parameters */ (void)ii; (void)is; (void)it; (void)ti;
+
 #if 0
     dip_status          ds;
     imp_type_handle     func_it;
@@ -2060,6 +2078,8 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *ii,
                                 imp_sym_handle *is, location_context *lc,
                                  location_list *ll )
 {
+    /* unused parameters */ (void)ii; (void)is; (void)lc; (void)ll;
+
 #if 0
     const char          *name;
     unsigned            len;
@@ -2113,6 +2133,8 @@ dip_status DIPIMPENTRY( SymObjLocation )( imp_image_handle *ii,
 search_result DIPIMPENTRY( AddrSym )( imp_image_handle *ii,
                             imp_mod_handle im, address a, imp_sym_handle *is )
 {
+    /* unused parameters */ (void)ii; (void)im; (void)a; (void)is;
+
 #if 0
     search_result       sr;
     search_result       prev_sr;
@@ -2307,11 +2329,11 @@ static search_result    DoLookupSym( imp_image_handle *ii,
 #define OPERATOR_TOKEN          "operator"
 #define DESTRUCTOR_TOKEN        "~"
 
+#if 0
 search_result   DoImpLookupSym( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li,
                 location_context *lc, void *d )
 {
-#if 0
     lookup_token        save_name;
     symbol_type         save_type;
     search_result       sr;
@@ -2360,10 +2382,9 @@ search_result   DoImpLookupSym( imp_image_handle *ii,
     li->name = save_name;
     li->type = save_type;
     return( sr );
-#else
-    return( SR_NONE );
-#endif
+//    return( SR_NONE );
 }
+#endif
 
 search_result DIPIMPENTRY( LookupSym )( imp_image_handle *ii,
                 symbol_source ss, void *source, lookup_item *li, void *d )
@@ -2371,6 +2392,8 @@ search_result DIPIMPENTRY( LookupSym )( imp_image_handle *ii,
 #if 0
     return( DoImpLookupSym( ii, ss, source, li, NULL, d ) );
 #else
+    /* unused parameters */ (void)ii; (void)ss; (void)source; (void)li; (void)d;
+
     return( SR_NONE );
 #endif
 }
@@ -2382,6 +2405,8 @@ search_result DIPIMPENTRY( LookupSymEx )( imp_image_handle *ii,
 #if 0
     return( DoImpLookupSym( ii, ss, source, li, lc, d ) );
 #else
+    /* unused parameters */ (void)ii; (void)ss; (void)source; (void)li; (void)lc; (void)d;
+
     return( SR_NONE );
 #endif
 }
@@ -2402,6 +2427,8 @@ search_result DIPIMPENTRY( AddrScope )( imp_image_handle *ii,
     scope->unique= sc_info.scope;
     return( sc_info.start.mach.offset == addr.mach.offset ? SR_EXACT : SR_CLOSEST );
 #else
+    /* unused parameters */ (void)ii; (void)im; (void)addr; (void)scope;
+
     return( SR_NONE );
 #endif
 }
@@ -2438,6 +2465,8 @@ search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *ii,
     out->unique= sc_info.scope;
     return( SR_CLOSEST );
 #else
+    /* unused parameters */ (void)ii; (void)im; (void)in; (void)out;
+
     return( SR_NONE );
 #endif
 }

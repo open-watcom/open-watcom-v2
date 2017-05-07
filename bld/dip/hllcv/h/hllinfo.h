@@ -34,9 +34,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "dip.h"
 #include "dipimp.h"
-#include "bool.h"
 #include "hll.h"
 
 typedef unsigned long   virt_mem;
@@ -140,7 +140,7 @@ struct imp_image_handle {
     hll_dir_entry       **directory;    /* The subsection directory, 2 levels. */
     unsigned            dir_count;      /* Number of entries in the directory. */
     virt_mem            types_base;     /* HLLPack types, NULL if per-module. */
-    mad_handle          mad;            /* MAD_X86 */
+    dig_mad             mad;            /* MAD_X86 */
     hllinfo_seg         *segments;      /* Segment mappings and attribs. */
     unsigned            seg_count;      /* Number of segments. */
     hllinfo_level       format_lvl;     /* The format level. */
@@ -185,8 +185,8 @@ extern bool                 VMGetU16( imp_image_handle *ii, virt_mem start, unsi
 extern bool                 VMGetU32( imp_image_handle *ii, virt_mem start, unsigned_32 *valp );
 extern void                 *VMRecord( imp_image_handle *, virt_mem, virt_mem *, unsigned_16 * );
 
-extern void                 *VMSsBlock( imp_image_handle *, hll_dir_entry *, unsigned_32, size_t );
-extern bool                 VMSsGetU8( imp_image_handle *, hll_dir_entry *, unsigned_32, unsigned_8 * );
+extern void                 *VMSsBlock( imp_image_handle *, hll_dir_entry *, virt_mem, size_t );
+extern bool                 VMSsGetU8( imp_image_handle *, hll_dir_entry *, virt_mem, unsigned_8 * );
 extern bool                 VMSsGetU16( imp_image_handle *, hll_dir_entry *, virt_mem, unsigned_16 * );
 extern bool                 VMSsGetU32( imp_image_handle *, hll_dir_entry *, virt_mem, unsigned_32 * );
 extern void                *VMSsRecord( imp_image_handle *ii, hll_dir_entry *hde, unsigned_32 rec_off,
@@ -204,12 +204,12 @@ extern dip_status           hllLocationManyReg( imp_image_handle *, unsigned, co
 
 extern size_t               hllNameCopy( char *, const char *, size_t, size_t );
 extern void                 hllMapLogical( imp_image_handle *, address * );
-extern void *               hllGetNumLeaf( void *, numeric_leaf * );
+extern const void           *hllGetNumLeaf( const void *, numeric_leaf * );
 extern bool                 hllIsSegExecutable( imp_image_handle *, unsigned );
 
 extern search_result        hllAddrMod( imp_image_handle *, address, imp_mod_handle * );
 
-extern dip_status           hllTypeSymGetName( imp_image_handle *, imp_sym_handle *, const char **, unsigned * );
+extern dip_status           hllTypeSymGetName( imp_image_handle *, imp_sym_handle *, const char **, size_t * );
 extern dip_status           hllTypeSymGetType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
 extern dip_status           hllTypeSymGetAddr( imp_image_handle *, imp_sym_handle *, location_context *, location_list * );
 extern dip_status           hllTypeSymGetValue( imp_image_handle *, imp_sym_handle *, location_context *, void * );
@@ -226,7 +226,7 @@ extern dip_status           hllTypeBase( imp_image_handle *, imp_type_handle *, 
 extern dip_status           hllTypeMemberFuncInfo( imp_image_handle *, imp_type_handle *, imp_type_handle *, imp_type_handle *, unsigned long * );
 
 extern dip_status           hllSymFillIn( imp_image_handle *, imp_sym_handle *, unsigned_16 seg, virt_mem, unsigned len );
-extern dip_status           hllSymFindMatchingSym( imp_image_handle *, const char *, unsigned, unsigned, imp_sym_handle * );
+extern dip_status           hllSymFindMatchingSym( imp_image_handle *, const char *, size_t, unsigned, imp_sym_handle * );
 extern dip_status           hllSymLocation( imp_image_handle *, imp_sym_handle *, location_context *, location_list * );
 extern dip_status           hllSymValue( imp_image_handle *, imp_sym_handle *, location_context *, void * );
 extern dip_status           hllSymType( imp_image_handle *, imp_sym_handle *, imp_type_handle * );
@@ -249,7 +249,7 @@ extern hll_style            hllGetModStyle( imp_image_handle *, imp_mod_handle )
 extern void hllLog(const char *fmt, ...);
 # define HLL_LOG(a) hllLog a
 #else
-# define HLL_LOG(a) do { } while (0)
+# define HLL_LOG(a)
 #endif
 
 #endif
