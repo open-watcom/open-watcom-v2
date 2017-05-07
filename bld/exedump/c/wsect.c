@@ -948,8 +948,8 @@ static void dump_info_headers( const char *input, uint length )
 }
 #endif
 
-extern void dump_abbrevs( const uint_8 *input, uint length )
-/**********************************************************/
+void dump_abbrevs( const uint_8 *input, uint length )
+/***************************************************/
 {
     const uint_8    *p;
     uint_32         tmp;

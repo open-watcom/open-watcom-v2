@@ -604,7 +604,8 @@ static void dmp_prog_sec( unsigned_32 start )
                 if( elf_sec.sh_type==SHT_REL || elf_sec.sh_type==SHT_RELA ) {
                     Elf32_Shdr      rel_sec;
                     Elf32_Rela      elf_rela;
-                    int             loc, ctr, rel_size;
+                    unsigned long   loc;
+                    int             ctr, rel_size;
 
                     Wdputs( "relocation information for section #" );
                     Putdec( elf_sec.sh_info );

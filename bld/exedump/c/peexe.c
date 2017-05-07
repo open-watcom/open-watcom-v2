@@ -276,8 +276,8 @@ static void DumpSection( pe_object *hdr )
     }
 }
 
-extern void DumpCoffHdrFlags( unsigned_16 flags )
-/***********************************************/
+void DumpCoffHdrFlags( unsigned_16 flags )
+/****************************************/
 {
     DumpFlags( flags, 0, PEHeadFlags, "" );
 }
@@ -302,13 +302,13 @@ static void DumpPEObjFlags( unsigned_32 flags )
 /*
  * Dump the Object Table.
  */
-extern void dmp_objects( unsigned num_objects )
-/*********************************************/
+void dmp_objects( unsigned num_objects )
+/**************************************/
 {
     unsigned_16 i;
-    pe_object * pe_obj;
-    pe_object * start;
-    char        save;
+    pe_object   *pe_obj;
+    pe_object   *start;
+    char        pe_obj_name[PE_OBJ_NAME_LEN + 1];
 
     if( num_objects == 0 )
         return;
@@ -320,16 +320,15 @@ extern void dmp_objects( unsigned num_objects )
         Wdputs( "object " );
         Putdec( i );
         Wdputs( ": name = " );
-        save = pe_obj->name[8];
-        pe_obj->name[8] = '\0';
-        Wdputs(  pe_obj->name );
-        if( pe_obj->name[0] == '/' ) {
+        memcpy( pe_obj_name, pe_obj->name, PE_OBJ_NAME_LEN );
+        pe_obj_name[PE_OBJ_NAME_LEN] = '\0';
+        Wdputs( pe_obj_name );
+        if( pe_obj_name[0] == '/' ) {
             Wdputs( " (" );
-            Wdputs( Coff_obj_name( pe_obj->name ) );
+            Wdputs( Coff_obj_name( pe_obj_name ) );
             Wdputs( ")" );
         }
         Wdputslc( "\n" );
-        pe_obj->name[8] = save;
         Dump_header( (char *)&pe_obj->virtual_size, pe_obj_msg );
         DumpPEObjFlags( pe_obj->flags );
         Wdputslc( "\n" );
