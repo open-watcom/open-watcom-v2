@@ -68,7 +68,7 @@ typedef enum  hll_lf_values {   /* type enumerations */
 } hll_lf_values;
 
 
-#pragma pack( 1 )
+#include "pushpck1.h"
 typedef enum {
     hll_sstModule = 0x101,
     hll_sstModules = hll_sstModule, /* misnomer. */
@@ -148,8 +148,8 @@ typedef struct {
     unsigned_16         Style;          /* The debug info style. */
     unsigned_16         Version;        /* The style version. */
     unsigned_8          name_len;       /* The name length. */
-    char                name[];
-    // hll_seginfo         segs[];
+//     char                name[];
+//     hll_seginfo         segs[];
 } hll_module;
 
 typedef struct {
@@ -159,7 +159,7 @@ typedef struct {
     unsigned_8          cSeg;           /* The number of segment info pieces (includes SegInfo). */
     unsigned_8          reserved;
     unsigned_8          name_len;       /* The name length. */
-//    char                name[1];
+//    char                name[];
 //  cv3_seginfo_16 arnsg[];
 } cv3_module_16;
 
@@ -170,27 +170,27 @@ typedef struct {
     unsigned_8          cSeg;           /* The number of segment info pieces (includes SegInfo). */
     unsigned_8          reserved;
     unsigned_8          name_len;       /* The name length. */
-//    char                name[1];
+//    char                name[];
 //  cv3_seginfo_32 arnsg[];
 } cv3_module_32;
 
 /* HLL public symbol record. */
 typedef struct {
-    unsigned_32 offset;
-    unsigned_16 seg;
-    unsigned_16 type;
-    unsigned_8  name_len;
-//    char        name[];
+    unsigned_32     offset;
+    unsigned_16     seg;
+    unsigned_16     type;
+    unsigned_8      name_len;
+//    char            name[];
 } hll_public;
 typedef hll_public hll_public_32; /* remove me */
 
 /* CV3 16-bit public symbol record. */
 typedef struct {
-    unsigned_16 offset;
-    unsigned_16 seg;
-    unsigned_16 type;
-    unsigned_8  name_len;
-//    char        name[1];
+    unsigned_16     offset;
+    unsigned_16     seg;
+    unsigned_16     type;
+    unsigned_8      name_len;
+//    char            name[];
 } cv3_public_16;
 
 /* CV3 32-bit public symbol record. (same as HLL) */
@@ -403,7 +403,7 @@ typedef struct {
     unsigned_32     offset;             /* Offset into the current segment. */
     unsigned_32     len;                /* Length of the block. */
     unsigned_8      name_len;           /* Length of the block name (usually 0). */
-    char            name[];             /* Block name. Usually not present. */
+//    char            name[];             /* Block name. Usually not present. */
 } hll_ssr_begin;
 
 /* HLL near/far/16/32 flags used by hll_ssr_proc, hll_ssr_proc2,
@@ -426,7 +426,7 @@ typedef struct {
     unsigned_8      name_len;           /* Length of the procedure name.
                                            For PROC2 and MEM_FUNC this can
                                            span two bytes. */
-    char            name[];             /* Procedure name. */
+//    char            name[];             /* Procedure name. */
 } hll_ssr_proc, hll_ssr_proc2, hll_ssr_mem_func;
 
 /* HLL end block (}). */
@@ -440,7 +440,7 @@ typedef struct {
     unsigned_32     offset;             /* Offset into the stack frame. */
     unsigned_16     type;               /* The type index. */
     unsigned_8      name_len;           /* The name length. */
-    char            name[];
+//    char            name[];
 } hll_ssr_auto;
 
 /* HLL static and static 2. */
@@ -451,7 +451,7 @@ typedef struct {
     unsigned_16     type;               /* The type index. */
     unsigned_8      name_len;           /* The name length. This can span
                                            two bytes for STATIC2. */
-    char            name[];
+//    char            name[];
 } hll_ssr_static, hll_ssr_static2;
 
 /* HLL TLS. */
@@ -462,7 +462,7 @@ typedef struct {
     unsigned_16     type;               /* The type index. */
     unsigned_8      name_len;           /* The name length. This can span
                                            two bytes. */
-    char            name[];
+//    char            name[];
 } hll_ssr_tls;
 
 /* HLL code label. */
@@ -471,7 +471,7 @@ typedef struct {
     unsigned_32     offset;             /* Offset into the current segment. */
     unsigned_8      flags;              /* Near/far 16/32-bit flags (hll_ssr_near_far). */
     unsigned_8      name_len;           /* The name length.*/
-    char            name[];             /* Procedure name. */
+//    char            name[];             /* Procedure name. */
 } hll_ssr_code_label;
 
 /* HLL x86 register value. */
@@ -533,7 +533,7 @@ typedef struct {
     unsigned_16     type;               /* The type index. */
     unsigned_8      reg;                /* Register number (hll_reg) */
     unsigned_8      name_len;           /* The name length. */
-    char            name[];
+//    char            name[];
 } hll_ssr_reg;
 
 /* HLL register relative variable. */
@@ -543,7 +543,7 @@ typedef struct {
     unsigned_32     offset;             /* Offset relative to the register. */
     unsigned_16     type;               /* The type index. */
     unsigned_8      name_len;           /* The name length. */
-    char            name[];
+//    char            name[];
 } hll_ssr_reg_relative;
 
 /* HLL constant. */
@@ -551,16 +551,16 @@ typedef struct {
     hll_ssr_common  common;
     unsigned_16     type;               /* The type index. */
     unsigned_8      val_len;            /* The constant value length. */
-    unsigned_8      val[1];             /* The constant value. */
-    //unsigned_8      name_len;           /* The name length. */
-    //char            name[];
+//    unsigned_8      val[1];             /* The constant value. */
+//    unsigned_8      name_len;           /* The name length. */
+//    char            name[];
 } hll_ssr_constant;
 
 /* HLL change segment. */
 typedef struct {
     hll_ssr_common  common;
     unsigned_16     seg;                /* The new default segment index. */
-    //unsigned_8      reserved;         /* FIXME: don't know the size! */
+//    unsigned_8      reserved;         /* FIXME: don't know the size! */
 } hll_ssr_change_seg;
 
 /* HLL typedef. */
@@ -568,7 +568,7 @@ typedef struct {
     hll_ssr_common  common;
     unsigned_16     type;               /* The type index. */
     unsigned_8      name_len;           /* The name length. */
-    char            name[];
+//    char            name[];
 } hll_ssr_typedef;
 
 /* HLL public symbol, duplication of PUBDEF. (never seen used) */
@@ -578,7 +578,7 @@ typedef struct {
     unsigned_16     seg;                /* Segment index. */
     unsigned_16     type;               /* The type index. */
     unsigned_8      name_len;           /* The name length. */
-    char            name[];
+//    char            name[];
 } hll_ssr_public;
 
 /* HLL member. */
@@ -586,7 +586,7 @@ typedef struct {
     hll_ssr_common  common;
     unsigned_32     off_sub_rec;        /* Offset to sub-record. */
     unsigned_8      name_len;           /* The name length. */
-    char            name[];
+//    char            name[];
 } hll_ssr_member;
 
 /* HLL based. */
@@ -595,7 +595,7 @@ typedef struct {
     unsigned_32     off_sub_rec;        /* Offset to sub-record. */
     unsigned_16     type;               /* The type index. */
     unsigned_8      name_len;           /* The name length. */
-    char            name[];
+//    char            name[];
 } hll_ssr_based;
 
 /* HLL based with member. */
@@ -605,7 +605,7 @@ typedef struct {
     unsigned_16     type;               /* The type index. */
     unsigned_32     off_based;          /* Offset from based. */
     unsigned_8      name_len;           /* The name length. */
-    char            name[];
+//    char            name[];
 } hll_ssr_based_member;
 
 
@@ -622,16 +622,16 @@ typedef struct {
     unsigned_16     type;               /* The type index. */
     unsigned_8      name_len;           /* The name length. This can span
                                            two bytes for TAG2. */
-    char            name[];
+//    char            name[];
 } hll_ssr_tag, hll_ssr_tag2;
 
 /* HLL map. */
 typedef struct {
     hll_ssr_common  common;
     unsigned_8      name_len;           /* The name length. */
-    char            name[];
-    //unsigned_8      known_name_len;   /* The known name length. */
-    //char            known_name[];     /* The known name. */
+//    char            name[];
+//    unsigned_8      known_name_len;   /* The known name length. */
+//    char            known_name[];     /* The known name. */
 } hll_ssr_map;
 
 /* HLL table. */
@@ -642,7 +642,7 @@ typedef struct {
     unsigned_16     type;               /* The type index. */
     unsigned_32     idx_offset;         /* Index offset to subrecord. */
     unsigned_8      name_len;           /* The name length. */
-    char            name[];
+//    char            name[];
 } hll_ssr_table;
 
 /* HLL Compiled unit information record. */
@@ -650,10 +650,10 @@ typedef struct {
     hll_ssr_common  common;
     unsigned_8      language;       /* hll_lang */
     unsigned_8      options_len;
-    char            options[1];
-    // unsigned_8      compiler_date_len;
-    // char            compiler_date[1];
-    // DATETIME        timestamp; /* DosGetDateTime() */
+//    char            options[];
+//     unsigned_8      compiler_date_len;
+//     char            compiler_date[1];
+//     DATETIME        timestamp; /* DosGetDateTime() */
 } hll_ssr_cuinfo;
 
 /* HLL auto scoped. */
@@ -664,7 +664,7 @@ typedef struct {
     unsigned_16     line;               /* Source line number. */
     unsigned_16     type;               /* The type index. */
     unsigned_8      name_len;           /* The name length. */
-    char            name[];
+//    char            name[];
 } hll_ssr_auto_scoped;
 
 /* HLL static scoped. */
@@ -676,7 +676,7 @@ typedef struct {
     unsigned_16     line;               /* Source line number. */
     unsigned_16     type;               /* The type index. */
     unsigned_8      name_len;           /* The name length. */
-    char            name[];
+//    char            name[];
 } hll_ssr_static_scoped;
 
 /* union of all the HLL symbol scope table records. */
@@ -741,7 +741,7 @@ typedef struct {
     unsigned_16     reserved;           /* Not used? */
     unsigned_8      flags;              /* Near/far flag. */
     unsigned_8      name_len;           /* Length of the procedure name. */
-    char            name[];             /* Procedure name. */
+//    char            name[];             /* Procedure name. */
 } cv3_ssr_proc;
 
 /* CV3 end block (}). */
@@ -755,7 +755,7 @@ typedef struct {
     unsigned_16     offset;             /* Offset into the stack frame. */
     unsigned_16     type;               /* The type index. */
     unsigned_8      name_len;           /* The name length. */
-    char            name[];
+//    char            name[];
 } cv3_ssr_auto;
 
 /* CV3 16-bit static variable. */
@@ -765,7 +765,7 @@ typedef struct {
     unsigned_16     seg;                /* Segment index. */
     unsigned_16     type;               /* The type index. */
     unsigned_8      name_len;           /* The name length. */
-    char            name[];
+//    char            name[];
 } cv3_ssr_static;
 
 /* CV3 16-bit register variable. */
@@ -774,7 +774,7 @@ typedef struct {
     unsigned_16     type;               /* The type index. */
     unsigned_8      reg;                /* Register number (hll_reg) */
     unsigned_8      name_len;           /* The name length. */
-    char            name[];
+//    char            name[];
 } cv3_ssr_reg;
 
 /* CV3 change segment. */
@@ -789,7 +789,7 @@ typedef struct {
     cv3_ssr_common  common;
     unsigned_16     type;               /* The type index. */
     unsigned_8      name_len;           /* The name length. */
-    char            name[];
+//    char            name[];
 } cv3_ssr_typedef;
 
 /* union of all the CV3 symbol scope table records. */
@@ -828,5 +828,4 @@ typedef union {
     cv3_lf_bitfield         bitfield;
 } cv3_lf_all;
 
-
-#pragma pack()
+#include "poppck.h"
