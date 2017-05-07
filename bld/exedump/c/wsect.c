@@ -136,7 +136,7 @@ static void getTAG( uint_32 value )
 /*********************************/
 {
     const char  *result;
-    int         i;
+    size_t      i;
 
     result = Getname( value, readableTAGs, NUM_TAGS );
     if( result == NULL ) {
@@ -156,7 +156,7 @@ static void getFORM( uint_32 value )
 /**********************************/
 {
     const char  *result;
-    int         i;
+    size_t      i;
 
     result = Getname( value, readableFORMs, NUM_FORMS );
     if( result == NULL ) {
@@ -176,7 +176,7 @@ static void getAT( uint_32 value )
 /********************************/
 {
     const char  *result;
-    int         i;
+    size_t      i;
 
     result = Getname( value, readableATs, NUM_ATS );
     if( result == NULL ) {
@@ -199,8 +199,8 @@ static void dump_hex( const uint_8 *input, uint length )
     int         i;
     uint        offset;
     uint        old_offset;
-    char        hex[ 80 ];
-    char        printable[ 17 ];
+    char        hex[80];
+    char        printable[17];
     int         ch;
 
     offset = 0;
@@ -209,14 +209,16 @@ static void dump_hex( const uint_8 *input, uint length )
         p = hex;
         old_offset = offset;
         for( ;; ) {
-            if( offset == length ) break;
-            if( i > 0xf ) break;
+            if( offset == length )
+                break;
+            if( i > 0xf )
+                break;
             if( i == 0x8 ) {
                 *p++ = ' ';
             }
-            ch = input[ offset ];
+            ch = input[offset];
             p += sprintf( p, " %02x", ch );
-            printable[ i ] = isprint( ch ) ? ch : '.';
+            printable[i] = isprint( ch ) ? (char)ch : '.';
             ++i;
             ++offset;
         }
@@ -231,7 +233,9 @@ static void dump_hex( const uint_8 *input, uint length )
 //      Wdputs( "%08lx:%-49s <%s>\n", old_offset, hex, printable );
         p = printable;
         i = 0;
-        if( offset == length ) break;
+        if( offset == length ) {
+            break;
+        }
     }
 }
 
@@ -282,9 +286,9 @@ uint_8 *find_abbrev( uint_32 start, uint_32 code )
     uint_32     tmp;
     uint_32     attr;
 
-    p = Sections[ DW_DEBUG_ABBREV ].data;
+    p = Sections[DW_DEBUG_ABBREV].data;
     p += start;
-    stop = p + Sections[ DW_DEBUG_ABBREV ].max_offset;
+    stop = p + Sections[DW_DEBUG_ABBREV].max_offset;
     for( ;; ) {
         if( p >= stop )
             return( NULL );
@@ -373,8 +377,8 @@ static void DmpLoc( uint_8 const *p, uint length, uint addr_size )
         op = *p;
         ++p;
 
-        Wdputs( OpName[ op ] );
-        opr = LocOpr[ op ];
+        Wdputs( OpName[op] );
+        opr = LocOpr[op];
         if( opr == DW_LOP_REG1 || opr == DW_LOP_BRG1 ) {
             Wdputs( "/" );
         } else {
@@ -448,12 +452,12 @@ static void DmpLoc( uint_8 const *p, uint length, uint addr_size )
         case DW_LOP_REG1:
             op1u = op-DW_OP_reg0;
             op = DW_OP_reg0;
-            Wdputs( RegName[ op1u] );
+            Wdputs( RegName[op1u] );
             break;
         case DW_LOP_BRG1:
             op1u = op-DW_OP_breg0;
             p = DecodeSLEB128( p, &op2s );
-            Wdputs( RegName[ op1u] );
+            Wdputs( RegName[op1u] );
             if( op2s < 0 ) {
                 Wdputs( " -" );
                 op2s = -op2s;
@@ -478,8 +482,8 @@ static void DmpLocList( uint_32 start, uint addr_size )
     uint_8 const    *p;
     uint_8 const    *stop;
 
-    p = Sections[ DW_DEBUG_LOC ].data;
-    stop = p + Sections[ DW_DEBUG_LOC ].max_offset;
+    p = Sections[DW_DEBUG_LOC].data;
+    stop = p + Sections[DW_DEBUG_LOC].max_offset;
     if( p == NULL ) {
         Wdputslc( "Error: No location list section\n" );
         return;
@@ -660,10 +664,10 @@ decode_form:
             break;
         case DW_FORM_strp:
             offset = get_u32( (uint_32 *)p );
-            if( offset > Sections[ DW_DEBUG_STR ].max_offset ) {
+            if( offset > Sections[DW_DEBUG_STR].max_offset ) {
                 Wdputslc( "Error: strp - invalid offset\n" );
             } else {
-                Wdputs( (const char *)Sections[ DW_DEBUG_STR ].data + offset );
+                Wdputs( (const char *)Sections[DW_DEBUG_STR].data + offset );
                 Wdputslc( "\n" );
             }
             p += sizeof( uint_32 );
@@ -957,10 +961,10 @@ void dump_abbrevs( const uint_8 *input, uint length )
     uint_32         abbr_off;
 //    bool            start;
 
-    if( Sections[ DW_DEBUG_ABBREV ].data == 0 ) {
-        Sections[ DW_DEBUG_ABBREV ].data = Wmalloc( length );
-        Sections[ DW_DEBUG_ABBREV ].max_offset = length;
-        memcpy( Sections[ DW_DEBUG_ABBREV ].data, input, length );
+    if( Sections[DW_DEBUG_ABBREV].data == 0 ) {
+        Sections[DW_DEBUG_ABBREV].data = Wmalloc( length );
+        Sections[DW_DEBUG_ABBREV].max_offset = length;
+        memcpy( Sections[DW_DEBUG_ABBREV].data, input, length );
     }
     p = input;
     for( ;; ) {
@@ -1020,7 +1024,7 @@ static void get_reference_op( uint_8 value )
 /******************************************/
 {
     const char  *result;
-    int         i;
+    size_t      i;
 
     result = Getname( value, readableReferenceOps, NUM_REFERENCE_OPS );
     if( result == NULL ) {
@@ -1062,7 +1066,7 @@ static void ScopePush( scope_stack * stack, uint_32 entry )
         stack->stack = realloc( stack->stack, stack->size * sizeof( uint_32 ) );
     }
 
-    stack->stack[ stack->free ] = entry;
+    stack->stack[stack->free] = entry;
     stack->free += 1;
 }
 
@@ -1074,7 +1078,7 @@ static uint_32 ScopePop( scope_stack *stack )
     }
 
     stack->free -= 1;
-    return stack->stack[ stack->free ];
+    return stack->stack[stack->free];
 }
 
 static void PutRefRegisters( ref_info *registers )
@@ -1082,7 +1086,7 @@ static void PutRefRegisters( ref_info *registers )
 {
     Wdputs( "[ " );
     if( registers->scope.free > 0 ) {
-        Puthex( registers->scope.stack[ registers->scope.free - 1 ], 8 );
+        Puthex( registers->scope.stack[registers->scope.free - 1], 8 );
     } else {
         Puthex( 0, 8 );
     }
@@ -1325,9 +1329,9 @@ void Dump_all_sections( void )
 
     sect = 0;
     for( ;; ) {
-        Wdputs( sectionNames[ sect ] );
+        Wdputs( sectionNames[sect] );
         Wdputslc( ":\n" );
-        Dump_specific_section( sect, Sections[ sect ].data, Sections[ sect ].max_offset );
+        Dump_specific_section( sect, Sections[sect].data, Sections[sect].max_offset );
         ++sect;
         if( sect == DW_DEBUG_MAX ) break;
         Wdputslc( "\n" );
