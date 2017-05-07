@@ -100,7 +100,7 @@ void    DumpEntries(void) {
     entry_pt    *dum_lst;
 
     uint        args_cnt;
-    PTYPE       code;
+    PCODE       code;
     PTYPE       typ;
     unsigned_16 flags;
     sym_id      sym;

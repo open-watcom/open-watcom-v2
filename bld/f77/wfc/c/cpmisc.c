@@ -46,6 +46,7 @@
 #include "downscan.h"
 #include "fmtinit.h"
 #include "upscan.h"
+#include "prmcodes.h"
 #include "gsubprog.h"
 #include "gflow.h"
 
@@ -93,7 +94,7 @@ static  void    NumOrLit( FCODE routine ) {
 void    CpStop(void) {
 //================
 
-    NumOrLit( RT_STOP );
+    NumOrLit( FC_STOP );
     Remember.transfer = true;
     Remember.stop_or_return = true;
 }
@@ -102,7 +103,7 @@ void    CpStop(void) {
 void    CpPause(void) {
 //=================
 
-    NumOrLit( RT_PAUSE );
+    NumOrLit( FC_PAUSE );
 }
 
 

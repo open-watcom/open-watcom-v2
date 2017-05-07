@@ -56,6 +56,7 @@
 #include "cgmagic.h"
 #include "gdbginfo.h"
 #include "gsublist.h"
+#include "prmcodes.h"
 #include "gsubprog.h"
 #include "declare.h"
 #include "implicit.h"

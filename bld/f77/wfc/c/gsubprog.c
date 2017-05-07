@@ -426,7 +426,7 @@ void    GArgList( entry_pt *arg_list, uint args, PTYPE typ ) {
 }
 
 
-void    GArgInfo( sym_id sym, PTYPE code, PTYPE typ ) {
+void    GArgInfo( sym_id sym, PCODE code, PTYPE typ ) {
 //===================================================
 
 // Dump information for an argument.

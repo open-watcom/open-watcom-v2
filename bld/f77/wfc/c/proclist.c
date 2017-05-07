@@ -45,6 +45,7 @@
 #include "insert.h"
 #include "utility.h"
 #include "gsfunc.h"
+#include "prmcodes.h"
 #include "gsubprog.h"
 #include "gsubscr.h"
 #include "proclist.h"

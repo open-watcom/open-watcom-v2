@@ -60,12 +60,17 @@ static  const OPR __FAR        LogOpr[] = { // must correspond to table in SCAN
         OPR_PHI, OPR_PHI, OPR_PHI
 };
 
+static const DSOPN lexDsOpn[] = {
+    #define pick(tok_id,dsopn_id,opn_proc) dsopn_id,
+    #include "tokdsopn.h"
+    #undef pick
+};
+
 /* Forward declarations */
 static  void    GetOpnd( void );
 static  void    FlushStatement( void );
 static  void    GetOpr( void );
 static  void    SetSwitch( void );
-
 
 
 static  itnode  *NewITNode( void ) {
@@ -282,21 +287,18 @@ static  void    GetOpnd( void ) {
 
     Lex.ptr = LexToken.start;
     Lex.opnpos = ( LexToken.line << 8 ) + LexToken.col + 1;
+    Lex.opn.ds = lexDsOpn[LexToken.class];
+    Lex.len = LexToken.stop - LexToken.start;
     if( LexToken.class == TO_OPR ) {
-        Lex.opn.ds = DSOPN_PHI;
         Lex.len = 0;
     } else if( LexToken.class == TO_LGL ) {
         if( LexToken.log > LOG_OPS ) {
-            Lex.len = LexToken.stop - LexToken.start;
-            Lex.opn.ds = DSOPN_LGL;
             Scan();
         } else {
             Lex.len = 0;
             Lex.opn.ds = DSOPN_PHI;
         }
     } else {
-        Lex.len = LexToken.stop - LexToken.start;
-        Lex.opn.ds = LexToken.class;
         // this is a kludge to collect FORMAT/INCLUDE statements
         // we don't want INCLUDE statements to span lines
         if( (ITHead == NULL) && (Lex.opr == OPR_TRM) && (Lex.opn.ds == DSOPN_NAM) ) {
