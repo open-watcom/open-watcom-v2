@@ -2975,7 +2975,7 @@ start_opac_string:
               &&( 0 != TypeIsBasedPtr( type ) ) ) {
                 continue;
             }
-            if( ! NodeIsZeroIntConstant( right ) ) {
+            if( !( NodeIsZeroIntConstant( right ) || NodeIsNullptr( right ) ) ) {
                 exprError( right, ERR_NOT_PTR_OR_ZERO );
                 break;
             }

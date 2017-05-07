@@ -799,6 +799,22 @@ bool NodeIsZeroIntConstant(     // TEST IF A ZERO INTEGER CONSTANT
     return( retb );
 }
 
+/**
+ * Test if node is nullptr
+ */
+bool NodeIsNullptr( PTREE node )
+{
+    INT_CONSTANT icon;
+
+    if( nodeGetConstant( node, &icon ) ) {
+        if( icon.type->id == TYP_NULLPTR ) {
+            return( true );
+        } 
+    }
+    
+    return( false );
+}
+
 
 PTREE NodeFromConstSym(         // BUILD CONSTANT NODE FROM CONSTANT SYMBOL
     SYMBOL con )                // - constant symbol

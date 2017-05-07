@@ -402,7 +402,12 @@ static PTREE allocConstant( uint_8 op, type_id id )
 PTREE PTreeNullptrConstant( void )
 /******************************/
 {
-    return( PTreeIntConstant( 0, TYP_NULLPTR ) );
+    PTREE nullptr_tree;
+
+    nullptr_tree = allocConstant( PT_PTR_CONSTANT, TYP_NULLPTR );
+
+
+    return( nullptr_tree );
 }
 
 

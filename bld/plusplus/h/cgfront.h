@@ -1139,6 +1139,9 @@ bool NodeIsZeroConstant(        // TEST IF A ZERO CONSTANT
 bool NodeIsZeroIntConstant(     // TEST IF A ZERO INTEGER CONSTANT
     PTREE node )                // - node
 ;
+bool NodeIsNullptr(             // TEST IF NULLPTR
+    PTREE node )                // - node
+;
 PTREE NodeLvExtract             // EXTRACT LVALUE, IF POSSIBLE
     ( PTREE expr )              // - expression
 ;

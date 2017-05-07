@@ -8368,6 +8368,7 @@ static void initBasicTypes( void )
         TYP_LONG_DOUBLE,
         TYP_VOID,
         TYP_DOT_DOT_DOT,
+        TYP_NULLPTR,
         TYP_MAX
     };
 
