@@ -136,7 +136,7 @@ size_t DIPIMPENTRY( ModName )( imp_image_handle *ii, imp_mod_handle im,
 /*
  * Gets the compiler unit infomation record (unit = module, so for a module).
  */
-hll_ssr_cuinfo *GetCompInfo( imp_image_handle *ii, imp_mod_handle im )
+hll_ssr_cuinfo *hllGetCompInfo( imp_image_handle *ii, imp_mod_handle im )
 {
     hll_dir_entry *hdd = hllFindDirEntry( ii, im, hll_sstSymbols );
     if( hdd != NULL ) {
@@ -159,7 +159,7 @@ hll_ssr_cuinfo *GetCompInfo( imp_image_handle *ii, imp_mod_handle im )
  */
 char *DIPIMPENTRY( ModSrcLang )( imp_image_handle *ii, imp_mod_handle im )
 {
-    hll_ssr_cuinfo *cuinfo = GetCompInfo( ii, im );
+    hll_ssr_cuinfo *cuinfo = hllGetCompInfo( ii, im );
     if( cuinfo != NULL ) {
         switch( cuinfo->language ) {
         case HLL_LANG_C:        return( "c" );
@@ -234,25 +234,18 @@ static walk_result FindModNB04( imp_image_handle *ii, hll_dir_entry *hdd, void *
     if( mp->ovlNumber != a->sect_id )
         return( WR_CONTINUE );
 
-    seg = 0;
-    sp = &mp->SegInfo;
-    for( ;; ) {
+    sp = &( mp->SegInfo );
+    for( seg = 0; seg < mp->cSeg; ++seg ) {
         address code;
         code.mach.segment = sp->Seg;
         code.mach.offset  = sp->offset;
         hllMapLogical( ii, &code );
-        if( code.mach.segment == a->mach.segment
-         && a->mach.offset - code.mach.offset <= sp->cbSeg) {
+        if( code.mach.segment == a->mach.segment && a->mach.offset - code.mach.offset <= sp->cbSeg ) {
             args->im = hdd->iMod;
             return( WR_STOP );
         }
-
-        /* next */
-        if( ++seg >= mp->cSeg ) {
-            break;
-        }
-        if( seg == 1 ) {
-            sp = (hll_seginfo *)&mp->name[mp->name_len];
+        if( seg == 0 ) {
+            sp = &( ((hll_module *)( (char *)mp + sizeof( hll_module ) + mp->name_len ))->SegInfo );
         } else {
             ++sp;
         }
@@ -266,16 +259,15 @@ static walk_result FindModNB04( imp_image_handle *ii, hll_dir_entry *hdd, void *
  */
 search_result hllAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im )
 {
-    int             seg;
+    unsigned    seg;
 
     /*
      * Check that the address is within the segment table.
      */
-    for( seg = 0; seg < ii->seg_count; seg++ ) {
+    for( seg = 0; seg < ii->seg_count; ++seg ) {
         if( ii->segments[seg].ovl == a.sect_id
-         && ii->segments[seg].map.segment == a.mach.segment
-         &&   a.mach.offset - ii->segments[seg].map.offset
-            < ii->segments[seg].size ) {
+          && ii->segments[seg].map.segment == a.mach.segment
+          && a.mach.offset - ii->segments[seg].map.offset < ii->segments[seg].size ) {
 
             /*
              * Find the address among the module sections.
@@ -299,8 +291,7 @@ search_result hllAddrMod( imp_image_handle *ii, address a, imp_mod_handle *im )
 /*
  * Finds the module which contains the address 'a'.
  */
-search_result DIPIMPENTRY( AddrMod )( imp_image_handle *ii, address a,
-                                      imp_mod_handle *im )
+search_result DIPIMPENTRY( AddrMod )( imp_image_handle *ii, address a, imp_mod_handle *im )
 {
     return( hllAddrMod( ii, a, im ) );
 }

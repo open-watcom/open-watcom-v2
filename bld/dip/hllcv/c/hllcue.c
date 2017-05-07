@@ -348,6 +348,10 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii,
         ic->u.hll.first = 0;
         ic->u.hll.last  = 0;
 
+        num_files = 0;
+        end_files = 0;
+        first_sfi = 0;
+
         /*
          * Find the two tables.
          */
@@ -816,6 +820,9 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii, imp_cue_handle *ic,
                                      int adj, imp_cue_handle *aic )
 {
     dip_status rc;
+
+    /* unused parameters */ (void)ii;
+
     HLL_LOG(( "DIPImpCueAdjust: ic=%p:{cur_line=%lu file=%#lx} adj=%d aic=%p",
               ic, (long)ic->cur_line, (long)ic->file, adj, aic ));
 
@@ -1012,6 +1019,8 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii, imp_mod_handle im,
                                       cue_fileid file, unsigned long line,
                                       unsigned column, imp_cue_handle *ic )
 {
+    /* unused parameters */ (void)column;
+
     /*
      * Do it the simple way, i.e. use DIPImpWalkFileList.
      *
@@ -1023,8 +1032,8 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii, imp_mod_handle im,
     hll_find_line_cue_in_file   state = {0};
     state.file = file;
     state.line = line;
-    if( state.line > UINT16_MAX )
-        state.line = UINT16_MAX;
+//    if( state.line > UINT16_MAX )
+//        state.line = UINT16_MAX;
     state.rc   = SR_NONE;
     walk_rc = DIPImpWalkFileList( ii, im, hllFindLineCueInFile, ic, &state );
     HLL_LOG(( "DIPImpLineCue: mod=%x file=%lx line=%lx -> %d (%lx)\n",
@@ -1067,7 +1076,7 @@ static walk_result hllFindAddrCueInFile( imp_image_handle *ii, imp_cue_handle *i
         return( WR_CONTINUE );
     }
     /* logical mapping offset. */
-    if( ic->segment - 1 < ii->seg_count ) {
+    if( ic->segment <= ii->seg_count ) {
         map_offset = ii->segments[ic->segment - 1].map.offset;
     } else {
         map_offset = 0;
@@ -1087,13 +1096,15 @@ static walk_result hllFindAddrCueInFile( imp_image_handle *ii, imp_cue_handle *i
         {
             cv3_linnum_entry_16 *linnum = entries;
             while( i-- > 0 ) {
-                signed_32 delta = state->addr.mach.offset - ( linnum[i].offset + map_offset );
-                if( delta >= 0 && delta <= state->best_delta ) {
-                    state->best_delta = delta;
-                    state->best = *ic;
-                    state->best.cur_line = i;
-                    if( !delta ) {
-                        return( WR_STOP );
+                if( state->addr.mach.offset >= ( linnum[i].offset + map_offset ) ) {
+                    unsigned_32 delta = state->addr.mach.offset - ( linnum[i].offset + map_offset );
+                    if( state->best_delta >= delta ) {
+                        state->best_delta = delta;
+                        state->best = *ic;
+                        state->best.cur_line = i;
+                        if( delta == 0 ) {
+                            return( WR_STOP );
+                        }
                     }
                 }
             }
@@ -1104,13 +1115,15 @@ static walk_result hllFindAddrCueInFile( imp_image_handle *ii, imp_cue_handle *i
         {
             cv3_linnum_entry_32 *linnum = entries;
             while( i-- > 0 ) {
-                signed_32 delta = state->addr.mach.offset - ( linnum[i].offset + map_offset );
-                if( delta >= 0 && delta <= state->best_delta ) {
-                    state->best_delta = delta;
-                    state->best = *ic;
-                    state->best.cur_line = i;
-                    if( !delta ) {
-                        return( WR_STOP );
+                if( state->addr.mach.offset >= ( linnum[i].offset + map_offset ) ) {
+                    unsigned_32 delta = state->addr.mach.offset - ( linnum[i].offset + map_offset );
+                    if( state->best_delta >= delta ) {
+                        state->best_delta = delta;
+                        state->best = *ic;
+                        state->best.cur_line = i;
+                        if( delta == 0 ) {
+                            return( WR_STOP );
+                        }
                     }
                 }
             }
@@ -1132,13 +1145,15 @@ static walk_result hllFindAddrCueInFile( imp_image_handle *ii, imp_cue_handle *i
             hl1_linnum_entry *linnum = entries;
             map_offset += ic->u.hll.base_offset;
             while( i-- > 0 ) {
-                signed_32 delta = state->addr.mach.offset - ( linnum[i].offset + map_offset );
-                if( delta >= 0 && delta <= state->best_delta ) {
-                    state->best_delta = delta;
-                    state->best = *ic;
-                    state->best.cur_line = i;
-                    if( !delta ) {
-                        return( WR_STOP );
+                if( state->addr.mach.offset >= ( linnum[i].offset + map_offset ) ) {
+                    unsigned_32 delta = state->addr.mach.offset - ( linnum[i].offset + map_offset );
+                    if( state->best_delta >= delta ) {
+                        state->best_delta = delta;
+                        state->best = *ic;
+                        state->best.cur_line = i;
+                        if( delta == 0 ) {
+                            return( WR_STOP );
+                        }
                     }
                 }
             }

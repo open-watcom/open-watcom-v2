@@ -39,7 +39,9 @@
 
 /* WD looks for this symbol to determine module bitness */
 int __nullarea;
+#ifdef __WATCOMC__
 #pragma aux __nullarea "*";
+#endif
 
 imp_image_handle        *ImageList;
 
@@ -125,8 +127,8 @@ static dip_status LoadDirectory( imp_image_handle *ii, unsigned long offent )
             }
         } else {
             /* Slow but simple. */
-            int             j;
-            hll_dir_entry  *ent = ii->directory[i];
+            unsigned        j;
+            hll_dir_entry   *ent = ii->directory[i];
 
             for( j = 0; j < num; j++, ent++ ) {
                 cv3_dir_entry cv3ent;
@@ -170,10 +172,10 @@ static dip_status FoundHLLSign( imp_image_handle *ii, unsigned long off,
     /* read the header. */
     rc = DCReadAt( ii->sym_fid, &hdr, sizeof( hdr ), off );
     if( rc & DS_ERR) {
-        return rc;
+        return( rc );
     }
     if( !IsHllSignature( &hdr ) ) {
-        return DS_FAIL;
+        return( DS_FAIL );
     }
 
     /*
@@ -185,11 +187,11 @@ static dip_status FoundHLLSign( imp_image_handle *ii, unsigned long off,
 
         rc = DCReadAt( ii->sym_fid, &dir_hdr, sizeof( dir_hdr ), off_dirent );
         if( rc & DS_ERR) {
-            return rc;
+            return( rc );
         }
         if( dir_hdr.cbDirHeader != sizeof( hll_dirinfo )
          || dir_hdr.cbDirEntry != sizeof( hll_dir_entry ) ) {
-            return DS_FAIL;
+            return( DS_FAIL );
         }
         ii->dir_count = dir_hdr.cDir;
         off_dirent += sizeof( dir_hdr );
@@ -200,7 +202,7 @@ static dip_status FoundHLLSign( imp_image_handle *ii, unsigned long off,
 
         rc = DCReadAt( ii->sym_fid, &dir_hdr, sizeof( dir_hdr ), off_dirent );
         if( rc & DS_ERR) {
-            return rc;
+            return( rc );
         }
         ii->dir_count = dir_hdr.cDir;
         off_dirent += sizeof( dir_hdr );
@@ -210,15 +212,15 @@ static dip_status FoundHLLSign( imp_image_handle *ii, unsigned long off,
     /* is the trailer following the directory? It usually is with wlink. */
     rc = DCReadAt( ii->sym_fid, &hdr, sizeof( hdr ), off_trailer );
     if( rc & DS_ERR) {
-        return rc;
+        return( rc );
     }
     if( !IsHllSignature( &hdr ) ) {
         /*
          * No it isn't, seek from the end (off + size).
          * Adjust the length first.
          */
-        long        cur;
-        unsigned    overlap = 0;
+        unsigned long   cur;
+        unsigned        overlap = 0;
 
         cur = DCSeek( ii->sym_fid, 0, DIG_END );
         if( cur > size + off && size + off > size ) {
@@ -239,11 +241,11 @@ static dip_status FoundHLLSign( imp_image_handle *ii, unsigned long off,
                 cur = off_trailer;
             }
             if( to_read < sizeof( hdr) ) {
-                return DS_FAIL;
+                return( DS_FAIL );
             }
             rc = DCReadAt( ii->sym_fid, buf, to_read, cur );
             if( rc & DS_ERR ) {
-                return rc;
+                return( rc );
             }
 
             /* search it */
@@ -472,7 +474,7 @@ static dip_status TryFindInImage( imp_image_handle *ii )
         pe_object       sh;
         debug_directory dbg_dir;
     }                   buf;
-    bool                have_mz_header = FALSE;
+    bool                have_mz_header = false;
     unsigned_32         nh_off;
     dip_status          rc;
 
@@ -483,7 +485,7 @@ static dip_status TryFindInImage( imp_image_handle *ii )
     }
     nh_off = 0;
     if( buf.sig_16 == DOS_SIGNATURE ) {
-        have_mz_header = TRUE;
+        have_mz_header = true;
         /* read the new exe header */
         rc = DCReadAt( ii->sym_fid, &nh_off, sizeof( nh_off ), NH_OFFSET );
         if( rc & DS_ERR ) {
@@ -673,11 +675,10 @@ void DIPIMPENTRY( MapInfo )( imp_image_handle *ii, void *d )
  */
 bool hllIsSegExecutable( imp_image_handle *ii, unsigned segment )
 {
-    if( segment - 1 < ii->seg_count
-     && ii->segments[segment - 1].is_executable ) {
-        return( TRUE );
+    if( segment <= ii->seg_count && ii->segments[segment - 1].is_executable ) {
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -685,7 +686,7 @@ bool hllIsSegExecutable( imp_image_handle *ii, unsigned segment )
  */
 void hllMapLogical( imp_image_handle *ii, address *a )
 {
-    if( a->mach.segment - 1 < ii->seg_count ) {
+    if( a->mach.segment <= ii->seg_count ) {
         hllinfo_seg *seg = &ii->segments[a->mach.segment - 1];
         a->mach.segment = seg->map.segment;
         a->mach.offset += seg->map.offset;
