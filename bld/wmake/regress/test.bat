@@ -8,10 +8,10 @@ del error.out
 if .%1 == . goto usage
 
 REM ===========================
-REM Build utilities first 
+REM Build utilities first
 REM ===========================
 cd cmds
-%1 -h
+wmake -h
 cd ..
 
 REM ===========================
