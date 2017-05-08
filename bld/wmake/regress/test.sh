@@ -5,7 +5,7 @@ function usage() {
     exit
 }
 
-if [ "$1" == "" ]; then 
+if [ "$1" == "" ]; then
     usage
 fi
 
@@ -15,7 +15,7 @@ rm -f error.out
 
 # Make sure the utilities exist
 cd cmds
-$1 -h
+wmake -h
 cd ..
 
 # ===========================
@@ -53,7 +53,7 @@ cd ..
 # -- UPDTEST - UPDATE TEST
 # ===========================
 echo =================================================================
-cd updtest 
+cd updtest
 ./test.sh $1 ../error.out
 cd ..
 
@@ -72,7 +72,7 @@ cd ..
 # -- INLINE TEST -
 # ===========================
 echo =================================================================
-cd inline 
+cd inline
 ./test.sh $1 ../error.out
 cd ..
 

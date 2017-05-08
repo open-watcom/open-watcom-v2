@@ -29,13 +29,13 @@ all: .symbolic
     @%append maketst1 !include defrule.mif
     @%append maketst1 !include deftarg.mif
     @%append maketst1
-    @%append maketst1 objs= & 
-    @%append maketst1     main.obj & 
-    @for %i in ($(numset)) do @%append maketst1     foo%i.obj & 
+    @%append maketst1 objs= &$(eol)
+    @%append maketst1     main.obj &$(eol)
+    @for %i in ($(numset)) do @%append maketst1     foo%i.obj &$(eol)
     @%append maketst1
     @%append maketst1 main.exe : $$(objs)
     @%append maketst1     @echo link main
-!ifdef __WATCOM__
+!ifdef __WATCOM_TOOLS__
     @%append maketst1     @$$(linker) $$(lflags) @main.lnk
 !else
     @%append maketst1     @$$(cl) $$(clflags) $$(objs) $$(ldflags)
