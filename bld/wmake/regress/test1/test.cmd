@@ -4,12 +4,13 @@ echo # Multiple Dependents Test
 echo # ===========================
 if .%1 == . goto usage
 
+set OWVERBOSE=0
 echo # ---------------------------
 echo # TEST 1
 echo # ---------------------------
 %1 -h -f create
 if exist err1.out del err1.out
-echo. >err1.out
+echo.>err1.out
 %1 -h -f maketst1 -l err1.out > tst1.out
 diff -b tst1.out tst1.chk
 if errorlevel 1 goto tst1err
