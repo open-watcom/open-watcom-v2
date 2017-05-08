@@ -5,7 +5,7 @@ numset= &
 
 all: .symbolic
 # create C source files fooN..N.c
-    @for %i in ($(numset)) do @%write foo%i.c extern int printf(char *,...); extern void foo%i(void); void foo%i(void){printf("%i\t");};
+    @for %i in ($(numset)) do @%write foo%i.c extern int printf(const char *,...); extern void foo%i(void); void foo%i(void){printf("%i\t");};
 # create C source file main.c
     @%write main.c $#include <stdio.h>
     @for %i in ($(numset)) do @%append main.c extern void foo%i(void);
