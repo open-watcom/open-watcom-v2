@@ -4,6 +4,7 @@ echo # Multiple Dependents Test
 echo # ===========================
 if .%1 == . goto usage
 
+set OWVERBOSE=0
 echo # ---------------------------
 echo # TEST 1
 echo # ---------------------------
