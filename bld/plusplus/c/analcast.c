@@ -86,6 +86,7 @@ static CNV_DIAG diagExplicit =  // DIAGNOSIS FOR EXPLICIT CAST
 , dfnCAST_RESULT( CAST_UDCF_RV )    /* udcf making rvalue            */ \
 , dfnCAST_RESULT( CAST_CONVERT_TO_BOOL )  /* convert to bool         */ \
 , dfnCAST_RESULT( CAST_REPLACE_INTEGRAL)  /* replace with integral # */ \
+, dfnCAST_RESULT( CAST_NULLPTR_TO_PTR)     /* (ptr/membptr) nullptr  */ \
                                                                         \
   /* ERRORS */                                                          \
 , dfnCAST_RESULT( DIAG_ALREADY )    /* already diagnosed(must be 1st)*/ \
@@ -1716,6 +1717,13 @@ static PTREE doCastResult           // DO CAST RESULT
 //      expr = CheckCharPromotion( expr );
         ctl->expr = expr;
       } break;
+      case CAST_NULLPTR_TO_PTR :
+      {
+        expr = NodeIntegralConstant( 0, ctl->tgt.orig );
+        expr = PTreeCopySrcLocation( expr, ctl->expr->u.subtree[1] );
+        expr = NodeReplace( ctl->expr, expr );
+
+      } break;
       case DIAG_MESSAGE :
         expr = diagnoseCastError( ctl );
         break;
@@ -2601,23 +2609,26 @@ PTREE CastExplicit              // EXPLICIT CASTE: ( TYPE )( EXPR )
 static uint_8 implicitTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //      source operand
 //      --------------
-//         a           c           m       g
-//         r   e       l   f   v           e
-//     e   i   n   p   a   u   o   p   .   n
-//     r   t   u   t   s   n   i   t   .   e
-//     r   h   m   r   s   c   d   r   .   r
+//         a           c           m       g   n
+//         r   e       l   f   v           e   u
+//     e   i   n   p   a   u   o   p   .   n   l
+//     r   t   u   t   s   n   i   t   .   e   l
+//     r   h   m   r   s   c   d   r   .   r   p
+//                                             t
+//                                             r
 //                                               target operand
 //                                               --------------
-    {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0  // error
-    ,  1, 11, 13,  4,  0,  3,  2,  4,  0,  0  // arithmetic
-    ,  1,  7, 12,  3,  0,  3,  2,  3,  0,  0  // enumeration
-    ,  1,  6,  6,  5,  0,  0,  2,  3,  0,  0  // pointer
-    ,  1,  0,  0,  0,  0,  0,  2,  0,  0,  0  // class
-    ,  1,  3,  3,  3,  0,  3,  2,  3,  0,  0  // function
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0  // void
-    ,  1, 10, 10,  3,  0,  3,  2, 14,  0,  0  // member pointer
-    ,  1,  0,  0,  0,  0,  0,  2,  0,  0,  0  // ellipsis
-    ,  1,  0,  0,  0,  0,  0,  2,  0,  0,  0  // generic
+    {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  0  // error
+    ,  1, 11, 13,  4,  0,  3,  2,  4,  0,  0,  1  // arithmetic
+    ,  1,  7, 12,  3,  0,  3,  2,  3,  0,  0,  1  // enumeration
+    ,  1,  6,  6,  5,  0,  0,  2,  3,  0,  0,  15 // pointer
+    ,  1,  0,  0,  0,  0,  0,  2,  0,  0,  0,  1  // class
+    ,  1,  3,  3,  3,  0,  3,  2,  3,  0,  0,  1  // function
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  1  // void
+    ,  1, 10, 10,  3,  0,  3,  2, 14,  0,  0,  15 // member pointer
+    ,  1,  0,  0,  0,  0,  0,  2,  0,  0,  0,  1  // ellipsis
+    ,  1,  0,  0,  0,  0,  0,  2,  0,  0,  0,  1  // generic
+    ,  1,  0,  0,  0,  0,  0,  2,  0,  0,  0,  1  // nullptr
     };
 
 //  0 - impossible
@@ -2633,6 +2644,7 @@ static uint_8 implicitTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 // 12 - enum -> enum
 // 13 - enum -> arith
 // 14 - membptr -> membptr
+// 15   nullptr -> ptr, membptr
 // 99 - do old conversion for now
 
 
@@ -2830,6 +2842,9 @@ static PTREE doCastImplicit     // DO AN IMPLICIT CAST
             } else {
                 result = DIAG_CAST_ILLEGAL;
             }
+            break;
+          case 15 :
+            result = CAST_NULLPTR_TO_PTR;
             break;
         }
     }

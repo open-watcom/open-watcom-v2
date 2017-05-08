@@ -804,15 +804,11 @@ bool NodeIsZeroIntConstant(     // TEST IF A ZERO INTEGER CONSTANT
  */
 bool NodeIsNullptr( PTREE node )
 {
-    INT_CONSTANT icon;
-
-    if( nodeGetConstant( node, &icon ) ) {
-        if( icon.type->id == TYP_NULLPTR ) {
-            return( true );
-        } 
+    if( node == NULL ) {
+        return( false );
     }
     
-    return( false );
+    return ( node->op == PT_PTR_CONSTANT );
 }
 
 
