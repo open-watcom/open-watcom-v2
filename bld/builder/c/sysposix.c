@@ -39,8 +39,8 @@
 
 void SysInit( int argc, char *argv[] )
 {
-    argc = argc;
-    argv = argv;
+    /* unused parameters */ (void)argc; (void)argv;
+
     setenv( "BLD_HOST", "UNIX", 1 );
 }
 
