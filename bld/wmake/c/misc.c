@@ -60,12 +60,10 @@ char *SkipWS( const char *p )
     return( (char *)p );
 }
 
-char *FindNextWS( char *str )
+char *FindNextWS( const char *str )
 /***********************************
  * Finds next free white space character, allowing doublequotes to
  * be used to specify strings with white spaces.
- *
- * str is not const because the return value is usually used to write data.
  */
 {
     bool    string_open = false;
@@ -96,7 +94,7 @@ char *FindNextWS( char *str )
         }
     }
 
-    return( str );
+    return( (char *)str );
 }
 
 char *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src )

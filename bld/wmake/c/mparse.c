@@ -41,6 +41,7 @@
 #include "msuffix.h"
 #include "mupdate.h"
 #include "mvecstr.h"
+#include "mmisc.h"
 #include "mparse.h"
 
 #include "clibext.h"
@@ -784,10 +785,7 @@ STATIC void getBody( FLIST *head )
                     /* terminator of inline file is found when first
                      * two characters are <<
                      */
-                     currChar = temp + 2;
-                     while( *currChar != NULLCHAR && cisws( *currChar ) ) {
-                         ++currChar;
-                     }
+                     currChar = SkipWS( temp + 2 );
                      if( *currChar == NULLCHAR ) {
                          current->keep = false;
                      } else if( strnicmp( currChar, NOKEEP, 6 ) == 0 ) {
