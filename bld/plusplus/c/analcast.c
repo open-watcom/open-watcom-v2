@@ -2605,7 +2605,12 @@ PTREE CastExplicit              // EXPLICIT CASTE: ( TYPE )( EXPR )
     return forceToDestination( &ctl );
 }
 
-
+/**
+ * This table represents the various possible combinations for implicit conversions between
+ * types.
+ *
+ * \Return an integer specifying the type of conversion to be performed (or error).
+ */
 static uint_8 implicitTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //      source operand
 //      --------------
@@ -2628,7 +2633,7 @@ static uint_8 implicitTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
     ,  1, 10, 10,  3,  0,  3,  2, 14,  0,  0,  15 // member pointer
     ,  1,  0,  0,  0,  0,  0,  2,  0,  0,  0,  1  // ellipsis
     ,  1,  0,  0,  0,  0,  0,  2,  0,  0,  0,  1  // generic
-    ,  1,  0,  0,  0,  0,  0,  2,  0,  0,  0,  1  // nullptr
+    ,  1,  2,  2,  2,  0,  0,  2,  2,  0,  0,  0  // nullptr
     };
 
 //  0 - impossible

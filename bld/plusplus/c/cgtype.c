@@ -324,6 +324,11 @@ static target_size_t cgSize(    // COMPUTE SIZE OF A TYPE
       case TYP_LONG_DOUBLE :
         size = TARGET_LONG_DOUBLE;
         break;
+
+      /* sizeof(nullptr) == sizeof(void *) */
+      case TYP_NULLPTR :
+        size = CgDataPtrSize();
+        break;
       case TYP_POINTER :
         if( ( ! ref_as_ptr ) && ( type->flag & TF1_REFERENCE ) ) {
             size = cgSize( type->of, false );
