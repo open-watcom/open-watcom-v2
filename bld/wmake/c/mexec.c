@@ -161,6 +161,19 @@ STATIC NKLIST   *noKeepList;            /* contains the list of files that
                                            needs to be cleaned when wmake
                                            exits */
 
+STATIC bool KeywordEqualUcase( const char *kwd, const char *start, const char *end )
+/***********************************************************************************
+ * check string for keyword (upper cased)
+ */
+{
+    while( *kwd != NULLCHAR && start < end ) {
+        if( *kwd++ != ctoupper( *start++ ) ) {
+            return( false );
+        }
+    }
+    return( *kwd == NULLCHAR && start == end );
+}
+
 STATIC char *createTmpFileName( void )
 /*************************************
  * create file name for temporary file
@@ -1021,7 +1034,7 @@ STATIC RET_T handleIf( char *cmd )
 
     save = *p;
     *p = NULLCHAR;
-    not = ( stricmp( tmp1, "NOT" ) == 0 );
+    not = KeywordEqualUcase( "NOT", tmp1, p );
     *p = save;
 
     if( not ) {             /* discard the "NOT" get next word */
@@ -1052,10 +1065,10 @@ STATIC RET_T handleIf( char *cmd )
     }
 
     *end1 = NULLCHAR;
-    if( stricmp( tmp1, "ERRORLEVEL" ) == 0 ) {
+    if( KeywordEqualUcase( "ERRORLEVEL", tmp1, end1 ) ) {
         *p = NULLCHAR;
         condition = ( lastErrorLevel >= atoi( tmp2 ) );
-    } else if( stricmp( tmp1, "EXIST" ) == 0 ) {
+    } else if( KeywordEqualUcase( "EXIST", tmp1, end1 ) ) {
 
         *p = NULLCHAR;
 
@@ -1152,7 +1165,7 @@ STATIC RET_T getForArgs( char *line, const char **pvar, char **pset,
 
     p = SkipWS( p + 1 );    /* move to "in" */
 
-    if( ctoupper( p[0] ) != 'I' || ctoupper( p[1] ) != 'N' || !cisws( p[2] ) ) {
+    if( !KeywordEqualUcase( "IN ", p, p + 3 ) ) {
         return( handleForSyntaxError() );
     }
 
@@ -1175,7 +1188,7 @@ STATIC RET_T getForArgs( char *line, const char **pvar, char **pset,
 
     p = SkipWS( p + 1 );    /* move to "do" */
 
-    if( ctoupper( p[0] ) != 'D' || ctoupper( p[1] ) != 'O' || !cisws( p[2] ) ) {
+    if( !KeywordEqualUcase( "DO ", p, p + 3 ) ) {
         return( handleForSyntaxError() );
     }
 
@@ -1816,14 +1829,15 @@ STATIC void killTmpEnv( UINT16 tmp )
 STATIC UINT16 makeTmpEnv( const char *cmd )
 /*****************************************/
 {
-    (void)cmd; // Unused
+    /* unused parameters */ (void)cmd;
+
     return( 0 );
 }
 
 STATIC void killTmpEnv( UINT16 tmp )
 /**********************************/
 {
-    (void)tmp; // Unused
+    /* unused parameters */ (void)tmp;
 }
 #endif
 
