@@ -36,7 +36,7 @@
 #include "msg.h"
 #include "mupdate.h"
 #include "mautodep.h"
-#include "autodept.h"
+#include "dostimet.h"
 #include "pcobj.h"
 
 #include "clibext.h"

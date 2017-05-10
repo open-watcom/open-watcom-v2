@@ -33,6 +33,7 @@
 #include <errno.h>
 #include <ctype.h>
 #include <time.h>
+#include <sys/stat.h>
 #include "asmalloc.h"
 #include "fatal.h"
 #include "asmeval.h"
@@ -40,6 +41,7 @@
 #include "objprs.h"
 #include "fixup.h"
 #include "autodept.h"
+#include "dostimet.h"
 #include "mangle.h"
 #include "directiv.h"
 #include "queues.h"
@@ -98,13 +100,14 @@ static unsigned long    lastLineNumber;
 const FNAME *AddFlist( char const *name )
 /***************************************/
 {
-    FNAME   *flist;
-    FNAME   *last;
-    int     index;
-    char    *fname;
-    char    buff[2*_MAX_PATH];
-    size_t  len1;
-    size_t  len2;
+    FNAME       *flist;
+    FNAME       *last;
+    int         index;
+    char        *fname;
+    char        buff[2*_MAX_PATH];
+    size_t      len1;
+    size_t      len2;
+    struct stat statbuf;
 
     index = 0;
     len1 = strlen( name ) + 1;
@@ -124,7 +127,9 @@ const FNAME *AddFlist( char const *name )
     memcpy( flist->name, name, len1 );
     flist->fullname = AsmAlloc( len2 );
     memcpy( flist->fullname, fname, len2 );
-    flist->mtime = _getFilenameTimeStamp( fname );
+    flist->mtime = 0;
+    if( stat( fname, &statbuf ) == 0 )
+        flist->mtime = statbuf.st_mtime;
     flist->next = NULL;
     if( FNames == NULL ) {
         FNames = flist;

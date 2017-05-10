@@ -28,7 +28,7 @@ msuffix.obj     &
 msysdep.obj     &
 mtarget.obj     &
 mupdate.obj     &
-autodept.obj    &
+dostimet.obj    &
 mvecstr.obj
 
 !ifdef DLLS_IMPLEMENTED

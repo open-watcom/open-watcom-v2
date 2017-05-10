@@ -35,6 +35,7 @@ intel_objs = &
     i87sched.obj &
     i87table.obj &
     i87wait.obj &
+    dostimet.obj &
     parmreg.obj &
     wvsyms.obj &
     wvtypes.obj

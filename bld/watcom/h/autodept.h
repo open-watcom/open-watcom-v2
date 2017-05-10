@@ -24,18 +24,15 @@
 *
 *  ========================================================================
 *
-* Description:  conversion function for autodependency date/time stamps
+* Description:  autodependency functions for file fullpath and date/time stamp
 *
 ****************************************************************************/
 
 #ifndef _AUTODEPT_H
 #define _AUTODEPT_H
 
-#include <time.h>
+#include <stddef.h>
 
-time_t _timet2dos(time_t x);
-time_t _dos2timet(time_t x);
-char *_getFilenameFullPath( char *buff, char const *name, size_t max );
-time_t _getFilenameTimeStamp( char const *filename );
+extern char     *_getFilenameFullPath( char *buff, char const *name, size_t max );
 
 #endif

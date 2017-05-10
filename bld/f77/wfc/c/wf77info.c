@@ -1859,37 +1859,6 @@ dbg_type        FEDbgType( cg_sym_handle _sym ) {
     return( db_type );
 }
 
-enum {
-    TIME_SEC_B  = 0,
-    TIME_MIN_B  = 5,
-    TIME_HOUR_B = 11,
-};
-
-enum {
-    DATE_DAY_B  = 0,
-    DATE_MON_B  = 5,
-    DATE_YEAR_B = 9,
-};
-
-
-static uint_32 *makeDOSTimeStamp( time_t ts ) {
-//=============================================
-
-    struct tm           *ltime;
-    uint_16             dos_date;
-    uint_16             dos_time;
-    static uint_32      dos_stamp;
-
-    ltime = localtime( &ts );
-    dos_date = (uint_16)((( ltime->tm_year - 80 ) << DATE_YEAR_B )
-             | (( ltime->tm_mon + 1 ) << DATE_MON_B )
-             | (( ltime->tm_mday ) << DATE_DAY_B ));
-    dos_time = (uint_16)((( ltime->tm_hour ) << TIME_HOUR_B )
-             | (( ltime->tm_min ) << TIME_MIN_B )
-             | (( ltime->tm_sec / 2 ) << TIME_SEC_B ));
-    dos_stamp = dos_time | ( dos_date << 16 );
-    return( &dos_stamp );
-}
 
 char    *GetFullSrcName( void ) {
 //===============================
@@ -2130,7 +2099,7 @@ pointer FEAuxInfo( pointer req_handle, int request ) {
             }
         }
     case DEPENDENCY_TIMESTAMP :
-        return( makeDOSTimeStamp( ((dep_info *)req_handle)->time_stamp ) );
+        return( &(((dep_info *)req_handle)->time_stamp) );
     case DEPENDENCY_NAME :
         return( ((dep_info *)req_handle)->fn );
     case SOURCE_LANGUAGE:

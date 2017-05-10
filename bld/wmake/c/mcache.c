@@ -40,7 +40,7 @@
 #include "mhash.h"
 #include "mmemory.h"
 #include "mmisc.h"
-#include "autodept.h"
+#include "dostimet.h"
 #include "mrcmsg.h"
 #include "msg.h"
 #include "pathgrp.h"
