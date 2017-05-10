@@ -7,11 +7,12 @@ if .%1 == . goto usage
 echo # ---------------------------
 echo # Test A
 echo # ---------------------------
-if exist tst2.out del tst2.out
-%1 -h -f for01 > tst2.out 2>&1
-diff tst2.out for01.chk
+if exist for01.out del for01.out
+%1 -h -f for01 > for01.out 2>&1
+diff for01.out for01.chk
 if errorlevel 1 goto tst2aerr
     echo # For Loop Test A successful
+    del for01.out
     goto tst2b
 :tst2aerr
     echo ## FORTEST ## >> %2
@@ -22,11 +23,12 @@ if errorlevel 1 goto tst2aerr
 echo # ---------------------------
 echo # Test B
 echo # ---------------------------
-del tst2.out
-%1 -h -f for02 > tst2.out 2>&1
-diff tst2.out for02.chk
+if exist for02.out del for02.out
+%1 -h -f for02 > for02.out 2>&1
+diff for02.out for02.chk
 if errorlevel 1 goto tst2berr
     echo # For Loop Test B successful
+    del for02.out
     goto tst2c
 :tst2berr
     echo ## FORTEST ## >> %2
@@ -37,11 +39,12 @@ if errorlevel 1 goto tst2berr
 echo # ---------------------------
 echo # Test C
 echo # ---------------------------
-del tst2.out
-%1 -h -f for03 > tst2.out 2>&1
-diff tst2.out for03.chk
+if exist for03.out del for03.out
+%1 -h -f for03 > for03.out 2>&1
+diff for03.out for03.chk
 if errorlevel 1 goto tst2cerr
     echo # For Loop Test C successful
+    del for03.out
     goto tst2d
 :tst2cerr
     echo ## FORTEST ## >> %2
@@ -52,15 +55,19 @@ if errorlevel 1 goto tst2cerr
 echo # ---------------------------
 echo # Test D
 echo # ---------------------------
-type for04a.chk   > tmpfile.tmp
-dir /b /-o       >> tmpfile.tmp
-type for04b.chk  >> tmpfile.tmp
-dir /b /-o for?? >> tmpfile.tmp
-type for04c.chk  >> tmpfile.tmp
-%1 -h -f for04 > tst2.out 2>&1
-diff tst2.out tmpfile.tmp
+if exist tmp04.chk del tmp04.chk
+echo. > for04.out
+type for04a.chk   > tmp04.chk
+dir /b /-o       >> tmp04.chk
+type for04b.chk  >> tmp04.chk
+dir /b /-o for?? >> tmp04.chk
+type for04c.chk  >> tmp04.chk
+%1 -h -f for04 > for04.out 2>&1
+diff for04.out tmp04.chk
 if errorlevel 1 goto tst2derr
     echo # For Loop Test D successful
+    del for04.out
+    del tmp04.chk
     goto tst2e
 :tst2derr
     echo ## FORTEST ## >> %2
@@ -71,11 +78,12 @@ if errorlevel 1 goto tst2derr
 echo # ---------------------------
 echo # Test E
 echo # ---------------------------
-del tst2.out
-%1 -h -f for05 > tst2.out 2>&1
-diff tst2.out for05.chk
+if exist for05.out del for05.out
+%1 -h -f for05 > for05.out 2>&1
+diff for05.out for05.chk
 if errorlevel 1 goto tst2eerr
     echo # For Loop Test E successful
+    del for05.out
     goto tst2f
 :tst2eerr
     echo ## FORTEST ## >> %2
@@ -86,11 +94,12 @@ if errorlevel 1 goto tst2eerr
 echo # ---------------------------
 echo # Test F
 echo # ---------------------------
-del tst2.out
-%1 -h -f for06 > tst2.out 2>&1
-diff tst2.out for06.chk
+if exist for06.out del for06.out
+%1 -h -f for06 > for06.out 2>&1
+diff for06.out for06.chk
 if errorlevel 1 goto tst2ferr
     echo # For Loop Test F successful
+    del for06.out
     goto tst2g
 :tst2ferr
     echo ## FORTEST ## >> %2
@@ -101,11 +110,12 @@ if errorlevel 1 goto tst2ferr
 echo # ---------------------------
 echo # Test G
 echo # ---------------------------
-del tst2.out
-%1 -h -f for07 > tst2.out 2>&1
-diff tst2.out for07.chk
+if exist for07.out del for07.out
+%1 -h -f for07 > for07.out 2>&1
+diff for07.out for07.chk
 if errorlevel 1 goto tst2gerr
     echo # For Loop Test G successful
+    del for07.out
     goto tst2h
 :tst2gerr
     echo ## FORTEST ## >> %2
@@ -116,28 +126,29 @@ if errorlevel 1 goto tst2gerr
 echo # ---------------------------
 echo # Test H
 echo # ---------------------------
+if exist for08.out del for08.out
+echo. > for08.out
 rem Need to set prompt, otherwise the test fails...
 prompt $p$g
-type for08.chk > tmpfile.tmp
-..\cmds\prntdir "echo a" >> tmpfile.tmp
-echo a >> tmpfile.tmp
-..\cmds\prntdir "echo b" >> tmpfile.tmp
-echo b >> tmpfile.tmp
-..\cmds\prntdir "echo c" >> tmpfile.tmp
-echo c >> tmpfile.tmp
-del tst2.out
-%1 -h -f for08 > tst2.out 2>&1
-diff -b tst2.out tmpfile.tmp
+type for08.chk > tmp08.chk
+..\cmds\prntdir "echo a" >> tmp08.chk
+echo a >> tmp08.chk
+..\cmds\prntdir "echo b" >> tmp08.chk
+echo b >> tmp08.chk
+..\cmds\prntdir "echo c" >> tmp08.chk
+echo c >> tmp08.chk
+%1 -h -f for08 > for08.out 2>&1
+diff -b for08.out tmp08.chk
 if errorlevel 1 goto tst2herr
     echo # For Loop Test H successful
+    del for08.out
+    del tmp08.chk
     goto done
 :tst2herr
     echo # Error: For Loop Test H did not work
 :err
 :done
     if not .%verbose% == . goto end
-    del tmpfile.tmp
-    del tst2.out
     if exist *.obj del *.obj
 
 goto end

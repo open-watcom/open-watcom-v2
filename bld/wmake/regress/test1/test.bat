@@ -9,7 +9,6 @@ echo # ---------------------------
 echo # TEST 1
 echo # ---------------------------
 %1 -h -f create
-if exist err1.out del err1.out
 echo. >err1.out
 %1 -h -f maketst1 -l err1.out > tst1.out
 diff -b err1.out err1.chk
@@ -20,6 +19,8 @@ diff -b tst1.out tst1a.chk > nul
 if errorlevel 1 goto tst1err
 :testok
     echo # Multiple Dependents Test successful
+    del err1.out
+    del tst1.out
     goto done
 :tst1err
     echo ## TEST1 ##  >> %2
@@ -28,7 +29,6 @@ if errorlevel 1 goto tst1err
     if not .%verbose% == . goto end
     del *.obj
     del *.exe
-    del *.out
     del main.*
     del foo*.c
     del maketst1
