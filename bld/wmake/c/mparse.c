@@ -574,6 +574,8 @@ STATIC void linkCList( TLIST *btlist, CLIST *bclist )
             }
         } else if( curtarg->sufsuf ) {
             /* special processing is needed for sufsuf */
+            if( curtarg->depend->clist != NULL )
+                FreeCList( curtarg->depend->clist );
             curtarg->depend->clist = DupCList( clisthead );
         } else {
             /* we walk the dependents to find the last one */
