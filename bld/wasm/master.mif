@@ -97,6 +97,7 @@ objs = $(extra_objs_$(host_os)_$(host_cpu)) &
     asmdata.obj         &
     asmjump.obj         &
     autodept.obj        &
+    dostimet.obj        &
     queues.obj          &
     pathlist.obj
 

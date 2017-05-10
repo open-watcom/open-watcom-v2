@@ -36,7 +36,6 @@
 #include "wio.h"
 #include "watcom.h"
 #include "pragdefn.h"
-#include "autodept.h"
 #include "sopen.h"
 
 #include "clibext.h"
@@ -1124,6 +1123,7 @@ static bool VerifyIncludes( const char *filename )
     FNAMEPTR    flist;
     time_t      mtime;
     FNAMEPTR    fnew;
+    struct stat statbuf;
 
     // skip the primary source file (first item)
     fnew = FNames->next;
@@ -1145,7 +1145,10 @@ static bool VerifyIncludes( const char *filename )
             }
         }
         if( flist->rwflag ) {
-            mtime = _getFilenameTimeStamp( flist->name );
+            mtime = 0;
+            if( stat( flist->name, &statbuf ) == 0 ) {
+                mtime = statbuf.st_mtime;
+            }
             if( flist->mtime != mtime || mtime == 0 ) {
                 PCHNote( PCHDR_INCFILE_CHANGED, flist->name  );
 #if 0

@@ -56,6 +56,7 @@
 #include "intrface.h"
 #include "x86obj.h"
 #include "i87data.h"
+#include "dostimet.h"
 #include "feprotos.h"
 
 #ifdef _PHAR_LAP /* This is a misnomer. Let's rename it */
@@ -1066,7 +1067,8 @@ void    ObjInit( void )
         if( depend == NULL )
             break;
         OutShort( DEPENDENCY_COMMENT, names );
-        OutLongInt( *(unsigned_32 *)FEAuxInfo( depend, DEPENDENCY_TIMESTAMP ), names );
+        // OMF use dos time/date format
+        OutLongInt( _timet2dos( *(time_t *)FEAuxInfo( depend, DEPENDENCY_TIMESTAMP ) ), names );
         OutName( FEAuxInfo( depend, DEPENDENCY_NAME ), names );
         PutObjOMFRec( CMD_COMENT, names->array, names->used );
         names->used = 0;

@@ -32,9 +32,9 @@
 #include "cvars.h"
 #include "iopath.h"
 #include "scan.h"
-#include "autodept.h"
 #include <stdarg.h>
 #include <stdio.h>
+#include <sys/stat.h>
 #ifdef __OSI__
     #include "ostype.h"
 #endif
@@ -679,6 +679,7 @@ FNAMEPTR AddFlist( char const *filename )
     unsigned    index;
     size_t      len1;
     size_t      len2;
+    struct stat statbuf;
 
     index = 0;
     for( lnk = &FNames; (flist = *lnk) != NULL; lnk = &flist->next ) {
@@ -704,7 +705,10 @@ FNAMEPTR AddFlist( char const *filename )
         flist->rwflag = true;
         flist->once = false;
         flist->fullpath = NULL;
-        flist->mtime = _getFilenameTimeStamp( filename );
+        flist->mtime = 0;
+        if( stat( filename, &statbuf ) == 0 ) {
+            flist->mtime = statbuf.st_mtime;
+        }
     }
     return( flist );
 }

@@ -62,7 +62,7 @@ mupdate.o: ../c/mupdate.c
 	$(CC) $(CFLAGS) -c $?
 mvecstr.o: ../c/mvecstr.c
 	$(CC) $(CFLAGS) -c $?
-autodept.o: ../../watcom/c/autodept.c
+dostimet.o: ../../watcom/c/dostimet.c
 	$(CC) $(CFLAGS) -c $?
 wsplice.o: ../../builder/c/wsplice.c
 	$(CC) $(CFLAGS) -c $?
@@ -72,7 +72,7 @@ clibext.o: ../../watcom/c/clibext.c
 OBJS = macros.o main.o mautodep.o mautoomf.o mautoorl.o mautores.o \
  mcache.o memory.o mexec.o mglob.o mhash.o misc.o mlex.o mlexmac.o mlexprs.o \
  mparse.o mpreproc.o mrcmsg.o msg.o mstream.o msuffix.o msysdep.o \
- mtarget.o mupdate.o mvecstr.o autodept.o clibext.o
+ mtarget.o mupdate.o mvecstr.o dostimet.o clibext.o
 
 wsplice: wsplice.o clibext.o
 	$(CC) -g wsplice.o clibext.o -o $@

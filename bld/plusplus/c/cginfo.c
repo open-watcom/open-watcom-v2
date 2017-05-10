@@ -906,19 +906,6 @@ static sym_access getSymAccess( // GET access flag of symbol
     return( access );
 }
 
-static time_t *getFileDepTimeStamp( SRCFILE h )
-{
-    static time_t            stamp;
-
-#if ( _RISC_CPU || COMP_CFG_COFF )
-    stamp = SrcFileTimeStamp( h );
-#else
-    /* OMF format */
-    stamp = _timet2dos( SrcFileTimeStamp( h ) );
-#endif
-    return( &stamp );
-}
-
 static void addDefaultLibs( void )
 {
     if( CompFlags.emit_library_names ) {
@@ -1404,7 +1391,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case DEPENDENCY_TIMESTAMP :
         DbgNotSym();
         DbgNotRetn();
-        retn = getFileDepTimeStamp( (SRCFILE)sym );
+        retn = &(((SRCFILE)sym)->time_stamp);
         break;
     case DEPENDENCY_NAME :
         DbgNotSym();

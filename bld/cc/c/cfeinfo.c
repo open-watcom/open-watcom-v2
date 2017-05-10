@@ -46,6 +46,7 @@
 #include "caux.h"
 #include "dwarfid.h"
 
+
 #define TRUNC_SYMBOL_HASH_LEN        4
 #define TRUNC_SYMBOL_LEN_WARN        120
 
@@ -565,19 +566,6 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
     }
 #endif
     return( cclass );
-}
-
-static time_t *getFileDepTimeStamp( FNAMEPTR flist )
-{
-    static time_t            stamp;
-
-#if _RISC_CPU || COMP_CFG_COFF
-    stamp = flist->mtime;
-#else
-    /* OMF format */
-    stamp = _timet2dos( flist->mtime );
-#endif
-    return( &stamp );
 }
 
 /*
@@ -1131,7 +1119,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
             return( (CGPOINTER)NextDependency( (FNAMEPTR)req_handle ) );
         return( NULL );
     case DEPENDENCY_TIMESTAMP:
-        return( (CGPOINTER)getFileDepTimeStamp( (FNAMEPTR)req_handle ) );
+        return( (CGPOINTER)&(((FNAMEPTR)req_handle)->mtime) );
     case DEPENDENCY_NAME:
         return( (CGPOINTER)FNameFullPath( (FNAMEPTR)req_handle ) );
     case PEGGED_REGISTER:
@@ -1259,7 +1247,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
             return( (CGPOINTER)NextDependency( (FNAMEPTR)req_handle ) );
         return( NULL );
     case DEPENDENCY_TIMESTAMP:
-        return( (CGPOINTER)getFileDepTimeStamp( (FNAMEPTR)req_handle ) );
+        return( (CGPOINTER)&(((FNAMEPTR)req_handle)->mtime) );
     case DEPENDENCY_NAME:
         return( (CGPOINTER)FNameFullPath( (FNAMEPTR)req_handle ) );
     default:
