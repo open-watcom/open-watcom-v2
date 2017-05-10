@@ -60,41 +60,60 @@ char *SkipWS( const char *p )
     return( (char *)p );
 }
 
+STATIC bool is_ws( char c )
+/*************************/
+{
+    return( cisws( c ) );
+}
+
+STATIC bool is_ws_or_equal( char c )
+/**********************************/
+{
+    return( cisws( c ) || c == '=' );
+}
+
+STATIC char *FindNextSep( const char *str, bool (*chk_sep)( char ) )
+/******************************************************************
+ * Finds next free separator character, allowing doublequotes to
+ * be used to specify strings with white spaces.
+ */
+{
+    bool    string_open;
+    char    c;
+
+    string_open = false;
+    while( (c = *str) != NULLCHAR ) {
+        if( c == BACKSLASH ) {
+            if( string_open && str[1] != NULLCHAR ) {
+                ++str;
+            }
+        } else if( c == DOUBLEQUOTE ) {
+            string_open = !string_open;
+        } else if( !string_open && chk_sep( c ) ) {
+            break;
+        }
+        str++;
+    }
+
+    return( (char *)str );
+}
+
 char *FindNextWS( const char *str )
 /***********************************
  * Finds next free white space character, allowing doublequotes to
  * be used to specify strings with white spaces.
  */
 {
-    bool    string_open = false;
+    return( FindNextSep( str, is_ws ) );
+}
 
-    while( *str != NULLCHAR ) {
-        if( *str == BACKSLASH ) {
-            str++;
-            if( *str != NULLCHAR ) {
-                if( !string_open && cisws ( *str ) ) {
-                    break;
-                }
-                str++;
-            }
-        } else {
-            if( *str == DOUBLEQUOTE ) {
-                string_open = !string_open;
-                str++;
-            } else {
-                if( string_open ) {
-                    str++;
-                } else {
-                    if( cisws( *str ) ) {
-                        break;
-                    }
-                    str++;
-                }
-            }
-        }
-    }
-
-    return( (char *)str );
+char *FindNextWSorEqual( const char *str )
+/*****************************************
+ * Finds next free white space or equal character, allowing doublequotes to
+ * be used to specify strings with white spaces.
+ */
+{
+    return( FindNextSep( str, is_ws_or_equal ) );
 }
 
 char *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src )
