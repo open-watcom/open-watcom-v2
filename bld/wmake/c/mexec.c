@@ -1278,10 +1278,10 @@ STATIC RET_T handleFor( char *line )
         *set = NULLCHAR;
         for( subst = DoWildCard( subst ); subst != NULL; subst = DoWildCard( NULL ) ) {
             newlen = numsubst * strlen( subst ) + cmdlen;
-            if( newlen > lastlen ) {
+            if( lastlen < newlen ) {
+                lastlen = newlen;
                 FreeSafe( exec );
                 exec = MallocSafe( newlen );
-                lastlen = newlen;
             }
 
             /* make variable substitutions */
@@ -1691,8 +1691,6 @@ STATIC bool hasMetas( const char *cmd )
             return( true );
         }
     }
-    return( false );
-
 #elif defined( __OS2__ ) || defined( __UNIX__ )
     const char  *p;
 
@@ -1703,9 +1701,8 @@ STATIC bool hasMetas( const char *cmd )
             return( true );
         }
     }
-    return( false );
-
 #endif
+    return( false );
 }
 
 static void dumpCommand( char *cmd )
@@ -2138,7 +2135,7 @@ void ExecInit( void )
     currentFileName = NULL;
     currentFileHandle = -1;
     /* Take any number first */
-    tmpFileNumber   = (UINT16)(time( NULL ) % 100000);
+    tmpFileNumber = (UINT16)( time( NULL ) % 100000 );
 }
 
 
