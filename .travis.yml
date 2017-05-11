@@ -19,7 +19,7 @@ before_script:
  - git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git ${TRAVIS_BUILD_DIR}/../travis-ci-ow-builds
 # compress GitHub repository to hold only a few last builds
  - cd ../travis-ci-ow-builds
- - if [ `$(git rev-list HEAD --count` > -gt 10 ]; then
+ - if [ `git rev-list HEAD --count` > -gt 10 ]; then
  -   git checkout --orphan temp1
  -   git add -A
  -   git commit -am "Initial commit"
