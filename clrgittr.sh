@@ -1,3 +1,7 @@
+#!/bin/sh
+# *****************************************************************
+# clrgittr.sh - compress git repository to hold maximum 10 commits
+# *****************************************************************
 cd ../travis-ci-ow-builds
 if [ `git rev-list HEAD --count` > -gt 10 ]; then
   git checkout --orphan temp1
