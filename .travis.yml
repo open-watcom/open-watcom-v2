@@ -17,6 +17,19 @@ before_script:
  - git config --global push.default simple
 # clone GitHub repository
  - git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git $HOME/travis-ci-ow-builds
+# compress GitHub repository to hold only a few last builds
+ - cd travis-ci-ow-builds
+ - if [ `git rev-list HEAD --count` > 10 ]; then
+ - git checkout --orphan temp1
+ - git add -A
+ - git commit -am "Initial commit"
+ - git branch -D master
+ - git branch -m master
+ - git push -f origin master
+ - git branch --set-upstream-to=origin/master master
+ - git pull
+ - fi
+ - cd
 # initialize OW build environment variables
  - export OWROOT=$TRAVIS_BUILD_DIR
  - export OWTOOLS=CLANG
@@ -28,7 +41,6 @@ before_script:
  - export OWVERBOSE=0
  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
  - . $OWROOT/cmnvars.sh
-
 
 script:
  - sh $OWROOT/build.sh rel
