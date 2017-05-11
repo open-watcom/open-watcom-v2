@@ -4,7 +4,7 @@
 # *****************************************************************
 cd ../travis-ci-ow-builds
 depth = $(`git rev-list HEAD --count`)
-if [ $depth > -gt 10 ]
+if [ $depth -gt 10 ]
 then
   git checkout --orphan temp1
   git add -A
