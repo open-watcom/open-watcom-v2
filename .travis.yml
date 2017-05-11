@@ -19,15 +19,15 @@ before_script:
  - git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git ${TRAVIS_BUILD_DIR}/../travis-ci-ow-builds
 # compress GitHub repository to hold only a few last builds
  - cd ../travis-ci-ow-builds
- - if [ $(git rev-list HEAD --count) > 10 ]; then
- - git checkout --orphan temp1
- - git add -A
- - git commit -am "Initial commit"
- - git branch -D master
- - git branch -m master
- - git push -f origin master
- - git branch --set-upstream-to=origin/master master
- - git pull
+ - if [ `$(git rev-list HEAD --count` > -gt 10 ]; then
+ -   git checkout --orphan temp1
+ -   git add -A
+ -   git commit -am "Initial commit"
+ -   git branch -D master
+ -   git branch -m master
+ -   git push -f origin master
+ -   git branch --set-upstream-to=origin/master master
+ -   git pull
  - fi
  - cd $TRAVIS_BUILD_DIR
 # initialize OW build environment variables
