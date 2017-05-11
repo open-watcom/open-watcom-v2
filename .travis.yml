@@ -11,6 +11,9 @@ before_install:
 
 before_script:
 # get clone of GitHub repository to return Travis CI OW build/log files
+# - cd ..
+# - mkdir travis-ci-ow-builds
+# - cd travis-ci-ow-builds
 # configure Git
  - git config --global user.email "travis@travis-ci.org"
  - git config --global user.name "Travis CI"
@@ -19,6 +22,7 @@ before_script:
  - git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git $HOME/travis-ci-ow-builds
 # compress GitHub repository to hold only a few last builds
  - pwd
+ - env
  - cd travis-ci-ow-builds
  - if [ `git rev-list HEAD --count` > 10 ]; then
  - git checkout --orphan temp1
@@ -30,11 +34,11 @@ before_script:
  - git branch --set-upstream-to=origin/master master
  - git pull
  - fi
- - cd
+# - cd ../open-watcom-v2
 # initialize OW build environment variables
  - export OWROOT=$TRAVIS_BUILD_DIR
  - export OWTOOLS=CLANG
- - export OWRELROOT=$HOME/travis-ci-ow-builds/rel
+ - export OWRELROOT=../travis-ci-ow-builds/rel
  - export OWOBJDIR=binbuild
  - export OWDOCBUILD=0
  - export OWDOCQUIET=1
@@ -48,7 +52,7 @@ script:
 
 after_failure:
 # after failure transfer log files back to GitHub repository
- - cd $HOME/travis-ci-ow-builds
+ - cd ../travis-ci-ow-builds
  - git checkout --quiet -f
 # copy new log files to git repository tree
  - if [ ! -d bld ]; then mkdir bld; fi
@@ -62,7 +66,7 @@ after_failure:
 
 after_success:
 # after success transfer OW build to GitHub repository
- - cd $HOME/travis-ci-ow-builds
+ - cd ../travis-ci-ow-builds
 # commit updated files to GitHub repository
  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then git add -f .; fi
  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then git commit --quiet -m "Travis CI build $TRAVIS_BUILD_NUMBER (success) - OW distribution"; fi
