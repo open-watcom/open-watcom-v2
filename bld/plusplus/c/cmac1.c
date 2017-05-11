@@ -935,6 +935,9 @@ static MACRO_TOKEN *glueTokens( MACRO_TOKEN *head )
                 break;
             if( next->token == T_MACRO_SHARP_SHARP ) {
                 next = next->next;
+                if( next == NULL )
+                    break;
+
                 if( next->token == T_WHITE_SPACE )
                     next = next->next;
                 // glue mtok->token with next->token to make one token
