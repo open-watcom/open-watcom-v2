@@ -3,8 +3,9 @@
 # clrgittr.sh - compress git repository to hold maximum 10 commits
 # *****************************************************************
 cd ../travis-ci-ow-builds
-depth = `git rev-list HEAD --count`
-if [ $depth > -gt 10 ]; then
+depth = $(`git rev-list HEAD --count`)
+if [ $depth > -gt 10 ]
+then
   git checkout --orphan temp1
   git add -A
   git commit -am "Initial commit"

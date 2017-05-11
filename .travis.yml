@@ -18,7 +18,6 @@ before_script:
 # clone GitHub repository
  - git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git ${TRAVIS_BUILD_DIR}/../travis-ci-ow-builds
 # compress GitHub repository to hold only a few last builds
- - sh --version
  - sh clrgittr.sh
 # initialize OW build environment variables
  - export OWROOT=$TRAVIS_BUILD_DIR
