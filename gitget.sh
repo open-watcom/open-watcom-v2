@@ -15,6 +15,7 @@ git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom
 #
 # compress GitHub repository to hold only a few last builds
 #
+depth=0
 cd ../travis-ci-ow-builds
 depth=$(`git rev-list HEAD --count`)
 if [ $depth -gt 10 ]
