@@ -513,8 +513,7 @@ void PutEnvFini( void )
 {
     ENV_TRACKER *cur;
 
-    while( envList != NULL ) {
-        cur = envList;
+    while( (cur = envList) != NULL ) {
         envList = cur->next;
         FreeSafe( cur );
     }
