@@ -2,6 +2,19 @@
 # *****************************************************************
 # clrgittr.sh - compress git repository to hold maximum 10 commits
 # *****************************************************************
+#
+# configure Git client
+#
+git config --global user.email "travis@travis-ci.org"
+git config --global user.name "Travis CI"
+git config --global push.default simple
+#
+# clone GitHub repository
+#
+git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git ${TRAVIS_BUILD_DIR}/../travis-ci-ow-builds
+#
+# compress GitHub repository to hold only a few last builds
+#
 cd ../travis-ci-ow-builds
 depth = $(`git rev-list HEAD --count`)
 if [ $depth -gt 10 ]
