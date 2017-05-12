@@ -1,6 +1,8 @@
 #!/bin/sh
 # *****************************************************************
-# clrgittr.sh - compress git repository to hold maximum 10 commits
+# clrgittr.sh - get clone of GitHub repository to return Travis CI 
+#               OW build/log files and compress GitHub repository 
+#               if necessary to hold only a last 10 builds
 # *****************************************************************
 #
 # configure Git client

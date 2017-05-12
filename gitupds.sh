@@ -3,9 +3,7 @@
 # updgits.sh - update git repository if build succeeds
 # *****************************************************************
 #
-# If build succeeds then transfer OW build to GitHub repository
-#
-# after success transfer OW build to GitHub repository
+# If OW build succeeds then transfer OW build to GitHub repository
 #
 cd ../travis-ci-ow-builds
 #
