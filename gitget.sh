@@ -30,4 +30,6 @@ then
   git branch --set-upstream-to=origin/master master
   git pull
 fi
+rm -f "-gt"
+rm -f clean.cmd
 cd $TRAVIS_BUILD_DIR
