@@ -7,7 +7,7 @@
 #
 cd ../travis-ci-ow-builds
 #
-# copy new log files to git repository tree
+# copy build log files to git repository tree
 #
 if [ ! -d bld ]; then mkdir bld; fi
 cp $OWROOT/bld/*.log bld/
