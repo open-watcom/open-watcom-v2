@@ -208,10 +208,10 @@ static void convert_to_find_t( struct find_t *fdta, lfnfind_t *lfndta )
 /*********************************************************************/
 {
     fdta->attrib  = lfndta->attributes;
-    LFN_CRTIME_OF( fdta ) = lfndta->creattime;
-    LFN_CRDATE_OF( fdta ) = lfndta->creatdate;
-    LFN_ACTIME_OF( fdta ) = lfndta->accesstime;
-    LFN_ACDATE_OF( fdta ) = lfndta->accessdate;
+    DTALFN_CRTIME_OF( fdta->reserved ) = lfndta->creattime;
+    DTALFN_CRDATE_OF( fdta->reserved ) = lfndta->creatdate;
+    DTALFN_ACTIME_OF( fdta->reserved ) = lfndta->accesstime;
+    DTALFN_ACDATE_OF( fdta->reserved ) = lfndta->accessdate;
     fdta->wr_time = lfndta->wrtime;
     fdta->wr_date = lfndta->wrdate;
     fdta->size    = lfndta->lfilesize;
@@ -304,12 +304,12 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attrib,
     lfnfind_t       lfndta;
     tiny_ret_t      rc = 0;
 
-    LFN_SIGN_OF( fdta )   = 0;
-    LFN_HANDLE_OF( fdta ) = 0;
+    DTALFN_SIGN_OF( fdta->reserved )   = 0;
+    DTALFN_HANDLE_OF( fdta->reserved ) = 0;
     if( _RWD_uselfn && TINY_OK( rc = _dos_find_first_lfn( path, attrib, &lfndta ) ) ) {
         convert_to_find_t( fdta, &lfndta );
-        LFN_SIGN_OF( fdta )   = _LFN_SIGN;
-        LFN_HANDLE_OF( fdta ) = TINY_INFO( rc );
+        DTALFN_SIGN_OF( fdta->reserved )   = _LFN_SIGN;
+        DTALFN_HANDLE_OF( fdta->reserved ) = TINY_INFO( rc );
         return( 0 );
     }
     if( IS_LFN_ERROR( rc ) ) {
@@ -327,8 +327,8 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *fdta )
     lfnfind_t       lfndta;
     tiny_ret_t      rc;
 
-    if( IS_LFN( fdta ) ) {
-        rc = _dos_find_next_lfn( LFN_HANDLE_OF( fdta ), &lfndta );
+    if( IS_LFN( fdta->reserved ) ) {
+        rc = _dos_find_next_lfn( DTALFN_HANDLE_OF( fdta->reserved ), &lfndta );
         if( TINY_OK( rc ) ) {
             convert_to_find_t( fdta, &lfndta );
             return( 0 );
@@ -346,8 +346,8 @@ _WCRTLINK unsigned _dos_findclose( struct find_t *fdta )
 #if defined( __WATCOM_LFN__ )
     tiny_ret_t      rc;
 
-    if( IS_LFN( fdta ) ) {
-        if( TINY_OK( rc = _dos_find_close_lfn( LFN_HANDLE_OF( fdta ) ) ) )
+    if( IS_LFN( fdta->reserved ) ) {
+        if( TINY_OK( rc = _dos_find_close_lfn( DTALFN_HANDLE_OF( fdta->reserved ) ) ) )
             return( 0 );
         return( __set_errno_dos_reterr( TINY_INFO( rc ) ) );
     }

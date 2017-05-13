@@ -128,7 +128,7 @@ static unsigned short at2mode( int attr, char *fname )
 _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct __F_NAME(stat,_stat) *buf )
 /********************************************************************************************/
 {
-    struct find_t       dta;
+    struct find_t       fdta;
     const CHAR_TYPE     *ptr;
     unsigned            rc;
     CHAR_TYPE           fullpath[_MAX_PATH];
@@ -168,14 +168,14 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct __F_NAME(stat
         /* restore current directory */
         __F_NAME(chdir,_wchdir)( cwd );
 
-        dta.attrib    = _A_SUBDIR;      /* fill in DTA */
-        dta.wr_time   = 0;
-        dta.wr_date   = 0;
-        dta.size      = 0;
-        dta.name[0]   = '\0';
+        fdta.attrib    = _A_SUBDIR;      /* fill in DTA */
+        fdta.wr_time   = 0;
+        fdta.wr_date   = 0;
+        fdta.size      = 0;
+        fdta.name[0]   = '\0';
 #ifdef __WATCOM_LFN__
-        LFN_SIGN_OF( &dta )   = 0;
-        LFN_HANDLE_OF( &dta ) = 0;
+        DTALFN_SIGN_OF( fdta.reserved )   = 0;
+        DTALFN_HANDLE_OF( fdta.reserved ) = 0;
 #endif
     } else {                            /* not a root directory */
 #if defined(__WIDECHAR__)
@@ -185,7 +185,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct __F_NAME(stat
             mbPath[0] = '\0';
         }
 #endif
-        if( _dos_findfirst( __F_NAME(path,mbPath), ALL_ATTRIB, &dta ) != 0 ) {
+        if( _dos_findfirst( __F_NAME(path,mbPath), ALL_ATTRIB, &fdta ) != 0 ) {
             int         handle;
             int         canread = 0;
             int         canwrite = 0;
@@ -229,7 +229,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct __F_NAME(stat
             }
             return( 0 );
         }
-        _dos_findclose( &dta );
+        _dos_findclose( &fdta );
     }
 
     /* process drive number */
@@ -240,15 +240,15 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct __F_NAME(stat
     }
     buf->st_rdev = buf->st_dev;
 
-    buf->st_size = dta.size;
-    buf->st_mode = at2mode( dta.attrib, dta.name );
+    buf->st_size = fdta.size;
+    buf->st_mode = at2mode( fdta.attrib, fdta.name );
 
-    buf->st_mtime = _d2ttime( dta.wr_date, dta.wr_time );
+    buf->st_mtime = _d2ttime( fdta.wr_date, fdta.wr_time );
     buf->st_btime = buf->st_mtime;
 #ifdef __WATCOM_LFN__
-    if( IS_LFN( &dta ) && LFN_CRTIME_OF( &dta ) ) {
-        buf->st_atime = _d2ttime( LFN_ACDATE_OF( &dta ), LFN_ACTIME_OF( &dta ) );
-        buf->st_ctime = _d2ttime( LFN_CRDATE_OF( &dta ), LFN_CRTIME_OF( &dta ) );
+    if( IS_LFN( fdta.reserved ) && DTALFN_CRTIME_OF( fdta.reserved ) ) {
+        buf->st_atime = _d2ttime( DTALFN_ACDATE_OF( fdta.reserved ), DTALFN_ACTIME_OF( fdta.reserved ) );
+        buf->st_ctime = _d2ttime( DTALFN_CRDATE_OF( fdta.reserved ), DTALFN_CRTIME_OF( fdta.reserved ) );
     } else {
 #endif
         buf->st_atime = buf->st_mtime;
@@ -259,7 +259,7 @@ _WCRTLINK int __F_NAME(stat,_wstat)( CHAR_TYPE const *path, struct __F_NAME(stat
     buf->st_nlink = 1;
     buf->st_ino = buf->st_uid = buf->st_gid = 0;
 
-    buf->st_attr = dta.attrib;
+    buf->st_attr = fdta.attrib;
     buf->st_archivedID = 0;
     buf->st_updatedID = 0;
     buf->st_inheritedRightsMask = 0;

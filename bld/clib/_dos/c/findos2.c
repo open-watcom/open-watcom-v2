@@ -86,10 +86,10 @@ _WCRTLINK unsigned _dos_findfirst( const char *path, unsigned attr,
                 (PVOID)&dir_buff, sizeof( dir_buff ), &searchcount, FF_LEVEL );
 
         if( rc != 0 && rc != ERROR_EAS_DIDNT_FIT ) {
-            FIND_HANDLE_OF( buf ) = BAD_HANDLE;
+            DTAXXX_HANDLE_OF( buf->reserved ) = BAD_HANDLE;
             return( __set_errno_dos_reterr( rc ) );
         }
-        FIND_HANDLE_OF( buf ) = handle;
+        DTAXXX_HANDLE_OF( buf->reserved ) = handle;
         copydir( buf, &dir_buff );          /* copy in other fields */
 
 #if defined(__OS2_286__)
@@ -120,7 +120,7 @@ _WCRTLINK unsigned _dos_findnext( struct find_t *buf ) {
         FF_BUFFER       dir_buff;
         OS_UINT         searchcount = 1;
 
-        rc = DosFindNext( FIND_HANDLE_OF( buf ), (PVOID)&dir_buff,
+        rc = DosFindNext( DTAXXX_HANDLE_OF( buf->reserved ), (PVOID)&dir_buff,
                     sizeof( dir_buff ), &searchcount );
         if( rc != 0 ) {
             return( __set_errno_dos_reterr( rc ) );
@@ -153,8 +153,8 @@ _WCRTLINK unsigned _dos_findclose( struct find_t *buf ) {
 #if defined(__OS2_286__)
     if( _RWD_osmode == OS2_MODE ) {        /* protected mode */
 #endif
-        if( FIND_HANDLE_OF( buf ) != BAD_HANDLE ) {
-            rc = DosFindClose( FIND_HANDLE_OF( buf ) );
+        if( DTAXXX_HANDLE_OF( buf->reserved ) != BAD_HANDLE ) {
+            rc = DosFindClose( DTAXXX_HANDLE_OF( buf->reserved ) );
             if( rc != 0 ) {
                 return( __set_errno_dos_reterr( rc ) );
             }

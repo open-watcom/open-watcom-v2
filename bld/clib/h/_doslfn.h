@@ -558,7 +558,7 @@ extern long __cvt_stamp2dos_lfn( long long *timestamp );
 
 #define IS_LFN_ERROR(x)     ((int_32)(x)<0&&(x)!= 0xFFFF7100)
 
-#define IS_LFN(x)           (_RWD_uselfn && LFN_SIGN_OF(x) == _LFN_SIGN && LFN_HANDLE_OF(x))
+#define IS_LFN(x)           (_RWD_uselfn && DTALFN_SIGN_OF(x) == _LFN_SIGN && DTALFN_HANDLE_OF(x))
 
 #define TINY_RET_ERROR(e)   ((e) | ~0xFFFF)
 
