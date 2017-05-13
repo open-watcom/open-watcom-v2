@@ -48,17 +48,19 @@
 #ifdef __NT__
     #include "libwin32.h"
     #include "ntext.h"
+    #include "ft2timet.h"
 #elif defined( __OS2__ )
     #include "os2fil64.h"
+    #include "d2ttime.h"
 #elif defined( __RDOS__ )
     #include "liballoc.h"
 #else
     #include "liballoc.h"
     #include "_doslfn.h"
     #include "_dtaxxx.h"
+    #include "d2ttime.h"
 #endif
 #include "i64.h"
-#include "d2ttime.h"
 #include "find.h"
 #include "seterrno.h"
 
@@ -182,9 +184,6 @@
  #endif
 /******************************************************************************/
 {
-    WORD        d;
-    WORD        t;
-
     /*** Convert attributes ***/
     fileinfo->attrib = 0;
     if( ffb->dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE ) {
@@ -207,12 +206,9 @@
     }
 
     /*** Handle the timestamps ***/
-    __MakeDOSDT( &ffb->ftCreationTime, &d, &t );
-    fileinfo->time_create = _d2ttime( d, t );
-    __MakeDOSDT( &ffb->ftLastAccessTime, &d, &t );
-    fileinfo->time_access = _d2ttime( d, t );
-    __MakeDOSDT( &ffb->ftLastWriteTime, &d, &t );
-    fileinfo->time_write = _d2ttime( d, t );
+    fileinfo->time_create = __NTfiletime_to_timet( &ffb->ftCreationTime );
+    fileinfo->time_access = __NTfiletime_to_timet( &ffb->ftLastAccessTime );
+    fileinfo->time_write = __NTfiletime_to_timet( &ffb->ftLastWriteTime );
 
     /*** Handle the file size ***/
   #ifdef __INT64__
