@@ -72,6 +72,8 @@ static unsigned cacheDelay;
 #define CACHE_DELAY_CHECK()     ( cacheDelay == 0 || ( --cacheDelay == 0 ) )
 #define CACHE_DELAY_RELEASE()   ( cacheDelay = 512 )
 
+#include "_dtaxxx.h"
+
 #else
 
 #define CACHE_DELAY_RELEASE()
@@ -232,6 +234,8 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
 
 #if defined( __UNIX__ )
         cnew->ce_tt = (time_t)-1L;
+#elif defined( __NT__ )
+        cnew->ce_tt = DTAXXX_TSTAMP_OF( entry->d_dta );
 #else
         cnew->ce_tt = _dos2timet( entry->d_date * 0x10000L + entry->d_time );
 #endif
