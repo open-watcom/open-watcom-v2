@@ -345,9 +345,9 @@ int __rdos_finddata_get( RDOSFINDTYPE *findbuf, struct _finddata_t *fileinfo )
 
     /*** Handle the timestamps ***/
   #ifdef __WATCOM_LFN__
-    if( IS_LFN( findbuf ) && LFN_CRTIME_OF( findbuf ) ) {
-        fileinfo->time_create = _d2ttime( LFN_CRDATE_OF( findbuf ), LFN_CRTIME_OF( findbuf ) );
-        fileinfo->time_access = _d2ttime( LFN_ACDATE_OF( findbuf ), LFN_ACTIME_OF( findbuf ) );
+    if( IS_LFN( findbuf->reserved ) && DTALFN_CRTIME_OF( findbuf->reserved ) ) {
+        fileinfo->time_create = _d2ttime( DTALFN_CRDATE_OF( findbuf->reserved ), DTALFN_CRTIME_OF( findbuf->reserved ) );
+        fileinfo->time_access = _d2ttime( DTALFN_ACDATE_OF( findbuf->reserved ), DTALFN_ACTIME_OF( findbuf->reserved ) );
     } else {
   #endif
         fileinfo->time_create = -1L;

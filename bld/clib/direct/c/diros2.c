@@ -93,8 +93,8 @@ static APIRET __find_close( DIR_TYPE *dirp )
     if( _RWD_osmode == OS2_MODE ) {
         /* protected mode */
 #endif
-        if( DIR_HANDLE_OF( dirp ) ) {
-            return( DosFindClose( DIR_HANDLE_OF( dirp ) ) );
+        if( DTAXXX_HANDLE_OF( dirp->d_dta ) ) {
+            return( DosFindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) ) );
         }
 #ifdef _M_I86
     }
@@ -183,7 +183,7 @@ static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR
             __set_errno_dos( ERROR_NO_MORE_FILES );
             return( NULL );
         }
-        DIR_HANDLE_OF( dirp ) = handle; /* store our handle     */
+        DTAXXX_HANDLE_OF( dirp->d_dta ) = handle; /* store our handle     */
         copydir( dirp, &dir_buff );     /* copy in other fields */
 #ifdef _M_I86
     } else {                            /* real mode */
@@ -272,7 +272,7 @@ _WCRTLINK DIRENT_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
             FF_BUFFER       dir_buff;
             OS_UINT         searchcount = 1;
 
-            rc = DosFindNext( DIR_HANDLE_OF( dirp ), (PVOID)&dir_buff,
+            rc = DosFindNext( DTAXXX_HANDLE_OF( dirp->d_dta ), (PVOID)&dir_buff,
                                 sizeof( dir_buff ), &searchcount );
             if( rc != 0 ) {
                 if( rc != ERROR_NO_MORE_FILES ) {

@@ -30,10 +30,10 @@
 ****************************************************************************/
 
 /*
- * DTA in directory/find structure is used only by DOS and _dos_find...
- * functions. If LFN version of _dos_find... functions are used then
- * conversion between LFN DTA <=> SFN DTA is made if access
- * DOS "find first/next" SFN functions.
+ * DTA in directory/find structure is used only by DOS version of appropriate
+ * functions. If DOS LFN version of _dos_find... functions are used then
+ * conversion between LFN DTA <=> SFN DTA is made if access DOS
+ * "find first/next" SFN functions.
  * For other systems it is used internaly to hold auxiliary data
  * The length of DTA is 21 bytes, that any internal structure must
  * respect this limit
@@ -52,35 +52,38 @@ typedef struct __doslfn_dta {
 } __doslfn_dta;
 #include "poppck.h"
 
-#define LFN_CRTIME_OF(x)    (((__doslfn_dta *)(x)->reserved)->cr_time)
-#define LFN_CRDATE_OF(x)    (((__doslfn_dta *)(x)->reserved)->cr_date)
-#define LFN_ACTIME_OF(x)    (((__doslfn_dta *)(x)->reserved)->ac_time)
-#define LFN_ACDATE_OF(x)    (((__doslfn_dta *)(x)->reserved)->ac_date)
-#define LFN_HANDLE_OF(x)    (((__doslfn_dta *)(x)->reserved)->handle)
-#define LFN_SIGN_OF(x)      (((__doslfn_dta *)(x)->reserved)->sign)
+#define DTALFN_CRTIME_OF(x)     (((__doslfn_dta *)(x))->cr_time)
+#define DTALFN_CRDATE_OF(x)     (((__doslfn_dta *)(x))->cr_date)
+#define DTALFN_ACTIME_OF(x)     (((__doslfn_dta *)(x))->ac_time)
+#define DTALFN_ACDATE_OF(x)     (((__doslfn_dta *)(x))->ac_date)
+#define DTALFN_HANDLE_OF(x)     (((__doslfn_dta *)(x))->handle)
+#define DTALFN_SIGN_OF(x)       (((__doslfn_dta *)(x))->sign)
 
 #elif defined( __NT__ )
 
+#include "pushpck1.h"
 typedef struct __nt_dta {
     void        *hndl;
+    time_t      tstamp;
     unsigned    attr;
 } __nt_dta;
+#include "poppck.h"
 
-#define DIR_HANDLE_OF(__dirp)   (((__nt_dta *)(__dirp)->d_dta)->hndl)
-#define DIR_ATTR_OF(__dirp)     (((__nt_dta *)(__dirp)->d_dta)->attr)
-#define FIND_HANDLE_OF(__find)  (((__nt_dta *)(__find)->reserved)->hndl)
-#define FIND_ATTR_OF(__find)    (((__nt_dta *)(__find)->reserved)->attr)
+#define DTAXXX_HANDLE_OF(x)     (((__nt_dta *)(x))->hndl)
+#define DTAXXX_TSTAMP_OF(x)     (((__nt_dta *)(x))->tstamp)
+#define DTAXXX_ATTR_OF(x)       (((__nt_dta *)(x))->attr)
 
 #define BAD_HANDLE              ((HANDLE)(~0))
 
 #elif defined( __OS2__ )
 
+#include "pushpck1.h"
 typedef struct __os2_dta {
     unsigned    hndl;
 } __os2_dta;
+#include "poppck.h"
 
-#define DIR_HANDLE_OF(__dirp)   (((__os2_dta *)(__dirp)->d_dta)->hndl)
-#define FIND_HANDLE_OF(__find)  (((__os2_dta *)(__find)->reserved)->hndl)
+#define DTAXXX_HANDLE_OF(x)     (((__os2_dta *)(x))->hndl)
 
 #define BAD_HANDLE              ((HDIR)(~0))
 

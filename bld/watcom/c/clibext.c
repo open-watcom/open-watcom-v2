@@ -2006,6 +2006,19 @@ unsigned _dos_setfileattr( const char *path, unsigned attribute )
 #define OPENMODE_DENY_READ      0x0030
 #define OPENMODE_DENY_NONE      0x0040
 
+#define WINDOWS_TICK            10000000
+#define SEC_TO_UNIX_EPOCH       11644473600LL
+
+
+static time_t __NTfiletime_to_timet( const FILETIME *ft )
+{
+    ULARGE_INTEGER  ulint;
+
+    ulint.u.LowPart   =   ft->dwLowDateTime; 
+    ulint.u.HighPart  =   ft->dwHighDateTime; 
+    return( ulint.QuadPart / WINDOWS_TICK - SEC_TO_UNIX_EPOCH );
+}
+
 static void __GetNTCreateAttr( unsigned attr, LPDWORD desired_access, LPDWORD nt_attr )
 {
     if( attr & _A_RDONLY ) {
@@ -2125,7 +2138,9 @@ static int is_directory( const char *name )
 }
 
 static void __GetNTDirInfo( struct dirent *dirp, LPWIN32_FIND_DATA ffd )
+/**********************************************************************/
 {
+    DTAXXX_TSTAMP_OF( dirp->d_dta ) = __NTfiletime_to_timet( &ffd->ftLastWriteTime );
     __MakeDOSDT( &ffd->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
     dirp->d_attr = (char)ffd->dwFileAttributes;
     dirp->d_size = ffd->nFileSizeLow;
@@ -2140,7 +2155,7 @@ static DIR *__opendir( const char *dirname, DIR *dirp )
     HANDLE              h;
 
     if( dirp->d_first != _DIR_CLOSED ) {
-        FindClose( DIR_HANDLE_OF( dirp ) );
+        FindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) );
         dirp->d_first = _DIR_CLOSED;
     }
     h = FindFirstFileA( dirname, &ffd );
@@ -2148,7 +2163,7 @@ static DIR *__opendir( const char *dirname, DIR *dirp )
         __set_errno( ENOENT );
         return( NULL );
     }
-    DIR_HANDLE_OF( dirp ) = h;
+    DTAXXX_HANDLE_OF( dirp->d_dta ) = h;
     __GetNTDirInfo( dirp, &ffd );
     dirp->d_first = _DIR_ISFIRST;
     return( dirp );
@@ -2188,7 +2203,7 @@ DIR *opendir( const char *dirname )
     }
     dirp = malloc( sizeof( DIR ) );
     if( dirp == NULL ) {
-        FindClose( DIR_HANDLE_OF( &tmp ) );
+        FindClose( DTAXXX_HANDLE_OF( tmp.d_dta ) );
         __set_errno( ENOMEM );
         return( NULL );
     }
@@ -2207,7 +2222,7 @@ struct dirent *readdir( DIR *dirp )
     if( dirp->d_first == _DIR_ISFIRST ) {
         dirp->d_first = _DIR_NOTFIRST;
     } else {
-        if( !FindNextFileA( DIR_HANDLE_OF( dirp ), &ffd ) ) {
+        if( !FindNextFileA( DTAXXX_HANDLE_OF( dirp->d_dta ), &ffd ) ) {
             __set_errno( ENOENT );
             return( NULL );
         }
@@ -2222,7 +2237,7 @@ int closedir( DIR *dirp )
     if( dirp == NULL || dirp->d_first == _DIR_CLOSED ) {
         return( __set_errno( ERANGE ) );
     }
-    if( !FindClose( DIR_HANDLE_OF( dirp ) ) ) {
+    if( !FindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) ) ) {
         return( -1 );
     }
     dirp->d_first = _DIR_CLOSED;
@@ -2352,19 +2367,19 @@ unsigned _dos_findfirst( const char *path, unsigned attr, struct find_t *buf )
 
     h = FindFirstFile( (LPTSTR)path, &ffd );
     if( h == INVALID_HANDLE_VALUE ) {
-        FIND_HANDLE_OF( buf ) = h;
+        DTAXXX_HANDLE_OF( buf->reserved ) = h;
         __set_errno( ENOENT );
         return( (unsigned)-1 );
     }
     if( !__NTFindNextFileWithAttr( h, attr, &ffd ) ) {
         error = GetLastError();
-        FIND_HANDLE_OF( buf ) = INVALID_HANDLE_VALUE;
+        DTAXXX_HANDLE_OF( buf->reserved ) = INVALID_HANDLE_VALUE;
         FindClose( h );
         __set_errno( ENOENT );
         return( (unsigned)-1 );
     }
-    FIND_HANDLE_OF( buf ) = h;
-    FIND_ATTR_OF( buf ) = attr;
+    DTAXXX_HANDLE_OF( buf->reserved ) = h;
+    DTAXXX_ATTR_OF( buf->reserved ) = attr;
     __GetNTDirInfo( (struct dirent *)buf, &ffd );
     return( 0 );
 }
@@ -2373,23 +2388,23 @@ unsigned _dos_findnext( struct find_t *buf )
 {
     WIN32_FIND_DATA     ffd;
 
-    if( !FindNextFile( FIND_HANDLE_OF( buf ), &ffd ) ) {
+    if( !FindNextFile( DTAXXX_HANDLE_OF( buf->reserved ), &ffd ) ) {
         __set_errno( ENOENT );
         return( (unsigned)-1 );
     }
-    if( !__NTFindNextFileWithAttr( FIND_HANDLE_OF( buf ), FIND_ATTR_OF( buf ), &ffd ) ) {
+    if( !__NTFindNextFileWithAttr( DTAXXX_HANDLE_OF( buf->reserved ), DTAXXX_ATTR_OF( buf->reserved ), &ffd ) ) {
         __set_errno( ENOENT );
         return( (unsigned)-1 );
     }
-    __GetNTDirInfo( (struct dirent *) buf, &ffd );
+    __GetNTDirInfo( (struct dirent *)buf, &ffd );
 
     return( 0 );
 }
 
 unsigned _dos_findclose( struct find_t *buf )
 {
-    if( FIND_HANDLE_OF( buf ) != INVALID_HANDLE_VALUE ) {
-        if( !FindClose( FIND_HANDLE_OF( buf ) ) ) {
+    if( DTAXXX_HANDLE_OF( buf->reserved ) != INVALID_HANDLE_VALUE ) {
+        if( !FindClose( DTAXXX_HANDLE_OF( buf->reserved ) ) ) {
             __set_errno( ENOENT );
             return( (unsigned)-1 );
         }

@@ -38,9 +38,13 @@
 #include <windows.h>
 #include "libwin32.h"
 #include "ntext.h"
+#include "_dtaxxx.h"
+#include "ft2timet.h"
+
 
 void __GetNTDirInfo(DIR_TYPE *dirp, LPWIN32_FIND_DATA ffb )
 {
+    DTAXXX_TSTAMP_OF( dirp->d_dta ) = __NTfiletime_to_timet( &ffb->ftLastWriteTime );
     __MakeDOSDT( &ffb->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
     dirp->d_attr = ffb->dwFileAttributes;
     dirp->d_size = ffb->nFileSizeLow;
