@@ -49,6 +49,7 @@
   #elif defined(__NT__)
     #include <windows.h>
     #include <mbstring.h>
+    #include "_dtaxxx.h"
   #endif
 #endif
 #include "wio.h"
@@ -1987,16 +1988,6 @@ unsigned _dos_setfileattr( const char *path, unsigned attribute )
     return( 0 );
 }
 
-typedef struct __nt_dta {
-    HANDLE      hndl;
-    DWORD       attr;
-} __nt_dta;
-
-#define DIR_HANDLE_OF(__dirp)   (((__nt_dta *)(__dirp)->d_dta)->hndl)
-#define DIR_ATTR_OF(__dirp)     (((__nt_dta *)(__dirp)->d_dta)->attr)
-#define FIND_HANDLE_OF(__find)  (((__nt_dta *)(__find)->reserved)->hndl)
-#define FIND_ATTR_OF(__find)    (((__nt_dta *)(__find)->reserved)->attr)
-
 #define GET_CHAR(p)       _mbsnextc((const unsigned char *)p)
 #define NEXT_CHAR_PTR(p)  _mbsinc((const unsigned char *)p)
 
@@ -2133,8 +2124,7 @@ static int is_directory( const char *name )
     return( -1 );
 }
 
-static void get_nt_dir_info( DIR *dirp, LPWIN32_FIND_DATA ffd )
-/*************************************************************/
+static void __GetNTDirInfo( struct dirent *dirp, LPWIN32_FIND_DATA ffd )
 {
     __MakeDOSDT( &ffd->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
     dirp->d_attr = (char)ffd->dwFileAttributes;
@@ -2159,7 +2149,7 @@ static DIR *__opendir( const char *dirname, DIR *dirp )
         return( NULL );
     }
     DIR_HANDLE_OF( dirp ) = h;
-    get_nt_dir_info( dirp, &ffd );
+    __GetNTDirInfo( dirp, &ffd );
     dirp->d_first = _DIR_ISFIRST;
     return( dirp );
 }
@@ -2221,7 +2211,7 @@ struct dirent *readdir( DIR *dirp )
             __set_errno( ENOENT );
             return( NULL );
         }
-        get_nt_dir_info( dirp, &ffd );
+        __GetNTDirInfo( dirp, &ffd );
     }
     return( dirp );
 }
@@ -2352,15 +2342,6 @@ static BOOL __NTFindNextFileWithAttr( HANDLE h, DWORD attr, LPWIN32_FIND_DATA ff
             return( FALSE );
         }
     }
-}
-
-static void __GetNTDirInfo( struct dirent *dirp, LPWIN32_FIND_DATA ffd )
-{
-    __MakeDOSDT( &ffd->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
-    dirp->d_attr = (char)ffd->dwFileAttributes;
-    dirp->d_size = ffd->nFileSizeLow;
-    strncpy( dirp->d_name, ffd->cFileName, NAME_MAX );
-    dirp->d_name[NAME_MAX] = 0;
 }
 
 unsigned _dos_findfirst( const char *path, unsigned attr, struct find_t *buf )
