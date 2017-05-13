@@ -39,7 +39,7 @@ extra_objs = &
 inc_dirs += -I"$(trap_dir)/lcl/dos/h" -I"$(lib_misc_dir)/h"
 extra_cpp_flags = -DWOW
 
-extra_c_flags_accio = -I"$(lib_misc_dir)/h"
+extra_c_flags_accio = -I"$(clib_dir)/h"
 
 !include $(trap_dir)/lcl/lcl.mif
 !include $(trap_dir)/master.mif
