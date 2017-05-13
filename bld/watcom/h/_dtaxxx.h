@@ -62,7 +62,7 @@ typedef struct __doslfn_dta {
 #elif defined( __NT__ )
 
 typedef struct __nt_dta {
-    HANDLE      hndl;
+    void        *hndl;
     unsigned    attr;
 } __nt_dta;
 
@@ -76,7 +76,7 @@ typedef struct __nt_dta {
 #elif defined( __OS2__ )
 
 typedef struct __os2_dta {
-    HDIR        hndl;
+    unsigned    hndl;
 } __os2_dta;
 
 #define DIR_HANDLE_OF(__dirp)   (((__os2_dta *)(__dirp)->d_dta)->hndl)
