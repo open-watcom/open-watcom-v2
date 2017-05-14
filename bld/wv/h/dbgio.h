@@ -39,17 +39,17 @@ typedef unsigned_8 seek_method; enum {
     DIO_SEEK_END
 };
 
-typedef unsigned_8 open_access; enum {
-    OP_READ         = 0x01,
-    OP_WRITE        = 0x02,
-    OP_CREATE       = 0x04,
-    OP_TRUNC        = 0x08,
-    OP_APPEND       = 0x10,
-    OP_EXEC         = 0x10, // only valid with OP_CREATE - ran out of bits
-    OP_REMOTE       = 0x20,
-    OP_LOCAL        = 0x40,
-    OP_SEARCH       = 0x80
-};
+typedef enum {
+    OP_READ         = 0x0001,
+    OP_WRITE        = 0x0002,
+    OP_CREATE       = 0x0004,
+    OP_TRUNC        = 0x0008,
+    OP_APPEND       = 0x0010,
+    OP_REMOTE       = 0x0020,
+    OP_LOCAL        = 0x0040,
+    OP_SEARCH       = 0x0080,
+    OP_EXEC         = 0x0100,
+} open_access;
 
 #define ERR_RETURN      ((size_t)-1)
 #define ERR_SEEK        ((unsigned long)-1L)
