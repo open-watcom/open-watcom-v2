@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +38,8 @@
 #include "guidlg.h"
 #include "msg.h"
 #include "memutil.h"
+#include "aboutmsg.h"
 
-extern char     *AboutMessage[];
-extern int      AboutSize;
 
 STATIC bool aboutEventProc( a_window *, gui_event, void * );
 STATIC int  AboutNumRows( a_window * );
@@ -69,8 +69,8 @@ wnd_info AboutInfo = {
 
 
 
-extern void AboutOpen( void )
-/***************************/
+void AboutOpen( void )
+/********************/
 {
     if( aboutWindow == NULL ) {
         aboutWindow = WndCreate(
@@ -86,8 +86,8 @@ extern void AboutOpen( void )
 
 
 
-extern void AboutClose( void )
-/****************************/
+void AboutClose( void )
+/*********************/
 {
     a_window *  wnd;
 
@@ -163,8 +163,8 @@ STATIC bool aboutEventProc( a_window *wnd, gui_event gui_ev, void *parm )
 
 
 
-extern void AboutSetOff( void )
-/*****************************/
+void AboutSetOff( void )
+/**********************/
 {
     aboutOn = false;
     if( aboutWindow != NULL ) {
@@ -174,12 +174,12 @@ extern void AboutSetOff( void )
 
 
 
-extern void DlgAbout( void )
-/**************************/
+void DlgAbout( void )
+/*******************/
 {
     char        *about_data;
     char        *about_rover;
-    int         about_len;
+    size_t      about_len;
     int         index;
 
     about_len = 0;

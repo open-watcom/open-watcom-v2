@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,9 +30,10 @@
 ****************************************************************************/
 
 
-#include "bool.h"
 #include <malloc.h>
 #include <stdio.h>
+#include "bool.h"
+#include "dumpmem.h"
 
 
 #define LOCSIZE     1
@@ -46,8 +48,8 @@
  * WalkMem - walk through the memory locations.   For the PC version only.
  */
 
-extern int WalkMem( void ) 
-/************************/
+int WalkMem( void ) 
+/*****************/
 {
     char                    * str;
     int                     heap_status;
@@ -78,8 +80,8 @@ extern int WalkMem( void )
  * DumpMem - dump out memory locations.   For the PC version only.
  */
 
-extern void DumpMem( void )
-/*************************/
+void DumpMem( void )
+/******************/
 {
     unsigned int            curr_addr;
     unsigned int            total;

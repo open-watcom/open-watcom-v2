@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,11 +34,12 @@
 #include <stdio.h>
 
 #include "common.h"
+#include "aui.h"
 #include "dip.h"
 #include "sampinfo.h"
 #include "wpgather.h"
+#include "dlgoptn.h"
 
-extern int      OptGatherCut;
 
 bool GetCurrentGather( sio_data * curr_sio )
 /******************************************/
@@ -60,8 +62,8 @@ bool GetCurrentGather( sio_data * curr_sio )
 
 
 
-extern void FlipCurrentGather( sio_data * curr_sio )
-/**************************************************/
+void FlipCurrentGather( sio_data * curr_sio )
+/*******************************************/
 {
     if( curr_sio->level_open == LEVEL_SAMPLE ) {
         curr_sio->gather_active
@@ -80,8 +82,8 @@ extern void FlipCurrentGather( sio_data * curr_sio )
 
 
 
-extern void GatherCurrent( sio_data * curr_sio )
-/**********************************************/
+void GatherCurrent( sio_data * curr_sio )
+/***************************************/
 {
     bool    gather_active;
 

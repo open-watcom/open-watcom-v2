@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,8 +37,7 @@
 #include "aui.h"
 #include "dip.h"
 #include "sampinfo.h"
-
-//#include "wpgetrow.def"
+#include "wpgetrow.h"
 
 
 STATIC int          WPGetImageRow( sio_data * );
@@ -47,8 +47,8 @@ STATIC int          WPGetRtnRow( sio_data * );
 
 
 
-extern image_info * SImageGetImage( a_window * wnd, int row )
-/***********************************************************/
+image_info * SImageGetImage( a_window * wnd, int row )
+/****************************************************/
 {
     sio_data *      curr_sio;
     image_info *    image;
@@ -59,11 +59,12 @@ extern image_info * SImageGetImage( a_window * wnd, int row )
     curr_sio = WndExtra( wnd );
     image_count = 0;
     count = 0;
-    count2 = curr_sio->image_count;
-    while( count2-- > 0 ) {
+    for( count2 = curr_sio->image_count; count2 > 0; --count2 ) {
         image = curr_sio->images[image_count++];
         if( !image->ignore_unknown_image && !image->ignore_gather ) {
-            if( count++ == row ) return( image );
+            if( count++ == row ) {
+                return( image );
+            }
         }
     }
     return( NULL );
@@ -71,8 +72,8 @@ extern image_info * SImageGetImage( a_window * wnd, int row )
 
 
 
-extern mod_info * SModGetModule( a_window * wnd, int row )
-/********************************************************/
+mod_info * SModGetModule( a_window * wnd, int row )
+/*************************************************/
 {
     sio_data *      curr_sio;
     image_info *    curr_image;
@@ -85,11 +86,12 @@ extern mod_info * SModGetModule( a_window * wnd, int row )
     curr_image = curr_sio->curr_image;
     count = 0;
     mod_count = 0;
-    count2 = curr_image->mod_count;
-    while( count2-- > 0 ) {
+    for( count2 = curr_image->mod_count; count2 > 0; --count2 ) {
         mod = curr_image->module[mod_count++];
         if( !mod->ignore_unknown_mod && !mod->ignore_gather ) {
-            if( count++ == row ) return( mod );
+            if( count++ == row ) {
+                return( mod );
+            }
         }
     }
     return( NULL );
@@ -97,8 +99,8 @@ extern mod_info * SModGetModule( a_window * wnd, int row )
 
 
 
-extern file_info * SFileGetFile( a_window * wnd, int row )
-/********************************************************/
+file_info * SFileGetFile( a_window * wnd, int row )
+/*************************************************/
 {
     sio_data *      curr_sio;
     mod_info *      curr_mod;
@@ -111,11 +113,12 @@ extern file_info * SFileGetFile( a_window * wnd, int row )
     curr_mod = curr_sio->curr_mod;
     count = 0;
     file_count = 0;
-    count2 = curr_mod->file_count;
-    while( count2-- > 0 ) {
+    for( count2 = curr_mod->file_count; count2 > 0; --count2 ) {
         curr_file = curr_mod->mod_file[file_count++];
         if( !curr_file->ignore_unknown_file && !curr_file->ignore_gather ) {
-            if( count++ == row ) return( curr_file );
+            if( count++ == row ) {
+                return( curr_file );
+            }
         }
     }
     return( NULL );
@@ -123,8 +126,8 @@ extern file_info * SFileGetFile( a_window * wnd, int row )
 
 
 
-extern rtn_info * SRtnGetRoutine( a_window * wnd, int row )
-/*********************************************************/
+rtn_info * SRtnGetRoutine( a_window * wnd, int row )
+/**************************************************/
 {
     sio_data *      curr_sio;
     file_info *     curr_file;
@@ -137,11 +140,12 @@ extern rtn_info * SRtnGetRoutine( a_window * wnd, int row )
     curr_file = curr_sio->curr_file;
     count = 0;
     rtn_count = 0;
-    count2 = curr_file->rtn_count;
-    while( count2-- > 0 ) {
+    for( count2 = curr_file->rtn_count; count2 > 0; --count2 ) {
         rtn = curr_file->routine[rtn_count++];
         if( !rtn->ignore_unknown_rtn && !rtn->ignore_gather ) {
-            if( count++ == row ) return( rtn );
+            if( count++ == row ) {
+                return( rtn );
+            }
         }
     }
     return( NULL );
@@ -149,8 +153,8 @@ extern rtn_info * SRtnGetRoutine( a_window * wnd, int row )
 
 
 
-extern int WPGetRow( sio_data * curr_sio )
-/****************************************/
+int WPGetRow( sio_data * curr_sio )
+/*********************************/
 {
     int             curr_line;
 
@@ -182,11 +186,12 @@ STATIC int WPGetImageRow( sio_data * curr_sio )
     row = 0;
     count = 0;
     curr_image = curr_sio->curr_image;
-    count2 = curr_sio->image_count;
-    while( count2-- > 0 ) {
+    for( count2 = curr_sio->image_count; count2 > 0; --count2 ) {
         image = curr_sio->images[count++];
         if( !image->ignore_unknown_image && !image->ignore_gather ) {
-            if( image == curr_image ) return( row );
+            if( image == curr_image ) {
+                return( row );
+            }
             row++;
         }
     }
@@ -209,11 +214,12 @@ STATIC int WPGetModRow( sio_data * curr_sio )
     count = 0;
     curr_image = curr_sio->curr_image;
     curr_mod = curr_sio->curr_mod;
-    count2 = curr_image->mod_count;
-    while( count2-- > 0 ) {
+    for( count2 = curr_image->mod_count; count2 > 0; --count2 ) {
         mod = curr_image->module[count++];
         if( !mod->ignore_unknown_mod && !mod->ignore_gather ) {
-            if( mod == curr_mod ) return( row );
+            if( mod == curr_mod ) {
+                return( row );
+            }
             row++;
         }
     }
@@ -236,11 +242,12 @@ STATIC int WPGetFileRow( sio_data * curr_sio )
     count = 0;
     curr_mod = curr_sio->curr_mod;
     curr_file = curr_sio->curr_file;
-    count2 = curr_mod->file_count;
-    while( count2-- > 0 ) {
+    for( count2 = curr_mod->file_count; count2 > 0; --count2 ) {
         cfile = curr_mod->mod_file[count++];
         if( !cfile->ignore_unknown_file && !cfile->ignore_gather ) {
-            if( cfile == curr_file ) return( row );
+            if( cfile == curr_file ) {
+                return( row );
+            }
             row++;
         }
     }
@@ -263,11 +270,12 @@ STATIC int WPGetRtnRow( sio_data * curr_sio )
     count = 0;
     curr_file = curr_sio->curr_file;
     curr_rtn = curr_sio->curr_rtn;
-    count2 = curr_file->rtn_count;
-    while( count2-- > 0 ) {
+    for( count2 = curr_file->rtn_count; count2 > 0; --count2 ) {
         rtn = curr_file->routine[count++];
         if( !rtn->ignore_unknown_rtn && !rtn->ignore_gather ) {
-            if( rtn == curr_rtn ) return( row );
+            if( rtn == curr_rtn ) {
+                return( row );
+            }
             row++;
         }
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,30 +24,14 @@
 *
 *  ========================================================================
 *
-* Description:  Profiler test app, Part I.
+* Description:  profiler global data
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
+extern char             SamplePath[_MAX_PATH];
+extern char             *HelpPathList;
+extern system_config    DefSysConfig;
 
-#include "pt.h"
-
-
-extern char flags[SIZE+1];
-extern int count, niter;
-
-
-static void __check_if( int i )
-{
-        float k;
-
-        if ( flags[i] ) {            /* found a prime */
-                for ( k = i + i; k <= SIZE; k = k + i ) {
-                        set_false( (int)k );
-                }
-                count++;
-        }
-}
-
-void (*check_if)( int ) = __check_if;
+extern sio_data         *SIOData;
+extern sio_data         *CurrSIOData;

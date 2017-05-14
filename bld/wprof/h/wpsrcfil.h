@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,30 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  Profiler test app, Part I.
+* Description:  Profiler source file management.
 *
 ****************************************************************************/
 
 
-#include <stdio.h>
-
-#include "pt.h"
-
-
-extern char flags[SIZE+1];
-extern int count, niter;
-
-
-static void __check_if( int i )
-{
-        float k;
-
-        if ( flags[i] ) {            /* found a prime */
-                for ( k = i + i; k <= SIZE; k = k + i ) {
-                        set_false( (int)k );
-                }
-                count++;
-        }
-}
-
-void (*check_if)( int ) = __check_if;
+extern char                 *WPSourceGetLine( a_window * wnd, int line );
+extern wp_srcfile           *WPSourceOpen( sio_data * curr_sio, bool quiet );
+extern void                 WPSourceClose( wp_srcfile * wpsrc_file );
+extern massgd_sample_addr   *WPGetMassgdSampData( sio_data * curr_sio, clicks_t click_index );

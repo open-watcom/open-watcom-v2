@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,6 +42,8 @@
 #include "sampinfo.h"
 #include "msg.h"
 #include "setsamps.h"
+#include "wpdata.h"
+#include "dlgoptn.h"
 
 
 //#include "wpdriver.def"
@@ -59,12 +62,9 @@ STATIC void     setDlgValues( gui_window * );
 STATIC void     setDlgDefaults( gui_window * );
 STATIC GUICALLBACK progEvent;
 
-extern sio_data *   CurrSIOData;
 
-
-
-extern void DlgGetOptions( a_window * wnd )
-/*****************************************/
+void DlgGetOptions( a_window * wnd )
+/**********************************/
 {
     CurrSIOData = WndExtra( wnd );
     DlgOpen( LIT( Options ), DLG_OPTS_ROWS, DLG_OPTS_COLS,
@@ -89,10 +89,10 @@ STATIC bool getDlgValues( gui_window * gui )
     if( *endptr == NULLCHAR ) {
         if( fcut > 10.0 ) {
             fcut = 10.0;
-        } else if( fcut < 0 ) {
+        } else if( fcut < 0.0 ) {
             fcut = 0.0;
         }
-        OptGatherCut = fcut * 10;
+        OptGatherCut = (int)( fcut * 10.0 );
     }
     OptStretchGlobal = ( GUIIsChecked( gui, CTL_STRETCH ) == GUI_CHECKED );
     OptAbsBarGlobal = ( GUIIsChecked( gui, CTL_ABS_BAR ) == GUI_CHECKED );

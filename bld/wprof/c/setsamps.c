@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,17 +49,11 @@
 #include "utils.h"
 #include "dipinter.h"
 #include "digcli.h"
+#include "clrsamps.h"
+#include "wpdata.h"
 
 #include "clibext.h"
 
-
-extern void         ClearMassaged(sio_data *curr_sio);
-extern void         ClearModuleInfo(image_info *curr_image);
-extern void         ClearFileInfo(mod_info *curr_mod);
-extern void         ClearRoutineInfo(file_info *curr_file);
-
-extern sio_data     *SIOData;
-extern sio_data     *CurrSIOData;
 
 static char         FNameBuff[_MAX_PATH2];
 
@@ -109,7 +104,7 @@ STATIC void initRoutineInfo( file_info *curr_file )
 /*************************************************/
 {
     rtn_info        *new_rtn;
-    int             name_len;
+    size_t          name_len;
 
     ClearRoutineInfo( curr_file );
     name_len = strlen( LIT( Unknown_Routine ) ) + 1;
@@ -159,7 +154,7 @@ STATIC void initModuleInfo( image_info *curr_image )
 /**************************************************/
 {
     mod_info        *new_mod;
-    int             name_len;
+    size_t          name_len;
 
     ClearModuleInfo( curr_image );
     name_len = strlen( LIT( Unknown_Module ) ) + 1;
@@ -189,7 +184,7 @@ STATIC walk_result loadRoutineInfo( sym_walk_info swi, sym_handle *sym, void *_n
     file_info       *sym_file;
     rtn_info        *new_rtn;
     int             rtn_count;
-    int             name_len;
+    size_t          name_len;
     int             sym_size;
     int             demangle_type;
 
@@ -228,7 +223,7 @@ STATIC walk_result loadModuleInfo( mod_handle mh, void *_curr_image )
     image_info      *curr_image = _curr_image;
     mod_info        *new_mod;
     int             mod_count;
-    int             name_len;
+    size_t          name_len;
 
     name_len = DIPModName( mh, NULL, 0 );
     new_mod = ProfCAlloc( sizeof( mod_info ) + name_len );
@@ -581,7 +576,7 @@ STATIC void resolveImageSamples( void )
 STATIC void loadImageInfo( image_info * curr_image )
 /**************************************************/
 {
-    int             name_len;
+    size_t          name_len;
     dig_fhandle     obj_fid;
     dig_fhandle     sym_fid;
     struct stat     file_status;
@@ -742,12 +737,12 @@ STATIC void calcAggregates( void )
     massgd_data = ProfAlloc( sizeof( *massgd_data ) );
     massgd_data[0] = ProfCAlloc( MAX_MASSGD_BUCKET_SIZE );
     for( ;; ) {
-        best = -1U;
+        best = (unsigned)-1;
         for( index = 0; index < buckets; ++index ) {
             index2 = sorted_idx[index];
             if( index2 >= MAX_RAW_BUCKET_INDEX )
                 continue;
-            if( best == -1U )
+            if( best == (unsigned)-1 )
                 best = index;
             cmp_result = AddrCmp( sorted_vect[index][index2],
                                   sorted_vect[best][sorted_idx[best]] );
@@ -755,7 +750,7 @@ STATIC void calcAggregates( void )
                 best = index;
             }
         }
-        if( best == -1U )
+        if( best == (unsigned)-1 )
             break;
         if( curr == NULL || AddrCmp( sorted_vect[best][sorted_idx[best]], curr->raw ) != 0 ) {
             if( ++curr_midx >= MAX_MASSGD_BUCKET_INDEX ) {

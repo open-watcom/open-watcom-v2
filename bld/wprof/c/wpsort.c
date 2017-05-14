@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -41,32 +42,37 @@
 
 #include "clibext.h"
 
-STATIC int imageCountCmp( pointer *, pointer * );
-STATIC int modCountCmp( pointer *, pointer * );
-STATIC int fileCountCmp( pointer *, pointer * );
-STATIC int rtnCountCmp( pointer *, pointer * );
-STATIC int imageNameCmp( pointer *, pointer * );
-STATIC int modNameCmp( pointer *, pointer * );
-STATIC int fileNameCmp( pointer *, pointer * );
-STATIC int rtnNameCmp( pointer *, pointer * );
 
-static void * imageSortCmp[] = {
-    &imageCountCmp,
-    &imageNameCmp
-};
-static void * modSortCmp[] = {
-    &modCountCmp,
-    &modNameCmp
-};
-static void * fileSortCmp[] = {
-    &fileCountCmp,
-    &fileNameCmp
-};
-static void * rtnSortCmp[] = {
-    &rtnCountCmp,
-    &rtnNameCmp
+typedef int compar( const void *, const void * );
+
+STATIC int imageCountCmp( const image_info **, const image_info ** );
+STATIC int modCountCmp( const mod_info **, const mod_info ** );
+STATIC int fileCountCmp( const file_info **, const file_info ** );
+STATIC int rtnCountCmp( const rtn_info **, const rtn_info ** );
+STATIC int imageNameCmp( const image_info **, const image_info ** );
+STATIC int modNameCmp( const mod_info **, const mod_info ** );
+STATIC int fileNameCmp( const file_info **, const file_info ** );
+STATIC int rtnNameCmp( const rtn_info **, const rtn_info ** );
+
+static compar *imageSortCmp[] = {
+    (compar *)imageCountCmp,
+    (compar *)imageNameCmp
 };
 
+static compar *modSortCmp[] = {
+    (compar *)modCountCmp,
+    (compar *)modNameCmp
+};
+
+static compar *fileSortCmp[] = {
+    (compar *)fileCountCmp,
+    (compar *)fileNameCmp
+};
+
+static compar *rtnSortCmp[] = {
+    (compar *)rtnCountCmp,
+    (compar *)rtnNameCmp
+};
 
 
 int GetCurrentSort( sio_data * curr_sio )
@@ -170,11 +176,11 @@ void SortRtn( sio_data * curr_sio )
 
 
 
-STATIC int imageCountCmp( pointer * d1, pointer * d2 )
-/****************************************************/
+STATIC int imageCountCmp( const image_info **d1, const image_info **d2 )
+/**********************************************************************/
 {
-    image_info *    data1;
-    image_info *    data2;
+    const image_info    *data1;
+    const image_info    *data2;
 
     data1 = *d1;
     data2 = *d2;
@@ -189,11 +195,11 @@ STATIC int imageCountCmp( pointer * d1, pointer * d2 )
 
 
 
-STATIC int modCountCmp( pointer * d1, pointer * d2 )
-/**************************************************/
+STATIC int modCountCmp( const mod_info **d1, const mod_info **d2 )
+/****************************************************************/
 {
-    mod_info *      data1;
-    mod_info *      data2;
+    const mod_info  *data1;
+    const mod_info  *data2;
 
     data1 = *d1;
     data2 = *d2;
@@ -208,11 +214,11 @@ STATIC int modCountCmp( pointer * d1, pointer * d2 )
 
 
 
-STATIC int fileCountCmp( pointer * d1, pointer * d2 )
-/***************************************************/
+STATIC int fileCountCmp( const file_info **d1, const file_info **d2 )
+/*******************************************************************/
 {
-    file_info *     data1;
-    file_info *     data2;
+    const file_info *data1;
+    const file_info *data2;
 
     data1 = *d1;
     data2 = *d2;
@@ -227,11 +233,11 @@ STATIC int fileCountCmp( pointer * d1, pointer * d2 )
 
 
 
-STATIC int rtnCountCmp( pointer * d1, pointer * d2 )
-/**************************************************/
+STATIC int rtnCountCmp( const rtn_info **d1, const rtn_info **d2 )
+/****************************************************************/
 {
-    rtn_info *      data1;
-    rtn_info *      data2;
+    const rtn_info  *data1;
+    const rtn_info  *data2;
 
     data1 = *d1;
     data2 = *d2;
@@ -246,11 +252,11 @@ STATIC int rtnCountCmp( pointer * d1, pointer * d2 )
 
 
 
-STATIC int imageNameCmp( pointer * d1, pointer * d2 )
-/***************************************************/
+STATIC int imageNameCmp( const image_info **d1, const image_info **d2 )
+/*********************************************************************/
 {
-    image_info *    data1;
-    image_info *    data2;
+    const image_info    *data1;
+    const image_info    *data2;
 
     data1 = *d1;
     data2 = *d2;
@@ -259,11 +265,11 @@ STATIC int imageNameCmp( pointer * d1, pointer * d2 )
 
 
 
-STATIC int modNameCmp( pointer * d1, pointer * d2 )
-/*************************************************/
+STATIC int modNameCmp( const mod_info **d1, const mod_info **d2 )
+/***************************************************************/
 {
-    mod_info *      data1;
-    mod_info *      data2;
+    const mod_info  *data1;
+    const mod_info  *data2;
 
     data1 = *d1;
     data2 = *d2;
@@ -272,11 +278,11 @@ STATIC int modNameCmp( pointer * d1, pointer * d2 )
 
 
 
-STATIC int fileNameCmp( pointer * d1, pointer * d2 )
-/**************************************************/
+STATIC int fileNameCmp( const file_info **d1, const file_info **d2 )
+/******************************************************************/
 {
-    file_info *     data1;
-    file_info *     data2;
+    const file_info *data1;
+    const file_info *data2;
 
     data1 = *d1;
     data2 = *d2;
@@ -285,11 +291,11 @@ STATIC int fileNameCmp( pointer * d1, pointer * d2 )
 
 
 
-STATIC int rtnNameCmp( pointer * d1, pointer * d2 )
-/*************************************************/
+STATIC int rtnNameCmp( const rtn_info **d1, const rtn_info **d2 )
+/***************************************************************/
 {
-    rtn_info *      data1;
-    rtn_info *      data2;
+    const rtn_info  *data1;
+    const rtn_info  *data2;
 
     data1 = *d1;
     data2 = *d2;
