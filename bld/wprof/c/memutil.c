@@ -42,6 +42,7 @@
 #ifdef TRMEM
 #include "trmemcvr.h"
 #endif
+#include "dumpmem.h"
 
 
 #ifdef TRMEM

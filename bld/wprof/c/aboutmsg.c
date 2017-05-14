@@ -48,9 +48,7 @@ STATIC bool aboutGetLine( a_window *, wnd_row, int, wnd_line_piece * );
 static a_window     *aboutWindow = NULL;
 static bool         aboutOn = true;
 
-
-
-wnd_info AboutInfo = {
+static wnd_info     AboutInfo = {
     aboutEventProc,
     NoRefresh,
     aboutGetLine,
@@ -73,11 +71,7 @@ void AboutOpen( void )
 /********************/
 {
     if( aboutWindow == NULL ) {
-        aboutWindow = WndCreate(
-                                LIT( WPROF_TITLE ),
-                                &AboutInfo,
-                                 WND_NO_CLASS,
-                                 NULL );
+        aboutWindow = WndCreate( LIT( WPROF_TITLE ), &AboutInfo, WND_NO_CLASS, NULL );
     }
     if( aboutWindow != NULL ) {
         WndShowWindow( aboutWindow );
@@ -118,9 +112,8 @@ STATIC int AboutNumRows( a_window * wnd )
 
 
 
-STATIC bool aboutGetLine( a_window *wnd, wnd_row row, int piece,
-                                       wnd_line_piece *line )
-/***********************************************************/
+STATIC bool aboutGetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *line )
+/*************************************************************************************/
 {
 //    gui_coord           size;
 
