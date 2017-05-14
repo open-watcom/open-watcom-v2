@@ -39,7 +39,7 @@
 #include "wpaui.h"
 #include "dip.h"
 #include "sampinfo.h"
-#include "wpsrcfil.h"
+#include "wpsrcfld.h"
 #include "_srcmgt.h"
 #include "srcmgt.h"
 #include "msg.h"

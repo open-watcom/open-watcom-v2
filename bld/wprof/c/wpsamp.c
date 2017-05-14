@@ -38,7 +38,7 @@
 #include "wpaui.h"
 #include "dip.h"
 #include "sampinfo.h"
-#include "wpsrcfil.h"
+#include "wpsrcfld.h"
 #include "wpasmfil.h"
 #include "msg.h"
 #include "memutil.h"

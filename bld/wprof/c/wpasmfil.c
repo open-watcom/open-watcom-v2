@@ -40,7 +40,7 @@
 #include "mad.h"
 #include "sampinfo.h"
 #include "wpasmfil.h"
-#include "wpsrcfil.h"
+#include "wpsrcfld.h"
 #include "_srcmgt.h"
 #include "srcmgt.h"
 #include "msg.h"

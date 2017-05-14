@@ -36,7 +36,7 @@
 #include "aui.h"
 #include "dip.h"
 #include "sampinfo.h"
-#include "wpsrcfil.h"
+#include "wpsrcfld.h"
 #include "wpasmfil.h"
 
 //#include "wpnumrow.def"
