@@ -101,50 +101,36 @@ static void printUsage( int msg )
     exit( 1 );
 }
 
-static int iswsOrOpt( char ch )
+static int is_ws( char ch )
 {
-    if( isspace( ch ) ) return( 1 );
-
-    if( IS_OPT_DELIM( ch ) ) return( 1 );
-
+    if( isspace( ch ) )
+        return( 1 );
     return( 0 );
 }
 
-static char *skipBlanks( char *cmd ) {
+static int is_ws_or_option( char ch )
+{
+    if( isspace( ch ) || IS_OPT_DELIM( ch ) )
+        return( 1 );
+    return( 0 );
+}
+
+static char *skipBlanks( const char *cmd )
+{
     while( isspace( *cmd ) ) {
         cmd++;
     }
-    return( cmd );
+    return( (char *)cmd );
 }
 
-static char *skipToNextArg( char * cmd ) {
-    char    string_open = 0;
+static char *skipToNextWS( const char *cmd )
+{
+    return( FindNextSep( cmd, is_ws ) );
+}
 
-    while( *cmd != '\0' ) {
-        if( *cmd == '\\' ) {
-            cmd++;
-            if( *cmd != '\0' ) {
-                if( !string_open && iswsOrOpt( *cmd ) ) {
-                    break;
-                }
-                cmd++;
-            }
-        } else {
-            if( *cmd == '\"' ) {
-                string_open = !string_open;
-                cmd++;
-            } else {
-                if( !string_open && iswsOrOpt( *cmd ) ) {
-                    break;
-                }
-                cmd++;
-            }
-        }
-    }
-
-    cmd = skipBlanks( cmd );
-
-    return( cmd );
+static char *skipToNextArg( const char *cmd )
+{
+    return( skipBlanks( FindNextSep( cmd, is_ws_or_option ) ) );
 }
 
 static char *getFileName( char *start, char *following )
@@ -154,15 +140,15 @@ static char *getFileName( char *start, char *following )
     char        *tmp;
 
     length = following - start;
-    tmp = (char *) MemAlloc( length + 1 );
+    tmp = (char *)MemAlloc( length + 1 );
     memcpy( tmp, start, length );
     tmp[length] = 0;
 
     if( strchr( tmp, '\"' ) == NULL )
         return tmp;
 
-    name = (char *) MemAlloc( length + 1 );
-    UnquoteFName( name, length + 1, tmp );
+    name = (char *)MemAlloc( length + 1 );
+    UnquoteItem( name, length + 1, tmp, is_ws );
     MemFree( tmp );
 
     return( name );
@@ -254,7 +240,7 @@ void HandleArgs( char *cmd )
                         if( *cmd == '=' ) {
                             cmd++;
                             ptr = cmd;
-                            cmd = FindNextWS( cmd );
+                            cmd = skipToNextWS( cmd );
                             ListFileName = getFileName( ptr, cmd );
                         }
                         break;
@@ -312,7 +298,7 @@ void HandleArgs( char *cmd )
                         if( *cmd == '=' ) {
                             cmd++;
                             ptr = cmd;
-                            cmd = FindNextWS( cmd );
+                            cmd = skipToNextWS( cmd );
                             SourceFileName = getFileName( ptr, cmd );
                         }
                         break;
@@ -328,7 +314,7 @@ void HandleArgs( char *cmd )
                     printUsage( ONLY_ONE_OBJECT );
                 }
                 ptr = cmd;
-                cmd = FindNextWS( cmd );
+                cmd = skipToNextWS( cmd );
                 ObjFileName = getFileName( ptr, cmd );
             }
             cmd = skipToNextArg( cmd );
