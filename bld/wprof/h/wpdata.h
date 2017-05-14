@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-extern char             SamplePath[_MAX_PATH];
+extern char             SamplePath[];
 extern char             *HelpPathList;
 extern system_config    DefSysConfig;
 
