@@ -36,12 +36,15 @@
 #define INCL_DOSPROCESS
 #include <os2.h>
 
+extern int _STACKLOW;
+
+
 #define NUM_TRDS 3
 #define STK_SIZE 4096
 char Stacks[NUM_TRDS][STK_SIZE];
 int  Trds;
 long  TrdsSem = 0;
-extern int _STACKLOW;
+
 
 #define delay( i, x ) for( i = 0; i < x; ++i )
 void trd(void) {

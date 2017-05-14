@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,23 +45,23 @@
 #include "wpdriver.h"
 #include "wphelp.h"
 #include "wpsamp.h"
+#include "aboutmsg.h"
+#include "rptsamps.h"
+#include "wpstart.h"
+#include "dip.h"
+#include "sampinfo.h"
+#include "wpdata.h"
+#include "wpavals.h"
 
 
-extern void WPInit(void);
-extern void AboutOpen(void);
-extern void ReportSampleInfo(void);
-
-extern gui_colour_set   WndColours[];
-extern int              WndNumColours;
 extern a_window *       WndMain;
-extern char             SamplePath[];
 
 #if defined( __OS2_PM__ )
 STATIC gui_resource     MainIcon = { WPROF_ICON, NULL };
 #endif
 
-extern void GUImain( void )
-/*************************/
+void GUImain( void )
+/******************/
 {
     WPInit();
     WndCreateStatusWindow( &WndColours[ WPA_STATUS_LINE ] );
@@ -80,8 +81,8 @@ extern void GUImain( void )
 }
 
 
-extern bool WndProcMacro( a_window * wnd, unsigned key )
-/******************************************************/
+bool WndProcMacro( a_window * wnd, unsigned key )
+/***********************************************/
 {
 #if 0
     int     menu;

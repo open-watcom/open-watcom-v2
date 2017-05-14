@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,29 +50,13 @@
 #include "wpsort.h"
 #include "wpsamp.h"
 #include "dipinter.h"
+#include "clrsamps.h"
+#include "wpgetrow.h"
+#include "wpnumrow.h"
+#include "wpsrcfil.h"
+#include "wpwind.h"
+#include "wpdata.h"
 
-
-extern image_info *SImageGetImage(a_window *wnd,int row);
-extern mod_info *SModGetModule(a_window *wnd,int row);
-extern file_info *SFileGetFile(a_window *wnd,int row);
-extern rtn_info *SRtnGetRoutine(a_window *wnd,int row);
-extern int WPGetRow(sio_data *curr_sio);
-extern wp_srcfile *WPSourceOpen(sio_data *curr_sio,bool quiet);
-extern void WPSourceClose(wp_srcfile *wpsrc_file);
-extern char *WPSourceGetLine(a_window *wnd,int line);
-extern gui_ord WPGetClientHeight(a_window *wnd);
-extern gui_ord WPGetClientWidth(a_window *wnd);
-extern void WPAdjustRowHeight(a_window *wnd,bool initial_set);
-extern void WPSetRowHeight(a_window *wnd);
-extern gui_ord WPPixelTruncWidth(gui_ord width);
-extern gui_ord WPPixelWidth(a_window *wnd);
-extern void ClearSample(sio_data *curr_sio);
-extern void SortCurrent(sio_data *curr_sio);
-extern int SampleNumRows( a_window * wnd );
-
-
-extern sio_data *       SIOData;
-extern sio_data *       CurrSIOData;
 
 STATIC void *           sampleCreateWin( void );
 STATIC void             sampleOpenMainImage( void );
@@ -294,8 +279,7 @@ STATIC void sampleOpenMainImage( void )
     int             count;
 
     gatherSort( CurrSIOData );
-    count = CurrSIOData->image_count;
-    while( count-- > 0 ) {
+    for( count = CurrSIOData->image_count; count > 0; --count ) {
         curr_image = CurrSIOData->images[count];
         if( curr_image->main_load ) {
             if( curr_image->dip_handle != NO_MOD && curr_image->mod_count > 2 ) {
@@ -830,7 +814,7 @@ STATIC bool ssrcGetLine( a_window *wnd, int row )
         return( false );
     }
     adjusted_row = row + 1;
-    sampNewRow = row != curr_sio->curr_proc_row;
+    sampNewRow = ( row != curr_sio->curr_proc_row );
     if( sampNewRow ) {
         curr_sio->curr_proc_row = row;
         dispName = WPSourceGetLine( wnd, adjusted_row );
@@ -841,13 +825,11 @@ STATIC bool ssrcGetLine( a_window *wnd, int row )
         wp_src = curr_sio->src_file;
         lines = wp_src->src_lines;
         dispCount = 0;
-        index = 0;
-        while( index < wp_src->wp_line_count ) {
+        for( index = 0; index < wp_src->wp_line_count; ++index ) {
             if( adjusted_row == lines[index].line ) {
                 dispCount = lines[index].tick_count;
                 break;
             }
-            index++;
         }
         localTicks = curr_sio->curr_file->agg_count;
         maxTime = wp_src->max_time;
@@ -1027,7 +1009,6 @@ STATIC void findRtnFromRow( sio_data *curr_sio, int row )
     mod_handle          mh;
     address             addr;
 
-    index = 0;
     ch = alloca( DIPHandleSize( HK_CUE, false ) );
     curr_file = curr_sio->curr_file;
     mh = curr_sio->curr_mod->mh;
@@ -1040,13 +1021,12 @@ STATIC void findRtnFromRow( sio_data *curr_sio, int row )
     addr = DIPCueAddr( ch );
     if( DIPAddrSym( mh, addr, sh ) == SR_NONE )
         return;
-    while( index < curr_file->rtn_count ) {
+    for( index = 0; index < curr_file->rtn_count; ++index ) {
         curr_rtn = curr_file->routine[index];
         if( curr_rtn->sh != NULL && DIPSymCmp( curr_rtn->sh, sh ) == 0 ) {
             curr_sio->curr_rtn = curr_rtn;
             break;
         }
-        index++;
     }
 }
 

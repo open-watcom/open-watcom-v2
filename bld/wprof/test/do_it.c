@@ -34,10 +34,12 @@
 
 #include "pt.h"
 
+
 extern char flags[SIZE+1];
 extern int count, niter;
 
 extern void (*check_if)(int);
+
 
 void hopla_oops( unsigned num )
 {

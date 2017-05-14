@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -42,6 +43,8 @@
 #include "sampinfo.h"
 #include "msg.h"
 #include "utils.h"
+#include "dlgcnvt.h"
+#include "wpdata.h"
 
 #include "clibext.h"
 
@@ -60,12 +63,9 @@ FILE            *ConvertFile;
 
 STATIC GUICALLBACK progEvent;
 
-extern sio_data *CurrSIOData;
 
-
-
-extern void DlgGetConvert( a_window * wnd )
-/*****************************************/
+void DlgGetConvert( a_window * wnd )
+/**********************************/
 {
     ConvertFile = NULL;
     CurrSIOData = WndExtra( wnd );

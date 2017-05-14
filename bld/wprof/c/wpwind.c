@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -33,18 +34,15 @@
 #include "aui.h"
 #include "wpaui.h"
 #include "msg.h"
+#include "wpwind.h"
 
 
-extern void     WndGetClientRect( a_window *, gui_rect * );
-
-extern a_window *   WndMain;
+extern a_window     *WndMain;
 
 static int          wndInSetRowHeight;
 
-
-
-extern gui_ord WPGetClientHeight( a_window * wnd )
-/************************************************/
+gui_ord WPGetClientHeight( a_window * wnd )
+/*****************************************/
 {
     gui_rect    rect;
 
@@ -54,8 +52,8 @@ extern gui_ord WPGetClientHeight( a_window * wnd )
 
 
 
-extern gui_ord WPGetClientWidth( a_window * wnd )
-/***********************************************/
+gui_ord WPGetClientWidth( a_window * wnd )
+/****************************************/
 {
     gui_rect    rect;
 
@@ -65,8 +63,8 @@ extern gui_ord WPGetClientWidth( a_window * wnd )
 
 
 
-extern void WPAdjustRowHeight( a_window * wnd, bool initial_set )
-/***************************************************************/
+void WPAdjustRowHeight( a_window * wnd, bool initial_set )
+/********************************************************/
 {
     gui_rect    main_rect;
     gui_rect    full_rect;
@@ -103,16 +101,16 @@ extern void WPAdjustRowHeight( a_window * wnd, bool initial_set )
 
 
 
-extern void WPSetRowHeight( a_window * wnd )
-/******************************************/
+void WPSetRowHeight( a_window * wnd )
+/***********************************/
 {
     WPAdjustRowHeight( wnd, true );
 }
 
 
 
-extern gui_ord WPPixelTruncWidth( gui_ord width )
-/***********************************************/
+gui_ord WPPixelTruncWidth( gui_ord width )
+/****************************************/
 {
     gui_coord       slacker;
 
@@ -123,8 +121,8 @@ extern gui_ord WPPixelTruncWidth( gui_ord width )
 
 
 
-extern gui_ord WPPixelWidth( a_window * wnd )
-/*******************************************/
+gui_ord WPPixelWidth( a_window * wnd )
+/************************************/
 {
     gui_coord   pixel_size;
     gui_coord   tmp;

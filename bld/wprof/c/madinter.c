@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -49,9 +50,8 @@
 #include "msg.h"
 #include "madinter.h"
 #include "support.h"
+#include "wpdata.h"
 
-
-extern sio_data         *CurrSIOData;
 
 mad_status              MADStatus;
 
