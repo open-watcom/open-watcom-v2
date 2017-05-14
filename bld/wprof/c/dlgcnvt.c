@@ -38,7 +38,7 @@
 #include "dip.h"
 #include "guidlg.h"
 #include "dlgbutn.h"
-#include "dlgcnvt.h"
+#include "dlgcnvtd.h"
 #include "sampinfo.h"
 #include "msg.h"
 #include "utils.h"
