@@ -286,7 +286,7 @@ size_t DIPHandleSize( handle_kind hk, bool mgr_size )
     }
 }
 
-dip_status DIPMoreMem( unsigned amount )
+dip_status DIPMoreMem( size_t amount )
 {
     int     i;
 

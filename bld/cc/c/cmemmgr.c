@@ -384,7 +384,7 @@ void FEfree( void *p )
 }
 
 
-int FEMoreMem( unsigned size )
+int FEMoreMem( size_t size )
 {
     /* unused parameters */ (void)size;
 

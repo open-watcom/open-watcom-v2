@@ -1585,8 +1585,8 @@ const char *FEGetEnv(           // GET VALUE FOR ENV-VAR
     return CppGetEnv( name );
 }
 
-int FEMoreMem( unsigned size )
-/****************************/
+int FEMoreMem( size_t size )
+/**************************/
 {
     /* unused parameters */ (void)size;
 

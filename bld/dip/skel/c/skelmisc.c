@@ -54,7 +54,7 @@ unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
     return( Sizes[hk] );
 }
 
-dip_status DIPIMPENTRY( MoreMem )( unsigned size )
+dip_status DIPIMPENTRY( MoreMem )( size_t size )
 {
     //TODO:
 /*

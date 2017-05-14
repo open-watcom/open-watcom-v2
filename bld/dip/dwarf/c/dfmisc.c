@@ -91,7 +91,7 @@ void DFFreeImage( imp_image_handle *ii )
     }
 }
 
-dip_status DIPIMPENTRY( MoreMem )( unsigned size )
+dip_status DIPIMPENTRY( MoreMem )( size_t size )
 {
 /*
         Return DS_OK if you could release some memory, DS_FAIL if you

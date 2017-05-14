@@ -49,7 +49,7 @@ void            DIPFiniLatest( void );
 
 size_t          DIPHandleSize( handle_kind hk, bool mgr_size );
 
-dip_status      DIPMoreMem( unsigned amount );
+dip_status      DIPMoreMem( size_t amount );
 
 process_info    *DIPCreateProcess( void );
 process_info    *DIPSetProcess( process_info * );
