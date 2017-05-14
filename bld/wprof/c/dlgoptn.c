@@ -37,15 +37,14 @@
 #include "dip.h"
 #include "guidlg.h"
 #include "dlgbutn.h"
-#include "dlgoptn.h"
+#include "dlgoptnd.h"
 #include "sampinfo.h"
 #include "msg.h"
 #include "setsamps.h"
 
-//#include "dlgoptn.def"
+
 //#include "wpdriver.def"
 //#include "setsamps.def"
-
 
 bool    OptStretchGlobal   = false;
 bool    OptAbsBarGlobal    = true;
