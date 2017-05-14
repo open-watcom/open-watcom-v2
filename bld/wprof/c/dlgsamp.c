@@ -78,8 +78,8 @@ void DlgOpenSample( void )
 /************************/
 {
     for( ;; ) {
-        if( !DlgFileBrowse( LIT( Enter_Sample ), sampFilterList, SamplePath,
-                            sizeof( SamplePath ), 0 ) ) break;
+        if( !DlgFileBrowse( LIT( Enter_Sample ), sampFilterList, SamplePath, _MAX_PATH, 0 ) )
+            break;
         if( WPSampFound() ) {
             OpenSample();
             break;
