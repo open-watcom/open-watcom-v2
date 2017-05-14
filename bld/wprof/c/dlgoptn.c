@@ -49,18 +49,18 @@
 //#include "wpdriver.def"
 //#include "setsamps.def"
 
-bool    OptStretchGlobal   = false;
-bool    OptAbsBarGlobal    = true;
-bool    OptRelBarGlobal    = true;
-bool    OptSortCountGlobal = true;
-bool    OptSortNameGlobal  = false;
-bool    OptGatherGlobal    = false;
-int     OptGatherCut       = 10;
+bool                OptStretchGlobal   = false;
+bool                OptAbsBarGlobal    = true;
+bool                OptRelBarGlobal    = true;
+bool                OptSortCountGlobal = true;
+bool                OptSortNameGlobal  = false;
+bool                OptGatherGlobal    = false;
+int                 OptGatherCut       = 10;
 
-STATIC bool     getDlgValues( gui_window * );
-STATIC void     setDlgValues( gui_window * );
-STATIC void     setDlgDefaults( gui_window * );
-STATIC GUICALLBACK progEvent;
+STATIC bool         getDlgValues( gui_window * );
+STATIC void         setDlgValues( gui_window * );
+STATIC void         setDlgDefaults( gui_window * );
+STATIC GUICALLBACK  progEvent;
 
 
 void DlgGetOptions( a_window * wnd )
@@ -68,7 +68,7 @@ void DlgGetOptions( a_window * wnd )
 {
     CurrSIOData = WndExtra( wnd );
     DlgOpen( LIT( Options ), DLG_OPTS_ROWS, DLG_OPTS_COLS,
-             &optionControls[0], ArraySize( optionControls ), &progEvent, NULL );
+            optionControls, ArraySize( optionControls ), &progEvent, NULL );
     if( CurrSIOData != NULL ) {
         WndDirty( CurrSIOData->sample_window );
     }

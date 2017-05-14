@@ -207,7 +207,7 @@ static char         absData[30];
 static char         lineData[96];
 
 
-wnd_info WPSampleInfo = {
+static wnd_info     WPSampleInfo = {
     sampleEventProc,
     sampleRefresh,
     sampleGetLine,
