@@ -62,7 +62,7 @@ unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
 /*
  * Free memory.
  */
-dip_status DIPIMPENTRY( MoreMem )( unsigned size )
+dip_status DIPIMPENTRY( MoreMem )( size_t size )
 {
     size = size;
     return( (VMShrink() != 0) ? DS_OK : DS_FAIL );

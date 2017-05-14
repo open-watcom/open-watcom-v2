@@ -283,7 +283,7 @@ static unsigned WVIMPENTRY( HandleSize )( handle_kind hk )
     return( Sizes[hk] );
 }
 
-static dip_status WVIMPENTRY( MoreMem )( unsigned amount )
+static dip_status WVIMPENTRY( MoreMem )( size_t amount )
 {
     /* unused parameters */ (void)amount;
 

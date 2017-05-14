@@ -70,7 +70,7 @@ void DIPIMPENTRY( Cancel )( void )
     InfoUnlock();
 }
 
-dip_status DIPIMPENTRY( MoreMem )( unsigned size )
+dip_status DIPIMPENTRY( MoreMem )( size_t size )
 {
     /* unused parameters */ (void)size;
 

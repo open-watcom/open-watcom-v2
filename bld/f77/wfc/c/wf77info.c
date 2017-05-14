@@ -1304,10 +1304,10 @@ cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe ) {
 }
 
 
-int     FEMoreMem( uint size ) {
+int     FEMoreMem( size_t size )
 //==================================
-
 // We can't free any memory for use by the back end.
+{
 
     /* unused parameters */ (void)size;
 
