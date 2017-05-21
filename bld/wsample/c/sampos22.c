@@ -87,6 +87,19 @@ unsigned NextThread( unsigned tid )
     return( tid + 1 );
 }
 
+void ResetThread( unsigned tid )
+{
+    if( tid-- > 0 ) {
+        SampleIndex = 0;
+        SampleIndexP[tid] = SampleIndex;
+        if( CallGraphMode ) {
+            SampleCount = 0;
+            LastSampleIndex = 0;
+            SampleCountP[tid] = SampleCount;
+        }
+    }
+}
+
 void InitTimerRate( void )
 {
     SleepTime = 55;

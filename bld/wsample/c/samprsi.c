@@ -52,6 +52,17 @@ unsigned NextThread( unsigned tid )
     return( !tid );
 }
 
+void ResetThread( unsigned tid )
+{
+    if( tid > 0 ) {
+        SampleIndex = 0;
+        if( CallGraphMode ) {
+            SampleCount = 0;
+            LastSampleIndex = 0;
+        }
+    }
+}
+
 bool VersionCheck( void )
 {
     return( true );

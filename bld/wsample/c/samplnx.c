@@ -273,6 +273,20 @@ unsigned NextThread( unsigned tid )
 }
 
 
+void ResetThread( unsigned tid )
+{
+    if( tid-- > 0 ) {
+        SampleIndex = 0;
+        SampleIndexP[tid] = SampleIndex;
+        if( CallGraphMode ) {
+            SampleCount = 0;
+            LastSampleIndex = 0;
+            SampleCountP[tid] = SampleCount;
+        }
+    }
+}
+
+
 static void SetPid( char **cmd )
 {
     SamplePid = GetNumber( 1, INT_MAX, cmd, 10 );
