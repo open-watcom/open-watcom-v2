@@ -40,15 +40,15 @@
 
 
 extern void *AllocTag;
-extern void *Alloc( int, void* );
-extern void Free( void* );
+extern void *Alloc( size_t, void * );
+extern void Free( void * );
 
-int SysCreate( char *name )
+int SysCreate( const char *name )
 {
     return( open( name, O_BINARY | O_WRONLY | O_TRUNC | O_CREAT, 0 ) );
 }
 
-unsigned SysWrite( int handle, void FAR_PTR *buff, unsigned len )
+unsigned SysWrite( int handle, const void FAR_PTR *buff, unsigned len )
 {
     return( write( handle, buff, len ) );
 }
@@ -63,7 +63,7 @@ int SysClose( int handle )
     return( close( handle ) );
 }
 
-void FAR_PTR *my_alloc( int size )
+void FAR_PTR *my_alloc( size_t size )
 {
     return( Alloc( size, AllocTag ) );
 }

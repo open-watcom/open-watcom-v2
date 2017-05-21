@@ -37,13 +37,11 @@
 #include "sysio.h"
 
 
-int SysOpen( char *name );
-
 void SysInit( void )
 {
 }
 
-int SysOpen( char *name )
+int SysOpen( const char *name )
 {
     tiny_ret_t ret;
 
@@ -53,7 +51,7 @@ int SysOpen( char *name )
     return( ret );
 }
 
-int SysCreate( char *name )
+int SysCreate( const char *name )
 {
     tiny_ret_t  ret;
 
@@ -63,7 +61,7 @@ int SysCreate( char *name )
     return( ret );
 }
 
-unsigned SysWrite( int handle, void FAR_PTR *buff, unsigned len )
+unsigned SysWrite( int handle, const void FAR_PTR *buff, unsigned len )
 {
     tiny_ret_t  ret;
 
@@ -89,7 +87,7 @@ int SysClose( int handle )
     return( 0 );
 }
 
-void FAR_PTR *my_alloc( int size )
+void FAR_PTR *my_alloc( size_t size )
 {
     return( _fmalloc( size ) );
 }

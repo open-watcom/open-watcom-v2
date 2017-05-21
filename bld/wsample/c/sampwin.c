@@ -207,7 +207,7 @@ static void internalError( char * str )
 /*
  * StartProg - start and execute sampled program
  */
-void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
 {
     WORD                timer;
     WORD                mod_count;
@@ -218,8 +218,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     FARPROC             notify_fn;
     FARPROC             fault_fn;
 
-
-    cmd = cmd;
+    /* unused parameters */ (void)cmd;
 
     /*
      * initialize sampler VxD

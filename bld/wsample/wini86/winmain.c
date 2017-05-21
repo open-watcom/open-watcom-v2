@@ -229,7 +229,7 @@ static int WindowsInit( HANDLE inst, int showcmd )
 
 } /* WindowsInit */
 
-void Output( char *str )
+void Output( const char *str )
 {
     MyOutput( str );
 }
@@ -237,7 +237,7 @@ void Output( char *str )
 /*
  * Output a string to the list box
  */
-void MyOutput( char *str, ... )
+void MyOutput( const char *str, ... )
 {
     static char tmpStr[TMPSLEN+1];
     static int  tmpOff=0;

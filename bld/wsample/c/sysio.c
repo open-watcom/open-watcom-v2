@@ -45,13 +45,13 @@
     #define O_BINARY 0
 #endif
 
-int SysCreate( char *name )
+int SysCreate( const char *name )
 {
     return( open( name, O_BINARY | O_WRONLY | O_TRUNC | O_CREAT,
                 S_IRUSR|S_IWUSR | S_IRGRP|S_IWGRP | S_IROTH|S_IWOTH ) );
 }
 
-unsigned SysWrite( int handle, void FAR_PTR *buff, unsigned len )
+size_t SysWrite( int handle, const void FAR_PTR *buff, size_t len )
 {
     return( posix_write( handle, buff, len ) );
 }
@@ -66,7 +66,7 @@ int SysClose( int handle )
     return( close( handle ) );
 }
 
-void FAR_PTR *my_alloc( int size )
+void FAR_PTR *my_alloc( size_t size )
 {
     return( malloc( size ) );
 }

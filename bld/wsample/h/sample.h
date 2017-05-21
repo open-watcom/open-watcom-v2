@@ -65,7 +65,7 @@ notes:
 #define SAMP_MINOR_VER          2
 #define SAMP_LARGEST_BLOCK      (0xfe00)
 
-#pragma pack( push, 1 )
+#include "pushpck1.h"
 
 typedef struct samp_address {
     uint_32             offset;
@@ -78,22 +78,22 @@ typedef struct samp_header {
     uint_16             signature;      /* must == SAMP_SIGNATURE */
     uint_8              major_ver;      /* must == SAMP_MAJOR_VER */
     uint_8              minor_ver;      /* must <= SAMP_MINOR_VER */
-    off_t               sample_start;   /* first sample block offset in file */
+    uint_32             sample_start;   /* first sample block offset in file */
 } samp_header;
 #define SIZE_HEADER     (sizeof( samp_header ))
 
 typedef enum samp_block_kinds {
-    SAMP_INFO       =  0, /* statistics for sample file */
-    SAMP_SAMPLES    =  1, /* actual CS:EIP samples */
-    SAMP_MARK       =  2, /* a character string occurring at a certain time */
-    SAMP_OVL_LOAD   =  3, /* an overlay section was loaded */
-    SAMP_CODE_LOAD  =  4, /* executable file loaded */
-    SAMP_ADDR_MAP   =  5, /* translation from map addr's to loaded code addr' */
-    SAMP_MAIN_LOAD  =  6, /* main executable file loaded */
-    SAMP_LAST       =  7, /* always the last block */
-    SAMP_REMAP_SECTION=8, /* overlay section(s) have moved in memory */
-    SAMP_CALLGRAPH  =  9, /* callgraph information for samples */
-    NUM_BLOCK_KINDS = 10
+    SAMP_INFO           =  0, /* statistics for sample file */
+    SAMP_SAMPLES        =  1, /* actual CS:EIP samples */
+    SAMP_MARK           =  2, /* a character string occurring at a certain time */
+    SAMP_OVL_LOAD       =  3, /* an overlay section was loaded */
+    SAMP_CODE_LOAD      =  4, /* executable file loaded */
+    SAMP_ADDR_MAP       =  5, /* translation from map addr's to loaded code addr' */
+    SAMP_MAIN_LOAD      =  6, /* main executable file loaded */
+    SAMP_LAST           =  7, /* always the last block */
+    SAMP_REMAP_SECTION  =  8, /* overlay section(s) have moved in memory */
+    SAMP_CALLGRAPH      =  9, /* callgraph information for samples */
+    NUM_BLOCK_KINDS     = 10
 } samp_block_kinds;
 
 
@@ -254,4 +254,4 @@ typedef struct samp_block {
 } samp_block;
 #define SIZE_BLOCK      (sizeof( samp_block ))
 
-#pragma pack( pop )
+#include "poppck.h"

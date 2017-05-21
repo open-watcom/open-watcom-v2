@@ -48,7 +48,7 @@ static  long    SampOffset;
 static  int     SampleHandle;
 static  bool    SampIsDOS;
 
-int  SampCreate( char *name )
+int  SampCreate( const char *name )
 {
     SampOffset = 0;
     SampIsDOS = false;
@@ -64,7 +64,7 @@ int  SampCreate( char *name )
 }
 
 
-int SampWrite( void FAR_PTR *buff, unsigned len )
+int SampWrite( const void FAR_PTR *buff, unsigned len )
 {
     LONG written;
 
@@ -110,10 +110,11 @@ int SampClose( void )
     }
 }
 
-void Output( char FAR_PTR *str )
+void Output( const char FAR_PTR *str )
 {
-    char FAR_PTR *p = str;
-    int len = 0;
+    const char  FAR_PTR *p = str;
+    unsigned    len = 0;
+
     while( *p++ != '\0' )
         ++len;
     SysWrite( 2, str, len );

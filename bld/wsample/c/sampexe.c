@@ -70,8 +70,7 @@ void GetProg( char *cmd, char *eoc )
 
     save = *eoc;
     *eoc = '\0';
-    _splitpath2( (char *)cmd, (char *)buff1,
-        (char **)&drive, (char **)&dir, (char **)&fname, (char **)&ext );
+    _splitpath2( cmd, buff1, &drive, &dir, &fname, &ext );
     *eoc = save;
 #ifdef __NETWARE__
     if( ext[0] == '\0' )
@@ -83,12 +82,12 @@ void GetProg( char *cmd, char *eoc )
     if( ext[0] == '\0' )
         ext = ".exe";
 #endif
-    _makepath( (char *)prog_name, (char *)drive, (char *)dir, (char *)fname, (char *)ext );
+    _makepath( prog_name, drive, dir, fname, ext );
 
     if( drive[0] == '\0' && dir[0] == '\0' ) {
-        _searchenv( (char *)prog_name, "PATH", ExeName );
-    } else if( access( (char *)prog_name, R_OK ) == 0 ) {
-        strcpy( ExeName, (char *)prog_name );
+        _searchenv( prog_name, "PATH", ExeName );
+    } else if( access( prog_name, R_OK ) == 0 ) {
+        strcpy( ExeName, prog_name );
     }
 
     if( ExeName[0] == '\0' ) {
@@ -111,8 +110,7 @@ void GetProg( char *cmd, char *eoc )
     chdir( dir );
 #endif
 
-    _splitpath2( SampName, (char *)buff2,
-        (char **)&drive, (char **)&dir, (char **)&sfname, (char **)&ext );
+    _splitpath2( SampName, buff2, &drive, &dir, &sfname, &ext );
 
     /*
      * for windows, we need to give the sample file an absolute
