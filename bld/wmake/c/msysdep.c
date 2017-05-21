@@ -207,8 +207,14 @@ bool IdenticalAutoDepTimes( time_t in_obj, time_t stamp )
 {
     time_t  diff_time;
 
-    /* in_obj can be a DOS time so we need to round to the nearest two-second */
-    if( in_obj == stamp || in_obj == (stamp & ~1) ) {
+#if defined( __UNIX__ )
+    if( in_obj == stamp ) {
+#elif defined( __NT__ ) && ( !defined( __WATCOMC__ ) || __WATCOMC__ > 1290 )
+    if( in_obj == stamp ) {
+#else
+    /* in_obj can be a DOS time so we need to round stamp to the nearest two-second */
+    if( in_obj == stamp || in_obj == (( stamp + 1 ) & ~1) ) {
+#endif
         return( true );
     }
     if( in_obj < stamp ) {
