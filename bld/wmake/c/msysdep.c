@@ -202,19 +202,17 @@ RET_T TouchFile( const char *name )
 
 #define FUZZY_DELTA     60      /* max allowed variance from stored time-stamp */
 
-bool IdenticalAutoDepTimes( time_t in_obj, time_t stamp )
-/*******************************************************/
+bool IdenticalAutoDepTimes( time_t in_obj, time_t stamp, bool dos_stamp )
+/***********************************************************************/
 {
     time_t  diff_time;
 
-#if defined( __UNIX__ )
-    if( in_obj == stamp ) {
-#elif defined( __NT__ ) && ( !defined( __WATCOMC__ ) || __WATCOMC__ > 1290 )
-    if( in_obj == stamp ) {
-#else
-    /* in_obj can be a DOS time so we need to round stamp to the nearest two-second */
-    if( in_obj == stamp || in_obj == (( stamp + 1 ) & ~1) ) {
-#endif
+    /* if in_obj is a DOS time then we need to round stamp up/down to the nearest two-second */
+    if( dos_stamp && (stamp & 1) ) {
+        if( in_obj == (stamp & ~1) || in_obj == (( stamp + 1 ) & ~1) ) {
+            return( true );
+        }
+    } else if( in_obj == stamp ) {
         return( true );
     }
     if( in_obj < stamp ) {

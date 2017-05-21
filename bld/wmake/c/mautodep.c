@@ -82,8 +82,7 @@ static bool isTargObsolete( char const *name, time_t stamp,
     if( CacheTime( dep_name, &curr_dep_time ) != RET_SUCCESS ) {
         exists = false, obsolete = true;
     } else {
-        if( !IdenticalAutoDepTimes( auto_dep_time, curr_dep_time ) ||
-                (*chk)( stamp, curr_dep_time ) ) {
+        if( !IdenticalAutoDepTimes( auto_dep_time, curr_dep_time, ( curr == &OMFAutoDepInfo ) ) || (*chk)( stamp, curr_dep_time ) ) {
             obsolete = true;
         }
         if( curr_dep_time > *pmax_time ) {
@@ -129,7 +128,7 @@ bool AutoDepCheck( char *name, time_t stamp,
             dep_handle (* const next_dep)( dep_handle ) = curr->next_dep;
 
             for( dep = first_dep( hdl ); dep != NULL; dep = next_dep( hdl ) ) {
-                obs |= isTargObsolete(name, stamp, chk, pmax_time, curr, dep );
+                obs |= isTargObsolete( name, stamp, chk, pmax_time, curr, dep );
                 if( obs && quick_logic ) {
                     break; // No need to calculate real max time
                 }
