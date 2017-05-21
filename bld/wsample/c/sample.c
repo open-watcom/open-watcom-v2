@@ -190,7 +190,7 @@ void SaveSamples( void )
                     Info.d.count[SAMP_SAMPLES].size += size;
                     Info.d.count[SAMP_SAMPLES].number += 1;
                 }
-                SampleIndex = 0;
+                ResetThread( tid );
             }
         } else {        /* record sample and callgraph information */
             for( i = 0; i < SampleIndex; i++ ) {
@@ -235,9 +235,7 @@ void SaveSamples( void )
                             j += 2;
                         }
                     }
-                    SampleIndex = 0;
-                    SampleCount = 0;
-                    LastSampleIndex = 0;
+                    ResetThread( tid );
                 }
             }
         }

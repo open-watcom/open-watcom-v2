@@ -137,6 +137,7 @@ extern void             SetTimerRate( char ** );
 extern unsigned long    TimerRate( void );
 extern unsigned         SafeMargin( void );
 extern unsigned         NextThread( unsigned );
+extern void             ResetThread( unsigned );
 
 extern void             SysInit( void );
 extern void             SysOptions( void );
