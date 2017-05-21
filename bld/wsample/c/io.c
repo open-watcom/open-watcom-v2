@@ -41,16 +41,16 @@
 static  unsigned long   SampOffset;
 static  int             SampleHandle;
 
-int  SampCreate( char *name )
+int  SampCreate( const char *name )
 {
     SampOffset = 0;
     SampleHandle = SysCreate( name );
     return( SampleHandle == -1 );
 }
 
-int SampWrite( void FAR_PTR *buff, unsigned len )
+int SampWrite( const void FAR_PTR *buff, size_t len )
 {
-    unsigned written;
+    size_t  written;
 
     written = SysWrite( SampleHandle, buff, len );
     if( written == len ) {
@@ -78,10 +78,11 @@ int SampClose( void )
     return( SysClose( SampleHandle ) );
 }
 
-void Output( char FAR_PTR *str )
+void Output( const char FAR_PTR *str )
 {
-    char FAR_PTR *p = str;
-    int len = 0;
+    const char  FAR_PTR *p = str;
+    size_t      len = 0;
+
     while( *p++ )
         ++len;
     SysWrite( 2, str, len );

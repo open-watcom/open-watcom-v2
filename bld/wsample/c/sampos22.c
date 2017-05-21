@@ -267,8 +267,7 @@ void StopProg( void )
 }
 
 
-static void CodeLoad( uDB_t FAR_PTR *buff, ULONG mte,
-                      char *name, samp_block_kinds kind )
+static void CodeLoad( uDB_t FAR_PTR *buff, ULONG mte, const char *name, samp_block_kinds kind )
 {
     seg_offset  ovl;
     int         i;
@@ -333,8 +332,7 @@ static void DebugExecute( uDB_t *buff, ULONG cmd )
         switch( buff->Cmd ) {
         case DBG_N_ModuleLoad:
             DosQueryModuleName( buff->Value, BUFF_SIZE, name );
-            CodeLoad( buff, buff->Value, name,
-                (buff->Value == MainMod) ? SAMP_MAIN_LOAD : SAMP_CODE_LOAD );
+            CodeLoad( buff, buff->Value, name, ( buff->Value == MainMod ) ? SAMP_MAIN_LOAD : SAMP_CODE_LOAD );
             buff->MTE = MainMod;
             break;
         case DBG_N_ModuleFree:
@@ -479,10 +477,10 @@ static void LoadProg( char *cmd, char *cmd_tail )
 }
 
 
-void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
 {
 
-    char        *src;
+    const char  *src;
     char        *dst;
     ULONG       drive;
     ULONG       map;
@@ -492,7 +490,8 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     ULONG       rc;
     char        *cmd_tail;
 
-    cmd = cmd;
+    /* unused parameters */ (void)cmd;
+
     MaxThread = 0;
     GrowArrays( 1 );
     src = prog;

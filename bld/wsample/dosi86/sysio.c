@@ -42,7 +42,7 @@ void SysInit( void )
 {
 }
 
-int SysCreate( char *name )
+int SysCreate( const char *name )
 {
     int     handle;
 
@@ -51,7 +51,7 @@ int SysCreate( char *name )
     return( handle );
 }
 
-unsigned SysWrite( int handle, void FAR_PTR *buff, unsigned len )
+unsigned SysWrite( int handle, const void FAR_PTR *buff, unsigned len )
 {
     tiny_ret_t  ret;
 
@@ -77,7 +77,7 @@ int SysClose( int handle )
     return( 0 );
 }
 
-void FAR_PTR *my_alloc( int size )
+void FAR_PTR *my_alloc( size_t size )
 {
     return( _fmalloc( size ) );
 }

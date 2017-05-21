@@ -105,7 +105,7 @@ static WORD horkyFindSegment( HMODULE modid, WORD segment )
 /*
  * newModule - handle a new module
  */
-static void newModule( HANDLE hmod, char *name, samp_block_kinds kind )
+static void newModule( HANDLE hmod, const char *name, samp_block_kinds kind )
 {
     GLOBALENTRY         ge;
     os2_exe_header      ne;

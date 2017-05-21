@@ -103,33 +103,33 @@ typedef struct {
 extern void REPORT_TYPE report( void );
 extern void             fatal( void );
 
-extern void             Output( char FAR_PTR * );
+extern void             Output( const char FAR_PTR * );
 extern unsigned         GetNumber( unsigned, unsigned, char **, unsigned );
 extern void             StopAndSave( void );
-extern void             WriteCodeLoad( seg_offset, char *, samp_block_kinds );
+extern void             WriteCodeLoad( seg_offset, const char *, samp_block_kinds );
 extern void             WriteAddrMap( seg, seg, off );
 extern void             AllocSamples( unsigned );
 extern void             RecordCGraph( void );
 
-extern int              SampCreate( char * );
-extern int              SampWrite( void FAR_PTR *, unsigned );
+extern int              SampCreate( const char * );
+extern int              SampWrite( const void FAR_PTR *, size_t );
 extern int              SampSeek( unsigned long );
 extern int              SampClose( void );
 extern void             SaveSamples( void );
 
-extern void             StartProg( char *cmd, char *prog, char *full_args, char *dos_args );
+extern void             StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args );
 extern void             StopProg( void );
-extern void             GetProg( char *,char * );
+extern void             GetProg( char *, char * );
 #if defined( __DOS__ ) && !defined( _PLS ) && !defined( _RSI )
 extern bool             __near VersionCheck( void );
-extern void             __near WriteMark( char FAR_PTR *str, seg_offset where );
+extern void             __near WriteMark( const char FAR_PTR *str, seg_offset where );
 #else
 extern bool             VersionCheck( void );
-extern void             WriteMark( char FAR_PTR *str, seg_offset where );
+extern void             WriteMark( const char FAR_PTR *str, seg_offset where );
 #endif
 extern void             Usage( void );
 
-extern void             FAR_PTR *my_alloc( int size );
+extern void             FAR_PTR *my_alloc( size_t size );
 extern void             my_free( void FAR_PTR *chunk );
 
 extern void             InitTimerRate( void );

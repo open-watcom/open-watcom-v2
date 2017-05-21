@@ -42,6 +42,8 @@
 #include "sample.h"
 #include "banner.h"
 
+#include "clibext.h"
+
 
 #if defined( __SMALL__ ) || defined( __MEDIUM__ )
     #error must be compiled with a large data model
@@ -74,7 +76,7 @@ int main( int argc, char **argv )
 {
     char                quiet;
     int                 fd;
-    unsigned            wanted;
+    size_t              wanted;
     unsigned            i, j, k, l;
     int                 length = 0;
     off_t               head_off;

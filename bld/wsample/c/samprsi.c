@@ -148,7 +148,7 @@ void StopProg( void )
 
 #define BSIZE 256
 
-void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
 {
 
     seg_offset  where;
@@ -158,7 +158,8 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     short       initial_cs;
     int         len;
 
-    cmd = cmd;
+    /* unused parameters */ (void)cmd;
+
     SampleIndex = 0;
     CurrTick  = 0L;
 

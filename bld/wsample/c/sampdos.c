@@ -124,7 +124,7 @@ void StopProg( void )
     RemoveDOSIntercepts();
 }
 
-void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
 {
     struct  SREGS       segs;
     seg_offset          ovl_tbl;
@@ -132,7 +132,8 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     pblock              parms;
     overlay_record_t    FAR_PTR *ovl_struct;
 
-    cmd = cmd;
+    /* unused parameters */ (void)cmd;
+
     InstallDOSIntercepts();
     StartTimer();
     segread( (struct SREGS *)&segs );
