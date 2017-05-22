@@ -1799,6 +1799,10 @@ static unsigned classify_operand( // CLASSIFY OPERAND AS PTR, ARITH, OTHER
                     retn = OPCL_OTHER;
                 }
                 break;
+              // While nullptr is not a pointer, is should act like so on most occasions.
+              case PT_PTR_CONSTANT :
+                retn = OPCL_PTR;
+                break;
               default :
                 retn = OPCL_OTHER;
                 break;

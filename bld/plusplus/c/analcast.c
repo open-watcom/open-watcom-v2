@@ -2625,7 +2625,7 @@ static uint_8 implicitTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //                                               target operand
 //                                               --------------
     {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  0  // error
-    ,  1, 11, 13,  4,  0,  3,  2,  4,  0,  0,  1  // arithmetic
+    ,  1, 11, 13,  4,  0,  3,  2,  4,  0,  0,  4  // arithmetic
     ,  1,  7, 12,  3,  0,  3,  2,  3,  0,  0,  1  // enumeration
     ,  1,  6,  6,  5,  0,  0,  2,  3,  0,  0,  15 // pointer
     ,  1,  0,  0,  0,  0,  0,  2,  0,  0,  0,  1  // class
@@ -2634,14 +2634,14 @@ static uint_8 implicitTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
     ,  1, 10, 10,  3,  0,  3,  2, 14,  0,  0,  15 // member pointer
     ,  1,  0,  0,  0,  0,  0,  2,  0,  0,  0,  1  // ellipsis
     ,  1,  0,  0,  0,  0,  0,  2,  0,  0,  0,  1  // generic
-    ,  1,  2,  2,  2,  0,  0,  2,  2,  0,  0,  0  // nullptr
+    ,  1,  6,  2,  2,  0,  0,  2,  2,  0,  0,  0  // nullptr
     };
 
 //  0 - impossible
 //  1 - one operand error ==> reduce to error node
 //  2 - bad explicit-cast type
 //  3 - bad expression for explicit cast
-//  4 - memb-ptr,ptr to arith (only bool is ok)
+//  4 - memb-ptr, ptr, nullptr to arith (only bool is ok)
 //  5 - ptr to ptr
 //  6 - arith, enum -> ptr
 //  7 - arith -> enum
