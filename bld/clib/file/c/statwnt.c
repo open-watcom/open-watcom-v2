@@ -52,7 +52,7 @@
 #include "ntext.h"
 #include "osver.h"
 #include "seterrno.h"
-#include "ft2timet.h"
+#include "timetwnt.h"
 #include "thread.h"
 #include "pathmac.h"
 

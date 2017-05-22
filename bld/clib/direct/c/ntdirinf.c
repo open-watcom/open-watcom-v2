@@ -39,7 +39,7 @@
 #include "libwin32.h"
 #include "ntext.h"
 #include "_dtaxxx.h"
-#include "ft2timet.h"
+#include "timetwnt.h"
 
 
 void __GetNTDirInfo( DIR_TYPE *dirp, LPWIN32_FIND_DATA ffb )
