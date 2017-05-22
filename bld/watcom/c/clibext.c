@@ -2006,17 +2006,17 @@ unsigned _dos_setfileattr( const char *path, unsigned attribute )
 #define OPENMODE_DENY_READ      0x0030
 #define OPENMODE_DENY_NONE      0x0040
 
-#define WINDOWS_TICK            10000000
+#define WINDOWS_TICK            10000000LL
 #define SEC_TO_UNIX_EPOCH       11644473600LL
 
 
-static time_t __NTfiletime_to_timet( const FILETIME *ft )
+static time_t __NT_filetime_to_timet( const FILETIME *ft )
 {
     ULARGE_INTEGER  ulint;
 
     ulint.u.LowPart   =   ft->dwLowDateTime; 
     ulint.u.HighPart  =   ft->dwHighDateTime; 
-    return( ulint.QuadPart / WINDOWS_TICK - SEC_TO_UNIX_EPOCH );
+    return( ( ulint.QuadPart + WINDOWS_TICK / 2 ) / WINDOWS_TICK - SEC_TO_UNIX_EPOCH );
 }
 
 static void __GetNTCreateAttr( unsigned attr, LPDWORD desired_access, LPDWORD nt_attr )
@@ -2140,7 +2140,7 @@ static int is_directory( const char *name )
 static void __GetNTDirInfo( struct dirent *dirp, LPWIN32_FIND_DATA ffd )
 /**********************************************************************/
 {
-    DTAXXX_TSTAMP_OF( dirp->d_dta ) = __NTfiletime_to_timet( &ffd->ftLastWriteTime );
+    DTAXXX_TSTAMP_OF( dirp->d_dta ) = __NT_filetime_to_timet( &ffd->ftLastWriteTime );
     __MakeDOSDT( &ffd->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
     dirp->d_attr = (char)ffd->dwFileAttributes;
     dirp->d_size = ffd->nFileSizeLow;
