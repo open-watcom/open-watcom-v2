@@ -6,7 +6,7 @@
 *
 *  ========================================================================
 *
-* Description:  Windows NT FILETIME to time_t conversion routine
+* Description:  Windows NT FILETIME -> time_t conversion routine
 *
 ****************************************************************************/
 
@@ -16,15 +16,11 @@
 #include "timetwnt.h"
 
 
-#define WINDOWS_TICK        10000000
-#define SEC_TO_UNIX_EPOCH   11644473600LL
-
-
-time_t __NTfiletime_to_timet( const FILETIME *ft )
+time_t __NT_filetime_to_timet( const FILETIME *ft )
 {
     ULARGE_INTEGER  ulint;
 
     ulint.u.LowPart   =   ft->dwLowDateTime; 
     ulint.u.HighPart  =   ft->dwHighDateTime; 
-    return( ulint.QuadPart / WINDOWS_TICK - SEC_TO_UNIX_EPOCH );
+    return( ( ulint.QuadPart + WINDOWS_TICK / 2 ) / WINDOWS_TICK - SEC_TO_UNIX_EPOCH );
 }
