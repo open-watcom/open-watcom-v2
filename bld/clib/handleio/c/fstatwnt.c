@@ -44,7 +44,7 @@
 #include "ntext.h"
 #include "rtcheck.h"
 #include "seterrno.h"
-#include "ft2timet.h"
+#include "timetwnt.h"
 #include "thread.h"
 
 

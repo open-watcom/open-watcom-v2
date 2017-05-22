@@ -48,7 +48,7 @@
 #ifdef __NT__
     #include "libwin32.h"
     #include "ntext.h"
-    #include "ft2timet.h"
+    #include "timetwnt.h"
 #elif defined( __OS2__ )
     #include "os2fil64.h"
     #include "d2ttime.h"

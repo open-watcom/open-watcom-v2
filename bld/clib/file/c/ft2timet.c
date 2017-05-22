@@ -13,7 +13,7 @@
 
 #include <time.h>
 #include <windows.h>
-#include "ft2timet.h"
+#include "timetwnt.h"
 
 
 #define WINDOWS_TICK        10000000
