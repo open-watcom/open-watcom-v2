@@ -167,9 +167,9 @@
             _ReleaseFileH( hid );
             return( __set_errno_nt() );
         }
-        buf->st_mtime = __NTfiletime_to_timet( &mtime );
-        buf->st_ctime = __NTfiletime_to_timet( &ctime );;
-        buf->st_atime = __NTfiletime_to_timet( &atime );
+        buf->st_mtime = __NT_filetime_to_timet( &mtime );
+        buf->st_ctime = __NT_filetime_to_timet( &ctime );;
+        buf->st_atime = __NT_filetime_to_timet( &atime );
 
         buf->st_dev = buf->st_rdev = 0;
     }

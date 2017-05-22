@@ -44,7 +44,7 @@
 
 void __GetNTDirInfo( DIR_TYPE *dirp, LPWIN32_FIND_DATA ffb )
 {
-    DTAXXX_TSTAMP_OF( dirp->d_dta ) = __NTfiletime_to_timet( &ffb->ftLastWriteTime );
+    DTAXXX_TSTAMP_OF( dirp->d_dta ) = __NT_filetime_to_timet( &ffb->ftLastWriteTime );
     __MakeDOSDT( &ffb->ftLastWriteTime, &dirp->d_date, &dirp->d_time );
     dirp->d_attr = ffb->dwFileAttributes;
     dirp->d_size = ffb->nFileSizeLow;

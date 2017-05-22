@@ -226,9 +226,9 @@ static DWORD at2mode( DWORD attr, CHAR_TYPE *fname, CHAR_TYPE const *orig_path )
     buf->st_size = ffb.nFileSizeLow;
 #endif
     buf->st_mode = at2mode( ffb.dwFileAttributes, ffb.cFileName, path );
-    buf->st_mtime = __NTfiletime_to_timet( &ffb.ftLastWriteTime );
-    buf->st_ctime = __NTfiletime_to_timet( &ffb.ftCreationTime );
-    buf->st_atime = __NTfiletime_to_timet( &ffb.ftLastAccessTime );
+    buf->st_mtime = __NT_filetime_to_timet( &ffb.ftLastWriteTime );
+    buf->st_ctime = __NT_filetime_to_timet( &ffb.ftCreationTime );
+    buf->st_atime = __NT_filetime_to_timet( &ffb.ftLastAccessTime );
     buf->st_nlink = 1;
     buf->st_ino = buf->st_uid = buf->st_gid = 0;
 

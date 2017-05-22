@@ -206,9 +206,9 @@
     }
 
     /*** Handle the timestamps ***/
-    fileinfo->time_create = __NTfiletime_to_timet( &ffb->ftCreationTime );
-    fileinfo->time_access = __NTfiletime_to_timet( &ffb->ftLastAccessTime );
-    fileinfo->time_write = __NTfiletime_to_timet( &ffb->ftLastWriteTime );
+    fileinfo->time_create = __NT_filetime_to_timet( &ffb->ftCreationTime );
+    fileinfo->time_access = __NT_filetime_to_timet( &ffb->ftLastAccessTime );
+    fileinfo->time_write = __NT_filetime_to_timet( &ffb->ftLastWriteTime );
 
     /*** Handle the file size ***/
   #ifdef __INT64__

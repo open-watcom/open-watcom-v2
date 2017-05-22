@@ -46,20 +46,20 @@
 #include "libwin32.h"
 #include "openmode.h"
 #include "seterrno.h"
+#include "timetwnt.h"
+
 
 _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const *times )
-/**********************************************************************************/
+/***************************************************************************************/
 {
     HANDLE              h;
-    struct tm           *split;
     time_t              curr_time;
     struct utimbuf      time_buf;
-    FILETIME            fctime,fatime,fwtime;
-    FILETIME            local_ft;
-    SYSTEMTIME          atime,wtime;
+    FILETIME            fctime;
+    FILETIME            fatime;
+    FILETIME            fwtime;
 
-    h = __lib_CreateFile( fn, GENERIC_READ | GENERIC_WRITE, 0, NULL,
-                               OPEN_EXISTING, 0, NULL );
+    h = __lib_CreateFile( fn, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL );
     if( h == (HANDLE)-1 ) {
         return( __set_errno_nt() );
     }
@@ -73,18 +73,8 @@ _WCRTLINK int __F_NAME(utime,_wutime)( CHAR_TYPE const *fn, struct utimbuf const
         time_buf.actime = curr_time;
         times = &time_buf;
     }
-    split = localtime( &(times->modtime) );
-    wtime.wYear = atime.wYear = 1900 + split->tm_year;
-    wtime.wMonth = atime.wMonth = split->tm_mon + 1;
-    wtime.wDay = atime.wDay = split->tm_mday;
-    wtime.wHour = atime.wHour = split->tm_hour;
-    wtime.wMinute = atime.wMinute = split->tm_min;
-    wtime.wSecond = atime.wSecond = split->tm_sec;
-    wtime.wMilliseconds = atime.wMilliseconds = 0;
-    SystemTimeToFileTime( &wtime, &local_ft );
-    LocalFileTimeToFileTime( &local_ft, &fwtime );
-    SystemTimeToFileTime( &atime, &local_ft );
-    LocalFileTimeToFileTime( &local_ft, &fatime );
+    __NT_timet_to_filetime( times->modtime, &fwtime );
+    __NT_timet_to_filetime( times->actime, &fatime );
 
     if( !SetFileTime( h, &fctime, &fatime, &fwtime ) ) {
         CloseHandle( h );
