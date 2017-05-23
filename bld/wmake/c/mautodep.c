@@ -58,7 +58,7 @@ void AutoDepInit( void )
 {
     const auto_dep_info * const *pcurr;
 
-    for( pcurr = &AutoDepTypes[0]; *pcurr != NULL; pcurr++ ) {
+    for( pcurr = AutoDepTypes; *pcurr != NULL; pcurr++ ) {
         if( (*pcurr)->init != NULL ) {
             (*pcurr)->init();
         }
@@ -122,7 +122,7 @@ bool AutoDepCheck( char *name, time_t stamp,
     quick_logic = !( Glob.rcs_make || Glob.debug || Glob.show_offenders );
     obs = false;
 
-    for( pcurr = &AutoDepTypes[0]; (curr = *pcurr) != NULL; pcurr++ ) {
+    for( pcurr = AutoDepTypes; (curr = *pcurr) != NULL; pcurr++ ) {
         if( (hdl = curr->init_file( name )) != NULL ) {
             dep_handle (* const first_dep)( handle )    = curr->first_dep;
             dep_handle (* const next_dep)( dep_handle ) = curr->next_dep;
@@ -146,7 +146,7 @@ void AutoDepFini( void )
 {
     const auto_dep_info * const *pcurr;
 
-    for( pcurr = &AutoDepTypes[0]; *pcurr != NULL; pcurr++ ) {
+    for( pcurr = AutoDepTypes; *pcurr != NULL; pcurr++ ) {
         if( (*pcurr)->fini != NULL ) {
             (*pcurr)->fini();
         }
