@@ -370,7 +370,7 @@ int IsDataReloc( ref_entry r_entry )
     }
 }
 
-dis_sec_offset RelocSize( ref_entry r_entry )
+unsigned RelocSize( ref_entry r_entry )
 {
     switch( r_entry->type ) {
     case ORL_RELOC_TYPE_ABSOLUTE:
@@ -395,7 +395,7 @@ dis_sec_offset RelocSize( ref_entry r_entry )
     case ORL_RELOC_TYPE_PLT_32:
     case ORL_RELOC_TYPE_WORD_16_SEG:
     case ORL_RELOC_TYPE_REL_16_SEG:
-        return 4;
+        return( 4 );
     case ORL_RELOC_TYPE_WORD_16:
     case ORL_RELOC_TYPE_HALF_HI:
     case ORL_RELOC_TYPE_HALF_LO:
@@ -414,26 +414,26 @@ dis_sec_offset RelocSize( ref_entry r_entry )
     case ORL_RELOC_TYPE_PLT_16_HI:
     case ORL_RELOC_TYPE_PLT_16_HA:
     case ORL_RELOC_TYPE_PLT_16_LO:
-        return 2;
+        return( 2 );
     case ORL_RELOC_TYPE_WORD_64:
-        return 8;
+        return( 8 );
     case ORL_RELOC_TYPE_WORD_32_SEG:
     case ORL_RELOC_TYPE_REL_32_SEG:
-        return 6;
+        return( 6 );
     case ORL_RELOC_TYPE_WORD_8:
     case ORL_RELOC_TYPE_REL_8:
     case ORL_RELOC_TYPE_WORD_HI_8:
     case ORL_RELOC_TYPE_REL_HI_8:
-        return 1;
+        return( 1 );
     default:
         // This should never happen, but 4 is the most likely size.
-        return 4;
+        return( 4 );
     }
 }
 
-dis_sec_offset HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
+unsigned HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
 {
-    dis_sec_offset      rv;
+    unsigned            rv;
     const char          * const *types;
     char                buff[MAX_SYM_LEN];      // fixme: should be TS_MAX_OBJNAME or something
 
