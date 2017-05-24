@@ -36,10 +36,10 @@
 extern return_val       DumpASMSection( section_ptr, unsigned_8 *, orl_sec_size, unsigned );
 extern return_val       BssASMSection( section_ptr, orl_sec_size, unsigned );
 extern dis_value        HandleAddend( ref_entry );
-extern dis_sec_offset   RelocSize( ref_entry );
+extern unsigned         RelocSize( ref_entry );
 extern int              IsMasmOutput( void );
 extern int              IsDataReloc( ref_entry );
-extern dis_sec_offset   HandleRefInData( ref_entry, void *, bool );
+extern unsigned         HandleRefInData( ref_entry, void *, bool );
 extern return_val       DumpASMDataFromSection( unsigned_8 *, dis_sec_offset,
                                                 dis_sec_offset, label_entry *,
                                                 ref_entry *, section_ptr );

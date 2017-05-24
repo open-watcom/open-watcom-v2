@@ -63,7 +63,7 @@ ref_entry DoPass1Relocs( unsigned_8 *contents, ref_entry r_entry,
                 switch( RelocSize( r_entry ) ) {
                 case 6:
                 case 4:
-                    value = *((long *)&(contents[ r_entry->offset ]));
+                    value = *((signed_32 *)&(contents[ r_entry->offset ]));
                     break;
                 case 2:
                     value = *((short *)&(contents[ r_entry->offset ]));
