@@ -98,7 +98,7 @@ int IsMasmOutput( void )
     return( !( DFormat & DFF_UNIX ) && ( GetFormat() == ORL_OMF ) );
 }
 
-static void printRawAndAddress( char * raw_data, orl_sec_offset address )
+static void printRawAndAddress( char * raw_data, dis_sec_offset address )
 {
     switch( strlen( raw_data ) ) {
     case 0:
@@ -370,7 +370,7 @@ int IsDataReloc( ref_entry r_entry )
     }
 }
 
-orl_sec_offset RelocSize( ref_entry r_entry )
+dis_sec_offset RelocSize( ref_entry r_entry )
 {
     switch( r_entry->type ) {
     case ORL_RELOC_TYPE_ABSOLUTE:
@@ -431,9 +431,9 @@ orl_sec_offset RelocSize( ref_entry r_entry )
     }
 }
 
-orl_sec_offset HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
+dis_sec_offset HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
 {
-    orl_sec_offset      rv;
+    dis_sec_offset      rv;
     const char          * const *types;
     char                buff[MAX_SYM_LEN];      // fixme: should be TS_MAX_OBJNAME or something
 
@@ -531,7 +531,7 @@ static void printOut( char *string, size_t offset, size_t size )
 }
 
 static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
-                                 orl_sec_offset curr_pos, orl_sec_offset end,
+                                 dis_sec_offset curr_pos, dis_sec_offset end,
                                  unsigned_8 *contents, char *buffer )
 {
     int         raw;
@@ -599,13 +599,13 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
     return( l_entry );
 }
 
-return_val DumpASMDataFromSection( unsigned_8 *contents, orl_sec_offset start,
-                                   orl_sec_offset end, label_entry *labent,
+return_val DumpASMDataFromSection( unsigned_8 *contents, dis_sec_offset start,
+                                   dis_sec_offset end, label_entry *labent,
                                    ref_entry *refent, section_ptr sec )
 {
-    orl_sec_offset      curr_pos;
-    orl_sec_offset      curr_size;
-    orl_sec_offset      tmp_size;
+    dis_sec_offset      curr_pos;
+    dis_sec_offset      curr_size;
+    dis_sec_offset      tmp_size;
     size_t              size;
     label_entry         l_entry;
     ref_entry           r_entry;
@@ -724,7 +724,7 @@ return_val DumpASMSection( section_ptr sec, unsigned_8 *contents, orl_sec_size s
 static return_val bssUnixASMSection( section_ptr sec, orl_sec_size size,
                                      label_entry l_entry )
 {
-    orl_sec_offset              dsiz = 0;
+    dis_sec_offset              dsiz = 0;
     char                        *prefix;
     label_entry                 prev_entry;
 

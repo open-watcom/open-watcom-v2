@@ -33,10 +33,8 @@
 #ifndef WDIS_REFPROC_INCLUDED
 #define WDIS_REFPROC_INCLUDED
 
-extern return_val       CreateUnnamedLabelRef( orl_sec_handle, label_entry,
-                                               orl_sec_offset );
-extern return_val       CreateAbsoluteLabelRef( orl_sec_handle, label_entry,
-                                               orl_sec_offset );
+extern return_val       CreateUnnamedLabelRef( orl_sec_handle, label_entry, dis_sec_offset );
+extern return_val       CreateAbsoluteLabelRef( orl_sec_handle, label_entry, dis_sec_offset );
 extern orl_return       DealWithRelocSection( orl_sec_handle );
 extern orl_return       CreateNamedLabelRef( orl_reloc * );
 

@@ -156,8 +156,8 @@ static orl_return nopCallBack( const char *str, void *cookie  )
     return( ORL_OKAY );
 }
 
-static orl_return scanTabCallBack( orl_sec_handle sh, orl_sec_offset start,
-                                   orl_sec_offset end, void *cookie )
+static orl_return scanTabCallBack( orl_sec_handle sh, dis_sec_offset start,
+                                   dis_sec_offset end, void *cookie )
 {
     section_ptr         sec;
     hash_data           *dp;

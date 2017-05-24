@@ -54,7 +54,7 @@ static hash_value stringEncode( const char *string )
     h = 0;
     for( p = (const unsigned char *)string; *p != 0; p++ ) {
         h = ( h << 4 ) + *p;
-        if( (g = h & 0xf0000000) != 0 ) {
+        if( (g = (h & 0xf0000000)) != 0 ) {
             h = h ^ ( g >> 24 );
             h = h ^ g;
         }

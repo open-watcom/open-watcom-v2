@@ -43,7 +43,7 @@ extern dis_handle       DHnd;
 
 
 ref_entry DoPass1Relocs( unsigned_8 *contents, ref_entry r_entry,
-                         orl_sec_offset start, orl_sec_offset end )
+                         dis_sec_offset start, dis_sec_offset end )
 {
     long                                value;
     unnamed_label_return_struct         rs;
@@ -110,7 +110,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, orl_sec_size size
                     ref_list sec_ref_list, scantab_ptr stl )
 // perform pass 1 on one section
 {
-    orl_sec_offset                      loop;
+    dis_sec_offset                      loop;
     dis_dec_ins                         decoded;
     dis_value                           value;
     dis_return                          dr;
@@ -119,7 +119,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, orl_sec_size size
     unsigned                            i;
     ref_entry                           r_entry;
     dis_inst_flags                      flags;
-    orl_sec_offset                      op_pos;
+    dis_sec_offset                      op_pos;
     int                                 is_intel;
     int                                 adjusted;
     sa_disasm_struct                    sds;

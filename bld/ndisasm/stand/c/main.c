@@ -403,7 +403,7 @@ void PrintTail( section_ptr sec )
 }
 
 
-void PrintLinePrefixAddress( orl_sec_offset off, bool is32bit )
+void PrintLinePrefixAddress( dis_sec_offset off, bool is32bit )
 {
     if( is32bit ) {
         BufferStore( "%08X", off );
@@ -413,7 +413,7 @@ void PrintLinePrefixAddress( orl_sec_offset off, bool is32bit )
 }
 
 
-void PrintLinePrefixData( unsigned_8 *data, orl_sec_offset off, orl_sec_offset total, unsigned item_size, unsigned len )
+void PrintLinePrefixData( unsigned_8 *data, dis_sec_offset off, dis_sec_offset total, unsigned item_size, unsigned len )
 {
     unsigned    done;
     union ptr {
@@ -505,7 +505,7 @@ static return_val disassembleSection( section_ptr sec, unsigned_8 *contents,
 }
 
 static label_entry dumpLabel( label_entry l_entry, section_ptr sec,
-                              orl_sec_offset loop, orl_sec_offset end )
+                              dis_sec_offset loop, dis_sec_offset end )
 {
     bool    is32bit;
 
@@ -544,12 +544,12 @@ static label_entry dumpLabel( label_entry l_entry, section_ptr sec,
     return( l_entry );
 }
 
-static orl_sec_offset checkForDupLines( unsigned_8 *contents, orl_sec_offset loop,
+static dis_sec_offset checkForDupLines( unsigned_8 *contents, dis_sec_offset loop,
                                         orl_sec_size size, label_entry l_entry,
                                         ref_entry r_entry )
 {
     unsigned_8                  *cmp;
-    orl_sec_offset              d;
+    dis_sec_offset              d;
     unsigned int                lines;
 
     cmp = &contents[loop - 16];
@@ -568,11 +568,11 @@ static orl_sec_offset checkForDupLines( unsigned_8 *contents, orl_sec_offset loo
     return( d );
 }
 
-void DumpDataFromSection( unsigned_8 *contents, orl_sec_offset start,
-                          orl_sec_offset end, label_entry *labent,
+void DumpDataFromSection( unsigned_8 *contents, dis_sec_offset start,
+                          dis_sec_offset end, label_entry *labent,
                           ref_entry *refent, section_ptr sec )
 {
-    orl_sec_offset              loop;
+    dis_sec_offset              loop;
     unsigned                    loop2;
     unsigned                    amount;
     label_entry                 l_entry;
