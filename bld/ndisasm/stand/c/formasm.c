@@ -481,16 +481,15 @@ dis_sec_offset HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
         if( asmLabels ) {
             BufferConcat( types[rv] );
         }
-        HandleAReference( 0, 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset,
-                          r_entry->offset + rv, &r_entry, buff );
+        HandleAReference( 0, 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset, r_entry->offset + rv, &r_entry, buff );
         BufferConcat( buff );
-        if( *((long *)data)!=0 || *((long *)data+4)!=0 ) {
-            BufferConcat("+");
-            if( *((long *)data+4)!=0 ) {
-                BufferStore("0x%x", *((long *)data+4) );
-                BufferStore("%08x", *((long *)data) );
+        if( *((unsigned_32 *)data) != 0 || *((unsigned_32 *)data + 1) != 0 ) {
+            BufferConcat( "+" );
+            if( *((unsigned_32 *)data + 1) != 0 ) {
+                BufferStore( "0x%x", *((unsigned_32 *)data + 1) );
+                BufferStore( "%08x", *((unsigned_32 *)data) );
             } else {
-                BufferStore("0x%x", *((long *)data) );
+                BufferStore( "0x%x", *((unsigned_32 *)data) );
             }
         }
         break;
