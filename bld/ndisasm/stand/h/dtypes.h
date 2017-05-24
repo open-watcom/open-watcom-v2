@@ -41,6 +41,8 @@ typedef uint_32                 label_id;
 typedef uint_16                 list_size;
 typedef uint_16                 num_errors;
 
+typedef orl_sec_offset          dis_sec_offset;
+
 typedef enum {
     LTYP_EXTERNAL_NAMED,
     LTYP_NAMED,
@@ -62,7 +64,7 @@ typedef label_entry_struct * label_entry;
 
 struct label_entry_struct {
     orl_sec_handle      shnd;
-    orl_sec_offset      offset;
+    dis_sec_offset      offset;
     label_type          type;
     orl_symbol_binding  binding;
     union {
@@ -103,7 +105,7 @@ typedef ref_entry_struct * ref_entry;
 
 struct reference_entry_struct {
     label_entry         label;
-    orl_sec_offset      offset;
+    dis_sec_offset      offset;
     orl_reloc_type      type;
     orl_reloc_addend    addend;
     ref_entry           next;
@@ -184,8 +186,8 @@ struct section_struct {
 
 struct scantab_struct {
     scantab_ptr         next;
-    orl_sec_offset      start;
-    orl_sec_offset      end;
+    dis_sec_offset      start;
+    dis_sec_offset      end;
 };
 
 typedef struct section_list_struct section_list_struct;
@@ -205,8 +207,8 @@ struct unnamed_label_return_struct {
 
 struct sa_disasm_struct {
     uint_8              *data;
-    orl_sec_offset      offs;
-    orl_sec_offset      last;
+    dis_sec_offset      offs;
+    dis_sec_offset      last;
 };
 
 typedef struct sa_disasm_struct sa_disasm_struct;

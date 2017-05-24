@@ -56,7 +56,7 @@ extern section_list_struct  Sections;
 
 static orl_reloc            *pdataReloc;
 
-static void doDescriptorRelocs( ref_entry *r_entry, orl_sec_offset offset, uint_32 address )
+static void doDescriptorRelocs( ref_entry *r_entry, dis_sec_offset offset, uint_32 address )
 {
     /* Skip over pair relocs */
     while( (*r_entry) && ((*r_entry)->type == ORL_RELOC_TYPE_PAIR || (*r_entry)->offset < offset ) ) {
@@ -70,8 +70,7 @@ static void doDescriptorRelocs( ref_entry *r_entry, orl_sec_offset offset, uint_
     }
 }
 
-static void printDescriptor( orl_sec_offset offset,
-                             descriptor_struct *descriptor, ref_entry *r_entry )
+static void printDescriptor( dis_sec_offset offset, descriptor_struct *descriptor, ref_entry *r_entry )
 {
     char *PreString;
 
@@ -129,7 +128,7 @@ orl_return StoreReloc( orl_reloc * reloc )
 return_val DumpPDataSection( section_ptr sec, unsigned_8 *contents,
                         orl_sec_size size, unsigned pass )
 {
-    orl_sec_offset      loop;
+    dis_sec_offset      loop;
     hash_data *         data_ptr;
     ref_list            r_list;
     ref_entry           r_entry;

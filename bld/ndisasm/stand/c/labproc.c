@@ -256,7 +256,7 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
     if( data_ptr ) {
         sec_label_list = (label_list) *data_ptr;
         entry = addLabel( sec_label_list, entry, sym_hnd );
-        if( Options & PRINT_PUBLICS && entry->shnd != 0 &&
+        if( (Options & PRINT_PUBLICS) && entry->shnd != 0 &&
                 primary_type != ORL_SYM_TYPE_SECTION &&
                 entry->binding != ORL_SYM_BINDING_LOCAL ) {
             Publics.number++;
@@ -277,7 +277,7 @@ orl_return DealWithSymbolSection( orl_sec_handle shnd )
     return( error );
 }
 
-void CreateUnnamedLabel( orl_sec_handle shnd, orl_sec_offset loc, unnamed_label_return return_struct )
+void CreateUnnamedLabel( orl_sec_handle shnd, dis_sec_offset loc, unnamed_label_return return_struct )
 {
     label_list          sec_label_list;
     hash_data *         data_ptr;
@@ -305,7 +305,7 @@ void CreateUnnamedLabel( orl_sec_handle shnd, orl_sec_offset loc, unnamed_label_
     return;
 }
 
-void CreateAbsoluteLabel( orl_sec_handle shnd, orl_sec_offset loc, unnamed_label_return return_struct )
+void CreateAbsoluteLabel( orl_sec_handle shnd, dis_sec_offset loc, unnamed_label_return return_struct )
 {
     label_list          sec_label_list;
     hash_data *         data_ptr;

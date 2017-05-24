@@ -257,7 +257,7 @@ static void printLine( void )
     MemFree( buff );
 }
 
-extern void MixSource( orl_sec_offset offset )
+extern void MixSource( dis_sec_offset offset )
 {
     orl_linnum *line_entry;
 
