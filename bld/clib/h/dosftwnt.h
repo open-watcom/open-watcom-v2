@@ -6,21 +6,10 @@
 *
 *  ========================================================================
 *
-* Description:  Windows NT FILETIME -> time_t conversion routine
+* Description:  Windows NT FILETIME <-> DOS time/date conversion routines
 *
 ****************************************************************************/
 
 
-#include <time.h>
-#include <windows.h>
-#include "timetwnt.h"
-
-
-time_t __NT_filetime_to_timet( const FILETIME *ft )
-{
-    ULARGE_INTEGER  ulint;
-
-    ulint.u.LowPart   =   ft->dwLowDateTime; 
-    ulint.u.HighPart  =   ft->dwHighDateTime; 
-    return( ulint.QuadPart / WINDOWS_TICK - SEC_TO_UNIX_EPOCH );
-}
+extern void __MakeDOSDT( FILETIME *NT_stamp, unsigned short *d, unsigned short *t );
+extern void __FromDOSDT( unsigned short d, unsigned short t, FILETIME *NT_stamp );

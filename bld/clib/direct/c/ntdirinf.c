@@ -40,6 +40,7 @@
 #include "ntext.h"
 #include "_dtaxxx.h"
 #include "timetwnt.h"
+#include "dosftwnt.h"
 
 
 void __GetNTDirInfo( DIR_TYPE *dirp, LPWIN32_FIND_DATA ffb )
