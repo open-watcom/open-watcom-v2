@@ -83,7 +83,8 @@ typedef uint_32                         omf_sec_size;
 typedef uint_32                         omf_sec_flags;
 typedef uint_32                         omf_sec_offset;
 
-typedef uint_32                         omf_sym_flags;
+typedef uint_32                         omf_symbol_flags;
+typedef uint_32                         omf_symbol_value;
 
 typedef uint_16                         omf_reloc_type;
 typedef uint_16                         omf_idx;
@@ -313,7 +314,7 @@ struct omf_symbol_handle_struct {
     omf_idx             seg;
     omf_frame           frame;
     omf_sec_offset      offset;
-    omf_sym_flags       flags;
+    omf_symbol_flags    flags;
     omf_sec_handle      section;
     orl_symbol_binding  binding;
     omf_string_struct   name;

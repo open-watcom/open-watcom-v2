@@ -48,14 +48,14 @@ static orl_return CheckSymbol( orl_symbol_handle orl_sym_hnd )
             if( (type & ORL_SYM_CDAT_MASK) || binding == ORL_SYM_BINDING_WEAK ) {
                 AddSym( name, SYM_WEAK, info );
             } else {
-                AddSym( name,  SYM_STRONG, info );
+                AddSym( name, SYM_STRONG, info );
             }
         } else {
             unsigned_64 val64;
 
-            val64 = ORLSymbolGetValue( orl_sym_hnd );
+            ORLSymbolGetValue( orl_sym_hnd, &val64 );
             if( val64.u._32[I64LO32] != 0 || val64.u._32[I64HI32] != 0 ) {
-                AddSym( name,  SYM_WEAK, info );
+                AddSym( name, SYM_WEAK, info );
             }
         }
     } else if( binding == ORL_SYM_BINDING_ALIAS ) {

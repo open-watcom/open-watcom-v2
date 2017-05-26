@@ -731,19 +731,23 @@ char * ORLENTRY ORLSymbolGetName( orl_symbol_handle orl_symbol_hnd )
     return( NULL );
 }
 
-orl_symbol_value ORLENTRY ORLSymbolGetValue( orl_symbol_handle orl_symbol_hnd )
+orl_return ORLENTRY ORLSymbolGetValue( orl_symbol_handle orl_symbol_hnd, orl_symbol_value *val )
 {
+    if( val == NULL )
+        return( ORL_ERROR );
     switch( ORLI_SYMBOL_HND->type ) {
     case( ORL_ELF ):
-        return( ElfSymbolGetValue( (elf_symbol_handle)orl_symbol_hnd ) );
+        return( ElfSymbolGetValue( (elf_symbol_handle)orl_symbol_hnd, val ) );
     case( ORL_COFF ):
-        return( CoffSymbolGetValue( (coff_symbol_handle)orl_symbol_hnd ) );
+        return( CoffSymbolGetValue( (coff_symbol_handle)orl_symbol_hnd, val ) );
     case( ORL_OMF ):
-        return( OmfSymbolGetValue( (omf_symbol_handle)orl_symbol_hnd ) );
-    default: {   //ORL_UNRECOGNIZED_FORMAT
-        unsigned_64 val64 = { 0, 0 };
-        return( val64 );
-        }
+        val->u._32[I64LO32] = OmfSymbolGetValue( (omf_symbol_handle)orl_symbol_hnd );
+        val->u._32[I64HI32] = 0;
+        return( ORL_OKAY );
+    default:     //ORL_UNRECOGNIZED_FORMAT
+        val->u._32[I64LO32] = 0;
+        val->u._32[I64HI32] = 0;
+        return( ORL_ERROR );
     }
 }
 

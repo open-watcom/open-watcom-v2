@@ -519,14 +519,10 @@ char * OMFENTRY OmfSymbolGetName( omf_symbol_handle sym )
 }
 
 
-orl_symbol_value OMFENTRY OmfSymbolGetValue( omf_symbol_handle sym )
+omf_symbol_value OMFENTRY OmfSymbolGetValue( omf_symbol_handle sym )
 {
-    orl_symbol_value    val64;
-
     assert( sym );
-    val64.u._32[I64LO32] = sym->offset;
-    val64.u._32[I64HI32] = 0;
-    return( val64 );
+    return( sym->offset );
 }
 
 
