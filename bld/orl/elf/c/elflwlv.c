@@ -230,7 +230,7 @@ orl_return ElfBuildSecNameHashTable( elf_file_handle elf_file_hnd )
     orl_return      error;
 
     elf_file_hnd->sec_name_hash_table = ORLHashTableCreate( elf_file_hnd->elf_hnd->funcs, SEC_NAME_HASH_TABLE_SIZE, ORL_HASH_STRING, (orl_hash_comparison_func) stricmp );
-    if( !(elf_file_hnd->sec_name_hash_table) ) {
+    if( elf_file_hnd->sec_name_hash_table == NULL ) {
         return( ORL_OUT_OF_MEMORY );
     }
     for( loop = 0; loop < elf_file_hnd->num_sections; loop++ ) {

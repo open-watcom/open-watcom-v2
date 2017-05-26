@@ -114,9 +114,6 @@ typedef omf_symbol_handle_struct        *omf_symbol_handle;
 typedef struct omf_grp_handle_struct    omf_grp_handle_struct;
 typedef omf_grp_handle_struct           *omf_grp_handle;
 
-typedef orl_reloc                       omf_reloc_handle_struct;
-typedef omf_reloc_handle_struct         *omf_reloc_handle;
-
 typedef struct omf_tmp_lidata_struct    omf_tmp_lidata_struct;
 typedef omf_tmp_lidata_struct           *omf_tmp_lidata;
 
@@ -255,7 +252,7 @@ struct omf_seg_assoc_struct {
 
 struct omf_reloc_assoc_struct {
     omf_quantity        num;
-    omf_reloc_handle    *relocs;
+    orl_reloc           **relocs;
 };
 
 struct omf_sym_assoc_struct {
@@ -328,14 +325,6 @@ struct omf_grp_handle_struct {
     orl_table_index     size;
     omf_idx             *segs;
     omf_symbol_handle   sym;
-};
-
-struct omf_reloc_handle_struct {
-    omf_sec_handle      section;
-    orl_sec_offset      locale;
-    omf_symbol_handle   symbol;
-    orl_reloc_type      type;
-    omf_sec_offset      offset;
 };
 
 typedef struct omf_scan_tab_struct {
