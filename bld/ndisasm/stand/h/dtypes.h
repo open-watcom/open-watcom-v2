@@ -110,7 +110,7 @@ struct reference_entry_struct {
     orl_reloc_addend    addend;
     ref_entry           next;
     int                 no_val;
-    char                *frame;
+    const char          *frame;
 };
 
 typedef struct ref_list_struct ref_list_struct;
@@ -177,7 +177,7 @@ typedef struct scantab_struct scantab_struct;
 typedef scantab_struct * scantab_ptr;
 
 struct section_struct {
-    char *              name;
+    const char          *name;
     orl_sec_handle      shnd;
     section_type        type;
     section_ptr         next;

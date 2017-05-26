@@ -79,8 +79,8 @@ static void             ClearCachedData( file_list *list );
 static orl_reloc        SavedReloc;
 static char             *ImpExternalName;
 static char             *ImpModName;
-static char             *FirstCodeSymName;
-static char             *FirstDataSymName;
+static const char       *FirstCodeSymName;
+static const char       *FirstDataSymName;
 static ordinal_t        ImpOrdinal;
 
 static readcache   *ReadCacheList;
@@ -349,7 +349,7 @@ static void AllocSeg( void *_snode, void *dummy )
     segnode             *snode = _snode;
     segdata             *sdata;
     char                *clname;
-    char                *sname;
+    const char          *sname;
     group_entry         *group;
     bool                isdbi;
 
@@ -447,7 +447,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
 {
     segdata             *sdata;
     segnode             *snode;
-    char                *name;
+    const char          *name;
     unsigned_32 _WCUNALIGNED *contents;
     size_t              len;
     orl_sec_flags       flags;
@@ -475,7 +475,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
             ORLSecGetContents( sec, (unsigned_8 **)&ImpExternalName );
             ImpExternalName += 2;
         } else if( name[len + 1] == '4' ) {     // it is an import by ordinal
-            ORLSecGetContents( sec, (void *) &contents );
+            ORLSecGetContents( sec, (void *)&contents );
             ImpOrdinal = *contents;
         }
         sdata->isdead = true;
@@ -529,19 +529,16 @@ static segnode *FindSegNode( orl_sec_handle sechdl )
 
 #define PREFIX_LEN (sizeof( ImportSymPrefix ) - 1)
 
-static void ImpProcSymbol( segnode *snode, orl_symbol_type type, char *name,
-                           size_t namelen )
-/***************************************************************************/
+static void ImpProcSymbol( segnode *snode, orl_symbol_type type, const char *name, size_t namelen )
+/*************************************************************************************************/
 {
     if( type & ORL_SYM_TYPE_UNDEFINED ) {
-        if( namelen > sizeof(CoffImportRefName) - 1 ) {
-            namelen -= sizeof(CoffImportRefName) - 1;
-            if( memicmp( name + namelen, CoffImportRefName,
-                         sizeof(CoffImportRefName) - 1 ) == 0 ) {
+        if( namelen > sizeof( CoffImportRefName ) - 1 ) {
+            namelen -= sizeof( CoffImportRefName ) - 1;
+            if( memicmp( name + namelen, CoffImportRefName, sizeof( CoffImportRefName ) - 1 ) == 0 ) {
                 _ChkAlloc( ImpModName, namelen + 5 );
                 memcpy( ImpModName, name, namelen );
-                if( memicmp( CurrMod->name + strlen(CurrMod->name)
-                             - 4, ".drv", 4 ) == 0 ) { //KLUDGE!!
+                if( memicmp( CurrMod->name + strlen( CurrMod->name ) - 4, ".drv", 4 ) == 0 ) { //KLUDGE!!
                     memcpy( ImpModName + namelen, ".drv", 5 );
                 } else {
                     memcpy( ImpModName + namelen, ".dll", 5 );
@@ -553,8 +550,7 @@ static void ImpProcSymbol( segnode *snode, orl_symbol_type type, char *name,
             FirstCodeSymName = name;
         }
     } else {
-        if( FirstDataSymName == NULL &&
-                memcmp( name, ImportSymPrefix, PREFIX_LEN ) == 0 ) {
+        if( FirstDataSymName == NULL && memcmp( name, ImportSymPrefix, PREFIX_LEN ) == 0 ) {
             FirstDataSymName = name + PREFIX_LEN;
         }
     }
@@ -582,7 +578,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
 /******************************************************/
 {
     orl_symbol_type     type;
-    char                *name;
+    const char          *name;
     unsigned_64         val64;
     orl_sec_handle      sechdl;
     symbol              *sym;
@@ -826,8 +822,8 @@ static orl_return P1Relocs( orl_sec_handle sec )
     return( ORLRelocSecScan( sec, DoReloc ) );
 }
 
-static void HandleImportSymbol( char *name )
-/******************************************/
+static void HandleImportSymbol( const char *name )
+/************************************************/
 {
     length_name intname;
     length_name modname;

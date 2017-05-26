@@ -165,7 +165,7 @@ coff_sec_handle COFFENTRY CoffSecGetSymbolTable( coff_sec_handle coff_sec_hnd )
     return( coff_sec_hnd->coff_file_hnd->symbol_table );
 }
 
-char * COFFENTRY CoffSecGetName( coff_sec_handle coff_sec_hnd )
+const char * COFFENTRY CoffSecGetName( coff_sec_handle coff_sec_hnd )
 {
     return( coff_sec_hnd->name );
 }
@@ -386,10 +386,10 @@ orl_return COFFENTRY CoffNoteSecScan( coff_sec_handle hnd, orl_note_callbacks *c
     return( CoffParseDrectve( (char *)hnd->contents, hnd->size, cb, cookie ) );
 }
 
-char * COFFENTRY CoffSymbolGetName( coff_symbol_handle coff_symbol_hnd )
+const char * COFFENTRY CoffSymbolGetName( coff_symbol_handle coff_symbol_hnd )
 {
     if( coff_symbol_hnd->type & ORL_SYM_TYPE_FILE ) {
-        return( (char *)( coff_symbol_hnd->symbol + 1 ) );
+        return( coff_symbol_hnd->symbol->name.name_string + 1 );
     }
     return( coff_symbol_hnd->name );
 }

@@ -378,7 +378,7 @@ orl_sec_handle ORLENTRY ORLFileGetSymbolTable( orl_file_handle orl_file_hnd )
     return( NULL );
 }
 
-char * ORLENTRY ORLSecGetName( orl_sec_handle orl_sec_hnd )
+const char * ORLENTRY ORLSecGetName( orl_sec_handle orl_sec_hnd )
 {
     switch( ORLI_SEC_HND->type ) {
     case( ORL_ELF ):
@@ -551,7 +551,7 @@ orl_sec_offset ORLENTRY ORLSecGetOffset( orl_sec_handle orl_sec_hnd )
     return( 0 );
 }
 
-char * ORLENTRY ORLSecGetClassName( orl_sec_handle orl_sec_hnd )
+const char * ORLENTRY ORLSecGetClassName( orl_sec_handle orl_sec_hnd )
 {
     if( ORLI_SEC_HND->type == ORL_OMF ) {
         return( OmfSecGetClassName( (omf_sec_handle)orl_sec_hnd ) );
@@ -716,7 +716,7 @@ orl_return ORLENTRY ORLNoteSecScan( orl_sec_handle orl_sec_hnd, orl_note_callbac
 }
 
 
-char * ORLENTRY ORLSymbolGetName( orl_symbol_handle orl_symbol_hnd )
+const char * ORLENTRY ORLSymbolGetName( orl_symbol_handle orl_symbol_hnd )
 {
     switch( ORLI_SYMBOL_HND->type ) {
     case( ORL_ELF ):
@@ -840,7 +840,7 @@ orl_return ORLENTRY ORLGroupsScan( orl_file_handle orl_file_hnd,
     return( ORL_ERROR );
 }
 
-char * ORLENTRY ORLGroupName( orl_group_handle orl_group_hnd )
+const char * ORLENTRY ORLGroupName( orl_group_handle orl_group_hnd )
 {
     if( ORLI_GROUP_HND->type == ORL_OMF ) {
         return( OmfGroupName( (omf_grp_handle)orl_group_hnd ) );
@@ -856,7 +856,7 @@ orl_table_index ORLENTRY ORLGroupSize( orl_group_handle orl_group_hnd )
     return( 0 );
 }
 
-char * ORLENTRY ORLGroupMember( orl_group_handle orl_group_hnd, orl_table_index idx )
+const char * ORLENTRY ORLGroupMember( orl_group_handle orl_group_hnd, orl_table_index idx )
 {
     if( ORLI_GROUP_HND->type == ORL_OMF ) {
         return( OmfGroupMember( (omf_grp_handle)orl_group_hnd, idx ) );

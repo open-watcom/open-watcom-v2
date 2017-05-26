@@ -85,7 +85,7 @@ dis_return DisCliGetData( void *d, unsigned off, size_t size, void *buff )
     return( DR_OK );
 }
 
-static label_entry handleLabels( char *sec_name, dis_sec_offset offset, dis_sec_offset end,
+static label_entry handleLabels( const char *sec_name, dis_sec_offset offset, dis_sec_offset end,
                              label_entry l_entry, orl_sec_size size )
 // handle any labels at this offset and skip all unused non-label symbols
 {
@@ -148,8 +148,8 @@ static return_val referenceString( ref_entry r_entry, orl_sec_size size,
                                    char *buff, ref_flags flags )
 {
     label_entry         l_entry;
-    char                *sep = ":";
-    char                *frame;
+    const char          *sep = ":";
+    const char          *frame;
     char                temp[15];
 
     frame = r_entry->frame;

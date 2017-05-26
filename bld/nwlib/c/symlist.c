@@ -35,7 +35,7 @@ static orl_return CheckSymbol( orl_symbol_handle orl_sym_hnd )
 /************************************************************/
 {
     orl_symbol_binding  binding;
-    char                *name;
+    const char          *name;
     orl_symbol_type     type;
     unsigned char       info;
 

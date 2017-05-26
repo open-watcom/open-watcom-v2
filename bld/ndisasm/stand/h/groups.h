@@ -33,8 +33,8 @@
 #ifndef WDIS_GROUPS_INCLUDED
 #define WDIS_GROUPS_INCLUDED
 
-extern return_val       DumpASMGroupName( char *name, bool fasm );
-extern return_val       DumpASMGroupMember( char *name );
+extern return_val       DumpASMGroupName( const char *name, bool fasm );
+extern return_val       DumpASMGroupMember( const char *name );
 extern return_val       DumpASMGroupFini( void );
 
 #endif

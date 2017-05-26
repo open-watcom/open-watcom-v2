@@ -43,8 +43,8 @@ section_type IdentifySec( orl_sec_handle shnd )
 {
     orl_sec_type        type;
     orl_sec_flags       flags;
-    char *              name;
-    hash_data *         data_ptr;
+    const char          *name;
+    hash_data           *data_ptr;
 
     type = ORLSecGetType( shnd );
     switch( type ) {

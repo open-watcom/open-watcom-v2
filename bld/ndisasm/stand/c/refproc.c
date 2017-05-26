@@ -75,12 +75,12 @@ static void addRef( ref_list sec_ref_list, ref_entry entry )
     }
 }
 
-static char *getFrameModifier( orl_reloc *rel )
+static const char *getFrameModifier( orl_reloc *rel )
 {
     orl_sec_handle      shnd;
     orl_group_handle    grp;
     orl_symbol_type     typ;
-    char                *name;
+    const char          *name;
 
     if( rel->symbol == rel->frame ) {
         /* FRAME = TARGET
@@ -122,9 +122,11 @@ orl_return CreateNamedLabelRef( orl_reloc *rel )
     hash_data *         data_ptr;
     ref_list            sec_ref_list;
 
-    if( rel->type == ORL_RELOC_TYPE_PAIR ) return( ORL_OKAY );
+    if( rel->type == ORL_RELOC_TYPE_PAIR )
+        return( ORL_OKAY );
     ref = MemAlloc( sizeof( ref_entry_struct ) );
-    if( !ref ) return( ORL_OUT_OF_MEMORY );
+    if( ref == NULL )
+        return( ORL_OUT_OF_MEMORY );
     memset( ref, 0, sizeof( ref_entry_struct ) );
     ref->offset = rel->offset;
     ref->type = rel->type;
@@ -133,11 +135,11 @@ orl_return CreateNamedLabelRef( orl_reloc *rel )
         ref->frame = getFrameModifier( rel );
     }
     data_ptr = HashTableQuery( SymbolToLabelTable, (hash_value) rel->symbol );
-    if( data_ptr ) {
-        ref->label = (label_entry) *data_ptr;
-        data_ptr = HashTableQuery( HandleToRefListTable, (hash_value) rel->section );
-        if( data_ptr ) {
-            sec_ref_list = (ref_list) *data_ptr;
+    if( data_ptr != NULL ) {
+        ref->label = (label_entry)*data_ptr;
+        data_ptr = HashTableQuery( HandleToRefListTable, (hash_value)rel->section );
+        if( data_ptr != NULL ) {
+            sec_ref_list = (ref_list)*data_ptr;
             addRef( sec_ref_list, ref );
         } else {
             // error!!!!  should have been created

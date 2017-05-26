@@ -47,7 +47,7 @@ orl_file_type           ELFENTRY ElfFileGetType( elf_file_handle );
 orl_file_size           ELFENTRY ElfFileGetSize( elf_file_handle );
 elf_sec_handle          ELFENTRY ElfFileGetSymbolTable( elf_file_handle );
 
-char                    * ELFENTRY ElfSecGetName( elf_sec_handle );
+const char              * ELFENTRY ElfSecGetName( elf_sec_handle );
 orl_sec_offset          ELFENTRY ElfSecGetBase( elf_sec_handle );
 orl_sec_size            ELFENTRY ElfSecGetSize( elf_sec_handle );
 orl_sec_type            ELFENTRY ElfSecGetType( elf_sec_handle );
@@ -69,7 +69,7 @@ orl_return              ELFENTRY ElfRelocSecScan( elf_sec_handle, orl_reloc_retu
 orl_return              ELFENTRY ElfSymbolSecScan( elf_sec_handle, orl_symbol_return_func );
 orl_return              ELFENTRY ElfNoteSecScan( elf_sec_handle, orl_note_callbacks *, void * );
 
-char                    * ELFENTRY ElfSymbolGetName( elf_symbol_handle );
+const char              * ELFENTRY ElfSymbolGetName( elf_symbol_handle );
 orl_return              ELFENTRY ElfSymbolGetValue( elf_symbol_handle, orl_symbol_value * );
 orl_symbol_binding      ELFENTRY ElfSymbolGetBinding( elf_symbol_handle );
 orl_symbol_type         ELFENTRY ElfSymbolGetType( elf_symbol_handle );

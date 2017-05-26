@@ -228,8 +228,8 @@ static void free_list( ListElem *liststart )
 static orl_return do_orl_symbol( orl_symbol_handle o_symbol )
 /***********************************************************/
 {
-    char *              name;
-    char *              namecopy;
+    const char      *name;
+    char            *namecopy;
 
     name = ORLSymbolGetName( o_symbol );
 
