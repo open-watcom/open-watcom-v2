@@ -47,7 +47,7 @@ extern wd_options       Options;
 extern hash_table       HandleToLabelListTable;
 extern hash_table       SymbolToLabelTable;
 extern publics_struct   Publics;
-extern char *           SourceFileInObject;
+extern char             *SourceFileInObject;
 extern dis_format_flags DFormat;
 
 static label_entry resolveTwoLabelsAtLocation( label_list sec_label_list, label_entry entry, label_entry previous_entry, label_entry old_entry )
@@ -91,7 +91,7 @@ static label_entry resolveTwoLabelsAtLocation( label_list sec_label_list, label_
     }
     // two labels for this location!
     entry->next = first_entry;
-    if( previous_entry ) {
+    if( previous_entry != NULL ) {
         previous_entry->next = entry;
     } else {
         sec_label_list->first = entry;
@@ -155,11 +155,11 @@ bool NeedsQuoting( const char *name )
     // If the name contains funny characters and we are producing
     // assemblable output, put back-quotes around it.
 
-    if( !(DFormat & DFF_ASM) )
+    if( (DFormat & DFF_ASM) == 0 )
         return( false );
     if( isdigit( *name ) )
         return( true );
-    while( *name ) {
+    while( *name != '\0' ) {
         if( isalnum( *name ) || *name == '_' || *name == '?' || *name == '$' ) {
             /* OK character */
         } else if( *name == '.' && !IsMasmOutput() ) {
@@ -175,32 +175,33 @@ bool NeedsQuoting( const char *name )
 
 orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
 {
-    hash_data *         data_ptr;
+    hash_data           *data_ptr;
     label_list          sec_label_list;
     label_entry         entry;
     orl_symbol_type     type;
     orl_symbol_type     primary_type;
     orl_sec_handle      sec;
-    char *              SourceName;
-    char *              LabName;
+    char                *SourceName;
+    char                *LabName;
     unsigned_64         val64;
 
     type = ORLSymbolGetType( sym_hnd );
     primary_type = type & 0xFF;
     switch( primary_type ) {
 // No harm in including these since elf generates relocs to these.
-//      case ORL_SYM_TYPE_NONE:
-//      case ORL_SYM_TYPE_FUNC_INFO:
-//          return( ORL_OKAY );
-        case ORL_SYM_TYPE_FILE:
-            SourceName = ORLSymbolGetName( sym_hnd );
-            if( (SourceName != NULL) && (SourceFileInObject == NULL) ) {
-                SourceFileInObject = SourceName;
-            }
-            return( ORL_OKAY );
+//    case ORL_SYM_TYPE_NONE:
+//    case ORL_SYM_TYPE_FUNC_INFO:
+//        return( ORL_OKAY );
+    case ORL_SYM_TYPE_FILE:
+        SourceName = ORLSymbolGetName( sym_hnd );
+        if( (SourceName != NULL) && (SourceFileInObject == NULL) ) {
+            SourceFileInObject = SourceName;
+        }
+        return( ORL_OKAY );
     }
     entry = MemAlloc( sizeof( label_entry_struct ) );
-    if( !entry ) return( ORL_OUT_OF_MEMORY );
+    if( entry == NULL )
+        return( ORL_OUT_OF_MEMORY );
     ORLSymbolGetValue( sym_hnd, &val64 );
     entry->offset = val64.u._32[I64LO32];
     // all symbols from the object file will have names
@@ -209,7 +210,7 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
         entry->type = LTYP_SECTION;
     } else if( primary_type == ORL_SYM_TYPE_GROUP ) {
         entry->type = LTYP_GROUP;
-    } else if( entry->shnd == 0 ) {
+    } else if( entry->shnd == NULL ) {
         entry->type = LTYP_EXTERNAL_NAMED;
     } else if( primary_type == ORL_SYM_TYPE_FUNC_INFO ){
         entry->type = LTYP_FUNC_INFO;
@@ -220,7 +221,7 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
     LabName = ORLSymbolGetName( sym_hnd );
     if( LabName == NULL ) {
         sec = ORLSymbolGetSecHandle( sym_hnd );
-        if( sec ) {
+        if( sec != NULL ) {
             LabName = ORLSecGetName( sec );
         } else {
             MemFree( entry );
@@ -252,11 +253,11 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
     } else {
         entry->label.name += 2;
     }
-    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) entry->shnd );
-    if( data_ptr ) {
-        sec_label_list = (label_list) *data_ptr;
+    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value)entry->shnd );
+    if( data_ptr != NULL ) {
+        sec_label_list = (label_list)*data_ptr;
         entry = addLabel( sec_label_list, entry, sym_hnd );
-        if( (Options & PRINT_PUBLICS) && entry->shnd != 0 &&
+        if( (Options & PRINT_PUBLICS) && entry->shnd != NULL &&
                 primary_type != ORL_SYM_TYPE_SECTION &&
                 entry->binding != ORL_SYM_BINDING_LOCAL ) {
             Publics.number++;
@@ -280,11 +281,11 @@ orl_return DealWithSymbolSection( orl_sec_handle shnd )
 void CreateUnnamedLabel( orl_sec_handle shnd, dis_sec_offset loc, unnamed_label_return return_struct )
 {
     label_list          sec_label_list;
-    hash_data *         data_ptr;
+    hash_data           *data_ptr;
     label_entry         entry;
 
     entry = MemAlloc( sizeof( label_entry_struct ) );
-    if( !entry ) {
+    if( entry == NULL ) {
         return_struct->error = RC_OUT_OF_MEMORY;
         return;
     }
@@ -292,9 +293,9 @@ void CreateUnnamedLabel( orl_sec_handle shnd, dis_sec_offset loc, unnamed_label_
     entry->type = LTYP_UNNAMED;
     entry->label.number = 0;
     entry->shnd = shnd;
-    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) shnd );
-    if( data_ptr ) {
-        sec_label_list = (label_list) *data_ptr;
+    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value)shnd );
+    if( data_ptr != NULL ) {
+        sec_label_list = (label_list)*data_ptr;
         entry = addLabel( sec_label_list, entry, 0 );
         return_struct->entry = entry;
         return_struct->error = RC_OKAY;
@@ -302,17 +303,16 @@ void CreateUnnamedLabel( orl_sec_handle shnd, dis_sec_offset loc, unnamed_label_
         // error!!!! the label list should have been created
         return_struct->error = RC_ERROR;
     }
-    return;
 }
 
 void CreateAbsoluteLabel( orl_sec_handle shnd, dis_sec_offset loc, unnamed_label_return return_struct )
 {
     label_list          sec_label_list;
-    hash_data *         data_ptr;
+    hash_data           *data_ptr;
     label_entry         entry;
 
     entry = MemAlloc( sizeof( label_entry_struct ) );
-    if( !entry ) {
+    if( entry == NULL ) {
         return_struct->error = RC_OUT_OF_MEMORY;
         return;
     }
@@ -320,9 +320,9 @@ void CreateAbsoluteLabel( orl_sec_handle shnd, dis_sec_offset loc, unnamed_label
     entry->type = LTYP_ABSOLUTE;
     entry->label.number = 0;
     entry->shnd = shnd;
-    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) shnd );
-    if( data_ptr ) {
-        sec_label_list = (label_list) *data_ptr;
+    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value)shnd );
+    if( data_ptr != NULL ) {
+        sec_label_list = (label_list)*data_ptr;
         entry = addLabel( sec_label_list, entry, 0 );
         return_struct->entry = entry;
         return_struct->error = RC_OKAY;
@@ -330,5 +330,4 @@ void CreateAbsoluteLabel( orl_sec_handle shnd, dis_sec_offset loc, unnamed_label
         // error!!!! the label list should have been created
         return_struct->error = RC_ERROR;
     }
-    return;
 }

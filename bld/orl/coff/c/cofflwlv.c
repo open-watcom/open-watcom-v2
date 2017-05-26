@@ -196,7 +196,7 @@ orl_return CoffBuildSecNameHashTable( coff_file_handle coff_file_hnd )
     orl_return                                  error;
 
     coff_file_hnd->sec_name_hash_table = ORLHashTableCreate( coff_file_hnd->coff_hnd->funcs, SEC_NAME_HASH_TABLE_SIZE, ORL_HASH_STRING, (orl_hash_comparison_func) stricmp );
-    if( !(coff_file_hnd->sec_name_hash_table) ) {
+    if( coff_file_hnd->sec_name_hash_table == NULL ) {
         return( ORL_OUT_OF_MEMORY );
     }
     for( loop = 0; loop < coff_file_hnd->num_sections; loop++ ) {

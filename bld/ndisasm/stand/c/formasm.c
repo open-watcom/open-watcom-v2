@@ -56,27 +56,29 @@ extern dis_format_flags DFormat;
 extern char             LabelChar;
 extern char             QuoteChar;
 
-static const char       * const masmTypes[] = {NULL,            // 0
-                                "DB\t",         // 1
-                                "DW\t",         // 2
-                                NULL,           // 3
-                                "DD\t",         // 4
-                                NULL,           // 5
-                                "DF\t",         // 6
-                                NULL,           // 7
-                                "DQ\t"          // 8
-                                };
+static const char   * const masmTypes[] = {
+    NULL,       // 0
+    "DB\t",     // 1
+    "DW\t",     // 2
+    NULL,       // 3
+    "DD\t",     // 4
+    NULL,       // 5
+    "DF\t",     // 6
+    NULL,       // 7
+    "DQ\t"      // 8
+};
 
-static const char       *const unixTypes[] = {NULL,             // 0
-                                ".byte\t",      // 1
-                                ".word\t",      // 2
-                                NULL,           // 3
-                                ".long\t",      // 4
-                                NULL,           // 5
-                                NULL,           // 6
-                                NULL,           // 7
-                                ".quad\t"       // 8
-                                };
+static const char   * const unixTypes[] = {
+    NULL,       // 0
+    ".byte\t",  // 1
+    ".word\t",  // 2
+    NULL,       // 3
+    ".long\t",  // 4
+    NULL,       // 5
+    NULL,       // 6
+    NULL,       // 7
+    ".quad\t"   // 8
+};
 
 // do a strncpy with max # characters = sec_size - current_position
 // if # chars copied == sec_size - current_position and last character
@@ -95,7 +97,7 @@ typedef enum {
 
 int IsMasmOutput( void )
 {
-    return( !( DFormat & DFF_UNIX ) && ( GetFormat() == ORL_OMF ) );
+    return( (DFormat & DFF_UNIX) == 0 && ( GetFormat() == ORL_OMF ) );
 }
 
 static void printRawAndAddress( char * raw_data, dis_sec_offset address )
@@ -108,16 +110,13 @@ static void printRawAndAddress( char * raw_data, dis_sec_offset address )
         BufferStore( "    00%02X     %04X", raw_data[0], address );
         break;
     case 2:
-        BufferStore( "  00%02X%02X     %04X", raw_data[1], raw_data[0],
-            address );
+        BufferStore( "  00%02X%02X     %04X", raw_data[1], raw_data[0], address );
         break;
     case 3:
-        BufferStore( "00%02X%02X%02X     %04X", raw_data[2], raw_data[1],
-            raw_data[0], address );
+        BufferStore( "00%02X%02X%02X     %04X", raw_data[2], raw_data[1], raw_data[0], address );
         break;
     default:
-        BufferStore( "%02X%02X%02X%02X     %04X", raw_data[3],
-            raw_data[2], raw_data[1], raw_data[0], address );
+        BufferStore( "%02X%02X%02X%02X     %04X", raw_data[3], raw_data[2], raw_data[1], raw_data[0], address );
         break;
     }
 }
@@ -152,37 +151,37 @@ static size_t printString( char *string, string_type type )
     buffer = MemAlloc( strlen( string ) * 2 + 1 );
     for( i = 0, j = 0; i < strlen( string ); i++ ) {
         switch( string[i] ){
-            case '\n':
-                buffer[j++] = '\\';
-                buffer[j++] = 'n';
-                break;
-            case '\r':
-                buffer[j++] = '\\';
-                buffer[j++] = 'r';
-                break;
-            case '\t':
-                buffer[j++] = '\\';
-                buffer[j++] = 't';
-                break;
-            case '\f':
-                buffer[j++] = '\\';
-                buffer[j++] = 'f';
-                break;
-            case '\\':
-                buffer[j++] = '\\';
-                buffer[j++] = '\\';
-                break;
-            case '\"':
-                buffer[j++] = QuoteChar;
-                buffer[j++] = '\"';
-                break;
-            case '\'':
-                buffer[j++] = '\\';
-                buffer[j++] = '\'';
-                break;
-            default:
-                buffer[j++] = string[i];
-                break;
+        case '\n':
+            buffer[j++] = '\\';
+            buffer[j++] = 'n';
+            break;
+        case '\r':
+            buffer[j++] = '\\';
+            buffer[j++] = 'r';
+            break;
+        case '\t':
+            buffer[j++] = '\\';
+            buffer[j++] = 't';
+            break;
+        case '\f':
+            buffer[j++] = '\\';
+            buffer[j++] = 'f';
+            break;
+        case '\\':
+            buffer[j++] = '\\';
+            buffer[j++] = '\\';
+            break;
+        case '\"':
+            buffer[j++] = QuoteChar;
+            buffer[j++] = '\"';
+            break;
+        case '\'':
+            buffer[j++] = '\\';
+            buffer[j++] = '\'';
+            break;
+        default:
+            buffer[j++] = string[i];
+            break;
         }
     }
     buffer[j] = 0;
@@ -191,10 +190,10 @@ static size_t printString( char *string, string_type type )
     BufferPrint();
     MemFree( buffer );
     switch( type ) {
-        case ASCII:
-            return( strlen( string ) );
-        case ASCIZ:
-            return( strlen( string ) + 1 );
+    case ASCII:
+        return( strlen( string ) );
+    case ASCIZ:
+        return( strlen( string ) + 1 );
     }
     // shouldn't get here, but compiler complains.
     return( 0 );
@@ -248,7 +247,7 @@ static void printRest( unsigned_8 *bytes, size_t size )
     for( i = 0; i < size; ) {
         // see if we can replace large chunks of homogenous
         // segment space by using the DUP macro
-        if( is_masm && !( i % 8 ) ) {
+        if( is_masm && (i % 8) == 0 ) {
             d = tryDUP( bytes, i, size );
             if( d > 0 ) {
                 i += d;
@@ -262,8 +261,8 @@ static void printRest( unsigned_8 *bytes, size_t size )
         }
 
         BufferHex( 2, bytes[i] );
-        if( i < size-1 ) {
-            if( ( i % 8 ) == 7 ) {
+        if( i < size - 1 ) {
+            if( (i % 8) == 7 ) {
                 BufferConcatNL();
                 BufferConcat( btype );
                 BufferPrint();
@@ -340,8 +339,8 @@ dis_value HandleAddend( ref_entry r_entry )
         bits = 64;
         break;
     }
-    if( (bits != 32) && (r_addend & (1 << (bits-1) ) ) ) {
-        return( r_addend | ( 0xFFFFFFFF ^ ( (1<<bits) - 1 ) ) );
+    if( (bits != 32) && (r_addend & (1 << (bits - 1) ) ) ) {
+        return( r_addend | ( 0xFFFFFFFF ^ ((1 << bits) - 1) ) );
     } else {
         return( r_addend );
     }
@@ -449,32 +448,32 @@ unsigned HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
         if( asmLabels && types[rv] ) {
             BufferConcat( types[rv] );
         }
-        HandleAReference(*((unsigned_32 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset,
-                         r_entry->offset + rv, &r_entry, buff );
+        HandleAReference(*((unsigned_32 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED,
+                            r_entry->offset, r_entry->offset + rv, &r_entry, buff );
         BufferConcat( buff );
         break;
     case 4:
         if( asmLabels ) {
             BufferConcat( types[rv] );
         }
-        HandleAReference(*((unsigned_32 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset,
-                         r_entry->offset + rv, &r_entry, buff );
+        HandleAReference(*((unsigned_32 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED,
+                            r_entry->offset, r_entry->offset + rv, &r_entry, buff );
         BufferConcat( buff );
         break;
     case 2:
         if( asmLabels ) {
             BufferConcat( types[rv] );
         }
-        HandleAReference(*((unsigned_16 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset,
-                         r_entry->offset + rv, &r_entry, buff );
+        HandleAReference(*((unsigned_16 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED,
+                            r_entry->offset, r_entry->offset + rv, &r_entry, buff );
         BufferConcat( buff );
         break;
     case 1:
         if( asmLabels ) {
             BufferConcat( types[rv] );
         }
-        HandleAReference(*((unsigned_8 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset,
-                         r_entry->offset + rv, &r_entry, buff );
+        HandleAReference(*((unsigned_8 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED,
+                            r_entry->offset, r_entry->offset + rv, &r_entry, buff );
         BufferConcat( buff );
         break;
     case 8:
@@ -538,12 +537,11 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
 
     /* unused parameters */ (void)end;
 
-    raw = buffer && contents;
+    raw = ( buffer != NULL && contents != NULL );
 
     is_masm = IsMasmOutput();
 
-    while( l_entry != NULL
-        && ( l_entry->type == LTYP_ABSOLUTE || l_entry->offset <= curr_pos ) ) {
+    while( l_entry != NULL && ( l_entry->type == LTYP_ABSOLUTE || l_entry->offset <= curr_pos ) ) {
         switch( l_entry->type ) {
         case LTYP_ABSOLUTE:
             // no print any absolute label here
@@ -562,9 +560,8 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
                 strncpy( buffer, (char *)contents + curr_pos, sizeof( unsigned_32 ) );
             }
             if( l_entry->type == LTYP_UNNAMED ) {
-                if( !(DFormat & DFF_ASM) ) {
-                    BufferStore( "\t     %04X\t%c$%d:", LabelChar, curr_pos,
-                                 l_entry->label.number );
+                if( (DFormat & DFF_ASM) == 0 ) {
+                    BufferStore( "\t     %04X\t%c$%d:", LabelChar, curr_pos, l_entry->label.number );
                     if( raw ) {
                         printRawAndAddress( buffer, curr_pos );
                     }
@@ -576,9 +573,8 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
                     }
                 }
             } else {
-                if( !(DFormat & DFF_ASM) ) {
-                    BufferStore( "\t     %04X\t%s:", curr_pos,
-                                 l_entry->label.name );
+                if( (DFormat & DFF_ASM) == 0 ) {
+                    BufferStore( "\t     %04X\t%s:", curr_pos, l_entry->label.name );
                     if( raw ) {
                         printRawAndAddress( buffer, curr_pos );
                     }
@@ -603,7 +599,7 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, dis_sec_offset start,
                                    ref_entry *refent, section_ptr sec )
 {
     dis_sec_offset      curr_pos;
-    dis_sec_offset      curr_size;
+    size_t              curr_size;
     dis_sec_offset      tmp_size;
     size_t              size;
     label_entry         l_entry;
@@ -655,7 +651,7 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, dis_sec_offset start,
             }
         }
         memcpy( buffer, contents + curr_pos, curr_size );
-        buffer[ curr_size ] = 0;
+        buffer[curr_size] = 0;
         printOut( buffer, curr_pos, curr_size );
     }
 
@@ -676,8 +672,8 @@ return_val DumpASMSection( section_ptr sec, unsigned_8 *contents, orl_sec_size s
     return_val          err;
 
     data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) sec->shnd );
-    if( data_ptr ) {
-        sec_label_list = (label_list) *data_ptr;
+    if( data_ptr != NULL ) {
+        sec_label_list = (label_list)*data_ptr;
         l_entry = sec_label_list->first;
     } else {
         sec_label_list = NULL;
@@ -686,8 +682,8 @@ return_val DumpASMSection( section_ptr sec, unsigned_8 *contents, orl_sec_size s
 
     r_entry = NULL;
     data_ptr = HashTableQuery( HandleToRefListTable, (hash_value) sec->shnd );
-    if( data_ptr ) {
-        sec_ref_list = (ref_list) *data_ptr;
+    if( data_ptr != NULL ) {
+        sec_ref_list = (ref_list)*data_ptr;
         if( sec_ref_list != NULL ) {
             r_entry = sec_ref_list->first;
         }
@@ -867,10 +863,10 @@ return_val BssASMSection( section_ptr sec, orl_sec_size size, unsigned pass )
     }
     /* Obtain the Symbol Table */
     data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) sec->shnd );
-    if( !data_ptr ) {
+    if( data_ptr == NULL ) {
         return RC_OKAY;
     }
-    sec_label_list = (label_list) *data_ptr;
+    sec_label_list = (label_list)*data_ptr;
 
     if( IsMasmOutput() ) {
         return( bssMasmASMSection( sec, size, sec_label_list->first ) );
