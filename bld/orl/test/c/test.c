@@ -83,7 +83,7 @@ static orl_return PrintSymbolInfo( orl_symbol_handle symbol )
 /***********************************************************/
 {
     orl_symbol_type                     type;
-    char                                *name;
+    const char                          *name;
     orl_sec_handle                      sec;
     unsigned_64                         val64;
 
@@ -221,7 +221,7 @@ static orl_return PrintRelocInfo( orl_reloc *reloc )
 static orl_return PrintSecInfo( orl_sec_handle o_shnd )
 /*****************************************************/
 {
-    char                        *buf;
+    const char                  *buf;
     int                         loop;
     int                         loop2;
     orl_sec_size                size;

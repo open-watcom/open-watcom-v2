@@ -490,14 +490,14 @@ void AddSegment( segdata *sd, class_entry *class )
     if( sd->isabs || sd->combine == COMBINE_INVALID ) {
         leader = MakeNewLeader( sd, class, info );
     } else {
-        char    *seg_name = sd->u.name;
+        const char  *seg_name = sd->u.name;
 
         leader = FindALeader( sd, class, info );
         if( ( (leader->info & USE_32) != (info & USE_32) ) &&
             !( (FmtData.type & MK_OS2_FLAT) && FmtData.u.os2.mixed1632 ) &&
             (FmtData.type & MK_RAW) == 0 ) {
-            char    *segname_16;
-            char    *segname_32;
+            const char  *segname_16;
+            const char  *segname_32;
 
             if( info & USE_32 ) {
                 segname_16 = leader->segname;
@@ -718,8 +718,8 @@ void AddToGroup( group_entry *group, seg_leader *seg )
         !( (FmtData.type & MK_OS2_FLAT) && FmtData.u.os2.mixed1632 ) &&
         (FmtData.type & MK_RAW) == 0 ) {
 
-        char    *segname_16;
-        char    *segname_32;
+        const char  *segname_16;
+        const char  *segname_32;
 
         if( seg->info & USE_32 ) {
             segname_16 = group->leaders->segname;

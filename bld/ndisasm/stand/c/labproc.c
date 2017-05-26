@@ -47,7 +47,7 @@ extern wd_options       Options;
 extern hash_table       HandleToLabelListTable;
 extern hash_table       SymbolToLabelTable;
 extern publics_struct   Publics;
-extern char             *SourceFileInObject;
+extern const char       *SourceFileInObject;
 extern dis_format_flags DFormat;
 
 static label_entry resolveTwoLabelsAtLocation( label_list sec_label_list, label_entry entry, label_entry previous_entry, label_entry old_entry )
@@ -181,9 +181,10 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
     orl_symbol_type     type;
     orl_symbol_type     primary_type;
     orl_sec_handle      sec;
-    char                *SourceName;
-    char                *LabName;
+    const char          *SourceName;
+    const char          *LabName;
     unsigned_64         val64;
+    char                *p;
 
     type = ORLSymbolGetType( sym_hnd );
     primary_type = type & 0xFF;
@@ -232,24 +233,24 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
     // Demangle the name, if necessary
     if( !((Options & NODEMANGLE_NAMES) || (DFormat & DFF_ASM)) ) {
         entry->label.name = MemAlloc( MAX_LINE_LEN + 3 );
-        __demangle_l( LabName, 0, &(entry->label.name[2]), MAX_LINE_LEN );
+        __demangle_l( LabName, 0, entry->label.name + 2, MAX_LINE_LEN );
     } else {
-        entry->label.name = MemAlloc( strlen( LabName )+8 );
-        strcpy( &(entry->label.name[2]), LabName );
+        entry->label.name = MemAlloc( strlen( LabName ) + 8 );
+        strcpy( entry->label.name + 2, LabName );
     }
 
-    entry->label.name[0]=0;
-    entry->label.name[1]=0;
-    LabName = &(entry->label.name[2]);
-    if( NeedsQuoting( LabName ) ) {
+    entry->label.name[0] = 0;
+    entry->label.name[1] = 0;
+    p = entry->label.name + 2;
+    if( NeedsQuoting( p ) ) {
         // entry->label.name[-1] will be 1 if we have added a quote,
         // 0 otherwise.  This is helpful when freeing the memory.
         entry->label.name[0] = 1;
         entry->label.name[1] = '`';
         entry->label.name += 1;
-        LabName += strlen( LabName );
-        LabName[0] = '`';
-        LabName[1] = '\0';
+        p += strlen( p );
+        p[0] = '`';
+        p[1] = '\0';
     } else {
         entry->label.name += 2;
     }
@@ -264,6 +265,13 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
         }
     } else {
         // error!!!! the label list should have been created
+        // Step back over backquote (`) or space where it should be.
+        if( entry->label.name[-1] == 1 ) {
+            entry->label.name -= 1;
+        } else {
+            entry->label.name -= 2;
+        }
+        MemFree( entry->label.name );
         MemFree( entry );
         return( ORL_ERROR );
     }

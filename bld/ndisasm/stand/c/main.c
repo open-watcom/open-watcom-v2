@@ -251,9 +251,9 @@ static void printMasmHeader( section_ptr sec )
     orl_sec_frame       frame;
     orl_sec_combine     combine;
     orl_sec_size        size;
-    char                *name;
-    char                *class;
-    char                *gname;
+    const char          *name;
+    const char          *class;
+    const char          *gname;
     char                *astr;
     orl_sec_handle      sh;
     orl_group_handle    grp = NULL;
@@ -263,7 +263,7 @@ static void printMasmHeader( section_ptr sec )
 
     // Load all necessary information
     name = sec->name;
-    if( !name ) {
+    if( name == NULL ) {
         name = "";
     }
     type = ORLSecGetType( sec->shnd );
@@ -272,7 +272,7 @@ static void printMasmHeader( section_ptr sec )
 
     if( DFormat & DFF_ASM ) {
         class = ORLSecGetClassName( sec->shnd );
-        if( !class ) {
+        if( class == NULL ) {
             class = "";
         }
         if( flags & ORL_SEC_FLAG_COMDAT ) {
@@ -360,7 +360,7 @@ static void printMasmHeader( section_ptr sec )
 void PrintAssumeHeader( section_ptr sec )
 {
     orl_group_handle    grp;
-    char                *name;
+    const char          *name;
 
     if( IsMasmOutput() && (DFormat & DFF_ASM) ) {
         grp = ORLSecGetGroup( sec->shnd );
@@ -388,11 +388,11 @@ void PrintHeader( section_ptr sec )
 
 void PrintTail( section_ptr sec )
 {
-    char        *name;
+    const char      *name;
 
     if( IsMasmOutput() && (DFormat & DFF_ASM) ) {
         name = sec->name;
-        if( !name ) {
+        if( name == NULL ) {
             name = "";
         }
         BufferQuoteName( name );
@@ -904,17 +904,18 @@ static void emitExtrns( hash_table hash )
 
 static orl_return       groupWalker( orl_group_handle grp )
 {
-    char                *name;
+    const char          *name;
     orl_table_index     size;
     orl_table_index     idx;
 
     name = ORLGroupName( grp );
     size = ORLGroupSize( grp );
-    if( !name || ( size < 1 ) ) return( ORL_OKAY );
+    if( name == NULL || ( size < 1 ) )
+        return( ORL_OKAY );
     DumpASMGroupName( name, (DFormat & DFF_ASM) );
     for( idx = 0; idx < size; idx++ ) {
         name = ORLGroupMember( grp, idx );
-        if( name ) {
+        if( name != NULL ) {
             DumpASMGroupMember( name );
         }
     }

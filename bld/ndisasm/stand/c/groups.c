@@ -45,7 +45,7 @@
 
 static int      useComma;
 
-return_val      DumpASMGroupName( char *name, bool fasm )
+return_val      DumpASMGroupName( const char *name, bool fasm )
 {
     assert( name );
 
@@ -61,7 +61,7 @@ return_val      DumpASMGroupName( char *name, bool fasm )
 }
 
 
-return_val      DumpASMGroupMember( char *name )
+return_val      DumpASMGroupMember( const char *name )
 {
     assert( name );
 

@@ -139,7 +139,7 @@ static void AutoORLInit( void )
 static orl_return findDependInfo( orl_sec_handle section )
 /********************************************************/
 {
-    char    *name;
+    const char  *name;
 
     name = ORLSecGetName( section );
     if( strcmp( name, dependSectionName ) == 0 ) {

@@ -188,7 +188,7 @@ omf_sec_handle OMFENTRY OmfFileGetSymbolTable( omf_file_handle ofh )
 }
 
 
-char * OMFENTRY OmfSecGetName( omf_sec_handle sh )
+const char * OMFENTRY OmfSecGetName( omf_sec_handle sh )
 {
     assert( sh );
 
@@ -246,7 +246,7 @@ orl_sec_alignment OMFENTRY OmfSecGetAlignment( omf_sec_handle sh )
 }
 
 
-char * OMFENTRY OmfSecGetClassName( omf_sec_handle sh )
+const char * OMFENTRY OmfSecGetClassName( omf_sec_handle sh )
 {
     omf_string_struct   *class;
 
@@ -511,7 +511,7 @@ orl_linnum * OMFENTRY OmfSecGetLines( omf_sec_handle sh )
 }
 
 
-char * OMFENTRY OmfSymbolGetName( omf_symbol_handle sym )
+const char * OMFENTRY OmfSymbolGetName( omf_symbol_handle sym )
 {
     assert( sym );
 
@@ -592,7 +592,7 @@ orl_return OMFENTRY OmfGroupsScan( omf_file_handle hnd, orl_group_return_func fu
 }
 
 
-char * OMFENTRY OmfGroupName( omf_grp_handle hnd )
+const char * OMFENTRY OmfGroupName( omf_grp_handle hnd )
 {
     assert( hnd );
     assert( hnd->sym );
@@ -609,7 +609,7 @@ orl_table_index OMFENTRY OmfGroupSize( omf_grp_handle hnd )
 }
 
 
-char * OMFENTRY OmfGroupMember( omf_grp_handle hnd, orl_table_index idx )
+const char * OMFENTRY OmfGroupMember( omf_grp_handle hnd, orl_table_index idx )
 {
     omf_sec_handle      sh;
 

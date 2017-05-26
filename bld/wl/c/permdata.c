@@ -611,10 +611,10 @@ static void BufRead( perm_read_info *info, void *data, size_t len )
     info->currpos += len;
 }
 
-static char *MapString( char *off )
-/**********************************/
+static char *MapString( const char *off )
+/***************************************/
 {
-    if( off == 0 )
+    if( off == NULL )
         return( NULL );
     return( IncStrTab + (unsigned)(pointer_int)off );
 }
@@ -631,11 +631,11 @@ static void ReadGroups( unsigned count, perm_read_info *info )
         _ChkAlloc( def, sizeof( incgroupdef ) + (size - 1) * 2 * sizeof( char * ) );
         RingAppend( &IncGroupDefs, def );
         def->numsegs = size;
-        def->grpname = MapString( (char *)(pointer_int)BufReadU32( info ) );
+        def->grpname = MapString( (const char *)(pointer_int)BufReadU32( info ) );
         p = def->names;
         while( size-- ) {
-            *(p++) = MapString( (char *)(pointer_int)BufReadU32( info ) );
-            *(p++) = MapString( (char *)(pointer_int)BufReadU32( info ) );
+            *(p++) = MapString( (const char *)(pointer_int)BufReadU32( info ) );
+            *(p++) = MapString( (const char *)(pointer_int)BufReadU32( info ) );
         }
     }
 }
@@ -647,7 +647,7 @@ static void ReadLibList( unsigned count, libnamelist **head, perm_read_info *inf
 
     while( count-- > 0 ) {
         _ChkAlloc( list, sizeof( libnamelist ) );
-        list->name = MapString( (char *)(pointer_int)BufReadU32( info ) );
+        list->name = MapString( (const char *)(pointer_int)BufReadU32( info ) );
         BufRead( info, &list->priority, sizeof( lib_priority ) );
         LinkList( head, list );
     }
@@ -816,7 +816,7 @@ static void ReadBinary( char **buf, unsigned_32 nameidx, time_t modtime )
     f_handle            hdl;
     size_t              size;
 
-    fname = MapString( (char *)(pointer_int)nameidx );
+    fname = MapString( (const char *)(pointer_int)nameidx );
     hdl = QObjOpen( fname );
     if( hdl == NIL_FHANDLE ) {
         return;

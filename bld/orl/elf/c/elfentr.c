@@ -148,7 +148,7 @@ elf_sec_handle ELFENTRY ElfFileGetSymbolTable( elf_file_handle elf_file_hnd )
     return( elf_file_hnd->symbol_table );
 }
 
-char * ELFENTRY ElfSecGetName( elf_sec_handle elf_sec_hnd )
+const char * ELFENTRY ElfSecGetName( elf_sec_handle elf_sec_hnd )
 {
     return( elf_sec_hnd->name );
 }
@@ -389,7 +389,7 @@ orl_return ELFENTRY ElfNoteSecScan( elf_sec_handle hnd, orl_note_callbacks *cb, 
     return( ElfParseDrectve( (char *)hnd->contents, hnd->size, cb, cookie ) );
 }
 
-char * ELFENTRY ElfSymbolGetName( elf_symbol_handle elf_symbol_hnd )
+const char * ELFENTRY ElfSymbolGetName( elf_symbol_handle elf_symbol_hnd )
 {
     return( elf_symbol_hnd->name );
 }
