@@ -394,9 +394,10 @@ char * ELFENTRY ElfSymbolGetName( elf_symbol_handle elf_symbol_hnd )
     return( elf_symbol_hnd->name );
 }
 
-orl_symbol_value ELFENTRY ElfSymbolGetValue( elf_symbol_handle elf_symbol_hnd )
+orl_return ELFENTRY ElfSymbolGetValue( elf_symbol_handle elf_symbol_hnd, orl_symbol_value *val )
 {
-    return( elf_symbol_hnd->value );
+    *val = elf_symbol_hnd->value;
+    return( ORL_OKAY );
 }
 
 orl_symbol_binding ELFENTRY ElfSymbolGetBinding( elf_symbol_handle elf_symbol_hnd )

@@ -85,30 +85,36 @@ static orl_return PrintSymbolInfo( orl_symbol_handle symbol )
     orl_symbol_type                     type;
     char                                *name;
     orl_sec_handle                      sec;
+    unsigned_64                         val64;
 
     name = ORLSymbolGetName( symbol );
     //printf( "handle = %x", symbol );
     printf( "%-25s:", name ? name : "" );
-    printf( " %8.8llx ", ORLSymbolGetValue( symbol ) );
+    ORLSymbolGetValue( symbol, &val64 );
+#ifdef _M_I86
+    printf( " %8.8lx%8.8lx ", val64.u._32[I64HI32], val64.u._32[I64LO32] );
+#else
+    printf( " %8.8x%8.8x ", val64.u._32[I64HI32], val64.u._32[I64LO32] );
+#endif
     switch( ORLSymbolGetBinding( symbol ) ) {
-        case ORL_SYM_BINDING_NONE:
-            printf( "n/a " );
-            break;
-        case ORL_SYM_BINDING_LOCAL:
-            printf( "locl" );
-            break;
-        case ORL_SYM_BINDING_WEAK:
-            printf( "weak" );
-            break;
-        case ORL_SYM_BINDING_GLOBAL:
-            printf( "glbl" );
-            break;
-        case ORL_SYM_BINDING_LAZY:
-            printf( "lazy" );
-            break;
-        case ORL_SYM_BINDING_ALIAS:
-            printf( "alis" );
-            break;
+    case ORL_SYM_BINDING_NONE:
+        printf( "n/a " );
+        break;
+    case ORL_SYM_BINDING_LOCAL:
+        printf( "locl" );
+        break;
+    case ORL_SYM_BINDING_WEAK:
+        printf( "weak" );
+        break;
+    case ORL_SYM_BINDING_GLOBAL:
+        printf( "glbl" );
+        break;
+    case ORL_SYM_BINDING_LAZY:
+        printf( "lazy" );
+        break;
+    case ORL_SYM_BINDING_ALIAS:
+        printf( "alis" );
+        break;
     }
     printf( " " );
     type = ORLSymbolGetType( symbol );
@@ -243,42 +249,42 @@ static orl_return PrintSecInfo( orl_sec_handle o_shnd )
         //printf( "Section Type:\t%d\n", sec_type );
         printf( "(" );
         switch( sec_type ) {
-            case ORL_SEC_TYPE_NONE:
-                printf( "sec_type_none" );
-                break;
-            case ORL_SEC_TYPE_NO_BITS:
-                printf( "no bits" );
-                break;
-            case ORL_SEC_TYPE_PROG_BITS:
-                printf( "program bits" );
-                break;
-            case ORL_SEC_TYPE_SYM_TABLE:
-                printf( "symbol table" );
-                break;
-            case ORL_SEC_TYPE_DYN_SYM_TABLE:
-                printf( "dynamic symbol table" );
-                break;
-            case ORL_SEC_TYPE_STR_TABLE:
-                printf( "string table" );
-                break;
-            case ORL_SEC_TYPE_RELOCS:
-                printf( "relocs" );
-                break;
-            case ORL_SEC_TYPE_RELOCS_EXPADD:
-                printf( "relocs with explicit addends" );
-                break;
-            case ORL_SEC_TYPE_HASH:
-                printf( "hash table" );
-                break;
-            case ORL_SEC_TYPE_DYNAMIC:
-                printf( "dynamic linking information" );
-                break;
-            case ORL_SEC_TYPE_NOTE:
-                printf( "note or comment" );
-                break;
-            default:
-                printf( "unknown type? %s", sec_type );
-                break;
+        case ORL_SEC_TYPE_NONE:
+            printf( "sec_type_none" );
+            break;
+        case ORL_SEC_TYPE_NO_BITS:
+            printf( "no bits" );
+            break;
+        case ORL_SEC_TYPE_PROG_BITS:
+            printf( "program bits" );
+            break;
+        case ORL_SEC_TYPE_SYM_TABLE:
+            printf( "symbol table" );
+            break;
+        case ORL_SEC_TYPE_DYN_SYM_TABLE:
+            printf( "dynamic symbol table" );
+            break;
+        case ORL_SEC_TYPE_STR_TABLE:
+            printf( "string table" );
+            break;
+        case ORL_SEC_TYPE_RELOCS:
+            printf( "relocs" );
+            break;
+        case ORL_SEC_TYPE_RELOCS_EXPADD:
+            printf( "relocs with explicit addends" );
+            break;
+        case ORL_SEC_TYPE_HASH:
+            printf( "hash table" );
+            break;
+        case ORL_SEC_TYPE_DYNAMIC:
+            printf( "dynamic linking information" );
+            break;
+        case ORL_SEC_TYPE_NOTE:
+            printf( "note or comment" );
+            break;
+        default:
+            printf( "unknown type? %s", sec_type );
+            break;
         }
         printf( ") " );
         sec_flags = ORLSecGetFlags( o_shnd );
@@ -496,35 +502,35 @@ int main( int argc, char *argv[] )
     }
     while( (c = getopt( argc, argv, "axhrsSo:" )) != EOF ) {
         switch( c ) {
-            case 'a':
-                dump.relocs++;
-                dump.header++;
-                dump.symbols++;
-                dump.sections++;
-                break;
-            case 'x':
-                dump.sec_contents++;
-                break;
-            case 'h':
-                dump.header++;
-                break;
-            case 'r':
-                dump.relocs++;
-                break;
-            case 's':
-                dump.symbols++;
-                break;
-            case 'S':
-                dump.sections++;
-                break;
-            case 'o':
-                secs[num_secs++] = optarg;
-                break;
-            default:
-                // error occured
-                exit(1);
-        };
-    };
+        case 'a':
+            dump.relocs++;
+            dump.header++;
+            dump.symbols++;
+            dump.sections++;
+            break;
+        case 'x':
+            dump.sec_contents++;
+            break;
+        case 'h':
+            dump.header++;
+            break;
+        case 'r':
+            dump.relocs++;
+            break;
+        case 's':
+            dump.symbols++;
+            break;
+        case 'S':
+            dump.sections++;
+            break;
+        case 'o':
+            secs[num_secs++] = optarg;
+            break;
+        default:
+            // error occured
+            exit(1);
+        }
+    }
     if( optind != argc - 1 ) {
         fprintf( stderr, "must specify 1 filename\n" );
         exit(1);
@@ -579,24 +585,24 @@ int main( int argc, char *argv[] )
         file_type = ORLFileGetType( o_fhnd );
         printf( " (" );
         switch( file_type ) {
-            case ORL_FILE_TYPE_NONE:
-                printf( "file_type_none" );
-                break;
-            case ORL_FILE_TYPE_OBJECT:
-                printf( "object file" );
-                break;
-            case ORL_FILE_TYPE_EXECUTABLE:
-                printf( "executable" );
-                break;
-            case ORL_FILE_TYPE_SHARED_OBJECT:
-                printf( "shared object" );
-                break;
-            case ORL_FILE_TYPE_DLL:
-                printf( "DLL" );
-                break;
-            default:
-                printf( "unknown file type?" );
-                break;
+        case ORL_FILE_TYPE_NONE:
+            printf( "file_type_none" );
+            break;
+        case ORL_FILE_TYPE_OBJECT:
+            printf( "object file" );
+            break;
+        case ORL_FILE_TYPE_EXECUTABLE:
+            printf( "executable" );
+            break;
+        case ORL_FILE_TYPE_SHARED_OBJECT:
+            printf( "shared object" );
+            break;
+        case ORL_FILE_TYPE_DLL:
+            printf( "DLL" );
+            break;
+        default:
+            printf( "unknown file type?" );
+            break;
         }
         printf( ")\n" );
         file_flags = ORLFileGetFlags( o_fhnd );

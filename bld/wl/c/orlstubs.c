@@ -148,10 +148,11 @@ char *ORLSymbolGetName( orl_symbol_handle a )
     return( NULL );
 }
 
-orl_symbol_value ORLSymbolGetValue( orl_symbol_handle a )
+orl_return ORLSymbolGetValue( orl_symbol_handle a, orl_symbol_value *b )
 {
     a = a;
-    return( 0 );
+    b = b;
+    return( ORL_ERROR );
 }
 
 orl_symbol_binding ORLSymbolGetBinding( orl_symbol_handle a )

@@ -560,8 +560,8 @@ static void ImpProcSymbol( segnode *snode, orl_symbol_type type, char *name,
     }
 }
 
-static void DefineComdatSym( segnode *seg, symbol *sym, orl_symbol_value value )
-/******************************************************************************/
+static void DefineComdatSym( segnode *seg, symbol *sym, unsigned_32 value )
+/*************************************************************************/
 {
     unsigned    select;
     sym_info    sym_type;
@@ -575,7 +575,7 @@ static void DefineComdatSym( segnode *seg, symbol *sym, orl_symbol_value value )
     } else {
         sym_type = (select - 1) << SYM_CDAT_SEL_SHIFT;
     }
-    DefineComdat( sdata, sym, value.u._32[I64LO32], sym_type, seg->contents );
+    DefineComdat( sdata, sym, value, sym_type, seg->contents );
 }
 
 static orl_return ProcSymbol( orl_symbol_handle symhdl )
@@ -583,7 +583,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
 {
     orl_symbol_type     type;
     char                *name;
-    orl_symbol_value    value;
+    unsigned_64         val64;
     orl_sec_handle      sechdl;
     symbol              *sym;
     size_t              namelen;
@@ -635,8 +635,8 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
         sym = SymOp( symop, name, namelen );
         CheckIfTocSym( sym );
         if( type & ORL_SYM_TYPE_COMMON ) {
-            value = ORLSymbolGetValue( symhdl );
-            sym = MakeCommunalSym( sym, value.u._32[I64LO32], false, true );
+            ORLSymbolGetValue( symhdl, &val64 );
+            sym = MakeCommunalSym( sym, val64.u._32[I64LO32], false, true );
         } else if( type & ORL_SYM_TYPE_UNDEFINED ) {
             DefineReference( sym );
             isweak = false;
@@ -658,14 +658,14 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
             }
         } else {
             newnode->isdefd = true;
-            value = ORLSymbolGetValue( symhdl );
+            ORLSymbolGetValue( symhdl, &val64 );
             if( (type & ORL_SYM_TYPE_COMMON) && (type & ORL_SYM_TYPE_OBJECT) && sechdl == NULL) {
-                sym = MakeCommunalSym( sym, value.u._32[I64LO32], false, true );
+                sym = MakeCommunalSym( sym, val64.u._32[I64LO32], false, true );
             } else if( snode != NULL && snode->entry != NULL && snode->entry->iscdat ) {
-                DefineComdatSym( snode, sym, value );
+                DefineComdatSym( snode, sym, val64.u._32[I64LO32] );
             } else {
                 sym->info |= SYM_DEFINED;
-                DefineSymbol( sym, snode, value.u._32[I64LO32], 0 );
+                DefineSymbol( sym, snode, val64.u._32[I64LO32], 0 );
             }
         }
         newnode->entry = sym;
@@ -795,7 +795,7 @@ static orl_return DoReloc( orl_reloc *reloc )
                 if( symseg != NULL && (seg->info & SEG_DEAD) == 0 ) {
                     unsigned_64 val64;
 
-                    val64 = ORLSymbolGetValue( reloc->symbol );
+                    ORLSymbolGetValue( reloc->symbol, &val64 );
                     addend = val64.u._32[I64LO32];
                     target.u.sdata = symseg->entry;
                     target.type = FIX_TARGET_SEG;

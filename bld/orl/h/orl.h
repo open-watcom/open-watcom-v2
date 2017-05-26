@@ -87,7 +87,7 @@ orl_return              ORLENTRY ORLSymbolSecScan( orl_sec_handle, orl_symbol_re
 orl_return              ORLENTRY ORLNoteSecScan( orl_sec_handle, orl_note_callbacks *, void * );
 
 char                    *ORLENTRY ORLSymbolGetName( orl_symbol_handle );
-orl_symbol_value        ORLENTRY ORLSymbolGetValue( orl_symbol_handle );
+orl_return              ORLENTRY ORLSymbolGetValue( orl_symbol_handle, orl_symbol_value * );
 orl_symbol_binding      ORLENTRY ORLSymbolGetBinding( orl_symbol_handle );
 orl_symbol_type         ORLENTRY ORLSymbolGetType( orl_symbol_handle );
 unsigned char           ORLENTRY ORLSymbolGetRawInfo( orl_symbol_handle );

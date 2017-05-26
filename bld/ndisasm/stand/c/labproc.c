@@ -201,7 +201,7 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
     }
     entry = MemAlloc( sizeof( label_entry_struct ) );
     if( !entry ) return( ORL_OUT_OF_MEMORY );
-    val64 = ORLSymbolGetValue( sym_hnd );
+    ORLSymbolGetValue( sym_hnd, &val64 );
     entry->offset = val64.u._32[I64LO32];
     // all symbols from the object file will have names
     entry->shnd = ORLSymbolGetSecHandle( sym_hnd );
