@@ -64,8 +64,7 @@ orl_return ORLFileFini( orl_file_handle a )
     return( ORL_ERROR );
 }
 
-orl_return ORLFileScan( orl_file_handle a, char *b,
-                               orl_sec_return_func c )
+orl_return ORLFileScan( orl_file_handle a, char *b, orl_sec_return_func c )
 {
     a = a;
     b = b;

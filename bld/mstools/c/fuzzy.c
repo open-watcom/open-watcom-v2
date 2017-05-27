@@ -282,7 +282,7 @@ static int handle_obj_file( const char *filename, orl_handle o_hnd )
         close( fileh );
         return( 0 );
     }
-    o_rc = ORLSymbolSecScan( o_symtab, &do_orl_symbol );
+    o_rc = ORLSymbolSecScan( o_symtab, do_orl_symbol );
     if( o_rc != ORL_OKAY ) {
         close( fileh );
         return( 0 );
@@ -455,7 +455,7 @@ void InitFuzzy( const char *objs[], const char *libs[],
         }
 
         /*** Scan the file(s) ***/
-        for( count=0; objs[count]!=NULL; count++ ) {
+        for( count = 0; objs[count] != NULL; count++ ) {
             if( !handle_obj_file( objs[count], o_hnd ) ) {
                 rc = (*callback)( objs[count] );
                 if( !rc )  break;
@@ -483,7 +483,7 @@ void InitFuzzy( const char *objs[], const char *libs[],
             Warning( "Cannot load WLIB DLL -- fuzzy name matching may not work" );
         } else {
             /*** Scan the file(s) ***/
-            for( count=0; libs[count]!=NULL; count++ ) {
+            for( count = 0; libs[count] != NULL; count++ ) {
                 if( !handle_lib_file( libs[count], libpaths ) ) {
                     rc = (*callback)( libs[count] );
                     if( !rc )  break;
