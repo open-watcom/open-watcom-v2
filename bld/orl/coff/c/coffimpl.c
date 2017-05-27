@@ -302,7 +302,7 @@ static void CreateCoffStringTable( coff_file_handle coff_file_hnd, coff_lib_file
     AddDataImpLib( coff_file_hnd, c_file->string_table, c_file->string_table_size - 4 );
 }
 
-static char *getImportName( char * src, coff_import_object_name_type type )
+static char *getImportName( char *src, coff_import_object_name_type type )
 {
     char    *end;
 

@@ -76,18 +76,18 @@ orl_return ORLENTRY ORLGetError( orl_handle orl_hnd )
 orl_return ORLENTRY ORLFini( orl_handle orl_hnd )
 /***********************************************/
 {
-    orl_return      error;
+    orl_return      return_val;
 
-    if( ( error = ElfFini( ORLI_HND->elf_hnd ) ) != ORL_OKAY )
-        return( error );
-    if( ( error = CoffFini( ORLI_HND->coff_hnd ) ) != ORL_OKAY )
-        return( error );
-    if( ( error = OmfFini( ORLI_HND->omf_hnd ) ) != ORL_OKAY )
-        return( error );
+    if( ( return_val = ElfFini( ORLI_HND->elf_hnd ) ) != ORL_OKAY )
+        return( return_val );
+    if( ( return_val = CoffFini( ORLI_HND->coff_hnd ) ) != ORL_OKAY )
+        return( return_val );
+    if( ( return_val = OmfFini( ORLI_HND->omf_hnd ) ) != ORL_OKAY )
+        return( return_val );
     while( ORLI_HND->first_file_hnd != NULL ) {
-        error = ORLRemoveFileLinks( ORLI_HND->first_file_hnd );
-        if( error != ORL_OKAY ) {
-            return( error );
+        return_val = ORLRemoveFileLinks( ORLI_HND->first_file_hnd );
+        if( return_val != ORL_OKAY ) {
+            return( return_val );
         }
     }
     ORL_FUNCS_FREE( ORLI_HND, orl_hnd );
@@ -97,7 +97,7 @@ orl_return ORLENTRY ORLFini( orl_handle orl_hnd )
 orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
 /*********************************************************************/
 {
-    unsigned char *     magic;
+    unsigned char       *magic;
     uint_16             machine_type;
     uint_16             offset;
     uint_16             len;
@@ -119,11 +119,11 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
     // valid, if it is then we assume that this is an OMF object file.
     if( magic[0] == CMD_THEADR ) {
         len = magic[1] | ( magic[2] << 8 );
-        len -= (unsigned char)(magic[3]);
+        len -= magic[3];
         len -= 2;
-        if( !len ) {
+        if( len == 0 ) {
             // This looks good so far, we must now check the record
-            len = (unsigned char)(magic[3]) + 1;
+            len = magic[3] + 1;
             if( ORL_FUNCS_SEEK( ORLI_HND, file, 4, SEEK_CUR ) == -1 ) {
                 return( ORL_UNRECOGNIZED_FORMAT );
             }
@@ -132,15 +132,15 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
             if( ORL_FUNCS_SEEK( ORLI_HND, file, -(long)( 4 + len ), SEEK_CUR ) == -1 ) {
                 return( ORL_UNRECOGNIZED_FORMAT );
             }
-            if( magic ) {
+            if( magic != NULL ) {
                 // Go on to check record checksum
                 while( len ) {
-                    chksum += (unsigned char)(*magic);
+                    chksum += *magic;
                     len--;
                     magic++;
                 }
                 magic--;
-                if( !( *magic ) || !chksum ) {
+                if( *magic == 0 || chksum == 0 ) {
                     // seems to be a correct OMF record to start the OBJ
                     return( ORL_OMF );
                 }
@@ -178,7 +178,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
             return( ORL_UNRECOGNIZED_FORMAT );
         }
         offset = *(uint_16 *)magic;
-        if( ORL_FUNCS_SEEK( ORLI_HND, file, offset-0x40, SEEK_CUR ) == -1 ) {
+        if( ORL_FUNCS_SEEK( ORLI_HND, file, offset - 0x40, SEEK_CUR ) == -1 ) {
             return( ORL_UNRECOGNIZED_FORMAT );
         }
         magic = ORL_FUNCS_READ( ORLI_HND, file, 4 );
@@ -211,7 +211,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
 
 orl_file_handle ORLENTRY ORLFileInit( orl_handle orl_hnd, orl_file_id file, orl_file_format type )
 {
-    orl_file_handle    orl_file_hnd;
+    orl_file_handle     orl_file_hnd;
 
     switch( type ) {
     case( ORL_ELF ):
@@ -250,24 +250,25 @@ orl_file_handle ORLENTRY ORLFileInit( orl_handle orl_hnd, orl_file_id file, orl_
 
 orl_return ORLENTRY ORLFileFini( orl_file_handle orl_file_hnd )
 {
-    orl_return                          error = ORL_ERROR;
+    orl_return          return_val = ORL_ERROR;
+
     /* jump table replace: */
     switch( ORLI_FILE_HND->type ) {
     case( ORL_ELF ):
-        error = ElfFileFini( ORLI_FILE_HND->file_hnd.elf );
+        return_val = ElfFileFini( ORLI_FILE_HND->file_hnd.elf );
         break;
     case( ORL_COFF ):
-        error = CoffFileFini( ORLI_FILE_HND->file_hnd.coff );
+        return_val = CoffFileFini( ORLI_FILE_HND->file_hnd.coff );
         break;
     case( ORL_OMF ):
-        error = OmfFileFini( ORLI_FILE_HND->file_hnd.omf );
+        return_val = OmfFileFini( ORLI_FILE_HND->file_hnd.omf );
         break;
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
 
-    if( error != ORL_OKAY )
-        return( error );
+    if( return_val != ORL_OKAY )
+        return( return_val );
     return( ORLRemoveFileLinks( ORLI_FILE_HND ) );
 }
 
@@ -699,16 +700,16 @@ orl_return ORLENTRY ORLSymbolSecScan( orl_sec_handle orl_sec_hnd, orl_symbol_ret
     return( ORL_ERROR );
 }
 
-orl_return ORLENTRY ORLNoteSecScan( orl_sec_handle orl_sec_hnd, orl_note_callbacks * fn, void *cookie )
+orl_return ORLENTRY ORLNoteSecScan( orl_sec_handle orl_sec_hnd, orl_note_callbacks *cbs, void *cookie )
 /*****************************************************************************************************/
 {
     switch( ORLI_SEC_HND->type ) {
     case( ORL_ELF ):
-        return( ElfNoteSecScan( (elf_sec_handle)orl_sec_hnd, fn, cookie ) );
+        return( ElfNoteSecScan( (elf_sec_handle)orl_sec_hnd, cbs, cookie ) );
     case( ORL_COFF ):
-        return( CoffNoteSecScan( (coff_sec_handle)orl_sec_hnd, fn, cookie ) );
+        return( CoffNoteSecScan( (coff_sec_handle)orl_sec_hnd, cbs, cookie ) );
     case( ORL_OMF ):
-        return( OmfNoteSecScan( (omf_sec_handle)orl_sec_hnd, fn, cookie ) );
+        return( OmfNoteSecScan( (omf_sec_handle)orl_sec_hnd, cbs, cookie ) );
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
@@ -825,15 +826,14 @@ orl_symbol_handle ORLENTRY ORLSymbolGetAssociated( orl_symbol_handle orl_symbol_
     return( NULL );
 }
 
-orl_return ORLENTRY ORLGroupsScan( orl_file_handle orl_file_hnd,
-                                   orl_group_return_func func )
+orl_return ORLENTRY ORLGroupsScan( orl_file_handle orl_file_hnd, orl_group_return_func return_func )
 {
     switch( ORLI_FILE_HND->type ) {
     case( ORL_ELF ):
     case( ORL_COFF ):
         return( ORL_OKAY );
     case( ORL_OMF ):
-        return( OmfGroupsScan( ORLI_FILE_HND->file_hnd.omf, func ) );
+        return( OmfGroupsScan( ORLI_FILE_HND->file_hnd.omf, return_func ) );
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }

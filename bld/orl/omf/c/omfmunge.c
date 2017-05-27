@@ -87,7 +87,7 @@ static int nameCmp( omf_file_handle ofh, omf_idx n1, omf_idx n2 )
         return( 1 );
     if( s1->len != s2->len )
         return( 1 );
-    return( stricmp( s1->string, s2->string ) );
+    return( stricmp( s1->string, s2->string ) != 0 );
 }
 
 
@@ -419,7 +419,7 @@ static orl_return       addToSymbolTable( omf_file_handle ofh, omf_symbol_handle
             return( ORL_OUT_OF_MEMORY );
         ofh->symbol_table = sh;
         sh->flags |= ORL_SEC_FLAG_REMOVE;
-        sh->assoc.sym.hash_tab = ORLHashTableCreate( ofh->omf_hnd->funcs, 257, ORL_HASH_STRING, (orl_hash_comparison_func)stricmp );
+        sh->assoc.sym.hash_tab = ORLHashTableCreate( ofh->omf_hnd->funcs, 257, ORL_HASH_STRING, stricmp );
         if( sh->assoc.sym.hash_tab == NULL ) {
             return( ORL_OUT_OF_MEMORY );
         }
@@ -646,7 +646,7 @@ static orl_return       expandPrevLIData( omf_file_handle ofh )
 
     /* Destroy original fixups
      */
-    while( ofh->lidata->first_fixup ) {
+    while( ofh->lidata->first_fixup != NULL ) {
         ftr = ofh->lidata->first_fixup;
         ofh->lidata->first_fixup = ftr->next;
         _ClientFree( ofh, ftr );
@@ -654,11 +654,10 @@ static orl_return       expandPrevLIData( omf_file_handle ofh )
 
     /* Add the generated fixups
      */
-    while( ofh->lidata->new_fixup ) {
+    while( ofh->lidata->new_fixup != NULL ) {
         ftr = ofh->lidata->new_fixup;
-        err = OmfAddFixupp( ofh, ftr->is32, ftr->mode, ftr->location,
-                            ftr->offset, ftr->fmethod, ftr->fidx, ftr->tmethod,
-                            ftr->tidx, ftr->disp );
+        err = OmfAddFixupp( ofh, ftr->is32, ftr->mode, ftr->location, ftr->offset,
+                            ftr->fmethod, ftr->fidx, ftr->tmethod, ftr->tidx, ftr->disp );
         if( err != ORL_OKAY )
             break;
         ofh->lidata->new_fixup = ftr->next;
@@ -688,7 +687,7 @@ static orl_return       applyBakpats( omf_file_handle ofh )
     /* Go through all the backpatches and update the segment data. The BAKPATs
      * aren't normal fixups and may modify all sorts of instructions.
      */
-    while( ofh->bakpat->first_fixup ) {
+    while( ofh->bakpat->first_fixup != NULL ) {
         tbf = ofh->bakpat->first_fixup;
         ofh->bakpat->first_fixup = tbf->next;
 
@@ -759,7 +758,7 @@ static orl_return       finishPrevWork( omf_file_handle ofh )
 }
 
 
-static orl_sec_offset   calcLIDataLength( int is32, omf_bytes *input, omf_rec_size *len )
+static orl_sec_offset   calcLIDataLength( bool is32, omf_bytes *input, omf_rec_size *len )
 {
     omf_rec_size    size;
     omf_bytes       buffer;
@@ -825,7 +824,7 @@ static orl_return       checkSegmentLength( omf_sec_handle sh, uint_32 max )
         if( conts == NULL )
             return( ORL_OUT_OF_MEMORY );
         memset( conts, 0, max );
-        if( sh->contents ) {
+        if( sh->contents != NULL ) {
             memcpy( conts, sh->contents, sh->assoc.seg.cur_size );
             _ClientFree( sh->omf_file_hnd, sh->contents );
         }
@@ -852,7 +851,7 @@ static int strNUpper( char *str, omf_string_struct *name )
 
 static orl_sec_flags    getSegSecFlags( omf_file_handle ofh, omf_idx name,
                                         omf_idx class, orl_sec_alignment align,
-                                        int combine, int use32 )
+                                        int combine, bool use32 )
 {
     char                lname[257];
     orl_sec_flags       flags = 0;
@@ -915,7 +914,7 @@ static orl_return   OmfAddFileName( omf_file_handle ofh, char *buffer, omf_strin
 }
 
 
-orl_return              OmfAddLIData( omf_file_handle ofh, int is32,
+orl_return              OmfAddLIData( omf_file_handle ofh, bool is32,
                                       omf_idx seg, orl_sec_offset offset,
                                       omf_bytes buffer, omf_rec_size len, int comdat )
 {
@@ -950,7 +949,7 @@ orl_return              OmfAddLIData( omf_file_handle ofh, int is32,
 
     while( tmplen > 0 ) {
         if( ofh->status & OMF_STATUS_EASY_OMF ) {
-            tmpsize = calcLIDataLength( 0, &tmp, &tmplen );
+            tmpsize = calcLIDataLength( false, &tmp, &tmplen );
         } else {
             tmpsize = calcLIDataLength( is32, &tmp, &tmplen );
         }
@@ -986,7 +985,7 @@ orl_return              OmfAddLIData( omf_file_handle ofh, int is32,
 }
 
 
-orl_return              OmfAddLEData( omf_file_handle ofh, int is32,
+orl_return              OmfAddLEData( omf_file_handle ofh, bool is32,
                                       omf_idx seg, orl_sec_offset offset,
                                       omf_bytes buffer, omf_rec_size len, int comdat )
 {
@@ -1131,7 +1130,7 @@ orl_return              OmfAddBakpat( omf_file_handle ofh, uint_8 loctype,
 }
 
 
-orl_return              OmfAddFixupp( omf_file_handle ofh, int is32, int mode,
+orl_return              OmfAddFixupp( omf_file_handle ofh, bool is32, int mode,
                                       int location, orl_sec_offset offset,
                                       int fmethod, omf_idx fidx, int tmethod,
                                       omf_idx tidx, orl_sec_offset disp )
@@ -1349,7 +1348,7 @@ orl_return  OmfAddExtDef( omf_file_handle ofh, omf_string_struct *extname, omf_r
 }
 
 
-orl_return              OmfAddComDat( omf_file_handle ofh, int is32, int flags,
+orl_return              OmfAddComDat( omf_file_handle ofh, bool is32, int flags,
                                       int attr, int align,
                                       orl_sec_offset offset, omf_idx seg,
                                       omf_idx group, omf_frame frame,
@@ -1513,9 +1512,9 @@ extern orl_return       OmfAddLineNum( omf_sec_handle sh, unsigned_16 line,
 }
 
 
-orl_return              OmfAddSegDef( omf_file_handle ofh, int is32,
+orl_return              OmfAddSegDef( omf_file_handle ofh, bool is32,
                                       orl_sec_alignment align, int combine,
-                                      int use32, int max, orl_sec_frame frame,
+                                      bool use32, bool max_size, orl_sec_frame frame,
                                       orl_sec_size size, omf_idx name,
                                       omf_idx class )
 {
@@ -1543,7 +1542,7 @@ orl_return              OmfAddSegDef( omf_file_handle ofh, int is32,
         sh->assoc.seg.seg_flags |= OMF_SEG_IS_ABS;
     }
 
-    if( max ) {
+    if( max_size ) {
         sh->assoc.seg.seg_flags |= OMF_SEG_IS_BIG;
         if( is32 ) {
             sh->size = 0xffffffff;
@@ -1577,7 +1576,7 @@ orl_return              OmfAddSegDef( omf_file_handle ofh, int is32,
 }
 
 
-orl_return              OmfAddPubDef( omf_file_handle ofh, int is32,
+orl_return              OmfAddPubDef( omf_file_handle ofh, bool is32,
                                       omf_idx group, omf_idx seg,
                                       omf_frame frame, char *buffer, omf_string_len len,
                                       orl_sec_offset offset, omf_rectyp typ )

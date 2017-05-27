@@ -132,7 +132,7 @@ struct omf_tmp_lidata_struct {
     omf_rec_size        size;
     omf_rec_size        used;
     uint_32             offset;
-    int                 is32;
+    bool                is32;
     omf_tmp_fixup       first_fixup;
     omf_tmp_fixup       last_fixup;
     omf_tmp_fixup       new_fixup;
@@ -141,7 +141,7 @@ struct omf_tmp_lidata_struct {
 
 struct omf_tmp_fixup_struct {
     omf_tmp_fixup       next;
-    int                 is32;
+    bool                is32;
     int                 mode;
     int                 location;
     orl_sec_offset      offset;

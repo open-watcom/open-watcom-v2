@@ -50,19 +50,19 @@ typedef struct orli_handle_struct {
     elf_handle                          elf_hnd;
     coff_handle                         coff_hnd;
     omf_handle                          omf_hnd;
-    struct orli_file_handle_struct *    first_file_hnd;
+    struct orli_file_handle_struct      *first_file_hnd;
     orl_return                          error;
-} * orli_handle;
+} *orli_handle;
 
 typedef struct orli_file_handle_struct {
     orli_handle                         orli_hnd;
-    struct orli_file_handle_struct *    next;
+    struct orli_file_handle_struct      *next;
     orl_file_format                     type;
     union {
         elf_file_handle                 elf;
         coff_file_handle                coff;
         omf_file_handle                 omf;
     } file_hnd;
-} * orli_file_handle;
+} *orli_file_handle;
 
 #endif

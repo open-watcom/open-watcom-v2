@@ -250,7 +250,7 @@ static void determine_file_specs( elf_file_handle elf_file_hnd, Elf32_Ehdr *e_hd
 }
 
 
-static void determine_section_specs( elf_sec_handle elf_sec_hnd, int sh_type, unsigned_32 sh_flags )
+static void determine_section_specs( elf_sec_handle elf_sec_hnd, unsigned_32 sh_type, unsigned_32 sh_flags )
 {
     elf_sec_hnd->flags = ORL_SEC_FLAG_READ_PERMISSION;
     switch( sh_type ) {
@@ -309,7 +309,7 @@ static void determine_section_specs( elf_sec_handle elf_sec_hnd, int sh_type, un
     if( sh_flags & SHF_WRITE ) {
         elf_sec_hnd->flags |= ORL_SEC_FLAG_WRITE_PERMISSION;
     }
-    if( !(sh_flags & SHF_ALLOC) ) {
+    if( (sh_flags & SHF_ALLOC) == 0 ) {
         elf_sec_hnd->flags |= ORL_SEC_FLAG_REMOVE;
     }
     if( sh_flags & SHF_EXECINSTR ) {
@@ -337,25 +337,25 @@ static void free_elf_sec_handles( elf_file_handle elf_file_hnd, int num_alloced 
 }
 
 
-static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, orl_sec_offset *name_index, char *s_hdr )
+static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index *name_index, char *s_hdr )
 {
     Elf32_Shdr          *s_hdr32;
     Elf64_Shdr          *s_hdr64;
     elf_sec_handle      elf_sec_hnd;
     int                 loop;
-    orl_sec_offset      *associated_index;
-    orl_sec_offset      *associated2_index;
+    elf_index           *associated_index;
+    elf_index           *associated2_index;
     unsigned_32         sh_align;
     unsigned_32         sh_type;
-    unsigned_32         sh_link;
-    unsigned_32         sh_info;
+    elf_index           sh_link;
+    elf_index           sh_info;
     unsigned_32         sh_flags;
     unsigned_64         sh_size;
 
-    associated_index = (orl_sec_offset *)_ClientAlloc( elf_file_hnd, sizeof( Elf64_Word ) * elf_file_hnd->num_sections );
+    associated_index = (elf_index *)_ClientAlloc( elf_file_hnd, sizeof( elf_index ) * elf_file_hnd->num_sections );
     if( associated_index == NULL )
         return( ORL_OUT_OF_MEMORY );
-    associated2_index = (orl_sec_offset *)_ClientAlloc( elf_file_hnd, sizeof( Elf64_Word ) * elf_file_hnd->num_sections );
+    associated2_index = (elf_index *)_ClientAlloc( elf_file_hnd, sizeof( elf_index ) * elf_file_hnd->num_sections );
     if( associated2_index == NULL ) {
         _ClientFree( elf_file_hnd, associated_index );
         return( ORL_OUT_OF_MEMORY );
@@ -463,8 +463,8 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, orl_sec_of
                 associated_index[loop] = sh_info - 1;
                 associated2_index[loop] = sh_link - 1;
             } else {
-                associated_index[loop] = (orl_sec_offset)-1;
-                associated2_index[loop] = (orl_sec_offset)-1;
+                associated_index[loop] = (elf_index)-1;
+                associated2_index[loop] = (elf_index)-1;
             }
             break;
         default:
@@ -489,7 +489,7 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, orl_sec_of
         case ORL_SEC_TYPE_RELOCS_EXPADD:
             elf_sec_hnd->assoc.reloc.symbol_table = elf_file_hnd->orig_sec_hnd[associated2_index[loop]];
             // some silly people create reloc sections with no associated section
-            if( associated_index[loop] != -1 ) {
+            if( associated_index[loop] != (elf_index)-1 ) {
                 elf_sec_hnd->assoc.reloc.orig_sec = elf_file_hnd->orig_sec_hnd[associated_index[loop]];
                 elf_file_hnd->orig_sec_hnd[associated_index[loop]]->assoc.normal.reloc_sec = elf_sec_hnd;
             }
@@ -529,7 +529,7 @@ static int sec_compare( const void *_first_sec, const void *_second_sec )
 
 orl_return ElfLoadFileStructure( elf_file_handle elf_file_hnd )
 {
-    orl_return          error;
+    orl_return          return_val;
     char                *s_hdr;
     Elf32_Ehdr          *e_hdr32;
     Elf64_Ehdr          *e_hdr64;
@@ -538,7 +538,7 @@ orl_return ElfLoadFileStructure( elf_file_handle elf_file_hnd )
     elf_quantity        contents_size2;
     elf_quantity        sec_header_table_size;
     int                 loop;
-    orl_sec_offset      *name_index;
+    elf_index           *name_index;
     char                *string_table;
     unsigned_64         shoff;
     int                 shnum;
@@ -593,13 +593,13 @@ orl_return ElfLoadFileStructure( elf_file_handle elf_file_hnd )
     s_hdr = _ClientRead( elf_file_hnd, sec_header_table_size );
     if( s_hdr == NULL )
         return( ORL_ERROR );
-    name_index = _ClientAlloc( elf_file_hnd, sizeof( orl_sec_offset ) * elf_file_hnd->num_sections );
+    name_index = _ClientAlloc( elf_file_hnd, sizeof( elf_index ) * elf_file_hnd->num_sections );
     if( name_index == NULL )
         return( ORL_OUT_OF_MEMORY );
-    error = load_elf_sec_handles( elf_file_hnd, name_index, s_hdr );
-    if( error != ORL_OKAY ) {
+    return_val = load_elf_sec_handles( elf_file_hnd, name_index, s_hdr );
+    if( return_val != ORL_OKAY ) {
         _ClientFree( elf_file_hnd, name_index );
-        return( error );
+        return( return_val );
     }
     // now sort the section handles by file offset
     qsort( elf_file_hnd->elf_sec_hnd, elf_file_hnd->num_sections, sizeof( elf_sec_handle ), sec_compare );

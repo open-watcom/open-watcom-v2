@@ -68,7 +68,7 @@ coff_sec_handle         COFFENTRY CoffCvtIdxToSecHdl( coff_file_handle, orl_tabl
 
 orl_return              COFFENTRY CoffRelocSecScan( coff_sec_handle, orl_reloc_return_func );
 orl_return              COFFENTRY CoffSymbolSecScan( coff_sec_handle, orl_symbol_return_func );
-orl_return              COFFENTRY CoffNoteSecScan( coff_sec_handle, orl_note_callbacks *,void *);
+orl_return              COFFENTRY CoffNoteSecScan( coff_sec_handle, orl_note_callbacks *, void * );
 
 const char              * COFFENTRY CoffSymbolGetName( coff_symbol_handle );
 orl_return              COFFENTRY CoffSymbolGetValue( coff_symbol_handle, orl_symbol_value * );
@@ -77,6 +77,6 @@ orl_symbol_type         COFFENTRY CoffSymbolGetType( coff_symbol_handle );
 coff_sec_handle         COFFENTRY CoffSymbolGetSecHandle( coff_symbol_handle );
 coff_symbol_handle      COFFENTRY CoffSymbolGetAssociated( coff_symbol_handle );
 
-unsigned long           COFFENTRY CoffExportTableRVA(coff_file_handle);
+unsigned long           COFFENTRY CoffExportTableRVA( coff_file_handle );
 
 #endif
