@@ -227,16 +227,16 @@ orl_return ElfCreateSymbolHandles( elf_sec_handle elf_sec_hnd )
 orl_return ElfBuildSecNameHashTable( elf_file_handle elf_file_hnd )
 {
     int             loop;
-    orl_return      error;
+    orl_return      return_val;
 
-    elf_file_hnd->sec_name_hash_table = ORLHashTableCreate( elf_file_hnd->elf_hnd->funcs, SEC_NAME_HASH_TABLE_SIZE, ORL_HASH_STRING, (orl_hash_comparison_func) stricmp );
+    elf_file_hnd->sec_name_hash_table = ORLHashTableCreate( elf_file_hnd->elf_hnd->funcs, SEC_NAME_HASH_TABLE_SIZE, ORL_HASH_STRING, stricmp );
     if( elf_file_hnd->sec_name_hash_table == NULL ) {
         return( ORL_OUT_OF_MEMORY );
     }
     for( loop = 0; loop < elf_file_hnd->num_sections; loop++ ) {
-        error = ORLHashTableInsert( elf_file_hnd->sec_name_hash_table, elf_file_hnd->elf_sec_hnd[loop]->name, elf_file_hnd->elf_sec_hnd[loop] );
-        if( error != ORL_OKAY ) {
-            return( error );
+        return_val = ORLHashTableInsert( elf_file_hnd->sec_name_hash_table, elf_file_hnd->elf_sec_hnd[loop]->name, elf_file_hnd->elf_sec_hnd[loop] );
+        if( return_val != ORL_OKAY ) {
+            return( return_val );
         }
     }
     return( ORL_OKAY );
@@ -591,8 +591,8 @@ static void EatWhite( const char **contents, size_t *len )
     }
 }
 
-static orl_return ParseExport( const char **contents, size_t *len, orl_note_callbacks *cb, void *cookie )
-/*******************************************************************************************************/
+static orl_return ParseExport( const char **contents, size_t *len, orl_note_callbacks *cbs, void *cookie )
+/********************************************************************************************************/
 {
     char        *arg;
     size_t      l;
@@ -603,7 +603,7 @@ static orl_return ParseExport( const char **contents, size_t *len, orl_note_call
     arg[l] = 0;
     *len -= l;
     *contents += l;
-    return( cb->export_fn( arg, cookie ) );
+    return( cbs->export_fn( arg, cookie ) );
 }
 
 
@@ -631,8 +631,8 @@ static orl_return ParseDefLibEntry( const char **contents, size_t *len,
     return( retval );
 }
 
-orl_return ElfParseDrectve( const char *contents, size_t len, orl_note_callbacks *cb, void *cookie )
-/**************************************************************************************************/
+orl_return ElfParseDrectve( const char *contents, size_t len, orl_note_callbacks *cbs, void *cookie )
+/***************************************************************************************************/
 {
     const char      *cmd;
 
@@ -647,15 +647,15 @@ orl_return ElfParseDrectve( const char *contents, size_t len, orl_note_callbacks
             break;
         contents++; len--;
         if( memicmp( cmd, "export", 6 ) == 0 ) {
-            if( ParseExport( &contents, &len, cb, cookie ) != ORL_OKAY ) {
+            if( ParseExport( &contents, &len, cbs, cookie ) != ORL_OKAY ) {
                 break;
             }
         } else if( memicmp( cmd, "defaultlib", 10 ) == 0 ) {
-            if( ParseDefLibEntry( &contents, &len, cb->deflib_fn, cookie ) != ORL_OKAY ) {
+            if( ParseDefLibEntry( &contents, &len, cbs->deflib_fn, cookie ) != ORL_OKAY ) {
                 break;
             }
         } else if( memicmp( cmd, "entry", 5 ) == 0 ) {
-            if( ParseDefLibEntry( &contents, &len, cb->entry_fn, cookie ) != ORL_OKAY ) {
+            if( ParseDefLibEntry( &contents, &len, cbs->entry_fn, cookie ) != ORL_OKAY ) {
                 break;
             }
         }

@@ -42,11 +42,10 @@ static orl_return       freeFileHandle( omf_file_handle ofh )
     omf_quantity        x;
     omf_tmp_fixup       tf;
 
-    sh = ofh->first_sec;
-    while( sh ) {
+    while( (sh = ofh->first_sec) != NULL ) {
         switch( sh->type ) {
         case ORL_SEC_TYPE_NOTE:
-            if( sh->assoc.comment.comments ) {
+            if( sh->assoc.comment.comments != NULL ) {
                 for( x = 0; x < sh->assoc.comment.num; x++ ) {
                     _ClientFree( ofh, sh->assoc.comment.comments[x] );
                 }
@@ -56,7 +55,7 @@ static orl_return       freeFileHandle( omf_file_handle ofh )
             }
             break;
         case ORL_SEC_TYPE_RELOCS:
-            if( sh->assoc.reloc.relocs ) {
+            if( sh->assoc.reloc.relocs != NULL ) {
                 for( x = 0; x < sh->assoc.reloc.num; x++ ) {
                     _ClientFree( ofh, sh->assoc.reloc.relocs[x] );
                 }
@@ -66,7 +65,7 @@ static orl_return       freeFileHandle( omf_file_handle ofh )
             }
             break;
         case ORL_SEC_TYPE_SYM_TABLE:
-            if( sh->assoc.sym.syms ) {
+            if( sh->assoc.sym.syms != NULL ) {
                 for( x = 0; x < sh->assoc.sym.num; x++ ) {
                     _ClientFree( ofh, sh->assoc.sym.syms[x] );
                 }
@@ -74,12 +73,12 @@ static orl_return       freeFileHandle( omf_file_handle ofh )
                 sh->assoc.sym.syms = NULL;
                 sh->assoc.sym.num = 0;
             }
-            if( sh->assoc.sym.hash_tab ) {
+            if( sh->assoc.sym.hash_tab != NULL ) {
                 ORLHashTableFree( sh->assoc.sym.hash_tab );
             }
             break;
         case( ORL_SEC_TYPE_STR_TABLE ):
-            if( sh->assoc.string.strings ) {
+            if( sh->assoc.string.strings != NULL ) {
                 for( x = 0; x < sh->assoc.string.num; x++ ) {
                     _ClientFree( ofh, sh->assoc.string.strings[x] );
                 }
@@ -90,11 +89,11 @@ static orl_return       freeFileHandle( omf_file_handle ofh )
             break;
         case( ORL_SEC_TYPE_NO_BITS ):
         case( ORL_SEC_TYPE_PROG_BITS ):
-            if( sh->contents ) {
+            if( sh->contents != NULL ) {
                 _ClientFree( ofh, sh->contents );
                 sh->contents = NULL;
             }
-            if( sh->assoc.seg.lines && ( sh->assoc.seg.num_lines > 0 ) ) {
+            if( sh->assoc.seg.lines != NULL && ( sh->assoc.seg.num_lines > 0 ) ) {
                 _ClientFree( ofh, sh->assoc.seg.lines );
                 sh->assoc.seg.lines = NULL;
                 sh->assoc.seg.num_lines = 0;
@@ -105,22 +104,21 @@ static orl_return       freeFileHandle( omf_file_handle ofh )
         }
         ofh->first_sec = sh->next;
         _ClientFree( ofh, sh );
-        sh = ofh->first_sec;
     }
 
-    if( ofh->segs ) {
+    if( ofh->segs != NULL ) {
         _ClientFree( ofh, ofh->segs );
         ofh->segs = NULL;
         ofh->num_segs = 0;
     }
 
-    if( ofh->comdats ) {
+    if( ofh->comdats != NULL ) {
         _ClientFree( ofh, ofh->comdats );
         ofh->comdats = NULL;
         ofh->num_comdats = 0;
     }
 
-    if( ofh->groups ) {
+    if( ofh->groups != NULL ) {
         for( x = 0; x < ofh->num_groups; x++ ) {
             assert( ofh->groups[x] );
             _ClientFree( ofh, ofh->groups[x]->segs );
@@ -131,8 +129,8 @@ static orl_return       freeFileHandle( omf_file_handle ofh )
         ofh->num_groups = 0;
     }
 
-    if( ofh->lidata ) {
-        while( ofh->lidata->first_fixup ) {
+    if( ofh->lidata != NULL ) {
+        while( ofh->lidata->first_fixup != NULL ) {
             tf = ofh->lidata->first_fixup;
             ofh->lidata->first_fixup = tf->next;
             _ClientFree( ofh, tf );
@@ -168,13 +166,11 @@ orl_return OmfRemoveFileLinks( omf_file_handle ofh )
     if( oh->first_file_hnd == ofh ) {
         oh->first_file_hnd = ofh->next;
     } else {
-        curr = oh->first_file_hnd;
-        while( curr->next != NULL ) {
+        for( curr = oh->first_file_hnd; curr->next != NULL; curr = curr->next ) {
             if( curr->next == ofh ) {
                 curr->next = ofh->next;
                 break;
             }
-            curr = curr->next;
         }
     }
     return( freeFileHandle( ofh ) );

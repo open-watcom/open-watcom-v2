@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "bool.h"
 #include "orlglobl.h"
 #include "orlhshdf.h"
 
@@ -70,16 +71,16 @@
 #define ORLI_GROUP_HND      ((orli_group_handle)orl_group_hnd)
 
 typedef struct orli_sec_handle_struct {
-    orl_file_format                     type;
-} * orli_sec_handle;
+    orl_file_format         type;
+} *orli_sec_handle;
 
 typedef struct orli_symbol_handle_struct {
-    orl_file_format                     type;
-} * orli_symbol_handle;
+    orl_file_format         type;
+} *orli_symbol_handle;
 
 typedef struct orli_group_handle_struct {
-    orl_file_format                     type;
-} * orli_group_handle;
+    orl_file_format         type;
+} *orli_group_handle;
 
 #include "orlcomon.h"
 

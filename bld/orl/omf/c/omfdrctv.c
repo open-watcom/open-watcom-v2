@@ -41,7 +41,7 @@
 #include "orlhash.h"
 
 
-orl_return      OmfParseComments( omf_sec_handle sh, orl_note_callbacks *cb, void *cookie )
+orl_return      OmfParseComments( omf_sec_handle sh, orl_note_callbacks *cbs, void *cookie )
 {
     omf_quantity        x;
     orl_return          err = ORL_OKAY;
@@ -50,7 +50,7 @@ orl_return      OmfParseComments( omf_sec_handle sh, orl_note_callbacks *cb, voi
     omf_sec_handle      csh;
 
     assert( sh );
-    assert( cb );
+    assert( cbs );
 
     for( x = 0; x < sh->assoc.comment.num; x++ ) {
         err = ORL_OKAY;
@@ -59,22 +59,22 @@ orl_return      OmfParseComments( omf_sec_handle sh, orl_note_callbacks *cb, voi
 
         switch( comment->class ) {
         case( CMT_DEFAULT_LIBRARY ):
-            if( cb->deflib_fn != NULL ) {
-                err = cb->deflib_fn( (char *)comment->data, cookie );
+            if( cbs->deflib_fn != NULL ) {
+                err = cbs->deflib_fn( (char *)comment->data, cookie );
             }
             break;
         case( CMT_DISASM_DIRECTIVE ):
-            if( cb->scantab_fn == NULL )
+            if( cbs->scantab_fn == NULL )
                 continue;
             err = OmfParseScanTab( comment->data, comment->len, &st );
             if( err != ORL_OKAY )
                 continue;
 
             csh = OmfFindSegOrComdat( sh->omf_file_hnd, st.seg, st.lname );
-            if( !csh )
+            if( csh == NULL )
                 continue;
 
-            err = cb->scantab_fn( (orl_sec_handle)csh, st.start, st.end, cookie );
+            err = cbs->scantab_fn( (orl_sec_handle)csh, st.start, st.end, cookie );
         }
         if( err != ORL_OKAY ) {
             break;

@@ -36,6 +36,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
+#include "bool.h"
 #include "trmemcvr.h"
 #include "orl.h"
 
@@ -43,14 +44,14 @@
 #define MAX_SECS    255
 
 typedef struct _dump_options {
-    int         header;
-    int         relocs;
-    int         symbols;
-    int         sections;
-    int         sec_contents;
+    bool        header;
+    bool        relocs;
+    bool        symbols;
+    bool        sections;
+    bool        sec_contents;
 } dump_options;
 
-static dump_options dump = { 0, 0, 0, 0, 0 };
+static dump_options dump = { false, false, false, false, false };
 
 typedef struct buff_entry   *buff_list;
 struct buff_entry {
@@ -60,7 +61,7 @@ struct buff_entry {
 
 static buff_list    buffList = NULL;
 
-static int sectionFound = 0;
+static bool sectionFound = false;
 
 static char *machType[] = {
     "NONE",
@@ -231,14 +232,15 @@ static orl_return PrintSecInfo( orl_sec_handle o_shnd )
     orl_sec_handle              symbol_table;
     orl_sec_handle              string_table;
     int                         sep;
-    int                         segname_printed = 0;
+    bool                        segname_printed;
 
     size = 0;   // just because gcc is a little retarded
-    sectionFound = 1;
+    sectionFound = true;
+    segname_printed = false;
     if( dump.sections || dump.sec_contents ) {
         buf = ORLSecGetName( o_shnd );
         printf( "[%s]\n", buf );
-        segname_printed = 1;
+        segname_printed = true;
         size = ORLSecGetSize( o_shnd );
     }
     if( dump.sections ) {
@@ -377,7 +379,7 @@ static orl_return PrintSecInfo( orl_sec_handle o_shnd )
                 printf( "0x%8.8x: ", loop );
                 for( loop2 = 0; loop2 < 16; loop2++ ) {
                     if( loop + loop2 < size ) {
-                        printf( "%2.2x ", buf[loop+loop2] );
+                        printf( "%2.2x ", buf[loop + loop2] );
                     } else {
                         printf( "   " );
                     }
@@ -387,8 +389,8 @@ static orl_return PrintSecInfo( orl_sec_handle o_shnd )
                 }
                 printf( " " );
                 for( loop2 = 0; loop2 < 16 && loop + loop2 < size; loop2++ ) {
-                    if( buf[loop+loop2] >= 32 && buf[loop+loop2] <= 122 ) {
-                        printf( "%c", buf[loop+loop2] );
+                    if( buf[loop + loop2] >= 32 && buf[loop + loop2] <= 122 ) {
+                        printf( "%c", buf[loop + loop2] );
                     } else {
                         printf( "." );
                     }
@@ -403,9 +405,10 @@ static orl_return PrintSecInfo( orl_sec_handle o_shnd )
     if( dump.relocs ) {
         reloc_section = ORLSecGetRelocTable( o_shnd );
         if( reloc_section ) {
-            if( !segname_printed++ ) {
+            if( !segname_printed ) {
                 buf = ORLSecGetName( o_shnd );
                 printf( "[%s]\n", buf );
+                segname_printed = true;
             }
             printf( "Relocs in [%s], ", ORLSecGetName( reloc_section ) );
             symbol_table = ORLSecGetSymbolTable( reloc_section );
@@ -421,7 +424,7 @@ static orl_return PrintSecInfo( orl_sec_handle o_shnd )
                 printf( "symtab=none, strtab=none.\n" );
             }
             //printf( "Relocs:\n" );
-            ORLRelocSecScan( reloc_section, &PrintRelocInfo );
+            ORLRelocSecScan( reloc_section, PrintRelocInfo );
         }
     }
     return( ORL_OKAY );
@@ -433,7 +436,7 @@ static orl_return PrintSymTable( orl_sec_handle orl_sec_hnd )
     if( dump.symbols ) {
         printf( "\nSymbol table\n" );
         printf( "~~~~~~~~~~~~\n" );
-        ORLSymbolSecScan( orl_sec_hnd, &PrintSymbolInfo );
+        ORLSymbolSecScan( orl_sec_hnd, PrintSymbolInfo );
     }
     return( ORL_OKAY );
 }
@@ -503,25 +506,25 @@ int main( int argc, char *argv[] )
     while( (c = getopt( argc, argv, "axhrsSo:" )) != EOF ) {
         switch( c ) {
         case 'a':
-            dump.relocs++;
-            dump.header++;
-            dump.symbols++;
-            dump.sections++;
+            dump.relocs = true;
+            dump.header = true;
+            dump.symbols = true;
+            dump.sections = true;
             break;
         case 'x':
-            dump.sec_contents++;
+            dump.sec_contents = true;
             break;
         case 'h':
-            dump.header++;
+            dump.header = true;
             break;
         case 'r':
-            dump.relocs++;
+            dump.relocs = true;
             break;
         case 's':
-            dump.symbols++;
+            dump.symbols = true;
             break;
         case 'S':
-            dump.sections++;
+            dump.sections = true;
             break;
         case 'o':
             secs[num_secs++] = optarg;
@@ -610,7 +613,7 @@ int main( int argc, char *argv[] )
         sep = 0;
         if( file_flags & ORL_FILE_FLAG_LINE_NUMS_STRIPPED ) {
             printf( "line number info stripped" );
-            sep = 1;
+            sep++;
         }
         if( file_flags & ORL_FILE_FLAG_RELOCS_STRIPPED ) {
             if( sep++ )
@@ -663,8 +666,8 @@ int main( int argc, char *argv[] )
     }
     if( num_secs ) {
         for( c = 0; c < num_secs; c++ ) {
-            sectionFound = 0;
-            if( ORLFileScan( o_fhnd, secs[c], &PrintSecInfo ) != ORL_OKAY ) {
+            sectionFound = false;
+            if( ORLFileScan( o_fhnd, secs[c], PrintSecInfo ) != ORL_OKAY ) {
                 printf( "Error occured in scanning section '%s'.\n", secs[c] );
             }
             if( !sectionFound ) {
@@ -672,12 +675,12 @@ int main( int argc, char *argv[] )
             }
         }
     } else {
-        if( ORLFileScan( o_fhnd, NULL, &PrintSecInfo ) != ORL_OKAY ) {
+        if( ORLFileScan( o_fhnd, NULL, PrintSecInfo ) != ORL_OKAY ) {
             printf( "Error occured in scanning file.\n" );
             return( 2 );
         }
     }
-    if( ORLFileScan( o_fhnd, ".symtab", &PrintSymTable ) != ORL_OKAY ) {
+    if( ORLFileScan( o_fhnd, ".symtab", PrintSymTable ) != ORL_OKAY ) {
         printf( "Error occured in scanning file for symbol table\n" );
         return( 2 );
     }

@@ -44,8 +44,8 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
 //    int                 len;
     uint_16             type; // type of CoffSymEnt
     coff_symbol_handle  current;
-    coff_sym_section *  aux;
-    coff_sym_weak *     weak;
+    coff_sym_section    *aux;
+    coff_sym_weak       *weak;
     coff_sec_handle     sechdl;
 
     if( file_hnd->num_symbols == 0 ){
@@ -60,25 +60,26 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
         current = file_hnd->symbol_handles + loop;
         current->file_format = ORL_COFF;
         current->coff_file_hnd = file_hnd;
+        current->has_bf = false;
         current->symbol = (coff_symbol *)( file_hnd->symbol_table->contents + sizeof( coff_symbol ) * loop );
         if( current->symbol->name.non_name.zeros == 0 ) {
             current->name = (char *)( file_hnd->string_table->contents + current->symbol->name.non_name.offset - sizeof( coff_sec_size ) );
-            current->name_alloced = COFF_FALSE;
+            current->name_alloced = false;
         } else {
 //            len = strlen( current->symbol->name.name_string );
             if( strlen( current->symbol->name.name_string ) >= COFF_SYM_NAME_LEN ) {
                 current->name = _ClientAlloc( file_hnd, COFF_SYM_NAME_LEN + 1 );
                 strncpy( current->name, current->symbol->name.name_string, COFF_SYM_NAME_LEN );
                 current->name[COFF_SYM_NAME_LEN] = '\0';
-                current->name_alloced = COFF_TRUE;
+                current->name_alloced = true;
             } else {
                 current->name = current->symbol->name.name_string;
-                current->name_alloced = COFF_FALSE;
+                current->name_alloced = false;
             }
         }
         if( memcmp( current->name, ".bf", 4 ) == 0 ) {
             if( current->symbol->num_aux >= 1 ) {
-                file_hnd->symbol_handles[prev].has_bf = COFF_TRUE;
+                file_hnd->symbol_handles[prev].has_bf = true;
             }
         }
         sechdl = NULL;
@@ -171,12 +172,13 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
             // The .bf, .lf and .ef symbols are not regular symbols
             // and their values in particular must not be interpreted
             // as offsets/addresses.
-            if( !memcmp( current->name, ".bf", 4 )
-                || !memcmp( current->name, ".lf", 4 )
-                || !memcmp( current->name, ".ef", 4 ) )
+            if( memcmp( current->name, ".bf", 4 ) == 0
+                || memcmp( current->name, ".lf", 4 ) == 0
+                || memcmp( current->name, ".ef", 4 ) == 0 ) {
                 current->binding = ORL_SYM_BINDING_NONE;
-            else
+            } else {
                 current->binding = ORL_SYM_BINDING_LOCAL;
+            }
             current->type |= ORL_SYM_TYPE_FUNC_INFO;
             break;
         case IMAGE_SYM_CLASS_FILE:
@@ -192,17 +194,17 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
 
 orl_return CoffBuildSecNameHashTable( coff_file_handle coff_file_hnd )
 {
-    unsigned                                    loop;
-    orl_return                                  error;
+    unsigned                loop;
+    orl_return              return_val;
 
-    coff_file_hnd->sec_name_hash_table = ORLHashTableCreate( coff_file_hnd->coff_hnd->funcs, SEC_NAME_HASH_TABLE_SIZE, ORL_HASH_STRING, (orl_hash_comparison_func) stricmp );
+    coff_file_hnd->sec_name_hash_table = ORLHashTableCreate( coff_file_hnd->coff_hnd->funcs, SEC_NAME_HASH_TABLE_SIZE, ORL_HASH_STRING, stricmp );
     if( coff_file_hnd->sec_name_hash_table == NULL ) {
         return( ORL_OUT_OF_MEMORY );
     }
     for( loop = 0; loop < coff_file_hnd->num_sections; loop++ ) {
-        error = ORLHashTableInsert( coff_file_hnd->sec_name_hash_table, coff_file_hnd->coff_sec_hnd[loop]->name, coff_file_hnd->coff_sec_hnd[loop] );
-        if( error != ORL_OKAY ) {
-            return( error );
+        return_val = ORLHashTableInsert( coff_file_hnd->sec_name_hash_table, coff_file_hnd->coff_sec_hnd[loop]->name, coff_file_hnd->coff_sec_hnd[loop] );
+        if( return_val != ORL_OKAY ) {
+            return( return_val );
         }
     }
     return( ORL_OKAY );
@@ -363,8 +365,8 @@ orl_return CoffCreateRelocs( coff_sec_handle orig_sec, coff_sec_handle reloc_sec
     unsigned    num_relocs;
     unsigned    loop;
     coff_reloc ORLUNALIGNED *rel;
-    orl_reloc * o_rel;
-    orl_reloc * prev_rel;
+    orl_reloc   *o_rel;
+    orl_reloc   *prev_rel;
 
     if( reloc_sec->coff_file_hnd->symbol_handles == NULL ) {
         return_val = CoffCreateSymbolHandles( reloc_sec->coff_file_hnd );
@@ -404,8 +406,8 @@ orl_return CoffCreateRelocs( coff_sec_handle orig_sec, coff_sec_handle reloc_sec
     return( ORL_OKAY );
 }
 
-orl_linnum * CoffConvertLines( coff_sec_handle hdl, orl_table_index numlines )
-/****************************************************************************/
+orl_linnum *CoffConvertLines( coff_sec_handle hdl, orl_table_index numlines )
+/***************************************************************************/
 {
     coff_line_num ORLUNALIGNED  *coffline;
     orl_linnum ORLUNALIGNED     *linestart;
@@ -444,7 +446,7 @@ orl_linnum * CoffConvertLines( coff_sec_handle hdl, orl_table_index numlines )
         currline++;
         numlines--;
     }
-    hdl->relocs_done = COFF_TRUE;
+    hdl->relocs_done = true;
     return( (orl_linnum *)linestart );
 }
 
@@ -490,11 +492,10 @@ static void EatWhite( const char **contents, size_t *len )
     }
 }
 
-static orl_return ParseExport( const char **contents, size_t *len,
-                                orl_note_callbacks *cb, void *cookie )
-/********************************************************************/
+static orl_return ParseExport( const char **contents, size_t *len, orl_note_callbacks *cbs, void *cookie )
+/********************************************************************************************************/
 {
-    char *      arg;
+    char        *arg;
     size_t      l;
 
     l = strncspn( *contents, ", \t", *len );
@@ -503,7 +504,7 @@ static orl_return ParseExport( const char **contents, size_t *len,
     arg[l] = 0;
     *len -= l;
     *contents += l;
-    return( cb->export_fn( arg, cookie ) );
+    return( cbs->export_fn( arg, cookie ) );
 }
 
 
@@ -531,8 +532,8 @@ static orl_return ParseDefLibEntry( const char **contents, size_t *len,
     return( retval );
 }
 
-orl_return CoffParseDrectve( const char *contents, size_t len, orl_note_callbacks *cb, void *cookie )
-/***************************************************************************************************/
+orl_return CoffParseDrectve( const char *contents, size_t len, orl_note_callbacks *cbs, void *cookie )
+/****************************************************************************************************/
 {
     const char  *cmd;
 
@@ -547,15 +548,15 @@ orl_return CoffParseDrectve( const char *contents, size_t len, orl_note_callback
             break;
         contents++; len--;
         if( memicmp( cmd, "export", 6 ) == 0 ) {
-            if( ParseExport( &contents, &len, cb, cookie ) != ORL_OKAY ) {
+            if( ParseExport( &contents, &len, cbs, cookie ) != ORL_OKAY ) {
                 break;
             }
         } else if( memicmp( cmd, "defaultlib", 10 ) == 0 ) {
-            if( ParseDefLibEntry( &contents, &len, cb->deflib_fn, cookie ) != ORL_OKAY ) {
+            if( ParseDefLibEntry( &contents, &len, cbs->deflib_fn, cookie ) != ORL_OKAY ) {
                 break;
             }
         } else if( memicmp( cmd, "entry", 5 ) == 0 ) {
-            if( ParseDefLibEntry( &contents, &len, cb->entry_fn, cookie ) != ORL_OKAY ) {
+            if( ParseDefLibEntry( &contents, &len, cbs->entry_fn, cookie ) != ORL_OKAY ) {
                 break;
             }
         }

@@ -39,11 +39,6 @@
 
 // handle definitions
 
-typedef enum {
-    COFF_FALSE = 0,
-    COFF_TRUE = 1
-} coff_bool;
-
 typedef uint_8                          coff_file_flags;
 typedef uint_32                         coff_file_index;
 typedef uint_32                         coff_headers_size;
@@ -132,11 +127,11 @@ struct coff_sec_handle_struct {
     coff_section_header *hdr;
     orl_sec_offset      base;
     union {
-        struct coff_normal_assoc_struct         normal;
-        struct coff_reloc_assoc_struct          reloc;
+        struct coff_normal_assoc_struct     normal;
+        struct coff_reloc_assoc_struct      reloc;
     } assoc;
-    coff_bool           name_alloced : 1;
-    coff_bool           relocs_done : 1;
+    bool                name_alloced    : 1;
+    bool                relocs_done     : 1;
 };
 
 struct coff_symbol_handle_struct {
@@ -146,8 +141,8 @@ struct coff_symbol_handle_struct {
     orl_symbol_type     type;
     coff_symbol ORLUNALIGNED *symbol;
     char                *name;
-    unsigned            name_alloced : 1;
-    unsigned            has_bf : 1;
+    bool                name_alloced    : 1;
+    bool                has_bf          : 1;
 };
 
 typedef struct pe_header_struct pe_header;

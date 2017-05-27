@@ -60,7 +60,7 @@ static void             setInitialData( omf_file_handle ofh )
 }
 
 
-omf_rec_size            OmfGetWordSize( int is32 )
+omf_rec_size    OmfGetWordSize( bool is32 )
 {
     if( is32 ) {
         return( 4 );
@@ -89,12 +89,9 @@ static orl_sec_offset   getUWord( omf_bytes buffer, int wordsize )
 }
 
 
-static int              check32Bit( omf_file_handle ofh, omf_rectyp typ )
+static bool check32Bit( omf_file_handle ofh, omf_rectyp typ )
 {
-    int is32;
-
-    is32 = _Is32BitRec( typ ) || ( ofh->status & OMF_STATUS_EASY_OMF );
-    return( is32 );
+    return( _Is32BitRec( typ ) || (ofh->status & OMF_STATUS_EASY_OMF) );
 }
 
 
@@ -188,7 +185,7 @@ static omf_idx loadIndex( omf_bytes *buffer, omf_rec_size *len )
 }
 
 
-static orl_return       processExplicitFixup( omf_file_handle ofh, int is32, omf_bytes *buffer, omf_rec_size *cur )
+static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, omf_bytes *buffer, omf_rec_size *cur )
 {
     omf_bytes           buf;
     omf_rec_size        len;
@@ -666,7 +663,7 @@ static orl_return       doPUBDEF( omf_file_handle ofh, omf_rectyp typ )
     omf_frame           frame = 0;
     char                *pubname;
     orl_sec_offset      offset;
-    int                 is32;
+    bool                is32;
     int                 wordsize;
 
     assert( ofh );
@@ -753,13 +750,13 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
     omf_idx             name;
     omf_idx             class;
     uint_8              datum;
-    int                 is32;
+    bool                is32;
     int                 wordsize;
     orl_sec_alignment   align;
     orl_sec_size        size = 0;
     int                 combine;
-    int                 max = 0;
-    int                 use32 = 0;
+    bool                max_size;
+    bool                use32;
     orl_sec_frame       frame;
 
     assert( ofh );
@@ -797,29 +794,22 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
         frame = ORL_SEC_NO_ABS_FRAME;
     }
 
-    if( datum & 0x02 ) {
-        max = 1;
-    }
     size = (orl_sec_size)getUWord( buffer, wordsize );
     buffer += wordsize;
     len -= wordsize;
-
-    if( datum & 0x01 ) {
-        use32 = 1;
-    } else {
-        use32 = 0;
-    }
 
     name = loadIndex( &buffer, &len );
     class = loadIndex( &buffer, &len );
     loadIndex( &buffer, &len );
 
+    max_size = ( (datum & 0x02) != 0 );
+    use32 = ( (datum & 0x01) != 0 );
     if( ofh->status & OMF_STATUS_EASY_OMF ) {
-        use32 = 1;
+        use32 = true;
         if( len >= 1 ) {
             datum = buffer[0];
             if( (datum & EASY_USE32_FIELD) == 0 ) {
-                use32 = 0;
+                use32 = false;
             }
         }
     }
@@ -830,7 +820,7 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
         ofh->status |= OMF_STATUS_ARCH_SET;
     }
 
-    return( OmfAddSegDef( ofh, is32, align, combine, use32, max, frame, size, name, class ) );
+    return( OmfAddSegDef( ofh, is32, align, combine, use32, max_size, frame, size, name, class ) );
 }
 
 
@@ -885,7 +875,7 @@ static orl_return       doFIXUPP( omf_file_handle ofh, omf_rectyp typ )
     omf_bytes           buffer;
     omf_rec_size        len;
     uint_8              datum;
-    int                 is32;
+    bool                is32;
 //    int                 wordsize;
 
     assert( ofh );
@@ -926,7 +916,7 @@ static orl_return       doBAKPAT( omf_file_handle ofh, omf_rectyp typ )
     omf_bytes           buffer;
     omf_rec_size        len;
     uint_8              loctype;
-    int                 is32;
+    bool                is32;
     int                 wordsize;
     orl_sec_offset      displacement;
     orl_sec_offset      offset;
@@ -993,7 +983,7 @@ static orl_return       doBAKPAT( omf_file_handle ofh, omf_rectyp typ )
 static orl_return       doLEDATA( omf_file_handle ofh, omf_rectyp typ )
 {
     orl_return          err;
-    int                 is32;
+    bool                is32;
     omf_bytes           buffer;
     omf_rec_size        len;
     int                 wordsize;
@@ -1028,7 +1018,7 @@ static orl_return       doLEDATA( omf_file_handle ofh, omf_rectyp typ )
 static orl_return       doLIDATA( omf_file_handle ofh, omf_rectyp typ )
 {
     orl_return          err;
-    int                 is32;
+    bool                is32;
     omf_bytes           buffer;
     omf_rec_size        len;
     int                 wordsize;
@@ -1068,7 +1058,7 @@ static orl_return       doLIDATA( omf_file_handle ofh, omf_rectyp typ )
 static orl_return       doCOMDAT( omf_file_handle ofh, omf_rectyp typ )
 {
     orl_return          err;
-    int                 is32;
+    bool                is32;
     omf_bytes           buffer;
     omf_rec_size        len;
     int                 wordsize;

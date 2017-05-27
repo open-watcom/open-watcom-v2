@@ -51,20 +51,22 @@ typedef uint_16         elf_reloc_type;
 
 typedef int_32          elf_quantity;
 
-typedef struct elf_handle_struct elf_handle_struct;
-typedef elf_handle_struct * elf_handle;
+typedef uint_32         elf_index;
 
-typedef struct elf_file_handle_struct elf_file_handle_struct;
-typedef elf_file_handle_struct * elf_file_handle;
+typedef struct elf_handle_struct        elf_handle_struct;
+typedef elf_handle_struct               *elf_handle;
 
-typedef struct elf_sec_handle_struct elf_sec_handle_struct;
-typedef elf_sec_handle_struct * elf_sec_handle;
+typedef struct elf_file_handle_struct   elf_file_handle_struct;
+typedef elf_file_handle_struct          *elf_file_handle;
+
+typedef struct elf_sec_handle_struct    elf_sec_handle_struct;
+typedef elf_sec_handle_struct           *elf_sec_handle;
 
 typedef struct elf_symbol_handle_struct elf_symbol_handle_struct;
-typedef elf_symbol_handle_struct * elf_symbol_handle;
+typedef elf_symbol_handle_struct        *elf_symbol_handle;
 
 struct elf_handle_struct {
-    orl_funcs *         funcs;
+    orl_funcs           *funcs;
     elf_file_handle     first_file_hnd;
 };
 
@@ -96,7 +98,7 @@ struct elf_normal_assoc_struct {
 struct elf_reloc_assoc_struct {
     elf_sec_handle      orig_sec;
     elf_sec_handle      symbol_table;
-    orl_reloc *         relocs;
+    orl_reloc           *relocs;
 };
 
 struct elf_sym_assoc_struct {

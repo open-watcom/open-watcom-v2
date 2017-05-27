@@ -36,7 +36,7 @@
 #include "omfglbl.h"
 #include "omftype.h"
 
-extern omf_rec_size     OmfGetWordSize( int is32 );
+extern omf_rec_size     OmfGetWordSize( bool is32 );
 extern orl_return       OmfParseScanTab( omf_bytes buffer, omf_rec_size len, omf_scan_tab_struct *entry );
 orl_return              OmfLoadFileStructure( omf_file_handle ofh );
 
