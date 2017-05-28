@@ -227,6 +227,15 @@ static int DataImpLibInit( coff_file_handle coff_file_hnd )
     return( ORL_OKAY );
 }
 
+static int DataImpLibFini( coff_file_handle coff_file_hnd )
+{
+    if( coff_file_hnd->implib_data == NULL ) {
+        _ClientFree( coff_file_hnd, coff_file_hnd->implib_data );
+        coff_file_hnd->implib_data = NULL;
+    }
+    return( ORL_OKAY );
+}
+
 static int AddDataImpLib( coff_file_handle coff_file_hnd, const void *buff, size_t len )
 {
     char    *x;
@@ -547,7 +556,7 @@ static int CoffCreateImport( coff_file_handle coff_file_hnd, import_sym *import 
     return( ORL_OKAY );
 }
 
-int convert_import_library( coff_file_handle coff_file_hnd )
+int convert_import_library_init( coff_file_handle coff_file_hnd )
 {
     coff_import_object_header   *i_hdr;
     import_sym                  sym;
@@ -564,4 +573,9 @@ int convert_import_library( coff_file_handle coff_file_hnd )
     sym.type = i_hdr->name_type;
     sym.ordinal = i_hdr->oh.ordinal;
     return( CoffCreateImport( coff_file_hnd, &sym ) );
+}
+
+int convert_import_library_fini( coff_file_handle coff_file_hnd )
+{
+    return( DataImpLibFini( coff_file_hnd ) );
 }

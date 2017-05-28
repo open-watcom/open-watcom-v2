@@ -824,9 +824,8 @@ static int strNUpper( char *str, omf_string_struct *name )
 }
 
 
-static orl_sec_flags    getSegSecFlags( omf_file_handle ofh, omf_idx name,
-                                        omf_idx class, orl_sec_alignment align,
-                                        int combine, bool use32 )
+static orl_sec_flags getSegSecFlags( omf_file_handle ofh, omf_idx name, omf_idx class,
+                                    orl_sec_alignment align, int combine, bool use32 )
 {
     char                lname[257];
     orl_sec_flags       flags = 0;
@@ -889,9 +888,8 @@ static orl_return   OmfAddFileName( omf_file_handle ofh, char *buffer, omf_strin
 }
 
 
-orl_return              OmfAddLIData( omf_file_handle ofh, bool is32,
-                                      omf_idx seg, omf_sec_offset offset,
-                                      omf_bytes buffer, omf_rec_size len, int comdat )
+orl_return OmfAddLIData( omf_file_handle ofh, bool is32, omf_idx seg, omf_sec_offset offset,
+                            omf_bytes buffer, omf_rec_size len, bool comdat )
 {
     omf_sec_handle      sh;
     orl_return          return_val;
@@ -960,9 +958,8 @@ orl_return              OmfAddLIData( omf_file_handle ofh, bool is32,
 }
 
 
-orl_return              OmfAddLEData( omf_file_handle ofh, bool is32,
-                                      omf_idx seg, omf_sec_offset offset,
-                                      omf_bytes buffer, omf_rec_size len, int comdat )
+orl_return OmfAddLEData( omf_file_handle ofh, bool is32, omf_idx seg, omf_sec_offset offset,
+                            omf_bytes buffer, omf_rec_size len, bool comdat )
 {
     omf_sec_handle      sh;
     orl_return          return_val;
@@ -1045,9 +1042,8 @@ omf_string_struct   *OmfGetLastExtName( omf_file_handle ofh )
 }
 
 
-orl_return              OmfAddBakpat( omf_file_handle ofh, uint_8 loctype,
-                                      omf_sec_offset location, omf_idx segidx,
-                                      omf_idx symidx, omf_reloc_addend disp )
+orl_return OmfAddBakpat( omf_file_handle ofh, uint_8 loctype, omf_sec_offset location,
+                            omf_idx segidx, omf_idx symidx, omf_reloc_addend disp )
 {
     omf_tmp_bkfix       tbf;
     orl_reloc_type      reltype;
@@ -1105,10 +1101,8 @@ orl_return              OmfAddBakpat( omf_file_handle ofh, uint_8 loctype,
 }
 
 
-orl_return              OmfAddFixupp( omf_file_handle ofh, bool is32, int mode,
-                                      int location, omf_sec_offset offset,
-                                      int fmethod, omf_idx fidx, int tmethod,
-                                      omf_idx tidx, omf_reloc_addend disp )
+orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location, omf_sec_offset offset,
+                            int fmethod, omf_idx fidx, int tmethod, omf_idx tidx, omf_reloc_addend disp )
 {
     omf_tmp_fixup       ftr;
     orl_reloc           *orel;
@@ -1323,12 +1317,9 @@ orl_return  OmfAddExtDef( omf_file_handle ofh, omf_string_struct *extname, omf_r
 }
 
 
-orl_return              OmfAddComDat( omf_file_handle ofh, bool is32, int flags,
-                                      int attr, int align,
-                                      omf_sec_offset offset, omf_idx seg,
-                                      omf_idx group, omf_frame frame,
-                                      omf_idx name, omf_bytes buffer, omf_rec_size len,
-                                      omf_rectyp typ )
+orl_return OmfAddComDat( omf_file_handle ofh, bool is32, int flags, int attr, int align,
+                        omf_sec_offset offset, omf_idx seg, omf_idx group, omf_frame frame,
+                        omf_idx name, omf_bytes buffer, omf_rec_size len, omf_rectyp typ )
 {
     orl_return          return_val;
     omf_sec_handle      sh;
@@ -1461,9 +1452,9 @@ orl_return              OmfAddComDat( omf_file_handle ofh, bool is32, int flags,
     }
 
     if( flags & COMDAT_ITERATED ) {
-        return_val = OmfAddLIData( ofh, is32, sh->assoc.seg.seg_id, offset, buffer, len, 1 );
+        return_val = OmfAddLIData( ofh, is32, sh->assoc.seg.seg_id, offset, buffer, len, true );
     } else {
-        return_val = OmfAddLEData( ofh, is32, sh->assoc.seg.seg_id, offset, buffer, len, 1 );
+        return_val = OmfAddLEData( ofh, is32, sh->assoc.seg.seg_id, offset, buffer, len, true );
     }
 
     return( return_val );
@@ -1484,11 +1475,9 @@ extern orl_return OmfAddLineNum( omf_sec_handle sh, unsigned_16 line, unsigned_3
 }
 
 
-orl_return              OmfAddSegDef( omf_file_handle ofh, bool is32,
-                                      orl_sec_alignment align, int combine,
-                                      bool use32, bool max_size, orl_sec_frame frame,
-                                      omf_sec_size size, omf_idx name,
-                                      omf_idx class )
+orl_return OmfAddSegDef( omf_file_handle ofh, bool is32, orl_sec_alignment align,
+                        int combine, bool use32, bool max_size, bool abs_frame,
+                        omf_frame frame, omf_sec_size size, omf_idx name, omf_idx class )
 {
     omf_sec_handle      sh;
     omf_symbol_handle   sym;
@@ -1510,7 +1499,7 @@ orl_return              OmfAddSegDef( omf_file_handle ofh, bool is32,
         sh->assoc.seg.seg_flags |= OMF_SEG_IS_32;
     }
 
-    if( frame > ORL_SEC_NO_ABS_FRAME ) {
+    if( abs_frame ) {
         sh->assoc.seg.seg_flags |= OMF_SEG_IS_ABS;
     }
 
@@ -1548,10 +1537,8 @@ orl_return              OmfAddSegDef( omf_file_handle ofh, bool is32,
 }
 
 
-orl_return              OmfAddPubDef( omf_file_handle ofh, bool is32,
-                                      omf_idx group, omf_idx seg,
-                                      omf_frame frame, char *buffer, omf_string_len len,
-                                      omf_sec_offset offset, omf_rectyp typ )
+orl_return OmfAddPubDef( omf_file_handle ofh, bool is32, omf_idx group, omf_idx seg, omf_frame frame,
+                            char *buffer, omf_string_len len, omf_sec_offset offset, omf_rectyp typ )
 {
     omf_symbol_handle   sym;
     orl_symbol_type     styp;
@@ -1704,8 +1691,7 @@ omf_string_struct *OmfGetLName( omf_sec_handle lnames, omf_idx idx )
 }
 
 
-omf_sec_handle          OmfFindSegOrComdat( omf_file_handle ofh, omf_idx seg,
-                                            omf_idx comdat_lname )
+omf_sec_handle OmfFindSegOrComdat( omf_file_handle ofh, omf_idx seg, omf_idx comdat_lname )
 {
     omf_quantity        x;
 

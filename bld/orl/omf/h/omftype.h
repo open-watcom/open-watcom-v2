@@ -232,7 +232,7 @@ struct omf_file_handle_struct {
 typedef struct omf_comdat_struct {
     omf_sec_handle      assoc_seg;
     omf_grp_handle      group;
-    uint_32             frame;
+    omf_frame           frame;
 } omf_comdat_struct;
 
 struct omf_seg_assoc_struct {
@@ -240,7 +240,7 @@ struct omf_seg_assoc_struct {
     omf_idx             class;
     orl_sec_alignment   alignment;
     orl_sec_combine     combine;
-    orl_sec_frame       frame;
+    omf_frame           frame;
     uint_32             seg_flags;
     uint_32             cur_size;
     omf_sec_offset      cur_offset;

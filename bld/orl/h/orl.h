@@ -99,5 +99,5 @@ const char              *ORLENTRY ORLGroupName( orl_group_handle );
 orl_table_index         ORLENTRY ORLGroupSize( orl_group_handle );
 const char              *ORLENTRY ORLGroupMember( orl_group_handle, orl_table_index );
 
-unsigned long           ORLENTRY ORLExportTableRVA( orl_file_handle);
+orl_rva                 ORLENTRY ORLExportTableRVA( orl_file_handle );
 #endif

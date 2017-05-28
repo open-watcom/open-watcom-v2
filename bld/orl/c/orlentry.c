@@ -273,9 +273,9 @@ orl_return ORLENTRY ORLFileFini( orl_file_handle orl_file_hnd )
 }
 
 
-unsigned long ORLENTRY ORLExportTableRVA( orl_file_handle orl_file_hnd )
+orl_rva ORLENTRY ORLExportTableRVA( orl_file_handle orl_file_hnd )
 {
-    unsigned long rva = 0L;
+    orl_rva     rva = 0;
 
     if( ORLI_FILE_HND->type == ORL_COFF ) {
         rva = CoffExportTableRVA( ORLI_FILE_HND->file_hnd.coff );

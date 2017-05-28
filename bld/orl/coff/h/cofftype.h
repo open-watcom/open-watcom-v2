@@ -60,6 +60,8 @@ typedef uint_8                          coff_comdat_selection;
 
 typedef uint_32                         coff_quantity;
 
+typedef uint_32                         coff_rva;
+
 typedef struct coff_handle_struct       coff_handle_struct;
 typedef coff_handle_struct              *coff_handle;
 
@@ -97,8 +99,9 @@ struct coff_file_handle_struct {
     coff_sec_handle     symbol_table;
     coff_sec_handle     string_table;
     orl_hash_table      sec_name_hash_table;
-    unsigned long       export_table_rva;
     char                *implib_data;
+    coff_rva            export_table_rva;
+    bool                pe64;
 };
 
 #define SEC_NAME_HASH_TABLE_SIZE 53
@@ -153,13 +156,20 @@ struct pe_header_struct {
     short       offset;
 };
 
-typedef struct pe_opt_hdr_struct pe_opt_hdr;
+typedef union pe_opt_hdr_struct pe_opt_hdr;
 
-struct pe_opt_hdr_struct
-{
-    unsigned short magic;
-    char           space[94];
-    unsigned long  export_table_rva;
+union pe_opt_hdr_struct {
+    unsigned_16     magic;
+    struct {
+        unsigned_16 magic;
+        char        space[94];
+        unsigned_32 export_table_rva;
+    } pe32;
+    struct {
+        unsigned_16 magic;
+        char        space[110];
+        unsigned_32 export_table_rva;
+    } pe64;
 };
 
 /*

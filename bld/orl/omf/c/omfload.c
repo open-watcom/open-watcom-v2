@@ -44,6 +44,8 @@
 #define MAX_REC_SIZE    65536
 #define TWO_BYTE_MASK   0x80
 
+#define OmfGetFrame(b)  (omf_frame)OmfGetUWord( (b), 2 )
+
 
 static void             setInitialData( omf_file_handle ofh )
 {
@@ -682,7 +684,7 @@ static orl_return       doPUBDEF( omf_file_handle ofh, omf_rectyp typ )
     omf_string_len      slen;
     omf_idx             seg;
     omf_idx             group;
-    omf_frame           frame = 0;
+    omf_frame           frame;
     char                *pubname;
     omf_sec_offset      offset;
     bool                is32;
@@ -705,10 +707,11 @@ static orl_return       doPUBDEF( omf_file_handle ofh, omf_rectyp typ )
     group = loadIndex( &buffer, &len );
     seg = loadIndex( &buffer, &len );
 
+    frame = 0;
     if( seg == 0 ) {
         if( len < 2 )
             return( ORL_ERROR );
-        frame = (omf_frame)OmfGetUWord( buffer, 2 );
+        frame = OmfGetFrame( buffer );
         buffer += 2;
         len -= 2;
     }
@@ -779,7 +782,8 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
     int                 combine;
     bool                max_size;
     bool                use32;
-    orl_sec_frame       frame;
+    omf_frame           frame;
+    bool                abs_frame;
 
     assert( ofh );
 
@@ -797,23 +801,24 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
     datum = *buffer++;
     len--;
 
+    frame = 0;
+    abs_frame = false;
     align = getAlignment( datum >> 5 );
     combine = ( datum >> 2 ) & 7;
     if( ( datum >> 5 ) == ALIGN_ABS ) {
+        abs_frame = true;
         if( ofh->status & OMF_STATUS_EASY_OMF ) {
             // FIXME !!! it looks bugy, frame should be 16-bit and offset ?
             // I can not found any information about it
-            frame = (orl_sec_frame)OmfGetUWord( buffer, 2 );
+            frame = OmfGetFrame( buffer );
         } else {
-            frame = (orl_sec_frame)OmfGetUWord( buffer, 2 );
+            frame = OmfGetFrame( buffer );
         }
         buffer += 3;
         len -= 3;
         if( len < ( wordsize + 3 ) ) {
             return( ORL_ERROR );
         }
-    } else {
-        frame = ORL_SEC_NO_ABS_FRAME;
     }
 
     size = (omf_sec_size)OmfGetUWord( buffer, wordsize );
@@ -842,7 +847,7 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
         ofh->status |= OMF_STATUS_ARCH_SET;
     }
 
-    return( OmfAddSegDef( ofh, is32, align, combine, use32, max_size, frame, size, name, class ) );
+    return( OmfAddSegDef( ofh, is32, align, combine, use32, max_size, abs_frame, frame, size, name, class ) );
 }
 
 
@@ -1034,7 +1039,7 @@ static orl_return       doLEDATA( omf_file_handle ofh, omf_rectyp typ )
     if( len < 0 )
         return( ORL_ERROR );
 
-    return( OmfAddLEData( ofh, is32, seg, offset, buffer, len, 0 ) );
+    return( OmfAddLEData( ofh, is32, seg, offset, buffer, len, false ) );
 }
 
 
@@ -1074,7 +1079,7 @@ static orl_return       doLIDATA( omf_file_handle ofh, omf_rectyp typ )
      * the matter, the conversion will create an LEData which will then be
      * added to the section.
      */
-    return( OmfAddLIData( ofh, is32, seg, offset, buffer, len, 0 ) );
+    return( OmfAddLIData( ofh, is32, seg, offset, buffer, len, false ) );
 }
 
 
@@ -1085,9 +1090,9 @@ static orl_return       doCOMDAT( omf_file_handle ofh, omf_rectyp typ )
     omf_bytes           buffer;
     omf_rec_size        len;
     int                 wordsize;
-    omf_idx             seg = 0;
-    omf_idx             group = 0;
-    omf_frame           frame = 0;
+    omf_idx             seg;
+    omf_idx             group;
+    omf_frame           frame;
     omf_idx             name;
     uint_8              attr;
     int                 align;
@@ -1123,11 +1128,14 @@ static orl_return       doCOMDAT( omf_file_handle ofh, omf_rectyp typ )
 
     loadIndex( &buffer, &len );
 
-    if( ( attr & COMDAT_ALLOC_MASK ) == COMDAT_EXPLICIT ) {
+    group = 0;
+    seg = 0;
+    frame = 0;
+    if( (attr & COMDAT_ALLOC_MASK) == COMDAT_EXPLICIT ) {
         group = loadIndex( &buffer, &len );
         seg = loadIndex( &buffer, &len );
         if( seg == 0 && group == 0 ) {
-            frame = (omf_frame)OmfGetUWord( buffer, 2 );
+            frame = OmfGetFrame( buffer );
             buffer += 2;
             len -= 2;
         }
@@ -1139,7 +1147,7 @@ static orl_return       doCOMDAT( omf_file_handle ofh, omf_rectyp typ )
 }
 
 
-static orl_return       procRecord( omf_file_handle ofh, omf_rectyp typ )
+static orl_return   procRecord( omf_file_handle ofh, omf_rectyp typ )
 {
     assert( ofh );
 

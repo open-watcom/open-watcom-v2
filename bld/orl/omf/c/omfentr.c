@@ -274,7 +274,7 @@ orl_sec_frame OMFENTRY OmfSecGetAbsFrame( omf_sec_handle sh )
 {
     assert( sh );
 
-    if( _IsSegType( sh->type ) ) {
+    if( _IsSegType( sh->type ) && (sh->assoc.seg.seg_flags & OMF_SEG_IS_ABS) ) {
         return( sh->assoc.seg.frame );
     }
     return( ORL_SEC_NO_ABS_FRAME );
