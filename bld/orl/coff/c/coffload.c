@@ -445,7 +445,7 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
         if( PE[0] == 'P' && PE[1] == 'E' && PE[2] == '\0' && PE[3] == '\0' ) {
             PEoffset = pe_hdr->offset + 4;
         } else {
-            _ClientSeek( coff_file_hnd, -(long)(pe_hdr->offset-4), SEEK_CUR );
+            _ClientSeek( coff_file_hnd, -(long)(pe_hdr->offset - 4), SEEK_CUR );
         }
     }
     coff_file_hnd->f_hdr_buffer = _ClientRead( coff_file_hnd, sizeof( coff_file_header ) );
@@ -457,7 +457,7 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
         // convert short import library structures to long import
         // library structures, change _ClientRead and _ClientSeek
         // macros to read from converted metadata
-        return_val = convert_import_library( coff_file_hnd );
+        return_val = convert_import_library_init( coff_file_hnd );
         if ( return_val != ORL_OKAY ) {
             return( return_val );
         }
@@ -468,13 +468,22 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
         f_hdr = (coff_file_header *)coff_file_hnd->f_hdr_buffer;
         determine_file_specs( coff_file_hnd, f_hdr );
     }
-    if( f_hdr->opt_hdr_size > 0 ) {     // skip optional header
+    if( f_hdr->opt_hdr_size > 0 ) {     // skip/process optional header
         pe_opt_hdr *opt_hdr = (pe_opt_hdr *)_ClientRead( coff_file_hnd, f_hdr->opt_hdr_size );
-
-        if( (opt_hdr->magic == 0x10b) || (opt_hdr->magic == 0x20b) ) {
-            coff_file_hnd->export_table_rva = opt_hdr->export_table_rva;
-        } else {
-            coff_file_hnd->export_table_rva = 0L;
+        switch( opt_hdr->magic ) {
+        case 0x10b:
+            // PE  (32-bit)
+            coff_file_hnd->export_table_rva = opt_hdr->pe32.export_table_rva;
+            break;
+        case 0x20b:
+            // PE+ (64-bit)
+            coff_file_hnd->flags |= ORL_FILE_FLAG_64BIT_MACHINE;
+            coff_file_hnd->pe64 = true;
+            coff_file_hnd->export_table_rva = opt_hdr->pe64.export_table_rva;
+            break;
+        default:
+            coff_file_hnd->export_table_rva = 0;
+            break;
         }
     }
     coff_file_hnd->initial_size = sizeof( coff_file_header ) + f_hdr->opt_hdr_size + PEoffset;

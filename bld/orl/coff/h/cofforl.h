@@ -77,6 +77,6 @@ orl_symbol_type         COFFENTRY CoffSymbolGetType( coff_symbol_handle );
 coff_sec_handle         COFFENTRY CoffSymbolGetSecHandle( coff_symbol_handle );
 coff_symbol_handle      COFFENTRY CoffSymbolGetAssociated( coff_symbol_handle );
 
-unsigned long           COFFENTRY CoffExportTableRVA( coff_file_handle );
+coff_rva                COFFENTRY CoffExportTableRVA( coff_file_handle );
 
 #endif

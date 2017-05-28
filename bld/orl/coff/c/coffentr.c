@@ -71,12 +71,8 @@ orl_return COFFENTRY CoffFileInit( coff_handle coff_hnd, orl_file_id file, coff_
     coff_file_hnd = (coff_file_handle)ORL_PTR_ALLOC( coff_hnd, sizeof( coff_file_handle_struct ) );
     if( coff_file_hnd == NULL )
         return( ORL_OUT_OF_MEMORY );
-    coff_file_hnd->coff_sec_hnd = NULL;
-    coff_file_hnd->orig_sec_hnd = NULL;
+    memset( coff_file_hnd, 0, sizeof( coff_file_handle_struct ) );
     coff_file_hnd->file = file;
-    coff_file_hnd->sec_name_hash_table = NULL;
-    coff_file_hnd->symbol_handles = NULL;
-    coff_file_hnd->implib_data = NULL;
     CoffAddFileLinks( coff_hnd, coff_file_hnd );
     return_val = CoffLoadFileStructure( coff_file_hnd );
     if( return_val != ORL_OKAY ) {
@@ -123,7 +119,7 @@ orl_return COFFENTRY CoffFileScan( coff_file_handle coff_file_hnd, const char *d
     return( ORL_OKAY );
 }
 
-unsigned long COFFENTRY CoffExportTableRVA(coff_file_handle coff_file_hnd)
+coff_rva COFFENTRY CoffExportTableRVA( coff_file_handle coff_file_hnd )
 {
     return( coff_file_hnd->export_table_rva );
 }

@@ -67,9 +67,7 @@ static void free_coff_file_hnd( coff_file_handle coff_file_hnd )
     if( coff_file_hnd->sec_name_hash_table != NULL ) {
         ORLHashTableFree( coff_file_hnd->sec_name_hash_table );
     }
-    if( coff_file_hnd->implib_data != NULL ) {
-        _ClientFree( coff_file_hnd, coff_file_hnd->implib_data );
-    }
+    convert_import_library_fini( coff_file_hnd );
     _ClientFree( coff_file_hnd, coff_file_hnd );
 }
 

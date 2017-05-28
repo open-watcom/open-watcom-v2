@@ -51,19 +51,21 @@
 
 typedef void                            *orl_file_id;
 
-typedef uint_32                         orl_file_offset;
-typedef uint_32                         orl_file_size;
+typedef unsigned_32                     orl_file_offset;
+typedef unsigned_32                     orl_file_size;
 
-typedef uint_32                         orl_sec_size;
-typedef uint_32                         orl_sec_offset;
-typedef uint_32                         orl_sec_alignment;
-typedef long                            orl_sec_frame;
+typedef unsigned_32                     orl_sec_size;
+typedef unsigned_32                     orl_sec_offset;
+typedef unsigned_32                     orl_sec_alignment;
+typedef unsigned_32                     orl_sec_frame;
 
-typedef int_32                          orl_reloc_addend;
+typedef signed_32                       orl_reloc_addend;
 
 typedef unsigned_64                     orl_symbol_value;
 
-typedef uint_32                         orl_table_index;
+typedef unsigned_32                     orl_table_index;
+
+typedef unsigned_32                     orl_rva;
 
 #define ORL_SEC_NO_ABS_FRAME            -1
 
