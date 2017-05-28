@@ -95,6 +95,8 @@ typedef uint_8                          omf_string_len;
 
 typedef int_32                          omf_quantity;
 
+typedef int_32                          omf_reloc_addend;
+
 typedef uint_8                          *omf_bytes;
 typedef uint_8                          omf_rectyp;
 typedef int_8                           omf_dbg_style;
@@ -144,12 +146,12 @@ struct omf_tmp_fixup_struct {
     bool                is32;
     int                 mode;
     int                 location;
-    orl_sec_offset      offset;
+    omf_sec_offset      offset;
     int                 fmethod;
     omf_idx             fidx;
     int                 tmethod;
     omf_idx             tidx;
-    orl_sec_offset      disp;
+    omf_reloc_addend    disp;
 };
 
 struct omf_tmp_bakpat_struct {
@@ -162,8 +164,8 @@ struct omf_tmp_bkfix_struct {
     orl_reloc_type      reltype;
     omf_idx             segidx;
     omf_idx             symidx;
-    orl_sec_offset      offset;
-    orl_sec_offset      disp;
+    omf_sec_offset      offset;
+    omf_reloc_addend    disp;
 };
 
 struct omf_handle_struct {
@@ -241,7 +243,7 @@ struct omf_seg_assoc_struct {
     orl_sec_frame       frame;
     uint_32             seg_flags;
     uint_32             cur_size;
-    uint_32             cur_offset;
+    omf_sec_offset      cur_offset;
     omf_idx             seg_id;
     omf_symbol_handle   sym;
     omf_comdat_struct   comdat;
@@ -330,8 +332,8 @@ struct omf_grp_handle_struct {
 typedef struct omf_scan_tab_struct {
     omf_idx             seg;
     omf_idx             lname;
-    orl_sec_offset      start;
-    orl_sec_offset      end;
+    omf_sec_offset      start;
+    omf_sec_offset      end;
 } omf_scan_tab_struct;
 
 #endif

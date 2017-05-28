@@ -44,42 +44,43 @@
 orl_return      OmfParseComments( omf_sec_handle sh, orl_note_callbacks *cbs, void *cookie )
 {
     omf_quantity        x;
-    orl_return          err = ORL_OKAY;
+    orl_return          return_val;
     omf_comment_struct  *comment;
     omf_scan_tab_struct st;
-    omf_sec_handle      csh;
+    orl_sec_handle      csh;
 
     assert( sh );
     assert( cbs );
 
     for( x = 0; x < sh->assoc.comment.num; x++ ) {
-        err = ORL_OKAY;
         comment = sh->assoc.comment.comments[x];
         assert( comment );
 
         switch( comment->class ) {
         case( CMT_DEFAULT_LIBRARY ):
             if( cbs->deflib_fn != NULL ) {
-                err = cbs->deflib_fn( (char *)comment->data, cookie );
+                return_val = cbs->deflib_fn( (char *)comment->data, cookie );
+                if( return_val != ORL_OKAY ) {
+                    return( return_val );
+                }
             }
             break;
         case( CMT_DISASM_DIRECTIVE ):
-            if( cbs->scantab_fn == NULL )
-                continue;
-            err = OmfParseScanTab( comment->data, comment->len, &st );
-            if( err != ORL_OKAY )
-                continue;
-
-            csh = OmfFindSegOrComdat( sh->omf_file_hnd, st.seg, st.lname );
-            if( csh == NULL )
-                continue;
-
-            err = cbs->scantab_fn( (orl_sec_handle)csh, st.start, st.end, cookie );
-        }
-        if( err != ORL_OKAY ) {
+            if( cbs->scantab_fn != NULL ) {
+                return_val = OmfParseScanTab( comment->data, comment->len, &st );
+                if( return_val == ORL_OKAY ) {
+                    csh = (orl_sec_handle)OmfFindSegOrComdat( sh->omf_file_hnd, st.seg, st.lname );
+                    if( csh != NULL ) {
+                        return_val = cbs->scantab_fn( csh, st.start, st.end, cookie );
+                        if( return_val != ORL_OKAY ) {
+                            return( return_val );
+                        }
+                    }
+                }
+            }
             break;
         }
     }
 
-    return( err );
+    return( ORL_OKAY );
 }
