@@ -36,11 +36,11 @@
 #include "omftype.h"
 
 extern orl_return       OmfAddLIData( omf_file_handle ofh, bool is32,
-                                      omf_idx seg, orl_sec_offset offset,
+                                      omf_idx seg, omf_sec_offset offset,
                                       omf_bytes buffer, omf_rec_size len, int comdat );
 
 extern orl_return       OmfAddLEData( omf_file_handle ofh, bool is32,
-                                      omf_idx seg, orl_sec_offset offset,
+                                      omf_idx seg, omf_sec_offset offset,
                                       omf_bytes buffer, omf_rec_size len, int comdat );
 
 extern orl_return       OmfAddLName( omf_file_handle ofh, char *buffer, omf_string_len len, omf_rectyp typ );
@@ -48,19 +48,19 @@ extern orl_return       OmfAddLName( omf_file_handle ofh, char *buffer, omf_stri
 extern orl_return       OmfAddExtName( omf_file_handle ofh, char *buffer, omf_string_len len, omf_rectyp typ );
 
 extern orl_return       OmfAddFixupp( omf_file_handle ofh, bool is32, int mode,
-                                      int location, orl_sec_offset offset,
+                                      int location, omf_sec_offset offset,
                                       int fmethod, omf_idx fidx, int tmethod,
-                                      omf_idx tidx, orl_sec_offset disp );
+                                      omf_idx tidx, omf_reloc_addend disp );
 
 extern orl_return       OmfAddBakpat( omf_file_handle ofh, uint_8 loctype,
-                                      orl_sec_offset location, omf_idx segidx,
-                                      omf_idx symidx, orl_sec_offset disp );
+                                      omf_sec_offset location, omf_idx segidx,
+                                      omf_idx symidx, omf_reloc_addend disp );
 
 extern orl_return       OmfAddExtDef( omf_file_handle ofh, omf_string_struct *name, omf_rectyp typ );
 
 extern orl_return       OmfAddComDat( omf_file_handle ofh, bool is32, int flags,
                                       int attr, int align,
-                                      orl_sec_offset offset, omf_idx seg,
+                                      omf_sec_offset offset, omf_idx seg,
                                       omf_idx group, omf_frame frame,
                                       omf_idx name, omf_bytes buffer, omf_rec_size len,
                                       omf_rectyp typ );
@@ -74,7 +74,7 @@ extern orl_return       OmfAddSegDef( omf_file_handle ofh, bool is32,
 extern orl_return       OmfAddPubDef( omf_file_handle ofh, bool is32,
                                       omf_idx group, omf_idx seg,
                                       omf_frame frame, char *buffer, omf_string_len len,
-                                      orl_sec_offset offset, omf_rectyp typ );
+                                      omf_sec_offset offset, omf_rectyp typ );
 
 extern orl_return       OmfAddGrpDef( omf_file_handle ofh, omf_idx name, omf_idx *segs, int size );
 

@@ -492,7 +492,7 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
         if( reloc_sec->assoc.reloc.relocs == NULL )
             return( ORL_OUT_OF_MEMORY );
         rel = reloc_sec->contents;
-        o_rel = (orl_reloc *)reloc_sec->assoc.reloc.relocs;
+        o_rel = reloc_sec->assoc.reloc.relocs;
         for( loop = 0; loop < num_relocs; loop++ ) {
             o_rel->section = (orl_sec_handle)orig_sec;
             if( reloc_sec->elf_file_hnd->flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
@@ -520,7 +520,7 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
         if( reloc_sec->assoc.reloc.relocs == NULL )
             return( ORL_OUT_OF_MEMORY );
         rel = reloc_sec->contents;
-        o_rel = (orl_reloc *)reloc_sec->assoc.reloc.relocs;
+        o_rel = reloc_sec->assoc.reloc.relocs;
         for( loop = 0; loop < num_relocs; loop++ ) {
             o_rel->section = (orl_sec_handle)orig_sec;
             if( reloc_sec->elf_file_hnd->flags & ORL_FILE_FLAG_64BIT_MACHINE ) {

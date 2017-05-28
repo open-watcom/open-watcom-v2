@@ -380,7 +380,7 @@ orl_return CoffCreateRelocs( coff_sec_handle orig_sec, coff_sec_handle reloc_sec
     if( reloc_sec->assoc.reloc.relocs == NULL )
         return( ORL_OUT_OF_MEMORY );
     rel = (coff_reloc *)reloc_sec->contents;
-    o_rel = (orl_reloc *)reloc_sec->assoc.reloc.relocs;
+    o_rel = reloc_sec->assoc.reloc.relocs;
     for( loop = 0; loop < num_relocs; loop++ ) {
         o_rel->section = (orl_sec_handle)orig_sec;
         if( reloc_sec->coff_file_hnd->machine_type == ORL_MACHINE_TYPE_ALPHA

@@ -56,7 +56,6 @@ orl_sec_alignment       ELFENTRY ElfSecGetAlignment( elf_sec_handle );
 elf_sec_handle          ELFENTRY ElfSecGetStringTable( elf_sec_handle );
 elf_sec_handle          ELFENTRY ElfSecGetSymbolTable( elf_sec_handle );
 elf_sec_handle          ELFENTRY ElfSecGetRelocTable( elf_sec_handle );
-orl_sec_offset          ELFENTRY ElfSecGetNonLocalSymbolLoc( elf_sec_handle );
 orl_return              ELFENTRY ElfSecGetContents( elf_sec_handle, unsigned char ** );
 orl_return              ELFENTRY ElfSecQueryReloc( elf_sec_handle, elf_sec_offset, orl_reloc_return_func );
 orl_return              ELFENTRY ElfSecScanReloc( elf_sec_handle, orl_reloc_return_func );

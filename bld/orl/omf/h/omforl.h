@@ -49,7 +49,7 @@ orl_file_size           OMFENTRY OmfFileGetSize( omf_file_handle );
 omf_sec_handle          OMFENTRY OmfFileGetSymbolTable( omf_file_handle );
 
 const char              * OMFENTRY OmfSecGetName( omf_sec_handle );
-orl_sec_offset          OMFENTRY OmfSecGetBase( omf_sec_handle );
+omf_sec_offset          OMFENTRY OmfSecGetBase( omf_sec_handle );
 orl_sec_size            OMFENTRY OmfSecGetSize( omf_sec_handle );
 orl_sec_type            OMFENTRY OmfSecGetType( omf_sec_handle );
 orl_sec_flags           OMFENTRY OmfSecGetFlags( omf_sec_handle );
@@ -57,7 +57,6 @@ orl_sec_alignment       OMFENTRY OmfSecGetAlignment( omf_sec_handle );
 omf_sec_handle          OMFENTRY OmfSecGetStringTable( omf_sec_handle );
 omf_sec_handle          OMFENTRY OmfSecGetSymbolTable( omf_sec_handle );
 omf_sec_handle          OMFENTRY OmfSecGetRelocTable( omf_sec_handle );
-orl_sec_offset          OMFENTRY OmfSecGetNonLocalSymbolLoc( omf_sec_handle );
 orl_return              OMFENTRY OmfSecGetContents( omf_sec_handle, unsigned char ** );
 orl_return              OMFENTRY OmfSecQueryReloc( omf_sec_handle, omf_sec_offset, orl_reloc_return_func );
 orl_return              OMFENTRY OmfSecScanReloc( omf_sec_handle, orl_reloc_return_func );
