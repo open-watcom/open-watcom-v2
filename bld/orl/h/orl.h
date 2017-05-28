@@ -59,7 +59,7 @@ orl_file_size           ORLENTRY ORLFileGetSize( orl_file_handle );
 orl_sec_handle          ORLENTRY ORLFileGetSymbolTable( orl_file_handle );
 
 const char              *ORLENTRY ORLSecGetName( orl_sec_handle );
-orl_sec_offset          ORLENTRY ORLSecGetBase( orl_sec_handle );
+orl_return              ORLENTRY ORLSecGetBase( orl_sec_handle, orl_sec_base * );
 orl_sec_size            ORLENTRY ORLSecGetSize( orl_sec_handle );
 orl_sec_type            ORLENTRY ORLSecGetType( orl_sec_handle );
 orl_sec_flags           ORLENTRY ORLSecGetFlags( orl_sec_handle );

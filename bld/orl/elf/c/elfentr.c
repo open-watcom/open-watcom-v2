@@ -151,9 +151,11 @@ const char * ELFENTRY ElfSecGetName( elf_sec_handle elf_sec_hnd )
     return( elf_sec_hnd->name );
 }
 
-orl_sec_offset ELFENTRY ElfSecGetBase( elf_sec_handle elf_sec_hnd )
+orl_return ELFENTRY ElfSecGetBase( elf_sec_handle elf_sec_hnd, orl_sec_base *base )
 {
-    return( elf_sec_hnd->base );
+    base->u._32[I64HI32] = elf_sec_hnd->base.u._32[I64HI32];
+    base->u._32[I64LO32] = elf_sec_hnd->base.u._32[I64LO32];
+    return( ORL_OKAY );
 }
 
 orl_sec_size ELFENTRY ElfSecGetSize( elf_sec_handle elf_sec_hnd )

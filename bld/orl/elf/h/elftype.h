@@ -128,7 +128,7 @@ struct elf_sec_handle_struct {
     orl_sec_flags       flags;
     orl_sec_alignment   alignment;
     unsigned char       *contents;
-    orl_sec_offset      base;
+    orl_sec_base        base;
     orl_table_index     index;
 //    elf_quantity        index;
     orl_sec_size        entsize;

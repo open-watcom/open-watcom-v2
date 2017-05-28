@@ -62,6 +62,7 @@ typedef unsigned_32                     orl_sec_frame;
 typedef signed_32                       orl_reloc_addend;
 
 typedef unsigned_64                     orl_symbol_value;
+typedef unsigned_64                     orl_sec_base;
 
 typedef unsigned_32                     orl_table_index;
 

@@ -394,16 +394,22 @@ const char * ORLENTRY ORLSecGetName( orl_sec_handle orl_sec_hnd )
     return( NULL );
 }
 
-orl_sec_offset ORLENTRY ORLSecGetBase( orl_sec_handle orl_sec_hnd )
+orl_return ORLENTRY ORLSecGetBase( orl_sec_handle orl_sec_hnd, orl_sec_base *base )
 {
     switch( ORLI_SEC_HND->type ) {
     case( ORL_ELF ):
-        return( ElfSecGetBase( (elf_sec_handle)orl_sec_hnd ) );
+        return( ElfSecGetBase( (elf_sec_handle)orl_sec_hnd, base ) );
     case( ORL_COFF ):
-        return( CoffSecGetBase( (coff_sec_handle)orl_sec_hnd ) );
+        base->u._32[I64HI32] = 0;
+        base->u._32[I64LO32] = CoffSecGetBase( (coff_sec_handle)orl_sec_hnd );
+        return( ORL_OKAY );
     case( ORL_OMF ):
-        return( OmfSecGetBase( (omf_sec_handle)orl_sec_hnd ) );
+        base->u._32[I64HI32] = 0;
+        base->u._32[I64LO32] = OmfSecGetBase( (omf_sec_handle)orl_sec_hnd );
+        return( ORL_OKAY );
     default:    // ORL_UNRECOGNIZED_FORMAT
+        base->u._32[I64HI32] = 0;
+        base->u._32[I64LO32] = 0;
         break;
     }
     return( 0 );
