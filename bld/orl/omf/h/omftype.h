@@ -289,7 +289,7 @@ struct omf_sec_handle_struct {
     orl_file_format     file_format;
     omf_file_handle     omf_file_hnd;
     omf_sec_handle      next;
-    orl_sec_size        size;
+    omf_sec_size        size;
     orl_sec_type        type;
     orl_sec_flags       flags;
     omf_bytes           contents;
@@ -324,7 +324,7 @@ struct omf_grp_handle_struct {
     omf_file_handle     omf_file_hnd;
     omf_idx             name;
     omf_idx             id;
-    orl_table_index     size;
+    orl_table_index     num_segs;
     omf_idx             *segs;
     omf_symbol_handle   sym;
 };
