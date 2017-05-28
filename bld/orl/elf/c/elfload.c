@@ -388,7 +388,8 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index 
             fix_shdr64_byte_order( elf_file_hnd, s_hdr64 );
             name_index[loop] = s_hdr64->sh_name;
             elf_sec_hnd->size = s_hdr64->sh_size.u._32[I64LO32];
-            elf_sec_hnd->base = s_hdr64->sh_addr.u._32[I64LO32];
+            elf_sec_hnd->base.u._32[I64HI32] = s_hdr64->sh_addr.u._32[I64HI32];
+            elf_sec_hnd->base.u._32[I64LO32] = s_hdr64->sh_addr.u._32[I64LO32];
             elf_sec_hnd->offset = s_hdr64->sh_offset.u._32[I64LO32];
             elf_sec_hnd->entsize = s_hdr64->sh_entsize.u._32[I64LO32];
             sh_align = s_hdr64->sh_addralign.u._32[I64LO32];
@@ -402,7 +403,8 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index 
             fix_shdr_byte_order( elf_file_hnd, s_hdr32 );
             name_index[loop] = s_hdr32->sh_name;
             elf_sec_hnd->size = s_hdr32->sh_size;
-            elf_sec_hnd->base = s_hdr32->sh_addr;
+            elf_sec_hnd->base.u._32[I64HI32] = 0;
+            elf_sec_hnd->base.u._32[I64LO32] = s_hdr32->sh_addr;
             elf_sec_hnd->offset = s_hdr32->sh_offset;
             elf_sec_hnd->entsize = s_hdr32->sh_entsize;
             sh_align = s_hdr32->sh_addralign;

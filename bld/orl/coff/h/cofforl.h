@@ -48,7 +48,7 @@ orl_file_size           COFFENTRY CoffFileGetSize( coff_file_handle );
 coff_sec_handle         COFFENTRY CoffFileGetSymbolTable( coff_file_handle );
 
 const char              * COFFENTRY CoffSecGetName( coff_sec_handle );
-orl_sec_offset          COFFENTRY CoffSecGetBase( coff_sec_handle );
+coff_sec_base           COFFENTRY CoffSecGetBase( coff_sec_handle );
 orl_sec_size            COFFENTRY CoffSecGetSize( coff_sec_handle );
 orl_sec_type            COFFENTRY CoffSecGetType( coff_sec_handle );
 orl_sec_flags           COFFENTRY CoffSecGetFlags( coff_sec_handle );

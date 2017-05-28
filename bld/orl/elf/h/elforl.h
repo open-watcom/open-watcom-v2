@@ -48,7 +48,7 @@ orl_file_size           ELFENTRY ElfFileGetSize( elf_file_handle );
 elf_sec_handle          ELFENTRY ElfFileGetSymbolTable( elf_file_handle );
 
 const char              * ELFENTRY ElfSecGetName( elf_sec_handle );
-orl_sec_offset          ELFENTRY ElfSecGetBase( elf_sec_handle );
+orl_return              ELFENTRY ElfSecGetBase( elf_sec_handle, orl_sec_base * );
 orl_sec_size            ELFENTRY ElfSecGetSize( elf_sec_handle );
 orl_sec_type            ELFENTRY ElfSecGetType( elf_sec_handle );
 orl_sec_flags           ELFENTRY ElfSecGetFlags( elf_sec_handle );

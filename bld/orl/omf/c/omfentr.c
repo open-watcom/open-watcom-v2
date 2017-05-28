@@ -197,7 +197,7 @@ const char * OMFENTRY OmfSecGetName( omf_sec_handle sh )
 }
 
 
-omf_sec_offset OMFENTRY OmfSecGetBase( omf_sec_handle sh )
+omf_sec_base OMFENTRY OmfSecGetBase( omf_sec_handle sh )
 {
     /* unused parameters */ (void)sh;
 

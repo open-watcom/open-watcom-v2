@@ -165,7 +165,7 @@ const char * COFFENTRY CoffSecGetName( coff_sec_handle coff_sec_hnd )
     return( coff_sec_hnd->name );
 }
 
-orl_sec_offset COFFENTRY CoffSecGetBase( coff_sec_handle coff_sec_hnd )
+coff_sec_base COFFENTRY CoffSecGetBase( coff_sec_handle coff_sec_hnd )
 {
     return( coff_sec_hnd->base );
 }

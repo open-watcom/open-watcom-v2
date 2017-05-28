@@ -61,6 +61,7 @@ typedef uint_8                          coff_comdat_selection;
 typedef uint_32                         coff_quantity;
 
 typedef uint_32                         coff_rva;
+typedef uint_32                         coff_sec_base;
 
 typedef struct coff_handle_struct       coff_handle_struct;
 typedef coff_handle_struct              *coff_handle;

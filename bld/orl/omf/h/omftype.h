@@ -82,6 +82,7 @@ typedef uint_32                         omf_headers_size;
 typedef uint_32                         omf_sec_size;
 typedef uint_32                         omf_sec_flags;
 typedef uint_32                         omf_sec_offset;
+typedef uint_32                         omf_sec_base;
 
 typedef uint_32                         omf_symbol_flags;
 typedef uint_32                         omf_symbol_value;
