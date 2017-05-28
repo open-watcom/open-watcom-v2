@@ -364,9 +364,9 @@ orl_return CoffCreateRelocs( coff_sec_handle orig_sec, coff_sec_handle reloc_sec
     orl_return  return_val;
     unsigned    num_relocs;
     unsigned    loop;
-    coff_reloc ORLUNALIGNED *rel;
-    orl_reloc   *o_rel;
-    orl_reloc   *prev_rel;
+    coff_reloc ORLUNALIGNED *irel;
+    orl_reloc   *orel;
+    orl_reloc   *prev_orel;
 
     if( reloc_sec->coff_file_hnd->symbol_handles == NULL ) {
         return_val = CoffCreateSymbolHandles( reloc_sec->coff_file_hnd );
@@ -376,32 +376,30 @@ orl_return CoffCreateRelocs( coff_sec_handle orig_sec, coff_sec_handle reloc_sec
     }
     num_relocs = reloc_sec->size / sizeof( coff_reloc );
     reloc_sec->assoc.reloc.num_relocs = num_relocs;
-    reloc_sec->assoc.reloc.relocs = (orl_reloc *)_ClientSecAlloc( reloc_sec, sizeof( orl_reloc ) * num_relocs );
+    orel = reloc_sec->assoc.reloc.relocs = (orl_reloc *)_ClientSecAlloc( reloc_sec, sizeof( orl_reloc ) * num_relocs );
     if( reloc_sec->assoc.reloc.relocs == NULL )
         return( ORL_OUT_OF_MEMORY );
-    rel = (coff_reloc *)reloc_sec->contents;
-    o_rel = reloc_sec->assoc.reloc.relocs;
+    irel = (coff_reloc *)reloc_sec->contents;
     for( loop = 0; loop < num_relocs; loop++ ) {
-        o_rel->section = (orl_sec_handle)orig_sec;
-        if( reloc_sec->coff_file_hnd->machine_type == ORL_MACHINE_TYPE_ALPHA
-            && rel->type == IMAGE_REL_ALPHA_MATCH ) {
-            o_rel->type = ORL_RELOC_TYPE_HALF_LO;
-            prev_rel = o_rel - 1;
-            o_rel->symbol = prev_rel->symbol;
-            o_rel->offset = prev_rel->offset + rel->sym_tab_index;
+        orel->section = (orl_sec_handle)orig_sec;
+        orel->frame = NULL;
+        orel->addend = 0;
+        if( reloc_sec->coff_file_hnd->machine_type == ORL_MACHINE_TYPE_ALPHA && irel->type == IMAGE_REL_ALPHA_MATCH ) {
+            orel->type = ORL_RELOC_TYPE_HALF_LO;
+            prev_orel = orel - 1;
+            orel->symbol = prev_orel->symbol;
+            orel->offset = prev_orel->offset + irel->sym_tab_index;
         } else {
-            o_rel->type = CoffConvertRelocType( reloc_sec->coff_file_hnd, rel->type );
-            if( o_rel->type == ORL_RELOC_TYPE_PAIR ) {
-                o_rel->symbol = NULL;
+            orel->type = CoffConvertRelocType( reloc_sec->coff_file_hnd, irel->type );
+            if( orel->type == ORL_RELOC_TYPE_PAIR ) {
+                orel->symbol = NULL;
             } else {
-                o_rel->symbol = (orl_symbol_handle)( reloc_sec->coff_file_hnd->symbol_handles + rel->sym_tab_index );
+                orel->symbol = (orl_symbol_handle)( reloc_sec->coff_file_hnd->symbol_handles + irel->sym_tab_index );
             }
-            o_rel->offset = rel->offset - orig_sec->hdr->offset;
+            orel->offset = irel->offset - orig_sec->hdr->offset;
         }
-        o_rel->addend = 0;
-        o_rel->frame = NULL;
-        rel++;
-        o_rel++;
+        irel++;
+        orel++;
     }
     return( ORL_OKAY );
 }
