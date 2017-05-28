@@ -208,7 +208,7 @@ omf_sec_offset OMFENTRY OmfSecGetBase( omf_sec_handle sh )
 }
 
 
-orl_sec_size OMFENTRY OmfSecGetSize( omf_sec_handle sh )
+omf_sec_size OMFENTRY OmfSecGetSize( omf_sec_handle sh )
 {
     assert( sh );
 
@@ -600,7 +600,7 @@ orl_table_index OMFENTRY OmfGroupSize( omf_grp_handle hnd )
 {
     assert( hnd );
 
-    return( hnd->size );
+    return( hnd->num_segs );
 }
 
 
@@ -610,7 +610,7 @@ const char * OMFENTRY OmfGroupMember( omf_grp_handle hnd, orl_table_index idx )
 
     assert( hnd );
 
-    if( ( hnd->size > 0 ) && ( idx < hnd->size ) ) {
+    if( ( hnd->num_segs > 0 ) && ( idx < hnd->num_segs ) ) {
         assert( hnd->segs );
         if( hnd->segs[idx] ) {
             sh = OmfFindSegOrComdat( hnd->omf_file_hnd, hnd->segs[idx], 0 );

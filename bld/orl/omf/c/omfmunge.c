@@ -1496,7 +1496,7 @@ extern orl_return       OmfAddLineNum( omf_sec_handle sh, unsigned_16 line,
 orl_return              OmfAddSegDef( omf_file_handle ofh, bool is32,
                                       orl_sec_alignment align, int combine,
                                       bool use32, bool max_size, orl_sec_frame frame,
-                                      orl_sec_size size, omf_idx name,
+                                      omf_sec_size size, omf_idx name,
                                       omf_idx class )
 {
     omf_sec_handle      sh;
@@ -1604,7 +1604,7 @@ orl_return              OmfAddPubDef( omf_file_handle ofh, bool is32,
 }
 
 
-orl_return  OmfAddGrpDef( omf_file_handle ofh, omf_idx name, omf_idx *segs, int size )
+orl_return  OmfAddGrpDef( omf_file_handle ofh, omf_idx name, omf_idx *segs, unsigned num_segs )
 {
     omf_symbol_handle   sym;
     omf_sec_handle      sh;
@@ -1621,13 +1621,13 @@ orl_return  OmfAddGrpDef( omf_file_handle ofh, omf_idx name, omf_idx *segs, int 
     if( gr == NULL )
         return( ORL_OUT_OF_MEMORY );
 
+    gr->num_segs = num_segs;
     gr->segs = segs;
     gr->name = name;
-    gr->size = size;
 
-    while( size ) {
-        size--;
-        sh = findSegment( ofh, segs[size] );
+    while( num_segs > 0 ) {
+        num_segs--;
+        sh = findSegment( ofh, segs[num_segs] );
         if( sh == NULL )
             return( ORL_ERROR );
         sh->flags |= ORL_SEC_FLAG_GROUPED;

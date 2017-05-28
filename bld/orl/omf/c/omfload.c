@@ -775,7 +775,7 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
     bool                is32;
     int                 wordsize;
     orl_sec_alignment   align;
-    orl_sec_size        size = 0;
+    omf_sec_size        size;
     int                 combine;
     bool                max_size;
     bool                use32;
@@ -816,7 +816,7 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
         frame = ORL_SEC_NO_ABS_FRAME;
     }
 
-    size = (orl_sec_size)OmfGetUWord( buffer, wordsize );
+    size = (omf_sec_size)OmfGetUWord( buffer, wordsize );
     buffer += wordsize;
     len -= wordsize;
 
@@ -853,7 +853,8 @@ static orl_return       doGRPDEF( omf_file_handle ofh )
     omf_rec_size        len;
     omf_idx             name;
     omf_idx             *segs;
-    orl_sec_size        size;
+    size_t              size;
+    unsigned            num_segs;
 
     assert( ofh );
 
@@ -877,17 +878,17 @@ static orl_return       doGRPDEF( omf_file_handle ofh )
         return( ORL_OUT_OF_MEMORY );
     memset( segs, 0, size );
 
-    size = 0;
+    num_segs = 0;
     while( len ) {
         if( buffer[0] != 0xff )
             return( ORL_ERROR );
         buffer++;
         len--;
-        segs[size] = loadIndex( &buffer, &len );
-        size++;
+        segs[num_segs] = loadIndex( &buffer, &len );
+        num_segs++;
     }
 
-    return( OmfAddGrpDef( ofh, name, segs, size ) );
+    return( OmfAddGrpDef( ofh, name, segs, num_segs ) );
 }
 
 
