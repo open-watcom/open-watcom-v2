@@ -502,6 +502,7 @@ static orl_return   writeAndFixupLIData( omf_file_handle ofh, omf_sec_handle sh,
     size -= tmp;
     used += tmp;
 
+    return_val = ORL_OKAY;
     if( findMatchingFixup( ofh->lidata->first_fixup, lo, hi ) ) {
         return( ORL_ERROR );
     } else if( block ) {
@@ -562,7 +563,6 @@ static orl_return   writeAndFixupLIData( omf_file_handle ofh, omf_sec_handle sh,
 
         ofh->lidata->size = size - tmp;
         ofh->lidata->used = used + tmp;
-        return_val = ORL_OKAY;
     }
 
     return( return_val );

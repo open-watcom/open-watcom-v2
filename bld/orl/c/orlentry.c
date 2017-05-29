@@ -823,12 +823,13 @@ orl_symbol_handle ORLENTRY ORLSymbolGetAssociated( orl_symbol_handle orl_symbol_
 {
     switch( ORLI_SYMBOL_HND->type ) {
     case( ORL_ELF ):
-        return( (orl_symbol_handle) ElfSymbolGetAssociated( (elf_symbol_handle)orl_symbol_hnd ) );
+        return( (orl_symbol_handle)ElfSymbolGetAssociated( (elf_symbol_handle)orl_symbol_hnd ) );
     case( ORL_COFF ):
-        return( (orl_symbol_handle) CoffSymbolGetAssociated( (coff_symbol_handle)orl_symbol_hnd ) );
+        return( (orl_symbol_handle)CoffSymbolGetAssociated( (coff_symbol_handle)orl_symbol_hnd ) );
     case( ORL_OMF ):
-        return( NULL );    // NYI: call to an OMF func. here.
-    default:    //ORL_UNRECOGNIZED_FORMAT
+        // NYI: call to an OMF func. here.
+        return( NULL );
+    default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
     return( NULL );
