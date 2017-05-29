@@ -569,8 +569,8 @@ static dis_sec_offset checkForDupLines( unsigned_8 *contents, dis_sec_offset loo
 }
 
 void DumpDataFromSection( unsigned_8 *contents, dis_sec_offset start,
-                          dis_sec_offset end, label_entry *labent,
-                          ref_entry *refent, section_ptr sec )
+                          dis_sec_offset end, label_entry *lab_entry,
+                          ref_entry *reference_entry, section_ptr sec )
 {
     dis_sec_offset              loop;
     unsigned                    loop2;
@@ -581,8 +581,8 @@ void DumpDataFromSection( unsigned_8 *contents, dis_sec_offset start,
 
     is32bit = ( end >= 0x10000 );
 
-    l_entry = *labent;
-    r_entry = *refent;
+    l_entry = *lab_entry;
+    r_entry = *reference_entry;
 
     for( loop = start; loop < end; ){
         /* Print a label if required */
@@ -637,8 +637,8 @@ void DumpDataFromSection( unsigned_8 *contents, dis_sec_offset start,
         BufferPrint();
     }
 
-    *labent = l_entry;
-    *refent = r_entry;
+    *lab_entry = l_entry;
+    *reference_entry = r_entry;
 }
 
 static void dumpSection( section_ptr sec, unsigned_8 *contents, orl_sec_size size, unsigned pass )
