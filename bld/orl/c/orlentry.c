@@ -250,7 +250,7 @@ orl_file_handle ORLENTRY ORLFileInit( orl_handle orl_hnd, orl_file_id file, orl_
 
 orl_return ORLENTRY ORLFileFini( orl_file_handle orl_file_hnd )
 {
-    orl_return          return_val = ORL_ERROR;
+    orl_return          return_val;
 
     /* jump table replace: */
     switch( ORLI_FILE_HND->type ) {
@@ -264,7 +264,7 @@ orl_return ORLENTRY ORLFileFini( orl_file_handle orl_file_hnd )
         return_val = OmfFileFini( ORLI_FILE_HND->file_hnd.omf );
         break;
     default:    // ORL_UNRECOGNIZED_FORMAT
-        break;
+        return( ORL_ERROR );
     }
 
     if( return_val != ORL_OKAY )
@@ -412,7 +412,7 @@ orl_return ORLENTRY ORLSecGetBase( orl_sec_handle orl_sec_hnd, orl_sec_base *bas
         base->u._32[I64LO32] = 0;
         break;
     }
-    return( 0 );
+    return( ORL_ERROR );
 }
 
 orl_sec_size ORLENTRY ORLSecGetSize( orl_sec_handle orl_sec_hnd )
@@ -754,8 +754,9 @@ orl_return ORLENTRY ORLSymbolGetValue( orl_symbol_handle orl_symbol_hnd, orl_sym
     default:     //ORL_UNRECOGNIZED_FORMAT
         val->u._32[I64LO32] = 0;
         val->u._32[I64HI32] = 0;
-        return( ORL_ERROR );
+        break;
     }
+    return( ORL_ERROR );
 }
 
 orl_symbol_binding ORLENTRY ORLSymbolGetBinding( orl_symbol_handle orl_symbol_hnd )
