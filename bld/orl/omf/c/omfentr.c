@@ -359,7 +359,7 @@ orl_return OMFENTRY OmfSecGetContents( omf_sec_handle sh, unsigned_8 **buffer )
 }
 
 
-static orl_return OMFENTRY relocScan( omf_sec_handle sh, omf_sec_offset offset,
+static orl_return OMFENTRY relocScan( omf_sec_handle sh, omf_sec_offset sec_offset,
                                       orl_reloc_return_func return_func, bool check )
 {
     uint_32             x;
@@ -387,7 +387,7 @@ static orl_return OMFENTRY relocScan( omf_sec_handle sh, omf_sec_offset offset,
     for( x = 0; x < num; x++ ) {
         rsh = (omf_sec_handle)(relocs[x]->section);
         if( global || ( sh->index == rsh->index ) ) {
-            if( !check || ( relocs[x]->offset == offset ) ) {
+            if( !check || ( relocs[x]->offset == sec_offset ) ) {
                 return_val = return_func( relocs[x] );
                 if( return_val != ORL_OKAY ) {
                     return( return_val );
@@ -399,14 +399,14 @@ static orl_return OMFENTRY relocScan( omf_sec_handle sh, omf_sec_offset offset,
 }
 
 
-orl_return OMFENTRY OmfSecQueryReloc( omf_sec_handle sh, omf_sec_offset offset, orl_reloc_return_func return_func )
+orl_return OMFENTRY OmfSecQueryReloc( omf_sec_handle sh, omf_sec_offset sec_offset, orl_reloc_return_func return_func )
 {
     assert( sh );
     assert( return_func );
 
     if( sh->type != ORL_SEC_TYPE_PROG_BITS )
         return( ORL_ERROR );
-    return( relocScan( sh, offset, return_func, true ) );
+    return( relocScan( sh, sec_offset, return_func, true ) );
 }
 
 
