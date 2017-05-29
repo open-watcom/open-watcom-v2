@@ -39,5 +39,6 @@ extern void             CreateAbsoluteLabel( orl_sec_handle, dis_sec_offset, unn
 extern orl_return       DealWithSymbolSection( orl_sec_handle );
 
 extern bool             NeedsQuoting( const char *name );
+extern void             FreeLabel( label_entry entry );
 
 #endif

@@ -595,8 +595,8 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
 }
 
 return_val DumpASMDataFromSection( unsigned_8 *contents, dis_sec_offset start,
-                                   dis_sec_offset end, label_entry *labent,
-                                   ref_entry *refent, section_ptr sec )
+                                   dis_sec_offset end, label_entry *lab_entry,
+                                   ref_entry *reference_entry, section_ptr sec )
 {
     dis_sec_offset      curr_pos;
     size_t              curr_size;
@@ -606,8 +606,8 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, dis_sec_offset start,
     ref_entry           r_entry;
     char                *buffer;
 
-    l_entry = *labent;
-    r_entry = *refent;
+    l_entry = *lab_entry;
+    r_entry = *reference_entry;
 
     size = end - start;
     if( size < sizeof( unsigned_32 ) )
@@ -655,8 +655,8 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, dis_sec_offset start,
         printOut( buffer, curr_pos, curr_size );
     }
 
-    *labent = l_entry;
-    *refent = r_entry;
+    *lab_entry = l_entry;
+    *reference_entry = r_entry;
     MemFree( buffer );
 
     return( RC_OKAY );

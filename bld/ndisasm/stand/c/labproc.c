@@ -50,6 +50,56 @@ extern publics_struct   Publics;
 extern const char       *SourceFileInObject;
 extern dis_format_flags DFormat;
 
+static void labelNameAlloc( label_entry entry, const char *name )
+{
+    char    *p;
+
+    // Demangle the name, if necessary
+    if( !((Options & NODEMANGLE_NAMES) || (DFormat & DFF_ASM)) ) {
+        entry->label.name = MemAlloc( MAX_LINE_LEN + 3 );
+        __demangle_l( name, 0, entry->label.name + 2, MAX_LINE_LEN );
+    } else {
+        entry->label.name = MemAlloc( strlen( name ) + 8 );
+        strcpy( entry->label.name + 2, name );
+    }
+    entry->label.name[0] = 0;
+    entry->label.name[1] = 0;
+    p = entry->label.name + 2;
+    if( NeedsQuoting( p ) ) {
+        // entry->label.name[-1] will be 1 if we have added a quote,
+        // 0 otherwise.  This is helpful when freeing the memory.
+        entry->label.name[0] = 1;
+        entry->label.name[1] = '`';
+        entry->label.name += 1;
+        p += strlen( p );
+        p[0] = '`';
+        p[1] = '\0';
+    } else {
+        entry->label.name += 2;
+    }
+}
+
+void FreeLabel( label_entry entry )
+{
+    switch( entry->type ) {
+    case LTYP_UNNAMED:
+    case LTYP_ABSOLUTE:
+        break;
+    default:
+        if( entry->label.name != NULL ) {
+            // Step back over backquote (`) or space where it should be.
+            if( entry->label.name[-1] == 1 ) {
+                entry->label.name -= 1;
+            } else {
+                entry->label.name -= 2;
+            }
+            MemFree( entry->label.name );
+        }
+        break;
+    }
+    MemFree( entry );
+}
+
 static label_entry resolveTwoLabelsAtLocation( label_list sec_label_list, label_entry entry, label_entry previous_entry, label_entry old_entry )
 {
     label_entry first_entry = old_entry;
@@ -57,32 +107,27 @@ static label_entry resolveTwoLabelsAtLocation( label_list sec_label_list, label_
     for( ; old_entry != NULL && old_entry->offset == entry->offset; old_entry = old_entry->next ) {
         if( entry->type == LTYP_UNNAMED ) {
             if( old_entry->type == LTYP_UNNAMED ) {
-                MemFree( entry );
-                entry = old_entry;
-                return( entry );
+                FreeLabel( entry );
+                return( old_entry );
             } else if( old_entry->type == LTYP_NAMED ) {
-                MemFree( entry );
-                entry = old_entry;
-                return( entry );
+                FreeLabel( entry );
+                return( old_entry );
             } else if( old_entry->type == LTYP_ABSOLUTE ) {
             } else if( old_entry->type == LTYP_FUNC_INFO ) {
             } else if( old_entry->type == LTYP_SECTION ) {
                 if( !IsMasmOutput() ) {
-                    MemFree( entry );
-                    entry = old_entry;
-                    return( entry );
+                    FreeLabel( entry );
+                    return( old_entry );
                 }
             } else {
-                MemFree( entry );
-                entry = old_entry;
-                return( entry );
+                FreeLabel( entry );
+                return( old_entry );
             }
         } else if( entry->type == LTYP_ABSOLUTE ) {
             if( old_entry->type == LTYP_ABSOLUTE ) {
                 // merge entry into old_entry
-                MemFree( entry );
-                entry = old_entry;
-                return( entry );
+                FreeLabel( entry );
+                return( old_entry );
             }
         } else if( entry->type == LTYP_EXTERNAL_NAMED ) {
             break;
@@ -181,10 +226,9 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
     orl_symbol_type     type;
     orl_symbol_type     primary_type;
     orl_sec_handle      sec;
-    const char          *SourceName;
-    const char          *LabName;
+    const char          *source_name;
+    const char          *label_name;
     unsigned_64         val64;
-    char                *p;
 
     type = ORLSymbolGetType( sym_hnd );
     primary_type = type & 0xFF;
@@ -194,9 +238,9 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
 //    case ORL_SYM_TYPE_FUNC_INFO:
 //        return( ORL_OKAY );
     case ORL_SYM_TYPE_FILE:
-        SourceName = ORLSymbolGetName( sym_hnd );
-        if( (SourceName != NULL) && (SourceFileInObject == NULL) ) {
-            SourceFileInObject = SourceName;
+        source_name = ORLSymbolGetName( sym_hnd );
+        if( ( source_name != NULL ) && ( SourceFileInObject == NULL ) ) {
+            SourceFileInObject = source_name;
         }
         return( ORL_OKAY );
     }
@@ -219,61 +263,30 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
         entry->type = LTYP_NAMED;
     }
     entry->binding = ORLSymbolGetBinding( sym_hnd );
-    LabName = ORLSymbolGetName( sym_hnd );
-    if( LabName == NULL ) {
+    label_name = ORLSymbolGetName( sym_hnd );
+    if( label_name == NULL ) {
         sec = ORLSymbolGetSecHandle( sym_hnd );
-        if( sec != NULL ) {
-            LabName = ORLSecGetName( sec );
-        } else {
-            MemFree( entry );
+        if( sec == NULL ) {
+            entry->label.name = NULL;
+            FreeLabel( entry );
             return( ORL_OKAY );
         }
+        label_name = ORLSecGetName( sec );
     }
+    labelNameAlloc( entry, label_name );
 
-    // Demangle the name, if necessary
-    if( !((Options & NODEMANGLE_NAMES) || (DFormat & DFF_ASM)) ) {
-        entry->label.name = MemAlloc( MAX_LINE_LEN + 3 );
-        __demangle_l( LabName, 0, entry->label.name + 2, MAX_LINE_LEN );
-    } else {
-        entry->label.name = MemAlloc( strlen( LabName ) + 8 );
-        strcpy( entry->label.name + 2, LabName );
-    }
-
-    entry->label.name[0] = 0;
-    entry->label.name[1] = 0;
-    p = entry->label.name + 2;
-    if( NeedsQuoting( p ) ) {
-        // entry->label.name[-1] will be 1 if we have added a quote,
-        // 0 otherwise.  This is helpful when freeing the memory.
-        entry->label.name[0] = 1;
-        entry->label.name[1] = '`';
-        entry->label.name += 1;
-        p += strlen( p );
-        p[0] = '`';
-        p[1] = '\0';
-    } else {
-        entry->label.name += 2;
-    }
     data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value)entry->shnd );
-    if( data_ptr != NULL ) {
-        sec_label_list = (label_list)*data_ptr;
-        entry = addLabel( sec_label_list, entry, sym_hnd );
-        if( (Options & PRINT_PUBLICS) && entry->shnd != NULL &&
-                primary_type != ORL_SYM_TYPE_SECTION &&
-                entry->binding != ORL_SYM_BINDING_LOCAL ) {
-            Publics.number++;
-        }
-    } else {
+    if( data_ptr == NULL ) {
         // error!!!! the label list should have been created
-        // Step back over backquote (`) or space where it should be.
-        if( entry->label.name[-1] == 1 ) {
-            entry->label.name -= 1;
-        } else {
-            entry->label.name -= 2;
-        }
-        MemFree( entry->label.name );
-        MemFree( entry );
+        FreeLabel( entry );
         return( ORL_ERROR );
+    }
+    sec_label_list = (label_list)*data_ptr;
+    entry = addLabel( sec_label_list, entry, sym_hnd );
+    if( (Options & PRINT_PUBLICS) && entry->shnd != NULL &&
+            primary_type != ORL_SYM_TYPE_SECTION &&
+            entry->binding != ORL_SYM_BINDING_LOCAL ) {
+        Publics.number++;
     }
     return( ORL_OKAY );
 }
