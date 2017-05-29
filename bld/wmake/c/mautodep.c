@@ -90,14 +90,17 @@ static bool isTargObsolete( char const *name, time_t stamp,
         }
     }
     if( Glob.debug ) {
-        char        time_buff[32] = "?";// for date + flag
+        char        time_buff[80] = "?";// for date + flag
         struct tm   *tm;
+        struct tm   tm1;
 
         if( exists ) {
+            tm1 = *localtime( &auto_dep_time );
             tm = localtime( &curr_dep_time );
-            FmtStr( time_buff, "%D-%s-%D  %D:%D:%D",
+            FmtStr( time_buff, "%D-%s-%D  %D:%D:%D(ad:%D:%D:%D)",
                     tm->tm_mday, MonthNames[tm->tm_mon], tm->tm_year,
-                    tm->tm_hour, tm->tm_min, tm->tm_sec );
+                    tm->tm_hour, tm->tm_min, tm->tm_sec,
+                    tm1.tm_hour, tm1.tm_min, tm1.tm_sec );
         }
         strcat( time_buff, ( obsolete ) ? "*" : " " );
         PrtMsg( DBG | INF | GETDATE_MSG, time_buff, dep_name );
