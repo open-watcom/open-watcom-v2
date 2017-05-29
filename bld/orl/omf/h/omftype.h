@@ -333,8 +333,8 @@ struct omf_grp_handle_struct {
 typedef struct omf_scan_tab_struct {
     omf_idx             seg;
     omf_idx             lname;
-    omf_sec_offset      start;
-    omf_sec_offset      end;
+    orl_sec_offset      start;
+    orl_sec_offset      end;
 } omf_scan_tab_struct;
 
 #endif

@@ -53,7 +53,7 @@ typedef orl_return (*orl_group_return_func)( orl_group_handle );
 typedef orl_return callback_export_fn( const char *, void * );
 typedef orl_return callback_deflib_fn( const char *, void * );
 typedef orl_return callback_entry_fn( const char *, void * );
-typedef orl_return callback_scantab_fn( orl_sec_handle, orl_sec_offset, orl_sec_offset, void * );
+typedef orl_return callback_scantab_fn( orl_sec_handle, const orl_sec_offset *, const orl_sec_offset *, void * );
 
 typedef struct {
     callback_export_fn  *export_fn;

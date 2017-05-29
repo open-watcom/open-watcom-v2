@@ -46,7 +46,7 @@ orl_return      OmfParseComments( omf_sec_handle sh, orl_note_callbacks *cbs, vo
     omf_quantity        x;
     orl_return          return_val;
     omf_comment_struct  *comment;
-    omf_scan_tab_struct st;
+    omf_scan_tab_struct st_entry;
     orl_sec_handle      csh;
 
     assert( sh );
@@ -67,11 +67,11 @@ orl_return      OmfParseComments( omf_sec_handle sh, orl_note_callbacks *cbs, vo
             break;
         case( CMT_DISASM_DIRECTIVE ):
             if( cbs->scantab_fn != NULL ) {
-                return_val = OmfParseScanTab( comment->data, comment->len, &st );
+                return_val = OmfParseScanTab( comment->data, comment->len, &st_entry );
                 if( return_val == ORL_OKAY ) {
-                    csh = (orl_sec_handle)OmfFindSegOrComdat( sh->omf_file_hnd, st.seg, st.lname );
+                    csh = (orl_sec_handle)OmfFindSegOrComdat( sh->omf_file_hnd, st_entry.seg, st_entry.lname );
                     if( csh != NULL ) {
-                        return_val = cbs->scantab_fn( csh, st.start, st.end, cookie );
+                        return_val = cbs->scantab_fn( csh, &st_entry.start, &st_entry.end, cookie );
                         if( return_val != ORL_OKAY ) {
                             return( return_val );
                         }
