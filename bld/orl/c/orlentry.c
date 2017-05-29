@@ -408,10 +408,10 @@ orl_return ORLENTRY ORLSecGetBase( orl_sec_handle orl_sec_hnd, orl_sec_base *bas
         base->u._32[I64LO32] = OmfSecGetBase( (omf_sec_handle)orl_sec_hnd );
         return( ORL_OKAY );
     default:    // ORL_UNRECOGNIZED_FORMAT
-        base->u._32[I64HI32] = 0;
-        base->u._32[I64LO32] = 0;
         break;
     }
+    base->u._32[I64HI32] = 0;
+    base->u._32[I64LO32] = 0;
     return( ORL_ERROR );
 }
 
@@ -748,14 +748,14 @@ orl_return ORLENTRY ORLSymbolGetValue( orl_symbol_handle orl_symbol_hnd, orl_sym
     case( ORL_COFF ):
         return( CoffSymbolGetValue( (coff_symbol_handle)orl_symbol_hnd, val ) );
     case( ORL_OMF ):
-        val->u._32[I64LO32] = OmfSymbolGetValue( (omf_symbol_handle)orl_symbol_hnd );
         val->u._32[I64HI32] = 0;
+        val->u._32[I64LO32] = OmfSymbolGetValue( (omf_symbol_handle)orl_symbol_hnd );
         return( ORL_OKAY );
     default:     //ORL_UNRECOGNIZED_FORMAT
-        val->u._32[I64LO32] = 0;
-        val->u._32[I64HI32] = 0;
         break;
     }
+    val->u._32[I64HI32] = 0;
+    val->u._32[I64LO32] = 0;
     return( ORL_ERROR );
 }
 
@@ -828,7 +828,8 @@ orl_symbol_handle ORLENTRY ORLSymbolGetAssociated( orl_symbol_handle orl_symbol_
         return( (orl_symbol_handle) CoffSymbolGetAssociated( (coff_symbol_handle)orl_symbol_hnd ) );
     case( ORL_OMF ):
         return( NULL );    // NYI: call to an OMF func. here.
-    default: break;//ORL_UNRECOGNIZED_FORMAT
+    default:    //ORL_UNRECOGNIZED_FORMAT
+        break;
     }
     return( NULL );
 }
