@@ -58,7 +58,7 @@ coff_sec_handle         COFFENTRY CoffSecGetSymbolTable( coff_sec_handle );
 coff_sec_handle         COFFENTRY CoffSecGetRelocTable( coff_sec_handle );
 orl_linnum              * COFFENTRY CoffSecGetLines( coff_sec_handle );
 orl_table_index         COFFENTRY CoffSecGetNumLines( coff_sec_handle );
-orl_sec_offset          COFFENTRY CoffSecGetOffset( coff_sec_handle );
+coff_sec_offset         COFFENTRY CoffSecGetOffset( coff_sec_handle );
 orl_return              COFFENTRY CoffSecGetContents( coff_sec_handle, unsigned char ** );
 orl_return              COFFENTRY CoffSecQueryReloc( coff_sec_handle, coff_sec_offset, orl_reloc_return_func );
 orl_return              COFFENTRY CoffSecScanReloc( coff_sec_handle, orl_reloc_return_func );

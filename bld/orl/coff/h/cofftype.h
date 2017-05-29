@@ -123,7 +123,7 @@ struct coff_sec_handle_struct {
     coff_sec_handle     next;
     char                *name;
     orl_sec_size        size;
-    orl_file_offset     offset;
+    coff_sec_offset     offset;
     orl_sec_type        type;
     orl_sec_flags       flags;
     orl_sec_alignment   align;

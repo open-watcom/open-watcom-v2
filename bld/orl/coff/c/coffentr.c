@@ -217,7 +217,7 @@ orl_linnum * COFFENTRY CoffSecGetLines( coff_sec_handle coff_sec_hnd )
     return( NULL );
 }
 
-orl_sec_offset COFFENTRY CoffSecGetOffset( coff_sec_handle coff_sec_hnd )
+coff_sec_offset COFFENTRY CoffSecGetOffset( coff_sec_handle coff_sec_hnd )
 {
     if( coff_sec_hnd->hdr != NULL ) {
         return( coff_sec_hnd->hdr->offset );

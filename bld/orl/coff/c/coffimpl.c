@@ -296,10 +296,10 @@ static void CreateCoffSymbols( coff_file_handle coff_file_hnd, coff_lib_file *c_
     AddDataImpLib( coff_file_hnd, c_file->symbol, c_file->header.num_symbols * COFF_SYM_SIZE );
 }
 
-static void CreateCoffReloc( coff_file_handle coff_file_hnd, unsigned_32 offset, unsigned_32 sym_tab_index, unsigned_16 type )
+static void CreateCoffReloc( coff_file_handle coff_file_hnd, coff_sec_offset sec_offset, unsigned_32 sym_tab_index, unsigned_16 type )
 {
     //output is buffered so no point in putting COFF_RELOC struct
-    AddDataImpLib( coff_file_hnd, &offset, sizeof( offset ) );
+    AddDataImpLib( coff_file_hnd, &sec_offset, sizeof( sec_offset ) );
     AddDataImpLib( coff_file_hnd, &sym_tab_index, sizeof( sym_tab_index ) );
     AddDataImpLib( coff_file_hnd, &type, sizeof( type ) );
 }
