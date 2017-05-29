@@ -144,7 +144,7 @@ static bool getOMFCommentRecord( omf_info *info )
         }
         nameBuffer[len - 1] = NULLCHAR;
         info->time_stamp = _dos2timet( comment.dos_date * 0x10000L + comment.dos_time );
-        info->name = &nameBuffer[0];
+        info->name = nameBuffer;
         return( true );
     }
     return( false );
