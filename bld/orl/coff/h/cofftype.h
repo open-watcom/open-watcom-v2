@@ -129,7 +129,7 @@ struct coff_sec_handle_struct {
     orl_sec_alignment   align;
     unsigned char       *contents;
     coff_section_header *hdr;
-    orl_sec_offset      base;
+    coff_sec_base       base;
     union {
         struct coff_normal_assoc_struct     normal;
         struct coff_reloc_assoc_struct      reloc;
