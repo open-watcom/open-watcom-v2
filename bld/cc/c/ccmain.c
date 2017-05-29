@@ -690,14 +690,14 @@ FNAMEPTR AddFlist( char const *filename )
     if( flist == NULL ) {
         len1 = strlen( filename ) + 1;
         if( HAS_PATH( filename ) || DependHeaderPath == NULL ) {
+            len2 = 0;
             flist = (FNAMEPTR)CMemAlloc( offsetof( fname_list, name ) + len1 );
-            memcpy( flist->name, filename, len1 );
         } else {
             len2 = strlen( DependHeaderPath );
             flist = (FNAMEPTR)CMemAlloc( offsetof( fname_list, name ) + len2 + len1 );
             memcpy( flist->name, DependHeaderPath, len2 );
-            memcpy( flist->name + len2, filename, len1 );
         }
+        memcpy( flist->name + len2, filename, len1 );
         *lnk = flist;
         flist->next = NULL;
         flist->index = index;
