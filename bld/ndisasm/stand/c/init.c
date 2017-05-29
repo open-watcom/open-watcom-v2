@@ -156,37 +156,45 @@ static orl_return nopCallBack( const char *str, void *cookie  )
     return( ORL_OKAY );
 }
 
-static orl_return scanTabCallBack( orl_sec_handle sh, dis_sec_offset start,
-                                   dis_sec_offset end, void *cookie )
+static orl_return scanTabCallBack( orl_sec_handle sh, const orl_sec_offset *pstart, const orl_sec_offset *pend, void *cookie )
 {
     section_ptr         sec;
     hash_data           *dp;
     scantab_ptr         sp;
     scantab_ptr         tmp;
     scantab_struct      senitel;
+    dis_sec_offset      start;
+    dis_sec_offset      end;
 
     /* unused parameters */ (void)cookie;
 
-    if( !sh ) return( ORL_OKAY );
-    if( start >= end ) return( ORL_OKAY );
-    dp = HashTableQuery( HandleToSectionTable, (hash_value) sh );
-    if( !dp ) return( ORL_OKAY );
-    sec = (section_ptr) *dp;
-    if( !sec ) return( ORL_OKAY );
+    if( !sh )
+        return( ORL_OKAY );
+    start = *pstart;
+    end = *pend;
+    if( start >= end )
+        return( ORL_OKAY );
+    dp = HashTableQuery( HandleToSectionTable, (hash_value)sh );
+    if( dp == NULL )
+        return( ORL_OKAY );
+    sec = (section_ptr)*dp;
+    if( sec == NULL )
+        return( ORL_OKAY );
 
     sp = MemAlloc( sizeof( scantab_struct ) );
-    if( !sp ) return( ORL_OUT_OF_MEMORY );
+    if( sp == NULL )
+        return( ORL_OUT_OF_MEMORY );
     memset( sp, 0, sizeof( scantab_struct ) );
     sp->start = start;
     sp->end = end;
 
     senitel.next = sec->scan;
     tmp = &senitel;
-    while( tmp->next && ( tmp->next->end < start ) ) {
+    while( tmp->next != NULL && ( tmp->next->end < start ) ) {
         tmp = tmp->next;
     }
 
-    if( tmp->next ) {
+    if( tmp->next != NULL ) {
         if( end < tmp->next->start ) {
             sp->next = tmp->next;
             tmp->next = sp;
@@ -202,7 +210,7 @@ static orl_return scanTabCallBack( orl_sec_handle sh, dis_sec_offset start,
 
             // check if we must do additional merging
             sp = tmp->next;
-            while( sp->next && ( sp->end > sp->next->start ) ) {
+            while( sp->next != NULL && ( sp->end > sp->next->start ) ) {
                 if( sp->end < sp->next->end ) {
                     sp->end = sp->next->end;
                 }

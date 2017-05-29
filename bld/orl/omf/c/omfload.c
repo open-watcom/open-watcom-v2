@@ -1283,13 +1283,12 @@ orl_return OmfLoadFileStructure( omf_file_handle ofh )
     return( return_val );
 }
 
-orl_return      OmfParseScanTab( omf_bytes buffer, omf_rec_size len,
-                                 omf_scan_tab_struct *entry )
+orl_return      OmfParseScanTab( omf_bytes buffer, omf_rec_size len, omf_scan_tab_struct *st_entry )
 {
     int         wordsize;
 
     assert( buffer );
-    assert( entry );
+    assert( st_entry );
 
     switch( buffer[0] ) {
     case( DDIR_SCAN_TABLE ):
@@ -1306,21 +1305,21 @@ orl_return      OmfParseScanTab( omf_bytes buffer, omf_rec_size len,
 
     if( len < ( 2 * wordsize + 1 ) )
         return( ORL_ERROR );
-    entry->seg = loadIndex( &buffer, &len );
-    if( entry->seg == 0 ) {
+    st_entry->seg = loadIndex( &buffer, &len );
+    if( st_entry->seg == 0 ) {
         if( len < ( 2 * wordsize + 1 ) )
             return( ORL_ERROR );
-        entry->lname = loadIndex( &buffer, &len );
-        if( entry->lname == 0 ) {
+        st_entry->lname = loadIndex( &buffer, &len );
+        if( st_entry->lname == 0 ) {
             return( ORL_ERROR );
         }
     }
 
     if( len < ( 2 * wordsize ) )
         return( ORL_ERROR );
-    entry->start = OmfGetUWord( buffer, wordsize );
+    st_entry->start = OmfGetUWord( buffer, wordsize );
     buffer += wordsize;
-    entry->end = OmfGetUWord( buffer, wordsize );
+    st_entry->end = OmfGetUWord( buffer, wordsize );
 
     return( ORL_OKAY );
 }
