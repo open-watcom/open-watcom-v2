@@ -116,10 +116,12 @@
 #define MAX_MAC_NAME    130     /* Maximum macro name length                */
 #define MAX_MAC_NEST    16      /* Maximum depth of macro nesting           */
 
-enum {
-    OLDEST_DATE   = 0L,                                         // oldest
-    YOUNGEST_DATE = (((time_t)-1) > 0) ? ULONG_MAX : LONG_MAX   // youngest
-};
+#define MAX_DATE_QUARTER    ((time_t)1 << (sizeof(time_t) * CHAR_BIT - 2))
+#define MAX_DATE_SIGNED     ((time_t)(MAX_DATE_QUARTER - 1 + MAX_DATE_QUARTER))
+#define MAX_DATE_UNSIGNED   ((time_t)-1)
+
+#define OLDEST_DATE     ((time_t)0)
+#define YOUNGEST_DATE   (((time_t)-1 > 0) ? MAX_DATE_UNSIGNED : MAX_DATE_SIGNED)
 
 #define MAKEFILE_NAME   "makefile"
 #ifdef __UNIX__
