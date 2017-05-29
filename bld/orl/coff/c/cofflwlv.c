@@ -113,8 +113,7 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
         case IMAGE_SYM_CLASS_LABEL:
         case IMAGE_SYM_CLASS_UNDEFINED_LABEL:
         case IMAGE_SYM_CLASS_WEAK_EXTERNAL:
-            if( current->symbol->storage_class
-                    == IMAGE_SYM_CLASS_LABEL ) {
+            if( current->symbol->storage_class == IMAGE_SYM_CLASS_LABEL ) {
                 current->binding = ORL_SYM_BINDING_LOCAL;
             } else if( (current->symbol->storage_class == IMAGE_SYM_CLASS_EXTERNAL
                       || current->symbol->storage_class == IMAGE_SYM_CLASS_WEAK_EXTERNAL)
