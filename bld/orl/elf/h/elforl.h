@@ -61,8 +61,7 @@ orl_return              ELFENTRY ElfSecQueryReloc( elf_sec_handle, elf_sec_offse
 orl_return              ELFENTRY ElfSecScanReloc( elf_sec_handle, orl_reloc_return_func );
 
 orl_table_index         ELFENTRY ElfCvtSecHdlToIdx( elf_sec_handle );
-elf_sec_handle          ELFENTRY ElfCvtIdxToSecHdl( elf_file_handle,
-                                                     orl_table_index );
+elf_sec_handle          ELFENTRY ElfCvtIdxToSecHdl( elf_file_handle, orl_table_index );
 
 orl_return              ELFENTRY ElfRelocSecScan( elf_sec_handle, orl_reloc_return_func );
 orl_return              ELFENTRY ElfSymbolSecScan( elf_sec_handle, orl_symbol_return_func );
