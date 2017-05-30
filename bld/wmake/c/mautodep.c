@@ -85,7 +85,7 @@ static bool isTargObsolete( char const *name, time_t stamp,
         if( !IdenticalAutoDepTimes( auto_dep_time, curr_dep_time, ( curr == &OMFAutoDepInfo ) ) || (*chk)( stamp, curr_dep_time ) ) {
             obsolete = true;
         }
-        if( curr_dep_time > *pmax_time ) {
+        if( *pmax_time < curr_dep_time ) {
             *pmax_time = curr_dep_time; // Glob.all should not affect comparison
         }
     }
@@ -97,7 +97,7 @@ static bool isTargObsolete( char const *name, time_t stamp,
         if( exists ) {
             tm1 = *localtime( &auto_dep_time );
             tm = localtime( &curr_dep_time );
-            FmtStr( time_buff, "%D-%s-%D  %D:%D:%D(ad:%D:%D:%D)",
+            FmtStr( time_buff, "%D-%s-%D  %D:%D:%D(%D:%D:%D)",
                     tm->tm_mday, MonthNames[tm->tm_mon], tm->tm_year,
                     tm->tm_hour, tm->tm_min, tm->tm_sec,
                     tm1.tm_hour, tm1.tm_min, tm1.tm_sec );
