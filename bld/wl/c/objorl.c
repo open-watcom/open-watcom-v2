@@ -688,16 +688,13 @@ static orl_return DoReloc( orl_reloc *reloc )
     segnode     *seg;
     segnode     *symseg;
     extnode     *ext;
-    bool        skip;
     bool        istoc;
 
-    skip = false;
     istoc = false;
     type = 0;
     switch( reloc->type ) {
     case ORL_RELOC_TYPE_PAIR:
-        skip = true;
-        break;
+        return( ORL_OKAY );
     case ORL_RELOC_TYPE_ABSOLUTE:
         type = FIX_OFFSET_32 | FIX_ABS;
         break;
@@ -708,14 +705,16 @@ static orl_return DoReloc( orl_reloc *reloc )
         type = FIX_OFFSET_26 | FIX_SHIFT;
         break;
     case ORL_RELOC_TYPE_TOCREL_14:  // relative ref to 14-bit offset from TOC base.
-        type = FIX_SHIFT;           // NOTE fall through
+        type = FIX_SHIFT;
+        // NOTE fall through
     case ORL_RELOC_TYPE_TOCREL_16:  // relative ref to 16-bit offset from TOC base.
     case ORL_RELOC_TYPE_GOT_16:     // relative ref to 16-bit offset from TOC base.
         type |= FIX_TOC | FIX_OFFSET_16;
         istoc = true;
         break;
     case ORL_RELOC_TYPE_TOCVREL_14:  // relative ref to 14-bit offset from TOC base.
-        type = FIX_SHIFT;        // NOTE fall through
+        type = FIX_SHIFT;
+        // NOTE fall through
     case ORL_RELOC_TYPE_TOCVREL_16:  // relative ref to 16-bit offset from TOC base.
         type |= FIX_TOCV | FIX_OFFSET_16;
         break;
@@ -723,8 +722,8 @@ static orl_return DoReloc( orl_reloc *reloc )
         type = FIX_IFGLUE | FIX_OFFSET_32;
         break;
     case ORL_RELOC_TYPE_IMGLUE:
-        skip = true;                 // NYI: do we need this?
-        break;
+        // NYI: do we need this?
+        return( ORL_OKAY );
     case ORL_RELOC_TYPE_JUMP:
         type = FIX_OFFSET_32 | FIX_REL;
         break;
@@ -761,10 +760,9 @@ static orl_return DoReloc( orl_reloc *reloc )
     case ORL_RELOC_TYPE_HALF_HI:
     case ORL_RELOC_TYPE_HALF_HA:
         SavedReloc = *reloc;
-        skip = true;
-        break;
+        return( ORL_OKAY );
     case ORL_RELOC_TYPE_HALF_LO:
-        if( SavedReloc.type == ORL_RELOC_TYPE_NONE ) {    // we recursed
+        if( SavedReloc.type == ORL_RELOC_TYPE_NONE ) {  // we recursed
             type = FIX_OFFSET_16 | FIX_SIGNED;
         } else {
             SavedReloc.type = ORL_RELOC_TYPE_NONE;      // flag recursion
@@ -778,40 +776,35 @@ static orl_return DoReloc( orl_reloc *reloc )
         LnkMsg( LOC+ERR+MSG_BAD_RELOC_TYPE, NULL );
         break;
     }
-    if( !skip ) {
-        seg = FindSegNode( reloc->section );
+    seg = FindSegNode( reloc->section );
+    if( seg != NULL && (seg->info & SEG_DEAD) == 0 && seg->entry != NULL && !seg->entry->isdead ) {
         addend = 0;
-        if( seg != NULL && (seg->info & SEG_DEAD) == 0 && seg->entry != NULL
-                                                   && !seg->entry->isdead ) {
-            SetCurrSeg( seg->entry, 0, seg->contents );
-            frame.type = FIX_FRAME_TARG;
-            ext = FindExtHandle( reloc->symbol );
-            if( ext == NULL ) {
-                symseg = FindSegNode( ORLSymbolGetSecHandle(reloc->symbol) );
-                if( symseg != NULL && (seg->info & SEG_DEAD) == 0 ) {
-                    unsigned_64 val64;
-
-                    ORLSymbolGetValue( reloc->symbol, &val64 );
-                    addend = val64.u._32[I64LO32];
-                    target.u.sdata = symseg->entry;
-                    target.type = FIX_TARGET_SEG;
-                    if( istoc ) {
-                        AddSdataOffToToc( symseg->entry, addend );
-                    }
-                } else {
-                    skip = true;
-                }
+        SetCurrSeg( seg->entry, 0, seg->contents );
+        frame.type = FIX_FRAME_TARG;
+        ext = FindExtHandle( reloc->symbol );
+        if( ext == NULL ) {
+            symseg = FindSegNode( ORLSymbolGetSecHandle(reloc->symbol) );
+            if( symseg == NULL ) {
+                return( ORL_OKAY );
             } else {
-                target.u.sym = ext->entry;
-                target.type = FIX_TARGET_EXT;
+                unsigned_64 val64;
+
+                ORLSymbolGetValue( reloc->symbol, &val64 );
+                addend = val64.u._32[I64LO32];
+                target.u.sdata = symseg->entry;
+                target.type = FIX_TARGET_SEG;
                 if( istoc ) {
-                    AddSymToToc( target.u.sym );
+                    AddSdataOffToToc( symseg->entry, addend );
                 }
             }
-            if( !skip ) {
-                StoreFixup( reloc->offset, type, &frame, &target, addend );
+        } else {
+            target.u.sym = ext->entry;
+            target.type = FIX_TARGET_EXT;
+            if( istoc ) {
+                AddSymToToc( target.u.sym );
             }
         }
+        StoreFixup( reloc->offset, type, &frame, &target, addend );
     }
     return( ORL_OKAY );
 }
