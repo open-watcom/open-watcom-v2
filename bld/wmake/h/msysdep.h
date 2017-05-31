@@ -161,10 +161,17 @@ typedef struct dll_cmd {
 #endif
 } DLL_CMD;
 
+typedef enum {
+    AUTO_DEP_NONE,
+    AUTO_DEP_OMF,
+    AUTO_DEP_ORL,
+    AUTO_DEP_RES
+} auto_dep_type;
+
 extern int          SwitchChar( void );
 extern int          OSCorrupted( void );
 extern RET_T        TouchFile( const char *name );
-extern bool         IdenticalAutoDepTimes( time_t, time_t, bool );
+extern bool         IdenticalAutoDepTimes( time_t, time_t, auto_dep_type );
 extern void         InitHardErr( void );
 extern void         OSLoadDLL( char *cmd, char *dll_name, char *ent_name );
 extern DLL_CMD      *OSFindDLL( char const *cmd_name );
