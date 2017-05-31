@@ -43,8 +43,8 @@ typedef uint_8          elf_file_flags;
 typedef uint_32         elf_file_index;
 typedef uint_32         elf_headers_size;
 
-typedef uint_32         elf_sec_size;
 typedef uint_32         elf_sec_flags;
+typedef uint_32         elf_sec_size;
 typedef uint_32         elf_sec_offset;
 
 typedef uint_16         elf_reloc_type;

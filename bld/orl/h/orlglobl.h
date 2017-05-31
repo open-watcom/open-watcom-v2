@@ -55,11 +55,10 @@ typedef unsigned_32                     orl_file_offset;
 typedef unsigned_32                     orl_file_size;
 
 typedef unsigned_32                     orl_sec_size;
+typedef unsigned_32                     orl_sec_offset;
+typedef signed_32                       orl_sec_addend;
 typedef unsigned_32                     orl_sec_alignment;
 typedef unsigned_32                     orl_sec_frame;
-
-typedef unsigned_32                     orl_sec_offset;
-typedef signed_32                       orl_reloc_addend;
 
 typedef unsigned_64                     orl_symbol_value;
 typedef unsigned_64                     orl_sec_base;

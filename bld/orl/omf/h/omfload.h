@@ -41,6 +41,6 @@ extern orl_return       OmfParseScanTab( omf_bytes buffer, omf_rec_size len, omf
 extern orl_return       OmfLoadFileStructure( omf_file_handle ofh );
 
 extern omf_sec_offset   OmfGetUWord( omf_bytes buffer, int wordsize );
-extern omf_reloc_addend OmfGetSWord( omf_bytes buffer, int wordsize );
+extern omf_sec_addend   OmfGetSWord( omf_bytes buffer, int wordsize );
 
 #endif

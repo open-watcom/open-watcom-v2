@@ -43,8 +43,8 @@ typedef uint_8                          coff_file_flags;
 typedef uint_32                         coff_file_index;
 typedef uint_32                         coff_headers_size;
 
-typedef uint_32                         coff_sec_size;
 typedef uint_32                         coff_sec_flags;
+typedef uint_32                         coff_sec_size;
 typedef uint_32                         coff_sec_offset;
 
 typedef uint_16                         coff_reloc_type;

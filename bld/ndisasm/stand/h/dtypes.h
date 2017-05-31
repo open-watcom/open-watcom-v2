@@ -107,7 +107,7 @@ struct reference_entry_struct {
     label_entry         label;
     dis_sec_offset      offset;
     orl_reloc_type      type;
-    orl_reloc_addend    addend;
+    orl_sec_addend      addend;
     ref_entry           next;
     int                 no_val;
     const char          *frame;

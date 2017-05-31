@@ -1043,7 +1043,7 @@ omf_string_struct   *OmfGetLastExtName( omf_file_handle ofh )
 
 
 orl_return OmfAddBakpat( omf_file_handle ofh, uint_8 loctype, omf_sec_offset location,
-                            omf_idx segidx, omf_idx symidx, omf_reloc_addend disp )
+                            omf_idx segidx, omf_idx symidx, omf_sec_addend disp )
 {
     omf_tmp_bkfix       tbf;
     orl_reloc_type      reltype;
@@ -1102,7 +1102,7 @@ orl_return OmfAddBakpat( omf_file_handle ofh, uint_8 loctype, omf_sec_offset loc
 
 
 orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location, omf_sec_offset offset,
-                            int fmethod, omf_idx fidx, int tmethod, omf_idx tidx, omf_reloc_addend disp )
+                            int fmethod, omf_idx fidx, int tmethod, omf_idx tidx, omf_sec_addend disp )
 {
     omf_tmp_fixup       ftr;
     orl_reloc           *orel;

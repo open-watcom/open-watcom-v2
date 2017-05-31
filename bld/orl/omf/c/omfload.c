@@ -92,7 +92,7 @@ omf_sec_offset  OmfGetUWord( omf_bytes buffer, int wordsize )
 }
 
 
-omf_reloc_addend    OmfGetSWord( omf_bytes buffer, int wordsize )
+omf_sec_addend    OmfGetSWord( omf_bytes buffer, int wordsize )
 {
     omf_sec_offset  result;
 
@@ -109,7 +109,7 @@ omf_reloc_addend    OmfGetSWord( omf_bytes buffer, int wordsize )
     case( 4 ):
         break;
     }
-    return( (omf_reloc_addend)result );
+    return( (omf_sec_addend)result );
 }
 
 
@@ -223,7 +223,7 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, om
     omf_idx             tidx;
     uint_8              datum;
     omf_rec_size        wordsize;
-    omf_reloc_addend    disp;
+    omf_sec_addend      disp;
 
     assert( ofh );
     assert( buffer );
@@ -946,7 +946,7 @@ static orl_return       doBAKPAT( omf_file_handle ofh, omf_rectyp typ )
     uint_8              loctype;
     bool                is32;
     int                 wordsize;
-    omf_reloc_addend    disp;
+    omf_sec_addend      disp;
     omf_sec_offset      offset;
     omf_idx             segidx;
     omf_idx             symidx;
