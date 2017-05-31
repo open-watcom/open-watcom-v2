@@ -398,7 +398,7 @@ static orl_return       addToSymbolTable( omf_file_handle ofh, omf_symbol_handle
             return( ORL_OUT_OF_MEMORY );
         ofh->symbol_table = sh;
         sh->flags |= ORL_SEC_FLAG_REMOVE;
-        sh->assoc.sym.hash_tab = ORLHashTableCreate( ofh->omf_hnd->funcs, 257, ORL_HASH_STRING, stricmp );
+        sh->assoc.sym.hash_tab = ORLHashTableCreate( ofh->omf_hnd->funcs, 257, ORL_HASH_STRING, (orl_hash_comparison_func)stricmp );
         if( sh->assoc.sym.hash_tab == NULL ) {
             return( ORL_OUT_OF_MEMORY );
         }

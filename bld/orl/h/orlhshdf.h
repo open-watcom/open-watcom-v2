@@ -42,11 +42,7 @@ typedef uint_32     orl_hash_value;
 typedef uint_32     orl_hash_table_size;
 typedef const void  *orl_hash_data;
 
-#if defined( __WATCOMC__ )
-typedef int         (*orl_hash_comparison_func)( const char *, const char * );
-#else
 typedef int         (*orl_hash_comparison_func)( orl_hash_data, orl_hash_data );
-#endif
 
 struct orl_hash_data_struct {
     orl_hash_data               data;
