@@ -232,12 +232,23 @@ STATIC enum cacheRet cacheDir( DHEADPTR *pdhead, char *path )
         ++files;
 #endif
 
-#if defined( __UNIX__ )
+#if defined( __WATCOMC__ ) && __WATCOMC__ < 1300
+        /*
+         * OW1.x bootstrap compiler workaround
+         */
+    #if defined( __UNIX__ )
         cnew->ce_tt = (time_t)-1L;
-#elif defined( __NT__ ) && ( !defined( __WATCOMC__ ) || __WATCOMC__ > 1290 )
-        cnew->ce_tt = DTAXXX_TSTAMP_OF( entry->d_dta );
-#else
+    #else
         cnew->ce_tt = _dos2timet( entry->d_date * 0x10000L + entry->d_time );
+    #endif
+#else
+    #if defined( __UNIX__ )
+        cnew->ce_tt = (time_t)-1L;
+    #elif defined( __NT__ )
+        cnew->ce_tt = DTAXXX_TSTAMP_OF( entry->d_dta );
+    #else
+        cnew->ce_tt = _dos2timet( entry->d_date * 0x10000L + entry->d_time );
+    #endif
 #endif
         ConstMemCpy( cnew->ce_name, entry->d_name, NAME_MAX + 1 );
 
