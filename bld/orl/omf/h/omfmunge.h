@@ -50,11 +50,11 @@ extern orl_return       OmfAddExtName( omf_file_handle ofh, char *buffer, omf_st
 extern orl_return       OmfAddFixupp( omf_file_handle ofh, bool is32, int mode,
                                       int location, omf_sec_offset offset,
                                       int fmethod, omf_idx fidx, int tmethod,
-                                      omf_idx tidx, omf_reloc_addend disp );
+                                      omf_idx tidx, omf_sec_addend disp );
 
 extern orl_return       OmfAddBakpat( omf_file_handle ofh, uint_8 loctype,
                                       omf_sec_offset location, omf_idx segidx,
-                                      omf_idx symidx, omf_reloc_addend disp );
+                                      omf_idx symidx, omf_sec_addend disp );
 
 extern orl_return       OmfAddExtDef( omf_file_handle ofh, omf_string_struct *name, omf_rectyp typ );
 

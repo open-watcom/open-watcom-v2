@@ -525,7 +525,7 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
                 orel->symbol = (orl_symbol_handle)( reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols + irela64->r_info.u._32[I64HI32] );
                 orel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, (elf_reloc_type)irela64->r_info.u._32[I64LO32] );
                 orel->offset = (orl_sec_offset)irela64->r_offset.u._32[I64LO32];
-                orel->addend = (orl_reloc_addend)irela64->r_addend.u._32[I64LO32];
+                orel->addend = (orl_sec_addend)irela64->r_addend.u._32[I64LO32];
             } else {
                 Elf32_Rela *irela32 = (Elf32_Rela *)irel;
                 fix_rela_byte_order( reloc_sec->elf_file_hnd, irela32 );

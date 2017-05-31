@@ -79,15 +79,17 @@ typedef uint_8                          omf_file_flags;
 typedef uint_32                         omf_file_index;
 typedef uint_32                         omf_headers_size;
 
-typedef uint_32                         omf_sec_size;
 typedef uint_32                         omf_sec_flags;
+typedef uint_32                         omf_sec_size;
 typedef uint_32                         omf_sec_offset;
+typedef int_32                          omf_sec_addend;
 typedef uint_32                         omf_sec_base;
+
+typedef uint_16                         omf_reloc_type;
 
 typedef uint_32                         omf_symbol_flags;
 typedef uint_32                         omf_symbol_value;
 
-typedef uint_16                         omf_reloc_type;
 typedef uint_16                         omf_idx;
 typedef uint_16                         omf_frame;
 
@@ -95,8 +97,6 @@ typedef int_32                          omf_rec_size;
 typedef uint_8                          omf_string_len;
 
 typedef int_32                          omf_quantity;
-
-typedef int_32                          omf_reloc_addend;
 
 typedef uint_8                          *omf_bytes;
 typedef uint_8                          omf_rectyp;
@@ -152,7 +152,7 @@ struct omf_tmp_fixup_struct {
     omf_idx             fidx;
     int                 tmethod;
     omf_idx             tidx;
-    omf_reloc_addend    disp;
+    omf_sec_addend      disp;
 };
 
 struct omf_tmp_bakpat_struct {
@@ -166,7 +166,7 @@ struct omf_tmp_bkfix_struct {
     omf_idx             segidx;
     omf_idx             symidx;
     omf_sec_offset      offset;
-    omf_reloc_addend    disp;
+    omf_sec_addend      disp;
 };
 
 struct omf_handle_struct {

@@ -41,7 +41,7 @@ typedef struct {
     orl_sec_offset                      offset;
     orl_symbol_handle                   symbol;
     orl_reloc_type                      type;
-    orl_reloc_addend                    addend;
+    orl_sec_addend                      addend;
     orl_symbol_handle                   frame; // used in OMF should be NULL otherwise
 } orl_reloc;
 
