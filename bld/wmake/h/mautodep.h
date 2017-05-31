@@ -33,13 +33,14 @@ typedef void    *handle;
 typedef void    *dep_handle;
 
 typedef struct  auto_dep_info {
-    void        (*init)( void );
-    handle      (*init_file)( const char *name );
-    dep_handle  (*first_dep)( handle );
-    void        (*trans_dep)( dep_handle, char **name, time_t *time_stamp );
-    dep_handle  (*next_dep)( dep_handle );
-    void        (*fini_file)( handle );
-    void        (*fini)( void );
+    void            (*init)( void );
+    handle          (*init_file)( const char *name );
+    dep_handle      (*first_dep)( handle );
+    void            (*trans_dep)( dep_handle, char **name, time_t *time_stamp );
+    dep_handle      (*next_dep)( dep_handle );
+    void            (*fini_file)( handle );
+    void            (*fini)( void );
+    auto_dep_type   type;
 } auto_dep_info;
 
 extern void     AutoDepInit( void );

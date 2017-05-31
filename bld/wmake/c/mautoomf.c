@@ -185,5 +185,6 @@ const auto_dep_info OMFAutoDepInfo = {
     OMFTransDep,
     OMFNextDep,
     OMFFiniFile,
-    NULL
+    NULL,
+    AUTO_DEP_OMF
 };

@@ -82,7 +82,7 @@ static bool isTargObsolete( char const *name, time_t stamp,
     if( CacheTime( dep_name, &curr_dep_time ) != RET_SUCCESS ) {
         exists = false, obsolete = true;
     } else {
-        if( !IdenticalAutoDepTimes( auto_dep_time, curr_dep_time, ( curr == &OMFAutoDepInfo ) ) || (*chk)( stamp, curr_dep_time ) ) {
+        if( !IdenticalAutoDepTimes( auto_dep_time, curr_dep_time, curr->type ) || (*chk)( stamp, curr_dep_time ) ) {
             obsolete = true;
         }
         if( *pmax_time < curr_dep_time ) {

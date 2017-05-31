@@ -270,6 +270,7 @@ const auto_dep_info ORLAutoDepInfo = {
     AutoORLNextDep,
     AutoORLFileFini,
     AutoORLFini,
+    AUTO_DEP_ORL
 };
 
 #endif

@@ -114,7 +114,8 @@ const auto_dep_info RESAutoDepInfo = {
     RESTransDep,
     RESNextDep,
     RESFiniFile,
-    NULL
+    NULL,
+    AUTO_DEP_RES
 };
 
 #endif
