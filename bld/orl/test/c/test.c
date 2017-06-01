@@ -143,7 +143,7 @@ static orl_return PrintSymbolInfo( orl_symbol_handle symbol )
         printf( "none" );
     }
     sec = ORLSymbolGetSecHandle( symbol );
-    if( sec ) {
+    if( sec != ORL_NULL_HANDLE ) {
         printf( " (in '%s')", ORLSecGetName( sec ) );
     }
     printf( "\n" );

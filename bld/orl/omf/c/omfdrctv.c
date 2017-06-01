@@ -70,7 +70,7 @@ orl_return      OmfParseComments( omf_sec_handle sh, orl_note_callbacks *cbs, vo
                 return_val = OmfParseScanTab( comment->data, comment->len, &st_entry );
                 if( return_val == ORL_OKAY ) {
                     csh = (orl_sec_handle)OmfFindSegOrComdat( sh->omf_file_hnd, st_entry.seg, st_entry.lname );
-                    if( csh != NULL ) {
+                    if( csh != ORL_NULL_HANDLE ) {
                         return_val = cbs->scantab_fn( csh, &st_entry.start, &st_entry.end, cookie );
                         if( return_val != ORL_OKAY ) {
                             return( return_val );

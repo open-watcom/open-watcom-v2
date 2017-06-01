@@ -37,37 +37,39 @@
 #define ORLENTRY
 
 #if defined( _WIN64 )
-#define ORL_FID2PH( fid )   (((int)(unsigned __int64)(fid)) - 1)
-#define ORL_PH2FID( ph )    ((orl_file_id)(unsigned __int64)(ph + 1))
+#define ORL_FID2PH( fid )       (((int)(unsigned __int64)(fid)) - 1)
+#define ORL_PH2FID( ph )        ((orl_file_id)(unsigned __int64)(ph + 1))
 #else
-#define ORL_FID2PH( fid )   (((int)(unsigned long)(fid)) - 1)
-#define ORL_PH2FID( ph )    ((orl_file_id)(unsigned long)(ph + 1))
+#define ORL_FID2PH( fid )       (((int)(unsigned long)(fid)) - 1)
+#define ORL_PH2FID( ph )        ((orl_file_id)(unsigned long)(ph + 1))
 #endif
 
-#define ORL_FID2FH( fid )   (fid)
-#define ORL_FH2FID( fh )    (fh)
+#define ORL_FID2FH( fid )       (fid)
+#define ORL_FH2FID( fh )        (fh)
 
-#define ORL_NIL_HANDLE      ((orl_file_id)NULL)
+#define ORL_NIL_HANDLE          ((orl_file_id)NULL)
 
-typedef void                            *orl_file_id;
+#define ORL_NULL_HANDLE         ((orl_sec_handle)NULL)
 
-typedef unsigned_32                     orl_file_offset;
-typedef unsigned_32                     orl_file_size;
+typedef void                    *orl_file_id;
 
-typedef unsigned_32                     orl_sec_size;
-typedef unsigned_32                     orl_sec_offset;
-typedef signed_32                       orl_sec_addend;
-typedef unsigned_32                     orl_sec_alignment;
-typedef unsigned_32                     orl_sec_frame;
+typedef unsigned_32             orl_file_offset;
+typedef unsigned_32             orl_file_size;
 
-typedef unsigned_64                     orl_symbol_value;
-typedef unsigned_64                     orl_sec_base;
+typedef unsigned_32             orl_sec_size;
+typedef unsigned_32             orl_sec_offset;
+typedef signed_32               orl_sec_addend;
+typedef unsigned_32             orl_sec_alignment;
+typedef unsigned_32             orl_sec_frame;
 
-typedef unsigned_32                     orl_table_index;
+typedef unsigned_64             orl_symbol_value;
+typedef unsigned_64             orl_sec_base;
 
-typedef unsigned_32                     orl_rva;
+typedef unsigned_32             orl_table_index;
 
-#define ORL_SEC_NO_ABS_FRAME            (orl_sec_frame)-1
+typedef unsigned_32             orl_rva;
+
+#define ORL_SEC_NO_ABS_FRAME    ((orl_sec_frame)-1)
 
 typedef enum {
     ORL_OUT_OF_MEMORY,

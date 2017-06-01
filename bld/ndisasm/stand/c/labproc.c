@@ -255,7 +255,7 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
         entry->type = LTYP_SECTION;
     } else if( primary_type == ORL_SYM_TYPE_GROUP ) {
         entry->type = LTYP_GROUP;
-    } else if( entry->shnd == NULL ) {
+    } else if( entry->shnd == ORL_NULL_HANDLE ) {
         entry->type = LTYP_EXTERNAL_NAMED;
     } else if( primary_type == ORL_SYM_TYPE_FUNC_INFO ){
         entry->type = LTYP_FUNC_INFO;
@@ -283,7 +283,7 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
     }
     sec_label_list = (label_list)*data_ptr;
     entry = addLabel( sec_label_list, entry, sym_hnd );
-    if( (Options & PRINT_PUBLICS) && entry->shnd != NULL &&
+    if( (Options & PRINT_PUBLICS) && entry->shnd != ORL_NULL_HANDLE &&
             primary_type != ORL_SYM_TYPE_SECTION &&
             entry->binding != ORL_SYM_BINDING_LOCAL ) {
         Publics.number++;

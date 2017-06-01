@@ -90,7 +90,7 @@ static const char *getFrameModifier( orl_reloc *rel )
         typ = ORLSymbolGetType( rel->symbol );
         if( typ & ORL_SYM_TYPE_SECTION ) {
             shnd = ORLSymbolGetSecHandle( rel->symbol );
-            if( shnd ) {
+            if( shnd != ORL_NULL_HANDLE ) {
                 grp = ORLSecGetGroup( shnd );
                 if( grp ) {
                     return( ORLGroupName( grp ) );
@@ -157,7 +157,7 @@ orl_return DealWithRelocSection( orl_sec_handle shnd )
 {
     orl_return  error;
 
-    error = ORLRelocSecScan( shnd, &CreateNamedLabelRef );
+    error = ORLRelocSecScan( shnd, CreateNamedLabelRef );
     return( error );
 }
 
@@ -167,7 +167,7 @@ return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_se
     ref_list            sec_ref_list;
 
     ref = MemAlloc( sizeof( ref_entry_struct ) );
-    if( !ref ) {
+    if( ref == NULL ) {
         return( RC_OUT_OF_MEMORY );
     }
     memset( ref, 0, sizeof( ref_entry_struct ) );
@@ -187,13 +187,14 @@ return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_se
     return( RC_OKAY );
 }
 
-return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc ) {
+return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc )
+{
     ref_entry           ref;
     hash_data *         data_ptr;
     ref_list            sec_ref_list;
 
     ref = MemAlloc( sizeof( ref_entry_struct ) );
-    if( !ref ) {
+    if( ref == NULL ) {
         return( RC_OUT_OF_MEMORY );
     }
     memset( ref, 0, sizeof( ref_entry_struct ) );
@@ -201,9 +202,9 @@ return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, dis_s
     ref->label = entry;
     ref->type = ORL_RELOC_TYPE_MAX + 1;
     ref->addend = 0;
-    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value) shnd );
+    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value)shnd );
     if( data_ptr ) {
-        sec_ref_list = (ref_list) *data_ptr;
+        sec_ref_list = (ref_list)*data_ptr;
         addRef( sec_ref_list, ref );
     } else {
         // error!!!!  should have been created

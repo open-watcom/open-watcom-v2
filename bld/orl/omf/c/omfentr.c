@@ -288,7 +288,7 @@ orl_sec_handle OMFENTRY OmfSecGetAssociated( omf_sec_handle sh )
     if( _IsSegType( sh->type ) && ( sh->flags & ORL_SEC_FLAG_COMDAT ) ) {
         return( (orl_sec_handle)(sh->assoc.seg.comdat.assoc_seg) );
     }
-    return( NULL );
+    return( ORL_NULL_HANDLE );
 }
 
 
