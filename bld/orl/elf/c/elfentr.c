@@ -72,7 +72,7 @@ orl_return ELFENTRY ElfFileInit( elf_handle elf_hnd, orl_file_id file, elf_file_
     if( elf_file_hnd == NULL ) {
         return( ORL_OUT_OF_MEMORY );
     }
-    elf_file_hnd->elf_sec_hnd = NULL;
+    elf_file_hnd->sec_handles = NULL;
     elf_file_hnd->file = file;
     elf_file_hnd->sec_name_hash_table = NULL;
     ElfAddFileLinks( elf_hnd, elf_file_hnd );
@@ -99,7 +99,7 @@ orl_return ELFENTRY ElfFileScan( elf_file_handle elf_file_hnd, const char *desir
     if( desired == NULL ) {
         /* global request */
         for( loop = 0; loop < elf_file_hnd->num_sections; loop++ ) {
-            return_val = return_func( (orl_sec_handle)elf_file_hnd->elf_sec_hnd[loop] );
+            return_val = return_func( (orl_sec_handle)elf_file_hnd->sec_handles[loop] );
             if( return_val != ORL_OKAY ) {
                 return( return_val );
             }
@@ -151,10 +151,10 @@ const char * ELFENTRY ElfSecGetName( elf_sec_handle elf_sec_hnd )
     return( elf_sec_hnd->name );
 }
 
-orl_return ELFENTRY ElfSecGetBase( elf_sec_handle elf_sec_hnd, orl_sec_base *base )
+orl_return ELFENTRY ElfSecGetBase( elf_sec_handle elf_sec_hnd, orl_sec_base *sec_base )
 {
-    base->u._32[I64HI32] = elf_sec_hnd->base.u._32[I64HI32];
-    base->u._32[I64LO32] = elf_sec_hnd->base.u._32[I64LO32];
+    sec_base->u._32[I64HI32] = elf_sec_hnd->base.u._32[I64HI32];
+    sec_base->u._32[I64LO32] = elf_sec_hnd->base.u._32[I64LO32];
     return( ORL_OKAY );
 }
 
@@ -301,23 +301,22 @@ orl_table_index ELFENTRY ElfCvtSecHdlToIdx( elf_sec_handle shdl )
     fhdl = shdl->elf_file_hnd;
     limit = fhdl->num_sections;
     for( index = 0; index < limit; index++ ) {
-        if( fhdl->elf_sec_hnd[index] == shdl ) {
-            return( fhdl->elf_sec_hnd[index]->index );
+        if( fhdl->sec_handles[index] == shdl ) {
+            return( fhdl->sec_handles[index]->index );
         }
     }
     return( 0 );
 }
 
-elf_sec_handle ELFENTRY ElfCvtIdxToSecHdl( elf_file_handle fhdl,
-                                              orl_table_index idx )
+elf_sec_handle ELFENTRY ElfCvtIdxToSecHdl( elf_file_handle fhdl, orl_table_index idx )
 {
     orl_table_index     index;
     orl_table_index     limit;
 
     limit = fhdl->num_sections;
     for( index = 0; index < limit; index++ ) {
-        if( fhdl->elf_sec_hnd[index]->index == idx ) {
-            return( fhdl->elf_sec_hnd[index] );
+        if( fhdl->sec_handles[index]->index == idx ) {
+            return( fhdl->sec_handles[index] );
         }
     }
     return( 0 );
@@ -394,9 +393,10 @@ const char * ELFENTRY ElfSymbolGetName( elf_symbol_handle elf_symbol_hnd )
     return( elf_symbol_hnd->name );
 }
 
-orl_return ELFENTRY ElfSymbolGetValue( elf_symbol_handle elf_symbol_hnd, orl_symbol_value *val )
+orl_return ELFENTRY ElfSymbolGetValue( elf_symbol_handle elf_symbol_hnd, orl_symbol_value *sym_value )
 {
-    *val = elf_symbol_hnd->value;
+    sym_value->u._32[I64HI32] = elf_symbol_hnd->value.u._32[I64HI32];
+    sym_value->u._32[I64LO32] = elf_symbol_hnd->value.u._32[I64LO32];
     return( ORL_OKAY );
 }
 
@@ -423,7 +423,7 @@ elf_sec_handle ELFENTRY ElfSymbolGetSecHandle( elf_symbol_handle elf_symbol_hnd 
     case SHN_UNDEF:
         return( NULL );
     default:
-        return( elf_symbol_hnd->elf_file_hnd->orig_sec_hnd[elf_symbol_hnd->shndx - 1]);
+        return( elf_symbol_hnd->elf_file_hnd->orig_sec_handles[elf_symbol_hnd->shndx - 1]);
     }
 }
 

@@ -394,24 +394,26 @@ const char * ORLENTRY ORLSecGetName( orl_sec_handle orl_sec_hnd )
     return( NULL );
 }
 
-orl_return ORLENTRY ORLSecGetBase( orl_sec_handle orl_sec_hnd, orl_sec_base *base )
+orl_return ORLENTRY ORLSecGetBase( orl_sec_handle orl_sec_hnd, orl_sec_base *sec_base )
 {
-    switch( ORLI_SEC_HND->type ) {
-    case( ORL_ELF ):
-        return( ElfSecGetBase( (elf_sec_handle)orl_sec_hnd, base ) );
-    case( ORL_COFF ):
-        base->u._32[I64HI32] = 0;
-        base->u._32[I64LO32] = CoffSecGetBase( (coff_sec_handle)orl_sec_hnd );
-        return( ORL_OKAY );
-    case( ORL_OMF ):
-        base->u._32[I64HI32] = 0;
-        base->u._32[I64LO32] = OmfSecGetBase( (omf_sec_handle)orl_sec_hnd );
-        return( ORL_OKAY );
-    default:    // ORL_UNRECOGNIZED_FORMAT
-        break;
+    if( sec_base != NULL ) {
+        switch( ORLI_SEC_HND->type ) {
+        case( ORL_ELF ):
+            return( ElfSecGetBase( (elf_sec_handle)orl_sec_hnd, sec_base ) );
+        case( ORL_COFF ):
+            sec_base->u._32[I64HI32] = 0;
+            sec_base->u._32[I64LO32] = CoffSecGetBase( (coff_sec_handle)orl_sec_hnd );
+            return( ORL_OKAY );
+        case( ORL_OMF ):
+            sec_base->u._32[I64HI32] = 0;
+            sec_base->u._32[I64LO32] = OmfSecGetBase( (omf_sec_handle)orl_sec_hnd );
+            return( ORL_OKAY );
+        default:    // ORL_UNRECOGNIZED_FORMAT
+            break;
+        }
+        sec_base->u._32[I64HI32] = 0;
+        sec_base->u._32[I64LO32] = 0;
     }
-    base->u._32[I64HI32] = 0;
-    base->u._32[I64LO32] = 0;
     return( ORL_ERROR );
 }
 
@@ -738,24 +740,26 @@ const char * ORLENTRY ORLSymbolGetName( orl_symbol_handle orl_symbol_hnd )
     return( NULL );
 }
 
-orl_return ORLENTRY ORLSymbolGetValue( orl_symbol_handle orl_symbol_hnd, orl_symbol_value *val )
+orl_return ORLENTRY ORLSymbolGetValue( orl_symbol_handle orl_symbol_hnd, orl_symbol_value *sym_value )
 {
-    if( val == NULL )
-        return( ORL_ERROR );
-    switch( ORLI_SYMBOL_HND->type ) {
-    case( ORL_ELF ):
-        return( ElfSymbolGetValue( (elf_symbol_handle)orl_symbol_hnd, val ) );
-    case( ORL_COFF ):
-        return( CoffSymbolGetValue( (coff_symbol_handle)orl_symbol_hnd, val ) );
-    case( ORL_OMF ):
-        val->u._32[I64HI32] = 0;
-        val->u._32[I64LO32] = OmfSymbolGetValue( (omf_symbol_handle)orl_symbol_hnd );
-        return( ORL_OKAY );
-    default:     //ORL_UNRECOGNIZED_FORMAT
-        break;
+    if( sym_value != NULL ) {
+        switch( ORLI_SYMBOL_HND->type ) {
+        case( ORL_ELF ):
+            return( ElfSymbolGetValue( (elf_symbol_handle)orl_symbol_hnd, sym_value ) );
+        case( ORL_COFF ):
+            sym_value->u._32[I64HI32] = 0;
+            sym_value->u._32[I64LO32] = CoffSymbolGetValue( (coff_symbol_handle)orl_symbol_hnd );
+            return( ORL_OKAY );
+        case( ORL_OMF ):
+            sym_value->u._32[I64HI32] = 0;
+            sym_value->u._32[I64LO32] = OmfSymbolGetValue( (omf_symbol_handle)orl_symbol_hnd );
+            return( ORL_OKAY );
+        default:     //ORL_UNRECOGNIZED_FORMAT
+            break;
+        }
+        sym_value->u._32[I64HI32] = 0;
+        sym_value->u._32[I64LO32] = 0;
     }
-    val->u._32[I64HI32] = 0;
-    val->u._32[I64LO32] = 0;
     return( ORL_ERROR );
 }
 

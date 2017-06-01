@@ -39,9 +39,9 @@ static void free_elf_file_hnd( elf_file_handle elf_file_hnd )
     int                         loop;
     elf_sec_handle              elf_sec_hnd;
 
-    if( elf_file_hnd->elf_sec_hnd != NULL ) {
+    if( elf_file_hnd->sec_handles != NULL ) {
         for( loop = 0; loop < elf_file_hnd->num_sections; loop++ ) {
-            elf_sec_hnd = elf_file_hnd->elf_sec_hnd[loop];
+            elf_sec_hnd = elf_file_hnd->sec_handles[loop];
             switch( elf_sec_hnd->type ) {
             case ORL_SEC_TYPE_RELOCS:
             case ORL_SEC_TYPE_RELOCS_EXPADD:
@@ -60,9 +60,9 @@ static void free_elf_file_hnd( elf_file_handle elf_file_hnd )
             }
             _ClientFree( elf_file_hnd, elf_sec_hnd );
         }
-        _ClientFree( elf_file_hnd, elf_file_hnd->elf_sec_hnd );
+        _ClientFree( elf_file_hnd, elf_file_hnd->sec_handles );
     }
-    _ClientFree( elf_file_hnd, elf_file_hnd->orig_sec_hnd );
+    _ClientFree( elf_file_hnd, elf_file_hnd->orig_sec_handles );
     if( elf_file_hnd->sec_name_hash_table != NULL ) {
         ORLHashTableFree( elf_file_hnd->sec_name_hash_table );
     }
