@@ -11,8 +11,8 @@ cd ../travis-ci-ow-builds
 #
 if [ ! -d bld ]; then mkdir bld; fi
 cp $OWROOT/bld/*.log bld/
-if [ ! -d docs ]; then mkdir docs; fi
-cp $OWROOT/docs/*.log docs/
+#if [ ! -d docs ]; then mkdir docs; fi
+#cp $OWROOT/docs/*.log docs/
 #
 # commit new log files to GitHub repository
 #
