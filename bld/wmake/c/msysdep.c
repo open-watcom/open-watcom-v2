@@ -223,7 +223,7 @@ bool IdenticalAutoDepTimes( time_t in_obj, time_t stamp, auto_dep_type autodep_t
         }
     }
 #else
-#if defined( __DOS__ ) || defined( __OS2__ )
+  #if defined( __DOS__ ) || defined( __OS2__ )
     /*
      * host is two-second file time based, the stamp is always two-second based time
      * if in_obj is not a two-second based file time ( ELF, COFF or RES object files )
@@ -234,7 +234,7 @@ bool IdenticalAutoDepTimes( time_t in_obj, time_t stamp, auto_dep_type autodep_t
             return( true );
         }
     }
-#else
+  #else
     /*
      * host is one-second file time based, the stamp is always one-second based time
      * if in_obj is a two-second based file time ( OMF object files )
@@ -245,7 +245,7 @@ bool IdenticalAutoDepTimes( time_t in_obj, time_t stamp, auto_dep_type autodep_t
             return( true );
         }
     }
-#endif
+  #endif
 #endif
     if( in_obj < stamp ) {
         /* stamp is newer than time in .OBJ file */

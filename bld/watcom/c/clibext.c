@@ -2016,7 +2016,7 @@ static time_t __NT_filetime_to_timet( const FILETIME *ft )
 
     ulint.u.LowPart   =   ft->dwLowDateTime; 
     ulint.u.HighPart  =   ft->dwHighDateTime; 
-    return( ( ulint.QuadPart + WINDOWS_TICK / 2 ) / WINDOWS_TICK - SEC_TO_UNIX_EPOCH );
+    return( ulint.QuadPart / WINDOWS_TICK - SEC_TO_UNIX_EPOCH );
 }
 
 static void __GetNTCreateAttr( unsigned attr, LPDWORD desired_access, LPDWORD nt_attr )
