@@ -16,7 +16,7 @@ before_script:
 # initialize OW build environment variables
  - export OWROOT=$TRAVIS_BUILD_DIR
  - export OWTOOLS=CLANG
- - export OWRELROOT=$TRAVIS_BUILD_DIR/../travis-ci-ow-builds/rel
+ - export OWRELROOT=$TRAVIS_BUILD_DIR/../travis-ci-ow-builds
  - export OWOBJDIR=binbuild
  - export OWDOCBUILD=0
  - export OWDOCQUIET=1

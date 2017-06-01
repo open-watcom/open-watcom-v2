@@ -29,5 +29,10 @@ then
   git push -f origin master
   git branch --set-upstream-to=origin/master master
   git pull
+  if [ -d rel ]
+  then
+    rm -f README.md
+    rm -rf rel
+  fi
 fi
 cd $TRAVIS_BUILD_DIR
