@@ -11,11 +11,6 @@ cd ../travis-ci-ow-builds
 #
 if [ "$TRAVIS_PULL_REQUEST" = "false" ]
 then
-  if [ -d rel ]
-  then
-    rm -f README.md
-    rm -rf rel
-  fi
   git add -f .
   git commit --quiet -m "Travis CI build $TRAVIS_BUILD_NUMBER (success) - OW distribution"
   git push --quiet -f origin
