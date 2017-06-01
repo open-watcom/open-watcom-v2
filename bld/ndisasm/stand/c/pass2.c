@@ -218,7 +218,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
     char                *p;
 
     buff[0] = '\0';
-    for( ; *r_entry && (*r_entry)->offset == offset; *r_entry = (*r_entry)->next ) {
+    for( ; *r_entry != NULL && (*r_entry)->offset == offset; *r_entry = (*r_entry)->next ) {
         if( (*r_entry)->no_val == 0 ) {
             nvalue = value;
         } else if( (*r_entry)->addend ) {
@@ -584,7 +584,7 @@ static void processDataInCode( section_ptr sec, unsigned_8 *contents, struct pas
         DumpDataFromSection( contents, data->loop, offset, l_entry,
                              &(data->r_entry), sec );
     }
-    while( data->r_entry && ( data->r_entry->offset < offset ) ) {
+    while( data->r_entry != NULL && ( data->r_entry->offset < offset ) ) {
         data->r_entry = data->r_entry->next;
     }
     data->loop = offset;
@@ -677,11 +677,11 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
         }
         // data may not be listed in scan table, but a fixup at this offset will
         // give it away
-        while( data.r_entry && ( data.r_entry->offset < data.loop ) ) {
+        while( data.r_entry != NULL && ( data.r_entry->offset < data.loop ) ) {
             data.r_entry = data.r_entry->next;
         }
         FPU_fixup = processFpuEmulatorFixup( &data.r_entry, data.loop );
-        if( data.r_entry && ( data.r_entry->offset == data.loop ) ) {
+        if( data.r_entry != NULL && ( data.r_entry->offset == data.loop ) ) {
             if( is_intel || IsDataReloc( data.r_entry ) ) {
                 // we just skip the data
                 decoded.size = 0;

@@ -36,12 +36,12 @@
 
 // label list
 
-typedef uint_32                 label_number;
-typedef uint_32                 label_id;
-typedef uint_16                 list_size;
-typedef uint_16                 num_errors;
+typedef uint_32                     label_number;
+typedef uint_32                     label_id;
+typedef uint_16                     list_size;
+typedef uint_16                     num_errors;
 
-typedef orl_sec_offset          dis_sec_offset;
+typedef orl_sec_offset              dis_sec_offset;
 
 typedef enum {
     LTYP_EXTERNAL_NAMED,
@@ -59,8 +59,8 @@ typedef enum {
     RFLAG_NO_FRAME      = 0x0002
 } ref_flags;
 
-typedef struct label_entry_struct label_entry_struct;
-typedef label_entry_struct * label_entry;
+typedef struct label_entry_struct       label_entry_struct;
+typedef label_entry_struct              *label_entry;
 
 struct label_entry_struct {
     orl_sec_handle      shnd;
@@ -74,23 +74,23 @@ struct label_entry_struct {
     label_entry         next;
 };
 
-typedef struct label_list_struct label_list_struct;
-typedef label_list_struct * label_list;
+typedef struct label_list_struct        label_list_struct;
+typedef label_list_struct               *label_list;
 
 struct label_list_struct {
     label_entry         first;
     label_entry         last;
 };
 
-typedef struct label_list_ptr_struct label_list_ptr_struct;
-typedef label_list_ptr_struct * label_list_ptr;
+typedef struct label_list_ptr_struct    label_list_ptr_struct;
+typedef label_list_ptr_struct           *label_list_ptr;
 
 struct label_list_ptr_struct {
     label_list          list;
     label_list_ptr      next;
 };
 
-typedef struct publics_struct publics_struct;
+typedef struct publics_struct           publics_struct;
 
 struct publics_struct {
     label_list_ptr      label_lists;
@@ -100,8 +100,8 @@ struct publics_struct {
 
 // reference list
 
-typedef struct reference_entry_struct ref_entry_struct;
-typedef ref_entry_struct * ref_entry;
+typedef struct reference_entry_struct   ref_entry_struct;
+typedef ref_entry_struct                *ref_entry;
 
 struct reference_entry_struct {
     label_entry         label;
@@ -113,8 +113,8 @@ struct reference_entry_struct {
     const char          *frame;
 };
 
-typedef struct ref_list_struct ref_list_struct;
-typedef ref_list_struct * ref_list;
+typedef struct ref_list_struct          ref_list_struct;
+typedef ref_list_struct                 *ref_list;
 
 struct ref_list_struct {
     ref_entry           first;
@@ -122,8 +122,8 @@ struct ref_list_struct {
     list_size           size;
 };
 
-typedef struct externs_struct externs_struct;
-typedef struct externs_struct * externs;
+typedef struct externs_struct           externs_struct;
+typedef struct externs_struct           *externs;
 
 struct externs_struct {
     ref_entry *         extern_refs;
@@ -170,11 +170,11 @@ typedef enum {
 
 typedef int_16 buffer_position;
 
-typedef struct section_struct section_struct;
-typedef section_struct * section_ptr;
+typedef struct section_struct       section_struct;
+typedef section_struct              *section_ptr;
 
-typedef struct scantab_struct scantab_struct;
-typedef scantab_struct * scantab_ptr;
+typedef struct scantab_struct       scantab_struct;
+typedef scantab_struct              *scantab_ptr;
 
 struct section_struct {
     const char          *name;
@@ -190,15 +190,15 @@ struct scantab_struct {
     dis_sec_offset      end;
 };
 
-typedef struct section_list_struct section_list_struct;
+typedef struct section_list_struct  section_list_struct;
 
 struct section_list_struct {
     section_ptr         first;
     section_ptr         last;
 };
 
-typedef struct unnamed_label_return_struct unnamed_label_return_struct;
-typedef unnamed_label_return_struct * unnamed_label_return;
+typedef struct unnamed_label_return_struct  unnamed_label_return_struct;
+typedef unnamed_label_return_struct         *unnamed_label_return;
 
 struct unnamed_label_return_struct {
     label_entry         entry;
@@ -211,38 +211,37 @@ struct sa_disasm_struct {
     dis_sec_offset      last;
 };
 
-typedef struct sa_disasm_struct sa_disasm_struct;
-typedef sa_disasm_struct *sa_disasm;
+typedef struct sa_disasm_struct     sa_disasm_struct;
+typedef sa_disasm_struct            *sa_disasm;
 
 // hash table definitions
-typedef pointer_int     hash_value;
-typedef pointer_int     hash_data;
-typedef uint_32         hash_table_size;
+typedef pointer_int                 hash_value;
+typedef pointer_int                 hash_data;
+typedef uint_32                     hash_table_size;
 
 typedef enum {
     HASH_STRING,
     HASH_NUMBER
 } hash_table_type;
 
-typedef
-    int         (*hash_table_comparison_func)( hash_value, hash_value );
+typedef int     (*hash_table_comparison_func)( hash_value, hash_value );
 
 struct hash_struct {
-    hash_value                  key;
-    hash_data                   data;
-    struct hash_struct *        next;
+    hash_value                      key;
+    hash_data                       data;
+    struct hash_struct              *next;
 };
 
-typedef struct hash_struct hash_struct;
+typedef struct hash_struct          hash_struct;
 
 struct hash_table_struct {
-    hash_table_size             size;
-    hash_table_type             type;
-    hash_table_comparison_func  compare;
-    hash_struct **              table;
+    hash_table_size                 size;
+    hash_table_type                 type;
+    hash_table_comparison_func      compare;
+    hash_struct                     **table;
 };
 
-typedef struct hash_table_struct hash_table_struct;
-typedef hash_table_struct * hash_table;
+typedef struct hash_table_struct    hash_table_struct;
+typedef hash_table_struct           *hash_table;
 
 #endif

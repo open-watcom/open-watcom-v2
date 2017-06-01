@@ -25,7 +25,7 @@
 *  ========================================================================
 *
 * Description:  hash table routines
-*               
+*
 *
 ****************************************************************************/
 
@@ -35,6 +35,9 @@
 #include "global.h"
 #include "hashtabl.h"
 #include "memfuncs.h"
+
+
+#define _HashCompare( a, b, c )  (a->compare( b, c ) == 0)
 
 int NumberCmp( hash_value n1, hash_value n2 )
 {
@@ -69,9 +72,9 @@ static hash_value hashFunc( hash_table hash_tbl, hash_value key )
 
 return_val HashTableInsert( hash_table hash_tbl, hash_value key, hash_data data )
 {
-    hash_value                  hash_val;
-    hash_struct *               hash_ptr;
-    hash_struct *               new_element;
+    hash_value              hash_val;
+    hash_struct             *hash_ptr;
+    hash_struct             *new_element;
 
     if( hash_tbl->type == HASH_STRING ) {
         hash_val = hashFunc( hash_tbl, stringEncode( (char *)key ) );
@@ -79,13 +82,13 @@ return_val HashTableInsert( hash_table hash_tbl, hash_value key, hash_data data 
         hash_val = hashFunc( hash_tbl, key );
     }
     for( hash_ptr = hash_tbl->table[hash_val]; hash_ptr != NULL; hash_ptr = hash_ptr->next ) {
-        if( !hash_tbl->compare( hash_ptr->key, key ) ) {
+        if( _HashCompare( hash_tbl, hash_ptr->key, key ) ) {
             hash_ptr->data = data;
             return( RC_OKAY );
         }
     }
     new_element = (hash_struct *)MemAlloc( sizeof( hash_struct ) );
-    if( !new_element ) {
+    if( new_element == NULL ) {
         return( RC_OUT_OF_MEMORY );
     }
     new_element->key = key;
@@ -106,7 +109,7 @@ hash_data *HashTableQuery( hash_table hash_tbl, hash_value key )
         hash_val = hashFunc( hash_tbl, key );
     }
     for( hash_ptr = hash_tbl->table[hash_val]; hash_ptr != NULL; hash_ptr = hash_ptr->next ) {
-        if( !hash_tbl->compare( hash_ptr->key, key ) ) {
+        if( _HashCompare( hash_tbl, hash_ptr->key, key ) ) {
             return( &(hash_ptr->data) );
         }
     }
@@ -118,10 +121,12 @@ hash_table HashTableCreate( hash_table_size size, hash_table_type type, hash_tab
     hash_table          hash_tbl;
     hash_table_size     loop;
 
-    hash_tbl = (hash_table) MemAlloc( sizeof( hash_table_struct ) );
-    if( !hash_tbl) return( NULL );
-    hash_tbl->table = (hash_struct **) MemAlloc( size * sizeof( hash_struct * ) );
-    if( !(hash_tbl->table) ) return( NULL );
+    hash_tbl = (hash_table)MemAlloc( sizeof( hash_table_struct ) );
+    if( hash_tbl == NULL )
+        return( NULL );
+    hash_tbl->table = (hash_struct **)MemAlloc( size * sizeof( hash_struct * ) );
+    if( hash_tbl->table == NULL )
+        return( NULL );
     hash_tbl->size = size;
     hash_tbl->type = type;
     hash_tbl->compare = func;

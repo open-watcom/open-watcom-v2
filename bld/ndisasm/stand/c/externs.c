@@ -70,7 +70,7 @@ externs CreateExterns( ref_list list ) {
     sec_externs->number = 0;
     entry = list->first;
     while( entry ) {
-        if( (entry->label->shnd == 0) && (entry->label->type != LTYP_GROUP) ) {
+        if( ( entry->label->shnd == ORL_NULL_HANDLE ) && (entry->label->type != LTYP_GROUP) ) {
             sec_externs->number++;
         }
         entry = entry->next;
@@ -79,7 +79,7 @@ externs CreateExterns( ref_list list ) {
         sec_externs->extern_refs = (ref_entry *) MemAlloc( sizeof( ref_entry ) * sec_externs->number );
         entry = list->first;
         while( entry ) {
-            if((entry->label->shnd == 0) && (entry->label->type !=LTYP_GROUP)) {
+            if( ( entry->label->shnd == ORL_NULL_HANDLE ) && ( entry->label->type != LTYP_GROUP ) ) {
                 sec_externs->extern_refs[index] = entry;
                 index++;
             }

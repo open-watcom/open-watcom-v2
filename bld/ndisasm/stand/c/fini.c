@@ -193,7 +193,7 @@ void Fini( void )
 {
     freeSectionList( &Sections );
     freeLabelList( 0 );
-    ORLFileScan( ObjFileHnd, NULL, &SectionFini );
+    ORLFileScan( ObjFileHnd, NULL, SectionFini );
     if( Options & PRINT_PUBLICS ) {
         freePublics();
     }

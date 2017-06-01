@@ -376,7 +376,7 @@ orl_sec_handle ORLENTRY ORLFileGetSymbolTable( orl_file_handle orl_file_hnd )
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
-    return( NULL );
+    return( ORL_NULL_HANDLE );
 }
 
 const char * ORLENTRY ORLSecGetName( orl_sec_handle orl_sec_hnd )
@@ -489,7 +489,7 @@ orl_sec_handle ORLENTRY ORLSecGetStringTable( orl_sec_handle orl_sec_hnd )
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
-    return( NULL );
+    return( ORL_NULL_HANDLE );
 }
 
 orl_sec_handle ORLENTRY ORLSecGetSymbolTable( orl_sec_handle orl_sec_hnd )
@@ -504,7 +504,7 @@ orl_sec_handle ORLENTRY ORLSecGetSymbolTable( orl_sec_handle orl_sec_hnd )
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
-    return( NULL );
+    return( ORL_NULL_HANDLE );
 }
 
 orl_sec_handle ORLENTRY ORLSecGetRelocTable( orl_sec_handle orl_sec_hnd )
@@ -519,7 +519,7 @@ orl_sec_handle ORLENTRY ORLSecGetRelocTable( orl_sec_handle orl_sec_hnd )
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
-    return( NULL );
+    return( ORL_NULL_HANDLE );
 }
 
 orl_linnum * ORLENTRY ORLSecGetLines( orl_sec_handle orl_sec_hnd )
@@ -589,7 +589,7 @@ orl_sec_handle ORLENTRY ORLSecGetAssociated( orl_sec_handle orl_sec_hnd )
     if( ORLI_SEC_HND->type == ORL_OMF ) {
         return( OmfSecGetAssociated( (omf_sec_handle)orl_sec_hnd ) );
     }
-    return( NULL );
+    return( ORL_NULL_HANDLE );
 }
 
 orl_group_handle ORLENTRY ORLSecGetGroup( orl_sec_handle orl_sec_hnd )
@@ -675,7 +675,7 @@ orl_sec_handle ORLENTRY ORLCvtIdxToSecHdl( orl_file_handle orl_file_hnd, orl_tab
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
-    return( NULL );
+    return( ORL_NULL_HANDLE );
 }
 
 orl_return ORLENTRY ORLRelocSecScan( orl_sec_handle orl_sec_hnd, orl_reloc_return_func return_func )
@@ -820,7 +820,7 @@ orl_sec_handle ORLENTRY ORLSymbolGetSecHandle( orl_symbol_handle orl_symbol_hnd 
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
-    return( NULL );
+    return( ORL_NULL_HANDLE );
 }
 
 orl_symbol_handle ORLENTRY ORLSymbolGetAssociated( orl_symbol_handle orl_symbol_hnd )
