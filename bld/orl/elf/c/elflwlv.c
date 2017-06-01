@@ -234,7 +234,7 @@ orl_return ElfBuildSecNameHashTable( elf_file_handle elf_file_hnd )
         return( ORL_OUT_OF_MEMORY );
     }
     for( loop = 0; loop < elf_file_hnd->num_sections; loop++ ) {
-        return_val = ORLHashTableInsert( elf_file_hnd->sec_name_hash_table, elf_file_hnd->elf_sec_hnd[loop]->name, elf_file_hnd->elf_sec_hnd[loop] );
+        return_val = ORLHashTableInsert( elf_file_hnd->sec_name_hash_table, elf_file_hnd->sec_handles[loop]->name, elf_file_hnd->sec_handles[loop] );
         if( return_val != ORL_OKAY ) {
             return( return_val );
         }

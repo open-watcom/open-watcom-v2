@@ -389,11 +389,9 @@ const char * COFFENTRY CoffSymbolGetName( coff_symbol_handle coff_symbol_hnd )
     return( coff_symbol_hnd->name );
 }
 
-orl_return COFFENTRY CoffSymbolGetValue( coff_symbol_handle coff_symbol_hnd, orl_symbol_value *val )
+coff_symbol_value COFFENTRY CoffSymbolGetValue( coff_symbol_handle coff_symbol_hnd )
 {
-    val->u._32[I64LO32] = coff_symbol_hnd->symbol->value;
-    val->u._32[I64HI32] = 0;
-    return( ORL_OKAY );
+    return( coff_symbol_hnd->symbol->value );
 }
 
 orl_symbol_binding COFFENTRY CoffSymbolGetBinding( coff_symbol_handle coff_symbol_hnd )

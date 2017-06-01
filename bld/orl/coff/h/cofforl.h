@@ -71,7 +71,7 @@ orl_return              COFFENTRY CoffSymbolSecScan( coff_sec_handle, orl_symbol
 orl_return              COFFENTRY CoffNoteSecScan( coff_sec_handle, orl_note_callbacks *, void * );
 
 const char              * COFFENTRY CoffSymbolGetName( coff_symbol_handle );
-orl_return              COFFENTRY CoffSymbolGetValue( coff_symbol_handle, orl_symbol_value * );
+coff_symbol_value       COFFENTRY CoffSymbolGetValue( coff_symbol_handle );
 orl_symbol_binding      COFFENTRY CoffSymbolGetBinding( coff_symbol_handle );
 orl_symbol_type         COFFENTRY CoffSymbolGetType( coff_symbol_handle );
 coff_sec_handle         COFFENTRY CoffSymbolGetSecHandle( coff_symbol_handle );
