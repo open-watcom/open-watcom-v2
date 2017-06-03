@@ -416,6 +416,6 @@ coff_symbol_handle COFFENTRY CoffSymbolGetAssociated( coff_symbol_handle hnd )
     coff_sym_weak   *weak;
 
     weak = (coff_sym_weak *)( hnd->symbol + 1 );
-    return( &hnd->coff_file_hnd->symbol_handles[weak->tag_index] );
+    return( hnd->coff_file_hnd->symbol_handles + weak->tag_index );
 }
 

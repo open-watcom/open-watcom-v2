@@ -85,7 +85,7 @@ static orl_return PrintSymbolInfo( orl_symbol_handle symbol )
 {
     orl_symbol_type                     type;
     const char                          *name;
-    orl_sec_handle                      sec;
+    orl_sec_handle                      section;
     unsigned_64                         val64;
 
     name = ORLSymbolGetName( symbol );
@@ -142,9 +142,9 @@ static orl_return PrintSymbolInfo( orl_symbol_handle symbol )
     } else {
         printf( "none" );
     }
-    sec = ORLSymbolGetSecHandle( symbol );
-    if( sec != ORL_NULL_HANDLE ) {
-        printf( " (in '%s')", ORLSecGetName( sec ) );
+    section = ORLSymbolGetSecHandle( symbol );
+    if( section != ORL_NULL_HANDLE ) {
+        printf( " (in '%s')", ORLSecGetName( section ) );
     }
     printf( "\n" );
     return( ORL_OKAY );
@@ -219,8 +219,8 @@ static orl_return PrintRelocInfo( orl_reloc *reloc )
     return( ORL_OKAY );
 }
 
-static orl_return PrintSecInfo( orl_sec_handle o_shnd )
-/*****************************************************/
+static orl_return PrintSecInfo( orl_sec_handle section )
+/******************************************************/
 {
     const char                  *buf;
     int                         loop;
@@ -238,16 +238,16 @@ static orl_return PrintSecInfo( orl_sec_handle o_shnd )
     sectionFound = true;
     segname_printed = false;
     if( dump.sections || dump.sec_contents ) {
-        buf = ORLSecGetName( o_shnd );
+        buf = ORLSecGetName( section );
         printf( "[%s]\n", buf );
         segname_printed = true;
-        size = ORLSecGetSize( o_shnd );
+        size = ORLSecGetSize( section );
     }
     if( dump.sections ) {
-        //printf( "\nSection Handle:\t0x%x\n", o_shnd );
+        //printf( "\nSection Handle:\t0x%x\n", section );
         printf( "Size=%8.8x ", size );
-        sec_type = ORLSecGetType( o_shnd );
-        printf( "Align=%4.4x ", ORLSecGetAlignment( o_shnd ) );
+        sec_type = ORLSecGetType( section );
+        printf( "Align=%4.4x ", ORLSecGetAlignment( section ) );
         //printf( "Section Type:\t%d\n", sec_type );
         printf( "(" );
         switch( sec_type ) {
@@ -289,7 +289,7 @@ static orl_return PrintSecInfo( orl_sec_handle o_shnd )
             break;
         }
         printf( ") " );
-        sec_flags = ORLSecGetFlags( o_shnd );
+        sec_flags = ORLSecGetFlags( section );
         printf( "ORL_flags=0x%x\n", sec_flags );
         sep = 0;
         if( sec_flags )
@@ -373,7 +373,7 @@ static orl_return PrintSecInfo( orl_sec_handle o_shnd )
         }
     }
     if( dump.sec_contents ) {
-        if( ORLSecGetContents( o_shnd, (unsigned_8 **)&buf ) == ORL_OKAY ) {
+        if( ORLSecGetContents( section, (unsigned_8 **)&buf ) == ORL_OKAY ) {
             printf( "Contents:\n" );
             for( loop = 0; loop < size; loop += 16 ) {
                 printf( "0x%8.8x: ", loop );
@@ -403,19 +403,19 @@ static orl_return PrintSecInfo( orl_sec_handle o_shnd )
         }
     }
     if( dump.relocs ) {
-        reloc_section = ORLSecGetRelocTable( o_shnd );
-        if( reloc_section ) {
+        reloc_section = ORLSecGetRelocTable( section );
+        if( reloc_section != ORL_NULL_HANDLE ) {
             if( !segname_printed ) {
-                buf = ORLSecGetName( o_shnd );
+                buf = ORLSecGetName( section );
                 printf( "[%s]\n", buf );
                 segname_printed = true;
             }
             printf( "Relocs in [%s], ", ORLSecGetName( reloc_section ) );
             symbol_table = ORLSecGetSymbolTable( reloc_section );
-            if( symbol_table ) {
+            if( symbol_table != ORL_NULL_HANDLE ) {
                 printf( "symtab='%s', ", ORLSecGetName( symbol_table ) );
                 string_table = ORLSecGetStringTable( symbol_table );
-                if( string_table ) {
+                if( string_table != ORL_NULL_HANDLE ) {
                     printf( "strtab='%s'.\n", ORLSecGetName( string_table ) );
                 } else {
                     printf( "strtab=none.\n" );
@@ -430,13 +430,13 @@ static orl_return PrintSecInfo( orl_sec_handle o_shnd )
     return( ORL_OKAY );
 }
 
-static orl_return PrintSymTable( orl_sec_handle orl_sec_hnd )
-/***********************************************************/
+static orl_return PrintSymTable( orl_sec_handle section )
+/*******************************************************/
 {
     if( dump.symbols ) {
         printf( "\nSymbol table\n" );
         printf( "~~~~~~~~~~~~\n" );
-        ORLSymbolSecScan( orl_sec_hnd, PrintSymbolInfo );
+        ORLSymbolSecScan( section, PrintSymbolInfo );
     }
     return( ORL_OKAY );
 }
@@ -477,13 +477,13 @@ static void freeBuffList( void )
 int main( int argc, char *argv[] )
 /********************************/
 {
-    orl_handle                  o_hnd;
-    orl_file_handle             o_fhnd;
+    orl_handle                  o_handle;
+    orl_file_handle             o_file_handle;
+    orl_file_flags              o_file_flags;
+    orl_machine_type            o_machine_type;
+    orl_file_type               o_file_type;
+    orl_file_format             o_file_format;
     int                         file;
-    orl_file_flags              file_flags;
-    orl_machine_type            machine_type;
-    orl_file_type               file_type;
-    orl_file_format             type;
     int                         c;
     int                         sep;
     char                        *secs[MAX_SECS];
@@ -545,17 +545,17 @@ int main( int argc, char *argv[] )
         return( 2 );
     }
     TRMemOpen();
-    o_hnd = ORLInit( &orl_cli_funcs );
-    if( o_hnd == NULL ) {
+    o_handle = ORLInit( &orl_cli_funcs );
+    if( o_handle == NULL ) {
         printf( "Got NULL orl_handle.\n" );
         return( 2 );
     }
-    type = ORLFileIdentify( o_hnd, ORL_PH2FID( file ) );
-    if( type == ORL_UNRECOGNIZED_FORMAT ) {
+    o_file_format = ORLFileIdentify( o_handle, ORL_PH2FID( file ) );
+    if( o_file_format == ORL_UNRECOGNIZED_FORMAT ) {
         printf( "The object file is not in either ELF, COFF or OMF format." );
         return( 1 );
     }
-    switch( type ) {
+    switch( o_file_format ) {
     case ORL_ELF:
         printf( "ELF" );
         break;
@@ -570,24 +570,24 @@ int main( int argc, char *argv[] )
         break;
     }
     printf( " object file.\n" );
-    o_fhnd = ORLFileInit( o_hnd, ORL_PH2FID( file ), type );
-    if( o_fhnd == NULL ) {
+    o_file_handle = ORLFileInit( o_handle, ORL_PH2FID( file ), o_file_format );
+    if( o_file_handle == NULL ) {
         printf( "Got NULL orl_file_handle.\n" );
         return( 2 );
     }
     if( dump.header ) {
         printf( "File %s:\n", argv[optind] );
-        machine_type = ORLFileGetMachineType( o_fhnd );
+        o_machine_type = ORLFileGetMachineType( o_file_handle );
         printf( "Machine Type: " );
-        if( machine_type >= ( sizeof( machType ) / sizeof( *machType ) ) ) {
+        if( o_machine_type >= ( sizeof( machType ) / sizeof( *machType ) ) ) {
             // We've probably added some new types?
-            printf( "?(%d)", machine_type );
+            printf( "?(%d)", o_machine_type );
         } else {
-            printf( "%s", machType[ machine_type ] );
+            printf( "%s", machType[o_machine_type] );
         }
-        file_type = ORLFileGetType( o_fhnd );
+        o_file_type = ORLFileGetType( o_file_handle );
         printf( " (" );
-        switch( file_type ) {
+        switch( o_file_type ) {
         case ORL_FILE_TYPE_NONE:
             printf( "file_type_none" );
             break;
@@ -608,54 +608,54 @@ int main( int argc, char *argv[] )
             break;
         }
         printf( ")\n" );
-        file_flags = ORLFileGetFlags( o_fhnd );
-        //printf(" File flags=0x%x\n", file_flags );
+        o_file_flags = ORLFileGetFlags( o_file_handle );
+        //printf(" File flags=0x%x\n", o_file_flags );
         sep = 0;
-        if( file_flags & ORL_FILE_FLAG_LINE_NUMS_STRIPPED ) {
+        if( o_file_flags & ORL_FILE_FLAG_LINE_NUMS_STRIPPED ) {
             printf( "line number info stripped" );
             sep++;
         }
-        if( file_flags & ORL_FILE_FLAG_RELOCS_STRIPPED ) {
+        if( o_file_flags & ORL_FILE_FLAG_RELOCS_STRIPPED ) {
             if( sep++ )
                 printf( ", " );
             printf( "relocs stripped" );
         }
-        if( file_flags & ORL_FILE_FLAG_LOCAL_SYMS_STRIPPED ) {
+        if( o_file_flags & ORL_FILE_FLAG_LOCAL_SYMS_STRIPPED ) {
             if( sep++ )
                 printf( ", " );
             printf( "local symbols stripped" );
         }
-        if( file_flags & ORL_FILE_FLAG_DEBUG_STRIPPED ) {
+        if( o_file_flags & ORL_FILE_FLAG_DEBUG_STRIPPED ) {
             if( sep++ )
                 printf( ", " );
             printf( "debug info stripped" );
         }
-        if( file_flags & ORL_FILE_FLAG_16BIT_MACHINE ) {
+        if( o_file_flags & ORL_FILE_FLAG_16BIT_MACHINE ) {
             if( sep++ )
                 printf( ", " );
             printf( "for 16-bit machine" );
         }
-        if( file_flags & ORL_FILE_FLAG_32BIT_MACHINE ) {
+        if( o_file_flags & ORL_FILE_FLAG_32BIT_MACHINE ) {
             if( sep++ )
                 printf( ", " );
             printf( "for 32-bit machine" );
         }
-        if( file_flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
+        if( o_file_flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
             if( sep++ )
                 printf( ", " );
             printf( "for 64-bit machine" );
         }
-        if( file_flags & ORL_FILE_FLAG_LITTLE_ENDIAN ) {
+        if( o_file_flags & ORL_FILE_FLAG_LITTLE_ENDIAN ) {
             if( sep++ )
                 printf( ", " );
             printf( "little-endian byte order" );
         }
-        if( file_flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
+        if( o_file_flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
             if( sep++ )
                 printf( ", " );
             printf( "big-endian byte order" );
         }
-        if( file_flags & ORL_FILE_FLAG_SYSTEM ) {
+        if( o_file_flags & ORL_FILE_FLAG_SYSTEM ) {
             if( sep++ )
                 printf( ", " );
             printf( "system file" );
@@ -667,7 +667,7 @@ int main( int argc, char *argv[] )
     if( num_secs ) {
         for( c = 0; c < num_secs; c++ ) {
             sectionFound = false;
-            if( ORLFileScan( o_fhnd, secs[c], PrintSecInfo ) != ORL_OKAY ) {
+            if( ORLFileScan( o_file_handle, secs[c], PrintSecInfo ) != ORL_OKAY ) {
                 printf( "Error occured in scanning section '%s'.\n", secs[c] );
             }
             if( !sectionFound ) {
@@ -675,16 +675,16 @@ int main( int argc, char *argv[] )
             }
         }
     } else {
-        if( ORLFileScan( o_fhnd, NULL, PrintSecInfo ) != ORL_OKAY ) {
+        if( ORLFileScan( o_file_handle, NULL, PrintSecInfo ) != ORL_OKAY ) {
             printf( "Error occured in scanning file.\n" );
             return( 2 );
         }
     }
-    if( ORLFileScan( o_fhnd, ".symtab", PrintSymTable ) != ORL_OKAY ) {
+    if( ORLFileScan( o_file_handle, ".symtab", PrintSymTable ) != ORL_OKAY ) {
         printf( "Error occured in scanning file for symbol table\n" );
         return( 2 );
     }
-    if( ORLFileFini( o_fhnd ) != ORL_OKAY ) {
+    if( ORLFileFini( o_file_handle ) != ORL_OKAY ) {
         printf( "Error calling ORLFileFini.\n" );
         return( 2 );
     }
@@ -692,7 +692,7 @@ int main( int argc, char *argv[] )
         printf( "Error closing file.\n" );
         return( 2 );
     }
-    if( ORLFini( o_hnd ) != ORL_OKAY ) {
+    if( ORLFini( o_handle ) != ORL_OKAY ) {
         printf( "Error calling ORLFini.\n" );
     }
     freeBuffList();
