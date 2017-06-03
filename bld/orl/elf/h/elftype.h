@@ -39,19 +39,22 @@
 
 // handle definitions
 
-typedef uint_8          elf_file_flags;
-typedef uint_32         elf_file_index;
-typedef uint_32         elf_headers_size;
+typedef unsigned_8                      elf_file_flags;
+typedef unsigned_32                     elf_file_index;
+typedef unsigned_32                     elf_headers_size;
 
-typedef uint_32         elf_sec_flags;
-typedef uint_32         elf_sec_size;
-typedef uint_32         elf_sec_offset;
+typedef unsigned_32                     elf_sec_flags;
+typedef unsigned_32                     elf_sec_size;
+typedef unsigned_32                     elf_sec_offset;
 
-typedef uint_16         elf_reloc_type;
+typedef unsigned_64                     elf_symbol_value;
+typedef unsigned_64                     elf_sec_base;
 
-typedef int_32          elf_quantity;
+typedef unsigned_16                     elf_reloc_type;
 
-typedef uint_32         elf_index;
+typedef unsigned_32                     elf_quantity;
+
+typedef unsigned_32                     elf_index;
 
 typedef struct elf_handle_struct        elf_handle_struct;
 typedef elf_handle_struct               *elf_handle;
@@ -76,9 +79,9 @@ struct elf_file_handle_struct {
     elf_sec_handle      *sec_handles;
     elf_sec_handle      *orig_sec_handles;
     orl_file_id         file;
-    unsigned char       *contents_buffer1;
-    unsigned char       *contents_buffer2;
-    uint16_t            shentsize;
+    unsigned_8          *contents_buffer1;
+    unsigned_8          *contents_buffer2;
+    unsigned_16         shentsize;
     orl_machine_type    machine_type;
     orl_file_type       type;
     orl_file_size       size;
@@ -122,16 +125,16 @@ struct elf_sec_handle_struct {
     elf_file_handle     elf_file_hnd;
     elf_sec_handle      next;
     char                *name;
-    orl_sec_size        size;
+    elf_sec_size        size;
     orl_file_offset     offset;
     orl_sec_type        type;
     orl_sec_flags       flags;
     orl_sec_alignment   alignment;
-    unsigned char       *contents;
-    orl_sec_base        base;
+    unsigned_8          *contents;
+    elf_sec_base        base;
     orl_table_index     index;
 //    elf_quantity        index;
-    orl_sec_size        entsize;
+    elf_sec_size        entsize;
     // assoc - things associated with the section
     union {
         struct elf_normal_assoc_struct  normal;
@@ -148,9 +151,9 @@ struct elf_symbol_handle_struct {
     orl_symbol_binding  binding;
     orl_symbol_type     type;
     char                *name;
-    orl_symbol_value    value;
-    uint16_t            shndx;
-    uint8_t             info;
+    elf_symbol_value    value;
+    unsigned_16         shndx;
+    unsigned_8          info;
 };
 
 #endif
