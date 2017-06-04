@@ -41,7 +41,7 @@ orl_return              OMFENTRY OmfFini( omf_handle );
 
 orl_return              OMFENTRY OmfFileInit( omf_handle, orl_file_id, omf_file_handle * );
 orl_return              OMFENTRY OmfFileFini( omf_file_handle );
-orl_return              OMFENTRY OmfFileScan( omf_file_handle, const char *, orl_sec_return_func );
+orl_return              OMFENTRY OmfFileScan( omf_file_handle, orl_hash_key, orl_sec_return_func );
 orl_machine_type        OMFENTRY OmfFileGetMachineType( omf_file_handle );
 orl_file_flags          OMFENTRY OmfFileGetFlags( omf_file_handle );
 orl_file_type           OMFENTRY OmfFileGetType( omf_file_handle );

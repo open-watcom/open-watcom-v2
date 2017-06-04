@@ -201,7 +201,7 @@ orl_return CoffBuildSecNameHashTable( coff_file_handle coff_file_hnd )
         return( ORL_OUT_OF_MEMORY );
     }
     for( loop = 0; loop < coff_file_hnd->num_sections; loop++ ) {
-        return_val = ORLHashTableInsert( coff_file_hnd->sec_name_hash_table, coff_file_hnd->coff_sec_hnd[loop]->name, coff_file_hnd->coff_sec_hnd[loop] );
+        return_val = ORLHashTableInsert( coff_file_hnd->sec_name_hash_table, (orl_hash_key)coff_file_hnd->coff_sec_hnd[loop]->name, coff_file_hnd->coff_sec_hnd[loop] );
         if( return_val != ORL_OKAY ) {
             return( return_val );
         }
