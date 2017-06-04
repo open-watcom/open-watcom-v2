@@ -90,8 +90,7 @@ orl_return ORLHashTableInsert( orl_hash_table hash_table, orl_hash_data key, orl
         hash_value = orlHash( hash_table, orlNumberEncode( key ) );
         break;
     }
-    hash_ptr = hash_table->table[hash_value];
-    while( hash_ptr != NULL ) {
+    for( hash_ptr = hash_table->table[hash_value]; hash_ptr != NULL; hash_ptr = hash_ptr->next ) {
         if( _HashCompare( hash_table, hash_ptr->key, key ) ) {
             last = hash_ptr->data_struct;
             while( last->next ) {
@@ -100,7 +99,6 @@ orl_return ORLHashTableInsert( orl_hash_table hash_table, orl_hash_data key, orl
             last->next = new_data_element;
             return( ORL_OKAY );
         }
-        hash_ptr = hash_ptr->next;
     }
     new_element = (orl_hash_struct *)_HashAlloc( hash_table, sizeof( orl_hash_struct ) );
     if( new_element == NULL )
@@ -160,22 +158,18 @@ void ORLHashTableFree( orl_hash_table hash_table )
 {
     unsigned                    loop;
     orl_hash_struct             *hash_ptr;
-    orl_hash_struct             *last_hash_ptr;
+    orl_hash_struct             *next_hash_ptr;
     orl_hash_data_struct        *data_ptr;
-    orl_hash_data_struct        *last_data_ptr;
+    orl_hash_data_struct        *next_data_ptr;
 
     for( loop = 0; loop < hash_table->size; loop++ ) {
-        hash_ptr = hash_table->table[loop];
-        while( hash_ptr != NULL ) {
-            data_ptr = hash_ptr->data_struct;
-            while( data_ptr != NULL ) {
-                last_data_ptr = data_ptr;
-                data_ptr = data_ptr->next;
-                _HashFree( hash_table, last_data_ptr );
+        for( hash_ptr = hash_table->table[loop]; hash_ptr != NULL; hash_ptr = next_hash_ptr ) {
+            next_hash_ptr = hash_ptr->next;
+            for( data_ptr = hash_ptr->data_struct; data_ptr != NULL; data_ptr = next_data_ptr ) {
+                next_data_ptr = data_ptr->next;
+                _HashFree( hash_table, data_ptr );
             }
-            last_hash_ptr = hash_ptr;
-            hash_ptr = hash_ptr->next;
-            _HashFree( hash_table, last_hash_ptr );
+            _HashFree( hash_table, hash_ptr );
         }
     }
     _HashFree( hash_table, hash_table->table );
