@@ -123,7 +123,7 @@ static const omf_symbol_handle_struct *findExtDefSym( omf_file_handle ofh, omf_i
 {
     omf_sec_handle                  sh;
     omf_string_struct               *extname;
-    orl_hash_data_struct            *hd;
+    orl_hash_data_struct            *data_entry;
     const omf_symbol_handle_struct  *sym;
 
     assert( ofh );
@@ -138,8 +138,8 @@ static const omf_symbol_handle_struct *findExtDefSym( omf_file_handle ofh, omf_i
     if( extname == NULL )
         return( NULL );
 
-    for( hd = ORLHashTableQuery( ofh->symbol_table->assoc.sym.hash_tab, (orl_hash_key)extname->string ); hd != NULL; hd = hd->next ) {
-        sym = hd->data;
+    for( data_entry = ORLHashTableQuery( ofh->symbol_table->assoc.sym.hash_tab, (orl_hash_key)extname->string ); data_entry != NULL; data_entry = data_entry->next ) {
+        sym = data_entry->data;
         if( sym != NULL ) {
             if( sym->typ & ( ORL_SYM_TYPE_UNDEFINED | ORL_SYM_TYPE_COMMON ) ) {
                 return( sym );
@@ -398,7 +398,7 @@ static orl_return       addToSymbolTable( omf_file_handle ofh, omf_symbol_handle
             return( ORL_OUT_OF_MEMORY );
         ofh->symbol_table = sh;
         sh->flags |= ORL_SEC_FLAG_REMOVE;
-        sh->assoc.sym.hash_tab = ORLHashTableCreate( ofh->omf_hnd->funcs, STD_HASH_TABLE_SIZE, ORL_HASH_STRING, (orl_hash_comparison_func)stricmp );
+        sh->assoc.sym.hash_tab = ORLHashTableCreate( ofh->omf_hnd->funcs, STD_HASH_TABLE_SIZE, ORL_HASH_STRING_IGNORECASE );
         if( sh->assoc.sym.hash_tab == NULL ) {
             return( ORL_OUT_OF_MEMORY );
         }

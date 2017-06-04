@@ -90,7 +90,7 @@ orl_return COFFENTRY CoffFileFini( coff_file_handle coff_file_hnd )
 
 orl_return COFFENTRY CoffFileScan( coff_file_handle coff_file_hnd, orl_hash_key desired, orl_sec_return_func return_func )
 {
-    orl_hash_data_struct    *data_struct;
+    orl_hash_data_struct    *data_entry;
     unsigned                loop;
     orl_return              return_val;
 
@@ -109,8 +109,8 @@ orl_return COFFENTRY CoffFileScan( coff_file_handle coff_file_hnd, orl_hash_key 
                 return( return_val );
             }
         }
-        for( data_struct = ORLHashTableQuery( coff_file_hnd->sec_name_hash_table, desired ); data_struct != NULL; data_struct = data_struct->next ) {
-            return_val = return_func( (orl_sec_handle)data_struct->data );
+        for( data_entry = ORLHashTableQuery( coff_file_hnd->sec_name_hash_table, desired ); data_entry != NULL; data_entry = data_entry->next ) {
+            return_val = return_func( (orl_sec_handle)data_entry->data );
             if( return_val != ORL_OKAY ) {
                 return( return_val );
             }

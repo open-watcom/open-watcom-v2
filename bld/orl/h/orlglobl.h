@@ -49,7 +49,7 @@
 
 #define ORL_NIL_HANDLE          ((orl_file_id)NULL)
 
-#define ORL_NULL_HANDLE         ((orl_sec_handle)NULL)
+#define ORL_NULL_HANDLE         NULL
 
 typedef void                    *orl_file_id;
 
