@@ -109,7 +109,7 @@ orl_return OMFENTRY OmfFileFini( omf_file_handle ofh )
 
 orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, orl_hash_key desired, orl_sec_return_func return_func )
 {
-    orl_hash_data_struct                *ds;
+    orl_hash_data_struct                *data_entry;
     omf_sec_handle                      sh;
     const omf_symbol_handle_struct      *sym;
     orl_return                          return_val;
@@ -131,8 +131,8 @@ orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, orl_hash_key desired, orl_
         }
     } else if( ofh->symbol_table != NULL ) {
         assert( ofh->symbol_table->assoc.sym.hash_tab );
-        for( ds = ORLHashTableQuery( ofh->symbol_table->assoc.sym.hash_tab, desired ); ds != NULL; ds = ds->next ) {
-            sym = ds->data;
+        for( data_entry = ORLHashTableQuery( ofh->symbol_table->assoc.sym.hash_tab, desired ); data_entry != NULL; data_entry = data_entry->next ) {
+            sym = data_entry->data;
             if( ( sym->typ == ORL_SYM_TYPE_SECTION ) && (sym->flags & OMF_SYM_FLAGS_GRPDEF) == 0 ) {
                 return_val = return_func( (orl_sec_handle)sym->section );
                 if( return_val != ORL_OKAY ) {

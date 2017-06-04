@@ -40,12 +40,12 @@ typedef enum {
 } orl_hash_table_type;
 
 typedef uint_32     orl_hash_value;
-typedef uint_32     orl_hash_table_size;
 typedef const void  *orl_hash_data;
 typedef const void  *orl_hash_key;
 
-typedef struct orl_hash_data_struct orl_hash_data_struct;
-typedef struct orl_hash_key_struct  orl_hash_key_struct;
+typedef struct orl_hash_data_struct     orl_hash_data_struct;
+typedef struct orl_hash_key_struct      orl_hash_key_struct;
+typedef struct orl_hash_table_struct    orl_hash_table_struct;
 
 struct orl_hash_data_struct {
     orl_hash_data               data;
@@ -58,17 +58,15 @@ struct orl_hash_key_struct {
     orl_hash_key_struct         *next;
 };
 
-typedef int         (*orl_hash_comparison_func)( orl_hash_key, orl_hash_key );
-
 struct orl_hash_table_struct {
     orl_hash_table_type         type;
-    orl_hash_table_size         size;
+    orl_hash_value              size;
     orl_funcs                   *funcs;
-    orl_hash_comparison_func    compare;
+    bool                        (*compare_func)( orl_hash_key, orl_hash_key );
+    orl_hash_value              (*hash_func)( orl_hash_value, orl_hash_key );
     orl_hash_key_struct         **table;
 };
 
-typedef struct orl_hash_table_struct    orl_hash_table_struct;
-typedef orl_hash_table_struct           *orl_hash_table;
+typedef orl_hash_table_struct   *orl_hash_table;
 
 #endif
