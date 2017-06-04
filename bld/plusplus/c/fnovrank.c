@@ -1326,27 +1326,30 @@ static void rankArithEnumToArith(   // RANK: Arith, Enum --> Arith
     }
 }
 
-
+//TODO: fix nullptr values
 static uint_8 rkdTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //      source operand
 //      --------------
-//         a           c           m       g
-//         r   e       l   f   v           e
-//     e   i   n   p   a   u   o   p   .   n
-//     r   t   u   t   s   n   i   t   .   e
-//     r   h   m   r   s   c   d   r   .   r
+//                                             n
+//                                             u
+//         a           c           m       g   l
+//         r   e       l   f   v           e   l
+//     e   i   n   p   a   u   o   p   .   n   p
+//     r   t   u   t   s   n   i   t   .   e   t
+//     r   h   m   r   s   c   d   r   .   r   r
 //                                               target operand
 //                                               --------------
-    {  1,  1,  1,  1,  1,  1,  1,  1,  1,  1  // error
-    ,  1, 10, 10, 14, 12,  1,  1,  0,  2,  0  // arithmetic
-    ,  1,  1,  3,  1, 18,  1,  1,  1,  2,  0  // enumeration
-    ,  1,  7,  7,  8, 17,  5,  1, 19,  2, 19  // pointer
-    ,  1, 16, 16, 15, 11, 16,  1, 15,  2, 15  // class
-    ,  1,  1,  1,  6, 18,  4,  1,  0,  2,  0  // function
-    ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1  // void
-    ,  1,  7,  7,  1, 17, 19,  1,  9,  2, 19  // member pointer
-    ,  1,  2,  2,  2,  2,  2,  1,  2,  3,  2  // ellipsis
-    ,  1,  0,  0,  0, 18,  0,  1,  0,  2,  0  // generic
+    {  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  0  // error
+    ,  1, 10, 10, 14, 12,  1,  1,  0,  2,  0,  0  // arithmetic
+    ,  1,  1,  3,  1, 18,  1,  1,  1,  2,  0,  0  // enumeration
+    ,  1,  7,  7,  8, 17,  5,  1, 19,  2, 19,  0  // pointer
+    ,  1, 16, 16, 15, 11, 16,  1, 15,  2, 15,  0  // class
+    ,  1,  1,  1,  6, 18,  4,  1,  0,  2,  0,  0  // function
+    ,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  0  // void
+    ,  1,  7,  7,  1, 17, 19,  1,  9,  2, 19,  0  // member pointer
+    ,  1,  2,  2,  2,  2,  2,  1,  2,  3,  2,  0  // ellipsis
+    ,  1,  0,  0,  0, 18,  0,  1,  0,  2,  0,  0  // generic
+    ,  1,  0,  0,  0, 18,  0,  1,  0,  2,  0,  0  // nullptr
     };
 
 #if 0

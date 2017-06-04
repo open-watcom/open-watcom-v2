@@ -2005,27 +2005,31 @@ static void allocClassDestination//ALLOCATE DESTINATION WHEN CLASS
     }
 }
 
-
+//TODO: fix nullptr values
 static uint_8 constTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //      source operand
 //      --------------
-//         a           c           m       g
-//         r   e       l   f   v           e
-//     e   i   n   p   a   u   o   p   .   n
-//     r   t   u   t   s   n   i   t   .   e
-//     r   h   m   r   s   c   d   r   .   r
+//                                             n
+//                                             u
+//         a           c           m       g   l
+//         r   e       l   f   v           e   l
+//     e   i   n   p   a   u   o   p   .   n   p
+//     r   t   u   t   s   n   i   t   .   e   t
+//     r   h   m   r   s   c   d   r   .   r   r
+
 //                                               target operand
 //                                               --------------
-    {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0  // error
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0  // arithmetic
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0  // enumeration
-    ,  1,  3,  3,  5,  3,  3,  3,  3,  0,  0  // pointer
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0  // class
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0  // function
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0  // void
-    ,  1,  4,  4,  4,  4,  4,  4,  6,  0,  0  // member pointer
-    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0  // ellipsis
-    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0  // generic
+    {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  0  // error
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // arithmetic
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // enumeration
+    ,  1,  3,  3,  5,  3,  3,  3,  3,  0,  0,  0  // pointer
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // class
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // function
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // void
+    ,  1,  4,  4,  4,  4,  4,  4,  6,  0,  0,  0  // member pointer
+    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // ellipsis
+    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // generic
+    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // nullptr
     };
 
 //  0 - impossible
@@ -2097,27 +2101,30 @@ PTREE CastConst                 // CONST_CASTE< TYPE >( EXPR )
     return doCastResult( &ctl, result );
 }
 
-
+//TODO: fix nullptr values
 static uint_8 reintTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //      source operand
 //      --------------
-//         a           c           m       g
-//         r   e       l   f   v           e
-//     e   i   n   p   a   u   o   p   .   n
-//     r   t   u   t   s   n   i   t   .   e
-//     r   h   m   r   s   c   d   r   .   r
+//                                             n
+//                                             u
+//         a           c           m       g   l
+//         r   e       l   f   v           e   l
+//     e   i   n   p   a   u   o   p   .   n   p
+//     r   t   u   t   s   n   i   t   .   e   t
+//     r   h   m   r   s   c   d   r   .   r   r
 //                                               target operand
 //                                               --------------
-    {  1,  1,  1,  1,  1,  1,  1,  1,  1,  1  // error
-    ,  1,  4,  4,  3,  4,  4,  4,  4,  0,  0  // arithmetic
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0  // enumeration
-    ,  1,  5,  7,  6,  7,  7,  7,  7,  0,  0  // pointer
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0  // class
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0  // function
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0  // void
-    ,  1,  9,  9,  9,  9,  9,  9,  8,  0,  0  // member pointer
-    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0  // ellipsis
-    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0  // generic
+    {  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1  // error
+    ,  1,  4,  4,  3,  4,  4,  4,  4,  0,  0,  0  // arithmetic
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // enumeration
+    ,  1,  5,  7,  6,  7,  7,  7,  7,  0,  0,  0  // pointer
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // class
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // function
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // void
+    ,  1,  9,  9,  9,  9,  9,  9,  8,  0,  0,  0  // member pointer
+    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // ellipsis
+    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // generic
+    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // generic
     };
 
 //  0 - impossible
@@ -2198,26 +2205,31 @@ PTREE CastReint                 // REINTERPRET_CASTE< TYPE >( EXPR )
     return doCastResult( &ctl, result );
 }
 
+
+//TODO: fix nullptr values
 static uint_8 staticTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //      source operand
 //      --------------
-//         a           c           m       g
-//         r   e       l   f   v           e
-//     e   i   n   p   a   u   o   p   .   n
-//     r   t   u   t   s   n   i   t   .   e
-//     r   h   m   r   s   c   d   r   .   r
+//                                             n
+//                                             u
+//         a           c           m       g   l
+//         r   e       l   f   v           e   l
+//     e   i   n   p   a   u   o   p   .   n   p
+//     r   t   u   t   s   n   i   t   .   e   t
+//     r   h   m   r   s   c   d   r   .   r   r
 //                                               target operand
 //                                               --------------
-    {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0  // error
-    ,  1,  4,  4,  3,  0,  3,  3,  3,  0,  0  // arithmetic
-    ,  1, 14,  4,  3,  0,  3,  3,  3,  0,  0  // enumeration
-    ,  1,  7,  7, 11,  0,  5,  3,  3,  0,  0  // pointer
-    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0  // class
-    ,  1,  2,  2,  2,  0,  2,  2,  2,  0,  0  // function
-    ,  1,  6,  6,  6,  0,  6,  6,  6,  0,  0  // void
-    ,  1, 10, 10,  3,  0,  3,  3, 13,  0,  0  // member pointer
-    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0  // ellipsis
-    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0  // generic
+    {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  0  // error
+    ,  1,  4,  4,  3,  0,  3,  3,  3,  0,  0,  0  // arithmetic
+    ,  1, 14,  4,  3,  0,  3,  3,  3,  0,  0,  0  // enumeration
+    ,  1,  7,  7, 11,  0,  5,  3,  3,  0,  0,  0  // pointer
+    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // class
+    ,  1,  2,  2,  2,  0,  2,  2,  2,  0,  0,  0  // function
+    ,  1,  6,  6,  6,  0,  6,  6,  6,  0,  0,  0  // void
+    ,  1, 10, 10,  3,  0,  3,  3, 13,  0,  0,  0  // member pointer
+    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // ellipsis
+    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // generic
+    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // nullptr
     };
 
 //  0 - impossible
@@ -2347,27 +2359,30 @@ PTREE CastStatic                // STATIC_CASTE< TYPE >( EXPR )
     return doCastResult( &ctl, result );
 }
 
-
+//TODO: fix nullptr values
 static uint_8 dynamicTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //      source operand
 //      --------------
-//         a           c           m       g
-//         r   e       l   f   v           e
-//     e   i   n   p   a   u   o   p   .   n
-//     r   t   u   t   s   n   i   t   .   e
-//     r   h   m   r   s   c   d   r   .   r
+//                                             n
+//                                             u
+//         a           c           m       g   l
+//         r   e       l   f   v           e   l
+//     e   i   n   p   a   u   o   p   .   n   p
+//     r   t   u   t   s   n   i   t   .   e   t
+//     r   h   m   r   s   c   d   r   .   r   r
 //                                               target operand
 //                                               --------------
-    {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0  // error
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0  // arithmetic
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0  // enumeration
-    ,  1,  3,  3,  4,  3,  3,  3,  3,  0,  0  // pointer
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0  // class
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0  // function
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0  // void
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0  // member pointer
-    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0  // ellipsis
-    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0  // generic
+    {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  0  // error
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // arithmetic
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // enumeration
+    ,  1,  3,  3,  4,  3,  3,  3,  3,  0,  0,  0  // pointer
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // class
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // function
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // void
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // member pointer
+    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // ellipsis
+    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // generic
+    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // nullptr
     };
 
 //  0 - impossible
@@ -2462,27 +2477,30 @@ PTREE CastDynamic               // DYNAMIC_CASTE< TYPE >( EXPR )
     return doCastResult( &ctl, result );
 }
 
-
+//TODO: fix nullptr values
 static uint_8 explicitTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //      source operand
 //      --------------
-//         a           c           m       g
-//         r   e       l   f   v           e
-//     e   i   n   p   a   u   o   p   .   n
-//     r   t   u   t   s   n   i   t   .   e
-//     r   h   m   r   s   c   d   r   .   r
+//                                             n
+//                                             u
+//         a           c           m       g   l
+//         r   e       l   f   v           e   l
+//     e   i   n   p   a   u   o   p   .   n   p
+//     r   t   u   t   s   n   i   t   .   e   t
+//     r   h   m   r   s   c   d   r   .   r   r
 //                                               target operand
 //                                               --------------
-    {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0  // error
-    ,  1, 11, 12,  4,  0,  0,  3,  3,  0,  0  // arithmetic
-    ,  1, 12, 12,  4,  0,  0,  3,  3,  0,  0  // enumeration
-    ,  1,  6,  7,  5,  0,  0,  3,  3,  0,  0  // pointer
-    ,  1,  0,  0,  0,  0,  0,  3,  0,  0,  0  // class
-    ,  1,  2,  2,  2,  0,  2,  2,  2,  0,  0  // function
-    ,  1, 13, 13, 13, 13,  0, 13, 13,  0,  0  // void
-    ,  1, 10, 10,  3,  0,  0,  3, 14,  0,  0  // member pointer
-    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0  // ellipsis
-    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0  // generic
+    {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  0  // error
+    ,  1, 11, 12,  4,  0,  0,  3,  3,  0,  0,  0  // arithmetic
+    ,  1, 12, 12,  4,  0,  0,  3,  3,  0,  0,  0  // enumeration
+    ,  1,  6,  7,  5,  0,  0,  3,  3,  0,  0,  0  // pointer
+    ,  1,  0,  0,  0,  0,  0,  3,  0,  0,  0,  0  // class
+    ,  1,  2,  2,  2,  0,  2,  2,  2,  0,  0,  0  // function
+    ,  1, 13, 13, 13, 13,  0, 13, 13,  0,  0,  0  // void
+    ,  1, 10, 10,  3,  0,  0,  3, 14,  0,  0,  0  // member pointer
+    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // ellipsis
+    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // generic
+    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // nullptr
     };
 
 //  0 - impossible
@@ -2615,13 +2633,13 @@ PTREE CastExplicit              // EXPLICIT CASTE: ( TYPE )( EXPR )
 static uint_8 implicitTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //      source operand
 //      --------------
-//         a           c           m       g   n
-//         r   e       l   f   v           e   u
-//     e   i   n   p   a   u   o   p   .   n   l
-//     r   t   u   t   s   n   i   t   .   e   l
-//     r   h   m   r   s   c   d   r   .   r   p
-//                                             t
-//                                             r
+//                                             n
+//                                             u
+//         a           c           m       g   l
+//         r   e       l   f   v           e   l
+//     e   i   n   p   a   u   o   p   .   n   p
+//     r   t   u   t   s   n   i   t   .   e   t
+//     r   h   m   r   s   c   d   r   .   r   r
 //                                               target operand
 //                                               --------------
     {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  0  // error
