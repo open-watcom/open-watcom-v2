@@ -107,7 +107,7 @@ orl_return OMFENTRY OmfFileFini( omf_file_handle ofh )
 }
 
 
-orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, const char *desired, orl_sec_return_func return_func )
+orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, orl_hash_key desired, orl_sec_return_func return_func )
 {
     orl_hash_data_struct                *ds;
     omf_sec_handle                      sh;

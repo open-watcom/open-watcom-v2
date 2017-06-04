@@ -88,7 +88,7 @@ orl_return COFFENTRY CoffFileFini( coff_file_handle coff_file_hnd )
     return( CoffRemoveFileLinks( coff_file_hnd ) );
 }
 
-orl_return COFFENTRY CoffFileScan( coff_file_handle coff_file_hnd, const char *desired, orl_sec_return_func return_func )
+orl_return COFFENTRY CoffFileScan( coff_file_handle coff_file_hnd, orl_hash_key desired, orl_sec_return_func return_func )
 {
     orl_hash_data_struct    *data_struct;
     unsigned                loop;

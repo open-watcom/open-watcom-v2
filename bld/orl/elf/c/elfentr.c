@@ -90,7 +90,7 @@ orl_return ELFENTRY ElfFileFini( elf_file_handle elf_file_hnd )
     return( ElfRemoveFileLinks( elf_file_hnd ) );
 }
 
-orl_return ELFENTRY ElfFileScan( elf_file_handle elf_file_hnd, const char *desired, orl_sec_return_func return_func )
+orl_return ELFENTRY ElfFileScan( elf_file_handle elf_file_hnd, orl_hash_key desired, orl_sec_return_func return_func )
 {
     orl_hash_data_struct    *data_struct;
     int                     loop;
