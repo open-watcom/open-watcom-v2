@@ -217,6 +217,7 @@ PTREE NodePruneTop(             // PRUNE TOP OPERAND NODE
           case PT_ERROR :
           case PT_STRING_CONSTANT :
           case PT_INT_CONSTANT :
+          case PT_PTR_CONSTANT :
           case PT_FLOATING_CONSTANT :
           case PT_TYPE :
           case PT_ID :
