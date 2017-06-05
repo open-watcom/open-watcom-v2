@@ -122,7 +122,7 @@ struct coff_sec_handle_struct {
     coff_file_handle    coff_file_hnd;
     coff_sec_handle     next;
     char                *name;
-    orl_sec_size        size;
+    coff_sec_size       size;
     coff_sec_offset     offset;
     orl_sec_type        type;
     orl_sec_flags       flags;
