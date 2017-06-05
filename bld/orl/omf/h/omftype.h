@@ -75,32 +75,32 @@ enum {
 
 // handle definitions
 
-typedef uint_8                          omf_file_flags;
-typedef uint_32                         omf_file_index;
-typedef uint_32                         omf_headers_size;
+typedef unsigned_8                      omf_file_flags;
+typedef unsigned_32                     omf_file_index;
+typedef unsigned_32                     omf_headers_size;
 
-typedef uint_32                         omf_sec_flags;
-typedef uint_32                         omf_sec_size;
-typedef uint_32                         omf_sec_offset;
-typedef int_32                          omf_sec_addend;
-typedef uint_32                         omf_sec_base;
+typedef unsigned_32                     omf_sec_flags;
+typedef unsigned_32                     omf_sec_size;
+typedef unsigned_32                     omf_sec_offset;
+typedef signed_32                       omf_sec_addend;
+typedef unsigned_32                     omf_sec_base;
 
-typedef uint_16                         omf_reloc_type;
+typedef unsigned_16                     omf_reloc_type;
 
-typedef uint_32                         omf_symbol_flags;
-typedef uint_32                         omf_symbol_value;
+typedef unsigned_32                     omf_symbol_flags;
+typedef unsigned_32                     omf_symbol_value;
 
-typedef uint_16                         omf_idx;
-typedef uint_16                         omf_frame;
+typedef unsigned_16                     omf_idx;
+typedef unsigned_16                     omf_frame;
 
-typedef int_32                          omf_rec_size;
-typedef uint_8                          omf_string_len;
+typedef signed_32                       omf_rec_size;
+typedef unsigned_8                      omf_string_len;
 
-typedef int_32                          omf_quantity;
+typedef signed_32                       omf_quantity;
 
-typedef uint_8                          *omf_bytes;
-typedef uint_8                          omf_rectyp;
-typedef int_8                           omf_dbg_style;
+typedef unsigned_8                      *omf_bytes;
+typedef unsigned_8                      omf_rectyp;
+typedef signed_8                        omf_dbg_style;
 
 typedef struct omf_handle_struct        omf_handle_struct;
 typedef omf_handle_struct               *omf_handle;
@@ -134,7 +134,7 @@ typedef struct omf_thred_fixup_struct   omf_thred_fixup;
 struct omf_tmp_lidata_struct {
     omf_rec_size        size;
     omf_rec_size        used;
-    uint_32             offset;
+    unsigned_32         offset;
     bool                is32;
     omf_tmp_fixup       first_fixup;
     omf_tmp_fixup       last_fixup;
@@ -242,8 +242,8 @@ struct omf_seg_assoc_struct {
     orl_sec_alignment   alignment;
     orl_sec_combine     combine;
     omf_frame           frame;
-    uint_32             seg_flags;
-    uint_32             cur_size;
+    unsigned_32         seg_flags;
+    unsigned_32         cur_size;
     omf_sec_offset      cur_offset;
     omf_idx             seg_id;
     omf_symbol_handle   sym;
@@ -275,8 +275,8 @@ struct omf_string_assoc_struct {
 };
 
 typedef struct omf_comment_struct {
-    uint_8              class;
-    uint_8              flags;
+    unsigned_8          class;
+    unsigned_8          flags;
     omf_rec_size        len;
     unsigned char       data[1];
 } omf_comment_struct;

@@ -91,13 +91,13 @@ orl_return COFFENTRY CoffFileFini( coff_file_handle coff_file_hnd )
 orl_return COFFENTRY CoffFileScan( coff_file_handle coff_file_hnd, orl_hash_key desired, orl_sec_return_func return_func )
 {
     orl_hash_data_struct    *data_entry;
-    unsigned                loop;
+    coff_quantity           i;
     orl_return              return_val;
 
     if( desired == NULL ) {
         /* global request */
-        for( loop = 0; loop < coff_file_hnd->num_sections; loop++ ) {
-            return_val = return_func( (orl_sec_handle)coff_file_hnd->coff_sec_hnd[loop] );
+        for( i = 0; i < coff_file_hnd->num_sections; ++i ) {
+            return_val = return_func( (orl_sec_handle)coff_file_hnd->coff_sec_hnd[i] );
             if( return_val != ORL_OKAY ) {
                 return( return_val );
             }
@@ -270,8 +270,8 @@ orl_table_index COFFENTRY CoffCvtSecHdlToIdx( coff_sec_handle shdl )
 /******************************************************************/
 // NYI: would be nice to have a O(1) way of doing this.
 {
-    orl_table_index     index;
-    orl_table_index     limit;
+    coff_quantity       index;
+    coff_quantity       limit;
     coff_file_handle    fhdl;
 
     fhdl = shdl->coff_file_hnd;
@@ -347,7 +347,7 @@ orl_return COFFENTRY CoffRelocSecScan( coff_sec_handle coff_sec_hnd, orl_reloc_r
 
 orl_return COFFENTRY CoffSymbolSecScan( coff_sec_handle coff_sec_hnd, orl_symbol_return_func return_func )
 {
-    unsigned            index;
+    coff_quantity       index;
     orl_return          return_val;
     coff_symbol_handle  coff_symbol_hnd;
 

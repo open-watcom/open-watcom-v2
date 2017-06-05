@@ -93,13 +93,13 @@ orl_return ELFENTRY ElfFileFini( elf_file_handle elf_file_hnd )
 orl_return ELFENTRY ElfFileScan( elf_file_handle elf_file_hnd, orl_hash_key desired, orl_sec_return_func return_func )
 {
     orl_hash_data_struct    *data_entry;
-    int                     loop;
+    elf_quantity            i;
     orl_return              return_val;
 
     if( desired == NULL ) {
         /* global request */
-        for( loop = 0; loop < elf_file_hnd->num_sections; loop++ ) {
-            return_val = return_func( (orl_sec_handle)elf_file_hnd->sec_handles[loop] );
+        for( i = 0; i < elf_file_hnd->num_sections; ++i ) {
+            return_val = return_func( (orl_sec_handle)elf_file_hnd->sec_handles[i] );
             if( return_val != ORL_OKAY ) {
                 return( return_val );
             }
@@ -111,7 +111,7 @@ orl_return ELFENTRY ElfFileScan( elf_file_handle elf_file_hnd, orl_hash_key desi
                 return( return_val );
             }
         }
-        for( data_entry = ORLHashTableQuery( elf_file_hnd->sec_name_hash_table, desired ); data_entry != NULL; data_entry = data_entry->next ) {
+        for( data_entry = ORLHashTableQuery( elf_file_hnd->sec_name_hash_table, (orl_hash_key)desired ); data_entry != NULL; data_entry = data_entry->next ) {
             return_val = return_func( (orl_sec_handle)data_entry->data );
             if( return_val != ORL_OKAY ) {
                 return( return_val );
@@ -292,16 +292,16 @@ orl_return ELFENTRY ElfSecScanReloc( elf_sec_handle elf_sec_hnd, orl_reloc_retur
 
 // One of these should be implimented O(1), but the section handles
 // get reordered in ElfLoad.
-orl_table_index ELFENTRY ElfCvtSecHdlToIdx( elf_sec_handle shdl )
+orl_table_index ELFENTRY ElfCvtSecHdlToIdx( elf_sec_handle elf_sec_hnd )
 {
-    orl_table_index     index;
-    orl_table_index     limit;
+    elf_quantity        index;
+    elf_quantity        limit;
     elf_file_handle     fhdl;
 
-    fhdl = shdl->elf_file_hnd;
+    fhdl = elf_sec_hnd->elf_file_hnd;
     limit = fhdl->num_sections;
     for( index = 0; index < limit; index++ ) {
-        if( fhdl->sec_handles[index] == shdl ) {
+        if( fhdl->sec_handles[index] == elf_sec_hnd ) {
             return( fhdl->sec_handles[index]->index );
         }
     }
@@ -310,8 +310,8 @@ orl_table_index ELFENTRY ElfCvtSecHdlToIdx( elf_sec_handle shdl )
 
 elf_sec_handle ELFENTRY ElfCvtIdxToSecHdl( elf_file_handle fhdl, orl_table_index idx )
 {
-    orl_table_index     index;
-    orl_table_index     limit;
+    elf_quantity        index;
+    elf_quantity        limit;
 
     limit = fhdl->num_sections;
     for( index = 0; index < limit; index++ ) {
@@ -376,16 +376,16 @@ orl_return ELFENTRY ElfSymbolSecScan( elf_sec_handle elf_sec_hnd, orl_symbol_ret
     return( ORL_OKAY );
 }
 
-orl_return ELFENTRY ElfNoteSecScan( elf_sec_handle hnd, orl_note_callbacks *cbs, void *cookie )
-/*********************************************************************************************/
+orl_return ELFENTRY ElfNoteSecScan( elf_sec_handle elf_sec_hnd, orl_note_callbacks *cbs, void *cookie )
+/*****************************************************************************************************/
 {
-    if( hnd->type != ORL_SEC_TYPE_NOTE )
+    if( elf_sec_hnd->type != ORL_SEC_TYPE_NOTE )
         return( ORL_ERROR );
-    if( strcmp( hnd->name, ".drectve" ) != 0 )
+    if( strcmp( elf_sec_hnd->name, ".drectve" ) != 0 )
         return( ORL_OKAY );
-    if( hnd->size == 0 )
+    if( elf_sec_hnd->size == 0 )
         return( ORL_OKAY );
-    return( ElfParseDrectve( (char *)hnd->contents, hnd->size, cbs, cookie ) );
+    return( ElfParseDrectve( (char *)elf_sec_hnd->contents, elf_sec_hnd->size, cbs, cookie ) );
 }
 
 const char * ELFENTRY ElfSymbolGetName( elf_symbol_handle elf_symbol_hnd )

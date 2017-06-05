@@ -61,8 +61,8 @@ static bool string_cmp_ignorecase( orl_hash_key p1, orl_hash_key p2 )
 
 static orl_hash_value hash_encode( orl_hash_value size, const unsigned char *ptr, size_t len, bool ignorecase )
 {
-    orl_hash_value  g;
-    orl_hash_value  h;
+    unsigned_32     g;
+    unsigned_32     h;
     int             c;
 
     h = 0;
@@ -96,7 +96,7 @@ static orl_hash_value string_hash_ignorecase( orl_hash_value size, orl_hash_key 
 
 orl_return ORLHashTableInsert( orl_hash_table hash_table, orl_hash_key key, orl_hash_data data )
 {
-    orl_hash_value          hash_value = 0;
+    orl_hash_value          hash_value;
     orl_hash_key_struct     *key_entry;
     orl_hash_key_struct     *new_key_entry;
     orl_hash_data_struct    *last_data_entry;
@@ -111,7 +111,7 @@ orl_return ORLHashTableInsert( orl_hash_table hash_table, orl_hash_key key, orl_
     for( key_entry = hash_table->table[hash_value]; key_entry != NULL; key_entry = key_entry->next ) {
         if( hash_table->compare_func( key_entry->key, key ) ) {
             last_data_entry = key_entry->data_entry;
-            while( last_data_entry->next ) {
+            while( last_data_entry->next != NULL ) {
                 last_data_entry = last_data_entry->next;
             }
             last_data_entry->next = new_data_entry;
@@ -130,8 +130,8 @@ orl_return ORLHashTableInsert( orl_hash_table hash_table, orl_hash_key key, orl_
 
 orl_hash_data_struct *ORLHashTableQuery( orl_hash_table hash_table, orl_hash_key key )
 {
-    orl_hash_value          hash_value = 0;
-    orl_hash_key_struct     *key_entry;
+    orl_hash_value      hash_value;
+    orl_hash_key_struct *key_entry;
 
     hash_value = hash_table->hash_func( hash_table->size, key );
     for( key_entry = hash_table->table[hash_value]; key_entry != NULL; key_entry = key_entry->next ) {
@@ -156,7 +156,6 @@ orl_hash_table ORLHashTableCreate( orl_funcs *funcs, orl_hash_value size, orl_ha
         return( NULL );
     }
     hash_table->size = size;
-    hash_table->type = type;
     hash_table->funcs = funcs;
     switch( type ) {
     case ORL_HASH_NUMBER:

@@ -131,7 +131,7 @@ orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, orl_hash_key desired, orl_
         }
     } else if( ofh->symbol_table != NULL ) {
         assert( ofh->symbol_table->assoc.sym.hash_tab );
-        for( data_entry = ORLHashTableQuery( ofh->symbol_table->assoc.sym.hash_tab, desired ); data_entry != NULL; data_entry = data_entry->next ) {
+        for( data_entry = ORLHashTableQuery( ofh->symbol_table->assoc.sym.hash_tab, (orl_hash_key)desired ); data_entry != NULL; data_entry = data_entry->next ) {
             sym = data_entry->data;
             if( ( sym->typ == ORL_SYM_TYPE_SECTION ) && (sym->flags & OMF_SYM_FLAGS_GRPDEF) == 0 ) {
                 return_val = return_func( (orl_sec_handle)sym->section );
@@ -362,8 +362,8 @@ orl_return OMFENTRY OmfSecGetContents( omf_sec_handle sh, unsigned_8 **buffer )
 static orl_return OMFENTRY relocScan( omf_sec_handle sh, omf_sec_offset sec_offset,
                                       orl_reloc_return_func return_func, bool check )
 {
-    uint_32             x;
-    uint_32             num;
+    unsigned_32         x;
+    unsigned_32         num;
     orl_reloc           **relocs;
     orl_return          return_val;
     int                 global;

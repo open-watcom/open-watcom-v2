@@ -36,12 +36,12 @@
 
 static void free_elf_file_hnd( elf_file_handle elf_file_hnd )
 {
-    int                         loop;
+    elf_quantity                i;
     elf_sec_handle              elf_sec_hnd;
 
     if( elf_file_hnd->sec_handles != NULL ) {
-        for( loop = 0; loop < elf_file_hnd->num_sections; loop++ ) {
-            elf_sec_hnd = elf_file_hnd->sec_handles[loop];
+        for( i = 0; i < elf_file_hnd->num_sections; ++i ) {
+            elf_sec_hnd = elf_file_hnd->sec_handles[i];
             switch( elf_sec_hnd->type ) {
             case ORL_SEC_TYPE_RELOCS:
             case ORL_SEC_TYPE_RELOCS_EXPADD:

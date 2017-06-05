@@ -461,7 +461,7 @@ static orl_return   writeAndFixupLIData( omf_file_handle ofh, omf_sec_handle sh,
 {
     int                 wordsize;
     omf_rec_size        tmp;
-    uint_32             repeat;
+    unsigned_32         repeat;
     long                block;
     omf_rec_size        size;
     omf_sec_offset      used;
@@ -650,9 +650,9 @@ static orl_return       applyBakpats( omf_file_handle ofh )
     omf_sec_handle      sh;
     orl_return          return_val = ORL_OKAY;
     omf_tmp_bkfix       tbf;
-    uint_8              *pfix8;
-    uint_16             *pfix16;
-    uint_32             *pfix32;
+    unsigned_8          *pfix8;
+    unsigned_16         *pfix16;
+    unsigned_32         *pfix32;
 
     assert( ofh );
     assert( ofh->bakpat );
@@ -679,14 +679,14 @@ static orl_return       applyBakpats( omf_file_handle ofh )
         switch( tbf->reltype ) {
         case ORL_RELOC_TYPE_WORD_8:
             pfix8 = sh->contents + tbf->offset;
-            *pfix8 += (uint_8)tbf->disp;
+            *pfix8 += (unsigned_8)tbf->disp;
             break;
         case ORL_RELOC_TYPE_WORD_16:
-            pfix16 = (uint_16 *)(sh->contents + tbf->offset);
-            *pfix16 += (uint_16)tbf->disp;
+            pfix16 = (unsigned_16 *)(sh->contents + tbf->offset);
+            *pfix16 += (unsigned_16)tbf->disp;
             break;
         case ORL_RELOC_TYPE_WORD_32:
-            pfix32 = (uint_32 *)(sh->contents + tbf->offset);
+            pfix32 = (unsigned_32 *)(sh->contents + tbf->offset);
             *pfix32 += tbf->disp;
             break;
         default:
@@ -739,7 +739,7 @@ static omf_sec_offset   calcLIDataLength( bool is32, omf_bytes *input, omf_rec_s
     omf_bytes       buffer;
     int             wordsize;
     long            tmp;
-    uint_32         repeat;
+    unsigned_32     repeat;
     long            block;
     long            result = 0;
 
@@ -784,7 +784,7 @@ static omf_sec_offset   calcLIDataLength( bool is32, omf_bytes *input, omf_rec_s
 }
 
 
-static orl_return       checkSegmentLength( omf_sec_handle sh, uint_32 max )
+static orl_return       checkSegmentLength( omf_sec_handle sh, unsigned_32 max )
 {
     omf_bytes   conts;
 
@@ -1042,7 +1042,7 @@ omf_string_struct   *OmfGetLastExtName( omf_file_handle ofh )
 }
 
 
-orl_return OmfAddBakpat( omf_file_handle ofh, uint_8 loctype, omf_sec_offset location,
+orl_return OmfAddBakpat( omf_file_handle ofh, unsigned_8 loctype, omf_sec_offset location,
                             omf_idx segidx, omf_idx symidx, omf_sec_addend disp )
 {
     omf_tmp_bkfix       tbf;
@@ -1639,7 +1639,7 @@ orl_return      OmfModEnd( omf_file_handle ofh )
 }
 
 
-orl_return  OmfAddComment( omf_file_handle ofh, uint_8 class, uint_8 flags, omf_bytes buff, omf_rec_size len )
+orl_return  OmfAddComment( omf_file_handle ofh, unsigned_8 class, unsigned_8 flags, omf_bytes buff, omf_rec_size len )
 {
     omf_sec_handle      sh;
     omf_comment_struct  *comment;

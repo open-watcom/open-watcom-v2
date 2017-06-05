@@ -98,9 +98,9 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
 /*********************************************************************/
 {
     unsigned char       *magic;
-    uint_16             machine_type;
-    uint_16             offset;
-    uint_16             len;
+    unsigned_16         machine_type;
+    unsigned_16         offset;
+    unsigned_16         len;
     unsigned char       chksum;
 
     magic = ORL_FUNCS_READ( ORLI_HND, file, 4 );
@@ -155,7 +155,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
         }
     }
 
-    machine_type = *(uint_16 *)magic;
+    machine_type = *(unsigned_16 *)magic;
     switch( machine_type ) {
     case IMAGE_FILE_MACHINE_I860:
     case IMAGE_FILE_MACHINE_I386A:
@@ -177,7 +177,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
         if( magic == NULL ) {
             return( ORL_UNRECOGNIZED_FORMAT );
         }
-        offset = *(uint_16 *)magic;
+        offset = *(unsigned_16 *)magic;
         if( ORL_FUNCS_SEEK( ORLI_HND, file, offset - 0x40, SEEK_CUR ) == -1 ) {
             return( ORL_UNRECOGNIZED_FORMAT );
         }
@@ -193,7 +193,7 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
             if( ORL_FUNCS_SEEK( ORLI_HND, file, -(long)(offset+8), SEEK_CUR ) == -1 ) {
                 return( ORL_UNRECOGNIZED_FORMAT );
             }
-            machine_type = *(uint_16 *)magic;
+            machine_type = *(unsigned_16 *)magic;
             switch( machine_type ) {
             case IMAGE_FILE_MACHINE_I860:
             case IMAGE_FILE_MACHINE_I386:
