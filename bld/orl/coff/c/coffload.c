@@ -259,7 +259,7 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
     unsigned                loop;
     coff_quantity           num_reloc_secs = 0;
     coff_sec_offset         *reloc_sec_offset;
-    orl_sec_size            *reloc_sec_size;
+    coff_sec_size           *reloc_sec_size;
     coff_quantity           reloc_secs_created;
 
     if( coff_file_hnd->num_sections == 0 ) {
@@ -270,13 +270,13 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
         reloc_sec_offset = (coff_sec_offset *)_ClientAlloc( coff_file_hnd, sizeof( coff_sec_offset ) * coff_file_hnd->num_sections );
         if( reloc_sec_offset == NULL )
             return( ORL_OUT_OF_MEMORY );
-        reloc_sec_size = (orl_sec_size *)_ClientAlloc( coff_file_hnd, sizeof( orl_sec_size ) * coff_file_hnd->num_sections );
+        reloc_sec_size = (coff_sec_size *)_ClientAlloc( coff_file_hnd, sizeof( coff_sec_size ) * coff_file_hnd->num_sections );
         if( reloc_sec_size == NULL ) {
             _ClientFree( coff_file_hnd, reloc_sec_offset );
             return( ORL_OUT_OF_MEMORY );
         }
         memset( reloc_sec_offset, 0, sizeof( coff_sec_offset ) * coff_file_hnd->num_sections );
-        memset( reloc_sec_size, 0, sizeof( orl_sec_size ) * coff_file_hnd->num_sections );
+        memset( reloc_sec_size, 0, sizeof( coff_sec_size ) * coff_file_hnd->num_sections );
         coff_file_hnd->orig_sec_hnd = (coff_sec_handle *)_ClientAlloc( coff_file_hnd, sizeof( coff_sec_handle ) * coff_file_hnd->num_sections );
         if( coff_file_hnd->orig_sec_hnd == NULL ) {
             _ClientFree( coff_file_hnd, reloc_sec_offset );
@@ -434,7 +434,7 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
     pe_header           *pe_hdr;
     char                *PE;
     orl_file_offset     PEoffset = 0;
-    orl_sec_size        *string_sec_size;
+    coff_sec_size       *string_sec_size;
 
     pe_hdr = _ClientRead( coff_file_hnd, 2 );
     _ClientSeek( coff_file_hnd, -2, SEEK_CUR );

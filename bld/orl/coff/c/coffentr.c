@@ -170,7 +170,7 @@ coff_sec_base COFFENTRY CoffSecGetBase( coff_sec_handle coff_sec_hnd )
     return( coff_sec_hnd->base );
 }
 
-orl_sec_size COFFENTRY CoffSecGetSize( coff_sec_handle coff_sec_hnd )
+coff_sec_size COFFENTRY CoffSecGetSize( coff_sec_handle coff_sec_hnd )
 {
     return( coff_sec_hnd->size );
 }
