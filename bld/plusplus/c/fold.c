@@ -1210,7 +1210,7 @@ static PTREE FoldBinarySimmetrical( bool *has_folded,
         if( zeroConstant( op2 ) && !hasSideEffects( op2 ) ) {
             *has_folded = true;
             // expr is true only if op1 is also zero.
-            expr = makeTrueFalse( expr, op2, !zeroConstant( op1 ));
+            expr = makeTrueFalse( expr, op2, zeroConstant( op1 ));
         }
         break;
     case CO_NE:
@@ -1271,7 +1271,7 @@ static PTREE FoldBinarySimmetrical( bool *has_folded,
         }
 
     }
-    
+
     return( expr );
 }
 
