@@ -223,8 +223,8 @@ static orl_return PrintSecInfo( orl_sec_handle section )
 /******************************************************/
 {
     const char                  *buf;
-    int                         loop;
-    int                         loop2;
+    unsigned                    i;
+    unsigned                    i2;
     orl_sec_size                size;
     orl_sec_type                sec_type;
     orl_sec_flags               sec_flags;
@@ -375,26 +375,26 @@ static orl_return PrintSecInfo( orl_sec_handle section )
     if( dump.sec_contents ) {
         if( ORLSecGetContents( section, (unsigned_8 **)&buf ) == ORL_OKAY ) {
             printf( "Contents:\n" );
-            for( loop = 0; loop < size; loop += 16 ) {
-                printf( "0x%8.8x: ", loop );
-                for( loop2 = 0; loop2 < 16; loop2++ ) {
-                    if( loop + loop2 < size ) {
-                        printf( "%2.2x ", buf[loop + loop2] );
+            for( i = 0; i < size; i += 16 ) {
+                printf( "0x%8.8x: ", i );
+                for( i2 = 0; i2 < 16; i2++ ) {
+                    if( i + i2 < size ) {
+                        printf( "%2.2x ", buf[i + i2] );
                     } else {
                         printf( "   " );
                     }
-                    if( loop2 == 7 ) {
+                    if( i2 == 7 ) {
                         printf( " " );
                     }
                 }
                 printf( " " );
-                for( loop2 = 0; loop2 < 16 && loop + loop2 < size; loop2++ ) {
-                    if( buf[loop + loop2] >= 32 && buf[loop + loop2] <= 122 ) {
-                        printf( "%c", buf[loop + loop2] );
+                for( i2 = 0; i2 < 16 && i + i2 < size; i2++ ) {
+                    if( buf[i + i2] >= 32 && buf[i + i2] <= 122 ) {
+                        printf( "%c", buf[i + i2] );
                     } else {
                         printf( "." );
                     }
-                    if( loop2 == 7 ) {
+                    if( i2 == 7 ) {
                         printf( " " );
                     }
                 }

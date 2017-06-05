@@ -136,13 +136,13 @@ static void fix_rela64_byte_order( elf_file_handle elf_file_hnd, Elf64_Rela *e_r
 
 orl_return ElfCreateSymbolHandles( elf_sec_handle elf_sec_hnd )
 {
-    int                 loop;
-    int                 num_syms;
+    unsigned            i;
+    unsigned            num_syms;
     elf_symbol_handle   current;
     unsigned char       *current_sym;
     Elf32_Sym           *current_sym32;
     Elf64_Sym           *current_sym64;
-    int                 st_name;
+    unsigned_32         st_name;
 
     num_syms = elf_sec_hnd->size / elf_sec_hnd->entsize;
     elf_sec_hnd->assoc.sym.symbols = (elf_symbol_handle)_ClientSecAlloc( elf_sec_hnd, sizeof( elf_symbol_handle_struct ) * num_syms );
@@ -150,7 +150,7 @@ orl_return ElfCreateSymbolHandles( elf_sec_handle elf_sec_hnd )
         return( ORL_OUT_OF_MEMORY );
     current = elf_sec_hnd->assoc.sym.symbols;
     current_sym = elf_sec_hnd->contents;
-    for( loop = 0; loop < num_syms; loop++ ) {
+    for( i = 0; i < num_syms; i++ ) {
         if( elf_sec_hnd->elf_file_hnd->flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
             current_sym64 = (Elf64_Sym *)current_sym;
             fix_sym64_byte_order( elf_sec_hnd->elf_file_hnd, current_sym64 );
@@ -226,15 +226,15 @@ orl_return ElfCreateSymbolHandles( elf_sec_handle elf_sec_hnd )
 
 orl_return ElfBuildSecNameHashTable( elf_file_handle elf_file_hnd )
 {
-    int             loop;
+    elf_quantity    i;
     orl_return      return_val;
 
     elf_file_hnd->sec_name_hash_table = ORLHashTableCreate( elf_file_hnd->elf_hnd->funcs, SEC_NAME_HASH_TABLE_SIZE, ORL_HASH_STRING_IGNORECASE );
     if( elf_file_hnd->sec_name_hash_table == NULL ) {
         return( ORL_OUT_OF_MEMORY );
     }
-    for( loop = 0; loop < elf_file_hnd->num_sections; loop++ ) {
-        return_val = ORLHashTableInsert( elf_file_hnd->sec_name_hash_table, (orl_hash_key)elf_file_hnd->sec_handles[loop]->name, elf_file_hnd->sec_handles[loop] );
+    for( i = 0; i < elf_file_hnd->num_sections; ++i ) {
+        return_val = ORLHashTableInsert( elf_file_hnd->sec_name_hash_table, elf_file_hnd->sec_handles[i]->name, elf_file_hnd->sec_handles[i] );
         if( return_val != ORL_OKAY ) {
             return( return_val );
         }
@@ -471,8 +471,8 @@ orl_reloc_type ElfConvertRelocType( elf_file_handle elf_file_hnd, elf_reloc_type
 orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
 {
     orl_return          return_val;
-    int                 num_relocs;
-    int                 loop;
+    unsigned            num_relocs;
+    unsigned            i;
     unsigned char       *irel;
     orl_reloc           *orel;
 
@@ -489,7 +489,7 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
         if( orel == NULL )
             return( ORL_OUT_OF_MEMORY );
         irel = reloc_sec->contents;
-        for( loop = 0; loop < num_relocs; loop++ ) {
+        for( i = 0; i < num_relocs; i++ ) {
             orel->section = (orl_sec_handle)orig_sec;
             orel->frame = NULL;
             orel->addend = 0;
@@ -516,7 +516,7 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
         if( orel == NULL )
             return( ORL_OUT_OF_MEMORY );
         irel = reloc_sec->contents;
-        for( loop = 0; loop < num_relocs; loop++ ) {
+        for( i = 0; i < num_relocs; i++ ) {
             orel->section = (orl_sec_handle)orig_sec;
             orel->frame = NULL;
             if( reloc_sec->elf_file_hnd->flags & ORL_FILE_FLAG_64BIT_MACHINE ) {

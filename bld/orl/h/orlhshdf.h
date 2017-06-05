@@ -39,7 +39,7 @@ typedef enum {
     ORL_HASH_NUMBER
 } orl_hash_table_type;
 
-typedef uint_32     orl_hash_value;
+typedef unsigned    orl_hash_value;
 typedef const void  *orl_hash_data;
 typedef const void  *orl_hash_key;
 
@@ -59,7 +59,6 @@ struct orl_hash_key_struct {
 };
 
 struct orl_hash_table_struct {
-    orl_hash_table_type         type;
     orl_hash_value              size;
     orl_funcs                   *funcs;
     bool                        (*compare_func)( orl_hash_key, orl_hash_key );

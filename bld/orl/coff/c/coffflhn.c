@@ -36,12 +36,12 @@
 
 static void free_coff_file_hnd( coff_file_handle coff_file_hnd )
 {
-    unsigned            loop;
+    coff_quantity       i;
     coff_sec_handle     coff_sec_hnd;
 
     if( coff_file_hnd->coff_sec_hnd != NULL ) {
-        for( loop = 0; loop < coff_file_hnd->num_sections; loop++ ) {
-            coff_sec_hnd = coff_file_hnd->coff_sec_hnd[loop];
+        for( i = 0; i < coff_file_hnd->num_sections; ++i ) {
+            coff_sec_hnd = coff_file_hnd->coff_sec_hnd[i];
             if( coff_sec_hnd->type == ORL_SEC_TYPE_RELOCS ) {
                 if( coff_sec_hnd->assoc.reloc.relocs != NULL ) {
                     _ClientFree( coff_file_hnd, coff_sec_hnd->assoc.reloc.relocs );
@@ -50,17 +50,17 @@ static void free_coff_file_hnd( coff_file_handle coff_file_hnd )
             if( coff_sec_hnd->name_alloced ) {
                 _ClientFree( coff_file_hnd, coff_sec_hnd->name );
             }
-            _ClientFree( coff_file_hnd, coff_file_hnd->coff_sec_hnd[loop] );
+            _ClientFree( coff_file_hnd, coff_file_hnd->coff_sec_hnd[i] );
         }
         _ClientFree( coff_file_hnd, coff_file_hnd->coff_sec_hnd );
     }
     _ClientFree( coff_file_hnd, coff_file_hnd->orig_sec_hnd );
     if( coff_file_hnd->symbol_handles != NULL ) {
-        for( loop = 0; loop < coff_file_hnd->num_symbols; loop++ ) {
-            if( coff_file_hnd->symbol_handles[loop].name_alloced ) {
-                _ClientFree( coff_file_hnd, coff_file_hnd->symbol_handles[loop].name );
+        for( i = 0; i < coff_file_hnd->num_symbols; ++i ) {
+            if( coff_file_hnd->symbol_handles[i].name_alloced ) {
+                _ClientFree( coff_file_hnd, coff_file_hnd->symbol_handles[i].name );
             }
-            loop += coff_file_hnd->symbol_handles[loop].symbol->num_aux;
+            i += coff_file_hnd->symbol_handles[i].symbol->num_aux;
         }
         _ClientFree( coff_file_hnd, coff_file_hnd->symbol_handles );
     }

@@ -39,29 +39,29 @@
 
 // handle definitions
 
-typedef uint_8                          coff_file_flags;
-typedef uint_32                         coff_file_index;
-typedef uint_32                         coff_headers_size;
+typedef unsigned_8                          coff_file_flags;
+typedef unsigned_32                         coff_file_index;
+typedef unsigned_32                         coff_headers_size;
 
-typedef uint_32                         coff_sec_flags;
-typedef uint_32                         coff_sec_size;
-typedef uint_32                         coff_sec_offset;
+typedef unsigned_32                         coff_sec_flags;
+typedef unsigned_32                         coff_sec_size;
+typedef unsigned_32                         coff_sec_offset;
 
-typedef uint_16                         coff_reloc_type;
+typedef unsigned_16                         coff_reloc_type;
 
-typedef uint_32                         coff_symbol_table_index;
-typedef uint_32                         coff_symbol_type;
-typedef uint_32                         coff_symbol_value;
-typedef uint_32                         coff_symbol_storage_class;
-typedef uint_32                         coff_function_size;
-typedef uint_32                         coff_symbol_characteristics;
-typedef uint_32                         coff_comdat_checksum;
-typedef uint_8                          coff_comdat_selection;
+typedef unsigned_32                         coff_symbol_table_index;
+typedef unsigned_32                         coff_symbol_type;
+typedef unsigned_32                         coff_symbol_value;
+typedef unsigned_32                         coff_symbol_storage_class;
+typedef unsigned_32                         coff_function_size;
+typedef unsigned_32                         coff_symbol_characteristics;
+typedef unsigned_32                         coff_comdat_checksum;
+typedef unsigned_8                          coff_comdat_selection;
 
-typedef uint_32                         coff_quantity;
+typedef unsigned_32                         coff_quantity;
 
-typedef uint_32                         coff_rva;
-typedef uint_32                         coff_sec_base;
+typedef unsigned_32                         coff_rva;
+typedef unsigned_32                         coff_sec_base;
 
 typedef struct coff_handle_struct       coff_handle_struct;
 typedef coff_handle_struct              *coff_handle;

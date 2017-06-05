@@ -39,10 +39,10 @@
 
 orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
 {
-    unsigned            loop;
-    unsigned            prev;
+    coff_quantity       i;
+    coff_quantity       prev;
 //    int                 len;
-    uint_16             type; // type of CoffSymEnt
+    unsigned_16         type; // type of CoffSymEnt
     coff_symbol_handle  current;
     coff_sym_section    *aux;
     coff_sym_weak       *weak;
@@ -56,12 +56,12 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
     if( file_hnd->symbol_handles == NULL )
         return( ORL_OUT_OF_MEMORY );
     prev = 0;
-    for( loop = 0; loop < file_hnd->num_symbols; loop++ ) {
-        current = file_hnd->symbol_handles + loop;
+    for( i = 0; i < file_hnd->num_symbols; i++ ) {
+        current = file_hnd->symbol_handles + i;
         current->file_format = ORL_COFF;
         current->coff_file_hnd = file_hnd;
         current->has_bf = false;
-        current->symbol = (coff_symbol *)( file_hnd->symbol_table->contents + sizeof( coff_symbol ) * loop );
+        current->symbol = (coff_symbol *)( file_hnd->symbol_table->contents + sizeof( coff_symbol ) * i );
         if( current->symbol->name.non_name.zeros == 0 ) {
             current->name = (char *)( file_hnd->string_table->contents + current->symbol->name.non_name.offset - sizeof( coff_sec_size ) );
             current->name_alloced = false;
@@ -185,23 +185,23 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
             current->type |= ORL_SYM_TYPE_FILE;
             break;
         }
-        prev = loop;
-        loop += current->symbol->num_aux;
+        prev = i;
+        i += current->symbol->num_aux;
     }
     return( ORL_OKAY );
 }
 
 orl_return CoffBuildSecNameHashTable( coff_file_handle coff_file_hnd )
 {
-    unsigned                loop;
+    coff_quantity           i;
     orl_return              return_val;
 
     coff_file_hnd->sec_name_hash_table = ORLHashTableCreate( coff_file_hnd->coff_hnd->funcs, SEC_NAME_HASH_TABLE_SIZE, ORL_HASH_STRING_IGNORECASE );
     if( coff_file_hnd->sec_name_hash_table == NULL ) {
         return( ORL_OUT_OF_MEMORY );
     }
-    for( loop = 0; loop < coff_file_hnd->num_sections; loop++ ) {
-        return_val = ORLHashTableInsert( coff_file_hnd->sec_name_hash_table, (orl_hash_key)coff_file_hnd->coff_sec_hnd[loop]->name, coff_file_hnd->coff_sec_hnd[loop] );
+    for( i = 0; i < coff_file_hnd->num_sections; ++i ) {
+        return_val = ORLHashTableInsert( coff_file_hnd->sec_name_hash_table, coff_file_hnd->coff_sec_hnd[i]->name, coff_file_hnd->coff_sec_hnd[i] );
         if( return_val != ORL_OKAY ) {
             return( return_val );
         }
@@ -362,7 +362,7 @@ orl_return CoffCreateRelocs( coff_sec_handle orig_sec, coff_sec_handle reloc_sec
 {
     orl_return  return_val;
     unsigned    num_relocs;
-    unsigned    loop;
+    unsigned    i;
     coff_reloc ORLUNALIGNED *irel;
     orl_reloc   *orel;
     orl_reloc   *prev_orel;
@@ -379,7 +379,7 @@ orl_return CoffCreateRelocs( coff_sec_handle orig_sec, coff_sec_handle reloc_sec
     if( reloc_sec->assoc.reloc.relocs == NULL )
         return( ORL_OUT_OF_MEMORY );
     irel = (coff_reloc *)reloc_sec->contents;
-    for( loop = 0; loop < num_relocs; loop++ ) {
+    for( i = 0; i < num_relocs; i++ ) {
         orel->section = (orl_sec_handle)orig_sec;
         orel->frame = NULL;
         orel->addend = 0;

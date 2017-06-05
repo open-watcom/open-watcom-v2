@@ -47,16 +47,14 @@
 static char SectionNames[3][COFF_SEC_NAME_LEN] =
     { ".rel", ".symtab", ".strtab" };
 
-static bool determine_file_specs( coff_file_handle coff_file_hnd,
-                                    coff_file_header *f_hdr )
-/***************************************************************/
+static bool determine_file_specs( coff_file_handle coff_file_hnd, coff_file_header *f_hdr )
+/*****************************************************************************************/
 {
-    uint_16 cpu_type;
-    uint_16 flags;
-    bool    flag_import_library;
+    unsigned_16 cpu_type;
+    unsigned_16 flags;
+    bool        flag_import_library;
 
-    if( (f_hdr->cpu_type == IMAGE_FILE_MACHINE_UNKNOWN) &&
-            (f_hdr->num_sections == IMPORT_OBJECT_HDR_SIG2) ) {
+    if( ( f_hdr->cpu_type == IMAGE_FILE_MACHINE_UNKNOWN ) && ( f_hdr->num_sections == IMPORT_OBJECT_HDR_SIG2 ) ) {
         // COFF import library
         cpu_type = ((coff_import_object_header *)f_hdr)->machine;
         flags = 0;
@@ -228,22 +226,22 @@ static void determine_section_specs( coff_sec_handle coff_sec_hnd,
     }
 }
 
-static void free_coff_sec_handles( coff_file_handle coff_file_hnd, unsigned num_alloced )
-/***************************************************************************************/
+static void free_coff_sec_handles( coff_file_handle coff_file_hnd, coff_quantity num_alloced )
+/********************************************************************************************/
 {
-    unsigned    loop;
+    coff_quantity   i;
 
     if( coff_file_hnd->coff_sec_hnd != NULL ) {
-        for( loop = 0; loop < num_alloced; loop++ ) {
-            if( coff_file_hnd->coff_sec_hnd[loop]->name_alloced ) {
-                _ClientFree( coff_file_hnd, coff_file_hnd->coff_sec_hnd[loop]->name );
+        for( i = 0; i < num_alloced; i++ ) {
+            if( coff_file_hnd->coff_sec_hnd[i]->name_alloced ) {
+                _ClientFree( coff_file_hnd, coff_file_hnd->coff_sec_hnd[i]->name );
             }
-            _ClientFree( coff_file_hnd, coff_file_hnd->coff_sec_hnd[loop] );
+            _ClientFree( coff_file_hnd, coff_file_hnd->coff_sec_hnd[i] );
         }
         _ClientFree( coff_file_hnd, coff_file_hnd->coff_sec_hnd );
     } else {
-        for( loop = 0; loop < num_alloced; loop++ ) {
-            _ClientFree( coff_file_hnd, coff_file_hnd->orig_sec_hnd[loop] );
+        for( i = 0; i < num_alloced; i++ ) {
+            _ClientFree( coff_file_hnd, coff_file_hnd->orig_sec_hnd[i] );
         }
     }
     _ClientFree( coff_file_hnd, coff_file_hnd->orig_sec_hnd );
@@ -256,7 +254,7 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
     coff_section_header     *s_hdr;
     coff_sec_handle         coff_sec_hnd;
     coff_sec_handle         coff_reloc_sec_hnd;
-    unsigned                loop;
+    coff_quantity           i;
     coff_quantity           num_reloc_secs = 0;
     coff_sec_offset         *reloc_sec_offset;
     coff_sec_size           *reloc_sec_size;
@@ -286,19 +284,19 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
     }
     coff_file_hnd->coff_sec_hnd = NULL;
     s_hdr = (coff_section_header *)coff_file_hnd->s_hdr_table_buffer;
-    for( loop = 0; loop < coff_file_hnd->num_sections; loop++ ) {
+    for( i = 0; i < coff_file_hnd->num_sections; ++i ) {
         coff_sec_hnd = (coff_sec_handle)_ClientAlloc( coff_file_hnd, sizeof( coff_sec_handle_struct ) );
         if( coff_sec_hnd == NULL ) {
-            free_coff_sec_handles( coff_file_hnd, loop );
+            free_coff_sec_handles( coff_file_hnd, i );
             _ClientFree( coff_file_hnd, reloc_sec_offset );
             _ClientFree( coff_file_hnd, reloc_sec_size );
             return( ORL_OUT_OF_MEMORY );
         }
-        coff_file_hnd->orig_sec_hnd[loop] = coff_sec_hnd;
+        coff_file_hnd->orig_sec_hnd[i] = coff_sec_hnd;
         if( s_hdr->name[0] != '/' ) {
             coff_sec_hnd->name = _ClientAlloc( coff_file_hnd, COFF_SEC_NAME_LEN + 1 );
             if( coff_sec_hnd->name == NULL ) {
-                free_coff_sec_handles( coff_file_hnd, loop );
+                free_coff_sec_handles( coff_file_hnd, i );
                 _ClientFree( coff_file_hnd, reloc_sec_offset );
                 _ClientFree( coff_file_hnd, reloc_sec_size );
                 return( ORL_OUT_OF_MEMORY );
@@ -320,11 +318,11 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
         determine_section_specs( coff_sec_hnd, s_hdr );
         coff_sec_hnd->contents = NULL;
         coff_sec_hnd->assoc.normal.reloc_sec = NULL;
-        reloc_sec_offset[loop] = s_hdr->reloc_ptr;
+        reloc_sec_offset[i] = s_hdr->reloc_ptr;
         if( s_hdr->num_relocs > 0 ) {
             num_reloc_secs++;
         }
-        reloc_sec_size[loop] = s_hdr->num_relocs * sizeof( coff_reloc );
+        reloc_sec_size[i] = s_hdr->num_relocs * sizeof( coff_reloc );
         s_hdr++;
     }
     /* There are num_reloc_secs + 2 additional section handles to create
@@ -338,8 +336,8 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
     }
     memcpy( coff_file_hnd->coff_sec_hnd, coff_file_hnd->orig_sec_hnd, sizeof( coff_sec_handle ) * coff_file_hnd->num_sections );
     reloc_secs_created = 0;
-    for( loop = 0; loop < coff_file_hnd->num_sections; loop++ ) {
-        if( reloc_sec_size[loop] > 0 ) {
+    for( i = 0; i < coff_file_hnd->num_sections; ++i ) {
+        if( reloc_sec_size[i] > 0 ) {
             reloc_secs_created++;
             // create a reloc section
             coff_file_hnd->coff_sec_hnd[coff_file_hnd->num_sections + reloc_secs_created] = (coff_sec_handle)_ClientAlloc( coff_file_hnd, sizeof( coff_sec_handle_struct ) );
@@ -355,23 +353,23 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
             coff_reloc_sec_hnd->name = SectionNames[0];     // ".rel"
             coff_reloc_sec_hnd->name_alloced = false;
             coff_reloc_sec_hnd->relocs_done = false;
-            coff_reloc_sec_hnd->size = reloc_sec_size[loop];
+            coff_reloc_sec_hnd->size = reloc_sec_size[i];
             coff_reloc_sec_hnd->base = 0;
-            coff_reloc_sec_hnd->offset = reloc_sec_offset[loop];
+            coff_reloc_sec_hnd->offset = reloc_sec_offset[i];
             coff_reloc_sec_hnd->type = ORL_SEC_TYPE_RELOCS;
             coff_reloc_sec_hnd->flags = ORL_SEC_FLAG_NONE;
             coff_reloc_sec_hnd->hdr = NULL;
-            coff_reloc_sec_hnd->assoc.reloc.orig_sec = coff_file_hnd->coff_sec_hnd[loop];
+            coff_reloc_sec_hnd->assoc.reloc.orig_sec = coff_file_hnd->coff_sec_hnd[i];
             coff_reloc_sec_hnd->assoc.reloc.relocs = NULL;
             coff_reloc_sec_hnd->align = 4;
-            coff_file_hnd->coff_sec_hnd[loop]->assoc.normal.reloc_sec = coff_reloc_sec_hnd;
+            coff_file_hnd->coff_sec_hnd[i]->assoc.normal.reloc_sec = coff_reloc_sec_hnd;
             coff_file_hnd->coff_sec_hnd[coff_file_hnd->num_sections + reloc_secs_created - 1] = coff_reloc_sec_hnd;
         }
     }
     // create the symbol table section
     coff_file_hnd->symbol_table = (coff_sec_handle)_ClientAlloc( coff_file_hnd, sizeof( coff_sec_handle_struct ) );
     if( coff_file_hnd->symbol_table == NULL ) {
-        free_coff_sec_handles( coff_file_hnd, loop + coff_file_hnd->num_sections );
+        free_coff_sec_handles( coff_file_hnd, i + coff_file_hnd->num_sections );
         _ClientFree( coff_file_hnd, reloc_sec_offset );
         _ClientFree( coff_file_hnd, reloc_sec_size );
         return( ORL_OUT_OF_MEMORY );
@@ -390,11 +388,11 @@ static orl_return load_coff_sec_handles( coff_file_handle coff_file_hnd,
     coff_file_hnd->symbol_table->flags = ORL_SEC_FLAG_NONE;
     coff_file_hnd->symbol_table->align = 4;
     coff_file_hnd->coff_sec_hnd[coff_file_hnd->num_sections + reloc_secs_created] = coff_file_hnd->symbol_table;
-    loop++;
+    i++;
     // create the string table section
     coff_file_hnd->string_table = (coff_sec_handle)_ClientAlloc( coff_file_hnd, sizeof( coff_sec_handle_struct ) );
     if( coff_file_hnd->string_table == NULL ) {
-        free_coff_sec_handles( coff_file_hnd, loop + coff_file_hnd->num_sections );
+        free_coff_sec_handles( coff_file_hnd, i + coff_file_hnd->num_sections );
         _ClientFree( coff_file_hnd, reloc_sec_offset );
         _ClientFree( coff_file_hnd, reloc_sec_size );
         return( ORL_OUT_OF_MEMORY );
@@ -429,8 +427,8 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
     coff_sec_offset     string_table_index;
     coff_sec_handle     last_sec_hnd;
     coff_sec_handle     coff_sec_hnd;
-    unsigned            loop;
-    unsigned            loop_limit;
+    coff_quantity       i;
+    coff_quantity       num_sections;
     pe_header           *pe_hdr;
     char                *PE;
     orl_file_offset     PEoffset = 0;
@@ -510,8 +508,8 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
     coff_file_hnd->initial_size += sec_header_table_size;
 
     buf_size = 0;
-    for( loop = 0; loop < coff_file_hnd->num_sections; loop++ ) {
-        coff_sec_hnd = coff_file_hnd->coff_sec_hnd[loop];
+    for( i = 0; i < coff_file_hnd->num_sections; ++i ) {
+        coff_sec_hnd = coff_file_hnd->coff_sec_hnd[i];
         if( (coff_sec_hnd->offset + coff_sec_hnd->size) > buf_size && (coff_sec_hnd->flags & ORL_SEC_FLAG_UNINITIALIZED_DATA) == 0 ) {
             buf_size = coff_sec_hnd->offset + coff_sec_hnd->size;
         }
@@ -522,7 +520,7 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
     if( coff_file_hnd->rest_of_file_buffer == NULL ) {
         return( ORL_ERROR );
     }
-    loop_limit = coff_file_hnd->num_sections;
+    num_sections = coff_file_hnd->num_sections;
     // read string table; always follows the symbol table, but may not exist
     if( last_sec_hnd == coff_file_hnd->string_table ) {
         // read the string table size; if that fails, there isn't any
@@ -551,11 +549,11 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
         } else {
             last_sec_hnd->contents = NULL;
         }
-        loop_limit--;
+        num_sections--;
     }
     // determine contents pointers of all sections
-    for( loop = 0; loop < loop_limit; loop++ ) {
-        coff_sec_hnd = coff_file_hnd->coff_sec_hnd[loop];
+    for( i = 0; i < num_sections; ++i ) {
+        coff_sec_hnd = coff_file_hnd->coff_sec_hnd[i];
         if( (coff_sec_hnd->size > 0 || coff_sec_hnd->type == ORL_SEC_TYPE_STR_TABLE) && coff_sec_hnd->offset != 0 ) {
             coff_sec_hnd->contents = coff_file_hnd->rest_of_file_buffer + coff_sec_hnd->offset - coff_file_hnd->initial_size;
         }
@@ -568,8 +566,8 @@ orl_return CoffLoadFileStructure( coff_file_handle coff_file_hnd )
         }
     }
     // determine section names
-    for( loop = 0; loop < coff_file_hnd->num_sections; loop++ ) {
-        coff_sec_hnd = coff_file_hnd->coff_sec_hnd[loop];
+    for( i = 0; i < coff_file_hnd->num_sections; ++i ) {
+        coff_sec_hnd = coff_file_hnd->coff_sec_hnd[i];
         if( coff_sec_hnd->name[0] == '/' ) {
             // change pointer to point into string table
             string_table_index = atoi( coff_sec_hnd->name + 1 ) - sizeof( coff_sec_size );

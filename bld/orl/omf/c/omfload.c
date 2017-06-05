@@ -151,7 +151,7 @@ static orl_return       loadRecord( omf_file_handle ofh )
 {
     unsigned short      len;
     omf_bytes           buff;
-    uint_8              chksum;
+    unsigned_8          chksum;
 
     assert( ofh );
 
@@ -213,15 +213,15 @@ static orl_return       processExplicitFixup( omf_file_handle ofh, bool is32, om
 {
     omf_bytes           buf;
     omf_rec_size        len;
-    uint_8              m;
+    unsigned_8          m;
     int                 location;
     int                 offset;
-    uint_8              fmethod;
+    unsigned_8          fmethod;
     omf_idx             fidx = 0;
-    uint_8              thred;
-    uint_8              tmethod;
+    unsigned_8          thred;
+    unsigned_8          tmethod;
     omf_idx             tidx;
-    uint_8              datum;
+    unsigned_8          datum;
     omf_rec_size        wordsize;
     omf_sec_addend      disp;
 
@@ -299,10 +299,10 @@ static orl_return       processThreadFixup( omf_file_handle ofh, omf_bytes *buff
 {
     omf_bytes           buf;
     omf_rec_size        len;
-    uint_8              d;
-    uint_8              method;
-    uint_8              thred;
-    uint_8              datum;
+    unsigned_8          d;
+    unsigned_8          method;
+    unsigned_8          thred;
+    unsigned_8          datum;
     omf_thred_fixup     *thredp;
 
     assert( ofh );
@@ -358,8 +358,8 @@ static orl_return       doTHEADR( omf_file_handle ofh )
 static orl_return       doCOMENT( omf_file_handle ofh )
 {
     orl_return          return_val;
-    uint_8              class;
-    uint_8              flags;
+    unsigned_8          class;
+    unsigned_8          flags;
     omf_bytes           buffer;
     omf_rec_size        len;
 
@@ -774,7 +774,7 @@ static orl_return       doSEGDEF( omf_file_handle ofh, omf_rectyp typ )
     omf_rec_size        len;
     omf_idx             name;
     omf_idx             class;
-    uint_8              datum;
+    unsigned_8          datum;
     bool                is32;
     int                 wordsize;
     orl_sec_alignment   align;
@@ -902,7 +902,7 @@ static orl_return       doFIXUPP( omf_file_handle ofh, omf_rectyp typ )
     orl_return          return_val;
     omf_bytes           buffer;
     omf_rec_size        len;
-    uint_8              datum;
+    unsigned_8          datum;
     bool                is32;
 //    int                 wordsize;
 
@@ -943,7 +943,7 @@ static orl_return       doBAKPAT( omf_file_handle ofh, omf_rectyp typ )
     orl_return          return_val;
     omf_bytes           buffer;
     omf_rec_size        len;
-    uint_8              loctype;
+    unsigned_8          loctype;
     bool                is32;
     int                 wordsize;
     omf_sec_addend      disp;
@@ -1094,9 +1094,9 @@ static orl_return       doCOMDAT( omf_file_handle ofh, omf_rectyp typ )
     omf_idx             group;
     omf_frame           frame;
     omf_idx             name;
-    uint_8              attr;
+    unsigned_8          attr;
     int                 align;
-    uint_8              flags;
+    unsigned_8          flags;
     omf_sec_offset      offset;
 
     assert( ofh );
