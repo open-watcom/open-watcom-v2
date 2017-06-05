@@ -502,8 +502,6 @@ static PTREE castConstant( PTREE expr, TYPE type, bool *happened )
     return( expr );
 }
 
-#if 0
-
 static bool soFarSoGood( PTREE expr, unsigned op, CGOP cgop )
 {
     if( expr != NULL && expr->op == op && expr->cgop == cgop ) {
@@ -587,9 +585,18 @@ static bool anachronismFound( PTREE expr )
     return( false );
 }
 
+/**
+ * Transform a node into a true/false boolean constant.
+ * Unlike makeBooleanConst, this function deletes the current node.
+ *
+ * \param expr The node to be transformed.
+ * \param op The undecorated expr.
+ * \param value Either 0 or 1 (false or true).
+ */
 static PTREE makeTrueFalse( PTREE expr, PTREE op, int value )
 {
     PTREE node;
+    DbgVerify( ( value & 1 ) == value, "invalid boolean constant fold" );
 
     if( anachronismFound( op ) ) {
         return( expr );
@@ -600,8 +607,15 @@ static PTREE makeTrueFalse( PTREE expr, PTREE op, int value )
     NodeFreeDupedExpr( expr );
     return( node );
 }
-#endif
 
+/**
+ * Transform a node into a true/false boolean constant.
+ * Unlike makeTrueFalse, this fucntion does not delete the current
+ * node, but simply replaces its type. (Its subtrees may never be freed)
+ *
+ * \param expr The node to be transformed.
+ * \param value Either 0 or 1 (false or true).
+ */
 static PTREE makeBooleanConst( PTREE expr, int value )
 {
     DbgVerify( ( value & 1 ) == value, "invalid boolean constant fold" );
@@ -1162,17 +1176,20 @@ static PTREE pruneExpr(         // PRUNE ONE SIDE FROM EXPRESSION
     (((1L << (op)) & ((1L << PT_INT_CONSTANT) | (1L << PT_FLOATING_CONSTANT))) != 0 )
 
 /**
- * Perform all the folding optimizations that can be simmetrically applied
+ * Perform some folding optimizations that can be simmetrically applied
  * to opl, opr.
  *
- * \param expr The expression to be folded.
- * \param op1 The lhs of the expression
- * \param op2 The rhs of the expression
+ * \param expr The binary expression to be folded.
+ * \param opl The lhs of the expression.
+ * \param opr The rhs of the expression.
+ * \param has_decoration Whether either side of the expression
+ *                       was conditionally-decorated.
  */
-
-#ifdef ALT
-static PTREE FoldBinarySimmetrical( bool *has_folded, PTREE expr, PTREE opl, PTREE opr, bool has_decoration, bool inverted )
+static PTREE FoldBinarySimmetrical( bool *has_folded,
+    PTREE expr, PTREE opl, PTREE opr,
+    bool has_decoration, bool inverted )
 {
+    *has_folded = false;
     //TYPE type = expr->type;
 
     // Still need to point to the right subtrees in the expression.
@@ -1188,24 +1205,21 @@ static PTREE FoldBinarySimmetrical( bool *has_folded, PTREE expr, PTREE opl, PTR
     // The lhs of the binary expression is a constant.
     switch( expr->cgop ) {
     case CO_EQ:
-        DbgVerify( ! has_decoration, "FoldBinary -- bad ==" );
+        DbgVerify( !has_decoration, "FoldBinary -- bad ==" );
 
         if( zeroConstant( op2 ) && !hasSideEffects( op2 ) ) {
             *has_folded = true;
             // expr is true only if op1 is also zero.
-            expr = makeBooleanConst( expr, zeroConstant( op1 ) );
-            
+            expr = makeTrueFalse( expr, op2, !zeroConstant( op1 ));
         }
         break;
     case CO_NE:
-        DbgVerify( ! has_decoration, "FoldBinary -- bad !=" );
+        DbgVerify( !has_decoration, "FoldBinary -- bad !=" );
 
         if( zeroConstant( op2 ) && !hasSideEffects( op2 ) ) {
             *has_folded = true;
             // expr is true only if op1 is not zero.
-            expr = makeBooleanConst( expr, !zeroConstant( op1 ) );
-            
-            //expr = makeTrueFalse( expr, op2, !zeroConstant( op1 ));
+            expr = makeTrueFalse( expr, op2, !zeroConstant( op1 ));
         }
         break;
     case CO_AND_AND:
@@ -1257,14 +1271,20 @@ static PTREE FoldBinarySimmetrical( bool *has_folded, PTREE expr, PTREE opl, PTR
         }
 
     }
-    *has_folded = false;
+    
     return( expr );
 }
 
+/**
+ * Perform some simple (single pass) folding transformations
+ * on the AST (binary expression).
+ * Note that other (multipass) transformations are applied
+ * by the backend.
+ *
+ * \param expr a binary expression to be folded.
+ */
 PTREE FoldBinary( PTREE expr )
-/****************************/
 {
-    PTREE orig = expr;
     PTREE orig1;
     PTREE orig2;
     PTREE op1;
@@ -1290,18 +1310,18 @@ PTREE FoldBinary( PTREE expr )
     has_decoration_right = op2 != orig2;
     has_decoration = has_decoration_left | has_decoration_right;
     
-    //
     if( !foldable( op1 ) && !foldable( op2 ) ) return( expr );
 
+    // Try performing folding in either direction for some common operations:
     bool has_folded = false;
-    // Try performing folding in either direction for some common operations.
     expr = FoldBinarySimmetrical( &has_folded, expr, op1, op2, has_decoration, false );
     if( has_folded )
         return expr;
-    //expr = FoldBinarySimmetrical( expr, op1, op2, has_decoration, true );
-    if( expr != orig )
+    expr = FoldBinarySimmetrical( &has_folded, expr, op1, op2, has_decoration, true );
+    if( has_folded )
         return expr;
 
+    // Try performing some of the asymmetrical transformations:
     switch( expr->cgop ) {
         case CO_PLUS_EQUAL :
         case CO_MINUS_EQUAL :
@@ -1447,264 +1467,6 @@ PTREE FoldBinary( PTREE expr )
 
     return( expr );
 }
-
-#else
-PTREE FoldBinary( PTREE expr )
-/****************************/
-{
-    PTREE orig1;
-    PTREE orig2;
-    PTREE op1;
-    PTREE op2;
-    PTREE op_t;
-    PTREE op_f;
-    PTREE op_test;
-    TYPE type;
-    unsigned typ1;
-    unsigned typ2;
-    bool cast_happened;
-    bool has_decoration_left;
-    bool has_decoration_right;
-    bool has_decoration;
-
-    type = expr->type;
-    orig1 = expr->u.subtree[0];
-    orig2 = expr->u.subtree[1];
-    type = expr->type;
-    op1 = overCondDecor( orig1 );
-    has_decoration_left = op1 != orig1;
-    op2 = overCondDecor( orig2 );
-    has_decoration_right = op2 != orig2;
-    has_decoration = has_decoration_left | has_decoration_left;
-    
-    //
-    if( !foldable( op1 ) && !foldable( op2 ) ) return( expr );
-
-
-    if( foldable( op1 ) && !hasSideEffects( op2 ) ) {
-        // We can fold the lhs of the operation (it is a constant):
-        switch( expr->cgop ) {
-        case CO_EQ:
-            DbgVerify( ! has_decoration, "FoldBinary -- bad ==" );
-
-            if( zeroConstant( op2 ) ) {
-                // We know that op1, op2 are constant expressions:
-                expr = makeBooleanConst( expr, zeroConstant( op1 ) );
-            }
-            break;
-        case CO_NE:
-            DbgVerify( ! has_decoration, "FoldBinary -- bad !=" );
-
-            if( zeroConstant( op2 ) ) {
-                // We know that op1, op2 are constant expressions:
-                expr = makeBooleanConst( expr, !zeroConstant( op1 ) );
-            }
-            break;
-        case CO_PLUS_EQUAL :
-        case CO_MINUS_EQUAL :
-        case CO_AND_EQUAL :
-        case CO_OR_EQUAL :
-        case CO_XOR_EQUAL :
-        case CO_EQUAL:
-            /* have to be careful with pointer scaling of numbers */
-            DbgVerify( ! has_decoration, "FoldBinary -- bad equals" );
-            if( ArithType( type ) != NULL ) {
-                expr->u.subtree[1] = castConstant( op2, type, &cast_happened );
-            }
-            break;
-        case CO_CONVERT:
-            DbgVerify( ! has_decoration, "FoldBinary -- bad convert" );
-            op_test = castConstant( op2, type, &cast_happened );
-            if( cast_happened ) {
-                /* op2 was freed */
-                op_test = PTreeCopySrcLocation( op_test, expr );
-                NodeFreeDupedExpr( op1 );
-                PTreeFree( expr );
-                return( op_test );
-            }
-            break;
-        case CO_COMMA :
-            //
-            // X, c -- can be optimized when X is PT_IC( IC_COND_TRUE )
-            // and comma node has PTF_COND_END set
-            //
-            if( (expr->flags & PTF_COND_END)
-             && op1->op == PT_IC
-             && op1->u.ic.opcode == IC_COND_TRUE ) {
-                expr = pruneExpr( expr, &expr->u.subtree[1], op2 );
-            }
-            break;
-        }
-        return( expr );
-    }
-
-    // This is the case where the the lhs of the binary operator is
-    // a constant.
-    if( foldable( op1 ) ) {
-        switch( expr->cgop ) {
-        case CO_EQ:
-            DbgVerify( ! has_decoration, "FoldBinary -- bad ==" );
-
-            if( zeroConstant( op2 ) ) {
-                // expr is true only if op1 is also zero.
-                expr = makeBooleanConst( expr, zeroConstant( op1 ) );
-            }
-            break;
-        case CO_NE:
-            DbgVerify( ! has_decoration, "FoldBinary -- bad !=" );
-
-            if( zeroConstant( op2 ) ) {
-                // expr is true only if op1 is not zero.
-                expr = makeBooleanConst( expr, !zeroConstant( op1 ) );
-            }
-            break;
-        case CO_AND_AND:
-            // Appy short-circuiting logic for &&.
-
-//          DbgVerify( has_decoration, "FoldBinary -- bad &&" );
-            if( ! zeroConstant( op1 ) ) {
-                /* 1 && X => X (X is already boolean) */
-                expr = pruneExpr( expr, &expr->u.subtree[1], op2 );
-            } else {
-                /* 0 && X => 0 */
-                return pruneExpr( expr, &expr->u.subtree[0], op1 );
-            }
-            break;
-        case CO_OR_OR:
-            //Apply short-circuiting logic for ||.
-//          DbgVerify( has_decoration, "FoldBinary -- bad ||" );
-            if( zeroConstant( op1 ) ) {
-                /* 0 || X => X (X is already boolean) */
-                return pruneExpr( expr, &expr->u.subtree[1], op2 );
-            } else {
-                /* 1 || X => 1 */
-                return pruneExpr( expr, &expr->u.subtree[0], op1 );
-            }
-            break;
-        case CO_COMMA:
-            /* c , X => X */
-//          DbgVerify( ! has_decoration, "FoldBinary -- bad comma" );
-            expr->u.subtree[1] = NULL;
-            op2 = PTreeCopySrcLocation( op2, expr );
-            NodeFreeDupedExpr( expr );
-            return( op2 );
-        case CO_QUESTION:
-            DbgVerify( ! has_decoration, "FoldBinary -- bad ?" );
-            op_t = op2->u.subtree[0];
-            op_f = op2->u.subtree[1];
-            has_decoration = isCondDecor( op_t );
-            DbgVerify( has_decoration == isCondDecor( op_f )
-                     , "FoldBinary -- bad ?:" );
-            if( has_decoration ) {
-                op_t = op_t->u.subtree[1];
-                op_f = op_f->u.subtree[1];
-            }
-            if( ! zeroConstant( op1 ) ) {
-                /* 1 ? T : F => T */
-                if( has_decoration ) {
-                    op2->u.subtree[0]->u.subtree[1] = NULL;
-                } else {
-                    op2->u.subtree[0] = NULL;
-                }
-                op2 = op_t;
-            } else {
-                /* 0 ? T : F => F */
-                if( has_decoration ) {
-                    op2->u.subtree[1]->u.subtree[1] = NULL;
-                } else {
-                    op2->u.subtree[1] = NULL;
-                }
-                op2 = op_f;
-            }
-            op2 = PTreeCopySrcLocation( op2, expr );
-            NodeFreeDupedExpr( expr );
-            return( op2 );
-        }
-    } else {
-        typ1 = op1->op;
-        typ2 = op2->op;
-        if( ! isIntFloatOp( typ1 ) || ! isIntFloatOp( typ2 ) ) {
-            // (void)0 can make it here
-            return expr;
-        }
-        if( typ1 != typ2 ) {
-            if( PT_FLOATING_CONSTANT == typ1 ) {
-                if( NULL == Integral64Type( op2->type ) ) {
-                    if( SignedIntType( op2->type ) ) {
-                        op2->u.floating_constant
-                            = BFCnvIF( op2->u.int_constant );
-                    } else {
-                        op2->u.floating_constant
-                            = BFCnvUF( op2->u.uint_constant );
-                    }
-                } else {
-                    if( SignedIntType( op2->type ) ) {
-                        op2->u.floating_constant
-                            = BFCnvI64F( op2->u.int64_constant );
-                    } else {
-                        op2->u.floating_constant
-                            = BFCnvU64F( op2->u.int64_constant );
-                    }
-                }
-                typ2 = PT_FLOATING_CONSTANT;
-                op2->op = typ2;
-            } else {
-                if( NULL == Integral64Type( op1->type ) ) {
-                    if( SignedIntType( op1->type ) ) {
-                        op1->u.floating_constant
-                            = BFCnvIF( op1->u.int_constant );
-                    } else {
-                        op1->u.floating_constant
-                            = BFCnvUF( op1->u.uint_constant );
-                    }
-                } else {
-                    if( SignedIntType( op1->type ) ) {
-                        op1->u.floating_constant
-                            = BFCnvI64F( op1->u.int64_constant );
-                    } else {
-                        op1->u.floating_constant
-                            = BFCnvU64F( op1->u.int64_constant );
-                    }
-                }
-                typ1 = PT_FLOATING_CONSTANT;
-                op1->op = typ2;
-            }
-        }
-        if( PT_FLOATING_CONSTANT == typ1 ) {
-            op1 = foldFloating( expr->cgop, op1, op2->u.floating_constant );
-        } else if( SignedIntType( op1->type ) ) {
-            if( NULL == Integral64Type( op1->type )
-             && NULL == Integral64Type( op2->type ) ) {
-                op1 = foldInt( expr->cgop, op1, op2->u.int_constant );
-            } else {
-                op1 = foldInt64( expr->cgop, op1, op2->u.int64_constant );
-            }
-        } else {
-            if( NULL == Integral64Type( op1->type )
-             && NULL == Integral64Type( op2->type ) ) {
-                op1 = foldUInt( expr->cgop, op1, op2->u.uint_constant );
-            } else {
-                op1 = foldUInt64( expr->cgop, op1, op2->u.int64_constant );
-            }
-        }
-        if( op1 != NULL ) {
-            /* binary op was folded! */
-            if( has_decoration ) {
-                orig1->u.subtree[1] = NULL;
-                orig2->u.subtree[1] = NULL;
-            } else {
-                expr->u.subtree[0] = NULL;
-            }
-            op1 = castConstant( op1, type, &cast_happened );
-            op1 = PTreeCopySrcLocation( op1, expr );
-            NodeFreeDupedExpr( expr );
-            return op1;
-        }
-    }
-    return( expr );
-}
-#endif
-
 
 PTREE Fold( PTREE expr )        // Fold expression
 /**********************/
