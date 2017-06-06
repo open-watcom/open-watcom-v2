@@ -144,7 +144,7 @@ orl_return ElfCreateSymbolHandles( elf_sec_handle elf_sec_hnd )
     Elf64_Sym           *current_sym64;
     unsigned_32         st_name;
 
-    num_syms = elf_sec_hnd->size / elf_sec_hnd->entsize;
+    num_syms = elf_sec_hnd->size.u._32[I64LO32] / elf_sec_hnd->entsize.u._32[I64LO32];
     elf_sec_hnd->assoc.sym.symbols = (elf_symbol_handle)_ClientSecAlloc( elf_sec_hnd, sizeof( elf_symbol_handle_struct ) * num_syms );
     if( elf_sec_hnd->assoc.sym.symbols == NULL )
         return( ORL_OUT_OF_MEMORY );
@@ -218,7 +218,7 @@ orl_return ElfCreateSymbolHandles( elf_sec_handle elf_sec_hnd )
             break;
         }
         current++;
-        current_sym += elf_sec_hnd->entsize;
+        current_sym += elf_sec_hnd->entsize.u._32[I64LO32];
     }
     return( ORL_OKAY );
 }
@@ -228,13 +228,15 @@ orl_return ElfBuildSecNameHashTable( elf_file_handle elf_file_hnd )
 {
     elf_quantity    i;
     orl_return      return_val;
+    orl_hash_key    key;
 
     elf_file_hnd->sec_name_hash_table = ORLHashTableCreate( elf_file_hnd->elf_hnd->funcs, SEC_NAME_HASH_TABLE_SIZE, ORL_HASH_STRING_IGNORECASE );
     if( elf_file_hnd->sec_name_hash_table == NULL ) {
         return( ORL_OUT_OF_MEMORY );
     }
     for( i = 0; i < elf_file_hnd->num_sections; ++i ) {
-        return_val = ORLHashTableInsert( elf_file_hnd->sec_name_hash_table, elf_file_hnd->sec_handles[i]->name, elf_file_hnd->sec_handles[i] );
+        key.u.string = elf_file_hnd->sec_handles[i]->name;
+        return_val = ORLHashTableInsert( elf_file_hnd->sec_name_hash_table, key, elf_file_hnd->sec_handles[i] );
         if( return_val != ORL_OKAY ) {
             return( return_val );
         }
@@ -484,7 +486,7 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
     }
     switch( reloc_sec->type ) {
     case ORL_SEC_TYPE_RELOCS:
-        num_relocs = reloc_sec->size / reloc_sec->entsize;
+        num_relocs = reloc_sec->size.u._32[I64LO32] / reloc_sec->entsize.u._32[I64LO32];
         orel = reloc_sec->assoc.reloc.relocs = (orl_reloc *)_ClientSecAlloc( reloc_sec, sizeof( orl_reloc ) * num_relocs );
         if( orel == NULL )
             return( ORL_OUT_OF_MEMORY );
@@ -506,12 +508,12 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
                 orel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, ELF32_R_TYPE( irel32->r_info ) );
                 orel->offset = irel32->r_offset;
             }
-            irel += reloc_sec->entsize;
+            irel += reloc_sec->entsize.u._32[I64LO32];
             orel++;
         }
         break;
     case ORL_SEC_TYPE_RELOCS_EXPADD:
-        num_relocs = reloc_sec->size / reloc_sec->entsize;
+        num_relocs = reloc_sec->size.u._32[I64LO32] / reloc_sec->entsize.u._32[I64LO32];
         orel = reloc_sec->assoc.reloc.relocs = (orl_reloc *)_ClientSecAlloc( reloc_sec, sizeof( orl_reloc ) * num_relocs );
         if( orel == NULL )
             return( ORL_OUT_OF_MEMORY );
@@ -534,7 +536,7 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
                 orel->offset = irela32->r_offset;
                 orel->addend = irela32->r_addend;
             }
-            irel += reloc_sec->entsize;
+            irel += reloc_sec->entsize.u._32[I64LO32];
             orel++;
         }
         break;

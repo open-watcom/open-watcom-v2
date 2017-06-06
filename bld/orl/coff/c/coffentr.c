@@ -88,11 +88,12 @@ orl_return COFFENTRY CoffFileFini( coff_file_handle coff_file_hnd )
     return( CoffRemoveFileLinks( coff_file_hnd ) );
 }
 
-orl_return COFFENTRY CoffFileScan( coff_file_handle coff_file_hnd, orl_hash_key desired, orl_sec_return_func return_func )
+orl_return COFFENTRY CoffFileScan( coff_file_handle coff_file_hnd, const char *desired, orl_sec_return_func return_func )
 {
     orl_hash_data_struct    *data_entry;
     coff_quantity           i;
     orl_return              return_val;
+    orl_hash_key            key;
 
     if( desired == NULL ) {
         /* global request */
@@ -109,7 +110,8 @@ orl_return COFFENTRY CoffFileScan( coff_file_handle coff_file_hnd, orl_hash_key 
                 return( return_val );
             }
         }
-        for( data_entry = ORLHashTableQuery( coff_file_hnd->sec_name_hash_table, desired ); data_entry != NULL; data_entry = data_entry->next ) {
+        key.u.string = desired;
+        for( data_entry = ORLHashTableQuery( coff_file_hnd->sec_name_hash_table, key ); data_entry != NULL; data_entry = data_entry->next ) {
             return_val = return_func( (orl_sec_handle)data_entry->data );
             if( return_val != ORL_OKAY ) {
                 return( return_val );

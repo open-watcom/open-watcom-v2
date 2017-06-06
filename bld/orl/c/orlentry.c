@@ -288,11 +288,11 @@ orl_return ORLENTRY ORLFileScan( orl_file_handle orl_file_hnd, const char *desir
 {
     switch( ORLI_FILE_HND->type ) {
     case( ORL_ELF ):
-        return( ElfFileScan( ORLI_FILE_HND->file_hnd.elf, (orl_hash_key)desired, return_func ) );
+        return( ElfFileScan( ORLI_FILE_HND->file_hnd.elf, desired, return_func ) );
     case( ORL_COFF ):
-        return( CoffFileScan( ORLI_FILE_HND->file_hnd.coff, (orl_hash_key)desired, return_func ) );
+        return( CoffFileScan( ORLI_FILE_HND->file_hnd.coff, desired, return_func ) );
     case( ORL_OMF ):
-        return( OmfFileScan( ORLI_FILE_HND->file_hnd.omf, (orl_hash_key)desired, return_func ) );
+        return( OmfFileScan( ORLI_FILE_HND->file_hnd.omf, desired, return_func ) );
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }

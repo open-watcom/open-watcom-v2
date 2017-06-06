@@ -46,20 +46,20 @@
 
 static bool number_cmp( orl_hash_key n1, orl_hash_key n2 )
 {
-    return( (pointer_int)n1 == (pointer_int)n2 );
+    return( n1.u.number == n2.u.number );
 }
 
 static bool string_cmp( orl_hash_key p1, orl_hash_key p2 )
 {
-    return( strcmp( (const char *)p1, (const char *)p2 ) == 0 );
+    return( strcmp( p1.u.string, p2.u.string ) == 0 );
 }
 
 static bool string_cmp_ignorecase( orl_hash_key p1, orl_hash_key p2 )
 {
-    return( stricmp( (const char *)p1, (const char *)p2 ) == 0 );
+    return( stricmp( p1.u.string, p2.u.string ) == 0 );
 }
 
-static orl_hash_value hash_encode( orl_hash_value size, const unsigned char *ptr, size_t len, bool ignorecase )
+static orl_hash_value hash_encode( orl_hash_value size, const char *ptr, size_t len, bool ignorecase )
 {
     unsigned_32     g;
     unsigned_32     h;
@@ -67,7 +67,7 @@ static orl_hash_value hash_encode( orl_hash_value size, const unsigned char *ptr
 
     h = 0;
     while( len-- > 0 ) {
-        c = *ptr++;
+        c = *(unsigned char *)ptr;
         if( ignorecase )
             c = toupper( c );
         h = ( h << 4 ) + c;
@@ -75,23 +75,24 @@ static orl_hash_value hash_encode( orl_hash_value size, const unsigned char *ptr
             h = h ^ ( g >> 24 );
             h = h ^ g;
         }
+        ptr++;
     }
     return( h % size );
 }
 
 static orl_hash_value number_hash( orl_hash_value size, orl_hash_key key )
 {
-    return( hash_encode( size, (const unsigned char *)&key, sizeof( orl_hash_key ), false ) );
+    return( hash_encode( size, (const char *)&key.u.number, sizeof( key.u.number ), false ) );
 }
 
 static orl_hash_value string_hash( orl_hash_value size, orl_hash_key key )
 {
-    return( hash_encode( size, key, strlen( key ), false ) );
+    return( hash_encode( size, key.u.string, strlen( key.u.string ), false ) );
 }
 
 static orl_hash_value string_hash_ignorecase( orl_hash_value size, orl_hash_key key )
 {
-    return( hash_encode( size, key, strlen( key ), true ) );
+    return( hash_encode( size, key.u.string, strlen( key.u.string ), true ) );
 }
 
 orl_return ORLHashTableInsert( orl_hash_table hash_table, orl_hash_key key, orl_hash_data data )
