@@ -637,7 +637,7 @@ PTREE FoldUnary( PTREE expr )
         switch( expr->cgop ) {
         case CO_EXCLAMATION:
             if( nonZeroExpr( op1 ) ) {
-                expr = makeBooleanConst( expr, 0 );
+                expr = makeTrueFalse( expr, op1, 0 );
             }
             break;
         }
