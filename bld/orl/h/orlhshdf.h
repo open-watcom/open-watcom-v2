@@ -41,7 +41,12 @@ typedef enum {
 
 typedef unsigned    orl_hash_value;
 typedef const void  *orl_hash_data;
-typedef const void  *orl_hash_key;
+typedef struct {
+    union {
+        pointer_int     number;
+        const char      *string;
+    } u;
+} orl_hash_key;
 
 typedef struct orl_hash_data_struct     orl_hash_data_struct;
 typedef struct orl_hash_key_struct      orl_hash_key_struct;

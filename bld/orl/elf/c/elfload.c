@@ -387,11 +387,13 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index 
             s_hdr64 = (Elf64_Shdr *)s_hdr;
             fix_shdr64_byte_order( elf_file_hnd, s_hdr64 );
             name_index[i] = s_hdr64->sh_name;
-            elf_sec_hnd->size = s_hdr64->sh_size.u._32[I64LO32];
+            elf_sec_hnd->size.u._32[I64HI32] = s_hdr64->sh_size.u._32[I64HI32];
+            elf_sec_hnd->size.u._32[I64LO32] = s_hdr64->sh_size.u._32[I64LO32];
             elf_sec_hnd->base.u._32[I64HI32] = s_hdr64->sh_addr.u._32[I64HI32];
             elf_sec_hnd->base.u._32[I64LO32] = s_hdr64->sh_addr.u._32[I64LO32];
             elf_sec_hnd->offset = s_hdr64->sh_offset.u._32[I64LO32];
-            elf_sec_hnd->entsize = s_hdr64->sh_entsize.u._32[I64LO32];
+            elf_sec_hnd->entsize.u._32[I64HI32] = s_hdr64->sh_entsize.u._32[I64HI32];
+            elf_sec_hnd->entsize.u._32[I64LO32] = s_hdr64->sh_entsize.u._32[I64LO32];
             sh_align = s_hdr64->sh_addralign.u._32[I64LO32];
             sh_flags = s_hdr64->sh_flags.u._32[I64LO32];
             sh_type = s_hdr64->sh_type;
@@ -402,11 +404,13 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index 
             s_hdr32 = (Elf32_Shdr *)s_hdr;
             fix_shdr_byte_order( elf_file_hnd, s_hdr32 );
             name_index[i] = s_hdr32->sh_name;
-            elf_sec_hnd->size = s_hdr32->sh_size;
+            elf_sec_hnd->size.u._32[I64HI32] = 0;
+            elf_sec_hnd->size.u._32[I64LO32] = s_hdr32->sh_size;
             elf_sec_hnd->base.u._32[I64HI32] = 0;
             elf_sec_hnd->base.u._32[I64LO32] = s_hdr32->sh_addr;
             elf_sec_hnd->offset = s_hdr32->sh_offset;
-            elf_sec_hnd->entsize = s_hdr32->sh_entsize;
+            elf_sec_hnd->entsize.u._32[I64HI32] = 0;
+            elf_sec_hnd->entsize.u._32[I64LO32] = s_hdr32->sh_entsize;
             sh_align = s_hdr32->sh_addralign;
             sh_flags = s_hdr32->sh_flags;
             sh_type = s_hdr32->sh_type;
@@ -514,15 +518,13 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index 
 }
 
 
-static int sec_compare( const void *first_sec, const void *second_sec )
+static int section_compare( const void *first_sec, const void *second_sec )
 {
-    if( (*(const elf_sec_handle *)first_sec)->offset > (*(const elf_sec_handle *)second_sec)->offset ) {
+    if( (*(const elf_sec_handle *)first_sec)->offset > (*(const elf_sec_handle *)second_sec)->offset )
         return( 1 );
-    } else if( (*(const elf_sec_handle *)first_sec)->offset < (*(const elf_sec_handle *)second_sec)->offset ) {
+    if( (*(const elf_sec_handle *)first_sec)->offset < (*(const elf_sec_handle *)second_sec)->offset )
         return( -1 );
-    } else {
-        return( 0 );
-    }
+    return( 0 );
 }
 
 
@@ -601,12 +603,12 @@ orl_return ElfLoadFileStructure( elf_file_handle elf_file_hnd )
         return( return_val );
     }
     // now sort the section handles by file offset
-    qsort( elf_file_hnd->sec_handles, elf_file_hnd->num_sections, sizeof( elf_sec_handle ), sec_compare );
+    qsort( elf_file_hnd->sec_handles, elf_file_hnd->num_sections, sizeof( elf_sec_handle ), section_compare );
 
     elf_sec_hnd = elf_file_hnd->sec_handles[elf_file_hnd->num_sections - 1];
-    contents_size2 = elf_sec_hnd->offset + elf_sec_hnd->size - shoff.u._32[I64LO32] - sec_header_table_size;
+    contents_size2 = elf_sec_hnd->offset + elf_sec_hnd->size.u._32[I64LO32] - shoff.u._32[I64LO32] - sec_header_table_size;
     if( contents_size2 > 0 ) {
-        elf_file_hnd->size = elf_sec_hnd->offset + elf_sec_hnd->size;
+        elf_file_hnd->size = elf_sec_hnd->offset + elf_sec_hnd->size.u._32[I64LO32];
         elf_file_hnd->contents_buffer2 = _ClientRead( elf_file_hnd, contents_size2 );
         if( elf_file_hnd->contents_buffer2 == NULL ) {
             _ClientFree( elf_file_hnd, name_index );
@@ -618,7 +620,7 @@ orl_return ElfLoadFileStructure( elf_file_handle elf_file_hnd )
     // determine contents pointers of all sections
     for( i = 0; i < elf_file_hnd->num_sections; ++i ) {
         elf_sec_hnd = elf_file_hnd->sec_handles[i];
-        if( elf_sec_hnd->size > 0 ) {
+        if( elf_sec_hnd->size.u._32[I64LO32] > 0 ) {
             if( elf_sec_hnd->offset < shoff.u._32[I64LO32] ) {
                 elf_sec_hnd->contents = elf_file_hnd->contents_buffer1 + elf_sec_hnd->offset - ehsize;
             } else {

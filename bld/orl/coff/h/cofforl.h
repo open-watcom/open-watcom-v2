@@ -40,7 +40,7 @@ orl_return              COFFENTRY CoffFini( coff_handle );
 
 orl_return              COFFENTRY CoffFileInit( coff_handle, orl_file_id, coff_file_handle * );
 orl_return              COFFENTRY CoffFileFini( coff_file_handle );
-orl_return              COFFENTRY CoffFileScan( coff_file_handle, orl_hash_key, orl_sec_return_func );
+orl_return              COFFENTRY CoffFileScan( coff_file_handle, const char *, orl_sec_return_func );
 orl_machine_type        COFFENTRY CoffFileGetMachineType( coff_file_handle );
 orl_file_flags          COFFENTRY CoffFileGetFlags( coff_file_handle );
 orl_file_type           COFFENTRY CoffFileGetType( coff_file_handle );

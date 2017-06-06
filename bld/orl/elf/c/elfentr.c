@@ -90,11 +90,12 @@ orl_return ELFENTRY ElfFileFini( elf_file_handle elf_file_hnd )
     return( ElfRemoveFileLinks( elf_file_hnd ) );
 }
 
-orl_return ELFENTRY ElfFileScan( elf_file_handle elf_file_hnd, orl_hash_key desired, orl_sec_return_func return_func )
+orl_return ELFENTRY ElfFileScan( elf_file_handle elf_file_hnd, const char *desired, orl_sec_return_func return_func )
 {
     orl_hash_data_struct    *data_entry;
     elf_quantity            i;
     orl_return              return_val;
+    orl_hash_key            key;
 
     if( desired == NULL ) {
         /* global request */
@@ -111,7 +112,8 @@ orl_return ELFENTRY ElfFileScan( elf_file_handle elf_file_hnd, orl_hash_key desi
                 return( return_val );
             }
         }
-        for( data_entry = ORLHashTableQuery( elf_file_hnd->sec_name_hash_table, (orl_hash_key)desired ); data_entry != NULL; data_entry = data_entry->next ) {
+        key.u.string = desired;
+        for( data_entry = ORLHashTableQuery( elf_file_hnd->sec_name_hash_table, key ); data_entry != NULL; data_entry = data_entry->next ) {
             return_val = return_func( (orl_sec_handle)data_entry->data );
             if( return_val != ORL_OKAY ) {
                 return( return_val );
@@ -160,7 +162,7 @@ orl_return ELFENTRY ElfSecGetBase( elf_sec_handle elf_sec_hnd, orl_sec_base *sec
 
 orl_sec_size ELFENTRY ElfSecGetSize( elf_sec_handle elf_sec_hnd )
 {
-    return( elf_sec_hnd->size );
+    return( elf_sec_hnd->size.u._32[I64LO32] );
 }
 
 orl_sec_type ELFENTRY ElfSecGetType( elf_sec_handle elf_sec_hnd )
@@ -248,7 +250,7 @@ orl_return ELFENTRY ElfSecQueryReloc( elf_sec_handle elf_sec_hnd, elf_sec_offset
     }
     reloc = reloc_sec_hnd->assoc.reloc.relocs;
     return_val = ORL_FALSE;
-    for( index = 0; index < reloc_sec_hnd->size; index += reloc_sec_hnd->entsize ) {
+    for( index = 0; index < reloc_sec_hnd->size.u._32[I64LO32]; index += reloc_sec_hnd->entsize.u._32[I64LO32] ) {
         if( reloc->offset == sec_offset ) {
             return_val = return_func( reloc );
             if( return_val != ORL_OKAY ) {
@@ -281,7 +283,7 @@ orl_return ELFENTRY ElfSecScanReloc( elf_sec_handle elf_sec_hnd, orl_reloc_retur
     }
     reloc = reloc_sec_hnd->assoc.reloc.relocs;
     return_val = ORL_FALSE;
-    for( index = 0; index < reloc_sec_hnd->size; index += reloc_sec_hnd->entsize ) {
+    for( index = 0; index < reloc_sec_hnd->size.u._32[I64LO32]; index += reloc_sec_hnd->entsize.u._32[I64LO32] ) {
         return_val = return_func( reloc );
         if( return_val != ORL_OKAY )
             return( return_val );
@@ -338,7 +340,7 @@ orl_return ELFENTRY ElfRelocSecScan( elf_sec_handle elf_sec_hnd, orl_reloc_retur
     }
     reloc = elf_sec_hnd->assoc.reloc.relocs;
     return_val = ORL_FALSE;
-    for( index = 0; index < elf_sec_hnd->size; index += elf_sec_hnd->entsize ) {
+    for( index = 0; index < elf_sec_hnd->size.u._32[I64LO32]; index += elf_sec_hnd->entsize.u._32[I64LO32] ) {
         return_val = return_func( reloc );
         if( return_val != ORL_OKAY )
             return( return_val );
@@ -367,7 +369,7 @@ orl_return ELFENTRY ElfSymbolSecScan( elf_sec_handle elf_sec_hnd, orl_symbol_ret
     default:
         return( ORL_ERROR );
     }
-    for( index = 0; index < elf_sec_hnd->size; index += elf_sec_hnd->entsize ) {
+    for( index = 0; index < elf_sec_hnd->size.u._32[I64LO32]; index += elf_sec_hnd->entsize.u._32[I64LO32] ) {
         return_val = return_func( (orl_symbol_handle)elf_symbol_hnd );
         if( return_val != ORL_OKAY )
             return( return_val );
@@ -383,9 +385,9 @@ orl_return ELFENTRY ElfNoteSecScan( elf_sec_handle elf_sec_hnd, orl_note_callbac
         return( ORL_ERROR );
     if( strcmp( elf_sec_hnd->name, ".drectve" ) != 0 )
         return( ORL_OKAY );
-    if( elf_sec_hnd->size == 0 )
+    if( elf_sec_hnd->size.u._32[I64LO32] == 0 )
         return( ORL_OKAY );
-    return( ElfParseDrectve( (char *)elf_sec_hnd->contents, elf_sec_hnd->size, cbs, cookie ) );
+    return( ElfParseDrectve( (char *)elf_sec_hnd->contents, elf_sec_hnd->size.u._32[I64LO32], cbs, cookie ) );
 }
 
 const char * ELFENTRY ElfSymbolGetName( elf_symbol_handle elf_symbol_hnd )
