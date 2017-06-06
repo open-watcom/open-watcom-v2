@@ -629,30 +629,22 @@ PTREE FoldUnary( PTREE expr )
 /***************************/
 {
     PTREE op1;
-    TYPE result_type;
+    TYPE result_type = expr->type;;
     bool dont_care;
 
     op1 = expr->u.subtree[0];
-    if( foldable( op1 ) ) {
-        switch( expr->cgop ) {
-        case CO_EXCLAMATION:
-            if( nonZeroExpr( op1 ) ) {
-                expr = makeTrueFalse( expr, op1, 0 );
-            }
-            break;
-        }
+
+    if( !foldable( op1 ) ) {
         return( expr );
     }
-    result_type = expr->type;
+
+    if( expr->cgop == CO_EXCLAMATION ) {
+        // This is the simplest operation.
+        return makeTrueFalse( expr, op1, !nonZeroExpr( op1 ) );
+    }
+
     if( op1->op == PT_FLOATING_CONSTANT ) {
         switch( expr->cgop ) {
-        case CO_EXCLAMATION:
-            op1->u.int64_constant.u._32[ I64HI32 ] = 0;
-            op1->u.int64_constant.u._32[ I64LO32 ]
-                = ( BFSign( op1->u.floating_constant ) == 0 );
-            op1->op = PT_INT_CONSTANT;
-            op1 = NodeSetBooleanType( op1 );
-            break;
         case CO_UMINUS:
             BFNegate( op1->u.floating_constant );
             break;
@@ -664,22 +656,20 @@ PTREE FoldUnary( PTREE expr )
         op1 = PTreeCopySrcLocation( op1, expr );
         PTreeFree( expr );
         return( castConstant( op1, result_type, &dont_care ) );
-    }
-    switch( expr->cgop ) {
-    case CO_TILDE:
-        op1->u.int64_constant.u._32[0] = ~ op1->u.int64_constant.u._32[0];
-        op1->u.int64_constant.u._32[1] = ~ op1->u.int64_constant.u._32[1];
-        break;
-    case CO_EXCLAMATION:
-        op1 = makeBooleanConst( op1, ! nonZeroExpr( op1 ) );
-        break;
-    case CO_UMINUS:
-        U64Neg( &op1->u.int64_constant, &op1->u.int64_constant );
-        break;
-    case CO_UPLUS:
-        break;
-    default:
-        return( expr );
+    } else if( op1->op == PT_INT_CONSTANT ) {
+        switch( expr->cgop ) {
+        case CO_TILDE:
+            op1->u.int64_constant.u._32[0] = ~ op1->u.int64_constant.u._32[0];
+            op1->u.int64_constant.u._32[1] = ~ op1->u.int64_constant.u._32[1];
+            break;
+        case CO_UMINUS:
+            U64Neg( &op1->u.int64_constant, &op1->u.int64_constant );
+            break;
+        case CO_UPLUS:
+            break;
+        default:
+            return( expr );
+        }
     }
     op1 = PTreeCopySrcLocation( op1, expr );
     PTreeFree( expr );
