@@ -1166,36 +1166,31 @@ static PTREE pruneExpr(         // PRUNE ONE SIDE FROM EXPRESSION
     (((1L << (op)) & ((1L << PT_INT_CONSTANT) | (1L << PT_FLOATING_CONSTANT))) != 0 )
 
 /**
- * Perform some folding optimizations that can be simmetrically applied
- * to opl, opr.
+ * Perform some folding optimizations that can be safely applied
+ * towards the left of the expression (the lhs is constant).
  *
  * \param expr The binary expression to be folded.
- * \param opl The lhs of the expression.
- * \param opr The rhs of the expression.
+ * \param op1 The lhs of the expression.
+ * \param op2 The rhs of the expression.
  * \param has_decoration Whether either side of the expression
  *                       was conditionally-decorated.
  */
-static PTREE FoldBinarySimmetrical( bool *has_folded,
-    PTREE expr, PTREE opl, PTREE opr,
-    bool has_decoration, bool inverted )
+static PTREE FoldBinaryLeft( bool *has_folded,
+    PTREE expr, PTREE op1, PTREE op2,
+    bool has_decoration )
 {
+    DbgVerify( foldable( op1 ), "op1 must be foldable" );
+
     *has_folded = false;
-    //TYPE type = expr->type;
 
-    // Still need to point to the right subtrees in the expression.
-    PTREE *pchild1 = inverted ? &expr->u.subtree[1] : &expr->u.subtree[0];
-    PTREE *pchild2 = inverted ? &expr->u.subtree[0] : &expr->u.subtree[1];
-    PTREE op1 = inverted ? opr : opl;
-    PTREE op2 = inverted ? opl : opr;
+    PTREE op_t;
+    PTREE op_f;
+    PTREE *pchild1 = &expr->u.subtree[0];
+    PTREE *pchild2 = &expr->u.subtree[1];
 
-
-    if( !foldable( op1 ) ) {
-        return expr;
-    }
-    // The lhs of the binary expression is a constant.
     switch( expr->cgop ) {
     case CO_EQ:
-        DbgVerify( !has_decoration, "FoldBinary -- bad ==" );
+        DbgVerify( !has_decoration, "FoldBinaryLeft -- bad ==" );
 
         if( zeroConstant( op2 ) && !hasSideEffects( op2 ) ) {
             *has_folded = true;
@@ -1204,7 +1199,7 @@ static PTREE FoldBinarySimmetrical( bool *has_folded,
         }
         break;
     case CO_NE:
-        DbgVerify( !has_decoration, "FoldBinary -- bad !=" );
+        DbgVerify( !has_decoration, "FoldBinaryLeft -- bad !=" );
 
         if( zeroConstant( op2 ) && !hasSideEffects( op2 ) ) {
             *has_folded = true;
@@ -1238,28 +1233,44 @@ static PTREE FoldBinarySimmetrical( bool *has_folded,
         }
         break;
     case CO_COMMA:
-        if( inverted ) 
-        {
-            // X, c -- can be optimized when X is PT_IC( IC_COND_TRUE )
-            // and comma node has PTF_COND_END set
-            //
-            if( (expr->flags & PTF_COND_END)
-             && op1->op == PT_IC
-             && op1->u.ic.opcode == IC_COND_TRUE ) {
-                *has_folded = true;
-                expr = pruneExpr( expr, pchild2, op2 );
-                break;
-            }
-        } else {
-            /* c , X => X */
+        /* c , X => X */
 //              DbgVerify( ! has_decoration, "FoldBinary -- bad comma" );
-            expr->u.subtree[1] = NULL;
-            op2 = PTreeCopySrcLocation( op2, expr );
-            NodeFreeDupedExpr( expr );
-            *has_folded = true;
-            return( op2 );
+        expr->u.subtree[1] = NULL;
+        op2 = PTreeCopySrcLocation( op2, expr );
+        NodeFreeDupedExpr( expr );
+        *has_folded = true;
+        return( op2 ); 
+    case CO_QUESTION:
+        DbgVerify( ! has_decoration, "FoldBinary -- bad ?" );
+        op_t = op2->u.subtree[0];
+        op_f = op2->u.subtree[1];
+        has_decoration = isCondDecor( op_t );
+        DbgVerify( has_decoration == isCondDecor( op_f )
+                 , "FoldBinary -- bad ?:" );
+        if( has_decoration ) {
+            op_t = op_t->u.subtree[1];
+            op_f = op_f->u.subtree[1];
         }
-
+        if( ! zeroConstant( op1 ) ) {
+            /* 1 ? T : F => T */
+            if( has_decoration ) {
+                op2->u.subtree[0]->u.subtree[1] = NULL;
+            } else {
+                op2->u.subtree[0] = NULL;
+            }
+            op2 = op_t;
+        } else {
+            /* 0 ? T : F => F */
+            if( has_decoration ) {
+                op2->u.subtree[1]->u.subtree[1] = NULL;
+            } else {
+                op2->u.subtree[1] = NULL;
+            }
+            op2 = op_f;
+        }
+        op2 = PTreeCopySrcLocation( op2, expr );
+        NodeFreeDupedExpr( expr );
+        return( op2 );
     }
 
     return( expr );
@@ -1279,8 +1290,6 @@ PTREE FoldBinary( PTREE expr )
     PTREE orig2;
     PTREE op1;
     PTREE op2;
-    PTREE op_t;
-    PTREE op_f;
     PTREE op_test;
     TYPE type;
     unsigned typ1;
@@ -1302,77 +1311,58 @@ PTREE FoldBinary( PTREE expr )
     
     if( !foldable( op1 ) && !foldable( op2 ) ) return( expr );
 
-    // Try performing folding in either direction for some common operations:
-    bool has_folded = false;
-    expr = FoldBinarySimmetrical( &has_folded, expr, op1, op2, has_decoration, false );
-    if( has_folded )
-        return expr;
-    expr = FoldBinarySimmetrical( &has_folded, expr, op1, op2, has_decoration, true );
-    if( has_folded )
-        return expr;
+    // Try performing left-folding on the expression.
+    /* Note that right-folding is only safe in certain situations. For example
 
-    // Try performing some of the asymmetrical transformations:
+    ( fn() && 0 )
+
+    cannot be directly folded into ( false ) by eliding the function call.
+    */
+    if ( foldable( op1 ) ) {
+        bool has_lfolded = false;
+        expr = FoldBinaryLeft( &has_lfolded, expr, op1, op2, has_decoration );
+        if( has_lfolded )
+            return( expr );
+    }
+
+    if( !foldable( op2 ) )
+        return( expr );
+
     switch( expr->cgop ) {
-        case CO_PLUS_EQUAL :
-        case CO_MINUS_EQUAL :
-        case CO_AND_EQUAL :
-        case CO_OR_EQUAL :
-        case CO_XOR_EQUAL :
-        case CO_EQUAL:
-            if( !foldable( op2 ) )
-                break;
-            /* have to be careful with pointer scaling of numbers */
-            DbgVerify( ! has_decoration, "FoldBinary -- bad equals" );
-            if( ArithType( type ) != NULL ) {
-                expr->u.subtree[1] = castConstant( op2, type, &cast_happened );
-            }
-            return( expr );
-        case CO_CONVERT:
-            if( !foldable( op2 ) )
-                break;
-            DbgVerify( ! has_decoration, "FoldBinary -- bad convert" );
-            op_test = castConstant( op2, type, &cast_happened );
-            if( cast_happened ) {
-                /* op2 was freed */
-                op_test = PTreeCopySrcLocation( op_test, expr );
-                NodeFreeDupedExpr( op1 );
-                PTreeFree( expr );
-                return( op_test );
-            }
-            return( expr );
-        case CO_QUESTION:
-            if( !foldable( op1 ) )
-                break;
-            DbgVerify( ! has_decoration, "FoldBinary -- bad ?" );
-            op_t = op2->u.subtree[0];
-            op_f = op2->u.subtree[1];
-            has_decoration = isCondDecor( op_t );
-            DbgVerify( has_decoration == isCondDecor( op_f )
-                     , "FoldBinary -- bad ?:" );
-            if( has_decoration ) {
-                op_t = op_t->u.subtree[1];
-                op_f = op_f->u.subtree[1];
-            }
-            if( ! zeroConstant( op1 ) ) {
-                /* 1 ? T : F => T */
-                if( has_decoration ) {
-                    op2->u.subtree[0]->u.subtree[1] = NULL;
-                } else {
-                    op2->u.subtree[0] = NULL;
-                }
-                op2 = op_t;
-            } else {
-                /* 0 ? T : F => F */
-                if( has_decoration ) {
-                    op2->u.subtree[1]->u.subtree[1] = NULL;
-                } else {
-                    op2->u.subtree[1] = NULL;
-                }
-                op2 = op_f;
-            }
-            op2 = PTreeCopySrcLocation( op2, expr );
-            NodeFreeDupedExpr( expr );
-            return( op2 );
+    case CO_COMMA:
+        // X, c -- can be optimized when X is PT_IC( IC_COND_TRUE )
+        // and comma node has PTF_COND_END set
+        //
+        if( (expr->flags & PTF_COND_END)
+         && op1->op == PT_IC
+         && op1->u.ic.opcode == IC_COND_TRUE ) {
+            expr = pruneExpr( expr, &expr->u.subtree[1], op2 );
+        }
+        return( expr );
+    case CO_PLUS_EQUAL :
+    case CO_MINUS_EQUAL :
+    case CO_AND_EQUAL :
+    case CO_OR_EQUAL :
+    case CO_XOR_EQUAL :
+    case CO_EQUAL:
+        /* have to be careful with pointer scaling of numbers */
+        DbgVerify( ! has_decoration, "FoldBinary -- bad equals" );
+        if( ArithType( type ) != NULL ) {
+            expr->u.subtree[1] = castConstant( op2, type, &cast_happened );
+        }
+        return( expr );
+    case CO_CONVERT:
+        DbgVerify( ! has_decoration, "FoldBinary -- bad convert" );
+        op_test = castConstant( op2, type, &cast_happened );
+        if( cast_happened ) {
+            /* op2 was freed */
+            op_test = PTreeCopySrcLocation( op_test, expr );
+            NodeFreeDupedExpr( op1 );
+            PTreeFree( expr );
+            return( op_test );
+        }
+        return( expr );
+
     }
     
     typ1 = op1->op;
