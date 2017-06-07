@@ -500,7 +500,7 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
                 fix_rel64_byte_order( reloc_sec->elf_file_hnd, irel64 );
                 orel->symbol = (orl_symbol_handle)( reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols + irel64->r_info.u._32[I64HI32] );
                 orel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, (elf_reloc_type)irel64->r_info.u._32[I64LO32] );
-                orel->offset = (orl_sec_offset)irel64->r_offset.u._32[I64LO32];
+                orel->offset = irel64->r_offset.u._32[I64LO32];
             } else {
                 Elf32_Rel *irel32 = (Elf32_Rel *)irel;
                 fix_rel_byte_order( reloc_sec->elf_file_hnd, irel32 );
@@ -526,8 +526,8 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
                 fix_rela64_byte_order( reloc_sec->elf_file_hnd, irela64 );
                 orel->symbol = (orl_symbol_handle)( reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols + irela64->r_info.u._32[I64HI32] );
                 orel->type = ElfConvertRelocType( reloc_sec->elf_file_hnd, (elf_reloc_type)irela64->r_info.u._32[I64LO32] );
-                orel->offset = (orl_sec_offset)irela64->r_offset.u._32[I64LO32];
-                orel->addend = (orl_sec_addend)irela64->r_addend.u._32[I64LO32];
+                orel->offset = irela64->r_offset.u._32[I64LO32];
+                orel->addend = irela64->r_addend.u._32[I64LO32];
             } else {
                 Elf32_Rela *irela32 = (Elf32_Rela *)irel;
                 fix_rela_byte_order( reloc_sec->elf_file_hnd, irela32 );

@@ -41,6 +41,7 @@
 
 typedef unsigned_8                      elf_file_flags;
 typedef unsigned_32                     elf_file_index;
+typedef unsigned_32                     elf_file_offset;
 typedef unsigned_32                     elf_headers_size;
 
 typedef unsigned_32                     elf_sec_flags;
@@ -54,7 +55,9 @@ typedef unsigned_16                     elf_reloc_type;
 
 typedef unsigned_32                     elf_quantity;
 
-typedef unsigned_32                     elf_index;
+typedef unsigned_16                     elf_half;
+typedef unsigned_32                     elf_word;
+typedef elf_word                        elf_index;
 
 typedef struct elf_handle_struct        elf_handle_struct;
 typedef elf_handle_struct               *elf_handle;
@@ -81,7 +84,7 @@ struct elf_file_handle_struct {
     orl_file_id         file;
     unsigned_8          *contents_buffer1;
     unsigned_8          *contents_buffer2;
-    unsigned_16         shentsize;
+    elf_half            shentsize;
     orl_machine_type    machine_type;
     orl_file_type       type;
     orl_file_size       size;
@@ -126,7 +129,7 @@ struct elf_sec_handle_struct {
     elf_sec_handle      next;
     char                *name;
     elf_sec_size        size;
-    orl_file_offset     offset;
+    elf_file_offset     file_offset;
     orl_sec_type        type;
     orl_sec_flags       flags;
     orl_sec_alignment   alignment;
@@ -152,7 +155,7 @@ struct elf_symbol_handle_struct {
     orl_symbol_type     type;
     char                *name;
     elf_symbol_value    value;
-    unsigned_16         shndx;
+    elf_half            shndx;
     unsigned_8          info;
 };
 
