@@ -89,7 +89,7 @@ dis_handler_return AXPPal( dis_handle *h, void *d, dis_dec_ins *ins )
 
     code.full = ins->opcode;
     ins->op[0].type = DO_IMMED;
-    ins->op[0].value = code.pal.code;
+    ins->op[0].value.s._32[I64LO32] = code.pal.code;
     ins->num_ops = 1;
     return( DHR_DONE );
 }
@@ -104,7 +104,7 @@ dis_handler_return AXPMemory( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].type = DO_REG;
     ins->op[0].base = code.memory.ra + DR_AXP_r0;
     ins->op[1].type = DO_MEMORY_ABS;
-    ins->op[1].value = DisSEX( code.memory.disp, 15 );
+    ins->op[1].value.s._32[I64LO32] = DisSEX( code.memory.disp, 15 );
     ins->op[1].base = code.memory.rb + DR_AXP_r0;
     ins->num_ops = 2;
     switch( code.memory.opcode & 0x0b ) {
@@ -182,9 +182,9 @@ dis_handler_return AXPJump( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].base = code.memory.ra + DR_AXP_r0;
     ins->op[1].type = DO_ABSOLUTE;
     ins->op[1].base = code.memory.rb + DR_AXP_r0;
-    ins->op[1].value = 0;
+    ins->op[1].value.s._32[I64LO32] = 0;
     ins->op[2].type = DO_IMMED;
-    ins->op[2].value = code.memory.disp & 0x3fff;
+    ins->op[2].value.s._32[I64LO32] = code.memory.disp & 0x3fff;
     ins->num_ops = 3;
     return( DHR_DONE );
 }
@@ -199,7 +199,7 @@ dis_handler_return AXPBranch( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].type = DO_REG;
     ins->op[0].base = code.branch.ra + DR_AXP_r0;
     ins->op[1].type = DO_RELATIVE;
-    ins->op[1].value = (DisSEX( code.branch.disp, 20 ) + 1) * sizeof( unsigned_32 );
+    ins->op[1].value.s._32[I64LO32] = (DisSEX( code.branch.disp, 20 ) + 1) * sizeof( unsigned_32 );
     ins->num_ops = 2;
     return( DHR_DONE );
 }
@@ -222,7 +222,7 @@ dis_handler_return AXPOperate( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->op[0].base = code.reg_operate.ra + DR_AXP_r0;
     if( code.reg_operate.lit_flag ) {
         ins->op[1].type = DO_IMMED;
-        ins->op[1].value = code.lit_operate.lit;
+        ins->op[1].value.s._32[I64LO32] = code.lit_operate.lit;
     } else {
         ins->op[1].type = DO_REG;
         ins->op[1].base = code.reg_operate.rb + DR_AXP_r0;
@@ -457,9 +457,9 @@ static size_t AXPInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
             unsigned long       val;
 
             new = "mov";
-            val = ins->op[1].value;
+            val = ins->op[1].value.s._32[I64LO32];
             ins->op[1] = ins->op[0];
-            ins->op[0].value = val;
+            ins->op[0].value.s._32[I64LO32] = val;
             ins->op[0].type = DO_IMMED;
         }
         break;
@@ -495,7 +495,7 @@ static size_t AXPInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
         }
         break;
     case DI_AXP_SUBQ:
-        if( ins->op[0].value == 31 ) {
+        if( ins->op[0].value.s._32[I64LO32] == 31 ) {
             new = "negq";
             ins->op[0] = ins->op[1];
             ins->op[1] = ins->op[2];
