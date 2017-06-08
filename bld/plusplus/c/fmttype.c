@@ -547,6 +547,9 @@ void FormatFunctionType( TYPE type, VBUF *pprefix, VBUF *psuffix, int num_def,
             case TYP_VOID:
                 VbufConcStr( pprefix, typeName[top->type->id] );
                 break;
+            case TYP_NULLPTR:
+                VbufConcStr( pprefix, "decltype(nullptr) " );
+                break;
             case TYP_GENERIC:
                 VbufConcChr( pprefix, '?' );
                 VbufConcDecimal( pprefix, top->type->u.g.index );
