@@ -205,9 +205,9 @@ static PTREE thunkArgList(      // BUILD THUNK ARGUMENT LIST
             expr = NodeFetchReference( expr );
             arg_model = ObjModelArgument( TypeReferenced( arg_type ) );
             if( TypeReference( arg_type ) == NULL && arg_model != OMR_CLASS_REF ) {
-                expr = NodeRvalue( expr );
+                expr = NodeGetRValue( expr );
             }
-            list = NodeArgument( list, expr );
+            list = NodeMakeArgument( list, expr );
         }
     }
     list = NodeReverseArgs( &count, list );
@@ -293,7 +293,7 @@ void RtnGenCallBackGenThunk(    // GENERATE THUNK CODE
             extra_arg = NULL;
         }
         if( SymIsThisMember( orig_sym ) ) {
-            this_arg = NodeArg( NodeThis() );
+            this_arg = NodeMakeArg( NodeMakeThis() );
         } else {
             this_arg = NULL;
         }
@@ -349,7 +349,7 @@ static PTREE applyReturnThunk(  // GENERATE A RETURN THUNK
         /* only need NULL checks for pointer casts */
         if( ptr_type->id == TYP_POINTER ) {
             if( (ptr_type->flag & TF1_REFERENCE) == 0 ) {
-                dup1 = NodeDupExpr( &expr );
+                dup1 = NodeMakeExprDuplicate( &expr );
             }
         }
     }
@@ -360,12 +360,12 @@ static PTREE applyReturnThunk(  // GENERATE A RETURN THUNK
         expr = NodeConvertVirtualPtr( expr, ret_type, vb_offset, vb_index );
     }
     if( delta != 0 ) {
-        expr = NodeAddToLeft( expr, NodeOffset( delta ), ret_type );
+        expr = NodeMakeLeftAddition( expr, NodeMakeConstantOffset( delta ), ret_type );
     }
     if( dup1 != NULL ) {
-        dup2 = NodeDupExpr( &dup1 );
-        dup1 = NodeCompareToZero( dup1 );
-        expr = NodeTestExpr( dup1, expr, dup2 );
+        dup2 = NodeMakeExprDuplicate( &dup1 );
+        dup1 = NodeMakeZeroCompare( dup1 );
+        expr = NodeMakeTernaryExpr( dup1, expr, dup2 );
     }
     return( expr );
 }
@@ -433,18 +433,18 @@ void EmitVfunThunk(             // EMIT THUNK FOR VIRTUAL FUNCTION
     override_class = ScopeClass( SymScope( override_sym ) );
     args = thunkArgList( fn_scope );
     /* make "this" arg */
-    this_arg = NodeRvalue( NodeThis() );
-    this_arg = NodeConvert( MakePointerTo( override_class ), this_arg );
-    this_arg = NodeArg( this_arg );
+    this_arg = NodeGetRValue( NodeMakeThis() );
+    this_arg = NodeMakeConversion( MakePointerTo( override_class ), this_arg );
+    this_arg = NodeMakeArg( this_arg );
     return_type = SymFuncReturnType( override_sym );
     return_node = NULL;
     if( OMR_CLASS_REF == ObjModelArgument( return_type ) ) {
-        return_node = NodeTemporary( return_type );
+        return_node = NodeMakeTemporary( return_type );
     }
     stmt = NodeMakeCall( override_sym, return_type, args );
     stmt = CallArgsArrange( override_sym->sym_type, stmt, args, this_arg, NULL, return_node );
     if( return_node != NULL ) {
-        stmt = NodeDtorExpr( stmt, return_node->u.symcg.symbol );
+        stmt = NodeMarkDtorExpr( stmt, return_node->u.symcg.symbol );
         stmt = PtdCtoredExprType( stmt, override_sym, return_type );
     }
     return_sym = SymFunctionReturn();

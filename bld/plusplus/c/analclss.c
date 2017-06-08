@@ -163,7 +163,7 @@ static void returnThis(         // RETURN "this" value
 
 static PTREE addOffset( PTREE node, target_offset_t offset, TYPE type )
 {
-    node = NodeBinary( CO_DOT, node, NodeOffset( offset ) );
+    node = NodeMakeBinary( CO_DOT, node, NodeMakeConstantOffset( offset ) );
     node->type = type;
     node->flags |= PTF_LVALUE;
     return( node );
@@ -171,7 +171,7 @@ static PTREE addOffset( PTREE node, target_offset_t offset, TYPE type )
 
 static PTREE addOffsetToThis( target_offset_t offset, TYPE type )
 {
-    return( addOffset( NodeThis(), offset, type ) );
+    return( addOffset( NodeMakeThis(), offset, type ) );
 }
 
 static PTREE nodeFirstParm(     // GET FIRST PARM AS A NODE
@@ -219,7 +219,7 @@ static PTREE addVBOffsetToThis(
     BASE_CLASS *base,
     TYPE type )
 {
-    return addVBOffsetToExpr( scope, base, type, NodeThis() );
+    return addVBOffsetToExpr( scope, base, type, NodeMakeThis() );
 }
 
 static PTREE accessSourceBase( SCOPE scope, BASE_CLASS *base )
@@ -289,9 +289,9 @@ static PTREE setThisFromOffset( // SET "THIS" BACK BY AN OFFSET
         /* bit-fields do not have l-values that can be adjusted */
         return( expr );
     }
-    offset_node = NodeOffset( offset );
+    offset_node = NodeMakeConstantOffset( offset );
     offset_node->cgop = CO_IGNORE;
-    expr = NodeBinary( CO_RESET_THIS, expr, offset_node );
+    expr = NodeMakeBinary( CO_RESET_THIS, expr, offset_node );
     expr->type = this_type;
     return( expr );
 }
@@ -450,11 +450,11 @@ static PTREE classArrayRtCall(  // GENERATE R/T CALL FOR ARRAY
     target_size_t nelem;        // - number of array elements
 
     nelem = ArrayTypeNumberItems( artype );
-    expr = NodeArgument( expr, NodeOffset( nelem ) );
+    expr = NodeMakeArgument( expr, NodeMakeConstantOffset( nelem ) );
     if( src != NULL ) {
-        expr = NodeArgument( expr, src );
+        expr = NodeMakeArgument( expr, src );
     }
-    expr = NodeArgument( expr, tgt );
+    expr = NodeMakeArgument( expr, tgt );
     expr = RunTimeCall( expr
                       , PointerTypeForArray( artype )
                       , rtn_code );
@@ -475,10 +475,10 @@ static void generateCopyObject( // GENERATE COPY OF OBJECT
     expr = NodeSetMemoryExact( expr );
     expr = NodeFetch( expr );
     expr->flags &= ~ PTF_LVALUE;
-    tgt = NodeThis();
+    tgt = NodeMakeThis();
     tgt->type = TypedefModifierRemove( tgt->type )->of;
     tgt->flags |= PTF_LVALUE;
-    expr = NodeCopyClassObject( tgt, expr );
+    expr = NodeMakeClassObjectCopy( tgt, expr );
     EmitAnalysedStmt( expr );
 }
 
@@ -499,7 +499,7 @@ static PTREE bitFieldNodeAssign( PTREE tgt, PTREE src, PTREE (*fetch)( PTREE ) )
     src = bitFieldLValueAdjust( src );
     src = fetch( src );
     tgt = bitFieldLValueAdjust( tgt );
-    return( NodeAssign( tgt, src ) );
+    return( NodeMakeAssignment( tgt, src ) );
 }
 
 
@@ -538,17 +538,17 @@ static void emitOpeqCall(       // EMIT AN ASSIGNMENT FOR DEFAULT OP=
       case TITER_CLASS_DBASE :
       case TITER_NAKED_DTOR  :
         if( NULL == StructType( cltype ) ) {
-            expr = bitFieldNodeAssign( tgt, src, NodeRvalue );
+            expr = bitFieldNodeAssign( tgt, src, NodeGetRValue );
         } else {
-            expr = NodeAssign( tgt, src );
+            expr = NodeMakeAssignment( tgt, src );
             expr = ClassAssign( expr );
         }
         break;
       case TITER_ARRAY_EXACT :
       case TITER_ARRAY_VBASE :
         if( NULL == StructType( cltype ) ) {
-            src = NodeConvertFlags( artype, src, PTF_MEMORY_EXACT | PTF_LVALUE );
-            tgt = NodeConvertFlags( artype, tgt, PTF_MEMORY_EXACT | PTF_LVALUE );
+            src = NodeMakeConversionFlags( artype, src, PTF_MEMORY_EXACT | PTF_LVALUE );
+            tgt = NodeMakeConversionFlags( artype, tgt, PTF_MEMORY_EXACT | PTF_LVALUE );
             expr = bitFieldNodeAssign( tgt, src, NodeFetch );
         } else if( ClassNeedsAssign( cltype, true ) ) {
             if( qualifier != 0 ) {
@@ -568,8 +568,8 @@ static void emitOpeqCall(       // EMIT AN ASSIGNMENT FOR DEFAULT OP=
                 CDtorScheduleArgRemap( assop );
                 assop = ClassFunMakeAddressable( assop );
                 assop->flag |= SF_ADDR_TAKEN;
-                expr = NodeArguments( MakeNodeSymbol( assop )
-                                    , NodeOffset( CgMemorySize( cltype ) )
+                expr = NodeMakeArgList( MakeNodeSymbol( assop )
+                                    , NodeMakeConstantOffset( CgMemorySize( cltype ) )
                                     , NULL );
                 expr = classArrayRtCall( expr
                                        , src
@@ -584,7 +584,7 @@ static void emitOpeqCall(       // EMIT AN ASSIGNMENT FOR DEFAULT OP=
             tgt->type = artype;
 #endif
             src = NodeFetch( src );
-            expr = NodeAssign( tgt, src );
+            expr = NodeMakeAssignment( tgt, src );
         }
         break;
     }
@@ -782,19 +782,19 @@ static PTREE doBinaryCopy(      // DO A BINARY COPY
     tgt_type = NodeType( tgt );
     tgt_type = TypeReferenced( tgt_type );
 
-    src = NodeRvalue( src );
+    src = NodeGetRValue( src );
 
     if( OMR_CLASS_REF == ObjModelArgument( tgt_type ) ) {
         src->flags &= ~PTF_CLASS_RVREF;
         src->flags |= PTF_LVALUE | PTF_MEMORY_EXACT;
-        src = NodeConvertFlags( tgt_type, src, PTF_MEMORY_EXACT | PTF_LVALUE );
+        src = NodeMakeConversionFlags( tgt_type, src, PTF_MEMORY_EXACT | PTF_LVALUE );
         src = NodeFetch( src );
         src->flags |= PTF_MEMORY_EXACT;
     } else {
-        src = NodeConvertFlags( tgt_type, src, PTF_MEMORY_EXACT );
+        src = NodeMakeConversionFlags( tgt_type, src, PTF_MEMORY_EXACT );
     }
-    tgt = NodeConvertFlags( tgt_type, tgt, PTF_MEMORY_EXACT | PTF_LVALUE );
-    return NodeCopyClassObject( tgt, src );
+    tgt = NodeMakeConversionFlags( tgt_type, tgt, PTF_MEMORY_EXACT | PTF_LVALUE );
+    return NodeMakeClassObjectCopy( tgt, src );
 }
 
 static PTREE doClassAssign(     // ASSIGN TO CLASS OBJECT
@@ -827,9 +827,9 @@ static PTREE doClassAssign(     // ASSIGN TO CLASS OBJECT
                 fun->u.symcg.result = result;
                 fun->cgop = CO_NAME_DOT;
                 fun = PTreeCopySrcLocation( fun, expr );
-                tgt = NodeDottedFunction( tgt, fun );
+                tgt = NodeMakeDottedFunction( tgt, fun );
                 tgt = PTreeCopySrcLocation( tgt, expr );
-                call_expr = NodeBinary( CO_CALL_NOOVLD, tgt, NodeArg( src ) );
+                call_expr = NodeMakeBinary( CO_CALL_NOOVLD, tgt, NodeMakeArg( src ) );
                 call_expr = PTreeCopySrcLocation( call_expr, expr );
                 call_expr = AnalyseCall( call_expr, &diagAssign );
                 PTreeFree( expr );
@@ -945,9 +945,9 @@ static PTREE genDefaultCopyDiag(// GENERATE COPY TO CLASS OBJECT, WITH DIAGNOSIS
         fun->u.symcg.result = result;
         fun->cgop = CO_NAME_DOT;
         fun = PTreeCopySrcLocation( fun, src );
-        tgt = NodeBinary( CO_ARROW, tgt, fun );
+        tgt = NodeMakeBinary( CO_ARROW, tgt, fun );
         tgt = PTreeCopySrcLocation( tgt, src );
-        expr = NodeBinary( CO_CALL_NOOVLD, tgt, NodeArg( src ) );
+        expr = NodeMakeBinary( CO_CALL_NOOVLD, tgt, NodeMakeArg( src ) );
         expr = PTreeCopySrcLocation( expr, src );
         expr = AnalyseCall( expr, diagnosis );
         if( expr->op == PT_ERROR ) {
@@ -955,7 +955,7 @@ static PTREE genDefaultCopyDiag(// GENERATE COPY TO CLASS OBJECT, WITH DIAGNOSIS
         } else {
             this_arg = NodeGetCallExpr( expr )->u.subtree[1];
             this_arg->u.subtree[0]
-                = NodeArgumentExactCtor( this_arg->u.subtree[0]
+                = NodeMakeArgCtor( this_arg->u.subtree[0]
                                        , tgt_type
                                        , true );
             *a_ctor_used = ctor;
@@ -1033,7 +1033,7 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
         FnovFreeDiag( &fnov_diag );
         opt = CALL_OPT_NONE;
         if( is_ctor ) {
-            src = NodeLvExtract( src );
+            src = NodeExtractLValue( src );
             result = classResult( type, &ctor_udc, ctor_udc->name->name, NULL );
         } else {
             TYPE src_class = ClassTypeForType( type_right );
@@ -1092,7 +1092,7 @@ static PTREE defaultCopyDiag(   // COPY TO CLASS OBJECT, WITH DIAGNOSIS
             } else {
                 src_type = SymFuncArgList( ctor_udc )->type_list[0];
             }
-            if( !temp_ok && NodeNonConstRefToTemp( src_type, right ) ) {
+            if( !temp_ok && NodeIsNonConstRefToTemp( src_type, right ) ) {
                 opt = CALL_OPT_ERR;
             }
         }
@@ -1172,27 +1172,27 @@ PTREE ClassCopyTemp(            // COPY A TEMPORARY
 #if 0
     SYMBOL ctor;                // - CTOR used
 #endif
-    expr = NodeLvExtract( expr );
-    if( NodeReferencesTemporary( expr )
+    expr = NodeExtractLValue( expr );
+    if( NodeYieldsTemporary( expr )
      && cl_type == ClassTypeForType( expr->type ) ) {
         NodeFreeDupedExpr( temp_node );
-        expr = NodeLvExtract( expr );
+        expr = NodeExtractLValue( expr );
         expr->type = cl_type;
         expr->flags |= PTF_LVALUE;
     } else {
         if( NULL == temp_node ) {
-            temp_node = NodeTemporary( cl_type );
+            temp_node = NodeMakeTemporary( cl_type );
             temp_node = PTreeCopySrcLocation( temp_node, expr );
         }
 #if 0
         expr = defaultCopyDiag( temp_node, expr, &diagCopy, &ctor );
-        expr = NodeDtorExpr( expr, temp_node->u.symcg.symbol );
+        expr = NodeMarkDtorExpr( expr, temp_node->u.symcg.symbol );
         if( ctor != NULL ) {
             expr = PtdCtoredExprType( expr, ctor, cl_type );
         }
 #else
         expr = CopyInit( expr, temp_node, cl_type, &diagTempCopy );
-        expr = NodeDtorExpr( expr, temp_node->u.symcg.symbol );
+        expr = NodeMarkDtorExpr( expr, temp_node->u.symcg.symbol );
 #endif
     }
     return expr;
@@ -1255,7 +1255,7 @@ static PTREE generateArrayClassCall( // CALL CTOR/DTOR FOR ARRAY OF CLASS OBJ.s
 {
     PTREE expr;                 // - generated expression
 
-    expr = classArrayRtCall( NodeTypeSigArg( sig )
+    expr = classArrayRtCall( NodeMakeTypeSignatureArg( sig )
                            , NULL
                            , sym
                            , artype
@@ -1277,7 +1277,7 @@ static PTREE generateArrayDtorCall( // CALL R/T ROUTINE TO DTOR ARRAY
     if( error_occurred ) {
         expr = NULL;
     } else {
-        node_this = NodeRvalue( node_this );
+        node_this = NodeGetRValue( node_this );
         TypeSigReferenced( base_sig );
         expr = generateArrayClassCall( array_type
                                      , base_sig
@@ -1512,9 +1512,9 @@ void RtnGenCallBackArrayDtor(   // GENERATE ARRAY DTOR
     scope = ScopeFunctionScopeInProgress();
     p1 = SymMakeDummy( MakeCDtorExtraArgType(), &name );
     p1 = ScopeInsert( scope, p1, name );
-    stmt = generateArrayDtorCall( ar_type, NodeThis() );
+    stmt = generateArrayDtorCall( ar_type, NodeMakeThis() );
     retn = SymFunctionReturn();
-    stmt = NodeAssignRef( MakeNodeSymbol( retn ), stmt );
+    stmt = NodeMakeRefAssignment( MakeNodeSymbol( retn ), stmt );
     EmitAnalysedStmt( stmt );
     CgFrontCodePtr( IC_PROC_RETURN, retn );
     finiClassFunction( dtor, &fn_data, &check );
@@ -1753,7 +1753,7 @@ static PTREE ctorPrologueArray( // GENERATE INITIALIZATION FOR CTOR OF ARRAY
     sig = TypeSigFind( tsa, cltype, NULL, &errors );
     DbgVerify( ! errors, "ctorPrologueArray -- unexpected errors" );
     TypeSigReferenced( sig );
-    stmt = classArrayRtCall( NodeTypeSigArg( sig )
+    stmt = classArrayRtCall( NodeMakeTypeSignatureArg( sig )
                            , init_expr
                            , init_item
                            , init_type
@@ -2050,7 +2050,7 @@ static void ctorPrologueMember( // GENERATE PROLOGUE FOR MEMBER
                 if( NULL != TypeReference( sym->sym_type ) ) {
                     expr = NodeUnaryCopy( CO_FETCH, expr );
                 }
-                data->comp_expr = NodeArg( expr );
+                data->comp_expr = NodeMakeArg( expr );
             }
             data->comp_options = CI_NULL;
             ctorPrologueComponents( data );
@@ -2103,7 +2103,7 @@ static void emitOffset( target_offset_t offset )
 {
     PTREE expr;
 
-    expr = NodeOffset( offset );
+    expr = NodeMakeConstantOffset( offset );
     DgStoreScalar( expr, 0, expr->type );
     PTreeFreeSubtrees( expr );
 }
@@ -2211,7 +2211,7 @@ static void emitRttiRef( SYMBOL sym, target_offset_t offset )
         sym->flag |= SF_ADDR_TAKEN;
         expr = MakeNodeSymbol( sym );
     } else {
-        expr = NodeZero();
+        expr = NodeMakeZeroConstant();
     }
     type = TypePtrToVoid();
     DgStoreScalar( expr, offset, type );
@@ -2230,7 +2230,7 @@ static void emitVFNPointer( SYMBOL sym )
         }
         expr = NodeMakeCallee( sym );
     } else {
-        expr = NodeZero();
+        expr = NodeMakeZeroConstant();
     }
     type = TypeVoidFunOfVoid();
     type = MakePointerTo( type );
@@ -2323,7 +2323,7 @@ static void ctorPrologueBaseGen(    // GENERATE FOR CTOR BASE CLASS
     data->comp_expr = extractBaseInit( data, base->type );
     if( data->comp_expr == NULL ) {
         if( data->gen_copy ) {
-            data->comp_expr = NodeArg( accessSourceBase( data->scope
+            data->comp_expr = NodeMakeArg( accessSourceBase( data->scope
                                                        , base ) );
         }
         data->comp_options = CI_NULL;
@@ -2424,7 +2424,7 @@ static void genDeleteVector(
         if( ! TypeAbstract( class_type ) ) {
             CgFrontCode( IC_DTOR_DAR_BEG );
             testExtraParm( DTOR_DELETE_VECTOR, false );
-            stmt = NodeUnary( CO_DELETE_ARRAY, NodeThis() );
+            stmt = NodeMakeUnary( CO_DELETE_ARRAY, NodeMakeThis() );
             stmt->flags |= PTF_MEMORY_EXACT;
             stmt = AnalyseDelete( stmt, true );
             EmitAnalysedStmt( stmt );
@@ -2540,7 +2540,7 @@ static void genDeleteThis( SYMBOL dtor )
     if( ! TypeAbstract( SymClass( dtor ) ) && SymIsVirtual( dtor ) ) {
         CgFrontCode( IC_DTOR_DLT_BEG );
         testExtraParm( DTOR_DELETE_THIS, false );
-        stmt = NodeUnary( CO_DELETE, NodeThis() );
+        stmt = NodeMakeUnary( CO_DELETE, NodeMakeThis() );
         stmt->flags |= PTF_MEMORY_EXACT;
         stmt = AnalyseDelete( stmt, true );
         EmitAnalysedStmt( stmt );

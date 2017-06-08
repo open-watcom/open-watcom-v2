@@ -315,7 +315,7 @@ bool AddDefaultArgs(            // ADD DEFAULT ARGUMENTS, AS REQ'D
                 PTreeErrorNode( defarg_expr );
                 break;
             }
-            defarg_expr = NodeArg( defarg_expr );
+            defarg_expr = NodeMakeArg( defarg_expr );
             *args = defarg_expr;
             args = &defarg_expr->u.subtree[0]; // used if more than one defarg
             func->flag |= SF_REFERENCED;

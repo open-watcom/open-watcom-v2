@@ -79,9 +79,9 @@ static PTREE adjust_base_ptr(   // ADJUST BASE PTR AS true/TESTING CONVERSION
     TYPE type )                 // - type, after conversion
 {
     if( orig->flags & PTF_PTR_NONZERO ) {
-        orig = NodeBinary( CO_DOT, orig, offset );
+        orig = NodeMakeBinary( CO_DOT, orig, offset );
     } else {
-        orig = NodeBinary( CO_PTR_DELTA, orig, offset );
+        orig = NodeMakeBinary( CO_PTR_DELTA, orig, offset );
     }
     orig->type = type;
     return orig;
@@ -99,25 +99,25 @@ PTREE NodeConvertVirtualPtr(    // EXECUTE A VIRTUAL BASE CAST
     PTREE dup;
 
     vbptr_type = MakeVBTableFieldType( true );
-    offset = NodeOffset( vb_offset );
-    expr = NodeBinary( CO_DOT, expr, offset );
+    offset = NodeMakeConstantOffset( vb_offset );
+    expr = NodeMakeBinary( CO_DOT, expr, offset );
     expr->flags |= PTF_LVALUE | PTF_PTR_NONZERO;
     expr->type = vbptr_type;
-    dup = NodeDupExpr( &expr );
+    dup = NodeMakeExprDuplicate( &expr );
     expr->flags |= PTF_LVALUE | PTF_PTR_NONZERO;
     expr = NodeFetch( expr );
     expr->type = vbptr_type;
     expr->flags &= ~ PTF_LVALUE;
     expr->flags |= PTF_PTR_NONZERO;
     adjust_type = TypePointedAtModified( vbptr_type );
-    offset = NodeOffset( vb_index * CgMemorySize( adjust_type ) );
-    expr = NodeBinary( CO_DOT, expr, offset );
+    offset = NodeMakeConstantOffset( vb_index * CgMemorySize( adjust_type ) );
+    expr = NodeMakeBinary( CO_DOT, expr, offset );
     expr->type = adjust_type;
     expr->flags |= PTF_LVALUE | PTF_PTR_NONZERO;
     expr = NodeFetch( expr );
     expr->type = adjust_type;
     expr->flags |= PTF_PTR_NONZERO;
-    expr = NodeBinary( CO_DOT, dup, expr );
+    expr = NodeMakeBinary( CO_DOT, dup, expr );
     expr->type = final_type;
     expr->flags |= PTF_LVALUE | PTF_PTR_NONZERO;
     return expr;
@@ -133,9 +133,9 @@ static void adjust_by_delta(    // COMPUTE DELTA ADJUSTMENT
     PTREE offset;               // - node containing delta
 
     if( delta == 0 ) {
-        *a_expr = NodeConvert( base, *a_expr );
+        *a_expr = NodeMakeConversion( base, *a_expr );
     } else {
-        offset = NodeOffset( delta );
+        offset = NodeMakeConstantOffset( delta );
         if( ! positive ) {
             offset->u.int_constant = - delta;
         }
@@ -194,7 +194,7 @@ void NodeConvertToBasePtr(      // CONVERT TO A BASE PTR, USING SEARCH_RESULT
                 expr = NodeMakeCallee( ibp );
                 expr->cgop = CO_IGNORE;
             }
-            expr = NodeUnary( CO_VBASE_FETCH, expr );
+            expr = NodeMakeUnary( CO_VBASE_FETCH, expr );
             expr = PtdVbaseFetch( expr
                                 , result->vb_offset
                                 , result->vb_index
@@ -205,21 +205,21 @@ void NodeConvertToBasePtr(      // CONVERT TO A BASE PTR, USING SEARCH_RESULT
             node = NodeReplace( node, expr );
         } else {
             dup = NULL;
-            if( ! NodePtrNonZero( node ) ) {
-                dup = NodeDupExpr( &node );
+            if( ! NodeIsNonNullPtr( node ) ) {
+                dup = NodeMakeExprDuplicate( &node );
             }
             vb_offset = result->vb_offset;
             vb_index = result->vb_index;
             node = NodeConvertVirtualPtr( node, base, vb_offset, vb_index );
             delta = result->delta;
             if( delta != 0 ) {
-                node = NodeBinary( CO_DOT, node, NodeOffset( delta ) );
+                node = NodeMakeBinary( CO_DOT, node, NodeMakeConstantOffset( delta ) );
                 node->type = base;
                 node->flags |= orig_prop;
             }
             if( dup != NULL ) {
-                orig = NodeDupExpr( &dup );
-                node = NodeTestExpr( NodeCompareToZero( orig ), node, dup );
+                orig = NodeMakeExprDuplicate( &dup );
+                node = NodeMakeTernaryExpr( NodeMakeZeroCompare( orig ), node, dup );
             }
         }
         *a_expr = node;
@@ -464,7 +464,7 @@ CNV_RETN NodeConvertPtr(        // CONVERT A POINTER
                                 , TypePointedAtModified( tgt ) ) ) {
       case CTD_NO :
         if( ptr_to_void( tgt ) ) {
-            *expr = NodeConvert( tgt, *expr );
+            *expr = NodeMakeConversion( tgt, *expr );
             retn = check_result_cv( expr, src, tgt, reqd_cnvptr );
         } else {
             retn = CNV_IMPOSSIBLE;

@@ -266,7 +266,7 @@ static void adjustFnAddrPtr     // ADJUST FOR &FUNCTION --> PTR
     PTREE func;                 // - function node ( &class::func )
 
     addrof = PTreeOp( &ctl->expr->u.subtree[1] );
-    switch( NodeAddrOfFun( addrof, &func ) ) {
+    switch( NodeGetOverloadedFnAddr( addrof, &func ) ) {
       case ADDR_FN_ONE_USED :
       case ADDR_FN_ONE :
         func = NodeActualNonOverloaded( func );
@@ -311,7 +311,7 @@ static void adjustFnAddrMembPtr // ADJUST FOR &FUNCTION --> MEMB-PTR
     TYPE mptype;                // - member-ptr type
 
     addrof = PTreeOp( &ctl->expr->u.subtree[1] );
-    switch( NodeAddrOfFun( addrof, &func ) ) {
+    switch( NodeGetOverloadedFnAddr( addrof, &func ) ) {
       case ADDR_FN_ONE_USED :
         if( !CompFlags.extensions_enabled )
             break;
@@ -449,7 +449,7 @@ void ConvCtlInit                // INITIALIZE CONVCTL
                     checkSrcForError( ctl );
                 } else if( NodeIsUnaryOp( ctl->expr->u.subtree[1], CO_BITFLD_CONVERT ) ) {
                     if( TypeIsConst( ctl->tgt.unmod->of ) ) {
-                        ctl->expr->u.subtree[1] = NodeRvalue( ctl->expr->u.subtree[1] );
+                        ctl->expr->u.subtree[1] = NodeGetRValue( ctl->expr->u.subtree[1] );
                     } else {
                         ConversionInfDisable();
                         PTreeErrorExpr( ctl->expr->u.subtree[1], ERR_CANT_REFERENCE_A_BIT_FIELD );
@@ -487,7 +487,7 @@ void ConvCtlInit                // INITIALIZE CONVCTL
                 ref_type = TypeReference( ctl->tgt.unmod );
                 if( TypeIsConst( ref_type ) ) {
                     PTREE exp;
-                    exp = NodeAssignTemporary( ref_type, ctl->expr->u.subtree[1] );
+                    exp = NodeMakeAssignToNewTmp( ref_type, ctl->expr->u.subtree[1] );
                     ctl->expr->u.subtree[1] = exp;
                 } else {
                     diagnoseError( ctl, ERR_TEMP_AS_NONCONST_REF );
@@ -500,7 +500,7 @@ void ConvCtlInit                // INITIALIZE CONVCTL
                     ctl->expr->u.subtree[1]->type = MakePointerTo( ref_type );
                     ctl->expr->u.subtree[1]->flags &= ~PTF_LVALUE;
                 } else {
-                    expr->u.subtree[1] = NodeRvalue( expr->u.subtree[1] );
+                    expr->u.subtree[1] = NodeGetRValue( expr->u.subtree[1] );
                     src = expr->u.subtree[1]->type;
                 }
             }
@@ -937,16 +937,16 @@ static PTREE nodeBasedSelfExpr( // FIND EXPR TO BE USED FOR BASED __SELF
     pted = TypePointedAtModified( node_type );
     umod = TypeModExtract( pted, &flags, &baser, TC1_NOT_ENUM_CHAR );
     tgt = TypeRebuildPcPtr( umod, flags, TF1_FAR );
-    expr->u.subtree[0] = NodeConvert( tgt, expr->u.subtree[0] );
+    expr->u.subtree[0] = NodeMakeConversion( tgt, expr->u.subtree[0] );
     expr->u.subtree[0]->flags &= ~ PTF_LVALUE;
-    return NodeDupExpr( &expr->u.subtree[0] );
+    return NodeMakeExprDuplicate( &expr->u.subtree[0] );
 }
 
 
 static PTREE findBasedStrSym(   // FIND REFERENCE SYMBOL FOR TF1_BASED_STRING
     TYPE expr_type )            // - type of pointer expression
 {
-    return NodeBasedStr( BasedPtrType( expr_type ) );
+    return NodeMakeBasedStr( BasedPtrType( expr_type ) );
 }
 
 
@@ -970,32 +970,32 @@ static PTREE convertFromPcPtr(  // CONVERT SPECIAL TO REGULAR PC PTR
                              , TC1_NOT_ENUM_CHAR );
         switch( ptr_class ) {
           case PC_PTR_FAR16 :
-            expr = NodeUnary( CO_FAR16_TO_POINTER, expr );
+            expr = NodeMakeUnary( CO_FAR16_TO_POINTER, expr );
             expr = NodeSetType( expr, ptr_type, PTF_PTR_NONZERO );
             break;
           case PC_PTR_BASED_VOID :
-            expr = NodeConvertFlags( tgt_type, expr, PTF_PTR_NONZERO );
+            expr = NodeMakeConversionFlags( tgt_type, expr, PTF_PTR_NONZERO );
             break;
           case PC_PTR_BASED_STRING :
           { PTREE bsym;         // - basing symbol
             bsym = findBasedStrSym( expr->type );
-            expr = NodeBinary( CO_SEG_OP, expr, bsym );
+            expr = NodeMakeBinary( CO_SEG_OP, expr, bsym );
             expr = NodeSetType( expr, tgt_type, PTF_PTR_NONZERO );
           } break;
           case PC_PTR_BASED_SELF :
-            expr = NodeBinary( CO_SEG_OP, expr, bself );
+            expr = NodeMakeBinary( CO_SEG_OP, expr, bself );
             expr = NodeSetType( expr, tgt_type, PTF_PTR_NONZERO );
             break;
           case PC_PTR_BASED_FETCH :
-            expr = NodeBinary( CO_SEG_OP
+            expr = NodeMakeBinary( CO_SEG_OP
                              , expr
-                             , NodeRvalue( MakeNodeSymbol( baser ) ) );
+                             , NodeGetRValue( MakeNodeSymbol( baser ) ) );
             expr = NodeSetType( expr, tgt_type, PTF_PTR_NONZERO );
             break;
           case PC_PTR_BASED_ADD :
-            expr = NodeBinary( CO_PLUS
+            expr = NodeMakeBinary( CO_PLUS
                              , expr
-                             , NodeRvalue( MakeNodeSymbol( baser ) ) );
+                             , NodeGetRValue( MakeNodeSymbol( baser ) ) );
             expr = NodeSetType( expr, tgt_type, PTF_PTR_NONZERO );
             break;
           default :
@@ -1018,22 +1018,22 @@ static PTREE convertToPcPtr(    // CONVERT REGULAR TO SPECIAL PC PTR
       case PC_PTR_NOT :
         break;
       case PC_PTR_FAR16 :
-        expr = NodeUnary( CO_POINTER_TO_FAR16, expr );
+        expr = NodeMakeUnary( CO_POINTER_TO_FAR16, expr );
         expr = NodeSetType( expr, ptr_type, PTF_PTR_NONZERO );
         break;
       case PC_PTR_BASED_SELF :
       case PC_PTR_BASED_VOID :
       case PC_PTR_BASED_FETCH :
       case PC_PTR_BASED_STRING :
-        expr = NodeConvertFlags( ptr_type, expr, PTF_PTR_NONZERO );
+        expr = NodeMakeConversionFlags( ptr_type, expr, PTF_PTR_NONZERO );
         break;
       case PC_PTR_BASED_ADD :
       { PTREE temp;             // - temp
         SYMBOL baser;           // - based symbol
         baser = BasedPtrType( ptr_type )->u.m.base;
         temp = MakeNodeSymbol( baser );
-        temp = NodeRvalue( temp );
-        expr = NodeBinary( CO_MINUS, expr, temp );
+        temp = NodeGetRValue( temp );
+        expr = NodeMakeBinary( CO_MINUS, expr, temp );
         expr = NodeSetType( expr, ptr_type, PTF_PTR_NONZERO );
       } break;
     }
@@ -1313,7 +1313,7 @@ static CNV_RETN pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
 #endif
                 // fall thru
             case 2:       // truncate to __based pointer, except TF1_ADD
-                expr = NodeConvert( tgt_type, expr );
+                expr = NodeMakeConversion( tgt_type, expr );
                 break;
             case 3:       // convert to FAR16
             case 8:       // convert regular to TF1_ADD
@@ -1330,7 +1330,7 @@ static CNV_RETN pcPtrConvertSrcTgt(// PTR CONVERT SOURCE TO TARGET
             case 6:       // convert from FAR16 to __based
             case 9:       // convert TF1_ADD to __based
                 expr = convertFromPcPtr( expr, type_src, bself );
-                expr = NodeConvert( tgt_type, expr );
+                expr = NodeMakeConversion( tgt_type, expr );
                 break;
             }
         }
@@ -1347,7 +1347,7 @@ CNV_RETN CastPtrToPtr           // IMPLICIT/EXPLICIT CAST PTR -> PTR
     PTREE expr;                 // - resultant expression
     PTREE dtor;                 // - dtoring operand
 
-    expr = *NodeReturnSrc( &ctl->expr, &dtor );
+    expr = *NodeGetReturnSrc( &ctl->expr, &dtor );
     if( expr->op == PT_SYMBOL ) {
         expr->u.symcg.symbol->flag |= SF_ADDR_TAKEN;
     }

@@ -84,9 +84,9 @@ PTREE UdcCall                   // CALL UDC FUNCTION
     node = NodeMakeCallee( result->sym );
     node->u.symcg.result = result;
     node->cgop = CO_NAME_CONVERT;
-    node = NodeDottedFunction( src, node );
+    node = NodeMakeDottedFunction( src, node );
     node = PTreeCopySrcLocation( node, src );
-    node = NodeBinary( CO_CALL_NOOVLD, node, NULL );
+    node = NodeMakeBinary( CO_CALL_NOOVLD, node, NULL );
     node = PTreeCopySrcLocation( node, src );
     node = AnalyseCall( node, diagnosis );
     return node;

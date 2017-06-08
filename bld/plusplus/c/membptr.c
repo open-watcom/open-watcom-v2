@@ -60,7 +60,7 @@ typedef enum                    // CLASSIFICATION OF MEMBER-PTR EXPRESSIONS
 static PTREE membPtrTemporary(  // PLACE MEMBER PTR IN TEMPORARY
     PTREE expr )                // - member-ptr expression
 {
-    expr = NodeAssign( NodeTemporary( expr->type ), expr );
+    expr = NodeMakeAssignment( NodeMakeTemporary( expr->type ), expr );
     expr->flags |= PTF_MEMORY_EXACT;
     return expr;
 }
@@ -73,7 +73,7 @@ static PTREE membPtrStoreTemp(  // STORE MEMBER PTR EXPR IN TEMPORARY
 
     a_expr = membPtrTemporary( expr );
     MembPtrAssign( &a_expr );
-    return NodeRvalue( a_expr );
+    return NodeGetRValue( a_expr );
 }
 
 
@@ -213,7 +213,7 @@ static PTREE accessOp(          // ACCESS AN OPERAND
 {
     PTREE expr;                 // - resultant expression
 
-    expr = NodeBinary( CO_DOT, base, NodeOffset( offset ) );
+    expr = NodeMakeBinary( CO_DOT, base, NodeMakeConstantOffset( offset ) );
     expr->type = type;
     expr->flags |= PTF_LVALUE;
     return expr;
@@ -227,7 +227,7 @@ static PTREE addOffset(         // ADD AN OFFSET TO AN LVALUE
 {
     PTREE expr;                 // - resultant expression
 
-    expr = NodeAddToLeft( field, NodeOffset( offset ), type );
+    expr = NodeMakeLeftAddition( field, NodeMakeConstantOffset( offset ), type );
     expr->flags &= ~ PTF_LVALUE;
     return expr;
 }
@@ -258,22 +258,22 @@ static void generateOffsetFunc( // GENERATE CODE FOR OFFSET FUNCTION
     type_ret = SymFuncReturnType( func );
     ret = SymFunctionReturn();
     if( SymIsThisDataMember( refed ) ) {
-        expr = NodeAddToLeft( NodeThis(), NodeOffset( refed->u.member_offset ), refed->sym_type );
+        expr = NodeMakeLeftAddition( NodeMakeThis(), NodeMakeConstantOffset( refed->u.member_offset ), refed->sym_type );
         expr = NodeFetchReference( expr );
     } else {
         if( SymIsVirtual( refed ) ) {
             VfnReference( refed );
             result = node->u.symcg.result;
-            expr = AccessVirtualFnAddress( NodeThis(), result, refed );
+            expr = AccessVirtualFnAddress( NodeMakeThis(), result, refed );
         } else {
             expr = MakeNodeSymbol( refed );
         }
     }
     expr->type = ret->sym_type;
-    expr = NodeAssign( MakeNodeSymbol( ret ), expr );
+    expr = NodeMakeAssignment( MakeNodeSymbol( ret ), expr );
     expr->type = type_ret;
     expr->flags |= PTF_LVALUE;
-    IcEmitExpr( NodeDone( expr ) );
+    IcEmitExpr( NodeMakeDone( expr ) );
     CgFrontReturnSymbol( ret );
     FunctionBodyShutdown( func, &func_fd );
     ScopeEnd( SCOPE_FUNCTION );
@@ -347,12 +347,12 @@ static PTREE computeNewDelta(   // COMPUTE NEW DELTA
     if( inf->delta_reqd ) {
         delta = ( inf->safe ) ? inf->delta : -inf->delta;
         if( inf->test_reqd ) {
-            node = addOffset( NodeDupExpr( &new_delta ), delta, type );
+            node = addOffset( NodeMakeExprDuplicate( &new_delta ), delta, type );
             node = FoldBinary( node );
-            node = NodeBinary( CO_COLON, new_delta, node );
+            node = NodeMakeBinary( CO_COLON, new_delta, node );
             node->type = type;
-            node = NodeBinary( CO_QUESTION
-                             , NodeCompareToZero( NodeDupExpr( new_index ) )
+            node = NodeMakeBinary( CO_QUESTION
+                             , NodeMakeZeroCompare( NodeMakeExprDuplicate( new_index ) )
                              , node );
             node->type = type;
         } else {
@@ -375,17 +375,17 @@ static PTREE computeNewIndex(   // COMPUTE NEW INDEX
     if( inf->mapping_reqd ) {
         type = TypeTargetSizeT();
         if( inf->mapping == NULL ) {
-            off_node = NodeOffset( inf->vb_index * TARGET_UINT );
+            off_node = NodeMakeConstantOffset( inf->vb_index * TARGET_UINT );
             off_node->type = type;
             if( inf->single_mapping ) {
-                node = NodeBinary( (inf->vb_index == 0 ) ? CO_GT : CO_EQ
-                                 , NodeDupExpr( &new_index )
-                                 , NodeOffset( inf->single_test * TARGET_UINT ) );
+                node = NodeMakeBinary( (inf->vb_index == 0 ) ? CO_GT : CO_EQ
+                                 , NodeMakeExprDuplicate( &new_index )
+                                 , NodeMakeConstantOffset( inf->single_test * TARGET_UINT ) );
                 node = NodeSetBooleanType( node );
                 node = FoldBinary( node );
-                new_index = NodeBinary( CO_COLON, off_node, new_index );
+                new_index = NodeMakeBinary( CO_COLON, off_node, new_index );
                 new_index->type = type;
-                new_index = NodeBinary( CO_QUESTION
+                new_index = NodeMakeBinary( CO_QUESTION
                                       , node
                                       , new_index );
                 new_index->type = type;
@@ -396,7 +396,7 @@ static PTREE computeNewIndex(   // COMPUTE NEW INDEX
             }
         } else {
             node = MakeNodeSymbol( inf->mapping );
-            node = NodeBinary( CO_DOT, node, new_index );
+            node = NodeMakeBinary( CO_DOT, node, new_index );
             node->type = type;
             node->flags |= PTF_LVALUE;
             new_index = NodeFetch( node );
@@ -419,8 +419,8 @@ static PTREE computeDeltaIndex( // COMPUTE NEW DELTA, INDEX
     original = expr;
     expr = PTreeOpLeft( original );
     expr = expr->u.subtree[0];
-    new_delta = NodeRvalue( expr->u.subtree[1] );
-    new_index = NodeRvalue( expr->u.subtree[0]->u.subtree[1] );
+    new_delta = NodeGetRValue( expr->u.subtree[1] );
+    new_index = NodeGetRValue( expr->u.subtree[0]->u.subtree[1] );
     if( inf->safe ) {
         new_delta = computeNewDelta( new_delta, &new_index, inf );
         new_index = computeNewIndex( new_index, inf );
@@ -447,8 +447,8 @@ static PTREE makeMembPtrExpr(   // MAKE A MEMBER-PTR EXPRESSION
 {
     PTREE expr;                 // - resultant expression
 
-    expr = NodeUnary( CO_MEMPTR_CONST
-                    , NodeArguments( index, delta, func, NULL ) );
+    expr = NodeMakeUnary( CO_MEMPTR_CONST
+                    , NodeMakeArgList( index, delta, func, NULL ) );
     expr->type = type;
     return expr;
 }
@@ -463,14 +463,14 @@ static PTREE makeMembPtrCon(    // MAKE A MEMBER-PTR CONSTANT EXPRESSION
     PTREE deref;                // - expression for dereferencing function
 
     if( func == NULL ) {
-        deref = NodeIntegralConstant( 0, MembPtrDerefFnPtr() );
+        deref = NodeMakeIntegralConstant( 0, MembPtrDerefFnPtr() );
     } else {
         deref = MakeNodeSymbol( func );
     }
     return makeMembPtrExpr( type
                           , deref
-                          , NodeOffset( delta )
-                          , NodeOffset( index ) );
+                          , NodeMakeConstantOffset( delta )
+                          , NodeMakeConstantOffset( index ) );
 }
 
 PTREE MembPtrZero(              // MAKE A NULL MEMBER POINTER CONSTANT
@@ -522,7 +522,7 @@ static PTREE assignMembPtrArg(  // ASSIGN A MEMBER-PTR ARGUMENT
     PTREE *a_left,              // - addr[ left operand ]
     PTREE *a_right )            // - addr[ right operand ]
 {
-    return NodeAssign( nextArg( a_left ), NodeRvalue( nextArg( a_right ) ) );
+    return NodeMakeAssignment( nextArg( a_left ), NodeGetRValue( nextArg( a_right ) ) );
 }
 
 
@@ -537,10 +537,10 @@ static PTREE storeMembPtrCon(   // STORE MEMBER-PTR CONSTANT
     left = PTreeOpLeft( expr );
     right = PTreeOpRight( expr );
     result = assignMembPtrArg( &left, &right );
-    result = NodeComma( result, assignMembPtrArg( &left, &right ) );
-    result = NodeComma( result, assignMembPtrArg( &left, &right ) );
+    result = NodeMakeComma( result, assignMembPtrArg( &left, &right ) );
+    result = NodeMakeComma( result, assignMembPtrArg( &left, &right ) );
     result = NodeReplace( expr , result );
-    result = NodeComma( result, tgt );
+    result = NodeMakeComma( result, tgt );
     result->flags |= PTF_SIDE_EFF;
     return result;
 }
@@ -670,7 +670,7 @@ static CNV_RETN analyseAddrOfNode( // ANALYSE NODE FOR (& item)
             retn = CNV_OK;
         }
     } else if( SymIsFunction( base_item ) ) {
-        if( ADDR_FN_ONE_USED == NodeAddrOfFun( item, &item ) ) {
+        if( ADDR_FN_ONE_USED == NodeGetOverloadedFnAddr( item, &item ) ) {
             item->u.symcg.symbol = ActualNonOverloadedFunc( base_item, item->u.symcg.result );
             retn = CNV_OK;
         } else {
@@ -799,7 +799,7 @@ static bool membPtrAddrOfNode(  // TEST IF (& class::member)
         if( NULL != mbrptr ) {
             return true;
         } else {
-            retn = NodeAddrOfFun( node, &fn );
+            retn = NodeGetOverloadedFnAddr( node, &fn );
             if( (retn != ADDR_FN_NONE )  &&
                 ( (fn->flags & PTF_COLON_QUALED) ||     // S::foo not just foo
                   ( CompFlags.extensions_enabled ) ) ) { // just foo (MFC ext)
@@ -916,9 +916,9 @@ static MP_TYPE classifyMpExpr(  // CLASSIFY A MEMBER-POINTER EXPRESSION
             }
         }
         type = MakePointerTo( dereferenceFnType( type_mp->of ) );
-        func = accessOp( NodeDupExpr( &expr ), 0, type );
+        func = accessOp( NodeMakeExprDuplicate( &expr ), 0, type );
         type = memberPtrLayout( &offset_delta, &offset_index );
-        delta = accessOp( NodeDupExpr( &expr ), offset_delta, type );
+        delta = accessOp( NodeMakeExprDuplicate( &expr ), offset_delta, type );
         index = accessOp( expr, offset_index, type );
         expr = makeMembPtrExpr( expr->type, func, delta, index );
         expr->flags |= PTF_LVALUE;
@@ -946,7 +946,7 @@ CNV_RETN MembPtrAssign(         // ASSIGNMENT/INITIALIZATION OF MEMBER POINTER
                          , expr->u.subtree[0]->type
                          , CNV_INIT_COPY );
     if( retn == CNV_OK ) {
-        tgt = NodeDupExpr( &expr->u.subtree[0] );
+        tgt = NodeMakeExprDuplicate( &expr->u.subtree[0] );
         classifyMpExpr( &expr->u.subtree[0] );
         switch( classifyMpExpr( &expr->u.subtree[1] ) ) {
           case MP_CONST :
@@ -1038,38 +1038,38 @@ static PTREE doDereference(     // GENERATE DE-REFERENCING CODE
     *r_rhs = NULL;
     expr = expr_root;
     expr = expr->u.subtree[0];
-    func = NodeRvalue( expr->u.subtree[1] );
+    func = NodeGetRValue( expr->u.subtree[1] );
     expr->u.subtree[1] = NULL;
     expr = expr->u.subtree[0];
-    delta = NodeRvalue( expr->u.subtree[1] );
+    delta = NodeGetRValue( expr->u.subtree[1] );
     expr->u.subtree[1] = NULL;
     type_offset = delta->type;
     if( ScopeHasVirtualBases( scope ) ) {
         expr = expr->u.subtree[0];
-        index = NodeRvalue( expr->u.subtree[1] );
+        index = NodeGetRValue( expr->u.subtree[1] );
         expr->u.subtree[1] = NULL;
-        temp = accessOp( NodeDupExpr( &lhs )
+        temp = accessOp( NodeMakeExprDuplicate( &lhs )
                        , ScopeVBPtrOffset( scope )
                        , MakePointerTo( type_offset ) );
-        expr = NodeAddToLeft( NodeFetch( NodeDupExpr( &temp ) )
-                        , NodeDupExpr( &index )
+        expr = NodeMakeLeftAddition( NodeFetch( NodeMakeExprDuplicate( &temp ) )
+                        , NodeMakeExprDuplicate( &index )
                         , type_offset );
         expr->flags |= PTF_LVALUE;
-        expr = NodeAddToLeft( temp, NodeFetch( expr ), type_cp );
+        expr = NodeMakeLeftAddition( temp, NodeFetch( expr ), type_cp );
         expr->flags &= ~ PTF_LVALUE;
-        expr = NodeBinary( CO_COLON, expr, lhs );
+        expr = NodeMakeBinary( CO_COLON, expr, lhs );
         expr->type = type_cp;
-        expr = NodeBinary( CO_QUESTION, NodeCompareToZero( index ), expr );
+        expr = NodeMakeBinary( CO_QUESTION, NodeMakeZeroCompare( index ), expr );
         expr->type = type_cp;
     } else {
         expr = lhs;
     }
     NodeFreeDupedExpr( expr_root );
-    expr = NodeAddToLeft( delta, expr, type_cp );
-    expr = NodeArg( expr );
+    expr = NodeMakeLeftAddition( delta, expr, type_cp );
+    expr = NodeMakeArg( expr );
     func = NodeUnaryCopy( CO_CALL_SETUP_IND, func );
     func->type = type_fn;
-    expr = NodeBinary( CO_CALL_EXEC_IND, func, expr );
+    expr = NodeMakeBinary( CO_CALL_EXEC_IND, func, expr );
     expr->type = type_mp->of;
     expr->flags |= PTF_LVALUE;
     if( FunctionDeclarationType( type_mp->of ) ) {
@@ -1110,7 +1110,7 @@ PTREE MembPtrDereference(       // DO '.*' AND '->*' operations
         ref = &((*ref)->u.subtree[0]);
         right = *ref;
         *ref = NULL;
-        expr->u.subtree[1] = NodeComma( NodePruneTop( expr->u.subtree[1] )
+        expr->u.subtree[1] = NodeMakeComma( NodePruneTop( expr->u.subtree[1] )
                                       , right );
         sym = right->u.symcg.symbol;
         if( expr->cgop == CO_DOT_STAR ) {
@@ -1437,9 +1437,9 @@ static PTREE doCompare(         // DO A COMPARISON
                              );
     } else {
         expr->u.subtree[0] = NodeReplace( expr->u.subtree[0]
-                                        , NodeRvalue( left ) );
+                                        , NodeGetRValue( left ) );
         expr->u.subtree[1] = NodeReplace( expr->u.subtree[1]
-                                        , NodeRvalue( right ) );
+                                        , NodeGetRValue( right ) );
     }
     return expr;
 }
@@ -1647,7 +1647,7 @@ PTREE MembPtrFuncArg(           // EXPRESSION FOR FUNCTION ARGUMENT
 //      arg = NodeReplace( arg, MakeNodeSymbol( sym ) );
         arg = NodeReplace( arg, NodeMakeCallee( sym ) );
     }
-    return NodeRvalue( arg );
+    return NodeGetRValue( arg );
 }
 
 

@@ -5756,7 +5756,7 @@ static void emitOffset( target_offset_t offset )
 {
     PTREE expr;
 
-    expr = NodeOffset( offset );
+    expr = NodeMakeConstantOffset( offset );
     DgStoreScalar( expr, 0, expr->type );
     PTreeFreeSubtrees( expr );
 }

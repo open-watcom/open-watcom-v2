@@ -111,7 +111,7 @@ static bool returnsStruct(      // TEST IF STRUCT RETURNED BY CALL
 {
     TYPE func_type;             // - type of function call
 
-    func_type = TypeFunctionCalled( NodeFuncForCall( call )->type );
+    func_type = TypeFunctionCalled( NodeGetFnForCall( call )->type );
 #if 0
     return NULL != StructType( func_type->of );
 #else

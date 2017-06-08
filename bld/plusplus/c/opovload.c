@@ -521,20 +521,20 @@ static PTREE transform_naked(   // TRANSFORM TO CALL TO NON-MEMBER FUNCTION
     SEARCH_RESULT *result;
 
     cgop = olinf->expr->cgop;
-    param = NodeArg( olinf->left.operand );
+    param = NodeMakeArg( olinf->left.operand );
     if( olinf->flags & PTO_BINARY ) {
         if( cgop == CO_CALL ) {
             param->u.subtree[0] = olinf->right.operand;
         } else {
             if( olinf->right.operand != NULL ) {
-                param = NodeArgument( param, olinf->right.operand );
+                param = NodeMakeArgument( param, olinf->right.operand );
             } else {
                 PTreeErrorNode( param );
             }
         }
     } else if( cgop == CO_POST_PLUS_PLUS
             || cgop == CO_POST_MINUS_MINUS ) {
-        param = NodeArgument( param, NodeZero() );
+        param = NodeMakeArgument( param, NodeMakeZeroConstant() );
     }
     result = NULL;
     if( olinf->result_nonmem != NULL ) {
@@ -579,10 +579,10 @@ static PTREE transform_member(  // TRANSFORM TO CALL TO MEMBER FUNCTION
             PTreeErrorExprSym( op, ERR_OPERATOR_ARROW_RETURN_BAD, op_sym );
             return op;
         }
-        caller = NodeDottedFunction( olinf->left.operand
+        caller = NodeMakeDottedFunction( olinf->left.operand
                                    , build_fun_name( olinf->result_mem ) );
         caller = PTreeCopySrcLocation( caller, op );
-        caller = NodeBinary( CO_CALL, caller, NULL );
+        caller = NodeMakeBinary( CO_CALL, caller, NULL );
         caller = PTreeCopySrcLocation( caller, op );
         caller = AnalyseCall( caller, NULL );
         op->u.subtree[0] = caller;
@@ -595,17 +595,17 @@ static PTREE transform_member(  // TRANSFORM TO CALL TO MEMBER FUNCTION
         if( olinf->flags & PTO_BINARY ) {
             param = olinf->right.operand;
             if( cgop != CO_CALL ) {
-                param = NodeArg( param );
+                param = NodeMakeArg( param );
             }
         } else {
             if( ( cgop == CO_POST_PLUS_PLUS   )
               ||( cgop == CO_POST_MINUS_MINUS ) ) {
-                param = NodeArg( NodeZero() );
+                param = NodeMakeArg( NodeMakeZeroConstant() );
             } else {
                 param = NULL;
             }
         }
-        caller = NodeDottedFunction( olinf->left.operand
+        caller = NodeMakeDottedFunction( olinf->left.operand
                                    , build_fun_name( olinf->result_mem ) );
         caller = PTreeCopySrcLocation( caller, op );
         op = transform_to_call( op, caller, param );
@@ -637,7 +637,7 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
         oper = PTreeIdSym( fun );
         oper = NodeSymbolNoRef( oper, fun, olinf->result_mem );
         oper->cgop = CO_NAME_DOT;
-        olinf->expr->u.subtree[0] = NodeDottedFunction( olinf->left.operand
+        olinf->expr->u.subtree[0] = NodeMakeDottedFunction( olinf->left.operand
                                                       , oper );
 
         ScopeFreeResult( olinf->result_nonmem );
@@ -664,7 +664,7 @@ static PTREE resolve_symbols(   // RESOLVE MULTIPLE OVERLOAD DEFINITIONS
             count = 2;
         }
     } else if( olinf->mask & OPM_POST ) {
-        zero_node = NodeZero();
+        zero_node = NodeMakeZeroConstant();
         setupOVOP( olinf, zero_node, &olinf->right );
         ptlist[1] = olinf->right.operand;
         alist.base.type_list[ 1 ] = olinf->right.node_type;
@@ -926,7 +926,7 @@ static bool isBadFun(           // DIAGNOSE IF MEMBER FUNC. OR OVERLOADED
     PTREE node;                 // - node to be examined
 
     node = PTreeOp( &operand );
-    switch( NodeAddrOfFun( node, &fnode ) ) {
+    switch( NodeGetOverloadedFnAddr( node, &fnode ) ) {
       default :
         retb = false;
         break;

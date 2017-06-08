@@ -44,7 +44,7 @@ CALL_OPT AnalyseCallOpts        // ANALYSE CALL OPTIMIZATIONS
     CALL_OPT retn;              // - type of return
     PTREE right;                // - bare source operand
 
-    right = *NodeReturnSrc( &src, a_dtor );
+    right = *NodeGetReturnSrc( &src, a_dtor );
     *a_right = right;
     if( type == ClassTypeForType( right->type ) ) {
         if( NodeCallsCtor( right ) ) {
@@ -52,7 +52,7 @@ CALL_OPT AnalyseCallOpts        // ANALYSE CALL OPTIMIZATIONS
         } else if( NodeIsBinaryOp( right, CO_CALL_EXEC )
                 || NodeIsBinaryOp( right, CO_CALL_EXEC_IND ) ) {
             TYPE ftype;         // - function type
-            ftype = TypeFunctionCalled( NodeFuncForCall( right )->type );
+            ftype = TypeFunctionCalled( NodeGetFnForCall( right )->type );
             DbgVerify( ftype != NULL
                      , "AnalyseCLassCallOpts -- impossible parse tree" );
             if( OMR_CLASS_REF == ObjModelFunctionReturn( ftype ) ) {
@@ -101,7 +101,7 @@ static PTREE doCopySubstitution( // EFFECT COPY SUBSTITUTION
     }
     repl->u.symcg.symbol->flag = 0;
     *a_repl = NodeReplace( *a_repl, tgt );
-    orig = NodeConvertFlags( ClassTypeForType( tgt->type )
+    orig = NodeMakeConversionFlags( ClassTypeForType( tgt->type )
                            , orig
                            , PTF_LVALUE
                            | PTF_MEMORY_EXACT

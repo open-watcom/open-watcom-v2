@@ -129,7 +129,7 @@ static void checkAutoReturn(    // CHECK IF AUTOMATIC BEING RETURNED
                 }
                 break;
             } else if( NodeIsBinaryOp( node, CO_CALL_EXEC_IND ) ) {
-                func_ret = TypeFunctionCalled( NodeFuncForCall( node )->type );
+                func_ret = TypeFunctionCalled( NodeGetFnForCall( node )->type );
                 func_ret = func_ret->of;
                 if( NULL != StructType( func_ret ) ) {
                     PTreeErrorExpr( expr, ERR_RET_AUTO_REF );
@@ -217,15 +217,15 @@ PTREE AnalyseReturnSimpleVal    // RETURN A SIMPLE VALUE
         if( expr->op != PT_ERROR ) {
             PTREE tgt = getReturnSym();
             if( NULL == TypeReference( retn_type ) ) {
-                expr = NodeRvalue( expr );
-                expr = NodeAssign( tgt, expr );
+                expr = NodeGetRValue( expr );
+                expr = NodeMakeAssignment( tgt, expr );
                 if( NULL != MemberPtrType( retn_type ) ) {
                     PTREE new_expr = expr;
                     MembPtrAssign( &new_expr );
                     expr = new_expr;
                 }
             } else {
-                expr = NodeAssignRef( tgt, expr );
+                expr = NodeMakeRefAssignment( tgt, expr );
             }
         }
     }

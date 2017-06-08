@@ -332,7 +332,7 @@ PTREE AnalyseValueExpr(         // ANALYZE A EXPRESSION, MAKE IT A VALUE
 target_size_t ArrayTypeNumberItems( // GET ACTUAL NUMBER OF ITEMS FOR AN ARRAY
     TYPE artype )               // - an array type
 ;
-PTREE CallArgumentExactCtor(    // GET EXACT CTOR ARG., IF REQUIRED
+PTREE MakeArgCtorCall(    // GET EXACT CTOR ARG., IF REQUIRED
     TYPE type,                  // - type for class
     bool exact )                // - true ==> exact CTORing of classes
 ;
@@ -888,55 +888,55 @@ PTREE NodeAddSideEffect(        // ADD A SIDE-EFFECT EXPRESSION
 PTREE NodeActualNonOverloaded(  // POSITION OVER DEFAULT-ARG SYMBOLS
     PTREE node )                // - PT_SYMBOL for function
 ;
-addr_func_t NodeAddrOfFun(      // GET PTREE FOR &FUN (FUN IS OVERLOADED)
+addr_func_t NodeGetOverloadedFnAddr(      // GET PTREE FOR &FUN (FUN IS OVERLOADED)
     PTREE oper,                 // - expression
     PTREE *addr_func )          // - addr[ &function ]
 ;
-PTREE NodeArg(                  // MAKE A SINGLE ARGUMENT NODE
+PTREE NodeMakeArg(                  // MAKE A SINGLE ARGUMENT NODE
     PTREE argval )              // - value for argument
 ;
-PTREE NodeArgument(             // MAKE AN ARGUMENT NODE
+PTREE NodeMakeArgument(             // MAKE AN ARGUMENT NODE
     PTREE left,                 // - left subtree
     PTREE right )               // - right subtree
 ;
-PTREE NodeArgumentExactCtor(    // ADD EXACT CTOR ARG., IF REQUIRED
+PTREE NodeMakeArgCtor(    // ADD EXACT CTOR ARG., IF REQUIRED
     PTREE args,                 // - other arguments
     TYPE type,                  // - type for class
     bool exact )                // - true ==> exact CTORing of classes
 ;
-PTREE NodeArguments(            // MAKE A LIST OF ARGUMENTS
+PTREE NodeMakeArgList(            // MAKE A LIST OF ARGUMENTS
     PTREE arg,                  // - first arg
     ... )                       // - NULL terminated, in reverse order
 ;
-PTREE NodeAssign(               // CREATE ASSIGNMENT NODE
+PTREE NodeMakeAssignment(               // CREATE ASSIGNMENT NODE
     PTREE tgt,                  // - target
     PTREE src )                 // - source
 ;
-PTREE NodeAssignRef(            // CREATE ASSIGNMENT NODE FOR REFERENCE
+PTREE NodeMakeRefAssignment(            // CREATE ASSIGNMENT NODE FOR REFERENCE
     PTREE tgt,                  // - target
     PTREE src )                 // - source
 ;
-PTREE NodeAssignTemporary(      // ASSIGN NODE TO A TEMPORARY
+PTREE NodeMakeAssignToNewTmp(      // ASSIGN NODE TO A TEMPORARY
     TYPE type,                  // - type of temporary
     PTREE expr )                // - the expression to be assigned to temp
 ;
-PTREE NodeAssignTemporaryNode(  // ASSIGN NODE TO A TEMPORARY NODE
+PTREE NodeMakeAssignToTmp(  // ASSIGN NODE TO A TEMPORARY NODE
     TYPE type,                  // - type of temporary
     PTREE expr,                 // - the expression to be assigned to temp
     PTREE temp_node )           // - node for temporary symbol
 ;
-PTREE NodeBasedStr(             // BUILD EXPRESSION FOR TF1_BASED_STRING TYPE
+PTREE NodeMakeBasedStr(             // BUILD EXPRESSION FOR TF1_BASED_STRING TYPE
     TYPE expr_type )            // - TF1_BASED_STRING type
 ;
-PTREE NodeBinary(               // MAKE A BINARY NODE
+PTREE NodeMakeBinary(               // MAKE A BINARY NODE
     CGOP op,                    // - operator
     PTREE left,                 // - left operand
     PTREE right )               // - right operand
 ;
-bool NodeBitField(              // TEST IF NODE IS A BIT FIELD
+bool NodeIsBitField(              // TEST IF NODE IS A BIT FIELD
     PTREE node )                // - the node
 ;
-PTREE NodeBitQuestAssign(       // ASSIGN (expr?bit-fld:bit-fld) = expr
+PTREE NodeMakeBitQuestAssign(       // ASSIGN (expr?bit-fld:bit-fld) = expr
     PTREE expr )                // - the expression
 ;
 void NodeBuildArgList(          // BUILD ARGUMENT LIST FROM CALLER ARG.S
@@ -948,10 +948,10 @@ void NodeBuildArgList(          // BUILD ARGUMENT LIST FROM CALLER ARG.S
 bool NodeCallsCtor(             // DETERMINE IF NODE CALLS CTOR
     PTREE node )                // - a call node
 ;
-PTREE NodeCDtorArg(             // BUILD CONSTANT NODE FOR CDTOR EXTRA ARG
+PTREE NodeMakeCDtorArg(             // BUILD CONSTANT NODE FOR CDTOR EXTRA ARG
     target_offset_t code )      // - the code
 ;
-PTREE NodeCDtorExtra(           // MAKE A CTOR/DTOR EXTRA PARM NODE
+PTREE NodeMakeCDtorExtraParm(           // MAKE A CTOR/DTOR EXTRA PARM NODE
     void )
 ;
 CNV_RETN NodeCheckCnvPtrVoid(   // CHECK CONVERSION TO 'VOID*'
@@ -967,11 +967,11 @@ CNV_RETN NodeCheckPtrTrunc(     // CHECK FOR POINTER TRUNCATION WARNING
     TYPE tgt,                   // - target type
     TYPE src )                  // - source type
 ;
-PTREE NodeComma(                // MAKE A COMMA PTREE NODE
+PTREE NodeMakeComma(                // MAKE A COMMA PTREE NODE
     PTREE left,                 // - left operand
     PTREE right )               // - right operand
 ;
-PTREE NodeCommaIfSideEffect(    // MAKE A COMMA PTREE NODE (IF LHS HAS side-effects)
+PTREE NodeMakeCommaIfLHSSideEffect(    // MAKE A COMMA PTREE NODE (IF LHS HAS side-effects)
     PTREE left,                 // - left operand
     PTREE right )               // - right operand
 ;
@@ -983,16 +983,16 @@ PTREE NodeSetType               // SET NODE TYPE, FLAGS
     , TYPE type                 // - new type for node
     , PTF_FLAG flags )          // - new flags
 ;
-PTREE NodeCompareToZero(        // MAKE A COMPARE-TO-ZERO NODE, IF REQ'D
+PTREE NodeMakeZeroCompare(        // MAKE A COMPARE-TO-ZERO NODE, IF REQ'D
     PTREE expr )
 ;
-PTREE NodeConvertToBool(        // MAKE A CONVERT-TO-BOOL NODE, IF REQ'D
+PTREE NodeMakeBoolConversion(        // MAKE A CONVERT-TO-BOOL NODE, IF REQ'D
     PTREE expr )
 ;
-int NodeConstantValue(          // GET CONSTANT VALUE FOR A NODE
+int NodeGetConstantValue(          // GET CONSTANT VALUE FOR A NODE
     PTREE node )                // - a constant node
 ;
-PTREE NodeConvert(              // MAKE A CONVERSION NODE
+PTREE NodeMakeConversion(              // MAKE A CONVERSION NODE
     TYPE type,                  // - type for conversion
     PTREE expr )                // - expression to be converted
 ;
@@ -1000,7 +1000,7 @@ bool NodeConvertArgument(       // CONVERT AN ARGUMENT VALUE
     PTREE *a_expr,              // - addr( argument value )
     TYPE proto )                // - prototype type
 ;
-PTREE NodeConvertFlags(         // MAKE A CONVERSION NODE WITH FLAGS, IF REQ'D
+PTREE NodeMakeConversionFlags(         // MAKE A CONVERSION NODE WITH FLAGS, IF REQ'D
     TYPE type,                  // - type for conversion
     PTREE expr,                 // - expression to be converted
     PTF_FLAG flags )            // - flags to be added
@@ -1032,25 +1032,25 @@ PTREE NodeConvertVirtualPtr(    // EXECUTE A VIRTUAL BASE CAST
     target_offset_t vb_offset,  // - offset of vbptr
     vindex vb_index )           // - index in vbtable
 ;
-PTREE NodeCopyClassObject(      // COPY OBJECT W/O CTOR
+PTREE NodeMakeClassObjectCopy(      // COPY OBJECT W/O CTOR
     PTREE tgt,                  // - target object (LVALUE)
     PTREE src )                 // - source object (RVALUE)
 ;
-bool NodeDerefPtr(              // DEREFERENCE A POINTER
+bool NodeTryDerefPtr(              // DEREFERENCE A POINTER
     PTREE *a_ptr )              // - addr[ ptr operand ]
 ;
-PTREE NodeDone(                 // MAKE A NODE-DONE
+PTREE NodeMakeDone(                 // MAKE A NODE-DONE
     PTREE expr )                // - expression
 ;
-PTREE NodeDottedFunction        // BUILD A DOT NODE FOR A FUNCTION
+PTREE NodeMakeDottedFunction        // BUILD A DOT NODE FOR A FUNCTION
     ( PTREE left                // - left operand
     , PTREE right )             // - right operand
 ;
-PTREE NodeDtorExpr(             // MARK FOR DTOR'ING AFTER EXPRESSION
+PTREE NodeMarkDtorExpr(             // MARK FOR DTOR'ING AFTER EXPRESSION
     PTREE expr,                 // - expression computing symbol
     SYMBOL sym )                // - SYMBOL being computed
 ;
-PTREE NodeDupExpr(              // DUPLICATE EXPRESSION
+PTREE NodeMakeExprDuplicate(              // DUPLICATE EXPRESSION
     PTREE *expr )               // - addr( expression )
 ;
 PTREE NodeFetch(                // FETCH A VALUE
@@ -1062,7 +1062,7 @@ PTREE NodeFetchClassExact(      // FETCH AS "CLASS_EXACT"
 PTREE NodeFetchReference(       // FETCH A REFERENCE, IF REQ'D
     PTREE expr )                // - expression
 ;
-PTREE NodeForceLvalue           // FORCE EXPRESSION TO BE LVALUE
+PTREE NodeForceLValue           // FORCE EXPRESSION TO BE LVALUE
     ( PTREE expr )              // - expression
 ;
 void NodeFreeDupedExpr(         // FREE AN EXPRESSION WITH DUPLICATES
@@ -1071,10 +1071,10 @@ void NodeFreeDupedExpr(         // FREE AN EXPRESSION WITH DUPLICATES
 void NodeFreeSearchResult(      // FREE SEARCH_RESULT FROM A NODE
     PTREE node )                // - the node
 ;
-PTREE NodeFromConstSym(         // BUILD CONSTANT NODE FROM CONSTANT SYMBOL
+PTREE NodeMakeFromConstSym(         // BUILD CONSTANT NODE FROM CONSTANT SYMBOL
     SYMBOL con )                // - constant symbol
 ;
-PTREE NodeFuncForCall(          // GET FUNCTION NODE FOR CALL
+PTREE NodeGetFnForCall(          // GET FUNCTION NODE FOR CALL
     PTREE call_node )           // - a call node
 ;
 PTREE NodeGetCallExpr(          // POINT AT CALL EXPRESSION
@@ -1088,17 +1088,17 @@ bool NodeGetIbpSymbol(          // GET BOUND-REFERENCE SYMBOL, IF POSSIBLE
     SYMBOL* a_ibp,              // - bound parameter to use
     target_offset_t* a_offset ) // - addr[ offset to basing symbol ]
 ;
-PTREE NodeIc(                   // ADD A PTREE-IC NODE
+PTREE NodeMakeIc(                   // ADD A PTREE-IC NODE
     CGINTEROP opcode )          // - opcode
 ;
-PTREE NodeIcUnsigned(           // ADD A PTREE-IC NODE, UNSIGNED OPERAND
+PTREE NodeMakeIcUnsigned(           // ADD A PTREE-IC NODE, UNSIGNED OPERAND
     CGINTEROP opcode,           // - opcode
     unsigned operand )          // - operand
 ;
-PTREE NodeIntDummy              // BUILD A DUMMY INTEGRAL NODE
+PTREE NodeMakeIntDummy              // BUILD A DUMMY INTEGRAL NODE
     ( void )
 ;
-PTREE NodeIntegralConstant      // BUILD AN INTEGRAL NODE FOR A VALUE
+PTREE NodeMakeIntegralConstant      // BUILD AN INTEGRAL NODE FOR A VALUE
     ( int val                   // - value
     , TYPE type )               // - node type (integral,enum,ptr)
 ;
@@ -1139,7 +1139,7 @@ bool NodeIsZeroConstant(        // TEST IF A ZERO CONSTANT
 bool NodeIsZeroIntConstant(     // TEST IF A ZERO INTEGER CONSTANT
     PTREE node )                // - node
 ;
-PTREE NodeLvExtract             // EXTRACT LVALUE, IF POSSIBLE
+PTREE NodeExtractLValue             // EXTRACT LVALUE, IF POSSIBLE
     ( PTREE expr )              // - expression
 ;
 PTREE NodeLvForRefClass         // MAKE LVALUE FOR REF CLASS
@@ -1169,14 +1169,14 @@ PTREE NodeMarkRvalue(           // SET TYPE, FLAGS FOR LVALUE
 PTREE NodeModInitTemporary(     // CREATE TEMP NODE (STATIC IF IN MODULE-INIT)
     TYPE type )                 // - type of temporary
 ;
-bool NodeNonConstRefToTemp(     // CHECK IF TEMP. PASSED AS NON-CONST REF
+bool NodeIsNonConstRefToTemp(     // CHECK IF TEMP. PASSED AS NON-CONST REF
     TYPE arg_type,              // - possible non-const reference
     PTREE node )                // - possible temporary
 ;
-PTREE NodeOffset(               // BUILD CONSTANT NODE FOR AN OFFSET
+PTREE NodeMakeConstantOffset(               // BUILD CONSTANT NODE FOR AN OFFSET
     target_offset_t offset )    // - the offset
 ;
-PTREE NodeTestExpr(             // GENERATE A TERNARY TEST EXPRESSION
+PTREE NodeMakeTernaryExpr(             // GENERATE A TERNARY TEST EXPRESSION
     PTREE b_expr,               // - boolean expression
     PTREE t_expr,               // - true expression
     PTREE f_expr )              // - false expression
@@ -1197,10 +1197,10 @@ PTREE NodePruneRight(            // PRUNE RIGHT OPERAND
 PTREE NodePruneTop(             // PRUNE TOP OPERAND
     PTREE expr )                // - expression
 ;
-bool NodePtrNonZero(            // TEST IF A PTR NODE IS ALWAYS NON-ZERO
+bool NodeIsNonNullPtr(            // TEST IF A PTR NODE IS ALWAYS NON-ZERO
     PTREE node )                // - node to be tested
 ;
-bool NodeReferencesTemporary(   // CHECK IF NODE PRODUCES OR IS TEMPORARY
+bool NodeYieldsTemporary(   // CHECK IF NODE PRODUCES OR IS TEMPORARY
     PTREE node )                // - possible temporary
 ;
 PTREE NodeRemoveCasts(          // REMOVE CASTING FROM NODE
@@ -1217,7 +1217,7 @@ PTREE NodeReplaceTop(           // REPLACE TOP EXPRESSION WITH ANOTHER
     PTREE old,                  // - expression to be replaced
     PTREE replace )             // - replacement expression
 ;
-PTREE* NodeReturnSrc(           // GET ADDR OF SOURCE OPERAND RETURNED
+PTREE* NodeGetReturnSrc(           // GET ADDR OF SOURCE OPERAND RETURNED
     PTREE* src,                 // - addr[ operand ]
     PTREE* dtor )               // - addr[ CO_DTOR operand ]
 ;
@@ -1228,19 +1228,19 @@ PTREE NodeReverseArgs(          // REVERSE CALL ARGUMENTS
     unsigned *arg_count,        // - # args
     PTREE arg )                 // - start of arg. list (to be reversed)
 ;
-PTREE NodeRvalue(               // GET RVALUE, IF LVALUE
+PTREE NodeGetRValue(               // GET RVALUE, IF LVALUE
     PTREE curr )                // - node to be transformed
 ;
-PTREE NodeRvalueExact(          // SET RVALUE (EXACT)
+PTREE NodeSetRValueExact(          // SET RVALUE (EXACT)
     PTREE node )                // - current node
 ;
-PTREE NodeRvalueExactLeft(      // SET RVALUE (EXACT) ON LEFT
+PTREE NodeSetRValueExactLeft(      // SET RVALUE (EXACT) ON LEFT
     PTREE node )                // - current node
 ;
 PTREE NodeRvalueExactRight(     // SET RVALUE (EXACT) ON RIGHT
     PTREE node )                // - current node
 ;
-PTREE NodeRvalueLeft(           // SET RVALUE ON LEFT
+PTREE NodeSetRValueLeft(           // SET RVALUE ON LEFT
     PTREE node )                // - current node
 ;
 PTREE NodeRvalueRight(          // SET RVALUE ON RIGHT
@@ -1249,7 +1249,7 @@ PTREE NodeRvalueRight(          // SET RVALUE ON RIGHT
 PTREE NodeRvForRefClass         // MAKE RVALUE FOR REF CLASS
     ( PTREE expr )              // - LVALUE ref-class expression
 ;
-PTREE NodeSegname(              // BUILD EXPRESSION FOR __segname
+PTREE NodeMakeSegname(              // BUILD EXPRESSION FOR __segname
     char* segname )             // - name of segment
 ;
 PTREE NodeSetMemoryExact(       // SET PTF_MEMORY_EXACT, IF REQ'D
@@ -1277,19 +1277,19 @@ PTREE NodeSymbolNoRef(          // FILL IN NODE FOR A SYMBOL, NO REF. SETTING
     SYMBOL sym,                 // - symbol
     SEARCH_RESULT *result )     // - search result
 ;
-PTREE NodeTemporary(            // CREATE TEMPORARY AND NODE FOR IT
+PTREE NodeMakeTemporary(            // CREATE TEMPORARY AND NODE FOR IT
     TYPE type )                 // - type of temporary
 ;
-PTREE NodeThis(                 // MAKE A RVALUE "THIS" NODE
+PTREE NodeMakeThis(                 // MAKE A RVALUE "THIS" NODE
     void )
 ;
-PTREE NodeThisCopyLocation(     // MAKE A RVALUE "THIS" NODE WITH LOCATION
+PTREE NodeMakeRVThisAtLoc(     // MAKE A RVALUE "THIS" NODE WITH LOCATION
     PTREE use_locn )            // - node to grab locn from
 ;
 TYPE NodeType(                  // GET TYPE FOR A NODE
     PTREE node )                // - the node
 ;
-PTREE NodeUnary(                // MAKE A UNARY NODE
+PTREE NodeMakeUnary(                // MAKE A UNARY NODE
     CGOP op,                    // - operator
     PTREE expr )                // - operand
 ;
@@ -1306,7 +1306,7 @@ void NodeWarnPtrTrunc(          // WARN FOR POINTER/REFERENCE TRUNCATION
 void NodeWarnPtrTruncCast(      // WARN FOR CAST POINTER/REFERENCE TRUNCATION
     PTREE node )                // - node for warning
 ;
-PTREE NodeZero                  // BUILD A ZERO NODE
+PTREE NodeMakeZeroConstant                  // BUILD A ZERO NODE
     ( void )
 ;
 PTREE OverloadOperator(         // HANDLE OPERATOR OVERLOADING, IF REQ'D
@@ -1484,7 +1484,7 @@ CNV_RETN UserDefCnvToType(      // DO A USER-DEFINED CONVERSION TO A TYPE
     TYPE src,                   // - source type (a class)
     TYPE tgt )                  // - target type
 ;
-PTREE NodeAddToLeft(            // FABRICATE AN ADDITION TO LEFT
+PTREE NodeMakeLeftAddition(            // FABRICATE AN ADDITION TO LEFT
     PTREE left,                 // - left operand
     PTREE right,                // - right operand
     TYPE type )                 // - type of result

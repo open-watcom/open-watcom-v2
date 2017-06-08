@@ -242,7 +242,7 @@ static bool getClassRvalue      // GET RVALUE FOR CLASS EXPRESSION
 {
     PTREE expr = ctl->expr->u.subtree[1];
     if( OMR_CLASS_VAL == ObjModelArgument( ctl->tgt.class_type ) ) {
-        expr = NodeRvalue( expr );
+        expr = NodeGetRValue( expr );
     } else {
         expr = NodeRvForRefClass( expr );
     }
@@ -265,9 +265,9 @@ static bool getLvalue           // GET LVALUE FOR EXPRESSION
         switch( obj_model ) {
           case OMR_CLASS_VAL :
             if( force_to_temp ) {
-                expr = NodeCopyClassObject( NodeTemporary( type ), expr );
+                expr = NodeMakeClassObjectCopy( NodeMakeTemporary( type ), expr );
             } else {
-                expr = NodeForceLvalue( expr );
+                expr = NodeForceLValue( expr );
             }
             break;
           case OMR_CLASS_REF :
@@ -338,7 +338,7 @@ static CAST_RESULT checkConstRef// CHECK FOR TEMP -> NON-CONST REFERENCE
         PTREE expr;
         expr = ctl->expr->u.subtree[1];
         if( ! ExprIsLvalue( expr )
-         || NodeReferencesTemporary( expr ) ) {
+         || NodeYieldsTemporary( expr ) ) {
             result = diagNonConstRefBinding( ctl );
         } else {
             // always an error if not a temp.
@@ -738,7 +738,7 @@ static bool castCtor            // APPLY CTOR
 
     retb = false;
     if( ctl->src.reference || getLvalue( ctl, false ) ) {
-        inp_node = NodeArg( ctl->expr->u.subtree[1] );
+        inp_node = NodeMakeArg( ctl->expr->u.subtree[1] );
         ctl->expr->u.subtree[1] = inp_node;
         NodeConvertCallArgList( ctl->expr
                               , 1
@@ -755,7 +755,7 @@ static bool castCtor            // APPLY CTOR
                     CAST_RESULT result = reqdConstRef( ctl );
                     if( result != CAST_TESTED_OK ) return false;
                 }
-                temp = NodeTemporary( ctl->tgt.class_type );
+                temp = NodeMakeTemporary( ctl->tgt.class_type );
                 ctl->destination = temp;
                 ctl->dtor_destination = true;
             }
@@ -768,12 +768,12 @@ static bool castCtor            // APPLY CTOR
                 if( ctl->tgt.class_type == ClassTypeForType( inp_node->type )
                  && OMR_CLASS_VAL == ObjModelArgument( ctl->tgt.class_type ) ) {
                     ctl->conv_fun = NULL;
-                    inp_node = NodeRvalue( inp_node->u.subtree[1] );
+                    inp_node = NodeGetRValue( inp_node->u.subtree[1] );
                     PTreeFree( ctl->expr->u.subtree[1] );
                     ctl->expr->u.subtree[1] = NULL;
-                    node = NodeCopyClassObject( temp, inp_node );
+                    node = NodeMakeClassObjectCopy( temp, inp_node );
                 } else {
-                    temp = NodeArg( temp );
+                    temp = NodeMakeArg( temp );
                     node = NodeMakeCall( ctl->conv_fun
                                        , SymFuncReturnType( ctl->conv_fun )
                                        , ctl->expr->u.subtree[1] );
@@ -783,7 +783,7 @@ static bool castCtor            // APPLY CTOR
                                               , node
                                               , node->u.subtree[1]
                                               , temp
-                                              , CallArgumentExactCtor
+                                              , MakeArgCtorCall
                                                     ( ctl->tgt.class_type
                                                     , true )
                                               , NULL );
@@ -863,7 +863,7 @@ static PTREE castUdcf           // APPLY USER-DEFINED CONVERSION FUNCTION
                 new_targ = MakeConstTypeOf( new_targ );
                 new_targ = MakeReferenceTo( new_targ );
                 if( NULL != ctl->destination ) {
-                    ctl->destination = NodeConvert( new_targ
+                    ctl->destination = NodeMakeConversion( new_targ
                                                   , ctl->destination ) ;
                 }
             } else {
@@ -898,7 +898,7 @@ static PTREE castUdcf           // APPLY USER-DEFINED CONVERSION FUNCTION
                 if( ! ctl->tgt.reference
                  && okSoFar( ctl ) ) {
                     ctl->expr->u.subtree[1] =
-                        NodeRvalue( ctl->expr->u.subtree[1] );
+                        NodeGetRValue( ctl->expr->u.subtree[1] );
                 }
                 SetCurrScope(curr);
 
@@ -1306,7 +1306,7 @@ static PTREE doReintPtrToArith  // DO REINTERPRET: PTR -> ARITH
     if( NULL == IntegralType( ctl->tgt.unmod ) ) {
         expr = diagnoseCast( ctl, ERR_CAST_ILLEGAL );
     } else if( NULL != SegmentShortType( ctl->tgt.unmod ) ) {
-        if( ! NodeDerefPtr( &ctl->expr->u.subtree[1] ) ) {
+        if( ! NodeTryDerefPtr( &ctl->expr->u.subtree[1] ) ) {
             expr = diagnoseCast( ctl, ERR_CAST_ILLEGAL );
         } else {
             #if _CPU == 8086
@@ -1316,12 +1316,12 @@ static PTREE doReintPtrToArith  // DO REINTERPRET: PTR -> ARITH
                 stripOffCastOrig( ctl );
                 argument = MakeModifiedType( GetBasicType( TYP_VOID ), TF1_FAR );
                 argument = MakePointerTo( argument );
-                expr = NodeConvert( argument, ctl->expr );
+                expr = NodeMakeConversion( argument, ctl->expr );
                 argument = GetBasicType( TYP_ULONG );
-                expr = NodeConvert( argument, expr );
-                expr = NodeBinary( CO_RSHIFT, expr, NodeOffset( 16 ) );
+                expr = NodeMakeConversion( argument, expr );
+                expr = NodeMakeBinary( CO_RSHIFT, expr, NodeMakeConstantOffset( 16 ) );
                 expr->type = argument;
-                expr = NodeConvert( TypeSegmentShort(), expr );
+                expr = NodeMakeConversion( TypeSegmentShort(), expr );
                 expr->locn = locn;
             #else
                 expr = doCgConversion( ctl );
@@ -1340,7 +1340,7 @@ static PTREE convertToBool          // CONVERT TO BOOL
     ( CONVCTL* ctl )                // - cast info
 {
     stripOffCastOrig( ctl );
-    return NodeConvertToBool( ctl->expr );
+    return NodeMakeBoolConversion( ctl->expr );
 }
 
 
@@ -1436,7 +1436,7 @@ static CAST_RESULT analysePtrToPtr  // ANALYSE PTR --> PTR
             PTREE node = ctl->expr->u.subtree[1];
             TYPE tgt_type;
             if( ctl->src.reference ) {
-                node = NodeRvalue( node );
+                node = NodeGetRValue( node );
             }
             tgt_type = ctl->tgt.unmod->of;
             result = CAST_DO_CGCONV;
@@ -1450,7 +1450,7 @@ static CAST_RESULT analysePtrToPtr  // ANALYSE PTR --> PTR
                 }
             }
             if( result != CAST_ERR_NODE ) {
-                node = NodeAssignTemporary( tgt_type, node );
+                node = NodeMakeAssignToNewTmp( tgt_type, node );
                 ctl->expr->u.subtree[1] = node;
                 if( PT_ERROR == node->op ) {
                     result = CAST_ERR_NODE;
@@ -1663,7 +1663,7 @@ static PTREE doCastResult           // DO CAST RESULT
         break;
       case CAST_TO_VOID :
         ctl->expr->type = ctl->tgt.orig;
-        ctl->expr->u.subtree[1] = NodeConvertFlags( ctl->tgt.orig
+        ctl->expr->u.subtree[1] = NodeMakeConversionFlags( ctl->tgt.orig
                                     , ctl->expr->u.subtree[1]
                                     , PTF_MEANINGFUL | PTF_SIDE_EFF );
         markUserCast( ctl );
@@ -1710,7 +1710,7 @@ static PTREE doCastResult           // DO CAST RESULT
         break;
       case CAST_REPLACE_INTEGRAL :
       { expr = PTreeOp( &ctl->expr->u.subtree[1] );
-        expr = NodeIntegralConstant( NodeConstantValue( expr ), ctl->tgt.orig );
+        expr = NodeMakeIntegralConstant( NodeGetConstantValue( expr ), ctl->tgt.orig );
         expr = PTreeCopySrcLocation( expr, ctl->expr->u.subtree[1] );
         expr = NodeReplace( ctl->expr, expr );
 //      expr = CheckCharPromotion( expr );
@@ -1945,9 +1945,9 @@ static PTREE forceToDestination // FORCE TO DESTINATION ON CAST, FUNC_ARG
                                                , ctl->diag_cast );
                 } else {
                     if( ctl->tgt.reference ) {
-                        expr = NodeAssignRef( ctl->destination, expr );
+                        expr = NodeMakeRefAssignment( ctl->destination, expr );
                     } else {
-                        expr = NodeAssign( ctl->destination, expr );
+                        expr = NodeMakeAssignment( ctl->destination, expr );
                     }
                     if( MemberPtrType( ctl->tgt.unmod ) ) {
                         PTREE dup = expr;
@@ -1957,10 +1957,10 @@ static PTREE forceToDestination // FORCE TO DESTINATION ON CAST, FUNC_ARG
                 }
             }
             if( ctl->dtor_destination && ctl->tgt.class_operand && PT_ERROR != expr->op ) {
-                expr = NodeDtorExpr( expr, ctl->destination->u.symcg.symbol );
+                expr = NodeMarkDtorExpr( expr, ctl->destination->u.symcg.symbol );
             }
             if( PT_ERROR != expr->op && !ctl->tgt.reference ) {
-                expr = NodeRvalue( expr );
+                expr = NodeGetRValue( expr );
             }
             fold_it = false;
         }
@@ -1991,7 +1991,7 @@ static void allocClassDestination//ALLOCATE DESTINATION WHEN CLASS
     if( NULL == ctl->destination ) {
         if( ctl->tgt.class_operand
          && ! ctl->tgt.reference ) {
-            ctl->destination = NodeTemporary( ctl->tgt.orig );
+            ctl->destination = NodeMakeTemporary( ctl->tgt.orig );
             ctl->dtor_destination = true;
         }
     }
@@ -2671,7 +2671,7 @@ PTREE AddCastNode               // ADD A CAST NODE
     PTF_FLAG flags;             // - flags for cast node
     flags = expr->flags & PTF_CONVERT;
     type = BindTemplateClass( type, &expr->locn, true );
-    expr = NodeBinary( CO_CONVERT, PTreeType( type ), expr );
+    expr = NodeMakeBinary( CO_CONVERT, PTreeType( type ), expr );
     expr = NodeSetType( expr, type, flags );
     expr = PTreeCopySrcLocation( expr, expr->u.subtree[1] );
     return CheckCharPromotion( expr );

@@ -526,13 +526,13 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
       case TYP_POINTER :
       case TYP_MEMBER_POINTER :
         if( initial == NULL ) {
-            initial = NodeZero();
+            initial = NodeMakeZeroConstant();
         }
         if( this_node == NULL ) {
-            node = NodeConvert( base_type, initial );
+            node = NodeMakeConversion( base_type, initial );
         } else {
             if( base_type->id == TYP_MEMBER_POINTER ) {
-                node = NodeBinary( CO_INIT, this_node, initial );
+                node = NodeMakeBinary( CO_INIT, this_node, initial );
                 node->type = this_node->type;
                 retn = MembPtrAssign( &node );
                 /* value of expression is 'this_node' */
@@ -542,19 +542,19 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
 
                 dup = NULL;
                 if( control & EFFECT_VALUE_THIS ) {
-                    dup = NodeDupExpr( &this_node );
+                    dup = NodeMakeExprDuplicate( &this_node );
                 }
                 if( base_type->id == TYP_BITFIELD ) {
                     this_node = NodeUnaryCopy( CO_BITFLD_CONVERT, this_node );
                     this_node->type = base_type->of;
                 }
-                node = NodeBinary( NULL == TypeReference( base_type )
+                node = NodeMakeBinary( NULL == TypeReference( base_type )
                                    ? CO_INIT : CO_INIT_REF
                                  , this_node
                                  , initial );
                 node->type = this_node->type;
                 if( dup != NULL ) {
-                    node = NodeComma( node, dup );
+                    node = NodeMakeComma( node, dup );
                 }
             }
         }
@@ -569,7 +569,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
             PTREE bare;             // - bare source operand
             PTREE co_dtor;          // - CO_DTOR operand
             if( this_node == NULL ) {
-                this_node = NodeTemporary( base_type );
+                this_node = NodeMakeTemporary( base_type );
                 this_node = PTreeSetLocn( this_node, err_locn );
                 check_dtoring = true;
             } else {
@@ -621,8 +621,8 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
                     node = CallArgsArrange( ctor->sym_type
                                           , node
                                           , node->u.subtree[1]
-                                          , NodeArg( this_node )
-                                          , CallArgumentExactCtor
+                                          , NodeMakeArg( this_node )
+                                          , MakeArgCtorCall
                                               ( base_type
                                               , ( control & EFFECT_EXACT ) != 0 )
                                           , NULL );
@@ -637,7 +637,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
             }
             if( node->op == PT_ERROR ) break;
             if( check_dtoring ) {
-                node = NodeDtorExpr( node, this_node->u.symcg.symbol );
+                node = NodeMarkDtorExpr( node, this_node->u.symcg.symbol );
                 if( node->op == PT_ERROR ) break;
             }
             if( control & EFFECT_EXACT ) {
@@ -656,7 +656,7 @@ PTREE EffectCtor(               // EFFECT A CONSTRUCTION
         }
         break;
       case TYP_VOID :
-        node = NodeUnary( CO_TRASH_EXPR, node );
+        node = NodeMakeUnary( CO_TRASH_EXPR, node );
         node->type = base_type;
         break;
       default :

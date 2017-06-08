@@ -125,7 +125,7 @@ static PTREE dupPromote(        // PROMOTE A DUPLICATE
     temp->sym_type = type;
     convertToTemp( dup1, temp );
     convertToTemp( dup2, temp );
-    dup = NodeBinary( NULL == TypeReference( type ) ? CO_EQUAL : CO_EQUAL_REF
+    dup = NodeMakeBinary( NULL == TypeReference( type ) ? CO_EQUAL : CO_EQUAL_REF
                     , MakeNodeSymbol( temp )
                     , dup );
     dup->type = type;

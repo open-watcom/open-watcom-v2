@@ -1655,7 +1655,7 @@ static bool is_ptr_constant(    // CHECK IF NODE IS TYPED AS PTR TO A CONSTANT
 static PTREE bld_type_size(     // BUILD CONSTANT NODE WITH SIZE OF TYPE
     TYPE type )                 // - type in question
 {
-    return NodeOffset( CgTypeSize( type ) );
+    return NodeMakeConstantOffset( CgTypeSize( type ) );
 }
 
 
@@ -1693,12 +1693,12 @@ static PTREE bld_ptr_adj(       // BUILD A POINTER ADJUSTMENT
     target_size_t pted_size;    // - size of ptr object type
 
     ptr_type = ptr->type;
-    factor = NodeConvert( TypePointerDiff( ptr_type ), factor );
+    factor = NodeMakeConversion( TypePointerDiff( ptr_type ), factor );
     pted_size = CgTypeSize( TypePointedAtModified( ptr_type ) );
     if( pted_size == 1 ) {
         return factor;
     }
-    new_node = NodeBinary( CO_TIMES, factor, NodeOffset( pted_size ) );
+    new_node = NodeMakeBinary( CO_TIMES, factor, NodeMakeConstantOffset( pted_size ) );
     new_node->type = factor->type;
     return FoldBinary( new_node );
 }
@@ -1886,7 +1886,7 @@ static PTREE convertCtor(       // CONVERT CTOR EXPRESSION
                     expr = MembPtrZero( type );
                     break;
                 default:
-                    expr = NodeIntegralConstant( 0, type );
+                    expr = NodeMakeIntegralConstant( 0, type );
                 }
             }
             PTreeExtractLocn( old, &expr->locn );
@@ -1902,10 +1902,10 @@ static PTREE convertCtor(       // CONVERT CTOR EXPRESSION
             expr = CastImplicit( expr, type, CNV_INIT, &diagInit );
 #endif
         } else {
-            PTREE temp = NodeTemporary( type );
+            PTREE temp = NodeMakeTemporary( type );
             expr = generateCtor( temp, expr );
             if( expr->op != PT_ERROR ) {
-                expr = NodeDtorExpr( expr, temp->u.symcg.symbol );
+                expr = NodeMarkDtorExpr( expr, temp->u.symcg.symbol );
             }
         }
         break;
@@ -1962,7 +1962,7 @@ static PTREE initClass(         // INIT. A CLASS ( INIT OR RETURN )
             break;
           case CNV_IMPOSSIBLE :
             ConversionTypesSet( orig_right, left->type );
-            expr = NodeBinary( CO_CTOR, left, right_comma );
+            expr = NodeMakeBinary( CO_CTOR, left, right_comma );
             expr->locn = *init_locn;
             CtorDiagNoMatch( expr, diagnosis->msg_impossible, &fnov_diag );
             ConversionDiagnoseInf();
@@ -2182,7 +2182,7 @@ static bool analyseAddrOfFunc(  // ANALYSE '&func'
 
     expr = PTreeOp( a_expr );
     addrof = expr;
-    switch( NodeAddrOfFun( addrof, &fnode ) ) {
+    switch( NodeGetOverloadedFnAddr( addrof, &fnode ) ) {
       default  :
         retb = true;
         break;
@@ -2516,7 +2516,7 @@ static bool allowClassCastAsLValue( PTREE *p_expr )
     if( class_type == NULL ) {
         retb = false;
     } else {
-        *p_expr = NodeForceLvalue( *p_expr );
+        *p_expr = NodeForceLValue( *p_expr );
         retb = true;
     }
     return( retb );
@@ -2955,7 +2955,7 @@ start_opac_string:
 #if 0
             ConvertExpr( &expr->u.subtree[0], right->type, CNV_EXPR );
 #else
-            expr->u.subtree[1] = NodeRvalue( expr->u.subtree[1] );
+            expr->u.subtree[1] = NodeGetRValue( expr->u.subtree[1] );
             if( expr->u.subtree[1]->op == PT_ERROR ) {
                 PTreeErrorNode( expr );
                 break;
@@ -3167,9 +3167,9 @@ start_opac_string:
                 break;
             continue;
           case CONV_AA_COMMON :
-            expr->u.subtree[0] = NodeConvert( type
+            expr->u.subtree[0] = NodeMakeConversion( type
                                             , expr->u.subtree[0] );
-            expr->u.subtree[1] = NodeConvert( type
+            expr->u.subtree[1] = NodeMakeConversion( type
                                             , expr->u.subtree[1] );
             left = PTreeOpLeft( expr );
             right = PTreeOpRight( expr );
@@ -3183,7 +3183,7 @@ start_opac_string:
             continue;
           case CONV_CMP_ZERO_LEFT :
             left = expr->u.subtree[0];
-            left = NodeConvertToBool( left );
+            left = NodeMakeBoolConversion( left );
             expr->u.subtree[0] = left;
             if( left->op != PT_ERROR )
                 continue;
@@ -3191,7 +3191,7 @@ start_opac_string:
             break;
           case CONV_CMP_ZERO_RIGHT :
             right = expr->u.subtree[1];
-            right = NodeConvertToBool( right );
+            right = NodeMakeBoolConversion( right );
             expr->u.subtree[1] = right;
             if( right->op != PT_ERROR )
                 continue;
@@ -3200,7 +3200,7 @@ start_opac_string:
           case CONV_TO_PTR_DIFF :
             type = TypePointerDiff( type );
             expr->type = type;
-            expr = NodeBinary( CO_DIVIDE
+            expr = NodeMakeBinary( CO_DIVIDE
                               , expr
                               , bld_pted_size( left ) );
             expr = PTreeCopySrcLocation( expr, left );
@@ -3213,7 +3213,7 @@ start_opac_string:
             }
             continue;
           case CONV_RVALUE_LEFT :
-            left = NodeRvalueLeft( expr );
+            left = NodeSetRValueLeft( expr );
             left->type = BindTemplateClass( left->type, &left->locn, false );
             type = TypedefModifierRemoveOnly( left->type );
             continue;
@@ -3578,7 +3578,7 @@ start_opac_string:
           case RESULT_COMMA :
             warnMeaningfulSideEffect( expr->u.subtree[0] );
             if( NodeIsUnaryOp( expr->u.subtree[0], CO_BITFLD_CONVERT ) ) {
-                left = NodeRvalueLeft( expr );
+                left = NodeSetRValueLeft( expr );
             }
             right = expr->u.subtree[1];
             if( NodeIsUnaryOp( right, CO_BITFLD_CONVERT ) ) {
@@ -3645,7 +3645,7 @@ start_opac_string:
             }
             expr = convertIncDec( new_op, expr, left );
             refed = TypedefModifierRemoveOnly( refed );
-            node = NodeIntegralConstant( 1, refed );
+            node = NodeMakeIntegralConstant( 1, refed );
             *PTreeRefRight( expr ) = node;
             type = expr->type;
           } continue;
@@ -3676,7 +3676,7 @@ start_opac_string:
             continue;
           case RESULT_ASSIGN :
             expr->flags |= PTF_SIDE_EFF | PTF_MEANINGFUL;
-            if( NodeBitField( expr->u.subtree[0] ) )
+            if( NodeIsBitField( expr->u.subtree[0] ) )
                 continue;
             expr->flags |= PTF_LVALUE;
             if( CompFlags.plain_char_promotion ) {
@@ -3691,9 +3691,9 @@ start_opac_string:
                 colon = PTreeOpRight( left );
                 opl = PTreeOpLeft( colon );
                 opr = PTreeOpRight( colon );
-                if( NodeBitField( opr ) && NodeBitField( opl ) ) {
+                if( NodeIsBitField( opr ) && NodeIsBitField( opl ) ) {
                     expr->type = type;
-                    expr = NodeBitQuestAssign( expr );
+                    expr = NodeMakeBitQuestAssign( expr );
                     expr->flags |= PTF_SIDE_EFF | PTF_MEANINGFUL;
                 }
             }
@@ -3778,7 +3778,7 @@ start_opac_string:
           } break;
           case RESULT_CALL :
             if( NULL == FunctionDeclarationType( type ) ) {
-                left = NodeRvalueLeft( expr );
+                left = NodeSetRValueLeft( expr );
             }
             type = TypedefModifierRemoveOnly( left->type );
             if( type->id == TYP_POINTER ) {
@@ -3883,7 +3883,7 @@ start_opac_string:
                     force_rvalue = true;
                 }
                 if( force_rvalue ) {
-                    left = NodeRvalueExactLeft( expr );
+                    left = NodeSetRValueExactLeft( expr );
                     if( PT_ERROR == left->op )
                         break;
                     type = TypedefModifierRemoveOnly( left->type );
@@ -3945,7 +3945,7 @@ start_opac_string:
             if( expr->flags & PTF_LVALUE )
                 continue;
             NodeRvalueRight( expr );
-            NodeRvalueLeft( expr );
+            NodeSetRValueLeft( expr );
             expr = CastImplicitCommonPtrExpr( expr
                                             , &diagPtrConvCommon
                                             , true );
@@ -4000,15 +4000,15 @@ start_opac_string:
           } continue;
           #undef ExtractColonFlags
           case RESULT_COND_OPRS :
-            expr->u.subtree[0] = NodeComma( NodeIc( IC_COND_TRUE )
+            expr->u.subtree[0] = NodeMakeComma( NodeMakeIc( IC_COND_TRUE )
                                           , expr->u.subtree[0] );
-            expr->u.subtree[1] = NodeComma( NodeIc( IC_COND_FALSE )
+            expr->u.subtree[1] = NodeMakeComma( NodeMakeIc( IC_COND_FALSE )
                                           , expr->u.subtree[1] );
             left = expr->u.subtree[0];
             right = expr->u.subtree[1];
             continue;
           case RESULT_COND_OPR :
-            expr->u.subtree[1] = NodeComma( NodeIc( IC_COND_TRUE )
+            expr->u.subtree[1] = NodeMakeComma( NodeMakeIc( IC_COND_TRUE )
                                           , expr->u.subtree[1] );
             continue;
           case RESULT_COND_EXPR :
@@ -4065,18 +4065,18 @@ start_opac_string:
                     expr = throw_exp;
                     break;
                 } else if( NULL != ArrayType( type ) ) {
-                    throw_exp = NodeRvalue( throw_exp );
+                    throw_exp = NodeGetRValue( throw_exp );
                     type = throw_exp->type;
                 } else if( NULL != MemberPtrType( type ) ) {
-                    throw_exp = NodeAssignTemporary( type, throw_exp );
+                    throw_exp = NodeMakeAssignToNewTmp( type, throw_exp );
                     type = NodeType( throw_exp );
                 } else if( NULL != FunctionDeclarationType( type ) ) {
                     type = TypeCanonicalThr( type );
-                    throw_exp = NodeConvert( type, throw_exp );
+                    throw_exp = NodeMakeConversion( type, throw_exp );
                     throw_exp->flags &= ~ PTF_LVALUE;
                 }
                 if( BasedPtrType( type ) ) {
-                    if( ! NodeDerefPtr( &throw_exp ) ) {
+                    if( ! NodeTryDerefPtr( &throw_exp ) ) {
                         expr = throw_exp;
                         break;
                     }
@@ -4110,14 +4110,14 @@ start_opac_string:
                             rtcode = RTF_THROW_ZERO;
                         }
 //                      constant = NodeGetConstantNode( throw_exp );
-                        throw_exp = NodeAssignTemporary( throw_exp->type, throw_exp );
+                        throw_exp = NodeMakeAssignToNewTmp( throw_exp->type, throw_exp );
                         expr = PTreeOpLeft( throw_exp );
                         type = NodeType( expr );
                     }
                     break;
                   case THROBJ_CLASS :
                   case THROBJ_CLASS_VIRT :
-                    throw_exp = NodeForceLvalue( throw_exp );
+                    throw_exp = NodeForceLValue( throw_exp );
                     expr = throw_exp;
                     type = NodeType( expr );
                     DbgVerify( NULL != TypeReference( type )
@@ -4136,7 +4136,7 @@ start_opac_string:
                     expr = PTreeErrorNode( throw_exp );
                     break;
                 }
-                expr = RunTimeCall( NodeArgument( expr, throw_exp )
+                expr = RunTimeCall( NodeMakeArgument( expr, throw_exp )
                                   , GetBasicType( TYP_VOID )
                                   , rtcode );
             }
@@ -4154,24 +4154,24 @@ start_opac_string:
             warnIntTrunc( right, segid_type, getConstBitsType( segid_type ) );
             left1 = expr->u.subtree[0];
             if( TypeIsBasedPtr( type ) ) {
-                left1 = NodeConvert( TypeSegAddr(), left1 );
+                left1 = NodeMakeConversion( TypeSegAddr(), left1 );
                 expr->u.subtree[0] = left1;
             }
             type = TypeSegOp( left1->type );
           } continue;
           case RESULT_SEGNAME :     // __segname( "..." )
             expr = NodeReplace( expr
-                              , NodeSegname( left->u.string->string ) );
+                              , NodeMakeSegname( left->u.string->string ) );
             type = expr->type;
             continue;
           case DREF_PTR_LEFT :      // DE-REFERENCE PTR ON LEFT
-          { if( ! NodeDerefPtr( &expr->u.subtree[0] ) )
+          { if( ! NodeTryDerefPtr( &expr->u.subtree[0] ) )
                 break;
             left = PTreeOpLeft( expr );
             type = left->type;
           } continue;
           case DREF_PTR_RIGHT :     // DE-REFERENCE PTR ON RIGHT
-          { if( ! NodeDerefPtr( &expr->u.subtree[1] ) )
+          { if( ! NodeTryDerefPtr( &expr->u.subtree[1] ) )
                 break;
             right = PTreeOpRight( expr );
           } continue;
@@ -4385,7 +4385,7 @@ PTREE AnalyseStmtExpr(      // ANALYZE A STATEMENT EXPRESSION
     if( expr != NULL ) {
         expr = run_traversals( expr );
         warnMeaningfulSideEffect( expr );
-        expr = NodeDone( expr );
+        expr = NodeMakeDone( expr );
     }
     return expr;
 }
@@ -4425,7 +4425,7 @@ PTREE AnalyseBoolExpr(      // ANALYZE A BOOLEAN EXPRESSION
             if( 0 == ( expr->flags & PTF_BOOLEAN ) ) {
                 warnBoolAssignment( expr );
             }
-            expr = NodeConvertToBool( expr );
+            expr = NodeMakeBoolConversion( expr );
         }
     }
     return expr;
@@ -4438,7 +4438,7 @@ PTREE AnalyseValueExpr(     // ANALYZE AN EXPRESSION, MAKE IT A VALUE
     if( expr != NULL ) {
         expr = run_traversals( expr );
         if( expr->op != PT_ERROR ) {
-            expr = NodeRvalue( expr );
+            expr = NodeGetRValue( expr );
         }
     }
     return expr;
@@ -4472,10 +4472,10 @@ PTREE AnalyseReturnExpr(    // ANALYSE A RETURN EXPRESSION
     if( expr != NULL ) {
         fun_type = SymFuncReturnType( func );
         right = expr;
-        expr = NodeBinary( CO_RETURN, PTreeType( fun_type ), right );
+        expr = NodeMakeBinary( CO_RETURN, PTreeType( fun_type ), right );
         expr = PTreeCopySrcLocation( expr, right );
         expr = run_traversals( expr );
-        expr = NodeDone( expr );
+        expr = NodeMakeDone( expr );
         if( FnRetnOpt() ) {
             expr->flags |= PTF_RETN_OPT;
         }

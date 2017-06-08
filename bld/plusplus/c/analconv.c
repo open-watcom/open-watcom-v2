@@ -351,7 +351,7 @@ bool ConvertCommonType(         // CONVERT TO COMMON TYPE (:, ==, !=)
     } else
     if( nodeMemberPtr( expr->u.subtree[0] )
      || nodeMemberPtr( expr->u.subtree[1] ) ) {
-        expr->u.subtree[0] = NodeRvalueLeft( expr );
+        expr->u.subtree[0] = NodeSetRValueLeft( expr );
         expr->u.subtree[1] = NodeRvalueRight( expr );
         expr = MembPtrCommonType( expr );
         *a_expr = expr;

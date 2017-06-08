@@ -288,7 +288,7 @@ static PTREE dataInitPadLeftSide( target_size_t start )
     type = TypeMergeForMember( type, currInit->base_type );
     tree->type = type;
     tree->flags |= PTF_LVALUE;
-    tree = NodeUnary( CO_INDIRECT, tree );
+    tree = NodeMakeUnary( CO_INDIRECT, tree );
     tree->type = type;
     tree->flags |= PTF_LVALUE;
     return( tree );
@@ -298,7 +298,7 @@ static PTREE dataInitPadLeftSide( target_size_t start )
 static PTREE refOfSym( TYPE type, SYMBOL var )
 /********************************************/
 {
-    return NodeConvert( MakeReferenceTo( type ), MakeNodeSymbol( var ) );
+    return NodeMakeConversion( MakeReferenceTo( type ), MakeNodeSymbol( var ) );
 }
 #endif
 
@@ -324,8 +324,8 @@ static void dataInitEmitAutoAssign( SYMBOL dst, SYMBOL src )
 #if 0
     type = MakeTypeOf( type, GetBasicType( TYP_UCHAR ) );
     node = NodeFetch( refOfSym( type, src ) );
-    node = NodeAssign( refOfSym( type, dst ), node );
-    node = NodeDone( node );
+    node = NodeMakeAssignment( refOfSym( type, dst ), node );
+    node = NodeMakeDone( node );
 
     _dump( "- Auto Assign Expression ------------------------------" );
     _dumpPTree( node );
@@ -695,7 +695,7 @@ static PTREE emitDtorInitExpr(  // EMIT DTOR MARKING FOR AN EXPRESSION
             // end of scope-call optimization
             expr = PtdInitSymEnd( expr, sym );
         }
-        expr = NodeDtorExpr( expr, sym );
+        expr = NodeMarkDtorExpr( expr, sym );
         if( done != NULL ) {
             done->u.subtree[0] = expr;
             expr = done;
@@ -1236,7 +1236,7 @@ static void dataInitInvokeCtor( target_size_t start )
         return;
     }
     node = dtorableObjectCtored( currInit->nest, node, true );
-    node = NodeDone( node );
+    node = NodeMakeDone( node );
 
     _dump( "- Invoke Ctor Expression ------------------------------" );
     _dumpPTree( node );
@@ -1295,8 +1295,8 @@ static void dataInitRunTimeCall( target_size_t start, target_size_t size )
             currInit->state = DS_ERROR;
         } else {
             sig = dataInitTypeSigFind( base_type, TSA_DEFAULT_CTOR | TSA_DTOR );
-            node = NodeArguments( NodeTypeSig( sig )
-                                , NodeOffset( num_elem )
+            node = NodeMakeArgList( NodeMakeTypeSignature( sig )
+                                , NodeMakeConstantOffset( num_elem )
                                 , dataInitPadLeftSide( start )
                                 , NULL );
             if( TypeHasVirtualBases( base_type ) ) {
@@ -1306,7 +1306,7 @@ static void dataInitRunTimeCall( target_size_t start, target_size_t size )
             }
             node = RunTimeCall( node, MakeReferenceTo( base_type ), fun_code );
             node = dtorableObjectCtored( currInit->nest, node, true );
-            node = NodeDone( node );
+            node = NodeMakeDone( node );
 
             _dump( "- RunTime Call Expression -----------------------------" );
             _dumpPTree( node );

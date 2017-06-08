@@ -1489,7 +1489,7 @@ static void computeFuncRank( SYMBOL fsym, SYMBOL sym, TYPE *tgt,
     SEARCH_RESULT       *result;
 
     initRankVector( FNC_DEFAULT, &curr_rank, 0 );
-    retn = NodeAddrOfFun( *ptlist, &fn );
+    retn = NodeGetOverloadedFnAddr( *ptlist, &fn );
     DbgAssert( retn != ADDR_FN_NONE );
     src_mptr = false;
     if( fn->flags & PTF_COLON_QUALED ) { // i.e. S::foo not just foo

@@ -2230,7 +2230,7 @@ void FunctionBody( DECL_INFO *dinfo )
       case RETN_DFLT_INT :
         if( MainProcedure( func ) ) {
             PTREE expr;
-            expr = AnalyseReturnExpr( func, NodeZero() );
+            expr = AnalyseReturnExpr( func, NodeMakeZeroConstant() );
             IcEmitExpr( expr );
         }
         // drops thru

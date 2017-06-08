@@ -158,17 +158,17 @@ static PTREE genVfunCall(       // DIRECTLY GENERATE VFUN CALL
     TYPE vfptr_type;            // - type[ ptr to VF table ]
     TYPE vfn_type;              // - type[ ptr to VF ]
 
-    node = NodeBinary( CO_DOT, node, NodeOffset( vf_offset ) );
+    node = NodeMakeBinary( CO_DOT, node, NodeMakeConstantOffset( vf_offset ) );
     vfptr_type = MakeVFTableFieldType( true );
     node->type = vfptr_type;
     node->flags |= PTF_LVALUE;
     node = PtdExprConst( node );
-    node = NodeRvalue( node );
+    node = NodeGetRValue( node );
     vfn_type = TypePointedAtModified( vfptr_type );
-    node = NodeBinary( CO_DOT, node, NodeOffset( vf_index * CgMemorySize( vfn_type ) ) );
+    node = NodeMakeBinary( CO_DOT, node, NodeMakeConstantOffset( vf_index * CgMemorySize( vfn_type ) ) );
     node->type = vfn_type;
     node->flags |= PTF_LVALUE;
-    node = NodeRvalue( node );
+    node = NodeGetRValue( node );
     node->type = sym->sym_type;
     return node;
 }
@@ -193,12 +193,12 @@ static PTREE genVfunIcs(        // GENERATE IC'S FOR CG-GENERATION OF VFUN CALL
 
     expr = NodeMakeCallee( vfun );
     expr->cgop = CO_IGNORE;
-    expr = NodeUnary( CO_CALL_SETUP_VFUN, expr );
+    expr = NodeMakeUnary( CO_CALL_SETUP_VFUN, expr );
     expr->type = vfun->sym_type;
     expr->flags = node->flags;
     expr = PtdVfunAccess( expr, vf_index, vf_offset, baser );
     node = NodeUnaryCopy( CO_VFUN_PTR, node );
-    return NodeComma( node, expr );
+    return NodeMakeComma( node, expr );
 }
 
 
@@ -241,7 +241,7 @@ PTREE VfnDecorateCall(          // DECORATE VIRTUAL CALL
     vfun = SymDefaultBase( vfun );
     sym = NodeMakeCallee( vfun );
     sym->cgop = CO_IGNORE;
-    sym = NodeBinary( CO_VIRT_FUNC, expr, sym );
+    sym = NodeMakeBinary( CO_VIRT_FUNC, expr, sym );
     sym->flags = expr->flags;
     sym->type = expr->type;
     return sym;
@@ -261,15 +261,15 @@ void VfnReference(              // EMIT VIRTUAL FUNCTION REFERENCE
 
     around = CgFrontLabelCs();
     CgFrontGotoNear( IC_LABEL_CS, O_GOTO, around );
-    fake = NodeAssignTemporary( MakePointerTo( vfun->sym_type )
+    fake = NodeMakeAssignToNewTmp( MakePointerTo( vfun->sym_type )
                               , NodeMakeCallee( vfun ) );
-    fake = NodeRvalue( fake );
+    fake = NodeGetRValue( fake );
     fake = NodeUnaryCopy( CO_CALL_SETUP_IND, fake );
     fake = VfnDecorateCall( fake, vfun );
-    fake = NodeBinary( CO_CALL_EXEC_IND, fake, NULL );
+    fake = NodeMakeBinary( CO_CALL_EXEC_IND, fake, NULL );
     fake->type = SymFuncReturnType( vfun );
     fake->flags |= PTF_MEANINGFUL | PTF_SIDE_EFF;
-    fake = NodeDone( fake );
+    fake = NodeMakeDone( fake );
     IcEmitExpr( fake );
     CgFrontLabdefCs( around );
     CgFrontLabfreeCs( 1 );

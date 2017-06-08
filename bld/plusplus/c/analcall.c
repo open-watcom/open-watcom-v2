@@ -102,10 +102,10 @@ static PTREE makeCall(          // MAKE A CALL OR INDIRECT CALL
 
     if( direct_call ) {
         node = NodeUnaryCopy( CO_CALL_SETUP, proc );
-        node = NodeBinary( CO_CALL_EXEC, node, args );
+        node = NodeMakeBinary( CO_CALL_EXEC, node, args );
     } else {
         node = VfunSetupCall( proc );
-        node = NodeBinary( CO_CALL_EXEC_IND, node, args );
+        node = NodeMakeBinary( CO_CALL_EXEC_IND, node, args );
     }
     return NodeSetType( node, type, PTF_MEANINGFUL | PTF_SIDE_EFF );
 }
@@ -160,7 +160,7 @@ void NodeBuildArgList(          // BUILD ARGUMENT LIST FROM CALLER ARG.S
     for( ; count > 0; --count ) {
         arg->type = BindTemplateClass( arg->type, &arg->locn, true );
         if( ( arg->flags & PTF_LVALUE )
-         && NodeReferencesTemporary( arg->u.subtree[1] ) ) {
+         && NodeYieldsTemporary( arg->u.subtree[1] ) ) {
             // temporaries may only be bound to const references
             if( NULL == TypeReference( arg->type ) ) {
                 arg->type = MakeConstReferenceTo( arg->type );
@@ -242,14 +242,14 @@ static bool passStructOnStack(  // PASS A STRUCT/CLASS ON STACK
     PTREE right;                // - right operand
     TYPE type;                  // - class type
 
-    right = NodeRvalue( arg->u.subtree[1] );
+    right = NodeGetRValue( arg->u.subtree[1] );
     type = right->type;
     if( right->flags & PTF_CLASS_RVREF ) {
         if( right->op != PT_ERROR ) {
-            PTREE temp = NodeTemporary( type );
+            PTREE temp = NodeMakeTemporary( type );
             right = ClassDefaultCopyDiag( temp, right, &diagEllConv );
             if( right->op != PT_ERROR ) {
-                right = NodeDtorExpr( right, temp->u.symcg.symbol );
+                right = NodeMarkDtorExpr( right, temp->u.symcg.symbol );
                 if( right->op != PT_ERROR ) {
                     right->type = type;
                     right = NodeFetch( right );
@@ -279,14 +279,14 @@ static bool convertEllipsisArg( // CONVERT AN ELLIPSIS (...) ARGUMENT
     PTREE afun;                 // - &[ function ]
     TYPE type;                  // - node type
 
-    switch( NodeAddrOfFun( PTreeOpRight( arg ), &afun ) ) {
+    switch( NodeGetOverloadedFnAddr( PTreeOpRight( arg ), &afun ) ) {
       case ADDR_FN_MANY :
       case ADDR_FN_MANY_USED :
         PTreeErrorExpr( arg->u.subtree[1], ERR_ELLIPSE_ADDR_OVERLOAD );
         retb = false;
         break;
       default :
-        right = NodeRvalue( arg->u.subtree[1] );
+        right = NodeGetRValue( arg->u.subtree[1] );
         arg->u.subtree[1] = right;
         type =  TypedefModifierRemove( right->type );
         switch( type->id ) {
@@ -297,19 +297,19 @@ static bool convertEllipsisArg( // CONVERT AN ELLIPSIS (...) ARGUMENT
           case TYP_WCHAR :
           case TYP_USHORT :
             type = TypeUnArithResult( type );
-            right = NodeConvert( type, right );
+            right = NodeMakeConversion( type, right );
             arg_finish( right, arg );
             retb = true;
             break;
           case TYP_FLOAT :
             type = GetBasicType( TYP_DOUBLE );
-            right = NodeConvert( type, right );
+            right = NodeMakeConversion( type, right );
             arg_finish( right, arg );
             retb = true;
             break;
           case TYP_ARRAY :
             type = PointerTypeForArray( right->type );
-            right = NodeConvert( type, right );
+            right = NodeMakeConversion( type, right );
             arg_finish( right, arg );
             retb = true;
             break;
@@ -459,7 +459,7 @@ static bool canCoaxVAStartSym( PTREE *parg )
     if( arg->op != PT_SYMBOL ) {
         return( false );
     }
-    *parg = NodeComma( orig_arg, PTreeAssign( NULL, arg ) );
+    *parg = NodeMakeComma( orig_arg, PTreeAssign( NULL, arg ) );
     return( true );
 }
 
@@ -565,7 +565,7 @@ static PTREE transformVaStart   // TRANSFORM TO CO_VASTART OPCODE
         offset -= TARGET_PACKING;
     }
     NodeFreeDupedExpr( expr );
-    expr = NodeBinary( CO_VASTART, valist, NodeOffset( offset ) );
+    expr = NodeMakeBinary( CO_VASTART, valist, NodeMakeConstantOffset( offset ) );
     return expr;
 }
 #endif
@@ -587,9 +587,9 @@ static bool adjustForVirtualCall(   // ADJUSTMENTS FOR POSSIBLE VIRTUAL CALL
     this_type = StructType( this_type );
     if( this_type != NULL ) {
         if( OMR_CLASS_VAL == ObjModelArgument( this_type ) ) {
-            expr = NodeAssignTemporary( this_type, expr );
+            expr = NodeMakeAssignToNewTmp( this_type, expr );
         } else {
-            expr = NodeConvert( MakePointerTo( expr->type ), expr );
+            expr = NodeMakeConversion( MakePointerTo( expr->type ), expr );
         }
         *this_node = expr;
     }
@@ -601,7 +601,7 @@ static bool adjustForVirtualCall(   // ADJUSTMENTS FOR POSSIBLE VIRTUAL CALL
     NodeConvertToBasePtr( this_node, this_type, result, true );
     sym = SymDefaultBase( sym );
     if( SymIsVirtual( sym ) && ((*routine)->flags & PTF_COLON_QUALED) == 0 && !exact_call ) {
-        expr = AccessVirtualFnAddress( NodeDupExpr( this_node )
+        expr = AccessVirtualFnAddress( NodeMakeExprDuplicate( this_node )
                                      , result
                                      , sym );
         expr->type = MakePointerTo( expr->type );
@@ -704,7 +704,7 @@ static PTREE insertRetnCopy(    // INSERT COPY OF RETURN ON STACK
     if( temp != NULL ) {
         PTreeOpLeft( callexpr )->flags |= PTF_MEMORY_EXACT;
         callexpr->flags |= PTF_MEMORY_EXACT;
-        callexpr = NodeCopyClassObject( temp, callexpr );
+        callexpr = NodeMakeClassObjectCopy( temp, callexpr );
     }
     return callexpr;
 }
@@ -717,7 +717,7 @@ static PTREE insertCppRetnArg(  // INSERT C++ RETURN ARGUMENT
 {
     if( return_kind == OMR_CLASS_REF ) {
         retnnode->flags |= PTF_ARG_RETURN;
-        arglist = insertArg( arglist, NodeArg( retnnode ) );
+        arglist = insertArg( arglist, NodeMakeArg( retnnode ) );
     }
     return arglist;
 }
@@ -751,7 +751,7 @@ static PTREE insertCDtor(       // INSERT CDTOR NODE INTO CALL LIST
         r_val = PTreeRefRight( arg );
         val = *r_val;
         if( val->op == PT_INT_CONSTANT ) {
-            PTREE new_val = NodeIcUnsigned( IC_CDARG_VAL, val->u.uint_constant );
+            PTREE new_val = NodeMakeIcUnsigned( IC_CDARG_VAL, val->u.uint_constant );
             new_val->type = val->type;
             *r_val = new_val;
             PTreeFree( val );
@@ -882,8 +882,8 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
             /* NYI: verify dtor call has no arguments */
             expr->u.subtree[0] = NULL;
             NodeFreeDupedExpr( expr );
-            expr = NodeConvert( GetBasicType( TYP_VOID ), this_node );
-            expr = NodeComma( expr, left );
+            expr = NodeMakeConversion( GetBasicType( TYP_VOID ), this_node );
+            expr = NodeMakeComma( expr, left );
             return( expr );
         }
         break;
@@ -891,7 +891,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
         if( left->flags & PTF_CALLED_ONLY ) {
             /* member pointer dereference being called */
             deref_args = left->u.subtree[1];
-            this_node = NodeDupExpr( &(deref_args->u.subtree[1]) );
+            this_node = NodeMakeExprDuplicate( &(deref_args->u.subtree[1]) );
             membptr_deref = true;
         }
         break;
@@ -951,7 +951,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
           case FNOV_NO_MATCH :
             if( this_node == NULL ) {
                 if( SymIsThisFuncMember( orig ) ) {
-                    this_node = NodeThisCopyLocation( left );
+                    this_node = NodeMakeRVThisAtLoc( left );
                 }
             }
             if( this_node != NULL ) {
@@ -987,7 +987,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
         if( this_node == NULL ) {
             if( SymIsThisFuncMember( sym ) ) {
                 if( result->use_this ) {
-                    this_node = NodeThisCopyLocation( left );
+                    this_node = NodeMakeRVThisAtLoc( left );
                     if( this_node == NULL ) {
                         PTreeErrorExpr( expr, ERR_INVALID_NONSTATIC_ACCESS );
                         InfSymbolDeclaration( sym );
@@ -1026,7 +1026,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
         left->type = type;
         if( this_node == NULL ) {
             if( SymIsThisFuncMember( sym ) ) {
-                this_node = NodeThisCopyLocation( left );
+                this_node = NodeMakeRVThisAtLoc( left );
             }
         } else {
             if( SymIsStaticFuncMember( sym ) ) {
@@ -1124,12 +1124,12 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
         if( this_node == NULL ) {
             cdtor = NULL;
         } else {
-            this_node = NodeArg( this_node );
+            this_node = NodeMakeArg( this_node );
             if( virtual_call ) {
                 this_node->flags |= PTF_ARG_THIS_VFUN;
             }
             if( sym != NULL && SymIsDtor( sym ) ) {
-                cdtor = NodeArg( NodeCDtorArg( DTOR_NULL ) );
+                cdtor = NodeMakeArg( NodeMakeCDtorArg( DTOR_NULL ) );
             } else {
                 cdtor = NULL;
             }
@@ -1160,7 +1160,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
             expr->flags |= PTF_LVALUE;
         }
         if( OMR_CLASS_REF == ObjModelArgument( type ) ) {
-            retnnode = NodeTemporary( type );
+            retnnode = NodeMakeTemporary( type );
             retnnode = PTreeCopySrcLocation( retnnode, expr );
         } else {
             retnnode = NULL;
@@ -1172,7 +1172,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
                               , cdtor
                               , retnnode );
         if( retnnode != NULL ) {
-            expr = NodeDtorExpr( expr, retnnode->u.symcg.symbol );
+            expr = NodeMarkDtorExpr( expr, retnnode->u.symcg.symbol );
             if( SymRequiresDtoring( retnnode->u.symcg.symbol ) ) {
                 expr = PtdCtoredExprType( expr, NULL, type );
             }
@@ -1195,7 +1195,7 @@ PTREE AnalyseCall(              // ANALYSIS FOR CALL
         }
     }
     if( static_fn_this != NULL ) {
-        expr = NodeCommaIfSideEffect( static_fn_this, expr );
+        expr = NodeMakeCommaIfLHSSideEffect( static_fn_this, expr );
     }
     ArgListTempFree( alist, count );
     PtListFree( ptlist, count );
@@ -1225,7 +1225,7 @@ PTREE AnalyseDtorCall(          // ANALYSIS FOR SPECIAL DTOR CALLS
     virtual_call = adjustForVirtualCall( &this_node, &dtor_id, result );
     return_type = SymFuncReturnType( dtor_sym );
     expr = makeCall( dtor_id, return_type, NULL, ! virtual_call );
-    this_node = NodeArg( this_node );
+    this_node = NodeMakeArg( this_node );
     if( virtual_call ) {
         this_node->flags |= PTF_ARG_THIS_VFUN;
     }
@@ -1233,7 +1233,7 @@ PTREE AnalyseDtorCall(          // ANALYSIS FOR SPECIAL DTOR CALLS
                           , expr
                           , NULL
                           , this_node
-                          , NodeArg( NodeCDtorArg( extra ) )
+                          , NodeMakeArg( NodeMakeCDtorArg( extra ) )
                           , NULL );
     if( virtual_call ) {
         expr->u.subtree[0] = VfnDecorateCall( expr->u.subtree[0], dtor_sym );
@@ -1256,12 +1256,12 @@ PTREE MakeDeleteCall(   // MAKE A CALL TO 'OPERATOR DELETE'
     del_args = SymFuncArgList( del_sym );
     args = NULL;
     if( class_parm != NULL ) {
-        size_arg = NodeOffset( class_parm->u.c.info->size );
-        size_arg = NodeConvert( del_args->type_list[1], size_arg );
-        args = NodeArgument( args, size_arg );
+        size_arg = NodeMakeConstantOffset( class_parm->u.c.info->size );
+        size_arg = NodeMakeConversion( del_args->type_list[1], size_arg );
+        args = NodeMakeArgument( args, size_arg );
     }
-    ptr = NodeConvert( del_args->type_list[0], ptr );
-    args = NodeArgument( args, ptr );
+    ptr = NodeMakeConversion( del_args->type_list[0], ptr );
+    args = NodeMakeArgument( args, ptr );
     expr = NodeMakeCall( del_sym, GetBasicType( TYP_VOID ), NULL );
     expr = CallArgsArrange( del_sym->sym_type
                           , expr

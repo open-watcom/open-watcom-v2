@@ -190,11 +190,11 @@ bool AnalyseThisDataItem(       // ANALYSE "THIS" DATA ITEM IN PARSE TREE
         right->u.symcg.result = NULL;
         if( expr->u.subtree[0]->flags & PTF_MEMORY_EXACT ) {
             offset = result->exact_delta + result->offset;
-            right = NodeReplace( right, NodeOffset( offset ) );
+            right = NodeReplace( right, NodeMakeConstantOffset( offset ) );
             *r_right = right;
         } else if( result->non_virtual ) {
             offset = result->delta + result->offset;
-            right = NodeReplace( right, NodeOffset( offset ) );
+            right = NodeReplace( right, NodeMakeConstantOffset( offset ) );
             *r_right = right;
         } else {
             expr = NodePruneRight( expr );
@@ -202,7 +202,7 @@ bool AnalyseThisDataItem(       // ANALYSE "THIS" DATA ITEM IN PARSE TREE
             expr->flags |= PTF_PTR_NONZERO;
             NodeConvertToBasePtr( &expr, type, result, true );
             expr->flags |= PTF_LVALUE | PTF_LV_CHECKED;
-            expr = NodeBinary( CO_DOT, expr, NodeOffset( result->offset ) );
+            expr = NodeMakeBinary( CO_DOT, expr, NodeMakeConstantOffset( result->offset ) );
         }
         expr->type = type;
         expr->flags |= PTF_LVALUE;
@@ -242,12 +242,12 @@ static PTREE thisPointsNode(    // MAKE this->node
     TYPE type;                  // - node type
     PTREE left;                 // - this node to left
 
-    left = NodeThisCopyLocation( node );
+    left = NodeMakeRVThisAtLoc( node );
     if( left == NULL ) {
         PTreeErrorExpr( node, ERR_INVALID_NONSTATIC_ACCESS );
     } else {
         type = node->type;
-        node = NodeBinary( CO_ARROW, left, node );
+        node = NodeMakeBinary( CO_ARROW, left, node );
         node->type = type;
         node->flags |= PTF_LVALUE;
         node = PTreeCopySrcLocation( node, left );
@@ -378,7 +378,7 @@ static bool analyseBareSymbol(  // ANALYSE AN BARE SYMBOL
         alias = NodeSymbol( NULL, sym->u.alias, expr->u.symcg.result );
         alias = PTreeCopySrcLocation( alias, expr );
         if( PointerType( sym->sym_type ) != NULL ) {
-            alias = NodeConvert( sym->sym_type, alias );
+            alias = NodeMakeConversion( sym->sym_type, alias );
         }
         PTreeFree( expr );
         *a_expr = alias;
@@ -399,7 +399,7 @@ static bool analyseBareSymbol(  // ANALYSE AN BARE SYMBOL
             if( SymIsEnumeration( sym ) ) {
                 sym = expr->u.symcg.symbol;
                 PTreeFree( expr );
-                expr = NodeFromConstSym( sym );
+                expr = NodeMakeFromConstSym( sym );
                 expr->type = sym->sym_type;
             } else {
                 expr = NodeSetMemoryExact( expr );
@@ -435,7 +435,7 @@ static bool massageStaticEnumAccess( // x.static, x.enum adjustments
     expr->u.subtree[1] = NULL;
     PTreeFree( expr );
     retb = analyseBareSymbol( &rhs );
-    *a_expr = NodeCommaIfSideEffect( lhs, rhs );
+    *a_expr = NodeMakeCommaIfLHSSideEffect( lhs, rhs );
 #endif
     return( retb );
 }
@@ -703,7 +703,7 @@ static TYPE analyseClPtrLeft(   // ANALYSE A CLASS POINTER ON LEFT
     TYPE type;                  // - node type
 
     expr = *a_expr;
-    left = NodeRvalueLeft( expr );
+    left = NodeSetRValueLeft( expr );
     type = TypedefModifierRemove( left->type );
     if( ( type->id != TYP_POINTER ) || ( TF1_REFERENCE & type->flag ) ) {
         type = diagMember( left, expr, ERR_MUST_BE_PTR_TO_STRUCT_OR_UNION );
@@ -719,7 +719,7 @@ static TYPE analyseClPtrLeft(   // ANALYSE A CLASS POINTER ON LEFT
                 InfClassDecl( type );
                 PTreeErrorNode( expr );
                 type = NULL;
-            } else if( ! NodeDerefPtr( &expr->u.subtree[0] ) ) {
+            } else if( ! NodeTryDerefPtr( &expr->u.subtree[0] ) ) {
                 PTreeErrorNode( expr );
                 type = NULL;
             }
@@ -827,7 +827,7 @@ bool AnalyseLvalue(             // ANALYSE AN LVALUE
     switch( expr->op ) {
     case PT_ID :
         if( expr->cgop == CO_NAME_THIS ) {
-            right = NodeThisCopyLocation( expr );
+            right = NodeMakeRVThisAtLoc( expr );
             if( NULL == right ) {
                 PTreeErrorExpr( expr, ERR_NO_THIS_PTR_DEFINED );
             } else {
@@ -837,7 +837,7 @@ bool AnalyseLvalue(             // ANALYSE AN LVALUE
                 retb = true;
             }
         } else if( expr->cgop == CO_NAME_CDTOR_EXTRA ) {
-            *a_expr = NodeCDtorExtra();
+            *a_expr = NodeMakeCDtorExtraParm();
             PTreeFree( expr );
             retb = true;
         } else if( expr->cgop == CO_NAME_DTOR ) {
@@ -953,15 +953,15 @@ PTREE AnalyseLvDot(             // ANALYSE LVALUE "."
                 if( cl_type != NULL ) {
 #if 0
                     if( OMR_CLASS_REF == ObjModelArgument( cl_type ) ) {
-                        left = NodeConvert( MakeReferenceTo( left->type )
+                        left = NodeMakeConversion( MakeReferenceTo( left->type )
                                           , left );
                         left->flags |= PTF_LVALUE;
                     } else {
-                        left = NodeAssignTemporary( left->type, left );
+                        left = NodeMakeAssignToNewTmp( left->type, left );
                     }
                     expr->u.subtree[0] = left;
 #else
-                    expr->u.subtree[0] = NodeForceLvalue( left );
+                    expr->u.subtree[0] = NodeForceLValue( left );
 #endif
                 }
             }
@@ -1108,7 +1108,7 @@ PTREE AnalyseOffsetOf(          // ANALYSE OFFSETOF
     PTreeFreeSubtrees( field );
     if( curr == NULL ) {
         PTreeFreeSubtrees( expr );
-        expr = NodeOffset( offset );
+        expr = NodeMakeConstantOffset( offset );
     }
     return expr;
 }
