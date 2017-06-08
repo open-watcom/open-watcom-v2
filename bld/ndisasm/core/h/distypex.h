@@ -69,7 +69,24 @@ typedef struct dis_range        dis_range;
 typedef struct dis_handle       dis_handle;
 
 typedef unsigned_32             dis_opcode;
-typedef signed_32               dis_value;
+typedef union {
+    union {
+        unsigned_8  _8[8];
+        unsigned_16 _16[4];
+        unsigned_32 _32[2];
+#if _INTEGRAL_MAX_BITS >= 64
+        uint_64     _64[1];
+#endif
+    } u;
+    union {
+        signed_8    _8[8];
+        signed_16   _16[4];
+        signed_32   _32[2];
+#if _INTEGRAL_MAX_BITS >= 64
+        int_64      _64[1];
+#endif
+    } s;
+} dis_value;
 typedef unsigned                dis_cpu;
 
 typedef enum {
