@@ -151,54 +151,9 @@ static orl_return PrintSymbolInfo( orl_symbol_handle symbol )
 }
 
 static char *relocTypes[] = {
-    "NONE",             // error type
-    "ABSOLUTE",         // ref to a 32-bit absolute address
-    "WORD16",           // a direct ref to a 16-bit address
-    "WORD32",           // a direct ref to a 32-bit address
-    "WORD32NB",         // a direct ref to a 32-bit address (no base added)
-    "HALFHI",           // ref to high half of 32-bit address
-    "HALFHA",           // ref to high half of 32-bit address adjusted for signed low half
-    "HALFLO",           // ref to low half of 32-bit address
-    "PAIR",             // reloc connecting a HALF_HI and HALF_LO
-    "JUMP",             // ref to the part of a 32-bit address valid for jump
-    "SECTION",          // ref to an offset from a section address
-    "SECREL",           // direct ref to a 32-bit address relative to the image base
-    "REL16",            // relative reference to 16-bit address
-    "REL21SH",          // relative ref. to a 21-bit address shifted 2
-    "WORD64",           // NYI: direct ref to a 64-bit address
-    "SEGMENT",          // 16-bit segment relocation
-    "WORD14",           // a direct ref to a 14-bit address shifted 2
-    "WORD24",           // a direct ref to a 24-bit address shifted 2
-    "WORD26",           // a direct ref to a 28-bit address shifted 2
-    "REL14",            // relative ref to a 14-bit address shifted 2
-    "REL24",            // relative ref to a 24-bit address shifted 2
-    "REL32",            // relative ref to a 32-bit address
-    "REL32NOA",         // relative ref to a 32-bit address without -4 adjustment
-    "TOCREL16",         // relative ref to a 16-bit offset from TOC base
-    "TOCREL14",         // relative ref to a 14-bit offset from TOC base shl 2
-    "TOCVREL16",        // like TOCREL16, data explicitly defined in .tocd
-    "TOCVREL14",        // like TOCREL14, data explicitly defined in .tocd
-    "GOT32",            // direct ref to 32-bit offset from GOT base
-    "GOT16",            // direct ref to 16-bit offset from GOT base
-    "GOT16HI",          // direct ref to hi 16 bits of offset from GOT base
-    "GOT16HA",          // ditto adjusted for signed low 16 bits
-    "GOT16LO",          // direct ref to lo 16 bits of offset from GOT base
-    "PLTREL24",         // relative ref to 24-bit offset from PLT base
-    "PLTREL32",         // relative ref to 32-bit offset from PLT base
-    "PLT32",            // direct ref to 32-bit offset from PLT base
-    "PLT16HI",          // direct ref to hi 16 bits of offset from PLT base
-    "PLT16HA",          // ditto adjusted for signed low 16 bits
-    "PLT16LO",          // direct ref to lo 16 bits of offset from PLT base
-    "IFGLUE",           // substitute TOC restore instruction iff symbol is glue code
-    "IMGLUE",           // symbol is glue code; VA is TOC restore instruction
-    "OFS8LO",           // low byte of 16-bit offset
-    "REL8LO",           // low byte of 16-bit relative reference
-    "OFS16SEG",         // 16:16 segment:offset
-    "REL16SEG",         // relative reference 16:16 segment:offset
-    "OFS8HI",           // high byte of 16-bit offset
-    "REL8HI",           // high byte of 16-bit relative reference
-    "OFS32SEG",         // 16:32 segment:offset
-    "REL32SEG",         // relative reference 16:32 segment:offset
+    #define pick(enum,text) text,
+    #include "orlreloc.h"
+    #undef pick
 };
 
 static orl_return PrintRelocInfo( orl_reloc *reloc )
@@ -206,7 +161,7 @@ static orl_return PrintRelocInfo( orl_reloc *reloc )
 {
     printf( " tag=%8.8x ", reloc->offset );
     if( reloc->type < sizeof( relocTypes ) / sizeof( *relocTypes ) ) {
-        printf( "%-8s", relocTypes[reloc->type] );
+        printf( "%-9s", relocTypes[reloc->type] );
     } else {
         printf( "??? (%2.2x)", reloc->type );
     }
