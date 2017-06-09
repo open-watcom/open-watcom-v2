@@ -62,9 +62,9 @@ section_type IdentifySec( orl_sec_handle shnd )
                 return( SECTION_TYPE_TEXT );
             }
             name = ORLSecGetName( shnd );
-            data_ptr = HashTableQuery( NameRecognitionTable, (hash_value) name );
-            if( data_ptr ) {
-                return( (section_type) *data_ptr );
+            data_ptr = HashTableQuery( NameRecognitionTable, name );
+            if( data_ptr != NULL ) {
+                return( (section_type)(pointer_int)*data_ptr );
             }
             return( SECTION_TYPE_DATA );
         case ORL_SEC_TYPE_RELOCS:
@@ -79,9 +79,9 @@ section_type IdentifySec( orl_sec_handle shnd )
                 return( SECTION_TYPE_DRECTVE );
             }
             name = ORLSecGetName( shnd );
-            data_ptr = HashTableQuery( NameRecognitionTable, (hash_value) name );
-            if( data_ptr ) {
-                return( (section_type) *data_ptr );
+            data_ptr = HashTableQuery( NameRecognitionTable, name );
+            if( data_ptr != NULL ) {
+                return( (section_type)(pointer_int)*data_ptr );
             }
             // fall through - unknown*/
         default:

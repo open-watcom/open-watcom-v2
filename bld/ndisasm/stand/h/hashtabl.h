@@ -33,10 +33,9 @@
 #ifndef WDIS_HASH_INCLUDED
 #define WDIS_HASH_INCLUDED
 
-extern hash_table       HashTableCreate( hash_table_size, hash_table_type, hash_table_comparison_func );
-extern return_val       HashTableInsert( hash_table, hash_value, hash_data );
-extern hash_data        *HashTableQuery( hash_table, hash_value );
+extern hash_table       HashTableCreate( hash_value, hash_table_type );
+extern return_val       HashTableInsert( hash_table, hash_key, hash_data );
+extern hash_data        *HashTableQuery( hash_table, hash_key );
 extern void             HashTableFree( hash_table );
-extern int              NumberCmp( hash_value, hash_value );
 
 #endif

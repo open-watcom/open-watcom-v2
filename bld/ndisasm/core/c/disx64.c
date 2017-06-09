@@ -1062,7 +1062,7 @@ static void X64GetAbsVal( void *d, dis_dec_ins *ins )
         ins->size += 4;
     } else {
         ins->op[oper].value.s._32[I64LO32] = GetUShort( d, ins->size );
-        ins->size   += 2;
+        ins->size += 2;
     }
 
     // Get Segment Value
@@ -1110,7 +1110,7 @@ static void X64GetRelVal( void *d, dis_dec_ins *ins )
 /*=====================================================================*/
 
 static dis_ref_type  X64GetRefType( REGWIDTH rw, dis_dec_ins *ins )
-/***********************************************************
+/******************************************************************
  * Get Reference Type
  */
 {
@@ -1618,7 +1618,8 @@ dis_handler_return X64MemAbsAcc_8( dis_handle *h, void *d, dis_dec_ins *ins )
             ins->size += 4;
             break;
         case RW_64BIT:
-            ins->op[oper].value.s._32[I64LO32] = GetULong( d, ins->size );    // TODO: long long
+            ins->op[oper].value.s._32[I64LO32] = GetULong( d, ins->size );
+            ins->op[oper].value.s._32[I64HI32] = GetULong( d, ins->size + 4 );
             ins->size += 8;
             break;
         }
@@ -1639,7 +1640,8 @@ dis_handler_return X64MemAbsAcc_8( dis_handle *h, void *d, dis_dec_ins *ins )
             ins->size += 4;
             break;
         case RW_64BIT:
-            ins->op[oper].value.s._32[I64LO32] = GetULong( d, ins->size );    // TODO: long long
+            ins->op[oper].value.s._32[I64LO32] = GetULong( d, ins->size );
+            ins->op[oper].value.s._32[I64HI32] = GetULong( d, ins->size + 4 );
             ins->size += 8;
             break;
         }
@@ -1749,7 +1751,8 @@ dis_handler_return X64ImmReg_8( dis_handle *h, void *d, dis_dec_ins *ins )
         oper = ins->num_ops++;
         ins->op[oper].op_position = ins->size;
         ins->op[oper].type = DO_IMMED;
-        ins->op[oper].value.s._32[I64LO32] = GetULong( d, ins->size ); // TODO: long long
+        ins->op[oper].value.s._32[I64LO32] = GetULong( d, ins->size );
+        ins->op[oper].value.s._32[I64HI32] = GetULong( d, ins->size + 4 );
         ins->op[oper].ref_type = DRT_X64_QWORD;
         ins->size += 8;
     } else {

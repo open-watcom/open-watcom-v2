@@ -143,22 +143,22 @@ mad_status MADIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud,
         if( ms != MS_OK ) return( ms );
         if( curr.mach.offset == (pdata.beg_addr.u._32[0] + sizeof( unsigned_32 )) ) {
             if( dd.ins.type != DI_AXP_LDA ) return( MS_FAIL );
-            frame_size = -dd.ins.op[1].value;
+            frame_size = -dd.ins.op[1].value.s._32[I64LO32];
         }
         switch( dd.ins.type ) {
         case DI_AXP_STQ:
             switch( dd.ins.op[0].base ) {
             case DR_AXP_ra:
             case DR_AXP_r26:
-                prev_ra_off = dd.ins.op[1].value;
+                prev_ra_off = dd.ins.op[1].value.s._32[I64LO32];
                 break;
             case DR_AXP_sp:
             case DR_AXP_r30:
-                prev_sp_off = dd.ins.op[1].value;
+                prev_sp_off = dd.ins.op[1].value.s._32[I64LO32];
                 break;
             case DR_AXP_fp:
             case DR_AXP_r15:
-                prev_fp_off = dd.ins.op[1].value;
+                prev_fp_off = dd.ins.op[1].value.s._32[I64LO32];
                 break;
             }
             break;

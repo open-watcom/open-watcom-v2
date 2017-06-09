@@ -58,7 +58,7 @@
 
 
 struct recognized_struct {
-    char                *name;
+    const char          *name;
     section_type        type;
 };
 
@@ -102,8 +102,10 @@ extern orl_sec_handle           debugHnd;
 
 // sections that require name-checking should be inserted in this array
 recognized_struct RecognizedName[] = {
-    {".pdata", SECTION_TYPE_PDATA}, {".drectve", SECTION_TYPE_DRECTVE},
-    {".bss", SECTION_TYPE_BSS}, {".text", SECTION_TYPE_TEXT},
+    {".pdata",      SECTION_TYPE_PDATA},
+    {".drectve",    SECTION_TYPE_DRECTVE},
+    {".bss",        SECTION_TYPE_BSS},
+    {".text",       SECTION_TYPE_TEXT},
     {".debug_line", SECTION_TYPE_LINES},
 };
 
@@ -161,7 +163,7 @@ static orl_return nopCallBack( const char *str, void *cookie  )
 static orl_return scanTabCallBack( orl_sec_handle sh, const orl_sec_offset *pstart, const orl_sec_offset *pend, void *cookie )
 {
     section_ptr         sec;
-    hash_data           *dp;
+    hash_data           *data_ptr;
     scantab_ptr         sp;
     scantab_ptr         tmp;
     scantab_struct      senitel;
@@ -176,10 +178,10 @@ static orl_return scanTabCallBack( orl_sec_handle sh, const orl_sec_offset *psta
     end = *pend;
     if( start >= end )
         return( ORL_OKAY );
-    dp = HashTableQuery( HandleToSectionTable, (hash_value)sh );
-    if( dp == NULL )
+    data_ptr = HashTableQuery( HandleToSectionTable, sh );
+    if( data_ptr == NULL )
         return( ORL_OKAY );
-    sec = (section_ptr)*dp;
+    sec = (section_ptr)*data_ptr;
     if( sec == NULL )
         return( ORL_OKAY );
 
@@ -284,7 +286,7 @@ static return_val registerSec( orl_sec_handle shnd, section_type type )
 
     sec = MemAlloc( sizeof( section_struct ) );
     if( sec != NULL ) {
-        error = HashTableInsert( HandleToSectionTable, (hash_value) shnd, (hash_data) sec );
+        error = HashTableInsert( HandleToSectionTable, shnd, (hash_data)sec );
         if( error == RC_OKAY ) {
             memset( sec, 0, sizeof( section_struct ) );
             sec->shnd = shnd;
@@ -337,7 +339,7 @@ static return_val createLabelList( orl_sec_handle shnd )
     if( list != NULL ) {
         list->first = NULL;
         list->last = NULL;
-        error = HashTableInsert( HandleToLabelListTable, (hash_value) shnd, (hash_data) list );
+        error = HashTableInsert( HandleToLabelListTable, shnd, (hash_data)list );
         if( error == RC_OKAY ) {
             if( (Options & PRINT_PUBLICS) && shnd != ORL_NULL_HANDLE ) {
                 error = addListToPublics( list );
@@ -363,7 +365,7 @@ static return_val createRefList( orl_sec_handle shnd )
     if( list != NULL ) {
         list->first = NULL;
         list->last = NULL;
-        error = HashTableInsert( HandleToRefListTable, (hash_value)shnd, (hash_data)list );
+        error = HashTableInsert( HandleToRefListTable, shnd, (hash_data)list );
         if( error != RC_OKAY ) {
             MemFree( list );
         }
@@ -528,15 +530,15 @@ static void initGlobals( void )
 
 static return_val createHashTables( void )
 {
-    HandleToSectionTable = HashTableCreate( HANDLE_TO_SECTION_TABLE_SIZE, HASH_NUMBER, (hash_table_comparison_func)NumberCmp );
+    HandleToSectionTable = HashTableCreate( HANDLE_TO_SECTION_TABLE_SIZE, HASH_HANDLE );
     if( HandleToSectionTable != NULL ) {
-        HandleToLabelListTable = HashTableCreate( HANDLE_TO_LIST_TABLE_SIZE, HASH_NUMBER, (hash_table_comparison_func)NumberCmp );
+        HandleToLabelListTable = HashTableCreate( HANDLE_TO_LIST_TABLE_SIZE, HASH_HANDLE );
         if( HandleToLabelListTable != NULL ) {
-            HandleToRefListTable = HashTableCreate( HANDLE_TO_LIST_TABLE_SIZE, HASH_NUMBER, (hash_table_comparison_func)NumberCmp );
+            HandleToRefListTable = HashTableCreate( HANDLE_TO_LIST_TABLE_SIZE, HASH_HANDLE );
             if( HandleToRefListTable != NULL ) {
-                SymbolToLabelTable = HashTableCreate( SYMBOL_TO_LABEL_TABLE_SIZE, HASH_NUMBER, (hash_table_comparison_func)NumberCmp );
+                SymbolToLabelTable = HashTableCreate( SYMBOL_TO_LABEL_TABLE_SIZE, HASH_HANDLE );
                 if( SymbolToLabelTable != NULL ) {
-                    NameRecognitionTable = HashTableCreate( RECOGNITION_TABLE_SIZE, HASH_STRING, (hash_table_comparison_func)stricmp );
+                    NameRecognitionTable = HashTableCreate( RECOGNITION_TABLE_SIZE, HASH_STRING_IGNORECASE );
                     if( NameRecognitionTable == NULL ) {
                         HashTableFree( HandleToSectionTable );
                         HashTableFree( HandleToSectionTable );
@@ -568,13 +570,13 @@ static return_val createHashTables( void )
 
 static return_val initHashTables( void )
 {
-    int         loop;
+    int         i;
     return_val  error;
 
     error = createHashTables();
     if( error == RC_OKAY ) {
-        for( loop = 0; loop < NUM_ELTS( RecognizedName ); loop++ ) {
-            HashTableInsert( NameRecognitionTable, (hash_value)RecognizedName[loop].name, RecognizedName[loop].type );
+        for( i = 0; i < NUM_ELTS( RecognizedName ); i++ ) {
+            HashTableInsert( NameRecognitionTable, RecognizedName[i].name, (void *)(pointer_int)RecognizedName[i].type );
         }
     }
     return( error );
@@ -809,6 +811,7 @@ void Init( void )
     char                cmd_line[ CMD_LINE_LEN ];
     return_val          error;
     char                **list;
+    char                *name;
 
     OutputDest = STDOUT_FILENO;
     ChangePrintDest( OutputDest );
@@ -855,10 +858,10 @@ void Init( void )
         CommentString = MASM_COMMENT_STRING;
     }
     if( IsIntelx86() ) {
-        SkipRefTable = HashTableCreate( RECOGNITION_TABLE_SIZE, HASH_STRING, (hash_table_comparison_func)stricmp );
-        if( SkipRefTable ) {
-            for( list = intelSkipRefList; *list != NULL; ++list ) {
-                error = HashTableInsert( SkipRefTable, (hash_value)*list, (hash_data)*list );
+        SkipRefTable = HashTableCreate( RECOGNITION_TABLE_SIZE, HASH_STRING_IGNORECASE );
+        if( SkipRefTable != NULL ) {
+            for( list = intelSkipRefList; (name = *list) != NULL; ++list ) {
+                error = HashTableInsert( SkipRefTable, name, (hash_data)*list );
                 if( error != RC_OKAY ) {
                     break;
                 }

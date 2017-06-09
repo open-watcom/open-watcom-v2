@@ -79,15 +79,15 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, si
     val = dd->addr;
     switch( ins->op[op].type & DO_MASK ) {
     case DO_RELATIVE:
-        val.mach.offset += ins->op[op].value;
+        val.mach.offset += ins->op[op].value.s._32[I64LO32];
         //NYI: 64 bit
         MCAddrToString( val, PPCT_N32_PTR, MLK_CODE, buff, buff_size );
         break;
     case DO_IMMED:
     case DO_ABSOLUTE:
     case DO_MEMORY_ABS:
-        MCTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( ins->op[0].value ) ), &mti );
-        MCTypeToString( dd->radix, &mti, &ins->op[op].value, buff, &buff_size );
+        MCTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( ins->op[0].value.s._32[I64LO32] ) ), &mti );
+        MCTypeToString( dd->radix, &mti, &ins->op[op].value.s._32[I64LO32], buff, &buff_size );
         break;
     }
     return( strlen( buff ) );
@@ -244,7 +244,7 @@ static int CTRZero( mad_registers const *mr )
 
 static int CRTest( mad_registers const *mr, mad_disasm_data *dd )
 {
-    if( mr->ppc.cr & (1 << (31 - dd->ins.op[1].value)) ) return( 1 );
+    if( mr->ppc.cr & (1 << (31 - dd->ins.op[1].value.s._32[I64LO32])) ) return( 1 );
     return( 0 );
 }
 
@@ -252,7 +252,7 @@ static mad_disasm_control Cond( mad_disasm_data *dd, mad_registers const *mr,
                         addr_off dest )
 {
     #define NOT_TAKEN   (MDC_CONDITIONAL | MDC_TAKEN_NOT)
-    switch( dd->ins.op[0].value >> 1 ) {
+    switch( dd->ins.op[0].value.s._32[I64LO32] >> 1 ) {
     case 0x0:
         if( CTRZero( mr ) || CRTest( mr, dd ) ) return( NOT_TAKEN );
         break;
@@ -307,8 +307,8 @@ static unsigned TrapTest( mad_disasm_data *dd, mad_registers const *mr )
     switch( dd->ins.type ) {
     case DI_PPC_twi:
     case DI_PPC_tdi:
-       b.u._32[I64LO32] = dd->ins.op[2].value;
-       if( dd->ins.op[2].value < 0 ) {
+       b.u._32[I64LO32] = dd->ins.op[2].value.s._32[I64LO32];
+       if( dd->ins.op[2].value.s._32[I64LO32] < 0 ) {
            b.u._32[I64HI32] = (unsigned_32)-1L;
        } else {
            b.u._32[I64HI32] = 0;
@@ -382,7 +382,7 @@ mad_disasm_control DisasmControl( mad_disasm_data *dd, mad_registers const *mr )
         } else {
             c = MDC_JUMP;
         }
-        v = dd->ins.op[0].value;
+        v = dd->ins.op[0].value.s._32[I64LO32];
         if( dd->ins.op[0].type == DO_RELATIVE ) {
             v += dd->addr.mach.offset;
         }
@@ -397,7 +397,7 @@ mad_disasm_control DisasmControl( mad_disasm_data *dd, mad_registers const *mr )
         } else {
             c = MDC_JUMP;
         }
-        v = dd->ins.op[2].value;
+        v = dd->ins.op[2].value.s._32[I64LO32];
         if( dd->ins.op[2].type == DO_RELATIVE ) {
             v += dd->addr.mach.offset;
         }
@@ -425,7 +425,7 @@ mad_disasm_control DisasmControl( mad_disasm_data *dd, mad_registers const *mr )
     case DI_PPC_tw:
     case DI_PPC_twi:
         c = MDC_SYSRET | MDC_CONDITIONAL;
-        if( TrapTest( dd, mr ) & dd->ins.op[0].value ) {
+        if( TrapTest( dd, mr ) & dd->ins.op[0].value.s._32[I64LO32] ) {
             c |= MDC_TAKEN;
         }
         return( c );
@@ -477,7 +477,7 @@ walk_result MADIMPENTRY( DisasmMemRefWalk )( mad_disasm_data *dd, MI_MEMREF_WALK
     a = dd->addr;
     for( i = 0; i < dd->ins.num_ops; ++i ) {
         if( dd->ins.op[i].type == DO_MEMORY_ABS ) {
-            a.mach.offset = dd->ins.op[i].value;
+            a.mach.offset = dd->ins.op[i].value.s._32[I64LO32];
             if( dd->ins.op[i].base != DR_PPC_r0 ) {
                 a.mach.offset += TRANS_REG( mr, dd->ins.op[i].base )->u._32[I64LO32];
             }
