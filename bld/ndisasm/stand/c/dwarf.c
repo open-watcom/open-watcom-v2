@@ -51,16 +51,18 @@ extern orl_sec_handle           debugHnd;
 
 static int ConvertLines( const uint_8 *input, uint length, uint limit );
 
-static void fixupLines( uint_8 *relocContents, orl_sec_handle sec )
+static void fixupLines( uint_8 *relocContents, orl_sec_handle shnd )
 {
-    hash_data                   *data_ptr;
+    hash_data                   *h_data;
     ref_list                    sec_ref_list;
     ref_entry                   r_entry;
     int                         i;
+    hash_key                    h_key;
 
-    data_ptr = HashTableQuery( HandleToRefListTable, sec );
-    if( data_ptr != NULL ) {
-        sec_ref_list = (ref_list)*data_ptr;
+    h_key.u.sec_handle = shnd;
+    h_data = HashTableQuery( HandleToRefListTable, h_key );
+    if( h_data != NULL ) {
+        sec_ref_list = h_data->u.sec_ref_list;
     } else {
         sec_ref_list = NULL;
     }
@@ -68,7 +70,7 @@ static void fixupLines( uint_8 *relocContents, orl_sec_handle sec )
         switch( r_entry->type ) {
         // is this the only one?
         case ORL_RELOC_TYPE_WORD_32:
-            if( r_entry->label->shnd == sec ) {
+            if( r_entry->label->shnd == shnd ) {
                 for( i = 0; i < 4; i++ ) {
                     relocContents[i + r_entry->offset] = ((char *)&(r_entry->label->offset))[i];
                 }
@@ -88,7 +90,7 @@ static void fixupLines( uint_8 *relocContents, orl_sec_handle sec )
     }
 }
 
-extern orl_table_index GetDwarfLines( section_ptr sec )
+extern orl_table_index GetDwarfLines( section_ptr section )
 {
     uint                size;
     uint                limit;
@@ -104,7 +106,7 @@ extern orl_table_index GetDwarfLines( section_ptr sec )
     if( debugHnd ) {
         ORLSecGetContents( debugHnd, &contents );
         size = ORLSecGetSize( debugHnd );
-        limit = ORLSecGetSize( sec->shnd );
+        limit = ORLSecGetSize( section->shnd );
         relocContents = MemAlloc( size );
         memcpy( relocContents, contents, size );
 

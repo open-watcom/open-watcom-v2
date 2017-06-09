@@ -217,8 +217,26 @@ typedef struct sa_disasm_struct     sa_disasm_struct;
 typedef sa_disasm_struct            *sa_disasm;
 
 // hash table definitions
-typedef const void                  *hash_key;
-typedef const void                  *hash_data;
+typedef struct {
+    union {
+//        const void                  *handle;
+        const void                  *sec_handle;
+        const void                  *sym_handle;
+        const char                  *string;
+    } u;
+} hash_key;
+
+typedef struct {
+    union {
+//        const void              *handle;
+        ref_list                sec_ref_list;
+        label_list              sec_label_list;
+        section_type            sec_type;
+        section_ptr             section;
+        const char              *string;
+        label_entry             lab_entry;
+    } u;
+} hash_data;
 typedef unsigned_32                 hash_value;
 
 typedef enum {
@@ -229,10 +247,15 @@ typedef enum {
 
 typedef struct hash_key_struct      hash_key_struct;
 typedef struct hash_table_struct    hash_table_struct;
+typedef struct hash_key_data        hash_key_data;
 
-struct hash_key_struct {
+struct hash_key_data {
     hash_key                        key;
     hash_data                       data;
+};
+
+struct hash_key_struct {
+    hash_key_data                   entry;
     hash_key_struct                 *next;
 };
 

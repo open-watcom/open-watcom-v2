@@ -43,17 +43,17 @@
 
 static bool handle_cmp( hash_key n1, hash_key n2 )
 {
-    return( (pointer_int)n1 == (pointer_int)n2 );
+    return( n1.u.sec_handle == n2.u.sec_handle );
 }
 
 static bool string_cmp( hash_key p1, hash_key p2 )
 {
-    return( strcmp( (char *)p1, (char *)p2 ) == 0 );
+    return( strcmp( p1.u.string, p2.u.string ) == 0 );
 }
 
 static bool string_cmp_ignorecase( hash_key p1, hash_key p2 )
 {
-    return( stricmp( (char *)p1, (char *)p2 ) == 0 );
+    return( stricmp( p1.u.string, p2.u.string ) == 0 );
 }
 
 static hash_value hash_encode( hash_value size, const char *ptr, size_t len, bool ignorecase )
@@ -79,29 +79,29 @@ static hash_value hash_encode( hash_value size, const char *ptr, size_t len, boo
 
 static hash_value handle_hash( hash_value size, hash_key key )
 {
-    return( hash_encode( size, (const char *)&key, sizeof( key ), false ) );
+    return( hash_encode( size, (const char *)&key.u.sec_handle, sizeof( key.u.sec_handle ), false ) );
 }
 
 static hash_value string_hash( hash_value size, hash_key key )
 {
-    return( hash_encode( size, key, strlen( key ), false ) );
+    return( hash_encode( size, key.u.string, strlen( key.u.string ), false ) );
 }
 
 static hash_value string_hash_ignorecase( hash_value size, hash_key key )
 {
-    return( hash_encode( size, key, strlen( key ), true ) );
+    return( hash_encode( size, key.u.string, strlen( key.u.string ), true ) );
 }
 
-return_val HashTableInsert( hash_table hash_tbl, hash_key key, hash_data data )
+return_val HashTableInsert( hash_table hash_tbl, hash_key_data *key_data )
 {
     hash_value              hash_val;
     hash_key_struct         *key_entry;
     hash_key_struct         *new_key_entry;
 
-    hash_val = hash_tbl->hash_func( hash_tbl->size, key );
+    hash_val = hash_tbl->hash_func( hash_tbl->size, key_data->key );
     for( key_entry = hash_tbl->table[hash_val]; key_entry != NULL; key_entry = key_entry->next ) {
-        if( hash_tbl->compare_func( key_entry->key, key ) ) {
-            key_entry->data = data;
+        if( hash_tbl->compare_func( key_entry->entry.key, key_data->key ) ) {
+            key_entry->entry.data = key_data->data;
             return( RC_OKAY );
         }
     }
@@ -109,8 +109,8 @@ return_val HashTableInsert( hash_table hash_tbl, hash_key key, hash_data data )
     if( new_key_entry == NULL ) {
         return( RC_OUT_OF_MEMORY );
     }
-    new_key_entry->key = key;
-    new_key_entry->data = data;
+    new_key_entry->entry.key = key_data->key;
+    new_key_entry->entry.data = key_data->data;
     new_key_entry->next = hash_tbl->table[hash_val];
     hash_tbl->table[hash_val] = new_key_entry;
     return( RC_OKAY );
@@ -123,8 +123,8 @@ hash_data *HashTableQuery( hash_table hash_tbl, hash_key key )
 
     hash_val = hash_tbl->hash_func( hash_tbl->size, key );
     for( key_entry = hash_tbl->table[hash_val]; key_entry != NULL; key_entry = key_entry->next ) {
-        if( hash_tbl->compare_func( key_entry->key, key ) ) {
-            return( &(key_entry->data) );
+        if( hash_tbl->compare_func( key_entry->entry.key, key ) ) {
+            return( &(key_entry->entry.data) );
         }
     }
     return( NULL );

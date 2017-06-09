@@ -76,10 +76,10 @@ static void freeScanTabList( scantab_ptr st )
 
 static void freeSectionList( section_list_struct *list )
 {
-    section_ptr         next;
+    section_ptr     next_section;
 
-    for( ; list->first != NULL; list->first = next ) {
-        next = list->first->next;
+    for( ; list->first != NULL; list->first = next_section ) {
+        next_section = list->first->next;
         freeScanTabList( list->first->scan );
         MemFree( list->first );
     }
@@ -87,37 +87,41 @@ static void freeSectionList( section_list_struct *list )
 
 static void freeLabelList( orl_sec_handle shnd )
 {
-    hash_data           *data_ptr;
-    label_list          list;
+    hash_data           *h_data;
+    label_list          sec_label_list;
     label_entry         entry;
     label_entry         next;
+    hash_key            h_key;
 
-    data_ptr = HashTableQuery( HandleToLabelListTable, shnd );
-    if( data_ptr != NULL ) {
-        list = (label_list)*data_ptr;
-        for( entry = list->first; entry != NULL; entry = next ) {
+    h_key.u.sec_handle = shnd;
+    h_data = HashTableQuery( HandleToLabelListTable, h_key );
+    if( h_data != NULL ) {
+        sec_label_list = h_data->u.sec_label_list;
+        for( entry = sec_label_list->first; entry != NULL; entry = next ) {
             next = entry->next;
             FreeLabel( entry );
         }
-        MemFree( list );
+        MemFree( sec_label_list );
     }
 }
 
 static void freeRefList( orl_sec_handle shnd )
 {
-    hash_data           *data_ptr;
-    ref_list            list;
+    hash_data           *h_data;
+    ref_list            sec_ref_list;
     ref_entry           entry;
     ref_entry           next;
+    hash_key            h_key;
 
-    data_ptr = HashTableQuery( HandleToRefListTable, shnd );
-    if( data_ptr != NULL ) {
-        list = (ref_list)*data_ptr;
-        for( entry = list->first; entry != NULL; entry = next ) {
+    h_key.u.sec_handle = shnd;
+    h_data = HashTableQuery( HandleToRefListTable, h_key );
+    if( h_data != NULL ) {
+        sec_ref_list = h_data->u.sec_ref_list;
+        for( entry = sec_ref_list->first; entry != NULL; entry = next ) {
             next = entry->next;
             MemFree( entry );
         }
-        MemFree( list );
+        MemFree( sec_ref_list );
     }
 }
 

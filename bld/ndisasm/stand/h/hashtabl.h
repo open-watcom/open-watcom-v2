@@ -34,7 +34,7 @@
 #define WDIS_HASH_INCLUDED
 
 extern hash_table       HashTableCreate( hash_value, hash_table_type );
-extern return_val       HashTableInsert( hash_table, hash_key, hash_data );
+extern return_val       HashTableInsert( hash_table, hash_key_data * );
 extern hash_data        *HashTableQuery( hash_table, hash_key );
 extern void             HashTableFree( hash_table );
 

@@ -109,7 +109,7 @@ recognized_struct RecognizedName[] = {
     {".debug_line", SECTION_TYPE_LINES},
 };
 
-static char *intelSkipRefList[] = {
+static const char * const intelSkipRefList[] = {
     "FIWRQQ", // boundary relocs
     "FIDRQQ",
     "FIERQQ",
@@ -160,29 +160,31 @@ static orl_return nopCallBack( const char *str, void *cookie  )
     return( ORL_OKAY );
 }
 
-static orl_return scanTabCallBack( orl_sec_handle sh, const orl_sec_offset *pstart, const orl_sec_offset *pend, void *cookie )
+static orl_return scanTabCallBack( orl_sec_handle shnd, const orl_sec_offset *pstart, const orl_sec_offset *pend, void *cookie )
 {
-    section_ptr         sec;
-    hash_data           *data_ptr;
+    section_ptr         section;
+    hash_data           *h_data;
     scantab_ptr         sp;
     scantab_ptr         tmp;
     scantab_struct      senitel;
     dis_sec_offset      start;
     dis_sec_offset      end;
+    hash_key            h_key;
 
     /* unused parameters */ (void)cookie;
 
-    if( sh == ORL_NULL_HANDLE )
+    if( shnd == ORL_NULL_HANDLE )
         return( ORL_OKAY );
     start = *pstart;
     end = *pend;
     if( start >= end )
         return( ORL_OKAY );
-    data_ptr = HashTableQuery( HandleToSectionTable, sh );
-    if( data_ptr == NULL )
+    h_key.u.sec_handle = shnd;
+    h_data = HashTableQuery( HandleToSectionTable, h_key );
+    if( h_data == NULL )
         return( ORL_OKAY );
-    sec = (section_ptr)*data_ptr;
-    if( sec == NULL )
+    section = h_data->u.section;
+    if( section == NULL )
         return( ORL_OKAY );
 
     sp = MemAlloc( sizeof( scantab_struct ) );
@@ -192,7 +194,7 @@ static orl_return scanTabCallBack( orl_sec_handle sh, const orl_sec_offset *psta
     sp->start = start;
     sp->end = end;
 
-    senitel.next = sec->scan;
+    senitel.next = section->scan;
     tmp = &senitel;
     while( tmp->next != NULL && ( tmp->next->end < start ) ) {
         tmp = tmp->next;
@@ -228,7 +230,7 @@ static orl_return scanTabCallBack( orl_sec_handle sh, const orl_sec_offset *psta
     }
 
     // restore the list
-    sec->scan = senitel.next;
+    section->scan = senitel.next;
 
     return( ORL_OKAY );
 }
@@ -256,22 +258,22 @@ static return_val processDrectveSection( orl_sec_handle shnd )
 
 static return_val addRelocSection( orl_sec_handle shnd )
 {
-    section_ptr         sec;
+    section_ptr     section;
 
     if( relocSections.first != NULL && ( GetFormat() == ORL_OMF ) )
         return( RC_OKAY );
 
-    sec = MemAlloc( sizeof( section_struct ) );
-    if( sec != NULL ) {
-        memset( sec, 0, sizeof( section_struct ) );
-        sec->shnd = shnd;
-        sec->next = NULL;
+    section = MemAlloc( sizeof( section_struct ) );
+    if( section != NULL ) {
+        memset( section, 0, sizeof( section_struct ) );
+        section->shnd = shnd;
+        section->next = NULL;
         if( relocSections.first != NULL ) {
-            relocSections.last->next = sec;
-            relocSections.last = sec;
+            relocSections.last->next = section;
+            relocSections.last = section;
         } else {
-            relocSections.first = sec;
-            relocSections.last = sec;
+            relocSections.first = section;
+            relocSections.last = section;
         }
     } else {
         return( RC_OUT_OF_MEMORY );
@@ -281,27 +283,30 @@ static return_val addRelocSection( orl_sec_handle shnd )
 
 static return_val registerSec( orl_sec_handle shnd, section_type type )
 {
-    section_ptr         sec;
+    section_ptr         section;
     return_val          error;
+    hash_key_data       key_entry;
 
-    sec = MemAlloc( sizeof( section_struct ) );
-    if( sec != NULL ) {
-        error = HashTableInsert( HandleToSectionTable, shnd, (hash_data)sec );
+    section = MemAlloc( sizeof( section_struct ) );
+    if( section != NULL ) {
+        key_entry.key.u.sec_handle = shnd;
+        key_entry.data.u.section = section;
+        error = HashTableInsert( HandleToSectionTable, &key_entry );
         if( error == RC_OKAY ) {
-            memset( sec, 0, sizeof( section_struct ) );
-            sec->shnd = shnd;
-            sec->name = ORLSecGetName( shnd );
-            sec->type = type;
-            sec->next = NULL;
+            memset( section, 0, sizeof( section_struct ) );
+            section->shnd = shnd;
+            section->name = ORLSecGetName( shnd );
+            section->type = type;
+            section->next = NULL;
             if( Sections.first != NULL ) {
-                Sections.last->next = sec;
-                Sections.last = sec;
+                Sections.last->next = section;
+                Sections.last = section;
             } else {
-                Sections.first = sec;
-                Sections.last = sec;
+                Sections.first = section;
+                Sections.last = section;
             }
         } else {
-            MemFree( sec );
+            MemFree( section );
             return( RC_OUT_OF_MEMORY );
         }
     } else {
@@ -334,12 +339,15 @@ static return_val createLabelList( orl_sec_handle shnd )
 {
     label_list          list;
     return_val          error;
+    hash_key_data       key_entry;
 
     list = MemAlloc( sizeof( label_list_struct ) );
     if( list != NULL ) {
         list->first = NULL;
         list->last = NULL;
-        error = HashTableInsert( HandleToLabelListTable, shnd, (hash_data)list );
+        key_entry.key.u.sec_handle = shnd;
+        key_entry.data.u.sec_label_list = list;
+        error = HashTableInsert( HandleToLabelListTable, &key_entry );
         if( error == RC_OKAY ) {
             if( (Options & PRINT_PUBLICS) && shnd != ORL_NULL_HANDLE ) {
                 error = addListToPublics( list );
@@ -358,14 +366,17 @@ static return_val createLabelList( orl_sec_handle shnd )
 
 static return_val createRefList( orl_sec_handle shnd )
 {
-    ref_list    list;
-    return_val  error;
+    ref_list        list;
+    return_val      error;
+    hash_key_data   key_entry;
 
     list = MemAlloc( sizeof( ref_list_struct ) );
     if( list != NULL ) {
         list->first = NULL;
         list->last = NULL;
-        error = HashTableInsert( HandleToRefListTable, shnd, (hash_data)list );
+        key_entry.key.u.sec_handle = shnd;
+        key_entry.data.u.sec_ref_list = list;
+        error = HashTableInsert( HandleToRefListTable, &key_entry );
         if( error != RC_OKAY ) {
             MemFree( list );
         }
@@ -570,13 +581,16 @@ static return_val createHashTables( void )
 
 static return_val initHashTables( void )
 {
-    int         i;
-    return_val  error;
+    int             i;
+    return_val      error;
+    hash_key_data   key_entry;
 
     error = createHashTables();
     if( error == RC_OKAY ) {
         for( i = 0; i < NUM_ELTS( RecognizedName ); i++ ) {
-            HashTableInsert( NameRecognitionTable, RecognizedName[i].name, (void *)(pointer_int)RecognizedName[i].type );
+            key_entry.key.u.string = RecognizedName[i].name;
+            key_entry.data.u.sec_type = RecognizedName[i].type;
+            HashTableInsert( NameRecognitionTable, &key_entry );
         }
     }
     return( error );
@@ -747,7 +761,7 @@ static return_val initSectionTables( void )
 {
     return_val          error;
     orl_return          o_error;
-    section_ptr         sec;
+    section_ptr         section;
 
     // list for references to external functions, etc.
     error = createLabelList( 0 );
@@ -759,9 +773,9 @@ static return_val initSectionTables( void )
                 o_error = DealWithSymbolSection( dynSymTable );
             }
             if( o_error == ORL_OKAY ) {
-                sec = relocSections.first;
-                while( sec ) {
-                    o_error = DealWithRelocSection( sec->shnd );
+                section = relocSections.first;
+                while( section != NULL ) {
+                    o_error = DealWithRelocSection( section->shnd );
                     if( o_error != ORL_OKAY ) {
                         if( o_error == ORL_OUT_OF_MEMORY ) {
                             return( RC_OUT_OF_MEMORY );
@@ -769,9 +783,9 @@ static return_val initSectionTables( void )
                             return( RC_ERROR );
                         }
                     }
-                    relocSections.first = sec->next;
-                    MemFree( sec );
-                    sec = relocSections.first;
+                    relocSections.first = section->next;
+                    MemFree( section );
+                    section = relocSections.first;
                 }
                 error = processDrectveSection( drectveSection );
             } else {
@@ -810,8 +824,9 @@ void Init( void )
 {
     char                cmd_line[ CMD_LINE_LEN ];
     return_val          error;
-    char                **list;
-    char                *name;
+    const char *        const *list;
+    const char          *name;
+    hash_key_data       key_entry;
 
     OutputDest = STDOUT_FILENO;
     ChangePrintDest( OutputDest );
@@ -861,7 +876,9 @@ void Init( void )
         SkipRefTable = HashTableCreate( RECOGNITION_TABLE_SIZE, HASH_STRING_IGNORECASE );
         if( SkipRefTable != NULL ) {
             for( list = intelSkipRefList; (name = *list) != NULL; ++list ) {
-                error = HashTableInsert( SkipRefTable, name, (hash_data)*list );
+                key_entry.key.u.string = name;
+                key_entry.data.u.string = *list;
+                error = HashTableInsert( SkipRefTable, &key_entry );
                 if( error != RC_OKAY ) {
                     break;
                 }

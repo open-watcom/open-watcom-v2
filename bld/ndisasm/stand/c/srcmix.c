@@ -108,7 +108,7 @@ static orl_linnum *SortLineNums( orl_linnum *lines, orl_table_index numlines )
     return newlines;
 }
 
-extern void GetSourceFile( section_ptr sec )
+extern void GetSourceFile( section_ptr section )
 {
     char        path[_MAX_PATH2];
     char *      drive;
@@ -117,9 +117,9 @@ extern void GetSourceFile( section_ptr sec )
     char *      extension;
     orl_linnum *templines;
 
-    numlines = ORLSecGetNumLines( sec->shnd );
+    numlines = ORLSecGetNumLines( section->shnd );
     if( numlines == 0 ) {
-        numlines = GetDwarfLines( sec );
+        numlines = GetDwarfLines( section );
         if( numlines == 0 ) {
             if( DFormat & DFF_ASM ) {
                 BufferConcat( CommentString );
@@ -133,7 +133,7 @@ extern void GetSourceFile( section_ptr sec )
             line_type = DWARF_LINES;
         }
     } else {
-        lines = ORLSecGetLines( sec->shnd );
+        lines = ORLSecGetLines( section->shnd );
         line_type = ORL_LINES;
     }
     templines = SortLineNums( lines , numlines );
