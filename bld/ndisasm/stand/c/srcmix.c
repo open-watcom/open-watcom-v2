@@ -97,15 +97,15 @@ static int compareLines( const void *first, const void *second )
     return 0;
 }
 
-static orl_linnum *SortLineNums( orl_linnum *lines, orl_table_index numlines )
+static orl_linnum *SortLineNums( orl_linnum *ilines, orl_table_index inumlines )
 {
     orl_linnum *newlines;
 
-    newlines = (orl_linnum *)MemAlloc( numlines * sizeof( orl_linnum ) );
-    memcpy( newlines, lines, numlines * sizeof( orl_linnum ) );
-    qsort( newlines, numlines, sizeof( orl_linnum ), compareLines );
+    newlines = (orl_linnum *)MemAlloc( inumlines * sizeof( orl_linnum ) );
+    memcpy( newlines, ilines, inumlines * sizeof( orl_linnum ) );
+    qsort( newlines, inumlines, sizeof( orl_linnum ), compareLines );
 
-    return newlines;
+    return( newlines );
 }
 
 extern void GetSourceFile( section_ptr section )

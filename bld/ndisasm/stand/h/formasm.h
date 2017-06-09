@@ -40,9 +40,7 @@ extern unsigned         RelocSize( ref_entry );
 extern int              IsMasmOutput( void );
 extern int              IsDataReloc( ref_entry );
 extern unsigned         HandleRefInData( ref_entry, void *, bool );
-extern return_val       DumpASMDataFromSection( unsigned_8 *, dis_sec_offset,
-                                                dis_sec_offset, label_entry *,
-                                                ref_entry *, section_ptr );
+extern return_val       DumpASMDataFromSection( unsigned_8 *, dis_sec_offset, dis_sec_offset, label_entry *, ref_entry *, section_ptr );
 extern const char       *SkipRef( ref_entry );
 
 #endif
