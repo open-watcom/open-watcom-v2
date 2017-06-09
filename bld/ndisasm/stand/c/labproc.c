@@ -172,6 +172,8 @@ static label_entry insertLabelInMiddle( label_list sec_label_list, label_entry e
 
 static label_entry addLabel( label_list sec_label_list, label_entry entry, orl_symbol_handle sym_hnd )
 {
+    hash_key_data   key_entry;
+
     if( sec_label_list->first == NULL ) {
         sec_label_list->first = entry;
         sec_label_list->last = entry;
@@ -190,7 +192,9 @@ static label_entry addLabel( label_list sec_label_list, label_entry entry, orl_s
     }
     // add entry to list
     if( sym_hnd != NULL ) {
-        HashTableInsert( SymbolToLabelTable, sym_hnd, (hash_data)entry );
+        key_entry.key.u.sym_handle = sym_hnd;
+        key_entry.data.u.lab_entry = entry;
+        HashTableInsert( SymbolToLabelTable, &key_entry );
     }
     return( entry );
 }
@@ -220,7 +224,7 @@ bool NeedsQuoting( const char *name )
 
 orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
 {
-    hash_data           *data_ptr;
+    hash_data           *h_data;
     label_list          sec_label_list;
     label_entry         entry;
     orl_symbol_type     type;
@@ -229,6 +233,7 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
     const char          *source_name;
     const char          *label_name;
     unsigned_64         val64;
+    hash_key            h_key;
 
     type = ORLSymbolGetType( sym_hnd );
     primary_type = type & 0xFF;
@@ -275,13 +280,14 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
     }
     labelNameAlloc( entry, label_name );
 
-    data_ptr = HashTableQuery( HandleToLabelListTable, entry->shnd );
-    if( data_ptr == NULL ) {
+    h_key.u.sec_handle = entry->shnd;
+    h_data = HashTableQuery( HandleToLabelListTable, h_key );
+    if( h_data == NULL ) {
         // error!!!! the label list should have been created
         FreeLabel( entry );
         return( ORL_ERROR );
     }
-    sec_label_list = (label_list)*data_ptr;
+    sec_label_list = h_data->u.sec_label_list;
     entry = addLabel( sec_label_list, entry, sym_hnd );
     if( (Options & PRINT_PUBLICS) && entry->shnd != ORL_NULL_HANDLE &&
             primary_type != ORL_SYM_TYPE_SECTION &&
@@ -302,8 +308,9 @@ orl_return DealWithSymbolSection( orl_sec_handle shnd )
 void CreateUnnamedLabel( orl_sec_handle shnd, dis_sec_offset loc, unnamed_label_return return_struct )
 {
     label_list          sec_label_list;
-    hash_data           *data_ptr;
+    hash_data           *h_data;
     label_entry         entry;
+    hash_key            h_key;
 
     entry = MemAlloc( sizeof( label_entry_struct ) );
     if( entry == NULL ) {
@@ -314,9 +321,10 @@ void CreateUnnamedLabel( orl_sec_handle shnd, dis_sec_offset loc, unnamed_label_
     entry->type = LTYP_UNNAMED;
     entry->label.number = 0;
     entry->shnd = shnd;
-    data_ptr = HashTableQuery( HandleToLabelListTable, shnd );
-    if( data_ptr != NULL ) {
-        sec_label_list = (label_list)*data_ptr;
+    h_key.u.sec_handle = shnd;
+    h_data = HashTableQuery( HandleToLabelListTable, h_key );
+    if( h_data != NULL ) {
+        sec_label_list = h_data->u.sec_label_list;
         entry = addLabel( sec_label_list, entry, 0 );
         return_struct->entry = entry;
         return_struct->error = RC_OKAY;
@@ -329,8 +337,9 @@ void CreateUnnamedLabel( orl_sec_handle shnd, dis_sec_offset loc, unnamed_label_
 void CreateAbsoluteLabel( orl_sec_handle shnd, dis_sec_offset loc, unnamed_label_return return_struct )
 {
     label_list          sec_label_list;
-    hash_data           *data_ptr;
+    hash_data           *h_data;
     label_entry         entry;
+    hash_key            h_key;
 
     entry = MemAlloc( sizeof( label_entry_struct ) );
     if( entry == NULL ) {
@@ -341,9 +350,10 @@ void CreateAbsoluteLabel( orl_sec_handle shnd, dis_sec_offset loc, unnamed_label
     entry->type = LTYP_ABSOLUTE;
     entry->label.number = 0;
     entry->shnd = shnd;
-    data_ptr = HashTableQuery( HandleToLabelListTable, shnd );
-    if( data_ptr != NULL ) {
-        sec_label_list = (label_list)*data_ptr;
+    h_key.u.sec_handle = shnd;
+    h_data = HashTableQuery( HandleToLabelListTable, h_key );
+    if( h_data != NULL ) {
+        sec_label_list = h_data->u.sec_label_list;
         entry = addLabel( sec_label_list, entry, 0 );
         return_struct->entry = entry;
         return_struct->error = RC_OKAY;

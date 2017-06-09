@@ -43,6 +43,6 @@ extern unsigned         HandleRefInData( ref_entry, void *, bool );
 extern return_val       DumpASMDataFromSection( unsigned_8 *, dis_sec_offset,
                                                 dis_sec_offset, label_entry *,
                                                 ref_entry *, section_ptr );
-extern char             *SkipRef( ref_entry );
+extern const char       *SkipRef( ref_entry );
 
 #endif

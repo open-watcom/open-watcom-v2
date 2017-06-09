@@ -548,7 +548,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff
     return( strlen( buff ) );
 }
 
-static void processDataInCode( section_ptr sec, unsigned_8 *contents, struct pass2 *data,
+static void processDataInCode( section_ptr section, unsigned_8 *contents, struct pass2 *data,
                                dis_sec_size size, label_entry *l_entry )
 {
     dis_sec_size        offset;
@@ -556,11 +556,11 @@ static void processDataInCode( section_ptr sec, unsigned_8 *contents, struct pas
     offset = data->loop + size;
     if( DFormat & DFF_ASM ) {
         DumpASMDataFromSection( contents, data->loop, offset, l_entry,
-                                &(data->r_entry), sec );
+                                &(data->r_entry), section );
         BufferPrint();
     } else {
         DumpDataFromSection( contents, data->loop, offset, l_entry,
-                             &(data->r_entry), sec );
+                             &(data->r_entry), section );
     }
     while( data->r_entry != NULL && ( data->r_entry->offset < offset ) ) {
         data->r_entry = data->r_entry->next;
@@ -568,9 +568,9 @@ static void processDataInCode( section_ptr sec, unsigned_8 *contents, struct pas
     data->loop = offset;
 }
 
-static char *processFpuEmulatorFixup( ref_entry *r, dis_sec_offset loop )
+static const char *processFpuEmulatorFixup( ref_entry *r, dis_sec_offset loop )
 {
-    char    *fixup;
+    const char  *fixup;
 
     if( *r != NULL && (*r)->offset == loop ) {
         fixup = SkipRef( *r );
@@ -590,7 +590,7 @@ static char *processFpuEmulatorFixup( ref_entry *r, dis_sec_offset loop )
     return( NULL );
 }
 
-num_errors DoPass2( section_ptr sec, unsigned_8 *contents, dis_sec_size size,
+num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size,
                     label_list sec_label_list, ref_list sec_ref_list )
 // perform pass 2 on one section
 {
@@ -603,12 +603,12 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, dis_sec_size size,
     scantab_ptr         st;
     int                 is_intel;
     sa_disasm_struct    sds;
-    char                *FPU_fixup;
+    const char          *FPU_fixup;
     int                 pos_tabs;
     bool                is32bit;
 
     routineBase = 0;
-    st = sec->scan;
+    st = section->scan;
     data.size = size;
     sds.data = contents;
     sds.last = size - 1;
@@ -624,16 +624,16 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, dis_sec_size size,
     data.disassembly_errors = 0;
 
     if( source_mix ) {
-        GetSourceFile( sec );
+        GetSourceFile( section );
     }
 
-    PrintHeader( sec );
+    PrintHeader( section );
     if( size && sec_label_list )
-        PrintAssumeHeader( sec );
+        PrintAssumeHeader( section );
     flags.u.all = DIF_NONE;
     if( GetMachineType() == ORL_MACHINE_TYPE_I386 ) {
         if( ( GetFormat() != ORL_OMF ) ||
-            ( ORLSecGetFlags( sec->shnd ) & ORL_SEC_FLAG_USE_32 ) ) {
+            ( ORLSecGetFlags( section->shnd ) & ORL_SEC_FLAG_USE_32 ) ) {
             flags.u.x86 = DIF_X86_USE32_FLAGS;
         }
         is_intel = 1;
@@ -649,7 +649,7 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, dis_sec_size size,
         }
         if( st && ( data.loop >= st->start ) ) {
             decoded.size = 0;
-            processDataInCode( sec, contents, &data, st->end - data.loop, &l_entry );
+            processDataInCode( section, contents, &data, st->end - data.loop, &l_entry );
             st = st->next;
             continue;
         }
@@ -663,7 +663,7 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, dis_sec_size size,
             if( is_intel || IsDataReloc( data.r_entry ) ) {
                 // we just skip the data
                 decoded.size = 0;
-                processDataInCode( sec, contents, &data, RelocSize( data.r_entry ), &l_entry );
+                processDataInCode( section, contents, &data, RelocSize( data.r_entry ), &l_entry );
                 continue;
             }
         }
@@ -676,7 +676,7 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, dis_sec_size size,
         sds.offs = data.loop;
         DisDecode( &DHnd, &sds, &decoded );
         if( sec_label_list ) {
-            l_entry = handleLabels( sec->name, data.loop, data.loop + decoded.size, l_entry, size );
+            l_entry = handleLabels( section->name, data.loop, data.loop + decoded.size, l_entry, size );
             if( ( l_entry != NULL )
                 && ( l_entry->offset > data.loop )
                 && ( l_entry->offset < data.loop + decoded.size ) ) {
@@ -687,7 +687,7 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, dis_sec_size size,
                     and label process from offset of actual label.
                 */
                 decoded.size = 0;
-                processDataInCode( sec, contents, &data, l_entry->offset - data.loop, &l_entry );
+                processDataInCode( section, contents, &data, l_entry->offset - data.loop, &l_entry );
                 continue;
             }
         }
@@ -735,7 +735,7 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, dis_sec_size size,
         BufferPrint();
     }
     if( sec_label_list ) {
-        l_entry = handleLabels( sec->name, size, (dis_sec_offset)-1, l_entry, size );
+        l_entry = handleLabels( section->name, size, (dis_sec_offset)-1, l_entry, size );
     }
     if( !(DFormat & DFF_ASM) ) {
         routineSize = data.loop - routineBase;
@@ -745,12 +745,12 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, dis_sec_size size,
         BufferMsg( BYTES );
         BufferConcat(",    ");
         BufferMsg( ROUTINE_BASE );
-        BufferStore(" %s + %04X\n\n", sec->name, routineBase );
+        BufferStore(" %s + %04X\n\n", section->name, routineBase );
         BufferPrint();
     }
     if( source_mix ) {
         EndSourceMix();
     }
-    PrintTail( sec );
+    PrintTail( section );
     return( data.disassembly_errors );
 }

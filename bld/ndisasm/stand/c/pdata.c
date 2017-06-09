@@ -125,14 +125,15 @@ orl_return StoreReloc( orl_reloc * reloc )
     return( ORL_OKAY );
 }
 
-return_val DumpPDataSection( section_ptr sec, unsigned_8 *contents, dis_sec_size size, unsigned pass )
+return_val DumpPDataSection( section_ptr section, unsigned_8 *contents, dis_sec_size size, unsigned pass )
 {
     dis_sec_offset      loop;
-    hash_data           *data_ptr;
+    hash_data           *h_data;
     ref_list            r_list;
     ref_entry           r_entry;
     descriptor_struct   descriptor;
     bool                is32bit;
+    hash_key            h_key;
 
     if( pass == 1 )
         return( RC_OKAY );
@@ -140,16 +141,17 @@ return_val DumpPDataSection( section_ptr sec, unsigned_8 *contents, dis_sec_size
         return( RC_OKAY );
 
     is32bit = ( size >= 0x10000 );
-    data_ptr = HashTableQuery( HandleToRefListTable, sec->shnd );
+    h_key.u.sec_handle = section->shnd;
+    h_data = HashTableQuery( HandleToRefListTable, h_key );
     r_entry = NULL;
-    if( data_ptr != NULL && *data_ptr != 0 ) {
-        r_list = (ref_list)*data_ptr;
-        if( r_list ) {
+    if( h_data != NULL ) {
+        r_list = h_data->u.sec_ref_list;
+        if( r_list != NULL ) {
             r_entry = r_list->first;
         }
     }
     BufferConcatNL();
-    PrintHeader( sec );
+    PrintHeader( section );
     BufferConcatNL();
     for( loop = 0; loop < size; loop += sizeof( descriptor_struct ) ) {
         if( r_entry == NULL )

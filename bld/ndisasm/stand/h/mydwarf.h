@@ -33,6 +33,6 @@
 #ifndef WDIS_DWARF_INCLUDED
 #define WDIS_DWARF_INCLUDED
 
-extern orl_table_index          GetDwarfLines( section_ptr sec );
+extern orl_table_index          GetDwarfLines( section_ptr section );
 
 #endif

@@ -542,7 +542,7 @@ static void printOut( char *string, size_t offset, size_t size )
     }
 }
 
-static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
+static label_entry dumpAsmLabel( label_entry l_entry, section_ptr section,
                                  dis_sec_offset curr_pos, dis_sec_offset end,
                                  unsigned_8 *contents, char *buffer )
 {
@@ -565,7 +565,7 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
                 break;
             /* fall through */
         case LTYP_NAMED:
-            if( strcmp( l_entry->label.name, sec->name ) == 0 )
+            if( strcmp( l_entry->label.name, section->name ) == 0 )
                 break;
             /* fall through */
         case LTYP_UNNAMED:
@@ -610,7 +610,7 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
 
 return_val DumpASMDataFromSection( unsigned_8 *contents, dis_sec_offset start,
                                    dis_sec_offset end, label_entry *lab_entry,
-                                   ref_entry *reference_entry, section_ptr sec )
+                                   ref_entry *reference_entry, section_ptr section )
 {
     dis_sec_offset      curr_pos;
     size_t              curr_size;
@@ -636,7 +636,7 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, dis_sec_offset start,
 
         /* dump labels
          */
-        l_entry = dumpAsmLabel( l_entry, sec, curr_pos, end, contents, buffer );
+        l_entry = dumpAsmLabel( l_entry, section, curr_pos, end, contents, buffer );
 
         curr_size = end - curr_pos;
         if( l_entry != NULL ) {
@@ -676,18 +676,20 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, dis_sec_offset start,
     return( RC_OKAY );
 }
 
-return_val DumpASMSection( section_ptr sec, unsigned_8 *contents, dis_sec_size size, unsigned pass )
+return_val DumpASMSection( section_ptr section, unsigned_8 *contents, dis_sec_size size, unsigned pass )
 {
-    hash_data           *data_ptr;
+    hash_data           *h_data;
     label_list          sec_label_list;
     label_entry         l_entry;
     ref_list            sec_ref_list;
     ref_entry           r_entry;
     return_val          err;
+    hash_key            h_key;
 
-    data_ptr = HashTableQuery( HandleToLabelListTable, sec->shnd );
-    if( data_ptr != NULL ) {
-        sec_label_list = (label_list)*data_ptr;
+    h_key.u.sec_handle = section->shnd;
+    h_data = HashTableQuery( HandleToLabelListTable, h_key );
+    if( h_data != NULL ) {
+        sec_label_list = h_data->u.sec_label_list;
         l_entry = sec_label_list->first;
     } else {
         sec_label_list = NULL;
@@ -695,9 +697,9 @@ return_val DumpASMSection( section_ptr sec, unsigned_8 *contents, dis_sec_size s
     }
 
     r_entry = NULL;
-    data_ptr = HashTableQuery( HandleToRefListTable, sec->shnd );
-    if( data_ptr != NULL ) {
-        sec_ref_list = (ref_list)*data_ptr;
+    h_data = HashTableQuery( HandleToRefListTable, h_key );
+    if( h_data != NULL ) {
+        sec_ref_list = h_data->u.sec_ref_list;
         if( sec_ref_list != NULL ) {
             r_entry = sec_ref_list->first;
         }
@@ -710,27 +712,27 @@ return_val DumpASMSection( section_ptr sec, unsigned_8 *contents, dis_sec_size s
 
     if( size == 0 ) {
         if( IsMasmOutput() ) {
-            PrintHeader( sec );
-            dumpAsmLabel( l_entry, sec, 0, 0, NULL, NULL );
-            PrintTail( sec );
+            PrintHeader( section );
+            dumpAsmLabel( l_entry, section, 0, 0, NULL, NULL );
+            PrintTail( section );
         }
         return( RC_OKAY );
     }
 
-    PrintHeader( sec );
-    err = DumpASMDataFromSection( contents, 0, size, &l_entry, &r_entry, sec );
+    PrintHeader( section );
+    err = DumpASMDataFromSection( contents, 0, size, &l_entry, &r_entry, section );
     if( size > 0 ) {
-        l_entry = dumpAsmLabel( l_entry, sec, size, size, NULL, NULL );
+        l_entry = dumpAsmLabel( l_entry, section, size, size, NULL, NULL );
     }
     BufferConcatNL();
     BufferPrint();
     if( err == RC_OKAY ) {
-        PrintTail( sec );
+        PrintTail( section );
     }
     return( err );
 }
 
-static return_val bssUnixASMSection( section_ptr sec, dis_sec_size size, label_entry l_entry )
+static return_val bssUnixASMSection( section_ptr section, dis_sec_size size, label_entry l_entry )
 {
     dis_sec_offset              dsiz = 0;
     char                        *prefix;
@@ -739,10 +741,10 @@ static return_val bssUnixASMSection( section_ptr sec, dis_sec_size size, label_e
     if( ( size == 0 ) && ( l_entry == NULL ) )
         return( RC_OKAY );
 
-    PrintHeader( sec );
+    PrintHeader( section );
     prev_entry = NULL;
     for( ; l_entry != NULL; l_entry = l_entry->next ) {
-        if( ( l_entry->type == LTYP_SECTION ) && ( strcmp( l_entry->label.name, sec->name ) == 0 ) ) {
+        if( ( l_entry->type == LTYP_SECTION ) && ( strcmp( l_entry->label.name, section->name ) == 0 ) ) {
             continue;
         } else if( prev_entry == NULL ) {
             prev_entry = l_entry;
@@ -811,12 +813,12 @@ static return_val bssUnixASMSection( section_ptr sec, dis_sec_size size, label_e
 
 #define OFFSET_UNDEF    ((size_t)-1)
 
-static return_val bssMasmASMSection( section_ptr sec, dis_sec_size size, label_entry l_entry )
+static return_val bssMasmASMSection( section_ptr section, dis_sec_size size, label_entry l_entry )
 {
     size_t      offset = OFFSET_UNDEF;
     dis_value   value;
 
-    PrintHeader( sec );
+    PrintHeader( section );
 
     value.u._32[I64HI32] = 0;
     for( ; l_entry != NULL; l_entry = l_entry->next ) {
@@ -861,7 +863,7 @@ static return_val bssMasmASMSection( section_ptr sec, dis_sec_size size, label_e
         BufferPrint();
     }
 
-    PrintTail( sec );
+    PrintTail( section );
 
     BufferConcatNL();
     BufferPrint();
@@ -869,36 +871,40 @@ static return_val bssMasmASMSection( section_ptr sec, dis_sec_size size, label_e
     return( RC_OKAY );
 }
 
-return_val BssASMSection( section_ptr sec, dis_sec_size size, unsigned pass )
+return_val BssASMSection( section_ptr section, dis_sec_size size, unsigned pass )
 {
-    hash_data           *data_ptr;
+    hash_data           *h_data;
     label_list          sec_label_list;
+    hash_key            h_key;
 
     if( pass == 1 ) {
         return RC_OKAY;
     }
     /* Obtain the Symbol Table */
-    data_ptr = HashTableQuery( HandleToLabelListTable, sec->shnd );
-    if( data_ptr == NULL ) {
+    h_key.u.sec_handle = section->shnd;
+    h_data = HashTableQuery( HandleToLabelListTable, h_key );
+    if( h_data == NULL ) {
         return RC_OKAY;
     }
-    sec_label_list = (label_list)*data_ptr;
+    sec_label_list = h_data->u.sec_label_list;
 
     if( IsMasmOutput() ) {
-        return( bssMasmASMSection( sec, size, sec_label_list->first ) );
+        return( bssMasmASMSection( section, size, sec_label_list->first ) );
     } else {
-        return( bssUnixASMSection( sec, size, sec_label_list->first ) );
+        return( bssUnixASMSection( section, size, sec_label_list->first ) );
     }
 }
 
-char *SkipRef( ref_entry r_entry )
+const char *SkipRef( ref_entry r_entry )
 {
-    hash_data   *data_ptr;
+    hash_data   *h_data;
+    hash_key    h_key;
 
     if( SkipRefTable != NULL && ( r_entry->label->type == LTYP_EXTERNAL_NAMED ) ) {
-        data_ptr = HashTableQuery( SkipRefTable, r_entry->label->label.name );
-        if( data_ptr != NULL ) {
-            return( (char *)*data_ptr );
+        h_key.u.string = r_entry->label->label.name;
+        h_data = HashTableQuery( SkipRefTable, h_key );
+        if( h_data != NULL ) {
+            return( h_data->u.string );
         }
     }
     return( NULL );
