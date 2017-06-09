@@ -41,15 +41,17 @@
 
 typedef unsigned_8                      elf_file_flags;
 typedef unsigned_32                     elf_file_index;
-typedef unsigned_32                     elf_file_offset;
+typedef unsigned_64                     elf_file_offset;
+typedef unsigned_64                     elf_file_size;
 typedef unsigned_32                     elf_headers_size;
 
 typedef unsigned_32                     elf_sec_flags;
+typedef unsigned_64                     elf_sec_base;
 typedef unsigned_64                     elf_sec_size;
 typedef unsigned_32                     elf_sec_offset;
+typedef signed_64                       elf_sec_addend;
 
 typedef unsigned_64                     elf_symbol_value;
-typedef unsigned_64                     elf_sec_base;
 
 typedef unsigned_16                     elf_reloc_type;
 

@@ -155,16 +155,16 @@ orl_return ElfCreateSymbolHandles( elf_sec_handle elf_sec_hnd )
             current_sym64 = (Elf64_Sym *)current_sym;
             fix_sym64_byte_order( elf_sec_hnd->elf_file_hnd, current_sym64 );
             st_name = current_sym64->st_name;
-            current->value.u._32[I64LO32] = current_sym64->st_value.u._32[I64LO32];
             current->value.u._32[I64HI32] = current_sym64->st_value.u._32[I64HI32];
+            current->value.u._32[I64LO32] = current_sym64->st_value.u._32[I64LO32];
             current->info = current_sym64->st_info;
             current->shndx = current_sym64->st_shndx;
         } else {
             current_sym32 = (Elf32_Sym *)current_sym;
             fix_sym_byte_order( elf_sec_hnd->elf_file_hnd, current_sym32 );
             st_name = current_sym32->st_name;
-            current->value.u._32[I64LO32] = current_sym32->st_value;
             current->value.u._32[I64HI32] = 0;
+            current->value.u._32[I64LO32] = current_sym32->st_value;
             current->info = current_sym32->st_info;
             current->shndx = current_sym32->st_shndx;
         }
