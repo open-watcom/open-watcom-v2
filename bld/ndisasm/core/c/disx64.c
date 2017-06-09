@@ -828,6 +828,9 @@ static void X64GetModRM( REGWIDTH rw, MOD mod, REGWIDTH rw_rm, RM rm, void *d,
         ins->op[oper].op_position = ins->size;
         ins->op[oper].value.s._32[I64LO32] = GetSByte( d, ins->size );
         ins->size += 1;
+        if( ins->op[oper].value.s._32[I64LO32] < 0 ) {
+            ins->op[oper].value.s._32[I64HI32] = -1;
+        }
         break;
     case MOD_2:
         ins->op[oper].op_position = ins->size;
@@ -1034,6 +1037,9 @@ static void X64GetImmedVal( SBIT s, WBIT w, void *d, dis_dec_ins *ins )
     } else if( s == S_BYTE ) {
         ins->op[oper].value.s._32[I64LO32] = GetSByte( d, ins->size );
         ins->size += 1;
+        if( ins->op[oper].value.s._32[I64LO32] < 0 ) {
+            ins->op[oper].value.s._32[I64HI32] = -1;
+        }
     } else if( X64_IS_OPND_SIZE_16BIT() ) {
         ins->op[oper].value.s._32[I64LO32] = GetUShort( d, ins->size );
         ins->size += 2;
