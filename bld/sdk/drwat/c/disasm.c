@@ -318,14 +318,13 @@ RVALUE FindWatSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo )
 {
     DWORD       symoff;
     DWORD       line;
-    BOOL        ret;
+
     if( !GetSymbolName( curModule, addr->offset, si->name, &symoff ) ) {
         return( NOT_FOUND );
     }
     si->symoff = symoff;
     if( getsrcinfo ) {
-        ret = GetLineNum( curModule, addr->offset, si->filename, MAX_FILE_NAME, &line );
-        if( !ret )
+        if( !GetLineNum( curModule, addr->offset, si->filename, MAX_FILE_NAME, &line ) )
             return( NOT_FOUND );
         si->linenum = line;
     }

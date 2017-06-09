@@ -32,11 +32,11 @@
 
 #include "vi.h"
 #include "linedlg.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK GotoLineDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK GotoLineDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static char     lineStr[20];
 static char     lineLen = sizeof( lineStr ) - 1;
@@ -45,7 +45,7 @@ static linenum  *lineVal;
 /*
  * GotoLineDlgProc - callback routine for goto line dialog
  */
-WINEXPORT BOOL CALLBACK GotoLineDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK GotoLineDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     switch( msg ) {
@@ -83,14 +83,14 @@ WINEXPORT BOOL CALLBACK GotoLineDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPA
  */
 bool GetLineDialog( linenum *line )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
     bool        rc;
 
     lineStr[0] = '\0';
     lineVal = line;
-    proc = MakeDlgProcInstance( GotoLineDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "LINEDLG", root_window_id, (DLGPROC)proc );
-    FreeProcInstance( proc );
+    dlgproc = MakeProcInstance_DLG( GotoLineDlgProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "LINEDLG", root_window_id, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
     SetWindowCursor();
     return( rc );
 

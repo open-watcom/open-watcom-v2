@@ -79,7 +79,7 @@ msglist DDEMsgs[] = {
     WM_DDE_REQUEST,             (char *)(pointer_int)STR_REQUEST,
     WM_DDE_TERMINATE,           (char *)(pointer_int)STR_TERMINATE,
     WM_DDE_UNADVISE,            (char *)(pointer_int)STR_UNADVISE,
-    0,                          (char *)(pointer_int)-1
+    0,                          NULL
 };
 
 static msglist FormatMsgs[] = {
@@ -268,7 +268,7 @@ static void doReplace( HWND lb, WORD searchcnt, char **searchfor, char **replace
         }
 
         /* replace the listbox line */
-        SendMessage( lb, LB_INSERTSTRING, i, (LPARAM)(LPSTR)inbuf );
+        SendMessage( lb, LB_INSERTSTRING, i, (LPARAM)(LPCSTR)inbuf );
         SendMessage( lb, LB_DELETESTRING, i + 1, 0 );
     }
 
@@ -448,7 +448,7 @@ void RecordMsg( char *buf )
             *ptr = '\0';
             if( ConfigInfo.screen_out ) {
                 setHorzExtent( info, start );
-                SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPSTR)start );
+                SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)start );
             }
             SpyLogOut( start );
             *ptr = '\n';
@@ -459,7 +459,7 @@ void RecordMsg( char *buf )
     if( start != ptr ) {
         if( ConfigInfo.screen_out ) {
             setHorzExtent( info, start );
-            ret = (int)SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPSTR)start );
+            ret = (int)SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)start );
         }
         SpyLogOut( start );
     }
@@ -780,9 +780,9 @@ static void processMsgStruct( char *buf, MONMSGSTRUCT *info, bool posted )
 } /* processMsgStruct */
 
 /*
- * DDEMsgProc - process DDE messages received from the DDE manager
+ * DDEProc - process DDE messages received from the DDE manager
  */
-HDDEDATA CALLBACK DDEMsgProc( UINT type, UINT fmt, HCONV hconv, HSZ hsz1, HSZ hsz2, HDDEDATA hdata, ULONG_PTR data1, ULONG_PTR data2 )
+HDDEDATA CALLBACK DDEProc( UINT type, UINT fmt, HCONV hconv, HSZ hsz1, HSZ hsz2, HDDEDATA hdata, ULONG_PTR data1, ULONG_PTR data2 )
 {
     char        buf[400];
     void        *info;
@@ -870,6 +870,6 @@ HDDEDATA CALLBACK DDEMsgProc( UINT type, UINT fmt, HCONV hconv, HSZ hsz1, HSZ hs
         break;
     }
     DdeUnaccessData( hdata );
-    return( (HDDEDATA)0 );
+    return( NULL );
 
-} /* DDEMsgProc */
+} /* DDEProc */

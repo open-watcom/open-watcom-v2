@@ -64,14 +64,14 @@ msgfiles = &
 !inject statwnd.obj   nt win os2         # shared with gui project
 !inject strsup.obj    nt win
 !inject toolbr.obj    nt win os2         # shared with gui project
+!inject wclbproc.obj     win     win386
 !inject windlg.obj    nt win             # shared with gui project
 !inject wmdisim.obj   nt win os2         # shared with gui project
 !inject wwinhelp.obj  nt win             # shared with gui project
-!inject wprocmap.obj             win386
 
 !ifeq name windbg
 objs = $(windbg)
-!else 
+!else
 objs = $($(host_os)) $($(host_os)$(host_cpu))
 !ifeq host_cpu i86
 objs += $($(host_os)dbg)
@@ -88,7 +88,7 @@ extra_c_flags_win_386 = -zw
 
 inc_dirs = -I. -I"../h" $(wpi_inc_dirs) $(dis_includes)
 
-.c: ../c
+.c: ../c;$(watcom_dir)/c
 .asm: ../asm
 
 $(name).lib : uistr.gh $(objs) $(libs) $(__MAKEFILES__)

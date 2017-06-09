@@ -70,7 +70,7 @@ extern WdeToolBarInfo   *WdeAllocToolBarInfo( int );
 extern void             WdeSetToolBarItemState( WdeToolBar *, ctl_id, UINT );
 extern bool             WdeCloseToolBar( WdeToolBar * );
 extern void             WdeFreeToolBar( WdeToolBar * );
-extern void             WdeHandleToolHint( WPARAM, BOOL );
+extern void             WdeHandleToolHint( ctl_id, bool );
 extern void             WdeHandleStickyToolPress( WdeToolBar *, WPARAM, LPARAM );
 
 #endif

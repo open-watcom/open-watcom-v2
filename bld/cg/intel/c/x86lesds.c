@@ -57,25 +57,35 @@ static  bool    AdjacentMem( name *s, name *r, type_class_def tipe )
     int         stride;
 
     stride = TypeClassSize[tipe];
-    if( s->n.class != r->n.class ) return( false );
+    if( s->n.class != r->n.class )
+        return( false );
     if( s->n.class == N_MEMORY ) {
-        if( s->v.symbol != r->v.symbol ) return( false );
-        if( s->m.memory_type != r->m.memory_type ) return( false );
-        if( s->v.offset != r->v.offset + stride ) return( false );
+        if( s->v.symbol != r->v.symbol )
+            return( false );
+        if( s->m.memory_type != r->m.memory_type )
+            return( false );
+        if( s->v.offset != r->v.offset + stride )
+            return( false );
         return( true );
     } else if( s->n.class == N_INDEXED ) {
-        if( HasTrueBase( s ) && !HasTrueBase( r ) ) return( false );
-        if( !HasTrueBase( s ) && HasTrueBase( r ) ) return( false );
-        if( s->i.base != r->i.base ) return( false );
-        if( s->i.index != r->i.index ) return( false );
-        if( s->i.constant != r->i.constant + stride ) return( false );
+        if( HasTrueBase( s ) && !HasTrueBase( r ) )
+            return( false );
+        if( !HasTrueBase( s ) && HasTrueBase( r ) )
+            return( false );
+        if( s->i.base != r->i.base )
+            return( false );
+        if( s->i.index != r->i.index )
+            return( false );
+        if( s->i.constant != r->i.constant + stride )
+            return( false );
         return( true );
     } else if( s->n.class == N_TEMP ) {
         base_s = DeAlias( s );
         locn_s = base_s->t.location + s->v.offset - base_s->v.offset;
         base_r = DeAlias( r );
         locn_r = base_r->t.location + r->v.offset - base_r->v.offset;
-        if( locn_s != locn_r + stride ) return( false );
+        if( locn_s != locn_r + stride )
+            return( false );
         return( true );
     }
     return( false );
@@ -242,8 +252,10 @@ static bool OptPushDWORDMemory( instruction *ins, instruction *next )
 static  bool    NotByteMove( instruction *ins )
 /*********************************************/
 {
-    if( ins->head.opcode != OP_MOV ) return( false );
-    if( ins->type_class == U1 || ins->type_class == I1 ) return( false );
+    if( ins->head.opcode != OP_MOV )
+        return( false );
+    if( ins->type_class == U1 || ins->type_class == I1 )
+        return( false );
     return( true );
 }
 
@@ -251,10 +263,12 @@ static  bool    NotByteMove( instruction *ins )
 static  bool    IsLESDS( instruction *ins, instruction *next )
 /************************************************************/
 {
-    if( G( ins ) != G_RM1
-        && G( ins ) != G_MOVAM ) return( false );
-    if( ins->type_class != WD && ins->type_class != SW ) return( false );
-    if( G( next ) != G_SM1 ) return( false );
+    if( G( ins ) != G_RM1 && G( ins ) != G_MOVAM )
+        return( false );
+    if( ins->type_class != WD && ins->type_class != SW )
+        return( false );
+    if( G( next ) != G_SM1 )
+        return( false );
     return( true );
 }
 
@@ -265,15 +279,21 @@ static  void    CheckLDSES( instruction *seg, instruction *reg,
 {
     hw_reg_set  tmp;
 
-    if( !HW_COvlap( seg->result->r.reg, HW_DS_ES_FS_GS ) ) return;
-    if( !AdjacentMem( seg->operands[0], reg->operands[0], U2 ) ) return;
+    if( !HW_COvlap( seg->result->r.reg, HW_DS_ES_FS_GS ) )
+        return;
+    if( !AdjacentMem( seg->operands[0], reg->operands[0], U2 ) )
+        return;
     if( seg->operands[0]->n.class == N_INDEXED ) {
         // special case of using result of seg
         if( seg_first ) {
             // don't think we can get here - using one of DS|ES|FS|GS as index reg?!?
-            if( HW_Ovlap( reg->operands[0]->i.index->r.reg, seg->result->r.reg ) ) return;
+            if( HW_Ovlap( reg->operands[0]->i.index->r.reg, seg->result->r.reg ) ) {
+                return;
+            }
         } else {
-            if( HW_Ovlap( seg->operands[0]->i.index->r.reg, reg->result->r.reg ) ) return;
+            if( HW_Ovlap( seg->operands[0]->i.index->r.reg, reg->result->r.reg ) ) {
+                return;
+            }
         }
     }
     reg->u.gen_table = LDSES;
@@ -306,7 +326,7 @@ extern  void    OptSegs( void )
                     }
                 }
                 if( MemMove( ins )  && !VolatileIns( ins )
-                 && MemMove( next ) && !VolatileIns( next ) ) {
+                  && MemMove( next ) && !VolatileIns( next ) ) {
                     // look for adjacent byte/word moves and combine them
                     if( OptMemMove( ins, next ) ) {
                         // tell ourselves to go around again in case

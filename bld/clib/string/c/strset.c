@@ -29,14 +29,14 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <string.h>
 #include "riscstr.h"
 
 
 #if defined(__RISCSTR__) && defined(__WIDECHAR__)
- _WCRTLINK CHAR_TYPE *__simple__wcsset( CHAR_TYPE *s, INTCHAR_TYPE c )
+ CHAR_TYPE *__simple__wcsset( CHAR_TYPE *s, INTCHAR_TYPE c )
 #else
  _WCRTLINK CHAR_TYPE *__F_NAME(strset,_wcsset)( CHAR_TYPE *s, INTCHAR_TYPE c )
 #endif

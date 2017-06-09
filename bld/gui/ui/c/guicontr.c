@@ -55,8 +55,7 @@ bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain,
     dialog_node *dlg_node;
     a_dialog    *ui_dlg_info;
 
-    plain = plain;
-    standout = standout;
+    /* unused parameters */ (void)plain; (void)standout;
 
     if( ( ctl_info == NULL ) || ( ctl_info->parent == NULL ) ) {
         return( false );
@@ -201,9 +200,8 @@ void GUIFreeAllControls( gui_window *wnd )
 
 bool GUILimitEditText( gui_window *wnd, gui_ctl_id id, int len )
 {
-    wnd=wnd;
-    id=id;
-    len=len;
+    /* unused parameters */ (void)wnd; (void)id; (void)len;
+
     return( true );
 }
 
@@ -230,8 +228,8 @@ EVENT GUIProcessControlEvent( gui_window *wnd, EVENT ev, gui_ord row,
     a_dialog    *ui_dlg_info;
     bool        colours_set;
 
-    row = row;
-    col = col;
+    /* unused parameters */ (void)row; (void)col;
+
     ui_dlg_info = GUIGetDialog( wnd );
     if( ui_dlg_info != NULL ) {
         colours_set = GUISetDialColours();

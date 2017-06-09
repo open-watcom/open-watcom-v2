@@ -48,14 +48,14 @@ typedef struct cue_blk {
     cue_info        info[CUES_PER_BLK]; /* variableb */
 } cue_blk;
 
-typedef struct seg_cue {
+struct seg_cue {
     struct seg_cue  *next;
     addr_seg        seg;
     addr_off        low;
     addr_off        high;
     unsigned_16     count;    /* #entries collected by head */
     cue_blk         *head;    /* list of cues               */
-} seg_cue;
+};
 
 
 

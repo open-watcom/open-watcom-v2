@@ -46,11 +46,11 @@ namespace std {
 
   int strstreambuf::doallocate() {
 
-    char   *oldbuf;
-    int     oldbufsize;
-    char   *newbuf;
-    int     newbufsize;
-    size_t  base_offset, ptr_offset, end_offset;
+    char      *oldbuf;
+    streamsize oldbufsize;
+    char      *newbuf;
+    streamsize newbufsize;
+    size_t     base_offset, ptr_offset, end_offset;
 
     __lock_it( __b_lock );
     if( !__dynamic || __frozen ) {

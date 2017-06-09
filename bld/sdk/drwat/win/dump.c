@@ -36,6 +36,7 @@
 #include <dos.h>
 #include <sys/stat.h>
 #include "drwatcom.h"
+#include "wclbproc.h"
 #include "wdebug.h"
 #include "dump.h"
 #include "tinyio.h"
@@ -44,9 +45,9 @@
 
 
 /* Local Window callback functions prototypes */
-BOOL __export FAR PASCAL DumpDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-BOOL __export FAR PASCAL DebuggerOptDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-BOOL __export FAR PASCAL DumpAnyDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK DumpDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK DebuggerOptDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK DumpAnyDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static HTASK            currTask;
 
@@ -322,15 +323,17 @@ void DoDump( HWND hwnd )
 } /* DoDump */
 
 /*
- * DumpDialog - get dump info
+ * DumpDialogDlgProc - get dump info
  */
-BOOL FAR PASCAL DumpDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK DumpDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        drive[_MAX_DRIVE];
     char        dir[_MAX_DIR];
     char        fname[_MAX_FNAME];
     char        ext[_MAX_EXT];
+    bool        ret;
 
+    ret = false;
     switch( msg ) {
     case WM_INITDIALOG:
         _splitpath( DTModuleEntry.szExePath, drive, dir, fname, ext );
@@ -347,10 +350,12 @@ BOOL FAR PASCAL DumpDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         invokeDebugger = FALSE;
         CheckDlgButton( hwnd, DUMP_INVOKE_DEBUGGER, BST_UNCHECKED );
         CheckRadioButton( hwnd, DUMP_ALL, DUMP_ALL_MEMORY, DumpHow );
-        return( TRUE );
+        ret = true;
+        break;
     case WM_CLOSE:
         PostMessage( hwnd, WM_COMMAND, IDCANCEL, 0L );
-        return( TRUE );
+        ret = true;
+        break;
     case WM_COMMAND:
         switch( wparam ) {
         case DUMP_INVOKE_DEBUGGER:
@@ -384,22 +389,23 @@ BOOL FAR PASCAL DumpDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             EndDialog( hwnd, 0 );
             break;
         }
-        return( TRUE );
+        ret = true;
+        break;
     }
-    return( FALSE );
+    return( ret );
 
-} /* DumpDialog */
+} /* DumpDialogDlgProc */
 
 /*
  * DumpTask - run task dump dialog
  */
 void DumpTask( HWND hwnd )
 {
-    FARPROC     fp;
+    DLGPROC     dlgproc;
 
-    fp = MakeProcInstance( (FARPROC)DumpDialog, Instance );
-    JDialogBox( Instance, "DMPTASK", hwnd, (DLGPROC)fp );
-    FreeProcInstance( fp );
+    dlgproc = MakeProcInstance_DLG( DumpDialogDlgProc, Instance );
+    JDialogBox( Instance, "DMPTASK", hwnd, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 
 } /* DumpTask */
 
@@ -443,7 +449,7 @@ static void FillTaskList( HWND hwnd )
             csip = GetRealCSIP( te.hTask, NULL );
             RCsprintf( str, STR_TASK_LB_FMT_STR, te.szModule,
                        HIWORD( csip ), LOWORD( csip ), (WORD)te.hTask );
-            SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
+            SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
         }
     } while( MyTaskNext( &te ) );
     SendDlgItemMessage( hwnd, TASKCTL_TASKLIST, LB_SETCURSEL, 0, 0L );
@@ -452,22 +458,24 @@ static void FillTaskList( HWND hwnd )
 } /* FillTaskList */
 
 /*
- * DebuggerOptDlg - manage the dialog to get debugger options
+ * DebuggerOptDlgProc - manage the dialog to get debugger options
  */
-BOOL FAR PASCAL DebuggerOptDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK DebuggerOptDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        str[128];
+    bool        ret;
 
+    ret = false;
     lparam = lparam;
     switch( msg ) {
     case WM_INITDIALOG:
         SetDlgItemText( hwnd, DBG_DEBUGGER_OPT, DebuggerOpts );
+        ret = true;
         break;
     case WM_COMMAND:
         switch( wparam ) {
         case IDOK:
-            GetDlgItemText( hwnd, DBG_DEBUGGER_OPT, DebuggerOpts,
-                            sizeof( DebuggerOpts )  );
+            GetDlgItemText( hwnd, DBG_DEBUGGER_OPT, DebuggerOpts, sizeof( DebuggerOpts )  );
             sprintf( str,"wdw %s %d", DebuggerOpts, (WORD)currTask );
             WinExec( str, SW_SHOWNORMAL );
             EndDialog( hwnd, 0 );
@@ -476,23 +484,25 @@ BOOL FAR PASCAL DebuggerOptDlg( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             EndDialog( hwnd, 0 );
             break;
         }
+        ret = true;
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 }
 
 /*
- * DumpAnyDialog - select a task to dump
+ * DumpAnyDialogDlgProc - select a task to dump
  */
-BOOL FAR PASCAL DumpAnyDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK DumpAnyDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        str[128];
     int         i, j;
-    FARPROC     fp;
+    DLGPROC     dlgproc;
+    bool        ret;
 
     lparam = lparam;
+
+    ret = false;
 
     switch( msg ) {
     case WM_INITDIALOG:
@@ -500,11 +510,13 @@ BOOL FAR PASCAL DumpAnyDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
         SetDlgCourierFont( hwnd, TASKCTL_TASKLIST );
         FillTaskList( hwnd );
         SetDlgItemText( hwnd, TASKCTL_TASKNAME, str );
-        return( TRUE );
+        ret = true;
+        break;
 
     case WM_CLOSE:
         PostMessage( hwnd, WM_COMMAND, IDCANCEL, 0L );
-        return( TRUE );
+        ret = true;
+        break;
 
     case WM_COMMAND:
         switch( wparam ) {
@@ -529,9 +541,9 @@ BOOL FAR PASCAL DumpAnyDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
             }
             break;
         case TASKCTL_DEBUG:
-            fp = MakeProcInstance( (FARPROC)DebuggerOptDlg, Instance );
-            JDialogBox( Instance, "DEBUGGER_OPTS", hwnd, (DLGPROC)fp );
-            FreeProcInstance( fp );
+            dlgproc = MakeProcInstance_DLG( DebuggerOptDlgProc, Instance );
+            JDialogBox( Instance, "DEBUGGER_OPTS", hwnd, dlgproc );
+            FreeProcInstance_DLG( dlgproc );
             break;
 #if( 0 )
         case TASKCTL_DUMP:
@@ -549,22 +561,23 @@ BOOL FAR PASCAL DumpAnyDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
             EndDialog( hwnd, 0 );
             break;
         }
-        return( TRUE );
+        ret = true;
+        break;
     }
-    return( FALSE );
+    return( ret );
 
-} /* DumpAnyDialog */
+} /* DumpAnyDialogDlgProc */
 
 /*
  * DumpATask - get a task from a list to dump
  */
 void DumpATask( HWND hwnd )
 {
-    FARPROC     fp;
+    DLGPROC     dlgproc;
 
-    fp = MakeProcInstance( (FARPROC)DumpAnyDialog, Instance );
-    JDialogBox( Instance, "TASKCTL", hwnd, (DLGPROC)fp );
+    dlgproc = MakeProcInstance_DLG( DumpAnyDialogDlgProc, Instance );
+    JDialogBox( Instance, "TASKCTL", hwnd, dlgproc );
     DumpDialogHwnd = 0;
-    FreeProcInstance( fp );
+    FreeProcInstance_DLG( dlgproc );
 
 } /* DumpATask */

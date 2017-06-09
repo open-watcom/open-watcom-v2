@@ -37,22 +37,23 @@
 #include "heap.h"
 #include "heapacc.h"
 
-_WCRTLINK size_t _memmax( void )  /* return size of largest free piece from near heap */
-    {
-        size_t maxlen, size;
-        frlptr pnext;
-        mheapptr mhp;
 
-        maxlen = 0;
-        _AccessNHeap();
-        for( mhp = __nheapbeg; mhp != NULL; mhp = mhp->next ) {
-            for( pnext = mhp->freehead.next; pnext != (frlptr)&mhp->freehead; pnext = pnext->next ) {
-                size = __ROUND_DOWN_SIZE( pnext->len - TAG_SIZE, ROUND_SIZE );
-                if( size > maxlen ) {
-                    maxlen = size;
-                }
+_WCRTLINK size_t _memmax( void )  /* return size of largest free piece from near heap */
+{
+    size_t      maxlen, size;
+    frlptr      frl;
+    mheapptr    heap;
+
+    maxlen = 0;
+    _AccessNHeap();
+    for( heap = __nheapbeg; heap != NULL; heap = heap->next ) {
+        for( frl = heap->freehead.next; frl != (frlptr)&heap->freehead; frl = frl->next ) {
+            size = __ROUND_DOWN_SIZE( frl->len - TAG_SIZE, ROUND_SIZE );
+            if( maxlen < size ) {
+                maxlen = size;
             }
         }
-        _ReleaseNHeap();
-        return( maxlen );
     }
+    _ReleaseNHeap();
+    return( maxlen );
+}

@@ -417,7 +417,7 @@ _WCRTLINK extern int   _pclose( FILE *__fp );
 _WCRTLINK extern FILE  *_popen( const char *__command, const char *__mode );
 _WCRTLINK extern int   _putw( int __binint, FILE *__fp );
 :endsegment
-_WCRTLINK extern char  *_tempnam( char *__dir, char *__prefix );
+_WCRTLINK extern char  *_tempnam( const char *__dir, const char *__prefix );
 
 :include ext.sp
 ::
@@ -517,7 +517,7 @@ _WCRTLINK extern void          _wperror( const wchar_t * );
 _WCRTLINK extern std::FILE     *_wpopen( const wchar_t *__command, const wchar_t *__mode );
 _WCRTLINK extern int           _wremove( const wchar_t * );
 _WCRTLINK extern int           _wrename( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t       *_wtempnam( wchar_t *__dir, wchar_t *__prefix );
+_WCRTLINK extern wchar_t       *_wtempnam( const wchar_t *__dir, const wchar_t *__prefix );
 _WCRTLINK extern wchar_t       *_wtmpnam( wchar_t * );
 _WCRTLINK extern std::wint_t   fgetwchar( void );
 _WCRTLINK extern std::wint_t   fputwchar( std::wint_t );
@@ -573,7 +573,7 @@ _WCRTLINK extern void     _wperror( const wchar_t * );
 _WCRTLINK extern FILE     *_wpopen( const wchar_t *__command, const wchar_t *__mode );
 _WCRTLINK extern int      _wremove( const wchar_t * );
 _WCRTLINK extern int      _wrename( const wchar_t *, const wchar_t * );
-_WCRTLINK extern wchar_t  *_wtempnam( wchar_t *__dir, wchar_t *__prefix );
+_WCRTLINK extern wchar_t  *_wtempnam( const wchar_t *__dir, const wchar_t *__prefix );
 _WCRTLINK extern wchar_t  *_wtmpnam( wchar_t * );
 _WCRTLINK extern int      _vbwprintf( wchar_t *, size_t, const wchar_t *, __va_list );
 _WCRTLINK extern int      _vsnwprintf( wchar_t *, size_t, const wchar_t *, __va_list );

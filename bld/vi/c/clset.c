@@ -357,9 +357,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
     const char  *value;
 
 #ifdef VICOMP
-    winflag = winflag;
-    isbool = isbool;
-    new = new;
+    /* unused parameters */ (void)winflag; (void)isbool; (void)new;
 #endif
     /*
      * set up value for boolean set commands
@@ -878,7 +876,7 @@ static vi_rc processSetToken( int j, char *new, const char **pvalue, int *winfla
                 SetNextAutoSaveTime();
                 break;
             case SETVAR_T_LANGUAGE:
-                if( lval < LANG_NONE || lval >= LANG_MAX ) {
+                if( lval < LANG_MIN || lval >= LANG_MAX ) {
                     return( ERR_INVALID_SET_COMMAND );
                 }
                 if( CurrentInfo != NULL ) {

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  near heap initialization (now unused) similar to nheapgrow
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -36,29 +36,26 @@
 #include <malloc.h>
 #include "heap.h"
 
-void _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount )
-{
-    mheapptr p1;
-    tag *last_tag;
 
-    p1 = start;
-    amount -= sizeof( miniheapblkp ) + TAG_SIZE;
-    __nheapbeg = p1;
-    p1->len  = amount + sizeof( miniheapblkp );
-    p1->prev = NULL;
-    p1->next = NULL;
-    p1->rover = &p1->freehead;
-    p1->freehead.prev = &p1->freehead;
-    p1->freehead.next = &p1->freehead;
-    p1->numalloc = 0;
-    p1->numfree = 0;
-    ++p1;
+#define FIRST_FRL(h)    ((frlptr)(h + 1))
+
+void _WCFAR __HeapInit( mheapptr heap, unsigned int amount )
+{
+    __nheapbeg = heap;
+    heap->len  = amount - TAG_SIZE;
+    heap->prev = NULL;
+    heap->next = NULL;
+    heap->rover = &heap->freehead;
+    heap->freehead.prev = &heap->freehead;
+    heap->freehead.next = &heap->freehead;
+    heap->numalloc = 0;
+    heap->numfree = 0;
+    FIRST_FRL( heap )->len = amount - TAG_SIZE - sizeof( miniheapblkp );
     /* fix up end of heap links */
-    last_tag = (tag *) ( (PTR)p1 + amount );
-    last_tag[0] = END_TAG;
+    SET_BLK_END( (frlptr)NEXT_BLK( FIRST_FRL( heap ) ) );
     /* build a block for _nfree() */
-    SET_MEMBLK_SIZE_USED( (frlptr)p1, amount );
-    ++__nheapbeg->numalloc;
-    __nheapbeg->largest_blk = ~0;    /* set to largest value to be safe */
-    _nfree( (PTR)p1 + TAG_SIZE );
+    SET_BLK_INUSE( FIRST_FRL( heap ) );
+    heap->numalloc++;
+    heap->largest_blk = /*0x....ffff*/ ~0U;   /* set to largest value to be safe */
+    _nfree( (void_nptr)BLK2CPTR( FIRST_FRL( heap ) ) );
 }

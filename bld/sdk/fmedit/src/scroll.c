@@ -41,7 +41,7 @@
 #define LN_SC_AMOUNT            10
 #define UNLOCK_SCROLL_FUDGE     10
 
-static void DoScroll( HWND wnd, int dx, int dy, BOOL lock );
+static void DoScroll( HWND wnd, int dx, int dy, bool lock );
 
 extern void VerticalScroll( WPARAM wparam, LPARAM lparam, HWND wnd )
 /******************************************************************/
@@ -101,7 +101,7 @@ extern void VerticalScroll( WPARAM wparam, LPARAM lparam, HWND wnd )
         }
     }
 
-    DoScroll( wnd, 0, ydel, TRUE );
+    DoScroll( wnd, 0, ydel, true );
 }
 
 extern void HorizontalScroll( WPARAM wparam, LPARAM lparam, HWND wnd )
@@ -162,7 +162,7 @@ extern void HorizontalScroll( WPARAM wparam, LPARAM lparam, HWND wnd )
         }
     }
 
-    DoScroll( wnd, xdel, 0, TRUE );
+    DoScroll( wnd, xdel, 0, true );
 }
 
 extern void InitScroll( SCR_CONFIG scroll, HWND wnd )
@@ -287,7 +287,7 @@ extern void AutoScroll( RECT eatom, POINT delta )
     if( !(GetScrollConfig() & SCROLL_HORZ) ) {
         xdel = 0;
     }
-    DoScroll( wnd, xdel, ydel, TRUE );
+    DoScroll( wnd, xdel, ydel, true );
     UpdateWindow( wnd );
 }
 
@@ -305,7 +305,7 @@ static int AdjustScroll( int curr, int low, int high, int delta )
     }
 }
 
-static void GetScrollBounds( LPRECT rect, BOOL lock )
+static void GetScrollBounds( LPRECT rect, bool lock )
 /***************************************************/
 {
     // if this is a locked scrolling the scroll bound is the scroll rect,
@@ -339,7 +339,7 @@ static void GetScrollBounds( LPRECT rect, BOOL lock )
     }
 }
 
-static void DoScroll( HWND wnd, int dx, int dy, BOOL lock )
+static void DoScroll( HWND wnd, int dx, int dy, bool lock )
 /*********************************************************/
 {
     /* scroll 'wnd' by 'dx' and 'dy'. 'lock' says to lock the scrolling on the */

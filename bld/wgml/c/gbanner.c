@@ -181,7 +181,8 @@ static char * subst_1var( char * pout, char * pvar, size_t len )
     int                 rc;
     char            *   pchar;
 
-    len = len;
+    /* unused parameters */ (void)len;
+
     ProcFlags.suppress_msg = true;
     scan_err = false;
 

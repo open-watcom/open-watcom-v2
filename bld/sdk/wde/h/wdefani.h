@@ -36,7 +36,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WINEXPORT extern OBJPTR  CALLBACK WdeAniCCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern CREATE_RTN WdeAniCCreate;
 extern bool              WdeAniCInit( bool );
 extern void              WdeAniCFini( void );
 

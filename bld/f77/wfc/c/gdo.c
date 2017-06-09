@@ -12,7 +12,7 @@
 *    except in compliance with the License. BY USING THIS FILE YOU AGREE TO
 *    ALL TERMS AND CONDITIONS OF THE LICENSE. A copy of the License is
 *    provided with the Original Code and Modifications, and is also
-*    available at www.sybase.com/developer/opensource.
+*    available at www.sybase.com/developer/opensource.263
 *
 *    The Original Code and all software distributed under the License are
 *    distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
@@ -243,7 +243,8 @@ static  void    DataDo( TYPE do_type ) {
 
     sym_id      do_var;
 
-    do_type = do_type;
+    /* unused parameters */ (void)do_type;
+
     do_var = CITNode->sym_ptr;
     AdvanceITPtr();
     DoExpr();                           // process e1

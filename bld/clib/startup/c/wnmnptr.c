@@ -33,7 +33,8 @@
 #include <stdlib.h>
 #include "rtdata.h"
 
-_WCRTLINK unsigned int *__get_winminor_ptr( void )
+
+_WCRTLINK unsigned int (*__get_winminor_ptr( void ))
 {
     return( &_RWD_winminor );
 }

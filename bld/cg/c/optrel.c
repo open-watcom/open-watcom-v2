@@ -49,8 +49,10 @@ static  bool    Jmp_to_lbl( ins_entry *instr )
 /********************************************/
 {
   optbegin
-    if( _Class( instr ) != OC_JMP ) optreturn( false );
-    if( _Label( instr ) != Handle ) optreturn( false );
+    if( _Class( instr ) != OC_JMP )
+        optreturn( false );
+    if( _Label( instr ) != Handle )
+        optreturn( false );
     optreturn( true );
 }
 
@@ -126,16 +128,21 @@ static  bool    InRange( void )
     label_handle    jmp_lbl;
 
   optbegin
-    if( _IsModel( NO_OPTIMIZATION ) ) optreturn( false );
+    if( _IsModel( NO_OPTIMIZATION ) )
+        optreturn( false );
     jmp_lbl = Handle->redirect;
     /* we don't have a redirection for this label*/
-    if( jmp_lbl == NULL ) optreturn( false );
+    if( jmp_lbl == NULL )
+        optreturn( false );
     /* forward jump: must still be in range*/
-    if( jmp_lbl->lbl.address == ADDR_UNKNOWN ) optreturn( true );
+    if( jmp_lbl->lbl.address == ADDR_UNKNOWN )
+        optreturn( true );
     /* can't redirect the redirection jump to itself*/
-    if( jmp_lbl->lbl.address == AskLocation() ) optreturn( false );
+    if( jmp_lbl->lbl.address == AskLocation() )
+        optreturn( false );
     /* can still reach old redirection with short backward jump*/
-    if( (AskLocation()-jmp_lbl->lbl.address)<=MAX_SHORT_BWD ) optreturn( true );
+    if( (AskLocation() - jmp_lbl->lbl.address) <= MAX_SHORT_BWD )
+        optreturn( true );
     /* can't get at old redirection any more*/
     HndlRedirect( NULL );
     optreturn( false );

@@ -220,7 +220,7 @@ typedef struct lstinfo {
 typedef struct gblwndinfo {
     HWND        add_dialog;
     HWND        alloc_dialog;
-    FARPROC     alloc_proc;
+    DLGPROC     alloc_dlgproc;
     ListBoxInfo list;
     BOOL        doing_add:1;
     BOOL        need_refresh:1;
@@ -307,7 +307,7 @@ void EndAdd( void );
 void SortHeapList( void );
 
 /* hwdisp.c */
-BOOL __export FAR PASCAL ItemDisplayProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+BOOL __export FAR PASCAL ItemDisplayProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 void ShowHeapObject( HWND lbhdl );
 
 /* hwsave.c */
@@ -318,9 +318,8 @@ void ShowSelector( HWND list );
 BOOL GlobDiscardObj( HWND list );
 BOOL GlobSetObjPos( HWND list, BOOL oldest );
 void RefreshAdd( HWND dialog, HWND lbhwnd );
-BOOL __export FAR PASCAL AllocDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
-//BOOL __export FAR PASCAL FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
-BOOL __export FAR PASCAL SetCodeDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+WINEXPORT INT_PTR CALLBACK AllocDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK SetCodeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 void SetMenusForAdd( HWND hwnd, BOOL start );
 HWND StartAdd( HWND parent, ListBoxInfo *info );
 
@@ -333,7 +332,7 @@ void MyFreeAllMem( void );
 void DoNBytes( HWND parent, WORD type );
 
 /* hwlocal.c */
-BOOL __export FAR PASCAL LocalHeapProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+BOOL __export FAR PASCAL LocalHeapProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 BOOL FormatLocalHeapListItem( char *line, unsigned index );
 int  SortByLocalType( LOCALENTRY **, LOCALENTRY ** );
 void LocalWalk( heap_list *item );
@@ -356,12 +355,12 @@ HWND DisplayLocalHeapInfo( HWND parent );
 /* hwutil.c */
 void SetStaticText( HWND hwnd, int id, char *str );
 void CenterDlg( HWND hwnd );
-int ErrorBox( HWND hwnd, UINT msgid, UINT type );
+int ErrorBox( HWND hwnd, msg_id msgid, UINT type );
 HWND *MakePushWin( HWND hwnd, const char *str, WORD cnt, ... );
 void KillPushWin( HWND *push );
 
 /* hwmonit */
-BOOL __export FAR PASCAL LocalMonitorProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+BOOL __export FAR PASCAL LocalMonitorProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 void BeginMonitor( heap_list *item );
 
 /* hwtable */
@@ -369,6 +368,6 @@ void InitializeStringTables( void );
 
 /* hwldstr */
 BOOL InitStringTable( void );
-char *HWAllocRCString( UINT id );
+char *HWAllocRCString( msg_id id );
 void HWFreeRCString( char *str );
-const char *HWGetRCString( UINT msgid );
+const char *HWGetRCString( msg_id msgid );

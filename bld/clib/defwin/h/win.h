@@ -32,22 +32,30 @@
 #ifdef __OS2__
 #define INCL_WIN
 #include <wos2.h>
-typedef int     HANDLE;
-extern  unsigned        __WinSetWindowPos(unsigned);
-#pragma aux __WinSetWindowPos = parm [eax] modify [ebx]
-#define WinSetWindowPos(a1,a2,a3,a4,a5,a6,a7)           \
-        __WinSetWindowPos(WinSetWindowPos(a1,a2,a3,a4,a5,a6,a7))
 #else
+#define INCLUDE_COMMDLG_H
 #include <wwindows.h>
 #endif
 #include "_defwin.h"
-
-
 /*
  * Define the _MBCS macro to compile defwin stuff with multibyte support.
  */
 #define _MBCS
 #include "mbdefwin.h"
+
+#if defined( __OS2__ )
+  #include "pmdlg.h"
+#else
+  #include "windlg.h"
+#endif
+
+#ifdef __OS2__
+typedef int         HANDLE;
+extern  unsigned    __WinSetWindowPos(unsigned);
+#pragma aux __WinSetWindowPos = parm [eax] modify [ebx]
+#define WinSetWindowPos(a1,a2,a3,a4,a5,a6,a7)           \
+        __WinSetWindowPos(WinSetWindowPos(a1,a2,a3,a4,a5,a6,a7))
+#endif
 
 #if defined( __WINDOWS_386__ )
 #define GetPtrGlobalLock(data) MK_FP32( GlobalLock( data ) )
@@ -87,12 +95,6 @@ extern void _ReleaseWinLines( void );
     #define AllocAlias16( a ) a
     #define FreeAlias16( a )
   #endif
-#endif
-
-#if defined( __OS2__ )
-  #include "pmdlg.h"
-#else
-  #include "windlg.h"
 #endif
 
 #if defined( __OS2__ )
@@ -166,56 +168,56 @@ typedef struct line_data {
 typedef line_data _WCI86FAR *LPLDATA;
 
 typedef struct window_data {
-    int         *handles;
-    int         handle_cnt;
-    int         text_color;
-    int         background_color;
-    int         x1, y1, x2, y2;
-    int         width, height;
-    int         xchar, ychar;
+    int             *handles;
+    int             handle_cnt;
+    int             text_color;
+    int             background_color;
+    int             x1, y1, x2, y2;
+    int             width, height;
+    int             xchar, ychar;
 #ifdef _MBCS
-    mb_char _WCI86FAR *image;
+    mb_char         _WCI86FAR *image;
 #else
-    LPSTR       image;
+    LPSTR           image;
 #endif
 #if !defined( __OS2__ )
-    HBRUSH      brush;
+    HBRUSH          brush;
 #endif
-    HWND        hwnd;
-    LPLDATA     LineHead, LineTail;
-    DWORD       LastLineNumber;
-    DWORD       CurrentLineNumber;
-    DWORD       TopLineNumber;
-    LPLDATA     tmpbuff;
-    int         buffoff;
-    int         curr_pos;
+    HWND            hwnd;
+    LPLDATA         LineHead, LineTail;
+    DWORD           LastLineNumber;
+    DWORD           CurrentLineNumber;
+    DWORD           TopLineNumber;
+    LPLDATA         tmpbuff;
+    int             buffoff;
+    int             curr_pos;
 #if !defined( __OS2__ )
-    HANDLE      inst;
+    HANDLE          inst;
 #endif
-    int         maxwidth;
+    int             maxwidth;
 #if defined( __OS2__ )
-    int         base_offset;
+    int             base_offset;
 #endif
-    int         InputMode;
+    int             InputMode;
 #if defined( __OS2__ )
-    HWND        frame;
+    HWND            frame;
 #endif
-    short       menuid;
-    BOOL        lineinprogress;
-    cursors     CaretType;
-    char        resizing:1;
-    char        active:1;
-    char        hascursor:1;
-    char        gphwin:1;
-    char        no_advance:1;
-    char        destroy:1;
-    char        hold7:1;
-    char        hold8:1;
+    short           menuid;
+    BOOL            lineinprogress;
+    cursors         CaretType;
+    unsigned char   resizing:1;
+    unsigned char   active:1;
+    unsigned char   hascursor:1;
+    unsigned char   gphwin:1;
+    unsigned char   no_advance:1;
+    unsigned char   destroy:1;
+    unsigned char   hold7:1;
+    unsigned char   hold8:1;
 } window_data;
 
 // LPWDATA is defined in _defwin.h as follows:
 // typedef struct window_data _WCI86FAR *LPWDATA;
-typedef LPWDATA _WCI86FAR *LPLPWDATA;
+typedef LPWDATA     _WCI86FAR *LPLPWDATA;
 
 typedef struct {
     LPLPWDATA   windows;
@@ -335,8 +337,8 @@ extern void     _Error( HWND hwndDlg, char *caption, char *msg );
 #endif
 extern int      _MessageLoop( BOOL );
 extern int      _BlockingMessageLoop( BOOL );
-extern void _WCI86FAR *_MemAlloc( unsigned );
-extern void _WCI86FAR *_MemReAlloc( void _WCI86FAR *ptr, unsigned size );
+extern void     _WCI86FAR *_MemAlloc( unsigned );
+extern void     _WCI86FAR *_MemReAlloc( void _WCI86FAR *ptr, unsigned size );
 extern void     _MemFree( void _WCI86FAR * );
 extern void     _NewCursor( LPWDATA, cursors );
 extern void     _DisplayCursor( LPWDATA w );

@@ -89,7 +89,8 @@ void    lay_heading( lay_tag ltag )
     att_args        l_args;
     int             cvterr;
 
-    ltag = ltag;
+    /* unused parameters */ (void)ltag;
+
     p = scan_start;
 
     if( !GlobalFlags.firstpass ) {

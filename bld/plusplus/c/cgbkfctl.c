@@ -168,7 +168,8 @@ unsigned FnCtlCondFlagExpr(     // START FLAGS OFFSET FOR EXPRESSION
 unsigned FnCtlCondFlagCtor(     // GET FLAG # FOR CTOR-TEST
     FN_CTL *fctl )              // - current function information
 {
-    fctl = fctl;
+    /* unused parameters */ (void)fctl;
+
     DbgVerify( fctl->has_ctor_test, "FnCtlCondFlagCtor -- ! has_ctor_test" );
     return cond_flags_offset;
 }
@@ -199,7 +200,8 @@ SYMBOL FnCtlNewCtorPtr(         // GET SYMBOL FOR NEW-CTORED PTR.
 static void fnCtlInit(          // INITIALIZATION FOR CGBKFCTL
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     VstkOpen( &stack_files, sizeof( FN_CTL ), 4 );
 }
 
@@ -207,7 +209,8 @@ static void fnCtlInit(          // INITIALIZATION FOR CGBKFCTL
 static void fnCtlFini(          // COMPLETION FOR CGBKFCTL
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     VstkClose( &stack_files );
 }
 

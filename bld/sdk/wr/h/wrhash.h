@@ -111,7 +111,7 @@ WRDLLENTRY extern void                 WRAPI WRValueListFree( WRHashValueList *l
 WRDLLENTRY extern WRHashValueList *    WRAPI WRLookupValue( WRHashTable *table, WRHashValue value );
 WRDLLENTRY extern int                  WRAPI WRValueExists( WRHashTable *table, WRHashValue value );
 WRDLLENTRY extern char *               WRAPI WRResolveValue( WRHashTable *, WRHashValue );
-WRDLLENTRY extern bool                 WRAPI WREditSym( HWND parent, WRHashTable **table, WRHashEntryFlags *flags, FARPROC help_callback );
+WRDLLENTRY extern bool                 WRAPI WREditSym( HWND parent, WRHashTable **table, WRHashEntryFlags *flags, HELP_CALLBACK help_callback );
 WRDLLENTRY extern bool                 WRAPI WRDeleteDLGInclude( WResDir dir );
 WRDLLENTRY extern bool                 WRAPI WRCreateDLGInclude( WResDir *dir, const char *include );
 

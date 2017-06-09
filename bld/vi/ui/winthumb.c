@@ -140,6 +140,5 @@ vi_rc PositionToNewThumbPosition( window *w, int win_y )
 
 void PositionHorizontalScrollThumb( window_id wid, int left_column )
 {
-    wid = wid;
-    left_column = left_column;
+    /* unused parameters */ (void)wid; (void)left_column;
 }

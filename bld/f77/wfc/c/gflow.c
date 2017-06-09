@@ -45,6 +45,7 @@
 #include "utility.h"
 #include "tcmplx.h"
 #include "cgmagic.h"
+#include "prmcodes.h"
 #include "gsubprog.h"
 #include "declare.h"
 #include "gflow.h"

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  based heap fill memory function
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -36,26 +36,25 @@
 #include "heap.h"
 
 
+#define HEAP(s)     ((XBPTR(heapblkp, s))0)
+
 _WCRTLINK int _bheapset( __segment seg, unsigned int fill )
 {
-    int         test_heap;
-    heapblk     __based( seg ) *p;
+    int         heap_status;
 
     if( seg == _DGroup() )
         return( _nheapset( fill ) );
     if( seg == _NULLSEG ) {
-        p = 0;
-        for( seg = __bheap; seg != _NULLSEG; seg = p->nextseg ) {
-            test_heap = _bheapset( seg, fill );
-            if( test_heap != _HEAPOK ) {
-                return( test_heap );
+        for( seg = __bheapbeg; seg != _NULLSEG; seg = HEAP( seg )->nextseg ) {
+            heap_status = _bheapset( seg, fill );
+            if( heap_status != _HEAPOK ) {
+                return( heap_status );
             }
         }
         return( _HEAPOK );
-    } else {
-        test_heap = _bheapchk( seg );
-        if( test_heap != _HEAPOK )
-            return( test_heap );
-        return( __HeapSet( seg, fill ) );
     }
+    heap_status = _bheapchk( seg );
+    if( heap_status != _HEAPOK )
+        return( heap_status );
+    return( __HeapSet( seg, fill ) );
 }

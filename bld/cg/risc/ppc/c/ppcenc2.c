@@ -45,14 +45,16 @@ void EncodeRet( oc_ret *oc ) {
 
     ppc_ins             encoding;
 
-    oc = oc;
+    /* unused parameters */ (void)oc;
+
     encoding = 0x6bfa8001;      // this is a little cheesy - ret ra(r26)
     ObjBytes( &encoding, sizeof( encoding ) );
 }
 
 static void doBranch( ppc_ins opcode, pointer lbl, uint reg )
 {
-    reg = reg;
+    /* unused parameters */ (void)reg;
+
     opcode = 0; // _Opcode( opcode ) | _A( reg );
     OutReloc( lbl, OWL_RELOC_BRANCH_REL, 0 );
     ObjBytes( &opcode, sizeof( opcode ) );

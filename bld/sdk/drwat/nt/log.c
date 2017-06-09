@@ -53,8 +53,8 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT BOOL CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-WINEXPORT BOOL CALLBACK LogOptsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK LogOptsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #define IsNT( x )       ( !( x & 0x80000000 ) )
 #define GetMinVer( x )  ( ( x & 0x0000FF00 ) >> 8 )
@@ -94,7 +94,7 @@ msglist Actions[] = {
     INT_CHAIN_TO_NEXT,          (char *)(pointer_int)STR_FAULT_PASSED_ON,
     INT_TERMINATE,              (char *)(pointer_int)STR_PROCESS_TERMINATED,
     INT_RESTART,                (char *)(pointer_int)STR_INSTR_RESTARTED,
-    0,                          (char *)(pointer_int)-1
+    0,                          NULL
 };
 
 /*
@@ -525,12 +525,15 @@ static void logDumpMemItem( HANDLE prochdl, MEMORY_BASIC_INFORMATION *mbi ) {
     }
 }
 
-BOOL CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     SelMemDlgInfo               *info;
     HWND                        lb;
+    bool                        ret;
 
-    info = (SelMemDlgInfo *)GetWindowLong( hwnd, DWL_USER );
+    ret = false;
+
+    info = (SelMemDlgInfo *)GET_DLGDATA( hwnd );
     switch( msg ) {
     case WM_INITDIALOG:
         {
@@ -539,7 +542,7 @@ BOOL CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             int     j;
 
             info = (SelMemDlgInfo *)lparam;
-            SetWindowLong( hwnd, DWL_USER, lparam );
+            SET_DLGDATA( hwnd, lparam );
             lb = GetDlgItem( hwnd, DMP_BOX );
             SetDlgMonoFont( hwnd, DMP_BOX );
             SetDlgMonoFont( hwnd, DMP_LABEL );
@@ -547,11 +550,12 @@ BOOL CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             for( i = 0; i < info->list.used; i++ ) {
                 if( info->list.data[i]->mbi.State == MEM_COMMIT ) {
                     FormatMemListEntry( buf, info->list.data[i] );
-                    j = (int)SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)buf );
+                    j = (int)SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)buf );
                     SendMessage( lb, LB_SETITEMDATA, j, i );
                 }
             }
         }
+        ret = true;
         break;
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
@@ -595,15 +599,14 @@ BOOL CALLBACK MemDmpDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
                                 MAKELPARAM( 0, info->list.used - 1 ) );
             break;
         }
+        ret = true;
         break;
     case WM_CLOSE:
         EndDialog( hwnd, 0 );
-        break;
-    default:
-        return( FALSE );
+        ret = true;
         break;
     }
-    return( TRUE );
+    return( ret );
 }
 
 /*
@@ -680,8 +683,7 @@ static void logFaultInfo( ExceptDlgInfo *info ) {
     logModules( info->procinfo->procid, INDENT );
     logRegisters( info );
     logPrintf( STR_SOURCE_INFORMATION );
-    if( info->got_dbginfo && GetLineNum( &info->init_ip, fname,
-            FNAME_BUFLEN, &line ) ) {
+    if( info->got_dbginfo && GetLineNum( &info->init_ip, fname, FNAME_BUFLEN, &line ) ) {
         logPrintf( STR_LOG_LINE_X_OF_FILE, INDENT, "", line, fname );
     } else {
         logPrintf( STR_LOG_N_A, INDENT, "" );
@@ -929,16 +931,21 @@ static BOOL getNewLogName( HWND parent, char *buf, char *title, BOOL outfile ) {
 /*
  * LogOptsDlgProc
  */
-BOOL CALLBACK LogOptsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK LogOptsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD                cmd;
     char                buf[BUF_SIZE];
     char                title[BUF_SIZE];
+    bool                ret;
 
     lparam = lparam;
+
+    ret = false;
+
     switch( msg ) {
     case WM_INITDIALOG:
         fillLogOptions( hwnd );
+        ret = true;
         break;
     case WM_COMMAND:
         cmd = LOWORD( wparam );
@@ -968,20 +975,20 @@ BOOL CALLBACK LogOptsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             }
             break;
         }
+        ret = true;
         break;
     case WM_CLOSE:
         EndDialog( hwnd, 0 );
-        break;
-    default:
-        return( FALSE );
+        ret = true;
         break;
     }
-    return( TRUE );
+    return( ret );
 }
 
 /*
  * SetLogOptions
  */
-void SetLogOptions( HWND hwnd ) {
+void SetLogOptions( HWND hwnd )
+{
     JDialogBox( Instance, "LOG", hwnd, LogOptsDlgProc );
 }

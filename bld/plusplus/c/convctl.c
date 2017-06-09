@@ -313,14 +313,16 @@ static void adjustFnAddrMembPtr // ADJUST FOR &FUNCTION --> MEMB-PTR
     addrof = PTreeOp( &ctl->expr->u.subtree[1] );
     switch( NodeAddrOfFun( addrof, &func ) ) {
       case ADDR_FN_ONE_USED :
-        if( ! CompFlags.extensions_enabled ) break;
+        if( !CompFlags.extensions_enabled )
+            break;
         // drops thru
       case ADDR_FN_ONE :
         func = NodeActualNonOverloaded( func );
         adjustFnMembPtr( ctl, func );
         break;
       case ADDR_FN_MANY_USED :
-        if( ! CompFlags.extensions_enabled ) break;
+        if( !CompFlags.extensions_enabled )
+            break;
         // drops thru
       case ADDR_FN_MANY :
         switch( _CNV_TYPE( ctl->reqd_cnv ) ) {

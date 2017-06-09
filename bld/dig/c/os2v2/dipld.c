@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,14 +40,14 @@
 #include "dipimp.h"
 #include "dipsys.h"
 
-void DIPSysUnload( dip_sys_handle *sys_hdl )
+void DIPSysUnload( dip_sys_handle sys_hdl )
 {
-    DosFreeModule( *sys_hdl );
+    DosFreeModule( sys_hdl );
 }
 
 dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
 {
-    HMODULE             dll;
+    dip_sys_handle      dip_mod;
     dip_init_func       *init_func;
     dip_status          status;
     char                dipname[CCHMAXPATH] = "";
@@ -58,15 +59,14 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
     strcpy( dipname, path );
     strcat( dipname, ".D32" );
     _searchenv( dipname, "PATH", dippath );
-    if( dippath[0] == '\0' || DosLoadModule( NULL, 0, dippath, &dll ) != 0 ) {
-        return( DS_ERR|DS_FOPEN_FAILED );
+    if( dippath[0] == '\0' || DosLoadModule( NULL, 0, dippath, &dip_mod ) != 0 ) {
+        return( DS_ERR | DS_FOPEN_FAILED );
     }
-    status = DS_ERR|DS_INVALID_DIP;
-    if( DosQueryProcAddr( dll, 0, "DIPLOAD", (PFN FAR *)&init_func ) == 0
-      && (*imp = init_func( &status, cli )) != NULL ) {
-        *sys_hdl = dll;
+    status = DS_ERR | DS_INVALID_DIP;
+    if( DosQueryProcAddr( dip_mod, 0, "DIPLOAD", (PFN FAR *)&init_func ) == 0 && (*imp = init_func( &status, cli )) != NULL ) {
+        *sys_hdl = dip_mod;
         return( DS_OK );
     }
-    DosFreeModule( dll );
+    DosFreeModule( dip_mod );
     return( status );
 }

@@ -47,7 +47,7 @@ void Puthex( unsigned_32 num, unsigned_16 width )
 /***********************************************/
 {
     while( width-- ) {
-        Wdputc( hexchar[ ( num >> ( 4 * width ) ) & 0x000f ] );
+        Wdputc( hexchar[( num >> ( 4 * width ) ) & 0x000f] );
     }
 }
 

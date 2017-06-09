@@ -50,6 +50,7 @@
 #include "stresolv.h"
 #include "symtab.h"
 #include "cptraps.h"
+#include "prmcodes.h"
 #include "gsubprog.h"
 #include "tdinit.h"
 #include "rstmgr.h"

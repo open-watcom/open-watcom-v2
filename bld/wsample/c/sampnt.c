@@ -108,6 +108,19 @@ unsigned NextThread( unsigned tid )
 
 } /* NextThread */
 
+void ResetThread( unsigned tid )
+{
+    if( tid-- > 0 ) {
+        SampleIndex = 0;
+        threadInfo[tid].SampleIndex = SampleIndex;
+        if( CallGraphMode ) {
+            SampleCount = 0;
+            LastSampleIndex = 0;
+            threadInfo[tid].SampleCount = SampleCount;
+        }
+    }
+}
+
 void InitTimerRate( void )
 {
     sleepTime = 55;
@@ -306,7 +319,7 @@ static int getPEHeader( HANDLE handle, pe_header *peh )
 /*
  * codeLoad - handle the loading of a new DLL/EXE
  */
-static void codeLoad( HANDLE handle, DWORD base, char *name, samp_block_kinds kind )
+static void codeLoad( HANDLE handle, DWORD base, const char *name, samp_block_kinds kind )
 {
     seg_offset          ovl;
     int                 i;
@@ -315,8 +328,6 @@ static void codeLoad( HANDLE handle, DWORD base, char *name, samp_block_kinds ki
     DWORD               offset;
     DWORD               bytes;
     pe_header           peh;
-
-    name = name;
 
     ovl.offset = 0;
     ovl.segment = 0;
@@ -377,7 +388,7 @@ static void deadThread( DWORD id )
 /*
  * loadProg - load the task to sample
  */
-static void loadProg( char *exe, char *cmdline )
+static void loadProg( const char *exe, char *cmdline )
 {
     STARTUPINFO         sinfo;
     PROCESS_INFORMATION pinfo;
@@ -514,7 +525,7 @@ static int GetDllName( LOAD_DLL_DEBUG_INFO *ld, char *buff, unsigned max )
     ReadProcessMemory( processHandle, ld->lpImageName, &name, sizeof( name ), &len );
     if( len != sizeof( name ) )
         return( FALSE );
-    if( name == 0 )
+    if( name == NULL )
         return( FALSE );
     len = GetString( ld->fUnicode, name, buff, max );
     if( len == 0 )
@@ -532,7 +543,7 @@ static int GetDllName( LOAD_DLL_DEBUG_INFO *ld, char *buff, unsigned max )
 /*
  * StartProg - start sampling a program
  */
-void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
 {
     DWORD       code;
     DWORD       tid;
@@ -545,7 +556,7 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     DWORD       ttid;
     HANDLE      tth;
 
-    cmd = cmd;
+    /* unused parameters */ (void)cmd;
 
     strcpy( utilBuff, prog );
     strcat( utilBuff, " " );

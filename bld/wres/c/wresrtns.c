@@ -30,63 +30,58 @@
 
 
 #include <stdlib.h>
-#include "wio.h"
+#include <stdio.h>
+#include "bool.h"
 #include "wressetr.h"
 #include "reserr.h"
 
-#include "clibext.h"
 
-
-static WResFileID wres_open( const char *name, wres_open_mode omode )
+static WResFileID res_open( const char *name, wres_open_mode omode )
 {
-    int     fd;
+    FILE    *fp;
 
-    omode=omode;
-#if defined( __WATCOMC__ ) && defined( __QNX__ )
-    /* This is a kludge fix to avoid turning on the O_TRUNC bit under QNX */
-    fd = open( name, O_RDONLY );
-    if( fd == -1 ) {
+    /* unused parameters */ (void)omode;
+
+    fp = fopen( name, "rb" );
+    if( fp == NULL )
         WRES_ERROR( WRS_OPEN_FAILED );
-    } else {
-        setmode( fd, O_BINARY );
-    }
-#else
-    fd = open( name, O_RDONLY | O_BINARY );
-    if( fd == -1 ) {
-        WRES_ERROR( WRS_OPEN_FAILED );
-    }
-#endif
-    return( WRES_PH2FID( fd ) );
+    return( WRES_FH2FID( fp ) );
 }
 
-static int wres_close( WResFileID fid )
+static bool res_close( WResFileID fid )
 {
-    return( close( WRES_FID2PH( fid ) ) );
+    return( fclose( WRES_FID2FH( fid ) ) != 0 );
 }
 
-static WResFileSSize wres_read( WResFileID fid, void *buf, WResFileSize size )
+static size_t res_read( WResFileID fid, void *buf, size_t size )
 {
-    return( posix_read( WRES_FID2PH( fid ), buf, size ) );
+    return( fread( buf, 1, size, WRES_FID2FH( fid ) ) );
 }
 
-static WResFileSSize wres_write( WResFileID fid, const void *buf, WResFileSize size )
+static size_t res_write( WResFileID fid, const void *buf, size_t size )
 {
-    return( posix_write( WRES_FID2PH( fid ), buf, size ) );
+    return( fwrite( buf, 1, size, WRES_FID2FH( fid ) ) );
 }
 
-static WResFileOffset wres_seek( WResFileID fid, WResFileOffset pos, int where )
+static bool res_seek( WResFileID fid, WResFileOffset pos, int where )
 {
     if( where == SEEK_SET ) {
         /* fool the wres library into thinking that the resource information starts at offset 0 */
-        return( lseek( WRES_FID2PH( fid ), pos + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( WRES_FID2PH( fid ), pos, where ) );
+        return( fseek( WRES_FID2FH( fid ), pos + WResFileShift, where ) != 0 );
     }
+    return( fseek( WRES_FID2FH( fid ), pos, where ) != 0 );
 }
 
-static WResFileOffset wres_tell( WResFileID fid )
+static WResFileOffset res_tell( WResFileID fid )
 {
-    return( tell( WRES_FID2PH( fid ) ) );
+    return( ftell( WRES_FID2FH( fid ) ) );
 }
 
-WResSetRtns( wres_open, wres_close, wres_read, wres_write, wres_seek, wres_tell, malloc, free );
+static bool res_ioerr( WResFileID fid, size_t rc )
+{
+    /* unused parameters */ (void)rc;
+
+    return( ferror( WRES_FID2FH( fid ) ) != 0 );
+}
+
+WResSetRtns( res_open, res_close, res_read, res_write, res_seek, res_tell, res_ioerr, malloc, free );

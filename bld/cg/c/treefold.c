@@ -330,7 +330,8 @@ int     GetLog2( unsigned_32 value )
         log = 0;
         count = 1;
         for( ;; ) {
-            if( count == value ) return( log );
+            if( count == value )
+                return( log );
             count += count;
             ++log;
         }
@@ -356,7 +357,8 @@ tn      FoldTimes( tn left, tn rite, type_def *tipe )
         left = rite;
         rite = temp;
     }
-    if( rite->class != TN_CONS ) return( NULL );
+    if( rite->class != TN_CONS )
+        return( NULL );
     if( left->class == TN_BINARY && left->u2.t.op == O_TIMES &&
         tipe == left->tipe && !HasBigConst( tipe ) ) {
         if( left->u.left->class == TN_CONS ) {
@@ -404,7 +406,8 @@ tn      FoldTimes( tn left, tn rite, type_def *tipe )
     if( test == 0 ) {
         return( TGBinary( O_COMMA, TGTrash( left ), rite, tipe ) );
     }
-    if( HasBigConst( tipe ) ) return( NULL );
+    if( HasBigConst( tipe ) )
+        return( NULL );
     if( test < 0 ) {
         CFNegate( rv );
     }
@@ -434,12 +437,16 @@ float_handle OkToNegate( float_handle value, type_def *tipe )
 {
     float_handle    neg;
 
-    if( HasBigConst( tipe ) && ( tipe->attr & TYPE_FLOAT ) == 0 ) return( NULL );
+    if( HasBigConst( tipe ) && ( tipe->attr & TYPE_FLOAT ) == 0 )
+        return( NULL );
     neg = CFCopy( value );
     CFNegate( neg );
-    if( HasBigConst( tipe ) ) return( neg );
-    if( tipe->attr & TYPE_SIGNED ) return( neg );
-    if( CFIsSize( neg,   tipe->length ) ) return( neg );
+    if( HasBigConst( tipe ) )
+        return( neg );
+    if( tipe->attr & TYPE_SIGNED )
+        return( neg );
+    if( CFIsSize( neg, tipe->length ) )
+        return( neg );
     CFFree( neg );
     return( NULL );
 }
@@ -1300,9 +1307,12 @@ static  tn      FindBase( tn tree, bool op_eq )
     type_attr           this_attr;
 
     for( ;; ) {
-        if( tree->class != TN_UNARY ) break;
-        if( tree->u2.t.op != O_CONVERT ) break;
-        if( tree->u.left->tipe->length > tree->tipe->length ) break;
+        if( tree->class != TN_UNARY )
+            break;
+        if( tree->u2.t.op != O_CONVERT )
+            break;
+        if( tree->u.left->tipe->length > tree->tipe->length )
+            break;
         child_attr = tree->u.left->tipe->attr;
         this_attr = tree->tipe->attr;
         if( op_eq ) {
@@ -1314,7 +1324,8 @@ static  tn      FindBase( tn tree, bool op_eq )
             // sign change isn't a problem either
             child_attr |= TYPE_SIGNED;
         }
-        if( child_attr != this_attr ) break;
+        if( child_attr != this_attr )
+            break;
         tree = tree->u.left;
     }
     return( tree );
@@ -1455,10 +1466,13 @@ tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
             return( NULL );
         }
 #if _TARGET & _TARG_370
-        if( left->u2.t.rite->class != TN_CONS ) return( NULL );
+        if( left->u2.t.rite->class != TN_CONS )
+            return( NULL );
 #endif
-        if( left->u2.t.op != O_AND ) return( NULL );
-        if( op != O_EQ && op != O_NE ) return( NULL );
+        if( left->u2.t.op != O_AND )
+            return( NULL );
+        if( op != O_EQ && op != O_NE )
+            return( NULL );
         if( left->u.left->class == TN_CONS ) {
             temp = left->u.left;
             left->u.left = left->u2.t.rite;
@@ -1475,7 +1489,8 @@ tn  FoldCompare( cg_op op, tn left, tn rite, type_def *tipe )
                 op = O_EQ;
             }
         }
-        if( CFTest( rite->u.name->c.value ) != 0 ) return( NULL );
+        if( CFTest( rite->u.name->c.value ) != 0 )
+            return( NULL );
         BurnTree( rite );
         left->class = TN_COMPARE;
         left->tipe = TypeBoolean;
@@ -1542,7 +1557,8 @@ tn      FoldPostGetsCompare( cg_op op, tn left, tn rite, type_def *tipe )
      * so we do a little tree re-write here to smooth things over.
      */
 
-    if( op != O_EQ && op != O_NE ) return( NULL );
+    if( op != O_EQ && op != O_NE )
+        return( NULL );
     if( rite->class == TN_CONS &&
         left->class == TN_POST_GETS &&
         ( left->u2.t.op == O_MINUS || left->u2.t.op == O_PLUS ) ) {

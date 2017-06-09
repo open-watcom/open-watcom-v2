@@ -278,9 +278,12 @@ static  uint    RegNibble( hw_reg_set hw_reg ) {
 
     ret = REG_AL;
     for(;;) {
-        if( HW_Equal( HWRegValues[ret], hw_reg ) ) break;
+        if( HW_Equal( HWRegValues[ret], hw_reg ) )
+            break;
         ++ret;
-        if( ret > REG_LAST ) break;
+        if( ret > REG_LAST ) {
+            break;
+        }
     }
     return( ret );
 }

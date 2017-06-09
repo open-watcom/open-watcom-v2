@@ -73,12 +73,12 @@
 #include "wrdll.h"
 #include "wrdmsg.h"
 #include "wrbitmap.h"
-
 #include "wwinhelp.h"
 #include "jdlg.h"
 #include "aboutdlg.h"
 #include "ldstr.h"
 #include "wresdefn.h"
+#include "wclbproc.h"
 #include "clibint.h"
 
 #include "clibext.h"
@@ -96,7 +96,7 @@
 /* external function prototypes                                             */
 /****************************************************************************/
 WINEXPORT LRESULT CALLBACK WREMainWndProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT BOOL    CALLBACK WRESplash( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WRESplashDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -323,15 +323,15 @@ bool WREInit( HINSTANCE app_inst )
 
     /* register the main window class */
     if( !RegisterClass( &wc ) ) {
-        return( FALSE );
+        return( false );
     }
 
     /* register the res MDI window class */
     if( !WRERegisterResClass( app_inst ) ) {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 /* Function to initialize all instances of WRE */
@@ -343,11 +343,11 @@ bool WREInitInst( HINSTANCE app_inst )
 
     if( !WRERegisterClipFormats( app_inst ) ) {
         WREDisplayErrorMsg( WRE_NOREGISTERCLIPFORMATS );
-        return( FALSE );
+        return( false );
     }
 
     if( !JDialogInit() ) {
-        return( FALSE );
+        return( false );
     }
 
     WRECtl3DInit( app_inst );
@@ -357,16 +357,16 @@ bool WREInitInst( HINSTANCE app_inst )
     WREInitTotalText();
 
     if( !WREInitResources( app_inst ) ) {
-        return( FALSE );
+        return( false );
     }
 
     /* load the accelerator table */
     WREAccel = LoadAccelerators( app_inst, "WREAccelTable" );
 
-    /* if the window could not be created return FALSE */
+    /* if the window could not be created return false */
     if( WREAccel == NULL ) {
         WREDisplayErrorMsg( WRE_NOLOADACCELTABLE );
-        return( FALSE );
+        return( false );
     }
 
     WREGetScreenPosOption( &r );
@@ -392,10 +392,10 @@ bool WREInitInst( HINSTANCE app_inst )
         FreeRCString( title );
     }
 
-    /* if the window could not be created return FALSE */
+    /* if the window could not be created return false */
     if( WREMainWin == NULL ) {
         WREDisplayErrorMsg( WRE_NOCREATEAPPWINDOW );
-        return( FALSE );
+        return( false );
     }
 
     WREMDIWin = WRECreateMDIClientWindow( WREMainWin, app_inst );
@@ -403,12 +403,12 @@ bool WREInitInst( HINSTANCE app_inst )
     /* attempt to create the main application ribbon */
     if( !WRECreateRibbon( WREMainWin ) ) {
         WREDisplayErrorMsg( WRE_NOCREATETOOLRIBBON );
-        return( FALSE );
+        return( false );
     }
 
     if( !WRECreateStatusLine( WREMainWin, app_inst ) ) {
         WREDisplayErrorMsg( WRE_NOCREATESTATUSLINE );
-        return( FALSE );
+        return( false );
     }
 
     WREMenu = GetMenu( WREMainWin );
@@ -422,7 +422,7 @@ bool WREInitInst( HINSTANCE app_inst )
 
     if( !WREInitHints() ) {
         WREDisplayErrorMsg( WRE_NOINITHINTS );
-        return( FALSE );
+        return( false );
     }
 
     /* if the window was created Show and Update it */
@@ -437,7 +437,7 @@ bool WREInitInst( HINSTANCE app_inst )
         WREDisplaySplashScreen( WREInst, WREMainWin, 1250 );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WREIsEditWindowDialogMessage( MSG *msg )
@@ -453,11 +453,10 @@ bool WREIsEditWindowDialogMessage( MSG *msg )
 
 bool WREWasAcceleratorHandled( MSG *msg )
 {
-    if( !TranslateMDISysAccel( WREMDIWin, msg ) &&
-        !TranslateAccelerator( WREMainWin, WREAccel, msg ) ) {
-        return( FALSE );
+    if( TranslateMDISysAccel( WREMDIWin, msg ) == 0 && TranslateAccelerator( WREMainWin, WREAccel, msg ) == 0 ) {
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 HWND WRECreateMDIClientWindow( HWND win, HINSTANCE app_inst )
@@ -878,14 +877,15 @@ bool WREHandleResEdit( void )
 
     if( WREGetPendingService() != NoServicePending ) {
         WRESetStatusByID( 0, WRE_EDITSESSIONPENDING );
-        return( TRUE );
+        return( true );
     }
 
     ok = WREGetCurrentResource( &curr );
 
     // correct ok if this the 'All Strings' entry
     if( !ok ) {
-        ok = (curr.info != NULL && curr.type != NULL && curr.info->current_type == RESOURCE2INT( RT_STRING ));
+        ok = ( curr.info != NULL && curr.type != NULL &&
+              curr.info->current_type == RESOURCE2INT( RT_STRING ) );
     }
 
     if( ok ) {
@@ -976,13 +976,13 @@ bool WRECleanup( bool fatal_exit )
         !WREEndAllAccelSessions( fatal_exit ) ||
         !WREEndAllImageSessions( fatal_exit ) ||
         !WREEndAllDialogSessions( fatal_exit ) ) {
-        return( FALSE );
+        return( false );
     }
 
     if( fatal_exit || WREQueryKillApp( FALSE ) ) {
         WREFreeResList();
     } else {
-        return( FALSE );
+        return( false );
     }
 
     WRESetOption( WREOptScreenMax, IsZoomed( WREMainWin ) );
@@ -1001,7 +1001,7 @@ bool WRECleanup( bool fatal_exit )
     WREFreeFileFilter();
     JDialogFini();
 
-    return( TRUE );
+    return( true );
 }
 
 bool WREProcessArgs( char **argv, int argc )
@@ -1038,14 +1038,14 @@ bool WREProcessArgs( char **argv, int argc )
 
 void WREDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
 {
-    FARPROC     lpProcAbout;
+    DLGPROC     dlgproc;
 
-    lpProcAbout = MakeProcInstance( (FARPROC)WRESplash, WREInst );
-    JDialogBoxParam( inst, "WRESplashScreen", parent, (DLGPROC)lpProcAbout, (LPARAM)&msecs );
-    FreeProcInstance( lpProcAbout );
+    dlgproc = MakeProcInstance_DLG( WRESplashDlgProc, WREInst );
+    JDialogBoxParam( inst, "WRESplashScreen", parent, dlgproc, (LPARAM)&msecs );
+    FreeProcInstance_DLG( dlgproc );
 }
 
-BOOL CALLBACK WRESplash( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WRESplashDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     UINT        msecs, start;
     UINT_PTR    timer;
@@ -1063,6 +1063,8 @@ BOOL CALLBACK WRESplash( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
     static HBITMAP   logo;
     static HBRUSH    brush;
     static COLORREF  color;
+
+    /* unused parameters */ (void)wParam;
 
     switch( message ) {
     case WM_SYSCOLORCHANGE:

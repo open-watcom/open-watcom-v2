@@ -52,6 +52,17 @@ unsigned NextThread( unsigned tid )
     return( !tid );
 }
 
+void ResetThread( unsigned tid )
+{
+    if( tid > 0 ) {
+        SampleIndex = 0;
+        if( CallGraphMode ) {
+            SampleCount = 0;
+            LastSampleIndex = 0;
+        }
+    }
+}
+
 bool VersionCheck( void )
 {
     return( true );
@@ -137,7 +148,7 @@ void StopProg( void )
 
 #define BSIZE 256
 
-void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
 {
 
     seg_offset  where;
@@ -147,7 +158,8 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     short       initial_cs;
     int         len;
 
-    cmd = cmd;
+    /* unused parameters */ (void)cmd;
+
     SampleIndex = 0;
     CurrTick  = 0L;
 

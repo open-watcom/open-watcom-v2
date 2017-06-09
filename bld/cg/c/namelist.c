@@ -60,20 +60,20 @@ static  int     Size[] = {
 };
 
 static  type_length     OneClass[] = {
-    U1,             /* U1*/
-    U1,             /* I1*/
-    U2,             /* U2*/
-    U2,             /* I2*/
-    U4,             /* U4*/
-    U4,             /* I4*/
-    U8,             /* U8*/
-    U8,             /* U8*/
-    CP,             /* CP*/
-    PT,             /* PT*/
-    FS,             /* FS*/
-    FD,             /* FD*/
-    FL,             /* FL*/
-    XX              /* XX*/
+    U1,             /* U1 */
+    U1,             /* I1 */
+    U2,             /* U2 */
+    U2,             /* I2 */
+    U4,             /* U4 */
+    U4,             /* I4 */
+    U8,             /* U8 */
+    U8,             /* U8 */
+    CP,             /* CP */
+    PT,             /* PT */
+    FS,             /* FS */
+    FD,             /* FD */
+    FL,             /* FL */
+    XX              /* XX */
 };
 
 type_length     TypeClassSize[XX + 1];

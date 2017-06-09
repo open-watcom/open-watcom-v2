@@ -2442,6 +2442,10 @@ DECL_SPEC *PTypeStgClass( stg_class_t val )
     DECL_SPEC *spec;
 
     spec = makeDeclSpec();
+
+    if( CompFlags.enable_std0x && val == STG_AUTO ) {
+        CErr1 ( ERR_CXX11_AUTO_STORAGE_SPECIFIER );
+    }
     spec->stg_class = val;
     return( spec );
 }
@@ -3117,7 +3121,8 @@ static void checkDestructor( TYPE return_type, int status, unsigned arg_count )
 
 static void checkOperator( TYPE return_type, int status, NAME name )
 {
-    return_type = return_type;
+    /* unused parameters */ (void)return_type;
+
     if( status & SM_NOT_A_FUNCTION ) {
         CErr2p( ERR_OPERATOR_BAD_DECL, name );
     }
@@ -3948,7 +3953,7 @@ DECL_INFO *FinishDeclarator( DECL_SPEC *dspec, DECL_INFO *dinfo )
         }
         setStorageClass( sym, dspec->stg_class );
         SymbolLocnDefine( &(id_tree->locn), sym );
-        if( ! PragToggle.unreferenced ) {
+        if( !PragToggle.unreferenced ) {
             sym->flag |= SF_NO_REF_WARN;
         }
         dinfo->sym = sym;
@@ -4217,7 +4222,7 @@ DECL_SPEC *PTypeClassInstantiation( TYPE typ, PTREE id )
     } else {
         spec = NULL;
     }
-    
+
     return( spec );
 }
 
@@ -4265,6 +4270,106 @@ DECL_SPEC *PTypeExpr( PTREE expr )
     } else {
         type = TypeError;
     }
+    PTreeFreeSubtrees( expr );
+    return( PTypeActualType( type ) );
+}
+
+static SYMBOL_DIAG diagMemb =   // diagnosis for member
+{   ERR_INVALID_NONSTATIC_ACCESS// - no "this"
+,   ERR_EXTRA_THIS_FOR_DATA     // - extra "this" for data element
+,   ERR_ENCLOSING_THIS_DATA     // - accessing enclosing class member
+};
+
+/*
+ * Return the type of the expression according
+ * to the decltype rules [dcl.type.simple] 4
+ *
+ * NOTE: There seems to be no way to discriminate between
+ * an id-expression and a parenthesized id-expression.
+ * We thus require support from the lexer (plusplus.y)
+ * via the additional parameter idexpr.
+ */
+DECL_SPEC *PTypeDecltypeExpr( PTREE expr, bool idexpr )
+/********************************/
+{
+    TYPE type;
+    SEARCH_RESULT *result;
+
+    type = TypeError;
+
+    expr = PTreeTraversePostfix( expr, &AnalyseNode );
+
+    if( expr->op == PT_ERROR ) {
+        // Early fail.
+        goto EXIT;
+    }
+
+    /* For an expression e, the type denoted by decltype(e)
+     * is defined as follows:
+     */
+
+    /*(4.1) — if e is an unparenthesized id-expression or
+     * an unparenthesized class member access (5.2.5), decltype(e)
+     * is the type of the entity named by e. If there is no such entity,
+     * or if e names a set of overloaded functions, the program is ill-formed;
+    */
+
+    if( idexpr ) {
+        SYMBOL sym;
+        bool is_qualified = NodeIsBinaryOp( expr, CO_COLON_COLON );
+        if ( is_qualified ) {
+            if( !AnalyseClQualRes( &expr, &result ) ) goto EXIT;
+            if( !AnalyseSymbolAccess( expr, expr, NULL, &diagMemb ) ) goto EXIT;
+            sym = expr->u.symcg.symbol;
+        } else {
+
+            // We know that an id-expression is modelled by a symbol.
+            result = ScopeFindNaked(GetCurrScope(), expr->u.id.name );
+            if( result == NULL ) {
+                CErr2p( ERR_UNDECLARED_SYM, expr->u.id.name );
+                goto EXIT;
+            }
+
+            sym = result->sym_name->name_syms;
+        }
+
+        // Get the type of the symbol.
+        type = sym->sym_type;
+
+        // Ill-formed if id-expression is overloaded function
+        if( IsActualOverloadedFunc( sym, result ) ) {
+            CErr1( ERR_ADDR_OF_OVERLOADED_FUN );
+            type = TypeError;
+        }
+
+    }
+
+    else if( AnalyseLvalue( &expr ) ) { // Successul Analysis
+
+        /* (4.2) — otherwise, if e is an xvalue, decltype(e) is T&&,
+         * where T is the type of e;
+         */
+
+        // TODO: We cannot fully implement decltype until we have rvalue references.
+        if( false ) {
+        }
+
+        /* (4.3) — otherwise, if e is an lvalue, decltype(e) is T&,
+         * where T is the type of e;
+         */
+        else if( expr->flags & PTF_LVALUE ) {
+            // NodeType always returns a refererence type for an lvalue.
+            type = NodeType( expr );
+
+        }
+
+        /* (4.4) — otherwise, decltype(e) is the type of e. */
+        else {
+            type = expr->type;
+        }
+    }
+
+EXIT:
     PTreeFreeSubtrees( expr );
     return( PTypeActualType( type ) );
 }
@@ -6594,7 +6699,7 @@ DECL_INFO *InsertDeclInfo( SCOPE insert_scope, DECL_INFO *dinfo )
                 /* brand new declaration */
                 if( dinfo->friend_fn ) {
                     if( ScopeId( scope ) == SCOPE_FILE ) {
-                        if( ! CompFlags.extensions_enabled ) {
+                        if( !CompFlags.extensions_enabled ) {
                             /* required by the ANSI C++ draft */
                             if( check_sym->id == SC_FUNCTION_TEMPLATE ) {
                                 check_sym->id = SC_EXTERN_FUNCTION_TEMPLATE;
@@ -6859,7 +6964,8 @@ bool VerifyPureFunction( DECL_INFO *dinfo )
 void VerifyMemberFunction( DECL_SPEC *dspec, DECL_INFO *dinfo )
 /*************************************************************/
 {
-    dspec = dspec;
+    /* unused parameters */ (void)dspec;
+
     FreeDeclInfo( dinfo );
 }
 
@@ -8150,7 +8256,7 @@ int BindExplicitTemplateArguments( SCOPE parm_scope, PTREE templ_args )
                     something_went_wrong = true;
                     break;
                 }
-                
+
                 typ = parm->type;
                 curr->sym_type->of->of = typ;
             } else if( parm->op == PT_INT_CONSTANT ) {
@@ -8406,6 +8512,8 @@ TYPE MakeNamespaceType( void )
 static void typesInit(          // TYPES INITIALIZATION
     INITFINI* defn )            // - definition
 {
+    /* unused parameters */ (void)defn;
+
     if( CompFlags.dll_subsequent ) {
         typeHashCtr = 0;
         uniqueTypes = NULL;
@@ -8424,7 +8532,6 @@ static void typesInit(          // TYPES INITIALIZATION
     typeHashTables[ TYP_BITFIELD ] = bitfieldHashTable;
     typeHashTables[ TYP_ARRAY ] = arrayHashTable;
     typeHashTables[ TYP_MODIFIER ] = modifierHashTable;
-    defn = defn;
     carveDECL_SPEC = CarveCreate( sizeof( DECL_SPEC ), BLOCK_DECL_SPEC );
     carveTYPE = CarveCreate( sizeof( struct type ), BLOCK_TYPE );
     carveCLASSINFO = CarveCreate( sizeof( CLASSINFO ), BLOCK_CLASSINFO );
@@ -8573,7 +8680,8 @@ static void freeTypeName( void *e, carve_walk_base *d )
 {
     TYPE t = e;
 
-    d = d;
+    /* unused parameters */ (void)d;
+
     if( t->id == TYP_TYPENAME ) {
         CMemFreePtr( &t->u.n.name );
     }
@@ -8585,7 +8693,8 @@ static void typesFini(          // COMPLETION OF TYPES PROCESSING
 {
     auto carve_walk_base data;
 
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     ClassFini();
     //DbgStmt( DumpOfRefs() );
     DbgStmt( CarveVerifyAllGone( carveDECL_SPEC, "DECL_SPEC" ) );

@@ -395,7 +395,7 @@ PTREE ThrowTypeSig(             // GET THROW ARGUMENT FOR TYPE SIGNATURE
 void ExceptionsCheck(           // DIAGNOSE EXCEPTIONAL USE, WHEN DISABLED
     void )
 {
-    if( ! CompFlags.excs_enabled ) {
+    if( !CompFlags.excs_enabled ) {
         CErr1( ERR_EXCEPTIONS_DISABLED );
     }
 }

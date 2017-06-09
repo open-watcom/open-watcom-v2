@@ -29,10 +29,9 @@
 ****************************************************************************/
 
 
-#include <limits.h>
-#include "wio.h"
 #include "global.h"
-#include "errors.h"
+#include "wio.h"
+#include "rcerrors.h"
 #include "semantic.h"
 #include "depend.h"
 #include "rcrtns.h"
@@ -47,41 +46,32 @@ void SemWriteRawDataItem( RawDataItem item )
     bool        error;
 
     if( item.IsString ) {
-        size_t  len = item.StrLen;
-
-        if( item.WriteNull ) {
-            ++len;
-        }
-        if( ResWriteStringLen( item.Item.String, item.LongItem, CurrResFile.fid, len ) ) {
-            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
-            ErrorHasOccured = true;
+        error = ResWriteStringLen( item.Item.String, item.LongItem, CurrResFile.fid, item.StrLen );
+        if( !error ) {
+            if( item.WriteNull ) {
+                if( item.LongItem ) {
+                    error = ResWriteUint16( 0, CurrResFile.fid );
+                } else {
+                    error = ResWriteUint8( '\0', CurrResFile.fid );
+                }
+            }
         }
         if( item.TmpStr ) {
-            RCFREE( item.Item.String );
+            RESFREE( item.Item.String );
         }
     } else {
-        if( !item.LongItem ) {
-            if( (int_32)item.Item.Num < 0 ) {
-                if( (int_32)item.Item.Num < SHRT_MIN ) {
-                    RcWarning( ERR_RAW_DATA_TOO_SMALL, item.Item.Num, SHRT_MIN );
-                }
-            } else {
-                if( item.Item.Num > USHRT_MAX ) {
-                    RcWarning( ERR_RAW_DATA_TOO_BIG, item.Item.Num, USHRT_MAX );
-                }
-            }
-        }
+        error = false;
         if( !ErrorHasOccured ) {
-            if( !item.LongItem ) {
-                error = ResWriteUint16( item.Item.Num, CurrResFile.fid );
-            } else {
+            if( item.LongItem ) {
                 error = ResWriteUint32( item.Item.Num, CurrResFile.fid );
-            }
-            if( error ) {
-                RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
-                ErrorHasOccured = true;
+            } else {
+                error = ResWriteUint16( item.Item.Num, CurrResFile.fid );
             }
         }
+    }
+    if( error ) {
+        RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, LastWresErrStr() );
+        ErrorHasOccured = true;
     }
 }
 
@@ -89,19 +79,19 @@ RcStatus SemCopyDataUntilEOF( WResFileOffset offset, WResFileID fid,
                          void *buff, unsigned buffsize, int *err_code )
 /*********************************************************************/
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
-    if( RCSEEK( fid, offset, SEEK_SET ) == -1 ) {
+    if( RESSEEK( fid, offset, SEEK_SET ) ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
 
-    while( (numread = RCREAD( fid, buff, buffsize )) != 0 ) {
-        if( RCIOERR( fid, numread ) ) {
+    while( (numread = RESREAD( fid, buff, buffsize )) != 0 ) {
+        if( numread != buffsize && RESIOERR( fid, numread ) ) {
             *err_code = errno;
             return( RS_READ_ERROR );
         }
-        if( RCWRITE( CurrResFile.fid, buff, numread ) != numread ) {
+        if( RESWRITE( CurrResFile.fid, buff, numread ) != numread ) {
             *err_code = errno;
             return( RS_WRITE_ERROR );
         }
@@ -122,53 +112,52 @@ ResLocation SemCopyRawFile( const char *filename )
     ResLocation     loc;
     int             err_code;
     WResFileOffset  pos;
+    bool            error;
 
-    buffer = RCALLOC( BUFFER_SIZE );
-
+    error = false;
+    fid = WRES_NIL_HANDLE;
+    buffer = RESALLOC( BUFFER_SIZE );
     if( RcFindResource( filename, full_filename ) == -1 ) {
         RcError( ERR_CANT_FIND_FILE, filename );
-        goto HANDLE_ERROR;
+        error = true;
     }
 
-    if( AddDependency( full_filename ) )
-        goto HANDLE_ERROR;
+    if( !error && AddDependency( full_filename ) )
+        error = true;
 
-    fid = RcIoOpenInput( full_filename, false );
-    if( fid == WRES_NIL_HANDLE ) {
-        RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
-        goto HANDLE_ERROR;
-    }
-
-    loc.start = SemStartResource();
-
-    pos = RCTELL( fid );
-    if( pos == -1 ) {
-        RcError( ERR_READING_DATA, full_filename, strerror( errno ) );
-        RCCLOSE( fid );
-        goto HANDLE_ERROR;
-    } else {
-        ret = SemCopyDataUntilEOF( pos, fid, buffer, BUFFER_SIZE, &err_code );
-        if( ret != RS_OK ) {
-            ReportCopyError( ret, ERR_READING_DATA, full_filename, err_code );
-            RCCLOSE( fid );
-            goto HANDLE_ERROR;
+    if( !error ) {
+        fid = RcIoOpenInput( full_filename, false );
+        if( fid == WRES_NIL_HANDLE ) {
+            RcError( ERR_CANT_OPEN_FILE, filename, strerror( errno ) );
+            error = true;
         }
     }
 
-    loc.len = SemEndResource( loc.start );
-
-    RCCLOSE( fid );
-
-    RCFREE( buffer );
-
-    return( loc );
-
-
-HANDLE_ERROR:
-    ErrorHasOccured = true;
-    loc.start = 0;
-    loc.len = 0;
-    RCFREE( buffer );
+    if( !error ) {
+        loc.start = SemStartResource();
+        pos = RESTELL( fid );
+        if( pos == -1 ) {
+            RcError( ERR_READING_DATA, full_filename, strerror( errno ) );
+            error = true;
+        } else {
+            ret = SemCopyDataUntilEOF( pos, fid, buffer, BUFFER_SIZE, &err_code );
+            if( ret != RS_OK ) {
+                ReportCopyError( ret, ERR_READING_DATA, full_filename, err_code );
+                error = true;
+            }
+        }
+    }
+    if( error ) {
+        ErrorHasOccured = true;
+        loc.start = 0;
+        loc.len = 0;
+    } else {
+        loc.len = SemEndResource( loc.start );
+    }
+    if( fid != WRES_NIL_HANDLE ) {
+        RESCLOSE( fid );
+    }
+    RESFREE( buffer );
     return( loc );
 }
 
@@ -177,7 +166,7 @@ DataElemList *SemNewDataElemList( RawDataItem node )
 {
     DataElemList    *head;
 
-    head = RCALLOC( sizeof( DataElemList ) );
+    head = RESALLOC( sizeof( DataElemList ) );
     head->data[0] = node;
     head->count = 1;
     head->next = NULL;
@@ -213,25 +202,21 @@ ResLocation SemFlushDataElemList( DataElemList *head, bool call_startend )
     ResLocation     resLoc;
     int             i;
 
-    curnode = head;
-    nextnode = head;
     resLoc.len = 0;
     if( call_startend ) {
         resLoc.start = SemStartResource();
     } else {
         resLoc.start = 0;
     }
-    while( nextnode != NULL ) {
+    for( curnode = head; curnode != NULL; curnode = nextnode ) {
         nextnode = curnode->next;
         for( i = 0; i < curnode->count; i++ ) {
             SemWriteRawDataItem( curnode->data[i] );
         }
-        RCFREE( curnode );
-        curnode = nextnode;
+        RESFREE( curnode );
     }
     if( call_startend ) {
-        if( CmdLineParms.MSResFormat
-          && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
+        if( CmdLineParms.MSResFormat && CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
             ResWritePadDWord( CurrResFile.fid );
         }
         resLoc.len = SemEndResource( resLoc.start );
@@ -247,16 +232,13 @@ void SemFreeDataElemList( DataElemList *head )
     DataElemList    *nextnode;
     int             i;
 
-    curnode = head;
-    nextnode = head;
-    while( nextnode != NULL ) {
+    for( curnode = head; curnode != NULL; curnode = nextnode ) {
         nextnode = curnode->next;
         for( i = 0; i < curnode->count; i++ ) {
             if( curnode->data[i].IsString ) {
-                RCFREE( curnode->data[i].Item.String );
+                RESFREE( curnode->data[i].Item.String );
             }
         }
-        RCFREE( curnode );
-        curnode = nextnode;
+        RESFREE( curnode );
     }
 }

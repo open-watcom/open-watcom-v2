@@ -73,7 +73,7 @@ void SetStaticText( HWND hwnd, int id, char *str ) {
  *            Otherwise a system modal box with an OK button is created
  *            'msg' must be 3 lines or less
  */
-int ErrorBox( HWND hwnd, UINT msgid, UINT type ) {
+int ErrorBox( HWND hwnd, msg_id msgid, UINT type ) {
 
     int         ret;
     const char  *msg;

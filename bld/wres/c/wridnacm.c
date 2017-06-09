@@ -29,39 +29,11 @@
 *
 ****************************************************************************/
 
+
 #include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#if defined( __UNIX__ ) && !defined( __WATCOMC__ )
-#include <strings.h>
-#endif
 #include "wresall.h"
-#include "util.h"
+#include "wmemicmp.h"
 
-#include "clibext.h"
-
-
-static int wresMemicmp( const void *p1, const void *p2, unsigned len )
-/********************************************************
- * Kludge to get around memicmp behavior where comparing upper case letters
- * against characters in the range z-A would return the negative
- * result */
-{
-    char        ch1;
-    char        ch2;
-    char        *str1;
-    char        *str2;
-    unsigned    i;
-
-    str1 = (char *)p1;
-    str2 = (char *)p2;
-    for( i=0; i < len; i++ ) {
-        ch1 = (char)toupper( str1[i] );
-        ch2 = (char)toupper( str2[i] );
-        if( ch1 != ch2 ) return( ch1 - ch2 );
-    }
-    return( 0 );
-}
 
 int WResIDNameCmp( const WResIDName *name1, const WResIDName *name2 )
 /*******************************************************************/
@@ -73,7 +45,7 @@ int WResIDNameCmp( const WResIDName *name1, const WResIDName *name2 )
     len = name1->NumChars;
     if( len > name2->NumChars )
         len = name2->NumChars;
-    cmp_rc = wresMemicmp( name1->Name, name2->Name, len );
+    cmp_rc = WresMemicmp( name1->Name, name2->Name, len );
     if( cmp_rc == 0 ) {
         if( name1->NumChars == name2->NumChars ) {
             return( 0 );

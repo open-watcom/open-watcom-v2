@@ -72,18 +72,15 @@
 
 !include ../../../../objlist.mif
 
-086_option_zdp =-zdp
-286_option_zdp =-zdp
+086_ms_option_zdf =-zdf-r
+086_mm_option_zdf =-zdf-r
+286_ms_option_zdf =-zdf-r
+286_mm_option_zdf =-zdf-r
 
-mem_opts      = -ol+t $($(processor)_option_zdp)
+mem_opts      = -ol+t $($(processor)_$(model)_option_zdf)
 grownear_opts = -I"$(win386_dir)/h"
 nheapmin_opts = -I"$(win386_dir)/h"
 sbrk_opts     = -I"$(win386_dir)/h"
-
-# WORKAROUND! The heap code contains a very suspect far pointer truncation,
-# but the code can't be modified without fully understanding it
-nheapchk_postopts = -wcd310
-nheapwal_postopts = -wcd310
 
 #                    d16 d32 dpm g16 g32 nt nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32 lpc lmp
 #==================================================================================================

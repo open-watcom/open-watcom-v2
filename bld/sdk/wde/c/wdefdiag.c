@@ -62,7 +62,6 @@
 #include "wdedefin.h"
 #include "wresall.h"
 #include "wde_rc.h"
-#include "wderesin.h"
 #include "wdesvobj.h"
 #include "wdectl3d.h"
 #include "wdecctl.h"
@@ -72,15 +71,12 @@
 #include "windlg.h"
 #include "windlg32.h"
 #include "jdlg.h"
+#include "wdedispa.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#ifdef __NT__
-    #define WDEDLGTEMPLATE (LPCDLGTEMPLATE)
-#else
-    #define WDEDLGTEMPLATE
-#endif
 
 #define WDE_NEW_DIALOG_X        20
 #define WDE_NEW_DIALOG_Y        (WDE_NEW_DIALOG_X + 20)
@@ -95,17 +91,62 @@
 #define DIALOG_MIN_WIDTH        75
 #define DIALOG_MIN_HEIGHT       DIALOG_MIN_WIDTH
 
-#define DEFAULT_FONT            "Helv"
-#define DEFAULT_POINT_SIZE      8
-#define DEFAULT_JFONT           "‚l‚r –¾’©"
-#define DEFAULT_JPOINT_SIZE     10
+#define DEFAULT_FONTFACENAME    "Helv"
+#define DEFAULT_FONTPOINTSIZE   8
+#define DEFAULT_JFONTFACENAME   "‚l‚r –¾’©"
+#define DEFAULT_JFONTPOINTSIZE  10
 #define DEFAULT_MEMFLAGS        (MEMFLAG_DISCARDABLE | MEMFLAG_PURE | MEMFLAG_MOVEABLE)
+
+#define pick_ACTS(o) \
+    pick_ACTION_MOVE(o,pick) \
+    pick_ACTION_DESTROY(o,pick) \
+    pick_ACTION_RESIZE(o,pick) \
+    pick_ACTION_DRAW(o,pick) \
+    pick_ACTION_VALIDATE_ACTION(o,pick) \
+    pick_ACTION_GET_WINDOW_HANDLE(o,pick) \
+    pick_ACTION_CREATE_WINDOW(o,pick) \
+    pick_ACTION_DESTROY_WINDOW(o,pick) \
+    pick_ACTION_SHOW_WIN(o,pick) \
+    pick_ACTION_RESIZE_INFO(o,pick) \
+    pick_ACTION_NOTIFY(o,pick) \
+    pick_ACTION_PASTE(o,pick) \
+    pick_ACTION_COPY(o,pick) \
+    pick_ACTION_CUT(o,pick) \
+    pick_ACTION_GET_OBJECT_INFO(o,pick) \
+    pick_ACTION_SET_OBJECT_INFO(o,pick) \
+    pick_ACTION_GET_OBJECT_HELPINFO(o,pick) \
+    pick_ACTION_ADD_SUBOBJECT(o,pick) \
+    pick_ACTION_FIND_SUBOBJECTS(o,pick) \
+    pick_ACTION_FIND_OBJECTS_PT(o,pick) \
+    pick_ACTION_REMOVE_SUBOBJECT(o,pick) \
+    pick_ACTION_GET_SUBOBJ_LIST(o,pick) \
+    pick_ACTION_IDENTIFY(o,pick) \
+    pick_ACTION_DEFINE(o,pick) \
+    pick_ACTION_SET_FONT(o,pick) \
+    pick_ACTION_GET_FONT(o,pick) \
+    pick_ACTION_GET_RESIZER(o,pick) \
+    pick_ACTION_GET_NC_SIZE(o,pick) \
+    pick_ACTION_SAVE_OBJECT(o,pick) \
+    pick_ACTION_ON_TOP(o,pick) \
+    pick_ACTION_TEST(o,pick) \
+    pick_ACTION_BECOME_FIRST_CHILD(o,pick) \
+    pick_ACTION_PUT_ME_FIRST(o,pick) \
+    pick_ACTION_GET_RESIZE_INC(o,pick) \
+    pick_ACTION_GET_SCROLL_RECT(o,pick) \
+    pick_ACTION_IS_MARK_VALID(o,pick) \
+    pick_ACTION_RESTORE_OBJECT(o,pick) \
+    pick_ACTION_RESOLVE_SYMBOL(o,pick) \
+    pick_ACTION_RESOLVE_HELPSYMBOL(o,pick) \
+    pick_ACTION_MODIFY_INFO(o,pick) \
+    pick_ACTION_GET_NEXT_CHILD(o,pick) \
+    pick_ACTION_SET_ORDER_MODE(o,pick) \
+    pick_ACTION_GET_ORDER_MODE(o,pick)
 
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC             dispatcher;
+    DISPATCH_FN         *dispatcher;
     HWND                window_handle;
     HWND                parent_handle;
     OBJ_ID              object_id;
@@ -145,9 +186,11 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL       CALLBACK WdeDialogDispatcher( ACTION, WdeDialogObject *, void *, void * );
-WINEXPORT BOOL       CALLBACK WdeDialogProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT BOOL       CALLBACK WdeDialogDefineProc( HWND, UINT, WPARAM, LPARAM );
+
+/* Local Window callback functions prototypes */
+WINEXPORT bool       CALLBACK WdeDialogDispatcher( ACTION_ID, OBJPTR, void *, void * );
+WINEXPORT INT_PTR    CALLBACK WdeDialogDlgProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR    CALLBACK WdeDialogDefineDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -155,124 +198,44 @@ WINEXPORT BOOL       CALLBACK WdeDialogDefineProc( HWND, UINT, WPARAM, LPARAM );
 static bool     WdeRemoveObject( WdeResInfo *, OBJPTR );
 static bool     WdeCalcDialogNCSize( WdeDialogObject *, RECT * );
 static bool     WdeKludgeDialogSize( WdeDialogObject *, bool, bool );
-static OBJPTR   WdeDialogCreater( OBJPTR, RECT *, OBJPTR );
+static WdeDialogObject *WdeDialogCreater( OBJPTR, RECT *, OBJPTR );
 static WResID   *WdeCreateDialogTitle( void );
-static BOOL     WdeDialogTest( WdeDialogObject *, void *, void * );
-static BOOL     WdeDialogSaveObject( WdeDialogObject *, WORD *, void * );
-static BOOL     WdeDialogMove( WdeDialogObject *, POINT *, bool * );
 static bool     WdeOffsetDialogUnits( WdeDialogObject *, RECT *, RECT * );
 static bool     WdeUpdateDialogUnits( WdeDialogObject *, RECT *, RECT * );
-static BOOL     WdeDialogGetFont( WdeDialogObject *, HFONT *, void * );
-static BOOL     WdeDialogResolveSymbol( WdeDialogObject *, bool *, bool * );
-static BOOL     WdeDialogResolveHelpSymbol( WdeDialogObject *, bool *, bool * );
-static BOOL     WdeDialogGetResizer( WdeDialogObject *, WdeResizeRatio *, OBJPTR * );
-static BOOL     WdeDialogGetNCSize( WdeDialogObject *, RECT *, void * );
-static BOOL     WdeDialogIdentify( WdeDialogObject *, OBJ_ID *, void * );
-static BOOL     WdeDialogDefine( WdeDialogObject *, POINT *, void * );
-static BOOL     WdeDialogResize( WdeDialogObject *, RECT *, bool * );
-static BOOL     WdeDialogIsMarkValid( WdeDialogObject *, BOOL *, void * );
-static BOOL     WdeDialogDestroy( WdeDialogObject *, bool *, bool * );
-static BOOL     WdeDialogRestore( WdeDialogObject *, void *, void * );
-static BOOL     WdeDialogCreateWindow( WdeDialogObject *, bool *, void * );
-static BOOL     WdeDialogDestroyWindow( WdeDialogObject *, bool *, bool * );
-static BOOL     WdeDialogShowWindow( WdeDialogObject *, bool *, void * );
-static BOOL     WdeDialogGetResizeInfo( WdeDialogObject *, RESIZE_ID *, void * );
-static BOOL     WdeDialogValidateAction( WdeDialogObject *, ACTION *, void * );
-static BOOL     WdeDialogSetFont( WdeDialogObject *, HFONT *, WdeResizeRatio * );
-static BOOL     WdeDialogDraw( WdeDialogObject *, RECT *, HDC * );
-static BOOL     WdeDialogAddSubObject( WdeDialogObject *, OBJPTR, void * );
-static BOOL     WdeDialogGetSubObjectList( WdeDialogObject *, LIST **, void * );
-static BOOL     WdeDialogFindSubObjects( WdeDialogObject *, SUBOBJ_REQUEST *, LIST ** );
-static BOOL     WdeDialogFindObjectsPt( WdeDialogObject *, POINT *, LIST ** );
-static BOOL     WdeDialogGetNextChild( WdeDialogObject *, OBJPTR *, bool * );
-static BOOL     WdeDialogRemoveSubObject( WdeDialogObject *, OBJPTR, void * );
-static BOOL     WdeDialogGetWindowHandle( WdeDialogObject *, HWND *, void * );
-static BOOL     WdeDialogNotify( WdeDialogObject *, NOTE_ID *, void * );
-static BOOL     WdeDialogFirstChild( WdeDialogObject *, void *, void *  );
-static BOOL     WdeDialogPutChildFirst( WdeDialogObject *, OBJPTR, void * );
-static BOOL     WdeDialogOnTop( WdeDialogObject *, void *, void * );
-static BOOL     WdeDialogPasteObject( WdeDialogObject *, OBJPTR, POINT * );
-static BOOL     WdeDialogCutObject( WdeDialogObject *, WdeDialogObject **, void * );
-static BOOL     WdeDialogCopyObject( WdeDialogObject *, WdeDialogObject **, WdeDialogObject * );
-static BOOL     WdeDialogSetOrderMode( WdeDialogObject *, WdeOrderMode *, void * );
-static BOOL     WdeDialogGetOrderMode( WdeDialogObject *, WdeOrderMode *, void * );
-static BOOL     WdeDialogSetObjectInfo( WdeDialogObject *, WdeDialogBoxHeader *, void * );
-static BOOL     WdeDialogGetObjectInfo( WdeDialogObject *obj, WdeDialogBoxHeader **, WResID ** );
-static BOOL     WdeDialogGetObjectHelpInfo( WdeDialogObject *obj, WdeDialogBoxHeader **, char ** );
-static BOOL     WdeDialogGetScrollRect( WdeDialogObject *, RECT *, void * );
-static BOOL     WdeDialogGetResizeInc( WdeDialogObject *, POINT *, void * );
+static bool     WdeBuildDialogTemplate( WdeDialogBoxHeader *, TEMPLATE_HANDLE *, size_t * );
+static void     WdeDialogSetDefineDialogInfo( WdeDefineObjectInfo *, HWND );
+static void     WdeDialogGetDefineDialogInfo( WdeDefineObjectInfo *, HWND );
+static void     WdeDialogSetDialogStyles( HWND, DialogStyle );
+static void     WdeDialogGetDialogStyles( HWND, DialogStyle * );
+static void     WdeDialogSetDialogEXStyles( HWND, uint_32 );
+static void     WdeDialogGetDialogEXStyles( HWND, uint_32 * );
+static void     WdeDialogSetDialogMemFlags( HWND, uint_16 );
+static void     WdeDialogGetDialogMemFlags( HWND, uint_16 * );
+static void     WdeDialogSetDialogFontInfo( HWND, WdeDialogObject * );
+static void     WdeDialogSetDialogPntInfo( HWND, int );
+static void     WdeFreeDialogObject( WdeDialogObject * );
+static void     WdeWriteDialogToInfo( WdeDialogObject * );
 
-static bool WdeBuildDialogTemplate( WdeDialogBoxHeader *, HGLOBAL * );
-static void WdeDialogSetDefineDialogInfo( WdeDefineObjectInfo *, HWND );
-static void WdeDialogGetDefineDialogInfo( WdeDefineObjectInfo *, HWND );
-static void WdeDialogSetDialogStyles( HWND, DialogStyle );
-static void WdeDialogGetDialogStyles( HWND, DialogStyle * );
-static void WdeDialogSetDialogEXStyles( HWND, uint_32 );
-static void WdeDialogGetDialogEXStyles( HWND, uint_32 * );
-static void WdeDialogSetDialogMemFlags( HWND, uint_16 );
-static void WdeDialogGetDialogMemFlags( HWND, uint_16 * );
-static void WdeDialogSetDialogFontInfo( HWND, WdeDialogObject * );
-static void WdeDialogSetDialogPntInfo( HWND, int );
-static void WdeFreeDialogObject( WdeDialogObject * );
-static void WdeWriteDialogToInfo( WdeDialogObject * );
-static BOOL WdeDialogModifyInfo( WdeDialogObject *, WdeInfoStruct *, void * );
+#define pick(e,n,c) static bool WdeDialog ## n ## c;
+    pick_ACTS( WdeDialogObject )
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static FARPROC                  WdeDialogDispatch;
-static FARPROC                  WdeDialogDefineProcInst;
-static DLGPROC                  WdeDialogProcInst;
-static DLGPROC                  WdeTestProcInst;
+static DISPATCH_FN              *WdeDialogDispatch;
+static DLGPROC                  WdeDialogDefineDlgProcInst;
+static DLGPROC                  WdeDialogDlgProcInst;
+static DLGPROC                  WdeTestDlgProcInst;
 static HINSTANCE                WdeAppInst;
 static WdeDialogBoxHeader       *WdeDefaultDialog;
 
 static HFONT             WdeLastFont;
 
 static DISPATCH_ITEM WdeDialogActions[] = {
-    { MOVE,                 (DISPATCH_RTN *)WdeDialogMove               },
-    { DESTROY,              (DISPATCH_RTN *)WdeDialogDestroy            },
-    { RESIZE,               (DISPATCH_RTN *)WdeDialogResize             },
-    { DRAW,                 (DISPATCH_RTN *)WdeDialogDraw               },
-    { VALIDATE_ACTION,      (DISPATCH_RTN *)WdeDialogValidateAction     },
-    { GET_WINDOW_HANDLE,    (DISPATCH_RTN *)WdeDialogGetWindowHandle    },
-    { CREATE_WINDOW,        (DISPATCH_RTN *)WdeDialogCreateWindow       },
-    { DESTROY_WINDOW,       (DISPATCH_RTN *)WdeDialogDestroyWindow      },
-    { SHOW_WIN,             (DISPATCH_RTN *)WdeDialogShowWindow         },
-    { RESIZE_INFO,          (DISPATCH_RTN *)WdeDialogGetResizeInfo      },
-    { NOTIFY,               (DISPATCH_RTN *)WdeDialogNotify             },
-    { PASTE,                (DISPATCH_RTN *)WdeDialogPasteObject        },
-    { COPY,                 (DISPATCH_RTN *)WdeDialogCopyObject         },
-    { CUT,                  (DISPATCH_RTN *)WdeDialogCutObject          },
-    { GET_OBJECT_INFO,      (DISPATCH_RTN *)WdeDialogGetObjectInfo      },
-    { SET_OBJECT_INFO,      (DISPATCH_RTN *)WdeDialogSetObjectInfo      },
-    { GET_OBJECT_HELPINFO,  (DISPATCH_RTN *)WdeDialogGetObjectHelpInfo  },
-    { ADD_SUBOBJECT,        (DISPATCH_RTN *)WdeDialogAddSubObject       },
-    { FIND_SUBOBJECTS,      (DISPATCH_RTN *)WdeDialogFindSubObjects     },
-    { FIND_OBJECTS_PT,      (DISPATCH_RTN *)WdeDialogFindObjectsPt      },
-    { REMOVE_SUBOBJECT,     (DISPATCH_RTN *)WdeDialogRemoveSubObject    },
-    { GET_SUBOBJ_LIST,      (DISPATCH_RTN *)WdeDialogGetSubObjectList   },
-    { IDENTIFY,             (DISPATCH_RTN *)WdeDialogIdentify           },
-    { DEFINE,               (DISPATCH_RTN *)WdeDialogDefine             },
-    { SET_FONT,             (DISPATCH_RTN *)WdeDialogSetFont            },
-    { GET_FONT,             (DISPATCH_RTN *)WdeDialogGetFont            },
-    { GET_RESIZER,          (DISPATCH_RTN *)WdeDialogGetResizer         },
-    { GET_NC_SIZE,          (DISPATCH_RTN *)WdeDialogGetNCSize          },
-    { SAVE_OBJECT,          (DISPATCH_RTN *)WdeDialogSaveObject         },
-    { ON_TOP,               (DISPATCH_RTN *)WdeDialogOnTop              },
-    { TEST,                 (DISPATCH_RTN *)WdeDialogTest               },
-    { BECOME_FIRST_CHILD,   (DISPATCH_RTN *)WdeDialogFirstChild         },
-    { PUT_ME_FIRST,         (DISPATCH_RTN *)WdeDialogPutChildFirst      },
-    { GET_RESIZE_INC,       (DISPATCH_RTN *)WdeDialogGetResizeInc       },
-    { GET_SCROLL_RECT,      (DISPATCH_RTN *)WdeDialogGetScrollRect      },
-    { IS_MARK_VALID,        (DISPATCH_RTN *)WdeDialogIsMarkValid        },
-    { RESTORE_OBJECT,       (DISPATCH_RTN *)WdeDialogRestore            },
-    { RESOLVE_SYMBOL,       (DISPATCH_RTN *)WdeDialogResolveSymbol      },
-    { RESOLVE_HELPSYMBOL,   (DISPATCH_RTN *)WdeDialogResolveHelpSymbol  },
-    { MODIFY_INFO,          (DISPATCH_RTN *)WdeDialogModifyInfo         },
-    { GET_NEXT_CHILD,       (DISPATCH_RTN *)WdeDialogGetNextChild       },
-    { SET_ORDER_MODE,       (DISPATCH_RTN *)WdeDialogSetOrderMode       },
-    { GET_ORDER_MODE,       (DISPATCH_RTN *)WdeDialogGetOrderMode       }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeDialog ## n},
+    pick_ACTS( WdeDialogObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS      (sizeof( WdeDialogActions ) / sizeof( DISPATCH_ITEM ))
@@ -283,26 +246,26 @@ bool WdeRemoveObject( WdeResInfo *res_info, OBJPTR object )
     int             pos;
 
     if( res_info == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     pos = WdeFindObjectPosInDialogList( res_info, object );
     if( pos == -1 ) {
-        return( FALSE );
+        return( false );
     }
 
     ditem = WdeFindDialogInResInfo( res_info, pos );
     if( ditem == NULL ) {
         WdeWriteTrail( "WdeRemoveObject: item not found!" );
-        return( FALSE );
+        return( false );
     }
 
     if( !WdeRemoveDialogFromResInfo( res_info, ditem, FALSE ) ) {
         WdeWriteTrail( "WdeRemoveObject: remove failed!" );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeDialogModified( void *_obj )
@@ -322,7 +285,7 @@ bool WdePreserveDialogWithDBI( void *_obj )
     vp = WdeDBIFromObject( obj );
 
     if( vp == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( obj->dlg_item->dialog_info != NULL ) {
@@ -332,7 +295,7 @@ bool WdePreserveDialogWithDBI( void *_obj )
     obj->dlg_item->dialog_info = vp;
     obj->dlg_item->object = NULL;
 
-    return( TRUE );
+    return( true );
 }
 
 WdeDialogBoxInfo *WdeDBIFromObject( void *_obj )
@@ -366,7 +329,7 @@ WdeDialogBoxInfo *WdeDBIFromObject( void *_obj )
         return( NULL );
     }
 
-    is32bitEx = FALSE;
+    is32bitEx = false;
 
     info->MemoryFlags = obj->mem_flags;
     info->dialog_header->symbol = WdeStrDup( obj->symbol );
@@ -378,7 +341,7 @@ WdeDialogBoxInfo *WdeDBIFromObject( void *_obj )
     WdeCleanOrderedList( &obj->ochildren );
 
     for( clist = obj->ochildren; clist; clist = ListNext( clist ) ) {
-        oentry = (WdeOrderedEntry  *)ListElement( clist );
+        oentry = (WdeOrderedEntry *)ListElement( clist );
         if( !Forward( oentry->obj, GET_OBJECT_INFO, &control, &symbol ) ) {
             WdeWriteTrail( "WdeDBIFromObject: GET_OBJECT_INFO failed!" );
             WdeFreeDialogBoxInfo( info );
@@ -398,27 +361,26 @@ WdeDialogBoxInfo *WdeDBIFromObject( void *_obj )
 
         if( obj->dialog_info->is32bit ) {
             if( control->HelpId != 0 || control->ExtendedStyle != 0 ) {
-                is32bitEx = TRUE;
+                is32bitEx = true;
             }
         }
 
         if( end != NULL ) {
-            ListInsertElt( end, control );
+            ListInsertElt( end, (OBJPTR)control );
             end = ListNext( end );
         } else {
-            ListAddElt( &info->control_list, control );
+            ListAddElt( &info->control_list, (OBJPTR)control );
             end = info->control_list;
         }
     }
 
     dh = info->dialog_header;
     if( obj->dialog_info->is32bit ) {
-        if( dh->HelpId != 0 || dh->ExtendedStyle != 0 ||
-            dh->FontWeightDefined || dh->FontItalicDefined || dh->FontCharsetDefined ) {
-            is32bitEx = TRUE;
+        if( dh->HelpId != 0 || dh->ExtendedStyle != 0 || dh->FontWeightDefined || dh->FontItalicDefined || dh->FontCharsetDefined ) {
+            is32bitEx = true;
         }
     } else {
-        dh->is32bit = FALSE;
+        dh->is32bit = false;
     }
 
     dh->is32bitEx = is32bitEx;
@@ -455,11 +417,10 @@ WResID *WdeCreateDialogTitle( void )
 RECT *WdeGetDefaultDialogNCSize( void )
 {
     static RECT nc_size;
-    static bool nc_size_set = FALSE;
+    static bool nc_size_set = false;
 
     if ( !nc_size_set ) {
-        nc_size.left = GetSystemMetrics( SM_CXDLGFRAME ) +
-                       GetSystemMetrics( SM_CXBORDER );
+        nc_size.left = GetSystemMetrics( SM_CXDLGFRAME ) + GetSystemMetrics( SM_CXBORDER );
         nc_size.right = nc_size.left;
 
         nc_size.bottom = GetSystemMetrics( SM_CYDLGFRAME );
@@ -467,14 +428,13 @@ RECT *WdeGetDefaultDialogNCSize( void )
         nc_size.bottom += GetSystemMetrics( SM_CYBORDER );
         nc_size.top += GetSystemMetrics( SM_CYCAPTION );
 
-        nc_size_set = TRUE;
+        nc_size_set = true;
     }
 
     return( &nc_size );
 }
 
-bool WdeKludgeDialogSize( WdeDialogObject *obj, bool adjust_for_nc,
-                          bool snap_to_grid )
+bool WdeKludgeDialogSize( WdeDialogObject *obj, bool adjust_for_nc, bool snap_to_grid )
 {
     RECT        old_rect;
     RECT        new_rect;
@@ -491,10 +451,9 @@ bool WdeKludgeDialogSize( WdeDialogObject *obj, bool adjust_for_nc,
         SETHDR_SIZEY( obj->dialog_info, pt.y );
     }
 
-    if( !WdeDialogToScreen( obj, &obj->resizer,
-                            GETHDR_PSIZE( obj->dialog_info ), &new_rect ) ) {
+    if( !WdeDialogToScreen( obj, &obj->resizer, GETHDR_PSIZE( obj->dialog_info ), &new_rect ) ) {
         WdeWriteTrail( "WdeKludgeDialogSize: WdeDialogToScreen failed!" );
-        return( FALSE );
+        return( false );
     }
 
     if( adjust_for_nc ) {
@@ -505,17 +464,17 @@ bool WdeKludgeDialogSize( WdeDialogObject *obj, bool adjust_for_nc,
         new_rect.bottom += obj->nc_size.bottom;
     }
 
-    user_action = FALSE;
+    user_action = false;
 
     /* YIKES!!! what a kludge */
     if( !EqualRect( &new_rect, &old_rect ) ) {
         if( !WdeDialogResize( obj, &new_rect, &user_action ) ) {
             WdeWriteTrail( "WdeKludgeDialogSize: Resize failed!" );
-            return( FALSE );
+            return( false );
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 OBJPTR WdeCreateNewDialog( WResID *name, bool is32bit )
@@ -525,15 +484,15 @@ OBJPTR WdeCreateNewDialog( WResID *name, bool is32bit )
     RECT            new_rect;
     bool            ok;
 
-
-    ok = ((base_obj = GetMainObject()) != NULL);
+    new = NULL;
+    ok = ( (base_obj = GetMainObject()) != NULL );
 
     if( ok ) {
         new_rect.left = WDE_NEW_DIALOG_X;
         new_rect.top = WDE_NEW_DIALOG_Y;
         new_rect.right = WDE_NEW_DIALOG_WIDTH;
         new_rect.bottom = WDE_NEW_DIALOG_HEIGHT;
-        ok = ((new = WdeDialogCreater( base_obj, &new_rect, NULL )) != NULL);
+        ok = ( (new = WdeDialogCreater( base_obj, &new_rect, NULL )) != NULL );
         if( !ok ) {
             WdeWriteTrail( "WdeCreateNewDialog: Create failed!" );
         }
@@ -547,14 +506,14 @@ OBJPTR WdeCreateNewDialog( WResID *name, bool is32bit )
         }
 //      new->helpname = NULL;
         new->helpsymbol = NULL;
-        ok = (new->name != NULL);
+        ok = ( new->name != NULL );
         if( !ok ) {
             WdeWriteTrail( "WdeDialogCreate: could not create dialog name!" );
         }
     }
 
     if( ok ) {
-        ok = WdeSetObjectInfo( new, &new->res_info, &new->dlg_item, new->name );
+        ok = WdeSetObjectInfo( (OBJPTR)new, &new->res_info, &new->dlg_item, new->name );
     }
 
     if( ok ) {
@@ -565,7 +524,7 @@ OBJPTR WdeCreateNewDialog( WResID *name, bool is32bit )
         SETHDR_SIZEH( WdeDefaultDialog, WDE_NEW_DIALOG_HEIGHT );
 
         new->dialog_info = WdeCopyDialogBoxHeader( WdeDefaultDialog );
-        ok = (new->dialog_info != NULL);
+        ok = ( new->dialog_info != NULL );
         if( !ok ) {
             WdeWriteTrail( "WdeDialogCreate: CopyDBH failed!" );
         }
@@ -586,15 +545,15 @@ OBJPTR WdeCreateNewDialog( WResID *name, bool is32bit )
     }
 
     if( ok ) {
-        MakeObjectCurrent( new );
+        MakeObjectCurrent( (OBJPTR)new );
     } else {
         if( new ) {
-            Destroy( (OBJPTR)new, FALSE );
+            Destroy( (OBJPTR)new, false );
             new = NULL;
         }
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
 OBJPTR WdeCreateDialogFromRes( WdeResInfo *res_info, WdeResDlgItem *ditem )
@@ -605,10 +564,12 @@ OBJPTR WdeCreateDialogFromRes( WdeResInfo *res_info, WdeResDlgItem *ditem )
     bool            ok;
     bool            show;
 
-    ok = (res_info != NULL && ditem != NULL);
+    new = NULL;
+    base_obj = NULL;
+    ok = ( res_info != NULL && ditem != NULL );
 
     if( ok ) {
-        ok = ((base_obj = GetMainObject()) != NULL);
+        ok = ( (base_obj = GetMainObject()) != NULL );
     }
 
     if( ok ) {
@@ -616,13 +577,13 @@ OBJPTR WdeCreateDialogFromRes( WdeResInfo *res_info, WdeResDlgItem *ditem )
         new_rect.top = WDE_NEW_DIALOG_Y;
         new_rect.right = WDE_NEW_DIALOG_WIDTH;
         new_rect.bottom = WDE_NEW_DIALOG_HEIGHT;
-        ok = ((new = WdeDialogCreater( base_obj, &new_rect, NULL )) != NULL);
+        ok = ( (new = WdeDialogCreater( base_obj, &new_rect, NULL )) != NULL );
     }
 
     if( ok ) {
         new->name = WdeCopyWResID( ditem->dialog_name );
 //      new->helpname = WdeCopyWResHelpID( ditem->helpname );
-        ok = (new->name != NULL);
+        ok = ( new->name != NULL );
     }
 
     if( ok ) {
@@ -630,11 +591,11 @@ OBJPTR WdeCreateDialogFromRes( WdeResInfo *res_info, WdeResDlgItem *ditem )
         new->dlg_item = ditem;
         new->mem_flags = ditem->dialog_info->MemoryFlags;
         new->dialog_info = WdeCopyDialogBoxHeader( ditem->dialog_info->dialog_header );
-        ok = (new->dialog_info != NULL);
+        ok = ( new->dialog_info != NULL );
     }
 
     if( ok ) {
-        show = FALSE;
+        show = false;
         ok = WdeDialogCreateWindow( new, &show, NULL ) != 0;
     }
 
@@ -643,14 +604,14 @@ OBJPTR WdeCreateDialogFromRes( WdeResInfo *res_info, WdeResDlgItem *ditem )
     }
 
     if( !ok ) {
-        Destroy( (OBJPTR)new, FALSE );
+        Destroy( (OBJPTR)new, false );
         new = NULL;
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
-WINEXPORT OBJPTR CALLBACK WdeDialogCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeDialogCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     WdeDialogObject *new;
     RECT            *def_nc_size;
@@ -679,13 +640,13 @@ WINEXPORT OBJPTR CALLBACK WdeDialogCreate( OBJPTR parent, RECT *obj_rect, OBJPTR
     new->name = WdeCreateDialogTitle();
     if( new->name == NULL ) {
         WdeWriteTrail( "WdeDialogCreate: WdeCreateDialogTitle failed!" );
-        Destroy( (OBJPTR)new, FALSE );
+        Destroy( (OBJPTR)new, false );
         return( NULL );
     }
 
-    if( !WdeSetObjectInfo( new, &new->res_info, &new->dlg_item, new->name ) ) {
+    if( !WdeSetObjectInfo( (OBJPTR)new, &new->res_info, &new->dlg_item, new->name ) ) {
         WdeWriteTrail( "WdeDialogCreate: WdeSetObjectInfo failed!" );
-        Destroy( (OBJPTR)new, FALSE );
+        Destroy( (OBJPTR)new, false );
         return( NULL );
     }
 
@@ -694,20 +655,20 @@ WINEXPORT OBJPTR CALLBACK WdeDialogCreate( OBJPTR parent, RECT *obj_rect, OBJPTR
     new->dialog_info = WdeCopyDialogBoxHeader( WdeDefaultDialog );
     if( new->dialog_info == NULL ) {
         WdeWriteTrail( "WdeDialogCreate: CopyDBH failed!" );
-        Destroy( (OBJPTR)new, FALSE );
+        Destroy( (OBJPTR)new, false );
         return( NULL );
     }
 
     if( !WdeDialogCreateWindow( new, NULL, NULL ) ) {
         WdeWriteTrail( "WdeDialogCreate: CREATE_WINDOW failed!" );
-        Destroy( (OBJPTR)new, FALSE );
+        Destroy( (OBJPTR)new, false );
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
-OBJPTR WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+WdeDialogObject *WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     WdeDialogObject *new;
     OBJPTR          ancestor;
@@ -729,30 +690,31 @@ OBJPTR WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
         return( new );
     }
     memset( new, 0, sizeof( WdeDialogObject ) );
+    memset( &parent_rect, 0, sizeof( parent_rect ) );
 
     /* make sure we are setting the correct parent */
     ancestor = parent;
-    Forward( (OBJPTR)ancestor, IDENTIFY, &ancestor_id, NULL );
+    Forward( ancestor, IDENTIFY, &ancestor_id, NULL );
     while( ancestor_id != BASE_OBJ ) {
         GetObjectParent( ancestor, &ancestor );
-        Forward( (OBJPTR)ancestor, IDENTIFY, &ancestor_id, NULL );
+        Forward( ancestor, IDENTIFY, &ancestor_id, NULL );
     }
 
     new->parent = ancestor;
     new->object_id  = DIALOG_OBJ;
     new->mode = WdeSelect;
-    new->dispatcher = WdeDialogDispatch;
+    OBJ_DISPATCHER_SET( new, WdeDialogDispatch );
     new->mem_flags = DEFAULT_MEMFLAGS;
 
-    resize_dialog_height = FALSE;
-    resize_dialog_width = FALSE;
+    resize_dialog_height = false;
+    resize_dialog_width = false;
 
     if( obj_rect->right - obj_rect->left < DIALOG_MIN_WIDTH  ) {
-        resize_dialog_width = TRUE;
+        resize_dialog_width = true;
     }
 
     if( obj_rect->bottom - obj_rect->top < DIALOG_MIN_HEIGHT ) {
-        resize_dialog_height = TRUE;
+        resize_dialog_height = true;
     }
 
     if( resize_dialog_width || resize_dialog_height ) {
@@ -789,7 +751,7 @@ OBJPTR WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     }
 
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -817,7 +779,7 @@ OBJPTR WdeDialogCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
     return( new );
 }
 
-WINEXPORT BOOL CALLBACK WdeDialogDispatcher( ACTION act, WdeDialogObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeDialogDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -825,21 +787,26 @@ WINEXPORT BOOL CALLBACK WdeDialogDispatcher( ACTION act, WdeDialogObject *obj, v
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeDialogActions[i].id == act ) {
-            if( WdeDialogActions[i].rtn ) {
+            if( WdeDialogActions[i].rtn != NULL ) {
                 return( WdeDialogActions[i].rtn( obj, p1, p2 ) );
             } else {
-                return( Forward( obj->parent, act, p1, p2 ) );
+                return( Forward( ((WdeDialogObject *)obj)->parent, act, p1, p2 ) );
             }
         }
     }
 
-    return( Forward( obj->o_item, act, p1, p2 ) );
+    return( Forward( ((WdeDialogObject *)obj)->o_item, act, p1, p2 ) );
 }
 
 bool WdeDialogInit( bool first )
 {
     char        *text;
     bool        use_default;
+#ifdef WDE_USE_RC_FONTS
+    char        *cp;
+    char        *font_facename;
+    int         font_pointsize;
+#endif
 
     _wde_touch( first );
 
@@ -848,69 +815,65 @@ bool WdeDialogInit( bool first )
     WdeDefaultDialog = WdeAllocDialogBoxHeader();
     if( WdeDefaultDialog == NULL ) {
         WdeWriteTrail( "WdeDialogInit: Alloc of dialog failed!" );
-        return( FALSE );
+        return( false );
     }
 #ifdef __NT__
-    WdeDefaultDialog->is32bit = TRUE;
+    WdeDefaultDialog->is32bit = true;
 #endif
 
     /* set up the default control structure */
-    SETHDR_STYLE( WdeDefaultDialog, WS_CAPTION | WS_SYSMENU |
-                                    WS_VISIBLE | DS_MODALFRAME | DS_SETFONT );
+    SETHDR_STYLE( WdeDefaultDialog, WS_CAPTION | WS_SYSMENU | WS_VISIBLE | DS_MODALFRAME | DS_SETFONT );
 
     // the following assumes the same memory allocation scheme is
     // being used for regular stuff and RC strings
     text = WdeAllocRCString( WDE_DEFAULTDIALOGCAPTION );
     SETHDR_CAPTION( WdeDefaultDialog, text );
 
-    use_default = TRUE;
-
+    use_default = true;
 #ifdef WDE_USE_RC_FONTS
-    char        *cp;
-    int         point_size;
-    text = WdeAllocRCString( WDE_DEFAULTDIALOGFONT );
-    if( text != NULL ) {
-        cp = _mbschr( text, '.' );
+    font_facename = WdeAllocRCString( WDE_DEFAULTDIALOGFONT );
+    if( font_facename != NULL ) {
+        cp = _mbschr( font_facename, '.' );
         if( cp != NULL ) {
             *cp = '\0';
-            SETHDR_FONTNAME( WdeDefaultDialog, WdeStrDup( text ) );
+            SETHDR_FONTFACENAME( WdeDefaultDialog, WdeStrDup( font_facename ) );
             cp++;
-            point_size = atoi( cp );
-            SETHDR_POINTSIZE( WdeDefaultDialog, point_size );
-            use_default = FALSE;
+            font_pointsize = atoi( cp );
+            SETHDR_FONTPOINTSIZE( WdeDefaultDialog, font_pointsize );
+            use_default = false;
         }
-        WdeFreeRCString( text );
+        WdeFreeRCString( font_facename );
     }
 #endif
 
     if( use_default ) {
         if( GetSystemMetrics( SM_DBCSENABLED ) ) {
-            SETHDR_FONTNAME( WdeDefaultDialog, WdeStrDup( DEFAULT_JFONT ) );
-            SETHDR_POINTSIZE( WdeDefaultDialog, DEFAULT_JPOINT_SIZE );
+            SETHDR_FONTFACENAME( WdeDefaultDialog, WdeStrDup( DEFAULT_JFONTFACENAME ) );
+            SETHDR_FONTPOINTSIZE( WdeDefaultDialog, DEFAULT_JFONTPOINTSIZE );
         } else {
-            SETHDR_FONTNAME( WdeDefaultDialog, WdeStrDup( DEFAULT_FONT ) );
-            SETHDR_POINTSIZE( WdeDefaultDialog, DEFAULT_POINT_SIZE );
+            SETHDR_FONTFACENAME( WdeDefaultDialog, WdeStrDup( DEFAULT_FONTFACENAME ) );
+            SETHDR_FONTPOINTSIZE( WdeDefaultDialog, DEFAULT_FONTPOINTSIZE );
         }
     }
 
-    WdeDialogDispatch = MakeProcInstance( (FARPROC)WdeDialogDispatcher, WdeAppInst );
-    WdeDialogDefineProcInst = MakeProcInstance( (FARPROC)WdeDialogDefineProc, WdeAppInst );
-    WdeTestProcInst = (DLGPROC)MakeProcInstance( (FARPROC)WdeTestDlgProc, WdeAppInst );
-    WdeDialogProcInst = (DLGPROC)MakeProcInstance ( (FARPROC)WdeDialogProc, WdeAppInst );
+    WdeDialogDispatch = MakeProcInstance_DISPATCHER( WdeDialogDispatcher, WdeAppInst );
+    WdeDialogDefineDlgProcInst = MakeProcInstance_DLG( WdeDialogDefineDlgProc, WdeAppInst );
+    WdeTestDlgProcInst = MakeProcInstance_DLG( WdeTestDlgProc, WdeAppInst );
+    WdeDialogDlgProcInst = MakeProcInstance_DLG( WdeDialogDlgProc, WdeAppInst );
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeDialogFini( void )
 {
     WdeFreeDialogBoxHeader( &WdeDefaultDialog );
-    FreeProcInstance( WdeDialogDefineProcInst);
-    FreeProcInstance( (FARPROC)WdeTestProcInst );
-    FreeProcInstance( (FARPROC)WdeDialogProcInst );
-    FreeProcInstance( WdeDialogDispatch );
+    FreeProcInstance_DLG( WdeDialogDefineDlgProcInst);
+    FreeProcInstance_DLG( WdeTestDlgProcInst );
+    FreeProcInstance_DLG( WdeDialogDlgProcInst );
+    FreeProcInstance_DISPATCHER( WdeDialogDispatch );
 }
 
-BOOL WdeDialogResolveSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
+bool WdeDialogResolveSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
 {
     WdeHashValue        val;
     OBJPTR              child;
@@ -919,18 +882,17 @@ BOOL WdeDialogResolveSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
     bool                found;
 
     if( obj->res_info == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    for( olist = obj->children; olist; olist = ListNext( olist ) ) {
+    for( olist = obj->children; olist != NULL; olist = ListNext( olist ) ) {
         child =  ListElement( olist );
         Forward( child, RESOLVE_SYMBOL, b, from_id );
     }
 
     if( !obj->name->IsName ) {
         if( from_id != NULL && *from_id ) {
-            vp = WdeResolveValue( obj->res_info->hash_table,
-                                  (WdeHashValue)obj->name->ID.Num );
+            vp = WdeResolveValue( obj->res_info->hash_table, (WdeHashValue)obj->name->ID.Num );
             if( vp != NULL ) {
                 if( obj->symbol != NULL ) {
                     WRMemFree( obj->symbol );
@@ -955,10 +917,10 @@ BOOL WdeDialogResolveSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogResolveHelpSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
+bool WdeDialogResolveHelpSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
 {
     WdeHashValue        val;
     OBJPTR              child;
@@ -967,7 +929,7 @@ BOOL WdeDialogResolveHelpSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
     bool                found;
 
     if( obj->res_info == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     for( olist = obj->children; olist != NULL; olist = ListNext( olist ) ) {
@@ -976,8 +938,7 @@ BOOL WdeDialogResolveHelpSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
     }
 
     if( from_id != NULL && *from_id ) {
-        vp = WdeResolveValue( obj->res_info->hash_table,
-                              (WdeHashValue)GETHDR_HELPID( obj->dialog_info ) );
+        vp = WdeResolveValue( obj->res_info->hash_table, (WdeHashValue)GETHDR_HELPID( obj->dialog_info ) );
         if( vp != NULL ) {
             if( obj->helpsymbol != NULL ) {
                 WRMemFree( obj->helpsymbol );
@@ -988,8 +949,7 @@ BOOL WdeDialogResolveHelpSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
         }
     } else {
         if( obj->helpsymbol ) {
-            val = WdeLookupName( obj->res_info->hash_table,
-                                 obj->helpsymbol, &found );
+            val = WdeLookupName( obj->res_info->hash_table, obj->helpsymbol, &found );
             if( found ) {
                 SETHDR_HELPID( obj->dialog_info, val );
                 WdeDialogModified( obj );
@@ -1003,10 +963,10 @@ BOOL WdeDialogResolveHelpSymbol( WdeDialogObject *obj, bool *b, bool *from_id )
         WdeWriteDialogToInfo( obj );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogModifyInfo( WdeDialogObject *obj, WdeInfoStruct *in, void *p2 )
+bool WdeDialogModifyInfo( WdeDialogObject *obj, WdeInfoStruct *in, void *p2 )
 {
     WResID              *old_name;
     char                *old_symbol;
@@ -1022,7 +982,7 @@ BOOL WdeDialogModifyInfo( WdeDialogObject *obj, WdeInfoStruct *in, void *p2 )
         }
         SETHDR_CAPTION( obj->dialog_info, in->u.dlg.caption );
         if( GETHDR_CAPTION( obj->dialog_info ) ) {
-            SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPSTR)GETHDR_CAPTION( obj->dialog_info ) );
+            SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPCSTR)GETHDR_CAPTION( obj->dialog_info ) );
         } else {
             SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPCSTR)"" );
         }
@@ -1058,25 +1018,27 @@ BOOL WdeDialogModifyInfo( WdeDialogObject *obj, WdeInfoStruct *in, void *p2 )
 
     WdeDialogModified( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogTest( WdeDialogObject *obj, void *p1, void *p2 )
+bool WdeDialogTest( WdeDialogObject *obj, TEMPLATE_HANDLE *p1, size_t *p2 )
 {
-    GLOBALHANDLE    dialog_template;
-    uint_8          *locked_global_mem;
+    TEMPLATE_HANDLE dlgtemplate;
+    WPTEMPLATE      template;
     char            *MenuName;
     char            *ClassName;
     DWORD           style;
     LIST            *clist;
     WdeOrderedEntry *oentry;
     HWND            hwin;
-    uint_16         flag;
+    ACTION_ID       act;
+    size_t          templatelen;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( p1 );
     _wde_touch( p2 );
 
+    templatelen = 0;
     SETHDR_NUMITEMS( obj->dialog_info, obj->num_children );
 
     MenuName = WdeResNameOrOrdinalToStr( GETHDR_MENUNAME( obj->dialog_info ), 10 );
@@ -1106,19 +1068,19 @@ BOOL WdeDialogTest( WdeDialogObject *obj, void *p1, void *p2 )
     }
 
     if( obj->dialog_info->is32bitEx ) {
-        dialog_template = DialogEXTemplate( (DWORD)style, GETHDR_EXSTYLE( obj->dialog_info ),
+        dlgtemplate = DialogEXTemplate( style, GETHDR_EXSTYLE( obj->dialog_info ),
             GETHDR_HELPID( obj->dialog_info ), GETHDR_SIZEX( obj->dialog_info ),
             GETHDR_SIZEY( obj->dialog_info ), GETHDR_SIZEW( obj->dialog_info ),
             GETHDR_SIZEH( obj->dialog_info ), MenuName, ClassName,
-            GETHDR_CAPTION( obj->dialog_info ), GETHDR_POINTSIZE( obj->dialog_info ),
-            GETHDR_FONTNAME( obj->dialog_info ), GETHDR_FONTWEIGHT( obj->dialog_info ),
-            GETHDR_FONTITALIC( obj->dialog_info ), GETHDR_FONTCHARSET( obj->dialog_info ) );
+            GETHDR_CAPTION( obj->dialog_info ), GETHDR_FONTPOINTSIZE( obj->dialog_info ),
+            GETHDR_FONTFACENAME( obj->dialog_info ), GETHDR_FONTWEIGHT( obj->dialog_info ),
+            GETHDR_FONTITALIC( obj->dialog_info ), GETHDR_FONTCHARSET( obj->dialog_info ), &templatelen );
     } else {
-        dialog_template = DialogTemplate( style, GETHDR_SIZEX( obj->dialog_info ),
+        dlgtemplate = DialogTemplate( style, GETHDR_SIZEX( obj->dialog_info ),
             GETHDR_SIZEY( obj->dialog_info ), GETHDR_SIZEW( obj->dialog_info ),
             GETHDR_SIZEH( obj->dialog_info ), MenuName, ClassName,
-            GETHDR_CAPTION( obj->dialog_info ), GETHDR_POINTSIZE( obj->dialog_info ),
-            GETHDR_FONTNAME( obj->dialog_info ) );
+            GETHDR_CAPTION( obj->dialog_info ), GETHDR_FONTPOINTSIZE( obj->dialog_info ),
+            GETHDR_FONTFACENAME( obj->dialog_info ), &templatelen );
     }
 
     if( MenuName != NULL ) {
@@ -1129,50 +1091,47 @@ BOOL WdeDialogTest( WdeDialogObject *obj, void *p1, void *p2 )
         WRMemFree( ClassName );
     }
 
-    if( dialog_template == NULL ) {
+    if( dlgtemplate == NULL ) {
         WdeWriteTrail( "WdeDialogTest: DialogTemplate failed!" );
-        return( FALSE );
+        return( false );
     }
 
     WdeCleanOrderedList( &obj->ochildren );
 
     if( obj->dialog_info->is32bitEx ) {
-        flag = TESTEX;
+        act = TESTEX;
     } else {
-        flag = TEST;
+        act = TEST;
     }
     /* add all the children */
     for( clist = obj->ochildren; clist != NULL; clist = ListNext( clist ) ) {
-        oentry = ListElement( clist );
-        if( !Forward( oentry->obj, flag, &dialog_template, NULL ) ) {
+        oentry = (WdeOrderedEntry *)ListElement( clist );
+        if( !Forward( oentry->obj, act, &dlgtemplate, &templatelen ) ) {
             WdeWriteTrail( "WdeDialogTest: control TEST failed!" );
-            GlobalFree( dialog_template );
-            return( FALSE );
+            GlobalFree( dlgtemplate );
+            return( false );
         }
     }
 
-    DoneAddingControls( dialog_template );
+    DoneAddingControls( dlgtemplate );
 
-    locked_global_mem = (uint_8 *)GlobalLock( dialog_template );
+    template = (WPTEMPLATE)GlobalLock( dlgtemplate );
 
-    if( locked_global_mem == NULL ) {
+    if( template == (WPTEMPLATE)NULL ) {
         WdeWriteTrail( "WdeDialogTest: Could not Lock template!" );
-        GlobalFree( dialog_template );
-        return( FALSE );
+        GlobalFree( dlgtemplate );
+        return( false );
     }
 
-    hwin = CreateDialogIndirectParam( WdeAppInst, WDEDLGTEMPLATE locked_global_mem,
-                                      obj->res_info->forms_win, WdeTestProcInst,
-                                      (LPARAM)obj );
+    hwin = CreateDialogIndirectParam( WdeAppInst, template, obj->res_info->forms_win, WdeTestDlgProcInst, (LPARAM)obj );
 
-    GlobalUnlock( dialog_template );
-
-    GlobalFree( dialog_template );
+    GlobalUnlock( dlgtemplate );
+    GlobalFree( dlgtemplate );
 
     if( hwin == NULL ) {
         WdeWriteTrail( "WdeDialogTest: Could not create window!" );
         ShowWindow( obj->window_handle, SW_SHOW );
-        return( FALSE );
+        return( false );
     }
 
     if( obj->num_children != 0 && !WdeSetTestControlDefaults( hwin ) ) {
@@ -1181,10 +1140,10 @@ BOOL WdeDialogTest( WdeDialogObject *obj, void *p1, void *p2 )
 
     ShowWindow( hwin, SW_SHOW );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogRestore( WdeDialogObject *obj, void *p1, void *p2 )
+bool WdeDialogRestore( WdeDialogObject *obj, void *p1, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p1 );
@@ -1194,16 +1153,16 @@ BOOL WdeDialogRestore( WdeDialogObject *obj, void *p1, void *p2 )
         ShowWindow( obj->window_handle, SW_HIDE );
         if( !WdeOpenDialogFromResInfo( obj->res_info, obj->dlg_item ) ) {
             ShowWindow( obj->window_handle, SW_SHOW );
-            obj->dlg_item->object = obj;
-            return( FALSE );
+            obj->dlg_item->object = (OBJPTR)obj;
+            return( false );
         }
         MakeObjectCurrent( obj->dlg_item->object );
-        Destroy( (OBJPTR)obj, FALSE );
+        Destroy( (OBJPTR)obj, false );
     } else {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeIsDialogRestorable( void *_obj )
@@ -1214,16 +1173,16 @@ bool WdeIsDialogRestorable( void *_obj )
             obj->dlg_item->dialog_info != NULL );
 }
 
-BOOL WdeDialogSaveObject( WdeDialogObject *obj, WORD *id, void *p2 )
+bool WdeDialogSaveObject( WdeDialogObject *obj, WORD *id, void *p2 )
 {
     WdeDialogBoxInfo    *dbi;
-    uint_8              ret;
+    bool                ret;
     WResLangType        lang;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
-    ret = FALSE;
+    ret = false;
 
     if( WdeIsHashTableDirty( obj->res_info->hash_table ) ) {
         Forward( obj->object_handle, RESOLVE_SYMBOL, NULL, NULL );
@@ -1231,45 +1190,40 @@ BOOL WdeDialogSaveObject( WdeDialogObject *obj, WORD *id, void *p2 )
     }
 
     dbi = WdeDBIFromObject( obj );
-    if( dbi == NULL ) {
-        return( FALSE );
-    }
+    if( dbi != NULL ) {
+        if( obj->dlg_item->dialog_info != NULL ) {
+            WdeFreeDialogBoxInfo( obj->dlg_item->dialog_info );
+        }
+        obj->dlg_item->dialog_info = dbi;
 
-    if( obj->dlg_item->dialog_info != NULL ) {
-        WdeFreeDialogBoxInfo( obj->dlg_item->dialog_info );
-    }
-    obj->dlg_item->dialog_info = dbi;
+        if( obj->dlg_item->lnode != NULL ) {
+            lang = obj->dlg_item->lnode->Info.lang;
+        } else {
+            lang.lang = DEF_LANG;
+            lang.sublang = DEF_SUBLANG;
+        }
 
-    if( obj->dlg_item->lnode != NULL ) {
-        lang = obj->dlg_item->lnode->Info.lang;
-    } else {
-        lang.lang = DEF_LANG;
-        lang.sublang = DEF_SUBLANG;
-    }
+        switch( *id ) {
+        case IDM_DIALOG_SAVE:
+            ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name, obj->name, &lang, false, false );
+            break;
 
-    switch( *id ) {
-    case IDM_DIALOG_SAVE:
-        ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name,
-                             obj->name, &lang, FALSE, FALSE );
-        break;
+        case IDM_DIALOG_SAVEAS:
+            ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name, obj->name, &lang, false, true );
+            break;
 
-    case IDM_DIALOG_SAVEAS:
-        ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name,
-                             obj->name, &lang, FALSE, TRUE );
-        break;
-
-    case IDM_DIALOG_SAVEINTO:
-        ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name,
-                             obj->name, &lang, TRUE, TRUE );
-        break;
+        case IDM_DIALOG_SAVEINTO:
+            ret = WdeSaveObject( obj->res_info, dbi, &obj->file_name, obj->name, &lang, true, true );
+            break;
+        }
     }
 
     return( ret );
 }
 
-BOOL WdeDialogGetResizeInc( WdeDialogObject *obj, POINT *p, void *p2 )
+bool WdeDialogGetResizeInc( WdeDialogObject *obj, POINT *p, void *p2 )
 {
-    DialogSizeInfo      dsize;
+    WdeDialogSizeInfo   sizeinfo;
     RECT                r;
 
     /* touch unused vars to get rid of warning */
@@ -1278,62 +1232,62 @@ BOOL WdeDialogGetResizeInc( WdeDialogObject *obj, POINT *p, void *p2 )
     p->x = 1;
     p->y = 1;
 
-    dsize.x = 0;
-    dsize.y = 0;
-    dsize.width = WdeGetOption( WdeOptReqGridX );
-    dsize.height = WdeGetOption( WdeOptReqGridY );
+    sizeinfo.x = 0;
+    sizeinfo.y = 0;
+    sizeinfo.width = WdeGetOption( WdeOptReqGridX );
+    sizeinfo.height = WdeGetOption( WdeOptReqGridY );
 
     if( obj->window_handle != (HWND)NULL ) {
-        SetRect( &r, 0, 0, dsize.width, dsize.height );
+        SetRect( &r, 0, 0, sizeinfo.width, sizeinfo.height );
         MapDialogRect( obj->window_handle, &r );
         p->x = r.right;
         p->y = r.bottom;
     } else {
-        if( WdeDialogToScreen( obj, &obj->resizer, &dsize, &r ) ) {
+        if( WdeDialogToScreen( obj, &obj->resizer, &sizeinfo, &r ) ) {
             p->x = r.right;
             p->y = r.bottom;
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogGetScrollRect( WdeDialogObject *obj, RECT *r, void *p2 )
+bool WdeDialogGetScrollRect( WdeDialogObject *obj, RECT *r, void *p2 )
 {
     return( Forward( obj->parent, GET_SCROLL_RECT, r, p2 ) );
 }
 
-BOOL WdeDialogGetResizer( WdeDialogObject *obj, WdeResizeRatio *resizer, OBJPTR *o )
+bool WdeDialogGetResizer( WdeDialogObject *obj, WdeResizeRatio *resizer, OBJPTR *o )
 {
     *resizer = obj->resizer;
     if( o != NULL ) {
-        *o = obj;
+        *o = (OBJPTR)obj;
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogGetFont( WdeDialogObject *obj, HFONT *font, void *p2 )
+bool WdeDialogGetFont( WdeDialogObject *obj, HFONT *font, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *font = obj->font;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogIdentify( WdeDialogObject *obj, OBJ_ID *id, void *p2 )
+bool WdeDialogIdentify( WdeDialogObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogDefine( WdeDialogObject *obj, POINT *pnt, void *p2 )
+bool WdeDialogDefine( WdeDialogObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
     INT_PTR              redraw;
@@ -1345,10 +1299,10 @@ BOOL WdeDialogDefine( WdeDialogObject *obj, POINT *pnt, void *p2 )
     _wde_touch( p2 );
 
     if( obj->mode != WdeSelect ) {
-        return( TRUE );
+        return( true );
     }
 
-    o_info.obj = obj;
+    o_info.obj = (OBJPTR)obj;
     o_info.obj_id = obj->object_id;
     o_info.win = obj->window_handle;
     o_info.symbol = obj->symbol;
@@ -1366,25 +1320,25 @@ BOOL WdeDialogDefine( WdeDialogObject *obj, POINT *pnt, void *p2 )
     if( !WdeGetOption( WdeOptUseDefDlg ) ) {
         redraw = WdeGenericDefine( &o_info );
     } else {
-        WdeSetStatusText( NULL, "", FALSE );
-        WdeSetStatusByID( WDE_DEFININGDIALOG, WDE_NONE );
+        WdeSetStatusText( NULL, "", false );
+        WdeSetStatusByID( WDE_DEFININGDIALOG, 0 );
 
         redraw = JDialogBoxParam( WdeAppInst, "WdeDefineDIALOG", obj->window_handle,
-                                  (DLGPROC)WdeDialogDefineProcInst, (LPARAM)&o_info ) != 0;
+                                  WdeDialogDefineDlgProcInst, (LPARAM)&o_info ) != 0;
 
         if( redraw != 0 ) {
-            quick = TRUE;
-            destroy_children = TRUE;
+            quick = true;
+            destroy_children = true;
             HideSelectBoxes();
 
             if( !WdeDialogDestroyWindow( obj, &quick, &destroy_children ) ) {
                 WdeWriteTrail( "WdeDialogDefine: WdeDialogDestroyWindow failed!" );
-                return( FALSE );
+                return( false );
             }
 
             if( !WdeDialogCreateWindow( obj, NULL, NULL ) ) {
                 WdeWriteTrail( "WdeDialogDefine: CREATE_WINDOW failed!" );
-                return( FALSE );
+                return( false );
             }
 
             ShowSelectBoxes();
@@ -1403,24 +1357,24 @@ BOOL WdeDialogDefine( WdeDialogObject *obj, POINT *pnt, void *p2 )
 
     WdeSetStatusReadyText();
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogIsMarkValid( WdeDialogObject *obj, BOOL *flag, void *p2 )
+bool WdeDialogIsMarkValid( WdeDialogObject *obj, bool *flag, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( obj->mode == WdeSelect ) {
-        *flag = (obj->window_handle != NULL && IsWindowVisible( obj->window_handle ));
+        *flag = ( obj->window_handle != NULL && IsWindowVisible( obj->window_handle ) );
     } else {
-        *flag = FALSE;
+        *flag = false;
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogDestroy( WdeDialogObject *obj, bool *flag, bool *hide )
+bool WdeDialogDestroy( WdeDialogObject *obj, bool *flag, bool *hide )
 {
     LIST        *clist;
     OBJPTR      sub_obj;
@@ -1441,14 +1395,14 @@ BOOL WdeDialogDestroy( WdeDialogObject *obj, bool *flag, bool *hide )
     if( hide != NULL && *hide ) {
         WdePreserveDialogWithDBI( obj );
         if( obj->res_info != NULL ) {
-            sub_obj = WdeGetNextObject( FALSE, obj, parent );
+            sub_obj = WdeGetNextObject( FALSE, (OBJPTR)obj, parent );
             if( sub_obj == NULL ) {
                 sub_obj = parent;
             }
             obj->res_info->next_current = sub_obj;
         }
     } else {
-        WdeRemoveObject( obj->res_info, obj );
+        WdeRemoveObject( obj->res_info, (OBJPTR)obj );
     }
 
     Location( obj->object_handle, &rect );
@@ -1459,8 +1413,8 @@ BOOL WdeDialogDestroy( WdeDialogObject *obj, bool *flag, bool *hide )
         }
     }
 
-    quick = TRUE;
-    destroy_children = TRUE;
+    quick = true;
+    destroy_children = true;
 
     if( !WdeDialogDestroyWindow( obj, &quick, &destroy_children ) ) {
         WdeWriteTrail( "WdeDialogDestroy: WdeDialogDestroyWindow failed!" );
@@ -1488,7 +1442,7 @@ BOOL WdeDialogDestroy( WdeDialogObject *obj, bool *flag, bool *hide )
 
     if( !Forward( obj->o_item, DESTROY, &b, NULL ) ) {
         WdeWriteTrail( "WdeDialogDestroy: Remove OITEM failed!" );
-        return( FALSE );
+        return( false );
     }
 
     WdeFreeOrderedList( obj->ochildren );
@@ -1503,9 +1457,9 @@ BOOL WdeDialogDestroy( WdeDialogObject *obj, bool *flag, bool *hide )
 
     MarkInvalid( &rect );
 
-    WdeCheckBaseScrollbars( FALSE );
+    WdeCheckBaseScrollbars( false );
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeFreeDialogObject( WdeDialogObject *obj  )
@@ -1537,53 +1491,53 @@ void WdeFreeDialogObject( WdeDialogObject *obj  )
     WRMemFree( obj );
 }
 
-BOOL WdeDialogCreateWindow( WdeDialogObject *obj, bool *show, void *p2 )
+bool WdeDialogCreateWindow( WdeDialogObject *obj, bool *show, void *p2 )
 {
-    HGLOBAL             hglobal_mem;
-    uint_8              *locked_global_mem;
-    RECT                rect;
-    LIST                *olist;
-    OBJPTR              child;
+    TEMPLATE_HANDLE dlgtemplate;
+    WPTEMPLATE      template;
+    RECT            rect;
+    LIST            *olist;
+    OBJPTR          child;
+    size_t          templatelen;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
+    templatelen = 0;
     //SETHDR_STYLE( obj->dialog_info, GETHDR_STYLE( obj->dialog_info ) & ~WS_VISIBLE );
 
-    if( !WdeBuildDialogTemplate( obj->dialog_info, &hglobal_mem ) ) {
-        return( FALSE );
+    if( !WdeBuildDialogTemplate( obj->dialog_info, &dlgtemplate, &templatelen ) ) {
+        return( false );
     }
 
-    locked_global_mem = (uint_8 *)GlobalLock( hglobal_mem );
+    template = (WPTEMPLATE)GlobalLock( dlgtemplate );
 
-    if( locked_global_mem == NULL ) {
+    if( template == (WPTEMPLATE)NULL ) {
         WdeWriteTrail( "WdeDialogCreateWindow: Could not lock template!" );
-        GlobalFree( hglobal_mem );
-        return( FALSE );
+        GlobalFree( dlgtemplate );
+        return( false );
     }
 
     if( !Forward( obj->parent, GET_FONT, &WdeLastFont, NULL ) ) {
         WdeWriteTrail( "WdeDialogCreateWindow: Couldn't get parent font!" );
-        GlobalFree( hglobal_mem );
-        return( FALSE );
+        GlobalUnlock( dlgtemplate );
+        GlobalFree( dlgtemplate );
+        return( false );
     }
 
-    obj->window_handle = CreateDialogIndirect( WdeAppInst, WDEDLGTEMPLATE locked_global_mem,
-                                               obj->parent_handle, WdeDialogProcInst );
+    obj->window_handle = CreateDialogIndirect( WdeAppInst, template, obj->parent_handle, WdeDialogDlgProcInst );
 
-    GlobalUnlock( hglobal_mem );
-
-    GlobalFree( hglobal_mem );
+    GlobalUnlock( dlgtemplate );
+    GlobalFree( dlgtemplate );
 
     if( obj->window_handle == NULL ) {
         WdeWriteTrail( "WdeDialogCreateWindow: Could not create window!" );
-        return( FALSE );
+        return( false );
     }
 
     // get the expected location of the dialog
     Location( (OBJPTR)obj, &rect );
-    SetWindowPos( obj->window_handle, (HWND)NULL,
-                  rect.left, rect.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE );
+    SetWindowPos( obj->window_handle, (HWND)NULL, rect.left, rect.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE );
 
     if( !WdeCalcDialogNCSize( obj, &obj->nc_size ) ) {
         WdeWriteTrail( "WdeDialogCreateWindow: WdeCalcDialogNCSize failed!" );
@@ -1596,7 +1550,7 @@ BOOL WdeDialogCreateWindow( WdeDialogObject *obj, bool *show, void *p2 )
 
     if( !WdeDialogSetFont( obj, &WdeLastFont, &obj->resizer ) ) {
         WdeWriteTrail( "WdeDialogCreateWindow: SET_FONT failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* let's recreate the children in reverse order */
@@ -1606,12 +1560,12 @@ BOOL WdeDialogCreateWindow( WdeDialogObject *obj, bool *show, void *p2 )
         olist = NULL;
     }
 
-    for( ; olist; olist = ListPrev( olist ) ) {
+    for( ; olist != NULL; olist = ListPrev( olist ) ) {
         OBJ_ID  id;
         child = ListElement( olist );
         if( !Forward( child, CREATE_WINDOW, NULL, NULL ) ) {
             WdeWriteTrail( "WdeDialogCreateWindow: Failed to create child window!" );
-            return( FALSE );
+            return( false );
         }
         if( Forward( child, IDENTIFY, &id, NULL ) && id == SBAR_OBJ ) {
             WdeSBNoodleSize( child, TRUE );
@@ -1626,10 +1580,10 @@ BOOL WdeDialogCreateWindow( WdeDialogObject *obj, bool *show, void *p2 )
         ShowWindow( obj->window_handle, SW_SHOW );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogOnTop( WdeDialogObject *obj, void *p1, void *p2 )
+bool WdeDialogOnTop( WdeDialogObject *obj, void *p1, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p1 );
@@ -1640,10 +1594,10 @@ BOOL WdeDialogOnTop( WdeDialogObject *obj, void *p1, void *p2 )
     SendMessage( obj->window_handle, WM_NCACTIVATE, (WPARAM)TRUE, 0 );
 #endif
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogAddSubObject( WdeDialogObject *dialog, OBJPTR obj, void *p2 )
+bool WdeDialogAddSubObject( WdeDialogObject *dialog, OBJPTR obj, void *p2 )
 {
     OBJ_ID      id;
     RECT        dialog_rect;
@@ -1655,7 +1609,7 @@ BOOL WdeDialogAddSubObject( WdeDialogObject *dialog, OBJPTR obj, void *p2 )
     _wde_touch( p2 );
 
     /* make sure the object is not another dialog object */
-    Forward( (OBJPTR)obj, IDENTIFY, &id, NULL );
+    Forward( obj, IDENTIFY, &id, NULL );
     if( id == DIALOG_OBJ ) {
         return( Forward( dialog->parent, ADD_SUBOBJECT, obj, p2 ) );
     }
@@ -1681,7 +1635,7 @@ BOOL WdeDialogAddSubObject( WdeDialogObject *dialog, OBJPTR obj, void *p2 )
 
     if( pnt.x < dialog_rect.left - fudge || pnt.y < dialog_rect.top ) {
         WdeWriteTrail( "WdeDialogAddSubObject: Cntrl not contained by dialog top left!" );
-        return( FALSE );
+        return( false );
     }
 
     if( dialog->num_children < WDE_DIALOG_MAX_CONTROLS ) {
@@ -1692,15 +1646,15 @@ BOOL WdeDialogAddSubObject( WdeDialogObject *dialog, OBJPTR obj, void *p2 )
 
         if( !Notify( obj, NEW_PARENT, dialog->object_handle ) ) {
             WdeWriteTrail( "WdeDialogAddSubObject: NEW_PARENT notify failed!" );
-            return( FALSE );
+            return( false );
         }
     } else {
         WdeWriteTrail( "WdeDialogAddSubObject: Dialog full!" );
         WdeDisplayErrorMsg( WDE_DIALOGFULL );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeCalcDialogNCSize( WdeDialogObject *obj, RECT *size )
@@ -1718,28 +1672,28 @@ bool WdeCalcDialogNCSize( WdeDialogObject *obj, RECT *size )
         size->right = win_rect.right - client_rect.right;
         size->bottom = win_rect.bottom - client_rect.bottom;
     } else {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogGetNCSize( WdeDialogObject *obj, RECT *size, void *p2 )
+bool WdeDialogGetNCSize( WdeDialogObject *obj, RECT *size, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *size = obj->nc_size;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogFindSubObjects( WdeDialogObject *obj, SUBOBJ_REQUEST *req, LIST **obj_list )
+bool WdeDialogFindSubObjects( WdeDialogObject *obj, SUBOBJ_REQUEST *req, LIST **obj_list )
 {
     return( WdeFindSubObjects( req, obj_list, obj->children ) );
 }
 
-BOOL WdeDialogFindObjectsPt( WdeDialogObject *obj, POINT *pt, LIST **obj_list )
+bool WdeDialogFindObjectsPt( WdeDialogObject *obj, POINT *pt, LIST **obj_list )
 {
     LIST   *subobjs;
 
@@ -1747,18 +1701,18 @@ BOOL WdeDialogFindObjectsPt( WdeDialogObject *obj, POINT *pt, LIST **obj_list )
         ListAddElt( obj_list, ListElement( subobjs ) );
         ListFree( subobjs );
     } else {
-        ListAddElt( obj_list, obj );
+        ListAddElt( obj_list, (OBJPTR)obj );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogGetNextChild( WdeDialogObject *obj, OBJPTR *o, bool *up )
+bool WdeDialogGetNextChild( WdeDialogObject *obj, OBJPTR *o, bool *up )
 {
     return( WdeGetNextChild( &obj->ochildren, o, *up ) );
 }
 
-BOOL WdeDialogRemoveSubObject( WdeDialogObject *dialog, OBJPTR obj, void *p2 )
+bool WdeDialogRemoveSubObject( WdeDialogObject *dialog, OBJPTR obj, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
@@ -1771,25 +1725,25 @@ BOOL WdeDialogRemoveSubObject( WdeDialogObject *dialog, OBJPTR obj, void *p2 )
             dialog->children = NULL;
         }
     } else {
-        return( FALSE );
+        return( false );
     }
 
     WdeDialogModified( dialog );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogGetSubObjectList( WdeDialogObject *obj, LIST **l, void *p2 )
+bool WdeDialogGetSubObjectList( WdeDialogObject *obj, LIST **l, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *l = obj->children;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogDraw( WdeDialogObject *obj, RECT *area, HDC *dc )
+bool WdeDialogDraw( WdeDialogObject *obj, RECT *area, HDC *dc )
 {
     RECT        rect;
     POINT       origin;
@@ -1807,7 +1761,7 @@ BOOL WdeDialogDraw( WdeDialogObject *obj, RECT *area, HDC *dc )
         if( IntersectRect( &trect, area, &child_rect ) ) {
             if( !Forward( child, ON_TOP, NULL, NULL ) ) {
                 WdeWriteTrail( "WdeDialogDraw: child ON_TOP failed!" );
-                return( FALSE );
+                return( false );
             }
         }
     }
@@ -1815,8 +1769,7 @@ BOOL WdeDialogDraw( WdeDialogObject *obj, RECT *area, HDC *dc )
     if( dc != NULL && IntersectRect( &trect, area, &rect ) ) {
         OffsetRect( &trect, -origin.x, -origin.y );
         RedrawWindow( obj->res_info->edit_win, &trect, (HRGN)NULL,
-                      RDW_INTERNALPAINT | //RDW_INVALIDATE |
-                      RDW_UPDATENOW );
+                      RDW_INTERNALPAINT /* | RDW_INVALIDATE */ | RDW_UPDATENOW );
         //SendMessage( obj->window_handle, WM_NCACTIVATE, (WPARAM)TRUE, NULL );
     }
 
@@ -1827,10 +1780,10 @@ BOOL WdeDialogDraw( WdeDialogObject *obj, RECT *area, HDC *dc )
 
     SendMessage( obj->window_handle, WM_NCACTIVATE, (WPARAM)TRUE, 0 );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogSetFont( WdeDialogObject *obj, HFONT *font, WdeResizeRatio *resizer )
+bool WdeDialogSetFont( WdeDialogObject *obj, HFONT *font, WdeResizeRatio *resizer )
 {
     LIST        *olist;
     OBJPTR      child;
@@ -1839,7 +1792,7 @@ BOOL WdeDialogSetFont( WdeDialogObject *obj, HFONT *font, WdeResizeRatio *resize
 
     if( !WdeKludgeDialogSize( obj, TRUE, FALSE ) ) {
         WdeWriteTrail( "WdeDialogSetFont: Couldn't kludge size!" );
-        return( FALSE );
+        return( false );
     }
 
     /* we must set the font of all children in reverse order */
@@ -1853,14 +1806,14 @@ BOOL WdeDialogSetFont( WdeDialogObject *obj, HFONT *font, WdeResizeRatio *resize
         child = ListElement( olist );
         if( !Forward( child, SET_FONT, font, resizer ) ) {
             WdeWriteTrail( "WdeDialogSetFont: Couldn't set child font!" );
-            return( FALSE );
+            return( false );
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogDestroyWindow( WdeDialogObject *obj, bool *quick, bool *destroy_children )
+bool WdeDialogDestroyWindow( WdeDialogObject *obj, bool *quick, bool *destroy_children )
 {
     LIST        *olist;
     OBJPTR      child;
@@ -1885,24 +1838,24 @@ BOOL WdeDialogDestroyWindow( WdeDialogObject *obj, bool *quick, bool *destroy_ch
 
     MarkInvalid( &rect );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogShowWindow( WdeDialogObject *obj, bool *flag, void *p2 )
+bool WdeDialogShowWindow( WdeDialogObject *obj, bool *flag, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( flag == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     WdeShowObjectWindow( obj->window_handle, *flag );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogGetResizeInfo( WdeDialogObject *obj, RESIZE_ID *info, void *p2 )
+bool WdeDialogGetResizeInfo( WdeDialogObject *obj, RESIZE_ID *info, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -1914,16 +1867,16 @@ BOOL WdeDialogGetResizeInfo( WdeDialogObject *obj, RESIZE_ID *info, void *p2 )
         *info = R_NONE;
     }
 
-    return( TRUE );
+    return( true );
 }
 
-static BOOL WdeDialogValidateMove( WdeDialogObject *obj, POINT *pnt, ACTION act )
+static bool WdeDialogValidateMove( WdeDialogObject *obj, POINT *pnt, ACTION_ID act )
 {
     RECT obj_rect;
     RECT nc_size;
 
     if( act == MOVE && obj->mode != WdeSelect ) {
-        return( FALSE );
+        return( false );
     }
 
     Location( (OBJPTR)obj, &obj_rect );
@@ -1947,13 +1900,13 @@ static BOOL WdeDialogValidateMove( WdeDialogObject *obj, POINT *pnt, ACTION act 
     obj_rect.bottom -= nc_size.bottom;
 
     if( PtInRect( &obj_rect, *pnt ) ) {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogValidateAction( WdeDialogObject *obj, ACTION *act, void *p2 )
+bool WdeDialogValidateAction( WdeDialogObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 
@@ -1963,42 +1916,42 @@ BOOL WdeDialogValidateAction( WdeDialogObject *obj, ACTION *act, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeDialogActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( ValidateAction( (OBJPTR)obj->o_item, *act, p2 ) );
+    return( ValidateAction( obj->o_item, *act, p2 ) );
 }
 
-BOOL WdeDialogGetWindowHandle( WdeDialogObject *obj, HWND *hwin, void *p2 )
+bool WdeDialogGetWindowHandle( WdeDialogObject *obj, HWND *hwin, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *hwin = obj->window_handle;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogFirstChild( WdeDialogObject *obj, void *p1, void *p2 )
+bool WdeDialogFirstChild( WdeDialogObject *obj, void *p1, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p1 );
     _wde_touch( p2 );
 
     if( obj->parent == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     if( !Forward( obj->parent, PUT_ME_FIRST, obj->object_handle, NULL ) ) {
         WdeWriteTrail( "WdeDialogFirstChild: PUT_ME_FIRST failed!" );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogPutChildFirst( WdeDialogObject *obj, OBJPTR child, void *p2 )
+bool WdeDialogPutChildFirst( WdeDialogObject *obj, OBJPTR child, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
@@ -2006,14 +1959,14 @@ BOOL WdeDialogPutChildFirst( WdeDialogObject *obj, OBJPTR child, void *p2 )
     if( obj->num_children != 0) {
         if( !WdePutObjFirst( child, &obj->children ) ) {
             WdeWriteTrail( "WdeDialogPutChildFirst: WdePutObjFirst failed!" );
-            return( FALSE );
+            return( false );
         }
     } else {
         WdeWriteTrail( "WdeDialogPutChildFirst: No children!" );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeWriteDialogToInfo( WdeDialogObject *obj )
@@ -2023,10 +1976,10 @@ void WdeWriteDialogToInfo( WdeDialogObject *obj )
     is.obj_id = DIALOG_OBJ;
     is.res_info = obj->res_info;
     is.obj = obj->object_handle;
-    is.dsize.x = GETHDR_SIZEX( obj->dialog_info );
-    is.dsize.y = GETHDR_SIZEY( obj->dialog_info );
-    is.dsize.width = GETHDR_SIZEW( obj->dialog_info );
-    is.dsize.height = GETHDR_SIZEH( obj->dialog_info );
+    is.sizeinfo.x = GETHDR_SIZEX( obj->dialog_info );
+    is.sizeinfo.y = GETHDR_SIZEY( obj->dialog_info );
+    is.sizeinfo.width = GETHDR_SIZEW( obj->dialog_info );
+    is.sizeinfo.height = GETHDR_SIZEH( obj->dialog_info );
     is.u.dlg.caption = GETHDR_CAPTION( obj->dialog_info );
     is.u.dlg.name = obj->name;
     is.symbol = WdeStrDup( obj->symbol );
@@ -2038,14 +1991,14 @@ void WdeWriteDialogToInfo( WdeDialogObject *obj )
     }
 }
 
-BOOL WdeDialogNotify( WdeDialogObject *obj, NOTE_ID *id, void *p2 )
+bool WdeDialogNotify( WdeDialogObject *obj, NOTE_ID *noteid, void *p2 )
 {
     HWND        handle;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
-    switch( *id ) {
+    switch( *noteid ) {
     case MOVE_START:
         HideSelectBoxes();
         break;
@@ -2059,7 +2012,7 @@ BOOL WdeDialogNotify( WdeDialogObject *obj, NOTE_ID *id, void *p2 )
          */
         if( !WdeDialogFirstChild( obj, NULL, NULL ) ) {
             WdeWriteTrail( "WdeDialogNotify: FIRST_CHILD falied!" );
-            return( FALSE );
+            return( false );
         }
 
         WdeDialogOnTop( obj, NULL, NULL );
@@ -2069,7 +2022,7 @@ BOOL WdeDialogNotify( WdeDialogObject *obj, NOTE_ID *id, void *p2 )
 
         WdeWriteDialogToInfo( obj );
 
-        return( TRUE );
+        return( true );
 
     case NEW_PARENT:
         if( p2 == NULL ) {
@@ -2078,19 +2031,19 @@ BOOL WdeDialogNotify( WdeDialogObject *obj, NOTE_ID *id, void *p2 )
         } else {
             if( obj->parent != (OBJPTR)p2 ) {
                 obj->parent = (OBJPTR)p2;
-                if( !Forward( (OBJPTR)obj->parent, GET_WINDOW_HANDLE, &handle, NULL ) ) {
-                    return ( FALSE );
+                if( !Forward( obj->parent, GET_WINDOW_HANDLE, &handle, NULL ) ) {
+                    return ( false );
                 }
                 obj->parent_handle = handle;
             }
         }
-        return( Notify( (OBJPTR)obj->o_item, *id, obj->parent ) );
+        return( Notify( obj->o_item, *noteid, obj->parent ) );
     }
 
-    return( FALSE );
+    return( false );
 }
 
-BOOL WdeDialogResize( WdeDialogObject *obj, RECT *new_pos, bool *flag )
+bool WdeDialogResize( WdeDialogObject *obj, RECT *new_pos, bool *flag )
 {
     LIST    *olist;
     OBJPTR  child;
@@ -2100,7 +2053,7 @@ BOOL WdeDialogResize( WdeDialogObject *obj, RECT *new_pos, bool *flag )
     POINT   origin;
 
     if( *flag && obj->mode != WdeSelect ) {
-        return( FALSE );
+        return( false );
     }
 
     if( new_pos->right - new_pos->left < obj->nc_size.left + obj->nc_size.right ) {
@@ -2115,7 +2068,7 @@ BOOL WdeDialogResize( WdeDialogObject *obj, RECT *new_pos, bool *flag )
 
     if( !Resize( obj->o_item, new_pos, *flag ) ) {
         WdeWriteTrail( "WdeDialogResize: O_ITEM RESIZE failed!" );
-        return( FALSE );
+        return( false );
     }
 
     if( *flag ) {
@@ -2123,7 +2076,7 @@ BOOL WdeDialogResize( WdeDialogObject *obj, RECT *new_pos, bool *flag )
         WdeUpdateDialogUnits( obj, new_pos, &obj->nc_size );
         if( !WdeKludgeDialogSize( obj, TRUE, FALSE ) ) {
             WdeWriteTrail( "WdeDialogResize: Couldn't kludge size!" );
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -2135,10 +2088,10 @@ BOOL WdeDialogResize( WdeDialogObject *obj, RECT *new_pos, bool *flag )
                      new_location.top - origin.y, new_location.right - new_location.left,
                      new_location.bottom - new_location.top, TRUE ) ) {
         WdeWriteTrail( "WdeDialogResize: MoveWindow failed!" );
-        if( !Resize( obj->o_item, &old_location, FALSE ) ) {
+        if( !Resize( obj->o_item, &old_location, false ) ) {
             WdeWriteTrail( "WdeDialogResize: O_ITEM RESIZE undo failed!" );
         }
-        return( FALSE );
+        return( false );
     }
 
     /* tell all children that they have a new location but DONT actually
@@ -2172,19 +2125,19 @@ BOOL WdeDialogResize( WdeDialogObject *obj, RECT *new_pos, bool *flag )
     }
 
     if( *flag ) {
-        WdeCheckBaseScrollbars( FALSE );
+        WdeCheckBaseScrollbars( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeUpdateDialogUnits( WdeDialogObject *obj, RECT *new, RECT *nc_size )
 {
-    RECT           size;
-    DialogSizeInfo dsize;
+    RECT                size;
+    WdeDialogSizeInfo   sizeinfo;
 
     if( new == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     size = *new;
@@ -2195,19 +2148,18 @@ bool WdeUpdateDialogUnits( WdeDialogObject *obj, RECT *new, RECT *nc_size )
     size.bottom -= nc_size->bottom;
 
     /* save the old dialog units */
-    dsize = GETHDR_SIZE( obj->dialog_info );
+    sizeinfo = GETHDR_SIZE( obj->dialog_info );
 
-    if( !WdeScreenToDialog( obj, &obj->resizer, &size,
-                            GETHDR_PSIZE( obj->dialog_info ) ) ) {
+    if( !WdeScreenToDialog( obj, &obj->resizer, &size, GETHDR_PSIZE( obj->dialog_info ) ) ) {
         /* restore the old dialog units */
-        SETHDR_SIZE( obj->dialog_info, dsize );
-        return( FALSE );
+        SETHDR_SIZE( obj->dialog_info, sizeinfo );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogMove( WdeDialogObject *obj, POINT *off, bool *forms_called )
+bool WdeDialogMove( WdeDialogObject *obj, POINT *off, bool *forms_called )
 {
     LIST    *olist;
     OBJPTR  child;
@@ -2286,12 +2238,12 @@ BOOL WdeDialogMove( WdeDialogObject *obj, POINT *off, bool *forms_called )
         if( *forms_called ) {
             RemoveObject( obj->parent, obj->object_handle );
         }
-        if( !Resize( obj->o_item, &old_location, FALSE ) ) {
+        if( !Resize( obj->o_item, &old_location, false ) ) {
             WdeWriteTrail( "WdeDialogMove: O_ITEM RESIZE undo failed!" );
         }
     } else if( ok && *forms_called )  {
         WdeDialogModified( obj );
-        WdeCheckBaseScrollbars( FALSE );
+        WdeCheckBaseScrollbars( false );
     }
 
     return( ok );
@@ -2299,9 +2251,9 @@ BOOL WdeDialogMove( WdeDialogObject *obj, POINT *off, bool *forms_called )
 
 bool WdeOffsetDialogUnits( WdeDialogObject *obj, RECT *new, RECT *nc_size )
 {
-    RECT           new_pos;
-    RECT           nc;
-    DialogSizeInfo dsize;
+    RECT                new_pos;
+    RECT                nc;
+    WdeDialogSizeInfo   sizeinfo;
 
     if( !nc_size ) {
         nc = obj->nc_size;
@@ -2318,18 +2270,21 @@ bool WdeOffsetDialogUnits( WdeDialogObject *obj, RECT *new, RECT *nc_size )
     new_pos.left += nc.left;
     new_pos.top += nc.top;
 
-    if( WdeScreenToDialog( obj, &obj->resizer, &new_pos, &dsize ) ) {
-        SETHDR_SIZEX( obj->dialog_info, dsize.x );
-        SETHDR_SIZEY( obj->dialog_info, dsize.y );
-        return( TRUE );
+    if( WdeScreenToDialog( obj, &obj->resizer, &new_pos, &sizeinfo ) ) {
+        SETHDR_SIZEX( obj->dialog_info, sizeinfo.x );
+        SETHDR_SIZEY( obj->dialog_info, sizeinfo.y );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
-BOOL WdeDialogGetObjectInfo( WdeDialogObject *obj,
-                             WdeDialogBoxHeader **info, WResID **name )
+bool WdeDialogGetObjectInfo( WdeDialogObject *obj, void **_info, void **name )
 {
+    WdeDialogBoxHeader **info = (WdeDialogBoxHeader **)_info;
+//    WResID **name = _name;
+    _wde_touch( name );
+
     if( info != NULL ) {
         *info = obj->dialog_info;
     }
@@ -2338,25 +2293,27 @@ BOOL WdeDialogGetObjectInfo( WdeDialogObject *obj,
         *name = obj->name;
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogSetObjectInfo( WdeDialogObject *obj, WdeDialogBoxHeader *info, void *p2 )
+bool WdeDialogSetObjectInfo( WdeDialogObject *obj, void *_info, void *name )
 {
+    WdeDialogBoxHeader *info = _info;
+//    WResID *name = _name;
     void *vp;
 
     /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
+    _wde_touch( name );
 
     if( info == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     vp = WdeCopyDialogBoxHeader( info );
 
     if( vp == NULL ) {
         WdeWriteTrail( "WdeDialogSetObjectInfo: copy failed!" );
-        return( FALSE );
+        return( false );
     }
 
     if( obj->dialog_info != NULL ) {
@@ -2365,22 +2322,22 @@ BOOL WdeDialogSetObjectInfo( WdeDialogObject *obj, WdeDialogBoxHeader *info, voi
 
     obj->dialog_info = vp;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogGetObjectHelpInfo( WdeDialogObject *obj,
-                                 WdeDialogBoxHeader **info, char **helpsymbol )
+bool WdeDialogGetObjectHelpInfo( WdeDialogObject *obj, void **info, char **helpsymbol )
 {
+//    WdeDialogBoxHeader **info = (WdeDialogBoxHeader **)_info;
     _wde_touch( info );
 
     if( helpsymbol != NULL ) {
         *helpsymbol = obj->helpsymbol;
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogPasteObject( WdeDialogObject *obj, OBJPTR parent, POINT *pnt )
+bool WdeDialogPasteObject( WdeDialogObject *obj, OBJPTR parent, POINT *pnt )
 {
     LIST            *c;
     LIST            *oc;
@@ -2392,7 +2349,7 @@ BOOL WdeDialogPasteObject( WdeDialogObject *obj, OBJPTR parent, POINT *pnt )
     obj->children = NULL;
     obj->ochildren = NULL;
 
-    ok = WdeSetObjectInfo( obj, &obj->res_info, &obj->dlg_item, obj->name );
+    ok = WdeSetObjectInfo( (OBJPTR)obj, &obj->res_info, &obj->dlg_item, obj->name );
     if( !ok ) {
         WdeWriteTrail( "WdeDialogPasteObject: WdeSetObjectInfo failed!" );
     }
@@ -2417,7 +2374,7 @@ BOOL WdeDialogPasteObject( WdeDialogObject *obj, OBJPTR parent, POINT *pnt )
         obj->ochildren = oc;
         for( ; oc != NULL; oc = ListNext( oc ) ) {
             oentry = (WdeOrderedEntry *)ListElement( oc );
-            ok = Forward( oentry->obj, PASTE, obj->object_handle, NULL );
+            ok = ( Forward( oentry->obj, PASTE, obj->object_handle, NULL ) != 0 );
             if( !ok ) {
                 WdeWriteTrail( "WdeDialogPasteObject: A PASTE failed!" );
             }
@@ -2425,7 +2382,7 @@ BOOL WdeDialogPasteObject( WdeDialogObject *obj, OBJPTR parent, POINT *pnt )
     }
 
     if( ok ) {
-        ok = WdeDialogFirstChild( obj, NULL, NULL );
+        ok = ( WdeDialogFirstChild( obj, NULL, NULL ) != 0 );
         if( !ok ) {
             WdeWriteTrail( "WdeDialogPasteObject: FIRST_CHILD falied!" );
         }
@@ -2443,8 +2400,7 @@ BOOL WdeDialogPasteObject( WdeDialogObject *obj, OBJPTR parent, POINT *pnt )
     return( ok );
 }
 
-BOOL WdeDialogCopyObject( WdeDialogObject *obj, WdeDialogObject **new,
-                          WdeDialogObject *handle )
+bool WdeDialogCopyObject( WdeDialogObject *obj, WdeDialogObject **new, OBJPTR handle )
 {
     LIST            *olist;
     OBJPTR          new_child;
@@ -2452,18 +2408,18 @@ BOOL WdeDialogCopyObject( WdeDialogObject *obj, WdeDialogObject **new,
 
     if( new == NULL ) {
         WdeWriteTrail( "WdeDialogCopyObject: Invalid new object!" );
-        return( FALSE );
+        return( false );
     }
 
     *new = (WdeDialogObject *)WRMemAlloc( sizeof( WdeDialogObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeDialogCopyObject: Object malloc failed" );
-        return( FALSE );
+        return( false );
     }
     memset( *new, 0, sizeof( WdeDialogObject ) );
 
-    (*new)->dispatcher = obj->dispatcher;
+    OBJ_DISPATCHER_COPY( *new, obj );
     (*new)->object_id = obj->object_id;
     (*new)->font = obj->font;
     (*new)->mem_flags = obj->mem_flags;
@@ -2479,11 +2435,11 @@ BOOL WdeDialogCopyObject( WdeDialogObject *obj, WdeDialogObject **new,
     if( (*new)->dialog_info == NULL || (*new)->name == NULL ) {
         WdeWriteTrail( "WdeDialogCopyObject: NULL field detected!" );
         WdeFreeDialogObject( *new );
-        return( FALSE );
+        return( false );
     }
 
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }
@@ -2491,7 +2447,7 @@ BOOL WdeDialogCopyObject( WdeDialogObject *obj, WdeDialogObject **new,
     if( !CopyObject( obj->o_item, &(*new)->o_item, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeDialogCopyObject: OITEM not created!" );
         WdeFreeDialogObject( *new );
-        return( FALSE );
+        return( false );
     }
 
     WdeCleanOrderedList( &obj->ochildren );
@@ -2508,12 +2464,12 @@ BOOL WdeDialogCopyObject( WdeDialogObject *obj, WdeDialogObject **new,
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogCutObject( WdeDialogObject *obj, WdeDialogObject **new, void *p2 )
+bool WdeDialogCutObject( WdeDialogObject *obj, OBJPTR *new, void *p2 )
 {
-    NOTE_ID   note_id;
+    NOTE_ID   noteid;
     bool      quick;
     bool      destroy_children;
 
@@ -2521,32 +2477,32 @@ BOOL WdeDialogCutObject( WdeDialogObject *obj, WdeDialogObject **new, void *p2 )
     _wde_touch( p2 );
 
     if( new == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     *new = NULL;
 
-    WdeRemoveObject( obj->res_info, obj );
+    WdeRemoveObject( obj->res_info, (OBJPTR)obj );
 
     obj->res_info = NULL;
     obj->dlg_item = NULL;
 
     if( !RemoveObject( obj->parent, obj->object_handle ) ) {
         WdeWriteTrail( "WdeDialogCutObject: Remove from parent failed!" );
-        return( FALSE );
+        return( false );
     }
 
-    note_id = NEW_PARENT;
-    if( !WdeDialogNotify( obj, &note_id, NULL ) ) {
+    noteid = NEW_PARENT;
+    if( !WdeDialogNotify( obj, &noteid, NULL ) ) {
         WdeWriteTrail( "WdeDialogCutObject: New parent notify failed!" );
         if( !AddObject( obj->parent, obj->object_handle ) ) {
             WdeWriteTrail( "WdeDialogCutObject: Add to parent failed!" );
         }
-        return( FALSE );
+        return( false );
     }
 
-    quick = TRUE;
-    destroy_children = TRUE;
+    quick = true;
+    destroy_children = true;
 
     if( !WdeDialogDestroyWindow( obj, &quick, &destroy_children ) ) {
         WdeWriteTrail( "WdeDialogDestroy: WdeDialogDestroyWindow failed!" );
@@ -2554,22 +2510,22 @@ BOOL WdeDialogCutObject( WdeDialogObject *obj, WdeDialogObject **new, void *p2 )
 
     *new = obj->object_handle;
 
-    WdeCheckBaseScrollbars( FALSE );
+    WdeCheckBaseScrollbars( false );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogGetOrderMode( WdeDialogObject *obj, WdeOrderMode *mode, void *p2 )
+bool WdeDialogGetOrderMode( WdeDialogObject *obj, WdeOrderMode *mode, WdeSetOrderLists *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *mode = obj->mode;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeDialogSetOrderMode( WdeDialogObject *obj, WdeOrderMode *mode, void *p2 )
+bool WdeDialogSetOrderMode( WdeDialogObject *obj, WdeOrderMode *mode, WdeSetOrderLists **p2 )
 {
     WdeSetOrderLists    *sol;
     WdeOrderedEntry     *oentry;
@@ -2581,14 +2537,16 @@ BOOL WdeDialogSetOrderMode( WdeDialogObject *obj, WdeOrderMode *mode, void *p2 )
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
+    sol = NULL;
+
     if( obj->ochildren == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( obj->mode == WdeSelect ) {
         sol = (WdeSetOrderLists *)WRMemAlloc( sizeof( WdeSetOrderLists ) );
         if( sol == NULL ) {
-            return( FALSE );
+            return( false );
         }
         WdeCleanOrderedList( &obj->ochildren );
         pos = 0;
@@ -2599,12 +2557,12 @@ BOOL WdeDialogSetOrderMode( WdeDialogObject *obj, WdeOrderMode *mode, void *p2 )
         }
         sol->oldlist = WdeCopyOrderedList( obj->ochildren );
         if( sol->oldlist == NULL ) {
-            return( FALSE );
+            return( false );
         }
         sol->newlist = NULL;
         WdeSetBaseObject( IDM_SELECT_MODE );
         HideSelectBoxes();
-        MakeObjectCurrent( obj );
+        MakeObjectCurrent( (OBJPTR)obj );
     }
 
     for( olist = obj->ochildren; olist != NULL; olist = ListNext( olist ) ) {
@@ -2635,25 +2593,24 @@ BOOL WdeDialogSetOrderMode( WdeDialogObject *obj, WdeOrderMode *mode, void *p2 )
         WdeReorderTags( sol, TRUE );
     }
 
-    WdeSetDialogObjectMenu( WdeIsDialogRestorable( obj ),
-                            obj->res_info->hash_table != NULL, obj->mode );
+    WdeSetDialogObjectMenu( WdeIsDialogRestorable( obj ), obj->res_info->hash_table != NULL, obj->mode );
 
-    return( TRUE );
+    return( true );
 }
 
-bool WdeBuildDialogTemplate ( WdeDialogBoxHeader *dialog_header, HGLOBAL *hglobal_mem )
+bool WdeBuildDialogTemplate( WdeDialogBoxHeader *dialog_header, TEMPLATE_HANDLE *dlgtemplate, size_t *templatelen )
 {
     char        *MenuName;
     char        *ClassName;
-    char        *fontname;
-    short       pointsize;
+    char        *font_facename;
+    short       font_pointsize;
     bool        ok;
     uint_32     style;
 
     MenuName = NULL;
     ClassName = NULL;
 
-    ok = (dialog_header != NULL && hglobal_mem != NULL);
+    ok = ( dialog_header != NULL && dlgtemplate != NULL );
 
     if( ok ) {
         style = GETHDR_STYLE( dialog_header );
@@ -2669,43 +2626,43 @@ bool WdeBuildDialogTemplate ( WdeDialogBoxHeader *dialog_header, HGLOBAL *hgloba
             WRMemFree( ClassName );
             ClassName = NULL;
         }
-        ok = (ClassName == NULL || (ClassName != NULL && WdeIsClassDefined( ClassName )));
+        ok = ( ClassName == NULL || (ClassName != NULL && WdeIsClassDefined( ClassName )) );
         if( !ok ) {
             //WdeDisplayErrorMsg( WDE_UNDEFINEDCLASS );
-            WdeSetStatusByID( WDE_NONE, WDE_UNDEFINEDCLASS );
+            WdeSetStatusByID( 0, WDE_UNDEFINEDCLASS );
             WRMemFree( ClassName );
             ClassName = NULL;
             ok = true;
         }
     }
 
-    fontname = GETHDR_FONTNAME( dialog_header );
-    pointsize = GETHDR_POINTSIZE( dialog_header );
+    font_facename = GETHDR_FONTFACENAME( dialog_header );
+    font_pointsize = GETHDR_FONTPOINTSIZE( dialog_header );
 
     // hokey kanji stuff
 #ifndef __NT__
     if( (style & DS_SETFONT ) == 0 && GetSystemMetrics( SM_DBCSENABLED ) ) {
         style |= DS_SETFONT;
-        fontname = "System";
-        pointsize = 14;
+        font_facename = "System";
+        font_pointsize = 14;
     }
 #endif
 
     /* Allocate global block of memory for Dialog template */
     if( ok ) {
-        *hglobal_mem = DialogTemplate( style, GETHDR_SIZEX( dialog_header ),
+        *dlgtemplate = DialogTemplate( style, GETHDR_SIZEX( dialog_header ),
             GETHDR_SIZEY( dialog_header ), GETHDR_SIZEW( dialog_header ),
             GETHDR_SIZEH( dialog_header ), MenuName, ClassName,
-            GETHDR_CAPTION( dialog_header ), pointsize, fontname );
+            GETHDR_CAPTION( dialog_header ), font_pointsize, font_facename, templatelen );
 
-        ok = (*hglobal_mem != NULL);
+        ok = ( *dlgtemplate != NULL );
         if( !ok ) {
             WdeWriteTrail( "Could not Alloc dialog template!" );
         }
     }
 
     if( ok ) {
-        DoneAddingControls( *hglobal_mem );
+        DoneAddingControls( *dlgtemplate );
     }
 
     if( MenuName != NULL ) {
@@ -2719,15 +2676,15 @@ bool WdeBuildDialogTemplate ( WdeDialogBoxHeader *dialog_header, HGLOBAL *hgloba
     return( ok );
 }
 
-WINEXPORT BOOL CALLBACK WdeDialogProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeDialogDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     LPARAM  new_lparam;
-    int     msg_processed;
+    bool    ret;
 
-    msg_processed = FALSE;
+    ret = false;
 
     if( WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
-        return( TRUE );
+        return( true );
     }
 
     switch( message ) {
@@ -2735,9 +2692,9 @@ WINEXPORT BOOL CALLBACK WdeDialogProc( HWND hWnd, UINT message, WPARAM wParam, L
     case WM_SETTEXT:
     case WM_NCPAINT:
     case WM_NCACTIVATE:
-        SetWindowLong( hWnd, DWL_MSGRESULT,
-                       WdeCtl3dDlgFramePaint( hWnd, message, wParam, lParam ) );
-        return( TRUE );
+        SET_DLGRESULT( hWnd, WdeCtl3dDlgFramePaint( hWnd, message, wParam, lParam ) );
+        ret = true;
+        break;
 #endif
 #if defined( __WINDOWS__ ) || defined( __NT__ ) && !defined( _WIN64 )
     case WM_DLGBORDER:
@@ -2747,7 +2704,7 @@ WINEXPORT BOOL CALLBACK WdeDialogProc( HWND hWnd, UINT message, WPARAM wParam, L
                 *((int *)lParam) = CTL3D_NOBORDER;
             }
         }
-        msg_processed = TRUE;
+        ret = true;
         break;
     case WM_DLGSUBCLASS:
         if( lParam ) {
@@ -2756,7 +2713,7 @@ WINEXPORT BOOL CALLBACK WdeDialogProc( HWND hWnd, UINT message, WPARAM wParam, L
                 *((int *)lParam) = CTL3D_NOSUBCLASS;
             }
         }
-        msg_processed = TRUE;
+        ret = true;
         break;
 #endif
     case WM_INITDIALOG:
@@ -2775,7 +2732,7 @@ WINEXPORT BOOL CALLBACK WdeDialogProc( HWND hWnd, UINT message, WPARAM wParam, L
             new_lparam = MAKELONG( HTCLIENT, HIWORD( lParam ) );
             SendMessage( hWnd, message, wParam, new_lparam );
         }
-        msg_processed = TRUE;
+        ret = true;
         break;
 
     case WM_SETFONT:
@@ -2783,17 +2740,17 @@ WINEXPORT BOOL CALLBACK WdeDialogProc( HWND hWnd, UINT message, WPARAM wParam, L
         break;
     }
 
-    return( msg_processed );
+    return( ret );
 }
 
-WINEXPORT BOOL CALLBACK WdeDialogDefineProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeDialogDefineDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    static WdeDefineObjectInfo *o_info;
-    static uint_8              init_done;
+    static WdeDefineObjectInfo *o_info = NULL;
+    static bool                init_done = false;
     bool                       ret;
     int                        font_index;
 
-    ret = FALSE;
+    ret = false;
 
     if( init_done && o_info != NULL ) {
         ret = WdeProcessSymbolCombo( hDlg, message, wParam, lParam,
@@ -2805,11 +2762,11 @@ WINEXPORT BOOL CALLBACK WdeDialogDefineProc( HWND hDlg, UINT message, WPARAM wPa
             ret = WdeProcessHelpSymbolCombo( hDlg, message, wParam, lParam,
                                              o_info->res_info->hash_table,
                                              o_info->info.d.header->HelpId,
-                                             TRUE );
+                                             true );
         }
 
         if( !ret && o_info->hook_func != NULL ) {
-            ret = (*o_info->hook_func)( hDlg, message, wParam, lParam, o_info->mask );
+            ret = o_info->hook_func( hDlg, message, wParam, lParam, o_info->mask );
         }
 
         if( ret ) {
@@ -2823,11 +2780,11 @@ WINEXPORT BOOL CALLBACK WdeDialogDefineProc( HWND hDlg, UINT message, WPARAM wPa
         break;
 
     case WM_INITDIALOG:
-        init_done = FALSE;
+        init_done = false;
         o_info = (WdeDefineObjectInfo *)lParam;
         WdeDialogSetDefineDialogInfo( o_info, hDlg );
-        init_done = TRUE;
-        ret = TRUE;
+        init_done = true;
+        ret = true;
         break;
 
     case WM_COMMAND:
@@ -2840,23 +2797,23 @@ WINEXPORT BOOL CALLBACK WdeDialogDefineProc( HWND hDlg, UINT message, WPARAM wPa
             break;
 
         case IDOK:
-            init_done = FALSE;
+            init_done = false;
             EndDialog( hDlg, TRUE );
             WdeDialogGetDefineDialogInfo( o_info, hDlg );
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDCANCEL:
-            init_done = FALSE;
+            init_done = false;
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
+            ret = true;
             break;
 
-        case IDB_FONTNAME:
+        case IDB_FONTFACENAME:
             switch( GET_WM_COMMAND_CMD( wParam, lParam ) ) {
             case CBN_CLOSEUP:
                 /* get the currently selected item */
-                font_index = (int)SendDlgItemMessage( hDlg, IDB_FONTNAME, CB_GETCURSEL, 0, 0L );
+                font_index = (int)SendDlgItemMessage( hDlg, IDB_FONTFACENAME, CB_GETCURSEL, 0, 0L );
 
                 if( font_index == CB_ERR ) {
                     WdeWriteTrail( "Could not get font index" );
@@ -2865,7 +2822,7 @@ WINEXPORT BOOL CALLBACK WdeDialogDefineProc( HWND hDlg, UINT message, WPARAM wPa
 
                 WdeDialogSetDialogPntInfo( hDlg, font_index );
 
-                SendDlgItemMessage( hDlg, IDB_POINTSIZE, CB_SETCURSEL, 0, 0L );
+                SendDlgItemMessage( hDlg, IDB_FONTPOINTSIZE, CB_SETCURSEL, 0, 0L );
 
                 break;
             }
@@ -2881,7 +2838,7 @@ void WdeDialogSetDefineDialogInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     WdeDialogObject *obj;
     DialogStyle     mask;
 
-    obj = o_info->obj;
+    obj = (WdeDialogObject *)o_info->obj;
     mask = o_info->mask;
 
     /* set the window styles */
@@ -2935,7 +2892,7 @@ void WdeDialogGetDefineDialogInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     uint_32             ExStyle;
 #endif
 
-    obj = o_info->obj;
+    obj = (WdeDialogObject *)o_info->obj;
     mask = o_info->mask;
 
     style = GETHDR_STYLE( obj->dialog_info );
@@ -2976,26 +2933,26 @@ void WdeDialogGetDefineDialogInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     WdeGetDefineObjectSymbolInfo( o_info, hDlg );
     WdeGetDefineObjectHelpSymbolInfo( o_info, hDlg );
 
-    if( GETHDR_FONTNAME( obj->dialog_info ) ) {
-        WRMemFree( GETHDR_FONTNAME( obj->dialog_info ) );
-        SETHDR_FONTNAME( obj->dialog_info, NULL );
+    if( GETHDR_FONTFACENAME( obj->dialog_info ) ) {
+        WRMemFree( GETHDR_FONTFACENAME( obj->dialog_info ) );
+        SETHDR_FONTFACENAME( obj->dialog_info, NULL );
     }
 
-    vp = WdeGetStrFromCombo( hDlg, IDB_FONTNAME );
+    vp = WdeGetStrFromCombo( hDlg, IDB_FONTFACENAME );
     if( vp != NULL ) {
         if( WdeIsStrSpace( vp ) ) {
             WRMemFree( vp );
         } else {
-            SETHDR_FONTNAME( obj->dialog_info, vp );
+            SETHDR_FONTFACENAME( obj->dialog_info, vp );
         }
     }
 
-    if( GETHDR_FONTNAME( obj->dialog_info ) ) {
-        SETHDR_POINTSIZE( obj->dialog_info,
-                          (uint_16)WdeGetUINT32FromCombo( hDlg, IDB_POINTSIZE ) );
+    if( GETHDR_FONTFACENAME( obj->dialog_info ) ) {
+        SETHDR_FONTPOINTSIZE( obj->dialog_info,
+                          (uint_16)WdeGetUINT32FromCombo( hDlg, IDB_FONTPOINTSIZE ) );
         style |= DS_SETFONT;
     } else {
-        SETHDR_POINTSIZE( obj->dialog_info, 0 );
+        SETHDR_FONTPOINTSIZE( obj->dialog_info, 0 );
         style &= ~DS_SETFONT;
     }
 
@@ -3328,26 +3285,24 @@ void WdeDialogSetDialogPntInfo( HWND hDlg, int index )
         olist = ListNext( olist );
     }
 
-    SendDlgItemMessage( hDlg, IDB_POINTSIZE, CB_RESETCONTENT, 0, 0 );
+    SendDlgItemMessage( hDlg, IDB_FONTPOINTSIZE, CB_RESETCONTENT, 0, 0 );
 
     if( olist == NULL ) {
         return;
     }
 
-    font_name = ListElement( olist );
+    font_name = (WdeFontNames *)ListElement( olist );
 
     if( font_name->fonttype & TRUETYPE_FONTTYPE ) {
         for( i = WDE_TT_FONT_MIN; i <= WDE_TT_FONT_MAX; i += 2 ) {
             ultoa( i, temp, 10 );
-            SendDlgItemMessage( hDlg, IDB_POINTSIZE, CB_ADDSTRING, 0,
-                                (LPARAM)(LPSTR)temp );
+            SendDlgItemMessage( hDlg, IDB_FONTPOINTSIZE, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)temp );
         }
     } else {
         for( olist = font_name->family_list; olist != NULL; olist = ListNext( olist ) ) {
             font_data = (WdeFontData *)ListElement( olist );
             ultoa( font_data->pointsize, temp, 10 );
-            SendDlgItemMessage( hDlg, IDB_POINTSIZE, CB_ADDSTRING, 0,
-                                (LPARAM)(LPSTR)temp );
+            SendDlgItemMessage( hDlg, IDB_FONTPOINTSIZE, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)temp );
         }
     }
 }
@@ -3366,14 +3321,13 @@ void WdeDialogSetDialogFontInfo( HWND hDlg, WdeDialogObject *obj )
     index = -1;
     for( olist = font_list; olist != NULL; olist = ListNext( olist ) ) {
         font_name = (WdeFontNames *)ListElement( olist );
-        SendDlgItemMessage( hDlg, IDB_FONTNAME, CB_ADDSTRING, 0,
-                            (LPARAM)(LPSTR)font_name->name );
+        SendDlgItemMessage( hDlg, IDB_FONTFACENAME, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)font_name->name );
         /* if the dialog has font info then find the index of
          * the font in the list
          */
-        if( !found && GETHDR_FONTNAME( obj->dialog_info ) &&
+        if( !found && GETHDR_FONTFACENAME( obj->dialog_info ) &&
             (GETHDR_STYLE( obj->dialog_info ) & DS_SETFONT) ) {
-            if( strcmp( font_name->name, GETHDR_FONTNAME( obj->dialog_info ) ) == 0 ) {
+            if( strcmp( font_name->name, GETHDR_FONTFACENAME( obj->dialog_info ) ) == 0 ) {
                 found = TRUE;
             }
             index++;
@@ -3387,12 +3341,11 @@ void WdeDialogSetDialogFontInfo( HWND hDlg, WdeDialogObject *obj )
     /* set the font name */
     if( GETHDR_STYLE( obj->dialog_info ) & DS_SETFONT ) {
         /* set the name of the font */
-        if( GETHDR_FONTNAME( obj->dialog_info ) ) {
-            WdeSetEditWithStr( GETHDR_FONTNAME( obj->dialog_info ), hDlg, IDB_FONTNAME );
+        if( GETHDR_FONTFACENAME( obj->dialog_info ) ) {
+            WdeSetEditWithStr( GETHDR_FONTFACENAME( obj->dialog_info ), hDlg, IDB_FONTFACENAME );
 
             /* set the point size of the font */
-            WdeSetEditWithUINT32( (uint_32)GETHDR_POINTSIZE( obj->dialog_info ),
-                                  10, hDlg, IDB_POINTSIZE );
+            WdeSetEditWithUINT32( (uint_32)GETHDR_FONTPOINTSIZE( obj->dialog_info ), 10, hDlg, IDB_FONTPOINTSIZE );
         }
     }
 }

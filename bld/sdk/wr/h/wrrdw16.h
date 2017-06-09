@@ -49,5 +49,6 @@
 /****************************************************************************/
 extern bool     WRLoadResourceFromWin16EXE( WRInfo * );
 extern long int WRReadWin16ExeHeader( WResFileID, os2_exe_header * );
+extern bool     WRIsHeaderValidWIN16( os2_exe_header * );
 
 #endif

@@ -55,7 +55,8 @@ sym_id  GStartCat( uint num_args, uint size ) {
 
 // Start cconcatenation into a temporary.
 
-    num_args = num_args; size = size;
+    /* unused parameters */ (void)num_args; (void)size;
+
     return( NULL );
 }
 
@@ -78,7 +79,8 @@ void    GStopCat( uint num_args, sym_id result ) {
 
 // Finish concatenation into a temporary.
 
-    result = result;
+    /* unused parameters */ (void)result;
+
     CITNode->sym_ptr = GTempString( CITNode->size );
     CITNode->opn.us = USOPN_VAL;
     // Push the address of a static SCB so that we can modify its
@@ -100,7 +102,7 @@ void    GCatArg( itnode *itptr ) {
 
 // Emit a character string to be concatenated.
 
-    itptr = itptr;
+    /* unused parameters */ (void)itptr;
 }
 
 

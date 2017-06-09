@@ -496,7 +496,8 @@ static  void    gml_doc_xxx( doc_section ds )
 
 void    gml_abstract( gml_tag gtag )
 {
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     if( ProcFlags.doc_sect_nxt == doc_sect_egdoc ) {
         xx_line_err( err_eof_expected, tok_start );
         return;
@@ -518,7 +519,8 @@ void    gml_abstract( gml_tag gtag )
 
 void    gml_appendix( gml_tag gtag )
 {
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     if( g_blank_lines_ln > 0 ) {
         set_skip_vars( NULL, NULL, NULL, 0, 0 );    // set g_blank_lines
     }
@@ -533,7 +535,8 @@ void    gml_appendix( gml_tag gtag )
 
 void    gml_backm( gml_tag gtag )
 {
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     if( g_blank_lines_ln > 0 ) {
         set_skip_vars( NULL, NULL, NULL, 0, 0 );    // set g_blank_lines
     }
@@ -547,7 +550,8 @@ void    gml_backm( gml_tag gtag )
 
 void    gml_body( gml_tag gtag )
 {
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     if( g_blank_lines_ln > 0 ) {
         set_skip_vars( NULL, NULL, NULL, 0, 0 );    // set g_blank_lines
     }
@@ -567,14 +571,16 @@ void    gml_body( gml_tag gtag )
 
 void    gml_figlist( gml_tag gtag )
 {
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     gml_doc_xxx( doc_sect_figlist );
     g_spacing_ln = layout_work.figlist.spacing;
 }
 
 void    gml_frontm( gml_tag gtag )
 {
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     gml_doc_xxx( doc_sect_frontm );
     g_spacing_ln = layout_work.defaults.spacing;
     if( !ProcFlags.fb_document_done ) { // the very first section/page
@@ -590,7 +596,8 @@ void    gml_frontm( gml_tag gtag )
 
 void    gml_index( gml_tag gtag )
 {
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     if( ProcFlags.doc_sect_nxt == doc_sect_egdoc ) {
         xx_line_err( err_eof_expected, tok_start );
         return;
@@ -620,7 +627,8 @@ void    gml_index( gml_tag gtag )
 
 void    gml_preface( gml_tag gtag )
 {
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     if( ProcFlags.doc_sect_nxt == doc_sect_egdoc ) {
         xx_line_err( err_eof_expected, tok_start );
         return;
@@ -639,7 +647,8 @@ void    gml_preface( gml_tag gtag )
 
 void    gml_titlep( gml_tag gtag )
 {
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     if( ProcFlags.doc_sect_nxt == doc_sect_egdoc ) {
         xx_line_err( err_eof_expected, tok_start );
         return;
@@ -668,7 +677,8 @@ void    gml_etitlep( gml_tag gtag )
 {
     tag_cb  *   wk;
 
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     gml_doc_xxx( doc_sect_etitlep );
     rs_loc = 0;
     titlep_lineno = 0;
@@ -682,14 +692,16 @@ void    gml_etitlep( gml_tag gtag )
 
 void    gml_toc( gml_tag gtag )
 {
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     gml_doc_xxx( doc_sect_toc );
     g_spacing_ln = layout_work.toc.spacing;
 }
 
 void    gml_egdoc( gml_tag gtag )
 {
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     if( g_blank_lines_ln > 0 ) {
         set_skip_vars( NULL, NULL, NULL, 0, 0 );    // set g_blank_lines
     }
@@ -708,7 +720,8 @@ void    gml_gdoc( gml_tag gtag )
 {
     char        *   p;
 
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     scan_err = false;
     p = scan_start;
     if( *p ) p++;
@@ -755,4 +768,3 @@ void    gml_gdoc( gml_tag gtag )
     }
     return;
 }
-

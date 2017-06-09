@@ -37,7 +37,7 @@
 #include "system.h"
 #include "zoiks.h"
 #include "cfloat.h"
-#include "conflict.h"
+#include "confldef.h"
 #include "makeins.h"
 #include "namelist.h"
 #include "rgtbl.h"
@@ -189,7 +189,8 @@ name    *SegmentPart( name *tosplit )
         new = TempOffset( tosplit, 4, U2 );
         if( new->t.temp_flags & CONST_TEMP ) {
             seg = SegmentPart( tosplit->v.symbol );
-            if( seg->n.class == N_REGISTER ) return( seg );
+            if( seg->n.class == N_REGISTER )
+                return( seg );
             new->v.symbol = seg;
         }
         return( new );
@@ -393,7 +394,7 @@ instruction     *rMAKEU2( instruction *ins )
             new_ins = ins;
         }
         ins->operands[0] = OffsetPart( ins->operands[0] );
-        if( NumOperands( ins ) >= 2 ) {
+        if( OpcodeNumOperands( ins ) >= 2 ) {
             ins->operands[1] = OffsetPart( ins->operands[1] );
         }
     }

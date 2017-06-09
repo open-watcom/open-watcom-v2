@@ -156,11 +156,11 @@ unsigned extra;
 unsigned len_mask;
 
 struct {
-    unsigned    quiet : 1;      /* no console output req'd */
-    unsigned    imperfect : 1;  /* non-minimal perfect hash function allowed */
-    unsigned    mask_hash : 1;  /* use mod 2^n */
-    unsigned    tiny_output : 1;/* output .gh file for small lists */
-    unsigned    align : 1;      /* output strings length mod 4 */
+    bool    quiet       : 1;    /* no console output req'd */
+    bool    imperfect   : 1;    /* non-minimal perfect hash function allowed */
+    bool    mask_hash   : 1;    /* use mod 2^n */
+    bool    tiny_output : 1;    /* output .gh file for small lists */
+    bool    align       : 1;    /* output strings length mod 4 */
 } flags;
 
 FILE *outfile;
@@ -879,16 +879,16 @@ char *get_gh_filename( const char *name )
 void dump_weights( unsigned first_index, unsigned last_index )
 /************************************************************/
 {
-    int bad_mask_hash;
-    unsigned mask;
-    char *prt_c;
-    letter_t c;
-    keyword_t i;
-    unsigned h;
+    bool        bad_mask_hash;
+    unsigned    mask;
+    char        *prt_c;
+    letter_t    c;
+    keyword_t   i;
+    unsigned    h;
 
     outfile = fopen( get_gh_filename( "weights" ), "w" );
     dump_common_defs( first_index, last_index );
-    bad_mask_hash = 0;
+    bad_mask_hash = false;
     for( mask = 1; mask != 0; mask <<= 1 ) {
         if( mask >= hashsize ) {
             for( i = 1; i <= num_keywords; ++i ) {
@@ -909,7 +909,7 @@ void dump_weights( unsigned first_index, unsigned last_index )
                             hashsize,
                             do_hash( hash[i] ),
                             h );
-                    bad_mask_hash = 1;
+                    bad_mask_hash = true;
                     //break;
                 }
             }

@@ -5,7 +5,7 @@ typedef int (far *fpFTicRi)( int, char );
 void f( fpFTicRi, double ) GOOD;
 void f( ... ) BAD;
 
-int far h( int, char ) { return 0; };
+int __far h( int, char ) { return 0; };
 
 void g( double a )
 {

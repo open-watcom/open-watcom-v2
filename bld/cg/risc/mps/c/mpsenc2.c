@@ -45,7 +45,8 @@ void EncodeRet( oc_ret *oc )
 {
     mips_ins            encoding;
 
-    oc = oc;
+    /* unused parameters */ (void)oc;
+
     // 'jr ra'
     encoding = _Opcode( 0 ) | _Rs( MIPS_RETURN_ADDR ) | _Function( 0x08 );
     ObjBytes( &encoding, sizeof( encoding ) );

@@ -58,6 +58,9 @@ namespace std {
   // Offset from current position in the stream:
   typedef long streamoff;
 
+  // Sizes and character counts in streams.
+  typedef int streamsize;
+
   // These are referred to in class ios, but are defined later, or elsewhere:
   class _WPRTLINK istream;
   class _WPRTLINK ostream;
@@ -162,10 +165,10 @@ namespace std {
     fmtflags   flags() const;
     char       fill( char __fillchar );
     char       fill() const;
-    int        precision( int __precision );
-    int        precision() const;
-    int        width( int __width );
-    int        width() const;
+    streamsize precision( streamsize __precision );
+    streamsize precision() const;
+    streamsize width( streamsize __width );
+    streamsize width() const;
     long      &iword( int __index );
     void     *&pword( int __index );
 
@@ -188,8 +191,8 @@ namespace std {
     long       __format_flags;
     int        __error_state;
     int        __enabled_exceptions;
-    int        __float_precision;
-    int        __field_width;
+    streamsize __float_precision;
+    streamsize __field_width;
     void      *__xalloc_list;
     char       __fill_character;
 
@@ -281,25 +284,25 @@ namespace std {
     return( __fill_character );
   }
 
-  inline int ios::precision( int __precision ) {
+  inline streamsize ios::precision( streamsize __precision ) {
     __lock_it( __i_lock );
-    int __old_precision = __float_precision;
+    streamsize __old_precision = __float_precision;
     __float_precision   = __precision;
     return( __old_precision );
   }
 
-  inline int ios::precision() const {
+  inline streamsize ios::precision() const {
     return( __float_precision );
   }
 
-  inline int ios::width( int __width ) {
+  inline streamsize ios::width( streamsize __width ) {
     __lock_it( __i_lock );
-    int __old_width = __field_width;
+    streamsize __old_width = __field_width;
     __field_width   = __width;
     return( __old_width );
   }
 
-  inline int ios::width() const {
+  inline streamsize ios::width() const {
     return( __field_width );
   }
 

@@ -38,12 +38,12 @@
 #include "fts.h"
 #include "rcstr.gh"
 #include <assert.h>
-#include "wprocmap.h"
+#include "wclbproc.h"
 #include "winctl.h"
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK SetFSDlgProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #define VI_LANG_FIRST   VI_LANG_LANG0
 #define VI_LANG_LAST    VI_LANG_LANG0 + LANG_MAX - 1
@@ -57,19 +57,19 @@ typedef struct {
     int         TabAmount;
     int         HardTab;
     int         ShiftWidth;
-    bool        PPKeywordOnly :1;
-    bool        CMode :1;
-    bool        ReadEntireFile :1;
-    bool        ReadOnlyCheck :1;
-    bool        IgnoreCtrlZ :1;
-    bool        CRLFAutoDetect :1;
-    bool        WriteCRLF :1;
-    bool        EightBits :1;
-    bool        RealTabs :1;
-    bool        AutoIndent :1;
-    bool        IgnoreTagCase :1;
-    bool        TagPrompt :1;
-    bool        ShowMatch :1;
+    bool        PPKeywordOnly   : 1;
+    bool        CMode           : 1;
+    bool        ReadEntireFile  : 1;
+    bool        ReadOnlyCheck   : 1;
+    bool        IgnoreCtrlZ     : 1;
+    bool        CRLFAutoDetect  : 1;
+    bool        WriteCRLF       : 1;
+    bool        EightBits       : 1;
+    bool        RealTabs        : 1;
+    bool        AutoIndent      : 1;
+    bool        IgnoreTagCase   : 1;
+    bool        TagPrompt       : 1;
+    bool        ShowMatch       : 1;
     char        TagFileName[TAGFILENAMEWIDTH];
     char        GrepDefault[GREPDEFAULTWIDTH];
 } dlg_data;
@@ -440,7 +440,7 @@ static void updateDialogSettings( HWND hwndDlg, bool title )
         totallen += sizeof( FT_TITLE ) + 1;
         template = MemAlloc( totallen );
         strcpy( template, FT_TITLE );
-        SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)(template + sizeof( FT_TITLE ) - 1) );
+        SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)(LPSTR)( template + sizeof( FT_TITLE ) - 1 ) );
         template[totallen - 2] = ')';
         template[totallen - 1] = '\0';
         SetWindowText( hwndDlg, template );
@@ -497,7 +497,7 @@ static void writeSettings( HWND hwndDlg )
         // put back in order we got them
         len = SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L );
         template = MemAlloc( len + 1 );
-        SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)template );
+        SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)(LPSTR)template );
         FTSStart( template );
         dumpCommands( dlgDataArray + index );
         FTSEnd();
@@ -527,7 +527,7 @@ static long deleteSelectedFT( HWND hwndDlg )
     // get template in string form
     len = SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L );
     template = MemAlloc( len + 1 );
-    SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)template );
+    SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)(LPSTR)template );
     // can't delete *.* entry
     rc = IDYES;
     if( !strcmp( template, "*.*" ) ) {
@@ -589,9 +589,9 @@ static long insertFT( HWND hwndDlg )
 }
 
 /*
- * SetFSProc - processes messages for the Data Control Dialog
+ * SetFSDlgProc - processes messages for the Data Control Dialog
  */
-WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK SetFSDlgProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         index;
     HWND        ctlhwnd;
@@ -654,12 +654,12 @@ WINEXPORT BOOL CALLBACK SetFSProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM
  */
 bool GetSetFSDialog( void )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
     bool        rc;
 
-    proc = MakeDlgProcInstance( SetFSProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "SETFS", root_window_id, (DLGPROC)proc );
-    FreeProcInstance( proc );
+    dlgproc = MakeProcInstance_DLG( SetFSDlgProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "SETFS", root_window_id, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 
     // redisplay all files to ensure screen completely correct
     ReDisplayBuffers( true );

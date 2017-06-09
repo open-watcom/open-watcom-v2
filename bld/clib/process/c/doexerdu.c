@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <conio.h>
@@ -45,11 +45,10 @@
 #include "_process.h"
 #include "_rdos.h"
 
-
 int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
-              const CHAR_TYPE * const argv[] )
+             CHAR_TYPE *envpar, 
+             const CHAR_TYPE * const argv[] )
 {
-    char *options;
     int len;
     char *p;
     int ok;
@@ -60,10 +59,11 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
     char *ep;
     int rc = -1;
     int fh;
+    int pid;
     char *drive;
     char *dir;
-
-    options = __CreateInheritString();
+    int wait;
+    int res;
 
     __F_NAME(__ccmdline,__wccmdline)( pgmname, argv, cmdline, 0 );
 
@@ -103,10 +103,27 @@ int _doexec( CHAR_TYPE *pgmname, CHAR_TYPE *cmdline,
         ok = 1;
     }
 
-    if( ok )
-        rc = RdosExec( pgmname, cmdline, options );
+    if( ok ) {
+        if( RdosIsForked() ) {
+            RdosExec( pgmname, cmdline, 0, envpar );
+        } else {
+            pid = RdosFork();
+            if( pid ) {
+                wait = RdosCreateWait();
+                RdosAddWaitForProcessEnd( wait, pid, (void *)pid );
+                res = RdosWaitForever( wait );
+                RdosCloseWait( wait );
+                if( res == 0 ) {
+                    rc = -1;
+                } else {
+                    rc = RdosGetExitCode();
+                }
+            } else {
+                RdosExec( pgmname, cmdline, 0, envpar );
+            }
+        }
+    }
 
-    lib_free( options );
     lib_free( p );
 
     return( rc );

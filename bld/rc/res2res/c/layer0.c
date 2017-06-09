@@ -31,16 +31,65 @@
 
 
 #include "layer0.h"
+#include "wio.h"
 #include "rcrtns.h"
+#include "reserr.h"
+
+#include "clibext.h"
 
 
-struct WResRoutines WResRtns = {
-    RCOPEN,
-    RCCLOSE,
-    RCREAD,
-    RCWRITE,
-    RCSEEK,
-    RCTELL,
-    RCALLOC,
-    RCFREE
-};
+WResFileID res_open( const char *name, wres_open_mode omode )
+{
+    int     fd;
+
+    omode=omode;
+#if defined( __WATCOMC__ ) && defined( __QNX__ )
+    /* This is a kludge fix to avoid turning on the O_TRUNC bit under QNX */
+    fd = open( name, O_RDONLY );
+    if( fd == -1 ) {
+        WRES_ERROR( WRS_OPEN_FAILED );
+    } else {
+        setmode( fd, O_BINARY );
+    }
+#else
+    fd = open( name, O_RDONLY | O_BINARY );
+    if( fd == -1 ) {
+        WRES_ERROR( WRS_OPEN_FAILED );
+    }
+#endif
+    return( WRES_PH2FID( fd ) );
+}
+
+bool res_close( WResFileID fid )
+{
+    return( close( WRES_FID2PH( fid ) ) != 0 );
+}
+
+size_t res_read( WResFileID fid, void *buf, size_t size )
+{
+    return( posix_read( WRES_FID2PH( fid ), buf, size ) );
+}
+
+size_t res_write( WResFileID fid, const void *buf, size_t size )
+{
+    return( posix_write( WRES_FID2PH( fid ), buf, size ) );
+}
+
+bool res_seek( WResFileID fid, WResFileOffset pos, int where )
+{
+    return( lseek( WRES_FID2PH( fid ), pos, where ) == -1 );
+}
+
+WResFileOffset res_tell( WResFileID fid )
+{
+    return( tell( WRES_FID2PH( fid ) ) );
+}
+
+bool res_ioerr( WResFileID fid, size_t rc )
+/*****************************************/
+{
+    fid=fid;
+    return( rc == -1 );
+}
+
+WResSetRtns( res_open, res_close, res_read, res_write, res_seek, res_tell, res_ioerr, RESALLOC, RESFREE );

@@ -55,8 +55,15 @@
 #include "fileacc.h"
 #include "trdlstac.h"
 #include "maxthrds.h"
+
 #if defined( __UNIX__ )
+
   #include "semapsx.h"
+  #if defined( __LINUX__ )
+    void *__LinuxGetThreadData( );
+    void  __LinuxSetThreadData( void *__data );
+  #endif
+
 #endif
 
 
@@ -502,8 +509,13 @@ thread_data *__MultipleThread( void )
     }
     return( tdata );
 #elif defined( __LINUX__ )
-    // TODO: Init multiple threads for Linux!
-    return( NULL );
+    thread_data *tdata;
+
+    tdata = (thread_data *)__LinuxGetThreadData( );
+    if( tdata == NULL ) {
+        tdata = __GetThreadData();
+    } 
+    return( tdata );
 #elif defined( __RDOS__ )
     thread_data *tdata;
 
@@ -707,14 +719,22 @@ void __QNXRemoveThread( void )
 thread_data *__LinuxAddThread( thread_data *tdata )
 /***********************************************/
 {
-    // TODO: Implement this for Linux!
-    return( NULL );
+    void    *tmp;
+    tdata = __AllocInitThreadData( tdata );
+    __LinuxSetThreadData( tdata );
+    return( tdata );
 }
 
 void __LinuxRemoveThread( void )
 /****************************/
 {
-    // TODO: Implement this for Linux!
+    thread_data *tdata;
+    
+    tdata = __LinuxGetThreadData();
+    if(tdata != NULL && tdata->__allocated )
+        lib_free( tdata );
+        
+    __LinuxSetThreadData( NULL );
 }
 
   #elif defined( __RDOS__ )

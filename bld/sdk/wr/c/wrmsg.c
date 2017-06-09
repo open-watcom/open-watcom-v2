@@ -42,7 +42,7 @@ void WRDisplayMsg( const char *msg )
     title = WRAllocRCString( WR_ERRMSG );
 
     if( !MessageBox( (HWND)NULL, msg, title, MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep( -1 );
+        MessageBeep( (UINT)-1 );
     }
 
     if( title != NULL ) {
@@ -50,7 +50,7 @@ void WRDisplayMsg( const char *msg )
     }
 }
 
-char *WRAllocRCString( UINT id )
+char *WRAllocRCString( msg_id id )
 {
     return( AllocRCString( id ) );
 }
@@ -60,7 +60,7 @@ void WRFreeRCString( char *str )
     FreeRCString( str );
 }
 
-int WRCopyRCString( UINT id, char *buf, int bufsize )
+int WRCopyRCString( msg_id id, char *buf, int bufsize )
 {
     return( CopyRCString( id, buf, bufsize ) );
 }
@@ -70,15 +70,14 @@ void WRInitDisplayError( HINSTANCE inst )
     SetInstance( inst );
 }
 
-void WRDisplayErrorMsg( UINT msg )
+void WRDisplayErrorMsg( msg_id msg )
 {
     char        *title;
 
     title = WRAllocRCString( WR_ERRMSG );
 
-    if( !RCMessageBox( (HWND)NULL, msg, title,
-                       MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep( -1 );
+    if( !RCMessageBox( (HWND)NULL, msg, title, MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
+        MessageBeep( (UINT)-1 );
     }
 
     if( title != NULL ) {
@@ -86,7 +85,7 @@ void WRDisplayErrorMsg( UINT msg )
     }
 }
 
-void WRPrintErrorMsg( UINT msg, ... )
+void WRPrintErrorMsg( msg_id msg, ... )
 {
     va_list     al;
     char        *str;

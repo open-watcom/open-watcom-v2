@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
+#include "commonui.h"
 #include <stdlib.h>
 #include <string.h>
 #include "watcom.h"
@@ -42,6 +42,7 @@
 #include "jdlg.h"
 #include "winexprt.h"
 #include "wresdefn.h"
+#include "wclbproc.h"
 
 
 /****************************************************************************/
@@ -51,7 +52,7 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT extern BOOL CALLBACK WRSelectImageProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT extern INT_PTR CALLBACK WRSelectImageDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -75,9 +76,9 @@ void WRAPI WRFreeSelectImageInfo( WRSelectImageInfo *info )
     }
 }
 
-WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, FARPROC hcb )
+WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, HELP_CALLBACK help_callback )
 {
-    DLGPROC             proc;
+    DLGPROC             dlgproc;
     HINSTANCE           inst;
     INT_PTR             modified;
     WRSelectImageInfo   *info;
@@ -92,16 +93,16 @@ WRSelectImageInfo * WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, FARPROC hcb
     }
     memset( info, 0, sizeof( WRSelectImageInfo ) );
 
-    info->hcb = hcb;
+    info->help_callback = help_callback;
     info->info = rinfo;
 
     inst = WRGetInstance();
 
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)WRSelectImageProc, inst );
+    dlgproc = MakeProcInstance_DLG( WRSelectImageDlgProc, inst );
 
-    modified = JDialogBoxParam( inst, "WRSelectImage", parent, proc, (LPARAM)info );
+    modified = JDialogBoxParam( inst, "WRSelectImage", parent, dlgproc, (LPARAM)(LPVOID)info );
 
-    FreeProcInstance( (FARPROC)proc );
+    FreeProcInstance_DLG( dlgproc );
 
     if( modified == -1 || modified == IDCANCEL ) {
         MemFree( info );
@@ -220,12 +221,12 @@ static bool WRGetWinInfo( HWND hdlg, WRSelectImageInfo *info )
     return( true );
 }
 
-WINEXPORT BOOL CALLBACK WRSelectImageProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WRSelectImageDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WRSelectImageInfo   *info;
-    BOOL                ret;
+    bool                ret;
 
-    ret = FALSE;
+    ret = false;
 
     switch( message ) {
     case WM_DESTROY:
@@ -242,7 +243,7 @@ WINEXPORT BOOL CALLBACK WRSelectImageProc( HWND hDlg, UINT message, WPARAM wPara
         if( !WRSetWinInfo( hDlg, info ) ) {
             EndDialog( hDlg, FALSE );
         }
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_SYSCOLORCHANGE:
@@ -253,24 +254,24 @@ WINEXPORT BOOL CALLBACK WRSelectImageProc( HWND hDlg, UINT message, WPARAM wPara
         info = (WRSelectImageInfo *)GET_DLGDATA( hDlg );
         switch( LOWORD( wParam ) ) {
         case IDM_SELIMGHELP:
-            if( info != NULL && info->hcb != NULL ) {
-                (*info->hcb)();
+            if( info != NULL && info->help_callback != (HELP_CALLBACK)NULL ) {
+                info->help_callback();
             }
             break;
 
         case IDOK:
             if( info == NULL ) {
                 EndDialog( hDlg, FALSE );
-                ret = TRUE;
+                ret = true;
             } else if( WRGetWinInfo( hDlg, info ) ) {
                 EndDialog( hDlg, TRUE );
-                ret = TRUE;
+                ret = true;
             }
             break;
 
         case IDCANCEL:
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDM_SELIMGBMP:

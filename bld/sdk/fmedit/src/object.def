@@ -3,64 +3,43 @@
 
 #include "list.def"
 
-/* there are a maximum of 16 internal objects currently reserved */
+/* there are a maximum of 16 internal objects currently reserved, see constant.def file */
+
+#define pick_OBJECTS() \
+    pick( NONE,     NULL ) \
+    pick( EATOM,    EAtomCreate ) \
+    pick( ITEM,     OItemCreate ) \
+    pick( CURROBJ,  CurrObjCreate ) \
+    pick( CURRITEM, CurrItemCreate )
 
 enum {
-    O_NONE,
-    O_EATOM,
-    O_ITEM,
-    O_CURROBJ,
-    O_CURRITEM,
+    #define pick(e,p) O_##e,
+    pick_OBJECTS()
+    #undef pick
 };
-
-typedef void *CURROBJPTR;
 
 extern void         InitializeObjects( CREATE_TABLE );
 extern void         SetCurrObject( OBJPTR );
 extern void         AddCurrObject( OBJPTR );
 extern void         DeleteCurrObject( OBJPTR );
 extern void         DeleteCurrObjptr( OBJPTR );
-extern BOOL         DeleteCurrItem( OBJECT * );
+extern bool         DeleteCurrItem( OBJPTR );
 extern void         MarkCurrObject( void );
-extern void         ObjMark( CURROBJPTR );
-extern CURROBJPTR   GetCurrObjptr( OBJPTR );
-extern void         SetPrimaryObject( CURROBJPTR );
-extern CURROBJPTR   GetPrimaryObject( void );
-extern void         UndoMove( OBJECT * );
-extern void         RemoveFromParent( OBJECT * );
-extern CURROBJPTR   GetECurrObject( void );
-extern CURROBJPTR   GetNextECurrObject( CURROBJPTR );
-extern OBJPTR       GetObjptr( OBJECT * );
-extern BOOL         GetAnchor( OBJECT *, POINT * );
+extern void         ObjMark( OBJPTR );
+extern OBJPTR       GetCurrObjptr( OBJPTR );
+extern void         SetPrimaryObject( OBJPTR );
+extern OBJPTR       GetPrimaryObject( void );
+extern void         UndoMove( OBJPTR );
+extern void         RemoveFromParent( OBJPTR );
+extern OBJPTR       GetEditCurrObject( void );
+extern OBJPTR       GetNextEditCurrObject( OBJPTR );
+extern OBJPTR       GetObjptr( OBJPTR );
+extern bool         GetAnchor( OBJPTR, POINT * );
 extern void         InitEditMenu( HWND, int );
 extern void         InitEditMenu( HWND, int );
-extern BOOL         RequestScrollRect( RECT * );
-extern BOOL         IsMarkValid( OBJECT * );
+extern bool         RequestScrollRect( RECT * );
+extern bool         IsMarkValid( OBJPTR );
 extern void         EndCurrObjMod( void );
 extern void         StartCurrObjMod( void );
-
-/* editor actions */
-
-#define EDITOR_ACTIONS      100
-#define EDITOR_NOTE_IDS     100
-
-enum {
-    RECREATE = EDITOR_ACTIONS,
-    GET_OBJECT,
-    ADD_OBJECT,
-    DELETE_OBJECT,
-    GET_PRIMARY,
-    UNDO_MOVE,
-    REMOVE_FROM_PARENT,
-    GET_OBJPTR,
-    GET_ANCHOR,
-    SHOW_SEL_BOXES,
-    FORCE_REDRAW
-};
-
-enum {
-    CURR_OBJ_MOD_BEGIN = EDITOR_NOTE_IDS,   // wraped around multiple
-    CURR_OBJ_MOD_END                        // changed of the currobj
-};
 
 #endif

@@ -61,9 +61,9 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    bool    (*init)( bool );
-    void    (*fini)( void );
-    OBJPTR  (CALLBACK *create)( OBJPTR , RECT *, OBJPTR );
+    bool        (*init)( bool );
+    void        (*fini)( void );
+    CREATE_RTN  *create;
 } WdeObjectRoutinesType;
 
 /****************************************************************************/
@@ -117,14 +117,14 @@ bool WdeInitCreateTable( void )
     first_inst = WdeIsFirstInst();
     if( WdeCreateTable == NULL ) {
         inst = WdeGetAppInstance();
-        WdeCreateTable = (CREATE_TABLE)WRMemAlloc( sizeof( FARPROC ) * NUM_OBJECTS );
+        WdeCreateTable = (CREATE_TABLE)WRMemAlloc( sizeof( FARPROC ) * NUM_USER_OBJECTS );
         for( i = 0; WdeObjectRoutines[i].create != NULL; i++ ) {
             if( WdeObjectRoutines[i].init != NULL ) {
                 if( !WdeObjectRoutines[i].init( first_inst ) ) {
                     return( FALSE );
                 }
             }
-            WdeCreateTable[i] = (CREATE_RTN)MakeProcInstance( (FARPROC)WdeObjectRoutines[i].create, inst );
+            WdeCreateTable[i] = (CREATE_RTN *)MakeProcInstance( (FARPROC)WdeObjectRoutines[i].create, inst );
         }
     }
 

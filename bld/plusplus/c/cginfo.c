@@ -93,7 +93,8 @@ static AUX_INFO *getLangInfo(   // GET LANGUAGE INFO. FOR SYMBOL
 static void init(               // MODULE INITIALIZATION
     INITFINI* def )             // - definition
 {
-    def = def;
+    /* unused parameters */ (void)def;
+
     CompFlags.low_on_memory_printed = false;
 }
 
@@ -124,7 +125,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
         break;
     case MSG_BLIP:
         if( CompFlags.ide_console_output ) {
-            if( ! CompFlags.quiet_mode ) {
+            if( !CompFlags.quiet_mode ) {
                 putchar( '.' );
                 fflush( stdout );
             }
@@ -134,14 +135,14 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
     case MSG_INFO_FILE:
     case MSG_INFO_PROC:
         if( CompFlags.ide_console_output ) {
-            if( ! CompFlags.quiet_mode ) {
+            if( !CompFlags.quiet_mode ) {
                 MsgDisplayLine( parm );
             }
         }
         break;
     case MSG_CODE_SIZE:
         if( CompFlags.ide_console_output ) {
-            if( ! CompFlags.quiet_mode ) {
+            if( !CompFlags.quiet_mode ) {
                 char buffer[30];
                 sprintf( buffer, "\rCode size: %u", (unsigned)(pointer_int)parm );
                 MsgDisplayLine( buffer );
@@ -175,7 +176,7 @@ void FEMessage(                 // MESSAGES FROM CODE-GENERATOR
         break;
     case MSG_PEEPHOLE_FLUSHED:
         if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
-            if( ! CompFlags.low_on_memory_printed ) {
+            if( !CompFlags.low_on_memory_printed ) {
                 CompFlags.low_on_memory_printed = true;
                 CErr1( WARN_CG_MEM_PEEPHOLE );
             }
@@ -390,20 +391,19 @@ segment_id FESegID(             // GET SEGMENT ID FOR SYMBOL
 int FELexLevel(                 // GET LEXICAL LEVEL OF SYMBOL
     cg_sym_handle sym )         // - the symbol
 {
-    sym = sym;
+    /* unused parameters */ (void)sym;
+
     return( 0 );
 }
 
 
 cg_type FEParmType(             // ARGUMENT PROMOTION ?
-    cg_sym_handle _func,        // function being called
+    cg_sym_handle func,         // function being called
     cg_sym_handle parm,         // parameter being passed
     cg_type type )              // - original type
 {
-    SYMBOL func = _func;
+    /* unused parameters */ (void)parm; (void)func;
 
-    func = func;
-    parm = parm;
     switch( type ) {
 #if _CPU == _AXP
     case TY_INT_1:
@@ -429,7 +429,7 @@ cg_type FEParmType(             // ARGUMENT PROMOTION ?
   #if _CPU != 8086
         if( func != NULL ) {
             type_flag fn_flags;
-            TypeModFlags( func->sym_type, &fn_flags );
+            TypeModFlags( ((SYMBOL)func)->sym_type, &fn_flags );
             if( fn_flags & TF1_FAR16 ) {
                 return( TY_INT_2 );
             }
@@ -580,7 +580,8 @@ static AUX_INFO *IntrinsicAuxLookup(
 #else
     AUX_INFO *inf;
 
-    sym = sym;
+    /* unused parameters */ (void)sym;
+
     inf = NULL;
 #endif
     return( inf );
@@ -867,12 +868,12 @@ static call_class getCallClass( // GET CLASS OF CALL
         value &= ~ REVERSE_PARMS;
 #endif
 #ifdef PROLOG_HOOKS
-        if( CompFlags.ep_switch_used != 0 ) {
+        if( CompFlags.ep_switch_used ) {
             value |= PROLOG_HOOKS;
         }
 #endif
 #ifdef EPILOG_HOOKS
-        if( CompFlags.ee_switch_used != 0 ) {
+        if( CompFlags.ee_switch_used ) {
             value |= EPILOG_HOOKS;
         }
 #endif
@@ -903,19 +904,6 @@ static sym_access getSymAccess( // GET access flag of symbol
         access = SYM_ACC_PUBLIC;
     }
     return( access );
-}
-
-static time_t *getFileDepTimeStamp( SRCFILE h )
-{
-    static time_t            stamp;
-
-#if ( _RISC_CPU || COMP_CFG_COFF )
-    stamp = SrcFileTimeStamp( h );
-#else
-    /* OMF format */
-    stamp = _timet2dos( SrcFileTimeStamp( h ) );
-#endif
-    return( &stamp );
 }
 
 static void addDefaultLibs( void )
@@ -1278,7 +1266,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case USED_8087:
         DbgNotSym();
         DbgNotRetn();
-        CompFlags.pgm_used_8087 = 1;
+        CompFlags.pgm_used_8087 = true;
         retn = NULL;
         break;
 #endif
@@ -1403,7 +1391,7 @@ void *FEAuxInfo(                // REQUEST AUXILLIARY INFORMATION
     case DEPENDENCY_TIMESTAMP :
         DbgNotSym();
         DbgNotRetn();
-        retn = getFileDepTimeStamp( (SRCFILE)sym );
+        retn = &(((SRCFILE)sym)->time_stamp);
         break;
     case DEPENDENCY_NAME :
         DbgNotSym();
@@ -1597,9 +1585,10 @@ const char *FEGetEnv(           // GET VALUE FOR ENV-VAR
     return CppGetEnv( name );
 }
 
-int FEMoreMem( unsigned size )
-/****************************/
+int FEMoreMem( size_t size )
+/**************************/
 {
-    size = size;
+    /* unused parameters */ (void)size;
+
     return( 0 );
 }

@@ -636,7 +636,7 @@ static bool IsZero( TREEPTR tree )
 
     if( tree->op.opr == OPR_PUSHINT ) {
         uint64      val64;
-        
+
         val64 = LongValue64( tree );
         ret = ( U64Test( &val64 ) == 0 );
     } else {
@@ -661,18 +661,19 @@ static TREEPTR BaseConv( TYPEPTR typ1, TREEPTR op2 )
             op2 = BasedPtrNode( typ2, op2 );
         }
     } else if( typ2->decl_type == TYPE_POINTER ) {
-        // If we're converting a near pointer to some larger arithmetic type,
+        // If we're converting a based pointer to some larger arithmetic type,
         // we must convert it to a long pointer first to get proper segment.
         // However, in flat model this conversion isn't done, we pretend
         // that segments don't exist.
         if( TypeSize( typ1 ) > TypeSize( typ2 ) ) {
 #if _CPU == 386
-            if( (TargetSwitches & FLAT_MODEL) == 0 ) {
-                op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_UNKNOWN ), true );
-            }
+            if( (TargetSwitches & FLAT_MODEL) == 0 && (typ2_flags & FLAG_BASED) ) {
 #else
-            op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_UNKNOWN ), true );
+            if( typ2_flags & FLAG_BASED ) {
 #endif
+                op2 = BasedPtrNode( typ2, op2 );
+//                op2 = CnvOp( op2, PtrNode( typ2->object, FLAG_FAR, SEG_UNKNOWN ), true );
+            }
         }
     } else if( typ1->decl_type == TYPE_POINTER ) {
         // If we're converting an arithmetic type to a pointer, first convert
@@ -769,7 +770,7 @@ TREEPTR RelOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
 
     /* check for meaningless comparison: */
     //TODO this would be a better check maybe in foldtree
-    if( CompFlags.pre_processing == 0 ) {
+    if( Pre_processing == PPCTL_NORMAL ) {
         cmp_cc = CMP_VOID;
         if( op2->op.opr == OPR_PUSHINT ) {
             cmp_cc = IsMeaninglessCompare( op2->op.u2.long64_value, typ1, typ2, opr );
@@ -800,7 +801,7 @@ TREEPTR RelOp( TREEPTR op1, TOKEN opr, TREEPTR op2 )
         if( opr != T_EQ && opr != T_NE ) {
             CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_POINTER_TYPE_MISMATCH );
         } else if( !IsZero( op1 ) && !IsZero( op2 ) ) {
-            CWarn1( WARN_POINTER_TYPE_MISMATCH, NON_ZERO_CONST );
+            CWarn1( WARN_POINTER_TYPE_MISMATCH, ERR_NON_ZERO_CONST );
         }
         if( op2_type == TYPE_POINTER ) {
             cmp_type = typ2;
@@ -1610,7 +1611,7 @@ TREEPTR CnvOp( TREEPTR opnd, TYPEPTR newtyp, bool cast_op )
         }
     }
     opnd_type = opnd->u.expr_type->decl_type;
-    if( CompFlags.pre_processing == 0 ) {
+    if( Pre_processing == PPCTL_NORMAL ) {
         opnd = RValue( opnd );
     }
     typ = TypeOf( opnd );

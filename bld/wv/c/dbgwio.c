@@ -114,7 +114,8 @@ static void     IOMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     io_location *curr;
     mad_radix   old_radix;
 
-    piece=piece;
+    /* unused parameters */ (void)piece;
+
     if( row < io->num_rows && row >= 0 ) {
         curr = &io->list[row];
     } else {
@@ -301,7 +302,8 @@ static bool IOEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     io_window   *io = WndIO( wnd );
 
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         if( io->num_rows != 0 ) {

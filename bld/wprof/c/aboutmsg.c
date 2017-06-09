@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,9 +38,8 @@
 #include "guidlg.h"
 #include "msg.h"
 #include "memutil.h"
+#include "aboutmsg.h"
 
-extern char     *AboutMessage[];
-extern int      AboutSize;
 
 STATIC bool aboutEventProc( a_window *, gui_event, void * );
 STATIC int  AboutNumRows( a_window * );
@@ -48,9 +48,7 @@ STATIC bool aboutGetLine( a_window *, wnd_row, int, wnd_line_piece * );
 static a_window     *aboutWindow = NULL;
 static bool         aboutOn = true;
 
-
-
-wnd_info AboutInfo = {
+static wnd_info     AboutInfo = {
     aboutEventProc,
     NoRefresh,
     aboutGetLine,
@@ -69,15 +67,11 @@ wnd_info AboutInfo = {
 
 
 
-extern void AboutOpen( void )
-/***************************/
+void AboutOpen( void )
+/********************/
 {
     if( aboutWindow == NULL ) {
-        aboutWindow = WndCreate(
-                                LIT( WPROF_TITLE ),
-                                &AboutInfo,
-                                 WND_NO_CLASS,
-                                 NULL );
+        aboutWindow = WndCreate( LIT( WPROF_TITLE ), &AboutInfo, WND_NO_CLASS, NULL );
     }
     if( aboutWindow != NULL ) {
         WndShowWindow( aboutWindow );
@@ -86,8 +80,8 @@ extern void AboutOpen( void )
 
 
 
-extern void AboutClose( void )
-/****************************/
+void AboutClose( void )
+/*********************/
 {
     a_window *  wnd;
 
@@ -104,7 +98,8 @@ STATIC int AboutNumRows( a_window * wnd )
 {
     int     ret_size;
 
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     if( aboutOn ) {
         ret_size = AboutSize;
 //        if( GUIIsGUI() ) {
@@ -117,13 +112,13 @@ STATIC int AboutNumRows( a_window * wnd )
 
 
 
-STATIC bool aboutGetLine( a_window *wnd, wnd_row row, int piece,
-                                       wnd_line_piece *line )
-/***********************************************************/
+STATIC bool aboutGetLine( a_window *wnd, wnd_row row, int piece, wnd_line_piece *line )
+/*************************************************************************************/
 {
 //    gui_coord           size;
 
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     if( piece != 0 || !aboutOn )
         return( false );
     if( row >= AboutSize ) {
@@ -147,8 +142,8 @@ STATIC bool aboutGetLine( a_window *wnd, wnd_row row, int piece,
 STATIC bool aboutEventProc( a_window *wnd, gui_event gui_ev, void *parm )
 /***********************************************************************/
 {
-    wnd=wnd;
-    parm=parm;
+    /* unused parameters */ (void)wnd; (void)parm;
+
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         return( true );
@@ -161,8 +156,8 @@ STATIC bool aboutEventProc( a_window *wnd, gui_event gui_ev, void *parm )
 
 
 
-extern void AboutSetOff( void )
-/*****************************/
+void AboutSetOff( void )
+/**********************/
 {
     aboutOn = false;
     if( aboutWindow != NULL ) {
@@ -172,12 +167,12 @@ extern void AboutSetOff( void )
 
 
 
-extern void DlgAbout( void )
-/**************************/
+void DlgAbout( void )
+/*******************/
 {
     char        *about_data;
     char        *about_rover;
-    int         about_len;
+    size_t      about_len;
     int         index;
 
     about_len = 0;

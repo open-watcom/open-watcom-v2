@@ -99,7 +99,7 @@ void __far *       _DOS_list_of_lists( void );
         modify          [ax es bx];
 
 int OSCorrupted( void )
-/****************************/
+/*********************/
 {
     _Packed struct mcb {
         UINT8   id;
@@ -142,7 +142,7 @@ int OSCorrupted( void )
 
 #if defined( __DOS__ )
 RET_T TouchFile( const char *name )
-/****************************************/
+/*********************************/
 {
     tiny_date_t     dt;
     tiny_time_t     tm;
@@ -185,7 +185,7 @@ RET_T TouchFile( const char *name )
 #endif
 
 RET_T TouchFile( const char *name )
-/****************************************/
+/*********************************/
 {
     int     fh;
 
@@ -202,15 +202,51 @@ RET_T TouchFile( const char *name )
 
 #define FUZZY_DELTA     60      /* max allowed variance from stored time-stamp */
 
-bool IdenticalAutoDepTimes( time_t in_obj, time_t stamp )
-/*******************************************************/
+bool IdenticalAutoDepTimes( time_t in_obj, time_t stamp, auto_dep_type autodep_type )
+/***********************************************************************************/
 {
     time_t  diff_time;
 
-    /* in_obj can be a DOS time so we need to round to the nearest two-second */
-    if( in_obj == stamp || in_obj == (stamp & ~1) ) {
+    if( in_obj == stamp )
         return( true );
+#if defined( __WATCOMC__ ) && __WATCOMC__ < 1300
+    /*
+     * OW1.x bootstrap compiler workaround
+     */
+    if( in_obj < stamp ) {
+        if( (( in_obj + 1 ) & ~1) == (stamp & ~1) ) {
+            return( true );
+        }
+    } else {
+        if( (( stamp + 1 ) & ~1) == (in_obj & ~1) ) {
+            return( true );
+        }
     }
+#else
+  #if defined( __DOS__ ) || defined( __OS2__ )
+    /*
+     * host is two-second file time based, the stamp is always two-second based time
+     * if in_obj is not a two-second based file time ( ELF, COFF or RES object files )
+     * then we need to round in_obj to the nearest two-second based time
+     */
+    if( autodep_type != AUTO_DEP_OMF && (in_obj & 1) ) {
+        if( stamp == (in_obj & ~1) ) {
+            return( true );
+        }
+    }
+  #else
+    /*
+     * host is one-second file time based, the stamp is always one-second based time
+     * if in_obj is a two-second based file time ( OMF object files )
+     * then we need to round stamp to the nearest two-second based time
+     */
+    if( autodep_type == AUTO_DEP_OMF && (stamp & 1) ) {
+        if( in_obj == (stamp & ~1) ) {
+            return( true );
+        }
+    }
+  #endif
+#endif
     if( in_obj < stamp ) {
         /* stamp is newer than time in .OBJ file */
         if( Glob.fuzzy ) {
@@ -275,23 +311,22 @@ int OSExecDLL( DLL_CMD* dll, char const* cmd_args )
 DLL_CMD *OSFindDLL( char const *cmd_name )
 /****************************************/
 {
-    cmd_name = cmd_name;
+    /* unused parameters */ (void)cmd_name;
+
     return( NULL );
 }
 
 void OSLoadDLL( char *cmd_name, char *dll_name, char *ent_name )
 /**************************************************************/
 {
-    cmd_name = cmd_name;
-    dll_name = dll_name;
-    ent_name = ent_name;
+    /* unused parameters */ (void)cmd_name; (void)dll_name; (void)ent_name;
 }
 
 int OSExecDLL( DLL_CMD* dll, char const* cmd_args )
 /*************************************************/
 {
-    dll = dll;
-    cmd_args = cmd_args;
+    /* unused parameters */ (void)dll; (void)cmd_args;
+
     return( -1 );
 }
 
@@ -355,12 +390,14 @@ static void passOnBreak( void )
 
 static void breakHandler( int sig_number )
 {
-    sig_number = sig_number;
+    /* unused parameters */ (void)sig_number;
+
     sig_count = 1;
     passOnBreak();
 }
 
-void InitSignals( void ) {
+void InitSignals( void )
+{
     sig_count = 0;
     DoingUpdate = false;
 #ifndef __UNIX__

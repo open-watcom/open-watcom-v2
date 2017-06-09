@@ -47,7 +47,9 @@ void    AddLblDef( ins_entry *instr )
         _SetStatus( lbl, CODELABEL );
         lbl->ins = instr;
         lbl = lbl->alias;
-        if( lbl == NULL ) break;
+        if( lbl == NULL ) {
+            break;
+        }
     }
   optend
 }
@@ -60,10 +62,14 @@ void    DelLblDef( ins_entry *instr )
 
   optbegin
     lbl = _Label( instr );
-    if( lbl == NULL ) optreturnvoid;
-    if( lbl->refs != NULL ) optreturnvoid;
-    if( !_TstStatus( lbl, DYINGLABEL ) ) optreturnvoid;
-    if( _TstStatus( lbl, REDIRECTION ) ) optreturnvoid;
+    if( lbl == NULL )
+        optreturnvoid;
+    if( lbl->refs != NULL )
+        optreturnvoid;
+    if( !_TstStatus( lbl, DYINGLABEL ) )
+        optreturnvoid;
+    if( _TstStatus( lbl, REDIRECTION ) )
+        optreturnvoid;
     ScrapCodeLabel( lbl );
   optend
 }
@@ -112,7 +118,8 @@ void    ChgLblRef( ins_entry *instr, label_handle new )
         owner = &old->refs;
         for(;;) {
             curr = *owner;
-            if( curr == instr ) break;
+            if( curr == instr )
+                break;
             owner = (ins_entry **)&_LblRef( curr );
         }
         *owner = _LblRef( curr );
@@ -173,13 +180,16 @@ ins_entry       *AliasLabels( ins_entry *oldlbl, ins_entry *newlbl )
         for(;;) {
             old->ins = new->ins;
             old = old->alias;
-            if( old == NULL ) break;
+            if( old == NULL ) {
+                break;
+            }
         }
         old = _Label( oldlbl );
         owner = &old->refs;
         for(;;) {
             old_jmp = *owner;
-            if( old_jmp == NULL ) break;
+            if( old_jmp == NULL )
+                break;
             _Label( old_jmp ) = new;
             owner = (ins_entry **)&_LblRef( old_jmp );
         }
@@ -207,11 +217,12 @@ static  void    KillDeadLabels( ins_entry *instr )
     owner = &_Label( instr );
     for(;;) {
         curr = *owner;
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         _ValidLbl( curr );
         if( curr->refs == NULL
-         && !_TstStatus( curr, REDIRECTION | KEEPLABEL )
-         && _TstStatus( curr, DYINGLABEL ) ) {
+          && !_TstStatus( curr, REDIRECTION | KEEPLABEL )
+          && _TstStatus( curr, DYINGLABEL ) ) {
             *owner = curr->alias;
             if( curr->redirect != NULL ) {
                 _ClrStatus( curr->redirect, REDIRECTION );
@@ -240,16 +251,20 @@ void    ScrapCodeLabel( label_handle lbl )
   optbegin
     owner = &Handles;
     for(;;) {
-        if( *owner == NULL ) optreturnvoid;
-        if( *owner == lbl ) break;
+        if( *owner == NULL )
+            optreturnvoid;
+        if( *owner == lbl )
+            break;
         owner = &(*owner)->lbl.link;
     }
     *owner = lbl->lbl.link;
     redir = lbl->redirect;
     code = _TstStatus( lbl, CODELABEL );
     CGFree( lbl );
-    if( !code ) optreturnvoid;
-    if( redir == NULL ) optreturnvoid;
+    if( !code )
+        optreturnvoid;
+    if( redir == NULL )
+        optreturnvoid;
     _ClrStatus( redir, REDIRECTION );
     TryScrapLabel( redir );
   optend
@@ -260,7 +275,8 @@ void    TryScrapLabel( label_handle old )
 /***************************************/
 {
   optbegin
-    if( old->refs != NULL ) optreturnvoid;
+    if( old->refs != NULL )
+        optreturnvoid;
     if( old->ins != NULL ) {
         KillDeadLabels( old->ins );
     } else if( _TstStatus( old, DYINGLABEL )

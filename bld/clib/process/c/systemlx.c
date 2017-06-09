@@ -36,5 +36,5 @@
 
 int system( const char *cmd )
 {
-    return spawnl( 0, "/bin/sh", "sh", "-c", cmd, 0 );
+    return( spawnl( P_WAIT, "/bin/sh", "sh", "-c", cmd, 0 ) );
 }

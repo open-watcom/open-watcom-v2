@@ -53,7 +53,7 @@ static windim   lastCol;
  */
 void SetMouseSpeed( int speed )
 {
-    speed = speed;
+    /* unused parameters */ (void)speed;
 
 } /* SetMouseSpeed */
 

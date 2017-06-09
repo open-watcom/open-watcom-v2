@@ -119,7 +119,7 @@ bool WSetEditWithStr( HWND edit, char *str )
 
     ok = ( edit != (HWND)NULL && str != NULL );
     if( ok ) {
-        SendMessage( edit, WM_SETTEXT, 0, (LPARAM)(LPSTR)str );
+        SendMessage( edit, WM_SETTEXT, 0, (LPARAM)(LPCSTR)str );
     }
 
     return( ok );
@@ -133,7 +133,7 @@ bool WSetLBoxWithStr( HWND lbox, char *str, void *data )
     ok = ( lbox != (HWND)NULL && str != NULL );
 
     if( ok ) {
-        pos = (box_pos)SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
+        pos = (box_pos)SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
         ok = ( pos != LB_ERR && pos != LB_ERRSPACE );
     }
 
@@ -152,7 +152,7 @@ bool WInsertLBoxWithStr( HWND lbox, box_pos pos, char *str, void *data )
     ok = ( lbox != (HWND)NULL && str != NULL );
 
     if( ok ) {
-        new_pos = (box_pos)SendMessage( lbox, LB_INSERTSTRING, pos, (LPARAM)(LPSTR)str );
+        new_pos = (box_pos)SendMessage( lbox, LB_INSERTSTRING, pos, (LPARAM)(LPCSTR)str );
         ok = ( new_pos != LB_ERR && new_pos != LB_ERRSPACE );
     }
 

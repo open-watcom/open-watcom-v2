@@ -34,13 +34,14 @@
 #include "coderep.h"
 #include "data.h"
 #include "savings.h"
+#include "conflict.h"
+
 
 extern  savings         Save;
 
 extern  void            SetCost(save_def*,save_def);
 extern  void            SetLoopCost(uint);
 extern  void            AdjTimeSize(uint*,uint*);
-extern  conflict_node   *NameConflict(instruction*,name*);
 extern  save_def        Weight(save_def,block*);
 
 static  save_def        MaxConstSave;
@@ -117,8 +118,8 @@ extern  bool    WorthProlog( conflict_node *conf, hw_reg_set reg ) {
     }
     return( savings >= cost );
 #else
-    reg = reg;
-    conf = conf;
+    /* unused parameters */ (void)reg; (void)conf;
+
     return( true );
 #endif
 }

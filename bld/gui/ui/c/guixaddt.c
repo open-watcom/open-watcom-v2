@@ -41,9 +41,7 @@
  */
 bool GUIControlSetRedraw( gui_window *wnd, gui_ctl_id id, bool redraw )
 {
-    wnd     = wnd;
-    id      = id;
-    redraw  = redraw;
+    /* unused parameters */ (void)wnd; (void)id; (void)redraw;
     return( true );
 }
 

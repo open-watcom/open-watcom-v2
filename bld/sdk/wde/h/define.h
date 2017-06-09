@@ -37,21 +37,21 @@
 /* Controls to change dialog and control data structures (200-360)          */
 /****************************************************************************/
 
-#define IDB_TEXT         200
-#define IDB_CAPTION      201
-#define IDB_ID           202
-#define IDB_CLASS        203
-#define IDB_MENU         204
-#define IDB_FONTNAME     205
-#define IDB_POINTSIZE    206
-#define IDB_DLGNAME      207
-#define IDB_STYLES       208
-#define IDB_OBJNAME      209
-#define IDB_SYMBOL       210
-#define IDB_CAPTEXT      211
-#define IDB_HELP         212
-#define IDB_HELPSYMBOL   213
-#define IDB_HELPID       214
+#define IDB_TEXT            200
+#define IDB_CAPTION         201
+#define IDB_ID              202
+#define IDB_CLASS           203
+#define IDB_MENU            204
+#define IDB_FONTFACENAME    205
+#define IDB_FONTPOINTSIZE   206
+#define IDB_DLGNAME         207
+#define IDB_STYLES          208
+#define IDB_OBJNAME         209
+#define IDB_SYMBOL          210
+#define IDB_CAPTEXT         211
+#define IDB_HELP            212
+#define IDB_HELPSYMBOL      213
+#define IDB_HELPID          214
 
 /****************************************************************************/
 /* Controls to change pre-defined window styles (220-259)                   */

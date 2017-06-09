@@ -33,7 +33,7 @@
 #include "vi.h"
 #include "startup.h"
 #include "banner.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Allow Easy Flash Screen suppression */
@@ -42,12 +42,12 @@
 #ifndef NOSPLASH
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK StartupProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK StartupDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 /*
- * StartupProc - callback routine for startup modeless dialog
+ * StartupDlgProc - callback routine for startup modeless dialog
  */
-WINEXPORT BOOL CALLBACK StartupProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK StartupDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     wparam = wparam;
@@ -74,10 +74,10 @@ WINEXPORT BOOL CALLBACK StartupProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
     }
     return( FALSE );
 
-} /* StartupProc */
+} /* StartupDlgProc */
 
 static HWND     startDlgWindow;
-static FARPROC  startDlgProc;
+static DLGPROC  startDlgProc;
 
 #endif
 
@@ -87,8 +87,8 @@ static FARPROC  startDlgProc;
 void ShowStartupDialog( void )
 {
 #ifndef NOSPLASH
-    startDlgProc = MakeDlgProcInstance( StartupProc, InstanceHandle );
-    startDlgWindow = CreateDialog( InstanceHandle, "Startup", (HWND)NULLHANDLE, (DLGPROC)startDlgProc );
+    startDlgProc = MakeProcInstance_DLG( StartupDlgProc, InstanceHandle );
+    startDlgWindow = CreateDialog( InstanceHandle, "Startup", (HWND)NULLHANDLE, startDlgProc );
 #endif
 
 } /* ShowStartupDialog */
@@ -105,7 +105,7 @@ void CloseStartupDialog( void )
     }
     DestroyWindow( startDlgWindow );
     startDlgWindow = NO_WINDOW;
-    (void)FreeProcInstance( startDlgProc );
+    FreeProcInstance_DLG( startDlgProc );
 #endif
 
 } /* CloseStartupDialog */

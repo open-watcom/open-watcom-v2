@@ -1,5 +1,8 @@
+#define FIRST_USER_ACTION_ID    256
+#define FIRST_USER_NOTE_ID      256
+#define FIRST_USER_OBJ_ID       16
+
 #define EDIT_SELECT 0
-#define USER_OBJ    16
 #define OBJ_ITEM 2
 #define OBJ_VICINITY 5
 #define MENU_NONE   0x00

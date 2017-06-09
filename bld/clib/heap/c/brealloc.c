@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Re-allocate memory block
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -36,29 +36,42 @@
 #include <string.h>
 #include "heap.h"
 
-_WCRTLINK void __based( void ) *_brealloc( __segment seg, void __based( void ) *mem, size_t size )
+
+extern void _mymemcpy( void_fptr, void_fptr, size_t );
+#if defined(__SMALL_DATA__) || defined(__WINDOWS__)
+#pragma aux _mymemcpy = \
+        "push ds"       \
+        "mov ds,dx"     \
+        memcpy_i86      \
+        "pop ds"        \
+    parm caller [es di] [dx si] [cx] modify exact [si di cx]
+#else
+#pragma aux _mymemcpy = \
+        memcpy_i86      \
+    parm caller [es di] [ds si] [cx] modify exact [si di cx]
+#endif
+
+_WCRTLINK void_bptr _brealloc( __segment seg, void_bptr cstg_old, size_t size )
 {
-    void        __based( void ) *p;
+    void_bptr   cstg_new;
     size_t      old_size;
 
-    if( mem == _NULLOFF )
+    if( cstg_old == _NULLOFF )
         return( _bmalloc( seg, size ) );
     if( size == 0 ) {
-        _bfree( seg, mem );
+        _bfree( seg, cstg_old );
         return( _NULLOFF );
     }
-    old_size = _bmsize( seg, mem );
-    p = _bexpand( seg, mem, size );
-    if( p == _NULLOFF ) {               /* if it couldn't be expanded */
-        p = _bmalloc( seg, size );      /* - allocate new block */
-        if( p != _NULLOFF ) {           /* - if we got one */
-            _fmemcpy( (void _WCFAR *)(seg :> p),
-                      (void _WCFAR *)(seg :> mem),
-                      old_size );
-            _bfree( seg, mem );
+    old_size = _bmsize( seg, cstg_old );
+    cstg_new = _bexpand( seg, cstg_old, size );
+    if( cstg_new == _NULLOFF ) {                /* if it couldn't be expanded */
+        cstg_new = _bmalloc( seg, size );       /* - allocate new block */
+        if( cstg_new != _NULLOFF ) {            /* - if we got one */
+            _mymemcpy( seg :> cstg_new, seg :> cstg_old, old_size );
+            _bfree( seg, cstg_old );
         } else {
-            _bexpand( seg, mem, old_size );
+            _bexpand( seg, cstg_old, old_size );
         }
     }
-    return( p );
+    return( cstg_new );
 }

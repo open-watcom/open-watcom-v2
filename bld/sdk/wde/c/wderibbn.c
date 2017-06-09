@@ -66,7 +66,7 @@ typedef struct {
     char    *down;
     UINT    menu_id;
     WORD    flags;
-    int     tip_id;
+    msg_id  tip_id;
 } WdeRibbonName;
 
 /****************************************************************************/
@@ -81,15 +81,15 @@ WdeRibbonName WdeRibbonNames[] = {
     { "New",        NULL, IDM_NEW_RES,      0,              WDE_TIP_NEW        },
     { "Open",       NULL, IDM_OPEN_RES,     0,              WDE_TIP_OPEN       },
     { "Save",       NULL, IDM_SAVE_RES,     0,              WDE_TIP_SAVE       },
-    { NULL,         NULL, BLANK_PAD,        0,              -1                 },
+    { NULL,         NULL, BLANK_PAD,        0,              0                  },
     { "Cut",        NULL, IDM_CUTOBJECT,    0,              WDE_TIP_CUT        },
     { "Copy",       NULL, IDM_COPYOBJECT,   0,              WDE_TIP_COPY       },
     { "Paste",      NULL, IDM_PASTEOBJECT,  0,              WDE_TIP_PASTE      },
-    { NULL,         NULL, BLANK_PAD,        0,              -1                 },
+    { NULL,         NULL, BLANK_PAD,        0,              0                  },
     { "SzToTxt",    NULL, IDM_SIZETOTEXT,   0,              WDE_TIP_SIZETOTEXT },
-    { NULL,         NULL, BLANK_PAD,        0,              -1                 },
+    { NULL,         NULL, BLANK_PAD,        0,              0                  },
     { "Test",       NULL, IDM_TEST_MODE,    ITEM_STICKY,    WDE_TIP_TEST_MODE  },
-    { NULL,         NULL, BLANK_PAD,        0,              -1                 },
+    { NULL,         NULL, BLANK_PAD,        0,              0                  },
     { "Order",      NULL, IDM_SET_ORDER,    ITEM_STICKY,    WDE_TIP_SET_ORDER  },
     { "Tabs",       NULL, IDM_SET_TABS,     ITEM_STICKY,    WDE_TIP_SET_TABS   },
     { "Groups",     NULL, IDM_SET_GROUPS,   ITEM_STICKY,    WDE_TIP_SET_GROUPS }
@@ -98,20 +98,20 @@ WdeRibbonName WdeRibbonNames[] = {
 #define NUM_TOOLS (sizeof( WdeRibbonNames ) / sizeof( WdeRibbonName ))
 
 WdeRibbonName WdeDDERibbonNames[] = {
-    { "Clear",      NULL, IDM_DDE_CLEAR,        0,              -1 },
-    { "Save",       NULL, IDM_DDE_UPDATE_PRJ,   0,              -1 },
-    { NULL,         NULL, BLANK_PAD,            0,              -1 },
-    { "Cut",        NULL, IDM_CUTOBJECT,        0,              -1 },
-    { "Copy",       NULL, IDM_COPYOBJECT,       0,              -1 },
-    { "Paste",      NULL, IDM_PASTEOBJECT,      0,              -1 },
-    { NULL,         NULL, BLANK_PAD,            0,              -1 },
-    { "SzToTxt",    NULL, IDM_SIZETOTEXT,       0,              -1 },
-    { NULL,         NULL, BLANK_PAD,            0,              -1 },
-    { "Test",       NULL, IDM_TEST_MODE,        ITEM_STICKY,    -1 },
-    { NULL,         NULL, BLANK_PAD,            0,              -1 },
-    { "Order",      NULL, IDM_SET_ORDER,        ITEM_STICKY,    -1 },
-    { "Tabs",       NULL, IDM_SET_TABS,         ITEM_STICKY,    -1 },
-    { "Groups",     NULL, IDM_SET_GROUPS,       ITEM_STICKY,    -1 }
+    { "Clear",      NULL, IDM_DDE_CLEAR,        0,              0 },
+    { "Save",       NULL, IDM_DDE_UPDATE_PRJ,   0,              0 },
+    { NULL,         NULL, BLANK_PAD,            0,              0 },
+    { "Cut",        NULL, IDM_CUTOBJECT,        0,              0 },
+    { "Copy",       NULL, IDM_COPYOBJECT,       0,              0 },
+    { "Paste",      NULL, IDM_PASTEOBJECT,      0,              0 },
+    { NULL,         NULL, BLANK_PAD,            0,              0 },
+    { "SzToTxt",    NULL, IDM_SIZETOTEXT,       0,              0 },
+    { NULL,         NULL, BLANK_PAD,            0,              0 },
+    { "Test",       NULL, IDM_TEST_MODE,        ITEM_STICKY,    0 },
+    { NULL,         NULL, BLANK_PAD,            0,              0 },
+    { "Order",      NULL, IDM_SET_ORDER,        ITEM_STICKY,    0 },
+    { "Tabs",       NULL, IDM_SET_TABS,         ITEM_STICKY,    0 },
+    { "Groups",     NULL, IDM_SET_GROUPS,       ITEM_STICKY,    0 }
 };
 
 #define NUM_DDE_TOOLS (sizeof( WdeDDERibbonNames ) / sizeof( WdeRibbonName ))
@@ -307,7 +307,7 @@ bool WdeDoInitRibbon( HINSTANCE inst, WdeRibbonName *tools, int num_tools )
             } else {
                 WdeRibbonInfo->items[i].depressed = WdeRibbonInfo->items[i].u.bmp;
             }
-            if( tools[i].tip_id < 0 || LoadString( inst, tools[i].tip_id, WdeRibbonInfo->items[i].tip, MAX_TIP ) <= 0 ) {
+            if( !( tools[i].tip_id > 0 && LoadString( inst, tools[i].tip_id, WdeRibbonInfo->items[i].tip, MAX_TIP ) > 0 ) ) {
                 WdeRibbonInfo->items[i].tip[0] = '\0';
             }
         } else {

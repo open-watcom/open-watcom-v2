@@ -40,7 +40,7 @@
 #include "linuxsys.h"
 
 
-void _WCNEAR *__brk( unsigned brk_value )
+_WCRTLINK void_nptr __brk( unsigned brk_value )
 {
     unsigned old_brk_value;
     unsigned sys_brk_value;
@@ -52,7 +52,7 @@ void _WCNEAR *__brk( unsigned brk_value )
     if( sys_brk_value == -1 ) {
         _RWD_errno = ENOMEM;
         _ReleaseNHeap();
-        return( (void _WCNEAR *)-1 );
+        return( (void_nptr)-1 );
     }
     if( _curbrk == 0 ) {
         _curbrk = sys_brk_value;
@@ -63,15 +63,15 @@ void _WCNEAR *__brk( unsigned brk_value )
     _curbrk = brk_value;            /* set new break value */
 
     _ReleaseNHeap();
-    return( (void _WCNEAR *)old_brk_value );
+    return( (void_nptr)old_brk_value );
 }
 
-_WCRTLINK void _WCNEAR *sbrk( int increment )
+_WCRTLINK void_nptr sbrk( int increment )
 {
     return( __brk( _curbrk + increment ) );
 }
 
-_WCRTLINK int brk( void *endds )
+_WCRTLINK int brk( void_nptr endds )
 {
-    return( __brk( (unsigned)endds ) == (void *)-1 ? -1 : 0 );
+    return( __brk( (unsigned)endds ) == (void_nptr)-1 ? -1 : 0 );
 }

@@ -40,20 +40,21 @@
 #include "encode.h"
 #include "data.h"
 #include "objout.h"
-#include "dumpio.h"
 #include "revcond.h"
+#include "dumpio.h"
 
 
-static  label_handle    LocateLabel( instruction *ins, int index )
-/*******************************************************************
+static  label_handle    LocateLabel( instruction *ins, byte dst_idx )
+/********************************************************************
     find the true or false ("index") label of the block containing "ins"
 */
 {
-    if( index == NO_JUMP ) return( NULL );
+    if( dst_idx == NO_JUMP )
+        return( NULL );
     for( ins = ins->head.next; ins->head.opcode != OP_BLOCK; ) {
         ins = ins->head.next;
     }
-    return( _BLOCK( ins )->edge[index].destination.u.lbl );
+    return( _BLOCK( ins )->edge[dst_idx].destination.u.lbl );
 }
 
 #if _TARGET & _TARG_RISC

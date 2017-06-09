@@ -38,7 +38,7 @@
 #include "statwnd.h"
 #include "mem.h"
 #include "loadcc.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Window callback functions prototypes */
@@ -751,7 +751,7 @@ void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *
                     if( *str == STATUS_NEXT_BLOCK ) {
                         *bptr = '\0';
                         if( strlen( buff ) > 0 ) {
-                            SendMessage( sw->win, SB_SETTEXT, curr_block, (LPARAM)buff );
+                            SendMessage( sw->win, SB_SETTEXT, curr_block, (LPARAM)(LPCSTR)buff );
                         }
                         curr_block++;
                         bptr = buff;
@@ -765,7 +765,7 @@ void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *
             bptr = buff;
         }
         if( strlen( bptr ) > 0 ) {
-            SendMessage( sw->win, SB_SETTEXT, curr_block, (LPARAM)bptr );
+            SendMessage( sw->win, SB_SETTEXT, curr_block, (LPARAM)(LPCSTR)bptr );
         }
     }
 #endif

@@ -40,11 +40,11 @@
 /*
  * InitDip
  */
-BOOL InitDip( void )
+bool InitDip( void )
 {
     if( DIPInit() & DS_ERR ) {
         RCMessageBox( NULL, STR_CANT_LOAD_DIP, AppName, MB_OK | MB_ICONEXCLAMATION );
-        return( FALSE );
+        return( false );
     }
     return( LoadTheDips() );
 }
@@ -52,19 +52,19 @@ BOOL InitDip( void )
 /*
  * GetLineNum
  */
-BOOL GetLineNum( address *addr, char *fname, DWORD bufsize, DWORD *line )
+bool GetLineNum( address *addr, char *fname, DWORD bufsize, DWORD *line )
 {
     cue_handle  *cue;
 
     cue = MemAlloc( DIPHandleSize( HK_CUE, false ) );
     if( DIPAddrCue( NO_MOD, *addr, cue ) == SR_NONE ) {
         MemFree( cue );
-        return( FALSE );
+        return( false );
     }
     DIPCueFile( cue, fname, bufsize );
     *line = DIPCueLine( cue );
     MemFree( cue );
-    return( TRUE );
+    return( true );
 }
 
 
@@ -72,7 +72,7 @@ BOOL GetLineNum( address *addr, char *fname, DWORD bufsize, DWORD *line )
 /*
  * GetSymbolName
  */
-BOOL GetSymbolName( address *addr, char *name, DWORD *symoff )
+bool GetSymbolName( address *addr, char *name, DWORD *symoff )
 {
     sym_handle          *symhdl;
     search_result       sr;
@@ -90,22 +90,22 @@ BOOL GetSymbolName( address *addr, char *name, DWORD *symoff )
         break;
     case SR_NONE:
         MemFree( symhdl );
-        return( FALSE );
+        return( false );
     }
     DIPSymName( symhdl, NULL, SN_OBJECT, name, MAX_SYM_NAME );
     MemFree( symhdl );
-    return( TRUE );
+    return( true );
 }
 
 /*
  * LoadDbgInfo
  */
-BOOL LoadDbgInfo( ModuleNode *mod )
+bool LoadDbgInfo( ModuleNode *mod )
 {
     unsigned            priority;
 
     if( !GetSegmentList( mod ) )
-        return( FALSE );
+        return( false );
     mod->syminfo->procinfo = DIPCreateProcess();
     priority = 0;
     for( ;; ) {
@@ -118,9 +118,9 @@ BOOL LoadDbgInfo( ModuleNode *mod )
         }
     }
     if( mod->syminfo->hdl == NO_MOD )
-        return( FALSE );
+        return( false );
     DIPMapInfo( mod->syminfo->hdl, mod );
-    return( TRUE );
+    return( true );
 }
 
 /*

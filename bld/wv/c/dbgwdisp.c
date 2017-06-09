@@ -421,7 +421,8 @@ static void ProcStatus( void )
 
 OVL_EXTERN bool DoneRefresh( inp_data_handle dummy, inp_rtn_action action )
 {
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     switch( action ) {
     case INP_RTN_INIT:
         return( true );
@@ -565,7 +566,7 @@ void ConfigDisp( void )
 wnd_class_wv ReqWndName( void )
 {
     int     cmd;
-    
+
     cmd = ScanCmd( WndNameTab );
     if( cmd < 0 )
         Error( ERR_LOC, LIT_DUI( ERR_BAD_WIND_NAME ) );

@@ -82,7 +82,7 @@ static bool ConvertOneWResource( WResFileID in_fid, WResFileID out_fid,
     //FIXME! The last argument should be true for Win32 resources
     error = MResWriteResourceHeader( &outhead, out_fid, false );
     if (!error) {
-        RCSEEK( in_fid, langinfo->Offset, SEEK_SET );
+        RESSEEK( in_fid, langinfo->Offset, SEEK_SET );
         error = BinaryCopy( in_fid, out_fid, outhead.Size );
     }
 

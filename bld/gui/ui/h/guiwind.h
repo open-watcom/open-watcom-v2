@@ -34,10 +34,9 @@
 #ifndef _GUIWIND_H_
 #define _GUIWIND_H_
 
-#include "stdui.h"
-
-#include "guitypes.h"
 #include "gui.h"
+#include "stdui.h"
+#include "guitypes.h"
 #include "uivedit.h"
 #include "uiledit.h"
 #include "uidialog.h"
@@ -104,7 +103,7 @@ typedef struct toolbarinfo {
     bool                fixed;          // true if toolbar is fixed, false if floating)
     int                 num_items;      // number of items in toolb bar
     gui_window          *floattoolbar;  // NULL if fixed
-    gui_toolbar_struct  *info;          // initialization information
+    gui_toolbar_struct  *toolinfo;      // initialization information
     bool                switching;      // set if between fixed and floating
     bool                excl;           // true if exclamation marks used for fixed
     bool                has_colours;    // true if plain and standout colour
@@ -127,7 +126,7 @@ struct gui_window {
     SAREA               prev_area;      // location for restore after max/min
     SAREA               dirty;          // area that is dirty
     gui_flags           flags;          // flags to keep state
-    GUICALLBACK         *call_back;     // app's callback routine
+    GUICALLBACK         *gui_call_back; // app's callback routine
     gui_control         *controls;      // list of controls in window
     void                *extra;         // extra pointer for app to use
     gui_window          *child;         // pointer to first child window

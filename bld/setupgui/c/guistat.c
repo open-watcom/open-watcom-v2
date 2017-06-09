@@ -275,7 +275,8 @@ static bool StatusEventProc( gui_window *gui, gui_event gui_ev, void *parm )
     gui_keystate        state;
     const char          *msg;
 
-    parm = parm;
+    /* unused parameters */ (void)parm;
+
     if( gui == NULL )
         return( false );
 
@@ -434,7 +435,6 @@ static bool StatusEventProc( gui_window *gui, gui_event gui_ev, void *parm )
         return( true );
     case GUI_KEYDOWN:
         GUI_GET_KEY_STATE( parm, key, state );
-        state = state;
         switch( key ) {
         case GUI_KEY_ESCAPE:
             if( !button_pressed ) {

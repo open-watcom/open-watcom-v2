@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -62,8 +63,6 @@ static gui_control_info GetNew[] = {
     DLG_BUTTON( NULL,     CANCEL, 0,            BUTTON_ROW, BUTTON_WIDTH ), /* CANCEL */
     DLG_DEFBUTTON( NULL,  OK,     0,            BUTTON_ROW, BUTTON_WIDTH )  /* OK     */
 };
-
-#define NUM_CONTROLS  ( sizeof( GetNew ) / sizeof( gui_control_info ) )
 
 typedef struct ret_info {
     char                *text;
@@ -153,7 +152,7 @@ gui_message_return GUIGetNewVal( const char *title, const char *old, char **new_
                          ( ( cols / 2 - BUTTON_WIDTH ) / 2 ) - BUTTON_WIDTH );
 
 
-    GUIDlgOpen( title, NUM_ROWS, cols, GetNew, NUM_CONTROLS, &GetNewFunction, &info );
+    GUIDlgOpen( title, NUM_ROWS, cols, GetNew, ARRAY_SIZE( GetNew ), &GetNewFunction, &info );
     *new_val = info.text;
     return( info.ret_val );
 }

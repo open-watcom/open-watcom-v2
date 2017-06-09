@@ -44,6 +44,5 @@ void BlipInit()
 
 void Blip( unsigned short location, char ch )
 {
-    location = location;
-    ch = ch;
+    /* unused parameters */ (void)location; (void)ch;
 }

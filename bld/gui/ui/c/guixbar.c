@@ -41,7 +41,7 @@ bool GUIDrawBar( gui_window *wnd, gui_ord row, gui_ord start, gui_ord width,
     gui_rect            rect;
     bool                ret;
 
-    bstyle = bstyle;
+    /* unused parameters */ (void)bstyle;
 
     if( wnd == NULL ) {
         return( false );

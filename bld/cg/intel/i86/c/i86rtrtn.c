@@ -49,6 +49,7 @@
 #include "optab.h"
 #include "inssegs.h"
 #include "fixindex.h"
+#include "conflict.h"
 
 
 extern  name            *GenFloat( name *, type_class_def );
@@ -56,7 +57,6 @@ extern  name            *GenConstData( const void *, type_class_def );
 extern  void            UpdateLive( instruction *, instruction * );
 extern  bool            SegIsSS( name * );
 extern  name            *GetSegment( name * );
-extern  conflict_node   *NameConflict( instruction *, name * );
 extern  name            *AddrConst( name *, int, constant_class );
 
 /*
@@ -177,7 +177,7 @@ bool    RTLeaveOp2( instruction *ins )
     default:
         return( false );
     }
-    if( NumOperands( ins ) != 2 )
+    if( OpcodeNumOperands( ins ) != 2 )
         return( false );
     return( true );
 }
@@ -323,7 +323,7 @@ instruction     *rMAKECALL( instruction *ins )
             HW_TurnOn( all_regs, regs );
             PrefixIns( ins, new_ins );
         }
-    } else if( NumOperands( ins ) == 2 ) {
+    } else if( OpcodeNumOperands( ins ) == 2 ) {
         if( rtindex == RT_DPOWI ) {
             parm2_class = I4;
         } else {

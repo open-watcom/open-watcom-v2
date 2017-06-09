@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,10 +37,9 @@
 #include "aui.h"
 #include "dip.h"
 #include "sampinfo.h"
-#include "wpsrcfil.h"
+#include "wpsrcfld.h"
 #include "wpasmfil.h"
-
-//#include "wpnumrow.def"
+#include "wpnumrow.h"
 
 
 //STATIC int              sampleNumRows( a_window * );
@@ -63,8 +63,8 @@ static SAMPLEROWRTNS * overviewRowRtns[] = {
 
 
 
-extern int SampleNumRows( a_window * wnd )
-/****************************************/
+int SampleNumRows( a_window * wnd )
+/*********************************/
 {
     sio_data *      curr_sio;
 

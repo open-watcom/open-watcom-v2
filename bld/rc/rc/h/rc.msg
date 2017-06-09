@@ -16,7 +16,7 @@ pick(   STR_APP_NAME,
 pick(   ERR_CANT_OPEN_FILE,
         "Unable to open file \"%s\": %s.",
         "ファイルをオ－プン出来ません \"%s\": %s." )
-pick(   ERR_RENAMEING_TMP_FILE,
+pick(   ERR_RENAMING_TMP_FILE,
         "Error renaming temporary file \"%s\" to \"%s\": %s.",
         "テンポラリ ファイル \"%s\" の \"%s\"への変更エラ－です: %s." )
 pick(   ERR_NOT_ICON_FILE,
@@ -312,6 +312,9 @@ pick(   ERR_WIN16_TOO_MANY_CONTROLS,
 pick(   ERR_SYMBOL_NOT_DEFINED,
         "Symbol '%s' is not defined.",
         "Can't expand environment variable '%s' recursively." )
+pick(   ERR_DELETING_FILE,
+        "Error deleting file \"%s\": %s.",
+        "Error deleting file \"%s\": %s." )
 #ifdef _STANDALONE_
 pick(   USAGE_MSG_FIRST,
         "Usage: %s {options} input-filename {options} [output-filename] {options}",

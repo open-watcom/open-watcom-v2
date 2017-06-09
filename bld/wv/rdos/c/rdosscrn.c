@@ -74,15 +74,15 @@ bool UsrScrnMode( void )
 bool DebugScreen( void )
 {
     int handle;
-    
+
     if( my_key == 0) {
         handle = RdosGetModuleHandle();
         my_key = RdosGetModuleFocusKey( handle );
     }
-    
+
     if( my_key )
         RdosSetFocus( my_key );
-        
+
     return( false );
 }
 
@@ -95,14 +95,14 @@ bool DebugScreenRecover( void )
 bool UserScreen( void )
 {
     int handle;
-    image_entry *img;
-        
+    image_entry *image;
+
     if( debug_key == 0 ) {
-        img = ImagePrimary();
-        if( img ) {
-            handle = img->system_handle;
+        image = ImagePrimary();
+        if( image != NULL ) {
+            handle = image->system_handle;
             debug_key = RdosGetModuleFocusKey( handle );
-        }        
+        }
     }
 
     if( debug_key )

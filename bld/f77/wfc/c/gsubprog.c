@@ -185,7 +185,8 @@ int     GParms( itnode *sp ) {
 
     int         num_stmts;
 
-    sp = sp;
+    /* unused parameters */ (void)sp;
+
     num_stmts = 0;
     for(;;) {
         if( !RecNOpn() ) {  // consider f()
@@ -421,14 +422,14 @@ void    GArgList( entry_pt *arg_list, uint args, PTYPE typ ) {
 
 // Dump start of an argument list.
 
-    arg_list = arg_list; args = args; typ = typ;
+    /* unused parameters */ (void)arg_list; (void)args; (void)typ;
 }
 
 
-void    GArgInfo( sym_id sym, PTYPE code, PTYPE typ ) {
+void    GArgInfo( sym_id sym, PCODE code, PTYPE typ ) {
 //===================================================
 
 // Dump information for an argument.
 
-    sym = sym; code = code; typ = typ;
+    /* unused parameters */ (void)sym; (void)code; (void)typ;
 }

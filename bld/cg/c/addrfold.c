@@ -366,7 +366,8 @@ static        bool    AddToTypeLength( type_length x, type_length y ) {
 
     lx = x; ly = y;
     x += y; lx += ly;
-    if( lx != x ) return( false );
+    if( lx != x )
+        return( false );
 #if _TARGET & _TARG_370
     if( lx < 0 || lx >= 4096 )
         return( false );
@@ -525,7 +526,8 @@ static  bool    ShiftConst( an r_addr ) {
 extern  bool    CypAddrShift( an l_addr, an r_addr, type_def *tipe ) {
 /********************************************************************/
 
-    tipe = tipe;
+    /* unused parameters */ (void)tipe;
+
     CheckPointer( l_addr );
     if( l_addr->format == NF_NAME )
         return( false );
@@ -615,7 +617,8 @@ extern  name    *GetValue( an addr, name *suggest ) {
                 ins = MakeBinary( OP_ADD, addr->u.n.name,
                                     AllocS32Const( addr->u.n.offset ),
                                     op, TypeClass( addr->tipe ) );
-                if( addr->flags & FL_ADDR_DEMOTED ) ins->ins_flags |= INS_DEMOTED;
+                if( addr->flags & FL_ADDR_DEMOTED )
+                    ins->ins_flags |= INS_DEMOTED;
                 AddIns( ins );
             } else {
                 op = addr->u.n.name;

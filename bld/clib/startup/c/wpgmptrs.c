@@ -34,6 +34,7 @@
 #include "saferlib.h"
 #include <stdlib.h>
 
+
 _WCRTLINK errno_t _get_wpgmptr( wchar_t **p )
 {
     if( __check_constraint_nullptr( p ) ) {

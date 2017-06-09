@@ -52,7 +52,8 @@ extern  char            *SkipBlanks(char *);
 bool    ParseCmdLine( char **fname, char **rest, char **opt_array, char *p ) {
 //============================================================================
 
-    fname = fname; rest = rest; p = p;
+    /* unused parameters */ (void)fname; (void)rest; (void)p;
+
     *opt_array = NULL;
     return( true );
 }

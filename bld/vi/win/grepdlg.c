@@ -32,20 +32,20 @@
 
 #include "vi.h"
 #include "grep.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK GrepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK GrepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
-static FARPROC  grepProc;
+static DLGPROC  grepProc;
 static HWND     grepHwnd;
 static bool     cancelPressed;
 
 /*
  * GrepDlgProc - callback routine for grep dialog
  */
-WINEXPORT BOOL CALLBACK GrepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK GrepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     switch( msg ) {
@@ -73,9 +73,9 @@ WINEXPORT BOOL CALLBACK GrepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
  */
 void InitGrepDialog( void )
 {
-    grepProc = MakeDlgProcInstance( GrepDlgProc, InstanceHandle );
+    grepProc = MakeProcInstance_DLG( GrepDlgProc, InstanceHandle );
     cancelPressed = false;
-    grepHwnd = CreateDialog( InstanceHandle, "GREPDLG", root_window_id, (DLGPROC)grepProc );
+    grepHwnd = CreateDialog( InstanceHandle, "GREPDLG", root_window_id, grepProc );
 
 } /* InitGrepDialog */
 
@@ -89,7 +89,7 @@ void FiniGrepDialog( void )
     if( !BAD_ID( grepHwnd ) ) {
         DestroyWindow( grepHwnd );
     }
-    (void)FreeProcInstance( grepProc );
+    FreeProcInstance_DLG( grepProc );
     grepProc = NULL;
     grepHwnd = NO_WINDOW;
 

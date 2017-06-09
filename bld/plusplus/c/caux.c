@@ -52,18 +52,15 @@ static AUX_INFO **infoTranslate;
 hw_reg_set *AuxParmDup(         // DUPLICATE AUX PARMS
     hw_reg_set *parms )
 {
-    unsigned amt;
-    hw_reg_set *c;
-    hw_reg_set *p;
+    size_t      amt;
+    hw_reg_set  *c;
+    hw_reg_set  *p;
 
     if( parms == NULL ) {
         return( parms );
     }
     amt = sizeof( hw_reg_set );
-    c = parms;
-    for(;;) {
-        if( HW_CEqual( *c, HW_EMPTY ) ) break;
-        ++c;
+    for( c = parms; !HW_CEqual( *c, HW_EMPTY ); ++c ) {
         amt += sizeof( hw_reg_set );
     }
     p = CMemAlloc( amt );
@@ -183,12 +180,9 @@ static void writeAuxInfo( AUX_INFO *info, unsigned index )
     save_parms = info->parms;
     save_objname = info->objname;
     if( save_parms != NULL ) {
-        len = 0;
-        regs = save_parms;
-        for(;;) {
+        len = sizeof( hw_reg_set );
+        for( regs = save_parms; !HW_CEqual( *regs, HW_EMPTY ); ++regs ) {
             len += sizeof( hw_reg_set );
-            if( HW_CEqual( *regs, HW_EMPTY ) ) break;
-            ++regs;
         }
         info->parms = PCHSetUInt( len );
     }
@@ -274,7 +268,8 @@ AUX_INFO *PragmaMapIndex( AUX_INFO *i )
 
 pch_status PCHInitPragmas( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 

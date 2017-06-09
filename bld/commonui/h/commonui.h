@@ -52,4 +52,4 @@
 
 
 typedef unsigned    ctl_id;
-typedef int         msg_id;
+typedef unsigned    msg_id;

@@ -805,11 +805,11 @@ dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ex
         fd = open( buffer, O_RDONLY );
     } else {
         // check open file in current directory or in full path
-        fd = MakeNameWithPathOpen( NULL, name, name_len, buff, buff_size );
+        fd = MakeNameWithPathOpen( NULL, buffer, p - buffer, buff, buff_size );
         if( fd == -1 ) {
             // check open file in debugger directory list
             for( curr = LclPath; curr != NULL; curr = curr->next ) {
-                fd = MakeNameWithPathOpen( curr->name, name, name_len, buff, buff_size );
+                fd = MakeNameWithPathOpen( curr->name, buffer, p - buffer, buff, buff_size );
                 if( fd != -1 ) {
                     break;
                 }

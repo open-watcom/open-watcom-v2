@@ -179,7 +179,7 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
 /*
  * Death - end of the pm debugger
  */
-void Death( DWORD msgid, ... )
+void Death( msg_id msgid, ... )
 {
     char        tmp[128];
     va_list     al;

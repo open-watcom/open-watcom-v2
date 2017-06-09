@@ -103,6 +103,7 @@ global char         *SrcFName;          /* source file name without suffix */
 global char         *DefFName;          /* .def file name (prototypes) */
 global char         *WholeFName;        /* whole file name with suffix */
 global char         *ForceInclude;
+global char         *ForcePreInclude;
 #if _CPU == 370
 global char         *AuxName;
 #endif
@@ -218,8 +219,9 @@ global int          TmpSymCount;
 global int          LitCount;
 global target_size  LitPoolSize;
 global size_t       MacroSize;
-global struct comp_flags CompFlags;
-global struct global_comp_flags GlobalCompFlags;
+global ppctl_t      Pre_processing;
+global comp_flags   CompFlags;
+global global_comp_flags GlobalCompFlags;
 global segment_id   SegmentNum;         /* next PRIVATE segment number to use */
 global segment_id   FarStringSegment;
 
@@ -428,7 +430,8 @@ extern void         CppPrtf(char *,...);
 extern void         SetCppWidth(unsigned);
 extern void         CppPrtChar(int);
 extern void         CppPrtToken(void);
-extern bool         OpenSrcFile(const char *,bool);
+extern bool         OpenSrcFile(const char *, src_file_type);
+extern void         CloseSrcFile(FCB *);
 extern void         OpenDefFile(void);
 extern FILE         *OpenBrowseFile(void);
 extern void         CloseFiles(void);
@@ -593,7 +596,10 @@ extern int          GetNextChar(void);
 extern void         GetNextCharUndo(int);
 extern int          GetCharCheckFile(int);
 extern int          getCharAfterBackSlash(void);
-extern void         CloseSrcFile(FCB *);
+extern bool         OpenFCB( FILE *fp, const char *filename, src_file_type typ );
+extern void         CloseFCB( FCB * );
+extern void         SrcPurge( void );
+extern void         InitIncFile( void );
 
 // cinfo.c
 extern void         SegInit(void);
@@ -863,7 +869,7 @@ extern char         *ftoa( FLOATVAL * );
 extern unsigned     JIS2Unicode( unsigned );
 
 // pchdr.c
-extern int          UsePreCompiledHeader( const char * );
+extern bool         UsePreCompiledHeader( const char * );
 extern void         InitBuildPreCompiledHeader( void );
 extern void         BuildPreCompiledHeader( const char * );
 extern void         FreePreCompiledHeader( void );

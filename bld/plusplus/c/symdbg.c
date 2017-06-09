@@ -1053,7 +1053,8 @@ static bool typedef_is_of_basic_types( TYPE type )
 static void doSymbolicDebugNamedType( TYPE type, void *data )
 /***********************************************************/
 {
-    data = data;
+    /* unused parameters */ (void)data;
+
     if( !ScopeType( type->u.t.scope, SCOPE_TEMPLATE_PARM ) &&
         !ScopeType( type->u.t.scope, SCOPE_TEMPLATE_SPEC_PARM ) &&
         !ScopeType( type->u.t.scope, SCOPE_TEMPLATE_DECL ) ) {

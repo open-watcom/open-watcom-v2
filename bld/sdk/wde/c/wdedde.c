@@ -69,9 +69,9 @@ void WdeInt3( void );
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
-                                       HSZ hsz1, HSZ hsz2, HDDEDATA hdata,
-                                       ULONG_PTR lData1, ULONG_PTR lData2 );
+
+/* Local Window callback functions prototypes */
+WINEXPORT FNCALLBACK DdeCallBack;
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -89,19 +89,19 @@ static void     WdeHandlePokedData( HDDEDATA hdata );
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static  DWORD   IdInst = 0;
-static  FARPROC DdeProc;
-static  HSZ     hDialogService = NULL;
-static  HSZ     hDialogTopic = NULL;
-static  HSZ     hService = NULL;
-static  HSZ     hTopic = NULL;
-static  HSZ     hFileItem = NULL;
-static  HSZ     hIs32BitItem = NULL;
-static  HSZ     hNameItem = NULL;
-static  HSZ     hDataItem = NULL;
-static  HCONV   WdeClientConv = NULL;
-static  HCONV   WdeServerConv = NULL;
-static  UINT    WdeDataClipbdFormat = 0;
+static  DWORD       IdInst = 0;
+static  PFNCALLBACK DdeProcInst = NULL;
+static  HSZ         hDialogService = NULL;
+static  HSZ         hDialogTopic = NULL;
+static  HSZ         hService = NULL;
+static  HSZ         hTopic = NULL;
+static  HSZ         hFileItem = NULL;
+static  HSZ         hIs32BitItem = NULL;
+static  HSZ         hNameItem = NULL;
+static  HSZ         hDataItem = NULL;
+static  HCONV       WdeClientConv = NULL;
+static  HCONV       WdeServerConv = NULL;
+static  UINT        WdeDataClipbdFormat = 0;
 
 bool WdeDDEStart( HINSTANCE inst )
 {
@@ -111,61 +111,61 @@ bool WdeDDEStart( HINSTANCE inst )
     _wde_touch( inst ); /* MakeProcInstance vanishes in NT */
 
     if( IdInst != 0 ) {
-        return( FALSE );
+        return( false );
     }
 
     WdeDataClipbdFormat = RegisterClipboardFormat( WR_CLIPBD_DIALOG );
     if( WdeDataClipbdFormat == 0 ) {
-        return( FALSE );
+        return( false );
     }
 
-    DdeProc = MakeProcInstance( (FARPROC)DdeCallBack, inst );
-    if( DdeProc == (FARPROC)NULL ) {
-        return( FALSE );
+    DdeProcInst = (PFNCALLBACK)MakeProcInstance( (FARPROC)DdeCallBack, inst );
+    if( DdeProcInst == NULL ) {
+        return( false );
     }
 
     flags = APPCLASS_STANDARD | APPCMD_FILTERINITS |
             CBF_FAIL_ADVISES | CBF_FAIL_SELFCONNECTIONS |
             CBF_SKIP_REGISTRATIONS | CBF_SKIP_UNREGISTRATIONS;
 
-    ret = DdeInitialize( &IdInst, (PFNCALLBACK)DdeProc, flags, 0 );
+    ret = DdeInitialize( &IdInst, DdeProcInst, flags, 0 );
     if( ret != DMLERR_NO_ERROR ) {
-        return( FALSE );
+        return( false );
     }
 
     hDialogService = DdeCreateStringHandle( IdInst, WDE_SERVICE_NAME, CP_WINANSI );
     if( hDialogService == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hDialogTopic = DdeCreateStringHandle( IdInst, WDE_DIALOG_TOPIC, CP_WINANSI );
     if( hDialogTopic == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hFileItem = DdeCreateStringHandle( IdInst, WRE_FILE_ITEM, CP_WINANSI );
     if( hFileItem == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hIs32BitItem = DdeCreateStringHandle( IdInst, WRE_32BIT_ITEM, CP_WINANSI );
     if( hIs32BitItem == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hNameItem = DdeCreateStringHandle( IdInst, WRE_NAME_ITEM, CP_WINANSI );
     if( hNameItem == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hDataItem = DdeCreateStringHandle( IdInst, WRE_DATA_ITEM, CP_WINANSI );
     if( hDataItem == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     DdeNameService( IdInst, hDialogService, (HSZ)NULL, DNS_REGISTER );
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeDDEEnd( void )
@@ -193,8 +193,8 @@ void WdeDDEEnd( void )
         DdeUninitialize( IdInst );
         IdInst = 0;
     }
-    if( DdeProc != (FARPROC)NULL ) {
-        FreeProcInstance( DdeProc );
+    if( DdeProcInst != NULL ) {
+        FreeProcInstance( (FARPROC)DdeProcInst );
     }
 }
 
@@ -246,29 +246,29 @@ bool WdeDDEDumpConversation( HINSTANCE inst )
 bool WdeDDEStartConversation( void )
 {
     if( IdInst == 0 ) {
-        return( FALSE );
+        return( false );
     }
 
     hService = DdeCreateStringHandle( IdInst, WRE_SERVICE_NAME, CP_WINANSI );
     if( hService == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     hTopic = DdeCreateStringHandle( IdInst, WRE_DIALOG_TOPIC, CP_WINANSI );
     if( hTopic == (HSZ)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     WdeClientConv = DdeConnect( IdInst, hService, hTopic, (LPVOID)NULL );
     if( WdeClientConv == (HCONV)NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( !WdeStartDDEEditSession() ) {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeDDEEndConversation( void )
@@ -296,7 +296,7 @@ void *WdeHData2Mem( HDDEDATA hData )
     void        *mem;
     uint_32     size;
 
-    if( hData == (HDDEDATA)NULL ) {
+    if( hData == NULL ) {
         return( NULL );
     }
 
@@ -322,13 +322,12 @@ HDDEDATA WdeCreateResNameData( WResID *name, bool is32bit )
 {
     HDDEDATA    hdata;
     void        *data;
-    uint_32     size;
+    size_t      size;
 
-    hdata = (HDDEDATA)NULL;
+    hdata = NULL;
 
     if( WRWResID2Mem( name, &data, &size, is32bit ) ) {
-        hdata = DdeCreateDataHandle( IdInst, (LPBYTE)data, size, 0,
-                                     hNameItem, WdeDataClipbdFormat, 0 );
+        hdata = DdeCreateDataHandle( IdInst, (LPBYTE)data, size, 0, hNameItem, WdeDataClipbdFormat, 0 );
         WRMemFree( data );
     }
 
@@ -341,7 +340,7 @@ HDDEDATA WdeCreateResData( WdeResDlgItem *ditem )
     void        *data;
     uint_32     size;
 
-    hdata = (HDDEDATA)NULL;
+    hdata = NULL;
 
     if( WdeGetItemData( ditem, &data, &size ) ) {
         hdata = DdeCreateDataHandle( IdInst, (LPBYTE)data, size, 0,
@@ -373,37 +372,37 @@ bool WdeUpdateDDEEditSession( void )
     HDDEDATA            hdata;
     bool                ok;
 
-    hdata = (HDDEDATA)NULL;
+    hdata = NULL;
     ditem = WdeGetDlgItem();
     ok = (WdeClientConv != (HCONV)NULL && ditem != NULL);
 
     if( ok ) {
         hdata = WdeCreateResData( ditem );
-        ok = (hdata != (HDDEDATA)NULL);
+        ok = (hdata != NULL);
     }
 
     if( ok ) {
-        ok = DdeClientTransaction( (LPBYTE)hdata, -1, WdeClientConv,
+        ok = DdeClientTransaction( (LPBYTE)hdata, (DWORD)-1L, WdeClientConv,
                                          hDataItem, WdeDataClipbdFormat,
                                          XTYP_POKE, TIME_OUT, NULL ) != 0;
     }
 
-    if( hdata != (HDDEDATA)NULL ) {
+    if( hdata != NULL ) {
         DdeFreeDataHandle( hdata );
     }
 
     if( ok ) {
         hdata = WdeCreateResNameData( ditem->dialog_name, ditem->is32bit );
-        ok = (hdata != (HDDEDATA)NULL);
+        ok = (hdata != NULL);
     }
 
     if( ok ) {
-        ok = DdeClientTransaction( (LPBYTE)hdata, -1, WdeClientConv,
+        ok = DdeClientTransaction( (LPBYTE)hdata, (DWORD)-1L, WdeClientConv,
                                          hNameItem, WdeDataClipbdFormat,
                                          XTYP_POKE, TIME_OUT, NULL ) != 0;
     }
 
-    if( hdata != (HDDEDATA)NULL ) {
+    if( hdata != NULL ) {
         DdeFreeDataHandle( hdata );
     }
 
@@ -435,7 +434,7 @@ bool WdeStartDDEEditSession( void )
         hData = DdeClientTransaction( NULL, 0, WdeClientConv,
                                       hFileItem, WdeDataClipbdFormat,
                                       XTYP_REQUEST, TIME_OUT, &ret );
-        ok = (hData != (HDDEDATA)NULL);
+        ok = (hData != NULL);
     }
 
     if( ok ) {
@@ -448,8 +447,8 @@ bool WdeStartDDEEditSession( void )
         hData = DdeClientTransaction( NULL, 0, WdeClientConv,
                                       hIs32BitItem, WdeDataClipbdFormat,
                                       XTYP_REQUEST, TIME_OUT, &ret );
-        if( hData != (HDDEDATA)NULL ) {
-            ditem->is32bit = TRUE;
+        if( hData != NULL ) {
+            ditem->is32bit = true;
             DdeFreeDataHandle( hData );
         }
     }
@@ -458,7 +457,7 @@ bool WdeStartDDEEditSession( void )
         hData = DdeClientTransaction( NULL, 0, WdeClientConv,
                                       hNameItem, WdeDataClipbdFormat,
                                       XTYP_REQUEST, TIME_OUT, &ret );
-        ok = (hData != (HDDEDATA)NULL);
+        ok = (hData != NULL);
     }
 
     if( ok ) {
@@ -477,7 +476,7 @@ bool WdeStartDDEEditSession( void )
         hData = DdeClientTransaction( NULL, 0, WdeClientConv,
                                       hDataItem, WdeDataClipbdFormat,
                                       XTYP_REQUEST, TIME_OUT, &ret );
-        if( hData != (HDDEDATA)NULL ) {
+        if( hData != NULL ) {
             data = WdeHData2Mem( hData );
             size = (int)DdeGetData( hData, NULL, 0, 0 );
             DdeFreeDataHandle( hData );
@@ -534,14 +533,15 @@ bool WdeStartDDEEditSession( void )
     return( ok );
 }
 
-static bool GotEndSession = FALSE;
+static bool GotEndSession = false;
+
 void WdeHandlePokedData( HDDEDATA hdata )
 {
     HWND        main;
     char        *cmd;
     WdeResInfo  *rinfo;
 
-    if( hdata == (HDDEDATA)NULL ) {
+    if( hdata == NULL ) {
         return;
     }
 
@@ -559,8 +559,8 @@ void WdeHandlePokedData( HDDEDATA hdata )
         ShowWindow( main, SW_SHOWMINNOACTIVE );
         ShowWindow( main, SW_HIDE );
     } else if( stricmp( cmd, "endsession" ) == 0 ) {
-        if( GotEndSession == FALSE ) {
-            GotEndSession = TRUE;
+        if( !GotEndSession ) {
+            GotEndSession = true;
             rinfo = WdeGetCurrentRes();
             WdeDestroyResourceWindow( rinfo );
         }
@@ -582,7 +582,7 @@ void WdeHandlePokedData( HDDEDATA hdata )
     WRMemFree( cmd );
 }
 
-WINEXPORT HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
+HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
                                 HSZ hsz1, HSZ hsz2, HDDEDATA hdata,
                                 ULONG_PTR lData1, ULONG_PTR lData2 )
 {
@@ -596,7 +596,7 @@ WINEXPORT HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
     _wde_touch( lData1 );
     _wde_touch( lData2 );
 
-    ret = (HDDEDATA)NULL;
+    ret = NULL;
 
     switch( wType ) {
     case XTYP_CONNECT_CONFIRM:
@@ -624,7 +624,7 @@ WINEXPORT HDDEDATA CALLBACK DdeCallBack( UINT wType, UINT wFmt, HCONV hConv,
         hszpair[0].hszTopic = hDialogTopic;
         hszpair[1].hszSvc = (HSZ)NULL;
         hszpair[1].hszTopic = (HSZ)NULL;
-        ret = (HDDEDATA)DdeCreateDataHandle( IdInst, (LPBYTE)&hszpair[0],
+        ret = DdeCreateDataHandle( IdInst, (LPBYTE)&hszpair[0],
                                              sizeof( hszpair ), 0L, 0, CF_TEXT, 0 );
         break;
 

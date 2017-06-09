@@ -280,7 +280,8 @@ static char *DBOpNames[] = {
 static char *DoLocation( char *str, dbg_loc loc ) {
 /*************************************************/
 
-    if( loc == NULL ) return( str );
+    if( loc == NULL )
+        return( str );
     str = DoLocation( str, loc->next );
     *str++ = ' ';
     switch( loc->class ) {
@@ -755,7 +756,8 @@ static  void    AddDim( array_list *ar, dim_any *dim ){
     owner = &ar->list;
     for(;;) {
         curr = *owner;
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         owner = &curr->next;
     }
     dim->entry.next = NULL;
@@ -885,7 +887,8 @@ static  void    AddField( struct_list *st, field_any *field ){
     owner = &st->list;
     for(;;) {
         curr = *owner;
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         owner = &curr->next;
     }
     field->entry.next = NULL;
@@ -1006,14 +1009,15 @@ extern  void        DBAddInheritance( struct_list *st, dbg_type inherit,
     AddField( st, field );
 }
 
-extern  void    DBAddBaseInfo( struct_list  *st, unsigned_32 vb_off,  unsigned_32 esize,
-                                              dbg_type vtbl, cg_type ptr_type ){
-/*******************************************************************/
+void    DBAddBaseInfo( struct_list  *st, unsigned_32 vb_off,  unsigned_32 esize,
+                                              dbg_type vtbl, cg_type ptr_type )
+/******************************************************************************/
+{
     st->vtbl_off    = vb_off;
     st->vtbl_type  = vtbl;
     st->ptr_type  =  ptr_type;
     st->vtbl_esize = esize;
-     Action( "DBAddBaseInfo( %p, %d, %d, %d,%s )%n", st, vb_off,
+    Action( "DBAddBaseInfo( %p, %d, %d, %d,%s )%n", st, vb_off,
                              esize, vtbl, Tipe( ptr_type) );
 }
 
@@ -1031,66 +1035,71 @@ extern  dbg_type        DBEndStruct( struct_list *st ) {
     field_any  *curr;
     uint        toff;
 
-     Action( "DBEndStruct( %p )", st );
-     TypDbg( "(%d) Struct #fields == %d%n", ++TypeIdx, st->num );
-     for(;;) {
-         curr = st->list;
-         if( curr == NULL ) break;
-         switch( curr->entry.field_type ) {
-         case FIELD_OFFSET:{
-             field_member *field = curr;
-
-             toff = field->u.off;
-             TypDbg( "    '%s' base==%d, offset==%d", field->name, field->base,
-                     toff );
-             if( field->len != 0 ) {
-                 TypDbg( "{%d:%d}", field->b_strt, field->b_len );
-             }
+    Action( "DBEndStruct( %p )", st );
+    TypDbg( "(%d) Struct #fields == %d%n", ++TypeIdx, st->num );
+    for( ;; ) {
+        curr = st->list;
+        if( curr == NULL )
             break;
-         }
-         case FIELD_LOC:{
-             field_member *field = curr;
-
-             TypDbg( "    '%s' base==%d, attr==%h, location==%s", field->name, field->base,
-                     field->attr, Location( field->u.loc ) );
-             if( field->len != 0 ) {
-                 TypDbg( "{%d:%d}", field->b_strt, field->b_len );
-             }
+        switch( curr->entry.field_type ) {
+        case FIELD_OFFSET:
+            {
+                field_member *field = curr;
+    
+                toff = field->u.off;
+                TypDbg( "    '%s' base==%d, offset==%d", field->name, field->base, toff );
+                if( field->len != 0 ) {
+                    TypDbg( "{%d:%d}", field->b_strt, field->b_len );
+                }
+            }
             break;
-         }
-         case FIELD_INHERIT:{
-             field_bclass *field = curr;
-
-             TypDbg( "    inherit base==%d, adjust==%s", field->base,
-                     Location( field->u.adjustor ) );
-             break;
-         }
-         }
-         TypDbg( "%n" );
-         st->list = curr->entry.next;
-         curr->entry.next = NULL;
-         CGFree( curr );
-     }
-     CGFree( st );
+        case FIELD_LOC:
+            {
+                field_member *field = curr;
+    
+                TypDbg( "    '%s' base==%d, attr==%h, location==%s", field->name, field->base,
+                         field->attr, Location( field->u.loc ) );
+                if( field->len != 0 ) {
+                    TypDbg( "{%d:%d}", field->b_strt, field->b_len );
+                }
+            }
+            break;
+        case FIELD_INHERIT:
+            {
+                field_bclass *field = curr;
+    
+                TypDbg( "    inherit base==%d, adjust==%s", field->base,
+                         Location( field->u.adjustor ) );
+            }
+            break;
+        }
+        TypDbg( "%n" );
+        st->list = curr->entry.next;
+        curr->entry.next = NULL;
+        CGFree( curr );
+    }
+    CGFree( st );
     Action( " -> %d%n", TypeIdx );
     return( TypeIdx );
 }
 
-bool            DBNested( bool flag ){
-/************************************/
-     Action( "DBNested( %d )", flag );
-     return( 0 );
+bool    DBNested( bool flag )
+/***************************/
+{
+    Action( "DBNested( %d )", flag );
+    return( false );
 }
 
-extern  dbg_type      DBStructForward( struct_list  *st ) {
-//===========================================================
-     Action( "DBStructForward( %p )", st );
-     return( DBG_NIL_TYPE  );
+dbg_type      DBStructForward( struct_list  *st )
+//===============================================
+{
+    Action( "DBStructForward( %p )", st );
+    return( DBG_NIL_TYPE  );
 }
 
-extern  enum_list       *DBBegEnum( cg_type tipe ) {
-//==================================================
-
+enum_list   *DBBegEnum( cg_type tipe )
+//====================================
+{
     enum_list   *en;
 
     Action( "DBBegEnum" );
@@ -1127,7 +1136,8 @@ extern  dbg_type        DBEndEnum( enum_list *en ) {
             Tipe( en->tipe ), en->num );
     for(;;) {
         cons = en->list;
-        if( cons == NULL ) break;
+        if( cons == NULL )
+            break;
         tval = cons->val;
         TypDbg( "    '%s' == %d%n", cons->name, tval );
         en->list = cons->next;
@@ -1152,7 +1162,7 @@ extern  proc_list       *DBBegProc( cg_type call_type, dbg_type ret ) {
     pr->call = call_type;
     pr->ret = ret;
     Action( " -> %p%n", pr );
-    return(pr);
+    return( pr );
 }
 extern  void  DBAddMethParms(  proc_list *pr,  dbg_type  cls, dbg_type this   ) {
 /************************************************************************/
@@ -1187,7 +1197,8 @@ extern  dbg_type        DBEndProc( proc_list *pr ) {
             Tipe(pr->call), pr->ret, pr->num );
     for(;;) {
         parm = pr->list;
-        if( parm == NULL ) break;
+        if( parm == NULL )
+            break;
         TypDbg( "    type == %d%n", parm->tipe );
         pr->list = parm->next;
         parm->next = NULL;

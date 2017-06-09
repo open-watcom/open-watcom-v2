@@ -131,7 +131,7 @@ void *CMemAlloc( size_t size )
         return( NULL );
     }
 #ifndef NDEBUG
-    if( ! PragDbgToggle.no_mem_cleanup ) {
+    if( !PragDbgToggle.no_mem_cleanup ) {
         CLEANPTR curr;
         static unsigned test_cleanup;
         static unsigned test_inc = 1;
@@ -272,7 +272,8 @@ void *CPermAlloc( size_t size )
 static void cmemInit(           // INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
 #ifdef TRACKER
     {
         unsigned trmem_flags;
@@ -298,7 +299,8 @@ static void cmemInit(           // INITIALIZATION
 static void cmemFini(           // COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     RingFree( &permList );
 #ifndef NDEBUG
     RingFree( &deferredFreeList );
@@ -308,7 +310,7 @@ static void cmemFini(           // COMPLETION
     if( PragDbgToggle.dump_memory ) {
         _trmem_prt_list( trackerHdl );
     }
-    if( _trmem_close( trackerHdl ) != 0 && ! CompFlags.compile_failed ) {
+    if( _trmem_close( trackerHdl ) != 0 && !CompFlags.compile_failed ) {
         // we can't print an error message since we have no more memory
   #if defined( __WWATCOMC__ )
         __trap();
@@ -327,7 +329,8 @@ INITDEFN( memmgr, cmemInit, cmemFini )
 static void cleanupInit(        // INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     cleanupList = NULL;
 #if 0
     BEMemInit();
@@ -338,7 +341,8 @@ static void cleanupInit(        // INITIALIZATION
 static void cleanupFini(        // COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     RingFree( &cleanupList );
 }
 

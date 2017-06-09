@@ -38,9 +38,10 @@
 #include "memout.h"
 #include "cgmem.h"
 #include "optmac.h"
-#include "dumpio.h"
 #include "memlimit.h"
 #include "onexit.h"
+#include "dumpio.h"
+
 
 /*  memory tracking levels */
 #define   _NO_TRACKING     0
@@ -141,7 +142,9 @@ extern  pointer CGAlloc( size_t size )
             _AlignmentCheck( chunk, 8 );
             return( chunk );
         }
-        if( _MemCheck( size ) == false ) break;
+        if( !_MemCheck( size ) ) {
+            break;
+        }
     }
     if( ( MemOut == MO_FATAL ) || ( InOptimizer != 0 ) ) {
         FatalError( "Out of memory" );

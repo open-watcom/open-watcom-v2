@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  allocate and zero memory from a based heap
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -36,21 +36,19 @@
 #include <string.h>
 #include "heap.h"
 
-_WCRTLINK void __based( void ) *_bcalloc( __segment seg, size_t n, size_t el_size )
+_WCRTLINK void_bptr _bcalloc( __segment seg, size_t n, size_t el_size )
 {
-    void            __based( void ) *p;
+    void_bptr       cstg;
     unsigned long   chk_size;
 
     chk_size = (unsigned long)n * el_size;
     el_size = chk_size;
-#ifndef __386__
     if( el_size != chk_size ) {
         return( _NULLOFF );
     }
-#endif
-    p = _bmalloc( seg, el_size );
-    if( p != _NULLOFF ) {
-        _fmemset( (void _WCFAR *)(seg :> p), 0, el_size );
+    cstg = _bmalloc( seg, el_size );
+    if( cstg != _NULLOFF ) {
+        _fmemset( (void_fptr)(seg :> cstg), 0, el_size );
     }
-    return( p );
+    return( cstg );
 }

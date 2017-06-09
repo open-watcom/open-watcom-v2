@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,31 +38,30 @@
 #include "madcli.h"
 #include "madsys.h"
 
-void MADSysUnload( mad_sys_handle *sys_hdl )
+void MADSysUnload( mad_sys_handle sys_hdl )
 {
-    RdosFreeDll( *sys_hdl );
+    RdosFreeDll( sys_hdl );
 }
 
-mad_status MADSysLoad( const char *path, mad_client_routines *cli,
-                                mad_imp_routines **imp, mad_sys_handle *sys_hdl )
+mad_status MADSysLoad( const char *path, mad_client_routines *cli, mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
-    int                 dll;
+    mad_sys_handle      mad_dll;
     mad_init_func       *init_func;
     char                newpath[256];
     mad_status          status;
 
     strcpy( newpath, path );
     strcat( newpath, ".dll" );
-    dll = RdosLoadDll( newpath );
-    if( dll == 0 ) {
-        return( MS_ERR|MS_FOPEN_FAILED );
+    mad_dll = RdosLoadDll( newpath );
+    if( mad_dll == NULL_SYSHDL ) {
+        return( MS_ERR | MS_FOPEN_FAILED );
     }
-    status = MS_ERR|MS_INVALID_MAD;
-    init_func = (mad_init_func *)RdosGetModuleProc( dll, "MADLOAD" );
+    status = MS_ERR | MS_INVALID_MAD;
+    init_func = (mad_init_func *)RdosGetModuleProc( mad_dll, "MADLOAD" );
     if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
-        *sys_hdl = dll;
+        *sys_hdl = mad_dll;
         return( MS_OK );
     }
-    RdosFreeDll( dll );
+    RdosFreeDll( mad_dll );
     return( status );
 }

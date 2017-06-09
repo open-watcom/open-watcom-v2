@@ -89,7 +89,8 @@ bool WndMainEventProc( gui_window * gui, gui_event event, void *parm )
 {
     int                 i;
 
-    parm = parm;
+    /* unused parameters */ (void)parm;
+
     switch( event ) {
     case GUI_PAINT:
         if( GUIIsGUI() ) {
@@ -201,7 +202,7 @@ bool SetupInit( void )
     init.menu = NULL;
     init.num_attrs = WND_NUMBER_OF_COLORS;
     init.colours = MainColours;
-    init.call_back = WndMainEventProc;
+    init.gui_call_back = WndMainEventProc;
     init.extra = NULL;
 
     GUIInitHotSpots( 1, WndGadgetArray );

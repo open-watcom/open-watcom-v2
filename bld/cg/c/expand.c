@@ -45,10 +45,10 @@
 #include "index.h"
 #include "fixindex.h"
 #include "generate.h"
+#include "conflict.h"
 
 
 extern  bool            DoVerify(vertype,instruction*);
-extern  void            MarkPossible(instruction*,name*,reg_set_index);
 extern  void            MarkCallI(instruction);
 extern  reg_set_index   CallIPossible(instruction*);
 
@@ -58,7 +58,8 @@ static instruction  *DoReduce( instruction *ins, opcode_entry *try, bool has_ind
     hw_reg_set  *zap;
     hw_reg_set  zap_all;
 
-    if( try->generate == G_NO ) return( ins );
+    if( try->generate == G_NO )
+        return( ins );
     if( try->generate >= FIRST_REDUCT )
         return( Reduce( ins ) );
     zap_all = ins->zap->reg;
@@ -66,7 +67,7 @@ static instruction  *DoReduce( instruction *ins, opcode_entry *try, bool has_ind
         HW_TurnOn( zap_all, *zap );
     }
     ins->zap = (register_name *)AllocRegName( zap_all );
-    if( has_index || ins->num_operands > NumOperands( ins ) ) {
+    if( has_index || ins->num_operands > OpcodeNumOperands( ins ) ) {
         ins = NeedIndex( ins );
     } else {
         ins->t.index_needs = RL_;
@@ -104,8 +105,11 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
         } else if( !_Any( try->op_type, RESULT_MUL ) ) {
             regs = name->r.reg;
             for( possible = RegSets[need->result]; ; ++possible ) {
-                if( HW_CEqual( *possible, HW_EMPTY ) ) return( false );
-                if( HW_Equal( *possible, regs ) ) break;
+                if( HW_CEqual( *possible, HW_EMPTY ) )
+                    return( false );
+                if( HW_Equal( *possible, regs ) ) {
+                    break;
+                }
             }
         }
     }
@@ -121,8 +125,11 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
         } else if( !_Any( try->op_type, OP1_MUL ) ) {
             regs = name->r.reg;
             for( possible = RegSets[need->left]; ; ++possible ) {
-                if( HW_CEqual( *possible, HW_EMPTY ) ) return( false );
-                if( HW_Equal( *possible, regs ) ) break;
+                if( HW_CEqual( *possible, HW_EMPTY ) )
+                    return( false );
+                if( HW_Equal( *possible, regs ) ) {
+                    break;
+                }
             }
         }
     }
@@ -138,8 +145,11 @@ static  bool    VerifyRegs( instruction *ins, operand_types ops )
         } else if( !_Any( try->op_type, OP2_MUL ) ) {
             regs = name->r.reg;
             for( possible = RegSets[need->right]; ; ++possible ) {
-                if( HW_CEqual( *possible, HW_EMPTY ) ) return( false );
-                if( HW_Equal( *possible, regs ) ) break;
+                if( HW_CEqual( *possible, HW_EMPTY ) )
+                    return( false );
+                if( HW_Equal( *possible, regs ) ) {
+                    break;
+                }
             }
         }
     }
@@ -168,7 +178,7 @@ static  operand_types   ClassifyOps( instruction *ins, bool *has_index )
     operand_types       ops;
     int                 num_operands;
 
-    num_operands = NumOperands( ins );
+    num_operands = OpcodeNumOperands( ins );
     *has_index = false;
     ops = NONE;
     name = ins->result;
@@ -288,18 +298,25 @@ opcode_entry    *FindGenEntry( instruction *ins, bool *has_index )
         try = CodeTable( ins );
         ins->table = try;
     }
-    if( try == NULL ) return( try );
+    if( try == NULL )
+        return( try );
     ops = ClassifyOps( ins, has_index );
     for( ;; ++try ) {
-        if( ( try->op_type & ops ) != ops ) continue;
+        if( ( try->op_type & ops ) != ops )
+            continue;
         verify = try->verify;
         if( verify != V_NO ) {
-            if( !DoVerify( verify & ~NOT_VOLATILE, ins ) ) continue;
-            if( (verify & NOT_VOLATILE) && VolatileIns( ins ) ) continue;
+            if( !DoVerify( verify & ~NOT_VOLATILE, ins ) )
+                continue;
+            if( (verify & NOT_VOLATILE) && VolatileIns( ins ) ) {
+                continue;
+            }
         }
         ins->u.gen_table = try;
         if( try->reg_set != RG_ ) {
-            if( VerifyRegs( ins, ops ) == false ) continue;
+            if( !VerifyRegs( ins, ops ) ) {
+                continue;
+            }
         }
         if( ins->head.opcode == OP_CALL_INDIRECT ) {
             MarkPossible(ins, ins->operands[CALL_OP_ADDR], CallIPossible(ins));
@@ -334,9 +351,12 @@ instruction     *PostExpandIns( instruction *ins )
     bool                dummy;
 
     try = FindGenEntry( ins, &dummy );
-    if( try == NULL ) return( ins );
-    if( try->generate == G_NO ) return( ins );
-    if( try->generate >= FIRST_REDUCT ) return( Reduce( ins ) );
+    if( try == NULL )
+        return( ins );
+    if( try->generate == G_NO )
+        return( ins );
+    if( try->generate >= FIRST_REDUCT )
+        return( Reduce( ins ) );
     return( ins );
 }
 
@@ -348,7 +368,8 @@ instruction     *ExpandIns( instruction *ins )
     bool                has_index;
 
     try = FindGenEntry( ins, &has_index );
-    if( try == NULL ) return( ins );
+    if( try == NULL )
+        return( ins );
     return( DoReduce( ins, try, has_index ) );
 }
 
@@ -364,7 +385,7 @@ int     ExpandOps( bool keep_on_truckin )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         EXBlip();
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ) {
-            if( keep_on_truckin == false && _MemLow ) {
+            if( !keep_on_truckin && _MemLow ) {
                 return( -1 );
             }
             ins = ExpandIns( ins );

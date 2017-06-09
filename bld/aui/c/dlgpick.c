@@ -43,13 +43,13 @@ static void PickInit( gui_window *gui, gui_ctl_id list_id )
     GUISetCurrSelect( gui, list_id, DlgChosen );
 }
 
-int DlgPickWithRtn2( const char *title, const void *data_handle, int def, GUIPICKGETTEXT *getstring, int items, WNDPICKER *pick )
+int DlgPickWithRtn2( const char *title, const void *data_handle, int def, GUIPICKGETTEXT *getstring, int items, WNDPICKER *pickfn )
 {
     DlgChosen = def;
     _data_handle = data_handle;
     _getstring = getstring;
     _items = items;
-    return( pick( title, &PickInit ) );
+    return( pickfn( title, &PickInit ) );
 }
 
 

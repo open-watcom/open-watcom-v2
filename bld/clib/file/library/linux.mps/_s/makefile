@@ -1,4 +1,4 @@
-#pmake: 32bit linux threading file mips static os_linux cpu_mps
+#pmake: nobuild 32bit linux threading file mips static os_linux cpu_mps
 
 processor = mps
 system    = linux

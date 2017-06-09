@@ -41,21 +41,22 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
     MDICREATESTRUCT     *mcs;
     char                class[MAX_CNAME];
 
-    if( hwnd == (HWND)~0 ) return( FALSE );
+    if( hwnd == (HWND)~0 )
+        return( FALSE );
 
     /*
      * misc. messages
      */
     switch( msg ) {
     case WM_NCCALCSIZE:
-        alias = AllocAlias16( (LPSTR) *lparam );
+        alias = AllocAlias16( (LPSTR)*lparam );
         *lparam = alias;
         return( TRUE );
     case WM_MDICREATE:
-        mcs = (MDICREATESTRUCT *) *lparam;
-        mcs->szClass = (LPSTR) AllocAlias16( (LPSTR)mcs->szClass );
-        mcs->szTitle = (LPSTR) AllocAlias16( (LPSTR)mcs->szTitle );
-        alias = AllocAlias16( (LPSTR) *lparam );
+        mcs = (MDICREATESTRUCT *)*lparam;
+        mcs->szClass = (LPSTR)AllocAlias16( (LPSTR)mcs->szClass );
+        mcs->szTitle = (LPSTR)AllocAlias16( (LPSTR)mcs->szTitle );
+        alias = AllocAlias16( (LPSTR)*lparam );
         *lparam = alias;
         return( TRUE );
     }
@@ -63,7 +64,8 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
     /*
      * try class specific messages
      */
-    if( hwnd == 0 ) return( FALSE );            /* 10-may-95 */
+    if( hwnd == 0 )
+        return( FALSE );
     class[0] = 0;
     GetClassName( hwnd, class, MAX_CNAME );
     class[MAX_CNAME-1] = 0;
@@ -71,7 +73,7 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
     /*
      * combo box messages
      */
-    if( !stricmp( class,"COMBOBOX" ) ) {
+    if( stricmp( class, "COMBOBOX" ) == 0 ) {
         switch( msg ) {
         case CB_ADDSTRING:
         case CB_DIR:
@@ -80,7 +82,7 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
         case CB_GETLBTEXT:
         case CB_INSERTSTRING:
         case CB_SELECTSTRING:
-            alias = AllocAlias16( (LPSTR) *lparam );
+            alias = AllocAlias16( (LPSTR)*lparam );
             *lparam = alias;
             return( TRUE );
         }
@@ -89,7 +91,7 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
     /*
      * edit control messages
      */
-    if( !stricmp( class,"EDIT" ) ) {
+    if( stricmp( class, "EDIT" ) == 0 ) {
         switch( msg ) {
         case EM_GETLINE:
         case EM_GETRECT:
@@ -97,7 +99,7 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
         case EM_SETRECT:
         case EM_SETRECTNP:
         case EM_SETTABSTOPS:
-            alias = AllocAlias16( (LPSTR) *lparam );
+            alias = AllocAlias16( (LPSTR)*lparam );
             *lparam = alias;
             return( TRUE );
         }
@@ -106,7 +108,7 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
     /*
      * list box messages
      */
-    if( !stricmp( class,"LISTBOX" ) ) {
+    if( stricmp( class, "LISTBOX" ) == 0 ) {
         switch( msg ) {
         case LB_ADDSTRING:
         case LB_DIR:
@@ -118,7 +120,7 @@ BOOL TryAlias( HWND hwnd, WORD msg, LONG *lparam )
         case LB_INSERTSTRING:
         case LB_SELECTSTRING:
         case LB_SETTABSTOPS:
-            alias = AllocAlias16( (LPSTR) *lparam );
+            alias = AllocAlias16( (LPSTR)*lparam );
             *lparam = alias;
             return( TRUE );
         }

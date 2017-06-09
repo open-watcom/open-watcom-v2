@@ -164,7 +164,7 @@ bool WAddEditWinLBoxEntry( WAccelEditInfo *einfo, WAccelEntry *entry, box_pos po
         keytext = WGetKeyText( key, flags );
         ok = (keytext != NULL);
         if( !ok ) {
-            WSetStatusByID( einfo->wsb, -1, W_INVALIDACCEL );
+            WSetStatusByID( einfo->wsb, 0, W_INVALIDACCEL );
             memcpy( entry, &DefaultEntry, sizeof( WAccelEntry ) );
             key = entry->u.entry.Ascii;
             flags = entry->u.entry.Flags;

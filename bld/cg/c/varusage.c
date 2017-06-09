@@ -81,7 +81,8 @@ static  bool    CoveringDefinitions( name *op )
     uint        loc;
     bool        covered[MAX_POSSIBLE_REG + 1];
 
-    if( op->n.size > MAX_POSSIBLE_REG ) return( false );
+    if( op->n.size > MAX_POSSIBLE_REG )
+        return( false );
     for( i = op->n.size; i-- > 0; ) {
         covered[i] = false;
     }
@@ -96,7 +97,9 @@ static  bool    CoveringDefinitions( name *op )
         }
     }
     for( i = op->n.size; i-- > 0; ) {
-        if( covered[i] == false ) return( false );
+        if( !covered[i] ) {
+            return( false );
+        }
     }
     return( true );
 }
@@ -111,11 +114,15 @@ static  void    Define( name *op, block *blk )
 
     actual = op;
     actual->v.block_usage |= DEF_WITHIN_BLOCK;
-    if( op->n.class == N_TEMP ) op = DeAlias( op );
-    if( op->v.block_usage & USE_IN_ANOTHER_BLOCK ) return;
-    if( actual != op && CoveringDefinitions( op ) == false ) return;
+    if( op->n.class == N_TEMP )
+        op = DeAlias( op );
+    if( op->v.block_usage & USE_IN_ANOTHER_BLOCK )
+        return;
+    if( actual != op && !CoveringDefinitions( op ) )
+        return;
     op->v.block_usage |= DEF_WITHIN_BLOCK;
-    if( op->v.conflict == NULL ) return;
+    if( op->v.conflict == NULL )
+        return;
     _GBitTurnOn( blk->dataflow->def, op->v.conflict->id.out_of_block );
 }
 
@@ -174,7 +181,8 @@ static void TransferOneTempBlockUsage( name *op )
         alias = op->t.alias;
         for( ;; ) {
             TransferBlockUsage( alias );
-            if( alias == op ) break;
+            if( alias == op )
+                break;
             alias = alias->t.alias;
         }
     }

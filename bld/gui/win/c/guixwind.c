@@ -77,7 +77,7 @@ static  bool                    Posted          =       false;
 static  bool                    FirstInstance   =       true;
 
 #ifdef __OS2_PM__
-static  WPI_PROC                oldFrameProc;
+static  WPI_WNDPROC             oldFrameProc;
 WPI_MRESULT CALLBACK GUIFrameProc( HWND, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 #endif
 
@@ -192,13 +192,13 @@ void GUIDestroyWnd( gui_window *wnd )
 }
 
 static bool DoRegisterClass( WPI_INST hinst, char *class_name,
-                             WPI_CLASSPROC call_back, UINT style, int extra )
+                             WPI_CLASSPROC win_call_back, UINT style, int extra )
 {
 #ifndef __OS2_PM__
     WNDCLASS    wc;
 
     wc.style = style;
-    wc.lpfnWndProc = call_back;
+    wc.lpfnWndProc = win_call_back;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = extra;
     wc.hInstance = hinst;
@@ -210,7 +210,7 @@ static bool DoRegisterClass( WPI_INST hinst, char *class_name,
 
     return( RegisterClass( &wc ) != 0 );
 #else
-    return( WinRegisterClass( hinst.hab, class_name, call_back,
+    return( WinRegisterClass( hinst.hab, class_name, win_call_back,
                               CS_CLIPCHILDREN | CS_SIZEREDRAW | CS_MOVENOTIFY |
                               style, extra ) );
 #endif
@@ -587,7 +587,7 @@ bool GUIXCreateWindow( gui_window *wnd, gui_create_info *dlg_info, gui_window *p
                                      0, (HMODULE)0, 0, NULL );
 #endif
     if( frame_hwnd != NULLHANDLE ) {
-        oldFrameProc = _wpi_subclasswindow( frame_hwnd, (WPI_PROC)GUIFrameProc );
+        oldFrameProc = _wpi_subclasswindow( frame_hwnd, GUIFrameProc );
         _wpi_setmenu( frame_hwnd, hmenu );
         _wpi_getclientrect( parent_hwnd, &parent_client_rect );
         show_flags = SWP_SIZE | SWP_MOVE;
@@ -1383,8 +1383,7 @@ WPI_MRESULT CALLBACK GUIWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, W
 }
 
 #ifdef __OS2_PM__
-WPI_MRESULT CALLBACK GUIFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
-                                   WPI_PARAM2 lparam )
+WPI_MRESULT CALLBACK GUIFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     HWND        client;
     bool        call_def;

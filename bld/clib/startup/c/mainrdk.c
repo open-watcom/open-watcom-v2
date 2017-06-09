@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <stdlib.h>
 #include <rdos.h>
 
@@ -121,8 +121,7 @@ void __RdosMain( void )
     __CMain();
 }
 
-_WCRTLINK _NORETURN void __exit( unsigned ret_code )
+_WCRTLINK _WCNORETURN void __exit( unsigned ret_code )
 {
     _cexit_( ret_code );  // A device-driver should never clean-up rtns, so just exit!
-    // never return
 }

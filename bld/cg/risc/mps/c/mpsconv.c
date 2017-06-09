@@ -229,9 +229,12 @@ extern bool CvtOk( type_class_def fr, type_class_def to )
     return true if a conversion from "fr" to "to" can be done
 */
 {
-    if( fr == XX ) return( false );
-    if( to == XX ) return( false );
-    if( AskHow( fr, to ) != BAD ) return( true );
+    if( fr == XX )
+        return( false );
+    if( to == XX )
+        return( false );
+    if( AskHow( fr, to ) != BAD )
+        return( true );
     return( false );
 }
 
@@ -296,7 +299,8 @@ instruction     *DoConversion( instruction *ins )
 rt_class    LookupConvertRoutine( instruction *ins )
 /**************************************************/
 {
-    ins = ins;
+    /* unused parameters */ (void)ins;
+
     _Zoiks( ZOIKS_101 );
     return( RT_NOP );
 }

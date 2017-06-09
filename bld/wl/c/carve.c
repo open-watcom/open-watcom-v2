@@ -39,10 +39,9 @@
 #include "carve.h"
 
 struct blk {
-    blk_t *     next;
+    blk_t       *next;
     unsigned    index;
-    unsigned    modified : 1;
-    unsigned    : 15;
+    bool        modified    : 1;
     char        data[1];
 };
 
@@ -430,7 +429,8 @@ void CarveRestart( carve_t cv, unsigned num )
 static void CarveZapBlock( carve_t cv, void *blk, void *dummy )
 /*************************************************************/
 {
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     MakeFreeList( cv, blk, 0 );
 }
 

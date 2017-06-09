@@ -35,10 +35,11 @@
 #include "iemem.h"
 #include "title.h"
 #include "jdlg.h"
+#include "wclbproc.h"
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam );
 
 #define TITLE_TIMER       666
 
@@ -50,9 +51,9 @@ typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
 #endif
 
 /*
- * wTitle - callback function for the displaying of the title screen
+ * wTitleDlgProc - callback function for the displaying of the title screen
  */
-BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK wTitleDlgProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
     UINT        msecs, start;
     UINT_PTR    timer;
@@ -65,11 +66,14 @@ BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
     HINSTANCE   hInstUser;
     PFNLI       pfnLoadImage;
 #endif
+    bool        ret;
 
     static BITMAP    bm;
     static HBITMAP   logo;
     static HBRUSH    brush;
     static COLORREF  color;
+
+    ret = false;
 
     switch ( message ) {
     case WM_INITDIALOG:
@@ -99,14 +103,15 @@ BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
         brush = CreateSolidBrush( color );
 
         GetObject( logo, sizeof( BITMAP ), &bm );
-        return( TRUE );
+        ret = true;
+        break;
 
 #ifdef __NT__
     case WM_CTLCOLORSTATIC:
         if( brush != NULL ) {
             dc = (HDC)wparam;
             SetBkColor( dc, color );
-            return( brush != NULL );
+            return( (INT_PTR)brush );
         }
         break;
 #else
@@ -116,7 +121,7 @@ BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
             if( HIWORD( lparam ) == CTLCOLOR_STATIC ) {
                 SetBkColor( dc, color );
             }
-            return( brush != NULL );
+            return( (INT_PTR)brush );
         }
         break;
 #endif
@@ -126,7 +131,7 @@ BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
             GetClientRect( hwnd, &rect );
             UnrealizeObject( brush );
             FillRect( (HDC)wparam, &rect, brush );
-            return( TRUE );
+            ret = true;
         }
         break;
 
@@ -153,7 +158,8 @@ BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
             KillTimer( hwnd, timer );
         }
         EndDialog( hwnd, TRUE );
-        return( TRUE );
+        ret = true;
+        break;
 
     case WM_DESTROY:
         if( logo != NULL ) {
@@ -163,20 +169,17 @@ BOOL CALLBACK wTitle( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
             DeleteObject( brush );
         }
         break;
-
-    default:
-        return( FALSE );
     }
-    return( FALSE );
+    return( ret );
 
-} /* wTitle */
+} /* wTitleDlgProc */
 
 /*
  * DisplayTitleScreen - display the title screen on startup
  */
 void DisplayTitleScreen( HINSTANCE inst, HWND parent, UINT msecs, char *app_name )
 {
-    FARPROC     fp;
+    DLGPROC     dlgproc;
     int         len;
 
     len = strlen( app_name );
@@ -184,9 +187,9 @@ void DisplayTitleScreen( HINSTANCE inst, HWND parent, UINT msecs, char *app_name
     strcpy( appName, app_name );
 
     wMainInst = inst;
-    fp = MakeProcInstance( (FARPROC)wTitle, inst );
-    JDialogBoxParam( inst, "WTitleScreen", parent, (DLGPROC)fp, (LPARAM)&msecs );
-    FreeProcInstance( fp );
+    dlgproc = MakeProcInstance_DLG( wTitleDlgProc, inst );
+    JDialogBoxParam( inst, "WTitleScreen", parent, dlgproc, (LPARAM)&msecs );
+    FreeProcInstance_DLG( dlgproc );
     MemFree( appName );
 
 } /* DisplayTitleScreen */

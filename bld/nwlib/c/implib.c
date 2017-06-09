@@ -64,15 +64,16 @@ static orl_return FindHelper( orl_sec_handle sec )
 }
 
 
-static unsigned long  export_table_rva;
+static orl_rva      export_table_rva;
 
 static orl_return FindExportTableHelper( orl_sec_handle sec )
 {
     if( found_sec_handle == 0 ) {
-        unsigned long   base = ORLSecGetBase( sec );
+        orl_sec_base    base;
 
-        if( ( base <= export_table_rva )
-            && ( base + ORLSecGetSize( sec ) > export_table_rva ) ) {
+        ORLSecGetBase( sec, &base );
+        if( ( base.u._32[I64LO32] <= export_table_rva )
+          && ( base.u._32[I64LO32] + ORLSecGetSize( sec ) > export_table_rva ) ) {
             found_sec_handle = sec;
         }
     }
@@ -90,7 +91,7 @@ static orl_sec_handle FindSec( obj_file *ofile, char *name )
         if( !stricmp( ".edata", name ) ) {
             export_table_rva = ORLExportTableRVA( ofile->orl );
 
-            if( export_table_rva == 0L ) {
+            if( export_table_rva == 0 ) {
                 FatalError( ERR_NO_EXPORTS, ofile->hdl->name );
             }
 
@@ -343,7 +344,7 @@ static void peAddImport( arch_header *arch, libfile io )
 {
     obj_file        *ofile;
     orl_sec_handle  export_sec;
-    orl_sec_offset  export_base;
+    orl_sec_base    export_base;
     char            *edata;
     char            *DLLName;
     char            *oldname;
@@ -396,21 +397,21 @@ static void peAddImport( arch_header *arch, libfile io )
     }
     export_sec = FindSec( ofile, ".edata" );
     ORLSecGetContents( export_sec, (unsigned_8 **)&edata );
-    export_base = ORLSecGetBase( export_sec );
+    ORLSecGetBase( export_sec, &export_base );
 
     if( export_table_rva != 0 ) {
-        adjust = export_base - export_table_rva;
-        edata += export_table_rva - export_base;
+        adjust = export_base.u._32[I64LO32] - export_table_rva;
+        edata += export_table_rva - export_base.u._32[I64LO32];
     } else {
         adjust = 0;
     }
 
     export_header = (Coff32_Export *)edata;
-    name_table = (Coff32_EName *)(edata + export_header->NamePointerTableRVA - export_base + adjust);
-    ord_table = (Coff32_EOrd *)(edata + export_header->OrdTableRVA - export_base + adjust);
+    name_table = (Coff32_EName *)(edata + export_header->NamePointerTableRVA - export_base.u._32[I64LO32] + adjust);
+    ord_table = (Coff32_EOrd *)(edata + export_header->OrdTableRVA - export_base.u._32[I64LO32] + adjust);
     ordinal_base = export_header->ordBase;
 
-    DLLName = edata + export_header->nameRVA - export_base + adjust;
+    DLLName = edata + export_header->nameRVA - export_base.u._32[I64LO32] + adjust;
     oldname = arch->name;
     arch->name = DLLName;
     arch->ffname = NULL;
@@ -419,7 +420,7 @@ static void peAddImport( arch_header *arch, libfile io )
         coffAddImportOverhead( arch, DLLName, processor );
     }
     for( i = 0; i < export_header->numNamePointer; i++ ) {
-        currname = &(edata[name_table[i] - export_base + adjust]);
+        currname = &(edata[name_table[i] - export_base.u._32[I64LO32] + adjust]);
         // allocate the space for the current symbol name and
         // add enough room for the following strcpy/strcat pairs.
         sym_len = strlen( currname ) + 1;

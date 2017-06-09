@@ -85,25 +85,25 @@ namespace std {
     int        ipfx( int __noskipws = 0 );
     void       isfx();
     int        get();
-    istream   &get(          char *__buf, int __len, char __delim = '\n' );
-    istream   &get(   signed char *__buf, int __len, char __delim = '\n' );
-    istream   &get( unsigned char *__buf, int __len, char __delim = '\n' );
+    istream   &get(          char *__buf, streamsize __len, char __delim = '\n' );
+    istream   &get(   signed char *__buf, streamsize __len, char __delim = '\n' );
+    istream   &get( unsigned char *__buf, streamsize __len, char __delim = '\n' );
     istream   &get(          char &__c );
     istream   &get(   signed char &__c );
     istream   &get( unsigned char &__c );
     istream   &get( streambuf &__sb, char __delim = '\n' );
-    istream   &getline(          char *__buf, int __len, char __delim = '\n' );
-    istream   &getline(   signed char *__buf, int __len, char __delim = '\n' );
-    istream   &getline( unsigned char *__buf, int __len, char __delim = '\n' );
-    istream   &ignore( int __num = 1, int __delim = EOF );
-    istream   &read(          char *__buf, int __len );
-    istream   &read(   signed char *__buf, int __len );
-    istream   &read( unsigned char *__buf, int __len );
+    istream   &getline(          char *__buf, streamsize __len, char __delim = '\n' );
+    istream   &getline(   signed char *__buf, streamsize __len, char __delim = '\n' );
+    istream   &getline( unsigned char *__buf, streamsize __len, char __delim = '\n' );
+    istream   &ignore( streamsize __num = 1, int __delim = EOF );
+    istream   &read(          char *__buf, streamsize __len );
+    istream   &read(   signed char *__buf, streamsize __len );
+    istream   &read( unsigned char *__buf, streamsize __len );
     istream   &seekg( streampos __position );
     istream   &seekg( streamoff __offset, ios::seekdir __direction );
     istream   &putback( char __c );
     streampos  tellg();
-    int        gcount() const;
+    streamsize gcount() const;
     int        peek();
     int        sync();
 
@@ -112,13 +112,13 @@ namespace std {
     void     eatwhite();
     istream &do_get( char &__c );
     istream &do_rshift( char &__c );
-    istream &do_read( char *__buf, int __len );
+    istream &do_read( char *__buf, streamsize __len );
     int      ipfx0( void );
     int      ipfx1( void );
     int      do_ipfx( int __noskipws );
 
   private:
-    int __last_read_length;
+    streamsize __last_read_length;
   };
 :include poppack.sp
 
@@ -153,12 +153,12 @@ namespace std {
     return( *this >> (char &) __c );
   }
 
-  inline istream &istream::get( signed char *__buf, int __len, char __delim ) {
+  inline istream &istream::get( signed char *__buf, streamsize __len, char __delim ) {
     return( get( (char *)__buf, __len, __delim ) );
   }
 
   inline istream &istream::get( unsigned char *__buf,
-                                int __len,
+                                streamsize __len,
                                 char __delim ) {
     return( get( (char *)__buf, __len, __delim ) );
   }
@@ -189,19 +189,19 @@ namespace std {
   }
 
   inline istream &istream::getline( signed char *__buf,
-                                    int __len,
+                                    streamsize __len,
                                     char __delim ) {
     return( getline( (char *)__buf, __len, __delim ) );
   }
 
   inline istream &istream::getline( unsigned char *__buf,
-                                    int __len,
+                                    streamsize __len,
                                     char __delim ) {
     return( getline( (char *)__buf, __len, __delim ) );
   }
 
 #ifdef __BIG_INLINE__
-  inline istream &istream::read( char *__buf, int __len ) {
+  inline istream &istream::read( char *__buf, streamsize __len ) {
     __lock_it( __i_lock );
     if( ipfx1() ) {
         if( rdbuf()->in_avail() > __len ) {
@@ -217,11 +217,11 @@ namespace std {
   }
 #endif
 
-  inline istream &istream::read( signed char *__buf, int __len ) {
+  inline istream &istream::read( signed char *__buf, streamsize __len ) {
     return( read( (char *) __buf, __len ) );
   }
 
-  inline istream &istream::read( unsigned char *__buf, int __len ) {
+  inline istream &istream::read( unsigned char *__buf, streamsize __len ) {
     return( read( (char *) __buf, __len ) );
   }
 
@@ -238,7 +238,7 @@ namespace std {
   inline void istream::isfx() {
   }
 
-  inline int istream::gcount() const {
+  inline streamsize istream::gcount() const {
     return( __last_read_length );
   }
 

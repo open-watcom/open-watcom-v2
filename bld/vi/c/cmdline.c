@@ -109,6 +109,8 @@ static vi_rc doProcessCommandLine( bool is_fancy )
     vi_rc       rc;
     char        *st;
 
+    /* unused parameters */ (void)is_fancy;
+
     /*
      * open the window and get the string
      */
@@ -116,7 +118,6 @@ static vi_rc doProcessCommandLine( bool is_fancy )
     if( st == NULL ) {
         return( ERR_NO_MEMORY );
     }
-    is_fancy = is_fancy;
 #ifdef __WIN__
     if( is_fancy ) {
         if( !GetCmdDialog( st, EditVars.MaxLine ) ) {
@@ -214,7 +215,12 @@ vi_rc TryCompileableToken( int token, const char *data, bool iscmdline )
         break;
     case PCL_T_ADDTOOLBARITEM:
 #ifdef __WIN__
-        rc = AddBitmapToToolBar( data );
+        rc = AddBitmapToToolBar( data, false );
+#endif
+        break;
+    case PCL_T_ADDTOOLBARITEM2:
+#ifdef __WIN__
+        rc = AddBitmapToToolBar( data, true );
 #endif
         break;
     case PCL_T_DELETETOOLBARITEM:
@@ -222,7 +228,7 @@ vi_rc TryCompileableToken( int token, const char *data, bool iscmdline )
         rc = DeleteFromToolBar( data );
 #endif
         break;
-    case PCL_T_ACTIVATE_IDE:
+    case PCL_T_ACTIVATEIDE:
 #ifdef __WIN__
         StartIDE( InstanceHandle, TRUE );
         rc = ERR_NO_ERR;

@@ -123,7 +123,9 @@ extern  dbg_type        DFScope( const char *name ) {
     enum scope_name index;
 
     for( index = 0; index < SCOPE_MAX; ++index ){
-        if( strcmp( name, ScopeNames[index] ) == 0 )break;
+        if( strcmp( name, ScopeNames[index] ) == 0 ) {
+            break;
+        }
     }
     return( index );
 }
@@ -141,8 +143,8 @@ extern  void    DFDumpName( dbg_name name, dbg_type tipe )
 extern void DFBackRefType( dbg_name name, dbg_type tipe )
 /*******************************************************/
 {
-    name = name;
-    tipe = tipe;
+    /* unused parameters */ (void)name; (void)tipe;
+
     Zoiks( ZOIKS_108 );
 }
 
@@ -272,7 +274,8 @@ extern  dbg_type    DFEndArray( dbg_array ar )
     count_tipe = DBG_NIL_TYPE;
     for(;;) {
         dim = ar->list;
-        if( dim == NULL ) break;
+        if( dim == NULL )
+            break;
         switch( dim->entry.kind ) {
         case DIM_CON:
             info.index_type = dim->con.idx;
@@ -291,7 +294,6 @@ extern  dbg_type    DFEndArray( dbg_array ar )
             varinfo.count_data  = MKBckVar( dim->var.dims, dim->var.off + tipe_addr->length, count_tipe);
             DWArrayVarDim( Client, &varinfo );
             break;
-
         }
         ar->list = dim->entry.next;
         CGFree( dim );
@@ -324,18 +326,18 @@ extern  dbg_type        DFFtnArray( back_handle dims, cg_type lo_bound_tipe,
 }
 
 
-extern  dbg_type        DFSubRange( signed_32 lo, signed_32 hi,
-                                    dbg_type base ) {
+extern  dbg_type DFSubRange( signed_32 lo, signed_32 hi, dbg_type base )
 /***************************************************/
 /* need some dwarflib support */
-    lo = lo;
-    hi = hi;
-    base = base;
+{
+    /* unused parameters */ (void)lo; (void)hi; (void)base;
+
     return( 0 );
 }
 
-static  uint   DFPtrClass( cg_type ptr_type ){
-/*******************************************************************/
+static  uint   DFPtrClass( cg_type ptr_type )
+/*******************************************/
+{
     type_def    *tipe_addr;
     uint        flags;
 
@@ -680,7 +682,8 @@ extern  dbg_type        DFEndStruct( dbg_struct st )
     DWBeginStruct( Client, ret, st->size, name, 0, 0 );
     for(;;) {
         field = st->list;
-        if( field == NULL ) break;
+        if( field == NULL )
+            break;
         switch( field->entry.field_type ) {
         case FIELD_INHERIT:
             flags = WVDFAccess(field->bclass.attr );
@@ -753,11 +756,12 @@ extern  dbg_type        DFEndEnum( dbg_enum en )
     ret = DWBeginEnumeration( Client, tipe_addr->length, NULL, 0, 0 );
     for(;;) {
         cons = en->list;
-        if( cons == NULL ) break;
+        if( cons == NULL )
+            break;
         val = cons->val;
         if( val.u._32[I64HI32] == 0 || val.u._32[I64HI32] == -1 ){
             DWAddConstant( Client, val.u._32[I64LO32], cons->name );
-        }else{
+        } else {
             DWAddConstant( Client, val.u._32[I64LO32], cons->name );
         }
         en->list = cons->next;
@@ -784,7 +788,8 @@ extern  dbg_type        DFEndProc( dbg_proc pr )
         DWAddEllipsisToSubroutineType( Client );
     }
     for(;;) {
-        if( parm == NULL ) break;
+        if( parm == NULL )
+            break;
         DWAddParmToSubroutineType( Client, parm->tipe, NULL, NULL, NULL );
         pr->list = parm->next;
         CGFree( parm );

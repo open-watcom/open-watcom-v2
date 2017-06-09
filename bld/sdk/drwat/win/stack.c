@@ -35,12 +35,13 @@
 #include <stdio.h>
 #include <dos.h>
 #include "drwatcom.h"
+#include "wclbproc.h"
 #include "wdebug.h"
 #include "jdlg.h"
 
 
 /* Local Window callback functions prototypes */
-BOOL __export FAR PASCAL STDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK STDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 typedef struct x {
     ADDRESS dispaddr;
@@ -51,13 +52,17 @@ typedef struct x {
 stdata  std;
 
 /*
- * STDialog - show a stack frame
+ * STDialogDlgProc - show a stack frame
  */
-BOOL FAR PASCAL STDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK STDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i;
+    bool        ret;
 
     lparam = lparam;
+
+    ret = false;
+
     switch( msg ) {
     case WM_INITDIALOG:
         {
@@ -100,12 +105,13 @@ BOOL FAR PASCAL STDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         }
         DisplayAsmLines( hwnd, &std.dispaddr, &std.faddr, ST_DISASM1,
                           ST_DISASM8, ST_SCROLL );
-        return( TRUE );
+        ret = true;
         break;
 
     case WM_CLOSE:
         PostMessage( hwnd, WM_COMMAND, ST_CANCEL, 0L );
-        return( TRUE );
+        ret = true;
+        break;
 
     case WM_COMMAND:
         switch( wparam ) {
@@ -115,24 +121,25 @@ BOOL FAR PASCAL STDialog( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
             EndDialog( hwnd, wparam );
             break;
         }
-        return( TRUE );
+        ret = true;
+        break;
 
     case WM_VSCROLL:
         ScrollAsmDisplay( hwnd, wparam, &std.dispaddr, &std.faddr,
                                 ST_DISASM1, ST_DISASM8, ST_SCROLL );
-        return( TRUE );
+        ret = true;
         break;
     }
-    return( FALSE );
+    return( ret );
 
-} /* STDialog */
+} /* STDialogDlgProc */
 
 /*
  * StartStackTraceDialog - do the stack trace dialog
  */
 void StartStackTraceDialog( HWND hwnd )
 {
-    FARPROC     fp;
+    DLGPROC     dlgproc;
     BOOL        first_try;
     INT_PTR     rc;
     int         currframe=0;
@@ -152,21 +159,19 @@ void StartStackTraceDialog( HWND hwnd )
         for( i=0;i<=currframe;i++ ) {
             if( !MyStackTraceNext( &std.ste ) || !IsValidSelector( std.ste.wCS ) ) {
                 if( first_try ) {
-                    RCMessageBox( hwnd, STR_NO_STACK_FRAMES_FOUND,
-                                  AppName, MB_OK );
+                    RCMessageBox( hwnd, STR_NO_STACK_FRAMES_FOUND, AppName, MB_OK );
                     return;
                 } else {
-                    RCMessageBox( hwnd, STR_NO_MORE_STACK_FRAMES,
-                                  AppName, MB_OK );
+                    RCMessageBox( hwnd, STR_NO_MORE_STACK_FRAMES, AppName, MB_OK );
                     currframe = oldcurrframe;
                     continue;
                 }
             }
             first_try = FALSE;
         }
-        fp = MakeProcInstance( (FARPROC)STDialog, Instance );
-        rc = JDialogBox( Instance, "STACKTRACE", hwnd, (DLGPROC)fp );
-        FreeProcInstance( fp );
+        dlgproc = MakeProcInstance_DLG( STDialogDlgProc, Instance );
+        rc = JDialogBox( Instance, "STACKTRACE", hwnd, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
         oldcurrframe = currframe;
         if( rc == ST_NEXT ) {
             currframe++;
@@ -174,8 +179,7 @@ void StartStackTraceDialog( HWND hwnd )
             currframe--;
             if( currframe < 0 ) {
                 currframe = 0;
-                RCMessageBox( hwnd, STR_NO_MORE_STACK_FRAMES,
-                              AppName, MB_OK );
+                RCMessageBox( hwnd, STR_NO_MORE_STACK_FRAMES, AppName, MB_OK );
             }
         } else {
             break;

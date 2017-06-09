@@ -344,7 +344,8 @@ extern  dbg_type    WVEndArray( dbg_array ar )
 //  ReverseDims( ar );
     for(;;) {
         dim = ar->list;
-        if( dim == NULL ) break;
+        if( dim == NULL )
+            break;
         switch( dim->entry.kind ) {
         case DIM_CON:
             sub = WVSubRange( dim->con.lo, dim->con.hi, dim->con.idx );
@@ -417,10 +418,14 @@ static  void    AddField( field_any **owner, field_any *field  ){
     off  = field->member.u.off;
     for(;;) {
         curr = *owner;
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         if( curr->member.entry.field_type == FIELD_OFFSET ) {
-            if( (off == curr->member.u.off) && (strt >= curr->member.b_strt) ) break;
-            if( off >= curr->member.u.off ) break;
+            if( (off == curr->member.u.off) && (strt >= curr->member.b_strt) )
+                break;
+            if( off >= curr->member.u.off ) {
+                break;
+            }
         }
         owner = &curr->member.entry.next;
     }
@@ -466,7 +471,8 @@ extern  dbg_type        WVEndStruct( dbg_struct st )
     SortFields( st );
     for(;;) {
         field = st->list;
-        if( field == NULL ) break;
+        if( field == NULL )
+            break;
         switch( field->entry.field_type ) {
         case FIELD_INHERIT:
             BuffStart( &temp, WT_STRUCTURE + STRUCT_INHERIT );
@@ -539,7 +545,8 @@ extern  dbg_type        WVEndEnum( dbg_enum en )
     EndType( true );
     for(;;) {
         cons = en->list;
-        if( cons == NULL ) break;
+        if( cons == NULL )
+            break;
         val = cons->val;
         class = SignedSizeClass64( val );
         BuffStart( &temp, WT_ENUMERATED + ENUM_BYTE + class );
@@ -575,7 +582,8 @@ extern  dbg_type        WVEndProc( dbg_proc pr )
     BuffByte( pr->num );
     for(;;) {
         parm = pr->list;
-        if( parm == NULL ) break;
+        if( parm == NULL )
+            break;
         if( BuffLoc() > DB_BUFF_SIZE - 4 ) {
             /* record is getting too big - split it up */
             EndType( true );

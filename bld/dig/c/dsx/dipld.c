@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -43,10 +44,10 @@
 
 #define DIPSIG  0x00504944UL    // "DIP"
 
-void DIPSysUnload( dip_sys_handle *sys_hdl )
+void DIPSysUnload( dip_sys_handle sys_hdl )
 {
     /* We should unload the symbols here but it's not worth the trouble */
-    DIGCli( Free )( (void *)*sys_hdl );
+    DIGCli( Free )( sys_hdl );
 }
 
 dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routines **imp, dip_sys_handle *sys_hdl )
@@ -75,7 +76,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
 #endif
             init_func = (dip_init_func *)dip->init_rtn;
             if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
-                *sys_hdl = (dip_sys_handle)dip;
+                *sys_hdl = dip;
                 return( DS_OK );
             }
 #ifdef WATCOM_DEBUG_SYMBOLS
@@ -84,7 +85,7 @@ dip_status DIPSysLoad( const char *path, dip_client_routines *cli, dip_imp_routi
 #ifdef __WATCOMC__
         }
 #endif
-        DIGCli( Free )( (void *)dip );
+        DIGCli( Free )( dip );
     }
     return( status );
 }

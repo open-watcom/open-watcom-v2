@@ -38,7 +38,7 @@
  * Determine if we're building RISC versions of string/memory routines.
  */
 
-#if defined(__AXP__) || defined(__PPC__)
+#if defined( __AXP__ ) || defined( __PPC__ ) || defined( __MIPS__ )
     #define __RISCSTR__
 #endif
 
@@ -335,19 +335,19 @@ struct __F_NAME(__RISC_StrData,__wRISC_StrData) {
  */
 
 #ifdef __WIDECHAR__
-_WCRTLINK extern wchar_t *  __simple_wcschr( const wchar_t *str, wint_t ch );
-_WCRTLINK extern int        __simple_wcscmp( const wchar_t *s1, const wchar_t *s2 );
-_WCRTLINK extern wchar_t *  __simple_wcscpy( wchar_t *dest, const wchar_t *src );
-_WCRTLINK extern int        __simple__wcsicmp( const wchar_t *s1, const wchar_t *s2 );
-_WCRTLINK extern size_t     __simple_wcslen( const wchar_t *str );
-_WCRTLINK extern wchar_t *  __simple__wcslwr( wchar_t *str );
-_WCRTLINK extern int        __simple_wcsncmp( const wchar_t *s1, const wchar_t *s2, size_t n );
-_WCRTLINK extern wchar_t *  __simple_wcsncpy( wchar_t *dest, const wchar_t *src, size_t n );
-_WCRTLINK extern int        __simple__wcsnicmp( const wchar_t *s1, const wchar_t *s2, size_t n );
-_WCRTLINK extern wchar_t *  __simple__wcsnset( wchar_t *str, int ch, size_t n );
-_WCRTLINK extern wchar_t *  __simple_wcsrchr( const wchar_t *str, wint_t ch );
-_WCRTLINK extern wchar_t *  __simple__wcsset( wchar_t *str, wchar_t ch );
-_WCRTLINK extern wchar_t *  __simple__wcsupr( wchar_t *str );
+extern wchar_t  *__simple_wcschr( const wchar_t *str, wint_t ch );
+extern int      __simple_wcscmp( const wchar_t *s1, const wchar_t *s2 );
+extern wchar_t  *__simple_wcscpy( wchar_t *dest, const wchar_t *src );
+extern int      __simple__wcsicmp( const wchar_t *s1, const wchar_t *s2 );
+extern size_t   __simple_wcslen( const wchar_t *str );
+extern wchar_t  *__simple__wcslwr( wchar_t *str );
+extern int      __simple_wcsncmp( const wchar_t *s1, const wchar_t *s2, size_t n );
+extern wchar_t  *__simple_wcsncpy( wchar_t *dest, const wchar_t *src, size_t n );
+extern int      __simple__wcsnicmp( const wchar_t *s1, const wchar_t *s2, size_t n );
+extern wchar_t  *__simple__wcsnset( wchar_t *str, int ch, size_t n );
+extern wchar_t  *__simple_wcsrchr( const wchar_t *str, wint_t ch );
+extern wchar_t  *__simple__wcsset( wchar_t *str, wchar_t ch );
+extern wchar_t  *__simple__wcsupr( wchar_t *str );
 #endif
 
 

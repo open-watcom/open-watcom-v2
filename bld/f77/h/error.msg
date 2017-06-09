@@ -2263,8 +2263,8 @@ MS_OZOPT_O_X [ cic0] /o[bp,i,l,k,m,r,t,do]
 MS_OZOPT_O_X [jcic0] /o[bp,i,l,k,m,r,t,do]
 MS_OZOPT_O_X [ crc0] /o[bp,i,l,k,m,r,t,do]
 MS_OZOPT_O_X [jcrc0] /o[bp,i,l,k,m,r,t,do]
-MS_CGOPT_STACK_CHK [ c8c0] stack checking
-MS_CGOPT_STACK_CHK [jc8c0] ｽﾀｯｸﾁｪｯｸ
+MS_CGOPT_STACK_CHK [ c c0] stack checking
+MS_CGOPT_STACK_CHK [jc c0] ｽﾀｯｸﾁｪｯｸ
 MS_CGOPT_DATA_THRESH [ c c0] set data threshold
 MS_CGOPT_DATA_THRESH [jc c0] ﾃﾞｰﾀｽﾚｯｼｮﾙﾄﾞの設定
 MS_OPT_AUTOMATIC [ c c0] local variables on the stack
@@ -2479,10 +2479,8 @@ MS_CTG_CPU [ c c0] *CPU Targets*
 MS_CTG_CPU [jc c0] *CPU ﾀｰｹﾞｯﾄ*
 CL_CTG_COMPILE_AND_LINK [ c c0] *Compile and Link Options*
 CL_CTG_COMPILE_AND_LINK [jc c0] *ｺﾝﾊﾟｲﾙ/ﾘﾝｸｵﾌﾟｼｮﾝ*
-CL_USAGE_LINE [ li 0] Usage: wfl {- or /<option> | <file>}
-CL_USAGE_LINE [jli 0] 使用方法: wfl {- or /<option> | <file>}
-CL_USAGE_LINE [ l3 0] Usage: wfl386 {- or /<option> | <file>}
-CL_USAGE_LINE [jl3 0] 使用方法: wfl386 {- or /<option> | <file>}
+CL_USAGE_LINE [ l  0] Usage: %1 {- or /<option> | <file>}
+CL_USAGE_LINE [jl  0] 使用方法: %1 {- or /<option> | <file>}
 CL_COMPILE_ONLY [ l  0] compile only, no linking
 CL_COMPILE_ONLY [jl  0] ｺﾝﾊﾟｲﾙのみ, ﾘﾝｸは行わない
 CL_IGNORE_WFL [ l  0] ignore WFL variable

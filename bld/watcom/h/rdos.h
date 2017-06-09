@@ -15,6 +15,7 @@
 #define real_math   long double
 #endif
 
+#include <stdarg.h>
 #include "rdoshdr.h"
 #include "rdu.h"
 
@@ -50,6 +51,8 @@
 #define AUDIO_WIDGET_TYPE_PIN         5
 #define AUDIO_WIDGET_TYPE_POWER       6
 #define AUDIO_WIDGET_TYPE_BEEP        7
+
+typedef void (TRdosCallback)(void *param, char ch);
 
 typedef struct ThreadEntryPoint
 {
@@ -334,6 +337,8 @@ void RDOSAPI RdosDebugGo();
 void RDOSAPI RdosDebugRun();
 void RDOSAPI RdosDebugNext();
 
+int RDOSAPI RdosPrintf(TRdosCallback *outproc, void *param, const char *format, va_list args); 
+
 #endif
 
 int RDOSAPI RdosHasPhysical64();
@@ -425,6 +430,23 @@ int RDOSAPI RdosCheckCanSerialPort(int ComPort, int *ModuleId, int *PortNr);
 int RDOSAPI RdosProgramCanModule(int Module, const char *ProgramName);
 int RDOSAPI RdosWaitForCanModuleProgramming(int Module, int *ErrorCode, int *Position);
 
+int RDOSAPI RdosOpenHandle(const char *Name, int Mode);
+int RDOSAPI RdosCloseHandle(int Handle);
+int RDOSAPI RdosReadHandle(int Handle, void *Buf, int Size);
+int RDOSAPI RdosWriteHandle(int Handle, const void *Buf, int Size);
+int RDOSAPI RdosDupHandle(int Handle);
+int RDOSAPI RdosDup2Handle(int Src, int Dest);
+long RDOSAPI RdosGetHandleSize(int Handle);
+int RDOSAPI RdosSetHandleSize(int Handle, long Size);
+int RDOSAPI RdosGetHandleMode(int Handle);
+int RDOSAPI RdosSetHandleMode(int Handle, int Mode);
+long RDOSAPI RdosGetHandlePos(int Handle);
+int RDOSAPI RdosSetHandlePos(int Handle, long Size);
+int RDOSAPI RdosEofHandle(int Handle);
+int RDOSAPI RdosIsHandleDevice(int Handle);
+int RDOSAPI RdosGetHandleTime(int Handle, unsigned long *MsbTime, unsigned long *LsbTime);
+int RDOSAPI RdosSetHandleTime(int Handle, unsigned long MsbTime, unsigned long LsbTime);
+
 int RDOSAPI RdosOpenFile(const char *FileName, char Access);
 int RDOSAPI RdosCreateFile(const char *FileName, int Attrib);
 void RDOSAPI RdosCloseFile(int Handle);
@@ -507,11 +529,15 @@ int RDOSAPI RdosIs64BitExe(const char *prog);
 
 #ifdef __RDOS__     // these are only available in user-mode
 
-int RDOSAPI RdosExec(const char *prog, const char *param, const char *options);
-int RDOSAPI RdosSpawn(const char *prog, const char *param, const char *startdir, const char *env, const char *options, int *thread);
-int RDOSAPI RdosSpawnDebug(const char *prog, const char *param, const char *startdir, const char *env, const char *options, int *thread);
-int RDOSAPI RdosFork(const char *name, const char *options);
+int RDOSAPI RdosExec(const char *prog, const char *param, const char *startdir, const char *env);
+int RDOSAPI RdosSpawn(const char *prog, const char *param, const char *startdir, const char *env, int *thread);
+int RDOSAPI RdosSpawnDebug(const char *prog, const char *param, const char *startdir, const char *env, int *thread);
+int RDOSAPI RdosFork();
+int RDOSAPI RdosIsForked();
+int RDOSAPI RdosWaitForExec(int ForkId);
+void RDOSAPI RdosFatalErrorExit();
 void RDOSAPI RdosUnloadExe(int ExitCode);
+int RDOSAPI RdosGetExitCode();
 void RDOSAPI RdosFreeProcessHandle(int handle);
 int RDOSAPI RdosGetProcessExitCode(int handle);
 void RDOSAPI RdosAddWaitForProcessEnd(int Handle, int ProcessHandle, void *ID);
@@ -658,11 +684,12 @@ void RDOSAPI RdosClearText();
 void RDOSAPI RdosGetTextSize(int *Rows, int *Cols);
 void RDOSAPI RdosGetCursorPosition(int *Row, int *Col);
 void RDOSAPI RdosSetCursorPosition(int Row, int Col);
+void RDOSAPI RdosGetConsoleCursorPosition(int *Row, int *Col);
+void RDOSAPI RdosSetConsoleCursorPosition(int Row, int Col);
 void RDOSAPI RdosWriteChar(char ch);
 void RDOSAPI RdosWriteSizeString(const char *Buf, int Size);
 void RDOSAPI RdosWriteAttributeString(int Row, int Col, const short int *Buf, int Size);
 void RDOSAPI RdosWriteString(const char *Buf);
-int RDOSAPI RdosReadLine(char *Buf, int MaxSize);
 
 int RDOSAPI RdosPing(long Node, long Timeout);
 
@@ -701,7 +728,6 @@ int RDOSAPI RdosGetCurrentDllHandle();
 int RDOSAPI RdosGetModuleHandle();
 const char *RDOSAPI RdosGetExeName();
 const char *RDOSAPI RdosGetCmdLine();
-const char *RDOSAPI RdosGetOptions();
 int RDOSAPI RdosLoadDll(const char *Name);
 void RDOSAPI RdosFreeDll(int handle);
 int RDOSAPI RdosDuplModuleFileHandle(int handle);
@@ -752,6 +778,7 @@ void RDOSAPI RdosSetEnvData(int handle, const char *buf);
 int RDOSAPI RdosOpenSysIni();
 int RDOSAPI RdosOpenIni(const char *filename);
 void RDOSAPI RdosCloseIni(int handle);
+int RDOSAPI RdosDupIni(int handle);
 int RDOSAPI RdosGotoIniSection(int handle, const char *name);
 int RDOSAPI RdosRemoveIniSection(int handle, const char *name);
 int RDOSAPI RdosReadIni(int handle, const char *var, char *str, int maxsize);

@@ -40,9 +40,8 @@
 #include "sampwin.h"
 #include "sysio.h"
 
-extern int      SysOpen( char *name );
 
-int SampWrite( void FAR_PTR *buff, unsigned len )
+int SampWrite( const void FAR_PTR *buff, unsigned len )
 {
     unsigned    written;
     int         handle;

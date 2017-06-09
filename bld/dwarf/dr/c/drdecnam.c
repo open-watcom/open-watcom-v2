@@ -1061,9 +1061,7 @@ static BrokenName_T *DecorateType( BrokenName_T *decname, Loc_T *loc, dw_tagnum 
             next_die = DWRReadReference( tmp_abbrev, tmp_entry );
             next_die = SkipPCH( next_die );
             if( next_die != DRMEM_HDL_NULL ) {
-                if( loc->tag == DW_TAG_WATCOM_address_class_type ) {
-                    prev_tag = prev_tag;
-                } else {
+                if( loc->tag != DW_TAG_WATCOM_address_class_type ) {
                     prev_tag = loc->tag;
                 }
                 FillLoc( loc, next_die );
@@ -1221,7 +1219,7 @@ static bool baseHook( dr_sym_type stype, drmem_hdl base, char *name,
     BaseSearchInfo  *data;
     String          namestr;
 
-    notused = notused;
+    /* unused parameters */ (void)notused;
 
     namestr.s = name;
     if( namestr.s == NULL ) {
@@ -1344,10 +1342,10 @@ static BrokenName_T *DecorateArray( BrokenName_T *decname, Loc_T *loc )
     }
     if( upper_bd != 0 ) {
         String      bounds;
-        char        buf[ 15 ];      /* "[ 2147483647 ]\0" */
-        char        indx[ 12 ];     /* "2147483647" */
+        char        buf[15];      /* "[2147483647]\0" */
+        char        indx[12];     /* "2147483647" */
 
-        buf[ 0 ] = '\0';
+        buf[0] = '\0';
         strncat( buf, ArrayLeftKwd.s, ArrayLeftKwd.l );
         ltoa( upper_bd, indx, 10 );
         strcat( buf, indx );
@@ -1449,8 +1447,8 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
     size_t      len;
     char        *charBuf;
 #ifdef __WATCOMC__
-    char        numBuf1[ 32 ];  // hold text for number
-    char        numBuf2[ 32 ];  // hold text for number
+    char        numBuf1[32];  // hold text for number
+    char        numBuf2[32];  // hold text for number
 #endif
     String      value;
     dw_ate      encoding;
@@ -1497,7 +1495,7 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
             if( charBuf == NULL ) {
                 DWREXCEPT( DREXCEP_OUT_OF_MMEM );
             }
-            charBuf[ 0 ] = '\'';
+            charBuf[0] = '\'';
             strncat( charBuf + 1, (char *)buf, len );
             strcat( charBuf, "'" );
         } else {
@@ -1607,10 +1605,10 @@ static void FORAddConstVal( BrokenName_T *decname, Loc_T *loc, Loc_T *type_loc )
                 break;
             case DW_ATE_unsigned_char:
             case DW_ATE_signed_char:
-                charBuf[ 0 ] = '\'';
-                charBuf[ 1 ] = *(unsigned_8 *)buf;
-                charBuf[ 2 ] = '\'';
-                charBuf[ 3 ] = '\'';
+                charBuf[0] = '\'';
+                charBuf[1] = *(unsigned_8 *)buf;
+                charBuf[2] = '\'';
+                charBuf[3] = '\'';
                 break;
             default:
                 DWREXCEPT( DREXCEP_BAD_DBG_INFO );
@@ -1679,7 +1677,8 @@ static bool FORAddParam( drmem_hdl entry, int index, void *data )
 
     BrokenName_T  decstruct = Empty_Broken_Name;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     list = (List_T *)data;
 
     FillLoc( &loc, entry );
@@ -1822,7 +1821,8 @@ static bool FORAddNameListItem( drmem_hdl entry, int index, void *data )
     drmem_hdl       abbrev;
     drmem_hdl       item;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     abbrev = DWRSkipTag( &mod ) + 1;
     if( !DWRScanForAttrib( &abbrev, &mod, DW_AT_namelist_item ) ) {
         DWREXCEPT( DREXCEP_BAD_DBG_INFO );
@@ -1918,7 +1918,7 @@ static bool FORAddArrayIndex( drmem_hdl abbrev, drmem_hdl entry, void *data )
     bool            inParam;
     String          *bounds;
     String const    *add;
-    char            buf[ 64 ];      /* "-4294967295:4294967295\0" */
+    char            buf[64];      /* "-4294967295:4294967295\0" */
 
     bounds = ((FORArrIndexInf *)data)->bounds;
     inParam = ((FORArrIndexInf *)data)->inParam;
@@ -1949,7 +1949,7 @@ static bool FORAddArrayIndex( drmem_hdl abbrev, drmem_hdl entry, void *data )
     ReallocStr( bounds );
     strncat( bounds->s, add->s, add->l );
 
-    buf[ 0 ] = '\0';
+    buf[0] = '\0';
 
     if( upper_bd < lower_bd ) {
         if( inParam ) {
@@ -2087,8 +2087,8 @@ static void FORDecString( BrokenName_T *decname, Loc_T *loc )
     uint_32     len = 0;
     drmem_hdl   tmp_abbrev;
     drmem_hdl   tmp_entry;
-    char        buf[ 64 ];  // "(2147483647)"
-    char        size[ 62 ]; // "2147483647"
+    char        buf[64];  // "(2147483647)"
+    char        size[62]; // "2147483647"
     String      sizeExpr;
 
     tmp_abbrev = loc->abbrev_current;

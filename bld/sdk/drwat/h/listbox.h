@@ -42,7 +42,7 @@ typedef struct {
     HWND                hwnd;
 } LBoxHdl;
 
-extern int      LBPrintf( LBoxHdl *lb, DWORD msgid, ... );
+extern int      LBPrintf( LBoxHdl *lb, msg_id msgid, ... );
 extern int      LBStrPrintf( LBoxHdl *lb, char *str, ... );
 extern void     SetListBoxFont( LBoxHdl *lb );
 extern void     ClearListBox( LBoxHdl *lb );

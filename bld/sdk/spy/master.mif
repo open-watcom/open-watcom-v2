@@ -52,7 +52,7 @@ extra_l_flags_nt  = lib $(dllname).lib
 
 extra_l_flags_dll = option implib
 
-extra_l_flags_dll_win = font mem option rwr segment CLASS 'CODE' PRELOAD FIXED
+extra_l_flags_dll_win = font mem option rwr export WEP RESIDENT segment CLASS 'CODE' PRELOAD FIXED
 extra_l_flags_dll_nt  = initglobal
 
 .c: ../c

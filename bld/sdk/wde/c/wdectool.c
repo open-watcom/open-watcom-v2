@@ -212,7 +212,7 @@ bool WdeSetStickyMode( bool mode )
     HMENU   menu;
     bool    old_mode;
 
-    if( !WdeGetNumRes() ) {
+    if( WdeGetNumRes() == 0 ) {
         return( false );
     }
 
@@ -230,7 +230,7 @@ bool WdeSetStickyMode( bool mode )
         CheckMenuItem( menu, IDM_STICKY_TOOLS, MF_BYCOMMAND | MF_UNCHECKED );
     }
 
-    WdeSetStatusText( NULL, "", TRUE );
+    WdeSetStatusText( NULL, "", true );
 
     return( old_mode );
 }
@@ -242,7 +242,7 @@ void WdeSetBaseObject( int menu_selection )
     int                 id;
     WdeToolBar          *tbar;
 
-    if( !WdeGetNumRes() ) {
+    if( WdeGetNumRes() == 0 ) {
         return;
     }
 
@@ -262,7 +262,7 @@ void WdeSetBaseObject( int menu_selection )
             SetBaseObjType( obj_id );
             CheckMenuItem( menu, menu_selection, MF_BYCOMMAND | MF_CHECKED );
             WdeSetToolBarItemState( tbar, menu_selection, BUTTON_DOWN );
-            WdeSetStatusText( NULL, "", TRUE );
+            WdeSetStatusText( NULL, "", true );
         }
     }
 }
@@ -304,8 +304,8 @@ bool WdeCreateControlsToolBar( void )
         return ( true );
     }
 
-    WdeSetStatusText( NULL, "", FALSE );
-    WdeSetStatusByID( WDE_CREATINGTOOLBOX, WDE_NONE );
+    WdeSetStatusText( NULL, "", false );
+    WdeSetStatusByID( WDE_CREATINGTOOLBOX, 0 );
 
     parent = WdeGetMainWindowHandle();
 
@@ -354,7 +354,7 @@ bool WdeCreateControlsToolBar( void )
     }
 
     text = WdeAllocRCString( WDE_TOOLBOXCAPTION );
-    SendMessage( WdeControls->win, WM_SETTEXT, 0, (LPARAM)(LPSTR)text );
+    SendMessage( WdeControls->win, WM_SETTEXT, 0, (LPARAM)(LPCSTR)text );
     if( text != NULL ) {
         WdeFreeRCString( text );
     }
@@ -368,7 +368,7 @@ bool WdeCreateControlsToolBar( void )
         WdeFreeRCString( text );
     }
 
-    if( WdeGetNumRes() != 0 ) {
+    if( WdeGetNumRes() ) {
         id = WdeGetMenuFromOBJID( GetBaseObjType() );
         if( id != -1 ) {
             WdeSetToolBarItemState( WdeControls, id, BUTTON_DOWN );
@@ -413,7 +413,7 @@ static bool wdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 
     ignore_msg = FALSE;
 
-    if( WdeGetNumRes() != 0 && !WdeInCleanup() ) {
+    if( WdeGetNumRes() && !WdeInCleanup() ) {
         obj = WdeGetCurrentDialog();
         if( obj && Forward( obj, GET_ORDER_MODE, &mode, NULL ) && mode != WdeSelect ) {
             ignore_msg = TRUE;

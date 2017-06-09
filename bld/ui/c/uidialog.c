@@ -782,7 +782,7 @@ void uimovefield( a_dialog *ui_dlg_info, VFIELD *curr, int row_diff, int col_dif
     a_combo_box *combo;
     a_list      *list;
 
-    ui_dlg_info = ui_dlg_info;
+    /* unused parameters */ (void)ui_dlg_info;
 
     switch( curr->typ ) {
     case FLD_COMBOBOX :

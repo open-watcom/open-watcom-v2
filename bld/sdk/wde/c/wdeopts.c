@@ -47,6 +47,8 @@
 #include "jdlg.h"
 #include "watini.h"
 #include "inipath.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -79,7 +81,9 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WdeOptionsProc( HWND, UINT, WPARAM, LPARAM );
+
+/* Local Window callback functions prototypes */
+WINEXPORT INT_PTR CALLBACK WdeOptionsDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -128,7 +132,7 @@ static bool WdeWriteIntOpt( char *entry, int i )
 
     ltoa( i, str, 10 );
 
-    ret = WritePrivateProfileString( WdeSectionName, entry, str, WdeProfileName );
+    ret = ( WritePrivateProfileString( WdeSectionName, entry, str, WdeProfileName ) != 0 );
 
     return( ret );
 }
@@ -169,7 +173,7 @@ static bool WdeWriteRectOpt( char *entry, RECT *r )
     ret = FALSE;
     str = WdeRectToStr( r );
     if( str != NULL ) {
-        ret = WritePrivateProfileString( WdeSectionName, entry, str, WdeProfileName );
+        ret = ( WritePrivateProfileString( WdeSectionName, entry, str, WdeProfileName ) != 0 );
         WRMemFree( str );
     }
 
@@ -437,18 +441,18 @@ int WdeSetOption( WdeOptReq req, int val )
 bool WdeDisplayOptions( void )
 {
     HWND      dialog_owner;
-    DLGPROC   proc_inst;
+    DLGPROC   dlgproc;
     HINSTANCE app_inst;
     INT_PTR   modified;
 
-    WdeSetStatusText( NULL, " ", FALSE );
-    WdeSetStatusByID( WDE_DISPLAYOPTIONS, WDE_NONE );
+    WdeSetStatusText( NULL, " ", false );
+    WdeSetStatusByID( WDE_DISPLAYOPTIONS, 0 );
 
     dialog_owner = WdeGetMainWindowHandle();
     app_inst = WdeGetAppInstance();
-    proc_inst = (DLGPROC)MakeProcInstance ( (FARPROC)WdeOptionsProc, app_inst );
-    modified = JDialogBoxParam( app_inst, "WdeOptions", dialog_owner, proc_inst, (LPARAM)NULL );
-    FreeProcInstance( (FARPROC)proc_inst );
+    dlgproc = MakeProcInstance_DLG( WdeOptionsDlgProc, app_inst );
+    modified = JDialogBoxParam( app_inst, "WdeOptions", dialog_owner, dlgproc, (LPARAM)NULL );
+    FreeProcInstance_DLG( dlgproc );
 
     if( modified == -1 ) {
         WdeWriteTrail( "WdeDisplayOptions: Dialog not created!" );
@@ -530,14 +534,14 @@ static void WdeGetOptInfo( HWND hDlg )
     }
 }
 
-WINEXPORT BOOL CALLBACK WdeOptionsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeOptionsDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
-    BOOL ret;
+    bool ret;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( lParam );
 
-    ret = FALSE;
+    ret = false;
 
     switch( message ) {
     case WM_SYSCOLORCHANGE:
@@ -547,7 +551,7 @@ WINEXPORT BOOL CALLBACK WdeOptionsProc( HWND hDlg, UINT message, WPARAM wParam, 
     case WM_INITDIALOG:
         WdeOptWin = hDlg;
         WdeSetOptInfo( hDlg, &WdeCurrentState );
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_DESTROY:
@@ -563,12 +567,12 @@ WINEXPORT BOOL CALLBACK WdeOptionsProc( HWND hDlg, UINT message, WPARAM wParam, 
         case IDOK:
             WdeGetOptInfo( hDlg );
             EndDialog( hDlg, TRUE );
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDCANCEL:
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
+            ret = true;
             break;
 
 #if 0

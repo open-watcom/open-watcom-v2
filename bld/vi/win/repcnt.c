@@ -34,7 +34,7 @@
 #include "color.h"
 #include "font.h"
 #include "utils.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 #include "win.h"
 #include "winifini.h"
 

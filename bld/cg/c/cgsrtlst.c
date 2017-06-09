@@ -107,11 +107,13 @@ static  void            *DoSortList( void *list, unsigned next_offset,
     unsigned    mid;
     int         i;
 
-    if( list == NULL ) return( NULL );
+    if( list == NULL )
+        return( NULL );
     array = CGAlloc( length * sizeof( void * ) );
     if( array == NULL ) {
         mid = length / 2;
-        if( mid == 0 ) return( list ); /* FATAL ERROR! */
+        if( mid == 0 )
+            return( list ); /* FATAL ERROR! */
         list2 = list;
         for( i = mid; i > 0; --i ) {
             list2 = _NEXT( list2, next_offset );

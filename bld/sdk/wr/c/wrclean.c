@@ -46,17 +46,11 @@ void WRAPI WRCleanDir( WResDir dir )
         return;
     }
 
-    tnode = dir->Head;
-    while( tnode != NULL ) {
-        rnode = tnode->Head;
-        while( rnode != NULL ) {
-            lnode = rnode->Head;
-            while( lnode != NULL ) {
+    for( tnode = dir->Head; tnode != NULL; tnode = tnode->Next ) {
+        for( rnode = tnode->Head; rnode != NULL; rnode = rnode->Next ) {
+            for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
                 lnode->data = NULL;
-                lnode = lnode->Next;
             }
-            rnode = rnode->Next;
         }
-        tnode = tnode->Next;
     }
 }

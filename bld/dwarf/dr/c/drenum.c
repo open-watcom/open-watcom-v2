@@ -57,8 +57,8 @@ static bool ReadEnumerator( drmem_hdl abbrev, drmem_hdl mod, void *inf )
     return( info->callback( name, val, info->data ) );
 }
 
-extern void DRLoadEnum( drmem_hdl entry, void * data, enumCallback callback )
-/***************************************************************************/
+void DRLoadEnum( drmem_hdl entry, void * data, enumCallback callback )
+/********************************************************************/
 {
     enum_cb_info    info;
     drmem_hdl       abbrev;

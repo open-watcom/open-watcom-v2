@@ -88,7 +88,8 @@ static void     BrkMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     brkp        *bp;
 
-    piece=piece;
+    /* unused parameters */ (void)piece;
+
     if( row < 0 ) {
         bp = NULL;
     } else {
@@ -167,7 +168,8 @@ static int BrkNumRows( a_window *wnd )
     brkp        *bp;
     int         count;
 
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     count = 0;
     for( bp = BrkList; bp != NULL; bp = bp->next ) {
         ++count;
@@ -301,7 +303,8 @@ static bool BrkEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     break_window        *wndbreak = WndBreak( wnd );
 
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         wndbreak->toggled_break = false;

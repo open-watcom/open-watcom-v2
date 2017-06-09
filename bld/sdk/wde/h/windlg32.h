@@ -32,59 +32,7 @@
 
 #if !defined( __OS2__ )
 
-#ifdef __NT__
-    #define ADJUST_ITEMLEN_DWORD( a )   a = (((a) + 3) & ~3)    // DWORD align
-    #define ADJUST_BLOCKLEN_DWORD( a )  a = (((a) + 3) & ~3)    // DWORD align
-#else
-    #define ADJUST_ITEMLEN_DWORD( a )
-    #define ADJUST_BLOCKLEN_DWORD( a )
-#endif
-
-#if defined( __NT__ )
-//#if defined( __ALPHA__ )
-//    #include "pushpck1.h"
-//#else
-    #include "pushpck2.h"
-//#endif
-#endif
-
-typedef struct {
-    WORD        dtVer;
-    WORD        dtSignature;
-    DWORD       dthelpID;
-    DWORD       dtExtendedStyle;
-    DWORD       dtStyle;
-    WORD        dtItemCount;
-    short       dtX;
-    short       dtY;
-    short       dtCX;
-    short       dtCY;
-} _DLGEXTEMPLATE;
-
-typedef struct {
-    short       PointSize;
-    short       weight;
-    char        bItalic;
-    char        bCharset;
-//  char        fontName[];
-} FONTEXINFO;
-
-typedef struct {
-    DWORD       dtilhelpID;
-    DWORD       dtilExtendedStyle;
-    DWORD       dtilStyle;
-    short       dtilX;
-    short       dtilY;
-    short       dtilCX;
-    short       dtilCY;
-    DWORD       dtilID;
-} _DLGEXITEMTEMPLATE;
-
-#if defined( __NT__ )
-    #include "poppck.h"
-#endif
-
-extern GLOBALHANDLE DialogEXTemplate( DWORD dtStyle, DWORD dtExStyle, DWORD dthelpID, int dtx, int dty, int dtcx, int dtcy, const char *menuname, const char *classname, const char *captiontext, short pointsize, const char *typeface, short FontWeight, char FontItalic, char FontCharset );
-extern GLOBALHANDLE AddControlEX( GLOBALHANDLE data, int dtilx, int dtily, int dtilcx, int dtilcy, DWORD id, DWORD style, DWORD exstyle, DWORD helpID, const char *class, const char *text, BYTE infolen, const char *infodata );
+extern TEMPLATE_HANDLE  DialogEXTemplate( DWORD style, DWORD exstyle, DWORD helpid, int x, int y, int cx, int cy, const char *menuname, const char *classname, const char *captiontext, WORD font_pointsize, const char *font_facename, WORD fontweight, BYTE fontitalic, BYTE fontcharset, size_t *templatelen );
+extern TEMPLATE_HANDLE  AddControlEX( TEMPLATE_HANDLE data, int x, int y, int cx, int cy, DWORD id, DWORD style, DWORD exstyle, DWORD helpid, const char *classname, const char *captiontext, const void *infodata, BYTE infodatalen, size_t *templatelen );
 
 #endif

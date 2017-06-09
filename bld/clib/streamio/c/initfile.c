@@ -41,7 +41,9 @@
 
 void __InitFiles( void )
 {
+#ifdef _M_I86
     __stream_link _WCI86NEAR    *ptr;
+#endif
     __stream_link               *link;
     FILE                        *fp;
 
@@ -53,20 +55,20 @@ void __InitFiles( void )
     stderr->_flag &= ~(_IONBF | _IOLBF | _IOFBF);
     stderr->_flag |= _IONBF;
     for( fp = _RWD_iob; fp->_flag != 0; ++fp ) {
-#ifdef __NETWARE__
-        ptr = lib_malloc( sizeof( __stream_link ) );
-#else
+#ifdef _M_I86
         ptr = lib_nmalloc( sizeof( __stream_link ) );
+        if( ptr != NULL ) {
+            link = ptr;
+        } else {
 #endif
-        if( ptr == NULL ) {
             link = lib_malloc( sizeof( __stream_link ) );
             if( link == NULL ) {
                 __fatal_runtime_error( "Not enough memory to allocate file structures", 1 );
                 // never return
             }
-        } else {
-            link = ptr;
+#ifdef _M_I86
         }
+#endif
         link->stream = fp;
         link->next = _RWD_ostream;
         _RWD_ostream = link;

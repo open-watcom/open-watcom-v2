@@ -265,7 +265,7 @@ dis_handler_return X64PrefixOpnd( dis_handle *h, void *d, dis_dec_ins *ins )
  * Operand Size Override
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
 
@@ -281,7 +281,7 @@ dis_handler_return X64PrefixRex( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     REX     rex_pr;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     rex_pr.full = GetUByte( d, ins->size );
     ins->size += 1;
@@ -319,7 +319,7 @@ dis_handler_return X64PrefixCS( dis_handle *h, void *d, dis_dec_ins *ins )
  * CS Segment Override
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     ins->flags.u.x64 |= DIF_X64_CS;
@@ -330,7 +330,7 @@ dis_handler_return X64PrefixFS( dis_handle *h, void *d, dis_dec_ins *ins )
  * FS Segment Override
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     ins->flags.u.x64 |= DIF_X64_FS;
@@ -342,7 +342,7 @@ dis_handler_return X64PrefixGS( dis_handle *h, void *d , dis_dec_ins *ins )
  * GS Segment Override
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     ins->flags.u.x64 |= DIF_X64_GS;
@@ -392,7 +392,7 @@ dis_handler_return X64PrefixAddr( dis_handle *h, void *d, dis_dec_ins *ins )
  * Address Size Override
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
 
@@ -406,7 +406,7 @@ dis_handler_return X64PrefixRepe( dis_handle *h, void *d, dis_dec_ins *ins )
  * REP/REPE/REPZ Override
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     ins->flags.u.x64 |= DIF_X64_REPE;
@@ -418,7 +418,7 @@ dis_handler_return X64PrefixRepne( dis_handle *h, void *d, dis_dec_ins *ins )
  * REPNE/REPNZ
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     ins->flags.u.x64 |= DIF_X64_REPNE;
@@ -430,7 +430,7 @@ dis_handler_return X64PrefixLock( dis_handle *h, void *d, dis_dec_ins *ins )
  * Lock Prefix
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     ins->flags.u.x64 |= DIF_X64_LOCK;
@@ -442,7 +442,7 @@ dis_handler_return X64PrefixSS( dis_handle *h, void *d, dis_dec_ins *ins )
  * SS Segment Override
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     ins->flags.u.x64 |= DIF_X64_SS;
@@ -454,7 +454,7 @@ dis_handler_return X64PrefixDS( dis_handle *h, void *d, dis_dec_ins *ins )
  * DS Segment Override
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     ins->flags.u.x64 |= DIF_X64_DS;
@@ -466,7 +466,7 @@ dis_handler_return X64PrefixES( dis_handle *h, void *d, dis_dec_ins *ins )
  * ES Segment Override
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size += 1;
     ins->flags.u.x64 |= DIF_X64_ES;
@@ -488,7 +488,7 @@ dis_handler_return X64PrefixES( dis_handle *h, void *d, dis_dec_ins *ins )
 
 static dis_register X64GetRegister_Q( REGWIDTH rw, RM reg, dis_dec_ins *ins )
 {
-    rw = rw; ins = ins;
+    /* unused parameters */ (void)rw; (void)ins;
 
     switch( reg ) {
     case REG_RAX: return( DR_X64_rax );
@@ -514,7 +514,7 @@ static dis_register X64GetRegister_Q( REGWIDTH rw, RM reg, dis_dec_ins *ins )
 
 static dis_register X64GetRegister_D( REGWIDTH rw, RM reg, dis_dec_ins *ins )
 {
-    rw = rw; ins = ins;
+    /* unused parameters */ (void)rw; (void)ins;
 
     switch( reg ) {
     case REG_RAX: return( DR_X64_eax );
@@ -540,7 +540,7 @@ static dis_register X64GetRegister_D( REGWIDTH rw, RM reg, dis_dec_ins *ins )
 
 static dis_register X64GetRegister_W( REGWIDTH rw, RM reg, dis_dec_ins *ins )
 {
-    rw = rw; ins = ins;
+    /* unused parameters */ (void)rw; (void)ins;
 
     switch( reg ) {
     case REG_RAX: return( DR_X64_ax );
@@ -565,7 +565,7 @@ static dis_register X64GetRegister_W( REGWIDTH rw, RM reg, dis_dec_ins *ins )
 
 static dis_register X64GetRegister_B( REGWIDTH rw, RM reg, dis_dec_ins *ins )
 {
-    rw = rw; ins = ins;
+    /* unused parameters */ (void)rw; (void)ins;
 
     // If a REX prefix is present then AH, BH, CH, CH are not accessible
     // they represent the new SIL/DIL/BPL/SPL registers!
@@ -659,7 +659,7 @@ static dis_register X64GetCRegister( WBIT w, RM reg, dis_dec_ins *ins )
  *  Get Control Register
  */
 {
-    w = w; ins = ins;
+    /* unused parameters */ (void)w; (void)ins;
 
     switch( reg ) {
     case REG_CR0: return( DR_X64_cr0 );
@@ -676,7 +676,7 @@ static dis_register X64GetDRegister( WBIT w, RM reg, dis_dec_ins *ins )
  *  Get Debug Register
  */
 {
-    w = w; ins = ins;
+    /* unused parameters */ (void)w; (void)ins;
 
     switch( reg ) {
     case REG_DR0: return( DR_X64_dr0 );
@@ -694,7 +694,7 @@ static dis_register X64GetSRegister( REGWIDTH rw, RM reg, dis_dec_ins *ins )
  *  Get Segment Register
  */
 {
-    rw = rw; ins = ins;
+    /* unused parameters */ (void)rw; (void)ins;
 
     switch( reg ) {
     case REG_CS: return( DR_X64_cs );
@@ -1382,7 +1382,7 @@ dis_handler_return X64SReg_8( dis_handle *h, void *d, dis_dec_ins *ins )
     unsigned    oper;
 #endif
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full    = ins->opcode;
     ins->size   += 1;
@@ -1412,7 +1412,7 @@ dis_handler_return X64NoOp_8( dis_handle *h, void *d, dis_dec_ins *ins )
     code_8      code;
     unsigned    oper;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full    = ins->opcode;
     ins->size   += 1;
@@ -1482,7 +1482,7 @@ dis_handler_return X64String_8( dis_handle *h, void *d, dis_dec_ins *ins )
     REGWIDTH    rw_mod;
     unsigned    oper;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full    = ins->opcode;
     ins->size   += 1;
@@ -1560,7 +1560,7 @@ dis_handler_return X64ImmAcc_8( dis_handle *h, void *d, dis_dec_ins *ins )
     code_8      code;
     REGWIDTH    rw_reg;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->num_ops = 0;
@@ -1595,7 +1595,7 @@ dis_handler_return X64MemAbsAcc_8( dis_handle *h, void *d, dis_dec_ins *ins )
     REGWIDTH    rw_reg;
     unsigned    oper;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->num_ops = 0;
@@ -1651,7 +1651,7 @@ dis_handler_return X64MemAbsAcc_8( dis_handle *h, void *d, dis_dec_ins *ins )
 dis_handler_return X64Abs_8( dis_handle *h, void *d, dis_dec_ins *ins )
 /*********************************************************************/
 {
-    h = h;
+    /* unused parameters */ (void)h;
 
     ins->size   += 1;
     ins->num_ops = 0;
@@ -1663,7 +1663,7 @@ dis_handler_return X64Abs_8( dis_handle *h, void *d, dis_dec_ins *ins )
 dis_handler_return X64Rel_8( dis_handle *h, void *d, dis_dec_ins *ins )
 /*********************************************************************/
 {
-    h = h;
+    /* unused parameters */ (void)h;
 
     ins->size   += 1;
     ins->num_ops = 0;
@@ -1678,7 +1678,7 @@ dis_handler_return X64Imm_8( dis_handle *h, void *d, dis_dec_ins *ins )
     code_8      code;
     unsigned    oper;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->size   += 1;
@@ -1728,7 +1728,7 @@ dis_handler_return X64ImmReg_8( dis_handle *h, void *d, dis_dec_ins *ins )
     RM          reg;
     unsigned    oper;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->num_ops = 0;
@@ -1762,7 +1762,7 @@ dis_handler_return X64ImmImm_8( dis_handle *h, void *d, dis_dec_ins *ins )
 /************************************************************************/
 //  8-bit   OOOO OOOO : Imm16 Imm8
 {
-    h = h;
+    /* unused parameters */ (void)h;
 
     ins->num_ops = 2;
     ins->size   += 1;
@@ -1785,7 +1785,7 @@ dis_handler_return X64Reg_8( dis_handle *h, void *d , dis_dec_ins *ins )
     REGWIDTH    rw = RW_64BIT;
     unsigned    oper;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size   += 1;
     ins->num_ops = 0;
@@ -1846,7 +1846,7 @@ dis_handler_return X64AccAcc_8( dis_handle *h, void *d, dis_dec_ins *ins )
     REGWIDTH    rw_reg;
     unsigned    oper;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full    = ins->opcode;
     ins->size   += 1;
@@ -1881,7 +1881,7 @@ dis_handler_return X64JmpCC_8( dis_handle *h, void *d, dis_dec_ins *ins )
     code_8      code;
     REGWIDTH    rw_reg;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->size   += 1;
@@ -1973,7 +1973,7 @@ dis_handler_return X64Shift_16( dis_handle *h, void *d, dis_dec_ins *ins )
     REGWIDTH    rw_mod;
     unsigned    oper;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->size   += 2;
@@ -2005,7 +2005,7 @@ dis_handler_return X64SReg_16( dis_handle *h, void *d, dis_dec_ins *ins )
     code_16     code;
     unsigned    oper;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full    = ins->opcode;
     ins->size   += 2;
@@ -2052,7 +2052,7 @@ dis_handler_return X64NoOp_16( dis_handle *h, void *d , dis_dec_ins *ins )
  *  OOOO OOOO : OOOO OOOO
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size   += 2;
     ins->num_ops = 0;
@@ -2069,7 +2069,7 @@ dis_handler_return X64ModRM_16( dis_handle *h, void *d, dis_dec_ins *ins )
     REGWIDTH    rw_mod;
     unsigned    oper;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full    = ins->opcode;
     ins->num_ops = 0;
@@ -2126,7 +2126,7 @@ dis_handler_return X64RegModRM_16( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_16     code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->num_ops = 0;
@@ -2144,7 +2144,7 @@ dis_handler_return X64RegModRM_test( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_16     code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->num_ops = 0;
@@ -2162,7 +2162,7 @@ dis_handler_return X64RegModRM_16B( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_16     code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->num_ops = 0;
@@ -2214,7 +2214,7 @@ dis_handler_return X64RegModRM_16C( dis_handle *h, void *d, dis_dec_ins *ins )
     REGWIDTH    rw_src;
     RM          reg;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->size   += 2;
@@ -2245,7 +2245,7 @@ dis_handler_return X64ModRMImm_16( dis_handle *h, void *d, dis_dec_ins *ins )
     REGWIDTH    rw_mod;
     REGWIDTH    rw_reg;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->num_ops = 0;
@@ -2287,7 +2287,7 @@ dis_handler_return X64Reg_16( dis_handle *h, void *d , dis_dec_ins *ins )
     RM          reg;
     REGWIDTH    rw = RW_32BIT;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full    = ins->opcode;
     ins->num_ops = 0;
@@ -2316,7 +2316,7 @@ dis_handler_return X64JmpCC_16( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_16     code;
 
-    h = h;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = ins->opcode;
     ins->size += 2;
@@ -2332,7 +2332,7 @@ dis_handler_return X64SRegModRM_16( dis_handle *h, void * d, dis_dec_ins *ins )
     REGWIDTH    rw_reg;
     REGWIDTH    rw_mod;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full     = ins->opcode;
     ins->size    += 2;
@@ -2390,7 +2390,7 @@ dis_handler_return X64NoOp_24( dis_handle *h, void *d , dis_dec_ins *ins )
  *  OOOO OOOO : OOOO OOOO : OOOO OOOO
  */
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     ins->size   += 3;
     ins->num_ops = 0;
@@ -2405,7 +2405,7 @@ dis_handler_return X64SetCC( dis_handle *h, void *d, dis_dec_ins *ins )
     code_24     code;
     REGWIDTH    rw_reg = RW_8BIT;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full = ins->opcode;
     ins->num_ops = 0;
@@ -2421,7 +2421,7 @@ dis_handler_return X64MovCC_24( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_24     code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     // TODO: Merge with X64ModRM_24B
     code.full   = ins->opcode;
@@ -2442,7 +2442,7 @@ dis_handler_return X64CRegReg_24( dis_handle *h, void *d, dis_dec_ins *ins )
     code_24     code;
     unsigned    oper;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full    = ins->opcode;
     ins->size   += 3;
@@ -2475,7 +2475,7 @@ dis_handler_return X64DRegReg_24( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     code_24     code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full    = ins->opcode;
     ins->size   += 3;
@@ -2510,7 +2510,7 @@ dis_handler_return X64ModRM_24( dis_handle *h, void *d, dis_dec_ins *ins )
     REGWIDTH    rw_reg;
     REGWIDTH    rw_mod;
 
-    h = h;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full    = ins->opcode;
     ins->num_ops = 0;
@@ -2562,7 +2562,7 @@ dis_handler_return X64RegModRM_24( dis_handle *h, void *d, dis_dec_ins *ins )
 
     code_24     code;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->size   += 3;
@@ -2579,7 +2579,7 @@ dis_handler_return X64RegModRM_24B( dis_handle *h, void *d, dis_dec_ins *ins )
     code_24     code;
     unsigned    oper;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->size   += 3;
@@ -2642,7 +2642,7 @@ dis_handler_return X64RegModRM_24C( dis_handle *h, void *d, dis_dec_ins *ins )
     REGWIDTH    rw_src;
     RM          reg;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->size   += 3;
@@ -2681,7 +2681,7 @@ dis_handler_return X64ModRMImm_24( dis_handle *h, void *d, dis_dec_ins *ins )
     REGWIDTH    rw_reg;
     RM          reg;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     code.full    = ins->opcode;
     ins->size   += 3;
@@ -2852,7 +2852,7 @@ static size_t X64InsHook( dis_handle *h, void *d, dis_dec_ins *ins,
     dis_operand save;
     char        temp_buff[40];
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     if( name == NULL ) name = temp_buff;
     p = name;
@@ -2937,7 +2937,7 @@ static size_t X64FlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
                              dis_format_flags flags, char *name )
 /********************************************************************/
 {
-    h = h; d = d; ins = ins; flags = flags; name = name;
+    /* unused parameters */ (void)h; (void)d; (void)ins; (void)flags; (void)name;
 
     return( 0 );
 }
@@ -3052,7 +3052,7 @@ static bool NeedSizing( dis_dec_ins *ins, dis_format_flags flags, unsigned op_nu
 {
     unsigned    i;
 
-    op_num = op_num;
+    /* unused parameters */ (void)op_num;
 
     if( flags & DFF_UNIX )
         return( false );
@@ -3095,7 +3095,7 @@ static size_t X64OpHook( dis_handle *h, void *d, dis_dec_ins *ins,
     size_t          len;
     dis_inst_flags  ins_flags;
 
-    h = h;
+    /* unused parameters */ (void)h;
 
     ins_flags.u.x64 = ins->flags.u.x64;
     p = op_buff;
@@ -3228,10 +3228,9 @@ static dis_handler_return X64DecodeTableCheck( int page, dis_dec_ins *ins )
 static void ByteSwap( dis_handle *h, void *d, dis_dec_ins *ins )
 /**************************************************************/
 {
+    /* unused parameters */ (void)h; (void)d; (void)ins;
+
     // Nothing to do here - instruction will be decoded byte by byte
-
-    h = h; d = d; ins = ins;
-
 }
 
 static void X64PreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
@@ -3244,8 +3243,9 @@ static size_t X64PostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
 /**********************************************************************/
 {
+    /* unused parameters */ (void)h; (void)d; (void)ins; (void)flags; (void)op_num; (void)op_buff; (void)buff_len;
+
     // No funky FPU emulation
-    h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff; buff_len = buff_len;
     return( 0 );
 }
 

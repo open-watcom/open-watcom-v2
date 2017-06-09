@@ -54,7 +54,7 @@ void    R_F2E( extended val, char *buff, int fld_width, int digs, bool plus,
     double_value = val;
     __iFDLD( &double_value, &ld );
 #else
-    ld.value = val;
+    ld.u.value = val;
 #endif
     cvt.flags    = E_FMT + F_DOT;
     cvt.ndigits  = digs;
@@ -119,7 +119,7 @@ void    R_F2F( extended val, char *buff, int fld_width, int digs, bool plus,
     double_value = val;
     __iFDLD( &double_value, &ld );
 #else
-    ld.value = val;
+    ld.u.value = val;
 #endif
     cvt.flags = F_FMT + F_DOT;
     cvt.ndigits = digs;

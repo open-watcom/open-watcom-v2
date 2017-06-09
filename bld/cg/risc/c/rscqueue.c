@@ -70,7 +70,8 @@ static  void    dumpDebug( void ) {
     oc_class            class;
 
     class = debugOC.oc_header.class;
-    if( ( class & GET_BASE ) != OC_INFO ) return;
+    if( ( class & GET_BASE ) != OC_INFO )
+        return;
     loc = AskLocation();
     switch( class & INFO_MASK ) {
     case INFO_LINE:
@@ -149,6 +150,8 @@ void    OutputOC( any_oc *oc, any_oc *next_lbl )
     offset              lc;
     offset              len;
     label_handle        lbl;
+
+    /* unused parameters */ (void)next_lbl;
 
     base = oc->oc_header.class & GET_BASE;
     if( base == OC_RET && (oc->oc_header.class & ATTR_NORET) )

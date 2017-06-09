@@ -228,6 +228,8 @@ static void dmp_mod_flag_ne( unsigned_16 flag, unsigned_8 target )
 static void dmp_mod_flag_lx( unsigned_32 flag, unsigned_16 ostype )
 /*****************************************************************/
 {
+    /* unused parameters */ (void)ostype;
+
     Wdputs( "Module Flags = " );
     if( (flag & OSF_MODTYPE_MASK) == OSF_VIRT_DEVICE ) {
         Wdputs( "VIRTDEVICE" );

@@ -39,7 +39,7 @@
 /***************************************************************************/
 extern  void    gml_pb( gml_tag gtag )
 {
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
 
     scan_err = false;
 

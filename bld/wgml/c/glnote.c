@@ -112,7 +112,8 @@ void    lay_note( lay_tag ltag )
     att_args        l_args;
     int             cvterr;
 
-    ltag = ltag;
+    /* unused parameters */ (void)ltag;
+
     p = scan_start;
     cvterr = false;
 

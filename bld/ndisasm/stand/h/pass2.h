@@ -35,7 +35,7 @@
 
 extern num_errors   DoPass2( section_ptr, unsigned_8 *, orl_sec_size, label_list, ref_list );
 extern size_t       HandleAReference( dis_value, int, ref_flags,
-                                          orl_sec_offset, orl_sec_size,
+                                          dis_sec_offset, orl_sec_size,
                                           ref_entry *, char * );
 
 #endif

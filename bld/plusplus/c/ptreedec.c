@@ -857,7 +857,8 @@ void PtdGenAfter                // GENERATE AFTER NODE PROCESSED
 static void init(               // INITIALIZE PTREEDEC
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carvePTD = CarveCreate( sizeof( PTD ), 128 );
 }
 
@@ -865,7 +866,8 @@ static void init(               // INITIALIZE PTREEDEC
 static void fini(               // COMPLETE PTREEDEC
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CarveDestroy( carvePTD );
 }
 

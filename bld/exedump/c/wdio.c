@@ -45,7 +45,7 @@
 bool Weof( void )
 /***************/
 {
-    return( eof( Handle ) );
+    return( eof( Handle ) != 0 );
 }
 
 /*
@@ -56,7 +56,7 @@ static void chkread( unsigned_32 amount )
 {
     if( Num_read < amount ) {
         Wdputs( "Error! Couldn't read from executable: " );
-        if (errno == 0) {
+        if( errno == 0 ) {
             Wdputs( "reached EOF" );
         } else {
             Wdputs( strerror( errno ) );
@@ -77,14 +77,14 @@ void Wread( void *buf, unsigned_32 amount )
     errno = 0;
     if( amount > Sizeleft ) {
         if( Sizeleft ) {
-            memcpy( buffer, &Read_buff[Num_read-Sizeleft], Sizeleft );
+            memcpy( buffer, &Read_buff[Num_read - Sizeleft], Sizeleft );
             amount -= Sizeleft;
         }
         if( amount/BSIZE >= 1 ) {
             Num_read = read( Handle, &buffer[Sizeleft], amount );
             chkread( amount );
             Sizeleft = 0;
-            Num_buff = -1;      // must read in new buffer on next seek
+            Num_buff = FORCE_SEEK;  // must read in new buffer on next seek
         } else {
             Num_read = read( Handle, Read_buff, BSIZE );
             chkread( amount );
@@ -93,7 +93,7 @@ void Wread( void *buf, unsigned_32 amount )
             Num_buff++;
         }
     } else {
-        memcpy( buffer, &Read_buff[Num_read-Sizeleft], amount );
+        memcpy( buffer, &Read_buff[Num_read - Sizeleft], amount );
         Sizeleft -= amount;
     }
 }
@@ -136,8 +136,8 @@ unsigned long WFileSize( void )
 /*
  * writeout a char
  */
-void Wdputc( char c )
-/*******************/
+void Wdputc( int c )
+/******************/
 {
     putchar( c );
 }
@@ -213,9 +213,8 @@ void Dump_header( void *data_ptr, const_string_table *msg )
 
 #define MAX_FLAG_SIZE   256
 
-extern void DumpFlags( unsigned_32 flags, unsigned_32 ignore,
-                       const_string_table *msg, const char *prefix )
-/****************************************************************/
+void DumpFlags( unsigned_32 flags, unsigned_32 ignore, const_string_table *msg, const char *prefix )
+/**************************************************************************************************/
 {
     char            name[MAX_FLAG_SIZE];
     char            *currpos;
@@ -317,17 +316,17 @@ void Banner( const char *title )
 /******************************/
 {
     char    line[LINE_LEN + 1];
-    int     title_len;
+    size_t  title_len;
 
-    line[ LINE_LEN ] = '\0';
+    line[LINE_LEN] = '\0';
 
     title_len = strlen( title );
-    if (title_len > LINE_LEN) {
+    if( title_len > LINE_LEN ) {
         title_len = LINE_LEN;
     }
 
     memset( line, ' ', LINE_LEN );
-    memcpy( &line[ (LINE_LEN - title_len) / 2 ], title, title_len );
+    memcpy( line + ( LINE_LEN - title_len ) / 2, title, title_len );
 
     Wdputs( line );
     Wdputslc( "\n" );

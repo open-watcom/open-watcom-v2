@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <io.h>
 #include <string.h>
 #if defined( __OS2__ )
@@ -48,17 +48,19 @@
 #ifdef __NT__
     #include "libwin32.h"
     #include "ntext.h"
+    #include "timetwnt.h"
 #elif defined( __OS2__ )
     #include "os2fil64.h"
+    #include "d2ttime.h"
 #elif defined( __RDOS__ )
     #include "liballoc.h"
 #else
     #include "liballoc.h"
     #include "_doslfn.h"
     #include "_dtaxxx.h"
+    #include "d2ttime.h"
 #endif
 #include "i64.h"
-#include "d2ttime.h"
 #include "find.h"
 #include "seterrno.h"
 
@@ -182,9 +184,6 @@
  #endif
 /******************************************************************************/
 {
-    WORD        d;
-    WORD        t;
-
     /*** Convert attributes ***/
     fileinfo->attrib = 0;
     if( ffb->dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE ) {
@@ -207,12 +206,9 @@
     }
 
     /*** Handle the timestamps ***/
-    __MakeDOSDT( &ffb->ftCreationTime, &d, &t );
-    fileinfo->time_create = _d2ttime( d, t );
-    __MakeDOSDT( &ffb->ftLastAccessTime, &d, &t );
-    fileinfo->time_access = _d2ttime( d, t );
-    __MakeDOSDT( &ffb->ftLastWriteTime, &d, &t );
-    fileinfo->time_write = _d2ttime( d, t );
+    fileinfo->time_create = __NT_filetime_to_timet( &ffb->ftCreationTime );
+    fileinfo->time_access = __NT_filetime_to_timet( &ffb->ftLastAccessTime );
+    fileinfo->time_write = __NT_filetime_to_timet( &ffb->ftLastWriteTime );
 
     /*** Handle the file size ***/
   #ifdef __INT64__
@@ -345,9 +341,9 @@ int __rdos_finddata_get( RDOSFINDTYPE *findbuf, struct _finddata_t *fileinfo )
 
     /*** Handle the timestamps ***/
   #ifdef __WATCOM_LFN__
-    if( IS_LFN( findbuf ) && LFN_CRTIME_OF( findbuf ) ) {
-        fileinfo->time_create = _d2ttime( LFN_CRDATE_OF( findbuf ), LFN_CRTIME_OF( findbuf ) );
-        fileinfo->time_access = _d2ttime( LFN_ACDATE_OF( findbuf ), LFN_ACTIME_OF( findbuf ) );
+    if( IS_LFN( findbuf->reserved ) && DTALFN_CRTIME_OF( findbuf->reserved ) ) {
+        fileinfo->time_create = _d2ttime( DTALFN_CRDATE_OF( findbuf->reserved ), DTALFN_CRTIME_OF( findbuf->reserved ) );
+        fileinfo->time_access = _d2ttime( DTALFN_ACDATE_OF( findbuf->reserved ), DTALFN_ACTIME_OF( findbuf->reserved ) );
     } else {
   #endif
         fileinfo->time_create = -1L;

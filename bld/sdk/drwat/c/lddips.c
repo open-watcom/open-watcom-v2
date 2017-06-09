@@ -33,8 +33,10 @@
 
 #include <string.h>
 #include "drwatcom.h"
+#include "wclbproc.h"
 #include "dip.h"
 #include "dipload.h"
+#include "diplasth.h"
 #include "ldstr.h"
 #include "rcstr.gh"
 #include "mem.h"
@@ -42,20 +44,18 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT BOOL CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 typedef struct {
     char        *loadmsg;
-    BOOL        loaded;
+    bool        loaded;
+#ifdef __WINDOWS__
     HINSTANCE   hinst;
+#endif
 } LoadInfo;
 
 static LoadInfo         *theLoadInfo;
-static unsigned         dipCnt;
-
-#ifdef __WINDOWS__
-extern HINSTANCE        DIPLastHandle;
-#endif
+static int              dipCnt;
 
 static void initDipMsgs( void )
 {
@@ -68,57 +68,60 @@ static void initDipMsgs( void )
     theLoadInfo = MemAlloc( dipCnt * sizeof( LoadInfo ) );
 }
 
-BOOL CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK ShowDipStatDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
-    WORD        i;
+    int         i;
+    bool        ret;
 
     lparam = lparam;
+
+    ret = false;
+
     switch( msg ) {
     case WM_INITDIALOG:
         for( i = 0; i < dipCnt; i++ ) {
             SetDlgMonoFont( hwnd, DIPLD_LIST );
             SetDlgMonoFont( hwnd, DIPLD_HEADER );
-            SendDlgItemMessage( hwnd, DIPLD_LIST, LB_ADDSTRING, 0,
-                                (LPARAM)(LPSTR)theLoadInfo[i].loadmsg );
+            SendDlgItemMessage( hwnd, DIPLD_LIST, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)theLoadInfo[i].loadmsg );
         }
+        ret = true;
         break;
     case WM_COMMAND:
         cmd = LOWORD( wparam );
         switch( cmd ) {
         case IDOK:
             SendMessage( hwnd, WM_CLOSE, 0, 0L );
-            break;
         }
+        ret = true;
         break;
     case WM_CLOSE:
         EndDialog( hwnd, 0 );
+        ret = true;
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 }
 
 void ShowDIPStatus( HWND hwnd )
 {
-    FARPROC     fp;
+    DLGPROC     dlgproc;
 
-    fp = MakeProcInstance( (FARPROC)ShowDipStatDlgProc, Instance );
-    JDialogBox( Instance, "DIP_STATUS_DLG", hwnd, (DLGPROC)fp );
-    FreeProcInstance( fp );
+    dlgproc = MakeProcInstance_DLG( ShowDipStatDlgProc, Instance );
+    JDialogBox( Instance, "DIP_STATUS_DLG", hwnd, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 }
 
-BOOL LoadTheDips( void )
+bool LoadTheDips( void )
 {
     int         rc;
     unsigned    i;
     char        *ptr;
     char        buf[256];
     char        status[80];
-    BOOL        diploaded;
+    bool        diploaded;
 
-    diploaded = FALSE;
+    diploaded = false;
     initDipMsgs();
     i = 0;
     for( ptr = DIPDefaults; *ptr != '\0'; ptr += strlen( ptr ) + 1 ) {
@@ -144,11 +147,11 @@ BOOL LoadTheDips( void )
             }
         } else {
             CopyRCString( STR_DIP_LOADED, status, sizeof( status) );
-            diploaded = TRUE;
+            diploaded = true;
         }
         sprintf( buf, "%-18s %s", ptr, status );
         theLoadInfo[i].loadmsg = MemAlloc( strlen( buf ) + 1 );
-        theLoadInfo[i].loaded = !( rc & DS_ERR );
+        theLoadInfo[i].loaded = ( (rc & DS_ERR) == 0 );
 #ifdef __WINDOWS__
         if( theLoadInfo[i].loaded ) {
             theLoadInfo[i].hinst = DIPLastHandle;
@@ -161,14 +164,13 @@ BOOL LoadTheDips( void )
         RCMessageBox( NULL, STR_NO_DIPS_LOADED, AppName, MB_OK | MB_ICONEXCLAMATION );
         ShowDIPStatus( NULL );
         DIPFini();
-        return( FALSE );
     }
-    return( TRUE );
+    return( diploaded );
 }
 
 void FiniDipMsgs( void )
 {
-    WORD        i;
+    int     i;
 
     for( i = 0; i < dipCnt; i++ ) {
         MemFree( theLoadInfo[i].loadmsg );
@@ -176,15 +178,15 @@ void FiniDipMsgs( void )
 }
 
 #ifdef __WINDOWS__
-BOOL IsDip( HINSTANCE hinst )
+bool IsDip( HINSTANCE hinst )
 {
-    WORD        i;
+    int     i;
 
     for( i = 0; i < dipCnt; i++ ) {
         if( theLoadInfo[i].loaded && theLoadInfo[i].hinst == hinst ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 #endif

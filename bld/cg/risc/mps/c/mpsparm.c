@@ -52,7 +52,8 @@
 extern  type_length     ParmAlignment( type_def *tipe )
 /*****************************************************/
 {
-    tipe = tipe;
+    /* unused parameters */ (void)tipe;
+
     return( 1 );
 }
 
@@ -63,8 +64,8 @@ extern  hw_reg_set      ParmReg( type_class_def class, type_length len, type_len
     hw_reg_set  *reg_set;
     hw_reg_set  regs;
 
-    len = len;
-    alignment = alignment;
+    /* unused parameters */ (void)len; (void)alignment;
+
     possible = ParmChoices( class );
     if( possible == NULL || HW_CEqual( *possible, HW_EMPTY ) ) {
         if( !HW_CEqual( *state->parm.curr_entry, HW_EMPTY ) ) {

@@ -38,12 +38,11 @@
 #include "subclass.h"
 #include "wstatus.h"
 #include <assert.h>
-#include "wprocmap.h"
 
 
 /* Local Windows CALLBACK function prototypes */
 WINEXPORT LRESULT CALLBACK StaticSubclassProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-WINEXPORT BOOL CALLBACK SSDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK SSDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #define NARRAY( a )             (sizeof( a ) / sizeof( a[0] ))
 
@@ -347,13 +346,13 @@ static void addSubclasses( HWND hwnd )
 {
     int     i;
     for( i = SS_FIRST_CONTENT; i <= SS_LAST_CONTENT; i++ ) {
-        SubclassGenericAdd( GetDlgItem( hwnd, i ), (WNDPROC)MakeWndProcInstance( StaticSubclassProc, InstanceHandle ) );
+        SubclassGenericAdd( GetDlgItem( hwnd, i ), StaticSubclassProc, InstanceHandle );
     }
     for( i = SS_FIRST_ALIGNMENT; i <= SS_LAST_ALIGNMENT; i++ ) {
-        SubclassGenericAdd( GetDlgItem( hwnd, i ), (WNDPROC)MakeWndProcInstance( StaticSubclassProc, InstanceHandle ) );
+        SubclassGenericAdd( GetDlgItem( hwnd, i ), StaticSubclassProc, InstanceHandle );
     }
     for( i = SS_FIRST_COMMAND; i <= SS_LAST_COMMAND; i++ ) {
-        SubclassGenericAdd( GetDlgItem( hwnd, i ), (WNDPROC)MakeWndProcInstance( StaticSubclassProc, InstanceHandle ) );
+        SubclassGenericAdd( GetDlgItem( hwnd, i ), StaticSubclassProc, InstanceHandle );
     }
 }
 
@@ -374,7 +373,7 @@ static void removeSubclasses( HWND hwnd )
 /*
  * SSDlgProc - callback routine for status bar settings drag & drop dialog
  */
-WINEXPORT BOOL CALLBACK SSDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK SSDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
     wparam = wparam;
@@ -402,20 +401,20 @@ WINEXPORT BOOL CALLBACK SSDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
  */
 void RefreshSSbar( void )
 {
-    static FARPROC      proc = NULL;
+    static DLGPROC      dlgproc = NULL;
 
     if( EditFlags.SSbar ) {
         if( !BAD_ID( hSSbar ) ) {
             return;
         }
-        proc = MakeDlgProcInstance( SSDlgProc, InstanceHandle );
-        hSSbar = CreateDialog( InstanceHandle, "SSBAR", root_window_id, (DLGPROC)proc );
+        dlgproc = MakeProcInstance_DLG( SSDlgProc, InstanceHandle );
+        hSSbar = CreateDialog( InstanceHandle, "SSBAR", root_window_id, dlgproc );
     } else {
         if( BAD_ID( hSSbar ) ) {
             return;
         }
         SendMessage( hSSbar, WM_CLOSE, 0, 0L );
-        FreeProcInstance( proc );
+        FreeProcInstance_DLG( dlgproc );
     }
     UpdateStatusWindow();
 

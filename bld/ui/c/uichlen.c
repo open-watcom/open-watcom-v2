@@ -38,7 +38,8 @@
 int UIAPI uicharlen( int ch )
 /****************************/
 {
-    ch=ch;
+    /* unused parameters */ (void)ch;
+
     return( 1 );
 }
 

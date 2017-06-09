@@ -73,7 +73,7 @@ void FreeELFFmt( void )
 void SetELFImportSymbol( symbol * sym )
 /********************************************/
 {
-    sym = sym;
+    /* unused parameters */ (void)sym;
 }
 
 bool ProcExportAll( void )

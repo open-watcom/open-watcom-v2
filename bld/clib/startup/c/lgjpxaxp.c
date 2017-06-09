@@ -31,19 +31,18 @@
 
 #include <windows.h>
 #include <setjmpex.h>
+#include "lgjpxaxp.h"
+#include "pdreg.h"
 
-extern int   _ProcSetsFP( void * );
-extern void  *RtlLookupFunctionEntry( unsigned long );
-extern void  RtlUnwindRfp( unsigned long, unsigned long, void *, unsigned long );
 
 typedef struct
 {
-    unsigned long   sp;
-    unsigned long   pc;
+    void            *sp;
+    void            *pc;
     unsigned long   seb;
     unsigned long   type;
     unsigned long   notused[2];
-    unsigned long   fp;
+    void            *fp;
 } _JUMPEXDATA;
 
 void longjmpex( jmp_buf jb, int ret )
@@ -56,10 +55,11 @@ void longjmpex( jmp_buf jb, int ret )
     er.ExceptionRecord         = 0L;
     er.ExceptionAddress        = 0L;
     er.NumberParameters        = 1L;
-    er.ExceptionInformation[0] = jd->sp;
+    er.ExceptionInformation[0] = (unsigned long)jd->sp;
 
-    if( !_ProcSetsFP( RtlLookupFunctionEntry( jd->pc ) ) )
-        RtlUnwind( (void *)jd->sp, (void *)jd->pc, &er, (void *)ret );
-    else
-        RtlUnwindRfp( jd->fp, jd->pc, &er, ret );
+    if( !_ProcSetsFP( RtlLookupFunctionEntry( jd->pc ) ) ) {
+        RtlUnwind( jd->sp, jd->pc, &er, (void *)ret );
+    } else {
+        RtlUnwindRfp( jd->fp, jd->pc, &er, (void *)ret );
+    }
 } /* longjmp() */

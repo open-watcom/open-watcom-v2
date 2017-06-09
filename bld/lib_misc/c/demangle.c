@@ -1296,7 +1296,8 @@ static bool op_delete_array( output_desc *data, state_desc *state )
 
 static bool ctor( output_desc *data, state_desc *state )
 {
-    state = state;
+    /* unused parameters */ (void)state;
+
     _output1( DM_CONSTRUCTOR );
     data->pending_loc = data->count - data->index;
     data->ctdt_pending = true;

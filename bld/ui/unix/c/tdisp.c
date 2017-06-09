@@ -821,7 +821,8 @@ static volatile int SizePending;
 static void size_handler( int signo )
 /***********************************/
 {
-    signo = signo;
+    /* unused parameters */ (void)signo;
+
     SizePending = 1;
 }
 
@@ -1084,7 +1085,7 @@ static int ti_hwcursor( void )
     case C_INSERT:
         TI_CURSOR_BOLD();
         break;
-    } 
+    }
 
     if( UIData->cursor_type == C_OFF ) {
         // Since some terminals can't hide the cursor we'll also
@@ -1418,7 +1419,7 @@ static int td_getcur( ORD *row, ORD *col, CURSOR_TYPE *type, int *attr )
 static int td_setcur( ORD row, ORD col, CURSOR_TYPE typ, int attr )
 /*****************************************************************/
 {
-    attr = attr;
+    /* unused parameters */ (void)attr;
 
     if( ( typ != UIData->cursor_type ) ||
         ( row != UIData->cursor_row ) ||

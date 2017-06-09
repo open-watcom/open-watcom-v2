@@ -34,25 +34,23 @@
 #include "cgdefs.h"
 #include "coderep.h"
 #include "cfloat.h"
-#include "dumpio.h"
 #include "data.h"
 #include "intrface.h"
 #include "rgtbl.h"
 #include "namelist.h"
+#include "dmpinc.h"
+#include "dumpio.h"
+#include "dumpins.h"
+#include "dumpblk.h"
+#include "dumpconf.h"
+#include "dumptab.h"
+#include "dumpref.h"
+#include "dumpfpu.h"
 #include "feprotos.h"
 
 
-extern  void            DumpRegName(hw_reg_set);
-extern  bool            DumpFPUIns(instruction*);
-extern  void            DumpOpcodeName(int);
-extern  void            DumpBlkId(block*);
-extern  void            DumpPossible(byte);
-extern  void            DumpTab(opcode_entry*);
-extern  void            DumpGBit(global_bit_set*);
-extern  void            DumpLBit(local_bit_set*);
-
-
 #define DO_DUMPOFFSET(str,off) DumpLiteral( str ); DoOffset( (off) )
+
 
 static  void    DoOffset( unsigned_32 o ) {
 /*****************************************/
@@ -63,9 +61,9 @@ static  void    DoOffset( unsigned_32 o ) {
 }
 
 
-extern  void    DumpInsOffsets() {
-/********************************/
-
+void    DumpInsOffsets( void )
+/****************************/
+{
     DO_DUMPOFFSET( "head.prev", offsetof( instruction, head.prev ) );
     DO_DUMPOFFSET( "head.next", offsetof( instruction, head.next ) );
     DO_DUMPOFFSET( "head.live", offsetof( instruction, head.live ) );
@@ -97,9 +95,9 @@ extern  void    DumpInsOffsets() {
 }
 
 
-extern  void    DumpInOut( instruction *ins ) {
-/*********************************************/
-
+void    DumpInOut( instruction *ins )
+/***********************************/
+{
     DumpLiteral( "     " );
     DumpGBit( &ins->head.live.out_of_block );
     DumpChar( ' ' );
@@ -112,9 +110,9 @@ extern  void    DumpInOut( instruction *ins ) {
 }
 
 
-extern  void    DumpITab( instruction *ins ) {
-/********************************************/
-
+void    DumpITab( instruction *ins )
+/**********************************/
+{
     if( ins->u.gen_table != NULL ) DumpTab( ins->u.gen_table );
 }
 
@@ -140,16 +138,16 @@ static const char * ClassNames[] = {
 };
 
 
-extern  void    DumpClass( type_class_def tipe ) {
-/***********************************************/
-
+void    DumpClass( type_class_def tipe )
+/**************************************/
+{
     DumpString( ClassNames[tipe] );
 }
 
 
-extern  void    DumpOperand( name *operand ) {
-/********************************************/
-
+void    DumpOperand( name *operand )
+/**********************************/
+{
     char        buffer[20];
     hw_reg_set  reg;
     name        *base;
@@ -196,7 +194,7 @@ extern  void    DumpOperand( name *operand ) {
         } else {
             DumpOperand( operand->i.index );
         }
-        if( operand->i.scale != 0 ) {
+        if( operand->i.scale > 0 ) {
             DumpChar( '*' );
             DumpInt( 1 << operand->i.scale );
         }
@@ -304,9 +302,9 @@ extern  void    DumpOperand( name *operand ) {
 }
 
 
-extern  void DoDumpIInfo( instruction *ins, bool fp ) {
-/*****************************************************/
-
+void DoDumpIInfo( instruction *ins, bool fp )
+/*******************************************/
+{
     if( ins->ins_flags & INS_DEMOTED ) {
         DumpChar( 'd' );
     } else {
@@ -354,23 +352,23 @@ extern  void DoDumpIInfo( instruction *ins, bool fp ) {
 }
 
 
-extern  void DumpFPInfo( instruction *ins ) {
-/*******************************************/
-
+void DumpFPInfo( instruction *ins )
+/*********************************/
+{
     DoDumpIInfo( ins, true );
 }
 
 
-extern  void DumpIInfo( instruction *ins ) {
-/*******************************************/
-
+void DumpIInfo( instruction *ins )
+/********************************/
+{
     DoDumpIInfo( ins, false );
 }
 
 
-extern void DumpInsOnly( instruction *ins ) {
-/*******************************************/
-
+void DumpInsOnly( instruction *ins )
+/**********************************/
+{
     int i;
 
     DumpOpcodeName( ins->head.opcode );
@@ -389,9 +387,9 @@ extern void DumpInsOnly( instruction *ins ) {
 }
 
 
-extern  void    DumpLineNum( instruction *ins ) {
-/***********************************************/
-
+void    DumpLineNum( instruction *ins )
+/*************************************/
+{
     if( ins->head.line_num != 0 ) {
         DumpLiteral( "    Line number=" );
         DumpInt( ins->head.line_num );
@@ -400,9 +398,9 @@ extern  void    DumpLineNum( instruction *ins ) {
 }
 
 
-extern  void    DumpInsNoNL( instruction *ins ) {
-/*******************************************/
-
+void    DumpInsNoNL( instruction *ins )
+/*************************************/
+{
     DumpLineNum( ins );
     DumpPtr( ins );
     DumpChar( ' ' );
@@ -414,7 +412,7 @@ extern  void    DumpInsNoNL( instruction *ins ) {
         DumpId( ins->id );
         DumpLiteral( ":  " );
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
-        if( DumpFPUIns( ins ) )
+        if( DumpFPUIns87( ins ) )
             return;
 #endif
         DumpInsOnly( ins );
@@ -426,17 +424,17 @@ extern  void    DumpInsNoNL( instruction *ins ) {
 }
 
 
-extern  void    DumpIns( instruction *ins ) {
-/*******************************************/
-
+void    DumpIns( instruction *ins )
+/*********************************/
+{
    DumpInsNoNL( ins );
    DumpNL();
 }
 
 
-extern void DumpInstrsOnly( block *blk ) {
-/****************************************/
-
+void DumpInstrsOnly( block *blk )
+/*******************************/
+{
     instruction *ins;
 
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -445,22 +443,23 @@ extern void DumpInstrsOnly( block *blk ) {
 }
 
 
-extern  void    DumpCond( instruction *ins, block *blk ) {
-/********************************************************/
+void    DumpCond( instruction *ins, block *blk )
+/**********************************************/
+{
+    byte    dst_idx;
 
-    int         i;
-
-    if( !_OpIsCondition( ins->head.opcode ) ) return;
+    if( !_OpIsCondition( ins->head.opcode ) )
+        return;
     if( ins->result == NULL ) {
-        i = _TrueIndex( ins );
-        if( i != NO_JUMP ) {
+        dst_idx = _TrueIndex( ins );
+        if( dst_idx != NO_JUMP ) {
             DumpLiteral( " then " );
-            DumpBlkId( blk->edge[i].destination.u.blk );
+            DumpBlkId( blk->edge[dst_idx].destination.u.blk );
         }
-        i = _FalseIndex( ins );
-        if( i != NO_JUMP ) {
+        dst_idx = _FalseIndex( ins );
+        if( dst_idx != NO_JUMP ) {
             DumpLiteral( " else " );
-            DumpBlkId( blk->edge[i].destination.u.blk );
+            DumpBlkId( blk->edge[dst_idx].destination.u.blk );
         }
     }
 }
@@ -481,9 +480,9 @@ static const char * Usage[] = {
 };
 
 
-extern  void    DumpVUsage( name *v ) {
-/*************************************/
-
+void    DumpVUsage( name *v )
+/***************************/
+{
     var_usage   u;
     int         i;
     int         j;
@@ -503,15 +502,17 @@ extern  void    DumpVUsage( name *v ) {
         }
         u >>= 1;
         ++ i;
-        if( u == 0 ) break;
+        if( u == 0 ) {
+            break;
+        }
     }
     DumpNL();
 }
 
 
-extern  void    DumpSym( name *sym ) {
-/************************************/
-
+void    DumpSym( name *sym )
+/**************************/
+{
     DumpPtr( sym );
     DumpChar( ' ' );
     DumpOperand( sym );
@@ -585,9 +586,9 @@ extern  void    DumpSym( name *sym ) {
     DumpNL();
 }
 
-extern  void    DumpTempWId( int id ) {
-/************************************/
-
+void    DumpTempWId( int id )
+/***************************/
+{
     name        *sym;
 
     DumpNL();
@@ -599,9 +600,9 @@ extern  void    DumpTempWId( int id ) {
 }
 
 
-extern  void    DumpSymList( name *sym ) {
-/****************************************/
-
+void    DumpSymList( name *sym )
+/******************************/
+{
     DumpNL();
     for( ; sym != NULL; sym = sym->n.next_name ) {
         DumpSym( sym );
@@ -609,44 +610,44 @@ extern  void    DumpSymList( name *sym ) {
 }
 
 
-extern  void    DumpNTemp() {
-/***************************/
-
+void    DumpNTemp( void )
+/***********************/
+{
     DumpSymList( Names[N_TEMP] );
 }
 
 
-extern  void    DumpNMemory() {
-/*****************************/
-
+void    DumpNMemory( void )
+/*************************/
+{
     DumpSymList( Names[N_MEMORY] );
 }
 
 
-extern  void    DumpNIndexed() {
-/******************************/
-
+void    DumpNIndexed( void )
+/**************************/
+{
     DumpSymList( Names[N_INDEXED] );
 }
 
 
-extern  void    DumpNConst() {
-/****************************/
-
+void    DumpNConst( void )
+/************************/
+{
     DumpSymList( Names[N_CONSTANT] );
 }
 
 
-extern  void    DumpNRegister() {
-/*******************************/
-
+void    DumpNRegister( void )
+/***************************/
+{
     DumpSymList( Names[N_REGISTER] );
 }
 
 
-extern  void    DumpInsList( block *blk ) {
-/*****************************************/
-
+void    DumpInsList( block *blk )
+/*******************************/
+{
     instruction *ins;
 
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {

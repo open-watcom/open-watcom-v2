@@ -29,11 +29,10 @@
 ****************************************************************************/
 
 
-extern int              SysCreate( char *name );
-extern unsigned         SysWrite( int handle, void FAR_PTR *buff, unsigned len );
+extern int              SysCreate( const char *name );
+extern size_t           SysWrite( int handle, const void FAR_PTR *buff, size_t len );
 extern unsigned long    SysSeek( int handle, unsigned long loc );
 extern int              SysClose( int handle );
 #ifdef __WINDOWS__
-extern int              SysOpen( char *name );
+extern int              SysOpen( const char *name );
 #endif
-

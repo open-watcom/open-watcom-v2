@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include "saferlib.h"
 #include <time.h>
 #include <wchar.h>

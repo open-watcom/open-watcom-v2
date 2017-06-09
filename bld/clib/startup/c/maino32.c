@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stddef.h>
@@ -197,7 +197,7 @@ void __OS2Fini( void )
 
 _WCRTDATA void (*__process_fini)(unsigned,unsigned) = NULL;
 
-_WCRTLINK _NORETURN void __exit( unsigned ret_code )
+_WCRTLINK _WCNORETURN void __exit( unsigned ret_code )
 {
     __OS2Fini(); // must be done before following finalizers get called
     if( __Is_DLL ) {
@@ -210,5 +210,4 @@ _WCRTLINK _NORETURN void __exit( unsigned ret_code )
     }
 
     DosExit( EXIT_PROCESS, ret_code );
-    // never return
 }

@@ -269,10 +269,10 @@ void _LDScale10x( ld_arg ld, int scale )
         if( scale < 0 ) n = -n;
         if( n > DBL_MAX_10_EXP ) {
             if( scale < 0 ) {
-                ld->value /= ONE_TO_DBL_MIN_10_EXP;
+                ld->u.value /= ONE_TO_DBL_MIN_10_EXP;
                 n += DBL_MIN_10_EXP;
             } else {
-                ld->value *= ONE_TO_DBL_MAX_10_EXP;
+                ld->u.value *= ONE_TO_DBL_MAX_10_EXP;
                 n -= DBL_MAX_10_EXP;
             }
         }
@@ -283,9 +283,9 @@ void _LDScale10x( ld_arg ld, int scale )
             }
         }
         if( scale < 0 ) {
-            ld->value /= factor;
+            ld->u.value /= factor;
         } else {
-            ld->value *= factor;
+            ld->u.value *= factor;
         }
     }
 }
@@ -533,11 +533,11 @@ FLTSUPPFUNC void __cvtld( long_double *pld, CVT_INFO *cvt, char *buf )
     }
     ld.exponent &= 0x7FFF;          // make number positive
 #else
-    ld.value = pld->value;
-    if( ld.word[1] & 0x80000000 ) {
+    ld.u.value = pld->u.value;
+    if( ld.u.word[1] & 0x80000000 ) {
         cvt->sign = -1;
     }
-    ld.word[1] &= 0x7FFFFFFF;               // make number positive
+    ld.u.word[1] &= 0x7FFFFFFF;               // make number positive
 #endif
     cvt->n1  = 0;
     cvt->nz1 = 0;
@@ -578,7 +578,7 @@ nan_inf:
 #ifdef _LONG_DOUBLE_
         xexp = ld.exponent - 0x3FFE;
 #else
-        xexp = (ld.word[1] >> 20) - 0x3FE;
+        xexp = (ld.u.word[1] >> 20) - 0x3FE;
 #endif
         xexp = xexp * 30103L / 100000L;
         xexp -= NDIG / 2;
@@ -610,11 +610,11 @@ nan_inf:
                     __FLDS( &ld, &tmp, &ld );
                     xexp = 8;
 #else
-                if( ld.value < 1e8 ) {
+                if( ld.u.value < 1e8 ) {
                     xexp = 0;
-                } else if( ld.value < 1e16 ) {
-                    value = (long)(ld.value / 1e8);
-                    ld.value -= (double)value * 1e8;
+                } else if( ld.u.value < 1e16 ) {
+                    value = (long)(ld.u.value / 1e8);
+                    ld.u.value -= (double)value * 1e8;
                     xexp = 8;
 #endif
                 } else {                // scale number down
@@ -672,11 +672,11 @@ nan_inf:
                 __FLDM( &ld, &tmp, &ld );
             }
 #else
-            if( (ld.word[1] & 0x7FF00000) == 0 )
+            if( (ld.u.word[1] & 0x7FF00000) == 0 )
                 break;
-            value = ld.value;
+            value = ld.u.value;
             if( n > 0 ) {
-                ld.value = (ld.value - (double)value) * 1e8;
+                ld.u.value = (ld.u.value - (double)value) * 1e8;
             }
 #endif
         }

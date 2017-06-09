@@ -47,6 +47,7 @@
 #else
 #include "wi163264.h"
 #endif
+#include "winexprt.h"
 
 #include "pushpck1.h"
 
@@ -54,6 +55,8 @@
 #define WPI_SIZEWINBMPINFOHDR           40
 #define WPI_SIZEOS2BMPFILEHDR           78
 #define WPI_SIZEOS2BMPINFOHDR           64
+
+#define WPI_EXPORT                      WINEXPORT
 
 /*************************/
 /* new types - both ways */
@@ -87,10 +90,10 @@
     #define WPI_HACCEL                  HACCEL
     #define WPI_MSG                     PM1632_WINDOW_MSG
     #define WPI_QMSG                    QMSG
-    #define WPI_DLGPROC                 PFNWP 
+    #define WPI_DLGPROC                 PFNWP
     #define WPI_ENUMPROCx               WPI_ENUMPROC
-    #define WPI_WNDPROC                 PFNWP 
-    #define WPI_WNDPROCx                PFNWP 
+    #define WPI_WNDPROC                 PFNWP
+    #define WPI_WNDPROCx                PFNWP
     #define WPI_PROC                    PFNWP
     #define WPI_PROCx                   PFNWP
     #define WPI_PRES                    HPS
@@ -106,9 +109,7 @@
     #define WPI_DLGRESULT               MRESULT
     typedef void (APIENTRY *WPI_LINEDDAPROC) ( int, int, WPI_PARAM2 );
     typedef BOOL (APIENTRY *WPI_ENUMPROC) ( HWND, WPI_PARAM2 );
-    typedef int (APIENTRY *WPI_FONTENUMPROC) ( WPI_LPLOGFONT,
-                                                        WPI_LPTEXTMETRIC,
-                                                        unsigned int, PSZ );
+    typedef int (APIENTRY *WPI_FONTENUMPROC) ( WPI_LPLOGFONT, WPI_LPTEXTMETRIC, unsigned int, PSZ );
     typedef struct WPI_INST {
         HAB                     hab;
         HMODULE                 mod_handle;

@@ -116,16 +116,17 @@ static int reScanGetNextChar( void )
 static int reScanGetCharCheck( int c )
 {
     if( c == '\0' ) {
-        CompFlags.rescan_buffer_done = 1;
+        CompFlags.rescan_buffer_done = true;
     }
     return( c );
 }
 
 static void reScanGetNextCharUndo( int c )
 {
-    c = c;
+    /* unused parameters */ (void)c;
+
     --SrcFile->src_ptr;
-    CompFlags.rescan_buffer_done = 0;
+    CompFlags.rescan_buffer_done = false;
 }
 
 static int SaveNextChar( void )
@@ -171,7 +172,8 @@ id_hash_idx CalcHash( const char *id, size_t len )
 {
     unsigned    hash;
 
-    len = len;
+    /* unused parameters */ (void)len;
+
     hash = hashpjw( id );
     HashValue = hash % ID_HASH_SIZE;
 #if ( MACRO_HASH_SIZE > 0x0ff0 ) && ( MACRO_HASH_SIZE < 0x0fff )
@@ -263,7 +265,7 @@ static TOKEN doScanName( void )
     CalcHash( Buffer, TokenLen );
     if( CompFlags.doing_macro_expansion )
         return( T_ID );
-    if( CompFlags.pre_processing & PPCTL_NO_EXPAND )
+    if( Pre_processing & PPCTL_NO_EXPAND )
         return( T_ID );
     token = IdLookup( Buffer, TokenLen );
     if( token == T_MACRO ) {
@@ -429,7 +431,7 @@ static TOKEN doScanAsm( void )
 
 static TOKEN ScanDot( void )
 {
-    if( CompFlags.pre_processing & PPCTL_ASM )
+    if( Pre_processing & PPCTL_ASM )
         return( doScanAsm() );
 
     Buffer[0] = '.';
@@ -678,7 +680,7 @@ static TOKEN ScanNum( void )
                SUFF_LL,SUFF_ULL } suffix;
     } con;
 
-    if( CompFlags.pre_processing & PPCTL_ASM )
+    if( Pre_processing & PPCTL_ASM )
         return( doScanAsm() );
 
     BadTokenInfo = 0;
@@ -908,7 +910,7 @@ static TOKEN ScanNum( void )
             break;
         }
     }
-    if( CompFlags.pre_processing && (CharSet[c] & (C_AL | C_DI)) ) {
+    if( Pre_processing != PPCTL_NORMAL && (CharSet[c] & (C_AL | C_DI)) ) {
         do {
             c = SaveNextChar();
         } while( CharSet[c] & (C_AL | C_DI) );
@@ -952,7 +954,7 @@ static TOKEN ScanSlash( void )
         if( CompFlags.cpp_output ) {
             CppComment( '/' );
         }
-        CompFlags.scanning_cpp_comment = 1;
+        CompFlags.scanning_cpp_comment = true;
         for( ;; ) {
             c = CurrChar;
             NextChar();
@@ -971,7 +973,7 @@ static TOKEN ScanSlash( void )
         if( CompFlags.cpp_output ) {
             CppComment( '\0' );
         }
-        CompFlags.scanning_cpp_comment = 0;
+        CompFlags.scanning_cpp_comment = false;
         Buffer[0] = ' ';
         Buffer[1] = '\0';
         return( T_WHITE_SPACE );
@@ -1126,7 +1128,7 @@ static void ScanComment( void )
     int         prev_char;
 
     CommentLoc = TokenLoc;
-    CompFlags.scanning_comment = 1;
+    CompFlags.scanning_comment = true;
     if( CompFlags.cpp_output ) {        // 30-dec-93
         CppComment( '*' );
         c = NextChar();
@@ -1193,7 +1195,7 @@ static void ScanComment( void )
         }
         CharSet['/'] &= ~C_EX;          // undo '/' special character
     }
-    CompFlags.scanning_comment = 0;
+    CompFlags.scanning_comment = false;
     NextChar();
 }
 
@@ -1341,7 +1343,7 @@ static TOKEN ScanString( void )
     for( ;; ) {
         if( c == '\n' ) {
             if( NestLevel != SkipLevel ) {
-                if ( CompFlags.extensions_enabled ) {
+                if( CompFlags.extensions_enabled ) {
                     CWarn1( WARN_MISSING_QUOTE, ERR_MISSING_QUOTE );
                     ok = true;
                 } else {
@@ -1491,7 +1493,7 @@ static void SkipWhiteSpace( int c )
         ScanWhiteSpace();
     } else {
         for( ; (CharSet[c] & C_WS); ) {
-            if( c != '\r' && CompFlags.pre_processing == 0 ) {
+            if( c != '\r' && Pre_processing == PPCTL_NORMAL ) {
                 CppPrtChar( c );
             }
             c = NextChar();
@@ -1509,7 +1511,7 @@ void SkipAhead( void )
             }
             if( CurrChar != '\n' )
                 break;
-            if( CompFlags.cpp_output && CompFlags.pre_processing == 0 ) {
+            if( CompFlags.cpp_output && Pre_processing == PPCTL_NORMAL ) {
                 CppPrtChar( '\n' );
             }
             SrcFileLoc = SrcFile->src_loc;
@@ -1532,7 +1534,7 @@ void SkipAhead( void )
 static TOKEN ScanNewline( void )
 {
     SrcFileLoc = SrcFile->src_loc;
-    if( CompFlags.pre_processing & PPCTL_EOL )
+    if( Pre_processing & PPCTL_EOL )
         return( T_NULL );
     return( ChkControl() );
 }
@@ -1656,8 +1658,8 @@ bool ReScanToken( void )
     GetCharCheck = reScanGetCharCheck;
     CurrChar = NextChar();
 
-    CompFlags.rescan_buffer_done = 0;
-    CompFlags.doing_macro_expansion = 1;        // return macros as ID's
+    CompFlags.rescan_buffer_done = false;
+    CompFlags.doing_macro_expansion = true;     // return macros as ID's
     CurToken = ScanToken();
     CompFlags.doing_macro_expansion = false;
     if( CurToken == T_STRING && CompFlags.wide_char_string ) {
@@ -1689,8 +1691,8 @@ void ScanInit( void )
         ClassTable[c] = InitClassTable[i + 1];
     }
     CurrChar = '\n';
-    CompFlags.pre_processing = PPCTL_NORMAL;
-    CompFlags.scanning_comment = 0;
+    Pre_processing = PPCTL_NORMAL;
+    CompFlags.scanning_comment = false;
     SizeOfCount = 0;
     NextChar = GetNextChar;
     UnGetChar = GetNextCharUndo;

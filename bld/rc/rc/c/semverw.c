@@ -31,7 +31,7 @@
 
 
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "semantic.h"
 #include "semantcw.h"
 #include "wresdefn.h"
@@ -43,84 +43,82 @@
 
 
 /*** Forward References ***/
-static uint_16 CalcNestSize( FullVerBlockNest * nest );
+static uint_16 CalcNestSize( FullVerBlockNest *nest );
 static bool SemWriteVerBlockNest( FullVerBlockNest *nest, WResFileID fid, int *err_code );
-static void FreeVerBlockNest( FullVerBlockNest * nest );
+static void FreeVerBlockNest( FullVerBlockNest *nest );
 
-FullVerValueList * SemWINNewVerValueList( VerValueItem item )
-/***********************************************************/
+FullVerValueList *SemWINNewVerValueList( VerValueItem item )
+/**********************************************************/
 {
-    FullVerValueList *  list;
+    FullVerValueList    *list;
 
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-        item.strlen = VER_CALC_SIZE; // terminate at the first NULLCHAR
-    }                                // instead of using the full string.
-                                     // This is what Microsoft does.
-    list = RCALLOC( sizeof(FullVerValueList) );
+        item.strlen = VER_CALC_SIZE;    // terminate at the first NULLCHAR
+    }                                   // instead of using the full string.
+                                        // This is what Microsoft does.
+    list = RESALLOC( sizeof( FullVerValueList ) );
     list->NumItems = 1;
-    list->Item = RCALLOC( sizeof(VerValueItem) );
+    list->Item = RESALLOC( sizeof( VerValueItem ) );
     list->Item[0] = item;
 
     return( list );
 }
 
-FullVerValueList * SemWINAddVerValueList( FullVerValueList * list,
-                                        VerValueItem item )
-/****************************************************************/
+FullVerValueList *SemWINAddVerValueList( FullVerValueList *list, VerValueItem item )
+/**********************************************************************************/
 {
     if( CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
-        item.strlen = VER_CALC_SIZE; // terminate at the first NULLCHAR
-    }                                // instead of using the full string.
-                                     // This is what MS does.
+        item.strlen = VER_CALC_SIZE;    // terminate at the first NULLCHAR
+    }                                   // instead of using the full string.
+                                        // This is what MS does.
     list->NumItems++;
-    list->Item = RCREALLOC( list->Item,
-                            list->NumItems * sizeof(VerValueItem) );
+    list->Item = RCREALLOC( list->Item, list->NumItems * sizeof( VerValueItem ) );
     list->Item[list->NumItems - 1] = item;
 
     return( list );
 }
 
-static void FreeValItem( VerValueItem * item )
-/********************************************/
+static void FreeValItem( VerValueItem *item )
+/*******************************************/
 {
     if( !item->IsNum ) {
-        RCFREE( item->Value.String );
+        RESFREE( item->Value.String );
     }
 }
 
-static void FreeValList( FullVerValueList * list )
-/************************************************/
+static void FreeValList( FullVerValueList *list )
+/***********************************************/
 {
-    int     curr_val;
+    unsigned    i;
 
-    for( curr_val = 0; curr_val < list->NumItems; curr_val++ ) {
-        FreeValItem( list->Item + curr_val );
+    for( i = 0; i < list->NumItems; i++ ) {
+        FreeValItem( list->Item + i );
     }
-    RCFREE( list->Item );
-    RCFREE( list );
+    RESFREE( list->Item );
+    RESFREE( list );
 }
 
 static bool semWriteVerValueList( FullVerValueList *list, bool use_unicode, WResFileID fid, int *err_code )
 /*********************************************************************************************************/
 {
-    bool    error;
-    int     curr_val;
+    bool        error;
+    unsigned    i;
 
     error = false;
-    for( curr_val = 0; !error && curr_val < list->NumItems; curr_val++ ) {
-        error = ResWriteVerValueItem( list->Item + curr_val, use_unicode, fid );
+    for( i = 0; !error && i < list->NumItems; i++ ) {
+        error = ResWriteVerValueItem( list->Item + i, use_unicode, fid );
     }
     *err_code = LastWresErr();
     return( error );
 }
 
 
-FullVerBlock * SemWINNewBlockVal( char * name, FullVerValueList * list )
-/**********************************************************************/
+FullVerBlock *SemWINNewBlockVal( char *name, FullVerValueList *list )
+/*******************************************************************/
 {
-    FullVerBlock *  block;
+    FullVerBlock    *block;
 
-    block = RCALLOC( sizeof(FullVerBlock) );
+    block = RESALLOC( sizeof( FullVerBlock ) );
     block->Next = NULL;
     block->Prev = NULL;
     block->Head.Key = name;
@@ -135,12 +133,12 @@ FullVerBlock * SemWINNewBlockVal( char * name, FullVerValueList * list )
     return( block );
 }
 
-FullVerBlock * SemWINNameVerBlock( char * name, FullVerBlockNest * nest )
-/***********************************************************************/
+FullVerBlock *SemWINNameVerBlock( char *name, FullVerBlockNest *nest )
+/********************************************************************/
 {
-    FullVerBlock *  block;
+    FullVerBlock    *block;
 
-    block = RCALLOC( sizeof(FullVerBlock) );
+    block = RESALLOC( sizeof( FullVerBlock ) );
     block->Next = NULL;
     block->Prev = NULL;
     block->Head.Key = name;
@@ -155,8 +153,8 @@ FullVerBlock * SemWINNameVerBlock( char * name, FullVerBlockNest * nest )
     return( block );
 }
 
-static uint_16 CalcBlockSize( FullVerBlock * block )
-/**************************************************/
+static uint_16 CalcBlockSize( FullVerBlock *block )
+/*************************************************/
 {
     uint_16     val_size;
     uint_16     padding;
@@ -174,7 +172,7 @@ static uint_16 CalcBlockSize( FullVerBlock * block )
     if( block->Value == NULL ) {
         padding = 0;
     } else {
-        int i;
+        unsigned    i;
 
         for( i = 0; i < block->Value->NumItems; i++ ) {
             val_size += ResSizeVerValueItem( block->Value->Item + i, block->UseUnicode );
@@ -188,7 +186,7 @@ static uint_16 CalcBlockSize( FullVerBlock * block )
     }
 
     block->Head.ValSize = val_size;
-    if( !stricmp( block->Head.Key, "Translation" ) ) {
+    if( stricmp( block->Head.Key, "Translation" ) == 0 ) {
         block->Head.Type = 0;
     } else {
         if( block->UseUnicode )
@@ -200,8 +198,8 @@ static uint_16 CalcBlockSize( FullVerBlock * block )
     return( block->Head.Size );
 }
 
-static bool SemWriteVerBlock( FullVerBlock * block, WResFileID fid, int *err_code )
-/*********************************************************************************/
+static bool SemWriteVerBlock( FullVerBlock *block, WResFileID fid, int *err_code )
+/********************************************************************************/
 {
     bool        error;
     uint_8      os;
@@ -227,10 +225,10 @@ static bool SemWriteVerBlock( FullVerBlock * block, WResFileID fid, int *err_cod
     return( error );
 }
 
-static void FreeVerBlock( FullVerBlock * block )
-/**********************************************/
+static void FreeVerBlock( FullVerBlock *block )
+/*********************************************/
 {
-    RCFREE( block->Head.Key );
+    RESFREE( block->Head.Key );
     if( block->Value != NULL ) {
         FreeValList( block->Value );
     }
@@ -238,48 +236,46 @@ static void FreeVerBlock( FullVerBlock * block )
         FreeVerBlockNest( block->Nest );
     }
 
-    RCFREE( block );
+    RESFREE( block );
 }
 
-FullVerBlockNest * SemWINNewBlockNest( FullVerBlock * child )
-/***********************************************************/
+FullVerBlockNest *SemWINNewBlockNest( FullVerBlock *child )
+/*********************************************************/
 {
-    FullVerBlockNest *  parent;
+    FullVerBlockNest    *parent;
 
-    parent = RCALLOC( sizeof(FullVerBlockNest) );
+    parent = RESALLOC( sizeof( FullVerBlockNest ) );
     parent->Head = NULL;
     parent->Tail = NULL;
 
     return( SemWINAddBlockNest( parent, child ) );
 }
 
-FullVerBlockNest * SemWINAddBlockNest( FullVerBlockNest * parent,
-                                FullVerBlock * child )
-/***************************************************************/
+FullVerBlockNest *SemWINAddBlockNest( FullVerBlockNest *parent, FullVerBlock *child )
+/***********************************************************************************/
 {
-    ResAddLLItemAtEnd( (void **) &(parent->Head), (void **) &(parent->Tail), child );
+    ResAddLLItemAtEnd( (void **)&(parent->Head), (void **)&(parent->Tail), child );
     return( parent );
 }
 
-FullVerBlockNest * SemWINMergeBlockNest( FullVerBlockNest * nest1,
-                            FullVerBlockNest * nest2 )
-/****************************************************************/
+FullVerBlockNest *SemWINMergeBlockNest( FullVerBlockNest *nest1, FullVerBlockNest *nest2 )
+/****************************************************************************************/
 {
-    FullVerBlock *  block;
+    FullVerBlock    *block;
 
     for( block = nest2->Head; block != NULL; block = block->Next ) {
-        ResAddLLItemAtEnd( (void **) &nest1->Head, (void **) &nest1->Tail, block );
+        ResAddLLItemAtEnd( (void **)&nest1->Head, (void **)&nest1->Tail, block );
     }
 
-    RCFREE( nest2 );
+    RESFREE( nest2 );
 
     return( nest1 );
 }
 
-static uint_16 CalcNestSize( FullVerBlockNest * nest )
-/****************************************************/
+static uint_16 CalcNestSize( FullVerBlockNest *nest )
+/***************************************************/
 {
-    FullVerBlock *  block;
+    FullVerBlock    *block;
     uint_16         size;
 
     size = 0;
@@ -290,21 +286,18 @@ static uint_16 CalcNestSize( FullVerBlockNest * nest )
     return( size );
 }
 
-static void FreeVerBlockNest( FullVerBlockNest * nest )
-/*****************************************************/
+static void FreeVerBlockNest( FullVerBlockNest *nest )
+/****************************************************/
 {
-    FullVerBlock *  block;
-    FullVerBlock *  old_block;
+    FullVerBlock    *block;
+    FullVerBlock    *nextblock;
 
-    block = nest->Head;
-    while( block != NULL ) {
-        old_block = block;
-        block = block->Next;
-
-        FreeVerBlock( old_block );
+    for( block = nest->Head; block != NULL; block = nextblock ) {
+        nextblock = block->Next;
+        FreeVerBlock( block );
     }
 
-    RCFREE( nest );
+    RESFREE( nest );
 }
 
 static bool SemWriteVerBlockNest( FullVerBlockNest *nest, WResFileID fid, int *err_code )
@@ -322,13 +315,13 @@ static bool SemWriteVerBlockNest( FullVerBlockNest *nest, WResFileID fid, int *e
 }
 
 
-VerFixedInfo * SemWINNewVerFixedInfo( VerFixedOption option )
-/***********************************************************/
+VerFixedInfo *SemWINNewVerFixedInfo( VerFixedOption option )
+/**********************************************************/
 {
-    VerFixedInfo *  info;
+    VerFixedInfo    *info;
 
-    info = RCALLOC( sizeof(VerFixedInfo) );
-    memset( info, 0, sizeof(VerFixedInfo) );
+    info = RESALLOC( sizeof( VerFixedInfo ) );
+    memset( info, 0, sizeof( VerFixedInfo ) );
 
     return( SemWINAddVerFixedInfo( info, option ) );
 }
@@ -337,9 +330,8 @@ VerFixedInfo * SemWINNewVerFixedInfo( VerFixedOption option )
 #define MakeVersion( verp ) ((uint_32)(verp).LowWord | \
                             ((uint_32)(verp).HighWord << 16 ))
 
-VerFixedInfo * SemWINAddVerFixedInfo( VerFixedInfo * info,
-                                        VerFixedOption option )
-/*************************************************************/
+VerFixedInfo *SemWINAddVerFixedInfo( VerFixedInfo *info, VerFixedOption option )
+/******************************************************************************/
 {
     switch( option.token ) {
     case Y_FILEFLAGS:
@@ -370,9 +362,8 @@ VerFixedInfo * SemWINAddVerFixedInfo( VerFixedInfo * info,
     return( info );
 }
 
-void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
-                        VerFixedInfo * info, FullVerBlockNest * nest )
-/********************************************************************/
+void SemWINWriteVerInfo( WResID *name, ResMemFlags flags, VerFixedInfo *info, FullVerBlockNest *nest )
+/****************************************************************************************************/
 {
     WResLangType    lang;
     VerBlockHeader  root;
@@ -391,9 +382,9 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
         os = WRES_OS_WIN16;
     }
     root.Key = "VS_VERSION_INFO";
-    root.ValSize = sizeof(VerFixedInfo);
+    root.ValSize = sizeof( VerFixedInfo );
     root.Type = 0;
-    padding = RES_PADDING( root.ValSize, sizeof(uint_32) );
+    padding = RES_PADDING( root.ValSize, sizeof( uint_32 ) );
     root.Size = ResSizeVerBlockHeader( &root, use_unicode, os )
                     + root.ValSize + padding + CalcNestSize( nest );
     /* pad the start of the resource so that padding within the resource */
@@ -407,7 +398,7 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
     if( !ErrorHasOccured ) {
         loc.start = SemStartResource();
 
-        error = ResWriteVerBlockHeader( &root, use_unicode, os, CurrResFile.fid);
+        error = ResWriteVerBlockHeader( &root, use_unicode, os, CurrResFile.fid );
         if( error ) {
             err_code = LastWresErr();
             goto OutputWriteError;
@@ -419,7 +410,7 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
             goto OutputWriteError;
         }
 
-        if( ResSeek( CurrResFile.fid, padding, SEEK_CUR ) == -1 )  {
+        if( ResSeek( CurrResFile.fid, padding, SEEK_CUR ) )  {
             err_code = LastWresErr();
             goto OutputWriteError;
         }
@@ -437,10 +428,10 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
         SemWINSetResourceLanguage( &lang, false );
         SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_VERSIONINFO ) ), flags, loc );
     } else {
-        RCFREE( name );
+        RESFREE( name );
     }
 
-    RCFREE( info );
+    RESFREE( info );
     FreeVerBlockNest( nest );
 
     return;
@@ -448,7 +439,7 @@ void SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
 OutputWriteError:
     RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code )  );
     ErrorHasOccured = true;
-    RCFREE( info );
+    RESFREE( info );
     FreeVerBlockNest( nest );
     return;
 }

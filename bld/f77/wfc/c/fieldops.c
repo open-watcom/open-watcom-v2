@@ -62,7 +62,8 @@ void    FieldOp( TYPE typ1, TYPE typ2, OPTR op ) {
 
 // Generate code for a field selection operator.
 
-    typ1 = typ1; op = op;
+    /* unused parameters */ (void)typ1; (void)op;
+
     PushOpn( CITNode->link );
     PushOpn( CITNode );
     if( CITNode->opn.us & USOPN_FLD ) {

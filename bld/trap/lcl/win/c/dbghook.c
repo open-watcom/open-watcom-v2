@@ -41,7 +41,7 @@ static HHOOK hookHandle;
 /*
  * DebugHook - don't allow any hook functions in debugee to get called
  */
-DWORD FAR PASCAL DebugHook( int ncode, WORD wparam, DWORD lparam )
+DWORD FAR PASCAL DebugHook( int ncode, WPARAM wparam, LPARAM lparam )
 {
     return( CallNextHookEx( hookHandle, ncode, wparam, lparam ) );
 #if 0

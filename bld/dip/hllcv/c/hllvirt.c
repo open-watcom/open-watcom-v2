@@ -174,9 +174,9 @@ static bool InitPageDir( imp_image_handle *ii, unsigned dir_idx )
     ii->virt[dir_idx] = DCAllocZ( sizeof( virt_page * ) * DIR_SIZE );
     if( ii->virt[dir_idx] == NULL ) {
         DCStatus( DS_ERR | DS_NO_MEM );
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 void *VMBlock( imp_image_handle *ii, virt_mem start, size_t len )
@@ -187,6 +187,7 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, size_t len )
     int                 i;
     int                 j;
     unsigned            num_pages;
+    unsigned            pageno;
     virt_mem            pg_start;
     virt_page           *pg;
     virt_page           *zero;
@@ -222,8 +223,7 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, size_t len )
             vmFreeBlock( ii, pg );
         }
         num_pages = BLOCK_FACTOR( len, VM_PAGE_SIZE );
-        pg = DCAlloc( num_pages * (sizeof( *pg ) + VM_PAGE_SIZE)
-                    + sizeof( loaded_block ) - 1 );
+        pg = DCAlloc( num_pages * (sizeof( *pg ) + VM_PAGE_SIZE) + sizeof( loaded_block ) - 1 );
         if( pg == NULL ) {
             DCStatus( DS_ERR|DS_NO_MEM );
             return( NULL );
@@ -231,9 +231,9 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, size_t len )
         /* set up new page table entries */
         block = (loaded_block *)&pg[num_pages];
         tmp_idx = dir_idx;
-        for( j = pg_idx, i = 0; i < num_pages; ++j, ++i ) {
-            pg[i].block = block;
-            pg[i].offset = i * VM_PAGE_SIZE;
+        for( j = pg_idx, pageno = 0; pageno < num_pages; ++j, ++pageno ) {
+            pg[pageno].block = block;
+            pg[pageno].offset = pageno * VM_PAGE_SIZE;
             if( j >= DIR_SIZE ) {
                 ++tmp_idx;
                 j = 0;
@@ -241,8 +241,8 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, size_t len )
             if( ii->virt[tmp_idx] == NULL ) {
                 if( !InitPageDir( ii, tmp_idx ) ) {
                     /* unwind the setup already done */
-                    num_pages = i;
-                    for( i = 0; i < num_pages; ++i, ++pg_idx ) {
+                    num_pages = pageno;
+                    for( pageno = 0; pageno < num_pages; ++pageno, ++pg_idx ) {
                         if( pg_idx >= DIR_SIZE ) {
                             ++dir_idx;
                             pg_idx = 0;
@@ -262,7 +262,7 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, size_t len )
                 */
                 KillPages( ii, tmp_idx, j );
             }
-            ii->virt[tmp_idx][j] = &pg[i];
+            ii->virt[tmp_idx][j] = &pg[pageno];
         }
         /* read in new block */
         len = num_pages * VM_PAGE_SIZE;
@@ -285,9 +285,9 @@ void *VMBlock( imp_image_handle *ii, virt_mem start, size_t len )
         /* deal with wrap-around */
         for( ii = ImageList; ii != NULL; ii = ii->next_image ) {
             if( ii->virt != NULL ) {
-                for( i = ii->vm_dir_num-1; i >= 0; --i ) {
+                for( i = ii->vm_dir_num - 1; i >= 0; --i ) {
                     if( ii->virt[i] != NULL ) {
-                        for( j = DIR_SIZE-1; j >= 0; --j ) {
+                        for( j = DIR_SIZE - 1; j >= 0; --j ) {
                             zero = ii->virt[i][j];
                             if( zero != NULL ) {
                                 zero->block->time_stamp = 0;
@@ -311,9 +311,9 @@ bool VMGetU8( imp_image_handle *ii, virt_mem start, unsigned_8 *valp )
     unsigned_8 *ptr = VMBlock( ii, start, sizeof(*valp) );
     if( ptr ) {
         *valp = *ptr;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -324,9 +324,9 @@ bool VMGetU16( imp_image_handle *ii, virt_mem start, unsigned_16 *valp )
     unsigned_16 *ptr = VMBlock( ii, start, sizeof(*valp) );
     if( ptr ) {
         *valp = *ptr;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -337,9 +337,9 @@ bool VMGetU32( imp_image_handle *ii, virt_mem start, unsigned_32 *valp )
     unsigned_32 *ptr = VMBlock( ii, start, sizeof(*valp) );
     if( ptr ) {
         *valp = *ptr;
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }
 
 /*
@@ -374,7 +374,7 @@ void *VMRecord( imp_image_handle *ii, virt_mem rec_off, virt_mem *next_rec, unsi
 /*
  * Get a block within a section.
  */
-void *VMSsBlock( imp_image_handle *ii, hll_dir_entry *hde, unsigned_32 start, size_t len )
+void *VMSsBlock( imp_image_handle *ii, hll_dir_entry *hde, virt_mem start, size_t len )
 {
     if( start < hde->cb && start + len <= hde->cb ) {
         return( VMBlock( ii, hde->lfo + start, len ) );
@@ -385,46 +385,46 @@ void *VMSsBlock( imp_image_handle *ii, hll_dir_entry *hde, unsigned_32 start, si
 /*
  * Get a 8-bit value.
  */
-bool VMSsGetU8( imp_image_handle *ii, hll_dir_entry *hde, unsigned_32 start, unsigned_8 *valp )
+bool VMSsGetU8( imp_image_handle *ii, hll_dir_entry *hde, virt_mem start, unsigned_8 *valp )
 {
     if( start < hde->cb ) {
         unsigned_8 *ptr = VMBlock( ii, hde->lfo + start, sizeof(*valp) );
         if( ptr ) {
             *valp = *ptr;
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 /*
  * Get a 16-bit value.
  */
-bool VMSsGetU16( imp_image_handle *ii, hll_dir_entry *hde, unsigned_32 start, unsigned_16 *valp )
+bool VMSsGetU16( imp_image_handle *ii, hll_dir_entry *hde, virt_mem start, unsigned_16 *valp )
 {
     if( start <= hde->cb - sizeof(*valp) ) {
         unsigned_16 *ptr = VMBlock( ii, hde->lfo + start, sizeof(*valp) );
         if( ptr ) {
             *valp = *ptr;
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 /*
  * Get a 32-bit value.
  */
-bool VMSsGetU32( imp_image_handle *ii, hll_dir_entry *hde, unsigned_32 start, unsigned_32 *valp )
+bool VMSsGetU32( imp_image_handle *ii, hll_dir_entry *hde, virt_mem start, unsigned_32 *valp )
 {
     if( start <= hde->cb - sizeof(*valp) ) {
         unsigned_32 *ptr = VMBlock( ii, hde->lfo + start, sizeof(*valp) );
         if( ptr ) {
             *valp = *ptr;
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 /*

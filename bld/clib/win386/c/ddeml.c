@@ -33,12 +33,9 @@
 #include "variety.h"
 #include "cover.h"
 
-WORD PASCAL _Cover_DdeInitialize( LPDWORD pidInst, PFNCALLBACK p,
-                                DWORD afCmd, DWORD ulRes)
+WORD PASCAL _Cover_DdeInitialize( LPDWORD pidInst, PFNCALLBACK p, DWORD afCmd, DWORD ulRes)
 {
-    return( DdeInitialize( pidInst,
-        (PFNCALLBACK) SetProc( (FARPROC)p, GETPROC_DDEMLCALLBACK ),
-                afCmd, ulRes ) );
+    return( DdeInitialize( pidInst, (PFNCALLBACK)SetProc( (FARPROC)p, GETPROC_DDEMLCALLBACK ), afCmd, ulRes ) );
 }
 
 HDDEDATA PASCAL _Cover_DdeClientTransaction( LPBYTE lpvdata,
@@ -64,8 +61,7 @@ HDDEDATA PASCAL _Cover_DdeClientTransaction( LPBYTE lpvdata,
     if( presult != 0 ) {
         presult = AllocAlias16( lpuresult );
     }
-    rc = _16DdeClientTransaction( (LPBYTE)pdata, cbdata, hconv, hszitem,
-                                  ufmt, utype, utimeout, (LPDWORD)presult );
+    rc = _16DdeClientTransaction( (LPBYTE)pdata, cbdata, hconv, hszitem, ufmt, utype, utimeout, (LPDWORD)presult );
     if( cbdata != -1L ) {
         if( pdata != 0 ) {
             FreeAlias16( pdata );

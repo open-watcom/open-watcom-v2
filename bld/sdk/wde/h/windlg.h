@@ -32,35 +32,27 @@
 
 #if !defined( __OS2__ )
 
+#include "_windlg.h"
+#include "wclbproc.h"
+
+
 #if defined( __WINDOWS_386__ )
 #define GetPtrGlobalLock(data) MK_FP32( GlobalLock( data ) )
 #else
 #define GetPtrGlobalLock(data) GlobalLock( data )
 #endif
 
-#ifdef __NT__
-    #define ADJUST_ITEMLEN( a )     a = (((a) + 7) & ~7)
-    #define ADJUST_BLOCKLEN( a )    a = (((a) + 3) & ~3)
-    #define ROUND_CLASSLEN( a )     (((a) + 1) & ~1)
-    #define _ISFAR
-    #define _FARmemcpy              memcpy
-    #define SLEN( a )               ((a) ? strlen( a ) * 2 + 2 : 2)
-    typedef WORD                    INFOTYPE;
+#ifdef __WINDOWS__
+  #define _FARmemcpy    _fmemcpy
+  #define SLEN( a )     ((a != NULL) ? strlen( a ) + 1 : 1)
 #else
-    #define SLEN( a )               ((a) ? strlen( a ) + 1 : 1)
-    #define ADJUST_ITEMLEN( a )
-    #define ADJUST_BLOCKLEN( a )
-    #define ROUND_CLASSLEN( a )     a
-    #define _ISFAR                  __far
-    #define _FARmemcpy              _fmemcpy
-    typedef BYTE                    INFOTYPE;
+  #define _FARmemcpy    memcpy
+  #define SLEN( a )     ((a != NULL) ? strlen( a ) * 2 + 2 : 2)
 #endif
 
-#include "_windlg.h"
-
-extern GLOBALHANDLE DialogTemplate( LONG dtStyle, int dtx, int dty, int dtcx, int dtcy, const char *menuname, const char *classname, const char *captiontext, int pointsize, const char *typeface );
-extern void         DoneAddingControls( GLOBALHANDLE data );
-extern GLOBALHANDLE AddControl( GLOBALHANDLE data, int dtilx, int dtily, int dtilcx, int dtilcy, int id, long style, const char *class, const char *text, BYTE infolen, const char *infodata );
-extern INT_PTR      DynamicDialogBox( DLGPROC fn, HANDLE inst, HWND hwnd, GLOBALHANDLE data );
+extern TEMPLATE_HANDLE  DialogTemplate( DWORD dtStyle, int x, int y, int cx, int cy, const char *menuname, const char *classname, const char *captiontext, WORD font_pointsize, const char *font_facename, size_t *templatelen );
+extern void             DoneAddingControls( TEMPLATE_HANDLE dlgtemplate );
+extern TEMPLATE_HANDLE  AddControl( TEMPLATE_HANDLE dlgtemplate, int x, int y, int cx, int cy, WORD id, DWORD style, const char *classname, const char *captiontext, const void *infodata, BYTE infodatalen, size_t *templatelen );
+extern INT_PTR          DynamicDialogBox( DLGPROCx fn, HANDLE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate );
 
 #endif

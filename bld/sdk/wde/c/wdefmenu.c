@@ -392,7 +392,7 @@ bool WdeIsCurrentMDIWindowZoomed( void )
     info = WdeGetCurrentRes();
 
     if( info != NULL && info->res_win != NULL ) {
-        return( IsZoomed( info->res_win ) );
+        return( IsZoomed( info->res_win ) != 0 );
     } else {
         return( FALSE );
     }

@@ -37,7 +37,7 @@
 
 
 static lang_info    langInfo[] = {
-    #define pick_lang(enum,enumrc,name,namej,fname) { NULL, 0, 0, NULL },
+    #define pick_lang(enum,enumrc,name,namej,fname,desc,filter) { NULL, 0, 0, NULL },
     #include "langdef.h"
     #undef pick_lang
 };
@@ -59,7 +59,7 @@ static char         *declspec_read_buf      = NULL;
 static int hashpjw( char *s, int entries )
 {
     unsigned long   h = 0, g;
-    
+
     for( ; *s != '\0'; ++s ) {
         h = (h << 4) + toupper( *s );
         if( (g = h & 0xf0000000) != 0 ) {
@@ -219,7 +219,8 @@ static bool lang_alloc( int cnt )
 
 static bool lang_save( int i, const char *buff )
 {
-    i = i; buff = buff;
+    /* unused parameters */ (void)i; (void)buff;
+
     return( true );
 }
 
@@ -231,7 +232,7 @@ void LangInit( lang_t newLanguage )
     vi_rc       rc;
     char        *buff;
     char        *fname[] = {
-        #define pick_lang(enum,enumrc,name,namej,fname) fname,
+        #define pick_lang(enum,enumrc,name,namej,fname,desc,filter) fname,
         #include "langdef.h"
         #undef pick_lang
     };
@@ -328,7 +329,7 @@ void LangFiniAll( void )
 {
     lang_t  i;
 
-    for( i = LANG_NONE; i < LANG_MAX; i++ ) {
+    for( i = LANG_MIN; i < LANG_MAX; i++ ) {
         while( langInfo[i].ref_count ) {
             LangFini( i );
         }

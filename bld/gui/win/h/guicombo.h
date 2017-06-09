@@ -33,6 +33,6 @@
 #ifndef _GUICOMBO_H_
 #define _GUICOMBO_H_
 
-extern WPI_PROC GUISubClassEditCombobox( HWND );
+extern WPI_WNDPROC GUISubClassEditCombobox( HWND );
 
 #endif // _GUICOMBO_H_

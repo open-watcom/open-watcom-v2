@@ -44,6 +44,6 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-extern bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name, HINSTANCE, HELP_CALLBACK * );
+extern bool WChangeMemFlags( HWND parent, uint_16 *mflags, WResID *res_name, HINSTANCE, HELP_CALLBACK help_callback );
 
 #endif

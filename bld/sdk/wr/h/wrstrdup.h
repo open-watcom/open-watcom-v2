@@ -45,7 +45,7 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 extern char *WRStrDup( const char *src );
-extern char *WRCopyString( char *mem, const char *str, int len );
+extern char *WRCopyString( char *mem, const char *str, size_t len );
 extern bool WRIsStrSpace( const char *s );
 extern bool WRStrHasSpace( const char *s );
 extern void WRStripStr( char *s );

@@ -54,7 +54,7 @@ typedef uint_16             MenuFlags;
 
 typedef struct MenuHeader {
     uint_16         Version;        /* currently 0 */
-    uint_16         HeaderSize;     /* currently 0 */
+    uint_16         Size;           /* currently 0 */
 } MenuHeader;
 
 typedef struct MenuItemPopup {      /* if (ItemFlags & MENU_POPUP) */

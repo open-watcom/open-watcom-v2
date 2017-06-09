@@ -385,7 +385,8 @@ static void     UseAddress( name *op ) {
         next = op->t.alias;
         for(;;) {
             next->v.usage |= USE_ADDRESS;
-            if( next == op ) break;
+            if( next == op )
+                break;
             next = next->t.alias;
         }
         break;
@@ -556,10 +557,11 @@ extern  instruction     *rBIN2QUAD( instruction *ins ) {
     return( doPromote( ins, new ) );
 }
 
-extern  bool    UnChangeable( instruction *ins ) {
-/************************************************/
+extern  bool    UnChangeable( instruction *ins )
+/**********************************************/
+{
+    /* unused parameters */ (void)ins;
 
-    ins = ins;
     return( false );
 }
 
@@ -923,8 +925,10 @@ static  void  CnvOpToInt( instruction * ins, int op )
 static bool IndexOverlaps( instruction *ins, int i )
 /**************************************************/
 {
-    if( ins->operands[i]->n.class != N_INDEXED ) return( false );
-    if( SameThing( ins->operands[i]->i.index, ins->result ) ) return( true );
+    if( ins->operands[i]->n.class != N_INDEXED )
+        return( false );
+    if( SameThing( ins->operands[i]->i.index, ins->result ) )
+        return( true );
     return( false );
 }
 

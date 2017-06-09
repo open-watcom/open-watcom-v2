@@ -52,21 +52,21 @@
 extern  unsigned short SS_Reg( void );
 #pragma aux SS_Reg =    \
         "mov ax,ss"     \
-    parm caller value [ax];
+    parm caller value [ax]
 
 extern  int SetBlock( unsigned short, unsigned );
 #pragma aux SetBlock =      \
         "mov    ah,04ah"    \
         "int    021h"       \
         "sbb    ax,ax"      \
-    parm caller [es] [bx] value [ax];
+    parm caller [es] [bx] value [ax]
 
 #else
 
 extern  unsigned short  GetDS( void );
 #pragma aux GetDS =     \
         "mov    ax,ds"  \
-    value [ax];
+    value [ax]
 
 extern  int SetBlock( unsigned short selector, unsigned size );
 #pragma aux SetBlock =      \
@@ -78,7 +78,7 @@ extern  int SetBlock( unsigned short selector, unsigned size );
         "ror    eax,1"      \
         "pop    es"         \
     parm caller [ax] [ebx]  \
-    modify [ebx] value [eax];
+    modify [ebx] value [eax]
 
 extern  int SegInfo( unsigned short selector );
 #pragma aux SegInfo =           \
@@ -88,7 +88,7 @@ extern  int SegInfo( unsigned short selector );
         "and    edi,0000FFFFh"  \
         "or     edi,eax"        \
     parm caller [ebx] value [edi] \
-    modify exact [eax ecx edx esi ebx edi];
+    modify exact [eax ecx edx esi ebx edi]
 
 extern  int SegmentLimit( void );
 #pragma aux SegmentLimit =  \
@@ -96,7 +96,7 @@ extern  int SegmentLimit( void );
         "mov    ax,ds"      \
         "lsl    eax,ax"     \
         "inc    eax"        \
-    value [eax] modify exact [eax];
+    value [eax] modify exact [eax]
 
 #endif
 
@@ -104,15 +104,15 @@ extern  int SegmentLimit( void );
 
 #if defined(__WINDOWS_386__)
 
-_WCRTLINK void _WCNEAR *sbrk( int increment )
+_WCRTLINK void_nptr sbrk( int increment )
 {
     increment = __ROUND_UP_SIZE_4K( increment );
-    return( (void _WCNEAR *)DPMIAlloc( increment ) );
+    return( (void_nptr)DPMIAlloc( increment ) );
 }
 
 #elif defined(__WINDOWS__)
 
-_WCRTLINK void _WCNEAR *sbrk( int increment )
+_WCRTLINK void_nptr sbrk( int increment )
 {
     HANDLE h;
 
@@ -126,20 +126,20 @@ _WCRTLINK void _WCNEAR *sbrk( int increment )
         _RWD_errno = EINVAL;
         h = (HANDLE)-1;
     }
-    return( (void _WCNEAR *)h );
+    return( (void_nptr)h );
 }
 
 #elif defined(__OSI__)
 
-_WCRTLINK void _WCNEAR *sbrk( int increment )
+_WCRTLINK void_nptr sbrk( int increment )
 {
     increment = __ROUND_UP_SIZE_4K( increment );
-    return( (void _WCNEAR *)TinyMemAlloc( increment ) );
+    return( (void_nptr)TinyMemAlloc( increment ) );
 }
 
 #else
 
-void _WCNEAR *__brk( unsigned brk_value )
+_WCRTLINK void_nptr __brk( unsigned brk_value )
 {
     unsigned        old_brk_value;
     unsigned short  segm;
@@ -147,7 +147,7 @@ void _WCNEAR *__brk( unsigned brk_value )
 
     if( brk_value < _STACKTOP ) {
         _RWD_errno = ENOMEM;
-        return( (void _WCNEAR *)-1 );
+        return( (void_nptr)-1 );
     }
     segm = _DGroup();
 #ifdef _M_I86
@@ -171,11 +171,11 @@ void _WCNEAR *__brk( unsigned brk_value )
         if( parent < 0 ) {
             if( SetBlock( parent & 0xffff, segm_size ) < 0 ) {
                 _RWD_errno = ENOMEM;
-                return( (void _WCNEAR *)-1 );
+                return( (void_nptr)-1 );
             }
         }
     } else {        /* _IsPharLap() || IsRationalNonZeroBase() */
-        segm_size = ( brk_value + 4095U ) / 4096U;
+        segm_size = __ROUND_UP_SIZE_TO_4K( brk_value );
         if( segm_size == 0 )
             segm_size = 0x000FFFFF;
         if( _IsRationalNonZeroBase() ) {
@@ -186,36 +186,36 @@ void _WCNEAR *__brk( unsigned brk_value )
 #endif
     if( SetBlock( segm, segm_size ) < 0 ) {
         _RWD_errno = ENOMEM;
-        return( (void _WCNEAR *)-1 );
+        return( (void_nptr)-1 );
     }
     old_brk_value = _curbrk;        /* return old value of _curbrk */
     _curbrk = brk_value;            /* set new break value */
 
-    return( (void _WCNEAR *)old_brk_value );
+    return( (void_nptr)old_brk_value );
 }
 
-_WCRTLINK void _WCNEAR *sbrk( int increment )
+_WCRTLINK void_nptr sbrk( int increment )
 {
 #ifdef __386__
     if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
-        void _WCNEAR *p;
+        void_nptr   cstg;
 
         if( increment > 0 ) {
             increment = __ROUND_UP_SIZE_4K( increment );
             if( _IsRational() ) {
-                p = TinyDPMIAlloc( increment );
+                cstg = TinyDPMIAlloc( increment );
             } else {
-                p = TinyCBAlloc( increment );
+                cstg = TinyCBAlloc( increment );
             }
-            if( p == NULL ) {
+            if( cstg == NULL ) {
                 _RWD_errno = ENOMEM;
-                p = (void _WCNEAR *)-1;
+                cstg = (void_nptr)-1;
             }
         } else {
             _RWD_errno = EINVAL;
-            p = (void _WCNEAR *)-1;
+            cstg = (void_nptr)-1;
         }
-        return( p );
+        return( cstg );
     } else if( _IsPharLap() ) {
         _curbrk = SegmentLimit();
     }

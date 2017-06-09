@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,6 @@
 
 
 #include "guiwind.h"
-
 #if defined(__OS2__) || defined(__OS2_PM__)
     #ifndef OS2_INCLUDED
         #undef NULL
@@ -160,8 +160,6 @@ static bool     ControlsInitialized = false;
 #define DIR_LIST_INDEX          5
 #define FILE_TYPES_INDEX        9
 #define DRIVE_LIST_INDEX        11
-
-#define NUM_CONTROLS ( sizeof( dlgControls ) / sizeof( gui_control_info ) )
 
 #define GetDriveTextList()      ((const char **)dlgControls[DRIVE_LIST_INDEX].text)
 #define SetDriveTextList(x)     dlgControls[DRIVE_LIST_INDEX].text = ((const char *)(x))
@@ -525,7 +523,8 @@ static bool goToDir( gui_window *gui, char *dir )
     size_t      len;
     int         rc;
 
-    gui = gui;
+    /* unused parameters */ (void)gui;
+
     if( dir == NULL ) {
         return( false );
     }
@@ -1223,7 +1222,7 @@ int GUIGetFileName( gui_window *gui, open_file_name *ofn )
         goToDir( gui, ofn->initial_dir );
 
         GUIModalDlgOpen( gui, ofn->title, DLG_FILE_ROWS, DLG_FILE_COLS,
-                    dlgControls, NUM_CONTROLS, &GetFileNameEvent, &dlg );
+                    dlgControls, ARRAY_SIZE( dlgControls ), &GetFileNameEvent, &dlg );
 
         if( !(ofn->flags & FN_CHANGEDIR) ) {
             goToDir( gui, olddir );
@@ -1241,5 +1240,5 @@ int GUIGetFileName( gui_window *gui, open_file_name *ofn )
 
 void GUIHookFileDlg( bool hook )
 {
-    hook = hook;
+    /* unused parameters */ (void)hook;
 }

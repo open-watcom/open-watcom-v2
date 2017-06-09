@@ -136,8 +136,10 @@ extern  void    MultiLineNums( ins_entry *ins ) {
     if( _ClassInfo( ins ) == OC_LINENUM ) {
         prev = ins->ins.prev;
         for(;;) {
-            if( prev == NULL ) break;
-            if( _Class( prev ) != OC_INFO ) break;
+            if( prev == NULL )
+                break;
+            if( _Class( prev ) != OC_INFO )
+                break;
             if( _ClassInfo( prev ) == OC_LINENUM ) {
                 ins = prev->ins.next;
                 UnLinkInstr( prev );

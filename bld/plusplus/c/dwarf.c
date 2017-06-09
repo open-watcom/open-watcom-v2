@@ -2218,9 +2218,11 @@ extern void DwarfDebugNameSpaceEnclosed( SYMBOL sym ) {
     DBObject( DwarfDebugType( ns->sym->sym_type ), NULL, TY_DEFAULT );
 }
 
-extern void DwarfDebugMemberFunc( SYMBOL func, SYMBOL this_sym ) {
-/*******************************************************************/
-    this_sym = this_sym;
+extern void DwarfDebugMemberFunc( SYMBOL func, SYMBOL this_sym )
+/**************************************************************/
+{
+    /* unused parameters */ (void)this_sym;
+
     DBObject( DwarfDebugType( SymClass( func ) ), NULL, TY_DEFAULT );
 }
 

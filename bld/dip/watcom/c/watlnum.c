@@ -380,7 +380,8 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii, imp_mod_handle im,
     word                save_entry = 0;
     const char          *base;
 
-    col = col;
+    /* unused parameters */ (void)col;
+
     if( file == 0 )
         file = 1;
     close.ic.im = im;
@@ -423,7 +424,8 @@ unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii, imp_cue_handle *ic )
 
 unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *ic )
 {
-    ii = ii; ic = ic;
+    /* unused parameters */ (void)ii; (void)ic;
+
     return( 0 );
 }
 
@@ -481,7 +483,8 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii, imp_mod_handle im
 
 imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii, imp_cue_handle *ic )
 {
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     return( ic->im );
 }
 
@@ -650,10 +653,10 @@ dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii, imp_cue_handle *ic,
     return( ok );
 }
 
-int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1,
-                                imp_cue_handle *ic2 )
+int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1, imp_cue_handle *ic2 )
 {
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     if( ic1->im < ic2->im )
         return( -1 );
     if( ic1->im > ic2->im )

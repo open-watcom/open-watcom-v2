@@ -65,7 +65,8 @@ extern gui_ord  WndVScrollWidth( a_window *wnd )
 {
     gui_system_metrics metrics;
 
-    wnd = wnd;
+    /* unused parameters */ (void)wnd;
+
     GUIGetSystemMetrics( &metrics );
     return( metrics.scrollbar_size.x );
 }

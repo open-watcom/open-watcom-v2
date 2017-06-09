@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,7 +48,6 @@ gui_menu_struct GUIHint[] = {
  { NULL, GUI_CHANGE_FONT, GUI_ENABLED, NULL },
  { NULL, GUI_FIX_TOOLBAR, GUI_ENABLED, NULL }
 };
-#define NUM_GUI_HINT ( sizeof( GUIHint ) / sizeof( gui_menu_struct ) )
 
 void GUIInitGUIMenuHint( void )
 {
@@ -298,7 +297,7 @@ void GUIFreePopupList( gui_window *wnd )
 
 void GUISetGUIHint( gui_window *wnd )
 {
-    GUIInitHint( wnd, NUM_GUI_HINT, GUIHint, GUI_HINT );
+    GUIInitHint( wnd, ARRAY_SIZE( GUIHint ), GUIHint, GUI_HINT );
 }
 
 HMENU   GUIHFloatingPopup       = NULLHANDLE;

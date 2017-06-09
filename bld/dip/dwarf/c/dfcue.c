@@ -88,8 +88,9 @@ imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii,
                                 imp_cue_handle *ic )
 /**********************************************************/
 {
+    /* unused parameters */ (void)ii;
+
     /* Return the module the source cue comes from. */
-     ii = ii;
      return( ic->im );
 }
 
@@ -165,7 +166,7 @@ static bool IsRelPathname( const char *name )
     if( (name[0] == '/') || (name[0] == '\\') ) {
         return( false );
     }
-    if( isalpha( name[0] ) && (name[1] == ':') 
+    if( isalpha( name[0] ) && (name[1] == ':')
       && ((name[2] == '/') || (name[2] == '\\')) ) {
         return( false );
     }
@@ -331,7 +332,8 @@ cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *ii,
                         imp_cue_handle *ic )
 /*************************************************************/
 {
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     return( ic->fno );
 }
 
@@ -453,7 +455,8 @@ unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii,
                         imp_cue_handle *ic )
 /***********************************************************/
 {
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     return( ic->line );
 }
 
@@ -461,12 +464,12 @@ unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii,
 unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *ic )
 /**********************************************************************************/
 {
+    /* unused parameters */ (void)ii;
+
     /* Return the column number of source cue. Return zero if there
      * is no column number associated with the cue, or an error occurs in
      * getting the information.
      */
-    ii = ii;
-
     return( ic->col );
 }
 
@@ -635,7 +638,8 @@ int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1,
      */
     long    ret;
 
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     ret = ic1->im - ic2->im;
     if( ret != 0 )
         return( ret );

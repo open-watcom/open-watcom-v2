@@ -30,7 +30,7 @@
 
 
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "os2res.h"
 #include "rcrtns.h"
 #include "rccore.h"
@@ -55,8 +55,8 @@ static void buildOS2ResTable( OS2ResTable *res_tbl, WResDir dir )
     OS2ResEntry     *entry;
     WResTypeInfo    *res_type;
     WResResInfo     *resinfo;
-    uint_16         type;
-    uint_16         id;
+    uint_16         type_id;
+    uint_16         name_id;
     int_32          length;
 
     entry = res_tbl->resources;
@@ -73,19 +73,17 @@ static void buildOS2ResTable( OS2ResTable *res_tbl, WResDir dir )
             continue;
         }
 
-        if( res_type->TypeName.IsName )
-            type = 0;
-        else
-            type = res_type->TypeName.ID.Num;
+        type_id = 0;
+        if( !res_type->TypeName.IsName )
+            type_id = res_type->TypeName.ID.Num;
 
-        if( resinfo->ResName.IsName )
-            id = 0;
-        else
-            id = resinfo->ResName.ID.Num;
+        name_id = 0;
+        if( !resinfo->ResName.IsName )
+            name_id = resinfo->ResName.ID.Num;
 
         /* Fill in resource entries */
-        entry->res_type   = type;
-        entry->res_id     = id;
+        entry->res_type   = type_id;
+        entry->res_id     = name_id;
         entry->wind       = wind;
         entry->mem_flags  = lang->MemoryFlags;
         entry->seg_length = 0;  /* Zero means 64K */
@@ -93,8 +91,8 @@ static void buildOS2ResTable( OS2ResTable *res_tbl, WResDir dir )
 
         for( length = lang->Length; length > 0x10000; length -= 0x10000 ) {
             entry++;
-            entry->res_type   = type;
-            entry->res_id     = id;
+            entry->res_type   = type_id;
+            entry->res_id     = name_id;
             entry->wind       = wind;
             entry->mem_flags  = lang->MemoryFlags;
             entry->seg_length = 0;
@@ -138,7 +136,7 @@ extern RcStatus InitOS2ResTable( int *err_code )
         /* One resource type/id record per resource segment, 16-bits each */
         res->table_size   = res->num_res_segs * 2 * sizeof( uint_16 );
 
-        res->resources = RCALLOC( res->num_res_segs * sizeof( res->resources[0] ) );
+        res->resources = RESALLOC( res->num_res_segs * sizeof( res->resources[0] ) );
         if( res->resources == NULL ) {
             *err_code = errno;
             return( RS_NO_MEM );
@@ -146,9 +144,7 @@ extern RcStatus InitOS2ResTable( int *err_code )
         buildOS2ResTable( res, dir );
 
         /* OS/2 requires resources to be sorted */
-        qsort( res->resources, res->num_res_segs,
-                sizeof( res->resources[0] ), compareOS2ResTypeId );
-
+        qsort( res->resources, res->num_res_segs, sizeof( res->resources[0] ), compareOS2ResTypeId );
     }
     return( RS_OK );
 } /* InitOS2ResTable */
@@ -198,14 +194,14 @@ static RcStatus copyOneResource( WResLangInfo *lang, WResFileID res_fid,
 
     /* align the output file to a boundary for shift_count */
     ret = RS_OK;
-    out_offset = RCTELL( out_fid );
+    out_offset = RESTELL( out_fid );
     if( out_offset == -1 ) {
         ret = RS_WRITE_ERROR;
         *err_code = errno;
     }
     if( ret == RS_OK ) {
         align_amount = AlignAmount( out_offset, shift_count );
-        if( RCSEEK( out_fid, align_amount, SEEK_CUR ) == -1 ) {
+        if( RESSEEK( out_fid, align_amount, SEEK_CUR ) ) {
             ret = RS_WRITE_ERROR;
             *err_code = errno;
         }
@@ -213,7 +209,7 @@ static RcStatus copyOneResource( WResLangInfo *lang, WResFileID res_fid,
     }
 
     if( ret == RS_OK ) {
-        if( RCSEEK( res_fid, lang->Offset, SEEK_SET ) == -1 ) {
+        if( RESSEEK( res_fid, lang->Offset, SEEK_SET ) ) {
             ret = RS_READ_ERROR;
             *err_code = errno;
         }
@@ -223,7 +219,7 @@ static RcStatus copyOneResource( WResLangInfo *lang, WResFileID res_fid,
         *err_code = errno;
     }
     if( ret == RS_OK ) {
-        align_amount = AlignAmount( RCTELL( out_fid ), shift_count );
+        align_amount = AlignAmount( RESTELL( out_fid ), shift_count );
         ret = PadExeData( out_fid, align_amount );
         *err_code = errno;
     }
@@ -264,7 +260,7 @@ RcStatus CopyOS2Resources( void )
     seg_offset = 0;     // shut up gcc
 
     /* We may need to add padding before the first resource segment */
-    align_amount = AlignAmount( RCTELL( tmp_fid ), shift_count );
+    align_amount = AlignAmount( RESTELL( tmp_fid ), shift_count );
     if( align_amount ) {
         ret = PadExeData( tmp_fid, align_amount );
         err_code = errno;
@@ -276,7 +272,7 @@ RcStatus CopyOS2Resources( void )
         lang = WResGetLangInfo( wind );
 
         if( entry->first_part ) {
-            seg_offset = RCTELL( tmp_fid );
+            seg_offset = RESTELL( tmp_fid );
         } else {
             seg_offset += 0x10000;
         }
@@ -300,9 +296,7 @@ RcStatus CopyOS2Resources( void )
             continue;
 
         /* Copy resource data */
-        ret = copyOneResource( lang, res_fid, tmp_fid,
-                                shift_count, &err_code );
-
+        ret = copyOneResource( lang, res_fid, tmp_fid, shift_count, &err_code );
         if( ret != RS_OK )
             break;
 
@@ -342,10 +336,10 @@ extern RcStatus WriteOS2ResTable( WResFileID fid, OS2ResTable *restab, int *err_
     for( i = 0; i < restab->num_res_segs && ret == RS_OK; i++ ) {
         res_type = restab->resources[i].res_type;
         res_id   = restab->resources[i].res_id;
-        if( RCWRITE( fid, &res_type, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
+        if( RESWRITE( fid, &res_type, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
             ret = RS_WRITE_ERROR;
         } else {
-            if( RCWRITE( fid, &res_id, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
+            if( RESWRITE( fid, &res_id, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
                 ret = RS_WRITE_ERROR;
             }
         }
@@ -353,7 +347,7 @@ extern RcStatus WriteOS2ResTable( WResFileID fid, OS2ResTable *restab, int *err_
 
     *err_code = errno;
     if( restab->resources != NULL ) {
-        RCFREE( restab->resources );
+        RESFREE( restab->resources );
     }
 
     return( ret );

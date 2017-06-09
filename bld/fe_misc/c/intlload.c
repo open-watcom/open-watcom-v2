@@ -106,8 +106,8 @@ static int doUsage( IntlData *data, _LocaleItem *item )
 
 static int doNULL( IntlData *data, _LocaleItem *item )
 {
-    data = data;
-    item = item;
+    /* unused parameters */ (void)data; (void)item;
+
     return( -1 );
 }
 

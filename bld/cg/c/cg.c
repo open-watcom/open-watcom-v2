@@ -477,28 +477,33 @@ extern  void    CGSelRange( sh *s, signed_32 lo, signed_32 hi, l *lb ) {
     CRefLabel( lb );
     SelRange(s,lo,hi,lb);
 }
+
 extern  void    SelRange( sh *s, signed_32 lo, signed_32 hi, l *lb ) {
 /********************************************************************/
 
     rh  **or;
     rh  *n;
 
-    VerLabel(lb);
-    CRefLabel(lb);
-    if(lo>hi) { CGError( "lo bound > hi bound" ); }
+    VerLabel( lb );
+    CRefLabel( lb );
+    if( lo > hi )
+        CGError( "lo bound > hi bound" );
     or = &s->r;
-    for(;;) {
-        if( *or==NULL) break;
-        if(hi< (*or)->l) break;
-        if(lo<= (*or)->h) { CGError( "case range overlap" ); }
+    for( ;; ) {
+        if( *or == NULL )
+            break;
+        if( hi < (*or)->l )
+            break;
+        if( lo <= (*or)->h )
+            CGError( "case range overlap" );
         or = &(*or)->n;
     }
-    n=CGAlloc(sizeof( rh ));
-    n->l=lo;
-    n->h=hi;
-    n->lb=lb;
-    n->n= *or;
-    *or=n;
+    n = CGAlloc( sizeof( rh ) );
+    n->l = lo;
+    n->h = hi;
+    n->lb = lb;
+    n->n = *or;
+    *or = n;
 }
 extern  void    CGSelOther( sh *s, l *lb ) {
 /******************************************/
@@ -598,6 +603,7 @@ static  cg_type PtrTipe( pointer s ) {
         return( TY_POINTER );
     }
 }
+
 extern  n       *CGFEName( pointer sym, cg_type t ) {
 /*************************************************/
 
@@ -616,9 +622,12 @@ extern  n       *CGFEName( pointer sym, cg_type t ) {
     if( FEAttr( sym ) & FE_STATIC ) {
         bk = FEBack( sym );
         VerBack( bk );
-        if( (FEAttr( sym ) & FE_IMPORT) == 0 ) DRefLabel( bk->lp );
+        if( (FEAttr( sym ) & FE_IMPORT) == 0 )
+            DRefLabel( bk->lp );
         for( st = StaticList; st; st = st->n ) {
-            if( st->s == sym ) break;
+            if( st->s == sym ) {
+                break;
+            }
         }
         if( st == NULL ) {
             st = CGAlloc( sizeof( s ) );
@@ -634,16 +643,13 @@ extern  n       *CGFEName( pointer sym, cg_type t ) {
         if( au != NULL ) {
             VerAuto( au );
             if( au->s != sym ) {
-                CGError( "Wrong auto back handle for %s(%p)",
-                         FEName( sym ), sym );
+                CGError( "Wrong auto back handle for %s(%p)", FEName( sym ), sym );
             }
             if( au->o ) {
-                CGError( "Outdated auto back handle for %s(%p)",
-                FEName( sym ), sym );
+                CGError( "Outdated auto back handle for %s(%p)", FEName( sym ), sym );
             }
         } else {
-            Action( "WARNING: Allocating back handle for lookup of %s(%p)%n",
-                 FEName( sym ), sym );
+            Action( "WARNING: Allocating back handle for lookup of %s(%p)%n", FEName( sym ), sym );
             au = CGAlloc( sizeof( a ) );
             au->n = AutoList;
             au->s = sym;

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  perform consistency check on a based heap
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -38,18 +38,21 @@
 #include "heapacc.h"
 
 
+#define HEAP(s)     ((XBPTR(heapblkp, s))0)
+#define FRLPTR(s)   XBPTR(freelistp, s)
+
 static int checkFreeList( unsigned long *free_size, __segment req_seg )
 {
-    farfrlptr       curr;
-    __segment       seg;
-    heapblk         _WCFAR *p;
-    unsigned long   total_size;
+    __segment           seg;
+    FRLPTR( seg )       frl;
+    unsigned long       total_size;
 
     total_size = 0;
-    for( seg = (req_seg == _NULLSEG ? __bheap : req_seg); seg != _NULLSEG; seg = p->nextseg ) {
-        p = MK_FP( seg, 0 );
-        for( curr = MK_FP( seg, p->freehead.next ); FP_OFF( curr ) != offsetof( heapblk, freehead ); curr = MK_FP( seg, curr->next ) ) {
-            total_size += curr->len;
+    for( seg = (req_seg == _NULLSEG ? __bheapbeg : req_seg); seg != _NULLSEG; seg = HEAP( seg )->nextseg ) {
+        frl = HEAP( seg )->freehead.next;
+        while( (unsigned)frl != offsetof( heapblk, freehead ) ) {
+            total_size += frl->len;
+            frl = frl->next;
         }
         if( req_seg != _NULLSEG ) {
             break;
@@ -59,23 +62,19 @@ static int checkFreeList( unsigned long *free_size, __segment req_seg )
     return( _HEAPOK );
 }
 
-static int checkFree( farfrlptr p )
+static int checkFree( freelistp _WCFAR *frl )
 {
-    __segment seg;
-    farfrlptr prev;
-    farfrlptr next;
-    farfrlptr prev_prev;
-    farfrlptr next_next;
+    __segment           seg;
+    FRLPTR( seg )       prev;
+    FRLPTR( seg )       next;
 
-    seg = FP_SEG( p );
-    prev = MK_FP( seg, p->prev );
-    next = MK_FP( seg, p->next );
-    if( prev->next != FP_OFF( p ) || next->prev != FP_OFF( p ) ) {
+    seg = FP_SEG( frl );
+    prev = frl->prev;
+    next = frl->next;
+    if( prev->next != (FRLPTR( seg ))frl || next->prev != (FRLPTR( seg ))frl ) {
         return( _HEAPBADNODE );
     }
-    prev_prev = MK_FP( seg, prev->prev );
-    next_next = MK_FP( seg, next->next );
-    if( prev_prev->next != FP_OFF( prev ) || next_next->prev != FP_OFF( next ) ) {
+    if( ((FRLPTR( seg ))prev->prev)->next != prev || ((FRLPTR( seg ))next->next)->prev != next ) {
         return( _HEAPBADNODE );
     }
     return( _HEAPOK );
@@ -93,7 +92,7 @@ _WCRTLINK int _bheapchk( __segment seg )
     heap_status = checkFreeList( &free_size, seg );
     if( heap_status == _HEAPOK ) {
         hi._pentry = NULL;
-        while( (heap_status = __HeapWalk( &hi, (seg == _NULLSEG ? __bheap : seg), (seg != _NULLSEG) )) == _HEAPOK ) {
+        while( (heap_status = __HeapWalk( &hi, (seg == _NULLSEG ? __bheapbeg : seg), seg )) == _HEAPOK ) {
             if( hi._useflag == _FREEENTRY ) {
                 heap_status = checkFree( hi._pentry );
                 if( heap_status != _HEAPOK )

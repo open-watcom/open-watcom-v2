@@ -68,6 +68,7 @@
 #include "jdlg.h"
 #include "wreres.h"
 #include "wresdefn.h"
+#include "wclbproc.h"
 
 
 /****************************************************************************/
@@ -80,7 +81,7 @@
 /* external function prototypes                                             */
 /****************************************************************************/
 WINEXPORT LRESULT CALLBACK WREResWndProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT LRESULT CALLBACK WREResInfoProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WREResInfoDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -889,7 +890,7 @@ bool WRESaveResource( WREResInfo *res_info, bool get_name )
 {
     char                *fn;
     WREGetFileStruct    gf;
-    int                 fn_offset;
+    size_t              fn_offset;
     bool                got_name;
     bool                ok;
 
@@ -962,7 +963,7 @@ bool WRESaveResource( WREResInfo *res_info, bool get_name )
 
     if( ok ) {
         //fn_offset = WRFindFnOffset( fn );
-        SendMessage( res_info->res_win, WM_SETTEXT, 0, (LPARAM)(LPSTR)&fn[fn_offset] );
+        SendMessage( res_info->res_win, WM_SETTEXT, 0, (LPARAM)(LPCSTR)( fn + fn_offset ) );
     }
 
     return( ok );
@@ -1072,10 +1073,10 @@ bool WRECreateResourceWindow( WREResInfo *res_info )
     if( ok ) {
         WREIncNumRes();
         if( res_info->info->file_name != NULL ) {
-            //int     fn_offset;
+            //size_t  fn_offset;
             //perhaps I should make this an option
             //fn_offset = WRFindFnOffset( res_info->info->file_name );
-            //title = &res_info->info->file_name[fn_offset];
+            //title = res_info->info->file_name + fn_offset;
             mdics.szTitle = res_info->info->file_name;
         } else if( res_info->info->save_name != NULL ) {
             mdics.szTitle = res_info->info->save_name;
@@ -1202,7 +1203,7 @@ bool WREInitResources( HINSTANCE inst )
 {
     WREResInfoBrush = CreateSolidBrush( GetSysColor( COLOR_BTNFACE ) );
     WREAppInst = inst;
-    WREResInfoWinProc = (DLGPROC)MakeProcInstance( (FARPROC)WREResInfoProc, inst );
+    WREResInfoWinProc = MakeProcInstance_DLG( WREResInfoDlgProc, inst );
     return( WREInitStaticVars() );
 }
 
@@ -1211,7 +1212,7 @@ void WREFiniResources( void )
     if( WREResInfoBrush != NULL ) {
         DeleteObject( WREResInfoBrush );
     }
-    FreeProcInstance( (FARPROC)WREResInfoWinProc );
+    FreeProcInstance_DLG( WREResInfoWinProc );
     WREFiniStaticVars();
 }
 
@@ -1226,10 +1227,10 @@ bool WRECreateResInfoWindow( WREResInfo *info )
     return( TRUE );
 }
 
-LRESULT CALLBACK WREResInfoProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WREResInfoDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WREResInfo  *info;
-    LRESULT     ret;
+    BOOL        ret;
     WORD        wp;
     UINT        cmd;
 

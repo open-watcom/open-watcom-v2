@@ -43,7 +43,7 @@
 #endif
 #include "ldstr.h"
 #include "uistr.gh"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Window callback functions prototypes */
@@ -220,13 +220,13 @@ INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
     switch( msg ) {
     case WM_INITDIALOG:
-        if( (char *)lparam != NULL ) {
-            SetWindowText( hwnd, (char *)lparam );
+        if( (LPCSTR)lparam != NULL ) {
+            SetWindowText( hwnd, (LPCSTR)lparam );
         }
         SendDlgItemMessage( hwnd, ALIAS_TEXT, EM_LIMITTEXT, 20, 0 );
         for( cur = CurHdl->data; cur != NULL; cur = cur->next ) {
             sprintf( buf, "0x%08lX", cur->id );
-            SendDlgItemMessage( hwnd, ALIAS_ID_LIST, LB_ADDSTRING, 0, (LPARAM)buf );
+            SendDlgItemMessage( hwnd, ALIAS_ID_LIST, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)buf );
         }
         break;
 #ifndef NOUSE3D
@@ -239,7 +239,7 @@ INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
         switch( cmd ) {
             case IDOK:
             case ALIAS_DO_MORE:
-                SendDlgItemMessage( hwnd, ALIAS_CUR_ID, WM_GETTEXT, CONST_LEN, (LPARAM)buf );
+                SendDlgItemMessage( hwnd, ALIAS_CUR_ID, WM_GETTEXT, CONST_LEN, (LPARAM)(LPSTR)buf );
                 realend = buf;
                 while( *realend != '\0' ) {
                     realend++;
@@ -256,7 +256,7 @@ INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
                 }
                 len = SendDlgItemMessage( hwnd, ALIAS_TEXT, WM_GETTEXTLENGTH, 0, 0 );
                 alias = MemAlloc( len + 1 );
-                len = SendDlgItemMessage( hwnd, ALIAS_TEXT, WM_GETTEXT, len + 1, (LPARAM)alias );
+                len = SendDlgItemMessage( hwnd, ALIAS_TEXT, WM_GETTEXT, len + 1, (LPARAM)(LPSTR)alias );
                 /* check for spaces */
                 endptr = alias;
                 while( !isspace( *endptr ) && *endptr != '\0' ) {
@@ -290,10 +290,10 @@ INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
             case ALIAS_ID_LIST:
                 if( GET_WM_COMMAND_CMD( wparam, lparam ) == LBN_SELCHANGE ) {
                     sel = (int)SendDlgItemMessage( hwnd, ALIAS_ID_LIST, LB_GETCURSEL, 0, 0L );
-                    SendDlgItemMessage( hwnd, ALIAS_ID_LIST, LB_GETTEXT, sel, (LPARAM)buf );
-                    SendDlgItemMessage( hwnd, ALIAS_CUR_ID, WM_SETTEXT, 0, (LPARAM)buf );
+                    SendDlgItemMessage( hwnd, ALIAS_ID_LIST, LB_GETTEXT, sel, (LPARAM)(LPSTR)buf );
+                    SendDlgItemMessage( hwnd, ALIAS_CUR_ID, WM_SETTEXT, 0, (LPARAM)(LPCSTR)buf );
                     cur = getIthAlias( CurHdl, sel );
-                    SendDlgItemMessage( hwnd, ALIAS_TEXT, WM_SETTEXT, 0, (LPARAM)cur->name );
+                    SendDlgItemMessage( hwnd, ALIAS_TEXT, WM_SETTEXT, 0, (LPARAM)(LPCSTR)cur->name );
                 }
                 break;
             default:
@@ -310,18 +310,18 @@ INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
  */
 void Query4Aliases( AliasHdl hdl, HANDLE instance, HWND hwnd, char *title )
 {
-    FARPROC     fp;
+    DLGPROC     dlgproc;
     INT_PTR     ret;
 
     CurHdl = hdl;
-    fp = MakeDlgProcInstance( AliasDlgProc, instance );
+    dlgproc = MakeProcInstance_DLG( AliasDlgProc, instance );
     for( ;; ) {
-        ret = DialogBoxParam( instance, "ALIAS_DLG", hwnd, (DLGPROC)fp, (LPARAM)title );
+        ret = DialogBoxParam( instance, "ALIAS_DLG", hwnd, dlgproc, (LPARAM)(LPCSTR)title );
         if( ret != ALIAS_DO_MORE ) {
             break;
         }
     }
-    FreeProcInstance( fp );
+    FreeProcInstance_DLG( dlgproc );
     CurHdl = NULL;
 
 } /* Query4Aliases */

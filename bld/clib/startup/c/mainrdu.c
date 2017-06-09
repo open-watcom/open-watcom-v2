@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stddef.h>
@@ -53,6 +53,7 @@
 #include "trdlstac.h"
 #include "cinit.h"
 #include "exitwmsg.h"
+#include "_rdos.h"
 
 
 static char    DllName[_MAX_PATH];
@@ -128,17 +129,22 @@ int __RdosInit( int is_dll, thread_data *tdata, int hdll )
     return( 1 );
 }
 
-_WCRTLINK _NORETURN void __exit( unsigned ret_code )
+_WCRTLINK _WCNORETURN void __exit( unsigned ret_code )
 {
-    if( !__Is_DLL ) {
-        __DoneExceptionFilter();
-        __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
+    thread_data         *tdata;
+
+    if( RdosIsForked() ) {
+        __CEndFork();
+    } else {
+        if( !__Is_DLL ) {
+            __DoneExceptionFilter();
+            __FiniRtns( 0, FINI_PRIORITY_EXIT-1 );
+        }
+        // Also gets done by __FreeThreadDataList which is activated from FiniSema4s
+        // for multi-threaded apps
+        __FirstThreadData = NULL;
+        if( !__Is_DLL ) {
+            RdosUnloadExe( ret_code );
+        }
     }
-    // Also gets done by __FreeThreadDataList which is activated from FiniSema4s
-    // for multi-threaded apps
-    __FirstThreadData = NULL;
-    if( !__Is_DLL ) {
-        RdosUnloadExe( ret_code );
-    }
-    // never return
 }

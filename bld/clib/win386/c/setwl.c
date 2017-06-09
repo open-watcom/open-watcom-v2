@@ -55,7 +55,9 @@ LONG PASCAL _Cover_GetWindowLong( HWND wnd, short what )
                 }
                 break;
             }
-            if( list->hwnd == wnd  &&  list->procaddr == value )  break;
+            if( list->hwnd == wnd && list->procaddr == value ) {
+                break;
+            }
         }
     }
     return( value );
@@ -69,14 +71,15 @@ LONG PASCAL _Cover_SetWindowLong( HWND wnd, short what, LONG value )
         for( list = WndProcList; ; list = list->next ) {
             if( list == NULL ) {
                 list = malloc( sizeof( struct wndprocs ) );
-                if( list == NULL ) return( 0 );
+                if( list == NULL )
+                    return( 0 );
                 list->next = WndProcList;
                 list->hwnd = wnd;
                 list->procaddr = value;
                 list->proctype = PROC_32;
                 WndProcList = list;
             }
-            if( list->hwnd == wnd  &&  list->procaddr == value ) {
+            if( list->hwnd == wnd && list->procaddr == value ) {
                 if( list->proctype == PROC_32 ) {
                     value = (LONG)SetProc( (FARPROC)value, GETPROC_CALLBACK );
                 }

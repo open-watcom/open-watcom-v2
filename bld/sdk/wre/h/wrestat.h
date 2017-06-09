@@ -50,6 +50,6 @@ extern void WREDestroyStatusLine( void );
 extern bool WRECreateStatusLine( HWND, HINSTANCE );
 extern void WREResizeStatusWindows( RECT * );
 extern bool WRESetStatusReadyText( void );
-extern bool WRESetStatusByID( DWORD id1, DWORD id2 );
+extern bool WRESetStatusByID( msg_id id1, msg_id id2 );
 
 #endif

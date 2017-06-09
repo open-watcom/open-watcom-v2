@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  allocate based heap
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -35,22 +35,24 @@
 #include <malloc.h>
 #include "heap.h"
 
-__segment __bheap = _NULLSEG;
+
+#define HEAP(s)    ((XBPTR(heapblkp, s))0)
+
+__segment __bheapbeg = _NULLSEG;
 
 _WCRTLINK __segment _bheapseg( size_t size )
 {
-    __segment   seg;
-    heapblk     __based( seg ) *p;
+    __segment       seg;
+    __segment       prev_seg;
 
     seg = __AllocSeg( size );
     if( seg == _NULLSEG )
         return( _NULLSEG );
-    p = 0;
-    p->nextseg = __bheap;
-    __bheap = seg;
-    seg = p->nextseg;
-    if( seg != _NULLSEG ) {
-        p->prevseg = __bheap;
+    prev_seg = __bheapbeg;
+    __bheapbeg = seg;
+    HEAP( seg )->nextseg = prev_seg;
+    if( prev_seg != _NULLSEG ) {
+        HEAP( prev_seg )->prevseg = seg;
     }
-    return( __bheap );
+    return( seg );
 }

@@ -533,7 +533,7 @@ void WSetEditTitle( WMenuEditInfo *einfo )
     }
 
     if( title != NULL ) {
-        SendMessage( einfo->win, WM_SETTEXT, 0, (LPARAM)title );
+        SendMessage( einfo->win, WM_SETTEXT, 0, (LPARAM)(LPCSTR)title );
         if( is_rc ) {
             FreeRCString( title );
         } else {
@@ -967,7 +967,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
             break;
 
         case IDM_MENU_MEM_FLAGS:
-            WSetStatusByID( einfo->wsb, W_CHANGEMENUMEMFLAGS, -1 );
+            WSetStatusByID( einfo->wsb, W_CHANGEMENUMEMFLAGS, 0 );
             einfo->info->modified |= WChangeMemFlags( einfo->win, &einfo->info->MemFlags,
                                                       einfo->info->res_name,
                                                       WGetEditInstance(),
@@ -1197,7 +1197,7 @@ bool WHandleWM_CLOSE( WMenuEditInfo *einfo, bool force_exit )
 void WHandleRename( WMenuEditInfo *einfo )
 {
     if( einfo != NULL ) {
-        WSetStatusByID( einfo->wsb, W_RENAMINGMENU, -1 );
+        WSetStatusByID( einfo->wsb, W_RENAMINGMENU, 0 );
         einfo->info->modified |= WRenameResource( einfo->win, &einfo->info->res_name,
                                                   WMenuHelpRoutine );
         WSetEditWinResName( einfo );
@@ -1258,7 +1258,7 @@ void WHandleClear( WMenuEditInfo *einfo )
             }
             einfo->info->modified = true;
             SetFocus( einfo->edit_dlg );
-            WSetStatusByID( einfo->wsb, W_MENUCLEARMSG, -1 );
+            WSetStatusByID( einfo->wsb, W_MENUCLEARMSG, 0 );
         }
     }
 }

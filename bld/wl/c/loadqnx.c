@@ -78,7 +78,8 @@ static void WriteLoadRec( void )
 static void ZeroLoad( virt_mem dummy, unsigned long length )
 /**********************************************************/
 {
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     PadLoad( length );
 }
 
@@ -120,7 +121,8 @@ static void CopyVerify( char *targ, virt_mem src, unsigned long size )
 static void ZeroVerify( char *targ, virt_mem dummy, unsigned long size )
 /**********************************************************************/
 {
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     memset( targ, 0, size );
 }
 
@@ -343,8 +345,7 @@ static void WriteQNXResource( void )
         if( FmtData.res_name_only ) {
             file = QObjOpen( FmtData.resource );
             if( file == NIL_FHANDLE ) {
-                PrintIOError( WRN+MSG_CANT_OPEN_NO_REASON, "s",
-                                        FmtData.resource );
+                PrintIOError( WRN+MSG_CANT_OPEN_NO_REASON, "s", FmtData.resource );
                 return;
             }
             len = QFileSize( file );

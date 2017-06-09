@@ -89,8 +89,8 @@ void CmdSysInit( void )
     TextSegName = strsave( "" );
     DataSegName = strsave( "" );
     GenCodeGroup = strsave( "" );
-    CompFlags.use_stdcall_at_number = 1;
-    CompFlags.register_conventions = 1;
+    CompFlags.use_stdcall_at_number = true;
+    CompFlags.register_conventions = true;
 }
 
 void CmdSysFini( void )
@@ -294,7 +294,7 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
     MergeIncludeFromEnv( "INCLUDE" );
     CMemFree( target_name );
     if( data->bm ) {
-        CompFlags.target_multi_thread = 1;
+        CompFlags.target_multi_thread = true;
     }
     if( data->bd ) {
         switch( TargetSystem ) {
@@ -304,7 +304,7 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
 #endif
             break;
         default:
-            CompFlags.target_multi_thread = 1;
+            CompFlags.target_multi_thread = true;
         }
     }
 }
@@ -362,7 +362,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         model = 's';
         PreDefineStringMacro( "_M_" MM_ARCH "SM" );
         PreDefineStringMacro( "__SMALL__" );
-        CompFlags.strings_in_code_segment = 0;
+        CompFlags.strings_in_code_segment = false;
         TargetSwitches &= ~CONST_IN_CODE;
         bit |= CHEAP_POINTER;
         break;
@@ -372,7 +372,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         CodePtrSize = TARGET_FAR_POINTER;
         PreDefineStringMacro( "_M_" MM_ARCH "MM" );
         PreDefineStringMacro( "__MEDIUM__" );
-        CompFlags.strings_in_code_segment = 0;
+        CompFlags.strings_in_code_segment = false;
         TargetSwitches &= ~CONST_IN_CODE;
         bit |= BIG_CODE | CHEAP_POINTER;
         break;
@@ -404,7 +404,7 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
         break;
 #else
     case OPT_mem_model_mfi:
-        CompFlags.mfi_switch_used = 1;
+        CompFlags.mfi_switch_used = true;
         /* fall thru */
     case OPT_mem_model_mf:
         model = 's';
@@ -611,7 +611,8 @@ static void setMemoryModel( OPT_STORAGE *data, mem_model_control control )
 static void setIntelArchitecture( OPT_STORAGE *data, mem_model_control control )
 {
 #if _CPU == 8086
-    control = control;
+    /* unused parameters */ (void)control;
+
     switch( data->arch_i86 ) {
     case OPT_arch_i86__0:
         SET_CPU( CpuSwitches, CPU_86 );
@@ -638,40 +639,40 @@ static void setIntelArchitecture( OPT_STORAGE *data, mem_model_control control )
 #else
     switch( data->arch_386 ) {
     case OPT_arch_386__3s:
-        CompFlags.register_conventions = 0;
+        CompFlags.register_conventions = false;
         SET_CPU( CpuSwitches, CPU_386 );
         break;
     case OPT_arch_386__3r:
-        CompFlags.register_conventions = 1;
+        CompFlags.register_conventions = true;
         SET_CPU( CpuSwitches, CPU_386 );
         break;
     case OPT_arch_386__4s:
-        CompFlags.register_conventions = 0;
+        CompFlags.register_conventions = false;
         SET_CPU( CpuSwitches, CPU_486 );
         break;
     case OPT_arch_386__4r:
-        CompFlags.register_conventions = 1;
+        CompFlags.register_conventions = true;
         SET_CPU( CpuSwitches, CPU_486 );
         break;
     case OPT_arch_386__5s:
-        CompFlags.register_conventions = 0;
+        CompFlags.register_conventions = false;
         SET_CPU( CpuSwitches, CPU_586 );
         break;
     case OPT_arch_386__5r:
-        CompFlags.register_conventions = 1;
+        CompFlags.register_conventions = true;
         SET_CPU( CpuSwitches, CPU_586 );
         break;
     case OPT_arch_386__6s:
-        CompFlags.register_conventions = 0;
+        CompFlags.register_conventions = false;
         SET_CPU( CpuSwitches, CPU_686 );
         break;
     case OPT_arch_386__6r:
-        CompFlags.register_conventions = 1;
+        CompFlags.register_conventions = true;
         SET_CPU( CpuSwitches, CPU_686 );
         break;
     }
     if( control & MMC_NETWARE ) {
-        CompFlags.register_conventions = 0;
+        CompFlags.register_conventions = false;
     }
 #endif
     defineM_IX86Macro();
@@ -891,7 +892,7 @@ static void macroDefs( void )
     }
     switch( GET_FPU_LEVEL( CpuSwitches ) ) {
     case FPU_NONE:
-        CompFlags.op_switch_used = 0;
+        CompFlags.op_switch_used = false;
         DefSwitchMacro( "FPC" );
         break;
     case FPU_87:
@@ -944,7 +945,7 @@ static void miscAnalysis( OPT_STORAGE *data )
         /* issue warning message if /zf[f|p] or /zg[f|p] spec'd? */
         TargetSwitches &= ~( FLOATING_FS | FLOATING_GS );
     }
-    if( ! CompFlags.save_restore_segregs ) {
+    if( !CompFlags.save_restore_segregs ) {
         if( TargetSwitches & FLOATING_DS ) {
             HW_CTurnOff( WatcallInfo.save, HW_DS );
         }
@@ -962,7 +963,7 @@ static void miscAnalysis( OPT_STORAGE *data )
         PreDefineStringMacro( "__FPI__" );
     }
 #if _CPU == 386
-    if( ! CompFlags.register_conventions ) {
+    if( !CompFlags.register_conventions ) {
         SetAuxStackConventions();
     }
 #endif
@@ -984,7 +985,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         break;
     case OPT_dbg_output_hda:
         if( data->fhd ) {
-            CompFlags.pch_debug_info_opt = 1;
+            CompFlags.pch_debug_info_opt = true;
         }
         GenSwitches |= DBG_DF | DBG_PREDEF;
         break;
@@ -993,7 +994,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     case OPT_dbg_output_hd:
     default:
         if( data->fhd ) {
-            CompFlags.pch_debug_info_opt = 1;
+            CompFlags.pch_debug_info_opt = true;
         }
         GenSwitches |= DBG_DF;
         break;
@@ -1187,35 +1188,35 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         TargetSwitches |= I_MATH_INLINE;
     }
     if( data->r ) {
-        CompFlags.save_restore_segregs = 1;
+        CompFlags.save_restore_segregs = true;
     }
     if( data->ri ) {
-        CompFlags.returns_promoted = 1;
+        CompFlags.returns_promoted = true;
     }
     if( data->sg ) {
-        CompFlags.sg_switch_used = 1;
+        CompFlags.sg_switch_used = true;
     }
     if( data->st ) {
-        CompFlags.st_switch_used = 1;
+        CompFlags.st_switch_used = true;
     }
     if( data->zc ) {
-        CompFlags.strings_in_code_segment = 1;
-        CompFlags.zc_switch_used = 1;
+        CompFlags.strings_in_code_segment = true;
+        CompFlags.zc_switch_used = true;
         TargetSwitches |= CONST_IN_CODE;
     }
     if( data->zm ) {
-        CompFlags.zm_switch_used = 1;
+        CompFlags.zm_switch_used = true;
     }
     if( data->zmf ) {
-        CompFlags.zm_switch_used = 1;
-        CompFlags.zmf_switch_used = 1;
+        CompFlags.zm_switch_used = true;
+        CompFlags.zmf_switch_used = true;
     }
     if( data->zu ) {
-        CompFlags.zu_switch_used = 1;
+        CompFlags.zu_switch_used = true;
         TargetSwitches |= FLOATING_SS;
     }
     if( data->zx ) {
-        CompFlags.zx_switch_used = 1;
+        CompFlags.zx_switch_used = true;
     }
     if( data->zt ) {
         DataThreshold = data->zt_value;
@@ -1226,10 +1227,10 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     }
 #else
     if( data->vcap ) {
-        CompFlags.vc_alloca_parm = 1;
+        CompFlags.vc_alloca_parm = true;
     }
     if( data->br ) {
-        CompFlags.br_switch_used = 1;
+        CompFlags.br_switch_used = true;
     }
     if( data->ez ) {
         TargetSwitches |= EZ_OMF;
@@ -1250,10 +1251,10 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         TargetSwitches |= INDEXED_GLOBALS;
     }
     if( data->zo ) {
-        CompFlags.zo_switch_used = 1;
+        CompFlags.zo_switch_used = true;
     }
     if( data->zz ) {
-        CompFlags.use_stdcall_at_number = 0;
+        CompFlags.use_stdcall_at_number = false;
     }
 #endif
     if( data->iso == OPT_iso_za ) {

@@ -69,14 +69,13 @@ bool IsDirectory( char *name )
     if( rc != 0 )
         return( false ); /* not valid */
 
-    if( name[1] == ':' && name[2] == '\\' && name[3] == '\0' ) {
+    if( name[1] == DRV_SEP && name[2] == '\\' && name[3] == '\0' ) {
         /* this is a root dir -- this is OK */
         return( true );
     }
 
     /* check if it is actually a sub-directory */
-    rc = _dos_findfirst( name, _A_NORMAL | _A_RDONLY | _A_HIDDEN |
-            _A_SYSTEM | _A_SUBDIR | _A_ARCH, &dta );
+    rc = _dos_findfirst( name, _A_NORMAL | _A_RDONLY | _A_HIDDEN | _A_SYSTEM | _A_SUBDIR | _A_ARCH, &dta );
     if( rc != 0 ) {
         return( false );
     }
@@ -106,7 +105,7 @@ void FormatFileEntry( direct_ent *file, char *res )
     char        buff[FILENAME_MAX], tmp[FILENAME_MAX];
     long        size;
 
-    if( file->attr & _A_SUBDIR ) {
+    if( IS_SUBDIR( file ) ) {
         MySprintf(tmp, " " FILE_SEP_STR "%S", file->name);
     } else {
         if( !IsTextFile( file->name ) ) {
@@ -121,7 +120,7 @@ void FormatFileEntry( direct_ent *file, char *res )
      */
     strcpy( buff, "-------" );
     size = file->fsize;
-    if( file->attr & _A_SUBDIR ) {
+    if( IS_SUBDIR( file ) ) {
         buff[0] = 'd';
         size = 0;
     }

@@ -4,7 +4,7 @@
 
 # .ASM files (in RUNTIME\A)
 
-!ifeq host_cpu axp
+!ifeq processor axp
 objs_asm =
 !else
 objs_asm = fshand.obj

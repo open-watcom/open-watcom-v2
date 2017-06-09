@@ -32,7 +32,7 @@
 #include "vi.h"
 #include <dos.h>
 #ifdef __WIN__
-#include "wprocmap.h"
+#include "wclbproc.h"
 #endif
 
 

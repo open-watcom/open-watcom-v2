@@ -35,7 +35,7 @@
 #include "ftbar.h"
 #include "font.h"
 #include "sstyle.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */

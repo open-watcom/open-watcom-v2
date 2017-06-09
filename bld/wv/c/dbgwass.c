@@ -401,8 +401,9 @@ static void AsmNotify( a_window *wnd, wnd_row row, int piece )
     asm_window  *asw;
     address     addr;
 
+    /* unused parameters */ (void)piece;
+
     asw = WndAsm( wnd );
-    piece=piece;
     if( wnd != WndFindActive() )
         return;
     if( row < 0 )
@@ -442,7 +443,7 @@ static void     AsmMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     int         i;
     unsigned    bit;
 
-    piece=piece;
+    /* unused parameters */ (void)piece;
 
     asw = WndAsm( wnd );
     if( row < 0 ) {
@@ -615,7 +616,8 @@ static  void    AsmBegPaint( a_window *wnd, int row, int num )
 {
     asm_window  *asw;
 
-    row=row;num=num;
+    /* unused parameters */ (void)row; (void)num;
+
     asw = WndAsm( wnd );
     InitCache( asw->ins[0].addr, WndRows( wnd ) * AVG_INS_SIZE );
 }
@@ -623,7 +625,8 @@ static  void    AsmBegPaint( a_window *wnd, int row, int num )
 
 static  void    AsmEndPaint( a_window *wnd, int row, int piece )
 {
-    wnd=wnd;row=row;piece=piece;
+    /* unused parameters */ (void)wnd; (void)row; (void)piece;
+
     FiniCache();
 }
 
@@ -995,7 +998,8 @@ static bool AsmEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     asm_window  *asw;
 
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     asw = WndAsm( wnd );
     switch( gui_ev ) {
     case GUI_NOW_ACTIVE:

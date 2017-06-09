@@ -36,7 +36,6 @@
 #include "wio.h"
 #include "watcom.h"
 #include "pragdefn.h"
-#include "autodept.h"
 #include "sopen.h"
 
 #include "clibext.h"
@@ -144,7 +143,6 @@ typedef struct pheader {
     unsigned        specialsyms_count;
     unsigned        cwd_len;        // length of current working directory
     unsigned        msgflags_len;   // length of MsgFlags array
-    unsigned        disable_ialias;
     unsigned        cpp_ignore_env;
     unsigned        ignore_default_dirs;
 } pheader;
@@ -310,7 +308,6 @@ static void OutPutHeader( void )
     pch.specialsyms_count = SymGetNumSpecialSyms();
     pch.cwd_len           = PH_cwd_len;
     pch.msgflags_len      = MESSAGE_COUNT;
-    pch.disable_ialias    = CompFlags.disable_ialias;
     pch.cpp_ignore_env    = CompFlags.cpp_ignore_env;
     pch.ignore_default_dirs = CompFlags.ignore_default_dirs;
 
@@ -584,7 +581,8 @@ static void SetTypeIndex( TYPEPTR typ )
 
 static void SetFuncTypeIndex( TYPEPTR typ, int index )
 {
-    index = index;      /* unused */
+    /* unused parameters */ (void)index;
+
     SetTypeIndex( typ );
 }
 
@@ -715,7 +713,8 @@ static void OutPutFuncParmList( TYPEPTR typ, int index )
     bool        rc;
     TYPEPTR     parm_type;
 
-    index = index;      /* unused */
+    /* unused parameters */ (void)index;
+
     if( typ->u.fn.parms != NULL ) {
         for( parm_types = typ->u.fn.parms; (parm_type = *parm_types) != NULL; ++parm_types ) {
             parm_type = PCHSetUInt( parm_type->u1.type_index );
@@ -1020,7 +1019,7 @@ void BuildPreCompiledHeader( const char *filename )
     InitDebugTags();
     FEfree( PH_Buffer );
     PCH_FileName = NULL;
-    CompFlags.make_precompiled_header = 0;
+    CompFlags.make_precompiled_header = false;
 }
 
 //========================================================================
@@ -1124,18 +1123,19 @@ static bool VerifyIncludes( const char *filename )
     FNAMEPTR    flist;
     time_t      mtime;
     FNAMEPTR    fnew;
+    struct stat statbuf;
 
     // skip the primary source file (first item)
     fnew = FNames->next;
     for( flist = FNameList; flist != NULL; flist = flist->next ) {
         if( fnew != NULL ) {
             if( FNAMECMPSTR( fnew->name, flist->name ) != 0 ) {
-                return( true );                
+                return( true );
             }
             fnew = fnew->next;
         } else if( filename != NULL ) {
             if( FNAMECMPSTR( filename, flist->name ) != 0 ) {
-                return( true );                
+                return( true );
             }
             filename = NULL;
         }
@@ -1145,7 +1145,10 @@ static bool VerifyIncludes( const char *filename )
             }
         }
         if( flist->rwflag ) {
-            mtime = _getFilenameTimeStamp( flist->name );
+            mtime = 0;
+            if( stat( flist->name, &statbuf ) == 0 ) {
+                mtime = statbuf.st_mtime;
+            }
             if( flist->mtime != mtime || mtime == 0 ) {
                 PCHNote( PCHDR_INCFILE_CHANGED, flist->name  );
 #if 0
@@ -1739,7 +1742,7 @@ static void AbortPreCompiledHeader( void )
     PCHMacroHash = NULL;
     IAliasNames = PCHIAliasNames;
     RestoreIncFileList();
-    CompFlags.make_precompiled_header = 1;      // force new PCH to be created
+    CompFlags.make_precompiled_header = true;   // force new PCH to be created
 }
 
 //========================================================================
@@ -1749,7 +1752,7 @@ static void AbortPreCompiledHeader( void )
 //      - all the include files are the same and have not been modified
 //========================================================================
 
-int UsePreCompiledHeader( const char *filename )
+bool UsePreCompiledHeader( const char *filename )
 {
     int                 handle;
     unsigned            size;
@@ -1759,8 +1762,8 @@ int UsePreCompiledHeader( const char *filename )
 
     handle = sopen3( PCH_FileName, O_RDONLY | O_BINARY, SH_DENYWR );
     if( handle == -1 ) {
-        CompFlags.make_precompiled_header = 1;
-        return( -1 );
+        CompFlags.make_precompiled_header = true;
+        return( false );
     }
     PCH_Start = NULL;
     TextSegArray = NULL;
@@ -1773,19 +1776,19 @@ int UsePreCompiledHeader( const char *filename )
         close( handle );
         PCHNote( PCHDR_READ_ERROR );
         AbortPreCompiledHeader();
-        return( -1 );
+        return( false );
     }
     if( !ValidHeader( &pch ) ) {
         close( handle );
         PCHNote( PCHDR_INVALID_HEADER );
         AbortPreCompiledHeader();
-        return( -1 );
+        return( false );
     }
     if( pch.gen_switches != GenSwitches || pch.target_switches != TargetSwitches ) {
         close( handle );
         PCHNote( PCHDR_DIFFERENT_OPTIONS );
         AbortPreCompiledHeader();
-        return( -1 );
+        return( false );
     }
     p = FEmalloc( pch.size );                   // allocate big memory block
     PCH_Start = p;
@@ -1798,43 +1801,43 @@ int UsePreCompiledHeader( const char *filename )
     if( PH_size != pch.size || size != pch.macro_size ) {
         PCHNote( PCHDR_READ_ERROR );
         AbortPreCompiledHeader();
-        return( -1 );
+        return( false );
     }
     if( !SameCWD( p ) ) {
         PCHNote( PCHDR_DIFFERENT_CWD );
         AbortPreCompiledHeader();
-        return( -1 );
+        return( false );
     }
     if( CompFlags.cpp_ignore_env != pch.cpp_ignore_env || CompFlags.ignore_default_dirs != pch.ignore_default_dirs ) {
         PCHNote( PCHDR_INCFILE_DIFFERENT );
         AbortPreCompiledHeader();
-        return( -1 );
+        return( false );
     }
     p = FixupIncludes( p + pch.cwd_len, pch.file_count );
     p = FixupRoDirList( p, pch.rdir_count );
     p = FixupIncAliasList( p, pch.ialias_count );
-    if( CompFlags.disable_ialias != pch.disable_ialias || VerifyIncludes( filename ) ) {
+    if( VerifyIncludes( filename ) ) {
         PCHNote( PCHDR_INCFILE_DIFFERENT );
         AbortPreCompiledHeader();
-        return( -1 );
+        return( false );
     }
     len = strlen( p ) + 1;              // get length of saved IncPathList
     if( FNAMECMPSTR( p, IncPathList ) != 0 ) {
         PCHNote( PCHDR_INCPATH_CHANGED );
         AbortPreCompiledHeader();
-        return( -1 );
+        return( false );
     }
     p += PCHAlign( len );
     p = FixupIncFileList( p, pch.incfile_count );
     if( VerifyMacros( PCH_Macros, pch.macro_count, pch.undef_macro_count ) != 0 ) {
         PCHNote( PCHDR_MACRO_CHANGED );
         AbortPreCompiledHeader();
-        return( -1 );
+        return( false );
     }
     LoadPreCompiledHeader( p, &pch );
     FreeOldIncFileList();
     PCH_FileName = NULL;
-    return( 0 );
+    return( true );
 }
 
 static void SetDebugType( TYPEPTR typ )
@@ -1844,7 +1847,8 @@ static void SetDebugType( TYPEPTR typ )
 
 static void SetFuncDebugType( TYPEPTR typ, int index )
 {
-    index = index;  /* unused */
+    /* unused parameters */ (void)index;
+
     typ->u1.debug_type = DBG_NIL_TYPE;
 }
 

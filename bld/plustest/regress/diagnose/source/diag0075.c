@@ -45,28 +45,28 @@ typedef int I5;
 typedef double I5;
 
 typedef char *P1;
-typedef char far *P1;
+typedef char __far *P1;
 
 typedef char *P2;
-typedef char far *P2;
+typedef char __far *P2;
 
 void foo( int x )
 {
     switch( x ) {
-	case 0 :
-	    for( int i=0; i<10; ++i )
-	    {
-	    }
-	case 1:
-	{
-	    for( int j=0; j<10; ++j )
-	    {
-	    }
-	default:
-	    for( int k=0; k<10; ++k )
-	    {
-	    }
-	}
+        case 0 :
+            for( int i=0; i<10; ++i )
+            {
+            }
+        case 1:
+        {
+            for( int j=0; j<10; ++j )
+            {
+            }
+        default:
+            for( int k=0; k<10; ++k )
+            {
+            }
+        }
     };
 }
 

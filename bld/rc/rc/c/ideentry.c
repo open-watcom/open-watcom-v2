@@ -42,7 +42,7 @@
 #include "rcmem.h"
 #include "rcspawn.h"
 #include "rcldstr.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "banner.h"
 #include "rc.h"
 #include "rccore.h"
@@ -295,7 +295,7 @@ static int RCMainLine( const char *opts, int argc, char **argv )
                 ParseEnvVar( str, argv, cmdbuf );
                 pass1 = false;
                 for( i = 0; i < argc; i++ ) {
-                    if( argv[i] != NULL && !stricmp( argv[i], "-r" ) ) {
+                    if( argv[i] != NULL && stricmp( argv[i], "-r" ) == 0 ) {
                         pass1 = true;
                         break;
                     }
@@ -359,7 +359,8 @@ IDEBool IDEAPI IDEInitDLL( IDECBHdl cbhdl, IDECallBacks *cb, IDEDllHdl *hdl )
 IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 /****************************************************************/
 {
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     if( info == NULL || info->ver < 2 ) {
         return( true );
     }
@@ -395,7 +396,8 @@ IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char *opts, IDEBool *fataler
 {
     int         rc;
 
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     StopInvoked = false;
     if( fatalerr != NULL )
         *fatalerr = false;
@@ -410,11 +412,12 @@ IDEBool IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool
 {
     int         rc;
 
+    /* unused parameters */ (void)hdl;
+
 #if !defined( __WATCOMC__ )
     _argc = argc;
     _argv = argv;
 #endif
-    hdl = hdl;
     StopInvoked = false;
     if( fatalerr != NULL )
         *fatalerr = false;
@@ -435,6 +438,7 @@ void IDEAPI IDEFreeHeap( void )
 void IDEAPI IDEFiniDLL( IDEDllHdl hdl )
 /*************************************/
 {
+    /* unused parameters */ (void)hdl;
+
     // fini wrc
-    hdl = hdl;
 }

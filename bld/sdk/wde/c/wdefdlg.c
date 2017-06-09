@@ -54,7 +54,7 @@ WdeResDlgItem *WdeFindDialogInResInfo( WdeResInfo *res_info, int dlg )
     if( dlg != -1 ) {
         for( dlist = res_info->dlg_item_list; dlist != NULL; dlist = ListNext( dlist ) ) {
             if( dlg-- == 0 ) {
-                return( ListElement( dlist ) );
+                return( (WdeResDlgItem *)ListElement( dlist ) );
             }
         }
     }

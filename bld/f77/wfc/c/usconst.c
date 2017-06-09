@@ -130,7 +130,8 @@ static  const logstar1 __FAR    CmpValue[] = {
 static void    BadEqual( TYPE typ1, TYPE typ2, OPTR op )
 //======================================================
 {
-    typ1=typ1;typ2=typ2;op=op;
+    /* unused parameters */ (void)typ1; (void)typ2; (void)op;
+
     Error( EQ_BAD_TARGET );
 }
 
@@ -146,7 +147,8 @@ static  void    Convert( void ) {
 static  void    LogOp( TYPE typ1, TYPE typ2, OPTR op ) {
 //======================================================
 
-    typ1 = typ1;
+    /* unused parameters */ (void)typ1;
+
     op -= OPTR_FIRST_LOGOP;
     if( _IsTypeInteger( typ2 ) ) {
         Convert();
@@ -161,7 +163,8 @@ static  void    LogOp( TYPE typ1, TYPE typ2, OPTR op ) {
 static  void    RelOp( TYPE typ1, TYPE typ2, OPTR op ) {
 //======================================================
 
-    typ1 = typ1; typ2 = typ2; op = op;
+    /* unused parameters */ (void)typ1; (void)typ2; (void)op;
+
     if( ResultType != FT_CHAR ) {
         Convert();
     }
@@ -177,7 +180,8 @@ static  void    BinOp( TYPE typ1, TYPE typ2, OPTR op ) {
 
     byte        index;
 
-    typ2 = typ2;
+    /* unused parameters */ (void)typ2;
+
     op -= OPTR_FIRST_ARITHOP;
     index = (byte)( ResultType - FT_INTEGER_1 );
     if( typ1 != FT_NO_TYPE ) {
@@ -196,7 +200,8 @@ static  void    BinOp( TYPE typ1, TYPE typ2, OPTR op ) {
 static  void    ExpOp( TYPE typ1, TYPE typ2, OPTR op ) {
 //======================================================
 
-    op = op;
+    /* unused parameters */ (void)op;
+
     if( !_IsTypeInteger( typ2 ) ) {
         Convert();
         GenExp( ResultType );

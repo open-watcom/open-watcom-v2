@@ -42,12 +42,27 @@
 #include "wde_rc.h"
 #include "wdecctl.h"
 #include "wdefedit.h"
+#include "wdedispa.h"
+
+
+/****************************************************************************/
+/* macro definitions                                                        */
+/****************************************************************************/
+
+#define pick_ACTS(o) \
+    pick_ACTION_DESTROY(o,pick) \
+    pick_ACTION_COPY(o,pick) \
+    pick_ACTION_VALIDATE_ACTION(o,pick) \
+    pick_ACTION_IDENTIFY(o,pick) \
+    pick_ACTION_GET_WINDOW_CLASS(o,pick) \
+    pick_ACTION_DEFINE(o,pick) \
+    pick_ACTION_GET_WND_PROC(o,pick)
 
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC     dispatcher;
+    DISPATCH_FN *dispatcher;
     OBJPTR      object_handle;
     OBJ_ID      object_id;
     OBJPTR      control;
@@ -56,7 +71,9 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL    CALLBACK WdeEditDispatcher( ACTION, WdeEditObject *, void *, void * );
+
+/* Local Window callback functions prototypes */
+WINEXPORT bool    CALLBACK WdeEditDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeEditSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -64,52 +81,42 @@ WINEXPORT LRESULT CALLBACK WdeEditSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 static OBJPTR   WdeMakeEdit( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
 static OBJPTR   WdeEdCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
-static BOOL     WdeEditDestroy( WdeEditObject *, BOOL *, void * );
-static BOOL     WdeEditValidateAction( WdeEditObject *, ACTION *, void * );
-static BOOL     WdeEditCopyObject( WdeEditObject *, WdeEditObject **, WdeEditObject * );
-static BOOL     WdeEditIdentify( WdeEditObject *, OBJ_ID *, void * );
-static BOOL     WdeEditGetWndProc( WdeEditObject *, WNDPROC *, void * );
-static BOOL     WdeEditGetWindowClass( WdeEditObject *, char **, void * );
-static BOOL     WdeEditDefine( WdeEditObject *, POINT *, void * );
 static void     WdeEditSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeEditGetDefineInfo( WdeDefineObjectInfo *, HWND );
-static BOOL     WdeEditDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+static bool     WdeEditDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+
+#define pick(e,n,c) static bool WdeEdit ## n ## c;
+    pick_ACTS( WdeEditObject )
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeEditDispatch;
+static DISPATCH_FN              *WdeEditDispatch;
 static WdeDialogBoxControl      *WdeDefaultEdit = NULL;
 static int                      WdeEditWndExtra;
 static WNDPROC                  WdeOriginalEditProc;
 //static WNDPROC                WdeEditProc;
 
 static DISPATCH_ITEM WdeEditActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeEditDestroy              },
-    { COPY,             (DISPATCH_RTN *)WdeEditCopyObject           },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeEditValidateAction       },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeEditIdentify             },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeEditGetWindowClass       },
-    { DEFINE,           (DISPATCH_RTN *)WdeEditDefine               },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeEditGetWndProc           }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeEdit ## n},
+    pick_ACTS( WdeEditObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS      (sizeof( WdeEditActions ) / sizeof( DISPATCH_ITEM ))
 
-WINEXPORT OBJPTR CALLBACK WdeEditCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeEditCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
-        return( WdeMakeEdit( parent, obj_rect, handle,
-                             ES_LEFT | ES_AUTOHSCROLL, "", EDIT_OBJ ) );
+        return( WdeMakeEdit( parent, obj_rect, handle, ES_LEFT | ES_AUTOHSCROLL, "", EDIT_OBJ ) );
     } else {
-        return( WdeEdCreate( parent, obj_rect, NULL, EDIT_OBJ,
-                             (WdeDialogBoxControl *)handle ) );
+        return( WdeEdCreate( parent, obj_rect, NULL, EDIT_OBJ, (WdeDialogBoxControl *)handle ) );
     }
 }
 
-OBJPTR WdeMakeEdit( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
-                    DialogStyle style, char *text, OBJ_ID id )
+OBJPTR WdeMakeEdit( OBJPTR parent, RECT *obj_rect, OBJPTR handle, DialogStyle style, char *text, OBJ_ID id )
 {
     OBJPTR new;
 
@@ -147,12 +154,12 @@ OBJPTR WdeEdCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new->dispatcher = WdeEditDispatch;
+    OBJ_DISPATCHER_SET( new, WdeEditDispatch );
 
     new->object_id = id;
 
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -165,24 +172,24 @@ OBJPTR WdeEdCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+    if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeEditCreate: SET_OBJECT_INFO failed!" );
-        Destroy( new->control, FALSE );
+        Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
 
-    if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
+    if( !Forward( new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeEditCreate: CREATE_WINDOW failed!" );
-        Destroy( new->control, FALSE );
+        Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
-WINEXPORT BOOL CALLBACK WdeEditDispatcher( ACTION act, WdeEditObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeEditDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -194,7 +201,7 @@ WINEXPORT BOOL CALLBACK WdeEditDispatcher( ACTION act, WdeEditObject *obj, void 
         }
     }
 
-    return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeEditObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeEditInit( bool first )
@@ -228,7 +235,7 @@ bool WdeEditInit( bool first )
     WdeDefaultEdit = WdeAllocDialogBoxControl();
     if( WdeDefaultEdit == NULL ) {
         WdeWriteTrail( "WdeEditInit: Alloc of control failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* set up the default control structure */
@@ -242,33 +249,33 @@ bool WdeEditInit( bool first )
     SETCTL_TEXT( WdeDefaultEdit, NULL );
     SETCTL_CLASSID( WdeDefaultEdit, ResNumToControlClass( CLASS_EDIT ) );
 
-    WdeEditDispatch = MakeProcInstance( (FARPROC)WdeEditDispatcher, WdeGetAppInstance() );
+    WdeEditDispatch = MakeProcInstance_DISPATCHER( WdeEditDispatcher, WdeGetAppInstance() );
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeEditFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultEdit );
-    FreeProcInstance( WdeEditDispatch );
+    FreeProcInstance_DISPATCHER( WdeEditDispatch );
 }
 
-BOOL WdeEditDestroy( WdeEditObject *obj, BOOL *flag, void *p2 )
+bool WdeEditDestroy( WdeEditObject *obj, bool *flag, bool *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeEditDestroy: Control DESTROY failed" );
-        return( FALSE );
+        return( false );
     }
 
     WRMemFree( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeEditValidateAction( WdeEditObject *obj, ACTION *act, void *p2 )
+bool WdeEditValidateAction( WdeEditObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 
@@ -277,33 +284,32 @@ BOOL WdeEditValidateAction( WdeEditObject *obj, ACTION *act, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeEditActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
+    return( ValidateAction( obj->control, *act, p2 ) );
 }
 
-BOOL WdeEditCopyObject( WdeEditObject *obj, WdeEditObject **new,
-                        WdeEditObject *handle )
+bool WdeEditCopyObject( WdeEditObject *obj, WdeEditObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeEditCopyObject: Invalid new object!" );
-        return( FALSE );
+        return( false );
     }
 
     *new = (WdeEditObject *)WRMemAlloc( sizeof( WdeEditObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeEditCopyObject: Object malloc failed" );
-        return( FALSE );
+        return( false );
     }
 
-    (*new)->dispatcher = obj->dispatcher;
+    OBJ_DISPATCHER_COPY( *new, obj );
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }
@@ -311,23 +317,23 @@ BOOL WdeEditCopyObject( WdeEditObject *obj, WdeEditObject **new,
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeEditCopyObject: Control not created!" );
         WRMemFree( *new );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeEditIdentify( WdeEditObject *obj, OBJ_ID *id, void *p2 )
+bool WdeEditIdentify( WdeEditObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeEditGetWndProc( WdeEditObject *obj, WNDPROC *proc, void *p2 )
+bool WdeEditGetWndProc( WdeEditObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -335,10 +341,10 @@ BOOL WdeEditGetWndProc( WdeEditObject *obj, WNDPROC *proc, void *p2 )
 
     *proc = WdeEditSuperClassProc;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeEditGetWindowClass( WdeEditObject *obj, char **class, void *p2 )
+bool WdeEditGetWindowClass( WdeEditObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -346,10 +352,10 @@ BOOL WdeEditGetWindowClass( WdeEditObject *obj, char **class, void *p2 )
 
     *class = "Edit";
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeEditDefine( WdeEditObject *obj, POINT *pnt, void *p2 )
+bool WdeEditDefine( WdeEditObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
@@ -547,15 +553,15 @@ void WdeEditGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
+bool WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
-    BOOL processed;
+    bool processed;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( mask );
     _wde_touch( lParam );
 
-    processed = FALSE;
+    processed = false;
 
     if( message == WM_COMMAND && GET_WM_COMMAND_CMD( wParam, lParam ) == BN_CLICKED ) {
         switch( LOWORD( wParam ) ) {
@@ -564,7 +570,7 @@ BOOL WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                 CheckDlgButton( hDlg, IDB_ES_RIGHT, BST_UNCHECKED );
                 CheckDlgButton( hDlg, IDB_ES_CENTER, BST_UNCHECKED );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_ES_CENTER:
@@ -572,21 +578,21 @@ BOOL WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                 CheckDlgButton( hDlg, IDB_ES_LEFT, BST_UNCHECKED );
                 CheckDlgButton( hDlg, IDB_ES_RIGHT, BST_UNCHECKED );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_ES_UPPERCASE:
             if( IsDlgButtonChecked( hDlg, IDB_ES_UPPERCASE ) ) {
                 CheckDlgButton( hDlg, IDB_ES_LOWERCASE, BST_UNCHECKED );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_ES_LOWERCASE:
             if( IsDlgButtonChecked( hDlg, IDB_ES_LOWERCASE ) ) {
                 CheckDlgButton( hDlg, IDB_ES_UPPERCASE, BST_UNCHECKED );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_ES_RIGHT:
@@ -594,7 +600,7 @@ BOOL WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                 CheckDlgButton( hDlg, IDB_ES_LEFT, BST_UNCHECKED );
                 CheckDlgButton( hDlg, IDB_ES_CENTER, BST_UNCHECKED );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_ES_MULTILINE:
@@ -617,7 +623,7 @@ BOOL WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                 EnableWindow( GetDlgItem( hDlg, IDB_ES_CENTER ), FALSE );
                 EnableWindow( GetDlgItem( hDlg, IDB_ES_RIGHT ), FALSE );
             }
-            processed = TRUE;
+            processed = true;
             break;
         }
     }
@@ -625,7 +631,7 @@ BOOL WdeEditDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
     return( processed );
 }
 
-WINEXPORT LRESULT CALLBACK WdeEditSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeEditSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalEditProc, hWnd, message, wParam, lParam ) );

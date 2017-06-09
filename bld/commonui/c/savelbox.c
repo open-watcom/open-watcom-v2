@@ -46,13 +46,13 @@
 #endif
 #include "ldstr.h"
 #include "uistr.gh"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 #include "clibext.h"
 
 
 /* Window callback functions prototypes */
-WINEXPORT UINT_PTR CALLBACK LBSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT UINT_PTR CALLBACK LBSaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 /*
  * writeListBoxContents
@@ -77,7 +77,7 @@ static bool writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND l
         return( false );
     }
     for( i = 0; i < count; i++ ) {
-        SendMessage( listbox, LB_GETTEXT, i, (LPARAM)str );
+        SendMessage( listbox, LB_GETTEXT, i, (LPARAM)(LPSTR)str );
         fprintf( f, "%s\n", str );
     }
     fclose( f );
@@ -88,9 +88,9 @@ static bool writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND l
 #ifndef NOUSE3D
 
 /*
- * LBSaveHook - hook used called by common dialog - for 3D controls
+ * LBSaveOFNHookProc - hook used called by common dialog - for 3D controls
  */
-UINT_PTR CALLBACK LBSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+UINT_PTR CALLBACK LBSaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     wparam = wparam;
     lparam = lparam;
@@ -106,7 +106,7 @@ UINT_PTR CALLBACK LBSaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
     }
     return( FALSE );
 
-} /* LBSaveHook */
+} /* LBSaveOFNHookProc */
 
 #endif
 
@@ -136,11 +136,11 @@ bool GetSaveFName( HWND mainhwnd, char *fname )
     of.Flags = OFN_HIDEREADONLY;
 #ifndef NOUSE3D
     of.Flags |= OFN_ENABLEHOOK;
-    of.lpfnHook = (LPOFNHOOKPROC)MakeOpenFileHookProcInstance( LBSaveHook, GET_HINSTANCE( mainhwnd ) );
+    of.lpfnHook = MakeProcInstance_OFNHOOK( LBSaveOFNHookProc, GET_HINSTANCE( mainhwnd ) );
 #endif
     rc = GetSaveFileName( &of );
 #ifndef NOUSE3D
-    FreeProcInstance( (FARPROC)of.lpfnHook );
+    FreeProcInstance_OFNHOOK( of.lpfnHook );
 #endif
     return( rc != 0 );
 

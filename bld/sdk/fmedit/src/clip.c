@@ -64,7 +64,7 @@ static void FreeClipboard( void )
 
     for( objlist = ClipBoard.objs; objlist != NULL; objlist = DListConsume( objlist ) ) {
         elt = DListElement( objlist );
-        Destroy( elt.copy, FALSE );
+        Destroy( elt.copy, false );
     }
     InitClipboard();
 }
@@ -156,7 +156,7 @@ void FMEDITAPI FMAddClipboard( OBJPTR original, OBJPTR copy )
 }
 
 
-BOOL FMEDITAPI FMClipObjExists( OBJPTR obj )
+bool FMEDITAPI FMClipObjExists( OBJPTR obj )
 /******************************************/
 {
     /* See if obj is already in the list of copy objects */
@@ -165,7 +165,7 @@ BOOL FMEDITAPI FMClipObjExists( OBJPTR obj )
     elt.copy = NULL;
     elt.original = obj;
     if( DListFindElt( ClipBoard.objs, elt ) != NULL ) {
-        return( TRUE );
+        return( true );
     } else {
         elt.copy = obj;
         elt.original = NULL;
@@ -174,7 +174,7 @@ BOOL FMEDITAPI FMClipObjExists( OBJPTR obj )
 }
 
 
-BOOL FMEDITAPI FMPasteValid( void )
+bool FMEDITAPI FMPasteValid( void )
 /*********************************/
 {
     return( ClipBoard.task == GET_CURRENT_TASK() );

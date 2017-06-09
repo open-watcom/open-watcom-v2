@@ -68,6 +68,8 @@
 #include "optimize.h"
 #include "index.h"
 #include "fixindex.h"
+#include "conflict.h"
+#include "scmain.h"
 #include "generate.h"
 #include "feprotos.h"
 
@@ -77,11 +79,8 @@ extern  void            AssgnMoreTemps( block_num );
 extern  bool            CommonSex( bool );
 extern  void            MakeFlowGraph( void );
 extern  void            FindReferences( void );
-extern  void            FreeConflicts( void );
 extern  bool            SplitConflicts( void );
-extern  void            FreeAConflict( conflict_node * );
 extern  void            RegTreeInit( void );
-extern  void            InitConflict( void );
 extern  void            OptCloseMoves( void );
 extern  void            Conditions( void );
 extern  void            MakeConflicts( void );
@@ -90,10 +89,7 @@ extern  void            LiveInfoUpdate( void );
 extern  void            FixIndex( void );
 extern  void            FixSegments( void );
 extern  void            FixMemRefs( void );
-extern  void            Score( void );
 extern  void            MergeIndex( void );
-extern  void            ScoreInit( void );
-extern  void            ScoreFini( void );
 extern  void            AllocALocal( name * );
 extern  void            ParmPropagate( void );
 extern  void            InitStackMap( void );
@@ -230,7 +226,8 @@ static  void            PreOptimize( void )
 static  block           *NextBlock( block *blk, void *parm )
 /**********************************************************/
 {
-    parm = parm;
+    /* unused parameters */ (void)parm;
+
     return( blk->next_block );
 }
 
@@ -279,7 +276,8 @@ static  void            PostOptimize( void )
         // Reuse registers freed by deriscifier
         Score();
         DeadInstructions(); // cleanup junk after Score()
-        if( !BlockByBlock ) LoopRegInvariant();
+        if( !BlockByBlock )
+            LoopRegInvariant();
     #if (_TARGET & _TARG_RISC) == 0
         // Get rid of remaining unused conditions on register level.
         if( _IsntTargetModel( STATEMENT_COUNTING ) ) {
@@ -315,7 +313,8 @@ static  void    FreeExtraTemps( name *last, block_num id )
     owner = &Names[N_TEMP];
     for( ;; ) {
         temp = *owner;
-        if( temp == last ) break;
+        if( temp == last )
+            break;
         if( ( temp->v.usage & USE_IN_ANOTHER_BLOCK ) == 0
          && !_FrontEndTmp( temp )
          && temp->t.u.block_id == id ) {
@@ -394,7 +393,7 @@ static  void    BlockToCode( bool partly_done )
     HeadBlock->u.partition = NULL;
 
     ForceTempsMemory();
-    if( partly_done == false ) {
+    if( !partly_done ) {
         FixMemRefs();
         HaveLiveInfo = false;
         if( _IsntModel( NO_OPTIMIZATION | FORTRAN_ALIASING ) ) {
@@ -423,7 +422,8 @@ static  void    BlockToCode( bool partly_done )
         owner = &ConfList;
         for( ;; ) {
             curr = *owner;
-            if( curr == NULL ) break;
+            if( curr == NULL )
+                break;
             if( curr->start_block == HeadBlock ) {
                 *owner = curr->next_conflict;
                 curr->next_conflict = conflist;
@@ -488,10 +488,10 @@ static  void    FlushBlocks( bool partly_done )
     block       *curr;
     block_class classes;
 
-    if( BlockByBlock == false && _IsntModel( NO_OPTIMIZATION ) ) {
+    if( !BlockByBlock && _IsntModel( NO_OPTIMIZATION ) ) {
         ProcMessage( MSG_REGALLOC_DIED );
     }
-    if( partly_done == false ) {
+    if( !partly_done ) {
         Renumber();
     }
     curr = CurrBlock;
@@ -520,7 +520,8 @@ static  void    FreeExtraSyms( name *last )
     owner = &Names[N_TEMP];
     for(;;) {
         temp = *owner;
-        if( temp == last ) break;
+        if( temp == last )
+            break;
         if( ( temp->v.usage & USE_IN_ANOTHER_BLOCK ) == 0
          && !_FrontEndTmp( temp ) ) {
             *owner = temp->n.next_name;
@@ -651,25 +652,26 @@ void    Generate( bool routine_done )
  * Follow this routine to see the transformation of code unfold.
  */
 {
-    if( BGInInline() ) return;
+    if( BGInInline() )
+        return;
     HaveLiveInfo = false;
     HaveDominatorInfo = false;
-    #if ( _TARGET & ( _TARG_370 | _TARG_RISC ) ) == 0
-        /* if we want to go fast, generate statement at a time */
-        if( _IsModel( NO_OPTIMIZATION ) ) {
-            if( !BlockByBlock ) {
-                InitStackMap();
-                BlockByBlock = true;
-            }
-            LNBlip( SrcLine );
-            FlushBlocks( false );
-            FreeExtraSyms( LastTemp );
-            if( _MemLow ) {
-                BlowAwayFreeLists();
-            }
-            return;
+#if ( _TARGET & ( _TARG_370 | _TARG_RISC ) ) == 0
+    /* if we want to go fast, generate statement at a time */
+    if( _IsModel( NO_OPTIMIZATION ) ) {
+        if( !BlockByBlock ) {
+            InitStackMap();
+            BlockByBlock = true;
         }
-    #endif
+        LNBlip( SrcLine );
+        FlushBlocks( false );
+        FreeExtraSyms( LastTemp );
+        if( _MemLow ) {
+            BlowAwayFreeLists();
+        }
+        return;
+    }
+#endif
 
     /* if we couldn't get the whole procedure in memory, generate part of it */
     if( BlockByBlock ) {
@@ -690,7 +692,7 @@ void    Generate( bool routine_done )
     }
 
     /* check to see that no basic block gets too unwieldy */
-    if( routine_done == false ) {
+    if( !routine_done ) {
         BlkTooBig();
         return;
     }
@@ -734,7 +736,7 @@ void    Generate( bool routine_done )
     FixIndex();
     FixSegments();
     FPRegAlloc();
-    if( RegAlloc( false ) == false ) {
+    if( !RegAlloc( false ) ) {
         Panic( true );
         HaveLiveInfo = false;
         return;

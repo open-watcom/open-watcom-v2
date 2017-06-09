@@ -183,9 +183,9 @@ _WCRTLINK long sysconf( int name )
         break;
     case _SC_THREAD_STACK_MIN:
         /* We don't actually have one, but we'll
-         * set the small, but acceptable, 1KB
+         * assume one page
          */
-        ret = (long)1024;
+        ret = (long)PAGE_SIZE;
         break;
     case _SC_THREAD_PRIORITY_SCHEDULING:
     case _SC_THREAD_PROCESS_SHARED:

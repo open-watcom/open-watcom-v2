@@ -43,19 +43,39 @@
 
 typedef struct scwinds {
     HWND                hwnd;
-    FARPROC             oldproc;
+    WNDPROC             oldproc;
 } scwinds;
 
-static scwinds SCWindows[128];
-static WORD     SCCount;
-static FARPROC  DefaultProcInstance;
-static FARPROC  EnumChildProcInstance;
-static FARPROC  EnumTaskProcInstance;
+static scwinds      SCWindows[128];
+static WORD         SCCount;
+static WNDPROC      DefaultProcInstance;
+static WNDENUMPROC  EnumChildProcInstance;
+static WNDENUMPROC  EnumTaskProcInstance;
+
+static WNDENUMPROC MakeProcInstance_WNDENUM( WNDENUMPROC fn, HINSTANCE instance )
+{
+    return( (WNDENUMPROC)MakeProcInstance( (FARPROC)fn, instance ) );
+}
+
+static WNDPROC MakeProcInstance_WND( WNDPROC fn, HINSTANCE instance )
+{
+    return( (WNDPROC)MakeProcInstance( (FARPROC)fn, instance ) );
+}
+
+static void FreeProcInstance_WNDENUM( WNDENUMPROC fn )
+{
+    FreeProcInstance( (FARPROC)fn );
+}
+
+static void FreeProcInstance_WND( WNDPROC fn )
+{
+    FreeProcInstance( (FARPROC)fn );
+}
 
 /*
  * SubClassProc - handle all messages for the stopped task
  */
-static long SubClassProc( HWND hwnd, unsigned message, WORD wparam, LONG lparam )
+static LRESULT SubClassProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
     PAINTSTRUCT ps;
     HDC         dc;
@@ -93,7 +113,7 @@ static long SubClassProc( HWND hwnd, unsigned message, WORD wparam, LONG lparam 
 
 }
 
-long __export FAR PASCAL DefaultProc( HWND hwnd, unsigned message, WORD wparam, LONG lparam )
+LRESULT __export FAR PASCAL DefaultProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam )
 {
     Out((OUT_MSG,"Default Proc: hwnd=%04x, msg=%04x, wp=%04x, lp=%08lx",
                     hwnd, message, wparam, lparam ));
@@ -112,37 +132,37 @@ long __export FAR PASCAL DefaultProc( HWND hwnd, unsigned message, WORD wparam, 
  */
 static BOOL SubClassWindow( HWND hwnd, BOOL do_children )
 {
-    FARPROC     fp;
     char        buffer[80];
 
     if( hwnd == NULL ) {
         return( 0 );
     }
-    buffer[0]=0;
+    buffer[0] = 0;
     GetClassName( hwnd, buffer, sizeof( buffer ) );
     Out((OUT_SOFT,"--- Subclass (%s), id=%04x",buffer,hwnd));
-    if( GetWindowWord( hwnd, GWW_HINSTANCE ) == (WORD)GetModuleHandle( "USER") ) {
+    if( GetWindowWord( hwnd, GWW_HINSTANCE ) == (WORD)GetModuleHandle( "USER" ) ) {
         Out((OUT_SOFT,"--- Subclass IGNORED (USER)" ));
         return( 1 );
     }
     if( buffer[0] != '#' ) { // don't subclass predefined windows classes
-        fp = (FARPROC)SetWindowLong( hwnd, GWL_WNDPROC, (LONG)DefaultProcInstance );
-        SCWindows[ SCCount ].hwnd = hwnd;
-        SCWindows[ SCCount ].oldproc = fp;
+        SCWindows[SCCount].hwnd = hwnd;
+        SCWindows[SCCount].oldproc = (WNDPROC)SetWindowLong( hwnd, GWL_WNDPROC, (LONG)DefaultProcInstance );
         SCCount++;
-        if( do_children ) EnumChildWindows( hwnd, (WNDENUMPROC)EnumChildProcInstance, 0 );
+        if( do_children ) {
+            EnumChildWindows( hwnd, EnumChildProcInstance, 0 );
+        }
     }
     return( 1 );
 
 }
 
-BOOL __export FAR PASCAL EnumTaskWindowsFunc( HWND hwnd, DWORD lparam )
+BOOL __export FAR PASCAL EnumTaskWindowsFunc( HWND hwnd, LPARAM lparam )
 {
     lparam=lparam;
     return( SubClassWindow( hwnd, TRUE ) );
 }
 
-BOOL __export FAR PASCAL EnumChildWindowsFunc( HWND hwnd, DWORD lparam )
+BOOL __export FAR PASCAL EnumChildWindowsFunc( HWND hwnd, LPARAM lparam )
 {
     lparam=lparam;
     return( SubClassWindow( hwnd, FALSE ) );
@@ -191,8 +211,8 @@ void ExitSoftMode( void )
 
     Out((OUT_SOFT,"Exiting Soft Mode" ));
 
-    for( i=SCCount-1;i>=0;--i ) { // go in reverse in case window subclassed 2x
-        SetWindowLong( SCWindows[i].hwnd, GWL_WNDPROC, (LONG) SCWindows[i].oldproc );
+    for( i = SCCount - 1; i >= 0; --i ) { // go in reverse in case window subclassed 2x
+        SetWindowLong( SCWindows[i].hwnd, GWL_WNDPROC, (LONG)SCWindows[i].oldproc );
     }
     SCCount = 0;
 
@@ -201,9 +221,12 @@ void ExitSoftMode( void )
 
 static BOOL IsTaskWnd( HWND wnd )
 {
-    if( wnd == NULL ) return( FALSE );
-    if( !IsWindow( wnd ) ) return( FALSE );
-    if( GetWindowTask( wnd ) != DebugeeTask ) return( FALSE );
+    if( wnd == NULL )
+        return( FALSE );
+    if( !IsWindow( wnd ) )
+        return( FALSE );
+    if( GetWindowTask( wnd ) != DebugeeTask )
+        return( FALSE );
     return( TRUE );
 }
 
@@ -283,18 +306,17 @@ restart_opts DebugeeWaitForMessage( void )
 
     Out((OUT_SOFT,"In SoftMode Loop task=%04x(%04x), act=%04x, foc=%04x, t=%d, DW=%04x", GetCurrentTask(), DebugeeTask, ActiveWnd, FocusWnd, TraceOn, DebuggerWindow ));
 
-    DefaultProcInstance = (FARPROC)MakeProcInstance( (FARPROC)DefaultProc, DebugeeInstance );
+    DefaultProcInstance = MakeProcInstance_WND( DefaultProc, DebugeeInstance );
+    EnumTaskProcInstance = MakeProcInstance_WNDENUM( EnumTaskWindowsFunc, DebugeeInstance );
+    EnumChildProcInstance = MakeProcInstance_WNDENUM( EnumChildWindowsFunc, DebugeeInstance );
+    EnumTaskWindows( GetCurrentTask(), EnumTaskProcInstance, 0 );
+    FreeProcInstance_WNDENUM( EnumChildProcInstance );
+    FreeProcInstance_WNDENUM( EnumTaskProcInstance );
 
-    EnumTaskProcInstance = MakeProcInstance( (FARPROC)EnumTaskWindowsFunc, DebugeeInstance );
-    EnumChildProcInstance = MakeProcInstance( (FARPROC)EnumChildWindowsFunc, DebugeeInstance );
-    EnumTaskWindows( GetCurrentTask(), (WNDENUMPROC)EnumTaskProcInstance, 0 );
-    FreeProcInstance( EnumChildProcInstance );
-    FreeProcInstance( EnumTaskProcInstance );
-
-    while( 1 ) {
+    for( ;; ) {
         GetMessage( &msg, NULL, 0, 0 );
-        if( msg.hwnd == NULL &&
-            msg.message == WM_NULL && msg.lParam == MAGIC_COOKIE ) break;
+        if( msg.hwnd == NULL && msg.message == WM_NULL && msg.lParam == MAGIC_COOKIE )
+            break;
         if( msg.hwnd != NULL ) {
             hinst = (HINSTANCE)GetWindowWord( msg.hwnd, GWW_HINSTANCE );
         } else {
@@ -318,7 +340,7 @@ restart_opts DebugeeWaitForMessage( void )
         }
     }
     ExitSoftMode();
-    FreeProcInstance( DefaultProcInstance );
+    FreeProcInstance_WND( DefaultProcInstance );
     if( capture != NULL ) {
         SetCapture( capture );
     }

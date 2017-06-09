@@ -71,7 +71,7 @@ int CBanner( void )
         ++count;
         BannerMsg( banner3a );
         ++count;
-        CompFlags.banner_printed = 1;
+        CompFlags.banner_printed = true;
     }
     return( count );
 }

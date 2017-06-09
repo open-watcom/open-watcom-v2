@@ -152,7 +152,8 @@ static void     FuncMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     address     addr;
     func_window *func = WndFunc( wnd );
 
-    piece=piece;
+    /* unused parameters */ (void)piece;
+
     addr = NilAddr;
     if( row != WND_NO_ROW )
         addr = NameListAddr( NameList( func ), row );
@@ -266,7 +267,8 @@ static bool FuncEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     func_window *func = WndFunc( wnd );
 
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         NameListInit( NameList( func ), WF_CODE );

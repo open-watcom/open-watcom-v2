@@ -1,2 +1,2 @@
-extern OBJPTR   OItemCreate( OBJPTR, RECT *, OBJPTR );
+extern INT_CREATE_RTN OItemCreate;
 extern void     InitOItem( void );

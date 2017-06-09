@@ -33,6 +33,7 @@
 #include <string.h>
 #include "drutils.h"
 #include "walloca.h"
+#include "drgettab.h"
 
 #include "clibext.h"
 
@@ -51,22 +52,23 @@ static bool GrabLineAddr( drmem_hdl abbrev, drmem_hdl mod, mod_scan_info *x, voi
  * the start of a compile unit die.  This picks out the line number info.
  * offset, and stores it in data */
 {
-    x = x;      // to avoid a warning
+    /* unused parameters */ (void)x;
+
     if( DWRScanForAttrib( &abbrev, &mod, DW_AT_stmt_list ) ) {
         *((unsigned_32 *)data) = DWRReadConstant( abbrev, mod );
     }
     return( false );    // do not continue with the search.
 }
 
-extern void DWRInitFileTable( file_table *tab )
-/*********************************************/
+void DWRInitFileTable( file_table *tab )
+/**************************************/
 {
     tab->len = 0;
     tab->tab = DWRALLOC( VBL_ARRAY_DELTA * sizeof( filetab_entry ) );
 }
 
-extern void DWRFiniFileTable( file_table *tab, bool freenames )
-/*************************************************************/
+void DWRFiniFileTable( file_table *tab, bool freenames )
+/******************************************************/
 {
     filetab_idx     ftidx;
 
@@ -90,7 +92,7 @@ static void GrowTable( file_table *tab )
     }
 }
 
-extern filetab_idx DWRAddFileName( char *name, file_table *tab )
+static filetab_idx DWRAddFileName( char *name, file_table *tab )
 /**************************************************************/
 {
     filetab_idx     ftidx;
@@ -119,27 +121,27 @@ static void DWRInsertIndex( filetab_idx ftidx, file_table *tab, unsigned where )
     }
 }
 
-extern void DWRAddIndex( filetab_idx ftidx, file_table *tab, unsigned where )
+static void DWRAddIndex( filetab_idx ftidx, file_table *tab, unsigned where )
 /***************************************************************************/
 {
     GrowTable( tab );
     DWRInsertIndex( ftidx, tab, where );
 }
 
-extern filetab_idx DWRIndexPath( dr_fileidx pathidx, file_table *tab )
+static filetab_idx DWRIndexPath( dr_fileidx pathidx, file_table *tab )
 /********************************************************************/
 {
     return( tab->tab[pathidx].u.idx.pathidx );
 }
 
-extern filetab_idx DWRIndexFile( dr_fileidx fileidx, file_table *tab )
-/********************************************************************/
+filetab_idx DWRIndexFile( dr_fileidx fileidx, file_table *tab )
+/*************************************************************/
 {
     return( tab->tab[fileidx].u.idx.fnameidx );
 }
 
-extern char * DWRIndexFileName( filetab_idx ftidx, file_table *tab )
-/******************************************************************/
+char * DWRIndexFileName( filetab_idx ftidx, file_table *tab )
+/***********************************************************/
 {
     return( tab->tab[ftidx].u.name );
 }
@@ -168,9 +170,8 @@ static void ReadNameEntry( drmem_hdl *start, file_info *nametab,
     DWRVMSkipLEB128( start );   // skip length
 }
 
-extern void DWRScanFileTable( drmem_hdl start, file_info *nametab,
-                              file_table *idxtab )
-/****************************************************************/
+void DWRScanFileTable( drmem_hdl start, file_info *nametab, file_table *idxtab )
+/******************************************************************************/
 // find the filenames in the line information, and return them in a table
 {
     drmem_hdl       finish;
@@ -245,8 +246,8 @@ extern void DWRScanFileTable( drmem_hdl start, file_info *nametab,
     DWRFiniFileTable( &curridxmap, false );
 }
 
-extern char * DWRFindFileName( dr_fileidx fileidx, drmem_hdl entry )
-/***************************************************************/
+char * DWRFindFileName( dr_fileidx fileidx, drmem_hdl entry )
+/***********************************************************/
 {
     compunit_info   *compunit;
     filetab_idx     ftidx;

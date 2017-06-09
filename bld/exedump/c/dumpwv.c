@@ -179,7 +179,7 @@ void Get_local_name( char *name, unsigned_8 *data, unsigned_8 *start )
 {
     int len;
 
-    len = start[0] - (data - start);
+    len = start[0] - (unsigned_8)( data - start );
     memcpy( name, data, len );
     name[len] = '\0';
 

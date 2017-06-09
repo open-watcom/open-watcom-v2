@@ -159,7 +159,7 @@ control_item * GUIGetControlByHwnd( gui_window *parent, HWND control )
 
 control_item *GUIControlInsert( gui_window *parent, gui_control_class control_class,
                                 HWND hwnd, gui_control_info *ctl_info,
-                                WPI_PROC call_back )
+                                WPI_WNDPROC win_call_back )
 {
     control_item        *item;
 
@@ -174,7 +174,7 @@ control_item *GUIControlInsert( gui_window *parent, gui_control_class control_cl
     item->id = ctl_info->id;
     item->next = NULL;
     item->hwnd = hwnd;
-    item->call_back = call_back;
+    item->win_call_back = win_call_back;
     item->next = parent->controls;
     parent->controls = item;
     return( item );
@@ -266,7 +266,7 @@ void GUIControlDeleteAll( gui_window *wnd )
 WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     control_item        *info;
-    WPI_PROC            call_back;
+    WPI_WNDPROC         win_call_back;
     HWND                parent;
     HWND                grand_parent;
     gui_window          *wnd;
@@ -291,7 +291,7 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
     if( info == NULL ) {
         return( 0L );
     }
-    call_back = info->call_back;
+    win_call_back = info->win_call_back;
     switch( message ) {
 #ifndef __OS2_PM__
     case WM_SETFOCUS :
@@ -365,10 +365,10 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
         break;
     case WM_NCDESTROY:
         GUIControlDelete( wnd, info->id );
-        _wpi_subclasswindow( hwnd, call_back );
+        _wpi_subclasswindow( hwnd, win_call_back );
         break;
     }
-    return( (WPI_MRESULT)_wpi_callwindowproc( (WPI_WNDPROC)call_back, hwnd, message, wparam, lparam ) );
+    return( (WPI_MRESULT)_wpi_callwindowproc( win_call_back, hwnd, message, wparam, lparam ) );
 }
 
 /*
@@ -378,7 +378,7 @@ WPI_MRESULT CALLBACK GUIEditFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam,
 WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     control_item        *info;
-    WPI_PROC            call_back;
+    WPI_WNDPROC         win_call_back;
     WPI_PRES            hdc;
     WPI_RECT            rect;
     HWND                parent;
@@ -393,7 +393,7 @@ WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
     if( info == NULL ) {
         return( 0L );
     }
-    call_back = info->call_back;
+    win_call_back = info->win_call_back;
     switch( message ) {
     case WM_ERASEBKGND:
         hdc = _wpi_getpres( hwnd );
@@ -402,13 +402,13 @@ WPI_MRESULT CALLBACK GUIGroupBoxFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
         _wpi_releasepres( hwnd, hdc );
         break;
     }
-    return( (WPI_MRESULT)_wpi_callwindowproc( (WPI_WNDPROC)call_back, hwnd, message, wparam, lparam ) );
+    return( (WPI_MRESULT)_wpi_callwindowproc( win_call_back, hwnd, message, wparam, lparam ) );
 }
 
-WPI_PROC GUIDoSubClass( HWND hwnd, gui_control_class control_class )
+WPI_WNDPROC GUIDoSubClass( HWND hwnd, gui_control_class control_class )
 {
-    WPI_PROC old;
-    WPI_PROC new;
+    WPI_WNDPROC old;
+    WPI_WNDPROC new;
 
     //CvrCtl3dSubclassCtl( hwnd );
 
@@ -417,11 +417,11 @@ WPI_PROC GUIDoSubClass( HWND hwnd, gui_control_class control_class )
         return( GUISubClassEditCombobox( hwnd ) );
     case GUI_EDIT:
     case GUI_EDIT_MLE:
-        new = _wpi_makeprocinstance( (WPI_PROC)GUIEditFunc, GUIMainHInst );
+        new = (WPI_WNDPROC)_wpi_makeprocinstance( (WPI_PROC)GUIEditFunc, GUIMainHInst );
         old = _wpi_subclasswindow( hwnd, new );
         return( old );
     case GUI_GROUPBOX:
-        new = _wpi_makeprocinstance( (WPI_PROC)GUIGroupBoxFunc, GUIMainHInst );
+        new = (WPI_WNDPROC)_wpi_makeprocinstance( (WPI_PROC)GUIGroupBoxFunc, GUIMainHInst );
         old = _wpi_subclasswindow( hwnd, new );
         return( old );
     default :
@@ -541,21 +541,19 @@ LONG GUISetControlStyle( gui_control_info *ctl_info )
     return( ret_style );
 }
 
-static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
-                           gui_coord pos, gui_coord size )
+static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent, gui_coord pos, gui_coord size )
 {
     DWORD       style;
     HWND        hwnd;
     char        *new_text;
-    void        *pctldata;
 #ifdef __OS2_PM__
     ENTRYFDATA  edata;
-#endif
-#if defined(__NT__)
+    void        *pctldata;
+#elif defined( __WINDOWS__ )
+#else
     DWORD       xstyle;
 #endif
 
-    pctldata = NULL;
     new_text = _wpi_menutext2pm( ctl_info->text );
 
     style = GUISetControlStyle( ctl_info );
@@ -568,8 +566,9 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
     }
 
 #ifdef __OS2_PM__
+    pctldata = NULL;
     if( ctl_info->control_class == GUI_EDIT ) {
-        edata.cb = sizeof(ENTRYFDATA);
+        edata.cb = sizeof( edata );
         edata.cchEditLimit = 2048;
         edata.ichMinSel = 0;
         edata.ichMaxSel = 0;
@@ -584,7 +583,16 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
         style |= WS_CHILD;
     }
 
-#if defined(__NT__)
+#if defined( __OS2_PM__ )
+    _wpi_createanywindow( GUIControls[ctl_info->control_class].classname,
+                  new_text, style, pos.x, pos.y, size.x, size.y,
+                  parent->hwnd, (HMENU)ctl_info->id, GUIMainHInst,
+                  pctldata, &hwnd, ctl_info->id, &hwnd );
+#elif defined( __WINDOWS__ )
+    hwnd = CreateWindow( GUIControls[ctl_info->control_class].classname,
+                  new_text, style, pos.x, pos.y, size.x, size.y,
+                  parent->hwnd, (HMENU)ctl_info->id, GUIMainHInst, NULL );
+#else
     // We do this crud to get 3d edges on edit controls, listboxes, and
     // comboboxes -rnk 07/07/95
     xstyle = 0L;
@@ -597,7 +605,7 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
 
     hwnd = CreateWindowEx( xstyle, GUIControls[ctl_info->control_class].classname,
         new_text, style, pos.x, pos.y, size.x, size.y, parent->hwnd,
-        (HMENU)ctl_info->id, GUIMainHInst, pctldata );
+        (HMENU)ctl_info->id, GUIMainHInst, NULL );
 
     /* From here to #else, new by RR 2003.12.05 */
 
@@ -611,7 +619,7 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
         if( LOBYTE(LOWORD(GetVersion())) >= 4 ) {
   #endif
             /* New shell active, Win95 or later */
-            setFont = (HFONT) GetStockObject( DEFAULT_GUI_FONT );
+            setFont = (HFONT)GetStockObject( DEFAULT_GUI_FONT );
   #if !defined( _WIN64 )
         } else {
             /* MSDN on net tells SYSTEM_FONT should be Tahoma on W2K    */
@@ -622,14 +630,9 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
 
         SendMessage( hwnd, WM_SETFONT, (WPARAM)setFont, (LPARAM)0 );
     }
-#else
-    _wpi_createanywindow( GUIControls[ctl_info->control_class].classname,
-                          new_text, style, pos.x, pos.y, size.x, size.y,
-                          parent->hwnd, (HMENU)ctl_info->id, GUIMainHInst,
-                          pctldata, &hwnd, ctl_info->id, &hwnd );
 #endif
 
-    if( new_text ) {
+    if( new_text != NULL ) {
         _wpi_freemenutext( new_text );
     }
 
@@ -640,8 +643,7 @@ static HWND CreateControl( gui_control_info *ctl_info, gui_window *parent,
  * GUIAddControl - add the given control to the parent window
  */
 
-bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain,
-                    gui_colour_set *standout )
+bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain, gui_colour_set *standout )
 {
     gui_coord           pos;
     gui_coord           size;
@@ -673,7 +675,7 @@ bool GUIAddControl( gui_control_info *ctl_info, gui_colour_set *plain,
         GUISendMessage( parent->hwnd, DM_SETDEFID, ctl_info->id, 0 );
     }
 #endif
-    if( !( ctl_info->style & GUI_CONTROL_INIT_INVISIBLE ) ) {
+    if( (ctl_info->style & GUI_CONTROL_INIT_INVISIBLE) == 0 ) {
         _wpi_showwindow( hwnd, SW_SHOW );
     }
     return( true );

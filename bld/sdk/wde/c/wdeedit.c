@@ -46,6 +46,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT LRESULT CALLBACK WdeEditWndProc( HWND, UINT, WPARAM, LPARAM );
 WINEXPORT LRESULT CALLBACK WdeFormsWndProc( HWND, UINT, WPARAM, LPARAM );
 
@@ -68,7 +70,7 @@ bool WdeSetEditMode( WdeResInfo *info, bool new_mode )
         old_mode = info->editting;
         info->editting = new_mode;
     } else {
-        old_mode = FALSE;
+        old_mode = false;
     }
 
     return( old_mode );
@@ -105,9 +107,9 @@ HWND WdeGetEditWindowHandle( WdeResInfo *info )
 void WdeInitEditClass( void )
 {
     LOGBRUSH    lbrush;
-    char        *text;
+    char        *font_facename;
     char        *cp;
-    int         point_size;
+    int         font_pointsize;
     bool        use_default;
 
     WdeEditBrush = GetStockObject( WHITE_BRUSH );
@@ -118,26 +120,26 @@ void WdeInitEditClass( void )
     WdeFormsBrush = CreateBrushIndirect( &lbrush );
 
     if( WdeEditFont == NULL ) {
-        use_default = TRUE;
-        text = WdeAllocRCString( WDE_EDITWINDOWFONT );
-        if( text != NULL ) {
-            cp = (char *)_mbschr( (unsigned char const *)text, '.' );
+        use_default = true;
+        font_facename = WdeAllocRCString( WDE_EDITWINDOWFONT );
+        if( font_facename != NULL ) {
+            cp = (char *)_mbschr( (unsigned char const *)font_facename, '.' );
             if( cp != NULL ) {
                 *cp = '\0';
                 cp++;
-                point_size = atoi( cp );
-                use_default = FALSE;
+                font_pointsize = atoi( cp );
+                use_default = false;
             }
         }
 
         if( use_default ) {
             WdeEditFont = WdeGetFont( "Helv", 8, FW_BOLD );
         } else {
-            WdeEditFont = WdeGetFont( text, point_size, FW_BOLD );
+            WdeEditFont = WdeGetFont( font_facename, font_pointsize, FW_BOLD );
         }
 
-        if( text != NULL ) {
-            WdeFreeRCString( text );
+        if( font_facename != NULL ) {
+            WdeFreeRCString( font_facename );
         }
     }
 }
@@ -171,7 +173,7 @@ bool WdeRegisterEditClass( HINSTANCE app_inst )
     /* register the edit window class */
     if( !RegisterClass( &wc ) ) {
         WdeDisplayErrorMsg( WDE_EDITREGISTERCLASSFAILED );
-        return( FALSE );
+        return( false );
     }
 
     /* fill in the window class structure for the edit window */
@@ -189,10 +191,10 @@ bool WdeRegisterEditClass( HINSTANCE app_inst )
     /* register the edit window class */
     if( !RegisterClass( &wc ) ) {
         WdeDisplayErrorMsg( WDE_EDITREGISTERCLASSFAILED );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeDestroyEditWindows( WdeResInfo *info )
@@ -220,7 +222,7 @@ bool WdeCreateEditWindows( WdeResInfo *info )
     HINSTANCE app_inst;
 
     if( info == NULL || info->res_win == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     app_inst = WdeGetAppInstance();
@@ -233,7 +235,7 @@ bool WdeCreateEditWindows( WdeResInfo *info )
 
     if( info->forms_win == NULL ) {
         WdeWriteTrail( "WdeCreateEditWindow: failed to create forms window!" );
-        return( FALSE );
+        return( false );
     }
 
     GetClientRect( info->forms_win, &rect );
@@ -244,7 +246,7 @@ bool WdeCreateEditWindows( WdeResInfo *info )
 
     if( info->edit_win == NULL ) {
         WdeWriteTrail( "WdeCreateEditWindow: failed to create forms window!" );
-        return( FALSE );
+        return( false );
     }
 
     SET_WNDINFO( info->edit_win, (LONG_PTR)info );
@@ -252,7 +254,7 @@ bool WdeCreateEditWindows( WdeResInfo *info )
 
     SetWindowPos( info->forms_win, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeResizeEditWindows( WdeResInfo *info )
@@ -261,22 +263,20 @@ bool WdeResizeEditWindows( WdeResInfo *info )
 
     if( info == NULL || info->res_win == NULL ||
         info->forms_win == NULL || info->edit_win == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     GetClientRect( info->res_win, &rect );
 
-    MoveWindow( info->forms_win, 0, 0, rect.right - rect.left,
-                rect.bottom - rect.top, TRUE );
+    MoveWindow( info->forms_win, 0, 0, rect.right - rect.left, rect.bottom - rect.top, TRUE );
 
-    WdeCheckBaseScrollbars( TRUE );
+    WdeCheckBaseScrollbars( true );
 
     GetClientRect( info->forms_win, &rect );
 
-    MoveWindow( info->edit_win, 0, 0, rect.right - rect.left,
-                rect.bottom - rect.top, TRUE );
+    MoveWindow( info->edit_win, 0, 0, rect.right - rect.left, rect.bottom - rect.top, TRUE );
 
-    return( TRUE );
+    return( true );
 }
 
 HFONT WdeGetEditFont( void )
@@ -294,13 +294,13 @@ LRESULT WdePassToEdit( UINT message, WPARAM wParam, LPARAM lParam )
         return( SendMessage( info->forms_win, message, wParam, lParam ) );
     }
 
-    return( FALSE );
+    return( false );
 }
 
-WINEXPORT LRESULT CALLBACK WdeEditWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeEditWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     HWND        hwin;
-    uint_32     styles;
+    DWORD       style;
     LRESULT     result;
 
 #if 0
@@ -317,8 +317,8 @@ WINEXPORT LRESULT CALLBACK WdeEditWndProc( HWND hWnd, UINT message, WPARAM wPara
 #ifdef __NT__
     case WM_CTLCOLORSTATIC:
         hwin = (HWND)lParam;
-        styles = GetWindowLong( hwin, GWL_STYLE );
-        if ( (styles & SS_SIMPLE) == SS_SIMPLE ) {
+        style = GET_WNDSTYLE( hwin );
+        if ( (style & SS_SIMPLE) == SS_SIMPLE ) {
             break;
         }
     case WM_CTLCOLORLISTBOX:
@@ -336,8 +336,8 @@ WINEXPORT LRESULT CALLBACK WdeEditWndProc( HWND hWnd, UINT message, WPARAM wPara
         switch( HIWORD( lParam ) ) {
         case CTLCOLOR_STATIC:
             hwin = (HWND)LOWORD( lParam );
-            styles = GetWindowLong( hwin, GWL_STYLE );
-            if( (styles & SS_SIMPLE) == SS_SIMPLE ) {
+            style = GET_WNDSTYLE( hwin );
+            if( (style & SS_SIMPLE) == SS_SIMPLE ) {
                 break;
             }
         case CTLCOLOR_LISTBOX:
@@ -358,7 +358,7 @@ WINEXPORT LRESULT CALLBACK WdeEditWndProc( HWND hWnd, UINT message, WPARAM wPara
     return( DefWindowProc( hWnd, message, wParam, lParam ) );
 }
 
-WINEXPORT LRESULT CALLBACK WdeFormsWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeFormsWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WdeResInfo *info;
     LRESULT     result;

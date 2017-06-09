@@ -60,7 +60,8 @@ extern  void    gml_set( gml_tag gtag )
     int             rc;
     symvar      * * working_dict;
 
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     subscript = no_subscript;           // not subscripted
     scan_err = false;
 

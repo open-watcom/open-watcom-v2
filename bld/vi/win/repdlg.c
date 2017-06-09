@@ -33,11 +33,11 @@
 
 #include "vi.h"
 #include "repdlg.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static fancy_find findData =
     { -1, -1, NULL, 0, NULL, 0, NULL, 0, NULL, 0, true, false, true, true, false, false };
@@ -45,7 +45,7 @@ static fancy_find findData =
 /*
  * RepDlgProc - callback routine for find & replace dialog
  */
-WINEXPORT BOOL CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int                 curr;
     int                 i;
@@ -102,7 +102,7 @@ WINEXPORT BOOL CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
                 if( index == LB_ERR ) {
                     break;
                 }
-                SendDlgItemMessage( hwnd, REP_LISTBOX, LB_GETTEXT, index, (LPARAM)find );
+                SendDlgItemMessage( hwnd, REP_LISTBOX, LB_GETTEXT, index, (LPARAM)(LPSTR)find );
                 SetDlgItemText( hwnd, REP_FIND, find );
                 if( cmd == LBN_DBLCLK ) {
                     PostMessage( hwnd, WM_COMMAND, GET_WM_COMMAND_MPS( IDOK, 0, 0 ) );
@@ -155,16 +155,16 @@ WINEXPORT BOOL CALLBACK RepDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
  */
 bool GetReplaceStringDialog( fancy_find *ff )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
     bool        rc;
 
     findData.find = ff->find;
     findData.findlen = ff->findlen;
     findData.replace = ff->replace;
     findData.replacelen = ff->replacelen;
-    proc = MakeDlgProcInstance( RepDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "REPDLG", root_window_id, (DLGPROC)proc ) != 0;
-    FreeProcInstance( proc );
+    dlgproc = MakeProcInstance_DLG( RepDlgProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "REPDLG", root_window_id, dlgproc ) != 0;
+    FreeProcInstance_DLG( dlgproc );
     SetWindowCursor();
 
     if( strlen( findData.find ) == 0 ) {

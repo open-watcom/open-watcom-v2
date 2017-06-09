@@ -82,7 +82,8 @@ static int TrdNumRows( a_window *wnd )
     thread_state    *thd;
     unsigned        num;
 
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     num = 0;
     for( thd = HeadThd; thd != NULL; thd = thd->link )
         ++num;
@@ -93,7 +94,8 @@ static void TrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     thread_state        *thd = GetThreadRow( row );
 
-    piece=piece;
+    /* unused parameters */ (void)piece;
+
     switch( id ) {
     case MENU_INITIALIZE:
         if( thd == NULL ) {
@@ -114,7 +116,7 @@ static void TrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
             default:
                 WndMenuGrayAll( wnd );
                 break;
-            }                    
+            }
         }
         return;
     case MENU_THREAD_FREEZE:
@@ -129,7 +131,7 @@ static void TrdMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
         switch( thd->state ) {
         case THD_THAW:
         case THD_FREEZE:
-        case THD_DEBUG:    
+        case THD_DEBUG:
             MakeThdCurr( thd );
             break;
         }
@@ -214,19 +216,19 @@ static  bool    TrdGetLine( a_window *wnd, int row, int piece,
                     break;
                 case THD_WAIT:
                     line->text = LIT_ENG( Wait );
-                    break;  
+                    break;
                 case THD_SIGNAL:
                     line->text = LIT_ENG( Signal );
-                    break;  
+                    break;
                 case THD_KEYBOARD:
                     line->text = LIT_ENG( Keyboard );
-                    break;  
+                    break;
                 case THD_BLOCKED:
                     line->text = LIT_ENG( Blocked );
-                    break;  
+                    break;
                 case THD_RUN:
                     line->text = LIT_ENG( Executing );
-                    break;  
+                    break;
                 case THD_DEBUG:
                     line->text = LIT_ENG( Debug );
                     break;

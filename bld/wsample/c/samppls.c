@@ -72,6 +72,17 @@ unsigned NextThread( unsigned tid )
     return( !tid );
 }
 
+void ResetThread( unsigned tid )
+{
+    if( tid > 0 ) {
+        SampleIndex = 0;
+        if( CallGraphMode ) {
+            SampleCount = 0;
+            LastSampleIndex = 0;
+        }
+    }
+}
+
 bool VersionCheck( void )
 {
     return( true );
@@ -205,14 +216,15 @@ static void FixTime( void )
     SetBiosClk( count );
 }
 
-void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
 {
     PTR386      addr;
     char        buff[BSIZE];
     int         len;
     seg_offset  where;
 
-    cmd = cmd;
+    /* unused parameters */ (void)cmd;
+
     SampleIndex = 0;
     CurrTick  = 0L;
     FakeBreak = 0;

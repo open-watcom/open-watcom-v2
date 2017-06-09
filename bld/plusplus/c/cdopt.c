@@ -387,9 +387,10 @@ static void dumpRing(           // DUMP A RING
 static void DumpCdoptCaches(    // DUMP CDOPT CACHES
     void )
 {
-    int saved = PragDbgToggle.cdopt;
+    bool saved;
 
-    PragDbgToggle.cdopt = 1;
+    saved = PragDbgToggle.cdopt;
+    PragDbgToggle.cdopt = true;
     dumpRing( allDescriptors.cdopt_ctor );
     dumpRing( allDescriptors.cdopt_dtor );
     dumpRing( allDescriptors.cdopt_opeq );
@@ -1003,7 +1004,7 @@ static bool dtorOptimizable(    // CAN DTOR BE OPTIMIZED UNDER ANY CONDITIONS?
     dtor = elem->cdtor;
     if( dtor == NULL ) {
         retb = true;
-    } else if( ! CompFlags.inline_functions ) {
+    } else if( !CompFlags.inline_functions ) {
         retb = false;
     } else {
         retb = classCanBeDtorOpt( SymClassInfo( dtor ) );
@@ -1129,10 +1130,7 @@ static bool classCanBeCtorOpt(  // CAN CLASS BE DEF-CTOR OPTIMIZED
     CLASSINFO *ci )             // - class info for ctor
 {
     ci->ctor_user_code_checked = true;
-    return ! ( ( ci->has_ctor && ci->ctor_user_code )
-            || ci->corrupted
-            || ( ! CompFlags.inline_functions )
-             );
+    return( !( ( ci->has_ctor && ci->ctor_user_code ) || ci->corrupted || ( !CompFlags.inline_functions ) ) );
 }
 
 
@@ -1363,7 +1361,8 @@ static SYMBOL defAssFind(       // GET DEFAULT OP= (OR NULL IF SCALAR )
 static bool defAssBasePushable( // TEST IF BASE CLASS PUSHABLE FOR OP=
     BASE_CLASS *bcl )           // - base class
 {
-    bcl = bcl;
+    /* unused parameters */ (void)bcl;
+
     return true;
 }
 
@@ -1371,7 +1370,8 @@ static bool defAssBasePushable( // TEST IF BASE CLASS PUSHABLE FOR OP=
 static bool defAssMembPushable( // TEST IF MEMBER PUSHABLE FOR OP=
     SYMBOL sym )                // - symbol for ctor
 {
-    sym = sym;
+    /* unused parameters */ (void)sym;
+
     return true;
 }
 
@@ -1421,8 +1421,7 @@ void RtnGenCallBackCdoptAccOpEq(// CHECK ACCESS FROM OP=, IF REQ'D
     CLASSINFO* ci = TypeClassInfo( type );
     if( ci->assign_defined ) {
         CD_DESCR* descr = CDoptDefOpeqBuild( type );
-        cdoptChkAccFunGen( ClassDefaultOpEq( type, descr->orig_type )
-                         , descr );
+        cdoptChkAccFunGen( ClassDefaultOpEq( type, descr->orig_type ), descr );
     }
 }
 
@@ -1908,7 +1907,8 @@ void CDoptBackEnd(              // START OF BACK-END PROCESSING
 static void cdoptInit(          // INITIALIZATION FOR CDOPT
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     allDescriptors.cdopt_ctor = NULL;
     allDescriptors.cdopt_dtor = NULL;
     allDescriptors.cdopt_opeq = NULL;
@@ -1934,7 +1934,8 @@ static void cdoptInit(          // INITIALIZATION FOR CDOPT
 static void cdoptFini(          // COMPLETION FOR CDOPT
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     cacheEmpty( &allDescriptors );
     CarveDestroy( carveCD_DESCR );
     CarveDestroy( carveCL_ELEM );
@@ -1967,12 +1968,14 @@ pch_status PCHReadCdOptData( void )
 
 pch_status PCHInitCdOptData( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniCdOptData( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }

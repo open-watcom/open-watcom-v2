@@ -38,22 +38,10 @@
 #include "heap.h"
 #include "heapacc.h"
 
-#if defined(__OS2__)
-    #if defined(__BIG_DATA__)
-        #define MODIFIES ds es
-    #else
-        #define MODIFIES es
-    #endif
-#elif defined(__WINDOWS__)
-    #define MODIFIES es
-#endif
+
+#define HEAP(s)     ((XBPTR(heapblkp, s))0)
 
 #if defined(__BIG_DATA__)
-
-#if defined(__WINDOWS__) || defined(__OS2__)
-    #pragma aux _heapmin modify [MODIFIES]
-    #pragma aux _heapshrink modify [MODIFIES]
-#endif
 
 _WCRTLINK int _heapshrink( void )
 {
@@ -67,11 +55,6 @@ _WCRTLINK int _heapmin( void )
 
 #endif
 
-#if defined(__WINDOWS__) || defined(__OS2__)
-    #pragma aux _fheapmin modify [MODIFIES]
-    #pragma aux _fheapshrink modify [MODIFIES]
-#endif
-
 _WCRTLINK int _fheapmin( void )
 {
     return( _fheapshrink() );
@@ -80,35 +63,28 @@ _WCRTLINK int _fheapmin( void )
 _WCRTLINK int _fheapshrink( void )
 {
     __segment   seg;
-    __segment   heap_seg;
+    __segment   next_seg;
     __segment   prev_seg;
     int         heap_status;
-    heapblk     _WCFAR *heap;
-    heapblk     _WCFAR *next_heap;
-    heapblk     _WCFAR *prev_heap;
 
-    heap_status = __HeapMin( __fheap, 0 );
+    heap_status = __HeapMin( __fheapbeg, _NULLSEG );
     _AccessFHeap();
-    for( seg = __fheap; seg != _NULLSEG; ) {
-        heap = MK_FP( seg, 0 );
+    for( seg = __fheapbeg; seg != _NULLSEG; seg = next_seg ) {
         /* we might free this segment so get the next one now */
-        heap_seg = seg;
-        seg = heap->nextseg;
-        if( heap->numalloc == 0 ) {     /* empty heap */
+        next_seg = HEAP( seg )->nextseg;
+        if( HEAP( seg )->numalloc == 0 ) {     /* empty heap */
             /* unlink from heap list */
-            prev_seg = heap->prevseg;
-            if( seg != _NULLSEG ) {
-                next_heap = MK_FP( seg, 0 );
-                next_heap->prevseg = prev_seg;
+            prev_seg = HEAP( seg )->prevseg;
+            if( next_seg != _NULLSEG ) {
+                HEAP( next_seg )->prevseg = prev_seg;
             }
             if( prev_seg == _NULLSEG ) {
-                __fheap = seg;
+                __fheapbeg = next_seg;
             } else {
-                prev_heap = MK_FP( prev_seg, 0 );
-                prev_heap->nextseg = seg;
+                HEAP( prev_seg )->nextseg = next_seg;
             }
-            __fheapRover = __fheap;
-            heap_status = __FreeSeg( heap_seg );
+            __fheapRover = __fheapbeg;
+            heap_status = __FreeSeg( seg );
         }
     }
     _ReleaseFHeap();

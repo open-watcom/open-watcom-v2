@@ -213,7 +213,7 @@ static void dmp_ord_name( unsigned_32 nam_off, unsigned_32 ord_off,
     unsigned_16     *ord_addr;
     unsigned_32     *nam_addr;
     unsigned_32     addr_size;
-    int             i;
+    size_t          i;
 
     Wlseek( nam_off );
     addr_size = num_ptr * sizeof( unsigned_32 );

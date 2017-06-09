@@ -44,7 +44,7 @@ SEGADDR_T AllocSegment( seg_info *si )
      * or kills the compiler.
      */
     si->index = (SEGADDR_T)FEmalloc( 0x04000 );
-    si->allocated = 1;
+    si->allocated = true;
     return( si->index );
 }
 

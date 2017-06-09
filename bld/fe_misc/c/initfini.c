@@ -255,14 +255,14 @@ void ExitPointReleaseRtn(       // RELEASE EXIT_POINT
 void InitFiniStub(              // STUB FOR NULL INIT/FINI
     INITFINI *defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
 }
 
 
 static void defaultAcquisitionCallback( // default call back at acquisition
     EXIT_POINT *ex )                    // - acquisition
 {
-    ex = ex;
+    /* unused parameters */ (void)ex;
 }
 
 

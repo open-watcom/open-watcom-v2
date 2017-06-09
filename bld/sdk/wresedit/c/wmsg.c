@@ -36,15 +36,14 @@
 #include "rcstr.gh"
 
 /* routine to create a message box */
-void WDisplayErrorMsg( UINT msg )
+void WDisplayErrorMsg( msg_id msg )
 {
     char        *title;
 
     title = AllocRCString( W_ERRMSG );
 
-    if( !RCMessageBox( (HWND)NULL , msg, title,
-                       MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
-        MessageBeep( -1 );
+    if( !RCMessageBox( (HWND)NULL, msg, title, MB_ICONEXCLAMATION | MB_OK | MB_TASKMODAL ) ) {
+        MessageBeep( (UINT)-1 );
     }
 
     if( title != NULL ) {

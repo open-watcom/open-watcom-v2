@@ -102,7 +102,8 @@ void FingClose( void )
 
 static int FingNumRows( a_window *wnd )
 {
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     return( TOP_BLANK( wnd ) + FingMessageSize + GUIIsGUI() );
 }
 
@@ -142,7 +143,8 @@ static bool FingEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     gui_colour_set      *colours;
 
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         if( GUIIsGUI() ) {

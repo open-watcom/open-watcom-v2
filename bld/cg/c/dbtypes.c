@@ -384,10 +384,11 @@ extern  dbg_array _CGAPI DBBegArray(  dbg_type base, cg_type tipe, bool is_col_m
     dbg_array   ar;
 //  type_def   *tipe_addr;
 
+    /* unused parameters */ (void)tipe;
+
 #ifndef NDEBUG
     EchoAPI( "DBBegArray( %i,%t,%i)", base, tipe, is_col_major );
 #endif
-    tipe = tipe;
     ar = CGAlloc( sizeof( *ar ) );
     ar->num = 0;
 //  tipe_addr = TypeAddress( tipe );
@@ -411,7 +412,8 @@ static  void    AddDim( dbg_array ar, dim_any *dim )
     owner = &ar->list;
     for(;;) {
         curr = *owner;
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         owner = &curr->entry.next;
     }
     dim->entry.next = NULL;

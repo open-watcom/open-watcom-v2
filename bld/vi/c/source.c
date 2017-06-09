@@ -380,13 +380,18 @@ void FileSPVAR( void )
     VarAddGlobalStr( "D1", drive );
     strcpy( path, drive );
     strcat( path, dir );
-    i = strlen( path ) - 1;
-    if( path[i] == FILE_SEP && i > 0 ) {
-        path[i] = '\0';
+    i = strlen( path );
+    if( i-- > 1 ) {
+#ifdef __UNIX__
+        if( path[i] == FILE_SEP ) {
+#else
+        if( path[i] == FILE_SEP && ( i != 2 || path[1] != DRV_SEP ) ) {
+#endif
+            path[i] = '\0';
+        }
     }
     if( CurrentFile != NULL ) {
         PushDirectory( path );
-        ChangeDirectory( path );
         GetCWD2( path, FILENAME_MAX );
         PopDirectory();
     } else {
@@ -395,7 +400,7 @@ void FileSPVAR( void )
     if( path[strlen(path) - 1] == FILE_SEP ) {
         StrMerge( 2, path, fname, ext );
     } else {
-        StrMerge( 3, path,FILE_SEP_STR, fname, ext );
+        StrMerge( 3, path, FILE_SEP_STR, fname, ext );
     }
     _splitpath( path, drive, dir, fname, ext );
     VarAddGlobalStr( "D", drive );

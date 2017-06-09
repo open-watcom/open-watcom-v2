@@ -139,7 +139,7 @@ extern  void    CloneCode( label_handle lbl )
         if( size > max_size && FindShort( jmp, NULL ) )
             continue;
         if( OptForSize < 50 ) {
-            max_size *= (100-OptForSize) / 25;
+            max_size *= ( 100 - OptForSize ) / 25;
         }
         if( size > max_size )
             continue;

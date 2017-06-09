@@ -64,7 +64,8 @@ condcode    scr_width( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * res
     char                type;
     uint32_t            width;
 
-    ressize = ressize;
+    /* unused parameters */ (void)ressize;
+
     if( (parmcount < 1) || (parmcount > 2) ) {
         return( neg );
     }

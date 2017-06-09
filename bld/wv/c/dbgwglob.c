@@ -80,7 +80,8 @@ void     GlobMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     address     addr;
     char        buff[TXT_LEN];
 
-    piece=piece;
+    /* unused parameters */ (void)piece;
+
     addr = NameListAddr( NameList( glob ), row );
     switch( id ) {
     case MENU_INITIALIZE:
@@ -160,7 +161,8 @@ bool GlobEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     glob_window *glob = WndGlob( wnd );
 
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         NameListInit( NameList( glob ), WF_DATA );

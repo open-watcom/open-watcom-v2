@@ -205,7 +205,7 @@ static void DropLabel( LABEL_INDEX label )
 {
     TREEPTR     tree;
 
-    CompFlags.label_dropped = 1;
+    CompFlags.label_dropped = true;
     DeadCode = 0;
     tree = LeafNode( OPR_LABEL );
     tree->op.u2.label_index = label;
@@ -332,11 +332,11 @@ static bool GrabLabels( void )
         if( LAToken != T_COLON )
             break; /* quit if look ahead not : */
         label = LkLabel( SavedId );
-        if( label->defined != 0 ) {
+        if( label->defined ) {
             CErr2p( ERR_LABEL_ALREADY_DEFINED, label->name );
         } else {
             DropLabel( label->ref_list );
-            label->defined = 1;         /* indicate label defined now */
+            label->defined = true;      /* indicate label defined now */
         }
         CMemFree( SavedId );            /* free the saved id */
         SavedId = NULL;
@@ -361,7 +361,7 @@ static void UnWindTry( tryindex_t try_scope )
     tree->op.u2.st.u.try_index = try_scope;
     AddStmt( tree );
 #else
-    try_scope = try_scope;
+    /* unused parameters */ (void)try_scope;
 #endif
 }
 
@@ -647,7 +647,7 @@ static void GotoStmt( void )
         CErr1( ERR_EXPECTING_LABEL );
     } else {
         label = LkLabel( Buffer );
-        label->referenced = 1;
+        label->referenced = true;
         Jump( label->ref_list );
     }
     NextToken();
@@ -900,10 +900,10 @@ static bool EndTry( void )
         tree->op.u2.st.u.try_sym_handle = DummyTrySymbol();
         tree->op.u2.st.parent_scope = parent_scope;
         AddStmt( tree );
-        CompFlags.exception_filter_expr = 1;
+        CompFlags.exception_filter_expr = true;
         expr = RValue( BracketExpr() );
-        CompFlags.exception_filter_expr = 0;
-        CompFlags.exception_handler = 1;
+        CompFlags.exception_filter_expr = false;
+        CompFlags.exception_handler = true;
         typ = TypeOf( expr );
         expr_type = DataTypeOf( typ );
         if( expr_type != TYPE_VOID ) {
@@ -921,7 +921,7 @@ static bool EndTry( void )
         AddStmt( tree );
         return( true );
     } else if( (CurToken == T__FINALLY) || (CurToken == T___FINALLY) ) {
-        CompFlags.in_finally_block = 1;
+        CompFlags.in_finally_block = true;
         NextToken();
         BlockStack->block_type = T__FINALLY;
         DeadCode = 0;
@@ -1093,12 +1093,12 @@ static void EndOfStmt( void )
         case T___EXCEPT:
             DropBreakLabel();
             TryScope = BlockStack->parent_index;
-            CompFlags.exception_handler = 0;
+            CompFlags.exception_handler = false;
             break;
         case T__FINALLY:
         case T___FINALLY:
             AddStmt( LeafNode( OPR_END_FINALLY ) );
-            CompFlags.in_finally_block = 0;
+            CompFlags.in_finally_block = false;
             TryScope = BlockStack->parent_index;
             break;
 #endif
@@ -1201,8 +1201,8 @@ void Statement( void )
     ++FuncCount;
     return_info.with = RETURN_WITH_NONE; /* indicate no return statements */
     return_info.with_expr = false;
-    CompFlags.label_dropped = 0;
-    CompFlags.addr_of_auto_taken = 0;
+    CompFlags.label_dropped = false;
+    CompFlags.addr_of_auto_taken = false;
     end_of_func_label = 0;
     return_at_outer_level = false;
     declaration_allowed = false;
@@ -1262,7 +1262,7 @@ void Statement( void )
                 BlockStack->break_label = 0;
             }
             if( CurToken == T_SEMI_COLON ) {
-                if( ! CompFlags.useful_side_effect ) {
+                if( !CompFlags.useful_side_effect ) {
                     CWarn1( WARN_MEANINGLESS, ERR_MEANINGLESS );
                 }
             }

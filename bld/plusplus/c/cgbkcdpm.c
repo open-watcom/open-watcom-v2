@@ -52,7 +52,8 @@ static cdtor_entry* ring_cdtors;// ring of pending entries
 static void init(               // module initialization
     INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carver_cdtors = CarveCreate( sizeof( cdtor_entry ), 8 );
 }
 
@@ -60,7 +61,8 @@ static void init(               // module initialization
 static void fini(               // module completion
     INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     RingCarveFree( carver_cdtors, &ring_cdtors );
     CarveDestroy( carver_cdtors );
 }

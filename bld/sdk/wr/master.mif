@@ -45,8 +45,8 @@ objs = wrmain.obj wrmem.obj wrmsg.obj wrfindt.obj wrtmpfil.obj &
     pass2.obj exeseg.obj exeresw.obj rcstr.obj ppalloc.obj &
     exeutil.obj exeobj.obj exerespe.obj rcio.obj semutil.obj &
     global.obj semstrw.obj semsnglw.obj semantic.obj semantcw.obj semraw.obj &
-    errors.obj tmpctl.obj autodep.obj &
-    dbtable.obj sharedio.obj rcspawn.obj
+    rcerrors.obj tmpctl.obj autodep.obj &
+    dbtable.obj sharedio.obj mergedir.obj rcspawn.obj
 
 msgfiles = $(wrc_dir)/h/rc.msg ../res/wr.msg
 
@@ -72,7 +72,7 @@ libs = $(wres_lib) $(commonui_lib)
 #------------- LINK
 extra_l_flags_dll = op implib $($(proj_name)_dllbase_$(host_os)_$(host_cpu))
 extra_l_flags_dll_nt = op heap=16k commit heap=8k
-extra_l_flags_dll_win = op rwr,stack=16k
+extra_l_flags_dll_win = op rwr,stack=16k export WEP RESIDENT
 #extra_l_flags_dll_win += segment  _TEXT PRELOAD FIXED
 #extra_l_flags_dll_win += segment  CLASS 'CODE' LOADONCALL MOVEABLE DISCARDABLE
 #extra_l_flags_dll_win += segment  CLASS 'CODE' PRELOAD

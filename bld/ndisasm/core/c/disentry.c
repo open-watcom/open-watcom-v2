@@ -149,7 +149,7 @@ dis_return DisInit( dis_cpu cpu, dis_handle *h, bool swap_bytes )
 void DisFini( dis_handle *h )
 // Perform all shutdown required
 {
-    h = h;
+    /* unused parameters */ (void)h;
 }
 
 void DisDecodeInit( dis_handle *h, dis_dec_ins *ins )
@@ -324,7 +324,8 @@ dis_return DisFormat( dis_handle *h, void *d, dis_dec_ins *ins_p,
     size_t      len;
     char        *end;
 
-    name_len = name_len;
+    /* unused parameters */ (void)name_len;
+
     ins = *ins_p;       /* so we can fiddle it around */
 
     if( name != NULL ) name[0] = '\0';

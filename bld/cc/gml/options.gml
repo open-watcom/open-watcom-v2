@@ -510,6 +510,13 @@
 :usage. force <file> to be included
 :jusage.
 
+:option. fip
+:target. any
+:file.
+:optional.
+:usage. automatic inclusion of <file> instead of _preincl.h (default)
+:jusage.
+
 :option. fo
 :target. any
 :file.
@@ -660,11 +667,6 @@
 :target. i86 386
 :enumerate. mem_model
 :usage. small (small code/small data)
-:jusage. スモール･メモリ･モデル(スモール･コード/スモール･データ)
-
-:option. na
-:target. any
-:usage. disable automatic inclusion of _ialias.h
 :jusage. スモール･メモリ･モデル(スモール･コード/スモール･データ)
 
 :option. nc

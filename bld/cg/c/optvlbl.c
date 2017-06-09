@@ -36,16 +36,17 @@
 extern  bool    ValidLbl( label_handle lbl )
 /******************************************/
 {
-    lbl=lbl;
+    /* unused parameters */ (void)lbl;
+
     return( true );
 #if 0
     label_handle    chk;
     static label_handle last = 0;
 
     chk = Handles;
-    if( last != NULL && last == lbl ) return( true );
-    for(;;) {
-        if( chk == NULL ) break;
+    if( last != NULL && last == lbl )
+        return( true );
+    for( ; chk != NULL; ) {
         if( chk == lbl ) {
             last = lbl;
             return( true );

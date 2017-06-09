@@ -59,7 +59,8 @@ condcode    scr_d2c( parm parms[MAX_FUN_PARMS], size_t parmcount, char **result,
     int                 n;
     getnum_block        gn;
 
-    ressize = ressize;
+    /* unused parameters */ (void)ressize;
+
     if( parmcount != 1 ) {
         cc = neg;
         return( cc );

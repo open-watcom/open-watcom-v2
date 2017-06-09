@@ -43,11 +43,6 @@
     typedef struct a_window a_window;
 #endif
 
-#include "bool.h"
-#ifndef NULL
-    #define NULL ((void*)0)
-#endif
-
 #define SAVE_SIZE               512
 
 typedef struct {
@@ -269,8 +264,6 @@ typedef struct aui_private_window_structure {
     wnd_dirt                dirty[1];
 } aui_private_window_structure;
 
-
-
 typedef bool        (WNDCALLBACK)( a_window *, gui_event, void * );
 typedef void        (WNDREFRESH)( a_window * );
 typedef void        (WNDMENU)( a_window *, gui_ctl_id id, int, int );
@@ -288,7 +281,6 @@ typedef a_window    *(WNDCREATE)( char *, struct wnd_info *, wnd_class, void * )
 typedef void        (WNDCLOSE)( a_window * );
 typedef int         (WNDPICKER)( const char *, GUIPICKCALLBACK * );
 typedef bool        (WNDCLICKHOOK)( a_window *wnd, gui_ctl_id id );
-
 
 typedef struct wnd_info {
         WNDCALLBACK             *event;
@@ -308,9 +300,8 @@ typedef struct wnd_info {
         gui_menu_struct         *popupmenu;
 } wnd_info;
 
-
 extern int              DlgPickWithRtn( const char *title, const void *data_handle, int def, GUIPICKGETTEXT *getstring, int items );
-extern int              DlgPickWithRtn2( const char *title, const void *data_handle, int def, GUIPICKGETTEXT *getstring, int items, WNDPICKER * );
+extern int              DlgPickWithRtn2( const char *title, const void *data_handle, int def, GUIPICKGETTEXT *getstring, int items, WNDPICKER *pickfn );
 extern int              DlgPick( const char *title, const void *data_handle, int def, int items );
 extern bool             DlgNew( const char *title, char *buff, unsigned buff_len );
 extern void             DlgOpen( const char *title, int, int, gui_control_info *, int, GUICALLBACK *, void * );
@@ -345,7 +336,6 @@ extern void             WndSetThumbPercent( a_window *, int );
 extern void             WndSetThumb( a_window * );
 extern WNDSCROLL        WndScroll;
 extern WNDSCROLL        WndScrollAbs;
-
 
 extern wnd_row          WndCurrRow( a_window * );
 extern bool             WndHasCurrent( a_window * );

@@ -251,9 +251,9 @@ static void printMasmHeader( section_ptr sec )
     orl_sec_frame       frame;
     orl_sec_combine     combine;
     orl_sec_size        size;
-    char                *name;
-    char                *class;
-    char                *gname;
+    const char          *name;
+    const char          *class;
+    const char          *gname;
     char                *astr;
     orl_sec_handle      sh;
     orl_group_handle    grp = NULL;
@@ -263,7 +263,7 @@ static void printMasmHeader( section_ptr sec )
 
     // Load all necessary information
     name = sec->name;
-    if( !name ) {
+    if( name == NULL ) {
         name = "";
     }
     type = ORLSecGetType( sec->shnd );
@@ -272,7 +272,7 @@ static void printMasmHeader( section_ptr sec )
 
     if( DFormat & DFF_ASM ) {
         class = ORLSecGetClassName( sec->shnd );
-        if( !class ) {
+        if( class == NULL ) {
             class = "";
         }
         if( flags & ORL_SEC_FLAG_COMDAT ) {
@@ -308,17 +308,17 @@ static void printMasmHeader( section_ptr sec )
                 grp = ORLSecGetGroup( sec->shnd );
                 astr = "SEGMENT";
             } else {
-                sh = NULL;
+                sh = ORL_NULL_HANDLE;
                 alignment = ORLSecGetAlignment( sec->shnd );
                 astr = getAlignment( alignment );
             }
-            if( sh || grp ) {
+            if( sh != ORL_NULL_HANDLE || grp ) {
                 name = NULL;
                 gname = NULL;
                 if( grp ) {
                     gname = ORLGroupName( grp );
                 }
-                if( sh ) {
+                if( sh != ORL_NULL_HANDLE ) {
                     name = ORLSecGetName( sh );
                     if( !name ) {
                         if( gname ) {
@@ -360,7 +360,7 @@ static void printMasmHeader( section_ptr sec )
 void PrintAssumeHeader( section_ptr sec )
 {
     orl_group_handle    grp;
-    char                *name;
+    const char          *name;
 
     if( IsMasmOutput() && (DFormat & DFF_ASM) ) {
         grp = ORLSecGetGroup( sec->shnd );
@@ -388,11 +388,11 @@ void PrintHeader( section_ptr sec )
 
 void PrintTail( section_ptr sec )
 {
-    char        *name;
+    const char      *name;
 
     if( IsMasmOutput() && (DFormat & DFF_ASM) ) {
         name = sec->name;
-        if( !name ) {
+        if( name == NULL ) {
             name = "";
         }
         BufferQuoteName( name );
@@ -403,7 +403,7 @@ void PrintTail( section_ptr sec )
 }
 
 
-void PrintLinePrefixAddress( orl_sec_offset off, bool is32bit )
+void PrintLinePrefixAddress( dis_sec_offset off, bool is32bit )
 {
     if( is32bit ) {
         BufferStore( "%08X", off );
@@ -413,7 +413,7 @@ void PrintLinePrefixAddress( orl_sec_offset off, bool is32bit )
 }
 
 
-void PrintLinePrefixData( unsigned_8 *data, orl_sec_offset off, orl_sec_offset total, unsigned item_size, unsigned len )
+void PrintLinePrefixData( unsigned_8 *data, dis_sec_offset off, dis_sec_offset total, unsigned item_size, unsigned len )
 {
     unsigned    done;
     union ptr {
@@ -461,13 +461,13 @@ static return_val disassembleSection( section_ptr sec, unsigned_8 *contents,
 
     data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) sec->shnd );
     if( data_ptr ) {
-        sec_label_list = (label_list) *data_ptr;
+        sec_label_list = (label_list)*data_ptr;
     } else {
         sec_label_list = NULL;
     }
     data_ptr = HashTableQuery( HandleToRefListTable, (hash_value) sec->shnd );
     if( data_ptr ) {
-        sec_ref_list = (ref_list) *data_ptr;
+        sec_ref_list = (ref_list)*data_ptr;
     } else {
         sec_ref_list = NULL;
     }
@@ -486,8 +486,8 @@ static return_val disassembleSection( section_ptr sec, unsigned_8 *contents,
             } else {
                 BufferMsg( NO_DIS_ERRORS );
             }
-                 BufferConcatNL();
-                 BufferConcatNL();
+            BufferConcatNL();
+            BufferConcatNL();
             BufferPrint();
             if( Options & PRINT_EXTERNS ) {
                 sec_externs = CreateExterns( sec_ref_list );
@@ -505,7 +505,7 @@ static return_val disassembleSection( section_ptr sec, unsigned_8 *contents,
 }
 
 static label_entry dumpLabel( label_entry l_entry, section_ptr sec,
-                              orl_sec_offset loop, orl_sec_offset end )
+                              dis_sec_offset loop, dis_sec_offset end )
 {
     bool    is32bit;
 
@@ -544,35 +544,41 @@ static label_entry dumpLabel( label_entry l_entry, section_ptr sec,
     return( l_entry );
 }
 
-static orl_sec_offset checkForDupLines( unsigned_8 *contents, orl_sec_offset loop,
+static dis_sec_offset checkForDupLines( unsigned_8 *contents, dis_sec_offset loop,
                                         orl_sec_size size, label_entry l_entry,
                                         ref_entry r_entry )
 {
     unsigned_8                  *cmp;
-    orl_sec_offset              d;
+    dis_sec_offset              d;
     unsigned int                lines;
 
     cmp = &contents[loop - 16];
-    if( l_entry && ( l_entry->offset < size ) ) size = l_entry->offset;
-    if( r_entry && ( r_entry->offset < size ) ) size = r_entry->offset;
-    if( ( size - loop ) < ( 16 * MIN_DUP_LINES ) ) return( 0 );
+    if( l_entry != NULL && ( l_entry->offset < size ) )
+        size = l_entry->offset;
+    if( r_entry != NULL && ( r_entry->offset < size ) )
+        size = r_entry->offset;
+    if( ( size - loop ) < ( 16 * MIN_DUP_LINES ) )
+        return( 0 );
 
     for( d = loop; d < ( size - 16 ); d += 16 ) {
-        if( memcmp( cmp, &contents[d], 16 ) ) break;
+        if( memcmp( cmp, &contents[d], 16 ) ) {
+            break;
+        }
     }
     d -= loop;
     lines = d / 16;
-    if( lines < MIN_DUP_LINES ) return( 0 );
+    if( lines < MIN_DUP_LINES )
+        return( 0 );
     BufferConcatNL();
     BufferStore( "\t--- Above line repeats %u times ---", lines );
     return( d );
 }
 
-void DumpDataFromSection( unsigned_8 *contents, orl_sec_offset start,
-                          orl_sec_offset end, label_entry *labent,
-                          ref_entry *refent, section_ptr sec )
+void DumpDataFromSection( unsigned_8 *contents, dis_sec_offset start,
+                          dis_sec_offset end, label_entry *lab_entry,
+                          ref_entry *reference_entry, section_ptr sec )
 {
-    orl_sec_offset              loop;
+    dis_sec_offset              loop;
     unsigned                    loop2;
     unsigned                    amount;
     label_entry                 l_entry;
@@ -581,8 +587,8 @@ void DumpDataFromSection( unsigned_8 *contents, orl_sec_offset start,
 
     is32bit = ( end >= 0x10000 );
 
-    l_entry = *labent;
-    r_entry = *refent;
+    l_entry = *lab_entry;
+    r_entry = *reference_entry;
 
     for( loop = start; loop < end; ){
         /* Print a label if required */
@@ -598,10 +604,10 @@ void DumpDataFromSection( unsigned_8 *contents, orl_sec_offset start,
         }
         if( (loop + amount) > end ) amount = end - loop;
         /* Skip over pair relocs */
-        while( r_entry && (r_entry->type == ORL_RELOC_TYPE_PAIR || r_entry->offset < loop) ) {
+        while( r_entry != NULL && (r_entry->type == ORL_RELOC_TYPE_PAIR || r_entry->offset < loop) ) {
             r_entry = r_entry->next;
         }
-        if( r_entry && r_entry->offset < loop + amount ) {
+        if( r_entry != NULL && r_entry->offset < loop + amount ) {
             if( r_entry->offset == loop ) {
                 amount = RelocSize( r_entry );
             } else {
@@ -614,7 +620,7 @@ void DumpDataFromSection( unsigned_8 *contents, orl_sec_offset start,
         PrintLinePrefixAddress( loop, is32bit );
         PrintLinePrefixData( contents, loop, loop + amount, 1, 16 );
         BufferConcat( " " );
-        if( r_entry && r_entry->offset == loop ) {
+        if( r_entry != NULL && r_entry->offset == loop ) {
             HandleRefInData( r_entry, &(contents[loop]), true );
             loop += amount;
         } else {
@@ -637,8 +643,8 @@ void DumpDataFromSection( unsigned_8 *contents, orl_sec_offset start,
         BufferPrint();
     }
 
-    *labent = l_entry;
-    *refent = r_entry;
+    *lab_entry = l_entry;
+    *reference_entry = r_entry;
 }
 
 static void dumpSection( section_ptr sec, unsigned_8 *contents, orl_sec_size size, unsigned pass )
@@ -651,7 +657,7 @@ static void dumpSection( section_ptr sec, unsigned_8 *contents, orl_sec_size siz
 
     /* Obtain the Symbol Table */
     data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value)sec->shnd );
-    if( data_ptr ) {
+    if( data_ptr != NULL ) {
         sec_label_list = (label_list)*data_ptr;
         l_entry = sec_label_list->first;
     } else {
@@ -662,7 +668,7 @@ static void dumpSection( section_ptr sec, unsigned_8 *contents, orl_sec_size siz
     /* Obtain the reloc table */
     data_ptr = HashTableQuery( HandleToRefListTable, (hash_value)sec->shnd );
     r_entry = NULL;
-    if( data_ptr ) {
+    if( data_ptr != NULL ) {
         sec_ref_list = (ref_list)*data_ptr;
         if( sec_ref_list != NULL ) {
             r_entry = sec_ref_list->first;
@@ -779,7 +785,7 @@ static void numberUnnamedLabels( label_entry l_entry )
 {
     static label_number labNum = 1;
 
-    while( l_entry ) {
+    while( l_entry != NULL ) {
         if( l_entry->type == LTYP_UNNAMED ) {
             l_entry->label.number = labNum;
             labNum++;
@@ -798,9 +804,9 @@ static hash_table emitGlobls( void )
     hash_table          hash;
     char                *name;
 
-    hash = HashTableCreate( TMP_TABLE_SIZE, HASH_STRING,
-                            (hash_table_comparison_func) strcmp );
-    if( !hash ) return( NULL );
+    hash = HashTableCreate( TMP_TABLE_SIZE, HASH_STRING, (hash_table_comparison_func)strcmp );
+    if( hash == NULL )
+        return( NULL );
 
     if( IsMasmOutput() ) {
         globl = "\t\tPUBLIC\t";
@@ -813,8 +819,7 @@ static hash_table emitGlobls( void )
         if( data_ptr != NULL ) {
             sec_label_list = (label_list) *data_ptr;
             if( sec_label_list != NULL ) {
-                for( l_entry = sec_label_list->first; l_entry != NULL;
-                                                l_entry = l_entry->next ) {
+                for( l_entry = sec_label_list->first; l_entry != NULL; l_entry = l_entry->next ) {
                     name = l_entry->label.name;
                     if( ( l_entry->binding != ORL_SYM_BINDING_LOCAL ) &&
                         (l_entry->type == LTYP_NAMED) &&
@@ -843,9 +848,8 @@ static void emitExtrns( hash_table hash )
     char                *extrn;
     char                *name;
 
-    if( !hash ) {
-        hash = HashTableCreate( TMP_TABLE_SIZE, HASH_STRING,
-                                (hash_table_comparison_func) strcmp );
+    if( hash == NULL ) {
+        hash = HashTableCreate( TMP_TABLE_SIZE, HASH_STRING, (hash_table_comparison_func)strcmp );
     }
 
     if( IsMasmOutput() ) {
@@ -856,16 +860,16 @@ static void emitExtrns( hash_table hash )
 
     for( sec = Sections.first; sec != NULL; sec = sec->next ) {
         dp = HashTableQuery( HandleToRefListTable, (hash_value) sec->shnd );
-        if( dp && *dp ) {
-            r_list = (ref_list) *dp;
-            for( r_entry = r_list->first; r_entry; r_entry = r_entry->next ) {
-                if( !r_entry->label->shnd ) {
+        if( dp != NULL && *dp != 0 ) {
+            r_list = (ref_list)*dp;
+            for( r_entry = r_list->first; r_entry != NULL; r_entry = r_entry->next ) {
+                if( r_entry->label->shnd == ORL_NULL_HANDLE ) {
                     name = r_entry->label->label.name;
-                    if( !name ) continue;
+                    if( name == NULL )
+                        continue;
                     dp = HashTableQuery( hash, (hash_value)name );
-                    if( !dp ) {
-                        HashTableInsert( hash, (hash_value)name,
-                                         (hash_data)name );
+                    if( dp != NULL ) {
+                        HashTableInsert( hash, (hash_value)name, (hash_data)name );
                         if( ( r_entry->label->type != LTYP_GROUP ) &&
                           (r_entry->label->binding != ORL_SYM_BINDING_LOCAL) ) {
                             BufferStore( extrn, name );
@@ -881,13 +885,13 @@ static void emitExtrns( hash_table hash )
     /* emit all externs not used but defined
      */
     dp = HashTableQuery( HandleToLabelListTable, (hash_value) NULL );
-    if( dp ) {
-        l_list = (label_list) *dp;
-        if( l_list ) {
-            for( l_entry = l_list->first; l_entry; l_entry = l_entry->next ) {
+    if( dp != NULL ) {
+        l_list = (label_list)*dp;
+        if( l_list != NULL ) {
+            for( l_entry = l_list->first; l_entry != NULL; l_entry = l_entry->next ) {
                 name = l_entry->label.name;
                 dp = HashTableQuery( hash, (hash_value)name );
-                if( !dp ) {
+                if( dp != NULL ) {
                     HashTableInsert( hash, (hash_value)name, (hash_data)name );
                     if( ( l_entry->binding != ORL_SYM_BINDING_LOCAL ) &&
                         ( l_entry->type == LTYP_EXTERNAL_NAMED ) ) {
@@ -904,17 +908,18 @@ static void emitExtrns( hash_table hash )
 
 static orl_return       groupWalker( orl_group_handle grp )
 {
-    char                *name;
+    const char          *name;
     orl_table_index     size;
     orl_table_index     idx;
 
     name = ORLGroupName( grp );
     size = ORLGroupSize( grp );
-    if( !name || ( size < 1 ) ) return( ORL_OKAY );
+    if( name == NULL || ( size < 1 ) )
+        return( ORL_OKAY );
     DumpASMGroupName( name, (DFormat & DFF_ASM) );
     for( idx = 0; idx < size; idx++ ) {
         name = ORLGroupMember( grp, idx );
-        if( name ) {
+        if( name != NULL ) {
             DumpASMGroupMember( name );
         }
     }
@@ -1004,7 +1009,7 @@ int main( int argc, char *argv[] )
     }
     /* number all the anonymous labels */
     for( sec = Sections.first; sec != NULL; sec = sec->next ) {
-        data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) sec->shnd );
+        data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value)sec->shnd );
         if( data_ptr != NULL ) {
             sec_label_list = (label_list) *data_ptr;
             if( sec_label_list != NULL ) {

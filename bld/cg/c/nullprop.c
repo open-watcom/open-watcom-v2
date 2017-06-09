@@ -249,7 +249,8 @@ static  int             BlockSearch( block *blk, instruction *ins, name *op, boo
 {
     instruction         *curr;
 
-    blk = blk;
+    /* unused parameters */ (void)blk;
+
     for( curr = ins; curr->head.opcode != OP_BLOCK; curr = NextIns( curr, forward ) ) {
         // if we are going forward, the dereferences take precedence over the
         // redefinitions, the reverse is true when backpeddling
@@ -436,17 +437,17 @@ static  bool            NullProp( block *blk )
     instruction         *cmp;
     name                **ptr;
     parm_struct         parms;
-    int                 dest_index;
+    byte                dest_idx;
 
     cmp = CompareIns( blk );
     if( cmp == NULL )
         return( false );
     switch( cmp->head.opcode ) {
     case OP_CMP_EQUAL:
-        dest_index = _FalseIndex( cmp );
+        dest_idx = _FalseIndex( cmp );
         break;
     case OP_CMP_NOT_EQUAL:
-        dest_index = _TrueIndex( cmp );
+        dest_idx = _TrueIndex( cmp );
         break;
     default:
         return( false );
@@ -467,14 +468,14 @@ static  bool            NullProp( block *blk )
         if( !EdgeHasSideEffect( blk, cmp, cmp->head.opcode == OP_CMP_NOT_EQUAL ) ) {
             // only nuke the edge if the code we are removing
             // does not have a side effect or if the dominators are before the compare
-            KillCondBlk( blk, cmp, dest_index );
+            KillCondBlk( blk, cmp, dest_idx );
             return( true );
         }
     }
     parms.forward = false;
     _MarkBlkAllUnVisited();
     if( DominatingDeref( &parms ) != NULL ) {
-        KillCondBlk( blk, cmp, dest_index );
+        KillCondBlk( blk, cmp, dest_idx );
         return( true );
     }
     return( false );

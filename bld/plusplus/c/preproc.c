@@ -261,7 +261,7 @@ static void idPrint( void )
     IDMANGLE *id;
     int comp;
 
-    if( ! CompFlags.encrypt_preproc_output ) {
+    if( !CompFlags.encrypt_preproc_output ) {
         PrtString( Buffer );
         return;
     }

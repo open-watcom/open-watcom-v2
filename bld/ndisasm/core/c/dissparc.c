@@ -45,7 +45,7 @@ dis_handler_return SPARCSetHi( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     sparc_ins   code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = _SparcIns( ins->opcode );
     ins->op[0].type = DO_IMMED;
@@ -60,7 +60,7 @@ dis_handler_return SPARCBranch( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     sparc_ins   code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = _SparcIns( ins->opcode );
     ins->op[0].type = DO_RELATIVE;
@@ -76,7 +76,7 @@ dis_handler_return SPARCCall( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     sparc_ins   code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = _SparcIns( ins->opcode );
     ins->op[0].type  = DO_RELATIVE;
@@ -93,7 +93,7 @@ dis_handler_return SPARCOp3( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     sparc_ins   code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = _SparcIns( ins->opcode );
     ins->op[ 0 ].type = DO_REG;
@@ -130,7 +130,7 @@ static void getOpIndices( sparc_ins code, int *mem, int *reg )
 
 static void doSparcMem( dis_handle *h, void *d, dis_operand *op, sparc_ins code )
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     op->type = DO_MEMORY_ABS;
     op->base = _SparcReg( code.op3.rs1 );
@@ -157,7 +157,7 @@ dis_handler_return SPARCMem( dis_handle *h, void *d, dis_dec_ins *ins )
     int         mem_op;
     int         reg_op;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = _SparcIns( ins->opcode );
     getOpIndices( code, &mem_op, &reg_op );
@@ -180,7 +180,7 @@ dis_handler_return SPARCFPop2( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     sparc_ins   code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = _SparcIns( ins->opcode );
     if( code.op3opf.opcode_3 == 0x35 ) {
@@ -203,7 +203,7 @@ dis_handler_return SPARCFPop3( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     sparc_ins   code;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     code.full = _SparcIns( ins->opcode );
     ins->op[ 0 ].type = DO_REG;
@@ -277,7 +277,7 @@ static size_t SPARCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
 {
     const char  *new_op_name;
 
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     if( !(flags & DFF_PSEUDO) )
         return( 0 );
@@ -363,7 +363,7 @@ static size_t SPARCInsHook( dis_handle *h, void *d, dis_dec_ins *ins,
 static size_t SPARCFlagHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, char *name )
 {
-    h = h; d = d; ins = ins; flags = flags; name = name;
+    /* unused parameters */ (void)h; (void)d; (void)ins; (void)flags; (void)name;
 
     return( 0 );
 }
@@ -391,7 +391,7 @@ static size_t SPARCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
 {
     dis_operand *op;
 
-    h = h; d = d; op_buff = op_buff; buff_len = buff_len;
+    /* unused parameters */ (void)h; (void)d; (void)op_buff; (void)buff_len;
 
     ins->op[op_num].ref_type = DRT_SPARC_WORD;
     if( flags & DFF_SYMBOLIC_REG ) {
@@ -408,14 +408,14 @@ static size_t SPARCOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
 
 static dis_handler_return SPARCDecodeTableCheck( int page, dis_dec_ins *ins )
 {
-    page = page; ins = ins;
+    /* unused parameters */ (void)page; (void)ins;
 
     return( DHR_DONE );
 }
 
 static void ByteSwap( dis_handle *h, void *d, dis_dec_ins *ins )
 {
-    h = h; d = d;
+    /* unused parameters */ (void)h; (void)d;
 
     if( h->need_bswap ) {
         SWAP_32( ins->opcode );
@@ -430,8 +430,9 @@ static void SPARCPreprocHook( dis_handle *h, void *d, dis_dec_ins *ins )
 static size_t SPARCPostOpHook( dis_handle *h, void *d, dis_dec_ins *ins,
         dis_format_flags flags, unsigned op_num, char *op_buff, size_t buff_len )
 {
+    /* unused parameters */ (void)h; (void)d; (void)ins; (void)flags; (void)op_num; (void)op_buff; (void)buff_len;
+
     // Nothing to do
-    h = h; d = d; ins = ins; flags = flags; op_num = op_num; op_buff = op_buff; buff_len = buff_len;
     return( 0 );
 }
 

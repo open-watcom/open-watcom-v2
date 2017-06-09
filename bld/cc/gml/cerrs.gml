@@ -324,7 +324,7 @@ Check to see if the expression should be signed instead of unsigned.
 .np
 The number of nested include files has reached a  preset limit,
 check for recursive include statements.
-:MSGSYM. NON_ZERO_CONST
+:MSGSYM. ERR_NON_ZERO_CONST
 :MSGTXT. Constant must be zero for pointer compare
 :MSGJTXT. ƒ|ƒCƒ“ƒ^‚Æ”äŠr‚·‚é’è”‚Íƒ[ƒ‚Å‚È‚¯‚ê‚Î‚È‚è‚Ü‚¹‚ñ
 :WARNING. 1

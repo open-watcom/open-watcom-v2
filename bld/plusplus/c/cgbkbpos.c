@@ -294,7 +294,8 @@ bool BlkPosnUseStab(            // TEST IF REALLY USING STATE TABLE IN SCOPE
 static void blkPosnInit(        // INITIALIZATION FOR BLK_POSN MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     VstkOpen( &stack_blk_posn, sizeof( BLK_POSN ), 32 );
 }
 
@@ -302,7 +303,8 @@ static void blkPosnInit(        // INITIALIZATION FOR BLK_POSN MODULE
 static void blkPosnFini(        // COMPLETION FOR BLK_POSN MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     VstkClose( &stack_blk_posn );
 }
 

@@ -184,10 +184,10 @@ char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prom
 }
 
 bool WEditSymbols( HWND parent, WRHashTable **symbol_table,
-                   HINSTANCE inst, HELP_CALLBACK hcb )
+                   HINSTANCE inst, HELP_CALLBACK help_callback )
 {
     WRHashEntryFlags    flags;
-    FARPROC             cb;
+    HELP_CALLBACK       hcb;
     bool                ret;
 
     _wtouch( inst );
@@ -197,9 +197,9 @@ bool WEditSymbols( HWND parent, WRHashTable **symbol_table,
     }
 
     flags = WR_HASHENTRY_ALL;
-    cb = MakeProcInstance( (FARPROC)hcb, inst );
-    ret = WREditSym( parent, symbol_table, &flags, cb );
-    FreeProcInstance( (FARPROC)cb );
+    hcb = (HELP_CALLBACK)MakeProcInstance( (FARPROC)help_callback, inst );
+    ret = WREditSym( parent, symbol_table, &flags, hcb );
+    FreeProcInstance( (FARPROC)hcb );
 
     return( ret );
 }

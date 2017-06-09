@@ -47,12 +47,27 @@
 #include "wdefutil.h"
 #include "wdedefsz.h"
 #include "wdefcust.h"
+#include "wdedispa.h"
+
+
+/****************************************************************************/
+/* macro definitions                                                        */
+/****************************************************************************/
+
+#define pick_ACTS(o) \
+    pick_ACTION_DESTROY(o,pick) \
+    pick_ACTION_COPY(o,pick) \
+    pick_ACTION_VALIDATE_ACTION(o,pick) \
+    pick_ACTION_IDENTIFY(o,pick) \
+    pick_ACTION_GET_WINDOW_CLASS(o,pick) \
+    pick_ACTION_DEFINE(o,pick) \
+    pick_ACTION_GET_WND_PROC(o,pick)
 
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC     dispatcher;
+    DISPATCH_FN *dispatcher;
     WNDPROC     win_proc;
     int         win_extra;
     char        *win_class;
@@ -73,46 +88,41 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT LRESULT    CALLBACK WdeCustomSuperClassProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT BOOL       CALLBACK WdeCustomDispatcher( ACTION, WdeCustomObject *, void *, void * );
+WINEXPORT bool       CALLBACK WdeCustomDispatcher( ACTION_ID, OBJPTR, void *, void * );
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
 static void     WdeChooseCustControlFromList( LIST *, WdeDialogBoxControl *, WdeCustLib **, UINT * );
-static BOOL     WdeChooseCustControlType( LPCCINFO, WdeDialogBoxControl *, WdeCustLib **, UINT *, uint_32 * );
+static bool     WdeChooseCustControlType( LPCCINFO, WdeDialogBoxControl *, WdeCustLib **, UINT *, uint_32 * );
 static OBJPTR   WdeMakeCustom( OBJPTR, RECT *, OBJPTR, int );
 static OBJPTR   WdeCustomCreater( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl *, WdeCustLib *, UINT );
-static BOOL     WdeCustomDestroy( WdeCustomObject *, BOOL *, void * );
-static BOOL     WdeCustomValidateAction( WdeCustomObject *, ACTION *, void * );
-static BOOL     WdeCustomCopyObject( WdeCustomObject *, WdeCustomObject **, WdeCustomObject * );
-static BOOL     WdeCustomIdentify( WdeCustomObject *, OBJ_ID *, void * );
-static BOOL     WdeCustomGetWndProc( WdeCustomObject *, WNDPROC *, void * );
-static BOOL     WdeCustomGetWindowClass( WdeCustomObject *, char **, void * );
-static BOOL     WdeCustomDefine( WdeCustomObject *, POINT *, void * );
 static bool     WdeAddNewClassToList( char *, char *, int, WNDPROC );
 static LIST     *WdeFindClassInList( char * );
 static bool     WdeCustomRegisterClass( char *, HINSTANCE, char **, int *, WNDPROC * );
 static void     WdeFreeClassList( void );
 static void     WdeFreeClassNode( WdeCustClassNode * );
 
+#define pick(e,n,c) static bool WdeCustom ## n ## c;
+    pick_ACTS( WdeCustomObject )
+#undef pick
+
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeCustomDispatch;
+static DISPATCH_FN              *WdeCustomDispatch;
 static WdeDialogBoxControl      *WdeDefaultCustom = NULL;
 static LIST                     *WdeCustClassList = NULL;
 static char                     WdeClassName[MAX_NAME];
 
 static DISPATCH_ITEM WdeCustomActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeCustomDestroy        },
-    { COPY,             (DISPATCH_RTN *)WdeCustomCopyObject     },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeCustomValidateAction },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeCustomIdentify       },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeCustomGetWindowClass },
-    { DEFINE,           (DISPATCH_RTN *)WdeCustomDefine         },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeCustomGetWndProc     }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeCustom ## n},
+    pick_ACTS( WdeCustomObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS     (sizeof( WdeCustomActions ) / sizeof( DISPATCH_ITEM ))
@@ -123,14 +133,14 @@ void WdeChooseCustControlFromList( LIST *info_list, WdeDialogBoxControl *control
     LIST        *ilist;
     LPCCINFO    lpcci;
     uint_32     min_hd;
-    BOOL        found;
+    bool        found;
     char        temp[5];
 
     min_hd = 32;
     *lib = NULL;
     *index = 0;
 
-    found = FALSE;
+    found = false;
 
     if( info_list != NULL ) {
         for( ilist = info_list; ilist != NULL; ilist = ListNext( ilist ) ) {
@@ -150,15 +160,15 @@ void WdeChooseCustControlFromList( LIST *info_list, WdeDialogBoxControl *control
     }
 }
 
-BOOL WdeChooseCustControlType( LPCCINFO lpcci, WdeDialogBoxControl *control,
+bool WdeChooseCustControlType( LPCCINFO lpcci, WdeDialogBoxControl *control,
                                WdeCustLib **lib, UINT *index, uint_32 *min_hd )
 {
-    BOOL    found;
+    bool    found;
     uint_32 s1;
     uint_32 s2;
     uint_32 new_min;
 
-    found = FALSE;
+    found = false;
 
     s1 = lpcci->flStyleDefault;
     s1 &= 0x0000ffff;
@@ -178,12 +188,12 @@ BOOL WdeChooseCustControlType( LPCCINFO lpcci, WdeDialogBoxControl *control,
     return( found );
 }
 
-WINEXPORT OBJPTR CALLBACK WdeCustomCreate1( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeCustomCreate1( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     return( WdeMakeCustom( parent, obj_rect, handle, 0 ) );
 }
 
-WINEXPORT OBJPTR CALLBACK WdeCustomCreate2( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeCustomCreate2( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     return( WdeMakeCustom( parent, obj_rect, handle, 1 ) );
 }
@@ -191,25 +201,25 @@ WINEXPORT OBJPTR CALLBACK WdeCustomCreate2( OBJPTR parent, RECT *obj_rect, OBJPT
 static bool WdeCheckForSmallRect( OBJPTR parent, WdeCustLib *cust_lib,
                            UINT cust_index, RECT *obj_rect )
 {
-    UINT                width;
-    UINT                height;
+    int                 width;
+    int                 height;
     WdeResizeRatio      r;
 
     if( parent == NULL || cust_lib == NULL || obj_rect == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     /* check if the objects size is greater than min allowed */
     if( obj_rect->right - obj_rect->left >= MIN_X ||
         obj_rect->bottom - obj_rect->top >= MIN_Y ) {
-        return( TRUE );
+        return( true );
     }
 
     width = cust_lib->lpcci[cust_index].cxDefault;
     height = cust_lib->lpcci[cust_index].cyDefault;
 
     if( !Forward( parent, GET_RESIZER, &r, NULL ) ) {
-        return( FALSE );
+        return( false );
     }
 
     WdeMapCustomSize( &width, &height, &r );
@@ -217,7 +227,7 @@ static bool WdeCheckForSmallRect( OBJPTR parent, WdeCustLib *cust_lib,
     obj_rect->right = obj_rect->left + width;
     obj_rect->bottom = obj_rect->top + height;
 
-    return( TRUE );
+    return( true );
 }
 
 OBJPTR WdeMakeCustom( OBJPTR parent, RECT *obj_rect, OBJPTR handle, int which )
@@ -270,13 +280,13 @@ OBJPTR WdeMakeCustom( OBJPTR parent, RECT *obj_rect, OBJPTR handle, int which )
             WRMemFree( class_name );
         }
         if( info_list == NULL ) {
-            WdeSetStatusByID( WDE_NONE, WDE_NOCUSTOMFORCLASS );
+            WdeSetStatusByID( 0, WDE_NOCUSTOMFORCLASS );
             return( NULL );
         }
         WdeChooseCustControlFromList( info_list, control, &cust_lib, &cust_index );
         if( cust_lib == NULL ) {
             WdeWriteTrail( "WdeMakeCustom: No custom control fits this class & style!" );
-            WdeSetStatusByID( WDE_NONE, WDE_CANTFINDCUSTOM );
+            WdeSetStatusByID( 0, WDE_CANTFINDCUSTOM );
             return( NULL );
         }
     }
@@ -330,14 +340,14 @@ bool WdeAddNewClassToList( char *class, char *new_name, int win_extra, WNDPROC w
     node = (WdeCustClassNode *)WRMemAlloc( sizeof( WdeCustClassNode ) );
     if( node == NULL ) {
         WdeWriteTrail( "WdeAddNewClassToList: node alloc failed!" );
-        return( FALSE );
+        return( false );
     }
 
     str = WdeStrDup( class );
     if( str == NULL ) {
         WdeWriteTrail( "WdeAddNewClassToList: class strdup failed!" );
         WRMemFree( node );
-        return( FALSE );
+        return( false );
     }
     node->class = str;
 
@@ -346,16 +356,16 @@ bool WdeAddNewClassToList( char *class, char *new_name, int win_extra, WNDPROC w
         WdeWriteTrail( "WdeAddNewClassToList: new_name alloc failed!" );
         WRMemFree( node->class );
         WRMemFree( node );
-        return( FALSE );
+        return( false );
     }
     node->new_name = str;
 
     node->win_extra = win_extra;
     node->win_proc = win_proc;
 
-    WdeInsertObject( &WdeCustClassList, (void *)node );
+    WdeInsertObject( &WdeCustClassList, (OBJPTR)node );
 
-    return( TRUE );
+    return( true );
 }
 
 LIST *WdeFindClassInList( char *class )
@@ -387,20 +397,20 @@ bool WdeCustomRegisterClass( char *class, HINSTANCE inst, char **new_name,
         *new_name = WdeStrDup( node->new_name );
         if( *new_name == NULL ) {
             WdeWriteTrail( "WdeCustomRegisterClass: new_name alloc failed!" );
-            return( FALSE );
+            return( false );
         }
-        return( TRUE );
+        return( true );
     }
 
     if( !GetClassInfo( inst, class, &wc ) ) {
         WdeWriteTrail( "WdeCustomRegisterClass: GetClassInfo failed!" );
-        return( FALSE );
+        return( false );
     }
 
     *new_name = (char *)WRMemAlloc( strlen( class ) + 5 );
     if( *new_name == NULL ) {
         WdeWriteTrail( "WdeCustomRegisterClass: new_name alloc failed!" );
-        return( FALSE );
+        return( false );
     }
     strcpy( *new_name, "WDE_" );
     strcat( *new_name, class );
@@ -426,16 +436,16 @@ bool WdeCustomRegisterClass( char *class, HINSTANCE inst, char **new_name,
         // subclass controls instead of superclassing them makes this
         // much less fatal
         //WRMemFree( *new_name );
-        //return( FALSE );
+        //return( false );
     }
 
     if( !WdeAddNewClassToList( class, *new_name, *win_extra, *win_proc ) ) {
         WdeWriteTrail( "WdeCustomRegisterClass: AddNewClass failed!" );
         WRMemFree( *new_name );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
@@ -469,13 +479,13 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new->dispatcher = WdeCustomDispatch;
+    OBJ_DISPATCHER_SET( new, WdeCustomDispatch );
     new->object_id = id;
     new->cust_lib = cust_lib;
     new->cust_index = cust_index;
 
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -488,24 +498,24 @@ OBJPTR WdeCustomCreater( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+    if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeCustomCreate: SET_OBJECT_INFO failed!" );
-        Destroy( new->control, FALSE );
+        Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
 
-    if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
+    if( !Forward( new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeCustomCreate: CREATE_WINDOW failed!" );
-        Destroy( new->control, FALSE );
+        Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
-WINEXPORT BOOL CALLBACK WdeCustomDispatcher( ACTION act, WdeCustomObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeCustomDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -519,7 +529,7 @@ WINEXPORT BOOL CALLBACK WdeCustomDispatcher( ACTION act, WdeCustomObject *obj, v
         }
     }
 
-    return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeCustomObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeCustomInit( bool first )
@@ -530,7 +540,7 @@ bool WdeCustomInit( bool first )
     WdeDefaultCustom = WdeAllocDialogBoxControl();
     if( WdeDefaultCustom == NULL ) {
         WdeWriteTrail( "WdeCustomInit: Alloc of control failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* set up the default control structure */
@@ -544,27 +554,26 @@ bool WdeCustomInit( bool first )
     SETCTL_TEXT( WdeDefaultCustom, NULL );
     SETCTL_CLASSID( WdeDefaultCustom, NULL );
 
-    WdeCustomDispatch = MakeProcInstance( (FARPROC)WdeCustomDispatcher,
-                                          WdeGetAppInstance() );
+    WdeCustomDispatch = MakeProcInstance_DISPATCHER( WdeCustomDispatcher, WdeGetAppInstance() );
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeCustomFini( void )
 {
     WdeFreeClassList();
     WdeFreeDialogBoxControl( &WdeDefaultCustom );
-    FreeProcInstance( WdeCustomDispatch );
+    FreeProcInstance_DISPATCHER( WdeCustomDispatch );
 }
 
-BOOL WdeCustomDestroy( WdeCustomObject *obj, BOOL *flag, void *p2 )
+bool WdeCustomDestroy( WdeCustomObject *obj, bool *flag, bool *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeCustomDestroy: Control DESTROY failed" );
-        return( FALSE );
+        return( false );
     }
 
     if( obj->win_class != NULL ) {
@@ -573,38 +582,37 @@ BOOL WdeCustomDestroy( WdeCustomObject *obj, BOOL *flag, void *p2 )
 
     WRMemFree( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeCustomValidateAction( WdeCustomObject *obj, ACTION *act, void *p2 )
+bool WdeCustomValidateAction( WdeCustomObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeCustomActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
+    return( ValidateAction( obj->control, *act, p2 ) );
 }
 
-BOOL WdeCustomCopyObject( WdeCustomObject *obj, WdeCustomObject **new,
-                          WdeCustomObject *handle )
+bool WdeCustomCopyObject( WdeCustomObject *obj, WdeCustomObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeCustomCopyObject: Invalid new object!" );
-        return( FALSE );
+        return( false );
     }
 
     *new = (WdeCustomObject *)WRMemAlloc( sizeof( WdeCustomObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeCustomCopyObject: Object malloc failed" );
-        return( FALSE );
+        return( false );
     }
 
-    (*new)->dispatcher = obj->dispatcher;
+    OBJ_DISPATCHER_COPY( *new, obj );
     (*new)->win_proc = obj->win_proc;
     (*new)->win_extra = obj->win_extra;
     (*new)->object_id = obj->object_id;
@@ -615,11 +623,11 @@ BOOL WdeCustomCopyObject( WdeCustomObject *obj, WdeCustomObject **new,
     if( (*new)->win_class == NULL ) {
         WdeWriteTrail( "WdeCustomCopyObject: Class alloc failed!" );
         WRMemFree( *new );
-        return( FALSE );
+        return( false );
     }
 
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }
@@ -627,23 +635,23 @@ BOOL WdeCustomCopyObject( WdeCustomObject *obj, WdeCustomObject **new,
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeCustomCopyObject: Control not created!" );
         WRMemFree( *new );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeCustomIdentify( WdeCustomObject *obj, OBJ_ID *id, void *p2 )
+bool WdeCustomIdentify( WdeCustomObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeCustomGetWndProc( WdeCustomObject *obj, WNDPROC *proc, void *p2 )
+bool WdeCustomGetWndProc( WdeCustomObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -651,10 +659,10 @@ BOOL WdeCustomGetWndProc( WdeCustomObject *obj, WNDPROC *proc, void *p2 )
 
     *proc = WdeCustomSuperClassProc;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeCustomGetWindowClass( WdeCustomObject *obj, char **class, void *p2 )
+bool WdeCustomGetWindowClass( WdeCustomObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -662,12 +670,12 @@ BOOL WdeCustomGetWindowClass( WdeCustomObject *obj, char **class, void *p2 )
 
     *class = obj->win_class;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
+bool WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
 {
-    BOOL                redraw;
+    bool                redraw;
     HWND                dialog_owner;
     LPCCINFO            lpcci;
     CCSTYLE             ccs;
@@ -683,13 +691,13 @@ BOOL WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
 
     if( !Forward( (OBJPTR)obj, GET_WINDOW_HANDLE, &o_info.win, NULL ) ) {
         WdeWriteTrail( "WdeControlDefine: GET_WINDOW_HANDLE failed!" );
-        return( FALSE );
+        return( false );
     }
 
     if( !Forward( obj->object_handle, GET_OBJECT_INFO,
                   &o_info.info.c.info, &o_info.symbol ) ) {
         WdeWriteTrail( "WdeCustomDefine: GET_OBJECT_INFO failed!" );
-        return( FALSE );
+        return( false );
     }
 
     if( !WdeGetOption( WdeOptUseDefDlg ) ) {
@@ -707,8 +715,8 @@ BOOL WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
 
     dialog_owner = WdeGetMainWindowHandle();
 
-    WdeSetStatusText( NULL, "", FALSE );
-    WdeSetStatusByID( WDE_DEFININGCUSTOM, WDE_NONE );
+    WdeSetStatusText( NULL, "", false );
+    WdeSetStatusByID( WDE_DEFININGCUSTOM, 0 );
 
     lpcci = &obj->cust_lib->lpcci[obj->cust_index];
 
@@ -732,7 +740,7 @@ BOOL WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
 
     proc = lpcci->lpfnStyle;
 
-    redraw = (BOOL)(*proc)( dialog_owner, &ccs );
+    redraw = ( (*proc)( dialog_owner, &ccs ) != 0 );
 
     if( redraw ) {
 
@@ -740,12 +748,12 @@ BOOL WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
 
         if( !Forward( obj->object_handle, DESTROY_WINDOW, NULL, NULL ) ) {
             WdeWriteTrail( "WdeCustomDefine: DESTROY_WINDOW failed!" );
-            return( FALSE );
+            return( false );
         }
 
         if( !Forward( obj->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
             WdeWriteTrail( "WdeCustomDefine: CREATE_WINDOW failed!" );
-            return( FALSE );
+            return( false );
         }
 
         Notify( obj->object_handle, CURRENT_OBJECT, NULL );
@@ -753,10 +761,10 @@ BOOL WdeCustomDefine( WdeCustomObject *obj, POINT *pnt, void *p2 )
 
     WdeSetStatusReadyText();
 
-    return( TRUE );
+    return( true );
 }
 
-WINEXPORT LRESULT CALLBACK WdeCustomSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeCustomSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WNDPROC             wnd_proc;
     int                 extra;

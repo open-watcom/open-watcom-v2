@@ -114,8 +114,8 @@ static const dw_atnum SubATList[] = {
 };
 
 
-extern void DRGetSubrangeInfo( drmem_hdl sub, dr_subinfo *info )
-/**************************************************************/
+void DRGetSubrangeInfo( drmem_hdl sub, dr_subinfo *info )
+/*******************************************************/
 {
     drmem_hdl       abbrev;
     dr_val32        vals[3];
@@ -134,8 +134,8 @@ static const dw_atnum BitATList[] = {
     0,
 };
 
-extern int DRGetBitFieldInfo( drmem_hdl mem, dr_bitfield *info )
-/**************************************************************/
+int DRGetBitFieldInfo( drmem_hdl mem, dr_bitfield *info )
+/*******************************************************/
 {
     drmem_hdl       abbrev;
     dr_val32        vals[3];
@@ -150,8 +150,8 @@ extern int DRGetBitFieldInfo( drmem_hdl mem, dr_bitfield *info )
 }
 
 
-extern bool DRGetTypeInfo( drmem_hdl entry, dr_typeinfo *info )
-/*************************************************************/
+bool DRGetTypeInfo( drmem_hdl entry, dr_typeinfo *info )
+/******************************************************/
 // Assume entry is pointing at start of a type
 {
     drmem_hdl       curr_ab;
@@ -338,8 +338,8 @@ error:
     return( false );
 }
 
-extern dr_ptr DRGetAddrClass( drmem_hdl entry )
-/*********************************************/
+dr_ptr DRGetAddrClass( drmem_hdl entry )
+/**************************************/
 {
     drmem_hdl   abbrev;
     dr_ptr      ret;
@@ -377,8 +377,8 @@ extern dr_ptr DRGetAddrClass( drmem_hdl entry )
     return( ret );
 }
 
-extern drmem_hdl DRGetTypeAT( drmem_hdl entry )
-/*********************************************/
+drmem_hdl DRGetTypeAT( drmem_hdl entry )
+/**************************************/
 {
     drmem_hdl   abbrev;
     drmem_hdl   type;
@@ -391,8 +391,8 @@ extern drmem_hdl DRGetTypeAT( drmem_hdl entry )
     return( type );
 }
 
-extern dr_array_stat DRGetArrayInfo( drmem_hdl entry, dr_array_info *info )
-/*************************************************************************/
+dr_array_stat DRGetArrayInfo( drmem_hdl entry, dr_array_info *info )
+/******************************************************************/
 {
     drmem_hdl       abbrev;
     dr_array_stat   stat;
@@ -428,8 +428,8 @@ extern dr_array_stat DRGetArrayInfo( drmem_hdl entry, dr_array_info *info )
     return( stat );
 }
 
-extern drmem_hdl DRSkipTypeChain( drmem_hdl tref )
-/************************************************/
+drmem_hdl DRSkipTypeChain( drmem_hdl tref )
+/*****************************************/
 // skip modifiers and typedefs
 {
     drmem_hdl       abbrev;

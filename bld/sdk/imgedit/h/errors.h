@@ -42,12 +42,12 @@
 #define WIE_INTERNAL_007            "Internal Error 007- Icon out of range."
 #define WIE_INTERNAL_008            "Internal Error 008- Icon count imbalance"
 
-extern void     IEPrintErrorMsg( char *title, char *msg, char *fname, UINT style );
-extern void     IEPrintErrorMsgByID( UINT title, UINT msg, char *fname, UINT style );
+extern void     IEPrintErrorMsg( const char *title, const char *msg, const char *fname, UINT style );
+extern void     IEPrintErrorMsgByID( msg_id title, msg_id msg, const char *fname, UINT style );
 extern void     IEInitDisplayError( HINSTANCE inst );
-extern void     IEDisplayErrorMsg( UINT title, UINT msg, UINT style );
-extern char     *IEAllocRCString( UINT id );
+extern void     IEDisplayErrorMsg( msg_id title, msg_id msg, UINT style );
+extern char     *IEAllocRCString( msg_id id );
 extern void     IEFreeRCString( char *str );
-extern int      IECopyRCString( UINT id, char *buf, int bufsize );
+extern int      IECopyRCString( msg_id id, char *buf, int bufsize );
 extern void     IEFiniErrors( void );
 extern BOOL     IEInitErrors( HINSTANCE inst );

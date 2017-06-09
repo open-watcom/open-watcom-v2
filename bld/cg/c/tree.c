@@ -308,17 +308,25 @@ static  type_def    *ResultType( tn left, tn rite, type_def *tipe,
 #if _TARGET & 0
     return( tipe );
 #else
-    if( left->tipe->length >= tipe->length ) return( tipe );
-    if( rite->class != TN_CONS ) return( tipe );
-    if( left->tipe->attr & TYPE_FLOAT ) return( tipe );
-    if( rite->tipe->attr & TYPE_FLOAT ) return( tipe );
-    if( tipe->length > TypeClassSize[U4] ) return( tipe );
+    if( left->tipe->length >= tipe->length )
+        return( tipe );
+    if( rite->class != TN_CONS )
+        return( tipe );
+    if( left->tipe->attr & TYPE_FLOAT )
+        return( tipe );
+    if( rite->tipe->attr & TYPE_FLOAT )
+        return( tipe );
+    if( tipe->length > TypeClassSize[U4] )
+        return( tipe );
     if( left->tipe->attr & TYPE_SIGNED ) {
         if( !CFSignedSize( rite->u.name->c.value, left->tipe->length ) ) {
             return( tipe );
         }
-        if( rite->u.name->c.lo.int_value < 0 ) return( tipe );
-        if( (tipe->attr & TYPE_SIGNED) == 0 ) return( tipe );
+        if( rite->u.name->c.lo.int_value < 0 )
+            return( tipe );
+        if( (tipe->attr & TYPE_SIGNED) == 0 ) {
+            return( tipe );
+        }
     } else {
         if( !CFUnSignedSize( rite->u.name->c.value, left->tipe->length ) )  {
             return( tipe );
@@ -378,11 +386,14 @@ extern  tn  TGCompare( cg_op op, tn left, tn rite, type_def *tipe )
     left = TGConvert( left, tipe );
     rite = TGConvert( rite, tipe );
     new = FoldCompare( op, left, rite, tipe );
-    if( new != NULL ) return( new );
+    if( new != NULL )
+        return( new );
     new = FoldBitCompare( op, left, rite );
-    if( new != NULL ) return( new );
+    if( new != NULL )
+        return( new );
     new = FoldPostGetsCompare( op, left, rite, tipe );
-    if( new != NULL ) return( new );
+    if( new != NULL )
+        return( new );
     new = TGNode( TN_COMPARE, op, left, rite, TypeBoolean );
     return( new );
 }
@@ -420,7 +431,9 @@ extern  unsigned_32    TGMask32( tn node )
     for( ;; ) {
         mask |= bit;
         bit <<= 1;
-        if( --len == 0 ) break;
+        if( --len == 0 ) {
+            break;
+        }
     }
     return( mask );
 }
@@ -445,7 +458,9 @@ static  unsigned_64    TGMask64( tn node )
         mask = tmp;
         U64ShiftL( &bit, 1, &tmp );
         bit = tmp;
-        if( --len == 0 ) break;
+        if( --len == 0 ) {
+            break;
+        }
     }
     return( mask );
 }
@@ -500,7 +515,8 @@ static  type_def  *BinResult( cg_op op, tn *l, tn *r, type_def *tipe,
     tn          temp;
     type_def    *otipe;
 
-    commie = commie; /* shut up the compiler */
+    /* unused parameters */ (void)commie;
+
     rite = *r;
     left = *l;
     switch( op ) {
@@ -979,8 +995,10 @@ extern  bool    TGCanDuplicate( tn node )
     case TN_BIT_RVALUE:
         return( TGCanDuplicate( node->u.left ) );
     case TN_BINARY:
-        if( !TGCanDuplicate( node->u.left ) ) return( false );
-        if( !TGCanDuplicate( node->u2.t.rite ) ) return( false );
+        if( !TGCanDuplicate( node->u.left ) )
+            return( false );
+        if( !TGCanDuplicate( node->u2.t.rite ) )
+            return( false );
         return( true );
     default:
         return( false );
@@ -1250,7 +1268,8 @@ extern  tn  TGFlow( cg_op op, tn left, tn rite )
         _Zoiks( ZOIKS_056 );
         break;
     }
-    if( result != NULL ) return( result );
+    if( result != NULL )
+        return( result );
     left = TGConvert( left, TypeBoolean );
     if( rite != NULL ) {  /* O_FLOW_NOT*/
         rite = TGConvert( rite, TypeBoolean );
@@ -1363,12 +1382,12 @@ extern  void    TGControl( cg_op op, tn node, label_handle lbl )
 {
     switch( op ) {
     case O_IF_TRUE:
-        if( FoldIfTrue( node, lbl ) == false ) {
+        if( !FoldIfTrue( node, lbl ) ) {
             Control( op, node, lbl, true );
         }
         break;
     case O_IF_FALSE:
-        if( FoldIfFalse( node, lbl ) == false ) {
+        if( !FoldIfFalse( node, lbl ) ) {
             Control( op, node, lbl, true );
         }
         break;
@@ -1412,13 +1431,15 @@ static  name    *TNGetLeafName( tn node )
     an      addr;
 
     addr = node->u.addr;
-    if( addr->format != NF_ADDR ) return( NULL );
+    if( addr->format != NF_ADDR )
+        return( NULL );
     switch( addr->class ) {
     case CL_ADDR_TEMP:
     case CL_ADDR_GLOBAL:
         return( addr->u.n.name );
     case CL_POINTER:
-        if( _IsModel( FORTRAN_ALIASING ) ) return( addr->u.n.name );
+        if( _IsModel( FORTRAN_ALIASING ) )
+            return( addr->u.n.name );
         return( NULL );
     default:
         return( NULL );
@@ -1441,31 +1462,41 @@ static  name *TNFindBase( tn node )
 {
     name    *op;
 
-    if( node == NULL ) return( NULL );
-    if( node->u2.t.base != NULL ) return( node->u2.t.base );
+    if( node == NULL )
+        return( NULL );
+    if( node->u2.t.base != NULL )
+        return( node->u2.t.base );
     switch( node->class ) {
     case TN_LEAF:
         return( TNGetLeafName( node ) );
     case TN_COMMA:
     case TN_SIDE_EFFECT:
-        if( (node->tipe->attr & TYPE_POINTER) == 0 ) return( NULL );
+        if( (node->tipe->attr & TYPE_POINTER) == 0 )
+            return( NULL );
         op = SafeRecurseCG( (func_sr)TNFindBase, ( node->class == TN_COMMA ) ? node->u.left : node->u2.t.rite );
-        if( op != NULL ) return( op );
+        if( op != NULL )
+            return( op );
     /* fall through */
     case TN_BINARY:
         // creating a based pointer via a binary convert - don't want a fake base
-        if( node->class == TN_BINARY && node->u2.t.op == O_CONVERT ) return( NULL );
+        if( node->class == TN_BINARY && node->u2.t.op == O_CONVERT )
+            return( NULL );
     /* fall through */
     case TN_LV_ASSIGN:
     case TN_LV_PRE_GETS:
-        if( (node->tipe->attr & TYPE_POINTER) == 0 ) return( NULL );
+        if( (node->tipe->attr & TYPE_POINTER) == 0 )
+            return( NULL );
         op = SafeRecurseCG( (func_sr)TNFindBase, node->u2.t.rite );
-        if( op != NULL ) return( op );
-        if( node->u2.t.op == O_CONVERT ) return( NULL );
-        if( node->class != TN_BINARY ) return( NULL );
+        if( op != NULL )
+            return( op );
+        if( node->u2.t.op == O_CONVERT )
+            return( NULL );
+        if( node->class != TN_BINARY )
+            return( NULL );
         return( SafeRecurseCG( (func_sr)TNFindBase, node->u.left ) );
     case TN_UNARY:
-        if( (node->tipe->attr & TYPE_POINTER) == 0 ) return( NULL );
+        if( (node->tipe->attr & TYPE_POINTER) == 0 )
+            return( NULL );
         switch( node->u2.t.op ) {
         case O_PTR_TO_NATIVE:
         case O_PTR_TO_FOREIGN:
@@ -1474,8 +1505,10 @@ static  name *TNFindBase( tn node )
         default:
             break;
         }
-        if( _IsntModel( FORTRAN_ALIASING ) ) return( NULL );
-        if( node->u2.t.op != O_POINTS ) return( NULL );
+        if( _IsntModel( FORTRAN_ALIASING ) )
+            return( NULL );
+        if( node->u2.t.op != O_POINTS )
+            return( NULL );
         switch( node->u.left->class ) {
         case TN_SIDE_EFFECT:
             return( SafeRecurseCG( (func_sr)TNFindBase, node->u.left->u2.t.rite ) );
@@ -1488,11 +1521,14 @@ static  name *TNFindBase( tn node )
             break;
         }
         node = node->u.left;
-        if( node->class != TN_LEAF ) return( NULL );
+        if( node->class != TN_LEAF )
+            return( NULL );
         op = TNGetLeafName( node );
-        if( op == NULL ) return( NULL );
+        if( op == NULL )
+            return( NULL );
         if( op->n.class == N_TEMP ) {
-            if( op->v.symbol == NULL ) return( NULL );
+            if( op->v.symbol == NULL )
+                return( NULL );
             op = SAllocUserTemp( FEAuxInfo( op->v.symbol, SHADOW_SYMBOL ), op->n.name_class, op->n.size );
         }
         return( op );
@@ -2211,20 +2247,27 @@ static  bool    ModifiesSP( tn node )
         break;
     case TN_CALL:
         // need to check if routine modifies SP
-        if( FunctionModifiesSP( node ) ) return( true );
+        if( FunctionModifiesSP( node ) )
+            return( true );
         // or if any of it's parm nodes modifies SP
-        if( node->u2.t.rite != NULL && ModifiesSP( node->u2.t.rite ) ) return( true );
+        if( node->u2.t.rite != NULL && ModifiesSP( node->u2.t.rite ) )
+            return( true );
         break;
     case TN_UNARY:
-        if( node->u2.t.op == O_STACK_ALLOC ) return( true );
+        if( node->u2.t.op == O_STACK_ALLOC )
+            return( true );
     /* fall through */
     default:
         if( node->u2.t.rite != NULL ) {
-            if( ModifiesSP( node->u2.t.rite ) ) return( true );
+            if( ModifiesSP( node->u2.t.rite ) ) {
+                return( true );
+            }
         }
         if( node->flags & TF_HAS_LEFT ) {
             assert( node->u.left != NULL );
-            if( ModifiesSP( node->u.left ) ) return( true );
+            if( ModifiesSP( node->u.left ) ) {
+                return( true );
+            }
         }
     }
     return( false );
@@ -2273,8 +2316,9 @@ static  an  TNCall( tn what, bool ignore_return )
     cg_sym_handle   sym;
     aux_handle      aux;
 
+    /* unused parameters */ (void)ignore_return;
+
     call = NULL;
-    ignore_return=ignore_return;
     addr = what->u.left; /* address to call*/
     sym = (cg_sym_handle)addr->u2.t.rite;
     aux = FEAuxInfo( sym, AUX_LOOKUP );

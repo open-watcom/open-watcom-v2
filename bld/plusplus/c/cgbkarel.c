@@ -158,7 +158,8 @@ void AutoRelFree(               // FREE ALL RELOCATIONS
 static void autoRelInit(        // INITIALIZE CGBKAREL
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carve_sym = CarveCreate( sizeof( AUTO_SYM ), 32 );
     carve_rel = CarveCreate( sizeof( AUTO_REL ), 32 );
 }
@@ -167,7 +168,8 @@ static void autoRelInit(        // INITIALIZE CGBKAREL
 static void autoRelFini(        // COMPLETE CGBKAREL
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CarveDestroy( carve_sym );
     CarveDestroy( carve_rel );
 }

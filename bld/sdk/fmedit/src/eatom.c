@@ -47,148 +47,84 @@
 /* use the app window. */
 #define USE_OWN_WINDOW 1
 
+#define pick_ACTS(o) \
+    pick_ACTION_LOCATE(o,pick) \
+    pick_ACTION_MOVE(o,pick) \
+    pick_ACTION_RESIZE(o,pick) \
+    pick_ACTION_REGISTER(o,pick) \
+    pick_ACTION_RECREATE(o,pick) \
+    pick_ACTION_DESTROY(o,pick) \
+    pick_ACTION_VALIDATE_ACTION(o,pick) \
+    pick_ACTION_DRAW(o,pick) \
+    pick_ACTION_GET_OBJPTR(o,pick) \
+    pick_ACTION_UNDO_MOVE(o,pick) \
+    pick_ACTION_REMOVE_FROM_PARENT(o,pick) \
+    pick_ACTION_GET_ANCHOR(o,pick) \
+    pick_ACTION_NOTIFY(o,pick) \
+    pick_ACTION_IS_MARK_VALID(o,pick)
+
+/* Local Window callback functions prototypes */
 WINEXPORT LRESULT CALLBACK EAtomWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /* forward references */
-
-static BOOL CALLBACK EAtomDispatch( ACTION, EATOM *, void *, void * );
-static BOOL EAtomLocation( OBJPTR, void *, void * );
-static BOOL EAtomMove( OBJPTR, void *, void * );
-static BOOL EAtomResize( OBJPTR, void *, void * );
-static BOOL EAtomRegister( OBJPTR, void *, void * );
-static BOOL EAtomRecreate( OBJPTR, void *, void * );
-static BOOL EAtomDestroy( OBJPTR, void *, void * );
-static BOOL EAtomValidateAction( OBJPTR, void *, void * );
-static BOOL EAtomDraw( OBJPTR, void *, void * );
-static BOOL EAtomGetObjptr( OBJPTR, void *, void * );
-static BOOL EAtomUndoMove( OBJPTR, void *, void * );
-static BOOL EAtomRemoveFromParent( OBJPTR, void *, void * );
-static BOOL EAtomGetAnchor( OBJPTR, void *, void * );
-static BOOL EAtomNotify( OBJPTR, void *, void * );
-static BOOL EAtomIsMarkValid( OBJPTR, void *, void * );
-
-static void ShowEAtomRect( EATOM * obj );
+#define pick(e,n,c) static bool EAtom ## n ## c;
+    pick_ACTS( EATOM )
+#undef pick
 
 static DISPATCH_ITEM EAtomActions[] = {
-    { LOCATE,               EAtomLocation           },
-    { MOVE,                 EAtomMove               },
-    { RESIZE,               EAtomResize             },
-    { REGISTER,             EAtomRegister           },
-    { RECREATE,             EAtomRecreate           },
-    { DESTROY,              EAtomDestroy            },
-    { VALIDATE_ACTION,      EAtomValidateAction     },
-    { DRAW,                 EAtomDraw               },
-    { GET_OBJPTR,           EAtomGetObjptr          },
-    { UNDO_MOVE,            EAtomUndoMove           },
-    { REMOVE_FROM_PARENT,   EAtomRemoveFromParent   },
-    { GET_ANCHOR,           EAtomGetAnchor          },
-    { NOTIFY,               EAtomNotify             },
-    { IS_MARK_VALID,        EAtomIsMarkValid        }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)EAtom ## n},
+    pick_ACTS( EATOM )
+    #undef pick
 };
 
 #define MAX_ACTIONS (sizeof( EAtomActions ) / sizeof( DISPATCH_ITEM ))
 
-static BOOL CALLBACK EAtomDispatch( ACTION id, EATOM *obj, void *p1, void *p2 )
-/*****************************************************************************/
+static bool CALLBACK EAtomDispatch( ACTION_ID id, OBJPTR obj, void *p1, void *p2 )
+/********************************************************************************/
 {
     /* dispatch the desired operation to the correct place */
     int i;
 
-    if( id >= APP_ACTIONS ) {
-        return( Forward( obj->obj, id, p1, p2 ) );
+    if( id >= FIRST_USER_ACTION_ID ) {
+        return( Forward( ((EATOM *)obj)->obj, id, p1, p2 ) );
     }
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( EAtomActions[i].id == id ) {
-            return( (EAtomActions[i].rtn)( obj, p1, p2 ) );
+            return( EAtomActions[i].rtn( obj, p1, p2 ) );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
-static BOOL EAtomValidateAction( OBJPTR _obj, void *_idptr, void *p2 )
-/********************************************************************/
+static bool EAtomValidateAction( EATOM *obj, ACTION_ID *idptr, void *p2 )
+/***********************************************************************/
 {
     /* check if the desired action is valid for and EATOM */
-    EATOM   *obj = _obj;
-    ACTION  *idptr = _idptr;
     int     i;
 
     obj = obj;        /* ref'd to avoid warning */
     p2 = p2;          /* ref'd to avoid warning */
 
-    if( *idptr >= APP_ACTIONS ) {
+    if( *idptr >= FIRST_USER_ACTION_ID ) {
         return( Forward( obj->obj, VALIDATE_ACTION, idptr, p2 ) );
     }
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( EAtomActions[i].id == *idptr ) {
-            return( TRUE );
+            return( true );
         }
     }
-    return( FALSE );
+    return( false );
 }
 
 
-OBJPTR EAtomCreate( OBJPTR parent, RECT *loc, OBJPTR handle )
+static bool EAtomLocation( EATOM *obj, RECT *rect, void *p2 )
 /***********************************************************/
 {
-    /* create an EATOM object */
-    EATOM       *new;
-    POINT       offset;
-    STATE_ID    st;
-
-    new = EdAlloc( sizeof( EATOM ) );
-    new->invoke = (FARPROC)&EAtomDispatch;
-    new->obj = parent;
-    new->parent = NULL;
-    if( handle == NULL ) {
-        new->handle = new;
-    } else {
-        new->handle = handle;
-    }
-    new->rect = *loc;
-    new->anchor.x = new->rect.left;
-    new->anchor.y = new->rect.top;
-    new->show = GetShowEatoms();
-    GetOffset( &offset );
-    if( new->show ) {
-#if USE_OWN_WINDOW
-        new->hwnd = CreateWindow( "EAtomClass",
-                                  NULL,
-                                  WS_VISIBLE | WS_CHILD | WS_DISABLED,
-                                  new->rect.left - offset.x,
-                                  new->rect.top - offset.y,
-                                  new->rect.right - new->rect.left,
-                                  new->rect.bottom - new->rect.top,
-                                  GetAppWnd(),
-                                  NULL,
-                                  GetInst(),
-                                  NULL );
-#else
-        new->hwnd = GetAppWnd();
-#endif
-    } else {
-        new->hwnd = NULL;
-    }
-    new->displayed = FALSE;
-    st = GetState();
-    if( st != SELECTING ) {
-        MouseAction( &new->rect );
-    }
-    ShowEAtomRect( new );
-    return( new );
-}
-
-
-static BOOL EAtomLocation( OBJPTR _obj, void *_rect, void *p2 )
-/*************************************************************/
-{
     /* return the location of the atom */
-    EATOM   *obj = _obj;
-    RECT    *rect = _rect;
     p2 = p2;          /* ref'd to avoid warning */
     *rect = obj->rect;
-    return( TRUE );
+    return( true );
 }
 
 static void CalcDrawRect( RECT *rect, RECT *drawrect )
@@ -236,7 +172,7 @@ static void ShowEAtomRect( EATOM *obj )
 {
     if( !obj->displayed ) {
         DrawEAtomRect( obj );
-        obj->displayed = TRUE;
+        obj->displayed = true;
     }
 }
 
@@ -245,18 +181,67 @@ static void HideEAtomRect( EATOM *obj )
 {
     if( obj->displayed ) {
         DrawEAtomRect( obj );
-        obj->displayed = FALSE;
+        obj->displayed = false;
     }
 }
 
-static BOOL EAtomMove( OBJPTR _obj, void *_offset, void *p2 )
+
+OBJPTR EAtomCreate( OBJPTR parent, RECT *loc, OBJPTR handle )
 /***********************************************************/
+{
+    /* create an EATOM object */
+    EATOM       *new;
+    POINT       offset;
+    STATE_ID    st;
+
+    new = EdAlloc( sizeof( EATOM ) );
+    OBJ_DISPATCHER_SET( new, EAtomDispatch );
+    new->obj = parent;
+    new->parent = NULL;
+    if( handle == NULL ) {
+        new->handle = (OBJPTR)new;
+    } else {
+        new->handle = handle;
+    }
+    new->rect = *loc;
+    new->anchor.x = new->rect.left;
+    new->anchor.y = new->rect.top;
+    new->show = GetShowEatoms();
+    GetOffset( &offset );
+    if( new->show ) {
+#if USE_OWN_WINDOW
+        new->hwnd = CreateWindow( "EAtomClass",
+                                  NULL,
+                                  WS_VISIBLE | WS_CHILD | WS_DISABLED,
+                                  new->rect.left - offset.x,
+                                  new->rect.top - offset.y,
+                                  new->rect.right - new->rect.left,
+                                  new->rect.bottom - new->rect.top,
+                                  GetAppWnd(),
+                                  NULL,
+                                  GetInst(),
+                                  NULL );
+#else
+        new->hwnd = GetAppWnd();
+#endif
+    } else {
+        new->hwnd = NULL;
+    }
+    new->displayed = false;
+    st = GetState();
+    if( st != SELECTING ) {
+        MouseAction( &new->rect );
+    }
+    ShowEAtomRect( new );
+    return( (OBJPTR)new );
+}
+
+static bool EAtomMove( EATOM *obj, POINT *offset, bool *p2 )
+/**********************************************************/
 {
     /*  Do the move operation.  The amount to move is stored in the left and
      *  top values of the passed rect.
      */
-    EATOM   *obj = _obj;
-    POINT   *offset = _offset;
     POINT   scrolloffset;
 
     p2 = p2;          /* ref'd to avoid warning */
@@ -276,18 +261,16 @@ static BOOL EAtomMove( OBJPTR _obj, void *_offset, void *p2 )
 #endif
     MouseAction( &obj->rect );
     ShowEAtomRect( obj );
-    return( TRUE );
+    return( true );
 }
 
 
-static BOOL EAtomResize( OBJPTR _obj, void *_info, void *p2 )
-/***********************************************************/
+static bool EAtomResize( EATOM *obj, RECT *info, bool *p2 )
+/*********************************************************/
 {
     /*  Do the resize operation.  The amount to resize is stored in the left and
      *  top values of the passed rect.
      */
-    EATOM   *obj = _obj;
-    RECT    *info = _info;
     POINT   point;
     POINT   scrolloffset;
     RECT    drawrect;
@@ -344,18 +327,16 @@ static BOOL EAtomResize( OBJPTR _obj, void *_info, void *p2 )
         MouseAction( &obj->rect );
         ShowEAtomRect( obj );
     }
-    return( TRUE );
+    return( true );
 }
 
 
-static BOOL EAtomRecreate( OBJPTR _obj, void *_pt, void *p2 )
-/***********************************************************/
+static bool EAtomRecreate( EATOM *obj, POINT *pt, void *p2 )
+/**********************************************************/
 {
     /*  Recreate the passed object by using the point in anchor as one
      *  corner and the passed point as the other
      */
-    EATOM   *obj = _obj;
-    POINT   *pt = _pt;
     POINT   scrolloffset;
     RECT    drawrect;
     RECT    newrect;
@@ -403,25 +384,24 @@ static BOOL EAtomRecreate( OBJPTR _obj, void *_pt, void *p2 )
         }
         ShowEAtomRect( obj );
     }
-    return( TRUE );
+    return( true );
 }
 
 
-static BOOL EAtomRegister( OBJPTR _obj, void *p1, void *p2 )
-/**********************************************************/
+static bool EAtomRegister( EATOM *obj, void *p1, void *p2 )
+/*********************************************************/
 {
     /* register the object */
-    EATOM       *obj = _obj;
-    BOOL        ret;
+    bool        ret;
     OBJPTR      new;
-    CURROBJPTR  currobj;
+    OBJPTR      currobj;
     STATE_ID    state;
     POINT       off;
 
     p1 = p1;          /* ref'd to avoid warning */
     p2 = p2;          /* ref'd to avoid warning */
-    ret = TRUE;
-    currobj = GetCurrObjptr( obj );
+    ret = true;
+    currobj = GetCurrObjptr( (OBJPTR)obj );
     state = GetState();
     if( !IsRectEmpty( (LPRECT)&obj->rect ) || state == CREATING ) {
         /* register the completed action with the appropriate object */
@@ -433,13 +413,13 @@ static BOOL EAtomRegister( OBJPTR _obj, void *p1, void *p2 )
                 if( Register( new ) ) {
                     AddCurrObject( new );
                 } else {
-                    ret = FALSE;
-                    Destroy( new, FALSE );
+                    ret = false;
+                    Destroy( new, false );
                 }
             } else {
-                ret = FALSE;
+                ret = false;
             }
-            Destroy( (OBJECT *)obj, FALSE );
+            Destroy( (OBJPTR)obj, false );
             break;
         case MOVING:
             off.x = obj->rect.left;
@@ -447,7 +427,7 @@ static BOOL EAtomRegister( OBJPTR _obj, void *p1, void *p2 )
             SnapPointToGrid( &off );
             off.x -= obj->anchor.x;
             off.y -= obj->anchor.y;
-            ret = Move( obj->obj, &off, TRUE );
+            ret = Move( obj->obj, &off, true );
             if( ret ) {
                 obj->offset = off;
                 currobj = GetCurrObjptr( obj->obj );
@@ -460,9 +440,9 @@ static BOOL EAtomRegister( OBJPTR _obj, void *p1, void *p2 )
             break;
         case SIZING:
             DeleteCurrObject( currobj );
-            Resize( obj->obj, &obj->rect, TRUE );
+            Resize( obj->obj, &obj->rect, true );
             AddCurrObject( obj->obj );
-            Destroy( (OBJECT *)obj, FALSE );
+            Destroy( (OBJPTR)obj, false );
             break;
 #ifdef DEBUG_ON
         default :
@@ -474,16 +454,15 @@ static BOOL EAtomRegister( OBJPTR _obj, void *p1, void *p2 )
     } else {
         /* a single click on the object implies making it current */
         AddCurrObject( obj->obj );
-        Destroy( (OBJECT *)obj, FALSE );
+        Destroy( (OBJPTR)obj, false );
     }
     return( ret );
 }
 
-static BOOL EAtomDestroy( OBJPTR _obj, void *p1, void *p2 )
-/*********************************************************/
+static bool EAtomDestroy( EATOM *obj, bool *p1, bool *p2 )
+/********************************************************/
 {
     /* destroy the EATOM */
-    EATOM   *obj = _obj;
     p1 = p1;          /* ref'd to avoid warning */
     p2 = p2;          /* ref'd to avoid warning */
 
@@ -496,15 +475,12 @@ static BOOL EAtomDestroy( OBJPTR _obj, void *p1, void *p2 )
     HideEAtomRect( obj );
 #endif
     EdFree( obj );
-    return( TRUE );
+    return( true );
 }
 
-static BOOL EAtomDraw( OBJPTR _obj, void *_rect, void *_hdc )
-/***********************************************************/
+static bool EAtomDraw( EATOM *obj, RECT *rect, HDC *hdc )
+/*******************************************************/
 {
-    EATOM   *obj = _obj;
-    RECT    *rect = _rect;
-    HDC     *hdc = _hdc;
     RECT    intersect;
 
     hdc = hdc;            /* ref'd to avoid warning */
@@ -512,27 +488,24 @@ static BOOL EAtomDraw( OBJPTR _obj, void *_rect, void *_hdc )
     if( obj->displayed && IntersectRect( &intersect, rect, &obj->rect ) ) {
         DrawEAtomRect( obj );
     }
-    return( TRUE );
+    return( true );
 }
 
-static BOOL EAtomGetObjptr( OBJPTR _obj, void *_newobj, void *p2 )
-/****************************************************************/
+static bool EAtomGetObjptr( EATOM *obj, OBJPTR *newobj, void *p2 )
+/*****************************************************************/
 {
     /* Get the OBJPTR of the object associated with this EATOM */
-    EATOM   *obj = _obj;
-    OBJPTR  *newobj = _newobj;
     p2 = p2;          /* ref'd to avoid warning */
 
     if( newobj != NULL ) {
         *newobj = obj->obj;
     }
-    return( TRUE );
+    return( true );
 }
 
-static BOOL EAtomUndoMove( OBJPTR _obj, void *p1, void *p2 )
-/**********************************************************/
+static bool EAtomUndoMove( EATOM *obj, void *p1, void *p2 )
+/*********************************************************/
 {
-    EATOM   *obj = _obj;
     p1 = p1;          /* ref'd to avoid warning */
     p2 = p2;          /* ref'd to avoid warning */
 
@@ -541,70 +514,64 @@ static BOOL EAtomUndoMove( OBJPTR _obj, void *p1, void *p2 )
         RemoveObject( obj->parent, obj->obj );
         obj->offset.x = -obj->offset.x;
         obj->offset.y = -obj->offset.y;
-        return( Move( obj->obj, &obj->offset, TRUE ));
+        return( Move( obj->obj, &obj->offset, true ) );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
-static BOOL EAtomRemoveFromParent( OBJPTR _obj, void *p1, void *p2 )
-/******************************************************************/
+static bool EAtomRemoveFromParent( EATOM *obj, void *p1, void *p2 )
+/*****************************************************************/
 {
-    EATOM   *obj = _obj;
     p1 = p1;          /* ref'd to avoid warning */
     p2 = p2;          /* ref'd to avoid warning */
 
     GetObjectParent( obj->obj, &obj->parent );
     if( obj->parent != NULL ) {
         RemoveObject( obj->parent, obj->obj );
-        return( TRUE );
+        return( true );
     } else  {
-        return( TRUE );
+        return( true );
     }
 }
 
 
-static BOOL EAtomGetAnchor( OBJPTR _obj, void *_pt, void *p2 )
-/************************************************************/
+static bool EAtomGetAnchor( EATOM *obj, POINT *pt, void *p2 )
+/***********************************************************/
 {
-    EATOM   *obj = _obj;
-    POINT   *pt = _pt;
     p2 = p2;
     *pt = obj->anchor;
-    return( TRUE );
+    return( true );
 }
 
-static BOOL EAtomIsMarkValid( OBJPTR obj, void *valid, void *p2 )
+static bool EAtomIsMarkValid( EATOM *obj, bool *valid, void *p2 )
 /***************************************************************/
 {
     obj = obj;
     p2 = p2;
 
-    *(BOOL *)valid = FALSE;
-    return( TRUE );
+    *valid = false;
+    return( true );
 }
 
-static BOOL EAtomNotify( OBJPTR _obj, void *_id, void *p2 )
-/*********************************************************/
+static bool EAtomNotify( EATOM *obj, NOTE_ID *noteid, void *p2 )
+/**************************************************************/
 {
-    EATOM   *obj = _obj;
-    NOTE_ID *id = _id;
-
-    switch( *id ) {
+    switch( *noteid ) {
     case MOVE_START:
     case MOVE_END:
         if( obj->obj != NULL ) {
-            return( Forward( obj->obj, NOTIFY, id, p2 ) );
+            return( Forward( obj->obj, NOTIFY, noteid, p2 ) );
         }
-        return( FALSE );
+        return( false );
     default:
-        return( FALSE );
+        return( false );
     }
 }
 
 
-WINEXPORT LRESULT CALLBACK EAtomWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lparam )
-/*********************************************************************************************/
+LRESULT CALLBACK EAtomWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lparam )
+/***********************************************************************************/
 {
     /* processes messages */
     PAINTSTRUCT    ps;
@@ -620,8 +587,8 @@ WINEXPORT LRESULT CALLBACK EAtomWndProc( HWND wnd, UINT message, WPARAM wparam, 
     return( 0L );
 }
 
-extern void InitEAtom( void )
-/***************************/
+void InitEAtom( void )
+/********************/
 {
     /* Initialization for EATOM objects - register the EAtomClass */
     WNDCLASS wc;

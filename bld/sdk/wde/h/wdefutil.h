@@ -65,7 +65,7 @@ extern bool     WdeFindObjectsAtPt( POINT *, LIST **, LIST * );
 extern bool     WdeFindSubObjects( SUBOBJ_REQUEST *, LIST **, LIST * );
 extern void     WdeDisableChildWindows( HWND );
 extern bool     WdeProcessMouse( HWND, UINT, WPARAM, LPARAM );
-extern BOOL     WdeControlDefine( WdeDefineObjectInfo * );
+extern bool     WdeControlDefine( WdeDefineObjectInfo * );
 extern bool     WdeProcessSymbolCombo( HWND, UINT, WPARAM, LPARAM, WdeHashTable *, uint_16, bool );
 extern bool     WdeProcessHelpSymbolCombo( HWND, UINT, WPARAM, LPARAM, WdeHashTable *, uint_32, bool );
 extern void     WdeSetDefineObjectSymbolInfo( WdeDefineObjectInfo *, HWND );
@@ -73,7 +73,7 @@ extern void     WdeGetDefineObjectSymbolInfo( WdeDefineObjectInfo *, HWND );
 extern void     WdeGetDefineObjectHelpSymbolInfo( WdeDefineObjectInfo *, HWND );
 extern void     WdeMapWindowRect( HWND, HWND, RECT * );
 extern bool     WdeIsStrSpace( char * );
-extern BOOL     WdeWinStylesHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+extern bool     WdeWinStylesHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
 extern void     WdeAddSymbolToObjectHashTable( WdeResInfo *, char *, WdeHashValue );
 
 extern void     WdeEXSetDefineInfo( WdeDefineObjectInfo *, HWND );

@@ -37,7 +37,7 @@
 
 namespace std {
 
-  filebuf::filebuf( filedesc fd, char *buf, int len ) : __file_handle( EOF ) {
+  filebuf::filebuf( filedesc fd, char *buf, streamsize len ) : __file_handle( EOF ) {
     attach( fd );
     setbuf( buf, len );
   }

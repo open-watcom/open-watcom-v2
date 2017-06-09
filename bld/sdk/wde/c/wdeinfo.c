@@ -35,7 +35,6 @@
 #include <mbstring.h>
 #include "wdemsgbx.h"
 #include "rcstr.gh"
-#include "wderesin.h"
 #include "wdegeted.h"
 #include "wdeobjid.h"
 #include "wde_wres.h"
@@ -48,11 +47,15 @@
 #include "wdeinfo.h"
 #include "wrdll.h"
 #include "jdlg.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WdeInfoWndProc( HWND, UINT, WPARAM, LPARAM );
+
+/* Local Window callback functions prototypes */
+WINEXPORT INT_PTR CALLBACK WdeInfoWndDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* external variables                                                       */
@@ -122,9 +125,9 @@ void WdeAddUniqueStringToCombo( HWND hdlg, int id, char *str )
     if( cbox == (HWND)NULL ) {
         return;
     }
-    pos = SendMessage( cbox, CB_FINDSTRINGEXACT, 0, (LPARAM)(LPSTR)str );
+    pos = SendMessage( cbox, CB_FINDSTRINGEXACT, 0, (LPARAM)(LPCSTR)str );
     if( pos == CB_ERR ) {
-        SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
+        SendMessage( cbox, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
     }
 }
 
@@ -135,12 +138,12 @@ void WdeSetFocusToInfo( void )
     }
 }
 
-BOOL WdeIsInfoMessage( MSG *msg )
+bool WdeIsInfoMessage( MSG *msg )
 {
     if ( WdeInfoWindowDepth != 0 && WdeInfoWindow != (HWND)NULL ) {
-        return( IsDialogMessage( WdeInfoWindow, msg ) );
+        return( IsDialogMessage( WdeInfoWindow, msg ) != 0 );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -168,7 +171,7 @@ bool WdeCreateInfoWindow( HWND main_window, HINSTANCE inst )
         return( FALSE );
     }
 
-    WdeInfoWinProc = (DLGPROC)MakeProcInstance ( (FARPROC)WdeInfoWndProc, inst );
+    WdeInfoWinProc = MakeProcInstance_DLG( WdeInfoWndDlgProc, inst );
 
     WdeInfoColor = GetSysColor( COLOR_BTNFACE );
     WdeInfoBrush = CreateSolidBrush( WdeInfoColor );
@@ -192,7 +195,7 @@ void WdeInfoFini( void )
 {
     WdeFiniInfoText();
     if( WdeInfoWinProc != NULL ) {
-        FreeProcInstance( (FARPROC)WdeInfoWinProc );
+        FreeProcInstance_DLG( WdeInfoWinProc );
     }
     if( WdeInfoBrush != NULL ) {
         DeleteObject( WdeInfoBrush );
@@ -323,8 +326,7 @@ void WdeWriteInfo( WdeInfoStruct *is )
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_IDSTR );
         WdeSetEditWithStr( "", WdeInfoWindow, IDB_INFO_IDNUM );
     } else {
-        WdeWriteObjectDimensions( (int_16)is->dsize.x, (int_16)is->dsize.y,
-                                  (int_16)is->dsize.width, (int_16)is->dsize.height );
+        WdeWriteObjectDimensions( &(is->sizeinfo) );
         WdeEnableInfoWindowInput( TRUE );
         if( is->obj_id == DIALOG_OBJ ) {
             WdeDisplayDialogInfo( is );
@@ -475,7 +477,7 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
 
     WRStripSymbol( str );
 
-    quoted_str = FALSE;
+    quoted_str = false;
     if( _mbclen( (unsigned char *)str ) == 1 && str[0] == '"' ) {
         unsigned char   *s;
 
@@ -490,7 +492,7 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
             *cp = '\0';
         }
         WRStripSymbol( str );
-        quoted_str = TRUE;
+        quoted_str = true;
     }
 
     if( str[0] == '\0' ) {
@@ -501,7 +503,7 @@ void WdeChangeDialogInfo( WdeInfoStruct *is )
     }
 
     ord = (uint_16)strtoul( str, &cp, 0 );
-    str_is_ordinal = (*cp == '\0');
+    str_is_ordinal = ( *cp == '\0' );
 
     c_is.symbol = NULL;
 
@@ -583,7 +585,7 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
     }
 
     ord = (uint_16)strtoul( str, &cp, 0 );
-    str_is_ordinal = (*cp == '\0');
+    str_is_ordinal = ( *cp == '\0' );
 
     c_is.symbol = NULL;
 
@@ -618,12 +620,14 @@ void WdeChangeControlInfo( WdeInfoStruct *is )
     *is = c_is;
 }
 
-void WdeWriteObjectDimensions( int x, int y, int width, int height )
+void WdeWriteObjectDimensions( WdeDialogSizeInfo *sizeinfo )
 {
     char str[56];
 
     sprintf( str, "(%d,%d) (%d,%d) %dx%d",
-             x, y, x + width, y + height, width, height );
+             sizeinfo->x, sizeinfo->y,
+             sizeinfo->x + sizeinfo->width, sizeinfo->y + sizeinfo->height,
+             sizeinfo->width, sizeinfo->height );
 
     WdeSetEditWithStr( str, WdeInfoWindow, IDB_INFO_SIZE );
 }
@@ -679,7 +683,7 @@ void WdeInfoLookupComboEntry( HWND hWnd, WORD hw )
     WRMemFree( str );
 }
 
-WINEXPORT BOOL CALLBACK WdeInfoWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeInfoWndDlgProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WORD    w;
     RECT    r;
@@ -690,7 +694,7 @@ WINEXPORT BOOL CALLBACK WdeInfoWndProc( HWND hWnd, UINT message, WPARAM wParam, 
     switch( message ) {
 #if defined( __NT__ )
     case WM_INITDIALOG:
-        SetWindowLong( hWnd, GWL_STYLE, WS_CHILD );
+        SET_WNDSTYLE( hWnd, WS_CHILD );
         break;
 #endif
     case WM_SYSCOLORCHANGE:

@@ -107,7 +107,8 @@ static carve_t carveSRCFILE_HANDLE;
 
 static void rewriteInit( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     currRewrite = NULL;
     carveREWRITE = CarveCreate( sizeof( REWRITE ), BLOCK_REWRITE );
     carveREWRITE_TOKENS = CarveCreate( sizeof( REWRITE_TOKENS ), BLOCK_REWRITE_TOKENS );
@@ -116,7 +117,8 @@ static void rewriteInit( INITFINI* defn )
 
 static void rewriteFini( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     RewriteFree( currRewrite );
     currRewrite = NULL;
     DbgStmt( CarveVerifyAllGone( carveREWRITE, "REWRITE" ) );
@@ -948,7 +950,7 @@ void RewriteRestoreToken( REWRITE *r )
 /************************************/
 {
     REWRITE *last_rewrite;
-    void (*last_source)( void );
+    token_source_fn *last_source;
 
     last_source = SetTokenSource( RewriteToken );
     last_rewrite = RewriteRewind( r );
@@ -997,29 +999,26 @@ static int getByte( REWRITE *r, REWRITE_TOKENS **rt, uint_8 **stop )
     return( *(r->stream++) );
 }
 
-static unsigned getString( REWRITE*r, REWRITE_TOKENS**rt, uint_8**stop, char*dest)
+static size_t getString( REWRITE *r, REWRITE_TOKENS **rt, uint_8 **stop, char *dest )
 {
     char c;
-    unsigned len;
+    size_t len;
 
     len = 0;
-    for(;;) {
-        c = getByte( r, rt, stop );
-        if( c == '\0' ) break;
-        *dest = c;
-        ++dest;
+    for( ; (c = getByte( r, rt, stop )) != '\0'; ) {
+        *dest++ = c;
         ++len;
     }
     *dest = '\0';
     return( len );
 }
 
-static int getBinary( REWRITE*r, REWRITE_TOKENS**rt, uint_8**stop, uint_8 *bin, unsigned size )
+static int getBinary( REWRITE *r, REWRITE_TOKENS **rt, uint_8 **stop, uint_8 *bin, size_t size )
 {
     int  rc = 0;
 
-    for( ; size > 0; --size, ++bin ) {
-        *bin = rc = getByte( r, rt, stop );
+    for( ; size-- > 0; ) {
+        *bin++ = rc = getByte( r, rt, stop );
     }
     return( rc == REWRITE_EOT );
 }
@@ -1043,7 +1042,7 @@ void RewriteToken( void )
     SRCFILE srcfile;
     uint_32 absolute;
     int code_byte;
-    unsigned len;
+    size_t len;
 
     r = currRewrite;
     rt = r->curr;

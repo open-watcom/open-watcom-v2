@@ -56,9 +56,10 @@ static void GUIMemPrintLine( void *handle, const char *buff, size_t len )
 void GUIMemRedirect( int handle )
 /*******************************/
 {
-    handle=handle;
 #ifdef TRMEM
     GUIMemFileHandle = handle;
+#else
+    /* unused parameters */ (void)handle;
 #endif
 }
 

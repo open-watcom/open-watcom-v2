@@ -108,7 +108,7 @@ struct fmt_os2_data {
     name_list           *mod_ref_list;
     name_list           *imp_tab_list;
     char                *stub_file_name;
-    char                *res_module_name;
+    char                *module_name;
     char                *old_lib_name;
     struct os2_seg_flags *os2_seg_flags;
     char                *description;

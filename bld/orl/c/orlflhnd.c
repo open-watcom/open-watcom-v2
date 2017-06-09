@@ -52,14 +52,11 @@ orl_return ORLRemoveFileLinks( orli_file_handle orli_file_hnd )
         ORL_FUNCS_FREE( orli_hnd, orli_file_hnd );
         return( ORL_OKAY );
     } else {
-        current = orli_hnd->first_file_hnd;
-        while( current->next != NULL ) {
+        for( current = orli_hnd->first_file_hnd; current->next != NULL; current = current->next ) {
             if( current->next == orli_file_hnd ) {
                 current->next = orli_file_hnd->next;
                 ORL_FUNCS_FREE( orli_hnd, orli_file_hnd );
                 return( ORL_OKAY );
-            } else {
-                current = current->next;
             }
         }
     }

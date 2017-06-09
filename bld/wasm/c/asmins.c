@@ -258,7 +258,8 @@ static void seg_override( asm_token seg_reg, asm_sym *sym )
         Code->prefix.seg = PREFIX_EMPTY;
     }
 #else
-    sym = sym;
+    /* unused parameters */ (void)sym;
+
     if( Code->prefix.seg != PREFIX_EMPTY ) {
         switch( seg_reg ) {
         case T_SS:
@@ -2323,7 +2324,7 @@ bool AsmParse( const char *curline )
     if( flag )
         return( RC_OK );
 #else
-    curline = curline;
+    /* unused parameters */ (void)curline;
 #endif
 
     //init
@@ -2442,7 +2443,7 @@ bool AsmParse( const char *curline )
                 break;
             switch( opndx.type ) {
             case EXPR_ADDR:
-                if( process_address( &opndx, &jmp_flags ) ) 
+                if( process_address( &opndx, &jmp_flags ) )
                     return( RC_ERROR );
 //                if( jmp_flags == INDIRECT_JUMP )
 //                    return( RC_ERROR );

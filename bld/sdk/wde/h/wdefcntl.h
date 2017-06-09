@@ -46,10 +46,10 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WINEXPORT extern OBJPTR CALLBACK WdeControlCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern CREATE_RTN WdeControlCreate;
 extern bool              WdeControlInit( bool );
 extern void              WdeControlFini( void );
 
-extern BOOL WdeUpdateCDialogUnits( OBJPTR, RECT *, WdeResizeRatio * );
+extern bool WdeUpdateCDialogUnits( OBJPTR, RECT *, WdeResizeRatio * );
 
 #endif

@@ -57,12 +57,12 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT WPI_DLGRESULT CALLBACK GUIInitDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WINEXPORT WPI_DLGRESULT CALLBACK GUIInitDialogFuncDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
 extern  bool            EditControlHasFocus;
 
 static  char            *Font           = NULL;         /* name of font used in dialogs  */
-static  int             PointSize       = 0;            /* point size of fonts used in dialogs   */
+static  int             FontPointSize   = 0;            /* point size of fonts used in dialogs   */
 static  WPI_TEXTMETRIC  GUIDialogtm;                    /* tm of dialog font */
 static  gui_coord       SizeDialog      = { 128, 128 }; /* of test dialog        */
 static  gui_coord       SizeScreen      = { 0, 0 };     /* of test dialog        */
@@ -77,10 +77,10 @@ void GUISetJapanese( void )
     if( GUIIsDBCS() ) {
   #if 0
         newfont = "";
-        PointSize = 0;
+        FontPointSize = 0;
   #else
-        newfont = "‚l‚r –¾’©";
-        PointSize = 10;
+        newfont = "ï¿½lï¿½r ï¿½ï¿½ï¿½ï¿½";
+        FontPointSize = 10;
   #endif
         if( Font != NULL ) {
             GUIMemFree( Font );
@@ -106,7 +106,7 @@ void GUIInitControl( control_item *item, gui_window *wnd, gui_ctl_id *focus_id )
         *focus_id = item->id;
     }
     /* will subclass if required */
-    item->call_back = GUIDoSubClass( ctrl, item->control_class );
+    item->win_call_back = GUIDoSubClass( ctrl, item->control_class );
     (void)CvrCtl3dSubclassCtl( ctrl );
     switch( item->control_class ) {
     case GUI_CHECK_BOX :
@@ -245,14 +245,18 @@ bool GUIProcessControlNotification( gui_ctl_id id, int wNotify, gui_window *wnd 
  * GUIProcessControlMsg
  */
 
-bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam, gui_window *wnd, WPI_DLGRESULT *ret )
+bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam, gui_window *wnd, bool *pret )
 {
     gui_ctl_id  id;
+    bool        ret;
 #ifndef __OS2_PM__
-    bool        my_ret;
+    bool        rc;
     int         notify_code;
 
     lparam=lparam;
+
+    ret = false;
+
     id = LOWORD( wparam );
     notify_code = GET_WM_COMMAND_CMD( wparam, lparam );
     switch( notify_code ) {
@@ -262,36 +266,39 @@ bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam, gui_window *wnd
     case BN_DOUBLECLICKED :  /* same as LBN_KILLFOCUS */
     case LBN_SELCHANGE :     /* same as CBN_SELCHANGE */
     case LBN_DBLCLK :        /* same as CBN_DCLICK */
-        my_ret = GUIProcessControlNotification( id, notify_code, wnd );
-        if( ret != NULL ) {
-            *ret = my_ret;
+        rc = GUIProcessControlNotification( id, notify_code, wnd );
+        if( pret != NULL ) {
+            *pret = rc;
         }
-        return( true );
+        ret = true;
         break;
     }
 #else
-    ret = ret;
+    pret = pret;
+
+    ret = false;
+
     id = _wpi_getid( wparam );
     if( SHORT1FROMMP( lparam ) == CMDSRC_PUSHBUTTON ) {
         GUIEVENTWND( wnd, GUI_CONTROL_CLICKED, &id );
-        return( true );
+        ret = true;
     }
 #endif
-    return( false );
+    return( ret );
 }
 
 /*
- * GUIDialogFunc - callback function for all dynamically created dialog
+ * GUIDialogDlgProc - callback function for all dynamically created dialog
  *                 boxes
  */
 
-WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     gui_ctl_id          id;
     bool                escape_pressed;
     gui_window          *wnd;
     bool                msg_processed;
-    WPI_DLGRESULT       ret;
+    bool                ret;
     gui_coord           size;
     WPI_POINT           pnt;
     HWND                child;
@@ -362,14 +369,14 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
         InitDialog( wnd );
 #ifdef __OS2_PM__
         if( hfocus != _wpi_getfocus() ) {
-            ret = (WPI_DLGRESULT)true;
+            ret = true;
         }
 #endif
         if( wnd->flags & IS_RES_DIALOG ) {
             if( hfocus == _wpi_getfocus() ) {
                 // if the focus did not change then let the
                 // windowing system set the focus
-                ret = (WPI_DLGRESULT)true;
+                ret = true;
             }
         }
         break;
@@ -478,11 +485,11 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
 #ifndef __OS2_PM__
     case WM_VKEYTOITEM :
         msg_processed = true;
-        ret = -1;
         GUIGetKeyState( &key_state.state );
-        if( ( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) ) {
-            ret = GUIEVENTWND( wnd, GUI_KEYTOITEM, &key_state );
+        if( !GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
+            return( -1 );
         }
+        ret = GUIEVENTWND( wnd, GUI_KEYTOITEM, &key_state );
         break;
 #endif
     // the following code allows GUI dialogs to receive key msgs
@@ -498,7 +505,7 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
             gui_ev = GUI_KEYDOWN;
         }
         GUIGetKeyState( &key_state.state );
-        if( ( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) ) {
+        if( GUIWindowsMapKey( wparam, lparam, &key_state.key ) ) {
             if( GUIEVENTWND( wnd, gui_ev, &key_state ) ) {
                 return( false );
             }
@@ -526,7 +533,7 @@ WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wpa
         return( _wpi_defdlgproc( hwnd, message, wparam, lparam ) );
     }
 #endif
-    return( ret );
+    _wpi_dlgreturn( ret );
 }
 
 /*
@@ -600,21 +607,22 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
 {
     gui_coord           pos, size;
     gui_coord           parent_pos;
-    TEMPLATE_HANDLE     data;
-    TEMPLATE_HANDLE     new;
+    TEMPLATE_HANDLE     old_dlgtemplate;
+    TEMPLATE_HANDLE     new_dlgtemplate;
     int                 i;
-    const char          *text;
+    const char          *captiontext;
     long                style;
     HWND                parent_hwnd;
     gui_control_info    *ctl_info;
     bool                got_first_focus;
     bool                in_group;
     LONG                dlg_style;
+#ifdef __OS2_PM__
     void                *pctldata;
     int                 pctldatalen;
-#ifdef __OS2_PM__
     ENTRYFDATA          edata;
 #endif
+    size_t              templatelen;
 
     wnd->flags |= IS_DIALOG;
     wnd->parent = dlg_info->parent;
@@ -646,37 +654,37 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         dlg_style = MODAL_STYLE;
     }
 
-    data = DialogTemplate( dlg_style | DS_SETFONT,
+    old_dlgtemplate = DialogTemplate( dlg_style | DS_SETFONT,
                            parent_pos.x, parent_pos.y, size.x, size.y,
                            LIT( Empty ), LIT( Empty ), dlg_info->title,
-                           PointSize, Font );
-    if( data == NULL ) {
+                           FontPointSize, Font, &templatelen );
+    if( old_dlgtemplate == NULL ) {
         return( false );
     }
 
     got_first_focus = false;
     in_group = false;
     for( i = 0; i < num_controls; i++ ) {
-        pctldata = NULL;
-        pctldatalen = 0;
         ctl_info = &controls_info[i];
 #ifdef __OS2_PM__
+        pctldata = NULL;
+        pctldatalen = 0;
         if( ctl_info->control_class == GUI_EDIT ) {
-            edata.cb = sizeof(ENTRYFDATA);
+            edata.cb = sizeof( ENTRYFDATA );
             edata.cchEditLimit = 2048;
             edata.ichMinSel = 0;
             edata.ichMaxSel = 0;
             pctldata = &edata;
-            pctldatalen = edata.cb;
+            pctldatalen = sizeof( edata );
         }
 #endif
         GUIDlgCalcLocation( &ctl_info->rect, &pos, &size );
         AdjustToDialogUnits( &pos );
         AdjustToDialogUnits( &size );
         if( ctl_info->text == NULL ) {
-            text = LIT( Empty );
+            captiontext = LIT( Empty );
         } else {
-            text = ctl_info->text;
+            captiontext = ctl_info->text;
         }
         style = GUISetControlStyle( ctl_info );
         if( !in_group ) {
@@ -685,21 +693,27 @@ bool GUIXCreateDialog( gui_create_info *dlg_info, gui_window *wnd,
         if( style & GUI_GROUP ) {
             in_group = !in_group;
         }
-        new = AddControl( data, pos.x, pos.y, size.x, size.y, ctl_info->id,
-                          style, GUIControls[ctl_info->control_class].classname,
-                          text, (BYTE)pctldatalen, (const char *)pctldata );
-        if( new == NULL  ) {
-            GlobalFree( data );
+#ifdef __OS2_PM__
+        new_dlgtemplate = AddControl( old_dlgtemplate, pos.x, pos.y, size.x, size.y, ctl_info->id,
+                          style, GUIControls[ctl_info->control_class].classname, captiontext,
+                          pctldata, (BYTE)pctldatalen, &templatelen );
+#else
+        new_dlgtemplate = AddControl( old_dlgtemplate, pos.x, pos.y, size.x, size.y, ctl_info->id,
+                          style, GUIControls[ctl_info->control_class].classname, captiontext,
+                          NULL, 0, &templatelen );
+#endif
+        if( new_dlgtemplate == NULL  ) {
+            GlobalFree( old_dlgtemplate );
             return( false );
         }
         if( GUIControlInsert( wnd, ctl_info->control_class, NULLHANDLE, ctl_info, NULL ) == NULL ) {
-            GlobalFree( data );
+            GlobalFree( old_dlgtemplate );
             return( false );
         }
-        data = new;
+        old_dlgtemplate = new_dlgtemplate;
     }
-    data = DoneAddingControls( data );
-    DynamicDialogBox( GUIDialogFunc, GUIMainHInst, parent_hwnd, data, (WPI_PARAM2)wnd );
+    new_dlgtemplate = DoneAddingControls( old_dlgtemplate );
+    DynamicDialogBox( GUIDialogDlgProc, GUIMainHInst, parent_hwnd, new_dlgtemplate, (WPI_PARAM2)wnd );
     return( true );
 }
 
@@ -719,16 +733,16 @@ void GUICloseDialog( gui_window * wnd )
 static WPI_FONT         DlgFont;
 
 /*
- * GUIInitDialogFunc - callback function the test dialog box used to get the
+ * GUIInitDialogFuncDlgProc - callback function the test dialog box used to get the
  *                     dialog box font info and client size info
  *
  */
 
-WPI_DLGRESULT CALLBACK GUIInitDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_DLGRESULT CALLBACK GUIInitDialogFuncDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     WPI_PRES            hdc;
     WPI_RECT            rect;
-    WPI_DLGRESULT       ret;
+    bool                ret;
 
     lparam = lparam;
     ret    = false;
@@ -760,7 +774,7 @@ WPI_DLGRESULT CALLBACK GUIInitDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1
 #endif
     }
 
-    return( ret );
+    _wpi_dlgreturn( ret );
 }
 
 void GUIFiniDialog( void )
@@ -773,9 +787,11 @@ void GUIFiniDialog( void )
 
 void GUIInitDialog( void )
 {
-    TEMPLATE_HANDLE     data;
+    TEMPLATE_HANDLE     old_dlgtemplate;
+    TEMPLATE_HANDLE     new_dlgtemplate;
     char                *cp;
     bool                font_set;
+    size_t              templatelen;
 
     font_set = false;
 #ifdef __OS2_PM__
@@ -788,13 +804,13 @@ void GUIInitDialog( void )
         if( cp ) {
             *cp = '\0';
             cp++;
-            PointSize = atoi( cp );
+            FontPointSize = atoi( cp );
             font_set = true;
         }
     }
 
     if( !font_set ) {
-        PointSize = 0;
+        FontPointSize = 0;
         if( Font != NULL ) {
             GUIMemFree( Font );
         }
@@ -803,13 +819,13 @@ void GUIInitDialog( void )
 
     // create a dialog of known dialog units and use the resulting
     // size of the client area to scale subsequent screen units
-    data = DialogTemplate( MODAL_STYLE | DS_SETFONT,
+    old_dlgtemplate = DialogTemplate( MODAL_STYLE | DS_SETFONT,
                            SizeDialog.x, SizeDialog.y,
                            SizeDialog.x, SizeDialog.y, LIT( Empty ),
-                           LIT( Empty ), LIT( Empty ), PointSize, Font );
-    if( data != NULL ) {
-        data = DoneAddingControls( data );
-        DynamicDialogBox( GUIInitDialogFunc, GUIMainHInst, NULLHANDLE, data, 0 );
+                           LIT( Empty ), LIT( Empty ), FontPointSize, Font, &templatelen );
+    if( old_dlgtemplate != NULL ) {
+        new_dlgtemplate = DoneAddingControls( old_dlgtemplate );
+        DynamicDialogBox( GUIInitDialogFuncDlgProc, GUIMainHInst, NULLHANDLE, new_dlgtemplate, 0 );
     }
 }
 

@@ -108,7 +108,8 @@ static int RepNumRows( a_window *wnd )
     int                 count;
     event_record        *ev;
 
-    wnd = wnd;
+    /* unused parameters */ (void)wnd;
+
     count = 0;
     for( ev = EventList; ev != NULL; ev = ev->next ) {
         ++count;
@@ -160,8 +161,9 @@ static void RepMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
     event_record        *ev;
 
+    /* unused parameters */ (void)wnd; (void)piece;
+
     ev = RepGetEvent( row );
-    wnd=wnd;piece=piece;
     switch( id ) {
     case MENU_INITIALIZE:
         WndMenuGrayAll( wnd );
@@ -191,7 +193,8 @@ static  bool    RepGetLine( a_window *wnd, int row, int piece,
 {
     event_record        *ev;
 
-    wnd = wnd;
+    /* unused parameters */ (void)wnd;
+
     ev = RepGetEvent( row );
     if( ev == NULL )
         return( false );
@@ -219,7 +222,8 @@ static  bool    RepGetLine( a_window *wnd, int row, int piece,
 
 static bool RepEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         RepRefresh( wnd );

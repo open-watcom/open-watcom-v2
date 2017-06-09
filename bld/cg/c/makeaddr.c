@@ -218,8 +218,8 @@ extern  bool    AddrFrlFree( void )
 }
 
 
-static  name    *Display( cg_sym_handle symbol, int level )
-/******************************************************/
+static  name    *Display( cg_sym_handle symbol, level_depth level )
+/*****************************************************************/
 {
     proc_def    *old_currproc;
     name        *old_names;
@@ -392,7 +392,8 @@ extern  bool    PointLess( an l_addr, an r_addr )
 {
     if( l_addr->class != CL_POINTER && r_addr->class != CL_POINTER )
         return( false );
-    if( l_addr->u.n.offset != 0 || r_addr->u.n.offset != 0 ) return( false );
+    if( l_addr->u.n.offset != 0 || r_addr->u.n.offset != 0 )
+        return( false );
     return( true );
 }
 
@@ -496,11 +497,16 @@ extern  void    FixCodePtr( an addr )
 extern  bool    NeedPtrConvert( an addr, type_def * tipe )
 /********************************************************/
 {
-    if( addr->format != NF_ADDR ) return( true );
+    if( addr->format != NF_ADDR )
+        return( true );
     if( addr->class == CL_ADDR_GLOBAL || addr->class == CL_ADDR_TEMP ) {
-        if( tipe->refno == TY_NEAR_POINTER ) return( false );
-        if( tipe->refno == TY_LONG_POINTER ) return( false );
-        if( tipe->refno == TY_HUGE_POINTER ) return( false );
+        if( tipe->refno == TY_NEAR_POINTER )
+            return( false );
+        if( tipe->refno == TY_LONG_POINTER )
+            return( false );
+        if( tipe->refno == TY_HUGE_POINTER ) {
+            return( false );
+        }
     }
     return( true );
 }
@@ -544,7 +550,7 @@ extern  an      MakeAddrName( cg_class class, cg_sym_handle sym, type_def *tipe 
 {
     an          addr;
     fe_attr     attr;
-    int         level;
+    level_depth level;
     name        *op;
 
     addr = NewAddrName();

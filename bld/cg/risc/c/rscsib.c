@@ -72,16 +72,21 @@ bool FoldIntoIndex( instruction * ins ) {
     if( ins->head.opcode == OP_LSHIFT ) {
         HW_CAsgn( base_reg, HW_EMPTY );
         cons = ins->operands[1];
-        if( cons->n.class != N_CONSTANT ) return( false );
-        if( cons->c.const_type != CONS_ABSOLUTE ) return( false );
-        if( cons->c.lo.int_value > 3 ) return( false );
+        if( cons->n.class != N_CONSTANT )
+            return( false );
+        if( cons->c.const_type != CONS_ABSOLUTE )
+            return( false );
+        if( cons->c.lo.int_value > 3 )
+            return( false );
 /*
         found SHL R1,n => R1
 */
     } else if( ins->head.opcode == OP_ADD ) {
         cons = ins->operands[1];
-        if( cons->n.class != N_REGISTER ) return( false );
-        if( cons->n.size != WORD_SIZE ) return( false );
+        if( cons->n.class != N_REGISTER )
+            return( false );
+        if( cons->n.size != WORD_SIZE )
+            return( false );
         base_reg = cons->r.reg;
 /*
         found ADD R1,R2 => R1
@@ -105,7 +110,8 @@ bool FoldIntoIndex( instruction * ins ) {
         next = SIBPossibleIndex( next, ins->result, &sib.index,
                                  &is_base, base_reg, other_reg,
                                  &dies, &modifies );
-        if( next == NULL ) break;
+        if( next == NULL )
+            break;
         sib.ins = next;
         // if( !HW_Equal( base_reg, HW_EMPTY ) && _IsTargetModel( INDEXED_GLOBALS )
         //  && sib.index->i.base != NULL
@@ -117,11 +123,13 @@ bool FoldIntoIndex( instruction * ins ) {
         if( HW_Equal( base_reg, HW_EMPTY ) ) {
             sib.flags = sib.index->i.index_flags;
             if( is_base ) {
-                if( sib.index->i.scale != 0 ) break;
+                if( sib.index->i.scale != 0 )
+                    break;
                 sib.flags ^= ( X_HIGH_BASE | X_LOW_BASE ); /* flip base and index */
             }
             sib.scale = cons->c.lo.int_value + sib.index->i.scale;
-            if( sib.scale > 3 ) break;
+            if( sib.scale > 3 )
+                break;
             if( ins->operands[0] == ins->result ) {
                 sib.reg = sib.index->i.index;
             } else {
@@ -142,12 +150,14 @@ bool FoldIntoIndex( instruction * ins ) {
             }
         } else { /* ADD */
             sib.flags = sib.index->i.index_flags & ~( X_HIGH_BASE | X_LOW_BASE );
-            if( sib.index->i.index_flags & X_BASE ) break;
+            if( sib.index->i.index_flags & X_BASE )
+                break;
             if( sib.index->i.base && sib.index->i.base->n.class == N_TEMP ) {
                 break;
             }
             sib.scale = sib.index->i.scale;
-            if( sib.scale != 0 ) break;
+            if( sib.scale != 0 )
+                break;
             if( ins->operands[0] == ins->result ) {
                 HW_Asgn( tmp, base_reg );
                 HW_TurnOn( tmp, sib.index->i.index->r.reg );

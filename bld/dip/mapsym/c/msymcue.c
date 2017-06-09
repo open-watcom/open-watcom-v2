@@ -42,53 +42,61 @@
 walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii,
                 imp_mod_handle im, DIP_IMP_CUE_WALKER *wk, imp_cue_handle *ic, void *d )
 {
-    ii = ii; im = im; wk = wk; ic = ic; d = d;
+    /* unused parameters */ (void)ii; (void)im; (void)wk; (void)ic; (void)d;
+
     return( WR_CONTINUE );
 }
 
 imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
-    ii = ii; ic = ic;
+    /* unused parameters */ (void)ii; (void)ic;
+
     return( IMH_NOMOD );
 }
 
 size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii,
                         imp_cue_handle *ic, char *buff, size_t buff_size )
 {
-    ii = ii; ic = ic; buff = buff; buff_size = buff_size;
+    /* unused parameters */ (void)ii; (void)ic; (void)buff; (void)buff_size;
+
     return( 0 );
 }
 
 cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
-    ii = ii; ic = ic;
+    /* unused parameters */ (void)ii; (void)ic;
+
     return( 0 );
 }
 
 dip_status DIPIMPENTRY( CueAdjust )( imp_image_handle *ii,
                 imp_cue_handle *src, int adj, imp_cue_handle *dst )
 {
-    ii = ii; src = src; adj = adj; dst = dst;
+    /* unused parameters */ (void)ii; (void)src; (void)adj; (void)dst;
+
     return( DS_ERR|DS_FAIL );
 }
 
 unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii, imp_cue_handle *ic )
 {
-    ii = ii; ic = ic;
+    /* unused parameters */ (void)ii; (void)ic;
+
     return( 0 );
 }
 
 unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *ic )
 {
-    ii = ii; ic = ic;
+    /* unused parameters */ (void)ii; (void)ic;
+
     return( 0 );
 }
 
 address DIPIMPENTRY( CueAddr )( imp_image_handle *ii, imp_cue_handle *ic )
 {
-    ii = ii; ic = ic;
+    /* unused parameters */ (void)ii; (void)ic;
+
     return( NilAddr );
 }
 
@@ -96,20 +104,23 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
                 imp_mod_handle im, cue_fileid file, unsigned long line,
                 unsigned column, imp_cue_handle *ic )
 {
-    ii = ii; im = im; file = file; line = line; column = column; ic = ic;
+    /* unused parameters */ (void)ii; (void)im; (void)file; (void)line; (void)column; (void)ic;
+
     return( SR_NONE );
 }
 
 search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
                 imp_mod_handle im, address addr, imp_cue_handle *ic )
 {
-    ii = ii; im = im; addr = addr; ic = ic;
+    /* unused parameters */ (void)ii; (void)im; (void)addr; (void)ic;
+
     return( SR_NONE );
 }
 
 int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1,
                                 imp_cue_handle *ic2 )
 {
-    ii = ii; ic1 = ic1; ic2 = ic2;
+    /* unused parameters */ (void)ii; (void)ic1; (void)ic2;
+
     return( 0 );
 }

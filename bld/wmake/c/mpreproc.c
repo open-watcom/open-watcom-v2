@@ -336,7 +336,7 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
     char        *name;
     char        *test;
     char        *value;
-    char const  *beg;
+    char        *beg;
 
     assert( !curNest.skip2endif );
 
@@ -367,12 +367,11 @@ STATIC void ifEqProcess( char const **v1, char **v2 )
     value = DeMacro( TOK_EOL );
     (void)eatToEOL();
 
-    chopTrailWS( test );            /* chop trailing ws */
-
     beg = SkipWS( test );           /* find first non-ws */
+    chopTrailWS( beg );             /* chop trailing ws */
 
     *v1 = value;
-    *v2 = StrDupSafe( beg );        /* 18-nov-91 */
+    *v2 = StrDupSafe( beg );
     FreeSafe( test );
 }
 
@@ -642,13 +641,13 @@ STATIC void bangDefine( void )
 }
 
 
-static char *skipUntilWS( char *p )
-/*********************************/
+static char *skipUntilWS( const char *p )
+/***************************************/
 {
     while( *p != NULLCHAR && !cisws( *p ) ) {
         ++p;
     }
-    return( p );
+    return( (char *)p );
 }
 
 
@@ -679,8 +678,8 @@ STATIC void bangInject( void )
         FreeSafe( text );
         return;
     }
-    *end_contents = NULLCHAR;
-    curr = end_contents + 1;
+    *end_contents++ = NULLCHAR;
+    curr = end_contents;
     for( ;; ) {
         curr = SkipWS( curr );
         if( *curr == NULLCHAR )
@@ -734,8 +733,8 @@ STATIC void bangLoadDLL( void )
         FreeSafe( text );
         return;
     }
-    *end_cmd_name = NULLCHAR;
-    dll_name = SkipWS( end_cmd_name + 1 );
+    *end_cmd_name++ = NULLCHAR;
+    dll_name = SkipWS( end_cmd_name );
     if( *dll_name == NULLCHAR ) {
         FreeSafe( text );
         return;
@@ -746,8 +745,8 @@ STATIC void bangLoadDLL( void )
         FreeSafe( text );
         return;
     }
-    *end_dll_name = NULLCHAR;
-    ent_name = SkipWS( end_dll_name + 1 );
+    *end_dll_name++ = NULLCHAR;
+    ent_name = SkipWS( end_dll_name );
     if( *ent_name == NULLCHAR ) {
         OSLoadDLL( cmd_name, dll_name, NULL );
         FreeSafe( text );
@@ -1174,48 +1173,48 @@ STRM_T PreGetCH( void )
 }
 
 
-STATIC void makeToken( TOKEN_O type, TOKEN_TYPE *current, int *index )
-/********************************************************************/
+STATIC void makeToken( TOKEN_O type, TOKEN_TYPE *current, size_t *index )
+/***********************************************************************/
 {
     switch( type ) {
-        case OP_COMPLEMENT:
-        case OP_LOG_NEGATION:
-        case OP_ADD:
-        case OP_SUBTRACT:
-        case OP_MULTIPLY:
-        case OP_DIVIDE:
-        case OP_MODULUS:
-        case OP_BIT_AND:
-        case OP_BIT_OR:
-        case OP_BIT_XOR:
-        case OP_LESSTHAN:
-        case OP_GREATERTHAN:
-        case OP_PAREN_LEFT:
-        case OP_PAREN_RIGHT:
-        case OP_ERROR:
-            (*index)++;
-            break;
-        case OP_LOG_AND:
-        case OP_LOG_OR:
-        case OP_SHIFT_LEFT:
-        case OP_SHIFT_RIGHT:
-        case OP_INEQU:
-        case OP_EQUAL:
-        case OP_LESSEQU:
-        case OP_GREATEREQU:
-            (*index) += 2;
-            break;
-        default:
-            current->type = OP_ERROR;
-            (*index)++;
+    case OP_COMPLEMENT:
+    case OP_LOG_NEGATION:
+    case OP_ADD:
+    case OP_SUBTRACT:
+    case OP_MULTIPLY:
+    case OP_DIVIDE:
+    case OP_MODULUS:
+    case OP_BIT_AND:
+    case OP_BIT_OR:
+    case OP_BIT_XOR:
+    case OP_LESSTHAN:
+    case OP_GREATERTHAN:
+    case OP_PAREN_LEFT:
+    case OP_PAREN_RIGHT:
+    case OP_ERROR:
+        (*index)++;
+        break;
+    case OP_LOG_AND:
+    case OP_LOG_OR:
+    case OP_SHIFT_LEFT:
+    case OP_SHIFT_RIGHT:
+    case OP_INEQU:
+    case OP_EQUAL:
+    case OP_LESSEQU:
+    case OP_GREATEREQU:
+        (*index) += 2;
+        break;
+    default:
+        current->type = OP_ERROR;
+        (*index)++;
     }
 
     current->type = type;
 }
 
 
-STATIC INT32 makeHexNumber( const char *inString, int *stringLength )
-/*******************************************************************/
+STATIC INT32 makeHexNumber( const char *inString, size_t *stringLength )
+/**********************************************************************/
 {
     INT32       value;
     char        c;
@@ -1237,18 +1236,18 @@ STATIC INT32 makeHexNumber( const char *inString, int *stringLength )
         value = value * 16 + c;
         ++pChar;
     }
-    *stringLength = (int)( pChar - inString );
+    *stringLength = pChar - inString;
     return( value );
 }
 
 
-STATIC void makeNumberToken( const char *inString, TOKEN_TYPE *current, int *index )
-/**********************************************************************************/
+STATIC void makeNumberToken( const char *inString, TOKEN_TYPE *current, size_t *index )
+/*************************************************************************************/
 {
     INT32       value;
     const char  *pChar;
     char        c;
-    int         hexLength;
+    size_t      hexLength;
 
     pChar = inString;
     value       = 0;
@@ -1278,15 +1277,15 @@ STATIC void makeNumberToken( const char *inString, TOKEN_TYPE *current, int *ind
     current->data.number = value;
     current->type = OP_INTEGER;
 
-    *index = (int)( pChar - inString );
+    *index = pChar - inString;
 }
 
 
-STATIC void makeStringToken( const char *inString, TOKEN_TYPE *current, int *index )
-/**********************************************************************************/
+STATIC void makeStringToken( const char *inString, TOKEN_TYPE *current, size_t *index )
+/*************************************************************************************/
 {
-    int inIndex;
-    int currentIndex;
+    size_t  inIndex;
+    size_t  currentIndex;
 
     inIndex       = 1;   // skip initial DOUBLEQUOTE
     currentIndex  = 0;
@@ -1323,8 +1322,8 @@ STATIC void makeStringToken( const char *inString, TOKEN_TYPE *current, int *ind
     *index = inIndex;
 }
 
-STATIC void makeAlphaToken( const char *inString, TOKEN_TYPE *current, int *index )
-/*********************************************************************************/
+STATIC void makeAlphaToken( const char *inString, TOKEN_TYPE *current, size_t *index )
+/************************************************************************************/
 {
     char const  *r;
     char        *pwrite;
@@ -1347,7 +1346,7 @@ STATIC void makeAlphaToken( const char *inString, TOKEN_TYPE *current, int *inde
     }
 
     *pwrite = NULLCHAR;
-    *index = (int)( r - inString );
+    *index = r - inString;
 }
 
 
@@ -1382,8 +1381,8 @@ STATIC bool name2function( TOKEN_TYPE const *current, char const *criterion,
     return( true );
 }
 
-STATIC void makeFuncToken( const char *inString, TOKEN_TYPE *current, int *index )
-/********************************************************************************
+STATIC void makeFuncToken( const char *inString, TOKEN_TYPE *current, size_t *index )
+/************************************************************************************
  * parses only to get alphanumeric characters for special functions
  * ie. EXIST, defined.  if special characters are needed enclose in quotes
  */
@@ -1420,21 +1419,21 @@ STATIC void makeFuncToken( const char *inString, TOKEN_TYPE *current, int *index
                     ++probe;    // Swallow OP_PAREN_RIGHT
                 }
             }
-            *index = (int)( probe - inString );
+            *index = probe - inString;
         } else {
             current->type = OP_ERROR;
         }
     }
 }
 
-STATIC void makeCmdToken( const char *inString, TOKEN_TYPE *current, int *index )
-/*******************************************************************************
+STATIC void makeCmdToken( const char *inString, TOKEN_TYPE *current, size_t *index )
+/***********************************************************************************
  * get a command token enclosed in square brackets; very basic - a right
  * square bracket terminates command regardless of quoting
  */
 {
-    int     inIndex;
-    int     currentIndex;
+    size_t  inIndex;
+    size_t  currentIndex;
 
     inIndex       = 1;   // skip opening bracket
     currentIndex  = 0;
@@ -1471,18 +1470,17 @@ STATIC void makeCmdToken( const char *inString, TOKEN_TYPE *current, int *index 
     *index = inIndex;
 }
 
-STATIC void ScanToken( const char *inString, TOKEN_TYPE *current, int *tokenLength )
-/**********************************************************************************/
+STATIC void ScanToken( const char *inString, TOKEN_TYPE *current, size_t *tokenLength )
+/*************************************************************************************/
 {
     const char  *pString;
-    int         index = 0;
+    size_t      index = 0;
+    char        c;
 
     pString = SkipWS( inString );
-
-    if( pString[index] != EOL ||
-        pString[index] != NULLCHAR ||
-        pString[index] != COMMENT ) {
-        switch( pString[index] ) {
+    c = pString[index];
+    if( c != EOL || c != NULLCHAR || c != COMMENT ) {
+        switch( c ) {
         case COMPLEMENT:
             makeToken( OP_COMPLEMENT, current, &index );
             break;
@@ -1584,7 +1582,7 @@ STATIC void ScanToken( const char *inString, TOKEN_TYPE *current, int *tokenLeng
             makeCmdToken( pString, current, &index );
             break;
         default:
-            if( pString[index] >= '0' && pString[index] <= '9') {
+            if( c >= '0' && c <= '9') {
                 makeNumberToken( pString, current, &index );
             } else {
                 makeFuncToken( pString, current, &index );
@@ -1595,7 +1593,7 @@ STATIC void ScanToken( const char *inString, TOKEN_TYPE *current, int *tokenLeng
         makeToken( OP_ENDOFSTRING, current, &index );
     }
 
-    *tokenLength = index + (int)( pString - inString );
+    *tokenLength = index + ( pString - inString );
 }
 
 
@@ -1604,7 +1602,7 @@ STATIC void nextToken( void )
  * Get the next token
  */
 {
-    int tokenLength;
+    size_t  tokenLength;
 
     if( *currentPtr != NULLCHAR ) {
         ScanToken( currentPtr, &currentToken, &tokenLength );

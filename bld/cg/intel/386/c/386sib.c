@@ -75,9 +75,12 @@ bool FoldIntoIndex( instruction *ins )
     if( ins->head.opcode == OP_LSHIFT ) {
         HW_CAsgn( base_reg, HW_EMPTY );
         cons = ins->operands[1];
-        if( cons->n.class != N_CONSTANT ) return( false );
-        if( cons->c.const_type != CONS_ABSOLUTE ) return( false );
-        if( cons->c.lo.int_value > 3 ) return( false );
+        if( cons->n.class != N_CONSTANT )
+            return( false );
+        if( cons->c.const_type != CONS_ABSOLUTE )
+            return( false );
+        if( cons->c.lo.int_value > 3 )
+            return( false );
 /*
         found SHL R1,n => R1
 */
@@ -88,12 +91,15 @@ bool FoldIntoIndex( instruction *ins )
 /*
         found ADD R1,c => R1
 */
-            if( TypeClassSize[ins->type_class] != WORD_SIZE ) return( false );
+            if( TypeClassSize[ins->type_class] != WORD_SIZE )
+                return( false );
             cons_add = true;
             HW_CAsgn( base_reg, HW_EMPTY );
         } else {
-            if( cons->n.class != N_REGISTER ) return( false );
-            if( cons->n.size != WORD_SIZE ) return( false );
+            if( cons->n.class != N_REGISTER )
+                return( false );
+            if( cons->n.size != WORD_SIZE )
+                return( false );
             base_reg = cons->r.reg;
 /*
         found ADD R1,R2 => R1
@@ -118,12 +124,14 @@ bool FoldIntoIndex( instruction *ins )
         next = SIBPossibleIndex( next, ins->result, &sib.index,
                                  &is_base, base_reg, other_reg,
                                  &dies, &modifies );
-        if( next == NULL ) break;
+        if( next == NULL )
+            break;
         sib.ins = next;
         sib.offset = 0;
         if( !HW_Equal( base_reg, HW_EMPTY ) && _IsTargetModel( INDEXED_GLOBALS )
          && sib.index->i.base != NULL
-         && sib.index->i.base->n.class == N_MEMORY ) break;
+         && sib.index->i.base->n.class == N_MEMORY )
+            break;
     /*
         Hey, we found a good one as long as reg dies immediately after it and we
         don't need to save the base register slot for INDEXED GLOBALS
@@ -141,11 +149,13 @@ bool FoldIntoIndex( instruction *ins )
                 sib.offset = value;
             } else {
                 if( is_base ) {
-                    if( sib.index->i.scale != 0 ) break;
+                    if( sib.index->i.scale != 0 )
+                        break;
                     sib.flags ^= ( X_HIGH_BASE | X_LOW_BASE ); /* flip base and index */
                 }
                 sib.scale = cons->c.lo.int_value + sib.index->i.scale;
-                if( sib.scale > 3 ) break;
+                if( sib.scale > 3 )
+                    break;
                 if( ins->operands[0] == ins->result ) {
                     sib.reg = sib.index->i.index;
                 } else {
@@ -159,7 +169,8 @@ bool FoldIntoIndex( instruction *ins )
                     // which we couldn't handle because X_LOW_BASE
                     // stuff can't (currently) deal with same reg being
                     // both base and index.  BBB - May 17, 1996
-                    if( HW_Ovlap( tmp, other_reg ) ) break;
+                    if( HW_Ovlap( tmp, other_reg ) )
+                        break;
 
                     HW_TurnOn( tmp, other_reg );
                     sib.reg = AllocRegName( tmp );
@@ -177,12 +188,14 @@ bool FoldIntoIndex( instruction *ins )
             }
         } else { /* ADD */
             sib.flags = sib.index->i.index_flags & ~( X_HIGH_BASE | X_LOW_BASE );
-            if( sib.index->i.index_flags & X_BASE ) break;
+            if( sib.index->i.index_flags & X_BASE )
+                break;
             if( sib.index->i.base && sib.index->i.base->n.class == N_TEMP ) {
                 break;
             }
             sib.scale = sib.index->i.scale;
-            if( sib.scale != 0 ) break;
+            if( sib.scale != 0 )
+                break;
             if( ins->operands[0] == ins->result ) {
                 HW_Asgn( tmp, base_reg );
                 HW_TurnOn( tmp, sib.index->i.index->r.reg );

@@ -524,9 +524,12 @@ void CgResScBlkScanBegin        // START SCANNING OF A BLOCK SCOPE
     , CALLNODE* caller          // - caller
     , DT_METHOD dtm )           // - dtor method for function
 {
+#ifndef NDEBUG
     SCOPE_RES* sr = newScope( scope, caller, dtm );
-    sr = sr;
     _printScopeRes( sr, "Start scanning block scope" );
+#else
+    newScope( scope, caller, dtm );
+#endif
 }
 
 
@@ -1147,7 +1150,8 @@ bool CgResolveNonThrow          // RESOLVE A FUNCTION AS NON-THROW
     ( CALLGRAPH* ctl            // - call graph
     , CALLNODE* node )          // - possible non-throw
 {
-    ctl = ctl;
+    /* unused parameters */ (void)ctl;
+
     if( ! node->is_vft ) {
         SYMBOL fun = node->base.object;
         if( fun != NULL ) {

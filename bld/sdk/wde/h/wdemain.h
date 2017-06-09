@@ -58,8 +58,8 @@ extern bool         WdeIsMenuIDValid( HMENU, unsigned );
 extern bool         WdeIsDDE( void );
 extern bool         WdeIsFirstInst( void );
 extern void         WdeEnableMenuInput( bool enable );
-extern void CALLBACK    WdeHelpRoutine( void );
-extern void CALLBACK    WdeHelpSearchRoutine( void );
-extern void CALLBACK    WdeHelpOnHelpRoutine( void );
+extern void         CALLBACK WdeHelpRoutine( void );
+extern void         CALLBACK WdeHelpSearchRoutine( void );
+extern void         CALLBACK WdeHelpOnHelpRoutine( void );
 
 #endif

@@ -743,15 +743,15 @@ reg_set_index   SegIndex( void )
 }
 
 
-reg_set_index   NoSegments( reg_set_index idx )
-/**********************************************
+reg_set_index   NoSegments( reg_set_index regs_idx )
+/***************************************************
     return a register list like "idx" that doesn't include any segment regs
 */
 {
-    if( idx == RL_ANYWORD ) {
-        idx = RL_WORD;
+    if( regs_idx == RL_ANYWORD ) {
+        regs_idx = RL_WORD;
     }
-    return( idx );
+    return( regs_idx );
 }
 
 
@@ -763,20 +763,21 @@ reg_set_index   IndexIntersect( reg_set_index curr,
     registers of type "class"
 */
 {
-    is_temp_index = is_temp_index;
+    /* unused parameters */ (void)is_temp_index;
+
     return( RegIntersect( curr, IndexSets[class] ) );
 }
 
 
-bool    IsIndexReg( hw_reg_set reg, type_class_def class,
-                            bool is_temp_index )
-/****************************************************************
+bool    IsIndexReg( hw_reg_set reg, type_class_def class, bool is_temp_index )
+/*****************************************************************************
     return true if "reg" can be used as an index of type "class"
 */
 {
     hw_reg_set  *list;
 
-    is_temp_index = is_temp_index;
+    /* unused parameters */ (void)is_temp_index;
+
     for( list = RegSets[IndexSets[class]]; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
         if( HW_Equal( *list, reg ) ) {
             break;
@@ -837,7 +838,8 @@ bool    IndexRegOk( hw_reg_set reg, bool is_temp_index )
 {
     hw_reg_set  *list;
 
-    is_temp_index = is_temp_index;
+    /* unused parameters */ (void)is_temp_index;
+
     if( RegClass( reg ) == U4 ) {
         list = RegSets[RL_DOUBLE];
     } else {
@@ -940,7 +942,8 @@ hw_reg_set      Low48Reg( hw_reg_set regs )
     return the low order part of 48 bit register "regs"
 */
 {
-    if( HW_CEqual( regs, HW_EMPTY ) ) return( HW_EMPTY );
+    if( HW_CEqual( regs, HW_EMPTY ) )
+        return( HW_EMPTY );
     if( HW_COvlap( regs, HW_SEGS ) ) {
         HW_CTurnOff( regs, HW_SEGS );
         return( regs );
@@ -973,10 +976,12 @@ hw_reg_set      Low64Reg( hw_reg_set regs )
     hw_reg_set  low;
     hw_reg_set  *order;
 
-    if( HW_CEqual( regs, HW_EMPTY ) ) return( HW_EMPTY );
+    if( HW_CEqual( regs, HW_EMPTY ) )
+        return( HW_EMPTY );
     order = Reg64Order;
     for( ;; ) {
-        if( HW_Ovlap( *order, regs ) ) break;
+        if( HW_Ovlap( *order, regs ) )
+            break;
         ++order;
     }
     low = regs;
@@ -1109,11 +1114,16 @@ hw_reg_set      FixedRegs( void )
     HW_CTurnOn( fixed, HW_BP );
     HW_CTurnOn( fixed, HW_SS );
     HW_CTurnOn( fixed, HW_CS );
-    if( _IsntTargetModel( FLOATING_DS ) ) HW_CTurnOn( fixed, HW_DS );
-    if( _IsntTargetModel( FLOATING_ES ) ) HW_CTurnOn( fixed, HW_ES );
-    if( _IsntTargetModel( FLOATING_FS ) ) HW_CTurnOn( fixed, HW_FS );
-    if( _IsntTargetModel( FLOATING_GS ) ) HW_CTurnOn( fixed, HW_GS );
-    if( _IsTargetModel( INDEXED_GLOBALS ) ) HW_CTurnOn( fixed, HW_EBX );
+    if( _IsntTargetModel( FLOATING_DS ) )
+        HW_CTurnOn( fixed, HW_DS );
+    if( _IsntTargetModel( FLOATING_ES ) )
+        HW_CTurnOn( fixed, HW_ES );
+    if( _IsntTargetModel( FLOATING_FS ) )
+        HW_CTurnOn( fixed, HW_FS );
+    if( _IsntTargetModel( FLOATING_GS ) )
+        HW_CTurnOn( fixed, HW_GS );
+    if( _IsTargetModel( INDEXED_GLOBALS ) )
+        HW_CTurnOn( fixed, HW_EBX );
     return( fixed );
 }
 
@@ -1121,9 +1131,12 @@ hw_reg_set      FixedRegs( void )
 bool    IsStackReg( name *sp )
 /****************************/
 {
-    if( sp == NULL ) return( false );
-    if( sp->n.class != N_REGISTER ) return( false );
-    if( !HW_CEqual( sp->r.reg, HW_SP ) ) return( false );
+    if( sp == NULL )
+        return( false );
+    if( sp->n.class != N_REGISTER )
+        return( false );
+    if( !HW_CEqual( sp->r.reg, HW_SP ) )
+        return( false );
     return( true );
 }
 
@@ -1138,7 +1151,8 @@ hw_reg_set      StackReg( void )
 hw_reg_set      DisplayReg( void )
 /********************************/
 {
-    if( CurrProc->targ.sp_frame ) return( HW_SP );
+    if( CurrProc->targ.sp_frame )
+        return( HW_SP );
     return( HW_BP );
 }
 
@@ -1169,8 +1183,10 @@ hw_reg_set      AllCacheRegs( void )
     HW_CTurnOn( all, HW_ES );
     HW_CTurnOn( all, HW_FS );
     HW_CTurnOn( all, HW_GS );
-    if( _IsTargetModel( FLOATING_DS ) ) HW_CTurnOn( all, HW_DS );
-    if( _IsTargetModel( INDEXED_GLOBALS ) ) HW_CTurnOff( all, HW_EBX );
+    if( _IsTargetModel( FLOATING_DS ) )
+        HW_CTurnOn( all, HW_DS );
+    if( _IsTargetModel( INDEXED_GLOBALS ) )
+        HW_CTurnOff( all, HW_EBX );
     return( all );
 }
 
@@ -1182,8 +1198,8 @@ hw_reg_set      *IdxRegs( void )
     return( DoubleRegs );
 }
 
-hw_reg_set      FirstReg( reg_set_index index )
-/**********************************************
+hw_reg_set      FirstReg( reg_set_index regs_idx )
+/*************************************************
     The table RTInfo[] uses reg_set_indexes instead of hw_reg_sets since
     they are only one byte long.  This retrieves the first hw_reg_set
     from the reg_set table "index".
@@ -1193,5 +1209,5 @@ hw_reg_set      FirstReg( reg_set_index index )
     register list and returns it.
 */
 {
-    return( *RegSets[index] );
+    return( *RegSets[regs_idx] );
 }

@@ -32,7 +32,7 @@
 
 #include "wio.h"
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "rcrtns.h"
 #include "rccore.h"
 #include "exeutil.h"
@@ -55,7 +55,7 @@ static RcStatus readObjectTable( ExeFileInfo *exe )
         objects_size = PE32( *pehdr ).num_objects * sizeof( pe_object );
         file_offset = exe->WinHeadOffset + sizeof( pe_header );
     }
-    exe->u.PEInfo.Objects = RCALLOC( objects_size );
+    exe->u.PEInfo.Objects = RESALLOC( objects_size );
     ret = SeekRead( exe->fid, file_offset, exe->u.PEInfo.Objects, objects_size );
     switch( ret ) {
     case RS_OK:
@@ -164,7 +164,7 @@ static int copyObjectTable( ExeFileInfo *old, ExeFileInfo *new )
         return( -1 );
     }
 
-    new->u.PEInfo.Objects = RCALLOC( new_obj_size );
+    new->u.PEInfo.Objects = RESALLOC( new_obj_size );
 
     for( obj_num = 0; obj_num < new_num_objects; obj_num++ ) {
         new->u.PEInfo.Objects[obj_num] = old->u.PEInfo.Objects[obj_num];
@@ -183,7 +183,7 @@ static int copyObjectTable( ExeFileInfo *old, ExeFileInfo *new )
  */
 static RcStatus copyOneObject( WResFileID old_fid, pe_object * old_obj,
                         WResFileID new_fid, pe_object * new_obj )
-/************************************************************************/
+/*********************************************************************/
 {
     /*
      * if this an uninitialized object (one for which there is not
@@ -192,9 +192,9 @@ static RcStatus copyOneObject( WResFileID old_fid, pe_object * old_obj,
     if( (old_obj->flags & PE_OBJ_UNINIT_DATA) && ( old_obj->physical_offset == 0 ) ) {
         return( RS_OK );
     }
-    if( RCSEEK( old_fid, old_obj->physical_offset, SEEK_SET ) == -1 )
+    if( RESSEEK( old_fid, old_obj->physical_offset, SEEK_SET ) )
         return( RS_READ_ERROR );
-    if( RCSEEK( new_fid, new_obj->physical_offset, SEEK_SET ) == -1 )
+    if( RESSEEK( new_fid, new_obj->physical_offset, SEEK_SET ) )
         return( RS_WRITE_ERROR );
 
     return( CopyExeData( old_fid, new_fid, old_obj->physical_size ) );

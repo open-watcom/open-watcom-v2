@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
+#include "commonui.h"
 #include <sys/types.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -72,34 +72,30 @@
 bool WRReadResData( WResFileID fid, BYTE *data, size_t length )
 {
     bool        ok;
+    size_t      numread;
 
     ok = ( data != NULL && length > 0 );
-    while( ok && length > CHUNK_SIZE ) {
-        ok = ( RCREAD( fid, data, CHUNK_SIZE ) == CHUNK_SIZE );
-        data += CHUNK_SIZE;
-        length -= CHUNK_SIZE;
+    for( numread = CHUNK_SIZE; ok && length > 0; length -= numread ) {
+        if( numread > length )
+            numread = length;
+        ok = ( RESREAD( fid, data, numread ) == numread );
+        data += numread;
     }
-    if( ok && length > 0 ) {
-        ok = ( RCREAD( fid, data, length ) == length );
-    }
-
     return( ok );
 }
 
 bool WRWriteResData( WResFileID fid, BYTE *data, size_t length )
 {
     bool        ok;
+    size_t      numwrite;
 
     ok = ( data != NULL && length > 0 );
-    while( ok && length > CHUNK_SIZE ) {
-        ok = ( RCWRITE( fid, data, CHUNK_SIZE ) == CHUNK_SIZE );
-        data += CHUNK_SIZE;
-        length -= CHUNK_SIZE;
+    for( numwrite = CHUNK_SIZE; ok && length > 0; length -= numwrite ) {
+        if( numwrite > length )
+            numwrite = length;
+        ok = ( RESWRITE( fid, data, numwrite ) == numwrite );
+        data += numwrite;
     }
-    if( ok && length > 0 ) {
-        ok = ( RCWRITE( fid, data, length ) == length );
-    }
-
     return( ok );
 }
 

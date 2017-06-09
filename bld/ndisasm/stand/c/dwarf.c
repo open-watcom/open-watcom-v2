@@ -42,51 +42,49 @@
 
 #define LINES_ARRAY_SIZE_INC    64
 
-extern char *                   SourceFileInDwarf;
-extern orl_linnum *             lines;
+extern char                     *SourceFileInDwarf;
+extern orl_linnum               *lines;
 static long                     currlinesize;
 extern hash_table               HandleToRefListTable;
 
 extern orl_sec_handle           debugHnd;
 
-static int ConvertLines( const uint_8 * input, uint length, uint limit );
+static int ConvertLines( const uint_8 *input, uint length, uint limit );
 
 static void fixupLines( uint_8 *relocContents, orl_sec_handle sec )
 {
-    hash_data *                 data_ptr;
+    hash_data                   *data_ptr;
     ref_list                    sec_ref_list;
     ref_entry                   r_entry;
     int                         i;
 
-    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value) sec );
+    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value)sec );
     if( data_ptr ) {
-        sec_ref_list = (ref_list) *data_ptr;
+        sec_ref_list = (ref_list)*data_ptr;
     } else {
         sec_ref_list = NULL;
     }
-    r_entry = sec_ref_list->first;
-    while( r_entry ) {
+    for( r_entry = sec_ref_list->first; r_entry != NULL; r_entry = r_entry->next ) {
         switch( r_entry->type ) {
-            // is this the only one?
-            case ORL_RELOC_TYPE_WORD_32:
-                if( r_entry->label->shnd == sec ) {
-                    for( i=0; i<4; i++ ) {
-                        relocContents[i+r_entry->offset] = ((char *)&(r_entry->label->offset))[i];
-                    }
-                } else {
-                    for( i=0; i<3; i++ ) {
-                        relocContents[i+r_entry->offset] = 0;
-                    }
+        // is this the only one?
+        case ORL_RELOC_TYPE_WORD_32:
+            if( r_entry->label->shnd == sec ) {
+                for( i = 0; i < 4; i++ ) {
+                    relocContents[i + r_entry->offset] = ((char *)&(r_entry->label->offset))[i];
+                }
+            } else {
+                for( i = 0; i < 3; i++ ) {
+                    relocContents[i + r_entry->offset] = 0;
+                }
 // Whatever this was supposed to do, it's killing the -s option for object files
 #if 0
-                    relocContents[3+r_entry->offset] = 0x80;
+                relocContents[3 + r_entry->offset] = 0x80;
 #else
-                    relocContents[3+r_entry->offset] = 0;
+                relocContents[3 + r_entry->offset] = 0;
 #endif
-                }
-                break;
+            }
+            break;
         }
-        r_entry = r_entry->next;
     }
 }
 
@@ -135,10 +133,11 @@ static uint_8 *DecodeULEB128( const uint_8 *input, uint_32 *value )
 
     result = 0;
     shift = 0;
-    for(;;) {
+    for( ;; ) {
         byte = *input++;
         result |= ( byte & 0x7f ) << shift;
-        if( ( byte & 0x80 ) == 0 ) break;
+        if( ( byte & 0x80 ) == 0 )
+            break;
         shift += 7;
     }
     *value = result;
@@ -154,11 +153,13 @@ static uint_8 *DecodeLEB128( const uint_8 *input, int_32 *value )
 
     result = 0;
     shift = 0;
-    for(;;) {
+    for( ;; ) {
         byte = *input++;
         result |= ( byte & 0x7f ) << shift;
         shift += 7;
-        if( ( byte & 0x80 ) == 0 ) break;
+        if( ( byte & 0x80 ) == 0 ) {
+            break;
+        }
     }
     if( ( shift < 32 ) && ( byte & 0x40 ) ) {
         result |= - ( 1 << shift );
@@ -166,6 +167,7 @@ static uint_8 *DecodeLEB128( const uint_8 *input, int_32 *value )
     *value = result;
     return( (uint_8 *)input );
 }
+
 typedef struct {
     uint_32                     address;
     uint                        file;
@@ -317,11 +319,11 @@ static int ConvertLines( const uint_8 * input, uint length, uint limit )
                     p+= op_len;
                     break;
                 case DW_LNE_set_address:
-                    if( op_len == 4 ){
+                    if( op_len == 4 ) {
                         tmp = *(uint_32 *)p;
-                    }else if( op_len == 2 ){
+                    } else if( op_len == 2 ) {
                         tmp = *(uint_16 *)p;
-                    }else{
+                    } else {
                         tmp = 0xffffffff;
                     }
                     state.address = tmp;
@@ -329,11 +331,11 @@ static int ConvertLines( const uint_8 * input, uint length, uint limit )
                     break;
                 case DW_LNE_WATCOM_set_segment_OLD:
                 case DW_LNE_WATCOM_set_segment:
-                    if( op_len == 4 ){
+                    if( op_len == 4 ) {
                         tmp = *(uint_32 *)p;
-                    }else if( op_len == 2 ){
+                    } else if( op_len == 2 ) {
                         tmp = *(uint_16 *)p;
-                    }else{
+                    } else {
                         tmp = 0xffffffff;
                     }
                     state.segment = (uint_16)tmp;

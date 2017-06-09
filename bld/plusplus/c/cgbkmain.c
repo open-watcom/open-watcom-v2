@@ -1904,8 +1904,7 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
                                      , exprn_type
                                      , (cg_sym_handle)func )
                          , exprn_type );
-            if( ! CompFlags.has_longjmp
-             && SPFN_LONGJMP == SpecialFunction( func ) ) {
+            if( !CompFlags.has_longjmp && SPFN_LONGJMP == SpecialFunction( func ) ) {
                 CompFlags.has_longjmp = true;
             }
           } break;
@@ -3154,11 +3153,11 @@ static FN_CTL* emit_virtual_file( // EMIT A VIRTUAL FILE
 //
 
           case IC_TRACE_BEG :               // TURN IC TRACE ON
-            PragDbgToggle.dump_exec_ic = 1;
+            PragDbgToggle.dump_exec_ic = true;
             break;
 
           case IC_TRACE_END :               // TURN IC TRACE OFF
-            PragDbgToggle.dump_exec_ic = 0;
+            PragDbgToggle.dump_exec_ic = false;
             break;
 
 #endif
@@ -3193,8 +3192,7 @@ static void writeVirtualFile(   // EMIT AND FREE A VIRTUAL FILE
     FstabInit();
 #ifndef NDEBUG
     func = file_ctl->symbol;
-    if( PragDbgToggle.callgraph || PragDbgToggle.dump_stab ||
-        PragDbgToggle.dump_exec_ic ) {
+    if( PragDbgToggle.callgraph || PragDbgToggle.dump_stab || PragDbgToggle.dump_exec_ic ) {
         if( func == NULL ) {
             printf( "generating module data\n" );
         } else {
@@ -3263,7 +3261,8 @@ static void process_thunk(      // PROCESS THUNK AFTER VIRTUAL FILES
 static void cgbackInit(         // INITIALIZATION FOR MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     state_tables_obj = NULL;
     fun_try_impls = NULL;
     data_file = NULL;
@@ -3297,7 +3296,8 @@ static void cgbackInit(         // INITIALIZATION FOR MODULE
 static void cgbackFini(         // COMPLETION FOR MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     VstkClose( &stack_labs_cs );
     VstkClose( &stack_goto_near );
     CarveDestroy( carveTRY_IMPL );
@@ -3317,7 +3317,7 @@ void CgBackEnd(                 // BACK-END CONTROLLER
     CDoptBackEnd();
     MarkFuncsToGen( max_inline_depth );
 #ifndef NDEBUG
-    PragDbgToggle.callgraph_scan = 0;
+    PragDbgToggle.callgraph_scan = false;
     if( PragDbgToggle.dump_cg ) {
         GenSwitches |= ECHO_API_CALLS;
     }

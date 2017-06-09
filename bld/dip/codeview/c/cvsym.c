@@ -991,7 +991,8 @@ static search_result MatchSym( imp_image_handle *ii, s_all *p,
 {
     struct match_data   *md = d;
 
-    is = is;
+    /* unused parameters */ (void)is;
+
     if( md->idx != SymTypeIdx( ii, p ) )
         return( SR_NONE );
     return( SR_EXACT );
@@ -1196,7 +1197,8 @@ walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *ii, symbol_source ss
                 void *source, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is,
                 location_context *lc, void *d )
 {
-    lc=lc;
+    /* unused parameters */ (void)lc;
+
     return( DoWalkSymList( ii, ss, source, wk, is, d ) );
 }
 
@@ -1204,7 +1206,8 @@ walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *ii, symbol_source ss
 imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *ii,
                         imp_sym_handle *is )
 {
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     return( is->im );
 }
 
@@ -1757,7 +1760,8 @@ static search_result SymCreate( imp_image_handle *ii, s_all *p,
 {
     imp_sym_handle      *new;
 
-    p = p;
+    /* unused parameters */ (void)p;
+
     new = DCSymCreate( ii, d );
     if( new == NULL )
         return( SR_FAIL );
@@ -1868,7 +1872,8 @@ static search_result   DoImpLookupSym( imp_image_handle *ii,
     char                *new;
     size_t              new_len;
 
-    lc = lc;
+    /* unused parameters */ (void)lc;
+
     save_type = li->type;
     save_name = li->name;
     new_len = 0;
@@ -1984,7 +1989,8 @@ search_result DIPIMPENTRY( ScopeOuter )( imp_image_handle *ii,
 int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
                                 imp_sym_handle *is2 )
 {
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     if( is1->handle < is2->handle )
         return( -1 );
     if( is1->handle > is2->handle )
@@ -1994,20 +2000,21 @@ int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
 
 dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *ii, imp_sym_handle *is )
 {
-    ii=ii;
-    is=is;
+    /* unused parameters */ (void)ii; (void)is;
+
     return(DS_OK);
 }
 
 dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *ii, imp_sym_handle *is )
 {
-    ii=ii;
-    is=is;
+    /* unused parameters */ (void)ii; (void)is;
+
     return(DS_OK);
 }
 
 dip_status DIPIMPENTRY( SymFreeAll )( imp_image_handle *ii )
 {
-    ii=ii;
+    /* unused parameters */ (void)ii;
+
     return(DS_OK);
 }

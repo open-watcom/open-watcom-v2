@@ -65,16 +65,13 @@ WResResNode *WREFindResNodeFromLangNode( WResTypeNode *tnode, WResLangNode *lnod
         return( NULL );
     }
 
-    rnode = tnode->Head;
-
-    while( rnode != NULL ) {
+    for( rnode = tnode->Head; rnode != NULL; rnode = rnode->Next ) {
         if( WREResNodeContainsLangNode( rnode, lnode ) ) {
             return( rnode );
         }
         if( rnode == tnode->Tail ) {
             break;
         }
-        rnode = rnode->Next;
     }
 
     return( NULL );
@@ -88,13 +85,10 @@ bool WREResNodeContainsLangNode( WResResNode *rnode, WResLangNode *lnode )
         return( FALSE );
     }
 
-    ln = rnode->Head;
-
-    while( ln != NULL ) {
+    for( ln = rnode->Head; ln != NULL; ln = ln->Next ) {
         if( ln == lnode ) {
             return( TRUE );
         }
-        ln = ln->Next;
     }
 
     return( FALSE );

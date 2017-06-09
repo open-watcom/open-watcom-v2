@@ -45,7 +45,7 @@ extern void Space( WPARAM wparam )
     OBJPTR  primary;
     RECT    rect;
     RECT    totalrect;
-    BOOL    atleasttwo;
+    bool    atleasttwo;
     POINT   offset;
     LIST    *objlist;
     int     totalsize;
@@ -58,13 +58,11 @@ extern void Space( WPARAM wparam )
     if( primary == NULL ) {
         return;
     }
-    currobj = GetECurrObject();
-    atleasttwo = FALSE;
-    while( currobj != NULL && !atleasttwo ) {
+    atleasttwo = false;
+    for( currobj = GetEditCurrObject(); currobj != NULL; currobj = GetNextEditCurrObject( currobj ) ) {
         if( currobj != primary ) {
-            atleasttwo = TRUE;
-        } else {
-            currobj = GetNextECurrObject( currobj );
+            atleasttwo = true;
+            break;
         }
     }
     if( !atleasttwo ) {
@@ -79,8 +77,7 @@ extern void Space( WPARAM wparam )
     totalrect.right = totalrect.bottom = 0;
     objsize = 0;
     objcount = 0;
-    currobj = GetECurrObject();
-    while( currobj != NULL ) {
+    for( currobj = GetEditCurrObject(); currobj != NULL; currobj = GetNextEditCurrObject( currobj ) ) {
         Location( currobj, &rect );
         if( rect.left < totalrect.left ) {
             totalrect.left = rect.left;
@@ -100,7 +97,6 @@ extern void Space( WPARAM wparam )
             objsize += rect.bottom - rect.top;
         }
         objcount++;
-        currobj = GetNextECurrObject( currobj );
     }
     if( LOWORD( wparam ) == IDM_SPACE_HORZ ) {
         totalsize = totalrect.right - totalrect.left;
@@ -110,8 +106,7 @@ extern void Space( WPARAM wparam )
         currpos = totalrect.top;
     }
     spacesize = (totalsize - objsize) / (objcount - 1);
-    currobj = GetECurrObject();
-    while( currobj != NULL ) {
+    for( currobj = GetEditCurrObject(); currobj != NULL; currobj = GetNextEditCurrObject( currobj ) ) {
         Location( currobj, &rect );
         if( LOWORD( wparam ) == IDM_SPACE_HORZ ) {
             offset.x = currpos - rect.left;
@@ -123,8 +118,7 @@ extern void Space( WPARAM wparam )
             currpos += rect.bottom - rect.top;
         }
         currpos += spacesize;
-        Move( currobj, &offset, TRUE );
-        currobj = GetNextECurrObject( currobj );
+        Move( currobj, &offset, true );
     }
-    FinishMoveOperation( TRUE );
+    FinishMoveOperation( true );
 }

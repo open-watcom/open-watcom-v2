@@ -38,11 +38,11 @@
 #include "data.h"
 #include "cgsrtlst.h"
 #include "namelist.h"
+#include "conflict.h"
 #include "feprotos.h"
 
 
 extern  void            FindReferences( void );
-extern  conflict_node   *AddConflictNode(name*);
 extern  save_def        Weight( save_def value, block *blk );
 
 static  void            PropagateConflicts( void );
@@ -60,10 +60,12 @@ static  void    AddTempSave( name *op, block *blk )
     if( op->n.class == N_INDEXED ) {
         op = op->i.index;
     }
-    if( op->n.class != N_TEMP ) return;
+    if( op->n.class != N_TEMP )
+        return;
     op = DeAlias( op );
     conf = op->v.conflict;
-    if( conf == NULL ) return;
+    if( conf == NULL )
+        return;
     conf->savings += Weight( 1, blk );
 }
 
@@ -85,7 +87,8 @@ static  bool    AllocBefore( void *n1, void *n2 )
         return( false );
     }
     if( t1->v.conflict != NULL ) {
-        if( t2->v.conflict == NULL ) return( true );
+        if( t2->v.conflict == NULL )
+            return( true );
         return( t1->v.conflict->savings > t2->v.conflict->savings );
     } else {
         return( t1->t.v.id > t2->t.v.id );
@@ -243,7 +246,7 @@ static  void    PropagateConflicts( void )
     /*   (When we run out of bits, everything } else { is forced to memory)*/
 
     FindReferences();
-    if( BlockByBlock == false ) {
+    if( !BlockByBlock ) {
         LiveAnalysis( HeadBlock, MemoryBits );
     }
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
@@ -322,6 +325,8 @@ static  void    LiveAnalysis( block *tail, global_bit_set memory_bits )
                 change = true;
             }
         }
-        if( change == false ) break;
+        if( !change ) {
+            break;
+        }
     }
 }

@@ -45,15 +45,15 @@ static STATE        *StateList = NULL;
 static STATE_HDL    StateID = 1;
 
 /* forward declaration */
-extern BOOL ShowError( void );
+bool ShowError( void );
 
-extern void SetInst( HANDLE inst )
+void SetInst( HANDLE inst )
 {
     /* save the DLL instance */
     FMEditInst = inst;
 }
 
-extern void NewState( void )
+void NewState( void )
 {
     /* initialize state info */
     State = EdAlloc( sizeof( STATE ) );
@@ -74,17 +74,17 @@ extern void NewState( void )
     State->hAccel[2] = NULL;
     State->hAccel[3] = NULL;
     State->hAccel[4] = NULL;
-    State->showerror = TRUE;
+    State->showerror = true;
     State->error = NULL;
     State->mouseaction = NULL;
-    State->show_eatoms = TRUE;
+    State->show_eatoms = true;
     State->id = StateID;
     ++StateID;
     State->next = StateList;
     StateList = State;
 }
 
-extern void SetStateWnd( HWND wnd )
+void SetStateWnd( HWND wnd )
 {
     RECT   rect;
 
@@ -98,7 +98,7 @@ extern void SetStateWnd( HWND wnd )
 }
 
 
-extern void FreeState( void )
+void FreeState( void )
 {
     STATE *s;
     STATE *last;
@@ -119,7 +119,7 @@ extern void FreeState( void )
     State = NULL;
 }
 
-extern HWND InheritState( HWND newwnd )
+HWND InheritState( HWND newwnd )
 {
     /* replace the window of the current state with the passed window */
     HWND old;
@@ -129,7 +129,7 @@ extern HWND InheritState( HWND newwnd )
     return( old );
 }
 
-BOOL FMEDITAPI InitState( HWND wnd )
+bool FMEDITAPI InitState( HWND wnd )
 {
     /* initialize the state from the window */
     STATE *s;
@@ -143,106 +143,106 @@ BOOL FMEDITAPI InitState( HWND wnd )
     return( State != NULL );
 }
 
-extern void SetState( STATE_ID state )
+void SetState( STATE_ID state )
 {
     /* set to the specified state */
     State->currstate = state;
     SetStateCursor( state );
 }
 
-extern STATE_ID GetState( void )
+STATE_ID GetState( void )
 {
     /* return the current state */
     return( State->currstate );
 }
 
-extern void SetBaseState( STATE_ID st )
+void SetBaseState( STATE_ID st )
 {
     /* set the state that the system goes to when nothing is actively happening */
     State->basestate = st;
 }
 
-extern void SetDefState( void )
+void SetDefState( void )
 {
     /* reset to base state */
     State->currstate = State->basestate;
     SetStateCursor( State->basestate );
 }
 
-extern void SetSize( RESIZE_ID id )
+void SetSize( RESIZE_ID id )
 {
     /* set the sizing state based on the passed sizing operation */
     State->sizeinfo |= id;
 }
 
-extern void ResetSize( void )
+void ResetSize( void )
 {
     /* reset the sizing state info */
     State->sizeinfo = R_NONE;
 }
 
-extern unsigned char GetSizing( void )
+unsigned char GetSizing( void )
 {
     /* return the sizing info */
     return( State->sizeinfo );
 }
 
-extern BOOL Sizing( char op )
+bool Sizing( char op )
 {
     /* check to see if a sizing operation is valid */
     return( (State->sizeinfo & op) != R_NONE );
 }
 
-extern void SetPrevMouse( POINT pt )
+void SetPrevMouse( POINT pt )
 {
     /* save the mouse position */
     State->prevmouse = pt;
 }
 
-extern POINT GetPrevMouse( void )
+POINT GetPrevMouse( void )
 {
     /* Return the last significant the mouse position. */
     return( State->prevmouse );
 }
 
-extern HANDLE GetAppWnd( void )
+HANDLE GetAppWnd( void )
 {
     /* save the application window handle */
     return( State->appwnd );
 }
 
-extern HANDLE GetInst( void )
+HANDLE GetInst( void )
 {
     /* save the instance handle */
     return( FMEditInst );
 }
 
-extern void CreateMainObject( void )
+void CreateMainObject( void )
 {
     /* create the main object */
-    State->mainobject = Create( USER_OBJ, NULL, NULL, NULL );
+    State->mainobject = Create( FIRST_USER_OBJ_ID, NULL, NULL, NULL );
 }
 
-extern void DestroyMainObject( void )
+void DestroyMainObject( void )
 {
     /* destroy the main object */
     OBJPTR temp;
 
     temp = State->mainobject;
-    Destroy( temp, FALSE );
+    Destroy( temp, false );
     State->mainobject = NULL;
 }
 
-extern void CreateCurrObject( void )
+void CreateCurrObject( void )
 {
     /* Create the current object */
     State->currobj = Create( O_CURROBJ, NULL, NULL, NULL );
 }
 
-extern void DestroyCurrObject( void )
+void DestroyCurrObject( void )
 {
     /* Destroy the current object */
-    Destroy( State->currobj, FALSE );
+    Destroy( State->currobj, false );
 }
 
 OBJPTR FMEDITAPI GetMainObject( void )
@@ -302,9 +302,9 @@ void *GetObjects( void )
 void SaveObject( void )
 {
     /* remember the previous object */
-    CURROBJPTR currobj;
+    OBJPTR  currobj;
 
-    currobj = GetECurrObject();
+    currobj = GetEditCurrObject();
     if( currobj != NULL ) {
         State->prevobject = GetObjptr( currobj );
     }
@@ -316,7 +316,7 @@ void RestorePrevObject( void )
     AddCurrObject( State->prevobject );
 }
 
-extern OBJPTR GetCurrObj( void )
+OBJPTR GetCurrObj( void )
 {
     /* get the current object */
     if( State == NULL ) {
@@ -326,60 +326,60 @@ extern OBJPTR GetCurrObj( void )
     }
 }
 
-extern void FMEDITAPI GetOffset( POINT *point )
+void FMEDITAPI GetOffset( POINT *point )
 {
     /* return the offset point */
     *point = State->offset;
 }
 
-extern void SetOffset( POINT point )
+void SetOffset( POINT point )
 {
     /* set the offset point */
     State->offset = point;
 }
 
-extern RECT GetScrollRect( void )
+RECT GetScrollRect( void )
 {
     /* return the scroll rect */
     return( State->scrollrect );
 }
 
-extern void SetScrollRect( RECT rect )
+void SetScrollRect( RECT rect )
 {
     /* set the scroll rect */
     State->scrollrect = rect;
 }
 
-extern void SetScrollConfig( SCR_CONFIG flag )
+void SetScrollConfig( SCR_CONFIG flag )
 {
     /* Set the scroll configuration */
     State->scrollconfig = flag;
 }
 
-extern SCR_CONFIG GetScrollConfig( void )
+SCR_CONFIG GetScrollConfig( void )
 {
     /* Get the scroll configuration */
     return( State->scrollconfig );
 }
 
-extern OBJPTR GetSelectEatom( void )
+OBJPTR GetSelectEatom( void )
 {
     /* return the banded select eatom */
     return( State->selecteatom );
 }
 
-extern void SetSelectEatom( OBJPTR eatom )
+void SetSelectEatom( OBJPTR eatom )
 {
     /* set the banded select eatom */
     State->selecteatom = eatom;
 }
 
-extern void SetShowEatoms( BOOL show )
+void SetShowEatoms( bool show )
 {
     State->show_eatoms = show;
 }
 
-extern BOOL GetShowEatoms( void )
+bool GetShowEatoms( void )
 {
     return( State->show_eatoms );
 }
@@ -387,27 +387,25 @@ extern BOOL GetShowEatoms( void )
 
 int FMEDITAPI FMTranslateAccelerator( HWND wnd, LPMSG message )
 {
-    int ret;
-    int i;
+    bool    ret;
+    int     i;
 
     if( !InitState( wnd ) ) {
-        return( FALSE );
+        return( false );
     }
-
-    ret = FALSE;
-
     if( State->currstate == EDITING ) {
-        return( ret );
+        return( false );
     }
-    for( i = 0; i < ACCELS && ret == FALSE; i++ ) {
+    ret = false;
+    for( i = 0; i < ACCELS && !ret; i++ ) {
         if( State->hAccel[i] != NULL ) {
-            ret |= TranslateAccelerator( wnd, State->hAccel[i], message );
+            ret |= ( TranslateAccelerator( wnd, State->hAccel[i], message ) != 0 );
         }
     }
     return( ret );
 }
 
-extern void LoadAccel( int bitmap )
+void LoadAccel( int bitmap )
 {
     if( bitmap & MENU_DELETE ) {
         State->hAccel[1] = LoadAccelerators( GetInst(), "DeleteAccelTable" );
@@ -423,17 +421,17 @@ extern void LoadAccel( int bitmap )
     }
 }
 
-extern BOOL GetShift( void )
+bool GetShift( void )
 {
-    return( State->keystate & MK_SHIFT );
+    return( (State->keystate & MK_SHIFT) != 0 );
 }
 
-extern BOOL GetControl( void )
+bool GetControl( void )
 {
-    return( State->keystate & MK_CONTROL );
+    return( (State->keystate & MK_CONTROL) != 0 );
 }
 
-extern void SetKeyState( WORD keystate )
+void SetKeyState( WORD keystate )
 {
     State->keystate = keystate;
 }
@@ -452,7 +450,7 @@ void FMEDITAPI DisplayError( char * msg )
     }
 }
 
-extern void ReportPending( void )
+void ReportPending( void )
 {
     if( ShowError() && State->error != NULL ) {
         MessageBox( GetAppWnd(), (LPSTR) State->error, NULL,
@@ -471,17 +469,17 @@ void FMEDITAPI ClearError( void )
 }
 
 
-BOOL ShowError( void )
+bool ShowError( void )
 {
     return( State->showerror );
 }
 
-void FMEDITAPI SetShowError( BOOL show )
+void FMEDITAPI SetShowError( bool show )
 {
     State->showerror = show;
 }
 
-BOOL FMEDITAPI IsEditting( HWND wnd )
+bool FMEDITAPI IsEditting( HWND wnd )
 {
     InitState( wnd );
     return( State->currstate == EDITING );
@@ -522,7 +520,7 @@ unsigned GetResizeVInc( void )
     return( State->vresizegrid );
 }
 
-BOOL FMEDITAPI InitStateFormID( STATE_HDL st )
+bool FMEDITAPI InitStateFormID( STATE_HDL st )
 {
     STATE *s;
 
@@ -545,20 +543,20 @@ STATE_HDL FMEDITAPI GetCurrFormID( void )
 
 void FMEDITAPI HideSelectBoxes( void )
 {
-    OBJECT      *currobj;
-    BOOL        show;
+    OBJPTR      currobj;
+    bool        show;
 
     currobj = GetCurrObj();
-    show = FALSE;
-    (*currobj)( SHOW_SEL_BOXES, currobj, &show, NULL );
+    show = false;
+    OBJ_DISPATCHER( currobj )( SHOW_SEL_BOXES, currobj, &show, NULL );
 }
 
 void FMEDITAPI ShowSelectBoxes( void )
 {
-    OBJECT      *currobj;
-    BOOL        show;
+    OBJPTR      currobj;
+    bool        show;
 
     currobj = GetCurrObj();
-    show = TRUE;
-    (*currobj)( SHOW_SEL_BOXES, currobj, &show, NULL );
+    show = true;
+    OBJ_DISPATCHER( currobj )( SHOW_SEL_BOXES, currobj, &show, NULL );
 }

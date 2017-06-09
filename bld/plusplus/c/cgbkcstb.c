@@ -162,7 +162,8 @@ SE* CallStabStateTablePosn(     // GET STATE-TABLE POSITION AT CALL POINT
 static void callStabInit(       // INITIALIZATION FOR CALL_STAB
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carve_call_stab = CarveCreate( sizeof( CALL_STAB ), 16 );
 }
 
@@ -170,7 +171,8 @@ static void callStabInit(       // INITIALIZATION FOR CALL_STAB
 static void callStabFini(       // COMPLETION FOR CALL_STAB
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CarveDestroy( carve_call_stab );
 }
 

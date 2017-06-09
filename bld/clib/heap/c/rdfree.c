@@ -38,8 +38,8 @@
 #include "rdosdev.h"
 
 
-_WCRTLINK void free( void *stg )
+_WCRTLINK void free( void *cstg )
 {
-    int sel = RdosPointerToSelector( stg );
+    int sel = RdosPointerToSelector( cstg );
     RdosFreeMem( sel );
 }

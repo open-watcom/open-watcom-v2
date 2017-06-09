@@ -63,8 +63,8 @@ void                    (*_ReleaseFHeap)(void)   = &__NullAccHeapRtn;
 void                    (*_AccessTDList)(void)   = &__NullAccTDListRtn;
 void                    (*_ReleaseTDList)(void)  = &__NullAccTDListRtn;
 
-void __QNXInit( void *ptr )
-/*************************/
+void __QNXInit( thread_data *ptr )
+/********************************/
 {
     unsigned *tmp;
 

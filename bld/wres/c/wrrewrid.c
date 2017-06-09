@@ -41,16 +41,14 @@ bool WResReadExtraWResID( WResID *name, WResFileID fid )
 /* assumes that the fixed portion has just been read in and is in name and */
 /* that name is big enough to hold the extra bytes */
 {
-    WResFileSSize   numread;
+    size_t          numread;
     uint_16         extrabytes;
 
     if( name->IsName ) {
         extrabytes = name->ID.Name.NumChars - 1;
         if( extrabytes > 0 ) {
-            numread = WRESREAD( fid, name->ID.Name.Name + 1, extrabytes );
-            if( numread != extrabytes ) {
-                WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-                return( true );
+            if( (numread = WRESREAD( fid, name->ID.Name.Name + 1, extrabytes )) != extrabytes ) {
+                return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
             }
         }
     }

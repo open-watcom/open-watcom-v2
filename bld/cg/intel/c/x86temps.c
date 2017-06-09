@@ -77,24 +77,35 @@ static  void    AssignPushLocals( void ) {
 
     curr_offset = 0;
     for( ins = HeadBlock->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-        if( CurrProc->prolog_state & GENERATED_PROLOG ) break;
+        if( CurrProc->prolog_state & GENERATED_PROLOG )
+            break;
         if( DoesSomething( ins ) ) {
-            if( ins->head.opcode != OP_MOV ) break;
-            if( UnChangeable( ins ) ) break;
+            if( ins->head.opcode != OP_MOV )
+                break;
+            if( UnChangeable( ins ) )
+                break;
             src = ins->operands[0];
             dst = ins->result;
-            if( src->n.class != N_REGISTER ) break;
-            if( _IsFloating( src->n.name_class ) ) break; /*90-Dec-17*/
-            if( dst->n.class != N_TEMP ) break;
+            if( src->n.class != N_REGISTER )
+                break;
+            if( _IsFloating( src->n.name_class ) )
+                break;
+            if( dst->n.class != N_TEMP )
+                break;
 #if _TARGET & _TARG_IAPX86
-            if( dst->n.size != 2 && dst->n.size != 4 ) break;
+            if( dst->n.size != 2 && dst->n.size != 4 )
+                break;
 #else
-            if( dst->n.size != 4 ) break;
+            if( dst->n.size != 4 )
+                break;
 #endif
             curr_offset -= PushSize( dst->n.size );/* assume it will be pushed*/
-            if( DeAlias( dst ) != dst ) break;
+            if( DeAlias( dst ) != dst )
+                break;
             if( dst->v.usage & HAS_MEMORY ) {
-                if( dst->t.location != curr_offset ) break;
+                if( dst->t.location != curr_offset ) {
+                    break;
+                }
             } else {
                 CurrProc->targ.push_local_size += PushSize( dst->n.size );
                 dst->t.location = - CurrProc->targ.push_local_size;

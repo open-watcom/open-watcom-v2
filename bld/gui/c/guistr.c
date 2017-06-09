@@ -43,7 +43,7 @@ static const char *GUIGetInternalLiteralString( gui_res_id id )
 {
     GUIStrTextBuffer[0] = '\0';
     if( GUIIsLoadStrInitialized() ) {
-        if( !GUILoadString( id, GUIStrTextBuffer, BUFFER_SIZE ) ) {
+        if( !GUILoadString( id, GUIStrTextBuffer, sizeof( GUIStrTextBuffer ) ) ) {
             GUIStrTextBuffer[0] = '\0';
         }
     }
@@ -52,18 +52,20 @@ static const char *GUIGetInternalLiteralString( gui_res_id id )
 
 bool GUIInitInternalStringTable( void )
 {
-    gui_res_id  i = GUI_LITERAL_BASE;
+    gui_res_id  id = GUI_LITERAL_BASE;
 
-#define pick( a, b, c ) LIT( a ) = GUIGetInternalLiteralString( i ); i++;
-#include "gui.msg"
-#undef pick
+    #define pick( a, b, c ) LIT( a ) = GUIGetInternalLiteralString( id ); id++;
+    #include "gui.msg"
+    #undef pick
+
     return( true );
 }
 
 bool GUIFiniInternalStringTable( void )
 {
-#define pick( a, b, c ) GUIMemFree( (void *)LIT( a ) );
-#include "gui.msg"
-#undef pick
+    #define pick( a, b, c ) GUIMemFree( (void *)LIT( a ) );
+    #include "gui.msg"
+    #undef pick
+
     return( true );
 }

@@ -102,7 +102,9 @@ bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
         class = ins->type_class;
     }
     if( to->n.class != N_CONSTANT ) {
-        if( TypeClassSize[class] != to->n.size ) return( false );
+        if( TypeClassSize[class] != to->n.size ) {
+            return( false );
+        }
     }
     for( i = ins->num_operands; i-- > 0; ) {
         save_ops[i] = ins->operands[i];
@@ -127,13 +129,13 @@ bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
                 || ((ins->u.gen_table->op_type & MASK_CC) ==
                     (gen_table->op_type & MASK_CC))) ) {
             if( to->n.class != N_INDEXED && old_op->n.class == N_INDEXED ) {
-                ins->num_operands = NumOperands( ins );
+                ins->num_operands = OpcodeNumOperands( ins );
             }
         } else {
             ok = false;
         }
     }
-    if( ( ok == false ) || ( flags & CHANGE_CHECK ) ) {
+    if( !ok || (flags & CHANGE_CHECK) ) {
         // if we failed or we were just checking then
         // restore the original instruction
         for( i = ins->num_operands; i-- > 0; ) {
@@ -160,9 +162,12 @@ static  bool    TryOldIndex( score *sc, instruction *ins, name **opp ) {
     name        *reg_name;
 
     op = *opp;
-    if( op->n.class != N_INDEXED ) return( false );
-    if( op->i.index->n.class != N_REGISTER ) return( false );
-    if( op->i.index->r.reg_index == NO_INDEX ) return( false );
+    if( op->n.class != N_INDEXED )
+        return( false );
+    if( op->i.index->n.class != N_REGISTER )
+        return( false );
+    if( op->i.index->r.reg_index == NO_INDEX )
+        return( false );
     this_reg = &sc[op->i.index->r.reg_index];
     for( curr_reg = this_reg->next_reg; curr_reg != this_reg; curr_reg = curr_reg->next_reg ) {
         if( curr_reg->generation < this_reg->generation ) {
@@ -177,8 +182,9 @@ static  bool    TryOldIndex( score *sc, instruction *ins, name **opp ) {
                                     op->n.name_class,
                                     op->n.size, op->i.scale,
                                     op->i.index_flags );
-                if( IndexOkay( ins, index )
-                 && ChangeIns( ins, index, opp, CHANGE_NORMAL ) ) return( true );
+                if( IndexOkay( ins, index ) && ChangeIns( ins, index, opp, CHANGE_NORMAL ) ) {
+                    return( true );
+                }
             }
         }
     }
@@ -199,7 +205,8 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
     score       *curr_reg;
     score_info  info;
 
-    if( CanReplace( ins ) == false ) return( false );
+    if( !CanReplace( ins ) )
+        return( false );
     op = *opp;
     if( op->n.class == N_REGISTER ) {
         live = ins->head.next->head.live.regs;
@@ -236,9 +243,9 @@ static  bool    TryRegOp( score *sc, instruction *ins, name **opp ) {
             }
         }
         for( i = ScoreCount; i-- > 0; ) {
-            if( ScoreEqual( sc, i, &info )
-             && ChangeIns( ins, ScoreList[i]->reg_name, opp, CHANGE_GEN ) )
+            if( ScoreEqual( sc, i, &info ) && ChangeIns( ins, ScoreList[i]->reg_name, opp, CHANGE_GEN ) ) {
                 return( true );
+            }
         }
 
         /*% couldn't find a register operand, try for an older index*/
@@ -256,9 +263,10 @@ bool    FindRegOpnd( score *sc, instruction *ins )
     int         i;
     bool        change;
 
-    if( IsStackReg( ins->result ) ) return( false );
+    if( IsStackReg( ins->result ) )
+        return( false );
     change = false;
-    for( i = NumOperands( ins ); i-- > 0; ) {
+    for( i = OpcodeNumOperands( ins ); i-- > 0; ) {
         if( TryRegOp( sc, ins, &ins->operands[i] ) ) {
             change = true;
         }
@@ -408,10 +416,14 @@ void    ScZeroCheck( score *sc, instruction *ins )
 
     if( ins->head.opcode != OP_XOR
      && ins->head.opcode != OP_MOD
-     && ins->head.opcode != OP_SUB ) return;
-    if( ins->operands[0] != ins->operands[1] ) return;
-    if( ins->operands[0] != ins->result ) return;
-    if( ins->operands[0]->n.class != N_REGISTER ) return;
+     && ins->head.opcode != OP_SUB )
+        return;
+    if( ins->operands[0] != ins->operands[1] )
+        return;
+    if( ins->operands[0] != ins->result )
+        return;
+    if( ins->operands[0]->n.class != N_REGISTER )
+        return;
     i = ins->result->r.reg_index;
     ScoreAssign( sc, i, ScZero );
 }

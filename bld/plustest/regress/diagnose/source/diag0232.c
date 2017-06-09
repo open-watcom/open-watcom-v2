@@ -160,8 +160,8 @@ struct x153 {
     }
 };
 struct x162 {
-    void f( void near *, void far * );
-    void f( void far *, void near * );
+    void f( void __near *, void __far * );
+    void f( void __far *, void __near * );
     
     void g( int *a, int *b )
     {

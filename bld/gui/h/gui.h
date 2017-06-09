@@ -36,7 +36,7 @@ typedef int         gui_ord;
 
 typedef unsigned    gui_ctl_id;
 typedef int         gui_ctl_idx;
-typedef int         gui_res_id;
+typedef unsigned    gui_res_id;
 typedef unsigned    gui_hlp_id;
 
 #if defined( _M_I86 )
@@ -339,7 +339,7 @@ typedef void (CONTRENUMCALLBACK)( gui_window *parent, gui_ctl_id id, void *param
 typedef void (GUIPICKCALLBACK)( gui_window *, gui_ctl_id id );
 typedef void (PICKDLGOPEN)( const char *title, int rows, int cols,
                              gui_control_info *controls_info, int num_controls,
-                             GUICALLBACK *rtn, void *extra );
+                             GUICALLBACK *gui_call_back, void *extra );
 typedef const char *(GUIPICKGETTEXT)( const void *data_handle, int item );
 
 typedef struct gui_create_info {
@@ -352,7 +352,7 @@ typedef struct gui_create_info {
     gui_menu_struct     *menu;
     int                 num_attrs;
     gui_colour_set      *colours;      /* array of num_attrs gui_attrs */
-    GUICALLBACK         *call_back;
+    GUICALLBACK         *gui_call_back;
     void                *extra;
     gui_resource        *icon;
     res_name_or_id      resource_menu;
@@ -877,7 +877,7 @@ extern gui_ctl_idx GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickin
 extern bool GUICreateDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info );
 extern bool GUICreateSysModalDialog( gui_create_info *dlg_info, int num_controls, gui_control_info *controls_info );
 extern bool GUICreateResDialog( gui_create_info *dlg_info, res_name_or_id dlg_id );
-extern bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK *cb, void *extra );
+extern bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK *gui_call_back, void *extra );
 extern void GUICloseDialog( gui_window * wnd );
 extern void GUISetModalDlgs( bool );
 

@@ -116,7 +116,7 @@ size_t ResSizeVerValueItem( VerValueItem * item, bool use_unicode )
             size = item->strlen + 1;
         }
         if( use_unicode ) {
-            size = ConvToUnicode( size, item->Value.String, NULL);
+            size = ConvToUnicode( size, item->Value.String, NULL );
         }
     }
     return( size );
@@ -128,10 +128,7 @@ bool ResWriteVerFixedInfo( VerFixedInfo *fixed, WResFileID fid )
     fixed->Signature = VER_FIXED_SIGNATURE;
     fixed->StructVer = VER_FIXED_STRUCT_VER;
     fixed->FileDateLow = (uint_32)time( NULL );
-    if( WRESWRITE( fid, fixed, sizeof( VerFixedInfo ) ) != sizeof( VerFixedInfo ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    } else {
-        return( false );
-    }
+    if( WRESWRITE( fid, fixed, sizeof( VerFixedInfo ) ) != sizeof( VerFixedInfo ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
+    return( false );
 }

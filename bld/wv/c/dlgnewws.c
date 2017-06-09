@@ -35,9 +35,9 @@
 #include "guidlg.h"
 #include "dlgnew.h"
 #include "dlgnewws.h"
+#include "dlgscomp.h"
+#include "modcomp.h"
 
-extern void             SymComplete( gui_window *gui, gui_ctl_id id );
-extern void             ModComplete( gui_window *gui, gui_ctl_id id );
 
 typedef enum {
     COMPLETE_SYMBOL,
@@ -94,10 +94,10 @@ static bool NewSymEvent( gui_window *gui, gui_event event, void *param )
 static bool DoDlgNew( const char *title, char *buff, unsigned buff_len, comp_type type )
 {
     if( type == COMPLETE_SYMBOL ) {
-        CompRtn = &SymComplete;
+        CompRtn = SymComplete;
         Controls[2].text = LIT_DUI( XSymbol_ );
     } else {
-        CompRtn = &ModComplete;
+        CompRtn = ModComplete;
         Controls[2].text = LIT_DUI( XModule_ );
     }
     Controls[1].text = LIT_DUI( OK );

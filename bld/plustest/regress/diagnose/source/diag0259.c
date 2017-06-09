@@ -42,47 +42,47 @@ template <class T> struct CT2 {};
 namespace CT2 { };
 namespace x20 {
     namespace x {
-	int x;
+        int x;
     }
     namespace e {
-	namespace z {
-	};
-	int y;
+        namespace z {
+        };
+        int y;
     }
     namespace x {
-	int z;
+        int z;
     }
     namespace x {
-	int w;
+        int w;
     }
     namespace x {
-	int a;
-	namespace {
-	    int qq;
-	    int qq;
-	    namespace ZZ {
-		namespace {
-		    namespace AA {
-			namespace {
-			    namespace XX {
-				int dd;
-				int dd;
-			    };
-			};
-		    };
-		};
-	    };
-	};
+        int a;
+        namespace {
+            int qq;
+            int qq;
+            namespace ZZ {
+                namespace {
+                    namespace AA {
+                        namespace {
+                            namespace XX {
+                                int dd;
+                                int dd;
+                            };
+                        };
+                    };
+                };
+            };
+        };
     }
     namespace x {
-	int b;
+        int b;
     }
     namespace x {
-	int c;
-	int c;
-	namespace y {
-	    int i;
-	}
+        int c;
+        int c;
+        namespace y {
+            int i;
+        }
     }
     namespace __x = x;
     namespace __x__y = x::y;
@@ -94,17 +94,17 @@ namespace x20 {
     namespace __x = __x;
     namespace __x = e::z;
     struct S {
-	void x() {
-	    int x;
-	    ;;
-	    __x::y::i++;
-	    x::y::i++;
-	    __x__y::i++;
-	}
+        void x() {
+            int x;
+            ;;
+            __x::y::i++;
+            x::y::i++;
+            __x__y::i++;
+        }
     };
     
     void foo( S *p ) {
-	p->x();
+        p->x();
     }
 }
 
@@ -113,13 +113,13 @@ namespace c = q;
 namespace x90 {
     int qq;
     namespace {
-	int x;
-	extern int y = 3;
-	static int z;
-	static int foo( int, int );
-	int ack() {
-	    return 0;
-	}
+        int x;
+        extern int y = 3;
+        static int z;
+        static int foo( int, int );
+        int ack() {
+            return 0;
+        }
     }
 };
 namespace x102 {
@@ -131,29 +131,29 @@ union U {
 struct S {
     U u;
 };
-S s2 = { 256 };		// this one complains about integer truncation
-S s3 = { { 256 } };		// this one complains about integer truncation
-S s1 = { 255 };		// this one does not complain
+S s2 = { 256 };         // this one complains about integer truncation
+S s3 = { { 256 } };             // this one complains about integer truncation
+S s1 = { 255 };         // this one does not complain
 };
 namespace x115 {
     extern "C" {
-	int waste;
-	template <class T>
-	    struct S {
-		T *p;
-		S( T * );
-	    };
-	template <class T>
-	    S<T>::S( T *p ) : p(p) {
-		++waste;
-	    }
+        int waste;
+        template <class T>
+            struct S {
+                T *p;
+                S( T * );
+            };
+        template <class T>
+            S<T>::S( T *p ) : p(p) {
+                ++waste;
+            }
     ;;
-	S<int> x(0);
+        S<int> x(0);
     };
 };
 namespace x131 {
     union U {
-	int x, y;
+        int x, y;
     } x = { 1, 2 };
 };
 void x136() {
@@ -161,28 +161,28 @@ void x136() {
 }
 void x139() {
     char* p, q;
-    char far *a,*b,*c;
+    char __far *a,*b,*c;
 }
 namespace x143 {
     static union {
-	class C {
-	    int c;
-	} m;
+        class C {
+            int c;
+        } m;
     };
     struct S {
     };
     static union {
-	int S;
+        int S;
     };
     struct X {
-	enum E { A, B };
-	int a[X::B];
+        enum E { A, B };
+        int a[X::B];
     };
     const struct Q {};
     struct X18 {
-	char b1 : 16;
-	bool b2 : 32;
-	short b3 : 24;
+        char b1 : 16;
+        bool b2 : 32;
+        short b3 : 24;
     };
 };
 extern "C" {
@@ -194,17 +194,17 @@ int WinMain( int, int ) {
 namespace x171 {
     void *alloc( unsigned );
     void *operator new( unsigned x ) {
-	return alloc(x);
+        return alloc(x);
     }
     void operator delete( void * ) {
     }
     struct S {
-	static void *alloc( unsigned );
-	void *operator new( unsigned x ) {
-	    return alloc(x);
-	}
-	void operator delete( void * ) {
-	}
+        static void *alloc( unsigned );
+        void *operator new( unsigned x ) {
+            return alloc(x);
+        }
+        void operator delete( void * ) {
+        }
     };
 };
 void *alloc( unsigned );
@@ -220,18 +220,18 @@ x171::S *x194() {
 
 struct x198 {
     namespace N {
-	int x;
+        int x;
     };
 };
 void x203(){
     namespace N {
-	int x;
+        int x;
     };
 };
 
 template <class T>
     namespace x210 {
-	int x;
+        int x;
     };
 #if __WATCOM_REVISION__ >= 7
 //--------------------------------------------------------
@@ -240,10 +240,10 @@ const char *, int );
 #define __WTEXT( x ) x
 
 #define WAssertEx(__x,__msg)\
-	(((int)(__x))? (void)0						\
-		     : Assert( 0, __WTEXT(#__x), __WTEXT(__msg),\
-		                       __WTEXT(__FUNCTION__), \
-		                       __WTEXT(__FILE__), __LINE__ ))
+        (((int)(__x))? (void)0                                          \
+                     : Assert( 0, __WTEXT(#__x), __WTEXT(__msg),\
+                                       __WTEXT(__FUNCTION__), \
+                                       __WTEXT(__FILE__), __LINE__ ))
 
 #define WASSERTEX(__x,__msg)  WAssertEx(__x,__msg)
 
@@ -272,19 +272,19 @@ void x227() {
 
 namespace x249 {
     namespace N {
-	void f();
-	void g();
-	void h();
-	namespace O {
+        void f();
+        void g();
+        void h();
+        namespace O {
             void N::f() {
               // error
-	    }
-	}
+            }
+        }
     }
     struct S {
-	void N::h() {
-	    // error
-	}
+        void N::h() {
+            // error
+        }
     };
     void N::g() {
       // OK
@@ -297,7 +297,7 @@ x314()
 {
         float f = 1.0;
         int *i = (int *)0;
-        if(i == &f)	// notes! should have different types
+        if(i == &f)     // notes! should have different types
                 return -1;
         return 0;
 }

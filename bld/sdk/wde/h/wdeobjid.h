@@ -37,7 +37,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef enum {
-    BASE_OBJ = USER_OBJ,
+    BASE_OBJ = FIRST_USER_OBJ_ID,
     DIALOG_OBJ,
     CONTROL_OBJ,
     PBUTTON_OBJ,
@@ -65,9 +65,9 @@ typedef enum {
     HEADER_OBJ,
     CUSTCNTL1_OBJ,
     CUSTCNTL2_OBJ,
-    LAST__OBJ
+    LAST_USER_OBJ_ID
 } Wde_Objects;
 
-#define NUM_OBJECTS (LAST__OBJ - USER_OBJ)
+#define NUM_USER_OBJECTS    (LAST_USER_OBJ_ID - FIRST_USER_OBJ_ID)
 
 #endif

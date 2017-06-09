@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,18 +45,14 @@
 #include "setsamps.h"
 #include "support.h"
 #include "utils.h"
+#include "clrsamps.h"
+#include "wpdata.h"
 
 #include "clibext.h"
 
 
-extern void ClearSample(sio_data *curr_sio);
-
-extern char             SamplePath[];
-extern system_config    DefSysConfig;
-
 sio_data                *SIOData;
 sio_data                *CurrSIOData;
-
 
 
 STATIC bool initCurrSIO( void )
@@ -63,27 +60,27 @@ STATIC bool initCurrSIO( void )
 {
     image_info      *new_image;
     file_handle     fh;
-    int             name_len;
+    size_t          name_len;
 
     fh = open( SamplePath, O_RDONLY | O_BINARY, S_IREAD );
-    if( fh == (file_handle) -1 ) {
+    if( fh == (file_handle)-1 ) {
         ErrorMsg( LIT( Cannot_Open_Smp_File ), SamplePath );
         return( false );
     }
-    CurrSIOData = ProfCAlloc( sizeof(sio_data) );
+    CurrSIOData = ProfCAlloc( sizeof( sio_data ) );
     CurrSIOData->fh = fh;
     name_len = strlen( SamplePath ) + 1;
     CurrSIOData->samp_file_name = ProfAlloc( name_len );
     memcpy( CurrSIOData->samp_file_name, SamplePath, name_len );
-    CurrSIOData->images = ProfAlloc( 2*sizeof(pointer) );
-    new_image = ProfCAlloc( sizeof(image_info) );
+    CurrSIOData->images = ProfAlloc( 2 * sizeof( pointer ) );
+    new_image = ProfCAlloc( sizeof( image_info ) );
     name_len = strlen( LIT( Unknown_Image ) ) + 1;
     new_image->name = ProfAlloc( name_len );
     memcpy( new_image->name, LIT( Unknown_Image ), name_len );
     new_image->unknown_image = true;
     CurrSIOData->images[0] = new_image;
     CurrSIOData->curr_image = new_image;
-    new_image = ProfCAlloc( sizeof(image_info) );
+    new_image = ProfCAlloc( sizeof( image_info ) );
     name_len = strlen( LIT( Gathered_Images ) ) + 1;
     new_image->name = ProfAlloc( name_len );
     memcpy( new_image->name, LIT( Gathered_Images ), name_len );
@@ -167,10 +164,10 @@ STATIC void procMarkBlock( clicks_t tick, samp_data *data )
 /*********************************************************/
 {
     mark_data       *new_mark;
-    int             name_len;
+    size_t          name_len;
 
     name_len = strlen( data->mark.mark_string );
-    new_mark = ProfCAlloc( sizeof(mark_data)+name_len );
+    new_mark = ProfCAlloc( sizeof( mark_data ) + name_len );
     new_mark->tick = tick;
     new_mark->thread = data->mark.thread_id;
     /* make sure to handle overlay resolution */
@@ -220,15 +217,15 @@ STATIC void procImageBlock( samp_data *data, bool main_exe )
 /**********************************************************/
 {
     image_info      *new_image;
-    int             name_len;
+    size_t          name_len;
     int             image_index;
 
     name_len = strlen( data->code.name ) + 1;
-    new_image = ProfCAlloc( sizeof(image_info) );
+    new_image = ProfCAlloc( sizeof( image_info ) );
     image_index = CurrSIOData->image_count;
     CurrSIOData->image_count++;
     CurrSIOData->images = ProfRealloc( CurrSIOData->images,
-                                     CurrSIOData->image_count*sizeof(pointer));
+                                     CurrSIOData->image_count * sizeof( pointer ) );
     CurrSIOData->images[image_index] = new_image;
     CurrSIOData->curr_image = new_image;
     new_image->name = ProfAlloc( name_len );
@@ -284,9 +281,8 @@ STATIC void procRemapBlock( clicks_t tick, uint_16 total_len,
 
     index = 0;
     total_len -= offsetof( samp_block, d.remap );
-    count = total_len / sizeof( remapping );
-    while( count-- > 0 ) {
-        new_remap = ProfCAlloc( sizeof(remap_data) );
+    for( count = total_len / sizeof( remapping ); count > 0; --count ) {
+        new_remap = ProfCAlloc( sizeof( remap_data ) );
         if( CurrSIOData->remaps == NULL ) {
             new_remap->next = new_remap;
         } else {

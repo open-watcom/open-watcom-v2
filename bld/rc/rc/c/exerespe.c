@@ -35,10 +35,10 @@
 #include "global.h"
 #include "rcstrblk.h"
 #include "rcstr.h"
-#include "errors.h"
-#include "wrmergdi.h"
+#include "rcerrors.h"
 #include "rcrtns.h"
 #include "rccore.h"
+#include "mergedir.h"
 #include "exeobj.h"
 #include "exeutil.h"
 #include "exerespe.h"
@@ -82,7 +82,7 @@ static void QueueEmpty( DirEntryQueue *queue )
 
     for( curr = queue->front; curr != NULL; curr = next ) {
         next = curr->next;
-        RCFREE( curr );
+        RESFREE( curr );
     }
 
     QueueInit( queue );
@@ -99,7 +99,7 @@ static void QueueAdd( DirEntryQueue *queue, PEResDirEntry *entry )
 {
     QueueNode       *new;
 
-    new = RCALLOC( sizeof(QueueNode) );
+    new = RESALLOC( sizeof( QueueNode ) );
     new->entry = entry;
     new->next = NULL;
     if( queue->front == NULL ) {
@@ -128,7 +128,7 @@ static PEResDirEntry *QueueRemove( DirEntryQueue *queue )
     }
 
     entry = old->entry;
-    RCFREE( old );
+    RESFREE( old );
     return( entry );
 } /* QueueRemove */
 
@@ -142,7 +142,7 @@ static void PEResDirEntryInit( PEResDirEntry *entry, int num_entries )
     entry->Head.num_name_entries = 0;
     entry->Head.num_id_entries = 0;
     entry->NumUnused = num_entries;
-    entry->Children = RCALLOC( num_entries * sizeof( PEResEntry ) );
+    entry->Children = RESALLOC( num_entries * sizeof( PEResEntry ) );
 }
 
 static void PEResDirAdd( PEResDirEntry * entry, WResID * name,
@@ -288,7 +288,7 @@ static bool PEResDirBuild( PEResDir *res, WResDir dir )
         res->ResSize = 0;
     } else {
         StringBlockBuild( &res->String, dir, true );
-        res->DirSize = sizeof(resource_dir_header);
+        res->DirSize = sizeof( resource_dir_header );
         PEResDirEntryInit( &res->Root, WResGetNumTypes( dir ) );
         for( wind = WResFirstResource( dir ); !WResIsEmptyWindow( wind ); wind = WResNextResource( wind, dir ) ) {
             if( WResIsFirstResOfType( wind ) ) {
@@ -354,13 +354,11 @@ static RcStatus SetEntryOffset( PEResEntry * entry, void * _curr_offset )
 
     if( entry->IsDirEntry ) {
         entry->Entry.entry_rva = *curr_offset | PE_RESOURCE_MASK_ON;
-        num_entries = entry->u.Dir.Head.num_name_entries +
-                            entry->u.Dir.Head.num_id_entries;
-        *curr_offset += sizeof(resource_dir_header) +
-                            num_entries * sizeof(resource_dir_entry);
+        num_entries = entry->u.Dir.Head.num_name_entries + entry->u.Dir.Head.num_id_entries;
+        *curr_offset += sizeof( resource_dir_header ) + num_entries * sizeof( resource_dir_entry );
     } else {
         entry->Entry.entry_rva = *curr_offset;
-        *curr_offset += sizeof(resource_entry);
+        *curr_offset += sizeof( resource_entry );
     }
     return( RS_OK );
 } /* SetEntryOffset */
@@ -412,11 +410,11 @@ static RcStatus SortDirEntry( PEResEntry * entry, void * dummy )
 {
     int     num_entries;
 
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
 
     if( entry->IsDirEntry ) {
         num_entries = entry->u.Dir.Head.num_name_entries + entry->u.Dir.Head.num_id_entries;
-        qsort( entry->u.Dir.Children, num_entries, sizeof(PEResEntry), ComparePEResIdName );
+        qsort( entry->u.Dir.Children, num_entries, sizeof( PEResEntry ), ComparePEResIdName );
     }
     return( RS_OK );
 } /* SortDirEntry */
@@ -427,17 +425,14 @@ static void CompleteTree( PEResDir * dir )
     uint_32     curr_offset;
     int         num_entries;
 
-    num_entries = dir->Root.Head.num_name_entries +
-                                dir->Root.Head.num_id_entries;
+    num_entries = dir->Root.Head.num_name_entries + dir->Root.Head.num_id_entries;
 
     /* sort the entries at each level */
-    qsort( dir->Root.Children, num_entries, sizeof(PEResEntry),
-                ComparePEResIdName );
+    qsort( dir->Root.Children, num_entries, sizeof( PEResEntry ), ComparePEResIdName );
     traverseTree( dir, NULL, SortDirEntry );
 
     /* Set curr_offset to the size of the root entry */
-    curr_offset = sizeof(resource_dir_header) +
-                        num_entries * sizeof(resource_dir_entry);
+    curr_offset = sizeof( resource_dir_header ) + num_entries * sizeof( resource_dir_entry );
 
     traverseTree( dir, &curr_offset, SetEntryOffset );
     dir->DirSize = curr_offset;
@@ -472,14 +467,14 @@ static RcStatus copyDataEntry( PEResEntry *entry, void *_copy_info )
         info = WResGetFileInfo( entry->u.Data.Wind );
         if( copy_info->curres == NULL || copy_info->curres == info ) {
             res_info = WResGetLangInfo( entry->u.Data.Wind );
-            if( RCSEEK( info->fid, res_info->Offset, SEEK_SET ) == -1 )
+            if( RESSEEK( info->fid, res_info->Offset, SEEK_SET ) )
                 return( RS_READ_ERROR );
             ret = CopyExeData( info->fid, copy_info->to_fid, res_info->Length );
             if( ret != RS_OK ) {
                 copy_info->errres = info;
                 return( ret );
             }
-            diff = ALIGN_VALUE( res_info->Length, sizeof(uint_32) );
+            diff = ALIGN_VALUE( res_info->Length, sizeof( uint_32 ) );
             if( diff > res_info->Length ) {
                 /* add the padding */
                 if( RcPadFile( copy_info->to_fid, (size_t)( diff - res_info->Length ) ) ) {
@@ -514,9 +509,9 @@ static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
     copy_info.to_fid = to_fid;
     copy_info.errres = NULL;
     copy_info.file = tmp;       /* for tracking debugging info offset */
-    start_off = ALIGN_VALUE( start_off, sizeof(uint_32) );
+    start_off = ALIGN_VALUE( start_off, sizeof( uint_32 ) );
 
-    if( RCSEEK( to_fid, start_off, SEEK_SET ) == -1 )
+    if( RESSEEK( to_fid, start_off, SEEK_SET ) )
         return( RS_WRITE_ERROR );
     if( !writebyfile ) {
         copy_info.curres = NULL;
@@ -524,7 +519,7 @@ static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
         *errres = copy_info.errres;
     } else {
         ret = RS_OK;
-        while( resfiles != NULL ) {
+        for( ; resfiles != NULL; resfiles = resfiles->next ) {
             copy_info.curres = resfiles;
             if( resfiles->IsOpen ) {
                 tmpopened = false;
@@ -548,7 +543,6 @@ static RcStatus copyPEResources( ExeFileInfo *tmp, ResFileInfo *resfiles,
                 *errres = resfiles;
                 break;
             }
-            resfiles = resfiles->next;
         }
     }
     return( ret );
@@ -563,12 +557,11 @@ static RcStatus writeDirEntry( PEResDirEntry *entry, WResFileID fid )
 {
     int     child_num;
 
-    if( RCWRITE( fid, &entry->Head, sizeof(resource_dir_header) ) != sizeof(resource_dir_header) )
+    if( RESWRITE( fid, &entry->Head, sizeof( resource_dir_header ) ) != sizeof( resource_dir_header ) )
         return( RS_WRITE_ERROR );
 
-    for( child_num = 0; child_num < entry->Head.num_name_entries +
-                    entry->Head.num_id_entries; child_num++ ) {
-        if( RCWRITE( fid, entry->Children + child_num, sizeof(resource_dir_entry) ) != sizeof(resource_dir_entry) ) {
+    for( child_num = 0; child_num < entry->Head.num_name_entries + entry->Head.num_id_entries; child_num++ ) {
+        if( RESWRITE( fid, entry->Children + child_num, sizeof( resource_dir_entry ) ) != sizeof( resource_dir_entry ) ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -583,7 +576,7 @@ static RcStatus writeDirEntry( PEResDirEntry *entry, WResFileID fid )
 static RcStatus writeDataEntry( PEResDataEntry * entry, WResFileID fid )
 /**********************************************************************/
 {
-    if( RCWRITE( fid, &entry->Entry, sizeof(resource_entry) ) != sizeof(resource_entry) )
+    if( RESWRITE( fid, &entry->Entry, sizeof( resource_entry ) ) != sizeof( resource_entry ) )
         return( RS_WRITE_ERROR );
     return( RS_OK );
 } /* writeDataEntry */
@@ -611,8 +604,7 @@ static RcStatus setDataEntry( PEResEntry *entry, void *_info )
             entry->u.Data.Entry.size = langinfo->Length;
             entry->u.Data.Entry.code_page = 0;    /* should this be the UNICODE page*/
             entry->u.Data.Entry.rsvd = 0;
-            *info->rva = *info->rva +
-                        ALIGN_VALUE( langinfo->Length, sizeof(uint_32) );
+            *info->rva = *info->rva + ALIGN_VALUE( langinfo->Length, sizeof( uint_32 ) );
         }
     }
     return( RS_OK );
@@ -622,15 +614,13 @@ static RcStatus setDataEntry( PEResEntry *entry, void *_info )
  * writeEntry-
  * NB when an error occurs this function MUST return without altering errno
  */
-static RcStatus writeEntry( PEResEntry * entry, void *_fid )
-/**********************************************************/
+static RcStatus writeEntry( PEResEntry *entry, void *fid )
+/********************************************************/
 {
-    WResFileID *fid = _fid;
-
     if( entry->IsDirEntry ) {
-        return( writeDirEntry( &entry->u.Dir, *fid ) );
+        return( writeDirEntry( &entry->u.Dir, *(WResFileID *)fid ) );
     } else {
-        return( writeDataEntry( &entry->u.Data, *fid ) );
+        return( writeDataEntry( &entry->u.Data, *(WResFileID *)fid ) );
     }
 } /* writeEntry */
 
@@ -638,12 +628,12 @@ static RcStatus writeEntry( PEResEntry * entry, void *_fid )
  * writeDirectory
  * NB when an error occurs this function MUST return without altering errno
  */
-static RcStatus writeDirectory( PEResDir * dir, WResFileID fid )
-/**************************************************************/
+static RcStatus writeDirectory( PEResDir *dir, WResFileID fid )
+/*************************************************************/
 {
     RcStatus    ret;
 
-    if( RCSEEK( fid, dir->ResOffset, SEEK_SET ) == -1 )
+    if( RESSEEK( fid, dir->ResOffset, SEEK_SET ) )
         return( RS_WRITE_ERROR );
 
     /* write the root entry header */
@@ -656,7 +646,7 @@ static RcStatus writeDirectory( PEResDir * dir, WResFileID fid )
         return( ret );
 
     if( dir->String.StringBlock != 0 ) {
-        if( RCWRITE( fid, dir->String.StringBlock, dir->String.StringBlockSize ) != dir->String.StringBlockSize ) {
+        if( RESWRITE( fid, dir->String.StringBlock, dir->String.StringBlockSize ) != dir->String.StringBlockSize ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -679,7 +669,7 @@ static void FreeSubDir( PEResDirEntry * subdir )
         }
     }
 
-    RCFREE( subdir->Children );
+    RESFREE( subdir->Children );
 }
 
 static void FreePEResDir( PEResDir * dir )
@@ -687,9 +677,9 @@ static void FreePEResDir( PEResDir * dir )
 {
     FreeSubDir( &dir->Root );
     if( dir->String.StringBlock != NULL )
-        RCFREE( dir->String.StringBlock );
+        RESFREE( dir->String.StringBlock );
     if( dir->String.StringList != NULL ) {
-        RCFREE( dir->String.StringList );
+        RESFREE( dir->String.StringList );
     }
 }
 
@@ -700,10 +690,10 @@ extern bool RcPadFile( WResFileID fid, size_t pad )
     char        zero = 0;
 
     if( pad > 0 ) {
-        if( RCSEEK( fid, pad - 1, SEEK_CUR ) == -1 ) {
+        if( RESSEEK( fid, pad - 1, SEEK_CUR ) ) {
             return( true );
         }
-        if( RCWRITE( fid, &zero, 1 ) != 1 )  {
+        if( RESWRITE( fid, &zero, 1 ) != 1 )  {
             return( true );
         }
     }
@@ -720,7 +710,7 @@ static bool padObject( PEResDir *dir, ExeFileInfo *tmp, long size )
     long        pos;
     long        pad;
 
-    pos = RCTELL( tmp->fid );
+    pos = RESTELL( tmp->fid );
     if( pos == -1 )
         return( true );
     pad = dir->ResOffset + size - pos;
@@ -732,11 +722,11 @@ static bool padObject( PEResDir *dir, ExeFileInfo *tmp, long size )
 #if( 0)
     char        zero=0;
 
-    if( RCSEEK( tmp->fid, dir->ResOffset, SEEK_SET ) == -1 )
+    if( RESSEEK( tmp->fid, dir->ResOffset, SEEK_SET ) )
         return( true );
-    if( RCSEEK( tmp->fid, size-1, SEEK_CUR ) == -1 )
+    if( RESSEEK( tmp->fid, size - 1, SEEK_CUR ) )
         return( true );
-    if( RCWRITE( tmp->fid, &zero, 1 ) != 1 )
+    if( RESWRITE( tmp->fid, &zero, 1 ) != 1 )
         return( true );
     CheckDebugOffset( tmp );
     return( false );
@@ -759,25 +749,6 @@ static void fillResourceObj( pe_object *res_obj, PEResDir *dir,
     res_obj->flags = PE_OBJ_INIT_DATA | PE_OBJ_READABLE;
 }
 
-// merge the directories of all the res files into one large directory
-// stored on the first resfileinfo node
-static bool mergeDirectory( ResFileInfo *resfiles, WResMergeError **errs )
-/***********************************************************************/
-{
-    ResFileInfo         *cur;
-
-    if( errs != NULL )
-        *errs = NULL;
-    if( resfiles == NULL )
-        return( false );
-    for( cur = resfiles->next; cur != NULL; cur = cur->next ) {
-        if( WResMergeDirs( resfiles->Dir, cur->Dir, errs ) ) {
-            return( true );
-        }
-    }
-    return( false );
-}
-
 static void setDataOffsets( PEResDir *dir, unsigned_32 *curr_rva,
                                 ResFileInfo *resfiles, bool writebyfile )
 /****************************************************************/
@@ -786,10 +757,9 @@ static void setDataOffsets( PEResDir *dir, unsigned_32 *curr_rva,
 
     cookie.rva = curr_rva;
     if( writebyfile ) {
-        while( resfiles != NULL ) {
+        for( ; resfiles != NULL; resfiles = resfiles->next ) {
             cookie.curfile = resfiles;
             traverseTree( dir, &cookie, setDataEntry );
-            resfiles = resfiles->next;
         }
     } else {
         cookie.curfile = NULL;
@@ -832,7 +802,7 @@ bool BuildPEResourceObject( ExeFileInfo *exe, ResFileInfo *resinfo,
 
     dir = &exe->u.PEInfo.Res;
 
-    mergeDirectory( resinfo, &errs );
+    MergeDirectory( resinfo, &errs );
     if( errs != NULL ) {
         reportDuplicateResources( errs );
         WResFreeMergeErrors( errs );

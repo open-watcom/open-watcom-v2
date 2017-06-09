@@ -33,7 +33,7 @@
 #include "cgstd.h"
 #include "coderep.h"
 #include "regset.h"
-#include "conflict.h"
+#include "confldef.h"
 #include "cfloat.h"
 #include "makeins.h"
 #include "namelist.h"
@@ -44,11 +44,10 @@
 #include "optab.h"
 #include "inssegs.h"
 #include "revcond.h"
+#include "conflict.h"
 
 
-extern  conflict_node   *NameConflict(instruction*,name*);
 extern  void            CheckCC(instruction*,instruction*);
-extern  void            MarkPossible(instruction*,name*,reg_set_index);
 
 type_class_def  HalfClass[] = {
     0,                  /* U1 */
@@ -70,67 +69,68 @@ type_class_def  HalfClass[] = {
 type_class_def  DoubleClass[] = {
 /*******************************/
 
-    U2,                 /* U1*/
-    I2,                 /* I1*/
-    U4,                 /* U2*/
-    I4,                 /* I2*/
-    U8,                 /* U4*/
-    I8,                 /* I4*/
-    XX,                 /* U8*/
-    XX,                 /* I8*/
-    0,                  /* CP*/
-    0,                  /* PT*/
-    0,                  /* FS*/
-    0,                  /* FD*/
-    XX                  /* XX*/
+    U2,                 /* U1 */
+    I2,                 /* I1 */
+    U4,                 /* U2 */
+    I4,                 /* I2 */
+    U8,                 /* U4 */
+    I8,                 /* I4 */
+    XX,                 /* U8 */
+    XX,                 /* I8 */
+    0,                  /* CP */
+    0,                  /* PT */
+    0,                  /* FS */
+    0,                  /* FD */
+    0,                  /* FL */
+    XX                  /* XX */
 };
 
 type_class_def  Unsigned[] = {
 /****************************/
 
-    U1,                 /* U1*/
-    U1,                 /* I1*/
-    U2,                 /* U2*/
-    U2,                 /* I2*/
-    U4,                 /* U4*/
-    U4,                 /* I4*/
-    U8,                 /* U8*/
-    U8,                 /* U8*/
+    U1,                 /* U1 */
+    U1,                 /* I1 */
+    U2,                 /* U2 */
+    U2,                 /* I2 */
+    U4,                 /* U4 */
+    U4,                 /* I4 */
+    U8,                 /* U8 */
+    U8,                 /* U8 */
 #if _TARGET & _TARG_370
-    U4,                 /* CP*/
-    U4,                 /* PT*/
+    U4,                 /* CP */
+    U4,                 /* PT */
 #else
-    CP,                 /* CP*/
-    PT,                 /* PT*/
+    CP,                 /* CP */
+    PT,                 /* PT */
 #endif
-    FS,                 /* FS*/
-    FD,                 /* FD*/
-    FL,                 /* FL*/
-    XX                  /* XX*/
+    FS,                 /* FS */
+    FD,                 /* FD */
+    FL,                 /* FL */
+    XX                  /* XX */
 };
 
 type_class_def  Signed[] = {
 /**************************/
 
-    I1,                 /* U1*/
-    I1,                 /* I1*/
-    I2,                 /* U2*/
-    I2,                 /* I2*/
-    I4,                 /* U4*/
-    I4,                 /* I4*/
-    I8,                 /* U8*/
-    I8,                 /* I8*/
+    I1,                 /* U1 */
+    I1,                 /* I1 */
+    I2,                 /* U2 */
+    I2,                 /* I2 */
+    I4,                 /* U4 */
+    I4,                 /* I4 */
+    I8,                 /* U8 */
+    I8,                 /* I8 */
 #if _TARGET & _TARG_370
-    I4,                 /* CP*/
-    I4,                 /* PT*/
+    I4,                 /* CP */
+    I4,                 /* PT */
 #else
-    CP,                 /* CP*/
-    PT,                 /* PT*/
+    CP,                 /* CP */
+    PT,                 /* PT */
 #endif
-    FS,                 /* FS*/
-    FD,                 /* FD*/
-    FL,                 /* FL*/
-    XX                  /* XX*/
+    FS,                 /* FS */
+    FD,                 /* FD */
+    FL,                 /* FL */
+    XX                  /* XX */
 };
 
 static  reg_set_index   ResultPossible( instruction *ins )
@@ -380,12 +380,16 @@ static  bool    CanUseOp1( instruction *ins, name *op1 )
 {
     name        *name2;
 
-    if( op1->n.class != N_REGISTER ) return( false );
-    if( HW_Ovlap( op1->r.reg, ins->head.next->head.live.regs ) ) return( false );
+    if( op1->n.class != N_REGISTER )
+        return( false );
+    if( HW_Ovlap( op1->r.reg, ins->head.next->head.live.regs ) )
+        return( false );
     if( ins->result->n.class == N_INDEXED ) {
         name2 = ins->result->i.index;
         if( name2->n.class == N_REGISTER ) {
-            if( HW_Ovlap( name2->r.reg, op1->r.reg ) ) return( false );
+            if( HW_Ovlap( name2->r.reg, op1->r.reg ) ) {
+                return( false );
+            }
         }
     }
     return( true );

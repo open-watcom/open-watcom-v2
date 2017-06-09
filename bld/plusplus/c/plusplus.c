@@ -68,6 +68,8 @@
 #include "clibint.h"
 
 
+#define DEFAULT_PREINCLUDE_FILE     "_preincl.h"
+
 enum {
     WPP_WARNINGS        = 0x01,                 /* only if -we is on */
     WPP_ERRORS          = 0x02,
@@ -141,44 +143,45 @@ static void OpenPgmFile(        // OPEN PROGRAM FILE
 }
 
 
-int OpenSrcFile(                // OPEN A SOURCE FILE
+bool OpenSrcFile(               // OPEN A SOURCE FILE
     const char * filename,      // - file name
-    bool is_lib )               // - true ==> is <file>
+    src_file_type typ )         // - source file type
+                                // return: true ==> opened ok
 {
-    bool        retb;           // - return: true ==> opened ok
-    int         save;           // - saved pre-proc status
+    bool        save;           // - saved pre-proc status
+    bool        is_lib;
+
+    is_lib = ( typ == FT_LIBRARY );
 
     // See if there's an alias for this file name
     filename = IAliasLookup( filename, is_lib );
 
-    if( IoSuppOpenSrc( filename, is_lib ? FT_LIBRARY : FT_HEADER ) ) {
+    if( IoSuppOpenSrc( filename, typ ) ) {
         PpStartFile();
-        retb = true;
-    } else {
-        save = CompFlags.cpp_output;
-        if( CompFlags.cpp_output ) {
-            PrtChar( PreProcChar );
-            PrtString( "include ");
-            if( is_lib ) {
-                PrtChar( '<' );
-            } else {
-                PrtChar( '"' );
-            }
-            PrtString( filename );
-            if( is_lib ) {
-                PrtChar( '>' );
-            } else {
-                PrtChar( '"' );
-            }
-            CompFlags.cpp_output = 0;
-        }
-        if( !CompFlags.ignore_fnf ) {
-            CErr2p( ERR_CANT_OPEN_FILE, filename );
-        }
-        CompFlags.cpp_output = save;
-        retb = CompFlags.ignore_fnf;
+        return( true );
     }
-    return( retb );
+    save = CompFlags.cpp_output;
+    if( CompFlags.cpp_output ) {
+        PrtChar( PreProcChar );
+        PrtString( "include ");
+        if( is_lib ) {
+            PrtChar( '<' );
+        } else {
+            PrtChar( '"' );
+        }
+        PrtString( filename );
+        if( is_lib ) {
+            PrtChar( '>' );
+        } else {
+            PrtChar( '"' );
+        }
+        CompFlags.cpp_output = false;
+    }
+    if( !CompFlags.ignore_fnf ) {
+        CErr2p( ERR_CANT_OPEN_FILE, filename );
+    }
+    CompFlags.cpp_output = save;
+    return( false );
 }
 
 
@@ -229,8 +232,7 @@ static void openForceIncludeFile( void )
     if( CompFlags.cpp_output ) {
         PrtChar( '\n' );
     }
-    InitialMacroFlag = MFLAG_NONE;
-    OpenSrcFile( ForceInclude, false );
+    OpenSrcFile( ForceInclude, FT_HEADER_FORCED );
     CMemFreePtr( &ForceInclude );
 }
 
@@ -244,6 +246,26 @@ static void setForceIncludeFromEnv( void )
     } else {
         ForceInclude = NULL;
     }
+}
+
+static bool openForcePreIncludeFile( void )
+{
+    bool    ok;
+
+    CtxSetCurrContext( CTX_FORCED_INCS );
+    if( CompFlags.cpp_output ) {
+        PrtChar( '\n' );
+    }
+    CompFlags.ignore_fnf = true;
+    ok = OpenSrcFile( ForcePreInclude, FT_HEADER_PRE );
+    CompFlags.ignore_fnf = false;
+    CMemFreePtr( &ForcePreInclude );
+    return( ok );
+}
+
+static void setForcePreInclude( void )
+{
+    ForcePreInclude = strsave( DEFAULT_PREINCLUDE_FILE );
 }
 
 static int doCCompile(          // COMPILE C++ PROGRAM
@@ -263,14 +285,14 @@ static int doCCompile(          // COMPILE C++ PROGRAM
     } else {
         ScanInit();
         setForceIncludeFromEnv();
+        setForcePreInclude();
         if( flags.batch_cmds ) {
             CompFlags.batch_file_processing = true;
             CompFlags.banner_printed = true;
         }
         if( parseCmdLine( argv ) ) {
             exit_status |= WPP_WARNINGS;
-        } else if( CompFlags.batch_file_primary
-                && ! CompFlags.batch_file_processing ) {
+        } else if( CompFlags.batch_file_primary && !CompFlags.batch_file_processing ) {
             if( CompFlags.batch_file_eof ) {
                 exit_status |= WPP_ERRORS;
             } else {
@@ -282,12 +304,9 @@ static int doCCompile(          // COMPILE C++ PROGRAM
             exit_status |= WPP_ERRORS;
         } else {
             ErrFileErase();
-            if( ! CompFlags.quiet_mode ) {
-                if( CompFlags.batch_file_processing
-                 || CompInfo.compfile_max != 1 ) {
-                    MsgDisplayLineArgs( "Compiling: "
-                                      , WholeFName
-                                      , NULL );
+            if( !CompFlags.quiet_mode ) {
+                if( CompFlags.batch_file_processing || CompInfo.compfile_max != 1 ) {
+                    MsgDisplayLineArgs( "Compiling: ", WholeFName, NULL );
                 }
             }
             if( 0 < ErrCount ) {
@@ -303,15 +322,14 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 CtxSetCurrContext( CTX_SOURCE );
                 ExitPointAcquire( cpp_preproc );
                 ExitPointAcquire( cpp_preproc_only );
-                CompFlags.ignore_fnf = true;
                 CompFlags.cpp_output = false;
-                if( !CompFlags.disable_ialias ) {
-                    OpenSrcFile( "_ialias.h", true );
-                    PpParse();
-                    SrcFileClose( true );
+                if( ForcePreInclude != NULL ) {
+                    if( openForcePreIncludeFile() ) {
+                        PpParse();
+                        SrcFileClose( true );
+                    }
                 }
                 CompFlags.cpp_output = true;
-                CompFlags.ignore_fnf = false;
                 if( ForceInclude != NULL ) {
                     EmitLine( 1, WholeFName );
                     openForceIncludeFile();
@@ -329,11 +347,9 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 ExitPointAcquire( cpp_analysis );
                 CgFrontModInitInit();       // must be before pchdr read point
                 CompFlags.watch_for_pcheader = false;
-                CompFlags.ignore_fnf = true;
-                if( !CompFlags.disable_ialias ) {
-                    OpenSrcFile( "_ialias.h", true );
+                if( ForcePreInclude != NULL ) {
+                    openForcePreIncludeFile();
                 }
-                CompFlags.ignore_fnf = false;
                 if( CompFlags.use_pcheaders ) {
                     // getting the first token should involve opening
                     // the first #include if there are no definitions
@@ -342,24 +358,24 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                 }
                 if( ForceInclude != NULL ) {
                     openForceIncludeFile();
-                    DbgVerify( ! CompFlags.watch_for_pcheader,
+                    DbgVerify( !CompFlags.watch_for_pcheader,
                         "force include file wasn't used for PCH" );
                 }
                 NextToken();
                 CompFlags.watch_for_pcheader = false;
-                CompFlags.external_defn_found = 0;
+                CompFlags.external_defn_found = false;
                 ParseDecls();
                 CtxSetCurrContext( CTX_ENDFILE );
                 ModuleInitFini();
                 ScopeEndFileScope();
-                #ifndef NDEBUG
-                    if( PragDbgToggle.dump_scopes ) {
-                        DumpScopes();
-                    }
-                    if( PragDbgToggle.dump_hash ) {
-                        DumpHashStats();
-                    }
-                #endif
+#ifndef NDEBUG
+                if( PragDbgToggle.dump_scopes ) {
+                    DumpScopes();
+                }
+                if( PragDbgToggle.dump_hash ) {
+                    DumpHashStats();
+                }
+#endif
                 PragmaExtrefsValidate();
                 BrinfWrite();
                 ExitPointRelease( cpp_analysis );
@@ -380,9 +396,9 @@ static int doCCompile(          // COMPILE C++ PROGRAM
                         AdDump();
                         AdClose( false );
                     }
-                }
-                else
+                } else {
                     AdClose( true );
+                }
                 CtxSetCurrContext( CTX_FINI );
                 ExitPointRelease( cpp_object );
             }
@@ -399,11 +415,11 @@ static int doCCompile(          // COMPILE C++ PROGRAM
 static void initCompFlags( void )
 {
     struct {
-        unsigned ignore_environment : 1;
-        unsigned ignore_current_dir : 1;
-        unsigned ide_cmd_line       : 1;
-        unsigned ide_console_output : 1;
-        unsigned dll_active         : 1;
+        bool    ignore_environment : 1;
+        bool    ignore_current_dir : 1;
+        bool    ide_cmd_line       : 1;
+        bool    ide_console_output : 1;
+        bool    dll_active         : 1;
     } xfer_flags;
 
     #define __save_flag( x ) xfer_flags.x = CompFlags.x;
@@ -451,12 +467,12 @@ static int front_end(           // FRONT-END PROCESSING
         if( CompFlags.ide_console_output ) {
             IoSuppSetLineBuffering( stdout, 256 );
             IoSuppSetLineBuffering( errout, 256 );
-            #if defined(__DOS__)
-            if( ! CompFlags.dll_subsequent ) {
+#if defined(__DOS__)
+            if( !CompFlags.dll_subsequent ) {
                 SrcFileFClose( stdaux );
                 SrcFileFClose( stdprn );
             }
-            #endif
+#endif
         }
         CppAtExit( &resetHandlers );
         SwitchChar = _dos_switch_char();
@@ -484,15 +500,19 @@ static int compileFiles(        // COMPILE FILES
 
     exit_status = 0;
     for( CompInfo.compfile_cur = 1; ; ++CompInfo.compfile_cur ) {
-        CompInfo.compfile_max = 0;
+        CompInfo.compfile_max = false;
         file_status = front_end( argv );
         if( file_status > exit_status ) {
             if( exit_status == WPP_BATCH_FILES ) break;
             exit_status = file_status;
         }
-        if( CompFlags.fatal_error ) break;
-        if( CompFlags.cmdline_error ) break;
-        if( CompInfo.compfile_cur >= CompInfo.compfile_max ) break;
+        if( CompFlags.fatal_error )
+            break;
+        if( CompFlags.cmdline_error )
+            break;
+        if( CompInfo.compfile_cur >= CompInfo.compfile_max ) {
+            break;
+        }
     }
     return exit_status;
 }
@@ -513,10 +533,10 @@ static int compilePrimaryCmd(   // COMPILE PRIMARY CMD LINE
             if( cmd_status > exit_status ) {
                 exit_status = cmd_status;
             }
-            if( CompFlags.batch_file_eof ) break;
+            if( CompFlags.batch_file_eof )
+                break;
             if( exit_status != WPP_SUCCESS ) {
-                if( exit_status == WPP_FATAL
-                 || ! CompFlags.batch_file_continue ) {
+                if( exit_status == WPP_FATAL || !CompFlags.batch_file_continue ) {
                     CmdLnBatchAbort();
                     break;
                 }

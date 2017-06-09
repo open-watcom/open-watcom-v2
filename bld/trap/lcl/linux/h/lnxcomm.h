@@ -337,7 +337,11 @@ extern char         *dbg_strcpy( pid_t pid, char *, const char * );
 extern int          SplitParms( char *p, const char **args, unsigned len );
 
 /* Copy of parent's environment */
-extern char     **dbg_environ;
+#if !defined( BUILTIN_TRAP_FILE )
+extern char         **dbg_environ;
+#else
+#define dbg_environ environ
+#endif
 
 /* Global variables */
 extern pid_t    pid;

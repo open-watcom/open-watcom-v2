@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -98,7 +98,7 @@ static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR
     HANDLE              h;
 
     if( dirp->d_first != _DIR_CLOSED ) {
-        FindClose( DIR_HANDLE_OF( dirp ) );
+        FindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) );
         dirp->d_first = _DIR_CLOSED;
     }
     h = __lib_FindFirstFile( dirname, &ffb );
@@ -106,7 +106,7 @@ static DIR_TYPE *__F_NAME(___opendir,___wopendir)( const CHAR_TYPE *dirname, DIR
         __set_errno_nt();
         return( NULL );
     }
-    DIR_HANDLE_OF( dirp ) = h;
+    DTAXXX_HANDLE_OF( dirp->d_dta ) = h;
     __GetNTDirInfo( dirp, &ffb );
     dirp->d_first = _DIR_ISFIRST;
     return( dirp );
@@ -146,7 +146,7 @@ static DIR_TYPE *__F_NAME(__opendir,__wopendir)( const CHAR_TYPE *dirname )
     }
     dirp = lib_malloc( sizeof( DIR_TYPE ) );
     if( dirp == NULL ) {
-        FindClose( DIR_HANDLE_OF( &tmp ) );
+        FindClose( DTAXXX_HANDLE_OF( tmp.d_dta ) );
         __set_errno_dos( ERROR_NOT_ENOUGH_MEMORY );
         return( NULL );
     }
@@ -172,7 +172,7 @@ _WCRTLINK DIRENT_TYPE *__F_NAME(readdir,_wreaddir)( DIR_TYPE *dirp )
     if( dirp->d_first == _DIR_ISFIRST ) {
         dirp->d_first = _DIR_NOTFIRST;
     } else {
-        if( !__lib_FindNextFile( DIR_HANDLE_OF( dirp ), &ffd ) ) {
+        if( !__lib_FindNextFile( DTAXXX_HANDLE_OF( dirp->d_dta ), &ffd ) ) {
             err = GetLastError();
             if( err != ERROR_NO_MORE_FILES ) {
                 __set_errno_dos( err );
@@ -192,7 +192,7 @@ _WCRTLINK int __F_NAME(closedir,_wclosedir)( DIR_TYPE *dirp )
     if( dirp == NULL || dirp->d_first == _DIR_CLOSED ) {
         return( __set_errno_dos( ERROR_INVALID_HANDLE ) );
     }
-    if( !FindClose( DIR_HANDLE_OF( dirp ) ) ) {
+    if( !FindClose( DTAXXX_HANDLE_OF( dirp->d_dta ) ) ) {
         return( __set_errno_nt() );
     }
     dirp->d_first = _DIR_CLOSED;

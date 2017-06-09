@@ -357,7 +357,8 @@ static  void    MemSetType( a_window *wnd, unsigned idx )
 
 static  bool    CanModify( a_window *wnd, int row, int piece )
 {
-    piece = piece;
+    /* unused parameters */ (void)piece;
+
     if( row < 0 )
         return( false );
     if( WndMem( wnd )->file )
@@ -957,7 +958,8 @@ static bool MemEventProc( a_window * wnd, gui_event gui_ev, void *parm )
     mem_window      *mem;
     int             i;
 
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     mem = WndMem( wnd );
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:

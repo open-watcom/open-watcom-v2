@@ -2001,7 +2001,7 @@ Type will be a dealiased type.
 :DD.The value of TRUE.
 This is normally 1.
 :eDL.
-.section char FEMoreMem( unsigned size )
+.section char FEMoreMem( size_t size )
 :I1.FEMoreMem
 :P.Release memory for the back end to use.
 :DL.

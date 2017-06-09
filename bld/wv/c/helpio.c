@@ -86,7 +86,8 @@ HELPIO int HelpAccess( const char *path, int mode )
     file_handle fh;
     int         rc;
 
-    mode=mode;
+    /* unused parameters */ (void)mode;
+
     fh = FileOpen( path, OP_READ );
     rc = -1;
     if( fh != NIL_HANDLE ) {
@@ -98,13 +99,15 @@ HELPIO int HelpAccess( const char *path, int mode )
 
 HELPIO char *HelpGetCWD( char *buf, int size )
 {
-    size=size;
+    /* unused parameters */ (void)size;
+
     buf[0] = NULLCHAR;
     return( buf );
 }
 
 HELPIO void HelpSearchEnv( const char *name, const char *env_var, char *buf )
 {
-    name=name;env_var=env_var;
+    /* unused parameters */ (void)name; (void)env_var;
+
     buf[0] = NULLCHAR;
 }

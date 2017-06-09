@@ -30,10 +30,9 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
+#include "commonui.h"
 #include <stdlib.h>
 #include <string.h>
-
 #include "watcom.h"
 #include "wrglbl.h"
 #include "wrinfoi.h"
@@ -120,21 +119,15 @@ void WRAPI WRFreeWResDirData( WResDir dir )
         return;
     }
 
-    tnode = dir->Head;
-    while( tnode != NULL ) {
-        rnode = tnode->Head;
-        while( rnode != NULL ) {
-            lnode = rnode->Head;
-            while( lnode != NULL ) {
+    for( tnode = dir->Head; tnode != NULL; tnode = tnode->Next ) {
+        for( rnode = tnode->Head; rnode != NULL; rnode = rnode->Next ) {
+            for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
                 if( lnode->data != NULL ) {
                     MemFree( lnode->data );
                     lnode->data = NULL;
                 }
-                lnode = lnode->Next;
             }
-            rnode = rnode->Next;
         }
-        tnode = tnode->Next;
     }
 }
 
@@ -150,27 +143,20 @@ int WRAPI WRCountZeroLengthResources( WResDir dir )
     }
 
     count = 0;
-
-    tnode = dir->Head;
-    while( tnode != NULL ) {
-        rnode = tnode->Head;
-        while( rnode != NULL ) {
-            lnode = rnode->Head;
-            while( lnode != NULL ) {
+    for( tnode = dir->Head; tnode != NULL; tnode = tnode->Next ) {
+        for( rnode = tnode->Head; rnode != NULL; rnode = rnode->Next ) {
+            for( lnode = rnode->Head; lnode != NULL; lnode = lnode->Next ) {
                 if( lnode->Info.Length == 0 ) {
                     count++;
                 }
-                lnode = lnode->Next;
             }
-            rnode = rnode->Next;
         }
-        tnode = tnode->Next;
     }
 
     return( count );
 }
 
-static int WRRelinkDir( WResDir dest, WResDir src )
+static bool WRRelinkDir( WResDir dest, WResDir src )
 {
     WResLangType    lt;
     WResTypeNode    *dtnode;
@@ -181,11 +167,11 @@ static int WRRelinkDir( WResDir dest, WResDir src )
     WResLangNode    *slnode;
 
     if( dest == NULL || src == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     if( dest->NumTypes != src->NumTypes || dest->NumResources != src->NumResources ) {
-        return( FALSE );
+        return( false );
     }
 
     dtnode = dest->Head;
@@ -224,7 +210,7 @@ static int WRRelinkDir( WResDir dest, WResDir src )
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
 // We really should not reread the file but, alas, time demands

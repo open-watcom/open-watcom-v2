@@ -34,11 +34,11 @@
 #include "wio.h"
 #include "global.h"
 #include "rcstrblk.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "os2res.h"
-#include "wrmergdi.h"
 #include "rcrtns.h"
 #include "rccore.h"
+#include "mergedir.h"
 #include "exeutil.h"
 #include "exereslx.h"
 
@@ -78,7 +78,7 @@ static bool addRes( LXResTable *res, WResDirWindow wind )
         LXResEntry      *curr_table;
 
         curr_table = res->resources;
-        res->resources = RCREALLOC( res->resources, (res->res_count + 32) * sizeof( LXResEntry ) );
+        res->resources = RCREALLOC( res->resources, ( res->res_count + 32 ) * sizeof( LXResEntry ) );
         if( res->resources == NULL ) {
             res->resources = curr_table;
             return( true );
@@ -149,26 +149,6 @@ static void reportDuplicateResources( WResMergeError *errs )
 }
 
 
-// merge the directories of all the res files into one large directory
-// stored on the first resfileinfo node
-static bool mergeDirectory( ResFileInfo *resfiles, WResMergeError **errs )
-/************************************************************************/
-{
-    ResFileInfo         *cur;
-
-    if( errs != NULL )
-        *errs = NULL;
-    if( resfiles == NULL )
-        return( false );
-    for( cur = resfiles->next; cur != NULL; cur = cur->next ) {
-        if( WResMergeDirs( resfiles->Dir, cur->Dir, errs ) ) {
-            return( true );
-        }
-    }
-    return( false );
-}
-
-
 RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
 /********************************************************************/
 {
@@ -229,11 +209,11 @@ RcStatus WriteLXResourceObjects( ExeFileInfo *exe, ResFileInfo *info )
         entry->resource.object += exe->u.LXInfo.FirstResObj + 1;
 
         // Copy resource data
-        if( RCSEEK( exe->fid, file_offset, SEEK_SET ) == -1 )
+        if( RESSEEK( exe->fid, file_offset, SEEK_SET ) )
             return( RS_WRITE_ERROR );
 
         res_info = WResGetLangInfo( entry->wind );
-        if( RCSEEK( info->fid, res_info->Offset, SEEK_SET ) == -1 )
+        if( RESSEEK( info->fid, res_info->Offset, SEEK_SET ) )
             return( RS_READ_ERROR );
 
         ret = CopyExeData( info->fid, exe->fid, res_info->Length );
@@ -285,11 +265,11 @@ bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
     unsigned_32     curr_total;
     unsigned_32     curr_offset;
 
-    res_obj = res_obj; rva = rva; offset = offset; writebyfile = writebyfile;
+    /* unused parameters */ (void)res_obj; (void)rva; (void)offset; (void)writebyfile;
 
     dir = &exeinfo->u.LXInfo.Res;
 
-    mergeDirectory( resinfo, &errs );
+    MergeDirectory( resinfo, &errs );
     if( errs != NULL ) {
         reportDuplicateResources( errs );
         WResFreeMergeErrors( errs );
@@ -319,9 +299,8 @@ bool BuildLXResourceObjects( ExeFileInfo *exeinfo, ResFileInfo *resinfo,
         res_size = ALIGN_VALUE( entry->resource.res_size, sizeof( uint_32 ) );
         total += res_size;
         curr_total += res_size;
-        while( curr_total > OSF_DEF_PAGE_SIZE ) {
+        for( ; curr_total > OSF_DEF_PAGE_SIZE; curr_total -= OSF_DEF_PAGE_SIZE ) {
             dir->num_pages++;
-            curr_total -= OSF_DEF_PAGE_SIZE;
         }
 
 #ifndef NDEBUG

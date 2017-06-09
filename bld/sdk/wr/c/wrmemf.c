@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#define INCLUDE_COMMDLG_H
 #include <wwindows.h>
 #include "watcom.h"
 #include "wrglbl.h"
@@ -38,6 +39,8 @@
 #include "memflags.h"
 #include "jdlg.h"
 #include "winexprt.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -47,15 +50,15 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct WRMFInfo {
-    FARPROC     hcb;
-    uint_16     mflags;
-    char        *name;
+    HELP_CALLBACK   help_callback;
+    uint_16         mflags;
+    char            *name;
 } WRMFInfo;
 
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT extern BOOL CALLBACK WRMemFlagsProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT extern INT_PTR CALLBACK WRMemFlagsDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -67,10 +70,10 @@ static void         WRGetWinInfo( HWND, WRMFInfo * );
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, FARPROC hcb )
+bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, HELP_CALLBACK help_callback )
 {
     WRMFInfo    info;
-    DLGPROC     proc;
+    DLGPROC     dlgproc;
     HINSTANCE   inst;
     INT_PTR     modified;
 
@@ -78,16 +81,16 @@ bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, FARPROC h
         return( false );
     }
 
-    info.hcb = hcb;
+    info.help_callback = help_callback;
     info.name = name;
     info.mflags = *mflags;
     inst = WRGetInstance();
 
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)WRMemFlagsProc, inst );
+    dlgproc = MakeProcInstance_DLG( WRMemFlagsDlgProc, inst );
 
-    modified = JDialogBoxParam( inst, "WRMemFlags", parent, proc, (LPARAM)&info );
+    modified = JDialogBoxParam( inst, "WRMemFlags", parent, dlgproc, (LPARAM)(LPVOID)&info );
 
-    FreeProcInstance( (FARPROC)proc );
+    FreeProcInstance_DLG( dlgproc );
 
     if( modified == IDOK ) {
         *mflags = info.mflags;
@@ -99,7 +102,7 @@ bool WRAPI WRChangeMemFlags( HWND parent, char *name, uint_16 *mflags, FARPROC h
 void WRSetWinInfo( HWND hDlg, WRMFInfo *info )
 {
     if( info != NULL ) {
-        SendDlgItemMessage( hDlg, IDM_MFNAME, WM_SETTEXT, 0, (LPARAM)(LPSTR)info->name );
+        SendDlgItemMessage( hDlg, IDM_MFNAME, WM_SETTEXT, 0, (LPARAM)(LPCSTR)info->name );
 
         if( info->mflags & MEMFLAG_MOVEABLE ) {
             CheckDlgButton( hDlg, IDM_MFMV, BST_CHECKED );
@@ -145,12 +148,12 @@ void WRGetWinInfo( HWND hDlg, WRMFInfo *info )
     }
 }
 
-WINEXPORT BOOL CALLBACK WRMemFlagsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WRMemFlagsDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WRMFInfo    *info;
-    BOOL        ret;
+    bool        ret;
 
-    ret = FALSE;
+    ret = false;
 
     switch( message ) {
     case WM_DESTROY:
@@ -162,7 +165,7 @@ WINEXPORT BOOL CALLBACK WRMemFlagsProc( HWND hDlg, UINT message, WPARAM wParam, 
         SET_DLGDATA( hDlg, info );
         WRRegisterDialog( hDlg );
         WRSetWinInfo( hDlg, info );
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_SYSCOLORCHANGE:
@@ -173,8 +176,8 @@ WINEXPORT BOOL CALLBACK WRMemFlagsProc( HWND hDlg, UINT message, WPARAM wParam, 
         switch( LOWORD( wParam ) ) {
         case IDM_MFHELP:
             info = (WRMFInfo *)GET_DLGDATA( hDlg );
-            if( info != NULL && info->hcb != NULL ) {
-                (*info->hcb)();
+            if( info != NULL && info->help_callback != (HELP_CALLBACK)NULL ) {
+                info->help_callback();
             }
             break;
 
@@ -186,12 +189,12 @@ WINEXPORT BOOL CALLBACK WRMemFlagsProc( HWND hDlg, UINT message, WPARAM wParam, 
             } else {
                 EndDialog( hDlg, FALSE );
             }
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDCANCEL:
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
+            ret = true;
             break;
         }
         break;

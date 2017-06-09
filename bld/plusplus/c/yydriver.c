@@ -123,19 +123,19 @@ struct parse_stack {
     REWRITE             *template_record_tokens;
     VSTK_CTL            angle_stack;
     char                *expect;
-    unsigned            no_super_tokens : 1;
-    unsigned            use_saved_tokens : 1;
-    unsigned            favour_reduce : 1;
-    unsigned            favour_shift : 1;
-    unsigned            look_ahead_stack : 1;
-    unsigned            look_ahead_active : 1;
-    unsigned            template_decl : 1;
-    unsigned            template_class_inst_defer : 1;
-    unsigned            special_colon_colon : 1;
-    unsigned            special_gt_gt : 1;
-    unsigned            special_typename : 1;
-    unsigned            template_extern : 1;
-    unsigned            template_instantiate : 1;
+    bool                no_super_tokens             : 1;
+    bool                use_saved_tokens            : 1;
+    bool                favour_reduce               : 1;
+    bool                favour_shift                : 1;
+    bool                look_ahead_stack            : 1;
+    bool                look_ahead_active           : 1;
+    bool                template_decl               : 1;
+    bool                template_class_inst_defer   : 1;
+    bool                special_colon_colon         : 1;
+    bool                special_gt_gt               : 1;
+    bool                special_typename            : 1;
+    bool                template_extern             : 1;
+    bool                template_instantiate        : 1;
 };
 
 typedef struct {
@@ -255,20 +255,20 @@ static void dump_state_stack(const char * label, PARSE_STACK * stack)
 {
     static PARSE_STACK * last_stack = NULL;
 
-    if(stack != last_stack) {
+    if( stack != last_stack ) {
         printf( "===============================================================================\n" );
         printf( "*** PARSE STACK CHANGE *** New: 0x%p Old: 0x%p\n", stack, last_stack );
         printf( "===============================================================================\n" );
         last_stack = stack;
-    }    
-    
-    if(NULL == stack) {
+    }
+
+    if( NULL == stack ) {
         printf( "dump_state_stack: NULL stack\n" );
     } else {
         YYACTIONTYPE *  the_ssp = stack->ssp;
         YYACTIONTYPE *  the_sstack = stack->sstack;
         unsigned        index;
-        
+
         printf( "dump_state_stack \"%s\" (0x%p):\n", label, the_sstack );
         /*
         //  ensure we dump the top of stack (test &(ssp[1]))
@@ -311,7 +311,8 @@ static void parserSuicideHandler( void )
 static void parseInit(          // PARSER INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carveRESTART_PARSE = CarveCreate( sizeof( RESTART_PARSE ), BLOCK_RESTART_PARSE );
     carveVALUE_STACK = CarveCreate( STACK_DEPTH * sizeof( YYSTYPE ), BLOCK_VALUE_STACK );
     carveSTATE_STACK = CarveCreate( STACK_DEPTH * sizeof( YYACTIONTYPE ), BLOCK_STATE_STACK );
@@ -331,7 +332,8 @@ static void parseInit(          // PARSER INITIALIZATION
 static void parseFini(          // PARSER INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     ParseFlush();
     DbgStmt( CarveVerifyAllGone( carveRESTART_PARSE, "RESTART_PARSE" ) );
     DbgStmt( CarveVerifyAllGone( carveVALUE_STACK, "VALUE_STACK" ) );
@@ -534,7 +536,7 @@ static void nextYYLexToken( PARSE_STACK *state )
         if( state->look_ahead_index != state->look_ahead_count ) {
             return;
         }
-        if( ! state->look_ahead_active ) {
+        if( !state->look_ahead_active ) {
             while( state->look_ahead_count != 0 ) {
                 VstkPop( &(state->look_ahead_storage) );
                 state->look_ahead_count--;
@@ -698,7 +700,7 @@ static YYTOKENTYPE scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
     id->u.id.scope = scope;
     yylval.tree = NULL;
     curr = start;
-    for(;;) {
+    for( ;; ) {
         /* CurToken == T_SAVED_ID && LAToken == T_COLON_COLON */
         curr = currBinary( CO_COLON_COLON, curr, id );
         nextRecordedToken( state );
@@ -709,7 +711,7 @@ static YYTOKENTYPE scopedChain( PARSE_STACK *state, PTREE start, PTREE id,
         } else {
             special_template = false;
         }
-        if( ! undefined_scope ) {
+        if( !undefined_scope ) {
             scope = checkColonColon( id, member_lookup, lexical_lookup, special_typename );
             if( scope == NULL ) {
                 undefined_scope = true;
@@ -801,7 +803,7 @@ static YYTOKENTYPE templateScopedChain( PARSE_STACK *state, bool special_typenam
     }
     curr = makeBinary( CO_COLON_COLON, NULL, scope_tree );
     nextRecordedToken( state );
-    for(;;) {
+    for( ;; ) {
         if( CurToken == T_TEMPLATE ) {
             special_template = true;
             nextRecordedToken( state );
@@ -813,7 +815,7 @@ static YYTOKENTYPE templateScopedChain( PARSE_STACK *state, bool special_typenam
             LookPastName();
             /* fall through */
         case T_SAVED_ID:
-            if( ! undefined_scope ) {
+            if( !undefined_scope ) {
                 id = makeId();
                 if( LAToken == T_COLON_COLON ) {
                     adjusted_token = scopedChain( state, curr, id, CH_ALREADY_STARTED, special_typename );
@@ -855,7 +857,7 @@ static YYTOKENTYPE templateScopedChain( PARSE_STACK *state, bool special_typenam
         case T_TILDE:
         case T_ALT_TILDE:
             yylval.tree = makeUnary( CO_TILDE, curr );
-            if( ! undefined_scope ) {
+            if( !undefined_scope ) {
                 state->scope_member = curr->u.subtree[1]->u.id.scope;
             }
             return( Y_TEMPLATE_SCOPED_TILDE );
@@ -1033,7 +1035,7 @@ static YYTOKENTYPE yylex( PARSE_STACK *state )
         LookPastName();
         /* fall through */
     case T_SAVED_ID:
-        if( LAToken == T_COLON_COLON && ! flags.no_super_token ) {
+        if( LAToken == T_COLON_COLON && !flags.no_super_token ) {
             token = scopedChain( state, NULL, makeId(), CH_NULL, flags.special_typename );
         } else {
             token = doId( state->scope_member );
@@ -1094,7 +1096,7 @@ static YYTOKENTYPE yylex( PARSE_STACK *state )
     if( ( token != Y_SCOPED_TILDE ) && ( token != Y_TEMPLATE_SCOPED_TILDE ) ) {
         state->scope_member = NULL;
     }
-    if( ! state->look_ahead_active ) {
+    if( !state->look_ahead_active ) {
         token = specialAngleBracket( state, token );
     }
     currToken = token;
@@ -1525,7 +1527,7 @@ static void pushRestartDecl( PARSE_STACK *state )
     restart->reset_scope = GetCurrScope();
 
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_parse ){
+    if( PragDbgToggle.dump_parse ) {
         printf( "===============================================================================\n" );
         printf( "*** pushRestartDecl: 0x%p 0x%p\n", state, restart );
         printf( "===============================================================================\n" );
@@ -1544,7 +1546,7 @@ static void popRestartDecl( PARSE_STACK *state )
 
     DbgStmt( restart = state->restart );
 #ifndef NDEBUG
-    if( PragDbgToggle.dump_parse ){
+    if( PragDbgToggle.dump_parse ) {
         printf( "===============================================================================\n" );
         printf( "*** popRestartDecl: 0x%p 0x%p\n", state, restart );
         printf( "===============================================================================\n" );
@@ -1684,7 +1686,7 @@ static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, YYACTIONTYPE 
     top_state = ssp[0];
     bit_index = ( t >> 3 );
     mask = 1 << ( t & 0x07 );
-    for(;;) {
+    for( ;; ) {
         if( yybitcheck[bit_index + yybitbase[top_state]] & mask ) {
             raw_action = yyactiontab[t + yyactionbasetab[top_state]];
             if( (raw_action & RAW_REDUCTION) == 0 ) {
@@ -1708,7 +1710,7 @@ static p_action normalYYAction( YYTOKENTYPE t, PARSE_STACK *state, YYACTIONTYPE 
         lhs = yyplhstab[rule];
         top_state = yyactiontab[lhs + yygotobase[ssp[-1]]];
 #ifndef NDEBUG
-        if( PragDbgToggle.dump_parse ) { 
+        if( PragDbgToggle.dump_parse ) {
             printf( "=== Unit reduction. New top state %03u Old state %03u ===\n", top_state, ssp[0] );
         }
 #endif
@@ -1735,7 +1737,7 @@ static void lookAheadShift( PARSE_STACK *state, YYACTIONTYPE new_state, YYTOKENT
         puts( yytoknames[t] );
     }
 #else
-    t = t;
+    /* unused parameters */ (void)t;
 #endif
     /* NYI: should push S::operator qualification but we can't pop it yet */
     state->ssp++;
@@ -1780,7 +1782,7 @@ static la_action lookAheadShiftReduce( YYTOKENTYPE t
     YYACTIONTYPE yyaction;
     unsigned yyk;
 
-    for(;;) {
+    for( ;; ) {
         yyk = *(state->ssp);
         if( yyk == YYAMBIGS0 && t == YYAMBIGT0 ) {
             if( host->favour_shift ) {
@@ -1839,7 +1841,7 @@ static void lookAheadUnsaveToken( PARSE_STACK *state, YYTOKENTYPE tok )
         CFatal( "trying to unsave an unaligned saved token" );
     }
 #else
-    tok = tok;
+    /* unused parameters */ (void)tok;
 #endif
     state->look_ahead_count--;
 }
@@ -1922,8 +1924,8 @@ static YYACTIONTYPE lookAheadYYAction( YYTOKENTYPE t, PARSE_STACK *state, PARSE_
     lookAheadReduce( &look_ahead_decl_state, YYAMBIGR0 );
     lookAheadShiftReduce( t, &look_ahead_decl_state, host );
     ambiguous_left_paren_token = lookAheadSaveToken( host, t );
-    for(;;) {
-        for(;;) {
+    for( ;; ) {
+        for( ;; ) {
             nextYYLexToken( host );
             t = yylex( host );
             lookAheadSaveToken( host, t );
@@ -2014,7 +2016,7 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
         state->kind = curr_##kind;
 
     state->expect = NULL;
-    for(;;) {
+    for( ;; ) {
 #ifndef NDEBUG
         unsigned stackDepth;
 #endif
@@ -2022,7 +2024,7 @@ static p_action doAction( YYTOKENTYPE t, PARSE_STACK *state )
         DbgStmt( if( PragDbgToggle.parser_states ) printf( "parser top state: %u token: 0x%x (%s)\n", yyk, t , yytoknames[t] ); );
         DbgStmt(stackDepth = (state->ssp - &(state->sstack[0])) + 1; );
 
-        /* 
+        /*
         //  DumpStack
         */
 #ifndef NDEBUG
@@ -2343,12 +2345,13 @@ static PTREE genericParseExpr( YYTOKENTYPE tok, TOKEN end_token, MSG_NUM err_msg
     newExprStack( &expr_state, tok );
     syncLocation();
     /* do parse */
-    for(;;) {
+    for( ;; ) {
         do {
             t = yylex( &expr_state );
             what = doAction( t, &expr_state );
         } while( what == P_RELEX );
-        if( what != P_SHIFT ) break;
+        if( what != P_SHIFT )
+            break;
         nextYYLexToken( &expr_state );
     }
     expr_tree = NULL;
@@ -2419,12 +2422,13 @@ DECL_INFO *ParseException( void )
     syncLocation();
     pushDefaultDeclSpec( &except_state );
     /* do parse */
-    for(;;) {
+    for( ;; ) {
         do {
             t = yylex( &except_state );
             what = doAction( t, &except_state );
         } while( what == P_RELEX );
-        if( what != P_SHIFT ) break;
+        if( what != P_SHIFT )
+            break;
         nextYYLexToken( &except_state );
     }
     exception = NULL;
@@ -2461,7 +2465,7 @@ static void parseEpilogue( void )
 {
     /* current token state is end-of-file */
     RtnGenerate();
-    CompFlags.parsing_finished = 1;
+    CompFlags.parsing_finished = true;
 }
 
 void ParseDecls( void )
@@ -2473,11 +2477,11 @@ void ParseDecls( void )
 
     while( CurToken != T_EOF ) {
         /*
-        // We have seen a case where a macro subsitution was returned, leaving 
-        // us with T_BAD_CHAR rather than T_BAD_TOKEN. For now,just die and 
+        // We have seen a case where a macro subsitution was returned, leaving
+        // us with T_BAD_CHAR rather than T_BAD_TOKEN. For now,just die and
         // get the hell out of parsing.
         */
-        if( CurToken == T_BAD_CHAR){
+        if( CurToken == T_BAD_CHAR) {
             CErr1( ERR_SYNTAX );    /* CErr1( BadTokenInfo ); ? */
             break;
         }
@@ -2487,12 +2491,13 @@ void ParseDecls( void )
         pushDefaultDeclSpec( &decl_state );
         do {
             /* do parse */
-            for(;;) {
+            for( ;; ) {
                 do {
                     t = yylex( &decl_state );
                     what = doAction( t, &decl_state );
                 } while( what == P_RELEX );
-                if( what != P_SHIFT ) break;
+                if( what != P_SHIFT )
+                    break;
                 nextYYLexToken( &decl_state );
             }
             if( what > P_SPECIAL ) {
@@ -2538,7 +2543,7 @@ DECL_SPEC *ParseClassInstantiation( REWRITE *defn )
     PTREE       save_tree;
     YYTOKENTYPE save_yytoken;
     unsigned    suppressState;
-    void (*last_source)( void );
+    token_source_fn *last_source;
     auto error_state_t check;
     auto TOKEN_LOCN locn;
 
@@ -2562,12 +2567,13 @@ DECL_SPEC *ParseClassInstantiation( REWRITE *defn )
     last_source = SetTokenSource( RewriteToken );
     last_rewrite = RewriteRewind( defn );
     /* do parse */
-    for(;;) {
+    for( ;; ) {
         do {
             t = yylex( &instantiate_state );
             what = doAction( t, &instantiate_state );
         } while( what == P_RELEX );
-        if( what != P_SHIFT ) break;
+        if( what != P_SHIFT )
+            break;
         nextYYLexToken( &instantiate_state );
     }
     RewriteClose( last_rewrite );
@@ -2596,7 +2602,7 @@ DECL_SPEC *ParseClassInstantiation( REWRITE *defn )
     deleteStack( &instantiate_state );
     LinkagePop();
 
-    SrcFileResetTokenLocn( &locn );
+    SrcFileSetTokenLocn( &locn );
     RewriteRestoreToken( save_token );
     ParseFlush();
     syncLocation();
@@ -2622,7 +2628,7 @@ void ParseClassMemberInstantiation( REWRITE *defn )
     PARSE_STACK instantiate_state;
     p_action    what;
     REWRITE     *last_rewrite;
-    void (*last_source)( void );
+    token_source_fn *last_source;
     auto TOKEN_LOCN locn;
 
     if( defn == NULL ) {
@@ -2637,12 +2643,13 @@ void ParseClassMemberInstantiation( REWRITE *defn )
     last_source = SetTokenSource( RewriteToken );
     last_rewrite = RewriteRewind( defn );
     /* do parse */
-    for(;;) {
+    for( ;; ) {
         do {
             t = yylex( &instantiate_state );
             what = doAction( t, &instantiate_state );
         } while( what == P_RELEX );
-        if( what != P_SHIFT ) break;
+        if( what != P_SHIFT )
+            break;
         nextYYLexToken( &instantiate_state );
     }
     RewriteClose( last_rewrite );
@@ -2665,7 +2672,7 @@ void ParseClassMemberInstantiation( REWRITE *defn )
     }
     deleteStack( &instantiate_state );
     LinkagePop();
-    SrcFileResetTokenLocn( &locn );
+    SrcFileSetTokenLocn( &locn );
     CurToken = T_EOF;
     strcpy( Buffer, Tokens[T_EOF] );
 }
@@ -2677,7 +2684,7 @@ void ParseFunctionInstantiation( REWRITE *defn )
     PARSE_STACK instantiate_state;
     p_action    what;
     REWRITE     *last_rewrite;
-    void (*last_source)( void );
+    token_source_fn *last_source;
     auto TOKEN_LOCN locn;
 
     if( defn == NULL ) {
@@ -2692,12 +2699,13 @@ void ParseFunctionInstantiation( REWRITE *defn )
     last_source = SetTokenSource( RewriteToken );
     last_rewrite = RewriteRewind( defn );
     /* do parse */
-    for(;;) {
+    for( ;; ) {
         do {
             t = yylex( &instantiate_state );
             what = doAction( t, &instantiate_state );
         } while( what == P_RELEX );
-        if( what != P_SHIFT ) break;
+        if( what != P_SHIFT )
+            break;
         nextYYLexToken( &instantiate_state );
     }
     RewriteClose( last_rewrite );
@@ -2720,7 +2728,7 @@ void ParseFunctionInstantiation( REWRITE *defn )
     }
     deleteStack( &instantiate_state );
     LinkagePop();
-    SrcFileResetTokenLocn( &locn );
+    SrcFileSetTokenLocn( &locn );
     CurToken = T_EOF;
     strcpy( Buffer, Tokens[T_EOF] );
 }
@@ -2769,7 +2777,7 @@ DECL_INFO *ReparseFunctionDeclaration( REWRITE *defn )
     REWRITE     *save_token;
     PTREE       save_tree;
     YYTOKENTYPE save_yytoken;
-    void (*last_source)( void );
+    token_source_fn *last_source;
     auto error_state_t check;
     auto TOKEN_LOCN locn;
 
@@ -2800,12 +2808,13 @@ DECL_INFO *ReparseFunctionDeclaration( REWRITE *defn )
     pushDefaultDeclSpec( &decl_state );
 
     /* do parse */
-    for(;;) {
+    for( ;; ) {
         do {
             t = yylex( &decl_state );
             what = doAction( t, &decl_state );
         } while( what == P_RELEX );
-        if( what != P_SHIFT ) break;
+        if( what != P_SHIFT )
+            break;
         nextYYLexToken( &decl_state );
     }
 
@@ -2819,7 +2828,7 @@ DECL_INFO *ReparseFunctionDeclaration( REWRITE *defn )
     deleteStack( &decl_state );
     LinkagePop();
 
-    SrcFileResetTokenLocn( &locn );
+    SrcFileSetTokenLocn( &locn );
     RewriteRestoreToken( save_token );
     ParseFlush();
     syncLocation();
@@ -2852,12 +2861,14 @@ pch_status PCHReadParserData( void )
 
 pch_status PCHInitParserData( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniParserData( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }

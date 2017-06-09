@@ -219,15 +219,15 @@ void GUIXGetWindowColours( gui_window * wnd, gui_colour_set * colours )
 
 bool GUISetRGB( gui_colour colour, gui_rgb rgb )
 {
-    colour = colour;
-    rgb = rgb;
+    /* unused parameters */ (void)colour; (void)rgb;
+
     return( false );
 }
 
 bool GUIGetRGB( gui_colour colour, gui_rgb *rgb )
 {
-    colour = colour;
-    rgb = rgb;
+    /* unused parameters */ (void)colour; (void)rgb;
+
     return( false );
 }
 
@@ -258,7 +258,7 @@ bool GUISetWndColour( gui_window *wnd, gui_attr attr, gui_colour_set *colour_set
 
 bool GUIGetRGBFromUser( gui_rgb rgb, gui_rgb *new_rgb )
 {
-    rgb = rgb;
-    new_rgb = new_rgb;
+    /* unused parameters */ (void)rgb; (void)new_rgb;
+
     return( false );
 }

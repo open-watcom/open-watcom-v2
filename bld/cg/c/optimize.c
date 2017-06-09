@@ -42,12 +42,11 @@
 #include "insutil.h"
 #include "insdead.h"
 #include "score.h"
+#include "conflict.h"
 #include "optimize.h"
 
 
 extern  bool            PropagateMoves(void);
-extern  conflict_node*  FindConflictNode(name*,block*,instruction*);
-extern  void            FreeConflicts(void);
 extern  void            FindReferences(void);
 extern  void            MakeConflicts(void);
 extern  void            MakeLiveInfo(void);
@@ -106,8 +105,10 @@ static  bool    CanReorder( instruction *try, instruction *after ) {
     return try if "try" could be moved past instruction "after"
 */
 
-    if( ReDefinesOps( try, after ) ) return( false );
-    if( ReDefinesOps( after, try ) ) return( false );
+    if( ReDefinesOps( try, after ) )
+        return( false );
+    if( ReDefinesOps( after, try ) )
+        return( false );
     return( true );
 }
 
@@ -120,16 +121,25 @@ static  instruction     *CanMoveAfter( instruction *ins ) {
 
     instruction *next;
 
-    if( _IsntIns( ins, PUSHABLE ) ) return( NULL );
-    if( ins->operands[0] != ins->result ) return( NULL );
-    if( ins->operands[1]->n.class != N_CONSTANT ) return( NULL );
-    if( _IsFloating( ins->type_class ) ) return( NULL );
-    if( _IsFloating( ins->base_type_class ) ) return( NULL );
+    if( _IsntIns( ins, PUSHABLE ) )
+        return( NULL );
+    if( ins->operands[0] != ins->result )
+        return( NULL );
+    if( ins->operands[1]->n.class != N_CONSTANT )
+        return( NULL );
+    if( _IsFloating( ins->type_class ) )
+        return( NULL );
+    if( _IsFloating( ins->base_type_class ) )
+        return( NULL );
     for( next = ins->head.next; next != NULL; next = next->head.next ) {
-        if( _IsntIns( next, SWAPABLE ) ) break;
-        if( CanReorder( ins, next ) == false ) break;
+        if( _IsntIns( next, SWAPABLE ) )
+            break;
+        if( !CanReorder( ins, next ) ) {
+            break;
+        }
     }
-    if( next == ins->head.next ) return( NULL );
+    if( next == ins->head.next )
+        return( NULL );
     return( next );
 }
 
@@ -175,14 +185,19 @@ bool    SameThing( name *x, name *y )
     since they may (probably will) both end up on the 8087 stack.
 */
 {
-    if( x == y ) return( true );
-    if( x == NULL || y == NULL ) return( false );
-    if( FPIsStack( x ) && FPIsStack( y ) ) return( true );
+    if( x == y )
+        return( true );
+    if( x == NULL || y == NULL )
+        return( false );
+    if( FPIsStack( x ) && FPIsStack( y ) )
+        return( true );
     if( x->n.class == N_MEMORY
      && y->n.class == N_MEMORY
-     && x->v.symbol == y->v.symbol ) return( true );
+     && x->v.symbol == y->v.symbol )
+        return( true );
     if( x->n.class == N_TEMP && y->n.class == N_TEMP ) {
-        if( x->t.v.id != y->t.v.id ) return( false );
+        if( x->t.v.id != y->t.v.id )
+            return( false );
         if( (x->t.temp_flags & ALIAS) == 0 && (y->t.temp_flags & ALIAS) == 0 )
             return( false );
         return( true );
@@ -210,8 +225,7 @@ void    DeadTemps( void )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = next ) {
             next = ins->head.next;
-            if( SideEffect( ins ) == false
-             && _IsntIns( ins, SIDE_EFFECT )
+            if( !SideEffect( ins ) && _IsntIns( ins, SIDE_EFFECT )
              && ins->result != NULL
              && ins->result->n.class == N_TEMP
              && ( ins->result->v.usage & (USE_ADDRESS|HAS_MEMORY|USE_WITHIN_BLOCK|USE_IN_ANOTHER_BLOCK) ) == 0 ) {
@@ -232,16 +246,21 @@ static  bool    IsDeadIns( block *blk, instruction *ins, instruction *next )
     name                *op;
 
     op = ins->result;
-    if( op == NULL ) return( false );
-//  if( op->n.class != N_TEMP ) return( false );
-    if( op->v.usage & USE_ADDRESS ) return( false );
-    if( SideEffect( ins ) ) return( false );
+    if( op == NULL )
+        return( false );
+//  if( op->n.class != N_TEMP )
+//        return( false );
+    if( op->v.usage & USE_ADDRESS )
+        return( false );
+    if( SideEffect( ins ) )
+        return( false );
     conf = FindConflictNode( op, blk, ins );
-    if( conf == NULL ) return( false );
+    if( conf == NULL )
+        return( false );
     if( _LBitEmpty( conf->id.within_block )
-     && _GBitEmpty( conf->id.out_of_block ) ) {
-         return( false );
-     }
+      && _GBitEmpty( conf->id.out_of_block ) ) {
+        return( false );
+    }
     if( _LBitOverlap( conf->id.within_block, next->head.live.within_block ) ) {
         return( false );
     }
@@ -294,15 +313,15 @@ void    AxeDeadCode( void )
                 }
             }
         }
-        if( change == false ) break;
+        if( !change )
+            break;
         FreeConflicts();
         /* Now it's safe to free instructions without problems with edges */
-        while ( kill ) {
+        for( ; kill != NULL; kill = next ) {
             next = _INS_KILL_LINK( kill );
             FreeIns( kill );
-            kill = next;
         }
-        NullConflicts(EMPTY);
+        NullConflicts( EMPTY );
         FindReferences();
         MakeConflicts();
         MakeLiveInfo();

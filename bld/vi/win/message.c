@@ -35,7 +35,7 @@
 #include "font.h"
 #include "utils.h"
 #include "myprtf.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 #include "winifini.h"
 
 

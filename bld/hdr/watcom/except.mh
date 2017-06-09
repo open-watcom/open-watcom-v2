@@ -18,8 +18,8 @@
 :include watexc.sp
 
 namespace std {
-  _WPRTLINK _NORETURN extern void     terminate( void );
-  _WPRTLINK _NORETURN extern void     unexpected( void );
+  _WPRTLINK _WCNORETURN extern void terminate( void );
+  _WPRTLINK _WCNORETURN extern void unexpected( void );
   _WPRTLINK extern PFV      set_terminate( PFV );
   _WPRTLINK extern PFV      set_unexpected( PFV );
 }

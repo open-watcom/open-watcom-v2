@@ -33,8 +33,10 @@
 
 #include "pt.h"
 
+
 extern char flags[SIZE+1];
 extern int count, niter;
+
 
 static void __check_if( int i )
 {

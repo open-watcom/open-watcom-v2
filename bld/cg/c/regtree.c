@@ -32,14 +32,13 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "conflict.h"
+#include "confldef.h"
 #include "regset.h"
 #include "freelist.h"
 #include "zoiks.h"
 #include "rgtbl.h"
+#include "conflict.h"
 
-
-extern  reg_set_index   GetPossibleForTemp(conflict_node *, name *);
 
 static  pointer         *RegFrl;
 static  pointer         *TreeFrl;
@@ -53,7 +52,9 @@ static bool HasSegRegs( reg_tree *tree )
     regs = tree->regs;
     if( regs != NULL ) {
         for( ; !HW_CEqual( *regs, HW_EMPTY ); ++regs ) {
-            if( HW_COvlap( *regs, HW_SEGS ) ) return( true );
+            if( HW_COvlap( *regs, HW_SEGS ) ) {
+                return( true );
+            }
         }
     }
     return( false );
@@ -87,9 +88,8 @@ static  hw_reg_set      *AllocRegSet( void )
     hw_reg_set  *curr;
 
     regs = AllocFrl( &RegFrl, REGSET_SIZE );
-    curr = regs;
-    for( i = REG_COUNT; i > 0; --i ) {
-        HW_CAsgn( *curr++, HW_EMPTY );
+    for( curr = regs, i = REG_COUNT; i > 0; --i, ++curr ) {
+        HW_CAsgn( *curr, HW_EMPTY );
     }
     return( regs );
 }
@@ -137,7 +137,7 @@ static  void    CheckBigPointer( reg_tree *tree )
         tree->hi->regs = NULL;
     }
 #else
-    tree = tree;
+    /* unused parameters */ (void)tree;
 #endif
 }
 
@@ -253,21 +253,19 @@ static  reg_tree        *BuildTree( name *alias, name *master,
         have_hi = false;
         temp = master->t.alias;
         while( temp != master ) {
-            if( have_lo == false
-             && temp->v.offset == offset && temp->n.size == losize ) {
+            if( !have_lo && temp->v.offset == offset && temp->n.size == losize ) {
                 tree->lo = BuildTree( temp, master, offset, losize, conf );
                 have_lo = true;
-            } else if( have_hi == false
-                 && temp->v.offset == midpoint && temp->n.size == hisize ) {
+            } else if( !have_hi && temp->v.offset == midpoint && temp->n.size == hisize ) {
                 tree->hi = BuildTree( temp, master, midpoint, hisize, conf );
                 have_hi = true;
             }
             temp = temp->t.alias;
         }
-        if( have_lo == false ) {
+        if( !have_lo ) {
             tree->lo = BuildTree( NULL, master, offset, losize, conf );
         }
-        if( have_hi == false ) {
+        if( !have_hi ) {
             tree->hi = BuildTree( NULL, master, midpoint, hisize, conf );
         }
         if( tree->hi->has_name ) {
@@ -299,7 +297,7 @@ static  void    TrimTree( reg_tree *tree )
 /****************************************/
 {
     if( tree->lo != NULL ) {
-        if( tree->lo->has_name == false ) {
+        if( !tree->lo->has_name ) {
             BurnRegTree( tree->lo );
             tree->lo = NULL;
         } else {
@@ -307,7 +305,7 @@ static  void    TrimTree( reg_tree *tree )
         }
     }
     if( tree->hi != NULL ) {
-        if( tree->hi->has_name == false ) {
+        if( !tree->hi->has_name ) {
             BurnRegTree( tree->hi );
             tree->hi = NULL;
         } else {
@@ -332,7 +330,9 @@ static  reg_tree        *CheckTree( reg_tree *tree )
             tree = NULL;
             break;
         }
-        if( temp == alias ) break;
+        if( temp == alias ) {
+            break;
+        }
     }
     return( tree );
 }
@@ -350,15 +350,13 @@ static  void    CompressSets( reg_tree *tree )
         CompressSets( tree->hi );
         if( tree->regs != NULL ) {
             dst = tree->regs;
-            src = dst;
-            for( i = REG_COUNT; i > 0; --i ) {
+            for( src = dst, i = REG_COUNT; i > 0; --i, ++src ) {
                 if( !HW_CEqual( *src, HW_EMPTY ) ) {
                     *dst++ = *src;
                 }
-                ++src;
             }
-            while( dst != src ) {
-                HW_CAsgn( *dst++, HW_EMPTY );
+            for( ; dst != src; ++dst ) {
+                HW_CAsgn( *dst, HW_EMPTY );
             }
         }
     }
@@ -429,7 +427,9 @@ static  bool    PartIntersect( reg_tree *part,
                 for( j = REG_COUNT; j > 0; --j ) {
                     if( !HW_CEqual( *dst, HW_EMPTY ) ) {
                         tmp = rtn( *dst );
-                        if( HW_Equal( curr, tmp ) ) break;
+                        if( HW_Equal( curr, tmp ) ) {
+                            break;
+                        }
                     }
                     ++dst;
                 }

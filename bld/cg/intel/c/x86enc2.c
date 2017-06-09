@@ -104,7 +104,7 @@ static byte SCondTable[] = {
         14,             /* OP_CMP_LESS_EQUAL */
         12,             /* OP_CMP_LESS */
         13 };           /* OP_CMP_GREATER_EQUAL */
-       
+
 static byte rev_condition[] = {
 /************************
     reverse the sense of an 8086 jmp (ie: ja -> jbe)
@@ -147,7 +147,7 @@ unsigned DepthAlign( unsigned depth )
         unsigned char *align_info_bytes = FEAuxInfo( NULL, CODE_LABEL_ALIGNMENT );
         Copy( align_info_bytes, AlignArray, align_info_bytes[0] + 1 );
     }
-    if( OptForSize )
+    if( OptForSize > 0 )
         return( 1 );
     if( _CPULevel( CPU_486 ) ) {
         if( depth == PROC_ALIGN || depth == DEEP_LOOP_ALIGN )
@@ -221,7 +221,8 @@ void    DoCall( label_handle lbl, bool imported, bool big, bool pop )
     oc_class    occlass;
     obj_length  len;
 
-    imported = imported;
+    /* unused parameters */ (void)imported;
+
     occlass = OC_CALL;
     if( pop )
         occlass |= ATTR_POP;
@@ -615,7 +616,8 @@ static  void    JumpReg( instruction *ins, name *reg_name ) {
 
     hw_reg_set  regs;
 
-    ins = ins;
+    /* unused parameters */ (void)ins;
+
     regs = reg_name->r.reg;
     if( reg_name->n.size > WORD_SIZE ) {
         /* fake up intersegment jump*/

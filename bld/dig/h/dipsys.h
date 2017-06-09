@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,14 +38,10 @@
 typedef void (DIGENTRY *dip_sys_handle)( void );
 #elif defined( __NT__ )
 #define NULL_SYSHDL 0
-typedef size_t      dip_sys_handle;
+typedef HANDLE      dip_sys_handle;
 #elif defined( __OS2__ )
 #define NULL_SYSHDL 0
-#if defined( _M_I86 )
-typedef unsigned short dip_sys_handle;
-#else
-typedef unsigned long dip_sys_handle;
-#endif
+typedef HMODULE     dip_sys_handle;
 #elif defined( __RDOS__ )
 #define NULL_SYSHDL 0
 typedef int         dip_sys_handle;
@@ -54,4 +51,4 @@ typedef void        *dip_sys_handle;
 #endif
 
 extern dip_status   DIPSysLoad( const char *, dip_client_routines *, dip_imp_routines **, dip_sys_handle * );
-extern void         DIPSysUnload( dip_sys_handle * );
+extern void         DIPSysUnload( dip_sys_handle );

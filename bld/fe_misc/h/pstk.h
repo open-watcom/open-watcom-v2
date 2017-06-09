@@ -40,8 +40,10 @@ typedef struct pstk_ctl     PSTK_CTL;       // control element for PSTK
 typedef struct pstk_blk     PSTK_BLK;       // block of items
 typedef struct pstk_iter    PSTK_ITER;      // iterator
 
+typedef void *elem_type;
+
 struct pstk_ctl {               // PSTK_CTL -- controller for a pointer stack
-    void const **top_item;      // - top occupied slot
+    elem_type *top_item;        // - top occupied slot
     PSTK_BLK *top_blk;          // - top of blocks
     PSTK_BLK *popped_blk;       // - last popped block
 };
@@ -49,25 +51,25 @@ struct pstk_ctl {               // PSTK_CTL -- controller for a pointer stack
 struct pstk_iter {              // PSTK_ITER -- iterator for PSTK
     PSTK_CTL const *pstk;       // - pstack being iterated
     PSTK_BLK const *block;      // - current block
-    void const * const *item;   // - last item returned
-    void const * const *top;    // - addr[ top element in stack ]
-    void const * const *bot;    // - addr[ bottom element in stack ]
+    const elem_type *item;      // - last item returned
+    const elem_type *top;       // - addr[ top element in stack ]
+    const elem_type *bot;       // - addr[ bottom element in stack ]
 };
 
-void PstkPush( PSTK_CTL *, void const * );
-void *PstkPop( PSTK_CTL * );
-void *PstkPopElement( PSTK_CTL * );
-void PstkOpen( PSTK_CTL * );
-void PstkClose( PSTK_CTL * );
-void PstkPopAll( PSTK_CTL * );
-void *PstkTopElement( PSTK_CTL * );
-void *PstkContainsElement( PSTK_CTL *, void const * );
+extern void         PstkPush( PSTK_CTL *, elem_type );
+extern elem_type    *PstkPop( PSTK_CTL * );
+extern elem_type    PstkPopElement( PSTK_CTL * );
+extern void         PstkOpen( PSTK_CTL * );
+extern void         PstkClose( PSTK_CTL * );
+extern void         PstkPopAll( PSTK_CTL * );
+extern elem_type    PstkTopElement( PSTK_CTL * );
+extern int          PstkContainsElement( PSTK_CTL *, elem_type );
 
-int PstkIterDnOpen( PSTK_ITER*, PSTK_CTL const * );
-void *PstkIterDnNext( PSTK_ITER* );
+extern int          PstkIterDnOpen( PSTK_ITER*, PSTK_CTL const * );
+extern elem_type    PstkIterDnNext( PSTK_ITER* );
 
-int PstkIterUpOpen( PSTK_ITER*, PSTK_CTL const * );
-void *PstkIterUpNext( PSTK_ITER* );
+extern int          PstkIterUpOpen( PSTK_ITER*, PSTK_CTL const * );
+extern elem_type    PstkIterUpNext( PSTK_ITER* );
 
 #define PstkTop( addr_ctl )     ((addr_ctl)->top_item)
 

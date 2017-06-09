@@ -30,45 +30,37 @@
 ****************************************************************************/
 
 
-extern void   PMfree( void * ptr );
-extern void * PMmalloc( size_t size );
-extern void * PMrealloc( void * ptr, size_t size );
+#include "_pmdlg.h"
 
-#define _ISFAR
+#ifdef _M_I86
+#define _FARmemcpy      _fmemcpy
+#else
 #define _FARmemcpy      memcpy
-#define SLEN( a ) (safeStrLen((a))+0)
-#define ADJUST_ITEMLEN( a )
-#define ADJUST_BLOCKLEN( a )
-#define ROUND_CLASSLEN( a ) a
-typedef BYTE INFOTYPE;
+#endif
+
+#define SLEN( a )       (((a)!=NULL)?strlen((a)):0)
 
 /*
  * OS/2 PM defaults,
  */
-#define CODE_PAGE               437
-#define TEMPLATE_TYPE           0
-#define RESERVED                0
-
-/*
- * the pm data structures
- */
-typedef DLGTITEM                DLGITEMTEMPLATE;
+#define CODE_PAGE       437
+#define TEMPLATE_TYPE   0
+#define RESERVED        0
 
 /*
  * I am not about to change this in ALL the code, and since I am not including
  * windows.h, I have defined it as such
  */
-typedef PVOID           TEMPLATE_HANDLE;
 
-extern TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty,
-                                        int dtcx, int dtcy, const char *menuname,
-                                        const char *classname, const char *captiontext,
-                                        int pointsize, const char *typeface );
-extern TEMPLATE_HANDLE DoneAddingControls ( TEMPLATE_HANDLE data );
-extern TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int dtilx,
-                                        int dtily, int dtilcx, int dtilcy,
-                                        int id, long style, const char *class,
-                                        const char *text, BYTE infolen,
-                                        const char *infodata );
-extern int DynamicDialogBox( PFNWP fn, WPI_INST inst, HWND hwnd,
-                                        TEMPLATE_HANDLE data, MPARAM lparam );
+extern void             PMfree( void *ptr );
+extern void             *PMmalloc( size_t size );
+extern void             *PMrealloc( void *ptr, size_t size );
+
+extern TEMPLATE_HANDLE  DialogTemplate( DWORD dtStyle, int x, int y, int cx, int cy,
+                                const char *menuname, const char *classname, const char *captiontext,
+                                WORD pointsize, const char *facename, size_t *templatelen );
+extern TEMPLATE_HANDLE  AddControl( TEMPLATE_HANDLE dlgtemplate, int x, int y, int cx, int cy, WORD id, DWORD style,
+                                const char *classname, const char *captiontext,
+                                const void *infodata, BYTE infodatalen, size_t *templatelen );
+extern TEMPLATE_HANDLE  DoneAddingControls ( TEMPLATE_HANDLE dlgtemplate );
+extern int              DynamicDialogBox( PFNWP fn, WPI_INST inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate, MPARAM lparam );

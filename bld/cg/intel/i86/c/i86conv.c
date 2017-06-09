@@ -261,9 +261,12 @@ static  conv_method     AskHow( type_class_def fr, type_class_def to )
 extern  bool    CvtOk( type_class_def fr, type_class_def to )
 /***********************************************************/
 {
-    if( fr == XX ) return( false );
-    if( to == XX ) return( false );
-    if( AskHow( fr, to ) != BAD ) return( true );
+    if( fr == XX )
+        return( false );
+    if( to == XX )
+        return( false );
+    if( AskHow( fr, to ) != BAD )
+        return( true );
     return( false );
 }
 

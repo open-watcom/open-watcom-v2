@@ -91,7 +91,7 @@ void AssignSeg( SYMPTR sym )
             }
             if( sym->u.var.segid == SEG_DATA ) {
                 sym->u.var.segid = SEG_BSS;
-                CompFlags.bss_segment_used = 1;
+                CompFlags.bss_segment_used = true;
             }
             SetSegAlign( sym );
         }
@@ -109,7 +109,10 @@ void SetFarHuge( SYMPTR sym, bool report )
     type_modifiers      attrib;
     target_size         size;
 
-    report = report; /* in case not used */
+#if _CPU != 8086
+    /* unused parameters */ (void)report;
+#endif
+
 #if _CPU == 8086
     if( sym->attribs.declspec == DECLSPEC_DLLIMPORT
       || sym->attribs.declspec == DECLSPEC_DLLEXPORT ) {
@@ -229,7 +232,8 @@ void    FEGenProc( CGSYM_HANDLE hdl, call_handle call_list )
 {
     SYM_HANDLE      sym_handle = (SYM_HANDLE)hdl;
 
-    call_list = call_list;
+    /* unused parameters */ (void)call_list;
+
     GenInLineFunc( sym_handle );
 }
 
@@ -577,7 +581,7 @@ void    SetSegs( void )
     char            *name;
     align_type      optsize_segalign;
 
-    CompFlags.low_on_memory_printed = 0;
+    CompFlags.low_on_memory_printed = false;
     flags = GLOBAL | INIT | EXEC;
     if( *TextSegName == '\0' ) {
         name = TS_SEG_CODE;
@@ -762,9 +766,9 @@ void FEMessage( int class, CGPOINTER parm )
     case MSG_PEEPHOLE_FLUSHED:
         if( (GenSwitches & NO_OPTIMIZATION) == 0 ) {
             if( WngLevel >= 4 ) {
-                if( CompFlags.low_on_memory_printed == 0 ) {
+                if( !CompFlags.low_on_memory_printed ) {
                     CInfoMsg( INFO_NOT_ENOUGH_MEMORY_TO_MAINTAIN_PEEPHOLE);
-                    CompFlags.low_on_memory_printed = 1;
+                    CompFlags.low_on_memory_printed = true;
                 }
             }
         }
@@ -871,7 +875,8 @@ BACK_HANDLE FEBack( CGSYM_HANDLE cgsym_handle )
 int FELexLevel( CGSYM_HANDLE cgsym_handle )
 /*****************************************/
 {
-    cgsym_handle = cgsym_handle;
+    /* unused parameters */ (void)cgsym_handle;
+
     return( 0 );
 }
 
@@ -880,8 +885,8 @@ int FELexLevel( CGSYM_HANDLE cgsym_handle )
 cg_type FEParmType( CGSYM_HANDLE func, CGSYM_HANDLE parm, cg_type tipe )
 /**********************************************************************/
 {
-    func = func;
-    parm = parm;
+    /* unused parameters */ (void)func; (void)parm;
+
     switch( tipe ) {
     case TY_INT_1:
     case TY_INT_2:
@@ -913,10 +918,10 @@ cg_type FEParmType( CGSYM_HANDLE func, CGSYM_HANDLE parm, cg_type tipe )
     SYM_HANDLE  sym_handle = (SYM_HANDLE)func;
     SYMPTR      sym;
 #else
-    func = func;
+    /* unused parameters */ (void)func;
 #endif
+    /* unused parameters */ (void)parm;
 
-    parm = parm;
     switch( tipe ) {
 #if _CPU == 386 || _CPU == 370 || _CPU == _PPC || _CPU == _MIPS
     case TY_UINT_2:

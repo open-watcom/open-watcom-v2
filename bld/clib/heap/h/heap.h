@@ -34,13 +34,28 @@
 #include "extender.h"
 #endif
 
+
 #ifdef _M_I86
-#define SEG_BPTR(s)     __based(s) *
-#define VOID_BPTR       __based(void) *
+#define XBPTR(t,s)      t __based(s) *
+#define BASED           __based(void)
 #else
-#define SEG_BPTR(s)     _WCNEAR *
-#define VOID_BPTR       _WCNEAR *
+#define XBPTR(t,s)      t _WCNEAR *
+#define BASED           _WCNEAR
 #endif
+
+#define BLK2CPTR(f)     ((unsigned)((unsigned)(f) + TAG_SIZE))
+#define CPTR2BLK(p)     ((unsigned)((unsigned)(p) - TAG_SIZE))
+
+#define memcpy_i86      "shr cx,1"  "rep movsw" "adc cx,cx"   "rep movsb"
+#define memcpy_386      "shr ecx,1" "rep movsw" "adc ecx,ecx" "rep movsb"
+
+#define memset_i86      "mov ah,al" "shr cx,1"  "rep stosw" "adc cx,cx"   "rep stosb"
+#define memset_386      "mov ah,al" "shr ecx,1" "rep stosw" "adc ecx,ecx" "rep stosb"
+
+typedef void            BASED *void_bptr;
+typedef void            _WCNEAR *void_nptr;
+typedef void            _WCFAR *void_fptr;
+typedef void            _WCHUGE *void_hptr;
 
 typedef unsigned int    tag;
 typedef unsigned char   _WCNEAR *PTR;
@@ -78,7 +93,7 @@ typedef struct heapblk {
     unsigned int        numalloc;       /* number of allocated blocks in heap */
     unsigned int        numfree;        /* number of free blocks in the heap */
     freelist            freehead;       /* listhead of free blocks in heap */
-#if defined(__WARP__)
+#if defined( __WARP__ )
     unsigned int        spare;          /* not used, match miniheapblkp size */
 #endif
 } heapblk;
@@ -89,7 +104,6 @@ typedef struct freelistp {
     struct freelistp    _WCNEAR *next;
 } freelistp;
 
-typedef freelistp       frl;
 typedef freelistp       _WCNEAR *frlptr;
 
 typedef struct heapblkp {
@@ -111,8 +125,8 @@ typedef struct heapblkp {
     unsigned int        largest_blk;
     unsigned int        numalloc;
     unsigned int        numfree;
-    frl                 freehead;
-#if defined(__WARP__)
+    freelistp           freehead;
+#if defined( __WARP__ )
     unsigned int        spare;          /* not used, match miniheapblkp size */
 #endif
 } heapblkp;
@@ -126,8 +140,8 @@ typedef struct miniheapblkp {
     unsigned int        largest_blk;
     unsigned int        numalloc;
     unsigned int        numfree;
-    frl                 freehead;
-#if defined(__WARP__)
+    freelistp           freehead;
+#if defined( __WARP__ )
     unsigned int        used_obj_any    :1; /* allocated with OBJ_ANY - block may be in high memory */
 #endif
 } miniheapblkp;
@@ -152,43 +166,42 @@ typedef struct dpmi_hdr {
 #endif
 
 extern mheapptr         _WCNEAR __nheapbeg;
-#if defined(_M_IX86)
-extern __segment        __fheap;
-extern __segment        __bheap;
+#if defined( _M_I86 )
+extern __segment        __fheapbeg;
+extern __segment        __bheapbeg;
 extern __segment        __fheapRover;
 #endif
 extern int              __heap_enabled;
 extern unsigned int     __LargestSizeB4Rover;
-extern miniheapblkp     _WCNEAR *__MiniHeapRover;
+extern mheapptr         __MiniHeapRover;
 extern unsigned int     __LargestSizeB4MiniHeapRover;
-extern miniheapblkp     _WCNEAR *__MiniHeapFreeRover;
+extern mheapptr         __MiniHeapFreeRover;
 
 extern size_t           __LastFree( void );
-extern int              __NHeapWalk( struct _heapinfo *entry, mheapptr heapbeg );
+extern int              __NHeapWalk( struct _heapinfo *entry, mheapptr start );
 extern int              __ExpandDGROUP( unsigned int __amt );
-#if defined(_M_IX86)
+#if defined( _M_I86 )
 extern __segment        __AllocSeg( unsigned int __amt );
 extern int              __GrowSeg( __segment __seg, unsigned int __amt );
 extern int              __FreeSeg( __segment __seg );
-extern int              __HeapWalk( struct _heapinfo *entry, __segment __seg, unsigned all );
-extern int              __HeapMin( __segment __seg, unsigned one_seg );
+extern int              __HeapWalk( struct _heapinfo *entry, __segment seg, __segment one_heap );
+extern int              __HeapMin( __segment __seg, __segment one_heap );
 extern int              __HeapSet( __segment __seg, unsigned fill );
 #endif
 
-#if defined(__DOS_EXT__)
+#if defined( __DOS_EXT__ )
 extern void             __FreeDPMIBlocks( void );
 extern void             *__ReAllocDPMIBlock( frlptr p1, unsigned req_size );
 extern void             *__ExpandDPMIBlock( frlptr, unsigned );
 #endif
 
-extern int              __HeapManager_expand( __segment seg, unsigned offset,
-                            size_t req_size, size_t *growth_size );
+extern int              __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t *growth_size );
 
-#if defined(_M_I86)
-extern void             _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amount );
+#if defined( _M_I86 )
+extern void             _WCFAR __HeapInit( mheapptr start, unsigned int amount );
 #endif
 
-#if defined(_M_IX86)
+#if defined( _M_IX86 )
  #define _DGroup()      FP_SEG((&__nheapbeg))
 #else
  #define _DGroup()      0
@@ -196,28 +209,26 @@ extern void             _WCFAR __HeapInit( void _WCNEAR *start, unsigned int amo
 // __IsCtsNHeap() is used to determine whether the operating system provides
 // a continuous near heap block. __ExpandDGroup should slice for more near
 // heap under those operating systems with __IsCtsNHeap() == 1.
-#if defined(__WARP__) || defined(__NT__) || defined(__WINDOWS__) || defined(__RDOS__)
+#if defined( __WARP__ ) || defined( __NT__ ) || defined( __WINDOWS__ ) || defined( __RDOS__ )
  #define __IsCtsNHeap() (0)
-#elif defined(__DOS_EXT__)
+#elif defined( __DOS_EXT__ )
  #define __IsCtsNHeap() (!(_IsRationalZeroBase() || _IsCodeBuilder()))
 #else
  #define __IsCtsNHeap() (1)
 #endif
 
-extern  unsigned        __MemAllocator( unsigned __sz, __segment __seg, unsigned __off );
-extern  void            __MemFree( unsigned __ptr, __segment __seg, unsigned __off );
-#if defined(_M_IX86)
- #if defined(_M_I86)
-  #pragma aux __MemAllocator "*" parm [ax] [dx] [bx];
-  #pragma aux __MemFree      "*" parm [ax] [dx] [bx];
- #else
-  #pragma aux __MemAllocator "*" parm [eax] [dx] [ebx];
-  #pragma aux __MemFree      "*" parm [eax] [dx] [ebx];
- #endif
+extern  void_bptr       __MemAllocator( unsigned __size, __segment __seg, void_bptr __heap );
+extern  void            __MemFree( void_bptr __cstg, __segment __seg, void_bptr __heap );
+#if defined( _M_I86 )
+  #pragma aux __MemAllocator "*" parm [ax] [dx] [bx]
+  #pragma aux __MemFree      "*" parm [ax] [dx] [bx]
+#elif defined( _M_IX86 )
+  #pragma aux __MemAllocator "*" parm [eax] [dx] [ebx]
+  #pragma aux __MemFree      "*" parm [eax] [dx] [ebx]
 #endif
 
 #define PARAS_IN_64K    (0x1000)
-#define END_TAG         (~0)
+#define END_TAG         (/*0x....ffff*/ ~0U)
 
 #define TAG_SIZE        (sizeof( tag ))
 #if defined( _M_I86 )
@@ -225,20 +236,29 @@ extern  void            __MemFree( unsigned __ptr, __segment __seg, unsigned __o
 #else
     #define ROUND_SIZE  (TAG_SIZE + TAG_SIZE)
 #endif
-#define FRL_SIZE        __ROUND_UP_SIZE( sizeof( frl ), ROUND_SIZE )
+#define FRL_SIZE        __ROUND_UP_SIZE( sizeof( freelistp ), ROUND_SIZE )
 
-#define MEMBLK_SIZE(p)              __ROUND_DOWN_SIZE( (p)->len, 2 )
-#define IS_MEMBLK_USED(p)           (((p)->len & 1) != 0)
-#define SET_MEMBLK_SIZE_USED(p,s)   (p)->len = ((s) | 1)
-#define SET_MEMBLK_USED(p)          (p)->len |= 1
-#define IS_MEMBLK_END(p)            ((p)->len == END_TAG)
-#define SET_MEMBLK_END(p)           (p)->len = END_TAG
+#define GET_BLK_SIZE(p)             ((p)->len & ~1U)
+#define IS_BLK_INUSE(p)             (((p)->len & 1) != 0)
+#define SET_BLK_SIZE_INUSE(p,s)     (p)->len = ((s) | 1)
+#define SET_BLK_INUSE(p)            (p)->len |= 1
+#define IS_BLK_END(p)               ((p)->len == END_TAG)
+#define SET_BLK_END(p)              (p)->len = END_TAG
+
+#define NEXT_BLK(p)                 ((unsigned)(p) + (p)->len)
+#define NEXT_BLK_A(p)               ((unsigned)(p) + GET_BLK_SIZE(p))
+
+#define IS_IN_HEAP(m,h)     ((unsigned)(h) <= (unsigned)(m) && (unsigned)(m) < (unsigned)NEXT_BLK((h)))
 
 #define __HM_SUCCESS    0
 #define __HM_FAIL       1
 #define __HM_TRYGROW    2
 
-#if defined(__WARP__)
+#if defined( __WARP__ )
 extern unsigned char    _os2_use_obj_any;           // Prefer high memory heap block
 extern unsigned char    _os2_obj_any_supported;     // DosAllocMem supports OBJ_ANY
+#endif
+
+#if defined( __QNX__ )
+extern void __setcbrk( unsigned offset );
 #endif

@@ -46,7 +46,7 @@ namespace std {
   istream &istream::get( streambuf &tgt_sb, char delim ) {
     streambuf *src_sb;
     int        c;
-    int        offset;
+    streamsize offset;
 
     __lock_it( __i_lock );
     if( !ipfx( 1 ) ) {

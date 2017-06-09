@@ -41,6 +41,7 @@
 #include "namelist.h"
 #include "optmkins.h"
 #include "makeins.h"
+#include "conflict.h"
 #include "feprotos.h"
 
 
@@ -50,7 +51,6 @@ static    bool          IckyWicky;
 extern    pointer       MemStart;
 extern    pointer       MemFinish;
 
-extern  bool            ConfFrlFree( void );
 extern  bool            RegTreeFrlFree( void );
 extern  bool            ScoreFrlFree( void );
 extern  bool            RegTreeFrlFree( void );
@@ -71,7 +71,7 @@ static  bool    FlushSomeOpt( pointer_int size )
         old = SetOP( AskCodeSeg() );
         freed = ShrinkQueue( size );
         SetOP( old );
-        if( _IsntModel( NO_OPTIMIZATION ) && IckyWicky == false ) {
+        if( _IsntModel( NO_OPTIMIZATION ) && !IckyWicky ) {
             IckyWicky = true;
             FEMessage( MSG_PEEPHOLE_FLUSHED, NULL );
         }

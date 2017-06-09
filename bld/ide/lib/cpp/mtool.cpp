@@ -182,7 +182,8 @@ WString *WEXPORT MTool::displayText( MSwitch *sw, WString& text, bool first )
     }
     text = *switchid;
 #else
-    first = first;
+    /* unused parameters */ (void)first;
+
     text = sw->text();
 #endif
     sw->displayText( text );

@@ -57,31 +57,43 @@
 
 int WRAPI WRCtl3DInit( HINSTANCE inst )
 {
+    /* unused parameters */ (void)inst;
+
     return( CvrCtl3DInit( inst ) );
 }
 
 void WRAPI WRCtl3DFini( HINSTANCE inst )
 {
+    /* unused parameters */ (void)inst;
+
     CvrCtl3DFini( inst );
 }
 
 bool WRAPI WRCtl3dSubclassDlg( HWND hwnd, WORD w )
 {
+    /* unused parameters */ (void)hwnd; (void)w;
+
     return( CvrCtl3dSubclassDlg( hwnd, w ) );
 }
 
 bool WRAPI WRCtl3dSubclassDlgAll( HWND hwnd )
 {
+    /* unused parameters */ (void)hwnd;
+
     return( CvrCtl3dSubclassDlgAll( hwnd ) );
 }
 
 bool WRAPI WRCtl3dSubclassDlgEx( HWND hwnd, DWORD dw )
 {
+    /* unused parameters */ (void)hwnd; (void)dw;
+
     return( CvrCtl3dSubclassDlgEx( hwnd, dw ) );
 }
 
 bool WRAPI WRCtl3dSubclassDlgExAll( HWND hwnd )
 {
+    /* unused parameters */ (void)hwnd;
+
     return( CvrCtl3dSubclassDlgExAll( hwnd ) );
 }
 
@@ -97,11 +109,15 @@ bool WRAPI WRCtl3dEnabled( void )
 
 HBRUSH WRAPI WRCtl3dCtlColor( HDC dc, LONG l )
 {
+    /* unused parameters */ (void)dc; (void)l;
+
     return( CvrCtl3dCtlColor( dc, l ) );
 }
 
 HBRUSH WRAPI WRCtl3dCtlColorEx( UINT wm, WPARAM wParam, LPARAM lParam )
 {
+    /* unused parameters */ (void)wm; (void)wParam; (void)lParam;
+
     return( CvrCtl3dCtlColorEx( wm, wParam, lParam ) );
 }
 
@@ -112,26 +128,36 @@ bool WRAPI WRCtl3dColorChange( void )
 
 bool WRAPI WRCtl3dSubclassCtl( HWND hwnd )
 {
+    /* unused parameters */ (void)hwnd;
+
     return( CvrCtl3dSubclassCtl( hwnd ) );
 }
 
 LONG WRAPI WRCtl3dDlgFramePaint( HWND hwnd, UINT msg, WPARAM wp, LPARAM lp )
 {
+    /* unused parameters */ (void)hwnd; (void)msg; (void)wp; (void)lp;
+
     return( CvrCtl3dDlgFramePaint( hwnd, msg, wp, lp ) );
 }
 
 bool WRAPI WRCtl3dAutoSubclass(HANDLE hndl )
 {
+    /* unused parameters */ (void)hndl;
+
     return( CvrCtl3dAutoSubclass( hndl ) );
 }
 
 bool WRAPI WRCtl3dRegister( HANDLE hndl )
 {
+    /* unused parameters */ (void)hndl;
+
     return( CvrCtl3dRegister( hndl ) );
 }
 
 bool WRAPI WRCtl3dUnregister( HANDLE inst )
 {
+    /* unused parameters */ (void)inst;
+
     return( CvrCtl3dUnregister( inst ) );
 }
 

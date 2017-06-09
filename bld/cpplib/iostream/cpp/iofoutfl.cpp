@@ -70,7 +70,7 @@ namespace std {
     int                 len;
     char                *x;
     CVT_INFO            cvt;
-    auto char           stkbuf[ LONGEST_FLOAT + 1 ];
+    char                stkbuf[ LONGEST_FLOAT + 1 ];
     std::ios::fmtflags  format_flags;
 #ifdef _LONG_DOUBLE_
     double              double_value;
@@ -79,7 +79,7 @@ namespace std {
     double_value = f;
     __EFG_cnvd2ld( &double_value, &ld );
 #else
-    ld.value = f;
+    ld.u.value = f;
 #endif
     __lock_it( __i_lock );
     precision = this->precision();

@@ -37,7 +37,7 @@
 
 namespace std {
 
-  ifstream::ifstream( filedesc fd, char *buf, int len )
+  ifstream::ifstream( filedesc fd, char *buf, streamsize len )
     : fstreambase( fd, buf, len ) {
   }
 

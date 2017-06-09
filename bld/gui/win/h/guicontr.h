@@ -37,7 +37,7 @@ typedef struct control_item {
     bool                checked;
     gui_ctl_id          id;
     gui_control_class   control_class;
-    WPI_PROC            call_back;
+    WPI_WNDPROC         win_call_back;
     HWND                hwnd;
     const char          *text;
     gui_control_styles  style;
@@ -56,14 +56,14 @@ extern control_item *GUIGetControlByID( gui_window *parent, gui_ctl_id id );
 extern control_item *GUIGetControlByHwnd( gui_window *parent, HWND control );
 extern control_item *GUIControlInsert( gui_window *parent_wnd, gui_control_class control_class,
                               HWND control, gui_control_info *ctl_info,
-                              WPI_PROC call_back );
+                              WPI_WNDPROC win_call_back );
 extern control_item *GUIControlInsertByHWND( HWND hwnd, gui_window *parent );
 extern void GUIControlDelete( gui_window *wnd, gui_ctl_id id );
 extern void GUIControlDeleteAll( gui_window *wnd );
 extern void GUIChangeHWnd( HWND, HWND );
 extern gui_window *GUIGetParentWnd( HWND );
 extern bool GUIAddParent( HWND, gui_window * );
-extern WPI_PROC GUIDoSubClass( HWND, gui_control_class );
+extern WPI_WNDPROC GUIDoSubClass( HWND, gui_control_class );
 extern bool GUIInsertCtrlWnd( gui_window *wnd );
 extern gui_window *GUIGetCtrlWnd( HWND hwnd );
 extern LONG GUISetControlStyle( gui_control_info *ctl_info );

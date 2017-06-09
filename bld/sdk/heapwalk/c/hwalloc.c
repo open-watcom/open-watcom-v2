@@ -32,11 +32,13 @@
 #include <ctype.h>
 #include "heapwalk.h"
 #include <stress.h>
+#include "wclbproc.h"
 #include "jdlg.h"
+#include "winexprt.h"
 
 
 /* Local Window callback functions prototypes */
-BOOL __export FAR PASCAL FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+WINEXPORT INT_PTR CALLBACK FreeNDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static DWORD    FreeAmt;
 static DWORD    AllocAmt;
@@ -44,8 +46,8 @@ static WORD     DialMode;
 
 static char AmtTable[] = { 1, 2, 5, 10, 25, 50, 0 };
 
-static void UpdateAllocMenu( void ) {
-
+static void UpdateAllocMenu( void )
+{
     HMENU       mh;
     WORD        i;
     WORD        cmd;
@@ -89,8 +91,8 @@ static void UpdateAllocMenu( void ) {
 } /* UpdateAllocMenu */
 
 
-void UpdateAllocInfo( HWND hwnd ) {
-
+void UpdateAllocInfo( HWND hwnd )
+{
     char        buf[20];
 
     sprintf( buf, "%lu", FreeAmt / 1024L );
@@ -102,7 +104,8 @@ void UpdateAllocInfo( HWND hwnd ) {
     UpdateAllocMenu();
 } /* UpdateAllocInfo */
 
-static BOOL MyFreeMem( DWORD amt ) {
+static BOOL MyFreeMem( DWORD amt )
+{
     FreeAmt += amt;
     if( !AllocMem( FreeAmt ) ) {
         FreeAmt -= amt;
@@ -112,7 +115,8 @@ static BOOL MyFreeMem( DWORD amt ) {
     return( TRUE );
 } /* MyFreeMem */
 
-static BOOL MyAllocMem( DWORD amt ) {
+static BOOL MyAllocMem( DWORD amt )
+{
     if( amt > FreeAmt ) return( FALSE );
     AllocAmt += amt;
     FreeAmt -= amt;
@@ -134,13 +138,17 @@ static BOOL MyAllocAllBut( DWORD amt ) {
     return( TRUE );
 } /* MyAllocAllBut */
 
-BOOL FAR PASCAL AllocDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+INT_PTR CALLBACK AllocDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HWND        parent;
     RECT        area;
+    bool        ret;
 
     lparam = lparam;
     wparam = wparam;
+
+    ret = false;
+
     switch( msg ) {
     case WM_INITDIALOG:
         parent = (HWND)GetWindowWord( hwnd, GWW_HWNDPARENT );
@@ -150,20 +158,21 @@ BOOL FAR PASCAL AllocDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
         FreeAmt = GetFreeSpace( 0 );
         AllocAmt = 0;
         UpdateAllocInfo( hwnd );
+        ret = true;
         break;
     case WM_SYSCOLORCHANGE:
         CvrCtl3dColorChange();
+        ret = true;
         break;
     case WM_CLOSE:
+        ret = true;
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 } /* AllocDlgProc */
 
-static DWORD ParseAmount( char *buf ) {
-
+static DWORD ParseAmount( char *buf )
+{
     char        *ptr;
     BOOL        in_k;
     char        *end;
@@ -190,11 +199,14 @@ static DWORD ParseAmount( char *buf ) {
 } /* ParseAmount */
 
 
-BOOL FAR PASCAL FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+INT_PTR CALLBACK FreeNDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        buf[256];
     DWORD       amt;
     const char  *str;
+    bool        ret;
+
+    ret = false;
 
     switch( msg ) {
     case WM_INITDIALOG:
@@ -225,9 +237,11 @@ BOOL FAR PASCAL FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
             SetDlgItemText( hwnd, FREE_AMT_TITLE, str );
             break;
         }
+        ret = true;
         break;
     case WM_SYSCOLORCHANGE:
         CvrCtl3dColorChange();
+        ret = true;
         break;
     case WM_COMMAND:
         if( HIWORD( lparam ) == BN_CLICKED ) {
@@ -271,45 +285,45 @@ BOOL FAR PASCAL FreeNDlgProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
                 break;
             }
         }
+        ret = true;
         break;
     case WM_CLOSE:
         EndDialog( hwnd, 0 );
+        ret = true;
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 }
 
 
 /***************** interface routines ****************************/
 
-void DoNBytes( HWND parent, WORD type ) {
-
-    FARPROC             fp;
+void DoNBytes( HWND parent, WORD type )
+{
+    DLGPROC             dlgproc;
     INT_PTR             ret;
 
     DialMode = type;
-    fp = MakeProcInstance( (FARPROC)FreeNDlgProc, Instance );
-    if( fp != NULL ) {
-        ret = JDialogBox( Instance, "FREE_N_DLG", parent, (DLGPROC)fp );
+    dlgproc = MakeProcInstance_DLG( FreeNDlgProc, Instance );
+    if( dlgproc != NULL ) {
+        ret = JDialogBox( Instance, "FREE_N_DLG", parent, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
         if( ret != -1 ) {
-            FreeProcInstance( fp );
             return;
         }
     }
     /* there's not enough memory to do the dialog
        so free some memory so we can do it */
     FreeAllMem();
-    fp = MakeProcInstance( (FARPROC)FreeNDlgProc, Instance );
-    ret = JDialogBox( Instance, "FREE_N_DLG", parent, (DLGPROC)fp );
-    FreeProcInstance( fp );
+    dlgproc = MakeProcInstance_DLG( FreeNDlgProc, Instance );
+    ret = JDialogBox( Instance, "FREE_N_DLG", parent, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
     AllocMem( FreeAmt );
 }
 
 
-void AllocAllBut( WORD type ) {
-
+void AllocAllBut( WORD type )
+{
     DWORD       amt;
 
     if( type == HEAPMENU_ALLOC_ALL ) {
@@ -320,23 +334,24 @@ void AllocAllBut( WORD type ) {
     MyAllocAllBut( amt );
 }
 
-void AllocMore( WORD type ) {
-
+void AllocMore( WORD type )
+{
     DWORD       amt;
 
     amt = AmtTable[type - HEAPMENU_ALLOC_FIRST] * 1024L;
     MyAllocMem( amt );
 }
 
-void FreeSomeMem( WORD type ) {
-
+void FreeSomeMem( WORD type )
+{
     DWORD       amt;
 
     amt = AmtTable[type - HEAPMENU_FREE_FIRST] * 1024L;
     MyFreeMem( amt );
 }
 
-void MyFreeAllMem( void ) {
+void MyFreeAllMem( void )
+{
     FreeAllMem();
     FreeAmt = GetFreeSpace( 0 );
     AllocAmt = 0;

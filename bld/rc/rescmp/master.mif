@@ -1,6 +1,6 @@
 proj_name = rescmp
 
-res2res_autodepends = .AUTODEPEND
+rescmp_autodepends = .AUTODEPEND
 
 !include cproj.mif
 !include defrule.mif

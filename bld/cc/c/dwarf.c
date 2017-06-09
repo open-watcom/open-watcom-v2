@@ -145,7 +145,8 @@ static dw_handle dwarfStructUnion( TYPEPTR typ, DC_CONTROL control )
     char        *name;
     char        defined;
 
-    control = control;
+    /* unused parameters */ (void)control;
+
     if( typ->type_flags & TF2_DWARF ) {
         dh = typ->u1.dwarf_type;
     } else {
@@ -305,7 +306,8 @@ static dw_handle dwarfType( TYPEPTR typ, DC_CONTROL control )
     dw_handle   dh = 0;
     SYMPTR      sym;
 
-    control = control;
+    /* unused parameters */ (void)control;
+
     if( typ->type_flags & TF2_DWARF )
         return( typ->u1.dwarf_type );
 
@@ -628,7 +630,8 @@ static void SetDwarfType( TYPEPTR typ )
 
 static void SetFuncDwarfType( TYPEPTR typ, int index )
 {
-    index = index;   /* unused */
+    /* unused parameters */ (void)index;
+
     typ->type_flags &= ~TF2_DWARF;
     typ->u1.dwarf_type = 0;
 }

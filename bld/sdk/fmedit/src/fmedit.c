@@ -32,6 +32,7 @@
 #include <malloc.h>
 #include <string.h>
 #include <stdlib.h>
+#define INCLUDE_COMMDLG_H
 #include <wwindows.h>
 #include "global.h"
 #include "dllmain.h"
@@ -55,8 +56,8 @@
 #include "align.def"
 #include "space.def"
 #include "clip.def"
+#include "wclbproc.h"
 
-WINEXPORT BOOL CALLBACK FMEditWndProc( HWND, UINT, WPARAM, LPARAM );
 
 void FMEDITAPI CloseFormEdit( HWND wnd )
 /**************************************/
@@ -83,7 +84,7 @@ void FMEDITAPI ResetFormEdit( HWND wnd )
 {
     /* close the editing window */
     if( InitState( wnd ) ) {
-        ResetCurrObject( FALSE );
+        ResetCurrObject( false );
         DestroyMainObject();
         CreateMainObject();
         SetCurrObject( GetMainObject() );
@@ -146,16 +147,14 @@ static void CutObjects( void )
 /****************************/
 {
     /* Cut the current objects */
-    CURROBJPTR  currobj;
+    OBJPTR      currobj;
     OBJPTR      saveobj;
-    CURROBJPTR  nextobj;
+    OBJPTR      nextobj;
     OBJPTR      appobj;
 
     FMNewClipboard();
-    nextobj = GetECurrObject();
-    while( nextobj != NULL ) {
-        currobj = nextobj;
-        nextobj = GetNextECurrObject( currobj );
+    for( currobj = GetEditCurrObject(); currobj != NULL; currobj = nextobj ) {
+        nextobj = GetNextEditCurrObject( currobj );
         appobj = GetObjptr( currobj );
         if( appobj != GetMainObject() ) {
             if( !FMClipObjExists( appobj ) ) {
@@ -172,13 +171,12 @@ static void CopyObjects( void )
 /*****************************/
 {
     /* Copy the current objects */
-    CURROBJPTR  currobj;
+    OBJPTR      currobj;
     OBJPTR      copyobj;
     OBJPTR      appobj;
 
     FMNewClipboard();
-    currobj = GetECurrObject();
-    while( currobj != NULL ) {
+    for( currobj = GetEditCurrObject(); currobj != NULL; currobj = GetNextEditCurrObject( currobj ) ) {
         appobj = GetObjptr( currobj );
         if( appobj != GetMainObject() ) {
             if( !FMClipObjExists( appobj ) ) {
@@ -188,20 +186,19 @@ static void CopyObjects( void )
                 }
             }
         }
-        currobj = GetNextECurrObject( currobj );
     }
 }
 
 
-WINEXPORT BOOL CALLBACK FMEditWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lparam )
-/*******************************************************************************************/
+BOOL CALLBACK FMEditWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lparam )
+/*********************************************************************************/
 {
     /* processes messages */
-    FARPROC        procaddr;
+    DLGPROC        dlgproc;
     HANDLE         inst;
     POINT          point;
     POINT          offset;
-    BOOL           frommenu;
+    bool           frommenu;
 
     if( !InitState( wnd ) ) {
         return( FALSE );
@@ -211,7 +208,7 @@ WINEXPORT BOOL CALLBACK FMEditWndProc( HWND wnd, UINT message, WPARAM wparam, LP
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case IDM_DELETEOBJECT:
-            frommenu = TRUE;
+            frommenu = true;
             ExecuteCurrObject( DESTROY, &frommenu, NULL );
             SetCurrObject( GetMainObject() );
             break;
@@ -245,9 +242,9 @@ WINEXPORT BOOL CALLBACK FMEditWndProc( HWND wnd, UINT message, WPARAM wparam, LP
             CopyObjects();
             break;
         case IDM_GRID:
-            procaddr = MakeProcInstance( (FARPROC)FMGrid, inst );
-            DialogBox( inst, "GridBox", wnd, (DLGPROC)procaddr );
-            FreeProcInstance( procaddr );
+            dlgproc = MakeProcInstance_DLG( FMGridDlgProc, inst );
+            DialogBox( inst, "GridBox", wnd, dlgproc );
+            FreeProcInstance_DLG( dlgproc );
             InheritState( wnd );
             break;
         case IDM_FMLEFT:
@@ -384,7 +381,7 @@ int WINAPI WEP( int parm )
 
 #endif
 
-BOOL FMEDITAPI ObjectPress( OBJPTR obj, POINT *pt, WORD wparam, HWND wnd )
+bool FMEDITAPI ObjectPress( OBJPTR obj, POINT *pt, WORD wparam, HWND wnd )
 /************************************************************************/
 {
     /* The application is telling us that the object obj got a button down
@@ -392,7 +389,7 @@ BOOL FMEDITAPI ObjectPress( OBJPTR obj, POINT *pt, WORD wparam, HWND wnd )
      */
     if( InitState( wnd ) ) {
         ProcessButtonDown( *pt, wparam & MK_SHIFT, obj );
-        return( TRUE );
+        return( true );
     }
-    return( FALSE );
+    return( false );
 }

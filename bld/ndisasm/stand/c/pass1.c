@@ -43,7 +43,7 @@ extern dis_handle       DHnd;
 
 
 ref_entry DoPass1Relocs( unsigned_8 *contents, ref_entry r_entry,
-                         orl_sec_offset start, orl_sec_offset end )
+                         dis_sec_offset start, dis_sec_offset end )
 {
     long                                value;
     unnamed_label_return_struct         rs;
@@ -51,19 +51,19 @@ ref_entry DoPass1Relocs( unsigned_8 *contents, ref_entry r_entry,
     if( !IsIntelx86() )
         return( r_entry );
 
-    while( r_entry && ( r_entry->offset < start ) ) {
+    while( r_entry != NULL && ( r_entry->offset < start ) ) {
         r_entry = r_entry->next;
     }
 
-    while( r_entry && ( r_entry->offset < end ) ) {
-        if( r_entry->label->shnd && ( r_entry->label->type == LTYP_SECTION ) ) {
+    while( r_entry != NULL && ( r_entry->offset < end ) ) {
+        if( r_entry->label->shnd != ORL_NULL_HANDLE && ( r_entry->label->type == LTYP_SECTION ) ) {
             if( r_entry->addend ) {
                 value = HandleAddend( r_entry );
             } else {
                 switch( RelocSize( r_entry ) ) {
                 case 6:
                 case 4:
-                    value = *((long *)&(contents[ r_entry->offset ]));
+                    value = *((signed_32 *)&(contents[ r_entry->offset ]));
                     break;
                 case 2:
                     value = *((short *)&(contents[ r_entry->offset ]));
@@ -110,7 +110,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, orl_sec_size size
                     ref_list sec_ref_list, scantab_ptr stl )
 // perform pass 1 on one section
 {
-    orl_sec_offset                      loop;
+    dis_sec_offset                      loop;
     dis_dec_ins                         decoded;
     dis_value                           value;
     dis_return                          dr;
@@ -119,7 +119,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, orl_sec_size size
     unsigned                            i;
     ref_entry                           r_entry;
     dis_inst_flags                      flags;
-    orl_sec_offset                      op_pos;
+    dis_sec_offset                      op_pos;
     int                                 is_intel;
     int                                 adjusted;
     sa_disasm_struct                    sds;
@@ -161,10 +161,10 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, orl_sec_size size
 
         // data may not be listed in scan table, but a fixup at this offset will
         // give it away
-        while( r_entry && ( ( r_entry->offset < loop ) || SkipRef(r_entry) ) ) {
+        while( r_entry != NULL && ( ( r_entry->offset < loop ) || SkipRef( r_entry ) ) ) {
             r_entry = r_entry->next;
         }
-        if( r_entry && ( r_entry->offset == loop ) ) {
+        if( r_entry != NULL && ( r_entry->offset == loop ) ) {
             if( is_intel || IsDataReloc( r_entry ) ) {
                 // we just skip the data
                 op_pos = loop;
@@ -201,11 +201,11 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, orl_sec_size size
             case DO_ABSOLUTE:
             case DO_MEMORY_ABS:
                 // Check for reloc at this location
-                while( r_entry && r_entry->offset < op_pos ) {
+                while( r_entry != NULL && r_entry->offset < op_pos ) {
                     r_entry = r_entry->next;
                 }
-                if( r_entry && ( r_entry->offset == op_pos ) ) {
-                    if( is_intel && r_entry->label->shnd
+                if( r_entry != NULL && ( r_entry->offset == op_pos ) ) {
+                    if( is_intel && r_entry->label->shnd != ORL_NULL_HANDLE
                         && ( r_entry->type != ORL_RELOC_TYPE_SEGMENT )
                         && ( r_entry->label->type == LTYP_SECTION ) ) {
                         /* For section offsets under intel we MUST generate a
@@ -214,8 +214,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, orl_sec_size size
                          */
                         if( r_entry->addend ) {
                             r_entry->no_val = 0;
-                            CreateUnnamedLabel( r_entry->label->shnd,
-                                                HandleAddend( r_entry ), &rs );
+                            CreateUnnamedLabel( r_entry->label->shnd, HandleAddend( r_entry ), &rs );
                         } else {
                             r_entry->no_val = 1;
                             if( adjusted && isSelfReloc( r_entry ) &&

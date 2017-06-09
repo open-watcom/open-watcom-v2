@@ -58,20 +58,17 @@ static LPMMINFOLIST     mminfoListHead;
 /*
  * mmioOpen - cover for mmsystem function mmioOpen
  */
-HMMIO PASCAL mmioOpen( LPSTR szFileName, LPMMIOINFO lpmmioinfo,
-                        DWORD dwOpenFlags)
+HMMIO PASCAL mmioOpen( LPSTR szFileName, LPMMIOINFO lpmmioinfo, DWORD dwOpenFlags)
 {
     HMMIO               rc;
     DWORD               alias;
     LPMMINFOLIST        curr;
 
     alias = 0;
-    if( !(dwOpenFlags & (MMIO_ALLOCBUF | MMIO_DELETE | MMIO_PARSE | MMIO_EXIST
-                                | MMIO_GETTEMP) ) ) {
+    if( !(dwOpenFlags & (MMIO_ALLOCBUF | MMIO_DELETE | MMIO_PARSE | MMIO_EXIST | MMIO_GETTEMP) ) ) {
         if( lpmmioinfo->cchBuffer != 0 && lpmmioinfo->pchBuffer != NULL ) {
-            DPMIGetHugeAlias( (DWORD) lpmmioinfo->pchBuffer, &alias,
-                                lpmmioinfo->cchBuffer );
-            lpmmioinfo->pchBuffer = (LPVOID) alias;
+            DPMIGetHugeAlias( (DWORD)lpmmioinfo->pchBuffer, &alias, lpmmioinfo->cchBuffer );
+            lpmmioinfo->pchBuffer = (LPVOID)alias;
         }
     }
 
@@ -129,8 +126,8 @@ LONG PASCAL mmioRead( HMMIO hmmio, HPSTR pch, LONG cch )
     LONG        rc;
     DWORD       alias;
 
-    DPMIGetHugeAlias( (DWORD) pch, &alias, cch );
-    rc = __mmioRead( hmmio, (HPSTR) alias, cch );
+    DPMIGetHugeAlias( (DWORD)pch, &alias, cch );
+    rc = __mmioRead( hmmio, (HPSTR)alias, cch );
     DPMIFreeHugeAlias( alias, cch );
     return( rc );
 
@@ -144,8 +141,8 @@ LONG PASCAL mmioWrite( HMMIO hmmio, const char *pch, LONG cch )
     LONG        rc;
     DWORD       alias;
 
-    DPMIGetHugeAlias( (DWORD) pch, &alias, cch );
-    rc = __mmioWrite( hmmio, (HPSTR) alias, cch );
+    DPMIGetHugeAlias( (DWORD)pch, &alias, cch );
+    rc = __mmioWrite( hmmio, (HPSTR)alias, cch );
     DPMIFreeHugeAlias( alias, cch );
     return( rc );
 

@@ -272,7 +272,7 @@ bool WEXPORT WWindow::processMsg( gui_event msg, void *parm )
         bool dummy;
         GUI_GET_ENDSESSION( parm, ending, dummy );
         endSession( ending );
-        dummy = dummy;
+        /* unused parameters */ (void)dummy;
     case GUI_ACTIVATEAPP:
         bool activated;
         GUI_GET_BOOL( parm, activated );
@@ -313,9 +313,9 @@ void WWindow::enumChildren() {
 }
 
 
-extern "C" bool WinProc( gui_window *hwin, gui_event msg, void *parm ) {
-/**********************************************************************/
-
+extern "C" bool WinProc( gui_window *hwin, gui_event msg, void *parm )
+/********************************************************************/
+{
     WWindow* win = (WWindow *)GUIGetExtra( hwin );
     if( msg == GUI_INIT_WINDOW ) {
         win->setHandle( hwin );
@@ -358,7 +358,7 @@ void WWindow::makeWindow( const char *title, WStyle style, WExStyle exstyle ) {
     create_info.menu = NULL;
     create_info.num_attrs = 0;
     create_info.colours = NULL;
-    create_info.call_back = WinProc;
+    create_info.gui_call_back = WinProc;
     create_info.extra = this;
     create_info.icon = NULL;
     _handle = GUICreateWindow( &create_info );

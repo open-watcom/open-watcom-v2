@@ -36,7 +36,7 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WINEXPORT extern OBJPTR  CALLBACK WdeLBoxCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern CREATE_RTN WdeLBoxCreate;
 extern bool              WdeLBoxInit( bool );
 extern void              WdeLBoxFini( void );
 

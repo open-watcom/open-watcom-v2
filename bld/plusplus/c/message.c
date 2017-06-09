@@ -220,7 +220,7 @@ static IDEBool IDEAPI idePrt    // PRINT FOR IDE
         ErrFileOpen();
     }
     if( err_file != NULL ) {
-        CompFlags.errfile_written = 1;
+        CompFlags.errfile_written = true;
         IdeMsgFormat( hdl
                     , info
                     , buffer
@@ -389,12 +389,9 @@ void MsgDisplay                 // DISPLAY A MESSAGE
               , msgnum
               , VbufString( &buffer )
               , msg_locn );
-    if( context_changed
-     && ! CompFlags.ew_switch_used
-     && ( severity == IDEMSGSEV_ERROR
-       || severity == IDEMSGSEV_WARNING )
-     && ( context == CTX_SOURCE
-       || context == CTX_FORCED_INCS )
+    if( context_changed && !CompFlags.ew_switch_used
+     && ( severity == IDEMSGSEV_ERROR || severity == IDEMSGSEV_WARNING )
+     && ( context == CTX_SOURCE || context == CTX_FORCED_INCS )
       ) {
         build_file_nesting();
     }
@@ -477,7 +474,8 @@ static void prtMsg(             // PRINT A MESSAGE
 {
     IDEMsgSeverity severity;    // - message severity
 
-    if( CompFlags.cpp_output )  return;
+    if( CompFlags.cpp_output )
+        return;
     if( warn_level == WLEVEL_NOTE ) {
         err_locn = notes_locn;
         severity = IDEMSGSEV_NOTE;
@@ -601,10 +599,10 @@ static bool okToPrintMsg        // SEE IF OK TO PRINT MESSAGE
         break;
       case MSG_TYPE_ANSIERR :
       case MSG_TYPE_ANSIWARN :
-        print_err = ! CompFlags.extensions_enabled;
+        print_err = !CompFlags.extensions_enabled;
         break;
       case MSG_TYPE_ANSI :
-        if( ! CompFlags.extensions_enabled ) {
+        if( !CompFlags.extensions_enabled ) {
             level = WLEVEL_ERROR;
         }
         break;
@@ -987,7 +985,8 @@ unsigned ErrPCHVersion(         // PROVIDE A VERSION NUMBER FOR THE ERROR MESSAG
 static void errFileInit(        // INITIALIZE FOR NO ERROR FILE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     errLimitExceeded = false;
     err_file = NULL;
     err_locn.src_file = NULL;
@@ -1003,9 +1002,10 @@ static void errFileInit(        // INITIALIZE FOR NO ERROR FILE
 static void errFileFini(        // CLOSE ERROR FILE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     if( IoSuppCloseFile( &err_file ) ) {
-        if( ! CompFlags.errfile_written ) {
+        if( !CompFlags.errfile_written ) {
             fileErase( IoSuppOutFileName( OFT_ERR ) );
         }
     }
@@ -1057,12 +1057,14 @@ pch_status PCHWriteErrWarnData( void )
 
 pch_status PCHInitErrWarnData( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniErrWarnData( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }

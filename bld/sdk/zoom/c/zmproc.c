@@ -628,18 +628,13 @@ LRESULT CALLBACK ZOOMMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
     return( FALSE );
 }
 
-void DoAutoRefresh( HWND mainhwnd, BOOL on ) {
-
-    UINT        ret;
-
+void DoAutoRefresh( HWND mainhwnd, BOOL on )
+{
     KillTimer( mainhwnd, ZM_REFRESH_TIMER );
     ConfigInfo.autorefresh = FALSE;
     if( on ) {
-        ret = SetTimer( mainhwnd, ZM_REFRESH_TIMER,
-                        ConfigInfo.refresh_interval * 100, NULL );
-        if( !ret ) {
-            RCMessageBox( mainhwnd, STR_UNABLE_TO_AUTOREFRESH,
-                        AppName, MB_OK | MB_ICONEXCLAMATION );
+        if( SetTimer( mainhwnd, ZM_REFRESH_TIMER, ConfigInfo.refresh_interval * 100, NULL ) == 0 ) {
+            RCMessageBox( mainhwnd, STR_UNABLE_TO_AUTOREFRESH, AppName, MB_OK | MB_ICONEXCLAMATION );
             ConfigInfo.autorefresh = FALSE;
         } else {
             ConfigInfo.autorefresh = TRUE;

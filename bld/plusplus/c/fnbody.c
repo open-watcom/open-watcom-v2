@@ -444,11 +444,7 @@ static FNLABEL *findLabel( NAME name )
     new_label->dangerous = false;
     new_label->destination.id = CgFrontLabelGoto();
     new_label->destination.defn = LabelAllocLabDef();
-    if( PragToggle.unreferenced ) {
-        new_label->referenced = false;
-    } else {
-        new_label->referenced = true;
-    }
+    new_label->referenced = !PragToggle.unreferenced;
     return( new_label );
 }
 
@@ -590,7 +586,7 @@ static void parseForStmt( void )
 
     nextYYToken();
     mustRecog( T_LEFT_PAREN );
-    if( ! CompFlags.use_old_for_scope ) {
+    if( !CompFlags.use_old_for_scope ) {
         openScope();
     }
     if( CurToken == T_SEMI_COLON ) {
@@ -1445,7 +1441,7 @@ static bool endOfStmt(          // PROCESS END-OF-STATEMENT
                  * "else" part. BTW, re-declaring that name is not
                  * allowed by the standard, but the current code
                  * doesn't catch that.
-                 */ 
+                 */
                 return recog;
             }
             if( ! top_block->expr_true ) {
@@ -1473,7 +1469,7 @@ static bool endOfStmt(          // PROCESS END-OF-STATEMENT
             closeScope();
             doJUMP( IC_LABEL_CS, O_GOTO, top_block->u.l.top_loop );
             dumpOutsideLabel( top_block );
-            if( id == CS_FOR && ! CompFlags.use_old_for_scope ) {
+            if( id == CS_FOR && !CompFlags.use_old_for_scope ) {
                 closeScope();
             }
             CgFrontLabfreeCs( 3 );
@@ -1825,7 +1821,7 @@ static void initFunctionBody( DECL_INFO *dinfo, FUNCTION_DATA *f, TYPE fn_type )
     ScopeBeginFunction( func );
     if( (TargetSwitches & FLOATING_SS) == 0 ) {
         if( fn_type->flag & TF1_INTERRUPT ) {
-            if( ! CompFlags.mfi_switch_used ) {
+            if( !CompFlags.mfi_switch_used ) {
                 TargetSwitches |= FLOATING_SS;
                 f->floating_ss = true;
             }
@@ -2265,7 +2261,8 @@ static void functionSuicideHandler( void )
 
 static void functionInit( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     functionSuicide.call_back = functionSuicideHandler;
     RegisterSuicideCallback( &functionSuicide );
     carveCSTACK = CarveCreate( sizeof( CSTACK ), BLOCK_CSTACK );
@@ -2276,7 +2273,8 @@ static void functionInit( INITFINI* defn )
 
 static void functionFini( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     DbgStmt( CarveVerifyAllGone( carveCSTACK, "CSTACK" ) );
     DbgStmt( CarveVerifyAllGone( carveSWCASE, "SWCASE" ) );
     DbgStmt( CarveVerifyAllGone( carveFNLABEL, "FNLABEL" ) );
@@ -2397,7 +2395,8 @@ void FunctionBodyDefargStartup(
 void FunctionBodyDefargShutdown(
     FUNCTION_DATA *f )          // - data
 {
-    f = f;
+    /* unused parameters */ (void)f;
+
     DbgAssert( f->is_defarg == true );
     currFunction = currFunction->next;
 }

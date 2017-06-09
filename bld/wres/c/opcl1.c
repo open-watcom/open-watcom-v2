@@ -30,12 +30,9 @@
 
 
 #include <stdio.h>
-#include "bool.h"
 #include "watcom.h"
-#include "filefmt.h"
-#include "wressetr.h"
-#include "wresset2.h"
 #include "wres.h"
+#include "wresset2.h"
 #include "opcl.h"
 
 
@@ -72,19 +69,19 @@ bool CloseResFile( PHANDLE_INFO hinfo )
  * and return false otherwise
  */
 {
-    bool    rc;
+    bool    ok;
 
-    rc = true;
+    ok = true;
     switch( hinfo->status ) {
     default:
         FiniResources( hinfo );
         /* fall throught */
     case 1:
-        rc = !ResCloseFile( hinfo->fid );
+        ok = !ResCloseFile( hinfo->fid );
         hinfo->fid = WRES_NIL_HANDLE;
         hinfo->status = 0;
         /* fall throught */
     case 0:
-        return( rc );
+        return( ok );
     }
 }

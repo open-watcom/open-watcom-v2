@@ -162,7 +162,7 @@ void WInfiniteList::unLoadAllBut( int contextIdx ) {
         }
     }
     #else
-    contextIdx = contextIdx;
+    /* unused parameters */ (void)contextIdx;
     #endif
 }
 

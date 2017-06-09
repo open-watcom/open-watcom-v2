@@ -235,7 +235,8 @@ void *CtxWhereAreYou(           // SET DEBUGGING BUFFER
 static void init(               // MODULE INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     registered_post_contexts = NULL;
     last_context = CTX_START;
     last_data = NULL;
@@ -245,7 +246,7 @@ static void init(               // MODULE INITIALIZATION
 static void fini(               // MODULE COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
 }
 
 

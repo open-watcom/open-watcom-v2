@@ -47,7 +47,7 @@
                           DIF_X86_GS | DIF_X86_SS )
 
 struct pass2 {
-    orl_sec_offset      loop;
+    dis_sec_offset      loop;
     orl_sec_size        size;
     num_errors          disassembly_errors;
     ref_entry           r_entry;
@@ -64,7 +64,7 @@ extern dis_format_flags         DFormat;
 extern bool                     source_mix;
 extern char *                   CommentString;
 
-static orl_sec_offset   routineBase = 0;
+static dis_sec_offset   routineBase = 0;
 static orl_sec_size     routineSize = 0;
 
 dis_return DisCliGetData( void *d, unsigned off, size_t size, void *buff )
@@ -85,7 +85,7 @@ dis_return DisCliGetData( void *d, unsigned off, size_t size, void *buff )
     return( DR_OK );
 }
 
-static label_entry handleLabels( char *sec_name, orl_sec_offset offset, orl_sec_offset end,
+static label_entry handleLabels( const char *sec_name, dis_sec_offset offset, dis_sec_offset end,
                              label_entry l_entry, orl_sec_size size )
 // handle any labels at this offset and skip all unused non-label symbols
 {
@@ -148,8 +148,8 @@ static return_val referenceString( ref_entry r_entry, orl_sec_size size,
                                    char *buff, ref_flags flags )
 {
     label_entry         l_entry;
-    char                *sep = ":";
-    char                *frame;
+    const char          *sep = ":";
+    const char          *frame;
     char                temp[15];
 
     frame = r_entry->frame;
@@ -209,7 +209,7 @@ static return_val referenceString( ref_entry r_entry, orl_sec_size size,
 }
 
 size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
-                           orl_sec_offset offset, orl_sec_size sec_size,
+                           dis_sec_offset offset, orl_sec_size sec_size,
                            ref_entry * r_entry, char *buff )
 // handle any references at this offset
 {
@@ -218,7 +218,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
     char                *p;
 
     buff[0] = '\0';
-    for( ; *r_entry && (*r_entry)->offset == offset; *r_entry = (*r_entry)->next ) {
+    for( ; *r_entry != NULL && (*r_entry)->offset == offset; *r_entry = (*r_entry)->next ) {
         if( (*r_entry)->no_val == 0 ) {
             nvalue = value;
         } else if( (*r_entry)->addend ) {
@@ -515,7 +515,8 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff
     dis_operand         *op;
     ref_flags           rf;
 
-    buff_len = buff_len;
+    /* unused parameters */ (void)buff_len;
+
     buff[0] = '\0';
 
     rf = RFLAG_DEFAULT;
@@ -583,13 +584,13 @@ static void processDataInCode( section_ptr sec, unsigned_8 *contents, struct pas
         DumpDataFromSection( contents, data->loop, offset, l_entry,
                              &(data->r_entry), sec );
     }
-    while( data->r_entry && ( data->r_entry->offset < offset ) ) {
+    while( data->r_entry != NULL && ( data->r_entry->offset < offset ) ) {
         data->r_entry = data->r_entry->next;
     }
     data->loop = offset;
 }
 
-static char *processFpuEmulatorFixup( ref_entry *r, orl_sec_offset loop )
+static char *processFpuEmulatorFixup( ref_entry *r, dis_sec_offset loop )
 {
     char    *fixup;
 
@@ -676,11 +677,11 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
         }
         // data may not be listed in scan table, but a fixup at this offset will
         // give it away
-        while( data.r_entry && ( data.r_entry->offset < data.loop ) ) {
+        while( data.r_entry != NULL && ( data.r_entry->offset < data.loop ) ) {
             data.r_entry = data.r_entry->next;
         }
         FPU_fixup = processFpuEmulatorFixup( &data.r_entry, data.loop );
-        if( data.r_entry && ( data.r_entry->offset == data.loop ) ) {
+        if( data.r_entry != NULL && ( data.r_entry->offset == data.loop ) ) {
             if( is_intel || IsDataReloc( data.r_entry ) ) {
                 // we just skip the data
                 decoded.size = 0;
@@ -756,7 +757,7 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
         BufferPrint();
     }
     if( sec_label_list ) {
-        l_entry = handleLabels( sec->name, size, (orl_sec_offset)-1, l_entry, size );
+        l_entry = handleLabels( sec->name, size, (dis_sec_offset)-1, l_entry, size );
     }
     if( !(DFormat & DFF_ASM) ) {
         routineSize = data.loop - routineBase;

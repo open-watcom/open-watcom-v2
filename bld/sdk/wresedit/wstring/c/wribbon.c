@@ -65,7 +65,7 @@ typedef struct {
     char    *up;
     char    *down;
     UINT    menu_id;
-    int     tip_id;
+    msg_id  tip_id;
 } WRibbonName;
 
 /****************************************************************************/
@@ -78,11 +78,11 @@ typedef struct {
 WRibbonName WRibbonNames[] = {
     { "Clear",      NULL, IDM_STR_CLEAR,    W_TIP_CLEAR   },
     { "Save",       NULL, IDM_STR_UPDATE,   W_TIP_UPDATE  },
-    { NULL,         NULL, BLANK_PAD,        -1            },
+    { NULL,         NULL, BLANK_PAD,        0             },
     { "Cut",        NULL, IDM_STR_CUT,      W_TIP_CUT     },
     { "Copy",       NULL, IDM_STR_COPY,     W_TIP_COPY    },
     { "Paste",      NULL, IDM_STR_PASTE,    W_TIP_PASTE   },
-    { NULL,         NULL, BLANK_PAD * 3,    -1            },
+    { NULL,         NULL, BLANK_PAD * 3,    0             },
     { "InsertKey",  NULL, IDM_STR_NEWITEM,  W_TIP_NEWITEM },
     { "DeleteKey",  NULL, IDM_STR_DELETE,   W_TIP_DELETE  }
 };
@@ -92,11 +92,11 @@ WRibbonName WSORibbonNames[] = {
     { "New",        NULL, IDM_STR_CLEAR,    W_TIP_NEW     },
     { "Open",       NULL, IDM_STR_OPEN,     W_TIP_OPEN    },
     { "Save",       NULL, IDM_STR_SAVE,     W_TIP_SAVE    },
-    { NULL,         NULL, BLANK_PAD,        -1            },
+    { NULL,         NULL, BLANK_PAD,        0             },
     { "Cut",        NULL, IDM_STR_CUT,      W_TIP_CUT     },
     { "Copy",       NULL, IDM_STR_COPY,     W_TIP_COPY    },
     { "Paste",      NULL, IDM_STR_PASTE,    W_TIP_PASTE   },
-    { NULL,         NULL, BLANK_PAD * 3,    -1            },
+    { NULL,         NULL, BLANK_PAD * 3,    0             },
     { "InsertKey",  NULL, IDM_STR_NEWITEM,  W_TIP_NEWITEM },
     { "DeleteKey",  NULL, IDM_STR_DELETE,   W_TIP_DELETE  }
 };
@@ -211,11 +211,11 @@ void WShowRibbon( WStringEditInfo *einfo, HMENU menu )
     if( einfo->show_ribbon ) {
         mtext = AllocRCString( W_SHOWTOOLBAR );
         ShowWindow( einfo->ribbon->win, SW_HIDE );
-        WSetStatusByID( einfo->wsb, -1, W_TOOLBARHIDDEN );
+        WSetStatusByID( einfo->wsb, 0, W_TOOLBARHIDDEN );
     } else {
         mtext = AllocRCString( W_HIDETOOLBAR );
         ShowWindow( einfo->ribbon->win, SW_SHOW );
-        WSetStatusByID( einfo->wsb, -1, W_TOOLBARSHOWN );
+        WSetStatusByID( einfo->wsb, 0, W_TOOLBARSHOWN );
     }
 
     einfo->show_ribbon = !einfo->show_ribbon;
@@ -295,7 +295,7 @@ bool WInitRibbons( HINSTANCE inst )
             } else {
                 WRibbonInfo->items[i].depressed = WRibbonInfo->items[i].u.bmp;
             }
-            if( WRibbonNames[i].tip_id < 0 || LoadString( inst, WRibbonNames[i].tip_id, WRibbonInfo->items[i].tip, MAX_TIP ) <= 0 ) {
+            if( !( WRibbonNames[i].tip_id > 0 && LoadString( inst, WRibbonNames[i].tip_id, WRibbonInfo->items[i].tip, MAX_TIP ) > 0 ) ) {
                 WRibbonInfo->items[i].tip[0] = '\0';
             }
         } else {
@@ -315,7 +315,7 @@ bool WInitRibbons( HINSTANCE inst )
             } else {
                 WSORibbonInfo->items[i].depressed = WSORibbonInfo->items[i].u.bmp;
             }
-            if( WSORibbonNames[i].tip_id < 0 || LoadString( inst, WSORibbonNames[i].tip_id, WSORibbonInfo->items[i].tip, MAX_TIP ) <= 0 ) {
+            if( !( WSORibbonNames[i].tip_id > 0 && LoadString( inst, WSORibbonNames[i].tip_id, WSORibbonInfo->items[i].tip, MAX_TIP ) > 0 ) ) {
                 WSORibbonInfo->items[i].tip[0] = '\0';
             }
         } else {

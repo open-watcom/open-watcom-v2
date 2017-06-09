@@ -74,7 +74,7 @@ int     SysSeek( b_file *io, long int new_offset, int seek_mode )
     long int    curr_offset;
     long int    new_page;
     long int    page_offset;
-    uint        bytes_read;
+    size_t      bytes_read;
 
     curr_offset = CurrFileOffset( io );
     if( seek_mode == SEEK_CUR ) {
@@ -122,10 +122,10 @@ int     SysSeek( b_file *io, long int new_offset, int seek_mode )
             return( -1 );
         }
         io->phys_offset += io->high_water;
-        bytes_read = readbytes( io, io->buffer + io->high_water,
-                                            io->buff_size - io->high_water );
+        bytes_read = readbytes( io, io->buffer + io->high_water, io->buff_size - io->high_water );
         if( bytes_read == READ_ERROR ) {
-            if( io->stat != IO_EOF ) return( -1 );
+            if( io->stat != IO_EOF )
+                return( -1 );
             IOOk( io );
             io->phys_offset -= io->high_water;  // restore offset
             if( lseek( io->handle, -(long)io->high_water, SEEK_CUR ) < 0 ) {
@@ -143,7 +143,8 @@ int     SysSeek( b_file *io, long int new_offset, int seek_mode )
         return( 0 );
     }
     if( new_offset != curr_offset ) {
-        if( FlushBuffer( io ) < 0 ) return( 0 );
+        if( FlushBuffer( io ) < 0 )
+            return( 0 );
         // round down to the nearest multiple of buff_size
         new_page = new_offset - new_offset % io->buff_size;
         if( lseek( io->handle, new_page, SEEK_SET ) < 0 ) {
@@ -154,7 +155,8 @@ int     SysSeek( b_file *io, long int new_offset, int seek_mode )
         io->b_curs = new_offset - new_page;
         bytes_read = readbytes( io, io->buffer, io->buff_size );
         if( bytes_read == READ_ERROR ) {
-            if( io->stat != IO_EOF ) return( -1 );
+            if( io->stat != IO_EOF )
+                return( -1 );
             IOOk( io );
             io->attrs |= PAST_EOF;
         } else {

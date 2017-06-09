@@ -36,14 +36,14 @@
 
 #include "dlist.def"
 
-extern void DListAddElt( DLIST **head, DLIST_ELT obj )
+extern void DListAddElt( DLIST **head, DLIST_ELT elt )
 /****************************************************/
 {
     /* add a new element to the dlist */
     DLIST * new;
 
     new = EdAlloc( sizeof( DLIST ) );
-    new->elt = obj;
+    new->elt = elt;
     new->next = *head;
     new->prev = NULL;
     if( *head != NULL ) {
@@ -91,14 +91,14 @@ extern DLIST *DListPrev( DLIST* curr )
 }
 
 
-extern void DListRemoveElt( DLIST **lst, DLIST_ELT obj )
+extern void DListRemoveElt( DLIST **lst, DLIST_ELT elt )
 /******************************************************/
 {
     /* delete the object from the dlist */
     DLIST * node;
 
     for( node = *lst; node != NULL; node = node->next ) {
-        if( node->elt.original == obj.original ) {
+        if( node->elt.original == elt.original ) {
             if( node->next != NULL ) {
                 node->next->prev = node->prev;
             }
@@ -145,7 +145,7 @@ extern DLIST *DListFindElt( DLIST *l, DLIST_ELT elt )
 }
 
 
-extern DLIST *DListCopy( DLIST* l )
+extern DLIST *DListCopy( DLIST *l )
 /*********************************/
 {
     /* make a copy of the passed dlist */
@@ -158,14 +158,14 @@ extern DLIST *DListCopy( DLIST* l )
     return( head );
 }
 
-extern void DListInsertElt( DLIST *prev, DLIST_ELT obj )
+extern void DListInsertElt( DLIST *prev, DLIST_ELT elt )
 /******************************************************/
 {
     /* add a new element to the list */
     DLIST *new;
 
     new = EdAlloc( sizeof( DLIST ) );
-    new->elt = obj;
+    new->elt = elt;
     new->next = prev->next;
     new->prev = prev;
     prev->next = new;

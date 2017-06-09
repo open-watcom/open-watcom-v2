@@ -43,7 +43,7 @@ HANDLE                  InstanceHandle,PrevInstance;
 samp_save               __far * __near SampSave;
 WORD                    SleepTime;
 DWORD                   TotalTime;
-HANDLE                  SampledProg;
+HINSTANCE               SampledProg;
 bool                    WDebug386 = false;
 interrupt_struct        __near IntData;
 seg_offset              CommonAddr = { 0, 0 };

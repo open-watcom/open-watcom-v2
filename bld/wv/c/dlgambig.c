@@ -48,7 +48,8 @@ static int SymPick( const char *text, GUIPICKCALLBACK *PickInit )
 {
     dlg_pick    dlg;
 
-    text=text;
+    /* unused parameters */ (void)text;
+
     dlg.func = PickInit;
     dlg.chosen = -1;
     ResDlgOpen( &GUIPickEvent, &dlg, DIALOG_AMBIG );

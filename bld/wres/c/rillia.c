@@ -70,7 +70,8 @@ void ResInsertLLItemAfter( void **headptr, void **tailptr, void *whoptr, void *i
     ss          *who;
     ss          *item;
 
-    headptr = headptr;
+    /* unused parameters */ (void)headptr;
+
     tail = (ss **)tailptr;
     who  = (ss *)whoptr;
     item = (ss *)itemptr;

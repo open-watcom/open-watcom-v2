@@ -32,9 +32,7 @@
 #include "variety.h"
 #include <windows.h>
 #include "rtdata.h"
-#ifdef BROKEN
 #include "pdreg.h"
-#endif
 
 #define GetContextReg(ctx, reg) (*(void**)&((ctx)->Int##reg))
 
@@ -42,54 +40,44 @@
 #define AXP_INSTR_SIZE  4
 
 
-typedef struct __PDATA
-{
-    unsigned long entry;
-    unsigned long end;
-    unsigned long handler;
-    unsigned long data;
-    unsigned long endProlog;
-} _PDATA;
-
-_WCRTLINK int _ProcSetsFP(_PDATA *pdata)
+_WCRTLINK int _ProcSetsFP( _PDATA *pdata )
 {
     unsigned int inst;
     int          usesFP = 0;
 
-    if (pdata->entry != pdata->endProlog)
-    {
-        inst = *(unsigned int *)(((char *)pdata->endProlog) - AXP_INSTR_SIZE);
-        if (inst == AXP_MOV_SP_FP)
+    if( pdata->BeginAddress != pdata->PrologEndAddress ) {
+        inst = *(unsigned int *)( ((char *)pdata->PrologEndAddress) - AXP_INSTR_SIZE);
+        if (inst == AXP_MOV_SP_FP) {
             usesFP = 1;
-    } /* if */
+        }
+    }
 
-    return usesFP;
-} /* _ProcSetsFP() */
+    return( usesFP );
+}
 
 #ifdef BROKEN
 
-_WCRTLINK _EXCINFO *_SetPData(_EXCINFO *info)
+_WCRTLINK _EXCINFO *_SetPData( _EXCINFO *info )
 {
-    info->pdata = (_PDATA *)RtlLookupFunctionEntry(info->pc);
+    info->pdata = RtlLookupFunctionEntry( info->pc );
     return info;
-} /* _SetPData() */
+}
 
 
-_WCRTLINK void _NextExcInfo(_EXCINFO *info)
+_WCRTLINK void _NextExcInfo( _EXCINFO *info )
 {
-    info->pc = RtlVirtualUnwind(info->pc, info->pdata, &info->context,
-                                &info->in_func, info->est_frame, 0);
-    _SetPData(info);
-} /* _NextExcInfo() */
+    info->pc = RtlVirtualUnwind( info->pc, info->pdata, &info->ContextRecord, &info->InFunction, info->EstablisherFrame, 0 );
+    _SetPData( info );
+}
 
 
-_WCRTLINK void _InitExcInfo(_EXCINFO *info)
+_WCRTLINK void _InitExcInfo( _EXCINFO *info )
 {
-    RtlCaptureContext(&info->context);
-    info->in_func = 1;
-    info->pc      = GetContextReg(&info->context, Ra);
+    RtlCaptureContext( &info->ContextRecord );
+    info->InFunction = 1;
+    info->pc      = GetContextReg( &info->ContextRecord, Ra );
 
-    _SetPData(info);
-    _NextExcInfo(info);
-} /* _InitExcInfo() */
+    _SetPData( info );
+    _NextExcInfo( info );
+}
 #endif

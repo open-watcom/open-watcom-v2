@@ -70,11 +70,11 @@ extern "C" long StringSearch
 // Use the Boyer-Moore algorithm:
 
     {
-        auto unsigned char  SkipTable[256];
-             unsigned int   extra_patlen;   // pattern size > 255
-             unsigned int   str_index;
-             unsigned int   pat_index;
-             unsigned int   skip;
+        unsigned char  SkipTable[256];
+        unsigned int   extra_patlen;   // pattern size > 255
+        unsigned int   str_index;
+        unsigned int   pat_index;
+        unsigned int   skip;
 
 // First, construct the SkipTable. For each character found in the pattern,
 // the corresponding SkipTable entry contains the offset from the last

@@ -67,48 +67,47 @@ bool WREChangeMemFlags( void )
 {
     WRECurrentResInfo   curr;
     HWND                parent;
-    char                *name;
-    int                 type;
+    char                *type_name;
+    uint_16             type_id;
     uint_16             mflags;
-    FARPROC             cb;
+    HELP_CALLBACK       hcb;
     bool                ok;
 
-    cb = NULL;
-    name = NULL;
+    hcb = (HELP_CALLBACK)NULL;
+    type_name = NULL;
     mflags = 0;
+    type_id = 0;
 
     ok = WREGetCurrentResource( &curr );
 
     if( ok )  {
-        if( curr.type->Info.TypeName.IsName ) {
-            type = 0;
-        } else {
-            type = curr.type->Info.TypeName.ID.Num;
+        if( !curr.type->Info.TypeName.IsName ) {
+            type_id = curr.type->Info.TypeName.ID.Num;
         }
-        name   = WREGetResName( curr.res, type );
+        type_name = WREGetResName( curr.res, type_id );
         parent = WREGetMainWindowHandle();
     }
 
     if( ok ) {
-        cb = MakeProcInstance( (FARPROC)WREHelpRoutine, WREGetAppInstance() );
-        ok = (cb != (FARPROC)NULL);
+        hcb = (HELP_CALLBACK)MakeProcInstance( (FARPROC)WREHelpRoutine, WREGetAppInstance() );
+        ok = (hcb != (HELP_CALLBACK)NULL);
     }
 
     if( ok ) {
         mflags = curr.lang->Info.MemoryFlags;
-        ok = WRChangeMemFlags( parent, name, &mflags, cb );
+        ok = WRChangeMemFlags( parent, type_name, &mflags, hcb );
     }
 
     if( ok ) {
         curr.lang->Info.MemoryFlags = mflags;
     }
 
-    if( cb != (FARPROC)NULL ) {
-        FreeProcInstance( (FARPROC)cb );
+    if( hcb != (HELP_CALLBACK)NULL ) {
+        FreeProcInstance( (FARPROC)hcb );
     }
 
-    if( name != NULL ) {
-        WRMemFree( name );
+    if( type_name != NULL ) {
+        WRMemFree( type_name );
     }
 
     return( ok );

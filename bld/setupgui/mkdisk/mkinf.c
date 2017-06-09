@@ -1140,7 +1140,8 @@ int CreateScript( long init_size, unsigned padding )
     unsigned            nfiles;
     int                 i;
 
-    init_size = init_size;
+    /* unused parameters */ (void)init_size;
+
     fp = fopen( "setup.inf", "w" );
     if( fp == NULL ) {
         printf( "Cannot create file 'setup.inf'\n" );

@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
+#include "commonui.h"
 #include <stdlib.h>
 #include <string.h>
 #include "watcom.h"
@@ -41,6 +41,8 @@
 #include "selft.h"
 #include "jdlg.h"
 #include "winexprt.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -54,13 +56,13 @@ typedef struct {
     bool                is32bit;
     bool                use_wres;
     WRFileType          file_type;
-    FARPROC             hcb;
+    HELP_CALLBACK       help_callback;
 } WRSFT;
 
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT extern BOOL CALLBACK WRSelectFileTypeProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT extern INT_PTR CALLBACK WRSelectFileTypeDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -122,9 +124,9 @@ static WRFileType educatedGuess( const char *name, bool is32bit, bool use_wres )
 }
 
 WRFileType WRAPI WRSelectFileType( HWND parent, const char *name, bool is32bit,
-                                       bool use_wres, FARPROC hcb )
+                                       bool use_wres, HELP_CALLBACK help_callback )
 {
-    DLGPROC     proc;
+    DLGPROC     dlgproc;
     HINSTANCE   inst;
     INT_PTR     modified;
     WRSFT       sft;
@@ -140,18 +142,18 @@ WRFileType WRAPI WRSelectFileType( HWND parent, const char *name, bool is32bit,
         return( guess );
     }
 
-    sft.hcb = hcb;
+    sft.help_callback = help_callback;
     sft.file_name = name;
     sft.file_type = WR_DONT_KNOW;
     sft.is32bit = is32bit;
     sft.use_wres  = use_wres;
     inst = WRGetInstance();
 
-    proc = (DLGPROC)MakeProcInstance( (FARPROC)WRSelectFileTypeProc, inst );
+    dlgproc = MakeProcInstance_DLG( WRSelectFileTypeDlgProc, inst );
 
-    modified = JDialogBoxParam( inst, "WRSelectFileType", parent, proc, (LPARAM)&sft );
+    modified = JDialogBoxParam( inst, "WRSelectFileType", parent, dlgproc, (LPARAM)(LPVOID)&sft );
 
-    FreeProcInstance( (FARPROC)proc );
+    FreeProcInstance_DLG( dlgproc );
 
     if( modified == -1 ) {
         return( WR_DONT_KNOW );
@@ -206,8 +208,7 @@ void WRSetWinInfo( HWND hDlg, WRSFT *sft )
     no_exe = FALSE;
 
     if( sft->file_name != NULL ) {
-        SendDlgItemMessage( hDlg, IDM_FILENAME, WM_SETTEXT, 0,
-                            (LPARAM)(LPSTR)sft->file_name );
+        SendDlgItemMessage( hDlg, IDM_FILENAME, WM_SETTEXT, 0, (LPARAM)(LPCSTR)sft->file_name );
         _splitpath( sft->file_name, NULL, NULL, NULL, ext );
         if( stricmp( ext, ".res" ) == 0 ) {
             CheckDlgButton( hDlg, IDM_FTRES, BST_CHECKED );
@@ -294,12 +295,12 @@ bool WRGetWinInfo( HWND hDlg, WRSFT *sft )
     return( true );
 }
 
-WINEXPORT BOOL CALLBACK WRSelectFileTypeProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WRSelectFileTypeDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WRSFT       *sft;
-    BOOL        ret;
+    bool        ret;
 
-    ret = FALSE;
+    ret = false;
 
     switch( message ) {
     case WM_DESTROY:
@@ -311,7 +312,7 @@ WINEXPORT BOOL CALLBACK WRSelectFileTypeProc( HWND hDlg, UINT message, WPARAM wP
         SET_DLGDATA( hDlg, sft );
         WRRegisterDialog( hDlg );
         WRSetWinInfo( hDlg, sft );
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_SYSCOLORCHANGE:
@@ -322,8 +323,8 @@ WINEXPORT BOOL CALLBACK WRSelectFileTypeProc( HWND hDlg, UINT message, WPARAM wP
         switch( LOWORD( wParam ) ) {
         case IDM_SFTHELP:
             sft = (WRSFT *)GET_DLGDATA( hDlg );
-            if( sft != NULL && sft->hcb != NULL ) {
-                (*(void (*)(void))sft->hcb)();
+            if( sft != NULL && sft->help_callback != (HELP_CALLBACK)NULL ) {
+                sft->help_callback();
             }
             break;
 
@@ -331,10 +332,10 @@ WINEXPORT BOOL CALLBACK WRSelectFileTypeProc( HWND hDlg, UINT message, WPARAM wP
             sft = (WRSFT *)GET_DLGDATA( hDlg );
             if( sft == NULL ) {
                 EndDialog( hDlg, FALSE );
-                ret = TRUE;
+                ret = true;
             } else if( WRGetWinInfo( hDlg, sft ) ) {
                 EndDialog( hDlg, TRUE );
-                ret = TRUE;
+                ret = true;
             } else {
                 WRDisplayErrorMsg( WR_INVALIDSELECTION );
             }
@@ -342,7 +343,7 @@ WINEXPORT BOOL CALLBACK WRSelectFileTypeProc( HWND hDlg, UINT message, WPARAM wP
 
         case IDCANCEL:
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDM_TSWINNT:

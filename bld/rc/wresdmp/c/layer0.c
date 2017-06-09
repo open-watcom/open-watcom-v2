@@ -31,13 +31,14 @@
 
 
 #include "layer0.h"
+#include "wio.h"
 #include "rcrtns.h"
 #include "reserr.h"
 
 #include "clibext.h"
 
 
-WResFileID wres_open( const char *name, wres_open_mode omode )
+WResFileID res_open( const char *name, wres_open_mode omode )
 {
     int     fd;
 
@@ -59,34 +60,40 @@ WResFileID wres_open( const char *name, wres_open_mode omode )
     return( WRES_PH2FID( fd ) );
 }
 
-int wres_close( WResFileID fid )
+bool res_close( WResFileID fid )
 {
-    return( close( WRES_FID2PH( fid ) ) );
+    return( close( WRES_FID2PH( fid ) ) != 0 );
 }
 
-WResFileSSize wres_read( WResFileID fid, void *buf, WResFileSize size )
+size_t res_read( WResFileID fid, void *buf, size_t size )
 {
     return( posix_read( WRES_FID2PH( fid ), buf, size ) );
 }
 
-WResFileSSize wres_write( WResFileID fid, const void *buf, WResFileSize size )
+size_t res_write( WResFileID fid, const void *buf, size_t size )
 {
     return( posix_write( WRES_FID2PH( fid ), buf, size ) );
 }
 
-WResFileOffset wres_seek( WResFileID fid, WResFileOffset pos, int where )
+bool res_seek( WResFileID fid, WResFileOffset pos, int where )
 {
     if( where == SEEK_SET ) {
         /* fool the wres library into thinking that the resource information starts at offset 0 */
-        return( lseek( WRES_FID2PH( fid ), pos + WResFileShift, where ) - WResFileShift );
-    } else {
-        return( lseek( WRES_FID2PH( fid ), pos, where ) );
+        return( lseek( WRES_FID2PH( fid ), pos + WResFileShift, where ) == -1 );
     }
+    return( lseek( WRES_FID2PH( fid ), pos, where ) == -1 );
 }
 
-WResFileOffset wres_tell( WResFileID fid )
+WResFileOffset res_tell( WResFileID fid )
 {
     return( tell( WRES_FID2PH( fid ) ) );
 }
 
-WResSetRtns( wres_open, wres_close, wres_read, wres_write, wres_seek, wres_tell, RCALLOC, RCFREE );
+bool res_ioerr( WResFileID fid, size_t rc )
+/*****************************************/
+{
+    fid=fid;
+    return( rc == -1 );
+}
+
+WResSetRtns( res_open, res_close, res_read, res_write, res_seek, res_tell, res_ioerr, RESALLOC, RESFREE );

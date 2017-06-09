@@ -27,6 +27,7 @@ BEGIN {
         exit 3
     }
     FS = "'"    # Split input lines on apostrophes
+    printf( "" ) > OUTFILE
 }
 
 # Process the input lines

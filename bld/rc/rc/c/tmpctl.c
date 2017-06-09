@@ -64,7 +64,7 @@ void UnregisterTmpFile( const char *name )
 
     for( i = 0; i < numTmpNames; i++ ) {
         if( tmpFileNames[i] != NULL ) {
-            if( !strcmp( tmpFileNames[i], name ) ) {
+            if( strcmp( tmpFileNames[i], name ) == 0 ) {
                 tmpFileNames[i] = NULL;
                 return;
             }
@@ -79,7 +79,7 @@ bool IsTmpFile( const char *name )
 
     for( i = 0; i < numTmpNames; i++ ) {
         if( tmpFileNames[i] != NULL ) {
-            if( !strcmp( tmpFileNames[i], name ) ) {
+            if( strcmp( tmpFileNames[i], name ) == 0 ) {
                 return( true );
             }
         }

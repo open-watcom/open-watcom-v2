@@ -755,7 +755,8 @@ bool TypeDefedNonAbstract       // REQUIRE DEFINED, NON-ABSTRACT TYPE
 {
     bool retb;                  // - return: true ==> defined & non-abstract
 
-    expr = expr;
+    /* unused parameters */ (void)expr;
+
     retb = false;
     if( ! TypeDefined( type ) ) {
         CErr1( msg_undefed );

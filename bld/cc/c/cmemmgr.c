@@ -184,7 +184,7 @@ static void *CFastAlloc( unsigned size )
         }
     }
     if( amount > PermAvail )
-        return( NULL ); 
+        return( NULL );
     PermAvail -= amount;
     p1 = (MCB *)( PermPtr + PermAvail );
     p1->len = amount | 1;
@@ -384,8 +384,9 @@ void FEfree( void *p )
 }
 
 
-int FEMoreMem( unsigned size )
+int FEMoreMem( size_t size )
 {
-    size = size;
+    /* unused parameters */ (void)size;
+
     return( 0 );
 }

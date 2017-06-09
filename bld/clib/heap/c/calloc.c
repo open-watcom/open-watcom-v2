@@ -37,7 +37,7 @@
 
 _WCRTLINK void *calloc( size_t n, size_t el_size )
 {
-    void            *mem;
+    void            *cstg;
     unsigned long   chk_size;
 
     chk_size = (unsigned long)n * el_size;
@@ -47,9 +47,9 @@ _WCRTLINK void *calloc( size_t n, size_t el_size )
         return( NULL );
     }
 #endif
-    mem = malloc( el_size );
-    if( mem == NULL ) {
+    cstg = malloc( el_size );
+    if( cstg == NULL ) {
         return( NULL );
     }
-    return( memset( mem, 0, el_size ) );
+    return( memset( cstg, 0, el_size ) );
 }

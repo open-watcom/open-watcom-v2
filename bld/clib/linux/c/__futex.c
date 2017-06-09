@@ -35,7 +35,7 @@
 #include "linuxsys.h"
 
 _WCRTLINK int __futex(volatile int *__address, int __operation, 
-                      int __value, void *__timeout)
+                      int __value, void *__timeout, int id)
 {
 syscall_res res;
 

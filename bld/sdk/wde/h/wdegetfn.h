@@ -40,8 +40,8 @@ typedef struct {
     char    *file_name;
     char    *title;
     char    *filter;
-    int     fn_offset;
-    int     ext_offset;
+    size_t  fn_offset;
+    size_t  ext_offset;
 } WdeGetFileStruct;
 
 /****************************************************************************/

@@ -30,15 +30,17 @@
 ****************************************************************************/
 
 
-#include "mad.h"
-#include "regcrt.h"
-#include "mem.h"
-#include "bitman.h"
 #include <string.h>
 #include <stdio.h>
 #include <malloc.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include "bool.h"
+#include "mad.h"
+#include "regcrt.h"
+#include "mem.h"
+#include "bitman.h"
+
 
 static unsigned getMADMaxFormatWidth( mad_type_handle th )
 {
@@ -125,7 +127,7 @@ static void getMadString( mad_reg_set_data *data, mad_registers *regs, int i,
     if ( create[i].maxd == 0 && descript != NULL ){
         create[i].maxd = strlen( descript );
     }
-    if ( descript != NULL && IsEmptyString( descript ) == FALSE ){
+    if ( descript != NULL && !IsEmptyString( descript ) ) {
         strcpy( create[i].buffer, descript );
         create[i].maxd ++;
     } else {
@@ -159,15 +161,15 @@ void FreeRegStringCreate( RegStringCreateData *reg_create, int num_regs )
     MemFree( reg_create );
 }
 
-BOOL IsEmptyString( const char *s )
+bool IsEmptyString( const char *s )
 {
     while( *s ) {
         if( isalnum( *s ) ) {
-            return ( FALSE );
+            return( false );
         }
         s++;
     }
-    return( TRUE );
+    return( true );
 }
 
 void GetRegStringCreate( mad_registers *regs, mad_reg_set_data *reg_set,

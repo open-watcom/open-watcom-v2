@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -50,10 +51,10 @@
 #include "utils.h"
 #include "wphelp.h"
 #include "dipinter.h"
-
-
-extern void ReportSampleInfo(void);
-extern void ClearAllSamples( void );
+#include "clrsamps.h"
+#include "rptsamps.h"
+#include "wpstart.h"
+#include "wpdata.h"
 
 
 STATIC bool     procCmd( char * );
@@ -128,16 +129,15 @@ STATIC char * cmdUsage[] = {
 };
 
 
-bool        WPWndInitDone = false;
-char        SamplePath[ _MAX_PATH ];
-char        *WProfDips = NULL;
+bool            WPWndInitDone = false;
+char            SamplePath[ _MAX_PATH ];
+char            *WProfDips = NULL;
 
-static int  WProfDipSize = 0;
+static size_t   WProfDipSize = 0;
 
 
-
-extern void WPInit( void )
-/************************/
+void WPInit( void )
+/*****************/
 {
     char        *rover;
     bool        do_report;
@@ -166,8 +166,8 @@ extern void WPInit( void )
 
 
 
-extern void WPFini( void )
-/************************/
+void WPFini( void )
+/*****************/
 {
     ClearAllSamples();
     WPFiniHelp();
@@ -183,8 +183,8 @@ STATIC bool procCmd( char * cmd )
 /*******************************/
 {
     char    *rover;
-    int     name_len;
-    int     old_len;
+    size_t  name_len;
+    size_t  old_len;
     int     cmd_type;
     int     index;
     bool    do_report;
@@ -193,7 +193,8 @@ STATIC bool procCmd( char * cmd )
     do_report = false;
     for( ;; ) {
         cmd = eatBlanks( cmd );
-        if( *cmd == NULLCHAR ) break;
+        if( *cmd == NULLCHAR )
+            break;
 #ifdef __UNIX__
         if( *cmd == '-' ) {
 #else
@@ -226,9 +227,8 @@ STATIC bool procCmd( char * cmd )
                 /* fall through */
 #endif
             case HELP_OPT:
-                index = 0;
-                while( cmdUsage[index] ) {
-                    ErrorMsg( cmdUsage[index++] );
+                for( index = 0; cmdUsage[index] != NULL; ++index ) {
+                    ErrorMsg( cmdUsage[index] );
                 }
                 exit( 0 );
             case DIP_OPT:
@@ -254,7 +254,7 @@ STATIC bool procCmd( char * cmd )
                         old_len--;
                     }
                     WProfDips = ProfRealloc( WProfDips, WProfDipSize );
-                    memcpy( WProfDips+old_len, rover, name_len );
+                    memcpy( WProfDips + old_len, rover, name_len );
                     old_len += name_len;
                     WProfDips[old_len++] = NULLCHAR;
                     WProfDips[old_len] = NULLCHAR;
@@ -279,8 +279,9 @@ STATIC bool procCmd( char * cmd )
 
 
 
-STATIC char * eatBlanks( char * cmd ) {
-/*************************************/
+STATIC char * eatBlanks( char * cmd )
+/***********************************/
+{
     while( isspace( *cmd ) && *cmd != NULLCHAR ) {
         ++cmd;
     }
@@ -289,8 +290,9 @@ STATIC char * eatBlanks( char * cmd ) {
 
 
 
-STATIC char * eatAlphaNum( char * cmd ) {
-/***************************************/
+STATIC char * eatAlphaNum( char * cmd )
+/*************************************/
+{
     while( isalnum( *cmd ) && *cmd != NULLCHAR ) {
         ++cmd;
     }
@@ -299,8 +301,9 @@ STATIC char * eatAlphaNum( char * cmd ) {
 
 
 
-STATIC char * eatAllChars( char * cmd ) {
-/***************************************/
+STATIC char * eatAllChars( char * cmd )
+/*************************************/
+{
     while( !isspace( *cmd ) && *cmd != NULLCHAR ) {
         ++cmd;
     }
@@ -309,9 +312,9 @@ STATIC char * eatAllChars( char * cmd ) {
 
 
 
-STATIC int minLook( char * * value ) {
-/************************************/
-
+STATIC int minLook( char * * value )
+/**********************************/
+{
     int         index;
     int         curr_len;
     char * *    strtab;
@@ -342,7 +345,8 @@ STATIC int minLook( char * * value ) {
                 }
                 break;
             }
-            if( *strlook != check_char ) break;
+            if( *strlook != check_char )
+                break;
             strlook++;
             strchck++;
             curr_len++;

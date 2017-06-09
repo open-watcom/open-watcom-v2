@@ -172,7 +172,7 @@ void DWENTRY DWMacUse( dw_client cli, dw_linenum line, const char *name )
 void InitDebugMacInfo( dw_client cli )
 /* must be called after InitDebugLine */
 {
-    cli = cli;
+    /* unused parameters */ (void)cli;
 }
 
 

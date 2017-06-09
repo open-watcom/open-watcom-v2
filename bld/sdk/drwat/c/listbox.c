@@ -55,7 +55,7 @@ void SetListBoxFont( LBoxHdl *lb ) {
     InvalidateRect( lb->hwnd, NULL, TRUE );
     UpdateWindow( lb->hwnd );
     if( lb->longest_item != -1 ) {
-        SendMessage( lb->hwnd, LB_GETTEXT, lb->longest_item, (LPARAM)buf );
+        SendMessage( lb->hwnd, LB_GETTEXT, lb->longest_item, (LPARAM)(LPSTR)buf );
         hdc = GetDC( lb->hwnd );
         newfont = GetMonoFont();
         oldfont = SelectObject( hdc, newfont);
@@ -68,7 +68,7 @@ void SetListBoxFont( LBoxHdl *lb ) {
         oldfont = SelectObject( hdc, newfont);
         lb->text_width = 0;
         for( i = 0; i < cnt; ++i ) {
-            SendMessage( lb->hwnd, LB_GETTEXT, i, (LPARAM)buf );
+            SendMessage( lb->hwnd, LB_GETTEXT, i, (LPARAM)(LPSTR)buf );
             GetTextExtentPoint( hdc, buf, strlen( buf ), &sz );
             if( sz.cx > lb->text_width ) {
                 lb->text_width = sz.cx;
@@ -154,7 +154,7 @@ static int doLBPrintf( LBoxHdl *lb, char *str, va_list al )
     HFONT       oldfont, newfont;
 
     vsprintf( tmp, str, al );
-    item = (int)SendMessage( lb->hwnd, LB_ADDSTRING, 0, (LPARAM)(LPSTR)tmp );
+    item = (int)SendMessage( lb->hwnd, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)tmp );
     lb->line_cnt++;
     SendMessage( lb->hwnd, LB_SETCURSEL, item, 0L );
     dc = GetDC( lb->hwnd );
@@ -179,7 +179,7 @@ static int doLBPrintf( LBoxHdl *lb, char *str, va_list al )
 } /* LBPrintf */
 
 
-int LBPrintf( LBoxHdl *lb, DWORD msgid, ... )
+int LBPrintf( LBoxHdl *lb, msg_id msgid, ... )
 {
     char        *str;
     int         ret;

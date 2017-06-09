@@ -39,6 +39,7 @@
 #include "wrrdres.h"
 #include "wrrdw16.h"
 #include "wrrdwnt.h"
+#include "exedos.h"
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -155,25 +156,81 @@ WRFileType WRIdentifyRESFile( const char *file )
     }
 }
 
-WRFileType WRIdentifyEXEFile( const char *fname, bool is_dll )
+static bool IdentifyWinExeHeader( FILE *fh, bool win16 )
 {
     os2_exe_header  os2_hdr;
     exe_pe_header   pe_hdr;
+    uint_16         offset;
+    bool            ok;
+
+    ok = ( fh != NULL );
+
+    if( ok ) {
+        ok = ( fseek( fh, 0x18, SEEK_SET ) == 0 );
+    }
+
+    /* check the reloc offset */
+    if( ok ) {
+        ok = ( fread( &offset, 1, sizeof( offset ), fh ) == sizeof( offset ) && offset >= 0x0040 );
+    }
+
+    if( ok ) {
+        ok = ( fseek( fh, NH_OFFSET, SEEK_SET ) == 0 );
+    }
+
+    /* check the header offset */
+    if( ok ) {
+        ok = ( fread( &offset, 1, sizeof( offset ), fh ) == sizeof( offset ) && offset != 0 );
+    }
+
+    /* seek to the header */
+    if( ok ) {
+        ok = ( fseek( fh, offset, SEEK_SET ) == 0 );
+    }
+
+    if( ok ) {
+        if( win16 ) {
+            ok = ( fread( &os2_hdr, 1, sizeof( os2_hdr ), fh ) == sizeof( os2_hdr ));
+            /* check for valid Win16 EXE */
+            if( ok ) {
+                return( WRIsHeaderValidWIN16( &os2_hdr ) );
+            }
+        } else {
+            ok = ( fread( &PE32( pe_hdr ), 1, sizeof( pe_header ), fh ) == sizeof( pe_header ) );
+            if( ok && IS_PE64( pe_hdr ) ) {
+                /* seek to the header again */
+                ok = ( fseek( fh, offset, SEEK_SET ) == 0 );
+                if( ok ) {
+                    ok = ( fread( &PE64( pe_hdr ), 1, sizeof( pe_header64 ), fh ) == sizeof( pe_header64 ) );
+                }
+            }
+            /* check for valid Win32 EXE */
+            if( ok ) {
+                return( WRIsHeaderValidWINNT( &pe_hdr ) );
+            }
+        }
+    }
+
+    return( false );
+}
+
+WRFileType WRIdentifyEXEFile( const char *fname, bool is_dll )
+{
     WRFileType      ftype;
-    WResFileID      fid;
+    FILE            *fh;
 
     ftype = WR_INVALID_FILE;
 
-    fid = ResOpenFileRO( fname );
-    if ( fid != WRES_NIL_HANDLE ) {
-        if( WRReadWin16ExeHeader( fid, &os2_hdr ) != 0 ) {
+    fh = fopen( fname, "rb" );
+    if( fh != NULL ) {
+        if( IdentifyWinExeHeader( fh, true ) ) {
             if( is_dll ) {
                 ftype = WR_WIN16_DLL;
             } else {
                 ftype = WR_WIN16_EXE;
             }
         } else {
-            if( WRReadWinNTExeHeader( fid, &pe_hdr ) != 0 ) {
+            if( IdentifyWinExeHeader( fh, false ) ) {
                 if( is_dll ) {
                     ftype = WR_WINNT_DLL;
                 } else {
@@ -181,7 +238,7 @@ WRFileType WRIdentifyEXEFile( const char *fname, bool is_dll )
                 }
             }
         }
-        ResCloseFile( fid );
+        fclose( fh );
     }
 
     return( ftype );
@@ -192,7 +249,7 @@ WRFileType WRIdentifyWinBMPFile( const char *file_name )
     WRFileType          ftype;
     FILE                *fp;
     BITMAPFILEHEADER    file_header;
-    BOOL                core;
+    bool                is_core;
     DWORD               size;
 
     fp = fopen( file_name, "rb" );
@@ -209,9 +266,8 @@ WRFileType WRIdentifyWinBMPFile( const char *file_name )
     }
 
     fread( &size, sizeof( size ), 1, fp );
-    core = (size == sizeof( BITMAPCOREHEADER ));
-
-    if( !core ) {
+    is_core = ( size == sizeof( BITMAPCOREHEADER ) );
+    if( !is_core ) {
         ftype = WR_WIN_BITMAP;
     }
 

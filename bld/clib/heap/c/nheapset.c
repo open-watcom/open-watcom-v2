@@ -38,6 +38,32 @@
 #include "heapacc.h"
 
 
+#if defined( _M_I86 )
+// 16-bit Intel all models
+extern  void    _mymemset(void_fptr,unsigned,unsigned);
+#pragma aux     _mymemset =     \
+        memset_i86              \
+    parm caller [es di] [ax] [cx] modify exact [ax di cx]
+#elif defined( _M_IX86 )
+// 32-bit Intel
+#if defined( __FLAT__ )
+// flat model
+extern  void    _mymemset(void_nptr,unsigned,unsigned);
+#pragma aux     _mymemset =     \
+        memset_386              \
+    parm caller [edi] [eax] [ecx] modify exact [ax edi ecx]
+#else
+// all segmented models
+extern  void    _mymemset(void_fptr,unsigned,unsigned);
+#pragma aux     _mymemset =     \
+        memset_386              \
+    parm caller [es edi] [eax] [ecx] modify exact [ax edi ecx]
+#endif
+#else
+// 32-bit non-Intel targets
+#define _mymemset   memset
+#endif
+
 #if defined(__SMALL_DATA__)
 _WCRTLINK int _heapset( unsigned int fill )
 {
@@ -45,30 +71,21 @@ _WCRTLINK int _heapset( unsigned int fill )
 }
 #endif
 
-#if defined(_M_IX86)
-    #pragma intrinsic(_fmemset)
-#endif
-
 _WCRTLINK int _nheapset( unsigned int fill )
 {
-    mheapptr mhp;
-    frlptr  curr;
-    int test_heap;
+    mheapptr    heap;
+    frlptr      frl;
+    int         heap_status;
 
-    test_heap = _heapchk();
-    if( test_heap != _HEAPOK ) {
-        return( test_heap );
+    heap_status = _heapchk();
+    if( heap_status != _HEAPOK ) {
+        return( heap_status );
     }
-    fill |= fill << 8;
     _AccessNHeap();
 
-    for( mhp = __nheapbeg; mhp != NULL; mhp = mhp->next ) {
-        for( curr = mhp->freehead.next; curr != (frlptr)&mhp->freehead; curr = curr->next ) {
-#if defined(_M_IX86)
-            _fmemset( (void _WCFAR *)(curr + 1), fill, curr->len - sizeof(frl) );
-#else
-            memset( (void *)(curr + 1), fill, curr->len - sizeof(frl) );
-#endif
+    for( heap = __nheapbeg; heap != NULL; heap = heap->next ) {
+        for( frl = heap->freehead.next; frl != (frlptr)&heap->freehead; frl = frl->next ) {
+            _mymemset( frl + 1, fill, frl->len - sizeof( freelistp ) );
         }
     }
     _ReleaseNHeap();

@@ -33,17 +33,27 @@
 #ifndef RCRTNS_INLCUDED
 #define RCRTNS_INLCUDED
 
-#include "wio.h"
 #include "trmemcvr.h"
 
-#define RCOPEN        open
-#define RCCLOSE       close
-#define RCWRITE       write
-#define RCREAD        read
-#define RCSEEK        lseek
-#define RCTELL        tell
-#define RCALLOC       TRMemAlloc
-#define RCFREE        TRMemFree
-#define RCREALLOC     TRMemRealloc
+#define RESOPEN         res_open
+#define RESCLOSE        res_close
+#define RESWRITE        res_write
+#define RESREAD         res_read
+#define RESSEEK         res_seek
+#define RESTELL         res_tell
+#define RESIOERR        res_ioerr
+
+#define RESALLOC        TRMemAlloc
+#define RESFREE         TRMemFree
+
+#define RCREALLOC       TRMemRealloc
+
+extern WResFileID       res_open( const char *name, wres_open_mode omode );
+extern bool             res_close( WResFileID fid );
+extern size_t           res_read( WResFileID fid, void *buf, size_t size );
+extern size_t           res_write( WResFileID fid, const void *buf, size_t size );
+extern bool             res_seek( WResFileID fid, WResFileOffset pos, int where );
+extern WResFileOffset   res_tell( WResFileID fid );
+extern bool             res_ioerr( WResFileID fid, size_t rc );
 
 #endif

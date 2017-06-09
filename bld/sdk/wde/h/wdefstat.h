@@ -36,9 +36,9 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WINEXPORT extern OBJPTR  CALLBACK WdeFrameCreate( OBJPTR, RECT *, OBJPTR );
-WINEXPORT extern OBJPTR  CALLBACK WdeTextCreate( OBJPTR, RECT *, OBJPTR );
-WINEXPORT extern OBJPTR  CALLBACK WdeIconCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern CREATE_RTN WdeFrameCreate;
+WINEXPORT extern CREATE_RTN WdeTextCreate;
+WINEXPORT extern CREATE_RTN WdeIconCreate;
 extern bool              WdeStaticInit( bool );
 extern void              WdeStaticFini( void );
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,12 +38,12 @@
 #include "dip.h"
 #include "msg.h"
 #include "memutil.h"
+#include "dumpmem.h"
 #ifdef TRMEM
 #include "trmemcvr.h"
 #endif
+#include "dumpmem.h"
 
-
-extern int WalkMem( void ) ;
 
 #ifdef TRMEM
 STATIC void profMemCheck( char *msg )
@@ -125,37 +126,37 @@ void *ProfCAlloc( size_t size )
 }
 
 #if 0
-extern void *WndAlloc( unsigned size )
-/************************************/
+void *WndAlloc( unsigned size )
+/*****************************/
 {
     return( ProfAlloc( size ) );
 }
 
-extern void *WndRealloc( void *chunk, unsigned size )
-/***************************************************/
+void *WndRealloc( void *chunk, unsigned size )
+/********************************************/
 {
     return( ProfRealloc( chunk, size ) );
 }
 
-extern void WndFree( void *chunk )
-/********************************/
+void WndFree( void *chunk )
+/*************************/
 {
     ProfFree( chunk );
 }
 
-extern void WndNoMemory( void )
-/*****************************/
+void WndNoMemory( void )
+/**********************/
 {
     fatal( LIT( Memfull  ));
 }
 
-extern void WndMemInit( void )
-/****************************/
+void WndMemInit( void )
+/*********************/
 {
 }
 
-extern void WndMemFini( void )
-/****************************/
+void WndMemFini( void )
+/*********************/
 {
 }
 #endif

@@ -329,7 +329,8 @@ PTREE NodePromoteDups(          // PROMOTE/REMOVE DUPLICATE NODES
 static void init(               // INITIALIZATION FOR MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carvePromo = CarveCreate( sizeof( PROMO ), 16 );
 }
 
@@ -337,7 +338,8 @@ static void init(               // INITIALIZATION FOR MODULE
 static void fini(               // COMPLETION FOR MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CarveDestroy( carvePromo );
 }
 

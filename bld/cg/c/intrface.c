@@ -136,7 +136,7 @@ extern  cg_init_info _CGAPI     BEInitCg( cg_switches switches,
 {
     cg_init_info        info;
 
-    OptForSize = optsize;
+    OptForSize = (byte)optsize;
     CGProcessorVersion = proc; /* so _CPULevel works */
 #if _TARGET & _TARG_IAPX86
     /* if it ain't a 386 or better, FS and GS aren't there */
@@ -549,7 +549,6 @@ extern  void _CGAPI     BEFreeBack( back_handle bck )
 extern  void _CGAPI     BEDefType( cg_type what, uint align, unsigned_32 len )
 /****************************************************************************/
 {
-    align = align;
 #ifndef NDEBUG
     EchoAPI( "BEDefType( %t, %x, %i )\n", what, align, len );
 #endif
@@ -587,7 +586,8 @@ extern  uint _CGAPI     BETypeAlign( cg_type tipe )
     retn = 1;
     return EchoAPIIntReturn( retn );
 #else
-    tipe = tipe;
+    /* unused parameters */ (void)tipe;
+
     return( 1 );
 #endif
 }
@@ -828,7 +828,8 @@ extern  cg_name _CGAPI CGTempName( temp_handle temp, cg_type tipe )
     hdlAdd( CG_NAMES, retn );
     return EchoAPICgnameReturn( retn );
 #else
-    tipe = tipe;
+    /* unused parameters */ (void)tipe;
+
     return( TGLeaf( BGTempName( (name *)temp, TypeAddress( TY_POINTER ) ) ) );
 #endif
 }
@@ -1577,14 +1578,17 @@ extern  void _CGAPI DGString( cchar_ptr value, uint len )
 
     for( ;; ) {
         assert( d <= dt );
-        if( slen == 0 ) break;
+        if( slen == 0 )
+            break;
         --slen;
         c = *s++;
         if( !iscntrl(c) && isascii(c)) {
-            if(( d + (1+1)) >= dt ) break;
+            if(( d + (1+1)) >= dt )
+                break;
             *d++ = c;
         } else {
-            if(( d + (4+1) ) >= dt ) break;
+            if(( d + (4+1) ) >= dt )
+                break;
             *d++ = '\\';
             *d++ = 'x';
             *d++ = hex[( c >> 4 ) & 0x0f];

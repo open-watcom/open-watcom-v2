@@ -43,7 +43,7 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT BOOL CALLBACK QueryEndDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK QueryEndDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #define DR_HELP_FILE    "drnt.hlp"
 #define DR_CHM_FILE     "drnt.chm"
@@ -74,29 +74,33 @@ static void SaveExtra( FILE *f )
  * QueryEnddlgProc
  */
 
-BOOL CALLBACK QueryEndDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK QueryEndDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
     char        buf[100];
     HWND        lb;
     ProcNode    *procinfo;
     ProcStats   procstat;
+    bool        ret;
 
     lparam = lparam;
+
+    ret = false;
+
     switch( msg ) {
     case WM_INITDIALOG:
         lb = GetDlgItem( hwnd, END_LIST );
         procinfo = GetNextOwnedProc( NULL );
         while( procinfo != NULL ) {
             if( GetProcessInfo( procinfo->procid, &procstat ) ) {
-                RCsprintf( buf, STR_PROCESS_X_NAME, procinfo->procid,
-                         procstat.name );
+                RCsprintf( buf, STR_PROCESS_X_NAME, procinfo->procid, procstat.name );
             } else {
                 RCsprintf( buf, STR_PROCESS_X, procinfo->procid );
             }
-            SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)buf );
+            SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)buf );
             procinfo = GetNextOwnedProc( procinfo );
         }
+        ret = true;
         break;
     case WM_COMMAND:
         cmd = LOWORD( wparam );
@@ -106,11 +110,10 @@ BOOL CALLBACK QueryEndDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
             EndDialog( hwnd, cmd );
             break;
         }
+        ret = true;
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 }
 
 /*
@@ -135,14 +138,11 @@ static void setupSystemMenu( HWND hwnd ) {
     smh = GetSystemMenu( hwnd, FALSE );
     mh = GetMenu( hwnd );
     AppendMenu( smh, MF_SEPARATOR, 0,NULL );
-    GetMenuString( mh, MENU_LOG_CURRENT_STATE, menuname, sizeof( menuname ),
-                   MF_BYCOMMAND );
+    GetMenuString( mh, MENU_LOG_CURRENT_STATE, menuname, sizeof( menuname ), MF_BYCOMMAND );
     AppendMenu( smh, MF_ENABLED, MENU_LOG_CURRENT_STATE, menuname );
-    GetMenuString( mh, MENU_LOG_OPTIONS, menuname, sizeof( menuname ),
-                   MF_BYCOMMAND );
+    GetMenuString( mh, MENU_LOG_OPTIONS, menuname, sizeof( menuname ), MF_BYCOMMAND );
     AppendMenu( smh, MF_ENABLED, MENU_LOG_OPTIONS, menuname );
-    GetMenuString( mh, MENU_TASK_CTL, menuname, sizeof( menuname ),
-                   MF_BYCOMMAND );
+    GetMenuString( mh, MENU_TASK_CTL, menuname, sizeof( menuname ), MF_BYCOMMAND );
     AppendMenu( smh, MF_ENABLED, MENU_TASK_CTL, menuname );
 }
 
@@ -165,8 +165,7 @@ LONG CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             CheckMenuItem( mh, MENU_AUTO_ATTATCH, MF_BYCOMMAND | MF_CHECKED );
         }
         if( ConfigData.continue_exception ) {
-            CheckMenuItem( mh, MENU_EXCEPTION_CONTINUE,
-                                MF_BYCOMMAND | MF_CHECKED );
+            CheckMenuItem( mh, MENU_EXCEPTION_CONTINUE, MF_BYCOMMAND | MF_CHECKED );
         }
         LBPrintf( MainLBox, STR_DRNT_STARTED, AppName );
         break;

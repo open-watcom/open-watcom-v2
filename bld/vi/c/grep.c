@@ -43,7 +43,7 @@
     #ifdef __NT__
         #include <commctrl.h>
     #endif
-    #include "wprocmap.h"
+    #include "wclbproc.h"
 #endif
 #include <assert.h>
 
@@ -52,9 +52,9 @@
 
 /* Local Windows CALLBACK function prototypes */
 #ifdef __WIN__
-WINEXPORT BOOL CALLBACK GrepListProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK GrepListDlgProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam );
 #ifdef __NT__
-WINEXPORT BOOL CALLBACK GrepListProc95( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam );
 #endif
 #endif
 
@@ -164,6 +164,7 @@ static int initList( window_id wid, const char *dirlist, char **list )
 {
     char        dir[MAX_STR];
     int         clist;
+    size_t      len;
 
 #ifdef __WIN__
     InitGrepDialog();
@@ -179,6 +180,16 @@ static int initList( window_id wid, const char *dirlist, char **list )
         fileGrep( EditVars.GrepDefault, list, &clist, wid );
     } else {
         do {
+            len = strlen( dir ) - 1;
+            if( dir[len] == FILE_SEP ) {
+#ifdef __UNIX__
+                if( len > 0 ) {
+#else
+                if( len > 0 && ( len != 2 || dir[1] != DRV_SEP ) ) {
+#endif
+                        dir[len] = '\0';
+                }
+            }
             if( IsDirectory( dir ) ) {
                 strcat( dir, FILE_SEP_STR );
                 strcat( dir, EditVars.GrepDefault );
@@ -269,7 +280,7 @@ static void getAllFiles( HWND dlg, char **files, int *count )
 
 } /* editFiles */
 
-WINEXPORT BOOL CALLBACK GrepListProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK GrepListDlgProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     static char         **fileList;
     static int          fileCount;
@@ -284,7 +295,7 @@ WINEXPORT BOOL CALLBACK GrepListProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM 
         MySprintf( tmp, "Files Containing \"%s\"", sString );
         SetWindowText( dlg, tmp );
         fileList = (char **)MemAlloc( sizeof( char * ) * MAX_FILES );
-        fileCount = initList( list_box, (char *)lparam, fileList );
+        fileCount = initList( list_box, (const char *)lparam, fileList );
         if( fileCount == 0 ) {
             /* tell him that there are no matches and close down? */
             Message1( "String \"%s\" not found", sString );
@@ -321,11 +332,11 @@ WINEXPORT BOOL CALLBACK GrepListProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM 
     }
     return( FALSE );
 
-} /* GrepListProc */
+} /* GrepListDlgProc */
 
   #ifdef __NT__
 
-WINEXPORT BOOL CALLBACK GrepListProc95( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK GrepListDlgProc95( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     static char         **fileList;
     static int          fileCount;
@@ -355,7 +366,7 @@ WINEXPORT BOOL CALLBACK GrepListProc95( HWND dlg, UINT msg, WPARAM wparam, LPARA
         lvc.iSubItem = 1;
         SendMessage( list_box, LVM_INSERTCOLUMN, 1, (LPARAM)&lvc );
         fileList = (char **)MemAlloc( sizeof( char * ) * MAX_FILES );
-        fileCount = initList( list_box, (char *)lparam, fileList );
+        fileCount = initList( list_box, (const char *)lparam, fileList );
         if( fileCount == 0 ) {
             Message1( "String \"%s\" not found", sString );
             EndDialog( dlg, DO_NOT_CLEAR_MESSAGE_WINDOW );
@@ -393,27 +404,27 @@ WINEXPORT BOOL CALLBACK GrepListProc95( HWND dlg, UINT msg, WPARAM wparam, LPARA
     }
     return( FALSE );
 
-} /* GrepListProc95 */
+} /* GrepListDlgProc95 */
 
   #endif
 
 static vi_rc doGREP( const char *dirlist )
 {
-    FARPROC     fp;
+    DLGPROC     dlgproc;
     vi_rc       rc;
 
   #ifdef __NT__
     if( LoadCommCtrl() ) {
-        fp = MakeDlgProcInstance( GrepListProc95, InstanceHandle );
-        rc = DialogBoxParam( InstanceHandle, "GREPLIST95", root_window_id, (DLGPROC)fp, (LPARAM)dirlist );
+        dlgproc = MakeProcInstance_DLG( GrepListDlgProc95, InstanceHandle );
+        rc = DialogBoxParam( InstanceHandle, "GREPLIST95", root_window_id, dlgproc, (LPARAM)dirlist );
     } else {
   #endif
-        fp = MakeDlgProcInstance( GrepListProc, InstanceHandle );
-        rc = DialogBoxParam( InstanceHandle, "GREPLIST", root_window_id, (DLGPROC)fp, (LPARAM)dirlist );
+        dlgproc = MakeProcInstance_DLG( GrepListDlgProc, InstanceHandle );
+        rc = DialogBoxParam( InstanceHandle, "GREPLIST", root_window_id, dlgproc, (LPARAM)dirlist );
   #ifdef __NT__
     }
   #endif
-    FreeProcInstance( fp );
+    FreeProcInstance_DLG( dlgproc );
     return( rc );
 }
 #else
@@ -583,7 +594,7 @@ static void fileGrep( const char *dir, char **list, int *clist, window_id wid )
         return;
     }
     for( i = 0; i < DirFileCount; i++ ) {
-        if( !(DirFiles[i]->attr & _A_SUBDIR ) ) {
+        if( !IS_SUBDIR( DirFiles[i] ) ) {
 
             strcpy( fn, path );
             strcat( fn, DirFiles[i]->name );

@@ -124,7 +124,7 @@ cg_dump_objs = &
     dumpschd.obj &
     dumptab.obj &
     dumptree.obj &
-    dump87.obj &
+    dumpfpu.obj &
     echoapi.obj
 
 cg_stub_objs = &

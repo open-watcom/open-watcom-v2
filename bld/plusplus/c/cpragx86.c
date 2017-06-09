@@ -62,7 +62,8 @@ static  hw_reg_set          asmRegsSaved = HW_D( HW_FULL );
 static void pragmaInit(         // INITIALIZATION FOR PRAGMAS
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     PragInit();
 
     PragmaAuxInfoInit( CompFlags.use_stdcall_at_number );
@@ -106,7 +107,8 @@ static void pragmaFini(         // FINISH PRAGMAS
     AUX_ENTRY       *curr;
     AUX_INFO        *info;
 
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     for( curr = AuxList; curr != NULL; curr = next ) {
         next = curr->next;
         info = curr->info;
@@ -157,7 +159,8 @@ static void assemblerInit(      // INITIALIZATION OF ASSEMBLER
     int         cpu;
     int         fpu;
 
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     switch( GET_CPU( CpuSwitches ) ) {
     case CPU_86:    cpu = 0; break;
     case CPU_186:   cpu = 1; break;
@@ -1265,15 +1268,9 @@ static bool parmSetsIdentical( hw_reg_set *parms1, hw_reg_set *parms2 )
         return( true );
     }
     if( parms1 != NULL && parms2 != NULL ) {
-        for(;;) {
-            if( HW_Equal( *parms1, *parms2 ) ) {
-                if( HW_CEqual( *parms1, HW_EMPTY ) ) {
-                    return( true );
-                }
-                ++parms1;
-                ++parms2;
-            } else {
-                break;
+        for( ; HW_Equal( *parms1, *parms2 ); ++parms1, ++parms2 ) {
+            if( HW_CEqual( *parms1, HW_EMPTY ) ) {
+                return( true );
             }
         }
     }

@@ -788,8 +788,9 @@ void uimenutitlebar( void )
 static void drawbar( SAREA area, void *dummy )
 /********************************************/
 {
+    /* unused parameters */ (void)dummy;
+
     forbid_refresh();
-    dummy = dummy;
     if( area.row < uimenuheight() ) {
         mfill( &UIData->screen, area.row, 0,
            UIData->attrs[ATTR_ACTIVE], ' ', UIData->width, area.height );
@@ -933,7 +934,8 @@ void UIAPI uimenus( MENUITEM *menus, MENUITEM **items, EVENT hot )
 {
     register    int                     index;
 
-    hot=hot;
+    /* unused parameters */ (void)hot;
+
     uimenubar( NULL );
     MenuList.titles = menus;
     for( index = 0 ; !MENUENDMARKER( menus[index] ); ++index ) {

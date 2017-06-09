@@ -473,8 +473,7 @@ int WINMAINENTRY WinMain( HINSTANCE currinst, HINSTANCE previnst,
     }
 
     while( GetMessage( &msg, (HWND)NULL, 0, 0 ) ) {
-        if( !TranslateMDISysAccel( ClientWindow, &msg ) &&
-            !TranslateAccelerator( HMainWindow, hAccel, &msg ) ) {
+        if( TranslateMDISysAccel( ClientWindow, &msg ) == 0 && TranslateAccelerator( HMainWindow, hAccel, &msg ) == 0 ) {
             TranslateMessage( &msg );
             DispatchMessage( &msg );
         }

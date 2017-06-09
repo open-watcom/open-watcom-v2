@@ -117,7 +117,7 @@ walk_status WalkOBJAutoDep( const char *file_name, rtn_status (*rtn)( time_t, ch
     } comment;
     auto char buff[256];
 
-    fh = open( file_name, O_RDONLY|O_BINARY );
+    fh = open( file_name, O_RDONLY | O_BINARY );
     if( fh < 0 ) {
         return( ADW_FILE_NOT_FOUND );
     }
@@ -151,7 +151,7 @@ walk_status WalkOBJAutoDep( const char *file_name, rtn_status (*rtn)( time_t, ch
                 break;
             }
             len = comment.name_len;
-            /* read in the checksum byte to stay in synch */
+            /* read in the checksum byte to stay in sync */
             ++len;
             if( (unsigned)read( fh, buff, len ) != len ) {
                 wstatus = ADW_FILE_ERROR;
@@ -159,8 +159,7 @@ walk_status WalkOBJAutoDep( const char *file_name, rtn_status (*rtn)( time_t, ch
             }
             buff[len - 1] = '\0';
             if( rtn != NULL ) {
-                DOS_stamp_time = dosStampToTime( comment.dos_date,
-                                                 comment.dos_time );
+                DOS_stamp_time = dosStampToTime( comment.dos_date, comment.dos_time );
                 rstatus = (*rtn)( DOS_stamp_time, buff, data );
                 if( rstatus == ADR_STOP ) {
                     wstatus = ADW_RTN_STOPPED;

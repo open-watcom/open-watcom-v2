@@ -90,8 +90,7 @@
                 (WPI_MSG) msgid, (WPI_PARAM1) parm1, (WPI_PARAM2) parm2 )
 
     #define SendDlgItemMessage( hwnd, item, msgid, parm1, parm2 ) \
-        WinSendDlgItemMsg( hwnd, (ULONG)item, (ULONG)msgid, \
-                                        (WPI_PARAM1)parm1, (WPI_PARAM2)parm2 )
+        WinSendDlgItemMsg( hwnd, item, msgid, (WPI_PARAM1)parm1, (WPI_PARAM2)parm2 )
 
     #define SetDlgItemText( hwnd, item, text ) \
         WinSetDlgItemText( hwnd, item, (PSZ)text )
@@ -222,6 +221,12 @@ extern void _wpi_releasepres( HWND hwnd, WPI_PRES pres );
         // nothing
 
     #define _wpi_unregisterclass( name, inst ) \
+        // nothing
+
+    #define _wpi_freedlgprocinstance( proc ) \
+        // nothing
+
+    #define _wpi_freeenumprocinstance( proc ) \
         // nothing
 
     #define _wpi_freeprocinstance( proc ) \
@@ -392,16 +397,13 @@ extern void _wpi_setwpiinst( HINSTANCE hinst, HMODULE module, WPI_INST *inst );
         WinSendMsg( hwnd, (WPI_MSG)msgid, (WPI_PARAM1)parm1, (WPI_PARAM2)parm2 )
 
     #define _wpi_senddlgitemmessage( hwnd, item, msgid, parm1, parm2 ) \
-        WinSendDlgItemMsg( hwnd, (ULONG)item, (ULONG)msgid, (WPI_PARAM1)parm1, \
-                                                            (WPI_PARAM2) parm2 )
+        WinSendDlgItemMsg( hwnd, item, msgid, (MPARAM)parm1, (MPARAM)parm2 )
 
     #define _wpi_getdlgitemcbtext( hwnd, item, selection, len, text ) \
-        _wpi_senddlgitemmessage( hwnd, item, CB_GETLBTEXT, \
-                        MPFROM2SHORT( selection, len ), (DWORD)(LPSTR) text )
+        WinSendDlgItemMsg( hwnd, item, CB_GETLBTEXT, MPFROM2SHORT( selection, len ), (MPARAM)(LPSTR)text )
 
     #define _wpi_getdlgitemlbtext( hwnd, item, selection, len, text ) \
-        _wpi_senddlgitemmessage( hwnd, item, LB_GETTEXT, \
-                        MPFROM2SHORT( selection, len ), (DWORD)(LPSTR) text )
+        WinSendDlgItemMsg( hwnd, item, LB_GETTEXT, MPFROM2SHORT( selection, len ), (MPARAM)(LPSTR)text )
 
     #define _wpi_setdlgitemtext( hwnd, item, text ) \
                                 WinSetDlgItemText( hwnd, item, (PSZ)text )
@@ -515,12 +517,13 @@ extern HWND _wpi_createobjwindow( LPSTR class, LPSTR name, ULONG style, int x,
 
     #define _wpi_makeprocinstance( proc, inst ) ( (WPI_PROC) proc )
 
-    #define _wpi_makeenumprocinstance( proc, inst ) ( (WPI_ENUMPROC) proc )
+    #define _wpi_makedlgprocinstance( proc, inst ) ( proc )
+
+    #define _wpi_makeenumprocinstance( proc, inst ) ( proc )
 
     #define _wpi_makelineddaprocinstance( proc, inst ) ((WPI_LINEDDAPROC)proc)
 
-    #define _wpi_defdlgproc( hwnd, msg, mp1, mp2 ) \
-                                            WinDefDlgProc(hwnd, msg, mp1, mp2)
+    #define _wpi_defdlgproc( hwnd, msg, mp1, mp2 ) WinDefDlgProc(hwnd, msg, mp1, mp2)
 
     #define _wpi_callwindowproc( proc, hwnd, msg, parm1, parm2 ) \
         ((proc)( hwnd, msg, (WPI_PARAM1) parm1, (WPI_PARAM2) parm2 ))
@@ -945,16 +948,15 @@ extern void _wpi_gettextface( WPI_PRES pres, int size, LPSTR buf );
 
     #define _wpi_metricoverhang( metric )       0
 
-extern int _wpi_getmetricpointsize( WPI_PRES pres, WPI_TEXTMETRIC *textmetric,
-                                            int *pix_size, int *match_num );
+extern int _wpi_getmetricpointsize( WPI_PRES pres, WPI_TEXTMETRIC *textmetric, int *pix_size, int *match_num );
 
     #define _wpi_metricmaxcharwidth( metric ) \
                 ((((metric).lAveCharWidth) > ((metric).lMaxCharInc)) ? ((metric).lAveCharWidth) : ((metric).lMaxCharInc))
 
     #define _wpi_metricileading( metric ) (metric).lInternalLeading
 
-extern void _wpi_enumfonts( WPI_PRES pres, char *facename,
-                                        WPI_FONTENUMPROC proc, char *data );
+extern void _wpi_enumfonts( WPI_PRES pres, char *facename, WPI_FONTENUMPROC proc, char *data );
+
 extern void _wpi_enumchildwindows( HWND hwnd, WPI_ENUMPROC proc, LPARAM data );
 
     #define _wpi_getnextwindow( hwnd ) WinGetNextWindow( hwnd )
@@ -1304,8 +1306,7 @@ extern BOOL _wpi_iszoomed( HWND hwnd );
 
     #define _wpi_getupdaterect( hwnd, prect ) WinQueryUpdateRect( hwnd, prect )
 
-    #define _wpi_subclasswindow( hwnd, new ) \
-        ( (WPI_PROC) WinSubclassWindow( hwnd, new ) )
+    #define _wpi_subclasswindow( hwnd, new ) WinSubclassWindow( hwnd, new )
 
 extern BOOL _wpi_insertmenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
                              unsigned attr_flags, unsigned new_id,

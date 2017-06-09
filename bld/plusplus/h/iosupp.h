@@ -29,35 +29,16 @@
 *
 ****************************************************************************/
 
-
-#ifndef __IOSUPP_H__
-#define __IOSUPP_H__
-
 // IOSUPP.H -- i/o support
 //
 // 91/06/04 -- J.W.Welch        -- defined
 // 92/12/29 -- B.J. Stecher     -- QNX support
 
-enum file_type                  // TYPES OF FILES
-{   FT_SRC                      // - primary source file
-,   FT_HEADER                   // - header file (i.e., #include "file.h")
-,   FT_LIBRARY                  // - library file (i.e., #include <stdfile.h>)
-,   FT_CMD                      // - command line option file (i.e., @compflags)
-};
-enum out_file_type              // TYPES OF OUTPUT FILES
-{   OFT_OBJ                     // - object file
-,   OFT_PPO                     // - preprocessor output
-,   OFT_ERR                     // - error file name
-,   OFT_MBR                     // - browse file name
-,   OFT_DEF                     // - prototype definitions
-#ifdef OPT_BR
-,   OFT_BRI                     // - new browser: module information
-#endif
-,   OFT_DEP                     // make-style auto-depend filename
-,   OFT_TRG                     // target filename
-,   OFT_SRCDEP                  // name of first depend(source) in autodep file
-,   OFT_MAX
-};
+#ifndef __IOSUPP_H__
+#define __IOSUPP_H__
+
+#include "ftype.h"
+
 
 // TEMP FILE typedefs
 typedef unsigned long           DISK_ADDR;      // disk address
@@ -90,10 +71,10 @@ char *IoSuppFullPath(           // GET FULL PATH OF FILE NAME (ALWAYS USE RET VA
 ;
 bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
     const char *file_name,      // - supplied file name
-    enum file_type )            // - what type of file is it?
+    src_file_type typ )         // - what type of file is it?
 ;
 char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
-    enum out_file_type )        // - extension
+    out_file_type typ )         // - extension
 ;
 void IoSuppSetBuffering(        // SET FULL BUFFERING FOR AN OPEN FILE
     FILE *fp,                   // - opened file

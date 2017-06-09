@@ -555,7 +555,7 @@ static void dump_cv4( unsigned_32 base )
     cv_trailer                  header;
     cv_subsection_directory     sst_dir_hdr;
     cv_directory_entry          sst_dir_entry;
-    int                         i;
+    unsigned_32                 i;
 
     Wlseek( base );
     Wread( &header, sizeof( header ) );

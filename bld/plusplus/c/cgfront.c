@@ -856,7 +856,8 @@ static void cgfrontInit(        // INITIALIZE FOR FRONT-END CODE GENERATION
 {
     char seg_name[30];          // - computed segment name
 
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     if( *TextSegName == '\0' ) {
         if( IsBigCode() ) {
             stxpcpy( stxpcpy( seg_name, ModuleName ), TS_SEG_CODE );
@@ -878,7 +879,8 @@ static void cgfrontInit(        // INITIALIZE FOR FRONT-END CODE GENERATION
 static void cgfrontFini(        // COMPLETE FRONT-END CODE GENERATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     if( dataCGFILE != NULL ) {
         CgioCloseOutputFile( dataCGFILE );
         dataCGFILE = NULL;
@@ -911,12 +913,14 @@ pch_status PCHReadFrontData( void )
 
 pch_status PCHInitFrontData( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniFrontData( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }

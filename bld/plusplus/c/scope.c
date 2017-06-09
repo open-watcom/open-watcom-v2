@@ -442,7 +442,7 @@ static void dumpThunk( THUNK_ACTION *thunk )
 {
     SYMBOL sym;
 
-    if( ! PragDbgToggle.dump_vftables ) {
+    if( !PragDbgToggle.dump_vftables ) {
         return;
     }
     printf( "thunk:" );
@@ -496,7 +496,7 @@ static void dumpVFN( SYMBOL sym, vftable_walk *data, CLASS_VFTABLE *table, vinde
     BASE_STACK *top;
     BASE_CLASS *base;
 
-    if( ! PragDbgToggle.dump_vftables ) {
+    if( !PragDbgToggle.dump_vftables ) {
         return;
     }
     printSymbolName( sym );
@@ -517,7 +517,7 @@ static void dumpVFN( SYMBOL sym, vftable_walk *data, CLASS_VFTABLE *table, vinde
 
 static void dumpDerivation( MEMBER_PTR_CAST *data )
 {
-    if( ! PragDbgToggle.dump_member_ptr ) {
+    if( !PragDbgToggle.dump_member_ptr ) {
         return;
     }
     if( data->safe ) {
@@ -530,7 +530,7 @@ static void dumpDerivation( MEMBER_PTR_CAST *data )
 
 static void dumpData( MEMBER_PTR_CAST *data )
 {
-    if( ! PragDbgToggle.dump_member_ptr ) {
+    if( !PragDbgToggle.dump_member_ptr ) {
         return;
     }
     printf(
@@ -784,7 +784,8 @@ static void scopeBeginFileScope( void )
 static void scopeInit(          // SCOPES INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     PCHActivate();
     carveSYM_REGION = CarveCreate( sizeof( SYM_REGION ), BLOCK_SYM_REGION );
     carveUSING_NS = CarveCreate( sizeof( USING_NS ), BLOCK_USING_NS );
@@ -824,7 +825,7 @@ static void scopeInit(          // SCOPES INITIALIZATION
     injectChipBug();
     injectDwarfAbbrev();
     injectBool();
-    if( ! CompFlags.enable_std0x ) {
+    if( !CompFlags.enable_std0x ) {
         KwDisable( T_STATIC_ASSERT );
         KwDisable( T_DECLTYPE );
     }
@@ -842,7 +843,8 @@ static void scopeInit(          // SCOPES INITIALIZATION
 static void scopeFini(          // SCOPES COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     DbgStmt( CarveVerifyAllGone( carveBASE_STACK, "BASE_STACK" ) );
     DbgStmt( CarveVerifyAllGone( carveBASE_PATH, "BASE_PATH" ) );
     DbgStmt( CarveVerifyAllGone( carvePATH_CAP, "PATH_CAP" ) );
@@ -1624,7 +1626,7 @@ SCOPE ScopeEnd( scope_type_t scope_type )
         CFatal( "scope terminated incorrectly" );
     }
 #else
-    scope_type = scope_type;
+    /* unused parameters */ (void)scope_type;
 #endif
     return( ScopeClose() );
 }
@@ -1880,18 +1882,11 @@ bool ScopeEquivalent( SCOPE scope, scope_type_t scope_type )
 NAME ScopeUnnamedNamespaceName( TOKEN_LOCN *locn )
 /************************************************/
 {
-    NAME ns_name;
-
-    if( ! CompFlags.extensions_enabled ) {
-        ns_name = uniqueNameSpaceName;
-        if( ns_name == NULL ) {
-            ns_name = CppNameUniqueNS( locn );
-            uniqueNameSpaceName = ns_name;
-        }
-    } else {
-        ns_name = CppNameUniqueNS( locn );
+    if( uniqueNameSpaceName == NULL ) {
+        uniqueNameSpaceName = CppNameUniqueNS( locn );
     }
-    return( ns_name );
+
+    return( uniqueNameSpaceName );
 }
 
 NAME ScopeNameSpaceName( SCOPE scope )
@@ -2117,7 +2112,7 @@ void ScopeInsertErrorSym( SCOPE scope, PTREE id )
     SYMBOL sym;                 // - symbol
     SYMBOL_NAME sym_name;       // - symbol name
 
-    if( ! CompFlags.no_error_sym_injection ) {
+    if( !CompFlags.no_error_sym_injection ) {
         name = id->u.id.name;
         sym = AllocSymbol();
         sym->sym_type = TypeError;
@@ -2670,7 +2665,8 @@ static walk_status clearLeapOf( BASE_STACK *top, void *parm )
     SCOPE scope;
     TYPE base_type;
 
-    parm = parm;
+    /* unused parameters */ (void)parm;
+
     scope = top->scope;
     base_type = ScopeClass( scope );
     base_type->of = NULL;
@@ -3606,7 +3602,7 @@ static void dumpSearch( lookup_walk *data )
     PATH_CAP *cap;
     BASE_PATH *path;
 
-    if( ! PragDbgToggle.dump_scopes ) {
+    if( !PragDbgToggle.dump_scopes ) {
         return;
     }
     for( cap = data->paths; cap != NULL; cap = cap->next ) {
@@ -4522,14 +4518,15 @@ static bool tryDisambigLookup( lookup_walk *data, SCOPE scope,
     SCOPE edge_scope;
     SCOPE *top;
 
-    scope = scope;
+    /* unused parameters */ (void)scope;
+
     DbgAssert( PstkTopElement( to_stack ) == NULL );
     PstkPopAll( to_stack );
     for( ; (top = (SCOPE *)PstkPop( from_stack )) != NULL; ) {
         RingIterBeg( (*top)->using_list, curr ) {
             if( curr->trigger != NULL ) {
                 edge_scope = curr->using_scope;
-                if( ! PstkContainsElement( cycle, edge_scope ) ) {
+                if( !PstkContainsElement( cycle, edge_scope ) ) {
                     PstkPush( cycle, edge_scope );
                     if( doRecordedLookup( data, edge_scope ) == NULL ) {
                         PstkPush( to_stack, edge_scope );
@@ -4599,7 +4596,7 @@ static bool simpleNSLookup( lookup_walk *data, SCOPE scope )
         if( data->member_lookup ?
             ( curr->trigger != NULL ) : (curr->trigger == NULL ) ) {
             edge_scope = curr->using_scope;
-            if( ! PstkContainsElement( &cycle, edge_scope ) ) {
+            if( !PstkContainsElement( &cycle, edge_scope ) ) {
                 PstkPush( &cycle, edge_scope );
                 PstkPush( &stack, edge_scope );
                 doRecordedLookup( data, edge_scope );
@@ -4612,11 +4609,11 @@ static bool simpleNSLookup( lookup_walk *data, SCOPE scope )
             top_scope = *top;
             RingIterBeg( top_scope->using_list, curr ) {
                 trigger_scope = curr->trigger;
-                if( data->member_lookup ? 
+                if( data->member_lookup ?
                     ( trigger_scope != NULL ) :
                     ( trigger_scope == scope || trigger_scope == top_scope ) ) {
                     edge_scope = curr->using_scope;
-                    if( ! PstkContainsElement( &cycle, edge_scope ) ) {
+                    if( !PstkContainsElement( &cycle, edge_scope ) ) {
                         PstkPush( &cycle, edge_scope );
                         PstkPush( &stack, edge_scope );
                         doRecordedLookup( data, edge_scope );
@@ -7103,13 +7100,13 @@ void ScopeAuxName( char *id, AUX_INFO *auxinfo )
     RingIterBeg( syms, sym ) {
 
         /*
-         *  Check to see if we are defining code and we already have a symbol 
+         *  Check to see if we are defining code and we already have a symbol
          *  defined that has code attached ( a function body )
-         */ 
+         */
         if( auxinfo && auxinfo->code && SymIsInitialized( sym ) && SymIsFunction( sym ) ){
             CErr2p( ERR_FUNCTION_REDEFINITION, sym );   //ERR_SYM_ALREADY_DEFINED, sym );
         }
-        
+
         fn_type = FunctionDeclarationType( sym->sym_type );
         if( fn_type == NULL ) {
             changeNonFunction( sym, auxinfo );
@@ -7160,7 +7157,8 @@ static walk_status markNotVisited( BASE_STACK *top, void *parm )
     SCOPE scope;
     TYPE class_type;
 
-    parm = parm;
+    /* unused parameters */ (void)parm;
+
     scope = top->scope;
     class_type = ScopeClass( scope );
     class_type->flag &= ~TF1_VISITED;

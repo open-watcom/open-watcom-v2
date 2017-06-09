@@ -20,6 +20,7 @@ wres_core_objs = &
     rrnamoor.obj &
     seekres.obj &
     varstr.obj &
+    wmemicmp.obj &
     wraddres.obj &
     wrerror.obj &
     wrfindrs.obj &

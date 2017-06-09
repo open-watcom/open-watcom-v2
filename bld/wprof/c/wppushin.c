@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,10 +40,7 @@
 #include "sampinfo.h"
 #include "memutil.h"
 #include "setsamps.h"
-
-
-/* Forward declarations */
-extern int  WPPopEvent( void );
+#include "wppushin.h"
 
 
 static int      *wpEventStack = 0;
@@ -52,8 +50,8 @@ static int      wpDataSize = 0;
 
 
 
-extern void *WPPopPtr( void )
-/***************************/
+void *WPPopPtr( void )
+/********************/
 {
     void        *data_point;
 
@@ -67,8 +65,8 @@ extern void *WPPopPtr( void )
 
 
 
-extern void WndDoInput( void )
-/****************************/
+void WndDoInput( void )
+/*********************/
 {
     void    *data_point;
     int     event;
@@ -82,8 +80,8 @@ extern void WndDoInput( void )
 
 
 
-extern void WPPushEvent( int event )
-/**********************************/
+void WPPushEvent( int event )
+/***************************/
 {
     wpStackSize++;
     wpEventStack = ProfRealloc( wpEventStack, wpStackSize * sizeof( int ) );
@@ -92,8 +90,8 @@ extern void WPPushEvent( int event )
 
 
 
-extern void WPPushPtrEvent( int event, void *ptr )
-/************************************************/
+void WPPushPtrEvent( int event, void *ptr )
+/*****************************************/
 {
     void    *data_point;
 
@@ -106,8 +104,8 @@ extern void WPPushPtrEvent( int event, void *ptr )
 
 
 
-extern int WPPopEvent( void )
-/***************************/
+int WPPopEvent( void )
+/********************/
 {
     if( wpStackSize == 0 ) {
         return( WP_NO_EVENT );

@@ -31,27 +31,27 @@
 
 :segment VERSION2
 #if !defined(__386__)
- #pragma library (graph2);
+ #pragma library (graph2)
 #elif defined(__SW_3S)
- #pragma library (graph23s);
+ #pragma library (graph23s)
 #else
- #pragma library (graph23r);
+ #pragma library (graph23r)
 #endif
 :elsesegment
 #if !defined(__386__)
- #pragma library (graph);
+ #pragma library (graph)
 #elif defined(__SW_3S)
- #pragma library (graph3s);
+ #pragma library (graph3s)
 #else
- #pragma library (graph3r);
+ #pragma library (graph3r)
 #endif
 :endsegment
 :elsesegment DOS
 
 :segment VERSION2
-#pragma library (graph2);
+#pragma library (graph2)
 :elsesegment
-#pragma library (graph);
+#pragma library (graph)
 :endsegment
 :endsegment
 :endsegment

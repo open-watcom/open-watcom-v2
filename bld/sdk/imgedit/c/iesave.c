@@ -41,11 +41,14 @@
 #include "wrselft.h"
 #include "iemem.h"
 #include "wresdefn.h"
+#include "wclbproc.h"
 
 
 #define DEF_MEMFLAGS    (MEMFLAG_MOVEABLE | MEMFLAG_PURE)
 #define SCANLINE_SIZE   32
 #define MAX_CHUNK       32768
+
+WINEXPORT UINT_PTR CALLBACK SaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static char     initialDir[_MAX_PATH];
 
@@ -106,8 +109,7 @@ static BOOL writeDataInPieces( BITMAPINFO *bmi, FILE *fp, img_node *node )
 /*
  * writeDataInPiecesData
  */
-static BOOL writeDataInPiecesData( BITMAPINFO *bmi, BYTE **data,
-                                   uint_32 *size, img_node *node )
+static BOOL writeDataInPiecesData( BITMAPINFO *bmi, BYTE **data, size_t *size, img_node *node )
 {
     HDC         hdc;
     HDC         memdc;
@@ -214,9 +216,9 @@ static void checkForPalExt( char *filename )
 } /* checkForPalExt */
 
 /*
- * SaveHook - hook used called by common dialog for 3D controls
+ * SaveOFNHookProc - hook used called by common dialog for 3D controls
  */
-BOOL CALLBACK SaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+UINT_PTR CALLBACK SaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     wparam = wparam;
     lparam = lparam;
@@ -239,7 +241,7 @@ BOOL CALLBACK SaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     }
     return( FALSE );
 
-} /* SaveHook */
+} /* SaveOFNHookProc */
 
 /*
  * getSaveFName - get the name of the file to be saved
@@ -284,13 +286,13 @@ static BOOL getSaveFName( char *fname, int imgtype )
     of.lpstrInitialDir = initialDir;
 #if !defined( __NT__ )
     /* Important! Do not use hook in WIN32, you will not get the nice dialog! */
-    of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)SaveHook, Instance );
+    of.lpfnHook = MakeProcInstance_OFNHOOK( SaveOFNHookProc, Instance );
     of.Flags = OFN_ENABLEHOOK;
 #endif
     of.Flags |= OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY;
     ret_val = GetSaveFileName( &of );
 #ifndef __NT__
-    FreeProcInstance( (FARPROC)of.lpfnHook );
+    FreeProcInstance_OFNHOOK( of.lpfnHook );
 #endif
 
     if( ret_val ) {
@@ -395,7 +397,7 @@ static BOOL saveBitmapFile( img_node *node )
 /*
  * SaveBitmapToData - get the bitmap data and save into a block of memory
  */
-BOOL SaveBitmapToData( img_node *node, BYTE **data, uint_32 *size )
+bool SaveBitmapToData( img_node *node, BYTE **data, size_t *size )
 {
     BITMAPFILEHEADER    bmfh;
     BITMAPINFO          *bmi;
@@ -404,7 +406,7 @@ BOOL SaveBitmapToData( img_node *node, BYTE **data, uint_32 *size )
     HDC                 hdc;
 
     if( data == NULL || size == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     bmi = GetDIBitmapInfo( node );
@@ -441,13 +443,13 @@ BOOL SaveBitmapToData( img_node *node, BYTE **data, uint_32 *size )
     // Make sure the bitmap can actually be malloc'd!!
     if( bmfh.bfSize > INT_MAX ) {
         FreeDIBitmapInfo( bmi );
-        return( FALSE );
+        return( false );
     }
 
     *data = MemAlloc( bmfh.bfSize );
     if( *data == NULL ) {
         FreeDIBitmapInfo( bmi );
-        return( FALSE );
+        return( false );
     }
     *size = 0;
 
@@ -459,12 +461,12 @@ BOOL SaveBitmapToData( img_node *node, BYTE **data, uint_32 *size )
 
     if( !writeDataInPiecesData( bmi, data, size, node ) ) {
         FreeDIBitmapInfo( bmi );
-        return( FALSE );
+        return( false );
     }
 
     FreeDIBitmapInfo( bmi );
 
-    return( TRUE );
+    return( true );
 
 } /* SaveBitmapToData */
 
@@ -694,7 +696,7 @@ static int getSaveImgDataLength( img_node *node, an_img_file *img_file,
 /*
  * SaveImgToData
  */
-BOOL SaveImgToData( img_node *node, BYTE **data, uint_32 *size )
+bool SaveImgToData( img_node *node, BYTE **data, size_t *size )
 {
     an_img_file         *img_file;
     an_img_resource     img_res;
@@ -710,7 +712,7 @@ BOOL SaveImgToData( img_node *node, BYTE **data, uint_32 *size )
     uint_32             data_length;
 
     if( data == NULL || size == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     count = node->num_of_images;                // Will be 1 for cursors
@@ -773,7 +775,7 @@ BOOL SaveImgToData( img_node *node, BYTE **data, uint_32 *size )
     if( data_length > INT_MAX ) {
         MemFree( img_file );
         MemFree( imginfo );
-        return( FALSE );
+        return( false );
     }
 
     // allocate the data for the image
@@ -781,7 +783,7 @@ BOOL SaveImgToData( img_node *node, BYTE **data, uint_32 *size )
     if( *data == NULL ) {
         MemFree( img_file );
         MemFree( imginfo );
-        return( FALSE );
+        return( false );
     }
     *size = 0;
 
@@ -845,7 +847,7 @@ BOOL SaveImgToData( img_node *node, BYTE **data, uint_32 *size )
     AllowRestoreOption( node );
     SetIsSaved( node->hwnd, TRUE );
 
-    return( TRUE );
+    return( true );
 
 } /* SaveImgToData */
 
@@ -912,15 +914,15 @@ static bool createNewImageLNODE( img_node *node, uint_16 type )
  */
 static bool saveResourceFile( img_node *node )
 {
-    BYTE        *data;
-    uint_32     size = 0;
-    uint_16     type;
-    WRFileType  save_type = 0;
-    BOOL        info_created;
-    bool        was32bit;
-    bool        is32bit;
-    bool        ok;
-    WPI_PROC    cb;
+    BYTE            *data;
+    size_t          size = 0;
+    uint_16         type;
+    WRFileType      save_type = 0;
+    BOOL            info_created;
+    bool            was32bit;
+    bool            is32bit;
+    bool            ok;
+    HELP_CALLBACK   hcb;
 
     info_created = FALSE;
     data = NULL;
@@ -962,9 +964,9 @@ static bool saveResourceFile( img_node *node )
     if( ok ) {
         was32bit = WRIs32Bit( node->wrinfo->file_type );
         for( ;; ) {
-            cb = _wpi_makeprocinstance( (WPI_PROC)IEHelpCallBack, Instance );
-            save_type = WRSelectFileType( HMainWindow, node->fname, was32bit, TRUE, cb );
-            _wpi_freeprocinstance( cb );
+            hcb = (HELP_CALLBACK)_wpi_makeprocinstance( (WPI_PROC)IEHelpCallBack, Instance );
+            save_type = WRSelectFileType( HMainWindow, node->fname, was32bit, TRUE, hcb );
+            _wpi_freeprocinstance( (WPI_PROC)hcb );
             is32bit = WRIs32Bit( save_type );
             if( was32bit ) {
                 if( is32bit ) {
@@ -1175,11 +1177,11 @@ static BOOL getSavePalName( char *fname )
     of.Flags = OFN_SHOWHELP | OFN_OVERWRITEPROMPT;
 #if !defined( __NT__ )
     of.Flags |= OFN_ENABLEHOOK;
-    of.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)SaveHook, Instance );
+    of.lpfnHook = MakeProcInstance_OFNHOOK( SaveOFNHookProc, Instance );
 #endif
     rc = GetSaveFileName( &of );
 #ifndef __NT__
-    FreeProcInstance( (FARPROC)of.lpfnHook );
+    FreeProcInstance_OFNHOOK( of.lpfnHook );
 #endif
     return( rc );
 

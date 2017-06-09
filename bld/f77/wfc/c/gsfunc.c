@@ -48,7 +48,7 @@ void    GSFArg( sym_id sym ) {
 
 // Generate a statement function argument.
 
-    sym = sym;
+    /* unused parameters */ (void)sym;
 }
 
 
@@ -79,7 +79,7 @@ void    GSFRetVal( itnode *sfunc ) {
 
 // Generate a statement function return value.
 
-    sfunc = sfunc;
+    /* unused parameters */ (void)sfunc;
 }
 
 
@@ -88,5 +88,5 @@ void    AdjSFList( itnode *sfunc ) {
 
 // Process statement function argument list.
 
-    sfunc = sfunc;
+    /* unused parameters */ (void)sfunc;
 }

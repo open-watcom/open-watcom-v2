@@ -32,12 +32,12 @@
 extern  void            InitIns( void );
 extern  bool            InsFrlFree( void );
 extern  void            FreeIns( instruction * );
-extern  instruction     *NewIns( int );
+extern  instruction     *NewIns( byte );
 extern  instruction     *MakeNop( void );
-extern  instruction     *MakeNary( opcode_defs, name *, name *, name *, type_class_def, type_class_def, int );
+extern  instruction     *MakeNary( opcode_defs, name *, name *, name *, type_class_def, type_class_def, byte );
 extern  instruction     *MakeMove( name *, name *, type_class_def );
 extern  instruction     *MakeUnary( opcode_defs, name *, name *, type_class_def );
 extern  instruction     *MakeConvert( name *, name *, type_class_def, type_class_def );
 extern  instruction     *MakeRound( name *, name *, type_class_def, type_class_def );
 extern  instruction     *MakeBinary( opcode_defs, name *, name *, name *, type_class_def );
-extern  instruction     *MakeCondition( opcode_defs, name *, name *, int, int, type_class_def );
+extern  instruction     *MakeCondition( opcode_defs, name *, name *, byte, byte, type_class_def );

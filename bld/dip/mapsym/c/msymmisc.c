@@ -45,13 +45,14 @@ unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
     return( Sizes[hk] );
 }
 
-dip_status DIPIMPENTRY( MoreMem )( unsigned size )
+dip_status DIPIMPENTRY( MoreMem )( size_t size )
 {
-    size = size;
+    /* unused parameters */ (void)size;
+
     return( DS_FAIL );
 }
 
-dip_status DIPIMPENTRY( Startup )( void )
+dip_status DIPImp( Startup )( void )
 {
     return( DS_OK );
 }

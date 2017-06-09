@@ -37,12 +37,12 @@
 #include "dyntpl.h"
 #include "util.h"
 #include "globals.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 #include "winctl.h"
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK SetGenDlgProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #define WORDWIDTH               30
 #define TMPDIRWIDTH             129
@@ -51,17 +51,17 @@ WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARA
 typedef struct {
     int         AutoSaveInterval;
     // int         MaxLineLen;
-    bool        Undo :1;
-    bool        AutoSave :1;
-    bool        LastEOL :1;
-    bool        SaveConfig :1;
-    bool        SaveOnBuild :1;
-    bool        BeepFlag :1;
-    bool        QuitMovesForward :1;
-    bool        SameFileCheck :1;
-    bool        Modal :1;
-    bool        CaseIgnore :1;
-    bool        SearchWrap :1;
+    bool        Undo                : 1;
+    bool        AutoSave            : 1;
+    bool        LastEOL             : 1;
+    bool        SaveConfig          : 1;
+    bool        SaveOnBuild         : 1;
+    bool        BeepFlag            : 1;
+    bool        QuitMovesForward    : 1;
+    bool        SameFileCheck       : 1;
+    bool        Modal               : 1;
+    bool        CaseIgnore          : 1;
+    bool        SearchWrap          : 1;
     char        Word[WORDWIDTH];
     char        WordAlt[WORDWIDTH];
     char        TmpDir[TMPDIRWIDTH];
@@ -280,9 +280,9 @@ static void setdlgDataDefaults( void )
 }
 
 /*
- * SetGenProc - processes messages for the Data Control Dialog
+ * SetGenDlgProc - processes messages for the Data Control Dialog
  */
-WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK SetGenDlgProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     switch( msg ) {
     case WM_INITDIALOG:
@@ -325,12 +325,12 @@ WINEXPORT BOOL CALLBACK SetGenProc( HWND hwndDlg, UINT msg, WPARAM wparam, LPARA
  */
 bool GetSetGenDialog( void )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
     bool        rc;
 
-    proc = MakeDlgProcInstance( SetGenProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "SETGEN", root_window_id, (DLGPROC)proc );
-    FreeProcInstance( proc );
+    dlgproc = MakeProcInstance_DLG( SetGenDlgProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "SETGEN", root_window_id, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 
     // redisplay all files to ensure screen completely correct
     ReDisplayBuffers( false );

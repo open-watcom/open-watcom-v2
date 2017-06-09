@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  sbrk() implementation for WIN32.
 *
 ****************************************************************************/
 
@@ -38,21 +37,22 @@
 #include "rterrno.h"
 #include "rtdata.h"
 #include "thread.h"
+#include "heap.h"
 
 
-_WCRTLINK void _WCNEAR *sbrk( int increment )
+_WCRTLINK void_nptr sbrk( int increment )
 {
     if( increment > 0 ) {
-        LPVOID      p;
+        LPVOID      cstg;
 
         increment = __ROUND_UP_SIZE_4K( increment );
-        //p = LocalAlloc( LMEM_FIXED, increment );
-        p = VirtualAlloc( NULL, increment, MEM_COMMIT, PAGE_EXECUTE_READWRITE );
-        if( p != NULL )
-            return( p );
+        //cstg = LocalAlloc( LMEM_FIXED, increment );
+        cstg = VirtualAlloc( NULL, increment, MEM_COMMIT, PAGE_EXECUTE_READWRITE );
+        if( cstg != NULL )
+            return( cstg );
         _RWD_errno = ENOMEM;
     } else {
         _RWD_errno = EINVAL;
     }
-    return( (void *)-1 );
+    return( (void_nptr)-1 );
 }

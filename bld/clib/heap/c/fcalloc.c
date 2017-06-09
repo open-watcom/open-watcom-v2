@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Allocate space for array from far heap
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -36,21 +36,19 @@
 #include <string.h>
 #include "heap.h"
 
-_WCRTLINK void _WCFAR *_fcalloc( size_t n, size_t el_size )
+_WCRTLINK void_fptr _fcalloc( size_t n, size_t el_size )
 {
-    void            _WCFAR *p;
+    void_fptr       cstg;
     unsigned long   chk_size;
 
     chk_size = (unsigned long)n * el_size;
     el_size = chk_size;
-#ifndef __386__
     if( el_size != chk_size ) {
-        return( (void _WCFAR *)NULL );
+        return( NULL );
     }
-#endif
-    p = _fmalloc( el_size );
-    if( p != (void _WCFAR *)NULL ) {
-        _fmemset( p, 0, el_size );
+    cstg = _fmalloc( el_size );
+    if( cstg != NULL ) {
+        _fmemset( cstg, 0, el_size );
     }
-    return( p );
+    return( cstg );
 }

@@ -33,12 +33,14 @@
 #ifndef COFF_IMPL_INCLUDED
 #define COFF_IMPL_INCLUDED
 
-#include	"orlglobl.h"
-#include	"coffglbl.h"
+#include "orlglobl.h"
+#include "coffglbl.h"
 
-extern orl_funcs ImportLibData;
-extern int convert_import_library(coff_file_handle coff_file_hnd);
+
+extern void *ImportLibRead( coff_file_handle coff_file_hnd, size_t len );
+extern long ImportLibSeek( coff_file_handle coff_file_hnd, long pos, int where );
+
+extern int  convert_import_library_init( coff_file_handle coff_file_hnd );
+extern int  convert_import_library_fini( coff_file_handle coff_file_hnd );
 
 #endif
-
-

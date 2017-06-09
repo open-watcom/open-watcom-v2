@@ -283,8 +283,8 @@ static bool DirParamStack( char **inf_name, char **src_path, DIR_PARAM_STACK_OPS
     }
 }
 
-static bool DoMainLoop( dlg_state * state )
-/*****************************************/
+static bool DoMainLoop( dlg_state *state )
+/****************************************/
 {
     const char          *diag_list[MAX_DIAGS + 1];
     const char          *diags;
@@ -313,6 +313,7 @@ static bool DoMainLoop( dlg_state * state )
     diag_list[i + 1] = NULL;
     /* process installation dialogs */
 
+    *state = DLG_NEXT;
     i = 0;
     for( ;; ) {
         if( i < 0 ) break;

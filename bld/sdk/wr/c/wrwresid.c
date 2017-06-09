@@ -86,7 +86,7 @@ static WResID *WR16Mem2WResID( void *data )
     }
 
     if( tmpName->IsName ) {
-        new->IsName = TRUE;
+        new->IsName = true;
         new->ID.Name.NumChars = stringlen;
         new->ID.Name.Name[0] = '\0';
         memcpy( &new->ID.Name.Name[0], &tmpName->ID.Name.Name[0], stringlen );
@@ -145,7 +145,7 @@ static WResID *WR32Mem2WResID( void *data )
     }
 
     if( tmpName->IsName ) {
-        new->IsName = TRUE;
+        new->IsName = true;
         new->ID.Name.NumChars = str_len - 1;
         new->ID.Name.Name[0] = '\0';
         memcpy( &new->ID.Name.Name[0], str, str_len - 1 );
@@ -160,16 +160,14 @@ static WResID *WR32Mem2WResID( void *data )
     return( new );
 }
 
-static int WRWResID2Mem16( WResID *name, void **data, uint_32 *size )
+static bool WRWResID2Mem16( WResID *name, void **data, size_t *size )
 {
-    int         len;
-    int         stringlen;
+    size_t      len;
 
     if( name == NULL || data == NULL || size == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
-    stringlen = 0;
     len = sizeof( WResID );
     if( name->IsName ) {
         len += name->ID.Name.NumChars;
@@ -180,16 +178,16 @@ static int WRWResID2Mem16( WResID *name, void **data, uint_32 *size )
 
     *data = MemAlloc( len );
     if( *data == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     memcpy( *data, name, len );
     *size = len;
 
-    return( TRUE );
+    return( true );
 }
 
-static int WRWResID2Mem32( WResID *name, void **data, uint_32 *size )
+static bool WRWResID2Mem32( WResID *name, void **data, size_t *size )
 {
     WResID      *tmpName;
     char        *str;
@@ -198,7 +196,7 @@ static int WRWResID2Mem32( WResID *name, void **data, uint_32 *size )
     size_t      len;
 
     if( name == NULL || data == NULL || size == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     uni_str = NULL;
@@ -211,7 +209,7 @@ static int WRWResID2Mem32( WResID *name, void **data, uint_32 *size )
             MemFree( str );
         }
         if( uni_str == NULL ) {
-            return( FALSE );
+            return( false );
         }
         uni_len -= 2;  // get rid of the null terminator
         len = len + uni_len;
@@ -225,14 +223,14 @@ static int WRWResID2Mem32( WResID *name, void **data, uint_32 *size )
         if( uni_str != NULL ) {
             MemFree( uni_str );
         }
-        return( FALSE );
+        return( false );
     }
 
-    *size = (uint_32)len;
+    *size = len;
 
     if( name->IsName ) {
         tmpName = (WResID *)*data;
-        tmpName->IsName = TRUE;
+        tmpName->IsName = true;
         tmpName->ID.Name.NumChars = name->ID.Name.NumChars;
         tmpName->ID.Name.Name[0] = '\0';
         memcpy( &tmpName->ID.Name.Name[0], uni_str, uni_len );
@@ -241,10 +239,10 @@ static int WRWResID2Mem32( WResID *name, void **data, uint_32 *size )
         memcpy( *data, name, len );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-int WRAPI WRWResID2Mem( WResID *name, void **data, uint_32 *size, bool is32bit )
+bool WRAPI WRWResID2Mem( WResID *name, void **data, size_t *size, bool is32bit )
 {
     if( is32bit ) {
         return( WRWResID2Mem32( name, data, size ) );

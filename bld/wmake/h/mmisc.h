@@ -47,7 +47,8 @@ extern char const   *DoWildCard( const char *base );
 extern void         DoWildCardClose( void );
 extern int          KWCompare( const void *p1, const void *p2 );
 extern char         *SkipWS( const char *p );
-extern char         *FindNextWS( char *str );
+extern char         *FindNextWS( const char *str );
+extern char         *FindNextWSorEqual( const char *str );
 extern char         *RemoveDoubleQuotes( char *dst, size_t maxlen, const char *src );
 extern int          PutEnvSafe( ENV_TRACKER *env );
 #if !defined(NDEBUG) || defined(DEVELOPMENT)

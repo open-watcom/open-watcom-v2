@@ -75,12 +75,12 @@ static void addRef( ref_list sec_ref_list, ref_entry entry )
     }
 }
 
-static char *getFrameModifier( orl_reloc *rel )
+static const char *getFrameModifier( orl_reloc *rel )
 {
     orl_sec_handle      shnd;
     orl_group_handle    grp;
     orl_symbol_type     typ;
-    char                *name;
+    const char          *name;
 
     if( rel->symbol == rel->frame ) {
         /* FRAME = TARGET
@@ -90,7 +90,7 @@ static char *getFrameModifier( orl_reloc *rel )
         typ = ORLSymbolGetType( rel->symbol );
         if( typ & ORL_SYM_TYPE_SECTION ) {
             shnd = ORLSymbolGetSecHandle( rel->symbol );
-            if( shnd ) {
+            if( shnd != ORL_NULL_HANDLE ) {
                 grp = ORLSecGetGroup( shnd );
                 if( grp ) {
                     return( ORLGroupName( grp ) );
@@ -122,9 +122,11 @@ orl_return CreateNamedLabelRef( orl_reloc *rel )
     hash_data *         data_ptr;
     ref_list            sec_ref_list;
 
-    if( rel->type == ORL_RELOC_TYPE_PAIR ) return( ORL_OKAY );
+    if( rel->type == ORL_RELOC_TYPE_PAIR )
+        return( ORL_OKAY );
     ref = MemAlloc( sizeof( ref_entry_struct ) );
-    if( !ref ) return( ORL_OUT_OF_MEMORY );
+    if( ref == NULL )
+        return( ORL_OUT_OF_MEMORY );
     memset( ref, 0, sizeof( ref_entry_struct ) );
     ref->offset = rel->offset;
     ref->type = rel->type;
@@ -133,11 +135,11 @@ orl_return CreateNamedLabelRef( orl_reloc *rel )
         ref->frame = getFrameModifier( rel );
     }
     data_ptr = HashTableQuery( SymbolToLabelTable, (hash_value) rel->symbol );
-    if( data_ptr ) {
-        ref->label = (label_entry) *data_ptr;
-        data_ptr = HashTableQuery( HandleToRefListTable, (hash_value) rel->section );
-        if( data_ptr ) {
-            sec_ref_list = (ref_list) *data_ptr;
+    if( data_ptr != NULL ) {
+        ref->label = (label_entry)*data_ptr;
+        data_ptr = HashTableQuery( HandleToRefListTable, (hash_value)rel->section );
+        if( data_ptr != NULL ) {
+            sec_ref_list = (ref_list)*data_ptr;
             addRef( sec_ref_list, ref );
         } else {
             // error!!!!  should have been created
@@ -155,17 +157,17 @@ orl_return DealWithRelocSection( orl_sec_handle shnd )
 {
     orl_return  error;
 
-    error = ORLRelocSecScan( shnd, &CreateNamedLabelRef );
+    error = ORLRelocSecScan( shnd, CreateNamedLabelRef );
     return( error );
 }
 
-return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, orl_sec_offset loc ) {
+return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc ) {
     ref_entry           ref;
     hash_data *         data_ptr;
     ref_list            sec_ref_list;
 
     ref = MemAlloc( sizeof( ref_entry_struct ) );
-    if( !ref ) {
+    if( ref == NULL ) {
         return( RC_OUT_OF_MEMORY );
     }
     memset( ref, 0, sizeof( ref_entry_struct ) );
@@ -185,13 +187,14 @@ return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, orl_se
     return( RC_OKAY );
 }
 
-return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, orl_sec_offset loc ) {
+return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc )
+{
     ref_entry           ref;
     hash_data *         data_ptr;
     ref_list            sec_ref_list;
 
     ref = MemAlloc( sizeof( ref_entry_struct ) );
-    if( !ref ) {
+    if( ref == NULL ) {
         return( RC_OUT_OF_MEMORY );
     }
     memset( ref, 0, sizeof( ref_entry_struct ) );
@@ -199,9 +202,9 @@ return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, orl_s
     ref->label = entry;
     ref->type = ORL_RELOC_TYPE_MAX + 1;
     ref->addend = 0;
-    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value) shnd );
+    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value)shnd );
     if( data_ptr ) {
-        sec_ref_list = (ref_list) *data_ptr;
+        sec_ref_list = (ref_list)*data_ptr;
         addRef( sec_ref_list, ref );
     } else {
         // error!!!!  should have been created

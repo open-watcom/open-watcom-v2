@@ -135,8 +135,10 @@ static  void    TellTempLocs( void )
     for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         if( temp->v.symbol != NULL && (temp->t.temp_flags & ALIAS) == 0 ) {
             ans = (int)(pointer_int)FEAuxInfo( temp->v.symbol, TEMP_LOC_NAME );
-            if( ans == TEMP_LOC_QUIT ) break;
-            if( temp->t.location == NO_LOCATION ) continue;
+            if( ans == TEMP_LOC_QUIT )
+                break;
+            if( temp->t.location == NO_LOCATION )
+                continue;
             if( ans == TEMP_LOC_YES ) {
                 FEAuxInfo( (pointer)(pointer_int)TempLocation( temp ), TEMP_LOC_TELL );
             }
@@ -203,10 +205,14 @@ static  void    ScanForLastUse( block *blk, stack_temp *new, name *temp )
             }
         } else {
             for( i = ins->num_operands; i-- > 0; ) {
-                if( SetLastUse( ins->operands[i], temp, new, ins ) ) return;
+                if( SetLastUse( ins->operands[i], temp, new, ins ) ) {
+                    return;
+                }
             }
             if( ins->result != NULL ) {
-                if( SetLastUse( ins->result, temp, new, ins ) ) return;
+                if( SetLastUse( ins->result, temp, new, ins ) ) {
+                    return;
+                }
             }
         }
     }
@@ -259,12 +265,15 @@ static  bool    In( name *op, name *name )
 /****************************************/
 {
     if( op->n.class == N_INDEXED ) {
-        if( In( op->i.index, name ) ) return( true );
+        if( In( op->i.index, name ) )
+            return( true );
         if( op->i.base != NULL && (op->i.index_flags & X_FAKE_BASE) == 0 ) {
             return( In( op->i.base, name ) );
         }
     } else if( op->n.class == N_TEMP ) {
-        if( DeAlias( op ) == name ) return( true );
+        if( DeAlias( op ) == name ) {
+            return( true );
+        }
     }
     return( false );
 }
@@ -274,7 +283,9 @@ static  bool    UsedByLA( instruction *ins, name *temp )
 /******************************************************/
 {
     if( ins->head.opcode == OP_LA || ins->head.opcode == OP_CAREFUL_LA ) {
-        if( ins->operands[0] == temp ) return( true );
+        if( ins->operands[0] == temp ) {
+            return( true );
+        }
     }
     return( false );
 }
@@ -302,13 +313,15 @@ static  instruction     *FindOnlyIns( name *name, bool *any_references )
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
             for( i = ins->num_operands; i-- > 0; ) {
                 if( In( ins->operands[i], name ) ) {
-                    if( onlyins != NULL ) return( NULL );
+                    if( onlyins != NULL )
+                        return( NULL );
                     onlyins = ins;
                 }
             }
             if( ins->result != NULL ) {
                 if( In( ins->result, name ) ) {
-                    if( onlyins != NULL ) return( NULL );
+                    if( onlyins != NULL )
+                        return( NULL );
                     onlyins = ins;
                 }
             }
@@ -369,7 +382,8 @@ static  void    AllocNewLocal( name *temp )
         name    *t;
 
         for( t = temp->t.alias; t != temp; t = t->t.alias ) {
-            if( t->t.temp_flags & CG_INTRODUCED ) continue;
+            if( t->t.temp_flags & CG_INTRODUCED )
+                continue;
             assert( t->n.size <= temp->n.size );
         }
     }
@@ -503,13 +517,19 @@ static void PropAParm( name *temp )
 
     if( temp->n.class == N_INDEXED ) {
         temp = temp->i.base;
-        if( temp == NULL ) return;
+        if( temp == NULL ) {
+            return;
+        }
     }
-    if( temp->n.class != N_TEMP ) return;
-    if( ( temp->v.usage & HAS_MEMORY ) != EMPTY ) return;
-    if( temp->t.location == NO_LOCATION ) return;
+    if( temp->n.class != N_TEMP )
+        return;
+    if( ( temp->v.usage & HAS_MEMORY ) != EMPTY )
+        return;
+    if( temp->t.location == NO_LOCATION )
+        return;
     base = DeAlias( temp );
-    if( base != temp ) PropAParm( base );
+    if( base != temp )
+        PropAParm( base );
     temp->t.location += temp->v.offset - base->v.offset;
     temp->v.usage |= HAS_MEMORY;
     temp->t.temp_flags |= STACK_PARM;
@@ -553,13 +573,15 @@ static void AssgnATemp( name *temp, block_num curr_id )
     if( temp->n.class == N_INDEXED && temp->i.base != NULL ) {
         temp = temp->i.base;
     }
-    if( temp->n.class != N_TEMP ) return;
+    if( temp->n.class != N_TEMP )
+        return;
     temp = DeAlias( temp );
     if( temp->v.usage & HAS_MEMORY ) {
         PropLocal( temp );
         return;
     }
-    if( ( temp->v.usage & NEEDS_MEMORY ) == EMPTY ) return;
+    if( ( temp->v.usage & NEEDS_MEMORY ) == EMPTY )
+        return;
     if( ( curr_id == NO_BLOCK_ID )
       || ( temp->t.u.block_id == curr_id )
       || ( temp->t.u.block_id == NO_BLOCK_ID ) ) {

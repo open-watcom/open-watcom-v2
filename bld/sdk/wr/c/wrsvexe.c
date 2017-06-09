@@ -30,7 +30,7 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
+#include "commonui.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -78,40 +78,40 @@ jmp_buf     jmpbuf_RCFatalError;
 /* this function duplicates Pass2 in rc.c of the WRC project */
 int WRPass2( void )
 {
-    int ok;
+    int rc;
 
-    ok = RcPass2IoInit();
+    rc = RcPass2IoInit();
 
-    if( ok ) {
+    if( rc ) {
         switch( Pass2Info.OldFile.Type ) {
         case EXE_TYPE_NE_WIN:
-            ok = MergeResExeWINNE();
+            rc = MergeResExeWINNE();
             break;
         case EXE_TYPE_PE:
-            ok = MergeResExePE();
+            rc = MergeResExePE();
             break;
         }
 
-        RcPass2IoShutdown( ok );
+        RcPass2IoShutdown( rc );
     }
 
-    return( ok );
+    return( rc );
 }
 
 int WRExecRCPass2( void )
 {
     int ret;
-    int ok;
+    int rc;
 
     ret = setjmp( jmpbuf_RCFatalError );
 
     if( ret ) {
-        ok = false;
+        rc = 0;
     } else {
-        ok = WRPass2();
+        rc = WRPass2();
     }
 
-    return( ok );
+    return( rc );
 }
 
 bool WRSaveResourceToWin16EXE( WRInfo *info, bool backup )
@@ -198,14 +198,17 @@ bool WRSaveResourceToEXE( WRInfo *info, bool backup, WRFileType ttype )
         } else {
             CmdLineParms.TargetOS = RC_TARGET_OS_WIN16;
         }
-        strcpy( CmdLineParms.InFileName, tmp_res );
-        strcpy( CmdLineParms.InExeFileName, info->file_name );
+        CmdLineParms.InFileName = tmp_res;
+        CmdLineParms.InExeFileName = info->file_name;
         if( stricmp( sname, info->file_name ) ) {
-            strcpy( CmdLineParms.OutExeFileName, sname );
+            CmdLineParms.OutExeFileName = sname;
         } else {
-            strcpy( CmdLineParms.OutExeFileName, info->file_name );
+            CmdLineParms.OutExeFileName = info->file_name;
         }
         ok = WRExecRCPass2();
+        CmdLineParms.InFileName = NULL;
+        CmdLineParms.InExeFileName = NULL;
+        CmdLineParms.OutExeFileName = NULL;
     }
 
     if( tmp_res != NULL ) {

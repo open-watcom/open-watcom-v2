@@ -84,7 +84,8 @@ static PSTK_CTL stack_new_ctors;    // stack: newed ctoring
 static void init(               // module initialization
     INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carve_patch_se = CarveCreate( sizeof( patch_entry ), 16 );
     carve_ctor_flag = CarveCreate( sizeof( CTOR_FLAG_SET ), 16 );
     carve_temp_entry = CarveCreate( sizeof( temp_entry ), 16 );
@@ -95,7 +96,8 @@ static void init(               // module initialization
 static void fini(               // module completion
     INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CarveDestroy( carve_patch_se );
     CarveDestroy( carve_ctor_flag );
     CarveDestroy( carve_temp_entry );

@@ -36,6 +36,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string.h>
+#include "bool.h"
 #include "trmemcvr.h"
 #include "orl.h"
 
@@ -43,14 +44,14 @@
 #define MAX_SECS    255
 
 typedef struct _dump_options {
-    int         header;
-    int         relocs;
-    int         symbols;
-    int         sections;
-    int         sec_contents;
+    bool        header;
+    bool        relocs;
+    bool        symbols;
+    bool        sections;
+    bool        sec_contents;
 } dump_options;
 
-static dump_options dump = { 0, 0, 0, 0, 0 };
+static dump_options dump = { false, false, false, false, false };
 
 typedef struct buff_entry   *buff_list;
 struct buff_entry {
@@ -60,7 +61,7 @@ struct buff_entry {
 
 static buff_list    buffList = NULL;
 
-static int sectionFound = 0;
+static bool sectionFound = false;
 
 static char *machType[] = {
     "NONE",
@@ -83,32 +84,38 @@ static orl_return PrintSymbolInfo( orl_symbol_handle symbol )
 /***********************************************************/
 {
     orl_symbol_type                     type;
-    char                                *name;
-    orl_sec_handle                      sec;
+    const char                          *name;
+    orl_sec_handle                      section;
+    unsigned_64                         val64;
 
     name = ORLSymbolGetName( symbol );
     //printf( "handle = %x", symbol );
     printf( "%-25s:", name ? name : "" );
-    printf( " %8.8llx ", ORLSymbolGetValue( symbol ) );
+    ORLSymbolGetValue( symbol, &val64 );
+#ifdef _M_I86
+    printf( " %8.8lx%8.8lx ", val64.u._32[I64HI32], val64.u._32[I64LO32] );
+#else
+    printf( " %8.8x%8.8x ", val64.u._32[I64HI32], val64.u._32[I64LO32] );
+#endif
     switch( ORLSymbolGetBinding( symbol ) ) {
-        case ORL_SYM_BINDING_NONE:
-            printf( "n/a " );
-            break;
-        case ORL_SYM_BINDING_LOCAL:
-            printf( "locl" );
-            break;
-        case ORL_SYM_BINDING_WEAK:
-            printf( "weak" );
-            break;
-        case ORL_SYM_BINDING_GLOBAL:
-            printf( "glbl" );
-            break;
-        case ORL_SYM_BINDING_LAZY:
-            printf( "lazy" );
-            break;
-        case ORL_SYM_BINDING_ALIAS:
-            printf( "alis" );
-            break;
+    case ORL_SYM_BINDING_NONE:
+        printf( "n/a " );
+        break;
+    case ORL_SYM_BINDING_LOCAL:
+        printf( "locl" );
+        break;
+    case ORL_SYM_BINDING_WEAK:
+        printf( "weak" );
+        break;
+    case ORL_SYM_BINDING_GLOBAL:
+        printf( "glbl" );
+        break;
+    case ORL_SYM_BINDING_LAZY:
+        printf( "lazy" );
+        break;
+    case ORL_SYM_BINDING_ALIAS:
+        printf( "alis" );
+        break;
     }
     printf( " " );
     type = ORLSymbolGetType( symbol );
@@ -135,9 +142,9 @@ static orl_return PrintSymbolInfo( orl_symbol_handle symbol )
     } else {
         printf( "none" );
     }
-    sec = ORLSymbolGetSecHandle( symbol );
-    if( sec ) {
-        printf( " (in '%s')", ORLSecGetName( sec ) );
+    section = ORLSymbolGetSecHandle( symbol );
+    if( section != ORL_NULL_HANDLE ) {
+        printf( " (in '%s')", ORLSecGetName( section ) );
     }
     printf( "\n" );
     return( ORL_OKAY );
@@ -212,12 +219,12 @@ static orl_return PrintRelocInfo( orl_reloc *reloc )
     return( ORL_OKAY );
 }
 
-static orl_return PrintSecInfo( orl_sec_handle o_shnd )
-/*****************************************************/
+static orl_return PrintSecInfo( orl_sec_handle section )
+/******************************************************/
 {
-    char                        *buf;
-    int                         loop;
-    int                         loop2;
+    const char                  *buf;
+    unsigned                    i;
+    unsigned                    i2;
     orl_sec_size                size;
     orl_sec_type                sec_type;
     orl_sec_flags               sec_flags;
@@ -225,63 +232,64 @@ static orl_return PrintSecInfo( orl_sec_handle o_shnd )
     orl_sec_handle              symbol_table;
     orl_sec_handle              string_table;
     int                         sep;
-    int                         segname_printed = 0;
+    bool                        segname_printed;
 
     size = 0;   // just because gcc is a little retarded
-    sectionFound = 1;
+    sectionFound = true;
+    segname_printed = false;
     if( dump.sections || dump.sec_contents ) {
-        buf = ORLSecGetName( o_shnd );
+        buf = ORLSecGetName( section );
         printf( "[%s]\n", buf );
-        segname_printed = 1;
-        size = ORLSecGetSize( o_shnd );
+        segname_printed = true;
+        size = ORLSecGetSize( section );
     }
     if( dump.sections ) {
-        //printf( "\nSection Handle:\t0x%x\n", o_shnd );
+        //printf( "\nSection Handle:\t0x%x\n", section );
         printf( "Size=%8.8x ", size );
-        sec_type = ORLSecGetType( o_shnd );
-        printf( "Align=%4.4x ", ORLSecGetAlignment( o_shnd ) );
+        sec_type = ORLSecGetType( section );
+        printf( "Align=%4.4x ", ORLSecGetAlignment( section ) );
         //printf( "Section Type:\t%d\n", sec_type );
         printf( "(" );
         switch( sec_type ) {
-            case ORL_SEC_TYPE_NONE:
-                printf( "sec_type_none" );
-                break;
-            case ORL_SEC_TYPE_NO_BITS:
-                printf( "no bits" );
-                break;
-            case ORL_SEC_TYPE_PROG_BITS:
-                printf( "program bits" );
-                break;
-            case ORL_SEC_TYPE_SYM_TABLE:
-                printf( "symbol table" );
-                break;
-            case ORL_SEC_TYPE_DYN_SYM_TABLE:
-                printf( "dynamic symbol table" );
-                break;
-            case ORL_SEC_TYPE_STR_TABLE:
-                printf( "string table" );
-                break;
-            case ORL_SEC_TYPE_RELOCS:
-                printf( "relocs" );
-                break;
-            case ORL_SEC_TYPE_RELOCS_EXPADD:
-                printf( "relocs with explicit addends" );
-                break;
-            case ORL_SEC_TYPE_HASH:
-                printf( "hash table" );
-                break;
-            case ORL_SEC_TYPE_DYNAMIC:
-                printf( "dynamic linking information" );
-                break;
-            case ORL_SEC_TYPE_NOTE:
-                printf( "note or comment" );
-                break;
-            default:
-                printf( "unknown type? %s", sec_type );
-                break;
+        case ORL_SEC_TYPE_NONE:
+            printf( "sec_type_none" );
+            break;
+        case ORL_SEC_TYPE_NO_BITS:
+            printf( "no bits" );
+            break;
+        case ORL_SEC_TYPE_PROG_BITS:
+            printf( "program bits" );
+            break;
+        case ORL_SEC_TYPE_SYM_TABLE:
+            printf( "symbol table" );
+            break;
+        case ORL_SEC_TYPE_DYN_SYM_TABLE:
+            printf( "dynamic symbol table" );
+            break;
+        case ORL_SEC_TYPE_STR_TABLE:
+            printf( "string table" );
+            break;
+        case ORL_SEC_TYPE_RELOCS:
+            printf( "relocs" );
+            break;
+        case ORL_SEC_TYPE_RELOCS_EXPADD:
+            printf( "relocs with explicit addends" );
+            break;
+        case ORL_SEC_TYPE_HASH:
+            printf( "hash table" );
+            break;
+        case ORL_SEC_TYPE_DYNAMIC:
+            printf( "dynamic linking information" );
+            break;
+        case ORL_SEC_TYPE_NOTE:
+            printf( "note or comment" );
+            break;
+        default:
+            printf( "unknown type? %s", sec_type );
+            break;
         }
         printf( ") " );
-        sec_flags = ORLSecGetFlags( o_shnd );
+        sec_flags = ORLSecGetFlags( section );
         printf( "ORL_flags=0x%x\n", sec_flags );
         sep = 0;
         if( sec_flags )
@@ -365,28 +373,28 @@ static orl_return PrintSecInfo( orl_sec_handle o_shnd )
         }
     }
     if( dump.sec_contents ) {
-        if( ORLSecGetContents( o_shnd, (unsigned_8 **)&buf ) == ORL_OKAY ) {
+        if( ORLSecGetContents( section, (unsigned_8 **)&buf ) == ORL_OKAY ) {
             printf( "Contents:\n" );
-            for( loop = 0; loop < size; loop += 16 ) {
-                printf( "0x%8.8x: ", loop );
-                for( loop2 = 0; loop2 < 16; loop2++ ) {
-                    if( loop + loop2 < size ) {
-                        printf( "%2.2x ", buf[loop+loop2] );
+            for( i = 0; i < size; i += 16 ) {
+                printf( "0x%8.8x: ", i );
+                for( i2 = 0; i2 < 16; i2++ ) {
+                    if( i + i2 < size ) {
+                        printf( "%2.2x ", buf[i + i2] );
                     } else {
                         printf( "   " );
                     }
-                    if( loop2 == 7 ) {
+                    if( i2 == 7 ) {
                         printf( " " );
                     }
                 }
                 printf( " " );
-                for( loop2 = 0; loop2 < 16 && loop + loop2 < size; loop2++ ) {
-                    if( buf[loop+loop2] >= 32 && buf[loop+loop2] <= 122 ) {
-                        printf( "%c", buf[loop+loop2] );
+                for( i2 = 0; i2 < 16 && i + i2 < size; i2++ ) {
+                    if( buf[i + i2] >= 32 && buf[i + i2] <= 122 ) {
+                        printf( "%c", buf[i + i2] );
                     } else {
                         printf( "." );
                     }
-                    if( loop2 == 7 ) {
+                    if( i2 == 7 ) {
                         printf( " " );
                     }
                 }
@@ -395,18 +403,19 @@ static orl_return PrintSecInfo( orl_sec_handle o_shnd )
         }
     }
     if( dump.relocs ) {
-        reloc_section = ORLSecGetRelocTable( o_shnd );
-        if( reloc_section ) {
-            if( !segname_printed++ ) {
-                buf = ORLSecGetName( o_shnd );
+        reloc_section = ORLSecGetRelocTable( section );
+        if( reloc_section != ORL_NULL_HANDLE ) {
+            if( !segname_printed ) {
+                buf = ORLSecGetName( section );
                 printf( "[%s]\n", buf );
+                segname_printed = true;
             }
             printf( "Relocs in [%s], ", ORLSecGetName( reloc_section ) );
             symbol_table = ORLSecGetSymbolTable( reloc_section );
-            if( symbol_table ) {
+            if( symbol_table != ORL_NULL_HANDLE ) {
                 printf( "symtab='%s', ", ORLSecGetName( symbol_table ) );
                 string_table = ORLSecGetStringTable( symbol_table );
-                if( string_table ) {
+                if( string_table != ORL_NULL_HANDLE ) {
                     printf( "strtab='%s'.\n", ORLSecGetName( string_table ) );
                 } else {
                     printf( "strtab=none.\n" );
@@ -415,19 +424,19 @@ static orl_return PrintSecInfo( orl_sec_handle o_shnd )
                 printf( "symtab=none, strtab=none.\n" );
             }
             //printf( "Relocs:\n" );
-            ORLRelocSecScan( reloc_section, &PrintRelocInfo );
+            ORLRelocSecScan( reloc_section, PrintRelocInfo );
         }
     }
     return( ORL_OKAY );
 }
 
-static orl_return PrintSymTable( orl_sec_handle orl_sec_hnd )
-/***********************************************************/
+static orl_return PrintSymTable( orl_sec_handle section )
+/*******************************************************/
 {
     if( dump.symbols ) {
         printf( "\nSymbol table\n" );
         printf( "~~~~~~~~~~~~\n" );
-        ORLSymbolSecScan( orl_sec_hnd, &PrintSymbolInfo );
+        ORLSymbolSecScan( section, PrintSymbolInfo );
     }
     return( ORL_OKAY );
 }
@@ -468,13 +477,13 @@ static void freeBuffList( void )
 int main( int argc, char *argv[] )
 /********************************/
 {
-    orl_handle                  o_hnd;
-    orl_file_handle             o_fhnd;
+    orl_handle                  o_handle;
+    orl_file_handle             o_file_handle;
+    orl_file_flags              o_file_flags;
+    orl_machine_type            o_machine_type;
+    orl_file_type               o_file_type;
+    orl_file_format             o_file_format;
     int                         file;
-    orl_file_flags              file_flags;
-    orl_machine_type            machine_type;
-    orl_file_type               file_type;
-    orl_file_format             type;
     int                         c;
     int                         sep;
     char                        *secs[MAX_SECS];
@@ -496,35 +505,35 @@ int main( int argc, char *argv[] )
     }
     while( (c = getopt( argc, argv, "axhrsSo:" )) != EOF ) {
         switch( c ) {
-            case 'a':
-                dump.relocs++;
-                dump.header++;
-                dump.symbols++;
-                dump.sections++;
-                break;
-            case 'x':
-                dump.sec_contents++;
-                break;
-            case 'h':
-                dump.header++;
-                break;
-            case 'r':
-                dump.relocs++;
-                break;
-            case 's':
-                dump.symbols++;
-                break;
-            case 'S':
-                dump.sections++;
-                break;
-            case 'o':
-                secs[num_secs++] = optarg;
-                break;
-            default:
-                // error occured
-                exit(1);
-        };
-    };
+        case 'a':
+            dump.relocs = true;
+            dump.header = true;
+            dump.symbols = true;
+            dump.sections = true;
+            break;
+        case 'x':
+            dump.sec_contents = true;
+            break;
+        case 'h':
+            dump.header = true;
+            break;
+        case 'r':
+            dump.relocs = true;
+            break;
+        case 's':
+            dump.symbols = true;
+            break;
+        case 'S':
+            dump.sections = true;
+            break;
+        case 'o':
+            secs[num_secs++] = optarg;
+            break;
+        default:
+            // error occured
+            exit(1);
+        }
+    }
     if( optind != argc - 1 ) {
         fprintf( stderr, "must specify 1 filename\n" );
         exit(1);
@@ -536,17 +545,17 @@ int main( int argc, char *argv[] )
         return( 2 );
     }
     TRMemOpen();
-    o_hnd = ORLInit( &orl_cli_funcs );
-    if( o_hnd == NULL ) {
+    o_handle = ORLInit( &orl_cli_funcs );
+    if( o_handle == NULL ) {
         printf( "Got NULL orl_handle.\n" );
         return( 2 );
     }
-    type = ORLFileIdentify( o_hnd, ORL_PH2FID( file ) );
-    if( type == ORL_UNRECOGNIZED_FORMAT ) {
+    o_file_format = ORLFileIdentify( o_handle, ORL_PH2FID( file ) );
+    if( o_file_format == ORL_UNRECOGNIZED_FORMAT ) {
         printf( "The object file is not in either ELF, COFF or OMF format." );
         return( 1 );
     }
-    switch( type ) {
+    switch( o_file_format ) {
     case ORL_ELF:
         printf( "ELF" );
         break;
@@ -561,92 +570,92 @@ int main( int argc, char *argv[] )
         break;
     }
     printf( " object file.\n" );
-    o_fhnd = ORLFileInit( o_hnd, ORL_PH2FID( file ), type );
-    if( o_fhnd == NULL ) {
+    o_file_handle = ORLFileInit( o_handle, ORL_PH2FID( file ), o_file_format );
+    if( o_file_handle == NULL ) {
         printf( "Got NULL orl_file_handle.\n" );
         return( 2 );
     }
     if( dump.header ) {
         printf( "File %s:\n", argv[optind] );
-        machine_type = ORLFileGetMachineType( o_fhnd );
+        o_machine_type = ORLFileGetMachineType( o_file_handle );
         printf( "Machine Type: " );
-        if( machine_type >= ( sizeof( machType ) / sizeof( *machType ) ) ) {
+        if( o_machine_type >= ( sizeof( machType ) / sizeof( *machType ) ) ) {
             // We've probably added some new types?
-            printf( "?(%d)", machine_type );
+            printf( "?(%d)", o_machine_type );
         } else {
-            printf( "%s", machType[ machine_type ] );
+            printf( "%s", machType[o_machine_type] );
         }
-        file_type = ORLFileGetType( o_fhnd );
+        o_file_type = ORLFileGetType( o_file_handle );
         printf( " (" );
-        switch( file_type ) {
-            case ORL_FILE_TYPE_NONE:
-                printf( "file_type_none" );
-                break;
-            case ORL_FILE_TYPE_OBJECT:
-                printf( "object file" );
-                break;
-            case ORL_FILE_TYPE_EXECUTABLE:
-                printf( "executable" );
-                break;
-            case ORL_FILE_TYPE_SHARED_OBJECT:
-                printf( "shared object" );
-                break;
-            case ORL_FILE_TYPE_DLL:
-                printf( "DLL" );
-                break;
-            default:
-                printf( "unknown file type?" );
-                break;
+        switch( o_file_type ) {
+        case ORL_FILE_TYPE_NONE:
+            printf( "file_type_none" );
+            break;
+        case ORL_FILE_TYPE_OBJECT:
+            printf( "object file" );
+            break;
+        case ORL_FILE_TYPE_EXECUTABLE:
+            printf( "executable" );
+            break;
+        case ORL_FILE_TYPE_SHARED_OBJECT:
+            printf( "shared object" );
+            break;
+        case ORL_FILE_TYPE_DLL:
+            printf( "DLL" );
+            break;
+        default:
+            printf( "unknown file type?" );
+            break;
         }
         printf( ")\n" );
-        file_flags = ORLFileGetFlags( o_fhnd );
-        //printf(" File flags=0x%x\n", file_flags );
+        o_file_flags = ORLFileGetFlags( o_file_handle );
+        //printf(" File flags=0x%x\n", o_file_flags );
         sep = 0;
-        if( file_flags & ORL_FILE_FLAG_LINE_NUMS_STRIPPED ) {
+        if( o_file_flags & ORL_FILE_FLAG_LINE_NUMS_STRIPPED ) {
             printf( "line number info stripped" );
-            sep = 1;
+            sep++;
         }
-        if( file_flags & ORL_FILE_FLAG_RELOCS_STRIPPED ) {
+        if( o_file_flags & ORL_FILE_FLAG_RELOCS_STRIPPED ) {
             if( sep++ )
                 printf( ", " );
             printf( "relocs stripped" );
         }
-        if( file_flags & ORL_FILE_FLAG_LOCAL_SYMS_STRIPPED ) {
+        if( o_file_flags & ORL_FILE_FLAG_LOCAL_SYMS_STRIPPED ) {
             if( sep++ )
                 printf( ", " );
             printf( "local symbols stripped" );
         }
-        if( file_flags & ORL_FILE_FLAG_DEBUG_STRIPPED ) {
+        if( o_file_flags & ORL_FILE_FLAG_DEBUG_STRIPPED ) {
             if( sep++ )
                 printf( ", " );
             printf( "debug info stripped" );
         }
-        if( file_flags & ORL_FILE_FLAG_16BIT_MACHINE ) {
+        if( o_file_flags & ORL_FILE_FLAG_16BIT_MACHINE ) {
             if( sep++ )
                 printf( ", " );
             printf( "for 16-bit machine" );
         }
-        if( file_flags & ORL_FILE_FLAG_32BIT_MACHINE ) {
+        if( o_file_flags & ORL_FILE_FLAG_32BIT_MACHINE ) {
             if( sep++ )
                 printf( ", " );
             printf( "for 32-bit machine" );
         }
-        if( file_flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
+        if( o_file_flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
             if( sep++ )
                 printf( ", " );
             printf( "for 64-bit machine" );
         }
-        if( file_flags & ORL_FILE_FLAG_LITTLE_ENDIAN ) {
+        if( o_file_flags & ORL_FILE_FLAG_LITTLE_ENDIAN ) {
             if( sep++ )
                 printf( ", " );
             printf( "little-endian byte order" );
         }
-        if( file_flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
+        if( o_file_flags & ORL_FILE_FLAG_BIG_ENDIAN ) {
             if( sep++ )
                 printf( ", " );
             printf( "big-endian byte order" );
         }
-        if( file_flags & ORL_FILE_FLAG_SYSTEM ) {
+        if( o_file_flags & ORL_FILE_FLAG_SYSTEM ) {
             if( sep++ )
                 printf( ", " );
             printf( "system file" );
@@ -657,8 +666,8 @@ int main( int argc, char *argv[] )
     }
     if( num_secs ) {
         for( c = 0; c < num_secs; c++ ) {
-            sectionFound = 0;
-            if( ORLFileScan( o_fhnd, secs[c], &PrintSecInfo ) != ORL_OKAY ) {
+            sectionFound = false;
+            if( ORLFileScan( o_file_handle, secs[c], PrintSecInfo ) != ORL_OKAY ) {
                 printf( "Error occured in scanning section '%s'.\n", secs[c] );
             }
             if( !sectionFound ) {
@@ -666,16 +675,16 @@ int main( int argc, char *argv[] )
             }
         }
     } else {
-        if( ORLFileScan( o_fhnd, NULL, &PrintSecInfo ) != ORL_OKAY ) {
+        if( ORLFileScan( o_file_handle, NULL, PrintSecInfo ) != ORL_OKAY ) {
             printf( "Error occured in scanning file.\n" );
             return( 2 );
         }
     }
-    if( ORLFileScan( o_fhnd, ".symtab", &PrintSymTable ) != ORL_OKAY ) {
+    if( ORLFileScan( o_file_handle, ".symtab", PrintSymTable ) != ORL_OKAY ) {
         printf( "Error occured in scanning file for symbol table\n" );
         return( 2 );
     }
-    if( ORLFileFini( o_fhnd ) != ORL_OKAY ) {
+    if( ORLFileFini( o_file_handle ) != ORL_OKAY ) {
         printf( "Error calling ORLFileFini.\n" );
         return( 2 );
     }
@@ -683,7 +692,7 @@ int main( int argc, char *argv[] )
         printf( "Error closing file.\n" );
         return( 2 );
     }
-    if( ORLFini( o_hnd ) != ORL_OKAY ) {
+    if( ORLFini( o_handle ) != ORL_OKAY ) {
         printf( "Error calling ORLFini.\n" );
     }
     freeBuffList();

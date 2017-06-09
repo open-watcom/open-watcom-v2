@@ -42,7 +42,8 @@ static void gml_hp_sf_common( gml_tag gtag, int level )
 {
     char    *   p;
 
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
 // keep any existing post_space, even if CT follows -- TBD
     if( (input_cbs->fmflags & II_sol) ) {
         ProcFlags.fsp = true;

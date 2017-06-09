@@ -37,7 +37,6 @@
 #include "font.h"
 #include "subclass.h"
 #include "hotkey.h"
-#include "wprocmap.h"
 
 
 /* NB: In Win386 mode, the FAR pointers passed to callback procs are
@@ -52,21 +51,21 @@
 
 /* Local Windows CALLBACK function prototypes */
 #if defined( __WINDOWS_386__ )
-WINEXPORT int CALLBACK EnumFamTypefaces( const LOGFONT *_lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam );
-WINEXPORT int CALLBACK EnumFamInfo( const LOGFONT *_lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam );
-WINEXPORT int CALLBACK SetupFontData( const LOGFONT *_lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam );
+WINEXPORT int CALLBACK EnumFamFaceNames( const LOGFONT *lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam );
+WINEXPORT int CALLBACK EnumFamInfo( const LOGFONT *lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam );
+WINEXPORT int CALLBACK SetupFontData( const LOGFONT *lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam );
 #elif defined( __WINDOWS__ )
-WINEXPORT int CALLBACK EnumFamTypefaces( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int FontType, LPARAM lparam );
+WINEXPORT int CALLBACK EnumFamFaceNames( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int FontType, LPARAM lparam );
 WINEXPORT int CALLBACK EnumFamInfo( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int FontType, LPARAM lparam );
 WINEXPORT int CALLBACK SetupFontData( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int FontType, LPARAM lparam );
 #else
-WINEXPORT int CALLBACK EnumFamTypefaces( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD FontType, LPARAM lparam );
+WINEXPORT int CALLBACK EnumFamFaceNames( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD FontType, LPARAM lparam );
 WINEXPORT int CALLBACK EnumFamInfo( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD FontType, LPARAM lparam );
 WINEXPORT int CALLBACK SetupFontData( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD FontType, LPARAM lparam );
 #endif
 WINEXPORT INT_PTR CALLBACK FtDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
-HWND    hwndTypeface, hwndStyle, hwndSize, hwndPick, hwndSizeEdit;
+HWND    hwndFaceName, hwndStyle, hwndSize, hwndPick, hwndSizeEdit;
 LOGFONT CurLogfont;
 
 HWND    hFontbar;
@@ -82,8 +81,8 @@ enum {
 #define MAX_SIZES       16
 
 struct {
-    bool    bold :1;
-    bool    italic :1;
+    bool    bold        : 1;
+    bool    italic      : 1;
 }       Style[MAX_STYLES];
 
 int     NStyles, NSizes;
@@ -93,25 +92,23 @@ int     YPIXELS_PER_INCH = 96;
 
 
 #if defined( __WINDOWS_386__ )
-WINEXPORT int CALLBACK EnumFamTypefaces( const LOGFONT *_lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam )
+WINEXPORT int CALLBACK EnumFamFaceNames( const LOGFONT *lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam )
 #elif defined( __WINDOWS__ )
-WINEXPORT int CALLBACK EnumFamTypefaces( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int FontType, LPARAM lparam )
+WINEXPORT int CALLBACK EnumFamFaceNames( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int FontType, LPARAM lparam )
 #else
-WINEXPORT int CALLBACK EnumFamTypefaces( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD FontType, LPARAM lparam )
+WINEXPORT int CALLBACK EnumFamFaceNames( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD FontType, LPARAM lparam )
 #endif
 {
 #ifdef __WINDOWS_386__
-    char                   faceName[LF_FACESIZE];
-    const LOGFONT __far    *lf = MK_FP32( (void *)_lf );
+    char                faceName[LF_FACESIZE];
+    const ENUMLOGFONT   __far *elf = MK_FP32( (void *)lf );
     tm = tm;
 #elif defined( __WINDOWS__ )
-    const LOGFONT FAR      *lf = (const LOGFONT FAR *)elf;
-//    const TEXTMETRIC FAR *tm = (const TEXTMETRIC FAR *)ntm;
     ntm = ntm;
 #else
+    const ENUMLOGFONT   FAR *elf = (const ENUMLOGFONT FAR *)lf;
     tm = tm;
 #endif
-
     lparam = lparam;
     FontType = FontType;
 
@@ -120,34 +117,33 @@ WINEXPORT int CALLBACK EnumFamTypefaces( const LOGFONT FAR *lf, const TEXTMETRIC
      * but we get a far pointer from Windows. Hence the shenanigans with
      * a temp buffer in the flat address space.
      */
-    _fstrcpy( faceName, lf->lfFaceName );
-    SendMessage( hwndTypeface, LB_ADDSTRING, 0, (LPARAM)faceName );
+    _fstrcpy( faceName, elf->elfLogFont.lfFaceName );
+    SendMessage( hwndFaceName, LB_ADDSTRING, 0, (LPARAM)faceName );
 #else
-    SendMessage( hwndTypeface, LB_ADDSTRING, 0, (LPARAM)(lf->lfFaceName) );
+    SendMessage( hwndFaceName, LB_ADDSTRING, 0, (LPARAM)(elf->elfLogFont.lfFaceName) );
 #endif
 
     return( TRUE );
 }
 
 #if defined( __WINDOWS_386__ )
-WINEXPORT int CALLBACK EnumFamInfo( const LOGFONT *_lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam )
+WINEXPORT int CALLBACK EnumFamInfo( const LOGFONT *lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam )
 #elif defined( __WINDOWS__ )
 WINEXPORT int CALLBACK EnumFamInfo( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int FontType, LPARAM lparam )
 #else
 WINEXPORT int CALLBACK EnumFamInfo( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm, DWORD FontType, LPARAM lparam )
 #endif
 {
-    char                   sbuf[40];
-    int                    height;
-    long                   *isTrueType = (long *)lparam;
+    char                    sbuf[40];
+    int                     height;
+    long                    *isTrueType = (long *)lparam;
 #ifdef __WINDOWS_386__
-    const LOGFONT __far    *lf = MK_FP32( (void *)_lf );
+    const ENUMLOGFONT       __far *elf = MK_FP32( (void *)lf );
     tm = tm;
 #elif defined( __WINDOWS__ )
-    const LOGFONT FAR      *lf = (const LOGFONT FAR *)elf;
-//    const TEXTMETRIC FAR *tm = (const TEXTMETRIC FAR *)ntm;
     ntm = ntm;
 #else
+    const ENUMLOGFONT       FAR *elf = (const ENUMLOGFONT FAR *)lf;
     tm = tm;
 #endif
 
@@ -165,7 +161,7 @@ WINEXPORT int CALLBACK EnumFamInfo( const LOGFONT FAR *lf, const TEXTMETRIC FAR 
     } else {
         /* add size to list
         */
-        height = abs( lf->lfHeight );
+        height = abs( elf->elfLogFont.lfHeight );
         sprintf( sbuf, "%d", height );
         if( SendMessage( hwndSize, CB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)sbuf ) == CB_ERR ) {
             SendMessage( hwndSize, CB_INSERTSTRING, NSizes, (LPARAM)sbuf );
@@ -175,7 +171,7 @@ WINEXPORT int CALLBACK EnumFamInfo( const LOGFONT FAR *lf, const TEXTMETRIC FAR 
 }
 
 #if defined( __WINDOWS_386__ )
-WINEXPORT int CALLBACK SetupFontData( const LOGFONT *_lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam )
+WINEXPORT int CALLBACK SetupFontData( const LOGFONT *lf, const TEXTMETRIC *tm, int FontType, LPARAM lparam )
 #elif defined( __WINDOWS__ )
 WINEXPORT int CALLBACK SetupFontData( const ENUMLOGFONT FAR *elf, const NEWTEXTMETRIC FAR *ntm, int FontType, LPARAM lparam )
 #else
@@ -183,13 +179,12 @@ WINEXPORT int CALLBACK SetupFontData( const LOGFONT FAR *lf, const TEXTMETRIC FA
 #endif
 {
 #ifdef __WINDOWS_386__
-    const LOGFONT __far    *lf = MK_FP32( (void *)_lf );
+    const ENUMLOGFONT       __far *elf = MK_FP32( (void *)lf );
     tm = tm;
 #elif defined( __WINDOWS__ )
-    const LOGFONT FAR      *lf = (const LOGFONT FAR *)elf;
-//    const TEXTMETRIC FAR *tm = (const TEXTMETRIC FAR *)ntm;
     ntm = ntm;
 #else
+    const ENUMLOGFONT       FAR *elf = (const ENUMLOGFONT FAR *)lf;
     tm = tm;
 #endif
 
@@ -197,32 +192,32 @@ WINEXPORT int CALLBACK SetupFontData( const LOGFONT FAR *lf, const TEXTMETRIC FA
     lparam = lparam;
 
     /* start setting up CurLogfont based on the font data */
-    CurLogfont.lfCharSet = lf->lfCharSet;
-    CurLogfont.lfOutPrecision = lf->lfOutPrecision;
-    CurLogfont.lfClipPrecision = lf->lfClipPrecision;
-    CurLogfont.lfQuality = lf->lfQuality;
-    CurLogfont.lfPitchAndFamily = lf->lfPitchAndFamily;
+    CurLogfont.lfCharSet = elf->elfLogFont.lfCharSet;
+    CurLogfont.lfOutPrecision = elf->elfLogFont.lfOutPrecision;
+    CurLogfont.lfClipPrecision = elf->elfLogFont.lfClipPrecision;
+    CurLogfont.lfQuality = elf->elfLogFont.lfQuality;
+    CurLogfont.lfPitchAndFamily = elf->elfLogFont.lfPitchAndFamily;
 
     /* only do this for the 1st font - we just want defaults */
     return( FALSE );
 }
 
-static void fillTypefaceBox( HWND hwnd )
+static void fillFaceNamesBox( HWND hwnd )
 {
-    FARPROC     fp;
-    HDC         hdc;
+    FONTENUMPROC    fontenumproc;
+    HDC             hdc;
 
     hwnd = hwnd;
 
-    /* put typefaces in combo box
+    /* put facenames in combo box
     */
     hdc = GetDC( edit_container_id );
-    fp = MakeFontEnumProcInstance( EnumFamTypefaces, InstanceHandle );
-    EnumFontFamilies( hdc, NULL, (FONTENUMPROC)fp, 0L );
-    FreeProcInstance( fp );
+    fontenumproc = MakeProcInstance_FONTENUM( EnumFamFaceNames, InstanceHandle );
+    EnumFontFamilies( hdc, NULL, fontenumproc, 0L );
+    FreeProcInstance_FONTENUM( fontenumproc );
     ReleaseDC( edit_container_id, hdc );
 
-    SendMessage( hwndTypeface, LB_SETCURSEL, 0, 0L );
+    SendMessage( hwndFaceName, LB_SETCURSEL, 0, 0L );
 }
 
 static void fillStyleBox( void )
@@ -244,10 +239,10 @@ static void fillStyleBox( void )
 
 static void fillInfoBoxes( HWND hwnd )
 {
-    FARPROC         fp;
+    FONTENUMPROC    fontenumproc;
     int             index;
     HDC             hdc;
-    char            typeface[LF_FACESIZE + 1];
+    char            facename[LF_FACESIZE + 1];
     char            size[8];
     long            isTrueType = 0;
     char            oldSize[8], oldStyle[40];
@@ -258,13 +253,13 @@ static void fillInfoBoxes( HWND hwnd )
 
     index = (int)SendMessage( hwndStyle, LB_GETCURSEL, 0, 0L );
     if( index != LB_ERR ) {
-        SendMessage( hwndStyle, LB_GETTEXT, index, (LPARAM)oldStyle );
+        SendMessage( hwndStyle, LB_GETTEXT, index, (LPARAM)(LPSTR)oldStyle );
     } else {
         oldStyle[0] = '\0';
     }
     index = (int)SendMessage( hwndSize, CB_GETCURSEL, 0, 0L );
     if( index != CB_ERR ) {
-        SendMessage( hwndSize, CB_GETLBTEXT, index, (LPARAM)oldSize );
+        SendMessage( hwndSize, CB_GETLBTEXT, index, (LPARAM)(LPSTR)oldSize );
     } else {
         oldSize[0] = '\0';
     }
@@ -273,19 +268,19 @@ static void fillInfoBoxes( HWND hwnd )
     SendMessage( hwndSize, CB_RESETCONTENT, 0, 0L );
     NStyles = NSizes = 0;
 
-    index = (int)SendMessage( hwndTypeface, LB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( hwndFaceName, LB_GETCURSEL, 0, 0L );
     if( index == LB_ERR ) {
         return;
     }
 
     fillStyleBox();
 
-    SendMessage( hwndTypeface, LB_GETTEXT, index, (LPARAM)typeface );
-    fp = MakeFontEnumProcInstance( EnumFamInfo, InstanceHandle );
+    SendMessage( hwndFaceName, LB_GETTEXT, index, (LPARAM)(LPSTR)facename );
+    fontenumproc = MakeProcInstance_FONTENUM( EnumFamInfo, InstanceHandle );
     hdc = GetDC( edit_container_id );
-    EnumFontFamilies( hdc, typeface, (FONTENUMPROC)fp, (LPARAM)(&isTrueType) );
+    EnumFontFamilies( hdc, facename, fontenumproc, (LPARAM)(&isTrueType) );
     ReleaseDC( edit_container_id, hdc );
-    FreeProcInstance( fp );
+    FreeProcInstance_FONTENUM( fontenumproc );
 
     if( isTrueType ) {
         /* suggest a few truetype point values
@@ -318,18 +313,18 @@ static void fillInfoBoxes( HWND hwnd )
     }
 }
 
-static void setDefaultTypeface( void )
+static void setDefaultFaceName( void )
 {
     int     i;
     LPSTR   typeName;
 
     // default default
-    SendMessage( hwndTypeface, LB_SETCURSEL, 0, 0L );
+    SendMessage( hwndFaceName, LB_SETCURSEL, 0, 0L );
 
     typeName = FontlfFaceName( SEType[SE_WHITESPACE].font );
-    i = (int)SendMessage( hwndTypeface, LB_SELECTSTRING, (WPARAM)-1, (LPARAM)typeName );
+    i = (int)SendMessage( hwndFaceName, LB_SELECTSTRING, (WPARAM)-1, (LPARAM)typeName );
     if( i != LB_ERR ) {
-        SendMessage( hwndTypeface, LB_SETCURSEL, i, 0L );
+        SendMessage( hwndFaceName, LB_SETCURSEL, i, 0L );
     }
 }
 
@@ -353,7 +348,7 @@ static void initHwnds( HWND hwndDlg )
 {
     char    tmp[5];
 
-    hwndTypeface = GetDlgItem( hwndDlg, FT_TYPEFACE );
+    hwndFaceName = GetDlgItem( hwndDlg, FT_FACENAME );
     hwndStyle = GetDlgItem( hwndDlg, FT_STYLE );
     hwndSize = GetDlgItem( hwndDlg, FT_SIZE );
     hwndPick = GetDlgItem( hwndDlg, FT_FTPICK );
@@ -363,15 +358,15 @@ static void initHwnds( HWND hwndDlg )
         hwndSizeEdit = GetWindow( hwndSizeEdit, GW_HWNDNEXT );
     }
 
-    SubclassGenericAdd( hwndTypeface, (WNDPROC)MakeWndProcInstance( HotkeyProc, InstanceHandle ) );
-    SubclassGenericAdd( hwndStyle,    (WNDPROC)MakeWndProcInstance( HotkeyProc, InstanceHandle ) );
-    SubclassGenericAdd( hwndSize,     (WNDPROC)MakeWndProcInstance( HotkeyProc, InstanceHandle ) );
-    SubclassGenericAdd( hwndSizeEdit, (WNDPROC)MakeWndProcInstance( HotkeyProc, InstanceHandle ) );
+    SubclassGenericAdd( hwndFaceName, HotkeyProc, InstanceHandle );
+    SubclassGenericAdd( hwndStyle,    HotkeyProc, InstanceHandle );
+    SubclassGenericAdd( hwndSize,     HotkeyProc, InstanceHandle );
+    SubclassGenericAdd( hwndSizeEdit, HotkeyProc, InstanceHandle );
 }
 
 static void doneWithHwnds( void )
 {
-    SubclassGenericRemove( hwndTypeface );
+    SubclassGenericRemove( hwndFaceName );
     SubclassGenericRemove( hwndStyle );
     SubclassGenericRemove( hwndSize );
     SubclassGenericRemove( hwndSizeEdit );
@@ -383,14 +378,14 @@ static int setCurLogfont( int overrideSize )
     char                size[8];
     int                 height;
     HDC                 hdc;
-    FARPROC             fp;
+    FONTENUMPROC        fontenumproc;
 
     if( overrideSize == 0 ) {
         index = (int)SendMessage( hwndSize, CB_GETCURSEL, 0, 0L );
         if( index == CB_ERR ) {
             return( 0 );
         }
-        SendMessage( hwndSize, CB_GETLBTEXT, index, (LPARAM)size );
+        SendMessage( hwndSize, CB_GETLBTEXT, index, (LPARAM)(LPSTR)size );
         height = atoi( size );
     } else {
         height = overrideSize;
@@ -414,17 +409,17 @@ static int setCurLogfont( int overrideSize )
     CurLogfont.lfQuality = PROOF_QUALITY;
     CurLogfont.lfPitchAndFamily = DEFAULT_PITCH | FF_DONTCARE;
 #endif
-    index = (int)SendMessage( hwndTypeface, LB_GETCURSEL, 0, 0L );
+    index = (int)SendMessage( hwndFaceName, LB_GETCURSEL, 0, 0L );
     if( index == LB_ERR ) {
         return( 0 );
     }
-    SendMessage( hwndTypeface, LB_GETTEXT, index, (LPARAM)CurLogfont.lfFaceName );
+    SendMessage( hwndFaceName, LB_GETTEXT, index, (LPARAM)(LPSTR)CurLogfont.lfFaceName );
 
     /* set up defaults for charset, etc. from info for 1st font of this type */
     hdc = GetDC( edit_container_id );
-    fp = MakeFontEnumProcInstance( SetupFontData, InstanceHandle );
-    EnumFontFamilies( hdc, CurLogfont.lfFaceName, (FONTENUMPROC)fp, 0L );
-    FreeProcInstance( fp );
+    fontenumproc = MakeProcInstance_FONTENUM( SetupFontData, InstanceHandle );
+    EnumFontFamilies( hdc, CurLogfont.lfFaceName, fontenumproc, 0L );
+    FreeProcInstance_FONTENUM( fontenumproc );
     ReleaseDC( edit_container_id, hdc );
 
     return( 1 );
@@ -451,8 +446,8 @@ WINEXPORT INT_PTR CALLBACK FtDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
         hFontbar = hwnd;
         MoveWindowTopRight( hwnd );
         initHwnds( hwnd );
-        fillTypefaceBox( hwnd );
-        setDefaultTypeface();
+        fillFaceNamesBox( hwnd );
+        setDefaultFaceName();
         fillInfoBoxes( hwnd );
         setDefaultSizeStyle();
         if( setCurLogfont( 0 ) ) {
@@ -481,12 +476,12 @@ WINEXPORT INT_PTR CALLBACK FtDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
             return( TRUE );
         case FT_SIZE:
         case FT_STYLE:
-        case FT_TYPEFACE:
+        case FT_FACENAME:
             dontQuit = false;
             if( GET_WM_COMMAND_CMD( wparam, lparam ) == CBN_SELCHANGE ||
                 GET_WM_COMMAND_CMD( wparam, lparam ) == LBN_SELCHANGE ) {
                 inSELCHANGE++;
-                if( cmd == FT_TYPEFACE ) {
+                if( cmd == FT_FACENAME ) {
                     fillInfoBoxes( hwnd );
                 }
                 if( (inSELCHANGE == 1) && setCurLogfont( 0 ) ) {
@@ -527,21 +522,21 @@ WINEXPORT INT_PTR CALLBACK FtDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
  */
 void RefreshFontbar( void )
 {
-    static FARPROC  proc = NULL;
+    static DLGPROC  dlgproc = NULL;
 
     if( EditFlags.Fontbar ) {
         if( !BAD_ID( hFontbar ) ) {
             return;
         }
-        proc = MakeDlgProcInstance( FtDlgProc, InstanceHandle );
-        hFontbar = CreateDialog( InstanceHandle, "FTBAR", root_window_id, (DLGPROC)proc );
+        dlgproc = MakeProcInstance_DLG( FtDlgProc, InstanceHandle );
+        hFontbar = CreateDialog( InstanceHandle, "FTBAR", root_window_id, dlgproc );
         SetMenuHelpString( "Ctrl affects all syntax elements" );
     } else {
         if( BAD_ID( hFontbar ) ) {
             return;
         }
         SendMessage( hFontbar, WM_CLOSE, 0, 0L );
-        FreeProcInstance( proc );
+        FreeProcInstance_DLG( dlgproc );
         SetMenuHelpString( "" );
     }
     UpdateStatusWindow();

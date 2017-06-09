@@ -140,7 +140,8 @@ static const char WindowNameTab[] =
 
 static void ToWndChooseNew( a_window *p )
 {
-    p=p;
+    /* unused parameters */ (void)p;
+
     WndChooseNew();
 }
 
@@ -203,7 +204,8 @@ bool DbgWndSearch( a_window * wnd, bool from_top, int direction )
 
 void ProcPUINYI( a_window *wnd )
 {
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     Say( "NYI" );
 }
 
@@ -248,7 +250,8 @@ void ProcWndFindPrev( a_window *wnd )
 
 static void WndBadCmd( a_window *wnd )
 {
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     Error( ERR_LOC, LIT_ENG( ERR_BAD_SUBCOMMAND ), GetCmdName( CMD_WINDOW ) );
 }
 
@@ -280,11 +283,12 @@ void WndSysStart( void )
 
 void WndSysEnd( bool pause )
 {
+    /* unused parameters */ (void)pause; // NYI - PUI
+
     GUISpawnEnd();
 #if defined(__UNIX__)
     ScrnSpawnEnd();
 #endif
-    pause=pause; // NYI - PUI
 }
 
 

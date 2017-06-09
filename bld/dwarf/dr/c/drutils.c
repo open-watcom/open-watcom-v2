@@ -626,7 +626,8 @@ char * DWRCopyDbgSecString( drmem_hdl *info, unsigned_32 offset )
     drmem_hdl   dbgsec_str;
     char        *str;
 
-    info = info;
+    /* unused parameters */ (void)info;
+
     dbgsec_str = DWRCurrNode->sections[DR_DEBUG_STR].base + offset;
     str = DWRVMCopyString( &dbgsec_str );
     return( str );

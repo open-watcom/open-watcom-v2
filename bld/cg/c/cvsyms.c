@@ -516,8 +516,7 @@ extern  void    CVSetBase( void )
 extern  void    CVRtnBeg( dbg_rtn *rtn, offset lc )
 /*************************************************/
 {
-    rtn = rtn;
-    lc  = lc;
+    /* unused parameters */ (void)rtn; (void)lc;
 }
 
 static dbg_patch    RtnPatch[1];
@@ -525,7 +524,8 @@ static dbg_patch    RtnPatch[1];
 static  name    *LocSymBP( dbg_loc loc )
 /**************************************/
 {
-    if( loc == NULL ) return( NULL );
+    if( loc == NULL )
+        return( NULL );
     if( (loc->class & 0xf0) != LOC_BP_OFFSET ){
         return( NULL );
     }
@@ -600,7 +600,8 @@ extern  void    CVProEnd( dbg_rtn *rtn, offset lc )
     sg_index            kind;
     cv_out              out[1];
 
-    lc = lc;
+    /* unused parameters */ (void)lc;
+
     sym = AskForLblSym( CurrProc->label );
     attr = FEAttr( sym );
     if( attr & FE_GLOBAL ){
@@ -708,8 +709,7 @@ extern  void    CVBlkEnd( dbg_block *blk, offset lc )
 extern  void    CVEpiBeg( dbg_rtn *rtn, offset lc )
 /*************************************************/
 {
-    rtn = rtn;
-    lc  = lc;
+    /* unused parameters */ (void)rtn; (void)lc;
 }
 
 extern  void    CVRtnEnd( dbg_rtn *rtn, offset lc )

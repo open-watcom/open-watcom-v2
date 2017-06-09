@@ -144,7 +144,8 @@ static bool WndDlgTxtAttr( const char *buff, wnd_attr_wv wndattr )
 
 static int DlgNumRows( a_window *wnd )
 {
-    wnd = wnd;
+    /* unused parameters */ (void)wnd;
+
     return( DlgLines );
 }
 
@@ -169,7 +170,8 @@ static  bool    DlgGetLine( a_window *wnd, int row, int piece, wnd_line_piece *l
     int         i;
     dlg_entry   *curr;
 
-    wnd = wnd;
+    /* unused parameters */ (void)wnd;
+
     curr = DlgListTop;
     if( piece != 0 )
         return( false );
@@ -199,7 +201,8 @@ void WndDlgFini( void )
 
 static bool DlgEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     switch( gui_ev ) {
     case GUI_NOW_ACTIVE:
         SetLogMenuItems( true );

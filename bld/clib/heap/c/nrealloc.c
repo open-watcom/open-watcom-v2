@@ -38,65 +38,110 @@
 #include "heapacc.h"
 
 
+#if defined( _M_I86 )
+// 16-bit Intel
+#if defined(__SMALL_DATA__) || defined(__WINDOWS__)
+// small data models
+extern void _mymemcpy( void_fptr, void_nptr, size_t );
+#pragma aux _mymemcpy = \
+        memcpy_i86      \
+    parm caller [es di] [si] [cx] modify exact [si di cx]
+#else
+// big data models
+extern void _mymemcpy( void_fptr, void_fptr, size_t );
+#pragma aux _mymemcpy = \
+        "push ds"       \
+        "mov ds,dx"     \
+        memcpy_i86      \
+        "pop ds"        \
+    parm caller [es di] [dx si] [cx] modify exact [si di cx]
+#endif
+#elif defined( _M_IX86 )
+// 32-bit Intel
+#if defined( __FLAT__ )
+// flat model
+extern void _mymemcpy( void_nptr, void_nptr, size_t );
+#pragma aux _mymemcpy = \
+        memcpy_386      \
+    parm caller [edi] [esi] [ecx] modify exact [esi edi ecx]
+#elif defined(__SMALL_DATA__)
+// small data models
+extern void _mymemcpy( void_fptr, void_nptr, size_t );
+#pragma aux _mymemcpy = \
+        memcpy_386      \
+    parm caller [es edi] [esi] [ecx] modify exact [esi edi ecx]
+#else
+// big data models
+extern void _mymemcpy( void_fptr, void_fptr, size_t );
+#pragma aux _mymemcpy = \
+        "push ds"       \
+        "mov ds,edx"    \
+        memcpy_386      \
+        "pop ds"        \
+    parm caller [es edi] [dx esi] [ecx] value [esi] modify exact [esi edi ecx]
+#endif
+#else
+// non-Intel targets
+#define _mymemcpy   memcpy
+#endif
+
 #if defined(__SMALL_DATA__)
 
-_WCRTLINK void *realloc( void *stg, size_t amount )
-    {
-        return( _nrealloc( stg, amount ) );
-    }
+_WCRTLINK void *realloc( void *cstg, size_t amount )
+{
+    return( _nrealloc( cstg, amount ) );
+}
 
 #endif
 
-#pragma intrinsic(memcpy)
+_WCRTLINK void_nptr _nrealloc( void_nptr cstg_old, size_t req_size )
+{
+    void_nptr   cstg_new;
+    size_t      old_size;
 
-_WCRTLINK void _WCNEAR *_nrealloc( void _WCI86NEAR *stg, size_t req_size )
-    {
-        void _WCNEAR *p;
-        size_t     old_size;
-
-        if( stg == NULL ) {
-            return( _nmalloc( req_size ) );
-        }
-        if( req_size == 0 ) {
-            _nfree( stg );
-            return( (void _WCNEAR *) NULL );
-        }
-        old_size = _nmsize( stg );
-        p = _nexpand( stg, req_size );  /* try to expand it in place */
-        if( p == NULL ) {               /* if couldn't be expanded in place */
+    if( cstg_old == NULL ) {
+        return( _nmalloc( req_size ) );
+    }
+    if( req_size == 0 ) {
+        _nfree( cstg_old );
+        return( NULL );
+    }
+    old_size = _nmsize( cstg_old );
+    cstg_new = _nexpand( cstg_old, req_size );  /* try to expand it in place */
+    if( cstg_new == NULL ) {                    /* if couldn't be expanded in place */
 #if defined(__DOS_EXT__)
-            if( _IsRational() ) {
-                frlptr  flp, newflp;
+        if( _IsRational() ) {
+            frlptr  flp, newflp;
 
-                flp = (frlptr) ((PTR)stg - TAG_SIZE);
-                newflp = __ReAllocDPMIBlock( flp, req_size + TAG_SIZE );
-                if( newflp ) {
-                    return( (void _WCNEAR *)((PTR)newflp + TAG_SIZE) );
-                }
+            flp = (frlptr)CPTR2BLK( cstg_old );
+            newflp = __ReAllocDPMIBlock( flp, req_size + TAG_SIZE );
+            if( newflp ) {
+                return( (void_nptr)BLK2CPTR( newflp ) );
             }
+        }
 #endif
 #if defined(__WARP__)
-            // If block in upper memory (i.e. above 512MB), try to keep it there
-            if ( (unsigned int)stg >= 0x20000000 ) {
-                int prior;
-                _AccessNHeap();
-                prior = _os2_use_obj_any;
-                _os2_use_obj_any = 1;
-                p = _nmalloc( req_size );   /* - allocate a new block */
-                _os2_use_obj_any = prior;
-                _ReleaseNHeap();
-            } else {
-                p = _nmalloc( req_size );   /* - allocate a new block */
-            }
-#else // !__WARP__
-            p = _nmalloc( req_size );   /* - allocate a new block */
-#endif
-            if( p != NULL ) {           /* - if we got one */
-                memcpy( p, stg, old_size );  /* copy it */
-                _nfree( stg );                  /* and free old one */
-            } else {
-                _nexpand( stg, old_size );      /* reset back to old size */
-            }
+        // If block in upper memory (i.e. above 512MB), try to keep it there
+        if( (unsigned int)cstg_old >= 0x20000000 ) {
+            int prior;
+            _AccessNHeap();
+            prior = _os2_use_obj_any;
+            _os2_use_obj_any = 1;
+            cstg_new = _nmalloc( req_size );    /* - allocate a new block */
+            _os2_use_obj_any = prior;
+            _ReleaseNHeap();
+        } else {
+            cstg_new = _nmalloc( req_size );    /* - allocate a new block */
         }
-        return( p );
+#else // !__WARP__
+        cstg_new = _nmalloc( req_size );        /* - allocate a new block */
+#endif
+        if( cstg_new != NULL ) {                /* - if we got one */
+            _mymemcpy( cstg_new, cstg_old, old_size );  /* copy it */
+            _nfree( cstg_old );                 /* and free old one */
+        } else {
+            _nexpand( cstg_old, old_size );     /* reset back to old size */
+        }
     }
+    return( cstg_new );
+}

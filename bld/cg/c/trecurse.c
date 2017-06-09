@@ -32,7 +32,6 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "dumpio.h"
 #include "data.h"
 #include "makeins.h"
 #include "stack.h"
@@ -41,6 +40,7 @@
 #include "insutil.h"
 #include "insdead.h"
 #include "blktrim.h"
+#include "dumpio.h"
 
 
 static  name            *ReturnValue;

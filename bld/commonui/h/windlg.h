@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -31,51 +32,33 @@
 
 #if !defined( __OS2__ )
 
+#include "wclbproc.h"
+#include "_windlg.h"
+
 #if defined( __WINDOWS_386__ )
 #define GetPtrGlobalLock(data) MK_FP32( GlobalLock( data ) )
 #else
 #define GetPtrGlobalLock(data) GlobalLock( data )
 #endif
 
-typedef GLOBALHANDLE    TEMPLATE_HANDLE;
+#ifdef __WINDOWS__
 
-#if defined(__NT__)
-
-#define ADJUST_ITEMLEN( a )     a = (((a)+7) & ~7)
-#define ADJUST_BLOCKLEN( a )    a = (((a)+3) & ~3)
-#define ROUND_CLASSLEN( a )     (((a)+1) & ~1)
-#define _FARmemcpy              memcpy
-#define _ISFAR
-//#define SLEN( a )               (strlen((a))*2+2)
-// fixed to handle DBCS strings properly - rnk 3/1/96
-#define SLEN( a )               (2*MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, (a), -1, NULL, 0 ))
-typedef WORD INFOTYPE;
+#define _FARmemcpy      _fmemcpy
+#define SLEN( a )       ((a != NULL) ? strlen((a)) + 1 : 1)
 
 #else
 
-#define SLEN( a )               (strlen((a))+1)
-#define ADJUST_ITEMLEN( a )
-#define ADJUST_BLOCKLEN( a )
-#define ROUND_CLASSLEN( a )     a
-#define _ISFAR                  __far
-#define _FARmemcpy              _fmemcpy
-typedef BYTE INFOTYPE;
+#define _FARmemcpy      memcpy
+#define SLEN( a )       ((a != NULL) ? 2 * MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, (a), -1, NULL, 0 ) : 2)
 
 #endif
 
-#include "_windlg.h"
-
-extern TEMPLATE_HANDLE DialogTemplate( LONG dtStyle, int dtx, int dty,
-                                       int dtcx, int dtcy, const char *menuname,
-                                       const char *classname, const char *captiontext,
-                                       int pointsize, const char *typeface );
-extern TEMPLATE_HANDLE DoneAddingControls( TEMPLATE_HANDLE data );
-extern TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE data, int dtilx,
-                                       int dtily, int dtilcx, int dtilcy,
-                                       int id, long style, const char *class,
-                                       const char *text, BYTE infolen,
-                                       const char *infodata );
-INT_PTR DynamicDialogBox( DLGPROCx fn, HINSTANCE inst, HWND hwnd,
-                                       TEMPLATE_HANDLE data, LPARAM lparam );
+extern TEMPLATE_HANDLE  DialogTemplate( DWORD style, int x, int y, int cx, int cy,
+                            const char *menuname, const char *classname, const char *captiontext,
+                            WORD pointsize, const char *facename, size_t *templatelen );
+extern TEMPLATE_HANDLE  AddControl( TEMPLATE_HANDLE dlgtemplate, int x, int y, int cx, int cy, WORD id, DWORD style,
+                            const char *classname, const char *captiontext, const void *infodata, BYTE infodatalen, size_t *templatelen );
+extern TEMPLATE_HANDLE  DoneAddingControls( TEMPLATE_HANDLE dlgtemplate );
+extern INT_PTR          DynamicDialogBox( DLGPROCx fn, HINSTANCE inst, HWND hwnd, TEMPLATE_HANDLE dlgtemplate, LPARAM lparam );
 
 #endif

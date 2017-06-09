@@ -46,6 +46,7 @@
 #include "caux.h"
 #include "dwarfid.h"
 
+
 #define TRUNC_SYMBOL_HASH_LEN        4
 #define TRUNC_SYMBOL_LEN_WARN        120
 
@@ -115,7 +116,7 @@ static const char *VarParmFuncs[] = {
 
 extern const alt_inline_funcs FlatAlternates[];
 
-static struct STRUCT_BYTE_SEQ( 1 ) FinallyCode = { 
+static struct STRUCT_BYTE_SEQ( 1 ) FinallyCode = {
     1, false, { 0xc3 }   /* ret */
 };
 
@@ -124,7 +125,7 @@ static hw_reg_set TryFiniParms[] = {
     HW_D( HW_EMPTY )
 };
 
-static struct STRUCT_BYTE_SEQ( 6 ) TryFiniCode = { 
+static struct STRUCT_BYTE_SEQ( 6 ) TryFiniCode = {
     6, false, { 0x64, 0xA3, 0, 0, 0, 0 }  /* mov fs:[0],eax */
 };
 
@@ -175,7 +176,7 @@ bool VarFunc( SYMPTR sym )
         len = strlen( p );
         hash = (len + VarFuncWeights[p[0] - 'a'] + VarFuncWeights[p[len - 1] -'a']) & 31;
 
-        if( memcmp( p, VarParmFuncs[hash], len + 1 ) == 0 
+        if( memcmp( p, VarParmFuncs[hash], len + 1 ) == 0
             && ( CompFlags.extensions_enabled || ( ( 1 << hash ) & VAR_PARM_FUNCS_ANSI ) ) )
             return( true );
 
@@ -322,8 +323,7 @@ bool ParmsToBeReversed( int flags, aux_info *inf )
         }
     }
 #else
-    flags = flags;
-    inf = inf;
+    /* unused parameters */ (void)flags; (void)inf;
 #endif
     return( false );
 }
@@ -546,12 +546,12 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
     cclass &= ~ REVERSE_PARMS;
 #endif
 #ifdef PROLOG_HOOKS
-    if( CompFlags.ep_switch_used != 0 ) {
+    if( CompFlags.ep_switch_used ) {
         cclass |= PROLOG_HOOKS;
     }
 #endif
 #ifdef EPILOG_HOOKS
-    if( CompFlags.ee_switch_used != 0 ) {
+    if( CompFlags.ee_switch_used ) {
         cclass |= EPILOG_HOOKS;
     }
 #endif
@@ -566,19 +566,6 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
     }
 #endif
     return( cclass );
-}
-
-static time_t *getFileDepTimeStamp( FNAMEPTR flist )
-{
-    static time_t            stamp;
-
-#if _RISC_CPU || COMP_CFG_COFF
-    stamp = flist->mtime;
-#else
-    /* OMF format */
-    stamp = _timet2dos( flist->mtime );
-#endif
-    return( &stamp );
 }
 
 /*
@@ -1085,7 +1072,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
     case CLASS_NAME:
         return( (CGPOINTER)SegClassName( (segment_id)(pointer_int)req_handle ) );
     case USED_8087:
-        CompFlags.pgm_used_8087 = 1;
+        CompFlags.pgm_used_8087 = true;
         return( NULL );
   #if _CPU == 386
     case P5_PROF_DATA:
@@ -1132,7 +1119,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
             return( (CGPOINTER)NextDependency( (FNAMEPTR)req_handle ) );
         return( NULL );
     case DEPENDENCY_TIMESTAMP:
-        return( (CGPOINTER)getFileDepTimeStamp( (FNAMEPTR)req_handle ) );
+        return( (CGPOINTER)&(((FNAMEPTR)req_handle)->mtime) );
     case DEPENDENCY_NAME:
         return( (CGPOINTER)FNameFullPath( (FNAMEPTR)req_handle ) );
     case PEGGED_REGISTER:
@@ -1260,7 +1247,7 @@ CGPOINTER FEAuxInfo( CGPOINTER req_handle, int request )
             return( (CGPOINTER)NextDependency( (FNAMEPTR)req_handle ) );
         return( NULL );
     case DEPENDENCY_TIMESTAMP:
-        return( (CGPOINTER)getFileDepTimeStamp( (FNAMEPTR)req_handle ) );
+        return( (CGPOINTER)&(((FNAMEPTR)req_handle)->mtime) );
     case DEPENDENCY_NAME:
         return( (CGPOINTER)FNameFullPath( (FNAMEPTR)req_handle ) );
     default:

@@ -44,9 +44,9 @@
 
 static char     ConvBuffer[CONV_BUF_SIZE];
 
-static int DefaultConversion( int len, const char *str, char *buf )
+static size_t DefaultConversion( size_t len, const char *str, char *buf )
 {
-    int         i;
+    size_t  i;
 
     if( buf != NULL ) {
         for( i = 0; i < len; i++ ) {
@@ -57,60 +57,44 @@ static int DefaultConversion( int len, const char *str, char *buf )
     return( len * 2 );
 }
 
-int (*ConvToUnicode)(int, const char *, char *) = DefaultConversion;
-
 bool ResWriteUint8( uint_8 newint, WResFileID fid )
 /*************************************************/
 {
-    if( WRESWRITE( fid, &newint, sizeof( uint_8 ) ) != sizeof( uint_8 ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    } else {
-        return( false );
-    }
+    if( WRESWRITE( fid, &newint, sizeof( uint_8 ) ) != sizeof( uint_8 ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
+    return( false );
 }
 
 bool ResWriteUint16( uint_16 newint, WResFileID fid )
 /***************************************************/
 {
-    if( WRESWRITE( fid, &newint, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    } else {
-        return( false );
-    }
+    if( WRESWRITE( fid, &newint, sizeof( uint_16 ) ) != sizeof( uint_16 ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
+    return( false );
 }
 
 bool ResWriteUint32( uint_32 newint, WResFileID fid )
 /***************************************************/
 {
-    if( WRESWRITE( fid, &newint, sizeof( uint_32 ) ) != sizeof( uint_32 ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    } else {
-        return( false );
-    }
+    if( WRESWRITE( fid, &newint, sizeof( uint_32 ) ) != sizeof( uint_32 ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
+    return( false );
 }
 
 bool ResWritePadDWord( WResFileID fid )
 /*************************************/
 {
     WResFileOffset  curr_pos;
-    WResFileSize    padding;
-    bool            error;
+    size_t          padding;
     uint_32         zero = 0;
 
-    error = false;
     curr_pos = WRESTELL( fid );
-    if( curr_pos == -1 ) {
-        WRES_ERROR( WRS_TELL_FAILED );
-        return( true );
-    }
-    padding = RES_PADDING( curr_pos, sizeof( uint_32 ) );
+    if( curr_pos == -1 )
+        return( WRES_ERROR( WRS_TELL_FAILED ) );
+    padding = RES_PADDING( curr_pos, sizeof( zero ) );
     if( padding != 0 ) {
-        if( (WResFileSize)WRESWRITE( fid, &zero, padding ) != padding ) {
-            WRES_ERROR( WRS_WRITE_FAILED );
-            return( true );
+        if( WRESWRITE( fid, &zero, padding ) != padding ) {
+            return( WRES_ERROR( WRS_WRITE_FAILED ) );
         }
     }
     return( false );
@@ -120,7 +104,7 @@ bool WResWriteWResIDNameUni( const WResIDName *name, bool use_unicode, WResFileI
 /*************************************************************************************/
 {
     bool            error;
-    uint_16         numchars;
+    unsigned        numchars;
     char            *ptr;
     bool            freebuf;
 
@@ -140,20 +124,18 @@ bool WResWriteWResIDNameUni( const WResIDName *name, bool use_unicode, WResFileI
             freebuf = true;
             ptr = WRESALLOC( 2 * numchars );
         }
-        numchars = (ConvToUnicode)( numchars, name->Name, ptr ) / 2;
-        error = ResWriteUint16( numchars, fid );
-        numchars *= 2;
+        numchars = ConvToUnicode( numchars, name->Name, ptr );
+        error = ResWriteUint16( numchars / 2, fid );
     } else {
         /* in 16-bit resources the string can be no more than 255 characters */
-        if( numchars > 0xFF )
-            numchars = 0xFF;
+        if( numchars > 255 )
+            numchars = 255;
         ptr = (char *)name->Name;
         error = ResWriteUint8( numchars, fid );
     }
     if( !error && numchars > 0 ) {
         if( WRESWRITE( fid, ptr, numchars ) != numchars ) {
-            error = true;
-            WRES_ERROR( WRS_WRITE_FAILED );
+            error = WRES_ERROR( WRS_WRITE_FAILED );
         }
     }
     if( freebuf ) {
@@ -191,7 +173,7 @@ bool WResWriteWResID( const WResID *name, WResFileID fid )
  */
 bool WResWriteTypeRecord( const WResTypeInfo *type, WResFileID fid )
 {
-    int             size;
+    size_t      size;
 
     if( type->TypeName.IsName ) {
         /* -1 because one of the chars in the name is declared in the struct */
@@ -199,12 +181,9 @@ bool WResWriteTypeRecord( const WResTypeInfo *type, WResFileID fid )
     } else {
         size = sizeof( WResTypeInfo );
     }
-    if( WRESWRITE( fid, type, size ) != size ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    } else {
-        return( false );
-    }
+    if( WRESWRITE( fid, type, size ) != size )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
+    return( false );
 } /* WResWriteTypeRecord */
 
 /*
@@ -213,7 +192,7 @@ bool WResWriteTypeRecord( const WResTypeInfo *type, WResFileID fid )
  */
 bool WResWriteResRecord( const WResResInfo *res, WResFileID fid )
 {
-    int             size;
+    size_t      size;
 
     if( res->ResName.IsName ) {
         /* -1 because one of the chars in the name is declared in the struct */
@@ -221,12 +200,9 @@ bool WResWriteResRecord( const WResResInfo *res, WResFileID fid )
     } else {
         size = sizeof( WResResInfo );
     }
-    if( WRESWRITE( fid, (uint_8 *)res, size ) != size ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    } else {
-        return( false );
-    }
+    if( WRESWRITE( fid, (uint_8 *)res, size ) != size )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
+    return( false );
 } /* WResWriteResRecord */
 
 /*
@@ -235,50 +211,34 @@ bool WResWriteResRecord( const WResResInfo *res, WResFileID fid )
  */
 bool WResWriteLangRecord( const WResLangInfo *info, WResFileID fid )
 {
-    if( WRESWRITE( fid, info, sizeof( WResLangInfo ) ) != sizeof( WResLangInfo ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    } else {
-        return( false );
-    }
+    if( WRESWRITE( fid, info, sizeof( WResLangInfo ) ) != sizeof( WResLangInfo ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
+    return( false );
 }
 
 bool WResWriteHeaderRecord( const WResHeader *header, WResFileID fid )
 /********************************************************************/
 {
-    bool            error;
-
-    error = ( WRESSEEK( fid, 0L, SEEK_SET ) == -1 );
-    if( error ) {
-        WRES_ERROR( WRS_SEEK_FAILED );
-    }
-
-    if( !error ) {
-        if( WRESWRITE( fid, header, sizeof( WResHeader ) ) != sizeof( WResHeader ) ) {
-            error = true;
-            WRES_ERROR( WRS_WRITE_FAILED );
-        }
-    }
-
-    return( error );
+    if( WRESSEEK( fid, 0L, SEEK_SET ) )
+        return( WRES_ERROR( WRS_SEEK_FAILED ) );
+    if( WRESWRITE( fid, header, sizeof( WResHeader ) ) != sizeof( WResHeader ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
+    return( false );
 } /* WResWriteHeaderRecord */
 
 bool WResWriteExtHeader( const WResExtHeader *ext_head, WResFileID fid )
 /**********************************************************************/
 {
-    if( WRESWRITE( fid, ext_head, sizeof( WResExtHeader ) ) != sizeof( WResExtHeader ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    } else {
-        return( false );
-    }
+    if( WRESWRITE( fid, ext_head, sizeof( WResExtHeader ) ) != sizeof( WResExtHeader ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
+    return( false );
 }
 
-bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID fid, uint_16 len )
-/*****************************************************************************************/
+bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID fid, size_t len )
+/****************************************************************************************/
 {
     char            *buf = NULL;
-    bool            ret;
+    bool            error;
 
     if( use_unicode ) {
         if( len * 2 > CONV_BUF_SIZE ) {
@@ -286,28 +246,24 @@ bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID fid, ui
         } else {
             buf = ConvBuffer;
         }
-        len = (ConvToUnicode)( len, string, buf );
+        len = ConvToUnicode( len, string, buf );
         string = buf;
     }
-    if( WRESWRITE( fid, string, len ) != len ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        ret = true;
-    } else {
-        ret = false;
-    }
+    error = false;
+    if( WRESWRITE( fid, string, len ) != len )
+        error = WRES_ERROR( WRS_WRITE_FAILED );
     if( use_unicode ) {
         if( buf != ConvBuffer ) {
             WRESFREE( buf );
         }
     }
-    return( ret );
+    return( error );
 }
 
 bool ResWriteString( const char *string, bool use_unicode, WResFileID fid )
 /*************************************************************************/
 {
     size_t  stringlen;
-    bool    ret;
 
     /* if string is NULL output the null string */
     if( string == NULL ) {
@@ -316,8 +272,7 @@ bool ResWriteString( const char *string, bool use_unicode, WResFileID fid )
 
     /* the +1 is so we will output the '\0' as well */
     stringlen = strlen( string ) + 1;
-    ret = ResWriteStringLen( string, use_unicode, fid, stringlen );
-    return( ret );
+    return( ResWriteStringLen( string, use_unicode, fid, stringlen ) );
 }
 
 bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, WResFileID fid )
@@ -435,3 +390,5 @@ void WriteInitStatics( void )
 {
     memset( ConvBuffer, 0, CONV_BUF_SIZE * sizeof( char ) );
 }
+
+ConvToUnicode_fn    *ConvToUnicode = DefaultConversion;

@@ -2,7 +2,7 @@
 #if defined(__386__)
 :endsegment
 :segment QNX | LINUX
-_WCRTLINK extern int          brk( void *endds );
+_WCRTLINK extern int          brk( void _WCNEAR *endds );
 :endsegment
 :segment QNX
 #endif

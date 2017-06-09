@@ -53,6 +53,8 @@
 #include "wdei2mem.h"
 #include "wdesdlg.h"
 #include "jdlg.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -66,7 +68,9 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WdeSelectDialogProc( HWND, UINT, WPARAM, LPARAM );
+
+/* Local Window callback functions prototypes */
+WINEXPORT INT_PTR CALLBACK WdeSelectDialogDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -99,13 +103,13 @@ bool WdeSelectDialog( WdeResInfo *res_info )
     bool            last;
 
     if( ListCount( res_info->dlg_item_list ) == 1 ) {
-        ok = WdeOpenSelectedDialog( res_info, ListElement( res_info->dlg_item_list ), TRUE );
+        ok = WdeOpenSelectedDialog( res_info, (WdeResDlgItem *)ListElement( res_info->dlg_item_list ), TRUE );
         return( ok );
     }
 
     selection = WdeSelectDialogs( res_info, FALSE );
     ok = true;
-    WdeSetWaitCursor( TRUE );
+    WdeSetWaitCursor( true );
 
     for( slist = selection; slist != NULL; slist = ListConsume( slist ) ) {
         ditem = (WdeResDlgItem *)ListElement( slist );
@@ -116,7 +120,7 @@ bool WdeSelectDialog( WdeResInfo *res_info )
         }
     }
 
-    WdeSetWaitCursor( FALSE );
+    WdeSetWaitCursor( false );
 
     return( ok );
 }
@@ -145,7 +149,7 @@ LIST *WdeSelectDialogs( WdeResInfo *res_info, bool remove )
 {
     INT_PTR             ret;
     HINSTANCE           inst;
-    FARPROC             proc;
+    DLGPROC             dlgproc;
     WdeDialogSelectInfo si;
 
     if( res_info == NULL ) {
@@ -154,9 +158,8 @@ LIST *WdeSelectDialogs( WdeResInfo *res_info, bool remove )
 
     inst = WdeGetAppInstance();
 
-    proc = MakeProcInstance( (FARPROC)WdeSelectDialogProc, inst );
-
-    if( proc == NULL ) {
+    dlgproc = MakeProcInstance_DLG( WdeSelectDialogDlgProc, inst );
+    if( dlgproc == NULL ) {
         return( FALSE );
     }
 
@@ -164,10 +167,8 @@ LIST *WdeSelectDialogs( WdeResInfo *res_info, bool remove )
     si.selection = NULL;
     si.remove = remove;
 
-    ret = JDialogBoxParam( inst, "WdeSelectDialog", res_info->res_win,
-                           (DLGPROC)proc, (LPARAM)&si );
-
-    FreeProcInstance( proc );
+    ret = JDialogBoxParam( inst, "WdeSelectDialog", res_info->res_win, dlgproc, (LPARAM)&si );
+    FreeProcInstance_DLG( dlgproc );
 
     /* if the window could not be created return FALSE */
     if( ret == -1 ) {
@@ -193,7 +194,7 @@ bool WdeSetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
 
     if( si->remove ) {
         text = WdeAllocRCString( WDE_REMOVEDIALOGS );
-        SendMessage( hDlg, WM_SETTEXT, 0, (LPARAM)text );
+        SendMessage( hDlg, WM_SETTEXT, 0, (LPARAM)(LPCSTR)text );
         if( text != NULL ) {
             WdeFreeRCString( text );
         }
@@ -251,7 +252,7 @@ bool WdeGetSelectInfo( HWND hDlg, WdeDialogSelectInfo *si )
                 ok = false;
                 break;
             }
-            ListAddElt( &si->selection, ditem );
+            ListAddElt( &si->selection, (OBJPTR)ditem );
         }
     }
 
@@ -275,10 +276,9 @@ bool WdeInitSelectListBox( WdeResInfo *res_info, HWND win )
         return( FALSE );
     }
 
-    dlist = res_info->dlg_item_list;
     SendMessage( win, WM_SETREDRAW, FALSE, 0 );
     count = 0;
-    while( dlist != NULL ) {
+    for( dlist = res_info->dlg_item_list; dlist != NULL; dlist = ListNext( dlist ) ) {
         ditem = (WdeResDlgItem *)ListElement( dlist );
         id = NULL;
 
@@ -303,14 +303,12 @@ bool WdeInitSelectListBox( WdeResInfo *res_info, HWND win )
         }
 
         /* add the name to the list box */
-        index = (int)SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPSTR)name );
+        index = (int)SendMessage( win, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)name );
         SendMessage( win, LB_SETITEMDATA, index, (LPARAM)count );
 
         WRMemFree( name );
 
         count++;
-
-        dlist = ListNext( dlist );
     }
 
     SendMessage( win, WM_SETREDRAW, TRUE, 0 );
@@ -401,7 +399,7 @@ bool WdeOpenDialogFromResInfo ( WdeResInfo *res_info, WdeResDlgItem *ditem )
             return( FALSE );
         }
         if( !WdeAddControlsToDialog( res_info, ditem->object, ditem->dialog_info ) ) {
-            Destroy( ditem->object, FALSE );
+            Destroy( ditem->object, false );
             ditem->object = NULL;
             return( FALSE );
         }
@@ -486,7 +484,7 @@ bool WdeAddControlToDialog( WdeResInfo *res_info, OBJPTR dialog,
 
     if( !Register( new ) ) {
         WdeWriteTrail( "WdeAddControlToDialog: Register failed!" );
-        Destroy( new, FALSE );
+        Destroy( new, false );
         return( FALSE );
     }
 
@@ -629,12 +627,12 @@ OBJ_ID WdeGetOBJIDFromControl( WdeDialogBoxControl *control )
     return( id );
 }
 
-WINEXPORT BOOL CALLBACK WdeSelectDialogProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeSelectDialogDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WdeDialogSelectInfo *si;
-    BOOL                ret;
+    bool                ret;
 
-    ret = FALSE;
+    ret = false;
 
     switch( message ) {
     case WM_SYSCOLORCHANGE:
@@ -647,7 +645,7 @@ WINEXPORT BOOL CALLBACK WdeSelectDialogProc( HWND hDlg, UINT message, WPARAM wPa
         if( !WdeSetSelectInfo( hDlg, si ) ) {
             EndDialog( hDlg, FALSE );
         }
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_COMMAND:
@@ -660,17 +658,15 @@ WINEXPORT BOOL CALLBACK WdeSelectDialogProc( HWND hDlg, UINT message, WPARAM wPa
             if( GET_WM_COMMAND_CMD( wParam, lParam ) != LBN_DBLCLK ) {
                 break;
             }
+            /* fall throught */
         case IDOK:
-            if( !WdeGetSelectInfo( hDlg, si ) ) {
-                EndDialog( hDlg, FALSE );
-            }
-            EndDialog( hDlg, TRUE );
-            ret = TRUE;
+            EndDialog( hDlg, WdeGetSelectInfo( hDlg, si ) );
+            ret = true;
             break;
 
         case IDCANCEL:
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
+            ret = true;
             break;
         }
         break;

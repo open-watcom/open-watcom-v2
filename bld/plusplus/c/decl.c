@@ -184,7 +184,7 @@ bool DeclNoInit( DECL_INFO *dinfo )
         if( sym->id != SC_STATIC && ScopeType( scope, SCOPE_FILE ) ) {
             CompFlags.external_defn_found = true;
             if( LinkageIsC( sym ) ) {
-                CompFlags.extern_C_defn_found = 1;
+                CompFlags.extern_C_defn_found = true;
             }
         }
         if( ! ScopeType( scope, SCOPE_FILE ) && ! ScopeType( scope, SCOPE_BLOCK ) ){
@@ -249,7 +249,7 @@ bool DeclWithInit( DECL_INFO *dinfo )
         if( sym->id != SC_STATIC ) {
             CompFlags.external_defn_found = true;
             if( LinkageIsC( sym ) ) {
-                CompFlags.extern_C_defn_found = 1;
+                CompFlags.extern_C_defn_found = true;
             }
         }
         if( ! ScopeType( GetCurrScope(), SCOPE_FILE ) ) {
@@ -809,7 +809,7 @@ static void verifyMainFunction( SYMBOL sym )
     }
 
     if( ( fn_type->of->id != TYP_SINT )
-     || ( ! CompFlags.extensions_enabled
+     || ( !CompFlags.extensions_enabled
        && DefaultIntType( fn_type->of ) ) ) {
         CErr1( ANSI_MAIN_MUST_RETURN_INT );
     }

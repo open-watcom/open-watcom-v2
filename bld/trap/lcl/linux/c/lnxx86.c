@@ -280,7 +280,9 @@ trap_retval ReqSet_watch( void )
         for( i = 0; i < wpCount; ++i ) {
             needed += wpList[ i ].dregs;
         }
-        if( needed <= 4 ) ret->multiplier |= USING_DEBUG_REG;
+        if( needed <= 4 ) {
+            ret->multiplier |= USING_DEBUG_REG;
+        }
     }
     return( sizeof( *ret ) );
 }

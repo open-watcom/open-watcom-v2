@@ -116,7 +116,7 @@ void MADIMPENTRY( TypeInfo )( mad_type_handle th, mad_type_info *ti )
 
 mad_type_handle MADIMPENTRY( TypeDefault )( mad_type_kind tk, mad_address_format af, mad_registers const *mr, address const *ap )
 {
-    af = af; mr = mr; ap = ap;
+    /* unused parameters */ (void)af; (void)mr; (void)ap;
 
     if( tk & MAS_IO ) {
         return( MAD_NIL_TYPE_HANDLE );
@@ -136,7 +136,7 @@ mad_type_handle MADIMPENTRY( TypeDefault )( mad_type_kind tk, mad_address_format
 
 mad_status MADIMPENTRY( TypeToString )( mad_radix radix, const mad_type_info *mti, const void *data, char *buff, size_t *buff_size_p )
 {
-    radix = radix; mti = mti; data = data; buff_size_p = buff_size_p; buff = buff;
+    /* unused parameters */ (void)radix; (void)mti; (void)data; (void)buff_size_p; (void)buff;
 
     return( MS_UNSUPPORTED );
 }
@@ -177,7 +177,7 @@ mad_type_handle MADIMPENTRY( TypeForDIPType )( const dip_type_info *ti )
 
 mad_status MADIMPENTRY( TypeConvert )( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
 {
-    in_t = in_t; in_d = in_d; out_t = out_t; out_d = out_d; seg = seg;
+    /* unused parameters */ (void)in_t; (void)in_d; (void)out_t; (void)out_d; (void)seg;
 
     return( MS_UNSUPPORTED );
 }

@@ -33,11 +33,11 @@
 
 #include "vi.h"
 #include "filelist.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK FileListProc( HWND dlg, UINT msg, WPARAM w, LPARAM l );
+WINEXPORT INT_PTR CALLBACK FileListDlgProc( HWND dlg, UINT msg, WPARAM w, LPARAM l );
 
 static info *findInfo( char *file_name )
 {
@@ -61,7 +61,7 @@ static bool applyToSelectedList( HWND list_box, bool (*func)( info * ) )
     for( i = 0; i < count; i++ ) {
         if( SendMessage( list_box, LB_GETSEL, i, 0L ) ) {
             name = MemAlloc( SendMessage( list_box, LB_GETTEXTLEN, i, 0L ) + 1 );
-            SendMessage( list_box, LB_GETTEXT, i, (LPARAM)name );
+            SendMessage( list_box, LB_GETTEXT, i, (LPARAM)(LPSTR)name );
             info = findInfo( name );
             MemFree( name );
             if( func( info ) ) {
@@ -105,7 +105,7 @@ static int fillBox( HWND list_box )
     return( count );
 }
 
-WINEXPORT BOOL CALLBACK FileListProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK FileListDlgProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HWND    list_box;
     bool    (*func)( info * );
@@ -153,11 +153,11 @@ WINEXPORT BOOL CALLBACK FileListProc( HWND dlg, UINT msg, WPARAM wparam, LPARAM 
 
 vi_rc EditFileFromList( void )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
     vi_rc       rc;
 
-    proc = MakeDlgProcInstance( FileListProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "FILELIST", root_window_id, (DLGPROC)proc );
-    FreeProcInstance( proc );
+    dlgproc = MakeProcInstance_DLG( FileListDlgProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "FILELIST", root_window_id, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
     return( rc );
 }

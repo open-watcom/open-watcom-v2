@@ -77,6 +77,7 @@
 #include "wwinhelp.h"
 #include "aboutdlg.h"
 #include "ldstr.h"
+#include "wclbproc.h"
 #include "clibint.h"
 
 #include "clibext.h"
@@ -93,8 +94,10 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Windows callback function prototypes */
 WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT BOOL    CALLBACK WdeSplash( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WdeSplashDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -128,21 +131,21 @@ typedef HANDLE (WINAPI *PFNLI)( HINSTANCE, LPCSTR, UINT, int, int, UINT );
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static HINSTANCE hInstWde;
-static HACCEL    WdeAccel;
-static HMENU     WdeDDEMenu         = NULL;
-static HMENU     WdeInitialMenu     = NULL;
-static HMENU     WdeResMenu         = NULL;
-static HMENU     WdeCurrentMenu     = NULL;
-static HWND      hWinWdeMain        = NULL;
-static HWND      hWinWdeMDIClient   = NULL;
-static bool      WdeCleanupStarted  = FALSE;
-static bool      WdeFatalExit       = FALSE;
-static bool      IsDDE              = FALSE;
-static bool      EnableMenuInput    = FALSE;
-static char      WdeMainClass[]     = "WdeMainClass";
-static bool      WdeFirstInst       = FALSE;
-static jmp_buf   WdeEnv;
+static HINSTANCE    hInstWde;
+static HACCEL       WdeAccel;
+static HMENU        WdeDDEMenu         = NULL;
+static HMENU        WdeInitialMenu     = NULL;
+static HMENU        WdeResMenu         = NULL;
+static HMENU        WdeCurrentMenu     = NULL;
+static HWND         hWinWdeMain        = NULL;
+static HWND         hWinWdeMDIClient   = NULL;
+static bool         WdeCleanupStarted  = FALSE;
+static bool         WdeFatalExit       = FALSE;
+static bool         IsDDE              = FALSE;
+static bool         EnableMenuInput    = FALSE;
+static char         WdeMainClass[]     = "WdeMainClass";
+static bool         WdeFirstInst       = FALSE;
+static jmp_buf      WdeEnv;
 
 bool WdeCreateNewFiles  = FALSE;
 
@@ -177,7 +180,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
     //check we are running in DDE mode
     IsDDE = WdeIsDDEArgs( _argv, _argc );
 
-    WdeFirstInst = (hinstPrevious == NULL);
+    WdeFirstInst = ( hinstPrevious == NULL );
 
     WdeInitEditClass();
 
@@ -193,9 +196,8 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
             return( 0 );
         }
 #ifndef __NT__
-    }
 #if 0
-    else if( IsDDE ) {
+    } else if( IsDDE ) {
         WdeDisplayErrorMsg( WDE_NOMULTIPLEINSTANCES );
         WdeDDEDumpConversation( hinstCurrent );
         return( 0 );
@@ -212,8 +214,8 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
             WdeDisplayErrorMsg( WDE_NOMULTIPLEINSTANCES );
         }
         return( 0 );
-    }
 #endif
+    }
 #endif
 
     if( !WdeInitInst( hinstCurrent ) ) {
@@ -250,7 +252,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
         WdeProcessArgs( _argv, _argc );
     }
 
-    if( !WdeGetNumRes() ) {
+    if( WdeGetNumRes() == 0 ) {
         WdeCreateNewResource( NULL );
     }
 
@@ -283,7 +285,7 @@ int PASCAL WinMain( HINSTANCE hinstCurrent, HINSTANCE hinstPrevious,
 /* Function to initialize the first instance of Wde */
 bool WdeInit( HINSTANCE app_inst )
 {
-    WNDCLASS wc;
+    WNDCLASS    wc;
 
     /* fill in the WINDOW CLASS structure for the main window */
     wc.style = CS_DBLCLKS;
@@ -468,17 +470,16 @@ bool WdeInitInst( HINSTANCE app_inst )
 
 bool WdeWasAcceleratorHandled( MSG *msg )
 {
-    if( !TranslateMDISysAccel( hWinWdeMDIClient, msg ) &&
-        !TranslateAccelerator( hWinWdeMain, WdeAccel, msg ) ) {
-        return( FALSE );
+    if( TranslateMDISysAccel( hWinWdeMDIClient, msg ) == 0 && TranslateAccelerator( hWinWdeMain, WdeAccel, msg ) == 0 ) {
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 void WdeSetAppMenuToRes( bool set_to_res_menu )
 {
-    HMENU   menu;
-    HMENU   new_menu;
+    HMENU       menu;
+    HMENU       new_menu;
 
     WdeShowInfoWindow( set_to_res_menu );
 
@@ -615,7 +616,7 @@ static void handleInitMenu( HMENU menu )
     }
 }
 
-WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     HMENU       menu;
     LRESULT     ret;
@@ -631,7 +632,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
         return( DefFrameProc( hWnd, hWinWdeMDIClient, message, wParam, lParam ) );
     }
 
-    pass_to_def = TRUE;
+    pass_to_def = true;
     ret = FALSE;
     res_info = WdeGetCurrentRes();
     menu = WdeGetMenuHandle();
@@ -642,7 +643,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
         break;
 
     case WM_USER:
-        WdeSetStatusByID( WDE_NONE, WDE_ONLYONEINSTANCE );
+        WdeSetStatusByID( 0, WDE_ONLYONEINSTANCE );
         break;
 
     case WM_MENUSELECT:
@@ -652,13 +653,13 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
     case WM_MEASUREITEM:
         WdeHandleMeasureItem( (MEASUREITEMSTRUCT *)lParam );
         ret = TRUE;
-        pass_to_def = FALSE;
+        pass_to_def = false;
         break;
 
     case WM_DRAWITEM:
         WdeHandleDrawItem( (DRAWITEMSTRUCT *)lParam );
         ret = TRUE;
-        pass_to_def = FALSE;
+        pass_to_def = false;
         break;
 
     case WM_MOVE:
@@ -682,7 +683,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
             WdeResizeWindows();
         }
 
-        pass_to_def = FALSE;
+        pass_to_def = false;
         break;
 
     case WM_COMMAND:
@@ -719,12 +720,12 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
         case IDM_CUSTOM1_TOOL:
         case IDM_CUSTOM2_TOOL:
             WdeSetBaseObject( wp );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_STICKY_TOOLS:
             WdeToggleStickyTools();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_FMLEFT:
@@ -738,42 +739,42 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
         case IDM_SPACE_HORZ:
         case IDM_SPACE_VERT:
             ret = WdePassToEdit( message, wParam, lParam );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SELECT_DIALOG:
             WdeSelectDialog( res_info );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_OPTIONS:
             WdeDisplayOptions ();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_NEW_RES:
             WdeCreateNewResource( NULL );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_DDE_CLEAR:
             WdeClearCurrentResource();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_OPEN_RES:
             WdeOpenResource( NULL );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SAVE_RES:
             WdeSaveResource( res_info, FALSE );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SAVEAS_RES:
             WdeSaveResource( res_info, TRUE );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_DDE_UPDATE_PRJ:
@@ -784,93 +785,93 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
             if( FMPasteValid() ) {
                 ret = WdePassToEdit( message, wParam, lParam );
             }
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_CUTOBJECT:
         case IDM_COPYOBJECT:
             ret = WdePassToEdit( message, wParam, lParam );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SAME_WIDTH:
             WdeSameSize( R_RIGHT );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SAME_HEIGHT:
             WdeSameSize( R_BOTTOM );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SAME_SIZE:
             WdeSameSize( R_BOTTOM | R_RIGHT );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SIZETOTEXT:
             WdeHandleSizeToText();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_GOTO_INFOBAR:
             WdeSetFocusToInfo();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_GOTO_OBJECT:
             WdeHandleGotoCurrentObject();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_DIALOG_RESTORE:
             WdeRestoreCurrentDialog();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_TAB:
         case IDM_STAB:
             WdeHandleTabEvent( wp == IDM_TAB );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
 #if 0
         /* this strategy has been rejected in favor of the hide option */
         case IDM_REMOVE_DIALOG:
             WdeRemoveDialog( res_info );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 #endif
 
         case IDM_HIDE_DIALOG:
             WdeHideCurrentDialog();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_TEST_MODE:
             WdeHandleTestModeMenu( res_info );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_DIALOG_NEW:
-            if( WdeCreateNewDialog( NULL, res_info->is32bit ) ) {
+            if( WdeCreateNewDialog( NULL, res_info->is32bit ) != NULL ) {
                 WdeHandleGotoCurrentObject();
             }
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_DIALOG_SAVE:
         case IDM_DIALOG_SAVEAS:
         case IDM_DIALOG_SAVEINTO:
             WdeSaveCurrentDialog( wp );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SET_ORDER:
         case IDM_SET_TABS:
         case IDM_SET_GROUPS:
             WdeSetDialogMode( wp );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_DEFINEOBJECT:
@@ -878,7 +879,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
             if( !WdeDefineCurrentObject( wp ) ) {
                 WdeWriteTrail( "WdeResWndProc: Define failed!" );
             }
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MDI_CASCADE:
@@ -886,7 +887,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
         case IDM_MDI_TILEH:
         case IDM_MDI_ARRANGE:
             WdeHandleMDIArrangeEvents( wp );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_EXIT:
@@ -898,66 +899,66 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
         case IDM_SELCUST2:
             if( !WdeSetCurrentCustControl( wp - IDM_SELCUST1 ) ) {
                 WdeWriteTrail( "WdeMainWndProc: WdeSetCurrentCustControl failed!" );
-                WdeSetStatusByID( WDE_NONE, WDE_SETFAILED );
+                WdeSetStatusByID( 0, WDE_SETFAILED );
             }
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_MS_CUSTOM:
-            WdeLoadCustomLib( TRUE, FALSE );
-            pass_to_def = FALSE;
+            WdeLoadCustomLib( true, false );
+            pass_to_def = false;
             break;
 
 #ifndef __NT__
         case IDM_BOR_CUSTOM:
-            WdeLoadCustomLib( FALSE, FALSE );
-            pass_to_def = FALSE;
+            WdeLoadCustomLib( false, false );
+            pass_to_def = false;
             break;
 #endif
 
         case IDM_LOADLIB:
-            WdeLoadCustomLib( FALSE, TRUE );
-            pass_to_def = FALSE;
+            WdeLoadCustomLib( false, true );
+            pass_to_def = false;
             break;
 
         case IDM_WRITE_SYMBOLS:
             WdeResourceHashTableAction( res_info, WRITE_HASH );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_LOAD_SYMBOLS:
             WdeResourceHashTableAction( res_info, LOAD_HASH );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_VIEW_SYMBOLS:
             WdeResourceHashTableAction( res_info, VIEW_HASH );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SHOW_TOOLS:
             WdeHandleShowToolsMenu();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_SHOW_RIBBON:
             WdeShowRibbon();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
         case IDM_HELP:
             WdeHelpRoutine();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
        case IDM_HELP_SEARCH:
             WdeHelpSearchRoutine();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
        case IDM_HELP_ON_HELP:
             WdeHelpOnHelpRoutine();
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
 
        case IDM_ABOUT:
@@ -970,7 +971,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
             FreeRCString( ai.name );
             FreeRCString( ai.version );
             FreeRCString( ai.title );
-            pass_to_def = FALSE;
+            pass_to_def = false;
             break;
         }
         break;
@@ -996,7 +997,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
         ret = WdeQueryKillApp( FALSE );
         if( ret ) {
             WdeFatalExit = TRUE;
-            pass_to_def = FALSE;
+            pass_to_def = false;
         }
         break;
 
@@ -1015,7 +1016,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
         }
         if( !WdeCleanup( res_info, WdeFatalExit ) ) {
             WdeCleanupStarted = FALSE;
-            pass_to_def = FALSE;
+            pass_to_def = false;
         }
     }
 
@@ -1027,7 +1028,7 @@ WINEXPORT LRESULT CALLBACK WdeMainWndProc( HWND hWnd, UINT message, WPARAM wPara
 
 bool WdeIsMenuIDValid( HMENU menu, unsigned id )
 {
-    UINT st;
+    UINT        st;
 
     if( !EnableMenuInput ) {
         return( FALSE );
@@ -1064,8 +1065,8 @@ bool WdeIsMenuIDValid( HMENU menu, unsigned id )
 
 bool WdeSetDialogMode( WORD id )
 {
-    OBJPTR        obj;
-    WdeOrderMode  mode;
+    OBJPTR          obj;
+    WdeOrderMode    mode;
 
     switch( id ) {
     case IDM_SET_ORDER:
@@ -1087,7 +1088,7 @@ bool WdeSetDialogMode( WORD id )
 
 bool WdeSaveCurrentDialog( WORD menu_id )
 {
-    OBJPTR  obj;
+    OBJPTR      obj;
 
     if ( (obj = WdeGetCurrentDialog()) != NULL ) {
         return( Forward( obj, SAVE_OBJECT, &menu_id, NULL ) != 0 );
@@ -1097,7 +1098,7 @@ bool WdeSaveCurrentDialog( WORD menu_id )
 
 bool WdeRestoreCurrentDialog( void )
 {
-    OBJPTR     obj;
+    OBJPTR      obj;
 
     if( (obj = WdeGetCurrentDialog()) != NULL ) {
         return( Forward( obj, RESTORE_OBJECT, NULL, NULL ) != 0 );
@@ -1121,8 +1122,8 @@ bool WdeHideCurrentDialog( void )
 
 void WdeHandleSizeToText( void )
 {
-    OBJPTR  obj;
-    LIST    *l;
+    OBJPTR      obj;
+    LIST        *l;
 
     l = WdeGetCurrObjectList();
     for( ; l != NULL; l = ListConsume( l ) ) {
@@ -1133,9 +1134,9 @@ void WdeHandleSizeToText( void )
 
 void WdeHandleTabEvent( bool up )
 {
-    OBJPTR obj;
+    OBJPTR      obj;
 
-    if( !WdeGetNumRes() ) {
+    if( WdeGetNumRes() == 0 ) {
         return;
     }
 
@@ -1149,8 +1150,8 @@ void WdeHandleTabEvent( bool up )
 
 LRESULT WdeHandleMDIArrangeEvents( WORD w )
 {
-    UINT    msg;
-    WPARAM  wp;
+    UINT        msg;
+    WPARAM      wp;
 
     wp = 0;
     switch( w ) {
@@ -1273,7 +1274,7 @@ bool WdeCleanup( WdeResInfo *res_info, bool fatal_exit )
 
 bool WdeIsDDEArgs( char **argv, int argc )
 {
-    int i;
+    int         i;
 
     for( i = 1; i < argc; i++ ) {
         if( stricmp( argv[i], DDE_OPT ) == 0 ) {
@@ -1286,8 +1287,8 @@ bool WdeIsDDEArgs( char **argv, int argc )
 
 bool WdeProcessArgs( char **argv, int argc )
 {
-    int     i;
-    bool    ok;
+    int         i;
+    bool        ok;
 
     ok = true;
 
@@ -1296,9 +1297,9 @@ bool WdeProcessArgs( char **argv, int argc )
             WdeCreateNewFiles = TRUE;
         } else if( stricmp( argv[i], DDE_OPT ) ) {
             if( WRFileExists( argv[i] ) ) {
-                ok = (WdeOpenResource( argv[i] ) && ok);
+                ok = ( WdeOpenResource( argv[i] ) && ok );
             } else if( WdeCreateNewFiles ) {
-                ok = (WdeCreateNewResource( argv[i] ) != NULL && ok);
+                ok = ( WdeCreateNewResource( argv[i] ) != NULL && ok );
             } else {
                 ok = false;
             }
@@ -1306,7 +1307,7 @@ bool WdeProcessArgs( char **argv, int argc )
     }
 
     if( !ok ) {
-        WdeSetStatusByID( WDE_NONE, WDE_INPUTFILENOTFOUND );
+        WdeSetStatusByID( 0, WDE_INPUTFILENOTFOUND );
     }
 
     return( ok );
@@ -1314,14 +1315,14 @@ bool WdeProcessArgs( char **argv, int argc )
 
 void WdeDisplaySplashScreen( HINSTANCE inst, HWND parent, UINT msecs )
 {
-    FARPROC     lpProcAbout;
+    DLGPROC     dlgproc;
 
-    lpProcAbout = MakeProcInstance( (FARPROC)WdeSplash, hInstWde );
-    JDialogBoxParam( inst, "WdeSplashScreen", parent, (DLGPROC)lpProcAbout, (LPARAM)&msecs );
-    FreeProcInstance( lpProcAbout );
+    dlgproc = MakeProcInstance_DLG( WdeSplashDlgProc, hInstWde );
+    JDialogBoxParam( inst, "WdeSplashScreen", parent, dlgproc, (LPARAM)&msecs );
+    FreeProcInstance_DLG( dlgproc );
 }
 
-WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeSplashDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     UINT        msecs, start;
     UINT_PTR    timer;
@@ -1334,6 +1335,7 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
     HINSTANCE   hInstUser;
     PFNLI       pfnLoadImage;
 #endif
+    bool        ret;
 
     static BITMAP    bm;
     static HBITMAP   logo;
@@ -1341,6 +1343,8 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
     static COLORREF  color;
 
     wParam=wParam;
+
+    ret = false;
 
     switch( message ) {
     case WM_SYSCOLORCHANGE:
@@ -1369,8 +1373,7 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
         hInstUser = GetModuleHandle( "USER32.DLL" );
         pfnLoadImage = (PFNLI)GetProcAddress( hInstUser, "LoadImageA" );
         if( pfnLoadImage != NULL ) {
-            logo = pfnLoadImage( hInstWde, "AboutLogo", IMAGE_BITMAP, 0, 0,
-                                 LR_LOADMAP3DCOLORS );
+            logo = pfnLoadImage( hInstWde, "AboutLogo", IMAGE_BITMAP, 0, 0, LR_LOADMAP3DCOLORS );
         } else {
 #endif
             logo = LoadBitmap( hInstWde, "AboutLogo" );
@@ -1386,7 +1389,8 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
         brush = CreateSolidBrush( color );
 
         GetObject( logo, sizeof( BITMAP ), &bm );
-        return( TRUE );
+        ret = true;
+        break;
 
 #if 0
 #ifdef __NT__
@@ -1394,7 +1398,7 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
         if( brush != NULL ) {
             dc = (HDC)wParam;
             SetBkColor( dc, color );
-            return( (LRESULT)brush );
+            return( (INT_PTR)brush );
         }
         break;
 #else
@@ -1404,7 +1408,7 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
             if( HIWORD( lParam ) == CTLCOLOR_STATIC ) {
                 SetBkColor( dc, color );
             }
-            return( (LRESULT)brush );
+            return( (INT_PTR)brush );
         }
         break;
 #endif
@@ -1414,7 +1418,7 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
             GetClientRect( hDlg, &rect );
             UnrealizeObject( brush );
             FillRect( (HDC)wParam, &rect, brush );
-            return( TRUE );
+            ret = true;
         }
         break;
 #endif
@@ -1425,7 +1429,7 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
             w666 = GetDlgItem( hDlg, 666 );
             GetClientRect( w666, &rect );
             GetClientRect( hDlg, &arect );
-            start = (arect.right - arect.left - bm.bmWidth) / 2;
+            start = ( arect.right - arect.left - bm.bmWidth ) / 2;
             MapWindowPoints( w666, hDlg, (POINT *)&rect, 2 );
             tdc = CreateCompatibleDC( dc );
             old = SelectObject( tdc, logo );
@@ -1442,27 +1446,28 @@ WINEXPORT BOOL CALLBACK WdeSplash( HWND hDlg, UINT message, WPARAM wParam, LPARA
             KillTimer( hDlg, timer );
         }
         EndDialog( hDlg, TRUE );
-        return( TRUE );
+        ret = true;
+        break;
     }
 
-    return( FALSE );
+    return( ret );
 }
 
-WINEXPORT void CALLBACK WdeHelpRoutine( void )
+void CALLBACK WdeHelpRoutine( void )
 {
     if( !WHtmlHelp( hWinWdeMain, "resdlg.chm", HELP_CONTENTS, 0 ) ) {
         WWinHelp( hWinWdeMain, "resdlg.hlp", HELP_CONTENTS, 0 );
     }
 }
 
-WINEXPORT void CALLBACK WdeHelpSearchRoutine( void )
+void CALLBACK WdeHelpSearchRoutine( void )
 {
     if( !WHtmlHelp( hWinWdeMain, "resdlg.chm", HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
         WWinHelp( hWinWdeMain, "resdlg.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
     }
 }
 
-WINEXPORT void CALLBACK WdeHelpOnHelpRoutine( void )
+void CALLBACK WdeHelpOnHelpRoutine( void )
 {
     WWinHelp( hWinWdeMain, "winhelp.hlp", HELP_HELPONHELP, 0 );
 }

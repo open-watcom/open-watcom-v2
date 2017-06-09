@@ -233,7 +233,8 @@ void GetMkFlags( ss_flags_m *storeFlags )
 
 void InitMkFlags( linenum line_no )
 {
-    line_no = line_no;
+    /* unused parameters */ (void)line_no;
+
     flags.inPreproc = false;
     flags.inInlineFile = false;
     flags.inMacro = false;
@@ -241,7 +242,7 @@ void InitMkFlags( linenum line_no )
 
 void GetMkBlock( ss_block *ss_new, char *start, int line )
 {
-    line = line;
+    /* unused parameters */ (void)line;
 
     if( start[0] == '\0' ) {
         if( firstNonWS == start ) {

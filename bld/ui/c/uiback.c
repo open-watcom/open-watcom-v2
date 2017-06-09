@@ -38,7 +38,8 @@ static void backblank( SAREA area, void *dummy )
 {
     register    ORD                     row;
 
-    dummy=dummy;
+    /* unused parameters */ (void)dummy;
+
     for( row = area.row; row < area.row + area.height; ++row ) {
         bfill( &UIData->screen, row, area.col, UIData->attrs[ATTR_NORMAL], ' ', area.width );
     }
@@ -50,7 +51,8 @@ static void backfill( SAREA area, void *dummy )
 {
     register    ORD                     row;
 
-    dummy=dummy;
+    /* unused parameters */ (void)dummy;
+
     for( row = area.row; row < area.row + area.height; ++row ) {
         uibcopy( &UIData->blank.type.buffer, row, area.col,
                &UIData->screen, row, area.col, area.width );

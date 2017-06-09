@@ -23,8 +23,8 @@
 !inject thrdxwnt.obj                     nt nta ntp
 !inject thredrdu.obj                                                                                        rdu
 !inject thredrdk.obj                                                                                            rdk
-!inject trdalloc.obj                     nt nta ntp nvc ncl nvl nll o16 o32                                 rdu rdk
-!inject trdlist.obj                      nt nta ntp         nvl nll     o32                                 rdu
+!inject trdalloc.obj                     nt nta ntp nvc ncl nvl nll o16 o32                     l32 lpc lmp rdu rdk
+!inject trdlist.obj                      nt nta ntp         nvl nll     o32                     l32 lpc lmp rdu
 
 !include ../../../../objlist.mif
 

@@ -40,81 +40,81 @@ typedef struct comp_flags {
 //                                                                          //
 *****************************************************************************/
 /*  00 */
-    unsigned float_used             : 1;
-    unsigned stats_printed          : 1;
-    unsigned low_on_memory_printed  : 1;
-    unsigned external_defn_found    : 1;
-    unsigned scanning_c_comment     : 1;    // scanning ANSI style (/**/) comment
-    unsigned srcfile_compiled       : 1;    // source file has been compiled
-    unsigned errfile_opened         : 1;    // error file has been opened
-    unsigned errfile_written        : 1;    // something has been written
+    bool    float_used              : 1;
+    bool    stats_printed           : 1;
+    bool    low_on_memory_printed   : 1;
+    bool    external_defn_found     : 1;
+    bool    scanning_c_comment      : 1;    // scanning ANSI style (/**/) comment
+    bool    srcfile_compiled        : 1;    // source file has been compiled
+    bool    errfile_opened          : 1;    // error file has been opened
+    bool    errfile_written         : 1;    // something has been written
 /*  08  */
-    unsigned main_has_parms         : 1;    /* on if "main" has parm(s) */
-    unsigned pgm_used_8087          : 1;    /* on => 8087 ins. generated */
-    unsigned banner_printed         : 1;    /* on => banner printed      */
-    unsigned cppi_segment_used      : 1;    /* C++ initializer segment */
-    unsigned rescan_buffer_done     : 1;    /* ## re-scan buffer used up */
-    unsigned has_winmain            : 1;    // WinMain() is defined
-    unsigned has_libmain            : 1;    // LibMain() is defined
-    unsigned has_dllmain            : 1;    // DllMain() is defined
+    bool    main_has_parms          : 1;    /* on if "main" has parm(s) */
+    bool    pgm_used_8087           : 1;    /* on => 8087 ins. generated */
+    bool    banner_printed          : 1;    /* on => banner printed      */
+    bool    cppi_segment_used       : 1;    /* C++ initializer segment */
+    bool    rescan_buffer_done      : 1;    /* ## re-scan buffer used up */
+    bool    has_winmain             : 1;    // WinMain() is defined
+    bool    has_libmain             : 1;    // LibMain() is defined
+    bool    has_dllmain             : 1;    // DllMain() is defined
 /*  16  */
-    unsigned has_main               : 1;    // main() is defined
-    unsigned has_longjmp            : 1;    // has longjmp reference
-    unsigned extern_C_defn_found    : 1;    // something was declared as "C"
-    unsigned inline_intrinsics      : 1;    // inline intrinsic fns
-    unsigned scanning_cpp_comment   : 1;    // scanning a C++ style comment
-    unsigned pragma_library         : 1;    // on => behave as if main seen
-    unsigned parsing_finished       : 1;    // program has been completely parsed
-    unsigned genned_static_dtor     : 1;    // genned DTOR of static var.
+    bool    has_main                : 1;    // main() is defined
+    bool    has_longjmp             : 1;    // has longjmp reference
+    bool    extern_C_defn_found     : 1;    // something was declared as "C"
+    bool    inline_intrinsics       : 1;    // inline intrinsic fns
+    bool    scanning_cpp_comment    : 1;    // scanning a C++ style comment
+    bool    pragma_library          : 1;    // on => behave as if main seen
+    bool    parsing_finished        : 1;    // program has been completely parsed
+    bool    genned_static_dtor      : 1;    // genned DTOR of static var.
 /*  24  */
-    unsigned inline_fun_reg         : 1;    // inline func. registration gen'ed
-    unsigned fatal_error            : 1;    // fatal error has occured
-    unsigned codegen_active         : 1;    // code generator is active
-    unsigned dt_method_pragma       : 1;    // pragma destruct encountered
-    unsigned dll_subsequent         : 1;    // DLL called second time thru
-    unsigned dll_active             : 1;    // DLL version of compiler
-    unsigned compile_failed         : 1;    // compilation failed
-    unsigned cmdline_error          : 1;    // error in cmd line
+    bool    inline_fun_reg          : 1;    // inline func. registration gen'ed
+    bool    fatal_error             : 1;    // fatal error has occured
+    bool    codegen_active          : 1;    // code generator is active
+    bool    dt_method_pragma        : 1;    // pragma destruct encountered
+    bool    dll_subsequent          : 1;    // DLL called second time thru
+    bool    dll_active              : 1;    // DLL version of compiler
+    bool    compile_failed          : 1;    // compilation failed
+    bool    cmdline_error           : 1;    // error in cmd line
 /*  32  */
-    unsigned watch_for_pcheader     : 1;    // watch for first #include
-    unsigned pch_debug_info_write   : 1;    // writing dbg info into PCH
-    unsigned pch_debug_info_read    : 1;    // reading dbg info from PCH
-    unsigned batch_file_primary     : 1;    // batch file found: primary scan
-    unsigned batch_file_processing  : 1;    // processing the batch file
-    unsigned batch_file_eof         : 1;    // EOF on the batch file
-    unsigned batch_file_continue    : 1;    // continue on errors
-    unsigned in_pragma              : 1;    // scanning in a #pragma
+    bool    watch_for_pcheader      : 1;    // watch for first #include
+    bool    pch_debug_info_write    : 1;    // writing dbg info into PCH
+    bool    pch_debug_info_read     : 1;    // reading dbg info from PCH
+    bool    batch_file_primary      : 1;    // batch file found: primary scan
+    bool    batch_file_processing   : 1;    // processing the batch file
+    bool    batch_file_eof          : 1;    // EOF on the batch file
+    bool    batch_file_continue     : 1;    // continue on errors
+    bool    in_pragma               : 1;    // scanning in a #pragma
 /*  40 */
-    unsigned ide_cmd_line           : 1;    // ide command line ok as is
-    unsigned ide_console_output     : 1;    // ide doing output to console
-    unsigned use_macro_tokens       : 1;    // macro expansion is token source
-    unsigned log_note_msgs          : 1;    // on ==> NOTE_MSGs to error file
-    unsigned has_wide_char_main     : 1;    // has wide char version of "main" fn
-    unsigned vfun_reference_done    : 1;    // extrf: -zv record generated
-    unsigned namespace_checks_done  : 1;    // namespace ref/def checks done
+    bool    ide_cmd_line            : 1;    // ide command line ok as is
+    bool    ide_console_output      : 1;    // ide doing output to console
+    bool    use_macro_tokens        : 1;    // macro expansion is token source
+    bool    log_note_msgs           : 1;    // on ==> NOTE_MSGs to error file
+    bool    has_wide_char_main      : 1;    // has wide char version of "main" fn
+    bool    vfun_reference_done     : 1;    // extrf: -zv record generated
+    bool    namespace_checks_done   : 1;    // namespace ref/def checks done
 
     //  don't add options here; these are flags that represent the status
     //  during execution
     //  Add options at offset 80 or greater (the number is not significant in any way!
-    unsigned filler00               : 1;
+    bool    filler00                : 1;
 /*  48 */
-    unsigned filler01               : 1;
-    unsigned filler02               : 1;
-    unsigned filler03               : 1;
-    unsigned filler04               : 1;
-    unsigned filler05               : 1;
-    unsigned filler06               : 1;
-    unsigned filler07               : 1;
-    unsigned filler08               : 1;
+    bool    filler01                : 1;
+    bool    filler02                : 1;
+    bool    filler03                : 1;
+    bool    filler04                : 1;
+    bool    filler05                : 1;
+    bool    filler06                : 1;
+    bool    filler07                : 1;
+    bool    filler08                : 1;
 /*  56  */
-    unsigned filler09               : 1;
-    unsigned filler10               : 1;
-    unsigned filler11               : 1;
-    unsigned filler12               : 1;
-    unsigned filler13               : 1;
-    unsigned filler14               : 1;
-    unsigned filler15               : 1;
-    unsigned filler16               : 1;
+    bool    filler09                : 1;
+    bool    filler10                : 1;
+    bool    filler11                : 1;
+    bool    filler12                : 1;
+    bool    filler13                : 1;
+    bool    filler14                : 1;
+    bool    filler15                : 1;
+    bool    filler16                : 1;
 
 /*****************************************************************************
 //                                                                          //
@@ -128,24 +128,24 @@ typedef struct comp_flags {
 *****************************************************************************/
 
 /*  64  */
-    unsigned extra_stats_wanted     : 1;
+    bool    extra_stats_wanted      : 1;
 
-    unsigned dbgfiller00            : 1;
-    unsigned dbgfiller01            : 1;
-    unsigned dbgfiller02            : 1;
-    unsigned dbgfiller03            : 1;
-    unsigned dbgfiller04            : 1;
-    unsigned dbgfiller05            : 1;
-    unsigned dbgfiller06            : 1;
+    bool    dbgfiller00             : 1;
+    bool    dbgfiller01             : 1;
+    bool    dbgfiller02             : 1;
+    bool    dbgfiller03             : 1;
+    bool    dbgfiller04             : 1;
+    bool    dbgfiller05             : 1;
+    bool    dbgfiller06             : 1;
 /*  72  */
-    unsigned dbgfiller07            : 1;
-    unsigned dbgfiller08            : 1;
-    unsigned dbgfiller09            : 1;
-    unsigned dbgfiller10            : 1;
-    unsigned dbgfiller11            : 1;
-    unsigned dbgfiller12            : 1;
-    unsigned dbgfiller13            : 1;
-    unsigned dbgfiller14            : 1;
+    bool    dbgfiller07             : 1;
+    bool    dbgfiller08             : 1;
+    bool    dbgfiller09             : 1;
+    bool    dbgfiller10             : 1;
+    bool    dbgfiller11             : 1;
+    bool    dbgfiller12             : 1;
+    bool    dbgfiller13             : 1;
+    bool    dbgfiller14             : 1;
 
 /*****************************************************************************
 //                                                                          //
@@ -153,140 +153,138 @@ typedef struct comp_flags {
 //                                                                          //
 *****************************************************************************/
 /*  80  */
-    unsigned signed_char            : 1;
-    unsigned check_syntax           : 1;
-    unsigned extensions_enabled     : 1;
-    unsigned inline_functions       : 1;    // inline user def'd 'inline' fns
-    unsigned dump_prototypes        : 1;    // output prototypes into .DEF file
-    unsigned use_base_types         : 1;    // use base types in .DEF protos
-    unsigned quiet_mode             : 1;
-    unsigned keep_comments          : 1;    // wcpp - output comments
+    bool    signed_char             : 1;
+    bool    check_syntax            : 1;
+    bool    extensions_enabled      : 1;
+    bool    inline_functions        : 1;    // inline user def'd 'inline' fns
+    bool    dump_prototypes         : 1;    // output prototypes into .DEF file
+    bool    use_base_types          : 1;    // use base types in .DEF protos
+    bool    quiet_mode              : 1;
+    bool    keep_comments           : 1;    // wcpp - output comments
 /*  88  */
-    unsigned emit_library_names     : 1;    // on => put LIB name in obj
-    unsigned comments_wanted        : 1;    // on => comments wanted
-    unsigned undefine_all_macros    : 1;    // on => -u all macros
-    unsigned cpp_line_wanted        : 1;    // wcpp - emit #line
-    unsigned cpp_ignore_line        : 1;    /* wcpp - ignore #line */
-    unsigned cpp_output             : 1;    // WCC doing CPP output
-    unsigned cpp_output_to_file     : 1;    // WCC doing CPP output to?.i
-    unsigned cpp_output_requested   : 1;
+    bool    emit_library_names      : 1;    // on => put LIB name in obj
+    bool    comments_wanted         : 1;    // on => comments wanted
+    bool    undefine_all_macros     : 1;    // on => -u all macros
+    bool    cpp_line_wanted         : 1;    // wcpp - emit #line
+    bool    cpp_ignore_line         : 1;    /* wcpp - ignore #line */
+    bool    cpp_output              : 1;    // WCC doing CPP output
+    bool    cpp_output_to_file      : 1;    // WCC doing CPP output to?.i
+    bool    cpp_output_requested    : 1;
 /*  96  */
-    unsigned no_debug_type_names    : 1;
-    unsigned emit_names             : 1;
-    unsigned warnings_cause_bad_exit: 1;
-    unsigned use_unicode            : 1;
-    unsigned unique_functions       : 1;
-    unsigned jis_to_unicode         : 1;
-    unsigned emit_dependencies      : 1;
-    unsigned emit_targimp_symbols   : 1;    // Insert target specific import symbols
+    bool    no_debug_type_names     : 1;
+    bool    emit_names              : 1;
+    bool    warnings_cause_bad_exit : 1;
+    bool    use_unicode             : 1;
+    bool    unique_functions        : 1;
+    bool    jis_to_unicode          : 1;
+    bool    emit_dependencies       : 1;
+    bool    emit_targimp_symbols    : 1;    // Insert target specific import symbols
 /*  104 */
-    unsigned emit_browser_info      : 1;
-    unsigned excs_enabled           : 1;    // exceptions enabled
-    unsigned rtti_enabled           : 1;    // RTTI enabled
-    unsigned extended_defines       : 1;    // -d swallows many tokens
-    unsigned virtual_stripping      : 1;    // enable virtual stripping
-    unsigned returns_promoted       : 1;    // promote arg,return to int
-    unsigned all_debug_type_names   : 1;
-    unsigned fhw_switch_used        : 1;
+    bool    emit_browser_info       : 1;
+    bool    excs_enabled            : 1;    // exceptions enabled
+    bool    rtti_enabled            : 1;    // RTTI enabled
+    bool    extended_defines        : 1;    // -d swallows many tokens
+    bool    virtual_stripping       : 1;    // enable virtual stripping
+    bool    returns_promoted        : 1;    // promote arg,return to int
+    bool    all_debug_type_names    : 1;
+    bool    fhw_switch_used         : 1;
 /*  112 */
-    unsigned fhr_switch_used        : 1;
-    unsigned modifier_bind_compatibility:1; // bind modifiers into generic types
-    unsigned prototype_instantiate  : 1;    // instantiate fn prototypes if possible
-    unsigned encrypt_preproc_output : 1;    // try to encrypt compiler output
-    unsigned check_truncated_fnames : 1;    // if can't find file, check 8.3
-    unsigned make_enums_an_int      : 1;    // don't overly optimize enum storage
-    unsigned use_pcheaders          : 1;    // pre-compiled headers are active
-    unsigned no_pch_warnings        : 1;    // don't explain PCH activity
+    bool    fhr_switch_used         : 1;
+    bool    modifier_bind_compatibility : 1; // bind modifiers into generic types
+    bool    prototype_instantiate   : 1;    // instantiate fn prototypes if possible
+    bool    encrypt_preproc_output  : 1;    // try to encrypt compiler output
+    bool    check_truncated_fnames  : 1;    // if can't find file, check 8.3
+    bool    make_enums_an_int       : 1;    // don't overly optimize enum storage
+    bool    use_pcheaders           : 1;    // pre-compiled headers are active
+    bool    no_pch_warnings         : 1;    // don't explain PCH activity
 /*  120 */
-    unsigned pch_debug_info_opt     : 1;    // optimize dbg info in PCH
-    unsigned pch_min_check          : 1;    // assume PCH header files haven't changed
-    unsigned bd_switch_used         : 1;
-    unsigned bm_switch_used         : 1;
-    unsigned bw_switch_used         : 1;
-    unsigned ee_switch_used         : 1;
-    unsigned ep_switch_used         : 1;
-    unsigned eq_switch_used         : 1;
+    bool    pch_debug_info_opt      : 1;    // optimize dbg info in PCH
+    bool    pch_min_check           : 1;    // assume PCH header files haven't changed
+    bool    bd_switch_used          : 1;
+    bool    bm_switch_used          : 1;
+    bool    bw_switch_used          : 1;
+    bool    ee_switch_used          : 1;
+    bool    ep_switch_used          : 1;
+    bool    eq_switch_used          : 1;
 /*  128 */
-    unsigned ew_switch_used         : 1;
-    unsigned op_switch_used         : 1;
-    unsigned br_switch_used         : 1;
-    unsigned rw_registration        : 1;    // RW-centric function registration
-    unsigned original_enum_setting  : 1;    // original -ei setting
-    unsigned ignore_environment     : 1;    // don't process WPP* and INCLUDE
-    unsigned ignore_current_dir     : 1;    // ignore current dir for include files
-    unsigned progress_messages      : 1;    // output msgs as compile progresses
+    bool    ew_switch_used          : 1;
+    bool    op_switch_used          : 1;
+    bool    br_switch_used          : 1;
+    bool    rw_registration         : 1;    // RW-centric function registration
+    bool    original_enum_setting   : 1;    // original -ei setting
+    bool    ignore_environment      : 1;    // don't process WPP* and INCLUDE
+    bool    ignore_current_dir      : 1;    // ignore current dir for include files
+    bool    progress_messages       : 1;    // output msgs as compile progresses
 /*  136 */
-    unsigned no_error_sym_injection : 1;    // don't insert error symbols
-    unsigned error_use_full         : 1;    // use full path names in error msgs
-    unsigned vc_alloca_parm         : 1;    // allow alloca to occur in parms
-    unsigned emit_all_default_libs  : 1;    // emit default libs in .OBJ file
-    unsigned bc_switch_used         : 1;    // building a console app
-    unsigned bg_switch_used         : 1;    // building a GUI app
-    unsigned optbr_v                : 1;    // browse: variables
-    unsigned optbr_f                : 1;    // browse: functions
+    bool    no_error_sym_injection  : 1;    // don't insert error symbols
+    bool    error_use_full          : 1;    // use full path names in error msgs
+    bool    vc_alloca_parm          : 1;    // allow alloca to occur in parms
+    bool    emit_all_default_libs   : 1;    // emit default libs in .OBJ file
+    bool    bc_switch_used          : 1;    // building a console app
+    bool    bg_switch_used          : 1;    // building a GUI app
+    bool    optbr_v                 : 1;    // browse: variables
+    bool    optbr_f                 : 1;    // browse: functions
 /*  144 */
-    unsigned optbr_t                : 1;    // browse: types
-    unsigned optbr_m                : 1;    // browse: data members
-    unsigned optbr_p                : 1;    // browse: preprocessor macros
-    unsigned static_inline_fns      : 1;    // emit inline fns in normal code seg
-    unsigned fhwe_switch_used       : 1;    // display but don't treat as errors
-    unsigned warn_about_padding     : 1;    // warn when padding is added
+    bool    optbr_t                 : 1;    // browse: types
+    bool    optbr_m                 : 1;    // browse: data members
+    bool    optbr_p                 : 1;    // browse: preprocessor macros
+    bool    static_inline_fns       : 1;    // emit inline fns in normal code seg
+    bool    fhwe_switch_used        : 1;    // display but don't treat as errors
+    bool    warn_about_padding      : 1;    // warn when padding is added
 
-    unsigned overload_13332         : 1;    // implement WP 13.3.3.2 better
-    unsigned line_comments          : 1;    // output // #line instead of #line
+    bool    overload_13332          : 1;    // implement WP 13.3.3.2 better
+    bool    line_comments           : 1;    // output // #line instead of #line
 /*  152 */
-    unsigned dont_align_segs        : 1;    // bug fix: don't align segments
-    unsigned fixed_name_mangling    : 1;    // bug fix: name mangling
-    unsigned plain_char_promotion   : 1;    // char -> int rvalue promotion warning
-    unsigned obfuscate_typesig_names: 1;    // mangle type sig names
-    unsigned dont_autogen_ext_inc   : 1;    // don't convert #include <string> to <string.h> or <string.hpp>
-    unsigned dont_autogen_ext_src   : 1;
-    unsigned use_old_for_scope      : 1;
-    unsigned no_alternative_tokens  : 1;    // disable alternative tokens
+    bool    dont_align_segs         : 1;    // bug fix: don't align segments
+    bool    fixed_name_mangling     : 1;    // bug fix: name mangling
+    bool    plain_char_promotion    : 1;    // char -> int rvalue promotion warning
+    bool    obfuscate_typesig_names : 1;    // mangle type sig names
+    bool    dont_autogen_ext_inc    : 1;    // don't convert #include <string> to <string.h> or <string.hpp>
+    bool    dont_autogen_ext_src    : 1;
+    bool    use_old_for_scope       : 1;
+    bool    no_alternative_tokens   : 1;    // disable alternative tokens
 /*  160 */
-    unsigned enable_std0x           : 1;    // enable some C++0x features
-    
+    bool    enable_std0x            : 1;    // enable some C++0x features
 
 /*****************************************************************************
 //                                                                          //
 // 'i86' '386' target flags
 //                                                                          //
 *****************************************************************************/
-    unsigned register_conventions   : 1;    // on for -3r, off for -3s
-    unsigned strings_in_code_segment: 1;    // on => put strings in CODE
-    unsigned save_restore_segregs   : 1;    // save/restore segment regs
-    unsigned target_multi_thread    : 1;    // multiple execution threads
-    unsigned use_stdcall_at_number  : 1;    // mangle __stdcall names as "_*@n"
-    unsigned fs_registration        : 1;    // using fs for function registration
-    unsigned sg_switch_used         : 1;
+    bool    register_conventions    : 1;    // on for -3r, off for -3s
+    bool    strings_in_code_segment : 1;    // on => put strings in CODE
+    bool    save_restore_segregs    : 1;    // save/restore segment regs
+    bool    target_multi_thread     : 1;    // multiple execution threads
+    bool    use_stdcall_at_number   : 1;    // mangle __stdcall names as "_*@n"
+    bool    fs_registration         : 1;    // using fs for function registration
+    bool    sg_switch_used          : 1;
 /*  168 */
-    unsigned st_switch_used         : 1;
-    unsigned zc_switch_used         : 1;
-    unsigned zm_switch_used         : 1;
-    unsigned zmf_switch_used        : 1;
-    unsigned zo_switch_used         : 1;
-    unsigned zu_switch_used         : 1;
-    unsigned zx_switch_used         : 1;
-    unsigned mfi_switch_used        : 1;    // flat model interrupts (ss stays same)
+    bool    st_switch_used          : 1;
+    bool    zc_switch_used          : 1;
+    bool    zm_switch_used          : 1;
+    bool    zmf_switch_used         : 1;
+    bool    zo_switch_used          : 1;
+    bool    zu_switch_used          : 1;
+    bool    zx_switch_used          : 1;
+    bool    mfi_switch_used         : 1;    // flat model interrupts (ss stays same)
 
 /*  176 */
-    unsigned i86filler00            : 1;
-    unsigned i86filler01            : 1;
-    unsigned i86filler02            : 1;
-    unsigned i86filler03            : 1;
-    unsigned i86filler04            : 1;
-    unsigned i86filler05            : 1;
-    unsigned i86filler06            : 1;
-    unsigned i86filler07            : 1;
+    bool    i86filler00             : 1;
+    bool    i86filler01             : 1;
+    bool    i86filler02             : 1;
+    bool    i86filler03             : 1;
+    bool    i86filler04             : 1;
+    bool    i86filler05             : 1;
+    bool    i86filler06             : 1;
+    bool    i86filler07             : 1;
 /* 184 */
-    unsigned i86filler08            : 1;
+    bool    i86filler08             : 1;
 
-    unsigned generate_auto_depend   : 1;
-    unsigned ignore_fnf             : 1;
-    unsigned disable_ialias         : 1;
-    unsigned cpp_ignore_env         : 1;    // ignore include path env vars
-    unsigned ignore_default_dirs    : 1;    // ignore all default dirs for file search (., ../h, ../c, ...)
-    unsigned oldmacros_enabled      : 1;    // enable old predefined macros (non-ISO compatible)
+    bool    generate_auto_depend    : 1;
+    bool    ignore_fnf              : 1;
+    bool    cpp_ignore_env          : 1;    // ignore include path env vars
+    bool    ignore_default_dirs     : 1;    // ignore all default dirs for file search (., ../h, ../c, ...)
+    bool    oldmacros_enabled       : 1;    // enable old predefined macros (non-ISO compatible)
 } COMP_FLAGS;
 
 #ifdef OPT_BR
@@ -318,7 +316,7 @@ typedef struct                          // DLL_DATA -- data for DLL
 } DLL_DATA;
 
 #include <pushpck4.h>
-struct comp_info {                      // Compiler information
+typedef struct comp_info {              // Compiler information
     TYPE        ptr_diff_near;          // - type from near ptr subtraction
     TYPE        ptr_diff_far;           // - type from far ptr subtraction
     TYPE        ptr_diff_far16;         // - type from far16 ptr subtraction
@@ -337,6 +335,6 @@ struct comp_info {                      // Compiler information
     unsigned    fc_file_line;           // - line # in -fc file
     char*       pch_buff_cursor;        // - PCH read: buffer cursor
     char*       pch_buff_end;           // - PCH read: end of buffer
-};
+} comp_info;
 #include <poppck.h>
 #endif

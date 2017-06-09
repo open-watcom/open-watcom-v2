@@ -71,7 +71,7 @@ typedef struct recognized_struct recognized_struct;
 #define SYMBOL_TO_LABEL_TABLE_SIZE 53
 #define RECOGNITION_TABLE_SIZE 29
 
-#define CPP_COMMENT_STRING "// "
+#define CPP_COMMENT_STRING  "// "
 #define MASM_COMMENT_STRING "; "
 
 char    *CommentString  = CPP_COMMENT_STRING;
@@ -80,11 +80,11 @@ extern wd_options       Options;
 extern char             LabelChar;
 extern char             QuoteChar;
 extern int              OutputDest;
-extern char *           ListFileName;
+extern char             *ListFileName;
 
 extern orl_handle       ORLHnd;
 extern orl_file_handle  ObjFileHnd;
-extern char *           ObjFileName;
+extern char             *ObjFileName;
 
 extern dis_handle       DHnd;
 
@@ -107,20 +107,22 @@ recognized_struct RecognizedName[] = {
     {".debug_line", SECTION_TYPE_LINES},
 };
 
-static char *intelSkipRefList[] = { "FIWRQQ", // boundary relocs
-                                    "FIDRQQ",
-                                    "FIERQQ",
-                                    "FICRQQ",
-                                    "FISRQQ",
-                                    "FIARQQ",
-                                    "FIFRQQ",
-                                    "FIGRQQ",
-                                    "FJCRQQ", // boundary + 1 relocs
-                                    "FJSRQQ",
-                                    "FJARQQ",
-                                    "FJFRQQ",
-                                    "FJGRQQ",
-                                    NULL };
+static char *intelSkipRefList[] = {
+    "FIWRQQ", // boundary relocs
+    "FIDRQQ",
+    "FIERQQ",
+    "FICRQQ",
+    "FISRQQ",
+    "FIARQQ",
+    "FIFRQQ",
+    "FIGRQQ",
+    "FJCRQQ", // boundary + 1 relocs
+    "FJSRQQ",
+    "FJARQQ",
+    "FJFRQQ",
+    "FJGRQQ",
+    NULL
+};
 
 #define NUM_ELTS( a )   (sizeof(a) / sizeof((a)[0]))
 
@@ -128,7 +130,7 @@ static orl_sec_handle           symbolTable;
 static orl_sec_handle           dynSymTable;
 static orl_sec_handle           drectveSection;
 static section_list_struct      relocSections;
-static char *                   objFileBuf;
+static char                     *objFileBuf;
 static long                     objFilePos;
 static unsigned long            objFileLen;
 
@@ -151,41 +153,50 @@ orl_file_format GetFormat( void )
 
 static orl_return nopCallBack( const char *str, void *cookie  )
 {
-    str = str;
-    cookie = cookie;
+    /* unused parameters */ (void)str; (void)cookie;
+
     return( ORL_OKAY );
 }
 
-static orl_return scanTabCallBack( orl_sec_handle sh, orl_sec_offset start,
-                                   orl_sec_offset end, void *cookie )
+static orl_return scanTabCallBack( orl_sec_handle sh, const orl_sec_offset *pstart, const orl_sec_offset *pend, void *cookie )
 {
     section_ptr         sec;
     hash_data           *dp;
     scantab_ptr         sp;
     scantab_ptr         tmp;
     scantab_struct      senitel;
+    dis_sec_offset      start;
+    dis_sec_offset      end;
 
-    cookie = cookie;
-    if( !sh ) return( ORL_OKAY );
-    if( start >= end ) return( ORL_OKAY );
-    dp = HashTableQuery( HandleToSectionTable, (hash_value) sh );
-    if( !dp ) return( ORL_OKAY );
-    sec = (section_ptr) *dp;
-    if( !sec ) return( ORL_OKAY );
+    /* unused parameters */ (void)cookie;
+
+    if( sh == ORL_NULL_HANDLE )
+        return( ORL_OKAY );
+    start = *pstart;
+    end = *pend;
+    if( start >= end )
+        return( ORL_OKAY );
+    dp = HashTableQuery( HandleToSectionTable, (hash_value)sh );
+    if( dp == NULL )
+        return( ORL_OKAY );
+    sec = (section_ptr)*dp;
+    if( sec == NULL )
+        return( ORL_OKAY );
 
     sp = MemAlloc( sizeof( scantab_struct ) );
-    if( !sp ) return( ORL_OUT_OF_MEMORY );
+    if( sp == NULL )
+        return( ORL_OUT_OF_MEMORY );
     memset( sp, 0, sizeof( scantab_struct ) );
     sp->start = start;
     sp->end = end;
 
     senitel.next = sec->scan;
     tmp = &senitel;
-    while( tmp->next && ( tmp->next->end < start ) ) {
+    while( tmp->next != NULL && ( tmp->next->end < start ) ) {
         tmp = tmp->next;
     }
 
-    if( tmp->next ) {
+    if( tmp->next != NULL ) {
         if( end < tmp->next->start ) {
             sp->next = tmp->next;
             tmp->next = sp;
@@ -201,7 +212,7 @@ static orl_return scanTabCallBack( orl_sec_handle sh, orl_sec_offset start,
 
             // check if we must do additional merging
             sp = tmp->next;
-            while( sp->next && ( sp->end > sp->next->start ) ) {
+            while( sp->next != NULL && ( sp->end > sp->next->start ) ) {
                 if( sp->end < sp->next->end ) {
                     sp->end = sp->next->end;
                 }
@@ -225,7 +236,7 @@ static return_val processDrectveSection( orl_sec_handle shnd )
     orl_return          o_error;
     orl_note_callbacks  cb;
 
-    if( !shnd )
+    if( shnd == ORL_NULL_HANDLE )
         return( RC_OKAY );
 
     cb.export_fn = nopCallBack;
@@ -245,15 +256,15 @@ static return_val addRelocSection( orl_sec_handle shnd )
 {
     section_ptr         sec;
 
-    if( relocSections.first && ( GetFormat() == ORL_OMF ) )
+    if( relocSections.first != NULL && ( GetFormat() == ORL_OMF ) )
         return( RC_OKAY );
 
     sec = MemAlloc( sizeof( section_struct ) );
-    if( sec ) {
+    if( sec != NULL ) {
         memset( sec, 0, sizeof( section_struct ) );
         sec->shnd = shnd;
         sec->next = NULL;
-        if( relocSections.first ) {
+        if( relocSections.first != NULL ) {
             relocSections.last->next = sec;
             relocSections.last = sec;
         } else {
@@ -272,7 +283,7 @@ static return_val registerSec( orl_sec_handle shnd, section_type type )
     return_val          error;
 
     sec = MemAlloc( sizeof( section_struct ) );
-    if( sec ) {
+    if( sec != NULL ) {
         error = HashTableInsert( HandleToSectionTable, (hash_value) shnd, (hash_data) sec );
         if( error == RC_OKAY ) {
             memset( sec, 0, sizeof( section_struct ) );
@@ -280,7 +291,7 @@ static return_val registerSec( orl_sec_handle shnd, section_type type )
             sec->name = ORLSecGetName( shnd );
             sec->type = type;
             sec->next = NULL;
-            if( Sections.first ) {
+            if( Sections.first != NULL ) {
                 Sections.last->next = sec;
                 Sections.last = sec;
             } else {
@@ -301,8 +312,8 @@ static return_val addListToPublics( label_list list )
 {
     label_list_ptr      list_ptr;
 
-    list_ptr = (label_list_ptr) MemAlloc( sizeof( label_list_ptr_struct ) );
-    if( list_ptr ) {
+    list_ptr = (label_list_ptr)MemAlloc( sizeof( label_list_ptr_struct ) );
+    if( list_ptr != NULL ) {
         list_ptr->list = list;
         if( Publics.label_lists == NULL ) {
             list_ptr->next = NULL;
@@ -323,12 +334,12 @@ static return_val createLabelList( orl_sec_handle shnd )
     return_val          error;
 
     list = MemAlloc( sizeof( label_list_struct ) );
-    if( list ) {
+    if( list != NULL ) {
         list->first = NULL;
         list->last = NULL;
         error = HashTableInsert( HandleToLabelListTable, (hash_value) shnd, (hash_data) list );
         if( error == RC_OKAY ) {
-            if( (Options & PRINT_PUBLICS) && shnd != 0 ) {
+            if( (Options & PRINT_PUBLICS) && shnd != ORL_NULL_HANDLE ) {
                 error = addListToPublics( list );
                 if( error != RC_OKAY ) {
                     MemFree( list );
@@ -349,10 +360,10 @@ static return_val createRefList( orl_sec_handle shnd )
     return_val  error;
 
     list = MemAlloc( sizeof( ref_list_struct ) );
-    if( list ) {
+    if( list != NULL ) {
         list->first = NULL;
         list->last = NULL;
-        error = HashTableInsert( HandleToRefListTable, (hash_value) shnd, (hash_data) list );
+        error = HashTableInsert( HandleToRefListTable, (hash_value)shnd, (hash_data)list );
         if( error != RC_OKAY ) {
             MemFree( list );
         }
@@ -387,49 +398,49 @@ static orl_return sectionInit( orl_sec_handle shnd )
 
     type = IdentifySec( shnd );
     switch( type ) {
-        case SECTION_TYPE_SYM_TABLE:
-            symbolTable = shnd;
-            // Might have a label or relocation in symbol section
-            error = registerSec( shnd, type );
-            if( error == RC_OKAY ) {
-                error = createLabelList( shnd );
-            }
+    case SECTION_TYPE_SYM_TABLE:
+        symbolTable = shnd;
+        // Might have a label or relocation in symbol section
+        error = registerSec( shnd, type );
+        if( error == RC_OKAY ) {
+            error = createLabelList( shnd );
+        }
+        break;
+    case SECTION_TYPE_DYN_SYM_TABLE:
+        dynSymTable = shnd;
+        // Might have a label or relocation in dynsym section
+        error = registerSec( shnd, type );
+        if( error == RC_OKAY ) {
+            error = createLabelList( shnd );
+        }
+        break;
+    case SECTION_TYPE_DRECTVE:
+        if( GetFormat() == ORL_OMF ) {
+            drectveSection = shnd;
             break;
-        case SECTION_TYPE_DYN_SYM_TABLE:
-            dynSymTable = shnd;
-            // Might have a label or relocation in dynsym section
-            error = registerSec( shnd, type );
-            if( error == RC_OKAY ) {
-                error = createLabelList( shnd );
-            }
-            break;
-        case SECTION_TYPE_DRECTVE:
-            if( GetFormat() == ORL_OMF ) {
-                drectveSection = shnd;
-                break;
-            } // else fall through
-        case SECTION_TYPE_BSS:
-            error = registerSec( shnd, type );
-            if( error == RC_OKAY ) {
-                error = createLabelList( shnd );
-            }
-            break;
-        case SECTION_TYPE_RELOCS:
-            // Ignore OMF relocs section
-            break;
-        case SECTION_TYPE_LINES:
-            debugHnd = shnd;
-            type = SECTION_TYPE_DATA;
-            // fall through
-        case SECTION_TYPE_TEXT:
-        case SECTION_TYPE_PDATA:
-        case SECTION_TYPE_DATA:
-        default: // Just in case we get a label or relocation in these sections
-            error = registerSec( shnd, type );
-            if( error == RC_OKAY ) {
-                error = textOrDataSectionInit( shnd );
-            }
-            break;
+        } // else fall through
+    case SECTION_TYPE_BSS:
+        error = registerSec( shnd, type );
+        if( error == RC_OKAY ) {
+            error = createLabelList( shnd );
+        }
+        break;
+    case SECTION_TYPE_RELOCS:
+        // Ignore OMF relocs section
+        break;
+    case SECTION_TYPE_LINES:
+        debugHnd = shnd;
+        type = SECTION_TYPE_DATA;
+        // fall through
+    case SECTION_TYPE_TEXT:
+    case SECTION_TYPE_PDATA:
+    case SECTION_TYPE_DATA:
+    default: // Just in case we get a label or relocation in these sections
+        error = registerSec( shnd, type );
+        if( error == RC_OKAY ) {
+            error = textOrDataSectionInit( shnd );
+        }
+        break;
     }
     if( error == RC_OKAY )
         return( ORL_OKAY );
@@ -439,7 +450,7 @@ static orl_return sectionInit( orl_sec_handle shnd )
 }
 
 
-static void openError( char * file_name )
+static void openError( char *file_name )
 {
     perror( file_name );
     exit( 1 );
@@ -451,9 +462,10 @@ static void openFiles( void )
 
     objhdl = open( ObjFileName, O_RDONLY | O_BINARY );
     if( objhdl != -1 ) {
-        if( ListFileName ) {
+        if( ListFileName != NULL ) {
             OutputDest = open( ListFileName, O_WRONLY | O_CREAT | O_TRUNC, PMODE_RW );
-            if( OutputDest == -1 ) openError( ListFileName );
+            if( OutputDest == -1 )
+                openError( ListFileName );
             ChangePrintDest( OutputDest );
         }
         objFileLen = filelength( objhdl );
@@ -472,9 +484,9 @@ static void openFiles( void )
 }
 
 static void *objRead( orl_file_id fid, size_t len )
-/********************************************/
+/*************************************************/
 {
-    void *      retval;
+    void        *retval;
 
     (void)fid;
     if( (unsigned long)( objFilePos + len ) > objFileLen )
@@ -516,16 +528,16 @@ static void initGlobals( void )
 
 static return_val createHashTables( void )
 {
-    HandleToSectionTable = HashTableCreate( HANDLE_TO_SECTION_TABLE_SIZE, HASH_NUMBER, NumberCmp );
-    if( HandleToSectionTable ) {
-        HandleToLabelListTable = HashTableCreate( HANDLE_TO_LIST_TABLE_SIZE, HASH_NUMBER, NumberCmp );
-        if( HandleToLabelListTable ) {
-            HandleToRefListTable = HashTableCreate( HANDLE_TO_LIST_TABLE_SIZE, HASH_NUMBER, NumberCmp );
-            if( HandleToRefListTable ) {
-                SymbolToLabelTable = HashTableCreate( SYMBOL_TO_LABEL_TABLE_SIZE, HASH_NUMBER, NumberCmp );
-                if( SymbolToLabelTable ) {
-                    NameRecognitionTable = HashTableCreate( RECOGNITION_TABLE_SIZE, HASH_STRING, (hash_table_comparison_func) stricmp );
-                    if( !NameRecognitionTable ) {
+    HandleToSectionTable = HashTableCreate( HANDLE_TO_SECTION_TABLE_SIZE, HASH_NUMBER, (hash_table_comparison_func)NumberCmp );
+    if( HandleToSectionTable != NULL ) {
+        HandleToLabelListTable = HashTableCreate( HANDLE_TO_LIST_TABLE_SIZE, HASH_NUMBER, (hash_table_comparison_func)NumberCmp );
+        if( HandleToLabelListTable != NULL ) {
+            HandleToRefListTable = HashTableCreate( HANDLE_TO_LIST_TABLE_SIZE, HASH_NUMBER, (hash_table_comparison_func)NumberCmp );
+            if( HandleToRefListTable != NULL ) {
+                SymbolToLabelTable = HashTableCreate( SYMBOL_TO_LABEL_TABLE_SIZE, HASH_NUMBER, (hash_table_comparison_func)NumberCmp );
+                if( SymbolToLabelTable != NULL ) {
+                    NameRecognitionTable = HashTableCreate( RECOGNITION_TABLE_SIZE, HASH_STRING, (hash_table_comparison_func)stricmp );
+                    if( NameRecognitionTable == NULL ) {
                         HashTableFree( HandleToSectionTable );
                         HashTableFree( HandleToSectionTable );
                         HashTableFree( HandleToLabelListTable );
@@ -562,7 +574,7 @@ static return_val initHashTables( void )
     error = createHashTables();
     if( error == RC_OKAY ) {
         for( loop = 0; loop < NUM_ELTS( RecognizedName ); loop++ ) {
-            HashTableInsert( NameRecognitionTable, (hash_value) RecognizedName[loop].name, RecognizedName[loop].type );
+            HashTableInsert( NameRecognitionTable, (hash_value)RecognizedName[loop].name, RecognizedName[loop].type );
         }
     }
     return( error );
@@ -664,7 +676,7 @@ static return_val initORL( void )
                     return( RC_ERROR );
                 }
                 // PAS assembler expects "", not \" for quotes.
-                if( !(Options & METAWARE_COMPATIBLE) ) {
+                if( (Options & METAWARE_COMPATIBLE) == 0 ) {
                     QuoteChar = '\"';
                 }
                 break;
@@ -700,9 +712,9 @@ static return_val initORL( void )
                 }
                 break;
             default:
-                    ORLFini( ORLHnd );
-                    PrintErrorMsg( RC_OKAY, WHERE_UNSUPPORTED_PROC );
-                    return( RC_ERROR );
+                ORLFini( ORLHnd );
+                PrintErrorMsg( RC_OKAY, WHERE_UNSUPPORTED_PROC );
+                return( RC_ERROR );
             }
             return( RC_OKAY );
         } else {
@@ -738,7 +750,7 @@ static return_val initSectionTables( void )
     // list for references to external functions, etc.
     error = createLabelList( 0 );
     if( error == RC_OKAY ) {
-        o_error = ORLFileScan( ObjFileHnd, NULL, &sectionInit );
+        o_error = ORLFileScan( ObjFileHnd, NULL, sectionInit );
         if( o_error == ORL_OKAY && symbolTable ) {
             o_error = DealWithSymbolSection( symbolTable );
             if( o_error == ORL_OKAY && dynSymTable ) {
@@ -843,20 +855,18 @@ void Init( void )
         CommentString = MASM_COMMENT_STRING;
     }
     if( IsIntelx86() ) {
-        SkipRefTable = HashTableCreate( RECOGNITION_TABLE_SIZE, HASH_STRING,
-                                        (hash_table_comparison_func) stricmp );
+        SkipRefTable = HashTableCreate( RECOGNITION_TABLE_SIZE, HASH_STRING, (hash_table_comparison_func)stricmp );
         if( SkipRefTable ) {
-            list = intelSkipRefList;
-            while( *list ) {
-                error = HashTableInsert( SkipRefTable, (hash_value) *list,
-                                         (hash_data) *list );
-                if( error != RC_OKAY ) break;
-                list++;
+            for( list = intelSkipRefList; *list != NULL; ++list ) {
+                error = HashTableInsert( SkipRefTable, (hash_value)*list, (hash_data)*list );
+                if( error != RC_OKAY ) {
+                    break;
+                }
             }
         }
     }
 
-    if( !LabelChar ) {
+    if( LabelChar == 0 ) {
         if( IsMasmOutput() ) {
             LabelChar = 'L';
         } else {

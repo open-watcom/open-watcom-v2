@@ -1327,8 +1327,7 @@ static PTREE doReintPtrToArith  // DO REINTERPRET: PTR -> ARITH
                 expr = doCgConversion( ctl );
             #endif
         }
-    } else if( ! CompFlags.extensions_enabled
-            && ptrToIntTruncs( ctl ) ) {
+    } else if( !CompFlags.extensions_enabled && ptrToIntTruncs( ctl ) ) {
         expr = diagnoseCast( ctl, ERR_REINT_INTEGRAL_PTR );
     } else {
         expr = doCgConversion( ctl );

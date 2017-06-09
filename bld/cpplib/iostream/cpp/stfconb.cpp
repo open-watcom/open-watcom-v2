@@ -42,7 +42,7 @@ namespace std {
   // Construct an empty streambuf using the given buf. If buffer is NULL
   // or len is 0, then the streambuf is unbuffered.
 
-  streambuf::streambuf( char *buf, int len ) {
+  streambuf::streambuf( char *buf, streamsize len ) {
 
 #ifdef __SW_BM
     __b_lock = __get_next_streambuf_lock();

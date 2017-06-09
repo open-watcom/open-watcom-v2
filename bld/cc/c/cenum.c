@@ -150,7 +150,8 @@ TYPEPTR EnumDecl( type_modifiers flags )
     TYPEPTR     typ;
     TAGPTR      tag;
 
-    flags = flags;
+    /* unused parameters */ (void)flags;
+
     NextToken();
     if( CurToken == T_ID ) {
         /* could be: (1) "enum" <id> ";"

@@ -36,20 +36,6 @@
 #include "common.h"
 #include "strings.h"
 
-typedef struct Parameters {
-    bool        dumpOffsets;
-    bool        dumpHexHeaders;
-    bool        dumpHexData;
-    bool        dumpInterpretation;
-    bool        dumpExeHeaderInfo;
-    bool        dumpResObjectInfo;
-    bool        printRuler;
-    bool        specificType;
-    unsigned_16 specificTypeID;
-    int         indentSpaces;
-    int         hexIndentSpaces;
-    char       *filename;
-} Parameters;
 
 /* default parameters */
 
@@ -78,8 +64,22 @@ typedef struct Parameters {
 #define OPT_HEXINDENTSPACES     'n'
 #define OPT_SPECIFICTYPE        't'
 
+typedef struct Parameters {
+    bool        dumpOffsets;
+    bool        dumpHexHeaders;
+    bool        dumpHexData;
+    bool        dumpInterpretation;
+    bool        dumpExeHeaderInfo;
+    bool        dumpResObjectInfo;
+    bool        printRuler;
+    bool        specificType;
+    unsigned_16 specificTypeID;
+    int         indentSpaces;
+    int         hexIndentSpaces;
+    char       *filename;
+} Parameters;
 
-void defaultParam( Parameters *param );
-bool loadParam( Parameters *param, int count, char *params[] );
+extern void defaultParam( Parameters *param );
+extern bool loadParam( Parameters *param, int count, char *params[] );
 
 #endif

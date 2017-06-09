@@ -59,7 +59,8 @@ static char     headerBuf[80];
  * makeHeader
  */
 #define EVENT_BUFSIZE   30
-static void makeHeader( UINT eventid, DEBUG_EVENT *dbinfo ) {
+static void makeHeader( msg_id eventid, DEBUG_EVENT *dbinfo )
+{
     char                event[ EVENT_BUFSIZE ];
     char                name[ MAX_PROC_NAME ];
 
@@ -113,7 +114,7 @@ static DWORD procException( DEBUG_EVENT *dbinfo ) {
     DWORD       type;
     int         action;
     char        buf[100];
-    DWORD       faultid;
+    msg_id      faultid;
 
     type = dbinfo->u.Exception.ExceptionRecord.ExceptionCode;
 #if  defined __AXP__

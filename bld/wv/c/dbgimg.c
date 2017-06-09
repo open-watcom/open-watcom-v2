@@ -42,13 +42,13 @@
 extern void             SetLastSym( char *to );
 extern bool             SymBrowse( char **name );
 
-char *ImgSymFileName( image_entry *img, bool always )
+char *ImgSymFileName( image_entry *image, bool always )
 {
-    if( img->dip_handle != NO_MOD || always ) {
-        if( img->symfile_name != NULL ) {
-            return( img->symfile_name );
+    if( image->dip_handle != NO_MOD || always ) {
+        if( image->symfile_name != NULL ) {
+            return( image->symfile_name );
         } else {
-            return( img->image_name );
+            return( image->image_name );
         }
     } else {
         return( LIT_ENG( Empty ) );

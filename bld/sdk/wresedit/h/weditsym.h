@@ -34,7 +34,7 @@
 #define WEDITSYM_INCLUDED
 
 extern char *WLoadSymbols( WRHashTable **table, char *file_name, HWND parent, bool prompt );
-extern bool WEditSymbols( HWND parent, WRHashTable **symbol_table, HINSTANCE inst, HELP_CALLBACK hcb );
+extern bool WEditSymbols( HWND parent, WRHashTable **symbol_table, HINSTANCE inst, HELP_CALLBACK help_callback );
 extern char *WCreateSymName( char *fname );
 
 #endif

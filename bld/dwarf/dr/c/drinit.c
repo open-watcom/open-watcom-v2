@@ -145,7 +145,8 @@ bool  DRDbgClear( dr_dbg_handle dbg )
     bool                ret;
     int                 i;
 
-    dbg = dbg;
+    /* unused parameters */ (void)dbg;
+
     ret = false;
     for( i = 0; i < DR_DEBUG_NUM_SECTS; i++ ) {
         DWRVMSwap( dbg->sections[i].base, dbg->sections[i].size, &ret );
@@ -153,8 +154,8 @@ bool  DRDbgClear( dr_dbg_handle dbg )
     return( ret );
 }
 
-extern void DRDbgDone( dr_dbg_handle dbg )
-/****************************************/
+void DRDbgDone( dr_dbg_handle dbg )
+/*********************************/
 {
     int                 i;
 
@@ -165,8 +166,8 @@ extern void DRDbgDone( dr_dbg_handle dbg )
     }
 }
 
-extern void DRDbgWatProducerVer( dr_dbg_handle dbg, df_ver wat_producer_ver )
-/***************************************************************************/
+void DRDbgWatProducerVer( dr_dbg_handle dbg, df_ver wat_producer_ver )
+/********************************************************************/
 {
     dbg->wat_producer_ver = wat_producer_ver;
 }

@@ -34,8 +34,8 @@
 
 void InitStats( void )
 {
-    CompFlags.stats_printed = 0;
-    CompFlags.extra_stats_wanted = 0;
+    CompFlags.stats_printed = false;
+    CompFlags.extra_stats_wanted = false;
     SrcLineCount = 0;
     IncLineCount = 0;
     WngCount = 0;
@@ -62,7 +62,7 @@ void PrintStats( void )
     char        msgbuf[MAX_MSG_LEN];
     int         len;
 
-    if( ! CompFlags.stats_printed ) {
+    if( !CompFlags.stats_printed ) {
         len = 0;
         fname = WholeFName;
         if( fname == NULL )
@@ -85,6 +85,6 @@ void PrintStats( void )
         len += sprintf( &msgbuf[len], "%u warnings, ", WngCount );
         len += sprintf( &msgbuf[len], "%u errors", ErrCount );
         BannerMsg( msgbuf );
-        CompFlags.stats_printed = 1;
+        CompFlags.stats_printed = true;
     }
 }

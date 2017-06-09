@@ -40,7 +40,7 @@ _WMRTLINK double modf( double x, double *iptr )
     long_double ld;
     int         exp;
 
-    ld.value = x;
+    ld.u.value = x;
     switch( __LDClass( &ld ) ) {
     case __ZERO:
         frac = 0.0;
@@ -56,7 +56,7 @@ _WMRTLINK double modf( double x, double *iptr )
         *iptr = x;
         break;
     case __NONZERO:
-        exp = ((ld.word[1] >> 20)&0x7FF) - 0x3FE;
+        exp = ((ld.u.word[1] >> 20)&0x7FF) - 0x3FE;
         if( exp < 0 ) {
             frac = x;
             *iptr = 0.0;

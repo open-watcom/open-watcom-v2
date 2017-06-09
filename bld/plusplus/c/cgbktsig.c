@@ -102,21 +102,21 @@ static void genName(            // OPTIONALLY GENERATE MANGLED NAME
     SYMBOL typeid_sym;
 
     switch( thr ) {
-      case THROBJ_SCALAR :
-      case THROBJ_PTR_FUN :
-      case THROBJ_CLASS :
-      case THROBJ_CLASS_VIRT :
+    case THROBJ_SCALAR :
+    case THROBJ_PTR_FUN :
+    case THROBJ_CLASS :
+    case THROBJ_CLASS_VIRT :
         typeid_sym = TypeidAccess( type );
         TypeidRef( typeid_sym );
         DgPtrSymDataOffset( typeid_sym, TypeidRawNameOffset() );
         break;
-      case THROBJ_PTR_SCALAR :
-      case THROBJ_PTR_CLASS :
-      case THROBJ_REFERENCE :
-      case THROBJ_VOID_STAR :
-      case THROBJ_ANYTHING :
+    case THROBJ_PTR_SCALAR :
+    case THROBJ_PTR_CLASS :
+    case THROBJ_REFERENCE :
+    case THROBJ_VOID_STAR :
+    case THROBJ_ANYTHING :
         break;
-      DbgDefault( "genName -- bad THROBJ_..." );
+    DbgDefault( "genName -- bad THROBJ_..." );
     }
 }
 
@@ -179,26 +179,29 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
     THROBJ thr;                 // - category of object
     segment_id old_seg;         // - old segment
 
-    if( ! ts->cgref ) return;
-    if( ts->cggen ) return;
+    if( !ts->cgref )
+        return;
+    if( ts->cggen )
+        return;
     ts->cggen = true;
     type_sig_gened = true;
     thr = ThrowCategory( ts->type );
-    if( thr == THROBJ_ANYTHING ) return;
+    if( thr == THROBJ_ANYTHING )
+        return;
 #ifndef NDEBUG
     if( PragDbgToggle.dump_stab ) {
         const char* code;
         switch( thr ) {
-          case THROBJ_SCALAR :      code = "THROBJ_SCALAR";     break;
-          case THROBJ_PTR_CLASS :   code = "THROBJ_PTR_CLASS";  break;
-          case THROBJ_PTR_SCALAR :  code = "THROBJ_PTR_SCALAR"; break;
-          case THROBJ_PTR_FUN :     code = "THROBJ_PTR_FUN";    break;
-          case THROBJ_VOID_STAR :   code = "THROBJ_VOID_STAR";  break;
-          case THROBJ_REFERENCE :   code = "THROBJ_REFERENCE";  break;
-          case THROBJ_CLASS :       code = "THROBJ_CLASS";      break;
-          case THROBJ_CLASS_VIRT :  code = "THROBJ_CLASS_VIRT"; break;
-          case THROBJ_ANYTHING :    code = "THROBJ_ANYTHING";   break;
-          default:                  code = "****** BAD ******"; break;
+        case THROBJ_SCALAR:     code = "THROBJ_SCALAR";     break;
+        case THROBJ_PTR_CLASS:  code = "THROBJ_PTR_CLASS";  break;
+        case THROBJ_PTR_SCALAR: code = "THROBJ_PTR_SCALAR"; break;
+        case THROBJ_PTR_FUN:    code = "THROBJ_PTR_FUN";    break;
+        case THROBJ_VOID_STAR:  code = "THROBJ_VOID_STAR";  break;
+        case THROBJ_REFERENCE:  code = "THROBJ_REFERENCE";  break;
+        case THROBJ_CLASS:      code = "THROBJ_CLASS";      break;
+        case THROBJ_CLASS_VIRT: code = "THROBJ_CLASS_VIRT"; break;
+        case THROBJ_ANYTHING:   code = "THROBJ_ANYTHING";   break;
+        default:                code = "****** BAD ******"; break;
         }
         printf( "Type Signature[%p] %s(%x)"
               , ts
@@ -211,7 +214,7 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
     switch( thr ) {
     case THROBJ_PTR_SCALAR :
     case THROBJ_PTR_CLASS :
-        genBaseHdr( thr, 1 );
+        genBaseHdr( thr, TSIG_FLAGS_INDIRECT );
         BeGenTsRef( ts );
 #ifndef NDEBUG
         if( PragDbgToggle.dump_stab ) {
@@ -220,19 +223,19 @@ static void genTypeSig(         // GENERATE A TYPE_SIG
 #endif
         break;
     case THROBJ_VOID_STAR :
-        genBaseHdr( thr, 0 );
+        genBaseHdr( thr, TSIG_FLAGS_NONE );
         genScalarHdr( ts );
         break;
     case THROBJ_PTR_FUN :
     case THROBJ_SCALAR :
-        genBaseHdr( thr, 0 );
+        genBaseHdr( thr, TSIG_FLAGS_NONE );
         genScalarHdr( ts );
         genName( thr, ts->type );
         break;
     case THROBJ_CLASS :
     case THROBJ_CLASS_VIRT :
       { unsigned size;
-        genBaseHdr( thr, 0 );
+        genBaseHdr( thr, TSIG_FLAGS_NONE );
         DgPtrSymCode( ts->default_ctor );
         DgPtrSymCode( ts->copy_ctor );
         DgPtrSymCode( ts->dtor );
@@ -334,7 +337,8 @@ void BeGenTypeSigEnts(          // EMIT TYPE_SIG_ENT RING
 static void typesigInit(        // INITIALIZATION FOR MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carveTYPE_SIG_ENT = CarveCreate( sizeof( TYPE_SIG_ENT ), 32 );
 }
 
@@ -342,7 +346,8 @@ static void typesigInit(        // INITIALIZATION FOR MODULE
 static void typesigFini(        // COMPLETION FOR MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CarveDestroy( carveTYPE_SIG_ENT );
 }
 

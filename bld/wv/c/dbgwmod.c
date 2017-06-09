@@ -125,7 +125,7 @@ static void     ModMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     mod_handle  handle;
     mod_window  *mod = WndMod( wnd );
 
-    piece=piece;
+    /* unused parameters */ (void)piece;
 
     handle = NO_MOD;
     addr = NilAddr;
@@ -287,7 +287,8 @@ static bool ModEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     mod_window  *mod = WndMod( wnd );
 
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         ModListInit( ModList( mod ), NULL );

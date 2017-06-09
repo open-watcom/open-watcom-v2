@@ -553,7 +553,8 @@ cg_type CgTypeOffset(          // GET CODEGEN TYPE FOR AN OFFSET
 static void init(               // MODULE INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     defined_type = TY_FIRST_FREE;
     cg_member_ptr = NULL_CGREFNO;
 #if _CPU == _AXP

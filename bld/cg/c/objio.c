@@ -121,7 +121,7 @@ static void cleanupLastBuffer( buf *pbuf )
 static  void    ObjError( int errcode )
 /*************************************/
 {
-    FatalError( strerror(  errcode ) );
+    FatalError( strerror( errcode ) );
 }
 
 
@@ -196,7 +196,8 @@ static  void    PutStream( handle h, const byte *b, uint len )
 {
     uint        n;
 
-    h = h;
+    /* unused parameters */ (void)h;
+
     for( ;; ) {
         n = len;
         if( n > CurBuf->bytes_left ) {
@@ -229,7 +230,8 @@ static  void    GetStream( handle h, byte *b, uint len )
 {
     uint        n;
 
-    h = h;
+    /* unused parameters */ (void)h;
+
     for( ;; ) {
         n = len;
         if( n > CurBuf->bytes_left ) {
@@ -258,7 +260,8 @@ static  void    SeekStream( handle h, objoffset offset )
     buf         *pbuf;
     objoffset   n;
 
-    h = h;
+    /* unused parameters */ (void)h;
+
     pbuf = BufList;
     n = 0;
     for( ;; ) {

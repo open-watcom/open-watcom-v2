@@ -533,7 +533,8 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
 {
     bool        save;
 
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     switch( id ) {
 #if defined(__GUI__)
     case MENU_MAIN_FILE_FONT:
@@ -741,7 +742,7 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
         if( HaveRemoteRunThread() )
             WndClassInspect( WND_RUN_THREAD );
         else
-            WndClassInspect( WND_THREAD );        
+            WndClassInspect( WND_THREAD );
         break;
     case MENU_MAIN_OPEN_FUNCTIONS:
         wnd = WndClassInspect( WND_GBLFUNCTIONS );

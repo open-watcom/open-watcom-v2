@@ -57,24 +57,27 @@
 #endif
 #include "heap.h"
 
+
+#define HEAP(s)             ((XBPTR(heapblkp, s))0)
+#define FRLPTR(s)           XBPTR(freelistp, s)
+#define SET_HEAP_END(s,p)   ((FRLPTR(s))(p))->len = END_TAG; ((FRLPTR(s))(p))->prev = 0
+
 int __GrowSeg( __segment seg, unsigned int amount )
 {
     unsigned        num_of_paras;   /* number of paragraphs desired   */
+    unsigned        new_heaplen;
     unsigned int    old_heaplen;
     unsigned int    old_heap_paras;
-    heapblk         _WCFAR *p;
-    freelist        _WCFAR *pfree;
-    freelist        _WCFAR *pnew;
-    tag             _WCFAR *last_tag;
+    FRLPTR( seg )   pfree;
+    FRLPTR( seg )   pnew;
 
     if( !__heap_enabled )
         return( 0 );
-    p = (heapblk _WCFAR *)MK_FP( seg, 0 );
-    old_heaplen = p->heaplen;
+    old_heaplen = HEAP( seg )->heaplen;
     if( old_heaplen != 0 ) {                /* if not already 64K */
         amount += TAG_SIZE;
         if( amount < TAG_SIZE )
-            amount = ~0;
+            amount = /*0x....ffff*/ ~0U;
         if( amount < _amblksiz )
             amount = _amblksiz;
         num_of_paras = __ROUND_UP_SIZE_TO_PARA( amount );
@@ -135,25 +138,24 @@ int __GrowSeg( __segment seg, unsigned int amount )
         if( TINY_ERROR( TinySetBlock( num_of_paras, seg ) ) )
             return( 0 );
 #endif
-        p->heaplen = num_of_paras << 4;        /* put in new heap length */
-        pfree = MK_FP( seg, p->freehead.prev );
-        if( FP_OFF( pfree ) + pfree->len != old_heaplen - TAG_SIZE * 2 ) {
+        new_heaplen = num_of_paras << 4;
+        HEAP( seg )->heaplen = new_heaplen;        /* put in new heap length */
+        pfree = HEAP( seg )->freehead.prev;
+        if( NEXT_BLK( pfree ) != old_heaplen - TAG_SIZE * 2 ) {
             /* last free entry not at end of the heap */
             /* add a new free entry to end of list */
-            pnew = MK_FP( seg, old_heaplen - TAG_SIZE * 2 );
-            pnew->prev = FP_OFF( pfree );
+            pnew = (FRLPTR( seg ))( old_heaplen - TAG_SIZE * 2 );
+            pnew->prev = pfree;
             pnew->next = pfree->next;
-            pfree->next = FP_OFF( pnew );
-            p->freehead.prev = FP_OFF( pnew );
-            p->numfree++;
+            pfree->next = pnew;
+            HEAP( seg )->freehead.prev = pnew;
+            HEAP( seg )->numfree++;
             pfree = pnew;
         }
-        pfree->len = p->heaplen - FP_OFF( pfree ) - TAG_SIZE * 2;
-        if( pfree->len > p->largest_blk )
-            p->largest_blk = pfree->len;
-        last_tag = MK_FP( seg, p->heaplen - TAG_SIZE * 2 );
-        *last_tag = END_TAG;
-        last_tag[1] = 0;            /* link to next piece of near heap */
+        pfree->len = new_heaplen - FP_OFF( pfree ) - TAG_SIZE * 2;
+        if( HEAP( seg )->largest_blk < pfree->len )
+            HEAP( seg )->largest_blk = pfree->len;
+        SET_HEAP_END( seg, new_heaplen - 2 * TAG_SIZE );
         return( 1 );                /* indicate segment was grown */
     }
     return( 0 );    /* indicate failed to grow the segment */

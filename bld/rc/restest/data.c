@@ -60,7 +60,8 @@ BOOL CALLBACK GetDataTypeDlgProc( HWND hwnd, UINT msg, UINT wparam, DWORD lparam
             } else {
                 val = strtoul( dataTypeBuf, &end, 0 );
                 if( *end != '\0' ) {
-                    while( isspace( *end ) ) end++;
+                    while( isspace( *end ) )
+                        end++;
                     if( *end != '\0' ) {
                         Error( "data", "You did not enter a numeric value" );
                     }

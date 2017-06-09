@@ -78,7 +78,7 @@ static void getText( ss_block *ss_new, char *text )
 static void getNextBlock( ss_block *ss_new, char *text, int text_col,
                           line *line, linenum line_no )
 {
-    line_no = line_no;
+    /* unused parameters */ (void)line_no;
 
     if( line == NULL ) {
         getEOFText( ss_new, text + text_col );

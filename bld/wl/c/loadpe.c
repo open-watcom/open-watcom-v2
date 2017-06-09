@@ -611,8 +611,8 @@ static unsigned_32 WriteExportInfo( pe_object *object, unsigned_32 file_align, p
     dir.minor = 0;
     dir.name_rva = object->rva + sizeof( dir );
     dir.ordinal_base = FmtData.u.os2.exports->ordinal;
-    if( FmtData.u.os2.res_module_name != NULL ) {
-        name = FmtData.u.os2.res_module_name;
+    if( FmtData.u.os2.module_name != NULL ) {
+        name = FmtData.u.os2.module_name;
     } else {
         name = GetBaseName( Root->outfile->fname, 0, &namelen );
     }
@@ -769,20 +769,22 @@ bool RcPadFile( WResFileID fid, size_t pad )
 {
     DbgAssert( WRES_FID2PH( fid ) == Root->outfile->handle );
 
-    fid = fid;
+    /* unused parameters */ (void)fid;
+
     PadLoad( pad );
     return( false );
 }
 
 void CheckDebugOffset( ExeFileInfo *info )
 {
-    info = info;
+    /* unused parameters */ (void)info;
 }
 
 RcStatus CopyExeData( WResFileID in_fid, WResFileID out_fid, unsigned_32 length )
 /****************************************************************************/
 {
-    out_fid = out_fid;
+    /* unused parameters */ (void)out_fid;
+
     for( ; length > MAX_HEADROOM; length -= MAX_HEADROOM ) {
         QRead( WRES_FID2PH( in_fid ), TokBuff, MAX_HEADROOM, "resource file" );
         WriteLoad( TokBuff, MAX_HEADROOM );

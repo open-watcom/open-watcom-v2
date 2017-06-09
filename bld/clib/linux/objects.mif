@@ -120,6 +120,7 @@
 !inject tcgetsid.obj                                                                            l32 lpc lmp
 !inject tcsendbr.obj                                                                            l32 lpc lmp
 !inject tcsetatr.obj                                                                            l32 lpc lmp
+!inject __tgkill.obj                                                                            l32 lpc lmp
 !inject time.obj                                                                                l32 lpc lmp
 !inject timer.obj                                                                               l32 lpc lmp
 !inject times.obj                                                                               l32 lpc lmp

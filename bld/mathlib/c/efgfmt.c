@@ -79,7 +79,7 @@ FLTSUPPFUNC FAR_STRING _EFG_Format( char *buffer, my_va_list *args, _mbcs_SPECS 
         /* convert this double into a long double */
         __iFDLD( &double_value, &ld );
 #else
-        ld.value = double_value;
+        ld.u.value = double_value;
 #endif
     }
     if( digits == -1 ) {

@@ -51,7 +51,7 @@
     #define DIGCLIENT
 #endif
 
-#if defined( __NT__ ) || defined( __OS2__ ) || defined( __RDOS__ )
+#if defined( __NT__ ) || defined( __OS2__ ) || defined( __RDOS__ ) || defined( __WINDOWS__ )
     #define DIG_DLLEXPORT   __declspec(dllexport)
 #else
     #define DIG_DLLEXPORT

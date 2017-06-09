@@ -50,8 +50,8 @@
  */
 bool GUISetRedraw( gui_window *wnd, bool redraw )
 {
-    wnd    = wnd;
-    redraw = redraw;
+    /* unused parameters */ (void)wnd; (void)redraw;
+
     return( true );
 }
 

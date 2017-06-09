@@ -39,28 +39,30 @@
 #include "rccore.h"
 
 
-static void initToolBarItems( ToolBarItems *ret ) {
+static void initToolBarItems( ToolBarItems *ret )
+{
     ret->next = NULL;
     ret->cnt = 0;
     memset( ret->items, 0, TB_ITEM_CNT * sizeof( uint_16 ) );
 }
 
-ToolBar *SemWINCreateToolBar( void ) {
+ToolBar *SemWINCreateToolBar( void )
+{
     ToolBar     *ret;
 
-    ret = RCALLOC( sizeof( ToolBar ) );
+    ret = RESALLOC( sizeof( ToolBar ) );
     ret->last = &ret->first;
     ret->nodecnt = 1;
     initToolBarItems( &ret->first );
     return( ret );
 }
 
-void SemWINAddToolBarItem( ToolBar *toolbar, uint_16 item ) {
-
+void SemWINAddToolBarItem( ToolBar *toolbar, uint_16 item )
+{
     ToolBarItems        *node;
 
     if( toolbar->last->cnt == TB_ITEM_CNT ) {
-        toolbar->last->next = RCALLOC( sizeof( ToolBarItems ) );
+        toolbar->last->next = RESALLOC( sizeof( ToolBarItems ) );
         toolbar->last = toolbar->last->next;
         initToolBarItems( toolbar->last );
         toolbar->nodecnt++;
@@ -70,37 +72,33 @@ void SemWINAddToolBarItem( ToolBar *toolbar, uint_16 item ) {
     node->cnt++;
 }
 
-static void semFreeToolBar( ToolBar *toolbar ) {
-
+static void semFreeToolBar( ToolBar *toolbar )
+{
     ToolBarItems        *cur;
-    ToolBarItems        *tmp;
+    ToolBarItems        *next;
 
-    cur = toolbar->first.next;
-    while( cur != NULL ) {
-        tmp = cur;
-        cur = cur->next;
-        RCFREE( tmp );
+    for( cur = toolbar->first.next; cur != NULL; cur = next ) {
+        next = cur->next;
+        RESFREE( cur );
     }
-    RCFREE( toolbar );
+    RESFREE( toolbar );
 }
 
 void SemWINWriteToolBar( WResID *name, ToolBar *toolbar,
                       unsigned long item1, unsigned long item2,
-                      ResMemFlags flags ) {
-
-    ResLocation              loc;
-    unsigned                 cnt;
-    ToolBarItems            *cur;
+                      ResMemFlags flags )
+{
+    ResLocation         loc;
+    unsigned            cnt;
+    ToolBarItems        *cur;
 
     if( !ErrorHasOccured ) {
         loc.start = SemStartResource();
         cnt = ( toolbar->nodecnt - 1 ) * TB_ITEM_CNT;
         cnt += toolbar->last->cnt;
         ResWriteToolBarHeader( CurrResFile.fid, item1, item2, cnt );
-        cur = &toolbar->first;
-        while( cur != NULL ) {
+        for( cur = &toolbar->first; cur != NULL; cur = cur->next ) {
             ResWriteToolBarItems( CurrResFile.fid, cur->items, cur->cnt );
-            cur = cur->next;
         }
         loc.len = SemEndResource( loc.start );
         SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_TOOLBAR ) ), flags, loc );

@@ -79,8 +79,8 @@ static void             ClearCachedData( file_list *list );
 static orl_reloc        SavedReloc;
 static char             *ImpExternalName;
 static char             *ImpModName;
-static char             *FirstCodeSymName;
-static char             *FirstDataSymName;
+static const char       *FirstCodeSymName;
+static const char       *FirstDataSymName;
 static ordinal_t        ImpOrdinal;
 
 static readcache   *ReadCacheList;
@@ -88,11 +88,10 @@ static readcache   *ReadCacheList;
 static void *ORLRead( orl_file_id fid, size_t len )
 /*************************************************/
 {
-    file_list   *list = ORL_FID2FL( fid );
     void        *result;
     readcache   *cache;
 
-    result = CachePermRead( list, ORLFilePos + ORLPos, len );
+    result = CachePermRead( ORL_FID2FL( fid ), ORLFilePos + ORLPos, len );
     ORLPos += len;
     _ChkAlloc( cache, sizeof( readcache ) );
     cache->next = ReadCacheList;
@@ -104,14 +103,12 @@ static void *ORLRead( orl_file_id fid, size_t len )
 static long ORLSeek( orl_file_id fid, long pos, int where )
 /*********************************************************/
 {
-    file_list *list = ORL_FID2FL( fid );
-
     if( where == SEEK_SET ) {
         ORLPos = pos;
     } else if( where == SEEK_CUR ) {
         ORLPos += pos;
     } else {
-        ORLPos = list->file->len - ORLFilePos - pos;
+        ORLPos = ORL_FID2FL( fid )->file->len - ORLFilePos - pos;
     }
     return( ORLPos );
 }
@@ -126,16 +123,14 @@ void InitObjORL( void )
 }
 
 void ObjORLFini( void )
-/****************************/
+/*********************/
 {
     ORLFini( ORLHandle );
 }
 
-static long ORLFileSeek( void *_list, long pos, int where )
-/*********************************************************/
+static long ORLFileSeek( file_list *list, long pos, int where )
+/*************************************************************/
 {
-    file_list *list = _list;
-
     if( where == SEEK_SET ) {
         ORLFilePos = pos;
         ORLPos = 0;
@@ -288,7 +283,8 @@ static orl_return NullFunc( orl_sec_handle dummy )
 /************************************************/
 // section type is ignored
 {
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     return( ORL_OKAY );
 }
 
@@ -297,7 +293,8 @@ static orl_return ExportCallback( const char *name, void *dummy )
 {
     length_name lname;
 
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     lname.name = name;
     lname.len = strlen( name );
     HandleExport( &lname, &lname, 0, 0 );
@@ -307,7 +304,8 @@ static orl_return ExportCallback( const char *name, void *dummy )
 static orl_return EntryCallback( const char *name, void *dummy )
 /**************************************************************/
 {
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     if( !StartInfo.user_specd ) {
         SetStartSym( name );
     }
@@ -317,7 +315,8 @@ static orl_return EntryCallback( const char *name, void *dummy )
 static orl_return DeflibCallback( const char *name, void *dummy )
 /***************************************************************/
 {
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     AddCommentLib( name, strlen( name ), LIB_PRIORITY_MAX - 2 );
     return( ORL_OKAY );
 }
@@ -339,7 +338,8 @@ static orl_return Unsupported( orl_sec_handle dummy )
 /***************************************************/
 // NYI
 {
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     return( ORL_OKAY );
 }
 
@@ -349,11 +349,12 @@ static void AllocSeg( void *_snode, void *dummy )
     segnode             *snode = _snode;
     segdata             *sdata;
     char                *clname;
-    char                *sname;
+    const char          *sname;
     group_entry         *group;
     bool                isdbi;
 
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     sdata = snode->entry;
     if( sdata == NULL )
         return;
@@ -429,7 +430,8 @@ static void DefNosymComdats( void *_snode, void *dummy )
     segnode             *snode = _snode;
     segdata             *sdata;
 
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     sdata = snode->entry;
     if( sdata == NULL || (snode->info & SEG_DEAD) )
         return;
@@ -445,7 +447,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
 {
     segdata             *sdata;
     segnode             *snode;
-    char                *name;
+    const char          *name;
     unsigned_32 _WCUNALIGNED *contents;
     size_t              len;
     orl_sec_flags       flags;
@@ -473,7 +475,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
             ORLSecGetContents( sec, (unsigned_8 **)&ImpExternalName );
             ImpExternalName += 2;
         } else if( name[len + 1] == '4' ) {     // it is an import by ordinal
-            ORLSecGetContents( sec, (void *) &contents );
+            ORLSecGetContents( sec, (void *)&contents );
             ImpOrdinal = *contents;
         }
         sdata->isdead = true;
@@ -527,19 +529,16 @@ static segnode *FindSegNode( orl_sec_handle sechdl )
 
 #define PREFIX_LEN (sizeof( ImportSymPrefix ) - 1)
 
-static void ImpProcSymbol( segnode *snode, orl_symbol_type type, char *name,
-                           size_t namelen )
-/***************************************************************************/
+static void ImpProcSymbol( segnode *snode, orl_symbol_type type, const char *name, size_t namelen )
+/*************************************************************************************************/
 {
     if( type & ORL_SYM_TYPE_UNDEFINED ) {
-        if( namelen > sizeof(CoffImportRefName) - 1 ) {
-            namelen -= sizeof(CoffImportRefName) - 1;
-            if( memicmp( name + namelen, CoffImportRefName,
-                         sizeof(CoffImportRefName) - 1 ) == 0 ) {
+        if( namelen > sizeof( CoffImportRefName ) - 1 ) {
+            namelen -= sizeof( CoffImportRefName ) - 1;
+            if( memicmp( name + namelen, CoffImportRefName, sizeof( CoffImportRefName ) - 1 ) == 0 ) {
                 _ChkAlloc( ImpModName, namelen + 5 );
                 memcpy( ImpModName, name, namelen );
-                if( memicmp( CurrMod->name + strlen(CurrMod->name)
-                             - 4, ".drv", 4 ) == 0 ) { //KLUDGE!!
+                if( memicmp( CurrMod->name + strlen( CurrMod->name ) - 4, ".drv", 4 ) == 0 ) { //KLUDGE!!
                     memcpy( ImpModName + namelen, ".drv", 5 );
                 } else {
                     memcpy( ImpModName + namelen, ".dll", 5 );
@@ -551,15 +550,14 @@ static void ImpProcSymbol( segnode *snode, orl_symbol_type type, char *name,
             FirstCodeSymName = name;
         }
     } else {
-        if( FirstDataSymName == NULL &&
-                memcmp( name, ImportSymPrefix, PREFIX_LEN ) == 0 ) {
+        if( FirstDataSymName == NULL && memcmp( name, ImportSymPrefix, PREFIX_LEN ) == 0 ) {
             FirstDataSymName = name + PREFIX_LEN;
         }
     }
 }
 
-static void DefineComdatSym( segnode *seg, symbol *sym, orl_symbol_value value )
-/******************************************************************************/
+static void DefineComdatSym( segnode *seg, symbol *sym, unsigned_32 value )
+/*************************************************************************/
 {
     unsigned    select;
     sym_info    sym_type;
@@ -573,15 +571,15 @@ static void DefineComdatSym( segnode *seg, symbol *sym, orl_symbol_value value )
     } else {
         sym_type = (select - 1) << SYM_CDAT_SEL_SHIFT;
     }
-    DefineComdat( sdata, sym, value.u._32[I64LO32], sym_type, seg->contents );
+    DefineComdat( sdata, sym, value, sym_type, seg->contents );
 }
 
 static orl_return ProcSymbol( orl_symbol_handle symhdl )
 /******************************************************/
 {
     orl_symbol_type     type;
-    char                *name;
-    orl_symbol_value    value;
+    const char          *name;
+    unsigned_64         val64;
     orl_sec_handle      sechdl;
     symbol              *sym;
     size_t              namelen;
@@ -633,8 +631,8 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
         sym = SymOp( symop, name, namelen );
         CheckIfTocSym( sym );
         if( type & ORL_SYM_TYPE_COMMON ) {
-            value = ORLSymbolGetValue( symhdl );
-            sym = MakeCommunalSym( sym, value.u._32[I64LO32], false, true );
+            ORLSymbolGetValue( symhdl, &val64 );
+            sym = MakeCommunalSym( sym, val64.u._32[I64LO32], false, true );
         } else if( type & ORL_SYM_TYPE_UNDEFINED ) {
             DefineReference( sym );
             isweak = false;
@@ -656,14 +654,14 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
             }
         } else {
             newnode->isdefd = true;
-            value = ORLSymbolGetValue( symhdl );
+            ORLSymbolGetValue( symhdl, &val64 );
             if( (type & ORL_SYM_TYPE_COMMON) && (type & ORL_SYM_TYPE_OBJECT) && sechdl == NULL) {
-                sym = MakeCommunalSym( sym, value.u._32[I64LO32], false, true );
+                sym = MakeCommunalSym( sym, val64.u._32[I64LO32], false, true );
             } else if( snode != NULL && snode->entry != NULL && snode->entry->iscdat ) {
-                DefineComdatSym( snode, sym, value );
+                DefineComdatSym( snode, sym, val64.u._32[I64LO32] );
             } else {
                 sym->info |= SYM_DEFINED;
-                DefineSymbol( sym, snode, value.u._32[I64LO32], 0 );
+                DefineSymbol( sym, snode, val64.u._32[I64LO32], 0 );
             }
         }
         newnode->entry = sym;
@@ -690,16 +688,13 @@ static orl_return DoReloc( orl_reloc *reloc )
     segnode     *seg;
     segnode     *symseg;
     extnode     *ext;
-    bool        skip;
     bool        istoc;
 
-    skip = false;
     istoc = false;
     type = 0;
     switch( reloc->type ) {
     case ORL_RELOC_TYPE_PAIR:
-        skip = true;
-        break;
+        return( ORL_OKAY );
     case ORL_RELOC_TYPE_ABSOLUTE:
         type = FIX_OFFSET_32 | FIX_ABS;
         break;
@@ -710,14 +705,16 @@ static orl_return DoReloc( orl_reloc *reloc )
         type = FIX_OFFSET_26 | FIX_SHIFT;
         break;
     case ORL_RELOC_TYPE_TOCREL_14:  // relative ref to 14-bit offset from TOC base.
-        type = FIX_SHIFT;           // NOTE fall through
+        type = FIX_SHIFT;
+        // NOTE fall through
     case ORL_RELOC_TYPE_TOCREL_16:  // relative ref to 16-bit offset from TOC base.
     case ORL_RELOC_TYPE_GOT_16:     // relative ref to 16-bit offset from TOC base.
         type |= FIX_TOC | FIX_OFFSET_16;
         istoc = true;
         break;
     case ORL_RELOC_TYPE_TOCVREL_14:  // relative ref to 14-bit offset from TOC base.
-        type = FIX_SHIFT;        // NOTE fall through
+        type = FIX_SHIFT;
+        // NOTE fall through
     case ORL_RELOC_TYPE_TOCVREL_16:  // relative ref to 16-bit offset from TOC base.
         type |= FIX_TOCV | FIX_OFFSET_16;
         break;
@@ -725,8 +722,8 @@ static orl_return DoReloc( orl_reloc *reloc )
         type = FIX_IFGLUE | FIX_OFFSET_32;
         break;
     case ORL_RELOC_TYPE_IMGLUE:
-        skip = true;                 // NYI: do we need this?
-        break;
+        // NYI: do we need this?
+        return( ORL_OKAY );
     case ORL_RELOC_TYPE_JUMP:
         type = FIX_OFFSET_32 | FIX_REL;
         break;
@@ -763,10 +760,9 @@ static orl_return DoReloc( orl_reloc *reloc )
     case ORL_RELOC_TYPE_HALF_HI:
     case ORL_RELOC_TYPE_HALF_HA:
         SavedReloc = *reloc;
-        skip = true;
-        break;
+        return( ORL_OKAY );
     case ORL_RELOC_TYPE_HALF_LO:
-        if( SavedReloc.type == ORL_RELOC_TYPE_NONE ) {    // we recursed
+        if( SavedReloc.type == ORL_RELOC_TYPE_NONE ) {  // we recursed
             type = FIX_OFFSET_16 | FIX_SIGNED;
         } else {
             SavedReloc.type = ORL_RELOC_TYPE_NONE;      // flag recursion
@@ -780,40 +776,35 @@ static orl_return DoReloc( orl_reloc *reloc )
         LnkMsg( LOC+ERR+MSG_BAD_RELOC_TYPE, NULL );
         break;
     }
-    if( !skip ) {
-        seg = FindSegNode( reloc->section );
+    seg = FindSegNode( reloc->section );
+    if( seg != NULL && (seg->info & SEG_DEAD) == 0 && seg->entry != NULL && !seg->entry->isdead ) {
         addend = 0;
-        if( seg != NULL && (seg->info & SEG_DEAD) == 0 && seg->entry != NULL
-                                                   && !seg->entry->isdead ) {
-            SetCurrSeg( seg->entry, 0, seg->contents );
-            frame.type = FIX_FRAME_TARG;
-            ext = FindExtHandle( reloc->symbol );
-            if( ext == NULL ) {
-                symseg = FindSegNode( ORLSymbolGetSecHandle(reloc->symbol) );
-                if( symseg != NULL && (seg->info & SEG_DEAD) == 0 ) {
-                    unsigned_64 val64;
-
-                    val64 = ORLSymbolGetValue( reloc->symbol );
-                    addend = val64.u._32[I64LO32];
-                    target.u.sdata = symseg->entry;
-                    target.type = FIX_TARGET_SEG;
-                    if( istoc ) {
-                        AddSdataOffToToc( symseg->entry, addend );
-                    }
-                } else {
-                    skip = true;
-                }
+        SetCurrSeg( seg->entry, 0, seg->contents );
+        frame.type = FIX_FRAME_TARG;
+        ext = FindExtHandle( reloc->symbol );
+        if( ext == NULL ) {
+            symseg = FindSegNode( ORLSymbolGetSecHandle(reloc->symbol) );
+            if( symseg == NULL ) {
+                return( ORL_OKAY );
             } else {
-                target.u.sym = ext->entry;
-                target.type = FIX_TARGET_EXT;
+                unsigned_64 val64;
+
+                ORLSymbolGetValue( reloc->symbol, &val64 );
+                addend = val64.u._32[I64LO32];
+                target.u.sdata = symseg->entry;
+                target.type = FIX_TARGET_SEG;
                 if( istoc ) {
-                    AddSymToToc( target.u.sym );
+                    AddSdataOffToToc( symseg->entry, addend );
                 }
             }
-            if( !skip ) {
-                StoreFixup( reloc->offset, type, &frame, &target, addend );
+        } else {
+            target.u.sym = ext->entry;
+            target.type = FIX_TARGET_EXT;
+            if( istoc ) {
+                AddSymToToc( target.u.sym );
             }
         }
+        StoreFixup( reloc->offset, type, &frame, &target, addend );
     }
     return( ORL_OKAY );
 }
@@ -824,8 +815,8 @@ static orl_return P1Relocs( orl_sec_handle sec )
     return( ORLRelocSecScan( sec, DoReloc ) );
 }
 
-static void HandleImportSymbol( char *name )
-/******************************************/
+static void HandleImportSymbol( const char *name )
+/************************************************/
 {
     length_name intname;
     length_name modname;

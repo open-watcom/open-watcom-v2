@@ -195,7 +195,7 @@ char *AddUndefName( const char *str )
 
     len = strlen( str );
     if( len == 0 ) {
-        CompFlags.undefine_all_macros = 1;
+        CompFlags.undefine_all_macros = true;
     } else {
         CalcHash( str, len );
         if( !MacroDel( str ) ) {
@@ -312,39 +312,39 @@ void InitModInfo( void )
 #elif _CPU == 386
     PackAmount = 8;
 #else
-    CompFlags.make_enums_an_int = 1;     // make enums ints
-    CompFlags.original_enum_setting = 1;
+    CompFlags.make_enums_an_int = true;     // make enums ints
+    CompFlags.original_enum_setting = true;
     PackAmount = 8;
 #endif
     PreProcChar = '#';
-    CompFlags.check_syntax          = 0;
-    CompFlags.signed_char           = 0;
-    CompFlags.use_full_codegen_od   = 0;
-    CompFlags.inline_functions      = 0;
-    CompFlags.dump_prototypes       = 0;
-    CompFlags.generate_prototypes   = 0;
-    CompFlags.bss_segment_used      = 0;
-    CompFlags.undefine_all_macros   = 0;
-    CompFlags.extensions_enabled    = 1;
-    CompFlags.oldmacros_enabled     = 1;
-    CompFlags.unix_ext              = 0;
-    CompFlags.slack_byte_warning    = 0;
-    CompFlags.errfile_written       = 0;
-    CompFlags.zu_switch_used        = 0;
-    CompFlags.register_conventions  = 0;
-    CompFlags.pragma_library        = 0;
-    CompFlags.emit_all_default_libs = 0;
-    CompFlags.emit_library_names    = 1;
-    CompFlags.emit_dependencies     = 1;
-    CompFlags.emit_targimp_symbols  = 1;
-    CompFlags.use_unicode           = 1;
-    CompFlags.no_debug_type_names   = 0;
-    CompFlags.auto_agg_inits        = 0;
-    CompFlags.no_check_inits        = 0;
-    CompFlags.no_check_qualifiers   = 0;
-    CompFlags.ignore_default_dirs   = 0;
-    CompFlags.use_stdcall_at_number = 1;
-    CompFlags.rent = 0;
+    CompFlags.check_syntax          = false;
+    CompFlags.signed_char           = false;
+    CompFlags.use_full_codegen_od   = false;
+    CompFlags.inline_functions      = false;
+    CompFlags.dump_prototypes       = false;
+    CompFlags.generate_prototypes   = false;
+    CompFlags.bss_segment_used      = false;
+    CompFlags.undefine_all_macros   = false;
+    CompFlags.extensions_enabled    = true;
+    CompFlags.oldmacros_enabled     = true;
+    CompFlags.unix_ext              = false;
+    CompFlags.slack_byte_warning    = false;
+    CompFlags.errfile_written       = false;
+    CompFlags.zu_switch_used        = false;
+    CompFlags.register_conventions  = false;
+    CompFlags.pragma_library        = false;
+    CompFlags.emit_all_default_libs = false;
+    CompFlags.emit_library_names    = true;
+    CompFlags.emit_dependencies     = true;
+    CompFlags.emit_targimp_symbols  = true;
+    CompFlags.use_unicode           = true;
+    CompFlags.no_debug_type_names   = false;
+    CompFlags.auto_agg_inits        = false;
+    CompFlags.no_check_inits        = false;
+    CompFlags.no_check_qualifiers   = false;
+    CompFlags.ignore_default_dirs   = false;
+    CompFlags.use_stdcall_at_number = true;
+    CompFlags.rent                  = false;
 
     SetAuxWatcallInfo();
 }

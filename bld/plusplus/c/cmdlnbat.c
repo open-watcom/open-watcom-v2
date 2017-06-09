@@ -57,7 +57,7 @@ static void cmdLnBatchClose(    // CLOSE BATCH FILE
 }
 
 
-static int cmdLnBatchReadBuffer(// READ A BUFFER
+static int batchReadBuffer(     // READ A BUFFER
     void )
 {
     int retn = read( batch_file, batch_buffer, sizeof( batch_buffer ) );
@@ -83,7 +83,7 @@ static int nextChar(            // GET NEXT CHARACTER
 
     for( ; ; ) {
         if( batch_bytes == 0 ) {
-            cmdLnBatchReadBuffer();
+            batchReadBuffer();
         }
         if( CompFlags.batch_file_eof ) {
             retn = 0;
@@ -110,10 +110,11 @@ static void cmdLnBatchFlushCrap(// FLUSH CARRIAGE-RETURNS, ETC
 {
     int chr;                    // - next char
 
-    if( ! CompFlags.batch_file_eof ) {
+    if( !CompFlags.batch_file_eof ) {
         for( ; ; ) {
             chr = nextChar();
-            if( CompFlags.batch_file_eof ) break;
+            if( CompFlags.batch_file_eof )
+                break;
             if( chr == '\n' ) {
                 ++ CompInfo.fc_file_line;
                 continue;

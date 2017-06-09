@@ -39,7 +39,7 @@ unsigned MADIMPENTRY( TraceSize )( void )
 
 void MADIMPENTRY( TraceInit )( mad_trace_data *td, mad_registers const *mr )
 {
-    td = td; mr = mr;
+    /* unused parameters */ (void)td; (void)mr;
 
     /* nothing to do */
 }
@@ -92,14 +92,14 @@ mad_trace_how MADIMPENTRY( TraceOne )( mad_trace_data *td, mad_disasm_data *dd, 
 
 mad_status MADIMPENTRY( TraceSimulate )( mad_trace_data *td, mad_disasm_data *dd, mad_registers const *in, mad_registers *out )
 {
-    td = td; dd = dd; in = in; out = out;
+    /* unused parameters */ (void)td; (void)dd; (void)in; (void)out;
 
     return( MS_UNSUPPORTED );
 }
 
 void MADIMPENTRY( TraceFini )( mad_trace_data *td )
 {
-    td = td;
+    /* unused parameters */ (void)td;
 
     /* nothing to do */
 }

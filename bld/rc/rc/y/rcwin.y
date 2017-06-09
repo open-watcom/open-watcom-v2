@@ -638,7 +638,7 @@ raw-data-item
         {
             $$.IsString = true;
             $$.TmpStr = true;
-            $$.StrLen = (uint_16)$1.length;
+            $$.StrLen = $1.length;
             $$.Item.String = $1.string;
             $$.LongItem = $1.lstring;
         }
@@ -1513,7 +1513,7 @@ cntl-options
     : comma-opt cntl-id comma-opt size-info
         {
             $$.ID = $2;
-            $$.Size = $4;
+            $$.SizeInfo = $4;
             $$.Style.Mask = 0;
             $$.Text = NULL;
             $$.ExtendedStyle = 0L;
@@ -1523,7 +1523,7 @@ cntl-options
     | comma-opt cntl-id comma-opt size-info comma-opt style
         {
             $$.ID = $2;
-            $$.Size = $4;
+            $$.SizeInfo = $4;
             $$.Style = $6;
             $$.Text = NULL;
             $$.ExtendedStyle = 0L;
@@ -1533,7 +1533,7 @@ cntl-options
     | comma-opt cntl-id comma-opt size-info comma-opt style comma-opt exstyle
         {
             $$.ID = $2;
-            $$.Size = $4;
+            $$.SizeInfo = $4;
             $$.Style = $6;
             $$.Text = NULL;
             $$.ExtendedStyle = $8.Value;
@@ -1544,7 +1544,7 @@ cntl-options
            exstyle comma-opt helpId
         {
             $$.ID = $2;
-            $$.Size = $4;
+            $$.SizeInfo = $4;
             $$.Style = $6;
             $$.Text = NULL;
             $$.ExtendedStyle = $8.Value;
@@ -1646,47 +1646,47 @@ icon-name
 icon-parms
     : size-x comma-opt size-y
         {
-            $$.Size.x = $1;
-            $$.Size.y = $3;
-            $$.Size.width = 0;          /* ignore width, height, style */
-            $$.Size.height = 0;
+            $$.SizeInfo.x = $1;
+            $$.SizeInfo.y = $3;
+            $$.SizeInfo.width = 0;          /* ignore width, height, style */
+            $$.SizeInfo.height = 0;
             $$.Style.Mask = 0;
             $$.ExtendedStyle = 0L;
         }
     | size-x comma-opt size-y comma-opt style
         {
-            $$.Size.x = $1;
-            $$.Size.y = $3;
-            $$.Size.width = 0;          /* ignore width, height */
-            $$.Size.height = 0;
+            $$.SizeInfo.x = $1;
+            $$.SizeInfo.y = $3;
+            $$.SizeInfo.width = 0;          /* ignore width, height */
+            $$.SizeInfo.height = 0;
             $$.Style = $5;
             $$.ExtendedStyle = 0L;
         }
     | size-x comma-opt size-y comma-opt size-w comma-opt size-h
         {
-            $$.Size.x = $1;
-            $$.Size.y = $3;
-            $$.Size.width = $5;         /* ignore style */
-            $$.Size.height = $7;
+            $$.SizeInfo.x = $1;
+            $$.SizeInfo.y = $3;
+            $$.SizeInfo.width = $5;         /* ignore style */
+            $$.SizeInfo.height = $7;
             $$.Style.Mask = 0;
             $$.ExtendedStyle = 0L;
         }
     | size-x comma-opt size-y comma-opt size-w comma-opt size-h comma-opt style
         {
-            $$.Size.x = $1;
-            $$.Size.y = $3;
-            $$.Size.width = $5;
-            $$.Size.height = $7;
+            $$.SizeInfo.x = $1;
+            $$.SizeInfo.y = $3;
+            $$.SizeInfo.width = $5;
+            $$.SizeInfo.height = $7;
             $$.Style = $9;
             $$.ExtendedStyle = 0L;
         }
     | size-x comma-opt size-y comma-opt size-w comma-opt size-h comma-opt style
              comma-opt exstyle
         {
-            $$.Size.x = $1;
-            $$.Size.y = $3;
-            $$.Size.width = $5;
-            $$.Size.height = $7;
+            $$.SizeInfo.x = $1;
+            $$.SizeInfo.y = $3;
+            $$.SizeInfo.width = $5;
+            $$.SizeInfo.height = $7;
             $$.Style = $9;
             $$.ExtendedStyle = $11.Value;
         }
@@ -1874,12 +1874,12 @@ value-string-list
         {
             $$.IsNum = false;
             $$.Value.String = $1.string;
-            $$.strlen = (uint_16)$1.length;
+            $$.strlen = $1.length;
         }
     | value-string-list string-constant
         {
             $$.IsNum = false;
-            $$.strlen = (uint_16)( strlen( $1.Value.String ) + strlen( $2.string ) );
+            $$.strlen = strlen( $1.Value.String ) + strlen( $2.string );
             $$.Value.String = RcMemMalloc( $$.strlen + 1 );
             strcpy( $$.Value.String, $1.Value.String );
             strcat( $$.Value.String, $2.string );

@@ -49,7 +49,8 @@ void    BIOSSetCursor( unsigned char page, unsigned char row, unsigned char col 
     CURSOR_TYPE     type;
     unsigned char   oldrow, oldcol;
 
-    page = page;
+    /* unused parameters */ (void)page;
+
     _uigetcursor( &oldrow, &oldcol, &type, &attr );
     _uisetcursor( row, col, type, attr );
 }
@@ -60,7 +61,8 @@ unsigned short BIOSGetCursor( unsigned char page )
     int             attr;
     CURSOR_TYPE     type;
 
-    page = page;
+    /* unused parameters */ (void)page;
+
     _uigetcursor( &row, &col, &type, &attr );
     return( ( row << 8 ) | col );
 }

@@ -323,12 +323,12 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
             CErr1( ERR_INV_STG_CLASS_FOR_GLOBAL );
             stg_class = SC_STATIC;
         } else if( stg_class == SC_NONE ) {
-            CompFlags.external_defn_found = 1;
+            CompFlags.external_defn_found = true;
         }
         if( sym->attribs.declspec == DECLSPEC_THREAD ) {
             if( !CompFlags.thread_data_present ) {
                 ThreadSeg = DefThreadSeg();
-                CompFlags.thread_data_present = 1;
+                CompFlags.thread_data_present = true;
             }
             sym->u.var.segid = ThreadSeg;
         }
@@ -361,7 +361,7 @@ static SYM_HANDLE VarDecl( SYMPTR sym, stg_classes stg_class, decl_state *state 
         if( (stg_class == SC_STATIC) && (sym->attribs.declspec == DECLSPEC_THREAD) ) {
             if( !CompFlags.thread_data_present ) {
                 ThreadSeg = DefThreadSeg();
-                CompFlags.thread_data_present = 1;
+                CompFlags.thread_data_present = true;
             }
             sym->u.var.segid = ThreadSeg;
         }
@@ -509,7 +509,7 @@ new_var:
         if( stg_class == SC_EXTERN ) {
             stg_class = SC_STATIC;
             if( SymLevel == 0 ) {
-                CompFlags.external_defn_found = 1;
+                CompFlags.external_defn_found = true;
                 stg_class = SC_NONE;
             } else {
                 CErr1( ERR_CANT_INITIALIZE_EXTERN_VAR );

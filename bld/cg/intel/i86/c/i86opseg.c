@@ -139,9 +139,9 @@ static  int     CountSegOvers( void )
     overs = 0;
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            if( NumOperands( ins ) == ins->num_operands && ( ZPageType == ZP_USES_DS
+            if( OpcodeNumOperands( ins ) == ins->num_operands && ( ZPageType == ZP_USES_DS
                || ( G( ins ) != G_MOVAM && G( ins ) != G_MOVMA ) ) ) {
-                for( i = NumOperands( ins ); i-- > 0; ) {
+                for( i = OpcodeNumOperands( ins ); i-- > 0; ) {
                     overs += Overs( ins->operands[i] );
                 }
                 if( ins->result != NULL ) {
@@ -163,17 +163,24 @@ static  int     Overs( name *op )
     name        *index;
 
     if( op->n.class == N_MEMORY ) {
-        if( SegIsSS( op ) ) return( 1 );
+        if( SegIsSS( op ) )
+            return( 1 );
         return( 0 );
     } else if( op->n.class == N_INDEXED ) {
         base = op->i.base;
-        if( !HasTrueBase( op ) ) return( 0 );
-        if( base->n.class != N_MEMORY ) return( 0 );
-        if( !SegIsSS( base ) ) return( 0 );
+        if( !HasTrueBase( op ) )
+            return( 0 );
+        if( base->n.class != N_MEMORY )
+            return( 0 );
+        if( !SegIsSS( base ) )
+            return( 0 );
         index = op->i.index;
-        if( HW_CEqual( index->r.reg, HW_BX ) ) return( 0 );
-        if( ZPageType == ZP_USES_SI ) return( 0 );
-        if( ZPageType == ZP_USES_DI ) return( 0 );
+        if( HW_CEqual( index->r.reg, HW_BX ) )
+            return( 0 );
+        if( ZPageType == ZP_USES_SI )
+            return( 0 );
+        if( ZPageType == ZP_USES_DI )
+            return( 0 );
         return( 1 );
     }
     return( 0 );

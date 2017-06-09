@@ -101,7 +101,8 @@ static  condcode    scr_veclp( parm parms[MAX_FUN_PARMS], size_t parmcount,
     symvar          *   psymvar;
     bool                suppress_msg;
 
-    ressize = ressize;
+    /* unused parameters */ (void)ressize;
+
     if( parmcount != 2 ) {
         return( neg );
     }

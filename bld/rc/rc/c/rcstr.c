@@ -37,9 +37,9 @@
 #include "rcrtns.h"
 
 
-static int RemoveRedundantStrings( void ** strlist, unsigned int num,
+static size_t RemoveRedundantStrings( void **strlist, size_t num,
                     int (*compare)(const void *, const void *) )
-/********************************************************************/
+/***************************************************************/
 /* strlist is a SORTED array of char *'s of size num */
 {
     void **     curr;       /* element being examined */
@@ -61,23 +61,23 @@ static int RemoveRedundantStrings( void ** strlist, unsigned int num,
 } /* RemoveRedundantStrings */
 
 
-static int SortAndRemoveRedundantStrings( void ** strlist, unsigned int num,
+static size_t SortAndRemoveRedundantStrings( void **strlist, size_t num,
                             int (*compare)(const void *, const void *) )
-/***************************************************************************/
+/**********************************************************************/
 /* strlist is an array of char *'s of size num */
 {
-    qsort( (void *)strlist, (size_t)num, sizeof( void * ), compare );
+    qsort( (void *)strlist, num, sizeof( void * ), compare );
     return( RemoveRedundantStrings( strlist, num, compare ) );
 } /* SortAndRemoveRedundantStrings */
 
-static int InitStringList( WResDir dir, void ** list, int len )
-/*************************************************************/
+static size_t InitStringList( WResDir dir, void **list, size_t len )
+/******************************************************************/
 /* The list will be a list of pointers to WResIDName's */
 {
     WResDirWindow   wind;
-    WResTypeInfo *  type;
-    WResResInfo *   res;
-    void **         element;
+    WResTypeInfo    *type;
+    WResResInfo     *res;
+    void            **element;
 
     wind = WResFirstResource( dir );
     element = list;
@@ -86,7 +86,7 @@ static int InitStringList( WResDir dir, void ** list, int len )
         if( WResIsFirstResOfType( wind ) ) {
             type = WResGetTypeInfo( wind );
             if( type->TypeName.IsName ) {
-                if( len <= 0 )
+                if( len == 0 )
                     return( 0 );      /* should never occur */
                 *element = &(type->TypeName.ID.Name);
                 element++;
@@ -96,7 +96,7 @@ static int InitStringList( WResDir dir, void ** list, int len )
         if( WResIsFirstLangOfRes( wind ) ) {
             res = WResGetResInfo( wind );
             if( res->ResName.IsName ) {
-                if( len <= 0 )
+                if( len == 0 )
                     return( 0 );      /* should never occur */
                 *element = &(res->ResName.ID.Name);
                 element++;
@@ -109,27 +109,27 @@ static int InitStringList( WResDir dir, void ** list, int len )
     return( element - list );
 } /* InitStringList */
 
-static void * MemUprCpy( void * dst, const void * src, size_t length )
-/********************************************************************/
+static void *MemUprCpy( void *dst, const void *src, size_t length )
+/*****************************************************************/
 {
-    char *          c_dst;
-    const char *    c_src;
+    char        *c_dst;
+    const char  *c_src;
 
     for( c_dst = dst, c_src = src; length > 0; c_dst++, c_src++, length-- ) {
-        *c_dst = toupper( *c_src );
+        *c_dst = toupper( (unsigned char)*c_src );
     }
 
     return( dst );
 } /* MemUprCpy */
 
-static void * MemUprCpyUni( void * dst, const void * src, size_t length )
-/***********************************************************************/
+static void *MemUprCpyUni( void *dst, const void *src, size_t length )
+/********************************************************************/
 {
-    uint_16 *       c_dst;
-    const char *    c_src;
+    uint_16     *c_dst;
+    const char  *c_src;
 
     for( c_dst = dst, c_src = src; length > 0; c_dst++, c_src++, length-- ) {
-        *c_dst = toupper( *c_src );
+        *c_dst = toupper( (unsigned char)*c_src );
     }
 
     return( dst );
@@ -149,22 +149,20 @@ static void CopyString( void **nextstr, WResIDName **name, bool use_unicode )
         name32 = *nextstr;
         name32->NumChars = currname->NumChars;
         MemUprCpyUni( &name32->Name, &currname->Name, currname->NumChars );
-        *nextstr = (uint_8 *)(*nextstr) + 2 * ( currname->NumChars - 1 )
-                                        + sizeof( StringItem32 );
+        *nextstr = (uint_8 *)(*nextstr) + 2 * ( currname->NumChars - 1 ) + sizeof( StringItem32 );
     } else {
         name16 = *nextstr;
         name16->NumChars = currname->NumChars;
         MemUprCpy( &name16->Name, &currname->Name, currname->NumChars );
-        *nextstr = (uint_8 *)(*nextstr) + currname->NumChars - 1
-                                        + sizeof( StringItem16 );
+        *nextstr = (uint_8 *)(*nextstr) + currname->NumChars - 1 + sizeof( StringItem16 );
     }
 } /* CopyString */
 
-static void ConstructStringBlock( StringsBlock * str )
+static void ConstructStringBlock( StringsBlock *str )
 /***************************************************/
 /* the string list should be filled in when this is called */
 {
-    char *          nextstring;     /* make this a char * so we can add by */
+    char            *nextstring;     /* make this a char * so we can add by */
                                     /* by bytes */
     WResIDName      *currname;
     unsigned        i;
@@ -173,15 +171,11 @@ static void ConstructStringBlock( StringsBlock * str )
     /* calculate the size of the block needed */
     str->StringBlockSize = 0;
 #if( 0 ) //may 24 1996 DRW
-    for( currname = str->StringList;
-                currname < str->StringList + str->StringListLen;
-                currname++ ) {
+    for( currname = str->StringList; currname < str->StringList + str->StringListLen; currname++ ) {
         if( str->UseUnicode ) {
-            str->StringBlockSize += sizeof( StringItem32 )
-                                    + 2 * ((**currname).NumChars - 1);
+            str->StringBlockSize += sizeof( StringItem32 ) + 2 * ((**currname).NumChars - 1);
         } else {
-            str->StringBlockSize += sizeof( StringItem16 )
-                                    + (**currname).NumChars - 1;
+            str->StringBlockSize += sizeof( StringItem16 ) + (**currname).NumChars - 1;
         }
     }
 #else
@@ -189,28 +183,25 @@ static void ConstructStringBlock( StringsBlock * str )
     for( i=0; i < cnt; i++ ) {
         currname = str->StringList[i];
         if( str->UseUnicode ) {
-            str->StringBlockSize += sizeof( StringItem32 )
-                                    + 2 * ((*currname).NumChars - 1);
+            str->StringBlockSize += sizeof( StringItem32 ) + 2 * ((*currname).NumChars - 1);
         } else {
-            str->StringBlockSize += sizeof( StringItem16 )
-                                    + (*currname).NumChars - 1;
+            str->StringBlockSize += sizeof( StringItem16 ) + (*currname).NumChars - 1;
         }
     }
 #endif
 
     /* allocate the block for the strings */
-    str->StringBlock = RCALLOC( str->StringBlockSize );
+    str->StringBlock = RESALLOC( str->StringBlockSize );
 
     /* copy the strings into the block */
     nextstring = str->StringBlock;
 #if( 0 ) //may 24 1996 DRW
-    for( currname = str->StringList; currname < str->StringList
-                + str->StringListLen; currname++ ) {
+    for( currname = str->StringList; currname < str->StringList + str->StringListLen; currname++ ) {
         CopyString( &nextstring, currname, str->UseUnicode );
     }
 #else
     cnt = str->StringListLen;
-    for( i=0; i < cnt; i++ ) {
+    for( i = 0; i < cnt; i++ ) {
         currname = str->StringList[i];
         str->StringList[i] = nextstring;
         CopyString( (void **)&nextstring, &currname, str->UseUnicode );
@@ -227,8 +218,8 @@ static int CompareWResIDNames( const void *n1, const void *n2 )
 void StringBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
 /***********************************************************************/
 {
-    int     list_len;
-    void ** new_list;
+    size_t  list_len;
+    void    **new_list;
 
     if( WResIsEmpty( dir ) ) {
         /* Empty directories are allowed since windows exe's may contain */
@@ -237,15 +228,14 @@ void StringBlockBuild( StringsBlock *str, WResDir dir, bool use_unicode )
         /* set the initial list_len to be the max possible */
         list_len = WResGetNumTypes( dir ) + WResGetNumResources( dir );
         str->UseUnicode = use_unicode;
-        str->StringList = RCALLOC( list_len * sizeof( void * ) );
+        str->StringList = RESALLOC( list_len * sizeof( void * ) );
 
         list_len = InitStringList( dir, str->StringList, list_len );
-        list_len = SortAndRemoveRedundantStrings( str->StringList,
-                    list_len, CompareWResIDNames );
+        list_len = SortAndRemoveRedundantStrings( str->StringList, list_len, CompareWResIDNames );
         str->StringListLen = list_len;
 
         if( list_len == 0 ) {
-            RCFREE( str->StringList );
+            RESFREE( str->StringList );
             str->StringList = NULL;
             str->StringBlock = NULL;
             str->StringBlockSize = 0;
@@ -280,8 +270,8 @@ static int genericCompare( const char *name1, uint_16 len1,
         char1 = name1;
         char2 = name2;
         while( char_num < min_chars ) {
-            ch1 = toupper( *char1 );
-            ch2 = toupper( *char2 );
+            ch1 = toupper( (unsigned char)*char1 );
+            ch2 = toupper( (unsigned char)*char2 );
             if( ch1 < ch2 ) {
                 return( -1 );
             } else if( ch1 > ch2 ) {
@@ -295,8 +285,8 @@ static int genericCompare( const char *name1, uint_16 len1,
         char1 = name1;
         char2u = (uint_16 *)name2;
         while( char_num < min_chars ) {
-            ch1 = toupper( *char1 );
-            ch2 = toupper( *char2u );
+            ch1 = toupper( (unsigned char)*char1 );
+            ch2 = toupper( (unsigned char)*char2u );
             if( ch1 < ch2 ) {
                 return( -1 );
             } else if( ch1 > ch2 ) {
@@ -350,8 +340,8 @@ int CompareStringItems32( const StringItem32 *item1,
     if( min_chars > item2->NumChars )
         min_chars = item2->NumChars;
     while( char_num < min_chars ) {
-        ch1 = toupper( *ptr1 );
-        ch2 = toupper( *ptr2 );
+        ch1 = toupper( (unsigned char)*ptr1 );
+        ch2 = toupper( (unsigned char)*ptr2 );
         if( ch1 < ch2 ) {
             return( -1 );
         } else if( ch1 > ch2 ) {
@@ -371,12 +361,12 @@ int CompareStringItems32( const StringItem32 *item1,
     }
 }
 
-extern int_32 StringBlockFind( StringsBlock *str, WResIDName * name )
-/*******************************************************************/
+extern int_32 StringBlockFind( StringsBlock *str, WResIDName *name )
+/******************************************************************/
 /* if the return code is -1 the name was not found, otherwise it is the */
 /* number of bytes into the StringBlock at which to find the name. */
 {
-    uint_8 **       location;
+    uint_8          **location;
 
     if( str->UseUnicode ) {
         location = bsearch( name, str->StringList, str->StringListLen,
@@ -391,6 +381,6 @@ extern int_32 StringBlockFind( StringsBlock *str, WResIDName * name )
     if( location == NULL ) {
         return( -1 );
     } else {
-        return( *location - (uint_8 *)str->StringBlock );
+        return( (int_32)( *location - (uint_8 *)str->StringBlock ) );
     }
 }

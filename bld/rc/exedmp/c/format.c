@@ -28,12 +28,14 @@
 *
 ****************************************************************************/
 
+
 #include "banner.h"
 #include "format.h"
 #include "param.h"
 #include "read.h"
 #include "main.h"
 #include "watcom.h"
+
 
 extern const char *resTypes[];
 extern const char *cpu_flags_labels[];
@@ -476,7 +478,7 @@ void printDirContents( ResDirEntry *dir, ExeFile *exeFile,
         if( dir->nameID == NAME ) {
             printf( MSG_DIR_NAME );
             for( i = 0; i < dir->nameSize; i++ ) {
-                printf( "%1s", &dir->name[ i ] );
+                printf( "%1s", (char *)&dir->name[ i ] );
             }
             printIndent( true, param );
             printf( MSG_DIR_NAMEADDRESS, getDirNameAbs( dir, exeFile ) );
@@ -495,11 +497,9 @@ void printDirContents( ResDirEntry *dir, ExeFile *exeFile,
     printf( "\n" );
 
     if( dir->entryType == TABLE ) {
-        printTableContents( dir->table, exeFile, param,
-                            getDirChildAbs( dir, exeFile ), depth );
+        printTableContents( dir->table, exeFile, param, getDirChildAbs( dir, exeFile ), depth );
     } else {
-        printDataContents( dir->data, exeFile, param,
-                           getDirChildAbs( dir, exeFile ) );
+        printDataContents( dir->data, exeFile, param, getDirChildAbs( dir, exeFile ) );
     }
     printf( "\n" );
 }

@@ -199,9 +199,11 @@ static  void    ExpandTlsOp( instruction *ins, name **pop )
         // gotta check for the base being one of these stupid TLS things
         if( op->i.base != NULL && ( op->i.index_flags & X_FAKE_BASE ) == 0 ) {
             base = op->i.base;
-            if( base->n.class != N_MEMORY || base->m.memory_type != CG_FE ) break;
+            if( base->n.class != N_MEMORY || base->m.memory_type != CG_FE )
+                break;
             attr = FEAttr( base->v.symbol );
-            if( ( attr & FE_THREAD_DATA ) == 0 ) break;
+            if( ( attr & FE_THREAD_DATA ) == 0 )
+                break;
             tls_data = GetTLSDataRef( ins, base, _OpClass(ins) );
             temp = AllocTemp( WD );
             new_ins = MakeUnary( OP_LA, tls_data, temp, WD );

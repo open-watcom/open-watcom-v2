@@ -35,7 +35,7 @@
 #include "errstr.h"
 
 
-_WCRTLINK int *__get_sys_nerr_ptr( void )
+_WCRTLINK int (*__get_sys_nerr_ptr( void ))
 {
     return( &_sys_nerr );
 }

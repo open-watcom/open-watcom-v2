@@ -20,7 +20,7 @@
 !inject comitos2.obj                                                o16 o32
 !inject comitwnt.obj                     nt nta ntp
 !inject creat.obj    d16 d32             nt nta ntp nvc     nvl     o16 o32         w16 w32 osi l32 lpc lmp
-!inject d2ttime.obj  d16 d32             nt nta ntp                 o16 o32         w16 w32 osi
+!inject d2ttime.obj  d16 d32                                        o16 o32         w16 w32 osi
 !inject dofilstr.obj                     nt nta ntp
 !inject dup.obj      d16 d32                                                        w16 w32 osi
 !inject dup2.obj     d16 d32                                                        w16 w32 osi

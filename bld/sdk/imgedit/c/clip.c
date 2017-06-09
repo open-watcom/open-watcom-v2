@@ -417,7 +417,7 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
         oldbitmap = _wpi_selectbitmap( mempres, node->handbitmap );
         oldbitmap2 = _wpi_selectbitmap( clippres, hAndClipped );
 
-        if( fstretchbmp == FALSE ) {
+        if( fstretchbmp == 0 ) {
             clipwidth = (short)bm_width;
             if( clipwidth > (short)width )
                 clipwidth = (short)width;
@@ -428,10 +428,10 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
             _wpi_patblt( mempres, truept.x, truept.y, width, height, BLACKNESS );
             _wpi_bitblt( mempres, truept.x, truept.y, clipwidth, clipheight,
                          clippres, 0, 0, SRCCOPY );
-        } else if( fstretchbmp == TRUE ) {
+        } else if( fstretchbmp == 1 ) {
             _wpi_stretchblt( mempres, truept.x, truept.y, width, height,
                              clippres, 0, 0, bm_width, bm_height, SRCCOPY);
-        } else {
+        } else {    /* fstretchbmp == -1 */
             _wpi_bitblt( mempres, truept.x, truept.y, width, height, clippres,
                          0, 0, SRCCOPY );
         }
@@ -442,7 +442,7 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
         _wpi_getoldbitmap( clippres, oldbitmap2 );
         oldbitmap2 = _wpi_selectbitmap( clippres, hbitmapdup );
 
-        if( fstretchbmp == FALSE ) {
+        if( fstretchbmp == 0 ) {
             clipwidth = (short)bm_width;
             if( clipwidth > (short)width )
                 clipwidth = (short)width;
@@ -465,10 +465,10 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
             _wpi_bitblt( mempres, truept.x, truept.y, clipwidth, clipheight,
                          clippres, 0, 0, SRCCOPY );
 #endif
-        } else if( fstretchbmp == TRUE ) {
+        } else if( fstretchbmp == 1 ) {
             _wpi_stretchblt( mempres, truept.x, truept.y, width, height,
                              clippres, 0, 0, bm_width, bm_height, SRCCOPY );
-        } else {
+        } else {    /* fstretchbmp == -1 */
             _wpi_bitblt( mempres, truept.x, truept.y, width, height, clippres,
                          0, 0, SRCCOPY );
         }
@@ -510,7 +510,7 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
         holddup = _wpi_selectbitmap( clippres, hbitmapdup );
         oldbitmap = _wpi_selectbitmap( mempres, node->hxorbitmap );
 
-        if( fstretchbmp == FALSE ) {
+        if( fstretchbmp == 0 ) {
             clipwidth = (short)bm_width;
             if( clipwidth > (short)width )
                 clipwidth = (short)width;
@@ -533,10 +533,10 @@ void PasteImage( WPI_POINT *pt, WPI_POINT pointsize, HWND hwnd )
             _wpi_bitblt( mempres, truept.x, truept.y, clipwidth, clipheight,
                          clippres, 0, 0, SRCCOPY );
 #endif
-        } else if( fstretchbmp == TRUE ) {
+        } else if( fstretchbmp == 1 ) {
             _wpi_stretchblt( mempres, truept.x, truept.y, width, height,
                              clippres, 0, 0, bm_width, bm_height, SRCCOPY );
-        } else {
+        } else {    /* fstretchbmp == -1 */
             _wpi_bitblt( mempres, truept.x, truept.y, width, height, clippres,
                          0, 0, SRCCOPY );
         }

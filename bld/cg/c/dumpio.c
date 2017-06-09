@@ -156,11 +156,13 @@ static void _DumpLongLen( unsigned_32 n, int len, bool sign )
         neg = false;
     }
     if( n != 0 ) {
-        for(;;) {
+        for( ;; ) {
             *--bp = n % 10 + '0';
             --len;
             n /= 10;
-            if( n == 0 ) break;
+            if( n == 0 ) {
+                break;
+            }
         }
     } else {
         *--bp = '0';

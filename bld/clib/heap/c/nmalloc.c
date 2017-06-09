@@ -37,14 +37,16 @@
 #include "extfunc.h"
 #include "heapacc.h"
 #include "heap.h"
+#if defined(__RDOS__)
+#include <rdos.h>
+#endif
 
 #if defined(_M_IX86)
     #pragma aux (__outside_CLIB) __nmemneed;
 #endif
 
 mheapptr        _WCNEAR __nheapbeg = NULL;
-
-miniheapblkp    _WCNEAR *__MiniHeapRover = NULL;
+mheapptr        __MiniHeapRover = NULL;
 unsigned int    __LargestSizeB4MiniHeapRover = 0;
 
 #if defined(__WARP__)
@@ -60,12 +62,13 @@ unsigned char _os2_use_obj_any;
 
 _WCRTLINK int _use_os2_high_mem( int fUseHighMem )
 {
-  int prior;
-  _AccessNHeap();
-  prior = _os2_use_obj_any;
-  _os2_use_obj_any = ( fUseHighMem != 0 );
-  _ReleaseNHeap();
-  return( prior );
+    int   prior;
+
+    _AccessNHeap();
+    prior = _os2_use_obj_any;
+    _os2_use_obj_any = ( fUseHighMem != 0 );
+    _ReleaseNHeap();
+    return( prior );
 }
 
 /**
@@ -74,15 +77,15 @@ _WCRTLINK int _use_os2_high_mem( int fUseHighMem )
 
 _WCRTLINK void *_os2lmalloc( size_t amount )
 {
-  int prior;
-  void _WCNEAR *ptr;
-  _AccessNHeap();
-  prior = _use_os2_high_mem( 0 );
-  ptr = _nmalloc( amount );
-  _use_os2_high_mem( prior );
-  _ReleaseNHeap();
-  return( ptr );
+    int         prior;
+    void_nptr   cstg;
 
+    _AccessNHeap();
+    prior = _use_os2_high_mem( 0 );
+    cstg = _nmalloc( amount );
+    _use_os2_high_mem( prior );
+    _ReleaseNHeap();
+    return( cstg );
 }
 
 /**
@@ -91,14 +94,15 @@ _WCRTLINK void *_os2lmalloc( size_t amount )
 
 _WCRTLINK void *_os2hmalloc( size_t amount )
 {
-  int prior;
-  void _WCNEAR *ptr;
-  _AccessNHeap();
-  prior = _use_os2_high_mem( 1 );
-  ptr = _nmalloc( amount );
-  _use_os2_high_mem( prior );
-  _ReleaseNHeap();
-  return( ptr );
+    int         prior;
+    void_nptr   cstg;
+
+    _AccessNHeap();
+    prior = _use_os2_high_mem( 1 );
+    cstg = _nmalloc( amount );
+    _use_os2_high_mem( prior );
+    _ReleaseNHeap();
+    return( cstg );
 }
 
 #endif /* __WARP__ */
@@ -119,33 +123,40 @@ _WCRTLINK void *malloc( size_t amount )
 
 #if defined( __RDOS__ ) && defined( __ALLOC_DEBUG )
 
-#include <rdos.h>
-
-_WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
+_WCRTLINK void_nptr _nmalloc( size_t amt )
 {
-    void *ptr;
+    void *cstg;
 
-    ptr = RdosAllocateDebugMem( amt );
+    cstg = RdosAllocateDebugMem( amt );
 
-    return( (void _WCNEAR *)ptr );
+    return( (void_nptr)cstg );
 }
 
 #else
 
-_WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
+_WCRTLINK void_nptr _nmalloc( size_t amt )
 {
     unsigned        largest;
     unsigned        size;
-    unsigned        ptr;
+    void_bptr       cstg;
     unsigned char   expanded;
-    mheapptr        miniheap_ptr;
+    mheapptr        heap;
 
 #if defined(__WARP__)
     unsigned char   use_obj_any;
 #endif // __WARP__
 
+#if defined(__RDOS__)
+    void *v_cstg;
+
+    if( RdosIsForked() ) {
+        v_cstg = RdosAllocateMem( amt );
+        return( (void_nptr)v_cstg );
+    }
+#endif
+
     if( (amt == 0) || (amt > -sizeof( heapblk )) ) {
-        return( (void _WCNEAR *)NULL );
+        return( NULL );
     }
 
     // Try to determine which miniheap to begin allocating from.
@@ -156,41 +167,41 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
     }
 
     _AccessNHeap();
-    ptr = 0;
+    cstg = NULL;
     expanded = 0;
-    for(;;) {
+    for( ;; ) {
 #if defined(__WARP__)
         // Need to update each pass in case 1st DosAllocMem determines OBJ_ANY not supported
         use_obj_any = ( _os2_obj_any_supported && _os2_use_obj_any );
 #endif
         // Figure out where to start looking for free blocks
         if( size > __LargestSizeB4MiniHeapRover ) {
-            miniheap_ptr = __MiniHeapRover;
-            if( miniheap_ptr == NULL ) {
+            heap = __MiniHeapRover;
+            if( heap == NULL ) {
                 __LargestSizeB4MiniHeapRover = 0;   // force to be updated
-                miniheap_ptr = __nheapbeg;
+                heap = __nheapbeg;
             }
         } else {
             __LargestSizeB4MiniHeapRover = 0;   // force to be updated
-            miniheap_ptr = __nheapbeg;
+            heap = __nheapbeg;
         }
         // Search for free block
-        for( ; miniheap_ptr != NULL; miniheap_ptr = miniheap_ptr->next ) {
-            __MiniHeapRover = miniheap_ptr;
-            largest = miniheap_ptr->largest_blk;
+        for( ; heap != NULL; heap = heap->next ) {
+            __MiniHeapRover = heap;
+            largest = heap->largest_blk;
 #if defined(__WARP__)
-            if( use_obj_any == ( miniheap_ptr->used_obj_any != 0 ) ) {
+            if( use_obj_any == ( heap->used_obj_any != 0 ) ) {
 #endif // __WARP__
               if( largest >= amt ) {
-                  ptr = __MemAllocator( amt, _DGroup(), (unsigned)miniheap_ptr );
-                  if( ptr != 0 ) {
+                  cstg = __MemAllocator( amt, _DGroup(), heap );
+                  if( cstg != NULL ) {
                       goto lbl_release_heap;
                   }
               }
 #if defined(__WARP__)
             }
 #endif // __WARP__
-            if( largest > __LargestSizeB4MiniHeapRover ) {
+            if( __LargestSizeB4MiniHeapRover < largest ) {
                 __LargestSizeB4MiniHeapRover = largest;
             }
         }
@@ -207,7 +218,7 @@ _WCRTLINK void _WCNEAR *_nmalloc( size_t amt )
     } /* forever */
 lbl_release_heap:
     _ReleaseNHeap();
-    return( (void _WCNEAR *)ptr );
+    return( cstg );
 }
 
 #endif

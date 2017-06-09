@@ -91,7 +91,7 @@ void DFFreeImage( imp_image_handle *ii )
     }
 }
 
-dip_status DIPIMPENTRY( MoreMem )( unsigned size )
+dip_status DIPIMPENTRY( MoreMem )( size_t size )
 {
 /*
         Return DS_OK if you could release some memory, DS_FAIL if you
@@ -100,7 +100,7 @@ dip_status DIPIMPENTRY( MoreMem )( unsigned size )
     imp_image_handle *curr;
     dip_status ret;
 
-    size = size;
+    /* unused parameters */ (void)size;
 
     ret = DS_FAIL;
     for( curr = Images; curr != NULL; curr = curr->next ) {
@@ -117,7 +117,7 @@ dip_status DIPIMPENTRY( MoreMem )( unsigned size )
     return( ret );
 }
 
-dip_status DIPIMPENTRY( Startup )(void)
+dip_status DIPImp( Startup )(void)
 {
 /*
         Return DS_OK if startup initialization went OK, or a DS_ERR|DS_?
@@ -134,8 +134,8 @@ void DIPIMPENTRY( Shutdown )( void )
 /*
         Shutting down and unloading. Last chance to free up stuff.
 */
-        Images = NULL;
-        DRFini();
+    Images = NULL;
+    DRFini();
 }
 
 void DIPIMPENTRY( Cancel )( void )

@@ -54,6 +54,25 @@ static  BOOL        bConnected = FALSE;
 static  BOOL        bAppSpawned = FALSE;
 static  FARPROC     lpDdeProc;
 
+#ifdef __WINDOWS__
+
+static WNDENUMPROC MakeProcInstance_WNDENUM( WNDENUMPROC fn, HINSTANCE instance )
+{
+    return( (WNDENUMPROC)MakeProcInstance( (FARPROC)fn, instance ) );
+}
+
+static void FreeProcInstance_WNDENUM( WNDENUMPROC fn )
+{
+    FreeProcInstance( (FARPROC)fn );
+}
+
+#else
+
+#define MakeProcInstance_WNDENUM(f,i)   f
+#define FreeProcInstance_WNDENUM(f)
+
+#endif
+
 static void doReset( void )
 {
     // reset for another connect
@@ -75,25 +94,25 @@ HDDEDATA __export FAR PASCAL DdeCallback( UINT wType, UINT wFmt, HCONV hConv,
     dwData2 = dwData2;
 
     switch( wType ) {
-        case XTYP_DISCONNECT:
-            // user may have killed vi, or maybe this is a response to
-            // our ddeuninitialize.  either way, reset for next connect
-            if( bConnected ) {
-                doReset();
-            }
-            return( NULL );
+    case XTYP_DISCONNECT:
+        // user may have killed vi, or maybe this is a response to
+        // our ddeuninitialize.  either way, reset for next connect
+        if( bConnected ) {
+            doReset();
+        }
+        return( NULL );
     }
     return( NULL );
 }
 
-int extern __export FAR PASCAL EDITConnect( void )
+int __export FAR PASCAL EDITConnect( void )
 {
 #ifdef __WINDOWS__
     char    *szProg = "CW.EXE";
 #elif __NT__
     char    *szProg = "CW32.EXE";
 #else
-    #error Unsupport operating system.
+    #error Unsupported operating system.
 #endif
 
     char    *szService = "Codewright";
@@ -107,9 +126,8 @@ int extern __export FAR PASCAL EDITConnect( void )
 
     // initialize our idInstance in ddeml
     if( !bDdemlInitialized ) {
-        lpDdeProc = MakeProcInstance( (FARPROC) DdeCallback, hInstance );
-        if( DdeInitialize( &idInstance, (PFNCALLBACK) lpDdeProc,
-                           APPCMD_CLIENTONLY, 0L ) != DMLERR_NO_ERROR ) {
+        lpDdeProc = MakeProcInstance( (FARPROC)DdeCallback, hInstance );
+        if( DdeInitialize( &idInstance, (PFNCALLBACK)lpDdeProc, APPCMD_CLIENTONLY, 0L ) != DMLERR_NO_ERROR ) {
             return( FALSE );
         }
         bDdemlInitialized = TRUE;
@@ -120,8 +138,7 @@ int extern __export FAR PASCAL EDITConnect( void )
     hszTopic= DdeCreateStringHandle( idInstance, szTopic, CP_WINANSI );
 
     // attempt connection
-    hConv = DdeConnect( idInstance, hszService, hszTopic,
-                        (PCONVCONTEXT) NULL );
+    hConv = DdeConnect( idInstance, hszService, hszTopic, (PCONVCONTEXT)NULL );
     if( hConv == 0 ) {
         // run editor (magically grabs focus)
         // DEBUGGERS NOTE: if debugging through here, give cw a moment
@@ -130,8 +147,7 @@ int extern __export FAR PASCAL EDITConnect( void )
         rc = WinExec( szProg, SW_RESTORE );
         if( rc >= 32 ) {
             // editor is up - try again (otherwise give up)
-            hConv = DdeConnect( idInstance, hszService, hszTopic,
-                                (PCONVCONTEXT) NULL );
+            hConv = DdeConnect( idInstance, hszService, hszTopic, (PCONVCONTEXT)NULL );
         }
     }
 
@@ -162,9 +178,9 @@ static BOOL doExecute( char *szCommand )
     return( hddeData != 0 );
 }
 
-int extern __export FAR PASCAL EDITFile( LPSTR szFile, LPSTR szHelpFile )
+int __export FAR PASCAL EDITFile( LPSTR szFile, LPSTR szHelpFile )
 {
-    char        szCommand[ 128 ];
+    char        szCommand[128];
     BOOL        rc;
 
     if( !bConnected ) {
@@ -186,10 +202,9 @@ int extern __export FAR PASCAL EDITFile( LPSTR szFile, LPSTR szHelpFile )
     return( rc );
 }
 
-int extern __export FAR PASCAL EDITLocateError( long lRow, int iCol,
-                                    int iLen, int idResource, LPSTR szErrmsg )
+int __export FAR PASCAL EDITLocateError( long lRow, int iCol, int iLen, int idResource, LPSTR szErrmsg )
 {
-    char        szCommand[ 100 ];
+    char        szCommand[100];
 //    int         len;
     BOOL        rc;
 
@@ -207,8 +222,7 @@ int extern __export FAR PASCAL EDITLocateError( long lRow, int iCol,
 #endif
 
     if( szErrmsg ) {
-        sprintf( szCommand, "MsgError %.*s",
-                 sizeof( szCommand ) - 10, szErrmsg );
+        sprintf( szCommand, "MsgError %.*s", sizeof( szCommand ) - 10, szErrmsg );
         rc |= doExecute( szCommand );
     }
 
@@ -221,12 +235,12 @@ int extern __export FAR PASCAL EDITLocateError( long lRow, int iCol,
     return( rc );
 }
 
-int extern __export FAR PASCAL EDITLocate( long lRow, int iCol, int iLen )
+int __export FAR PASCAL EDITLocate( long lRow, int iCol, int iLen )
 {
     return( EDITLocateError( lRow, iCol, iLen, 0, NULL ) );
 }
 
-int extern __export FAR PASCAL EDITShowWindow( int iCmdShow )
+int __export FAR PASCAL EDITShowWindow( int iCmdShow )
 {
     char        szCommand[ 80 ];
     BOOL        rc;
@@ -253,8 +267,7 @@ int extern __export FAR PASCAL EDITShowWindow( int iCmdShow )
         return( rc );
     }
     hszItem = DdeCreateStringHandle( idInstance, "ExecReturn", CP_WINANSI );
-    hData = DdeClientTransaction( NULL, 0, hConv, hszItem, CF_TEXT,
-                                  XTYP_REQUEST, 5000, NULL );
+    hData = DdeClientTransaction( NULL, 0, hConv, hszItem, CF_TEXT, XTYP_REQUEST, 5000, NULL );
     DdeFreeStringHandle( idInstance, hszItem );
     if( hData == 0 ) {
         return( FALSE );
@@ -279,42 +292,37 @@ int extern __export FAR PASCAL EDITShowWindow( int iCmdShow )
 BOOL CALLBACK EnumWnd( HWND hwnd, LPARAM lParam )
 {
     char    *szWantClass = CW_CLASS;
-    char    szThisClass[ sizeof( CW_CLASS ) ];
+    char    szThisClass[sizeof( CW_CLASS )];
 
-    if( GetClassName( hwnd, szThisClass, sizeof( szThisClass ) ) + 1 !=
-            sizeof( szThisClass ) ) {
+    if( GetClassName( hwnd, szThisClass, sizeof( szThisClass ) ) + 1 != sizeof( szThisClass ) ) {
         // if not correct length, definitely no match
         return( TRUE );
     }
     if( strcmp( szThisClass, szWantClass ) == 0 ) {
         // gotcha - store handle & stop enumeration
-        *( (HWND *)lParam ) = hwnd;
+        *(HWND *)lParam = hwnd;
         return( FALSE );
     }
     return( TRUE );
 }
 
-int extern __export FAR PASCAL EDITDisconnect( void )
+int __export FAR PASCAL EDITDisconnect( void )
 {
 //    DWORD       idTransaction;
-    WNDENUMPROC lpEnumWnd;
+    WNDENUMPROC wndenumproc;
     HWND        hwndCodewright = NULL;
-
 
     if( !bConnected ) {
         return( TRUE );
     }
-
     // kill our dde connection
     DdeUninitialize( idInstance );
     idInstance = 0;
-
     if( bAppSpawned ) {
         // look for a window with class name szClassName
-        lpEnumWnd = (WNDENUMPROC) MakeProcInstance( (FARPROC) EnumWnd,
-                                                     hInstance );
-        EnumWindows( lpEnumWnd, (LPARAM)&hwndCodewright );
-        FreeProcInstance( (FARPROC) lpEnumWnd );
+        wndenumproc = MakeProcInstance_WNDENUM( EnumWnd, hInstance );
+        EnumWindows( wndenumproc, (LPARAM)&hwndCodewright );
+        FreeProcInstance_WNDENUM( wndenumproc );
 
         if( hwndCodewright != NULL ) {
             // found a window called CodeWright - make a half-hearted

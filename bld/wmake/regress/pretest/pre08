@@ -10,13 +10,12 @@ mkerr=..\cmds\mkerr
 
 .silent
 
-tests = pre08.001 pre08.002 pre08.003 pre08.004 pre08.005 pre08.006     &
-        pre08.007 pre08.008 pre08.009 pre08.010 pre08.011
+tests = pre08.001 pre08.002 pre08.003 pre08.004 pre08.005 &
+        pre08.006 pre08.007 pre08.008 pre08.009 pre08.010
 
 all: .symbolic $(tests)
     rm pre08.005
     rm pre08.007
-    rm pre08.008
 
 
 pre08.001: .symbolic
@@ -57,16 +56,12 @@ pre08.006: .symbolic
     if not errorlevel 1 $(mkerr)
     if errorlevel 2 $(mkerr)
 
-# this is an oddball case - try if a b == a echo hi under DOS
+
 pre08.007:
-    if a b == a %create pre08.007
+    if a        ==      a       %create pre08.007
 
 
-pre08.008:
-    if a        ==      a       %create pre08.008
-
-
-pre08.009: .symbolic
+pre08.008: .symbolic
     echo you should get 11 syntax errors now
     -if
     -if a
@@ -81,7 +76,7 @@ pre08.009: .symbolic
     -if =
 
 
-pre08.010: .symbolic
+pre08.009: .symbolic
     echo you should get 11 syntax errors now
     -if not
     -if not a
@@ -96,7 +91,7 @@ pre08.010: .symbolic
     -if not =
 
 
-pre08.011: .symbolic
+pre08.010: .symbolic
     echo you should get 8 syntax errors now
     -if errorlevel
     -if errorlevel 0

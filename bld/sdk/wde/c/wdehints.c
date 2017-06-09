@@ -50,13 +50,13 @@
 /****************************************************************************/
 typedef struct {
     int         id;
-    DWORD       hint;
+    msg_id      hint;
 } WdeHintItem;
 
 typedef struct {
     int         loc[MAX_NESTED_POPUPS];
     HMENU       popup;
-    DWORD       hint;
+    msg_id      hint;
 } WdePopupHintItem;
 
 typedef struct {
@@ -70,7 +70,7 @@ typedef struct {
 /****************************************************************************/
 static WdeHintItem      *WdeGetHintItem( ctl_id id );
 static void             WdeHandlePopupHint( HMENU, HMENU );
-static DWORD            WdeGetPopupHint( WdePopupListItem *, HMENU );
+static msg_id           WdeGetPopupHint( WdePopupListItem *, HMENU );
 static WdePopupListItem *WdeFindPopupListItem( HMENU menu );
 static bool             WdeCreateWdePopupListItem( int, HMENU, WdePopupHintItem * );
 static bool             WdeInitHintItems( int, HMENU, WdePopupHintItem * );
@@ -210,12 +210,12 @@ void WdeHandleMenuSelect( WPARAM wParam, LPARAM lParam )
     WORD    flags;
 
     if( MENU_CLOSED( wParam, lParam ) ) {
-        WdeSetStatusText( NULL, "", TRUE );
+        WdeSetStatusText( NULL, "", true );
     } else {
         menu = WdeGetMenuHandle();
         flags = GET_WM_MENUSELECT_FLAGS( wParam, lParam );
         if( flags & (MF_SYSMENU | MF_SEPARATOR) ) {
-            WdeSetStatusText( NULL, "", TRUE );
+            WdeSetStatusText( NULL, "", true );
         } else if( flags & MF_POPUP ) {
 #ifdef __NT__
             popup = GetSubMenu( (HMENU)lParam, GET_WM_MENUSELECT_ITEM( wParam, lParam ) );
@@ -238,7 +238,7 @@ void WdeDisplayHint( ctl_id id )
     if( id < WDE_MDI_FIRST ) {
         hint = WdeGetHintItem( id );
         if( hint != NULL ) {
-            WdeSetStatusByID( WDE_NONE, hint->hint );
+            WdeSetStatusByID( 0, hint->hint );
         }
     } else {
         mditext = WdeAllocRCString( WDE_HINT_MDIMSG );
@@ -246,7 +246,7 @@ void WdeDisplayHint( ctl_id id )
             buf = WRMemAlloc( strlen( mditext ) + 20 + 1 );
             if( buf != NULL ) {
                 sprintf( buf, mditext, WDE_MDI_FIRST + 1 - id );
-                WdeSetStatusText( NULL, buf, TRUE );
+                WdeSetStatusText( NULL, buf, true );
                 WRMemFree( buf );
             }
             WdeFreeRCString( mditext );
@@ -282,7 +282,7 @@ WdePopupListItem *WdeFindPopupListItem( HMENU menu )
     return( NULL );
 }
 
-DWORD WdeGetPopupHint( WdePopupListItem *p, HMENU popup )
+msg_id WdeGetPopupHint( WdePopupListItem *p, HMENU popup )
 {
     int i;
 
@@ -292,27 +292,26 @@ DWORD WdeGetPopupHint( WdePopupListItem *p, HMENU popup )
         }
     }
 
-    return( -1 );
+    return( 0 );
 }
 
 void WdeHandlePopupHint( HMENU menu, HMENU popup )
 {
     WdePopupListItem    *p;
-    DWORD               hint;
+    msg_id              hint;
 
-    hint = -1;
+    hint = 0;
 
     p = WdeFindPopupListItem( menu );
 
     if( p != NULL ) {
         hint = WdeGetPopupHint( p, popup );
-        if( hint != -1 ) {
-            WdeSetStatusByID( WDE_NONE, hint );
-        }
     }
 
-    if( hint == -1 ) {
-        WdeSetStatusText( NULL, "", TRUE );
+    if( hint > 0 ) {
+        WdeSetStatusByID( 0, hint );
+    } else {
+        WdeSetStatusText( NULL, "", true );
     }
 }
 
@@ -362,7 +361,7 @@ bool WdeCreateWdePopupListItem( int num, HMENU menu, WdePopupHintItem *hint_item
         p->menu = menu;
         p->hint_items = hint_items;
         if( WdeInitHintItems( num, menu, hint_items ) ) {
-            ListAddElt( &WdePopupList, p );
+            ListAddElt( &WdePopupList, (OBJPTR)p );
         } else {
             WRMemFree( p );
             return( FALSE );

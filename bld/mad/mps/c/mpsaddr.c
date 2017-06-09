@@ -33,14 +33,14 @@
 
 void MADIMPENTRY( AddrAdd )( address *a, long b, mad_address_format af )
 {
-    af = af;
+    /* unused parameters */ (void)af;
 
     a->mach.offset += b;
 }
 
 int MADIMPENTRY( AddrComp )( address const *ap, address const *bp, mad_address_format af )
 {
-    af = af;
+    /* unused parameters */ (void)af;
 
     if( ap->mach.offset == bp->mach.offset ) return(  0 );
     if( ap->mach.offset >  bp->mach.offset ) return( +1 );
@@ -51,7 +51,7 @@ long MADIMPENTRY( AddrDiff )( address const *a, address const *b, mad_address_fo
 {
     long        diff;
 
-    af = af;
+    /* unused parameters */ (void)af;
 
     diff = a->mach.offset - b->mach.offset;
     return( diff );
@@ -59,21 +59,21 @@ long MADIMPENTRY( AddrDiff )( address const *a, address const *b, mad_address_fo
 
 mad_status MADIMPENTRY( AddrMap )( addr_ptr *a, addr_ptr const *map, addr_ptr const *real, mad_registers const *mr )
 {
-    a = a; map = map; real = real; mr = mr;
+    /* unused parameters */ (void)a; (void)map; (void)real; (void)mr;
 
     return( MS_FAIL );
 }
 
 mad_status MADIMPENTRY( AddrFlat )( mad_registers const *mr )
 {
-    mr = mr;
+    /* unused parameters */ (void)mr;
 
     return( MS_FAIL );
 }
 
 mad_status MADIMPENTRY( AddrInterrupt )( addr_ptr const *a, unsigned size, mad_registers const *mr )
 {
-    a = a; size = size; mr = mr;
+    /* unused parameters */ (void)a; (void)size; (void)mr;
 
     return( MS_FAIL );
 }

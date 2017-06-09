@@ -87,9 +87,8 @@ int ExpandFileNames( char *p, char ***argv )
      * run through matches
      */
     for( i = 0; i < DirFileCount; i++ ) {
-        if( DirFiles[i]->attr & (_A_VOLID + _A_SUBDIR) ) {
+        if( IS_SUBDIR( DirFiles[i] ) )
             continue;
-        }
         _splitpath( DirFiles[i]->name, NULL, NULL, name, extin );
         _makepath( pathin, drive, directory, name, extin );
         *argv = MemReAlloc( *argv, (argc + 1) * sizeof( char * ) );

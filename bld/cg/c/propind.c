@@ -49,11 +49,15 @@ static  byte    OpRefs( name *op, name *ref ) {
 /*********************************************/
     byte        refs;
 
-    if( SameThing( op, ref ) ) return( 1 );
+    if( SameThing( op, ref ) )
+        return( 1 );
     refs = 0;
     if( op->n.class == N_INDEXED ) {
-        if( SameThing( op->i.base, ref ) ) refs++;
-        if( SameThing( op->i.index, ref ) ) refs++;
+        if( SameThing( op->i.base, ref ) )
+            refs++;
+        if( SameThing( op->i.index, ref ) ) {
+            refs++;
+        }
     }
     return( refs );
 }
@@ -98,12 +102,17 @@ static  bool    AdjustIndex( instruction *ins, name *res, signed_32 c ) {
 */
     byte        i;
 
-    if( NumRefs( ins, res ) != 1 ) return( false );
+    if( NumRefs( ins, res ) != 1 )
+        return( false );
     for( i = 0; i < ins->num_operands; i++ ) {
-        if( Adjusted( &ins->operands[i], res, c ) ) return( true );
+        if( Adjusted( &ins->operands[i], res, c ) ) {
+            return( true );
+        }
     }
     if( ins->result != NULL ) {
-        if( Adjusted( &ins->result, res, c ) ) return( true );
+        if( Adjusted( &ins->result, res, c ) ) {
+            return( true );
+        }
     }
     return( false );
 }

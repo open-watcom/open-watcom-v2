@@ -34,6 +34,7 @@
 #include "wresall.h"
 #include "global.h"
 #include "cmpres.h"
+#include "cmpcont.h"
 
 static int CompareHeaders( WResFileID fid1, WResFileID fid2 )
 /***********************************************************/

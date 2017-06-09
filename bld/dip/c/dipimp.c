@@ -142,17 +142,7 @@ const char __based( __segname( "_CODE" ) ) Signature[4] = "DIP";
 DIG_DLLEXPORT dip_imp_routines * DIGENTRY DIPLOAD( dip_status *status, dip_client_routines *client )
 {
     DIPClient = client;
-#if defined( __WINDOWS__ )
-    {
-        FARPROC start;
-
-        start = MakeProcInstance( (FARPROC)DIPImp( Startup ), ThisInst );
-        *status = ((dip_status(DIGENTRY*)(void)) start)();
-        FreeProcInstance( start );
-    }
-#else
     *status = DIPImp( Startup )();
-#endif
     if( *status & DS_ERR )
         return( NULL );
     return( &ImpInterface );
@@ -266,7 +256,7 @@ dig_mad DCCurrMAD( void )
     return( DIPClient->CurrMAD() );
 }
 
-unsigned        DCMachineData( address a, dig_info_type info_type,
+unsigned DCMachineData( address a, dig_info_type info_type,
                                 dig_elen in_size,  const void *in,
                                 dig_elen out_size, void *out )
 {
@@ -282,7 +272,7 @@ dip_status DIPIMPENTRY( OldTypeBase )(imp_image_handle *ii, imp_type_handle *it,
 
 #if defined( __WINDOWS__ )
 
-typedef void (DIGENTRY INTER_FUNC)();
+typedef void (DIGENTRY *INTERPROC)();
 
 #ifdef DEBUGGING
 void Say( const char *buff )
@@ -303,7 +293,7 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
 */
 {
     MSG                 msg;
-    INTER_FUNC          **func;
+    INTERPROC           *func;
     unsigned            count;
     struct {
         dip_init_func   *load;
@@ -321,10 +311,10 @@ int PASCAL WinMain( HINSTANCE this_inst, HINSTANCE prev_inst, LPSTR cmdline, int
     link = MK_FP( seg, off );
     TaskId = GetCurrentTask();
     ThisInst = this_inst;
-    func = (INTER_FUNC **)&ImpInterface.HandleSize;
-    count = ( sizeof( dip_imp_routines ) - offsetof( dip_imp_routines, HandleSize ) ) / sizeof( INTER_FUNC * );
+    func = (INTERPROC *)&ImpInterface.HandleSize;
+    count = ( sizeof( dip_imp_routines ) - offsetof( dip_imp_routines, HandleSize ) ) / sizeof( INTERPROC );
     while( count != 0 ) {
-        *func = (INTER_FUNC *)MakeProcInstance( (FARPROC)*func, this_inst );
+        *func = (INTERPROC)MakeProcInstance( (FARPROC)*func, this_inst );
         ++func;
         --count;
     }

@@ -33,26 +33,27 @@
 #ifndef RCRTNS_INLCUDED
 #define RCRTNS_INLCUDED
 
-#include "wio.h"
 #include "wrmemi.h"
 
-extern WResFileID     wres_open( const char *name, wres_open_mode omode );
-extern int            wres_close( WResFileID fid );
-extern WResFileSSize  wres_read( WResFileID fid, void *buf, WResFileSize size );
-extern WResFileSSize  wres_write( WResFileID fid, const void *buf, WResFileSize size );
-extern WResFileOffset wres_seek( WResFileID fid, WResFileOffset pos, int where );
-extern WResFileOffset wres_tell( WResFileID fid );
+#define RESOPEN         res_open
+#define RESCLOSE        res_close
+#define RESWRITE        res_write
+#define RESREAD         res_read
+#define RESSEEK         res_seek
+#define RESTELL         res_tell
+#define RESIOERR        res_ioerr
 
-#define RCOPEN          wres_open
-#define RCCLOSE         wres_close
-#define RCWRITE         wres_write
-#define RCREAD          wres_read
-#define RCSEEK          wres_seek
-#define RCTELL          wres_tell
-#define RCALLOC         MemAlloc
-#define RCFREE          MemFree
+#define RESALLOC        MemAlloc
+#define RESFREE         MemFree
+
 #define RCREALLOC       MemRealloc
 
-#define RCIOERR(fh,rc)  (rc == -1)
+extern WResFileID       res_open( const char *name, wres_open_mode omode );
+extern bool             res_close( WResFileID fid );
+extern size_t           res_read( WResFileID fid, void *buf, size_t size );
+extern size_t           res_write( WResFileID fid, const void *buf, size_t size );
+extern bool             res_seek( WResFileID fid, WResFileOffset pos, int where );
+extern WResFileOffset   res_tell( WResFileID fid );
+extern bool             res_ioerr( WResFileID fid, size_t rc );
 
 #endif

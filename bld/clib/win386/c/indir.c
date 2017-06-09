@@ -72,10 +72,10 @@ HINDIR GetIndirectFunctionHandle( FARPROC proc, ... )
      * get count and validate list
      */
     va_start( al, proc );
-    while( 1 ) {
-
+    for( ;; ) {
         len = va_arg( al, int );
-        if( len == INDIR_ENDLIST ) break;
+        if( len == INDIR_ENDLIST )
+            break;
         if( len == INDIR_CDECL ) {
             msc = 1;
             num++;
@@ -85,8 +85,9 @@ HINDIR GetIndirectFunctionHandle( FARPROC proc, ... )
         } else {
             return( NULL );
         }
-        if( num > 128 ) return( NULL ); /* ya, so its arbitrary */
-
+        if( num > 128 ) {
+            return( NULL ); /* ya, so its arbitrary */
+        }
     }
     va_end( al );
 
@@ -94,10 +95,12 @@ HINDIR GetIndirectFunctionHandle( FARPROC proc, ... )
      * get and add new list item
      */
     curr = malloc( sizeof( indir ) + num * sizeof( short ) );
-    if( curr == NULL ) return( NULL );
+    if( curr == NULL )
+        return( NULL );
     curr->proc = proc;
     curr->num = num;
-    if( msc ) curr->num--;
+    if( msc )
+        curr->num--;
     curr->msc = msc;
 
     /*
@@ -106,13 +109,11 @@ HINDIR GetIndirectFunctionHandle( FARPROC proc, ... )
     i = 0;
     va_start( al, proc );
     while( num > 0 ) {
-
         len = va_arg( al, short );
         if( len != INDIR_CDECL ) {
             curr->lens[i++] = len;
         }
         num--;
-
     }
 
     va_end( al );
@@ -130,8 +131,9 @@ DWORD InvokeIndirectFunction( HINDIR handle, ... )
     short       i;
     va_list     al;
 
-    curr = (indir *) handle;
-    if( curr == NULL ) return( -1L );
+    curr = (indir *)handle;
+    if( curr == NULL )
+        return( -1L );
     va_start( al, handle );
 
     /*
@@ -139,17 +141,19 @@ DWORD InvokeIndirectFunction( HINDIR handle, ... )
      */
     if( curr->num != 0 ) {
         vals = malloc( sizeof( DWORD ) * curr->num );
-        if( vals == NULL ) return( -1L );
-        for( i=0;i<curr->num;i++ ) {
+        if( vals == NULL )
+            return( -1L );
+        for( i = 0; i < curr->num; i++ ) {
             if( curr->lens[i] == -1 ) {
                 vals[i] = va_arg( al, unsigned long );
-                vals[i] = AllocAlias16( (void *) vals[i] );
-                if( vals[i] == -1 ) return( -1L );
+                vals[i] = AllocAlias16( (void *)vals[i] );
+                if( vals[i] == -1 ) {
+                    return( -1L );
+                }
             } else {
                 vals[i] = va_arg( al, DWORD );
             }
         }
-
     }
 
     /*
@@ -157,29 +161,40 @@ DWORD InvokeIndirectFunction( HINDIR handle, ... )
      * in the opposite order of pascal calling convention
      */
     if( curr->msc ) {
-        for( i=0; i<=curr->num-1;i++ ) {
+        for( i = 0; i <= curr->num - 1; i++ ) {
             Push( vals[i] );
-            if( curr->lens[i] == -1 ) Push( 4L );
-            else if( curr->lens[i] == 1 ) Push( 2L );
-            else Push( curr->lens[i] );
+            if( curr->lens[i] == -1 ) {
+                Push( 4L );
+            } else if( curr->lens[i] == 1 ) {
+                Push( 2L );
+            } else {
+                Push( curr->lens[i] );
+            }
         }
     } else {
-        for( i=curr->num-1;i>=0;i-- ) {
+        for( i = curr->num - 1; i >= 0; i-- ) {
             Push( vals[i] );
-            if( curr->lens[i] == -1 ) Push( 4L );
-            else if( curr->lens[i] == 1 ) Push( 2L );
-            else Push( curr->lens[i] );
+            if( curr->lens[i] == -1 ) {
+                Push( 4L );
+            } else if( curr->lens[i] == 1 ) {
+                Push( 2L );
+            } else {
+                Push( curr->lens[i] );
+            }
         }
     }
-    Push( (DWORD) curr->proc );
-    if( curr->msc ) Push( curr->num + 0x100 );
-    else Push( curr->num );
+    Push( (DWORD)curr->proc );
+    if( curr->msc ) {
+        Push( curr->num + 0x100 );
+    } else {
+        Push( curr->num );
+    }
     rc = Invoke16BitFunction();
 
     /*
      * release the aliases
      */
-    for( i=0;i<curr->num;i++ ) {
+    for( i = 0; i < curr->num; i++ ) {
         if( curr->lens[i] == -1 ) {
             FreeAlias16( vals[i] );
         }

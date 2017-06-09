@@ -32,13 +32,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include "heapwalk.h"
+#include "wclbproc.h"
 #include "jdlg.h"
 
 
 /* Local Window callback functions prototypes */
-BOOL __export FAR PASCAL SummaryInfoProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+WINEXPORT INT_PTR CALLBACK SummaryInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
-static  FARPROC         dialProc;
+static  DLGPROC         dialProc;
 static  unsigned        dialCount = 0;
 
 #define GBL_INFO_DIALOG         1
@@ -139,12 +140,17 @@ static void fillLclInfoDialog( HWND hwnd ) {
 }
 
 /*
- * SummaryInfoProc - process messages from summary information dialogs
+ * SummaryInfoDlgProc - process messages from summary information dialogs
  */
-BOOL FAR PASCAL SummaryInfoProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+INT_PTR CALLBACK SummaryInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
+    bool    ret;
+
     wparam = wparam;
     lparam = lparam;
+
+    ret = false;
+
     switch( msg ) {
     case WM_INITDIALOG:
         SetWindowLong( hwnd, DWL_USER, lparam );
@@ -159,9 +165,11 @@ BOOL FAR PASCAL SummaryInfoProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam 
             fillGblInfoDialog( hwnd );
             break;
         }
+        ret = true;
         break;
     case WM_SYSCOLORCHANGE:
         CvrCtl3dColorChange();
+        ret = true;
         break;
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
@@ -182,22 +190,22 @@ BOOL FAR PASCAL SummaryInfoProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam 
             }
             break;
         }
+        ret = true;
         break;
     case WM_CLOSE:
         DestroyWindow( hwnd );
+        ret = true;
         break;
     case WM_NCDESTROY:
         dialCount --;
         if( dialCount == 0 ) {
-            FreeProcInstance( dialProc );
+            FreeProcInstance_DLG( dialProc );
         }
-        return( FALSE ); /* we need to let WINDOWS see this message or
-                            fonts are left undeleted */
-    default:
-        return( FALSE );
+        break; /* we need to let WINDOWS see this message or fonts are left undeleted */
     }
-    return( TRUE );
-} /* SummaryInfoProc */
+    return( ret );
+
+} /* SummaryInfoDlgProc */
 
 /*
  * initProcInst - make sure dialProc points to a valid procedure and
@@ -207,7 +215,7 @@ BOOL FAR PASCAL SummaryInfoProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam 
 static void initProcInst( void ) {
 
     if( dialCount == 0 ) {
-        dialProc = MakeProcInstance( (FARPROC)SummaryInfoProc, Instance );
+        dialProc = MakeProcInstance_DLG( SummaryInfoDlgProc, Instance );
     }
     dialCount ++;
 } /* initProcInst */
@@ -219,8 +227,8 @@ static void initProcInst( void ) {
 void DisplayGlobHeapInfo( HWND parent ) {
 
     initProcInst();
-    JCreateDialogParam( Instance, "GBL_HEAP_INFO", parent ,
-                          (DLGPROC)dialProc, GBL_INFO_DIALOG );
+    JCreateDialogParam( Instance, "GBL_HEAP_INFO", parent , dialProc, GBL_INFO_DIALOG );
+
 } /* DisplayGlobMemInfo */
 
 /*
@@ -230,8 +238,8 @@ void DisplayGlobHeapInfo( HWND parent ) {
 void DisplayMemManInfo( HWND parent ) {
 
     initProcInst();
-    JCreateDialogParam( Instance, "MEMMAN_INFO", parent, (DLGPROC)dialProc,
-                       MEM_INFO_DIALOG );
+    JCreateDialogParam( Instance, "MEMMAN_INFO", parent, dialProc, MEM_INFO_DIALOG );
+
 } /* DisplayMemManInfo */
 
 /*
@@ -243,7 +251,7 @@ HWND DisplayLocalHeapInfo( HWND parent ) {
     HWND                dialog;
 
     initProcInst();
-    dialog = JCreateDialogParam( Instance, "LCL_HEAP_INFO", parent,
-                             (DLGPROC)dialProc, LCL_INFO_DIALOG);
+    dialog = JCreateDialogParam( Instance, "LCL_HEAP_INFO", parent, dialProc, LCL_INFO_DIALOG);
     return( dialog );
+
 } /* DisplayLocalHeapInfo */

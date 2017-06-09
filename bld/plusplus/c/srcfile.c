@@ -122,7 +122,7 @@ static SRCFILE primarySrcFile;              // primary source file
 static DIR_LIST* roDirs;                    // read-only directories
 static unsigned totalSrcFiles;              // running total of SRCFILE's
 
-static unsigned char notFilled[2] = { '\n', '\0' };  // default buffer to force readBuffer
+static unsigned char notFilled[2] = { '\n', '\0' };  // default buffer to force srcReadBuffer
 
 static int lastChar;                    // unknown char to return in GetNextChar
 
@@ -201,7 +201,8 @@ static void cleanupOpenFiles(   // CLEAN UP ON MEMORY FAILURE
 static void srcFileInit(        // INITIALIZE SOURCE FILING
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     traced_back = NULL;
     freeFiles = NULL;
     srcFilesUnique = NULL;
@@ -219,7 +220,8 @@ static void srcFileInit(        // INITIALIZE SOURCE FILING
 static void srcFileFini(        // COMPLETE SOURCE FILING
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     if( srcFile != NULL ) {
         if( activeSrc() != NULL ) {
             while( NULL != srcFile ) {
@@ -342,6 +344,7 @@ static SRCFILE srcFileAlloc(    // ALLOCATE A SRCFILE
     new_src->sister = new_src;
     new_src->guard_state = GUARD_NULL;
     new_src->time_stamp = ftime;
+    new_src->force_include = false;
     MacroStateGet( &(new_src->macro_state) );
     if( srcFile == NULL ) {
         new_src->parent_locn = 0;
@@ -410,7 +413,7 @@ void SrcFileNotAFile(           // LABEL SRCFILE AS A DEVICE
 
 SRCFILE SrcFileOpen(            // OPEN NEW SOURCE FILE
     void *fp,                   // - system file control
-    char *name,                 // - file name
+    const char *name,           // - file name
     time_t ftime )
 {
     SRCFILE     new_src;        // - new source file
@@ -644,7 +647,7 @@ void SrcFileCurrentLocation(    // SET LOCATION FOR CURRENT SOURCE FILE
 }
 
 
-static bool readBuffer(         // READ NEXT BUFFER
+static bool srcReadBuffer(      // READ NEXT BUFFER
     bool close_top_file )       // - true ==> close top file
 {
     OPEN_FILE *act;             // - open file
@@ -668,6 +671,9 @@ static bool readBuffer(         // READ NEXT BUFFER
             if( close_top_file ) {
                 close_top_file = false;
             } else {
+                if( src_file->force_include && act->nextc == notFilled ) {
+                    InitialMacroFlag = MFLAG_NONE;
+                }
                 act->nextc = &act->buff[0];
                 if( src_file->found_eof ) {
                     src_file->found_eof = false;
@@ -768,8 +774,9 @@ static int getTestCharFromFile( OPEN_FILE **pact )
             break;
         }
         // '\0' in the middle of the buffer must be processed as a char
-        if( act->nextc != ( act->lastc + 1 ) ) break;
-        if( readBuffer( getGuardState() == GUARD_IFNDEF ) ) {
+        if( act->nextc != ( act->lastc + 1 ) )
+            break;
+        if( srcReadBuffer( getGuardState() == GUARD_IFNDEF ) ) {
             c = CurrChar;
             break;
         }
@@ -854,8 +861,9 @@ static int getCharAfterTwoQuestion( void )
     return( CurrChar );
 }
 
-static void outputTrigraphWarning( char c ) {
-    if( ! CompFlags.extensions_enabled ) {
+static void outputTrigraphWarning( char c )
+{
+    if( !CompFlags.extensions_enabled ) {
         // probably know about trigraphs if they are using -za
         return;
     }
@@ -1007,7 +1015,7 @@ static int getCharCheck( OPEN_FILE *act, int c )
         case '\0':
             // '\0' in the middle of the buffer must be processed as a char
             if( act->nextc == ( act->lastc + 1 ) ) {
-                if( ! readBuffer( getGuardState() == GUARD_IFNDEF ) ) {
+                if( !srcReadBuffer( getGuardState() == GUARD_IFNDEF ) ) {
                     return( GetNextChar() );
                 }
                 return( CurrChar );
@@ -1188,7 +1196,7 @@ int GetNextChar( void )
 
 void SrcFileScanName( int e )   // CALLED FROM CSCAN TO SCAN AN IDENTIFIER
 {
-    unsigned        len;
+    size_t          len;
     unsigned char   *p;
     OPEN_FILE       *act;
     int             c;
@@ -1204,35 +1212,43 @@ void SrcFileScanName( int e )   // CALLED FROM CSCAN TO SCAN AN IDENTIFIER
                 p = act->nextc;
                 for(;;) {
                     c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                        break;
                     Buffer[len] = c;
                     ++len;
                     c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                        break;
                     Buffer[len] = c;
                     ++len;
                     c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                        break;
                     Buffer[len] = c;
                     ++len;
                     c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                        break;
                     Buffer[len] = c;
                     ++len;
                     c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                        break;
                     Buffer[len] = c;
                     ++len;
                     c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                        break;
                     Buffer[len] = c;
                     ++len;
                     c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                        break;
                     Buffer[len] = c;
                     ++len;
                     c = *p++;
-                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                    if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                        break;
                     Buffer[len] = c;
                     ++len;
                     if( len > BUF_SIZE ) {
@@ -1241,11 +1257,13 @@ void SrcFileScanName( int e )   // CALLED FROM CSCAN TO SCAN AN IDENTIFIER
                 }
                 act->column += p - act->nextc;
                 act->nextc = p;
-                if(( CharSet[c] & C_EX ) == 0 ) break;
+                if(( CharSet[c] & C_EX ) == 0 )
+                    break;
                 // act->column is one too many at this point
                 --act->column;
                 c = getCharCheck( act, c );
-                if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                    break;
                 Buffer[len] = c;
                 ++len;
             }
@@ -1255,7 +1273,8 @@ void SrcFileScanName( int e )   // CALLED FROM CSCAN TO SCAN AN IDENTIFIER
             // but we'll just be safe rather than sorry...
             for(;;) {
                 c = NextChar();
-                if(( CharSet[c] & (C_AL|C_DI) ) == 0 ) break;
+                if(( CharSet[c] & (C_AL|C_DI) ) == 0 )
+                    break;
                 Buffer[len] = c;
                 ++len;
                 if( len > BUF_SIZE ) {
@@ -1280,34 +1299,45 @@ void SrcFileScanWhiteSpace( bool expanding )
     OPEN_FILE       *act;
     int             c;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     if( NextChar == GetNextChar ) {
-        for(;;) {
+        for( ;; ) {
             // codegen can't do this optimization so we have to
             c = '\0';
             act = activeSrc();
             p = act->nextc;
             for( ;; ) {
                 c = *p++;
-                if( CharSet[c] != C_WS ) break;
+                if( CharSet[c] != C_WS )
+                    break;
                 c = *p++;
-                if( CharSet[c] != C_WS ) break;
+                if( CharSet[c] != C_WS )
+                    break;
                 c = *p++;
-                if( CharSet[c] != C_WS ) break;
+                if( CharSet[c] != C_WS )
+                    break;
                 c = *p++;
-                if( CharSet[c] != C_WS ) break;
+                if( CharSet[c] != C_WS )
+                    break;
                 c = *p++;
-                if( CharSet[c] != C_WS ) break;
+                if( CharSet[c] != C_WS )
+                    break;
                 c = *p++;
-                if( CharSet[c] != C_WS ) break;
+                if( CharSet[c] != C_WS )
+                    break;
                 c = *p++;
-                if( CharSet[c] != C_WS ) break;
+                if( CharSet[c] != C_WS )
+                    break;
                 c = *p++;
-                if( CharSet[c] != C_WS ) break;
+                if( CharSet[c] != C_WS ) {
+                    break;
+                }
             }
             act->column += p - act->nextc;
             act->nextc = p;
-            if(( CharSet[c] & C_EX ) == 0 ) break;
+            if(( CharSet[c] & C_EX ) == 0 )
+                break;
             if( c == '\n' ) {
                 act->line++;
                 act->column = 0;
@@ -1319,21 +1349,26 @@ void SrcFileScanWhiteSpace( bool expanding )
             } else if( c != '\r' ) {
                 --act->column;
                 c = getCharCheck( act, c );
-                if(( CharSet[c] & C_WS ) == 0 ) break;
+                if(( CharSet[c] & C_WS ) == 0 ) {
+                    break;
+                }
             }
         }
         CurrChar = c;
     } else {
-        for(;;) {
+        for( ;; ) {
             c = NextChar();
-            if(( CharSet[c] & C_WS ) == 0 ) break;
+            if(( CharSet[c] & C_WS ) == 0 )
+                break;
             c = NextChar();
-            if(( CharSet[c] & C_WS ) == 0 ) break;
+            if(( CharSet[c] & C_WS ) == 0 ) {
+                break;
+            }
         }
     }
 }
 
-void SrcFileScanCppComment()
+void SrcFileScanCppComment( void )
 {
     unsigned char   *p;
     OPEN_FILE       *act;
@@ -1347,13 +1382,18 @@ void SrcFileScanCppComment()
             p = act->nextc;
             for( ;; ) {
                 c = *p++;
-                if( CharSet[c] & C_EX ) break;
+                if( CharSet[c] & C_EX )
+                    break;
                 c = *p++;
-                if( CharSet[c] & C_EX ) break;
+                if( CharSet[c] & C_EX )
+                    break;
                 c = *p++;
-                if( CharSet[c] & C_EX ) break;
+                if( CharSet[c] & C_EX )
+                    break;
                 c = *p++;
-                if( CharSet[c] & C_EX ) break;
+                if( CharSet[c] & C_EX ) {
+                    break;
+                }
             }
             // we don't have to keep the column up to date, because once
             // we get to the end of the line, we will be starting the
@@ -1385,8 +1425,11 @@ void SrcFileScanCppComment()
     } else {
         for( ;; ) {
             c = NextChar();
-            if( c == LCHR_EOF ) break;
-            if( c == '\n' ) break;
+            if( c == LCHR_EOF )
+                break;
+            if( c == '\n' ) {
+                break;
+            }
         }
     }
 }
@@ -1398,7 +1441,7 @@ bool IsSrcFilePrimary(          // DETERMINE IF PRIMARY SOURCE FILE
 }
 
 
-void SrcFileLibrary(            // MARK CURRENT SOURCE FILE AS A LIBRARY FILE
+void SetSrcFileLibrary(         // MARK CURRENT SOURCE FILE AS A LIBRARY FILE
     void )
 {
     srcFile->lib_inc = true;
@@ -1440,7 +1483,7 @@ SRCFILE SrcFileGetPrimary(      // GET PRIMARY SOURCE FILE
 }
 
 
-void SrcFileCommand(            // MARK CURRENT SOURCE FILE AS A COMMAND FILE
+void SetSrcFileCommand(         // MARK CURRENT SOURCE FILE AS A COMMAND FILE
     void )
 {
     srcFile->cmdline   = true;
@@ -1477,7 +1520,7 @@ void SrcFileGetTokenLocn(       // FILL IN TOKEN_LOCN FROM CURRENCY
     tgt->column = TokenColumn;
 }
 
-void SrcFileResetTokenLocn(     // RESET TOKEN_LOCN
+void SrcFileSetTokenLocn(       // RESET TOKEN_LOCN
     TOKEN_LOCN *tgt )           // - from SrcFileGetTokenLocn
 {
     set_srcFile( tgt->src_file );
@@ -1541,7 +1584,8 @@ SRCFILE SrcFileNotReadOnly(     // GET NEXT NON-READ-ONLY SOURCE FILE
     char const *file_name;      // - file name of current entry
 
     for( ; curr != NULL; curr = curr->unique ) {
-        if( curr->read_only ) continue;
+        if( curr->read_only )
+            continue;
         read_only = false;
         file_name = SrcFileFullName( curr );
         RingIterBeg( roDirs, srch ) {
@@ -1550,7 +1594,9 @@ SRCFILE SrcFileNotReadOnly(     // GET NEXT NON-READ-ONLY SOURCE FILE
                 break;
             }
         } RingIterEnd( srch );
-        if( ! read_only ) break;
+        if( !read_only ) {
+            break;
+        }
     }
     return( curr );
 }
@@ -1646,8 +1692,8 @@ void SrcFileGuardPpIf(          // #IF DETECTED IN SOURCE FILE
 
 
 void SrcFileGuardPpIfndef(      // SUPPLY #IFNDEF NAME
-    char *name,                 // - macro name
-    unsigned len )              // - length of name
+    const char *name,           // - macro name
+    size_t len )                // - length of name
 {
     SRCFILE src;
 
@@ -1674,8 +1720,7 @@ void SrcFileGuardPpElse(        // #ELSE DETECTED IN SOURCE FILE
 void SrcFileGuardPpEndif(       // #ENDIF DETECTED IN SOURCE FILE
     void )
 {
-    if( ( 0 == IfDepthInSrcFile() )
-      &&( getGuardState() == GUARD_MID ) ) {
+    if( ( 0 == IfDepthInSrcFile() ) &&( getGuardState() == GUARD_MID ) ) {
         setGuardState( GUARD_BOT );
     }
 }
@@ -1700,7 +1745,7 @@ bool SrcFileGuardedIf(          // SKIP REST OF GUARDED FILE, IF POSSIBLE
 {
     if( getGuardState() == GUARD_IF ) {
         if( !value ) {
-            if( !readBuffer( true ) ) {
+            if( !srcReadBuffer( true ) ) {
                 GetNextChar();
             }
             return( true );
@@ -1712,7 +1757,7 @@ bool SrcFileGuardedIf(          // SKIP REST OF GUARDED FILE, IF POSSIBLE
 
 
 bool SrcFileProcessOnce(        // CHECK WHETHER WE HAVE TO OPEN THE FILE
-    char *name )
+    const char *name )
 {
     SRCFILE old;                // - existing SRCFILE
 
@@ -1867,7 +1912,7 @@ static bool srcFileCacheClose( bool close_all_ok )
 }
 
 
-static bool recursiveIncludeDetected( char *name )
+static bool recursiveIncludeDetected( const char *name )
 {
     SRCFILE curr;
 
@@ -1885,7 +1930,7 @@ static bool recursiveIncludeDetected( char *name )
 }
 
 
-FILE *SrcFileFOpen( char *name, src_file_open kind )
+FILE *SrcFileFOpen( const char *name, src_file_open kind )
 {
     FILE *fp;
     const char *mode;
@@ -1901,15 +1946,19 @@ FILE *SrcFileFOpen( char *name, src_file_open kind )
             }
             break;
         }
-        if( errno != ENOMEM && errno != ENFILE && errno != EMFILE ) break;
-        if( ! srcFileCacheClose( kind == SFO_SOURCE_FILE ) ) break;
+        if( errno != ENOMEM && errno != ENFILE && errno != EMFILE )
+            break;
+        if( ! srcFileCacheClose( kind == SFO_SOURCE_FILE ) ) {
+            break;
+        }
     }
     return( fp );
 }
 
 int SrcFileFClose( FILE *fp )
 {
-    if( fp == stdin ) return( 0 );
+    if( fp == stdin )
+        return( 0 );
     return( fclose( fp ) );
 }
 
@@ -1957,10 +2006,10 @@ static void saveSrcFile( void *e, carve_walk_base *d )
     s->ifndef_name = PCHSetUInt( ifndef_len );
     PCHWriteCVIndex( d->index );
     PCHWriteVar( *s );
-    if( name_len != 0 ) {
+    if( name_len > 0 ) {
         PCHWrite( name_save, name_len );
     }
-    if( ifndef_len != 0 ) {
+    if( ifndef_len > 0 ) {
         PCHWrite( ifndef_save, ifndef_len );
     }
     s->sister = sister_save;
@@ -2044,7 +2093,7 @@ pch_status PCHReadSrcFiles( void )
             s->name = NULL;
         }
         ifndef_len = PCHGetUInt( s->ifndef_name );
-        if( ifndef_len != 0 ) {
+        if( ifndef_len > 0 ) {
             if( ifndef_len > buff_len ) {
                 CMemFree( buff );
                 buff_len = ifndef_len;

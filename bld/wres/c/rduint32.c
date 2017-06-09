@@ -38,13 +38,9 @@
 bool ResReadUint32( uint_32 *newint, WResFileID fid )
 /***************************************************/
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
-    numread = WRESREAD( fid, newint, sizeof( uint_32 ) );
-    if( numread == sizeof( uint_32 ) ) {
-        return( false );
-    } else {
-        WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-    }
-    return( true );
+    if( (numread = WRESREAD( fid, newint, sizeof( uint_32 ) )) != sizeof( uint_32 ) )
+        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
+    return( false );
 }

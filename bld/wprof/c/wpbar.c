@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -104,8 +105,8 @@ bool GetCurrentMaxBar( sio_data * curr_sio )
 
 
 
-extern void FlipCurrentAbsBar( sio_data * curr_sio )
-/**************************************************/
+void FlipCurrentAbsBar( sio_data * curr_sio )
+/*******************************************/
 {
     if( curr_sio->level_open == LEVEL_SAMPLE ) {
         curr_sio->abs_bar = !curr_sio->abs_bar;
@@ -122,8 +123,8 @@ extern void FlipCurrentAbsBar( sio_data * curr_sio )
 
 
 
-extern void FlipCurrentRelBar( sio_data * curr_sio )
-/**************************************************/
+void FlipCurrentRelBar( sio_data * curr_sio )
+/*******************************************/
 {
     if( curr_sio->level_open == LEVEL_SAMPLE ) {
         curr_sio->rel_bar = !curr_sio->rel_bar;
@@ -140,8 +141,8 @@ extern void FlipCurrentRelBar( sio_data * curr_sio )
 
 
 
-extern void FlipCurrentMaxBar( sio_data * curr_sio )
-/**************************************************/
+void FlipCurrentMaxBar( sio_data * curr_sio )
+/*******************************************/
 {
     if( curr_sio->level_open == LEVEL_SAMPLE ) {
         curr_sio->bar_max = !curr_sio->bar_max;

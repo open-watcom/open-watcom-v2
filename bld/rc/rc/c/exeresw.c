@@ -31,7 +31,7 @@
 
 #include "wio.h"
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "rcstrblk.h"
 #include "rcstr.h"
 #include "rcrtns.h"
@@ -102,11 +102,10 @@ static uint_16 findResOrTypeName( ResTable *restab, WResID *name )
     uint_16     name_id;
     int_32      str_offset;
 
+    name_id = 0;
     if( name->IsName ) {
         str_offset = StringBlockFind( &restab->Str, &name->ID.Name );
-        if( str_offset == -1 ) {
-            name_id = 0;
-        } else {
+        if( str_offset != -1 ) {
             name_id = str_offset + restab->Dir.TableSize;
         }
     } else {
@@ -122,7 +121,7 @@ static FullTypeRecord *addExeTypeRecord( ResTable *restab,
 {
     FullTypeRecord      *exe_type;
 
-    exe_type = RCALLOC( sizeof( FullTypeRecord ) );
+    exe_type = RESALLOC( sizeof( FullTypeRecord ) );
 
     exe_type->Info.reserved = 0;
     exe_type->Info.num_resources = type->NumResources;
@@ -145,16 +144,16 @@ static FullTypeRecord *findExeTypeRecord( ResTable *restab,
     FullTypeRecord      *exe_type;
     StringItem16        *exe_type_name;
 
-    for( exe_type = restab->Dir.Head; exe_type != NULL;
-                exe_type = exe_type->Next ) {
-        if( type->TypeName.IsName && !(exe_type->Info.type & 0x8000) ) {
+    for( exe_type = restab->Dir.Head; exe_type != NULL; exe_type = exe_type->Next ) {
+        if( type->TypeName.IsName && (exe_type->Info.type & 0x8000) == 0 ) {
             /* if they are both names */
-            exe_type_name = (StringItem16 *)((char *)restab->Str.StringBlock +
-                            (exe_type->Info.type - restab->Dir.TableSize));
+            exe_type_name = (StringItem16 *)((char *)restab->Str.StringBlock
+                               + (exe_type->Info.type - restab->Dir.TableSize));
             if( exe_type_name->NumChars == type->TypeName.ID.Name.NumChars
-                && !memicmp( exe_type_name->Name, type->TypeName.ID.Name.Name,
-                             exe_type_name->NumChars ) ) break;
-        } else if( !(type->TypeName.IsName) && exe_type->Info.type & 0x8000 ) {
+              && memicmp( exe_type_name->Name, type->TypeName.ID.Name.Name, exe_type_name->NumChars ) == 0 ) {
+                break;
+            }
+        } else if( !(type->TypeName.IsName) && (exe_type->Info.type & 0x8000) ) {
             /* if they are both numbers */
             if( type->TypeName.ID.Num == (exe_type->Info.type & ~0x8000) ) {
                 break;
@@ -177,7 +176,7 @@ static void addExeResRecord( ResTable *restab, FullTypeRecord *type,
 {
     FullResourceRecord          *exe_res;
 
-    exe_res = RCALLOC( sizeof( FullResourceRecord ) );
+    exe_res = RESALLOC( sizeof( FullResourceRecord ) );
 
     exe_res->Info.offset = exe_offset;
     exe_res->Info.length = exe_length;
@@ -203,14 +202,14 @@ static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
     /* align the output file to a boundary for shift_count */
     ret = RS_OK;
     align_amount = 0;   // shut up gcc
-    out_offset = RCTELL( out_fid );
+    out_offset = RESTELL( out_fid );
     if( out_offset == -1 ) {
         ret = RS_WRITE_ERROR;
         *err_code = errno;
     }
     if( ret == RS_OK ) {
         align_amount = AlignAmount( out_offset, shift_count );
-        if( RCSEEK( out_fid, align_amount, SEEK_CUR ) == -1 ) {
+        if( RESSEEK( out_fid, align_amount, SEEK_CUR ) ) {
             ret = RS_WRITE_ERROR;
             *err_code = errno;
         }
@@ -218,7 +217,7 @@ static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
     }
 
     if( ret == RS_OK ) {
-        if( RCSEEK( res_fid, lang->Offset, SEEK_SET ) == -1 ) {
+        if( RESSEEK( res_fid, lang->Offset, SEEK_SET ) ) {
             ret = RS_READ_ERROR;
             *err_code = errno;
         }
@@ -228,15 +227,14 @@ static RcStatus copyOneResource( ResTable *restab, FullTypeRecord *type,
         *err_code = errno;
     }
     if( ret == RS_OK ) {
-        align_amount = AlignAmount( RCTELL( out_fid ), shift_count );
+        align_amount = AlignAmount( RESTELL( out_fid ), shift_count );
         ret = PadExeData( out_fid, align_amount );
         *err_code = errno;
     }
 
     if( ret == RS_OK ) {
         addExeResRecord( restab, type, &(res->ResName), lang->MemoryFlags,
-                out_offset >> shift_count,
-                (lang->Length + align_amount) >> shift_count );
+                out_offset >> shift_count, (lang->Length + align_amount) >> shift_count );
     }
 
     return( ret );
@@ -284,8 +282,7 @@ RcStatus CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
 
         if( ARE_BITS_EQUAL( sect2mask, sect2bits, lang->MemoryFlags ) == sect2 ) {
             ret = copyOneResource( restab, exe_type, lang, res, res_fid,
-                                    tmp_fid, restab->Dir.ResShiftCount,
-                                    &err_code );
+                                    tmp_fid, restab->Dir.ResShiftCount, &err_code );
         }
 
         if( ret != RS_OK )
@@ -318,7 +315,7 @@ RcStatus CopyWINResources( uint_16 sect2mask, uint_16 sect2bits, bool sect2 )
 static RcStatus writeTypeRecord( WResFileID fid, resource_type_record *res )
 /**************************************************************************/
 {
-    if( RCWRITE( fid, res, sizeof( resource_type_record ) ) != sizeof( resource_type_record ) ) {
+    if( RESWRITE( fid, res, sizeof( resource_type_record ) ) != sizeof( resource_type_record ) ) {
         return( RS_WRITE_ERROR );
     } else {
         return( RS_OK );
@@ -333,7 +330,7 @@ static RcStatus writeTypeRecord( WResFileID fid, resource_type_record *res )
 static RcStatus writeResRecord( WResFileID fid, resource_record *type )
 /*********************************************************************/
 {
-    if( RCWRITE( fid, type, sizeof( resource_record ) ) != sizeof( resource_record ) ) {
+    if( RESWRITE( fid, type, sizeof( resource_record ) ) != sizeof( resource_record ) ) {
         return( RS_WRITE_ERROR );
     } else {
         return( RS_OK );
@@ -353,9 +350,9 @@ static void freeResTable( ResTable *restab )
         next_type = exe_type->Next;
         for( exe_res = exe_type->Head; exe_res != NULL; exe_res = next_res ) {
             next_res = exe_res->Next;
-            RCFREE( exe_res );
+            RESFREE( exe_res );
         }
-        RCFREE( exe_type );
+        RESFREE( exe_type );
     }
 
     restab->Dir.Head = NULL;
@@ -371,7 +368,7 @@ static RcStatus writeStringBlock( WResFileID fid, StringsBlock *str )
 /*******************************************************************/
 {
     if( str->StringBlockSize > 0 ) {
-        if( RCWRITE( fid, str->StringBlock, str->StringBlockSize ) != str->StringBlockSize ) {
+        if( RESWRITE( fid, str->StringBlock, str->StringBlockSize ) != str->StringBlockSize ) {
             return( RS_WRITE_ERROR );
         }
     }
@@ -391,7 +388,7 @@ extern RcStatus WriteWINResTable( WResFileID fid, ResTable *restab, int *err_cod
     uint_16                     zero;
 
     ret = RS_OK;
-    if( RCWRITE( fid, &(restab->Dir.ResShiftCount), sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
+    if( RESWRITE( fid, &(restab->Dir.ResShiftCount), sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
         ret = RS_WRITE_ERROR;
     }
 
@@ -407,7 +404,7 @@ extern RcStatus WriteWINResTable( WResFileID fid, ResTable *restab, int *err_cod
 
     if( ret == RS_OK ) {
         zero = 0;
-        if( RCWRITE( fid, &zero, sizeof( uint_16 ) ) != sizeof( uint_16 ) ) {
+        if( RESWRITE( fid, &zero, sizeof( zero ) ) != sizeof( zero ) ) {
             ret = RS_WRITE_ERROR;
         }
     }

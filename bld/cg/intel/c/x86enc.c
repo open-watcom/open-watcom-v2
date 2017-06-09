@@ -478,7 +478,6 @@ static  bool    LayOpndSize( instruction *ins, gentype gen ) {
 */
 
 #if _TARGET & _TARG_IAPX86
-    gen = gen;
     switch( ins->head.opcode ) {
     case OP_PUSH:
         if( ( gen == G_C1 || gen == G_M1 ) && ins->type_class == I4 ) {
@@ -715,7 +714,7 @@ static  void    DoP5MemoryDivide( instruction *ins ) {
     InputOC( &oc );
 
     seg = NULL;
-    if( ins->num_operands > NumOperands( ins ) ) {
+    if( ins->num_operands > OpcodeNumOperands( ins ) ) {
         seg = ins->operands[ins->num_operands - 1];
     }
 
@@ -1547,7 +1546,7 @@ extern  void    GenTouchStack( bool sp_might_point_at_something ) {
 */
 
 #if _TARGET & _TARG_IAPX86
-    sp_might_point_at_something=sp_might_point_at_something;
+    /* unused parameters */ (void)sp_might_point_at_something;
 #else
     if( sp_might_point_at_something || OptForSize == 100 ) {
         QuickSave( HW_EAX, OP_PUSH );
@@ -1609,7 +1608,8 @@ extern  void    GenUnkMov( hw_reg_set dst, pointer value ) {
 /***********************************************************
     MOV         dst,??? - to be patched
 */
-    dst = dst;
+    /* unused parameters */ (void)dst;
+
     _Code;
     LayOpbyte( 0xb8 );
     OpndSize( dst );
@@ -1892,8 +1892,8 @@ void    GenObjCode( instruction *ins ) {
 
         _Code;
         LayInitial( ins, gen );
-        i = ins->num_operands - 1;
-        if( i >= NumOperands( ins ) ) {
+        if( ins->num_operands > OpcodeNumOperands( ins ) ) {
+            i = ins->num_operands - 1;
             if( ins->operands[i]->n.class == N_REGISTER ) {
                 GenSeg( ins->operands[i]->r.reg );
             } else {
@@ -1950,7 +1950,7 @@ void    GenObjCode( instruction *ins ) {
                 break;
             }
             LayACRegOp( left );
-            if( NumOperands( ins ) != 1 && right->c.lo.int_value == 2 ) {
+            if( OpcodeNumOperands( ins ) != 1 && right->c.lo.int_value == 2 ) {
                 /* never address*/
                 TransferIns();
                 if( opnd_size ) {

@@ -166,7 +166,8 @@ int GUIGetCharacter( gui_draw_char draw_char )
 
 void GUISetCharacter( gui_draw_char draw_char, int ch )
 {
-    ch=ch; draw_char=draw_char;
+    /* unused parameters */ (void)ch; (void)draw_char;
+
     // not implemented in this revision
     // some apps do a
     // if an app calls GUISetCharacter( GUI_SCROLL_SLIDER, 177 );

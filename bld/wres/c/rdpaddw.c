@@ -44,18 +44,12 @@ bool ResReadPadDWord( WResFileID fid )
 {
     WResFileOffset  curr_pos;
     WResFileOffset  padding;
-    bool            error;
 
     curr_pos = WRESTELL( fid );
-    if( curr_pos == -1 ) {
-        WRES_ERROR( WRS_TELL_FAILED );
-        error = true;
-    } else {
-        padding = RES_PADDING( curr_pos, sizeof( uint_32 ) );
-        error = ( WRESSEEK( fid, padding, SEEK_CUR ) == -1 );
-        if( error ) {
-            WRES_ERROR( WRS_SEEK_FAILED );
-        }
-    }
-    return( error );
+    if( curr_pos == -1 )
+        return( WRES_ERROR( WRS_TELL_FAILED ) );
+    padding = RES_PADDING( curr_pos, sizeof( uint_32 ) );
+    if( WRESSEEK( fid, padding, SEEK_CUR ) )
+        return( WRES_ERROR( WRS_SEEK_FAILED ) );
+    return( false );
 }

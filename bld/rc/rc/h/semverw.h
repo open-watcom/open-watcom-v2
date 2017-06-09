@@ -50,36 +50,34 @@ typedef struct VerFixedOption {
 } VerFixedOption;
 
 typedef struct FullVerValueList {
-    int             NumItems;
-    VerValueItem *  Item;       // array of items
+    unsigned        NumItems;
+    VerValueItem    *Item;          // array of items
 } FullVerValueList;
 
 struct FullVerBlock;
 typedef struct FullVerBlockNest {
-    struct FullVerBlock *   Head;
-    struct FullVerBlock *   Tail;
+    struct FullVerBlock     *Head;
+    struct FullVerBlock     *Tail;
 } FullVerBlockNest;
 
 typedef struct FullVerBlock {
-    struct FullVerBlock *   Next;
-    struct FullVerBlock *   Prev;
+    struct FullVerBlock     *Next;
+    struct FullVerBlock     *Prev;
     bool                    UseUnicode;
     VerBlockHeader          Head;
-    FullVerValueList *      Value;
-    FullVerBlockNest *      Nest;
+    FullVerValueList        *Value;
+    FullVerBlockNest        *Nest;
 } FullVerBlock;
 
 extern FullVerValueList *SemWINNewVerValueList( VerValueItem item );
 extern FullVerValueList *SemWINAddVerValueList( FullVerValueList *, VerValueItem);
-extern FullVerBlock     *SemWINNewBlockVal( char * name, FullVerValueList * list );
-extern FullVerBlock     *SemWINNameVerBlock( char * name, FullVerBlockNest * nest );
-extern FullVerBlockNest *SemWINNewBlockNest( FullVerBlock * child );
+extern FullVerBlock     *SemWINNewBlockVal( char *name, FullVerValueList *list );
+extern FullVerBlock     *SemWINNameVerBlock( char *name, FullVerBlockNest *nest );
+extern FullVerBlockNest *SemWINNewBlockNest( FullVerBlock *child );
 extern FullVerBlockNest *SemWINAddBlockNest( FullVerBlockNest *, FullVerBlock * );
-extern FullVerBlockNest *SemWINMergeBlockNest( FullVerBlockNest * nest1,
-                            FullVerBlockNest * nest2 );
+extern FullVerBlockNest *SemWINMergeBlockNest( FullVerBlockNest *nest1, FullVerBlockNest *nest2 );
 extern VerFixedInfo     *SemWINNewVerFixedInfo( VerFixedOption option );
-extern VerFixedInfo     *SemWINAddVerFixedInfo( VerFixedInfo * info, VerFixedOption );
-extern void             SemWINWriteVerInfo( WResID * name, ResMemFlags flags,
-                            VerFixedInfo * info, FullVerBlockNest * nest );
+extern VerFixedInfo     *SemWINAddVerFixedInfo( VerFixedInfo *info, VerFixedOption );
+extern void             SemWINWriteVerInfo( WResID *name, ResMemFlags flags, VerFixedInfo *info, FullVerBlockNest *nest );
 
 #endif

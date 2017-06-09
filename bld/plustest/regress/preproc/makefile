@@ -8,7 +8,7 @@ alt_error=00
 .c.i:
     %append $(%ERROR_FILE) @@@ $^@ @@@
     @%make set_path_wpp
-    $(wpp_$(arch)) $[@ -w0 -pl -fo=.i -na
+    $(wpp_$(arch)) $[@ -w0 -pl -fo=.i -fip
     @%make set_old_path
     cat $(%ERROR_FILE) $^@ >tmp_exec.out
     cp tmp_exec.out $(%ERROR_FILE)
@@ -16,7 +16,7 @@ alt_error=00
 .c.i1:
     %append $(%ERROR_FILE) @@@ $^@ @@@
     @%make set_path_wpp
-    $(wpp_$(arch)) $[@ -w0 -plc -fo=.i1 -na
+    $(wpp_$(arch)) $[@ -w0 -plc -fo=.i1 -fip
     @%make set_old_path
     cat $(%ERROR_FILE) $^@ >tmp_exec.out
     cp tmp_exec.out $(%ERROR_FILE)
@@ -24,7 +24,7 @@ alt_error=00
 .c.i0:
     %append $(%ERROR_FILE) @@@ $^@ @@@
     @%make set_path_wpp
-    $(wpp_$(arch)) $[@ -w0 -pl -pw=0 -fo=.i0 -na
+    $(wpp_$(arch)) $[@ -w0 -pl -pw=0 -fo=.i0 -fip
     @%make set_old_path
     cat $(%ERROR_FILE) $^@ >tmp_exec.out
     cp tmp_exec.out $(%ERROR_FILE)

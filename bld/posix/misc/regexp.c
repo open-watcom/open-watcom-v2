@@ -289,10 +289,11 @@ regexp *RegComp( const char *instr )
     const char  *exp;
     char        buff[MAX_STR*2];
     int         flags;
-    bool        ignmag = false;
+    bool        ignmag;
     unsigned    j;
     size_t      i, k, len;
 
+    ignmag = false;
 #ifdef WANT_EXCLAMATION
     if( instr[0] == '!' ) {
         instr++;
@@ -842,8 +843,7 @@ static bool RegExec2( regexp *prog, const char *string, bool anchflag )
 
     /* If there is a "must appear" string, look for it. */
     if( prog->regmust != NULL ) {
-        s = string;
-        while( ( s = StrChr( s, prog->regmust[0] ) ) != NULL ) {
+        for( s = string; (s = StrChr( s, prog->regmust[0] )) != NULL; ++s ) {
             if( CASEIGNORE ) {
                 if( strnicmp( s, prog->regmust, prog->regmlen ) == 0 ) {
                     break;
@@ -853,7 +853,6 @@ static bool RegExec2( regexp *prog, const char *string, bool anchflag )
                     break;
                 }
             }
-            s++;
         }
         if( s == NULL ) {
             return( false ); /* Not present. */
@@ -945,8 +944,7 @@ static bool regmatch( reg_node *prog )
     reg_node    *node;  /* Current node. */
     reg_node    *next;  /* Next node. */
 
-    node = prog;
-    while( node != NULL ) {
+    for( node = prog; node != NULL; node = next ) {
         next = regnext( node );
 
         switch( OP( node ) ) {
@@ -1115,7 +1113,7 @@ static bool regmatch( reg_node *prog )
         case MATCHPREV + 18:
         case MATCHPREV + 19:
             {
-                int no;
+                int        no;
                 const char *curr;
                 const char *save;
 
@@ -1126,7 +1124,7 @@ static bool regmatch( reg_node *prog )
                 curr = regstartp[no];
                 save = reginput;
                 if( CASEIGNORE ) {
-                    while( 1 ) {
+                    for( ;; ) {
                         if( tolower( *curr ) == tolower( *reginput ) ) {
                             if( curr == regendp[no] ) {
                                 return( true );
@@ -1139,7 +1137,7 @@ static bool regmatch( reg_node *prog )
                         }
                     }
                 } else {
-                    while( 1 ) {
+                    for( ;; ) {
                         if( *curr == *reginput ) {
                             if( curr == regendp[no] ) {
                                 return( true );
@@ -1151,7 +1149,6 @@ static bool regmatch( reg_node *prog )
                             return( false );
                         }
                     }
-
                 }
             }
             break;
@@ -1179,10 +1176,9 @@ static bool regmatch( reg_node *prog )
         case STAR:
         case PLUS:
             {
-                char nextch;
-                size_t no;
-                const char *save;
-                unsigned min;
+                char       nextch;
+                const char *start;
+                const char *check;
 
                 /*
                  * Lookahead to avoid useless match attempts
@@ -1192,10 +1188,11 @@ static bool regmatch( reg_node *prog )
                 if( OP( next ) == EXACTLY ) {
                     nextch = *OPERAND_STR( next );
                 }
-                min = ( OP( node ) == STAR ) ? 0 : 1;
-                save = reginput;
-                no = regrepeat( OPERAND( node ) );
-                while( no >= min ) {
+                start = reginput;
+                if( OP( node ) == PLUS )
+                    ++start;
+                regrepeat( OPERAND( node ) );
+                for( check = reginput; reginput >= start; reginput = --check ) {
                     /* If it could work, try it. */
                     if( CASEIGNORE ) {
                         if( nextch == '\0' || tolower( *reginput ) == tolower( nextch ) ) {
@@ -1210,9 +1207,6 @@ static bool regmatch( reg_node *prog )
                             }
                         }
                     }
-                    /* Couldn't or didn't -- back up. */
-                    no--;
-                    reginput = save + no;
                 }
                 return( false );
             }
@@ -1231,8 +1225,6 @@ static bool regmatch( reg_node *prog )
             return( false );
             break;
         }
-
-        node = next;
     }
 
     /*

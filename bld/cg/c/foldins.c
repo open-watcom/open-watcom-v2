@@ -64,11 +64,12 @@ bool     IsTrickyPointerConv( instruction *ins )
 {
 #if _TARGET & ( _TARG_80386 | _TARG_IAPX86 )
     if( (ins->head.opcode == OP_CONVERT) && _IsPointer( ins->type_class ) ) {
-        if( ins->base_type_class == U2 && TypeClassSize[ins->type_class] > WORD_SIZE )
+        if( ins->base_type_class == U2 && TypeClassSize[ins->type_class] > WORD_SIZE ) {
             return( true );
+        }
     }
 #else
-    ins = ins;
+    /* unused parameters */ (void)ins;
 #endif
     return( false );
 }
@@ -93,11 +94,15 @@ static  bool    RelocConst( name *op ) {
 static bool ActiveCompare( instruction *ins ) {
 /*********************************************/
 
-    if( _FalseIndex( ins ) == _TrueIndex( ins ) ) return( false );
+    if( _FalseIndex( ins ) == _TrueIndex( ins ) )
+        return( false );
     /* if unexpanded OR expanded and not just placeholder conditional */
-    if( ins->table == NULL ) return( true );
-    if( ins->u.gen_table == NULL ) return( false );
-    if( DoesSomething( ins ) ) return( true );
+    if( ins->table == NULL )
+        return( true );
+    if( ins->u.gen_table == NULL )
+        return( false );
+    if( DoesSomething( ins ) )
+        return( true );
     return( false );
 }
 
@@ -127,11 +132,15 @@ static  instruction *CmpRelocZero( instruction *ins, int c, int r ) {
     name        *rel;
     bool        truth;
 
-    if( NumOperands( ins ) != 2 ) return( NULL );
+    if( OpcodeNumOperands( ins ) != 2 )
+        return( NULL );
     cons = ins->operands[c];
-    if( cons->n.class != N_CONSTANT ) return( NULL );
-    if( cons->c.const_type != CONS_ABSOLUTE ) return( NULL );
-    if( CFTest( cons->c.value ) != 0 ) return( NULL );
+    if( cons->n.class != N_CONSTANT )
+        return( NULL );
+    if( cons->c.const_type != CONS_ABSOLUTE )
+        return( NULL );
+    if( CFTest( cons->c.value ) != 0 )
+        return( NULL );
     rel = ins->operands[r];
     if( rel->c.const_type == CONS_OFFSET && !AskSegNear( (segment_id)rel->c.lo.int_value ) )
         return( NULL );
@@ -151,8 +160,10 @@ static  instruction *CmpRelocZero( instruction *ins, int c, int r ) {
     default:
         return( false );
     }
-    if( !ActiveCompare( ins ) ) return( NULL );
-    if( c != 1 ) truth = !truth;
+    if( !ActiveCompare( ins ) )
+        return( NULL );
+    if( c != 1 )
+        truth = !truth;
     if( truth ) {
         _SetBlockIndex( ins, _TrueIndex(ins), _TrueIndex(ins) );
     } else {
@@ -169,13 +180,13 @@ static  instruction *StraightLine( instruction *ins, tn fold, bool is_true )
     name        *result;
 
     result = TGetName( fold );
-    if( result == NULL ) 
+    if( result == NULL )
         return( NULL );
-    if( result->n.class != N_CONSTANT ) 
+    if( result->n.class != N_CONSTANT )
         return( NULL );
-    if( result->c.const_type != CONS_ABSOLUTE ) 
+    if( result->c.const_type != CONS_ABSOLUTE )
         return( NULL );
-    if( result->c.lo.int_value == 0 ) 
+    if( result->c.lo.int_value == 0 )
         is_true = !is_true;
     if( is_true ) {
         _SetBlockIndex( ins, _TrueIndex(ins), _TrueIndex(ins) );
@@ -205,7 +216,7 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
 
     tipe = ClassType( ins->type_class );
     left_tipe = ClassType( _OpClass( ins ) );
-    num_operands = NumOperands( ins );
+    num_operands = OpcodeNumOperands( ins );
     left = NULL;
     rite = NULL;
     if( num_operands != 0 ) {
@@ -260,7 +271,8 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     case OP_CONVERT:
         // look out for CNV PT U2 t1 type instructions; if sizeof( PT ) is greater
         // than sizeof( U2 ), we don't want to fold or we'll screw up based pointers
-        if( IsTrickyPointerConv( ins ) ) return( NULL );
+        if( IsTrickyPointerConv( ins ) )
+            return( NULL );
         // fall through!
     case OP_ROUND:
         fold = FoldCnvRnd( (cg_op)ins->head.opcode, left, tipe );
@@ -305,10 +317,12 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
             ins->table = NULL;
             // look out for scary DIV U4 EDX:EAX, c1 -> t1 type instructions
             if( result->n.class != N_CONSTANT &&
-                result->n.size != TypeClassSize[ins->type_class] ) return( NULL );
+                result->n.size != TypeClassSize[ins->type_class] )
+                return( NULL );
             // look out for scary MUL U4 EDX:EAX, c1 -> t1 type instructions
             if( result->n.class != N_CONSTANT &&
-                ins->result->n.size != TypeClassSize[ins->type_class] ) return( NULL );
+                ins->result->n.size != TypeClassSize[ins->type_class] )
+                return( NULL );
             new_ins = MakeMove( result, ins->result, ins->type_class );
             SetCSEBits( ins, new_ins );
             DupSeg( ins, new_ins );
@@ -347,7 +361,8 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     case OP_AND:
     case OP_XOR:
         // for commutative op's prefer constant on right
-        if( _IsPointer( ins->type_class ) ) break;
+        if( _IsPointer( ins->type_class ) )
+            break;
         tmp = ins->operands[0];
         if( tmp->n.class == N_CONSTANT && tmp->c.const_type == CONS_ABSOLUTE ) {
             ins->operands[0] = ins->operands[1];
@@ -370,7 +385,8 @@ instruction    *FoldIns( instruction *ins ) {
     int         i;
     bool        have_const;
 
-    if( ins->ins_flags & INS_CC_USED ) return( NULL );
+    if( ins->ins_flags & INS_CC_USED )
+        return( NULL );
     have_const = false;
     for( i = ins->num_operands; i-- > 0; ) {
         if( ins->operands[i]->n.class == N_CONSTANT ) {
@@ -381,7 +397,7 @@ instruction    *FoldIns( instruction *ins ) {
         }
     }
     if( have_const ) {
-        i = NumOperands( ins );
+        i = OpcodeNumOperands( ins );
         if( i > 1 ) {
             if( RelocConst( ins->operands[1] ) ) {
                 return( CmpRelocZero( ins, 0, 1 ) );
@@ -421,7 +437,9 @@ bool    ConstFold( block *root ) {
             }
         }
         blk = blk->u.partition;
-        if( blk == root ) break;
+        if( blk == root ) {
+            break;
+        }
     }
     return( change );
 }

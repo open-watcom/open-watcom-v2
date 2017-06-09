@@ -38,25 +38,26 @@
 #include "paint.def"
 #include "memory.def"
 
-#define _eq_bool( b1, b2 )  (((b1) ? TRUE : FALSE) == ((b2) ? TRUE : FALSE))
 
+#define pick_ACTS(o) \
+    pick_ACTION_DELETE_OBJECT(o,pick) \
+    pick_ACTION_DESTROY(o,pick) \
+    pick_ACTION_VALIDATE_ACTION(o,pick) \
+    pick_ACTION_GET_OBJPTR(o,pick) \
+    pick_ACTION_SHOW_SEL_BOXES(o,pick)
+
+/* Local Window callback functions prototypes */
 WINEXPORT LRESULT CALLBACK CurrItemWndProc( HWND, UINT, WPARAM, LPARAM );
 
 /* forward references */
-
-static BOOL CALLBACK CurrItemDispatch( ACTION, CURRITEM *, void *, void * );
-static BOOL CurrItemDelete( OBJPTR, void *, void * );
-static BOOL CurrItemDestroy( OBJPTR, void *, void * );
-static BOOL CurrItemValidateAction( OBJPTR, void *, void * );
-static BOOL CurrItemGetObjptr( OBJPTR, void *, void * );
-static BOOL CurrItemShowSelBoxes( OBJPTR, void *, void * );
+#define pick(e,n,c) static bool CurrItem ## n ## c;
+    pick_ACTS( CURRITEM )
+#undef pick
 
 static DISPATCH_ITEM CurrItemActions[] = {
-    { DELETE_OBJECT,    CurrItemDelete          },
-    { DESTROY,          CurrItemDestroy         },
-    { VALIDATE_ACTION,  CurrItemValidateAction  },
-    { GET_OBJPTR,       CurrItemGetObjptr       },
-    { SHOW_SEL_BOXES,   CurrItemShowSelBoxes    }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)CurrItem ## n},
+    pick_ACTS( CURRITEM )
+    #undef pick
 };
 
 #define MAX_ACTIONS (sizeof( CurrItemActions ) / sizeof( DISPATCH_ITEM ))
@@ -67,7 +68,7 @@ static DISPATCH_ITEM CurrItemActions[] = {
     #define MOVE_TO( hdc, x, y, lppoint ) MoveTo( (hdc), (x), (y) );
 #endif
 
-static BOOL CALLBACK CurrItemDispatch( ACTION id, CURRITEM *ci, void *p1, void *p2 )
+static bool CALLBACK CurrItemDispatch( ACTION_ID id, OBJPTR ci, void *p1, void *p2 )
 /**********************************************************************************/
 {
     /* dispatch the desired operation to the correct place */
@@ -75,18 +76,16 @@ static BOOL CALLBACK CurrItemDispatch( ACTION id, CURRITEM *ci, void *p1, void *
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( CurrItemActions[i].id == id ) {
-            return( (CurrItemActions[i].rtn)( ci, p1, p2 ) );
+            return( CurrItemActions[i].rtn( ci, p1, p2 ) );
         }
     }
-    return( Forward( ci->obj, id, p1, p2 ) );
+    return( Forward( ((CURRITEM *)ci)->obj, id, p1, p2 ) );
 }
 
-static BOOL CurrItemValidateAction( OBJPTR _ci, void *_idptr, void *p2 )
-/**********************************************************************/
+static bool CurrItemValidateAction( CURRITEM *ci, ACTION_ID *idptr, void *p2 )
+/****************************************************************************/
 {
     /* check if the desired action is valid for and CURRITEM */
-    CURRITEM    *ci = _ci;
-    ACTION      *idptr = _idptr;
     int         i;
 
     ci = ci;           /* ref'd to avoid warning */
@@ -94,31 +93,29 @@ static BOOL CurrItemValidateAction( OBJPTR _ci, void *_idptr, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( CurrItemActions[i].id == *idptr ) {
-            return( TRUE );
+            return( true );
         }
     }
     return( Forward( ci->obj, VALIDATE_ACTION, idptr, p2 ) );
 }
 
-static BOOL CurrItemDestroy( OBJPTR _ci, void *first, void *p2 )
-/**************************************************************/
+static bool CurrItemDestroy( CURRITEM *ci, bool *first, bool *p2 )
+/****************************************************************/
 {
     /* destroy the CURRITEM - the object was destroyed while it was current */
-    CURRITEM    *ci = _ci;
     OBJPTR      obj;
 
     p2 = p2;          /* ref'd to avoid warning */
     obj = ci->obj;
-    DeleteCurrObject( ci );
-    Destroy( obj, *(BOOL *)first );
-    return( TRUE );
+    DeleteCurrObject( (OBJPTR)ci );
+    Destroy( obj, *first );
+    return( true );
 }
 
-static BOOL CurrItemDelete( OBJPTR _ci, void *p1, void *p2 )
-/**********************************************************/
+static bool CurrItemDeleteObject( CURRITEM *ci, OBJPTR p1, bool *p2 )
+/********************************************************************/
 {
     /* delete the CURRITEM but do not destroy the object */
-    CURRITEM    *ci = _ci;
     p1 = p1;          /* ref'd to avoid warning */
     p2 = p2;          /* ref'd to avoid warning */
 
@@ -127,38 +124,36 @@ static BOOL CurrItemDelete( OBJPTR _ci, void *p1, void *p2 )
         DestroyWindow( ci->hwnd );
     }
     EdFree( ci );
-    return( TRUE );
+    return( true );
 }
 
-static BOOL CurrItemShowSelBoxes( OBJPTR _ci, void *_show, void *p2 )
-/*******************************************************************/
+static bool CurrItemShowSelBoxes( CURRITEM *ci, bool *show, void *p2 )
+/********************************************************************/
 {
-    CURRITEM    *ci = _ci;
-    BOOL        *show = _show;
     p2 = p2;    // unused
 
-    if( !_eq_bool( *show, ci->show_sel_boxes ) ) {
+    if( *show != ci->show_sel_boxes ) {
         ci->show_sel_boxes = *show;
         if( ci->hwnd != NULL ) {
             InvalidateRect( ci->hwnd, NULL, TRUE );
         }
     }
-    return( TRUE );
+    return( true );
 }
 
 OBJPTR CurrItemCreate( OBJPTR parent, RECT *loc, OBJPTR obj )
-/***********************************************************/
+/**************************************************************/
 {
     /* Create a CURRITEM object */
     CURRITEM *new;
 
     parent = parent;         /* ref'd to avoid warning */
     new = EdAlloc( sizeof( CURRITEM ) );
-    new->invoke = (FARPROC)&CurrItemDispatch;
+    OBJ_DISPATCHER_SET( new, CurrItemDispatch );
     new->obj = obj;
     GetOffset( &new->offset );
     new->rect = *loc;
-    new->show_sel_boxes = TRUE;
+    new->show_sel_boxes = true;
     new->fmstate = GetCurrFormID();
     if( IsMarkValid( obj ) ) {
         new->hwnd = CreateWindow( "CurrItemClass",
@@ -177,21 +172,19 @@ OBJPTR CurrItemCreate( OBJPTR parent, RECT *loc, OBJPTR obj )
     } else {
         new->hwnd = NULL;
     }
-    return( new );
+    return( (OBJPTR)new );
 }
 
-static BOOL CurrItemGetObjptr( OBJPTR _ci, void *_newobj, void *p2 )
-/******************************************************************/
+static bool CurrItemGetObjptr( CURRITEM *ci, OBJPTR *newobj, void *p2 )
+/**********************************************************************/
 {
     /* return the objptr of the object associated with this curritem */
-    CURRITEM    *ci = _ci;
-    OBJPTR      *newobj = _newobj;
     p2 = p2;    /* ref'd to avoid warning */
 
     if( newobj != NULL ) {
         *newobj = ci->obj;
     }
-    return( TRUE );
+    return( true );
 }
 
 static void DrawSquare( HDC hdc, POINT point )
@@ -477,7 +470,7 @@ static void MarkBoxes( LPRECT currect, HDC hdc, RESIZE_ID sizeid )
     }
 }
 
-WINEXPORT LRESULT CALLBACK CurrItemWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lparam )
+LRESULT CALLBACK CurrItemWndProc( HWND wnd, UINT message, WPARAM wparam, LPARAM lparam )
 /**************************************************************************************/
 {
     /* processes messages */
@@ -542,9 +535,9 @@ WINEXPORT LRESULT CALLBACK CurrItemWndProc( HWND wnd, UINT message, WPARAM wpara
                 GetClientRect( wnd, &rect );
                 InflateRect( &rect, -SQUAREWIDTH / 2, -SQUAREWIDTH / 2 );
                 if( !IsRectEmpty( &rect ) ) {
-                    if( ci == GetPrimaryObject() ) {
+                    if( (OBJPTR)ci == GetPrimaryObject() ) {
                         sizeid = R_ALL;
-                        GetResizeInfo( (OBJECT *)ci, &sizeid );
+                        GetResizeInfo( (OBJPTR)ci, &sizeid );
                         MarkBoxes( &rect, hdc, sizeid );
                     } else {
                         OutlineBoxes( &rect, hdc );
@@ -565,8 +558,8 @@ WINEXPORT LRESULT CALLBACK CurrItemWndProc( HWND wnd, UINT message, WPARAM wpara
     return( 0L );
 }
 
-extern void InitCurrItem( void )
-/******************************/
+void InitCurrItem( void )
+/***********************/
 {
     /* Initialization for CURRITEM objects - register the CurrItemClass */
     WNDCLASS wc;

@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Parse Windows dialog resource script and 
+* Description:  Parse Windows dialog resource script and
 *               convert it into OS/2 dialog resource script.
 *
 ****************************************************************************/
@@ -117,7 +117,7 @@ char *my_fgets( char *buf, int n, FILE *fp )
 {
     char    *rc;
     size_t  i;
-    
+
     if( (rc = fgets( buf, n, fp )) != NULL ) {
         for( i = strlen( buf ); i && isWSorCtrlZ( buf[ i - 1] ); --i ) {
             buf[ i - 1 ] = '\0';
@@ -130,7 +130,7 @@ void disp_usage( void )
 /*********************/
 {
     char    **p;
-    
+
     p = usage;
     while( *p ) {
         printf( "%s\n", *p++ );
@@ -239,7 +239,7 @@ int check_statement( char *str )
     char    buff1[ MAX_LINE_LEN ];
     char    *p;
     int     i;
-    
+
     if( *str != '\0' ) {
         while( isspace( *str ) )
             ++str;
@@ -264,7 +264,7 @@ char *skip_keyword( char *str, int *plen )
     int     len;
     char    *p;
     char    *p2;
-    
+
     flag = 0;
     while(( *str != '"' ) && !isdigit( *str ) && ( *str != '+' )
         && ( *str != '-' ) && ( *str != '\0' )) {
@@ -343,8 +343,7 @@ void check_parm_item( char *keyword, char *parms[], control_type control, int pa
                 int tab_cnt, char *str, char **win_tab, char **os2_tab, int *retval )
 /************************************************************************************/
 {
-    parms = parms; control = control; parm_idx = parm_idx; tab_cnt = tab_cnt;
-    win_tab = win_tab; os2_tab = os2_tab;
+    /* unused parameters */ (void)parms; (void)control; (void)parm_idx; (void)tab_cnt; (void)win_tab; (void)os2_tab;
 
     if( strstr( str, keyword ) != NULL ) {
         *retval = 1;
@@ -356,7 +355,9 @@ void convert_parm_table( char *keyword, char *parms[], control_type control, int
 /***************************************************************************************/
 {
     int i;
-    
+
+    /* unused parameters */ (void)keyword;
+
     for( i = 0; i < tab_cnt; ++i ) {
         if( strcmp( str, win_tab[i] ) == 0 ) {
             if(( win_tab == control_style_win ) && !check_control_style( i, control ) ) {
@@ -378,12 +379,12 @@ control_type process_parms( char *parms[], int parms_cnt, char **win_tab,
     int     i;
     int     retval;
     char    buff1[ MAX_LINE_LEN ];
-    
+
     retval = 0;
     for( i = 0; i < parms_cnt; ++i ) {
         if( *(parms[ i ]) != '\0' ) {
             strcpy( buff1, parms[ i ] );
-            if( win_tab != font_win ) 
+            if( win_tab != font_win )
                 strupr( buff1 );
             fn( keyword, parms, control, i, tab_cnt, buff1, win_tab, os2_tab, &retval );
         }
@@ -410,7 +411,7 @@ void add_parms_item( char *parms[], char *str, int after )
 /********************************************************/
 {
     int i;
-    
+
     if( after ) {
         for( i = 0; i < MAX_STMT_PARMS; ++i ) {
             if( *(parms[ i ]) == '\0' ) {
@@ -457,7 +458,7 @@ void add_parms_list( statement *stmt, char *separators, int flag )
     if(( strstr( stmt->name, "TEXT" ) != NULL )
         || ( strcmp( stmt->name, "GROUPBOX" ) == 0 )
         || ( strcmp( stmt->name, "CONTROL" ) == 0 )) {
-        if( !process_parms( stmt->parms, MAX_STMT_PARMS, control_style_win, 
+        if( !process_parms( stmt->parms, MAX_STMT_PARMS, control_style_win,
             control_style_os2, CTRL_STYLE_CNT, 0, check_parm_item, "DT_MNEMONIC" )
             && strcmp( stmt->text, "\"\"" ) ) {
             add_parms_item( stmt->parms, "DT_MNEMONIC", ADD_AFTER );
@@ -475,7 +476,7 @@ void remove_parms_item( char *parms[], char *str )
 /************************************************/
 {
     int i;
-    
+
     for( i = 0; i < MAX_STMT_PARMS; ++i ) {
         if( *(parms[ i ]) != '\0' ) {
             if( strcmp( parms[ i ], str ) == 0 ) {
@@ -490,7 +491,7 @@ void convert_font( char *parms[], int parms_cnt )
 /***********************************************/
 {
     int i;
-    
+
     if( opt.font ) {
         for( i = 0; i < parms_cnt; ++i ) {
             strcpy( parms[ i ], opt.font_name );
@@ -508,7 +509,7 @@ void out_parms_style( FILE *fo, char *parms[], char *str )
     int     item_idx;
     int     i;
     char    *p;
-    
+
     oper_NOT = 0;
     item_idx = 0;
     for( i = 0; i < MAX_STMT_PARMS; ++i ) {
@@ -558,7 +559,7 @@ void process_style( char *parms[], char *str )
     char            **ptr;
     control_type    control = 0;
     int             i;
-    
+
     if( strcmp( str, "DIALOG" ) != 0 ) {
         ptr = malloc( sizeof(char *) );
         *ptr = str;
@@ -568,7 +569,7 @@ void process_style( char *parms[], char *str )
         if( control == T_COMBOBOX ) {
             if( process_parms( parms, MAX_STMT_PARMS, control_class_win,
                 control_class_os2, CTRL_NAME_CNT, control, check_parm_item, "CBS_DROPDOWNLIST" ) ) {
-                if( process_parms( parms, MAX_STMT_PARMS, control_class_win, 
+                if( process_parms( parms, MAX_STMT_PARMS, control_class_win,
                     control_class_os2, CTRL_NAME_CNT, control, check_parm_item, "CBS_OWNERDRAW" ) ) {
                     strcpy( str, "CONTROL" );
                     add_parms_item( parms, "\"watcombo\"", ADD_BEFORE );
@@ -591,7 +592,7 @@ void process_style( char *parms[], char *str )
                 CTRL_NAME_CNT, control, convert_parm_table, NULL );
             if( process_parms( parms, MAX_STMT_PARMS, control_class_win, control_class_os2,
                 CTRL_NAME_CNT, control, check_parm_item, "WC_STATIC" ) ) {
-                if( !process_parms( parms, MAX_STMT_PARMS, control_class_win, 
+                if( !process_parms( parms, MAX_STMT_PARMS, control_class_win,
                     control_class_os2, CTRL_NAME_CNT, control, check_parm_item, "SS_" ) ) {
                     add_parms_item( parms, "SS_GROUPBOX", ADD_AFTER );
                 }
@@ -614,7 +615,7 @@ void out_color_style( FILE *fo, statement *x )
 {
     int     i;
     char    *p;
-    
+
     for( i = 0; i < MAX_STMT_PARMS; ++i ) {
         p = x->parms[ i ];
         if(( strcmp( p, "SS_WHITEFRAME" ) == 0 )
@@ -638,7 +639,7 @@ void get_rectangle_list( statement *x, char *separators )
 /*******************************************************/
 {
     char    *p;
-    
+
     p = strtok( NULL, separators );
     if( p != NULL ) {
         x->x = atoi( p ) * CONV_X;
@@ -663,7 +664,7 @@ void get_rectangle_parms( statement *x )
     int     i;
     int     j;
     char    *p;
-    
+
     j = 0;
     for( i = 0; i < MAX_STMT_PARMS; ++i ) {
         p = x->parms[ i ];
@@ -692,7 +693,7 @@ int process_statement( char *line, FILE *fo )
     char    buff1[ MAX_LINE_LEN + 1 ];
     int     len = 0;
     char    *p;
-    
+
     if( *line == '\0' )
         return( 0 );
     strcpy( buff1, skip_separator( line ) );
@@ -780,7 +781,7 @@ void process_dialog_declaration( FILE *fi, FILE *fo, char *line )
     size_t  len;
     int     sysmodal, visible;
     int     i;
-    
+
     ++dialogs_cnt;
     if( opt.quiet == 0 ) {
         fprintf( stdout, "." );
@@ -922,7 +923,7 @@ void alloc_statement( statement *stmt )
 /*************************************/
 {
     int i;
-    
+
     for( i = 0; i < MAX_STMT_PARMS; ++i ) {
         stmt->parms[ i ] = malloc( MAX_PARM_LEN );
         *(stmt->parms[ i ]) = '\0';
@@ -933,7 +934,7 @@ void free_statement( statement *stmt )
 /************************************/
 {
     int i;
-    
+
     for( i = 0; i < MAX_STMT_PARMS; ++i ) {
         free( stmt->parms[ i ] );
     }
@@ -952,7 +953,7 @@ int main( int argc, char *argv[] )
     char    *buff2;
     char    *separators = " \t";
     size_t  len;
-    
+
     i = process_cmdl( argc, argv );
     if( i == 0 ) {
         disp_usage();
@@ -987,15 +988,15 @@ int main( int argc, char *argv[] )
         printf( "Could not open input file: %s\n", fname );
         return( -1 );
     }
-    
+
     alloc_statement( &dlg_hdr );
     alloc_statement( &dlg_item );
 
     line = malloc( MAX_LINE_LEN );
-    
+
     buff1 = malloc( MAX_LINE_LEN );
     buff2 = malloc( MAX_LINE_LEN );
-    
+
     my_fgets( line, MAX_LINE_LEN, fi );
     while( !feof( fi ) ) {
         while( !feof( fi ) ) {
@@ -1059,7 +1060,7 @@ int main( int argc, char *argv[] )
     free( buff1 );
 
     free( line );
-    
+
     free_statement( &dlg_item );
     free_statement( &dlg_hdr );
     if( fi != NULL )

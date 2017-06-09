@@ -35,6 +35,5 @@
 
 BOOL PASCAL _Cover_EnumTaskWindows( HANDLE task, FARPROC p, LONG param )
 {
-    return( EnumTaskWindows( task, SetProc( p, GETPROC_ENUMTASKWINDOWS ),
-                param ) );
+    return( EnumTaskWindows( task, SetProc( p, GETPROC_ENUMTASKWINDOWS ), param ) );
 }

@@ -38,8 +38,7 @@ short PASCAL _Cover_Escape( HDC dc, short a, short b, LPSTR c, LPSTR d )
     short       rc;
 
     if( a == SETABORTPROC ) {
-        rc = Escape( dc, a, b,
-                (LPSTR) SetProc( (FARPROC) c, GETPROC_ABORTPROC ), d );
+        rc = Escape( dc, a, b, (LPSTR)SetProc( (FARPROC)c, GETPROC_ABORTPROC ), d );
     } else {
         rc = Escape( dc, a, b, c, d );
     }

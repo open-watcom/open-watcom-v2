@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  based heap memory block size
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -36,10 +36,7 @@
 #include "heap.h"
 
 
-_WCRTLINK size_t _bmsize( __segment seg, void __based( void ) *offset )
+_WCRTLINK size_t _bmsize( __segment seg, void_bptr cstg )
 {
-    tag     _WCFAR *q;
-
-    q = (tag _WCFAR *)( ((unsigned char _WCFAR *)(seg :> offset)) - TAG_SIZE );
-    return( ( *q & ~1 ) - TAG_SIZE );
+    return( GET_BLK_SIZE( (freelist _WCFAR *)( seg :> CPTR2BLK( cstg ) ) ) - TAG_SIZE );
 }

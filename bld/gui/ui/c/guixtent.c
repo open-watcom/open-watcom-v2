@@ -42,7 +42,7 @@ gui_ord GUIGetExtentX( gui_window * wnd, const char * text, size_t length )
 {
     gui_coord coord;
 
-    wnd = wnd;
+    /* unused parameters */ (void)wnd;
 
     if( text ) {
         coord.x = strlen( text );
@@ -60,8 +60,8 @@ gui_ord GUIGetExtentY( gui_window * wnd, const char * text )
 {
     gui_coord coord;
 
-    wnd = wnd;
-    text = text;
+    /* unused parameters */ (void)wnd; (void)text;
+
     coord.x = 1;
     coord.y = 1;
     GUIScreenToScaleR( &coord );
@@ -70,13 +70,15 @@ gui_ord GUIGetExtentY( gui_window * wnd, const char * text )
 
 gui_ord GUIGetControlExtentX( gui_window * wnd, gui_ctl_id id, const char * text, size_t length )
 {
-    id=id;
+    /* unused parameters */ (void)id;
+
     return( GUIGetExtentX( wnd, text, length ) );
 }
 
 gui_ord GUIGetControlExtentY( gui_window * wnd, gui_ctl_id id, const char * text )
 {
-    id=id;
+    /* unused parameters */ (void)id;
+
     return( GUIGetExtentY( wnd, text ) );
 }
 

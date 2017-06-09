@@ -34,6 +34,7 @@
 
 void WndResizeHook( a_window *wnd )
 {
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     // resize any window hook
 }

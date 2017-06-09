@@ -42,7 +42,6 @@ bool WResFileInit( WResFileID fid )
 /* is called the real header will be written out */
 {
     WResHeader  head;
-    bool        error;
 
     head.Magic[0] = WRESMAGIC0;
     head.Magic[1] = WRESMAGIC1;
@@ -52,20 +51,12 @@ bool WResFileInit( WResFileID fid )
     head.WResVer = WRESVERSION;
 
     /* write the empty record out at the begining of the file */
-    error = ( WRESSEEK( fid, 0, SEEK_SET ) == -1 );
-    if( error ) {
-        WRES_ERROR( WRS_SEEK_FAILED );
-    } else {
-        error = WResWriteHeaderRecord( &head, fid );
-        if( error ) {
-            WRES_ERROR( WRS_SEEK_FAILED );
-        } else {
-            /* leave room for the extended header */
-            error = ( WRESSEEK( fid, sizeof( WResExtHeader ), SEEK_CUR ) == -1 );
-            if( error ) {
-                WRES_ERROR( WRS_SEEK_FAILED );
-            }
-        }
-    }
-    return( error );
+    if( WRESSEEK( fid, 0, SEEK_SET ) )
+        return( WRES_ERROR( WRS_SEEK_FAILED ) );
+    if( WResWriteHeaderRecord( &head, fid ) )
+        return( true );
+    /* leave room for the extended header */
+    if( WRESSEEK( fid, sizeof( WResExtHeader ), SEEK_CUR ) )
+        return( WRES_ERROR( WRS_SEEK_FAILED ) );
+    return( false );
 } /* WResFileInit */

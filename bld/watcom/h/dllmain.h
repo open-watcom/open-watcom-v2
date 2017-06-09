@@ -58,13 +58,8 @@ extern int __stdcall DllMain( int hdll, int reason, void *reserved );
 
 #elif defined( __WINDOWS__ )
 
-#if defined( _M_I86 )
-    extern int __export __far __pascal LibMain( HINSTANCE, WORD, WORD, LPSTR );
-    extern int __export __far __pascal WEP( int );
-#else
-    extern int __far __pascal LibMain( HINSTANCE, WORD, WORD, LPSTR );
-    extern int __far __pascal WEP( int );
-#endif
+extern int __far __pascal LibMain( HINSTANCE, WORD, WORD, LPSTR );
+extern int __far __pascal WEP( int );
 
 #endif
 

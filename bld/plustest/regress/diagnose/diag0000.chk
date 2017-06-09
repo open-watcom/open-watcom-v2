@@ -765,7 +765,7 @@ File: source\diag0047.c
 (22,5): Error! E861: qualified symbol cannot be defined in this scope
 (22,5): Error! E372: inline member friend function 'X::f' is not allowed
   definition: 'void X::f( void )'
-(33,18): Error! E373: invalid modifier for auto variable
+(33,20): Error! E373: invalid modifier for auto variable
 File: source\diag0048.c
 (4,1): Error! E396: 'main' cannot be overloaded
 File: source\diag0049.c
@@ -935,16 +935,16 @@ File: source\diag0052.c
 (2,42): Warning! W442: modifier has been repeated
   repeated modifier is '__export'
 (3,36): Error! E138: based modifier has been repeated
-(4,14): Warning! W442: modifier has been repeated
+(4,18): Warning! W442: modifier has been repeated
   repeated modifier is '__far'
-(5,15): Error! E443: illegal combination of memory model modifiers
-(6,25): Error! E443: illegal combination of memory model modifiers
-(6,25): Error! E581: variable 'f' can only be based on a string in this context
+(5,19): Error! E443: illegal combination of memory model modifiers
+(6,27): Error! E443: illegal combination of memory model modifiers
+(6,27): Error! E581: variable 'f' can only be based on a string in this context
 (7,14): Error! E029: symbol 'r' has not been declared
 (7,31): Error! E138: based modifier has been repeated
 (7,31): Error! E581: variable 'g' can only be based on a string in this context
-(8,20): Error! E443: illegal combination of memory model modifiers
-(9,36): Error! E443: illegal combination of memory model modifiers
+(8,24): Error! E443: illegal combination of memory model modifiers
+(9,38): Error! E443: illegal combination of memory model modifiers
 (13,23): Error! E444: argument name 'a' has already been used
 (13,38): Error! E444: argument name 'b' has already been used
 (14,20): Error! E444: argument name 'a' has already been used
@@ -1517,9 +1517,9 @@ File: source\diag0075.c
   definition: 'I4'
 (45,18): Error! E125: invalid redefinition of the typedef name 'I5'
   definition: 'I5'
-(48,21): Error! E125: invalid redefinition of the typedef name 'P1'
+(48,23): Error! E125: invalid redefinition of the typedef name 'P1'
   definition: 'P1'
-(51,21): Error! E125: invalid redefinition of the typedef name 'P2'
+(51,23): Error! E125: invalid redefinition of the typedef name 'P2'
   definition: 'P2'
 (73,10): Error! E126: class 'S' has already been defined
 (76,1): Error! E585: syntax error; missing start of function body after constructor initializer
@@ -2022,5 +2022,5 @@ File: source\diag0099.c
 (28,14): Error! E331: access permission of nested class 'X23::N' conflicts with previous declaration
 (25,26): Warning! W726: no reference to formal parameter 'n'
   definition: 'int n' in 'X23::X23( int )'
-(38,19): Error! E348: cannot define a member pointer with a memory model modifier
+(38,21): Error! E348: cannot define a member pointer with a memory model modifier
 (39,28): Error! E348: cannot define a member pointer with a memory model modifier

@@ -125,9 +125,9 @@ typedef struct WdeCustLibStruct {
     bool        ms_lib;
     bool        load_only;
     char        *file_name;
-    char        *info_name;
-    char        *style_name;
-    char        *flags_name;
+    const char  *info_name;
+    const char  *style_name;
+    const char  *flags_name;
     LIST        *controls;
     HGLOBAL     class_list;
 } WdeCustLib;
@@ -161,6 +161,6 @@ extern bool WdeFreeAllCustLibs( void );
 extern void WdeFindClassInAllCustLibs( char *, LIST ** );
 extern void WdeFreeCustRESProcs( void );
 extern bool WdeIsBorBtnIDSupported( uint_16 );
-extern void WdeMapCustomSize( uint_32 *w, uint_32 *h, WdeResizeRatio *r );
+extern void WdeMapCustomSize( int *w, int *h, WdeResizeRatio *r );
 
 #endif

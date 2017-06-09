@@ -736,7 +736,7 @@ void ShiftImage( WORD shiftdirection )
     WPI_RECTDIM right;
     WPI_RECTDIM top;
     WPI_RECTDIM bottom;
-    DWORD       message;
+    msg_id      message;
 
     node = GetCurrentNode();
     if( node == NULL ) {

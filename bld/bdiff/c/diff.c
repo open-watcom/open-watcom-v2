@@ -459,12 +459,12 @@ static int TryBackingUp( int backup )
             for( ; backup >= sizeof( hole ); backup -= sizeof( hole ) ) {
                 OldCurr -= sizeof( hole );
                 NewCurr -= sizeof( hole );
-                AddHole( OldCurr - OldFile, NewCurr - NewFile );
+                AddHole( (foff)( OldCurr - OldFile ), (foff)( NewCurr - NewFile ) );
             }
             if( backup != 0 ) {
                 OldCurr -= backup;
                 NewCurr -= backup;
-                AddDiff( NewCurr - NewFile, backup );
+                AddDiff( (foff)( NewCurr - NewFile ), backup );
             }
             return( 1 );
         }
@@ -495,7 +495,7 @@ void FindRegions( void )
              && !TryBackingUp( 3 * sizeof( hole ) ) ) {
                 ++OldCurr;
                 ++NewCurr;
-                AddSimilarDiff( OldCurr - OldFile, NewCurr - NewFile, ( old_hi - OldCurr ) + 1 );
+                AddSimilarDiff( (foff)( OldCurr - OldFile ), (foff)( NewCurr - NewFile ), (foff)( old_hi - OldCurr ) + 1 );
                 if( !ReSync() )
                     break;
                 stats( "%8.8lx:%8.8lx\n", OldCurr - OldFile, NewCurr - NewFile );
@@ -504,7 +504,7 @@ void FindRegions( void )
             }
         }
         if( OldCurr == OldFile || NewCurr == NewFile ) {
-            AddSimilarDiff( OldCurr - OldFile, NewCurr - NewFile, ( old_hi - OldCurr ) + 1 );
+            AddSimilarDiff( (foff)( OldCurr - OldFile ), (foff)( NewCurr - NewFile ), (foff)( old_hi - OldCurr ) + 1 );
             break;
         }
         --OldCurr;

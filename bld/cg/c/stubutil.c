@@ -47,12 +47,14 @@
 #include "utils.h"
 #include "stack.h"
 #include "stubdata.h"
+#include "dumptree.h"
 #include "feprotos.h"
 
-extern  void            DumpTree(n *);
+
 extern  void            BECloseFiles();
 extern  void            exit(int);
 extern  void            Action(char * str, ... );
+
 
 extern  char    *EnvVar( char *env ) {
 //====================================
@@ -589,7 +591,8 @@ extern n *FindParm( n *p, n *r ) {
 //================================
 
     for( ;; ) {
-        if( p->r == r ) return( p );
+        if( p->r == r )
+            return( p );
         p = p->r;
     }
 //  return( NULL );
@@ -657,7 +660,7 @@ extern  bool    CheckInLine( n * t ) {
     Code( "%n======== Inline code for %s ends%n", FEName( t->h ) );
     Action( "%n======== Inline code for %s ends%n", FEName( t->h ) );
     NodeList = nlist;
-    return true;
+    return( true );
 }
 extern  void    DumpSubTree( n *t ) {
 //===================================
@@ -774,7 +777,7 @@ extern  segment_id      SetFile( segment_id seg ) {
 
     old = CurSeg;
     CurSeg = seg;
-    if( seg > MAX_SEG || seg < MIN_SEG || SegOk[seg] == false ) {
+    if( seg > MAX_SEG || seg < MIN_SEG || !SegOk[seg] ) {
         CGError( "BESetSeg - bad segment (%d)", seg );
     } else {
         if( Files[seg].hdl == 0 ) {

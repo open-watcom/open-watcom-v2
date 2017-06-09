@@ -115,6 +115,7 @@ char    *TypeKW( TYPE typ ) {
 PTYPE   ParmType( TYPE typ, uint size ) {
 //=======================================
 
-    size = size;
+    /* unused parameters */ (void)size;
+
     return( TypeInfo[ typ ].ptyp );
 }

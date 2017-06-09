@@ -262,7 +262,7 @@ static void PragLibs( void )
         GetLibraryNames();
         MustRecog( T_RIGHT_PAREN );
     } else {
-        CompFlags.pragma_library = 1;
+        CompFlags.pragma_library = true;
     }
 }
 
@@ -472,19 +472,19 @@ static void CopyLinkage( void )
 static void CopyParms( void )
 /**************************/
 {
-    int         i;
+    size_t      size;
     hw_reg_set  *regs;
 
     if( CurrInfo->parms != CurrAlias->parms )
         return;
     if( IsAuxParmsBuiltIn( CurrInfo->parms ) )
         return;
-    for( i = 1, regs = CurrInfo->parms;
-         !HW_CEqual( *regs, HW_EMPTY ); ++i, ++regs )
-        ;
-    i *= sizeof( hw_reg_set );
-    regs = (hw_reg_set *)CMemAlloc( i );
-    memcpy( regs, CurrInfo->parms, i );
+    size = sizeof( hw_reg_set );
+    for( regs = CurrInfo->parms; !HW_CEqual( *regs, HW_EMPTY ); ++regs ) {
+        size += sizeof( hw_reg_set );
+    }
+    regs = (hw_reg_set *)CMemAlloc( size );
+    memcpy( regs, CurrInfo->parms, size );
     CurrInfo->parms = regs;
 }
 
@@ -674,18 +674,15 @@ hw_reg_set *PragManyRegSets( void )
     hw_reg_set  *sets;
     hw_reg_set  buff[MAXIMUM_PARMSETS + 1];
 
-    for( i = 0; i < MAXIMUM_PARMSETS + 1; ++i ) {
-        list = PragRegList();
-        if( HW_CEqual( list, HW_EMPTY ) )
+    for( i = 0, list = PragRegList(); !HW_CEqual( list, HW_EMPTY ); list = PragRegList(), ++i ) {
+        if( i == MAXIMUM_PARMSETS ) {
+            CErr1( ERR_TOO_MANY_PARM_SETS );
             break;
+        }
         buff[i] = list;
     }
-    if( i > MAXIMUM_PARMSETS ) {
-        CErr1( ERR_TOO_MANY_PARM_SETS );
-        i = MAXIMUM_PARMSETS;
-    }
-    HW_CAsgn( buff[i++], HW_EMPTY );
-    i *= sizeof( hw_reg_set );
+    HW_CAsgn( buff[i], HW_EMPTY );
+    i = ( i + 1 ) * sizeof( hw_reg_set );
     sets = (hw_reg_set *)CMemAlloc( i );
     memcpy( sets, buff, i );
     return( sets );
@@ -768,7 +765,7 @@ static void PragAllocText( void )
             }
         }
 #if _CPU == 8086 || _CPU == 386
-        CompFlags.multiple_code_segments = 1;
+        CompFlags.multiple_code_segments = true;
 #endif
         MustRecog( T_RIGHT_PAREN );
     }
@@ -856,7 +853,7 @@ static void PushEnum( void )
     struct enums_info *ei;
 
     ei = CMemAlloc( sizeof( struct enums_info ) );
-    ei->make_enums = (bool)CompFlags.make_enums_an_int;
+    ei->make_enums = CompFlags.make_enums_an_int;
     ei->next = EnumInfo;
     EnumInfo = ei;
 }
@@ -948,7 +945,7 @@ static void PragCodeSeg( void )
         MustRecog( T_RIGHT_PAREN );
         DefCodeSegment = tseg;
 #if _CPU == 8086 || _CPU == 386
-        CompFlags.multiple_code_segments = 1;
+        CompFlags.multiple_code_segments = true;
 #endif
     }
 }
@@ -1276,7 +1273,7 @@ void CPragma( void )
     /* Note that the include_alias pragma must always be processed
      * because it's intended for the preprocessor, not the compiler.
      */
-    CompFlags.in_pragma = 1;
+    CompFlags.in_pragma = true;
     NextToken();
     if( PragRecog( "include_alias" ) ) {
         PragIncludeAlias();
@@ -1343,5 +1340,5 @@ void CPragma( void )
     }
     if( check_end )
         EndOfPragma();
-    CompFlags.in_pragma = 0;
+    CompFlags.in_pragma = false;
 }

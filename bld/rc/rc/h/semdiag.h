@@ -33,8 +33,8 @@
 #define SEMDIAG_INCLUDED
 
 typedef struct DlgHeader32 {
-    DialogBoxHeader32    Head;
-    DialogExHeader32     ExHead;
+    DialogBoxHeader32           Head;
+    DialogBoxExHeader32short    ExHead;
 } DlgHeader32;
 
 typedef struct FullDialogBoxHeader {
@@ -47,15 +47,15 @@ typedef struct FullDialogBoxHeader {
 } FullDialogBoxHeader;
 
 typedef struct DlgControl32 {
-    uint_32               Style;
-    uint_32               ExtendedStyle;
-    DialogSizeInfo        Size;
-    uint_32               ID;
-    ControlClass         *ClassID;
-    ResNameOrOrdinal     *Text;
-    uint_16               ExtraBytes;       /* should be 0 */
-    uint_32               HelpId;           /* only used for Dialogex */
-    bool                  HelpIdDefined;    /* only used for Dialogex */
+    uint_32             Style;
+    uint_32             ExtendedStyle;
+    DialogSizeInfo      SizeInfo;
+    uint_32             ID;
+    ControlClass        *ClassID;
+    ResNameOrOrdinal    *Text;
+    uint_16             ExtraBytes;         /* should be 0 */
+    uint_32             HelpId;             /* only used for Dialogex */
+    bool                HelpIdDefined;      /* only used for Dialogex */
 }DlgControl32;
 
 typedef struct FullDialogBoxControl {
@@ -70,16 +70,16 @@ typedef struct FullDialogBoxControl {
 } FullDialogBoxControl;
 
 typedef struct FullDiagCtrlList {
-    FullDialogBoxControl *          head;
-    FullDialogBoxControl *          tail;
+    FullDialogBoxControl            *head;
+    FullDialogBoxControl            *tail;
     uint_16                         numctrls; /* Win16 only support upto 255 controls. */
 } FullDiagCtrlList;
 
 typedef struct FullDiagCtrlOptions {
-    DialogSizeInfo          Size;
+    DialogSizeInfo          SizeInfo;
     IntMask                 Style;
     uint_16                 ID;
-    ResNameOrOrdinal *      Text;
+    ResNameOrOrdinal        *Text;
     uint_32                 ExtendedStyle;
     uint_32                 HelpId;
     bool                    HelpIdDefined;
@@ -122,7 +122,7 @@ typedef struct FullDiagCtrlListOS2 {
 } FullDiagCtrlListOS2;
 
 typedef struct FullDiagCtrlOptionsOS2 {
-    DialogSizeInfo          Size;
+    DialogSizeInfo          SizeInfo;
     IntMask                 Style;
     uint_16                 ID;
     ResNameOrOrdinal        *Text;

@@ -31,13 +31,30 @@
 
 
 /* Any changes to this file must be reflected in 386FUNIT.C */
-_F_( FU_ALU1 ),
-_F_( FU_ALUX ),
-_F_( FU_IMUL ),
-_F_( FU_IDIV ),
-_F_( FU_FOP ),
-_F_( FU_FADD ),
-_F_( FU_FMUL ),
-_F_( FU_FDIV ),
-_F_( FU_TRIG ),
-_F_( FU_CALL ),
+#ifdef FPU_586
+/*   enum       units               unit_stall  opnd_stall          */
+_F_( FU_NO,     F_NONE,             0,          0       )   /* NO   */
+_F_( FU_ALU1,   F_ALU1,             1,          2       )   /* ALU1 */
+_F_( FU_ALUX,   F_ALU1 | F_ALU2,    1,          2       )   /* ALUX */
+_F_( FU_IMUL,   F_ALU1,             11,         11      )   /* IMUL */
+_F_( FU_IDIV,   F_ALU1,             24,         24      )   /* IDIV */
+_F_( FU_FOP,    F_ALU1,             1,          1       )   /* FOP  */
+_F_( FU_FADD,   F_ALU1,             1,          3       )   /* FADD */
+_F_( FU_FMUL,   F_ALU1,             2,          3       )   /* FMUL */
+_F_( FU_FDIV,   F_FOP,              32,         32      )   /* FDIV */
+_F_( FU_TRIG,   F_ALU1,             69,         69      )   /* TRIG */
+_F_( FU_CALL,   F_NONE,             0,          0       )   /* CALL */
+#else
+/*   enum       units               unit_stall  opnd_stall          */
+_F_( FU_NO,     F_NONE,             0,          0       )   /* NO   */
+_F_( FU_ALU1,   F_ALU1,             1,          2       )   /* ALU1 */
+_F_( FU_ALUX,   F_ALU1 | F_ALU2,    1,          2       )   /* ALUX */
+_F_( FU_IMUL,   F_ALU1,             11,         11      )   /* IMUL */
+_F_( FU_IDIV,   F_ALU1,             24,         24      )   /* IDIV */
+_F_( FU_FOP,    F_FOP,              8,          8       )   /* FOP  */
+_F_( FU_FADD,   F_FOP,              10,         10      )   /* FADD */
+_F_( FU_FMUL,   F_FOP,              16,         16      )   /* FMUL */
+_F_( FU_FDIV,   F_FOP,              73,         73      )   /* FDIV */
+_F_( FU_TRIG,   F_FOP,              241,        241     )   /* TRIG */
+_F_( FU_CALL,   F_NONE,             0,          0       )   /* CALL */
+#endif

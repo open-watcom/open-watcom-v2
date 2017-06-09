@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation _Exit().
+* Description:  Implementation of the _Exit() function.
 *
 ****************************************************************************/
 
@@ -35,8 +35,8 @@
 
 /* POSIX says _exit() and _Exit() "shall be functionally equivalent" */
 
-_WCRTLINK _NORETURN void _Exit( int status )
-/******************************************/
+_WCRTLINK _WCNORETURN void _Exit( int status )
+/********************************************/
 {
     _exit( status );
 }

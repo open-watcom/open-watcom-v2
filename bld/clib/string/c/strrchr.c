@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <stddef.h>
 #include <string.h>
 #include "riscstr.h"
@@ -86,7 +86,7 @@ extern  char *_fast_strrchr( const char _WCFAR *, char );
 
 
 #if defined(__RISCSTR__) && defined(__WIDECHAR__)
- _WCRTLINK CHAR_TYPE *__simple_wcsrchr( const CHAR_TYPE *s, INTCHAR_TYPE c )
+ CHAR_TYPE *__simple_wcsrchr( const CHAR_TYPE *s, INTCHAR_TYPE c )
 #else
  _WCRTLINK CHAR_TYPE *__F_NAME(strrchr,wcsrchr)( const CHAR_TYPE *s, INTCHAR_TYPE c )
 #endif

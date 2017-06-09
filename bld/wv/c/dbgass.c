@@ -50,7 +50,8 @@ static walk_result MemRefDisp( address a, mad_type_handle th,
     item_mach           item;
     size_t              max;
 
-    d = d;
+    /* unused parameters */ (void)d;
+
     if( mk & MMK_IMPLICIT )
         return( WR_CONTINUE );
     p = TxtBuff;

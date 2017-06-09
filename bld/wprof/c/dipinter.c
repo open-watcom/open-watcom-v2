@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -44,13 +45,12 @@
 #include "myassert.h"
 #include "support.h"
 #include "dipinter.h"
+#include "wpstart.h"
+#include "wpdata.h"
 
 
 //#include "support.def"
 //#include "msg.def"
-
-extern char *           WProfDips;
-extern sio_data         *CurrSIOData;
 
 STATIC char *       errMsgText( dip_status );
 STATIC bool         loadDIP( char *, bool, bool );
@@ -62,7 +62,7 @@ STATIC dip_status   DIPStatus;
 void DIPCLIENTRY( ImageUnload )( mod_handle mh )
 /**********************************************/
 {
-    mh=mh;
+    /* unused parameters */ (void)mh;
 }
 
 
@@ -78,8 +78,8 @@ void DIPCLIENTRY( MapAddr )( addr_ptr * addr, void * d )
 imp_sym_handle *DIPCLIENTRY( SymCreate )( imp_image_handle *ih, void *d )
 /***********************************************************************/
 {
-    ih=ih;
-    d=d;
+    /* unused parameters */ (void)ih; (void)d;
+
     return( NULL );
 }
 
@@ -89,9 +89,8 @@ dip_status DIPCLIENTRY( ItemLocation )( location_context * lc,
                             context_item ci, location_list * ll )
 /***************************************************************/
 {
-    lc=lc;
-    ci=ci;
-    ll=ll;
+    /* unused parameters */ (void)lc; (void)ci; (void)ll;
+
     return( DS_ERR|DS_NO_CONTEXT );
 }
 
@@ -101,9 +100,8 @@ dip_status DIPCLIENTRY( AssignLocation )( location_list * dst,
                         location_list * src, unsigned long size )
 /***************************************************************/
 {
-    dst=dst;
-    src=src;
-    size=size;
+    /* unused parameters */ (void)dst; (void)src; (void)size;
+
     return( DS_ERR );
 }
 

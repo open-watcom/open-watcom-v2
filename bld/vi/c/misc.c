@@ -453,7 +453,7 @@ bool PromptThisFileForSave( const char *filename )
         SetFocus( hwnd_old );
     }
 #else
-    filename = filename;
+    /* unused parameters */ (void)filename;
 #endif
     return( true );
 
@@ -792,17 +792,6 @@ vi_rc CurFileExitOptionSaveChanges( void )
     }
     return( ERR_NO_ERR );
 }
-
-/*
- * UpdateCurrentDirectory - update the current directory variable
- */
-void UpdateCurrentDirectory( void )
-{
-
-    MemFreePtr( (void **)&CurrentDirectory );
-    GetCWD1( &CurrentDirectory );
-
-} /* UpdateCurrentDirectory */
 
 #ifndef __WIN__
 /*

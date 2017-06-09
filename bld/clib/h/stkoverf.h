@@ -29,4 +29,4 @@
 ****************************************************************************/
 
 
-extern _NORETURN void   __STKOVERFLOW( void );
+extern _WCNORETURN void     __STKOVERFLOW( void );

@@ -42,7 +42,8 @@
 
 extern  void    gml_cmt( gml_tag gtag )
 {
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     scan_start = scan_stop;
     return;
 }

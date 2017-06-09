@@ -86,7 +86,9 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
             case O_DIV:
             case O_MOD:
                 if( name->u.left->tipe->length > tipe->length ||
-                    name->u2.t.rite->tipe->length > tipe->length ) break;
+                    name->u2.t.rite->tipe->length > tipe->length )
+                    break;
+                /* fall throught */
 #endif
             case O_TIMES:
             case O_AND:
@@ -95,9 +97,12 @@ static  bool    DemoteTree( tn name, type_def *tipe, bool just_test ) {
             case O_LSHIFT:
             case O_PLUS:
             case O_MINUS:
-                if( name->tipe->refno == TY_HUGE_POINTER ) break;
-                if( name->u.left->tipe->refno == TY_HUGE_POINTER ) break;
-                if( name->u2.t.rite->tipe->refno == TY_HUGE_POINTER ) break;
+                if( name->tipe->refno == TY_HUGE_POINTER )
+                    break;
+                if( name->u.left->tipe->refno == TY_HUGE_POINTER )
+                    break;
+                if( name->u2.t.rite->tipe->refno == TY_HUGE_POINTER )
+                    break;
                 can_demote = DemoteTree( name->u.left, tipe, just_test );
                 if( can_demote ) {
                     can_demote = DemoteTree( name->u2.t.rite, tipe, just_test );

@@ -33,304 +33,186 @@
 #include "wdeglbl.h"
 #include "windlg.h"
 #include "windlg32.h"
-
-#ifndef MB_ERR_INVALID_CHARS
-    #define MB_ERR_INVALID_CHARS 0x00000000
-#endif
-
-/*
- * stringLength - get length of string
- */
-static int stringLength( const char _ISFAR *str )
-{
-#if defined( __NT__ ) && !defined( __DEC__ )
-    if( str == NULL ) {
-        return( SLEN( str ) );
-    } else {
-        int len;
-        len = MultiByteToWideChar( CP_OEMCP, MB_ERR_INVALID_CHARS, str, -1, NULL, 0 );
-        if( len == 0 || len == ERROR_NO_UNICODE_TRANSLATION ) {
-            return( SLEN( str ) );
-        }
-        return( len * sizeof( WCHAR ) );
-    }
-#else
-    return( SLEN( str ) );
-#endif
-
-} /* stringLength */
-
-/*
- * copyString - copy from string to memory
- */
-static char _ISFAR *copyString( char _ISFAR *mem, const char _ISFAR *str, int len )
-{
-#if defined( __NT__ ) && !defined( __DEC__ )
-    int i;
-
-    if( mem != NULL && str != NULL ) {
-        for( i = 0; i < len / 2; i++ ) {
-            *(short *)mem = *str;
-            mem += 2;
-            str++;
-        }
-        return( mem );
-    } else {
-        return( mem + len );
-    }
-#else
-    if( mem != NULL && str != NULL ) {
-        _FARmemcpy( mem, str, len );
-    }
-    return( mem + len );
-#endif
-
-} /* copyString */
-
-/*
- * copyMBString - copy from string to memory
- */
-static char _ISFAR *copyMBString( char _ISFAR *mem, const char _ISFAR *str, int len )
-{
-#if defined( __NT__ ) && !defined( __DEC__ )
-    if( mem != NULL && str != NULL ) {
-        int     len2;
-        len2 = MultiByteToWideChar( CP_OEMCP, MB_ERR_INVALID_CHARS,
-                                    str, -1, (LPWSTR)mem, len );
-        len2 *= sizeof( WCHAR );
-        if( len2 != len ) {
-            return( copyString( mem, str, len ) );
-        }
-        return( mem + len );
-    } else {
-        return( copyString( mem, str, len ) );
-    }
-#else
-    return( copyString( mem, str, len ) );
-#endif
-
-} /* copyMBString */
+#include "wdedlgut.h"
 
 
 /*
  * DialogTemplate - build a dialog template
  */
-GLOBALHANDLE DialogEXTemplate( DWORD dtStyle, DWORD dtExStyle, DWORD dthelpID,
-                               int dtx, int dty, int dtcx, int dtcy, const char *menuname,
-                               const char *classname, const char *captiontext, short pointsize,
-                               const char *typeface, short FontWeight, char FontItalic, char FontCharset )
+TEMPLATE_HANDLE DialogEXTemplate( DWORD style, DWORD exstyle, DWORD helpid,
+                               int x, int y, int cx, int cy, const char *menuname,
+                               const char *classname, const char *captiontext, WORD font_pointsize,
+                               const char *font_facename, WORD fontweight, BYTE fontitalic, BYTE fontcharset, size_t *templatelen )
 {
-    GLOBALHANDLE        data;
-    UINT                blocklen, menulen, classlen, captionlen, typefacelen;
-    UINT                _ISFAR *numbytes;
-    char                _ISFAR *dlgtypeface;
-    char                _ISFAR *dlgtemp;
-    _DLGEXTEMPLATE      _ISFAR *dt;
-    FONTEXINFO          _ISFAR *fi;
+    TEMPLATE_HANDLE     dlgtemplate;
+    UINT                blocklen, menulen, classlen, textlen, facenamelen;
+    WPCHAR              template;
+    WPDLGTEMPLATEEX     dt;
+    WPFONTINFOEX        fi;
+
+    *templatelen = 0;
 
     /*
      * get size of block and allocate memory
      */
-    menulen = stringLength( menuname );
-    classlen = stringLength( classname );
-    captionlen = stringLength( captiontext );
+    menulen = DlgStringLength( menuname );
+    classlen = DlgStringLength( classname );
+    textlen = DlgStringLength( captiontext );
 
-    blocklen = sizeof( UINT ) + sizeof( _DLGEXTEMPLATE ) + menulen + classlen + captionlen;
+    blocklen = sizeof( WDLGTEMPLATEEX ) + menulen + classlen + textlen;
 
-    if( dtStyle & DS_SETFONT ) {
-      typefacelen = stringLength( typeface );
-      blocklen += 3 * sizeof( short ) + typefacelen;
+    if( style & DS_SETFONT ) {
+        facenamelen = DlgStringLength( font_facename );
+        blocklen += sizeof( WFONTINFOEX ) + facenamelen;
     } else {
-      typefacelen = 0;
+        facenamelen = 0;
     }
 
-    ADJUST_BLOCKLEN_DWORD( blocklen );
-
-    data = GlobalAlloc( GMEM_MOVEABLE | GMEM_ZEROINIT, blocklen );
-    if( data == NULL ) {
+    dlgtemplate = GlobalAlloc( GMEM_MOVEABLE | GMEM_ZEROINIT, blocklen );
+    if( dlgtemplate == NULL ) {
         return( NULL );
     }
 
-    numbytes = GetPtrGlobalLock( data );
-    *numbytes = (UINT)blocklen;
+    template = GetPtrGlobalLock( dlgtemplate );
+    *templatelen = blocklen;
 
     /*
      * set up template
      */
-    dt = (_DLGEXTEMPLATE _ISFAR *)(numbytes + 1);
+    dt = (WPDLGTEMPLATEEX)template;
 
     dt->dtVer = 0x0001;                 // signature dword is 0xffff0001
     dt->dtSignature = 0xffff;
-    dt->dthelpID = dthelpID;
-    dt->dtExtendedStyle = dtExStyle;
-    dt->dtStyle = dtStyle;
+    dt->dtHelpID = helpid;
+    dt->dtExtendedStyle = exstyle;
+    dt->dtStyle = style;
     dt->dtItemCount = 0;
 
-    dt->dtX = dtx;
-    dt->dtY = dty;
-    dt->dtCX = dtcx;
-    dt->dtCY = dtcy;
+    dt->dtX = x;
+    dt->dtY = y;
+    dt->dtCX = cx;
+    dt->dtCY = cy;
 
-    dlgtemp = (char _ISFAR *)(dt + 1);
+    template = (WPCHAR)( dt + 1 );
 
     /*
      * add extra strings to block
      */
-    dlgtemp = copyMBString( dlgtemp, menuname, menulen );
-    dlgtemp = copyMBString( dlgtemp, classname, classlen );
-    dlgtemp = copyMBString( dlgtemp, captiontext, captionlen );
+    template = DlgCopyMBString( template, menuname, menulen );
+    template = DlgCopyMBString( template, classname, classlen );
+    template = DlgCopyMBString( template, captiontext, textlen );
 
     /*
      * add font data (if needed)
      */
-    if( dtStyle & DS_SETFONT ) {
-        fi = (FONTEXINFO _ISFAR *)dlgtemp;
-        fi->PointSize = pointsize;
-        fi->weight = FontWeight;
-        fi->bItalic = FontItalic;
-        fi->bCharset = FontCharset;
-        dlgtypeface = (char _ISFAR *)(fi + 1);
-        copyMBString( dlgtypeface, typeface, typefacelen );
-        // copyMBString( fi->fontName, typeface, typefacelen );
+    if( style & DS_SETFONT ) {
+        fi = (WPFONTINFOEX)template;
+        fi->PointSize = font_pointsize;
+        fi->weight = fontweight;
+        fi->bItalic = fontitalic;
+        fi->bCharset = fontcharset;
+        template = (WPCHAR)( fi + 1 );
+        template = DlgCopyMBString( template, font_facename, facenamelen );
     }
 
-    GlobalUnlock( data );
-    return( data );
+    GlobalUnlock( dlgtemplate );
+    return( dlgtemplate );
 
 } /* DialogEXTemplate */
-
-#if defined( __NT__ )
-#include "pushpck1.h"
-typedef struct MyControlClass {
-    unsigned short      crap;
-    unsigned char       class[2];
-} MyControlClass;
-#endif
 
 /*
  * AddControlEX - add a control to a dialog
  */
-GLOBALHANDLE AddControlEX( GLOBALHANDLE data, int dtilx, int dtily,
-                           int dtilcx, int dtilcy, DWORD id, DWORD style,
-                           DWORD exstyle, DWORD helpID, const char *class, const char *text,
-                           BYTE infolen, const char *infodata )
+TEMPLATE_HANDLE AddControlEX( TEMPLATE_HANDLE old_dlgtemplate, int x, int y, int cx, int cy, DWORD id, DWORD style,
+                           DWORD exstyle, DWORD helpid, const char *classname, const char *captiontext,
+                           const void *infodata, BYTE infodatalen, size_t *templatelen )
 {
-    GLOBALHANDLE        new;
+    TEMPLATE_HANDLE     new_dlgtemplate;
     UINT                blocklen, classlen, textlen;
-    UINT                _ISFAR *numbytes;
-    _DLGEXTEMPLATE      _ISFAR *dt;
-    _DLGEXITEMTEMPLATE  _ISFAR *dit;
-    char                _ISFAR * ditstr;
-#if defined( __NT__ ) && !defined( __DEC__ )
-    MyControlClass      cclass;
-    BOOL                textClass;
-#endif
+    WPCHAR              template;
+    WPDLGTEMPLATEEX     dt;
+    WPDLGITEMTEMPLATEEX dit;
+    WPCHAR              ditstr;
+    unsigned char       class_ordinal;
+    size_t              item_start;
 
     /*
      * compute size of block, reallocate block to hold this stuff
      */
-#if defined( __NT__ ) && !defined( __DEC__ )
 
-    textClass = FALSE;
-    classlen = sizeof( cclass );
-    cclass.crap = 0xffff;
-    cclass.class[0] = 0;
-    cclass.class[1] = 0;
-
-    if( class[0] & 0x80 ) {
-        cclass.class[0] = class[0];
-    } else {
-        if( stricmp( class, "combobox" ) == 0 ) {
-            cclass.class[0] = 0x85;
-        } else if( stricmp( class, "scrollbar" ) == 0 ) {
-            cclass.class[0] = 0x84;
-        } else if( stricmp( class, "listbox" ) == 0 ) {
-            cclass.class[0] = 0x83;
-        } else if( stricmp( class, "static" ) == 0 ) {
-            cclass.class[0] = 0x82;
-        } else if( stricmp( class, "edit" ) == 0 ) {
-            cclass.class[0] = 0x81;
-        } else if( stricmp( class, "button" ) == 0 ) {
-            cclass.class[0] = 0x80;
-        }
-
-        if( cclass.class[0] == 0 ) {
-            classlen = stringLength( class );
-            textClass = TRUE;
-        }
-    }
-
+    class_ordinal = DlgGetClassOrdinal( classname );
+    if( class_ordinal > 0 ) {
+#if defined( __WINDOWS__ )
+        classlen = 1;
 #else
-    classlen = stringLength( class );
+        classlen = 4;
 #endif
+    } else {
+        classlen = DlgStringLength( classname );
+    }
+    textlen = DlgStringLength( captiontext );
 
-    textlen = stringLength( text );
-
-    blocklen = sizeof( _DLGEXITEMTEMPLATE ) + classlen + textlen + sizeof( INFOTYPE ) + infolen;
-    ADJUST_ITEMLEN_DWORD( blocklen );
-
-    blocklen += *(UINT _ISFAR *)GetPtrGlobalLock( data );
-    GlobalUnlock( data );
-
-    new = GlobalReAlloc( data, blocklen, GMEM_MOVEABLE | GMEM_ZEROINIT );
-    if( new == NULL ) {
+    item_start = *templatelen;
+    ADJUST_DLGLEN( item_start );
+#if defined( __WINDOWS__ )
+    blocklen = item_start + sizeof( WDLGITEMTEMPLATEEX ) + classlen + textlen + sizeof( BYTE ) + infodatalen;
+#else
+    blocklen = item_start + sizeof( WDLGITEMTEMPLATEEX ) + classlen + textlen + sizeof( WORD ) + infodatalen;
+#endif
+    GlobalUnlock( old_dlgtemplate );
+    new_dlgtemplate = GlobalReAlloc( old_dlgtemplate, blocklen, GMEM_MOVEABLE | GMEM_ZEROINIT );
+    if( new_dlgtemplate == NULL ) {
         return( NULL );
     }
 
-    numbytes = GetPtrGlobalLock( new );
+    template = GetPtrGlobalLock( new_dlgtemplate );
 
     /*
      * one more item...
      */
-    dt = (_DLGEXTEMPLATE _ISFAR *)(numbytes + 1);
+    dt = (WPDLGTEMPLATEEX)template;
     dt->dtItemCount++;
 
     /*
      * point to start of item template, and set up values
      */
-    dit = (_DLGEXITEMTEMPLATE _ISFAR *)((char _ISFAR *)numbytes + *numbytes);
-    dit->dtilhelpID = helpID;
-    dit->dtilExtendedStyle = exstyle;
-    dit->dtilStyle = style;
-
-    dit->dtilX = dtilx;
-    dit->dtilY = dtily;
-    dit->dtilCX = dtilcx;
-    dit->dtilCY = dtilcy;
-    dit->dtilID = id;
-
-    ditstr = (char _ISFAR *)(dit + 1);
+    dit = (WPDLGITEMTEMPLATEEX)( template + item_start );
+    dit->ditHelpID = helpid;
+    dit->ditExtendedStyle = exstyle;
+    dit->ditStyle = style;
+    dit->ditX = (short)x;
+    dit->ditY = (short)y;
+    dit->ditCX = (short)cx;
+    dit->ditCY = (short)cy;
+    dit->ditID = id;
 
     /*
      * append extra data
      */
 
-#if defined( __NT__ ) && !defined( __DEC__ )
-    if( textClass ) {
-        ditstr = copyMBString( ditstr, class, classlen );
-    } else {
-        _FARmemcpy( ditstr, &cclass, classlen );
-        ditstr += ROUND_CLASSLEN( classlen );
-    }
+    ditstr = (WPCHAR)( dit + 1 );
+    if( class_ordinal > 0 ) {
+#if defined( __WINDOWS__ )
+        *ditstr++ = class_ordinal;
 #else
-    if( class[0] & 0x80 ) {
-        _FARmemcpy( ditstr, class, classlen );
-        ditstr += ROUND_CLASSLEN( classlen );
-    } else {
-        ditstr = copyMBString( ditstr, class, classlen );
-    }
+        ditstr = DlgCopyWord( ditstr, -1 );
+        ditstr = DlgCopyWord( ditstr, class_ordinal );
 #endif
+    } else {
+        ditstr = DlgCopyMBString( ditstr, classname, classlen );
+    }
+    ditstr = DlgCopyMBString( ditstr, captiontext, textlen );
+#if defined( __WINDOWS__ )
+    *ditstr++ = infodatalen;
+#else
+    ditstr = DlgCopyWord( ditstr, infodatalen );
+#endif
+    _FARmemcpy( ditstr, infodata, infodatalen );
+    ditstr += infodatalen;
 
-    ditstr = copyMBString( ditstr, text, textlen );
-    *(INFOTYPE *)ditstr = infolen;
-    ditstr += sizeof( INFOTYPE );
-    _FARmemcpy( ditstr, infodata, infolen );
-    ditstr += infolen;
+    *templatelen = (size_t)( ditstr - template );
 
-    *numbytes = (UINT)(ditstr - (char _ISFAR *)numbytes);
-    ADJUST_BLOCKLEN_DWORD( *numbytes );
-
-    GlobalUnlock( new );
-    return( new );
+    GlobalUnlock( new_dlgtemplate );
+    return( new_dlgtemplate );
 
 } /* AddControlEX */

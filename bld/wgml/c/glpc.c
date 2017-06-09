@@ -153,7 +153,8 @@ void    lay_p( lay_tag ltag )
     att_args        l_args;
 //    int             cvterr;
 
-    ltag = ltag;
+    /* unused parameters */ (void)ltag;
+
     if( !GlobalFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();
@@ -183,7 +184,8 @@ void    lay_pc( lay_tag ltag )
     att_args        l_args;
 //    bool            cvterr;
 
-    ltag = ltag;
+    /* unused parameters */ (void)ltag;
+
     if( !GlobalFlags.firstpass ) {
         scan_start = scan_stop;
         eat_lay_sub_tag();

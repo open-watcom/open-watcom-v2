@@ -77,10 +77,9 @@ static void FormatTranslationInfo( HWND lb, WORD far *info, UINT infosize )
 {
     LBPrintf( lb, "" );
     LBPrintf( lb, "Translation INFO" );
-    while( infosize >= 4 ) {
-        LBPrintf( lb, "    language: %04X   charset: %04X", *info, *(info + 1 ) );
-        info +=2;
-        infosize -=4;
+    for( ; infosize >= 2 * sizeof( WORD ); infosize -= 2 * sizeof( WORD ) ) {
+        LBPrintf( lb, "    language: %04X   charset: %04X", info[0], info[1] );
+        info += 2;
     }
     if( infosize != 0 ) {
         Error( "verinfo", "Translation Info size not a multiple of 4" );
@@ -94,12 +93,12 @@ static void DoStringSection( HWND lb, void *info, WORD far *lang, UINT infosize 
     void far    *ptr;
     UINT        size;
 
-    while( infosize >= 4 ) {
+    for( ; infosize >= 2 * sizeof( WORD ); infosize -= 2 * sizeof( WORD ) ) {
         LBPrintf( lb, "" );
-        LBPrintf( lb, "STRING SECTION %04X%04X", *lang, *(lang + 1 ) );
+        LBPrintf( lb, "STRING SECTION %04X%04X", lang[0], lang[1] );
         for( i = 0; i < NumVerStrings; i++ ) {
             sprintf( namebuf, "\\StringFileInfo\\%04X%04X\\%s",
-                     *lang, *(lang + 1 ), VerStringTypes[i] );
+                     lang[0], lang[1], VerStringTypes[i] );
             LBPrintf( lb, "" );
             LBPrintf( lb, VerStringTypes[i] );
 #ifdef __NT__
@@ -107,7 +106,8 @@ static void DoStringSection( HWND lb, void *info, WORD far *lang, UINT infosize 
                 WORD    unibuf[100];
                 WORD    j;
 
-                for( j=0; j < 100; j++ ) unibuf[j] = namebuf[j];
+                for( j = 0; j < 100; j++ )
+                    unibuf[j] = namebuf[j];
                 if( !VerQueryValueW( info, unibuf, &ptr, &size ) ) {
                     LBPrintf( lb, "    Not Available" );
                 } else {
@@ -122,8 +122,7 @@ static void DoStringSection( HWND lb, void *info, WORD far *lang, UINT infosize 
             }
 #endif
         }
-        lang +=2;
-        infosize -=4;
+        lang += 2;
     }
 }
 

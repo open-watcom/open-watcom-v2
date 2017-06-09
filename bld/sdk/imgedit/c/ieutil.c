@@ -374,8 +374,8 @@ void SetIsSaved( HWND hwnd, BOOL fissaved )
         }
         _splitpath( node->fname, drive, dir, fname, ext );
 
-        strcpy( title, strupr( fname ) );
-        strcat( title, strupr( ext ) );
+        strcpy( title, fname );
+        strupr( strcat( title, ext ) );
         _wpi_setwindowtext( _wpi_getframe( node->hwnd ), (LPSTR)title );
 
         main_title = (char *)MemAlloc( strlen( IEAppTitle ) + strlen( title ) + 3 + 1 );
@@ -443,7 +443,7 @@ void OutlineRectangle( bool firsttime, WPI_PRES pres, WPI_RECT *prevrc, WPI_RECT
 /*
  * GetFnameFromPath - given a full pathname, return just the file name
  */
-void GetFnameFromPath( char *fullpath, char *fname )
+void GetFnameFromPath( const char *fullpath, char *fname )
 {
     char        filename[_MAX_FNAME];
     char        ext[_MAX_EXT];
@@ -454,8 +454,8 @@ void GetFnameFromPath( char *fullpath, char *fname )
     }
     _splitpath( fullpath, NULL, NULL, filename, ext );
 
-    strcpy( fname, strupr( filename ) );
-    strcat( fname, strupr( ext ) );
+    strcpy( fname, filename );
+    strupr( strcat( fname, ext ) );
 
 } /* GetFnameFromPath */
 
@@ -548,7 +548,7 @@ BOOL CALLBACK GetPosProc( HWND hwnd, LONG lparam )
  */
 void FindOrigin( WPI_POINT *new_origin )
 {
-    WPI_ENUMPROC    fp;
+    WPI_ENUMPROC    enumproc;
     int             image_count;
     int             i, j;
     WPI_POINT       temp;
@@ -568,9 +568,9 @@ void FindOrigin( WPI_POINT *new_origin )
     windowCoords = MemAlloc( image_count * sizeof( WPI_POINT ) );
     windowIndex = 0;
 
-    fp = _wpi_makeenumprocinstance( GetPosProc, Instance );
-    _wpi_enumchildwindows( ClientWindow, fp, 0L );
-    _wpi_freeprocinstance( fp );
+    enumproc = _wpi_makeenumprocinstance( GetPosProc, Instance );
+    _wpi_enumchildwindows( ClientWindow, enumproc, 0L );
+    _wpi_freeenumprocinstance( enumproc );
 
     /*
      * I'm just using a simple bubble sort ... we're using small amounts of data

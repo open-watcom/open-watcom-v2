@@ -31,7 +31,7 @@
 
 #include "wio.h"
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "tmpctl.h"
 #include "autodep.h"
 #include "semantic.h"
@@ -42,15 +42,20 @@
 #include "clibext.h"
 
 
+typedef struct {
+    uint_32             time;       /* file's time taken from stat */
+    uint_16             len;        /* sizeof the name array */
+    char                name[1];    /* dynamic array */
+} ResDepInfo;
+
 typedef struct DepNode {
     struct DepNode      *next;
-    DepInfo             info;   /* this must be the last element because
-                                 * it contains a dynamic array */
+    ResDepInfo          info;       /* this must be the last element because it contains a dynamic array */
 } DepNode;
 
 static DepNode          *depList;
 
-bool AddDependency( char *fname )
+bool AddDependency( const char *fname )
 {
     char                *name;
     DepNode             *new;
@@ -59,41 +64,29 @@ bool AddDependency( char *fname )
     int                 cmp;
 
     if( CmdLineParms.GenAutoDep ) {
-        name = RCALLOC( _MAX_PATH );
+        cmp = 0;
+        name = RESALLOC( _MAX_PATH );
         _fullpath( name, fname, _MAX_PATH );
-        cur = &depList;
-        for( ;; ) {
-            if( *cur == NULL ) {
+        for( cur = &depList; *cur != NULL; cur = &(*cur)->next ) {
+            cmp = strcmp( name, (*cur)->info.name );
+            if( cmp >= 0 ) {
                 break;
-            } else {
-                cmp = strcmp( name, (*cur)->info.name );
-                if( cmp == 0 ) {
-                    RCFREE( name );
-                    return( false );
-                } else if( cmp > 0 ) {
-                    break;
-                } else {
-                    cur = &(*cur)->next;
-                }
             }
         }
-        len = strlen( name ) + 1;
-        new = RCALLOC( sizeof( DepNode ) + len );
-        new->next = *cur;
-        new->info.len = len;
-
-        /*
-         * Avoid false buffer overflow positive with GCC
-         * and -DFORTIFY_SOURCE
-         */
-        memcpy( new->info.name, name, len + 1);
-        *cur = new;
-        RCFREE( name );
+        if( *cur == NULL || cmp != 0 ) {
+            len = strlen( name ) + 1;
+            new = RESALLOC( sizeof( DepNode ) - 1 + len );
+            new->next = *cur;
+            new->info.len = (uint_16)len;
+            memcpy( new->info.name, name, len );
+            *cur = new;
+        }
+        RESFREE( name );
     }
     return( false );
 }
 
-static void writeOneNode( DepInfo *cur )
+static void writeOneNode( ResDepInfo *cur )
 {
     RawDataItem         item = { 0 };
 
@@ -114,19 +107,19 @@ static void writeOneNode( DepInfo *cur )
     item.Item.Num = cur->len;
     SemWriteRawDataItem( item );
 
-    /* write out file name */
+    /* write out file name including termination */
     item.IsString = true;
     item.Item.String = cur->name;
-    item.StrLen = strlen( cur->name );
-    item.WriteNull = true;
+    item.StrLen = cur->len;
+    item.WriteNull = false;
     SemWriteRawDataItem( item );
 }
 
 static void writeDepListEOF( void )
 {
-    DepInfo     eof;
+    ResDepInfo  eof;
 
-    memset( &eof, 0, sizeof( DepInfo ) );
+    memset( &eof, 0, sizeof( ResDepInfo ) );
     writeOneNode( &eof );
 }
 
@@ -137,7 +130,7 @@ static void freeDepList( void )
 
     for( cur = depList; cur != NULL; cur = next ) {
         next = cur->next;
-        RCFREE( cur );
+        RESFREE( cur );
     }
 }
 

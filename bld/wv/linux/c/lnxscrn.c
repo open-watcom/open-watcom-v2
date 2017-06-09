@@ -122,8 +122,9 @@ unsigned ConfigScreen( void )
  */
 static void HupHandler( int signo )
 {
+    /* unused parameters */ (void)signo;
+
     /* Xqsh has gone away -- nothing to do except die */
-    signo = signo;
     ReleaseProgOvlay( true );
     KillDebugger( 0 );
 }
@@ -516,7 +517,8 @@ bool ScreenOption( const char *start, unsigned len, int pass )
 {
     char        *p;
 
-    pass=pass;
+    /* unused parameters */ (void)pass;
+
     switch( Lookup( SysOptNameTab, start, len ) ) {
     case OPT_CONSOLE:
         _Free( DbgTerminal );

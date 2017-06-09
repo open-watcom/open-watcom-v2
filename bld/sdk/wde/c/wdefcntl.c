@@ -52,10 +52,12 @@
 #include "wdeopts.h"
 #include "wdedebug.h"
 #include "wde_rc.h"
-#include "wdefcntl.h"
 #include "wdefbase.h"
 #include "windlg.h"
 #include "windlg32.h"
+#include "wdefcntl.h"
+#include "wdedispa.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -65,11 +67,51 @@
 #define WDE_SIZE_TO_TEXT_PAD   2
 #define WDE_CKECK_RADIO_ADJUST 16
 
+#define pick_ACTS(o) \
+    pick_ACTION_MOVE(o,pick) \
+    pick_ACTION_NOTIFY(o,pick) \
+    pick_ACTION_RESIZE(o,pick) \
+    pick_ACTION_DRAW(o,pick) \
+    pick_ACTION_ADD_SUBOBJECT(o,pick1) \
+    pick_ACTION_DESTROY(o,pick) \
+    pick_ACTION_COPY(o,pick) \
+    pick_ACTION_CUT(o,pick) \
+    pick_ACTION_PASTE(o,pick) \
+    pick_ACTION_VALIDATE_ACTION(o,pick) \
+    pick_ACTION_RESIZE_INFO(o,pick) \
+    pick_ACTION_GET_WINDOW_HANDLE(o,pick) \
+    pick_ACTION_CREATE_WINDOW(o,pick) \
+    pick_ACTION_DESTROY_WINDOW(o,pick) \
+    pick_ACTION_SHOW_WIN(o,pick) \
+    pick_ACTION_GET_OBJECT_INFO(o,pick) \
+    pick_ACTION_SET_OBJECT_INFO(o,pick) \
+    pick_ACTION_GET_OBJECT_HELPINFO(o,pick) \
+    pick_ACTION_SET_OBJECT_HELPINFO(o,pick) \
+    pick_ACTION_SET_FONT(o,pick) \
+    pick_ACTION_GET_FONT(o,pick1) \
+    pick_ACTION_GET_NC_SIZE(o,pick1) \
+    pick_ACTION_ON_TOP(o,pick) \
+    pick_ACTION_TEST(o,pick) \
+    pick_ACTION_TESTEX(o,pick) \
+    pick_ACTION_BECOME_FIRST_CHILD(o,pick) \
+    pick_ACTION_GET_RESIZE_INC(o,pick1) \
+    pick_ACTION_GET_SCROLL_RECT(o,pick1) \
+    pick_ACTION_SET_CLEAR_INT(o,pick) \
+    pick_ACTION_IS_OBJECT_CLEAR(o,pick) \
+    pick_ACTION_IS_MARK_VALID(o,pick) \
+    pick_ACTION_RESOLVE_SYMBOL(o,pick) \
+    pick_ACTION_RESOLVE_HELPSYMBOL(o,pick) \
+    pick_ACTION_MODIFY_INFO(o,pick) \
+    pick_ACTION_SET_ORDER_MODE(o,pick) \
+    pick_ACTION_GET_ORDER_MODE(o,pick) \
+    pick_ACTION_SIZE_TO_TEXT(o,pick) \
+    pick_ACTION_GET_RESIZER(o,pick1)
+
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC             dispatcher;
+    DISPATCH_FN         *dispatcher;
     HWND                window_handle;
     HWND                parent_handle;
     OBJPTR              object_handle;
@@ -92,96 +134,40 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WdeControlDispatcher( ACTION, WdeControlObject *, void *, void * );
+
+/* Local Window callback functions prototypes */
+WINEXPORT bool CALLBACK WdeControlDispatcher( ACTION_ID, OBJPTR, void *, void * );
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static BOOL WdeControlTest( WdeControlObject *, GLOBALHANDLE *, void * );
-static BOOL WdeControlTestEX( WdeControlObject *, GLOBALHANDLE *, void * );
-static BOOL WdeControlDraw( WdeControlObject *, RECT *, HDC * );
-static BOOL WdeControlResolveSymbol( WdeControlObject *, bool *, bool * );
-static BOOL WdeControlResolveHelpSymbol( WdeControlObject *, bool *, bool * );
-static BOOL WdeControlOnTop( WdeControlObject *, void *, void * );
-static BOOL WdeControlCreateWindow( WdeControlObject *, void *, void * );
-static BOOL WdeControlDestroyWindow( WdeControlObject *, bool *, bool * );
-static BOOL WdeControlShowWindow( WdeControlObject *, bool *, void * );
-static BOOL WdeControlIsMarkValid( WdeControlObject *, BOOL *, void * );
-static BOOL WdeControlDestroy( WdeControlObject *, BOOL *, void * );
-static BOOL WdeControlSetFont( WdeControlObject *, HFONT *, WdeResizeRatio * );
-static BOOL WdeControlGetResizeInfo( WdeControlObject *, RESIZE_ID *, void * );
-static BOOL WdeControlValidateAction( WdeControlObject *, ACTION *, void * );
-static BOOL WdeControlGetWindowHandle( WdeControlObject *, HWND *, void * );
-static BOOL WdeControlResize( WdeControlObject *, RECT *, BOOL * );
-static BOOL WdeControlMove( WdeControlObject *, POINT *, BOOL * );
-static BOOL WdeControlNotify( WdeControlObject *, NOTE_ID*, void * );
-static BOOL WdeControlFirstChild( WdeControlObject *, void *, void * );
-static BOOL WdeControlPasteObject( WdeControlObject *, OBJPTR, POINT * );
-static BOOL WdeControlCutObject( WdeControlObject *, WdeControlObject **, void * );
-static BOOL WdeControlCopyObject( WdeControlObject *, WdeControlObject **, WdeControlObject * );
-static BOOL WdeControlGetObjectInfo( WdeControlObject *, WdeDialogBoxControl **, char ** );
-static BOOL WdeControlSetObjectInfo( WdeControlObject *, WdeDialogBoxControl *, char * );
-static BOOL WdeControlSetObjectHelpInfo( WdeControlObject *, WdeDialogBoxControl *, char * );
-static BOOL WdeControlGetObjectHelpInfo( WdeControlObject *, WdeDialogBoxControl **, char ** );
-static BOOL WdeControlSetClearInt( WdeControlObject *, BOOL *, void * );
-static BOOL WdeControlGetClearInt( WdeControlObject *, BOOL *, void * );
-static BOOL WdeChangeControlSize( WdeControlObject *, BOOL, BOOL );
-static BOOL WdeOffsetDialogUnits( WdeControlObject *, WdeResizeRatio * );
+static bool WdeChangeControlSize( WdeControlObject *, bool, bool );
+static bool WdeOffsetDialogUnits( WdeControlObject *, WdeResizeRatio * );
 static void WdeBringControlToTop( WdeControlObject * );
 static void WdeSetClearObjectPos( WdeControlObject * );
 static void WdeFreeControlObject( WdeControlObject * );
 static void WdeWriteControlToInfo( WdeControlObject * );
-static BOOL WdeControlModifyInfo( WdeControlObject *, WdeInfoStruct *, void * );
-static BOOL WdeControlSetOrderMode( WdeControlObject *, WdeOrderMode *, WdeSetOrderLists ** );
-static BOOL WdeControlGetOrderMode( WdeControlObject *, WdeOrderMode *, void * );
-static BOOL WdeControlSizeToText( WdeControlObject *, void *, void * );
+static bool WdeControlModifyInfo( WdeControlObject *, WdeInfoStruct *, void * );
+static bool WdeControlSizeToText( WdeControlObject *, void *, void * );
+
+#define pick(e,n,c)  static bool WdeControl ## n ## c;
+#define pick1(e,n,c) static bool WdeControl ## n ## c;
+    pick_ACTS( WdeControlObject )
+#undef pick1
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
-static FARPROC           WdeControlDispatch;
+static DISPATCH_FN       *WdeControlDispatch;
 static HINSTANCE         WdeAppInst;
 
 static DISPATCH_ITEM WdeControlActions[] = {
-    { MOVE,                 (DISPATCH_RTN *)WdeControlMove              },
-    { NOTIFY,               (DISPATCH_RTN *)WdeControlNotify            },
-    { RESIZE,               (DISPATCH_RTN *)WdeControlResize            },
-    { DRAW,                 (DISPATCH_RTN *)WdeControlDraw              },
-    { ADD_SUBOBJECT,        (DISPATCH_RTN *)NULL                        },
-    { DESTROY,              (DISPATCH_RTN *)WdeControlDestroy           },
-    { COPY,                 (DISPATCH_RTN *)WdeControlCopyObject        },
-    { CUT,                  (DISPATCH_RTN *)WdeControlCutObject         },
-    { PASTE,                (DISPATCH_RTN *)WdeControlPasteObject       },
-    { VALIDATE_ACTION,      (DISPATCH_RTN *)WdeControlValidateAction    },
-    { RESIZE_INFO,          (DISPATCH_RTN *)WdeControlGetResizeInfo     },
-    { GET_WINDOW_HANDLE,    (DISPATCH_RTN *)WdeControlGetWindowHandle   },
-    { CREATE_WINDOW,        (DISPATCH_RTN *)WdeControlCreateWindow      },
-    { DESTROY_WINDOW,       (DISPATCH_RTN *)WdeControlDestroyWindow     },
-    { SHOW_WIN,             (DISPATCH_RTN *)WdeControlShowWindow        },
-    { GET_OBJECT_INFO,      (DISPATCH_RTN *)WdeControlGetObjectInfo     },
-    { SET_OBJECT_INFO,      (DISPATCH_RTN *)WdeControlSetObjectInfo     },
-    { GET_OBJECT_HELPINFO,  (DISPATCH_RTN *)WdeControlGetObjectHelpInfo },
-    { SET_OBJECT_HELPINFO,  (DISPATCH_RTN *)WdeControlSetObjectHelpInfo },
-    { SET_FONT,             (DISPATCH_RTN *)WdeControlSetFont           },
-    { GET_FONT,             (DISPATCH_RTN *)NULL                        },
-    { GET_NC_SIZE,          (DISPATCH_RTN *)NULL                        },
-    { GET_NC_SIZE,          (DISPATCH_RTN *)NULL                        },
-    { ON_TOP,               (DISPATCH_RTN *)WdeControlOnTop             },
-    { TEST,                 (DISPATCH_RTN *)WdeControlTest              },
-    { TESTEX,               (DISPATCH_RTN *)WdeControlTestEX            },
-    { BECOME_FIRST_CHILD,   (DISPATCH_RTN *)WdeControlFirstChild        },
-    { GET_RESIZE_INC,       (DISPATCH_RTN *)NULL                        },
-    { GET_SCROLL_RECT,      (DISPATCH_RTN *)NULL                        },
-    { SET_CLEAR_INT,        (DISPATCH_RTN *)WdeControlSetClearInt       },
-    { IS_OBJECT_CLEAR,      (DISPATCH_RTN *)WdeControlGetClearInt       },
-    { IS_MARK_VALID,        (DISPATCH_RTN *)WdeControlIsMarkValid       },
-    { RESOLVE_SYMBOL,       (DISPATCH_RTN *)WdeControlResolveSymbol     },
-    { RESOLVE_HELPSYMBOL,   (DISPATCH_RTN *)WdeControlResolveHelpSymbol },
-    { MODIFY_INFO,          (DISPATCH_RTN *)WdeControlModifyInfo        },
-    { SET_ORDER_MODE,       (DISPATCH_RTN *)WdeControlSetOrderMode      },
-    { GET_ORDER_MODE,       (DISPATCH_RTN *)WdeControlGetOrderMode      },
-    { SIZE_TO_TEXT,         (DISPATCH_RTN *)WdeControlSizeToText        },
-    { GET_RESIZER,          (DISPATCH_RTN *)NULL                        }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeControl ## n},
+    #define pick1(e,n,c) {e, (DISPATCH_RTN *)NULL},
+    pick_ACTS( WdeControlObject )
+    #undef pick1
+    #undef pick
 };
 
 #define MAX_ACTIONS      (sizeof( WdeControlActions ) / sizeof( DISPATCH_ITEM ))
@@ -205,7 +191,7 @@ void WdeSetClearObjectPos( WdeControlObject *obj )
     //WdeSOP( obj, obj->parent );
 }
 
-WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     OBJPTR              ancestor;
     OBJ_ID              id;
@@ -223,7 +209,7 @@ WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPT
     }
 
     if( ok ) {
-        ok = (!Forward( parent, GET_ORDER_MODE, &mode, NULL ) || mode == WdeSelect);
+        ok = ( !Forward( parent, GET_ORDER_MODE, &mode, NULL ) || mode == WdeSelect );
     }
 
     if( ok ) {
@@ -247,19 +233,19 @@ WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPT
     if( ok ) {
         /* make sure we are setting the correct parent */
         ancestor = parent;
-        Forward( (OBJPTR)ancestor, IDENTIFY, &id, NULL );
+        Forward( ancestor, IDENTIFY, &id, NULL );
         while( id != DIALOG_OBJ && id != BASE_OBJ ) {
             GetObjectParent( ancestor, &ancestor );
-            Forward( (OBJPTR)ancestor, IDENTIFY, &id, NULL );
+            Forward( ancestor, IDENTIFY, &id, NULL );
         }
         new->parent = ancestor;
-        new->dispatcher = WdeControlDispatch;
-        new->sizeable = TRUE;
+        OBJ_DISPATCHER_SET( new, WdeControlDispatch );
+        new->sizeable = true;
         new->mode = WdeSelect;
-        if( handle ) {
-            new->object_handle = handle;
+        if( handle == NULL ) {
+            new->object_handle = (OBJPTR)new;
         } else {
-            new->object_handle = new;
+            new->object_handle = handle;
         }
         new->base_obj = GetMainObject();
         new->res_info = WdeGetCurrentRes();
@@ -316,10 +302,10 @@ WINEXPORT OBJPTR CALLBACK WdeControlCreate( OBJPTR parent, RECT *obj_rect, OBJPT
         }
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
-WINEXPORT BOOL CALLBACK WdeControlDispatcher( ACTION act, WdeControlObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeControlDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -327,45 +313,42 @@ WINEXPORT BOOL CALLBACK WdeControlDispatcher( ACTION act, WdeControlObject *obj,
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeControlActions[i].id == act ) {
-            if( WdeControlActions[i].rtn ) {
+            if( WdeControlActions[i].rtn != NULL ) {
                 return( WdeControlActions[i].rtn( obj, p1, p2 ) );
             } else {
-                return( Forward( obj->parent, act, p1, p2 ) );
+                return( Forward( ((WdeControlObject *)obj)->parent, act, p1, p2 ) );
             }
         }
     }
 
-    return( Forward( (OBJPTR)obj->o_item, act, p1, p2 ) );
+    return( Forward( ((WdeControlObject *)obj)->o_item, act, p1, p2 ) );
 }
 
 bool WdeControlInit( bool first )
 {
     _wde_touch( first );
     WdeAppInst = WdeGetAppInstance();
-    WdeControlDispatch = MakeProcInstance( (FARPROC)WdeControlDispatcher, WdeAppInst );
-    return( TRUE );
+    WdeControlDispatch = MakeProcInstance_DISPATCHER( WdeControlDispatcher, WdeAppInst );
+    return( true );
 }
 
 void WdeControlFini( void )
 {
-    FreeProcInstance( WdeControlDispatch );
+    FreeProcInstance_DISPATCHER( WdeControlDispatch );
 }
 
-BOOL WdeControlTest( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
+bool WdeControlTest( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size_t *templatelen )
 {
     char        *Text;
     char        *Class;
     uint_32     style;
     uint_16     ID;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
-
     Text = WdeResNameOrOrdinalToStr( GETCTL_TEXT( obj->control_info ), 10 );
     if( Text == NULL ) {
         Text = WdeStrDup( "" );
         if( Text == NULL ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -374,7 +357,7 @@ BOOL WdeControlTest( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
         Class = WdeStrDup( "" );
         if( Class == NULL ) {
             WRMemFree( Text );
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -385,38 +368,35 @@ BOOL WdeControlTest( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
         style &= 0xffffffff ^ (CBS_OWNERDRAWFIXED | CBS_OWNERDRAWVARIABLE);
     } else if( stricmp( obj->window_class, "wde_borbtn" ) == 0 ) {
         if( !WdeIsBorBtnIDSupported( GETCTL_ID( obj->control_info ) ) ) {
-            ID = WDE_PREVIEW_ID;
+            ID = (uint_16)WDE_PREVIEW_ID;
         }
     }
 
-    *template = AddControl( *template,
+    *dlgtemplate = AddControl( *dlgtemplate,
                             GETCTL_SIZEX( obj->control_info ),
                             GETCTL_SIZEY( obj->control_info ),
                             GETCTL_SIZEW( obj->control_info ),
                             GETCTL_SIZEH( obj->control_info ),
-                            ID, style, Class, Text, 0, NULL );
+                            ID, style, Class, Text, NULL, 0, templatelen );
 
     WRMemFree( Text );
     WRMemFree( Class );
 
-    return( *template != NULL );
+    return( *dlgtemplate != NULL );
 }
 
-BOOL WdeControlTestEX( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
+bool WdeControlTestEX( WdeControlObject *obj, TEMPLATE_HANDLE *dlgtemplate, size_t *templatelen )
 {
     char        *Text;
     char        *Class;
     uint_32     style;
     uint_16     ID;
 
-    /* touch unused vars to get rid of warning */
-    _wde_touch( p2 );
-
     Text = WdeResNameOrOrdinalToStr( GETCTL_TEXT( obj->control_info ), 10 );
     if( Text == NULL ) {
         Text = WdeStrDup( "" );
         if( Text == NULL ) {
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -425,7 +405,7 @@ BOOL WdeControlTestEX( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
         Class = WdeStrDup( "" );
         if( Class == NULL ) {
             WRMemFree( Text );
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -436,11 +416,11 @@ BOOL WdeControlTestEX( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
         style &= 0xffffffff ^ (CBS_OWNERDRAWFIXED | CBS_OWNERDRAWVARIABLE);
     } else if( stricmp( obj->window_class, "wde_borbtn" ) == 0 ) {
         if( !WdeIsBorBtnIDSupported( GETCTL_ID( obj->control_info ) ) ) {
-            ID = WDE_PREVIEW_ID;
+            ID = (uint_16)WDE_PREVIEW_ID;
         }
     }
 
-    *template = AddControlEX( *template,
+    *dlgtemplate = AddControlEX( *dlgtemplate,
                               GETCTL_SIZEX( obj->control_info ),
                               GETCTL_SIZEY( obj->control_info ),
                               GETCTL_SIZEW( obj->control_info ),
@@ -448,32 +428,32 @@ BOOL WdeControlTestEX( WdeControlObject *obj, GLOBALHANDLE *template, void *p2 )
                               ID, style,
                               GETCTL_EXSTYLE( obj->control_info ),
                               GETCTL_HELPID( obj->control_info ),
-                              Class, Text, 0, NULL );
+                              Class, Text, NULL, 0, templatelen );
 
     WRMemFree( Text );
     WRMemFree( Class );
 
-    return( *template != NULL );
+    return( *dlgtemplate != NULL );
 }
 
-BOOL WdeControlIsMarkValid( WdeControlObject *obj, BOOL *flag, void *p2 )
+bool WdeControlIsMarkValid( WdeControlObject *obj, bool *flag, void *p2 )
 {
-    uint_32 s;
+    DWORD   style;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( obj->mode == WdeSelect && obj->window_handle != NULL ) {
-        s = (uint_32)GetWindowLong( obj->window_handle, GWL_STYLE );
-        *flag = ((s & WS_VISIBLE) != 0);
+        style = GET_WNDSTYLE( obj->window_handle );
+        *flag = ((style & WS_VISIBLE) != 0);
     } else {
-        *flag = FALSE;
+        *flag = false;
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlDestroy( WdeControlObject *obj, BOOL *flag, void *p2 )
+bool WdeControlDestroy( WdeControlObject *obj, bool *flag, bool *p2 )
 {
     RECT        rect;
     OBJPTR      next;
@@ -482,7 +462,7 @@ BOOL WdeControlDestroy( WdeControlObject *obj, BOOL *flag, void *p2 )
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
-    check_scroll = (obj->parent == obj->base_obj);
+    check_scroll = ( obj->parent == obj->base_obj );
 
     if( *flag ) {
         if( obj->res_info ) {
@@ -501,14 +481,14 @@ BOOL WdeControlDestroy( WdeControlObject *obj, BOOL *flag, void *p2 )
         WdeWriteTrail( "WdeControlDestroy: RemoveObject failed!" );
     }
 
-    *flag = FALSE;
+    *flag = false;
 
     if( !Forward( obj->o_item, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeControlDestroy: Failed to destroy OITEM!" );
         if( obj->parent ) {
             AddObject( obj->parent, obj->object_handle );
         }
-        return( FALSE );
+        return( false );
     }
 
     if( obj->window_handle != NULL ) {
@@ -526,10 +506,10 @@ BOOL WdeControlDestroy( WdeControlObject *obj, BOOL *flag, void *p2 )
     MarkInvalid( &rect );
 
     if( check_scroll ) {
-        WdeCheckBaseScrollbars( FALSE );
+        WdeCheckBaseScrollbars( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeFreeControlObject( WdeControlObject *obj )
@@ -549,7 +529,7 @@ void WdeFreeControlObject( WdeControlObject *obj )
     WRMemFree( obj );
 }
 
-BOOL WdeChangeControlSize( WdeControlObject *obj, BOOL widths_only, BOOL snap_to_grid )
+bool WdeChangeControlSize( WdeControlObject *obj, bool widths_only, bool snap_to_grid )
 {
     RECT      t;
     RECT      size;
@@ -577,8 +557,7 @@ BOOL WdeChangeControlSize( WdeControlObject *obj, BOOL widths_only, BOOL snap_to
         WdeMapWindowRect( obj->parent_handle, obj->res_info->edit_win, &size );
         OffsetRect( &size, origin.x, origin.y );
     } else {
-        WdeDialogToScreen( obj->object_handle, NULL,
-                           GETCTL_PSIZE( obj->control_info ), &size );
+        WdeDialogToScreen( obj->object_handle, NULL, GETCTL_PSIZE( obj->control_info ), &size );
     }
 
     if( widths_only ) {
@@ -589,16 +568,16 @@ BOOL WdeChangeControlSize( WdeControlObject *obj, BOOL widths_only, BOOL snap_to
     }
 
     if( !EqualRect( &size, &obj_rect ) ) {
-        if( !Resize( obj->object_handle, &size, FALSE ) ) {
+        if( !Resize( obj->object_handle, &size, false ) ) {
             WdeWriteTrail( "WdeChangeControlSize: RESIZE failed!" );
-            return( FALSE );
+            return( false );
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlSetFont( WdeControlObject *obj, HFONT *font, WdeResizeRatio *resizer )
+bool WdeControlSetFont( WdeControlObject *obj, HFONT *font, WdeResizeRatio *resizer )
 {
     ControlClass        *control_class;
     ResNameOrOrdinal    *rname;
@@ -612,19 +591,18 @@ BOOL WdeControlSetFont( WdeControlObject *obj, HFONT *font, WdeResizeRatio *resi
 
     if( !Forward( obj->parent, GET_WINDOW_HANDLE, &obj->parent_handle, NULL) ) {
         WdeWriteTrail( "WdeControlSetFont: GET_WINDOW_HANDLE failed!" );
-        return( FALSE );
+        return( false );
     }
 
-    if( !WdeChangeControlSize( obj, FALSE, FALSE ) ) {
+    if( !WdeChangeControlSize( obj, false, false ) ) {
         WdeWriteTrail( "WdeControlSetFont: WdeChangeControlSize failed!" );
-        return( FALSE );
+        return( false );
     }
 
     if( obj->window_handle != NULL ) {
         control_class = GETCTL_CLASSID( obj->control_info );
-        if( control_class->Class == CLASS_STATIC &&
-            (GETCTL_STYLE( obj->control_info ) & 0x0000000f) == SS_ICON ) {
-            return( TRUE );
+        if( control_class->Class == CLASS_STATIC && (GETCTL_STYLE( obj->control_info ) & 0x0000000f) == SS_ICON ) {
+            return( true );
         }
 
         name = NULL;
@@ -640,13 +618,13 @@ BOOL WdeControlSetFont( WdeControlObject *obj, HFONT *font, WdeResizeRatio *resi
 
         SendMessage( obj->window_handle, WM_SETFONT, (WPARAM)*font, (LPARAM)TRUE );
 
-        SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)name );
+        SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPCSTR)name );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlDraw( WdeControlObject *obj, RECT *area, HDC *dc )
+bool WdeControlDraw( WdeControlObject *obj, RECT *area, HDC *dc )
 {
     RECT    rect;
     RECT    trect;
@@ -660,8 +638,7 @@ BOOL WdeControlDraw( WdeControlObject *obj, RECT *area, HDC *dc )
     if( dc != NULL && IntersectRect( &trect, area, &rect ) ) {
         OffsetRect( &trect, -origin.x, -origin.y );
         MapWindowPoints( obj->res_info->edit_win, obj->window_handle, (POINT *)&trect, 2 );
-        RedrawWindow( obj->window_handle, (RECT *)&trect, (HRGN)NULL,
-                      RDW_INTERNALPAINT | RDW_UPDATENOW );
+        RedrawWindow( obj->window_handle, (RECT *)&trect, (HRGN)NULL, RDW_INTERNALPAINT | RDW_UPDATENOW );
     }
 
     OffsetRect( &rect, -origin.x, -origin.y );
@@ -674,10 +651,10 @@ BOOL WdeControlDraw( WdeControlObject *obj, RECT *area, HDC *dc )
         SetWindowPos( obj->window_handle, (HWND)NULL, rect.left, rect.top, 0, 0, flags );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlOnTop( WdeControlObject *obj, void *p1, void *p2 )
+bool WdeControlOnTop( WdeControlObject *obj, void *p1, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p1 );
@@ -685,30 +662,30 @@ BOOL WdeControlOnTop( WdeControlObject *obj, void *p1, void *p2 )
 
     WdeBringControlToTop( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlSetClearInt( WdeControlObject *obj, BOOL *b, void *p2 )
+bool WdeControlSetClearInt( WdeControlObject *obj, bool *b, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
-    obj->clear_interior = ( *b != 0 );
+    obj->clear_interior = *b;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlGetClearInt( WdeControlObject *obj, BOOL *b, void *p2 )
+bool WdeControlGetClearInt( WdeControlObject *obj, bool *b, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *b = obj->clear_interior;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlCreateWindow( WdeControlObject *obj, void *p1, void *p2 )
+bool WdeControlCreateWindow( WdeControlObject *obj, bool *p1, void *p2 )
 {
     ResNameOrOrdinal    *rname;
     char                *name;
@@ -718,9 +695,9 @@ BOOL WdeControlCreateWindow( WdeControlObject *obj, void *p1, void *p2 )
     POINT               pnt;
     RECT                obj_rect;
     DialogStyle         style;
-    uint_32             exstyle;
-    BOOL                set_font;
-    BOOL                set_crt_params;
+    DWORD               exstyle;
+    bool                set_font;
+    bool                set_crt_params;
     POINT               origin;
     uint_16             ID;
     OBJ_ID              oid;
@@ -732,23 +709,22 @@ BOOL WdeControlCreateWindow( WdeControlObject *obj, void *p1, void *p2 )
 
     if( !Forward( obj->parent, GET_WINDOW_HANDLE, &obj->parent_handle, NULL ) ) {
         WdeWriteTrail( "WdeControlCreateWindow: GET_WINDOW_HANDLE failed!" );
-        return( FALSE );
+        return( false );
     }
 
     if( !Forward( obj->object_handle, IDENTIFY, &oid, NULL ) ) {
         WdeWriteTrail( "WdeControlCreateWindow: IDENTIFY failed!" );
-        return( FALSE );
+        return( false );
     }
 
     new_proc = (WNDPROC)NULL;
-    if( !Forward( obj->object_handle, GET_WND_PROC, &new_proc, NULL ) ||
-        new_proc == (WNDPROC)NULL ) {
+    if( !Forward( obj->object_handle, GET_WND_PROC, &new_proc, NULL ) || new_proc == (WNDPROC)NULL ) {
         WdeWriteTrail( "WdeControlCreateWindow: Could not get new wnd proc!" );
-        return( FALSE );
+        return( false );
     }
 
-    set_font = TRUE;
-    set_crt_params = TRUE;
+    set_font = true;
+    set_crt_params = true;
 
     Location( obj->object_handle, &obj_rect );
 
@@ -763,7 +739,7 @@ BOOL WdeControlCreateWindow( WdeControlObject *obj, void *p1, void *p2 )
     cname = NULL;
 
     if( oid == ICON_OBJ ) {
-        set_font = FALSE;
+        set_font = false;
         name = "DefaultIcon";
     }
 
@@ -798,10 +774,10 @@ BOOL WdeControlCreateWindow( WdeControlObject *obj, void *p1, void *p2 )
     ID = GETCTL_ID( obj->control_info );
     if( stricmp( obj->window_class, "wde_borbtn" ) == 0 ) {
         if( !WdeIsBorBtnIDSupported( GETCTL_ID( obj->control_info ) ) ) {
-            ID = WDE_PREVIEW_ID;
+            ID = (uint_16)WDE_PREVIEW_ID;
         }
-        set_font = FALSE;
-        set_crt_params = FALSE;
+        set_font = false;
+        set_crt_params = false;
     }
 
     if( !set_font ) {
@@ -833,7 +809,7 @@ BOOL WdeControlCreateWindow( WdeControlObject *obj, void *p1, void *p2 )
 
     if( obj->window_handle == NULL ) {
         WdeWriteTrail( "WdeControlCreateWindow: Could not create window!" );
-        return( FALSE );
+        return( false );
     }
 
     // 3D subclass the control
@@ -846,24 +822,24 @@ BOOL WdeControlCreateWindow( WdeControlObject *obj, void *p1, void *p2 )
     if( obj->old_proc == (WNDPROC)NULL ) {
         DestroyWindow( obj->window_handle );
         obj->window_handle = NULL;
-        return( FALSE );
+        return( false );
     }
     SET_WNDPROC( obj->window_handle, (LONG_PTR)new_proc );
 
     if( set_font ) {
         SendMessage( obj->window_handle, WM_SETFONT, (WPARAM)obj->font, (LPARAM)TRUE );
 
-        SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)name );
+        SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPCSTR)name );
     }
 
     WdeBringControlToTop( obj );
 
     ShowWindow( obj->window_handle, SW_SHOW );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlDestroyWindow( WdeControlObject *obj, bool *quick, bool *destroy_children )
+bool WdeControlDestroyWindow( WdeControlObject *obj, bool *quick, bool *destroy_children )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( destroy_children );
@@ -875,20 +851,20 @@ BOOL WdeControlDestroyWindow( WdeControlObject *obj, bool *quick, bool *destroy_
     obj->window_handle = NULL;
     obj->tag = NULL;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlShowWindow( WdeControlObject *obj, bool *flag, void *p2 )
+bool WdeControlShowWindow( WdeControlObject *obj, bool *flag, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     WdeShowObjectWindow( obj->window_handle, *flag );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlGetResizeInfo( WdeControlObject *obj, RESIZE_ID *info, void *p2 )
+bool WdeControlGetResizeInfo( WdeControlObject *obj, RESIZE_ID *info, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -900,18 +876,18 @@ BOOL WdeControlGetResizeInfo( WdeControlObject *obj, RESIZE_ID *info, void *p2 )
         *info = R_NONE;
     }
 
-    return( TRUE );
+    return( true );
 }
 
-static BOOL WdeControlValidateMove( WdeControlObject *obj, POINT *pnt, ACTION act )
+static bool WdeControlValidateMove( WdeControlObject *obj, POINT *pnt, ACTION_ID act )
 {
     RECT        obj_rect;
     RECT        win_rect;
     OBJ_ID      id;
-    BOOL        clear;
+    bool        clear;
 
     if( act == MOVE && obj->mode != WdeSelect ) {
-        return( FALSE );
+        return( false );
     }
 
     id = BASE_OBJ;
@@ -921,7 +897,7 @@ static BOOL WdeControlValidateMove( WdeControlObject *obj, POINT *pnt, ACTION ac
         Location( (OBJPTR)obj, &obj_rect );
         GetWindowRect( obj->window_handle, &win_rect );
         obj_rect.bottom = obj_rect.top + win_rect.bottom - win_rect.top;
-        return( PtInRect( &obj_rect, *pnt ) );
+        return( PtInRect( &obj_rect, *pnt ) != 0 );
     }
 
     clear = obj->clear_interior;
@@ -932,7 +908,7 @@ static BOOL WdeControlValidateMove( WdeControlObject *obj, POINT *pnt, ACTION ac
         mask = GETCTL_STYLE( obj->control_info ) & 0x0000000F;
 
         if( mask != SS_BLACKRECT && mask != SS_GRAYRECT && mask != SS_WHITERECT ) {
-            clear = TRUE;
+            clear = true;
         }
     }
 
@@ -943,13 +919,13 @@ static BOOL WdeControlValidateMove( WdeControlObject *obj, POINT *pnt, ACTION ac
         obj_rect.right -= WDE_BORDER_SIZE;
         obj_rect.top += WDE_BORDER_SIZE;
         obj_rect.bottom -= WDE_BORDER_SIZE;
-        return( !PtInRect( &obj_rect, *pnt ) );
+        return( PtInRect( &obj_rect, *pnt ) == 0 );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlValidateAction( WdeControlObject *obj, ACTION *act, void *p2 )
+bool WdeControlValidateAction( WdeControlObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 
@@ -959,31 +935,31 @@ BOOL WdeControlValidateAction( WdeControlObject *obj, ACTION *act, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeControlActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( ValidateAction( (OBJPTR)obj->o_item, *act, p2 ) );
+    return( ValidateAction( obj->o_item, *act, p2 ) );
 }
 
-BOOL WdeControlGetWindowHandle( WdeControlObject *obj, HWND *hwin, void *p2 )
+bool WdeControlGetWindowHandle( WdeControlObject *obj, HWND *hwin, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *hwin = obj->window_handle;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlPasteObject( WdeControlObject *obj, OBJPTR parent, POINT *pnt )
+bool WdeControlPasteObject( WdeControlObject *obj, OBJPTR parent, POINT *pnt )
 {
     bool ok;
 
     obj->base_obj = GetMainObject();
     obj->res_info = WdeGetCurrentRes();
 
-    ok = (obj->base_obj != NULL && obj->res_info != NULL);
+    ok = ( obj->base_obj != NULL && obj->res_info != NULL );
 
     if( ok ) {
         if( pnt != NULL ) {
@@ -1005,7 +981,7 @@ BOOL WdeControlPasteObject( WdeControlObject *obj, OBJPTR parent, POINT *pnt )
     }
 
     if( ok ) {
-        ok = WdeChangeControlSize( obj, FALSE, TRUE ) != 0;
+        ok = WdeChangeControlSize( obj, false, true ) != 0;
         if( !ok ) {
             WdeWriteTrail( "WdeControlPasteObject: WdeChangeControlSize failed!" );
         }
@@ -1021,8 +997,7 @@ BOOL WdeControlPasteObject( WdeControlObject *obj, OBJPTR parent, POINT *pnt )
     if( ok ) {
         WdeControlModified( obj );
         if( obj->symbol != NULL ) {
-            WdeAddSymbolToObjectHashTable( obj->res_info, obj->symbol,
-                                           GETCTL_ID( obj->control_info ) );
+            WdeAddSymbolToObjectHashTable( obj->res_info, obj->symbol, GETCTL_ID( obj->control_info ) );
         }
         WdeControlOnTop( obj, NULL, NULL );
     } else {
@@ -1033,23 +1008,22 @@ BOOL WdeControlPasteObject( WdeControlObject *obj, OBJPTR parent, POINT *pnt )
     return( ok );
 }
 
-BOOL WdeControlCopyObject( WdeControlObject *obj, WdeControlObject **new,
-                           WdeControlObject *handle )
+bool WdeControlCopyObject( WdeControlObject *obj, WdeControlObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeControlCopyObject: Invalid new object!" );
-        return( FALSE );
+        return( false );
     }
 
     *new = (WdeControlObject *)WRMemAlloc( sizeof( WdeControlObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeControlCopyObject: Object malloc failed" );
-        return( FALSE );
+        return( false );
     }
     memset( *new, 0, sizeof( WdeControlObject ) );
 
-    (*new)->dispatcher = obj->dispatcher;
+    OBJ_DISPATCHER_COPY( *new, obj );
     (*new)->window_class = obj->window_class;
     (*new)->font = obj->font;
     (*new)->sizeable = obj->sizeable;
@@ -1060,7 +1034,7 @@ BOOL WdeControlCopyObject( WdeControlObject *obj, WdeControlObject **new,
     if( !(*new)->control_info ) {
         WdeWriteTrail( "WdeControlCopyObject: NULL info!" );
         WdeFreeControlObject( *new );
-        return( FALSE );
+        return( false );
     }
 
     SETCTL_ID( (*new)->control_info, WdeGetNextControlID() );
@@ -1070,7 +1044,7 @@ BOOL WdeControlCopyObject( WdeControlObject *obj, WdeControlObject **new,
         if( (*new)->symbol == NULL ) {
             WdeWriteTrail( "WdeControlCopyObject: Symbol alloc failed" );
             WdeFreeControlObject( *new );
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -1080,12 +1054,12 @@ BOOL WdeControlCopyObject( WdeControlObject *obj, WdeControlObject **new,
         if( (*new)->helpsymbol == NULL ) {
             WdeWriteTrail( "WdeControlCopyObject: Help symbol alloc failed" );
             WdeFreeControlObject( *new );
-            return( FALSE );
+            return( false );
         }
     }
 
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }
@@ -1093,15 +1067,15 @@ BOOL WdeControlCopyObject( WdeControlObject *obj, WdeControlObject **new,
     if( !CopyObject( obj->o_item, &(*new)->o_item, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeControlCopyObject: OITEM not created!" );
         WdeFreeControlObject( *new );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlCutObject( WdeControlObject *obj, WdeControlObject **new, void *p2 )
+bool WdeControlCutObject( WdeControlObject *obj, OBJPTR *new, void *p2 )
 {
-    NOTE_ID     note_id;
+    NOTE_ID     noteid;
     bool        check_scroll;
 
     /* touch unused vars to get rid of warning */
@@ -1109,20 +1083,20 @@ BOOL WdeControlCutObject( WdeControlObject *obj, WdeControlObject **new, void *p
 
     *new = NULL;
 
-    check_scroll = (obj->parent == obj->base_obj);
+    check_scroll = ( obj->parent == obj->base_obj );
 
     if( !RemoveObject( obj->parent, obj->object_handle ) ) {
         WdeWriteTrail( "WdeControlCutObject: Remove from parent failed!" );
-        return( FALSE );
+        return( false );
     }
 
-    note_id = NEW_PARENT;
-    if( !WdeControlNotify( obj, &note_id, NULL ) ) {
+    noteid = NEW_PARENT;
+    if( !WdeControlNotify( obj, &noteid, NULL ) ) {
         WdeWriteTrail( "WdeControlCutObject: New parent notify failed!" );
         if( !AddObject( obj->parent, obj->object_handle ) ) {
             WdeWriteTrail( "WdeControlCutObject: Add to parent failed!" );
         }
-        return( FALSE );
+        return( false );
     }
 
     if( obj->window_handle != NULL ) {
@@ -1136,30 +1110,30 @@ BOOL WdeControlCutObject( WdeControlObject *obj, WdeControlObject **new, void *p
     WdeControlModified( obj );
 
     if( check_scroll ) {
-        WdeCheckBaseScrollbars( FALSE );
+        WdeCheckBaseScrollbars( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlFirstChild( WdeControlObject *obj, void *p1, void *p2 )
+bool WdeControlFirstChild( WdeControlObject *obj, void *p1, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p1 );
     _wde_touch( p2 );
 
     if( obj->parent == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     if( !Forward( obj->parent, PUT_ME_FIRST, obj->object_handle, NULL ) ) {
         WdeWriteTrail( "WdeControlFirstChild: PUT_ME_FIRST failed!" );
-        return( FALSE );
+        return( false );
     }
 
     WdeBringControlToTop( obj );
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeWriteControlToInfo( WdeControlObject *obj )
@@ -1169,10 +1143,10 @@ void WdeWriteControlToInfo( WdeControlObject *obj )
     is.obj_id = CONTROL_OBJ;
     is.res_info = obj->res_info;
     is.obj = obj->object_handle;
-    is.dsize.x = GETCTL_SIZEX( obj->control_info );
-    is.dsize.y = GETCTL_SIZEY( obj->control_info );
-    is.dsize.width = GETCTL_SIZEW( obj->control_info );
-    is.dsize.height = GETCTL_SIZEH( obj->control_info );
+    is.sizeinfo.x = GETCTL_SIZEX( obj->control_info );
+    is.sizeinfo.y = GETCTL_SIZEY( obj->control_info );
+    is.sizeinfo.width = GETCTL_SIZEW( obj->control_info );
+    is.sizeinfo.height = GETCTL_SIZEH( obj->control_info );
     is.u.ctl.text = GETCTL_TEXT( obj->control_info );
     is.u.ctl.id = GETCTL_ID( obj->control_info );
     is.symbol = WdeStrDup( obj->symbol );
@@ -1188,16 +1162,16 @@ void WdeWriteControlToInfo( WdeControlObject *obj )
 //  }
 }
 
-BOOL WdeControlNotify( WdeControlObject *obj, NOTE_ID *id, void *p2 )
+bool WdeControlNotify( WdeControlObject *obj, NOTE_ID *noteid, void *p2 )
 {
     HWND   handle;
-    BOOL   new_parent;
-    BOOL   parent_changed;
+    bool   new_parent;
+    bool   parent_changed;
 
-    new_parent = FALSE;
-    parent_changed = FALSE;
+    new_parent = false;
+    parent_changed = false;
 
-    switch( *id ) {
+    switch( *noteid ) {
     case MOVE_START:
         HideSelectBoxes();
         break;
@@ -1214,12 +1188,12 @@ BOOL WdeControlNotify( WdeControlObject *obj, NOTE_ID *id, void *p2 )
          */
         if( !WdeControlFirstChild( obj, NULL, NULL ) ) {
             WdeWriteTrail( "WdeControlNotify: FIRST_CHILD falied!" );
-            return( FALSE );
+            return( false );
         }
 
         if( !Forward( obj->parent, BECOME_FIRST_CHILD, NULL, NULL ) ) {
             WdeWriteTrail( "WdeControlNotify: BECOME_FIRST_CHILD falied!" );
-            return( FALSE );
+            return( false );
         }
 
         if( obj->parent == obj->base_obj ) {
@@ -1232,26 +1206,26 @@ BOOL WdeControlNotify( WdeControlObject *obj, NOTE_ID *id, void *p2 )
 
         WdeWriteControlToInfo( obj );
 
-        return ( TRUE );
+        return( true );
 
     case NEW_PARENT:
         if( p2 == NULL ) {
             obj->parent = NULL;
             obj->parent_handle = NULL;
-            return( Notify( obj->o_item, *id, obj->parent ) );
+            return( Notify( obj->o_item, *noteid, obj->parent ) );
         }
 
         if( obj->parent != p2 ) {
-            new_parent = TRUE;
+            new_parent = true;
         }
 
         if( !Forward( p2, GET_WINDOW_HANDLE, &handle, NULL ) ) {
             WdeWriteTrail( "WdeControlNotify: GET_WINDOW_HANDLE failed!" );
-            return( FALSE );
+            return( false );
         }
 
         if( obj->parent_handle != handle ) {
-            parent_changed = TRUE;
+            parent_changed = true;
         }
 
         if( new_parent ) {
@@ -1259,43 +1233,43 @@ BOOL WdeControlNotify( WdeControlObject *obj, NOTE_ID *id, void *p2 )
             obj->parent_handle = handle;
             if( !Forward( obj->parent, GET_FONT, &obj->font, NULL ) ) {
                 WdeWriteTrail( "WdeControlNotify: GET_FONT failed!" );
-                return( FALSE );
+                return( false );
             }
-            parent_changed = TRUE;
+            parent_changed = true;
         }
 
         if( parent_changed ) {
             if( obj->window_handle != NULL ) {
                 if( !WdeControlDestroyWindow ( obj, NULL, NULL ) ) {
                     WdeWriteTrail( "WdeControlNotify: DESTROY_WINDOW failed!" );
-                    return( FALSE );
+                    return( false );
                 }
-                if( !Forward( (OBJPTR)obj->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
+                if( !Forward( obj->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
                     WdeWriteTrail("WdeControlNotify: CREATE_WINDOW failed!" );
-                    return( FALSE );
+                    return( false );
                 }
             }
         }
-        return( Notify( obj->o_item, *id, obj->parent ) );
+        return( Notify( obj->o_item, *noteid, obj->parent ) );
 
     case SET_LOCATION:
         if( obj->clear_interior ) {
             WdeSetClearObjectPos( obj );
         }
-        return( WdeChangeControlSize( obj, FALSE, FALSE ) );
+        return( WdeChangeControlSize( obj, false, false ) );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 /* NOTE: This function assumes that there was no change of parent */
-static BOOL WdeOffsetDialogUnits ( WdeControlObject *obj, WdeResizeRatio *r )
+static bool WdeOffsetDialogUnits ( WdeControlObject *obj, WdeResizeRatio *r )
 {
-    RECT           parent_pos;
-    RECT           new_pos;
-    RECT           nc_size;
-    RECT           win_pos;
-    DialogSizeInfo dsize;
+    RECT                parent_pos;
+    RECT                new_pos;
+    RECT                nc_size;
+    RECT                win_pos;
+    WdeDialogSizeInfo   sizeinfo;
 
     Location( obj->object_handle, &new_pos );
 
@@ -1304,7 +1278,7 @@ static BOOL WdeOffsetDialogUnits ( WdeControlObject *obj, WdeResizeRatio *r )
 
         if( !Forward( obj->parent, GET_NC_SIZE, &nc_size, NULL ) ) {
             WdeWriteTrail( "WdeOffsetDialogUnits: GET_NC_SIZE failed!" );
-            return( FALSE );
+            return( false );
         }
 
         win_pos.left = new_pos.left - parent_pos.left - nc_size.left;
@@ -1317,35 +1291,32 @@ static BOOL WdeOffsetDialogUnits ( WdeControlObject *obj, WdeResizeRatio *r )
     win_pos.right = win_pos.left + (new_pos.right - new_pos.left);
     win_pos.bottom = win_pos.top + (new_pos.bottom - new_pos.top);
 
-    if( WdeScreenToDialog( obj, r, &win_pos, &dsize ) ) {
-        SETCTL_SIZEX( obj->control_info, dsize.x );
-        SETCTL_SIZEY( obj->control_info, dsize.y );
-        return( TRUE );
+    if( WdeScreenToDialog( obj, r, &win_pos, &sizeinfo ) ) {
+        SETCTL_SIZEX( obj->control_info, sizeinfo.x );
+        SETCTL_SIZEY( obj->control_info, sizeinfo.y );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
-BOOL WdeUpdateCDialogUnits( OBJPTR obj, RECT *new, WdeResizeRatio *r )
+bool WdeUpdateCDialogUnits( OBJPTR cobj, RECT *new, WdeResizeRatio *r )
 {
-    WdeControlObject    *cobj;
-    DialogSizeInfo      dsize;
-
-    cobj = (WdeControlObject *)obj;
+    WdeDialogSizeInfo   sizeinfo;
 
     /* save the old dialog units */
-    dsize = GETCTL_SIZE( cobj->control_info );
+    sizeinfo = GETCTL_SIZE( ((WdeControlObject *)cobj)->control_info );
 
-    if( !WdeScreenToDialog( cobj, r, new, GETCTL_PSIZE( cobj->control_info ) ) ) {
+    if( !WdeScreenToDialog( cobj, r, new, GETCTL_PSIZE( ((WdeControlObject *)cobj)->control_info ) ) ) {
         /* restore the old dialog units */
-        SETCTL_SIZE( cobj->control_info, dsize );
-        return( FALSE );
+        SETCTL_SIZE( ((WdeControlObject *)cobj)->control_info, sizeinfo );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlResize( WdeControlObject *obj, RECT *new_pos, BOOL *flag )
+bool WdeControlResize( WdeControlObject *obj, RECT *new_pos, bool *flag )
 {
     RECT           object_rect;
     RECT           nc_size;
@@ -1353,23 +1324,23 @@ BOOL WdeControlResize( WdeControlObject *obj, RECT *new_pos, BOOL *flag )
     RECT           rect;
     POINT          origin;
     POINT          pnt;
-    BOOL           error;
+    bool           error;
     WdeResizeRatio resizer;
     int            min_width;
     int            min_height;
 
     if( *flag && obj->mode != WdeSelect ) {
-        return( FALSE );
+        return( false );
     }
 
     if( obj->parent == NULL ) {
         WdeWriteTrail( "WdeDialogResize: obj has no parent!" );
-        return( FALSE );
+        return( false );
     }
 
     if( !Forward( obj->parent, GET_RESIZER, &resizer, NULL ) ) {
         WdeWriteTrail( "WdeDialogResize: GET_RESIZER failed!" );
-        return( FALSE );
+        return( false );
     }
 
     min_width = MulDiv( WDE_CONTROL_MIN_WIDTH, resizer.xmap, 4 );
@@ -1387,16 +1358,16 @@ BOOL WdeControlResize( WdeControlObject *obj, RECT *new_pos, BOOL *flag )
 
     if( !Resize( obj->o_item, new_pos, *flag ) ) {
         WdeWriteTrail( "WdeControlResize: O_ITEM RESIZE failed!" );
-        return( FALSE );
+        return( false );
     }
 
     if( !*flag ) {
-        error = FALSE;
+        error = false;
         if( obj->parent != obj->base_obj ) {
             Location( obj->parent, &parent_rect );
             if( !Forward( obj->parent, GET_NC_SIZE, &nc_size, NULL ) ) {
                 WdeWriteTrail( "WdeDialogAddSubObject: Couldn't get nc size!" );
-                error = TRUE;
+                error = true;
             }
             parent_rect.left += nc_size.left;
             parent_rect.right -= nc_size.right;
@@ -1406,17 +1377,16 @@ BOOL WdeControlResize( WdeControlObject *obj, RECT *new_pos, BOOL *flag )
             pnt.y = new_pos->top;
 
             if( pnt.x < parent_rect.left || pnt.y < parent_rect.top ) {
-                WdeWriteTrail( "WdeControlResize: "
-                               "control not contained by dialog top left!" );
-                //error = TRUE;
-                error = FALSE; // experiment -- don't cause a failure
+                WdeWriteTrail( "WdeControlResize: control not contained by dialog top left!" );
+                //error = true;
+                error = false; // experiment -- don't cause a failure
             }
         }
         if( error ) {
-            if( !Resize( obj->o_item, &object_rect, FALSE ) ) {
+            if( !Resize( obj->o_item, &object_rect, false ) ) {
                 WdeWriteTrail( "WdeControlResize: O_ITEM RESIZE undo failed!" );
             }
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -1443,20 +1413,20 @@ BOOL WdeControlResize( WdeControlObject *obj, RECT *new_pos, BOOL *flag )
         if( obj->parent == obj->base_obj ) {
             rect = *new_pos;
         }
-        WdeUpdateCDialogUnits( obj, &rect, &resizer );
-        if( !WdeChangeControlSize( obj, FALSE, FALSE ) ) {
+        WdeUpdateCDialogUnits( (OBJPTR)obj, &rect, &resizer );
+        if( !WdeChangeControlSize( obj, false, false ) ) {
             WdeWriteTrail( "WdeControlResize: WdeChangeControlSize failed!" );
-            return( FALSE );
+            return( false );
         }
         if( obj->parent == obj->base_obj ) {
-            WdeCheckBaseScrollbars( FALSE );
+            WdeCheckBaseScrollbars( false );
         }
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlMove ( WdeControlObject *obj, POINT *off, BOOL *forms_called )
+bool WdeControlMove( WdeControlObject *obj, POINT *off, bool *forms_called )
 {
     RECT           parent_rect;
     RECT           object_rect;
@@ -1486,7 +1456,7 @@ BOOL WdeControlMove ( WdeControlObject *obj, POINT *off, BOOL *forms_called )
 
     /* update the location of the object */
     if( !Move( obj->o_item, &offset, *forms_called ) ) {
-        return( FALSE );
+        return( false );
     }
 
     Location( obj->object_handle, &object_rect );
@@ -1530,10 +1500,8 @@ BOOL WdeControlMove ( WdeControlObject *obj, POINT *off, BOOL *forms_called )
                     WdeMapWindowRect( obj->res_info->edit_win,
                                       obj->parent_handle, &object_rect );
                 }
-                SETCTL_SIZEX( obj->control_info,
-                              (uint_16)MulDiv( object_rect.left, 4, resizer.xmap ) );
-                SETCTL_SIZEY( obj->control_info,
-                              (uint_16)MulDiv( object_rect.top, 8, resizer.ymap ) );
+                SETCTL_SIZEX( obj->control_info, MulDiv( object_rect.left, 4, resizer.xmap ) );
+                SETCTL_SIZEY( obj->control_info, MulDiv( object_rect.top, 8, resizer.ymap ) );
             }
 
             if( obj->symbol != NULL ) {
@@ -1542,7 +1510,7 @@ BOOL WdeControlMove ( WdeControlObject *obj, POINT *off, BOOL *forms_called )
             }
         }
 
-        if( ok && !WdeChangeControlSize( obj, FALSE, TRUE ) ) {
+        if( ok && !WdeChangeControlSize( obj, false, true ) ) {
             WdeWriteTrail( "WdeControlMove: WdeChangeControlSize failed!" );
             ok = false;
         }
@@ -1572,36 +1540,37 @@ BOOL WdeControlMove ( WdeControlObject *obj, POINT *off, BOOL *forms_called )
         if( *forms_called ) {
             RemoveObject( obj->parent, obj->object_handle );
         }
-        if( !Resize( obj->o_item, &old_pos, FALSE ) ) {
+        if( !Resize( obj->o_item, &old_pos, false ) ) {
             WdeWriteTrail( "WdeControlMove: O_ITEM RESIZE undo failed!" );
         }
     } else if( ok && *forms_called ) {
         WdeControlModified( obj );
         if( old_parent == obj->base_obj || obj->parent == obj->base_obj ) {
-            WdeCheckBaseScrollbars( FALSE );
+            WdeCheckBaseScrollbars( false );
         }
     }
 
     return( ok );
 }
 
-BOOL WdeControlGetObjectInfo( WdeControlObject *obj,
-                              WdeDialogBoxControl **info, char **s )
+bool WdeControlGetObjectInfo( WdeControlObject *obj, void **_info, void **s )
 {
+    WdeDialogBoxControl **info = (WdeDialogBoxControl **)_info;
+
     if( info != NULL ) {
         *info = obj->control_info;
     }
 
-    if( s ) {
+    if( s != NULL ) {
         *s = obj->symbol;
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlSetObjectInfo( WdeControlObject *obj,
-                              WdeDialogBoxControl *info, char *s )
+bool WdeControlSetObjectInfo( WdeControlObject *obj, void *_info, void *s )
 {
+    WdeDialogBoxControl *info = _info;
     RECT                size;
     POINT               origin;
     WdeResizeRatio      resizer;
@@ -1615,7 +1584,7 @@ BOOL WdeControlSetObjectInfo( WdeControlObject *obj,
 
 
     if( info == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     /* JPK - Added for help ID */
@@ -1645,22 +1614,22 @@ BOOL WdeControlSetObjectInfo( WdeControlObject *obj,
 
         if( !Forward( obj->parent, GET_RESIZER, &resizer, NULL ) ) {
             WdeWriteTrail( "WdeControlSetControlInfo: GET_RESIZER failed!" );
-            return( FALSE );
+            return( false );
         }
 
         if( !WdeScreenToDialog( obj, &resizer, &size, GETCTL_PSIZE( obj->control_info ) ) ) {
             WdeWriteTrail( "WdeControlSetControlInfo: WdeScreenToDialog failed!" );
-            return( FALSE );
+            return( false );
         }
 
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlSetObjectHelpInfo( WdeControlObject *obj,
-                                  WdeDialogBoxControl *info, char *hs )
+bool WdeControlSetObjectHelpInfo( WdeControlObject *obj, void *info, char *hs )
 {
+//    WdeDialogBoxControl *info = _info;
     _wde_touch( info );
 
     if( obj->helpsymbol != NULL ) {
@@ -1668,12 +1637,13 @@ BOOL WdeControlSetObjectHelpInfo( WdeControlObject *obj,
     }
     obj->helpsymbol = WdeStrDup( hs );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlGetObjectHelpInfo( WdeControlObject *obj,
-                                  WdeDialogBoxControl **info, char **hs )
+bool WdeControlGetObjectHelpInfo( WdeControlObject *obj, void **_info, char **hs )
 {
+    WdeDialogBoxControl **info = (WdeDialogBoxControl **)_info;
+
     // this is redundant
     if( info != NULL ) {
         *info = obj->control_info;
@@ -1684,10 +1654,10 @@ BOOL WdeControlGetObjectHelpInfo( WdeControlObject *obj,
         *hs = obj->helpsymbol;
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlResolveSymbol( WdeControlObject *obj, bool *b, bool *from_id )
+bool WdeControlResolveSymbol( WdeControlObject *obj, bool *b, bool *from_id )
 {
     WdeHashValue        val;
     void                *vp;
@@ -1695,8 +1665,7 @@ BOOL WdeControlResolveSymbol( WdeControlObject *obj, bool *b, bool *from_id )
 
     if( obj->control_info != NULL && obj->res_info != NULL ) {
         if( from_id != NULL && *from_id ) {
-            vp = WdeResolveValue( obj->res_info->hash_table,
-                                  (WdeHashValue)GETCTL_ID( obj->control_info ) );
+            vp = WdeResolveValue( obj->res_info->hash_table, (WdeHashValue)GETCTL_ID( obj->control_info ) );
             if( vp != NULL ) {
                 if( obj->symbol != NULL ) {
                     WRMemFree( obj->symbol );
@@ -1706,8 +1675,7 @@ BOOL WdeControlResolveSymbol( WdeControlObject *obj, bool *b, bool *from_id )
             }
         } else {
             if( obj->symbol != NULL ) {
-                val = WdeLookupName( obj->res_info->hash_table,
-                                     obj->symbol, &found );
+                val = WdeLookupName( obj->res_info->hash_table, obj->symbol, &found );
                 if( found ) {
                     SETCTL_ID( obj->control_info, (uint_16)val );
                     WdeControlModified( obj );
@@ -1721,13 +1689,13 @@ BOOL WdeControlResolveSymbol( WdeControlObject *obj, bool *b, bool *from_id )
             WdeWriteControlToInfo( obj );
         }
     } else {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlResolveHelpSymbol( WdeControlObject *obj, bool *b, bool *from_id )
+bool WdeControlResolveHelpSymbol( WdeControlObject *obj, bool *b, bool *from_id )
 {
     WdeHashValue        val;
     void                *vp;
@@ -1735,8 +1703,7 @@ BOOL WdeControlResolveHelpSymbol( WdeControlObject *obj, bool *b, bool *from_id 
 
     if( obj->control_info != NULL && obj->res_info != NULL ) {
         if( from_id != NULL && *from_id ) {
-            vp = WdeResolveValue( obj->res_info->hash_table,
-                                  (WdeHashValue)GETCTL_HELPID( obj->control_info ) );
+            vp = WdeResolveValue( obj->res_info->hash_table, (WdeHashValue)GETCTL_HELPID( obj->control_info ) );
             if( vp != NULL ) {
                 if( obj->helpsymbol != NULL ) {
                     WRMemFree( obj->helpsymbol );
@@ -1764,13 +1731,13 @@ BOOL WdeControlResolveHelpSymbol( WdeControlObject *obj, bool *b, bool *from_id 
             WdeWriteControlToInfo( obj );
         }
     } else {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlModifyInfo( WdeControlObject *obj, WdeInfoStruct *in, void *p2 )
+bool WdeControlModifyInfo( WdeControlObject *obj, WdeInfoStruct *in, void *p2 )
 {
     WdeHashEntry        *entry;
     char                *text;
@@ -1786,10 +1753,10 @@ BOOL WdeControlModifyInfo( WdeControlObject *obj, WdeInfoStruct *in, void *p2 )
         SETCTL_TEXT( obj->control_info, in->u.ctl.text );
         text = WdeResNameOrOrdinalToStr( GETCTL_TEXT( obj->control_info ), 10 );
         if( text != NULL ) {
-            SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)text );
+            SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPCSTR)text );
             WRMemFree( text );
         } else {
-            SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)"" );
+            SendMessage( obj->window_handle, WM_SETTEXT, 0, (LPARAM)(LPCSTR)"" );
         }
     }
 
@@ -1803,7 +1770,7 @@ BOOL WdeControlModifyInfo( WdeControlObject *obj, WdeInfoStruct *in, void *p2 )
         dup = false;
         entry = WdeDefAddHashEntry( obj->res_info->hash_table, obj->symbol, &dup );
         if( entry != NULL ) {
-            SETCTL_ID( obj->control_info, entry->value );
+            SETCTL_ID( obj->control_info, (uint_16)entry->value );
         }
     } else {
         SETCTL_ID( obj->control_info, in->u.ctl.id );
@@ -1813,21 +1780,20 @@ BOOL WdeControlModifyInfo( WdeControlObject *obj, WdeInfoStruct *in, void *p2 )
 
     WdeBringControlToTop( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlGetOrderMode( WdeControlObject *obj, WdeOrderMode *mode, void *p2 )
+bool WdeControlGetOrderMode( WdeControlObject *obj, WdeOrderMode *mode, WdeSetOrderLists *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *mode = obj->mode;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlSetOrderMode( WdeControlObject *obj, WdeOrderMode *mode,
-                             WdeSetOrderLists **l )
+bool WdeControlSetOrderMode( WdeControlObject *obj, WdeOrderMode *mode, WdeSetOrderLists **l )
 {
     WdeSetOrderStruct   *o;
     DialogStyle         style;
@@ -1837,16 +1803,15 @@ BOOL WdeControlSetOrderMode( WdeControlObject *obj, WdeOrderMode *mode,
     if( obj->mode == WdeSelect ) {
         o = (WdeSetOrderStruct *)WRMemAlloc( sizeof( WdeSetOrderStruct ) );
         if( o == NULL ) {
-            return( FALSE );
+            return( false );
         }
-        o->old_oe = ListElement( WdeFindOrderedEntry( (*l)->oldlist,
-                                                      obj->object_handle ) );
+        o->old_oe = (WdeOrderedEntry *)ListElement( WdeFindOrderedEntry( (*l)->oldlist, obj->object_handle ) );
         o->new_oe = NULL;
         o->lists = *l;
         o->old_oe->mode = *mode;
         o->old_oe->pos_set = FALSE;
-        o->old_oe->tab_set = ((style & WS_TABSTOP) != 0);
-        o->old_oe->grp_set = ((style & WS_GROUP) != 0);
+        o->old_oe->tab_set = ( (style & WS_TABSTOP) != 0 );
+        o->old_oe->grp_set = ( (style & WS_GROUP) != 0 );
         o->res_info = obj->res_info;
         obj->tag = WdeCreateTag( obj->window_handle, o );
         obj->mode = *mode;
@@ -1856,7 +1821,7 @@ BOOL WdeControlSetOrderMode( WdeControlObject *obj, WdeOrderMode *mode,
         obj->tag = NULL;
         obj->mode = WdeSelect;
         if( o == NULL ) {
-            return( FALSE );
+            return( false );
         }
         if( o->old_oe->tab_set ) {
             style |= WS_TABSTOP;
@@ -1873,7 +1838,7 @@ BOOL WdeControlSetOrderMode( WdeControlObject *obj, WdeOrderMode *mode,
     } else {
         o = WdeGetTagInfo( obj->tag );
         if( o == NULL ) {
-            return( FALSE );
+            return( false );
         }
         o->old_oe->mode = *mode;
         if( o->new_oe != NULL ) {
@@ -1885,27 +1850,32 @@ BOOL WdeControlSetOrderMode( WdeControlObject *obj, WdeOrderMode *mode,
 
     SETCTL_STYLE( obj->control_info, style );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
+bool WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
 {
     SIZE        size;
     int         width;
     int         height;
     OBJ_ID      id;
     RECT        pos;
-    BOOL        ok;
+    bool        ok;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( p1 );
     _wde_touch( p2 );
 
     ok = true;
+    id = 0;
+    size.cx = 0;
+    size.cy = 0;
+    width = 0;
+    height = 0;
+    SetRectEmpty( &pos );
 
     if( obj->parent_handle == (HWND)NULL ) {
-        ok = (Forward( obj->parent, GET_WINDOW_HANDLE, &obj->parent_handle, NULL ) &&
-              obj->parent_handle != (HWND)NULL);
+        ok = ( Forward( obj->parent, GET_WINDOW_HANDLE, &obj->parent_handle, NULL ) && obj->parent_handle != (HWND)NULL );
     }
 
     if( ok ) {
@@ -1917,7 +1887,6 @@ BOOL WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
     }
 
     if( ok ) {
-        width = 0;
         ok = false;
         switch( id ) {
         case PBUTTON_OBJ:
@@ -1944,7 +1913,6 @@ BOOL WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
     }
 
     if( ok ) {
-        height = 0;
         ok = false;
         switch( id ) {
         case RBUTTON_OBJ:
@@ -1966,7 +1934,7 @@ BOOL WdeControlSizeToText( WdeControlObject *obj, void *p1, void *p2 )
         pos.right = pos.left + width;
         pos.bottom = pos.top + height;
         HideSelectBoxes();
-        ok = Resize( obj->object_handle, &pos, TRUE );
+        ok = Resize( obj->object_handle, &pos, true );
         ShowSelectBoxes();
     }
 

@@ -68,18 +68,22 @@
     #define _TARGET_    "x86 16-bit"
     #define WFC         "wfc"           // copmiler name
     #define WFLENV      "WFL"           // "WFL" environment variable
+    #define _NAME_      "wfl"
 #elif _CPU == 386
     #define _TARGET_    "x86 32-bit"
     #define WFC         "wfc386"        // compiler name
     #define WFLENV      "WFL386"        // "WFL" environment variable
+    #define _NAME_      "wfl386"
 #elif _CPU == _AXP
     #define _TARGET_    "Alpha AXP"
     #define WFC         "wfcaxp"        // copmiler name
     #define WFLENV      "WFLAXP"        // "WFL" environment variable
+    #define _NAME_      "wflaxp"
 #elif _CPU == _PPC
     #define _TARGET_    "PowerPC"
     #define WFC         "wfcppc"        // copmiler name
     #define WFLENV      "WFLPPC"        // "WFL" environment variable
+    #define _NAME_      "wflppc"
 #else
     #error Unknown Target CPU
 #endif
@@ -261,7 +265,7 @@ int     main( int argc, char *argv[] ) {
     char        *q;
     char        *cmd;
 
-    argc = argc;
+    /* unused parameters */ (void)argc;
 
     __InitResource();
     __ErrorInit( argv[0] );
@@ -956,7 +960,7 @@ static  void    Usage( void ) {
 
     PrtBanner();
     puts( "" );
-    MsgBuffer( CL_USAGE_LINE, buff );
+    MsgBuffer( CL_USAGE_LINE, buff, _NAME_ );
     puts( buff );
     puts( "" );
     ShowOptions( buff );

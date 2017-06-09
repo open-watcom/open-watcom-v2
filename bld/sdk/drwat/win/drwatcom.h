@@ -143,7 +143,7 @@ extern WORD                     ExceptionAction;
 
 /* debug.c */
 WORD NumToAddr( HMODULE modhandle, WORD num );
-DWORD GetFaultString( int intnum, char *buff );
+msg_id GetFaultString( int intnum, char *buff );
 
 /* disasm.c */
 unsigned Disassemble( ADDRESS *addr, char *buff, int addbytes );
@@ -188,18 +188,18 @@ void DoStatDialog( HWND );
 BOOL FindSymbol( ADDRESS *addr, syminfo *si );
 void SymFileClose( void );
 RVALUE FindWatSymbol( ADDRESS *addr, syminfo *si, int getsrcinfo );
-BOOL InitSymbols( void );
+bool InitSymbols( void );
 void FiniSymbols( void );
-BOOL LoadDbgInfo( void );
+bool LoadDbgInfo( void );
 
 /* win32app.c */
 bool CheckIsWin32App( HANDLE );
-BOOL DoGlobalEntryModule( GLOBALENTRY *ge, HMODULE hmod, WORD seg );
-BOOL DoGlobalEntryHandle( GLOBALENTRY *ge, HANDLE hmem );
+bool DoGlobalEntryModule( GLOBALENTRY *ge, HMODULE hmod, WORD seg );
+bool DoGlobalEntryHandle( GLOBALENTRY *ge, HANDLE hmem );
 
 /* winmain.c */
 #pragma aux Death aborts;
-void Death( DWORD msgid, ... );
+void Death( msg_id msgid, ... );
 
 /* winproc.c */
 extern LONG __export FAR PASCAL WindowProc( HWND, UINT, WPARAM, LPARAM );
@@ -211,9 +211,9 @@ void ClearAlert( void );
 /* lddips.c */
 
 void ShowDIPStatus( HWND hwnd );
-BOOL LoadTheDips( void );
+bool LoadTheDips( void );
 void FiniDipMsgs( void );
-BOOL IsDip( HINSTANCE );
+bool IsDip( HINSTANCE );
 
 /* lognote.c */
 void AnotateLog( HWND hwnd, HANDLE Instance, void (*fn)(char *)  );

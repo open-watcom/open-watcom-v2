@@ -77,9 +77,8 @@ static bool CheckEntry( drmem_hdl abbrev, drmem_hdl mod, mod_scan_info *minfo, v
     return( sinfo->callback( &symctxt, sinfo->data ) );
 }
 
-extern bool DRSymSearch( dr_search search, dr_depth depth, void *_name,
-                                        void *data, DRSYMSRCH callback )
-/**********************************************************************/
+bool DRSymSearch( dr_search search, dr_depth depth, void *_name, void *data, DRSYMSRCH callback )
+/***********************************************************************************************/
 // search the debugging information for interesting symbols (of type dr_search)
 // optionally search inside lexical blocks or classes (dr_depth)
 // optionally look for a particular name.
@@ -103,10 +102,8 @@ extern bool DRSymSearch( dr_search search, dr_depth depth, void *_name,
     return( done );
 }
 
-extern bool DRResumeSymSearch( dr_search_context *ctxt, dr_search search,
-                               dr_depth depth, void *_name,
-                               void *data,
-                               DRSYMSRCH callback )
+bool DRResumeSymSearch( dr_search_context *ctxt, dr_search search,
+                               dr_depth depth, void *_name, void *data, DRSYMSRCH callback )
 /************************************************************************/
 // resume a search from context information in ctxt
 {
@@ -132,16 +129,15 @@ extern bool DRResumeSymSearch( dr_search_context *ctxt, dr_search search,
 static bool DRSearchMacro( regexp *name, void * data, DRSYMSRCH callback )
 /************************************************************************/
 {
-    name = name;            // just to avoid warnings.
-    data = data;
-    callback = callback;
+    /* unused parameters */ (void)name; (void)data; (void)callback;
+
     // NYI
 
     return( false );        // more info, in case anyone checks
 }
 
-extern dr_search_context * DRDuplicateSearchContext( dr_search_context *cxt )
-/***************************************************************************/
+dr_search_context * DRDuplicateSearchContext( dr_search_context *cxt )
+/********************************************************************/
 {
     int                 i;
     dr_search_context   *newCtxt;
@@ -160,8 +156,8 @@ extern dr_search_context * DRDuplicateSearchContext( dr_search_context *cxt )
     return( newCtxt );
 }
 
-extern void DRFreeSearchContext( dr_search_context *ctxt )
-/********************************************************/
+void DRFreeSearchContext( dr_search_context *ctxt )
+/*************************************************/
 {
     DWRFREE( ctxt->stack.stack );
     DWRFREE( ctxt );

@@ -245,7 +245,7 @@ bool WREEndEditStringResource( WStringHandle hndl )
             curr.res = NULL;
             curr.lang = NULL;
             ret = WREDeleteStringResources( &curr, TRUE );
-            WRESetStatusByID( -1, WRE_EMPTYREMOVED );
+            WRESetStatusByID( 0, WRE_EMPTYREMOVED );
         }
         WRERemoveStringEditSession( session );
     }
@@ -479,14 +479,12 @@ WStringNode *WRECreateStringNodes( WRECurrentResInfo *curr )
 
     nodes = NULL;
     tcurr = *curr;
-    rnode = curr->type->Head;
-
-    while( rnode ) {
+    for( rnode = curr->type->Head; rnode != NULL; rnode = rnode->Next ) {
         lnode = rnode->Head;
         if( lnode != NULL ) {
             lang = lnode->Info.lang;
         }
-        while( lnode != NULL ) {
+        for( ; lnode != NULL; lnode = lnode->Next ) {
             if( lnode->Info.lang.lang == lang.lang &&
                 lnode->Info.lang.sublang == lang.sublang ) {
                 tcurr.res = rnode;
@@ -503,9 +501,7 @@ WStringNode *WRECreateStringNodes( WRECurrentResInfo *curr )
                     nodes = new;
                 }
             }
-            lnode = lnode->Next;
         }
-        rnode = rnode->Next;
     }
 
     return( nodes );

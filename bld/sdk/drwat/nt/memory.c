@@ -41,7 +41,7 @@
 #ifndef CHICAGO
 
 /* Local Window callback functions prototypes */
-WINEXPORT BOOL CALLBACK MemInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK MemInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 typedef struct {
     DWORD       procid;
@@ -61,7 +61,7 @@ static void fillImageInfo( HWND hwnd, DWORD procid ) {
     int         id;
 
     id = (int)SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETCURSEL, 0, 0L );
-    SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETLBTEXT, id, (LPARAM)imagename );
+    SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETLBTEXT, id, (LPARAM)(LPSTR)imagename );
     if( strcmp( imagename, TOTAL_MEM_STR ) == 0 ) {
         ok = GetMemInfo( procid, &procinfo );
         info = &procinfo.image;
@@ -160,25 +160,21 @@ static void fillMemInfo( HWND hwnd, DWORD procid, BOOL first_time ) {
         if( !first_time ) {
             id = (int)SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETCURSEL, 0, 0L );
             if( id != CB_ERR ) {
-                SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETLBTEXT, id, (LPARAM)imagename );
+                SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_GETLBTEXT, id, (LPARAM)(LPSTR)imagename );
             }
         } else {
             id = CB_ERR;
         }
         SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_RESETCONTENT, 0, 0L );
         for( i = 0; i < data.modcnt; i++ ) {
-            SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_ADDSTRING,
-                                0, (LPARAM)data.modlist[i] );
+            SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)data.modlist[i] );
         }
-        SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_ADDSTRING,
-                            0, (LPARAM)TOTAL_MEM_STR );
+        SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)TOTAL_MEM_STR );
         if( id != CB_ERR ) {
-            id = SendDlgItemMessage( hwnd, MEM_IMAGE_NAME,
-                                CB_FINDSTRINGEXACT, -1, (LPARAM)imagename );
+            id = SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_FINDSTRINGEXACT, -1, (LPARAM)(LPCSTR)imagename );
         }
         if( id == CB_ERR ) {
-            SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_SELECTSTRING,
-                                -1, (LPARAM)TOTAL_MEM_STR );
+            SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_SELECTSTRING, -1, (LPARAM)(LPCSTR)TOTAL_MEM_STR );
         } else {
             SendDlgItemMessage( hwnd, MEM_IMAGE_NAME, CB_SETCURSEL, id, 0L );
         }
@@ -209,18 +205,22 @@ static void fillMemInfo( HWND hwnd, DWORD procid, BOOL first_time ) {
 /*
  * MemInfoDlgProc
  */
-BOOL CALLBACK MemInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK MemInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
     MemDlgInfo  *info;
+    bool        ret;
 
-    info = (MemDlgInfo *)GetWindowLong( hwnd, DWL_USER );
+    ret = false;
+
+    info = (MemDlgInfo *)GET_DLGDATA( hwnd );
     switch( msg ) {
     case WM_INITDIALOG:
         info = MemAlloc( sizeof( MemDlgInfo ) );
         info->procid = lparam;
-        SetWindowLong( hwnd, DWL_USER, (DWORD)info );
+        SET_DLGDATA( hwnd, info );
         fillMemInfo( hwnd, info->procid, TRUE );
+        ret = true;
         break;
     case WM_COMMAND:
         cmd = LOWORD( wparam );
@@ -238,18 +238,19 @@ BOOL CALLBACK MemInfoDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             }
             break;
         }
+        ret = true;
         break;
     case WM_CLOSE:
         MemFree( info );
         EndDialog( hwnd, 0 );
+        ret = true;
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 }
 
-void DoMemDlg( HWND hwnd, DWORD procid ) {
+void DoMemDlg( HWND hwnd, DWORD procid )
+{
     RefreshCostlyInfo();
     JDialogBoxParam( Instance, "MEMORY_DLG", hwnd, MemInfoDlgProc, procid );
 }

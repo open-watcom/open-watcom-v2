@@ -33,6 +33,9 @@
 #include "layer0.h"
 #include "reserr.h"
 
-void WresRecordError( WResStatus status ) {
-    status = status;
+bool WresRecordError( WResStatus status )
+{
+    /* unused parameters */ (void)status;
+
+    return( true );
 }

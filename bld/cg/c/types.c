@@ -182,7 +182,8 @@ extern  type_def        *TypeAlias( cg_type define, cg_type existing ) {
     type_list   *list;
 
     t = TypeAddress( existing );
-    if( t->refno == TY_DEFAULT ) return( t );
+    if( t->refno == TY_DEFAULT )
+        return( t );
     list = CGAlloc( sizeof( type_list ) );
     list->link = TypeList;
     TypeList = list;
@@ -200,7 +201,8 @@ extern  type_def        *TypeDef( cg_type refno, type_length length, type_length
 */
     type_list   *list;
 
-    align = align;
+    /* unused parameters */ (void)align;
+
     list = CGAlloc( sizeof( type_list ) );
     list->link = TypeList;
     TypeList = list;

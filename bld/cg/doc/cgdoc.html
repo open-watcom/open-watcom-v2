@@ -1816,7 +1816,7 @@ Type will be a dealiased type.
 <DD>The value of TRUE.
 This is normally 1.
 </DL>
-<H2>char FEMoreMem( unsigned size )</H2>
+<H2>char FEMoreMem( size_t size )</H2>
 <! FEMoreMem
 <P>Release memory for the back end to use.
 <DL>
@@ -2634,7 +2634,8 @@ hopelessly confused.
 handle = NULL;
 for( ;; ) {
     handle = FEAuxInfo( handle, NEXT_IMPORT );
-    if( handle == NULL ) break;
+    if( handle == NULL )
+        break;
     do_something( FEAuxInfo( handle, IMPORT_NAME ) );
 }
 </PRE>
@@ -2643,7 +2644,8 @@ for( ;; ) {
 segment = 0;
 for( ;; ) {
     segment = FEAuxInfo( segment, FREE_SEGMENT );
-    if( segment == NULL ) break;
+    if( segment == NULL )
+        break;
     segment_size = *(short *)MK_FP( segment, 0 ) * 16;
     this_is_my_memory_now( MK_FP( segment, 0 ), segment_size );
 }

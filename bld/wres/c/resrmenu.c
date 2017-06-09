@@ -50,7 +50,7 @@ bool ResReadMenuHeader( MenuHeader *currhead, WResFileID fid )
     currhead->Version = val16;
     if( !error ) {
         error = ResReadUint16( &val16, fid );
-        currhead->HeaderSize = val16;
+        currhead->Size = val16;
     }
     return( error );
 }
@@ -58,27 +58,21 @@ bool ResReadMenuHeader( MenuHeader *currhead, WResFileID fid )
 bool ResReadMenuExtraBytes( MenuHeader *header, WResFileID fid, char *buf )
 /*************************************************************************/
 {
-    bool            error;
-    WResFileSSize   numread;
-    int             size;
+    unsigned        size;
 
-    error = false;
-    numread = 0;
-    size = header->HeaderSize;
+    size = header->Size;
     if( buf != NULL ) {
-        numread = WRESREAD( fid, buf, size );
-        if( numread != size ) {
-            error = true;
+        if( WRESREAD( fid, buf, size ) != size ) {
+            return( true );
         }
     } else {
         WRESSEEK( fid, size, SEEK_CUR );
     }
-
-    return( error );
+    return( false );
 }
 
 // NB: Anyone using this function will have to manually seek back after
-// calling ResIsMenuEx() (just as in ResIsDialogEx()).
+// calling ResIsMenuEx() (just as in ResIsDialogBoxEx()).
 // If you've already read the header, just call ResIsHeaderMenuEx().
 bool ResIsMenuEx( WResFileID fid )
 /********************************/

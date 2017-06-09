@@ -1,2 +1,2 @@
-_WCRTLINK _NORETURN extern void  _exit( int __status );
+_WCRTLINK _WCNORETURN extern void  _exit( int __status );
 

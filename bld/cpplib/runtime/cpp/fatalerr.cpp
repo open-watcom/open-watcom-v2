@@ -35,13 +35,11 @@
 #include "exitwmsg.h"
 
 
-// never return
 extern "C"
-_NORETURN
+_WCNORETURN
 void CPPLIB( fatal_runtime_error )( // FATAL RUNTIME ERROR
     char *msg,                      // - diagnostic message
     int code )                      // - exit code
 {
     __fatal_runtime_error( msg, code );
-    // never return
 }

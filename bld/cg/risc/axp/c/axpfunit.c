@@ -44,10 +44,9 @@ enum {
 };
 
 static const FU_entry FUnits[] = {
-    /* units                    unit_stall  opnd_stall */
-    F_NONE,                     0,          0,      /* NO */
-    F_ALU,                      1,          1,      /* ALU */
-    F_ALU,                      1,          1,      /* LDSTR */
+    #define _F_(id,units,unit_stall,opnd_stall) {units, unit_stall, opnd_stall},
+    #include "f.h"
+    #undef _F_
 };
 
 const FU_entry *FUEntry( instruction *ins )

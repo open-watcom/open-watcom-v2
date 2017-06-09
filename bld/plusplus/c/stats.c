@@ -42,9 +42,10 @@
 static void statsInit(          // INITIALIZE STATISTICS GATHERING
     INITFINI* defn )            // - definition
 {
-    defn = defn;
-    CompFlags.stats_printed = 0;
-    CompFlags.extra_stats_wanted = 0;
+    /* unused parameters */ (void)defn;
+
+    CompFlags.stats_printed = false;
+    CompFlags.extra_stats_wanted = false;
     SrcLineCount = 0;
     IncLineCount = 0;
     WngCount = 0;
@@ -77,14 +78,15 @@ static void intPrint            // PRINT INT LINE SEGMENT
 static void statsPrint(         // PRINT STATISTICS
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     if( CompFlags.stats_printed ) {
         return;
     }
     if( CompFlags.quiet_mode ) {
         return;
     }
-    if( ! CompFlags.srcfile_compiled ) {
+    if( !CompFlags.srcfile_compiled ) {
         return;
     }
     if( WholeFName != NULL ) {
@@ -101,7 +103,7 @@ static void statsPrint(         // PRINT STATISTICS
         intPrint( &buffer, "warning", ", ", WngCount );
         intPrint( &buffer, "error", "", ErrCount );
         MsgDisplayLine( VbufString( &buffer ) );
-        CompFlags.stats_printed = 1;
+        CompFlags.stats_printed = true;
         VbufFree( &buffer );
     }
 }
@@ -126,14 +128,16 @@ pch_status PCHWriteStats( void )
 
 pch_status PCHInitStats( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 
 pch_status PCHFiniStats( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
@@ -351,7 +355,7 @@ static void rptRepository       // PRINT REPOSITORY REPORT
     unsigned file_count;        // - # files
 
     defn = defn;
-    if( ! CompFlags.extra_stats_wanted ) {
+    if( !CompFlags.extra_stats_wanted ) {
         for(;;) {
             last = VstkPop( &srcFiles );
             if( NULL == last )

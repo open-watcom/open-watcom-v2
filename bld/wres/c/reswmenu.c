@@ -43,47 +43,35 @@
 bool ResWriteMenuHeader( MenuHeader *currhead, WResFileID fid )
 /*************************************************************/
 {
-    bool    error;
-
-    error = ResWriteUint16( currhead->Version, fid );
-    if( !error ) {
-        error = ResWriteUint16( currhead->HeaderSize, fid );
-    }
-    return( error );
+    if( ResWriteUint16( currhead->Version, fid ) )
+        return( true );
+    if( ResWriteUint16( currhead->Size, fid ) )
+        return( true );
+    return( false );
 }
 
 bool ResWriteMenuExHeader( MenuHeader *currhead, WResFileID fid, uint_8 *headerdata )
 /***********************************************************************************/
 {
-    if( ResWriteMenuHeader( currhead, fid ) ) {
+    if( ResWriteMenuHeader( currhead, fid ) )
         return( true );
-    } else {
-        if( headerdata != NULL ) {
-            if( WRESWRITE( fid, headerdata, currhead->HeaderSize ) != currhead->HeaderSize ) {
-                WRES_ERROR( WRS_WRITE_FAILED );
-                return( true );
-            }
+    if( headerdata != NULL ) {
+        if( WRESWRITE( fid, headerdata, currhead->Size ) != currhead->Size ) {
+            return( WRES_ERROR( WRS_WRITE_FAILED ) );
         }
-        return( false );
     }
+    return( false );
 }
 
 bool ResWriteMenuItemPopup( const MenuItemPopup *curritem, bool use_unicode, WResFileID fid )
 /*******************************************************************************************/
 {
-    bool        error;
-
     if( curritem->ItemFlags & MENU_POPUP ) {
-        error = ResWriteUint16( curritem->ItemFlags, fid );
-        if( !error ) {
-            error = ResWriteString( curritem->ItemText, use_unicode, fid );
-        }
-    } else {
-        WRES_ERROR( WRS_BAD_PARAMETER );
-        error = true;
+        if( ResWriteUint16( curritem->ItemFlags, fid ) )
+            return( true );
+        return( ResWriteString( curritem->ItemText, use_unicode, fid ) );
     }
-
-    return( error );
+    return( WRES_ERROR( WRS_BAD_PARAMETER ) );
 }
 
 bool ResWriteMenuExItemPopup( const MenuItemPopup *curritem, const MenuExItemPopup *exdata,
@@ -112,13 +100,9 @@ bool ResWriteMenuExItemPopup( const MenuItemPopup *curritem, const MenuExItemPop
         if( !error ) {
             error = ResWriteUint32( exdata->HelpId, fid );
         }
-    } else {
-        WRES_ERROR( WRS_BAD_PARAMETER );
-        error = true;
+        return( error );
     }
-
-    return( error );
-
+    return( WRES_ERROR( WRS_BAD_PARAMETER ) );
 }
 
 bool ResWriteMenuItemNormal( const MenuItemNormal *curritem, bool use_unicode, WResFileID fid )
@@ -126,19 +110,13 @@ bool ResWriteMenuItemNormal( const MenuItemNormal *curritem, bool use_unicode, W
 {
     bool        error;
 
-    if( curritem->ItemFlags & MENU_POPUP ) {
-        WRES_ERROR( WRS_BAD_PARAMETER );
-        error = true;
-    } else {
-        error = ResWriteUint16( curritem->ItemFlags, fid );
-        if( !error ) {
-            error = ResWriteUint16( (uint_16)curritem->ItemID, fid );
-        }
-        if( !error ) {
-            error = ResWriteString( curritem->ItemText, use_unicode, fid );
-        }
-    }
-
+    if( curritem->ItemFlags & MENU_POPUP )
+        return( WRES_ERROR( WRS_BAD_PARAMETER ) );
+    error = ResWriteUint16( curritem->ItemFlags, fid );
+    if( !error )
+        error = ResWriteUint16( (uint_16)curritem->ItemID, fid );
+    if( !error )
+        error = ResWriteString( curritem->ItemText, use_unicode, fid );
     return( error );
 }
 
@@ -148,28 +126,24 @@ bool ResWriteMenuExItemNormal( const MenuItemNormal *curritem, const MenuExItemN
 {
     bool        error;
 
-    if( curritem->ItemFlags & MENUEX_POPUP ) {
-        WRES_ERROR( WRS_BAD_PARAMETER );
-        error = true;
-    } else {
-        error = ResWriteUint32( exdata->ItemType, fid );
-        if( !error ) {
-            error = ResWriteUint32( exdata->ItemState, fid );
-        }
-        if( !error ) {
-            error = ResWriteUint32( curritem->ItemID, fid );
-        }
-        if( !error ) {
-            error = ResWriteUint16( curritem->ItemFlags, fid );
-        }
-        if( !error ) {
-            error = ResWriteString( curritem->ItemText, use_unicode, fid );
-        }
-        if( !error ) {
-            error = ResWritePadDWord( fid );
-        }
+    if( curritem->ItemFlags & MENUEX_POPUP )
+        return( WRES_ERROR( WRS_BAD_PARAMETER ) );
+    error = ResWriteUint32( exdata->ItemType, fid );
+    if( !error ) {
+        error = ResWriteUint32( exdata->ItemState, fid );
     }
-
+    if( !error ) {
+        error = ResWriteUint32( curritem->ItemID, fid );
+    }
+    if( !error ) {
+        error = ResWriteUint16( curritem->ItemFlags, fid );
+    }
+    if( !error ) {
+        error = ResWriteString( curritem->ItemText, use_unicode, fid );
+    }
+    if( !error ) {
+        error = ResWritePadDWord( fid );
+    }
     return( error );
 }
 

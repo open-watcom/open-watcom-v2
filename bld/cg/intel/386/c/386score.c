@@ -48,13 +48,13 @@ void    ScInitRegs( score *sc )
     if( _IsntTargetModel( FLOATING_DS ) ) {
         if( _IsntTargetModel( FLOATING_ES ) ) {
             xs = AllocRegName(HW_ES)->r.reg_index;
-            if( RegsEqual( sc, xs, ds ) == false ) {
+            if( !RegsEqual( sc, xs, ds ) ) {
                 RegInsert( sc, xs, ds );
             }
         }
         if( _IsntTargetModel( FLOATING_SS ) ) {
             xs = AllocRegName(HW_SS)->r.reg_index;
-            if( RegsEqual( sc, xs, ds ) == false ) {
+            if( !RegsEqual( sc, xs, ds ) ) {
                 RegInsert( sc, xs, ds );
             }
         }
@@ -79,7 +79,7 @@ void    ScoreSegments( score *sc )
     Do special scoreboarding on segment registers.
 */
 {
-    sc = sc;
+    /* unused parameters */ (void)sc;
 }
 
 
@@ -110,7 +110,8 @@ bool    ScConvert( instruction *ins )
     next instruction.
 */
 {
-    ins = ins;
+    /* unused parameters */ (void)ins;
+
     return( false );
 }
 
@@ -120,7 +121,8 @@ bool    CanReplace( instruction *ins )
     an 8086ism
 */
 {
-    ins = ins;
+    /* unused parameters */ (void)ins;
+
     return( true );
 }
 

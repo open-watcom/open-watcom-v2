@@ -58,7 +58,7 @@ struct pch_delmac {
     char                name[1];
 };
 
-static unsigned         macroSegmentLimit;  // last free byte in MacroSegment
+static size_t           macroSegmentLimit;  // last free byte in MacroSegment
 static MEPTR            *macroHashTable;    // hash table [ MACRO_HASH_SIZE ]
 static MEPTR            beforeIncludeChecks;// #undef macros defined before first #include
 static MACRO_SEG_LIST   *macroSegmentList;  // pointer to list of macro segments
@@ -74,7 +74,7 @@ ExtraRptSpace( macro_space );
 #define macroSizeAlign( s )     _RoundUp((s), sizeof( int ))
 
 static void *macroAllocateInSeg( // ALLOCATE WITHIN A SEGMENT
-    unsigned size )             // - size
+    size_t size )               // - size
 {
     void *retn;                 // - return location
 
@@ -202,13 +202,15 @@ pch_status PCHWriteMacros( void )
 
 pch_status PCHInitMacros( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniMacros( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
@@ -285,7 +287,7 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
     void )
 {
     bool retb;
-    int macros_different;
+    bool macros_different;
     unsigned max_rlen;
     unsigned rlen;
     unsigned pch_hash;
@@ -330,10 +332,10 @@ bool PCHVerifyMacroCheck(       // READ AND VERIFY MACRO CHECK INFO FROM PCHDR
             if( strcmp( new_macro->macro_name, pch_macro->macro_name ) == 0 ) {
                 matched_macro = new_macro;
                 new_macro->macro_flags |= MFLAG_PCH_CHECKED;
-                macros_different = macroCompare( new_macro, pch_macro );
+                macros_different = ( macroCompare( new_macro, pch_macro ) != 0 );
                 if( pch_macro->macro_flags & MFLAG_REFERENCED ) {
                     // (2) original macro was referenced during first #include
-                    if( ! macros_different ) {
+                    if( !macros_different ) {
                         // OK; defns are identical in both compilation units
                         break;
                     }
@@ -401,7 +403,7 @@ pch_status PCHReadMacros( void )
     MEPTR prev;
     MEPTR pch_prev;
     MEPTR pch_curr;
-    unsigned mlen;
+    size_t mlen;
     unsigned hash;
     MACRO_SEG_LIST *old_seglist;
     MEPTR *old_hashtab;
@@ -490,8 +492,8 @@ static MEPTR macroFind(         // LOOK UP A HASHED MACRO
 
 
 void MacroOverflow(             // OVERFLOW SEGMENT IF REQUIRED
-    unsigned amount_needed,     // - amount for macro
-    unsigned amount_used )      // - amount used in segment
+    size_t amount_needed,       // - amount for macro
+    size_t amount_used )        // - amount used in segment
 {
     char    *old_offset;
 
@@ -654,14 +656,14 @@ static void doMacroUndef( char *name, size_t len, bool quiet )
     unsigned hash;          // - current macro hash
 
     if( magicPredefined( name ) ) {
-        if( ! quiet ) {
+        if( !quiet ) {
             CErr2p( ERR_UNDEF_IMPOSSIBLE, name );
         }
     } else {
         fmentry = macroFind( name, len, &hash );
         if( fmentry != NULL ) {
             if( fmentry->macro_defn == 0 ) {
-                if( ! quiet ) {
+                if( !quiet ) {
                     CErr2p( ERR_UNDEF_IMPOSSIBLE, name );
                 }
             } else {

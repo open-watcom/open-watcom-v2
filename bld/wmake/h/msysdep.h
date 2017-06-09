@@ -116,10 +116,12 @@
 #define MAX_MAC_NAME    130     /* Maximum macro name length                */
 #define MAX_MAC_NEST    16      /* Maximum depth of macro nesting           */
 
-enum {
-    OLDEST_DATE   = 0L,                                         // oldest
-    YOUNGEST_DATE = (((time_t)-1) > 0) ? ULONG_MAX : LONG_MAX   // youngest
-};
+#define MAX_DATE_QUARTER    ((time_t)1 << (sizeof(time_t) * CHAR_BIT - 2))
+#define MAX_DATE_SIGNED     ((time_t)(MAX_DATE_QUARTER - 1 + MAX_DATE_QUARTER))
+#define MAX_DATE_UNSIGNED   ((time_t)-1)
+
+#define OLDEST_DATE     ((time_t)0)
+#define YOUNGEST_DATE   (((time_t)-1 > 0) ? MAX_DATE_UNSIGNED : MAX_DATE_SIGNED)
 
 #define MAKEFILE_NAME   "makefile"
 #ifdef __UNIX__
@@ -159,10 +161,17 @@ typedef struct dll_cmd {
 #endif
 } DLL_CMD;
 
+typedef enum {
+    AUTO_DEP_NONE,
+    AUTO_DEP_OMF,
+    AUTO_DEP_ORL,
+    AUTO_DEP_RES
+} auto_dep_type;
+
 extern int          SwitchChar( void );
 extern int          OSCorrupted( void );
 extern RET_T        TouchFile( const char *name );
-extern bool         IdenticalAutoDepTimes( time_t, time_t );
+extern bool         IdenticalAutoDepTimes( time_t, time_t, auto_dep_type );
 extern void         InitHardErr( void );
 extern void         OSLoadDLL( char *cmd, char *dll_name, char *ent_name );
 extern DLL_CMD      *OSFindDLL( char const *cmd_name );

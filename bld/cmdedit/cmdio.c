@@ -297,7 +297,7 @@ pasrtn DosChgFilePtr( int hdl, long offset, int typ, unsigned long PASPTR * newp
 }
 
 
-pasrtn DosRead( USHORT hdl, char far *buff, USHORT len, USHORT PASPTR *read )
+pasrtn DosRead( USHORT hdl, char far *buff, USHORT len, USHORT PASPTR *readlen )
 {
     r.x.bx = hdl;
     r.x.ds = FP_SEG( buff );
@@ -307,15 +307,15 @@ pasrtn DosRead( USHORT hdl, char far *buff, USHORT len, USHORT PASPTR *read )
     r.x.flags &= ~INTR_CF;
     intr( 0x21, &r );
     if( r.x.flags & INTR_CF ) {
-        *read = 0;
+        *readlen = 0;
         return( -1 );
     } else {
-        *read = r.x.ax;
+        *readlen = r.x.ax;
         return( 0 );
     }
 }
 
-pasrtn DosWrite( USHORT hdl, char far *buff, USHORT len, USHORT PASPTR *written )
+pasrtn DosWrite( USHORT hdl, char far *buff, USHORT len, USHORT PASPTR *writelen )
 {
     r.x.bx = hdl;
     r.x.ds = FP_SEG( buff );
@@ -325,10 +325,10 @@ pasrtn DosWrite( USHORT hdl, char far *buff, USHORT len, USHORT PASPTR *written 
     r.x.flags &= ~INTR_CF;
     intr( 0x21, &r );
     if( r.x.flags & INTR_CF ) {
-        *written = 0;
+        *writelen = 0;
         return( -1 );
     } else {
-        *written = r.x.ax;
+        *writelen = r.x.ax;
         return( 0 );
     }
 }

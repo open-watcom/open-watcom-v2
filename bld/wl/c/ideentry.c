@@ -153,8 +153,8 @@ bool IsStdOutConsole( void )
 static bool GetAddtlCommand( IDEInfoType cmd, char *buf )
 /*******************************************************/
 {
-    cmd = cmd;
-    buf = buf;
+    /* unused parameters */ (void)cmd; (void)buf;
+
     return false;
 #if 0
     if( InitInfo.cmd_line_has_files ) return false;
@@ -187,7 +187,8 @@ void GetExtraCommands( void )
 IDEBool IDEAPI IDEPassInitInfo( IDEDllHdl hdl, IDEInitInfo *info )
 /****************************************************************/
 {
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     if( info->ver < IDE_CUR_INFO_VER5 )
         return true;
     InitInfo = *info;
@@ -217,7 +218,8 @@ void IDEAPI IDEFreeHeap( void )
 IDEBool IDEAPI IDEInitDLL( IDECBHdl cbhdl, IDECallBacks *cb, IDEDllHdl *hdl )
 /***************************************************************************/
 {
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     IdeHdl = cbhdl;
     IdeCbs = cb;
     InitSubSystems();
@@ -227,14 +229,16 @@ IDEBool IDEAPI IDEInitDLL( IDECBHdl cbhdl, IDECallBacks *cb, IDEDllHdl *hdl )
 void IDEAPI IDEFiniDLL( IDEDllHdl hdl )
 /*************************************/
 {
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     FiniSubSystems();
 }
 
 IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char * opts, IDEBool *fatalerr )
 /**********************************************************************************/
 {
-    hdl = hdl;
+    /* unused parameters */ (void)hdl;
+
     LinkMainLine( (char *) opts );
     *fatalerr = (LinkState & LINK_ERROR) != 0;
     return( *fatalerr );
@@ -243,9 +247,8 @@ IDEBool IDEAPI IDERunYourSelf( IDEDllHdl hdl, const char * opts, IDEBool *fatale
 IDEBool IDEAPI IDERunYourSelfArgv( IDEDllHdl hdl, int argc, char **argv, IDEBool *fatalerr )
 /******************************************************************************************/
 {
-    argc = argc;        /* to avoid a warning */
-    argv = argv;
-    hdl = hdl;
+    /* unused parameters */ (void)hdl; (void)argc; (void)argv;
+
 #ifndef __WATCOMC__
     _argv = argv;
     _argc = argc;

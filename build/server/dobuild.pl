@@ -347,7 +347,7 @@ sub make_test_batch
         }
     }
     print BATCH "cd $OW"; print BATCH 'cd bld';
-    print BATCH 'builder -i cleanlog';
+    print BATCH 'builder -i testclean';
     print BATCH 'builder -i test';
     close(BATCH);
     # On Windows it has no efect

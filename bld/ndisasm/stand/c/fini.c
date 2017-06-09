@@ -41,14 +41,15 @@
 #include "identsec.h"
 #include "init.h"
 #include "main.h"
+#include "labproc.h"
 
 extern wd_options       Options;
 extern orl_handle       ORLHnd;
 extern dis_handle       DHnd;
 
-extern char *           ListFileName;
-extern char *           SourceFileName;
-extern char *           SourceFileInDwarf;
+extern char             *ListFileName;
+extern char             *SourceFileName;
+extern char             *SourceFileInDwarf;
 
 extern int              OutputDest;
 extern orl_file_handle  ObjFileHnd;
@@ -65,56 +66,38 @@ extern publics_struct           Publics;
 
 static void freeScanTabList( scantab_ptr st )
 {
-    scantab_ptr         temp;
+    scantab_ptr         next;
 
-    while( st ) {
-        temp = st;
-        st = st->next;
-        MemFree( temp );
+    for( ; st != NULL; st = next ) {
+        next = st->next;
+        MemFree( st );
     }
 }
 
-static void freeSectionList( section_list_struct * list )
+static void freeSectionList( section_list_struct *list )
 {
-    section_ptr         temp;
+    section_ptr         next;
 
-    while( list->first ) {
-        temp = list->first;
-        list->first = temp->next;
-        freeScanTabList( temp->scan );
-        MemFree( temp );
+    for( ; list->first != NULL; list->first = next ) {
+        next = list->first->next;
+        freeScanTabList( list->first->scan );
+        MemFree( list->first );
     }
 }
 
 static void freeLabelList( orl_sec_handle shnd )
 {
-    hash_data *         data_ptr;
+    hash_data           *data_ptr;
     label_list          list;
     label_entry         entry;
-    label_entry         temp;
+    label_entry         next;
 
-    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) shnd );
-    if( data_ptr ) {
-        list = (label_list) *data_ptr;
-        entry = list->first;
-        while( entry ) {
-            temp = entry;
-            entry = entry->next;
-            switch( temp->type ) {
-            case LTYP_UNNAMED:
-            case LTYP_ABSOLUTE:
-                break;
-            default:
-                // Step back over backquote (`) or space where it should be.
-                if( temp->label.name[-1]==1 ) {
-                    temp->label.name -= 1;
-                } else {
-                    temp->label.name -= 2;
-                }
-                MemFree( temp->label.name );
-                break;
-            }
-            MemFree( temp );
+    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value)shnd );
+    if( data_ptr != NULL ) {
+        list = (label_list)*data_ptr;
+        for( entry = list->first; entry != NULL; entry = next ) {
+            next = entry->next;
+            FreeLabel( entry );
         }
         MemFree( list );
     }
@@ -122,19 +105,17 @@ static void freeLabelList( orl_sec_handle shnd )
 
 static void freeRefList( orl_sec_handle shnd )
 {
-    hash_data *         data_ptr;
+    hash_data           *data_ptr;
     ref_list            list;
     ref_entry           entry;
-    ref_entry           temp;
+    ref_entry           next;
 
-    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value) shnd );
-    if( data_ptr ) {
-        list = (ref_list) *data_ptr;
-        entry = list->first;
-        while( entry ) {
-            temp = entry;
-            entry = entry->next;
-            MemFree( temp );
+    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value)shnd );
+    if( data_ptr != NULL ) {
+        list = (ref_list)*data_ptr;
+        for( entry = list->first; entry != NULL; entry = next ) {
+            next = entry->next;
+            MemFree( entry );
         }
         MemFree( list );
     }
@@ -146,27 +127,26 @@ static orl_return SectionFini( orl_sec_handle shnd )
 
     type = IdentifySec( shnd );
     switch( type ) {
-        case SECTION_TYPE_TEXT:
-        case SECTION_TYPE_BSS:
-        case SECTION_TYPE_DATA:
-        case SECTION_TYPE_DRECTVE:
-        case SECTION_TYPE_PDATA:
-        default:
-            freeRefList( shnd );
-            freeLabelList( shnd );
-            break;
+    case SECTION_TYPE_TEXT:
+    case SECTION_TYPE_BSS:
+    case SECTION_TYPE_DATA:
+    case SECTION_TYPE_DRECTVE:
+    case SECTION_TYPE_PDATA:
+    default:
+        freeRefList( shnd );
+        freeLabelList( shnd );
+        break;
     }
     return( ORL_OKAY );
 }
 
-static void freePublics( void ) {
+static void freePublics( void )
+{
     label_list_ptr      ptr;
 
-    ptr = Publics.label_lists;
-    while( ptr != NULL ) {
+    while( (ptr = Publics.label_lists) != NULL ) {
         Publics.label_lists = Publics.label_lists->next;
         MemFree( ptr );
-        ptr = Publics.label_lists;
     }
     if( Publics.public_symbols != NULL ) {
         MemFree( Publics.public_symbols );
@@ -213,7 +193,7 @@ void Fini( void )
 {
     freeSectionList( &Sections );
     freeLabelList( 0 );
-    ORLFileScan( ObjFileHnd, NULL, &SectionFini );
+    ORLFileScan( ObjFileHnd, NULL, SectionFini );
     if( Options & PRINT_PUBLICS ) {
         freePublics();
     }

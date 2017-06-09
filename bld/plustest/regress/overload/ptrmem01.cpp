@@ -1,14 +1,14 @@
 #include "dump.h"
 
 
-int near a;
-int far b;
-int huge c;
+int __near a;
+int __far b;
+int __huge c;
 
-void f1( int near * ) GOOD;
-void f1( int far * ) GOOD;
+void f1( int __near * ) GOOD;
+void f1( int __far * ) GOOD;
 #ifdef _M_I86
-void f1( int huge * ) GOOD;
+void f1( int __huge * ) GOOD;
 #endif
 
 void g1( void )
@@ -18,10 +18,10 @@ void g1( void )
     f1( &c );
 }
 
-void f2( int near & ) GOOD;
-void f2( int huge & ) GOOD;
+void f2( int __near & ) GOOD;
+void f2( int __huge & ) GOOD;
 #ifdef _M_I86
-void f2( int far & ) GOOD;
+void f2( int __far & ) GOOD;
 #endif
 
 void g2( void )

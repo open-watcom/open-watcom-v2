@@ -33,7 +33,8 @@
 #include <stdlib.h>
 #include "rtdata.h"
 
-_WCRTLINK unsigned char *__get_osmajor_ptr( void )
+
+_WCRTLINK unsigned char (*__get_osmajor_ptr( void ))
 {
     return( &_RWD_osmajor );
 }

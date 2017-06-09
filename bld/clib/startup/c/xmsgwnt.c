@@ -37,7 +37,7 @@
 #include "exitwmsg.h"
 
 
-_WCRTLINK _NORETURN void __exit_with_msg( char *msg, unsigned retcode )
+_WCRTLINK _WCNORETURN void __exit_with_msg( char *msg, unsigned retcode )
 {
 
     unsigned    len;
@@ -53,13 +53,11 @@ _WCRTLINK _NORETURN void __exit_with_msg( char *msg, unsigned retcode )
     newline[1] = '\n';
     WriteFile( NT_STDERR_FILENO, &newline, 2, &written, NULL );
     __exit( retcode );
-    // never return
 }
 
-_WCRTLINK _NORETURN void __fatal_runtime_error( char *msg, unsigned retcode )
+_WCRTLINK _WCNORETURN void __fatal_runtime_error( char *msg, unsigned retcode )
 {
     if( __EnterWVIDEO( msg ) )
         __exit( retcode );
     __exit_with_msg( msg, retcode );
-    // never return
 }

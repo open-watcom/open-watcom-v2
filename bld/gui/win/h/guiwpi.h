@@ -30,7 +30,27 @@
 ****************************************************************************/
 
 
-#ifndef __OS2_PM__
+#ifdef __OS2_PM__
+    #define _wpi_createwindow_ex( exstyle, class, name, frame_style, create_flags, \
+                    client_style, x, y, width, height, parent, menu, inst, \
+                    pparam, pframe_hwnd ) \
+            _wpi_createwindow( (class), (name), (frame_style), (create_flags), \
+                    (client_style), (x), (y), (width), (height), (parent), (menu), (inst), \
+                    (pparam), (pframe_hwnd) )
+    #define EM_GETSEL               EM_QUERYSEL
+    #define IDI_APPLICATION         SPTR_APPICON
+    #define _wpi_setmaxposition( info, pos_x, pos_y )   // nothing
+    #define _wpi_sethbrbackground( hwnd, brush )        // nothing
+    #define _wpi_loadicon( hinst, icon )        (WPI_HICON)( _wpi_loadcursor( (hinst), (ULONG)(icon) ) )
+    #define _wpi_getsysicon( hinst, icon )      (WPI_HICON)WinQuerySysPointer( HWND_DESKTOP, icon, true)
+    #define _wpi_destroyicon( icon )            WinDestroyPointer( (HPOINTER)icon )
+    #define _wpi_help( hwnd, file, key, top )   WinCreateHelpInstance( wnd, file, key, topic ) // ???
+    #define _wpi_createanywindow( class, name, style, x, y, width, height, \
+                    parent_hwnd, menu, inst, param, hwnd, id, frame_hwnd ) \
+            *frame_hwnd = WinCreateWindow( parent_hwnd, class, name, style, \
+                                           x, y, width, height, parent_hwnd, \
+                                           HWND_TOP, id, param, NULL );
+#else
     #define _wpi_createwindow_ex( exstyle, class, name, frame_style, create_flags, \
                     client_style, x, y, width, height, parent, menu, inst, \
                     pparam, pframe_hwnd ) \
@@ -38,61 +58,20 @@
                 (client_style), x, y, width, height, parent, menu, inst, \
                 pparam )
 
-    #define     _wpi_setmaxposition( info, pos_x, pos_y ) \
+    #define _wpi_setmaxposition( info, pos_x, pos_y ) \
         (info)->ptMaxPosition.x = pos_x; (info)->ptMaxPosition.y = pos_y
-    #define     _wpi_sethbrbackground( hwnd, brush ) SET_HBRBACKGROUND( hwnd, brush )
-    #define     _wpi_loadicon( hinst, icon ) LoadIcon( hinst, icon )
-    #define     _wpi_getsysicon( hinst, icon ) LoadIcon( hinst, icon )
-    #define     _wpi_destroyicon( icon ) DestroyIcon( icon )
-    #define     _wpi_help( hwnd, file, key, top ) WinHelp( wnd, file, key, topic )
+    #define _wpi_sethbrbackground( hwnd, brush ) SET_HBRBACKGROUND( hwnd, brush )
+    #define _wpi_loadicon( hinst, icon ) LoadIcon( hinst, icon )
+    #define _wpi_getsysicon( hinst, icon ) LoadIcon( hinst, icon )
+    #define _wpi_destroyicon( icon ) DestroyIcon( icon )
+    #define _wpi_help( hwnd, file, key, top ) WinHelp( wnd, file, key, topic )
     #define _wpi_createanywindow( class, name, style, x, y, width, height, \
                         parent_hwnd, menu, inst, param, hwnd, id, frame ) \
         *hwnd = CreateWindow( class, name, style, x, y, width, height, \
                 parent_hwnd, menu, inst, param );
-#else
-    #define _wpi_createwindow_ex( exstyle, class, name, frame_style, create_flags, \
-                    client_style, x, y, width, height, parent, menu, inst, \
-                    pparam, pframe_hwnd ) \
-            _wpi_createwindow( (class), (name), (frame_style), (create_flags), \
-                    (client_style), (x), (y), (width), (height), (parent), (menu), (inst), \
-                    (pparam), (pframe_hwnd) )
-    #define     EM_GETSEL               EM_QUERYSEL
-    #define     IDI_APPLICATION         SPTR_APPICON
-    #define     _wpi_setmaxposition( info, pos_x, pos_y )
-        // nothing
-    #define     _wpi_sethbrbackground( hwnd, brush )
-        // nothing
-    #define     _wpi_loadicon( hinst, icon ) \
-        (WPI_HICON) ( _wpi_loadcursor( (hinst), (ULONG)(icon) ) )
-    #define     _wpi_getsysicon( hinst, icon ) \
-        (WPI_HICON) WinQuerySysPointer( HWND_DESKTOP, icon, true)
-    #define     _wpi_destroyicon( icon ) WinDestroyPointer( (HPOINTER)icon )
-    #define     _wpi_help( hwnd, file, key, top ) \
-        WinCreateHelpInstance( wnd, file, key, topic ) // ???
-    #define _wpi_createanywindow( class, name, style, x, y, width, height, \
-                    parent_hwnd, menu, inst, param, hwnd, id, frame_hwnd ) \
-            *frame_hwnd = WinCreateWindow( parent_hwnd, class, name, style, \
-                                           x, y, width, height, parent_hwnd, \
-                                           HWND_TOP, id, param, NULL );
 #endif
 
-#ifndef __OS2_PM__
-    #define GUI_RECTDIM WPI_RECTDIM
-    #define _wpi_cvth_y_plus1( y, h ) (y)
-    #define _wpi_cvth_y_size( y, h, size ) (y)
-    #define _wpi_cvth_y_size_plus1( y, h, size ) (y)
-    #define _wpi_cvtc_y_plus1( hwnd, y ) (y)
-    #define _wpi_cvtc_y_size( hwnd, y, size ) (y)
-    #define _wpi_cvtc_y_size_plus1( hwnd, y, size ) (y)
-    #define _wpi_cvtc_rect_plus1( hwnd, prect ) // do nothing
-    #define _wpi_cvth_rect_plus1( prect, h ) // do nothing
-    #define MB_MOVEABLE         0
-    #define _wpi_rationalize_rect( prect ) \
-        (prect)->right -= (prect)->left; \
-        (prect)->left = 0; \
-        (prect)->bottom -= (prect)->top; \
-        (prect)->top = 0;
-#else
+#ifdef __OS2_PM__
     #define GUI_RECTDIM WPI_RECTDIM
     #define _wpi_cvth_y_plus1( y, h ) ((h) - (y))
     #define _wpi_cvth_y_size( y, h, size ) ((h) - (y) - 1 - (size))
@@ -117,5 +96,23 @@
         (prect)->xLeft = 0; \
         (prect)->yTop -= (prect)->yBottom; \
         (prect)->yBottom = 0;
+    #define _wpi_dlgreturn( flag )              return( MRFROMSHORT( flag ) )
+#else
+    #define GUI_RECTDIM WPI_RECTDIM
+    #define _wpi_cvth_y_plus1( y, h ) (y)
+    #define _wpi_cvth_y_size( y, h, size ) (y)
+    #define _wpi_cvth_y_size_plus1( y, h, size ) (y)
+    #define _wpi_cvtc_y_plus1( hwnd, y ) (y)
+    #define _wpi_cvtc_y_size( hwnd, y, size ) (y)
+    #define _wpi_cvtc_y_size_plus1( hwnd, y, size ) (y)
+    #define _wpi_cvtc_rect_plus1( hwnd, prect ) // do nothing
+    #define _wpi_cvth_rect_plus1( prect, h ) // do nothing
+    #define MB_MOVEABLE         0
+    #define _wpi_rationalize_rect( prect ) \
+        (prect)->right -= (prect)->left; \
+        (prect)->left = 0; \
+        (prect)->bottom -= (prect)->top; \
+        (prect)->top = 0;
+    #define _wpi_dlgreturn( flag )              return( flag )
 #endif
 

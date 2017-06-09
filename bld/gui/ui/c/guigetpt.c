@@ -40,7 +40,8 @@
 void GUIGetPoint( gui_window * wnd, gui_ord extent, gui_ord row,
                   gui_point * point )
 {
-    wnd = wnd;
+    /* unused parameters */ (void)wnd;
+
     if( point != NULL ) {
         point->x = extent;
         GUIScaleToScreenRPt( point );

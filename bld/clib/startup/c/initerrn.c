@@ -33,10 +33,13 @@
 #include <i86.h>
 #include <sys/magic.h>
 #include "rtdata.h"
+#include "initerrn.h"
 
-extern int      errno;  /* this is the real variable */
+#define errno errno
+#include <errno.h>
+#undef errno
 
-extern void __initerrno( void )
+void __initerrno( void )
 {
     void        *err_ptr;
     int         old_errno;

@@ -54,7 +54,8 @@ condcode    scr_length( parm parms[MAX_FUN_PARMS], size_t parmcount, char **resu
     char            *   pend;
     int                 len;
 
-    ressize = ressize;
+    /* unused parameters */ (void)ressize;
+
     if( parmcount != 1 ) {
         return( neg );
     }

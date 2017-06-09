@@ -69,7 +69,7 @@ static bool ConvertMResources( WResFileID in_fid, WResFileID out_fid, WResDir ou
     while( !lastheader && !error ) {
         name = ConvertNameOrOrdToID( mheader->Name );
         type = ConvertNameOrOrdToID( mheader->Type );
-        offset = RCTELL( out_fid );
+        offset = RESTELL( out_fid );
 
         /* copy the resource if it isn't a name table or if the user */
         /* requested that name tables be copied */
@@ -85,7 +85,7 @@ static bool ConvertMResources( WResFileID in_fid, WResFileID out_fid, WResDir ou
                 error = BinaryCopy( in_fid, out_fid, mheader->Size );
             }
         } else {
-            RCSEEK( in_fid, mheader->Size, SEEK_CUR );
+            RESSEEK( in_fid, mheader->Size, SEEK_CUR );
         }
 
         WResIDFree( name );

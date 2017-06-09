@@ -54,7 +54,7 @@ enum {
 #endif
 
 #define PHH_MAJOR               0x03
-#define PHH_MINOR               0x2f
+#define PHH_MINOR               0x30
 
 #define TEXT_HEADER_SIZE        40
 #ifdef __UNIX__
@@ -107,7 +107,7 @@ enum {
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_386
 #elif defined( _M_X64 )
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_X64
-#elif defined( _M_AXP )
+#elif defined( _M_ALPHA )
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_AXP
 #elif defined( _M_ARM )
 #define PHH_HOST_ARCHITECTURE   PHH_ARCHITECTURE_ARM

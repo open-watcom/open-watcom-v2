@@ -31,6 +31,9 @@
 
 #include "variety.h"
 #include <stddef.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <process.h>
 #include "rtdata.h"
 #include "rtstack.h"
 #include "stacklow.h"
@@ -44,8 +47,9 @@
 #include "cinit.h"
 #include "mthread.h"
 
-
 #ifdef __SW_BM
+sem_t *__tls_sem;
+
 _WCRTLINK int *__threadid( void )
 {
     return( (int *)&(__THREADDATAPTR->thread_id) );
@@ -74,6 +78,10 @@ void __LinuxInit( struct thread_data *ptr )
     unsigned    *tmp;
 
 #ifdef __SW_BM
+    __tls_sem = (sem_t *)malloc(sizeof(sem_t));
+    if(__tls_sem != NULL)
+        sem_init( __tls_sem, 0, 1 );
+
     __InitThreadData( ptr );
     __FirstThreadData = ptr;
 #endif
@@ -84,9 +92,15 @@ void __LinuxInit( struct thread_data *ptr )
     *tmp = _STACKLOW;
 }
 
-_WCRTLINK _NORETURN void __exit( unsigned ret_code )
+_WCRTLINK _WCNORETURN void __exit( unsigned ret_code )
 {
+#ifdef __SW_BM
+    if( __FirstThreadData != NULL && gettid( ) == __FirstThreadData->thread_id ) {
+        __FiniRtns( 0, FINI_PRIORITY_EXIT - 1 );
+        _sys_exit_group( ret_code );
+    } else
+#else
     __FiniRtns( 0, FINI_PRIORITY_EXIT - 1 );
+#endif
     _sys_exit( ret_code );
-    // never return
 }

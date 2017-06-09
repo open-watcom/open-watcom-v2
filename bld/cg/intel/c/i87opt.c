@@ -25,7 +25,7 @@
 *
 *  ========================================================================
 *
-* Description:  Optimize x87 FPU instruction sequences. 
+* Description:  Optimize x87 FPU instruction sequences.
 *
 ****************************************************************************/
 
@@ -200,7 +200,7 @@ static  instruction     *PushDelayed( instruction *ins, an addr, call_state *sta
     addr->format = NF_ADDR; /* so instruction doesn't get freed! */
     BGDone( addr );
 #if _TARGET & _TARG_IAPX86
-    state = state;
+    /* unused parameters */ (void)state;
 #else
     if( state->attr & ROUTINE_STACK_RESERVE ) {
         ReserveStack( state, ins, addr->tipe->length );
@@ -268,7 +268,8 @@ static bool PushDelayedIfRedefinition( instruction *ins, pn parm, call_state *st
 
 static  void    UseInOther( name *op )
 {
-    if( op == NULL ) return;
+    if( op == NULL )
+        return;
     switch( op->n.class ) {
     case N_TEMP:
     case N_MEMORY:
@@ -408,10 +409,9 @@ static  bool    FSinCos( instruction *ins1 ) {
         if( G( ins3 ) != G_RFLD ) {
             return( false );
         }
-        if( FPRegNum( ins1->operands[0] ) !=
-            FPRegNum( ins3->operands[0] ) - 1 ) {
-                return( false );
-            }
+        if( FPRegNum( ins1->operands[0] ) != FPRegNum( ins3->operands[0] ) - 1 ) {
+            return( false );
+        }
         if( ins4->head.opcode != _OTHER( ins2->head.opcode ) ) {
             return( false );
         }
@@ -460,9 +460,12 @@ static  instruction     *BackUpAndFree( instruction *ins, instruction *junk1,
     instruction *ret;
 
     ret = ins->head.prev;
-    if( junk1 != NULL ) FreeIns( junk1 );
-    if( junk2 != NULL ) FreeIns( junk2 );
-    if( ret->head.opcode == OP_BLOCK ) ret = ret->head.next;
+    if( junk1 != NULL )
+        FreeIns( junk1 );
+    if( junk2 != NULL )
+        FreeIns( junk2 );
+    if( ret->head.opcode == OP_BLOCK )
+        ret = ret->head.next;
     return( ret );
 }
 
@@ -511,15 +514,19 @@ static  instruction    *To86Move( instruction *ins, instruction *next ) {
 
     ret = ins->head.next;
     for( regs = RegSets[RL_MOVE_REG]; ; ++regs ) {
-        if( HW_CEqual( *regs, HW_EMPTY ) ) return( ret );
-        if( HW_Ovlap( *regs, next->head.live.regs ) ) continue;
-        if( HW_Ovlap( *regs, ins->head.live.regs ) ) continue;
+        if( HW_CEqual( *regs, HW_EMPTY ) )
+            return( ret );
+        if( HW_Ovlap( *regs, next->head.live.regs ) )
+            continue;
+        if( HW_Ovlap( *regs, ins->head.live.regs ) )
+            continue;
         reg = AllocRegName( *regs );
         break;
     }
     if( next->result->n.name_class == FS ) {
 #if _TARGET & _TARG_IAPX86
-        if( OptForSize > 50 ) return( ret );
+        if( OptForSize > 50 )
+            return( ret );
         MoveThrough( LowPart( ins->operands[0], U2 ),
                      LowPart( next->result, U2 ), ins, next, reg, U2 );
         MoveThrough( HighPart( ins->operands[0], U2 ),
@@ -528,7 +535,8 @@ static  instruction    *To86Move( instruction *ins, instruction *next ) {
         MoveThrough( ins->operands[0], next->result, ins, next, reg, U4 );
 #endif
     } else {
-        if( OptForSize > 50 ) return( ret );
+        if( OptForSize > 50 )
+            return( ret );
 #if _TARGET & _TARG_IAPX86
         MoveThrough( LowPart( LowPart( ins->operands[0], U4 ), U2 ),
                      LowPart( LowPart( next->result      , U4 ), U2 ),
@@ -565,7 +573,9 @@ static  bool    RedundantStore( instruction *ins ) {
                 return( true );
             }
         }
-        if( InsOrderDependant( ins, next ) ) return( false );
+        if( InsOrderDependant( ins, next ) ) {
+            return( false );
+        }
     }
     return( false );
 }
@@ -583,7 +593,8 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
 
     next = Next87Ins( ins );
     ret = ins->head.next;
-    if( next == ins ) return( ret );
+    if( next == ins )
+        return( ret );
     if( G( ins ) == G_RFLD && FPRegNum( ins->operands[0] ) == 0 ) {
         if( G( next ) == G_MFST ) {
 
@@ -631,7 +642,9 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
         if( ( G( next ) == G_RRFBINP || G( next ) == G_RNFBINP ) ) {
             if( G( ins ) == G_MFLD ) {
                 class = ins->operands[0]->n.name_class;
-                if( !_IsFloating( class ) ) return( ret ); /* need convert! */
+                if( !_IsFloating( class ) ) {
+                    return( ret ); /* need convert! */
+                }
             }
             if( ( FPRegNum( next->operands[0] ) == 1 ) ) {
 
@@ -639,8 +652,8 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
 
                 next->result = ST( 0 );
                 next->operands[0] = ins->operands[0];
-                if( ins->num_operands > NumOperands( ins ) && next->num_operands <= NumOperands( next ) ) {
-                    next->operands[next->num_operands] = ins->operands[NumOperands( ins )];
+                if( ins->num_operands > OpcodeNumOperands( ins ) && next->num_operands <= OpcodeNumOperands( next ) ) {
+                    next->operands[next->num_operands] = ins->operands[OpcodeNumOperands( ins )];
                     next->num_operands++;
                 }
                 FreeIns( ins );
@@ -662,7 +675,8 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
 
                 /* FLD X, FLD Y, FXCH ST(1) ==> FLD Y, FLD X */
                 third = Next87Ins( next );
-                if( third == next ) return( ret );
+                if( third == next )
+                    return( ret );
                 if( G( third ) == G_FXCH && FPRegNum( third->result ) == 1 ) {
                     FreeIns( third );
                     if( FPRegNum( next->operands[0] ) != 0 ) {
@@ -702,9 +716,9 @@ static  instruction    *Opt87Sequence( instruction *ins, bool *again ) {
         }
     } else if( G( ins ) == G_MFST || G( ins ) == G_RFST ) {
         if( G( next ) == G_MFLD
-        && ( next->operands[0] == ins->result )
-        &&   _IsFloating( ins->result->n.name_class )
-        && !IsVolatile( ins->result ) ) {
+          && ( next->operands[0] == ins->result )
+          &&   _IsFloating( ins->result->n.name_class )
+          && !IsVolatile( ins->result ) ) {
 
             /* FSTP X, FLD X ==> FST X */
 

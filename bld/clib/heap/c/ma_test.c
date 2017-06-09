@@ -76,18 +76,11 @@
 
 #define BASED_HEAP_SIZE 512
 
-// Casting _NULLOFF to long produces 0xFFFFFFFF, while casting the return of
-// failing based heap routines to long produces 0xFFFF. At this point it is
-// unclear whether that is a compiler bug, whether the _NULLOFF macro is wrong,
-// or whether the test makes bad assumptions. For the moment, get around it
-// by casting to unsigned in a few specific cases. This hack should be removed
-// when it is determined what's actually wrong and the original problem fixed.
-#define HACK_CAST   (unsigned)
-
 // This is a macro performing everything needed before returning the call
 #if defined( _M_I86 )
     #define _CRET() {                                                   \
-        if( doheapwlk ) AskHeapWlk( FREED_BEFORE, type, __LINE__ );     \
+        if( doheapwlk )                                                 \
+            AskHeapWlk( FREED_BEFORE, type, __LINE__ );                 \
         if( type == TYPE_DEFAULT ) {                                    \
             free( (void *) ptr_char );                                  \
             free( (void *) ptr_int );                                   \
@@ -107,13 +100,15 @@
             hfree( (void __huge *) ptr_int );                           \
             hfree( (void __huge *) ptr_double );                        \
         }                                                               \
-        if( doheapwlk ) AskHeapWlk( FREED_AFTER, type, __LINE__ );      \
+        if( doheapwlk )                                                 \
+            AskHeapWlk( FREED_AFTER, type, __LINE__ );                  \
         memavail = _memavl();                                           \
         return;                                                         \
     }
 
     #define _CRET_HUGE() {                                              \
-        if( doheapwlk ) AskHeapWlk( FREED_BEFORE, type, __LINE__ );     \
+        if( doheapwlk )                                                 \
+            AskHeapWlk( FREED_BEFORE, type, __LINE__ );                 \
         if( type == TYPE_HUGE ) {                                       \
             hfree( (void __huge *) ptr_char );                          \
             hfree( (void __huge *) ptr_int );                           \
@@ -121,14 +116,16 @@
         } else {                                                        \
             printf( "INTERNAL ERROR - incorrect heap type\n" );         \
         }                                                               \
-        if( doheapwlk ) AskHeapWlk( FREED_AFTER, type, __LINE__ );      \
+        if( doheapwlk )                                                 \
+            AskHeapWlk( FREED_AFTER, type, __LINE__ );                  \
         memavail = _memavl();                                           \
         return;                                                         \
     }
 
 #else
     #define _CRET() {                                                   \
-        if( doheapwlk ) AskHeapWlk( FREED_BEFORE, type, __LINE__ );     \
+        if( doheapwlk )                                                 \
+            AskHeapWlk( FREED_BEFORE, type, __LINE__ );                 \
         if( type == TYPE_DEFAULT ) {                                    \
             free( (char *) ptr_char );                                  \
             free( (int *) ptr_int );                                    \
@@ -138,7 +135,8 @@
             _nfree( (int __near *) ptr_int );                           \
             _nfree( (double __near *) ptr_double );                     \
         }                                                               \
-        if( doheapwlk ) AskHeapWlk( FREED_AFTER, type, __LINE__ );      \
+        if( doheapwlk )                                                 \
+            AskHeapWlk( FREED_AFTER, type, __LINE__ );                  \
         memavail = _memavl();                                           \
         return;                                                         \
     }
@@ -153,14 +151,14 @@
 
 // Macro to free based pointers and the corresponding segment
 #define _DOBFREE() {                                            \
-  if( (char __based(seg)*)ptr_char != _NULLOFF ) {              \
-      _bfree( seg, (char __based(seg)*)ptr_char );              \
+  if( (void __based(void)*)ptr_char != _NULLOFF ) {             \
+      _bfree( seg, (void __based(void)*)ptr_char );             \
   }                                                             \
-  if( (int __based(seg)*)ptr_int != _NULLOFF ) {                \
-      _bfree( seg,(int __based(seg)*)ptr_int );                 \
+  if( (void __based(void)*)ptr_int != _NULLOFF ) {              \
+      _bfree( seg,(void __based(void)*)ptr_int );               \
   }                                                             \
-  if( (double __based(seg)*)ptr_double != _NULLOFF ) {          \
-      _bfree( seg,(double __based(seg)*)ptr_double);            \
+  if( (void __based(void)*)ptr_double != _NULLOFF ) {           \
+      _bfree( seg,(void __based(void)*)ptr_double);             \
   }                                                             \
 }
 
@@ -209,14 +207,17 @@ static const char *errmsg[] = {
 
 void ShowDot( int ctr )
 {
-    if( ( ctr % DOT_INTERVAL ) == 0 ) putch( '.' );
+    if( ( ctr % DOT_INTERVAL ) == 0 ) {
+        putch( '.' );
+    }
 }
 
 void AskHeapWlk( int timing, int type, int lineno )
 {
     char ans;
 
-    if( type == TYPE_HUGE ) return;     // No huge _heapwalk()
+    if( type == TYPE_HUGE )
+        return;                         // No huge _heapwalk()
     cprintf( "[-h] Dump the heap %s freeing? ",
              (timing == FREED_BEFORE ) ? "before" : "after" );
     ans = getche();
@@ -249,7 +250,8 @@ void AskHeapWlk( int timing, int type, int lineno )
                     heap_status = INTERNAL_ERR;
                     break;
             }
-            if( heap_status != _HEAPOK ) break;
+            if( heap_status != _HEAPOK )
+                break;
             printf( "  %s block at %Fp of size %4.4X\n",
                     ( h_info._useflag == _USEDENTRY ? "USED" : "FREE" ),
                     h_info._pentry, h_info._size );
@@ -388,7 +390,8 @@ void Test_alloca_stackavail__memavl__memmax( test_result *result )
             ShowDot( ctr );
         }
     }   // Make sure that the buffer is accessible before returning
-    if( tracethisloop ) cprintf( "\r\nTrace done. No problems detected.\r\n");
+    if( tracethisloop )
+        cprintf( "\r\nTrace done. No problems detected.\r\n");
     result->status = TEST_PASS;
 }
 
@@ -436,7 +439,8 @@ void Test_calloc__msize( test_result *result, int type )
             }
             if( seg == _NULLSEG ) {
                 result->status = TEST_NOSEG;
-                if( more_debug ) noseg_lineno = __LINE__;
+                if( more_debug )
+                    noseg_lineno = __LINE__;
                 return;
             }
             strcpy( result->funcname,"_bcalloc()" );
@@ -461,11 +465,12 @@ void Test_calloc__msize( test_result *result, int type )
     }
     if( ptr_char == _NUL || ptr_int == _NUL ) {
         result->status = TEST_NOMEM;
-        if( more_debug ) nomem_lineno = __LINE__;
+        if( more_debug )
+            nomem_lineno = __LINE__;
         _CRET();
     }
 #if defined( _M_I86 ) && (defined(__SMALL__) || defined(__MEDIUM__))
-    if( type != TYPE_FAR && HACK_CAST ptr_double != HACK_CAST _NUL ) {
+    if( type != TYPE_FAR && ptr_double != _NUL ) {
         result->status = TEST_FAIL;
         strcpy( result->msg, errmsg[14] );
         _CRET();
@@ -477,7 +482,7 @@ void Test_calloc__msize( test_result *result, int type )
 #else       // 32-bit or large data model
     if( type == TYPE_BASED || type == TYPE_NEAR ) {
     #if defined( _M_I86 )
-        if( HACK_CAST ptr_double != HACK_CAST _NUL ) {
+        if( ptr_double != _NUL ) {
             result->status = TEST_FAIL;
             strcpy( result->msg, errmsg[14] );
             _CRET();
@@ -533,15 +538,18 @@ void Test_calloc__msize( test_result *result, int type )
             default:
                 break;
         }
-        if( tracethisloop ) ShowDot( ctr );
+        if( tracethisloop ) {
+            ShowDot( ctr );
+        }
     }
-    if( tracethisloop )cprintf( "\r\nTrace done. No accessing problems.\r\n");
+    if( tracethisloop )
+        cprintf( "\r\nTrace done. No accessing problems.\r\n");
     if( result->status != TEST_PASS ) {
         strcpy( result->msg, errmsg[4] ); // didn't clear the memory
         _CRET();
     }
     size = NUM_EL;
-    if( size % WSIZE != 0 ) {
+    if( ( size % WSIZE ) != 0 ) {
         size += ( WSIZE - ( size % WSIZE ) );   // Align it to WSIZE
     }
     switch( type ) {
@@ -560,7 +568,7 @@ void Test_calloc__msize( test_result *result, int type )
             break;
         case TYPE_BASED:
             strcpy( result->funcname,"_bmsize()" );
-            retsize = _bmsize( seg, (char __based( seg ) *)ptr_char );
+            retsize = _bmsize( seg, (void __based(void)*)ptr_char );
             break;
 #endif
         default:
@@ -568,8 +576,7 @@ void Test_calloc__msize( test_result *result, int type )
     }
     if( retsize < size || retsize > size + SIZE_MARGIN ) {
         result->status = TEST_FAIL;
-        sprintf( result->msg, "%s. size = %u, returned = %u", errmsg[9],
-                 size, retsize );
+        sprintf( result->msg, "%s. size = %u, returned = %u", errmsg[9], size, retsize );
     }
     _CRET();
 } // Test_calloc__msize() //
@@ -620,7 +627,8 @@ void Test_malloc_realloc__expand( test_result *result, int type )
             }
             if( seg == _NULLSEG ) {
                 result->status = TEST_NOSEG;
-                if( more_debug ) noseg_lineno = __LINE__;
+                if( more_debug )
+                    noseg_lineno = __LINE__;
                 return;
             }
             strcpy( result->funcname,"_bmalloc()" );
@@ -645,11 +653,12 @@ void Test_malloc_realloc__expand( test_result *result, int type )
     }
     if( ptr_char == _NUL || ptr_int == _NUL ) {
         result->status = TEST_NOMEM;
-        if( more_debug ) nomem_lineno = __LINE__;
+        if( more_debug )
+            nomem_lineno = __LINE__;
         _CRET();
     }
 #if defined( _M_I86 ) && (defined(__SMALL__) || defined(__MEDIUM__))
-    if( type != TYPE_FAR && HACK_CAST ptr_double != HACK_CAST _NUL ) {
+    if( type != TYPE_FAR && ptr_double != _NUL ) {
         result->status = TEST_FAIL;
         strcpy( result->msg, errmsg[14] );
         _CRET();
@@ -661,7 +670,7 @@ void Test_malloc_realloc__expand( test_result *result, int type )
 #else       // 32-bit or large data model
     if( type == TYPE_BASED || type == TYPE_NEAR ) {
     #if defined( _M_I86 )
-        if( HACK_CAST ptr_double != HACK_CAST _NUL ) {
+        if( ptr_double != _NUL ) {
             result->status = TEST_FAIL;
             strcpy( result->msg, errmsg[14] );
             _CRET();
@@ -709,9 +718,12 @@ void Test_malloc_realloc__expand( test_result *result, int type )
             default:
                 break;
         }
-        if( tracethisloop ) ShowDot( ctr );
+        if( tracethisloop ) {
+            ShowDot( ctr );
+        }
     }   // Make sure that array is accessible.
-    if(tracethisloop) cprintf( "\r\nTrace done. No problems detected.\r\n" );
+    if( tracethisloop )
+        cprintf( "\r\nTrace done. No problems detected.\r\n" );
 
     // The following tests realloc() and _expand():
     size = ( NUM_EL >> 1) * sizeof( int ); // shrink by half
@@ -731,7 +743,7 @@ void Test_malloc_realloc__expand( test_result *result, int type )
             break;
         case TYPE_BASED:
             strcpy( result->funcname, "_brealloc()" );
-            tmp_ptr = (long) _brealloc( seg,(int __based(seg)*)ptr_int,size);
+            tmp_ptr = (long) _brealloc( seg,(void __based(void)*)ptr_int,size);
             break;
 #endif
         default:
@@ -768,7 +780,7 @@ void Test_malloc_realloc__expand( test_result *result, int type )
             break;
         case TYPE_BASED:
             strcpy( result->funcname, "_bexpand()" );
-            tmp_ptr = (long)_bexpand( seg, (int __based(seg)*)ptr_int, size );
+            tmp_ptr = (long)_bexpand( seg, (void __based(void)*)ptr_int, size );
             break;
 #endif
         default:
@@ -874,7 +886,8 @@ void Test_halloc( test_result *result )
     }
     if( ptr_char == NULL ) {
         result->status = TEST_NOMEM ;
-        if( more_debug ) nomem_lineno = __LINE__;
+        if( more_debug )
+            nomem_lineno = __LINE__;
         _CRET_HUGE();
     }
     ptr_double = (double __huge *)halloc( HUGE_NUM_EL, sizeof( double ) );
@@ -885,7 +898,8 @@ void Test_halloc( test_result *result )
     }
     if( ptr_int == NULL || ptr_double == NULL) {
         result->status = TEST_NOMEM ;
-        if( more_debug ) nomem_lineno = __LINE__;
+        if( more_debug )
+            nomem_lineno = __LINE__;
         _CRET_HUGE();
     }
     result->status = TEST_PASS;
@@ -902,9 +916,12 @@ void Test_halloc( test_result *result )
     tracethisloop = AskTrace( result->funcname, __LINE__ );
     for( ctr = 0; ctr < HUGE_NUM_EL; ++ctr ) {
         ptr_char[ctr]   = ptr_int[ctr] = ptr_double[ctr] = 6;
-        if( tracethisloop ) ShowDot( ctr );
+        if( tracethisloop ) {
+            ShowDot( ctr );
+        }
     }   // Make sure that array is accessible.
-    if( tracethisloop ) cprintf( "\r\nTrace done. No problems detected.\r\n");
+    if( tracethisloop )
+        cprintf( "\r\nTrace done. No problems detected.\r\n");
     _CRET_HUGE();
 }
 #endif
@@ -957,7 +974,8 @@ void Usage( char *filename )
     char *tmp;
 
     tmp = strrchr( filename, '\\' );
-    if( tmp != NULL ) filename = tmp + 1;
+    if( tmp != NULL )
+        filename = tmp + 1;
     cprintf( "%-16s",filename );
     cprintf( "Test program for the memory allocation routines.\r\n" );
     cprintf( "Usage:  %s [-d][-p][-h][-t][-c]\r\n", filename );
@@ -976,7 +994,8 @@ void ParseArgs( int argc, char *argv[] )
     char buffer[ARGLENGTH];
     char *delims = { "/-" };
 
-    if( argc == 1 ) return;
+    if( argc == 1 )
+        return;
     *buffer = '\0';
     if( argv[1][0] == '?' ) {
         Usage( argv[0] );
@@ -1059,7 +1078,8 @@ int main( int argc, char *argv[] )
 #endif
     ParseArgs( argc, argv );
 
-    if( more_debug ) DisplayConstants();
+    if( more_debug )
+        DisplayConstants();
 
 #if defined( _M_I86 ) && !defined(__WINDOWS__)
     _nheapgrow();
@@ -1098,7 +1118,8 @@ int main( int argc, char *argv[] )
     Test_malloc_realloc__expand( &result, TYPE_BASED );
     TranslateResult( &result );
 
-    if( seg != _NULLSEG ) _bfreeseg( seg );
+    if( seg != _NULLSEG )
+        _bfreeseg( seg );
 
     Test_halloc( &result );
     TranslateResult( &result );

@@ -1053,7 +1053,8 @@ static void listPrint( FILE *fp, char *str, ... )
 {
     va_list             arglist;
 
-    fp = fp;
+    /* unused parameters */ (void)fp;
+
     va_start( arglist, str );
     msgLength += vsnprintf( listMsg + msgLength, MAX_MESSAGE_LEN - msgLength, str, arglist );
     va_end( arglist );
@@ -1076,7 +1077,8 @@ static void listNewLine( FILE *fp )
 
 static void fpadch( FILE *fp, char ch, size_t len )
 {
-    fp = fp;
+    /* unused parameters */ (void)fp;
+
     if( len > 0 ) {
         if( len > MAX_MESSAGE_LEN - msgLength )
             len = MAX_MESSAGE_LEN - msgLength;

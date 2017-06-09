@@ -45,11 +45,11 @@ static void PrintDialogBoxHeader( DialogBoxHeader * head )
     puts( "Dialog Header:" );
     printf("\tStyle: 0x%08lx  No. of items: %d\n",
                 head->Style, head->NumOfItems );
-    printf( "\tx: %d   y: %d   w: %d   h: %d\n", head->Size.x, head->Size.y,
-                head->Size.width, head->Size.height );
+    printf( "\tx: %d   y: %d   w: %d   h: %d\n", head->SizeInfo.x, head->SizeInfo.y,
+                head->SizeInfo.width, head->SizeInfo.height );
     printf( "\tMenu Name: %-10.10s    ClassName: %-10.10s\n",
-                head->MenuName, head->ClassName );
-    printf( "\tCaption: %-.40\n", head->Caption );
+                (char *)head->MenuName, (char *)head->ClassName );
+    printf( "\tCaption: %-.40s\n", (char *)head->Caption );
     if (head->Style & DS_SETFONT) {
         printf( "\tPoint Size: %d   FontName: %-.20s\n", head->PointSize,
                 head->FontName );
@@ -101,8 +101,8 @@ static void PrintDialogBoxControl( DialogBoxControl * control )
 /*************************************************************/
 {
     printf( "x: %d   y: %d   w: %d   h: %d\n",
-            control->Size.x, control->Size.y, control->Size.width,
-            control->Size.height );
+            control->SizeInfo.x, control->SizeInfo.y, control->SizeInfo.width,
+            control->SizeInfo.height );
     printf( "\tId: %d   Style: 0x%08lx\n", control->ID, control->Style );
     PrintControlClass( control->ClassID );
     printf( "Extra bytes: %d\n", control->ExtraBytes );
@@ -114,16 +114,14 @@ bool DumpDialog( uint_32 offset, uint_32 length, WResFileID fid )
 /***************************************************************/
 {
     bool                error;
-    WResFileOffset      prevpos;
     int                 itemnum;
     DialogBoxHeader     head;
     DialogBoxControl    control;
 
     length = length;
     head.NumOfItems = 0;
-    prevpos = RCSEEK( fid, offset, SEEK_SET );
-    error = ( prevpos == -1 );
 
+    error = RESSEEK( fid, offset, SEEK_SET );
     if( !error ) {
         error = ResReadDialogBoxHeader( &head, fid );
     }
@@ -139,17 +137,17 @@ bool DumpDialog( uint_32 offset, uint_32 length, WResFileID fid )
             printf( "   %3d. ", itemnum + 1 );
             PrintDialogBoxControl( &control );
             if( control.ClassID != NULL ) {
-                RCFREE( control.ClassID );
+                RESFREE( control.ClassID );
             }
             if( control.Text != NULL ) {
-                RCFREE( control.Text );
+                RESFREE( control.Text );
             }
         }
     }
 
     ResFreeDialogBoxHeaderPtrs( &head );
 
-    RCSEEK( fid, prevpos, SEEK_SET );
+    RESSEEK( fid, offset, SEEK_SET );
 
     return( error );
 }

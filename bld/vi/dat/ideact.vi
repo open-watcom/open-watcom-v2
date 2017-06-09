@@ -1,2 +1,2 @@
-addtoolbaritem temp
-addtoolbaritem temp hammer "Activate IDE" activateide
+addtoolbaritem2 temp
+addtoolbaritem2 temp hammer "Activate IDE" "Activate IDE" activateide

@@ -87,7 +87,7 @@ static int nameCmp( omf_file_handle ofh, omf_idx n1, omf_idx n2 )
         return( 1 );
     if( s1->len != s2->len )
         return( 1 );
-    return( stricmp( s1->string, s2->string ) );
+    return( stricmp( s1->string, s2->string ) != 0 );
 }
 
 
@@ -101,7 +101,7 @@ static void *checkArraySize( omf_file_handle ofh, void *old_arr, long num, long 
     assert( inc > 0 );
     assert( elem > 0 );
 
-    if( !( num % inc ) ) {
+    if( (num % inc) == 0 ) {
         size = ( num + inc ) * elem;
         new_arr = _ClientAlloc( ofh, size );
         if( new_arr == NULL )
@@ -123,23 +123,25 @@ static const omf_symbol_handle_struct *findExtDefSym( omf_file_handle ofh, omf_i
 {
     omf_sec_handle                  sh;
     omf_string_struct               *extname;
-    orl_hash_data_struct            *hd;
+    orl_hash_data_struct            *data_entry;
     const omf_symbol_handle_struct  *sym;
+    orl_hash_key                    key;
 
     assert( ofh );
 
-    if( !ofh->extdefs )
+    if( ofh->extdefs == NULL )
         return( NULL );
     sh = ofh->extdefs;
-    if( !ext || ( ext > sh->assoc.string.num ) )
+    if( ext == 0 || ( ext > sh->assoc.string.num ) )
         return( NULL );
     assert( sh->assoc.string.strings );
     extname = sh->assoc.string.strings[ext - 1];
     if( extname == NULL )
         return( NULL );
 
-    for( hd = ORLHashTableQuery( ofh->symbol_table->assoc.sym.hash_tab, extname->string ); hd != NULL; hd = hd->next ) {
-        sym = hd->data;
+    key.u.string = extname->string;
+    for( data_entry = ORLHashTableQuery( ofh->symbol_table->assoc.sym.hash_tab, key ); data_entry != NULL; data_entry = data_entry->next ) {
+        sym = data_entry->data;
         if( sym != NULL ) {
             if( sym->typ & ( ORL_SYM_TYPE_UNDEFINED | ORL_SYM_TYPE_COMMON ) ) {
                 return( sym );
@@ -154,7 +156,7 @@ static omf_grp_handle   findGroup( omf_file_handle ofh, omf_idx grp )
 {
     assert( ofh );
 
-    if( !grp || ( grp > ofh->num_groups ) )
+    if( grp == 0 || ( grp > ofh->num_groups ) )
         return( NULL );
     assert( ofh->groups );
     return( ofh->groups[grp - 1] );
@@ -165,7 +167,7 @@ static omf_sec_handle   findComDat( omf_file_handle ofh, omf_idx seg )
 {
     assert( ofh );
 
-    if( !seg || ( seg > ofh->num_comdats ) )
+    if( seg == 0 || ( seg > ofh->num_comdats ) )
         return( NULL );
     assert( ofh->comdats );
     return( ofh->comdats[seg - 1] );
@@ -178,7 +180,7 @@ static omf_sec_handle   findComDatByName( omf_file_handle ofh, omf_idx nameidx )
     assert( ofh );
     assert( ofh->comdats );
 
-    if( !nameidx )
+    if( nameidx == 0 )
         return( NULL );
     for( index = 0; index < ofh->num_comdats; index++ ) {
         if( ofh->comdats[index]->assoc.seg.name == nameidx ) {
@@ -193,7 +195,7 @@ static omf_sec_handle   findSegment( omf_file_handle ofh, omf_idx seg )
 {
     assert( ofh );
 
-    if( !seg || ( seg > ofh->num_segs ) )
+    if( seg == 0 || ( seg > ofh->num_segs ) )
         return( NULL );
     assert( ofh->segs );
     return( ofh->segs[seg - 1] );
@@ -266,11 +268,11 @@ static omf_sec_handle   newComDatSection( omf_file_handle ofh )
     assert( ofh );
 
     ofh->comdats = checkArraySize( ofh, ofh->comdats, ofh->num_comdats, STD_INC, sizeof( omf_sec_handle ) );
-    if( !ofh->comdats )
+    if( ofh->comdats == NULL )
         return( NULL );
 
     sh = newSection( ofh, OMF_SEC_NEXT_AVAILABLE, ORL_SEC_TYPE_PROG_BITS );
-    if( !sh )
+    if( sh == NULL )
         return( sh );
 
     ofh->comdats[ofh->num_comdats] = sh;
@@ -288,11 +290,11 @@ static omf_sec_handle   newSegSection( omf_file_handle ofh, orl_sec_type typ )
     assert( ofh );
 
     ofh->segs = checkArraySize( ofh, ofh->segs, ofh->num_segs, STD_INC, sizeof( omf_sec_handle ) );
-    if( !ofh->segs )
+    if( ofh->segs == NULL )
         return( NULL );
 
     sh = newSection( ofh, OMF_SEC_NEXT_AVAILABLE, typ );
-    if( !sh )
+    if( sh == NULL )
         return( sh );
 
     ofh->segs[ofh->num_segs] = sh;
@@ -310,7 +312,7 @@ static omf_grp_handle   newGroup( omf_file_handle ofh )
     assert( ofh );
 
     ofh->groups = checkArraySize( ofh, ofh->groups, ofh->num_groups, STD_INC, sizeof( omf_grp_handle ) );
-    if( !ofh->groups )
+    if( ofh->groups == NULL )
         return( NULL );
 
     gr = _ClientAlloc( ofh, sizeof( omf_grp_handle_struct ) );
@@ -325,25 +327,6 @@ static omf_grp_handle   newGroup( omf_file_handle ofh )
     gr->omf_file_hnd = ofh;
 
     return( gr );
-}
-
-
-static orl_sec_offset   getUWord( omf_bytes buffer, int wordsize )
-{
-    orl_sec_offset      result = 0;
-
-    assert( buffer );
-
-    switch( wordsize ) {
-    case( 4 ):
-        result |= buffer[3] << 24;
-        result |= buffer[2] << 16;
-    case( 2 ):
-        result |= buffer[1] << 8;
-    default:
-        result |= buffer[0];
-    }
-    return( result );
 }
 
 
@@ -365,7 +348,7 @@ static omf_sec_handle   newStringTable( omf_file_handle ofh, omf_quantity idx )
     assert( ofh );
 
     sh = newSection( ofh, idx, ORL_SEC_TYPE_STR_TABLE );
-    if( sh ) {
+    if( sh != NULL ) {
         sh->flags = ORL_SEC_FLAG_REMOVE;
     }
     return( sh );
@@ -384,10 +367,8 @@ static orl_return       addString( omf_sec_handle sh, char *buffer, omf_string_l
 
     /* Check if we need to allocate more string table
      */
-    sh->assoc.string.strings = checkArraySize( ofh, sh->assoc.string.strings,
-                                               sh->assoc.string.num, STD_INC,
-                                               sizeof( omf_string_struct * ) );
-    if( !sh->assoc.string.strings )
+    sh->assoc.string.strings = checkArraySize( ofh, sh->assoc.string.strings, sh->assoc.string.num, STD_INC, sizeof( omf_string_struct * ) );
+    if( sh->assoc.string.strings == NULL )
         return( ORL_OUT_OF_MEMORY );
 
     str = _ClientAlloc( ofh, sizeof( omf_string_struct ) + len );
@@ -408,77 +389,75 @@ static orl_return       addString( omf_sec_handle sh, char *buffer, omf_string_l
 static orl_return       addToSymbolTable( omf_file_handle ofh, omf_symbol_handle sym )
 {
     omf_sec_handle      sh;
+    orl_hash_key        key;
 
     assert( ofh );
     assert( sym );
 
     sh = ofh->symbol_table;
-    if( !sh ) {
+    if( sh == NULL ) {
         sh = newSection( ofh, OMF_SEC_SYM_TABLE_INDEX, ORL_SEC_TYPE_SYM_TABLE );
-        if( !sh )
+        if( sh == NULL )
             return( ORL_OUT_OF_MEMORY );
         ofh->symbol_table = sh;
         sh->flags |= ORL_SEC_FLAG_REMOVE;
-        sh->assoc.sym.hash_tab = ORLHashTableCreate( ofh->omf_hnd->funcs, 257, ORL_HASH_STRING, (orl_hash_comparison_func)stricmp );
-        if( !sh->assoc.sym.hash_tab ) {
+        sh->assoc.sym.hash_tab = ORLHashTableCreate( ofh->omf_hnd->funcs, STD_HASH_TABLE_SIZE, ORL_HASH_STRING_IGNORECASE );
+        if( sh->assoc.sym.hash_tab == NULL ) {
             return( ORL_OUT_OF_MEMORY );
         }
     }
     assert( sh->assoc.sym.hash_tab );
 
-    sh->assoc.sym.syms = checkArraySize( ofh, sh->assoc.sym.syms,
-                                         sh->assoc.sym.num, STD_INC,
-                                         sizeof( omf_symbol_handle ) );
-    if( !sh->assoc.sym.syms )
+    sh->assoc.sym.syms = checkArraySize( ofh, sh->assoc.sym.syms, sh->assoc.sym.num, STD_INC, sizeof( omf_symbol_handle ) );
+    if( sh->assoc.sym.syms == NULL )
         return( ORL_OUT_OF_MEMORY );
 
     sh->assoc.sym.syms[sh->assoc.sym.num] = sym;
     sh->assoc.sym.num++;
-    return( ORLHashTableInsert( sh->assoc.sym.hash_tab, sym->name.string, sym ) );
+    key.u.string = sym->name.string;
+    return( ORLHashTableInsert( sh->assoc.sym.hash_tab, key, sym ) );
 }
 
 
-static orl_return       addReloc( omf_file_handle ofh, omf_reloc_handle orh )
+static orl_return       addReloc( omf_file_handle ofh, orl_reloc *orel )
 {
     omf_sec_handle      sh;
 
     assert( ofh );
-    assert( orh );
+    assert( orel );
 
-    if( !ofh->relocs ) {
+    if( ofh->relocs == NULL ) {
         ofh->relocs = newSection( ofh, OMF_SEC_RELOC_INDEX, ORL_SEC_TYPE_RELOCS );
-        if( !ofh->relocs )
+        if( ofh->relocs == NULL )
             return( ORL_OUT_OF_MEMORY );
         ofh->relocs->flags |= ORL_SEC_FLAG_REMOVE;
     }
 
     sh = ofh->relocs;
-    sh->assoc.reloc.relocs = checkArraySize( ofh, sh->assoc.reloc.relocs,
-                                             sh->assoc.reloc.num, STD_INC,
-                                             sizeof( omf_reloc_handle ) );
-    if( !sh->assoc.reloc.relocs )
+    sh->assoc.reloc.relocs = checkArraySize( ofh, sh->assoc.reloc.relocs, sh->assoc.reloc.num, STD_INC, sizeof( orl_reloc * ) );
+    if( sh->assoc.reloc.relocs == NULL )
         return( ORL_OUT_OF_MEMORY );
 
-    sh->assoc.reloc.relocs[sh->assoc.reloc.num] = orh;
+    sh->assoc.reloc.relocs[sh->assoc.reloc.num] = orel;
     sh->assoc.reloc.num++;
 
     return( ORL_OKAY );
 }
 
 
-static omf_tmp_fixup    findMatchingFixup( omf_tmp_fixup tf, orl_sec_offset lo, orl_sec_offset hi )
+static omf_tmp_fixup findMatchingFixup( omf_tmp_fixup ftr, omf_sec_offset lo, omf_sec_offset hi )
 {
     if( hi < lo ) {
         hi = lo;
     }
 
-    while( tf ) {
-        if( ( tf->offset >= lo ) && ( tf->offset <= hi ) )
+    while( ftr != NULL ) {
+        if( ( ftr->offset >= lo ) && ( ftr->offset <= hi ) )
             break;
-        tf = tf->next;
+        ftr = ftr->next;
     }
 
-    return( tf );
+    return( ftr );
 }
 
 
@@ -486,14 +465,14 @@ static orl_return   writeAndFixupLIData( omf_file_handle ofh, omf_sec_handle sh,
 {
     int                 wordsize;
     omf_rec_size        tmp;
-    uint_32             repeat;
+    unsigned_32         repeat;
     long                block;
     omf_rec_size        size;
-    orl_sec_offset      used;
-    orl_sec_offset      hi;
-    orl_sec_offset      lo;
+    omf_sec_offset      used;
+    omf_sec_offset      hi;
+    omf_sec_offset      lo;
     omf_bytes           ptr;
-    orl_return          err = ORL_OKAY;
+    orl_return          return_val;
     omf_tmp_fixup       ftr;
     omf_tmp_fixup       ntr;
     int                 x;
@@ -517,9 +496,9 @@ static orl_return   writeAndFixupLIData( omf_file_handle ofh, omf_sec_handle sh,
     size = ofh->lidata->size;
     ptr = buffer + used;
 
-    repeat = getUWord( ptr, wordsize );
+    repeat = OmfGetUWord( ptr, wordsize );
     ptr += wordsize;
-    block = getUWord( ptr, 2 );
+    block = OmfGetUWord( ptr, 2 );
     ptr += 2;
 
     lo = used;
@@ -527,6 +506,7 @@ static orl_return   writeAndFixupLIData( omf_file_handle ofh, omf_sec_handle sh,
     size -= tmp;
     used += tmp;
 
+    return_val = ORL_OKAY;
     if( findMatchingFixup( ofh->lidata->first_fixup, lo, hi ) ) {
         return( ORL_ERROR );
     } else if( block ) {
@@ -535,8 +515,8 @@ static orl_return   writeAndFixupLIData( omf_file_handle ofh, omf_sec_handle sh,
             ofh->lidata->used = used;
             ofh->lidata->size = size;
             for( x = 0; x < block; x++ ) {
-                err = writeAndFixupLIData( ofh, sh, buffer );
-                if( err != ORL_OKAY ) {
+                return_val = writeAndFixupLIData( ofh, sh, buffer );
+                if( return_val != ORL_OKAY ) {
                     break;
                 }
             }
@@ -557,7 +537,7 @@ static orl_return   writeAndFixupLIData( omf_file_handle ofh, omf_sec_handle sh,
             /* create appropriate fixup records
              */
             ftr = findMatchingFixup( ofh->lidata->first_fixup, lo, hi );
-            while( ftr ) {
+            while( ftr != NULL ) {
                 ntr = _ClientAlloc( ofh, sizeof( omf_tmp_fixup_struct ) );
                 if( ntr == NULL )
                     return( ORL_OUT_OF_MEMORY );
@@ -587,10 +567,9 @@ static orl_return   writeAndFixupLIData( omf_file_handle ofh, omf_sec_handle sh,
 
         ofh->lidata->size = size - tmp;
         ofh->lidata->used = used + tmp;
-        err = ORL_OKAY;
     }
 
-    return( err );
+    return( return_val );
 }
 
 
@@ -599,10 +578,10 @@ static orl_return       expandPrevLIData( omf_file_handle ofh )
     omf_sec_handle      sh;
     int                 size;
     omf_bytes           buffer;
-    orl_return          err = ORL_OKAY;
+    orl_return          return_val = ORL_OKAY;
     unsigned char       tmp[1024];
     omf_tmp_fixup       ftr;
-    orl_sec_offset      offset;
+    omf_sec_offset      offset;
 
     assert( ofh );
     assert( ofh->work_sec );
@@ -631,9 +610,9 @@ static orl_return       expandPrevLIData( omf_file_handle ofh )
     memcpy( buffer, sh->contents + offset, size );
 
     while( ofh->lidata->size > 0 ) {
-        err = writeAndFixupLIData( ofh, sh, buffer );
-        if( err != ORL_OKAY ) {
-            return( err );
+        return_val = writeAndFixupLIData( ofh, sh, buffer );
+        if( return_val != ORL_OKAY ) {
+            return( return_val );
         }
     }
     sh->assoc.seg.cur_offset = offset;
@@ -642,11 +621,11 @@ static orl_return       expandPrevLIData( omf_file_handle ofh )
         _ClientFree( ofh, buffer );
     }
 
-    assert( !( ofh->status & OMF_STATUS_ADD_MASK ) );
+    assert( (ofh->status & OMF_STATUS_ADD_MASK) == 0 );
 
     /* Destroy original fixups
      */
-    while( ofh->lidata->first_fixup ) {
+    while( ofh->lidata->first_fixup != NULL ) {
         ftr = ofh->lidata->first_fixup;
         ofh->lidata->first_fixup = ftr->next;
         _ClientFree( ofh, ftr );
@@ -654,12 +633,11 @@ static orl_return       expandPrevLIData( omf_file_handle ofh )
 
     /* Add the generated fixups
      */
-    while( ofh->lidata->new_fixup ) {
+    while( ofh->lidata->new_fixup != NULL ) {
         ftr = ofh->lidata->new_fixup;
-        err = OmfAddFixupp( ofh, ftr->is32, ftr->mode, ftr->location,
-                            ftr->offset, ftr->fmethod, ftr->fidx, ftr->tmethod,
-                            ftr->tidx, ftr->disp );
-        if( err != ORL_OKAY )
+        return_val = OmfAddFixupp( ofh, ftr->is32, ftr->mode, ftr->location, ftr->offset,
+                            ftr->fmethod, ftr->fidx, ftr->tmethod, ftr->tidx, ftr->disp );
+        if( return_val != ORL_OKAY )
             break;
         ofh->lidata->new_fixup = ftr->next;
         _ClientFree( ofh, ftr );
@@ -667,18 +645,18 @@ static orl_return       expandPrevLIData( omf_file_handle ofh )
 
     ofh->lidata->last_fixup = NULL;
 
-    return( err );
+    return( return_val );
 }
 
 
 static orl_return       applyBakpats( omf_file_handle ofh )
 {
     omf_sec_handle      sh;
-    orl_return          err = ORL_OKAY;
+    orl_return          return_val = ORL_OKAY;
     omf_tmp_bkfix       tbf;
-    uint_8              *pfix8;
-    uint_16             *pfix16;
-    uint_32             *pfix32;
+    unsigned_8          *pfix8;
+    unsigned_16         *pfix16;
+    unsigned_32         *pfix32;
 
     assert( ofh );
     assert( ofh->bakpat );
@@ -688,61 +666,62 @@ static orl_return       applyBakpats( omf_file_handle ofh )
     /* Go through all the backpatches and update the segment data. The BAKPATs
      * aren't normal fixups and may modify all sorts of instructions.
      */
-    while( ofh->bakpat->first_fixup ) {
+    while( ofh->bakpat->first_fixup != NULL ) {
         tbf = ofh->bakpat->first_fixup;
         ofh->bakpat->first_fixup = tbf->next;
 
         assert( tbf->segidx || tbf->symidx );
-        if( tbf->segidx )
+        if( tbf->segidx ) {
             sh = findSegment( ofh, tbf->segidx );
-        else 
+        } else {
             sh = findComDatByName( ofh, tbf->symidx );
-        if( !sh ) {
-            err = ORL_ERROR;
+        }
+        if( sh == NULL ) {
+            return_val = ORL_ERROR;
             break;
         }
         switch( tbf->reltype ) {
         case ORL_RELOC_TYPE_WORD_8:
             pfix8 = sh->contents + tbf->offset;
-            *pfix8 += (uint_8)tbf->disp;
+            *pfix8 += (unsigned_8)tbf->disp;
             break;
         case ORL_RELOC_TYPE_WORD_16:
-            pfix16 = (uint_16 *)(sh->contents + tbf->offset);
-            *pfix16 += (uint_16)tbf->disp;
+            pfix16 = (unsigned_16 *)(sh->contents + tbf->offset);
+            *pfix16 += (unsigned_16)tbf->disp;
             break;
         case ORL_RELOC_TYPE_WORD_32:
-            pfix32 = (uint_32 *)(sh->contents + tbf->offset);
+            pfix32 = (unsigned_32 *)(sh->contents + tbf->offset);
             *pfix32 += tbf->disp;
             break;
         default:
             assert( 0 );
-            err = ORL_ERROR;
+            return_val = ORL_ERROR;
             break;
         }
-        if( err != ORL_OKAY )
+        if( return_val != ORL_OKAY )
             break;
 
         _ClientFree( ofh, tbf );
     }
 
-    assert( !(ofh->status & OMF_STATUS_ADD_BAKPAT) );
+    assert( (ofh->status & OMF_STATUS_ADD_BAKPAT) == 0 );
     /* Free the entire bakpat structure as well. */
     _ClientFree( ofh, ofh->bakpat );
     ofh->bakpat = NULL;
 
-    return( err );
+    return( return_val );
 }
 
 
 static orl_return       finishPrevWork( omf_file_handle ofh )
 {
-    orl_return  err = ORL_OKAY;
+    orl_return  return_val = ORL_OKAY;
 
     assert( ofh );
 
     if( ofh->status & OMF_STATUS_ADD_LIDATA ) {
         ofh->status &= ~OMF_STATUS_ADD_LIDATA;
-        err = expandPrevLIData( ofh );
+        return_val = expandPrevLIData( ofh );
     }
     /* NB: We're assuming that a BAKPAT/NBKPAT record always follows
      * the LEDATA (or possibly LIDATA) record it modifies. This is
@@ -751,20 +730,20 @@ static orl_return       finishPrevWork( omf_file_handle ofh )
      */
     if( ofh->status & OMF_STATUS_ADD_BAKPAT ) {
         ofh->status &= ~OMF_STATUS_ADD_BAKPAT;
-        err = applyBakpats( ofh );
+        return_val = applyBakpats( ofh );
     }
-    assert( !( ofh->status & OMF_STATUS_ADD_MASK ) );
-    return( err );
+    assert( (ofh->status & OMF_STATUS_ADD_MASK) == 0 );
+    return( return_val );
 }
 
 
-static orl_sec_offset   calcLIDataLength( int is32, omf_bytes *input, omf_rec_size *len )
+static omf_sec_offset   calcLIDataLength( bool is32, omf_bytes *input, omf_rec_size *len )
 {
     omf_rec_size    size;
     omf_bytes       buffer;
     int             wordsize;
     long            tmp;
-    uint_32         repeat;
+    unsigned_32     repeat;
     long            block;
     long            result = 0;
 
@@ -779,16 +758,16 @@ static orl_sec_offset   calcLIDataLength( int is32, omf_bytes *input, omf_rec_si
 
     if( size < tmp )
         return( 0 );
-    repeat = getUWord( buffer, wordsize );
+    repeat = OmfGetUWord( buffer, wordsize );
     buffer += wordsize;
-    block = getUWord( buffer, 2 );
+    block = OmfGetUWord( buffer, 2 );
     buffer += 2;
     size -= tmp;
 
     if( block ) {
         while( block ) {
             tmp = calcLIDataLength( is32, &buffer, &size );
-            if( !tmp )
+            if( tmp == 0 )
                 return( 0 );
             result += tmp;
             block--;
@@ -809,7 +788,7 @@ static orl_sec_offset   calcLIDataLength( int is32, omf_bytes *input, omf_rec_si
 }
 
 
-static orl_return       checkSegmentLength( omf_sec_handle sh, uint_32 max )
+static orl_return       checkSegmentLength( omf_sec_handle sh, unsigned_32 max )
 {
     omf_bytes   conts;
 
@@ -824,7 +803,7 @@ static orl_return       checkSegmentLength( omf_sec_handle sh, uint_32 max )
         if( conts == NULL )
             return( ORL_OUT_OF_MEMORY );
         memset( conts, 0, max );
-        if( sh->contents ) {
+        if( sh->contents != NULL ) {
             memcpy( conts, sh->contents, sh->assoc.seg.cur_size );
             _ClientFree( sh->omf_file_hnd, sh->contents );
         }
@@ -849,24 +828,24 @@ static int strNUpper( char *str, omf_string_struct *name )
 }
 
 
-static orl_sec_flags    getSegSecFlags( omf_file_handle ofh, omf_idx name,
-                                        omf_idx class, orl_sec_alignment align,
-                                        int combine, int use32 )
+static orl_sec_flags getSegSecFlags( omf_file_handle ofh, omf_idx name, omf_idx class,
+                                    orl_sec_alignment align, int combine, bool use32 )
 {
     char                lname[257];
     orl_sec_flags       flags = 0;
     omf_string_struct   *str;
     int                 slen;
 
-    align = align; combine = combine;
+    /* unused parameters */ (void)align; (void)combine;
+
     assert( ofh );
 
     str = OmfGetLName( ofh->lnames, class );
     if( str != NULL ) {
         slen = strNUpper( lname, str );
-        if( ( slen > 3 ) && ( !strcmp( "CODE", &lname[slen - 4] ) || !strcmp( "TEXT", &lname[slen - 4] ) ) ) {
+        if( ( slen > 3 ) && ( strcmp( "CODE", &lname[slen - 4] ) == 0 || strcmp( "TEXT", &lname[slen - 4] ) == 0 ) ) {
             flags |= ORL_SEC_FLAG_EXEC | ORL_SEC_FLAG_EXECUTE_PERMISSION | ORL_SEC_FLAG_READ_PERMISSION;
-        } else if( ( slen > 3 ) && !strcmp( "DATA", &lname[slen - 4] ) ) {
+        } else if( ( slen > 3 ) && strcmp( "DATA", &lname[slen - 4] ) == 0 ) {
             flags |= ORL_SEC_FLAG_READ_PERMISSION;
             str = OmfGetLName( ofh->lnames, name );
             if( str != NULL ) {
@@ -875,17 +854,17 @@ static orl_sec_flags    getSegSecFlags( omf_file_handle ofh, omf_idx name,
                     flags |= ORL_SEC_FLAG_INITIALIZED_DATA;
                 }
             }
-        } else if( ( slen > 4 ) && !strcmp( "CONST", &lname[slen - 5] ) ) {
+        } else if( ( slen > 4 ) && strcmp( "CONST", &lname[slen - 5] ) == 0 ) {
             flags |= ORL_SEC_FLAG_READ_PERMISSION | ORL_SEC_FLAG_INITIALIZED_DATA;
-        } else if( ( slen > 2 ) && !strcmp( "BSS", &lname[slen - 3] ) ) {
+        } else if( ( slen > 2 ) && strcmp( "BSS", &lname[slen - 3] ) == 0 ) {
             flags |= ORL_SEC_FLAG_READ_PERMISSION | ORL_SEC_FLAG_WRITE_PERMISSION | ORL_SEC_FLAG_UNINITIALIZED_DATA;
-        } else if( ( slen > 4 ) && !strcmp( "STACK", &lname[slen - 5] ) ) {
+        } else if( ( slen > 4 ) && strcmp( "STACK", &lname[slen - 5] ) == 0 ) {
             flags |= ORL_SEC_FLAG_READ_PERMISSION | ORL_SEC_FLAG_WRITE_PERMISSION | ORL_SEC_FLAG_UNINITIALIZED_DATA;
         } else {
             flags |= ORL_SEC_FLAG_READ_PERMISSION;
             str = OmfGetLName( ofh->lnames, name );
             slen = strNUpper( lname, str );
-            if( ( slen > 3 ) && ( !strcmp( "CODE", &lname[slen - 4] ) || !strcmp( "TEXT", &lname[slen - 4] ) ) ) {
+            if( ( slen > 3 ) && ( strcmp( "CODE", &lname[slen - 4] ) == 0 || strcmp( "TEXT", &lname[slen - 4] ) == 0 ) ) {
                 flags |= ORL_SEC_FLAG_EXEC | ORL_SEC_FLAG_EXECUTE_PERMISSION;
             }
         }
@@ -913,14 +892,13 @@ static orl_return   OmfAddFileName( omf_file_handle ofh, char *buffer, omf_strin
 }
 
 
-orl_return              OmfAddLIData( omf_file_handle ofh, int is32,
-                                      omf_idx seg, orl_sec_offset offset,
-                                      omf_bytes buffer, omf_rec_size len, int comdat )
+orl_return OmfAddLIData( omf_file_handle ofh, bool is32, omf_idx seg, omf_sec_offset offset,
+                            omf_bytes buffer, omf_rec_size len, bool comdat )
 {
     omf_sec_handle      sh;
-    orl_return          err;
-    orl_sec_offset      size;
-    orl_sec_offset      tmpsize;
+    orl_return          return_val;
+    omf_sec_offset      size;
+    omf_sec_offset      tmpsize;
     omf_bytes           tmp;
     omf_rec_size        tmplen;
 
@@ -928,16 +906,16 @@ orl_return              OmfAddLIData( omf_file_handle ofh, int is32,
     assert( buffer );
     assert( seg );
 
-    err = finishPrevWork( ofh );
-    if( err != ORL_OKAY )
-        return( err );
+    return_val = finishPrevWork( ofh );
+    if( return_val != ORL_OKAY )
+        return( return_val );
 
     if( comdat ) {
         sh = findComDat( ofh, seg );
     } else {
         sh = findSegment( ofh, seg );
     }
-    if( !sh )
+    if( sh == NULL )
         return( ORL_ERROR );
     if( len < 0 )
         return( ORL_ERROR );
@@ -948,7 +926,7 @@ orl_return              OmfAddLIData( omf_file_handle ofh, int is32,
 
     while( tmplen > 0 ) {
         if( ofh->status & OMF_STATUS_EASY_OMF ) {
-            tmpsize = calcLIDataLength( 0, &tmp, &tmplen );
+            tmpsize = calcLIDataLength( false, &tmp, &tmplen );
         } else {
             tmpsize = calcLIDataLength( is32, &tmp, &tmplen );
         }
@@ -957,13 +935,13 @@ orl_return              OmfAddLIData( omf_file_handle ofh, int is32,
         size += tmpsize;
     }
 
-    err = checkSegmentLength( sh, offset + size );
-    if( err != ORL_OKAY )
-        return( err );
+    return_val = checkSegmentLength( sh, offset + size );
+    if( return_val != ORL_OKAY )
+        return( return_val );
 
     /* we put off expanding the lidata until all the fixups are in
      */
-    if( !ofh->lidata ) {
+    if( ofh->lidata == NULL ) {
         ofh->lidata = _ClientAlloc( ofh, sizeof( omf_tmp_lidata_struct ) );
         if( ofh->lidata == NULL ) {
             return( ORL_OUT_OF_MEMORY );
@@ -980,45 +958,45 @@ orl_return              OmfAddLIData( omf_file_handle ofh, int is32,
     ofh->status |= OMF_STATUS_ADD_LIDATA;
     ofh->work_sec = sh;
 
-    return( err );
+    return( return_val );
 }
 
 
-orl_return              OmfAddLEData( omf_file_handle ofh, int is32,
-                                      omf_idx seg, orl_sec_offset offset,
-                                      omf_bytes buffer, omf_rec_size len, int comdat )
+orl_return OmfAddLEData( omf_file_handle ofh, bool is32, omf_idx seg, omf_sec_offset offset,
+                            omf_bytes buffer, omf_rec_size len, bool comdat )
 {
     omf_sec_handle      sh;
-    orl_return          err;
+    orl_return          return_val;
 
-    is32 = is32;
+    /* unused parameters */ (void)is32;
+
     assert( ofh );
     assert( buffer );
     assert( seg );
 
-    err = finishPrevWork( ofh );
-    if( err != ORL_OKAY )
-        return( err );
+    return_val = finishPrevWork( ofh );
+    if( return_val != ORL_OKAY )
+        return( return_val );
 
     if( comdat ) {
         sh = findComDat( ofh, seg );
     } else {
         sh = findSegment( ofh, seg );
     }
-    if( !sh )
+    if( sh == NULL )
         return( ORL_ERROR );
     if( len < 0 )
         return( ORL_ERROR );
 
-    err = checkSegmentLength( sh, offset + len );
-    if( err != ORL_OKAY )
-        return( err );
+    return_val = checkSegmentLength( sh, offset + len );
+    if( return_val != ORL_OKAY )
+        return( return_val );
 
     sh->assoc.seg.cur_offset = offset;
     memcpy( sh->contents + offset, buffer, len );
     ofh->work_sec = sh;
 
-    return( err );
+    return( return_val );
 }
 
 
@@ -1027,10 +1005,11 @@ orl_return  OmfAddLName( omf_file_handle ofh, char *buffer, omf_string_len len, 
     assert( ofh );
     assert( buffer );
 
-    typ = typ;
-    if( !ofh->lnames ) {
+    /* unused parameters */ (void)typ;
+
+    if( ofh->lnames == NULL ) {
         ofh->lnames = newStringTable( ofh, OMF_SEC_LNAME_INDEX );
-        if( !ofh->lnames )
+        if( ofh->lnames == NULL )
             return( ORL_OUT_OF_MEMORY );
         ofh->lnames->flags = ORL_SEC_FLAG_REMOVE;
     }
@@ -1044,10 +1023,11 @@ orl_return  OmfAddExtName( omf_file_handle ofh, char *buffer, omf_string_len len
     assert( ofh );
     assert( buffer );
 
-    typ = typ;
-    if( !ofh->extdefs ) {
+    /* unused parameters */ (void)typ;
+
+    if( ofh->extdefs == NULL ) {
         ofh->extdefs = newStringTable( ofh, OMF_SEC_IMPORT_INDEX );
-        if( !ofh->extdefs )
+        if( ofh->extdefs == NULL )
             return( ORL_OUT_OF_MEMORY );
         ofh->extdefs->flags = ORL_SEC_FLAG_REMOVE;
     }
@@ -1066,9 +1046,8 @@ omf_string_struct   *OmfGetLastExtName( omf_file_handle ofh )
 }
 
 
-orl_return              OmfAddBakpat( omf_file_handle ofh, uint_8 loctype,
-                                      orl_sec_offset location, omf_idx segidx,
-                                      omf_idx symidx, orl_sec_offset disp )
+orl_return OmfAddBakpat( omf_file_handle ofh, unsigned_8 loctype, omf_sec_offset location,
+                            omf_idx segidx, omf_idx symidx, omf_sec_addend disp )
 {
     omf_tmp_bkfix       tbf;
     orl_reloc_type      reltype;
@@ -1078,9 +1057,9 @@ orl_return              OmfAddBakpat( omf_file_handle ofh, uint_8 loctype,
     /* The BAKPAT records must be applied at the end. One of segidx/symidx
      * must be set to distinguish between BAKPAT and NBKPAT.
      */
-    if( !ofh->bakpat ) {
+    if( ofh->bakpat == NULL ) {
         ofh->bakpat = _ClientAlloc( ofh, sizeof( omf_tmp_bakpat_struct ) );
-        if( ofh->bakpat == NULL ) 
+        if( ofh->bakpat == NULL )
             return( ORL_OUT_OF_MEMORY );
         memset( ofh->bakpat, 0, sizeof( omf_tmp_bakpat_struct ) );
         ofh->status |= OMF_STATUS_ADD_BAKPAT;
@@ -1126,13 +1105,11 @@ orl_return              OmfAddBakpat( omf_file_handle ofh, uint_8 loctype,
 }
 
 
-orl_return              OmfAddFixupp( omf_file_handle ofh, int is32, int mode,
-                                      int location, orl_sec_offset offset,
-                                      int fmethod, omf_idx fidx, int tmethod,
-                                      omf_idx tidx, orl_sec_offset disp )
+orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location, omf_sec_offset offset,
+                            int fmethod, omf_idx fidx, int tmethod, omf_idx tidx, omf_sec_addend disp )
 {
-    omf_tmp_fixup       tfr;
-    omf_reloc_handle    orel;
+    omf_tmp_fixup       ftr;
+    orl_reloc           *orel;
     omf_sec_handle      sh;
     omf_grp_handle      gr;
 
@@ -1142,39 +1119,39 @@ orl_return              OmfAddFixupp( omf_file_handle ofh, int is32, int mode,
         assert( ofh->work_sec );
         assert( ofh->lidata );
 
-        tfr = _ClientAlloc( ofh, sizeof( omf_tmp_fixup_struct ) );
-        if( tfr == NULL )
+        ftr = _ClientAlloc( ofh, sizeof( omf_tmp_fixup_struct ) );
+        if( ftr == NULL )
             return( ORL_OUT_OF_MEMORY );
-        memset( tfr, 0, sizeof( omf_tmp_fixup_struct ) );
+        memset( ftr, 0, sizeof( omf_tmp_fixup_struct ) );
 
         if( fmethod == FRAME_LOC ) {
             fmethod = FRAME_SEG;
             fidx = ofh->work_sec->assoc.seg.seg_id;
         }
 
-        tfr->is32 = is32;
-        tfr->mode = mode;
-        tfr->location = location;
-        tfr->offset = offset;
-        tfr->fmethod = fmethod;
-        tfr->fidx = fidx;
-        tfr->tmethod = tmethod;
-        tfr->tidx = tidx;
-        tfr->disp = disp;
+        ftr->is32 = is32;
+        ftr->mode = mode;
+        ftr->location = location;
+        ftr->offset = offset;
+        ftr->fmethod = fmethod;
+        ftr->fidx = fidx;
+        ftr->tmethod = tmethod;
+        ftr->tidx = tidx;
+        ftr->disp = disp;
 
         if( ofh->lidata->last_fixup ) {
-            ofh->lidata->last_fixup->next = tfr;
+            ofh->lidata->last_fixup->next = ftr;
         } else {
-            ofh->lidata->first_fixup = tfr;
+            ofh->lidata->first_fixup = ftr;
         }
-        ofh->lidata->last_fixup = tfr;
+        ofh->lidata->last_fixup = ftr;
         return( ORL_OKAY );
     }
 
-    orel = _ClientAlloc( ofh, sizeof( omf_reloc_handle_struct ) );
+    orel = _ClientAlloc( ofh, sizeof( orl_reloc ) );
     if( orel == NULL )
         return( ORL_OUT_OF_MEMORY );
-    memset( orel, 0, sizeof( omf_reloc_handle_struct ) );
+    memset( orel, 0, sizeof( orl_reloc ) );
 
     switch( location ) {
     case( LOC_OFFSET_LO ):              /* relocate lo byte of offset   */
@@ -1233,7 +1210,7 @@ orl_return              OmfAddFixupp( omf_file_handle ofh, int is32, int mode,
 
     /* no section for fixups to refer to
      */
-    if( !ofh->work_sec )
+    if( ofh->work_sec == NULL )
         return( ORL_ERROR );
 
     orel->offset = offset + ofh->work_sec->assoc.seg.cur_offset;
@@ -1249,21 +1226,21 @@ orl_return              OmfAddFixupp( omf_file_handle ofh, int is32, int mode,
     case( TARGET_SEGWD ):            /* segment index with displacement      */
     case( TARGET_SEG ):              /* segment index, no displacement       */
         sh = findSegment( ofh, tidx );
-        if( !sh )
+        if( sh == NULL )
             return( ORL_ERROR );
         orel->symbol = (orl_symbol_handle)(sh->assoc.seg.sym);
         break;
     case( TARGET_GRPWD ):            /* group index with displacement        */
     case( TARGET_GRP ):              /* group index, no displacement         */
         gr = findGroup( ofh, tidx );
-        if( !gr )
+        if( gr == NULL )
             return( ORL_ERROR );
         orel->symbol = (orl_symbol_handle)(gr->sym);
         break;
     case( TARGET_EXTWD ):            /* external index with displacement     */
     case( TARGET_EXT ):              /* external index, no displacement      */
         orel->symbol = (orl_symbol_handle)(findExtDefSym( ofh, tidx ));
-        if( !orel->symbol )
+        if( orel->symbol == NULL )
             return( ORL_ERROR );
         break;
     case( TARGET_ABSWD ):            /* abs frame num with displacement      */
@@ -1276,19 +1253,19 @@ orl_return              OmfAddFixupp( omf_file_handle ofh, int is32, int mode,
     switch( fmethod ) {
     case( FRAME_SEG ):                      /* segment index                */
         sh = findSegment( ofh, fidx );
-        if( !sh )
+        if( sh == NULL )
             return( ORL_ERROR );
         orel->frame = (orl_symbol_handle)(sh->assoc.seg.sym);
         break;
     case( FRAME_GRP ):                      /* group index                  */
         gr = findGroup( ofh, fidx );
-        if( !gr )
+        if( gr == NULL )
             return( ORL_ERROR );
         orel->frame = (orl_symbol_handle)(gr->sym);
         break;
     case( FRAME_EXT ):                      /* external index               */
         orel->frame = (orl_symbol_handle)(findExtDefSym( ofh, fidx ));
-        if( !orel->frame )
+        if( orel->frame == NULL )
             return( ORL_ERROR );
         break;
     case( FRAME_ABS ):                      /* absolute frame number        */
@@ -1314,7 +1291,6 @@ orl_return  OmfAddExtDef( omf_file_handle ofh, omf_string_struct *extname, omf_r
     assert( ofh );
     assert( extname );
 
-    typ = typ;
     styp = ORL_SYM_TYPE_OBJECT;
     if( ( typ == CMD_COMDEF ) || ( typ == CMD_LCOMDEF ) ) {
         styp |= ORL_SYM_TYPE_COMMON;
@@ -1322,7 +1298,7 @@ orl_return  OmfAddExtDef( omf_file_handle ofh, omf_string_struct *extname, omf_r
         styp |= ORL_SYM_TYPE_UNDEFINED;
     }
     sym = _NewSymbol( ofh, styp, extname );
-    if( !sym )
+    if( sym == NULL )
         return( ORL_OUT_OF_MEMORY );
 
     sym->idx = ofh->extdefs->assoc.string.num + 1;
@@ -1345,32 +1321,30 @@ orl_return  OmfAddExtDef( omf_file_handle ofh, omf_string_struct *extname, omf_r
 }
 
 
-orl_return              OmfAddComDat( omf_file_handle ofh, int is32, int flags,
-                                      int attr, int align,
-                                      orl_sec_offset offset, omf_idx seg,
-                                      omf_idx group, omf_frame frame,
-                                      omf_idx name, omf_bytes buffer, omf_rec_size len,
-                                      omf_rectyp typ )
+orl_return OmfAddComDat( omf_file_handle ofh, bool is32, int flags, int attr, int align,
+                        omf_sec_offset offset, omf_idx seg, omf_idx group, omf_frame frame,
+                        omf_idx name, omf_bytes buffer, omf_rec_size len, omf_rectyp typ )
 {
-    orl_return          err;
+    orl_return          return_val;
     omf_sec_handle      sh;
     omf_symbol_handle   sym;
     orl_symbol_type     styp;
-    orl_sec_offset      size;
+    omf_sec_offset      size;
     omf_string_struct   *comname;
 
-    typ = typ;
+    /* unused parameters */ (void)typ;
+
     assert( ofh );
     assert( buffer );
 
-    err = finishPrevWork( ofh );
-    if( err != ORL_OKAY )
-        return( err );
+    return_val = finishPrevWork( ofh );
+    if( return_val != ORL_OKAY )
+        return( return_val );
 
     if( align == -1 ) {
         if( seg ) {
             sh = findSegment( ofh, seg );
-            if( !sh )
+            if( sh == NULL )
                 return( ORL_ERROR );
             align = sh->assoc.seg.alignment;
         } else {
@@ -1380,14 +1354,14 @@ orl_return              OmfAddComDat( omf_file_handle ofh, int is32, int flags,
 
     if( flags & COMDAT_CONTINUE ) {
         sh = findComDatByName( ofh, name );
-        if( !sh ) {
+        if( sh == NULL ) {
             return( ORL_ERROR );
         }
     } else {
         /* Create new Comdat
          */
         sh = newComDatSection( ofh );
-        if( !sh )
+        if( sh == NULL )
             return( ORL_OUT_OF_MEMORY );
 
         sh->assoc.seg.name = name;
@@ -1405,7 +1379,7 @@ orl_return              OmfAddComDat( omf_file_handle ofh, int is32, int flags,
         switch( attr & COMDAT_ALLOC_MASK ) {
         case( COMDAT_EXPLICIT ):        /* in given segment */
             sh->assoc.seg.comdat.assoc_seg = findSegment( ofh, seg );
-            if( !sh->assoc.seg.comdat.assoc_seg )
+            if( sh->assoc.seg.comdat.assoc_seg == NULL )
                 return( ORL_ERROR );
             sh->flags |= sh->assoc.seg.comdat.assoc_seg->flags;
             sh->assoc.seg.combine |= ORL_SEC_COMBINE_COMDAT_ALLOC_EXPLIC;
@@ -1470,9 +1444,9 @@ orl_return              OmfAddComDat( omf_file_handle ofh, int is32, int flags,
             sym->binding = ORL_SYM_BINDING_GLOBAL;
         }
 
-        err = addToSymbolTable( ofh, sym );
-        if( err != ORL_OKAY ) {
-            return( err );
+        return_val = addToSymbolTable( ofh, sym );
+        if( return_val != ORL_OKAY ) {
+            return( return_val );
         }
     }
 
@@ -1482,21 +1456,18 @@ orl_return              OmfAddComDat( omf_file_handle ofh, int is32, int flags,
     }
 
     if( flags & COMDAT_ITERATED ) {
-        err = OmfAddLIData( ofh, is32, sh->assoc.seg.seg_id, offset, buffer, len, 1 );
+        return_val = OmfAddLIData( ofh, is32, sh->assoc.seg.seg_id, offset, buffer, len, true );
     } else {
-        err = OmfAddLEData( ofh, is32, sh->assoc.seg.seg_id, offset, buffer, len, 1 );
+        return_val = OmfAddLEData( ofh, is32, sh->assoc.seg.seg_id, offset, buffer, len, true );
     }
 
-    return( err );
+    return( return_val );
 }
 
 
-extern orl_return       OmfAddLineNum( omf_sec_handle sh, unsigned_16 line,
-                                       unsigned_32 offset )
+extern orl_return OmfAddLineNum( omf_sec_handle sh, unsigned_16 line, unsigned_32 offset )
 {
-    sh->assoc.seg.lines = checkArraySize( sh->omf_file_hnd, sh->assoc.seg.lines,
-                                          sh->assoc.seg.num_lines, STD_INC,
-                                          sizeof( orl_linnum ) );
+    sh->assoc.seg.lines = checkArraySize( sh->omf_file_hnd, sh->assoc.seg.lines, sh->assoc.seg.num_lines, STD_INC, sizeof( orl_linnum ) );
     if( sh->assoc.seg.lines == NULL )
         return( ORL_OUT_OF_MEMORY );
 
@@ -1508,11 +1479,9 @@ extern orl_return       OmfAddLineNum( omf_sec_handle sh, unsigned_16 line,
 }
 
 
-orl_return              OmfAddSegDef( omf_file_handle ofh, int is32,
-                                      orl_sec_alignment align, int combine,
-                                      int use32, int max, orl_sec_frame frame,
-                                      orl_sec_size size, omf_idx name,
-                                      omf_idx class )
+orl_return OmfAddSegDef( omf_file_handle ofh, bool is32, orl_sec_alignment align,
+                        int combine, bool use32, bool max_size, bool abs_frame,
+                        omf_frame frame, omf_sec_size size, omf_idx name, omf_idx class )
 {
     omf_sec_handle      sh;
     omf_symbol_handle   sym;
@@ -1521,7 +1490,7 @@ orl_return              OmfAddSegDef( omf_file_handle ofh, int is32,
     assert( ofh );
 
     sh = newSegSection( ofh, ORL_SEC_TYPE_PROG_BITS );
-    if( !sh )
+    if( sh == NULL )
         return( ORL_OUT_OF_MEMORY );
 
     sh->assoc.seg.name = name;
@@ -1534,11 +1503,11 @@ orl_return              OmfAddSegDef( omf_file_handle ofh, int is32,
         sh->assoc.seg.seg_flags |= OMF_SEG_IS_32;
     }
 
-    if( frame > ORL_SEC_NO_ABS_FRAME ) {
+    if( abs_frame ) {
         sh->assoc.seg.seg_flags |= OMF_SEG_IS_ABS;
     }
 
-    if( max ) {
+    if( max_size ) {
         sh->assoc.seg.seg_flags |= OMF_SEG_IS_BIG;
         if( is32 ) {
             sh->size = 0xffffffff;
@@ -1572,23 +1541,22 @@ orl_return              OmfAddSegDef( omf_file_handle ofh, int is32,
 }
 
 
-orl_return              OmfAddPubDef( omf_file_handle ofh, int is32,
-                                      omf_idx group, omf_idx seg,
-                                      omf_frame frame, char *buffer, omf_string_len len,
-                                      orl_sec_offset offset, omf_rectyp typ )
+orl_return OmfAddPubDef( omf_file_handle ofh, bool is32, omf_idx group, omf_idx seg, omf_frame frame,
+                            char *buffer, omf_string_len len, omf_sec_offset offset, omf_rectyp typ )
 {
     omf_symbol_handle   sym;
     orl_symbol_type     styp;
 
-    is32 = is32;
+    /* unused parameters */ (void)is32;
+
     assert( ofh );
     assert( buffer );
 
-    if( !seg && group ) {
+    if( seg == 0 && group != 0 ) {
         /* we currently don't handle this, presumably it does not occur.
          */
         return( ORL_ERROR );
-    } else if( !seg && !group ) {
+    } else if( seg == 0 && group == 0 ) {
         styp = ORL_SYM_TYPE_ABSOLUTE;
     } else {
         styp = ORL_SYM_TYPE_DEFINED;
@@ -1596,7 +1564,7 @@ orl_return              OmfAddPubDef( omf_file_handle ofh, int is32,
     styp |= ORL_SYM_TYPE_OBJECT;
 
     sym = newSymbol( ofh, styp, buffer, len );
-    if( !sym )
+    if( sym == NULL )
         return( ORL_OUT_OF_MEMORY );
 
     sym->seg = seg;
@@ -1618,7 +1586,7 @@ orl_return              OmfAddPubDef( omf_file_handle ofh, int is32,
 }
 
 
-orl_return  OmfAddGrpDef( omf_file_handle ofh, omf_idx name, omf_idx *segs, int size )
+orl_return  OmfAddGrpDef( omf_file_handle ofh, omf_idx name, omf_idx *segs, unsigned num_segs )
 {
     omf_symbol_handle   sym;
     omf_sec_handle      sh;
@@ -1628,21 +1596,21 @@ orl_return  OmfAddGrpDef( omf_file_handle ofh, omf_idx name, omf_idx *segs, int 
     assert( ofh );
     assert( segs );
 
-    if( !name )
+    if( name == 0 )
         return( ORL_ERROR );
 
     gr = newGroup( ofh );
-    if( !gr )
+    if( gr == NULL )
         return( ORL_OUT_OF_MEMORY );
 
+    gr->num_segs = num_segs;
     gr->segs = segs;
     gr->name = name;
-    gr->size = size;
 
-    while( size ) {
-        size--;
-        sh = findSegment( ofh, segs[size] );
-        if( !sh )
+    while( num_segs > 0 ) {
+        num_segs--;
+        sh = findSegment( ofh, segs[num_segs] );
+        if( sh == NULL )
             return( ORL_ERROR );
         sh->flags |= ORL_SEC_FLAG_GROUPED;
         sh->assoc.seg.group = gr;
@@ -1653,7 +1621,7 @@ orl_return  OmfAddGrpDef( omf_file_handle ofh, omf_idx name, omf_idx *segs, int 
         return( ORL_ERROR );
 
     sym = _NewSymbol( ofh, ORL_SYM_TYPE_GROUP, grpname );
-    if( !sym )
+    if( sym == NULL )
         return( ORL_OUT_OF_MEMORY );
 
     sym->flags |= OMF_SYM_FLAGS_GRPDEF;
@@ -1666,16 +1634,16 @@ orl_return  OmfAddGrpDef( omf_file_handle ofh, omf_idx name, omf_idx *segs, int 
 
 orl_return      OmfModEnd( omf_file_handle ofh )
 {
-    orl_return          err;
+    orl_return          return_val;
 
     assert( ofh );
 
-    err = finishPrevWork( ofh );
-    return( err );
+    return_val = finishPrevWork( ofh );
+    return( return_val );
 }
 
 
-orl_return  OmfAddComment( omf_file_handle ofh, uint_8 class, uint_8 flags, omf_bytes buff, omf_rec_size len )
+orl_return  OmfAddComment( omf_file_handle ofh, unsigned_8 class, unsigned_8 flags, omf_bytes buff, omf_rec_size len )
 {
     omf_sec_handle      sh;
     omf_comment_struct  *comment;
@@ -1684,18 +1652,16 @@ orl_return  OmfAddComment( omf_file_handle ofh, uint_8 class, uint_8 flags, omf_
     assert( buff );
 
     sh = ofh->comments;
-    if( !sh ) {
+    if( sh == NULL ) {
         sh = newSection( ofh, OMF_SEC_COMMENT_INDEX, ORL_SEC_TYPE_NOTE );
-        if( !sh )
+        if( sh == NULL )
             return( ORL_OUT_OF_MEMORY );
         sh->flags |= ORL_SEC_FLAG_REMOVE;
         ofh->comments = sh;
     }
 
-    sh->assoc.comment.comments = checkArraySize(ofh, sh->assoc.comment.comments,
-                                                sh->assoc.comment.num, STD_INC,
-                                                sizeof( omf_comment_struct * ) );
-    if( !sh->assoc.comment.comments )
+    sh->assoc.comment.comments = checkArraySize( ofh, sh->assoc.comment.comments, sh->assoc.comment.num, STD_INC, sizeof( omf_comment_struct * ) );
+    if( sh->assoc.comment.comments == NULL )
         return( ORL_OUT_OF_MEMORY );
 
     comment = _ClientAlloc( ofh, sizeof( omf_comment_struct ) + len );
@@ -1729,8 +1695,7 @@ omf_string_struct *OmfGetLName( omf_sec_handle lnames, omf_idx idx )
 }
 
 
-omf_sec_handle          OmfFindSegOrComdat( omf_file_handle ofh, omf_idx seg,
-                                            omf_idx comdat_lname )
+omf_sec_handle OmfFindSegOrComdat( omf_file_handle ofh, omf_idx seg, omf_idx comdat_lname )
 {
     omf_quantity        x;
 
@@ -1764,13 +1729,13 @@ orl_return      OmfExportSegmentContents( omf_sec_handle sh )
 
 orl_return      OmfTheadr( omf_file_handle ofh )
 {
-    orl_return          err;
+    orl_return          return_val;
     omf_bytes           buffer;
     omf_string_len      len;
 
-    err = finishPrevWork( ofh );
-    if( err != ORL_OKAY )
-        return( err );
+    return_val = finishPrevWork( ofh );
+    if( return_val != ORL_OKAY )
+        return( return_val );
     buffer = ofh->parsebuf;
     len = *buffer++;
     if( len > ofh->parselen )

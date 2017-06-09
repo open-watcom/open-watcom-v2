@@ -36,14 +36,20 @@
 #include "reserr.h"
 #include "wresrtns.h"
 
-#include "clibext.h"
-
 
 #define UINT16_MAXDIGITS    5
 #define UINT32_MAXDIGITS    9
 
-char * WResIDToStr( const WResID * name )
-/***************************************/
+static char *u32tostr( char *buf, uint_32 num )
+{
+    if( num > 9 )
+        buf = u32tostr( buf, num / 10 );
+    *buf++ = ( num % 10 ) + '0';
+    return( buf );
+}
+
+char *WResIDToStr( const WResID *name )
+/*************************************/
 /* return the value in an ID if it is a string, NULL otherwise */
 {
     char *      string;
@@ -63,7 +69,7 @@ char * WResIDToStr( const WResID * name )
         if( string == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
-            itoa( name->ID.Num, string, 10 );
+            *u32tostr( string, name->ID.Num ) = '\0';
         }
     }
 
@@ -71,8 +77,8 @@ char * WResIDToStr( const WResID * name )
 } /* WResIDToStr */
 
 
-char * WResHelpIDToStr( const WResHelpID * name )
-/***************************************/
+char *WResHelpIDToStr( const WResHelpID *name )
+/*********************************************/
 /* return the value in a Help ID if it is a string, NULL otherwise */
 {
     char *string;
@@ -92,7 +98,7 @@ char * WResHelpIDToStr( const WResHelpID * name )
         if( string == NULL ) {
             WRES_ERROR( WRS_MALLOC_FAILED );
         } else {
-            itoa( name->ID.Num, string, 10 );
+            *u32tostr( string, name->ID.Num ) = '\0';
         }
     }
 

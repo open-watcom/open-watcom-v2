@@ -83,8 +83,7 @@ static size_t WdeCalcSizeOfControlClass( ControlClass *name, bool is32bit )
     return( size );
 }
 
-static size_t WdeCalcSizeOfDialogBoxControl( WdeDialogBoxControl *control,
-                                              bool is32bit, bool is32bitEx )
+static size_t WdeCalcSizeOfDialogBoxControl( ControlClass *ClassID, ResNameOrOrdinal *Text, bool is32bit, bool is32bitEx )
 {
     size_t size;
 
@@ -102,21 +101,21 @@ static size_t WdeCalcSizeOfDialogBoxControl( WdeDialogBoxControl *control,
         size += sizeof( uint_8 );   /* Extra bytes */
     }
 
-    size += WdeCalcSizeOfControlClass( GETCTL_CLASSID( control ), is32bit );
+    size += WdeCalcSizeOfControlClass( ClassID, is32bit );
 
-    size += WdeCalcSizeOfResNameOrOrdinal( GETCTL_TEXT( control ), is32bit );
+    size += WdeCalcSizeOfResNameOrOrdinal( Text, is32bit );
 
     return( size );
 }
 
-static size_t WdeCalcSizeOfDialogBoxHeader( WdeDialogBoxHeader *header )
+static size_t WdeCalcSizeOfDialogBoxHeader( ResNameOrOrdinal *MenuName, ResNameOrOrdinal *ClassName, char *Caption, char *FontName, bool is32bit, bool is32bitEx )
 {
     size_t size;
 
-    if( header->is32bitEx ) {
+    if( is32bitEx ) {
         // fix part of DialogBoxExHeader32 (up to MenuName)
         size = 7 * sizeof( uint_16 ) + 3 * sizeof( uint_32 );
-    } else if( header->is32bit ) {
+    } else if( is32bit ) {
         // fix part of DialogBoxHeader32 (up to MenuName)
         size = 5 * sizeof( uint_16 ) + 2 * sizeof( uint_32 );
     } else {
@@ -124,22 +123,22 @@ static size_t WdeCalcSizeOfDialogBoxHeader( WdeDialogBoxHeader *header )
         size = 1 * sizeof( uint_8 ) + 4 * sizeof( uint_16 ) + 1 * sizeof( uint_32 );
     }
 
-    size += WdeCalcSizeOfResNameOrOrdinal( GETHDR_MENUNAME( header ), header->is32bit );
+    size += WdeCalcSizeOfResNameOrOrdinal( MenuName, is32bit );
 
-    size += WdeCalcSizeOfResNameOrOrdinal( GETHDR_CLASSNAME( header ), header->is32bit );
+    size += WdeCalcSizeOfResNameOrOrdinal( ClassName, is32bit );
 
-    size += WdeCalcStrlen( GETHDR_CAPTION( header ), header->is32bit );
+    size += WdeCalcStrlen( Caption, is32bit );
 
-    if( GETHDR_STYLE( header ) & DS_SETFONT ) {
+    if( FontName != NULL ) {
         size += sizeof( uint_16 );      /* PointSize */
 
-        if( header->is32bitEx ) {
+        if( is32bitEx ) {
             size += sizeof( uint_16 );  /* FontWeight */
             size += sizeof( uint_8 );   /* FontItalic */
             size += sizeof( uint_8 );   /* FontCharset */
         }
 
-        size += WdeCalcStrlen( GETHDR_FONTNAME( header ), header->is32bit );
+        size += WdeCalcStrlen( FontName, is32bit );
     }
 
     return( size );
@@ -150,22 +149,21 @@ size_t WdeCalcSizeOfWdeDialogBoxInfo( WdeDialogBoxInfo *info )
     size_t              size;
     size_t              csize;
     LIST                *clist;
-    WdeDialogBoxControl *control;
     bool                is32bit;
     bool                is32bitEx;
 
-    is32bit = info->dialog_header->is32bit;
-    is32bitEx = info->dialog_header->is32bitEx;
+    #define h   (info->dialog_header)
+    #define c   ((WdeDialogBoxControl *)ListElement( clist ))
 
     if( info == NULL ) {
         return( 0 );
     }
-
-    size = WdeCalcSizeOfDialogBoxHeader( info->dialog_header );
-
-    for( clist = info->control_list; clist; clist = ListNext( clist ) ) {
-        control = (WdeDialogBoxControl *)ListElement( clist );
-        csize = WdeCalcSizeOfDialogBoxControl( control, is32bit, is32bitEx );
+    is32bit = h->is32bit;
+    is32bitEx = h->is32bitEx;
+    size = WdeCalcSizeOfDialogBoxHeader( GETHDR_MENUNAME( h ), GETHDR_CLASSNAME( h ),
+                                        GETHDR_CAPTION( h ), GETHDR_FONTFACENAME( h ), is32bit, is32bitEx );
+    for( clist = info->control_list; clist != NULL; clist = ListNext( clist ) ) {
+        csize = WdeCalcSizeOfDialogBoxControl( GETCTL_CLASSID( c ), GETCTL_TEXT( c ), is32bit, is32bitEx );
         if( csize == 0 ) {
             return( 0 );
         }
@@ -174,7 +172,6 @@ size_t WdeCalcSizeOfWdeDialogBoxInfo( WdeDialogBoxInfo *info )
         }
         size = size + csize;
     }
-
     if( is32bit ) {
         size = size + CALC_PAD( size, sizeof( uint_32 ) );
     }

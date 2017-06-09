@@ -95,7 +95,8 @@ POOL_CON *ConPoolInt64Add       // ADD AN INT-64 CONSTANT
 static void conPoolsInit(       // INITIALIZE CONSTANT POOLS
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     pool_float = NULL;
     pool_int64 = NULL;
     carvePOOL_CON = CarveCreate( sizeof( POOL_CON ), 64 );
@@ -105,8 +106,8 @@ static void conPoolsInit(       // INITIALIZE CONSTANT POOLS
 static void conPoolsFini(       // COMPLETE CONSTANT POOLS
     INITFINI* defn )            // - definition
 {
+    /* unused parameters */ (void)defn;
 
-    defn = defn;
     CarveDestroy( carvePOOL_CON );
 }
 

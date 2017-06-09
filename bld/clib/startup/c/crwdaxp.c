@@ -33,14 +33,14 @@
 #include <wchar.h>
 #include "rtdata.h"
 
-_WCRTDATA unsigned int      _dynend;        // top of dynamic data area
+          unsigned int      _dynend;        // top of dynamic data area
 _WCRTDATA unsigned int      _curbrk;        // top of usable memory
 _WCRTDATA char              *_LpCmdLine;    // pointer to raw command line
 _WCRTDATA char              *_LpPgmName;    // pointer to program name (for argv[0])
-_WCRTDATA char              *_LpDllName;    // pointer to dll name (for OS/2, Win32)
+          char              *_LpDllName;    // pointer to dll name (for OS/2, Win32)
 _WCRTDATA wchar_t           *_LpwCmdLine;   // pointer to wide raw command line
 _WCRTDATA wchar_t           *_LpwPgmName;   // pointer to wide program name (for argv[0])
-_WCRTDATA wchar_t           *_LpwDllName;   // pointer to wide dll name (for OS/2, Win32)
+          wchar_t           *_LpwDllName;   // pointer to wide dll name (for OS/2, Win32)
 _WCRTDATA unsigned int      _STACKLOW;      // lowest address in stack
 _WCRTDATA unsigned int      _STACKTOP;      // highest address in stack
 _WCRTDATA void              *__ASTACKSIZ;   // alternate stack size

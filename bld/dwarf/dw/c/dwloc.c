@@ -138,7 +138,8 @@ dw_loc_label DWENTRY DWLocNewLabel( dw_client cli, dw_loc_id loc )
 
 void DWENTRY DWLocSetLabel( dw_client cli, dw_loc_id loc, dw_loc_label label )
 {
-    cli = cli;
+    /* unused parameters */ (void)cli;
+
     label->addr = loc->addr;
 }
 

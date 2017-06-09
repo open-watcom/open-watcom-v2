@@ -41,18 +41,16 @@
 #include "insutil.h"
 #include "index.h"
 #include "fixindex.h"
+#include "conflict.h"
 #include "feprotos.h"
 
 
 extern  opcode_entry    String[];
 
 extern  bool            SegOver(name*);
-extern  conflict_node   *NameConflict(instruction*,name*);
 extern  name            *Addressable(name*,type_class_def);
 extern  name            *GetSegment(name*);
 extern  name            *NearSegment(void);
-extern  reg_set_index   MarkIndex(instruction*,name*,bool);
-extern  void            MarkSegment(instruction*,name*);
 extern  void            NoMemIndex(instruction*);
 extern  bool            FPCInCode( void );
 extern  void            ExpandThreadDataRef(instruction*);
@@ -74,7 +72,7 @@ instruction     *NeedIndex( instruction *ins ) {
     conflict_node       *conf;
     name                *name;
 
-    if( ins->num_operands > NumOperands( ins ) ) {
+    if( ins->num_operands > OpcodeNumOperands( ins ) ) {
         name = ins->operands[ins->num_operands - 1];
         conf = NameConflict( ins, name );
         if( conf != NULL && _Isnt( conf, CST_NEEDS_SEGMENT_SPLIT ) ) {
@@ -184,7 +182,7 @@ static  name    *FindSegment( instruction *ins ) {
     name        *index;
     int         i;
 
-    if( ins->num_operands > NumOperands( ins ) )
+    if( ins->num_operands > OpcodeNumOperands( ins ) )
         return( NULL );
     if( ins->type_class == XX ) {
         if( ins->head.opcode != OP_CALL_INDIRECT ) {
@@ -320,12 +318,12 @@ void    FixSegments( void ) {
              */
 #define ANY_FLOATING (FLOATING_DS|FLOATING_ES|FLOATING_FS|FLOATING_GS)
 #if _TARGET & _TARG_80386
-            if( _IsntTargetModel( ANY_FLOATING ) && ins->num_operands > NumOperands( ins )
+            if( _IsntTargetModel( ANY_FLOATING ) && ins->num_operands > OpcodeNumOperands( ins )
                  && !(_IsTargetModel( FLAT_MODEL ) &&
                 (ins->operands[ins->num_operands - 1]->n.class == N_REGISTER) &&
                 HW_CEqual( ins->operands[ins->num_operands - 1]->r.reg, HW_CS )) ) {
 #else
-            if( _IsntTargetModel( ANY_FLOATING ) && ins->num_operands > NumOperands( ins ) ) {
+            if( _IsntTargetModel( ANY_FLOATING ) && ins->num_operands > OpcodeNumOperands( ins ) ) {
 #endif
                 /* throw away override */
                 ins->num_operands--;
@@ -364,9 +362,9 @@ void    MergeIndex( void ) {
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
-            if( NumOperands( ins ) < ins->num_operands ) {
+            if( OpcodeNumOperands( ins ) < ins->num_operands ) {
                 dec = false;
-                for( i = NumOperands( ins ); i-- > 0; ) {
+                for( i = OpcodeNumOperands( ins ); i-- > 0; ) {
                     name = &ins->operands[i];
                     if( (*name)->n.class == N_INDEXED ) {
                         Merge( name, ins );
@@ -434,7 +432,9 @@ void    FixChoices( void ) {
                 for(;;) {
                     alias = alias->t.alias;
                     alias->t.possible = NoSegments( alias->t.possible );
-                    if( alias == temp ) break;
+                    if( alias == temp ) {
+                        break;
+                    }
                 }
             }
 #else

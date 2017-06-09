@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  shrink a based heap as small as possible
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -45,5 +45,5 @@ _WCRTLINK int _bheapmin( __segment seg )
 {
     if( seg == _DGroup() )
         return( _nheapshrink() );
-    return( __HeapMin( (seg == _NULLSEG ? __bheap : seg), (seg != _NULLSEG) ) );
+    return( __HeapMin( (seg == _NULLSEG ? __bheapbeg : seg), seg ) );
 }

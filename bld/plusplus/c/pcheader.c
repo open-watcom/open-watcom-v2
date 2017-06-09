@@ -294,7 +294,7 @@ static void alignPCH( unsigned i, bool writing )
         }
     }
 #else
-    i = i;
+    /* unused parameters */ (void)i;
 #endif
 }
 
@@ -617,7 +617,7 @@ void PCHWarn2p( MSG_NUM msg, void *p )
 
 static bool checkCompFlags( COMP_FLAGS *testflags )
 {
-    #define _VERIFY_FLAG( f ) if( testflags->f ^ CompFlags.f ) return( true );
+    #define _VERIFY_FLAG( f ) if( testflags->f ^ CompFlags.f ) return( true )
     _VERIFY_FLAG( signed_char );
     _VERIFY_FLAG( original_enum_setting );
     _VERIFY_FLAG( excs_enabled );
@@ -626,7 +626,6 @@ static bool checkCompFlags( COMP_FLAGS *testflags )
     _VERIFY_FLAG( pch_debug_info_opt );
     _VERIFY_FLAG( register_conventions );
     _VERIFY_FLAG( extensions_enabled );
-    _VERIFY_FLAG( disable_ialias );
     _VERIFY_FLAG( cpp_ignore_env );
     _VERIFY_FLAG( ignore_default_dirs );
     #undef _VERIFY_FLAG
@@ -636,7 +635,7 @@ static bool checkCompFlags( COMP_FLAGS *testflags )
 static void transferCompFlags( COMP_FLAGS *testflags )
 {
     // flags that can be changed in header files usually go here
-    #define _COPY_FLAG( f ) CompFlags.f=0;if( testflags->f )CompFlags.f=1;
+    #define _COPY_FLAG( f ) CompFlags.f = testflags->f
     _COPY_FLAG( float_used );
     _COPY_FLAG( external_defn_found );
     _COPY_FLAG( main_has_parms );
@@ -653,7 +652,7 @@ static void transferCompFlags( COMP_FLAGS *testflags )
 
 static bool stringIsDifferent( const char *from_pch, const char *curr, unsigned msg )
 {
-    if( ! CompFlags.pch_min_check ) {
+    if( !CompFlags.pch_min_check ) {
         if( FNAMECMPSTR( from_pch, curr ) != 0 ) {
             pchWarn( msg );
             return( true );
@@ -750,7 +749,7 @@ static bool stalePCH( char *include_file )
     return( false );
 }
 
-static unsigned readBuffer( unsigned left_check )
+static unsigned pchReadBuffer( unsigned left_check )
 {
     unsigned left;
 
@@ -766,7 +765,7 @@ static unsigned initialRead( void )
     unsigned left;
 
     DbgAssert( pch_buff_eob == pch_buff_cur );
-    left = readBuffer( -1 );
+    left = pchReadBuffer( -1 );
     pch_buff_cur = ioBuffer;
     return( left );
 }
@@ -868,7 +867,7 @@ void *PCHRead( void *p, unsigned size )
         p = (char *)p + left;
         size -= left;
         aligned_size -= left;
-        left = readBuffer( 0 );
+        left = pchReadBuffer( 0 );
         buff_ptr = ioBuffer;
         DbgAssert( ( aligned_size % PCH_ALIGN ) == 0 );
     }
@@ -892,7 +891,7 @@ void *PCHReadUnaligned( void *p, unsigned size )
         p = memcpy( p, buff_ptr, left );
         p = (char *)p + left;
         size -= left;
-        left = readBuffer( 0 );
+        left = pchReadBuffer( 0 );
         buff_ptr = ioBuffer;
     }
     memcpy( p, buff_ptr, size );
@@ -998,14 +997,16 @@ pch_status PCHWriteVerify( void )
 pch_status PCHInitVerify( bool writing )
 /**************************************/
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniVerify( bool writing )
 /**************************************/
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
@@ -1103,7 +1104,8 @@ static void pchInit( INITFINI* defn )
 {
     pch_reloc_info *cri;
 
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     pchName = NULL;
     pchDebugInfoName = NULL;
     for( cri = relocInfo; cri < &relocInfo[ PCHRELOC_MAX ]; ++cri ) {
@@ -1121,7 +1123,8 @@ static void pchInit( INITFINI* defn )
 
 static void pchFini( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CMemFreePtr( &pchName );
 }
 

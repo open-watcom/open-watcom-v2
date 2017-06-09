@@ -1,4 +1,4 @@
-#pmake: debug flat cpu_386 os_os2
+#pmake: nobuild debug flat cpu_386 os_os2
 #
 # cont3r.lib -- register based 32-bit CONTAINER library
 #

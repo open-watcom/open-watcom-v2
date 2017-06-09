@@ -190,9 +190,9 @@ static void determine_file_class( elf_file_handle elf_file_hnd, Elf32_Ehdr *e_hd
 }
 
 
-static void determine_file_specs( elf_file_handle elf_file_hnd, Elf32_Ehdr *e_hdr )
+static void determine_file_specs( elf_file_handle elf_file_hnd, elf_half e_machine, elf_half e_type )
 {
-    switch( e_hdr->e_machine ) {
+    switch( e_machine ) {
     case EM_M32:
         elf_file_hnd->machine_type = ORL_MACHINE_TYPE_WE_2100;
         break;
@@ -229,7 +229,7 @@ static void determine_file_specs( elf_file_handle elf_file_hnd, Elf32_Ehdr *e_hd
     default:
         elf_file_hnd->machine_type = ORL_MACHINE_TYPE_NONE;
     }
-    switch( e_hdr->e_type ) {
+    switch( e_type ) {
     case ET_REL:
         elf_file_hnd->type = ORL_FILE_TYPE_OBJECT;
         break;
@@ -250,7 +250,7 @@ static void determine_file_specs( elf_file_handle elf_file_hnd, Elf32_Ehdr *e_hd
 }
 
 
-static void determine_section_specs( elf_sec_handle elf_sec_hnd, int sh_type, unsigned_32 sh_flags )
+static void determine_section_specs( elf_sec_handle elf_sec_hnd, elf_word sh_type, unsigned_32 sh_flags )
 {
     elf_sec_hnd->flags = ORL_SEC_FLAG_READ_PERMISSION;
     switch( sh_type ) {
@@ -309,7 +309,7 @@ static void determine_section_specs( elf_sec_handle elf_sec_hnd, int sh_type, un
     if( sh_flags & SHF_WRITE ) {
         elf_sec_hnd->flags |= ORL_SEC_FLAG_WRITE_PERMISSION;
     }
-    if( !(sh_flags & SHF_ALLOC) ) {
+    if( (sh_flags & SHF_ALLOC) == 0 ) {
         elf_sec_hnd->flags |= ORL_SEC_FLAG_REMOVE;
     }
     if( sh_flags & SHF_EXECINSTR ) {
@@ -319,99 +319,101 @@ static void determine_section_specs( elf_sec_handle elf_sec_hnd, int sh_type, un
 }
 
 
-static void free_elf_sec_handles( elf_file_handle elf_file_hnd, int num_alloced )
+static void free_elf_sec_handles( elf_file_handle elf_file_hnd, elf_quantity num_alloced )
 {
-    int         loop;
+    elf_quantity    i;
 
-    if( elf_file_hnd->elf_sec_hnd != NULL ) {
-        for( loop = 0; loop < num_alloced; loop++ ) {
-            _ClientFree( elf_file_hnd, elf_file_hnd->elf_sec_hnd[loop] );
+    if( elf_file_hnd->sec_handles != NULL ) {
+        for( i = 0; i < num_alloced; i++ ) {
+            _ClientFree( elf_file_hnd, elf_file_hnd->sec_handles[i] );
         }
-        _ClientFree( elf_file_hnd, elf_file_hnd->elf_sec_hnd );
+        _ClientFree( elf_file_hnd, elf_file_hnd->sec_handles );
     } else {
-        for( loop = 0; loop < num_alloced; loop++ ) {
-            _ClientFree( elf_file_hnd, elf_file_hnd->orig_sec_hnd[loop] );
+        for( i = 0; i < num_alloced; i++ ) {
+            _ClientFree( elf_file_hnd, elf_file_hnd->orig_sec_handles[i] );
         }
     }
-    _ClientFree( elf_file_hnd, elf_file_hnd->orig_sec_hnd );
+    _ClientFree( elf_file_hnd, elf_file_hnd->orig_sec_handles );
 }
 
 
-static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, orl_sec_offset *name_index, char *s_hdr )
+static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index *name_index, char *s_hdr )
 {
     Elf32_Shdr          *s_hdr32;
     Elf64_Shdr          *s_hdr64;
     elf_sec_handle      elf_sec_hnd;
-    int                 loop;
-    orl_sec_offset      *associated_index;
-    orl_sec_offset      *associated2_index;
+    elf_quantity        i;
+    elf_index           *associated_index;
+    elf_index           *associated2_index;
     unsigned_32         sh_align;
-    unsigned_32         sh_type;
-    unsigned_32         sh_link;
-    unsigned_32         sh_info;
+    elf_word            sh_type;
+    elf_index           sh_link;
+    elf_index           sh_info;
     unsigned_32         sh_flags;
-    unsigned_64         sh_size;
 
-    associated_index = (orl_sec_offset *)_ClientAlloc( elf_file_hnd, sizeof( Elf64_Word ) * elf_file_hnd->num_sections );
+    associated_index = (elf_index *)_ClientAlloc( elf_file_hnd, sizeof( elf_index ) * elf_file_hnd->num_sections );
     if( associated_index == NULL )
         return( ORL_OUT_OF_MEMORY );
-    associated2_index = (orl_sec_offset *)_ClientAlloc( elf_file_hnd, sizeof( Elf64_Word ) * elf_file_hnd->num_sections );
+    associated2_index = (elf_index *)_ClientAlloc( elf_file_hnd, sizeof( elf_index ) * elf_file_hnd->num_sections );
     if( associated2_index == NULL ) {
         _ClientFree( elf_file_hnd, associated_index );
         return( ORL_OUT_OF_MEMORY );
     }
     elf_file_hnd->symbol_table = NULL;
-    elf_file_hnd->elf_sec_hnd = NULL;
-    elf_file_hnd->orig_sec_hnd = (elf_sec_handle *)_ClientAlloc( elf_file_hnd, sizeof( elf_sec_handle ) * elf_file_hnd->num_sections );
-    if( elf_file_hnd->orig_sec_hnd == NULL ) {
+    elf_file_hnd->sec_handles = NULL;
+    elf_file_hnd->orig_sec_handles = (elf_sec_handle *)_ClientAlloc( elf_file_hnd, sizeof( elf_sec_handle ) * elf_file_hnd->num_sections );
+    if( elf_file_hnd->orig_sec_handles == NULL ) {
         _ClientFree( elf_file_hnd, associated_index );
         _ClientFree( elf_file_hnd, associated2_index );
         return( ORL_OUT_OF_MEMORY );
     }
     s_hdr += elf_file_hnd->shentsize; // skip over index 0
-    for( loop = 0; loop < elf_file_hnd->num_sections; loop++ ) {
+    for( i = 0; i < elf_file_hnd->num_sections; ++i ) {
         elf_sec_hnd = (elf_sec_handle)_ClientAlloc( elf_file_hnd, sizeof( elf_sec_handle_struct ) );
         if( elf_sec_hnd == NULL ) {
-            free_elf_sec_handles( elf_file_hnd, loop );
+            free_elf_sec_handles( elf_file_hnd, i );
             _ClientFree( elf_file_hnd, associated_index );
             _ClientFree( elf_file_hnd, associated2_index );
-            _ClientFree( elf_file_hnd, elf_file_hnd->orig_sec_hnd );
+            _ClientFree( elf_file_hnd, elf_file_hnd->orig_sec_handles );
             return( ORL_OUT_OF_MEMORY );
         }
-        elf_file_hnd->orig_sec_hnd[loop] = elf_sec_hnd;
+        elf_file_hnd->orig_sec_handles[i] = elf_sec_hnd;
         elf_sec_hnd->file_format = ORL_ELF;
         elf_sec_hnd->elf_file_hnd = elf_file_hnd;
-        elf_sec_hnd->index = loop + 1;
+        elf_sec_hnd->index = i + 1;
 
         if( elf_file_hnd->flags & ORL_FILE_FLAG_64BIT_MACHINE ) {
             s_hdr64 = (Elf64_Shdr *)s_hdr;
             fix_shdr64_byte_order( elf_file_hnd, s_hdr64 );
-            name_index[loop] = s_hdr64->sh_name;
-            elf_sec_hnd->size = s_hdr64->sh_size.u._32[I64LO32];
-            elf_sec_hnd->base = s_hdr64->sh_addr.u._32[I64LO32];
-            elf_sec_hnd->offset = s_hdr64->sh_offset.u._32[I64LO32];
-            elf_sec_hnd->entsize = s_hdr64->sh_entsize.u._32[I64LO32];
+            name_index[i] = s_hdr64->sh_name;
+            elf_sec_hnd->size.u._32[I64HI32] = s_hdr64->sh_size.u._32[I64HI32];
+            elf_sec_hnd->size.u._32[I64LO32] = s_hdr64->sh_size.u._32[I64LO32];
+            elf_sec_hnd->base.u._32[I64HI32] = s_hdr64->sh_addr.u._32[I64HI32];
+            elf_sec_hnd->base.u._32[I64LO32] = s_hdr64->sh_addr.u._32[I64LO32];
+            elf_sec_hnd->file_offset = s_hdr64->sh_offset.u._32[I64LO32];
+            elf_sec_hnd->entsize.u._32[I64HI32] = s_hdr64->sh_entsize.u._32[I64HI32];
+            elf_sec_hnd->entsize.u._32[I64LO32] = s_hdr64->sh_entsize.u._32[I64LO32];
             sh_align = s_hdr64->sh_addralign.u._32[I64LO32];
             sh_flags = s_hdr64->sh_flags.u._32[I64LO32];
             sh_type = s_hdr64->sh_type;
             sh_link = s_hdr64->sh_link;
             sh_info = s_hdr64->sh_info;
-            sh_size = s_hdr64->sh_size;
         } else {
             s_hdr32 = (Elf32_Shdr *)s_hdr;
             fix_shdr_byte_order( elf_file_hnd, s_hdr32 );
-            name_index[loop] = s_hdr32->sh_name;
-            elf_sec_hnd->size = s_hdr32->sh_size;
-            elf_sec_hnd->base = s_hdr32->sh_addr;
-            elf_sec_hnd->offset = s_hdr32->sh_offset;
-            elf_sec_hnd->entsize = s_hdr32->sh_entsize;
+            name_index[i] = s_hdr32->sh_name;
+            elf_sec_hnd->size.u._32[I64HI32] = 0;
+            elf_sec_hnd->size.u._32[I64LO32] = s_hdr32->sh_size;
+            elf_sec_hnd->base.u._32[I64HI32] = 0;
+            elf_sec_hnd->base.u._32[I64LO32] = s_hdr32->sh_addr;
+            elf_sec_hnd->file_offset = s_hdr32->sh_offset;
+            elf_sec_hnd->entsize.u._32[I64HI32] = 0;
+            elf_sec_hnd->entsize.u._32[I64LO32] = s_hdr32->sh_entsize;
             sh_align = s_hdr32->sh_addralign;
             sh_flags = s_hdr32->sh_flags;
             sh_type = s_hdr32->sh_type;
             sh_link = s_hdr32->sh_link;
             sh_info = s_hdr32->sh_info;
-            sh_size.u._32[I64LO32] = s_hdr32->sh_size;
-            sh_size.u._32[I64HI32] = 0;
         }
         switch( sh_align ) {
         case 0:
@@ -452,19 +454,19 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, orl_sec_of
         case ORL_SEC_TYPE_DYN_SYM_TABLE:
         case ORL_SEC_TYPE_IMPORT:
         case ORL_SEC_TYPE_EXPORT:
-            associated_index[loop] = sh_link - 1;
+            associated_index[i] = sh_link - 1;
             break;
         case ORL_SEC_TYPE_RELOCS:
         case ORL_SEC_TYPE_RELOCS_EXPADD:
             // Certain funky toolchains produce two reloc sections for each
             // section containing relocations (both .rel and .rela) and one of
             // them is empty. We have to ignore the empty one!
-            if( sh_size.u._32[I64LO32] != 0 || sh_size.u._32[I64HI32] != 0 ) {
-                associated_index[loop] = sh_info - 1;
-                associated2_index[loop] = sh_link - 1;
+            if( elf_sec_hnd->size.u._32[I64LO32] != 0 || elf_sec_hnd->size.u._32[I64HI32] != 0 ) {
+                associated_index[i] = sh_info - 1;
+                associated2_index[i] = sh_link - 1;
             } else {
-                associated_index[loop] = (orl_sec_offset)-1;
-                associated2_index[loop] = (orl_sec_offset)-1;
+                associated_index[i] = (elf_index)-1;
+                associated2_index[i] = (elf_index)-1;
             }
             break;
         default:
@@ -472,64 +474,59 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, orl_sec_of
         }
         s_hdr += elf_file_hnd->shentsize;
     }
-    for( loop = 0; loop < elf_file_hnd->num_sections; loop++ ) {
-        elf_sec_hnd = elf_file_hnd->orig_sec_hnd[loop];
+    for( i = 0; i < elf_file_hnd->num_sections; ++i ) {
+        elf_sec_hnd = elf_file_hnd->orig_sec_handles[i];
         switch( elf_sec_hnd->type ) {
         case ORL_SEC_TYPE_SYM_TABLE:
         case ORL_SEC_TYPE_DYN_SYM_TABLE:
-            elf_sec_hnd->assoc.sym.string_table = elf_file_hnd->orig_sec_hnd[associated_index[loop]];
+            elf_sec_hnd->assoc.sym.string_table = elf_file_hnd->orig_sec_handles[associated_index[i]];
             break;
         case ORL_SEC_TYPE_IMPORT:
-            elf_sec_hnd->assoc.import.string_table = elf_file_hnd->orig_sec_hnd[associated_index[loop]];
+            elf_sec_hnd->assoc.import.string_table = elf_file_hnd->orig_sec_handles[associated_index[i]];
             break;
         case ORL_SEC_TYPE_EXPORT:
-            elf_sec_hnd->assoc.export.symbol_table = elf_file_hnd->orig_sec_hnd[associated_index[loop]];
+            elf_sec_hnd->assoc.export.symbol_table = elf_file_hnd->orig_sec_handles[associated_index[i]];
             break;
         case ORL_SEC_TYPE_RELOCS:
         case ORL_SEC_TYPE_RELOCS_EXPADD:
-            elf_sec_hnd->assoc.reloc.symbol_table = elf_file_hnd->orig_sec_hnd[associated2_index[loop]];
+            elf_sec_hnd->assoc.reloc.symbol_table = elf_file_hnd->orig_sec_handles[associated2_index[i]];
             // some silly people create reloc sections with no associated section
-            if( associated_index[loop] != -1 ) {
-                elf_sec_hnd->assoc.reloc.orig_sec = elf_file_hnd->orig_sec_hnd[associated_index[loop]];
-                elf_file_hnd->orig_sec_hnd[associated_index[loop]]->assoc.normal.reloc_sec = elf_sec_hnd;
+            if( associated_index[i] != (elf_index)-1 ) {
+                elf_sec_hnd->assoc.reloc.orig_sec = elf_file_hnd->orig_sec_handles[associated_index[i]];
+                elf_file_hnd->orig_sec_handles[associated_index[i]]->assoc.normal.reloc_sec = elf_sec_hnd;
             }
             break;
         default:
             break;
         }
     }
-    elf_file_hnd->elf_sec_hnd = (elf_sec_handle *)_ClientAlloc( elf_file_hnd, sizeof( elf_sec_handle ) * elf_file_hnd->num_sections );
-    if( elf_file_hnd->elf_sec_hnd == NULL ) {
+    elf_file_hnd->sec_handles = (elf_sec_handle *)_ClientAlloc( elf_file_hnd, sizeof( elf_sec_handle ) * elf_file_hnd->num_sections );
+    if( elf_file_hnd->sec_handles == NULL ) {
         _ClientFree( elf_file_hnd, associated_index );
         _ClientFree( elf_file_hnd, associated2_index );
-        _ClientFree( elf_file_hnd, elf_file_hnd->orig_sec_hnd );
+        _ClientFree( elf_file_hnd, elf_file_hnd->orig_sec_handles );
         return( ORL_OUT_OF_MEMORY );
     }
-    memcpy( elf_file_hnd->elf_sec_hnd, elf_file_hnd->orig_sec_hnd, sizeof( elf_sec_handle ) * elf_file_hnd->num_sections );
+    memcpy( elf_file_hnd->sec_handles, elf_file_hnd->orig_sec_handles, sizeof( elf_sec_handle ) * elf_file_hnd->num_sections );
     _ClientFree( elf_file_hnd, associated_index );
     _ClientFree( elf_file_hnd, associated2_index );
     return( ORL_OKAY );
 }
 
 
-static int sec_compare( const void *_first_sec, const void *_second_sec )
+static int section_compare( const void *sec1, const void *sec2 )
 {
-    const elf_sec_handle *first_sec = (const elf_sec_handle *)_first_sec;
-    const elf_sec_handle *second_sec = (const elf_sec_handle *)_second_sec;
-
-    if( (*first_sec)->offset > (*second_sec)->offset ) {
+    if( (*(const elf_sec_handle *)sec1)->file_offset > (*(const elf_sec_handle *)sec2)->file_offset )
         return( 1 );
-    } else if( (*first_sec)->offset < (*second_sec)->offset ) {
+    if( (*(const elf_sec_handle *)sec1)->file_offset < (*(const elf_sec_handle *)sec2)->file_offset )
         return( -1 );
-    } else {
-        return( 0 );
-    }
+    return( 0 );
 }
 
 
 orl_return ElfLoadFileStructure( elf_file_handle elf_file_hnd )
 {
-    orl_return          error;
+    orl_return          return_val;
     char                *s_hdr;
     Elf32_Ehdr          *e_hdr32;
     Elf64_Ehdr          *e_hdr64;
@@ -537,13 +534,13 @@ orl_return ElfLoadFileStructure( elf_file_handle elf_file_hnd )
     elf_quantity        contents_size1;
     elf_quantity        contents_size2;
     elf_quantity        sec_header_table_size;
-    int                 loop;
-    orl_sec_offset      *name_index;
+    elf_quantity        i;
+    elf_index           *name_index;
     char                *string_table;
-    unsigned_64         shoff;
-    int                 shnum;
-    int                 ehsize;
-    int                 shstrndx;
+    elf_file_offset     shoff;
+    elf_half            shnum;
+    elf_half            ehsize;
+    elf_half            shstrndx;
 
     e_hdr32 = _ClientRead( elf_file_hnd, sizeof( e_hdr32->e_ident ) );
     if( e_hdr32 == NULL )
@@ -554,29 +551,28 @@ orl_return ElfLoadFileStructure( elf_file_handle elf_file_hnd )
         e_hdr64 = _ClientRead( elf_file_hnd, sizeof( Elf64_Ehdr ) );
         if( e_hdr64 == NULL )
             return( ORL_ERROR );
-        fix_ehdr64_byte_order( elf_file_hnd, e_hdr64 );        
-        shoff = e_hdr64->e_shoff;
+        fix_ehdr64_byte_order( elf_file_hnd, e_hdr64 );
+        shoff = e_hdr64->e_shoff.u._32[I64LO32];
         shnum = e_hdr64->e_shnum;
         ehsize = e_hdr64->e_ehsize;
         shstrndx = e_hdr64->e_shstrndx;
         elf_file_hnd->shentsize = e_hdr64->e_shentsize;
-        determine_file_specs( elf_file_hnd, (Elf32_Ehdr *)e_hdr64 );
+        determine_file_specs( elf_file_hnd, e_hdr64->e_machine, e_hdr64->e_type );
     } else {
         e_hdr32 = _ClientRead( elf_file_hnd, sizeof( Elf32_Ehdr ) );
         if( e_hdr32 == NULL )
             return( ORL_ERROR );
         fix_ehdr_byte_order( elf_file_hnd, e_hdr32 );
-        shoff.u._32[I64LO32] = e_hdr32->e_shoff;
-        shoff.u._32[I64HI32] = 0;
+        shoff = e_hdr32->e_shoff;
         shnum = e_hdr32->e_shnum;
         ehsize = e_hdr32->e_ehsize;
         shstrndx = e_hdr32->e_shstrndx;
         elf_file_hnd->shentsize = e_hdr32->e_shentsize;
-        determine_file_specs( elf_file_hnd, e_hdr32 );
+        determine_file_specs( elf_file_hnd, e_hdr32->e_machine, e_hdr32->e_type );
     }
     elf_file_hnd->num_sections = shnum - 1; // -1 to ignore shdr table index
 
-    contents_size1 = shoff.u._32[I64LO32] - ehsize;
+    contents_size1 = shoff - ehsize;
     sec_header_table_size = elf_file_hnd->shentsize * shnum;
 
     // e_ehsize might not be the same as sizeof( Elf32_Ehdr ) (different versions)
@@ -593,44 +589,44 @@ orl_return ElfLoadFileStructure( elf_file_handle elf_file_hnd )
     s_hdr = _ClientRead( elf_file_hnd, sec_header_table_size );
     if( s_hdr == NULL )
         return( ORL_ERROR );
-    name_index = _ClientAlloc( elf_file_hnd, sizeof( orl_sec_offset ) * elf_file_hnd->num_sections );
+    name_index = _ClientAlloc( elf_file_hnd, sizeof( elf_index ) * elf_file_hnd->num_sections );
     if( name_index == NULL )
         return( ORL_OUT_OF_MEMORY );
-    error = load_elf_sec_handles( elf_file_hnd, name_index, s_hdr );
-    if( error != ORL_OKAY ) {
+    return_val = load_elf_sec_handles( elf_file_hnd, name_index, s_hdr );
+    if( return_val != ORL_OKAY ) {
         _ClientFree( elf_file_hnd, name_index );
-        return( error );
+        return( return_val );
     }
     // now sort the section handles by file offset
-    qsort( elf_file_hnd->elf_sec_hnd, elf_file_hnd->num_sections, sizeof( elf_sec_handle ), sec_compare );
+    qsort( elf_file_hnd->sec_handles, elf_file_hnd->num_sections, sizeof( elf_sec_handle ), section_compare );
 
-    elf_sec_hnd = elf_file_hnd->elf_sec_hnd[elf_file_hnd->num_sections - 1];
-    contents_size2 = elf_sec_hnd->offset + elf_sec_hnd->size - shoff.u._32[I64LO32] - sec_header_table_size;
+    elf_sec_hnd = elf_file_hnd->sec_handles[elf_file_hnd->num_sections - 1];
+    contents_size2 = elf_sec_hnd->file_offset + elf_sec_hnd->size.u._32[I64LO32] - shoff - sec_header_table_size;
     if( contents_size2 > 0 ) {
-        elf_file_hnd->size = elf_sec_hnd->offset + elf_sec_hnd->size;
+        elf_file_hnd->size = elf_sec_hnd->file_offset + elf_sec_hnd->size.u._32[I64LO32];
         elf_file_hnd->contents_buffer2 = _ClientRead( elf_file_hnd, contents_size2 );
         if( elf_file_hnd->contents_buffer2 == NULL ) {
             _ClientFree( elf_file_hnd, name_index );
             return( ORL_ERROR );
         }
     } else {
-        elf_file_hnd->size = shoff.u._32[I64LO32] + sec_header_table_size;
+        elf_file_hnd->size = shoff + sec_header_table_size;
     }
     // determine contents pointers of all sections
-    for( loop = 0; loop < elf_file_hnd->num_sections; loop++ ) {
-        elf_sec_hnd = elf_file_hnd->elf_sec_hnd[loop];
-        if( elf_sec_hnd->size > 0 ) {
-            if( elf_sec_hnd->offset < shoff.u._32[I64LO32] ) {
-                elf_sec_hnd->contents = elf_file_hnd->contents_buffer1 + elf_sec_hnd->offset - ehsize;
+    for( i = 0; i < elf_file_hnd->num_sections; ++i ) {
+        elf_sec_hnd = elf_file_hnd->sec_handles[i];
+        if( elf_sec_hnd->size.u._32[I64LO32] > 0 ) {
+            if( elf_sec_hnd->file_offset < shoff ) {
+                elf_sec_hnd->contents = elf_file_hnd->contents_buffer1 + elf_sec_hnd->file_offset - ehsize;
             } else {
-                elf_sec_hnd->contents = elf_file_hnd->contents_buffer2 + elf_sec_hnd->offset - shoff.u._32[I64LO32] - sec_header_table_size;
+                elf_sec_hnd->contents = elf_file_hnd->contents_buffer2 + elf_sec_hnd->file_offset - shoff - sec_header_table_size;
             }
         }
     }
     // determine section names
-    string_table = (char *)elf_file_hnd->orig_sec_hnd[shstrndx - 1]->contents;
-    for( loop = 0; loop < elf_file_hnd->num_sections; loop++ ) {
-        elf_file_hnd->orig_sec_hnd[loop]->name = string_table + name_index[loop];
+    string_table = (char *)elf_file_hnd->orig_sec_handles[shstrndx - 1]->contents;
+    for( i = 0; i < elf_file_hnd->num_sections; ++i ) {
+        elf_file_hnd->orig_sec_handles[i]->name = string_table + name_index[i];
     }
     _ClientFree( elf_file_hnd, name_index );
     return( ORL_OKAY );

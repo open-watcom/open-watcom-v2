@@ -89,7 +89,8 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii,
 imp_mod_handle DIPIMPENTRY( CueMod )( imp_image_handle *ii,
                                 imp_cue_handle *ic )
 {
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     return( ic->im );
 }
 
@@ -122,7 +123,8 @@ size_t DIPIMPENTRY( CueFile )( imp_image_handle *ii,
 cue_fileid DIPIMPENTRY( CueFileId )( imp_image_handle *ii,
                         imp_cue_handle *ic )
 {
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     return( ic->file );
 }
 
@@ -149,7 +151,8 @@ unsigned long DIPIMPENTRY( CueLine )( imp_image_handle *ii,
 
 unsigned DIPIMPENTRY( CueColumn )( imp_image_handle *ii, imp_cue_handle *ic )
 {
-    ii = ii; ic = ic;
+    /* unused parameters */ (void)ii; (void)ic;
+
     return( 0 );
 }
 
@@ -307,7 +310,8 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
     unsigned                            pair;
     unsigned_16                         *line_number;
 
-    column = column;
+    /* unused parameters */ (void)column;
+
     cde = FindDirEntry( ii, im, sstSrcModule );
     if( cde == NULL )
         return( SR_NONE );
@@ -526,7 +530,8 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
 int DIPIMPENTRY( CueCmp )( imp_image_handle *ii, imp_cue_handle *ic1,
                                 imp_cue_handle *ic2 )
 {
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     if( ic1->im != ic2->im )
         return( ic1->im - ic2->im );
     if( ic1->line < ic2->line )

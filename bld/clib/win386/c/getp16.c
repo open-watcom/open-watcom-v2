@@ -303,7 +303,7 @@ CALLBACKPTR GetProc16( PROCPTR pp, long type )
 #endif
     default:
         if( type >= GETPROC_USERDEFINED_1 && type <= GETPROC_USERDEFINED_32 ) {
-            ptr = UserProcs[ type - GETPROC_USERDEFINED_1 ];
+            ptr = UserProcs[type - GETPROC_USERDEFINED_1];
         }
         break;
     }

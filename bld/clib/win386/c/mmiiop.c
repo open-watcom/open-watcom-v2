@@ -33,12 +33,10 @@
 #include "variety.h"
 #include "cover.h"
 
-LPMMIOPROC PASCAL _Cover_mmioInstallIOProc(FOURCC fccIOProc,
-                LPMMIOPROC pIOProc, DWORD dwFlags)
+LPMMIOPROC PASCAL _Cover_mmioInstallIOProc(FOURCC fccIOProc, LPMMIOPROC pIOProc, DWORD dwFlags)
 {
     if( dwFlags & MMIO_INSTALLPROC ) {
-        return( mmioInstallIOProc( fccIOProc,
-                SetProc( (FARPROC)pIOProc, GETPROC_MMSYSTEM_MMIOPROC ), dwFlags ) );
+        return( mmioInstallIOProc( fccIOProc, SetProc( (FARPROC)pIOProc, GETPROC_MMSYSTEM_MMIOPROC ), dwFlags ) );
     } else {
         return( mmioInstallIOProc( fccIOProc, pIOProc, dwFlags ) );
     }

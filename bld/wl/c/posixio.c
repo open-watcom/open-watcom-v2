@@ -395,7 +395,8 @@ bool QSysHelp( char **cmd_ptr )
     while( *p ) ++p; /* skip over executable name */
     return( p[1] == '?' );
 #else
-    cmd_ptr = cmd_ptr;
+    /* unused parameters */ (void)cmd_ptr;
+
     return false;
 #endif
 }
@@ -447,7 +448,8 @@ void GetCmdLine( char *buff )
 void TrapBreak( int sig_num )
 /***************************/
 {
-    sig_num = sig_num;          // to avoid a warning, will be optimized out.
+    /* unused parameters */ (void)sig_num;
+
     CaughtBreak = true;
 }
 

@@ -39,7 +39,7 @@
 #include "model.h"
 #include "vergen.h"
 #include "zoiks.h"
-#include "conflict.h"
+#include "confldef.h"
 #include "cfloat.h"
 #include "makeins.h"
 #include "s37split.def"

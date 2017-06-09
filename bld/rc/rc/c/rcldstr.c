@@ -34,10 +34,9 @@
 #endif
 #include "wio.h"
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "rcldstr.h"
 #include "wresset2.h"
-#include "iortns.h"
 #include "clibint.h"
 
 #include "clibext.h"
@@ -57,7 +56,8 @@ bool InitRcMsgs( void )
 
 bool GetRcMsg( unsigned resid, char *buff, int buff_len )
 {
-    buff_len = buff_len;
+    /* unused parameters */ (void)buff_len;
+
     strcpy( buff, StringTable[resid] );
     return( true );
 }
@@ -73,7 +73,7 @@ extern HANDLE_INFO  hInstance;
 
 extern bool         RcIoNoBuffer;
 
-static unsigned MsgShift;
+static unsigned     MsgShift;
 
 bool InitRcMsgs( void )
 {

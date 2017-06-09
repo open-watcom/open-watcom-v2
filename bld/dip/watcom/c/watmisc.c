@@ -53,7 +53,7 @@ unsigned DIPIMPENTRY( HandleSize )( handle_kind hk )
     return( Sizes[hk] );
 }
 
-dip_status DIPIMPENTRY( Startup )( void )
+dip_status DIPImp( Startup )( void )
 {
     return( DS_OK );
 }
@@ -70,15 +70,17 @@ void DIPIMPENTRY( Cancel )( void )
     InfoUnlock();
 }
 
-dip_status DIPIMPENTRY( MoreMem )( unsigned size )
+dip_status DIPIMPENTRY( MoreMem )( size_t size )
 {
-    size = size;
+    /* unused parameters */ (void)size;
+
     return( InfoRelease() );
 }
 
 imp_mod_handle DIPIMPENTRY( SymMod )( imp_image_handle *ii, imp_sym_handle *is )
 {
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     return( is->im );
 }
 
@@ -243,7 +245,8 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     unsigned            op_len;
     imp_sym_handle      *scope_is;
 
-    lc = lc;
+    /* unused parameters */ (void)lc;
+
     if( GETU8( li->name.start ) == SH_ESCAPE ) {
         CollectSymHdl( li->name.start, DCSymCreate( ii, d ) );
         return( SR_EXACT );
@@ -366,7 +369,8 @@ dip_status DIPIMPENTRY( SymLocation )( imp_image_handle *ii, imp_sym_handle *is,
 dip_status DIPIMPENTRY( SymValue )( imp_image_handle *ii, imp_sym_handle *is,
                                 location_context *lc, void *value )
 {
-    lc = lc;
+    /* unused parameters */ (void)lc;
+
     switch( is->type ) {
     case SH_CST:
         return( SymHdl2CstValue( ii, is, value ) );
@@ -486,14 +490,16 @@ walk_result DIPIMPENTRY( WalkSymListEx )( imp_image_handle *ii, symbol_source ss
                 void *source, DIP_IMP_SYM_WALKER *wk, imp_sym_handle *is,
                 location_context *lc, void *d )
 {
-    lc=lc;
+    /* unused parameters */ (void)lc;
+
     return( DoWalkSymList( ii, ss, source, wk, is, d ) );
 }
 
 dip_status DIPIMPENTRY( ModDefault )( imp_image_handle *ii, imp_mod_handle im,
                         default_kind dk, dip_type_info *ti )
 {
-    ii = ii; im = im; dk = dk; ti = ti;
+    /* unused parameters */ (void)ii; (void)im; (void)dk; (void)ti;
+
     return( DS_FAIL );
 }
 
@@ -516,7 +522,8 @@ static int GblCmp( gbl_info *g1, gbl_info *g2 )
 int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
                         imp_sym_handle *is2 )
 {
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     if( is1->im != is2->im )
         return( is1->im - is2->im );
     switch( is1->type ) {
@@ -564,20 +571,21 @@ int DIPIMPENTRY( SymCmp )( imp_image_handle *ii, imp_sym_handle *is1,
 
 dip_status DIPIMPENTRY( SymAddRef )( imp_image_handle *ii, imp_sym_handle *is )
 {
-    ii=ii;
-    is=is;
+    /* unused parameters */ (void)ii; (void)is;
+
     return(DS_OK);
 }
 
 dip_status DIPIMPENTRY( SymRelease )( imp_image_handle *ii, imp_sym_handle *is )
 {
-    ii=ii;
-    is=is;
+    /* unused parameters */ (void)ii; (void)is;
+
     return(DS_OK);
 }
 
 dip_status DIPIMPENTRY( SymFreeAll )( imp_image_handle *ii )
 {
-    ii=ii;
+    /* unused parameters */ (void)ii;
+
     return(DS_OK);
 }

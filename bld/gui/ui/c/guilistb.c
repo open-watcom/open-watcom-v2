@@ -326,25 +326,21 @@ bool GUIListBoxTopIndex( a_list *list, gui_ctl_idx choice, bool set, gui_ctl_idx
 
 bool GUIDropDown( gui_window *wnd, gui_ctl_id id, bool drop )
 {
-    wnd = wnd;
-    id = id;
-    drop = drop;
+    /* unused parameters */ (void)wnd; (void)id; (void)drop;
+
     return( false );
 }
 
 bool GUISetListItemData( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice, void *data )
 {
-    wnd = wnd;
-    id = id;
-    choice = choice;
-    data = data;
+    /* unused parameters */ (void)wnd; (void)id; (void)choice; (void)data;
+
     return( false );
 }
 
 void *GUIGetListItemData( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice )
 {
-    wnd = wnd;
-    id = id;
-    choice = choice;
+    /* unused parameters */ (void)wnd; (void)id; (void)choice;
+
     return( NULL );
 }

@@ -49,8 +49,8 @@ typedef struct dbgheader {
 
 typedef struct {
     char        signature[4];
-    uint_16     disk_number;        
-    uint_16     disk_having_cd;     
+    uint_16     disk_number;
+    uint_16     disk_having_cd;
     uint_16     num_entries_on_disk;
     uint_16     total_num_entries;
     uint_32     cd_size;
@@ -100,12 +100,12 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
     WResFileShift = 0;
     if( notfound ) {
         offset = sizeof( dbgheader );
-    
+
         /* Look for a PKZIP header and skip archive if present */
-        if( WRESSEEK( hinfo->fid, -(WResFileOffset)sizeof( eocd ), SEEK_END ) != -1 ) {
+        if( !WRESSEEK( hinfo->fid, -(WResFileOffset)sizeof( eocd ), SEEK_END ) ) {
             if( WRESREAD( hinfo->fid, &eocd, sizeof( eocd ) ) == sizeof( eocd ) ) {
                 if( memcmp( &eocd.signature, "PK\005\006", 4 ) == 0 ) {
-                    if( WRESSEEK( hinfo->fid, eocd.cd_offset, SEEK_SET ) != -1 ) {
+                    if( !WRESSEEK( hinfo->fid, eocd.cd_offset, SEEK_SET ) ) {
                         if( WRESREAD( hinfo->fid, &cdfh, sizeof( cdfh ) ) == sizeof( cdfh ) ) {
                             if( memcmp( &cdfh.signature, "PK\001\002", 4 ) == 0 ) {
                                 offset += eocd.cd_offset + eocd.cd_size - cdfh.offset + sizeof( eocd );
@@ -115,7 +115,8 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
                 }
             }
         }
-        currpos = WRESSEEK( hinfo->fid, -offset, SEEK_END );
+        WRESSEEK( hinfo->fid, -offset, SEEK_END );
+        currpos = WRESTELL( hinfo->fid );
         for( ;; ) {
             WRESREAD( hinfo->fid, &header, sizeof( dbgheader ) );
             if( header.signature == WAT_RES_SIG ) {

@@ -371,11 +371,11 @@ LONG CALLBACK MemWalkerProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     HDC                 dc;
     char                buf[150];
 
-    info = (MemWalkerInfo *)GetWindowLong( hwnd, 0 );
+    info = (MemWalkerInfo *)GET_WNDINFO( hwnd );
     switch ( msg ) {
     case WM_CREATE:
         info = (MemWalkerInfo *)( (CREATESTRUCT *)lparam )->lpCreateParams;
-        SetWindowLong( hwnd, 0, (DWORD)info );
+        SET_WNDINFO( hwnd, (LONG_PTR)info );
         info->listdata.data = NULL;
         info->listdata.allocated = 0;
         info->listdata.used = 0;
@@ -447,8 +447,8 @@ LONG CALLBACK MemWalkerProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     return( 0L );
 }
 
-BOOL RegisterMemWalker( void ) {
-
+bool RegisterMemWalker( void )
+{
     WNDCLASS            wc;
 
     wc.style = 0L;
@@ -461,7 +461,7 @@ BOOL RegisterMemWalker( void ) {
     wc.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
     wc.lpszMenuName = NULL;
     wc.lpszClassName = MEM_WALKER_CLASS;
-    return( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) != 0 );
 }
 
 void WalkMemory( HWND parent, HANDLE hdl, DWORD procid ) {

@@ -1088,7 +1088,7 @@ fe_attr FEAttr( cg_sym_handle _sym ) {
 void    FEGenProc( cg_sym_handle sym, call_handle handle)
 //=======================================================
 {
-    sym = sym; handle = handle;
+    /* unused parameters */ (void)sym; (void)handle;
 }
 
 
@@ -1228,6 +1228,7 @@ const char *FEExtName( cg_sym_handle sym, int request ) {
         return( GetNamePattern( (sym_id)sym ) );
     case EXTN_PRMSIZE:
         return( (const char *)(pointer_int)GetParmsSize( (sym_id)sym ) );
+    case EXTN_CALLBACKNAME:
     default:
         return( NULL );
     }
@@ -1271,15 +1272,14 @@ int     FELexLevel( cg_sym_handle _sym ) {
 }
 
 
-cg_type FEParmType( cg_sym_handle _fn, cg_sym_handle parm, cg_type tipe ) {
+cg_type FEParmType( cg_sym_handle fn, cg_sym_handle parm, cg_type tipe ) {
 //=========================================================================
 
 // Return the type that an argument of the given type should be converted
 // to.
 
-    sym_id      fn = _fn;
+    /* unused parameters */ (void)parm; (void)fn;
 
-    parm = parm;
     switch( tipe ) {
 #if _CPU == 386
     case TY_UINT_2:
@@ -1290,15 +1290,13 @@ cg_type FEParmType( cg_sym_handle _fn, cg_sym_handle parm, cg_type tipe ) {
 #if _CPU == 386
         {
             aux_info    *aux;
-            aux = AuxLookup( fn );
+            aux = AuxLookup( (sym_id)fn );
             if( aux != NULL ) {
                 if( aux->cclass & FAR16_CALL ) {
                     return( TY_INT_2 );
                 }
             }
         }
-#else
-        fn = fn;
 #endif
         tipe = TY_INTEGER;
     }
@@ -1306,12 +1304,13 @@ cg_type FEParmType( cg_sym_handle _fn, cg_sym_handle parm, cg_type tipe ) {
 }
 
 
-int     FEMoreMem( uint size ) {
+int     FEMoreMem( size_t size )
 //==================================
-
 // We can't free any memory for use by the back end.
+{
 
-    size = size;
+    /* unused parameters */ (void)size;
+
     return( false );
 }
 
@@ -1478,7 +1477,7 @@ static  dbg_type        GetDbgType( sym_id sym ) {
             if( sym->u.ns.flags & SY_VALUE_PARM ) {
                 char    new_name[32];
                 sprintf( new_name, "%s*(*)", DBGNames[ PT_CHAR ] );
-                return( DBCharBlockNamed( new_name, 0 ) );        
+                return( DBCharBlockNamed( new_name, 0 ) );
             }
             loc = DBLocInit();
             if( Options & OPT_DESCRIPTOR ) {
@@ -1498,7 +1497,7 @@ static  dbg_type        GetDbgType( sym_id sym ) {
     } else if( (sym->u.ns.u1.s.typ == FT_CHAR) ) {
         char    new_name[32];
         sprintf( new_name, "%s*%u", DBGNames[ PT_CHAR ], sym->u.ns.xt.size );
-        return( DBCharBlockNamed( new_name, sym->u.ns.xt.size ) );        
+        return( DBCharBlockNamed( new_name, sym->u.ns.xt.size ) );
     } else {
         return( BaseDbgType( sym->u.ns.u1.s.typ, sym->u.ns.xt.size ) );
     }
@@ -1860,37 +1859,6 @@ dbg_type        FEDbgType( cg_sym_handle _sym ) {
     return( db_type );
 }
 
-enum {
-    TIME_SEC_B  = 0,
-    TIME_MIN_B  = 5,
-    TIME_HOUR_B = 11,
-};
-
-enum {
-    DATE_DAY_B  = 0,
-    DATE_MON_B  = 5,
-    DATE_YEAR_B = 9,
-};
-
-
-static uint_32 *makeDOSTimeStamp( time_t ts ) {
-//=============================================
-
-    struct tm           *ltime;
-    uint_16             dos_date;
-    uint_16             dos_time;
-    static uint_32      dos_stamp;
-
-    ltime = localtime( &ts );
-    dos_date = (uint_16)((( ltime->tm_year - 80 ) << DATE_YEAR_B )
-             | (( ltime->tm_mon + 1 ) << DATE_MON_B )
-             | (( ltime->tm_mday ) << DATE_DAY_B ));
-    dos_time = (uint_16)((( ltime->tm_hour ) << TIME_HOUR_B )
-             | (( ltime->tm_min ) << TIME_MIN_B )
-             | (( ltime->tm_sec / 2 ) << TIME_SEC_B ));
-    dos_stamp = dos_time | ( dos_date << 16 );
-    return( &dos_stamp );
-}
 
 char    *GetFullSrcName( void ) {
 //===============================
@@ -2131,7 +2099,7 @@ pointer FEAuxInfo( pointer req_handle, int request ) {
             }
         }
     case DEPENDENCY_TIMESTAMP :
-        return( makeDOSTimeStamp( ((dep_info *)req_handle)->time_stamp ) );
+        return( &(((dep_info *)req_handle)->time_stamp) );
     case DEPENDENCY_NAME :
         return( ((dep_info *)req_handle)->fn );
     case SOURCE_LANGUAGE:

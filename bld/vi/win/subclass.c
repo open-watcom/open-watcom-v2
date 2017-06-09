@@ -34,18 +34,19 @@
 #include "subclass.h"
 #include <assert.h>
 
+
 proc_entry  *procHead;
 proc_entry  *procTail;
 
-void SubclassGenericAdd( HWND hwnd, WNDPROC proc )
+void SubclassGenericAdd( HWND hwnd, WNDPROCx wndproc, HINSTANCE inst )
 {
-    proc_entry *newProc;
+    proc_entry  *newProc;
 
     newProc = MemAlloc( sizeof( proc_entry ) );
 
     newProc->hwnd = hwnd;
     newProc->oldProc = (WNDPROC)GET_WNDPROC( hwnd );
-    newProc->newProc = proc;
+    newProc->newProc = MakeProcInstance_WND( wndproc, inst );
     SET_WNDPROC( hwnd, (LONG_PTR)newProc->newProc );
 
     AddLLItemAtEnd( (ss **)&procHead, (ss **)&procTail, (ss *)newProc );
@@ -55,14 +56,15 @@ void SubclassGenericRemove( HWND hwnd )
 {
     proc_entry  *findProc;
 
-    findProc = procHead;
-    while( findProc && findProc->hwnd != hwnd ) {
-        findProc = findProc->next;
+    for( findProc = procHead; findProc != NULL; findProc = findProc->next ) {
+        if( findProc->hwnd == hwnd ) {
+            break;
+        }
     }
     assert( findProc != NULL );
 
     SET_WNDPROC( hwnd, (LONG_PTR)findProc->oldProc );
-    (void)FreeProcInstance( (FARPROC)findProc->newProc );
+    FreeProcInstance_WND( findProc->newProc );
 
     DeleteLLItem( (ss **)&procHead, (ss **)&procTail, (ss *)findProc );
     MemFree( findProc );
@@ -87,9 +89,10 @@ WNDPROC SubclassGenericFindOldProc( HWND hwnd )
     // for the old window... /*BW*/
     proc_entry  *findProc;
 
-    findProc = procHead;
-    while( findProc && findProc->hwnd != hwnd ) {
-        findProc = findProc->next;
+    for( findProc = procHead; findProc != NULL; findProc = findProc->next ) {
+        if( findProc->hwnd == hwnd ) {
+            break;
+        }
     }
     assert( findProc != NULL );
     return( findProc->oldProc );

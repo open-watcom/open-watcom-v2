@@ -35,7 +35,9 @@
 
 #include "mresfmt.h"
 
-extern int (*ConvToUnicode)( int, const char *, char * );
+typedef size_t ConvToUnicode_fn( size_t, const char *, char * );
+
+extern ConvToUnicode_fn *ConvToUnicode;
 
 extern bool ResWriteUint8( uint_8 newint, WResFileID fid );
 extern bool ResWriteUint16( uint_16 newint, WResFileID fid );
@@ -52,7 +54,7 @@ extern bool WResWriteExtHeader( const WResExtHeader *ext_head, WResFileID fid );
 extern void MResFreeResourceHeader( MResResourceHeader *oldheader );
 extern bool ResWriteNameOrOrdinal( ResNameOrOrdinal *name, bool use_unicode, WResFileID fid );
 extern bool ResWriteString( const char *string, bool use_unicode, WResFileID fid );
-extern bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID fid, uint_16 len );
+extern bool ResWriteStringLen( const char *string, bool use_unicode, WResFileID fid, size_t len );
 extern void WriteInitStatics( void );
 extern bool MResWriteResourceHeader( MResResourceHeader *currhead, WResFileID fid, bool iswin32 );
 

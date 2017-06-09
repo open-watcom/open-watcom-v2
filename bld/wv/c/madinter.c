@@ -144,8 +144,9 @@ size_t MADCLIENTRY( String )( mad_string mstr, char *buff, size_t buff_len )
 
 mad_status MADCLIENTRY( AddString )( mad_string mstr, const char *str )
 {
+    /* unused parameters */ (void)mstr; (void)str;
+
     //MAD: NYI
-    mstr = mstr; str = str;
     return( MS_FAIL );
 }
 

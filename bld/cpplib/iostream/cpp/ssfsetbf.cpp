@@ -39,7 +39,7 @@ namespace std {
 
   // Just remember the size to allocate next time.
 
-  streambuf *strstreambuf::setbuf( char *, int size ) {
+  streambuf *strstreambuf::setbuf( char *, streamsize size ) {
     __lock_it( __b_lock );
     if( size > 0 ) {
         __allocation_size = size;

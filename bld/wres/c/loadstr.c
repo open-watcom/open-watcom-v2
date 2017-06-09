@@ -49,14 +49,15 @@ WResDir    MainDir;
 static int GetString( WResLangInfo *res, PHANDLE_INFO hinfo, UINT idResource, lpstr lpszBuffer, int nBufferMax )
 /**************************************************************************************************************/
 {
-    int                 length;
+    size_t              length;
     int                 stringnum;
-    int                 stringlen;
-    WResFileSSize       numread;
-    int                 ix1, ix2;
+    unsigned            stringlen;
+    size_t              numread;
+    size_t              ix1;
+    int                 ix2;
     char                stringbuff[GET_STR_BUF_LEN];
 
-    if( WRESSEEK( hinfo->fid, res->Offset, SEEK_SET ) == -1 )
+    if( WRESSEEK( hinfo->fid, res->Offset, SEEK_SET ) )
         return( -1 );
     length = res->Length;
     stringnum = idResource & 0x0f;
@@ -87,7 +88,8 @@ static int GetString( WResLangInfo *res, PHANDLE_INFO hinfo, UINT idResource, lp
                 stringnum--;
             }
             for( ; stringlen > 0; --stringlen ) {
-                if( ix1 >= numread ) break;
+                if( ix1 >= numread )
+                    break;
                 if( stringnum < 0 ) {
                     if( ix2 < nBufferMax - 1 ) {
                         lpszBuffer[ix2++] = stringbuff[ix1];
@@ -163,7 +165,8 @@ bool FiniResources2( WResDir dir, PHANDLE_INFO hinfo )
 /****************************************************/
 /* return true if error */
 {
-    hinfo=hinfo;
+    /* unused parameters */ (void)hinfo;
+
     WResFreeDir( dir );
     return( false );
 }

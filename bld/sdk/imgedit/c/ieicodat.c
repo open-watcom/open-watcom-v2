@@ -43,7 +43,7 @@
 /*
  * readIconFromData - read the icon file and set up structures
  */
-static BOOL readIconFromData( BYTE *data, char *fname  )
+static bool readIconFromData( BYTE *data, const char *fname  )
 {
     an_img_file         *iconfile;
     img_node            *node;
@@ -59,7 +59,7 @@ static BOOL readIconFromData( BYTE *data, char *fname  )
     if( iconfile == NULL ) {
         fclose( fp );
         WImgEditError( WIE_ERR_BAD_ICON_FILE, filename );
-        return( FALSE );
+        return( false );
     }
     num_of_images = iconfile->count;
 
@@ -73,7 +73,7 @@ static BOOL readIconFromData( BYTE *data, char *fname  )
             WImgEditError( WIE_ERR_BAD_ICON_CLR, filename );
             ImageClose( iconfile );
             fclose( fp );
-            return( FALSE );
+            return( false );
         }
     }
 #endif
@@ -93,7 +93,7 @@ static BOOL readIconFromData( BYTE *data, char *fname  )
             ImageClose( iconfile );
             fclose( fp );
             MemFree( node );
-            return( FALSE );
+            return( false );
         }
 
         node[i].imgtype = ICON_IMG;
@@ -114,7 +114,7 @@ static BOOL readIconFromData( BYTE *data, char *fname  )
         }
         node[i].issaved = TRUE;
         node[i].next = NULL;
-        strcpy( node[i].fname, strupr( fname ) );
+        strupr( strcpy( node[i].fname, fname ) );
         ImageFini( icon );
     }
     node[i - 1].nexticon = NULL;
@@ -127,6 +127,6 @@ static BOOL readIconFromData( BYTE *data, char *fname  )
     CreateNewDrawPad( node );
 
     MemFree( node );
-    return( TRUE );
+    return( true );
 
 } /* readInIconFile */

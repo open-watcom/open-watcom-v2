@@ -41,7 +41,8 @@ vi_rc DoMatching( range *r, long count )
     vi_rc       rc;
     i_mark      pos;
 
-    count = count;
+    /* unused parameters */ (void)count;
+
     rc = FindMatch( &pos );
     r->line_based = false;
     r->start = pos;
@@ -91,7 +92,7 @@ vi_rc FindMatch( i_mark *pos1 )
                 break;
             }
         }
-    
+
         /*
          * get appropriate array entry
          */

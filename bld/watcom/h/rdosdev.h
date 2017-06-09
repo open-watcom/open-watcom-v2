@@ -51,7 +51,7 @@ extern "C" {
 #define AUDIO_OUT_HANDLE   0xCEDA
 #define HID_HANDLE         0xD736
 #define BITMAP_HANDLE      0xDB57
-#define INI_HANDLE         0xEAF3
+#define INI_HANDLE             0xEAF3
 #define USB_PIPE_HANDLE    0xFA3E
 
 // special user-mode gates
@@ -643,9 +643,6 @@ void RdosHookCreateThread(__rdos_hook_callback *callb_proc);
 void RdosHookTerminateThread(__rdos_hook_callback *callb_proc);
 void RdosHookInitPci(__rdos_hook_callback *callb_proc);
 
-void RdosHookOpenApp(__rdos_hook_callback *callb_proc);
-void RdosHookCloseApp(__rdos_hook_callback *callb_proc);
-
 void RdosHookEnableFocus(__rdos_hook_callback *callb_proc);
 
 void RdosHookState(__rdos_hook_state_callback *callb_proc);
@@ -757,6 +754,15 @@ void RdosInsertFileEntry(int dir_sel, int file_entry);
 
 int RdosGetFileInfo(int handle, char *access, char *drive, int *file_sel);
 int RdosDuplFileInfo(char access, char drive, int file_sel);
+
+int RdosOpenKernelFile(const char *FileName, int Mode);
+void RdosCloseCFile(int Handle);
+long RdosGetCFileSize(int Handle);
+void RdosSetCFileSize(int Handle, long Size);
+int RdosReadCFile(int Handle, void *Buf, int Size, long Pos);
+int RdosWriteCFile(int Handle, const void *Buf, int Size, long Pos);
+void RdosGetCFileTime(int Handle, unsigned long *MsbTime, unsigned long *LsbTime);
+void RdosSetCFileTime(int Handle, unsigned long MsbTime, unsigned long LsbTime);
 
 void RdosLockFile(int file_sel);
 void RdosUnlockFile(int file_sel);
@@ -1473,24 +1479,12 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     OsGate_hook_create_process \
     parm [es edi];
 
-#pragma aux RdosHookTerminateProcess = \
-    OsGate_hook_terminate_process \
-    parm [es edi];
-
 #pragma aux RdosHookCreateThread = \
     OsGate_hook_create_thread \
     parm [es edi];
 
 #pragma aux RdosHookTerminateThread = \
     OsGate_hook_terminate_thread \
-    parm [es edi];
-
-#pragma aux RdosHookOpenApp = \
-    OsGate_hook_open_app \
-    parm [es edi];
-
-#pragma aux RdosHookCloseApp = \
-    OsGate_hook_close_app \
     parm [es edi];
 
 #pragma aux RdosHookEnableFocus = \
@@ -1997,6 +1991,51 @@ int RdosGetSignedHidOutput(int Sel, int Usage);
     CarryToBool \
     parm [eax] \
     value [eax];
+
+#pragma aux RdosOpenKernelFile = \
+    OsGate_open_kernel_file \
+    ValidateHandle  \
+    parm [es edi] [cx] \
+    value [ebx];
+
+#pragma aux RdosCloseCFile = \
+    OsGate_close_c_file  \
+    parm [ebx];
+
+#pragma aux RdosGetCFileSize = \
+    OsGate_get_c_file_size  \
+    ValidateEax \
+    parm [ebx]  \
+    value [eax];
+
+#pragma aux RdosSetCFileSize = \
+    OsGate_set_c_file_size  \
+    parm [ebx] [eax];
+    
+#pragma aux RdosReadCFile = \
+    OsGate_read_c_file  \
+    ValidateEax \
+    parm [ebx] [es edi] [ecx] [edx]  \
+    value [eax] \
+    modify [edx];
+
+#pragma aux RdosWriteCFile = \
+    OsGate_write_c_file  \
+    ValidateEax \
+    parm [ebx] [es edi] [ecx] [edx]  \
+    value [eax] \
+    modify [edx];
+
+#pragma aux RdosGetCFileTime = \
+    OsGate_get_c_file_time  \
+    "mov fs:[esi],edx" \
+    "mov es:[edi],eax" \
+    parm [ebx] [fs esi] [es edi]  \
+    modify [eax edx];
+
+#pragma aux RdosSetCFileTime = \
+    OsGate_set_c_file_time  \
+    parm [ebx] [edx] [eax];
 
 #pragma aux RdosReadPciByte = \
     OsGate_read_pci_byte \

@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  free a block of memory from based heap
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -37,14 +37,14 @@
 #include "heapacc.h"
 
 
-_WCRTLINK void _bfree( __segment seg, void __based( void ) *offset )
+_WCRTLINK void _bfree( __segment seg, void_bptr cstg )
 {
     _AccessFHeap();
-    if( offset != _NULLOFF ) {
+    if( cstg != _NULLOFF ) {
         if( seg == _DGroup() ) {
-            _nfree( offset );
+            _nfree( cstg );
         } else {
-            __MemFree( (unsigned)offset, seg, 0 );
+            __MemFree( cstg, seg, 0 );
         }
     }
     _ReleaseFHeap();

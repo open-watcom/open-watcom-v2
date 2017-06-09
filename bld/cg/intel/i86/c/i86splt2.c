@@ -193,7 +193,8 @@ extern  name    *HighPart( name *tosplit, type_class_def class )
                 new_cons = tosplit->v.symbol;
             }
             op = HighPart( new_cons, class );
-            if( op->n.class == N_REGISTER ) return( op );
+            if( op->n.class == N_REGISTER )
+                return( op );
             new->v.symbol = op;
         }
         break;
@@ -661,7 +662,8 @@ static  void    Split8Name( instruction *ins, name *tosplit, eight_byte_name *ou
     out->mid_high = NULL;
     out->high     = NULL;
 
-    if( tosplit == NULL ) return;
+    if( tosplit == NULL )
+        return;
     switch( tosplit->n.class ) {
     case N_REGISTER:
         out->low      = AllocRegName( HW_DX );

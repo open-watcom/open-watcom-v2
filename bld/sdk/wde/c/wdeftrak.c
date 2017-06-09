@@ -43,12 +43,27 @@
 #include "wdesdup.h"
 #include "wdecctl.h"
 #include "wdeftrak.h"
+#include "wdedispa.h"
+
+
+/****************************************************************************/
+/* macro definitions                                                        */
+/****************************************************************************/
+
+#define pick_ACTS(o) \
+    pick_ACTION_DESTROY(o,pick) \
+    pick_ACTION_COPY(o,pick) \
+    pick_ACTION_VALIDATE_ACTION(o,pick) \
+    pick_ACTION_IDENTIFY(o,pick) \
+    pick_ACTION_GET_WINDOW_CLASS(o,pick) \
+    pick_ACTION_DEFINE(o,pick) \
+    pick_ACTION_GET_WND_PROC(o,pick)
 
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC     dispatcher;
+    DISPATCH_FN *dispatcher;
     OBJPTR      object_handle;
     OBJ_ID      object_id;
     OBJPTR      control;
@@ -57,7 +72,9 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL    CALLBACK WdeTrakDispatcher( ACTION, WdeTrakObject *, void *, void * );
+
+/* Local Window callback functions prototypes */
+WINEXPORT bool    CALLBACK WdeTrakDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeTrakSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -65,22 +82,19 @@ WINEXPORT LRESULT CALLBACK WdeTrakSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 static OBJPTR   WdeMakeTrak( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
 static OBJPTR   WdeTrackCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
-static BOOL     WdeTrakDestroy( WdeTrakObject *, BOOL *, void * );
-static BOOL     WdeTrakValidateAction( WdeTrakObject *, ACTION *, void * );
-static BOOL     WdeTrakCopyObject( WdeTrakObject *, WdeTrakObject **, WdeTrakObject * );
-static BOOL     WdeTrakIdentify( WdeTrakObject *, OBJ_ID *, void * );
-static BOOL     WdeTrakGetWndProc( WdeTrakObject *, WNDPROC *, void * );
-static BOOL     WdeTrakGetWindowClass( WdeTrakObject *, char **, void * );
-static BOOL     WdeTrakDefine( WdeTrakObject *, POINT *, void * );
 static void     WdeTrakSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeTrakGetDefineInfo( WdeDefineObjectInfo *, HWND );
-static BOOL     WdeTrakDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+static bool     WdeTrakDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+
+#define pick(e,n,c) static bool WdeTrak ## n ## c;
+    pick_ACTS( WdeTrakObject )
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeTrakDispatch;
+static DISPATCH_FN              *WdeTrakDispatch;
 static WdeDialogBoxControl      *WdeDefaultTrak = NULL;
 static int                      WdeTrakWndExtra;
 static WNDPROC                  WdeOriginalTrakProc;
@@ -89,18 +103,14 @@ static WNDPROC                  WdeOriginalTrakProc;
 #define WTRACKBAR_CLASS  TRACKBAR_CLASS
 
 static DISPATCH_ITEM WdeTrakActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeTrakDestroy          },
-    { COPY,             (DISPATCH_RTN *)WdeTrakCopyObject       },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeTrakValidateAction   },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeTrakIdentify         },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeTrakGetWindowClass   },
-    { DEFINE,           (DISPATCH_RTN *)WdeTrakDefine           },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeTrakGetWndProc       }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeTrak ## n},
+    pick_ACTS( WdeTrakObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS     (sizeof( WdeTrakActions ) / sizeof( DISPATCH_ITEM ))
 
-WINEXPORT OBJPTR CALLBACK WdeTrakCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeTrakCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeTrak( parent, obj_rect, handle, 0, "", TRACKBAR_OBJ ) );
@@ -149,11 +159,11 @@ OBJPTR WdeTrackCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new->dispatcher = WdeTrakDispatch;
+    OBJ_DISPATCHER_SET( new, WdeTrakDispatch );
     new->object_id = id;
 
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -166,24 +176,24 @@ OBJPTR WdeTrackCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+    if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeTrakCreate: SET_OBJECT_INFO failed!" );
-        Destroy( new->control, FALSE );
+        Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
 
-    if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
+    if( !Forward( new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeTrakCreate: CREATE_WINDOW failed!" );
-        Destroy( new->control, FALSE );
+        Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
-WINEXPORT BOOL CALLBACK WdeTrakDispatcher( ACTION act, WdeTrakObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeTrakDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -195,7 +205,7 @@ WINEXPORT BOOL CALLBACK WdeTrakDispatcher( ACTION act, WdeTrakObject *obj, void 
         }
     }
 
-    return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeTrakObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeTrakInit( bool first )
@@ -229,7 +239,7 @@ bool WdeTrakInit( bool first )
     WdeDefaultTrak = WdeAllocDialogBoxControl();
     if( WdeDefaultTrak == NULL ) {
         WdeWriteTrail( "WdeTrakInit: Alloc of control failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* set up the default control structure */
@@ -243,32 +253,32 @@ bool WdeTrakInit( bool first )
     SETCTL_TEXT( WdeDefaultTrak, NULL );
     SETCTL_CLASSID( WdeDefaultTrak, WdeStrToControlClass( WTRACKBAR_CLASS ) );
 
-    WdeTrakDispatch = MakeProcInstance( (FARPROC)WdeTrakDispatcher, WdeGetAppInstance() );
-    return( TRUE );
+    WdeTrakDispatch = MakeProcInstance_DISPATCHER( WdeTrakDispatcher, WdeGetAppInstance() );
+    return( true );
 }
 
 void WdeTrakFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultTrak );
-    FreeProcInstance( WdeTrakDispatch );
+    FreeProcInstance_DISPATCHER( WdeTrakDispatch );
 }
 
-BOOL WdeTrakDestroy( WdeTrakObject *obj, BOOL *flag, void *p2 )
+bool WdeTrakDestroy( WdeTrakObject *obj, bool *flag, bool *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeTrakDestroy: Control DESTROY failed" );
-        return( FALSE );
+        return( false );
     }
 
     WRMemFree( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTrakValidateAction( WdeTrakObject *obj, ACTION *act, void *p2 )
+bool WdeTrakValidateAction( WdeTrakObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 
@@ -277,32 +287,32 @@ BOOL WdeTrakValidateAction( WdeTrakObject *obj, ACTION *act, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeTrakActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
+    return( ValidateAction( obj->control, *act, p2 ) );
 }
 
-BOOL WdeTrakCopyObject( WdeTrakObject *obj, WdeTrakObject **new, WdeTrakObject *handle )
+bool WdeTrakCopyObject( WdeTrakObject *obj, WdeTrakObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeTrakCopyObject: Invalid new object!" );
-        return( FALSE );
+        return( false );
     }
 
     *new = (WdeTrakObject *)WRMemAlloc( sizeof( WdeTrakObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeTrakCopyObject: Object malloc failed" );
-        return( FALSE );
+        return( false );
     }
 
-    (*new)->dispatcher = obj->dispatcher;
+    OBJ_DISPATCHER_COPY( *new, obj );
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }
@@ -310,23 +320,23 @@ BOOL WdeTrakCopyObject( WdeTrakObject *obj, WdeTrakObject **new, WdeTrakObject *
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeTrakCopyObject: Control not created!" );
         WRMemFree( *new );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTrakIdentify( WdeTrakObject *obj, OBJ_ID *id, void *p2 )
+bool WdeTrakIdentify( WdeTrakObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTrakGetWndProc( WdeTrakObject *obj, WNDPROC *proc, void *p2 )
+bool WdeTrakGetWndProc( WdeTrakObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -334,10 +344,10 @@ BOOL WdeTrakGetWndProc( WdeTrakObject *obj, WNDPROC *proc, void *p2 )
 
     *proc = WdeTrakSuperClassProc;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTrakGetWindowClass( WdeTrakObject *obj, char **class, void *p2 )
+bool WdeTrakGetWindowClass( WdeTrakObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -345,10 +355,10 @@ BOOL WdeTrakGetWindowClass( WdeTrakObject *obj, char **class, void *p2 )
 
     *class = WTRACKBAR_CLASS;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeTrakDefine( WdeTrakObject *obj, POINT *pnt, void *p2 )
+bool WdeTrakDefine( WdeTrakObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
@@ -429,7 +439,7 @@ void WdeTrakGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 {
 #ifdef __NT__XX
     DialogStyle mask = 0;
-    BOOL        vert = FALSE;
+    bool        vert = false;
 
     // get the track bar settings
     if( IsDlgButtonChecked( hDlg, IDB_TBS_AUTOTICKS ) ) {
@@ -443,7 +453,7 @@ void WdeTrakGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     }
     if( IsDlgButtonChecked( hDlg, IDB_TBS_VERT ) ) {
         mask |= TBS_VERT;
-        vert = TRUE;
+        vert = true;
     }
     if( IsDlgButtonChecked( hDlg, IDB_TBS_TOP ) ) {
         if( !vert ) {
@@ -465,8 +475,7 @@ void WdeTrakGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
         mask |= TBS_NOTHUMB;
     }
 
-    SETCTL_STYLE( o_info->info.c.info,
-                  (GETCTL_STYLE( o_info->info.c.info ) & 0xffff0000) | mask );
+    SETCTL_STYLE( o_info->info.c.info, (GETCTL_STYLE( o_info->info.c.info ) & 0xffff0000) | mask );
 
     // get the extended control settings
     WdeEXGetDefineInfo( o_info, hDlg );
@@ -476,10 +485,10 @@ void WdeTrakGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
+bool WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
 #ifdef __NT__XX
-    BOOL    processed;
+    bool    processed;
     BOOL    flag;
     WORD    wp;
 
@@ -487,7 +496,7 @@ BOOL WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
     _wde_touch( mask );
     _wde_touch( lParam );
 
-    processed = FALSE;
+    processed = false;
 
     if( message == WM_COMMAND && GET_WM_COMMAND_CMD( wParam, lParam ) == BN_CLICKED ) {
         wp = LOWORD( wParam );
@@ -504,7 +513,7 @@ BOOL WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                 EnableWindow( GetDlgItem( hDlg, IDB_TBS_TOP ), TRUE );
                 EnableWindow( GetDlgItem( hDlg, IDB_TBS_BOTTOM ), TRUE );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_TBS_BOTH:
@@ -518,7 +527,7 @@ BOOL WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
             EnableWindow( GetDlgItem( hDlg, IDB_TBS_LEFT ), flag );
             EnableWindow( GetDlgItem( hDlg, IDB_TBS_TOP ), flag );
             EnableWindow( GetDlgItem( hDlg, IDB_TBS_BOTTOM ), flag );
-            processed = TRUE;
+            processed = true;
             break;
 
         case IDB_TBS_VERT:
@@ -532,7 +541,7 @@ BOOL WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                 EnableWindow( GetDlgItem( hDlg, IDB_TBS_TOP ), !flag );
                 EnableWindow( GetDlgItem( hDlg, IDB_TBS_BOTTOM ), !flag );
             }
-            processed = TRUE;
+            processed = true;
             break;
 
        case IDB_TBS_HORZ:
@@ -546,7 +555,7 @@ BOOL WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
                 EnableWindow( GetDlgItem( hDlg, IDB_TBS_TOP ), !flag );
                 EnableWindow( GetDlgItem( hDlg, IDB_TBS_BOTTOM ), !flag );
             }
-            processed = TRUE;
+            processed = true;
             break;
         }
     }
@@ -562,7 +571,7 @@ BOOL WdeTrakDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
 #endif
 }
 
-WINEXPORT LRESULT CALLBACK WdeTrakSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeTrakSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalTrakProc, hWnd, message, wParam, lParam ) );

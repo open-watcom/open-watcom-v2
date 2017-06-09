@@ -40,7 +40,7 @@ namespace std {
   // Construct an istrstream that reads from the characters starting at
   // str for length size.
 
-  istrstream::istrstream( signed char *str, int size )
+  istrstream::istrstream( signed char *str, streamsize size )
     : strstreambase( (char *)str, size, NULL ) {
   }
 

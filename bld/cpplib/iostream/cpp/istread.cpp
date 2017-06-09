@@ -42,7 +42,7 @@ namespace std {
   // Read up to "len" characters from the stream and store them in
   // buffer "buf".
 
-  istream &istream::read( char *buf, int len ) {
+  istream &istream::read( char *buf, streamsize len ) {
     __lock_it( __i_lock );
     if( ipfx1() ) {
         if( rdbuf()->in_avail() > len ) {

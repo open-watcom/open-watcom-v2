@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,15 +41,14 @@
 #include "clibext.h"
 
 
-void MADSysUnload( mad_sys_handle *sys_hdl )
+void MADSysUnload( mad_sys_handle sys_hdl )
 {
-    dlclose( *sys_hdl );
+    dlclose( sys_hdl );
 }
 
-mad_status MADSysLoad( const char *path, mad_client_routines *cli,
-                       mad_imp_routines **imp, mad_sys_handle *sys_hdl )
+mad_status MADSysLoad( const char *path, mad_client_routines *cli, mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
-    void                *shlib;
+    mad_sys_handle      shlib;
     mad_init_func       *init_func;
     char                newpath[_MAX_PATH];
     char                full_path[_MAX_PATH];
@@ -61,10 +61,10 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli,
         _searchenv( newpath, "PATH", full_path );
         shlib = dlopen( full_path, RTLD_NOW );
         if( shlib == NULL ) {
-            return( MS_ERR|MS_FOPEN_FAILED );
+            return( MS_ERR | MS_FOPEN_FAILED );
         }
     }
-    status = MS_ERR|MS_INVALID_MAD;
+    status = MS_ERR | MS_INVALID_MAD;
     init_func = (mad_init_func *)dlsym( shlib, "MADLOAD" );
     if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
         *sys_hdl = shlib;

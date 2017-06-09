@@ -202,8 +202,9 @@ dw_handle DWENTRY DWBeginSubroutine(
     dw_handle                   new;
     abbrev_code                 abbrev;
 
+    /* unused parameters */ (void)call_type;
+
     _Validate( name != NULL );
-    call_type = call_type;
     new = GetHandle( cli );
     if( flags & DW_FLAG_DECLARATION ){
         abbrev = AB_SUBROUTINE_DECL;
@@ -374,8 +375,8 @@ dw_handle DWENTRY DWBeginMemFuncDecl(
     dw_handle                   new;
     abbrev_code                 abbrev;
 
-    segment = segment;
-    loc = loc;
+    /* unused parameters */ (void)segment; (void)loc;
+
     new = GetHandle( cli );
 //  if( segment != NULL ){
 //      abbrev = AB_MEMFUNCDECLSEG;
@@ -558,7 +559,8 @@ dw_handle DWENTRY DWVariable(
     dw_handle                   new;
     abbrev_code                 abbrev;
 
-    start_scope = start_scope;
+    /* unused parameters */ (void)start_scope;
+
     _Validate( type != 0 );
     _Validate( name !=NULL );
     new = LabelNewHandle( cli );
@@ -610,7 +612,8 @@ dw_handle DWENTRY DWConstant(
     dw_handle                   new;
     abbrev_code                 abbrev;
 
-    start_scope = start_scope;
+    /* unused parameters */ (void)start_scope;
+
     _Validate( type != 0 );
     _Validate( name != NULL );
     new = LabelNewHandle( cli );

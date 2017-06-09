@@ -84,14 +84,18 @@ extern  void    RegInsert( score *sc, int dst_idx, int src_idx ) {
     for(;;) {
         next->list = src->list;
         next = next->next_reg;
-        if( next == dst ) break;
+        if( next == dst ) {
+            break;
+        }
     }
     next = src;
     gen_num = 0;
     for(;;) {
         next = next->next_reg;
         ++gen_num;
-        if( next == src ) break;
+        if( next == src ) {
+            break;
+        }
     }
     dst->generation = gen_num;
     src->prev_reg->next_reg = dst;
@@ -199,10 +203,7 @@ extern  void    RegKill( score *scoreboard, hw_reg_set regs ) {
                 scoreboard->prev_reg = scoreboard;
                 scoreboard->generation = 0;
             } else {
-                owner = scoreboard->list;
-                for( ; ; ) {
-                    curr_list = *owner;
-                    if( curr_list == NULL ) break;
+                for( owner = scoreboard->list; (curr_list = *owner) != NULL; ) {
                     if( curr_list->info.index_reg != NO_INDEX
                       && HW_Ovlap( ScoreList[curr_list->info.index_reg]->reg, regs ) ) {
                         *owner = curr_list->next;
@@ -226,10 +227,12 @@ extern  void    RegAdd( score *sc, int dst_idx, int src_idx ) {
 /*     NOT vice-versa. Ie: we just did a  MOV R(src_idx) ==> R(dst_idx)*/
 /*     or equivalent*/
 
-    if( ScoreList[dst_idx]->size != ScoreList[src_idx]->size ) return;
+    if( ScoreList[dst_idx]->size != ScoreList[src_idx]->size )
+        return;
     if( !ScAddOk( ScoreList[dst_idx]->reg, ScoreList[src_idx]->reg ) )
         return;
-    if( RegsEqual( sc, dst_idx, src_idx ) ) return;
+    if( RegsEqual( sc, dst_idx, src_idx ) )
+        return;
     MergeDown( sc, dst_idx, src_idx );
     MergeUp( sc, dst_idx, src_idx );
     RegInsert( sc, dst_idx, src_idx );

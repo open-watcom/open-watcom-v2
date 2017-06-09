@@ -305,7 +305,21 @@ typedef unsigned long       syscall_res;
 #define SYS_sched_setaffinity   241
 #define SYS_sched_getaffinity   242
 #define SYS_set_thread_area     243
-/* ... */
+#define SYS_get_thread_area     244
+#define SYS_io_setup            245
+#define SYS_io_destroy          246
+#define SYS_io_getevents        247
+#define SYS_io_submit           248
+#define SYS_io_cancel           249
+#define SYS_fadvise64           250
+/* 251 is not implemented */
+#define SYS_exit_group          252
+#define SYS_lookup_dcookie      253
+#define SYS_epoll_create        254
+#define SYS_epoll_ctl           255
+#define SYS_epoll_wait          256
+#define SYS_remap_file_pages    257
+#define SYS_set_tid_address     258
 #define SYS_timer_create        259
 #define SYS_timer_settime       260
 #define SYS_timer_gettime       261
@@ -315,6 +329,9 @@ typedef unsigned long       syscall_res;
 #define SYS_clock_gettime       265
 #define SYS_clock_getres        266
 #define SYS_clock_nanosleep     267
+#define SYS_statfs64            268
+#define SYS_fstatfs64           269
+#define SYS_tgkill              270
 
 /*
  * internal sub-numbers for SYS_socketcall
@@ -382,4 +399,5 @@ syscall_res sys_call5( u_long func, u_long r_ebx, u_long r_ecx, u_long r_edx, u_
     parm [eax] [ebx] [ecx] [edx] [esi] [edi]    \
     value [eax];
 
-#define _sys_exit(rc)   sys_call1n(SYS_exit, rc)
+#define _sys_exit_group(rc) sys_call1n(SYS_exit_group, rc)
+#define _sys_exit(rc)       sys_call1n(SYS_exit, rc)

@@ -1190,7 +1190,8 @@ static void do_fini_stuff( void )
 int main( int argc, char **argv )
 /*******************************/
 {
-    argc = argc;
+    /* unused parameters */ (void)argc;
+
 #ifndef __WATCOMC__
     _argv = argv;
     _argc = argc;

@@ -23,13 +23,13 @@
 
 #if defined(__PPC__)
  extern void *__builtin_va_start(va_list*, ...);
- #pragma intrinsic(__builtin_va_start);
+ #pragma intrinsic(__builtin_va_start)
  #define va_alist       void *__alist, ...
  #define va_dcl
  #define va_start(ap)   (__builtin_va_start(&ap,__alist,0))
 #elif defined(__AXP__)
  extern void *__builtin_va_start(va_list*, ...);
- #pragma intrinsic(__builtin_va_start);
+ #pragma intrinsic(__builtin_va_start)
  #define va_alist       void *__alist, ...
  #define va_dcl
  #define va_start(ap)   (__builtin_va_start(&ap,__alist,0))

@@ -123,7 +123,9 @@ void OWLENTRY OWLSectionFini( owl_section_handle section ) {
 
     // while user may be done with this section, we can't trash
     // it until we are ready to write the entire file
-    section = section;
+
+    /* unused parameters */ (void)section;
+
     _Log(( section->file, "OWLSectionFini( %x )\n", section ));
 }
 

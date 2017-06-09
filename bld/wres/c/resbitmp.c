@@ -38,9 +38,7 @@
 bool ResWriteBitmapInfoHeader( BitmapInfoHeader *head, WResFileID fid )
 /*********************************************************************/
 {
-    if( WRESWRITE( fid, head, sizeof( BitmapInfoHeader ) ) != sizeof( BitmapInfoHeader ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED )
-        return( true );
-    }
+    if( WRESWRITE( fid, head, sizeof( BitmapInfoHeader ) ) != sizeof( BitmapInfoHeader ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
     return( false );
 }

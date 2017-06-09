@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -77,7 +78,6 @@ static gui_menu_struct MDIMenu[] = {
     {  NULL,    GUI_MDI_TILE_VERT,      GUI_GRAYED,     NULL    },
     {  NULL,    GUI_MDI_ARRANGE_ICONS,  GUI_GRAYED,     NULL    },
 };
-#define NUM_MDI_MENUS ( sizeof( MDIMenu ) / sizeof( gui_menu_struct ) )
 
 static gui_menu_struct MDIFirstSepMenu[] = {
     {  NULL,    GUI_MDI_FIRST_SEPARATOR,    GUI_SEPARATOR,    NULL }
@@ -460,14 +460,15 @@ static void DlgInit( gui_window *wnd, void *param )
 
 static void DlgCount( gui_window *wnd, void *param )
 {
-    param = param;
-    wnd = wnd;
+    /* unused parameters */ (void)param; (void)wnd;
+
     TotalWindows++;
 }
 
 static void IconCount( gui_window *wnd, void *param )
 {
-    param = param;
+    /* unused parameters */ (void)param;
+
     if( GUIIsMinimized( wnd ) ) {
         TotalWindows++;
     }
@@ -573,7 +574,7 @@ void AddMDIActions( bool has_items, gui_window *wnd )
         GUIAppendMenuToPopup( wnd, GUIMDIMenuID, MDIFirstSepMenu, false );
     }
 
-    for( i = 0; i < NUM_MDI_MENUS; i++ ) {
+    for( i = 0; i < ARRAY_SIZE( MDIMenu ); i++ ) {
         GUIAppendMenuToPopup( wnd, GUIMDIMenuID, &MDIMenu[i], false );
     }
 }

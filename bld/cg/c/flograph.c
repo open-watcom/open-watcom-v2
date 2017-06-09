@@ -43,7 +43,7 @@
 
 extern  bool            FloodForward( block *, bool (*)( block *, void * ), void * );
 
-static  void            NewInterval( block *blk, interval_depth level );
+static  void            NewInterval( block *blk, level_depth level );
 
 static    interval_def  *Intervals;
 
@@ -216,8 +216,8 @@ static  void    FixLinks( void )
 }
 
 
-static  interval_def    *IntervalNo( block *blk, interval_depth level )
-/*********************************************************************/
+static  interval_def    *IntervalNo( block *blk, level_depth level )
+/******************************************************************/
 {
     interval_def        *curr;
 
@@ -237,7 +237,7 @@ static  bool    FindIntervals( void )
     interval_def        *curr;
     interval_def        *prev_int;
     interval_def        *test;
-    interval_depth      level;
+    level_depth         level;
     int                 num;
     int                 prev_num;
     bool                add;
@@ -260,7 +260,7 @@ static  bool    FindIntervals( void )
     level = 1;
     for( ;; ) {
         prev_num = num;
-        num = 1;                       /* at least one node at new level*/
+        num = 1;                       /* at least one node at new level */
         NewInterval( HeadBlock, level );
         for( blk = HeadBlock->next_block; blk != NULL; blk = blk->next_block ) {
             curr = IntervalNo( blk, level - 1 );
@@ -270,19 +270,19 @@ static  bool    FindIntervals( void )
                 add = false;
                 for( ;; ) {
                     test = IntervalNo( edge->source, level - 1 );
-                                                /* guess - internal edge*/
+                                                /* guess - internal edge */
                     if( test != curr ) {
-                                                /* guess - lower level head*/
+                                                /* guess - lower level head */
                         test = test->parent;
                         if( test == NULL ) {
                             add = true;
                             break;
                         }
-                                                /* guess - no other predecessor*/
+                                                /* guess - no other predecessor */
                         if( prev_int == NULL ) {
                             prev_int = test;
                         } else {
-                                                /* guess - different predecessor*/
+                                                /* guess - different predecessor */
                             if( test != prev_int ) {
                                 add = true;
                                 break;
@@ -294,20 +294,20 @@ static  bool    FindIntervals( void )
                         break;
                     }
                 }
-                if( add == false ) {
+                if( !add ) {
                     curr->parent = prev_int;
                     prev_int->last_block = curr->last_block;
                     for( test = prev_int->sub_int; test->next_sub_int != NULL; ) {
                         test = test->next_sub_int;
                     }
                     test->next_sub_int = curr;
-                } else {                        /* admit - create a new interval*/
+                } else {                        /* admit - create a new interval */
                     NewInterval( blk, level );
                     num ++;
                 }
             }
         }
-        ++ level;
+        ++level;
         if( num == prev_num || num == 1 ) {
             break;
         }
@@ -318,8 +318,8 @@ static  bool    FindIntervals( void )
 
 static  void    ReorderBlocks( void )
 /***********************************/
-/*   Reorder blocks according to the interval ordering*/
-/*   This allows each interval to be identified as a continuous range of blocks*/
+/*   Reorder blocks according to the interval ordering */
+/*   This allows each interval to be identified as a continuous range of blocks */
 {
     interval_def        *curr;
     block               *last_block;
@@ -378,8 +378,8 @@ static  void    EdgeLevels( void )
 }
 
 
-static  void    NewInterval( block *blk, interval_depth level )
-/*************************************************************/
+static  void    NewInterval( block *blk, level_depth level )
+/**********************************************************/
 {
     interval_def        *prev;
     interval_def        *new;
@@ -402,7 +402,7 @@ static  void    NestingDepth( void )
 /**********************************/
 {
     block               *blk;
-    interval_depth      level;
+    level_depth         level;
     interval_def        *interval;
     block_edge          *edge;
     block               *target;
@@ -411,14 +411,14 @@ static  void    NestingDepth( void )
 
     for( interval = BlockList->u.interval->parent; interval->parent != NULL; interval = interval->parent ) {
         level = interval->level - 1;
-        /* borrow 'next_block'*/
-        /* identify all back edges at this level*/
+        /* borrow 'next_block' */
+        /* identify all back edges at this level */
         for( blk = BlockList; blk != NULL; blk = blk->prev_block ) {
             blk->next_block = NULL;
             for( i = blk->targets; i-- > 0; ) {
                 edge = &blk->edge[i];
                 target = edge->destination.u.blk;
-                if( target->id <= blk->id ) {     /* if back edge*/
+                if( target->id <= blk->id ) {     /* if back edge */
                     if( edge->join_level == level ) {
                         blk->next_block = target;
                         if( blk->loop_head == NULL ) {
@@ -439,8 +439,8 @@ static  void    NestingDepth( void )
                         if( edge->join_level <= level ) {
                             target = edge->destination.u.blk->next_block;
                             if( target != NULL ) {
-                                blk->depth ++;
-                                blk->next_block = target;  /* store head in node*/
+                                blk->depth++;
+                                blk->next_block = target;  /* store head in node */
                                 if( blk->loop_head == NULL && blk != target ) {
                                     blk->loop_head = target;
                                 }
@@ -452,13 +452,13 @@ static  void    NestingDepth( void )
                     }
                 }
             }
-            if( change == false ) {
+            if( !change ) {
                 break;
             }
         }
     }
 
-/*   Restore 'next_block'*/
+/*   Restore 'next_block' */
 
     HeadBlock = NULL;
     for( blk = BlockList; blk != NULL; blk = blk->prev_block ) {
@@ -541,7 +541,7 @@ extern  void    MakeFlowGraph( void )
                 Irreducable();
             }
        } else {
-            /* irreducable flow graph. repair prev_block links*/
+            /* irreducable flow graph. repair prev_block links */
             Irreducable();
         }
         KillIntervals();

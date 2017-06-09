@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -64,6 +65,8 @@
 #include "digcli.h"
 #include "digld.h"
 #include "utils.h"
+#include "sampinfo.h"
+#include "wpdata.h"
 
 #include "clibext.h"
 
@@ -143,7 +146,8 @@ dig_fhandle DIGLoader( Open )( const char *name, size_t name_len, const char *ex
     char        *filename;
     int         fd;
 
-    max_result = max_result;
+    /* unused parameters */ (void)max_result;
+
     memcpy( realname, name, name_len );
     realname[name_len] = '\0';
     if( ext != NULL && *ext != NULLCHAR ) {

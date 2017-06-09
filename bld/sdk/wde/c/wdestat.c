@@ -40,11 +40,11 @@
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#define STATUS_FONTNAME   "Helv"
-#define STATUS_POINTSIZE  8
-#define MAX_STATUS_TEXT   MAX_NAME
-#define STATUS_LINE_PAD   4
-#define STATUS1_WIDTH     160
+#define STATUS_FONTFACENAME     "Helv"
+#define STATUS_FONTPOINTSIZE    8
+#define MAX_STATUS_TEXT         MAX_NAME
+#define STATUS_LINE_PAD         4
+#define STATUS1_WIDTH           160
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -100,35 +100,35 @@ bool WdeCreateStatusLine( HWND main, HINSTANCE inst )
     HFONT               old_font;
     HDC                 dc;
     status_block_desc   sbd;
-    char                *status_font;
+    char                *font_facename;
     char                *cp;
-    int                 point_size;
+    int                 font_pointsize;
     bool                use_default;
 
     memset( &lf, 0, sizeof( LOGFONT ) );
     dc = GetDC( main );
     lf.lfWeight = FW_BOLD;
-    use_default = TRUE;
+    use_default = true;
 
-    status_font = WdeAllocRCString( WDE_STATUSFONT );
-    if( status_font != NULL ) {
-        cp = (char *)_mbschr( (unsigned char *)status_font, '.' );
+    font_facename = WdeAllocRCString( WDE_STATUSFONT );
+    if( font_facename != NULL ) {
+        cp = (char *)_mbschr( (unsigned char *)font_facename, '.' );
         if( cp != NULL ) {
             *cp = '\0';
-            strcpy( lf.lfFaceName, status_font );
+            strcpy( lf.lfFaceName, font_facename );
             cp++;
-            point_size = atoi( cp );
-            use_default = FALSE;
+            font_pointsize = atoi( cp );
+            use_default = false;
         }
-        WdeFreeRCString( status_font );
+        WdeFreeRCString( font_facename );
     }
 
     if( use_default ) {
-        strcpy( lf.lfFaceName, STATUS_FONTNAME );
-        point_size = STATUS_POINTSIZE;
+        strcpy( lf.lfFaceName, STATUS_FONTFACENAME );
+        font_pointsize = STATUS_FONTPOINTSIZE;
     }
 
-    lf.lfHeight = -MulDiv( point_size, GetDeviceCaps( dc, LOGPIXELSY ), 72 );
+    lf.lfHeight = -MulDiv( font_pointsize, GetDeviceCaps( dc, LOGPIXELSY ), 72 );
     WdeStatusFont = CreateFontIndirect( &lf );
     old_font = SelectObject( dc, WdeStatusFont );
     GetTextMetrics( dc, &tm );
@@ -147,8 +147,8 @@ bool WdeCreateStatusLine( HWND main, HINSTANCE inst )
 
     sbd.separator_width = STATUS_LINE_PAD;
     sbd.width = STATUS1_WIDTH;
-    sbd.width_is_percent = FALSE;
-    sbd.width_is_pixels = TRUE;
+    sbd.width_is_percent = false;
+    sbd.width_is_pixels = true;
 
     StatusWndSetSeparators( WdeStatusBar, 1, &sbd );
 
@@ -183,11 +183,11 @@ void WdeResizeStatusWindows( RECT *rect )
 
 bool WdeSetStatusReadyText( void )
 {
-    WdeSetStatusText( NULL, "", FALSE );
-    return( WdeSetStatusByID( WDE_READYMSG, WDE_NONE ) );
+    WdeSetStatusText( NULL, "", false );
+    return( WdeSetStatusByID( WDE_READYMSG, 0 ) );
 }
 
-bool WdeSetStatusByID( DWORD id1, DWORD id2 )
+bool WdeSetStatusByID( msg_id id1, msg_id id2 )
 {
     char        *str1;
     char        *str2;
@@ -197,15 +197,15 @@ bool WdeSetStatusByID( DWORD id1, DWORD id2 )
     str1 = NULL;
     str2 = NULL;
 
-    if( id1 != WDE_NONE ) {
+    if( id1 > 0 ) {
         str1 = WdeAllocRCString( id1 );
     }
 
-    if( id2 != WDE_NONE ) {
+    if( id2 > 0 ) {
         str2 = WdeAllocRCString( id2 );
     }
 
-    ret = WdeSetStatusText( str1, str2, TRUE );
+    ret = WdeSetStatusText( str1, str2, true );
 
     if( str1 != NULL ) {
         WdeFreeRCString( str1 );
@@ -218,7 +218,7 @@ bool WdeSetStatusByID( DWORD id1, DWORD id2 )
     return( ret );
 }
 
-bool WdeSetStatusText( const char *status1, const char *status2, int redisplay )
+bool WdeSetStatusText( const char *status1, const char *status2, bool redisplay )
 {
     int len;
     int pos;

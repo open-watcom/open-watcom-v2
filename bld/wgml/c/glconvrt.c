@@ -2067,7 +2067,8 @@ void    lay_convert( lay_tag ltag )
 {
     char        *   p;
 
-    ltag = ltag;
+    /* unused parameters */ (void)ltag;
+
     p = scan_start;
     scan_start = scan_stop;
 

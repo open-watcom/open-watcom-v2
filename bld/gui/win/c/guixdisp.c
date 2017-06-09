@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -51,8 +52,6 @@ static MessageTypes Types[] = {
  {  MB_SYSTEMMODAL,             GUI_SYSTEMMODAL         }
 };
 
-#define NUM_STYLES ( sizeof( Types ) / sizeof( MessageTypes ) )
-
 /*
  * GUIDisplayMessage - display a message with requested types of icon and
  *                      return user's response.
@@ -73,7 +72,7 @@ gui_message_return GUIDisplayMessage( gui_window *wnd,
         return( GUI_RET_ABORT );
     }
     style = 0;
-    for( i = 0; i < NUM_STYLES; i++ ) {
+    for( i = 0; i < ARRAY_SIZE( Types ); i++ ) {
         if( type & Types[i].type ) {
             style |= Types[i].style;
         }

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,18 +40,16 @@
 #include "dlgsamp.h"
 #include "utils.h"
 #include "wpdriver.h"
+#include "sampinfo.h"
+#include "wpdata.h"
 
 #include "clibext.h"
-
-
-extern char     SamplePath[_MAX_PATH];
 
 
 static char * sampFilterList = {
     "Sample Files (*.smp)\0*.smp\0"
     ALLFILES
 };
-
 
 
 bool WPSampFound( void )
@@ -75,12 +74,12 @@ bool WPSampFound( void )
 
 
 
-extern void DlgOpenSample( void )
-/*******************************/
+void DlgOpenSample( void )
+/************************/
 {
     for( ;; ) {
-        if( !DlgFileBrowse( LIT( Enter_Sample ), sampFilterList, SamplePath,
-                            sizeof( SamplePath ), 0 ) ) break;
+        if( !DlgFileBrowse( LIT( Enter_Sample ), sampFilterList, SamplePath, _MAX_PATH, 0 ) )
+            break;
         if( WPSampFound() ) {
             OpenSample();
             break;

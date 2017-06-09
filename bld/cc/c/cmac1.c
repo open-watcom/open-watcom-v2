@@ -48,7 +48,7 @@ typedef struct tokens {
 
 typedef struct macro_token {
     struct macro_token  *next;
-    TOKEN               token;  
+    TOKEN               token;
     char                data[1];
 } MACRO_TOKEN;
 
@@ -83,7 +83,6 @@ static struct special_macro_names  SpcMacros[] = {
     { "__LINE__",           MACRO_LINE          },
     { "__STDC__",           MACRO_STDC          },
     { "__STDC_HOSTED__",    MACRO_STDC_HOSTED   },
-    { "__STDC_LIB_EXT1__",  MACRO_STDC_LIB_EXT1 },
     { "__STDC_VERSION__",   MACRO_STDC_VERSION  },
     { "__TIME__",           MACRO_TIME          },
     { NULL,                 0                   }
@@ -183,10 +182,8 @@ void GetMacroToken( void )
     MACRO_TOKEN     *mtok;
     size_t          len;
     char            *buf;
-    struct {
-        unsigned keep_token : 1;
-        unsigned next_token : 1;
-    } flag;
+    bool            keep_token;
+    bool            next_token;
 
     buf = Buffer;
     buf[0] = '\0';
@@ -199,8 +196,8 @@ void GetMacroToken( void )
             len++;
         }
         TokenLen = len;
-        flag.keep_token = false;
-        flag.next_token = false;
+        keep_token = false;
+        next_token = false;
         switch( CurToken ) {
         case T_UNEXPANDABLE_ID:
             CalcHash( buf, len );
@@ -236,7 +233,7 @@ void GetMacroToken( void )
                     ++tcur;
                     ++tbeg;
                 }
-                flag.keep_token = true;
+                keep_token = true;
             }
             break;
         case T_LSTRING:
@@ -252,16 +249,16 @@ void GetMacroToken( void )
             if( mtok->data[0] == 'Z' ) {    // if end of macro
                 DeleteNestedMacro();
             }
-            flag.next_token = true;
+            next_token = true;
             break;
         default:
             break;
         }
-        if( !flag.keep_token ) {
+        if( !keep_token ) {
             TokenList = mtok->next;
             CMemFree( mtok );
         }
-        if( !flag.next_token ) {
+        if( !next_token ) {
             break;
         }
     }
@@ -362,11 +359,6 @@ TOKEN SpecialMacro( special_macros spc_macro )
         Buffer[1] = '\0';
         Constant = 1;
         ConstType = TYPE_INT;
-        return( T_CONSTANT );
-    case MACRO_STDC_LIB_EXT1:
-        CPYLIT( Buffer, "200509L" );
-        Constant = 200509;
-        ConstType = TYPE_LONG;
         return( T_CONSTANT );
     case MACRO_STDC_VERSION:
         if( CompFlags.c99_extensions ) {

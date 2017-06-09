@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -340,14 +340,13 @@ void __VersionEnforcement( void )
 }
 #endif
 
-_NORETURN void __exit( unsigned rc )
+_WCNORETURN void __exit( unsigned rc )
 {
     __FiniRtns( 0, InitFiniLevel );
 /*
  * Netware has own _exit procedure
  */
     _exit( rc );
-    // never return
 }
 
 unsigned short __GETDS( void )

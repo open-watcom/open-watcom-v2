@@ -279,7 +279,7 @@ _WCRTLINK extern wchar_t  *_wcsupr( wchar_t * );
 _WCRTLINK extern wchar_t  *_wcsrev( wchar_t * );
 _WCRTLINK extern wchar_t  *_wcsset( wchar_t *, wchar_t );
 _WCRTLINK extern wchar_t  *_wmktemp( wchar_t *__template );
-_WCRTLINK extern wchar_t  *_wtempnam( wchar_t *__dir, wchar_t *__prefix );
+_WCRTLINK extern wchar_t  *_wtempnam( const wchar_t *__dir, const wchar_t *__prefix );
 
 :: Also in stdint.h
 #define WCHAR_MIN       0

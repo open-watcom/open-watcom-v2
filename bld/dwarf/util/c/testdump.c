@@ -310,7 +310,7 @@ static char *getName( uint_32 value, readable_name *table, size_t size ) {
 
 static char *getTAG( uint_32 value ) {
 
-    static char                 buf[ 30 ];
+    static char                 buf[30];
     char *                      result;
 
     result = getName( value, readableTAGs, NUM_TAGS );
@@ -324,7 +324,7 @@ static char *getTAG( uint_32 value ) {
 
 static char *getFORM( uint_32 value ) {
 
-    static char                 buf[ 30 ];
+    static char                 buf[30];
     char *                      result;
 
     result = getName( value, readableFORMs, NUM_FORMS );
@@ -338,7 +338,7 @@ static char *getFORM( uint_32 value ) {
 
 static char *getAT( uint_32 value ) {
 
-    static char                 buf[ 30 ];
+    static char                 buf[30];
     char *                      result;
 
     result = getName( value, readableATs, NUM_ATS );
@@ -356,8 +356,8 @@ static void dumpHex( const unsigned_8 *input, uint length, int offsets )
     int         i;
     uint        offset;
     uint        old_offset;
-    char        hex[ 80 ];
-    char        printable[ 17 ];
+    char        hex[80];
+    char        printable[17];
     int         ch;
 
     if( offsets ) {
@@ -376,14 +376,14 @@ static void dumpHex( const unsigned_8 *input, uint length, int offsets )
             if( i == 0x8 ) {
                 *p++ = ' ';
             }
-            ch = input[ offset ];
+            ch = input[offset];
             p += sprintf( p, " %02x", ch );
-            printable[ i ] = isprint( ch ) ? ch : '.';
+            printable[i] = isprint( ch ) ? ch : '.';
             ++i;
             ++offset;
         }
         *p = 0;
-        printable[ i ] = 0;
+        printable[i] = 0;
         printf( "%08x:%-49s <%s>\n", old_offset, hex, printable );
         p = printable;
         i = 0;
@@ -438,8 +438,8 @@ uint_8 *findAbbrev( uint_32 code, uint_32 start ) {
     uint_32     tmp;
     uint_32     attr;
 
-    p = Sections[ DW_DEBUG_ABBREV ].data + start;
-    stop = p + Sections[ DW_DEBUG_ABBREV ].max_offset;
+    p = Sections[DW_DEBUG_ABBREV].data + start;
+    stop = p + Sections[DW_DEBUG_ABBREV].max_offset;
     for(;;) {
         if( p >= stop ) return( NULL );
         p = DecodeULEB128( p, &tmp );
@@ -460,11 +460,11 @@ uint_8 *findAbbrev( uint_32 code, uint_32 start ) {
 
 static void printf_debug_str( unsigned int offset )
 {
-    if( offset > Sections[ DW_DEBUG_STR ].max_offset ) {
+    if( offset > Sections[DW_DEBUG_STR].max_offset ) {
         printf( "\tstring @ .debug_str+%u (invalid offset)\n",
                offset );
     } else {
-        printf( "\t\"%s\"\n", Sections[ DW_DEBUG_STR ].data + offset );
+        printf( "\t\"%s\"\n", Sections[DW_DEBUG_STR].data + offset );
     }
 }
 
@@ -610,7 +610,7 @@ static void dumpInfo( const uint_8 *input, uint length ) {
 }
 
 
-extern void dumpAbbrevs( const unsigned_8 *input, uint length ) {
+void dumpAbbrevs( const unsigned_8 *input, uint length ) {
 
     const uint_8 *p;
     uint_32     tmp;
@@ -649,7 +649,7 @@ extern void dumpAbbrevs( const unsigned_8 *input, uint length ) {
 
 static char *getStandardOp( uint_8 value ) {
 
-    static char                 buf[ 30 ];
+    static char                 buf[30];
     char *                      result;
 
     result = getName( value, readableStandardOps, NUM_STANDARD_OPS );
@@ -761,9 +761,9 @@ static void dumpLines(
         opcode_lengths = alloca( sizeof( uint ) * opcode_base );
         printf( "standard_opcode_lengths:\n" );
         for( u = 0; u < opcode_base - 1; ++u ) {
-            opcode_lengths[ u ] = *p;
+            opcode_lengths[u] = *p;
             ++p;
-            printf( "%4u: %u\n", u + 1, opcode_lengths[ u ] );
+            printf( "%4u: %u\n", u + 1, opcode_lengths[u] );
         }
 
         printf( "-- current_offset = %08x\n", p - input );
@@ -906,7 +906,7 @@ static void dumpLines(
                     state.address += tmp;
                     break;
                 default:
-                    for( u = 0; u < opcode_lengths[ op_code - 1 ]; ++u ) {
+                    for( u = 0; u < opcode_lengths[op_code - 1]; ++u ) {
                         p = DecodeLEB128( p, &itmp );
                         printf( " %08lx", itmp );
                     }
@@ -932,7 +932,7 @@ hacky:
 
 static char *getReferenceOp( uint_8 value ) {
 
-    static char                 buf[ 30 ];
+    static char                 buf[30];
     char *                      result;
 
     result = getName( value, readableReferenceOps, NUM_REFERENCE_OPS );
@@ -1161,28 +1161,28 @@ void DumpSections( void ) {
     sortTables();
     sect = 0;
     for(;;) {
-        printf( "%s:\n", sectionNames[ sect ] );
+        printf( "%s:\n", sectionNames[sect] );
         switch( sect ) {
         case DW_DEBUG_ABBREV:
-            dumpAbbrevs( Sections[ sect ].data, Sections[ sect ].max_offset );
+            dumpAbbrevs( Sections[sect].data, Sections[sect].max_offset );
             break;
         case DW_DEBUG_INFO:
-            dumpInfo( Sections[ sect ].data, Sections[ sect ].max_offset );
+            dumpInfo( Sections[sect].data, Sections[sect].max_offset );
             break;
         case DW_DEBUG_LINE:
-            dumpLines( Sections[ sect ].data, Sections[ sect ].max_offset );
+            dumpLines( Sections[sect].data, Sections[sect].max_offset );
             break;
         case DW_DEBUG_REF:
-            dumpRef( Sections[ sect ].data, Sections[ sect ].max_offset );
+            dumpRef( Sections[sect].data, Sections[sect].max_offset );
             break;
         case DW_DEBUG_ARANGES:
-            dumpARanges( Sections[ sect ].data, Sections[ sect ].max_offset );
+            dumpARanges( Sections[sect].data, Sections[sect].max_offset );
             break;
         case DW_DEBUG_STR:
             // Strings are displayed when dumping other sections
             break;
         default:
-            dumpHex( Sections[ sect ].data, Sections[ sect ].max_offset, 0 );
+            dumpHex( Sections[sect].data, Sections[sect].max_offset, 0 );
             break;
         }
         ++sect;

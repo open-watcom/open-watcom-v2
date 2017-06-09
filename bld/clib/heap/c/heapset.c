@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Internal heap free space filling
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -39,40 +39,24 @@
 #include "heapacc.h"
 
 
-#if defined(__386__)
-#define STOSW   0x66 0xab
-#define _DI     edi
-#define _CX     ecx
-#else
-#define STOSW   0xab
-#define _DI     di
-#define _CX     cx
-#endif
+#define HEAP(s)     ((XBPTR(heapblkp, s))0)
+#define FRLPTR(s)   XBPTR(freelistp, s)
 
-extern  void    far_memset(void _WCFAR *,int,unsigned);
-#pragma aux     far_memset = \
-        0xd1 0xe9       /* shr cx,1 */\
-        0xf3 STOSW      /* rep stosw */\
-        0x11 0xc9       /* adc cx,cx */\
-        0xf3 0xaa       /* rep stosb */\
-        parm caller [es _DI] [ax] [_CX] \
-        modify exact [_DI _CX];
-
-
+extern  void    _mymemset(void_fptr,unsigned,unsigned);
+#pragma aux     _mymemset = \
+        memset_i86          \
+    parm caller [es di] [ax] [cx] modify exact [ax di cx]
 
 int __HeapSet( __segment seg, unsigned int fill )
 {
-    farfrlptr       curr;
-    heapblk         _WCFAR *p;
+    FRLPTR( seg )   frl;
 
-    fill |= fill << 8;
     _AccessFHeap();
-    for( ; seg != _NULLSEG; seg = p->nextseg ) {
-        p = MK_FP( seg, 0 );
-        curr = MK_FP( seg, p->freehead.next );
-        while( FP_OFF( curr ) != offsetof( heapblk, freehead ) ) {
-            far_memset( (void _WCFAR *)( curr + 1 ), fill, curr->len - sizeof( frl ) );
-            curr = MK_FP( seg, curr->next );
+    for( ; seg != _NULLSEG; seg = HEAP( seg )->nextseg ) {
+        frl = HEAP( seg )->freehead.next;
+        while( FP_OFF( frl ) != offsetof( heapblk, freehead ) ) {
+            _mymemset( frl + 1, fill, frl->len - sizeof( freelistp ) );
+            frl = frl->next;
         }
     }
     _ReleaseFHeap();

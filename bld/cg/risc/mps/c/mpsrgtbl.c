@@ -379,11 +379,14 @@ static  reg_set_index   IsSets[] = {
 reg_set_index RegIntersect( reg_set_index s1, reg_set_index s2 )
 /**************************************************************/
 {
-    if( s1 == s2 ) return( s1 );
+    if( s1 == s2 )
+        return( s1 );
     switch( _Combine( s1, s2 ) ) {
     default:
-        if( s1 == RL_NUMBER_OF_SETS ) return( s2 );
-        if( s2 == RL_NUMBER_OF_SETS ) return( s1 );
+        if( s1 == RL_NUMBER_OF_SETS )
+            return( s2 );
+        if( s2 == RL_NUMBER_OF_SETS )
+            return( s1 );
         return( RL_ );
     }
 }
@@ -392,7 +395,7 @@ reg_set_index RegIntersect( reg_set_index s1, reg_set_index s2 )
 hw_reg_set InLineParm( hw_reg_set regs, hw_reg_set used )
 /*******************************************************/
 {
-    used = used;
+    /* unused parameters */ (void)used;
 
     return( regs );
 }
@@ -498,10 +501,10 @@ reg_set_index SegIndex( void )
 }
 
 
-reg_set_index NoSegments( reg_set_index idx )
-/*******************************************/
+reg_set_index NoSegments( reg_set_index regs_idx )
+/************************************************/
 {
-    return( idx );
+    return( regs_idx );
 }
 
 
@@ -510,9 +513,8 @@ reg_set_index IndexIntersect( reg_set_index curr,
                                       bool is_temp_index )
 /*********************************************************/
 {
-    curr = curr;
-    class = class;
-    is_temp_index = is_temp_index;
+    /* unused parameters */ (void)curr; (void)class; (void)is_temp_index;
+
     return( RL_DWORD );
 }
 
@@ -523,10 +525,12 @@ bool IsIndexReg( hw_reg_set reg, type_class_def class,
 {
     hw_reg_set          *dregs;
 
-    is_temp_index = is_temp_index;
-    class = class;
+    /* unused parameters */ (void)class; (void)is_temp_index;
+
     for( dregs = &DWordRegs[0]; !HW_CEqual( *dregs, HW_EMPTY ); ++dregs ) {
-        if( HW_Equal( *dregs, reg ) ) return( true );
+        if( HW_Equal( *dregs, reg ) ) {
+            return( true );
+        }
     }
     return( false );
 }
@@ -535,8 +539,8 @@ bool IsIndexReg( hw_reg_set reg, type_class_def class,
 bool IndexRegOk( hw_reg_set reg, bool is_temp_index )
 /***************************************************/
 {
-    is_temp_index = is_temp_index;
-    reg = reg;
+    /* unused parameters */ (void)reg; (void)is_temp_index;
+
     return( false );
 }
 
@@ -544,7 +548,8 @@ bool IndexRegOk( hw_reg_set reg, bool is_temp_index )
 bool IsSegReg( hw_reg_set regs )
 /******************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( false );
 }
 
@@ -577,7 +582,8 @@ type_class_def RegClass( hw_reg_set regs )
 hw_reg_set Low16Reg( hw_reg_set regs )
 /************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( HW_EMPTY );
 }
 
@@ -585,7 +591,8 @@ hw_reg_set Low16Reg( hw_reg_set regs )
 hw_reg_set High16Reg( hw_reg_set regs )
 /*************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( HW_EMPTY );
 }
 
@@ -593,7 +600,8 @@ hw_reg_set High16Reg( hw_reg_set regs )
 hw_reg_set Low32Reg( hw_reg_set regs )
 /************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( HW_EMPTY );
 }
 
@@ -601,7 +609,8 @@ hw_reg_set Low32Reg( hw_reg_set regs )
 hw_reg_set High32Reg( hw_reg_set regs )
 /*************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( HW_EMPTY );
 }
 
@@ -609,7 +618,8 @@ hw_reg_set High32Reg( hw_reg_set regs )
 hw_reg_set High48Reg( hw_reg_set regs )
 /*************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( HW_EMPTY );
 }
 
@@ -617,7 +627,8 @@ hw_reg_set High48Reg( hw_reg_set regs )
 hw_reg_set Low48Reg( hw_reg_set regs )
 /************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( HW_EMPTY );
 }
 
@@ -633,7 +644,9 @@ hw_reg_set Low64Reg( hw_reg_set regs )
     if( HW_CEqual( regs, HW_EMPTY ) )
         return( HW_EMPTY );
     for( order = Reg64Order; ; ++order ) {
-        if( HW_Ovlap( *order, regs ) ) break;
+        if( HW_Ovlap( *order, regs ) ) {
+            break;
+        }
     }
     low = regs;
     HW_OnlyOn( low, *order );
@@ -691,7 +704,6 @@ hw_reg_set LowReg( hw_reg_set regs )
 hw_reg_set FullReg( hw_reg_set regs )
 /***********************************/
 {
-    regs = regs;
     return( regs );
 }
 
@@ -702,7 +714,9 @@ bool IsRegClass( hw_reg_set regs, type_class_def class )
     hw_reg_set  *list;
 
     for( list = RegSets[IsSets[class]]; !HW_CEqual( *list, HW_EMPTY ); ++list ) {
-        if( HW_Equal( *list, regs ) ) return( true );
+        if( HW_Equal( *list, regs ) ) {
+            return( true );
+        }
     }
     return( false );
 }
@@ -847,13 +861,19 @@ byte    RegTrans( hw_reg_set reg )
      * This should be cached in the reg name and used instead of a stupid lookup
      */
     for( i = 0; i < sizeof( GeneralRegs ) / sizeof( GeneralRegs[0] ); i++ ) {
-        if( HW_Subset( GeneralRegs[i], reg ) ) return( i );
+        if( HW_Subset( GeneralRegs[i], reg ) ) {
+            return( i );
+        }
     }
     for( i = 0; i < sizeof( QWordRegs ) / sizeof( QWordRegs[0] ); i++ ) {
-        if( HW_Subset( QWordRegs[i], reg ) ) return( i * 2 + 2 );
+        if( HW_Subset( QWordRegs[i], reg ) ) {
+            return( i * 2 + 2 );
+        }
     }
     for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {
-        if( HW_Equal( reg, FloatRegs[i] ) ) return( i );
+        if( HW_Equal( reg, FloatRegs[i] ) ) {
+            return( i );
+        }
     }
     return( 0 );
 }
@@ -869,10 +889,14 @@ mips_regn RegTransN( name *reg_name )
     reg = reg_name->r.reg;
 
     for( i = 0; i < sizeof( GeneralRegs ) / sizeof( GeneralRegs[0] ); i++ ) {
-        if( HW_Subset( GeneralRegs[i], reg ) ) return( i + MIPS_REGN_r0 );
+        if( HW_Subset( GeneralRegs[i], reg ) ) {
+            return( i + MIPS_REGN_r0 );
+        }
     }
     for( i = 0; i < sizeof( FloatRegs ) / sizeof( FloatRegs[0] ); i++ ) {
-        if( HW_Equal( reg, FloatRegs[i] ) ) return( i + MIPS_REGN_f0 );
+        if( HW_Equal( reg, FloatRegs[i] ) ) {
+            return( i + MIPS_REGN_f0 );
+        }
     }
     _Zoiks( ZOIKS_031 );
     return( MIPS_REGN_END );
@@ -885,8 +909,8 @@ void SetArchIndex( name *new_r, hw_reg_set regs )
 }
 
 
-hw_reg_set      FirstReg( reg_set_index index )
-/**********************************************
+hw_reg_set      FirstReg( reg_set_index regs_idx )
+/*************************************************
     The table RTInfo[] uses reg_set_indexes instead of hw_reg_sets since
     they are only one byte long.  This retrieves the first hw_reg_set
     from the reg_set table "index".
@@ -896,5 +920,5 @@ hw_reg_set      FirstReg( reg_set_index index )
     register list and returns it.
 */
 {
-    return( *RegSets[index] );
+    return( *RegSets[regs_idx] );
 }

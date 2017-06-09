@@ -85,15 +85,17 @@ int main( void )
 
     /*printf( "extern UINT8 IsArray[] = {\n" );*/
     printf( "/*STRM_MAGIC*/  0,\n" );
-    printf( "/*STRM_END  */  0" );      /* note: no ",\n" !! */
+    printf( "/*STRM_END  */  0,\n" );
 
     for( i = 0; i <= 255; i++ ) {
         noneyet = true;
 
+        if( i > 0 )
+            printf( ",\n" );
         if( isprint( i ) ) {
-            printf( ",\n/*   '%c'    */  ", i );
+            printf( "/*   '%c'    */  ", i );
         } else {
-            printf( ",\n/*   0x%02x   */  ", i );
+            printf( "/*   0x%02x   */  ", i );
         }
 
         if( isws( i ) ) {
@@ -125,8 +127,7 @@ int main( void )
             printf( "0" );
         }
     }
-
-    /*printf("\n};\n");*/
+    /*printf("};\n");*/
     printf( "\n" );
     return( 0 );
 }

@@ -64,14 +64,14 @@
 
 WRFileType WRESelectFileType( char *name, bool is32bit )
 {
-    WRFileType  file_type;
-    HWND        parent;
-    FARPROC     cb;
+    WRFileType      file_type;
+    HWND            parent;
+    HELP_CALLBACK   hcb;
 
-    cb = MakeProcInstance( (FARPROC)WREHelpRoutine, WREGetAppInstance() );
+    hcb = (HELP_CALLBACK)MakeProcInstance( (FARPROC)WREHelpRoutine, WREGetAppInstance() );
     parent = WREGetMainWindowHandle();
-    file_type = WRSelectFileType( parent, name, is32bit, FALSE, cb );
-    FreeProcInstance( (FARPROC)cb );
+    file_type = WRSelectFileType( parent, name, is32bit, FALSE, hcb );
+    FreeProcInstance( (FARPROC)hcb );
 
     return( file_type );
 }

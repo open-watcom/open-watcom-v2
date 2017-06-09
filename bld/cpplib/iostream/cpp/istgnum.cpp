@@ -65,7 +65,7 @@ static unsigned long const overFlowMasks[] = {
 std::ios::iostate __getnumber( std::streambuf *sb,
                                unsigned long &number,
                                int base,
-                               int &offset ) {
+                               std::streamsize &offset ) {
 
     unsigned long  result;
     unsigned long  overflow;

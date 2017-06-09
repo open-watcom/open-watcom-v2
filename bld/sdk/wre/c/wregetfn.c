@@ -45,11 +45,13 @@
 #include "wrectl3d.h"
 #include "wregetfn.h"
 #include "wrdll.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT UINT CALLBACK WREOpenHookProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT UINT_PTR CALLBACK WREOpenOFNHookProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -248,7 +250,7 @@ char *WREGetFileName( WREGetFileStruct *gf, DWORD flags, WREGetFileAction action
     wreofn.lpstrInitialDir = wre_initial_dir;
     wreofn.lpstrTitle = wrefntitle;
     wreofn.Flags = flags;
-    wreofn.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)WREOpenHookProc, app_inst );
+    wreofn.lpfnHook = MakeProcInstance_OFNHOOK( WREOpenOFNHookProc, app_inst );
 
 #if 0
     wreofn.nFileOffset = 0L;
@@ -268,7 +270,7 @@ char *WREGetFileName( WREGetFileStruct *gf, DWORD flags, WREGetFileAction action
 
 #ifndef __NT__
     if( wreofn.lpfnHook != NULL ) {
-        FreeProcInstance( (FARPROC)wreofn.lpfnHook );
+        FreeProcInstance_OFNHOOK( wreofn.lpfnHook );
     }
 #endif
 
@@ -306,7 +308,7 @@ char *WREGetFileName( WREGetFileStruct *gf, DWORD flags, WREGetFileAction action
     return( WREStrDup( wre_file_name ) );
 }
 
-UINT CALLBACK WREOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+UINT_PTR CALLBACK WREOpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char    *title;
 
@@ -321,7 +323,7 @@ UINT CALLBACK WREOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
         title = AllocRCString( WRE_GETFNCOMBOTITLE );
         if( title != NULL ) {
-            SendDlgItemMessage( hwnd, stc2, WM_SETTEXT, 0, (LPARAM)title );
+            SendDlgItemMessage( hwnd, stc2, WM_SETTEXT, 0, (LPARAM)(LPCSTR)title );
             FreeRCString( title );
         }
         return( TRUE );

@@ -31,22 +31,32 @@
 
 #include "variety.h"
 #include <rdos.h>
-#include <io.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string.h>
 #include "iomode.h"
 #include "exitwmsg.h"
 #include "rtdata.h"
 
+static ThreadState state;
+static char FatalErrorStr[256];
 
-_WCRTLINK _NORETURN void __exit_with_msg( char *msg, unsigned retcode )
+_WCRTLINK _WCNORETURN void __exit_with_msg( char *msg, unsigned retcode )
 {
-    RdosWriteString( msg );
-    RdosWriteString( "\r\n" );
+    int handle = RdosGetThreadHandle();
+    RdosGetThreadState( handle, &state );
+    sprintf( FatalErrorStr, "Fatal error in thread: %04hX %s", handle, state.Name );
+
+    write( STDERR_FILENO, FatalErrorStr, strlen( FatalErrorStr ) );
+    write( STDERR_FILENO, "\r\n", 2 );
+    write( STDERR_FILENO, msg, strlen( msg ) );
+    write( STDERR_FILENO, "\r\n", 2 );
+
+    RdosFatalErrorExit();
     __exit( retcode );
-    // never return
 }
 
-_WCRTLINK _NORETURN void __fatal_runtime_error( char *msg, unsigned retcode )
+_WCRTLINK _WCNORETURN void __fatal_runtime_error( char *msg, unsigned retcode )
 {
     __exit_with_msg( msg, retcode );
-    // never return
 }

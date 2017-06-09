@@ -38,37 +38,23 @@
 bool WResReadHeaderRecord( WResHeader *header, WResFileID fid )
 /*************************************************************/
 {
-    bool            error;
-    WResFileSSize   numread;
+    size_t          numread;
 
-    error = ( WRESSEEK( fid, 0, SEEK_SET ) == -1 );
-    if( error ) {
-        WRES_ERROR( WRS_SEEK_FAILED );
-    } else {
-        numread = WRESREAD( fid, header, sizeof( WResHeader ) );
-        if( numread != sizeof( WResHeader ) ) {
-            WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-            error = true;
-        } else {
-            error = ( WRESSEEK( fid, 0, SEEK_SET ) == -1 );
-            if( error ) {
-                WRES_ERROR( WRS_SEEK_FAILED );
-            }
-        }
-    }
-    return( error );
+    if( WRESSEEK( fid, 0, SEEK_SET ) )
+        return( WRES_ERROR( WRS_SEEK_FAILED ) );
+    if( (numread = WRESREAD( fid, header, sizeof( WResHeader ) )) != sizeof( WResHeader ) )
+        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
+    if( WRESSEEK( fid, 0, SEEK_SET ) )
+        return( WRES_ERROR( WRS_SEEK_FAILED ) );
+    return( false );
 }
 
 bool WResReadExtHeader( WResExtHeader *head, WResFileID fid )
 /***********************************************************/
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
-    numread = WRESREAD( fid, head, sizeof( WResExtHeader ) );
-    if( numread != sizeof( WResExtHeader ) ) {
-        WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-        return( true );
-    } else {
-        return( false );
-    }
+    if( (numread = WRESREAD( fid, head, sizeof( WResExtHeader ) )) != sizeof( WResExtHeader ) )
+        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
+    return( false );
 }

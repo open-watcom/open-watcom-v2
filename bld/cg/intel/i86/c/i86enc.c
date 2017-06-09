@@ -335,7 +335,7 @@ extern  byte    DoMDisp( name *op, bool alt_encoding )
 
 
     regs = CalcSegment( op->v.symbol, op->m.memory_type );
-    if( ( alt_encoding == false && ZPageType != ZP_USES_DS )
+    if( ( !alt_encoding && ZPageType != ZP_USES_DS )
       ||  !HW_COvlap( regs, HW_SS ) ) {
         zptype = ZP_USES_SS;
     } else {
@@ -440,7 +440,8 @@ extern  void    LayModRM( name *op )
 extern  void    DoRelocConst( name *op, type_class_def kind )
 /***********************************************************/
 {
-    kind = kind;
+    /* unused parameters */ (void)kind;
+
     ILen += 2;
     if( op->c.const_type == CONS_OFFSET ) {
         DoSymRef( op->c.value, ((var_name *)op->c.value)->offset, false );
@@ -712,7 +713,7 @@ extern  void    GFld10( type_length where )
 void StartBlockProfiling( block *blk )
 /************************************/
 {
-    blk = blk;
+    /* unused parameters */ (void)blk;
 }
 
 void EndBlockProfiling( void )
@@ -723,6 +724,7 @@ void EndBlockProfiling( void )
 segment_id GenProfileData( char *fe_name, label_handle *data, label_handle *stack )
 /***********************************************************************************/
 {
-    fe_name = fe_name; data = data; stack = stack;
+    /* unused parameters */ (void)fe_name; (void)data; (void)stack;
+
     return( 0 );
 }

@@ -7,7 +7,7 @@
 #ifndef KEYBD_DEF_INCLUDED
 #define KEYBD_DEF_INCLUDED
 
-extern BOOL ProcessKeyDown( int keycode );
-extern BOOL ProcessKeyUp( int keycode );
+extern bool ProcessKeyDown( int keycode );
+extern bool ProcessKeyUp( int keycode );
 
 #endif

@@ -38,11 +38,7 @@
 bool ResCloseFile( WResFileID fid )
 /*********************************/
 {
-    bool        ret;
-
-    ret = ( WRESCLOSE( fid ) != 0 );
-    if( ret ) {
-        WRES_ERROR( WRS_CLOSE_FAILED );
-    }
-    return( ret );
+    if( WRESCLOSE( fid ) )
+        return( WRES_ERROR( WRS_CLOSE_FAILED ) );
+    return( false );
 }

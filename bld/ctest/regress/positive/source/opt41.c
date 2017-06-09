@@ -7,7 +7,7 @@
 char s[] = "12345678";
 char c;
 
-void test(char far *s)
+void test(char __far *s)
 {
     char i;
 

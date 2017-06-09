@@ -86,8 +86,8 @@ typedef struct siginfo siginfo_t;
 #ifdef __NEUTRINO__
 typedef struct {
     long    nrt;
-    long   rt;
-    } sigset_t;
+    long    rt;
+} sigset_t;
 #else
 typedef long    sigset_t;       /* Used for signal sets             */
 #endif
@@ -98,28 +98,28 @@ struct sigaction {
 };
 struct _sigaction {
     void        (__SIG_FAR *sa_handler)(int);
-    sigset_t sa_mask;
-    short int sa_flags;
+    sigset_t    sa_mask;
+    short int   sa_flags;
 };
 
 union sigval {
     int         sigval_int;
-    void       *sigval_ptr;
+    void        *sigval_ptr;
 };
 
 #ifdef __386__
 typedef struct stack_t stack_t;
 struct stack_t {
-        void         *ss_sp;
-        size_t        ss_size;
-        int           ss_flags;
-        ushort_t      ss_seg;   /* should always be zero; but incase */
+    void        *ss_sp;
+    size_t      ss_size;
+    int         ss_flags;
+    ushort_t    ss_seg;   /* should always be zero; but incase */
 };
 
-#define SS_ONSTACK        (1<<0)
-#define SS_DISABLE        (1<<1)
+#define SS_ONSTACK  (1<<0)
+#define SS_DISABLE  (1<<1)
 
-#define _SS_SETSEG         (1<<8)
+#define _SS_SETSEG  (1<<8)
 
 extern int sigaltstack(const stack_t *ss, stack_t *oss);
 
@@ -194,24 +194,24 @@ typedef void (__SIG_FAR *__far_sig_func)( int );
 #define SIG_DFL         ((__sig_func)2)
 #define SIG_ERR         ((__sig_func)3)
 
-#define SIGABRT 1
-#define SIGFPE  2
-#define SIGILL  3
-#define SIGINT  4
-#define SIGSEGV 5
-#define SIGTERM 6
+#define SIGABRT  1
+#define SIGFPE   2
+#define SIGILL   3
+#define SIGINT   4
+#define SIGSEGV  5
+#define SIGTERM  6
 #define SIGBREAK 7
 /* following are OS/2 1.x process flag A,B and C */
-#define SIGUSR1 8
-#define SIGUSR2 9
-#define SIGUSR3 10
+#define SIGUSR1  8
+#define SIGUSR2  9
+#define SIGUSR3  10
 /* following are for OS/2 2.x only */
 #define SIGIDIVZ 11
 #define SIGIOVFL 12
 
-#define _SIGMAX     12
+#define _SIGMAX  12
 :endsegment
-#define _SIGMIN     1
+#define _SIGMIN  1
 
 :segment QNX
 /* sigprocmask() flags */
@@ -248,6 +248,7 @@ _WCRTLINK extern int  siginterrupt( int __signo, int __flag );
 _WCRTLINK extern int  sigwait( const sigset_t *__set, int *__sig );
 _WCRTLINK extern int  sigwaitinfo( const sigset_t *__set, siginfo_t *__info );
 _WCRTLINK extern int  sigtimedwait( const sigset_t *__set, siginfo_t *__info, const struct timespec *__timeout );
+_WCRTLINK extern int  pthread_kill( pthread_t __thread, int __sig );
 :endsegment
 :include extepi.sp
 

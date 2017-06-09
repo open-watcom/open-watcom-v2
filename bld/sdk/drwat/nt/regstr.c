@@ -32,6 +32,7 @@
 
 
 #include "drwatcom.h"
+#include "wclbproc.h"
 #include "regstr.h"
 #include "mad.h"
 #include <string.h>
@@ -49,7 +50,7 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT BOOL CALLBACK ChangeRegisterDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam);
+WINEXPORT INT_PTR CALLBACK ChangeRegisterDialogDlgProc( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam);
 WINEXPORT LRESULT CALLBACK RegStringProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 
@@ -70,15 +71,15 @@ HWND CreateRegString( HWND parent, int x, int y, int width, int height, char *te
         NULL );
     MoveWindow( ret, x, y, width, height, FALSE );
 
-    SetWindowLong( ret, 0, 0 );
+    SET_WNDINFO( ret, 0 );
     return( ret );
 }
 
 void UpdateRegString( HWND string, HWND list, int x, int y, int width, int height, char *text )
 {
-    int len;
-    char *cmp;
-    LONG flags;
+    int     len;
+    char    *cmp;
+    DWORD   flags;
 
     len = GetWindowTextLength( string ) + 1;
     cmp = alloca( len );
@@ -89,28 +90,26 @@ void UpdateRegString( HWND string, HWND list, int x, int y, int width, int heigh
     }
     MoveWindow( string, x, y, width, height, TRUE );
 
-    flags = GetWindowLong( string, 0 );
+    flags = GET_WNDINFO( string );
     flags &= ~REG_DESTROY;
-    SetWindowLong( string, 0, flags );
+    SET_WNDINFO( string, flags );
 }
 
 void SetRegStringDestroyFlag(HWND hwnd)
 {
-    LONG flags;
+    DWORD   flags;
 
-    flags = GetWindowLong( hwnd, 0 );
+    flags = GET_WNDINFO( hwnd );
     flags |= REG_DESTROY;
-    SetWindowLong( hwnd, 0, flags );
+    SET_WNDINFO( hwnd, flags );
 }
 
-BOOL GetRegStringDestroyFlag(HWND hwnd)
+bool GetRegStringDestroyFlag(HWND hwnd)
 {
-    LONG flags;
-    flags = GetWindowLong( hwnd, 0 );
-    if( flags & REG_DESTROY ) {
-        return( TRUE );
-    }
-    return( FALSE );
+    DWORD   flags;
+
+    flags = GET_WNDINFO( hwnd );
+    return( (flags & REG_DESTROY) != 0 );
 }
 
 static void RegStrPaint(HWND hwnd)
@@ -124,9 +123,9 @@ static void RegStrPaint(HWND hwnd)
     int         top;
     COLORREF    fground;
     COLORREF    bground;
-    LONG        flags;
+    DWORD       flags;
 
-    flags = GetWindowLong( hwnd, 0);
+    flags = GET_WNDINFO( hwnd );
     hdc = BeginPaint( hwnd, &ps );
 
     SelectObject( hdc, GetMonoFont() );
@@ -137,8 +136,7 @@ static void RegStrPaint(HWND hwnd)
     if( flags & REG_SELECTED ){
         fground = GetSysColor( COLOR_HIGHLIGHTTEXT );
         bground = GetSysColor( COLOR_HIGHLIGHT );
-    }
-    else{
+    } else {
         fground = GetSysColor( COLOR_WINDOWTEXT );
         bground = GetSysColor( COLOR_WINDOW );
     }
@@ -150,36 +148,36 @@ static void RegStrPaint(HWND hwnd)
     EndPaint( hwnd, &ps );
 }
 
-static BOOL SetRegSelectFlag(HWND hwnd,BOOL setting)
+static bool SetRegSelectFlag( HWND hwnd, bool setting )
 {
-    LONG flags;
+    DWORD   flags;
 
-    flags = GetWindowLong( hwnd, 0 );
-    if( ( setting == TRUE ) && !( flags & REG_SELECTED ) ) {
+    flags = GET_WNDINFO( hwnd );
+    if( setting && (flags & REG_SELECTED) == 0 ) {
         flags |= REG_SELECTED;
         InvalidateRect( hwnd, NULL, FALSE );
-        SetWindowLong( hwnd, 0, flags );
-        return ( TRUE );
+        SET_WNDINFO( hwnd, flags );
+        return( true );
     }
-    if( ( setting == FALSE ) && ( flags & REG_SELECTED ) ) {
+    if( !setting && (flags & REG_SELECTED) ) {
         flags &= ~REG_SELECTED;
         InvalidateRect( hwnd, NULL, FALSE );
-        SetWindowLong( hwnd, 0, flags );
-        return ( TRUE );
+        SET_WNDINFO( hwnd, flags );
+        return( true );
     }
-    return ( FALSE );
+    return( false );
 }
 
 void GetChildPos( HWND parent, HWND child, RECT *c_rect )
 {
-    LONG            style;
-    LONG            ex_style;
+    DWORD           style;
+    DWORD           ex_style;
     RECT            p_rect;
 
     GetWindowRect( parent, &p_rect );
     GetClientRect( parent, c_rect );
-    style = GetWindowLong( parent, GWL_STYLE );
-    ex_style = GetWindowLong( parent, GWL_EXSTYLE );
+    style = GET_WNDSTYLE( parent );
+    ex_style = GET_WNDEXSTYLE( parent );
     AdjustWindowRectEx( c_rect, style, FALSE, ex_style );
     p_rect.left -= c_rect->left;
     p_rect.top -= c_rect->top;
@@ -189,6 +187,7 @@ void GetChildPos( HWND parent, HWND child, RECT *c_rect )
     c_rect->bottom -= c_rect->top;
     c_rect->top -= p_rect.top;
 }
+
 static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
 {
     RegModifyData   *data;
@@ -207,7 +206,7 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
     TEXTMETRIC      tm;
     HWND            cancel;
 
-    SetWindowLong( hwnd, DWL_USER, (LONG)lparam);
+    SET_DLGDATA( hwnd, lparam );
     data = (RegModifyData *)lparam;
     len = MADRegFullName( data->curr_info, ".", NULL, 0 );
     if( len > 0 ) {
@@ -255,7 +254,7 @@ static void InitChangeRegisterDialog(HWND hwnd,LPARAM lparam)
             }
             if( max_len < strlen( s ) )
                 max_len = strlen( s );
-            SendDlgItemMessage( hwnd, CH_REG_COMBO_LIST, CB_ADDSTRING, 0, (LPARAM)s );
+            SendDlgItemMessage( hwnd, CH_REG_COMBO_LIST, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)s );
             if( memcmp( data->curr_value, data->m_list[i].data, BITS2BYTES( cmp.b.bits ) ) == 0 ) {
                 SendDlgItemMessage( hwnd, CH_REG_COMBO_LIST, CB_SETCURSEL, (WPARAM)i, 0 );
             }
@@ -293,7 +292,7 @@ static void CheckForRegisterChange( HWND hwnd )
     addr_seg        seg;
     InputUnion      in;
 
-    data = ( RegModifyData * )GetWindowLong( hwnd, DWL_USER );
+    data = (RegModifyData *)GET_DLGDATA( hwnd );
     MADTypeInfo( data->curr_info->type, &mti_target );
     if( data->num_possible == 1 ) {
         size = SendDlgItemMessage( hwnd, REG_EDIT_FIELD, WM_GETTEXTLENGTH, 0, 0 ) + 1 ;
@@ -346,36 +345,44 @@ static void CheckForRegisterChange( HWND hwnd )
     }
 }
 
-BOOL CALLBACK ChangeRegisterDialog( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam)
+INT_PTR CALLBACK ChangeRegisterDialogDlgProc( HWND hwnd, UINT msg,WPARAM  wparam, LPARAM lparam)
 {
     WORD        cmd;
+    bool        ret;
+
+    ret = false;
+
     switch( msg ){
     case WM_INITDIALOG:
         InitChangeRegisterDialog( hwnd, lparam );
-        return( TRUE );
+        ret = true;
+        break;
 
     case WM_CLOSE:
         PostMessage( hwnd, WM_COMMAND, IDCANCEL, 0L );
-        return( TRUE );
+        ret = true;
+        break;
 
     case WM_COMMAND:
         cmd = LOWORD( wparam );
         switch( cmd ) {
         case IDCANCEL:
             EndDialog( hwnd, 0 );
-            return( TRUE );
+            ret = true;
+            break;
         case IDOK:
             CheckForRegisterChange( hwnd );
-            return( TRUE );
+            ret = true;
+            break;
         }
    }
-   return( FALSE );
+   return( ret );
 }
 
 static void GetNewRegValue( HWND hwnd )
 {
     HWND            owner;
-    DLGPROC         fp;
+    DLGPROC         dlgproc;
     INT_PTR         reg_modified;
     RegModifyData   modify_data;
     const char      *descript;
@@ -408,14 +415,14 @@ static void GetNewRegValue( HWND hwnd )
         reg_modified = 1;
         break;
     case 1:
-        fp = (DLGPROC)MakeProcInstance( ChangeRegisterDialog, Instance );
-        reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_EDIT", owner, fp, (LPARAM)( &modify_data ) );
-        FreeProcInstance( fp );
+        dlgproc = MakeProcInstance_DLG( ChangeRegisterDialogDlgProc, Instance );
+        reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_EDIT", owner, dlgproc, (LPARAM)( &modify_data ) );
+        FreeProcInstance_DLG( dlgproc );
         break;
     default:
-        fp = (DLGPROC)MakeProcInstance( ChangeRegisterDialog, Instance );
-        reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_COMBO", owner, fp, (LPARAM)( &modify_data ) );
-        FreeProcInstance( fp );
+        dlgproc = MakeProcInstance_DLG( ChangeRegisterDialogDlgProc, Instance );
+        reg_modified = JDialogBoxParam( Instance, "CHANGE_REG_COMBO", owner, dlgproc, (LPARAM)( &modify_data ) );
+        FreeProcInstance_DLG( dlgproc );
     }
     if( reg_modified == 1 ) {
         MADRegUpdateStart( regs, modify_data.curr_info->flags, modify_data.curr_info->bit_start, modify_data.curr_info->bit_size );
@@ -440,10 +447,10 @@ LRESULT CALLBACK RegStringProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         SendMessage( list, CHILD_L_CLICK, (WPARAM) hwnd, lparam );
         break;
     case REG_STRING_DESELECTED:
-        SetRegSelectFlag( hwnd, FALSE );
+        SetRegSelectFlag( hwnd, false );
         break;
     case REG_STRING_SELECTED:
-        SetRegSelectFlag( hwnd, TRUE );
+        SetRegSelectFlag( hwnd, true );
         break;
     case WM_LBUTTONDBLCLK:
         GetNewRegValue( hwnd );

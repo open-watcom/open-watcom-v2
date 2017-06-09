@@ -152,11 +152,9 @@ bool WResAddResource2( const WResID *type, const WResID *name,
         if( currres != NULL ) {
             currlang = __FindLang( lang, currres );
             if( currlang != NULL ) {
-                if( duplicate != NULL ) {
+                if( duplicate != NULL )
                     WResMakeWindow( duplicate, currtype, currres, currlang );
-                }
-                WRES_ERROR( WRS_DUP_ENTRY )
-                return( true );
+                return( WRES_ERROR( WRS_DUP_ENTRY ) );
             }
         }
     }

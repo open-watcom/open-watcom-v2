@@ -51,11 +51,8 @@ void __TimerCallBack()
     __InvokeCallBack( CallBackFunc );
 }
 
-UINT PASCAL _Cover_timeSetEvent(UINT uDelay, UINT uResolution,
-    LPTIMECALLBACK lpFunction, DWORD dwUser, UINT uFlags)
+UINT PASCAL _Cover_timeSetEvent(UINT uDelay, UINT uResolution, LPTIMECALLBACK lpFunction, DWORD dwUser, UINT uFlags)
 {
     CallBackFunc = lpFunction;
-    return( timeSetEvent( uDelay, uResolution,
-        GetTimerCallBack( __TimerCallBack ),
-        dwUser, uFlags ) );
+    return( timeSetEvent( uDelay, uResolution, GetTimerCallBack( __TimerCallBack ), dwUser, uFlags ) );
 }

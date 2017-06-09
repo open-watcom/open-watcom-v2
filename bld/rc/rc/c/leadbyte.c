@@ -47,17 +47,16 @@ void SetNativeLeadBytes( void ) {
     unsigned    i;
 
     GetCPInfo( CP_ACP, &info );
-    i = 0;
-    while( info.LeadByte[i] != 0 && info.LeadByte[i+1] != 0 ) {
-        SetMBRange( info.LeadByte[i], info.LeadByte[i+1], 1 );
-        i += 2;
+    for( i = 0; info.LeadByte[i] != 0 && info.LeadByte[i + 1] != 0; i += 2 ) {
+        SetMBRange( info.LeadByte[i], info.LeadByte[i + 1], 1 );
     }
 }
 
-int NativeDBStringToUnicode( int len, const char *str, char *buf ) {
-/*******************************************************************/
-    int         ret;
-    unsigned    outlen;
+size_t NativeDBStringToUnicode( size_t len, const char *str, char *buf )
+/**********************************************************************/
+{
+    size_t      ret;
+    size_t      outlen;
 
     if( len > 0 ) {
         if( buf == NULL ) {
@@ -65,7 +64,7 @@ int NativeDBStringToUnicode( int len, const char *str, char *buf ) {
         } else {
             outlen = len * 2;
         }
-        ret = MultiByteToWideChar( CP_ACP, 0, str, len, (LPWSTR)buf, outlen );
+        ret = (unsigned)MultiByteToWideChar( CP_ACP, 0, str, (int)len, (LPWSTR)buf, (int)outlen );
     } else {
         ret = 0;
     }

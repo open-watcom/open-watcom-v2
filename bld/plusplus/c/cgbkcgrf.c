@@ -315,7 +315,7 @@ static bool shouldBeInlined(    // DETERMINE IF INLINING AN INLINABLE FN IS OK
     if( fctl == NULL || SymIsThunk( fctl->func ) ) {
         return false;
     }
-    if( ! callGraphFlags.inline_recursion ) {
+    if( !callGraphFlags.inline_recursion ) {
         for( ; fctl != NULL; fctl = FnCtlPrev( fctl ) ) {
             if( sym == fctl->func ) return( false );
         }
@@ -1093,7 +1093,8 @@ static bool procStaticFunction( // PROCESS STATIC FUNCTIONS IN CALL GRAPH
         unsigned oe_static : 1; // - static function is called once
     } flags;
 
-    ctl = ctl;
+    /* unused parameters */ (void)ctl;
+
     ExtraRptIncrementCtr( ctr_nodes_visited );
 //  if( node->inlineable && node->addrs == 0 ) {
     if( node->inlineable ) {
@@ -1173,7 +1174,8 @@ static bool procFunction(       // POST-PROCESS FUNCTION IN CALL GRAPH
     SYMBOL func;                // - function
     CGFILE* cgfile;             // - for function
 
-    ctl = ctl;
+    /* unused parameters */ (void)ctl;
+
     ExtraRptIncrementCtr( ctr_nodes_visited );
     if( node->state_table ) {
         callGraphFlags.any_state_tables = true;
@@ -1184,7 +1186,7 @@ static bool procFunction(       // POST-PROCESS FUNCTION IN CALL GRAPH
             func->flag |= SF_ADDR_TAKEN;
         }
         markAsGen( node );
-    } else if( ! CompFlags.inline_functions ) {
+    } else if( !CompFlags.inline_functions ) {
         markAsGen( node );
     } else {
         genFunction( node );
@@ -1300,9 +1302,7 @@ static bool setFunctionStab(    // SET STATE-TABLE INFO. FOR FUNCTION
             cgfile->u.s.stab_gen = stab_gen;
             cgfile->cond_flags = max_cond_flags;
 #ifndef NDEBUG
-            if( PragDbgToggle.dump_emit_ic ||
-                PragDbgToggle.callgraph         ||
-                PragDbgToggle.dump_stab ) {
+            if( PragDbgToggle.dump_emit_ic || PragDbgToggle.callgraph || PragDbgToggle.dump_stab ) {
                 VBUF vbuf;
                 SYMBOL func = cgfile->symbol;
                 if( state_table ) {
@@ -1330,10 +1330,12 @@ void MarkFuncsToGen(            // DETERMINE FUNCTIONS TO BE GENERATED
     CGFILE *vfcg;               // - current VFTDefn CGFILE
 
 #ifndef NDEBUG
-    unsigned int dbg_dump_exec = PragDbgToggle.dump_exec_ic;
-    PragDbgToggle.dump_exec_ic = 0;
+    bool dbg_dump_exec;
+
+    dbg_dump_exec = PragDbgToggle.dump_exec_ic;
+    PragDbgToggle.dump_exec_ic = false;
     if( PragDbgToggle.callgraph_scan ) {
-        PragDbgToggle.callgraph = 1;
+        PragDbgToggle.callgraph = true;
     }
 #endif
     vft_defs = NULL;
@@ -1343,13 +1345,13 @@ void MarkFuncsToGen(            // DETERMINE FUNCTIONS TO BE GENERATED
     callGraphFlags.any_state_tables = false;
     callGraphFlags.only_once_found = false;
 //  callGraphFlags.not_inlined_set = false;
-    if( ! CompFlags.inline_functions ) {
+    if( !CompFlags.inline_functions ) {
         max_inline_depth = 0;
         ctl.scope_call_opt = false;
     } else {
         max_inline_depth = bounding_depth;
-        if( ! CompFlags.dt_method_pragma
-         && ( CompInfo.dt_method_speced == DTM_DIRECT
+        if( !CompFlags.dt_method_pragma
+          && ( CompInfo.dt_method_speced == DTM_DIRECT
            || CompInfo.dt_method_speced == DTM_DIRECT_SMALL
            || CompInfo.dt_method_speced == DTM_TABLE_SMALL ) ) {
             ctl.scope_call_opt = false;

@@ -175,11 +175,11 @@ void SingleStepMode( void );
 void EnterSoftMode( void );
 void ExitSoftMode( void );
 //long FAR PASCAL SubClassProc( HWND hwnd, unsigned message, WORD wparam, LONG lparam );
-DWORD FAR PASCAL DebugHook( int ncode, WORD wparam, DWORD lparam );
+DWORD FAR PASCAL DebugHook( int ncode, WPARAM wparam, LPARAM lparam );
 restart_opts DebugeeWaitForMessage( void );
-long FAR PASCAL DefaultProc( HWND hwnd, unsigned message, WORD wparam, LONG lparam );
-BOOL FAR PASCAL EnumTaskWindowsFunc( HWND hwnd, DWORD lparam );
-BOOL FAR PASCAL EnumChildWindowsFunc( HWND hwnd, DWORD lparam );
+LRESULT FAR PASCAL DefaultProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam );
+BOOL FAR PASCAL EnumTaskWindowsFunc( HWND hwnd, LPARAM lparam );
+BOOL FAR PASCAL EnumChildWindowsFunc( HWND hwnd, LPARAM lparam );
 
 /* dbghook.c */
 void FiniDebugHook( void );

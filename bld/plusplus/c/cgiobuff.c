@@ -707,8 +707,7 @@ static void cgioBuffReleaseMemory(      // RELEASE MEMORY
         }
     } RingIterEndSafe( curr )
     RingIterBegSafe( list, curr ) {
-        if( ! curr->written
-         && ! CompFlags.compile_failed ) {
+        if( !curr->written && !CompFlags.compile_failed ) {
             IoSuppTempWrite( curr->disk_addr, TMPBLOCK_BSIZE, curr->data );
         }
         DbgAssert( *findDirectoryEntry( curr->disk_addr ) == curr );
@@ -729,8 +728,7 @@ static void cgioBuffReleaseMemory(      // RELEASE MEMORY
                 removeFromReuseList( curr );
             }
             RingPruneWithPrev( &allBufs, curr, prev );
-            if( ! curr->written
-             && ! CompFlags.compile_failed ) {
+            if( !curr->written && !CompFlags.compile_failed ) {
                 beingWritten = curr;
                 IoSuppTempWrite( curr->disk_addr
                                , TMPBLOCK_BSIZE

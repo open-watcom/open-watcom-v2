@@ -75,28 +75,32 @@ enum {
 
 // handle definitions
 
-typedef uint_8                          omf_file_flags;
-typedef uint_32                         omf_file_index;
-typedef uint_32                         omf_headers_size;
+typedef unsigned_8                      omf_file_flags;
+typedef unsigned_32                     omf_file_index;
+typedef unsigned_32                     omf_headers_size;
 
-typedef uint_32                         omf_sec_size;
-typedef uint_32                         omf_sec_flags;
-typedef uint_32                         omf_sec_offset;
+typedef unsigned_32                     omf_sec_flags;
+typedef unsigned_32                     omf_sec_size;
+typedef unsigned_32                     omf_sec_offset;
+typedef signed_32                       omf_sec_addend;
+typedef unsigned_32                     omf_sec_base;
 
-typedef uint_32                         omf_sym_flags;
+typedef unsigned_16                     omf_reloc_type;
 
-typedef uint_16                         omf_reloc_type;
-typedef uint_16                         omf_idx;
-typedef uint_16                         omf_frame;
+typedef unsigned_32                     omf_symbol_flags;
+typedef unsigned_32                     omf_symbol_value;
 
-typedef int_32                          omf_rec_size;
-typedef uint_8                          omf_string_len;
+typedef unsigned_16                     omf_idx;
+typedef unsigned_16                     omf_frame;
 
-typedef int_32                          omf_quantity;
+typedef signed_32                       omf_rec_size;
+typedef unsigned_8                      omf_string_len;
 
-typedef uint_8                          *omf_bytes;
-typedef uint_8                          omf_rectyp;
-typedef int_8                           omf_dbg_style;
+typedef signed_32                       omf_quantity;
+
+typedef unsigned_8                      *omf_bytes;
+typedef unsigned_8                      omf_rectyp;
+typedef signed_8                        omf_dbg_style;
 
 typedef struct omf_handle_struct        omf_handle_struct;
 typedef omf_handle_struct               *omf_handle;
@@ -112,9 +116,6 @@ typedef omf_symbol_handle_struct        *omf_symbol_handle;
 
 typedef struct omf_grp_handle_struct    omf_grp_handle_struct;
 typedef omf_grp_handle_struct           *omf_grp_handle;
-
-typedef orl_reloc                       omf_reloc_handle_struct;
-typedef omf_reloc_handle_struct         *omf_reloc_handle;
 
 typedef struct omf_tmp_lidata_struct    omf_tmp_lidata_struct;
 typedef omf_tmp_lidata_struct           *omf_tmp_lidata;
@@ -133,8 +134,8 @@ typedef struct omf_thred_fixup_struct   omf_thred_fixup;
 struct omf_tmp_lidata_struct {
     omf_rec_size        size;
     omf_rec_size        used;
-    uint_32             offset;
-    int                 is32;
+    unsigned_32         offset;
+    bool                is32;
     omf_tmp_fixup       first_fixup;
     omf_tmp_fixup       last_fixup;
     omf_tmp_fixup       new_fixup;
@@ -143,15 +144,15 @@ struct omf_tmp_lidata_struct {
 
 struct omf_tmp_fixup_struct {
     omf_tmp_fixup       next;
-    int                 is32;
+    bool                is32;
     int                 mode;
     int                 location;
-    orl_sec_offset      offset;
+    omf_sec_offset      offset;
     int                 fmethod;
     omf_idx             fidx;
     int                 tmethod;
     omf_idx             tidx;
-    orl_sec_offset      disp;
+    omf_sec_addend      disp;
 };
 
 struct omf_tmp_bakpat_struct {
@@ -164,8 +165,8 @@ struct omf_tmp_bkfix_struct {
     orl_reloc_type      reltype;
     omf_idx             segidx;
     omf_idx             symidx;
-    orl_sec_offset      offset;
-    orl_sec_offset      disp;
+    omf_sec_offset      offset;
+    omf_sec_addend      disp;
 };
 
 struct omf_handle_struct {
@@ -232,7 +233,7 @@ struct omf_file_handle_struct {
 typedef struct omf_comdat_struct {
     omf_sec_handle      assoc_seg;
     omf_grp_handle      group;
-    uint_32             frame;
+    omf_frame           frame;
 } omf_comdat_struct;
 
 struct omf_seg_assoc_struct {
@@ -240,10 +241,10 @@ struct omf_seg_assoc_struct {
     omf_idx             class;
     orl_sec_alignment   alignment;
     orl_sec_combine     combine;
-    orl_sec_frame       frame;
-    uint_32             seg_flags;
-    uint_32             cur_size;
-    uint_32             cur_offset;
+    omf_frame           frame;
+    unsigned_32         seg_flags;
+    unsigned_32         cur_size;
+    omf_sec_offset      cur_offset;
     omf_idx             seg_id;
     omf_symbol_handle   sym;
     omf_comdat_struct   comdat;
@@ -254,7 +255,7 @@ struct omf_seg_assoc_struct {
 
 struct omf_reloc_assoc_struct {
     omf_quantity        num;
-    omf_reloc_handle    *relocs;
+    orl_reloc           **relocs;
 };
 
 struct omf_sym_assoc_struct {
@@ -274,8 +275,8 @@ struct omf_string_assoc_struct {
 };
 
 typedef struct omf_comment_struct {
-    uint_8              class;
-    uint_8              flags;
+    unsigned_8          class;
+    unsigned_8          flags;
     omf_rec_size        len;
     unsigned char       data[1];
 } omf_comment_struct;
@@ -289,7 +290,7 @@ struct omf_sec_handle_struct {
     orl_file_format     file_format;
     omf_file_handle     omf_file_hnd;
     omf_sec_handle      next;
-    orl_sec_size        size;
+    omf_sec_size        size;
     orl_sec_type        type;
     orl_sec_flags       flags;
     omf_bytes           contents;
@@ -313,7 +314,7 @@ struct omf_symbol_handle_struct {
     omf_idx             seg;
     omf_frame           frame;
     omf_sec_offset      offset;
-    omf_sym_flags       flags;
+    omf_symbol_flags    flags;
     omf_sec_handle      section;
     orl_symbol_binding  binding;
     omf_string_struct   name;
@@ -324,17 +325,9 @@ struct omf_grp_handle_struct {
     omf_file_handle     omf_file_hnd;
     omf_idx             name;
     omf_idx             id;
-    orl_table_index     size;
+    orl_table_index     num_segs;
     omf_idx             *segs;
     omf_symbol_handle   sym;
-};
-
-struct omf_reloc_handle_struct {
-    omf_sec_handle      section;
-    orl_sec_offset      locale;
-    omf_symbol_handle   symbol;
-    orl_reloc_type      type;
-    omf_sec_offset      offset;
 };
 
 typedef struct omf_scan_tab_struct {

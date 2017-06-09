@@ -58,7 +58,9 @@ MemoryPool::MemoryPool( const char * owner )
 
 //------------------------------------------
 {
-    owner = owner;  // disable warning if DEBUG not enabled
+    #if !DEBUG
+    /* unused parameters */ (void)owner;
+    #endif
 }
 
 
@@ -78,7 +80,9 @@ MemoryPool::MemoryPool( size_t elemSize, const char * owner, int elemsPerBlock )
 
 //----------------------------------------------------------
 {
-    owner = owner;  // disable warning if DEBUG not enabled
+    #if !DEBUG
+    /* unused parameters */ (void)owner;
+    #endif
 
     setSize( elemSize, elemsPerBlock );
 }

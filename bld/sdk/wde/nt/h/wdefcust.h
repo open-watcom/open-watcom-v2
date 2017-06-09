@@ -40,8 +40,8 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WINEXPORT extern OBJPTR CALLBACK WdeCustomCreate1( OBJPTR, RECT *, OBJPTR );
-WINEXPORT extern OBJPTR CALLBACK WdeCustomCreate2( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern CREATE_RTN WdeCustomCreate1;
+WINEXPORT extern CREATE_RTN WdeCustomCreate2;
 extern bool             WdeCustomInit( bool );
 extern void             WdeCustomFini( void );
 

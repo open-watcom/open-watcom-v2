@@ -37,19 +37,13 @@
 
 
 #if defined(__SMALL_DATA__)
-_WCRTLINK size_t _msize( void *p )
+_WCRTLINK size_t _msize( void *cstg )
 {
-    tag *q;
-
-    q = (tag *)(((unsigned char *)p) - TAG_SIZE);
-    return( ( *q & ~1 ) - TAG_SIZE );
+    return( GET_BLK_SIZE( (freelist *)CPTR2BLK( cstg ) ) - TAG_SIZE );
 }
 #endif
 
-_WCRTLINK size_t _nmsize( void _WCNEAR *p )
+_WCRTLINK size_t _nmsize( void_nptr cstg )
 {
-    tag _WCNEAR *q;
-
-    q = (tag _WCNEAR *)(((unsigned char _WCNEAR *)p) - TAG_SIZE);
-    return( ( *q & ~1 ) - TAG_SIZE );
+    return( GET_BLK_SIZE( (freelist _WCNEAR *)CPTR2BLK( cstg ) ) - TAG_SIZE );
 }

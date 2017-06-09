@@ -61,4 +61,9 @@
     #pragma aux __wNTMain "*"
   #endif
 
+  #if defined( _M_ALPHA )
+    void mainCRTStartup( void );
+    void wmainCRTStartup( void );
+  #endif
+
 #endif

@@ -46,14 +46,12 @@ M32ResResourceHeader *M32ResReadResourceHeader( WResFileID fid )
     error = false;
     newhead = WRESALLOC( sizeof( M32ResResourceHeader ) );
     if( newhead == NULL ) {
-        error = true;
-        WRES_ERROR( WRS_MALLOC_FAILED );
+        error = WRES_ERROR( WRS_MALLOC_FAILED );
     }
     if( !error ) {
         newhead->head16 = WRESALLOC( sizeof( MResResourceHeader ) );
         if( newhead->head16 == NULL ) {
-            error = true;
-            WRES_ERROR( WRS_MALLOC_FAILED );
+            error = WRES_ERROR( WRS_MALLOC_FAILED );
         }
     }
     if( !error ) {
@@ -65,7 +63,7 @@ M32ResResourceHeader *M32ResReadResourceHeader( WResFileID fid )
     }
     if( !error ) {
         error = ResReadUint32( &tmp32, fid );
-        newhead->HeaderSize = tmp32;
+        newhead->Size = tmp32;
     }
     if( !error ) {
         newhead->head16->Type = ResRead32NameOrOrdinal( fid );
@@ -119,8 +117,7 @@ MResResourceHeader *MResReadResourceHeader( WResFileID fid )
 
     newhead = WRESALLOC( sizeof( MResResourceHeader ) );
     if( newhead == NULL ) {
-        error = true;
-        WRES_ERROR( WRS_MALLOC_FAILED );
+        error = WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         error = false;
     }

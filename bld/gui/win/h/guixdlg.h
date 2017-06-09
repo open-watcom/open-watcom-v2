@@ -33,12 +33,12 @@
 #ifndef _GUIXDLG_H_
 #define _GUIXDLG_H_
 
-WINEXPORT WPI_DLGRESULT CALLBACK GUIDialogFunc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WINEXPORT WPI_DLGRESULT CALLBACK GUIDialogDlgProc( HWND hwnd, WPI_MSG message, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
 extern void GUIInitDialog( void );
 extern void GUIFiniDialog( void );
 extern bool GUIProcessControlNotification( gui_ctl_id id, int wNotify, gui_window *wnd );
-extern bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam, gui_window *wnd, WPI_DLGRESULT *ret );
+extern bool GUIProcessControlMsg( WPI_PARAM1 wparam, WPI_PARAM2 lparam, gui_window *wnd, bool *pret );
 extern void GUIInitControl( control_item *item, gui_window *wnd, gui_ctl_id *focus_id );
 
 #endif // _GUIXDLG_H_

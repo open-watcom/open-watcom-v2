@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <stdlib.h>
 #include <io.h>
 #include <malloc.h>
@@ -44,7 +44,7 @@
 #define UNIQUE                  5
 
 
-static CHAR_TYPE *try_dir( CHAR_TYPE *dir, CHAR_TYPE *prefix )
+static CHAR_TYPE *try_dir( const CHAR_TYPE *dir, const CHAR_TYPE *prefix )
 {
     CHAR_TYPE *         buf;
     size_t              numchars;
@@ -101,10 +101,10 @@ static CHAR_TYPE *try_dir( CHAR_TYPE *dir, CHAR_TYPE *prefix )
 }
 
 
-_WCRTLINK CHAR_TYPE *__F_NAME(_tempnam,_wtempnam)( CHAR_TYPE *dir, CHAR_TYPE *prefix )
+_WCRTLINK CHAR_TYPE *__F_NAME(_tempnam,_wtempnam)( const CHAR_TYPE *dir, const CHAR_TYPE *prefix )
 {
     CHAR_TYPE *         p;
-    CHAR_TYPE *         envp;
+    const CHAR_TYPE *   envp;
 
     /*** Try the directory given by the TMP environment variable ***/
     envp = __F_NAME(getenv,_wgetenv)( STRING( "TMP" ) );

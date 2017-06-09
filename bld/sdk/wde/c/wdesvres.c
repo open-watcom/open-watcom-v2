@@ -87,7 +87,7 @@ bool WdeSaveResourceToFile( WdeResInfo *res_info )
     bool        ok;
     char        fn[_MAX_PATH];
 
-    WdeSetWaitCursor( TRUE );
+    WdeSetWaitCursor( true );
 
     ok = (res_info != NULL && res_info->info != NULL);
 
@@ -137,7 +137,7 @@ bool WdeSaveResourceToFile( WdeResInfo *res_info )
         WdeFreeInfoData( res_info );
     }
 
-    WdeSetWaitCursor( FALSE );
+    WdeSetWaitCursor( false );
 
     return( ok );
 }
@@ -160,9 +160,7 @@ bool WdeInfoToData( WdeResInfo *info )
     def_lang.lang = DEF_SUBLANG;
     def_lang.sublang = DEF_SUBLANG;
     dnode = info->dlg_entry;
-    dlist = info->dlg_item_list;
-
-    while( dlist != NULL ) {
+    for( dlist = info->dlg_item_list; dlist != NULL; dlist = ListNext( dlist ) ) {
         ditem = (WdeResDlgItem *)ListElement( dlist );
 
         data = NULL;
@@ -216,8 +214,6 @@ bool WdeInfoToData( WdeResInfo *info )
 
             info->info->dir->NumResources++;
         }
-
-        dlist = ListNext( dlist );
     }
 
     return( TRUE );

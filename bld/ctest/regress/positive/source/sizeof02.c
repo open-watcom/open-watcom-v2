@@ -5,8 +5,8 @@
 #define SIZE_FAR
 #define SIZE_HUGE
 #else
-#define SIZE_FAR far
-#define SIZE_HUGE huge
+#define SIZE_FAR __far
+#define SIZE_HUGE __huge
 #endif
 
 char SIZE_FAR two[60u*1024];

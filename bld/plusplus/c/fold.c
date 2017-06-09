@@ -520,7 +520,7 @@ static bool anachronismFound( PTREE expr )
         (1) this != 0, this == 0
         (2) &r != 0, &r == 0    -- r is 'T & r;' (parm or auto)
     */
-    if( ! CompFlags.extensions_enabled ) {
+    if( !CompFlags.extensions_enabled ) {
         /* ANSI C++ code cannot require these constructs */
         return( false );
     }

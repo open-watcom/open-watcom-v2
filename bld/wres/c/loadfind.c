@@ -74,7 +74,7 @@ bool FindResourcesX( PHANDLE_INFO hinfo, bool res_file )
     WResFileShift = 0;
     if( notfound ) {
         offset = sizeof( dbgheader );
-        if( WRESSEEK( hinfo->fid, -(WResFileOffset)sizeof( PATCH_LEVEL ), SEEK_END ) != -1 ) {
+        if( !WRESSEEK( hinfo->fid, -(WResFileOffset)sizeof( PATCH_LEVEL ), SEEK_END ) ) {
             if( WRESREAD( hinfo->fid, buffer, sizeof( PATCH_LEVEL ) ) == sizeof( PATCH_LEVEL ) ) {
                 if( memcmp( buffer, PATCH_LEVEL, PATCH_LEVEL_HEAD_SIZE ) == 0 ) {
                     offset += sizeof( PATCH_LEVEL );

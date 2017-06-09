@@ -38,21 +38,15 @@
 bool ResWriteFontInfo( FontInfo *info, WResFileID fid )
 /*****************************************************/
 {
-    if( WRESWRITE( fid, info, sizeof( FontInfo ) ) != sizeof( FontInfo ) ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    } else {
-        return( false );
-    }
+    if( WRESWRITE( fid, info, sizeof( FontInfo ) ) != sizeof( FontInfo ) )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
+    return( false );
 }
 
 bool ResWriteFontDirEntry( FontDirEntry *entry, WResFileID fid )
 /**************************************************************/
 {
-    if( WRESWRITE( fid, &(entry->Info), entry->StructSize ) != entry->StructSize ) {
-        WRES_ERROR( WRS_WRITE_FAILED );
-        return( true );
-    } else {
-        return( false );
-    }
+    if( WRESWRITE( fid, &(entry->Info), entry->StructSize ) != entry->StructSize )
+        return( WRES_ERROR( WRS_WRITE_FAILED ) );
+    return( false );
 }

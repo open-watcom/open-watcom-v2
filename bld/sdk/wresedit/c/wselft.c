@@ -63,15 +63,15 @@
 
 WRFileType WSelectFileType( HWND parent, char *name,
                             bool is32bit, bool use_wres,
-                            HINSTANCE inst, HELP_CALLBACK hcb )
+                            HINSTANCE inst, HELP_CALLBACK help_callback )
 {
     WRFileType          file_type;
-    FARPROC             cb;
+    HELP_CALLBACK       hcb;
 
     _wtouch( inst );
-    cb = MakeProcInstance( (FARPROC)hcb, inst );
-    file_type = WRSelectFileType( parent, name, is32bit, use_wres, cb );
-    FreeProcInstance( (FARPROC)cb );
+    hcb = (HELP_CALLBACK)MakeProcInstance( (FARPROC)help_callback, inst );
+    file_type = WRSelectFileType( parent, name, is32bit, use_wres, hcb );
+    FreeProcInstance( (FARPROC)hcb );
 
     return( file_type );
 }

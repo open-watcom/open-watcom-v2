@@ -223,9 +223,12 @@ extern  bool    CvtOk( type_class_def fr, type_class_def to ) {
     return true if a conversion from "fr" to "to" can be done
 */
 
-    if( fr == XX ) return( false );
-    if( to == XX ) return( false );
-    if( AskHow( fr, to ) != BAD ) return( true );
+    if( fr == XX )
+        return( false );
+    if( to == XX )
+        return( false );
+    if( AskHow( fr, to ) != BAD )
+        return( true );
     return( false );
 }
 
@@ -260,7 +263,7 @@ extern  instruction     *rDOCVT( instruction *ins ) {
     }
     ins->head.state = INS_NEEDS_WORK;
     if( src->n.class == N_CONSTANT && src->c.const_type == CONS_ABSOLUTE
-     && ins->type_class != XX ) {
+      && ins->type_class != XX ) {
         src = TrimConst( src, ins->base_type_class );
         how = OK;
     } else {
@@ -290,7 +293,8 @@ instruction     *DoConversion( instruction *ins )
 rt_class    LookupConvertRoutine( instruction *ins )
 /**************************************************/
 {
-    ins = ins;
+    /* unused parameters */ (void)ins;
+
     _Zoiks( ZOIKS_101 );
     return( RT_NOP );
 }

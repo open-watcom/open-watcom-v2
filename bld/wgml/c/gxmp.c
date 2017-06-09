@@ -65,7 +65,7 @@ extern  void    gml_xmp( gml_tag gtag )
 {
     char    *   p;
 
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
 
     start_doc_sect();
     scr_process_break();
@@ -167,7 +167,8 @@ void    gml_exmp( gml_tag gtag )
 {
     tag_cb  *   wk;
 
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     scr_process_break();
     if( !ProcFlags.xmp_active ) {       // no preceding :XMP tag
         g_err_tag_prec( "XMP" );

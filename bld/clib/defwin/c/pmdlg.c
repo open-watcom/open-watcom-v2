@@ -39,6 +39,7 @@
 
 #define DISPLAY(x)              WinMessageBox( HWND_DESKTOP, NULL, x, "Error", 0, MB_APPLMODAL | MB_NOICON | MB_OK | MB_MOVEABLE );
 #define MAX_INTEGER_FIELD       11
+
 typedef struct {
     USHORT      x;
     USHORT      y;
@@ -51,8 +52,8 @@ typedef struct {
     char        *cclass;
     char        *text;
     char        *presparms;
-    char        *ctldata;
-    ULONG       *ctldatalen;
+    void        *ctldata;
+    ULONG       ctldatalen;
 } itemdata;
 
 /*
@@ -61,9 +62,9 @@ typedef struct {
  * The ctldata/ctldatalen, serve a dual purpose.  In most cases, control data
  * consists of one long, so instead of entering the four bytes in an array,
  * we set the ULONG ctldatalen equal to those bytes, and pass a NULL for
- * ctldata.  If you have more control data, then you will have to use an arry
+ * ctldata.  If you have more control data, then you will have to use an array
  * of bytes and plase the length of the array into the ULONG ctldatalen.
- * if you have no data, set ctldatalen = 0 and pass a NULL string to "", for
+ * if you have no data, set ctldatalen = 0 and pass a NULL string (""), for
  * ctldata.
  *
  * For certains things ctldata is required, this is true for dialog boxes.
@@ -73,40 +74,44 @@ typedef struct {
  */
 
 static itemdata _getint[] = {
-{  12,  45, 215, 45, DID_SLBC_DLG, 6,
-   FS_DLGBORDER | WS_CLIPSIBLINGS | WS_VISIBLE | WS_SAVEBITS,
-   (ULONG)WC_FRAME, NULL , "Set Number Of Lines Between Clears", "", NULL,
-   (ULONG*)(FCF_SYSMENU | FCF_TITLEBAR) },
-{  4,  29, 150, 8, 101, 0,
+{   12,  45, 215, 45, DID_SLBC_DLG, 6,
+    FS_DLGBORDER | WS_CLIPSIBLINGS | WS_VISIBLE | WS_SAVEBITS,
+    (ULONG)WC_FRAME, NULL , "Set Number Of Lines Between Clears", "",
+    NULL, FCF_SYSMENU | FCF_TITLEBAR },
+{   4,  29, 150, 8, 101, 0,
     SS_TEXT | DT_LEFT,
-    (ULONG)WC_STATIC, NULL, "Number Of Lines Between Clears:", "" , "", 0},
-{  157,  29, 47, 8, DID_SLBC_FIELD, 0,
+    (ULONG)WC_STATIC, NULL, "Number Of Lines Between Clears:", "" ,
+    "", 0 },
+{   157,  29, 47, 8, DID_SLBC_FIELD, 0,
     ES_RIGHT | ES_MARGIN | WS_TABSTOP,
-    (ULONG)WC_ENTRYFIELD, NULL, "10000", "" , "", 0},
-{  4,  4, 40, 14, DID_OK, 0,
+    (ULONG)WC_ENTRYFIELD, NULL, "10000", "" ,
+    "", 0 },
+{   4,  4, 40, 14, DID_OK, 0,
     BS_PUSHBUTTON | BS_AUTOSIZE | WS_TABSTOP,
-    (ULONG)WC_BUTTON, NULL, "~OK", "" , "", 0},
-{  58,  4, 40, 14, DID_DEFAULT, 0,
+    (ULONG)WC_BUTTON, NULL, "~OK", "" ,
+    "", 0 },
+{   58,  4, 40, 14, DID_DEFAULT, 0,
     BS_PUSHBUTTON | BS_AUTOSIZE | WS_TABSTOP,
-    (ULONG)WC_BUTTON, NULL, "~Default", "" , "", 0},
-{  112,  4, 40, 14, DID_CANCEL, 0,
+    (ULONG)WC_BUTTON, NULL, "~Default", "" ,
+    "", 0 },
+{   112,  4, 40, 14, DID_CANCEL, 0,
     BS_PUSHBUTTON | BS_AUTOSIZE | WS_TABSTOP,
-    (ULONG)WC_BUTTON, NULL, "Cancel", "" , "", 0},
-{  166,  4, 40, 14, DID_HELP, 0,
+    (ULONG)WC_BUTTON, NULL, "Cancel", "" ,
+    "", 0 },
+{   166,  4, 40, 14, DID_HELP, 0,
     BS_HELP | BS_NOPOINTERFOCUS | WS_TABSTOP,
-    (ULONG)WC_BUTTON, NULL, "Help", "" , "", 0},
+    (ULONG)WC_BUTTON, NULL, "Help", "" ,
+    "", 0 },
 };
 
 #define MAX_INT_ITEMS sizeof( _getint ) / sizeof( itemdata )
 
-char *ultoa( unsigned long int __value, char *__buf, int __radix );
-
 static char *titleName = "Open Watcom Default Windowing System";
 static char *helpMsg = "Enter the number of lines of text you would like to keep in the window at any time";
 
-static void setIntegerValue( HWND hwndDlg, USHORT id, ULONG val ) {
-//=============================================================
-
+static void setIntegerValue( HWND hwndDlg, USHORT id, ULONG val )
+//===============================================================
+{
     char        buff[MAX_INTEGER_FIELD+1];
 
     ultoa( val, buff, 10 );
@@ -114,9 +119,9 @@ static void setIntegerValue( HWND hwndDlg, USHORT id, ULONG val ) {
 }
 
 
-static BOOL getIntegerValue( HWND hwndDlg, USHORT id, ULONG *pval ) {
-//===============================================================
-
+static BOOL getIntegerValue( HWND hwndDlg, USHORT id, ULONG *pval )
+//=================================================================
+{
     char        buff[MAX_INTEGER_FIELD+1];
     char        *ptr;
     ULONG       val;
@@ -143,10 +148,9 @@ static BOOL getIntegerValue( HWND hwndDlg, USHORT id, ULONG *pval ) {
 }
 
 
-static BOOL chkIntegerValue( HWND hwndDlg, USHORT id,
-                                 ULONG *pval, char *errmsg ) {
-//============================================================
-
+static BOOL chkIntegerValue( HWND hwndDlg, USHORT id, ULONG *pval, char *errmsg )
+//===============================================================================
+{
     if( getIntegerValue( hwndDlg, id, pval ) ) {
         return( TRUE );
     } else {
@@ -158,10 +162,9 @@ static BOOL chkIntegerValue( HWND hwndDlg, USHORT id,
 /*
  * _GetIntervalBox - control dialog for getting interval
  */
-static  MRESULT EXPENTRY IntervalDialogProc( HWND hwndDlg, USHORT msg,
-                                         MPARAM mp1, MPARAM mp2 ) {
-//=================================================================
-
+static  MRESULT EXPENTRY IntervalDialogProc( HWND hwndDlg, USHORT msg, MPARAM mp1, MPARAM mp2 )
+//=============================================================================================
+{
     USHORT              dlg_id;
     HWND                dlg_hwnd;
 
@@ -182,7 +185,7 @@ static  MRESULT EXPENTRY IntervalDialogProc( HWND hwndDlg, USHORT msg,
             setIntegerValue( hwndDlg, DID_SLBC_FIELD, DEFAULT_CLEAR_INTERVAL );
             break;
         case DID_OK:
-            if ( chkIntegerValue( hwndDlg, DID_SLBC_FIELD, &(_AutoClearLines ),
+            if( chkIntegerValue( hwndDlg, DID_SLBC_FIELD, &(_AutoClearLines ),
                                   "Value must be greater than 0!" ) ) {
                 WinDismissDlg( hwndDlg, 1 );
             }
@@ -210,26 +213,27 @@ static  MRESULT EXPENTRY IntervalDialogProc( HWND hwndDlg, USHORT msg,
  */
 void _GetClearInterval( void )
 {
-    GLOBALHANDLE        data,new;
+    TEMPLATE_HANDLE     old_dlgtemplate;
+    TEMPLATE_HANDLE     new_dlgtemplate;
     int                 i;
 
-    data = _DialogTemplate( TEMP_TYPE, 437, 0xffff );
-
-    if( data == NULL ) return;
-    for( i=0;i<MAX_INT_ITEMS;i++ ) {
-        new = _AddControl( data, _getint[i].style,
+    old_dlgtemplate = _DialogTemplate( TEMP_TYPE, 437, 0xffff );
+    if( old_dlgtemplate == NULL )
+        return;
+    for( i = 0; i < MAX_INT_ITEMS; i++ ) {
+        new_dlgtemplate = _AddControl( old_dlgtemplate, _getint[i].style,
                 _getint[i].x, _getint[i].y, _getint[i].cx, _getint[i].cy,
                 _getint[i].id, _getint[i].children, _getint[i].nclass,
                 _getint[i].cclass, _getint[i].text, _getint[i].presparms,
                 _getint[i].ctldata, _getint[i].ctldatalen );
-        if( new == NULL  ) {
-            PMfree( data );
+        if( new_dlgtemplate == NULL  ) {
+            PMfree( old_dlgtemplate );
             return;
         }
-        data = new;
+        old_dlgtemplate = new_dlgtemplate;
     }
 
-    data = _DoneAddingControls( data );
-    _DynamicDialogBox( (PFNWP)IntervalDialogProc, _MainWindow, data );
+    new_dlgtemplate = _DoneAddingControls( old_dlgtemplate );
+    _DynamicDialogBox( (PFNWP)IntervalDialogProc, _MainWindow, new_dlgtemplate );
 
 } /* _GetClearInterval */

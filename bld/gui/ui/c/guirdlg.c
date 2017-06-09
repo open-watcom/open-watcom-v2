@@ -155,8 +155,7 @@ static bool Template2Dlg( DialogBoxHeader **hdr, DialogBoxControl **cntls )
     return( ok );
 }
 
-static gui_control_styles GetControlStyles( DialogBoxControl *ctl,
-                                            gui_control_class control_class )
+static gui_control_styles GetControlStyles( DialogBoxControl *ctl, gui_control_class control_class )
 {
     gui_control_styles  styles;
 
@@ -278,8 +277,7 @@ static gui_control_class GetControlClass( DialogBoxControl *ctl )
     return( control_class );
 }
 
-static bool DialogBoxControl2GUI( DialogBoxControl *ctl,
-                                  gui_control_info *ctl_info )
+static bool DialogBoxControl2GUI( DialogBoxControl *ctl, gui_control_info *ctl_info )
 {
     SAREA               area;
     bool                ok;
@@ -317,12 +315,12 @@ static bool DialogBoxControl2GUI( DialogBoxControl *ctl,
         }
 
         // set the control postion
-        area.row = ctl->Size.y / DLG_Y_MULT;
-        area.col = ctl->Size.x / DLG_X_MULT;
-        area.width = ( ( ctl->Size.width + DLG_X_MULT/2 ) / DLG_X_MULT );
+        area.row = ctl->SizeInfo.y / DLG_Y_MULT;
+        area.col = ctl->SizeInfo.x / DLG_X_MULT;
+        area.width = ( ( ctl->SizeInfo.width + DLG_X_MULT/2 ) / DLG_X_MULT );
         if( area.width < 1 )
             area.width = 1;
-        area.height = ( ( ctl->Size.height + DLG_Y_MULT/2 ) / DLG_Y_MULT );
+        area.height = ( ( ctl->SizeInfo.height + DLG_Y_MULT/2 ) / DLG_Y_MULT );
         if( area.height < 1 )
             area.height = 1;
         ok = GUIScreenToScaleRectR( &area, &ctl_info->rect );
@@ -360,8 +358,8 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
 
     // set the dialog postion remembering to add the size of the frame
     GUIGetScreenArea( &bounding );
-    area.width = hdr->Size.width / DLG_X_MULT + 2;
-    area.height = hdr->Size.height / DLG_Y_MULT + 2;
+    area.width = hdr->SizeInfo.width / DLG_X_MULT + 2;
+    area.height = hdr->SizeInfo.height / DLG_Y_MULT + 2;
     area.row = 0;
     if( bounding.height > area.height )
         area.row = ( bounding.height - area.height ) / 2;
@@ -411,7 +409,7 @@ static gui_create_info *DialogBoxHeader2GUI( DialogBoxHeader *hdr )
     return( dlg_info );
 }
 
-bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK *cb, void *extra )
+bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLBACK *gui_call_back, void *extra )
 {
     DialogBoxHeader     *hdr;
     DialogBoxControl    *cntls;
@@ -426,7 +424,7 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
     dlg_info = NULL;
     controls_info = NULL;
 
-    ok = ( cb != NULL );
+    ok = ( gui_call_back != NULL );
 
     if( ok ) {
         ok = GUISeekDialogTemplate( dlg_id );
@@ -469,7 +467,7 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
 
     if( ok ) {
         dlg_info->parent = parent;
-        dlg_info->call_back = cb;
+        dlg_info->gui_call_back = gui_call_back;
         dlg_info->extra = extra;
         ok = GUICreateDialog( dlg_info, hdr->NumOfItems, controls_info );
     }
@@ -497,4 +495,3 @@ bool GUICreateDialogFromRes( res_name_or_id dlg_id, gui_window *parent, GUICALLB
     }
     return( ok );
 }
-

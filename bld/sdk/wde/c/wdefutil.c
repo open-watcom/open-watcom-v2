@@ -59,6 +59,8 @@
 #include "wdefutil.h"
 #include "wrstrdup.h"
 #include "jdlg.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -68,7 +70,9 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND, UINT, WPARAM, LPARAM );
+
+/* Local Window callback functions prototypes */
+WINEXPORT INT_PTR CALLBACK WdeControlDefineDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -118,33 +122,33 @@ static WdeMouseMapStruct WdeMouseMapper[] = {
 };
 
 static WdeOBJIDToDefineProcItems WdeOBJIDToDefineProc[] = {
-    { DIALOG_OBJ,    "WdeDefineDIALOG"      },
-    { PBUTTON_OBJ,   "WdeDefinePUSH"        },
-    { CBUTTON_OBJ,   "WdeDefineCHECK"       },
-    { RBUTTON_OBJ,   "WdeDefineRADIO"       },
-    { GBUTTON_OBJ,   "WdeDefineGROUPBOX"    },
-    { FRAME_OBJ,     "WdeDefineFRAME"       },
-    { TEXT_OBJ,      "WdeDefineTEXT"        },
-    { ICON_OBJ,      "WdeDefineICON"        },
-    { EDIT_OBJ,      "WdeDefineEDIT"        },
-    { LISTBOX_OBJ,   "WdeDefineLISTBOX"     },
-    { COMBOBOX_OBJ,  "WdeDefineCOMBOBOX"    },
-    { HSCROLL_OBJ,   "WdeDefineHSCROLLBAR"  },
-    { VSCROLL_OBJ,   "WdeDefineVSCROLLBAR"  },
-    { SIZEBOX_OBJ,   "WdeDefineSIZEBOX"     },
-    { SBAR_OBJ,      "WdeDefineSTATUSBAR"   },
-    { LVIEW_OBJ,     "WdeDefineLISTVIEW"    },
-    { TVIEW_OBJ,     "WdeDefineTREEVIEW"    },
-    { TABCNTL_OBJ,   "WdeDefineTABCONTROL"  },
-    { ANIMATE_OBJ,   "WdeDefineANIMATE"     },
-    { UPDOWN_OBJ,    "WdeDefineUPDOWN"      },
-    { TRACKBAR_OBJ,  "WdeDefineTRACKBAR"    },
-    { PROGRESS_OBJ,  "WdeDefinePROGRESSBAR" },
-    { HOTKEY_OBJ,    "WdeDefineHOTKEY"      },
-    { HEADER_OBJ,    "WdeDefineHEADER"      },
-    { BASE_OBJ,      NULL                   },
-    { CONTROL_OBJ,   NULL                   },
-    { LAST__OBJ,     NULL                   }
+    { DIALOG_OBJ,       "WdeDefineDIALOG"      },
+    { PBUTTON_OBJ,      "WdeDefinePUSH"        },
+    { CBUTTON_OBJ,      "WdeDefineCHECK"       },
+    { RBUTTON_OBJ,      "WdeDefineRADIO"       },
+    { GBUTTON_OBJ,      "WdeDefineGROUPBOX"    },
+    { FRAME_OBJ,        "WdeDefineFRAME"       },
+    { TEXT_OBJ,         "WdeDefineTEXT"        },
+    { ICON_OBJ,         "WdeDefineICON"        },
+    { EDIT_OBJ,         "WdeDefineEDIT"        },
+    { LISTBOX_OBJ,      "WdeDefineLISTBOX"     },
+    { COMBOBOX_OBJ,     "WdeDefineCOMBOBOX"    },
+    { HSCROLL_OBJ,      "WdeDefineHSCROLLBAR"  },
+    { VSCROLL_OBJ,      "WdeDefineVSCROLLBAR"  },
+    { SIZEBOX_OBJ,      "WdeDefineSIZEBOX"     },
+    { SBAR_OBJ,         "WdeDefineSTATUSBAR"   },
+    { LVIEW_OBJ,        "WdeDefineLISTVIEW"    },
+    { TVIEW_OBJ,        "WdeDefineTREEVIEW"    },
+    { TABCNTL_OBJ,      "WdeDefineTABCONTROL"  },
+    { ANIMATE_OBJ,      "WdeDefineANIMATE"     },
+    { UPDOWN_OBJ,       "WdeDefineUPDOWN"      },
+    { TRACKBAR_OBJ,     "WdeDefineTRACKBAR"    },
+    { PROGRESS_OBJ,     "WdeDefinePROGRESSBAR" },
+    { HOTKEY_OBJ,       "WdeDefineHOTKEY"      },
+    { HEADER_OBJ,       "WdeDefineHEADER"      },
+    { BASE_OBJ,         NULL                   },
+    { CONTROL_OBJ,      NULL                   },
+    { LAST_USER_OBJ_ID, NULL                   }
 };
 
 
@@ -165,7 +169,7 @@ void WdeSnapPointToGrid( POINT *pt )
     WdeSnapPoint( pt, vinc, hinc );
 }
 
-OBJPTR WdeGetNextObject( bool up, OBJPTR obj, OBJPTR p )
+OBJPTR WdeGetNextObject( bool up, OBJPTR obj, OBJPTR parent )
 {
     OBJPTR old_current;
 
@@ -175,11 +179,11 @@ OBJPTR WdeGetNextObject( bool up, OBJPTR obj, OBJPTR p )
 
     if( obj != NULL && obj != GetMainObject() ) {
         old_current = obj;
-        if( p == NULL ) {
-            GetObjectParent( obj, &p );
+        if( parent == NULL ) {
+            GetObjectParent( obj, &parent );
         }
-        if( p != NULL ) {
-            if( Forward( p, GET_NEXT_CHILD, &obj, &up ) && obj != old_current ) {
+        if( parent != NULL ) {
+            if( Forward( parent, GET_NEXT_CHILD, &obj, &up ) && obj != old_current ) {
                 return( obj );
             }
         }
@@ -204,9 +208,9 @@ OBJPTR WdeCloneObject( OBJPTR obj, POINT *offset )
     if( ok ) {
         state = (WORD)GetKeyState( VK_CONTROL );
 #ifdef __NT__
-        ok = ((state & 0x8000) != 0x00);
+        ok = ( (state & 0x8000) != 0 );
 #else
-        ok = ((state & 0x80) != 0x00);
+        ok = ( (state & 0x80) != 0 );
 #endif
     }
 
@@ -232,7 +236,7 @@ OBJPTR WdeCloneObject( OBJPTR obj, POINT *offset )
 
     if( !ok ) {
         if( new != NULL ) {
-            Destroy( new, FALSE );
+            Destroy( new, false );
             new = NULL;
         }
     }
@@ -259,7 +263,7 @@ WdeNextIDStruct *WdeFindNextIDStruct( OBJPTR base )
     WdeNextIDStruct *ids;
 
     for( olist = WdeNextIDList; olist != NULL; olist = ListPrev( olist ) ) {
-        ids = ListElement( olist );
+        ids = (WdeNextIDStruct *)ListElement( olist );
         if( ids->base == base ) {
             return( ids );
         }
@@ -288,7 +292,7 @@ uint_16 WdeGetNextControlID( void )
             if( ids != NULL ) {
                 ids->base = base;
                 ids->id = WDE_START_CONTROL_ID;
-                ListAddElt( &WdeNextIDList, ids );
+                ListAddElt( &WdeNextIDList, (OBJPTR)ids );
             } else {
                 WdeWriteTrail( "WdeGetNextControlID: ids alloc failed!" );
                 return( WDE_START_CONTROL_ID );
@@ -334,14 +338,14 @@ uint_32 WdeHammingDistance( uint_32 x1, uint_32 x2 )
 bool WdeIsClassDefined( char *class )
 {
     WNDCLASS  wc;
-    BOOL      ret;
+    bool      ret;
     HINSTANCE app_inst;
 
     if( class != NULL && *class != '\0' ) {
         app_inst = WdeGetAppInstance();
-        ret = GetClassInfo( app_inst, class, &wc );
+        ret = ( GetClassInfo( app_inst, class, &wc ) != 0 );
     } else {
-        ret = FALSE;
+        ret = false;
     }
 
     return( ret );
@@ -349,19 +353,19 @@ bool WdeIsClassDefined( char *class )
 
 void WdeShowObjectWindow( HWND win, bool flag )
 {
-    uint_32 s;
+    DWORD   style;
 
     if( win != NULL ) {
-        s = (uint_32)GetWindowLong( win, GWL_STYLE );
+        style = GET_WNDSTYLE( win );
         if( flag ) {
-            if( !(s & WS_VISIBLE) ) {
-                s |= WS_VISIBLE;
-                SetWindowLong( win, GWL_STYLE, s );
+            if( !(style & WS_VISIBLE) ) {
+                style |= WS_VISIBLE;
+                SET_WNDSTYLE( win, style );
             }
         } else {
-            if( s & WS_VISIBLE ) {
-                s ^= WS_VISIBLE;
-                SetWindowLong( win, GWL_STYLE, s );
+            if( style & WS_VISIBLE ) {
+                style ^= WS_VISIBLE;
+                SET_WNDSTYLE( win, style );
             }
         }
     }
@@ -425,7 +429,7 @@ bool WdeFindObjectsAtPt( POINT *pt, LIST **obj_list, LIST *olist )
     do {
         child = ListElement( ol );
         is_clear = Forward( child, IS_OBJECT_CLEAR, &b, NULL ) && b;
-        can_move = ValidateAction( child, PICK, &req.p.pt );
+        can_move = ( ValidateAction( child, PICK, &req.p.pt ) != 0 );
         if( can_move ) {
             sel = child;
             break;
@@ -504,10 +508,8 @@ void WdeDisableChildWindows( HWND hWnd )
 {
     HWND win;
 
-    win = GetWindow( hWnd, GW_CHILD );
-    while( win != NULL ) {
+    for( win = GetWindow( hWnd, GW_CHILD ); win != NULL; win = GetWindow( win, GW_HWNDNEXT ) ) {
         EnableWindow( win, FALSE );
-        win = GetWindow( win, GW_HWNDNEXT );
     }
 }
 
@@ -515,7 +517,7 @@ char *WdeGetDefineProcFromOBJID( Wde_Objects obj_id )
 {
     int i;
 
-    for( i = 0; WdeOBJIDToDefineProc[i].obj_id != LAST__OBJ; i++ ) {
+    for( i = 0; WdeOBJIDToDefineProc[i].obj_id != LAST_USER_OBJ_ID; i++ ) {
         if( WdeOBJIDToDefineProc[i].obj_id == obj_id ) {
             return( WdeOBJIDToDefineProc[i].proc_name );
         }
@@ -620,18 +622,16 @@ void WdeSetDefineObjectSymbolInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
                 WRMemFree( str1 );
             }
             o_info->info.d.id = 0;
-            o_info->info.d.use_id = FALSE;
+            o_info->info.d.use_id = false;
         } else {
             if( o_info->symbol != NULL ) {
                 WdeSetComboWithStr( o_info->symbol, hDlg, IDB_SYMBOL );
             } else {
-                WdeSetEditWithSINT16( (int_16)o_info->info.d.name->ID.Num,
-                                      10, hDlg, IDB_SYMBOL );
+                WdeSetEditWithSINT16( (int_16)o_info->info.d.name->ID.Num, 10, hDlg, IDB_SYMBOL );
             }
             o_info->info.d.id = (uint_16)o_info->info.d.name->ID.Num;
-            o_info->info.d.use_id = TRUE;
-            WdeSetEditWithSINT16( (int_16) o_info->info.d.name->ID.Num,
-                                  10, hDlg, IDB_ID );
+            o_info->info.d.use_id = true;
+            WdeSetEditWithSINT16( (int_16) o_info->info.d.name->ID.Num, 10, hDlg, IDB_ID );
         }
 
         /* JPK - added for help id */
@@ -938,29 +938,29 @@ bool WdeProcessMouse( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
     return( ret );
 }
 
-BOOL WdeControlDefine( WdeDefineObjectInfo *o_info )
+bool WdeControlDefine( WdeDefineObjectInfo *o_info )
 {
     char                *symbol;
     char                *helpsymbol;
     char                *dlg_template;
     INT_PTR             redraw;
-    FARPROC             def_proc;
+    DLGPROC             dlgproc;
     HINSTANCE           app_inst;
     WdeOrderMode        mode;
 
     if( Forward( o_info->obj, GET_ORDER_MODE, &mode, NULL ) && mode != WdeSelect ) {
-        return( TRUE );
+        return( true );
     }
 
     if( !Forward( o_info->obj, GET_OBJECT_INFO, &o_info->info.c.info, &symbol ) ) {
         WdeWriteTrail( "WdeControlDefine: GET_OBJECT_INFO failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* JPK - added for help id */
     if( !Forward( o_info->obj, GET_OBJECT_HELPINFO, &o_info->info.c.info, &helpsymbol ) ) {
         WdeWriteTrail( "WdeControlDefine: GET_OBJECT_HELPINFO failed!" );
-        return( FALSE );
+        return( false );
     }
 
     o_info->symbol = WdeStrDup( symbol );
@@ -970,7 +970,7 @@ BOOL WdeControlDefine( WdeDefineObjectInfo *o_info )
     if( o_info->win == NULL ) {
         if( !Forward( o_info->obj, GET_WINDOW_HANDLE, &o_info->win, NULL ) ) {
             WdeWriteTrail( "WdeControlDefine: GET_WINDOW_HANDLE failed!" );
-            return( FALSE );
+            return( false );
         }
     }
 
@@ -978,39 +978,37 @@ BOOL WdeControlDefine( WdeDefineObjectInfo *o_info )
         return( WdeGenericDefine( o_info ) );
     }
 
-    WdeSetStatusText( NULL, "", FALSE );
-    WdeSetStatusByID( WDE_DEFININGCONTROL, WDE_NONE );
+    WdeSetStatusText( NULL, "", false );
+    WdeSetStatusByID( WDE_DEFININGCONTROL, 0 );
 
     app_inst = WdeGetAppInstance();
 
     dlg_template = WdeGetDefineProcFromOBJID( o_info->obj_id );
     if( dlg_template == NULL ) {
         WdeWriteTrail( "WdeControlDefine: Invalid OBJECT_ID!" );
-        return( FALSE );
+        return( false );
     }
 
     redraw = -1;
 
-    def_proc = MakeProcInstance( (FARPROC)WdeControlDefineProc, app_inst );
-
-    if( def_proc != NULL ) {
-        redraw = JDialogBoxParam( app_inst, dlg_template, o_info->win,
-                                  (DLGPROC)def_proc, (LPARAM)o_info );
-        FreeProcInstance( def_proc );
+    dlgproc = MakeProcInstance_DLG( WdeControlDefineDlgProc, app_inst );
+    if( dlgproc != NULL ) {
+        redraw = JDialogBoxParam( app_inst, dlg_template, o_info->win, dlgproc, (LPARAM)o_info );
+        FreeProcInstance_DLG( dlgproc );
     }
 
     if( redraw == -1 ) {
         WdeWriteTrail( "WdeControlDefine: Dialog not created!" );
-        return( FALSE );
+        return( false );
     } else if( redraw ) {
         if( !Forward( o_info->obj, SET_OBJECT_INFO, NULL, o_info->symbol ) ) {
             WdeWriteTrail( "WdeControlDefine: SET_OBJECT_INFO failed!" );
-            return( FALSE );
+            return( false );
         }
         /* JPK - added this for help id */
         if( !Forward( o_info->obj, SET_OBJECT_HELPINFO, NULL, o_info->helpsymbol ) ) {
             WdeWriteTrail( "WdeControlDefine: SET_OBJECT_HELPINFO failed!" );
-            return( FALSE );
+            return( false );
         }
         if( o_info->symbol != NULL ) {
             WdeAddSymbolToObjectHashTable( o_info->res_info, o_info->symbol,
@@ -1022,11 +1020,11 @@ BOOL WdeControlDefine( WdeDefineObjectInfo *o_info )
         }
         if( !Forward( o_info->obj, DESTROY_WINDOW, NULL, NULL ) ) {
             WdeWriteTrail( "WdeControlDefine: DESTROY_WINDOW failed!" );
-            return( FALSE );
+            return( false );
         }
         if( !Forward( o_info->obj, CREATE_WINDOW, NULL, NULL ) ) {
             WdeWriteTrail( "WdeControlDefine: CREATE_WINDOW failed!" );
-            return( FALSE );
+            return( false );
         }
         Notify( o_info->obj, PRIMARY_OBJECT, NULL );
     }
@@ -1043,16 +1041,16 @@ BOOL WdeControlDefine( WdeDefineObjectInfo *o_info )
 
     WdeSetStatusReadyText();
 
-    return( TRUE );
+    return( true );
 }
 
-WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeControlDefineDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static WdeDefineObjectInfo  *o_info = NULL;
-    static BOOL                 init_done = FALSE;
-    BOOL                        ret;
+    static bool                 init_done = false;
+    bool                        ret;
 
-    ret = FALSE;
+    ret = false;
 
     if( init_done && o_info != NULL ) {
         if( o_info->hook_func != NULL ) {
@@ -1062,15 +1060,15 @@ WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wP
         if( !ret ) {
             ret = WdeProcessSymbolCombo( hDlg, message, wParam, lParam,
                                          o_info->res_info->hash_table,
-                                         GETCTL_ID( o_info->info.c.info ), TRUE );
+                                         GETCTL_ID( o_info->info.c.info ), true );
         }
 
-        /* JPK - added for help id support */
+        /* added for help id support */
         if( !ret ) {
             ret = WdeProcessHelpSymbolCombo( hDlg, message, wParam, lParam,
                                              o_info->res_info->hash_table,
                                              GETCTL_HELPID( o_info->info.c.info ),
-                                             TRUE );
+                                             true );
         }
 
         if( ret ) {
@@ -1084,16 +1082,15 @@ WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wP
         break;
 
     case WM_INITDIALOG:
-        init_done = TRUE;
+        init_done = true;
         o_info = (WdeDefineObjectInfo *)lParam;
         if( o_info == NULL ) {
             EndDialog( hDlg, FALSE );
-            init_done = FALSE;
-            ret = TRUE;
+            init_done = false;
         } else {
             WdeSetDefineControlInfo( o_info, hDlg );
         }
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_COMMAND:
@@ -1105,15 +1102,15 @@ WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wP
         case IDOK:
             WdeGetDefineControlInfo( o_info, hDlg );
             EndDialog( hDlg, TRUE );
-            ret = TRUE;
-            init_done = FALSE;
+            ret = true;
+            init_done = false;
             o_info = NULL;
             break;
 
         case IDCANCEL:
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
-            init_done = FALSE;
+            ret = true;
+            init_done = false;
             o_info = NULL;
             break;
         }
@@ -1123,16 +1120,15 @@ WINEXPORT BOOL CALLBACK WdeControlDefineProc( HWND hDlg, UINT message, WPARAM wP
 }
 
 
-BOOL WdeWinStylesHook( HWND hDlg, UINT message,
-                       WPARAM wParam, LPARAM lParam, DialogStyle mask )
+bool WdeWinStylesHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
     DialogStyle  tstyle;
-    BOOL         ret;
+    bool         ret;
     bool         overlapped;
 
     _wde_touch( lParam );
 
-    ret = FALSE;
+    ret = false;
 
     if( message == WM_COMMAND && GET_WM_COMMAND_CMD( wParam, lParam ) == BN_CLICKED ) {
         switch( LOWORD( wParam ) ) {
@@ -1140,14 +1136,14 @@ BOOL WdeWinStylesHook( HWND hDlg, UINT message,
             if( IsDlgButtonChecked( hDlg, IDB_WS_CHILD ) ) {
                 CheckDlgButton( hDlg, IDB_WS_POPUP, BST_UNCHECKED );
             }
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDB_WS_POPUP:
             if( IsDlgButtonChecked( hDlg, IDB_WS_POPUP ) ) {
                 CheckDlgButton( hDlg, IDB_WS_CHILD, BST_UNCHECKED );
             }
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDB_WS_CAPTION:
@@ -1158,7 +1154,7 @@ BOOL WdeWinStylesHook( HWND hDlg, UINT message,
                 CheckDlgButton( hDlg, IDB_WS_BORDER, BST_UNCHECKED );
                 CheckDlgButton( hDlg, IDB_WS_DLGFRAME, BST_UNCHECKED );
             }
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDB_WS_DLGFRAME:
@@ -1172,7 +1168,7 @@ BOOL WdeWinStylesHook( HWND hDlg, UINT message,
             } else {
                 CheckDlgButton( hDlg, IDB_WS_CAPTION, BST_UNCHECKED );
             }
-            ret = TRUE;
+            ret = true;
             break;
 
 #if __NT__XX
@@ -1275,13 +1271,13 @@ bool WdeProcessSymbolCombo( HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
     _wde_touch( id );
     _wde_touch( use_id );
 
-    processed = FALSE;
+    processed = false;
 
     if ( message == WM_COMMAND && LOWORD( wParam ) == IDB_SYMBOL ) {
         hw = GET_WM_COMMAND_CMD( wParam, lParam );
         if( hw == CBN_EDITCHANGE || hw == CBN_SELCHANGE ) {
             WdeDefineObjectLookupComboEntry( hDlg, hw, table );
-            processed = TRUE;
+            processed = true;
         }
     }
 
@@ -1353,13 +1349,13 @@ bool WdeProcessHelpSymbolCombo( HWND hDlg, UINT message, WPARAM wParam, LPARAM l
     _wde_touch( id );
     _wde_touch( use_id );
 
-    processed = FALSE;
+    processed = false;
 
     if( message == WM_COMMAND && LOWORD( wParam ) == IDB_HELPSYMBOL ) {
         hw = GET_WM_COMMAND_CMD( wParam, lParam );
         if( hw == CBN_EDITCHANGE || hw == CBN_SELCHANGE ) {
             WdeDefineObjectLookupHelpComboEntry( hDlg, hw, table );
-            processed = TRUE;
+            processed = true;
         }
     }
 

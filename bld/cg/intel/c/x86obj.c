@@ -56,6 +56,7 @@
 #include "intrface.h"
 #include "x86obj.h"
 #include "i87data.h"
+#include "dostimet.h"
 #include "feprotos.h"
 
 #ifdef _PHAR_LAP /* This is a misnomer. Let's rename it */
@@ -339,7 +340,8 @@ static  byte    SegmentAttr( byte align, seg_attr tipe, bool use_16 )
 {
     byte        attr;
 
-    use_16 = use_16;
+    /* unused parameters */ (void)use_16;
+
     if( align <= 1 ) {
         attr = SEG_ALGN_BYTE;
     } else if( align <= 2 ) {
@@ -373,7 +375,7 @@ static  byte    SegmentAttr( byte align, seg_attr tipe, bool use_16 )
 #ifdef _OMF_32
     if( _IsntTargetModel( EZ_OMF ) ) {
         if( _IsTargetModel( USE_32 ) ) {
-            if( use_16 == false ) {
+            if( !use_16 ) {
                 attr |= SEG_USE_32;
             }
         }
@@ -523,7 +525,8 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
     object      *obj;
     cmd_omf     cmd;
 
-    use_16 = use_16;
+    /* unused parameters */ (void)use_16;
+
     obj = CGAlloc( sizeof( object ) );
     rec->obj = obj;
     obj->index = rec->sidx;
@@ -563,7 +566,7 @@ static  void    DoASegDef( index_rec *rec, bool use_16 )
     FlushNames();
     obj->segfix = AskObjHandle();
     if( ++SegsDefd > 32000 ) {
-        FEMessage( MSG_FATAL, "too many segments" );
+        FatalError( "too many segments" );
     }
 #ifdef _OMF_32
     cmd = PickOMF( CMD_SEGDEF );
@@ -1064,7 +1067,8 @@ void    ObjInit( void )
         if( depend == NULL )
             break;
         OutShort( DEPENDENCY_COMMENT, names );
-        OutLongInt( *(unsigned_32 *)FEAuxInfo( depend, DEPENDENCY_TIMESTAMP ), names );
+        // OMF use dos time/date format
+        OutLongInt( _timet2dos( *(time_t *)FEAuxInfo( depend, DEPENDENCY_TIMESTAMP ) ), names );
         OutName( FEAuxInfo( depend, DEPENDENCY_NAME ), names );
         PutObjOMFRec( CMD_COMENT, names->array, names->used );
         names->used = 0;
@@ -2220,7 +2224,8 @@ void    OutDLLExport( uint words, cg_sym_handle sym )
 {
     object      *obj;
 
-    words = words;
+    /* unused parameters */ (void)words;
+
     SetUpObj( false );
     EjectLEData();
     obj = CurrSeg->obj;

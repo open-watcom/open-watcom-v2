@@ -38,7 +38,7 @@
 
 /* Local Window callback functions prototypes */
 WINEXPORT BOOL CALLBACK GridEnumProc( HWND hwnd, LONG lparam );
-WINEXPORT void CALLBACK DrawPt( int xpos, int ypos, WPI_PARAM2 lparam );
+WPI_EXPORT void CALLBACK DrawPt( int xpos, int ypos, WPI_PARAM2 lparam );
 
 #define MIN_DRAW_WIN_WIDTH      150
 
@@ -75,8 +75,8 @@ BOOL CALLBACK GridEnumProc( HWND hwnd, LONG lparam )
 void CalculateDims( short img_width, short img_height, short *area_width,
                     short *area_height )
 {
-    int         point_size1;
-    int         point_size2;
+    int         pointsize1;
+    int         pointsize2;
     int         max_width;
     int         max_height;
     WPI_RECT    rcclient;
@@ -96,16 +96,16 @@ void CalculateDims( short img_width, short img_height, short *area_width,
     max_height = _wpi_getheightrect( rcclient ) - y_adj;
 #endif
 
-    point_size1 = max_width / img_width;
-    if( point_size1 < 1 )
-        point_size1 = 1;
-    point_size2 = max_height / img_height;
-    if( point_size2 < 1 )
-        point_size2 = 1;
+    pointsize1 = max_width / img_width;
+    if( pointsize1 < 1 )
+        pointsize1 = 1;
+    pointsize2 = max_height / img_height;
+    if( pointsize2 < 1 )
+        pointsize2 = 1;
 
-    pointSize.x = point_size1;
-    if( pointSize.x > point_size2 )
-        pointSize.x = point_size2;
+    pointSize.x = pointsize1;
+    if( pointSize.x > pointsize2 )
+        pointSize.x = pointsize2;
     while( pointSize.x * img_width < MIN_DRAW_WIN_WIDTH ) {
         pointSize.x++;
     }
@@ -1004,7 +1004,7 @@ void CreateDrawnImage( img_node *node )
  */
 void CheckGridItem( HMENU hmenu )
 {
-    WPI_ENUMPROC        fp_enum;
+    WPI_ENUMPROC        enumproc;
     HCURSOR             prevcursor;
 
     prevcursor = _wpi_setcursor( _wpi_getsyscursor( IDC_WAIT ) );
@@ -1022,9 +1022,9 @@ void CheckGridItem( HMENU hmenu )
     PressGridButton();
 
     if( DoImagesExist() ) {
-        fp_enum = _wpi_makeenumprocinstance( GridEnumProc, Instance );
-        _wpi_enumchildwindows( ClientWindow, fp_enum, 0L );
-        _wpi_freeprocinstance( fp_enum );
+        enumproc = _wpi_makeenumprocinstance( GridEnumProc, Instance );
+        _wpi_enumchildwindows( ClientWindow, enumproc, 0L );
+        _wpi_freeenumprocinstance( enumproc );
     }
     _wpi_setcursor( prevcursor );
 
@@ -1159,7 +1159,7 @@ void ResizeChild( WPI_PARAM2 lparam, HWND hwnd, bool firsttime )
     short       y_adjustment;
     short       new_width;
     short       new_height;
-    WPI_POINT   point_size;
+    WPI_POINT   pointsize;
     WPI_POINT   max;
     HWND        frame;
     HMENU       hmenu;
@@ -1204,36 +1204,36 @@ void ResizeChild( WPI_PARAM2 lparam, HWND hwnd, bool firsttime )
     }
 
     // the following assumes that max.x >> min_width
-    point_size.x = max.x / node->width;
-    if( point_size.x > width / node->width )
-        point_size.x = width / node->width;
-    if( point_size.x < min_width / node->width + 1 )
-        point_size.x = min_width / node->width + 1;
+    pointsize.x = max.x / node->width;
+    if( pointsize.x > width / node->width )
+        pointsize.x = width / node->width;
+    if( pointsize.x < min_width / node->width + 1 )
+        pointsize.x = min_width / node->width + 1;
 
-    point_size.y = max.y / node->height;
-    if( point_size.y > height / node->height )
-        point_size.y = height / node->height;
-    if( point_size.y < 1 )
-        point_size.y = 1;
+    pointsize.y = max.y / node->height;
+    if( pointsize.y > height / node->height )
+        pointsize.y = height / node->height;
+    if( pointsize.y < 1 )
+        pointsize.y = 1;
 
     if( ImgedConfigInfo.square_grid ) {
-        if( point_size.x > point_size.y )
-            point_size.x = point_size.y;
-        if( point_size.x < min_width / node->width + 1 ) {
-            point_size.x = min_width / node->width + 1;
+        if( pointsize.x > pointsize.y )
+            pointsize.x = pointsize.y;
+        if( pointsize.x < min_width / node->width + 1 ) {
+            pointsize.x = min_width / node->width + 1;
         }
-        if( point_size.x > max.y / node->height ) {
+        if( pointsize.x > max.y / node->height ) {
             hmenu = GetMenu( _wpi_getframe( HMainWindow ) );
             CheckSquareGrid( hmenu );
         } else {
-            point_size.y = point_size.x;
+            pointsize.y = pointsize.x;
         }
     }
 
-    new_width = (short)(point_size.x * node->width + x_adjustment);
-    new_height = (short)(point_size.y * node->height + y_adjustment);
+    new_width = (short)(pointsize.x * node->width + x_adjustment);
+    new_height = (short)(pointsize.y * node->height + y_adjustment);
 
-    pointSize = point_size;
+    pointSize = pointsize;
 
     if( pointSize.x * node->width != width || pointSize.y * node->height != height ) {
         SetWindowPos( frame, HWND_TOP, 0, 0, new_width, new_height,

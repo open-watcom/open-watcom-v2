@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -48,22 +49,15 @@
 #include "wpdriver.h"
 #include "wphelp.h"
 #include "wpsamp.h"
-
-
-extern void WPFini(void);
-extern void AboutClose(void);
-extern void DlgAbout(void);
-extern void ClearSample(sio_data *curr_sio);
-extern void DlgGetOptions(a_window *wnd);
-extern void AboutSetOff(void);
-extern void WPMemPrtUsage( void );
-
-extern char         SamplePath[_MAX_PATH];
-extern sio_data *   CurrSIOData;
+#include "aboutmsg.h"
+#include "clrsamps.h"
+#include "dlgoptn.h"
+#include "wpstart.h"
+#include "wpdata.h"
+#include "memutil.h"
 
 
 #define OFN_SAMPLE_FILE (OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST)
-
 
 static gui_menu_struct fileMenu[] = {
     { "&Open...", MENU_OPEN_SAMPLE, GUI_ENABLED, "Open a sample file." },
@@ -133,7 +127,8 @@ bool WndMainMenuProc( a_window *wnd, gui_ctl_id id )
     char *          sys_spec;
 #endif
 
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     active = WndFindActive();
     switch( id ) {
     case MENU_OPEN_SAMPLE:

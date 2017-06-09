@@ -43,19 +43,6 @@ void InitPurge( void )
 }
 
 
-static void SrcPurge( void )
-/*******************/
-{
-    FCB *src_file;
-
-    while( (src_file = SrcFile) != NULL ) {
-        SrcFile = src_file->prev_file;
-        CClose( src_file->src_fp );
-        FEfree( src_file->src_buf );
-        CMemFree( src_file );
-    }
-}
-
 static void Purge( char **ptr )
 {
     if( *ptr != NULL ) {

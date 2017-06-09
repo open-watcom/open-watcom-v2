@@ -363,6 +363,7 @@ Modified        By              Reason
 %type <dspec> type-specifier-seq
 %type <dspec> type-specifier
 %type <dspec> typeof-specifier
+%type <dspec> decltype-specifier
 %type <dspec> arg-decl-specifier-seq
 %type <dspec> decl-specifier-seq
 %type <dspec> non-type-decl-specifier-seq
@@ -1508,10 +1509,16 @@ simple-type-specifier
     | qualified-type-specifier
     | basic-type-specifier
     /* see N1978 -- Decltype (Revision 5) */
-    | Y_DECLTYPE Y_LEFT_PAREN expression Y_RIGHT_PAREN
-    { $$ = PTypeExpr( $3 ); }
+    | decltype-specifier
     /* extension */
     | typeof-specifier
+    ;
+
+decltype-specifier
+    : Y_DECLTYPE Y_LEFT_PAREN id-expression Y_RIGHT_PAREN
+    { $$ = PTypeDecltypeExpr( $3, true ); }
+    | Y_DECLTYPE Y_LEFT_PAREN expression Y_RIGHT_PAREN
+    { $$ = PTypeDecltypeExpr( $3, false ); }
     ;
 
 /* non-standard */

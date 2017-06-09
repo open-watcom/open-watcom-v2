@@ -162,7 +162,8 @@ static  void    XLOption( opt_entry *optn, bool negated ) {
 
 // Extend source line beyond column 72.
 
-    optn = optn;
+    /* unused parameters */ (void)optn;
+
     if( negated ) {
         LastColumn = LAST_COL;
     } else {
@@ -189,7 +190,8 @@ static  void    DefOption( opt_entry *optn, char *ptr ) {
 
 // Define a macro.
 
-    optn = optn;
+    /* unused parameters */ (void)optn;
+
     MacroDEFINE( ptr, SkipToken( ptr ) - ptr );
 }
 
@@ -203,7 +205,8 @@ static  void    PathOption( opt_entry *optn, char *ptr )
     int         old_len;
     int         len;
 
-    optn = optn;
+    /* unused parameters */ (void)optn;
+
     len = strlen( ptr );
     // skip quotes
     if( ptr[0] == '"' && ptr[len - 1] == '"' ) {
@@ -396,7 +399,8 @@ static  void    FOOption( opt_entry *optn, char *ptr ) {
 
 // Process "FO=" option.
 
-    optn = optn;
+    /* unused parameters */ (void)optn;
+
     ObjName = ptr;
 }
 
@@ -406,8 +410,8 @@ static  void    NegOption( opt_entry *optn, bool negated ) {
 
 // Turn off bit option.
 
-    optn = optn;
-    negated = negated;
+    /* unused parameters */ (void)optn; (void)negated;
+
     NewOptions &= ~optn->value;
     if( optn->value == DISK_MASK ) {
         NewOptions |= OPT_LIST;
@@ -418,7 +422,8 @@ static  void    NegOption( opt_entry *optn, bool negated ) {
 static  void    ChiOption( opt_entry *optn, bool negated ) {
 //==========================================================
 
-    optn = optn; negated = negated;
+    /* unused parameters */ (void)optn; (void)negated;
+
     __UseChineseCharSet();
     NewOptions &= ~( OPT_CHINESE | OPT_JAPANESE | OPT_KOREAN );
     NewOptions |= OPT_CHINESE;
@@ -428,7 +433,8 @@ static  void    ChiOption( opt_entry *optn, bool negated ) {
 static  void    JapOption( opt_entry *optn, bool negated ) {
 //==========================================================
 
-    optn = optn; negated = negated;
+    /* unused parameters */ (void)optn; (void)negated;
+
     __UseJapaneseCharSet();
     NewOptions &= ~( OPT_CHINESE | OPT_JAPANESE | OPT_KOREAN );
     NewOptions |= OPT_JAPANESE;
@@ -438,7 +444,8 @@ static  void    JapOption( opt_entry *optn, bool negated ) {
 static  void    KorOption( opt_entry *optn, bool negated ) {
 //==========================================================
 
-    optn = optn; negated = negated;
+    /* unused parameters */ (void)optn; (void)negated;
+
     __UseKoreanCharSet();
     NewOptions &= ~( OPT_CHINESE | OPT_JAPANESE | OPT_KOREAN );
     NewOptions |= OPT_KOREAN;
@@ -526,7 +533,7 @@ void    CmdOption( char *buff ) {
 
     optn = GetOptn( buff, &negated );
     if( optn == NULL ) {
-        // Check if we've encountered a compound optimization option    
+        // Check if we've encountered a compound optimization option
         if( tolower( buff[0] ) == 'o' && strlen(buff) > 2 )
             CompoundOptOption( buff );
         else
@@ -556,11 +563,11 @@ static  void  CompoundOptOption( char *buff ) {
 
     single_opt[0] = buff[0];
     i = 0;
-    
+
     while( buff[++i] != '\0' ) {
         opt_i = 1;
         single_opt[opt_i++] = buff[i];
-        
+
         switch( tolower( buff[i] ) ) {
             case 'l':
                 if( buff[i+1] == '+' )
@@ -575,7 +582,7 @@ static  void  CompoundOptOption( char *buff ) {
                     single_opt[opt_i++] = buff[++i];
                 break;
         }
-        
+
         single_opt[opt_i] = '\0';
         CmdOption( single_opt );
     }

@@ -112,7 +112,8 @@ void RestoreCursor( void )
 
 vi_rc SetFont( const char *data )
 {
-    data = data;
+    /* unused parameters */ (void)data;
+
     return( ERR_NO_ERR );
 }
 
@@ -232,7 +233,7 @@ static void getColorPalette( char *p )
 #if defined( _M_I86 ) || defined( __OS2__ ) /* || defined( __4G__ ) */
     BIOSGetColorPalette( p );
 #else
-    p = p;
+    /* unused parameters */ (void)p;
 #endif
 
 } /* getColorPalette */

@@ -339,12 +339,12 @@ static void GetInitCmd( int pass )
 }
 
 #ifndef __GUI__
-static void PrintUsage( int first_ln )
+static void PrintUsage( dui_res_id first_ln )
 {
     char        *msg_buff;
 
-    for( ;; first_ln++ ) {
-        msg_buff = DUILoadString( first_ln );
+    for( ;; ) {
+        msg_buff = DUILoadString( first_ln++ );
         if( ( msg_buff[0] == '.' ) && ( msg_buff[1] == 0 ) )
             break;
         puts( msg_buff );
@@ -511,7 +511,8 @@ static void ProcOptList( int pass )
 
 OVL_EXTERN char *GetEnvArg( int i )
 {
-    i = i;
+    /* unused parameters */ (void)i;
+
     return( NULL );
 }
 

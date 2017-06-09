@@ -203,9 +203,10 @@ static void processThrow(       // PROCESS A THROW
 {
     _RTCTL rt_ctl;              // - R/T control
     DISPATCH_EXC dispatch;      // - dispatch control
-    auto FsExcRec excrec;       // - system exception record
+    FsExcRec excrec;            // - system exception record
     volatile rboolean unwound;
-    void *force_this_routine_to_have_an_EBP_frame;
+    void __based(__segname("_STACK")) *force_this_routine_to_have_an_EBP_frame;
+//    void *force_this_routine_to_have_an_EBP_frame;
 
 //  CPPLIB( DbgRtDumpAutoDtor )();
 

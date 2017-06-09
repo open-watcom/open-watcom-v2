@@ -41,15 +41,12 @@ WResID *WResReadWResID( WResFileID fid )
 {
     WResID          newid;
     WResID          *newidptr;
-    WResFileSSize   numread;
-    int             extrabytes;     /* chars to be read beyond the fixed size */
-    bool            error;
+    size_t          numread;
+    unsigned        extrabytes;     /* chars to be read beyond the fixed size */
 
     /* read in the fixed part of the record */
-    error = WResReadFixedWResID( &newid, fid );
-    if( error ) {
+    if( WResReadFixedWResID( &newid, fid ) )
         return( NULL );
-    }
 
     if( newid.IsName ) {
         extrabytes = newid.ID.Name.NumChars - 1;
@@ -63,8 +60,7 @@ WResID *WResReadWResID( WResFileID fid )
     } else {
         memcpy( newidptr, &newid, sizeof( WResID ) );
         if( extrabytes != 0 ) {
-            numread = WRESREAD( fid, newidptr->ID.Name.Name + 1, extrabytes );
-            if( numread != extrabytes ) {
+            if( (numread = WRESREAD( fid, newidptr->ID.Name.Name + 1, extrabytes )) != extrabytes ) {
                 WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
                 WRESFREE( newidptr );
                 newidptr = NULL;

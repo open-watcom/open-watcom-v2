@@ -229,7 +229,7 @@ static int WindowsInit( HANDLE inst, int showcmd )
 
 } /* WindowsInit */
 
-void Output( char *str )
+void Output( const char *str )
 {
     MyOutput( str );
 }
@@ -237,7 +237,7 @@ void Output( char *str )
 /*
  * Output a string to the list box
  */
-void MyOutput( char *str, ... )
+void MyOutput( const char *str, ... )
 {
     static char tmpStr[TMPSLEN+1];
     static int  tmpOff=0;
@@ -344,7 +344,7 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE previnst, LPSTR cmd, int show)
         parm.lpCmdShow = (void __far *)&cmddat;
         parm.dwReserved = 0;
         newinst = LoadModule( "wsamplew.exe", (LPVOID)&parm );
-        if( (UINT)newinst < 32 ) {
+        if( newinst < HINSTANCE_ERROR ) {
             WinMessage( MsgArray[MSG_SAMPLE_12 - ERR_FIRST_MESSAGE] );
             CloseShop();
             return( FALSE );

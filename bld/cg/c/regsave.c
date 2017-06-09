@@ -33,7 +33,7 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "conflict.h"
+#include "confldef.h"
 #include "model.h"
 #include "savings.h"
 #include "namelist.h"
@@ -64,7 +64,7 @@ extern  void    SetLoopCost( uint time ) {
     save_def    loop_weight;
     int         i;
 
-    loop_weight         = ( LOOP_FACTOR * time ) / TOTAL_WEIGHT;
+    loop_weight = ( LOOP_FACTOR * time ) / TOTAL_WEIGHT;
     if( loop_weight == 0 ) {
         loop_weight = 1;
     }
@@ -73,7 +73,9 @@ extern  void    SetLoopCost( uint time ) {
     for(;;) {
         Save.loop_weight[i] = Save.loop_weight[i - 1] * loop_weight;
         ++ i;
-        if( i > MAX_LOOP ) break;
+        if( i > MAX_LOOP ) {
+            break;
+        }
     }
 }
 

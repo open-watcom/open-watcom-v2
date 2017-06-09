@@ -44,18 +44,19 @@ WResIDName *WResIDNameFromStr( const char *string )
     size_t      stringlen;
 
     stringlen = strlen( string );
-    if( stringlen >= USHRT_MAX ) {
-        /* truncate the string if it is more that UCHAR_MAX in length */
+#if !defined( _M_I86 )
+    if( stringlen > USHRT_MAX ) {
+        /* truncate the string if it is more that USHRT_MAX in length */
         stringlen = USHRT_MAX;
     }
-
+#endif
     newstring = WRESALLOC( sizeof( WResIDName ) + stringlen - 1 );
     if( newstring == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
         newstring->NumChars = stringlen;
         /* don't copy the '\0' */
-        memcpy( &(newstring->Name), string, stringlen );
+        memcpy( newstring->Name, string, stringlen );
     }
 
     return( newstring );

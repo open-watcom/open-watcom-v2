@@ -37,14 +37,16 @@ void __InitPenWinRC( LPRC lprc )
 {
     int i;
 
-    if( lprc == NULL ) return;
+    if( lprc == NULL )
+        return;
 
-    if( lprc->lpfnYield != NULL && lprc->lpfnYield != (RCYIELDPROC) RC_LDEFAULT ) {
+    if( lprc->lpfnYield != NULL && lprc->lpfnYield != (RCYIELDPROC)RC_LDEFAULT ) {
         SetProc( (FARPROC)lprc->lpfnYield, GETPROC_PENWIN_RCYIELDPROC );
     }
-    for( i=0;i<MAXDICTIONARIES;i++ ) {
-        if( lprc->rglpdf[i] == NULL ) break;
-        if( lprc->rglpdf[i] != (LPDF) RC_LDEFAULT ) {
+    for( i = 0; i < MAXDICTIONARIES; i++ ) {
+        if( lprc->rglpdf[i] == NULL )
+            break;
+        if( lprc->rglpdf[i] != (LPDF)RC_LDEFAULT ) {
             SetProc( (FARPROC)lprc->rglpdf[i], GETPROC_PENWIN_LPDF );
         }
     }

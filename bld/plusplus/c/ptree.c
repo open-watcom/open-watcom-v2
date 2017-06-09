@@ -99,7 +99,8 @@ static PTO_FLAG oper_flags[] ={ // definitions for unary, binary oper.s
 static void ptreeInit(          // INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carvePTREE = CarveCreate( sizeof( struct parse_tree_node ), BLOCK_PTREE );
     ExtraRptRegisterCtr( &nodes_hiwater, "high-water mark: PTREE nodes used" );
     ExtraRptRegisterCtr( &total_frees, "total # of PTreeFreeSubtrees" );
@@ -110,7 +111,8 @@ static void ptreeInit(          // INITIALIZATION
 static void ptreeFini(          // COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     DbgStmt( CarveVerifyAllGone( carvePTREE, "PTREE" ) );
     CarveDestroy( carvePTREE );
 }

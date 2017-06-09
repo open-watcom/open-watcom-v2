@@ -822,7 +822,8 @@ fe_seg_id SegmentAddComdatData( // ADD SEGMENT FOR A COMDAT DATA SYMBOL
     char const * name;          // - segment name
     PC_SEGMENT* seg;            // - allocated segment
 
-    sym = sym;
+    /* unused parameters */ (void)sym;
+
     if( control & SI_ALL_ZERO ) {
         attrs = SGAT_DATA_COMMON_ZERO;
         name = TS_SEG_BSS;
@@ -1478,20 +1479,23 @@ pch_status PCHWriteSegments( void )
 
 pch_status PCHInitSegments( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniSegments( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 static void fini(               // FINALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     SegmentFini();
 }
 

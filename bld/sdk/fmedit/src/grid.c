@@ -36,8 +36,8 @@
 #include "grid.def"
 #include "fmdlgs.h"
 
-extern BOOL SnapRectToGrid( RECT *rec )
-/*************************************/
+bool SnapRectToGrid( RECT *rec )
+/******************************/
 {
     /*  Make sure the passed rectangle aligns with the user-specified
      *  resize grid.
@@ -45,16 +45,16 @@ extern BOOL SnapRectToGrid( RECT *rec )
     int     inc;
     int     rnd;
     int     size;
-    BOOL    changed;
+    bool    changed;
     int     new;
 
-    changed = FALSE;
+    changed = false;
     inc = GetResizeVInc();
     rnd = inc - 1;
     size = rec->bottom - rec->top - 1;    /* exclude borders */
     new = ((size + rnd) / inc) * inc;
     if( new != size ) {
-        changed = TRUE;
+        changed = true;
         rec->bottom = rec->top + new;
     }
     inc = GetResizeHInc();
@@ -62,7 +62,7 @@ extern BOOL SnapRectToGrid( RECT *rec )
     size = rec->right - rec->left - 1;
     new = ((size + rnd) / inc) * inc;
     if( new != size ) {
-        changed = TRUE;
+        changed = true;
         rec->right = rec->left + new;
     }
     return( changed );
@@ -92,29 +92,45 @@ extern void SnapPointToResizeGrid( POINT *pt )
 }
 
 
-WINEXPORT BOOL CALLBACK FMGrid( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK FMGridDlgProc( HWND hdlg, UINT message, WPARAM wParam, LPARAM lParam )
 /*************************************************************************************/
 {
     /* Processes messages for "Grid" dialog box */
     RECT        rect;
     HANDLE      appwnd;
     unsigned    inc;
-    BOOL        ret;
+    bool        ret;
+    BOOL        translated;
 
     lParam = lParam;                 /* reference to avoid warning */
+
+    ret = false;
     switch( message ) {
     case WM_INITDIALOG:
         InheritState( hdlg );
         SetDlgItemInt( hdlg, ID_VPREC, GetVerticalInc(), FALSE );
         SetDlgItemInt( hdlg, ID_HPREC, GetHorizontalInc(), FALSE );
-        return( TRUE );
+        ret = true;
+        break;
     case WM_COMMAND:
         InitState( hdlg );
         switch( LOWORD( wParam ) ) {
         case IDOK:
-            inc = GetDlgItemInt( hdlg, ID_VPREC, &ret, FALSE );
-            if( ret && inc >= 1 && inc <= 100 ) {
+            inc = GetDlgItemInt( hdlg, ID_VPREC, &translated, FALSE );
+            if( translated && inc >= 1 && inc <= 100 ) {
                 SetVerticalInc( inc );
+                inc = GetDlgItemInt( hdlg, ID_HPREC, &translated, FALSE );
+                if( translated && inc >= 1 && inc <= 100 ) {
+                    SetHorizontalInc( inc );
+                    EndDialog( hdlg, TRUE );
+                } else {
+                    MessageBox( hdlg,
+                                "The horizontal precision must be an integer "
+                                    "between 1 and 100",
+                                NULL,
+                                MB_ICONEXCLAMATION | MB_OK );
+                    SetFocus( GetDlgItem( hdlg, ID_HPREC ) );
+                }
             } else {
                 MessageBox( hdlg,
                             "The vertical precision must be an integer "
@@ -122,25 +138,13 @@ WINEXPORT BOOL CALLBACK FMGrid( HWND hdlg, UINT message, WPARAM wParam, LPARAM l
                             NULL,
                             MB_ICONEXCLAMATION | MB_OK );
                 SetFocus( GetDlgItem( hdlg, ID_VPREC ) );
-                return( TRUE );
             }
-            inc = GetDlgItemInt( hdlg, ID_HPREC, &ret, FALSE );
-            if( ret && inc >= 1 && inc <= 100 ) {
-                SetHorizontalInc( inc );
-            } else {
-                MessageBox( hdlg,
-                            "The horizontal precision must be an integer "
-                                "between 1 and 100",
-                            NULL,
-                            MB_ICONEXCLAMATION | MB_OK );
-                SetFocus( GetDlgItem( hdlg, ID_HPREC ) );
-                return( TRUE );
-            }
-            EndDialog( hdlg, TRUE );
-            return( TRUE );
+            ret = true;
+            break;
         case IDCANCEL:
             EndDialog( hdlg, FALSE );
-            return( TRUE );
+            ret = true;
+            break;
         }
         break;
     case WM_MOVE:
@@ -151,5 +155,5 @@ WINEXPORT BOOL CALLBACK FMGrid( HWND hdlg, UINT message, WPARAM wParam, LPARAM l
         UpdateWindow( appwnd );
         break;
     }
-    return( FALSE );
+    return( ret );
 }

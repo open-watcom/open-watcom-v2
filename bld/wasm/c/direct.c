@@ -3538,7 +3538,8 @@ bool ProcDef( token_idx i, bool proc_def )
     char            *name;
     token_idx       n;
 
-    proc_def = proc_def;
+    /* unused parameters */ (void)proc_def;
+
     if( Options.mode & MODE_IDEAL ) {
         n = ++i;
     } else if( i > 0 ) {

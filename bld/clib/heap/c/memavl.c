@@ -42,18 +42,18 @@
 /* Best done at start of program and after _nheapgrow() has been called. */
 
 _WCRTLINK size_t _memavl( void )
-    {
-        size_t length;
-        frlptr pnext;
-        mheapptr mhp;
+{
+    size_t      length;
+    frlptr      frl;
+    mheapptr    heap;
 
-        length = 0;
-        _AccessNHeap();
-        for( mhp = __nheapbeg; mhp != NULL; mhp = mhp->next ) {
-            for( pnext = mhp->freehead.next; pnext != (frlptr)&mhp->freehead; pnext = pnext->next ) {
-                length += __ROUND_DOWN_SIZE( pnext->len - TAG_SIZE, ROUND_SIZE );
-            }
+    length = 0;
+    _AccessNHeap();
+    for( heap = __nheapbeg; heap != NULL; heap = heap->next ) {
+        for( frl = heap->freehead.next; frl != (frlptr)&heap->freehead; frl = frl->next ) {
+            length += __ROUND_DOWN_SIZE( frl->len - TAG_SIZE, ROUND_SIZE );
         }
-        _ReleaseNHeap();
-        return( length );
     }
+    _ReleaseNHeap();
+    return( length );
+}

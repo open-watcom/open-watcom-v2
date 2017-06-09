@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,27 +38,25 @@
 #include "madimp.h"
 #include "madsys.h"
 
-void MADSysUnload( mad_sys_handle *sys_hdl )
+void MADSysUnload( mad_sys_handle sys_hdl )
 {
-    DosFreeModule( *sys_hdl );
+    DosFreeModule( sys_hdl );
 }
 
-mad_status MADSysLoad( const char *path, mad_client_routines *cli,
-                                mad_imp_routines **imp, mad_sys_handle *sys_hdl )
+mad_status MADSysLoad( const char *path, mad_client_routines *cli, mad_imp_routines **imp, mad_sys_handle *sys_hdl )
 {
-    HMODULE             dll;
+    HMODULE             dip_mod;
     mad_init_func       *init_func;
     mad_status          status;
 
-    if( DosLoadModule( NULL, 0, (char *)path, &dll ) != 0 ) {
-        return( MS_ERR|MS_FOPEN_FAILED );
+    if( DosLoadModule( NULL, 0, (char *)path, &dip_mod ) != 0 ) {
+        return( MS_ERR | MS_FOPEN_FAILED );
     }
-    status = MS_ERR|MS_INVALID_MAD;
-    if( DosGetProcAddr( dll, "MADLOAD", (PFN FAR *)&init_func ) == 0
-      && (*imp = init_func( &status, cli )) != NULL ) {
-        *sys_hdl = dll;
+    status = MS_ERR | MS_INVALID_MAD;
+    if( DosGetProcAddr( dip_mod, "MADLOAD", (PFN FAR *)&init_func ) == 0 && (*imp = init_func( &status, cli )) != NULL ) {
+        *sys_hdl = dip_mod;
         return( MS_OK );
     }
-    DosFreeModule( dll );
+    DosFreeModule( dip_mod );
     return( status );
 }

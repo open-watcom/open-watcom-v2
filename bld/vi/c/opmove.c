@@ -142,10 +142,11 @@ vi_rc MovePageMiddle( range *r, long count )
 {
     linenum     ln, lne;
 
+    /* unused parameters */ (void)count;
+
     if( CurrentLine == NULL ) {
         return( ERR_NO_FILE );
     }
-    count = count;
     ln = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES ) - 1;
     CFindLastLine( &lne );
     lne = lne - LeftTopPos.line + 1;
@@ -229,10 +230,11 @@ static vi_rc newColumnOnCurrentLine( range *r, int new_col )
 
 vi_rc MoveLineEnd( range *r, long count )
 {
+    /* unused parameters */ (void)count;
+
     if( CurrentLine == NULL ) {
         return( ERR_NO_FILE );
     }
-    count = count;
     if( EditFlags.Modeless ) {
         return( newColumnOnCurrentLine( r, CurrentLine->len + 1 ) );
     } else {
@@ -243,10 +245,11 @@ vi_rc MoveLineEnd( range *r, long count )
 #if 0
 vi_rc LineEndRange( range *r, long count )
 {
+    /* unused parameters */ (void)count;
+
     if( CurrentLine == NULL ) {
         return( ERR_NO_FILE );
     }
-    count = count;
     r->start.line = CurrentPos.line;
     r->line_based = false;
     r->end = r->start;
@@ -257,7 +260,8 @@ vi_rc LineEndRange( range *r, long count )
 
 vi_rc MoveStartOfLine( range *r, long count )
 {
-    count = count;
+    /* unused parameters */ (void)count;
+
     if( CurrentLine == NULL ) {
         return( ERR_NO_FILE );
     }
@@ -268,7 +272,8 @@ vi_rc MoveLineBegin( range *r, long count )
 {
     vi_rc   rc;
 
-    count = count;
+    /* unused parameters */ (void)count;
+
     rc = newColumnOnCurrentLine( r, 1 );
 
     // Make "Home" behave like "0"
@@ -597,10 +602,11 @@ vi_rc MoveToLastCharFindRev( range *r, long count )
  */
 vi_rc MoveStartOfFile( range *r, long count )
 {
+    /* unused parameters */ (void)count;
+
     if( CurrentLine == NULL ) {
         return( ERR_NO_FILE );
     }
-    count = count;      // not needed here
     r->start.line = 1;
     r->start.column = 1;
     r->line_based = false;
@@ -615,10 +621,11 @@ vi_rc MoveEndOfFile( range *r, long count )
 {
     linenum     ln;
 
+    /* unused parameters */ (void)count;
+
     if( CurrentLine == NULL ) {
         return( ERR_NO_FILE );
     }
-    count = count;      // not needed here
     CFindLastLine( &ln );
     r->start.line = ln;
     if( EditFlags.Modeless ) {
@@ -633,15 +640,17 @@ vi_rc MoveEndOfFile( range *r, long count )
 
 vi_rc MoveTopOfPage( range *r, long count )
 {
-    count = count;
+    /* unused parameters */ (void)count;
+
     return( doMoveToStartEndOfLine( r, LeftTopPos.line-CurrentPos.line, true ) );
 }
 
 vi_rc MoveBottomOfPage( range *r, long count )
 {
-    int bottom = LeftTopPos.line +
-                 WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES ) - 1;
-    count = count;
+    int bottom = LeftTopPos.line + WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES ) - 1;
+
+    /* unused parameters */ (void)count;
+
     return( doMoveToStartEndOfLine( r, bottom - CurrentPos.line, false ) );
 }
 

@@ -84,7 +84,7 @@ static RcStatus readDBIndex( FILE *fh )
     size_t      size;
 
     size = charInfo.header.num_indices * sizeof( DBIndexEntry );
-    charInfo.index = RCALLOC( size );
+    charInfo.index = RESALLOC( size );
     numread = fread( charInfo.index, 1, size, fh );
     if( numread != size ) {
         return( feof( fh ) ? RS_READ_INCMPLT : RS_READ_ERROR );
@@ -98,7 +98,7 @@ static RcStatus readDBTable( FILE *fh )
     size_t      size;
 
     size = charInfo.header.num_entries * sizeof( uint_16 );
-    charInfo.entries = RCALLOC( size );
+    charInfo.entries = RESALLOC( size );
     numread = fread( charInfo.entries, 1, size, fh );
     if( numread != size ) {
         return( feof( fh ) ? RS_READ_INCMPLT : RS_READ_ERROR );
@@ -153,13 +153,13 @@ const char *GetLeadBytes( void ) {
     return( charInfo.begchars );
 }
 
-int DBStringToUnicode( int len, const char *str, char *buf ) {
+size_t DBStringToUnicode( size_t len, const char *str, char *buf ) {
 
     const uint_8    *ptr;
     const uint_8    *end;
     uint_16         *ubuf;
     uint_16         dbchar;
-    int             ret;
+    size_t          ret;
 
     ret = 0;
     ubuf = (uint_16 *)buf;
@@ -176,7 +176,7 @@ int DBStringToUnicode( int len, const char *str, char *buf ) {
             *ubuf = lookUpDBChar( dbchar );
             ubuf++;
         }
-        ret +=2;
+        ret += sizeof( *ubuf );
     }
     return( ret );
 }
@@ -185,11 +185,11 @@ void FreeCharTable( void )
 /************************/
 {
     if( charInfo.index != NULL ) {
-        RCFREE( charInfo.index );
+        RESFREE( charInfo.index );
         charInfo.index = NULL;
     }
     if( charInfo.entries != NULL ) {
-        RCFREE( charInfo.entries );
+        RESFREE( charInfo.entries );
         charInfo.entries = NULL;
     }
 }

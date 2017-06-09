@@ -31,7 +31,7 @@
 
 
 typedef struct {
-    bool     SW_CASE_SENSITIVE              : 1; // used by SSL - use SW_CASE_IGNORE
+    bool     SW_SSL_CASE_SENSITIVE          : 1; // used by SSL - use SW_CASE_IGNORE
     bool     SW_REMOTE_FILES                : 1;
     bool     SW_TOUCH_SCREEN_BUFF           : 1;
     bool     SW_REMOTE_LINK                 : 1;
@@ -107,10 +107,10 @@ typedef struct {
 } dbg_switches;
 
 
-#define _SwitchOn( switch )     ( ( DbgSwitches.switch ) = 1 )
-#define _SwitchOff( switch )    ( ( DbgSwitches.switch ) = 0)
-#define _SwitchToggle( switch ) ( ( DbgSwitches.switch ) = !( DbgSwitches.switch ) )
-#define _SwitchSet( switch, i ) ( ( DbgSwitches.switch ) = ( ( i ) != 0 ) )
+#define _SwitchOn( switch )     ( DbgSwitches.switch = true )
+#define _SwitchOff( switch )    ( DbgSwitches.switch = false )
+#define _SwitchToggle( switch ) ( DbgSwitches.switch = !DbgSwitches.switch )
+#define _SwitchSet( switch, i ) ( DbgSwitches.switch = ( (i) != 0 ) )
 
-#define _IsOn( switch )         ( ( DbgSwitches.switch ) != 0 )
-#define _IsOff( switch )        ( ( DbgSwitches.switch ) == 0 )
+#define _IsOn( switch )         ( DbgSwitches.switch )
+#define _IsOff( switch )        ( !DbgSwitches.switch )

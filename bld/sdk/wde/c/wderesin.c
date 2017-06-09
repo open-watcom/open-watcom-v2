@@ -78,10 +78,10 @@ bool WdeFreeResInfo( WdeResInfo *res_info )
         }
         WRMemFree( res_info );
     } else {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeFreeDialogBoxInfo( WdeDialogBoxInfo *dlg_info )
@@ -91,10 +91,10 @@ bool WdeFreeDialogBoxInfo( WdeDialogBoxInfo *dlg_info )
         WdeFreeDialogBoxHeader( &dlg_info->dialog_header );
         WRMemFree( dlg_info );
     } else {
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeFreeResDlgItem( WdeResDlgItem **ditem, bool destroy_object )
@@ -107,7 +107,7 @@ void WdeFreeResDlgItem( WdeResDlgItem **ditem, bool destroy_object )
             WdeFreeDialogBoxInfo( (*ditem)->dialog_info );
         }
         if( destroy_object && (*ditem)->object != NULL ) {
-            Destroy( (*ditem)->object, FALSE );
+            Destroy( (*ditem)->object, false );
         }
         (*ditem)->object = NULL;
         WRMemFree( *ditem );
@@ -139,7 +139,7 @@ void WdeFreeResItemList( LIST **item_list )
         for( ilist = *item_list; ilist != NULL; ilist = ListNext( ilist ) ) {
             item = (WdeResDlgItem *)ListElement( ilist );
             if( item->object != NULL ) {
-                Destroy( item->object, FALSE );
+                Destroy( item->object, false );
             } else {
                 WdeFreeResDlgItem( &item, TRUE );
             }
@@ -182,17 +182,17 @@ bool WdeIsResModified( WdeResInfo *res_info )
 
     if( res_info != NULL ) {
         if( res_info->modified ) {
-            return( TRUE );
+            return( true );
         }
         for( ilist = res_info->dlg_item_list; ilist != NULL; ilist = ListNext( ilist ) ) {
             item = (WdeResDlgItem *)ListElement( ilist );
             if( item->modified ) {
-                return( TRUE );
+                return( true );
             }
         }
     }
 
-    return( FALSE );
+    return( false );
 }
 
 void WdeSetResModified( WdeResInfo *res_info, bool mod )

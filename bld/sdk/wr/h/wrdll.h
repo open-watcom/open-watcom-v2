@@ -43,7 +43,11 @@
     #define WRDLLENTRY
 #endif
 
-typedef void (CALLBACK HELP_CALLBACK)( void );
+#if defined( __OS2__ )
+typedef void (APIENTRY *HELP_CALLBACK)(void);
+#else
+typedef void (WINAPI *HELP_CALLBACK)(void);
+#endif
 
 #include "wrinfo.h"
 #include "wrmain.h"

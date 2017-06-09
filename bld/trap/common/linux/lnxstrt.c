@@ -50,31 +50,16 @@ const trap_requests *TrapLoad( const trap_callbacks *client )
     return( &ImpInterface );
 }
 
-#if !defined( __WATCOMC__ ) && !defined( BUILTIN_TRAP_FILE )
+#if !defined( BUILTIN_TRAP_FILE )
 
-void *_nmalloc( unsigned size )
-{
-    return( malloc( size ) );
-}
-
-void *malloc( unsigned size )
+void *malloc( size_t size )
 {
     return( Client->malloc( size ) );
 }
 
-void *_nrealloc( void *ptr, unsigned size )
-{
-    return( realloc( ptr, size ) );
-}
-
-void *realloc( void *ptr, unsigned size )
+void *realloc( void *ptr, size_t size )
 {
     return( Client->realloc( ptr, size ) );
-}
-
-void _nfree( void *ptr )
-{
-    free( ptr );
 }
 
 void free( void *ptr )
@@ -87,11 +72,11 @@ char *getenv( const char *name )
     return( Client->getenv( name ) );
 }
 
-#endif
-
 #if 0 /* redefining signal is not yet necessary */
 void    (*signal( int __sig, void (*__func)(int) ))(int)
 {
     return( Client->signal( __sig, __func ) );
 }
+#endif
+
 #endif

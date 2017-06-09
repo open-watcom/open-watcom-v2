@@ -36,12 +36,13 @@
 #include "model.h"
 #include "procdef.h"
 #include "tree.h"
-#include "dumpio.h"
 #include "typemap.h"
+#include "dmpinc.h"
+#include "dumpio.h"
+#include "dumpan.h"
+#include "dumpins.h"
+#include "dumptree.h"
 
-extern  void            DumpOperand(name*);
-extern  void            Dumpan(an);
-extern  void            DumpClass(type_class_def);
 
 static  void            DumpSubTree( tn node, int indent );
 
@@ -219,9 +220,9 @@ static  void    DumpSubTree( tn node, int indent ) {
 }
 
 
-extern  void    DumpTree( tn node ) {
-/***********************************/
-
+void    DumpTree( tn node )
+/*************************/
+{
     DumpSubTree( node, 0 );
     DumpNL();
 }

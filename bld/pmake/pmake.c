@@ -408,7 +408,8 @@ static void TestDirectory( const char *makefile )
 
 static void SetDoneFlag( int sig_no )
 {
-    sig_no = sig_no;
+    /* unused parameters */ (void)sig_no;
+
     DoneFlag = 1;
 }
 

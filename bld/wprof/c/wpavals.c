@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -32,6 +33,7 @@
 #include "common.h"
 #include "aui.h"
 #include "wpaui.h"
+#include "wpavals.h"
 
 gui_colour_set WndColours[] = {
 
@@ -63,13 +65,13 @@ gui_colour_set WndColours[] = {
     { GUI_BRIGHT_RED,   GUI_BRIGHT_WHITE },     /* WPA_CLEAR_EXTRA    */
 };
 
-int          WndNumColours = WPA_NUMBER_OF_COLOURS;
+int                 WndNumColours = WPA_NUMBER_OF_COLOURS;
 
-wnd_attr    WndPlainAttr = WPA_PLAIN;
-wnd_attr    WndTabStopAttr = WPA_TABSTOP;
-wnd_attr    WndSelectedAttr = WPA_SELECTED;
-wnd_attr    WndCursorAttr = WPA_SELECTED;
-wnd_attr    WndStatusColour = WPA_STATUS_LINE;
+wnd_attr            WndPlainAttr = WPA_PLAIN;
+wnd_attr            WndTabStopAttr = WPA_TABSTOP;
+wnd_attr            WndSelectedAttr = WPA_SELECTED;
+wnd_attr            WndCursorAttr = WPA_SELECTED;
+wnd_attr            WndStatusColour = WPA_STATUS_LINE;
 
 wnd_update_list     WndFlags = 0;
 gui_window_styles   WndStyle = GUI_PLAIN+GUI_GMOUSE;

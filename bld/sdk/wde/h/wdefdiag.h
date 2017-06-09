@@ -48,7 +48,7 @@
 extern WdeDialogBoxInfo *WdeDBIFromObject( void * );
 extern OBJPTR           WdeCreateNewDialog( WResID *, bool is32bit );
 extern OBJPTR           WdeCreateDialogFromRes( WdeResInfo *, WdeResDlgItem * );
-WINEXPORT extern OBJPTR CALLBACK WdeDialogCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern CREATE_RTN WdeDialogCreate;
 extern bool             WdeDialogInit( bool );
 extern void             WdeDialogFini( void );
 extern bool             WdeIsDialogRestorable( void * );

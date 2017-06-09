@@ -145,7 +145,7 @@ void    EnLink( label_handle label, bool label_dies )
 void    AddIns( instruction *ins )
 /********************************/
 {
-    if( HaveCurrBlock == false ) {
+    if( !HaveCurrBlock ) {
         EnLink( AskForNewLabel(), true );
         HaveCurrBlock = true;
     }
@@ -357,7 +357,8 @@ static void *LinkReturns( void *arg )
     label_handle        link_to;
     label_handle        to_search;
 
-    arg = arg;
+    /* unused parameters */ (void)arg;
+
     link_to = LinkReturnsParms[0];
     to_search = LinkReturnsParms[1];
     blk = FindBlockWithLbl( to_search );
@@ -409,7 +410,8 @@ bool        FixReturns( void )
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         if( _IsBlkAttr( blk, BLK_CALL_LABEL ) ) {
             _MarkBlkVisited( blk );
-            if( blk->next_block == NULL ) return( false );
+            if( blk->next_block == NULL )
+                return( false );
             _MarkBlkAttr( blk, BLK_RETURNED_TO );
             LinkReturnsParms[0] = blk->next_block->label;
             LinkReturnsParms[1] = blk->edge[0].destination.u.lbl;
@@ -464,12 +466,17 @@ bool    BlkTooBig( void )
 {
     label_handle    blk;
 
-    if( !HaveCurrBlock ) return( false );
-    if( CurrBlock == NULL ) return( false );
-    if( CurrBlock->ins.hd.next == (instruction *)&CurrBlock->ins ) return( false );
+    if( !HaveCurrBlock )
+        return( false );
+    if( CurrBlock == NULL )
+        return( false );
+    if( CurrBlock->ins.hd.next == (instruction *)&CurrBlock->ins )
+        return( false );
     _INS_NOT_BLOCK( CurrBlock->ins.hd.next );
-    if( (InsId - CurrBlock->ins.hd.next->id) < INS_PER_BLOCK ) return( false );
-    if( CurrBlock->targets != 0 ) return( false );
+    if( (InsId - CurrBlock->ins.hd.next->id) < INS_PER_BLOCK )
+        return( false );
+    if( CurrBlock->targets != 0 )
+        return( false );
     blk = AskForNewLabel();
     GenBlock( BLK_JUMP, 1 );
     AddTarget( blk, false );
@@ -478,8 +485,8 @@ bool    BlkTooBig( void )
 }
 
 
-void    NewProc( int level )
-/**************************/
+void    NewProc( level_depth level )
+/**********************************/
 {
     proc_def    *new;
 

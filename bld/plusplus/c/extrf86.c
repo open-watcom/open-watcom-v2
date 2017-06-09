@@ -97,7 +97,7 @@ void *ExtrefImportType(         // GET NEXT IMPORT TYPE FOR A SYMBOL
 
     if( rinfo->type == EXTRF_DATA_WEAK ) {
         retn = (void*)IMPORT_IS_WEAK;
-    } else if( ! CompFlags.virtual_stripping ) {
+    } else if( !CompFlags.virtual_stripping ) {
         retn = (void*)IMPORT_IS_LAZY;
         switch( rinfo->type ) {
           case EXTRF_FN_LAZY :
@@ -138,7 +138,9 @@ static void extrefClassVisit(   // VISIT ANCESTRAL CLASS
     void * _rinfo )              // - resolution information
 {
     EXTRF *rinfo = _rinfo;
-    sym = sym;
+
+    /* unused parameters */ (void)sym;
+
     extrefPruneOvfn( &rinfo->syms, csym );
     extrefAddOvfn( &rinfo->syms, csym );
 }
@@ -267,7 +269,7 @@ void *ExtrefResolve(            // DETERMINE RESOLUTION FOR A SYMBOL
             retn = NULL;
         }
     } else if( SymIsVirtual( sym ) ) {
-        if( ! CompFlags.virtual_stripping ) {
+        if( !CompFlags.virtual_stripping ) {
             if( pureSymCanBeUndefd( sym ) ) {
                 rinfo->type = EXTRF_PURE_VFN_CONDITIONAL;
                 retn = RunTimeCallSymbol( RTF_PURE_VIRT );
@@ -278,7 +280,7 @@ void *ExtrefResolve(            // DETERMINE RESOLUTION FOR A SYMBOL
             // TODO!!!!!!!!!!!!!!
             // there are allocated memory blocks by virtualListBuild
             // which are not freed
-            // 
+            //
             virtualListBuild( sym, rinfo );
             if( pureSymCanBeUndefd( sym ) ) {
                 rinfo->type = EXTRF_PURE_VFN_CONDITIONAL;
@@ -330,7 +332,9 @@ static void extrefVfunRegister( // REGISTER AN ANCESTRAL FUNCTION
     void * _orig )              // - ring of functions
 {
     OVFN **orig = _orig;
-    sym = sym;
+
+    /* unused parameters */ (void)sym;
+
     extrefPruneOvfn( orig, csym );
     extrefAddOvfn( orig, csym );
 }
@@ -355,7 +359,7 @@ void *ExtrefVfunInfo(           // GET INFORMATION FOR VIRTUAL FUN. REFERENCE
         if( CompFlags.virtual_stripping ) {
             orig_funs = startVRing();
             VfnAncestralWalk( sym->u.virt_fun, &extrefVfunRegister, orig_funs );
-        } else if( ! CompFlags.vfun_reference_done ) {
+        } else if( !CompFlags.vfun_reference_done ) {
             CompFlags.vfun_reference_done = true;
             orig_funs = startVRing();
             extrefAddOvfn( orig_funs, NULL );
@@ -412,7 +416,8 @@ void *ExtrefNextVfunSym(         // MOVE TO NEXT ORIGNATING FUN. FOR VIRTUAL CAL
 static void extrefInit(         // INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carveOVFN = CarveCreate( sizeof( OVFN ), 32 );
     carveRingHead = CarveCreate( sizeof( OVFN* ), 8 );
     ExtraRptRegisterCtr( &ctr_cgfiles, "number of CGFILE lookups (extref)" );
@@ -422,11 +427,12 @@ static void extrefInit(         // INITIALIZATION
 static void extrefFini(         // COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
 // TODO!!!!!!!!!!!!!!
 // there are allocated memory blocks by virtualListBuild
 // which are not freed
-// 
+//
     DbgStmt( CarveVerifyAllGone( carveOVFN, "OVFN" ) );
     DbgStmt( CarveVerifyAllGone( carveRingHead, "OVFN* ring heads" ) );
     CarveDestroy( carveOVFN );

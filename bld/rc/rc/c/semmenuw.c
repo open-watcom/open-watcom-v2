@@ -62,7 +62,7 @@ struct PopupMenuExItem {
 
 
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "semantic.h"
 #include "semantcw.h"
 #include "wresdefn.h"
@@ -120,8 +120,8 @@ FullMenu *SemWINNewMenu( FullMenuItem firstitem )
     FullMenu       *newmenu;
     FullMenuItem   *newitem;
 
-    newmenu = RCALLOC( sizeof(FullMenu) );
-    newitem = RCALLOC( sizeof(FullMenuItem) );
+    newmenu = RESALLOC( sizeof( FullMenu ) );
+    newitem = RESALLOC( sizeof( FullMenuItem ) );
 
     if( newmenu == NULL || newitem == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -133,7 +133,7 @@ FullMenu *SemWINNewMenu( FullMenuItem firstitem )
     newmenu->head = NULL;
     newmenu->tail = NULL;
 
-    ResAddLLItemAtEnd( (void **) &(newmenu->head), (void **) &(newmenu->tail), newitem );
+    ResAddLLItemAtEnd( (void **)&(newmenu->head), (void **)&(newmenu->tail), newitem );
 
     return( newmenu );
 }
@@ -144,7 +144,7 @@ FullMenu *SemWINAddMenuItem( FullMenu *currmenu, FullMenuItem curritem )
     FullMenuItem     *newitem;
 
 
-    newitem = RCALLOC( sizeof(FullMenuItem) );
+    newitem = RESALLOC( sizeof( FullMenuItem ) );
 
     if( newitem == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -154,7 +154,7 @@ FullMenu *SemWINAddMenuItem( FullMenu *currmenu, FullMenuItem curritem )
 
     *newitem = curritem;
 
-    ResAddLLItemAtEnd( (void **) &(currmenu->head), (void **) &(currmenu->tail), newitem );
+    ResAddLLItemAtEnd( (void **)&(currmenu->head), (void **)&(currmenu->tail), newitem );
 
     return( currmenu );
 }
@@ -264,11 +264,11 @@ static void SemFreeMenuItem( FullMenuItem *curritem )
     if( curritem->IsPopup ) {
         SemFreeSubMenu( curritem->item.popup.submenu );
         if( curritem->item.popup.item.menuData.ItemText != NULL ) {
-            RCFREE( curritem->item.popup.item.menuData.ItemText );
+            RESFREE( curritem->item.popup.item.menuData.ItemText );
         }
     } else {
         if( curritem->item.normal.menuData.ItemText != NULL ) {
-            RCFREE( curritem->item.normal.menuData.ItemText );
+            RESFREE( curritem->item.normal.menuData.ItemText );
         }
     }
 }
@@ -277,17 +277,14 @@ static void SemFreeSubMenu( FullMenu *submenu )
 /**********************************************/
 {
     FullMenuItem   *curritem;
-    FullMenuItem   *olditem;
+    FullMenuItem   *nextitem;
 
-    curritem = submenu->head;
-    while( curritem != NULL ) {
+    for( curritem = submenu->head; curritem != NULL; curritem = nextitem ) {
+        nextitem = curritem->next;
         SemFreeMenuItem( curritem );
-        olditem = curritem;
-        curritem = curritem->next;
-        RCFREE( olditem );
+        RESFREE( curritem );
     }
-
-    RCFREE( submenu );
+    RESFREE( submenu );
 }
 
 void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
@@ -304,13 +301,13 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
     if( !ErrorHasOccured ) {
         if( tokentype == Y_MENU ) {
             head.Version = 0;    /* currently these fields are both 0 */
-            head.HeaderSize = 0;
+            head.Size = 0;
             loc.start = SemStartResource();
             error = ResWriteMenuHeader( &head, CurrResFile.fid );
         } else if( tokentype == Y_MENU_EX ) {
             head.Version = RES_HEADER_VERSION;
-            head.HeaderSize = RES_HEADER_SIZE;
-            memset( headerdata, 0, head.HeaderSize );
+            head.Size = RES_HEADER_SIZE;
+            memset( headerdata, 0, head.Size );
             ResWritePadDWord( CurrResFile.fid );
             loc.start = SemStartResource();
             error = ResWriteMenuExHeader( &head, CurrResFile.fid, headerdata );
@@ -319,28 +316,22 @@ void SemWINWriteMenu( WResID *name, ResMemFlags flags, FullMenu *menu,
         }
         if( error ) {
             err_code = LastWresErr();
-            goto OutputWriteError;
+        } else {
+            error = SemWriteSubMenu( menu, &err_code, tokentype );
         }
-        error = SemWriteSubMenu( menu, &err_code, tokentype );
         if( !error && CmdLineParms.MSResFormat &&
                       CmdLineParms.TargetOS == RC_TARGET_OS_WIN32 ) {
             error = ResWritePadDWord( CurrResFile.fid );
         }
-        if( error)
-            goto OutputWriteError;
-        loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_MENU ) ), flags, loc );
+        if( error) {
+            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
+            ErrorHasOccured = true;
+        } else {
+            loc.len = SemEndResource( loc.start );
+            SemAddResourceFree( name, WResIDFromNum( RESOURCE2INT( RT_MENU ) ), flags, loc );
+        }
     } else {
-        RCFREE( name );
+        RESFREE( name );
     }
-
     SemFreeSubMenu( menu );
-    return;
-
-
-OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
-    ErrorHasOccured = true;
-    SemFreeSubMenu( menu );
-    return;
 }

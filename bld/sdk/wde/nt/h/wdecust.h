@@ -77,6 +77,6 @@ extern bool WdeLoadCustomLib( bool, bool );
 extern bool WdeFreeAllCustLibs( void );
 extern void WdeFindClassInAllCustLibs( char *, LIST ** );
 extern bool WdeFindLibIndexFromInfo( LPCCINFO, WdeCustLib **, UINT * );
-extern void WdeMapCustomSize( UINT *w, UINT *h, WdeResizeRatio *r );
+extern void WdeMapCustomSize( int *w, int *h, WdeResizeRatio *r );
 
 #endif

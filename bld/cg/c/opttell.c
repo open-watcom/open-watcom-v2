@@ -133,8 +133,10 @@ static  void    ReallyScrapLabel( label_handle lbl )
   optbegin
     owner = &Handles;
     for(;;) {
-        if( *owner == NULL ) optreturnvoid;
-        if( *owner == lbl ) break;
+        if( *owner == NULL )
+            optreturnvoid;
+        if( *owner == lbl )
+            break;
         owner = &(*owner)->lbl.link;
     }
     *owner = lbl->lbl.link;
@@ -170,7 +172,8 @@ static  label_handle    NextCondemned( label_handle lbl )
 {
   optbegin
     for( ;; ) {
-        if( lbl == NULL ) break;
+        if( lbl == NULL )
+            break;
         if( _TstStatus( lbl, CONDEMNED ) ) {
             _ClrStatus( lbl, CONDEMNED );
             break;
@@ -189,7 +192,8 @@ void    TellBeginExecutions( void )
   optbegin
     for(;;) {
         dead = NextCondemned( Handles );
-        if( dead == NULL ) break;
+        if( dead == NULL )
+            break;
         GenKillLabel( dead );
     }
   optend
@@ -208,7 +212,7 @@ void    TellFreeAllLabels( void )
         if( _TstStatus( Handles, CODELABEL )
          && Handles->lbl.sym == NULL
          && !_TstStatus( Handles, REDIRECTION )
-         && unfreed == false ) {
+         && !unfreed ) {
             _Zoiks( ZOIKS_001 );
             unfreed = true;
         }

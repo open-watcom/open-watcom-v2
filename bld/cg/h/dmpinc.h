@@ -43,7 +43,6 @@ extern void DumpRegTree();
 extern void DumpSc();
 extern void DumpGen();
 extern void DumpTree();
-extern void DumpCurrLoop();
 extern void DumpIVList();
 extern void DumpInvariants();
 extern void DumpOpt();

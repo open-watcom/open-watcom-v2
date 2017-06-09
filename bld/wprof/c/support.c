@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -47,6 +48,7 @@
 #include "memutil.h"
 #include "clibext.h"
 #include "support.h"
+#include "wpdata.h"
 
 
 #define BYTE_SIZE       (8)      /* Number of bits in a byte */
@@ -85,10 +87,6 @@ static char             exeBuff[BUFF_SIZE];
 
 STATIC void             AdvanceCurrentOffset( uint_32 );
 STATIC uint_32          TransformExeOffset( uint_16, uint_32, uint_16 );
-extern void             MapAddressToMap( addr_ptr *addr );
-
-extern sio_data         *CurrSIOData;
-
 
 static mad_disasm_data  *MDData;
 static unsigned         MDSize;
@@ -905,13 +903,11 @@ void MapAddressIntoSection( address *addr )
         count++;
     }
     overlay = curr_image->ovl_data;
-    count = 0;
-    while( count < curr_image->ovl_count ) {
+    for( count = 0; count < curr_image->ovl_count; ++count ) {
         if( addr->mach.segment == overlay[count].base_para ) {
             addr->sect_id = count + 1;
             break;
         }
-        count++;
     }
 }
 
@@ -954,7 +950,7 @@ STATIC void ResolveOverlays( image_info *image )
         }
         for( index2 = 0; index2 < count2; ++index2 ) {
             while( curr_tick == map_tick ) {
-                remap_segment[remap->section-1] = remap->segment;
+                remap_segment[remap->section - 1] = remap->segment;
                 if( remap == CurrSIOData->remaps ) {
                     map_tick = CurrSIOData->total_samples;
                 } else {
@@ -964,19 +960,15 @@ STATIC void ResolveOverlays( image_info *image )
             }
             actual_segment = samp_data[index2].mach.segment;
             if( actual_segment != base_segment ) {
-                count3 = 0;
-                while( count3 < ovl_count ) {
+                for( count3 = 0; count3 < ovl_count; ++count3 ) {
                     if( actual_segment == remap_segment[count3] ) {
-                        samp_data[index2].mach.segment
-                            = overlay[count3].base_para;
+                        samp_data[index2].mach.segment = overlay[count3].base_para;
                         samp_data[index2].sect_id = count3 + 1;
                         break;
                     }
-                    count3++;
                 }
             }
             curr_tick++;
-            count3++;
         }
     }
     ProfFree( remap_segment );
@@ -1007,7 +999,7 @@ STATIC bool LoadOverlayInfo( void )
     char                    *name;
     char                    *ext;
     int                     count;
-    int                     len;
+    size_t                  len;
 
     image = CurrSIOData->curr_image;
     fh = ExeOpen( image->name );
@@ -1018,8 +1010,7 @@ STATIC bool LoadOverlayInfo( void )
     SetExeFile( fh, false );
     map_addr = image->overlay_table;
     MapAddressToMap( &map_addr.mach );
-    fileoffset = TransformExeOffset( map_addr.mach.segment,
-                                     map_addr.mach.offset, ROOT_SECTION );
+    fileoffset = TransformExeOffset( map_addr.mach.segment, map_addr.mach.offset, ROOT_SECTION );
     if( lseek( fh, fileoffset, SEEK_SET ) != fileoffset ) {
         ErrorMsg( LIT( Cannot_Process_Ovly ), image->name );
         return( false );
@@ -1115,8 +1106,7 @@ bool LoadImageOverlays( void )
     /* assume 32-bit addresses until proven otherwise */
     exeFlags.is_32_bit = true;
 
-    image_index = 0;
-    while( image_index < CurrSIOData->image_count ) {
+    for( image_index = 0; image_index < CurrSIOData->image_count; ++image_index ) {
         curr_image = CurrSIOData->curr_image;
         if( curr_image->overlay_table.mach.segment != 0 ) {
             CurrSIOData->curr_image = curr_image;
@@ -1127,7 +1117,6 @@ bool LoadImageOverlays( void )
                 ResolveOverlays( curr_image );
             }
         }
-        image_index++;
     }
     return( true );
 }
@@ -1293,11 +1282,15 @@ bool CnvAddr( address addr, char *buff, size_t buff_len )
 
 bool IsX86BigAddr( address a )
 {
+    /* unused parameters */ (void)a;
+
     return( exeFlags.is_32_bit );
 }
 
 bool IsX86RealAddr( address a )
 {
+    /* unused parameters */ (void)a;
+
     switch( exeType ) {
     case EXE_MZ:
     case EXE_OVL:

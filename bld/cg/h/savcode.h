@@ -159,7 +159,8 @@
 /*  the very first use */
         for(;;) {
 /*  for each instruction in conflict range */
-            if( ins->head.opcode == OP_BLOCK ) break;
+            if( ins->head.opcode == OP_BLOCK )
+                break;
             next = ins->head.next;
 /*  reload volatile names after calls */
             if( _OpIsCall( ins->head.opcode ) ) {
@@ -264,7 +265,7 @@
                 if( _GBitOverlap( conf->id.out_of_block, flow->need_store ) ) {
                     _SuffixStore( final_defn, reg_name, opnd, class );
 #ifndef _InRegAssgn
-                    final_defn = final_defn;
+                    /* unused parameters */ (void)final_defn;
 #endif
                 }
                 if( _GBitOverlap( conf->id.out_of_block, flow->need_load ) ) {
@@ -288,7 +289,8 @@
             }
         }
         _UpdateCost( blk, opnd );
-        if( last ) break;
+        if( last )
+            break;
         blk = blk->next_block;
         ins = blk->ins.hd.next;
     }

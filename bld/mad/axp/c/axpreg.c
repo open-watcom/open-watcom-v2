@@ -307,7 +307,8 @@ mad_status MADIMPENTRY( RegistersHost )( mad_registers *mr )
 
 mad_status MADIMPENTRY( RegistersTarget )( mad_registers *mr )
 {
-    mr = mr;
+    /* unused parameters */ (void)mr;
+
     return( MS_OK );
 }
 
@@ -360,7 +361,8 @@ size_t MADIMPENTRY( RegSetLevel )( const mad_reg_set_data *rsd, char *buff, size
 
 unsigned MADIMPENTRY( RegSetDisplayGrouping )( const mad_reg_set_data *rsd )
 {
-    rsd = rsd;
+    /* unused parameters */ (void)rsd;
+
     return( 0 );
 }
 
@@ -482,7 +484,8 @@ mad_status MADIMPENTRY( RegSetDisplayGetPiece )( const mad_reg_set_data *rsd,
                                 mad_type_handle *disp_type,
                                 size_t *max_value )
 {
-    mr = mr;
+    /* unused parameters */ (void)mr;
+
     return( rsd->get_piece( piece, descript_p, max_descript_p, reg, disp_type, max_value ) );
 }
 
@@ -491,7 +494,8 @@ static const mad_modify_list    FltReg = { NULL, AXPT_DOUBLE, MAD_MSTR_NIL };
 
 mad_status MADIMPENTRY( RegSetDisplayModify )( const mad_reg_set_data *rsd, const mad_reg_info *ri, const mad_modify_list **possible_p, int *num_possible_p )
 {
-    rsd = rsd;
+    /* unused parameters */ (void)rsd;
+
     switch( ri->bit_start ) {
     case BIT_OFF( u31 ):
     case BIT_OFF( f31 ):
@@ -516,7 +520,8 @@ mad_status MADIMPENTRY( RegModified )( const mad_reg_set_data *rsd, const mad_re
     unsigned    mask;
     unsigned    size;
 
-    rsd = rsd;
+    /* unused parameters */ (void)rsd;
+
     if( ri->bit_start == BIT_OFF( pal.nt.fir ) ) {
         new_ip = old->axp.pal.nt.fir;
         //NYI: 64 bit
@@ -680,7 +685,8 @@ size_t MADIMPENTRY( RegSpecialName )( mad_special_reg sr, const mad_registers *m
     size_t      len;
     const char  *p;
 
-    af = af;
+    /* unused parameters */ (void)af;
+
     idx = 0;
     switch( sr ) {
     case MSR_IP:
@@ -739,10 +745,7 @@ const mad_reg_info *MADIMPENTRY( RegFromContextItem )( context_item ci )
 
 void MADIMPENTRY( RegUpdateStart )( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
 {
-    bit_size = bit_size;
-    bit_start = bit_start;
-    flags = flags;
-    mr = mr;
+    /* unused parameters */ (void)bit_size; (void)bit_start; (void)flags; (void)mr;
 }
 
 void MADIMPENTRY( RegUpdateEnd )( mad_registers *mr, unsigned flags, unsigned bit_start, unsigned bit_size )
@@ -750,8 +753,8 @@ void MADIMPENTRY( RegUpdateEnd )( mad_registers *mr, unsigned flags, unsigned bi
     unsigned    i;
     unsigned    bit_end;
 
-    mr = mr;
-    flags = flags;
+    /* unused parameters */ (void)mr; (void)flags;
+
     memset( &mr->axp.u31, 0, sizeof( mr->axp.u31 ) );
     memset( &mr->axp.f31, 0, sizeof( mr->axp.f31 ) );
     bit_end = bit_start + bit_size;

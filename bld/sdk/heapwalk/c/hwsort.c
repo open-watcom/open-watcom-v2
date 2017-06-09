@@ -38,7 +38,7 @@
 
 /* Local Window callback functions prototypes */
 #if 0
-BOOL __export FAR PASCAL ExtendedSortProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam );
+INT_PTR __export FAR PASCAL ExtendedSortDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 #endif
 
 
@@ -142,7 +142,7 @@ static int SortByLRU( heap_list **p1, heap_list **p2 )
 } /* SortByLRU */
 
 #if(0)
-BOOL FAR PASCAL ExtendedSortProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam )
+INT_PTR FAR PASCAL ExtendedSortDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        buf[50];
     char        test[50];
@@ -191,13 +191,13 @@ BOOL FAR PASCAL ExtendedSortProc( HWND hwnd, WORD msg, WORD wparam, DWORD lparam
 }
 
 
-static ExtendedSort() {
+static ExtendedSort( void )
+{
+    DLGPROC     dlgproc;
 
-    FARPROC     dialproc;
-
-    dialproc = MakeProcInstance( ExtendedSortProc, Instance );
-    JDialogBox( Instance, "EXTEND_SORT", HeapWalkMainWindow, dialproc );
-    FreeProcInstance( dialproc );
+    dlgproc = MakeProcInstance_DLG( ExtendedSortDlgProc, Instance );
+    JDialogBox( Instance, "EXTEND_SORT", HeapWalkMainWindow, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 } /* ExtendedSort */
 #endif
 

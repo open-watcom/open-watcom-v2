@@ -140,7 +140,7 @@ label2:                         // OK
 
 // 6.7
 before_declaration:
-    const volatile unsigned long int far *const volatile     cvulifpcvf;
+    const volatile unsigned long int __far *const volatile     cvulifpcvf;
     goto after_declaration;     // jumping over declaration
     int k;
 after_declaration:

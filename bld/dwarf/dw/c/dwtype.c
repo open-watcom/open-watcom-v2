@@ -50,7 +50,8 @@ dw_handle DWENTRY DWHandle(
 {
     dw_handle                   new_hdl;
 
-    kind = kind;
+    /* unused parameters */ (void)kind;
+
     new_hdl = NewHandle( cli );
     return( new_hdl );
 }
@@ -166,7 +167,8 @@ dw_handle DWENTRY DWTypedef(
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
 
-    start_scope = start_scope;
+    /* unused parameters */ (void)start_scope;
+
     _Validate( name != NULL );
     _Validate( base_type != 0 );
     new_hdl = GetHandle( cli );
@@ -279,7 +281,8 @@ dw_handle DWENTRY DWBeginArray(
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
 
-    start_scope = start_scope;
+    /* unused parameters */ (void)start_scope;
+
     new_hdl = GetHandle( cli );
     _Validate( elt_type != 0 );
     abbrev = AB_SIBLING;
@@ -371,7 +374,8 @@ void DWENTRY DWBeginStruct(
     abbrev_code                 abbrev;
     dw_st                       kind;
 
-    start_scope = start_scope;
+    /* unused parameters */ (void)start_scope;
+
     SetHandleLocation( cli, struct_hdl );
     kind = GetExtra( cli, struct_hdl )->structure.kind;
     abbrev = 0;
@@ -552,7 +556,8 @@ dw_handle DWENTRY DWBeginEnumeration(
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
 
-    start_scope = start_scope;
+    /* unused parameters */ (void)start_scope;
+
     new_hdl = GetHandle( cli );
     abbrev = AB_ENUMERATION | AB_SIBLING;
     emitCommonTypeInfo( cli, abbrev, name, flags );
@@ -593,7 +598,8 @@ dw_handle DWENTRY DWBeginSubroutineType(
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
 
-    start_scope = start_scope;
+    /* unused parameters */ (void)start_scope;
+
     _Validate( return_type != 0 );
     new_hdl = GetHandle( cli );
     abbrev = AB_SUBROUTINE_TYPE | AB_SIBLING;
@@ -621,9 +627,11 @@ dw_handle DWENTRY DWAddParmToSubroutineType(
 {
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
-//TODO: change interface
-    loc = loc;
-    seg = seg;
+
+    /* unused parameters */ (void)loc; (void)seg;
+
+    //TODO: change interface
+
     _Validate( parm_type != 0 );
     new_hdl = LabelNewHandle( cli );
     abbrev = AB_FORMAL_PARM_TYPE;
@@ -669,7 +677,8 @@ dw_handle DWENTRY DWString(
     dw_handle                   new_hdl;
     abbrev_code                 abbrev;
 
-    start_scope = start_scope;
+    /* unused parameters */ (void)start_scope;
+
     new_hdl = GetHandle( cli );
     abbrev = string_length ? AB_STRING_WITH_LOC : AB_STRING;
     if( byte_size ) abbrev |= AB_BYTE_SIZE;

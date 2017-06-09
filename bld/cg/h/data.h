@@ -33,7 +33,7 @@
 #include "addrname.h"
 #include "regset.h"
 #include "rttable.h"
-#include "conflict.h"
+#include "confldef.h"
 #include "procdef.h"
 #include "optmac.h"
 

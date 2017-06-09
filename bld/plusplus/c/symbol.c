@@ -986,7 +986,7 @@ bool SymIsExtern(               // SYMBOL IS DEFINED OUTSIDE THIS MODULE
         }
     }
 #ifndef NDEBUG
-    if( retb && ! CompFlags.parsing_finished ) {
+    if( retb && !CompFlags.parsing_finished ) {
         // symbol still has a chance of being initialized!
         CFatal( "SymIsExtern return value is not accurate" );
     }
@@ -1368,7 +1368,6 @@ SYMBOL SymConstantValue             // GET CONSTANT VALUE FOR SYMBOL
 SYMBOL SymDefArgBase(               // GET DEFARG BASE SYMBOL
     SYMBOL sym )                    // - the symbol
 {
-    sym = sym;
     while( SymIsDefArg( sym ) ) {
         sym = sym->thread;
     }

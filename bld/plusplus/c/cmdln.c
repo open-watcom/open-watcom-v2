@@ -137,7 +137,7 @@ void PreDefineStringMacro(      // PREDEFINE A MACRO
     const char *sptr;           // - points into string
     MEPTR mptr;                 // - macro entry
 
-    if( ! CompFlags.undefine_all_macros ) {
+    if( !CompFlags.undefine_all_macros ) {
         mptr = NULL;
         if( undef_names.ring == NULL ) {
             mptr = defineStringMacro( str );
@@ -170,7 +170,7 @@ void AddUndefName()             // SAVE A #UNDEF NAME
     CmdScanChar();
     len = CmdScanId( &opt );
     if( len == 0 ) {
-        CompFlags.undefine_all_macros = 1;
+        CompFlags.undefine_all_macros = true;
     } else {
         mac_name = RingNameAllocVct( &undef_names, opt, len );
         MacroCmdLnUndef( mac_name, len );
@@ -280,14 +280,14 @@ void MiscMacroDefs(             // PREDEFINE MISCELLANEOUS MACROS
         defineStringMacro( "_CPPRTTI" );
     }
     defineFeatureMacros();
-    if( ! CompFlags.no_alternative_tokens ) {
+    if( !CompFlags.no_alternative_tokens ) {
         DefineAlternativeTokens();
     }
     PreDefineStringMacro( "__WATCOMC__=" BANSTR( _BANVER ) );
     PreDefineStringMacro( "__WATCOM_CPLUSPLUS__=" BANSTR( _BANVER ) );
     // #if __WATCOM_REVISION__ >= 8
     PreDefineStringMacro( "__WATCOM_REVISION__=8" );
-    if( ! PragToggle.check_stack ) {
+    if( !PragToggle.check_stack ) {
         DefSwitchMacro( "S" );
     }
     RingNameFree( &undef_names );
@@ -300,8 +300,8 @@ void InitModInfo(               // INITIALIZE MODULE INFORMATION
     GblPackAmount = PackAmount;
     SrcFileSetTab( DEF_TAB_WIDTH );
     RingNameInit( &undef_names );
-    PragToggle.check_stack = 1;
-    PragToggle.unreferenced = 1;
+    PragToggle.check_stack = true;
+    PragToggle.unreferenced = true;
     DataThreshold = 32767;
     OptSize = 50;
     WholeFName = NULL;
@@ -311,13 +311,13 @@ void InitModInfo(               // INITIALIZE MODULE INFORMATION
     ErrLimit = 20;
     WngLevel = WLEVEL_DEFAULT;
     /* set CompFlags defaults */
-    CompFlags.extensions_enabled = 1;
-    CompFlags.oldmacros_enabled = 1;
-    CompFlags.emit_library_names = 1;
-    CompFlags.emit_dependencies = 1;
-    CompFlags.emit_targimp_symbols = 1;
-    CompFlags.check_truncated_fnames = 1;
-    CompFlags.inline_functions = 1;
+    CompFlags.extensions_enabled = true;
+    CompFlags.oldmacros_enabled = true;
+    CompFlags.emit_library_names = true;
+    CompFlags.emit_dependencies = true;
+    CompFlags.emit_targimp_symbols = true;
+    CompFlags.check_truncated_fnames = true;
+    CompFlags.inline_functions = true;
 
     SetAuxWatcallInfo();
 

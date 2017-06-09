@@ -99,7 +99,7 @@ static void WREResetListbox( HWND lbox )
     }
 }
 
-static LRESULT WREFindTypeLBoxIndex( HWND lbox, uint_16 type, WResTypeNode **typeNode )
+static LRESULT WREFindTypeLBoxIndex( HWND lbox, uint_16 type_id, WResTypeNode **typeNode )
 {
     WResTypeNode        *tnode;
     int                 count;
@@ -117,7 +117,7 @@ static LRESULT WREFindTypeLBoxIndex( HWND lbox, uint_16 type, WResTypeNode **typ
         for( i = 0; i < count; i++ ) {
             tnode = (WResTypeNode *)SendMessage( lbox, LB_GETITEMDATA, i, 0 );
             if( tnode != NULL ) {
-                if( (uint_16)tnode->Info.TypeName.ID.Num == type ) {
+                if( (uint_16)tnode->Info.TypeName.ID.Num == type_id ) {
                     if( typeNode != NULL ) {
                         *typeNode = tnode;
                     }
@@ -130,9 +130,9 @@ static LRESULT WREFindTypeLBoxIndex( HWND lbox, uint_16 type, WResTypeNode **typ
     return( -1 );
 }
 
-char *WREGetResName( WResResNode *rnode, uint_16 type )
+char *WREGetResName( WResResNode *rnode, uint_16 type_id )
 {
-    return( WRGetResName( rnode, type ) );
+    return( WRGetResName( rnode, type_id ) );
 }
 
 bool WREAddToTypeListBox( HWND lbox, WResTypeNode *tnode )
@@ -227,8 +227,7 @@ bool WREInitResourceWindow( WREResInfo *info, uint_16 type )
     return( ok );
 }
 
-bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force,
-                             WResID *name, int index )
+bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force, WResID *name, int index )
 {
     HWND                resLbox;
     HWND                typeLbox;
@@ -285,7 +284,7 @@ bool WRESetResNamesFromType( WREResInfo *info, uint_16 type, bool force,
             index = LB_ERR;
             str = WResIDToStr( name );
             if( str != NULL ) {
-                index = (int)SendMessage( resLbox, LB_FINDSTRING, 0, (LPARAM)str );
+                index = (int)SendMessage( resLbox, LB_FINDSTRING, 0, (LPARAM)(LPCSTR)str );
                 WRMemFree( str );
             }
             if( index == LB_ERR ) {
@@ -409,14 +408,14 @@ void WRESetTotalText( WREResInfo *info )
     }
 
     if( count == 0 ) {
-        SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPSTR)WRETotalTextNone );
+        SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPCSTR)WRETotalTextNone );
     } else if( count == 1 ) {
-        SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPSTR)WRETotalTextOne );
+        SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPCSTR)WRETotalTextOne );
     } else {
         buf = WRMemAlloc( strlen( WRETotalText ) + 20 + 1 );
         if( buf != NULL ) {
             sprintf( buf, WRETotalText, count );
-            SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPSTR)buf );
+            SendMessage( total, WM_SETTEXT, 0, (LPARAM)(LPCSTR)buf );
             WRMemFree( buf );
         }
     }

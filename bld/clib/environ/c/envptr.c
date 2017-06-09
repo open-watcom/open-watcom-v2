@@ -33,7 +33,8 @@
 #include <stdlib.h>
 #include "rtdata.h"
 
-_WCRTLINK char ***__get_environ_ptr( void )
+
+_WCRTLINK char ** (*__get_environ_ptr( void ))
 {
     return( &_RWD_environ );
 }

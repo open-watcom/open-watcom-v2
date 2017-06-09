@@ -35,7 +35,7 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT WPI_DLGRESULT CALLBACK SelColorProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT WPI_DLGRESULT CALLBACK SelColorDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
 static palette_box      screenColor;
 static palette_box      inverseColor;
@@ -115,13 +115,16 @@ static void selectColor( WPI_POINT *pt, HWND hwnd )
 } /* selectColor */
 
 /*
- * SelColorProc - select the color to represent the background
+ * SelColorDlgProc - select the color to represent the background
  */
-WPI_DLGRESULT CALLBACK SelColorProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_DLGRESULT CALLBACK SelColorDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     PAINTSTRUCT         ps;
     WPI_POINT           pt;
     WPI_PRES            pres;
+    bool                ret;
+
+    ret = false;
 
     if( _wpi_dlg_command( hwnd, &msg, &wparam, &lparam ) ) {
         switch( LOWORD( wparam ) ) {
@@ -135,16 +138,14 @@ WPI_DLGRESULT CALLBACK SelColorProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, 
 
         case IDB_HELP:
             IEHelpRoutine();
-            return( FALSE );
-
-        default:
-            return( FALSE );
+            break;
         }
     } else {
         switch( msg ) {
         case WM_INITDIALOG:
             showColors( hwnd );
-            return( TRUE );
+            ret = true;
+            break;
 
 #ifndef __OS2_PM__
         case WM_SYSCOLORCHANGE:
@@ -174,22 +175,22 @@ WPI_DLGRESULT CALLBACK SelColorProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, 
             return( _wpi_defdlgproc( hwnd, msg, wparam, lparam ) );
         }
     }
-    _wpi_dlgreturn( FALSE );
+    _wpi_dlgreturn( ret );
 
-} /* SelColorProc */
+} /* SelColorDlgProc */
 
 /*
  * ChooseBkColor - choose the color to represent the background
  */
 void ChooseBkColor( void )
 {
-    WPI_PROC            fp;
+    WPI_DLGPROC         dlgproc;
     WPI_DLGRESULT       button_type;
 
     screenColor.color = GetViewBkColor();
-    fp = _wpi_makeprocinstance( (WPI_PROC)SelColorProc, Instance );
-    button_type = _wpi_dialogbox( HMainWindow, (WPI_DLGPROC)fp, Instance, SELBKCOLOR, 0L );
-    _wpi_freeprocinstance( fp );
+    dlgproc = _wpi_makedlgprocinstance( SelColorDlgProc, Instance );
+    button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, SELBKCOLOR, 0L );
+    _wpi_freedlgprocinstance( dlgproc );
 
     if( button_type == IDCANCEL ) {
         return;

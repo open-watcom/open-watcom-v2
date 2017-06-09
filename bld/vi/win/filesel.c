@@ -34,36 +34,23 @@
 #include <dlgs.h>
 #include <cderr.h>
 #include <assert.h>
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT UINT_PTR CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
-typedef UINT (CALLBACK *OPENHOOKTYPE)( HWND, UINT, WPARAM, LPARAM );
+static char *filterList = {
+    #define LANG_FILTER
+    #define pick_lang(enum,enumrc,name,namej,fname,desc,filter) desc " (" filter ")\0" filter "\0"
+    #include "langdef.h"
+    #undef pick_lang
+    "\0"
+};
 
-static char *filterList = "C/C++ Files (*.c;*.h;*.cpp;*.hpp;*.cxx;*.hxx;*.inl)\0*.c;*.h;*.cpp;*.hpp;*.cxx;*.hxx;*.inl\0"
-                          "C Files (*.c;*.h)\0*.c;*.h\0"
-                          "C++ Files (*.cpp;*.hpp;*.cxx;*.hxx;*.inl)\0*.cpp;*.hpp;*.cxx;*.hxx;*.inl\0"
-                          "Fortran Files (*.for;*.fi;*.f;*.inc)\0*.for;*.fi;*.f;*.inc\0"
-                          "Java(Script) Files (*.java;*.js)\0*.java;*.js\0"
-                          "SQL Files (*.sql)\0*.sql\0"
-                          "Batch Files (*.bat;*.cmd)\0*.bat;*.cmd\0"
-                          "Basic (*.bas;*.frm;*.cls)\0*.bas;*.frm;*.cls\0"
-                          "Perl Files (*.pl;*.cgi)\0*.pl;*.cgi\0"
-                          "HTML Files (*.htm;*.html;*.xhtml)\0*.htm;*.html;*.xhtml\0"
-                          "WML Files (*.wml)\0*.wml\0"
-                          "GML Files (*.gml)\0*.gml\0"
-                          "DBTest (*.tst)\0*.tst\0"
-                          "Makefiles (makefile;*.mk;*.mif;*.mak)\0makefile;*.mk;*.mif;*.mak\0"
-                          "Assembly Files (*.asm;*.inc)\0*.asm;*.inc\0"
-                          "Resource Files (*.rc;*.rh;*.dlg)\0*.rc;*.rh;*.dlg\0"
-                          "AWK Files (*.awk)\0*.awk\0"
-                          "All Files (*.*)\0*.*\0"
-                          "\0";
 static char *FileNameList;
 
-WINEXPORT UINT_PTR CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT UINT_PTR CALLBACK OpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     unsigned                    len;
 #ifdef __WINDOWS_386__
@@ -92,7 +79,7 @@ WINEXPORT UINT_PTR CALLBACK OpenHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
             len = SendDlgItemMessage( hwnd, edt1, WM_GETTEXTLENGTH, 0, 0 );
             if( len >= of->nMaxFile ) {
                 FileNameList = MemAlloc( len + 1 );
-                len = SendDlgItemMessage( hwnd, edt1, WM_GETTEXT, len + 1, (LPARAM)FileNameList );
+                len = SendDlgItemMessage( hwnd, edt1, WM_GETTEXT, len + 1, (LPARAM)(LPSTR)FileNameList );
             }
         }
         break;
@@ -110,6 +97,8 @@ vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool wan
     static long         filemask = 1;
     bool                is_chicago = false;
 
+    /* unused parameters */ (void)mask; (void)want_all_dirs;
+
 #if defined( __NT__ ) && !defined( _WIN64 )
     /* added to get around chicago crashing in the fileopen dlg */
     /* -------------------------------------------------------- */
@@ -119,8 +108,6 @@ vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool wan
     /* -------------------------------------------------------- */
 #endif
 
-    mask = mask;
-    want_all_dirs = want_all_dirs;
     *result[0] = '\0';
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
@@ -136,12 +123,12 @@ vi_rc SelectFileOpen( const char *dir, char **result, const char *mask, bool wan
         of.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER;
     } else {
         of.Flags = OFN_PATHMUSTEXIST | OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_ENABLEHOOK;
-        of.lpfnHook = (LPOFNHOOKPROC)MakeOpenFileHookProcInstance( OpenHook, InstanceHandle );
+        of.lpfnHook = MakeProcInstance_OFNHOOK( OpenOFNHookProc, InstanceHandle );
     }
     rc = GetOpenFileName( &of ) != 0;
     filemask = of.nFilterIndex;
     if( !is_chicago ) {
-        (void)FreeProcInstance( (FARPROC)of.lpfnHook );
+        FreeProcInstance_OFNHOOK( of.lpfnHook );
     }
     if( !rc && CommDlgExtendedError() == FNERR_BUFFERTOOSMALL ) {
         if( !is_chicago ) {
@@ -188,11 +175,11 @@ vi_rc SelectFileSave( char *result )
         of.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY | OFN_NOREADONLYRETURN | OFN_EXPLORER;
     } else {
         of.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY | OFN_NOREADONLYRETURN | OFN_ENABLEHOOK;
-        of.lpfnHook = (LPOFNHOOKPROC)MakeOpenFileHookProcInstance( OpenHook, InstanceHandle );
+        of.lpfnHook = MakeProcInstance_OFNHOOK( OpenOFNHookProc, InstanceHandle );
     }
     doit = GetSaveFileName( &of );
     if( !is_chicago ) {
-        (void)FreeProcInstance( (FARPROC)of.lpfnHook );
+        FreeProcInstance_OFNHOOK( of.lpfnHook );
     }
     if( doit != 0 ) {
         UpdateCurrentDirectory();

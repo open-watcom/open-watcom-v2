@@ -76,8 +76,8 @@ hw_reg_set SavedRegs( void )
 void    UpdateReturn( call_state *state, type_def *tipe, type_class_def class, aux_handle aux )
 /*********************************************************************************************/
 {
-    tipe = tipe;
-    aux = aux;
+    /* unused parameters */ (void)tipe; (void)aux;
+
     state->return_reg = ReturnReg( class );
 }
 
@@ -203,23 +203,27 @@ hw_reg_set      SaveRegs( void )
 bool            IsStackReg( name *n )
 /***********************************/
 {
-    if( n == NULL ) return( false );
-    if( n->n.class != N_REGISTER ) return( false );
-    if( !HW_CEqual( n->r.reg, HW_R30 ) &&
-        !HW_CEqual( n->r.reg, HW_D30 ) ) return( false );
+    if( n == NULL )
+        return( false );
+    if( n->n.class != N_REGISTER )
+        return( false );
+    if( !HW_CEqual( n->r.reg, HW_R30 ) && !HW_CEqual( n->r.reg, HW_D30 ) )
+        return( false );
     return( true );
 }
 
 hw_reg_set      HighOffsetReg( hw_reg_set regs )
 /**********************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( HW_EMPTY );
 }
 
 hw_reg_set      LowOffsetReg( hw_reg_set regs )
 /*********************************************/
 {
-    regs = regs;
+    /* unused parameters */ (void)regs;
+
     return( HW_EMPTY );
 }

@@ -81,8 +81,7 @@ char *WdeGetStrFromEdit( HWND hDlg, int id, bool *mod )
         return( NULL );
     }
 
-    text_copied = SendDlgItemMessage( hDlg, id, WM_GETTEXT, text_length + 1,
-                                      (LPARAM)(LPSTR)cp );
+    text_copied = SendDlgItemMessage( hDlg, id, WM_GETTEXT, text_length + 1, (LPARAM)(LPSTR)cp );
 
     if( text_copied > text_length ) {
         WRMemFree( cp );
@@ -148,8 +147,7 @@ char *WdeGetStrFromComboLBox( HWND hDlg, int id, int index )
         return( NULL );
     }
 
-    text_copied = SendDlgItemMessage( hDlg, id, CB_GETLBTEXT, index,
-                                      (LPARAM)(LPSTR)cp );
+    text_copied = SendDlgItemMessage( hDlg, id, CB_GETLBTEXT, index, (LPARAM)(LPCSTR)cp );
 
     if( text_copied != text_length ) {
         WRMemFree( cp );
@@ -211,7 +209,7 @@ void WdeSetComboWithStr( char *cp, HWND hDlg, int id )
 void WdeSetEditWithStr( char *cp, HWND hDlg, int id )
 {
     if( cp != NULL ) {
-        SendDlgItemMessage( hDlg, id, WM_SETTEXT, 0, (LPARAM)(LPSTR)cp );
+        SendDlgItemMessage( hDlg, id, WM_SETTEXT, 0, (LPARAM)(LPCSTR)cp );
     }
 }
 

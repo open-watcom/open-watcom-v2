@@ -52,10 +52,10 @@
 
 #ifdef NAME_PTR_IS_NAME_MEMBER
 #define NAME_PTR(n)     ((idname *)((char *)(n) - NAME_SIZE ))
-#define NAME_RETVAL(n)  ((n)->name)     
+#define NAME_RETVAL(n)  ((n)->name)
 #else
 #define NAME_PTR(n)     ((idname *)(n))
-#define NAME_RETVAL(n)  (n)     
+#define NAME_RETVAL(n)  (n)
 #endif
 
 static idname           *hashTable[ NAME_TABLE_HASH ];
@@ -331,7 +331,8 @@ pch_status PCHInitNames( bool writing )
 
 pch_status PCHFiniNames( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     nameFlags.no_creates_allowed = false;
     CMemFreePtr( &nameTranslateTable );
     return( PCHCB_OK );
@@ -438,7 +439,8 @@ unsigned NameHash( NAME name )
 static void init(               // INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     if( CompFlags.dll_subsequent ) {
         memset( hashTable, 0, sizeof( hashTable ) );
         nameDummyIndex = 0;
@@ -544,7 +546,8 @@ static void dumpNames( void )
 static void fini(               // INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
 #ifndef NDEBUG
     if( PragDbgToggle.dump_names ) {
         dumpNames();

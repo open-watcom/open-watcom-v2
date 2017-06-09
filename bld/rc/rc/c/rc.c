@@ -33,7 +33,7 @@
 #include "wio.h"
 #include "global.h"
 #include "yydriver.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "depend.h"
 #include "rcldstr.h"
 #include "preproc.h"
@@ -51,7 +51,7 @@
 
 extern HANDLE_INFO  hInstance;
 
-WResSetRtns(RcOpen,RcClose,RcRead,RcWrite,RcSeek,RcTell,RcMemMalloc,RcMemFree);
+WResSetRtns(res_open,res_close,res_read,res_write,res_seek,res_tell,res_ioerr,RcMemMalloc,RcMemFree);
 
 void InitGlobs( void )
 /********************/

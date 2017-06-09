@@ -33,17 +33,19 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <rdos.h>
+#include "heap.h"
 
-_WCRTLINK void _WCNEAR *sbrk( int increment )
+
+_WCRTLINK void_nptr sbrk( int increment )
 {
-    void *p;
+    void *cstg;
 
     if( increment > 0 ) {
         increment = __ROUND_UP_SIZE_4K( increment );
-        p = RdosAllocateMem( increment );
-        if( p != NULL ) {
-            return( p );
+        cstg = RdosAllocateMem( increment );
+        if( cstg != NULL ) {
+            return( cstg );
         }
     }
-    return( (void *) -1 );
+    return( (void_nptr)-1 );
 }

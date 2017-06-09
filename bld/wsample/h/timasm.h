@@ -41,5 +41,5 @@ typedef struct pblock {
 } pblock;
 
 extern unsigned short   __near GetPSP( void );
-extern void             __near DOSLoadProg( char __near *, pblock __near *, report_fn_ptr );
+extern void             __near DOSLoadProg( const char __near *, pblock __near *, report_fn_ptr );
 extern void             __far DOSRunProg( seg_offset __near * );

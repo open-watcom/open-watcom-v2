@@ -42,7 +42,6 @@
 #include "cgaux.h"
 #include "data.h"
 #include "makeins.h"
-#include "dumpio.h"
 #include "namelist.h"
 #include "blips.h"
 #include "edge.h"
@@ -53,6 +52,7 @@
 #include "blktrim.h"
 #include "unroll.h"
 #include "revcond.h"
+#include "dumpio.h"
 
 
 extern  void            RemoveBlock( block * );
@@ -296,7 +296,7 @@ static  signed_32       UnrollCount( block *loop_tail, bool *clean, bool *comple
     if( unroll_count == 0 ) {
         if( _IsntModel( LOOP_UNROLLING ) )
             return( 0 );
-        if( OptForSize != 0 )
+        if( OptForSize > 0 )
             return( false );
         num_ins = 0;
         for( blk = loop_tail; blk != NULL; blk = blk->u.loop ) {
@@ -477,7 +477,8 @@ static  block   *DoUnroll( block *tail, signed_32 reps, bool replace_vars )
     signed_32           i;
     signed_32           size;
 
-    replace_vars = replace_vars;
+    /* unused parameters */ (void)replace_vars;
+
     size = sizeof( loop_abstract ) * reps;
 
     // allocate an array of these abstract loop thingies
@@ -942,7 +943,7 @@ static  void    MakeWorldGoAround( block *loop, loop_abstract *cleanup_copy, loo
     SuffixPreHeader( add );
 
     // add a piece of code to check and make sure n and ( n - reps ) have the same sign
-    if( cond->complete == false && Signed[comp_type] != comp_type ) {
+    if( !cond->complete && Signed[comp_type] != comp_type ) {
         new = MakeBlock( AskForNewLabel(), 2 );
         _SetBlkAttr( new, BLK_CONDITIONAL );
         new->loop_head = PreHead->loop_head;

@@ -184,7 +184,7 @@ size_t MADIMPENTRY( DisasmFormat )( mad_disasm_data *dd, mad_disasm_piece dp, ma
 
 unsigned MADIMPENTRY( DisasmInsSize )( mad_disasm_data *dd )
 {
-    dd = dd;
+    /* unused parameters */ (void)dd;
 
     return( sizeof( unsigned_32 ) );
 }
@@ -206,7 +206,7 @@ mad_status MADIMPENTRY( DisasmInsUndoable )( mad_disasm_data *dd )
         return( MS_FAIL );
     }
 #else
-    dd = dd;
+    /* unused parameters */ (void)dd;
 #endif
     return( MS_OK );
 }
@@ -530,7 +530,8 @@ mad_status MADIMPENTRY( DisasmInspectAddr )(const char *start, unsigned len, mad
     char        *buff = __alloca( len * 2 + 1 );
     char        *to;
 
-    mr = mr;
+    /* unused parameters */ (void)mr;
+
     to = buff;
     for( ; len != 0; --len ) {
         if( *start == '(' )

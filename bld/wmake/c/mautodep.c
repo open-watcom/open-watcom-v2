@@ -58,7 +58,7 @@ void AutoDepInit( void )
 {
     const auto_dep_info * const *pcurr;
 
-    for( pcurr = &AutoDepTypes[0]; *pcurr != NULL; pcurr++ ) {
+    for( pcurr = AutoDepTypes; *pcurr != NULL; pcurr++ ) {
         if( (*pcurr)->init != NULL ) {
             (*pcurr)->init();
         }
@@ -82,23 +82,25 @@ static bool isTargObsolete( char const *name, time_t stamp,
     if( CacheTime( dep_name, &curr_dep_time ) != RET_SUCCESS ) {
         exists = false, obsolete = true;
     } else {
-        if( !IdenticalAutoDepTimes( auto_dep_time, curr_dep_time ) ||
-                (*chk)( stamp, curr_dep_time ) ) {
+        if( !IdenticalAutoDepTimes( auto_dep_time, curr_dep_time, curr->type ) || (*chk)( stamp, curr_dep_time ) ) {
             obsolete = true;
         }
-        if( curr_dep_time > *pmax_time ) {
+        if( *pmax_time < curr_dep_time ) {
             *pmax_time = curr_dep_time; // Glob.all should not affect comparison
         }
     }
     if( Glob.debug ) {
-        char        time_buff[32] = "?";// for date + flag
+        char        time_buff[80] = "?";// for date + flag
         struct tm   *tm;
+        struct tm   tm1;
 
         if( exists ) {
+            tm1 = *localtime( &auto_dep_time );
             tm = localtime( &curr_dep_time );
-            FmtStr( time_buff, "%D-%s-%D  %D:%D:%D",
+            FmtStr( time_buff, "%D-%s-%D  %D:%D:%D(%D:%D:%D)",
                     tm->tm_mday, MonthNames[tm->tm_mon], tm->tm_year,
-                    tm->tm_hour, tm->tm_min, tm->tm_sec );
+                    tm->tm_hour, tm->tm_min, tm->tm_sec,
+                    tm1.tm_hour, tm1.tm_min, tm1.tm_sec );
         }
         strcat( time_buff, ( obsolete ) ? "*" : " " );
         PrtMsg( DBG | INF | GETDATE_MSG, time_buff, dep_name );
@@ -123,13 +125,13 @@ bool AutoDepCheck( char *name, time_t stamp,
     quick_logic = !( Glob.rcs_make || Glob.debug || Glob.show_offenders );
     obs = false;
 
-    for( pcurr = &AutoDepTypes[0]; (curr = *pcurr) != NULL; pcurr++ ) {
+    for( pcurr = AutoDepTypes; (curr = *pcurr) != NULL; pcurr++ ) {
         if( (hdl = curr->init_file( name )) != NULL ) {
             dep_handle (* const first_dep)( handle )    = curr->first_dep;
             dep_handle (* const next_dep)( dep_handle ) = curr->next_dep;
 
             for( dep = first_dep( hdl ); dep != NULL; dep = next_dep( hdl ) ) {
-                obs |= isTargObsolete(name, stamp, chk, pmax_time, curr, dep );
+                obs |= isTargObsolete( name, stamp, chk, pmax_time, curr, dep );
                 if( obs && quick_logic ) {
                     break; // No need to calculate real max time
                 }
@@ -147,7 +149,7 @@ void AutoDepFini( void )
 {
     const auto_dep_info * const *pcurr;
 
-    for( pcurr = &AutoDepTypes[0]; *pcurr != NULL; pcurr++ ) {
+    for( pcurr = AutoDepTypes; *pcurr != NULL; pcurr++ ) {
         if( (*pcurr)->fini != NULL ) {
             (*pcurr)->fini();
         }

@@ -70,7 +70,8 @@ static void *getMem( size_t size, WHO_PTR who )
 #ifdef TRMEM
     tmp = _trmem_alloc( size, who, trmemHandle );
 #else
-    who = who;
+    /* unused parameters */ (void)who;
+
     tmp = malloc( size );
 #endif
     if( tmp != NULL ) {
@@ -306,7 +307,8 @@ static void *doMemReAllocUnsafe( void *ptr, size_t size, WHO_PTR who )
 #ifdef TRMEM
     tmp = _trmem_realloc( ptr, size, who, trmemHandle );
 #else
-    who = who;
+    /* unused parameters */ (void)who;
+
     tmp = realloc( ptr, size );
 #endif
 #ifdef __WATCOMC__

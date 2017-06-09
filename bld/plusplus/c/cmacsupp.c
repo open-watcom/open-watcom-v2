@@ -36,10 +36,10 @@
 
 
 void MacroOffsetAddChar(            // MacroOffset: ADD A CHARACTER
-    unsigned *mlen,                 // - length of MacroOffset
+    size_t *mlen,                   // - length of MacroOffset
     char chr )                      // - character to insert
 {
-    unsigned clen;
+    size_t  clen;
 
     clen = *mlen;
     MacroOverflow( clen + 1, clen );
@@ -49,10 +49,10 @@ void MacroOffsetAddChar(            // MacroOffset: ADD A CHARACTER
 
 
 void MacroOffsetAddToken(           // MacroOffset: ADD A TOKEN
-    unsigned *mlen,                 // - Macro Offset Length
+    size_t *mlen,                   // - Macro Offset Length
     TOKEN token )                   // - token to be added
 {
-    unsigned clen;
+    size_t  clen;
 
     clen = *mlen;
     MacroOverflow( clen + sizeof( TOKEN ), clen );
@@ -62,11 +62,11 @@ void MacroOffsetAddToken(           // MacroOffset: ADD A TOKEN
 
 
 void MacroOffsetAddMemNoCopy(       // MacroOffset: ADD A SEQUENCE OF BYTES
-    unsigned *mlen,                 // - Macro Offset Length
+    size_t *mlen,                   // - Macro Offset Length
     const char *buff,               // - bytes to be added
-    unsigned len )                  // - number of bytes
+    size_t len )                    // - number of bytes
 {
-    unsigned clen;
+    size_t  clen;
 
     clen = *mlen;
     MacroOverflow( clen + len, 0 );
@@ -77,11 +77,11 @@ void MacroOffsetAddMemNoCopy(       // MacroOffset: ADD A SEQUENCE OF BYTES
 
 
 void MacroOffsetAddMem(             // MacroOffset: ADD A SEQUENCE OF BYTES
-    unsigned *mlen,                 // - Macro Offset Length
+    size_t *mlen,                   // - Macro Offset Length
     const char *buff,               // - bytes to be added
-    unsigned len )                  // - number of bytes
+    size_t len )                    // - number of bytes
 {
-    unsigned clen;
+    size_t  clen;
 
     clen = *mlen;
     MacroOverflow( clen + len, clen );

@@ -2,7 +2,9 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc.
+*    Portions Copyright (c) 2017 Open Watcom Contributors.
+*    All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -214,6 +216,7 @@ static option_mapping mappings[] = {
     { "feh-direct",                     "xst" },
     { "feh-table",                      "xss" },
     { "feh",                            "xs" },
+    { "fnonconst-initializers",         "aa" },
     { "ftabstob=:",                     "t=" },
     /* { "mcmodel=:",                      "m" }, --- handled explicitly */
     { "mabi=cdecl",                     "ecc" },

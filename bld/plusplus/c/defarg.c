@@ -427,7 +427,8 @@ void ProcessDefArgs( DECL_INFO *dinfo )
 static void init(               // INITIALIZATION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     ExtraRptRegisterCtr( &ctr_defargs, "# defargs defined" );
     ExtraRptRegisterCtr( &ctr_defargs_intconst, "# defargs that are integral constants" );
     ExtraRptRegisterCtr( &ctr_defargs_fpconst, "# defargs that are floating point constants" );
@@ -440,7 +441,8 @@ static void init(               // INITIALIZATION
 static void fini(               // COMPLETION
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     DbgStmt( defargFreePtrees() );
     DbgStmt( CarveVerifyAllGone( carveRELOC_LIST, "RELOC_LIST" ) );
     CarveDestroy( carveRELOC_LIST );

@@ -57,8 +57,6 @@ static void gml_xl_lp_common( gml_tag gtag )
 {
     char        *   p;
 
-    gtag = gtag;
-
     end_lp();                           // terminate :LP if active
 
     init_nest_cb( true );
@@ -480,7 +478,8 @@ static  void    gml_li_ol( gml_tag gtag )
     uint32_t        num_len;
     char            charnumber[MAX_L_AS_STR];
 
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     scan_err = false;
     p = scan_start;
 
@@ -562,7 +561,8 @@ static  void    gml_li_sl( gml_tag gtag )
 {
     char        *   p;
 
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     scan_err = false;
     p = scan_start;
 
@@ -615,7 +615,8 @@ static  void    gml_li_ul( gml_tag gtag )
     char        *   p;
     char            bullet[3];
 
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
+
     scan_err = false;
     p = scan_start;
 

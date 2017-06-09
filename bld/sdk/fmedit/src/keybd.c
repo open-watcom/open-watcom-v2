@@ -36,14 +36,15 @@
 #include "state.def"
 #include "currobj.def"
 #include "mouse.def"
+#include "keybd.def"
 
 /* Forward References */
-static BOOL IgnoreKbd( int keycode );
-static BOOL CheckKbdMove( int keycode );
-static BOOL ContinueKbdMove( int keycode );
-static BOOL EndKbdMove( int keycode );
+static bool IgnoreKbd( int keycode );
+static bool CheckKbdMove( int keycode );
+static bool ContinueKbdMove( int keycode );
+static bool EndKbdMove( int keycode );
 
-static BOOL (*KeyDownActions[])( int keycode ) = {
+static bool (*KeyDownActions[])( int keycode ) = {
     CheckKbdMove,                   /* DORMANT          */
     CheckKbdMove,                   /* OVERBOX          */
     IgnoreKbd,                      /* MOVING           */
@@ -59,7 +60,7 @@ static BOOL (*KeyDownActions[])( int keycode ) = {
     ContinueKbdMove                 /* KBD_MOVING       */
 };
 
-static BOOL (*KeyUpActions[])( int keycode ) = {
+static bool (*KeyUpActions[])( int keycode ) = {
     IgnoreKbd,                      /* DORMANT          */
     IgnoreKbd,                      /* OVERBOX          */
     IgnoreKbd,                      /* MOVING           */
@@ -75,44 +76,42 @@ static BOOL (*KeyUpActions[])( int keycode ) = {
     EndKbdMove                      /* KBD_MOVING       */
 };
 
-extern BOOL ProcessKeyDown( int keycode )
-/***************************************/
+bool ProcessKeyDown( int keycode )
+/********************************/
 {
     return( KeyDownActions[GetState()]( keycode ) );
 }
 
-extern BOOL ProcessKeyUp( int keycode )
-/*************************************/
+bool ProcessKeyUp( int keycode )
+/******************************/
 {
     return( KeyUpActions[GetState()]( keycode ) );
 }
 
 
-static BOOL IgnoreKbd( int keycode )
+static bool IgnoreKbd( int keycode )
 /**********************************/
 {
     keycode = keycode;
-    return( FALSE );
+    return( false );
 }
 
 static void MoveCurrObj( LPPOINT pt )
 /***********************************/
 {
-    CURROBJPTR  curr;
+    OBJPTR  curr;
 
-    curr = GetECurrObject();
-    while( curr != NULL ) {
-        Move( curr, pt, TRUE );
-        curr = GetNextECurrObject( curr );
+    for( curr = GetEditCurrObject(); curr != NULL; curr = GetNextEditCurrObject( curr ) ) {
+        Move( curr, pt, true );
     }
 }
 
-static BOOL FilterMoveKeys( int keycode, LPPOINT pt )
+static bool FilterMoveKeys( int keycode, LPPOINT pt )
 /***************************************************/
 {
-    BOOL    ret;
+    bool    ret;
 
-    ret = TRUE;
+    ret = true;
     switch( keycode ) {
     case VK_LEFT:
         pt->x = -GetHorizontalInc();
@@ -131,7 +130,7 @@ static BOOL FilterMoveKeys( int keycode, LPPOINT pt )
         pt->y = GetVerticalInc();
         break;
     default:
-        ret = FALSE;
+        ret = false;
         break;
     }
     return( ret );
@@ -143,39 +142,37 @@ static void DoKbdMove( LPPOINT pt )
     LIST    *list;
 
     list = GetCurrObjectList();
-    SetShowEatoms( FALSE );
+    SetShowEatoms( false );
     BeginMoveOperation( list );
     ListFree( list );
     MoveCurrObj( pt );
-    FinishMoveOperation( FALSE );
-    SetShowEatoms( TRUE );
+    FinishMoveOperation( false );
+    SetShowEatoms( true );
 }
 
 static void SetKbdMoveGrid( void )
 /********************************/
 {
-    CURROBJPTR  curr;
+    OBJPTR      curr;
     unsigned    hinc;
     unsigned    vinc;
     POINT       pt;
 
     hinc = 0;
     vinc = 0;
-    curr = GetECurrObject();
-    while( curr != NULL ) {
+    for( curr = GetEditCurrObject(); curr != NULL; curr = GetNextEditCurrObject( curr ) ) {
         if( ResizeIncrements( curr, &pt ) ) {
             if( hinc < pt.x )
                 hinc = pt.x;
             vinc = max( vinc, pt.y );
         }
-        curr = GetNextECurrObject( curr );
     }
     if( hinc != 0 && vinc != 0 ) {
         SetResizeGrid( hinc, vinc );
     }
 }
 
-static BOOL CheckKbdMove( int keycode )
+static bool CheckKbdMove( int keycode )
 /*************************************/
 {
     POINT   pt;
@@ -184,34 +181,34 @@ static BOOL CheckKbdMove( int keycode )
         SetState( KBD_MOVING );
         SetKbdMoveGrid();
         DoKbdMove( &pt );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
-static BOOL ContinueKbdMove( int keycode )
+static bool ContinueKbdMove( int keycode )
 /****************************************/
 {
     POINT   pt;
 
     if( FilterMoveKeys( keycode, &pt ) ) {
         DoKbdMove( &pt );
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
-static BOOL EndKbdMove( int keycode )
+static bool EndKbdMove( int keycode )
 /***********************************/
 {
     POINT   dummy;
 
     if( FilterMoveKeys( keycode, &dummy ) ) {
         SetDefState();
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }

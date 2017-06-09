@@ -68,6 +68,17 @@ unsigned NextThread( unsigned tid )
     return( !tid );
 }
 
+void ResetThread( unsigned tid )
+{
+    if( tid > 0 ) {
+        SampleIndex = 0;
+        if( CallGraphMode ) {
+            SampleCount = 0;
+            LastSampleIndex = 0;
+        }
+    }
+}
+
 /*
     timer_handler is the main working component of this program.
     A PC (or PS/2) has a built-in timer that keeps interrupting processor

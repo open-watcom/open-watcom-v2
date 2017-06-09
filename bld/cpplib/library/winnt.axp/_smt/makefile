@@ -1,4 +1,4 @@
-#pmake/120: nomodel cpu_axp os_nt
+#pmake/120: nobuild nomodel cpu_axp os_nt
 processor    = axp
 system       = winnt
 model        =

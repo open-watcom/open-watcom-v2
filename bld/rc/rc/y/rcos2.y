@@ -600,7 +600,7 @@ raw-data-item
         {
             $$.IsString    = true;
             $$.LongItem    = $1.lstring;
-            $$.StrLen      = (uint_16)$1.length;
+            $$.StrLen      = $1.length;
             $$.TmpStr      = true;
             $$.WriteNull   = false;
             $$.Item.String = $1.string;
@@ -637,7 +637,7 @@ rc-data-item
         {
             $$.IsString    = true;
             $$.LongItem    = $1.lstring;
-            $$.StrLen      = (uint_16)$1.length;
+            $$.StrLen      = $1.length;
             $$.TmpStr      = true;
             $$.WriteNull   = true;
             $$.Item.String = $1.string;
@@ -1217,7 +1217,7 @@ cntl-options
     : comma-opt cntl-id comma-opt size-info comma-opt
         {
             $$.ID = $2;
-            $$.Size = $4;
+            $$.SizeInfo = $4;
             $$.Style.Mask = 0;
             $$.Style.Value = 0;
             $$.Text = NULL;
@@ -1225,7 +1225,7 @@ cntl-options
     | comma-opt cntl-id comma-opt size-info comma-opt cntl-style
         {
             $$.ID = $2;
-            $$.Size = $4;
+            $$.SizeInfo = $4;
             $$.Style = $6;
             $$.Text = NULL;
         }
@@ -1351,19 +1351,19 @@ icon-stmt
 icon-parms
     : size-x comma-opt size-y comma-opt size-w comma-opt size-h
         {
-            $$.Size.x = $1;
-            $$.Size.y = $3;
-            $$.Size.width = $5;
-            $$.Size.height = $7;
+            $$.SizeInfo.x = $1;
+            $$.SizeInfo.y = $3;
+            $$.SizeInfo.width = $5;
+            $$.SizeInfo.height = $7;
             $$.Style.Mask  = 0;         /* no style given */
             $$.Style.Value = 0;
         }
     | size-x comma-opt size-y comma-opt size-w comma-opt size-h comma-opt cntl-style
         {
-            $$.Size.x = $1;
-            $$.Size.y = $3;
-            $$.Size.width = $5;
-            $$.Size.height = $7;
+            $$.SizeInfo.x = $1;
+            $$.SizeInfo.y = $3;
+            $$.SizeInfo.width = $5;
+            $$.SizeInfo.height = $7;
             $$.Style = $9;
         }
     ;

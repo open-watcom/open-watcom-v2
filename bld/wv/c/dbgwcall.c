@@ -79,7 +79,7 @@ static void     CallMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     call_chain  *chain;
     call_window *call = WndCall( wnd );
 
-    piece=piece;
+    /* unused parameters */ (void)piece;
 
     chain = GetCallChain( &call->tb, row );
     switch( id ) {
@@ -206,7 +206,8 @@ static bool CallEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     call_window *call = WndCall( wnd );
 
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         InitTraceBack( &call->tb );

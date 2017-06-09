@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
+#include "commonui.h"
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,6 +49,7 @@
 #include "jdlg.h"
 #include "winexprt.h"
 #include "wresdefn.h"
+#include "wclbproc.h"
 
 
 /****************************************************************************/
@@ -60,23 +61,23 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct SymInitStruct {
-    char        *symbol;
-    int         value;
+    char            *symbol;
+    int             value;
 } SymInitStruct;
 
 typedef struct WREditSymInfo {
-    FARPROC             hcb;
+    HELP_CALLBACK       help_callback;
     WRHashTable         *table;
     bool                modified;
     WRHashEntryFlags    flags;
 } WREditSymInfo;
 
 typedef struct WRAddSymInfo {
-    FARPROC     hcb;
-    WRHashTable *table;
-    char        *symbol;
-    WRHashValue value;
-    bool        modify;
+    HELP_CALLBACK   help_callback;
+    WRHashTable     *table;
+    char            *symbol;
+    WRHashValue     value;
+    bool            modify;
 } WRAddSymInfo;
 
 /****************************************************************************/
@@ -86,8 +87,8 @@ typedef struct WRAddSymInfo {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
-WINEXPORT BOOL CALLBACK WRAddSymProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
+WINEXPORT INT_PTR CALLBACK WREditSymbolsDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
+WINEXPORT INT_PTR CALLBACK WRAddSymDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -730,8 +731,7 @@ WRHashEntry * WRAPI WRAddHashEntry( WRHashTable *table, const char *name, WRHash
         entry->value_next = table->values[vhash];
         table->names[nhash] = entry;
         table->values[vhash] = entry;
-        strcpy( entry->name, symbol );
-        strupr( entry->name );
+        strupr( strcpy( entry->name, symbol ) );
         entry->value = value;
         entry->ref_count = 0;
         entry->flags = WR_HASHENTRY_UNUSED;
@@ -966,12 +966,12 @@ bool WRAPI WRIsValidSymbol( const char *symbol )
 }
 
 bool WRAPI WREditSym( HWND parent, WRHashTable **table,
-                          WRHashEntryFlags *flags, FARPROC help_callback )
+                          WRHashEntryFlags *flags, HELP_CALLBACK help_callback )
 {
     WREditSymInfo       info;
     WRHashTable         *tmp;
     HINSTANCE           inst;
-    FARPROC             proc;
+    DLGPROC             dlgproc;
     INT_PTR             ret;
     bool                ok;
 
@@ -985,17 +985,17 @@ bool WRAPI WREditSym( HWND parent, WRHashTable **table,
 
     if( ok ) {
         inst = WRGetInstance();
-        proc = MakeProcInstance( (FARPROC)WREditSymbolsProc, inst );
-        ok = (proc != NULL);
+        dlgproc = MakeProcInstance_DLG( WREditSymbolsDlgProc, inst );
+        ok = (dlgproc != NULL);
     }
 
     if( ok ) {
-        info.hcb = help_callback;
+        info.help_callback = help_callback;
         info.table = tmp;
         info.modified = false;
         info.flags = *flags;
-        ret = JDialogBoxParam( inst, "WRSymbols", parent, (DLGPROC)proc, (LPARAM)(LPVOID)&info );
-        FreeProcInstance( proc );
+        ret = JDialogBoxParam( inst, "WRSymbols", parent, dlgproc, (LPARAM)(LPVOID)&info );
+        FreeProcInstance_DLG( dlgproc );
         ok = false;
         if( ret ) {
             UpdateWindow( parent );
@@ -1092,10 +1092,9 @@ static bool WRAddSymbol( HWND hDlg, WRHashTable *table, bool force,
         if( dup ) {
             // this is neccessary if the value of the string was moified
             index = (int)SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_FINDSTRINGEXACT, 0,
-                                        (LPARAM)(LPSTR)symbol );
+                                        (LPARAM)(LPCSTR)symbol );
         } else {
-            index = (int)SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_ADDSTRING, 0,
-                                        (LPARAM)(LPSTR)symbol );
+            index = (int)SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)symbol );
             SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_SETITEMDATA,
                                 index, (LPARAM)(LPVOID)entry );
         }
@@ -1129,11 +1128,11 @@ static WRHashEntry *getHashEntry( HWND hDlg )
     return( entry );
 }
 
-static bool WRAddNewSymbol( HWND hDlg, WRHashTable *table, FARPROC hcb, bool modify )
+static bool WRAddNewSymbol( HWND hDlg, WRHashTable *table, HELP_CALLBACK help_callback, bool modify )
 {
     WRAddSymInfo        info;
     WRHashEntry         *entry;
-    DLGPROC             proc_inst;
+    DLGPROC             dlgproc;
     HINSTANCE           inst;
     INT_PTR             modified;
     bool                ret;
@@ -1143,7 +1142,7 @@ static bool WRAddNewSymbol( HWND hDlg, WRHashTable *table, FARPROC hcb, bool mod
     }
 
     info.table = table;
-    info.hcb = hcb;
+    info.help_callback = help_callback;
     info.value = 0;
     info.modify = modify;
 
@@ -1158,9 +1157,9 @@ static bool WRAddNewSymbol( HWND hDlg, WRHashTable *table, FARPROC hcb, bool mod
     ret = false;
 
     inst = WRGetInstance();
-    proc_inst = (DLGPROC)MakeProcInstance( (FARPROC)WRAddSymProc, inst );
-    modified = JDialogBoxParam( inst, "WRAddSymbol", hDlg, proc_inst, (LPARAM)(LPVOID)&info );
-    FreeProcInstance( (FARPROC)proc_inst );
+    dlgproc = MakeProcInstance_DLG( WRAddSymDlgProc, inst );
+    modified = JDialogBoxParam( inst, "WRAddSymbol", hDlg, dlgproc, (LPARAM)(LPVOID)&info );
+    FreeProcInstance_DLG( dlgproc );
 
     if( modified == IDOK ) {
         ret = WRAddSymbol( hDlg, table, modify, info.symbol, info.value );
@@ -1367,13 +1366,13 @@ static bool WRHandleDELKey( HWND hDlg, WREditSymInfo *info )
     return( false );
 }
 
-WINEXPORT BOOL CALLBACK WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WREditSymbolsDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WREditSymInfo       *info;
-    BOOL                ret;
+    bool                ret;
     WORD                wp, cmd;
 
-    ret = FALSE;
+    ret = false;
 
     switch( message ) {
     case WM_SYSCOLORCHANGE:
@@ -1388,23 +1387,22 @@ WINEXPORT BOOL CALLBACK WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wPara
             break;
         }
         WRSetupEditSymDialog( hDlg, info, TRUE );
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_DRAWITEM:
         WRDrawHashListBoxItem( hDlg, (DRAWITEMSTRUCT *)lParam );
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_VKEYTOITEM:
-        ret = -1;
         info = (WREditSymInfo *)GET_DLGDATA( hDlg );
         if( info != NULL && LOWORD( wParam ) == VK_DELETE ) {
             if( WRHandleDELKey( hDlg, info ) ) {
-                ret = -2;
+                return( (INT_PTR)-2 );
             }
         }
-        break;
+        return( (INT_PTR)-1 );
 
     case WM_COMMAND:
         info = (WREditSymInfo *)GET_DLGDATA( hDlg );
@@ -1420,8 +1418,8 @@ WINEXPORT BOOL CALLBACK WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wPara
             break;
 
         case IDB_SYM_HELP:
-            if( info != NULL && info->hcb != NULL ) {
-                (*info->hcb)();
+            if( info != NULL && info->help_callback != (HELP_CALLBACK)NULL ) {
+                info->help_callback();
             }
             break;
 
@@ -1430,11 +1428,11 @@ WINEXPORT BOOL CALLBACK WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wPara
                 info->flags = WRGetEditSymEntryFlags( hDlg );
             }
             EndDialog( hDlg, TRUE );
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDCANCEL:
-            ret = TRUE;
+            ret = true;
             if( info != NULL && info->modified ) {
                 if( !WRDiscardChangesQuery() ) {
                     break;
@@ -1448,7 +1446,7 @@ WINEXPORT BOOL CALLBACK WREditSymbolsProc( HWND hDlg, UINT message, WPARAM wPara
             if( info == NULL || info->table == NULL ) {
                 break;
             }
-            if( WRAddNewSymbol( hDlg,info->table, info->hcb, wp == IDB_SYM_MODIFY ) ) {
+            if( WRAddNewSymbol( hDlg,info->table, info->help_callback, wp == IDB_SYM_MODIFY ) ) {
                 info->modified = true;
             }
             break;
@@ -1487,7 +1485,7 @@ static void WRSetAddSymInfo( HWND hDlg, WRAddSymInfo *info )
         if( info->modify ) {
             str = WRAllocRCString( WR_MODIFYSYMBOLTITLE );
             if( str != NULL ) {
-                SendMessage( hDlg, WM_SETTEXT, 0, (LPARAM)(LPSTR)str );
+                SendMessage( hDlg, WM_SETTEXT, 0, (LPARAM)(LPCSTR)str );
                 WRFreeRCString( str );
             }
             if( info->symbol != NULL ) {
@@ -1551,13 +1549,13 @@ static void WRSetAddSymOK( HWND hDlg )
     EnableWindow( GetDlgItem( hDlg, IDOK ), enable );
 }
 
-WINEXPORT BOOL CALLBACK WRAddSymProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WRAddSymDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WRAddSymInfo        *info;
     WORD                cmd;
-    BOOL                ret;
+    bool                ret;
 
-    ret = FALSE;
+    ret = false;
 
     switch( message ) {
     case WM_INITDIALOG:
@@ -1565,7 +1563,7 @@ WINEXPORT BOOL CALLBACK WRAddSymProc( HWND hDlg, UINT message, WPARAM wParam, LP
         SET_DLGDATA( hDlg, info );
         WRSetAddSymInfo( hDlg, info );
         WRSetAddSymOK( hDlg );
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_SYSCOLORCHANGE:
@@ -1576,8 +1574,8 @@ WINEXPORT BOOL CALLBACK WRAddSymProc( HWND hDlg, UINT message, WPARAM wParam, LP
         info = (WRAddSymInfo *)GET_DLGDATA( hDlg );
         switch( LOWORD( wParam ) ) {
         case IDB_ADDSYM_HELP:
-            if( info != NULL && info->hcb != NULL ) {
-                (*info->hcb)();
+            if( info != NULL && info->help_callback != (HELP_CALLBACK)NULL ) {
+                info->help_callback();
             }
             break;
 
@@ -1595,12 +1593,12 @@ WINEXPORT BOOL CALLBACK WRAddSymProc( HWND hDlg, UINT message, WPARAM wParam, LP
             if( WRGetAddSymInfo( hDlg, info ) ) {
                 EndDialog( hDlg, TRUE );
             }
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDCANCEL:
             EndDialog( hDlg, FALSE );
-            ret = TRUE;
+            ret = true;
             break;
         }
         break;

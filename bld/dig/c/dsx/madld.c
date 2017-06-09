@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,9 +41,9 @@
 
 #define MADSIG  0x0044414DUL    // "MAD"
 
-void MADSysUnload( mad_sys_handle *sys_hdl )
+void MADSysUnload( mad_sys_handle sys_hdl )
 {
-    DIGCli( Free )( *sys_hdl );
+    DIGCli( Free )( sys_hdl );
 }
 
 mad_status MADSysLoad( const char *path, mad_client_routines *cli,
@@ -66,13 +67,13 @@ mad_status MADSysLoad( const char *path, mad_client_routines *cli,
 #endif
             init_func = (mad_init_func *)mad->init_rtn;
             if( init_func != NULL && (*imp = init_func( &status, cli )) != NULL ) {
-                *sys_hdl = (mad_sys_handle)mad;
+                *sys_hdl = mad;
                 return( MS_OK );
             }
 #ifdef __WATCOMC__
         }
 #endif
-        DIGCli( Free )( (void *)mad );
+        DIGCli( Free )( mad );
     }
     return( status );
 }

@@ -80,7 +80,7 @@ typedef struct {
 } DBIndexEntry;
 #include "poppck.h"
 
-extern int          DBStringToUnicode( int len, const char *str, char *buf );
+extern size_t       DBStringToUnicode( size_t len, const char *str, char *buf );
 extern RcStatus     LoadCharTable( const char *fname, char *path );
 extern void         DbtableInitStatics( void );
 extern const char   *GetLeadBytes( void );

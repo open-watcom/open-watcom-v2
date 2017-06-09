@@ -32,12 +32,12 @@
 
 #include "mad.h"
 //function prototypes
-extern BOOL InitMADInfo(void);
-extern void FiniMADInfo(void);
-extern void GetCurrAddr(address *curr,mad_registers *regs);
+extern bool InitMADInfo( void );
+extern void FiniMADInfo( void );
+extern void GetCurrAddr( address *curr, mad_registers *regs );
 
 #ifndef __WINDOWS__
 extern msglist MADMsgs[];
 #endif
 extern void AllocMadRegisters( mad_registers **regs );
-extern void DeAllocMadRegisters(mad_registers *);
+extern void DeAllocMadRegisters( mad_registers * );

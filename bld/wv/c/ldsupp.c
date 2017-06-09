@@ -106,7 +106,7 @@ void LDToS( char *buff, xreal *v, unsigned a, unsigned b, unsigned c,
 {
     double      value;
 
-    b=b;c=c;d=d;e=e;format=format;exp_char=exp_char;
+    /* unused parameters */ (void)b; (void)c; (void)d; (void)e; (void)format; (void)exp_char;
 
     value = LDToD( v );
     sprintf( buff, "%.*g", a, value );

@@ -42,7 +42,6 @@
 #include "ppcgen.h"
 #include "data.h"
 #include "objout.h"
-#include "dumpio.h"
 #include "cgauxinf.h"
 #include "dbsyms.h"
 #include "object.h"
@@ -53,11 +52,11 @@
 #include "rscobj.h"
 #include "split.h"
 #include "namelist.h"
+#include "dumpio.h"
+#include "dumpins.h"
+#include "dumptab.h"
 #include "feprotos.h"
 
-
-extern void DumpInsOnly( instruction * );
-extern void DumpGen( opcode_entry * );
 
 extern label_handle     GetWeirdPPCDotDotLabel( label_handle );
 
@@ -180,7 +179,8 @@ void EmitInsReloc( void *ins, pointer sym, owl_reloc_type type )
     oc.oc_rins.reloc = type;
     InputOC( &oc );
 #else
-    ins = ins; sym = sym; type = type;
+    /* unused parameters */ (void)ins; (void)sym; (void)type;
+
     _Zoiks( ZOIKS_091 );
 #endif
 }
@@ -931,7 +931,7 @@ void    GenKillLabel( label_handle lbl )
 void    GenCallLabel( pointer label )
 /***********************************/
 {
-    label = label;
+    /* unused parameters */ (void)label;
 }
 
 
@@ -948,14 +948,15 @@ byte    ReverseCondition( byte cond )
 }
 
 
-static label_handle LocateLabel( instruction *ins, int index )
-/************************************************************/
+static label_handle LocateLabel( instruction *ins, byte dst_idx )
+/***************************************************************/
 {
-    if( index == NO_JUMP ) return( NULL );
+    if( dst_idx == NO_JUMP )
+        return( NULL );
     for( ins = ins->head.next; ins->head.opcode != OP_BLOCK; ) {
         ins = ins->head.next;
     }
-    return( _BLOCK( ins )->edge[index].destination.u.lbl );
+    return( _BLOCK( ins )->edge[dst_idx].destination.u.lbl );
 }
 
 

@@ -52,14 +52,16 @@ static  bool    Conflicts( type_length start,  type_length end,
 static  bool    ovNo( name *op1, name *op2 )
 /******************************************/
 {
-    op1 = op2;
+    /* unused parameters */ (void)op1; (void)op2;
+
     return( false );
 }
 
 static  bool    ovYes( name *op1, name *op2 )
 /*******************************************/
 {
-    op1 = op2;
+    /* unused parameters */ (void)op1; (void)op2;
+
     return( true );
 }
 
@@ -82,8 +84,9 @@ static  bool    ovReg( name *op1, name *op2 )
 static  bool    ovIndex( name *op1, name *op2 )
 /*********************************************/
 {
+    /* unused parameters */ (void)op1; (void)op2;
+
     /* this is overly pessimistic, but we shouldn't see mem->mem moves anyway */
-    op1 = op2;
     return( true );
 }
 
@@ -105,8 +108,10 @@ static  bool    (*OverlapTable[N_INDEXED + 1][N_INDEXED + 1])( name *, name * ) 
 extern  bool    Overlaps( name *result, name *op )
 /************************************************/
 {
-    if( result == NULL || op == NULL ) return( false );
-    if( result == op ) return( true );
+    if( result == NULL || op == NULL )
+        return( false );
+    if( result == op )
+        return( true );
     return( OverlapTable[result->n.class][op->n.class]( result, op ) );
 }
 
@@ -116,7 +121,9 @@ extern  bool    CondOverlaps( name *result, name *ccop )
     to be modified as well.
 */
 {
-    if( result == NULL || ccop == NULL ) return( true );
-    if( result == ccop ) return( true );
+    if( result == NULL || ccop == NULL )
+        return( true );
+    if( result == ccop )
+        return( true );
     return( OverlapTable[result->n.class][ccop->n.class]( result, ccop ) );
 }

@@ -34,12 +34,11 @@
 
 #include "pt.h"
 
-extern char flags[SIZE+1];
+extern char flags[SIZE + 1];
 extern int count, niter;
 
 
-fetch( argc, argv )
-char **argv;
+int fetch( int argc, char **argv )
 {
     int retval;
     int i;

@@ -128,7 +128,7 @@ static void DumpEmptyResource( WREImageSession *session )
         curr.res = session->rnode;
         curr.lang = session->lnode;
         WRERemoveEmptyResource( &curr );
-        WRESetStatusByID( -1, WRE_EMPTYREMOVED );
+        WRESetStatusByID( 0, WRE_EMPTYREMOVED );
     }
 }
 
@@ -303,7 +303,7 @@ bool WRECommitImageSession( HCONV server, HCONV client )
     return( ok );
 }
 
-bool WREGetImageSessionFileName( HCONV server, void **data, uint_32 *size )
+bool WREGetImageSessionFileName( HCONV server, void **data, size_t *size )
 {
     WREImageSession *session;
 
@@ -318,13 +318,13 @@ bool WREGetImageSessionFileName( HCONV server, void **data, uint_32 *size )
 
     *data = WREStrDup( session->info.file_name );
     if( *data != NULL ) {
-        *size = (uint_32)( strlen( *data ) + 1 );
+        *size = strlen( *data ) + 1;
     }
 
     return( TRUE );
 }
 
-bool WREGetImageSessionResName( HCONV server, void **data, uint_32 *size )
+bool WREGetImageSessionResName( HCONV server, void **data, size_t *size )
 {
     WREImageSession *session;
 
@@ -337,15 +337,14 @@ bool WREGetImageSessionResName( HCONV server, void **data, uint_32 *size )
         return( FALSE );
     }
 
-    if( !WRWResID2Mem( session->info.res_name, data, size,
-                       session->info.is32bit ) ) {
+    if( !WRWResID2Mem( session->info.res_name, data, size, session->info.is32bit ) ) {
         return( FALSE );
     }
 
     return( TRUE );
 }
 
-bool WREGetImageSessionData( HCONV server, void **data, uint_32 *size )
+bool WREGetImageSessionData( HCONV server, void **data, size_t *size )
 {
     WREImageSession     *session;
     size_t              tsize;
@@ -393,7 +392,7 @@ bool WRESetImageSessionResName( HCONV server, HDDEDATA hdata )
     uint_32             size;
     bool                ok;
 
-    ok = (server != (HCONV)NULL && hdata != (HDDEDATA)NULL);
+    ok = (server != (HCONV)NULL && hdata != NULL);
 
     if( ok ) {
         session = WREFindImageSession( server );
@@ -428,7 +427,7 @@ bool WRESetImageSessionResName( HCONV server, HDDEDATA hdata )
     return( ok );
 }
 
-static bool WRESetBitmapSessionResData( WREImageSession *session, void *data, uint_32 size )
+static bool WRESetBitmapSessionResData( WREImageSession *session, void *data, size_t size )
 {
     bool                ok;
 
@@ -504,7 +503,7 @@ bool WRESetImageSessionResData( HCONV server, HDDEDATA hdata )
     uint_32             size;
     bool                ok;
 
-    ok = (server != (HCONV)NULL && hdata != (HDDEDATA)NULL);
+    ok = (server != (HCONV)NULL && hdata != NULL);
 
     if( ok ) {
         session = WREFindImageSession( server );
@@ -532,7 +531,7 @@ WREImageSession *WREStartImageSession( WRESPT service, WRECurrentResInfo *curr, 
 {
     WREImageSession     *session;
     BYTE                *data;
-    uint_32             size;
+    size_t              size;
     bool                ok;
 
     if( curr == NULL ) {

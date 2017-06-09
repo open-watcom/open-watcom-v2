@@ -31,7 +31,7 @@
 ****************************************************************************/
 
 
-#include <wwindows.h>
+#include "commonui.h"
 #include <stdio.h>
 #include <string.h>
 #include "watcom.h"
@@ -69,7 +69,7 @@ bool WRAPI WRSetLBoxWithStr( HWND lbox, const char *str, void *data )
     ok = (lbox != (HWND)NULL && str != NULL);
 
     if( ok ) {
-        index = (int)SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPSTR)str );
+        index = (int)SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
         ok = (index != LB_ERR && index != LB_ERRSPACE);
     }
 
@@ -81,7 +81,7 @@ bool WRAPI WRSetLBoxWithStr( HWND lbox, const char *str, void *data )
 }
 
 static bool WRSetLBoxWithLangNode( HWND lbox, WResResNode *rnode,
-                                  WResLangNode *lnode, uint_16 type )
+                                  WResLangNode *lnode, uint_16 type_id )
 {
     bool        ok;
     char        *cp;
@@ -90,7 +90,7 @@ static bool WRSetLBoxWithLangNode( HWND lbox, WResResNode *rnode,
 
     ok = (lbox != (HWND)NULL && rnode != NULL && lnode != NULL);
 
-    ok = ok && ((cp = WRGetResName( rnode, type )) != NULL);
+    ok = ok && ((cp = WRGetResName( rnode, type_id )) != NULL);
 
     ok = ok && WRSetLBoxWithStr( lbox, cp, lnode );
 
@@ -101,21 +101,17 @@ static bool WRSetLBoxWithLangNode( HWND lbox, WResResNode *rnode,
     return( ok );
 }
 
-static bool WRSetLBoxWithResNode( HWND lbox, WResResNode *rnode, int type )
+static bool WRSetLBoxWithResNode( HWND lbox, WResResNode *rnode, uint_16 type_id )
 {
     WResLangNode        *lnode;
     bool                ok;
 
     ok = (lbox != (HWND)NULL && rnode != NULL);
-
     if( ok ) {
-        lnode = rnode->Head;
-        while( ok && lnode != NULL ) {
-            ok = WRSetLBoxWithLangNode( lbox, rnode, lnode, type );
+        for( lnode = rnode->Head; ok && lnode != NULL; lnode = lnode->Next ) {
+            ok = WRSetLBoxWithLangNode( lbox, rnode, lnode, type_id );
             if( lnode == rnode->Tail ) {
-                lnode = NULL;
-            } else {
-                lnode = lnode->Next;
+                break;
             }
         }
     }
@@ -128,19 +124,17 @@ bool WRAPI WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
     WResResNode *rnode;
     char        *str;
     bool        ok;
-    int         type;
+    uint_16     type_id;
 
+    type_id = 0;
     ok = (lbox != (HWND)NULL && tnode != NULL);
 
     if( ok ) {
         if( !tnode->Info.TypeName.IsName ) {
-            type = tnode->Info.TypeName.ID.Num;
-        } else {
-            type = 0;
+            type_id = tnode->Info.TypeName.ID.Num;
         }
         SendMessage( lbox, WM_SETREDRAW, FALSE, 0 );
-        rnode = tnode->Head;
-        if( ok && type == RESOURCE2INT( RT_STRING ) ) {
+        if( ok && type_id == RESOURCE2INT( RT_STRING ) ) {
             str = WRAllocRCString( WR_ALLSTRINGS );
             if( str != NULL ) {
                 ok = WRSetLBoxWithStr( lbox, str, NULL );
@@ -149,12 +143,10 @@ bool WRAPI WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
                 ok = false;
             }
         } else {
-            while( ok && rnode != NULL ) {
-                ok = WRSetLBoxWithResNode( lbox, rnode, type );
+            for( rnode = tnode->Head; ok && rnode != NULL; rnode = rnode->Next ) {
+                ok = WRSetLBoxWithResNode( lbox, rnode, type_id );
                 if( rnode == tnode->Tail ) {
-                    rnode = NULL;
-                } else {
-                    rnode = rnode->Next;
+                    break;
                 }
             }
         }
@@ -169,7 +161,7 @@ bool WRAPI WRSetResNamesFromTypeNode( HWND lbox, WResTypeNode *tnode )
     return( ok );
 }
 
-char * WRAPI WRGetResName( WResResNode *rnode, uint_16 type )
+char * WRAPI WRGetResName( WResResNode *rnode, uint_16 type_id )
 {
     WResID  *id;
     int     num;
@@ -181,7 +173,7 @@ char * WRAPI WRGetResName( WResResNode *rnode, uint_16 type )
 
     if( rnode != NULL ) {
         id = &rnode->Info.ResName;
-        if( type == RESOURCE2INT( RT_STRING ) ) {
+        if( type_id == RESOURCE2INT( RT_STRING ) ) {
             num = id->ID.Num;
             if( num != 0 ) {
                 text = WRAllocRCString( WR_STRINGIDS );

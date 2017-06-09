@@ -254,7 +254,8 @@ bool TraceModifications( MAD_MEMREF_WALKER *wk, void *d )
 
 void TraceStop( bool tracing )
 {
-    tracing=tracing;
+    /* unused parameters */ (void)tracing;
+
     MADTraceFini( TraceState.td );
 }
 

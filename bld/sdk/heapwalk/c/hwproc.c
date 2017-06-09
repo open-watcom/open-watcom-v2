@@ -34,9 +34,11 @@
 #include <string.h>
 #include "bool.h"
 #include "heapwalk.h"
+#include "wclbproc.h"
 #include "aboutdlg.h"
 #include "wwinhelp.h"
 #include "jdlg.h"
+#include "wclbproc.h"
 
 
 static  BOOL    NoRefresh = FALSE;
@@ -241,7 +243,7 @@ BOOL FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
     HMENU       mh2;
     HCURSOR     hourglass;
     HCURSOR     oldcursor;
-    FARPROC     fp;
+    DLGPROC     dlgproc;
     DWORD       index;
     heap_list   hl;
     GblWndInfo  *info;
@@ -254,8 +256,7 @@ BOOL FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
         InitPaintProc();
         info = MemAlloc( sizeof( GblWndInfo ) );
         if( info == NULL ) {
-            ErrorBox( hwnd, STR_UNABLE_2_STARTUP,
-                     MB_OK | MB_ICONINFORMATION );
+            ErrorBox( hwnd, STR_UNABLE_2_STARTUP, MB_OK | MB_ICONINFORMATION );
             PostQuitMessage( 0 );
         }
         memset( info, 0, sizeof( GblWndInfo ) );
@@ -264,9 +265,8 @@ BOOL FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
 //      ReleaseDC(hwnd, hdc);
         SetDisplayType( hwnd, &( info->list.title ), HEAPMENU_DISPLAY_INIT );
         CreateListBox( hwnd, &info->list, GLOBAL_LB );
-        info->alloc_proc = MakeProcInstance( (FARPROC)AllocDlgProc, Instance );
-        info->alloc_dialog = JCreateDialog( Instance, "ALLOC_DLG",
-                                           hwnd, (DLGPROC)info->alloc_proc );
+        info->alloc_dlgproc = MakeProcInstance_DLG( AllocDlgProc, Instance );
+        info->alloc_dialog = JCreateDialog( Instance, "ALLOC_DLG", hwnd, info->alloc_dlgproc );
         memset( &ResHwnd, 0, MAX_RES * sizeof( HWND ) );
         break;
     case WM_MEASUREITEM:
@@ -311,7 +311,7 @@ BOOL FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
         KillPushWin( info->list.title );
         SaveConfigFile( FALSE );
         if( info != NULL ) {
-            FreeProcInstance( info->alloc_proc );
+            FreeProcInstance_DLG( info->alloc_dlgproc );
             MemFree( info );
         }
         DestroyMonoFonts();
@@ -455,9 +455,9 @@ BOOL FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             InitHeapList( info->list.box, TRUE );
             break;
         case HEAPMENU_GLOBAL_CODE_SIZE:
-            fp = MakeProcInstance( (FARPROC)SetCodeDlgProc, Instance );
-            JDialogBox( Instance, "CODE_AREA_DLG", hwnd, (DLGPROC)fp );
-            FreeProcInstance( fp );
+            dlgproc = MakeProcInstance_DLG( SetCodeDlgProc, Instance );
+            JDialogBox( Instance, "CODE_AREA_DLG", hwnd, dlgproc );
+            FreeProcInstance_DLG( dlgproc );
             break;
         case HEAPMENU_FILE_SAVE:
             InitHeapList( info->list.box, TRUE );

@@ -70,7 +70,8 @@ void    RemoveEdge( block_edge *edge )
         owner = &edge->destination.u.blk->input_edges;
         for(;;) {
             curr = *owner;
-            if( curr == edge ) break;
+            if( curr == edge )
+                break;
             owner = &(*owner)->next_source;
         }
         *owner = curr->next_source;

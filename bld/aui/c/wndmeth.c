@@ -58,28 +58,29 @@ a_window *WndNoOpen( void )
 
 bool NoGetLine( a_window *wnd, int row, int piece, wnd_line_piece *line )
 {
-    wnd=wnd;row=row;piece=piece;line=line;
+    /* unused parameters */ (void)wnd; (void)row; (void)piece; (void)line;
+
     return( false );
 }
 
 void NoModify( a_window *wnd, int row, int piece )
 {
-    wnd=wnd;row=row;piece=piece;
+    /* unused parameters */ (void)wnd; (void)row; (void)piece;
 }
 
 void NoNotify( a_window *wnd, wnd_row row, int piece )
 {
-    wnd=wnd;row=row;piece=piece;
+    /* unused parameters */ (void)wnd; (void)row; (void)piece;
 }
 
 void    NoBegPaint( a_window *wnd, wnd_row row, int num )
 {
-    wnd=wnd;row=row;num=num;
+    /* unused parameters */ (void)wnd; (void)row; (void)num;
 }
 
 void    NoEndPaint( a_window *wnd, wnd_row row, int num )
 {
-    wnd=wnd;row=row;num=num;
+    /* unused parameters */ (void)wnd; (void)row; (void)num;
 }
 
 void NoRefresh( a_window * wnd )
@@ -89,31 +90,35 @@ void NoRefresh( a_window * wnd )
 
 void NoMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
 {
-    wnd=wnd;id=id;row=row;piece=piece;
+    /* unused parameters */ (void)wnd; (void)id; (void)row; (void)piece;
 }
 
 
 int NoScroll( a_window * wnd, int lines )
 {
-    wnd=wnd;lines=lines;
+    /* unused parameters */ (void)wnd; (void)lines;
+
     return( 0 );
 }
 
 int NoNumRows( a_window * wnd )
 {
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     return( -1 );
 }
 
 int NoNextRow( a_window * wnd, int row, int inc )
 {
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     return( row + inc );
 }
 
 bool NoEventProc( a_window * wnd, gui_event event, void *parm )
 {
-    wnd=wnd;parm=parm;
+    /* unused parameters */ (void)wnd; (void)parm;
+
     switch( event ) {
     case GUI_INIT_WINDOW:
     case GUI_RESIZE:

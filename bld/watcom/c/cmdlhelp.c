@@ -39,12 +39,13 @@
 #include "clibext.h"
 
 
-int BuildQuotedFName( char *dst, size_t maxlen, const char *path, const char *filename, const char *quote_char )
-/*****************************************************************************************************************/
+int BuildQuotedItem( char *dst, size_t maxlen, const char *path, const char *filename, const char *quote_char )
+/*************************************************************************************************************/
 {
     int has_space = 0;
 
-    maxlen = maxlen;
+    /* unused parameters */ (void)maxlen;
+
     if( strchr( path, ' ' ) != NULL )
         has_space = 1;
     if( strchr( filename, ' ' ) != NULL )
@@ -58,98 +59,72 @@ int BuildQuotedFName( char *dst, size_t maxlen, const char *path, const char *fi
     return( has_space );
 }
 
-int UnquoteFName( char *dst, size_t maxlen, const char *src )
-/***********************************************************************
+int UnquoteItem( char *dst, size_t maxlen, const char *src, int (*chk_sep)(char) )
+/*********************************************************************************
  * Removes doublequote characters from filename and copies other content
  * from src to dst. Only maxlen number of characters are copied to dst
  * including terminating NUL character. Returns value 1 when quotes was
  * removed from orginal filename, 0 otherwise.
  */
 {
-    char    string_open = 0;
-    size_t  pos = 0;
-    char    t;
-    int     un_quoted = 0;
+    size_t  pos;
+    char    c;
+    char    string_open;
+    char    un_quoted;
 
     assert( maxlen );
 
     // leave space for NUL terminator
     maxlen--;
-
-    while( pos < maxlen ) {
-        t = *src++;
-
-        if( t == '\0' ) break;
-
-        if( t == '\\' ) {
-            t = *src++;
-
-            if( t == '\"' ) {
-                *dst++ = '\"';
-                pos++;
-                un_quoted = 1;
-            } else {
-                *dst++ = '\\';
-                pos++;
-
-                if( pos < maxlen ) {
-                    *dst++ = t;
-                    pos++;
-                }
-            }
-        } else {
-            if( t == '\"' ) {
-                string_open = !string_open;
-                un_quoted = 1;
-            } else {
-                if( string_open ) {
-                    *dst++ = t;
-                    pos++;
-                } else if( t == ' ' || t == '\t' ) {
-                    break;
-                } else {
-                    *dst++ = t;
-                    pos++;
-                }
-            }
+    pos = 0;
+    string_open = 0;
+    un_quoted = 0;
+    while( pos < maxlen && (c = *src++) != '\0' ) {
+        if( c == '\"' ) {
+            string_open = !string_open;
+            un_quoted = 1;
+            continue;
         }
+        if( c == '\\' ) {
+            if( string_open && *src != '\0' ) {
+                c = *src++;
+                if( c == '\"' ) {
+                    un_quoted = 1;
+                }
+            }
+        } else if( !string_open && chk_sep( c ) ) {
+            break;
+        }
+        *dst++ = c;
+        pos++;
     }
-
     *dst = '\0';
 
     return( un_quoted );
 }
 
-char *FindNextWS( char *str )
-/***********************************
+char *FindNextSep( const char *str, int (*chk_sep)(char) )
+/*********************************************************
  * Finds next free white space character, allowing doublequotes to
  * be used to specify strings with white spaces.
  */
 {
-    char    string_open = 0;
+    char        string_open;
+    char        c;
 
-    while( *str != '\0' ) {
-        if( *str == '\\' ) {
-            str++;
-            if( *str != '\0' ) {
-                if( !string_open && ( *str == ' ' || *str == '\t' ) ) {
-                    break;
-                }
-                str++;
+    string_open = 0;
+    while( (c = *str) != '\0' ) {
+        if( c == '\"' ) {
+            string_open = !string_open;
+        } else if( c == '\\' ) {
+            if( string_open && str[1] != '\0' ) {
+                ++str;
             }
-        } else {
-            if( *str == '\"' ) {
-                string_open = !string_open;
-                str++;
-            } else {
-                if( !string_open && ( *str == ' ' || *str == '\t' ) ) {
-                    break;
-                }
-                str++;
-            }
+        } else if( !string_open && chk_sep( c ) ) {
+            break;
         }
+        ++str;
     }
 
-    return( str );
+    return( (char *)str );
 }
-

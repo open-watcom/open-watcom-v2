@@ -72,8 +72,6 @@ typedef struct {
     WdeResInfo          *res_info;
 } WdeSetOrderStruct;
 
-extern char WdeTagClass[];
-
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/

@@ -489,7 +489,8 @@ static void DoScrollDrag( p_gadget gadget, int prev, int diff )
     gui_event bottom;
     gui_event scroll;
 
-    prev = prev;
+    /* unused parameters */ (void)prev;
+
     if( gadget->dir == VERTICAL ) {
         top = GUI_SCROLL_TOP;
         bottom = GUI_SCROLL_BOTTOM;

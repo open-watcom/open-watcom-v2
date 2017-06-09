@@ -41,6 +41,7 @@
 #include "msuffix.h"
 #include "mupdate.h"
 #include "mvecstr.h"
+#include "mmisc.h"
 #include "mparse.h"
 
 #include "clibext.h"
@@ -573,6 +574,8 @@ STATIC void linkCList( TLIST *btlist, CLIST *bclist )
             }
         } else if( curtarg->sufsuf ) {
             /* special processing is needed for sufsuf */
+            if( curtarg->depend->clist != NULL )
+                FreeCList( curtarg->depend->clist );
             curtarg->depend->clist = DupCList( clisthead );
         } else {
             /* we walk the dependents to find the last one */
@@ -784,10 +787,7 @@ STATIC void getBody( FLIST *head )
                     /* terminator of inline file is found when first
                      * two characters are <<
                      */
-                     currChar = temp + 2;
-                     while( *currChar != NULLCHAR && cisws( *currChar ) ) {
-                         ++currChar;
-                     }
+                     currChar = SkipWS( temp + 2 );
                      if( *currChar == NULLCHAR ) {
                          current->keep = false;
                      } else if( strnicmp( currChar, NOKEEP, 6 ) == 0 ) {

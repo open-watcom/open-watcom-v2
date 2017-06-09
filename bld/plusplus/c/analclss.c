@@ -2384,7 +2384,7 @@ void CtorPrologue(              // GENERATE PROLOGUE FOR CTOR
         CgFrontCode( IC_CTOR_COMP_END );
     }
     ScopeWalkDirectBases( scope, ctorPrologueBaseGen, &data );
-    if( ! CompFlags.extensions_enabled ) {
+    if( !CompFlags.extensions_enabled ) {
         // ISO C++ requires vfptr to be set here
         initVFPtr( scope, ctor );
     }
@@ -2460,7 +2460,8 @@ void DtorPrologue(              // GENERATE PROLOGUE FOR DTOR
     bool regster;               // - true ==> function needs registration
     TYPE class_type;            // - type for class
 
-    rtbeg = rtbeg;              // - can remove argument
+    /* unused parameters */ (void)rtbeg;
+
     if( SymClassCorrupted( dtor ) ) {
         return;
     }
@@ -2557,7 +2558,8 @@ void DtorEpilogue(              // GENERATE EPILOGUE FOR DTOR
     SCOPE scope;
     TYPE class_type;
 
-    rtbeg = rtbeg;
+    /* unused parameters */ (void)rtbeg;
+
     if( SymClassCorrupted( dtor ) ) {
         return;
     }

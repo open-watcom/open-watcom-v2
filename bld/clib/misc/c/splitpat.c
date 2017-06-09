@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #include <stdlib.h>
 #include <string.h>
 #if !defined( __WIDECHAR__ ) && !defined( __UNIX__ )

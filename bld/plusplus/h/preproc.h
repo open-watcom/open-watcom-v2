@@ -36,6 +36,7 @@
 
 #include "ctokens.h"            // tokens
 #include "srcfile.h"            // source files
+#include "ftype.h"              // source file types
 
 #include "macro.h"              // macro structures
 
@@ -54,6 +55,8 @@ enum {
     #include "auxinfo.h"
     #undef pick
 };
+
+typedef void token_source_fn( void );
 
 //typedef target_ulong target_int_const;
 
@@ -80,7 +83,7 @@ typedef enum ppctl_t {
 global  ppctl_t     PPControl;          // pre-processor control bits
 global  TOKEN       CurToken;           // current token
 global  MSG_NUM     BadTokenInfo;       // error message that describes why T_BAD_TOKEN is bad
-global  int         TokenLen;           // length of current token
+global  size_t      TokenLen;           // length of current token
 global  LINE_NO     TokenLine;          // line # of current token
 global  COLUMN_NO   TokenColumn;        // column # of current token
 global  int         CurrChar;           // current character
@@ -94,10 +97,11 @@ global  macro_flags InitialMacroFlag;   // current value to init macro flags to
 global  char        *MacroOffset;       // first free byte in MacroSegment
 global  char        __Time[10];         // "HH:MM:SS" for __TIME__ macro
 global  char        __Date[12];         // "MMM DD YYYY" for __DATE__ macro
-global  FILE *      CppFile;            /* output for preprocessor */
-global  char *      ForceInclude;
-global  char *      SrcFName;           /* source file name without suffix */
-global  char *      WholeFName;         /* whole file name with suffix */
+global  FILE        *CppFile;           /* output for preprocessor */
+global  char        *ForceInclude;
+global  char        *ForcePreInclude;
+global  char        *SrcFName;          /* source file name without suffix */
+global  char        *WholeFName;        /* whole file name with suffix */
 global  char        PreProcChar;        /* preprocessor directive indicator */
 global  int         SwitchChar;         // DOS switch character
 
@@ -106,7 +110,7 @@ global  int         SwitchChar;         // DOS switch character
 // extra uint_32 is for buffer overrun checking in debugging compiler
 global  char        Buffer[BUF_SIZE+16+sizeof(uint_32)];
 
-extern  int     (*NextChar)( void );    // next-character routine (initialized in SRCFILE)
+extern  int         (*NextChar)( void );    // next-character routine (initialized in SRCFILE)
 
 // PROTOTYPES: exposed to C++ project
 
@@ -115,10 +119,10 @@ void MacroStateGet( MACRO_STATE * );
 bool MacroStateMatchesCurrent( MACRO_STATE * );
 
 // provide a temporary source of tokens
-void (*SetTokenSource( void (*)( void ) ))( void );
+token_source_fn *SetTokenSource( token_source_fn * );
 
 // restore source of tokens
-void ResetTokenSource( void (*)( void ) );
+void ResetTokenSource( token_source_fn * );
 
 bool TokenUsesBuffer( TOKEN t );
 
@@ -162,9 +166,9 @@ void MacroCanBeRedefined(       // SET MACRO SO THAT USE CAN REDEFINE IN SOURCE
 MEPTR MacroScan(                // SCAN AND DEFINE A MACRO (#define, -d)
     macro_scanning defn )       // - scanning definition
 ;
-int OpenSrcFile(                // OPEN A SOURCE FILE
+bool OpenSrcFile(               // OPEN A SOURCE FILE
     const char * filename,      // - file name
-    bool is_lib )               // - true ==> is <file>
+    src_file_type typ )         // - source file type
 ;
 void PpInit(                    // INITIALIZE PREPROCESSING
     void )
@@ -280,8 +284,8 @@ MEPTR MacroLookup(              // LOOKUP NAME AS A MACRO
     size_t len )                // - length of name
 ;
 void MacroOverflow(             // OVERFLOW SEGMENT IF REQUIRED
-    unsigned amount_needed,     // - amount for macro
-    unsigned amount_used )      // - amount used in segment
+    size_t amount_needed,       // - amount for macro
+    size_t amount_used )        // - amount used in segment
 ;
 void MacroStorageInit(          // INITIALIZE FOR MACRO STORAGE
     void )
@@ -317,7 +321,7 @@ void PrtToken(                  // PRINT PREPROC TOKEN IF REQ'D
 void ReScanInit(                // RE-SCAN TOKEN INITIALIZATION
     char *buf )
 ;
-int ReScanToken(                // RE-SCAN TOKEN FROM BUFFER
+bool ReScanToken(               // RE-SCAN TOKEN FROM BUFFER
     void )
 ;
 bool ScanOptionalComment(       // SCAN AN OPTIONAL COMMENT

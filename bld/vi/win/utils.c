@@ -454,7 +454,7 @@ void MyDelay( int ms )
 void MyBeep( void )
 {
     if( EditFlags.BeepFlag ) {
-        MessageBeep( -1 );
+        MessageBeep( (UINT)-1 );
     }
 }
 
@@ -471,10 +471,11 @@ void PushDirectory( const char *orig )
     oldPath[0] = '\0';
     _dos_getdrive( &c );
     oldDrive = (char)c;
-    if( orig[1] == ':' ) {
+    if( orig[1] == DRV_SEP ) {
         ChangeDrive( orig[0] );
     }
     GetCWD2( oldPath, FILENAME_MAX );
+    ChangeDirectory( orig );
 
 } /* PushDirectory */
 
@@ -787,14 +788,14 @@ void CenterWindowInRoot( HWND hwnd )
 void DrawRectangleUpDown( HWND hwnd, int which )
 {
     LONG    l;
-    l = GetWindowLong( hwnd, GWL_STYLE );
+    l = GET_WNDSTYLE( hwnd );
     l &= ~SS_WHITEFRAME;
     l |= SS_BLACKFRAME;
     if( which == DRAW_UP ) {
         l &= ~SS_BLACKFRAME;
         l |= SS_WHITEFRAME;
     }
-    SetWindowLong( hwnd, GWL_STYLE, l );
+    SET_WNDSTYLE( hwnd, l );
     InvalidateRect( hwnd, NULL, TRUE );
     UpdateWindow( hwnd );
 }

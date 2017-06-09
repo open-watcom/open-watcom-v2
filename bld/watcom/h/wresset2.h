@@ -32,7 +32,6 @@
 #ifndef WRESSET2_INCLUDED
 #define WRESSET2_INCLUDED
 
-#include "bool.h"
 #ifdef WIN_GUI
 # include <windows.h>
 #endif

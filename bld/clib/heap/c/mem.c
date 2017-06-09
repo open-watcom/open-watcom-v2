@@ -36,200 +36,180 @@
 #include "heap.h"
 
 
-#if defined( _M_I86 )
-    extern __segment setup_ds( __segment );
-    #pragma aux setup_ds = \
-                "push ax" \
-                "mov ax,ds" \
-                "pop ds" \
-                parm [ax] value [ax];
-    #define setup_segment( _x ) _x = setup_ds( _x );
-#else
-    #define setup_segment( _x ) (void)(_x = _x);
-#endif
+#define HEAP(s)     ((XBPTR(heapblkp, s))(heap))
+#define FRLPTR(s)   XBPTR(freelistp, s)
 
 //
 // input:
 //      size    - #bytes to allocate
-//      segment - 16bit Intel data selector containing heap
-//      offset  - address of heap control block
+//      seg     - 16bit Intel data selector containing heap
+//      heap    - address of heap control block
 //                if 16bit Intel -> offset within segment
 //                else           -> absolute pointer value
 //
 // output:
-//      result  - address of allocated storage or zero on failure
+//      cstg    - "C" address of allocated storage or zero on failure
 //                if 16bit Intel -> offset within segment
 //                else           -> absolute pointer value
 //
-unsigned __MemAllocator( unsigned req_size, __segment segment, unsigned offset )
+void_bptr __MemAllocator( unsigned req_size, __segment seg, void_bptr heap )
 {
-    frlptr  result;
+    void_bptr   cstg;
 
-    result = 0;                                 // assume the worst
-    setup_segment( segment );                   // setup DS for 16bit Intel
-
-    if( req_size != 0 ) {                       // quit if size is zero
+    cstg = NULL;                                        // assume the worst
+    if( req_size != 0 ) {                               // quit if size is zero
         unsigned    size;
 
         size = __ROUND_UP_SIZE( req_size + TAG_SIZE, ROUND_SIZE );// round up size
-        if( size >= req_size ) {                // quit if overflowed
-            heapblkp    _WCI86NEAR *heap;
+        if( size >= req_size ) {                        // quit if overflowed
             unsigned    largest;
 
-            heap = (heapblkp _WCI86NEAR *)offset;
-            largest = heap->largest_blk;
+            largest = HEAP( seg )->largest_blk;
             if( size < FRL_SIZE ) {
                 size = FRL_SIZE;
             }
-            if( size <= largest ) {             // quit if size too big
-                frlptr      pcur;
-                unsigned    len;
+            if( size <= largest ) {                     // quit if size too big
+                FRLPTR( seg )   pcur;
+                unsigned        len;
 
-                pcur = heap->rover;             // start at rover
-                largest = heap->b4rover;
-                if( size <= largest ) {         // check size with rover
-                    pcur = heap->freehead.next; // start at beginning
-                    largest = 0;                // reset largest block size
+                pcur = HEAP( seg )->rover;              // start at rover
+                largest = HEAP( seg )->b4rover;
+                if( size <= largest ) {                 // check size with rover
+                    pcur = HEAP( seg )->freehead.next;  // start at beginning
+                    largest = 0;                        // reset largest block size
                 }
-                for( ;; ) {                     // search free list
+                for( ;; ) {                             // search free list
                     len = pcur->len;
-                    if( size <= len ) {         // found one
+                    if( size <= len ) {                 // found one
                         break;
                     }
-                    if( len > largest ) {       // update largest block size
+                    if( largest < len ) {               // update largest block size
                         largest = len;
                     }
-                    pcur = pcur->next;          // advance to next entry
-                    if( pcur ==                 // if back at start
-                        (frlptr)&(heap->freehead)) {
-                        heap->largest_blk = largest;    // update largest
-                        setup_segment( segment );       // 16bit Intel restore
-                        return( (unsigned)result );     // return 0
+                    pcur = pcur->next;                  // advance to next entry
+                                                        // if back at start
+                    if( pcur == (FRLPTR( seg ))&(HEAP( seg )->freehead) ) {
+                        HEAP( seg )->largest_blk = largest; // update largest
+                        return( cstg );                 // return 0
                     }
                 }
-                heap->b4rover = largest;        // update rover size
-                heap->numalloc++;               // udpate allocation count
-                len -= size;                    // compute leftover size
-                if( len >= FRL_SIZE ) {         // if leftover big enough
-                                                // split into two chunks
-                    frlptr pprev;               // before current
-                    frlptr pnext;               // after current
-                    frlptr pnew;                // start of new piece
+                HEAP( seg )->b4rover = largest;         // update rover size
+                HEAP( seg )->numalloc++;                // udpate allocation count
+                len -= size;                            // compute leftover size
+                if( len >= FRL_SIZE ) {                 // if leftover big enough, split into two chunks
+                    FRLPTR( seg )   pprev;              // before current
+                    FRLPTR( seg )   pnext;              // after current
+                    FRLPTR( seg )   pnew;               // start of new piece
 
-                    pnew = (frlptr)((PTR)pcur + size);
-                    heap->rover = pnew;         // update rover
-                    pnew->len = len;            // set new size
-                    pcur->len = size;           // reset current size
-                    pprev = pcur->prev;         // update next/prev links
+                    pnew = (FRLPTR( seg ))((PTR)pcur + size);
+                    HEAP( seg )->rover = pnew;          // update rover
+                    pnew->len = len;                    // set new size
+                    pcur->len = size;                   // reset current size
+                    pprev = pcur->prev;                 // update next/prev links
                     pnew->prev = pprev;
                     pnext = pcur->next;
                     pnew->next = pnext;
                     pprev->next = pnew;
                     pnext->prev = pnew;
-                } else {                        // just use this chunk
-                    frlptr pprev;               // before current
-                    frlptr pnext;               // after current
+                } else {                                // just use this chunk
+                    FRLPTR( seg )   pprev;              // before current
+                    FRLPTR( seg )   pnext;              // after current
 
-                    heap->numfree--;            // 1 fewer entries in free list
+                    HEAP( seg )->numfree--;             // 1 fewer entries in free list
                     pprev = pcur->prev;
-                    heap->rover = pprev;        // update rover
-                    pnext = pcur->next;         // update next/prev links
+                    HEAP( seg )->rover = pprev;         // update rover
+                    pnext = pcur->next;                 // update next/prev links
                     pprev->next = pnext;
                     pnext->prev = pprev;
                 }
-                SET_MEMBLK_USED( pcur );        // mark as allocated
-                                                // get pointer to user area
-                result = (frlptr)((PTR)pcur + TAG_SIZE);
+                SET_BLK_INUSE( pcur );                  // mark as allocated
+                                                        // get pointer to user area
+                cstg = (void_bptr)BLK2CPTR( pcur );
             }
         }
     }
-    setup_segment( segment );                   // 16bit Intel restore
-    return( (unsigned)result );
+    return( cstg );
 }
 
 //
 // input:
-//      pointer - address of block to free
+//      cstg    - "C" address of block to free
 //                if 16bit Intel -> offset within segment
 //                else           -> absolute pointer value
-//      segment - 16bit Intel data selector containing heap
-//      offset  - address of heap control block
+//      seg     - 16bit Intel data selector containing heap
+//      heap    - address of heap control block
 //                if 16bit Intel -> offset within segment
 //                else           -> absolute pointer value
 //
 // output:
 //      none
 //
-void __MemFree( unsigned pointer, __segment segment, unsigned offset )
+void __MemFree( void_bptr cstg, __segment seg, void_bptr heap )
 {
-    setup_segment( segment );                   // setup DS for 16bit Intel
+    if( cstg != NULL ) {                                // quit if pointer is zero
+        FRLPTR( seg )   pfree;
 
-    if( pointer != 0 ) {                        // quit if pointer is zero
-        frlptr pfree;
+        pfree = (FRLPTR( seg ))CPTR2BLK( cstg );
+        if( IS_BLK_INUSE( pfree ) ) {                   // quit if storage is free
+            FRLPTR( seg )   pnext;
+            FRLPTR( seg )   pprev;
+            FRLPTR( seg )   ptr;
+            unsigned        len;
 
-        pfree = (frlptr)(pointer - TAG_SIZE);
-        if( IS_MEMBLK_USED( pfree ) ) {         // quit if storage is free
-            heapblkp    _WCI86NEAR *heap;
-            frlptr      pnext;
-            frlptr      pprev;
-            frlptr      ptr;
-            unsigned    len;
-
-            heap = (heapblkp _WCI86NEAR *)offset;
-            do {                                // this allows break statement
-                unsigned average;
-                unsigned numfree;
+            do {                                        // this allows break statement
+                unsigned    average;
+                unsigned    numfree;
 
                 // look at next block to try and coalesce
-                len = MEMBLK_SIZE( pfree );      // get next block
-                pnext = (frlptr)((PTR)pfree + len);
-                if( !IS_MEMBLK_USED( pnext ) ) {   // if it is free
-                    len += pnext->len;          // include the length
-                    pfree->len = len;           // update pfree length
-                    if( pnext == heap->rover ) {    // check for rover
-                        heap->rover = pfree;    // update rover
+                len = GET_BLK_SIZE( pfree );            // get next block
+                pnext = (FRLPTR( seg ))((PTR)pfree + len);
+                if( !IS_BLK_INUSE( pnext ) ) {          // if it is free
+                    len += pnext->len;                  // include the length
+                    pfree->len = len;                   // update pfree length
+                    if( pnext == HEAP( seg )->rover ) { // check for rover
+                        HEAP( seg )->rover = pfree;     // update rover
                     }
-                    pprev = pnext->prev;        // fixup next/prev links
+                    pprev = pnext->prev;                // fixup next/prev links
                     pnext = pnext->next;
                     pprev->next = pnext;
                     pnext->prev = pprev;
-                    heap->numfree--;            // reduce numfree
-                    break;                      // proceed to coalesce code
+                    HEAP( seg )->numfree--;             // reduce numfree
+                    break;                              // proceed to coalesce code
                 }
 
                 // following block is not free
                 // we must now try to figure out where pfree
                 // is in relation to the entries in the free list
-                pfree->len = len;               // remove allocated marker
+                pfree->len = len;                       // remove allocated marker
 
                 // check a few special places
                 // see if pfree is:
                 // - just before or just after the rover
                 // - at the very beginning or very end of the heap
-                pnext = heap->rover;            // get rover
-                if( pfree < pnext ) {           // where is pfree?
-                                                // pfree is before rover
-                    if( pfree > pnext->prev ) { // where is pfree?
-                                                // pfree is next to rover
-                        break;                  // proceed to coalesce code
+                pnext = HEAP( seg )->rover;             // get rover
+                if( pfree < pnext ) {                   // where is pfree?
+                                                        // pfree is before rover
+                    if( pfree > pnext->prev ) {         // where is pfree?
+                                                        // pfree is next to rover
+                        break;                          // proceed to coalesce code
                     }
-                    pnext = heap->freehead.next;    // get start of free list
-                    if( pfree < pnext ) {       // where is pfree?
-                                                // pfree is at start of list
-                        break;                  // proceed to coalesce code
+                    pnext = HEAP( seg )->freehead.next; // get start of free list
+                    if( pfree < pnext ) {               // where is pfree?
+                                                        // pfree is at start of list
+                        break;                          // proceed to coalesce code
                     }
-                } else {                        // pfree is after rover
-                    pnext = pnext->next;        // pnext is after rover
-                    if( pfree < pnext ) {       // where is pfree?
-                                                // pfree is just after rover
-                        break;                  // proceed to coalesce code
+                } else {                                // pfree is after rover
+                    pnext = pnext->next;                // pnext is after rover
+                    if( pfree < pnext ) {               // where is pfree?
+                                                        // pfree is just after rover
+                        break;                          // proceed to coalesce code
                     }
-                                                // get end of free list
-                    pnext = (frlptr)&(heap->freehead);
+                                                        // get end of free list
+                    pnext = (FRLPTR( seg ))&(HEAP( seg )->freehead);
                     pprev = pnext->prev;
-                    if( pfree > pprev ) {       // where is pfree?
-                                                // pfree is at end of list
-                        break;                  // proceed to coalesce code
+                    if( pfree > pprev ) {               // where is pfree?
+                                                        // pfree is at end of list
+                        break;                          // proceed to coalesce code
                     }
                 }
 
@@ -244,9 +224,10 @@ void __MemFree( unsigned pointer, __segment segment, unsigned offset )
                 // number of blocks we will search to twice the calculated
                 // average.
 
-                numfree = heap->numfree;
-                average = heap->numalloc / (numfree+1);
+                numfree = HEAP( seg )->numfree;
+                average = HEAP( seg )->numalloc / ( numfree + 1 );
                 if( average < numfree ) {
+                    unsigned    worst;
 
                     // There are lots of allocated blocks and lots of free
                     // blocks.  On average we should find a free block
@@ -255,93 +236,80 @@ void __MemFree( unsigned pointer, __segment segment, unsigned offset )
                     // allocated blocks and give up once we have looked at
                     // twice the average.
 
-                    unsigned worst;
-                    worst = heap->numalloc - numfree;
-                    average *= 2;               // give up after this many
+                    worst = HEAP( seg )->numalloc - numfree;
+                    average *= 2;                       // give up after this many
                     if( worst <= numfree ) {
-                        average = UINT_MAX;     // we won't give up loop
+                        average = UINT_MAX;             // we won't give up loop
                     }
-                                                // point at next allocated
-                    pnext = (frlptr)((PTR)pfree + pfree->len);
-                    for(;;) {
-                        if( IS_MEMBLK_USED( pnext ) ) {    // pnext is allocated
-                            if( pnext->len != END_TAG ) {  // check for end TAG
-                                pnext = (frlptr)((PTR)pnext + MEMBLK_SIZE( pnext ));
-                                average--;
-                                if( !average ) {    // give up search
-                                    break;
-                                }
-                            } else {
-                                break;          // stop at end tag
-                            }
-                        } else {
-                            // break twice!
-                            goto found_it;      // we have the spot
+                                                        // point at next allocated
+                    pnext = (FRLPTR( seg ))NEXT_BLK( pfree );
+                    for( ; !IS_BLK_END( pnext ); ) {    // check for end TAG, stop at end tag
+                        if( !IS_BLK_INUSE( pnext ) )    // pnext is free then break twice!
+                            goto found_it;              // we have the spot
+                        pnext = (FRLPTR( seg ))NEXT_BLK_A( pnext );
+                        average--;
+                        if( average == 0 ) {            // give up search
+                            break;
                         }
                     }
                 }
 
                 // when all else fails, search the free list
-                pnext = heap->rover;            // begin at rover
-                if( pfree < pnext ) {           // is pfree before rover?
-                                                // then begin at start
-                    pnext = heap->freehead.next;
+                pnext = HEAP( seg )->rover;             // begin at rover
+                if( pfree < pnext ) {                   // is pfree before rover? then begin at start
+                    pnext = HEAP( seg )->freehead.next;
                 }
-                for(;;) {
-                    if( pfree < pnext ) {       // if pfree before pnext
-                        break;                  // we found it
+                for( ;; ) {
+                    if( pfree < pnext ) {               // if pfree before pnext
+                        break;                          // we found it
                     }
-                    pnext = pnext->next;        // advance pnext
+                    pnext = pnext->next;                // advance pnext
 
-                    if( pfree < pnext ) {       // if pfree before pnext
-                        break;                  // we found it
+                    if( pfree < pnext ) {               // if pfree before pnext
+                        break;                          // we found it
                     }
-                    pnext = pnext->next;        // advance pnext
+                    pnext = pnext->next;                // advance pnext
 
-                    if( pfree < pnext ) {       // if pfree before pnext
-                        break;                  // we found it
+                    if( pfree < pnext ) {               // if pfree before pnext
+                        break;                          // we found it
                     }
-                    pnext = pnext->next;        // advance pnext
+                    pnext = pnext->next;                // advance pnext
                 }
-            } while( 0 );                       // only do once
+            } while( 0 );                               // only do once
 
 found_it:
             // if we are here, then we found the spot
-            pprev = pnext->prev;                // setup pprev
+            pprev = pnext->prev;                        // setup pprev
 
             // pprev, pfree, pnext are all setup
             len = pfree->len;
-
-                                                // check pprev and pfree
-            ptr = (frlptr)((PTR)pprev + pprev->len);
-            if( ptr == pfree ) {                // are they adjacent?
-                                                // coalesce pprev and pfree
-                len += pprev->len;              // udpate len
+                                                        // check pprev and pfree
+            ptr = (FRLPTR( seg ))NEXT_BLK( pprev );
+            if( ptr == pfree ) {                        // are they adjacent?
+                                                        // coalesce pprev and pfree
+                len += pprev->len;                      // udpate len
                 pprev->len = len;
-                if( heap->rover == pfree ) {    // check rover impact
-                    heap->rover = pprev;        // update rover
+                if( HEAP( seg )->rover == pfree ) {     // check rover impact
+                    HEAP( seg )->rover = pprev;         // update rover
                 }
-                pfree = pprev;                  // now work with coalesced blk
+                pfree = pprev;                          // now work with coalesced blk
             } else {
-                heap->numfree++;                // one more free entry
-                pfree->next = pnext;            // update next/prev entries
+                HEAP( seg )->numfree++;                 // one more free entry
+                pfree->next = pnext;                    // update next/prev entries
                 pfree->prev = pprev;
                 pprev->next = pfree;
                 pnext->prev = pfree;
             }
-            heap->numalloc--;                   // one fewer allocated
+            HEAP( seg )->numalloc--;                    // one fewer allocated
 
-            if( pfree < heap->rover ) {         // check rover impact
-                if( len > heap->b4rover ) {     // is len bigger than b4rover
-                    heap->b4rover = len;        // then update b4rover
+            if( pfree < HEAP( seg )->rover ) {          // check rover impact
+                if( HEAP( seg )->b4rover < len ) {      // is len bigger than b4rover
+                    HEAP( seg )->b4rover = len;         // then update b4rover
                 }
             }
-
-            if( len > heap->largest_blk ) {     // check largest block
-                heap->largest_blk = len;
+            if( HEAP( seg )->largest_blk < len ) {      // check largest block
+                HEAP( seg )->largest_blk = len;
             }
         }
     }
-
-    setup_segment( segment );                   // 16bit Intel restore
 }

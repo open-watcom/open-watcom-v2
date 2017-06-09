@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Huge allocation/deallocation routines for DOS and Windows
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -39,18 +39,18 @@
 #include <malloc.h>
 #include "heap.h"
 
-extern  long _dosalloc(unsigned);
-#pragma aux     _dosalloc = 0xb4 0x48   /* mov ah,48h */        \
-                            0xcd 0x21   /* int 21h    */        \
-                            0x19 0xd2   /* sbb dx,dx  */        \
-                        parm caller [bx] value [dx ax] modify [dx ax];
+extern long _dosalloc( unsigned );
+#pragma aux _dosalloc = \
+        "mov ah,48h"    \
+        "int 21h"       \
+        "sbb dx,dx"     \
+    parm caller [bx] value [dx ax] modify [dx ax]
 
-extern  void    _dosfree(void _WCHUGE *);
-#pragma aux     _dosfree  = 0xb4 0x49   /* mov ah,49h */        \
-                            0xcd 0x21   /* int 21h    */        \
-                        parm caller [ax es] modify [es];
-
-#define HUGE_NULL       ((void _WCHUGE *)NULL)
+extern void _dosfree( void_hptr );
+#pragma aux _dosfree =  \
+        "mov ah,49h"    \
+        "int 21h"       \
+    parm caller [ax es] modify [es]
 
 static int only_one_bit( size_t x )
 {
@@ -65,38 +65,38 @@ static int only_one_bit( size_t x )
     return 1;
 }
 
-_WCRTLINK void _WCHUGE *halloc( long numb, unsigned size )
+_WCRTLINK void_hptr halloc( long numb, unsigned size )
 {
     unsigned long   amount;
 #if defined(__WINDOWS__)
     HANDLE          hmem;
-    LPSTR           p;
+    LPSTR           cstg;
 
     amount = (unsigned long)numb * size;
     if( amount == 0 )
-        return( HUGE_NULL );
+        return( NULL );
     if( amount > 65536 && ! only_one_bit( size ) )
-        return( HUGE_NULL );
-    hmem = GlobalAlloc( GMEM_MOVEABLE|GMEM_ZEROINIT, amount );
+        return( NULL );
+    hmem = GlobalAlloc( GMEM_MOVEABLE | GMEM_ZEROINIT, amount );
     if( hmem == NULL )
-        return( HUGE_NULL );
-    p = GlobalLock( hmem );
-    return( p );
+        return( NULL );
+    cstg = GlobalLock( hmem );
+    return( cstg );
 #else
-    long            seg;
+    long            rc;
     unsigned int    num_of_paras;
     char            _WCHUGE *hp;
 
     amount = (unsigned long)numb * size;
     if( amount == 0  || amount >= 0x100000 )
-        return( HUGE_NULL );
-    if( amount > 65536 && ! only_one_bit( size ) )
-        return( HUGE_NULL );
+        return( NULL );
+    if( amount > 65536 && !only_one_bit( size ) )
+        return( NULL );
     num_of_paras = __ROUND_UP_SIZE_TO_PARA( amount );
-    seg = _dosalloc( num_of_paras );
-    if( seg < 0 )
-        return( HUGE_NULL );  /* allocation failed */
-    hp = (char _WCHUGE *)MK_FP( (unsigned short)seg, 0 );
+    rc = _dosalloc( num_of_paras );
+    if( rc < 0 )
+        return( NULL );  /* allocation failed */
+    hp = (char _WCHUGE *)MK_FP( (unsigned short)rc, 0 );
     for( ;; ) {
         size = 0x8000;
         if( num_of_paras < 0x0800 )
@@ -107,18 +107,15 @@ _WCRTLINK void _WCHUGE *halloc( long numb, unsigned size )
         hp = hp + size;
         num_of_paras -= 0x0800;
     }
-    return( (void _WCHUGE *)MK_FP( (unsigned short)seg, 0 ) );
+    return( (void_hptr)MK_FP( (unsigned short)rc, 0 ) );
 #endif
 }
 
-#if defined(__WINDOWS__)
-  #pragma aux hfree modify [es]
-#endif
-_WCRTLINK void hfree( void _WCHUGE *ptr )
+_WCRTLINK void hfree( void_hptr cstg )
 {
 #if defined(__WINDOWS__)
-    __FreeSeg( FP_SEG( ptr ) );
+    __FreeSeg( FP_SEG( cstg ) );
 #else
-    _dosfree( ptr );
+    _dosfree( cstg );
 #endif
 }

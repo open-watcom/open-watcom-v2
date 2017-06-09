@@ -43,12 +43,27 @@
 #include "wdesdup.h"
 #include "wdecctl.h"
 #include "wdefupdn.h"
+#include "wdedispa.h"
+
+
+/****************************************************************************/
+/* macro definitions                                                        */
+/****************************************************************************/
+
+#define pick_ACTS(o) \
+    pick_ACTION_DESTROY(o,pick) \
+    pick_ACTION_COPY(o,pick) \
+    pick_ACTION_VALIDATE_ACTION(o,pick) \
+    pick_ACTION_IDENTIFY(o,pick) \
+    pick_ACTION_GET_WINDOW_CLASS(o,pick) \
+    pick_ACTION_DEFINE(o,pick) \
+    pick_ACTION_GET_WND_PROC(o,pick)
 
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC     dispatcher;
+    DISPATCH_FN *dispatcher;
     OBJPTR      object_handle;
     OBJ_ID      object_id;
     OBJPTR      control;
@@ -57,7 +72,9 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL    CALLBACK WdeUpDnDispatcher( ACTION, WdeUpDnObject *, void *, void * );
+
+/* Local Window callback functions prototypes */
+WINEXPORT bool    CALLBACK WdeUpDnDispatcher( ACTION_ID, OBJPTR, void *, void * );
 WINEXPORT LRESULT CALLBACK WdeUpDnSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -65,22 +82,19 @@ WINEXPORT LRESULT CALLBACK WdeUpDnSuperClassProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 static OBJPTR   WdeMakeUpDn( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
 static OBJPTR   WdeUDCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
-static BOOL     WdeUpDnDestroy( WdeUpDnObject *, BOOL *, void * );
-static BOOL     WdeUpDnValidateAction( WdeUpDnObject *, ACTION *, void * );
-static BOOL     WdeUpDnCopyObject( WdeUpDnObject *, WdeUpDnObject **, WdeUpDnObject * );
-static BOOL     WdeUpDnIdentify( WdeUpDnObject *, OBJ_ID *, void * );
-static BOOL     WdeUpDnGetWndProc( WdeUpDnObject *, WNDPROC *, void * );
-static BOOL     WdeUpDnGetWindowClass( WdeUpDnObject *, char **, void * );
-static BOOL     WdeUpDnDefine( WdeUpDnObject *, POINT *, void * );
 static void     WdeUpDnSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeUpDnGetDefineInfo( WdeDefineObjectInfo *, HWND );
-static BOOL     WdeUpDnDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+static bool     WdeUpDnDefineHook( HWND, UINT, WPARAM, LPARAM, DialogStyle );
+
+#define pick(e,n,c) static bool WdeUpDn ## n ## c;
+    pick_ACTS( WdeUpDnObject )
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeUpDnDispatch;
+static DISPATCH_FN              *WdeUpDnDispatch;
 static WdeDialogBoxControl      *WdeDefaultUpDn = NULL;
 static int                      WdeUpDnWndExtra;
 static WNDPROC                  WdeOriginalUpDnProc;
@@ -89,18 +103,14 @@ static WNDPROC                  WdeOriginalUpDnProc;
 #define WUPDOWN_CLASS    UPDOWN_CLASS
 
 static DISPATCH_ITEM WdeUpDnActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeUpDnDestroy          },
-    { COPY,             (DISPATCH_RTN *)WdeUpDnCopyObject       },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeUpDnValidateAction   },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeUpDnIdentify         },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeUpDnGetWindowClass   },
-    { DEFINE,           (DISPATCH_RTN *)WdeUpDnDefine           },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeUpDnGetWndProc       }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeUpDn ## n},
+    pick_ACTS( WdeUpDnObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS     (sizeof( WdeUpDnActions ) / sizeof( DISPATCH_ITEM ))
 
-WINEXPORT OBJPTR CALLBACK WdeUpDnCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeUpDnCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeUpDn( parent, obj_rect, handle, 0, "", UPDOWN_OBJ ) );
@@ -149,10 +159,10 @@ OBJPTR WdeUDCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new->dispatcher = WdeUpDnDispatch;
+    OBJ_DISPATCHER_SET( new, WdeUpDnDispatch );
     new->object_id = id;
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -165,24 +175,24 @@ OBJPTR WdeUDCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+    if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeUpDnCreate: SET_OBJECT_INFO failed!" );
-        Destroy( new->control, FALSE );
+        Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
 
-    if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
+    if( !Forward( new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeUpDnCreate: CREATE_WINDOW failed!" );
-        Destroy( new->control, FALSE );
+        Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
-WINEXPORT BOOL CALLBACK WdeUpDnDispatcher( ACTION act, WdeUpDnObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeUpDnDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -194,7 +204,7 @@ WINEXPORT BOOL CALLBACK WdeUpDnDispatcher( ACTION act, WdeUpDnObject *obj, void 
         }
     }
 
-    return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeUpDnObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeUpDnInit( bool first )
@@ -228,7 +238,7 @@ bool WdeUpDnInit( bool first )
     WdeDefaultUpDn = WdeAllocDialogBoxControl();
     if( WdeDefaultUpDn == NULL ) {
         WdeWriteTrail( "WdeUpDnInit: Alloc of control failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* set up the default control structure */
@@ -242,33 +252,32 @@ bool WdeUpDnInit( bool first )
     SETCTL_TEXT( WdeDefaultUpDn, NULL );
     SETCTL_CLASSID( WdeDefaultUpDn, WdeStrToControlClass( WUPDOWN_CLASS ) );
 
-    WdeUpDnDispatch = MakeProcInstance( (FARPROC)WdeUpDnDispatcher,
-                                        WdeGetAppInstance() );
-    return( TRUE );
+    WdeUpDnDispatch = MakeProcInstance_DISPATCHER( WdeUpDnDispatcher, WdeGetAppInstance() );
+    return( true );
 }
 
 void WdeUpDnFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultUpDn );
-    FreeProcInstance( WdeUpDnDispatch );
+    FreeProcInstance_DISPATCHER( WdeUpDnDispatch );
 }
 
-BOOL WdeUpDnDestroy( WdeUpDnObject *obj, BOOL *flag, void *p2 )
+bool WdeUpDnDestroy( WdeUpDnObject *obj, bool *flag, bool *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeUpDnDestroy: Control DESTROY failed" );
-        return( FALSE );
+        return( false );
     }
 
     WRMemFree( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeUpDnValidateAction( WdeUpDnObject *obj, ACTION *act, void *p2 )
+bool WdeUpDnValidateAction( WdeUpDnObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 
@@ -277,31 +286,31 @@ BOOL WdeUpDnValidateAction( WdeUpDnObject *obj, ACTION *act, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeUpDnActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( ValidateAction( (OBJPTR) obj->control, *act, p2 ) );
+    return( ValidateAction( obj->control, *act, p2 ) );
 }
 
-BOOL WdeUpDnCopyObject( WdeUpDnObject *obj, WdeUpDnObject **new, WdeUpDnObject *handle )
+bool WdeUpDnCopyObject( WdeUpDnObject *obj, WdeUpDnObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeUpDnCopyObject: Invalid new object!" );
-        return( FALSE );
+        return( false );
     }
 
     *new = (WdeUpDnObject *)WRMemAlloc( sizeof( WdeUpDnObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeUpDnCopyObject: Object malloc failed" );
-        return( FALSE );
+        return( false );
     }
 
-    (*new)->dispatcher = obj->dispatcher;
+    OBJ_DISPATCHER_COPY( *new, obj );
     (*new)->object_id = obj->object_id;
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }
@@ -309,23 +318,23 @@ BOOL WdeUpDnCopyObject( WdeUpDnObject *obj, WdeUpDnObject **new, WdeUpDnObject *
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeUpDnCopyObject: Control not created!" );
         WRMemFree( *new );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeUpDnIdentify( WdeUpDnObject *obj, OBJ_ID *id, void *p2 )
+bool WdeUpDnIdentify( WdeUpDnObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeUpDnGetWndProc( WdeUpDnObject *obj, WNDPROC *proc, void *p2 )
+bool WdeUpDnGetWndProc( WdeUpDnObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -333,10 +342,10 @@ BOOL WdeUpDnGetWndProc( WdeUpDnObject *obj, WNDPROC *proc, void *p2 )
 
     *proc = WdeUpDnSuperClassProc;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeUpDnGetWindowClass( WdeUpDnObject *obj, char **class, void *p2 )
+bool WdeUpDnGetWindowClass( WdeUpDnObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -344,10 +353,10 @@ BOOL WdeUpDnGetWindowClass( WdeUpDnObject *obj, char **class, void *p2 )
 
     *class = WUPDOWN_CLASS;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeUpDnDefine( WdeUpDnObject *obj, POINT *pnt, void *p2 )
+bool WdeUpDnDefine( WdeUpDnObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
@@ -446,9 +455,9 @@ void WdeUpDnGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
 #endif
 }
 
-BOOL WdeUpDnDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
+bool WdeUpDnDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, DialogStyle mask )
 {
-    BOOL processed;
+    bool processed;
 
     /* touch unused vars to get rid of warning */
     _wde_touch( hDlg );
@@ -457,12 +466,12 @@ BOOL WdeUpDnDefineHook( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam, D
     _wde_touch( lParam );
     _wde_touch( mask );
 
-    processed = FALSE;
+    processed = false;
 
     return( processed );
 }
 
-WINEXPORT LRESULT CALLBACK WdeUpDnSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeUpDnSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalUpDnProc, hWnd, message, wParam, lParam ) );

@@ -443,7 +443,7 @@ typedef struct segdata {
     virt_mem_ptr    u1;             // virtual memory pointer to data for this segment
     virt_mem        vm_data;        // virtual memory pointer to data for class copy data
     union {
-        char        *name;          // name of the segment
+        const char  *name;          // name of the segment
         seg_leader  *leader;        // leader for the segment.
         SEGDATA     *sdata;         // for explicit comdats
     } u;
@@ -521,10 +521,10 @@ typedef struct seg_flags {
 
 typedef struct extnode {
     symbol              *entry;
-    void                *handle;    // ORL: handle for the symbol
-    unsigned            ovlref : 12;
-    unsigned            isweak : 1;
-    unsigned            isdefd : 1; // used in ORL
+    void                *handle;        // ORL: handle for the symbol
+    unsigned            ovlref  : 12;
+    unsigned            isweak  : 1;
+    unsigned            isdefd  : 1;    // used in ORL
 } extnode;
 
 typedef struct grpnode {

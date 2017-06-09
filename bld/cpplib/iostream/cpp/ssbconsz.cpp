@@ -37,7 +37,7 @@
 
 namespace std {
 
-  strstreambase::strstreambase( char *str, int size, char *pstart )
+  strstreambase::strstreambase( char *str, streamsize size, char *pstart )
     : __strstrmbuf( str, size, pstart ) {
 
     ios::init( (streambuf *) &__strstrmbuf );

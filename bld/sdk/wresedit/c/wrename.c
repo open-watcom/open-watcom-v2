@@ -46,6 +46,8 @@
 #include "w_rc.h"
 #include "wresall.h"
 #include "jdlg.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* macro definitions                                                        */
@@ -55,7 +57,7 @@
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct WResRenameInfo {
-    HELP_CALLBACK       *hcb;
+    HELP_CALLBACK       help_callback;
     WResID              *old_name;
     WResID              *new_name;
 } WResRenameInfo;
@@ -63,7 +65,7 @@ typedef struct WResRenameInfo {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WResRenameProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT INT_PTR CALLBACK WResRenameDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -76,7 +78,7 @@ static bool WGetNewName( HWND, WResRenameInfo * );
 /* static variables                                                         */
 /****************************************************************************/
 
-bool WRenameResource( HWND parent, WResID **name, HELP_CALLBACK *hcb )
+bool WRenameResource( HWND parent, WResID **name, HELP_CALLBACK help_callback )
 {
     WResRenameInfo  info;
     bool            ok;
@@ -88,7 +90,7 @@ bool WRenameResource( HWND parent, WResID **name, HELP_CALLBACK *hcb )
 
     if( ok )  {
         ok = false;
-        info.hcb = hcb;
+        info.help_callback = help_callback;
         info.old_name = *name;
         if( WGetNewName( parent, &info ) && info.new_name != NULL ) {
             if( *name != NULL ) {
@@ -104,17 +106,17 @@ bool WRenameResource( HWND parent, WResID **name, HELP_CALLBACK *hcb )
 
 bool WGetNewName( HWND parent, WResRenameInfo *info )
 {
-    DLGPROC     proc_inst;
+    DLGPROC     dlgproc;
     HINSTANCE   app_inst;
     INT_PTR     modified;
 
     app_inst = WGetEditInstance();
 
-    proc_inst = (DLGPROC)MakeProcInstance( (FARPROC)WResRenameProc, app_inst );
+    dlgproc = MakeProcInstance_DLG( WResRenameDlgProc, app_inst );
 
-    modified = JDialogBoxParam( app_inst, "WRenameResource", parent, proc_inst, (LPARAM)info );
+    modified = JDialogBoxParam( app_inst, "WRenameResource", parent, dlgproc, (LPARAM)info );
 
-    FreeProcInstance( (FARPROC)proc_inst );
+    FreeProcInstance_DLG( dlgproc );
 
     return( modified != -1 && modified == IDOK );
 }
@@ -136,7 +138,7 @@ void WGetWinInfo( HWND hDlg, WResRenameInfo *info )
     }
 }
 
-WINEXPORT BOOL CALLBACK WResRenameProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+WINEXPORT INT_PTR CALLBACK WResRenameDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WResRenameInfo  *info;
     BOOL            ret;
@@ -159,8 +161,8 @@ WINEXPORT BOOL CALLBACK WResRenameProc( HWND hDlg, UINT message, WPARAM wParam, 
         info = (WResRenameInfo *)GET_DLGDATA( hDlg );
         switch( LOWORD( wParam ) ) {
         case IDM_HELP:
-            if( info != NULL && info->hcb != NULL ) {
-                (*info->hcb)();
+            if( info != NULL && info->help_callback != NULL ) {
+                info->help_callback();
             }
             break;
 

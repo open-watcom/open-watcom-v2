@@ -44,11 +44,13 @@
 #include "wctl3d.h"
 #include "wstrdup.h"
 #include "wgetfn.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT UINT CALLBACK WOpenHookProc( HWND, UINT, WPARAM, LPARAM );
+WINEXPORT UINT_PTR CALLBACK WOpenOFNHookProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -211,7 +213,7 @@ char *WGetFileName( WGetFileStruct *gf, HWND owner, DWORD flags, WGetFileAction 
     wofn.lpstrTitle = WFnTitle;
     wofn.Flags = flags;
 #if !defined( __NT__ )
-    wofn.lpfnHook = (LPOFNHOOKPROC)MakeProcInstance( (FARPROC)WOpenHookProc, app_inst );
+    wofn.lpfnHook = MakeProcInstance_OFNHOOK( WOpenOFNHookProc, app_inst );
 #endif
 
 #if 0
@@ -233,7 +235,7 @@ char *WGetFileName( WGetFileStruct *gf, HWND owner, DWORD flags, WGetFileAction 
 
 #ifndef __NT__
     if( wofn.lpfnHook != NULL ) {
-        FreeProcInstance( (FARPROC)wofn.lpfnHook );
+        FreeProcInstance_OFNHOOK( wofn.lpfnHook );
     }
 #endif
 
@@ -268,7 +270,7 @@ char *WGetFileName( WGetFileStruct *gf, HWND owner, DWORD flags, WGetFileAction 
 }
 
 #ifndef __NT__
-WINEXPORT UINT CALLBACK WOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT UINT_PTR CALLBACK WOpenOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char    *title;
 
@@ -283,7 +285,7 @@ WINEXPORT UINT CALLBACK WOpenHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
 
         title = AllocRCString( W_GETFNCOMBOTITLE );
         if( title != NULL ) {
-            SendDlgItemMessage( hwnd, stc2, WM_SETTEXT, 0, (LPARAM)title );
+            SendDlgItemMessage( hwnd, stc2, WM_SETTEXT, 0, (LPARAM)(LPCSTR)title );
             FreeRCString( title );
         }
 

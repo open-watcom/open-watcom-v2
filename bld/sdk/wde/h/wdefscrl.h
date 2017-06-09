@@ -36,9 +36,9 @@
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
-WINEXPORT extern OBJPTR  CALLBACK WdeHScrollCreate( OBJPTR, RECT *, OBJPTR );
-WINEXPORT extern OBJPTR  CALLBACK WdeVScrollCreate( OBJPTR, RECT *, OBJPTR );
-WINEXPORT extern OBJPTR  CALLBACK WdeSizeBoxCreate( OBJPTR, RECT *, OBJPTR );
+WINEXPORT extern CREATE_RTN WdeHScrollCreate;
+WINEXPORT extern CREATE_RTN WdeVScrollCreate;
+WINEXPORT extern CREATE_RTN WdeSizeBoxCreate;
 extern bool              WdeScrollInit( bool );
 extern void              WdeScrollFini( void );
 

@@ -1,6 +1,6 @@
 #include "dump.h"
 
-void f( void near *, void far * ) GOOD;
+void f( void __near *, void __far * ) GOOD;
 void f( ... ) BAD;
 
 void g( int *a, int *b )

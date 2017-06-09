@@ -430,7 +430,7 @@ void ClearImageText( void )
 /*
  * IEPrintAmtText
  */
-void IEPrintAmtText( DWORD message, int amt )
+void IEPrintAmtText( msg_id message, int amt )
 {
     char        *text;
     char        *msg;
@@ -451,7 +451,7 @@ void IEPrintAmtText( DWORD message, int amt )
 /*
  * WriteSetSizeText
  */
-void WriteSetSizeText( DWORD msg, int x, int y )
+void WriteSetSizeText( msg_id msg, int x, int y )
 {
     char        *text;
     char        *msg_text;
@@ -472,7 +472,7 @@ void WriteSetSizeText( DWORD msg, int x, int y )
 /*
  * PrintHintTextByID
  */
-void PrintHintTextByID( DWORD id, char *fname )
+void PrintHintTextByID( msg_id id, const char *fname )
 {
     char        *msg;
 
@@ -487,7 +487,7 @@ void PrintHintTextByID( DWORD id, char *fname )
 /*
  * PrintHintText
  */
-void PrintHintText( char *msg, char *fname )
+void PrintHintText( const char *msg, const char *fname )
 {
     char        *text;
 
@@ -509,7 +509,7 @@ void PrintHintText( char *msg, char *fname )
 /*
  * SetHintText - set the hint text
  */
-void SetHintText( char *msg )
+void SetHintText( const char *msg )
 {
     char        *text;
     int         len;

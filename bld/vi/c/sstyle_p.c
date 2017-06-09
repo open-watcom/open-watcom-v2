@@ -351,7 +351,8 @@ static void getSpecialVariable( ss_block *ss_new, char *start )
 
 static void getSymbol( ss_block *ss_new, char *start )
 {
-    start = start;
+    /* unused parameters */ (void)start;
+
     flags.beforeRegExp = true;
     flags.doubleRegExp = false;
     ss_new->type = SE_SYMBOL;
@@ -548,8 +549,7 @@ void InitPerlFlags( linenum line_no )
 
 void GetPerlBlock( ss_block *ss_new, char *start, line *line, linenum line_no )
 {
-    line = line;
-    line_no = line_no;
+    /* unused parameters */ (void)line; (void)line_no;
 
     if( start[0] == '\0' ) {
         if( firstNonWS == start ) {

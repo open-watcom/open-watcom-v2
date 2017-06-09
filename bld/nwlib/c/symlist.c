@@ -35,7 +35,7 @@ static orl_return CheckSymbol( orl_symbol_handle orl_sym_hnd )
 /************************************************************/
 {
     orl_symbol_binding  binding;
-    char                *name;
+    const char          *name;
     orl_symbol_type     type;
     unsigned char       info;
 
@@ -48,14 +48,14 @@ static orl_return CheckSymbol( orl_symbol_handle orl_sym_hnd )
             if( (type & ORL_SYM_CDAT_MASK) || binding == ORL_SYM_BINDING_WEAK ) {
                 AddSym( name, SYM_WEAK, info );
             } else {
-                AddSym( name,  SYM_STRONG, info );
+                AddSym( name, SYM_STRONG, info );
             }
         } else {
             unsigned_64 val64;
 
-            val64 = ORLSymbolGetValue( orl_sym_hnd );
+            ORLSymbolGetValue( orl_sym_hnd, &val64 );
             if( val64.u._32[I64LO32] != 0 || val64.u._32[I64HI32] != 0 ) {
-                AddSym( name,  SYM_WEAK, info );
+                AddSym( name, SYM_WEAK, info );
             }
         }
     } else if( binding == ORL_SYM_BINDING_ALIAS ) {
@@ -73,7 +73,7 @@ bool ObjWalkSymList( obj_file *ofile, sym_file *sfile )
         sym_sec_hnd = ORLFileGetSymbolTable( ofile->orl );
         if( sym_sec_hnd == NULL )
             return( false );
-        if( ORLSymbolSecScan( sym_sec_hnd, &CheckSymbol ) != ORL_OKAY ) {
+        if( ORLSymbolSecScan( sym_sec_hnd, CheckSymbol ) != ORL_OKAY ) {
             return( false );
         }
     } else {

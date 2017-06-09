@@ -52,7 +52,7 @@ static bool ConvertFileMResToWRes( WResFileID in_fid )
     tmp_fid = ResOpenNewFile( TMP_FILENAME );
     if( tmp_fid == WRES_NIL_HANDLE ) {
         perror( "Error (temp file): " );
-        ResCloseFile( infile );
+        ResCloseFile( in_fid );
         return( true );
     }
     WResFileInit( tmp_fid );

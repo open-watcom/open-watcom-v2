@@ -356,7 +356,7 @@ static void StoreIValue( DATA_TYPE dtype, int value, target_size size )
         dq.flags = Q_DATA;
         dq.u_long_value1 = value;
         if( value != 0 )
-            CompFlags.non_zero_data = 1;
+            CompFlags.non_zero_data = true;
         GenDataQuad( &dq, size );
         LastCurDataQuad = CurDataQuad;
         return;
@@ -1267,9 +1267,9 @@ static void AggregateVarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
 
     sym2_handle = MakeNewSym( &sym2, 'X', sym->sym_type, SC_STATIC );
     sym2.flags |= SYM_INITIALIZED;
-    CompFlags.initializing_data = 1;
+    CompFlags.initializing_data = true;
     StaticInit( &sym2, sym2_handle );
-    CompFlags.initializing_data = 0;
+    CompFlags.initializing_data = false;
     SymReplace( &sym2, sym2_handle );
     /* StaticInit will change sym2.sym_type if it is an incomplete array type */
     sym->sym_type = sym2.sym_type;
@@ -1535,9 +1535,9 @@ void VarDeclEquals( SYMPTR sym, SYM_HANDLE sym_handle )
             CErrSymName( ERR_VAR_ALREADY_INITIALIZED, sym, sym_handle );
         }
         sym->flags |= SYM_INITIALIZED;
-        CompFlags.initializing_data = 1;
+        CompFlags.initializing_data = true;
         StaticInit( sym, sym_handle );
-        CompFlags.initializing_data = 0;
+        CompFlags.initializing_data = false;
     } else {
         SymReplace( sym, sym_handle );
         SrcLoc = TokenLoc;

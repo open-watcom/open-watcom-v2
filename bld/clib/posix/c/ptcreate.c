@@ -65,13 +65,13 @@ static void __thread_start( void *data )
     
     passed->thread = __register_thread();
 
-    sem_post(&passed->registered);
-
     start_routine = passed->start_routine;
     arg = passed->arg;
     
     /* Lock our running mutex to allow for future joins */
     pthread_mutex_lock(__get_thread_running_mutex(passed->thread));
+    
+    sem_post(&passed->registered);
     
     /* Call the user routine */
     ret = start_routine(arg);
@@ -125,11 +125,9 @@ _WCRTLINK int pthread_create( pthread_t *thread, const pthread_attr_t *attr,
         }
     }
     
-    if(sem_init(&passed->registered, 0, 1) != 0) {
+    if(sem_init(&passed->registered, 0, 0) != 0) {
         return( -1 );
     }
-    
-    sem_wait(&passed->registered);
     
     ret = _beginthread( __thread_start, NULL, 0, (void *)passed );
     

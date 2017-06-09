@@ -480,7 +480,7 @@ void WSetEditTitle( WAccelEditInfo *einfo )
     }
 
     if( title != NULL ) {
-        SendMessage( einfo->win, WM_SETTEXT, 0, (LPARAM)title );
+        SendMessage( einfo->win, WM_SETTEXT, 0, (LPARAM)(LPCSTR)title );
         if( is_rc ) {
             FreeRCString( title );
         } else {
@@ -862,7 +862,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
             break;
 
         case IDM_ACC_KEYVALUE:
-            WSetStatusByID( einfo->wsb, W_GETTINGKEYS, -1 );
+            WSetStatusByID( einfo->wsb, W_GETTINGKEYS, 0 );
             WHandleGetKeyValue( einfo, einfo->last_menu_select == IDM_ACC_KEYVALUE );
             WSetStatusReadyText( einfo->wsb );
             pass_to_def = FALSE;
@@ -885,7 +885,7 @@ WINEXPORT LRESULT CALLBACK WMainWndProc( HWND hWnd, UINT message, WPARAM wParam,
             break;
 
         case IDM_ACC_MEM_FLAGS:
-            WSetStatusByID( einfo->wsb, W_CHANGEACCELMEMFLAGS, -1 );
+            WSetStatusByID( einfo->wsb, W_CHANGEACCELMEMFLAGS, 0 );
             einfo->info->modified |= WChangeMemFlags( einfo->win, &einfo->info->MemFlags,
                                                       einfo->info->res_name,
                                                       WGetEditInstance(),
@@ -1067,7 +1067,7 @@ bool WHandleWM_CLOSE( WAccelEditInfo *einfo, bool force_exit )
 void WHandleRename( WAccelEditInfo *einfo )
 {
     if( einfo != NULL ) {
-        WSetStatusByID( einfo->wsb, W_RENAMINGACCEL, -1 );
+        WSetStatusByID( einfo->wsb, W_RENAMINGACCEL, 0 );
         einfo->info->modified |= WRenameResource( einfo->win, &einfo->info->res_name,
                                                   WAccHelpRoutine );
         WSetEditWinResName( einfo );
@@ -1126,7 +1126,7 @@ void WHandleClear( WAccelEditInfo *einfo )
             }
             einfo->info->modified = true;
             SetFocus( einfo->edit_dlg );
-            WSetStatusByID( einfo->wsb, W_ACCELCLEARMSG, -1 );
+            WSetStatusByID( einfo->wsb, W_ACCELCLEARMSG, 0 );
         }
     }
 }

@@ -29,13 +29,11 @@
 *
 ****************************************************************************/
 
-#include "wio.h"
+
 #include "layer0.h"
 #include "opcl.h"
 #include "reserr.h"
 #include "wresrtns.h"
-
-#include "clibext.h"
 
 
 WResFileID ResOpenFileRW( const char *filename )
@@ -44,8 +42,7 @@ WResFileID ResOpenFileRW( const char *filename )
     WResFileID  fid;
 
     fid = WRESOPEN( filename, WRES_OPEN_RW );
-    if( fid == WRES_NIL_HANDLE ) {
+    if( fid == WRES_NIL_HANDLE )
         WRES_ERROR( WRS_OPEN_FAILED );
-    }
     return( fid );
 }

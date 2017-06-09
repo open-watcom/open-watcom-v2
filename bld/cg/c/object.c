@@ -164,8 +164,7 @@ void    GenObject( void )
                 }
             }
         }
-        if( BlocksUnTrimmed == false
-          && blk->label != CurrProc->label && blk->label != NULL ) {
+        if( !BlocksUnTrimmed && blk->label != CurrProc->label && blk->label != NULL ) {
             TellCondemnedLabel( blk->label );
         }
         CurrBlock = blk;
@@ -256,7 +255,8 @@ static block    *BQFirst( block_queue *q ) {
 static block    *BQNext( block_queue *q, block *curr ) {
 /******************************************************/
 
-    q = q;
+    /* unused parameters */ (void)q;
+
     return( curr->next_block );
 }
 
@@ -315,7 +315,8 @@ static  int     PointerHeuristic( block *blk, instruction *cond ) {
 
     int                 prediction;
 
-    blk = blk;
+    /* unused parameters */ (void)blk;
+
     prediction = DNA;
     if( _IsPointer( cond->type_class ) ) {
         switch( cond->head.opcode ) {
@@ -337,7 +338,8 @@ static  int     OpcodeHeuristic( block *blk, instruction *cond ) {
 //    name                *op1;
     name                *op2;
 
-    blk = blk;
+    /* unused parameters */ (void)blk;
+
     prediction = DNA;
 //    op1 = cond->operands[0];
     op2 = cond->operands[1];

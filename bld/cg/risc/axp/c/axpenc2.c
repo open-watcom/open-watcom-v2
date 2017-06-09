@@ -45,7 +45,8 @@ void EncodeRet( oc_ret *oc ) {
 
     axp_ins             encoding;
 
-    oc = oc;
+    /* unused parameters */ (void)oc;
+
     encoding = 0x6bfa8001;      // this is a little cheesy - ret ra(r26)
     ObjBytes( &encoding, sizeof( encoding ) );
 }

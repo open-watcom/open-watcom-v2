@@ -42,7 +42,7 @@ void __pragma("also_goes_byebye") X15::x25( int, int )
 
 void x39()
 {
-    void far *p;
+    void __far *p;
 
     p = unsigned(p);    // column should be 17 not 18 in diagnostic
 }
@@ -91,7 +91,7 @@ void x85() {
     __segment seg2;
     void __based( seg1 ) *p1;
     void __based( seg2 ) *p2;
-    
+
     p2 = p1;                            // OK
 }
 

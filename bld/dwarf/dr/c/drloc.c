@@ -105,7 +105,8 @@ static void DoLocExpr( unsigned_8       *p,
 #define Push( a )    (--a)
 #define IsEmpty( a, b )  ( (a) == (b) )
 
-    var = var;
+    /* unused parameters */ (void)var;
+
     end = &p[length];
     stk_top = &stack[100];
     stack[100] = 0;
@@ -624,8 +625,8 @@ bool DRParmEntryAT( drmem_hdl var, dr_loc_callbck *callbck, void *d )
     return( ret );
 }
 
-extern drmem_hdl DRStringLengthAT( drmem_hdl str )
-/************************************************/
+drmem_hdl DRStringLengthAT( drmem_hdl str )
+/*****************************************/
 {
     drmem_hdl   abbrev;
 

@@ -50,7 +50,7 @@ void    GBegSSStr( itnode *array_node ) {
 
 // Start a substring operation on an array element.
 
-    array_node = array_node;
+    /* unused parameters */ (void)array_node;
 }
 
 
@@ -59,7 +59,7 @@ void    GBegFSS( itnode *func_node ) {
 
 // Start a substring operation on a function return value.
 
-    func_node = func_node;
+    /* unused parameters */ (void)func_node;
 }
 
 
@@ -68,7 +68,7 @@ void    GBegSFSS( itnode *sf_node ) {
 
 // Start a substring operation on a statement function.
 
-    sf_node = sf_node;
+    /* unused parameters */ (void)sf_node;
 }
 
 
@@ -86,7 +86,7 @@ void    GSubStr( itnode *char_node ) {
 
 // Generate a substring element.
 
-    char_node = char_node;
+    /* unused parameters */ (void)char_node;
 }
 
 

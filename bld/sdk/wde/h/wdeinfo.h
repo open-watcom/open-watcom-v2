@@ -33,17 +33,18 @@
 #ifndef WDEINFO_INCLUDED
 #define WDEINFO_INCLUDED
 
-#include "wresall.h"
+
+#include "wderesin.h"
 
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    OBJ_ID          obj_id;
-    char            *symbol;
-    WdeResInfo      *res_info;
-    void            *obj;
-    DialogSizeInfo  dsize;
+    OBJ_ID              obj_id;
+    char                *symbol;
+    WdeResInfo          *res_info;
+    void                *obj;
+    WdeDialogSizeInfo   sizeinfo;
     union {
         struct {
             char                *caption;
@@ -65,10 +66,10 @@ extern int  WdeGetInfoWindowDepth( void );
 extern bool WdeCreateInfoWindow( HWND, HINSTANCE );
 extern void WdeResizeInfoWindow( RECT * );
 extern void WdeInfoFini( void );
-extern void WdeWriteObjectDimensions( int, int, int, int );
+extern void WdeWriteObjectDimensions( WdeDialogSizeInfo * );
 extern void WdeWriteInfo( WdeInfoStruct * );
 extern void WdeDestroyInfoWindow( void );
 extern void WdeShowInfoWindow( bool );
-extern BOOL WdeIsInfoMessage( MSG *msg );
+extern bool WdeIsInfoMessage( MSG *msg );
 
 #endif

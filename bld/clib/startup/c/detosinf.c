@@ -39,9 +39,8 @@
 #include <sys/kernel.h>
 #include <sys/utsname.h>
 #include "crwd.h"
+#include "osinfqnx.h"
 
-extern unsigned char    __87;
-extern unsigned char    __r87;
 
 void __DetOSInfo( void )
 {

@@ -30,7 +30,7 @@
 
 
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "rcrtns.h"
 #include "semutil.h"
 #include "rccore.h"
@@ -61,25 +61,24 @@ void ReportCopyError( RcStatus status, int read_msg, const char *filename, int e
  */
 RcStatus CopyData( WResFileOffset offset, uint_32 length, WResFileID fid,
                 void *buff, unsigned buffsize, int *err_code )
-/***************************************************************************/
+/***********************************************************************/
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
-    if( RCSEEK( fid, offset, SEEK_SET ) == -1 ) {
+    if( RESSEEK( fid, offset, SEEK_SET ) ) {
         *err_code = errno;
         return( RS_READ_ERROR );
     }
 
-    while( length > 0 ) {
+    for( ; length > 0; length -= buffsize ) {
         if( buffsize > length )
             buffsize = (unsigned)length;
-        numread = RCREAD( fid, buff, buffsize );
-        if( (WResFileSize)numread != buffsize ) {
+        numread = RESREAD( fid, buff, buffsize );
+        if( numread != buffsize ) {
             *err_code = errno;
-            return( RCIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
+            return( RESIOERR( fid, numread ) ? RS_READ_ERROR : RS_READ_INCMPLT );
         }
-        length -= buffsize;
-        if( (WResFileSize)RCWRITE( CurrResFile.fid, buff, buffsize ) != buffsize ) {
+        if( RESWRITE( CurrResFile.fid, buff, buffsize ) != buffsize ) {
             *err_code = errno;
             return( RS_WRITE_ERROR );
         }

@@ -56,10 +56,10 @@
 #define BUFFER_OVERRUN_CHECK    (0x35791113)
 #endif
 
-static  void    nextMacroToken( void );
-static  void    (*tokenSource)( void );
+static  void            nextMacroToken( void );
+static  token_source_fn *tokenSource;
 
-static  char    *ReScanPtr;
+static  char            *ReScanPtr;
 
 ExtraRptCtr( nextTokenCalls );
 ExtraRptCtr( nextTokenSavedId );
@@ -140,13 +140,13 @@ static int rescanBuffer( void )
 {
     CurrChar = *(unsigned char *)ReScanPtr++;
     if( CurrChar == '\0' ) {
-        CompFlags.rescan_buffer_done = 1;
+        CompFlags.rescan_buffer_done = true;
     }
     return( CurrChar );
 }
 
-int ReScanToken( void )
-/*********************/
+bool ReScanToken( void )
+/**********************/
 {
     int saved_currchar;
     int (*saved_nextchar)(void);
@@ -157,7 +157,7 @@ int ReScanToken( void )
     saved_column = TokenColumn;
     saved_currchar = CurrChar;
     saved_nextchar = NextChar;
-    CompFlags.rescan_buffer_done = 0;
+    CompFlags.rescan_buffer_done = false;
     NextChar = rescanBuffer;
     NextChar();
     CurToken = ScanToken( true );
@@ -169,18 +169,18 @@ int ReScanToken( void )
     return( CompFlags.rescan_buffer_done );
 }
 
-void (*SetTokenSource( void (*source)( void ) ))( void )
-/******************************************************/
+token_source_fn *SetTokenSource( token_source_fn *source )
+/********************************************************/
 {
-    void (*last_source)( void );
+    token_source_fn *last_source;
 
     last_source = tokenSource;
     tokenSource = source;
     return( last_source );
 }
 
-void ResetTokenSource( void (*source)( void ) )
-/*********************************************/
+void ResetTokenSource( token_source_fn *source )
+/**********************************************/
 {
     tokenSource = source;
 }
@@ -213,8 +213,7 @@ static int saveNextChar( void )
 
     c = NextChar();
     if( TokenLen < BUF_SIZE - 2 ) {
-        Buffer[TokenLen] = c;
-        ++TokenLen;
+        Buffer[TokenLen++] = c;
     } else if( TokenLen == BUF_SIZE - 2 ) {
         if( NestLevel == SkipLevel ) {
             CErr1( ERR_TOKEN_TRUNCATED );
@@ -293,7 +292,7 @@ static void scanCComment( void )
 
     SrcFileCurrentLocation();
     start_line = TokenLine;
-    CompFlags.scanning_c_comment = 1;
+    CompFlags.scanning_c_comment = true;
     if( CompFlags.cpp_output ) {
         prt_comment_char( '/' );
         prt_comment_char( '*' );
@@ -306,7 +305,7 @@ static void scanCComment( void )
                 if( c == '/' ) break;
                 if( c == LCHR_EOF ) {
                     /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = 0;
+                    CompFlags.scanning_c_comment = false;
                     return;
                 }
             }
@@ -321,7 +320,7 @@ static void scanCComment( void )
                 if( c == '/' ) break;
                 if( c == LCHR_EOF ) {
                     /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = 0;
+                    CompFlags.scanning_c_comment = false;
                     return;
                 }
                 SrcFileSetErrLoc();
@@ -337,7 +336,7 @@ static void scanCComment( void )
                 if( c == '/' ) break;
                 if( c == LCHR_EOF ) {
                     /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = 0;
+                    CompFlags.scanning_c_comment = false;
                     return;
                 }
             }
@@ -350,7 +349,7 @@ static void scanCComment( void )
                 if( c == '/' ) break;
                 if( c == LCHR_EOF ) {
                     /* unterminated comment already detected in NextChar() */
-                    CompFlags.scanning_c_comment = 0;
+                    CompFlags.scanning_c_comment = false;
                     return;
                 }
                 SrcFileSetErrLoc();
@@ -358,7 +357,7 @@ static void scanCComment( void )
             }
         }
     }
-    CompFlags.scanning_c_comment = 0;
+    CompFlags.scanning_c_comment = false;
     NextChar();
 }
 
@@ -366,7 +365,7 @@ static void scanCppComment( void )
 {
     int c;
 
-    CompFlags.scanning_cpp_comment = 1;
+    CompFlags.scanning_cpp_comment = true;
     if( CompFlags.cpp_output ) {
         prt_comment_char( '/' );
         prt_comment_char( '/' );
@@ -379,7 +378,7 @@ static void scanCppComment( void )
     } else {
         SrcFileScanCppComment();
     }
-    CompFlags.scanning_cpp_comment = 0;
+    CompFlags.scanning_cpp_comment = false;
 }
 
 static int doESCChar( int c, bool expanding, type_id char_type )
@@ -451,7 +450,7 @@ static TOKEN charConst( type_id char_type, bool expanding )
     value = 0;
     for( ;; ) {
         if( c == '\r' || c == '\n' ) {
-            DbgAssert( Buffer[TokenLen-1] == c );
+            DbgAssert( Buffer[TokenLen - 1] == c );
             --TokenLen;
             token = T_BAD_TOKEN;
             break;
@@ -491,7 +490,7 @@ static TOKEN charConst( type_id char_type, bool expanding )
         value = (value << 8) + c;
         /* handle case where user wants a \ but doesn't escape it */
         if( c == '\'' && CurrChar != '\'' ) {
-            if( ! CompFlags.cpp_output ) {
+            if( !CompFlags.cpp_output ) {
                 token = T_BAD_TOKEN;
                 break;
             }
@@ -499,7 +498,7 @@ static TOKEN charConst( type_id char_type, bool expanding )
         c = CurrChar;
         if( c == '\'' ) break;
         if( i >= 4 ) {
-            if( ! CompFlags.cpp_output ) {
+            if( !CompFlags.cpp_output ) {
                 token = T_BAD_TOKEN;
                 break;
             }
@@ -563,7 +562,7 @@ static void unGetChar( int c )
 {
     if( NextChar == rescanBuffer ) {
         --ReScanPtr;
-        CompFlags.rescan_buffer_done = 0;
+        CompFlags.rescan_buffer_done = false;
     } else {
         GetNextCharUndo( c );
     }
@@ -682,12 +681,10 @@ static TOKEN doScanFloat( void )
             c = saveNextChar();
             if( (CharSet[c] & (C_AL | C_DI)) == 0 ) break;
         }
-        --TokenLen;
-        Buffer[TokenLen] = '\0';
+        Buffer[--TokenLen] = '\0';
         return( T_BAD_TOKEN );
     } else {
-        --TokenLen;
-        Buffer[TokenLen] = '\0';
+        Buffer[--TokenLen] = '\0';
         return( CurToken );
     }
 }
@@ -750,7 +747,7 @@ static TOKEN doScanString( type_id string_type, bool expanding )
         }
     }
     SrcFileSetSwEnd( false );
-    Buffer[TokenLen-1] = '\0';
+    Buffer[TokenLen - 1] = '\0';
     if( ok ) {
         if( ok == 2 ) {
             NextChar();
@@ -762,7 +759,7 @@ static TOKEN doScanString( type_id string_type, bool expanding )
     }
     // '\n' or LCHR_EOF don't print nicely
     --TokenLen;
-    Buffer[TokenLen-1] = '\0';
+    Buffer[TokenLen - 1] = '\0';
     BadTokenInfo = ERR_MISSING_QUOTE;
     return( T_BAD_TOKEN );
 }
@@ -1151,12 +1148,10 @@ static TOKEN scanNum( bool expanding )
             c = saveNextChar();
             if( (CharSet[c] & (C_AL | C_DI)) == 0 ) break;
         }
-        --TokenLen;
-        Buffer[TokenLen] = '\0';
+        Buffer[--TokenLen] = '\0';
         return( T_BAD_TOKEN );
     } else {
-        --TokenLen;
-        Buffer[TokenLen] = '\0';
+        Buffer[--TokenLen] = '\0';
         return( T_CONSTANT );
     }
 }
@@ -1165,8 +1160,9 @@ static TOKEN scanDelim1( bool expanding )
 {
     TOKEN token;
 
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
-    expanding = expanding;
     token = TokValue[ CurrChar ];
     Buffer[0] = CurrChar;
     Buffer[1] = '\0';
@@ -1180,9 +1176,10 @@ static TOKEN scanDelim12( bool expanding )       // @ or @@ token
     int c;
     int chr2;
     TOKEN tok;
-    int token_len;
+    size_t token_len;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     c = CurrChar;
     Buffer[0] = c;
@@ -1195,7 +1192,7 @@ static TOKEN scanDelim12( bool expanding )       // @ or @@ token
         ++token_len;
         NextChar();
     }
-    Buffer[ token_len ] = '\0';
+    Buffer[token_len] = '\0';
     TokenLen = token_len;
     return( tok );
 }
@@ -1205,9 +1202,10 @@ static TOKEN scanDelim12EQ( bool expanding )     // @, @@, or @= token
     int c;
     int chr2;
     TOKEN tok;
-    int token_len;
+    size_t token_len;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     c = CurrChar;
     Buffer[0] = c;
@@ -1224,7 +1222,7 @@ static TOKEN scanDelim12EQ( bool expanding )     // @, @@, or @= token
         ++token_len;
         NextChar();
     }
-    Buffer[ token_len ] = '\0';
+    Buffer[token_len] = '\0';
     TokenLen = token_len;
     return( tok );
 }
@@ -1234,9 +1232,10 @@ static TOKEN scanDelim12EQ2EQ( bool expanding )  // @, @@, @=, or @@= token
     int c;
     int chr2;
     TOKEN tok;
-    int token_len;
+    size_t token_len;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     c = CurrChar;
     Buffer[0] = c;
@@ -1258,7 +1257,7 @@ static TOKEN scanDelim12EQ2EQ( bool expanding )  // @, @@, @=, or @@= token
             NextChar();
         }
     }
-    Buffer[ token_len ] = '\0';
+    Buffer[token_len] = '\0';
     TokenLen = token_len;
     return( tok );
 }
@@ -1268,9 +1267,10 @@ static TOKEN scanDelim1EQ( bool expanding )      // @ or @= token
     int c;
     int chr2;
     TOKEN tok;
-    int token_len;
+    size_t token_len;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     c = CurrChar;
     Buffer[0] = c;
@@ -1283,7 +1283,7 @@ static TOKEN scanDelim1EQ( bool expanding )      // @ or @= token
         ++token_len;
         NextChar();
     }
-    Buffer[ token_len ] = '\0';
+    Buffer[token_len] = '\0';
     TokenLen = token_len;
     return( tok );
 }
@@ -1292,7 +1292,7 @@ static TOKEN scanSlash( bool expanding ) // /, /=, // comment, or /*comment*/
 {
     int nc;
     int tok;
-    int token_len;
+    size_t token_len;
 
     SrcFileCurrentLocation();
     Buffer[0] = '/';
@@ -1317,7 +1317,7 @@ static TOKEN scanSlash( bool expanding ) // /, /=, // comment, or /*comment*/
             tok = T_WHITE_SPACE;
         }
     }
-    Buffer[ token_len ] = '\0';
+    Buffer[token_len] = '\0';
     TokenLen = token_len;
     return( tok );
 }
@@ -1326,9 +1326,10 @@ static TOKEN scanLT( bool expanding )    // <, <=, <<, <<=, <%, <:
 {
     int nc;
     TOKEN tok;
-    int token_len;
+    size_t token_len;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     Buffer[0] = '<';
     tok = T_LT;
@@ -1357,7 +1358,7 @@ static TOKEN scanLT( bool expanding )    // <, <=, <<, <<=, <%, <:
         ++token_len;
         NextChar();
     }
-    Buffer[ token_len ] = '\0';
+    Buffer[token_len] = '\0';
     TokenLen = token_len;
     return( tok );
 }
@@ -1366,9 +1367,10 @@ static TOKEN scanPercent( bool expanding )   // %, %=, %>, %:, %:%:
 {
     int nc;
     TOKEN tok;
-    int token_len;
+    size_t token_len;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     Buffer[0] = '%';
     tok = T_PERCENT;
@@ -1400,7 +1402,7 @@ static TOKEN scanPercent( bool expanding )   // %, %=, %>, %:, %:%:
             }
         }
     }
-    Buffer[ token_len ] = '\0';
+    Buffer[token_len] = '\0';
     TokenLen = token_len;
     return( tok );
 }
@@ -1409,9 +1411,10 @@ static TOKEN scanColon( bool expanding ) // :, ::, or :>
 {
     int nc;
     TOKEN tok;
-    int token_len;
+    size_t token_len;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     Buffer[0] = ':';
     nc = NextChar();
@@ -1429,7 +1432,7 @@ static TOKEN scanColon( bool expanding ) // :, ::, or :>
         NextChar();
         ++token_len;
     }
-    Buffer[ token_len ] = '\0';
+    Buffer[token_len] = '\0';
     TokenLen = token_len;
     return( tok );
 }
@@ -1439,9 +1442,10 @@ static TOKEN scanMinus( bool expanding ) // -, -=, --, ->, or ->*
     int nc;
     int nnc;
     TOKEN tok;
-    int token_len;
+    size_t token_len;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     Buffer[0] = '-';
     nc = NextChar();
@@ -1468,14 +1472,15 @@ static TOKEN scanMinus( bool expanding ) // -, -=, --, ->, or ->*
             tok = T_ARROW;
         }
     }
-    Buffer[ token_len ] = '\0';
+    Buffer[token_len] = '\0';
     TokenLen = token_len;
     return( tok );
 }
 
 static TOKEN scanFloat( bool expanding )
 {
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     if( PPControl & PPCTL_ASM )
         return( doScanAsmToken() );
@@ -1533,14 +1538,14 @@ static TOKEN scanPPNumber( void )
         }
         break;
     }
-    --TokenLen;
-    Buffer[TokenLen] = '\0';
+    Buffer[--TokenLen] = '\0';
     return( T_PPNUMBER );
 }
 
 static TOKEN scanPPDigit( bool expanding )
 {
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     Buffer[0] = CurrChar;
     TokenLen = 1;
@@ -1551,7 +1556,8 @@ static TOKEN scanPPDot( bool expanding )
 {
     int         c;
 
-    expanding = expanding;
+    /* unused parameters */ (void)expanding;
+
     SrcFileCurrentLocation();
     Buffer[0] = '.';
     TokenLen = 1;
@@ -1625,8 +1631,6 @@ static TOKEN scanInvalid( bool expanding )
         }
         return( T_EOF );
     }
-#else
-    expanding = expanding;
 #endif
     if( diagnose_lex_error( expanding ) ) {
         CErr2( WARN_WEIRD_CHARACTER, CurrChar );
@@ -1638,7 +1642,9 @@ static TOKEN scanInvalid( bool expanding )
 static TOKEN scanEof( bool expanding )
 {
     DbgAssert( _BufferOverrun == BUFFER_OVERRUN_CHECK );
-    expanding = expanding;
+
+    /* unused parameters */ (void)expanding;
+
     return( T_EOF );
 }
 
@@ -1683,7 +1689,7 @@ void ScanInit( void )
     tokenSource = nextMacroToken;
     ReScanPtr = NULL;
     PPControl = PPCTL_NORMAL;
-    CompFlags.scanning_c_comment = 0;
+    CompFlags.scanning_c_comment = false;
     memset( ClassTable, SCAN_INVALID, sizeof( ClassTable ) );
     memset( &ClassTable['A'], SCAN_NAME, 26 );
     memset( &ClassTable['a'], SCAN_NAME, 26 );

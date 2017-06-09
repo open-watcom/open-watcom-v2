@@ -231,7 +231,7 @@ static  void    gml_hx_common( gml_tag gtag, int hx_lvl )
     static char htextx[8] = "$htextX";
     static char headx[7]  = "$headX";
 
-    gtag = gtag;
+    /* unused parameters */ (void)gtag;
 
     *(hxstr + 2) = '0' + hx_lvl;
     htextx[6] = '0' + hx_lvl;

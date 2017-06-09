@@ -37,7 +37,7 @@ msglist FlagMsg[] = {
     LF_FREE,                    (char *)(pointer_int)STR_FREE,
     LF_MOVEABLE,                (char *)(pointer_int)STR_MOVEABLE,
     LF_FIXED,                   (char *)(pointer_int)STR_FIXED,
-    0,                          (char *)(pointer_int)-1
+    0,                          NULL
 };
 
 msglist LocalGDIMsg[] = {
@@ -54,7 +54,7 @@ msglist LocalGDIMsg[] = {
     LT_GDI_MAX,                 (char *)(pointer_int)STR_MAX,
     LT_NORMAL,                  (char *)(pointer_int)STR_UNKNOWN,
     LT_FREE,                    (char *)(pointer_int)STR_FREE,
-    0,                          (char *)(pointer_int)-1
+    0,                          NULL
 };
 
 msglist LocalUSERMsg[] = {
@@ -85,13 +85,13 @@ msglist LocalUSERMsg[] = {
     LT_USER_MAX,                (char *)(pointer_int)STR_MAX,
     LT_NORMAL,                  (char *)(pointer_int)STR_UNKNOWN,
     LT_FREE,                    (char *)(pointer_int)STR_FREE,
-    0,                          (char *)(pointer_int)-1
+    0,                          NULL
 };
 
 msglist LocalNormMsg[] = {
     LT_NORMAL,                  (char *)(pointer_int)STR_UNKNOWN,
     LT_FREE,                    (char *)(pointer_int)STR_FREE,
-    0,                          (char *)(pointer_int)-1
+    0,                          NULL
 };
 
 msglist Sort_types[] = {
@@ -102,8 +102,8 @@ msglist Sort_types[] = {
     HEAPMENU_SORT_TYPE,         (char *)(pointer_int)STR_TYPE,
     HEAPMENU_SORT_FLAG,         (char *)(pointer_int)STR_FLAG,
     HEAPMENU_SORT_LRU,          (char *)(pointer_int)STR_AGE,
-    0,                          (char *)(pointer_int)-1 };
-
+    0,                          NULL
+};
 
 msglist DPMI_Sort_types[] = {
     HEAPMENU_SORT_ADDR,         (char *)(pointer_int)STR_BASE_ADDR,
@@ -112,15 +112,16 @@ msglist DPMI_Sort_types[] = {
     HEAPMENU_SORT_TYPE,         (char *)(pointer_int)STR_TYPE,
     HEAPMENU_SORT_GRAN,         (char *)(pointer_int)STR_GRANULARITY,
     HEAPMENU_SORT_DPL,          (char *)(pointer_int)STR_DPL,
-    0,                          (char *)(pointer_int)-1 };
+    0,                          NULL
+};
 
 msglist Display_types[] = {
     HEAPMENU_DISPLAY_ENTIRE,    (char *)(pointer_int)STR_ALL_HEAP_ITEMS,
     HEAPMENU_DISPLAY_LRU,       (char *)(pointer_int)STR_ONLY_LRU_ITEMS,
     HEAPMENU_DISPLAY_FREE,      (char *)(pointer_int)STR_ONLY_FREE_ITEMS,
     HEAPMENU_DISPLAY_DPMI,      (char *)(pointer_int)STR_SELECTOR_LIST,
-    0,                          (char *)(pointer_int)-1 };
-
+    0,                          NULL
+};
 
 void InitializeStringTables( void ) {
 

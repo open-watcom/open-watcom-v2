@@ -39,13 +39,9 @@ bool WResReadFixedWResID( WResID *name, WResFileID fid )
 /******************************************************/
 /* reads the fixed part of a WResID */
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
-    numread = WRESREAD( fid, name, sizeof( WResID ) );
-    if( numread == sizeof( WResID ) ) {
-        return( false );
-    } else {
-        WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-    }
-    return( true );
+    if( (numread = WRESREAD( fid, name, sizeof( WResID ) )) != sizeof( WResID ) )
+        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
+    return( false );
 } /* WResReadFixedWResID */

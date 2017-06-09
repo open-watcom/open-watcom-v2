@@ -32,8 +32,9 @@
 
 #include <stddef.h>
 #include "wresall.h"
-#include "bincpy.h"
+#include "wressetr.h"
 #include "rcrtns.h"
+#include "bincpy.h"
 
 #define BUFFER_SIZE  1024
 
@@ -42,32 +43,17 @@ static char     Buffer[ BUFFER_SIZE ];
 bool BinaryCopy( WResFileID in_fid, WResFileID out_fid, unsigned long length )
 /****************************************************************************/
 {
-    int     nummoved;
+    size_t      bufflen;
 
-    /* read the parts that fill the buffer */
-    while( length >= BUFFER_SIZE ) {
-        nummoved = RCREAD( in_fid, Buffer, BUFFER_SIZE );
-        if( nummoved != BUFFER_SIZE ) {
+    for( bufflen = sizeof( Buffer ); length > 0; length -= bufflen ) {
+        if( bufflen > length )
+            bufflen = length;
+        if( RESREAD( in_fid, Buffer, bufflen ) != bufflen ) {
             return( true );
         }
-        nummoved = RCWRITE( out_fid, Buffer, BUFFER_SIZE );
-        if( nummoved != BUFFER_SIZE ) {
-            return( true );
-        }
-
-        length -= BUFFER_SIZE;
-    }
-
-    if( length > 0 ) {
-        nummoved = RCREAD( in_fid, Buffer, length );
-        if( nummoved != (int)length ) {
-            return( true );
-        }
-        nummoved = RCWRITE( out_fid, Buffer, length );
-        if( nummoved != (int)length ) {
+        if( RESWRITE( out_fid, Buffer, bufflen ) != bufflen ) {
             return( true );
         }
     }
-
     return( false );
 }

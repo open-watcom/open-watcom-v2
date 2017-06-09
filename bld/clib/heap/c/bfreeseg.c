@@ -37,44 +37,25 @@
 #include "heapacc.h"
 
 
-#if defined(__OS2__)
-    #if defined(__BIG_DATA__)
-        #define MODIFIES ds es
-    #else
-        #define MODIFIES es
-    #endif
-#elif defined(__WINDOWS__)
-    #define MODIFIES es
-#endif
-
-#if defined(__WINDOWS__) || defined(__OS2__)
-    #pragma aux _bfreeseg modify [MODIFIES]
-#endif
+#define HEAP(s)     ((XBPTR(heapblkp, s))0)
 
 _WCRTLINK int _bfreeseg( __segment seg )
 {
-    __segment   heap_seg;
-    __segment   prev_seg;
-    heapblk     _WCFAR *heap;
-    heapblk     _WCFAR *next_heap;
-    heapblk     _WCFAR *prev_heap;
+    __segment       next_seg;
+    __segment       prev_seg;
 
     _AccessFHeap();
-    heap = MK_FP( seg, 0 );
-    heap_seg = seg;
-    seg = heap->nextseg;
     /* unlink from heap list */
-    prev_seg = heap->prevseg;
-    if( seg != _NULLSEG ) {
-        next_heap = MK_FP( seg, 0 );
-        next_heap->prevseg = prev_seg;
+    prev_seg = HEAP( seg )->prevseg;
+    next_seg = HEAP( seg )->nextseg;
+    if( next_seg != _NULLSEG ) {
+        HEAP( next_seg )->prevseg = prev_seg;
     }
     if( prev_seg == _NULLSEG ) {
-        __bheap = seg;
+        __bheapbeg = next_seg;
     } else {
-        prev_heap = MK_FP( prev_seg, 0 );
-        prev_heap->nextseg = seg;
+        HEAP( prev_seg )->nextseg = next_seg;
     }
     _ReleaseFHeap();
-    return( __FreeSeg( heap_seg ) );
+    return( __FreeSeg( seg ) );
 }

@@ -98,7 +98,7 @@ void MainProcSetup(             // SETUP FOR MAIN PROC
             break;
           default :
             if( LinkageIsC( sym ) ) {
-                CompFlags.extern_C_defn_found = 1;
+                CompFlags.extern_C_defn_found = true;
             }
             break;
         }

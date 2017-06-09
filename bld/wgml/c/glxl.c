@@ -534,7 +534,8 @@ void    lay_dl( lay_tag ltag )
     att_args            l_args;
     int                 cvterr;
 
-    ltag = ltag;
+    /* unused parameters */ (void)ltag;
+
     p = scan_start;
     cvterr = false;
 
@@ -629,7 +630,8 @@ void    lay_gl( lay_tag ltag )
     att_args            l_args;
     int                 cvterr;
 
-    ltag = ltag;
+    /* unused parameters */ (void)ltag;
+
     p = scan_start;
     cvterr = false;
 
@@ -720,7 +722,8 @@ void    lay_ol( lay_tag ltag )
     att_args            l_args;
     int                 cvterr;
 
-    ltag = ltag;
+    /* unused parameters */ (void)ltag;
+
     p = scan_start;
     cvterr = false;
 
@@ -824,7 +827,8 @@ void    lay_sl( lay_tag ltag )
     att_args            l_args;
     int                 cvterr;
 
-    ltag = ltag;
+    /* unused parameters */ (void)ltag;
+
     p = scan_start;
     cvterr = false;
 
@@ -915,7 +919,8 @@ void    lay_ul( lay_tag ltag )
     att_args            l_args;
     int                 cvterr;
 
-    ltag = ltag;
+    /* unused parameters */ (void)ltag;
+
     p = scan_start;
     cvterr = false;
 

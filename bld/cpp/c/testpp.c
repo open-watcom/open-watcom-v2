@@ -31,7 +31,6 @@
 
 #include "preproc.h"
 
-extern char PreProcChar;
 
 static void dumpheap( void )
 {
@@ -78,7 +77,7 @@ int main( int argc, char *argv[] )
         exit( 1 );
     }
     if( argv[2] != NULL ) {
-        PreProcChar = argv[2][0];
+        PP_PreProcChar = argv[2][0];
     }
     if( PP_Init( argv[1], PPFLAG_EMIT_LINE, NULL ) != 0 ) {
         printf( "Unable to open '%s'\n", argv[1] );

@@ -13,7 +13,8 @@ int main( int argc, char **argv )
     int     c;
     int     prev;
 
-    argc = argc;
+    /* unused parameters */ (void)argc;
+
 #ifdef __UNIX__
     to_crlf = false;
 #else

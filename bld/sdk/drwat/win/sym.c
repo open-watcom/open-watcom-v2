@@ -82,7 +82,7 @@ dig_fhandle PathOpen( char *name, unsigned len, char *ext )
 /*
  * InitSymbols
  */
-BOOL InitSymbols( void )
+bool InitSymbols( void )
 {
     int         rc;
     BOOL        diploaded;
@@ -92,13 +92,13 @@ BOOL InitSymbols( void )
     if( rc & DS_ERR ) {
         RCMessageBox( NULL, STR_CANT_INIT_DIP, AppName,
                       MB_OK | MB_ICONEXCLAMATION );
-        return( FALSE );
+        return( false );
     }
     if( LoadTheDips() ) {
         dipIsLoaded = TRUE;
-        return( TRUE );
+        return( true );
     } else {
-        return( FALSE );
+        return( false );
     }
 }
 
@@ -116,13 +116,13 @@ void FiniSymbols( void )
 /*
  * LoadDbgInfo
  */
-BOOL LoadDbgInfo( void )
+bool LoadDbgInfo( void )
 {
-    BOOL                err;
+    bool                err;
     unsigned            priority;
 
     DEBUGOUT( "Enter LoadDbgInfo" );
-    err = TRUE;
+    err = true;
     curProcess = DIPCreateProcess();
     cur_fid = DIGCli( Open )( DTModuleEntry.szExePath , DIG_READ );
     if( cur_fid != DIG_NIL_HANDLE ) {
@@ -140,7 +140,7 @@ BOOL LoadDbgInfo( void )
         if( curModHdl != NO_MOD ) {
             DEBUGOUT( "debug info load OK" );
             DIPMapInfo( curModHdl, NULL );
-            err = FALSE;
+            err = false;
         } else {
             DEBUGOUT( "curModHdl == NO_MOD" );
         }
@@ -154,9 +154,9 @@ BOOL LoadDbgInfo( void )
         DIPDestroyProcess( curProcess );
         curProcess = NULL;
         curModHdl = NO_MOD;
-        return( FALSE );
+        return( false );
     }
-    return( TRUE );
+    return( true );
 }
 
 /*

@@ -271,7 +271,8 @@ static cg_name directRef(       // DO DIRECT REFERENCE IF POSSIBLE
     target_offset_t offset;     // - offset from bound reference
     cg_name op;                 // - NULL or direct-ref expression
 
-    ref_off = ref_off;
+    /* unused parameters */ (void)ref_off;
+
     if( IbpReference( orig_sym, a_sym, &bound, &offset ) ) {
         op = CgSymbolPlusOffset( bound, offset );
     } else {
@@ -566,7 +567,8 @@ cg_name IbpFetchVfRef(          // FETCH A VIRTUAL FUNCTION ADDRESS
 static void ibpInit(            // INITIALIZE CGBKIBRP
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carveIBRP = CarveCreate( sizeof( IBRP ), 32 );
 }
 
@@ -574,7 +576,8 @@ static void ibpInit(            // INITIALIZE CGBKIBRP
 static void ibpFini(            // COMPLETE CGBKIBRP
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CarveDestroy( carveIBRP );
 }
 

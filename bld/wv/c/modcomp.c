@@ -37,9 +37,9 @@
 #include "modlist.h"
 #include "strutil.h"
 #include "wndsys.h"
+#include "dlgscomp.h"
+#include "modcomp.h"
 
-
-extern char     *DlgGetMatchString( gui_window *gui, gui_ctl_id id, size_t *matchoff );
 
 static const char *ModGetName( const void *data_handle, int item )
 {
@@ -51,7 +51,7 @@ static const char *ModGetName( const void *data_handle, int item )
     return( TxtBuff );
 }
 
-extern void ModComplete( gui_window *gui, gui_ctl_id id )
+void ModComplete( gui_window *gui, gui_ctl_id id )
 {
     char        *match;
     module_list list;

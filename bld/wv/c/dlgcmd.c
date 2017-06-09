@@ -43,6 +43,7 @@
 #include "dbgutil.h"
 #include "dbgcmd.h"
 #include "dbginit.h"
+#include "dlgscomp.h"
 
 
 typedef struct dlg_command {
@@ -52,7 +53,6 @@ typedef struct dlg_command {
 extern void             DlgSetHistory( gui_window *gui, void *history, char *cmd, int edit, int list );
 extern bool             DlgHistoryKey( gui_window *gui, void *param, int edit, int list );
 extern void             DlgClickHistory( gui_window *gui, int edit, int list );
-extern void             SymComplete( gui_window *gui, gui_ctl_id id );
 
 
 static bool CmdEvent( gui_window *gui, gui_event gui_ev, void *param )

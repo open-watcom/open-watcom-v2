@@ -31,6 +31,7 @@
 
 
 #ifndef _STRINGL_H
+#define _STRINGL_H
 
 typedef struct string_literal_t STRING_LITERAL;
 typedef STRING_LITERAL *STRING_CONSTANT;
@@ -38,7 +39,7 @@ typedef STRING_LITERAL *STRING_CONSTANT;
 struct string_literal_t {
     STRING_CONSTANT     next;           // - next entry
     back_handle         cg_handle;      // - handle during code generation
-    unsigned            len;            // - length in bytes not including '\0'
+    size_t              len;            // - length in bytes not including '\0'
     fe_seg_id           segid;          // - segment containing string bytes
     unsigned            concat : 1;     // - is result of concatenation
     unsigned            multi_line : 1; // - concat parts were on different lines
@@ -46,22 +47,21 @@ struct string_literal_t {
     char                string[1];      // - data
 };
 
-extern void StringTrash( STRING_CONSTANT );
-extern STRING_CONSTANT StringCreate( char *, unsigned );
-extern STRING_CONSTANT StringConcat( STRING_CONSTANT, STRING_CONSTANT );
-extern void StringConcatDifferentLines( STRING_CONSTANT );
-extern bool StringSame( STRING_CONSTANT, STRING_CONSTANT );
-extern size_t StringByteLength( STRING_CONSTANT );
-extern size_t StringAWStrLen( STRING_CONSTANT );
-extern char *StringBytes( STRING_CONSTANT );
+extern void             StringTrash( STRING_CONSTANT );
+extern STRING_CONSTANT  StringCreate( char *, size_t );
+extern STRING_CONSTANT  StringConcat( STRING_CONSTANT, STRING_CONSTANT );
+extern void             StringConcatDifferentLines( STRING_CONSTANT );
+extern bool             StringSame( STRING_CONSTANT, STRING_CONSTANT );
+extern size_t           StringByteLength( STRING_CONSTANT );
+extern size_t           StringAWStrLen( STRING_CONSTANT );
+extern char             *StringBytes( STRING_CONSTANT );
 
-void StringWalk(                // WALK DEFINED STRING LITERALS
+extern void StringWalk(         // WALK DEFINED STRING LITERALS
     void (*walker)              // - walking routine
         ( STRING_CONSTANT ) )   // - - current string
 ;
 
-STRING_CONSTANT StringGetIndex( STRING_CONSTANT );
-STRING_CONSTANT StringMapIndex( STRING_CONSTANT );
+extern STRING_CONSTANT  StringGetIndex( STRING_CONSTANT );
+extern STRING_CONSTANT  StringMapIndex( STRING_CONSTANT );
 
-#define _STRINGL_H
 #endif

@@ -87,8 +87,8 @@ void Dialog::addControl( const char * text, const char * id, const char *cls, lo
 {
     Rect &       r( (*_rectangles)[ rect ] );
 
-    cls = cls;
-    style = style;
+    /* unused parameters */ (void)cls; (void)style;
+
     _controls->push_back( Control( text, id, r ) );
 }
 

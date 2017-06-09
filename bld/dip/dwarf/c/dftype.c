@@ -49,7 +49,9 @@ typedef struct {
 static bool ArrayIndexSkip( drmem_hdl index, int pos, void *_df )
 {
     array_wlk_skip *df = _df;
-    pos = pos;
+
+    /* unused parameters */ (void)pos;
+
     if( df->skip == 0 ){
         df->curr = index;
         return( false );
@@ -326,7 +328,8 @@ static bool AType( drmem_hdl type, void *_typ_wlk, dr_search_context *cont )
     imp_type_handle *it;
     dr_dbg_handle   saved;
 
-    cont = cont;
+    /* unused parameters */ (void)cont;
+
     ret = true;
     it = typ_wlk->it;
     it->im = typ_wlk->im;
@@ -362,10 +365,11 @@ walk_result DIPIMPENTRY( WalkTypeList )( imp_image_handle *ii,
 imp_mod_handle DIPIMPENTRY( TypeMod )( imp_image_handle *ii,
                                 imp_type_handle *it )
 {
+    /* unused parameters */ (void)ii;
+
     /*
         Return the module that the type handle comes from.
     */
-    ii = ii;
     return( it->im );
 }
 
@@ -502,7 +506,8 @@ dip_status DIPIMPENTRY( TypeBase )( imp_image_handle *ii,
 {
     drmem_hdl  btype;
 
-    lc = lc; ll = ll;
+    /* unused parameters */ (void)lc; (void)ll;
+
     /*
         Given an implementation type handle, fill in 'base' with the
         base type of the handle.
@@ -540,7 +545,8 @@ static bool AEnum( drmem_hdl var, int index, void *_de )
     enum_range *de = _de;
     int_32  value;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     if( !DRConstValAT( var, (uint_32 *)&value ) ){
         return( false );
     }
@@ -561,7 +567,8 @@ static bool ArrayEnumType( drmem_hdl tenu, int index, void *_df )
     enum_range     de;
     int_32         count;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     de.low  = _I32_MIN;
     de.high = _I32_MAX;
     if( !DRWalkEnum( tenu, AEnum, &de )){
@@ -640,7 +647,8 @@ static bool ArraySubRange( drmem_hdl tsub, int index, void *_df )
     int_32     high;
     int_32     count;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     DRGetSubrangeInfo( tsub, &info );
     /* DWARF 2.0 specifies lower bound defaults for C/C++ (0) and FORTRAN (1) */
     if( info.low.val_class == DR_VAL_NOT ) {
@@ -729,7 +737,8 @@ static bool AParm( drmem_hdl var, int index, void *_df )
 {
     parm_wlk *df = _df;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     ++df->count;
     if( df->count == df->last ){
         df->var = var;
@@ -817,7 +826,8 @@ int DIPIMPENTRY( TypeCmp )( imp_image_handle *ii, imp_type_handle *it1,
 {
     long diff;
 
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     diff = it1->type - it2->type;
     return( diff );
 }
@@ -974,7 +984,8 @@ static bool AInherit( drmem_hdl inh, int index, void *_d )
     dr_dbg_handle   saved;
     walk_result     wr;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     cont = true;
 
     btype = DRGetTypeAT( inh );
@@ -1067,7 +1078,8 @@ static bool AInheritLookup( drmem_hdl inh, int index, void *_d )
     drmem_hdl btype;
     drmem_hdl old_inh;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     btype = DRGetTypeAT( inh );
     btype = DRSkipTypeChain( btype ); /* skip modifiers and typedefs */
     if( DRGetVirtuality( inh ) == DR_VIRTUALITY_VIRTUAL ){
@@ -1090,7 +1102,8 @@ static bool AEnumMem( drmem_hdl var, int index, void *_d )
     imp_sym_handle  *is;
     dr_dbg_handle   saved;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     cont = true;
     is = d->is;
     SetSymHandle( (type_wlk *)d, is );
@@ -1112,7 +1125,8 @@ static bool AEnumMemLookup( drmem_hdl var, int index, void *_d )
     char            *name;
     size_t          len;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     name =  DRGetName( var );
     if( name == NULL ){
         DCStatus( DS_FAIL );
@@ -1273,7 +1287,8 @@ static bool AInhFind( drmem_hdl inh, int index, void *_df )
     drmem_hdl       dr_derived;
     inh_path        head, *curr, **old_lnk;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     head.inh = inh;
     head.next = NULL;
     old_lnk = df->lnk;
@@ -1397,20 +1412,21 @@ size_t DIPIMPENTRY( TypeName )( imp_image_handle *ii, imp_type_handle *it,
 
 dip_status DIPIMPENTRY( TypeAddRef )( imp_image_handle *ii, imp_type_handle *it )
 {
-    ii=ii;
-    it=it;
+    /* unused parameters */ (void)ii; (void)it;
+
     return(DS_OK);
 }
 
 dip_status DIPIMPENTRY( TypeRelease )( imp_image_handle *ii, imp_type_handle *it )
 {
-    ii=ii;
-    it=it;
+    /* unused parameters */ (void)ii; (void)it;
+
     return(DS_OK);
 }
 
 dip_status DIPIMPENTRY( TypeFreeAll )( imp_image_handle *ii )
 {
-    ii=ii;
+    /* unused parameters */ (void)ii;
+
     return(DS_OK);
 }

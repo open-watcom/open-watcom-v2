@@ -243,7 +243,8 @@ vi_rc DisplayLineInWindowWithSyntaxStyle( window_id wid, int c_line_no, line *li
     char                *tmp;
 //    dc_line             *c_line;
 
-    junk = junk;
+    /* unused parameters */ (void)junk;
+
     if( EditFlags.RealTabs ) {
         a = strlen( text );
         tmp = StaticAlloc();

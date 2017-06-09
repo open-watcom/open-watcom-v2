@@ -44,13 +44,13 @@ typedef struct {
     WResLangNode        *lnode;
     uint_16             type;
     WRInfo              *info;
-    FARPROC             hcb;
+    HELP_CALLBACK       help_callback;
 } WRSelectImageInfo;
 
 /****************************************************************************/
 /* function prototypes                                                      */
 /****************************************************************************/
 WRDLLENTRY extern void                 WRAPI WRFreeSelectImageInfo( WRSelectImageInfo *info );
-WRDLLENTRY extern WRSelectImageInfo *  WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, FARPROC hcb );
+WRDLLENTRY extern WRSelectImageInfo *  WRAPI WRSelectImage( HWND parent, WRInfo *rinfo, HELP_CALLBACK help_callback );
 
 #endif

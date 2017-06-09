@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -46,8 +47,6 @@ static gui_control_info Controls[] = {
     DLG_DEFBUTTON(  NULL, CTL_PICK_OK,      2,  12, 12 ),
     DLG_BUTTON(     NULL, CTL_PICK_CANCEL,  18, 12, 28 ),
 };
-
-#define NUM_CONTROLS ( sizeof( Controls ) / sizeof( gui_control_info ) )
 
 bool GUIPickEvent( gui_window *gui, gui_event gui_ev, void *param )
 {
@@ -100,7 +99,7 @@ gui_ctl_idx GUIDlgPickWithRtn( const char *title, GUIPICKCALLBACK *pickinit, PIC
     Controls[2].text = LIT( Cancel );
     dlg.func = pickinit;
     dlg.chosen = -1;
-    OpenRtn( title, DLG_PICK_ROWS, len, Controls, NUM_CONTROLS, &GUIPickEvent, &dlg );
+    OpenRtn( title, DLG_PICK_ROWS, len, Controls, ARRAY_SIZE( Controls ), &GUIPickEvent, &dlg );
     return( dlg.chosen );
 }
 

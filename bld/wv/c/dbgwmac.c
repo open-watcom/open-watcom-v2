@@ -175,7 +175,8 @@ static bool MacModWhat( a_window *wnd, wnd_row row )
     int         old;
     wnd_macro   *mac;
 
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     mac = MacGetMacro( row );
     old = mac->type;
     if( mac->wndclass == WND_ALL ) {
@@ -317,7 +318,8 @@ static void MacModWhere( a_window *wnd, wnd_row row )
     int                 new;
     wnd_macro           *mac;
 
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     mac = MacGetMacro( row );
     new = DlgPickWithRtn( LIT_DUI( Enter_Window ), WndDisplayNames, mac->wndclass, WndGetName, WND_CURRENT );
     if( new == -1 )
@@ -343,7 +345,8 @@ static void MacModCmd( a_window *wnd, wnd_row row )
     wnd_macro   *mac;
 //    char        *p;
 
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     mac = MacGetMacro( row );
     cmds = mac->cmd;
 //    p = StrCopy( cmds->buff, TxtBuff );
@@ -392,9 +395,10 @@ static void     MacMenuItem( a_window *wnd, gui_ctl_id id, int row, int piece )
     mac_window          *wndmac;
     const char          *old;
 
+    /* unused parameters */ (void)piece;
+
     wndmac = WndMac( wnd );
     wndmac->last_id = id;
-    piece=piece;
     if( row < 0 ) {
         mac = NULL;
     } else {
@@ -445,7 +449,8 @@ static int MacNumRows( a_window *wnd )
     wnd_macro   *mac;
     int         count;
 
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
+
     count = 0;
     for( mac = WndMacroList; mac != NULL; mac = mac->link ) {
         ++count;
@@ -603,7 +608,8 @@ static bool MacEventProc( a_window * wnd, gui_event gui_ev, void *parm )
 {
     mac_window  *wndmac = WndMac( wnd );
 
-    parm=parm;
+    /* unused parameters */ (void)parm;
+
     switch( gui_ev ) {
     case GUI_INIT_WINDOW:
         MacRefresh( wnd );

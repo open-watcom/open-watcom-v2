@@ -107,10 +107,11 @@ static bool AContainer( drmem_hdl enclose, int index, void *_df )
 //***************************************************************
 {
     dr_scope_entry     *new;
-    bool            cont;
+    bool               cont;
     dr_scope_trail     *df = _df;
 
-    index = index;
+    /* unused parameters */ (void)index;
+
     new = AllocScopeEntry( &df->ctl );
     new->next = df->head;
     df->head = new;
@@ -123,10 +124,10 @@ static bool AContainer( drmem_hdl enclose, int index, void *_df )
     return( cont );
 }
 
-extern void DRGetScopeList( dr_scope_trail *container, drmem_hdl of )
-//*********************************************************************
+void DRGetScopeList( dr_scope_trail *container, drmem_hdl of )
+//************************************************************
 // Walk in to of starting at ccu
-//*********************************************************************
+//************************************************************
 {
     compunit_info   *compunit;
 
@@ -139,10 +140,10 @@ extern void DRGetScopeList( dr_scope_trail *container, drmem_hdl of )
     }
 }
 
-extern void DREndScopeList( dr_scope_trail *container )
-//******************************************************
+void DREndScopeList( dr_scope_trail *container )
+//**********************************************
 // Free list
-//******************************************************
+//**********************************************
 {
     ScopeCtlFini( &container->ctl );
 }

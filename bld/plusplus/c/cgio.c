@@ -142,7 +142,8 @@ ExtraRptCtr( cgio_locates_thunk );
 static void cgioInit(           // INITIALIZE FOR CG-IO
     INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     cg_file_ring = NULL;
     cg_thunk_ring = NULL;
     cg_file_removed = NULL;
@@ -181,7 +182,8 @@ static void cgioInit(           // INITIALIZE FOR CG-IO
 static void cgioFini(           // FINALIZE FOR CG-IO
     INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     CgioBuffFini();
     CarveDestroy( carveCGFILE );
     CarveDestroy( carveCGFILE_GEN );

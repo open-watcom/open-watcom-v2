@@ -45,16 +45,16 @@
 
 struct pstk_blk {
     PSTK_BLK    *next;
-    void const  *data[PSTK_BLOCK_SIZE];
+    elem_type   data[PSTK_BLOCK_SIZE];
 };
 
 #define BLOCK_PSTK_BLK         4
 static carve_t carvePSTK_BLK;
 
-static void const **addBlock( PSTK_CTL *h )
+static elem_type *addBlock( PSTK_CTL *h )
 {
-    PSTK_BLK *new_block;
-    void const **top;
+    PSTK_BLK    *new_block;
+    elem_type   *top;
 
     new_block = h->popped_blk;
     if( new_block == NULL ) {
@@ -64,16 +64,16 @@ static void const **addBlock( PSTK_CTL *h )
     }
     new_block->next = h->top_blk;
     h->top_blk = new_block;
-    top = &(new_block->data[PSTK_BLOCK_SIZE]);
+    top = new_block->data + PSTK_BLOCK_SIZE;
     return( top );
 }
 
-static void const **removeBlock( PSTK_CTL *h )
+static elem_type *removeBlock( PSTK_CTL *h )
 {
-    void const **top;
-    PSTK_BLK *old_block;
-    PSTK_BLK *last_block;
-    PSTK_BLK *curr_block;
+    elem_type   *top;
+    PSTK_BLK    *old_block;
+    PSTK_BLK    *last_block;
+    PSTK_BLK    *curr_block;
 
     old_block = h->top_blk;
     curr_block = old_block->next;
@@ -83,23 +83,23 @@ static void const **removeBlock( PSTK_CTL *h )
     CarveFree( carvePSTK_BLK, last_block );
     top = NULL;
     if( curr_block != NULL ) {
-        top = &(curr_block->data[0]);
+        top = curr_block->data;
     }
     return( top );
 }
 
-void PstkPush( PSTK_CTL *h, void const *e )
-/*****************************************/
+void PstkPush( PSTK_CTL *h, elem_type e )
+/***************************************/
 {
-    PSTK_BLK *top_block;
-    void const **top;
+    PSTK_BLK    *top_block;
+    elem_type   *top;
 
     top = h->top_item;
     if( top == NULL ) {
         top = addBlock( h );
     } else {
         top_block = h->top_blk;
-        if( top == (void const **) &(top_block->data[0]) ) {
+        if( top == top_block->data ) {
             top = addBlock( h );
         }
     }
@@ -108,19 +108,19 @@ void PstkPush( PSTK_CTL *h, void const *e )
     *top = e;
 }
 
-void *PstkPop( PSTK_CTL *h )
-/**************************/
+elem_type *PstkPop( PSTK_CTL *h )
+/*******************************/
 {
-    PSTK_BLK *top_block;
-    void const **top;
-    void const **return_top;
+    PSTK_BLK    *top_block;
+    elem_type   *top;
+    elem_type   *return_top;
 
     return_top = h->top_item;
     if( return_top != NULL ) {
         top = return_top;
         ++top;
         top_block = h->top_blk;
-        if( top == (void const **) &(top_block->data[PSTK_BLOCK_SIZE]) ) {
+        if( top == top_block->data + PSTK_BLOCK_SIZE ) {
             top = removeBlock( h );
         }
         h->top_item = top;
@@ -128,11 +128,13 @@ void *PstkPop( PSTK_CTL *h )
     return( return_top );
 }
 
-void* PstkPopElement( PSTK_CTL *h )
-/*********************************/
+elem_type PstkPopElement( PSTK_CTL *h )
+/*************************************/
 {
-    void **a_element = PstkPop( h );
-    void *element;
+    elem_type   *a_element;
+    elem_type   element;
+
+    a_element = PstkPop( h );
     if( NULL == a_element ) {
         element = NULL;
     } else {
@@ -141,55 +143,51 @@ void* PstkPopElement( PSTK_CTL *h )
     return element;
 }
 
-void *PstkTopElement( PSTK_CTL *h )
-/*********************************/
+elem_type PstkTopElement( PSTK_CTL *h )
+/*************************************/
 {
-    void const **a_element = PstkTop( h );
-    void *element;
+    elem_type *a_element = PstkTop( h );
+    elem_type element;
     if( NULL == a_element ) {
         element = NULL;
     } else {
-        element = (void*) *a_element;
+        element = *a_element;
     }
     return element;
 }
 
-static void const *isElementPresent( void const **start, void const **stop, void const *e )
+static int isElementPresent( const elem_type *start, const elem_type *stop, elem_type e )
 {
     DbgAssert( start != stop );
     do {
         if( *start == e ) {
-            return( e );
+            return( 1 );
         }
         ++start;
     } while( start != stop );
-    return( NULL );
+    return( 0 );
 }
 
-void *PstkContainsElement( PSTK_CTL *h, void const *e )
-/*****************************************************/
+int PstkContainsElement( PSTK_CTL *h, elem_type e )
+/*************************************************/
 {
-    void const **curr;
-    void const **stop;
+    const elem_type *curr;
     PSTK_BLK *block;
 
     curr = h->top_item;
     if( curr == NULL ) {
-        return( NULL );
+        return( 0 );
     }
     block = h->top_blk;
-    stop = (const void **) &(block->data[PSTK_BLOCK_SIZE]);
-    if( isElementPresent( curr, stop, e ) != NULL ) {
-        return( (void*) e );
+    if( isElementPresent( curr, block->data + PSTK_BLOCK_SIZE, e ) ) {
+        return( 1 );
     }
     for( block = block->next; block != NULL; block = block->next ) {
-        curr = (const void **) &(block->data[0]);
-        stop = (const void **) &(block->data[PSTK_BLOCK_SIZE]);
-        if( isElementPresent( curr, stop, e ) != NULL ) {
-            return( (void*) e );
+        if( isElementPresent( block->data + 0, block->data + PSTK_BLOCK_SIZE, e ) ) {
+            return( 1 );
         }
     }
-    return( NULL );
+    return( 0 );
 }
 
 void PstkOpen( PSTK_CTL *h )
@@ -211,9 +209,9 @@ void PstkClose( PSTK_CTL *h )
         CarveFree( carvePSTK_BLK, curr );
     }
     CarveFree( carvePSTK_BLK, h->popped_blk );
-    DbgStmt( h->popped_blk = (void*)-1 );
-    DbgStmt( h->top_blk = (void*)-1 );
-    DbgStmt( h->top_item = (void*)-1 );
+    DbgStmt( h->popped_blk = (PSTK_BLK *)-1 );
+    DbgStmt( h->top_blk = (PSTK_BLK *)-1 );
+    DbgStmt( h->top_item = (elem_type *)-1 );
 }
 
 void PstkPopAll( PSTK_CTL *h )
@@ -227,13 +225,15 @@ void PstkPopAll( PSTK_CTL *h )
 
 static void pstkInit( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     carvePSTK_BLK = CarveCreate( sizeof( PSTK_BLK ), BLOCK_PSTK_BLK );
 }
 
 static void pstkFini( INITFINI* defn )
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
 #ifndef NDEBUG
     CarveVerifyAllGone( carvePSTK_BLK, "PSTK_BLK" );
 #endif
@@ -252,8 +252,9 @@ INITDEFN( pstk, pstkInit, pstkFini )
 //          ...
 //          if( PstkIterUpOpen( &iter, &pstk ) ) {
 //              for( ; ; ) {
-//                  void* item = PstkIterUpNext( &iter );
-//                  if( NULL == item ) break;
+//                  void *item = PstkIterUpNext( &iter );
+//                  if( NULL == item )
+//                      break;
 //                  ... process "item"
 //              }
 //          }
@@ -263,18 +264,19 @@ INITDEFN( pstk, pstkInit, pstkFini )
 //          ...
 //          if( PstkIterDnOpen( &iter, &pstk ) ) {
 //              for( ; ; ) {
-//                  void* item = PstkIterDnNext( &iter );
-//                  if( NULL == item ) break;
+//                  void *item = PstkIterDnNext( &iter );
+//                  if( NULL == item )
+//                      break;
 //                  ... process "item"
 //              }
 //          }
 
 
 int PstkIterDnOpen                  // OPEN THE DOWN ITERATOR
-    ( PSTK_ITER* iter               // - the iterator
+    ( PSTK_ITER *iter               // - the iterator
     , PSTK_CTL const *pstk )        // - the pstk
 {
-    void const * const* a_item;     // - addr[ next item ]
+    elem_type *a_item;              // - addr[ next item ]
 
     iter->pstk = pstk;
     a_item = pstk->top_item;
@@ -284,10 +286,10 @@ int PstkIterDnOpen                  // OPEN THE DOWN ITERATOR
         iter->top = NULL;
         iter->bot = NULL;
     } else {
-        PSTK_BLK const * blk = pstk->top_blk;
+        const PSTK_BLK *blk = pstk->top_blk;
         iter->block = blk;
         if( NULL == blk->next ) {
-            iter->bot = &blk->data[ PSTK_BLOCK_SIZE - 1 ];
+            iter->bot = blk->data + PSTK_BLOCK_SIZE - 1;
         } else {
             iter->bot = 0;
         }
@@ -298,34 +300,34 @@ int PstkIterDnOpen                  // OPEN THE DOWN ITERATOR
 }
 
 
-void* PstkIterDnNext                // GET NEXT ITEM
-    ( PSTK_ITER* iter )             // - the iterator
+elem_type PstkIterDnNext            // GET NEXT ITEM
+    ( PSTK_ITER *iter )             // - the iterator
 {
-    void* retn;                     // - return: next item
-    void const * const* a_item;     // - addr[ next item ]
+    elem_type retn;                 // - return: next item
+    const elem_type *a_item;        // - addr[ next item ]
 
     a_item = iter->item;
     if( NULL == a_item ) {
         retn = NULL;
     } else {
-        PSTK_BLK const * blk = iter->block;
-        if( a_item == &blk->data[ PSTK_BLOCK_SIZE - 1 ] ) {
+        const PSTK_BLK *blk = iter->block;
+        if( a_item == blk->data + PSTK_BLOCK_SIZE - 1 ) {
             if( blk->next == NULL ) {
                 retn = NULL;
             } else {
                 blk = blk->next;
                 iter->block = blk;
                 if( NULL == blk->next ) {
-                    iter->bot = &blk->data[ PSTK_BLOCK_SIZE - 1 ];
+                    iter->bot = blk->data + PSTK_BLOCK_SIZE - 1;
                 }
-                a_item = &blk->data[0];
+                a_item = blk->data;
                 iter->item = a_item;
-                retn = (void*) *a_item;
+                retn = *a_item;
             }
         } else {
-            ++ a_item;
+            ++a_item;
             iter->item = a_item;
-            retn = (void*) *a_item;
+            retn = *a_item;
         }
     }
     return retn;
@@ -333,12 +335,12 @@ void* PstkIterDnNext                // GET NEXT ITEM
 
 
 static void setUpBlock              // SETUP UP-BLOCK
-    ( PSTK_ITER* iter               // - the iterator
-    , PSTK_BLK const * pred )       // - preceding block
+    ( PSTK_ITER *iter               // - the iterator
+    , PSTK_BLK const *pred )        // - preceding block
 {
-    PSTK_CTL const * pstk;          // - pstk being used
-    PSTK_BLK const * curr;          // - used to search blocks
-    PSTK_BLK const * next;          // - next block (from the top)
+    PSTK_CTL const *pstk;           // - pstk being used
+    PSTK_BLK const *curr;           // - used to search blocks
+    PSTK_BLK const *next;           // - next block (from the top)
 
     pstk = iter->pstk;
     curr = pstk->top_blk;
@@ -346,15 +348,16 @@ static void setUpBlock              // SETUP UP-BLOCK
         iter->item = NULL;
     } else {
         iter->top = pstk->top_item;
-        for( ; ; ) {
+        for( ;; ) {
             DbgAssert( curr != NULL );
             next = curr->next;
-            if( next == pred ) break;
+            if( next == pred )
+                break;
             curr = next;
         }
-        iter->item = &curr->data[ PSTK_BLOCK_SIZE ];
+        iter->item = curr->data + PSTK_BLOCK_SIZE;
         if( NULL == pred ) {
-            iter->bot = &curr->data[ PSTK_BLOCK_SIZE - 1 ];
+            iter->bot = curr->data + PSTK_BLOCK_SIZE - 1;
         }
         iter->block = curr;
     }
@@ -362,7 +365,7 @@ static void setUpBlock              // SETUP UP-BLOCK
 
 
 int PstkIterUpOpen                  // OPEN THE UP ITERATOR
-    ( PSTK_ITER* iter               // - the iterator
+    ( PSTK_ITER *iter               // - the iterator
     , PSTK_CTL const *pstk )        // - the pstk
 {
     iter->pstk = pstk;
@@ -371,11 +374,11 @@ int PstkIterUpOpen                  // OPEN THE UP ITERATOR
 }
 
 
-void* PstkIterUpNext                // GET NEXT ITEM
-    ( PSTK_ITER* iter )             // - the iterator
+elem_type PstkIterUpNext            // GET NEXT ITEM
+    ( PSTK_ITER *iter )             // - the iterator
 {
-    void* retn;                     // - return: next item
-    void const * const* a_item;     // - addr[ next item ]
+    elem_type retn;                 // - return: next item
+    const elem_type *a_item;        // - addr[ next item ]
 
     a_item = iter->item;
     if( NULL == a_item ) {
@@ -384,14 +387,14 @@ void* PstkIterUpNext                // GET NEXT ITEM
         if( a_item == iter->top ) {
             retn = NULL;
         } else {
-            PSTK_BLK const * blk = iter->block;
-            if( a_item == &blk->data[ 0 ] ) {
+            const PSTK_BLK * blk = iter->block;
+            if( a_item == blk->data ) {
                 setUpBlock( iter, blk );
                 a_item = iter->item;
             }
             -- a_item;
             iter->item = a_item;
-            retn = (void*) *a_item;
+            retn = *a_item;
         }
     }
     return retn;

@@ -329,7 +329,8 @@ bool CgDeclSkippableConstObj(   // DETERMINE IF SKIPPABLE CONST OBJ
 static void init(               // INITIALIZATION FOR MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     VstkOpen( &stack_inline_args, sizeof( struct symbol ), 16 );
     VstkOpen( &stack_symbol_name, sizeof( struct symbol_name ), 16 );
 }
@@ -338,7 +339,8 @@ static void init(               // INITIALIZATION FOR MODULE
 static void fini(               // COMPLETION FOR MODULE
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     VstkClose( &stack_inline_args );
     VstkClose( &stack_symbol_name );
 }

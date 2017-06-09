@@ -35,6 +35,7 @@ host_os=$(rtdll_host_os_$(system))
 
 version_res_dll_nt_386 = version.res
 version_res_dll_nt_x64 = version.res
+version_res_dll_nt_axp = version.res
 
 verrc_dll_skel = ../verinfo.rc
 verrc_dll      = $(dllname)

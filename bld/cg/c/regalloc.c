@@ -49,6 +49,7 @@
 #include "inssegs.h"
 #include "optimize.h"
 #include "fixindex.h"
+#include "conflict.h"
 
 
 enum allocation_state {
@@ -59,27 +60,23 @@ enum allocation_state {
 
 extern  void            NowDead(name *,conflict_node *,name_set *,block *);
 extern  void            BurnRegTree(reg_tree *);
-extern  conflict_node   *NameConflict(instruction *,name *);
 extern  void            BuildNameTree(conflict_node *);
 extern  void            BurnNameTree(reg_tree *);
 extern  bool            WorthProlog(conflict_node *,hw_reg_set);
 extern  void            FindReferences(void);
 extern  void            NowAlive(name *,conflict_node *,name_set *,block *);
 extern  void            BuildRegTree(conflict_node *);
-extern  void            FreeAConflict(conflict_node *);
 extern  void            LiveInfoUpdate(void);
 extern  void            MakeLiveInfo(void);
-extern  void            FreeConflicts(void);
 extern  void            MakeConflicts(void);
 extern  void            AddSegment(instruction *);
 extern  void            CalcSavings(conflict_node *);
 extern  bool            PropagateMoves(void);
 extern  bool            PropRegsOne(void);
-extern  conflict_node   *FindConflictNode(name *,block *,instruction *);
 extern  bool            MoreConflicts(void);
 extern  void            MemConstTemp(conflict_node *);
 extern  void            ConstSavings(void);
-extern  void            FreePossibleForAlias( conflict_node * );
+
 
 static  bool    ContainedIn( name *name1, name *name2 ) {
 /********************************************************
@@ -454,7 +451,8 @@ static  signed_32     CountRegMoves( conflict_node *conf,
     conflict_node       *other_conf;
     name                *other_opnd;
 
-    levels = levels;
+    /* unused parameters */ (void)levels;
+
     if( tree == NULL )
         return( 0 );
     reg_name = AllocRegName( reg );
@@ -611,7 +609,7 @@ static  bool    UnaryOpGetsReg( instruction *ins, hw_reg_set reg,
     given that the result or operand gets a register (a little machine specific
     but I don't know of any machines for which this isn't true).
 */
-     return( NumOperands( ins ) == 1 && ins->result != NULL &&
+     return( OpcodeNumOperands( ins ) == 1 && ins->result != NULL &&
             !IsSegReg( reg ) && ins->head.opcode != OP_CONVERT &&
             ( ins->operands[0] == op || ins->result == op ) );
 }
@@ -627,12 +625,10 @@ static  bool    StealsSeg( instruction *ins,
     hw_reg_set          *index_needs;
     name                *op;
     conflict_node       *new_conf;
-    int                 i;
 
-    i = ins->num_operands - 1;
-    if( i < NumOperands( ins ) )
+    if( ins->num_operands <= OpcodeNumOperands( ins ) )
         return( false );
-    op = ins->operands[i];
+    op = ins->operands[ins->num_operands - 1];
     new_conf = NameConflict( ins, op );
     if( new_conf == NULL )
         return( false );
@@ -1339,7 +1335,7 @@ bool    RegAlloc( bool keep_on_truckin ) {
     enum allocation_state       last;
 
     HW_CAsgn( GivenRegisters, HW_EMPTY );
-    if( BlockByBlock == false ) {
+    if( !BlockByBlock ) {
         InitChoices();
         unknowns = ExpandOps( keep_on_truckin );
         if( unknowns <= 0 )

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -45,6 +46,7 @@
 #include "myassert.h"
 #include "support.h"
 #include "utils.h"
+#include "wpdata.h"
 
 #define MD_x86
 #define MD_axp
@@ -54,8 +56,6 @@
 
 #include "clibext.h"
 
-
-extern sio_data         *CurrSIOData;
 
 void *DIGCLIENTRY( Alloc )( size_t amount )
 /*****************************************/
@@ -120,7 +120,7 @@ size_t DIGCLIENTRY( Read )( dig_fhandle fid, void * b , size_t s )
 #if defined( __QNX__ )
     return( BigRead( DIG_FID2PH( fid ), b, s ) );
 #else
-    return( read( DIG_FID2PH( fid ), b, s ) );
+    return( posix_read( DIG_FID2PH( fid ), b, s ) );
 #endif
 }
 
@@ -130,7 +130,7 @@ size_t DIGCLIENTRY( Write )( dig_fhandle fid, const void * b, size_t s )
 #if defined( __QNX__ )
     return( BigWrite( DIG_FID2PH( fid ), b, s ) );
 #else
-    return( write( DIG_FID2PH( fid ), b, s ) );
+    return( posix_write( DIG_FID2PH( fid ), b, s ) );
 #endif
 }
 
@@ -143,7 +143,8 @@ void DIGCLIENTRY( Close )( dig_fhandle fid )
 void DIGCLIENTRY( Remove )( const char * name, dig_open mode )
 /************************************************************/
 {
-    mode=mode;
+    /* unused parameters */ (void)mode;
+
     remove( name );
 }
 
@@ -154,7 +155,8 @@ unsigned DIGCLIENTRY( MachineData )( address addr, unsigned info_type,
 {
     enum x86_addr_characteristics       *d;
 
-    info_type = info_type; in_size = in_size; in = in; out_size = out_size;
+    /* unused parameters */ (void)info_type; (void)in_size; (void)in; (void)out_size;
+
     switch( CurrSIOData->config.mad ) {
     case MAD_X86:
         d = out;

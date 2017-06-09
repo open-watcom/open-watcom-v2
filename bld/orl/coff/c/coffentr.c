@@ -39,7 +39,7 @@
 
 coff_handle COFFENTRY CoffInit( orl_funcs *funcs )
 {
-    coff_handle                                 coff_hnd;
+    coff_handle         coff_hnd;
 
     coff_hnd = (coff_handle)ORL_CLI_ALLOC( funcs, sizeof( coff_handle_struct ) );
     if( coff_hnd != NULL ) {
@@ -51,12 +51,12 @@ coff_handle COFFENTRY CoffInit( orl_funcs *funcs )
 
 orl_return COFFENTRY CoffFini( coff_handle coff_hnd )
 {
-    orl_return                                  error;
+    orl_return          return_val;
 
     while( coff_hnd->first_file_hnd != NULL ) {
-        error = CoffRemoveFileLinks( coff_hnd->first_file_hnd );
-        if( error != ORL_OKAY ) {
-            return( error );
+        return_val = CoffRemoveFileLinks( coff_hnd->first_file_hnd );
+        if( return_val != ORL_OKAY ) {
+            return( return_val );
         }
     }
     ORL_PTR_FREE( coff_hnd, coff_hnd );
@@ -66,25 +66,21 @@ orl_return COFFENTRY CoffFini( coff_handle coff_hnd )
 orl_return COFFENTRY CoffFileInit( coff_handle coff_hnd, orl_file_id file, coff_file_handle *pcfh )
 {
     coff_file_handle    coff_file_hnd;
-    orl_return          error;
+    orl_return          return_val;
 
     coff_file_hnd = (coff_file_handle)ORL_PTR_ALLOC( coff_hnd, sizeof( coff_file_handle_struct ) );
     if( coff_file_hnd == NULL )
         return( ORL_OUT_OF_MEMORY );
-    coff_file_hnd->coff_sec_hnd = NULL;
-    coff_file_hnd->orig_sec_hnd = NULL;
+    memset( coff_file_hnd, 0, sizeof( coff_file_handle_struct ) );
     coff_file_hnd->file = file;
-    coff_file_hnd->sec_name_hash_table = NULL;
-    coff_file_hnd->symbol_handles = NULL;
-    coff_file_hnd->implib_data = NULL;
     CoffAddFileLinks( coff_hnd, coff_file_hnd );
-    error = CoffLoadFileStructure( coff_file_hnd );
-    if( error != ORL_OKAY ) {
+    return_val = CoffLoadFileStructure( coff_file_hnd );
+    if( return_val != ORL_OKAY ) {
         CoffRemoveFileLinks( coff_file_hnd );
         coff_file_hnd = NULL;
     }
     *pcfh = coff_file_hnd;
-    return( error );
+    return( return_val );
 }
 
 orl_return COFFENTRY CoffFileFini( coff_file_handle coff_file_hnd )
@@ -94,37 +90,38 @@ orl_return COFFENTRY CoffFileFini( coff_file_handle coff_file_hnd )
 
 orl_return COFFENTRY CoffFileScan( coff_file_handle coff_file_hnd, const char *desired, orl_sec_return_func return_func )
 {
-    orl_hash_data_struct *              data_struct;
-    unsigned                            loop;
-    orl_return                          error;
+    orl_hash_data_struct    *data_entry;
+    coff_quantity           i;
+    orl_return              return_val;
+    orl_hash_key            key;
 
     if( desired == NULL ) {
         /* global request */
-        for( loop = 0; loop < coff_file_hnd->num_sections; loop++ ) {
-            error = return_func( (orl_sec_handle)coff_file_hnd->coff_sec_hnd[loop] );
-            if( error != ORL_OKAY ) {
-                return( error );
+        for( i = 0; i < coff_file_hnd->num_sections; ++i ) {
+            return_val = return_func( (orl_sec_handle)coff_file_hnd->coff_sec_hnd[i] );
+            if( return_val != ORL_OKAY ) {
+                return( return_val );
             }
         }
     } else {
-        if( !(coff_file_hnd->sec_name_hash_table) ) {
-            error = CoffBuildSecNameHashTable( coff_file_hnd );
-            if( error != ORL_OKAY ) {
-                return( error );
+        if( coff_file_hnd->sec_name_hash_table == NULL ) {
+            return_val = CoffBuildSecNameHashTable( coff_file_hnd );
+            if( return_val != ORL_OKAY ) {
+                return( return_val );
             }
         }
-        data_struct = ORLHashTableQuery( coff_file_hnd->sec_name_hash_table, desired );
-        while( data_struct != NULL ) {
-            error = return_func( (orl_sec_handle)data_struct->data );
-            if( error != ORL_OKAY )
-                return( error );
-            data_struct = data_struct->next;
+        key.u.string = desired;
+        for( data_entry = ORLHashTableQuery( coff_file_hnd->sec_name_hash_table, key ); data_entry != NULL; data_entry = data_entry->next ) {
+            return_val = return_func( (orl_sec_handle)data_entry->data );
+            if( return_val != ORL_OKAY ) {
+                return( return_val );
+            }
         }
     }
     return( ORL_OKAY );
 }
 
-unsigned long COFFENTRY CoffExportTableRVA(coff_file_handle coff_file_hnd)
+coff_rva COFFENTRY CoffExportTableRVA( coff_file_handle coff_file_hnd )
 {
     return( coff_file_hnd->export_table_rva );
 }
@@ -165,17 +162,17 @@ coff_sec_handle COFFENTRY CoffSecGetSymbolTable( coff_sec_handle coff_sec_hnd )
     return( coff_sec_hnd->coff_file_hnd->symbol_table );
 }
 
-char * COFFENTRY CoffSecGetName( coff_sec_handle coff_sec_hnd )
+const char * COFFENTRY CoffSecGetName( coff_sec_handle coff_sec_hnd )
 {
     return( coff_sec_hnd->name );
 }
 
-orl_sec_offset COFFENTRY CoffSecGetBase( coff_sec_handle coff_sec_hnd )
+coff_sec_base COFFENTRY CoffSecGetBase( coff_sec_handle coff_sec_hnd )
 {
     return( coff_sec_hnd->base );
 }
 
-orl_sec_size COFFENTRY CoffSecGetSize( coff_sec_handle coff_sec_hnd )
+coff_sec_size COFFENTRY CoffSecGetSize( coff_sec_handle coff_sec_hnd )
 {
     return( coff_sec_hnd->size );
 }
@@ -222,7 +219,7 @@ orl_linnum * COFFENTRY CoffSecGetLines( coff_sec_handle coff_sec_hnd )
     return( NULL );
 }
 
-orl_sec_offset COFFENTRY CoffSecGetOffset( coff_sec_handle coff_sec_hnd )
+coff_sec_offset COFFENTRY CoffSecGetOffset( coff_sec_handle coff_sec_hnd )
 {
     if( coff_sec_hnd->hdr != NULL ) {
         return( coff_sec_hnd->hdr->offset );
@@ -241,10 +238,10 @@ orl_return COFFENTRY CoffSecGetContents( coff_sec_handle coff_sec_hnd, unsigned 
 
 orl_return COFFENTRY CoffSecQueryReloc( coff_sec_handle coff_sec_hnd, coff_sec_offset sec_offset, orl_reloc_return_func return_func )
 {
-    unsigned                                    index;
-    coff_sec_handle                             reloc_sec_hnd;
-    orl_reloc *                                 reloc;
-    orl_return                                  return_val;
+    unsigned            index;
+    coff_sec_handle     reloc_sec_hnd;
+    orl_reloc           *reloc;
+    orl_return          return_val;
 
     if( coff_sec_hnd->type != ORL_SEC_TYPE_PROG_BITS )
         return( ORL_ERROR );
@@ -275,8 +272,8 @@ orl_table_index COFFENTRY CoffCvtSecHdlToIdx( coff_sec_handle shdl )
 /******************************************************************/
 // NYI: would be nice to have a O(1) way of doing this.
 {
-    orl_table_index     index;
-    orl_table_index     limit;
+    coff_quantity       index;
+    coff_quantity       limit;
     coff_file_handle    fhdl;
 
     fhdl = shdl->coff_file_hnd;
@@ -298,10 +295,10 @@ coff_sec_handle COFFENTRY CoffCvtIdxToSecHdl( coff_file_handle fhdl,
 
 orl_return COFFENTRY CoffSecScanReloc( coff_sec_handle coff_sec_hnd, orl_reloc_return_func return_func )
 {
-    unsigned                                    index;
-    coff_sec_handle                             reloc_sec_hnd;
-    orl_reloc *                                 reloc;
-    orl_return                                  return_val;
+    unsigned            index;
+    coff_sec_handle     reloc_sec_hnd;
+    orl_reloc           *reloc;
+    orl_return          return_val;
 
     if( coff_sec_hnd->type != ORL_SEC_TYPE_PROG_BITS )
         return( ORL_ERROR );
@@ -327,9 +324,9 @@ orl_return COFFENTRY CoffSecScanReloc( coff_sec_handle coff_sec_hnd, orl_reloc_r
 
 orl_return COFFENTRY CoffRelocSecScan( coff_sec_handle coff_sec_hnd, orl_reloc_return_func return_func )
 {
-    unsigned                                    index;
-    orl_reloc *                                 reloc;
-    orl_return                                  return_val;
+    unsigned        index;
+    orl_reloc       *reloc;
+    orl_return      return_val;
 
     if( coff_sec_hnd->type != ORL_SEC_TYPE_RELOCS )
         return( ORL_ERROR );
@@ -352,30 +349,30 @@ orl_return COFFENTRY CoffRelocSecScan( coff_sec_handle coff_sec_hnd, orl_reloc_r
 
 orl_return COFFENTRY CoffSymbolSecScan( coff_sec_handle coff_sec_hnd, orl_symbol_return_func return_func )
 {
-    unsigned                                    index;
-    orl_return                                  error;
-    coff_symbol_handle                          coff_symbol_hnd;
+    coff_quantity       index;
+    orl_return          return_val;
+    coff_symbol_handle  coff_symbol_hnd;
 
     if( coff_sec_hnd->type != ORL_SEC_TYPE_SYM_TABLE )
         return( ORL_ERROR );
-    if( !(coff_sec_hnd->coff_file_hnd->symbol_handles) ) {
-        error = CoffCreateSymbolHandles( coff_sec_hnd->coff_file_hnd );
-        if( error != ORL_OKAY ) {
-            return( error );
+    if( coff_sec_hnd->coff_file_hnd->symbol_handles == NULL ) {
+        return_val = CoffCreateSymbolHandles( coff_sec_hnd->coff_file_hnd );
+        if( return_val != ORL_OKAY ) {
+            return( return_val );
         }
     }
     for( index = 0; index < coff_sec_hnd->coff_file_hnd->num_symbols; index++ ) {
         coff_symbol_hnd = coff_sec_hnd->coff_file_hnd->symbol_handles + index;
-        error = return_func( (orl_symbol_handle) coff_symbol_hnd );
-        if( error != ORL_OKAY )
-            return( error );
+        return_val = return_func( (orl_symbol_handle)coff_symbol_hnd );
+        if( return_val != ORL_OKAY )
+            return( return_val );
         index += coff_symbol_hnd->symbol->num_aux;
     }
     return( ORL_OKAY );
 }
 
-orl_return COFFENTRY CoffNoteSecScan( coff_sec_handle hnd, orl_note_callbacks *cb, void *cookie )
-/***********************************************************************************************/
+orl_return COFFENTRY CoffNoteSecScan( coff_sec_handle hnd, orl_note_callbacks *cbs, void *cookie )
+/************************************************************************************************/
 {
     if( hnd->type != ORL_SEC_TYPE_NOTE )
         return( ORL_ERROR );
@@ -383,24 +380,20 @@ orl_return COFFENTRY CoffNoteSecScan( coff_sec_handle hnd, orl_note_callbacks *c
         return( ORL_OKAY );
     if( hnd->size == 0 )
         return( ORL_OKAY );
-    return( CoffParseDrectve( (char *)hnd->contents, hnd->size, cb, cookie ) );
+    return( CoffParseDrectve( (char *)hnd->contents, hnd->size, cbs, cookie ) );
 }
 
-char * COFFENTRY CoffSymbolGetName( coff_symbol_handle coff_symbol_hnd )
+const char * COFFENTRY CoffSymbolGetName( coff_symbol_handle coff_symbol_hnd )
 {
     if( coff_symbol_hnd->type & ORL_SYM_TYPE_FILE ) {
-        return( (char *)( coff_symbol_hnd->symbol + 1 ) );
+        return( coff_symbol_hnd->symbol->name.name_string + 1 );
     }
     return( coff_symbol_hnd->name );
 }
 
-orl_symbol_value COFFENTRY CoffSymbolGetValue( coff_symbol_handle coff_symbol_hnd )
+coff_symbol_value COFFENTRY CoffSymbolGetValue( coff_symbol_handle coff_symbol_hnd )
 {
-    unsigned_64 val64;
-
-    val64.u._32[I64LO32] = coff_symbol_hnd->symbol->value;
-    val64.u._32[I64HI32] = 0;
-    return( val64 );
+    return( coff_symbol_hnd->symbol->value );
 }
 
 orl_symbol_binding COFFENTRY CoffSymbolGetBinding( coff_symbol_handle coff_symbol_hnd )
@@ -422,9 +415,9 @@ coff_sec_handle COFFENTRY CoffSymbolGetSecHandle( coff_symbol_handle coff_symbol
 
 coff_symbol_handle COFFENTRY CoffSymbolGetAssociated( coff_symbol_handle hnd )
 {
-    coff_sym_weak *     weak;
+    coff_sym_weak   *weak;
 
     weak = (coff_sym_weak *)( hnd->symbol + 1 );
-    return( &hnd->coff_file_hnd->symbol_handles[weak->tag_index] );
+    return( hnd->coff_file_hnd->symbol_handles + weak->tag_index );
 }
 

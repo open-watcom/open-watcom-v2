@@ -111,11 +111,14 @@ static  zero_bits       AZeroHalf( zero_bits l, zero_bits r ) {
     zero_bits   zhalf;
 
     zhalf = l & LO_HALF;
-    if( zhalf ) return( zhalf );
+    if( zhalf )
+        return( zhalf );
     zhalf = l & HI_HALF;
-    if( zhalf ) return( zhalf );
+    if( zhalf )
+        return( zhalf );
     zhalf = r & LO_HALF;
-    if( zhalf ) return( zhalf );
+    if( zhalf )
+        return( zhalf );
     zhalf = r & HI_HALF;
     return( zhalf );
 }
@@ -158,18 +161,25 @@ extern  bool    ScoreZero( score *sc, instruction **pins ) {
 #define NonZeroRESPart( x )  NonZeroPart( res, x, hc )
 
     ins = *pins;
-    if( ins->num_operands != 2 ) return( false );
-    if( ins->result == NULL ) return( false );
+    if( ins->num_operands != 2 )
+        return( false );
+    if( ins->result == NULL )
+        return( false );
     if( ( ins->head.opcode != OP_ADD && ins->head.opcode != OP_AND
        && ins->head.opcode != OP_OR && ins->head.opcode != OP_XOR
-       && ins->head.opcode != OP_SUB ) ) return( false );
-    if( ins->ins_flags & INS_CC_USED ) return( false );
-    if( VolatileIns( ins ) ) return( false );
+       && ins->head.opcode != OP_SUB ) )
+        return( false );
+    if( ins->ins_flags & INS_CC_USED )
+        return( false );
+    if( VolatileIns( ins ) )
+        return( false );
     op1 = ins->operands[0];
     op2 = ins->operands[1];
     res = ins->result;
-    if( op1->n.size != op2->n.size ) return( false );
-    if( res->n.size != op2->n.size ) return( false );
+    if( op1->n.size != op2->n.size )
+        return( false );
+    if( res->n.size != op2->n.size )
+        return( false );
     class = ins->type_class;
     op1zpart = HasZero( sc, op1 );
     op2zpart = HasZero( sc, op2 );
@@ -273,26 +283,28 @@ extern  bool    ScoreZero( score *sc, instruction **pins ) {
         }
         break;
     }
-    if( CheckIns( &ins1 ) == false && ins2 != NULL ) {
+    if( !CheckIns( &ins1 ) && ins2 != NULL ) {
         ins2->head.next = ins2;
         ins2->head.prev = ins2;
         FreeIns( ins2 );
         ins2 = NULL;
     }
-    if( CheckIns( &ins2 ) == false && ins1 != NULL ) {
+    if( !CheckIns( &ins2 ) && ins1 != NULL ) {
         ins1->head.next = ins1;
         ins1->head.prev = ins1;
         FreeIns( ins1 );
         ins1 = NULL;
     }
-    if( ins1 == NULL && ins2 == NULL ) return( change );
+    if( ins1 == NULL && ins2 == NULL )
+        return( change );
     if( ins2 != NULL ) {
         SuffixIns( ins, ins2 );
+        *pins = ins2;
     }
     if( ins1 != NULL ) {
         SuffixIns( ins, ins1 );
+        *pins = ins1;
     }
     FreeIns( ins );
-    *pins = ins1;
     return( true );
 }

@@ -215,7 +215,7 @@ void    IEFiniGlobalStrings( void );
 BOOL    IEInitGlobalStrings( void );
 
 /* ieproc.c */
-WINEXPORT extern WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT extern WPI_MRESULT CALLBACK ImgEdFrameProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 void CALLBACK       IEHelpCallBack( void );
 void                IEEnableMenuInput( BOOL enable );
 void                IEHelpRoutine( void );
@@ -223,14 +223,14 @@ void                IEHelpSearchRoutine( void );
 void                IEHelpOnHelpRoutine( void );
 
 /* ieclrpal.c */
-WINEXPORT extern WPI_MRESULT CALLBACK ColorPalWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT extern WPI_MRESULT CALLBACK ColorPalWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 void                CreateColorPal( void );
 void                CheckPaletteItem( HMENU hmenu );
 void                SetRGBValues( RGBQUAD *argbvals, int upperlimit );
 
 /* clrcntls.c */
-WINEXPORT extern WPI_MRESULT CALLBACK    ColorsWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
-WINEXPORT extern WPI_MRESULT CALLBACK    ScreenWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT extern WPI_MRESULT CALLBACK    ColorsWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT extern WPI_MRESULT CALLBACK    ScreenWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 void                CreateColorControls( HWND hparent );
 void                DisplayScreenClrs( BOOL fdisplay );
 void                SetNumColors( int number_of_colors );
@@ -239,7 +239,7 @@ void                ShowNewColor( int index, COLORREF newcolor, BOOL repaint );
 void                SetInitScreenColor( COLORREF color );
 
 /* curclr.c */
-WINEXPORT extern WPI_MRESULT CALLBACK CurrentWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT extern WPI_MRESULT CALLBACK CurrentWndProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 void            CreateCurrentWnd( HWND hparent );
 void            SetColor( int mousebutton, COLORREF color, COLORREF solid, wie_clrtype type );
 COLORREF        GetSelectedColor( int mousebutton, COLORREF *solid, wie_clrtype *type );
@@ -248,7 +248,7 @@ void            SetCurrentNumColors( int colour_count );
 void            ChangeCurrentColor( void );
 
 /* ieviewin.c */
-WINEXPORT extern WPI_MRESULT CALLBACK ViewWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT extern WPI_MRESULT CALLBACK ViewWindowProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 HWND            CreateViewWin( int width, int height );
 void            CheckViewItem( HMENU hmenu );
 COLORREF        GetViewBkColor( void );
@@ -267,7 +267,7 @@ HBITMAP         EnlargeImage( HWND hwnd );
 //void            ConvertToDIBitmap( HBITMAP hbitmap );
 void            SetIsSaved( HWND hwnd, BOOL fissaved );
 void            OutlineRectangle( bool firsttime, WPI_PRES pres, WPI_RECT *prevrc, WPI_RECT *newrc );
-void            GetFnameFromPath( char *fullpath, char *fname );
+void            GetFnameFromPath( const char *fullpath, char *fname );
 void            GrayEditOptions( void );
 void            FindOrigin( WPI_POINT *new_origin );
 void            SetMenus( img_node *node );
@@ -286,16 +286,15 @@ int     OpenImage( HANDLE hDrop );
 BOOL    LoadColorPalette( void );
 void    SetInitialOpenDir( char *new_dir );
 char    *GetInitOpenDir( void );
-void    OpenFileOnStart( char *fname );
-BOOL    ReadBitmapFromData( void *data, char *fullname, WRInfo *info, WResLangNode *lnode );
-BOOL    ReadIconFromData( void *data, char *fname, WRInfo *info, WResLangNode *lnode  );
-BOOL    ReadCursorFromData( void *data, char *fname, WRInfo *info, WResLangNode *lnode );
+void    OpenFileOnStart( const char *fname );
+bool    ReadBitmapFromData( void *data, const char *fullname, WRInfo *info, WResLangNode *lnode );
+bool    ReadIconFromData( void *data, const char *fname, WRInfo *info, WResLangNode *lnode  );
+bool    ReadCursorFromData( void *data, const char *fname, WRInfo *info, WResLangNode *lnode );
 void    WriteIconLoadedText( char *filename, int num );
 
 /* iesave.c */
-WINEXPORT extern BOOL CALLBACK SaveHook( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-BOOL    SaveBitmapToData( img_node *node, BYTE **data, uint_32 *size );
-BOOL    SaveImgToData( img_node *node, BYTE **data, uint_32 *size );
+bool    SaveBitmapToData( img_node *node, BYTE **data, size_t *size );
+bool    SaveImgToData( img_node *node, BYTE **data, size_t *size );
 BOOL    SaveFile( int how );
 BOOL    SaveFileFromNode( img_node *node, int how );
 BOOL    SaveColorPalette( void );
@@ -303,12 +302,12 @@ void    SetInitialSaveDir( char *new_dir );
 char    *GetInitSaveDir( void );
 
 /* ienew.c */
-WINEXPORT extern WPI_DLGRESULT CALLBACK  SelImgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
-WINEXPORT extern WPI_DLGRESULT CALLBACK  SelBitmapProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT extern WPI_DLGRESULT CALLBACK  SelImgDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT extern WPI_DLGRESULT CALLBACK  SelBitmapDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 #ifndef __OS2_PM__
-WINEXPORT extern BOOL CALLBACK SelCursorProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT extern INT_PTR CALLBACK SelCursorDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 #endif
-int                     NewImage( int img_type, char *filename );
+int         NewImage( int img_type, const char *filename );
 
 /* iedraw.c */
 void        CalculateDims( short img_width, short img_height, short *area_width, short *area_height );
@@ -336,7 +335,7 @@ void        DrawSinglePoint( HWND hwnd, WPI_POINT *pt, short mousebutton );
 void        Paint( HWND hwnd, WPI_POINT *start_pt, WPI_POINT *end_pt, int mousebutton );
 
 /* drawproc.c */
-WINEXPORT extern WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT extern WPI_MRESULT CALLBACK DrawAreaWinProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 int                 SetToolType( int toolid );
 void                InitializeCursors( void );
 void                CleanupCursors( void );
@@ -455,11 +454,11 @@ void    ResizeStatusBar( WPI_PARAM2 lparam );
 void    FiniStatusLine( void );
 void    SetHotSpot( img_node *node );
 void    ClearImageText( void );
-void    SetHintText( char *msg );
-void    PrintHintTextByID( DWORD id, char *fname );
-void    PrintHintText( char *msg, char *fname );
-void    WriteSetSizeText( DWORD msg, int x, int y );
-void    IEPrintAmtText( DWORD message, int amt );
+void    SetHintText( const char *msg );
+void    PrintHintTextByID( msg_id id, const char *fname );
+void    PrintHintText( const char *msg, const char *fname );
+void    WriteSetSizeText( msg_id msg, int x, int y );
+void    IEPrintAmtText( msg_id message, int amt );
 
 /* iefonts.c */
 void    CreateStatusFont( void );
@@ -470,7 +469,7 @@ void    ChangeImageSize( void );
 
 /* settings.c */
 void    SelectOptions( void );
-BOOL    StretchPastedImage( void );
+int     StretchPastedImage( void );
 int     GetRotateType( void );
 BOOL    DoKeepRect( void );
 void    SetSettingsDlg( settings_info *info );
@@ -506,7 +505,7 @@ void    IECtl3dSubclassDlg( HWND, WORD );
 void    IECtl3dSubclassDlgAll( HWND );
 
 /* errors.c */
-void    WImgEditError( UINT error, char *fname );
+void    WImgEditError( msg_id error, const char *fname );
 
 #ifndef __OS2_PM__
 
@@ -543,7 +542,7 @@ BITMAPINFO  *GetDIBitmapInfo( img_node *node );
 void        FreeDIBitmapInfo( BITMAPINFO *bmi );
 
 /* pickbmp.c */
-extern BOOL        SelectDynamicBitmap( img_node *node, int imgcount, char *filename );
+extern BOOL        SelectDynamicBitmap( img_node *node, int imgcount, const char *filename );
 WINEXPORT extern LRESULT CALLBACK BitmapPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 /* hinttext.c */

@@ -35,8 +35,8 @@
     #define USE_MBCS_TRANSLATION
 #endif
 
-#include "widechar.h"
 #include "variety.h"
+#include "widechar.h"
 #ifdef SAFE_SCANF
     #include "saferlib.h"
 #endif

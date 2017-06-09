@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  far heap check and fill free space by fill byte
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -46,11 +46,11 @@ _WCRTLINK int _heapset( unsigned int fill )
 
 _WCRTLINK int _fheapset( unsigned int fill )
 {
-    int         test_heap;
+    int         heap_status;
 
-    test_heap = _heapchk();
-    if( test_heap != _HEAPOK ) {
-        return( test_heap );
+    heap_status = _heapchk();
+    if( heap_status != _HEAPOK ) {
+        return( heap_status );
     }
-    return( __HeapSet( __fheap, fill ) );
+    return( __HeapSet( __fheapbeg, fill ) );
 }

@@ -300,7 +300,7 @@ static search_result LkupGblAddr( info_block *inf, imp_sym_handle *is, addr_ptr 
     gbl_link            *target;
     gbl_info            *gbl;
     int                 comp_rtn;
- 
+
     low = LINK( inf )->link;
     nearest = NULL;
     high = LINK( inf )->end - 1;
@@ -520,7 +520,8 @@ dip_status SymHdl2GblInfo( imp_image_handle *ii, imp_sym_handle *is,
     gbl_info            *gbl;
     unsigned            kind;
 
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     gbl = is->u.gbl;
     kind = GBL_KIND( gbl );
     if( kind & GBL_KIND_DATA ) {
@@ -540,7 +541,8 @@ unsigned SymHdl2GblName( imp_image_handle *ii, imp_sym_handle *is,
     size_t      len;
     const char  *gbl;
 
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     gbl = (const char *)is->u.gbl + is->name_off;
     len = GETU8( gbl++ );
     __unmangled_name( gbl, len, &gbl, &len );
@@ -560,7 +562,8 @@ unsigned SymHdl2ObjGblName( imp_image_handle *ii, imp_sym_handle *is,
     unsigned    len;
     const char  *gbl;
 
-    ii = ii;
+    /* unused parameters */ (void)ii;
+
     gbl = (const char *)is->u.gbl + is->name_off;
     len = GETU8( gbl++ );
     if( buff_size > 0 ) {

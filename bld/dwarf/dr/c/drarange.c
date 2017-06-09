@@ -47,8 +47,8 @@ typedef struct arange_header {
 #include "poppck.h"
 
 
-extern void DRWalkARange( DRARNGWLK callback, void *data )
-/********************************************************/
+void DRWalkARange( DRARNGWLK callback, void *data )
+/*************************************************/
 {
     dr_arange_data      arange;
     arange_header       header;

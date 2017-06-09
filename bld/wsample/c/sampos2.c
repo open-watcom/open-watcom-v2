@@ -82,6 +82,19 @@ unsigned NextThread( unsigned tid )
     return( tid + 1 );
 }
 
+void ResetThread( unsigned tid )
+{
+    if( tid-- > 0 ) {
+        SampleIndex = 0;
+        SampleIndexP[tid] = SampleIndex;
+        if( CallGraphMode ) {
+            SampleCount = 0;
+            LastSampleIndex = 0;
+            SampleCountP[tid] = SampleCount;
+        }
+    }
+}
+
 void InitTimerRate( void )
 {
     SleepTime = 55;
@@ -329,8 +342,7 @@ void StopProg( void )
 }
 
 
-static void CodeLoad( TRACEBUF FAR_PTR *buff, USHORT mte,
-                      char *name, samp_block_kinds kind )
+static void CodeLoad( TRACEBUF FAR_PTR *buff, USHORT mte, const char *name, samp_block_kinds kind )
 {
     seg_offset  ovl;
     int         i;
@@ -374,8 +386,7 @@ static USHORT LibLoadPTrace( TRACEBUF FAR_PTR *buff )
         buff->segv = FP_SEG( name );
         buff->offv = FP_OFF( name );
         DosPTrace( buff );
-        CodeLoad( buff, buff->value, name,
-                 (MainMod == buff->value) ? SAMP_MAIN_LOAD : SAMP_CODE_LOAD );
+        CodeLoad( buff, buff->value, name, ( MainMod == buff->value ) ? SAMP_MAIN_LOAD : SAMP_CODE_LOAD );
         buff->value = value;
         buff->cmd = cmd;
         buff->offv = offv;
@@ -459,10 +470,10 @@ static void LoadProg( char *cmd, char *cmd_tail )
 
 #define BSIZE 256
 
-void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
 {
 
-    char        *src;
+    const char  *src;
     char        *dst;
     USHORT      drive;
     ULONG       map;
@@ -473,7 +484,8 @@ void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
     seg_offset  where;
     char        *cmd_tail;
 
-    cmd = cmd;
+    /* unused parameters */ (void)cmd;
+
     MaxThread = 0;
     GrowArrays( 1 );
     src = prog;

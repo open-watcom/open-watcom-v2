@@ -35,6 +35,11 @@
 #include "clibext.h"
 
 
+#if ( _INTEGRAL_MAX_BITS >= 64 )
+#define U64_DOUBLE_CORRECTION   (2.0 * ( (double)9223372036854775807LL + 1.0 ))
+#endif
+
+
 static bool IsConstantZero( TREEPTR tree );
 
 static uint_32 DoOp32( uint_32 left, opr_code opr, uint_32 right, bool sign )
@@ -396,10 +401,10 @@ int64 LongValue64( TREEPTR leaf )
         __LDI8( &ld, &value );
         return( value );
 #elif ( _INTEGRAL_MAX_BITS >= 64 )
-        value.u._64[0] = ld.u.value;
+        value.u._64[0] = (uint_64)(int_64)ld.u.value;
         return( value );
 #else
-        val32 = ld.value;
+        val32 = ld.u.value;
 #endif
         break;
     default:
@@ -556,11 +561,11 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
             value = leaf->op.u2.long64_value;
             __I8LD( &value, &ld );
 #elif ( _INTEGRAL_MAX_BITS >= 64 )
-            ld.u.value = (double)leaf->op.u2.long64_value.u._64[0];
+            ld.u.value = (double)(int_64)leaf->op.u2.long64_value.u._64[0];
 #else
 
     #error not implemented for compiler with integral max bits < 64
-            ld.value = 0;
+            ld.u.value = 0;
 #endif
             break;
         case TYPE_ULONG64:
@@ -568,18 +573,27 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
             value = leaf->op.u2.long64_value;
             __U8LD( &value, &ld );
 #elif ( _INTEGRAL_MAX_BITS >= 64 )
+  #if 0
             ld.u.value = (double)leaf->op.u2.ulong64_value.u._64[0];
+  #else
+            /* temporary fix for missing uint_64 -> double conversion in OW code generator for RISC */
+            /* it is valid for two's complement integers */
+            ld.u.value = (double)(int_64)leaf->op.u2.ulong64_value.u._64[0];
+            if( (int_64)leaf->op.u2.ulong64_value.u._64[0] < 0 ) {
+                ld.u.value += U64_DOUBLE_CORRECTION;
+            }
+  #endif
 #else
 
     #error not implemented for compiler with integral max bits < 64
-            ld.value = 0;
+            ld.u.value = 0;
 #endif
             break;
-        //signed types
         case TYPE_CHAR:
         case TYPE_SHORT:
         case TYPE_INT:
         case TYPE_LONG:
+            // signed types
 #ifdef _LONG_DOUBLE_
             __I4LD( leaf->op.u2.long_value, &ld );
 #else
@@ -587,9 +601,11 @@ void CastFloatValue( TREEPTR leaf, DATA_TYPE newtype )
 #endif
             break;
         default:
-        //unsigned types
+            // unsigned types
 #ifdef _LONG_DOUBLE_
             __U4LD( leaf->op.u2.ulong_value, &ld );
+#elif ( _INTEGRAL_MAX_BITS >= 64 )
+            ld.u.value = (double)(int_64)leaf->op.u2.ulong_value;
 #else
             ld.u.value = (double)leaf->op.u2.ulong_value;
 #endif
@@ -851,7 +867,7 @@ static int_32 LongValue( TREEPTR leaf )
 #ifdef _LONG_DOUBLE_
         value = __LDI4( &ld );
 #else
-        value = ld.u.value;
+        value = (int_32)ld.u.value;
 #endif
         break;
     default:
@@ -1180,9 +1196,9 @@ static void CheckOpndValues( TREEPTR tree )
     case OPR_LSHIFT_EQUAL:
     case OPR_RSHIFT_EQUAL:
         if( IsConstLeaf( tree->right ) ) {
-            bool    shift_too_big = false;
-            bool    shift_negative = false;
-            int     max_shift;
+            bool        shift_too_big = false;
+            bool        shift_negative = false;
+            unsigned    max_shift;
 
             opnd = tree->right;
             r_type = opnd->u.expr_type;
@@ -1196,29 +1212,28 @@ static void CheckOpndValues( TREEPTR tree )
             max_shift *= 8;
             switch( con ) {
             case SIGNED_INT: {
-                int_32      right;
-
-                right = opnd->op.u2.long_value;
-                if( right < 0 )
+                if( opnd->op.u2.long_value < 0 ) {
                     shift_negative = true;
-                else if( right >= max_shift )
+                } else if( opnd->op.u2.ulong_value >= max_shift ) {
                     shift_too_big = true;
-                break;
                 }
+                } break;
             case SIGNED_INT64: {
                 int64       right;
-                int64       big_shift;
+                uint64      big_shift;
 
                 right = LongValue64( opnd );
-                I32ToI64( max_shift, &big_shift );
-                if( I64Test( &right ) < 0 )
+                if( I64Test( &right ) < 0 ) {
                     shift_negative = true;
-                else if( I64Cmp( &right, &big_shift ) >= 0 )
-                    shift_too_big = true;
-                break;
+                } else {
+                    U32ToU64( max_shift, &big_shift );
+                    if( U64Cmp( &right, &big_shift ) >= 0 ) {
+                        shift_too_big = true;
+                    }
                 }
+                } break;
             case UNSIGNED_INT:
-                if( (uint_32)opnd->op.u2.long_value >= (uint_32)max_shift )
+                if( opnd->op.u2.ulong_value >= max_shift )
                     shift_too_big = true;
                 break;
             case UNSIGNED_INT64: {
@@ -1227,10 +1242,10 @@ static void CheckOpndValues( TREEPTR tree )
 
                 right = LongValue64( opnd );
                 U32ToU64( max_shift, &big_shift );
-                if( U64Cmp( &right, &big_shift ) >= 0 )
+                if( U64Cmp( &right, &big_shift ) >= 0 ) {
                     shift_too_big = true;
-                break;
                 }
+                } break;
             default:
                 // Not supposed to happen!
                 break;

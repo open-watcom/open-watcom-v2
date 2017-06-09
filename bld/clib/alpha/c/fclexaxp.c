@@ -29,13 +29,10 @@
 ****************************************************************************/
 
 
-#include "rtdata.h"
 #include "variety.h"
+#include "rtdata.h"
+#include "fpcraxp.h"
 #include "clearfpe.h"
-
-
-extern unsigned long _GetFPCR(void);
-extern void          _SetFPCR(unsigned long);
 
 
 /*

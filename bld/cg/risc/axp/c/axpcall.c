@@ -74,7 +74,7 @@ extern  an      BGCall( cn call, bool use_return, bool in_line )
     if( state->attr & ROUTINE_IS_SETJMP ) {
         call_ins->flags.call_flags |= CALL_IS_SETJMP;
     }
-    if( use_return == false ) {
+    if( !use_return ) {
         call_ins->flags.call_flags |= CALL_IGNORES_RETURN;
     }
 
@@ -127,7 +127,8 @@ extern  void    BGProcDecl( cg_sym_handle sym, type_def *tipe )
 extern  type_def        *PassParmType( cg_sym_handle func, type_def *tipe, call_class class )
 /****************************************************************************************/
 {
-    class = class;
+    /* unused parameters */ (void)class;
+
     tipe = QParmType( func, NULL, tipe );
     return( tipe );
 }
@@ -142,7 +143,8 @@ extern  instruction    *PushOneParm( instruction *ins, name *curr,
     name        *dst;
     name        *stack_reg;
 
-    state = state;
+    /* unused parameters */ (void)state;
+
     stack_reg = AllocRegName( StackReg() );
     dst = AllocIndex( stack_reg, NULL, offset, class );
     new = MakeMove( curr, dst, class );
@@ -155,8 +157,8 @@ extern  name    *StReturn( an retval, type_def *tipe, instruction **pins )
 {
     name        *index;
 
-    retval = retval;
-    pins = pins;
+    /* unused parameters */ (void)retval; (void)pins;
+
     index = AllocIndex( CurrProc->targ.return_points, NULL, 0, TypeClass( tipe ) );
     return( index );
 }
@@ -185,6 +187,7 @@ extern  void    RestoreFromTargProc( void )
 extern  reg_set_index   CallIPossible( instruction *ins )
 /*******************************************************/
 {
-     ins = ins;
+    /* unused parameters */ (void)ins;
+
      return( RL_DWORD );
 }

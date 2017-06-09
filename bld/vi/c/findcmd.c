@@ -145,8 +145,7 @@ static vi_rc getFindString( range *r, bool is_forward, bool is_fancy, bool searc
     fancy_find  ff;
 #endif
 
-    is_fancy = is_fancy;
-    search_again = search_again;
+    /* unused parameters */ (void)is_fancy; (void)search_again;
 
 #ifdef __WIN__
     old_ci = EditFlags.CaseIgnore;
@@ -230,7 +229,8 @@ vi_rc DoFindForward( range *r, long count )
 {
     vi_rc   rc;
 
-    count = count;
+    /* unused parameters */ (void)count;
+
     rc = getFindString( r, true, false, false );
     return( rc );
 
@@ -243,7 +243,8 @@ vi_rc DoFindBackwards( range *r, long count )
 {
     vi_rc   rc;
 
-    count = count;
+    /* unused parameters */ (void)count;
+
     rc = getFindString( r, false, false, false );
     return( rc );
 
@@ -297,7 +298,8 @@ vi_rc FancyDoFind( range *r, long count )
 {
     vi_rc   rc;
 
-    count = count;
+    /* unused parameters */ (void)count;
+
     if( CurrentFile == NULL ) {
         // you cant search if theres no file!
         return( ERR_NO_FILE );
@@ -314,7 +316,8 @@ vi_rc DoNextFindForward( range *r, long count )
 {
     char        st = '\0';
 
-    count = count;
+    /* unused parameters */ (void)count;
+
     if( EditFlags.LastSearchWasForward ) {
         return( processFind( r, &st, GetFindForward ) );
     } else {
@@ -330,7 +333,8 @@ vi_rc DoNextFindBackwards( range *r, long count )
 {
     char        st = '\0';
 
-    count = count;
+    /* unused parameters */ (void)count;
+
     if( !EditFlags.LastSearchWasForward ) {
         return( processFind( r, &st, GetFindForward ) );
     } else {
@@ -459,7 +463,7 @@ vi_rc GetFind( char *st, i_mark *pos1, int *len1, find_type flags )
         }
     }
     lastPosInfo = CurrentInfo;
-    
+
     /*
      * process results
      */

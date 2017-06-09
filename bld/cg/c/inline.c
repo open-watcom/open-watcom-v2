@@ -102,7 +102,7 @@ extern  an      BGStopInline( call_handle handle, type_def *tipe ) {
     inline_stack    *junk;
     an              retv;
 
-    if( HaveCurrBlock == false ) {
+    if( !HaveCurrBlock ) {
         EnLink( AskForNewLabel(), true );
         HaveCurrBlock = true;
     }
@@ -123,8 +123,10 @@ extern  an      BGStopInline( call_handle handle, type_def *tipe ) {
 static bool NotEquiv( type_def *a, type_def *b )
 /**********************************************/
 {
-    if( TypeClass( a ) != TypeClass( b ) ) return( true );
-    if( a->length != b->length ) return( true );
+    if( TypeClass( a ) != TypeClass( b ) )
+        return( true );
+    if( a->length != b->length )
+        return( true );
     return( false );
 }
 

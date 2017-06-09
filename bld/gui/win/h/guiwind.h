@@ -49,12 +49,11 @@
     #include <commdlg.h>
 #endif
 
+#include "gui.h"
 #include "commonui.h"
 #include "wpi.h"
 #include "guiwpi.h"
 #include "guitypes.h"
-
-#include "gui.h"
 #include "toolbr.h"
 #include "guihint.h"
 
@@ -145,7 +144,7 @@ typedef struct gui_window {
     gui_ord             num_cols;
     unsigned int        hscroll_range;
     unsigned int        vscroll_range;
-    GUICALLBACK         *call_back;
+    GUICALLBACK         *gui_call_back;
     void                *extra;
     HWND                status;
     int                 num_menus;

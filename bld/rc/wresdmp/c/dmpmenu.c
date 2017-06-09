@@ -99,22 +99,20 @@ static void PrintNormalItem( MenuItemNormal * item )
 static void PrintHeader( MenuHeader * head )
 /******************************************/
 {
-    printf( "\tMenu Header.   Version: %d  Header size: %d\n", head->Version,
-                head->HeaderSize );
+    printf( "\tMenu Header.   Version: %d  Header size: %d\n", head->Version, head->Size );
 }
 
 bool DumpMenu( uint_32 offset, uint_32 length, WResFileID fid )
 /*************************************************************/
 {
     bool            error;
-    WResFileOffset  prevpos;
     int             depth;  /* number of menu levels deep */
     MenuItem        *item;
     MenuHeader      head;
 
     length = length;
-    prevpos = RCSEEK( fid, offset, SEEK_SET );
-    error = (prevpos == -1);
+
+    error = RESSEEK( fid, offset, SEEK_SET );
 
     if( !error ) {
         error = ResReadMenuHeader( &head, fid );
@@ -144,7 +142,7 @@ bool DumpMenu( uint_32 offset, uint_32 length, WResFileID fid )
         ResFreeMenuItem( item );
     }
 
-    RCSEEK( fid, prevpos, SEEK_SET );
+    RESSEEK( fid, offset, SEEK_SET );
 
     return( error );
 }

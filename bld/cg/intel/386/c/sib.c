@@ -53,11 +53,16 @@ static  bool    InsIsCandidate( instruction *ins )
     name    *reg;
 
     reg = ins->result;
-    if( reg == NULL ) return( false );
-    if( reg->n.class != N_REGISTER ) return( false );
-    if( reg->n.size != WORD_SIZE ) return( false );
-    if( ins->operands[0]->n.class != N_REGISTER ) return( false );
-    if( !IsIndexReg( reg->r.reg, WD, 0 ) ) return( false );
+    if( reg == NULL )
+        return( false );
+    if( reg->n.class != N_REGISTER )
+        return( false );
+    if( reg->n.size != WORD_SIZE )
+        return( false );
+    if( ins->operands[0]->n.class != N_REGISTER )
+        return( false );
+    if( !IsIndexReg( reg->r.reg, WD, 0 ) )
+        return( false );
     return( true );
 }
 
@@ -93,11 +98,15 @@ static  bool    LivesAfterIns( instruction *ins, name *reg )
 
     HW_Asgn( live_later, ins->head.next->head.live.regs );
     HW_OnlyOn( live_later, reg->r.reg );
-    if( HW_CEqual( live_later, HW_EMPTY ) ) return( false );
+    if( HW_CEqual( live_later, HW_EMPTY ) )
+        return( false );
     res = ins->result;
-    if( res == NULL ) return( true );
-    if( res->n.class != N_REGISTER ) return( true );
-    if( HW_Subset( res->r.reg, live_later ) ) return( false );
+    if( res == NULL )
+        return( true );
+    if( res->n.class != N_REGISTER )
+        return( true );
+    if( HW_Subset( res->r.reg, live_later ) )
+        return( false );
     return( true );
 }
 
@@ -109,7 +118,9 @@ static bool BadUse( name *reg, name *test, name **pindex, bool * is_base )
     hw_reg_set  base_name;
 
     if( test->n.class == N_REGISTER ) {
-        if( HW_Ovlap( test->r.reg, reg->r.reg ) ) return( true );
+        if( HW_Ovlap( test->r.reg, reg->r.reg ) ) {
+            return( true );
+        }
     }
     if( test->n.class == N_INDEXED ) {
         HW_Asgn( idx_name, test->i.index->r.reg );
@@ -180,8 +191,10 @@ instruction     *SIBPossibleIndex( instruction *ins, name *reg,
     next = ins->head.next;
     /* moving forward, ... */
     for( ;; ) {
-        if( next->head.opcode == OP_BLOCK ) return( NULL );
-        if( !HW_Ovlap( next->head.live.regs, reg->r.reg ) ) return( NULL );
+        if( next->head.opcode == OP_BLOCK )
+            return( NULL );
+        if( !HW_Ovlap( next->head.live.regs, reg->r.reg ) )
+            return( NULL );
         *pindex = NULL;
         *pbase = false;
 /*
@@ -193,13 +206,15 @@ instruction     *SIBPossibleIndex( instruction *ins, name *reg,
                 return( NULL );
             }
         }
-        if( *pindex != NULL ) break;
+        if( *pindex != NULL )
+            break;
         if( next->result != NULL ) {
             if( BadUse( reg, next->result, pindex, pbase ) ) {
                 return( NULL );
             }
         }
-        if( *pindex != NULL ) break;
+        if( *pindex != NULL )
+            break;
 /*
         if instruction doesn't modify reg, (or possibly base reg) move forward
 */

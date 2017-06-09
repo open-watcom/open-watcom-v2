@@ -89,7 +89,7 @@ void SrcFileCmdLnDummyOpen(     // OPEN DUMMY FILE FOR COMMAND LINE
 int SrcFileCmdLnGetChar(        // GET NEXT CHARACTER FOR CMD-LINE FILE
     void )
 ;
-void SrcFileCommand(            // MARK CURRENT SOURCE FILE AS A COMMAND FILE
+void SetSrcFileCommand(         // MARK CURRENT SOURCE FILE AS A COMMAND FILE
     void )
 ;
 SRCFILE SrcFileCurrent(         // GET CURRENT SRCFILE
@@ -104,7 +104,7 @@ void SrcFileCurrentLocation(    // SET LOCATION FOR CURRENT SOURCE FILE
 void SrcFileGetTokenLocn(       // FILL IN TOKEN_LOCN FROM CURRENT TOKEN LOCATION
     TOKEN_LOCN *tgt )           // - to be filled in
 ;
-void SrcFileResetTokenLocn(     // RESET TOKEN_LOCN
+void SrcFileSetTokenLocn(       // RESET TOKEN_LOCN
     TOKEN_LOCN *tgt )           // - from SrcFileGetTokenLocn
 ;
 bool SrcFileAreTLSameLine(      // CHECK WHETHER TOKEN_LOCNs ARE THE SAME LINE
@@ -114,7 +114,7 @@ bool SrcFileAreTLSameLine(      // CHECK WHETHER TOKEN_LOCNs ARE THE SAME LINE
 unsigned SrcFileIndex(          // GET INDEX OF THIS SRCFILE
     SRCFILE sf )                // - the source file
 ;
-void SrcFileLibrary(            // MARK CURRENT SOURCE FILE AS A LIBRARY FILE
+void SetSrcFileLibrary(         // MARK CURRENT SOURCE FILE AS A LIBRARY FILE
     void )
 ;
 LINE_NO SrcFileLine(            // GET CURRENT SOURCE LINE
@@ -134,7 +134,7 @@ SRCFILE SrcFileNotReadOnly(     // GET NEXT NON-READ-ONLY SOURCE FILE
 ;
 SRCFILE SrcFileOpen(            // OPEN NEW SOURCE FILE
     void *fp,                   // - system file control
-    char *name,                 // - file name
+    const char *name,           // - file name
     time_t ftime )
 ;
 void SrcFileNotAFile(           // LABEL SRCFILE AS A DEVICE
@@ -189,7 +189,7 @@ bool SrcFileGuardedIf(          // SKIP REST OF GUARDED FILE, IF POSSIBLE
     bool value )                // - <value> in #if <value>
 ;
 bool SrcFileProcessOnce(        // CHECK WHETHER WE HAVE TO OPEN THE FILE
-    char *name )
+    const char *name )
 ;
 void SrcFileGuardPpElse(        // #ELSE DETECTED IN SOURCE FILE
     void )
@@ -201,8 +201,8 @@ void SrcFileGuardPpIf(          // #IF DETECTED IN SOURCE FILE
     void )
 ;
 void SrcFileGuardPpIfndef(      // SUPPLY #IFNDEF NAME
-    char *name,                 // - macro name
-    unsigned len )              // - length of name
+    const char *name,           // - macro name
+    size_t len )                // - length of name
 ;
 void SrcFileGuardStateSig(      // SIGNAL SIGNIFICANCE (TOKEN, ETC) IN FILE
     void )
@@ -213,7 +213,7 @@ bool SrcFileSame(               // ARE THESE SRC FILES THE SAME FILE?
 ;
 
 FILE *SrcFileFOpen(             // FOPEN A FILE WITH HANDLE CACHEING
-    char *name,                 // - name of file to open
+    const char *name,           // - name of file to open
     src_file_open kind )        // - how to open file
 ;
 

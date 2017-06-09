@@ -34,7 +34,7 @@
 #include <malloc.h>
 #include "window.h"
 #include "win.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 #if defined( __WATCOMC__ ) && defined( __NT__ )
     #pragma library( "shell32" )

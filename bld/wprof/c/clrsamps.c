@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -35,18 +36,17 @@
 #include "aui.h"
 #include "dip.h"
 #include "sampinfo.h"
-#include "wpsrcfil.h"
+#include "wpsrcfld.h"
 #include "wpasmfil.h"
 #include "memutil.h"
 #include "dipinter.h"
+#include "clrsamps.h"
+#include "wpsrcfil.h"
+#include "wpdata.h"
 
 
-extern void WPSourceClose(wp_srcfile *wpsrc_file);
-
-extern sio_data *       SIOData;
-
-extern void ClearMassaged( sio_data * curr_sio )
-/**********************************************/
+void ClearMassaged( sio_data * curr_sio )
+/***************************************/
 {
     unsigned            index;
     unsigned            buckets;
@@ -66,8 +66,8 @@ extern void ClearMassaged( sio_data * curr_sio )
 
 
 
-extern void ClearRoutineInfo( file_info * curr_file )
-/***************************************************/
+void ClearRoutineInfo( file_info * curr_file )
+/********************************************/
 {
     rtn_info *      curr_rtn;
     int             count;
@@ -75,8 +75,7 @@ extern void ClearRoutineInfo( file_info * curr_file )
     if( curr_file->routine == NULL ) {
         return;
     }
-    count = 0;
-    while( count < curr_file->rtn_count ) {
+    for( count = 0; count < curr_file->rtn_count; ++count ) {
         curr_rtn = curr_file->routine[count];
         if( curr_rtn != NULL ) {
             if( curr_rtn->sh != NULL ) {
@@ -84,7 +83,6 @@ extern void ClearRoutineInfo( file_info * curr_file )
             }
             ProfFree( curr_rtn );
         }
-        count++;
     }
     ProfFree( curr_file->routine );
     curr_file->routine = NULL;
@@ -93,21 +91,19 @@ extern void ClearRoutineInfo( file_info * curr_file )
 
 
 
-extern void ClearFileInfo( mod_info * curr_mod )
-/**********************************************/
+void ClearFileInfo( mod_info * curr_mod )
+/***************************************/
 {
     int             count;
 
     if( curr_mod->mod_file == NULL ) {
         return;
     }
-    count = 0;
-    while( count < curr_mod->file_count ) {
+    for( count = 0; count < curr_mod->file_count; ++count ) {
         if( curr_mod->mod_file[count] != NULL ) {
             ClearRoutineInfo( curr_mod->mod_file[count] );
             ProfFree( curr_mod->mod_file[count] );
         }
-        count++;
     }
     ProfFree( curr_mod->mod_file );
     curr_mod->mod_file = NULL;
@@ -116,21 +112,19 @@ extern void ClearFileInfo( mod_info * curr_mod )
 
 
 
-extern void ClearModuleInfo( image_info * curr_image )
-/****************************************************/
+void ClearModuleInfo( image_info * curr_image )
+/*********************************************/
 {
     int             count;
 
     if( curr_image->module == NULL ) {
         return;
     }
-    count = 0;
-    while( count < curr_image->mod_count ) {
+    for( count = 0; count < curr_image->mod_count; ++count ) {
         if( curr_image->module[count] != NULL ) {
             ClearFileInfo( curr_image->module[count] );
             ProfFree( curr_image->module[count] );
         }
-        count++;
     }
     ProfFree( curr_image->module );
     curr_image->module = NULL;
@@ -139,8 +133,8 @@ extern void ClearModuleInfo( image_info * curr_image )
 
 
 
-extern void ClearSample( sio_data * curr_sio )
-/********************************************/
+void ClearSample( sio_data * curr_sio )
+/*************************************/
 {
     sio_data *          prev_sio;
     mark_data *         marks;
@@ -172,8 +166,7 @@ extern void ClearSample( sio_data * curr_sio )
     if( curr_sio->asm_file != NULL ) {
         WPAsmClose( curr_sio->asm_file );
     }
-    index = 0;
-    while( index < curr_sio->image_count ) {
+    for( index = 0; index < curr_sio->image_count; ++index ) {
         image = curr_sio->images[index];
         if( image->map_data != NULL ) {
             ProfFree( image->map_data );
@@ -192,29 +185,28 @@ extern void ClearSample( sio_data * curr_sio )
         }
         ClearModuleInfo( image );
         ProfFree( image );
-        index++;
     }
     ProfFree( curr_sio->images );
-    ovl = curr_sio->ovl_loads;
-    while( ovl != NULL ) {
+    for( ovl = curr_sio->ovl_loads; ovl != NULL; ovl = next_ovl ) {
         next_ovl = ovl->next;
         ProfFree( ovl );
-        ovl = next_ovl;
-        if( ovl == curr_sio->ovl_loads ) break;
+        if( next_ovl == curr_sio->ovl_loads ) {
+            break;
+        }
     }
-    remap = curr_sio->remaps;
-    while( remap != NULL ) {
+    for( remap = curr_sio->remaps; remap != NULL; remap = next_remap ) {
         next_remap = remap->next;
         ProfFree( remap );
-        remap = next_remap;
-        if( remap == curr_sio->remaps ) break;
+        if( next_remap == curr_sio->remaps ) {
+            break;
+        }
     }
-    marks = curr_sio->marks;
-    while( marks != NULL ) {
+    for( marks = curr_sio->marks; marks != NULL; marks = next_mark ) {
         next_mark = marks->next;
         ProfFree( marks );
-        marks = next_mark;
-        if( marks == curr_sio->marks ) break;
+        if( next_mark == curr_sio->marks ) {
+            break;
+        }
     }
     for( thd = curr_sio->samples; thd != NULL; thd = next ) {
         next = thd->next;
@@ -246,8 +238,8 @@ extern void ClearSample( sio_data * curr_sio )
 
 
 
-extern void ClearAllSamples( void )
-/*********************************/
+void ClearAllSamples( void )
+/**************************/
 {
     while( SIOData != NULL ) {
         ClearSample( SIOData->next );

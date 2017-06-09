@@ -156,12 +156,10 @@ extern void _wpi_getpaintrect( PAINTSTRUCT *ps, WPI_RECT *rect );
                         SendDlgItemMessage( hwnd, item, msgid, parm1, parm2 )
 
     #define _wpi_getdlgitemcbtext( hwnd, item, selection, len, text ) \
-        _wpi_senddlgitemmessage( hwnd, item, CB_GETLBTEXT, \
-                        selection, (DWORD)(LPSTR) text )
+                        SendDlgItemMessage( hwnd, item, CB_GETLBTEXT, selection, (LPARAM)(LPSTR)text )
 
     #define _wpi_getdlgitemlbtext( hwnd, item, selection, len, text ) \
-        _wpi_senddlgitemmessage( hwnd, item, LB_GETTEXT, \
-                        selection, (DWORD)(LPSTR) text )
+                        SendDlgItemMessage( hwnd, item, LB_GETTEXT, selection, (LPARAM)(LPSTR)text )
 
     #define _wpi_setdlgitemtext( hwnd, item, text ) \
                                             SetDlgItemText( hwnd, item, text )
@@ -304,6 +302,9 @@ extern void _wpi_getbitmapdim( HBITMAP bmp, int *pwidth, int *pheight );
 
     #define _wpi_makeprocinstance( proc, inst ) MakeProcInstance( proc, inst )
 
+    #define _wpi_makedlgprocinstance( proc, inst ) \
+                                    (WPI_DLGPROC)MakeProcInstance( (FARPROC)proc, inst )
+
     #define _wpi_makeenumprocinstance( proc, inst ) \
                                     (WPI_ENUMPROC)MakeProcInstance( (FARPROC)proc, inst )
 
@@ -311,6 +312,10 @@ extern void _wpi_getbitmapdim( HBITMAP bmp, int *pwidth, int *pheight );
                                     (WPI_LINEDDAPROC)MakeProcInstance( (FARPROC)proc, inst )
 
     #define _wpi_defdlgproc( hwnd, msg, mp1, mp2 ) FALSE
+
+    #define _wpi_freedlgprocinstance( proc ) FreeProcInstance( (FARPROC)proc )
+
+    #define _wpi_freeenumprocinstance( proc ) FreeProcInstance( (FARPROC)proc )
 
     #define _wpi_freeprocinstance( proc ) FreeProcInstance( (FARPROC)proc )
 
@@ -339,7 +344,7 @@ extern void _wpi_getbitmapdim( HBITMAP bmp, int *pwidth, int *pheight );
     #define _wpi_enddialog( hwnd, result ) EndDialog( hwnd, result )
 
     #define _wpi_dialogbox( parent, proc, inst, res_id, data ) \
-        DialogBoxParam( inst, res_id, parent, proc, (DWORD)(LPARAM)(data) )
+        DialogBoxParam( inst, res_id, parent, proc, (LPARAM)(data) )
 
     #define _wpi_setstretchbltmode( mem, mode ) SetStretchBltMode( mem, mode )
 
@@ -1113,7 +1118,7 @@ extern void _wpi_setrestoredrect( HWND hwnd, WPI_RECT *prect );
 
     #define _wpi_getupdaterect( hwnd, prect ) GetUpdateRect(hwnd, prect, FALSE)
 
-extern WPI_PROC _wpi_subclasswindow( HWND hwnd, WPI_PROC newproc );
+extern WPI_WNDPROC _wpi_subclasswindow( HWND hwnd, WPI_WNDPROC newproc );
 
 extern BOOL _wpi_insertmenu( HMENU hmenu, unsigned pos, unsigned menu_flags,
                              unsigned attr_flags, unsigned new_id,

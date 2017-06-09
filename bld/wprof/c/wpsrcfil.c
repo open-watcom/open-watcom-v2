@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -39,18 +40,19 @@
 #include "wpaui.h"
 #include "dip.h"
 #include "sampinfo.h"
-#include "wpsrcfil.h"
+#include "wpsrcfld.h"
 #include "_srcmgt.h"
 #include "srcmgt.h"
 #include "msg.h"
 #include "memutil.h"
+#include "wpsrcfil.h"
 
 
 STATIC void setSrcLineData( wp_srcfile *, sio_data *, mod_info *,
                             file_info *, rtn_info *  );
 
-extern char * WPSourceGetLine( a_window * wnd, int line )
-/*******************************************************/
+char *WPSourceGetLine( a_window * wnd, int line )
+/***********************************************/
 {
     sio_data *      curr_sio;
     wp_srcfile *    wp_src;
@@ -81,8 +83,8 @@ extern char * WPSourceGetLine( a_window * wnd, int line )
 
 
 
-extern wp_srcfile * WPSourceOpen( sio_data * curr_sio, bool quiet )
-/*****************************************************************/
+wp_srcfile * WPSourceOpen( sio_data * curr_sio, bool quiet )
+/**********************************************************/
 {
     file_info *         curr_file;
     rtn_info *          curr_rtn;
@@ -134,8 +136,8 @@ extern wp_srcfile * WPSourceOpen( sio_data * curr_sio, bool quiet )
 
 
 
-extern void WPSourceClose( wp_srcfile * wpsrc_file )
-/**************************************************/
+void WPSourceClose( wp_srcfile * wpsrc_file )
+/*******************************************/
 {
     if( wpsrc_file != NULL ) {
         FDoneSource( wpsrc_file->src_file );
@@ -148,7 +150,7 @@ extern void WPSourceClose( wp_srcfile * wpsrc_file )
 
 
 
-extern massgd_sample_addr * WPGetMassgdSampData( sio_data * curr_sio,
+massgd_sample_addr * WPGetMassgdSampData( sio_data * curr_sio,
                                                  clicks_t click_index )
 /*********************************************************************/
 {
@@ -161,15 +163,15 @@ extern massgd_sample_addr * WPGetMassgdSampData( sio_data * curr_sio,
 
 
 
-STATIC void setSrcLineData( wp_srcfile * wpsrc_file, sio_data * curr_sio,
-                            mod_info * curr_mod, file_info * curr_file,
-                                                        rtn_info * curr_rtn )
-/***************************************************************************/
+STATIC void setSrcLineData( wp_srcfile *wpsrc_file, sio_data *curr_sio,
+                            mod_info *curr_mod, file_info *curr_file,
+                                                        rtn_info *curr_rtn )
+/**************************************************************************/
 {
-    massgd_sample_addr *    samp_data;
-    wp_srcline *            lines;
-    rtn_info *              rtn_rover;
-    cue_handle *            ch;
+    massgd_sample_addr      *samp_data;
+    wp_srcline              *lines;
+    rtn_info                *rtn_rover;
+    cue_handle              *ch;
     clicks_t                click_index;
     unsigned long           last_srcline;
     unsigned long           new_line;
@@ -185,8 +187,7 @@ STATIC void setSrcLineData( wp_srcfile * wpsrc_file, sio_data * curr_sio,
     new_line = 0;
     line_count = 0;
     wpsrc_file->max_time = 0;
-    count = 0;
-    while( count < curr_file->rtn_count ) {
+    for( count = 0; count < curr_file->rtn_count; ++count ) {
         rtn_rover = curr_file->routine[count];
         if( rtn_rover->tick_count == 0 ) {
             count2 = 0;
@@ -194,7 +195,7 @@ STATIC void setSrcLineData( wp_srcfile * wpsrc_file, sio_data * curr_sio,
             click_index = rtn_rover->first_tick_index - 1;
             count2 = rtn_rover->last_tick_index - click_index;
             line_count += count2;
-            lines = ProfRealloc( lines, sizeof(wp_srcline)*line_count );
+            lines = ProfRealloc( lines, sizeof( wp_srcline ) * line_count );
         }
         while( count2-- > 0 ) {
             samp_data = WPGetMassgdSampData( curr_sio, click_index );
@@ -219,11 +220,9 @@ STATIC void setSrcLineData( wp_srcfile * wpsrc_file, sio_data * curr_sio,
             click_index++;
         }
         line_count = line_index + 1;
-        count++;
     }
     wpsrc_file->wp_line_count = line_count;
     if( line_count != 0 ) {
-        wpsrc_file->src_lines
-                = ProfRealloc( lines, sizeof(wp_srcline)*line_count );
+        wpsrc_file->src_lines = ProfRealloc( lines, sizeof( wp_srcline ) * line_count );
     }
 }

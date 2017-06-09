@@ -35,6 +35,7 @@
 #include "data.h"
 #include "redefby.h"
 #include "nullprop.h"
+#include "conflict.h"
 
 
 /* block flag usage                                                 */
@@ -45,7 +46,6 @@
 #define BLK_CONTAINS_CALL   BLK_LOOP_EXIT /* borrow. Only used during loop opts */
 /*                                                                  */
 
-extern  conflict_node   *NameConflict(instruction*,name*);
 
 static  bool    SameConf( name *op, instruction *ins, conflict_node *conf )
 /*************************************************************************/
@@ -186,7 +186,7 @@ static  void    PropagateLoadStoreBits( block *start, global_bit_set *id )
                 }
             }
         }
-        if( change == false ) {
+        if( !change ) {
             break;
         }
     }
@@ -283,7 +283,7 @@ extern  void    CalcLoadStore( conflict_node *conf )
     see below
 */
 {
-    if( BlockByBlock == false ) {
+    if( !BlockByBlock ) {
         CalculateLoadStore( conf );
     }
 }

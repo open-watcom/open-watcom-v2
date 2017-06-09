@@ -45,10 +45,10 @@
 /****************************************************************************/
 /* macro definitions                                                        */
 /****************************************************************************/
-#define STATUS_FONTNAME   "Helv"
-#define STATUS_POINTSIZE  8
-#define STATUS_LINE_PAD   4
-#define STATUS1_WIDTH     160
+#define STATUS_FONTFACENAME     "Helv"
+#define STATUS_FONTPOINTSIZE    8
+#define STATUS_LINE_PAD         4
+#define STATUS1_WIDTH           160
 
 /****************************************************************************/
 /* type definitions                                                         */
@@ -76,35 +76,35 @@ bool WInitStatusLines( HINSTANCE inst )
     TEXTMETRIC          tm;
     HFONT               old_font;
     HDC                 dc;
-    char                *status_font;
+    char                *font_facename;
     char                *cp;
-    int                 point_size;
+    int                 font_pointsize;
     bool                use_default;
 
     memset( &lf, 0, sizeof( LOGFONT ) );
     dc = GetDC( (HWND)NULL );
     lf.lfWeight = FW_BOLD;
-    use_default = TRUE;
+    use_default = true;
 
-    status_font = AllocRCString( W_STATUSFONT );
-    if( status_font != NULL ) {
-        cp = (char *)_mbschr( (unsigned char const *)status_font, '.' );
+    font_facename = AllocRCString( W_STATUSFONT );
+    if( font_facename != NULL ) {
+        cp = (char *)_mbschr( (unsigned char const *)font_facename, '.' );
         if( cp != NULL ) {
             *cp = '\0';
-            strcpy( lf.lfFaceName, status_font );
+            strcpy( lf.lfFaceName, font_facename );
             cp++;
-            point_size = atoi( cp );
-            use_default = FALSE;
+            font_pointsize = atoi( cp );
+            use_default = false;
         }
-        FreeRCString( status_font );
+        FreeRCString( font_facename );
     }
 
     if( use_default ) {
-        strcpy( lf.lfFaceName, STATUS_FONTNAME );
-        point_size = STATUS_POINTSIZE;
+        strcpy( lf.lfFaceName, STATUS_FONTFACENAME );
+        font_pointsize = STATUS_FONTPOINTSIZE;
     }
 
-    lf.lfHeight = -MulDiv( point_size, GetDeviceCaps( dc, LOGPIXELSY ), 72 );
+    lf.lfHeight = -MulDiv( font_pointsize, GetDeviceCaps( dc, LOGPIXELSY ), 72 );
     WStatusFont = CreateFontIndirect( &lf );
     old_font = SelectObject( dc, WStatusFont );
     GetTextMetrics( dc, &tm );
@@ -196,7 +196,7 @@ WStatBar *WCreateStatusLine( HWND parent, HINSTANCE inst )
 bool WSetStatusReadyText( WStatBar *wsb )
 {
     WSetStatusText( wsb, NULL, "" );
-    return( WSetStatusByID( wsb, W_READYMSG, -1 ) );
+    return( WSetStatusByID( wsb, W_READYMSG, 0 ) );
 }
 
 bool WSetStatusByID( WStatBar *wsb, msg_id id1, msg_id id2 )
@@ -209,11 +209,11 @@ bool WSetStatusByID( WStatBar *wsb, msg_id id1, msg_id id2 )
     str1 = NULL;
     str2 = NULL;
 
-    if( id1 != -1 ) {
+    if( id1 > 0 ) {
         str1 = AllocRCString( id1 );
     }
 
-    if( id2 != -1 ) {
+    if( id2 > 0 ) {
         str2 = AllocRCString( id2 );
     }
 

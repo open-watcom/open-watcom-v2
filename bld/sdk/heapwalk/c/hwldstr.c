@@ -106,12 +106,12 @@ BOOL InitStringTable( void )
  * GetRCString
  */
 
-const char *HWGetRCString( UINT msgid )
+const char *HWGetRCString( msg_id msgid )
 {
     return( StringTbl[msgid] );
 }
 
-char *HWAllocRCString( UINT id )
+char *HWAllocRCString( msg_id id )
 {
     return( StringTbl[id] );
 }
@@ -123,7 +123,7 @@ void HWFreeRCString( char *str )
 }
 
 #if 0
-int HWCopyRCString( UINT id, char *buf, int bufsize )
+int HWCopyRCString( msg_id id, char *buf, int bufsize )
 {
     strncpy( buf, StringTbl[ id ], bufsize );
     return( strlen( StringTbl[ id ] ) );

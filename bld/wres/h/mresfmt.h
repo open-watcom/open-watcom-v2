@@ -48,7 +48,7 @@ typedef struct MResResourceHeader {
 
 typedef struct M32ResResourceHeader {
     MResResourceHeader      *head16;
-    uint_32                  HeaderSize;
+    uint_32                 Size;
 } M32ResResourceHeader;
 
 #endif

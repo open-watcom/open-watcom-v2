@@ -38,9 +38,9 @@ struct section_data {
 };
 extern struct section_data Sections[];
 
-extern uint_32 RelocValues[ DW_W_MAX ];
-extern uint_32 SymHandles[ 20 ];
-extern dw_handle FundamentalTypes[ DW_FT_MAX ];
+extern uint_32 RelocValues[DW_W_MAX];
+extern uint_32 SymHandles[20];
+extern dw_handle FundamentalTypes[DW_FT_MAX];
 extern dw_client Client;
 
 extern void Test( void );

@@ -31,16 +31,18 @@
 
 #include "cgstd.h"
 #include "coderep.h"
-#include "conflict.h"
+#include "confldef.h"
 #include "regset.h"
+#include "dmpinc.h"
 #include "dumpio.h"
+#include "dumpconf.h"
+#include "dumpins.h"
+#include "dumpregt.h"
 
-extern  void            DumpSym(name*);
-extern  void            DumpRegName(hw_reg_set);
 
-static  void    DumpIndent( int i ) {
-/***********************************/
-
+static  void    DumpIndent( int i )
+/*********************************/
+{
     while( --i >= 0 ) {
         DumpChar( ' ' );
     }
@@ -114,9 +116,9 @@ static  void    DoDump( reg_tree *tree, int indent ) {
 }
 
 
-extern  void    DumpRegTree( reg_tree *tree ) {
-/*********************************************/
-
+void    DumpRegTree( reg_tree *tree )
+/***********************************/
+{
     if( tree != NULL ) {
         DoDump( tree, 0 );
     }

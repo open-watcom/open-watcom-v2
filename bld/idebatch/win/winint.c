@@ -93,14 +93,14 @@ int CALLBACK EnumFunc( LPLOGFONT lf, LPTEXTMETRIC tm, UINT ftype, LPSTR data )
  */
 static void getMonoFont( HDC hdc, HANDLE inst )
 {
-    LOGFONT     logfont;
-    FARPROC     fp;
+    LOGFONT         logfont;
+    OLDFONTENUMPROC oldfontenumproc;
 
     inst = inst;
 
-    fp = MakeProcInstance( (FARPROC) EnumFunc, inst );
-    EnumFonts( hdc, NULL, (LPVOID) fp, NULL);
-    FreeProcInstance( fp );
+    oldfontenumproc = MakeProcInstance_OLDFONTENUM( EnumFunc, inst );
+    EnumFonts( hdc, NULL, oldfontenumproc, NULL);
+    FreeProcInstance_OLDFONTENUM( oldfontenumproc );
 
     if( fixedFont == NULL ) {
         fixedFont = GetStockObject( ANSI_FIXED_FONT );
@@ -220,8 +220,7 @@ void resizeChildWindows( WORD width, WORD height )
 
 } /* resizeChildWindows */
 
-BOOL __export FAR PASCAL AboutDlgProc( HWND hwnd, UINT msg,
-                                UINT wparam, LONG lparam )
+INT_PTR __export FAR PASCAL AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     lparam = lparam;
 

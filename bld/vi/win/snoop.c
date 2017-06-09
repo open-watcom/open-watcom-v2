@@ -37,14 +37,14 @@
 #ifdef __NT__
     #include <shlobj.h>
 #endif
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */
 #ifdef __NT__
 WINEXPORT int CALLBACK BrowseCallbackProc( HWND hwnd, UINT msg, LPARAM lparam, LPARAM data );
 #endif
-WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 #ifdef __NT__
 typedef LPITEMIDLIST    (CALLBACK *PFNSHBFF)( LPBROWSEINFO );
@@ -80,7 +80,7 @@ WINEXPORT int CALLBACK BrowseCallbackProc( HWND hwnd, UINT msg, LPARAM lparam, L
 /*
  * snoopDlgProc - callback routine for snoop dialog
  */
-WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     // int                 i;
     int                 cmd;
@@ -128,7 +128,7 @@ WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
                 if( index == LB_ERR ) {
                     break;
                 }
-                SendDlgItemMessage( hwnd, SNOOP_EXT, LB_GETTEXT, index, (LPARAM)snoop );
+                SendDlgItemMessage( hwnd, SNOOP_EXT, LB_GETTEXT, index, (LPARAM)(LPSTR)snoop );
                 SetDlgItemText( hwnd, SNOOP_STRING, snoop );
             }
             break;
@@ -181,7 +181,7 @@ WINEXPORT BOOL CALLBACK SnoopDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
  */
 bool GetSnoopStringDialog( fancy_find **ff )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
     bool        rc;
 
 #ifdef __NT__
@@ -198,17 +198,17 @@ bool GetSnoopStringDialog( fancy_find **ff )
     snoopData.case_ignore = EditFlags.CaseIgnore;
     ReplaceString( &snoopData.ext, EditVars.GrepDefault );
     *ff = &snoopData; /* data is no longer copied */
-    proc = MakeDlgProcInstance( SnoopDlgProc, InstanceHandle );
+    dlgproc = MakeProcInstance_DLG( SnoopDlgProc, InstanceHandle );
 #ifdef __NT__
     if( pfnSHBrowseForFolder != NULL ) {
-        rc = DialogBox( InstanceHandle, "SNOOPDLG95", root_window_id, (DLGPROC)proc );
+        rc = DialogBox( InstanceHandle, "SNOOPDLG95", root_window_id, dlgproc );
     } else {
 #endif
-        rc = DialogBox( InstanceHandle, "SNOOPDLG", root_window_id, (DLGPROC)proc );
+        rc = DialogBox( InstanceHandle, "SNOOPDLG", root_window_id, dlgproc );
 #ifdef __NT__
     }
 #endif
-    FreeProcInstance( proc );
+    FreeProcInstance_DLG( dlgproc );
     SetWindowCursor();
     return( rc );
 

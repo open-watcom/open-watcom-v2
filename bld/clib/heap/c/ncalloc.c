@@ -36,21 +36,21 @@
 #include <string.h>
 #include "heap.h"
 
-_WCRTLINK void _WCNEAR *_ncalloc( size_t n, size_t el_size )
+_WCRTLINK void_nptr _ncalloc( size_t n, size_t el_size )
 {
-    void _WCI86NEAR     *p;
-    unsigned long       chk_size;
+    void_nptr       cstg;
+    unsigned long   chk_size;
 
-    chk_size = (unsigned long) n * el_size;
+    chk_size = (unsigned long)n * el_size;
     el_size = chk_size;
 #if defined( _M_I86 )
     if( el_size != chk_size ) {
-        return( (void _WCNEAR *)NULL );
+        return( NULL );
     }
 #endif
-    p = _nmalloc( el_size );
-    if( p != (void _WCNEAR *)NULL ) {
-        memset( p, 0, el_size );
+    cstg = _nmalloc( el_size );
+    if( cstg != NULL ) {
+        memset( cstg, 0, el_size );
     }
-    return( p );
+    return( cstg );
 }

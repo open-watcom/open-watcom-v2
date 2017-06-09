@@ -1321,7 +1321,8 @@ static void cppNamesInit(       // INITIALIZE NAMES FOR NAMES PROCESSING
     NAME        op_name;
     NAME        place_holder;
 
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     DbgStmt( { unsigned n = MAX_OP_NAMES; DbgAssert( n == ARRAY_SIZE( operatorSameAs )); } );
     place_holder = NameDummy();
     for( cp = operatorNamesStr, op = operatorNames, ap = operatorSameAs
@@ -1364,7 +1365,8 @@ static void cppNamesInit(       // INITIALIZE NAMES FOR NAMES PROCESSING
 static void cppNamesFini(       // COMPLETION OF NAMES PROCESSING
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     VbufFree( &mangled_name );
     CMemFreePtr( &objNameBuff );
 }
@@ -1402,12 +1404,14 @@ pch_status PCHWriteOpNames( void )
 
 pch_status PCHInitOpNames( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }
 
 pch_status PCHFiniOpNames( bool writing )
 {
-    writing = writing;
+    /* unused parameters */ (void)writing;
+
     return( PCHCB_OK );
 }

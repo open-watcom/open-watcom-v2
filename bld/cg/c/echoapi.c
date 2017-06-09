@@ -42,8 +42,8 @@
 #include "model.h"
 #include "cgmem.h"
 #include "useinfo.h"
-#include "dumpio.h"
 #include "onexit.h"
+#include "dumpio.h"
 #include "feprotos.h"
 
 #include "clibext.h"
@@ -78,7 +78,8 @@ static void     EchoAPIRedirect( void )
 static  void    EchoAPIUnredirect( void )
 /***************************************/
 {
-    if( EchoAPIFile == NULL ) return;
+    if( EchoAPIFile == NULL )
+        return;
     fclose( EchoAPIFile );
     EchoAPIFile = NULL;
 }
@@ -356,21 +357,21 @@ cg_name EchoAPICgnameReturn     // EchoAPI cg_name RETURN VALUE
     ( cg_name retn )            // - cg_name value
 {
     EchoAPI( " -> %n\n", retn );
-    return retn;
+    return( retn );
 }
 
 call_handle EchoAPICallHandleReturn // EchoAPI call_handle RETURN VALUE
     ( call_handle retn )            // - call_handle value
 {
     EchoAPI( " -> %C\n", retn );
-    return retn;
+    return( retn );
 }
 
 cg_type EchoAPICgtypeReturn     // EchoAPI cg_type RETURN VALUE
     ( cg_type retn )            // - cg_type value
 {
     EchoAPI( " -> %t\n", retn );
-    return retn;
+    return( retn );
 }
 
 
@@ -378,7 +379,7 @@ int EchoAPIHexReturn            // EchoAPI HEXADECIMAL RETURN VALUE
     ( int retn )                // - value
 {
     EchoAPI( " -> %x\n", retn );
-    return retn;
+    return( retn );
 }
 
 
@@ -386,7 +387,7 @@ int EchoAPIIntReturn    // EchoAPI DECIMAL RETURN VALUE
     ( int retn )        // - value
 {
     EchoAPI( " -> %i\n", retn );
-    return retn;
+    return( retn );
 }
 
 
@@ -394,7 +395,7 @@ sel_handle EchoAPISelHandleReturn   // EchoAPI sel_handle RETURN VALUE
     ( sel_handle retn )             // - sel_handle value
 {
     EchoAPI( " -> %S\n", retn );
-    return retn;
+    return( retn );
 }
 
 
@@ -402,7 +403,7 @@ temp_handle EchoAPITempHandleReturn // EchoAPI temp_handle RETURN VALUE
     ( temp_handle retn )            // - temp_handle value
 {
     EchoAPI( " -> %T\n", retn );
-    return retn;
+    return( retn );
 }
 
 
@@ -463,7 +464,8 @@ void hdlAddUnary                // ADD A HANDLE AFTER A UNARY OPERATION
     , tn handle                 // - the handle
     , tn old )                  // - handle operated upon by unary oper'n
 {
-    old = old;
+    /* unused parameters */ (void)old;
+
     hdlAddReuse( hdltype, handle );
 }
 
@@ -473,8 +475,8 @@ void hdlAddBinary               // ADD A HANDLE AFTER A BINARY OPERATION
     , tn old_l                  // - handle operated upon by unary oper'n
     , tn old_r )                // - handle operated upon by unary oper'n
 {
-    old_l = old_l;
-    old_r = old_r;
+    /* unused parameters */ (void)old_l; (void)old_r;
+
     hdlAddReuse( hdltype, handle );
 }
 
@@ -485,19 +487,19 @@ void hdlAddTernary              // ADD A HANDLE AFTER A TERNARY OPERATION
     , tn old_l                  // - handle operated upon by unary oper'n
     , tn old_r )                // - handle operated upon by unary oper'n
 {
-    old_t = old_t;
-    old_l = old_l;
-    old_r = old_r;
+    /* unused parameters */ (void)old_t; (void)old_l; (void)old_r;
+
     hdlAddReuse( hdltype, handle );
 }
 
 void hdlAllUsed                 // VERIFY ALL HANDLES IN RING HAVE BEEN USED
     ( handle_type hdltype )
 {
+    /* unused parameters */ (void)hdltype;
+
     // check to ensure that all nodes of type hdltype are used LMW
     // create linked list of node when creating, and check all are empty
     // after tree is burned
-    hdltype = hdltype;
 }
 
 void EchoAPIInit( void )
@@ -516,13 +518,13 @@ static char *callBackName       // MAKE CALL-BACK NAME FOR PRINTING
 {
     const char  *name;          // - name to be used
 
-    name = FEExtName( (cg_sym_handle)rtn, EXTN_CALLBACKNAME );
+    name = FEExtName( (cg_sym_handle)&rtn, EXTN_CALLBACKNAME );
     if( name == NULL ) {
         sprintf( buffer, "%p", rtn );
     } else {
         sprintf( buffer, "%p:%s", rtn, name );
     }
-    return buffer;
+    return( buffer );
 }
 
 

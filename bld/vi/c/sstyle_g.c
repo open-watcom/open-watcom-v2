@@ -176,7 +176,8 @@ void GetGMLFlags( ss_flags_g *storeFlags )
 
 void InitGMLFlags( linenum line_no )
 {
-    line_no = line_no;
+    /* unused parameters */ (void)line_no;
+
     flags.inGMLComment = false;
     flags.inGMLKeyword = false;
     flags.inString = false;
@@ -184,7 +185,7 @@ void InitGMLFlags( linenum line_no )
 
 void GetGMLBlock( ss_block *ss_new, char *start, int line )
 {
-    line = line;
+    /* unused parameters */ (void)line;
 
     if( start[0] == '\0' ) {
         if( firstNonWS == start ) {

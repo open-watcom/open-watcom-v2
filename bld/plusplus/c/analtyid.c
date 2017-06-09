@@ -106,7 +106,7 @@ PTREE AnalyseTypeidExpr( PTREE typeid_expr )
     TYPE class_type;
     CLASSINFO *info;
 
-    if( ! CompFlags.rtti_enabled ) {
+    if( !CompFlags.rtti_enabled ) {
         PTreeErrorExpr( typeid_expr, ERR_RTTI_DISABLED );
         return( typeid_expr );
     }

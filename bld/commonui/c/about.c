@@ -42,20 +42,19 @@
 #endif
 #include "ldstr.h"
 #include "uistr.gh"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 #if defined( _M_I86 ) && defined( __WINDOWS__ )
     #pragma library( "toolhelp.lib" )   /* For SystemHeapInfo */
 #endif
 
-
 /* Window callback functions prototypes */
-WINEXPORT INT_PTR CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 /*
- * AboutProc - callback routine for settings dialog
+ * AboutDlgProc - callback routine for settings dialog
  */
-INT_PTR CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK AboutDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     char        buff[256];
     LPABOUTINFO pai;
@@ -160,17 +159,17 @@ INT_PTR CALLBACK AboutProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     }
     return( FALSE );
 
-} /* AboutProc */
+} /* AboutDlgProc */
 
 /*
  * DoAbout - show the startup dialog
  */
 void DoAbout( LPABOUTINFO ai )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
 
-    proc = MakeDlgProcInstance( AboutProc, ai->inst );
-    DialogBoxParam( ai->inst, "About", ai->owner, (DLGPROC)proc, (LPARAM)ai );
-    FreeProcInstance( proc );
+    dlgproc = MakeProcInstance_DLG( AboutDlgProc, ai->inst );
+    DialogBoxParam( ai->inst, "About", ai->owner, dlgproc, (LPARAM)ai );
+    FreeProcInstance_DLG( dlgproc );
 
 } /* DoAbout */

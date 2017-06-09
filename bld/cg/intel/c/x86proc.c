@@ -68,8 +68,8 @@ extern  void        GenWindowsEpilog( void );
 extern  void        GenCypWindowsEpilog( void );
 extern  void        GenRdosdevProlog( void );
 extern  void        GenRdosdevEpilog( void );
-extern  void        GenEnter(int,int);
-extern  void        GenUnkEnter(pointer,int);
+extern  void        GenEnter(int,level_depth);
+extern  void        GenUnkEnter(pointer,level_depth);
 extern  void        GenRegAnd(hw_reg_set,type_length);
 extern  void        GenRegSub(hw_reg_set,type_length);
 extern  void        GenUnkSub(hw_reg_set,pointer);
@@ -99,7 +99,7 @@ static  void        CalcUsedRegs( void );
 static  void        Enter( void );
 static  void        AllocStack( void );
 static  int         Push( hw_reg_set to_push );
-static  void        DoEnter( int level );
+static  void        DoEnter( level_depth level );
 static  void        DoEpilog( void );
 
 
@@ -203,9 +203,9 @@ static  bool    ScanInstructions( void )
 
 
 #if _TARGET & _TARG_80386
-static  void    ChkFDOp( name *op, int depth ) {
-/**********************************************/
-
+static  void    ChkFDOp( name *op, level_depth depth )
+/****************************************************/
+{
     if( op->n.class != N_TEMP )
         return;
     if( (op->v.usage & (USE_IN_ANOTHER_BLOCK | USE_ADDRESS)) == 0 )
@@ -229,12 +229,12 @@ static  void    ChkFDOp( name *op, int depth ) {
 
 #if _TARGET & _TARG_80386
 static  void    ScanForFDOps( void )
-/****************************/
+/**********************************/
 {
     block       *blk;
-    instruction     *ins;
+    instruction *ins;
     int         i;
-    int         depth;
+    level_depth depth;
 
     CurrProc->contains_call = false;
     if( BlockByBlock )
@@ -325,7 +325,7 @@ void    AddCacheRegs( void )
         return;
     if( CurrProc->state.attr & ROUTINE_WANTS_DEBUGGING )
         return;
-    if( CurrProc->lex_level != 0 )
+    if( CurrProc->lex_level > 0 )
         return;
     if( _FPULevel( FPU_586 ) ) {
         ScanForFDOps();
@@ -371,7 +371,7 @@ static  bool    NeedBPProlog( void ) {
         return( true );
     if( CurrProc->targ.push_local_size != 0 )
         return( true );
-    if( CurrProc->lex_level != 0 )
+    if( CurrProc->lex_level > 0 )
         return( true );
     if( CurrProc->targ.sp_align )
         return( true );
@@ -380,8 +380,9 @@ static  bool    NeedBPProlog( void ) {
     if( ( CurrProc->state.attr & ROUTINE_NEEDS_PROLOG ) != 0 )
         return( true );
     if( FAR_RET_ON_STACK ) {
-        if( CHAIN_FRAME )
+        if( CHAIN_FRAME ) {
             return( true );
+        }
     }
     return( false );
 }
@@ -505,8 +506,9 @@ static  void    EpilogHook( void )
         DoRTCall( RT_EPIHOOK, false );
     }
     size = ProEpiDataSize();
-    if( size != 0 )
+    if( size != 0 ) {
         GenRegAdd( HW_SP, size );
+    }
 }
 
 
@@ -628,7 +630,7 @@ void    GenProlog( void )
 
     if( _RoutineIsInterrupt( CurrProc->state.attr ) ||
         ( CurrProc->state.attr & ROUTINE_NEVER_RETURNS ) ) {
-       ret_size = 0;
+        ret_size = 0;
     } else if( _RoutineIsLong( CurrProc->state.attr ) ) {
         ret_size = 2 * WORD_SIZE;
     } else if( _RoutineIsFar16( CurrProc->state.attr ) ) {
@@ -746,7 +748,7 @@ void    InitStackDepth( block *blk )
 extern  void        AdjustStackDepth( instruction *ins )
 /******************************************************/
 {
-    name    *op;
+    name        *op;
     type_length adjust;
 
     if( !DoesSomething( ins ) )
@@ -800,10 +802,11 @@ extern void     AdjustStackDepthDirect( int adjust ) {
 extern  bool    BaseIsSP( name *op ) {
 /************************************/
 
-    if( !CurrProc->targ.sp_frame ) return( false );
-        if( CurrProc->targ.sp_align && ( op->t.temp_flags & STACK_PARM ) ) {
-            return( false );
-        }
+    if( !CurrProc->targ.sp_frame )
+        return( false );
+    if( CurrProc->targ.sp_align && ( op->t.temp_flags & STACK_PARM ) ) {
+        return( false );
+    }
     return( true );
 }
 
@@ -895,15 +898,15 @@ static  void    PopAll( void ) {
 static  void    Enter( void ) {
 /***********************/
 
-    int     lex_level;
-    int     i;
+    level_depth lex_level;
+    int         i;
 
     lex_level = CurrProc->lex_level;
     if( !CurrProc->targ.sp_frame && _CPULevel( CPU_186 ) &&
 #if _TARGET & _TARG_80386
     CurrProc->locals.size <= 65535 &&
 #endif
-    ( lex_level != 0 || ( CurrProc->locals.size != 0 && OptForSize > 50 ) ) ) {
+    ( lex_level > 0 || ( CurrProc->locals.size != 0 && OptForSize > 50 ) ) ) {
         DoEnter( lex_level );
         HW_CTurnOn( CurrProc->state.used, HW_BP );
         CurrProc->state.attr |= ROUTINE_NEEDS_PROLOG;
@@ -922,7 +925,7 @@ static  void    Enter( void ) {
                 if( CurrProc->lex_level > 1 ) {
                     GenRegAdd( HW_BP, ( CurrProc->lex_level - 1 ) * WORD_SIZE );
                 }
-                if( CurrProc->lex_level != 0 ) {
+                if( CurrProc->lex_level > 0 ) {
                     QuickSave( HW_BP, OP_PUSH );
                 }
             }
@@ -1017,9 +1020,9 @@ type_length PushSize( type_length len )
 }
 
 
-static  void    AllocStack( void ) {
-/****************************/
-
+static  void    AllocStack( void )
+/********************************/
+{
     type_length     size;
 
     /* keep stack aligned */
@@ -1052,9 +1055,9 @@ static  void    AllocStack( void ) {
 }
 
 
-static  void    DoEnter( int level ) {
-/************************************/
-
+static  void    DoEnter( level_depth level )
+/******************************************/
+{
     type_length size;
 
     /* keep stack aligned */
@@ -1105,7 +1108,7 @@ void    GenEpilog( void )
             AbsPatch( CurrProc->targ.stack_check,
                   CurrProc->locals.size +
                   CurrProc->parms.base  +
-                  WORD_SIZE*CurrProc->lex_level +
+                  WORD_SIZE * CurrProc->lex_level +
                   CurrProc->targ.push_local_size +
                   MaxStack );
         }
@@ -1113,15 +1116,15 @@ void    GenEpilog( void )
 
 
     CurrProc->prolog_state |= GENERATED_EPILOG;
-    if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
+    if( _IsModel( DBG_LOCALS ) ) {  // d1+ or d2
         EmitRtnEnd();
     }
 }
 
 
-static  void    DoEpilog( void ) {
-/**************************/
-
+static  void    DoEpilog( void )
+/******************************/
+{
     hw_reg_set  to_pop;
     bool    is_long;
     type_length size;
@@ -1172,7 +1175,7 @@ static  void    DoEpilog( void ) {
                 EpilogHook();
                 if( FAR_RET_ON_STACK ) {
                     if( CHEAP_FRAME ) {
-                      GenCypWindowsEpilog();
+                        GenCypWindowsEpilog();
                     } else {
                         GenWindowsEpilog();
                     }
@@ -1192,7 +1195,7 @@ static  void    DoEpilog( void ) {
     if( CurrProc->prolog_state & GENERATE_THUNK_PROLOG ) {
         QuickSave( HW_SP, OP_POP );
     }
-    if( _IsTargetModel( NEW_P5_PROFILING|P5_PROFILING ) ) {
+    if( _IsTargetModel( NEW_P5_PROFILING | P5_PROFILING ) ) {
         GenP5ProfilingEpilog( CurrProc->label );
     }
 #endif
@@ -1207,8 +1210,8 @@ static  void    DoEpilog( void ) {
 }
 
 
-int AskDisplaySize( int level )
-/*****************************/
+int AskDisplaySize( level_depth level )
+/*************************************/
 {
     return( level * WORD_SIZE );
 }

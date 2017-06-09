@@ -225,7 +225,8 @@ static  int     ExtractText( char *string, int len ) {
 // Given a string of text, extract as much text as possible up to a maximum
 // of "len" bytes so that we don't split double-byte characters.
 
-    string = string;
+    /* unused parameters */ (void)string;
+
     return( len );
 }
 
@@ -233,7 +234,8 @@ static  int     ExtractText( char *string, int len ) {
 static  bool    IsDoubleByteBlank( char *ptr ) {
 // Determine if character is a double-byte blank character.
 
-    ptr = ptr;
+    /* unused parameters */ (void)ptr;
+
     return( false );
 }
 
@@ -241,7 +243,8 @@ static  bool    IsDoubleByteBlank( char *ptr ) {
 static  bool    IsDoubleByteChar( char ch ) {
 // Determine if character is a double-byte character.
 
-    ch = ch;
+    /* unused parameters */ (void)ch;
+
     return( false );
 }
 
@@ -249,7 +252,8 @@ static  bool    IsDoubleByteChar( char ch ) {
 static  int     CharacterWidth( char PGM *ptr ) {
 // Determine character width.
 
-    ptr = ptr;
+    /* unused parameters */ (void)ptr;
+
     return( 1 );
 }
 
@@ -257,7 +261,8 @@ static  int     CharacterWidth( char PGM *ptr ) {
 static  bool    IsForeign( char ch ) {
 // Determine if character is a foreign character (i.e. non-ASCII).
 
-    ch = ch;
+    /* unused parameters */ (void)ch;
+
     return( false );
 }
 

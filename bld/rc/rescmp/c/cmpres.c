@@ -36,6 +36,8 @@
 #include "global.h"
 #include "bincmp.h"
 #include "rcrtns.h"
+#include "cmpres.h"
+
 
 static WResDirWindow LookUpResource( WResDirWindow wind1, WResDir dir2 )
 /**********************************************************************/
@@ -50,15 +52,14 @@ static WResDirWindow LookUpResource( WResDirWindow wind1, WResDir dir2 )
     res1 = WResGetResInfo( wind1 );
     lang1 = WResGetLangInfo( wind1 );
 
-    wind2 = WResFindResource( &(type1->TypeName), &(res1->ResName), dir2,
-                              &(lang1->lang) );
+    wind2 = WResFindResource( &(type1->TypeName), &(res1->ResName), dir2, &(lang1->lang) );
     if (WResIsEmptyWindow( wind2 ) && !CmdLineParms.Quiet) {
         resname1 = WResIDToStr( &(res1->ResName) );
         printf( "Error: Resource %s (lang 0x%X SubLang 0x%X) not in file %s\n",
                         resname1, (int)lang1->lang.lang,
                         (int)lang1->lang.sublang,
                         CmdLineParms.FileName2 );
-        RCFREE( resname1 );
+        RESFREE( resname1 );
     }
 
     return( wind2 );
@@ -86,30 +87,26 @@ static int CompareOneResource( WResFileID fid1, WResDirWindow wind1,
     if (lang1->MemoryFlags != lang2->MemoryFlags) {
         if (!CmdLineParms.Quiet) {
             resname1 = WResIDToStr( &(res1->ResName) );
-            printf( "Error: memory flags for resource %s are not the same\n",
-                            resname1 );
-            RCFREE( resname1 );
+            printf( "Error: memory flags for resource %s are not the same\n", resname1 );
+            RESFREE( resname1 );
         }
         oldretcode = 1;
     }
     if (lang1->Length != lang2->Length) {
         if (!CmdLineParms.Quiet) {
             resname1 = WResIDToStr( &(res1->ResName) );
-            printf( "Error: resource %s does not have the same length\n",
-                            resname1 );
-            RCFREE( resname1 );
+            printf( "Error: resource %s does not have the same length\n", resname1 );
+            RESFREE( resname1 );
         }
         oldretcode = 1;
     } else {
-        retcode = BinaryCompare( fid1, lang1->Offset, fid2,
-                        lang2->Offset, lang1->Length );
+        retcode = BinaryCompare( fid1, lang1->Offset, fid2, lang2->Offset, lang1->Length );
         switch (retcode) {
         case 1:
             if (!CmdLineParms.Quiet) {
                 resname1 = WResIDToStr( &(res1->ResName) );
-                printf( "Error: contents of resource %s are different.\n",
-                                resname1 );
-                RCFREE( resname1 );
+                printf( "Error: contents of resource %s are different.\n", resname1 );
+                RESFREE( resname1 );
             }
             oldretcode = retcode;
             break;

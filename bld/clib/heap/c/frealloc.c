@@ -25,6 +25,7 @@
 *  ========================================================================
 *
 * Description:  Far heap reallocation routines.
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -36,76 +37,64 @@
 #include <string.h>
 #include "heap.h"
 
-#if defined(__386__)
-#define MOVSW   0x66 0xa5
-#define _DI     edi
-#define _SI     esi
-#define _CX     ecx
-#else
-#define MOVSW   0xa5
-#define _DI     di
-#define _SI     si
-#define _CX     cx
-#endif
 
-
-extern void _WCNEAR *_mymemcpy( void _WCFAR *, void _WCFAR *, size_t );
+extern void _mymemcpy( void_fptr, void_fptr, size_t );
+#if defined(__SMALL_DATA__) || defined(__WINDOWS__)
 #pragma aux _mymemcpy = \
-        0x1e            /* push ds */ \
-        0x8e 0xda       /* mov ds,dx */ \
-        0xd1 0xe9       /* shr cx,1 */ \
-        0xf3 MOVSW      /* rep movsw */ \
-        0x11 0xc9       /* adc cx,cx */ \
-        0xf3 0xa4       /* rep movsb */ \
-        0x1f            /* pop ds */ \
-        parm caller     [es _DI] [dx _SI] [_CX] \
-        value           [_SI] \
-        modify exact    [_SI _DI _CX];
-
+        "push ds"       \
+        "mov ds,dx"     \
+        memcpy_i86      \
+        "pop ds"        \
+    parm caller [es di] [dx si] [cx] modify exact [si di cx]
+#else
+#pragma aux _mymemcpy = \
+        memcpy_i86      \
+    parm caller [es di] [ds si] [cx] modify exact [si di cx]
+#endif
 
 #if defined(__BIG_DATA__)
 
-_WCRTLINK void *realloc( void *stg, size_t amount )
+_WCRTLINK void *realloc( void *cstg, size_t amount )
 {
-    return( _frealloc( stg, amount ) );
+    return( _frealloc( cstg, amount ) );
 }
 
 #endif
 
 
-_WCRTLINK void _WCFAR *_frealloc( void _WCFAR *stg, size_t req_size )
+_WCRTLINK void_fptr _frealloc( void_fptr cstg_old, size_t req_size )
 {
-    size_t  old_size;
-    void    _WCFAR *p;
+    size_t      old_size;
+    void_fptr   cstg_new;
 
-    if( stg == NULL ) {
+    if( cstg_old == NULL ) {
         return( _fmalloc( req_size ) );
     }
     if( req_size == 0 ) {
-        _ffree( stg );
+        _ffree( cstg_old );
         return( NULL );
     }
-    old_size = _fmsize( stg );
-    if( FP_SEG( stg ) == _DGroup() ) {
-        p = stg;
-        if( _nexpand( (void _WCNEAR *)FP_OFF( stg ), req_size ) == NULL ) {
-            p = NULL;
+    old_size = _fmsize( cstg_old );
+    if( FP_SEG( cstg_old ) == _DGroup() ) {
+        cstg_new = cstg_old;
+        if( _nexpand( (void_nptr)cstg_old, req_size ) == NULL ) {
+            cstg_new = NULL;
         }
     } else {
-        p = _fexpand( stg, req_size );
+        cstg_new = _fexpand( cstg_old, req_size );
     }
-    if( p == NULL ) {       /* couldn't be expanded inline */
-        p = _fmalloc( req_size );
-        if( p != NULL ) {
-            _mymemcpy( p, stg, old_size );
-            _ffree( stg );
+    if( cstg_new == NULL ) {        /* couldn't be expanded inline */
+        cstg_new = _fmalloc( req_size );
+        if( cstg_new != NULL ) {
+            _mymemcpy( cstg_new, cstg_old, old_size );
+            _ffree( cstg_old );
         } else {
-            if( FP_SEG( stg ) == _DGroup() ) {
-                _nexpand( (void _WCNEAR *)FP_OFF( stg ), old_size );
+            if( FP_SEG( cstg_old ) == _DGroup() ) {
+                _nexpand( (void_nptr)cstg_old, old_size );
             } else {
-                _fexpand( stg, old_size );
+                _fexpand( cstg_old, old_size );
             }
         }
     }
-    return( p );
+    return( cstg_new );
 }

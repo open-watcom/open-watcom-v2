@@ -64,7 +64,7 @@ ifdef __386__
  ifdef __STACK__
           push  ECX
  endif
-          push  FP_FUNC_SQRT             ; - indicate "sqrt"
+          push  FP_FUNC_SQRT            ; - indicate "sqrt"
           push  argx[ESP]               ; - push argument
           push  argx[ESP]               ; - ...
           call  __math87_err            ; - math error

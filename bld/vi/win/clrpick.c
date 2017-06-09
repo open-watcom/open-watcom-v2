@@ -39,7 +39,6 @@
 #include "toolbr.h"
 #include "sstyle.h"
 #include "subclass.h"
-#include "wprocmap.h"
 
 
 /* Local Windows CALLBACK function prototypes */
@@ -274,8 +273,7 @@ static LRESULT gotoNewBlock( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     HDC     hdc;
 
-    wparam = wparam;
-    msg = msg;
+    /* unused parameters */ (void)wparam; (void)msg;
 
     hdc = GetDC( hwnd );
     drawUnselected( hdc, cursx, cursy );
@@ -361,7 +359,7 @@ WINEXPORT LRESULT CALLBACK ClrPickProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
         initRGBValues();
         // our subclass slows things down - force a paint before we subclass
         UpdateWindow( hwnd );
-        // SubclassGenericAdd( hwnd, (WNDPROC)MakeWndProcInstance( HotkeyProc, InstanceHandle ) );
+        // SubclassGenericAdd( hwnd, HotkeyProc, InstanceHandle );
         return( 0 );
     case WM_PAINT:
         paintBlocks( hwnd );

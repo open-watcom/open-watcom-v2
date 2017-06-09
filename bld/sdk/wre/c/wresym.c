@@ -207,7 +207,7 @@ static char *WRELoadSymbols( WRHashTable **table, char *file_name, bool prompt )
 
     if( ok ) {
         WRESetStatusText( NULL, "", FALSE );
-        WRESetStatusByID( WRE_LOADINGSYMBOLS, -1 );
+        WRESetStatusByID( WRE_LOADINGSYMBOLS, 0 );
     }
 
     if( ok ) {
@@ -296,7 +296,7 @@ bool WRESaveSymbols( WRHashTable *table, char **file_name, bool prompt )
 
     ok = true;
     WRESetStatusText( NULL, "", FALSE );
-    WRESetStatusByID( WRE_SAVEINGSYMBOLS, -1 );
+    WRESetStatusByID( WRE_SAVEINGSYMBOLS, 0 );
 
     if( prompt || *file_name == NULL ) {
         gf.file_name = *file_name;
@@ -331,26 +331,26 @@ bool WRESaveSymbols( WRHashTable *table, char **file_name, bool prompt )
 bool WREEditResourceSymbols( WREResInfo *info )
 {
     WRHashEntryFlags    flags;
-    FARPROC             cb;
+    HELP_CALLBACK       hcb;
     bool                ok;
 
-    cb = NULL;
+    hcb = (HELP_CALLBACK)NULL;
     ok = (info != NULL && info->symbol_table != NULL);
 
     if( ok ) {
-        cb = MakeProcInstance( (FARPROC)WREHelpRoutine, WREGetAppInstance() );
-        ok = (cb != (FARPROC)NULL);
+        hcb = (HELP_CALLBACK)MakeProcInstance( (FARPROC)WREHelpRoutine, WREGetAppInstance() );
+        ok = (hcb != (HELP_CALLBACK)NULL);
     }
 
     if( ok ) {
         flags = WR_HASHENTRY_ALL;
-        ok = WREditSym( info->info_win, &info->symbol_table, &flags, cb );
+        ok = WREditSym( info->info_win, &info->symbol_table, &flags, hcb );
     }
 
     // ***** call routine to update the edit sessions *****
 
-    if( cb != (FARPROC)NULL ) {
-        FreeProcInstance( (FARPROC)cb );
+    if( hcb != (HELP_CALLBACK)NULL ) {
+        FreeProcInstance( (FARPROC)hcb );
     }
 
     return( ok );

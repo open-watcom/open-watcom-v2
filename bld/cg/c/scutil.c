@@ -82,7 +82,7 @@ extern  void    ScoreCalcList( void )
     }
     for( reg_name = Names[N_REGISTER]; reg_name != NULL; reg_name = reg_name->n.next_name ) {
         if( ScRealRegister( reg_name ) ) {
-            ++ ScoreCount;
+            ++ScoreCount;
         }
     }
     if( ScoreCount != 0 ) {
@@ -144,11 +144,9 @@ extern  void    ScoreClear( score *p )
     int         i;
     list_head   *list_heads;
 
-    i = ScoreCount;
-    list_heads = (list_head *)&p[i];
+    list_heads = (list_head *)&p[ScoreCount];
     *list_heads = NULL;  /* initialize free list*/
-    i = 0;
-    for( ;; ) {
+    for( i = 0; i < ScoreCount; ++i ) {
         ++list_heads;
         p->list = list_heads;
         *list_heads = NULL;
@@ -156,8 +154,7 @@ extern  void    ScoreClear( score *p )
         p->prev_reg = p;
         p->index = i;
         p->generation = 0;
-        ++ p;
-        if( ++i == ScoreCount ) break;
+        ++p;
     }
 }
 
@@ -193,27 +190,21 @@ extern  void    FreeScoreBoard( score *p )
     score       *q;
 
     if( p != NULL ) {
-        i = ScoreCount;
         q = p;
-        for(;;) {
-            --i;
+        for( i = ScoreCount; i > 0; --i ) {
             ScoreFreeList( q );
             ++q;
-            if( i == 0 ) break;
         }
-        i = ScoreCount;
-        list_heads = (list_head *)&p[i];
+        list_heads = (list_head *)&p[ScoreCount];
         *list_heads = NULL;  /* initialize free list*/
-        for(;;) {
-            --i;
+        for( i = ScoreCount; i > 0; --i ) {
             ++list_heads;
             p->list = list_heads;
             *list_heads = NULL;
             p->next_reg = p;
             p->prev_reg = p;
             p->generation = 0;
-            ++ p;
-            if( i == 0 ) break;
+            ++p;
         }
     }
 }
@@ -227,14 +218,9 @@ extern  void    MemChanged( score *p, bool statics_too )
     score_list  *curr;
     bool        changed;
 
-    i = ScoreCount;
-    for(;;) {
-        --i;
+    for( i = ScoreCount; i > 0; --i ) {
         if( p->list != NULL ) {
-            owner = p->list;
-            for(;;) {
-                curr = *owner;
-                if( curr == NULL ) break;
+            for( owner = p->list; (curr = *owner) != NULL; ) {
                 changed = false;
                 switch( curr->info.class ) {
                 case N_CONSTANT:
@@ -272,8 +258,7 @@ extern  void    MemChanged( score *p, bool statics_too )
                 }
             }
         }
-        ++ p;
-        if( i == 0 ) break;
+        ++p;
     }
 }
 

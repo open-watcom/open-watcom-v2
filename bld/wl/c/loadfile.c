@@ -81,8 +81,8 @@ typedef struct {
     char        *fname;
     char        *buffer;
     size_t      bufsize;
-    char        *dllname;
-    size_t      dlllen;
+    char        *module_name;
+    size_t      module_name_len;
     bool        didone  : 1;
 } implibinfo;
 
@@ -110,7 +110,7 @@ static void SetupImpLib( void )
     ImpLib.bufsize = 0;
     ImpLib.handle = NIL_FHANDLE;
     ImpLib.buffer = NULL;
-    ImpLib.dllname = NULL;
+    ImpLib.module_name = NULL;
     ImpLib.didone = false;
     if( FmtData.make_implib ) {
         _ChkAlloc( ImpLib.buffer, IMPLIB_BUFSIZE );
@@ -123,14 +123,15 @@ static void SetupImpLib( void )
         /* GetBaseName results in the filename only   *
          * it trims both the path, and the extension */
         fname = GetBaseName( Root->outfile->fname, 0, &namelen );
-        ImpLib.dlllen = namelen;
+        ImpLib.module_name_len = namelen;
         /*
          * increase length to restore full extension if not OS2
          * sometimes the extension of the output name is important
          */
-        ImpLib.dlllen += strlen( fname + namelen );
-        _ChkAlloc( ImpLib.dllname, ImpLib.dlllen );
-        memcpy( ImpLib.dllname, fname, ImpLib.dlllen );
+        if( (FmtData.type & MK_OS2_16BIT) == 0 )
+            ImpLib.module_name_len += strlen( fname + namelen );
+        _ChkAlloc( ImpLib.module_name, ImpLib.module_name_len );
+        memcpy( ImpLib.module_name, fname, ImpLib.module_name_len );
     }
 }
 
@@ -831,7 +832,7 @@ void BuildImpLib( void )
     _LnkFree( FmtData.implibname );
     _LnkFree( ImpLib.fname );
     _LnkFree( ImpLib.buffer );
-    _LnkFree( ImpLib.dllname );
+    _LnkFree( ImpLib.module_name );
 }
 
 static void BufImpWrite( const char *buffer, size_t len )
@@ -871,7 +872,7 @@ void AddImpLibEntry( const char *intname, const char *extname, ordinal_t ordinal
     } else {
         otherlen = 10;          // max length of a 32-bit int.
     }
-    buff = alloca( intlen + otherlen + ImpLib.dlllen + 13 );
+    buff = alloca( intlen + otherlen + ImpLib.module_name_len + 13 );
     buff[0] = '+';
     buff[1] = '+';
     buff[2] = '\'';
@@ -881,8 +882,8 @@ void AddImpLibEntry( const char *intname, const char *extname, ordinal_t ordinal
     *currpos++ = '\'';
     *currpos++ = '.';
     *currpos++ = '\'';
-    memcpy( currpos, ImpLib.dllname, ImpLib.dlllen );
-    currpos += ImpLib.dlllen;
+    memcpy( currpos, ImpLib.module_name, ImpLib.module_name_len );
+    currpos += ImpLib.module_name_len;
     *currpos++ = '\'';
     *currpos++ = '.';
     if( ordinal == NOT_IMP_BY_ORDINAL ) {
@@ -906,7 +907,8 @@ void WriteLoad3( void *dummy, const char *buff, size_t size )
 /***********************************************************/
 /* write a buffer out to the load file (useful as a callback) */
 {
-    dummy = dummy;
+    /* unused parameters */ (void)dummy;
+
     WriteLoad( buff, size );
 }
 

@@ -15,10 +15,13 @@ set PROJDIR=<CWD>
 
 [ BLOCK <1> rel cprel ]
 #======================
-    <CCCMD> wini86/drwatcom.exe  <OWRELROOT>/binw/drwatcom.exe
-    <CCCMD> nt386/drwatcom.exe   <OWRELROOT>/binnt/drwatcom.exe
+    <CCCMD> wini86/drwatcom.exe  <OWRELROOT>/binw/
+    <CCCMD> wini86/drwatcom.sym  <OWRELROOT>/binw/
+    <CCCMD> nt386/drwatcom.exe   <OWRELROOT>/binnt/
+    <CCCMD> nt386/drwatcom.sym   <OWRELROOT>/binnt/
     <CCCMD> win95/drwatcom.exe   <OWRELROOT>/binnt/_drwin95.exe
-    <CCCMD> ntaxp/drwatcom.exe   <OWRELROOT>/axpnt/drwatcom.exe
+    <CCCMD> win95/drwatcom.sym   <OWRELROOT>/binnt/_drwin95.sym
+    <CCCMD> ntaxp/drwatcom.exe   <OWRELROOT>/axpnt/
 
 [ BLOCK . . ]
 

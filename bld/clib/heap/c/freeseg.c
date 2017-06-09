@@ -52,19 +52,8 @@
 #include "seterrno.h"
 
 
-#if defined(__OS2__)
-  #if defined(__BIG_DATA__)
-    #define MODIFIES ds es
-  #else
-    #define MODIFIES es
-  #endif
-#elif defined(__WINDOWS__)
-    #define MODIFIES es
-#endif
-
 #if defined(__WINDOWS__) || defined(__OS2__)
 
-#pragma aux DoFreeSeg modify [MODIFIES]
 static int DoFreeSeg( __segment seg )
 {
   #if defined(__WINDOWS__)
@@ -104,7 +93,7 @@ extern int tricky_free_seg( int, int );
         "call   DoFreeSeg"      \
         "mov    es,cx"          \
         "mov    ds,dx"          \
-        parm [ax] [bx] value [ax] modify [cx dx]
+        parm [ax] [bx] value [ax] modify [cx dx ds es]
 #else
 #pragma aux tricky_free_seg = \
         "mov    cx,es"          \
@@ -116,10 +105,9 @@ extern int tricky_free_seg( int, int );
         "L1:"                   \
         "call   DoFreeSeg"      \
         "mov    es,cx"          \
-        parm [ax] [bx] value [ax] modify [cx]
+        parm [ax] [bx] value [ax] modify [cx es]
 #endif
 
-#pragma aux __DoFreeSeg modify [MODIFIES]
 static int __DoFreeSeg( __segment first )
 {
     __segment     last;
@@ -138,9 +126,6 @@ static int __DoFreeSeg( __segment first )
 #endif
 
 
-#if defined(__WINDOWS__) || defined(__OS2__)
-#pragma aux __FreeSeg modify [MODIFIES]
-#endif
 int __FreeSeg( __segment seg )
 {
 #if defined(__QNX__)

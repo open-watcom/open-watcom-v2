@@ -58,7 +58,7 @@ void __LDFloatToString( char *buf,
     double_value = *f;
     __EFG_cnvd2ld( &double_value, &ld );
 #else
-    ld.value = *f;
+    ld.u.value = *f;
 #endif
 
     if( (format_flags & (std::ios::scientific|ios::fixed)) == std::ios::scientific ) {

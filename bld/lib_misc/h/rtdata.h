@@ -81,15 +81,15 @@ typedef struct _87state {
 
 extern __stream_link        *__OpenStreams;
 extern __stream_link        *__ClosedStreams;
-extern      char            * _WCNEAR __env_mask;  /* ptr to char array of flags */
-extern      void            (*__FPE_handler_exit)( void );
+extern char                 * _WCNEAR __env_mask;  /* ptr to char array of flags */
+extern void                 (*__FPE_handler_exit)( void );
 #if !defined( __NETWARE__ )
-    extern  int             _cbyte;
-    extern  int             _cbyte2;
-    extern  int             _child;
-    extern  int             __umaskval;
-    extern  unsigned        _curbrk;
-    extern  int             _commode;
+_WCRTDATA extern  int       _cbyte;
+_WCRTDATA extern  int       _cbyte2;
+          extern  int       _child;
+          extern  int       __umaskval;
+_WCRTDATA extern  unsigned  _curbrk;
+          extern  int       _commode;
   #if defined( __WATCOMC__ ) && defined( _M_IX86 )
     #pragma aux             _child "_*";
   #endif
@@ -97,11 +97,11 @@ extern      void            (*__FPE_handler_exit)( void );
 
 #if !defined( _M_I86 )
 #if defined( __DOS__ )
-extern char     _WCFAR *_Envptr;
+_WCRTDATA extern char       _WCFAR *_Envptr;
 #elif defined( __LINUX__ )
-extern char     **_Envptr;
+_WCRTDATA extern char       **_Envptr;
 #else
-extern char     *_Envptr;
+_WCRTDATA extern char       *_Envptr;
 #endif
 #endif
 

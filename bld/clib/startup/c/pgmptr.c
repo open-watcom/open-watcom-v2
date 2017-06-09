@@ -34,7 +34,7 @@
 #include "rtdata.h"
 
 
-_WCRTLINK char **__get_pgmptr_ptr( void )
+_WCRTLINK char * (*__get_pgmptr_ptr( void ))
 {
     return( &_pgmptr );
 }

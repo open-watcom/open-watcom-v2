@@ -47,11 +47,15 @@
 #include "wde_rc.h"
 #include "wdedefin.h"
 #include "jdlg.h"
+#include "wclbproc.h"
+
 
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
-WINEXPORT BOOL CALLBACK WdeGenericDefineProc( HWND, UINT, WPARAM, LPARAM );
+
+/* Local Window callback functions prototypes */
+WINEXPORT INT_PTR CALLBACK WdeGenericDefineDlgProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
 /* static function prototypes                                               */
@@ -91,7 +95,7 @@ bool WdeDefineCurrentObject( WORD w )
             WdeSetOption( WdeOptUseDefDlg, old_option );
         }
     } else {
-        ret = FALSE;
+        ret = false;
     }
 
     if( ret ) {
@@ -104,48 +108,45 @@ bool WdeDefineCurrentObject( WORD w )
 bool WdeGenericDefine( WdeDefineObjectInfo *info )
 {
     INT_PTR              redraw;
-    BOOL                 quick;
-    BOOL                 destroy_children;
-    FARPROC              proc_inst;
+    bool                 quick;
+    bool                 destroy_children;
+    DLGPROC              dlgproc;
     HINSTANCE            app_inst;
 
     if( info->obj == NULL ) {
         WdeWriteTrail( "WdeGenericDefine: NULL obj!" );
-        return( FALSE );
+        return( false );
     }
 
-    WdeSetStatusText( NULL, "", FALSE );
-    WdeSetStatusByID( WDE_GENERICDEFINE, WDE_NONE );
+    WdeSetStatusText( NULL, "", false );
+    WdeSetStatusByID( WDE_GENERICDEFINE, 0 );
 
     if( info->win == NULL && !Forward( info->obj, GET_WINDOW_HANDLE, &info->win, NULL ) ) {
         WdeWriteTrail( "WdeGenericDefine: GET_WINDOW_HANDLE failed!" );
-        return( FALSE );
+        return( false );
     }
 
     redraw = FALSE;
 
     app_inst = WdeGetAppInstance();
 
-    proc_inst = MakeProcInstance ( (FARPROC)WdeGenericDefineProc, app_inst );
-
-    redraw = JDialogBoxParam( app_inst, "WdeDefineGeneric", info->win,
-                              (DLGPROC)proc_inst, (LPARAM)info );
-
-    FreeProcInstance ( proc_inst );
+    dlgproc = MakeProcInstance_DLG( WdeGenericDefineDlgProc, app_inst );
+    redraw = JDialogBoxParam( app_inst, "WdeDefineGeneric", info->win, dlgproc, (LPARAM)info );
+    FreeProcInstance_DLG( dlgproc );
 
     if( redraw == -1 ) {
         WdeWriteTrail( "WdeGenericDefine: Dialog not created!" );
-        return( FALSE );
+        return( false );
     } else if( redraw ) {
-        destroy_children = TRUE;
+        destroy_children = true;
         quick = (info->obj_id == DIALOG_OBJ);
         if( !Forward( info->obj, DESTROY_WINDOW, &quick, &destroy_children ) ) {
             WdeWriteTrail( "WdeGenericDefine: DESTROY_WINDOW failed!" );
-            return( FALSE );
+            return( false );
         }
         if( !Forward( info->obj, CREATE_WINDOW, NULL, NULL ) ) {
             WdeWriteTrail( "WdeGenericDefine: CREATE_WINDOW failed!" );
-            return( FALSE );
+            return( false );
         }
 
         if( info->obj_id != DIALOG_OBJ ) {
@@ -155,7 +156,7 @@ bool WdeGenericDefine( WdeDefineObjectInfo *info )
 
     WdeSetStatusReadyText();
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeGenericSetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
@@ -165,18 +166,18 @@ bool WdeGenericSetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
 
     if ( info->obj_id == 0 && !Forward( info->obj, IDENTIFY, &info->obj_id, NULL ) ) {
         WdeWriteTrail( "WdeGenericSetDefineInfo: IDENTIFY failed!" );
-        return( FALSE );
+        return( false );
     }
 
     if( info->obj_id == BASE_OBJ ) {
         WdeWriteTrail( "WdeGenericSetDefineInfo: Attempt to define base object.!" );
-        return( FALSE );
+        return( false );
     } else if( info->obj_id == DIALOG_OBJ ) {
         if( !info->info.d.header || !info->info.d.name ) {
             if( !Forward( info->obj, GET_OBJECT_INFO,
                           &info->info.d.header, &info->info.d.name ) ) {
                 WdeWriteTrail( "WdeGenericDefine: GET_OBJECT_INFO failed!" );
-                return( FALSE );
+                return( false );
             }
         }
         style = GETHDR_STYLE( info->info.d.header );
@@ -192,7 +193,7 @@ bool WdeGenericSetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
         if( !info->info.c.info ) {
             if( !Forward ( info->obj, GET_OBJECT_INFO, &info->info.c.info, NULL ) ) {
                 WdeWriteTrail( "WdeGenericDefine: GET_OBJECT_INFO failed!" );
-                return( FALSE );
+                return( false );
             }
         }
         style = GETCTL_STYLE( info->info.c.info );
@@ -219,7 +220,7 @@ bool WdeGenericSetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
 
     WdeSetObjectStyle( hDlg, style & 0x0000ffff );
 
-    return( TRUE );
+    return( true );
 }
 
 bool WdeGenericGetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
@@ -237,7 +238,7 @@ bool WdeGenericGetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
 
     if( info->obj_id == BASE_OBJ ) {
         WdeWriteTrail( "WdeGenericSetDefineInfo: Attempt to define base object.!" );
-        return( FALSE );
+        return( false );
     } else if( info->obj_id == DIALOG_OBJ ) {
         SETHDR_STYLE( info->info.d.header, style );
         vp = (void *)WdeGetStrFromEdit ( hDlg, IDB_TEXT, &mod );
@@ -261,7 +262,7 @@ bool WdeGenericGetDefineInfo( WdeDefineObjectInfo *info, HWND hDlg )
     WdeGetDefineObjectSymbolInfo( info, hDlg );
     WdeGetDefineObjectHelpSymbolInfo( info, hDlg );
 
-    return( TRUE );
+    return( true );
 }
 
 void WdeSetObjectStyle( HWND hDlg, DialogStyle style )
@@ -276,14 +277,14 @@ void WdeGetObjectStyle( HWND hDlg, DialogStyle *style )
     *style = (uint_16)WdeGetUINT32FromEdit( hDlg, IDB_STYLES, NULL );
 }
 
-WINEXPORT BOOL CALLBACK WdeGenericDefineProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+INT_PTR CALLBACK WdeGenericDefineDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     static WdeDefineObjectInfo  *info = NULL;
-    BOOL                        ret;
+    bool                        ret;
     bool                        use_id;
     uint_16                     id;
 
-    ret = FALSE;
+    ret = false;
 
     if( info != NULL ) {
         if( info->hook_func != NULL ) {
@@ -295,7 +296,7 @@ WINEXPORT BOOL CALLBACK WdeGenericDefineProc( HWND hDlg, UINT message, WPARAM wP
                 use_id = info->info.d.use_id;
             } else {
                 id = GETCTL_ID( info->info.c.info );
-                use_id = TRUE;
+                use_id = true;
             }
             ret = WdeProcessSymbolCombo( hDlg, message, wParam, lParam,
                                          info->res_info->hash_table, id, use_id );
@@ -315,7 +316,7 @@ WINEXPORT BOOL CALLBACK WdeGenericDefineProc( HWND hDlg, UINT message, WPARAM wP
         if( !WdeGenericSetDefineInfo( info, hDlg ) ) {
             EndDialog( hDlg, FALSE );
         }
-        ret = TRUE;
+        ret = true;
         break;
 
     case WM_COMMAND:
@@ -325,18 +326,15 @@ WINEXPORT BOOL CALLBACK WdeGenericDefineProc( HWND hDlg, UINT message, WPARAM wP
             break;
 
         case IDOK:
-            if( !WdeGenericGetDefineInfo( info, hDlg ) ) {
-                EndDialog( hDlg, FALSE );
-            }
-            EndDialog( hDlg, TRUE );
+            EndDialog( hDlg, WdeGenericGetDefineInfo( info, hDlg ) );
             info = NULL;
-            ret = TRUE;
+            ret = true;
             break;
 
         case IDCANCEL:
             EndDialog( hDlg, FALSE );
             info = NULL;
-            ret = TRUE;
+            ret = true;
             break;
         }
     }

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,31 +24,12 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Profiler source file management.
 *
 ****************************************************************************/
 
 
-#ifndef _WPSRCFIL_H
-
-typedef struct wp_srcline {
-    unsigned long               line;
-    clicks_t                    tick_count;
-} wp_srcline;
-
-typedef struct wp_srcfile {
-    void *                      src_file;
-    char *                      src_buff;
-    wp_srcline *                src_lines;
-    clicks_t                    max_time;
-    int                         wp_line_count;
-    int                         rtn_line;
-    int                         samp_line;
-    int                         src_buff_len;
-    int                         src_rows;
-    uint_8                      src_eof : 1;
-} wp_srcfile;
-
-#define _WPSRCFIL_H
-#endif
+extern char                 *WPSourceGetLine( a_window * wnd, int line );
+extern wp_srcfile           *WPSourceOpen( sio_data * curr_sio, bool quiet );
+extern void                 WPSourceClose( wp_srcfile * wpsrc_file );
+extern massgd_sample_addr   *WPGetMassgdSampData( sio_data * curr_sio, clicks_t click_index );

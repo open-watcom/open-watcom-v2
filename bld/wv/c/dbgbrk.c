@@ -345,12 +345,12 @@ static void UpdateGlobalBP( brkp *bp )
 {
     if( SectIsLoaded( bp->loc.addr.sect_id, OVL_MAP_EXE ) ) {
         if( bp->status.b.active ) {
-            if( !bp->status.b.in_place ) {    
+            if( !bp->status.b.in_place ) {
                 bp->status.b.in_place = true;
                 AsyncAddBreak( bp->loc.addr, false );
             }
         } else {
-            if( bp->status.b.in_place ) {    
+            if( bp->status.b.in_place ) {
                 bp->status.b.in_place = false;
                 AsyncRemoveBreak( bp->loc.addr, false );
             }
@@ -881,7 +881,8 @@ OVL_EXTERN brkp *SetWatch( memory_expr def_seg )
 
 OVL_EXTERN brkp *BadPoint( memory_expr def_seg )
 {
-    def_seg=def_seg;
+    /* unused parameters */ (void)def_seg;
+
     Error( ERR_LOC, LIT_ENG( ERR_BAD_OPTION ), GetCmdName( CMD_BREAK ) );
     return( NULL );
 }
@@ -898,7 +899,8 @@ OVL_EXTERN brkp *ImageBreak( memory_expr def_seg )
     bool        clear = false;
     int         cmd;
 
-    def_seg=def_seg;
+    /* unused parameters */ (void)def_seg;
+
     while( CurrToken == T_DIV ) {
         Scan();
         cmd = ScanCmd( PointNameTab );
@@ -1113,7 +1115,7 @@ void SetPointAddr( brkp *bp, address addr )
             return;
         DIPModName( mod, TxtBuff, TXT_LEN );
         bp->mod_name = DupStr( TxtBuff );
-        if( image->image_name != NULL ) {
+        if( image->image_name[0] != NULLCHAR ) {
             start = SkipPathInfo( image->image_name, OP_REMOTE );
             bp->image_name = DupStrLen( start, ExtPointer( start, OP_REMOTE ) - start );
         } else {

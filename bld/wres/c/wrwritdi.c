@@ -88,10 +88,8 @@ bool WResWriteDir( WResFileID fid, WResDir currdir )
 
     /* get the offset of the start of the directory */
     diroffset = WRESTELL( fid );
-    error = (diroffset == -1);
-
-    if( error ) {
-        WRES_ERROR( WRS_TELL_FAILED );
+    if( diroffset == -1 ) {
+        error = WRES_ERROR( WRS_TELL_FAILED );
     } else {
         error = writeTypeList( fid, currdir->Head );
     }
@@ -113,9 +111,8 @@ bool WResWriteDir( WResFileID fid, WResDir currdir )
 
     /* leave the handle at the start of the file */
     if( !error ) {
-        error = ( WRESSEEK( fid, 0L, SEEK_SET ) == -1 );
-        if( error ) {
-            WRES_ERROR( WRS_SEEK_FAILED );
+        if( WRESSEEK( fid, 0L, SEEK_SET ) ) {
+            error = WRES_ERROR( WRS_SEEK_FAILED );
         }
     }
 

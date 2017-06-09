@@ -77,7 +77,7 @@ typedef struct lli {
 extern char             **environ;
 #endif
 
-static void             CodeLoad( char *name, u_long addr, samp_block_kinds kind );
+static void             CodeLoad( const char *name, u_long addr, samp_block_kinds kind );
 
 static unsigned         SleepTime;
 static unsigned         *SampleIndexP;
@@ -273,6 +273,20 @@ unsigned NextThread( unsigned tid )
 }
 
 
+void ResetThread( unsigned tid )
+{
+    if( tid-- > 0 ) {
+        SampleIndex = 0;
+        SampleIndexP[tid] = SampleIndex;
+        if( CallGraphMode ) {
+            SampleCount = 0;
+            LastSampleIndex = 0;
+            SampleCountP[tid] = SampleCount;
+        }
+    }
+}
+
+
 static void SetPid( char **cmd )
 {
     SamplePid = GetNumber( 1, INT_MAX, cmd, 10 );
@@ -428,7 +442,7 @@ void StopProg( void )
 }
 
 
-static void CodeLoad( char *name, u_long addr, samp_block_kinds kind )
+static void CodeLoad( const char *name, u_long addr, samp_block_kinds kind )
 {
     seg_offset  ovl;
 
@@ -440,7 +454,7 @@ static void CodeLoad( char *name, u_long addr, samp_block_kinds kind )
 }
 
 
-static void InternalError( char *str )
+static void InternalError( const char *str )
 {
     Output( MsgArray[MSG_SAMPLE_2 - ERR_FIRST_MESSAGE] );
     Output( str );
@@ -728,12 +742,14 @@ static int GetExeNameFromPid( pid_t pid, char *buffer, int max_len )
 }
 
 
-void StartProg( char *cmd, char *prog, char *full_args, char *dos_args )
+void StartProg( const char *cmd, const char *prog, char *full_args, char *dos_args )
 {
     char            exe_name[PATH_MAX];
     pid_t           save_pgrp;
     pid_t           pid;
     int             status;
+
+    /* unused parameters */ (void)cmd;
 
     MaxThread = 0;
     GrowArrays( 1 );

@@ -30,4 +30,4 @@
 ****************************************************************************/
 
 
-extern BOOL StrToU64( char *s, unsigned_64 *u64, BOOL neg );
+extern bool StrToU64( char *s, unsigned_64 *u64, bool neg );

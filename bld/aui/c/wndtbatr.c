@@ -34,6 +34,7 @@
 
 wnd_attr WndMapTabAttr( wnd_attr attr )
 {
-    attr=attr;
+    /* unused parameters */ (void)attr;
+
     return( WndTabStopAttr );
 }

@@ -354,7 +354,7 @@ void GUIXMDIInit( void )
 
 void XChangeTitle( gui_window *wnd )
 {
-    wnd=wnd;
+    /* unused parameters */ (void)wnd;
 }
 
 bool GUICascadeWindows( void )

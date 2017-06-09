@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -40,16 +41,15 @@
 #include "mad.h"
 #include "sampinfo.h"
 #include "wpasmfil.h"
-#include "wpsrcfil.h"
+#include "wpsrcfld.h"
 #include "_srcmgt.h"
 #include "srcmgt.h"
 #include "msg.h"
 #include "memutil.h"
 #include "setsamps.h"
 #include "support.h"
+#include "wpsrcfil.h"
 
-
-extern massgd_sample_addr *WPGetMassgdSampData(sio_data *curr_sio,clicks_t click_index);
 
 #define MAX_ASM_BUFF_LEN    256
 
@@ -100,7 +100,8 @@ wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
     int                 addr_cmp;
     clicks_t            addr_tick_index;
 
-    quiet=quiet;
+    /* unused parameters */ (void)quiet;
+
     ch = alloca( DIPHandleSize( HK_CUE, false ) );
     ch2 = alloca( DIPHandleSize( HK_CUE, false ) );
     curr_file = curr_sio->curr_file;
@@ -146,15 +147,13 @@ wp_asmfile *WPAsmOpen( sio_data * curr_sio, int src_row, bool quiet )
             asm_line->u.src.src_file = NULL;
             if( !curr_file->unknown_file ) {
                 fid = DIPCueFileId( ch );
-                file_index = 0;
-                while( file_index < curr_mod->file_count ) {
+                for( file_index = 0; file_index < curr_mod->file_count; ++file_index ) {
                     curr_file = curr_mod->mod_file[file_index];
                     if( curr_file->fid == fid ) {
                         asm_line->u.src.src_file =
                                 FOpenSource( curr_file->name, mh, fid );
                         break;
                     }
-                    file_index++;
                 }
             }
             rows++;
@@ -199,13 +198,11 @@ void WPAsmClose( wp_asmfile * wpasm_file )
 
     if( wpasm_file != NULL ) {
         if( wpasm_file->asm_data != NULL ) {
-            row = 0;
-            while( row < wpasm_file->asm_rows ) {
+            for( row = 0; row < wpasm_file->asm_rows; ++row ) {
                 asm_line = WPGetAsmLoc( wpasm_file, row, &asm_group, &asm_row );
                 if( asm_line->source_line ) {
                     FDoneSource( asm_line->u.src.src_file );
                 }
-                row++;
             }
             row = wpasm_file->asm_rows;
             asm_group = 0;

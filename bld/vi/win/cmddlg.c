@@ -33,11 +33,11 @@
 
 #include "vi.h"
 #include "cmd.h"
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Local Windows CALLBACK function prototypes */
-WINEXPORT BOOL CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static char     *cmdStr;
 static int      cmdLen;
@@ -45,7 +45,7 @@ static int      cmdLen;
 /*
  * CmdDlgProc - callback routine for command dialog
  */
-WINEXPORT BOOL CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+WINEXPORT INT_PTR CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int                 curr;
     int                 i;
@@ -55,9 +55,6 @@ WINEXPORT BOOL CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
     history_data        *h;
     char                *ptr;
 
-#ifdef __NT__
-    lparam = lparam;
-#endif
     switch( msg ) {
     case WM_INITDIALOG:
         CenterWindowInRoot( hwnd );
@@ -86,7 +83,7 @@ WINEXPORT BOOL CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
                 if( index == LB_ERR ) {
                     break;
                 }
-                SendDlgItemMessage( hwnd, CMD_LISTBOX, LB_GETTEXT, index, (LPARAM)str );
+                SendDlgItemMessage( hwnd, CMD_LISTBOX, LB_GETTEXT, index, (LPARAM)(LPSTR)str );
                 SetDlgItemText( hwnd, CMD_EDIT, str );
                 if( cmd == LBN_DBLCLK ) {
                     PostMessage( hwnd, WM_COMMAND, IDOK, 0L );
@@ -126,14 +123,14 @@ WINEXPORT BOOL CALLBACK CmdDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
  */
 bool GetCmdDialog( char *str, int len )
 {
-    FARPROC     proc;
+    DLGPROC     dlgproc;
     bool        rc;
 
     cmdStr = str;
     cmdLen = len;
-    proc = MakeDlgProcInstance( CmdDlgProc, InstanceHandle );
-    rc = DialogBox( InstanceHandle, "CMDDLG", root_window_id, (DLGPROC)proc );
-    FreeProcInstance( proc );
+    dlgproc = MakeProcInstance_DLG( CmdDlgProc, InstanceHandle );
+    rc = DialogBox( InstanceHandle, "CMDDLG", root_window_id, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
 
     /* this is technically a bug of some kind - if the above command
      * was a DDE message to another window to take focus, we will

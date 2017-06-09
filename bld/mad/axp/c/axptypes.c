@@ -117,7 +117,7 @@ void MADIMPENTRY( TypeInfo )( mad_type_handle th, mad_type_info *ti )
 
 mad_type_handle MADIMPENTRY( TypeDefault )( mad_type_kind tk, mad_address_format af, const mad_registers *mr, const address *ap )
 {
-    af = af; mr = mr; ap = ap;
+    /* unused parameters */ (void)af; (void)mr; (void)ap;
 
     if( tk & MAS_IO ) {
         return( MAD_NIL_TYPE_HANDLE );
@@ -264,7 +264,7 @@ mad_type_handle MADIMPENTRY( TypeForDIPType )( const dip_type_info *ti )
 
 mad_status MADIMPENTRY( TypeConvert )( const mad_type_info *in_t, const void *in_d, const mad_type_info *out_t, void *out_d, addr_seg seg )
 {
-    seg = seg;
+    /* unused parameters */ (void)seg;
 
     return( DoConvert( in_t, in_d, out_t, out_d ) );
 }

@@ -103,7 +103,8 @@ condcode    scr_index( parm parms[MAX_FUN_PARMS], size_t parmcount, char **resul
     char            *   ph;
     char            *   pn;
 
-    ressize = ressize;
+    /* unused parameters */ (void)ressize;
+
     if( (parmcount < 2) || (parmcount > 3) ) {
         cc = neg;
         return( cc );
@@ -218,7 +219,8 @@ condcode    scr_lpos( parm parms[MAX_FUN_PARMS], size_t parmcount, char * * resu
     char            *   ph;
     char            *   pn;
 
-    ressize = ressize;
+    /* unused parameters */ (void)ressize;
+
     if( (parmcount < 2) || (parmcount > 3) ) {
         cc = neg;
         return( cc );

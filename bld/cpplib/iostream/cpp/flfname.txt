@@ -22,7 +22,7 @@ Semantics: Create a filebuf object that is connected to an open file.
 
 Filename: flfconsf.cpp
 Declaration:
-    std::filebuf::filebuf( filedesc fd, char *buf, int len ) : __file_handle( EOF ) 
+    std::filebuf::filebuf( filedesc fd, char *buf, streamsize len ) : __file_handle( EOF ) 
 Semantics: Create a filebuf object that is connected to an open file and
 	   that uses the buffer specified by buf and len.
 
@@ -75,7 +75,7 @@ Semantics: Handle allocating a buffer, if required.
 
 Filename: flfsetbf.cpp 
 Declaration:
-    streambuf *std::filebuf::setbuf( char *buf, int len ) 
+    streambuf *std::filebuf::setbuf( char *buf, streamsize len ) 
 Semantics: Set up the filebuf using the specified buffer.
 
 

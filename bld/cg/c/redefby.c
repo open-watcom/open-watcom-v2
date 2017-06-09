@@ -345,8 +345,7 @@ static  bool    ZappedBySTQ_U( instruction *ins, name *op ) {
         break;
     }
 #else
-    op = op;
-    ins = ins;
+    /* unused parameters */ (void)op; (void)ins;
 #endif
     return( false );
 }

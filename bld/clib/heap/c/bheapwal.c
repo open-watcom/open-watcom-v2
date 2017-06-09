@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  based heap walk function
+*               (16-bit code only)
 *
 ****************************************************************************/
 
@@ -44,7 +44,7 @@ _WCRTLINK int _bheapwalk( __segment seg, struct _heapinfo *entry )
     if( seg == _DGroup() )
         return( _nheapwalk( entry ) );
     _AccessFHeap();
-    heap_status = __HeapWalk( entry, (seg == _NULLSEG ? __bheap : seg), (seg != _NULLSEG) );
+    heap_status = __HeapWalk( entry, (seg == _NULLSEG ? __bheapbeg : seg), seg );
     _ReleaseFHeap();
     return( heap_status );
 }

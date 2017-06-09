@@ -24,16 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  Client callback prototypes for wres library.
+* Description:  Client callback prototypes.
 *
 ****************************************************************************/
 
-
-extern WResFileID       RcOpen( const char *, wres_open_mode );
-extern int              RcClose( WResFileID );
-extern WResFileSSize    RcWrite( WResFileID, const void *, WResFileSize );
-extern WResFileSSize    RcRead( WResFileID, void *, WResFileSize );
-extern WResFileOffset   RcSeek( WResFileID, WResFileOffset, int );
-extern WResFileOffset   RcTell( WResFileID );
 
 extern void     CloseAllFiles( void );

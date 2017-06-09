@@ -98,7 +98,8 @@ section_def *FindSection( segment_id id )
 
     curr = sectionDefs[id % N_SECTIONS];
     while( curr != NULL ) {
-        if( curr->id == id ) break;
+        if( curr->id == id )
+            break;
         curr = curr->next;
     }
     return( curr );
@@ -180,12 +181,16 @@ static  void    DefaultLibs( void )
     lib = NULL;
     for( ;; ) {  //Library dependencies
         lib = FEAuxInfo( lib, NEXT_LIBRARY );
-        if( lib == NULL ) break;
+        if( lib == NULL )
+            break;
         name =  (char *)FEAuxInfo( lib, LIBRARY_NAME ) + 1;
-        if( name == NULL || *name == '\0' ) continue;
+        if( name == NULL || *name == '\0' )
+            continue;
         if( comments == NULL ){
             comments = OWLSectionInit( owlFile, ".drectve", OWL_SECTION_INFO, 1 );
-            if( comments == NULL )break;
+            if( comments == NULL ) {
+                break;
+            }
         }
         OWLEmitData( comments, COMMENTV( COFF_DRECTVE_DEFLIB ) );
         OWLEmitData( comments, name, strlen( name ) );
@@ -214,7 +219,8 @@ static  void    AliasNames( void )
     alias = NULL;
     for( ;; ) {  // Aliases
         alias = FEAuxInfo( alias, NEXT_ALIAS );
-        if( alias == NULL ) break;
+        if( alias == NULL )
+            break;
         alias_name = FEAuxInfo( alias, ALIAS_NAME );
         if( alias_name == NULL ) {
             DoOutObjectName( FEAuxInfo( alias, ALIAS_SYMBOL ),
@@ -272,7 +278,8 @@ static  void    EmitDependencyInfo( void )
     depend = NULL;
     for( ;; ) {
         depend = FEAuxInfo( depend, NEXT_DEPENDENCY );
-        if( depend == NULL ) break;
+        if( depend == NULL )
+            break;
         if( sect == NULL ) {
             sect = OWLSectionInit( owlFile, dependSectionName, OWL_SECTION_INFO, 16 );
         }
@@ -365,7 +372,8 @@ void    ObjFini( void )
 static  int PutBytes( void *handle, const char *buffer, unsigned len )
 /********************************************************************/
 {
-    handle = handle;
+    /* unused parameters */ (void)handle;
+
 #ifndef NDEBUG
     // enable OWL logging
     if( handle == NULL ) {
@@ -483,8 +491,8 @@ void    DefSegment( segment_id id, seg_attr attr, const char *str, uint align, b
     section_def         *new;
     owl_section_type    type;
 
-    align = align;
-    use_16 = use_16;
+    /* unused parameters */ (void)align; (void)use_16;
+
     new = AddSection( id );
     if( attr & EXEC ) {
         type = OWL_SECTION_CODE;
@@ -565,7 +573,8 @@ void    OutLineNum( cg_linenum line, bool label_line )
     cue_state            info;
     offset               lc;
 
-    label_line = label_line;
+    /* unused parameters */ (void)label_line;
+
     lc = OWLTellOffset( currSection->owl_handle );
     if( _IsModel( DBG_DF ) || _IsModel( DBG_CV ) ) {
         CueFind( line, &info );
@@ -856,7 +865,8 @@ static void DumpImportResolve( label_handle label )
     int                 type;
     back_handle         bck;
 
-    if( AskIfRTLabel( label ) ) return;
+    if( AskIfRTLabel( label ) )
+        return;
     sym = AskForLblSym( label );
     if( sym != NULL ){
         def_resolve = FEAuxInfo( sym, DEFAULT_IMPORT_RESOLVE );
@@ -888,8 +898,9 @@ static void DumpImportResolve( label_handle label )
 void    OutReloc( label_handle label, owl_reloc_type tipe, unsigned offset )
 /**************************************************************************/
 {
+    /* unused parameters */ (void)offset;
+
     DumpImportResolve( label );
-    offset = offset;
     OWLEmitReloc( currSection->owl_handle,
         OWLTellOffset( currSection->owl_handle ),
         labelOwlSym( label ), tipe );
@@ -900,7 +911,8 @@ void    OutSegReloc( label_handle label, segment_id seg )
 {
     section_def             *sect;
 
-    label = label;
+    /* unused parameters */ (void)label;
+
     sect = FindSection( seg );
     OWLEmitMetaReloc( currSection->owl_handle,
         OWLTellOffset( currSection->owl_handle ),
@@ -1046,8 +1058,7 @@ void    *InitPatch( void )
 void    AbsPatch( abspatch_handle patch, offset lc )
 /**************************************************/
 {
-    patch = patch;
-    lc = lc;
+    /* unused parameters */ (void)patch; (void)lc;
 }
 
 void    DoEmptyQueue( void )
@@ -1093,7 +1104,8 @@ void    IncLocation( offset by )
 bool    AskNameROM( pointer hdl, cg_class class )
 /***********************************************/
 {
-    hdl = hdl; class = class;
+    /* unused parameters */ (void)hdl; (void)class;
+
     return( false );
 }
 
@@ -1101,14 +1113,16 @@ bool    AskNameROM( pointer hdl, cg_class class )
 unsigned DepthAlign( unsigned depth )
 /***********************************/
 {
-    depth = depth;
+    /* unused parameters */ (void)depth;
+
     return( 4 );
 }
 
 bool    CodeHasAbsPatch( oc_entry *code )
 /***************************************/
 {
-    code = code;
+    /* unused parameters */ (void)code;
+
     return( false );    // NYI
 }
 
@@ -1132,8 +1146,9 @@ static bool    relocBefore( void *_p1, void *_p2 )
 void    DoAlignment( int align )
 /******************************/
 {
+    /* unused parameters */ (void)align;
+
     // NYI
-    align = align;
 }
 
 byte_seq_reloc *SortListReloc( byte_seq_reloc *relocs )

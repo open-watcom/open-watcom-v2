@@ -52,6 +52,8 @@
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT LRESULT CALLBACK WdeTagProc( HWND, UINT, WPARAM, LPARAM );
 
 /****************************************************************************/
@@ -65,7 +67,6 @@ WINEXPORT LRESULT CALLBACK WdeTagProc( HWND, UINT, WPARAM, LPARAM );
 /****************************************************************************/
 /* external variables                                                       */
 /****************************************************************************/
-extern char WdeTagClass[] = "wdetag";
 
 /****************************************************************************/
 /* static variables                                                         */
@@ -74,6 +75,7 @@ static int        WdeTagExtra           = 0;
 static WNDPROC    WdeOriginalButtonProc = NULL;
 static HINSTANCE  WdeAppInst            = NULL;
 static HFONT      WdeTagFont            = NULL;
+static char       WdeTagClass[]         = "wdetag";
 
 static void WdeSetTagState( WdeOrderedEntry *oe )
 {
@@ -115,14 +117,14 @@ static void WdeSetTagText( WdeOrderedEntry *oe )
             }
             break;
         }
-        SendMessage( oe->tag, WM_SETTEXT, 0, (LPARAM)(LPSTR)str );
+        SendMessage( oe->tag, WM_SETTEXT, 0, (LPARAM)(LPCSTR)str );
     }
 }
 
 static void WdeSetTagOrder( WdeSetOrderStruct *o, bool reorder )
 {
     if( o->new_oe ) {
-        ListRemoveElt( &o->lists->newlist, o->new_oe );
+        ListRemoveElt( &o->lists->newlist, (OBJPTR)o->new_oe );
         WRMemFree( o->new_oe );
         o->new_oe = NULL;
         o->old_oe->present = TRUE;
@@ -134,7 +136,7 @@ static void WdeSetTagOrder( WdeSetOrderStruct *o, bool reorder )
             memcpy( o->new_oe, o->old_oe, sizeof( WdeOrderedEntry ) );
             o->old_oe->present = FALSE;
             o->old_oe->pos = 0;
-            WdeInsertObject( &o->lists->newlist, o->new_oe );
+            WdeInsertObject( &o->lists->newlist, (OBJPTR)o->new_oe );
         }
     }
 
@@ -199,19 +201,19 @@ static void WdeTagDblClicked( WdeSetOrderStruct *o )
     WdeReorderTags( o->lists, TRUE );
 }
 
-void WdeFreeOrderedList( LIST *l )
+void WdeFreeOrderedList( LIST *list )
 {
     LIST                *olist;
     WdeOrderedEntry     *oe;
 
-    for( olist = l; olist != NULL; olist = ListNext( olist ) ) {
+    for( olist = list; olist != NULL; olist = ListNext( olist ) ) {
         oe = (WdeOrderedEntry *)ListElement( olist );
         if( oe != NULL ) {
             WRMemFree( oe );
         }
     }
 
-    ListFree( l );
+    ListFree( list );
 }
 
 LIST *WdeCopyOrderedList( LIST *src )
@@ -228,12 +230,12 @@ LIST *WdeCopyOrderedList( LIST *src )
     return( dest );
 }
 
-LIST *WdeFindOrderedEntry( LIST *l, OBJPTR obj )
+LIST *WdeFindOrderedEntry( LIST *list, OBJPTR obj )
 {
     WdeOrderedEntry *oentry;
     LIST            *olist;
 
-    for( olist = l; olist != NULL; olist = ListNext( olist ) ) {
+    for( olist = list; olist != NULL; olist = ListNext( olist ) ) {
         oentry = (WdeOrderedEntry *)ListElement( olist );
         if( oentry->obj == obj ) {
             return( olist );
@@ -243,19 +245,19 @@ LIST *WdeFindOrderedEntry( LIST *l, OBJPTR obj )
     return( NULL );
 }
 
-bool WdeAddOrderedEntry( LIST **l, OBJPTR obj )
+bool WdeAddOrderedEntry( LIST **list, OBJPTR obj )
 {
     WdeOrderedEntry *oentry;
     LIST            *olist;
 
-    if( l == NULL ) {
-        return( FALSE );
+    if( list == NULL ) {
+        return( false );
     }
 
-    if( (olist = WdeFindOrderedEntry( *l, obj )) != NULL ) {
+    if( (olist = WdeFindOrderedEntry( *list, obj )) != NULL ) {
         oentry = (WdeOrderedEntry *)ListElement ( olist );
         oentry->present = TRUE;
-        return( TRUE );
+        return( true );
     }
 
     oentry = (WdeOrderedEntry *)WRMemAlloc( sizeof( WdeOrderedEntry ) );
@@ -263,42 +265,42 @@ bool WdeAddOrderedEntry( LIST **l, OBJPTR obj )
         memset( oentry, 0, sizeof( WdeOrderedEntry ) );
         oentry->obj = obj;
         oentry->present = TRUE;
-        WdeInsertObject( l, oentry );
+        WdeInsertObject( list, (OBJPTR)oentry );
     }
 
     return( oentry != NULL );
 }
 
-bool WdeRemoveOrderedEntry( LIST *l, OBJPTR obj )
+bool WdeRemoveOrderedEntry( LIST *list, OBJPTR obj )
 {
     WdeOrderedEntry *oentry;
     LIST            *olist;
 
-    if( (olist = WdeFindOrderedEntry( l, obj )) != NULL ) {
+    if( (olist = WdeFindOrderedEntry( list, obj )) != NULL ) {
         oentry = (WdeOrderedEntry *)ListElement( olist );
         oentry->present = FALSE;
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
-bool WdeCleanOrderedList( LIST **l )
+bool WdeCleanOrderedList( LIST **list )
 {
     WdeOrderedEntry *oentry;
     LIST            *tlist;
     LIST            *olist;
 
-    if( l == NULL ) {
-        return( FALSE );
+    if( list == NULL ) {
+        return( false );
     }
 
-    tlist = WdeListCopy( *l );
+    tlist = WdeListCopy( *list );
 
     for( olist = tlist; olist != NULL; olist = ListNext( olist ) ) {
         oentry = (WdeOrderedEntry *)ListElement( olist );
         if( !oentry->present ) {
-            ListRemoveElt( l, oentry );
+            ListRemoveElt( list, (OBJPTR)oentry );
             WRMemFree( oentry );
         }
     }
@@ -307,35 +309,35 @@ bool WdeCleanOrderedList( LIST **l )
         ListFree( tlist );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-bool WdeGetNextChild( LIST **l, OBJPTR *obj, bool up )
+bool WdeGetNextChild( LIST **list, OBJPTR *obj, bool up )
 {
     WdeOrderedEntry *oentry;
     LIST            *o;
 
-    WdeCleanOrderedList( l );
+    WdeCleanOrderedList( list );
 
-    if( l != NULL && *l != NULL && obj != NULL && *obj != NULL &&
-        (o = WdeFindOrderedEntry( *l, *obj )) != NULL ) {
+    if( list != NULL && *list != NULL && obj != NULL && *obj != NULL &&
+        (o = WdeFindOrderedEntry( *list, *obj )) != NULL ) {
         if( up ) {
             o = ListNext( o );
             if( o == NULL ) {
-                o = *l;
+                o = *list;
             }
         } else {
             o = ListPrev( o );
             if( o == NULL ) {
-                WdeListLastElt( *l, &o );
+                WdeListLastElt( *list, &o );
             }
         }
-        oentry = ListElement( o );
+        oentry = (WdeOrderedEntry *)ListElement( o );
         *obj = oentry->obj;
-        return( TRUE );
+        return( true );
     }
 
-    return( FALSE );
+    return( false );
 }
 
 void WdeFiniOrderStuff( void )
@@ -367,7 +369,7 @@ bool WdeRegisterTagClass( HINSTANCE inst )
     WdeOriginalButtonProc = wc.lpfnWndProc;
     wc.lpfnWndProc = WdeTagProc;
 
-    return( RegisterClass( &wc ) );
+    return( RegisterClass( &wc ) != (ATOM)0 );
 }
 
 void WdeDestroyTag ( HWND tag )
@@ -447,9 +449,9 @@ void WdeTagPressed( WdeSetOrderStruct *o )
         case WdeSetOrder:
             state = (WORD)GetKeyState( VK_SHIFT );
 #ifdef __NT__
-            shift = ((state & 0x8000) != 0x00);
+            shift = ( (state & 0x8000) != 0 );
 #else
-            shift = ((state & 0x80) != 0x00 );
+            shift = ( (state & 0x80) != 0 );
 #endif
             if( shift ) {
                 WdeOrderPrevTags( o );
@@ -494,13 +496,13 @@ WdeSetOrderStruct *WdeGetTagInfo( HWND tag )
     return( NULL );
 }
 
-WINEXPORT LRESULT CALLBACK WdeTagProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeTagProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     WdeSetOrderStruct   *o;
     bool                pass_to_def;
     LRESULT             ret;
 
-    pass_to_def = TRUE;
+    pass_to_def = true;
     ret = FALSE;
     o = (WdeSetOrderStruct *)GET_WNDLONGPTR( hWnd, WdeTagExtra );
 
@@ -512,7 +514,7 @@ WINEXPORT LRESULT CALLBACK WdeTagProc( HWND hWnd, UINT message, WPARAM wParam, L
         break;
 
     case WM_ERASEBKGND:
-        pass_to_def = FALSE;
+        pass_to_def = false;
         ret = TRUE;
         break;
 
@@ -520,7 +522,7 @@ WINEXPORT LRESULT CALLBACK WdeTagProc( HWND hWnd, UINT message, WPARAM wParam, L
     case WM_MBUTTONDBLCLK:
     case WM_RBUTTONDBLCLK:
         WdeTagDblClicked( o );
-        pass_to_def = FALSE;
+        pass_to_def = false;
         ret = TRUE;
         break;
 
@@ -530,7 +532,7 @@ WINEXPORT LRESULT CALLBACK WdeTagProc( HWND hWnd, UINT message, WPARAM wParam, L
         if( o != NULL ) {
             Notify( o->old_oe->obj, PRIMARY_OBJECT, NULL );
         }
-        pass_to_def = FALSE;
+        pass_to_def = false;
         ret = TRUE;
         break;
 
@@ -540,7 +542,7 @@ WINEXPORT LRESULT CALLBACK WdeTagProc( HWND hWnd, UINT message, WPARAM wParam, L
         if( o != NULL ) {
             Notify( o->old_oe->obj, PRIMARY_OBJECT, NULL );
         }
-        pass_to_def = FALSE;
+        pass_to_def = false;
         ret = TRUE;
         break;
 
@@ -555,7 +557,7 @@ WINEXPORT LRESULT CALLBACK WdeTagProc( HWND hWnd, UINT message, WPARAM wParam, L
     case WM_NCRBUTTONDBLCLK:
     case WM_NCMOUSEMOVE:
     case WM_MOUSEMOVE:
-        pass_to_def = FALSE;
+        pass_to_def = false;
         ret = TRUE;
         break;
     }

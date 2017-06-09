@@ -24,7 +24,7 @@ Semantics: Construct an fstreambase that is initialized and attached to the
 
 Filename: fsbconsf.cpp
 Declaration: 
-    std::fstreambase::fstreambase( filedesc fd, char *buf, int len )
+    std::fstreambase::fstreambase( filedesc fd, char *buf, streamsize len )
 Semantics: Construct an fstreambase that is initialized and attached to the
 	   specified file, using the specified buf.
 
@@ -55,7 +55,7 @@ Semantics: Open the named file.
 
 Filename: fsbsetbf.cpp
 Declaration: 
-    void std::fstreambase::setbuf( char *buf, int len )
+    void std::fstreambase::setbuf( char *buf, streamsize len )
 Semantics: Attempt filebuf::setbuf()
 
 
@@ -87,7 +87,7 @@ Semantics: Construct an ifstream that is initialized and attached to the
 
 Filename: ifsconsf.cpp
 Declaration: 
-    std::ifstream::ifstream( filedesc fd, char *buf, int len )
+    std::ifstream::ifstream( filedesc fd, char *buf, streamsize len )
             : fstreambase( fd, buf, len )
 Semantics: Construct an ifstream that is initialized and attached to the
 	   specified file, using the specified buf.
@@ -126,7 +126,7 @@ Semantics: Construct an ofstream that is initialized and attached to the
 
 Filename: ofsconsf.cpp
 Declaration: 
-    std::ofstream::ofstream( filedesc fd, char *buf, int len )
+    std::ofstream::ofstream( filedesc fd, char *buf, streamsize len )
             : fstreambase( fd, buf, len )
 Semantics: Construct an ofstream that is initialized and attached to the
 	   specified file, using the specified buf.
@@ -165,7 +165,7 @@ Semantics: Construct an fstream that is initialized and attached to the
 
 Filename: fstconsf.cpp
 Declaration: 
-    std::fstream::fstream( filedesc fd, char *buf, int len )
+    std::fstream::fstream( filedesc fd, char *buf, streamsize len )
            : fstreambase( fd, buf, len )
 Semantics: Construct an fstream that is initialized and attached to the
 	   specified file, using the specified buf.

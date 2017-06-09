@@ -164,8 +164,8 @@ namespace std {
 _WMRTLINK extern double ceil( double __x );
 _WMRTLINK extern double floor( double __x );
 #if defined(_M_IX86) && 0
-#pragma aux ceil  parm nomemory modify nomemory;
-#pragma aux floor parm nomemory modify nomemory;
+#pragma aux ceil  parm nomemory modify nomemory
+#pragma aux floor parm nomemory modify nomemory
 #endif
 _WMRTLINK extern double frexp( double __value, int *__exp );
 _WMRTLINK extern double ldexp( double __x, int __exp );

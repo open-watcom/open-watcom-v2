@@ -522,17 +522,18 @@ void    GenEpilog( void )
 }
 
 
-int     AskDisplaySize( int level )
-/*********************************/
+int     AskDisplaySize( level_depth level )
+/*****************************************/
 {
-    level = level;
+    /* unused parameters */ (void)level;
+
     return( 0 );
 }
 
 void    InitStackDepth( block *blk )
 /**********************************/
 {
-    blk = blk;
+    /* unused parameters */ (void)blk;
 }
 
 type_length     PushSize( type_length len )

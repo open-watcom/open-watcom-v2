@@ -71,7 +71,7 @@ void main( void )
     double bd;
     long int *pli;
     long int bli;
-    long int far *fpli;
+    long int __far *fpli;
     class complex bc;
     class complex *pc;
     void *pv;

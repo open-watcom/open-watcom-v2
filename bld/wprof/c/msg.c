@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -38,10 +39,12 @@
 #include "msg.h"
 #include "aui.h"
 #include "utils.h"
+#include "wpstart.h"
+
+#include "clibext.h"
+
 
 #define MAX_MSG_LEN     200
-
-extern  bool    WPWndInitDone;
 
 
 STATIC void doErr( char * msg, va_list args )
@@ -97,7 +100,7 @@ STATIC void doErr( char * msg, va_list args )
         WndDisplayMessage( buff, "Error", GUI_INFORMATION );
     } else {
         *--dest = '\n';
-        write( STDOUT_FILENO, buff, strlen( buff ) );
+        posix_write( STDOUT_FILENO, buff, strlen( buff ) );
     }
 }
 

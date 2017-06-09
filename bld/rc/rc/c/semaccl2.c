@@ -30,7 +30,7 @@
 
 
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "semantic.h"
 #include "semantc2.h"
 #include "reserr.h"
@@ -41,7 +41,7 @@
 static bool ResOS2WriteAccelEntry( AccelTableEntryOS2 *currentry, WResFileID fid )
 /********************************************************************************/
 {
-    if( RCWRITE( fid, currentry, sizeof( AccelTableEntryOS2 ) ) != sizeof( AccelTableEntryOS2 ) ) {
+    if( RESWRITE( fid, currentry, sizeof( AccelTableEntryOS2 ) ) != sizeof( AccelTableEntryOS2 ) ) {
         WRES_ERROR( WRS_WRITE_FAILED );
         return( true );
     }
@@ -74,7 +74,7 @@ int SemOS2StrToAccelEvent( char * string )
 static void CheckAccelFlags( uint_16 * flags, unsigned long idval )
 /********************************************************************/
 {
-    idval = idval;
+    /* unused parameters */ (void)idval;
 
     /* CHAR is the default */
     if( !( *flags & OS2_ACCEL_VIRTUALKEY ) && !( *flags & OS2_ACCEL_CHAR ) )
@@ -127,8 +127,8 @@ FullAccelTableOS2 *SemOS2NewAccelTable( FullAccelEntryOS2 firstentry )
     FullAccelTableOS2   *newtable;
     FullAccelEntryOS2   *newentry;
 
-    newtable = RCALLOC( sizeof( FullAccelTableOS2 ) );
-    newentry = RCALLOC( sizeof( FullAccelEntryOS2 ) );
+    newtable = RESALLOC( sizeof( FullAccelTableOS2 ) );
+    newentry = RESALLOC( sizeof( FullAccelEntryOS2 ) );
 
     if( newtable == NULL || newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -150,7 +150,7 @@ FullAccelTableOS2 *SemOS2AddAccelEntry( FullAccelEntryOS2 currentry, FullAccelTa
 {
     FullAccelEntryOS2     *newentry;
 
-    newentry = RCALLOC( sizeof( FullAccelEntryOS2 ) );
+    newentry = RESALLOC( sizeof( FullAccelEntryOS2 ) );
 
     if( newentry == NULL ) {
         RcError( ERR_OUT_OF_MEMORY );
@@ -160,7 +160,7 @@ FullAccelTableOS2 *SemOS2AddAccelEntry( FullAccelEntryOS2 currentry, FullAccelTa
 
     *newentry = currentry;
 
-    ResAddLLItemAtEnd( (void **) &(currtable->head), (void **) &(currtable->tail), newentry );
+    ResAddLLItemAtEnd( (void **)&(currtable->head), (void **)&(currtable->tail), newentry );
 
     return( currtable );
 }
@@ -169,27 +169,24 @@ static void SemOS2FreeAccelTable( FullAccelTableOS2 * acctable )
 /**************************************************************/
 {
     FullAccelEntryOS2   *currentry;
-    FullAccelEntryOS2   *oldentry;
+    FullAccelEntryOS2   *nextentry;
 
-    currentry = acctable->head;
-    while( currentry != NULL ) {
-        oldentry = currentry;
-        currentry = currentry->next;
-        RCFREE( oldentry );
+    for( currentry = acctable->head; currentry != NULL; currentry = nextentry ) {
+        nextentry = currentry->next;
+        RESFREE( currentry );
     }
-    RCFREE( acctable );
+    RESFREE( acctable );
 }
 
 static int SemOS2CountAccelTableEntries( FullAccelTableOS2 *acctable )
 /********************************************************************/
 {
     FullAccelEntryOS2   *currentry;
-    int                 count = 0;
+    int                 count;
 
-    currentry = acctable->head;
-    while( currentry != NULL ) {
+    count = 0;
+    for( currentry = acctable->head; currentry != NULL; currentry = currentry->next ) {
         count++;
-        currentry = currentry->next;
     }
     return( count );
 }
@@ -205,10 +202,8 @@ static bool writeAccelTableEntries( FullAccelTableOS2 *acctable,
     if( !error ) {
         error = ResWriteUint16( codepage, fid );
     }
-    currentry = acctable->head;
-    while( currentry != NULL && !error ) {
+    for( currentry = acctable->head; currentry != NULL && !error; currentry = currentry->next ) {
         ResOS2WriteAccelEntry( &currentry->entry, fid );
-        currentry = currentry->next;
     }
     return( error );
 }
@@ -226,20 +221,14 @@ void SemOS2WriteAccelTable( WResID *name, ResMemFlags flags, uint_32 codepage,
         error = writeAccelTableEntries( acctable, CurrResFile.fid, codepage );
         if( error ) {
             err_code = LastWresErr();
-            goto OutputWriteError;
+            RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
+            ErrorHasOccured = true;
+        } else {
+            loc.len = SemEndResource( loc.start );
+            SemAddResourceFree( name, WResIDFromNum( OS2_RT_ACCELTABLE ), flags, loc );
         }
-        loc.len = SemEndResource( loc.start );
-        SemAddResourceFree( name, WResIDFromNum( OS2_RT_ACCELTABLE ), flags, loc );
     } else {
-        RCFREE( name );
+        RESFREE( name );
     }
-
     SemOS2FreeAccelTable( acctable );
-    return;
-
-OutputWriteError:
-    RcError( ERR_WRITTING_RES_FILE, CurrResFile.filename, strerror( err_code ) );
-    ErrorHasOccured = true;
-    SemOS2FreeAccelTable( acctable );
-    return;
 }

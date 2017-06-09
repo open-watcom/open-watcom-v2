@@ -46,7 +46,7 @@ char    *scr_single_func_e( char * in, char * end, char * * result )
     symsub          *   symsubval;
     int                 rc;
 
-    end   = end;
+    /* unused parameters */ (void)end;
 
     pchar = scan_sym( in + 3 + (*(in + 3) == '&'), &symvar_entry, &var_ind );
 
@@ -197,8 +197,7 @@ char    *scr_single_func_u( char * in, char * end, char * * result )
     int                 rc;
     char            *   pval;
 
-    end   = end;
-
+    /* unused parameters */ (void)end;
 
     if( *(in + 3) == '&' ) {            // symbol name
         pchar = scan_sym( in + 4, &symvar_entry, &var_ind );
@@ -312,7 +311,8 @@ static  char    *scr_single_func_unsupport( char * in, char * * result )
 {
     char        charstr[2];
 
-    result = result;
+    /* unused parameters */ (void)result;
+
     charstr[0] = *(in + 1);
     charstr[1] = '\0';
     g_warn( wng_func_unsupport, charstr );

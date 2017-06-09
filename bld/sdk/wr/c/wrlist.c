@@ -208,12 +208,12 @@ LIST *ListCopy( LIST * l )
     return( head );
 }
 
-int ListCount( LIST *l )
+int ListCount( LIST *list )
 {
     int count;
 
     count = 0;
-    for( ; l != NULL; l = l->next ) {
+    for( ; list != NULL; list = list->next ) {
         count++;
     }
     return( count );

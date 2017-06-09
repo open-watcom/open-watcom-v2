@@ -128,7 +128,8 @@ static fe_seg_id cgSegIdThread( SYMBOL sym, type_flag flags )
 {
     fe_seg_id       id;         // - segment id
 
-    flags = flags;
+    /* unused parameters */ (void)flags;
+
 #ifdef _CHECK_SIZE      // only defined if needed
     if( (flags & TF1_HUGE) == 0 ) {
         target_size_t   size;       // - size of symbol

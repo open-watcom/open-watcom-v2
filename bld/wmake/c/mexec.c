@@ -76,6 +76,10 @@
   #define MASK_ALL_ITEMS  "*.*"
 #endif
 
+#define SkipUntilWSorEqual(p)   while( *p != NULLCHAR && !cisws( *p ) && *p != '=' ) ++p
+#define SkipUntilRparent(p)     while( *p != NULLCHAR && *p != ')' ) ++p
+
+
 typedef enum {
     FLAG_SHELL      = 0x01,
     FLAG_SILENT     = 0x02,
@@ -160,6 +164,19 @@ STATIC RET_T execLine( char *line );    /* called recursively in handleFor */
 STATIC NKLIST   *noKeepList;            /* contains the list of files that
                                            needs to be cleaned when wmake
                                            exits */
+
+STATIC bool KeywordEqualUcase( const char *kwd, const char *start, const char *end )
+/***********************************************************************************
+ * check string for keyword (upper cased)
+ */
+{
+    while( *kwd != NULLCHAR && start < end ) {
+        if( *kwd++ != ctoupper( *start++ ) ) {
+            return( false );
+        }
+    }
+    return( *kwd == NULLCHAR && start == end );
+}
 
 STATIC char *createTmpFileName( void )
 /*************************************
@@ -589,9 +606,7 @@ STATIC RET_T percentWrite( char *arg, enum write_type type )
         return( RET_SUCCESS );
     }
 
-    p = SkipWS( arg );
-    fn = p;
-
+    fn = p = SkipWS( arg );
     if( *p != DOUBLEQUOTE ) {
         while( cisfilec( *p ) ) {
             ++p;
@@ -695,8 +710,7 @@ STATIC RET_T percentRename( char *arg )
     }
 
     /* Get first file name, must end in space but may be surrounded by double quotes */
-    p = SkipWS( arg );
-    fn1 = p;
+    fn1 = p = SkipWS( arg );
     if( *p != DOUBLEQUOTE ) {
         while( cisfilec( *p ) ) {
             ++p;
@@ -721,8 +735,7 @@ STATIC RET_T percentRename( char *arg )
     *p++ = NULLCHAR;        /* terminate first file name */
 
     /* Get second file name as well */
-    p = SkipWS( p );
-    fn2 = p;
+    fn2 = p = SkipWS( p );
     if( *p != DOUBLEQUOTE ) {
         while( cisfilec( *p ) ) {
             ++p;
@@ -918,20 +931,16 @@ STATIC RET_T handleSet( char *cmd )
     }
 
     p = SkipWS( cmd + 3 );      /* find first non-ws after "SET" */
-
     if( *p == NULLCHAR ) {      /* just "SET" with no options... pass on */
         return( mySystem( cmd, cmd ) );
     }
 
     /* anything goes in a dos set name... even punctuation! */
     name = p;
-    while( *p != NULLCHAR && !cisws( *p ) && *p != '=' ) {
-        ++p;
-    }
+    SkipUntilWSorEqual( p );
     endname = p;
 
     p = SkipWS( p );            /* trim ws after name */
-
     if( *p != '=' || endname == name ) {
         PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_SET] );
         return( RET_ERROR );
@@ -942,7 +951,7 @@ STATIC RET_T handleSet( char *cmd )
     ++p;                        /* advance to character after '=' */
 
                         /* +1 for '=' (already +1 for NULLCHAR in ENV_TRACKER) */
-    env = MallocSafe( sizeof( *env ) + 1 + (endname - name) + strlen( p ) );
+    env = MallocSafe( sizeof( *env ) + 1 + ( endname - name ) + strlen( p ) );
     FmtStr( env->value, "%s=%s", name, p );
     retcode = PutEnvSafe( env );
     if( retcode != 0 ) {
@@ -987,10 +996,9 @@ STATIC RET_T handleIf( char *cmd )
     bool        not;        /* flag for not keyword                     */
     bool        condition;  /* whether the condition was T or F         */
     char        *p;         /* used to scan the string                  */
-    char const  *tmp1;      /* one of NOT | ERRORLEVEL | <str1> | EXIST */
-    char const  *tmp2;      /* one of <number> | "==" | <file> | <str2> */
+    char        *tmp1;      /* one of NOT | ERRORLEVEL | <str1> | EXIST */
+    char        *tmp2;      /* one of <number> | "==" | <file> | <str2> */
     char        *end1;      /* location of end of tmp1 string           */
-    char        save;       /* save character                           */
     const char  *file;      /* for checking file existence              */
 
     assert( cmd != NULL );
@@ -1010,90 +1018,72 @@ STATIC RET_T handleIf( char *cmd )
         return( RET_ERROR );
     }
 
-    tmp1 = p;                   /* find first word after IF */
-    while( !cisws( *p ) && *p != NULLCHAR && *p != '=' ) {
-        ++p;
-    }
-    if( *p == NULLCHAR ) {
-        PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
-        return( RET_ERROR );
-    }
-
-    save = *p;
-    *p = NULLCHAR;
-    not = ( stricmp( tmp1, "NOT" ) == 0 );
-    *p = save;
-
+    not = KeywordEqualUcase( "NOT ", p, p + 4 );
     if( not ) {             /* discard the "NOT" get next word */
-        tmp1 = p = SkipWS( p );
-        while( !cisws( *p ) && *p != NULLCHAR && *p != '=' ) {
-            ++p;
-        }
+        p = SkipWS( p + 4 );
         if( *p == NULLCHAR ) {
             PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
             return( RET_ERROR );
         }
-        save = *p;
-    }
-    end1 = p;
-
-    tmp2 = p = SkipWS( p );
-    if( *p == NULLCHAR ) {
-        PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
-        return( RET_ERROR );
     }
 
-    //while( !cisws( *p ) && *p != NULLCHAR ) ++p;
-    p = FindNextWS( p );
-
-    if( *p == NULLCHAR ) {
-        PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
-        return( RET_ERROR );
-    }
-
-    *end1 = NULLCHAR;
-    if( stricmp( tmp1, "ERRORLEVEL" ) == 0 ) {
+    if( KeywordEqualUcase( "ERRORLEVEL ", p, p + 11 ) ) {
+        tmp2 = p = SkipWS( p + 11 );
+        if( *p == NULLCHAR ) {
+            PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
+            return( RET_ERROR );
+        }
+        p = FindNextWS( p );
+        if( *p == NULLCHAR ) {
+            PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
+            return( RET_ERROR );
+        }
         *p = NULLCHAR;
         condition = ( lastErrorLevel >= atoi( tmp2 ) );
-    } else if( stricmp( tmp1, "EXIST" ) == 0 ) {
-
+    } else if( KeywordEqualUcase( "EXIST ", p, p + 6 ) ) {
+        tmp2 = p = SkipWS( p + 6 );
+        if( *p == NULLCHAR ) {
+            PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
+            return( RET_ERROR );
+        }
+        p = FindNextWS( p );
+        if( *p == NULLCHAR ) {
+            PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
+            return( RET_ERROR );
+        }
         *p = NULLCHAR;
 
         // handle long filenames
-        RemoveDoubleQuotes( (char *)tmp2, strlen( tmp2 ) + 1, tmp2 );
+        RemoveDoubleQuotes( tmp2, strlen( tmp2 ) + 1, tmp2 );
 
         file = DoWildCard( tmp2 );
         condition = ( ( file != NULL ) && CacheExists( file ) );
         /* abandon rest of entries if any */
         DoWildCardClose();
     } else {
-        *end1 = save;
-        p = end1;           /* back up to end of 1st token */
-        for( ;; ) {
-            while( ( *p != NULLCHAR ) && ( *p != '=' ) ) {
-                ++p;
-            }
-            if( *p == NULLCHAR ) {
-                PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
-                return( RET_ERROR );
-            }
-            if( p[1] == '=' ) {
-                break;
-            }
-            ++p;
-        }
-                            /* we have found "==", get <str2> */
-        tmp2 = p = SkipWS( p + 2 );
-        while( !cisws( *p ) && *p != NULLCHAR ) {
-            ++p;
-        }
+        tmp1 = p;                   /* find first word after IF [NOT] */
+        end1 = p = FindNextWSorEqual( p );
         if( *p == NULLCHAR ) {
             PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
             return( RET_ERROR );
         }
-        *p = NULLCHAR;
-        *end1 = NULLCHAR;       /* null-terminate tmp1 again */
-        condition = ( strcmp( tmp1, tmp2 ) == 0 );
+        p = SkipWS( p );
+        if( p[0] != '=' || p[1] != '=' ) {
+            PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
+            return( RET_ERROR );
+        }
+        tmp2 = p = SkipWS( p + 2 );
+        if( *p == NULLCHAR ) {
+            PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
+            return( RET_ERROR );
+        }
+
+        p = FindNextWS( p );
+        if( *p == NULLCHAR ) {
+            PrtMsg( ERR | SYNTAX_ERROR_IN, dosInternals[COM_IF] );
+            return( RET_ERROR );
+        }
+        condition = ( end1 - tmp1 == p - tmp2 && memcmp( tmp1, tmp2, end1 - tmp1 ) == 0 );
     }
 
     p = SkipWS( p + 1 );
@@ -1102,7 +1092,7 @@ STATIC RET_T handleIf( char *cmd )
         return( RET_ERROR );
     }
 
-    if( (not && !condition) || (!not && condition) ) {
+    if( not ^ condition ) {
         return( execLine( p ) );
     }
     return( RET_SUCCESS );
@@ -1128,7 +1118,6 @@ STATIC RET_T getForArgs( char *line, const char **pvar, char **pset,
     /* remember we can hack up line all we like... */
 
     p = SkipWS( line + 3 ); /* find first non-ws after "FOR" */
-
                             /* got <var>, now test if legal */
     if( p[0] != '%' ) {
         return( handleForSyntaxError() );
@@ -1151,31 +1140,25 @@ STATIC RET_T getForArgs( char *line, const char **pvar, char **pset,
     *p = NULLCHAR;          /* truncate variable name */
 
     p = SkipWS( p + 1 );    /* move to "in" */
-
-    if( ctoupper( p[0] ) != 'I' || ctoupper( p[1] ) != 'N' || !cisws( p[2] ) ) {
+    if( !KeywordEqualUcase( "IN ", p, p + 3 ) ) {
         return( handleForSyntaxError() );
     }
 
     p = SkipWS( p + 3 );    /* move to ( before <set> */
-
     if( p[0] != '(' ) {
         return( handleForSyntaxError() );
     }
     ++p;
-    *pset = p;/* beginning of set */
 
-    while( *p != NULLCHAR && *p != ')' ) {
-        ++p;
-    }
+    *pset = p;              /* beginning of set string */
+    SkipUntilRparent( p );
     if( *p == NULLCHAR ) {
         return( handleForSyntaxError() );
     }
-
-    *p = NULLCHAR;          /* truncate set string */
+    *p = NULLCHAR;          /* terminate set string */
 
     p = SkipWS( p + 1 );    /* move to "do" */
-
-    if( ctoupper( p[0] ) != 'D' || ctoupper( p[1] ) != 'O' || !cisws( p[2] ) ) {
+    if( !KeywordEqualUcase( "DO ", p, p + 3 ) ) {
         return( handleForSyntaxError() );
     }
 
@@ -1250,7 +1233,6 @@ STATIC RET_T handleFor( char *line )
     char            *set;           /* set of values for looping            */
     const char      *cmd;           /* command to execute                   */
     const char      *p;             /* working pointer                      */
-    char            hold;           /* final character of set during loop   */
     const char      *subst;         /* pointer to the element to substitute */
     size_t          varlen;         /* strlen( var )                        */
     unsigned        numsubst;       /* number of substitutions per cmd      */
@@ -1258,6 +1240,7 @@ STATIC RET_T handleFor( char *line )
     size_t          newlen;         /* size of memory we need               */
     size_t          lastlen;        /* last size of memory we asked for     */
     char            *exec;          /* line to execute                      */
+    size_t          incr;           /* increment to next item during loop   */
 
     assert( line != NULL );
 
@@ -1287,24 +1270,18 @@ STATIC RET_T handleFor( char *line )
     cmdlen = strlen( cmd ) - numsubst * varlen + 1;
     lastlen = 0;
     exec = NULL;
-
-                    /* always skip ws in set */
-    set = SkipWS( set );
-    hold = *set;
-    while( hold != NULLCHAR ) {
-        subst = set;        /* remember start of subst string */
-
+    for( incr = 1; *(set = SkipWS( set )) != NULLCHAR; set += incr ) {
+        subst = set;   /* remember start of subst string */
         set = FindNextWS( set );
-
-        hold = *set;
+        if( *set == NULLCHAR )
+            incr = 0;
         *set = NULLCHAR;
-
         for( subst = DoWildCard( subst ); subst != NULL; subst = DoWildCard( NULL ) ) {
             newlen = numsubst * strlen( subst ) + cmdlen;
-            if( newlen > lastlen ) {
+            if( lastlen < newlen ) {
+                lastlen = newlen;
                 FreeSafe( exec );
                 exec = MallocSafe( newlen );
-                lastlen = newlen;
             }
 
             /* make variable substitutions */
@@ -1317,11 +1294,6 @@ STATIC RET_T handleFor( char *line )
                 DoWildCardClose();
                 return( RET_ERROR );
             }
-        }
-
-        set = SkipWS( set + 1 );
-        if( *set == NULLCHAR ) {    /* if ws at end of set */
-            hold = NULLCHAR;
         }
     }
 
@@ -1338,8 +1310,8 @@ STATIC RET_T handleFor( char *line )
 STATIC RET_T handleCD( char *cmd )
 /********************************/
 {
-    char const  *p;     // pointer to walk with
-    char const  *s;
+    char        *p;     // pointer to walk with
+    char        *s;
 
 #ifdef DEVELOPMENT
     PrtMsg( DBG | INF | INTERPRETING, dosInternals[COM_CD] );
@@ -1347,24 +1319,24 @@ STATIC RET_T handleCD( char *cmd )
 
     closeCurrentFile();
     p = cmd;
-    while( cisalpha( *p ) ) {
-        ++p;     /* advance past command name */
+    while( cisalpha( *p ) ) {       /* advance past command name */
+        ++p;
     }
 
-    p = SkipWS( (char *)p );
+    p = SkipWS( p );
     if( *p == NULLCHAR ) {          /* no args - just print the cd */
         return( mySystem( cmd, cmd ) );
     }
 
     if( p[1] == ':' ) {             /* just a drive: arg, print the cd */
-        s = SkipWS( (char *)p + 2 );
+        s = SkipWS( p + 2 );
         if( *s == NULLCHAR ) {
             return( mySystem( cmd, cmd ) );
         }
     }
 
     // handle long filenames
-    RemoveDoubleQuotes( (char *)p, strlen( p ) + 1, p );
+    RemoveDoubleQuotes( p, strlen( p ) + 1, p );
 
     if( chdir( p ) != 0 ) {         /* an error changing path */
         PrtMsg( ERR | CHANGING_DIR, p );
@@ -1415,16 +1387,13 @@ STATIC RET_T getRMArgs( char *line, rm_flags *flags, const char **pfile )
 {
     static char *p  = NULL;
 
-                            /* first run? */
-    if( line ) {
+    if( line != NULL ) {        /* first run? */
         flags->bForce   = false;
         flags->bDirs    = false;
         flags->bVerbose = false;
 
-        p = SkipWS( line + 2 ); /* find first non-ws after "RM" */
-
-                                /* is it a switch? */
-        while( p[0] == '-' ) {
+        /* find all options after "RM" */
+        for( p = SkipWS( line + 2 ); p[0] == '-'; p = SkipWS( p ) ) {
             p++;
             while( cisalpha( p[0] ) ) {
                 switch( ctolower( p[0] ) ) {
@@ -1442,13 +1411,12 @@ STATIC RET_T getRMArgs( char *line, rm_flags *flags, const char **pfile )
                 }
                 p++;
             }
-            p = SkipWS( p );
         }
     }
 
     if( p != NULL && *p != NULLCHAR ) {
         *pfile = p;
-        p = FindNextWS(p);
+        p = FindNextWS( p );
         if( *p == NULLCHAR ) {
             p = NULL;
         } else {
@@ -1498,7 +1466,7 @@ STATIC bool remove_item( const char *name, const rm_flags *flags, bool dir )
     return( rc == 0 );
 }
 
-static int IsDotOrDotDot( const char *fname )
+static bool IsDotOrDotDot( const char *fname )
 {
     /* return 1 if fname is "." or "..", 0 otherwise */
     return( fname[0] == '.' && ( fname[1] == NULLCHAR || ( fname[1] == '.' && fname[2] == NULLCHAR ) ) );
@@ -1723,8 +1691,6 @@ STATIC bool hasMetas( const char *cmd )
             return( true );
         }
     }
-    return( false );
-
 #elif defined( __OS2__ ) || defined( __UNIX__ )
     const char  *p;
 
@@ -1735,9 +1701,8 @@ STATIC bool hasMetas( const char *cmd )
             return( true );
         }
     }
-    return( false );
-
 #endif
+    return( false );
 }
 
 static void dumpCommand( char *cmd )
@@ -1816,14 +1781,15 @@ STATIC void killTmpEnv( UINT16 tmp )
 STATIC UINT16 makeTmpEnv( const char *cmd )
 /*****************************************/
 {
-    (void)cmd; // Unused
+    /* unused parameters */ (void)cmd;
+
     return( 0 );
 }
 
 STATIC void killTmpEnv( UINT16 tmp )
 /**********************************/
 {
-    (void)tmp; // Unused
+    /* unused parameters */ (void)tmp;
 }
 #endif
 
@@ -2021,15 +1987,17 @@ STATIC RET_T execLine( char *line )
     assert( line != NULL );
 
     CheckForBreak();
+    flags = 0;
     /* make a copy of global flags */
-    flags = ((Glob.silent && !Glob.silentno) ? FLAG_SILENT : 0)
-           | (Glob.ignore ? FLAG_IGNORE : 0)
-           | (Glob.shell ? FLAG_SHELL : 0);
+    if( Glob.silent && !Glob.silentno )
+        flags |= FLAG_SILENT;
+    if( Glob.ignore )
+        flags |= FLAG_IGNORE;
+    if( Glob.shell )
+        flags |= FLAG_SHELL;
 
-    p = line;               /* process @*!- and strip leading ws */
-    for( ;; ) {
+    for( p = line; ; ++p ) {         /* process @*!- and strip leading ws */
         p = SkipWS( p );
-
         if( *p == '@' ) {
             if( !Glob.silentno ) {
                 flags |= FLAG_SILENT;
@@ -2043,7 +2011,6 @@ STATIC RET_T execLine( char *line )
         } else {
             break;
         }
-        ++p;
     }
 
     assert( !cisws( *p ) );
@@ -2168,7 +2135,7 @@ void ExecInit( void )
     currentFileName = NULL;
     currentFileHandle = -1;
     /* Take any number first */
-    tmpFileNumber   = (UINT16)(time( NULL ) % 100000);
+    tmpFileNumber = (UINT16)( time( NULL ) % 100000 );
 }
 
 

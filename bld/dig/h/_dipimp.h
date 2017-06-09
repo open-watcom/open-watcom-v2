@@ -30,7 +30,7 @@
 
 
 pick( unsigned,         HandleSize,         ( handle_kind ) )
-pick( dip_status,       MoreMem,            ( unsigned ) )
+pick( dip_status,       MoreMem,            ( size_t ) )
 pick( void,             Shutdown,           ( void ) )
 pick( void,             Cancel,             ( void ) )
 pick( dip_status,       LoadInfo,           ( dig_fhandle, imp_image_handle * ) )

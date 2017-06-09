@@ -34,6 +34,7 @@
 
 #include "pt.h"
 
+
 extern char flags[SIZE+1];
 extern int count, niter;
 

@@ -43,7 +43,7 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT BOOL CALLBACK RetCodeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+WINEXPORT INT_PTR CALLBACK RetCodeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 typedef struct {
     DWORD       procid;
@@ -85,7 +85,7 @@ msglist ThreadWaitMsgs[] = {
     17,     (char *)(pointer_int)STR_WAIT_4_LPC_REPLY,
     18,     (char *)(pointer_int)STR_WAIT_4_VIRTUAL_MEMORY,
     19,     (char *)(pointer_int)STR_WAIT_4_PAGE_OUT,
-    0,      (char *)(pointer_int)-1
+    0,      NULL
 };
 
 msglist ThreadStateMsgs[] = {
@@ -97,7 +97,7 @@ msglist ThreadStateMsgs[] = {
     5,      (char *)(pointer_int)STR_WAITING,
     6,      (char *)(pointer_int)STR_TRANSITION,
     7,      (char *)(pointer_int)STR_UNKNOWN,
-    0,      (char *)(pointer_int)-1
+    0,      NULL
 };
 
 #define BUF_SIZE        100
@@ -131,20 +131,23 @@ BOOL ParseNumeric( char *buf, BOOL signed_val, DWORD *val ) {
 /*
  * ThreadCtlProc
  */
-BOOL CALLBACK RetCodeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK RetCodeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     RetCodeInfo         *info;
     WORD                cmd;
     char                buf[BUF_SIZE];
     char                *title;
     msg_id              info_str_id;
+    bool                ret;
 
-    info = (RetCodeInfo *)GetWindowLong( hwnd, DWL_USER );
+    ret = false;
+
+    info = (RetCodeInfo *)GET_DLGDATA( hwnd );
     switch( msg ) {
     case WM_INITDIALOG:
         info = (RetCodeInfo *)lparam;
         info->really_kill = FALSE;
-        SetWindowLong( hwnd, DWL_USER, lparam );
+        SET_DLGDATA( hwnd, lparam );
         if( info->type == RETCD_THREAD ) {
             title = AllocRCString( STR_THREAD_RETURN_CODE );
             info_str_id = STR_THREAD_X;
@@ -157,6 +160,7 @@ BOOL CALLBACK RetCodeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
         RCsprintf( buf, info_str_id, info->type, info->id );
         SetDlgItemText( hwnd, RET_PROC_INFO, buf );
         SetDlgItemText( hwnd, RET_VALUE, "-1" );
+        ret = true;
         break;
     case WM_COMMAND:
         cmd = LOWORD( wparam );
@@ -174,15 +178,15 @@ BOOL CALLBACK RetCodeDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
         case IDCANCEL:
             SendMessage( hwnd, WM_CLOSE, 0, 0L );
             break;
-         }
-         break;
+        }
+        ret = true;
+        break;
     case WM_CLOSE:
         EndDialog( hwnd, 0 );
+        ret = true;
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 }
 
 /*
@@ -219,14 +223,14 @@ static void enableChoices( HWND hwnd, BOOL enable ) {
 /*
  * ThreadCtlProc
  */
-BOOL CALLBACK ThreadPriorityProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK ThreadPriorityDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD                cmd;
     ThreadPriorityInfo  *info;
     char                buf[100];
-    BOOL                ret;
+    bool                ret;
 
-    info = (ThreadPriorityInfo *)GetWindowLong( hwnd, DWL_USER );
+    info = (ThreadPriorityInfo *)GET_DLGDATA( hwnd );
     switch( msg ) {
     case WM_INITDIALOG:
         info = (ThreadPriorityInfo *)lparam;
@@ -258,52 +262,53 @@ BOOL CALLBACK ThreadPriorityProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpa
             CheckDlgButton( hwnd, PRIORITY_TIME_CRITICAL, BST_CHECKED );
             break;
         }
-        SetWindowLong( hwnd, DWL_USER, lparam );
+        SET_DLGDATA( hwnd, lparam );
+        ret = true;
         break;
     case WM_COMMAND:
-         cmd = LOWORD( wparam );
-         switch( cmd ) {
-         case IDOK:
-             if( IsDlgButtonChecked( hwnd, PRIORITY_IDLE ) ) {
+        cmd = LOWORD( wparam );
+        switch( cmd ) {
+        case IDOK:
+            if( IsDlgButtonChecked( hwnd, PRIORITY_IDLE ) ) {
                 ret = SetThreadPriority( info->thread->threadhdl,
-                                         THREAD_PRIORITY_IDLE );
-             } else if( IsDlgButtonChecked( hwnd, PRIORITY_LOWEST ) ) {
+                                         THREAD_PRIORITY_IDLE ) != 0;
+            } else if( IsDlgButtonChecked( hwnd, PRIORITY_LOWEST ) ) {
                 ret = SetThreadPriority( info->thread->threadhdl,
-                                         THREAD_PRIORITY_LOWEST );
-             } else if( IsDlgButtonChecked( hwnd, PRIORITY_BELOW_NORMAL ) ) {
+                                         THREAD_PRIORITY_LOWEST ) != 0;
+            } else if( IsDlgButtonChecked( hwnd, PRIORITY_BELOW_NORMAL ) ) {
                 ret = SetThreadPriority( info->thread->threadhdl,
-                                         THREAD_PRIORITY_BELOW_NORMAL );
-             } else if( IsDlgButtonChecked( hwnd, PRIORITY_NORMAL ) ) {
+                                         THREAD_PRIORITY_BELOW_NORMAL ) != 0;
+            } else if( IsDlgButtonChecked( hwnd, PRIORITY_NORMAL ) ) {
                 ret = SetThreadPriority( info->thread->threadhdl,
-                                         THREAD_PRIORITY_NORMAL );
-             } else if( IsDlgButtonChecked( hwnd, PRIORITY_ABOVE_NORMAL ) ) {
+                                         THREAD_PRIORITY_NORMAL ) != 0;
+            } else if( IsDlgButtonChecked( hwnd, PRIORITY_ABOVE_NORMAL ) ) {
                 ret = SetThreadPriority( info->thread->threadhdl,
-                                         THREAD_PRIORITY_ABOVE_NORMAL );
-             } else if( IsDlgButtonChecked( hwnd, PRIORITY_HIGHEST ) ) {
+                                         THREAD_PRIORITY_ABOVE_NORMAL ) != 0;
+            } else if( IsDlgButtonChecked( hwnd, PRIORITY_HIGHEST ) ) {
                 ret = SetThreadPriority( info->thread->threadhdl,
-                                         THREAD_PRIORITY_HIGHEST );
-             } else if( IsDlgButtonChecked( hwnd, PRIORITY_TIME_CRITICAL ) ) {
+                                         THREAD_PRIORITY_HIGHEST ) != 0;
+            } else if( IsDlgButtonChecked( hwnd, PRIORITY_TIME_CRITICAL ) ) {
                 ret = SetThreadPriority( info->thread->threadhdl,
-                                         THREAD_PRIORITY_TIME_CRITICAL );
-             }
-             if( !ret ) {
-                 RCMessageBox( hwnd, STR_CANT_SET_THREAD_PRI, AppName,
+                                         THREAD_PRIORITY_TIME_CRITICAL ) != 0;
+            }
+            if( !ret ) {
+                RCMessageBox( hwnd, STR_CANT_SET_THREAD_PRI, AppName,
                              MB_OK | MB_ICONEXCLAMATION );
-             }
-             SendMessage( hwnd, WM_CLOSE, 0, 0L );
-             break;
-         case IDCANCEL:
-             SendMessage( hwnd, WM_CLOSE, 0, 0L );
-             break;
-         }
-         break;
+            }
+            SendMessage( hwnd, WM_CLOSE, 0, 0L );
+            break;
+        case IDCANCEL:
+            SendMessage( hwnd, WM_CLOSE, 0, 0L );
+            break;
+        }
+        ret = true;
+        break;
     case WM_CLOSE:
         EndDialog( hwnd, 0 );
+        ret = true;
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 }
 #endif
 
@@ -329,16 +334,16 @@ static void fillThreadCtl( HWND hwnd, ProcStats *info, char *buf ) {
         strcpy( save, "bbbbbbbbbbbb" ); /* just some text that shouldn't
                                            match anything in the listbox */
     } else {
-        SendMessage( lb, LB_GETTEXT, index, (LPARAM)save );
+        SendMessage( lb, LB_GETTEXT, index, (LPARAM)(LPSTR)save );
     }
     SendMessage( lb, LB_RESETCONTENT, 0, 0L );
     rc = GetNextThread( &thdinfo, &place, info->pid, TRUE );
     while( rc ) {
         sprintf( buf, "tid = %08lX", thdinfo.tid );
-        SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)buf );
+        SendMessage( lb, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)buf );
         rc = GetNextThread( &thdinfo, &place, info->pid, FALSE );
     }
-    index = SendMessage( lb, LB_FINDSTRING, -1, (LPARAM)save );
+    index = SendMessage( lb, LB_FINDSTRING, -1, (LPARAM)(LPCSTR)save );
     if( index == LB_ERR ) {
         enableChoices( hwnd, FALSE );
     } else {
@@ -365,7 +370,7 @@ static void fillThreadInfo( HWND hwnd, ProcStats *info ) {
         SetDlgItemText( hwnd, THREAD_PRIORITY, "" );
     } else {
         enableChoices( hwnd, TRUE );
-        SendMessage( lb, LB_GETTEXT, index, (LPARAM)buf );
+        SendMessage( lb, LB_GETTEXT, index, (LPARAM)(LPSTR)buf );
         threadid = getThreadId( buf );
         sprintf( buf, "tid = %08lX", threadid );
         SetDlgItemText( hwnd, THREAD_TID, buf );
@@ -418,7 +423,7 @@ BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     DWORD               rc;
     char                *action;
 
-    info = (ThreadCtlInfo *)GetWindowLong( hwnd, DWL_USER );
+    info = (ThreadCtlInfo *)GET_DLGDATA( hwnd );
     switch( msg ) {
     case WM_INITDIALOG:
         info = MemAlloc( sizeof( ThreadCtlInfo ) );
@@ -429,7 +434,7 @@ BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         }
         info->procid = lparam;
         ThreadDlg = hwnd;
-        SetWindowLong( hwnd, DWL_USER, (DWORD)info );
+        SET_DLGDATA( hwnd, info );
         fillThreadCtl( hwnd, &info->procinfo, buf );
         RCsprintf( buf, STR_THREAD_4_PROC_X, lparam );
         SetDlgItemText( hwnd, THREAD_PROC_NAME, buf );
@@ -452,7 +457,7 @@ BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
                             MB_OK | MB_ICONEXCLAMATION );
                 break;
             }
-            SendDlgItemMessage( hwnd, THREAD_LIST, LB_GETTEXT, index, (LPARAM)buf );
+            SendDlgItemMessage( hwnd, THREAD_LIST, LB_GETTEXT, index, (LPARAM)(LPSTR)buf );
             threadid = getThreadId( buf );
             process = FindProcess( info->procinfo.pid );
             thread = FindThread( process, threadid );
@@ -551,7 +556,7 @@ BOOL CALLBACK ThreadCtlProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 //                  prinfo.priority = GetThreadPriority( thread->threadhdl );
 //                  prinfo.procinfo = &info->procinfo;
 //                  DialogBoxParam( Instance, "THREAD_PRIORITY_DLG", hwnd,
-//                                  ThreadPriorityProc, (DWORD)&prinfo );
+//                                  ThreadPriorityDlgProc, (DWORD)&prinfo );
 //                  fillThreadInfo( hwnd, &info->procinfo );
 //              }
 //          }

@@ -78,54 +78,13 @@
 #define LOCALS          0x10
 #define TYPES           0x20
 
-extern int                      Handle;         /* the file handle         */
-extern int                      Lhandle;        /* the listfile handle     */
-extern unsigned_16              Sizeleft;       /* size left from BSIZE    */
-extern unsigned_16              WSize;          /* size left from BSIZE    */
-extern unsigned_16              Num_buff;       /* number of BSIZE buffer  */
-extern char                     Read_buff[BSIZE];       /* BSIZE buffer    */
-extern char                     Write_buff[BSIZE];      /* BSIZE buffer    */
-extern char                     *Wbuff;         /* buffer          */
-extern char                     *Lang_lst;      /* buffer          */
-extern int                      Num_read;       /* number of bytes read    */
-extern unsigned_32              Data_count;     /* used in OS2, QNX and ELF*/
-extern unsigned_32              Curr_sectoff;
-extern unsigned_32              Coff_off;       // offset of coff file */
-extern unsigned_32              New_exe_off;    /* offset of new exe head  */
-extern unsigned_32              Exp_off;        /* offset   */
-extern unsigned_32              Imp_off;        /* offset   */
-extern unsigned_32              Fix_off;        /* offset   */
-extern unsigned_32              Res_off;        /* offset   */
-extern unsigned_32              Data_off;       /* offset   */
-extern struct segment_record *  Int_seg_tab;    /* internal segment table  */
-extern char **                  Int_mod_ref_tab;/* internal mod_ref table  */
-extern unsigned_16              Segspec;        /* spec seg # for dmp_seg  */
-extern unsigned long            Hexoff;         /* offset for binary dump  */
-extern Elf32_Ehdr               Elf_head;       /* the elf_header          */
-extern lmf_header               Qnx_head;       /* the qnx_header          */
-extern extended_header          Phar_ext_head;  /* the phar_extended_header*/
-extern simple_header            Phar_head;      /* the phar_header         */
-extern extended_nlm_header      Nlm_ext_head;   /* the nlm_extended_header */
-extern nlm_header               Nlm_head;       /* the nlm_header          */
-extern pe_header                Pe_head;        /* the pe_header           */
-extern struct os2_flat_header   Os2_386_head;   /* the new_header (V2.0)   */
-extern struct os2_exe_header    Os2_head;       /* the new_header          */
-extern struct dos_exe_header    Dos_head;       /* the old_header          */
-extern unsigned_16              Resrc_shift_cnt;/* the restab shift        */
-extern unsigned_16              Options_dmp;
-extern unsigned_8               Debug_options;
-extern char                     *Name;          /* file name               */
-extern unsigned_32              Load_len;       /* start of debugging info */
-extern unsigned_32              Resrc_end;      /* end of resrc table      */
-extern jmp_buf                  Se_env;         /* for the setjmp          */
-extern int                      Form;
-extern bool                     Byte_swap;      /* endianness flag         */
+#define FORCE_SEEK      ((unsigned_16)-1)
 
-enum {
+typedef enum {
     FORM_NE,
     FORM_LE,
     FORM_LX
-};
+} exe_form;
 
 typedef const char * const const_string_table;
 
@@ -202,4 +161,46 @@ typedef enum {
     DR_DEBUG_NUM_SECTS          // the number of debug info sections.
 } dr_section;
 
-extern struct                   section_data Sections[DR_DEBUG_NUM_SECTS];
+extern struct section_data      Sections[DR_DEBUG_NUM_SECTS];
+extern int                      Handle;         /* the file handle         */
+extern int                      Lhandle;        /* the listfile handle     */
+extern unsigned_16              Sizeleft;       /* size left from BSIZE    */
+extern unsigned_16              WSize;          /* size left from BSIZE    */
+extern unsigned_16              Num_buff;       /* number of BSIZE buffer  */
+extern char                     Read_buff[BSIZE];       /* BSIZE buffer    */
+extern char                     Write_buff[BSIZE];      /* BSIZE buffer    */
+extern char                     *Wbuff;         /* buffer          */
+extern char                     *Lang_lst;      /* buffer          */
+extern unsigned                 Num_read;       /* number of bytes read    */
+extern unsigned_32              Data_count;     /* used in OS2, QNX and ELF*/
+extern unsigned_32              Curr_sectoff;
+extern unsigned_32              Coff_off;       // offset of coff file */
+extern unsigned_32              New_exe_off;    /* offset of new exe head  */
+extern unsigned_32              Exp_off;        /* offset   */
+extern unsigned_32              Imp_off;        /* offset   */
+extern unsigned_32              Fix_off;        /* offset   */
+extern unsigned_32              Res_off;        /* offset   */
+extern unsigned_32              Data_off;       /* offset   */
+extern struct segment_record *  Int_seg_tab;    /* internal segment table  */
+extern char **                  Int_mod_ref_tab;/* internal mod_ref table  */
+extern unsigned_16              Segspec;        /* spec seg # for dmp_seg  */
+extern unsigned long            Hexoff;         /* offset for binary dump  */
+extern Elf32_Ehdr               Elf_head;       /* the elf_header          */
+extern lmf_header               Qnx_head;       /* the qnx_header          */
+extern extended_header          Phar_ext_head;  /* the phar_extended_header*/
+extern simple_header            Phar_head;      /* the phar_header         */
+extern extended_nlm_header      Nlm_ext_head;   /* the nlm_extended_header */
+extern nlm_header               Nlm_head;       /* the nlm_header          */
+extern pe_header                Pe_head;        /* the pe_header           */
+extern struct os2_flat_header   Os2_386_head;   /* the new_header (V2.0)   */
+extern struct os2_exe_header    Os2_head;       /* the new_header          */
+extern struct dos_exe_header    Dos_head;       /* the old_header          */
+extern unsigned_16              Resrc_shift_cnt;/* the restab shift        */
+extern unsigned_16              Options_dmp;
+extern unsigned_8               Debug_options;
+extern char                     *Name;          /* file name               */
+extern unsigned_32              Load_len;       /* start of debugging info */
+extern unsigned_32              Resrc_end;      /* end of resrc table      */
+extern jmp_buf                  Se_env;         /* for the setjmp          */
+extern exe_form                 Form;
+extern bool                     Byte_swap;      /* endianness flag         */

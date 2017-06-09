@@ -33,12 +33,12 @@
 #include "curritem.def"
 
 typedef struct {
-    FARPROC     invoke;
+    DISPATCH_FN *dispatcher;
     OBJPTR      obj;
     HWND        hwnd;
     POINT       offset;
     RECT        rect;
-    BOOL        show_sel_boxes;
+    bool        show_sel_boxes;
     STATE_HDL   fmstate;            // handle to fmedit state
 } CURRITEM;
 

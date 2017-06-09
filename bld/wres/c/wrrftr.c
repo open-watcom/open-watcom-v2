@@ -39,37 +39,29 @@ bool WResReadFixedTypeRecord( WResTypeInfo *newtype, WResFileID fid )
 /*******************************************************************/
 /* read the fixed part of a Type info record */
 {
-    WResFileSSize   numread;
+    size_t      numread;
 
-    numread = WRESREAD( fid, newtype, sizeof( WResTypeInfo ) );
-    if( numread == sizeof( WResTypeInfo ) ) {
-        return( false );
-    } else {
-        WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
-    }
-    return( true );
+    if( (numread = WRESREAD( fid, newtype, sizeof( WResTypeInfo ) )) != sizeof( WResTypeInfo ) )
+        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
+    return( false );
 } /* WResReadFixedTypeRecord */
 
 bool WResReadFixedTypeRecord1or2( WResTypeInfo *newtype, WResFileID fid )
 /***********************************************************************/
 /* read the fixed part of a Type info record for version 2 or before */
 {
-    WResFileSSize       numread;
+    size_t              numread;
     WResTypeInfo1or2    info;
 
-    numread = WRESREAD( fid, &info, sizeof( WResTypeInfo1or2 ) );
-    if( numread == sizeof( WResTypeInfo1or2 ) ) {
-        newtype->NumResources = info.NumResources;
-        newtype->TypeName.IsName = info.TypeName.IsName;
-        if( newtype->TypeName.IsName ) {
-            newtype->TypeName.ID.Name.Name[0] = info.TypeName.ID.Name.Name[0];
-            newtype->TypeName.ID.Name.NumChars = info.TypeName.ID.Name.NumChars;
-        } else {
-            newtype->TypeName.ID.Num = info.TypeName.ID.Num;
-        }
-        return( false );
+    if( (numread = WRESREAD( fid, &info, sizeof( WResTypeInfo1or2 ) )) != sizeof( WResTypeInfo1or2 ) )
+        return( WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE ) );
+    newtype->NumResources = info.NumResources;
+    newtype->TypeName.IsName = info.TypeName.IsName;
+    if( newtype->TypeName.IsName ) {
+        newtype->TypeName.ID.Name.Name[0] = info.TypeName.ID.Name.Name[0];
+        newtype->TypeName.ID.Name.NumChars = info.TypeName.ID.Name.NumChars;
     } else {
-        WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
+        newtype->TypeName.ID.Num = info.TypeName.ID.Num;
     }
-    return( true );
+    return( false );
 } /* WResReadFixedTypeRecord */

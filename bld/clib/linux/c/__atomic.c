@@ -35,21 +35,39 @@
 #ifdef __386__
 
 /* Simple wrapper around Intel CMPXCHG */
-static void cmpxchg( volatile int *i, int j, int k );
+static unsigned cmpxchg( volatile int *i, int j, int k );
 #pragma aux cmpxchg = \
     "lock cmpxchg [edx], ecx" \
-    parm [edx] [eax] [ecx];
+    "jnz noxchg" \
+    "mov eax,1" \
+    "jmp donexchg" \
+    "noxchg:" \
+    "mov eax,0" \
+    "donexchg:" \
+    parm [edx] [eax] [ecx] \
+    value [eax];
 
+static void increment( volatile int *i );
+#pragma aux increment = \
+    "lock inc dword ptr [eax]" \
+    parm [eax];
+
+static void decrement( volatile int *i );
+#pragma aux decrement = \
+    "lock dec dword ptr [eax]" \
+    parm [eax];
+    
 #endif
 
 int __atomic_compare_and_swap( volatile int *dest, int expected, int source )
 {
-
+unsigned ret;
 #ifdef __386__
-    cmpxchg( dest, expected, source );
+    ret = cmpxchg( dest, expected, source );
+#else
+    ret = (unsigned)0;
 #endif
-
-    return( *dest == source );
+    return( ret == (unsigned)1 );
 }
 
 int __atomic_add( volatile int *dest, int delta )
@@ -59,8 +77,26 @@ int __atomic_add( volatile int *dest, int delta )
     for( ;; ) {
         value = *dest;
         if( __atomic_compare_and_swap( dest, value, value + delta ) ) {
-            return( value + delta );
+            return( 1 );
         }
     }
     return( 0 );
+}
+
+void __atomic_increment( volatile int *i )
+{
+#ifdef __386__
+    increment(i);
+#else
+    *i = *i + 1;
+#endif
+}
+
+void __atomic_decrement( volatile int *i )
+{
+#ifdef __386__
+    decrement(i);
+#else
+    *i = *i - 1;
+#endif
 }

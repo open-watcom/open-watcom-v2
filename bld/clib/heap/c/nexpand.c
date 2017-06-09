@@ -39,14 +39,14 @@
 
 #if defined(__SMALL_DATA__)
 
-_WCRTLINK void *_expand( void *stg, size_t amount )
+_WCRTLINK void *_expand( void *cstg, size_t amount )
 {
-    return( _nexpand( stg, amount ) );
+    return( _nexpand( cstg, amount ) );
 }
 
 #endif
 
-_WCRTLINK void _WCNEAR *_nexpand( void _WCNEAR *stg, size_t req_size )
+_WCRTLINK void_nptr _nexpand( void_nptr cstg, size_t req_size )
 {
     struct {
         unsigned expanded : 1;
@@ -57,10 +57,10 @@ _WCRTLINK void _WCNEAR *_nexpand( void _WCNEAR *stg, size_t req_size )
     flags.expanded = 0;
     _AccessNHeap();
     for( ;; ) {
-        retval = __HeapManager_expand( _DGroup(), (unsigned)stg, req_size, &growth_size );
+        retval = __HeapManager_expand( _DGroup(), cstg, req_size, &growth_size );
         if( retval == __HM_SUCCESS ) {
             _ReleaseNHeap();
-            return( stg );
+            return( cstg );
         }
         if( retval == __HM_FAIL || !__IsCtsNHeap() )
             break;

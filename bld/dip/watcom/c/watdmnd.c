@@ -195,7 +195,8 @@ static walk_result WlkClear( imp_image_handle *ii, imp_mod_handle im, void *d )
     dword               real_entry;
     pointer_int         *lnk;
 
-    d = d;
+    /* unused parameters */ (void)d;
+
     mp = ModPointer( ii, im );
     sect = FindInfo( ii, im );
     for( dk = 0; dk < MAX_DMND; ++dk ) {

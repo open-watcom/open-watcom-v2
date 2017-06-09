@@ -31,7 +31,7 @@
 
 
 #include "global.h"
-#include "errors.h"
+#include "rcerrors.h"
 #include "autodep.h"
 #include "reserr.h"
 #include "wresdefn.h"
@@ -62,7 +62,7 @@ static void closeAResFile( ResFileInfo *res )
         WResFreeDir( res->Dir );
         res->Dir = NULL;
     }
-    RCFREE( res );
+    RESFREE( res );
 }
 
 bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
@@ -78,11 +78,10 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
     WResTargetOS    target;
 
     *allopen = true;
-    rescnt = 0;
     *resinfo = NULL;
-
-    while( resnames != NULL ) {
-        resfile = RCALLOC( sizeof( ResFileInfo ) );
+    rescnt = 0;
+    for( ; resnames != NULL; resnames = resnames->next ) {
+        resfile = RESALLOC( sizeof( ResFileInfo ) );
         resfile->next = *resinfo;
         *resinfo = resfile;
         resfile->Dir = WResInitDir();
@@ -156,7 +155,6 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
         default: // EXE_TYPE_UNKNOWN
             break;
         }
-        resnames = resnames->next;
         rescnt++;
     }
     return( true );
@@ -168,24 +166,27 @@ HANDLE_ERROR:
 }
 
 void CloseResFiles( ResFileInfo *resfiles )
-/*******************************************/
+/*****************************************/
 {
     ResFileInfo         *res;
 
-    while( resfiles != NULL ) {
-        res = resfiles;
+    while( (res = resfiles) != NULL ) {
         resfiles = res->next;
         closeAResFile( res );
     }
 }
 
-void WresRecordError( WResStatus status ) {
+bool WresRecordError( WResStatus status )
+/***************************************/
+{
     errFromWres.used = true;
     errFromWres.status = status;
     errFromWres.errnum = errno;
+    return( true );
 }
 
 char *LastWresErrStr( void )
+/**************************/
 {
     if( errFromWres.used ) {
         switch( errFromWres.status ) {
@@ -200,6 +201,7 @@ char *LastWresErrStr( void )
 }
 
 int LastWresErr( void )
+/*********************/
 {
     if( errFromWres.used ) {
         return( errFromWres.errnum );
@@ -208,6 +210,7 @@ int LastWresErr( void )
 }
 
 int LastWresStatus( void )
+/************************/
 {
     if( errFromWres.used ) {
         return( errFromWres.status );
@@ -215,8 +218,8 @@ int LastWresStatus( void )
     return( 0 );
 }
 
-extern void SharedIOInitStatics( void )
-/*************************************/
+void SharedIOInitStatics( void )
+/******************************/
 {
     memset( &errFromWres, 0, sizeof( ErrFrame ) );
 }
@@ -275,7 +278,7 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
             break;
         default:
             type = typebuf;
-            itoa( typeid->ID.Num, type, 10 );
+            utoa( typeid->ID.Num, type, 10 );
             break;
         }
     }
@@ -284,7 +287,7 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
         name = WResIDToStr( nameid );
     } else {
         name = namebuf;
-        itoa( nameid->ID.Num, name, 10 );
+        utoa( nameid->ID.Num, name, 10 );
     }
     if( !typeid->IsName && typeid->ID.Num == RESOURCE2INT( RT_STRING ) ) {
         strbase = ( nameid->ID.Num - 1 ) * 16;
@@ -317,9 +320,9 @@ void ReportDupResource( WResID *nameid, WResID *typeid, const char *file1,
         }
     }
     if( nameid->IsName ) {
-        RCFREE( name );
+        RESFREE( name );
     }
     if( typeid->IsName ) {
-        RCFREE( type );
+        RESFREE( type );
     }
 }

@@ -37,7 +37,7 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT WPI_DLGRESULT CALLBACK CurrentSettingsProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
+WPI_EXPORT WPI_DLGRESULT CALLBACK CurrentSettingsDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam );
 
 static int      stretchClipPaste;
 static int      rotateType;
@@ -48,9 +48,9 @@ static BOOL     fSaveSettings;
 static BOOL     fWrapShift;
 
 /*
- * CurrentSettingsProc - display the current settings and allows for change
+ * CurrentSettingsDlgProc - display the current settings and allows for change
  */
-WPI_DLGRESULT CALLBACK CurrentSettingsProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_DLGRESULT CALLBACK CurrentSettingsDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     BOOL                err;
     char                *title;
@@ -58,6 +58,9 @@ WPI_DLGRESULT CALLBACK CurrentSettingsProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 w
     char                *msg_text;
     short               new_shift;
     static BOOL         keepsquare;
+    bool                ret;
+
+    ret = false;
 
     if( _wpi_dlg_command( hwnd, &msg, &wparam, &lparam ) ) {
         switch( LOWORD( wparam ) ) {
@@ -78,7 +81,7 @@ WPI_DLGRESULT CALLBACK CurrentSettingsProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 w
                 if( title != NULL ) {
                     IEFreeRCString( title );
                 }
-                return( FALSE );
+                break;
             }
             ImgedConfigInfo.shift = new_shift;
 
@@ -118,10 +121,7 @@ WPI_DLGRESULT CALLBACK CurrentSettingsProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 w
 
         case SETTINGS_HELP:
             IEHelpRoutine();
-            return( FALSE );
-
-        default:
-            return( FALSE );
+            break;
         }
     } else {
         switch( msg ) {
@@ -151,7 +151,8 @@ WPI_DLGRESULT CALLBACK CurrentSettingsProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 w
             } else {
                 _wpi_checkradiobutton( hwnd, WRAP_SHIFT, CLIP_SHIFT, CLIP_SHIFT );
             }
-            return( TRUE );
+            ret = true;
+            break;
 
 #ifndef __OS2_PM__
         case WM_SYSCOLORCHANGE:
@@ -166,22 +167,22 @@ WPI_DLGRESULT CALLBACK CurrentSettingsProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 w
             return( _wpi_defdlgproc( hwnd, msg, wparam, lparam ) );
         }
     }
-    _wpi_dlgreturn( FALSE );
+    _wpi_dlgreturn( ret );
 
-} /* CurrentSettingsProc */
+} /* CurrentSettingsDlgProc */
 
 /*
  * SelectOptions - bring up the current settings dialog box
  */
 void SelectOptions( void )
 {
-    WPI_PROC        fp;
+    WPI_DLGPROC     dlgproc;
     WPI_DLGRESULT   button_type;
     HMENU           hmenu;
 
-    fp = _wpi_makeprocinstance( (WPI_PROC)CurrentSettingsProc, Instance );
-    button_type = _wpi_dialogbox( HMainWindow, (WPI_DLGPROC)fp, Instance, CURRENT_SETTINGS, 0L );
-    _wpi_freeprocinstance( fp );
+    dlgproc = _wpi_makedlgprocinstance( CurrentSettingsDlgProc, Instance );
+    button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, CURRENT_SETTINGS, 0L );
+    _wpi_freedlgprocinstance( dlgproc );
 
     if( button_type == DLGID_CANCEL ) {
         return;
@@ -198,12 +199,12 @@ void SelectOptions( void )
  * StretchPastedImage - return whether we should stretch the pasted image or
  *                      not (not => clip the image)
  */
-BOOL StretchPastedImage( void )
+int StretchPastedImage( void )
 {
     if( stretchClipPaste == STRETCH_PASTE ) {
-        return( TRUE );
+        return( 1 );
     } else {
-        return( FALSE );
+        return( 0 );
     }
 
 } /* StretchPastedImage */

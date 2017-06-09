@@ -39,27 +39,21 @@ WResIDName *WResReadWResIDName( WResFileID fid )
 {
     WResIDName      newname;
     WResIDName      *newptr;
-    WResFileSSize   numread;
-    bool            error;
+    size_t          numread;
 
     /* read the size of the name in */
-    error = ResReadUint8( &(newname.NumChars), fid );
+    if( ResReadUint8( &(newname.NumChars), fid ) )
+        return( NULL );
 
     /* alloc the space for the new record */
-    if( error ) {
-        return( NULL );
-    } else {
-        /* -1 because one of the chars in the name is declared in the struct */
-        newptr = WRESALLOC( sizeof( WResIDName ) + newname.NumChars - 1 );
-    }
-
-    /* read in the characters */
+    /* -1 because one of the chars in the name is declared in the struct */
+    newptr = WRESALLOC( sizeof( WResIDName ) + newname.NumChars - 1 );
     if( newptr == NULL ) {
         WRES_ERROR( WRS_MALLOC_FAILED );
     } else {
+        /* read in the characters */
         newptr->NumChars = newname.NumChars;
-        numread = WRESREAD( fid, newptr->Name, newptr->NumChars );
-        if( numread != newptr->NumChars ) {
+        if( (numread = WRESREAD( fid, newptr->Name, newptr->NumChars )) != newptr->NumChars ) {
             WRES_ERROR( WRESIOERR( fid, numread ) ? WRS_READ_FAILED : WRS_READ_INCOMPLETE );
             WRESFREE( newptr );
             newptr = NULL;

@@ -1062,7 +1062,8 @@ static bool VarNodeHidden( var_info *i, var_node *v )
     var_type_bits       hide;
     var_node            *vstruct;
 
-    i=i;
+    /* unused parameters */ (void)i;
+
     vstruct = VarFindParentStruct( v );
     if( vstruct != NULL && vstruct->display_type != NULL ) {
         hide = vstruct->display_type->hide;
@@ -1070,7 +1071,7 @@ static bool VarNodeHidden( var_info *i, var_node *v )
         hide = Hide;
     }
 
-    return( ( v->bits & hide ) != 0 );
+    return( (v->bits & hide) != 0 );
 }
 
 static var_node *VarNextNode( var_info *i, var_node *v )
@@ -1551,7 +1552,8 @@ void    VarBuildName( var_info *info, var_node *v, bool just_end_bit )
     array_info          ainfo;
     DIPHDL( sym, field );
 
-    info=info;
+    /* unused parameters */ (void)info;
+
     if( v->node_type == NODE_INHERIT ) {
         name = StrCopy( ": ", TxtBuff );
         if( v->bits & VARNODE_PROTECTED ) {
@@ -1715,7 +1717,8 @@ void VarExpandRow( var_info *i, var_node *v, int row )
         the re-opening leaves any sub-expansions as they were.
 */
 {
-    row=row;
+    /* unused parameters */ (void)row;
+
     if( v->node_type == NODE_INHERIT ) {
         v->display ^= VARDISP_INHERIT_CLOSED;
         VarNodeDisplayUpdate( v );
@@ -1737,7 +1740,8 @@ void VarExpandRow( var_info *i, var_node *v, int row )
 
 void VarExpandRowNoCollapse( var_info *i, var_node *v, int row )
 {
-    row=row;
+    /* unused parameters */ (void)row;
+
     if( v->node_type == NODE_INHERIT ) {
         v->display ^= VARDISP_INHERIT_CLOSED;
         VarNodeDisplayUpdate( v );
@@ -2375,7 +2379,8 @@ static void VarFreeScopeList( var_info *i, scope_state *junk )
 
 bool VarDeleteAllScopes( var_info *i, void *cookie )
 {
-    cookie=cookie;
+    /* unused parameters */ (void)cookie;
+
     while( i->s != NULL ) {
         VarFreeScopeList( i, i->s );
     }
@@ -2388,7 +2393,8 @@ bool VarDeleteAScope( var_info *i, void *cookie )
 {
     scope_state *s, *oldest, *outer;
 
-    cookie=cookie;
+    /* unused parameters */ (void)cookie;
+
     if( i->mem_lock )
         return( false );
     oldest = NULL;
@@ -2597,7 +2603,8 @@ void VarGetDepths( var_info *i, var_node *v, int *pdepth, int *pinherit )
 {
     var_node    *curr;
 
-    i=i;
+    /* unused parameters */ (void)i;
+
     *pinherit = 0;
     *pdepth = 0;
     for( curr = v->parent; curr != NULL; curr = curr->parent ) {

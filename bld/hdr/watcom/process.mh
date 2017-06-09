@@ -107,14 +107,14 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
 #if defined(__386__)
  _WCRTLINK extern int   _beginthread( void (*__start_address)(void *),
      void *__stack_bottom, unsigned __stack_size, void *__arglist );
- #pragma intrinsic(_beginthread);
+ #pragma intrinsic(_beginthread)
  _WCRTLINK extern void  _endthread( void );
 :elsesegment
 #if defined(_M_I86)
  _WCRTLINK extern int _WCFAR  _beginthread(
     void (_WCFAR *__start_address)(void _WCFAR *),
     void _WCFAR *__stack_bottom, unsigned __stack_size, void _WCFAR *__arglist );
- #pragma intrinsic(_beginthread);
+ #pragma intrinsic(_beginthread)
  _WCRTLINK extern void _WCFAR _endthread( void );
  _WCRTLINK extern void _WCFAR *__chkstack( void _WCFAR * );
  #ifndef __SW_ZU
@@ -130,15 +130,10 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
                 unsigned __stack_size,
                 unsigned (__stdcall *__start_address)(void *),
                 void *__arglist, unsigned __initflag, unsigned *__thrdaddr );
-  #pragma intrinsic(_beginthread,_beginthreadex);
+  #pragma intrinsic(_beginthread,_beginthreadex)
   _WCRTLINK extern void _endthreadex( unsigned __retval );
 :include thrdhndl.sp
- #elif defined(__RDOS__)
-  _WCRTLINK extern int  _beginthread(
-                void (*__start_address)(void *), int prio,
-                const char *thread_name,
-                unsigned __stack_size, void *__arglist );
- #elif defined(__RDOSDEV__)
+ #elif defined(__RDOS__) || defined(__RDOSDEV__)
   _WCRTLINK extern int  _beginthread(
                 void (*__start_address)(void *), int prio,
                 const char *thread_name,
@@ -146,7 +141,7 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
  #else
   _WCRTLINK extern int  _beginthread( void (*__start_address)(void *),
       void *__stack_bottom, unsigned __stack_size, void *__arglist );
-  #pragma intrinsic(_beginthread);
+  #pragma intrinsic(_beginthread)
  #endif
  _WCRTLINK extern void  _endthread( void );
 :endsegment

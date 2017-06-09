@@ -58,8 +58,8 @@ void CmdSysInit( void )
     TextSegName = strsave( "" );
     DataSegName = strsave( "" );
     GenCodeGroup = strsave( "" );
-    CompFlags.make_enums_an_int = 1;
-    CompFlags.original_enum_setting = 1;
+    CompFlags.make_enums_an_int = true;
+    CompFlags.original_enum_setting = true;
 }
 
 void CmdSysFini( void )
@@ -112,7 +112,7 @@ static void setFinalTargetSystem( OPT_STORAGE *data, char *target_name )
     MergeIncludeFromEnv( "INCLUDE" );
     CMemFree( target_name );
     if( data->bm || data->bd ) {
-        CompFlags.target_multi_thread = 1;
+        CompFlags.target_multi_thread = true;
     }
 }
 
@@ -254,7 +254,7 @@ static void setMemoryModel( OPT_STORAGE *data )
 
 static void miscAnalysis( OPT_STORAGE *data )
 {
-    data = data;
+    /* unused parameters */ (void)data;
 }
 
 void CmdSysAnalyse( OPT_STORAGE *data )
@@ -267,13 +267,13 @@ void CmdSysAnalyse( OPT_STORAGE *data )
     case OPT_dbg_output_hd:
     default:
         if( data->fhd ) {
-            CompFlags.pch_debug_info_opt = 1;
+            CompFlags.pch_debug_info_opt = true;
         }
         GenSwitches |= DBG_DF;
         break;
     case OPT_dbg_output_hda:
         if( data->fhd ) {
-            CompFlags.pch_debug_info_opt = 1;
+            CompFlags.pch_debug_info_opt = true;
         }
         GenSwitches |= DBG_DF | DBG_PREDEF;
         break;
@@ -297,7 +297,7 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         TargetSwitches |= ALIGNED_SHORT;
     }
     if( data->br ) {
-        CompFlags.br_switch_used = 1;
+        CompFlags.br_switch_used = true;
     }
     if( data->la ) {
         TargetSwitches |= ASM_OUTPUT;
@@ -321,10 +321,10 @@ void CmdSysAnalyse( OPT_STORAGE *data )
         TargetSwitches &= ~I_MATH_INLINE;
     }
     if( data->vcap ) {
-        CompFlags.vc_alloca_parm = 1;
+        CompFlags.vc_alloca_parm = true;
     }
     if( data->zm ) {
-        CompFlags.zm_switch_used = 1;
+        CompFlags.zm_switch_used = true;
     }
 
     // frees 'target_name' memory

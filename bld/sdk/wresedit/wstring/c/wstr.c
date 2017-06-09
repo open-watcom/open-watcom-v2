@@ -106,7 +106,7 @@ void WFreeStringEInfo( WStringEditInfo *einfo )
             einfo->edit_dlg = (HWND)NULL;
         }
         if( einfo->win != (HWND)NULL && IsWindow( einfo->win ) ) {
-            SetWindowLong( einfo->win, 0, (LONG)0 );
+            SET_WNDINFO( einfo->win, 0 );
             DestroyWindow( einfo->win );
             einfo->win = (HWND)NULL;
         }

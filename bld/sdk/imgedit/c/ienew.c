@@ -34,6 +34,8 @@
 #include "imgedit.h"
 #include "iconinfo.h"
 #include "jdlg.h"
+#include "wclbproc.h"
+
 
 static int              imgType = UNDEF_IMG;
 static short            imgHeight = DIM_DEFAULT;
@@ -42,11 +44,14 @@ static short            bitCount;
 static int              imageCount = 0;
 
 /*
- * SelImgProc - select the image type to edit.
+ * SelImgDlgProc - select the image type to edit.
  */
-WPI_DLGRESULT CALLBACK SelImgProc( HWND hwnd, WPI_MSG msg,
-                                   WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_DLGRESULT CALLBACK SelImgDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
+    bool    ret;
+
+    ret = false;
+
     if( _wpi_dlg_command( hwnd, &msg, &wparam, &lparam ) ) {
         switch( LOWORD( wparam ) ) {
         case DLGID_OK:
@@ -66,10 +71,7 @@ WPI_DLGRESULT CALLBACK SelImgProc( HWND hwnd, WPI_MSG msg,
 
         case IDB_HELP:
             IEHelpRoutine();
-            return( FALSE );
-
-        default:
-            return( FALSE );
+            break;
         }
     } else {
         switch( msg ) {
@@ -79,7 +81,8 @@ WPI_DLGRESULT CALLBACK SelImgProc( HWND hwnd, WPI_MSG msg,
             } else {
                 _wpi_checkradiobutton( hwnd, SEL_BITMAP, SEL_CURSOR, SEL_BITMAP + imgType - 1 );
             }
-            return( TRUE );
+            ret = true;
+            break;
 
 #ifndef __OS2_PM__
         case WM_SYSCOLORCHANGE:
@@ -94,20 +97,22 @@ WPI_DLGRESULT CALLBACK SelImgProc( HWND hwnd, WPI_MSG msg,
             return( _wpi_defdlgproc( hwnd, msg, wparam, lparam ) );
         }
     }
-    _wpi_dlgreturn( FALSE );
+    _wpi_dlgreturn( ret );
 
-} /* SelImgProc */
+} /* SelImgDlgProc */
 
 /*
- * SelBitmapProc - select options for the bitmap (size and color scheme)
+ * SelBitmapDlgProc - select options for the bitmap (size and color scheme)
  */
-WPI_DLGRESULT CALLBACK SelBitmapProc( HWND hwnd, WPI_MSG msg,
-                                      WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+WPI_DLGRESULT CALLBACK SelBitmapDlgProc( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     char        *title;
     char        *text;
     char        *msg_text;
     BOOL        err;
+    bool        ret;
+
+    ret = false;
 
     if( _wpi_dlg_command( hwnd, &msg, &wparam, &lparam ) ) {
         switch( LOWORD( wparam ) ) {
@@ -134,7 +139,7 @@ WPI_DLGRESULT CALLBACK SelBitmapProc( HWND hwnd, WPI_MSG msg,
                 if( title != NULL ) {
                     IEFreeRCString( title );
                 }
-                return( FALSE );
+                break;
             }
 
             if( _wpi_isbuttonchecked( hwnd, BMP_TRUECOLOR ) ) {
@@ -155,10 +160,7 @@ WPI_DLGRESULT CALLBACK SelBitmapProc( HWND hwnd, WPI_MSG msg,
 
         case IDB_HELP:
             IEHelpRoutine();
-            return( FALSE );
-
-        default:
-            return( FALSE );
+            break;
         }
 
     } else {
@@ -176,7 +178,8 @@ WPI_DLGRESULT CALLBACK SelBitmapProc( HWND hwnd, WPI_MSG msg,
             } else {
                 _wpi_checkradiobutton( hwnd, BMP_TRUECOLOR, BMP_2COLOR, BMP_TRUECOLOR );
             }
-            return( TRUE );
+            ret = true;
+            break;
 
 #ifndef __OS2_PM__
         case WM_SYSCOLORCHANGE:
@@ -191,35 +194,39 @@ WPI_DLGRESULT CALLBACK SelBitmapProc( HWND hwnd, WPI_MSG msg,
             return( _wpi_defdlgproc( hwnd, msg, wparam, lparam ) );
         }
     }
-    _wpi_dlgreturn( FALSE );
+    _wpi_dlgreturn( ret );
 
-} /* SelBitmapProc */
+} /* SelBitmapDlgProc */
 
 #ifndef __OS2_PM__
 
 /*
- * SelCursorProc - select the target device to use the cursor on
+ * SelCursorDlgProc - select the target device to use the cursor on
  */
-BOOL CALLBACK SelCursorProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+INT_PTR CALLBACK SelCursorDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     static HWND hlistbox;
     char        *mono32x32;
     int         index;
+    bool        ret;
 
     lparam = lparam;
+
+    ret = false;
 
     switch( msg ) {
     case WM_INITDIALOG:
         hlistbox = GetDlgItem( hwnd, TARGETLISTBOX );
         mono32x32 = IEAllocRCString( WIE_MONO32X32 );
         if( mono32x32 != NULL ) {
-            SendMessage( hlistbox, LB_INSERTSTRING, 0, (LPARAM)(LPSTR)mono32x32 );
+            SendMessage( hlistbox, LB_INSERTSTRING, 0, (LPARAM)(LPCSTR)mono32x32 );
             IEFreeRCString( mono32x32 );
         } else {
             SendMessage( hlistbox, LB_INSERTSTRING, 0, (LPARAM)(LPCSTR)"Monochrome, 32x32" );
         }
         SendMessage( hlistbox, LB_SETCURSEL, 0, 0L );
-        return( TRUE );
+        ret = true;
+        break;
 
     case WM_SYSCOLORCHANGE:
         IECtl3dColorChange();
@@ -233,10 +240,8 @@ BOOL CALLBACK SelCursorProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
                 imgWidth = 32;
                 imgHeight = 32;
                 bitCount = 1;
-            } else {
-                return( FALSE );
+                EndDialog( hwnd, TRUE );
             }
-            EndDialog( hwnd, TRUE );
             break;
 
         case IDCANCEL:
@@ -245,29 +250,25 @@ BOOL CALLBACK SelCursorProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 
         case IDB_HELP:
             IEHelpRoutine();
-            return( FALSE );
-
-        default:
-            return( FALSE );
+            break;
         }
         break;
 
     case WM_CLOSE:
         EndDialog( hwnd, IDCANCEL );
+        ret = true;
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 
-} /* SelCursorProc */
+} /* SelCursorDlgProc */
 
 #endif
 
 /*
  * initializeImage - initialize the bitmaps according to the image type
  */
-static void initializeImage( img_node *node, char *filename )
+static void initializeImage( img_node *node, const char *filename )
 {
     node->imgtype = imgType;
     node->width = imgWidth;
@@ -296,9 +297,9 @@ static void initializeImage( img_node *node, char *filename )
 /*
  * NewImage - create a new image and return the image type (bitmap, icon, or cursor)
  */
-int NewImage( int img_type, char *filename )
+int NewImage( int img_type, const char *filename )
 {
-    WPI_PROC            fp;
+    WPI_DLGPROC         dlgproc;
     INT_PTR             button_type;
     short               width;
     short               height;
@@ -320,9 +321,9 @@ int NewImage( int img_type, char *filename )
     }
 
     if( img_type == UNDEF_IMG ) {
-        fp = _wpi_makeprocinstance( (WPI_PROC)SelImgProc, Instance );
-        button_type = _wpi_dialogbox( HMainWindow, (DLGPROC)fp, Instance, SELECTIMAGE, 0L );
-        _wpi_freeprocinstance( fp );
+        dlgproc = _wpi_makedlgprocinstance( SelImgDlgProc, Instance );
+        button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, SELECTIMAGE, 0L );
+        _wpi_freedlgprocinstance( dlgproc );
 
         if( button_type == DLGID_CANCEL ) {
             return( FALSE );
@@ -335,9 +336,9 @@ int NewImage( int img_type, char *filename )
 
     switch( imgType ) {
     case BITMAP_IMG:
-        fp = _wpi_makeprocinstance( (WPI_PROC)SelBitmapProc, Instance );
-        button_type = _wpi_dialogbox( HMainWindow, (DLGPROC)fp, Instance, BITMAPTYPE, 0L );
-        _wpi_freeprocinstance( fp );
+        dlgproc = _wpi_makedlgprocinstance( SelBitmapDlgProc, Instance );
+        button_type = _wpi_dialogbox( HMainWindow, dlgproc, Instance, BITMAPTYPE, 0L );
+        _wpi_freedlgprocinstance( dlgproc );
         if( button_type == DLGID_CANCEL ) {
             imgType = UNDEF_IMG;
             imageCount--;
@@ -377,9 +378,9 @@ int NewImage( int img_type, char *filename )
         imgHeight = height;
         bitCount = bcount;
 #else
-        fp = MakeProcInstance( (FARPROC)SelCursorProc, Instance );
-        button_type = JDialogBox( Instance, "CURSORTYPE", HMainWindow, (DLGPROC)fp );
-        FreeProcInstance( fp );
+        dlgproc = MakeProcInstance_DLG( SelCursorDlgProc, Instance );
+        button_type = JDialogBox( Instance, "CURSORTYPE", HMainWindow, dlgproc );
+        FreeProcInstance_DLG( dlgproc );
         if( button_type == IDCANCEL ) {
             imgType = UNDEF_IMG;
             return( imgType );

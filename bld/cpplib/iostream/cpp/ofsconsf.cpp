@@ -37,7 +37,7 @@
 
 namespace std {
 
-  ofstream::ofstream( filedesc fd, char *buf, int len )
+  ofstream::ofstream( filedesc fd, char *buf, streamsize len )
     : fstreambase( fd, buf, len ) {
   }
 

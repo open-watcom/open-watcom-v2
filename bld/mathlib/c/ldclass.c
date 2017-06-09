@@ -52,16 +52,16 @@ int __LDClass( long_double *ld )
     }
     return( __NONZERO );
 #else
-    if( (ld->word[1] & 0x7FF00000) == 0x7FF00000 ) {/* NaN or Inf */
-        if( (ld->word[1] & 0x7FFFFFFF) == 0x7FF00000 && ld->word[0] == 0 ) {
+    if( (ld->u.word[1] & 0x7FF00000) == 0x7FF00000 ) {/* NaN or Inf */
+        if( (ld->u.word[1] & 0x7FFFFFFF) == 0x7FF00000 && ld->u.word[0] == 0 ) {
             return( __INFINITY );
         }
         return( __NAN );
     }
-    if( (ld->word[1] & 0x7FFFFFFF) == 0 && ld->word[0] == 0 ) {
+    if( (ld->u.word[1] & 0x7FFFFFFF) == 0 && ld->u.word[0] == 0 ) {
         return( __ZERO );
     }
-    if( (ld->word[1] & 0x7FF00000) == 0 ) {
+    if( (ld->u.word[1] & 0x7FF00000) == 0 ) {
         return( __DENORMAL );
     }
     return( __NONZERO );

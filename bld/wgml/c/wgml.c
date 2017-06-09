@@ -770,7 +770,8 @@ int main( int argc, char * argv[] )
     clock_t     start_time;
     clock_t     end_time;
 
-    argc = argc; argv = argv;
+    /* unused parameters */ (void)argc; (void)argv;
+
     environment = &env;
     if( setjmp( env ) ) {               // if fatal error has occurred
         my_exit( 16 );

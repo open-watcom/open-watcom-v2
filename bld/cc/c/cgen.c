@@ -277,7 +277,8 @@ static cg_type DataPointerType( OPNODE *node )
     }
     return( dtype );
 #else
-    node = node;
+    /* unused parameters */ (void)node;
+
     return( TY_POINTER );
 #endif
 }
@@ -437,7 +438,8 @@ static void GenVaStart( cg_name op1, cg_name offset )
 {
     cg_name     name;
 
-    offset = offset;
+    /* unused parameters */ (void)offset;
+
     name = CGUnary( O_VA_START, op1, TY_POINTER );
     CGDone( name );
 }
@@ -715,7 +717,7 @@ static cg_name ConvertPointer( OPNODE *node, cg_name name )
         name = CGUnary( O_PTR_TO_FOREIGN, name, TY_POINTER );
     }
 #else
-    node = node;
+    /* unused parameters */ (void)node;
 #endif
     return( name );
 }
@@ -1846,7 +1848,8 @@ static cg_type CodePtrType( type_modifiers flags )
     }
     return( dtype );
 #else
-    flags = flags;
+    /* unused parameters */ (void)flags;
+
     return( TY_CODE_PTR );
 #endif
 }

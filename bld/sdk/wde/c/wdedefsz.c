@@ -34,6 +34,7 @@
 #include "wderesiz.h"
 #include "wdeobjid.h"
 #include "wdeactn.h"
+#include "wdeinfo.h"
 #include "wdefont.h"
 #include "wdedefsz.h"
 #include "wresall.h"
@@ -105,39 +106,39 @@ POINT *WdeGetDefaultSizeFromOBJID( OBJ_ID id )
 
 bool WdeChangeSizeToDefIfSmallRect( OBJPTR parent, OBJ_ID id, RECT *size )
 {
-    WdeResizeRatio  r;
-    DialogSizeInfo  dsize;
-    RECT            new_size;
-    POINT           *dim;
+    WdeResizeRatio      r;
+    WdeDialogSizeInfo   sizeinfo;
+    RECT                new_size;
+    POINT               *dim;
 
     if( parent == NULL || size == NULL || id == 0 ) {
-        return( FALSE );
+        return( false );
     }
 
     /* check if the objects size is greater than min allowed */
     if( size->right - size->left >= MIN_X || size->bottom - size->top >= MIN_Y ) {
-        return( TRUE );
+        return( true );
     }
 
     if( (dim = WdeGetDefaultSizeFromOBJID( id )) == NULL ) {
-        return( TRUE );
+        return( true );
     }
 
     if( !Forward( parent, GET_RESIZER, &r, NULL ) ) {
-        return( FALSE );
+        return( false );
     }
 
-    dsize.x = 0;
-    dsize.y = 0;
-    dsize.width = dim->x;
-    dsize.height = dim->y;
+    sizeinfo.x = 0;
+    sizeinfo.y = 0;
+    sizeinfo.width = dim->x;
+    sizeinfo.height = dim->y;
 
-    if( !WdeDialogToScreen( NULL, &r, &dsize, &new_size ) ) {
-        return( FALSE );
+    if( !WdeDialogToScreen( NULL, &r, &sizeinfo, &new_size ) ) {
+        return( false );
     }
 
     size->right = size->left + (new_size.right - new_size.left);
     size->bottom = size->top + (new_size.bottom - new_size.top);
 
-    return( TRUE );
+    return( true );
 }

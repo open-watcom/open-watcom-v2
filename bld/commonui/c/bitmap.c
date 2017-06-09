@@ -261,7 +261,7 @@ static HBITMAP readBitmap( HWND hwnd, FILE *fp, long offset, bool core, bitmap_i
  *                  return a handle to a newly created bitmap
  */
 
-HBITMAP ReadBitmapFile( HWND hwnd, char *file_name, bitmap_info *info )
+HBITMAP ReadBitmapFile( HWND hwnd, const char *file_name, bitmap_info *info )
 {
     FILE                *fp;
     HBITMAP             bitmap_handle;

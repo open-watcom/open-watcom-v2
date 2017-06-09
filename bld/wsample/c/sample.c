@@ -74,9 +74,9 @@ static int              stackSize = 0;
 
 
 #if defined( __DOS__ ) && !defined( _PLS ) && !defined( _RSI )
-void __near WriteMark( char FAR_PTR *str, seg_offset where )
+void __near WriteMark( const char FAR_PTR *str, seg_offset where )
 #else
-void WriteMark( char FAR_PTR *str, seg_offset where )
+void WriteMark( const char FAR_PTR *str, seg_offset where )
 #endif
 {
     struct {
@@ -84,7 +84,7 @@ void WriteMark( char FAR_PTR *str, seg_offset where )
         struct samp_mark            mark;
     }           proto;
     unsigned    size;
-    char        FAR_PTR *ptr;
+    const char  FAR_PTR *ptr;
 
     SamplerOff++;
     size = 1;
@@ -107,7 +107,7 @@ void WriteMark( char FAR_PTR *str, seg_offset where )
     SamplerOff--;
 }
 
-void WriteCodeLoad( seg_offset ovl_tbl, char *name, samp_block_kinds kind )
+void WriteCodeLoad( seg_offset ovl_tbl, const char *name, samp_block_kinds kind )
 {
     struct {
         struct samp_block_prefix    pref;
@@ -190,7 +190,7 @@ void SaveSamples( void )
                     Info.d.count[SAMP_SAMPLES].size += size;
                     Info.d.count[SAMP_SAMPLES].number += 1;
                 }
-                SampleIndex = 0;
+                ResetThread( tid );
             }
         } else {        /* record sample and callgraph information */
             for( i = 0; i < SampleIndex; i++ ) {
@@ -235,9 +235,7 @@ void SaveSamples( void )
                             j += 2;
                         }
                     }
-                    SampleIndex = 0;
-                    SampleCount = 0;
-                    LastSampleIndex = 0;
+                    ResetThread( tid );
                 }
             }
         }

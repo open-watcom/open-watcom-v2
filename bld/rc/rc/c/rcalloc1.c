@@ -35,7 +35,7 @@
 #include "bool.h"
 #include "rcalloc0.h"
 #include "rcalloc1.h"
-#include "errors.h"
+#include "rcerrors.h"
 #ifdef RCMEM_DEBUG
 #include "errprt.h"
 #endif
@@ -99,9 +99,8 @@ static void FreeBigListNode( void *mem, bool freemem )
         BigList = travptr;
         return;
     }
-    travptr = BigList;
     prevnode = BigList;
-    while( travptr != NULL ) {
+    for( travptr = BigList; travptr != NULL; travptr = travptr->next ) {
         memptr = (unsigned char *)travptr + headersize;
         if( memptr == mem ) {
             prevnode->next = travptr->next;
@@ -116,7 +115,6 @@ static void FreeBigListNode( void *mem, bool freemem )
             break;
         }
         prevnode = travptr;
-        travptr = travptr->next;
     }
     if( travptr == NULL ) {
         RcFatalError( ERR_INTERNAL, INTERR_MEM_FREE_FAILED );

@@ -42,18 +42,16 @@
 bool DumpString( uint_32 offset, uint_32 length, WResFileID fid )
 /***************************************************************/
 {
-    WResFileOffset      prevpos;
     unsigned            len;
-    unsigned            numread;
-    unsigned            cursor;
+    size_t              numread;
+    size_t              cursor;
     unsigned            stringlen;
     char                *stringbuff;
 
-    prevpos = RCSEEK( fid, offset, SEEK_SET );
-    if( prevpos == -1 )
+    if( RESSEEK( fid, offset, SEEK_SET ) )
         return( true );
     len = DMP_STR_BUF_LEN;
-    stringbuff = (char *)RCALLOC( len );
+    stringbuff = RESALLOC( len );
     if( stringbuff == NULL )
         return( true );
 
@@ -71,7 +69,7 @@ bool DumpString( uint_32 offset, uint_32 length, WResFileID fid )
                 len = length;
                 length = 0;
             }
-            numread = RCREAD( fid, stringbuff, len );
+            numread = RESREAD( fid, stringbuff, len );
             cursor = 0;
         }
         if( stringlen == 0 ) {
@@ -96,9 +94,9 @@ bool DumpString( uint_32 offset, uint_32 length, WResFileID fid )
     } while( length != 0 || numread > 0 );
     putchar( '\n' );
 
-    RCFREE( stringbuff );
+    RESFREE( stringbuff );
 
-    RCSEEK( fid, prevpos, SEEK_SET );
+    RESSEEK( fid, offset, SEEK_SET );
 
     return( false );
 }

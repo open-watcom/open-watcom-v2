@@ -36,7 +36,7 @@
 #ifndef NOUSE3D
     #include "ctl3dcvr.h"
 #endif
-#include "wprocmap.h"
+#include "wclbproc.h"
 
 
 /* Window callback functions prototypes */
@@ -62,7 +62,7 @@ INT_PTR CALLBACK MarkDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
         SetFocus( hdl );
         return( FALSE );
 //      strcpy( buf, "---------" );
-//      SendDlgItemMessage( hwnd, MARK_EDIT, WM_SETTEXT, 0, (LPARAM)buf );
+//      SendDlgItemMessage( hwnd, MARK_EDIT, WM_SETTEXT, 0, (LPARAM)(LPCSTR)buf );
         break;
 #ifndef NOUSE3D
     case WM_SYSCOLORCHANGE:
@@ -116,15 +116,15 @@ INT_PTR CALLBACK MarkDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
  */
 void ProcessMark( HWND owner, HANDLE instance, void (*func)( char * ) )
 {
-    FARPROC             fp;
+    DLGPROC     dlgproc;
 
     if( WriteFn != NULL ) {
         return;
     }
     WriteFn = func;
-    fp = MakeDlgProcInstance( MarkDlgProc, instance );
-    DialogBox( instance, "MARK_DLG", owner, (DLGPROC)fp );
-    FreeProcInstance( fp );
+    dlgproc = MakeProcInstance_DLG( MarkDlgProc, instance );
+    DialogBox( instance, "MARK_DLG", owner, dlgproc );
+    FreeProcInstance_DLG( dlgproc );
     WriteFn = NULL;
 
 } /* ProcessMark */

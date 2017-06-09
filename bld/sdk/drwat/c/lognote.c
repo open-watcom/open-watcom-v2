@@ -31,16 +31,17 @@
 
 
 #include "drwatcom.h"
+#include "wclbproc.h"
 #include "notelog.h"
 #include "jdlg.h"
 
 
-/* Local Window callback functions prototypes */
-BOOL __export CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
-
 #define BUF_SIZE        100
 
-BOOL CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+/* Local Window callback functions prototypes */
+WINEXPORT INT_PTR CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
+
+WINEXPORT INT_PTR CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     WORD        cmd;
     int         linecnt;
@@ -50,16 +51,20 @@ BOOL CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
     LRESULT     len;
     WORD        *wptr;
     void        (*fn)(char *);
+    bool        ret;
+
+    ret = false;
 
     switch( msg ) {
     case WM_INITDIALOG:
-        SetWindowLong( hwnd, DWL_USER, lparam );
+        SET_DLGDATA( hwnd, lparam );
+        ret = true;
         break;
     case WM_COMMAND:
         cmd = LOWORD( wparam );
         switch( cmd ) {
         case IDOK:
-            fn = (void *)GetWindowLong( hwnd, DWL_USER );
+            fn = (void *)GET_DLGDATA( hwnd );
             edithwnd = GetDlgItem( hwnd, LOG_TEXT );
             linecnt = (int)SendMessage( edithwnd, EM_GETLINECOUNT, 0, 0L );
             for( i = 0; i < linecnt; i++ ) {
@@ -77,21 +82,21 @@ BOOL CALLBACK NoteLogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             SendMessage( hwnd, WM_CLOSE, 0, 0L );
             break;
         }
+        ret = true;
         break;
     case WM_CLOSE:
         EndDialog( hwnd, 0 );
+        ret = true;
         break;
-    default:
-        return( FALSE );
     }
-    return( TRUE );
+    return( ret );
 }
 
 void AnotateLog( HWND hwnd, HANDLE Instance, void (*fn)(char *)  ) {
 
-    FARPROC     fp;
+    DLGPROC     dlgproc;
 
-    fp = MakeProcInstance( (FARPROC)NoteLogDlgProc, Instance );
-    JDialogBoxParam( Instance, "NOTE_LOG", hwnd, (DLGPROC)fp, (LPARAM)fn );
-    FreeProcInstance( fp );
+    dlgproc = MakeProcInstance_DLG( NoteLogDlgProc, Instance );
+    JDialogBoxParam( Instance, "NOTE_LOG", hwnd, dlgproc, (LPARAM)fn );
+    FreeProcInstance_DLG( dlgproc );
 }

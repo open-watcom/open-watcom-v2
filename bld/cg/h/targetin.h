@@ -33,7 +33,7 @@ extern  void            GenProlog( void );
 extern  void            GenEpilog( void );
 extern  void            AddCacheRegs( void );
 extern  void            InitStackDepth( block * );
-extern  int             AskDisplaySize( int level );
+extern  int             AskDisplaySize( level_depth level );
 extern  type_length     PushSize( type_length );
 extern  void            PushLocals( void );
 extern  void            SetTempLocation( name *, type_length );

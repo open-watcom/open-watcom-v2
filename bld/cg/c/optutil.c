@@ -45,8 +45,10 @@ ins_entry       *ValidIns( ins_entry *instr )
 {
   optbegin
     for(;;) {
-        if( instr == NULL ) break;
-        if( _Class( instr ) != OC_DEAD ) break;
+        if( instr == NULL )
+            break;
+        if( _Class( instr ) != OC_DEAD )
+            break;
         instr = instr->ins.next;
     }
     optreturn( instr );
@@ -65,8 +67,10 @@ ins_entry       *PrevIns( ins_entry *instr )
         instr = instr->ins.prev;
     }
     for(;;) {
-        if( instr == NULL ) break;
-        if( _Class( instr ) != OC_INFO ) break;
+        if( instr == NULL )
+            break;
+        if( _Class( instr ) != OC_INFO )
+            break;
         instr = instr->ins.prev;
     }
     optreturn( instr );
@@ -101,8 +105,10 @@ ins_entry       *NextIns( ins_entry *instr )
         instr = instr->ins.next;
     }
     for(;;) {
-        if( instr == NULL ) break;
-        if( _Class( instr ) != OC_INFO ) break;
+        if( instr == NULL )
+            break;
+        if( _Class( instr ) != OC_INFO )
+            break;
         instr = instr->ins.next;
     }
     optreturn( instr );
@@ -164,7 +170,8 @@ void    DelRef( ins_entry **owner, ins_entry *instr )
   optbegin
     for(;;) {
         curr = *owner;
-        if( curr == instr ) break;
+        if( curr == instr )
+            break;
         owner = (ins_entry **)&_LblRef( curr );
     }
     *owner = _LblRef( curr );
@@ -225,11 +232,14 @@ static  ins_entry *DelInstr_Helper( ins_entry *old )
     _SetClass( old, OC_DEAD );
     next = ValidIns( old->ins.next );
     for(;;) {
-        if( next == NULL ) return( NULL );
-        if( _Class( next ) != OC_INFO ) break;
+        if( next == NULL )
+            return( NULL );
+        if( _Class( next ) != OC_INFO )
+            break;
         next = next->ins.next;
     }
-    if( next->ins.prev == NULL ) return( next );
+    if( next->ins.prev == NULL )
+        return( next );
     MultiLineNums( next->ins.prev );
     return( next );
 }

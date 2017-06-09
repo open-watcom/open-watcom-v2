@@ -1,6 +1,6 @@
-#pmake: nobuild winnt threading dll conio axp static os_nt cpu_axp
+#pmake: nobuild winnt threading dll conio axp dynamic os_nt cpu_axp
 processor=axp
 system=winnt
-linkage=static
+linkage=dynamic
 
 !include $(clib_dir)/mklib.mif

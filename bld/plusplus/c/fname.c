@@ -47,7 +47,8 @@ static FNAME *fnameList;
 static void fnameInit(          // START FNAME PROCESSING
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     fnameList = NULL;
 }
 
@@ -55,7 +56,8 @@ static void fnameInit(          // START FNAME PROCESSING
 static void fnameFini(          // FINISH FNAME PROCESSING
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     RingFree( &fnameList );
 }
 

@@ -93,7 +93,8 @@ void Quit( const char **usage_msg, const char *str, ... )
 {
     va_list     al;
 
-    usage_msg = usage_msg;
+    /* unused parameters */ (void)usage_msg;
+
 #ifdef __WIN__
     {
         char    buff[MAX_STR];

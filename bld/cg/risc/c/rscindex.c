@@ -42,13 +42,12 @@
 #include "insutil.h"
 #include "index.h"
 #include "fixindex.h"
+#include "conflict.h"
 #include "feprotos.h"
 
 
 extern  opcode_entry    String[];
 
-extern  reg_set_index   MarkIndex(instruction*,name*,bool);
-extern  conflict_node   *NameConflict(instruction*,name*);
 
 bool    IndexOkay( instruction *ins, name *index ) {
 /**********************************************************/

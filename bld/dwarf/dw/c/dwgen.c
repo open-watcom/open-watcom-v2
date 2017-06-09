@@ -201,7 +201,7 @@ void DWENTRY DWFini( dw_client cli )
     CLIFree( cli, cli );
 }
 
-extern void DWInitDebugLine( dw_client cli, dw_cu_info *cu )
+void DWInitDebugLine( dw_client cli, dw_cu_info *cu )
 {
     cli->offset_size = cu->offset_size;
     cli->segment_size = cu->segment_size;
@@ -211,7 +211,7 @@ extern void DWInitDebugLine( dw_client cli, dw_cu_info *cu )
     InitDebugLine( cli, cu->source_filename, cu->inc_list, cu->inc_list_len );
 }
 
-extern void DWFiniDebugLine( dw_client cli )
+void DWFiniDebugLine( dw_client cli )
 {
     FiniDebugLine( cli );
 }

@@ -39,7 +39,7 @@ static int __LDSign( long_double *ld )
 #ifdef _LONG_DOUBLE_
     return( ld->exponent >> 15 );
 #else
-    return( ld->word[1] >> 31 );
+    return( ld->u.word[1] >> 31 );
 #endif
 }
 

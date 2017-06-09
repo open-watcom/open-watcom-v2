@@ -44,7 +44,6 @@
 #include "data.h"
 #include "rtrtn.h"
 #include "cgauxinf.h"
-#include "dumpio.h"
 #include "dbsyms.h"
 #include "rscconst.h"
 #include "object.h"
@@ -55,11 +54,12 @@
 #include "split.h"
 #include "namelist.h"
 #include "revcond.h"
+#include "dmpinc.h"
+#include "dumpio.h"
+#include "dumpins.h"
+#include "dumptab.h"
 #include "feprotos.h"
 
-
-extern void DumpInsOnly( instruction * );
-extern void DumpGen( opcode_entry * );
 
 extern void             GenIType( uint_8 opcode, uint_8 rt, uint_8 rs, signed_16 immed );
 
@@ -734,9 +734,12 @@ static  bool    encodeThreadDataRef( instruction *ins )
 //    label_handle        tls_index;
 
     op = ins->operands[0];
-    if( op->n.class != N_MEMORY ) return( false );
-    if( op->m.memory_type != CG_FE ) return( false );
-    if( ( FEAttr( op->v.symbol ) & FE_THREAD_DATA ) == 0 ) return( false );
+    if( op->n.class != N_MEMORY )
+        return( false );
+    if( op->m.memory_type != CG_FE )
+        return( false );
+    if( ( FEAttr( op->v.symbol ) & FE_THREAD_DATA ) == 0 )
+        return( false );
 
     /*
      * Put out a sequence that looks like:

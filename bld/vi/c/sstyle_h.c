@@ -163,7 +163,8 @@ void GetHTMLFlags( ss_flags_h *storeFlags )
 
 void InitHTMLFlags( linenum line_no )
 {
-    line_no = line_no;
+    /* unused parameters */ (void)line_no;
+
     flags.inHTMLComment = false;
     flags.inHTMLKeyword = false;
     flags.inString = false;
@@ -172,7 +173,7 @@ void InitHTMLFlags( linenum line_no )
 
 void GetHTMLBlock( ss_block *ss_new, char *start, int line )
 {
-    line = line;
+    /* unused parameters */ (void)line;
 
     if( start[0] == '\0' ) {
         if( firstNonWS == start ) {

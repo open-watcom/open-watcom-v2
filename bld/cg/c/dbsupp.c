@@ -104,12 +104,17 @@ extern  dbg_loc         LocDupl( dbg_loc loc ) {
 extern  offset          LocSimpField( dbg_loc loc ) {
 /***************************************************/
 
-    if( loc == NULL ) return( 0 );
-    if( loc->class != LOC_OPER + LOP_ADD ) return( NO_OFFSET );
+    if( loc == NULL )
+        return( 0 );
+    if( loc->class != LOC_OPER + LOP_ADD )
+        return( NO_OFFSET );
     loc = loc->next;
-    if( loc == NULL ) return( NO_OFFSET );
-    if( loc->next != NULL ) return( NO_OFFSET );
-    if( loc->class != LOC_CONST_1 ) return( NO_OFFSET );
+    if( loc == NULL )
+        return( NO_OFFSET );
+    if( loc->next != NULL )
+        return( NO_OFFSET );
+    if( loc->class != LOC_CONST_1 )
+        return( NO_OFFSET );
     return( loc->u.val );
 }
 
@@ -117,9 +122,12 @@ extern  offset          LocSimpField( dbg_loc loc ) {
 extern  cg_sym_handle   LocSimpStatic( dbg_loc loc ) {
 /****************************************************/
 
-    if( loc == NULL ) return( NULL );
-    if( loc->next != NULL ) return( NULL );
-    if( loc->class != LOC_MEMORY ) return( NULL );
+    if( loc == NULL )
+        return( NULL );
+    if( loc->next != NULL )
+        return( NULL );
+    if( loc->class != LOC_MEMORY )
+        return( NULL );
     return( loc->u.fe_sym );
 }
 
@@ -289,7 +297,8 @@ extern  void _CGAPI DBLocFini( dbg_loc loc )
     owner = &loc;
     for( ;; ) {
         curr = *owner;
-        if( curr == NULL ) break;
+        if( curr == NULL )
+            break;
         curr->use--;
         if( curr->use == 0 ) {
             *owner = curr->next;

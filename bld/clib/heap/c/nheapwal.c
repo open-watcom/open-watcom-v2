@@ -37,67 +37,65 @@
 #include "heap.h"
 #include "heapacc.h"
 
+
+#define FIRST_FRL(h)    ((frlptr)(h + 1))
+
 #if defined(__SMALL_DATA__)
 _WCRTLINK int _heapwalk( struct _heapinfo *entry )
-    {
-        return( _nheapwalk( entry ) );
-    }
+{
+    return( _nheapwalk( entry ) );
+}
 #endif
 
-int __NHeapWalk( struct _heapinfo *entry, mheapptr heapbeg )
-    {
-        frlptr p;
-        frlptr q;
+int __NHeapWalk( struct _heapinfo *entry, mheapptr heap )
+{
+    frlptr frl;
+    frlptr frl_next;
 
-        if( heapbeg == NULL ) {
-            return( _HEAPEMPTY );
-        }
-        p = (frlptr)(entry->_pentry);
-        if( p == NULL ) {
-            p = (frlptr)(heapbeg + 1);
-        } else {    /* advance to next entry */
-            for( heapbeg = __nheapbeg; heapbeg->next != NULL; heapbeg = heapbeg->next ) {
-                if( (PTR)heapbeg <= (PTR)p && (PTR)heapbeg + heapbeg->len > (PTR)p ) {
-                    break;
-                }
-            }
-            q = (frlptr)((PTR)p + MEMBLK_SIZE( p ));
-            if( q <= p ) {
-                return( _HEAPBADNODE );
-            }
-            p = q;
-        }
-        for( ;; ) {
-            if( p->len == END_TAG ) {
-                if( heapbeg->next == NULL ) {
-                    entry->_useflag = _USEDENTRY;
-                    entry->_size    = 0;
-                    entry->_pentry  = NULL;
-                    return( _HEAPEND );
-                } else { // We advance to next miniheapblk
-                    heapbeg = heapbeg->next;
-                    p = (frlptr)(heapbeg + 1);
-                }
-            } else {
+    if( heap == NULL ) {
+        return( _HEAPEMPTY );
+    }
+    frl = (frlptr)(entry->_pentry);
+    if( frl == NULL ) {
+        frl = FIRST_FRL( heap );
+    } else {    /* advance to next entry */
+        for( ; heap->next != NULL; heap = heap->next ) {
+            if( IS_IN_HEAP( frl, heap ) ) {
                 break;
             }
         }
-        entry->_pentry  = p;
-        entry->_useflag = _FREEENTRY;
-        entry->_size    = MEMBLK_SIZE( p );
-        if( IS_MEMBLK_USED( p ) ) {
-            entry->_useflag = _USEDENTRY;
+        frl_next = (frlptr)NEXT_BLK_A( frl );
+        if( frl_next <= frl ) {
+            return( _HEAPBADNODE );
         }
-        return( _HEAPOK );
+        frl = frl_next;
     }
+    for( ; IS_BLK_END( frl ); ) {
+        if( heap->next == NULL ) {
+            entry->_useflag = _USEDENTRY;
+            entry->_size    = 0;
+            entry->_pentry  = NULL;
+            return( _HEAPEND );
+        }
+        // We advance to next miniheapblk
+        heap = heap->next;
+        frl = FIRST_FRL( heap );
+    }
+    entry->_pentry  = frl;
+    entry->_useflag = _FREEENTRY;
+    entry->_size    = GET_BLK_SIZE( frl );
+    if( IS_BLK_INUSE( frl ) ) {
+        entry->_useflag = _USEDENTRY;
+    }
+    return( _HEAPOK );
+}
 
 _WCRTLINK int _nheapwalk( struct _heapinfo *entry )
-    {
-        int     heap_status;
+{
+    int     heap_status;
 
-        _AccessNHeap();
-        heap_status = __NHeapWalk( entry, __nheapbeg );
-        _ReleaseNHeap();
-        return( heap_status );
-    }
-
+    _AccessNHeap();
+    heap_status = __NHeapWalk( entry, __nheapbeg );
+    _ReleaseNHeap();
+    return( heap_status );
+}

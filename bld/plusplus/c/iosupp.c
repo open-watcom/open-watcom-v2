@@ -187,7 +187,7 @@ static const char* extsOut[] =        // extensions for output files
 static char *FNameBuf = NULL;   // file name buffer for output files
 
 char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
-    enum out_file_type typ )    // - extension
+    out_file_type typ )         // - extension
 {
     char *drive;
     char *dir;
@@ -373,7 +373,7 @@ static void makeDirName(        // MAKE FILE NAME (WITHOUT DRIVE)
 
 static bool openSrc(            // ATTEMPT TO OPEN FILE
     char *name,                 // - file name
-    enum file_type typ )        // - type of file being opened
+    src_file_type typ )         // - type of file being opened
 {
     pch_absorb pch_OK;          // - pre-compiled header load status
     FILE *fp;                   // - file pointer
@@ -417,22 +417,26 @@ static bool openSrc(            // ATTEMPT TO OPEN FILE
 #endif
     }
 #ifdef OPT_BR
-    if( might_browse ) switch( typ ) {
-      case FT_SRC :
-      case FT_LIBRARY :
-      case FT_HEADER :
-        BrinfOpenSource( SrcFileCurrent() );
-        break;
+    if( might_browse ) {
+        switch( typ ) {
+        case FT_SRC:
+        case FT_LIBRARY:
+        case FT_HEADER:
+        case FT_HEADER_FORCED:
+        case FT_HEADER_PRE:
+            BrinfOpenSource( SrcFileCurrent() );
+            break;
+        }
     }
 #endif
     return( true );
 }
 
 
-static const char *openExt(     // ATTEMPT TO OPEN FILE (EXT. TO BE APPENDED)
+static const char *openSrcExt(  // ATTEMPT TO OPEN FILE (EXT. TO BE APPENDED)
     const char *ext,            // - extension
     struct path_descr *nd,      // - name descriptor
-    enum file_type typ )        // - type of file being opened
+    src_file_type typ )         // - type of file being opened
 {
     const char  *ret;           // - ret
     char name[_MAX_PATH];       // - buffer for file name
@@ -450,30 +454,42 @@ static const char *openExt(     // ATTEMPT TO OPEN FILE (EXT. TO BE APPENDED)
 static const char *openSrcExts( // ATTEMPT TO OPEN FILE (EXT.S TO BE APPENDED)
     const char **exts,          // - extensions
     struct path_descr *nd,      // - name descriptor
-    enum file_type typ )        // - type of file being opened
+    src_file_type typ )         // - type of file being opened
 {
     const char *ext;            // - current extension
 
     if( nd->ext[0] == '\0' ) {
-        bool doSrc = (!(CompFlags.dont_autogen_ext_src) && (FT_SRC == typ));
-        bool doInc = (!(CompFlags.dont_autogen_ext_inc) && ((FT_HEADER == typ)||(FT_LIBRARY == typ)));
-        bool doExt = (doSrc || doInc);
+        bool    doExt;
 
-        ext = openExt( NULL, nd, typ );
+        ext = openSrcExt( NULL, nd, typ );
 
-        if(( ext == NULL ) && (doExt)) {
-            for( ; ; ) {
+        switch( typ ) {
+        case FT_SRC:
+            doExt = !(CompFlags.dont_autogen_ext_src);
+            break;
+        case FT_HEADER:
+        case FT_HEADER_FORCED:
+        case FT_HEADER_PRE:
+        case FT_LIBRARY:
+            doExt = !(CompFlags.dont_autogen_ext_inc);
+            break;
+        default:
+            doExt = false;
+            break;
+        }
+        if( ( ext == NULL ) && doExt ) {
+            for( ;; ) {
                 ext = *exts++;
-                if( ext == NULL ) 
+                if( ext == NULL )
                     break;
-                ext = openExt( ext, nd, typ );
+                ext = openSrcExt( ext, nd, typ );
                 if( ext != NULL ) {
                     break;
                 }
             }
         }
     } else {
-        ext = openExt( nd->ext, nd, typ );
+        ext = openSrcExt( nd->ext, nd, typ );
     }
     return( ext );
 }
@@ -483,11 +499,11 @@ static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
     const char *path,           // - path
     const char **exts,          // - file extensions
     struct path_descr *fd,      // - file descriptor
-    enum file_type typ )        // - type of file being opened
+    src_file_type typ )         // - type of file being opened
 {
     bool retb = false;          // - return: true ==> opened
     struct path_descr pd;       // - path descriptor
-    char dir[_MAX_PATH*2];      // - new path
+    char dir[_MAX_PATH * 2];    // - new path
     char *pp;                   // - pointer into path
     const char *ext;            // - extension opened
 
@@ -522,7 +538,7 @@ static bool openSrcPath(        // ATTEMPT TO OPEN FILE (PATH TO BE PREPENDED)
 
 static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     struct path_descr *fd,      // - descriptor for file name
-    enum file_type typ )        // - type of search path to use
+    src_file_type typ )         // - type of search path to use
 {
     const char  **paths;        // - optional paths to prepend
     const char  **exts;         // - optional extensions to append
@@ -560,6 +576,8 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
         }
         break;
     case FT_HEADER:
+    case FT_HEADER_FORCED:
+    case FT_HEADER_PRE:
     case FT_LIBRARY:
         exts = extsHdr;
         // have to look for absolute paths
@@ -567,12 +585,12 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
             retb = openSrcPath( "", exts, fd, typ );
             break;
         }
-        if( typ == FT_HEADER && !IS_DIR_SEP( fd->dir[0] ) ) {
+        if( typ != FT_LIBRARY && !IS_DIR_SEP( fd->dir[0] ) ) {
             if( CompFlags.ignore_default_dirs ) {
                 curr = SrcFileCurrent();
                 splitFileName( SrcFileName( curr ), &idescr );
                 _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
-                retb = openSrcPath( bufpth, exts, fd, FT_HEADER );
+                retb = openSrcPath( bufpth, exts, fd, typ );
                 if( retb ) {
                     break;
                 }
@@ -593,7 +611,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
                     _makepath( bufpth, idescr.drv, idescr.dir, NULL, NULL );
                     /*optimization: don't try and open if in previously checked dir*/
                     if( strcmp( bufpth, prevpth ) != 0 ) {
-                        retb = openSrcPath( bufpth, exts, fd, FT_HEADER );
+                        retb = openSrcPath( bufpth, exts, fd, typ );
                         if( retb ) {
                             break;
                         }
@@ -619,7 +637,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
         if( retb ) {
             break;
         }
-        if( typ == FT_HEADER && !CompFlags.ignore_default_dirs && !IS_DIR_SEP( fd->dir[0] ) ) {
+        if( typ != FT_LIBRARY && !CompFlags.ignore_default_dirs && !IS_DIR_SEP( fd->dir[0] ) ) {
             paths = pathHdr;
         }
         break;
@@ -644,10 +662,10 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
     if( retb ) {
         switch( typ ) {
         case FT_CMD:
-            SrcFileCommand();
+            SetSrcFileCommand();
             break;
         case FT_LIBRARY:
-            SrcFileLibrary();
+            SetSrcFileLibrary();
             break;
         }
     }
@@ -657,7 +675,7 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
 
 bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
     const char *file_name,      // - supplied file name
-    enum file_type typ )        // - type of search path to use
+    src_file_type typ )         // - type of search path to use
 {
     struct path_descr   fd;     // - descriptor for file name
 
@@ -666,9 +684,11 @@ bool IoSuppOpenSrc(             // OPEN A SOURCE FILE (PRIMARY,HEADER)
      && file_name[0] != '\0' ) {
         TOKEN_LOCN locn;
         switch( typ ) {
-          case FT_SRC :
-          case FT_HEADER :
-          case FT_LIBRARY :
+        case FT_SRC:
+        case FT_HEADER:
+        case FT_HEADER_FORCED:
+        case FT_HEADER_PRE:
+        case FT_LIBRARY:
             SrcFileGetTokenLocn( &locn );
             BrinfIncludeSource( file_name, &locn );
             break;
@@ -906,7 +926,8 @@ static void setPaths(           // SET PATHS (IF THEY EXIST)
 static void ioSuppInit(         // INITIALIZE IO SUPPORT
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     outFileChecked = 0;
     tempBlock = 0;
     tempname = NULL;
@@ -923,7 +944,8 @@ static void ioSuppInit(         // INITIALIZE IO SUPPORT
 static void ioSuppFini(         // FINALIZE IO SUPPORT
     INITFINI* defn )            // - definition
 {
-    defn = defn;
+    /* unused parameters */ (void)defn;
+
     if( temphandle != -1 ) {
         close( temphandle );
         if( tempname != NULL ) {

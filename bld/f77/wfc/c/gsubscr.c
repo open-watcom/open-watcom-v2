@@ -50,7 +50,7 @@ void    GBegSubScr( itnode *array_node ) {
 
 // Start a subscript operation.
 
-    array_node = array_node;
+    /* unused parameters */ (void)array_node;
 }
 
 

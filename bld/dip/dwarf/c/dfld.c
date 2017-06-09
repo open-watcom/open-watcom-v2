@@ -200,7 +200,8 @@ static void DWRRead( void *_f, dr_section sect, void *buff, size_t size )
     imp_image       f = _f;
 //    unsigned long   base;
 
-    sect = sect;
+    /* unused parameters */ (void)sect;
+
 //    base = f->dwarf->sect_offsets[sect];
     DCRead( f->sym_fid, buff, size );
 }
@@ -338,7 +339,8 @@ static bool AModHash( drmem_hdl sym, void *_ii, dr_search_context *cont )
 //    unsigned            len;
     char                buff[256];
 
-    cont = cont;
+    /* unused parameters */ (void)cont;
+
     if( !DRIsStatic( sym ) ) {
 //        len = DRGetNameBuff( sym, buff, sizeof( buff ) );
         DRGetNameBuff( sym, buff, sizeof( buff ) );
@@ -352,7 +354,8 @@ static walk_result ModGlbSymHash( imp_image_handle *ii, imp_mod_handle im, void 
 /**********************************************************************************/
 // Add module's global syms to the name hash
 {
-    d = d;
+    /* unused parameters */ (void)d;
+
     DRWalkModFunc( IMH2MODI( ii, im )->cu_tag, false, AModHash, ii );   /* load hash */
     return( WR_CONTINUE );
 }

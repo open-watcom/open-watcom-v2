@@ -42,12 +42,27 @@
 #include "wde_rc.h"
 #include "wdecctl.h"
 #include "wdefstat.h"
+#include "wdedispa.h"
+
+
+/****************************************************************************/
+/* macro definitions                                                        */
+/****************************************************************************/
+
+#define pick_ACTS(o) \
+    pick_ACTION_DESTROY(o,pick) \
+    pick_ACTION_COPY(o,pick) \
+    pick_ACTION_VALIDATE_ACTION(o,pick) \
+    pick_ACTION_IDENTIFY(o,pick) \
+    pick_ACTION_GET_WINDOW_CLASS(o,pick) \
+    pick_ACTION_DEFINE(o,pick) \
+    pick_ACTION_GET_WND_PROC(o,pick)
 
 /****************************************************************************/
 /* type definitions                                                         */
 /****************************************************************************/
 typedef struct {
-    FARPROC     dispatcher;
+    DISPATCH_FN *dispatcher;
     OBJPTR      object_handle;
     OBJ_ID      object_id;
     OBJPTR      control;
@@ -56,47 +71,42 @@ typedef struct {
 /****************************************************************************/
 /* external function prototypes                                             */
 /****************************************************************************/
+
+/* Local Window callback functions prototypes */
 WINEXPORT LRESULT CALLBACK WdeStaticSuperClassProc( HWND, UINT, WPARAM, LPARAM );
-WINEXPORT BOOL    CALLBACK WdeStaticDispatcher( ACTION, WdeStaticObject *, void *, void * );
+WINEXPORT bool    CALLBACK WdeStaticDispatcher( ACTION_ID, OBJPTR, void *, void * );
 
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
 static OBJPTR   WdeMakeStatic( OBJPTR, RECT *, OBJPTR, DialogStyle, char *, OBJ_ID );
 static OBJPTR   WdeStatCreate( OBJPTR, RECT *, OBJPTR, OBJ_ID, WdeDialogBoxControl * );
-static BOOL     WdeStaticDestroy( WdeStaticObject *, BOOL *, void * );
-static BOOL     WdeStaticValidateAction( WdeStaticObject *, ACTION *, void * );
-static BOOL     WdeStaticCopyObject( WdeStaticObject *, WdeStaticObject **, WdeStaticObject * );
-static BOOL     WdeStaticIdentify( WdeStaticObject *, OBJ_ID *, void * );
-static BOOL     WdeStaticGetWndProc( WdeStaticObject *, WNDPROC *, void * );
-static BOOL     WdeStaticGetWindowClass( WdeStaticObject *, char **, void * );
-static BOOL     WdeStaticDefine( WdeStaticObject *, POINT *, void * );
 static void     WdeStaticSetDefineInfo( WdeDefineObjectInfo *, HWND );
 static void     WdeStaticGetDefineInfo( WdeDefineObjectInfo *, HWND );
+
+#define pick(e,n,c) static bool WdeStatic ## n ## c;
+    pick_ACTS( WdeStaticObject )
+#undef pick
 
 /****************************************************************************/
 /* static variables                                                         */
 /****************************************************************************/
 static HINSTANCE                WdeApplicationInstance;
-static FARPROC                  WdeStaticDispatch;
+static DISPATCH_FN              *WdeStaticDispatch;
 static WdeDialogBoxControl      *WdeDefaultStatic = NULL;
 static int                      WdeStaticWndExtra;
 static WNDPROC                  WdeOriginalStaticProc;
 //static WNDPROC                WdeStaticProc;
 
 static DISPATCH_ITEM WdeStaticActions[] = {
-    { DESTROY,          (DISPATCH_RTN *)WdeStaticDestroy        },
-    { COPY,             (DISPATCH_RTN *)WdeStaticCopyObject     },
-    { VALIDATE_ACTION,  (DISPATCH_RTN *)WdeStaticValidateAction },
-    { IDENTIFY,         (DISPATCH_RTN *)WdeStaticIdentify       },
-    { GET_WINDOW_CLASS, (DISPATCH_RTN *)WdeStaticGetWindowClass },
-    { DEFINE,           (DISPATCH_RTN *)WdeStaticDefine         },
-    { GET_WND_PROC,     (DISPATCH_RTN *)WdeStaticGetWndProc     }
+    #define pick(e,n,c) {e, (DISPATCH_RTN *)WdeStatic ## n},
+    pick_ACTS( WdeStaticObject )
+    #undef pick
 };
 
 #define MAX_ACTIONS     (sizeof( WdeStaticActions ) / sizeof( DISPATCH_ITEM ))
 
-WINEXPORT OBJPTR CALLBACK WdeFrameCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeFrameCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeStatic( parent, obj_rect, handle,
@@ -107,7 +117,7 @@ WINEXPORT OBJPTR CALLBACK WdeFrameCreate( OBJPTR parent, RECT *obj_rect, OBJPTR 
     }
 }
 
-WINEXPORT OBJPTR CALLBACK WdeTextCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeTextCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeStatic( parent, obj_rect, handle,
@@ -118,7 +128,7 @@ WINEXPORT OBJPTR CALLBACK WdeTextCreate( OBJPTR parent, RECT *obj_rect, OBJPTR h
     }
 }
 
-WINEXPORT OBJPTR CALLBACK WdeIconCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
+OBJPTR CALLBACK WdeIconCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle )
 {
     if( handle == NULL ) {
         return( WdeMakeStatic( parent, obj_rect, handle,
@@ -167,10 +177,10 @@ OBJPTR WdeStatCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    new->dispatcher = WdeStaticDispatch;
+    OBJ_DISPATCHER_SET( new, WdeStaticDispatch );
     new->object_id = id;
     if( handle == NULL ) {
-        new->object_handle = new;
+        new->object_handle = (OBJPTR)new;
     } else {
         new->object_handle = handle;
     }
@@ -183,24 +193,24 @@ OBJPTR WdeStatCreate( OBJPTR parent, RECT *obj_rect, OBJPTR handle,
         return( NULL );
     }
 
-    if( !Forward( (OBJPTR)new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
+    if( !Forward( new->object_handle, SET_OBJECT_INFO, info, NULL ) ) {
         WdeWriteTrail( "WdeStaticCreate: SET_OBJECT_INFO failed!" );
-        Destroy( new->control, FALSE );
+        Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
 
-    if( !Forward( (OBJPTR)new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
+    if( !Forward( new->object_handle, CREATE_WINDOW, NULL, NULL ) ) {
         WdeWriteTrail( "WdeStaticCreate: CREATE_WINDOW failed!" );
-        Destroy( new->control, FALSE );
+        Destroy( new->control, false );
         WRMemFree( new );
         return( NULL );
     }
 
-    return( new );
+    return( (OBJPTR)new );
 }
 
-WINEXPORT BOOL CALLBACK WdeStaticDispatcher( ACTION act, WdeStaticObject *obj, void *p1, void *p2 )
+bool CALLBACK WdeStaticDispatcher( ACTION_ID act, OBJPTR obj, void *p1, void *p2 )
 {
     int     i;
 
@@ -212,7 +222,7 @@ WINEXPORT BOOL CALLBACK WdeStaticDispatcher( ACTION act, WdeStaticObject *obj, v
         }
     }
 
-    return( Forward( (OBJPTR)obj->control, act, p1, p2 ) );
+    return( Forward( ((WdeStaticObject *)obj)->control, act, p1, p2 ) );
 }
 
 bool WdeStaticInit( bool first )
@@ -246,7 +256,7 @@ bool WdeStaticInit( bool first )
     WdeDefaultStatic = WdeAllocDialogBoxControl();
     if( WdeDefaultStatic == NULL ) {
         WdeWriteTrail( "WdeStaticInit: Alloc of control failed!" );
-        return( FALSE );
+        return( false );
     }
 
     /* set up the default control structure */
@@ -260,33 +270,32 @@ bool WdeStaticInit( bool first )
     SETCTL_TEXT( WdeDefaultStatic, NULL );
     SETCTL_CLASSID( WdeDefaultStatic, ResNumToControlClass( CLASS_STATIC ) );
 
-    WdeStaticDispatch = MakeProcInstance( (FARPROC)WdeStaticDispatcher,
-                                          WdeGetAppInstance() );
-    return( TRUE );
+    WdeStaticDispatch = MakeProcInstance_DISPATCHER( WdeStaticDispatcher, WdeGetAppInstance() );
+    return( true );
 }
 
 void WdeStaticFini( void )
 {
     WdeFreeDialogBoxControl( &WdeDefaultStatic );
-    FreeProcInstance( WdeStaticDispatch );
+    FreeProcInstance_DISPATCHER( WdeStaticDispatch );
 }
 
-BOOL WdeStaticDestroy( WdeStaticObject *obj, BOOL *flag, void *p2 )
+bool WdeStaticDestroy( WdeStaticObject *obj, bool *flag, bool *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     if( !Forward( obj->control, DESTROY, flag, NULL ) ) {
         WdeWriteTrail( "WdeStaticDestroy: Control DESTROY failed" );
-        return( FALSE );
+        return( false );
     }
 
     WRMemFree( obj );
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeStaticValidateAction( WdeStaticObject *obj, ACTION *act, void *p2 )
+bool WdeStaticValidateAction( WdeStaticObject *obj, ACTION_ID *act, void *p2 )
 {
     int     i;
 
@@ -295,33 +304,32 @@ BOOL WdeStaticValidateAction( WdeStaticObject *obj, ACTION *act, void *p2 )
 
     for( i = 0; i < MAX_ACTIONS; i++ ) {
         if( WdeStaticActions[i].id == *act ) {
-            return( TRUE );
+            return( true );
         }
     }
 
-    return( ValidateAction( (OBJPTR)obj->control, *act, p2 ) );
+    return( ValidateAction( obj->control, *act, p2 ) );
 }
 
-BOOL WdeStaticCopyObject( WdeStaticObject *obj, WdeStaticObject **new,
-                          WdeStaticObject *handle )
+bool WdeStaticCopyObject( WdeStaticObject *obj, WdeStaticObject **new, OBJPTR handle )
 {
     if( new == NULL ) {
         WdeWriteTrail( "WdeStaticCopyObject: Invalid new object!" );
-        return( FALSE );
+        return( false );
     }
 
     *new = (WdeStaticObject *)WRMemAlloc( sizeof( WdeStaticObject ) );
 
     if( *new == NULL ) {
         WdeWriteTrail( "WdeStaticCopyObject: Object malloc failed" );
-        return( FALSE );
+        return( false );
     }
 
-    (*new)->dispatcher = obj->dispatcher;
+    OBJ_DISPATCHER_COPY( *new, obj );
     (*new)->object_id = obj->object_id;
 
     if( handle == NULL ) {
-        (*new)->object_handle = *new;
+        (*new)->object_handle = (OBJPTR)*new;
     } else {
         (*new)->object_handle = handle;
     }
@@ -329,23 +337,23 @@ BOOL WdeStaticCopyObject( WdeStaticObject *obj, WdeStaticObject **new,
     if( !CopyObject( obj->control, &(*new)->control, (*new)->object_handle ) ) {
         WdeWriteTrail( "WdeStaticCopyObject: Control not created!" );
         WRMemFree( *new );
-        return( FALSE );
+        return( false );
     }
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeStaticIdentify( WdeStaticObject *obj, OBJ_ID *id, void *p2 )
+bool WdeStaticIdentify( WdeStaticObject *obj, OBJ_ID *id, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( p2 );
 
     *id = obj->object_id;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeStaticGetWndProc( WdeStaticObject *obj, WNDPROC *proc, void *p2 )
+bool WdeStaticGetWndProc( WdeStaticObject *obj, WNDPROC *proc, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -353,10 +361,10 @@ BOOL WdeStaticGetWndProc( WdeStaticObject *obj, WNDPROC *proc, void *p2 )
 
     *proc = WdeStaticSuperClassProc;
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeStaticGetWindowClass( WdeStaticObject *obj, char **class, void *p2 )
+bool WdeStaticGetWindowClass( WdeStaticObject *obj, char **class, void *p2 )
 {
     /* touch unused vars to get rid of warning */
     _wde_touch( obj );
@@ -364,10 +372,10 @@ BOOL WdeStaticGetWindowClass( WdeStaticObject *obj, char **class, void *p2 )
 
     *class = "static";
 
-    return( TRUE );
+    return( true );
 }
 
-BOOL WdeStaticDefine( WdeStaticObject *obj, POINT *pnt, void *p2 )
+bool WdeStaticDefine( WdeStaticObject *obj, POINT *pnt, void *p2 )
 {
     WdeDefineObjectInfo  o_info;
 
@@ -639,7 +647,7 @@ void WdeStaticGetDefineInfo( WdeDefineObjectInfo *o_info, HWND hDlg )
     WdeEXSetDefineInfo( o_info, hDlg );
 }
 
-WINEXPORT LRESULT CALLBACK WdeStaticSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK WdeStaticSuperClassProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
     if( !WdeProcessMouse( hWnd, message, wParam, lParam ) ) {
         return( CallWindowProc( WdeOriginalStaticProc, hWnd, message, wParam, lParam ) );
