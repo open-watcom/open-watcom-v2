@@ -119,7 +119,7 @@ static const char *getFrameModifier( orl_reloc *rel )
 orl_return CreateNamedLabelRef( orl_reloc *rel )
 {
     ref_entry           ref;
-    hash_data *         data_ptr;
+    hash_data           *data_ptr;
     ref_list            sec_ref_list;
 
     if( rel->type == ORL_RELOC_TYPE_PAIR )
@@ -134,10 +134,10 @@ orl_return CreateNamedLabelRef( orl_reloc *rel )
     if( IsMasmOutput() && rel->frame ) {
         ref->frame = getFrameModifier( rel );
     }
-    data_ptr = HashTableQuery( SymbolToLabelTable, (hash_value) rel->symbol );
+    data_ptr = HashTableQuery( SymbolToLabelTable, rel->symbol );
     if( data_ptr != NULL ) {
         ref->label = (label_entry)*data_ptr;
-        data_ptr = HashTableQuery( HandleToRefListTable, (hash_value)rel->section );
+        data_ptr = HashTableQuery( HandleToRefListTable, rel->section );
         if( data_ptr != NULL ) {
             sec_ref_list = (ref_list)*data_ptr;
             addRef( sec_ref_list, ref );
@@ -161,9 +161,10 @@ orl_return DealWithRelocSection( orl_sec_handle shnd )
     return( error );
 }
 
-return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc ) {
+return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc )
+{
     ref_entry           ref;
-    hash_data *         data_ptr;
+    hash_data           *data_ptr;
     ref_list            sec_ref_list;
 
     ref = MemAlloc( sizeof( ref_entry_struct ) );
@@ -175,8 +176,8 @@ return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_se
     ref->label = entry;
     ref->type = ORL_RELOC_TYPE_JUMP;
     ref->addend = 0;
-    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value) shnd );
-    if( data_ptr ) {
+    data_ptr = HashTableQuery( HandleToRefListTable, shnd );
+    if( data_ptr != NULL ) {
         sec_ref_list = (ref_list) *data_ptr;
         addRef( sec_ref_list, ref );
     } else {
@@ -190,7 +191,7 @@ return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_se
 return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc )
 {
     ref_entry           ref;
-    hash_data *         data_ptr;
+    hash_data           *data_ptr;
     ref_list            sec_ref_list;
 
     ref = MemAlloc( sizeof( ref_entry_struct ) );
@@ -201,9 +202,8 @@ return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, dis_s
     ref->offset = loc;
     ref->label = entry;
     ref->type = ORL_RELOC_TYPE_MAX + 1;
-    ref->addend = 0;
-    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value)shnd );
-    if( data_ptr ) {
+    data_ptr = HashTableQuery( HandleToRefListTable, shnd );
+    if( data_ptr != NULL ) {
         sec_ref_list = (ref_list)*data_ptr;
         addRef( sec_ref_list, ref );
     } else {

@@ -83,10 +83,11 @@ void CreatePublicsArray( void )
     }
 }
 
-void PrintPublics( void ) {
+void PrintPublics( void )
+{
     int                 loop;
     label_entry         entry;
-    hash_data *         data_ptr;
+    hash_data           *data_ptr;
     section_ptr         sec;
 
     // fixme:  data labels get a _ in front, others one after ??
@@ -102,10 +103,10 @@ void PrintPublics( void ) {
     for( loop = 0; loop < Publics.number; loop++ ) {
         entry = Publics.public_symbols[loop];
         BufferConcat( entry->label.name );
-        data_ptr = HashTableQuery( HandleToSectionTable, (hash_value) entry->shnd );
+        data_ptr = HashTableQuery( HandleToSectionTable, entry->shnd );
         // fixme: what is the proper behavour if no section found??
-        if( data_ptr ) {
-            sec = (section_ptr) *data_ptr;
+        if( data_ptr != NULL ) {
+            sec = (section_ptr)*data_ptr;
             BufferAlignToTab( SECTION_TAB_POS );
             BufferConcat( sec->name );
         }

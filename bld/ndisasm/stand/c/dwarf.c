@@ -58,8 +58,8 @@ static void fixupLines( uint_8 *relocContents, orl_sec_handle sec )
     ref_entry                   r_entry;
     int                         i;
 
-    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value)sec );
-    if( data_ptr ) {
+    data_ptr = HashTableQuery( HandleToRefListTable, sec );
+    if( data_ptr != NULL ) {
         sec_ref_list = (ref_list)*data_ptr;
     } else {
         sec_ref_list = NULL;

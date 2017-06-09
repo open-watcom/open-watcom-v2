@@ -40,10 +40,10 @@ extern void             BufferConcat( const char * );
 extern void             BufferQuoteName( const char * );
 extern void             BufferConcatNL( void );
 extern size_t           BufferStore( const char * format, ... );
-extern void             BufferHex( unsigned prec, unsigned long value );
+extern void             BufferHex( unsigned prec, dis_value value );
 extern void             BufferPrint( void );
 extern size_t           BufferMsg( int );
 extern void             BufferAlignToTab( unsigned );
-extern void             FmtHexNum( char *buff, unsigned prec, unsigned long value, bool no_prefix );
+extern void             FmtHexNum( char *buff, unsigned prec, dis_value value, bool no_prefix );
 
 #endif

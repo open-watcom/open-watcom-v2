@@ -72,15 +72,15 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op, char *buff, si
     val = dd->addr;
     switch( ins->op[op].type & DO_MASK ) {
     case DO_RELATIVE:
-        val.mach.offset += ins->op[op].value;
+        val.mach.offset += ins->op[op].value.s._32[I64LO32];
         //NYI: 64 bit
         MCAddrToString( val, AXPT_N32_PTR, MLK_CODE, buff, buff_size );
         break;
     case DO_IMMED:
     case DO_ABSOLUTE:
     case DO_MEMORY_ABS:
-        MCTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( ins->op[0].value ) ), &mti );
-        MCTypeToString( dd->radix, &mti, &ins->op[op].value, buff, &buff_size );
+        MCTypeInfoForHost( MTK_INTEGER, SIGNTYPE_SIZE( sizeof( ins->op[0].value.s._32[I64LO32] ) ), &mti );
+        MCTypeToString( dd->radix, &mti, &ins->op[op].value.s._32[I64LO32], buff, &buff_size );
         break;
     }
     return( strlen( buff ) );
@@ -293,32 +293,32 @@ mad_disasm_control DisasmControl( mad_disasm_data *dd, const mad_registers *mr )
     case DI_AXP_RET:
         return( MDC_RET | MDC_TAKEN );
     case DI_AXP_BR:
-        return( dd->ins.op[1].value < 0
+        return( dd->ins.op[1].value.s._32[I64LO32] < 0
                         ? (MDC_JUMP | MDC_TAKEN_BACK)
                         : (MDC_JUMP | MDC_TAKEN_FORWARD) );
     case DI_AXP_FBEQ:
         if( !Cond( dd, mr, DI_AXP_BEQ ) ) return( MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_NOT );
-        return( dd->ins.op[1].value < 0
+        return( dd->ins.op[1].value.s._32[I64LO32] < 0
                         ? (MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_BACK)
                         : (MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_FORWARD) );
     case DI_AXP_FBLE:
         if( !Cond( dd, mr, DI_AXP_BLE ) ) return( MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_NOT );
-        return( dd->ins.op[1].value < 0
+        return( dd->ins.op[1].value.s._32[I64LO32] < 0
                         ? (MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_BACK)
                         : (MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_FORWARD) );
     case DI_AXP_FBNE:
         if( !Cond( dd, mr, DI_AXP_BNE ) ) return( MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_NOT );
-        return( dd->ins.op[1].value < 0
+        return( dd->ins.op[1].value.s._32[I64LO32] < 0
                         ? (MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_BACK)
                         : (MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_FORWARD) );
     case DI_AXP_FBGE:
         if( !Cond( dd, mr, DI_AXP_BGE ) ) return( MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_NOT );
-        return( dd->ins.op[1].value < 0
+        return( dd->ins.op[1].value.s._32[I64LO32] < 0
                         ? (MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_BACK)
                         : (MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_FORWARD) );
     case DI_AXP_FBGT:
         if( !Cond( dd, mr, DI_AXP_BGT ) ) return( MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_NOT );
-        return( dd->ins.op[1].value < 0
+        return( dd->ins.op[1].value.s._32[I64LO32] < 0
                         ? (MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_BACK)
                         : (MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_FORWARD) );
     case DI_AXP_BLBC:
@@ -330,7 +330,7 @@ mad_disasm_control DisasmControl( mad_disasm_data *dd, const mad_registers *mr )
     case DI_AXP_BGE:
     case DI_AXP_BGT:
         if( !Cond( dd, mr, dd->ins.type ) ) return( MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_NOT );
-        return( dd->ins.op[1].value < 0
+        return( dd->ins.op[1].value.s._32[I64LO32] < 0
                         ? (MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_BACK)
                         : (MDC_JUMP | MDC_CONDITIONAL | MDC_TAKEN_FORWARD) );
     case DI_AXP_CMOVEQ:
@@ -399,7 +399,7 @@ mad_status MADIMPENTRY( DisasmInsNext )( mad_disasm_data *dd, const mad_register
     case MDC_JUMP:
     case MDC_CALL:
     case MDC_RET:
-        new = dd->ins.op[1].value;
+        new = dd->ins.op[1].value.s._32[I64LO32];
         if( dd->ins.op[1].type == DO_RELATIVE ) {
             new += mr->axp.pal.nt.fir.u._32[0];
         }
@@ -427,7 +427,7 @@ walk_result MADIMPENTRY( DisasmMemRefWalk )( mad_disasm_data *dd, MI_MEMREF_WALK
     }
     a = dd->addr;
     for( i = 0; i < dd->ins.num_ops; ++i ) {
-        a.mach.offset = dd->ins.op[i].value;
+        a.mach.offset = dd->ins.op[i].value.s._32[I64LO32];
         switch( dd->ins.op[i].type ) {
         case DO_MEMORY_REL:
             a.mach.offset += dd->addr.mach.offset;

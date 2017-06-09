@@ -190,7 +190,7 @@ static label_entry addLabel( label_list sec_label_list, label_entry entry, orl_s
     }
     // add entry to list
     if( sym_hnd != NULL ) {
-        HashTableInsert( SymbolToLabelTable, (hash_value) sym_hnd, (hash_data) entry );
+        HashTableInsert( SymbolToLabelTable, sym_hnd, (hash_data)entry );
     }
     return( entry );
 }
@@ -275,7 +275,7 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
     }
     labelNameAlloc( entry, label_name );
 
-    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value)entry->shnd );
+    data_ptr = HashTableQuery( HandleToLabelListTable, entry->shnd );
     if( data_ptr == NULL ) {
         // error!!!! the label list should have been created
         FreeLabel( entry );
@@ -314,7 +314,7 @@ void CreateUnnamedLabel( orl_sec_handle shnd, dis_sec_offset loc, unnamed_label_
     entry->type = LTYP_UNNAMED;
     entry->label.number = 0;
     entry->shnd = shnd;
-    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value)shnd );
+    data_ptr = HashTableQuery( HandleToLabelListTable, shnd );
     if( data_ptr != NULL ) {
         sec_label_list = (label_list)*data_ptr;
         entry = addLabel( sec_label_list, entry, 0 );
@@ -341,7 +341,7 @@ void CreateAbsoluteLabel( orl_sec_handle shnd, dis_sec_offset loc, unnamed_label
     entry->type = LTYP_ABSOLUTE;
     entry->label.number = 0;
     entry->shnd = shnd;
-    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value)shnd );
+    data_ptr = HashTableQuery( HandleToLabelListTable, shnd );
     if( data_ptr != NULL ) {
         sec_label_list = (label_list)*data_ptr;
         entry = addLabel( sec_label_list, entry, 0 );

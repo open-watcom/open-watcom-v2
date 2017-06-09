@@ -377,7 +377,7 @@ static int HeuristicTraceBack(
         // Check for ADD SP,n right after current ip and adjust SP if its there
         // because it must be popping parms
         if( dd.ins.type == DI_X86_add3 && ConstOp( dd.ins.op[OP_2] ) && IsSPReg( dd.ins.op[OP_1] ) ){
-            sp_value.mach.offset += dd.ins.op[ OP_2 ].value;
+            sp_value.mach.offset += dd.ins.op[ OP_2 ].value.s._32[I64LO32];
         }
         // Run through code from the known symbol until and collect prolog info
         word_size = Is32BitSegment ? 4 : 2;
@@ -393,12 +393,12 @@ static int HeuristicTraceBack(
             case DI_INVALID:
                 return( 0 );
             case DI_X86_call3:
-                jmplabel = ToSegStr( dd.ins.op[ OP_1 ].value, dd.ins.op[ OP_1 ].extra, 0 );
+                jmplabel = ToSegStr( dd.ins.op[ OP_1 ].value.s._32[I64LO32], dd.ins.op[ OP_1 ].extra, 0 );
                 if( IdentifyFunc( jmplabel, &sp_adjust ) )
                     continue;
                 break;
             case DI_X86_call:
-                jmplabel = JmpLabel( dd.ins.op[ OP_1 ].value, 0 );
+                jmplabel = JmpLabel( dd.ins.op[ OP_1 ].value.s._32[I64LO32], 0 );
                 if( IdentifyFunc( jmplabel, &sp_adjust ) )
                     continue;
                 break;
@@ -408,7 +408,7 @@ static int HeuristicTraceBack(
                 bp_to_ra_offset = sp_adjust; // mov bp,sp
                 found_mov_bp_sp = 1;
                 saved_bp_loc = 0; // 0[bp]
-                sp_adjust -= dd.ins.op[ OP_1 ].value; // sub sp,n
+                sp_adjust -= dd.ins.op[ OP_1 ].value.s._32[I64LO32]; // sub sp,n
                 break;
             case DI_X86_inc2:
                 if( IsBPReg( dd.ins.op[ OP_1 ] ) ) {
@@ -447,15 +447,15 @@ static int HeuristicTraceBack(
                 }
                 continue;
             case DI_X86_sub:
-                dd.ins.op[ OP_2 ].value = -dd.ins.op[ OP_2 ].value;
+                dd.ins.op[ OP_2 ].value.s._32[I64LO32] = -dd.ins.op[ OP_2 ].value.s._32[I64LO32];
             case DI_X86_add:
                 if( !ConstOp( dd.ins.op[ OP_2 ] ) )
                     break;
                 if( IsSPReg( dd.ins.op[ OP_1 ] ) ) {
-                    sp_adjust += dd.ins.op[ OP_2 ].value;
+                    sp_adjust += dd.ins.op[ OP_2 ].value.s._32[I64LO32];
                     continue;
                 } else if( IsBPReg( dd.ins.op[ OP_1 ] ) ) {
-                    bp_adjust += dd.ins.op[ OP_2 ].value;
+                    bp_adjust += dd.ins.op[ OP_2 ].value.s._32[I64LO32];
                     continue;
                 }
                 break;

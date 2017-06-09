@@ -250,7 +250,7 @@ static void printMasmHeader( section_ptr sec )
     orl_sec_type        type;
     orl_sec_frame       frame;
     orl_sec_combine     combine;
-    orl_sec_size        size;
+    dis_sec_size        size;
     const char          *name;
     const char          *class;
     const char          *gname;
@@ -450,7 +450,7 @@ void PrintLinePrefixData( unsigned_8 *data, dis_sec_offset off, dis_sec_offset t
 
 
 static return_val disassembleSection( section_ptr sec, unsigned_8 *contents,
-                orl_sec_size size, unsigned pass )
+                dis_sec_size size, unsigned pass )
 {
     hash_data                   *data_ptr;
     label_list                  sec_label_list;
@@ -459,14 +459,14 @@ static return_val disassembleSection( section_ptr sec, unsigned_8 *contents,
     externs                     sec_externs;
     num_errors                  disassembly_errors;
 
-    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) sec->shnd );
-    if( data_ptr ) {
+    data_ptr = HashTableQuery( HandleToLabelListTable, sec->shnd );
+    if( data_ptr != NULL ) {
         sec_label_list = (label_list)*data_ptr;
     } else {
         sec_label_list = NULL;
     }
-    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value) sec->shnd );
-    if( data_ptr ) {
+    data_ptr = HashTableQuery( HandleToRefListTable, sec->shnd );
+    if( data_ptr != NULL ) {
         sec_ref_list = (ref_list)*data_ptr;
     } else {
         sec_ref_list = NULL;
@@ -545,7 +545,7 @@ static label_entry dumpLabel( label_entry l_entry, section_ptr sec,
 }
 
 static dis_sec_offset checkForDupLines( unsigned_8 *contents, dis_sec_offset loop,
-                                        orl_sec_size size, label_entry l_entry,
+                                        dis_sec_size size, label_entry l_entry,
                                         ref_entry r_entry )
 {
     unsigned_8                  *cmp;
@@ -621,7 +621,7 @@ void DumpDataFromSection( unsigned_8 *contents, dis_sec_offset start,
         PrintLinePrefixData( contents, loop, loop + amount, 1, 16 );
         BufferConcat( " " );
         if( r_entry != NULL && r_entry->offset == loop ) {
-            HandleRefInData( r_entry, &(contents[loop]), true );
+            HandleRefInData( r_entry, contents + loop, true );
             loop += amount;
         } else {
             for( loop2 = 0; loop2 < amount; loop2++, loop++ ) {
@@ -647,7 +647,7 @@ void DumpDataFromSection( unsigned_8 *contents, dis_sec_offset start,
     *reference_entry = r_entry;
 }
 
-static void dumpSection( section_ptr sec, unsigned_8 *contents, orl_sec_size size, unsigned pass )
+static void dumpSection( section_ptr sec, unsigned_8 *contents, dis_sec_size size, unsigned pass )
 {
     hash_data                   *data_ptr;
     label_list                  sec_label_list;
@@ -656,7 +656,7 @@ static void dumpSection( section_ptr sec, unsigned_8 *contents, orl_sec_size siz
     ref_entry                   r_entry;
 
     /* Obtain the Symbol Table */
-    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value)sec->shnd );
+    data_ptr = HashTableQuery( HandleToLabelListTable, sec->shnd );
     if( data_ptr != NULL ) {
         sec_label_list = (label_list)*data_ptr;
         l_entry = sec_label_list->first;
@@ -666,7 +666,7 @@ static void dumpSection( section_ptr sec, unsigned_8 *contents, orl_sec_size siz
     }
 
     /* Obtain the reloc table */
-    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value)sec->shnd );
+    data_ptr = HashTableQuery( HandleToRefListTable, sec->shnd );
     r_entry = NULL;
     if( data_ptr != NULL ) {
         sec_ref_list = (ref_list)*data_ptr;
@@ -692,7 +692,7 @@ static void dumpSection( section_ptr sec, unsigned_8 *contents, orl_sec_size siz
     BufferPrint();
 }
 
-static void bssSection( section_ptr sec, orl_sec_size size, unsigned pass )
+static void bssSection( section_ptr sec, dis_sec_size size, unsigned pass )
 {
     hash_data           *data_ptr;
     label_list          sec_label_list;
@@ -705,9 +705,9 @@ static void bssSection( section_ptr sec, orl_sec_size size, unsigned pass )
     is32bit = ( size >= 0x10000 );
 
     /* Obtain the Symbol Table */
-    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) sec->shnd );
-    if( data_ptr ) {
-        sec_label_list = (label_list) *data_ptr;
+    data_ptr = HashTableQuery( HandleToLabelListTable, sec->shnd );
+    if( data_ptr != NULL ) {
+        sec_label_list = (label_list)*data_ptr;
     } else {
         sec_label_list = NULL;
     }
@@ -744,7 +744,7 @@ static void bssSection( section_ptr sec, orl_sec_size size, unsigned pass )
 
 static return_val DealWithSection( section_ptr sec, unsigned pass )
 {
-    orl_sec_size        size;
+    dis_sec_size        size;
     unsigned_8          *contents;
     return_val          error = RC_OKAY;
 
@@ -797,14 +797,14 @@ static void numberUnnamedLabels( label_entry l_entry )
 static hash_table emitGlobls( void )
 {
     section_ptr         sec;
-    hash_data *         data_ptr;
+    hash_data           *data_ptr;
     label_list          sec_label_list;
     label_entry         l_entry;
     char                *globl;
     hash_table          hash;
     char                *name;
 
-    hash = HashTableCreate( TMP_TABLE_SIZE, HASH_STRING, (hash_table_comparison_func)strcmp );
+    hash = HashTableCreate( TMP_TABLE_SIZE, HASH_STRING );
     if( hash == NULL )
         return( NULL );
 
@@ -815,20 +815,18 @@ static hash_table emitGlobls( void )
     }
 
     for( sec = Sections.first; sec != NULL; sec = sec->next ) {
-        data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) sec->shnd );
+        data_ptr = HashTableQuery( HandleToLabelListTable, sec->shnd );
         if( data_ptr != NULL ) {
             sec_label_list = (label_list) *data_ptr;
             if( sec_label_list != NULL ) {
                 for( l_entry = sec_label_list->first; l_entry != NULL; l_entry = l_entry->next ) {
                     name = l_entry->label.name;
-                    if( ( l_entry->binding != ORL_SYM_BINDING_LOCAL ) &&
-                        (l_entry->type == LTYP_NAMED) &&
-                        strcmp( name, sec->name ) ) {
+                    if( ( l_entry->binding != ORL_SYM_BINDING_LOCAL ) && (l_entry->type == LTYP_NAMED) && strcmp( name, sec->name ) ) {
                         BufferConcat( globl );
                         BufferConcat( name );
                         BufferConcatNL();
                         BufferPrint();
-                        HashTableInsert(hash,(hash_value)name,(hash_data)name);
+                        HashTableInsert( hash, name, (hash_data)name );
                     }
                 }
             }
@@ -840,7 +838,7 @@ static hash_table emitGlobls( void )
 static void emitExtrns( hash_table hash )
 {
     section_ptr         sec;
-    hash_data           *dp;
+    hash_data           *data_ptr;
     ref_list            r_list;
     ref_entry           r_entry;
     label_entry         l_entry;
@@ -849,7 +847,7 @@ static void emitExtrns( hash_table hash )
     char                *name;
 
     if( hash == NULL ) {
-        hash = HashTableCreate( TMP_TABLE_SIZE, HASH_STRING, (hash_table_comparison_func)strcmp );
+        hash = HashTableCreate( TMP_TABLE_SIZE, HASH_STRING );
     }
 
     if( IsMasmOutput() ) {
@@ -859,19 +857,18 @@ static void emitExtrns( hash_table hash )
     }
 
     for( sec = Sections.first; sec != NULL; sec = sec->next ) {
-        dp = HashTableQuery( HandleToRefListTable, (hash_value) sec->shnd );
-        if( dp != NULL && *dp != 0 ) {
-            r_list = (ref_list)*dp;
+        data_ptr = HashTableQuery( HandleToRefListTable, sec->shnd );
+        if( data_ptr != NULL && *data_ptr != 0 ) {
+            r_list = (ref_list)*data_ptr;
             for( r_entry = r_list->first; r_entry != NULL; r_entry = r_entry->next ) {
                 if( r_entry->label->shnd == ORL_NULL_HANDLE ) {
                     name = r_entry->label->label.name;
                     if( name == NULL )
                         continue;
-                    dp = HashTableQuery( hash, (hash_value)name );
-                    if( dp != NULL ) {
-                        HashTableInsert( hash, (hash_value)name, (hash_data)name );
-                        if( ( r_entry->label->type != LTYP_GROUP ) &&
-                          (r_entry->label->binding != ORL_SYM_BINDING_LOCAL) ) {
+                    data_ptr = HashTableQuery( hash, name );
+                    if( data_ptr == NULL ) {
+                        HashTableInsert( hash, name, (hash_data)name );
+                        if( ( r_entry->label->type != LTYP_GROUP ) && (r_entry->label->binding != ORL_SYM_BINDING_LOCAL) ) {
                             BufferStore( extrn, name );
                             BufferConcatNL();
                             BufferPrint();
@@ -884,15 +881,15 @@ static void emitExtrns( hash_table hash )
 
     /* emit all externs not used but defined
      */
-    dp = HashTableQuery( HandleToLabelListTable, (hash_value) NULL );
-    if( dp != NULL ) {
-        l_list = (label_list)*dp;
+    data_ptr = HashTableQuery( HandleToLabelListTable, NULL );
+    if( data_ptr != NULL ) {
+        l_list = (label_list)*data_ptr;
         if( l_list != NULL ) {
             for( l_entry = l_list->first; l_entry != NULL; l_entry = l_entry->next ) {
                 name = l_entry->label.name;
-                dp = HashTableQuery( hash, (hash_value)name );
-                if( dp != NULL ) {
-                    HashTableInsert( hash, (hash_value)name, (hash_data)name );
+                data_ptr = HashTableQuery( hash, name );
+                if( data_ptr == NULL ) {
+                    HashTableInsert( hash, name, (hash_data)name );
                     if( ( l_entry->binding != ORL_SYM_BINDING_LOCAL ) &&
                         ( l_entry->type == LTYP_EXTERNAL_NAMED ) ) {
                         BufferStore( extrn, name );
@@ -991,7 +988,7 @@ int main( int argc, char *argv[] )
 {
     section_ptr         sec;
     return_val          error;
-    hash_data *         data_ptr;
+    hash_data           *data_ptr;
     label_list          sec_label_list;
 
 #if !defined( __WATCOMC__ )
@@ -1009,9 +1006,9 @@ int main( int argc, char *argv[] )
     }
     /* number all the anonymous labels */
     for( sec = Sections.first; sec != NULL; sec = sec->next ) {
-        data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value)sec->shnd );
+        data_ptr = HashTableQuery( HandleToLabelListTable, sec->shnd );
         if( data_ptr != NULL ) {
-            sec_label_list = (label_list) *data_ptr;
+            sec_label_list = (label_list)*data_ptr;
             if( sec_label_list != NULL ) {
                 numberUnnamedLabels( sec_label_list->first );
             }

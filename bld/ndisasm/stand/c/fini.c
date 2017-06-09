@@ -92,7 +92,7 @@ static void freeLabelList( orl_sec_handle shnd )
     label_entry         entry;
     label_entry         next;
 
-    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value)shnd );
+    data_ptr = HashTableQuery( HandleToLabelListTable, shnd );
     if( data_ptr != NULL ) {
         list = (label_list)*data_ptr;
         for( entry = list->first; entry != NULL; entry = next ) {
@@ -110,7 +110,7 @@ static void freeRefList( orl_sec_handle shnd )
     ref_entry           entry;
     ref_entry           next;
 
-    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value)shnd );
+    data_ptr = HashTableQuery( HandleToRefListTable, shnd );
     if( data_ptr != NULL ) {
         list = (ref_list)*data_ptr;
         for( entry = list->first; entry != NULL; entry = next ) {

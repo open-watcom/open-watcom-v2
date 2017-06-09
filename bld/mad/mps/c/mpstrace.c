@@ -129,15 +129,15 @@ mad_status MADIMPENTRY( TraceSimulate )( mad_trace_data *td, mad_disasm_data *dd
     case MDC_CALL:
         if( dd->ins.op[0].type == DO_ABSOLUTE ) {
             // takes care of 'j' and 'jal'
-            new = dd->ins.op[0].value;
+            new = dd->ins.op[0].value.s._32[I64LO32];
         } else if( dd->ins.num_ops == 3 && dd->ins.op[2].type == DO_RELATIVE ) {
             // takes care of all 'b' instructions with three operands
             new  = out->mips.pc.u._32[I64LO32];
-            new += dd->ins.op[2].value;
+            new += dd->ins.op[2].value.s._32[I64LO32];
         } else if( dd->ins.num_ops == 2 && dd->ins.op[1].type == DO_RELATIVE ) {
             // takes care of all 'b' instructions with two operands
             new  = out->mips.pc.u._32[I64LO32];
-            new += dd->ins.op[1].value;
+            new += dd->ins.op[1].value.s._32[I64LO32];
         } else {
             // takes care of 'jalr' and 'jr'
             new = TRANS_REG( out, dd->ins.op[dd->ins.num_ops - 1].base )->u._32[I64LO32];

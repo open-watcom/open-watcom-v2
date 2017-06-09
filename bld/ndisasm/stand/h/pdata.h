@@ -33,8 +33,7 @@
 #ifndef WDIS_PDATA_INCLUDED
 #define WDIS_PDATA_INCLUDED
 
-extern return_val       DumpPDataSection( section_ptr, unsigned_8 *, orl_sec_size,
-                                          unsigned );
+extern return_val       DumpPDataSection( section_ptr, unsigned_8 *, dis_sec_size, unsigned );
 extern orl_return       StoreReloc( orl_reloc * );
 
 #endif

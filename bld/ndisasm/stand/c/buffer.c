@@ -47,18 +47,30 @@ static unsigned                 OutputPos = 0;
 static char                     Buffer[BUFFER_LEN] = {0};
 static char                     IntermedBuffer[BUFFER_LEN] = {0};
 
-void FmtHexNum( char *buff, unsigned prec, unsigned long value, bool no_prefix )
+void FmtHexNum( char *buff, unsigned prec, dis_value value, bool no_prefix )
 {
-    char * src;
-    char * dst;
+    char        *src;
+    char        *dst;
+    const char  *fmt;
+    int         len;
 
     if( (DFormat & DFF_ASM) && IsMasmOutput() ) {
-        if( ( value == 0 ) && ( prec == 0 ) ) {
+        if( ( value.u._32[I64LO32] == 0 ) && ( value.u._32[I64HI32] == 0 ) && ( prec == 0 ) ) {
             strcpy( buff, "0" );
-        } else if( no_prefix ) {
-            sprintf( buff, "%*.*lxH", prec, prec, value );
         } else {
-            sprintf( buff, "0%*.*lxH", prec, prec, value );
+            fmt = ( no_prefix ) ? "%*.*lxH" : "0%*.*lxH";
+            if( value.u._32[I64HI32] == 0 ) {
+                len = 0;
+            } else {
+                if( prec > 8 ) {
+                    len = sprintf( buff, fmt, prec - 8, prec - 8, value.u._32[I64HI32] );
+                    prec = 8;
+                } else {
+                    len = sprintf( buff, fmt, 0, 0, value.u._32[I64HI32] );
+                }
+                fmt = "%*.*lxH";
+            }
+            sprintf( buff + len, fmt, prec, prec, value.u._32[I64LO32] );
         }
         /* don't need the extra leading zero, squeeze it out */
         for ( src = dst = buff; *src != '\0'; src++ ) {
@@ -68,14 +80,26 @@ void FmtHexNum( char *buff, unsigned prec, unsigned long value, bool no_prefix )
             }
         }
         *dst = '\0';
-        if ( buff[1] == 'H' ) buff[1] = '\0';
+        if ( buff[1] == 'H' ) {
+            buff[1] = '\0';
+        }
     } else {
-        if( ( value == 0 ) && ( prec == 0 ) ) {
+        if( ( value.u._32[I64LO32] == 0 ) && ( value.u._32[I64HI32] == 0 ) && ( prec == 0 ) ) {
             strcpy( buff, "0x0" );
-        } else if( no_prefix ) {
-            sprintf( buff, "%*.*lx", prec, prec, value );
         } else {
-            sprintf( buff, "0x%*.*lx", prec, prec, value );
+            fmt = ( no_prefix ) ? "%*.*lx" : "0%*.*lx";
+            if( value.u._32[I64HI32] == 0 ) {
+                len = 0;
+            } else {
+                if( prec > 8 ) {
+                    len = sprintf( buff, fmt, prec - 8, prec - 8, value.u._32[I64HI32] );
+                    prec = 8;
+                } else {
+                    len = sprintf( buff, fmt, 0, 0, value.u._32[I64HI32] );
+                }
+                fmt = "%*.*lx";
+            }
+            sprintf( buff + len, fmt, prec, prec, value.u._32[I64LO32] );
         }
     }
 }
@@ -163,7 +187,7 @@ void BufferPrint( void )
     *Buffer = 0;
 }
 
-void BufferHex( unsigned prec, unsigned long value )
+void BufferHex( unsigned prec, dis_value value )
 {
     FmtHexNum( IntermedBuffer, prec, value, false );
     BufferConcat( IntermedBuffer );
