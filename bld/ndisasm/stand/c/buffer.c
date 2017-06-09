@@ -87,7 +87,7 @@ void FmtHexNum( char *buff, unsigned prec, dis_value value, bool no_prefix )
         if( ( value.u._32[I64LO32] == 0 ) && ( value.u._32[I64HI32] == 0 ) && ( prec == 0 ) ) {
             strcpy( buff, "0x0" );
         } else {
-            fmt = ( no_prefix ) ? "%*.*lx" : "0%*.*lx";
+            fmt = ( no_prefix ) ? "%*.*lx" : "0x%*.*lx";
             if( value.u._32[I64HI32] == 0 ) {
                 len = 0;
             } else {
