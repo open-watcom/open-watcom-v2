@@ -43,26 +43,26 @@ orl_handle ORLENTRY ORLInit( orl_funcs *funcs )
 {
     orl_handle                  orl_hnd;
 
-    orl_hnd = (orl_handle)ORL_CLI_ALLOC( funcs, sizeof( struct orli_handle_struct ) );
+    orl_hnd = (orl_handle)ORL_CLI_ALLOC( funcs, sizeof( struct LCL_STRUCT_SYM( orl_handle ) ) );
     if( orl_hnd != NULL ) {
-        ORLI_HND->error = ORL_OKAY;
-        ORLI_HND->funcs = *funcs;
-        ORLI_HND->elf_hnd = ElfInit( &ORLI_HND->funcs );
-        if( ORLI_HND->elf_hnd == NULL ) {
+        LCL_ORL_HND( orl_hnd )->error = ORL_OKAY;
+        LCL_ORL_HND( orl_hnd )->funcs = *funcs;
+        LCL_ORL_HND( orl_hnd )->elf_hnd = ElfInit( &LCL_ORL_HND( orl_hnd )->funcs );
+        if( LCL_ORL_HND( orl_hnd )->elf_hnd == NULL ) {
             ORL_CLI_FREE( funcs, orl_hnd );
             return( NULL );
         }
-        ORLI_HND->coff_hnd = CoffInit( &ORLI_HND->funcs );
-        if( ORLI_HND->coff_hnd == NULL ) {
+        LCL_ORL_HND( orl_hnd )->coff_hnd = CoffInit( &LCL_ORL_HND( orl_hnd )->funcs );
+        if( LCL_ORL_HND( orl_hnd )->coff_hnd == NULL ) {
             ORL_CLI_FREE( funcs, orl_hnd );
             return( NULL );
         }
-        ORLI_HND->omf_hnd = OmfInit( &ORLI_HND->funcs );
-        if( ORLI_HND->omf_hnd == NULL ) {
+        LCL_ORL_HND( orl_hnd )->omf_hnd = OmfInit( &LCL_ORL_HND( orl_hnd )->funcs );
+        if( LCL_ORL_HND( orl_hnd )->omf_hnd == NULL ) {
             ORL_CLI_FREE( funcs, orl_hnd );
             return( NULL );
         }
-        ORLI_HND->first_file_hnd = NULL;
+        LCL_ORL_HND( orl_hnd )->first_file_hnd = NULL;
     }
     return( orl_hnd );
 }
@@ -70,7 +70,7 @@ orl_handle ORLENTRY ORLInit( orl_funcs *funcs )
 orl_return ORLENTRY ORLGetError( orl_handle orl_hnd )
 /***************************************************/
 {
-    return( ORLI_HND->error );
+    return( LCL_ORL_HND( orl_hnd )->error );
 }
 
 orl_return ORLENTRY ORLFini( orl_handle orl_hnd )
@@ -78,19 +78,19 @@ orl_return ORLENTRY ORLFini( orl_handle orl_hnd )
 {
     orl_return      return_val;
 
-    if( ( return_val = ElfFini( ORLI_HND->elf_hnd ) ) != ORL_OKAY )
+    if( ( return_val = ElfFini( LCL_ORL_HND( orl_hnd )->elf_hnd ) ) != ORL_OKAY )
         return( return_val );
-    if( ( return_val = CoffFini( ORLI_HND->coff_hnd ) ) != ORL_OKAY )
+    if( ( return_val = CoffFini( LCL_ORL_HND( orl_hnd )->coff_hnd ) ) != ORL_OKAY )
         return( return_val );
-    if( ( return_val = OmfFini( ORLI_HND->omf_hnd ) ) != ORL_OKAY )
+    if( ( return_val = OmfFini( LCL_ORL_HND( orl_hnd )->omf_hnd ) ) != ORL_OKAY )
         return( return_val );
-    while( ORLI_HND->first_file_hnd != NULL ) {
-        return_val = ORLRemoveFileLinks( ORLI_HND->first_file_hnd );
+    while( LCL_ORL_HND( orl_hnd )->first_file_hnd != NULL ) {
+        return_val = ORLRemoveFileLinks( LCL_ORL_HND( orl_hnd )->first_file_hnd );
         if( return_val != ORL_OKAY ) {
             return( return_val );
         }
     }
-    ORL_FUNCS_FREE( ORLI_HND, orl_hnd );
+    ORL_FUNCS_FREE( LCL_ORL_HND( orl_hnd ), orl_hnd );
     return( ORL_OKAY );
 }
 
@@ -103,11 +103,11 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
     unsigned_16         len;
     unsigned char       chksum;
 
-    magic = ORL_FUNCS_READ( ORLI_HND, file, 4 );
+    magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), file, 4 );
     if( magic == NULL ) {
         return( ORL_UNRECOGNIZED_FORMAT );
     }
-    if( ORL_FUNCS_SEEK( ORLI_HND, file, -4, SEEK_CUR ) == -1 ) {
+    if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, -4, SEEK_CUR ) == -1 ) {
         return( ORL_UNRECOGNIZED_FORMAT );
     }
     if( magic[0] == 0x7f && magic[1] == 'E' && magic[2] == 'L' && magic[3] == 'F' ) {
@@ -124,12 +124,12 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
         if( len == 0 ) {
             // This looks good so far, we must now check the record
             len = magic[3] + 1;
-            if( ORL_FUNCS_SEEK( ORLI_HND, file, 4, SEEK_CUR ) == -1 ) {
+            if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, 4, SEEK_CUR ) == -1 ) {
                 return( ORL_UNRECOGNIZED_FORMAT );
             }
             chksum = magic[0] + magic[1] + magic[2] + magic[3];
-            magic = ORL_FUNCS_READ( ORLI_HND, file, len );
-            if( ORL_FUNCS_SEEK( ORLI_HND, file, -(long)( 4 + len ), SEEK_CUR ) == -1 ) {
+            magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), file, len );
+            if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, -(long)( 4 + len ), SEEK_CUR ) == -1 ) {
                 return( ORL_UNRECOGNIZED_FORMAT );
             }
             if( magic != NULL ) {
@@ -145,10 +145,10 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
                     return( ORL_OMF );
                 }
             } else {
-                magic = ORL_FUNCS_READ( ORLI_HND, file, 4 );
+                magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), file, 4 );
                 if( magic == NULL ) {
                     return( ORL_UNRECOGNIZED_FORMAT );
-                } else if( ORL_FUNCS_SEEK( ORLI_HND, file, -4, SEEK_CUR ) == -1 ) {
+                } else if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, -4, SEEK_CUR ) == -1 ) {
                     return( ORL_UNRECOGNIZED_FORMAT );
                 }
             }
@@ -170,27 +170,27 @@ orl_file_format ORLFileIdentify( orl_handle orl_hnd, orl_file_id file )
     }
     // Is it PE?
     if( magic[0] == 'M' && magic[1] == 'Z' ) {
-        if( ORL_FUNCS_SEEK( ORLI_HND, file, 0x3c, SEEK_CUR ) == -1 ) {
+        if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, 0x3c, SEEK_CUR ) == -1 ) {
             return( ORL_UNRECOGNIZED_FORMAT );
         }
-        magic = ORL_FUNCS_READ( ORLI_HND, file, 0x4 );
+        magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), file, 0x4 );
         if( magic == NULL ) {
             return( ORL_UNRECOGNIZED_FORMAT );
         }
         offset = *(unsigned_16 *)magic;
-        if( ORL_FUNCS_SEEK( ORLI_HND, file, offset - 0x40, SEEK_CUR ) == -1 ) {
+        if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, offset - 0x40, SEEK_CUR ) == -1 ) {
             return( ORL_UNRECOGNIZED_FORMAT );
         }
-        magic = ORL_FUNCS_READ( ORLI_HND, file, 4 );
+        magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), file, 4 );
         if( magic == NULL ) {
             return( ORL_UNRECOGNIZED_FORMAT );
         }
         if( magic[0]=='P' && magic[1] == 'E' && magic[2] == '\0' && magic[3] == '\0' ) {
-            magic = ORL_FUNCS_READ( ORLI_HND, file, 4 );
+            magic = ORL_FUNCS_READ( LCL_ORL_HND( orl_hnd ), file, 4 );
             if( magic == NULL ) {
                 return( ORL_UNRECOGNIZED_FORMAT );
             }
-            if( ORL_FUNCS_SEEK( ORLI_HND, file, -(long)(offset+8), SEEK_CUR ) == -1 ) {
+            if( ORL_FUNCS_SEEK( LCL_ORL_HND( orl_hnd ), file, -(long)(offset+8), SEEK_CUR ) == -1 ) {
                 return( ORL_UNRECOGNIZED_FORMAT );
             }
             machine_type = *(unsigned_16 *)magic;
@@ -217,30 +217,30 @@ orl_file_handle ORLENTRY ORLFileInit( orl_handle orl_hnd, orl_file_id file, orl_
     case( ORL_ELF ):
     case( ORL_COFF ):
     case( ORL_OMF ):
-        orl_file_hnd = (orl_file_handle)ORL_FUNCS_ALLOC( ORLI_HND, sizeof( struct orli_file_handle_struct ) );
+        orl_file_hnd = (orl_file_handle)ORL_FUNCS_ALLOC( LCL_ORL_HND( orl_hnd ), sizeof( struct LCL_STRUCT_SYM( orl_file_handle ) ) );
         if( orl_file_hnd == NULL ) {
-            ORLI_HND->error = ORL_OUT_OF_MEMORY;
+            LCL_ORL_HND( orl_hnd )->error = ORL_OUT_OF_MEMORY;
             break;
         }
-        ORLI_FILE_HND->type = type;
+        LCL_FIL_HND( orl_file_hnd )->type = type;
         switch( type ) {
         case ORL_ELF:
-            ORLI_HND->error = ElfFileInit( ORLI_HND->elf_hnd, file, &ORLI_FILE_HND->file_hnd.elf );
+            LCL_ORL_HND( orl_hnd )->error = ElfFileInit( LCL_ORL_HND( orl_hnd )->elf_hnd, file, &LCL_FIL_HND( orl_file_hnd )->file_hnd.elf );
             break;
         case ORL_COFF:
-            ORLI_HND->error = CoffFileInit( ORLI_HND->coff_hnd, file, &ORLI_FILE_HND->file_hnd.coff );
+            LCL_ORL_HND( orl_hnd )->error = CoffFileInit( LCL_ORL_HND( orl_hnd )->coff_hnd, file, &LCL_FIL_HND( orl_file_hnd )->file_hnd.coff );
             break;
         case ORL_OMF:
-            ORLI_HND->error = OmfFileInit( ORLI_HND->omf_hnd, file, &ORLI_FILE_HND->file_hnd.omf );
+            LCL_ORL_HND( orl_hnd )->error = OmfFileInit( LCL_ORL_HND( orl_hnd )->omf_hnd, file, &LCL_FIL_HND( orl_file_hnd )->file_hnd.omf );
             break;
         default:
             break;
         }
-        if( ORLI_HND->error != ORL_OKAY ) {
-            ORL_FUNCS_FREE( ORLI_HND, orl_file_hnd );
+        if( LCL_ORL_HND( orl_hnd )->error != ORL_OKAY ) {
+            ORL_FUNCS_FREE( LCL_ORL_HND( orl_hnd ), orl_file_hnd );
             break;
         }
-        ORLAddFileLinks( ORLI_HND, ORLI_FILE_HND );
+        ORLAddFileLinks( LCL_ORL_HND( orl_hnd ), LCL_FIL_HND( orl_file_hnd ) );
         return( orl_file_hnd );
     default:    //ORL_UNRECOGNIZED_FORMAT
         break;
@@ -253,15 +253,15 @@ orl_return ORLENTRY ORLFileFini( orl_file_handle orl_file_hnd )
     orl_return          return_val;
 
     /* jump table replace: */
-    switch( ORLI_FILE_HND->type ) {
+    switch( LCL_FIL_HND( orl_file_hnd )->type ) {
     case( ORL_ELF ):
-        return_val = ElfFileFini( ORLI_FILE_HND->file_hnd.elf );
+        return_val = ElfFileFini( LCL_FIL_HND( orl_file_hnd )->file_hnd.elf );
         break;
     case( ORL_COFF ):
-        return_val = CoffFileFini( ORLI_FILE_HND->file_hnd.coff );
+        return_val = CoffFileFini( LCL_FIL_HND( orl_file_hnd )->file_hnd.coff );
         break;
     case( ORL_OMF ):
-        return_val = OmfFileFini( ORLI_FILE_HND->file_hnd.omf );
+        return_val = OmfFileFini( LCL_FIL_HND( orl_file_hnd )->file_hnd.omf );
         break;
     default:    // ORL_UNRECOGNIZED_FORMAT
         return( ORL_ERROR );
@@ -269,7 +269,7 @@ orl_return ORLENTRY ORLFileFini( orl_file_handle orl_file_hnd )
 
     if( return_val != ORL_OKAY )
         return( return_val );
-    return( ORLRemoveFileLinks( ORLI_FILE_HND ) );
+    return( ORLRemoveFileLinks( LCL_FIL_HND( orl_file_hnd ) ) );
 }
 
 
@@ -277,8 +277,8 @@ orl_rva ORLENTRY ORLExportTableRVA( orl_file_handle orl_file_hnd )
 {
     orl_rva     rva = 0;
 
-    if( ORLI_FILE_HND->type == ORL_COFF ) {
-        rva = CoffExportTableRVA( ORLI_FILE_HND->file_hnd.coff );
+    if( LCL_FIL_HND( orl_file_hnd )->type == ORL_COFF ) {
+        rva = CoffExportTableRVA( LCL_FIL_HND( orl_file_hnd )->file_hnd.coff );
     }
 
     return( rva );
@@ -286,13 +286,13 @@ orl_rva ORLENTRY ORLExportTableRVA( orl_file_handle orl_file_hnd )
 
 orl_return ORLENTRY ORLFileScan( orl_file_handle orl_file_hnd, const char *desired, orl_sec_return_func return_func )
 {
-    switch( ORLI_FILE_HND->type ) {
+    switch( LCL_FIL_HND( orl_file_hnd )->type ) {
     case( ORL_ELF ):
-        return( ElfFileScan( ORLI_FILE_HND->file_hnd.elf, desired, return_func ) );
+        return( ElfFileScan( LCL_FIL_HND( orl_file_hnd )->file_hnd.elf, desired, return_func ) );
     case( ORL_COFF ):
-        return( CoffFileScan( ORLI_FILE_HND->file_hnd.coff, desired, return_func ) );
+        return( CoffFileScan( LCL_FIL_HND( orl_file_hnd )->file_hnd.coff, desired, return_func ) );
     case( ORL_OMF ):
-        return( OmfFileScan( ORLI_FILE_HND->file_hnd.omf, desired, return_func ) );
+        return( OmfFileScan( LCL_FIL_HND( orl_file_hnd )->file_hnd.omf, desired, return_func ) );
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
@@ -301,13 +301,13 @@ orl_return ORLENTRY ORLFileScan( orl_file_handle orl_file_hnd, const char *desir
 
 orl_machine_type ORLENTRY ORLFileGetMachineType( orl_file_handle orl_file_hnd )
 {
-    switch( ORLI_FILE_HND->type ) {
+    switch( LCL_FIL_HND( orl_file_hnd )->type ) {
     case( ORL_ELF ):
-        return( ElfFileGetMachineType( ORLI_FILE_HND->file_hnd.elf ) );
+        return( ElfFileGetMachineType( LCL_FIL_HND( orl_file_hnd )->file_hnd.elf ) );
     case( ORL_COFF ):
-        return( CoffFileGetMachineType( ORLI_FILE_HND->file_hnd.coff ) );
+        return( CoffFileGetMachineType( LCL_FIL_HND( orl_file_hnd )->file_hnd.coff ) );
     case( ORL_OMF ):
-        return( OmfFileGetMachineType( ORLI_FILE_HND->file_hnd.omf ) );
+        return( OmfFileGetMachineType( LCL_FIL_HND( orl_file_hnd )->file_hnd.omf ) );
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
@@ -316,13 +316,13 @@ orl_machine_type ORLENTRY ORLFileGetMachineType( orl_file_handle orl_file_hnd )
 
 orl_file_flags ORLENTRY ORLFileGetFlags( orl_file_handle orl_file_hnd )
 {
-    switch( ORLI_FILE_HND->type ) {
+    switch( LCL_FIL_HND( orl_file_hnd )->type ) {
     case( ORL_ELF ):
-        return( ElfFileGetFlags( ORLI_FILE_HND->file_hnd.elf ) );
+        return( ElfFileGetFlags( LCL_FIL_HND( orl_file_hnd )->file_hnd.elf ) );
     case( ORL_COFF ):
-        return( CoffFileGetFlags( ORLI_FILE_HND->file_hnd.coff ) );
+        return( CoffFileGetFlags( LCL_FIL_HND( orl_file_hnd )->file_hnd.coff ) );
     case( ORL_OMF ):
-        return( OmfFileGetFlags( ORLI_FILE_HND->file_hnd.omf ) );
+        return( OmfFileGetFlags( LCL_FIL_HND( orl_file_hnd )->file_hnd.omf ) );
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
@@ -331,13 +331,13 @@ orl_file_flags ORLENTRY ORLFileGetFlags( orl_file_handle orl_file_hnd )
 
 orl_file_size ORLENTRY ORLFileGetSize( orl_file_handle orl_file_hnd )
 {
-    switch( ORLI_FILE_HND->type ) {
+    switch( LCL_FIL_HND( orl_file_hnd )->type ) {
     case( ORL_ELF ):
-        return( ElfFileGetSize( ORLI_FILE_HND->file_hnd.elf ) );
+        return( ElfFileGetSize( LCL_FIL_HND( orl_file_hnd )->file_hnd.elf ) );
     case( ORL_COFF ):
-        return( CoffFileGetSize( ORLI_FILE_HND->file_hnd.coff ) );
+        return( CoffFileGetSize( LCL_FIL_HND( orl_file_hnd )->file_hnd.coff ) );
     case( ORL_OMF ):
-        return( OmfFileGetSize( ORLI_FILE_HND->file_hnd.omf ) );
+        return( OmfFileGetSize( LCL_FIL_HND( orl_file_hnd )->file_hnd.omf ) );
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
@@ -346,13 +346,13 @@ orl_file_size ORLENTRY ORLFileGetSize( orl_file_handle orl_file_hnd )
 
 orl_file_type ORLENTRY ORLFileGetType( orl_file_handle orl_file_hnd )
 {
-    switch( ORLI_FILE_HND->type ) {
+    switch( LCL_FIL_HND( orl_file_hnd )->type ) {
     case( ORL_ELF ):
-        return( ElfFileGetType( ORLI_FILE_HND->file_hnd.elf ) );
+        return( ElfFileGetType( LCL_FIL_HND( orl_file_hnd )->file_hnd.elf ) );
     case( ORL_COFF ):
-        return( CoffFileGetType( ORLI_FILE_HND->file_hnd.coff ) );
+        return( CoffFileGetType( LCL_FIL_HND( orl_file_hnd )->file_hnd.coff ) );
     case( ORL_OMF ):
-        return( OmfFileGetType( ORLI_FILE_HND->file_hnd.omf ) );
+        return( OmfFileGetType( LCL_FIL_HND( orl_file_hnd )->file_hnd.omf ) );
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
@@ -361,18 +361,18 @@ orl_file_type ORLENTRY ORLFileGetType( orl_file_handle orl_file_hnd )
 
 orl_file_format ORLENTRY ORLFileGetFormat( orl_file_handle orl_file_hnd )
 {
-    return( ORLI_FILE_HND->type );
+    return( LCL_FIL_HND( orl_file_hnd )->type );
 }
 
 orl_sec_handle ORLENTRY ORLFileGetSymbolTable( orl_file_handle orl_file_hnd )
 {
-    switch( ORLI_FILE_HND->type ) {
+    switch( LCL_FIL_HND( orl_file_hnd )->type ) {
     case( ORL_ELF ):
-        return( (orl_sec_handle)ElfFileGetSymbolTable( ORLI_FILE_HND->file_hnd.elf ) );
+        return( (orl_sec_handle)ElfFileGetSymbolTable( LCL_FIL_HND( orl_file_hnd )->file_hnd.elf ) );
     case( ORL_COFF ):
-        return( (orl_sec_handle)CoffFileGetSymbolTable( ORLI_FILE_HND->file_hnd.coff ) );
+        return( (orl_sec_handle)CoffFileGetSymbolTable( LCL_FIL_HND( orl_file_hnd )->file_hnd.coff ) );
     case( ORL_OMF ):
-        return( (orl_sec_handle)OmfFileGetSymbolTable( ORLI_FILE_HND->file_hnd.omf ) );
+        return( (orl_sec_handle)OmfFileGetSymbolTable( LCL_FIL_HND( orl_file_hnd )->file_hnd.omf ) );
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
@@ -381,7 +381,7 @@ orl_sec_handle ORLENTRY ORLFileGetSymbolTable( orl_file_handle orl_file_hnd )
 
 const char * ORLENTRY ORLSecGetName( orl_sec_handle orl_sec_hnd )
 {
-    switch( ORLI_SEC_HND->type ) {
+    switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
     case( ORL_ELF ):
         return( ElfSecGetName( (elf_sec_handle)orl_sec_hnd ) );
     case( ORL_COFF ):
@@ -397,7 +397,7 @@ const char * ORLENTRY ORLSecGetName( orl_sec_handle orl_sec_hnd )
 orl_return ORLENTRY ORLSecGetBase( orl_sec_handle orl_sec_hnd, orl_sec_base *sec_base )
 {
     if( sec_base != NULL ) {
-        switch( ORLI_SEC_HND->type ) {
+        switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
         case( ORL_ELF ):
             return( ElfSecGetBase( (elf_sec_handle)orl_sec_hnd, sec_base ) );
         case( ORL_COFF ):
@@ -419,7 +419,7 @@ orl_return ORLENTRY ORLSecGetBase( orl_sec_handle orl_sec_hnd, orl_sec_base *sec
 
 orl_sec_size ORLENTRY ORLSecGetSize( orl_sec_handle orl_sec_hnd )
 {
-    switch( ORLI_SEC_HND->type ) {
+    switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
     case( ORL_ELF ):
         return( ElfSecGetSize( (elf_sec_handle)orl_sec_hnd ) );
     case( ORL_COFF ):
@@ -434,7 +434,7 @@ orl_sec_size ORLENTRY ORLSecGetSize( orl_sec_handle orl_sec_hnd )
 
 orl_sec_type ORLENTRY ORLSecGetType( orl_sec_handle orl_sec_hnd )
 {
-    switch( ORLI_SEC_HND->type ) {
+    switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
     case( ORL_ELF ):
         return( ElfSecGetType( (elf_sec_handle)orl_sec_hnd ) );
     case( ORL_COFF ):
@@ -449,7 +449,7 @@ orl_sec_type ORLENTRY ORLSecGetType( orl_sec_handle orl_sec_hnd )
 
 orl_sec_alignment ORLENTRY ORLSecGetAlignment( orl_sec_handle orl_sec_hnd )
 {
-    switch( ORLI_SEC_HND->type ) {
+    switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
     case( ORL_ELF ):
         return( ElfSecGetAlignment( (elf_sec_handle)orl_sec_hnd ) );
     case( ORL_COFF ):
@@ -464,7 +464,7 @@ orl_sec_alignment ORLENTRY ORLSecGetAlignment( orl_sec_handle orl_sec_hnd )
 
 orl_sec_flags ORLENTRY ORLSecGetFlags( orl_sec_handle orl_sec_hnd )
 {
-    switch( ORLI_SEC_HND->type ) {
+    switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
     case( ORL_ELF ):
         return( ElfSecGetFlags( (elf_sec_handle)orl_sec_hnd ) );
     case( ORL_COFF ):
@@ -479,7 +479,7 @@ orl_sec_flags ORLENTRY ORLSecGetFlags( orl_sec_handle orl_sec_hnd )
 
 orl_sec_handle ORLENTRY ORLSecGetStringTable( orl_sec_handle orl_sec_hnd )
 {
-    switch( ORLI_SEC_HND->type ) {
+    switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
     case( ORL_ELF ):
         return( (orl_sec_handle)ElfSecGetStringTable( (elf_sec_handle)orl_sec_hnd ) );
     case( ORL_COFF ):
@@ -494,7 +494,7 @@ orl_sec_handle ORLENTRY ORLSecGetStringTable( orl_sec_handle orl_sec_hnd )
 
 orl_sec_handle ORLENTRY ORLSecGetSymbolTable( orl_sec_handle orl_sec_hnd )
 {
-    switch( ORLI_SEC_HND->type ) {
+    switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
     case( ORL_ELF ):
         return( (orl_sec_handle)ElfSecGetSymbolTable( (elf_sec_handle)orl_sec_hnd ) );
     case( ORL_COFF ):
@@ -509,7 +509,7 @@ orl_sec_handle ORLENTRY ORLSecGetSymbolTable( orl_sec_handle orl_sec_hnd )
 
 orl_sec_handle ORLENTRY ORLSecGetRelocTable( orl_sec_handle orl_sec_hnd )
 {
-    switch( ORLI_SEC_HND->type ) {
+    switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
     case( ORL_ELF ):
         return( (orl_sec_handle)ElfSecGetRelocTable( (elf_sec_handle)orl_sec_hnd ) );
     case( ORL_COFF ):
@@ -524,7 +524,7 @@ orl_sec_handle ORLENTRY ORLSecGetRelocTable( orl_sec_handle orl_sec_hnd )
 
 orl_linnum * ORLENTRY ORLSecGetLines( orl_sec_handle orl_sec_hnd )
 {
-    switch( ORLI_SEC_HND->type ) {
+    switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
     case( ORL_ELF ):
         return( NULL );
     case( ORL_COFF ):
@@ -539,7 +539,7 @@ orl_linnum * ORLENTRY ORLSecGetLines( orl_sec_handle orl_sec_hnd )
 
 orl_table_index ORLENTRY ORLSecGetNumLines( orl_sec_handle orl_sec_hnd )
 {
-    switch( ORLI_SEC_HND->type ) {
+    switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
     case( ORL_ELF ):
         return( 0 );
     case( ORL_COFF ):
@@ -554,7 +554,7 @@ orl_table_index ORLENTRY ORLSecGetNumLines( orl_sec_handle orl_sec_hnd )
 
 orl_sec_offset ORLENTRY ORLSecGetOffset( orl_sec_handle orl_sec_hnd )
 {
-    if( ORLI_SEC_HND->type == ORL_COFF ) {
+    if( LCL_SEC_HND( orl_sec_hnd )->type == ORL_COFF ) {
         return( CoffSecGetOffset( (coff_sec_handle)orl_sec_hnd ) );
     }
     return( 0 );
@@ -562,7 +562,7 @@ orl_sec_offset ORLENTRY ORLSecGetOffset( orl_sec_handle orl_sec_hnd )
 
 const char * ORLENTRY ORLSecGetClassName( orl_sec_handle orl_sec_hnd )
 {
-    if( ORLI_SEC_HND->type == ORL_OMF ) {
+    if( LCL_SEC_HND( orl_sec_hnd )->type == ORL_OMF ) {
         return( OmfSecGetClassName( (omf_sec_handle)orl_sec_hnd ) );
     }
     return( 0 );
@@ -570,7 +570,7 @@ const char * ORLENTRY ORLSecGetClassName( orl_sec_handle orl_sec_hnd )
 
 orl_sec_combine ORLENTRY ORLSecGetCombine( orl_sec_handle orl_sec_hnd )
 {
-    if( ORLI_SEC_HND->type == ORL_OMF ) {
+    if( LCL_SEC_HND( orl_sec_hnd )->type == ORL_OMF ) {
         return( OmfSecGetCombine( (omf_sec_handle)orl_sec_hnd ) );
     }
     return( ORL_SEC_COMBINE_NONE );
@@ -578,7 +578,7 @@ orl_sec_combine ORLENTRY ORLSecGetCombine( orl_sec_handle orl_sec_hnd )
 
 orl_sec_frame ORLENTRY ORLSecGetAbsFrame( orl_sec_handle orl_sec_hnd )
 {
-    if( ORLI_SEC_HND->type == ORL_OMF ) {
+    if( LCL_SEC_HND( orl_sec_hnd )->type == ORL_OMF ) {
         return( OmfSecGetAbsFrame( (omf_sec_handle)orl_sec_hnd ) );
     }
     return( ORL_SEC_NO_ABS_FRAME );
@@ -586,7 +586,7 @@ orl_sec_frame ORLENTRY ORLSecGetAbsFrame( orl_sec_handle orl_sec_hnd )
 
 orl_sec_handle ORLENTRY ORLSecGetAssociated( orl_sec_handle orl_sec_hnd )
 {
-    if( ORLI_SEC_HND->type == ORL_OMF ) {
+    if( LCL_SEC_HND( orl_sec_hnd )->type == ORL_OMF ) {
         return( OmfSecGetAssociated( (omf_sec_handle)orl_sec_hnd ) );
     }
     return( ORL_NULL_HANDLE );
@@ -594,7 +594,7 @@ orl_sec_handle ORLENTRY ORLSecGetAssociated( orl_sec_handle orl_sec_hnd )
 
 orl_group_handle ORLENTRY ORLSecGetGroup( orl_sec_handle orl_sec_hnd )
 {
-    if( ORLI_SEC_HND->type == ORL_OMF ) {
+    if( LCL_SEC_HND( orl_sec_hnd )->type == ORL_OMF ) {
         return( OmfSecGetGroup( (omf_sec_handle)orl_sec_hnd ) );
     }
     return( NULL );
@@ -602,7 +602,7 @@ orl_group_handle ORLENTRY ORLSecGetGroup( orl_sec_handle orl_sec_hnd )
 
 orl_return ORLENTRY ORLSecGetContents( orl_sec_handle orl_sec_hnd, unsigned char **buffer )
 {
-    switch( ORLI_SEC_HND->type ) {
+    switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
     case( ORL_ELF ):
         return( ElfSecGetContents( (elf_sec_handle)orl_sec_hnd, buffer ) );
     case( ORL_COFF ):
@@ -617,7 +617,7 @@ orl_return ORLENTRY ORLSecGetContents( orl_sec_handle orl_sec_hnd, unsigned char
 
 orl_return ORLENTRY ORLSecQueryReloc( orl_sec_handle orl_sec_hnd, orl_sec_offset sec_offset, orl_reloc_return_func return_func )
 {
-    switch( ORLI_SEC_HND->type ) {
+    switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
     case( ORL_ELF ):
         return( ElfSecQueryReloc( (elf_sec_handle)orl_sec_hnd, sec_offset, return_func ) );
     case( ORL_COFF ):
@@ -632,7 +632,7 @@ orl_return ORLENTRY ORLSecQueryReloc( orl_sec_handle orl_sec_hnd, orl_sec_offset
 
 orl_return ORLENTRY ORLSecScanReloc( orl_sec_handle orl_sec_hnd, orl_reloc_return_func return_func )
 {
-    switch( ORLI_SEC_HND->type ) {
+    switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
     case( ORL_ELF ):
         return( ElfSecScanReloc( (elf_sec_handle)orl_sec_hnd, return_func ) );
     case( ORL_COFF ):
@@ -649,7 +649,7 @@ orl_return ORLENTRY ORLSecScanReloc( orl_sec_handle orl_sec_hnd, orl_reloc_retur
 orl_table_index ORLENTRY ORLCvtSecHdlToIdx( orl_sec_handle orl_sec_hnd )
 /**********************************************************************/
 {
-    switch( ORLI_SEC_HND->type ) {
+    switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
     case( ORL_ELF ):
         return( ElfCvtSecHdlToIdx( (elf_sec_handle)orl_sec_hnd ) );
     case( ORL_COFF ):
@@ -665,13 +665,13 @@ orl_table_index ORLENTRY ORLCvtSecHdlToIdx( orl_sec_handle orl_sec_hnd )
 orl_sec_handle ORLENTRY ORLCvtIdxToSecHdl( orl_file_handle orl_file_hnd, orl_table_index idx )
 /********************************************************************************************/
 {
-    switch( ORLI_FILE_HND->type ) {
+    switch( LCL_FIL_HND( orl_file_hnd )->type ) {
     case( ORL_ELF ):
-        return( (orl_sec_handle)ElfCvtIdxToSecHdl( ORLI_FILE_HND->file_hnd.elf, idx ) );
+        return( (orl_sec_handle)ElfCvtIdxToSecHdl( LCL_FIL_HND( orl_file_hnd )->file_hnd.elf, idx ) );
     case( ORL_COFF ):
-        return( (orl_sec_handle)CoffCvtIdxToSecHdl( ORLI_FILE_HND->file_hnd.coff, idx ) );
+        return( (orl_sec_handle)CoffCvtIdxToSecHdl( LCL_FIL_HND( orl_file_hnd )->file_hnd.coff, idx ) );
     case( ORL_OMF ):
-        return( (orl_sec_handle)OmfCvtIdxToSecHdl( ORLI_FILE_HND->file_hnd.omf, idx ) );
+        return( (orl_sec_handle)OmfCvtIdxToSecHdl( LCL_FIL_HND( orl_file_hnd )->file_hnd.omf, idx ) );
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
@@ -680,7 +680,7 @@ orl_sec_handle ORLENTRY ORLCvtIdxToSecHdl( orl_file_handle orl_file_hnd, orl_tab
 
 orl_return ORLENTRY ORLRelocSecScan( orl_sec_handle orl_sec_hnd, orl_reloc_return_func return_func )
 {
-    switch( ORLI_SEC_HND->type ) {
+    switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
     case( ORL_ELF ):
         return( ElfRelocSecScan( (elf_sec_handle)orl_sec_hnd, return_func ) );
     case( ORL_COFF ):
@@ -695,7 +695,7 @@ orl_return ORLENTRY ORLRelocSecScan( orl_sec_handle orl_sec_hnd, orl_reloc_retur
 
 orl_return ORLENTRY ORLSymbolSecScan( orl_sec_handle orl_sec_hnd, orl_symbol_return_func return_func )
 {
-    switch( ORLI_SEC_HND->type ) {
+    switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
     case( ORL_ELF ):
         return( ElfSymbolSecScan( (elf_sec_handle)orl_sec_hnd, return_func ) );
     case( ORL_COFF ):
@@ -711,7 +711,7 @@ orl_return ORLENTRY ORLSymbolSecScan( orl_sec_handle orl_sec_hnd, orl_symbol_ret
 orl_return ORLENTRY ORLNoteSecScan( orl_sec_handle orl_sec_hnd, orl_note_callbacks *cbs, void *cookie )
 /*****************************************************************************************************/
 {
-    switch( ORLI_SEC_HND->type ) {
+    switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
     case( ORL_ELF ):
         return( ElfNoteSecScan( (elf_sec_handle)orl_sec_hnd, cbs, cookie ) );
     case( ORL_COFF ):
@@ -727,7 +727,7 @@ orl_return ORLENTRY ORLNoteSecScan( orl_sec_handle orl_sec_hnd, orl_note_callbac
 
 const char * ORLENTRY ORLSymbolGetName( orl_symbol_handle orl_symbol_hnd )
 {
-    switch( ORLI_SYMBOL_HND->type ) {
+    switch( LCL_SYM_HND( orl_symbol_hnd )->type ) {
     case( ORL_ELF ):
         return( ElfSymbolGetName( (elf_symbol_handle)orl_symbol_hnd ) );
     case( ORL_COFF ):
@@ -743,7 +743,7 @@ const char * ORLENTRY ORLSymbolGetName( orl_symbol_handle orl_symbol_hnd )
 orl_return ORLENTRY ORLSymbolGetValue( orl_symbol_handle orl_symbol_hnd, orl_symbol_value *sym_value )
 {
     if( sym_value != NULL ) {
-        switch( ORLI_SYMBOL_HND->type ) {
+        switch( LCL_SYM_HND( orl_symbol_hnd )->type ) {
         case( ORL_ELF ):
             return( ElfSymbolGetValue( (elf_symbol_handle)orl_symbol_hnd, sym_value ) );
         case( ORL_COFF ):
@@ -765,7 +765,7 @@ orl_return ORLENTRY ORLSymbolGetValue( orl_symbol_handle orl_symbol_hnd, orl_sym
 
 orl_symbol_binding ORLENTRY ORLSymbolGetBinding( orl_symbol_handle orl_symbol_hnd )
 {
-    switch( ORLI_SYMBOL_HND->type ) {
+    switch( LCL_SYM_HND( orl_symbol_hnd )->type ) {
     case( ORL_ELF ):
         return( ElfSymbolGetBinding( (elf_symbol_handle)orl_symbol_hnd ) );
     case( ORL_COFF ):
@@ -780,7 +780,7 @@ orl_symbol_binding ORLENTRY ORLSymbolGetBinding( orl_symbol_handle orl_symbol_hn
 
 orl_symbol_type ORLENTRY ORLSymbolGetType( orl_symbol_handle orl_symbol_hnd )
 {
-    switch( ORLI_SYMBOL_HND->type ) {
+    switch( LCL_SYM_HND( orl_symbol_hnd )->type ) {
     case( ORL_ELF ):
         return( ElfSymbolGetType( (elf_symbol_handle)orl_symbol_hnd ) );
     case( ORL_COFF ):
@@ -795,7 +795,7 @@ orl_symbol_type ORLENTRY ORLSymbolGetType( orl_symbol_handle orl_symbol_hnd )
 
 unsigned char ORLENTRY ORLSymbolGetRawInfo( orl_symbol_handle orl_symbol_hnd )
 {
-    switch( ORLI_SYMBOL_HND->type ) {
+    switch( LCL_SYM_HND( orl_symbol_hnd )->type ) {
     case( ORL_ELF ):
         return( ElfSymbolGetRawInfo( (elf_symbol_handle)orl_symbol_hnd ) );
     case( ORL_COFF ):
@@ -810,7 +810,7 @@ unsigned char ORLENTRY ORLSymbolGetRawInfo( orl_symbol_handle orl_symbol_hnd )
 
 orl_sec_handle ORLENTRY ORLSymbolGetSecHandle( orl_symbol_handle orl_symbol_hnd )
 {
-    switch( ORLI_SYMBOL_HND->type ) {
+    switch( LCL_SYM_HND( orl_symbol_hnd )->type ) {
     case( ORL_ELF ):
         return( (orl_sec_handle)ElfSymbolGetSecHandle( (elf_symbol_handle)orl_symbol_hnd ) );
     case( ORL_COFF ):
@@ -825,7 +825,7 @@ orl_sec_handle ORLENTRY ORLSymbolGetSecHandle( orl_symbol_handle orl_symbol_hnd 
 
 orl_symbol_handle ORLENTRY ORLSymbolGetAssociated( orl_symbol_handle orl_symbol_hnd )
 {
-    switch( ORLI_SYMBOL_HND->type ) {
+    switch( LCL_SYM_HND( orl_symbol_hnd )->type ) {
     case( ORL_ELF ):
         return( (orl_symbol_handle)ElfSymbolGetAssociated( (elf_symbol_handle)orl_symbol_hnd ) );
     case( ORL_COFF ):
@@ -841,12 +841,12 @@ orl_symbol_handle ORLENTRY ORLSymbolGetAssociated( orl_symbol_handle orl_symbol_
 
 orl_return ORLENTRY ORLGroupsScan( orl_file_handle orl_file_hnd, orl_group_return_func return_func )
 {
-    switch( ORLI_FILE_HND->type ) {
+    switch( LCL_FIL_HND( orl_file_hnd )->type ) {
     case( ORL_ELF ):
     case( ORL_COFF ):
         return( ORL_OKAY );
     case( ORL_OMF ):
-        return( OmfGroupsScan( ORLI_FILE_HND->file_hnd.omf, return_func ) );
+        return( OmfGroupsScan( LCL_FIL_HND( orl_file_hnd )->file_hnd.omf, return_func ) );
     default:    // ORL_UNRECOGNIZED_FORMAT
         break;
     }
@@ -855,7 +855,7 @@ orl_return ORLENTRY ORLGroupsScan( orl_file_handle orl_file_hnd, orl_group_retur
 
 const char * ORLENTRY ORLGroupName( orl_group_handle orl_group_hnd )
 {
-    if( ORLI_GROUP_HND->type == ORL_OMF ) {
+    if( LCL_GRP_HND( orl_group_hnd )->type == ORL_OMF ) {
         return( OmfGroupName( (omf_grp_handle)orl_group_hnd ) );
     }
     return( NULL );
@@ -863,7 +863,7 @@ const char * ORLENTRY ORLGroupName( orl_group_handle orl_group_hnd )
 
 orl_table_index ORLENTRY ORLGroupSize( orl_group_handle orl_group_hnd )
 {
-    if( ORLI_GROUP_HND->type == ORL_OMF ) {
+    if( LCL_GRP_HND( orl_group_hnd )->type == ORL_OMF ) {
         return( OmfGroupSize( (omf_grp_handle)orl_group_hnd ) );
     }
     return( 0 );
@@ -871,7 +871,7 @@ orl_table_index ORLENTRY ORLGroupSize( orl_group_handle orl_group_hnd )
 
 const char * ORLENTRY ORLGroupMember( orl_group_handle orl_group_hnd, orl_table_index idx )
 {
-    if( ORLI_GROUP_HND->type == ORL_OMF ) {
+    if( LCL_GRP_HND( orl_group_hnd )->type == ORL_OMF ) {
         return( OmfGroupMember( (omf_grp_handle)orl_group_hnd, idx ) );
     }
     return( NULL );

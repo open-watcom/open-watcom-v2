@@ -34,13 +34,6 @@
 
 #include <stddef.h>
 #include "orlglobl.h"
-
-typedef struct orl_handle_struct        *orl_handle;
-typedef struct orl_file_handle_struct   *orl_file_handle;
-typedef struct orl_sec_handle_struct    *orl_sec_handle;
-typedef struct orl_symbol_handle_struct *orl_symbol_handle;
-typedef struct orl_group_handle_struct  *orl_group_handle;
-
 #include "orlcomon.h"
 
 orl_handle              ORLENTRY ORLInit( orl_funcs *funcs );

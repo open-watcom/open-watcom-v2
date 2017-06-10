@@ -33,7 +33,7 @@
 #ifndef ORL_FILE_HANDLE_INCLUDED
 #define ORL_FILE_HANDLE_INCLUDED
 
-extern void             ORLAddFileLinks( orli_handle, orli_file_handle );
-extern orl_return       ORLRemoveFileLinks( orli_file_handle );
+extern void             ORLAddFileLinks( LCL_SYM( orl_handle ), LCL_SYM( orl_file_handle ) );
+extern orl_return       ORLRemoveFileLinks( LCL_SYM( orl_file_handle ) );
 
 #endif
