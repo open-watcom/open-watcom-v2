@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description: Internal ORL interfaces. 
+* Description: Internal ORL interfaces.
 *
 ****************************************************************************/
 
@@ -62,25 +62,42 @@
 #define ORL_PTR_FREE(x,a)               (x)->funcs->cli_free(a)
 
 
+#define LCL_SYM(s)          lcl_ ## s
+#define LCL_CONST_SYM(s)    const_lcl_ ## s
+#define LCL_STRUCT_SYM(s)   lcl_ ## s ## _struct
+
+#define TYPEDEF_LCL_TYPE(t)  \
+    typedef const struct LCL_STRUCT_SYM( t ) * LCL_CONST_SYM( t ); \
+    typedef struct LCL_STRUCT_SYM( t ) * LCL_SYM( t )
+
+#define TYPEDEF_LOCAL_TYPE(t) \
+    typedef const struct STRUCT_SYM( t ) * CONST_SYM( t ); \
+    typedef struct STRUCT_SYM( t ) * t
+
+
 /* NB The following are sort of fake.  We are hiding the contents of
    the file-specific section and symbol handles from the ORL
    level, allowing it only to check their type. */
 
-#define ORLI_SEC_HND        ((orli_sec_handle)orl_sec_hnd)
-#define ORLI_SYMBOL_HND     ((orli_symbol_handle)orl_symbol_hnd)
-#define ORLI_GROUP_HND      ((orli_group_handle)orl_group_hnd)
+#define LCL_SEC_HND(p)          ((struct LCL_STRUCT_SYM( orl_sec_handle ) *)p)
+#define LCL_SYM_HND(p)          ((struct LCL_STRUCT_SYM( orl_symbol_handle ) *)p)
+#define LCL_GRP_HND(p)          ((struct LCL_STRUCT_SYM( orl_group_handle ) *)p)
 
-typedef struct orli_sec_handle_struct {
-    orl_file_format         type;
-} *orli_sec_handle;
+TYPEDEF_LCL_TYPE( orl_sec_handle );
+TYPEDEF_LCL_TYPE( orl_symbol_handle );
+TYPEDEF_LCL_TYPE( orl_group_handle );
 
-typedef struct orli_symbol_handle_struct {
+struct LCL_STRUCT_SYM( orl_sec_handle ) {
     orl_file_format         type;
-} *orli_symbol_handle;
+};
 
-typedef struct orli_group_handle_struct {
+struct LCL_STRUCT_SYM( orl_symbol_handle ) {
     orl_file_format         type;
-} *orli_group_handle;
+};
+
+struct LCL_STRUCT_SYM( orl_group_handle ) {
+    orl_file_format         type;
+};
 
 #include "orlcomon.h"
 

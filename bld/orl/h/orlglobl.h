@@ -51,6 +51,19 @@
 
 #define ORL_NULL_HANDLE         NULL
 
+#define CONST_SYM(s)    const_ ## s
+#define STRUCT_SYM(s)   s ## _struct
+
+#define TYPEDEF_VIRT_TYPE(t) \
+    typedef const struct STRUCT_SYM( t ) * CONST_SYM( t ); \
+    typedef struct STRUCT_SYM( t ) * t
+
+TYPEDEF_VIRT_TYPE( orl_handle );
+TYPEDEF_VIRT_TYPE( orl_file_handle );
+TYPEDEF_VIRT_TYPE( orl_sec_handle );
+TYPEDEF_VIRT_TYPE( orl_symbol_handle );
+TYPEDEF_VIRT_TYPE( orl_group_handle );
+
 typedef void                    *orl_file_id;
 
 typedef unsigned_32             orl_file_offset;

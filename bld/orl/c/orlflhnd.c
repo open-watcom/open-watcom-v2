@@ -33,29 +33,29 @@
 #include "orllevel.h"
 #include "orlflhnd.h"
 
-void ORLAddFileLinks( orli_handle orli_hnd, orli_file_handle orli_file_hnd )
+void ORLAddFileLinks( LCL_SYM( orl_handle ) orl_hnd, LCL_SYM( orl_file_handle ) orl_file_hnd )
 {
-    orli_file_hnd->next = orli_hnd->first_file_hnd;
-    orli_file_hnd->orli_hnd = orli_hnd;
-    orli_hnd->first_file_hnd = orli_file_hnd;
+    orl_file_hnd->next = orl_hnd->first_file_hnd;
+    orl_file_hnd->orl_hnd = orl_hnd;
+    orl_hnd->first_file_hnd = orl_file_hnd;
 }
 
-orl_return ORLRemoveFileLinks( orli_file_handle orli_file_hnd )
+orl_return ORLRemoveFileLinks( LCL_SYM( orl_file_handle ) orl_file_hnd )
 {
-    orli_handle                         orli_hnd;
-    orli_file_handle                    current;
+    LCL_SYM( orl_handle )                        orl_hnd;
+    LCL_SYM( orl_file_handle )                   current;
 
-    orli_hnd = orli_file_hnd->orli_hnd;
+    orl_hnd = orl_file_hnd->orl_hnd;
 
-    if( orli_hnd->first_file_hnd == orli_file_hnd ) {
-        orli_hnd->first_file_hnd = orli_file_hnd->next;
-        ORL_FUNCS_FREE( orli_hnd, orli_file_hnd );
+    if( orl_hnd->first_file_hnd == orl_file_hnd ) {
+        orl_hnd->first_file_hnd = orl_file_hnd->next;
+        ORL_FUNCS_FREE( orl_hnd, orl_file_hnd );
         return( ORL_OKAY );
     } else {
-        for( current = orli_hnd->first_file_hnd; current->next != NULL; current = current->next ) {
-            if( current->next == orli_file_hnd ) {
-                current->next = orli_file_hnd->next;
-                ORL_FUNCS_FREE( orli_hnd, orli_file_hnd );
+        for( current = orl_hnd->first_file_hnd; current->next != NULL; current = current->next ) {
+            if( current->next == orl_file_hnd ) {
+                current->next = orl_file_hnd->next;
+                ORL_FUNCS_FREE( orl_hnd, orl_file_hnd );
                 return( ORL_OKAY );
             }
         }
