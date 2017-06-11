@@ -106,6 +106,10 @@ static bool DgStoreScalarValue( TYPE type, PTREE expr, target_size_t offset )
         CgFrontDataPtr( IC_DATA_FLT, ConPoolFloatAdd( expr ) );
         retb = ( BFSign( expr->u.floating_constant ) == 0 );
         break;
+    case PT_PTR_CONSTANT:
+        CgFrontDataPtr( IC_DATA_INT, 0 );
+        retb = true;
+        break;
     case PT_INT_CONSTANT:
         if( NULL == Integral64Type( expr->type ) ) {
             CgFrontDataInt( IC_DATA_INT, expr->u.int_constant );
@@ -125,7 +129,7 @@ static bool DgStoreScalarValue( TYPE type, PTREE expr, target_size_t offset )
         CgFrontDataPtr( IC_DATA_PTR_SYM, expr->u.symcg.symbol );
         break;
     default:
-        CFatal( "dgfront.c unexpected pointer data in DgStorePointer" );
+        CFatal( "dgfront.c unexpected pointer data in DgStoreScalarValue" );
         break;
     }
     return( retb );
