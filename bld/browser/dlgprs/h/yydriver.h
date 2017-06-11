@@ -60,7 +60,6 @@ private:
 
             Scanner *                   _scanner;
 
-            YYSTYPE *                   yyvp;
             YYSTYPE                     yyval;
             YYSTYPE                     yylval;
 
