@@ -1499,6 +1499,7 @@ static PTREE linker_constant_tree_node( PTREE expr )
         break;
     case PT_TYPE:
         break;
+    case PT_PTR_CONSTANT:
     case PT_STRING_CONSTANT:
     case PT_FLOATING_CONSTANT:
         if( linkerConstantSymbolNode != NULL ) {
