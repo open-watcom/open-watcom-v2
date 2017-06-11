@@ -245,7 +245,7 @@ typedef enum {
     HASH_HANDLE
 } hash_table_type;
 
-typedef struct hash_key_struct      hash_key_struct;
+typedef struct hash_entry_struct    hash_entry_struct;
 typedef struct hash_table_struct    hash_table_struct;
 typedef struct hash_key_data        hash_key_data;
 
@@ -254,16 +254,16 @@ struct hash_key_data {
     hash_data                       data;
 };
 
-struct hash_key_struct {
+struct hash_entry_struct {
     hash_key_data                   entry;
-    hash_key_struct                 *next;
+    hash_entry_struct               *next;
 };
 
 struct hash_table_struct {
     hash_value                      size;
     hash_value                      (*hash_func)(hash_value,hash_key);
     bool                            (*compare_func)(hash_key,hash_key);
-    hash_key_struct                 **table;
+    hash_entry_struct               **table;
 };
 
 typedef hash_table_struct           *hash_table;
