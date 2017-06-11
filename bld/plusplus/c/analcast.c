@@ -2878,6 +2878,7 @@ static PTREE doCastImplicit     // DO AN IMPLICIT CAST
             break;
           case 15 :
             result = CAST_NULLPTR_TO_PTR;
+            break;
           case 16 : // zero -> nullptr
             if( zeroSrc( &ctl ) ) {
                 result = CAST_ZERO_TO_NULLPTR;
