@@ -1342,6 +1342,11 @@ static PTREE convertToBool          // CONVERT TO BOOL
     ( CONVCTL* ctl )                // - cast info
 {
     stripOffCastOrig( ctl );
+
+    if( ctl->src.kind == RKD_NULLPTR && ctl->clscls_implicit ) {
+        ConvCtlWarning( ctl, WARN_IMPLICIT_NULLPTR_TO_BOOL );
+    }
+
     return NodeConvertToBool( ctl->expr );
 }
 
@@ -2880,11 +2885,10 @@ static PTREE doCastImplicit     // DO AN IMPLICIT CAST
             result = CAST_NULLPTR_TO_PTR;
             break;
           case 16 : // zero -> nullptr
-            result = DIAG_CAST_ILLEGAL;
             if( zeroSrc( &ctl ) ) {
-                if( !ConvCtlWarning( &ctl, WARN_IMPLICIT_NULLPTR_TO_BOOL ) ) {
-                    result = CAST_ZERO_TO_NULLPTR;
-                }
+                result = CAST_ZERO_TO_NULLPTR;
+            } else {
+                result = DIAG_CAST_ILLEGAL;
             }
             break;
         }
