@@ -2880,10 +2880,11 @@ static PTREE doCastImplicit     // DO AN IMPLICIT CAST
             result = CAST_NULLPTR_TO_PTR;
             break;
           case 16 : // zero -> nullptr
+            result = DIAG_CAST_ILLEGAL;
             if( zeroSrc( &ctl ) ) {
-                result = CAST_ZERO_TO_NULLPTR;
-            } else {
-                result = DIAG_CAST_ILLEGAL;
+                if( !ConvCtlWarning( &ctl, WARN_IMPLICIT_NULLPTR_TO_BOOL ) ) {
+                    result = CAST_ZERO_TO_NULLPTR;
+                }
             }
             break;
         }
