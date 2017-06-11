@@ -49,7 +49,7 @@ typedef struct {
 } orl_hash_key;
 
 typedef struct orl_hash_data_struct     orl_hash_data_struct;
-typedef struct orl_hash_key_struct      orl_hash_key_struct;
+typedef struct orl_hash_entry_struct    orl_hash_entry_struct;
 typedef struct orl_hash_table_struct    orl_hash_table_struct;
 
 struct orl_hash_data_struct {
@@ -57,10 +57,10 @@ struct orl_hash_data_struct {
     orl_hash_data_struct        *next;
 };
 
-struct orl_hash_key_struct {
+struct orl_hash_entry_struct {
     orl_hash_key                key;
     orl_hash_data_struct        *data_entry;
-    orl_hash_key_struct         *next;
+    orl_hash_entry_struct       *next;
 };
 
 struct orl_hash_table_struct {
@@ -68,7 +68,7 @@ struct orl_hash_table_struct {
     orl_funcs                   *funcs;
     bool                        (*compare_func)( orl_hash_key, orl_hash_key );
     orl_hash_value              (*hash_func)( orl_hash_value, orl_hash_key );
-    orl_hash_key_struct         **table;
+    orl_hash_entry_struct       **table;
 };
 
 typedef orl_hash_table_struct   *orl_hash_table;
