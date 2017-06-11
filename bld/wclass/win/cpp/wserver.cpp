@@ -104,13 +104,10 @@ WEXPORT WServer::~WServer() {
 }
 
 
-BOOL WEXPORT WServer::xtConnect( HSZ htopic, HSZ hservice ) {
+bool WEXPORT WServer::xtConnect( HSZ htopic, HSZ hservice ) {
 /***********************************************************/
 
-    if( (hservice == _service) && (htopic == _topic) ) {
-        return( TRUE );
-    }
-    return( FALSE );
+    return( (hservice == _service) && (htopic == _topic) );
 }
 
 
