@@ -45,7 +45,7 @@ extern orl_machine_type     ELFENTRY ElfFileGetMachineType( elf_file_handle );
 extern orl_file_flags       ELFENTRY ElfFileGetFlags( elf_file_handle );
 extern orl_file_type        ELFENTRY ElfFileGetType( elf_file_handle );
 extern orl_file_size        ELFENTRY ElfFileGetSize( elf_file_handle );
-extern elf_sec_handle       ELFENTRY ElfFileG;etSymbolTable( elf_file_handle );
+extern elf_sec_handle       ELFENTRY ElfFileGetSymbolTable( elf_file_handle );
 
 extern const char           * ELFENTRY ElfSecGetName( elf_sec_handle );
 extern orl_return           ELFENTRY ElfSecGetBase( elf_sec_handle, orl_sec_base * );
