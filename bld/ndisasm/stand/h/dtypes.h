@@ -228,15 +228,16 @@ typedef struct {
 
 typedef struct {
     union {
-//        const void              *handle;
-        ref_list                sec_ref_list;
-        label_list              sec_label_list;
-        section_type            sec_type;
-        section_ptr             section;
-        const char              *string;
-        label_entry             lab_entry;
+//        const void                  *handle;
+        ref_list                    sec_ref_list;
+        label_list                  sec_label_list;
+        section_type                sec_type;
+        section_ptr                 section;
+        const char                  *string;
+        label_entry                 lab_entry;
     } u;
 } hash_data;
+
 typedef unsigned_32                 hash_value;
 
 typedef enum {
@@ -247,15 +248,15 @@ typedef enum {
 
 typedef struct hash_entry_struct    hash_entry_struct;
 typedef struct hash_table_struct    hash_table_struct;
-typedef struct hash_key_data        hash_key_data;
+typedef struct hash_entry_data      hash_entry_data;
 
-struct hash_key_data {
+struct hash_entry_data {
     hash_key                        key;
     hash_data                       data;
 };
 
 struct hash_entry_struct {
-    hash_key_data                   entry;
+    hash_entry_data                 entry;
     hash_entry_struct               *next;
 };
 

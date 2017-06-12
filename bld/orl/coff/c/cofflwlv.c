@@ -52,7 +52,7 @@ orl_return CoffCreateSymbolHandles( coff_file_handle file_hnd )
         file_hnd->symbol_handles = NULL;
         return( ORL_OKAY );
     }
-    file_hnd->symbol_handles = (coff_symbol_handle)_ClientAlloc( file_hnd, sizeof( coff_symbol_handle_struct ) * file_hnd->num_symbols );
+    file_hnd->symbol_handles = (coff_symbol_handle)_ClientAlloc( file_hnd, sizeof( ORL_STRUCT( coff_symbol_handle ) ) * file_hnd->num_symbols );
     if( file_hnd->symbol_handles == NULL )
         return( ORL_OUT_OF_MEMORY );
     prev = 0;
@@ -408,9 +408,9 @@ orl_return CoffCreateRelocs( coff_sec_handle orig_sec, coff_sec_handle reloc_sec
 orl_linnum CoffConvertLines( coff_sec_handle hdl, orl_table_index numlines )
 /**************************************************************************/
 {
-    coff_line_num ORLUNALIGNED  *coffline;
-    struct ORL_STRUCT( orl_linnum ) ORLUNALIGNED *linestart;
-    struct ORL_STRUCT( orl_linnum ) ORLUNALIGNED *currline;
+    coff_line_num               ORLUNALIGNED *coffline;
+    ORL_STRUCT( orl_linnum )    ORLUNALIGNED *linestart;
+    ORL_STRUCT( orl_linnum )    ORLUNALIGNED *currline;
     coff_file_handle            fhdl;
     unsigned_32                 linebase;
     coff_symbol_handle          sym;
@@ -424,7 +424,7 @@ orl_linnum CoffConvertLines( coff_sec_handle hdl, orl_table_index numlines )
         }
     }
     coffline = (coff_line_num *)( hdl->hdr->lineno_ptr - fhdl->initial_size + fhdl->rest_of_file_buffer );
-    currline = (struct ORL_STRUCT( orl_linnum ) ORLUNALIGNED *)coffline;
+    currline = (ORL_STRUCT( orl_linnum ) ORLUNALIGNED *)coffline;
     if( hdl->relocs_done )
         return( (orl_linnum)currline );
     linestart = currline;

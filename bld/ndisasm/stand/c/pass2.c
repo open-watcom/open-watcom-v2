@@ -210,28 +210,30 @@ static return_val referenceString( ref_entry r_entry, dis_sec_size size,
 
 size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
                            dis_sec_offset offset, dis_sec_size sec_size,
-                           ref_entry * r_entry, char *buff )
+                           ref_entry *reference_entry, char *buff )
 // handle any references at this offset
 {
     return_val          error;
     dis_sec_addend      nvalue;
     char                *p;
+    ref_entry           r_entry;
 
+    r_entry = *reference_entry;
     buff[0] = '\0';
-    for( ; *r_entry != NULL && (*r_entry)->offset == offset; *r_entry = (*r_entry)->next ) {
-        if( (*r_entry)->no_val == 0 ) {
+    for( ; r_entry != NULL && r_entry->offset == offset; r_entry = r_entry->next ) {
+        if( r_entry->no_val == 0 ) {
             nvalue = value.u._32[I64LO32];
-        } else if( (*r_entry)->addend ) {
-            nvalue = HandleAddend( *r_entry );
+        } else if( r_entry->addend ) {
+            nvalue = HandleAddend( r_entry );
         } else {
             nvalue = 0;
         }
-        switch( (*r_entry)->type ) {
+        switch( r_entry->type ) {
         case ORL_RELOC_TYPE_MAX + 1:
         case ORL_RELOC_TYPE_JUMP:
         case ORL_RELOC_TYPE_REL_21_SH:
         case ORL_RELOC_TYPE_WORD_26:
-            error = referenceString( *r_entry, sec_size, "j^", "", "", buff, flags );
+            error = referenceString( r_entry, sec_size, "j^", "", "", buff, flags );
             if( error != RC_OKAY ) {
                 // label is defined to be beyond the boundaries of the section!
                 if( !(DFormat & DFF_ASM) ){
@@ -244,22 +246,22 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
                 BufferMsg( LABEL_BEYOND_SECTION );
                 BufferConcatNL();
                 BufferPrint();
-                *r_entry = (*r_entry)->next;
+                *reference_entry = r_entry->next;
                 return( 0 );
             }
             continue; // Don't print addend
             break;
         case ORL_RELOC_TYPE_SEC_REL:
-            referenceString( *r_entry, sec_size, "s^", "s^", "@s", buff, flags );
+            referenceString( r_entry, sec_size, "s^", "s^", "@s", buff, flags );
             break;
         case ORL_RELOC_TYPE_HALF_HI:
-            referenceString( *r_entry, sec_size, "h^", "h^", "@h", buff, flags );
+            referenceString( r_entry, sec_size, "h^", "h^", "@h", buff, flags );
             break;
         case ORL_RELOC_TYPE_HALF_HA:
-            referenceString( *r_entry, sec_size, "ha^", "ha^", "@ha", buff, flags );
+            referenceString( r_entry, sec_size, "ha^", "ha^", "@ha", buff, flags );
             break;
         case ORL_RELOC_TYPE_HALF_LO:
-            referenceString( *r_entry, sec_size, "l^", "l^", "@l", buff, flags );
+            referenceString( r_entry, sec_size, "l^", "l^", "@l", buff, flags );
             break;
         case ORL_RELOC_TYPE_REL_14:
         case ORL_RELOC_TYPE_REL_24:
@@ -269,22 +271,22 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
         case ORL_RELOC_TYPE_WORD_16:
         case ORL_RELOC_TYPE_WORD_32:
         case ORL_RELOC_TYPE_WORD_64:
-            if( ( (*r_entry)->label->type != LTYP_GROUP ) &&
+            if( ( r_entry->label->type != LTYP_GROUP ) &&
               ( flags & RFLAG_IS_IMMED ) && IsMasmOutput() ) {
-                referenceString( *r_entry, sec_size, "offset ", "offset ", "", buff, flags );
+                referenceString( r_entry, sec_size, "offset ", "offset ", "", buff, flags );
             } else {
-                referenceString( *r_entry, sec_size, "", "", "", buff, flags );
+                referenceString( r_entry, sec_size, "", "", "", buff, flags );
             }
             break;
         case ORL_RELOC_TYPE_REL_16:
-            if( IsIntelx86() && !(*r_entry)->no_val ) {
+            if( IsIntelx86() && !r_entry->no_val ) {
                 nvalue -= ins_size;
             }
-            if( ( (*r_entry)->label->type != LTYP_GROUP ) &&
+            if( ( r_entry->label->type != LTYP_GROUP ) &&
               ( flags & RFLAG_IS_IMMED ) && IsMasmOutput() ) {
-                referenceString( *r_entry, sec_size, "offset ", "offset ", "", buff, flags );
+                referenceString( r_entry, sec_size, "offset ", "offset ", "", buff, flags );
             } else {
-                referenceString( *r_entry, sec_size, "", "", "", buff, flags  );
+                referenceString( r_entry, sec_size, "", "", "", buff, flags  );
             }
             break;
         case ORL_RELOC_TYPE_WORD_8:
@@ -292,16 +294,16 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
         case ORL_RELOC_TYPE_WORD_HI_8:
         case ORL_RELOC_TYPE_WORD_32_SEG:
             // Keep these seperate because they are OMF specific
-            referenceString( *r_entry, sec_size, "", "", "", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "", buff, flags );
             break;
         case ORL_RELOC_TYPE_SEGMENT:
-            if( ( (*r_entry)->label->type != LTYP_GROUP )
-                && ( (*r_entry)->label->type != LTYP_SECTION )
+            if( ( r_entry->label->type != LTYP_GROUP )
+                && ( r_entry->label->type != LTYP_SECTION )
                 && ( flags & RFLAG_IS_IMMED )
                 && IsMasmOutput() ) {
-                referenceString( *r_entry, sec_size, "seg ", "seg ", "", buff, flags );
+                referenceString( r_entry, sec_size, "seg ", "seg ", "", buff, flags );
             } else {
-                referenceString( *r_entry, sec_size, "", "", "", buff, flags );
+                referenceString( r_entry, sec_size, "", "", "", buff, flags );
             }
             break;
 
@@ -329,54 +331,54 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             // relative addresses without relocate
             //
             // in amd64 code the instruction size will be added in pass1.c!
-            if( (*r_entry)->no_val == 0 && !( GetMachineType() == ORL_MACHINE_TYPE_AMD64 ) ) {
+            if( r_entry->no_val == 0 && !( GetMachineType() == ORL_MACHINE_TYPE_AMD64 ) ) {
                 nvalue -= ins_size;
             }
-            referenceString( *r_entry, sec_size, "", "", "", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "", buff, flags );
             break;
         case ORL_RELOC_TYPE_TOCREL_14:
             nvalue &= ~0x3;
         case ORL_RELOC_TYPE_TOCREL_16:
-            referenceString( *r_entry, sec_size, "[toc]", "[toc]", "@toc", buff, flags );
+            referenceString( r_entry, sec_size, "[toc]", "[toc]", "@toc", buff, flags );
             break;
         case ORL_RELOC_TYPE_TOCVREL_14:
             nvalue &= ~0x3;
         case ORL_RELOC_TYPE_TOCVREL_16:
-            referenceString( *r_entry, sec_size, "[tocv]", "[tocv]", "@tocv", buff, flags );
+            referenceString( r_entry, sec_size, "[tocv]", "[tocv]", "@tocv", buff, flags );
             break;
         case ORL_RELOC_TYPE_GOT_16:
-            referenceString( *r_entry, sec_size, "", "", "@got", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "@got", buff, flags );
             break;
         case ORL_RELOC_TYPE_GOT_16_HI:
-            referenceString( *r_entry, sec_size, "", "", "@got@h", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "@got@h", buff, flags );
             break;
         case ORL_RELOC_TYPE_GOT_16_HA:
-            referenceString( *r_entry, sec_size, "", "", "@got@ha", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "@got@ha", buff, flags );
             break;
         case ORL_RELOC_TYPE_GOT_16_LO:
-            referenceString( *r_entry, sec_size, "", "", "@got@l", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "@got@l", buff, flags );
             break;
         case ORL_RELOC_TYPE_PLTREL_24:
         case ORL_RELOC_TYPE_PLTREL_32:
         case ORL_RELOC_TYPE_PLT_32:
-            referenceString( *r_entry, sec_size, "", "", "@plt", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "@plt", buff, flags );
             break;
         case ORL_RELOC_TYPE_PLT_16_HI:
-            referenceString( *r_entry, sec_size, "", "", "@plt@h", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "@plt@h", buff, flags );
             break;
         case ORL_RELOC_TYPE_PLT_16_HA:
-            referenceString( *r_entry, sec_size, "", "", "@plt@ha", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "@plt@ha", buff, flags );
             break;
         case ORL_RELOC_TYPE_PLT_16_LO:
-            referenceString( *r_entry, sec_size, "", "", "@plt@l", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "@plt@l", buff, flags );
             break;
         default:
             continue;
         }
         // LTYP_UNNAMED labels are always at the correct location
-        // if( nvalue != 0 && (*r_entry)->label->type != LTYP_UNNAMED ) {
+        // if( nvalue != 0 && r_entry->label->type != LTYP_UNNAMED ) {
         // not so - BBB Oct 28, 1996
-        if(( (*r_entry)->no_val == 0 ) && nvalue != 0 ) {
+        if(( r_entry->no_val == 0 ) && nvalue != 0 ) {
             p = &buff[strlen(buff)];
             if( nvalue < 0 ) {
                 *p++ = '-';
@@ -389,6 +391,7 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             FmtHexNum( p, 0, value, false );
         }
     }
+    *reference_entry = r_entry;
     return( strlen( buff ) );
 }
 
@@ -568,26 +571,29 @@ static void processDataInCode( section_ptr section, unsigned_8 *contents, struct
     data->loop = offset;
 }
 
-static const char *processFpuEmulatorFixup( ref_entry *r, dis_sec_offset loop )
+static ref_entry processFpuEmulatorFixup( ref_entry r_entry, dis_sec_offset loop, const char **pfixup )
 {
-    const char  *fixup;
+    const char  *fpu_fixup;
 
-    if( *r != NULL && (*r)->offset == loop ) {
-        fixup = SkipRef( *r );
-        if( fixup != NULL ) {
-            *r = (*r)->next;
+    if( r_entry != NULL && r_entry->offset == loop ) {
+        fpu_fixup = SkipRef( r_entry );
+        if( fpu_fixup != NULL ) {
+            r_entry = r_entry->next;
             // there can be second fixup per instruction with 1 byte offset
             // it must be skipped too, displayed is first only
             // first one is significant, second one is segment override only
-            if( *r && SkipRef( *r ) != NULL && ( (*r)->offset == loop + 1 ) ) {
-                *r = (*r)->next;
+            if( r_entry != NULL && SkipRef( r_entry ) != NULL && ( r_entry->offset == loop + 1 ) ) {
+                r_entry = r_entry->next;
             }
-            if( Options & PRINT_FPU_EMU_FIXUP ) {
-                return( fixup );
+            if( (Options & PRINT_FPU_EMU_FIXUP) == 0 ) {
+                fpu_fixup = NULL;
             }
         }
+    } else {
+        fpu_fixup = NULL;
     }
-    return( NULL );
+    *pfixup = fpu_fixup;
+    return( r_entry );
 }
 
 num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size,
@@ -658,7 +664,7 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
         while( data.r_entry != NULL && ( data.r_entry->offset < data.loop ) ) {
             data.r_entry = data.r_entry->next;
         }
-        FPU_fixup = processFpuEmulatorFixup( &data.r_entry, data.loop );
+        data.r_entry = processFpuEmulatorFixup( data.r_entry, data.loop, &FPU_fixup );
         if( data.r_entry != NULL && ( data.r_entry->offset == data.loop ) ) {
             if( is_intel || IsDataReloc( data.r_entry ) ) {
                 // we just skip the data

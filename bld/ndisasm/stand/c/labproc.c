@@ -172,7 +172,7 @@ static label_entry insertLabelInMiddle( label_list sec_label_list, label_entry e
 
 static label_entry addLabel( label_list sec_label_list, label_entry entry, orl_symbol_handle sym_hnd )
 {
-    hash_key_data   key_entry;
+    hash_entry_data key_entry;
 
     if( sec_label_list->first == NULL ) {
         sec_label_list->first = entry;

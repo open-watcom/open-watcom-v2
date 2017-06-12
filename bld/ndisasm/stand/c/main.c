@@ -809,8 +809,7 @@ static hash_table emitGlobls( void )
     char                *globl;
     hash_table          hash;
     char                *name;
-    hash_key_data       key_entry;
-    
+    hash_entry_data     key_entry;
 
     hash = HashTableCreate( TMP_TABLE_SIZE, HASH_STRING );
     if( hash == NULL )
@@ -856,7 +855,7 @@ static void emitExtrns( hash_table hash )
     label_list          l_list;
     char                *extrn;
     char                *name;
-    hash_key_data       key_entry;
+    hash_entry_data     key_entry;
 
     if( hash == NULL ) {
         hash = HashTableCreate( TMP_TABLE_SIZE, HASH_STRING );

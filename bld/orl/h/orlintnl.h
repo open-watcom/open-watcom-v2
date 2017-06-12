@@ -64,38 +64,38 @@
 
 #define LCL_SYM(s)          lcl_ ## s
 #define LCL_CONST_SYM(s)    const_lcl_ ## s
-#define ORL_LCL_STRUCT(s)   lcl_ ## s ## _struct
+#define ORL_LCL_STRUCT(s)   struct lcl_ ## s ## _struct
 
 #define TYPEDEF_LCL_TYPE(t)  \
-    typedef const struct ORL_LCL_STRUCT( t ) * LCL_CONST_SYM( t ); \
-    typedef struct ORL_LCL_STRUCT( t ) * LCL_SYM( t )
+    typedef const ORL_LCL_STRUCT( t ) * LCL_CONST_SYM( t ); \
+    typedef ORL_LCL_STRUCT( t ) * LCL_SYM( t )
 
 #define TYPEDEF_LOCAL_TYPE(t) \
-    typedef const struct ORL_STRUCT( t ) * CONST_SYM( t ); \
-    typedef struct ORL_STRUCT( t ) * t
+    typedef const ORL_STRUCT( t ) * const_ ## t; \
+    typedef ORL_STRUCT( t ) * t
 
 
 /* NB The following are sort of fake.  We are hiding the contents of
    the file-specific section and symbol handles from the ORL
    level, allowing it only to check their type. */
 
-#define LCL_SEC_HND(p)          ((struct ORL_LCL_STRUCT( orl_sec_handle ) *)p)
-#define LCL_SYM_HND(p)          ((struct ORL_LCL_STRUCT( orl_symbol_handle ) *)p)
-#define LCL_GRP_HND(p)          ((struct ORL_LCL_STRUCT( orl_group_handle ) *)p)
+#define LCL_SEC_HND(p)          ((ORL_LCL_STRUCT( orl_sec_handle ) *)p)
+#define LCL_SYM_HND(p)          ((ORL_LCL_STRUCT( orl_symbol_handle ) *)p)
+#define LCL_GRP_HND(p)          ((ORL_LCL_STRUCT( orl_group_handle ) *)p)
 
 TYPEDEF_LCL_TYPE( orl_sec_handle );
 TYPEDEF_LCL_TYPE( orl_symbol_handle );
 TYPEDEF_LCL_TYPE( orl_group_handle );
 
-struct ORL_LCL_STRUCT( orl_sec_handle ) {
+ORL_LCL_STRUCT( orl_sec_handle ) {
     orl_file_format         type;
 };
 
-struct ORL_LCL_STRUCT( orl_symbol_handle ) {
+ORL_LCL_STRUCT( orl_symbol_handle ) {
     orl_file_format         type;
 };
 
-struct ORL_LCL_STRUCT( orl_group_handle ) {
+ORL_LCL_STRUCT( orl_group_handle ) {
     orl_file_format         type;
 };
 
