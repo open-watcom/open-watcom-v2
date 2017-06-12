@@ -405,12 +405,12 @@ orl_return CoffCreateRelocs( coff_sec_handle orig_sec, coff_sec_handle reloc_sec
     return( ORL_OKAY );
 }
 
-orl_linnum *CoffConvertLines( coff_sec_handle hdl, orl_table_index numlines )
-/***************************************************************************/
+orl_linnum CoffConvertLines( coff_sec_handle hdl, orl_table_index numlines )
+/**************************************************************************/
 {
     coff_line_num ORLUNALIGNED  *coffline;
-    orl_linnum ORLUNALIGNED     *linestart;
-    orl_linnum ORLUNALIGNED     *currline;
+    struct STRUCT_SYM( orl_linnum ) ORLUNALIGNED *linestart;
+    struct STRUCT_SYM( orl_linnum ) ORLUNALIGNED *currline;
     coff_file_handle            fhdl;
     unsigned_32                 linebase;
     coff_symbol_handle          sym;
@@ -424,9 +424,9 @@ orl_linnum *CoffConvertLines( coff_sec_handle hdl, orl_table_index numlines )
         }
     }
     coffline = (coff_line_num *)( hdl->hdr->lineno_ptr - fhdl->initial_size + fhdl->rest_of_file_buffer );
-    currline = (orl_linnum *)coffline;
+    currline = (struct STRUCT_SYM( orl_linnum ) ORLUNALIGNED *)coffline;
     if( hdl->relocs_done )
-        return( (orl_linnum *)currline );
+        return( (orl_linnum)currline );
     linestart = currline;
     linebase = 0;
     while( numlines > 0 ) {
@@ -446,7 +446,7 @@ orl_linnum *CoffConvertLines( coff_sec_handle hdl, orl_table_index numlines )
         numlines--;
     }
     hdl->relocs_done = true;
-    return( (orl_linnum *)linestart );
+    return( (orl_linnum)linestart );
 }
 
 static size_t strncspn( const char *s, const char *charset, size_t len )

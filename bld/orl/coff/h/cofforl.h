@@ -56,7 +56,7 @@ extern orl_sec_alignment    COFFENTRY CoffSecGetAlignment( coff_sec_handle );
 extern coff_sec_handle      COFFENTRY CoffSecGetStringTable( coff_sec_handle );
 extern coff_sec_handle      COFFENTRY CoffSecGetSymbolTable( coff_sec_handle );
 extern coff_sec_handle      COFFENTRY CoffSecGetRelocTable( coff_sec_handle );
-extern orl_linnum           * COFFENTRY CoffSecGetLines( coff_sec_handle );
+extern orl_linnum           COFFENTRY CoffSecGetLines( coff_sec_handle );
 extern orl_table_index      COFFENTRY CoffSecGetNumLines( coff_sec_handle );
 extern coff_sec_offset      COFFENTRY CoffSecGetOffset( coff_sec_handle );
 extern orl_return           COFFENTRY CoffSecGetContents( coff_sec_handle, unsigned char ** );

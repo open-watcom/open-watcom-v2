@@ -249,7 +249,7 @@ struct omf_seg_assoc_struct {
     omf_symbol_handle   sym;
     omf_comdat_struct   comdat;
     omf_grp_handle      group;
-    orl_linnum          *lines;
+    orl_linnum          lines;
     orl_table_index     num_lines;
 };
 

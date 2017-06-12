@@ -43,7 +43,7 @@
 #define LINES_ARRAY_SIZE_INC    64
 
 extern char                     *SourceFileInDwarf;
-extern orl_linnum               *lines;
+extern orl_linnum               lines;
 static long                     currlinesize;
 extern hash_table               HandleToRefListTable;
 
@@ -98,7 +98,7 @@ extern orl_table_index GetDwarfLines( section_ptr section )
     unsigned_8          *relocContents;
     orl_table_index     numlines;
 
-    if( lines ) {
+    if( lines != NULL ) {
         MemFree( lines );
         lines = NULL;
     }
@@ -200,10 +200,10 @@ static void dump_state( state_info *state, int *numlines, uint limit )
     if( state->address < limit ) {
         if( *numlines >= currlinesize ) {
             currlinesize += LINES_ARRAY_SIZE_INC;
-            if( lines ) {
-                lines = (orl_linnum *)MemRealloc( lines, currlinesize*sizeof(orl_linnum) );
+            if( lines != NULL ) {
+                lines = (orl_linnum)MemRealloc( lines, currlinesize * sizeof( struct STRUCT_SYM( orl_linnum ) ) );
             } else {
-                lines = (orl_linnum *)MemAlloc( currlinesize*sizeof(orl_linnum) );
+                lines = (orl_linnum)MemAlloc( currlinesize * sizeof( struct STRUCT_SYM( orl_linnum ) ) );
             }
         }
         lines[*numlines].linnum = (uint_16)state->line;

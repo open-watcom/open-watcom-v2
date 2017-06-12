@@ -522,7 +522,7 @@ orl_sec_handle ORLENTRY ORLSecGetRelocTable( orl_sec_handle orl_sec_hnd )
     return( ORL_NULL_HANDLE );
 }
 
-orl_linnum * ORLENTRY ORLSecGetLines( orl_sec_handle orl_sec_hnd )
+orl_linnum ORLENTRY ORLSecGetLines( orl_sec_handle orl_sec_hnd )
 {
     switch( LCL_SEC_HND( orl_sec_hnd )->type ) {
     case( ORL_ELF ):
