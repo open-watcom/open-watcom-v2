@@ -123,9 +123,9 @@ static omf_symbol_handle findExtDefSym( omf_file_handle ofh, omf_idx ext )
 {
     omf_sec_handle                  sh;
     omf_string_struct               *extname;
-    orl_hash_data_struct            *data_entry;
+    orl_hash_data_entry             data_entry;
     omf_symbol_handle               sym;
-    orl_hash_key                    key;
+    orl_hash_key                    h_key;
 
     assert( ofh );
 
@@ -139,9 +139,9 @@ static omf_symbol_handle findExtDefSym( omf_file_handle ofh, omf_idx ext )
     if( extname == NULL )
         return( NULL );
 
-    key.u.string = extname->string;
-    for( data_entry = ORLHashTableQuery( ofh->symbol_table->assoc.sym.hash_tab, key ); data_entry != NULL; data_entry = data_entry->next ) {
-        sym = (omf_symbol_handle)data_entry->data;
+    h_key.u.string = extname->string;
+    for( data_entry = ORLHashTableQuery( ofh->symbol_table->assoc.sym.hash_tab, h_key ); data_entry != NULL; data_entry = data_entry->next ) {
+        sym = (omf_symbol_handle)data_entry->data.u.sym_handle;
         if( sym != NULL ) {
             if( sym->typ & ( ORL_SYM_TYPE_UNDEFINED | ORL_SYM_TYPE_COMMON ) ) {
                 return( sym );
@@ -389,7 +389,8 @@ static orl_return       addString( omf_sec_handle sh, char *buffer, omf_string_l
 static orl_return       addToSymbolTable( omf_file_handle ofh, omf_symbol_handle sym )
 {
     omf_sec_handle      sh;
-    orl_hash_key        key;
+    orl_hash_key        h_key;
+    orl_hash_data       h_data;
 
     assert( ofh );
     assert( sym );
@@ -414,8 +415,9 @@ static orl_return       addToSymbolTable( omf_file_handle ofh, omf_symbol_handle
 
     sh->assoc.sym.syms[sh->assoc.sym.num] = sym;
     sh->assoc.sym.num++;
-    key.u.string = sym->name.string;
-    return( ORLHashTableInsert( sh->assoc.sym.hash_tab, key, sym ) );
+    h_key.u.string = sym->name.string;
+    h_data.u.sym_handle = (orl_symbol_handle)sym;
+    return( ORLHashTableInsert( sh->assoc.sym.hash_tab, h_key, h_data ) );
 }
 
 

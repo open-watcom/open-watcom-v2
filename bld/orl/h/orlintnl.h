@@ -38,7 +38,6 @@
 #include <string.h>
 #include "bool.h"
 #include "orlglobl.h"
-#include "orlhshdf.h"
 
 #if !defined( __386__ ) && !defined( __GNUC__ )
 #define ORLUNALIGNED __unaligned
@@ -99,6 +98,7 @@ ORL_LCL_STRUCT( orl_group_handle ) {
     orl_file_format         type;
 };
 
+#include "orlhshdf.h"
 #include "orlcomon.h"
 
 #endif
