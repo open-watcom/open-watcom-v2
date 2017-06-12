@@ -206,10 +206,10 @@ static orl_return scanTabCallBack( orl_sec_handle shnd, const orl_sec_offset *ps
             tmp->next = sp;
         } else {
             // The two records will be merged into one
-            if( end > tmp->next->end ) {
+            if( tmp->next->end < end ) {
                 tmp->next->end = end;
             }
-            if( start < tmp->next->start ) {
+            if( tmp->next->start > start ) {
                 tmp->next->start = start;
             }
             MemFree( sp );

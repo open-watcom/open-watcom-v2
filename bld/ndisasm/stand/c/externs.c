@@ -42,17 +42,15 @@
 #include "clibext.h"
 
 
-static int ref_compare( const void *_entry1, const void *_entry2 )
+static int ref_compare( const void *entry1, const void *entry2 )
 {
-    const ref_entry *entry1 = (const ref_entry *)_entry1;
-    const ref_entry *entry2 = (const ref_entry *)_entry2;
     int         ret_val;
 
-    ret_val = stricmp( (*entry1)->label->label.name, (*entry2)->label->label.name );
+    ret_val = stricmp( (*(const ref_entry *)entry1)->label->label.name, (*(const ref_entry *)entry2)->label->label.name );
     if( ret_val == 0 ) {
-        if( (*entry1)->offset < (*entry2)->offset ) {
+        if( (*(const ref_entry *)entry1)->offset < (*(const ref_entry *)entry2)->offset ) {
             ret_val = -1;
-        } else if( (*entry1)->offset > (*entry2)->offset ) {
+        } else if( (*(const ref_entry *)entry1)->offset > (*(const ref_entry *)entry2)->offset ) {
             ret_val = 1;
         }
     }
