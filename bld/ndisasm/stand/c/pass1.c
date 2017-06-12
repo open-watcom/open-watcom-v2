@@ -159,7 +159,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
 
         // data may not be listed in scan table, but a fixup at this offset will
         // give it away
-        while( r_entry != NULL && ( ( r_entry->offset < loop ) || SkipRef( r_entry ) ) ) {
+        while( r_entry != NULL && ( ( r_entry->offset < loop ) || SkipRef( r_entry ) != NULL ) ) {
             r_entry = r_entry->next;
         }
         if( r_entry != NULL && ( r_entry->offset == loop ) ) {

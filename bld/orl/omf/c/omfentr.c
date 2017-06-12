@@ -48,7 +48,7 @@ omf_handle OMFENTRY OmfInit( orl_funcs *funcs )
 
     assert( funcs );
 
-    oh = ORL_CLI_ALLOC( funcs, sizeof( omf_handle_struct ) );
+    oh = ORL_CLI_ALLOC( funcs, sizeof( ORL_STRUCT( omf_handle ) ) );
     if( oh != NULL ) {
         oh->funcs = funcs;
         oh->first_file_hnd = NULL;
@@ -81,11 +81,11 @@ orl_return OMFENTRY OmfFileInit( omf_handle oh, orl_file_id file, omf_file_handl
 
     assert( oh );
 
-    ofh = ORL_PTR_ALLOC( oh, sizeof( omf_file_handle_struct ) );
+    ofh = ORL_PTR_ALLOC( oh, sizeof( ORL_STRUCT( omf_file_handle ) ) );
     if( ofh == NULL )
         return( ORL_OUT_OF_MEMORY );
 
-    memset( ofh, 0, sizeof( omf_file_handle_struct ) );
+    memset( ofh, 0, sizeof( ORL_STRUCT( omf_file_handle ) ) );
     ofh->file = file;
 
     OmfAddFileLinks( oh, ofh );
@@ -111,7 +111,7 @@ orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, const char *desired, orl_s
 {
     orl_hash_data_struct                *data_entry;
     omf_sec_handle                      sh;
-    const omf_symbol_handle_struct      *sym;
+    omf_symbol_handle                   sym;
     orl_return                          return_val;
     orl_hash_key                        key;
 
@@ -134,7 +134,7 @@ orl_return OMFENTRY OmfFileScan( omf_file_handle ofh, const char *desired, orl_s
         assert( ofh->symbol_table->assoc.sym.hash_tab );
         key.u.string = desired;
         for( data_entry = ORLHashTableQuery( ofh->symbol_table->assoc.sym.hash_tab, key ); data_entry != NULL; data_entry = data_entry->next ) {
-            sym = data_entry->data;
+            sym = (omf_symbol_handle)data_entry->data;
             if( ( sym->typ == ORL_SYM_TYPE_SECTION ) && (sym->flags & OMF_SYM_FLAGS_GRPDEF) == 0 ) {
                 return_val = return_func( (orl_sec_handle)sym->section );
                 if( return_val != ORL_OKAY ) {

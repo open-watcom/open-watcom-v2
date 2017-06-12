@@ -285,7 +285,7 @@ static return_val registerSec( orl_sec_handle shnd, section_type type )
 {
     section_ptr         section;
     return_val          error;
-    hash_key_data       key_entry;
+    hash_entry_data     key_entry;
 
     section = MemAlloc( sizeof( section_struct ) );
     if( section != NULL ) {
@@ -339,7 +339,7 @@ static return_val createLabelList( orl_sec_handle shnd )
 {
     label_list          list;
     return_val          error;
-    hash_key_data       key_entry;
+    hash_entry_data     key_entry;
 
     list = MemAlloc( sizeof( label_list_struct ) );
     if( list != NULL ) {
@@ -368,7 +368,7 @@ static return_val createRefList( orl_sec_handle shnd )
 {
     ref_list        list;
     return_val      error;
-    hash_key_data   key_entry;
+    hash_entry_data key_entry;
 
     list = MemAlloc( sizeof( ref_list_struct ) );
     if( list != NULL ) {
@@ -583,7 +583,7 @@ static return_val initHashTables( void )
 {
     int             i;
     return_val      error;
-    hash_key_data   key_entry;
+    hash_entry_data key_entry;
 
     error = createHashTables();
     if( error == RC_OKAY ) {
@@ -826,7 +826,7 @@ void Init( void )
     return_val          error;
     const char *        const *list;
     const char          *name;
-    hash_key_data       key_entry;
+    hash_entry_data     key_entry;
 
     OutputDest = STDOUT_FILENO;
     ChangePrintDest( OutputDest );

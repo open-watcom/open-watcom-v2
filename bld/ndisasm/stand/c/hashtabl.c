@@ -92,7 +92,7 @@ static hash_value string_hash_ignorecase( hash_value size, hash_key key )
     return( hash_encode( size, key.u.string, strlen( key.u.string ), true ) );
 }
 
-return_val HashTableInsert( hash_table hash_tbl, hash_key_data *key_data )
+return_val HashTableInsert( hash_table hash_tbl, hash_entry_data *key_data )
 {
     hash_value              hash_val;
     hash_entry_struct       *hash_entry;
