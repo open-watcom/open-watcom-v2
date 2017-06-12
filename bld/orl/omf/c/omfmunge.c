@@ -1467,7 +1467,7 @@ orl_return OmfAddComDat( omf_file_handle ofh, bool is32, int flags, int attr, in
 
 extern orl_return OmfAddLineNum( omf_sec_handle sh, unsigned_16 line, unsigned_32 offset )
 {
-    sh->assoc.seg.lines = checkArraySize( sh->omf_file_hnd, sh->assoc.seg.lines, sh->assoc.seg.num_lines, STD_INC, sizeof( struct STRUCT_SYM( orl_linnum ) ) );
+    sh->assoc.seg.lines = checkArraySize( sh->omf_file_hnd, sh->assoc.seg.lines, sh->assoc.seg.num_lines, STD_INC, sizeof( struct ORL_STRUCT( orl_linnum ) ) );
     if( sh->assoc.seg.lines == NULL )
         return( ORL_OUT_OF_MEMORY );
 

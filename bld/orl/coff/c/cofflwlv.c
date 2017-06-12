@@ -409,8 +409,8 @@ orl_linnum CoffConvertLines( coff_sec_handle hdl, orl_table_index numlines )
 /**************************************************************************/
 {
     coff_line_num ORLUNALIGNED  *coffline;
-    struct STRUCT_SYM( orl_linnum ) ORLUNALIGNED *linestart;
-    struct STRUCT_SYM( orl_linnum ) ORLUNALIGNED *currline;
+    struct ORL_STRUCT( orl_linnum ) ORLUNALIGNED *linestart;
+    struct ORL_STRUCT( orl_linnum ) ORLUNALIGNED *currline;
     coff_file_handle            fhdl;
     unsigned_32                 linebase;
     coff_symbol_handle          sym;
@@ -424,7 +424,7 @@ orl_linnum CoffConvertLines( coff_sec_handle hdl, orl_table_index numlines )
         }
     }
     coffline = (coff_line_num *)( hdl->hdr->lineno_ptr - fhdl->initial_size + fhdl->rest_of_file_buffer );
-    currline = (struct STRUCT_SYM( orl_linnum ) ORLUNALIGNED *)coffline;
+    currline = (struct ORL_STRUCT( orl_linnum ) ORLUNALIGNED *)coffline;
     if( hdl->relocs_done )
         return( (orl_linnum)currline );
     linestart = currline;
