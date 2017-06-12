@@ -195,15 +195,17 @@ orl_return CoffBuildSecNameHashTable( coff_file_handle coff_file_hnd )
 {
     coff_quantity           i;
     orl_return              return_val;
-    orl_hash_key            key;
+    orl_hash_key            h_key;
+    orl_hash_data           h_data;
 
     coff_file_hnd->sec_name_hash_table = ORLHashTableCreate( coff_file_hnd->coff_hnd->funcs, SEC_NAME_HASH_TABLE_SIZE, ORL_HASH_STRING_IGNORECASE );
     if( coff_file_hnd->sec_name_hash_table == NULL ) {
         return( ORL_OUT_OF_MEMORY );
     }
     for( i = 0; i < coff_file_hnd->num_sections; ++i ) {
-        key.u.string = coff_file_hnd->coff_sec_hnd[i]->name;
-        return_val = ORLHashTableInsert( coff_file_hnd->sec_name_hash_table, key, coff_file_hnd->coff_sec_hnd[i] );
+        h_key.u.string = coff_file_hnd->coff_sec_hnd[i]->name;
+        h_data.u.sec_handle = (orl_sec_handle)coff_file_hnd->coff_sec_hnd[i];
+        return_val = ORLHashTableInsert( coff_file_hnd->sec_name_hash_table, h_key, h_data );
         if( return_val != ORL_OKAY ) {
             return( return_val );
         }

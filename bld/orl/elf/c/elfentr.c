@@ -92,10 +92,10 @@ orl_return ELFENTRY ElfFileFini( elf_file_handle elf_file_hnd )
 
 orl_return ELFENTRY ElfFileScan( elf_file_handle elf_file_hnd, const char *desired, orl_sec_return_func return_func )
 {
-    orl_hash_data_struct    *data_entry;
+    orl_hash_data_entry     data_entry;
     elf_quantity            i;
     orl_return              return_val;
-    orl_hash_key            key;
+    orl_hash_key            h_key;
 
     if( desired == NULL ) {
         /* global request */
@@ -112,9 +112,9 @@ orl_return ELFENTRY ElfFileScan( elf_file_handle elf_file_hnd, const char *desir
                 return( return_val );
             }
         }
-        key.u.string = desired;
-        for( data_entry = ORLHashTableQuery( elf_file_hnd->sec_name_hash_table, key ); data_entry != NULL; data_entry = data_entry->next ) {
-            return_val = return_func( (orl_sec_handle)data_entry->data );
+        h_key.u.string = desired;
+        for( data_entry = ORLHashTableQuery( elf_file_hnd->sec_name_hash_table, h_key ); data_entry != NULL; data_entry = data_entry->next ) {
+            return_val = return_func( data_entry->data.u.sec_handle );
             if( return_val != ORL_OKAY ) {
                 return( return_val );
             }

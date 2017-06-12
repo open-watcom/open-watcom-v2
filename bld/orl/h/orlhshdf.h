@@ -39,8 +39,14 @@ typedef enum {
     ORL_HASH_NUMBER
 } orl_hash_table_type;
 
-typedef unsigned    orl_hash_value;
-typedef const void  *orl_hash_data;
+typedef unsigned_32     orl_hash_value;
+typedef struct {
+    union {
+        orl_symbol_handle   sym_handle;
+        orl_sec_handle      sec_handle;
+        const char          *string;
+    } u;
+} orl_hash_data;
 typedef struct {
     union {
         pointer_int     number;
@@ -48,29 +54,27 @@ typedef struct {
     } u;
 } orl_hash_key;
 
-typedef struct orl_hash_data_struct     orl_hash_data_struct;
-typedef struct orl_hash_entry_struct    orl_hash_entry_struct;
-typedef struct orl_hash_table_struct    orl_hash_table_struct;
+TYPEDEF_LOCAL_TYPE( orl_hash_data_entry );
+TYPEDEF_LOCAL_TYPE( orl_hash_entry );
+TYPEDEF_LOCAL_TYPE( orl_hash_table );
 
-struct orl_hash_data_struct {
-    orl_hash_data               data;
-    orl_hash_data_struct        *next;
+ORL_STRUCT( orl_hash_data_entry ) {
+    orl_hash_data           data;
+    orl_hash_data_entry     next;
 };
 
-struct orl_hash_entry_struct {
-    orl_hash_key                key;
-    orl_hash_data_struct        *data_entry;
-    orl_hash_entry_struct       *next;
+ORL_STRUCT( orl_hash_entry ) {
+    orl_hash_key            key;
+    orl_hash_data_entry     data_entry;
+    orl_hash_entry          next;
 };
 
-struct orl_hash_table_struct {
-    orl_hash_value              size;
-    orl_funcs                   *funcs;
-    bool                        (*compare_func)( orl_hash_key, orl_hash_key );
-    orl_hash_value              (*hash_func)( orl_hash_value, orl_hash_key );
-    orl_hash_entry_struct       **table;
+ORL_STRUCT( orl_hash_table ) {
+    orl_hash_value          size;
+    orl_funcs               *funcs;
+    bool                    (*compare_func)( orl_hash_key, orl_hash_key );
+    orl_hash_value          (*hash_func)( orl_hash_value, orl_hash_key );
+    orl_hash_entry          *table;
 };
-
-typedef orl_hash_table_struct   *orl_hash_table;
 
 #endif
