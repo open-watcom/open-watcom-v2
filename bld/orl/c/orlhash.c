@@ -151,7 +151,7 @@ orl_hash_table ORLHashTableCreate( orl_funcs *funcs, orl_hash_value size, orl_ha
     hash_table = (orl_hash_table)ORL_CLI_ALLOC( funcs, sizeof( ORL_STRUCT( orl_hash_table ) ) );
     if( hash_table == NULL )
         return( NULL );
-    hash_table->table = (orl_hash_entry *)ORL_CLI_ALLOC( funcs, size * sizeof( ORL_STRUCT( orl_hash_entry ) ) );
+    hash_table->table = (orl_hash_entry *)ORL_CLI_ALLOC( funcs, size * sizeof( orl_hash_entry ) );
     if( hash_table->table == NULL ) {
         ORL_CLI_FREE( funcs, hash_table );
         return( NULL );
