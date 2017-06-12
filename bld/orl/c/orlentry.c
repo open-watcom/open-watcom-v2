@@ -43,7 +43,7 @@ orl_handle ORLENTRY ORLInit( orl_funcs *funcs )
 {
     orl_handle                  orl_hnd;
 
-    orl_hnd = (orl_handle)ORL_CLI_ALLOC( funcs, sizeof( struct LCL_STRUCT_SYM( orl_handle ) ) );
+    orl_hnd = (orl_handle)ORL_CLI_ALLOC( funcs, sizeof( struct ORL_LCL_STRUCT( orl_handle ) ) );
     if( orl_hnd != NULL ) {
         LCL_ORL_HND( orl_hnd )->error = ORL_OKAY;
         LCL_ORL_HND( orl_hnd )->funcs = *funcs;
@@ -217,7 +217,7 @@ orl_file_handle ORLENTRY ORLFileInit( orl_handle orl_hnd, orl_file_id file, orl_
     case( ORL_ELF ):
     case( ORL_COFF ):
     case( ORL_OMF ):
-        orl_file_hnd = (orl_file_handle)ORL_FUNCS_ALLOC( LCL_ORL_HND( orl_hnd ), sizeof( struct LCL_STRUCT_SYM( orl_file_handle ) ) );
+        orl_file_hnd = (orl_file_handle)ORL_FUNCS_ALLOC( LCL_ORL_HND( orl_hnd ), sizeof( struct ORL_LCL_STRUCT( orl_file_handle ) ) );
         if( orl_file_hnd == NULL ) {
             LCL_ORL_HND( orl_hnd )->error = ORL_OUT_OF_MEMORY;
             break;

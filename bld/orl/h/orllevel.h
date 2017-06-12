@@ -42,13 +42,13 @@
 
 /* NB _handle = a type, _hnd = a variable */
 
-#define LCL_ORL_HND(p)          ((struct LCL_STRUCT_SYM( orl_handle ) *)p)
-#define LCL_FIL_HND(p)          ((struct LCL_STRUCT_SYM( orl_file_handle ) *)p)
+#define LCL_ORL_HND(p)          ((struct ORL_LCL_STRUCT( orl_handle ) *)p)
+#define LCL_FIL_HND(p)          ((struct ORL_LCL_STRUCT( orl_file_handle ) *)p)
 
 TYPEDEF_LCL_TYPE( orl_handle );
 TYPEDEF_LCL_TYPE( orl_file_handle );
 
-struct LCL_STRUCT_SYM( orl_handle ) {
+struct ORL_LCL_STRUCT( orl_handle ) {
     orl_funcs                           funcs;
     elf_handle                          elf_hnd;
     coff_handle                         coff_hnd;
@@ -57,7 +57,7 @@ struct LCL_STRUCT_SYM( orl_handle ) {
     orl_return                          error;
 };
 
-struct LCL_STRUCT_SYM( orl_file_handle ) {
+struct ORL_LCL_STRUCT( orl_file_handle ) {
     LCL_SYM( orl_handle )               orl_hnd;
     LCL_SYM( orl_file_handle )          next;
     orl_file_format                     type;

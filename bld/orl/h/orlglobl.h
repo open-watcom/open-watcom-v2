@@ -51,10 +51,10 @@
 
 #define ORL_NULL_HANDLE         NULL
 
-#define STRUCT_SYM(s)           s ## _struct
+#define ORL_STRUCT(s)           s ## _struct
 
-//#define TYPEDEF_ORLENTRY_TYPE(t)    typedef const struct STRUCT_SYM( t ) * t
-#define TYPEDEF_ORLENTRY_TYPE(t)    typedef struct STRUCT_SYM( t ) * t
+//#define TYPEDEF_ORLENTRY_TYPE(t)    typedef const struct ORL_STRUCT( t ) * t
+#define TYPEDEF_ORLENTRY_TYPE(t)    typedef struct ORL_STRUCT( t ) * t
 
 TYPEDEF_ORLENTRY_TYPE( orl_handle );
 TYPEDEF_ORLENTRY_TYPE( orl_file_handle );
@@ -98,10 +98,10 @@ typedef enum {
 } orl_file_format;
 
 //TYPEDEF_ORLENTRY_TYPE( orl_linnum );
-typedef struct STRUCT_SYM( orl_linnum ) * orl_linnum;
+typedef struct ORL_STRUCT( orl_linnum ) * orl_linnum;
 
 #include <pushpck1.h>
-struct STRUCT_SYM( orl_linnum ) {
+struct ORL_STRUCT( orl_linnum ) {
     unsigned_16 linnum;
     unsigned_32 off;
 };

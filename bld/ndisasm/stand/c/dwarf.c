@@ -201,9 +201,9 @@ static void dump_state( state_info *state, int *numlines, uint limit )
         if( *numlines >= currlinesize ) {
             currlinesize += LINES_ARRAY_SIZE_INC;
             if( lines != NULL ) {
-                lines = (orl_linnum)MemRealloc( lines, currlinesize * sizeof( struct STRUCT_SYM( orl_linnum ) ) );
+                lines = (orl_linnum)MemRealloc( lines, currlinesize * sizeof( struct ORL_STRUCT( orl_linnum ) ) );
             } else {
-                lines = (orl_linnum)MemAlloc( currlinesize * sizeof( struct STRUCT_SYM( orl_linnum ) ) );
+                lines = (orl_linnum)MemAlloc( currlinesize * sizeof( struct ORL_STRUCT( orl_linnum ) ) );
             }
         }
         lines[*numlines].linnum = (uint_16)state->line;
