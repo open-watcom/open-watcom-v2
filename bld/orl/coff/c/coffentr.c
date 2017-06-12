@@ -208,7 +208,7 @@ orl_table_index COFFENTRY CoffSecGetNumLines( coff_sec_handle coff_sec_hnd )
     return( 0 );
 }
 
-orl_linnum * COFFENTRY CoffSecGetLines( coff_sec_handle coff_sec_hnd )
+orl_linnum COFFENTRY CoffSecGetLines( coff_sec_handle coff_sec_hnd )
 {
     orl_table_index     numlines;
 

@@ -66,7 +66,7 @@ extern orl_sec_frame        OMFENTRY OmfSecGetAbsFrame( omf_sec_handle );
 extern orl_sec_handle       OMFENTRY OmfSecGetAssociated( omf_sec_handle );
 extern orl_group_handle     OMFENTRY OmfSecGetGroup( omf_sec_handle );
 extern orl_table_index      OMFENTRY OmfSecGetNumLines( omf_sec_handle );
-extern orl_linnum           * OMFENTRY OmfSecGetLines( omf_sec_handle );
+extern orl_linnum           OMFENTRY OmfSecGetLines( omf_sec_handle );
 
 extern orl_table_index      OMFENTRY OmfCvtSecHdlToIdx( omf_sec_handle );
 extern omf_sec_handle       OMFENTRY OmfCvtIdxToSecHdl( omf_file_handle, orl_table_index );

@@ -60,7 +60,7 @@ extern orl_sec_alignment    ORLENTRY ORLSecGetAlignment( orl_sec_handle );
 extern orl_sec_handle       ORLENTRY ORLSecGetStringTable( orl_sec_handle );
 extern orl_sec_handle       ORLENTRY ORLSecGetSymbolTable( orl_sec_handle );
 extern orl_sec_handle       ORLENTRY ORLSecGetRelocTable( orl_sec_handle );
-extern orl_linnum           * ORLENTRY ORLSecGetLines( orl_sec_handle );
+extern orl_linnum           ORLENTRY ORLSecGetLines( orl_sec_handle );
 extern orl_table_index      ORLENTRY ORLSecGetNumLines( orl_sec_handle );
 extern orl_sec_offset       ORLENTRY ORLSecGetOffset( orl_sec_handle );
 extern orl_return           ORLENTRY ORLSecGetContents( orl_sec_handle, unsigned char ** );

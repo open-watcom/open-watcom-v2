@@ -496,7 +496,7 @@ orl_table_index OMFENTRY OmfSecGetNumLines( omf_sec_handle sh )
 }
 
 
-orl_linnum * OMFENTRY OmfSecGetLines( omf_sec_handle sh )
+orl_linnum OMFENTRY OmfSecGetLines( omf_sec_handle sh )
 {
     assert( sh );
 

@@ -51,18 +51,16 @@
 
 #define ORL_NULL_HANDLE         NULL
 
-#define CONST_SYM(s)    const_ ## s
-#define STRUCT_SYM(s)   s ## _struct
+#define STRUCT_SYM(s)           s ## _struct
 
-#define TYPEDEF_VIRT_TYPE(t) \
-    typedef const struct STRUCT_SYM( t ) * CONST_SYM( t ); \
-    typedef struct STRUCT_SYM( t ) * t
+//#define TYPEDEF_ORLENTRY_TYPE(t)    typedef const struct STRUCT_SYM( t ) * t
+#define TYPEDEF_ORLENTRY_TYPE(t)    typedef struct STRUCT_SYM( t ) * t
 
-TYPEDEF_VIRT_TYPE( orl_handle );
-TYPEDEF_VIRT_TYPE( orl_file_handle );
-TYPEDEF_VIRT_TYPE( orl_sec_handle );
-TYPEDEF_VIRT_TYPE( orl_symbol_handle );
-TYPEDEF_VIRT_TYPE( orl_group_handle );
+TYPEDEF_ORLENTRY_TYPE( orl_handle );
+TYPEDEF_ORLENTRY_TYPE( orl_file_handle );
+TYPEDEF_ORLENTRY_TYPE( orl_sec_handle );
+TYPEDEF_ORLENTRY_TYPE( orl_symbol_handle );
+TYPEDEF_ORLENTRY_TYPE( orl_group_handle );
 
 typedef void                    *orl_file_id;
 
@@ -99,11 +97,14 @@ typedef enum {
     ORL_UNRECOGNIZED_FORMAT
 } orl_file_format;
 
+//TYPEDEF_ORLENTRY_TYPE( orl_linnum );
+typedef struct STRUCT_SYM( orl_linnum ) * orl_linnum;
+
 #include <pushpck1.h>
-typedef struct {
+struct STRUCT_SYM( orl_linnum ) {
     unsigned_16 linnum;
     unsigned_32 off;
-} orl_linnum;
+};
 #include <poppck.h>
 
 typedef struct orl_funcs {

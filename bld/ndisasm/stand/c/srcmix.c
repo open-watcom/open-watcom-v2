@@ -53,7 +53,7 @@ char *                  SourceFileInObject = NULL;
 char *                  SourceFileInDwarf = NULL;
 bool                    source_mix = false;
 FILE *                  SourceFile = NULL;
-orl_linnum *            lines = NULL;
+orl_linnum              lines = NULL;
 orl_table_index         numlines;
 orl_table_index         currline;
 int                     lineInFile;
@@ -77,8 +77,8 @@ static void NoSource( char *file )
 
 static int compareLines( const void *first, const void *second )
 {
-    orl_linnum *l1 = (orl_linnum *)first;
-    orl_linnum *l2 = (orl_linnum *)second;
+    orl_linnum l1 = (orl_linnum)first;
+    orl_linnum l2 = (orl_linnum)second;
 
     // make sure the "fake" function label line numbers filter to the end
     if( l1->linnum == 0 ) {
@@ -97,13 +97,13 @@ static int compareLines( const void *first, const void *second )
     return 0;
 }
 
-static orl_linnum *SortLineNums( orl_linnum *ilines, orl_table_index inumlines )
+static orl_linnum SortLineNums( orl_linnum ilines, orl_table_index inumlines )
 {
-    orl_linnum *newlines;
+    orl_linnum newlines;
 
-    newlines = (orl_linnum *)MemAlloc( inumlines * sizeof( orl_linnum ) );
-    memcpy( newlines, ilines, inumlines * sizeof( orl_linnum ) );
-    qsort( newlines, inumlines, sizeof( orl_linnum ), compareLines );
+    newlines = (orl_linnum)MemAlloc( inumlines * sizeof( struct STRUCT_SYM( orl_linnum ) ) );
+    memcpy( newlines, ilines, inumlines * sizeof( struct STRUCT_SYM( orl_linnum ) ) );
+    qsort( newlines, inumlines, sizeof( struct STRUCT_SYM( orl_linnum ) ), compareLines );
 
     return( newlines );
 }
@@ -115,7 +115,7 @@ extern void GetSourceFile( section_ptr section )
     char *      dir;
     char *      file_name;
     char *      extension;
-    orl_linnum *templines;
+    orl_linnum  templines;
 
     numlines = ORLSecGetNumLines( section->shnd );
     if( numlines == 0 ) {
@@ -259,7 +259,7 @@ static void printLine( void )
 
 extern void MixSource( dis_sec_offset offset )
 {
-    orl_linnum *line_entry;
+    orl_linnum line_entry;
 
     if( SourceFile ){
         line_entry = &(lines[currline]);
