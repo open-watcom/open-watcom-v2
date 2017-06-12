@@ -114,8 +114,6 @@ typedef unsigned_8                      *omf_bytes;
 typedef unsigned_8                      omf_rectyp;
 typedef signed_8                        omf_dbg_style;
 
-typedef struct omf_thred_fixup_struct   omf_thred_fixup;
-
 ORL_STRUCT( omf_tmp_lidata ) {
     omf_rec_size        size;
     omf_rec_size        used;
@@ -159,7 +157,9 @@ ORL_STRUCT( omf_handle ) {
     omf_file_handle     first_file_hnd;
 };
 
-struct omf_thred_fixup_struct {
+TYPEDEF_LOCAL_TYPE( omf_thred_fixup );
+
+ORL_STRUCT( omf_thred_fixup ) {
     omf_idx             idx;
     unsigned char       method;
 };
@@ -177,8 +177,8 @@ ORL_STRUCT( omf_file_handle ) {
     omf_sec_handle      relocs;
     omf_sec_handle      comments;
 
-    omf_thred_fixup     frame_thred[4];
-    omf_thred_fixup     target_thred[4];
+    ORL_STRUCT( omf_thred_fixup )   frame_thred[4];
+    ORL_STRUCT( omf_thred_fixup )   target_thred[4];
 
     omf_sec_handle      first_sec;
     omf_sec_handle      last_sec;
@@ -249,26 +249,30 @@ struct omf_sym_assoc_struct {
     orl_hash_table      hash_tab;
 };
 
-typedef struct omf_string_struct {
+TYPEDEF_LOCAL_TYPE( omf_string );
+
+ORL_STRUCT( omf_string ) {
     omf_string_len      len;
     char                string[1];
-} omf_string_struct;
+};
 
 struct omf_string_assoc_struct {
     omf_idx             num;
-    omf_string_struct   **strings;
+    omf_string          *strings;
 };
 
-typedef struct omf_comment_struct {
+TYPEDEF_LOCAL_TYPE( omf_comment );
+
+ORL_STRUCT( omf_comment ) {
     unsigned_8          class;
     unsigned_8          flags;
     omf_rec_size        len;
     unsigned char       data[1];
-} omf_comment_struct;
+};
 
 struct omf_comment_assoc_struct {
     omf_quantity        num;
-    omf_comment_struct  **comments;
+    omf_comment         *comments;
 };
 
 ORL_STRUCT( omf_sec_handle ) {
@@ -301,8 +305,8 @@ ORL_STRUCT( omf_symbol_handle ) {
     omf_sec_offset      offset;
     omf_symbol_flags    flags;
     omf_sec_handle      section;
-    orl_symbol_binding  binding;
-    omf_string_struct   name;
+    orl_symbol_binding          binding;
+    ORL_STRUCT( omf_string )    name;
 };
 
 ORL_STRUCT( omf_grp_handle ) {
@@ -315,11 +319,13 @@ ORL_STRUCT( omf_grp_handle ) {
     omf_symbol_handle   sym;
 };
 
-typedef struct omf_scan_tab_struct {
+TYPEDEF_LOCAL_TYPE( omf_scan_tab );
+
+ORL_STRUCT( omf_scan_tab ) {
     omf_idx             seg;
     omf_idx             lname;
     orl_sec_offset      start;
     orl_sec_offset      end;
-} omf_scan_tab_struct;
+};
 
 #endif

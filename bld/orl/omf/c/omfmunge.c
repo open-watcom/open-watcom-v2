@@ -70,8 +70,8 @@ static orl_sec_combine getCombine( int combine )
 
 static int nameCmp( omf_file_handle ofh, omf_idx n1, omf_idx n2 )
 {
-    omf_string_struct   *s1;
-    omf_string_struct   *s2;
+    omf_string          s1;
+    omf_string          s2;
 
     assert( ofh );
     assert( n1 );
@@ -122,7 +122,7 @@ static void *checkArraySize( omf_file_handle ofh, void *old_arr, long num, long 
 static omf_symbol_handle findExtDefSym( omf_file_handle ofh, omf_idx ext )
 {
     omf_sec_handle                  sh;
-    omf_string_struct               *extname;
+    omf_string                      extname;
     orl_hash_data_entry             data_entry;
     omf_symbol_handle               sym;
     orl_hash_key                    h_key;
@@ -330,7 +330,7 @@ static omf_grp_handle   newGroup( omf_file_handle ofh )
 }
 
 
-static omf_string_struct *getIdx2String( omf_sec_handle sh, omf_idx idx )
+static omf_string getIdx2String( omf_sec_handle sh, omf_idx idx )
 {
     assert( sh );
 
@@ -357,7 +357,7 @@ static omf_sec_handle   newStringTable( omf_file_handle ofh, omf_quantity idx )
 
 static orl_return       addString( omf_sec_handle sh, char *buffer, omf_string_len len )
 {
-    omf_string_struct   *str;
+    omf_string          str;
     omf_file_handle     ofh;
 
     assert( sh );
@@ -367,15 +367,15 @@ static orl_return       addString( omf_sec_handle sh, char *buffer, omf_string_l
 
     /* Check if we need to allocate more string table
      */
-    sh->assoc.string.strings = checkArraySize( ofh, sh->assoc.string.strings, sh->assoc.string.num, STD_INC, sizeof( omf_string_struct * ) );
+    sh->assoc.string.strings = checkArraySize( ofh, sh->assoc.string.strings, sh->assoc.string.num, STD_INC, sizeof( omf_string ) );
     if( sh->assoc.string.strings == NULL )
         return( ORL_OUT_OF_MEMORY );
 
-    str = _ClientAlloc( ofh, sizeof( omf_string_struct ) + len );
+    str = (omf_string)_ClientAlloc( ofh, sizeof( ORL_STRUCT( omf_string ) ) + len );
     if( str == NULL )
         return( ORL_OUT_OF_MEMORY );
 
-    memset( str, 0, sizeof( omf_string_struct ) + len );
+    memset( str, 0, sizeof( ORL_STRUCT( omf_string ) ) + len );
     memcpy( str->string, buffer, len );
     str->string[len] = '\0';
     str->len = len;
@@ -816,7 +816,7 @@ static orl_return       checkSegmentLength( omf_sec_handle sh, unsigned_32 max )
 }
 
 
-static int strNUpper( char *str, omf_string_struct *name )
+static int strNUpper( char *str, omf_string name )
 {
     int     i;
 
@@ -835,7 +835,7 @@ static orl_sec_flags getSegSecFlags( omf_file_handle ofh, omf_idx name, omf_idx 
 {
     char                lname[257];
     orl_sec_flags       flags = 0;
-    omf_string_struct   *str;
+    omf_string          str;
     int                 slen;
 
     /* unused parameters */ (void)align; (void)combine;
@@ -1038,7 +1038,7 @@ orl_return  OmfAddExtName( omf_file_handle ofh, char *buffer, omf_string_len len
 }
 
 
-omf_string_struct   *OmfGetLastExtName( omf_file_handle ofh )
+omf_string OmfGetLastExtName( omf_file_handle ofh )
 {
     omf_sec_handle sh = ofh->extdefs;
 
@@ -1285,7 +1285,7 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location,
 }
 
 
-orl_return  OmfAddExtDef( omf_file_handle ofh, omf_string_struct *extname, omf_rectyp typ )
+orl_return  OmfAddExtDef( omf_file_handle ofh, omf_string extname, omf_rectyp typ )
 {
     omf_symbol_handle   sym;
     orl_symbol_type     styp;
@@ -1332,7 +1332,7 @@ orl_return OmfAddComDat( omf_file_handle ofh, bool is32, int flags, int attr, in
     omf_symbol_handle   sym;
     orl_symbol_type     styp;
     omf_sec_offset      size;
-    omf_string_struct   *comname;
+    omf_string          comname;
 
     /* unused parameters */ (void)typ;
 
@@ -1487,7 +1487,7 @@ orl_return OmfAddSegDef( omf_file_handle ofh, bool is32, orl_sec_alignment align
 {
     omf_sec_handle      sh;
     omf_symbol_handle   sym;
-    omf_string_struct   *segname;
+    omf_string          segname;
 
     assert( ofh );
 
@@ -1593,7 +1593,7 @@ orl_return  OmfAddGrpDef( omf_file_handle ofh, omf_idx name, omf_idx *segs, unsi
     omf_symbol_handle   sym;
     omf_sec_handle      sh;
     omf_grp_handle      gr;
-    omf_string_struct   *grpname;
+    omf_string          grpname;
 
     assert( ofh );
     assert( segs );
@@ -1648,7 +1648,7 @@ orl_return      OmfModEnd( omf_file_handle ofh )
 orl_return  OmfAddComment( omf_file_handle ofh, unsigned_8 class, unsigned_8 flags, omf_bytes buff, omf_rec_size len )
 {
     omf_sec_handle      sh;
-    omf_comment_struct  *comment;
+    omf_comment         comment;
 
     assert( ofh );
     assert( buff );
@@ -1662,14 +1662,14 @@ orl_return  OmfAddComment( omf_file_handle ofh, unsigned_8 class, unsigned_8 fla
         ofh->comments = sh;
     }
 
-    sh->assoc.comment.comments = checkArraySize( ofh, sh->assoc.comment.comments, sh->assoc.comment.num, STD_INC, sizeof( omf_comment_struct * ) );
+    sh->assoc.comment.comments = checkArraySize( ofh, sh->assoc.comment.comments, sh->assoc.comment.num, STD_INC, sizeof( omf_comment ) );
     if( sh->assoc.comment.comments == NULL )
         return( ORL_OUT_OF_MEMORY );
 
-    comment = _ClientAlloc( ofh, sizeof( omf_comment_struct ) + len );
+    comment = (omf_comment)_ClientAlloc( ofh, sizeof( ORL_STRUCT( omf_comment ) ) + len );
     if( comment == NULL )
         return( ORL_OUT_OF_MEMORY );
-    memset( comment, 0, sizeof( omf_comment_struct ) + len );
+    memset( comment, 0, sizeof( ORL_STRUCT( omf_comment ) ) + len );
 
     comment->class = class;
     comment->flags = flags;
@@ -1684,7 +1684,7 @@ orl_return  OmfAddComment( omf_file_handle ofh, unsigned_8 class, unsigned_8 fla
 }
 
 
-omf_string_struct *OmfGetLName( omf_sec_handle lnames, omf_idx idx )
+omf_string OmfGetLName( omf_sec_handle lnames, omf_idx idx )
 {
     assert( lnames );
     assert( lnames->type == ORL_SEC_TYPE_STR_TABLE );

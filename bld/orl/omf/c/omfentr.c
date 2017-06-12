@@ -247,7 +247,7 @@ orl_sec_alignment OMFENTRY OmfSecGetAlignment( omf_sec_handle sh )
 
 const char * OMFENTRY OmfSecGetClassName( omf_sec_handle sh )
 {
-    omf_string_struct   *class;
+    omf_string      class;
 
     assert( sh );
 

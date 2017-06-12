@@ -56,7 +56,7 @@ extern orl_return       OmfAddBakpat( omf_file_handle ofh, unsigned_8 loctype,
                                       omf_sec_offset location, omf_idx segidx,
                                       omf_idx symidx, omf_sec_addend disp );
 
-extern orl_return       OmfAddExtDef( omf_file_handle ofh, omf_string_struct *name, omf_rectyp typ );
+extern orl_return       OmfAddExtDef( omf_file_handle ofh, omf_string name, omf_rectyp typ );
 
 extern orl_return       OmfAddComDat( omf_file_handle ofh, bool is32, int flags,
                                       int attr, int align,
@@ -84,9 +84,9 @@ extern orl_return       OmfAddLineNum( omf_sec_handle sh, unsigned_16 line, unsi
 
 extern omf_sec_handle   OmfFindSegOrComdat( omf_file_handle ofh, omf_idx seg, omf_idx comdat_lname );
 
-extern omf_string_struct *OmfGetLName( omf_sec_handle lnames, omf_idx idx );
+extern omf_string       OmfGetLName( omf_sec_handle lnames, omf_idx idx );
 
-extern omf_string_struct *OmfGetLastExtName( omf_file_handle ofh );
+extern omf_string       OmfGetLastExtName( omf_file_handle ofh );
 
 extern orl_return       OmfExportSegmentContents( omf_sec_handle sh );
 
