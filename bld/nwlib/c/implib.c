@@ -88,7 +88,7 @@ static orl_sec_handle FindSec( obj_file *ofile, char *name )
 
     ORLFileScan( ofile->orl, name, FindHelper );
     if( found_sec_handle == 0 ) {
-        if( !stricmp( ".edata", name ) ) {
+        if( stricmp( ".edata", name ) == 0 ) {
             export_table_rva = ORLExportTableRVA( ofile->orl );
 
             if( export_table_rva == 0 ) {
@@ -158,7 +158,7 @@ static bool elfAddImport( arch_header *arch, libfile io )
 
     export_sec = FindSec( ofile, ".exports" );
     ORLSecGetContents( export_sec, (unsigned_8 **)&export_table );
-    export_size = (Elf32_Word) ORLSecGetSize( export_sec ) / sizeof( Elf32_Export );
+    export_size = ORLSecGetSize( export_sec ) / sizeof( Elf32_Export );
     sym_sec = ORLSecGetSymbolTable( export_sec );
     ORLSecGetContents( sym_sec, (unsigned_8 **)&sym_table );
 //    sym_size = (Elf32_Word) ORLSecGetSize( sym_sec ) / sizeof( Elf32_Sym );
@@ -321,7 +321,7 @@ static bool nlmAddImport( arch_header *arch, libfile io )
     if( LibRead( io, dll_name, name_len ) != name_len ) {
         FatalError( ERR_BAD_DLL, io->name );
     }
-    symbol[name_len] = 0;
+    symbol[name_len] = '\0';
     LibSeek( io, nlm.publicsOffset, SEEK_SET  );
     while( nlm.numberOfPublics > 0 ) {
         nlm.numberOfPublics--;
@@ -331,7 +331,7 @@ static bool nlmAddImport( arch_header *arch, libfile io )
         if( LibRead( io, symbol, name_len ) != name_len ) {
             FatalError( ERR_BAD_DLL, io->name );
         }
-        symbol[name_len] = 0;
+        symbol[name_len] = '\0';
         if( LibRead( io, &offset, sizeof( offset ) ) != sizeof( offset ) ) {
             FatalError( ERR_BAD_DLL, io->name );
         }
@@ -467,7 +467,7 @@ static char *GetImportString( char **rawpntr, char *original )
     while( *raw && (quote || (*raw != '.')) ) {
         if( quote && (*raw == '\'') ) {
             quote  = false;
-            *raw++ = 0x00;
+            *raw++ = '\0';
             break;
         }
 
@@ -476,7 +476,7 @@ static char *GetImportString( char **rawpntr, char *original )
 
     if( *raw == '.' || (!*raw && !quote) ) {
         if( *raw == '.' )
-            *raw++ = 0x00;
+            *raw++ = '\0';
 
         *rawpntr = raw;
     } else {
@@ -501,20 +501,20 @@ void ProcessImport( char *name )
     namecopy = DupStr( name );
 
     symName = GetImportString( &name, namecopy );
-    if( !*name || !*symName ) {
+    if( *name == '\0' || *symName == '\0' ) {
         FatalError( ERR_BAD_CMDLINE, namecopy );
     }
 
     DLLName = GetImportString( &name, namecopy );
-    if( !*DLLName ) {
+    if( *DLLName == '\0' ) {
         FatalError( ERR_BAD_CMDLINE, namecopy );
     }
 
     exportedName = symName;     // JBS 99/07/01 give it a default value
 
-    if( *name ) {
+    if( *name != '\0' ) {
         ordString = GetImportString( &name, namecopy );
-        if( *ordString ) {
+        if( *ordString != '\0' ) {
             if( isdigit( *ordString ) ) {
                 ordinal = strtoul( ordString, NULL, 0 );
             } else {
@@ -527,22 +527,22 @@ void ProcessImport( char *name )
          * of the line.
          */
         if( ordinal ) {
-            while( *name && isspace( *name ) )
+            while( *name != '\0' && isspace( *name ) )
                 ++name;
 
-            if( *name != 0x00 ) {
+            if( *name != '\0' ) {
                 FatalError( ERR_BAD_CMDLINE, namecopy );
             }
-        } else if( *name ) {
+        } else if( *name != '\0' ) {
             exportedName = GetImportString( &name, namecopy );
             if( !exportedName || !*exportedName ) {
                 exportedName = symName;
             } else if( isdigit( *exportedName ) ) {
                 ordinal      = strtoul( exportedName, NULL, 0 );
                 exportedName = symName;
-            } else if( *name ) {
+            } else if( *name != '\0' ) {
                 ordString = GetImportString( &name, namecopy );
-                if( *ordString ) {
+                if( *ordString != '\0' ) {
                     if( isdigit( *ordString ) ) {
                         ordinal = strtoul( ordString, NULL, 0 );
                     } else {
