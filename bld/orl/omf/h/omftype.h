@@ -240,7 +240,7 @@ struct omf_seg_assoc_struct {
 
 struct omf_reloc_assoc_struct {
     omf_quantity        num;
-    orl_reloc           **relocs;
+    orl_reloc           *relocs;
 };
 
 struct omf_sym_assoc_struct {

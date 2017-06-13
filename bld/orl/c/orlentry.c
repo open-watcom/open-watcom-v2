@@ -49,17 +49,17 @@ orl_handle ORLENTRY ORLInit( orl_funcs *funcs )
         LCL_ORL_HND( orl_hnd )->funcs = *funcs;
         LCL_ORL_HND( orl_hnd )->elf_hnd = ElfInit( &LCL_ORL_HND( orl_hnd )->funcs );
         if( LCL_ORL_HND( orl_hnd )->elf_hnd == NULL ) {
-            ORL_CLI_FREE( funcs, orl_hnd );
+            ORL_CLI_FREE( funcs, (void *)orl_hnd );
             return( NULL );
         }
         LCL_ORL_HND( orl_hnd )->coff_hnd = CoffInit( &LCL_ORL_HND( orl_hnd )->funcs );
         if( LCL_ORL_HND( orl_hnd )->coff_hnd == NULL ) {
-            ORL_CLI_FREE( funcs, orl_hnd );
+            ORL_CLI_FREE( funcs, (void *)orl_hnd );
             return( NULL );
         }
         LCL_ORL_HND( orl_hnd )->omf_hnd = OmfInit( &LCL_ORL_HND( orl_hnd )->funcs );
         if( LCL_ORL_HND( orl_hnd )->omf_hnd == NULL ) {
-            ORL_CLI_FREE( funcs, orl_hnd );
+            ORL_CLI_FREE( funcs, (void *)orl_hnd );
             return( NULL );
         }
         LCL_ORL_HND( orl_hnd )->first_file_hnd = NULL;
@@ -90,7 +90,7 @@ orl_return ORLENTRY ORLFini( orl_handle orl_hnd )
             return( return_val );
         }
     }
-    ORL_FUNCS_FREE( LCL_ORL_HND( orl_hnd ), orl_hnd );
+    ORL_FUNCS_FREE( LCL_ORL_HND( orl_hnd ), (void *)orl_hnd );
     return( ORL_OKAY );
 }
 
@@ -237,7 +237,7 @@ orl_file_handle ORLENTRY ORLFileInit( orl_handle orl_hnd, orl_file_id file, orl_
             break;
         }
         if( LCL_ORL_HND( orl_hnd )->error != ORL_OKAY ) {
-            ORL_FUNCS_FREE( LCL_ORL_HND( orl_hnd ), orl_file_hnd );
+            ORL_FUNCS_FREE( LCL_ORL_HND( orl_hnd ), (void *)orl_file_hnd );
             break;
         }
         ORLAddFileLinks( LCL_ORL_HND( orl_hnd ), LCL_FIL_HND( orl_file_hnd ) );

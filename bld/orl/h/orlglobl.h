@@ -53,8 +53,7 @@
 
 #define ORL_STRUCT(s)           struct s ## _struct
 
-//#define TYPEDEF_ORLENTRY_TYPE(t)    typedef const ORL_STRUCT( t ) * t
-#define TYPEDEF_ORLENTRY_TYPE(t)    typedef ORL_STRUCT( t ) * t
+#define TYPEDEF_ORLENTRY_TYPE(t)    typedef const ORL_STRUCT( t ) * t
 
 TYPEDEF_ORLENTRY_TYPE( orl_handle );
 TYPEDEF_ORLENTRY_TYPE( orl_file_handle );
@@ -97,10 +96,9 @@ typedef enum {
     ORL_UNRECOGNIZED_FORMAT
 } orl_file_format;
 
-//TYPEDEF_ORLENTRY_TYPE( orl_linnum );
-typedef ORL_STRUCT( orl_linnum ) * orl_linnum;
-
 #include <pushpck1.h>
+TYPEDEF_ORLENTRY_TYPE( orl_linnum );
+
 ORL_STRUCT( orl_linnum ) {
     unsigned_16 linnum;
     unsigned_32 off;

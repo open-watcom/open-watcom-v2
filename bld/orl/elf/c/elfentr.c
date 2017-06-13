@@ -234,7 +234,7 @@ orl_return ELFENTRY ElfSecQueryReloc( elf_sec_handle elf_sec_hnd, elf_sec_offset
 {
     unsigned        index;
     elf_sec_handle  reloc_sec_hnd;
-    orl_reloc       *reloc;
+    orl_reloc       reloc;
     orl_return      return_val;
 
     if( elf_sec_hnd->type != ORL_SEC_TYPE_PROG_BITS )
@@ -266,7 +266,7 @@ orl_return ELFENTRY ElfSecScanReloc( elf_sec_handle elf_sec_hnd, orl_reloc_retur
 {
     unsigned            index;
     elf_sec_handle      reloc_sec_hnd;
-    orl_reloc           *reloc;
+    orl_reloc           reloc;
     orl_return          return_val;
 
     if( elf_sec_hnd->type != ORL_SEC_TYPE_PROG_BITS ) {
@@ -327,7 +327,7 @@ elf_sec_handle ELFENTRY ElfCvtIdxToSecHdl( elf_file_handle fhdl, orl_table_index
 orl_return ELFENTRY ElfRelocSecScan( elf_sec_handle elf_sec_hnd, orl_reloc_return_func return_func )
 {
     unsigned            index;
-    orl_reloc           *reloc;
+    orl_reloc           reloc;
     orl_return          return_val;
 
     if( elf_sec_hnd->type != ORL_SEC_TYPE_RELOCS && elf_sec_hnd->type != ORL_SEC_TYPE_RELOCS_EXPADD )

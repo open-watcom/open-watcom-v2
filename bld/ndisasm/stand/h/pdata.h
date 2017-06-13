@@ -34,6 +34,6 @@
 #define WDIS_PDATA_INCLUDED
 
 extern return_val       DumpPDataSection( section_ptr, unsigned_8 *, dis_sec_size, unsigned );
-extern orl_return       StoreReloc( orl_reloc * );
+extern orl_return       StoreReloc( orl_reloc );
 
 #endif

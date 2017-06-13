@@ -107,7 +107,7 @@ struct coff_normal_assoc_struct {
 struct coff_reloc_assoc_struct {
     coff_sec_handle     orig_sec;
     unsigned            num_relocs;
-    orl_reloc           *relocs;
+    orl_reloc           relocs;
 };
 
 ORL_STRUCT( coff_sec_handle ) {

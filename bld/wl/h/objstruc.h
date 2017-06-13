@@ -29,6 +29,9 @@
 ****************************************************************************/
 
 
+#include "orl.h"
+#include "hash.h"
+
 typedef struct file_list        FILE_LIST;
 typedef struct path_entry       PATH_ENTRY;
 typedef struct mod_entry        MOD_ENTRY;
@@ -55,8 +58,6 @@ typedef struct ovl_area {
 } ovl_area;
 typedef struct order_class      ORDER_CLASS;
 typedef struct order_segment    ORDER_SEGMENT;
-
-#include "hash.h"
 
 typedef struct section {
     SECTION             *next_sect;
@@ -521,7 +522,7 @@ typedef struct seg_flags {
 
 typedef struct extnode {
     symbol              *entry;
-    void                *handle;        // ORL: handle for the symbol
+    orl_symbol_handle   handle;         // ORL: handle for the symbol
     unsigned            ovlref  : 12;
     unsigned            isweak  : 1;
     unsigned            isdefd  : 1;    // used in ORL
@@ -533,7 +534,7 @@ typedef struct grpnode {
 
 typedef struct segnode {
     SEGDATA             *entry;
-    void                *handle;    // ORL: handle for the segment.
+    orl_sec_handle      handle;     // ORL: handle for the segment.
     unsigned_8          *contents;  // ORL: pointer to contents of segment.
     unsigned            info;
 } segnode;

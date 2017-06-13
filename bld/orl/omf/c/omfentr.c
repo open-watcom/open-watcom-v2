@@ -366,7 +366,7 @@ static orl_return OMFENTRY relocScan( omf_sec_handle sh, omf_sec_offset sec_offs
 {
     unsigned_32         x;
     unsigned_32         num;
-    orl_reloc           **relocs;
+    orl_reloc           *relocs;
     orl_return          return_val;
     int                 global;
     omf_sec_handle      rsh;

@@ -364,12 +364,12 @@ orl_reloc_type CoffConvertRelocType( coff_file_handle coff_file_hnd, coff_reloc_
 
 orl_return CoffCreateRelocs( coff_sec_handle orig_sec, coff_sec_handle reloc_sec )
 {
-    orl_return  return_val;
-    unsigned    num_relocs;
-    unsigned    i;
+    orl_return              return_val;
+    unsigned                num_relocs;
+    unsigned                i;
     coff_reloc ORLUNALIGNED *irel;
-    orl_reloc   *orel;
-    orl_reloc   *prev_orel;
+    ORL_STRUCT( orl_reloc ) *orel;
+    orl_reloc               prev_orel;
 
     if( reloc_sec->coff_file_hnd->symbol_handles == NULL ) {
         return_val = CoffCreateSymbolHandles( reloc_sec->coff_file_hnd );
@@ -379,8 +379,9 @@ orl_return CoffCreateRelocs( coff_sec_handle orig_sec, coff_sec_handle reloc_sec
     }
     num_relocs = reloc_sec->size / sizeof( coff_reloc );
     reloc_sec->assoc.reloc.num_relocs = num_relocs;
-    orel = reloc_sec->assoc.reloc.relocs = (orl_reloc *)_ClientSecAlloc( reloc_sec, sizeof( orl_reloc ) * num_relocs );
-    if( reloc_sec->assoc.reloc.relocs == NULL )
+    orel = _ClientSecAlloc( reloc_sec, sizeof( ORL_STRUCT( orl_reloc ) ) * num_relocs );
+    reloc_sec->assoc.reloc.relocs = orel;
+    if( orel == NULL )
         return( ORL_OUT_OF_MEMORY );
     irel = (coff_reloc *)reloc_sec->contents;
     for( i = 0; i < num_relocs; i++ ) {

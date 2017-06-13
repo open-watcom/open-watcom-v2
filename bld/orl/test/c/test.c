@@ -156,8 +156,8 @@ static char *relocTypes[] = {
     #undef pick
 };
 
-static orl_return PrintRelocInfo( orl_reloc *reloc )
-/**************************************************/
+static orl_return PrintRelocInfo( orl_reloc reloc )
+/*************************************************/
 {
     printf( " tag=%8.8x ", reloc->offset );
     if( reloc->type < sizeof( relocTypes ) / sizeof( *relocTypes ) ) {

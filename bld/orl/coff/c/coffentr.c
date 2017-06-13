@@ -240,7 +240,7 @@ orl_return COFFENTRY CoffSecQueryReloc( coff_sec_handle coff_sec_hnd, coff_sec_o
 {
     unsigned            index;
     coff_sec_handle     reloc_sec_hnd;
-    orl_reloc           *reloc;
+    orl_reloc           reloc;
     orl_return          return_val;
 
     if( coff_sec_hnd->type != ORL_SEC_TYPE_PROG_BITS )
@@ -297,7 +297,7 @@ orl_return COFFENTRY CoffSecScanReloc( coff_sec_handle coff_sec_hnd, orl_reloc_r
 {
     unsigned            index;
     coff_sec_handle     reloc_sec_hnd;
-    orl_reloc           *reloc;
+    orl_reloc           reloc;
     orl_return          return_val;
 
     if( coff_sec_hnd->type != ORL_SEC_TYPE_PROG_BITS )
@@ -325,7 +325,7 @@ orl_return COFFENTRY CoffSecScanReloc( coff_sec_handle coff_sec_hnd, orl_reloc_r
 orl_return COFFENTRY CoffRelocSecScan( coff_sec_handle coff_sec_hnd, orl_reloc_return_func return_func )
 {
     unsigned        index;
-    orl_reloc       *reloc;
+    orl_reloc       reloc;
     orl_return      return_val;
 
     if( coff_sec_hnd->type != ORL_SEC_TYPE_RELOCS )
