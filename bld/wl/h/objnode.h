@@ -45,7 +45,7 @@ extern void             BurnNodes( void );
 extern void             ReleaseNames( void );
 extern void             CollapseLazyExtdefs( void );
 extern segnode          *FindSegdata( seg_leader * );
-extern extnode          *FindExtHandle( void * );
+extern extnode          *FindExtHandle( orl_symbol_handle );
 extern segdata          *AllocSegData( void );
 extern void             FreeSegData( void * );
 extern list_of_names    *MakeListName( char *, size_t );

@@ -287,10 +287,10 @@ static bool DoesExtHandleMatch( void *curr, void *target )
     return( ((extnode *)curr)->handle == target );
 }
 
-extnode *FindExtHandle( void *handle )
-/************************************/
+extnode *FindExtHandle( orl_symbol_handle sym_handle )
+/****************************************************/
 {
-    return( (extnode *) IterateFindValue( ExtNodes, handle, DoesExtHandleMatch ) );
+    return( (extnode *)IterateFindValue( ExtNodes, (void *)sym_handle, DoesExtHandleMatch ) );
 }
 
 segdata *AllocSegData( void )

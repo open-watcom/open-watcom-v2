@@ -54,7 +54,7 @@ extern char                 *CommentString;
 extern dis_format_flags     DFormat;
 extern section_list_struct  Sections;
 
-static orl_reloc            *pdataReloc;
+static orl_reloc            pdataReloc;
 
 static ref_entry doDescriptorRelocs( ref_entry r_entry, dis_sec_offset offset, uint_32 address )
 {
@@ -122,7 +122,7 @@ static ref_entry printDescriptor( dis_sec_offset offset, descriptor_struct *desc
     return( r_entry );
 }
 
-orl_return StoreReloc( orl_reloc *reloc )
+orl_return StoreReloc( orl_reloc reloc )
 {
     pdataReloc = reloc;
     return( ORL_OKAY );

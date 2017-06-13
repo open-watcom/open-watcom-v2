@@ -99,7 +99,7 @@ struct elf_normal_assoc_struct {
 struct elf_reloc_assoc_struct {
     elf_sec_handle      orig_sec;
     elf_sec_handle      symbol_table;
-    orl_reloc           *relocs;
+    orl_reloc           relocs;
 };
 
 struct elf_sym_assoc_struct {

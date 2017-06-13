@@ -99,9 +99,9 @@ static int compareLines( const void *first, const void *second )
 
 static orl_linnum SortLineNums( orl_linnum ilines, orl_table_index inumlines )
 {
-    orl_linnum newlines;
+    void    *newlines;
 
-    newlines = (orl_linnum)MemAlloc( inumlines * sizeof( ORL_STRUCT( orl_linnum ) ) );
+    newlines = MemAlloc( inumlines * sizeof( ORL_STRUCT( orl_linnum ) ) );
     memcpy( newlines, ilines, inumlines * sizeof( ORL_STRUCT( orl_linnum ) ) );
     qsort( newlines, inumlines, sizeof( ORL_STRUCT( orl_linnum ) ), compareLines );
 
@@ -138,7 +138,7 @@ extern void GetSourceFile( section_ptr section )
     }
     templines = SortLineNums( lines , numlines );
     if( line_type == DWARF_LINES ) {
-        MemFree( lines );
+        MemFree( (void *)lines );
     }
     lines = templines;
     currline = 0;
@@ -281,11 +281,12 @@ extern void MixSource( dis_sec_offset offset )
 
 extern void EndSourceMix( void )
 {
-    if( SourceFile ) {
+    if( SourceFile != NULL ) {
         fclose( SourceFile );
         SourceFile = NULL;
     }
-    if( lines ) {
-        MemFree( lines );
+    if( lines != NULL ) {
+        MemFree( (void *)lines );
+        lines = NULL;
     }
 }

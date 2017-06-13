@@ -35,7 +35,6 @@
 #include "msg.h"
 #include "wlnkmsg.h"
 #include "alloc.h"
-#include "orl.h"
 #include "specials.h"
 #include "obj2supp.h"
 #include "objnode.h"
@@ -70,20 +69,20 @@ typedef struct readcache {
     void        *data;
 } readcache;
 
-static orl_handle       ORLHandle;
-static long             ORLFilePos;
-static long             ORLPos;
+static orl_handle               ORLHandle;
+static long                     ORLFilePos;
+static long                     ORLPos;
 
-static void             ClearCachedData( file_list *list );
+static void                     ClearCachedData( file_list *list );
 
-static orl_reloc        SavedReloc;
-static char             *ImpExternalName;
-static char             *ImpModName;
-static const char       *FirstCodeSymName;
-static const char       *FirstDataSymName;
-static ordinal_t        ImpOrdinal;
+static ORL_STRUCT( orl_reloc )  SavedReloc;
+static char                     *ImpExternalName;
+static char                     *ImpModName;
+static const char               *FirstCodeSymName;
+static const char               *FirstDataSymName;
+static ordinal_t                ImpOrdinal;
 
-static readcache   *ReadCacheList;
+static readcache                *ReadCacheList;
 
 static void *ORLRead( orl_file_id fid, size_t len )
 /*************************************************/
@@ -504,7 +503,7 @@ static orl_return DeclareSegment( orl_sec_handle sec )
     numlines = ORLSecGetNumLines( sec );
     if( numlines > 0 ) {
         numlines *= sizeof( orl_linnum );
-        DBIAddLines( sdata, ORLSecGetLines( sec ), numlines, true );
+        DBIAddLines( sdata, (const void *)ORLSecGetLines( sec ), numlines, true );
     }
     return( ORL_OKAY );
 }
@@ -675,8 +674,8 @@ static orl_return SymTable( orl_sec_handle sec )
     return( ORLSymbolSecScan( sec, ProcSymbol ) );
 }
 
-static orl_return DoReloc( orl_reloc *reloc )
-/*******************************************/
+static orl_return DoReloc( orl_reloc reloc )
+/******************************************/
 {
     fix_type    type;
     frame_spec  frame;
@@ -780,7 +779,7 @@ static orl_return DoReloc( orl_reloc *reloc )
         frame.type = FIX_FRAME_TARG;
         ext = FindExtHandle( reloc->symbol );
         if( ext == NULL ) {
-            symseg = FindSegNode( ORLSymbolGetSecHandle(reloc->symbol) );
+            symseg = FindSegNode( ORLSymbolGetSecHandle( reloc->symbol ) );
             if( symseg == NULL ) {
                 return( ORL_OKAY );
             } else {

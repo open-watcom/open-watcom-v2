@@ -423,8 +423,8 @@ void DBIGenGlobal( symbol *sym, section *sect )
 #endif
 }
 
-void DBIAddLines( segdata *seg, void *line, size_t size, bool is32bit )
-/*********************************************************************/
+void DBIAddLines( segdata *seg, const void *line, size_t size, bool is32bit )
+/***************************************************************************/
 // called during pass 1 linnum processing
 {
     lineinfo    *info;

@@ -75,7 +75,7 @@ static void addRef( ref_list sec_ref_list, ref_entry entry )
     }
 }
 
-static const char *getFrameModifier( orl_reloc *rel )
+static const char *getFrameModifier( orl_reloc rel )
 {
     orl_sec_handle      shnd;
     orl_group_handle    grp;
@@ -116,7 +116,7 @@ static const char *getFrameModifier( orl_reloc *rel )
 }
 
 
-orl_return CreateNamedLabelRef( orl_reloc *rel )
+orl_return CreateNamedLabelRef( orl_reloc rel )
 {
     ref_entry           ref;
     hash_data           *h_data;

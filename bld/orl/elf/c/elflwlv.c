@@ -474,11 +474,11 @@ orl_reloc_type ElfConvertRelocType( elf_file_handle elf_file_hnd, elf_reloc_type
 
 orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
 {
-    orl_return          return_val;
-    unsigned            num_relocs;
-    unsigned            i;
-    unsigned char       *irel;
-    orl_reloc           *orel;
+    orl_return              return_val;
+    unsigned                num_relocs;
+    unsigned                i;
+    unsigned char           *irel;
+    ORL_STRUCT( orl_reloc ) *orel;
 
     if( reloc_sec->assoc.reloc.symbol_table->assoc.sym.symbols == NULL ) {
         return_val = ElfCreateSymbolHandles( reloc_sec->assoc.reloc.symbol_table );
@@ -489,7 +489,8 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
     switch( reloc_sec->type ) {
     case ORL_SEC_TYPE_RELOCS:
         num_relocs = reloc_sec->size.u._32[I64LO32] / reloc_sec->entsize.u._32[I64LO32];
-        orel = reloc_sec->assoc.reloc.relocs = (orl_reloc *)_ClientSecAlloc( reloc_sec, sizeof( orl_reloc ) * num_relocs );
+        orel = _ClientSecAlloc( reloc_sec, sizeof( ORL_STRUCT( orl_reloc ) ) * num_relocs );
+        reloc_sec->assoc.reloc.relocs = orel;
         if( orel == NULL )
             return( ORL_OUT_OF_MEMORY );
         irel = reloc_sec->contents;
@@ -516,7 +517,8 @@ orl_return ElfCreateRelocs( elf_sec_handle orig_sec, elf_sec_handle reloc_sec )
         break;
     case ORL_SEC_TYPE_RELOCS_EXPADD:
         num_relocs = reloc_sec->size.u._32[I64LO32] / reloc_sec->entsize.u._32[I64LO32];
-        orel = reloc_sec->assoc.reloc.relocs = (orl_reloc *)_ClientSecAlloc( reloc_sec, sizeof( orl_reloc ) * num_relocs );
+        orel = _ClientSecAlloc( reloc_sec, sizeof( ORL_STRUCT( orl_reloc ) ) * num_relocs );
+        reloc_sec->assoc.reloc.relocs = orel;
         if( orel == NULL )
             return( ORL_OUT_OF_MEMORY );
         irel = reloc_sec->contents;

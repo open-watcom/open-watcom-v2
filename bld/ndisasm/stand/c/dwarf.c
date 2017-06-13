@@ -99,7 +99,7 @@ extern orl_table_index GetDwarfLines( section_ptr section )
     orl_table_index     numlines;
 
     if( lines != NULL ) {
-        MemFree( lines );
+        MemFree( (void *)lines );
         lines = NULL;
     }
     currlinesize = 0;
@@ -201,13 +201,13 @@ static void dump_state( state_info *state, int *numlines, uint limit )
         if( *numlines >= currlinesize ) {
             currlinesize += LINES_ARRAY_SIZE_INC;
             if( lines != NULL ) {
-                lines = (orl_linnum)MemRealloc( lines, currlinesize * sizeof( ORL_STRUCT( orl_linnum ) ) );
+                lines = MemRealloc( (void *)lines, currlinesize * sizeof( ORL_STRUCT( orl_linnum ) ) );
             } else {
-                lines = (orl_linnum)MemAlloc( currlinesize * sizeof( ORL_STRUCT( orl_linnum ) ) );
+                lines = MemAlloc( currlinesize * sizeof( ORL_STRUCT( orl_linnum ) ) );
             }
         }
-        lines[*numlines].linnum = (uint_16)state->line;
-        lines[*numlines].off = state->address;
+        ((ORL_STRUCT( orl_linnum ) *)lines)[*numlines].linnum = (uint_16)state->line;
+        ((ORL_STRUCT( orl_linnum ) *)lines)[*numlines].off = state->address;
         (*numlines)++;
     }
 }

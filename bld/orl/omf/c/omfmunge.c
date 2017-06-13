@@ -421,7 +421,7 @@ static orl_return       addToSymbolTable( omf_file_handle ofh, omf_symbol_handle
 }
 
 
-static orl_return       addReloc( omf_file_handle ofh, orl_reloc *orel )
+static orl_return       addReloc( omf_file_handle ofh, orl_reloc orel )
 {
     omf_sec_handle      sh;
 
@@ -436,7 +436,7 @@ static orl_return       addReloc( omf_file_handle ofh, orl_reloc *orel )
     }
 
     sh = ofh->relocs;
-    sh->assoc.reloc.relocs = checkArraySize( ofh, sh->assoc.reloc.relocs, sh->assoc.reloc.num, STD_INC, sizeof( orl_reloc * ) );
+    sh->assoc.reloc.relocs = checkArraySize( ofh, sh->assoc.reloc.relocs, sh->assoc.reloc.num, STD_INC, sizeof( orl_reloc ) );
     if( sh->assoc.reloc.relocs == NULL )
         return( ORL_OUT_OF_MEMORY );
 
@@ -1110,10 +1110,10 @@ orl_return OmfAddBakpat( omf_file_handle ofh, unsigned_8 loctype, omf_sec_offset
 orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location, omf_sec_offset offset,
                             int fmethod, omf_idx fidx, int tmethod, omf_idx tidx, omf_sec_addend disp )
 {
-    omf_tmp_fixup       ftr;
-    orl_reloc           *orel;
-    omf_sec_handle      sh;
-    omf_grp_handle      gr;
+    omf_tmp_fixup           ftr;
+    ORL_STRUCT( orl_reloc ) *orel;
+    omf_sec_handle          sh;
+    omf_grp_handle          gr;
 
     assert( ofh );
 
@@ -1150,10 +1150,10 @@ orl_return OmfAddFixupp( omf_file_handle ofh, bool is32, int mode, int location,
         return( ORL_OKAY );
     }
 
-    orel = _ClientAlloc( ofh, sizeof( orl_reloc ) );
+    orel = _ClientAlloc( ofh, sizeof( ORL_STRUCT( orl_reloc ) ) );
     if( orel == NULL )
         return( ORL_OUT_OF_MEMORY );
-    memset( orel, 0, sizeof( orl_reloc ) );
+    memset( orel, 0, sizeof( ORL_STRUCT( orl_reloc ) ) );
 
     switch( location ) {
     case( LOC_OFFSET_LO ):              /* relocate lo byte of offset   */
@@ -1469,12 +1469,12 @@ orl_return OmfAddComDat( omf_file_handle ofh, bool is32, int flags, int attr, in
 
 extern orl_return OmfAddLineNum( omf_sec_handle sh, unsigned_16 line, unsigned_32 offset )
 {
-    sh->assoc.seg.lines = checkArraySize( sh->omf_file_hnd, sh->assoc.seg.lines, sh->assoc.seg.num_lines, STD_INC, sizeof( ORL_STRUCT( orl_linnum ) ) );
+    sh->assoc.seg.lines = checkArraySize( sh->omf_file_hnd, (void *)sh->assoc.seg.lines, sh->assoc.seg.num_lines, STD_INC, sizeof( ORL_STRUCT( orl_linnum ) ) );
     if( sh->assoc.seg.lines == NULL )
         return( ORL_OUT_OF_MEMORY );
 
-    sh->assoc.seg.lines[sh->assoc.seg.num_lines].linnum = line;
-    sh->assoc.seg.lines[sh->assoc.seg.num_lines].off = offset;
+    ((ORL_STRUCT( orl_linnum ) *)sh->assoc.seg.lines)[sh->assoc.seg.num_lines].linnum = line;
+    ((ORL_STRUCT( orl_linnum ) *)sh->assoc.seg.lines)[sh->assoc.seg.num_lines].off = offset;
     sh->assoc.seg.num_lines++;
 
     return( ORL_OKAY );
