@@ -73,8 +73,8 @@ typedef struct section {
     unsigned_32         size;
     void                *reloclist;
     union {
-        unsigned_32         file_loc;
-        MOD_ENTRY           *dist_mods;
+        unsigned_32     file_loc;
+        MOD_ENTRY       *dist_mods;
     } u;
     void                *dbg_info;
     OUTFILELIST         *outfile;
@@ -86,15 +86,15 @@ typedef struct path_entry {
 } path_entry;
 
 typedef struct outfilelist {
-    OUTFILELIST     *next;
-    char            *fname;     // name of the file to be written to.
-    f_handle        handle;
-    unsigned long   file_loc;
-    char            *buffer;
-    unsigned long   bufpos;
-    unsigned        ovlfnoff;   // offset of filename from _OVLTAB
-    bool            is_exe;     // executable flag (for file permissions)
-    unsigned long   origin;
+    OUTFILELIST         *next;
+    char                *fname;     // name of the file to be written to.
+    f_handle            handle;
+    unsigned long       file_loc;
+    char                *buffer;
+    unsigned long       bufpos;
+    unsigned            ovlfnoff;   // offset of filename from _OVLTAB
+    bool                is_exe;     // executable flag (for file permissions)
+    unsigned long       origin;
 } outfilelist;
 
 enum infile_flags {
@@ -335,8 +335,8 @@ typedef struct group_entry {
 
 // this is a bit in the segflags field. This is also defined in exeos2.h
 
-#define SEG_DATA            1
-#define SEG_READ_ONLY    0x80
+#define SEG_DATA        1
+#define SEG_READ_ONLY   0x80
 
 // the default value to initialize group flags to. This is the same as
 // SEG_LEVEL_3 in exeos2.h.
@@ -348,21 +348,21 @@ typedef struct group_entry {
 #define SEG_16_ALIAS    1
 
 typedef struct seg_leader {
-    SEG_LEADER      *next_seg;
-    SEG_LEADER      *grp_next;
-    char            *segname;
-    SEGDATA         *pieces;
-    group_entry     *group;
-    class_entry     *class;
-    offset          size;               // total size of segment
-    SEG_LEADER      *DupSeg;            // Segment to get data from for output
-    unsigned_16     info;
-    unsigned_16     align   : 5;        // alignment of seg (power of 2)
-    unsigned_16     dbgtype : 3;        // debugging type of seg
-    unsigned_16     combine : 2;        // combine val. of seg
-    unsigned_32     num;                // # of addrinfos to output (video)
-    targ_addr       seg_addr;           // address of segment.
-    unsigned_16     segflags;           // format specific segment flags
+    SEG_LEADER          *next_seg;
+    SEG_LEADER          *grp_next;
+    char                *segname;
+    SEGDATA             *pieces;
+    group_entry         *group;
+    class_entry         *class;
+    offset              size;               // total size of segment
+    SEG_LEADER          *DupSeg;            // Segment to get data from for output
+    unsigned_16         info;
+    unsigned_16         align   : 5;        // alignment of seg (power of 2)
+    unsigned_16         dbgtype : 3;        // debugging type of seg
+    unsigned_16         combine : 2;        // combine val. of seg
+    unsigned_32         num;                // # of addrinfos to output (video)
+    targ_addr           seg_addr;           // address of segment.
+    unsigned_16         segflags;           // format specific segment flags
 } seg_leader;
 
 /***********************************************************************
@@ -437,47 +437,47 @@ enum {
 */
 
 typedef struct segdata {
-    SEGDATA         *next;
-    SEGDATA         *mod_next;      // next segdata in module list.
-    offset          length;         // length of segment in current module.
-    virt_mem_ptr    u1;             // virtual memory pointer to data for this segment
-    virt_mem        vm_data;        // virtual memory pointer to data for class copy data
+    SEGDATA             *next;
+    SEGDATA             *mod_next;      // next segdata in module list.
+    offset              length;         // length of segment in current module.
+    virt_mem_ptr        u1;             // virtual memory pointer to data for this segment
+    virt_mem            vm_data;        // virtual memory pointer to data for class copy data
     union {
-        const char  *name;          // name of the segment
-        seg_leader  *leader;        // leader for the segment.
-        SEGDATA     *sdata;         // for explicit comdats
+        const char      *name;          // name of the segment
+        seg_leader      *leader;        // leader for the segment.
+        SEGDATA         *sdata;         // for explicit comdats
     } u;
     union {
-        void        *refs;          // P1dce: list of other seg's this references
-        signed_32   delta;          // P2: for calc'ing segment & symbol addrs
+        void            *refs;          // P1dce: list of other seg's this references
+        signed_32       delta;          // P2: for calc'ing segment & symbol addrs
     } a;
     union {
-        mod_entry   *mod;           // P2CV&DW: pointer to defining module.
-        char        *clname;        // INC: class name for segment
+        mod_entry       *mod;           // P2CV&DW: pointer to defining module.
+        char            *clname;        // INC: class name for segment
     } o;
-    unsigned_32     addrinfo;       // P2VIDEO: offset into addrinfo of seg.
-    unsigned_16     frame;          // the frame of an absolute segment.
-    unsigned        align      : 5;
-    unsigned        select     : 3; // comdat: selection type
-    unsigned        combine    : 2; // how to combine segment with others
-    unsigned        alloc      : 2; // comdat: where to allocate segment.
+    unsigned_32         addrinfo;       // P2VIDEO: offset into addrinfo of seg.
+    unsigned_16         frame;          // the frame of an absolute segment.
+    unsigned            align      : 5;
+    unsigned            select     : 3; // comdat: selection type
+    unsigned            combine    : 2; // how to combine segment with others
+    unsigned            alloc      : 2; // comdat: where to allocate segment.
 
-    bool            is32bit    : 1; // true if segment is 32 bits
-    bool            iscode     : 1; // true if a code segment.
-    bool            isabs      : 1; // true if this is an absolute segment.
-    bool            iscdat     : 1; // true if this is a comdat
-    bool            isuninit   : 1; // true if seg is uninitialized
-    bool            isidata    : 1; // true if segment is .idata (ORL only)
-    bool            ispdata    : 1; // true if segment is .pdata
-    bool            isreldata  : 1; // true if segment is .reldata
-    bool            visited    : 1; // dce: true if visited in graph search.
-    bool            isrefd     : 1; // dce: true if this module is referenced.
-    bool            isdead     : 1; // dce: true if segdata or segdef killed.
-    bool            isdefd     : 1; // segdata has been defined
-    bool            isfree     : 1; // segdata is free (used in carver stuff)
-    bool            isprepd    : 1; // has been prepped for inc linking
-    bool            canfarcall : 1; // OK to do far call optimization here
-    bool            hascdatsym : 1; // true if comdat and has a symbol defd
+    bool                is32bit    : 1; // true if segment is 32 bits
+    bool                iscode     : 1; // true if a code segment.
+    bool                isabs      : 1; // true if this is an absolute segment.
+    bool                iscdat     : 1; // true if this is a comdat
+    bool                isuninit   : 1; // true if seg is uninitialized
+    bool                isidata    : 1; // true if segment is .idata (ORL only)
+    bool                ispdata    : 1; // true if segment is .pdata
+    bool                isreldata  : 1; // true if segment is .reldata
+    bool                visited    : 1; // dce: true if visited in graph search.
+    bool                isrefd     : 1; // dce: true if this module is referenced.
+    bool                isdead     : 1; // dce: true if segdata or segdef killed.
+    bool                isdefd     : 1; // segdata has been defined
+    bool                isfree     : 1; // segdata is free (used in carver stuff)
+    bool                isprepd    : 1; // has been prepped for inc linking
+    bool                canfarcall : 1; // OK to do far call optimization here
+    bool                hascdatsym : 1; // true if comdat and has a symbol defd
 } segdata;
 
 typedef struct node {
