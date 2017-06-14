@@ -72,7 +72,7 @@ hash_table      SkipRefTable = NULL;
 
 orl_handle              ORLHnd;
 orl_file_handle         ObjFileHnd;
-orl_sec_handle          debugHnd;
+orl_sec_handle          debugHnd = ORL_NULL_HANDLE;
 dis_handle              DHnd;
 dis_format_flags        DFormat;
 
@@ -255,8 +255,8 @@ static void printMasmHeader( section_ptr section )
     const char          *class;
     const char          *gname;
     char                *astr;
-    orl_sec_handle      sh;
-    orl_group_handle    grp = NULL;
+    orl_sec_handle      shnd;
+    orl_group_handle    grp;
     char                comname[MAX_LINE_LEN];
 
     size = ORLSecGetSize( section->shnd );
@@ -304,24 +304,25 @@ static void printMasmHeader( section_ptr section )
             }
             combine = ORLSecGetCombine( section->shnd );
             if( (combine & ORL_SEC_COMBINE_COMDAT_ALLOC_MASK) == ORL_SEC_COMBINE_COMDAT_ALLOC_EXPLIC ) {
-                sh = ORLSecGetAssociated( section->shnd );
+                shnd = ORLSecGetAssociated( section->shnd );
                 grp = ORLSecGetGroup( section->shnd );
                 astr = "SEGMENT";
             } else {
-                sh = ORL_NULL_HANDLE;
+                shnd = ORL_NULL_HANDLE;
+                grp = ORL_NULL_HANDLE;
                 alignment = ORLSecGetAlignment( section->shnd );
                 astr = getAlignment( alignment );
             }
-            if( sh != ORL_NULL_HANDLE || grp ) {
+            if( shnd != ORL_NULL_HANDLE || grp != ORL_NULL_HANDLE ) {
                 name = NULL;
                 gname = NULL;
-                if( grp ) {
+                if( grp != ORL_NULL_HANDLE ) {
                     gname = ORLGroupName( grp );
                 }
-                if( sh != ORL_NULL_HANDLE ) {
-                    name = ORLSecGetName( sh );
-                    if( !name ) {
-                        if( gname ) {
+                if( shnd != ORL_NULL_HANDLE ) {
+                    name = ORLSecGetName( shnd );
+                    if( name != NULL ) {
+                        if( gname != NULL ) {
                             name = gname;
                             gname = NULL;
                         } else {
@@ -332,7 +333,7 @@ static void printMasmHeader( section_ptr section )
                     name = gname;
                     gname = NULL;
                 }
-                if( gname ) {
+                if( gname != NULL ) {
                     BufferStore( "Comdat: %s %s %s '%s:%s' %08X bytes", comname,
                                  astr, getPick( combine ), gname, name, size );
                 } else {
@@ -364,7 +365,7 @@ void PrintAssumeHeader( section_ptr section )
 
     if( IsMasmOutput() && (DFormat & DFF_ASM) ) {
         grp = ORLSecGetGroup( section->shnd );
-        if( grp ) {
+        if( grp != ORL_NULL_HANDLE ) {
             name = ORLGroupName( grp );
         } else {
             name = section->name;

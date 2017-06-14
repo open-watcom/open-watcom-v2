@@ -74,8 +74,6 @@ typedef struct recognized_struct recognized_struct;
 #define CPP_COMMENT_STRING  "// "
 #define MASM_COMMENT_STRING "; "
 
-char    *CommentString  = CPP_COMMENT_STRING;
-
 extern wd_options       Options;
 extern char             LabelChar;
 extern char             QuoteChar;
@@ -99,6 +97,8 @@ extern section_list_struct      Sections;
 extern publics_struct           Publics;
 
 extern orl_sec_handle           debugHnd;
+
+char    *CommentString  = CPP_COMMENT_STRING;
 
 // sections that require name-checking should be inserted in this array
 recognized_struct RecognizedName[] = {
@@ -128,9 +128,9 @@ static const char * const intelSkipRefList[] = {
 
 #define NUM_ELTS( a )   (sizeof(a) / sizeof((a)[0]))
 
-static orl_sec_handle           symbolTable;
-static orl_sec_handle           dynSymTable;
-static orl_sec_handle           drectveSection;
+static orl_sec_handle           symbolTable = ORL_NULL_HANDLE;
+static orl_sec_handle           dynSymTable = ORL_NULL_HANDLE;
+static orl_sec_handle           drectveSection = ORL_NULL_HANDLE;
 static section_list_struct      relocSections;
 static char                     *objFileBuf;
 static long                     objFilePos;
@@ -396,7 +396,7 @@ static return_val textOrDataSectionInit( orl_sec_handle shnd )
         error = createRefList( shnd );
         if( error == RC_OKAY ) {
             reloc_sec = ORLSecGetRelocTable( shnd );
-            if( reloc_sec ) {
+            if( reloc_sec != ORL_NULL_HANDLE ) {
                 error = addRelocSection( reloc_sec );
             }
         }
@@ -651,14 +651,14 @@ static return_val initORL( void )
     ORLSetFuncs( orl_cli_funcs, objRead, objSeek, MemAlloc, MemFree );
 
     ORLHnd = ORLInit( &orl_cli_funcs );
-    if( ORLHnd ) {
+    if( ORLHnd != ORL_NULL_HANDLE ) {
         type = ORLFileIdentify( ORLHnd, NULL );
         if( type == ORL_UNRECOGNIZED_FORMAT ) {
             PrintErrorMsg( RC_OKAY, WHERE_NOT_COFF_ELF );
             return( RC_ERROR );
         }
         ObjFileHnd = ORLFileInit( ORLHnd, NULL, type );
-        if( ObjFileHnd ) {
+        if( ObjFileHnd != ORL_NULL_HANDLE ) {
             // check byte order
             flags = ORLFileGetFlags( ObjFileHnd );
             byte_swap = false;
@@ -767,9 +767,9 @@ static return_val initSectionTables( void )
     error = createLabelList( 0 );
     if( error == RC_OKAY ) {
         o_error = ORLFileScan( ObjFileHnd, NULL, sectionInit );
-        if( o_error == ORL_OKAY && symbolTable ) {
+        if( o_error == ORL_OKAY && symbolTable != ORL_NULL_HANDLE ) {
             o_error = DealWithSymbolSection( symbolTable );
-            if( o_error == ORL_OKAY && dynSymTable ) {
+            if( o_error == ORL_OKAY && dynSymTable != ORL_NULL_HANDLE ) {
                 o_error = DealWithSymbolSection( dynSymTable );
             }
             if( o_error == ORL_OKAY ) {

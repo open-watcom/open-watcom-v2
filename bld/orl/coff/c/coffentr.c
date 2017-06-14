@@ -286,9 +286,8 @@ orl_table_index COFFENTRY CoffCvtSecHdlToIdx( coff_sec_handle shdl )
     return( 0 );
 }
 
-coff_sec_handle COFFENTRY CoffCvtIdxToSecHdl( coff_file_handle fhdl,
-                                              orl_table_index idx )
-/******************************************************************/
+coff_sec_handle COFFENTRY CoffCvtIdxToSecHdl( coff_file_handle fhdl, orl_table_index idx )
+/**********************************************************************************************/
 {
     return( fhdl->orig_sec_hnd[idx - 1] );
 }

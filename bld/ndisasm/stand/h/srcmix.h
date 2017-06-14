@@ -34,7 +34,7 @@
 #define WDIS_SRC_MIX_INCLUDED
 
 extern void             GetSourceFile( section_ptr );
-extern void             MixSource( dis_sec_offset );
+extern void             MixSource( dis_sec_offset, orl_table_index *, orl_table_index * );
 extern void             EndSourceMix( void );
 
 #endif

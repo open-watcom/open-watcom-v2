@@ -597,7 +597,7 @@ orl_group_handle ORLENTRY ORLSecGetGroup( orl_sec_handle orl_sec_hnd )
     if( LCL_SEC_HND( orl_sec_hnd )->type == ORL_OMF ) {
         return( OmfSecGetGroup( (omf_sec_handle)orl_sec_hnd ) );
     }
-    return( NULL );
+    return( ORL_NULL_HANDLE );
 }
 
 orl_return ORLENTRY ORLSecGetContents( orl_sec_handle orl_sec_hnd, unsigned char **buffer )

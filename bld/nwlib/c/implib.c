@@ -57,7 +57,7 @@ static orl_sec_handle found_sec_handle;
 
 static orl_return FindHelper( orl_sec_handle sec )
 {
-    if( found_sec_handle == 0 ) {
+    if( found_sec_handle == ORL_NULL_HANDLE ) {
         found_sec_handle = sec;
     }
     return( ORL_OKAY );
@@ -68,7 +68,7 @@ static orl_rva      export_table_rva;
 
 static orl_return FindExportTableHelper( orl_sec_handle sec )
 {
-    if( found_sec_handle == 0 ) {
+    if( found_sec_handle == ORL_NULL_HANDLE ) {
         orl_sec_base    base;
 
         ORLSecGetBase( sec, &base );
@@ -84,10 +84,10 @@ static orl_return FindExportTableHelper( orl_sec_handle sec )
 static orl_sec_handle FindSec( obj_file *ofile, char *name )
 {
     export_table_rva = 0;
-    found_sec_handle = 0;
+    found_sec_handle = ORL_NULL_HANDLE;
 
     ORLFileScan( ofile->orl, name, FindHelper );
-    if( found_sec_handle == 0 ) {
+    if( found_sec_handle == ORL_NULL_HANDLE ) {
         if( stricmp( ".edata", name ) == 0 ) {
             export_table_rva = ORLExportTableRVA( ofile->orl );
 
@@ -98,7 +98,7 @@ static orl_sec_handle FindSec( obj_file *ofile, char *name )
             ORLFileScan( ofile->orl, NULL, FindExportTableHelper );
         }
 
-        if( found_sec_handle == 0 ) {
+        if( found_sec_handle == ORL_NULL_HANDLE ) {
             FatalError( ERR_NO_EXPORTS, ofile->hdl->name );
         }
     }
@@ -161,7 +161,7 @@ static bool elfAddImport( arch_header *arch, libfile io )
     export_size = ORLSecGetSize( export_sec ) / sizeof( Elf32_Export );
     sym_sec = ORLSecGetSymbolTable( export_sec );
     ORLSecGetContents( sym_sec, (unsigned_8 **)&sym_table );
-//    sym_size = (Elf32_Word) ORLSecGetSize( sym_sec ) / sizeof( Elf32_Sym );
+//    sym_size = ORLSecGetSize( sym_sec ) / sizeof( Elf32_Sym );
     string_sec = ORLSecGetStringTable( sym_sec );
     ORLSecGetContents( string_sec, (unsigned_8 **)&strings );
 

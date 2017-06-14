@@ -191,7 +191,7 @@ static label_entry addLabel( label_list sec_label_list, label_entry entry, orl_s
         entry = insertLabelInMiddle( sec_label_list, entry );
     }
     // add entry to list
-    if( sym_hnd != NULL ) {
+    if( sym_hnd != ORL_NULL_HANDLE ) {
         key_entry.key.u.sym_handle = sym_hnd;
         key_entry.data.u.lab_entry = entry;
         HashTableInsert( SymbolToLabelTable, &key_entry );
@@ -229,7 +229,7 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
     label_entry         entry;
     orl_symbol_type     type;
     orl_symbol_type     primary_type;
-    orl_sec_handle      sec;
+    orl_sec_handle      shnd;
     const char          *source_name;
     const char          *label_name;
     unsigned_64         val64;
@@ -270,13 +270,13 @@ orl_return CreateNamedLabel( orl_symbol_handle sym_hnd )
     entry->binding = ORLSymbolGetBinding( sym_hnd );
     label_name = ORLSymbolGetName( sym_hnd );
     if( label_name == NULL ) {
-        sec = ORLSymbolGetSecHandle( sym_hnd );
-        if( sec == NULL ) {
+        shnd = ORLSymbolGetSecHandle( sym_hnd );
+        if( shnd == ORL_NULL_HANDLE ) {
             entry->label.name = NULL;
             FreeLabel( entry );
             return( ORL_OKAY );
         }
-        label_name = ORLSecGetName( sec );
+        label_name = ORLSecGetName( shnd );
     }
     labelNameAlloc( entry, label_name );
 

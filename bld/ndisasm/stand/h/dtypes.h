@@ -70,7 +70,7 @@ struct label_entry_struct {
     label_type          type;
     orl_symbol_binding  binding;
     union {
-        char *          name;
+        char            *name;
         label_number    number;
     } label;
     label_entry         next;

@@ -44,19 +44,17 @@
 #include "clibext.h"
 
 
-extern char *   ObjFileName;
-extern char *   CommentString;
+extern char             *ObjFileName;
+extern char             *CommentString;
 extern dis_format_flags DFormat;
 
-char *                  SourceFileName = NULL;
-char *                  SourceFileInObject = NULL;
-char *                  SourceFileInDwarf = NULL;
+char                    *SourceFileName = NULL;
+char                    *SourceFileInObject = NULL;
+char                    *SourceFileInDwarf = NULL;
 bool                    source_mix = false;
-FILE *                  SourceFile = NULL;
+FILE                    *SourceFile = NULL;
 orl_linnum              lines = NULL;
 orl_table_index         numlines;
-orl_table_index         currline;
-int                     lineInFile;
 
 static enum {
     NO_LINES,
@@ -75,26 +73,23 @@ static void NoSource( char *file )
     BufferPrint();
 }
 
-static int compareLines( const void *first, const void *second )
+static int compareLines( const void *l1, const void *l2 )
 {
-    orl_linnum l1 = (orl_linnum)first;
-    orl_linnum l2 = (orl_linnum)second;
-
     // make sure the "fake" function label line numbers filter to the end
-    if( l1->linnum == 0 ) {
-        return 1;
+    if( ((orl_linnum)l1)->linnum == 0 ) {
+        return( 1 );
     }
-    if( l2->linnum == 0 ) {
-        return -1;
+    if( ((orl_linnum)l2)->linnum == 0 ) {
+        return( -1 );
     }
 
-    if( l1->off > l2->off ) {
-        return 1;
+    if( ((orl_linnum)l1)->off > ((orl_linnum)l2)->off ) {
+        return( 1 );
     }
-    if( l1->off < l2->off ) {
-        return -1;
+    if( ((orl_linnum)l1)->off < ((orl_linnum)l2)->off ) {
+        return( -1 );
     }
-    return 0;
+    return( 0 );
 }
 
 static orl_linnum SortLineNums( orl_linnum ilines, orl_table_index inumlines )
@@ -111,10 +106,10 @@ static orl_linnum SortLineNums( orl_linnum ilines, orl_table_index inumlines )
 extern void GetSourceFile( section_ptr section )
 {
     char        path[_MAX_PATH2];
-    char *      drive;
-    char *      dir;
-    char *      file_name;
-    char *      extension;
+    char        *drive;
+    char        *dir;
+    char        *file_name;
+    char        *extension;
     orl_linnum  templines;
 
     numlines = ORLSecGetNumLines( section->shnd );
@@ -136,22 +131,20 @@ extern void GetSourceFile( section_ptr section )
         lines = ORLSecGetLines( section->shnd );
         line_type = ORL_LINES;
     }
-    templines = SortLineNums( lines , numlines );
+    templines = SortLineNums( lines, numlines );
     if( line_type == DWARF_LINES ) {
         MemFree( (void *)lines );
     }
     lines = templines;
-    currline = 0;
-    lineInFile = 0;
 
-    if( SourceFileName ) {
+    if( SourceFileName != NULL ) {
         SourceFile = fopen( SourceFileName, "r" );
         if( SourceFile != NULL ) {
             return;
         }
         _splitpath2( SourceFileName, path, &drive, &dir, &file_name, &extension );
         MemFree( SourceFileName );
-        SourceFileName = MemAlloc( strlen(drive) + strlen(dir) + strlen(file_name) + 5 );
+        SourceFileName = MemAlloc( strlen( drive ) + strlen( dir ) + strlen( file_name ) + 5 );
 
         _makepath( SourceFileName, drive, dir, file_name, ".c" );
         SourceFile = fopen( SourceFileName, "r" );
@@ -180,14 +173,14 @@ extern void GetSourceFile( section_ptr section )
         return;
     }
 
-    if( SourceFileInObject ) {
+    if( SourceFileInObject != NULL ) {
         SourceFile = fopen( SourceFileInObject, "r" );
         if( SourceFile != NULL ) {
             return;
         }
     }
 
-    if( SourceFileInDwarf ) {
+    if( SourceFileInDwarf != NULL ) {
         SourceFile = fopen( SourceFileInDwarf, "r" );
         if( SourceFile != NULL ) {
             return;
@@ -195,7 +188,7 @@ extern void GetSourceFile( section_ptr section )
     }
 
     _splitpath2( ObjFileName, path, &drive, &dir, &file_name, &extension );
-    SourceFileName = MemAlloc( strlen(drive) + strlen(dir) + strlen(file_name) + 5 );
+    SourceFileName = MemAlloc( strlen( drive ) + strlen( dir ) + strlen( file_name ) + 5 );
 
     _makepath( SourceFileName, drive, dir, file_name, ".c" );
     SourceFile = fopen( SourceFileName, "r" );
@@ -231,19 +224,18 @@ static char *getNextLine( void )
 
     pos = ftell( SourceFile );
     len = 0;
-    do{
-        c=fgetc( SourceFile );
+    do {
+        c = fgetc( SourceFile );
         len++;
-    }while( c != '\n' && c != EOF );
+    } while( c != '\n' && c != EOF );
 
-    buff = MemAlloc( len+1 );
+    buff = MemAlloc( len + 1 );
     if( c == EOF ) {
         buff[0]='\0';
     } else {
         fseek( SourceFile, pos, SEEK_SET );
-        fgets( buff, len+1, SourceFile );
+        fgets( buff, len + 1, SourceFile );
     }
-    lineInFile++;
     return buff;
 }
 
@@ -257,25 +249,31 @@ static void printLine( void )
     MemFree( buff );
 }
 
-extern void MixSource( dis_sec_offset offset )
+void MixSource( dis_sec_offset offset, orl_table_index *currline, orl_table_index *lineInFile )
 {
     orl_linnum line_entry;
+    orl_table_index curr_line;
+    orl_table_index line_in_file;
 
-    if( SourceFile ){
-        line_entry = &(lines[currline]);
-        while( currline < numlines && line_entry->off == offset
-                        && line_entry->linnum != 0 ) {
+    if( SourceFile != NULL ){
+        curr_line = *currline;
+        line_in_file = *lineInFile;
+        line_entry = lines + curr_line;
+        for( ; curr_line < numlines; curr_line++ ) {
+            if( line_entry->off != offset || line_entry->linnum == 0 )
+                break;
             BufferConcatNL();
-            while( lineInFile < line_entry->linnum ){
+            for( ; line_in_file < line_entry->linnum; line_in_file++ ) {
                 if( DFormat & DFF_ASM ) {
                     BufferConcat( CommentString );
                     BufferPrint();
                 }
                 printLine();
             }
-            currline++;
-            line_entry = &(lines[currline]);
+            line_entry++;
         }
+        *currline = curr_line;
+        *lineInFile = line_in_file;
     }
 }
 

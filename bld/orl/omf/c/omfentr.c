@@ -305,7 +305,7 @@ orl_group_handle OMFENTRY OmfSecGetGroup( omf_sec_handle sh )
             return( (orl_group_handle)(sh->assoc.seg.group) );
         }
     }
-    return( NULL );
+    return( ORL_NULL_HANDLE );
 }
 
 

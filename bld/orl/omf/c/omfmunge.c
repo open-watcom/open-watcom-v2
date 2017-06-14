@@ -249,7 +249,7 @@ static omf_sec_handle   newSection( omf_file_handle ofh, omf_quantity idx, orl_s
     sh->type = typ;
     sh->index = idx;
 
-    if( ofh->first_sec ) {
+    if( ofh->first_sec != NULL ) {
         ofh->last_sec->next = sh;
     } else {
         ofh->first_sec = sh;
