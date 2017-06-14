@@ -59,7 +59,7 @@ static orl_return       freeFileHandle( omf_file_handle ofh )
                 for( x = 0; x < sh->assoc.reloc.num; x++ ) {
                     _ClientFree( ofh, (void *)sh->assoc.reloc.relocs[x] );
                 }
-                _ClientFree( ofh, sh->assoc.reloc.relocs );
+                _ClientFree( ofh, (void *)sh->assoc.reloc.relocs );
                 sh->assoc.reloc.relocs = NULL;
                 sh->assoc.reloc.num = 0;
             }
