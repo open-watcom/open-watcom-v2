@@ -560,7 +560,7 @@ static  bool    GuardApplies( block *blk, block *dst, name *reg ) {
 /*****************************************************************/
 
     instruction *ins;
-    int         i;
+    opcnt       i;
 
     for( ins = dst->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         for( i = 0; i < ins->num_operands; i++ ) {

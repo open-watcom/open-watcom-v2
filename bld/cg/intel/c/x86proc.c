@@ -233,7 +233,7 @@ static  void    ScanForFDOps( void )
 {
     block       *blk;
     instruction *ins;
-    int         i;
+    opcnt       i;
     level_depth depth;
 
     CurrProc->contains_call = false;

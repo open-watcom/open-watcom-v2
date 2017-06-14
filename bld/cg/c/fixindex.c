@@ -57,7 +57,7 @@ static byte NumTab[LAST_OP - FIRST_OP + 1] = {
 };
 
 
-byte    OpcodeNumOperands( instruction *ins )
+opcnt   OpcodeNumOperands( instruction *ins )
 /********************************************
     see NumTab
 */
@@ -71,7 +71,7 @@ void     ReplaceOperand( instruction *ins, name *old, name *new ) {
     Replace all occurences of operand/result "old" with "new" in "ins".
 */
 
-    int                 i;
+    opcnt   i;
 
     for( i = ins->num_operands; i-- > 0; ) {
         if( ins->operands[i] == old ) {
@@ -125,7 +125,7 @@ name    *FindIndex( instruction *ins ) {
 */
 
     name        *index;
-    int         i;
+    opcnt       i;
 
     for( i = 0; i < ins->num_operands; ++i ) {
         index = ins->operands[i];
@@ -150,7 +150,7 @@ void    NoMemIndex( instruction *ins ) {
     of an N_INDEXED operand in "ins". If we are, call IndexToTemp.
 */
 
-    int         i;
+    opcnt       i;
     name        *bad_index;
 
     for( ;; ) {
@@ -172,7 +172,7 @@ void    NoMemIndex( instruction *ins ) {
 }
 
 
-static  name    *OpTemp( instruction *ins, uint i, uint j ) {
+static  name    *OpTemp( instruction *ins, opcnt i, opcnt j ) {
 /************************************************************
     Used by OneMemRef to split an operand out into a temporary
 */

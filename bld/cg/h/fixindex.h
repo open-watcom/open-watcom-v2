@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-extern byte         OpcodeNumOperands( instruction *ins );
+extern opcnt        OpcodeNumOperands( instruction *ins );
 extern void         ReplaceOperand( instruction *ins, name *old, name *new );
 extern name         *IndexToTemp( instruction * ins, name * index );
 extern name         *FindIndex( instruction *ins );

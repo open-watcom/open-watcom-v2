@@ -37,7 +37,7 @@
         instruction     *temp_ins;
         instruction     *last_defn;
         instruction     *first_use;
-        int             i;
+        opcnt           i;
         bool            last;
         instruction     *final_defn;
         bool            flows_in;

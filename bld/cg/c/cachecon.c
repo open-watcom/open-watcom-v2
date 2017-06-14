@@ -49,10 +49,10 @@
 static  block           *Head;
 static  block           *(*Next)(block*);
 
-static  int     CountOps( instruction *ins, name *cons ) {
-/********************************************************/
-
-    int num_operands;
+static  opcnt   CountOps( instruction *ins, name *cons )
+/******************************************************/
+{
+    opcnt   num_operands;
 
     switch( ins->head.opcode ) {
     case OP_LSHIFT:
@@ -91,9 +91,9 @@ static  type_class_def  FindMaxClass( name *cons, int *prefs ) {
 
     block               *blk;
     instruction         *ins;
-    int                 i;
+    opcnt               i;
     int                 class;
-    int                 num_operands;
+    opcnt               num_operands;
 
     class = -1;
     *prefs = 0;
@@ -129,10 +129,10 @@ static  bool    ReplaceConst( name *cons, name *temp, type_class_def tmp_class )
 {
     block               *blk;
     instruction         *ins;
-    int                 i;
+    opcnt               i;
     type_class_def      ins_class;
     bool                change;
-    int                 num_operands;
+    opcnt               num_operands;
 
     /* unused parameters */ (void)tmp_class;
 
@@ -201,7 +201,7 @@ extern  void            MemConstTemp( conflict_node *conf ) {
 
     block               *blk;
     instruction         *ins;
-    int                 i;
+    opcnt               i;
     name                *other;
     name                *temp;
     instruction         *folded;

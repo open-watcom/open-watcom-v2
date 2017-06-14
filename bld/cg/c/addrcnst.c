@@ -72,7 +72,7 @@ extern  void    KillMovAddrConsts( void ) {
     name                *op;
     name                *new_op;
     type_class_def      class;
-    int                 i;
+    opcnt               i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {

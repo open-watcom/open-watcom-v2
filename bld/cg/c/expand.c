@@ -176,7 +176,7 @@ static  operand_types   ClassifyOps( instruction *ins, bool *has_index )
 {
     name                *name;
     operand_types       ops;
-    int                 num_operands;
+    opcnt               num_operands;
 
     num_operands = OpcodeNumOperands( ins );
     *has_index = false;

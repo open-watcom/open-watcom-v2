@@ -53,7 +53,7 @@ static  bool    CheckIns( instruction **pins ) {
     opcode_entry        *try;
     instruction         *ins;
     bool                dummy;
-    int                 i;
+    opcnt               i;
 
     ins = *pins;
     ok = true;

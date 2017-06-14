@@ -73,7 +73,7 @@ static  void    CheckRefs( conflict_node *conf, block *blk )
     Also mark as BLK_CONTAINS_CALL if it does
 */
 {
-    int         i;
+    opcnt       i;
     instruction *ins;
 
     if( _IsBlkAttr( blk, BLK_BIG_LABEL | BLK_RETURN | BLK_BIG_JUMP ) ) {

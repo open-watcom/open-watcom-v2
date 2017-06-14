@@ -58,9 +58,9 @@ static  int             CurrInfo;
 static  conflict_info   ConflictInfo[MAX_CONF_INFO];
 
 
-static void RenumFrom( instruction *ins ) {
-/*****************************************/
-
+static void RenumFrom( instruction *ins )
+/***************************************/
+{
     block               *blk;
     instruction_id      id;
 
@@ -85,9 +85,9 @@ static void RenumFrom( instruction *ins ) {
 }
 
 
-static  conflict_info   *AddConfInfo( conflict_node *conf ) {
-/***********************************************************/
-
+static  conflict_info   *AddConfInfo( conflict_node *conf )
+/*********************************************************/
+{
     conflict_info       *info;
 
     if( _Is( conf, CST_CONF_VISITED ) ) {
@@ -131,11 +131,10 @@ static  void    FindNameConf( name *name, instruction *ins,
 }
 
 
-static  void    FindAllConflicts( instruction *ins,
-                                 instruction *other, conflict_bits for_which ) {
-/***************************************************************************/
-
-    int         i;
+static  void    FindAllConflicts( instruction *ins, instruction *other, conflict_bits for_which )
+/***********************************************************************************************/
+{
+    opcnt   i;
 
     for( i = ins->num_operands; i-- > 0; ) {
         FindNameConf( ins->operands[i], ins, other, for_which );
@@ -146,9 +145,9 @@ static  void    FindAllConflicts( instruction *ins,
 }
 
 
-static  void    MakeConflictInfo( instruction *ins1, instruction *ins2 ) {
-/************************************************************************/
-
+static  void    MakeConflictInfo( instruction *ins1, instruction *ins2 )
+/**********************************************************************/
+{
     int                 i;
     conflict_info       *info;
 

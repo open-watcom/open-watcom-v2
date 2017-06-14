@@ -200,7 +200,7 @@ static void TransferTempBlockUsage( block *blk )
 */
 {
     instruction *ins;
-    int         i;
+    opcnt       i;
 
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         for( i = ins->num_operands; i-- > 0; ) {
@@ -248,7 +248,7 @@ static  void    TransferMemBlockUsage( block *blk )
 */
 {
     instruction *ins;
-    int         i;
+    opcnt       i;
 
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         for( i = ins->num_operands; i-- > 0; ) {
@@ -300,7 +300,7 @@ extern  void    TransferTempFlags( void )
 {
     block       *blk;
     instruction *ins;
-    int         i;
+    opcnt       i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -365,7 +365,7 @@ static  void    SearchDefUse( void )
     block       *blk;
     instruction *ins;
     name        *name;
-    int         i;
+    opcnt       i;
     bool        touched_non_op;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {

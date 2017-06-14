@@ -80,7 +80,7 @@ static  bool    ReDefinesOps( instruction *of, instruction *ins ) {
     or the result of instruction "of"
 */
 
-    int         i;
+    opcnt   i;
 
     for( i = of->num_operands; i-- > 0; ) {
         if( of->operands[i]->n.class == N_REGISTER )

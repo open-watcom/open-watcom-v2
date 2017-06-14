@@ -92,7 +92,7 @@ static  bool    CanChange( instruction **pins,
 
     instruction         *ins;
     opcode_entry        *try;
-    int                 i;
+    opcnt               i;
     name                *opnd;
     bool                temp_index;
     bool                has_index;
@@ -160,7 +160,7 @@ static  bool    CantChange( instruction **pins, name *frm, name *to ) {
 /*********************************************************************/
 
     instruction         *new_ins;
-    byte                num_operands;
+    opcnt               num_operands;
 
     num_operands = (*pins)->num_operands;
     new_ins = NewIns( num_operands );
@@ -232,7 +232,7 @@ static  bool    ThrashDown( instruction *ins ) {
 
     name        *Y;
     name        *Z;
-    int         i;
+    opcnt       i;
     instruction *oth_ins;
 
     Y = ins->operands[0];
@@ -304,7 +304,7 @@ static  bool    ThrashUp( instruction *ins ) {
     instruction *thrsh_ins;
     name        *Y;
     name        *Z;
-    int         i;
+    opcnt       i;
     instruction *oth_ins;
 
     Y = ins->operands[0];

@@ -349,7 +349,7 @@ extern  bool    DoVerify( vertype kind, instruction *ins ) {
          break;
     case V_CONSTTEMP:
         {
-            int                 i;
+            opcnt   i;
 
             for( i = ins->num_operands; i-- > 0; ) {
                 op1 = ins->operands[i];

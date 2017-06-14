@@ -369,7 +369,7 @@ void DumpIInfo( instruction *ins )
 void DumpInsOnly( instruction *ins )
 /**********************************/
 {
-    int i;
+    opcnt   i;
 
     DumpOpcodeName( ins->head.opcode );
     DumpIInfo( ins );

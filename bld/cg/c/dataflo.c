@@ -108,7 +108,7 @@ static  void    RoughSortTemps( void )
     name                *opnd;
     block               *blk;
     instruction         *ins;
-    int                 i;
+    opcnt               i;
 
     for( opnd = Names[N_TEMP]; opnd != NULL; opnd = opnd->n.next_name ) {
         if( ( opnd->v.usage & ( USE_MEMORY|USE_ADDRESS ) ) ) {

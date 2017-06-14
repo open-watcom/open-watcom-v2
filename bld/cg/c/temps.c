@@ -192,7 +192,7 @@ static  void    ScanForLastUse( block *blk, stack_temp *new, name *temp )
 /***********************************************************************/
 {
     instruction *ins;
-    int         i;
+    opcnt       i;
 
     for( ins = blk->ins.hd.prev; ins->head.opcode != OP_BLOCK; ins = ins->head.prev ) {
         if( ins->result != NULL && ins->result->n.class == N_TEMP
@@ -224,7 +224,7 @@ static  void    ScanForFirstDefn( block *blk, stack_temp *new, name *temp )
 /*************************************************************************/
 {
     instruction *ins;
-    int         i;
+    opcnt       i;
 
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         if( ins->result != NULL ) {
@@ -297,7 +297,7 @@ static  instruction     *FindOnlyIns( name *name, bool *any_references )
     block       *blk;
     instruction *ins;
     instruction *onlyins;
-    int         i;
+    opcnt       i;
 
     if( name->v.block_usage == USED_NEVER ) {
         *any_references = false;
@@ -457,7 +457,7 @@ static  void    CalcNumberOfUses( void )
     name        *temp;
     block       *blk;
     instruction *ins;
-    int         i;
+    opcnt       i;
 
     for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {
         if( temp->t.temp_flags & STACK_PARM ) {
@@ -541,7 +541,7 @@ extern  void    ParmPropagate( void )
 {
     instruction *ins;
     block       *blk;
-    int         i;
+    opcnt       i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -623,7 +623,7 @@ extern  void    AssgnMoreTemps( block_num curr_id )
 {
     instruction *ins;
     block       *blk;
-    int         i;
+    opcnt       i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -649,7 +649,7 @@ extern  void            CountTempRefs( void )
 {
     block               *blk;
     instruction         *ins;
-    int                 i;
+    opcnt               i;
     name                *temp;
 
     for( temp = Names[N_TEMP]; temp != NULL; temp = temp->n.next_name ) {

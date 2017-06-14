@@ -2,7 +2,8 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2002-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,17 +25,10 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  Split related functions
 *
 ****************************************************************************/
 
 
-extern void     DelSeg( instruction *ins );
-extern void     DelSegOp( instruction *ins, opcnt i );
-extern void     DelSegRes( instruction *ins );
-extern void     DupSeg( instruction *ins, instruction *new_ins );
-extern void     DupSegOp( instruction *ins, instruction *new_ins, opcnt i );
-extern void     DupSegRes( instruction *ins, instruction *new_ins );
-extern void     MoveSegOp( instruction *ins, instruction *new_ins, opcnt i );
-extern void     MoveSegRes( instruction *ins, instruction *new_ins );
+extern  void            CnvOpToInt( instruction *, opcnt );
+extern  bool            IndexOverlaps( instruction *ins, opcnt i );

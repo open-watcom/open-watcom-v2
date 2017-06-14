@@ -121,7 +121,7 @@ static  void    ReplaceInstances( name *of, name *with )
 {
     block       *blk;
     instruction *ins;
-    int         i;
+    opcnt       i;
 //    block       *replaced;
 
 //    replaced = NULL;

@@ -125,9 +125,9 @@ static  instruction *KillCompare( instruction *ins, name *result ) {
 }
 
 
-static  instruction *CmpRelocZero( instruction *ins, int c, int r ) {
-/*******************************************************************/
-
+static  instruction *CmpRelocZero( instruction *ins, opcnt c, opcnt r )
+/*********************************************************************/
+{
     name        *cons;
     name        *rel;
     bool        truth;
@@ -201,7 +201,7 @@ static  instruction    *FoldAbsolute( instruction *ins ) {
     See below.
 */
     instruction *new_ins;
-    int         num_operands;
+    opcnt       num_operands;
     name        *result;
     tn          fold;
     type_def    *tipe;
@@ -382,7 +382,7 @@ instruction    *FoldIns( instruction *ins ) {
     to replace the original "ins".
 */
 
-    int         i;
+    opcnt       i;
     bool        have_const;
 
     if( ins->ins_flags & INS_CC_USED )

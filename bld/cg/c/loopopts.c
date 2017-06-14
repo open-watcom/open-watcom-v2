@@ -122,7 +122,7 @@ static void     ReplaceAllOccurences( name *of, name *with )
 {
     block       *blk;
     instruction *ins;
-    int         i;
+    opcnt       i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -687,7 +687,7 @@ bool     Hoistable( instruction *ins, block *blk )
 {
     bool        will_execute;
     bool        dangerous;
-    int         i;
+    opcnt       i;
     value       v;
     bool        big_const;
 
@@ -780,7 +780,7 @@ static bool     InvariantExpr( instruction *ins, block *blk )
     loop.
 */
 {
-    int         i;
+    opcnt       i;
 
     if( !Hoistable( ins, blk ) )
         return( false );
@@ -802,7 +802,7 @@ static void     UpdateLoopLiveInfo( instruction *ins )
 {
     hw_reg_set  reg;
     block       *blk;
-    int         i;
+    opcnt       i;
 
     HW_Asgn( reg, ins->result->r.reg );
     for( i = 0; i < ins->num_operands; ++i ) {
@@ -1485,7 +1485,7 @@ static  void    MarkUses( instruction *ins )
 /******************************************/
 {
     induction   *var;
-    int         i;
+    opcnt       i;
 
     for( var = IndVarList; var != NULL; var = var->next ) {
         if( _IsV( var, IV_SURVIVED ) )
@@ -1547,7 +1547,7 @@ static  void    AdjustIndex( induction *var, induction *new )
 {
     block       *blk;
     instruction *ins;
-    int         i;
+    opcnt       i;
 
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -1805,7 +1805,7 @@ static  void    ReplaceOccurences( name *of, name *with )
 {
     block       *blk;
     instruction *ins;
-    int         i;
+    opcnt       i;
 
     for( blk = Loop; blk != NULL; blk = blk->u.loop ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
@@ -2277,8 +2277,8 @@ instruction     *DupIns( instruction *blk_end, instruction *ins,
 /**************************************************************/
 {
     instruction *new;
-    int         num_operands;
-    int         i;
+    opcnt       num_operands;
+    opcnt       i;
 
     new = NewIns( ins->num_operands );
     num_operands = ins->num_operands;
@@ -2486,7 +2486,7 @@ bool    AnalyseLoop( induction *var, bool *ponecond,
     block       *first_blk;
     instruction *ins;
     iv_usage    usage;
-    int         i;
+    opcnt       i;
 
     *ponecond = false;
     *pcond = NULL;
@@ -2833,11 +2833,11 @@ static  bool    ConstOverflowsType( signed_64 *val, type_class_def class )
 }
 
 static  bool    DoReplacement( instruction *ins, induction *rep,
-                               int ind, int non_ind, type_class_def class )
-/****************************************************************************
-    Replace operands[ind] with "rep" in instruction "ins".  operands[
-    non_ind] is guaranteed not to be another induction variable.  This
-    may generate a bunch of code to calculate the correct linear
+                               opcnt ind, opcnt non_ind, type_class_def class )
+/******************************************************************************
+    Replace operands[ind] with "rep" in instruction "ins".
+    operands[non_ind] is guaranteed not to be another induction variable.
+    This may generate a bunch of code to calculate the correct linear
     function of the non-induction operand that we need to compare
     against "rep", but this code will all be loop invariant, so it'll
     get hauled out into the pre-header.
@@ -2902,8 +2902,8 @@ static  bool    DoReplacement( instruction *ins, induction *rep,
 }
 
 static  bool    RepIndVar( instruction *ins, induction *rep,
-                           int i_ind, int i_non_ind, type_class_def class )
-/****************************************************************
+                           opcnt i_ind, opcnt i_non_ind, type_class_def class )
+/******************************************************************************
     One operand of "ins" needs to be replaced with "rep"
 */
 {
@@ -3056,7 +3056,7 @@ static  bool    FindRegInvariants( void )
     block       *blk;
     instruction *ins;
     instruction *next;
-    int         i;
+    opcnt       i;
     bool        change;
 
     change = false;
@@ -3115,7 +3115,7 @@ static  bool    FindInvariants( void )
     instruction *next;
     name        *op;
     name        *temp;
-    int         i;
+    opcnt       i;
     bool        change;
 
     change = false;

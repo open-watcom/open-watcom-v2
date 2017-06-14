@@ -93,7 +93,7 @@ static  bool    NeedWait( name *op, name *res, instruction *ins_86 ) {
 /********************************************************************/
 
     bool        need_wait;
-    int         i;
+    opcnt       i;
 
     if( op != NULL ) {
         need_wait = OpsCollide( op, ins_86->result );

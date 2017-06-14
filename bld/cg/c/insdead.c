@@ -153,7 +153,7 @@ extern  bool            VolatileIns(instruction *ins)
     This is a utility routine for any module to use.
 */
 {
-    int         i;
+    opcnt   i;
 
     for( i = ins->num_operands; i-- > 0; ) {
         if( IsVolatile( ins->operands[i] ) ) {
@@ -228,7 +228,7 @@ static  bool    MarkOpsUseful( instruction *ins )
     mark all of its operands as useful
 */
 {
-    int         i;
+    opcnt       i;
     bool        change;
 
     change = false;

@@ -893,8 +893,8 @@ extern  instruction     *rMOVEXX_4( instruction *ins ) {
 }
 
 
-static  void  CnvOpToInt( instruction * ins, int op )
-/***************************************************/
+static  void  CnvOpToInt( instruction * ins, opcnt op )
+/*****************************************************/
 {
     name        *name1;
 
@@ -922,8 +922,8 @@ static  void  CnvOpToInt( instruction * ins, int op )
 }
 
 
-static bool IndexOverlaps( instruction *ins, int i )
-/**************************************************/
+static bool IndexOverlaps( instruction *ins, opcnt i )
+/****************************************************/
 {
     if( ins->operands[i]->n.class != N_INDEXED )
         return( false );
