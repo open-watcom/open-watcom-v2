@@ -103,7 +103,7 @@ extern orl_table_index GetDwarfLines( section_ptr section )
         lines = NULL;
     }
     currlinesize = 0;
-    if( debugHnd ) {
+    if( debugHnd != ORL_NULL_HANDLE ) {
         ORLSecGetContents( debugHnd, &contents );
         size = ORLSecGetSize( debugHnd );
         limit = ORLSecGetSize( section->shnd );

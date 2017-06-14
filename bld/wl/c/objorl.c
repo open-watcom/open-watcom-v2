@@ -441,15 +441,15 @@ static orl_return DeclareSegment( orl_sec_handle sec )
 /****************************************************/
 // declare the "segment"
 {
-    segdata             *sdata;
-    segnode             *snode;
-    const char          *name;
+    segdata                 *sdata;
+    segnode                 *snode;
+    const char              *name;
     unsigned_32 _WCUNALIGNED *contents;
-    size_t              len;
-    orl_sec_flags       flags;
-    orl_sec_type        type;
-    size_t              numlines;
-    unsigned            segidx;
+    size_t                  len;
+    orl_sec_flags           flags;
+    orl_sec_type            type;
+    size_t                  numlines;
+    unsigned                segidx;
 
     type = ORLSecGetType( sec );
     if( type != ORL_SEC_TYPE_NO_BITS && type != ORL_SEC_TYPE_PROG_BITS ) {
@@ -513,7 +513,7 @@ static segnode *FindSegNode( orl_sec_handle sechdl )
 {
     orl_table_index     idx;
 
-    if( sechdl == NULL )
+    if( sechdl == ORL_NULL_HANDLE )
         return( NULL );
     idx = ORLCvtSecHdlToIdx( sechdl );
     if( idx == 0 ) {
@@ -651,7 +651,7 @@ static orl_return ProcSymbol( orl_symbol_handle symhdl )
         } else {
             newnode->isdefd = true;
             ORLSymbolGetValue( symhdl, &val64 );
-            if( (type & ORL_SYM_TYPE_COMMON) && (type & ORL_SYM_TYPE_OBJECT) && sechdl == NULL ) {
+            if( (type & ORL_SYM_TYPE_COMMON) && (type & ORL_SYM_TYPE_OBJECT) && sechdl == ORL_NULL_HANDLE ) {
                 sym = MakeCommunalSym( sym, val64.u._32[I64LO32], false, true );
             } else if( snode != NULL && snode->entry != NULL && snode->entry->iscdat ) {
                 DefineComdatSym( snode, sym, val64.u._32[I64LO32] );

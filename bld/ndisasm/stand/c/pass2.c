@@ -612,6 +612,8 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
     const char          *FPU_fixup;
     int                 pos_tabs;
     bool                is32bit;
+    orl_table_index     currline;
+    orl_table_index     lineInFile;
 
     routineBase = 0;
     st = section->scan;
@@ -628,6 +630,8 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
         data.r_entry = NULL;
     }
     data.disassembly_errors = 0;
+    currline = 0;
+    lineInFile = 0;
 
     if( source_mix ) {
         GetSourceFile( section );
@@ -675,7 +679,7 @@ num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size
         }
 
         if( source_mix ) {
-            MixSource( data.loop );
+            MixSource( data.loop, &currline, &lineInFile );
         }
         DisDecodeInit( &DHnd, &decoded );
         decoded.flags.u.all |= flags.u.all;

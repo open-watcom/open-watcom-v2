@@ -92,7 +92,7 @@ static const char *getFrameModifier( orl_reloc rel )
             shnd = ORLSymbolGetSecHandle( rel->symbol );
             if( shnd != ORL_NULL_HANDLE ) {
                 grp = ORLSecGetGroup( shnd );
-                if( grp ) {
+                if( grp != ORL_NULL_HANDLE ) {
                     return( ORLGroupName( grp ) );
                 }
             }
@@ -103,9 +103,9 @@ static const char *getFrameModifier( orl_reloc rel )
         typ = ORLSymbolGetType( rel->frame );
         if( typ & ( ORL_SYM_TYPE_SECTION | ORL_SYM_TYPE_GROUP ) ) {
             name = ORLSymbolGetName( rel->frame );
-            if( name && !stricmp( name, "FLAT" ) ) {
+            if( name != NULL && stricmp( name, "FLAT" ) == 0 ) {
                 UseFlatModel();
-                if( !( DFormat & DFF_ASM ) ) {
+                if( (DFormat & DFF_ASM) == 0 ) {
                     return( NULL );
                 }
             }

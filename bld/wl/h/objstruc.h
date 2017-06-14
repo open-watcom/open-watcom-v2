@@ -211,7 +211,7 @@ typedef struct member_list {
 
 /*
    NOTE: this is an entry for the kludge of the year award, 1993.
-   Since I need to keep symbol *'s and module handles in the same pointer,
+   Since I need to keep symbol *'s and modules in the same pointer,
    I tell the difference by checking test to see if it is less than 8K
    (the max. # of distributed modules).
 */
