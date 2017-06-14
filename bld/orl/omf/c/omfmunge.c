@@ -436,7 +436,7 @@ static orl_return       addReloc( omf_file_handle ofh, orl_reloc orel )
     }
 
     sh = ofh->relocs;
-    sh->assoc.reloc.relocs = checkArraySize( ofh, sh->assoc.reloc.relocs, sh->assoc.reloc.num, STD_INC, sizeof( orl_reloc ) );
+    sh->assoc.reloc.relocs = checkArraySize( ofh, (void *)sh->assoc.reloc.relocs, sh->assoc.reloc.num, STD_INC, sizeof( orl_reloc ) );
     if( sh->assoc.reloc.relocs == NULL )
         return( ORL_OUT_OF_MEMORY );
 
