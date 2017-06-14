@@ -38,9 +38,8 @@
 #include "nullprop.h"
 #include "insdead.h"
 #include "optab.h"
+#include "overlap.h"
 
-
-extern  bool            CondOverlaps( name *result, name *ccop );
 
 typedef enum {          /* in order of increasing amount of information */
         UNKNOWN_STATE,

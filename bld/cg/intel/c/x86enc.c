@@ -413,7 +413,7 @@ static  bool    NeedOpndSize( instruction *ins ) {
 /*************************************************
         Do we REALLY, REALLY need the operand size override.
 */
-    int         i;
+    opcnt       i;
     hw_reg_set  result_reg;
     hw_reg_set  full_reg;
     instruction *next;
@@ -1838,7 +1838,7 @@ void    GenObjCode( instruction *ins ) {
     name        *result;
     name        *left = NULL;
     name        *right = NULL;
-    int         i;
+    opcnt       i;
     bool        opnd_size;
 
     gen = G( ins );

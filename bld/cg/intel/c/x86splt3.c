@@ -63,7 +63,7 @@ static  void    MoveSeg( instruction *ins, instruction *new_ins,
                          name *op, bool save_old )
 /**************************************************/
 {
-    int         i;
+    opcnt   i;
 
     if( ins->head.opcode == OP_BLOCK )
         return;
@@ -108,8 +108,8 @@ void    DupSeg( instruction *ins, instruction *new_ins )
 }
 
 
-void    DupSegOp( instruction *ins, instruction *new_ins, int i )
-/***************************************************************/
+void    DupSegOp( instruction *ins, instruction *new_ins, opcnt i )
+/*****************************************************************/
 {
     MoveSeg( ins, new_ins, new_ins->operands[i], true );
 }
@@ -122,8 +122,8 @@ void    DupSegRes( instruction *ins, instruction *new_ins )
 }
 
 
-void    MoveSegOp( instruction *ins, instruction *new_ins, int i )
-/****************************************************************/
+void    MoveSegOp( instruction *ins, instruction *new_ins, opcnt i )
+/******************************************************************/
 {
     MoveSeg( ins, new_ins, new_ins->operands[i], false );
 }
@@ -139,7 +139,7 @@ void    MoveSegRes( instruction *ins, instruction *new_ins )
 void    DelSegRes( instruction *ins )
 /***********************************/
 {
-    int         i;
+    opcnt   i;
 
     if( ins->num_operands <= OpcodeNumOperands( ins ) )
         return;
@@ -154,10 +154,10 @@ void    DelSegRes( instruction *ins )
 }
 
 
-void    DelSegOp( instruction *ins, int i )
-/*****************************************/
+void    DelSegOp( instruction *ins, opcnt i )
+/*******************************************/
 {
-    int         j;
+    opcnt   j;
 
     if( ins->num_operands <= OpcodeNumOperands( ins ) )
         return;

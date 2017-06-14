@@ -51,6 +51,7 @@
 #include "fixindex.h"
 #include "revcond.h"
 #include "conflict.h"
+#include "x86split.h"
 
 
 extern  instruction     *ByteShift(instruction*);
@@ -75,48 +76,45 @@ extern  instruction     *SplitLoadAddr(instruction*);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  opcode_entry    *GetMoveNoCCEntry( void );
 
-extern  instruction             *rFIXSHIFT(instruction *);
-extern  instruction             *rDOCVT(instruction*);
-extern  instruction             *rMAKEFNEG(instruction*);
-extern  instruction             *rSPLITCMP(instruction*);
-extern  instruction             *rSPLITMOVE(instruction*);
-extern  instruction             *rSPLITOP(instruction*);
-extern  instruction             *rSPLITNEG(instruction*);
-extern  instruction             *rFLIPSIGN(instruction*);
-extern  instruction             *rTEMP2CONST(instruction*);
-extern  instruction             *rSAVEFACE(instruction*);
-extern  instruction             *rMULSAVEFACE(instruction*);
-extern  instruction             *rDOLONGPUSH( instruction * );
-extern  instruction             *rOP1CMEM( instruction * );
-extern  instruction             *rOP2CMEM( instruction * );
-extern  instruction             *rFSCONSCMP( instruction * );
-extern  instruction             *rHIGHLOWMOVE( instruction * );
-extern  instruction             *rMAKECYPMUL( instruction * );
-extern  instruction             *rMAKESTRCMP( instruction * );
-extern  instruction             *rMAKESTRMOVE( instruction * );
-extern  instruction             *rMOVELOW( instruction * );
-extern  instruction             *rMOVOP1MEM( instruction * );
-extern  instruction             *rOP2CL( instruction * );
-extern  instruction             *rOP2CX( instruction * );
-extern  instruction             *rSPLITUNARY( instruction * );
-extern  instruction             *rMULREGISTER( instruction * );
-extern  instruction             *rDIVREGISTER( instruction * );
-extern  instruction             *rCPSUB( instruction * );
-extern  instruction             *rPTSUB( instruction * );
-extern  instruction             *rU_TEST( instruction * );
-extern  instruction             *rEXTPT( instruction * );
-extern  instruction             *rMAYBSTRMOVE( instruction * );
-extern  instruction             *rSEG_SEG( instruction * );
-extern  instruction             *rCHPPT( instruction * );
-extern  instruction             *rMOVRESMEM( instruction * );
-extern  instruction             *rMAKEU4CONS( instruction * );
-extern  instruction             *rEXT_PUSHC( instruction * );
-extern  instruction             *rCMPCP( instruction * );
-extern  instruction             *rMOVPTI8( instruction * );
-extern  instruction             *rMOVI8PT( instruction * );
-
-/* forward declaration */
-extern  void                    CnvOpToInt( instruction * ins, int op );
+extern  instruction     *rFIXSHIFT(instruction *);
+extern  instruction     *rDOCVT(instruction*);
+extern  instruction     *rMAKEFNEG(instruction*);
+extern  instruction     *rSPLITCMP(instruction*);
+extern  instruction     *rSPLITMOVE(instruction*);
+extern  instruction     *rSPLITOP(instruction*);
+extern  instruction     *rSPLITNEG(instruction*);
+extern  instruction     *rFLIPSIGN(instruction*);
+extern  instruction     *rTEMP2CONST(instruction*);
+extern  instruction     *rSAVEFACE(instruction*);
+extern  instruction     *rMULSAVEFACE(instruction*);
+extern  instruction     *rDOLONGPUSH( instruction * );
+extern  instruction     *rOP1CMEM( instruction * );
+extern  instruction     *rOP2CMEM( instruction * );
+extern  instruction     *rFSCONSCMP( instruction * );
+extern  instruction     *rHIGHLOWMOVE( instruction * );
+extern  instruction     *rMAKECYPMUL( instruction * );
+extern  instruction     *rMAKESTRCMP( instruction * );
+extern  instruction     *rMAKESTRMOVE( instruction * );
+extern  instruction     *rMOVELOW( instruction * );
+extern  instruction     *rMOVOP1MEM( instruction * );
+extern  instruction     *rOP2CL( instruction * );
+extern  instruction     *rOP2CX( instruction * );
+extern  instruction     *rSPLITUNARY( instruction * );
+extern  instruction     *rMULREGISTER( instruction * );
+extern  instruction     *rDIVREGISTER( instruction * );
+extern  instruction     *rCPSUB( instruction * );
+extern  instruction     *rPTSUB( instruction * );
+extern  instruction     *rU_TEST( instruction * );
+extern  instruction     *rEXTPT( instruction * );
+extern  instruction     *rMAYBSTRMOVE( instruction * );
+extern  instruction     *rSEG_SEG( instruction * );
+extern  instruction     *rCHPPT( instruction * );
+extern  instruction     *rMOVRESMEM( instruction * );
+extern  instruction     *rMAKEU4CONS( instruction * );
+extern  instruction     *rEXT_PUSHC( instruction * );
+extern  instruction     *rCMPCP( instruction * );
+extern  instruction     *rMOVPTI8( instruction * );
+extern  instruction     *rMOVI8PT( instruction * );
 
 extern  opcode_entry    String[];
 
@@ -475,14 +473,12 @@ static  instruction     *LoadStringOps( instruction *ins,
             PrefixIns( ins, load_op1 );
             load_op2 = MakeUnary( OP_LA, *op1, AllocRegName( SI ), WD );
             PrefixIns( ins, load_op2 );
-            load_op2 = MakeMove( ins->operands[ins->num_operands - 1],
-                                  AllocRegName( HW_DS ), U2 );
+            load_op2 = MakeMove( ins->operands[ins->num_operands - 1], AllocRegName( HW_DS ), U2 );
             PrefixIns( ins, load_op2 );
             es_needs_save = SegmentFloats( *op2 );
             ds_needs_save = true;
         } else {
-            load_op1 = MakeMove( ins->operands[ins->num_operands - 1],
-                                  AllocRegName( HW_ES ), U2 );
+            load_op1 = MakeMove( ins->operands[ins->num_operands - 1], AllocRegName( HW_ES ), U2 );
             PrefixIns( ins, load_op1 );
             load_op2 = MakeUnary( OP_LA, *op2, AllocRegName( DI ), WD );
             PrefixIns( ins, load_op2 );
@@ -944,7 +940,7 @@ extern  instruction     *rFLIPSIGN( instruction *ins ) {
 extern  instruction     *rTEMP2CONST( instruction *ins ) {
 /********************************************************/
 
-    int         i;
+    opcnt       i;
     name        *op;
     instruction *new;
 
@@ -968,9 +964,9 @@ extern  instruction     *rTEMP2CONST( instruction *ins ) {
 }
 
 
-extern  void            CnvOpToInt( instruction * ins, int op ) {
+extern  void            CnvOpToInt( instruction * ins, opcnt op )
 /***************************************************************/
-
+{
     name                *name1;
 
     switch( ins->type_class ) {

@@ -48,6 +48,8 @@
 #include "inssegs.h"
 #include "optimize.h"
 #include "fixindex.h"
+#include "x86split.h"
+#include "overlap.h"
 
 
 extern  name            *IntEquivalent( name * );
@@ -55,8 +57,6 @@ extern  void            UpdateLive( instruction *, instruction * );
 extern  name            *AddrConst( name *, int, constant_class );
 extern  name            *SegName( name * );
 extern  name            *OpAdjusted( name *, int, type_class_def );
-extern  bool            Overlaps( name *, name * );
-extern  void            CnvOpToInt( instruction *, int );
 extern  name            *Int64Equivalent( name * );
 
 name    *LowPart( name *tosplit, type_class_def class )

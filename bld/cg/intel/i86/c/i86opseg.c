@@ -133,7 +133,7 @@ static  int     CountSegOvers( void )
 {
     block       *blk;
     instruction *ins;
-    int         i;
+    opcnt       i;
     int         overs;
 
     overs = 0;

@@ -64,7 +64,7 @@ static  name    **Enregister( instruction *ins )
     a N_MEMORY, N_INDEXED, or N_TEMP as an operand or result.
 */
 {
-    int         i;
+    opcnt       i;
 
     switch( ins->head.opcode ) {
     case OP_MOV:
@@ -457,7 +457,7 @@ extern  bool    LdStAlloc( void )
 static bool CanCompressOperand( instruction *ins, name **popnd )
 /**************************************************************/
 {
-    int         i;
+    opcnt       i;
     hw_reg_set  reg;
     name        *op;
 
@@ -499,7 +499,7 @@ static bool     CanCompressResult( instruction *ins,
                                    name **popnd )
 /**********************************************************************/
 {
-    int         i;
+    opcnt       i;
     hw_reg_set  reg;
     name        *op;
 
@@ -539,8 +539,8 @@ static void     CompressIns( instruction *ins )
     name        **popnd;
     name        **preplace;
     name        *replacement;
-    int         i;
-    int         num_operands;
+    opcnt       i;
+    opcnt       num_operands;
 
     if( (ins->ins_flags & INS_RISCIFIED) == 0 )
         return;

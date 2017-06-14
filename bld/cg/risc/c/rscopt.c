@@ -84,7 +84,7 @@ static void ConvertOtherOperands( instruction *ins, name *temp )
 */
 {
     instruction *new_ins;
-    int         i;
+    opcnt       i;
 
     ins->table = NULL;
     for( i = ins->num_operands; i-- > 0; ) {
@@ -111,7 +111,7 @@ static bool ConvertInsToInt( instruction *ins, name *temp )
     if we changed something.
 */
 {
-    int         i;
+    opcnt       i;
 
     if( ins->head.opcode == OP_CONVERT || ins->head.opcode == OP_MOV ) {
         if( ins->operands[0] == temp ) {

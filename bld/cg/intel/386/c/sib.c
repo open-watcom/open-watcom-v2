@@ -185,7 +185,7 @@ instruction     *SIBPossibleIndex( instruction *ins, name *reg,
 /**********************************************************************/
 {
     instruction     *next;
-    int             i;
+    opcnt           i;
     mod_info        modifies;
 
     next = ins->head.next;

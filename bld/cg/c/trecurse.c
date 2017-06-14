@@ -203,7 +203,7 @@ static bool SafePath( instruction *ins )
     eliminating a call higher up the tree.
 */
 {
-    int         i;
+    opcnt       i;
 
     for( ; ins->head.opcode != OP_BLOCK ; ins = ins->head.next ) {
         if( SideEffect( ins ) )
@@ -286,7 +286,7 @@ static bool ScaryConditions( void )
 {
     block       *blk;
     instruction *ins;
-    int         i;
+    opcnt       i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {

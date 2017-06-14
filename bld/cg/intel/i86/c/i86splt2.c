@@ -46,6 +46,8 @@
 #include "optab.h"
 #include "inssegs.h"
 #include "optimize.h"
+#include "overlap.h"
+#include "x86split.h"
 
 
 typedef struct eight_byte_name {
@@ -59,8 +61,6 @@ extern  name            *IntEquivalent( name * );
 extern  void            UpdateLive( instruction *, instruction * );
 extern  name            *AddrConst( name *, int, constant_class );
 extern  name            *SegName( name * );
-extern  bool            Overlaps( name *, name * );
-extern  bool            IndexOverlaps( instruction *ins, int i );
 
 /*forward declaration*/
 static  void            Split8Name( instruction *ins, name *tosplit, eight_byte_name *out );
@@ -261,8 +261,8 @@ extern  instruction     *SplitUnary( instruction *ins )
     return( new_ins );
 }
 
-static  instruction     *SplitOverlapped( instruction *ins, int op )
-/******************************************************************/
+static  instruction     *SplitOverlapped( instruction *ins, opcnt op )
+/********************************************************************/
 /* Used to split 8 byte operation because of overlap problems */
 {
     instruction         *move;

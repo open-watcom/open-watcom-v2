@@ -234,7 +234,7 @@ static  void    AssignFPOps( instruction *ins, int *stk_level ) {
 
     int                 old_level;
     name                *op;
-    int                 i;
+    opcnt               i;
 
     /* Now check operands ... bump down stack level for each*/
     /* top of stack operand that will be popped (may be more than one)*/
@@ -560,7 +560,7 @@ extern  bool    FPSideEffect( instruction *ins ) {
 
 */
 
-    int         i;
+    opcnt       i;
     bool        has_fp_reg;
 
     if( !_FPULevel( FPU_87 ) )
@@ -699,7 +699,7 @@ static  void    NoStackAcrossCalls( void ) {
 
     block       *blk;
     instruction *ins;
-    int         i;
+    opcnt       i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {

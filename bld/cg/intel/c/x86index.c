@@ -180,7 +180,7 @@ static  name    *FindSegment( instruction *ins ) {
 */
 
     name        *index;
-    int         i;
+    opcnt       i;
 
     if( ins->num_operands > OpcodeNumOperands( ins ) )
         return( NULL );
@@ -215,7 +215,7 @@ void    AddSegment( instruction *ins ) {
     override, add it to the instruction as an extra operand.
 */
 
-    int                 i;
+    opcnt               i;
     name                *index;
     name                *new_index;
     instruction         *new_ins;
@@ -356,7 +356,7 @@ void    MergeIndex( void ) {
 
     block       *blk;
     instruction *ins;
-    int         i;
+    opcnt       i;
     name        **name;
     bool        dec;
 
@@ -493,7 +493,7 @@ void    FixFPConsts( instruction *ins ) {
     memory reference and treat it accordingly.
 */
 
-    int                 i;
+    opcnt               i;
     type_class_def      class;
 
     if( !FPCInCode() && (_IsTargetModel( FLOATING_SS ) && _IsTargetModel( FLOATING_DS )) ) {

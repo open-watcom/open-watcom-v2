@@ -108,8 +108,8 @@ static unsigned InsStallable( instruction *ins )
     schedule the instructions in a block.
 */
 {
-    unsigned stallable;
-    int i;
+    unsigned    stallable;
+    opcnt       i;
 
     stallable = 0;
     for( i = ins->num_operands; i-- > 0; ) {
@@ -183,7 +183,7 @@ static bool StackOp( instruction *ins )
     pointer.
 */
 {
-    int         i;
+    opcnt       i;
     hw_reg_set  sp;
     name        *op;
 
@@ -250,7 +250,7 @@ static bool OkToSlide( instruction *ins, name *op )
 */
 {
 #if  _TARGET & (_TARG_80386 | _TARG_IAPX86 )
-    int             i;
+    opcnt           i;
 #endif
 
     /* unused parameters */ (void)ins;
@@ -280,7 +280,7 @@ static bool HiddenDependancy( instruction *ins, name *op )
     AL and AH - these cause a stall.
 */
 {
-    int         i;
+    opcnt       i;
     hw_reg_set  full;
 
     if( FPStackIns( ins ) )
@@ -339,7 +339,7 @@ static dep_type DataDependant( instruction *ins_i,
     instruction j? And if so, how?
 */
 {
-    int             k;
+    opcnt           k;
     dep_type        ret;
 
     ret = DEP_NONE;
@@ -396,7 +396,7 @@ static bool ImplicitDependancy( instruction *imp, instruction *ins )
 */
 {
     name        *op;
-    int         i;
+    opcnt       i;
 
     op = imp->result;
     if( op == NULL )
@@ -765,7 +765,7 @@ static void FixIndexAdjust( instruction *adj, bool forward )
     name        *op;
     type_length bias;
     hw_reg_set  reg;
-    int         i;
+    opcnt       i;
     int         scale;
 
     bias = adj->operands[1]->c.lo.int_value;

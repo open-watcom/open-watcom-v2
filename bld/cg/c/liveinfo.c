@@ -228,7 +228,7 @@ static  void    FlowConflicts( instruction *first,
     instruction         *ins;
     name                *opnd;
     conflict_node       *conf;
-    int                 i;
+    opcnt               i;
     opcode_defs         opcode;
     name_set            alive;
     bool                result_forced_alive;

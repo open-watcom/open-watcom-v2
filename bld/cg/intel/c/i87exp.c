@@ -320,13 +320,13 @@ extern  instruction     *PrefFLDOp( instruction *ins,
 }
 
 
-static  void    PrefixFLDOp( instruction *ins, operand_type op, int i ) {
-/*************************************************************************
+static  void    PrefixFLDOp( instruction *ins, operand_type op, opcnt i )
+/************************************************************************
     Prefix the floating point instruction "ins" with an FLD instruction
     for one of its operands (ins->operands[i]).  That operand has
     classification "op".
 */
-
+{
     name        *opnd;
     instruction *new_ins;
 
@@ -776,7 +776,7 @@ static  instruction     *DoExpand( instruction *ins ) {
 */
 
 
-    int                 i;
+    opcnt               i;
     int                 reg_num;
     operand_type        op1_type;
     operand_type        op2_type = OP_NONE;
