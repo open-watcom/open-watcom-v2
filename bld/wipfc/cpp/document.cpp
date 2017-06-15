@@ -306,13 +306,43 @@ void Document::parse( Lexer* lexer )
     if( tok == Lexer::END )
         throw FatalError( ERR_EOF );
     while( tok != Lexer::END ) {
-        //Should only ever see :h1, :fn :euserdoc, .*, and .imbed here
+        //Should only ever see :hx, :fn :euserdoc, .*, and .imbed here
         if( tok == Lexer::TAG ) {
             if( lexer->tagId() == Lexer::H1 ) {
                 Hn* h1( new Hn( this, NULL, dataName(), lexerLine(), lexerCol(), 1 ) );
                 Page* pg( new Page( this, h1 ) );
                 addPage( pg );
                 tok = h1->parse( lexer );
+            }
+            else if( lexer->tagId() == Lexer::H2 ) {
+                Hn* h2( new Hn( this, NULL, dataName(), lexerLine(), lexerCol(), 2 ) );
+                Page* pg( new Page( this, h2 ) );
+                addPage( pg );
+                tok = h2->parse( lexer );
+            }
+            else if( lexer->tagId() == Lexer::H3 ) {
+                Hn* h3( new Hn( this, NULL, dataName(), lexerLine(), lexerCol(), 3 ) );
+                Page* pg( new Page( this, h3 ) );
+                addPage( pg );
+                tok = h3->parse( lexer );
+            }
+            else if( lexer->tagId() == Lexer::H4 ) {
+                Hn* h4( new Hn( this, NULL, dataName(), lexerLine(), lexerCol(), 4 ) );
+                Page* pg( new Page( this, h4 ) );
+                addPage( pg );
+                tok = h4->parse( lexer );
+            }
+            else if( lexer->tagId() == Lexer::H5 ) {
+                Hn* h5( new Hn( this, NULL, dataName(), lexerLine(), lexerCol(), 5 ) );
+                Page* pg( new Page( this, h5 ) );
+                addPage( pg );
+                tok = h5->parse( lexer );
+            }
+            else if( lexer->tagId() == Lexer::H6 ) {
+                Hn* h6( new Hn( this, NULL, dataName(), lexerLine(), lexerCol(), 6 ) );
+                Page* pg( new Page( this, h6 ) );
+                addPage( pg );
+                tok = h6->parse( lexer );
             }
             else if( lexer->tagId() == Lexer::FN ) {
                 Fn* fn( new Fn( this, NULL, dataName(), lexerLine(), lexerCol() ) );
