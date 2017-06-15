@@ -640,7 +640,7 @@ C>set &dbgcmd=/swap/lines#50
 The following example illustrates how to define default options for the
 debugger under Linux:
 .exam begin
-$ export &dbgcmdup="-rows=50 -cols=100"
+$ export &dbgcmdup="-lines=50 -columns=100"
 .exam end
 .pc
 Under Linux, care must be taken to specify the environment variable name
