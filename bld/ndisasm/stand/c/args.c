@@ -57,9 +57,9 @@ static const char * const banner[]={
 
 extern wd_options               Options;
 extern char                     LabelChar;
-extern char *                   ObjFileName;
-extern char *                   ListFileName;
-extern char *                   SourceFileName;
+extern char                     *ObjFileName;
+extern char                     *ListFileName;
+extern char                     *SourceFileName;
 extern bool                     source_mix;
 extern dis_format_flags         DFormat;
 
@@ -76,22 +76,19 @@ static void printUsage( int msg )
         BufferConcatNL();
         BufferPrint();
     }
-    text = banner;
-    while( *text ) {
-        Print( *text++ );
+    for( text = banner; *text != '\0'; ++text ) {
+        Print( *text );
         Print( "\n" );
     }
     id = MSG_USAGE_BASE;
     if( MsgGet( id, buff ) ) {
-        ++id;
-        while( MsgGet( id, buff ) ) {
+        for( ++id; MsgGet( id, buff ); ++id ) {
             if( buff[0] == '.' && buff[1] == '\0' ) {
                 break;
             }
             BufferConcat( buff );
             BufferConcatNL();
             BufferPrint();
-            ++id;
         }
     }
     if( ObjFileName != NULL ) {
@@ -204,7 +201,7 @@ void HandleArgs( char *cmd )
     if( *cmd == '\0' || *cmd == '?' ) {
         printUsage( 0 );
     } else {
-        while( *cmd ) {
+        while( *cmd != '\0' ) {
             if( IS_OPT_DELIM( *cmd ) ) {
                 cmd++;
                 switch( tolower( *cmd ) ) {

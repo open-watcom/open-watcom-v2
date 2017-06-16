@@ -66,25 +66,20 @@ externs CreateExterns( ref_list list ) {
     if( !sec_externs) return( NULL );
     memset( sec_externs, 0, sizeof( externs_struct ) );
     sec_externs->number = 0;
-    entry = list->first;
-    while( entry ) {
+    for( entry = list->first; entry != NULL; entry = entry->next ) {
         if( ( entry->label->shnd == ORL_NULL_HANDLE ) && (entry->label->type != LTYP_GROUP) ) {
             sec_externs->number++;
         }
-        entry = entry->next;
     }
     if( sec_externs->number > 0 ) {
         sec_externs->extern_refs = (ref_entry *) MemAlloc( sizeof( ref_entry ) * sec_externs->number );
-        entry = list->first;
-        while( entry ) {
+        for( entry = list->first; entry != NULL; entry = entry->next ) {
             if( ( entry->label->shnd == ORL_NULL_HANDLE ) && ( entry->label->type != LTYP_GROUP ) ) {
                 sec_externs->extern_refs[index] = entry;
                 index++;
             }
-            entry = entry->next;
         }
-        qsort( sec_externs->extern_refs, sec_externs->number,
-                sizeof( ref_entry * ), ref_compare );
+        qsort( sec_externs->extern_refs, sec_externs->number, sizeof( ref_entry * ), ref_compare );
     }
     return( sec_externs );
 }

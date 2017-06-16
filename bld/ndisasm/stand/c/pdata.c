@@ -59,8 +59,10 @@ static orl_reloc            pdataReloc;
 static ref_entry doDescriptorRelocs( ref_entry r_entry, dis_sec_offset offset, uint_32 address )
 {
     /* Skip over pair relocs */
-    while( r_entry != NULL && (r_entry->type == ORL_RELOC_TYPE_PAIR || r_entry->offset < offset ) ) {
-        r_entry = r_entry->next;
+    for( ; r_entry != NULL; r_entry = r_entry->next ) {
+        if( r_entry->type != ORL_RELOC_TYPE_PAIR && r_entry->offset >= offset ) {
+            break;
+        }
     }
     if( r_entry != NULL && r_entry->offset == offset ) {
         HandleRefInData( r_entry, &address, false );
@@ -171,8 +173,10 @@ return_val DumpPDataSection( section_ptr section, unsigned_8 *contents, dis_sec_
         BufferMsg( PROCEDURE_DESCRIPTOR );
 
         /* Skip over pair relocs */
-        while( r_entry != NULL && (r_entry->type == ORL_RELOC_TYPE_PAIR || r_entry->offset < loop) ) {
-            r_entry = r_entry->next;
+        for( ; r_entry != NULL; r_entry = r_entry->next ) {
+            if( r_entry->type != ORL_RELOC_TYPE_PAIR && r_entry->offset >= loop ) {
+                break;
+            }
         }
         switch( r_entry->label->type ) {
         case LTYP_EXTERNAL_NAMED:

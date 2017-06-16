@@ -50,11 +50,13 @@ ref_entry DoPass1Relocs( unsigned_8 *contents, ref_entry r_entry, dis_sec_offset
     if( !IsIntelx86() )
         return( r_entry );
 
-    while( r_entry != NULL && ( r_entry->offset < start ) ) {
-        r_entry = r_entry->next;
+    for( ; r_entry != NULL; r_entry = r_entry->next ) {
+        if( r_entry->offset >= start ) {
+            break;
+        }
     }
 
-    while( r_entry != NULL && ( r_entry->offset < end ) ) {
+    for( ; r_entry != NULL && ( r_entry->offset < end ); r_entry = r_entry->next ) {
         if( r_entry->label->shnd != ORL_NULL_HANDLE && ( r_entry->label->type == LTYP_SECTION ) ) {
             if( r_entry->addend ) {
                 addend = HandleAddend( r_entry );
@@ -78,15 +80,14 @@ ref_entry DoPass1Relocs( unsigned_8 *contents, ref_entry r_entry, dis_sec_offset
             CreateUnnamedLabel( r_entry->label->shnd, addend, &rs );
             if( rs.error == RC_OKAY ) {
                 r_entry->label = rs.entry;
-                r_entry->no_val = 1;
+                r_entry->has_val = false;
             }
         }
-        r_entry = r_entry->next;
     }
     return( r_entry );
 }
 
-static int isSelfReloc( ref_entry r_entry )
+static bool isSelfReloc( ref_entry r_entry )
 {
     switch( r_entry->type ) {
     case ORL_RELOC_TYPE_REL_16:
@@ -101,9 +102,9 @@ static int isSelfReloc( ref_entry r_entry )
     case ORL_RELOC_TYPE_REL_32_ADJ3:
     case ORL_RELOC_TYPE_REL_32_ADJ4:
     case ORL_RELOC_TYPE_REL_32_ADJ5:
-        return( 1 );
+        return( true );
     }
-    return( 0 );
+    return( false );
 }
 
 return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size, ref_list sec_ref_list, scantab_ptr stl )
@@ -118,7 +119,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
     ref_entry                           r_entry;
     dis_inst_flags                      flags;
     dis_sec_offset                      op_pos;
-    int                                 is_intel;
+    bool                                is_intel;
     int                                 adjusted;
     sa_disasm_struct                    sds;
 
@@ -132,11 +133,10 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
 
     flags.u.all = DIF_NONE;
     if( GetMachineType() == ORL_MACHINE_TYPE_I386 ) {
-        if( ( GetFormat() != ORL_OMF ) ||
-            ( ORLSecGetFlags( shnd ) & ORL_SEC_FLAG_USE_32 ) ) {
+        if( ( GetFormat() != ORL_OMF ) || (ORLSecGetFlags( shnd ) & ORL_SEC_FLAG_USE_32) ) {
             flags.u.x86 = DIF_X86_USE32_FLAGS;
         }
-        is_intel = 1;
+        is_intel = true;
     } else {
         is_intel = IsIntelx86();
     }
@@ -144,10 +144,12 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
     for( loop = 0; loop < size; loop += decoded.size ) {
 
         // skip data in code segment
-        while( stl && ( loop > stl->end ) ) {
-            stl = stl->next;
+        for( ; stl != NULL; stl = stl->next ) {
+            if( stl->end >= loop  ) {
+                break;
+            }
         }
-        if( stl && ( loop >= stl->start ) ) {
+        if( stl != NULL && ( loop >= stl->start ) ) {
             decoded.size = 0;
             if( is_intel ) {
                 r_entry = DoPass1Relocs( contents, r_entry, loop, stl->end );
@@ -159,8 +161,10 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
 
         // data may not be listed in scan table, but a fixup at this offset will
         // give it away
-        while( r_entry != NULL && ( ( r_entry->offset < loop ) || SkipRef( r_entry ) != NULL ) ) {
-            r_entry = r_entry->next;
+        for( ; r_entry != NULL; r_entry = r_entry->next ) {
+            if( ( r_entry->offset >= loop ) && SkipRef( r_entry ) == NULL ) {
+                break;
+            }
         }
         if( r_entry != NULL && ( r_entry->offset == loop ) ) {
             if( is_intel || IsDataReloc( r_entry ) ) {
@@ -191,7 +195,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                 /* fall through */
             case DO_RELATIVE:
             case DO_MEMORY_REL:
-                if( ( decoded.op[i].type &  DO_MASK ) != DO_IMMED ) {
+                if( (decoded.op[i].type & DO_MASK) != DO_IMMED ) {
                     decoded.op[i].value.u._32[I64LO32] += loop;
                     adjusted = 1;
                 }
@@ -199,8 +203,10 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
             case DO_ABSOLUTE:
             case DO_MEMORY_ABS:
                 // Check for reloc at this location
-                while( r_entry != NULL && r_entry->offset < op_pos ) {
-                    r_entry = r_entry->next;
+                for( ; r_entry != NULL; r_entry = r_entry->next ) {
+                    if( r_entry->offset >= op_pos ) {
+                        break;
+                    }
                 }
                 if( r_entry != NULL && ( r_entry->offset == op_pos ) ) {
                     if( is_intel && r_entry->label->shnd != ORL_NULL_HANDLE
@@ -211,14 +217,13 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                          * code is re-assembled
                          */
                         if( r_entry->addend ) {
-                            r_entry->no_val = 0;
+                            r_entry->has_val = true;
                             CreateUnnamedLabel( r_entry->label->shnd, HandleAddend( r_entry ), &rs );
                         } else {
                             dis_sec_offset  loc;
 
-                            r_entry->no_val = 1;
-                            if( adjusted && isSelfReloc( r_entry ) &&
-                                ( r_entry->label->type == LTYP_SECTION ) ) {
+                            r_entry->has_val = false;
+                            if( adjusted && isSelfReloc( r_entry ) && ( r_entry->label->type == LTYP_SECTION ) ) {
                                 /* This is a kludgy reloc done under OMF
                                  */
                                 decoded.op[i].value.u._32[I64LO32] -= loop;
@@ -236,7 +241,7 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                             if( loc > ORLSecGetSize( r_entry->label->shnd ) ) {
                                 // can't fold it into the label position - BBB Oct 28, 1996
                                 loc = 0;
-                                r_entry->no_val = 0;
+                                r_entry->has_val = true;
                             }
                             CreateUnnamedLabel( r_entry->label->shnd, loc, &rs );
                         }
@@ -246,9 +251,8 @@ return_val DoPass1( orl_sec_handle shnd, unsigned_8 *contents, dis_sec_size size
                     } else {
                         // fixme: got to handle other types of relocs here
                     }
-                } else if( ( decoded.op[i].type &  DO_MASK ) != DO_IMMED ) {
-                    if( decoded.op[i].base == DR_NONE &&
-                        decoded.op[i].index == DR_NONE ) {
+                } else if( (decoded.op[i].type & DO_MASK) != DO_IMMED ) {
+                    if( decoded.op[i].base == DR_NONE && decoded.op[i].index == DR_NONE ) {
                         switch( decoded.op[i].type & DO_MASK ) {
                         case DO_MEMORY_REL:
                         case DO_MEMORY_ABS:
