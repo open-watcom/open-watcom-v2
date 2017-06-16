@@ -40,7 +40,7 @@ static unsigned GetUByte( void *d, unsigned off )
     unsigned_8  data;
 
     //NYI: have to error check return code
-    DisCliGetData( d, off, sizeof(data), &data );
+    DisCliGetData( d, off, sizeof( data ), &data );
     return( data );
 }
 
@@ -52,7 +52,7 @@ static unsigned GetUShort( void *d, unsigned off )
     }   data;
 
     //NYI: have to error check return code
-    DisCliGetData( d, off, sizeof(data), &data );
+    DisCliGetData( d, off, sizeof( data ), &data );
     return( (data.hi << 8) | data.lo );
 }
 
@@ -66,7 +66,7 @@ static unsigned long GetULong( void *d, unsigned off )
     }   data;
 
     //NYI: have to error check return code
-    DisCliGetData( d, off, sizeof(data), &data );
+    DisCliGetData( d, off, sizeof( data ), &data );
     return( ((unsigned long)data.hi << 24)
         |   ((unsigned long)data.mid_hi << 16)
         |   (data.mid_lo << 8)

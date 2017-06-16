@@ -111,7 +111,7 @@ struct reference_entry_struct {
     orl_reloc_type      type;
     dis_sec_addend      addend;
     ref_entry           next;
-    int                 no_val;
+    bool                has_val;
     const char          *frame;
 };
 

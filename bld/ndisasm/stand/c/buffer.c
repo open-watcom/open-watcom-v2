@@ -47,59 +47,43 @@ static unsigned                 OutputPos = 0;
 static char                     Buffer[BUFFER_LEN] = {0};
 static char                     IntermedBuffer[BUFFER_LEN] = {0};
 
-void FmtHexNum( char *buff, unsigned prec, dis_value value, bool no_prefix )
+void FmtHexNum( char *buff, unsigned prec, dis_value value, bool with_prefix )
 {
     char        *src;
     char        *dst;
     const char  *fmt;
     int         len;
+    bool        masm_src;
 
-    if( (DFormat & DFF_ASM) && IsMasmOutput() ) {
-        if( ( value.u._32[I64LO32] == 0 ) && ( value.u._32[I64HI32] == 0 ) && ( prec == 0 ) ) {
-            strcpy( buff, "0" );
-        } else {
-            fmt = ( no_prefix ) ? "%*.*lxH" : "0%*.*lxH";
-            if( value.u._32[I64HI32] == 0 ) {
-                len = 0;
-            } else {
-                if( prec > 8 ) {
-                    len = sprintf( buff, fmt, prec - 8, prec - 8, value.u._32[I64HI32] );
-                    prec = 8;
-                } else {
-                    len = sprintf( buff, fmt, 0, 0, value.u._32[I64HI32] );
-                }
-                fmt = "%*.*lxH";
-            }
-            sprintf( buff + len, fmt, prec, prec, value.u._32[I64LO32] );
-        }
-        /* don't need the extra leading zero, squeeze it out */
-        for ( src = dst = buff; *src != '\0'; src++ ) {
-            if ( dst != buff || src[0] != '0' || !isdigit( src[1] ) ) {
-                *dst = *src;
-                dst++;
-            }
-        }
-        *dst = '\0';
-        if ( buff[1] == 'H' ) {
-            buff[1] = '\0';
-        }
+    masm_src = ( (DFormat & DFF_ASM) && IsMasmOutput() );
+    if( ( value.u._32[I64LO32] == 0 ) && ( value.u._32[I64HI32] == 0 ) && ( prec == 0 ) ) {
+        strcpy( buff, ( masm_src ) ? "0" : "0x0" );
     } else {
-        if( ( value.u._32[I64LO32] == 0 ) && ( value.u._32[I64HI32] == 0 ) && ( prec == 0 ) ) {
-            strcpy( buff, "0x0" );
+        fmt = ( with_prefix ) ? (( masm_src ) ? "0%*.*lxH" : "0x%*.*lx") : (( masm_src ) ? "%*.*lxH" : "%*.*lx");
+        if( value.u._32[I64HI32] == 0 ) {
+            len = 0;
         } else {
-            fmt = ( no_prefix ) ? "%*.*lx" : "0x%*.*lx";
-            if( value.u._32[I64HI32] == 0 ) {
-                len = 0;
+            if( prec > 8 ) {
+                len = sprintf( buff, fmt, prec - 8, prec - 8, value.u._32[I64HI32] );
+                prec = 8;
             } else {
-                if( prec > 8 ) {
-                    len = sprintf( buff, fmt, prec - 8, prec - 8, value.u._32[I64HI32] );
-                    prec = 8;
-                } else {
-                    len = sprintf( buff, fmt, 0, 0, value.u._32[I64HI32] );
-                }
-                fmt = "%*.*lx";
+                len = sprintf( buff, fmt, 0, 0, value.u._32[I64HI32] );
             }
-            sprintf( buff + len, fmt, prec, prec, value.u._32[I64LO32] );
+            fmt = ( masm_src ) ? "%*.*lxH" : "%*.*lx";
+        }
+        sprintf( buff + len, fmt, prec, prec, value.u._32[I64LO32] );
+        if( masm_src ) {
+            /* don't need the extra leading zero, squeeze it out */
+            for ( src = dst = buff; *src != '\0'; src++ ) {
+                if ( dst != buff || src[0] != '0' || !isdigit( src[1] ) ) {
+                    *dst = *src;
+                    dst++;
+                }
+            }
+            *dst = '\0';
+            if ( buff[1] == 'H' ) {
+                buff[1] = '\0';
+            }
         }
     }
 }
@@ -127,16 +111,16 @@ void BufferAlignToTab( unsigned pos )
 static void updateOutputPos( const char *string )
 // update the position of the last character as it will be seen in output
 {
-    if( string == NULL ) return;
-    while( *string ) {
-        if( *string == '\n' ) {
-            OutputPos = 0;
-        } else if( *string == '\t' ) {
-            OutputPos = ((OutputPos / 8) + 1) * 8;
-        } else {
-            OutputPos++;
+    if( string != NULL ) {
+        for( ; *string != '\0'; ++string ) {
+            if( *string == '\n' ) {
+                OutputPos = 0;
+            } else if( *string == '\t' ) {
+                OutputPos = ((OutputPos / 8) + 1) * 8;
+            } else {
+                OutputPos++;
+            }
         }
-        string++;
     }
 }
 
@@ -189,7 +173,7 @@ void BufferPrint( void )
 
 void BufferHex( unsigned prec, dis_value value )
 {
-    FmtHexNum( IntermedBuffer, prec, value, false );
+    FmtHexNum( IntermedBuffer, prec, value, true );
     BufferConcat( IntermedBuffer );
 }
 

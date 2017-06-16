@@ -95,7 +95,7 @@ typedef enum {
     ASCIZ
 } string_type;
 
-int IsMasmOutput( void )
+bool IsMasmOutput( void )
 {
     return( (DFormat & DFF_UNIX) == 0 && ( GetFormat() == ORL_OMF ) );
 }
@@ -239,7 +239,7 @@ static void printRest( unsigned_8 *bytes, size_t size )
     size_t      i;
     size_t      d;
     char        *btype;
-    int         is_masm;
+    bool        is_masm;
     dis_value   value;
 
     is_masm = IsMasmOutput();
@@ -346,14 +346,12 @@ dis_sec_addend HandleAddend( ref_entry r_entry )
         bits = 64;
         break;
     }
-    if( (bits != 32) && (r_addend & (1 << (bits - 1) ) ) ) {
+    if( (bits < 32) && (r_addend & (1 << (bits - 1) ) ) )
         return( r_addend | ( 0xFFFFFFFF ^ ((1 << bits) - 1) ) );
-    } else {
-        return( r_addend );
-    }
+    return( r_addend );
 }
 
-int IsDataReloc( ref_entry r_entry )
+bool IsDataReloc( ref_entry r_entry )
 {
     switch( r_entry->type ) {
     case ORL_RELOC_TYPE_ABSOLUTE:
@@ -370,9 +368,9 @@ int IsDataReloc( ref_entry r_entry )
     case ORL_RELOC_TYPE_PLTREL_32:
     case ORL_RELOC_TYPE_PLT_32:
     case ORL_RELOC_TYPE_WORD_64:
-        return( 1 );
+        return( true );
     default:
-        return( 0 );
+        return( false );
     }
 }
 
@@ -449,60 +447,44 @@ unsigned HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
     } else {
         types = unixTypes;
     }
-
-    value.u._32[I64HI32] = 0;
     rv = RelocSize( r_entry );
+    if( asmLabels && types[rv] != NULL ) {
+        BufferConcat( types[rv] );
+    }
+    value.u._32[I64HI32] = 0;
     switch( rv ) {
     case 6:
-        if( asmLabels && types[rv] ) {
-            BufferConcat( types[rv] );
-        }
         value.u._32[I64LO32] = *(unsigned_32 *)data;
-        HandleAReference(value, 0, RFLAG_DEFAULT | RFLAG_IS_IMMED,
-                            r_entry->offset, r_entry->offset + rv, &r_entry, buff );
-        BufferConcat( buff );
         break;
     case 4:
-        if( asmLabels ) {
-            BufferConcat( types[rv] );
-        }
         value.u._32[I64LO32] = *(unsigned_32 *)data;
-        HandleAReference(value, 0, RFLAG_DEFAULT | RFLAG_IS_IMMED,
-                            r_entry->offset, r_entry->offset + rv, &r_entry, buff );
-        BufferConcat( buff );
         break;
     case 2:
-        if( asmLabels ) {
-            BufferConcat( types[rv] );
-        }
         value.u._32[I64LO32] = *(unsigned_16 *)data;
-        HandleAReference(value, 0, RFLAG_DEFAULT | RFLAG_IS_IMMED,
-                            r_entry->offset, r_entry->offset + rv, &r_entry, buff );
-        BufferConcat( buff );
         break;
     case 1:
-        if( asmLabels ) {
-            BufferConcat( types[rv] );
-        }
         value.u._32[I64LO32] = *(unsigned_8 *)data;
-        HandleAReference(value, 0, RFLAG_DEFAULT | RFLAG_IS_IMMED,
-                            r_entry->offset, r_entry->offset + rv, &r_entry, buff );
-        BufferConcat( buff );
         break;
     case 8:
-        if( asmLabels ) {
-            BufferConcat( types[rv] );
-        }
         value.u._32[I64LO32] = 0;
-        HandleAReference( value, 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset, r_entry->offset + rv, &r_entry, buff );
-        BufferConcat( buff );
-        if( *((unsigned_32 *)data) != 0 || *((unsigned_32 *)data + 1) != 0 ) {
+        break;
+    default:
+        value.u._32[I64LO32] = 0;
+        break;
+    }
+    HandleAReference( value, 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset, r_entry->offset + rv, &r_entry, buff );
+    BufferConcat( buff );
+    switch( rv ) {
+    case 8:
+        value.u._32[I64LO32] = *(unsigned_32 *)data;
+        value.u._32[I64HI32] = *((unsigned_32 *)data + 1);
+        if( value.u._32[I64LO32] != 0 || value.u._32[I64HI32] != 0 ) {
             BufferConcat( "+" );
-            if( *((unsigned_32 *)data + 1) != 0 ) {
-                BufferStore( "0x%x", *((unsigned_32 *)data + 1) );
-                BufferStore( "%08x", *((unsigned_32 *)data) );
+            if( value.u._32[I64HI32] != 0 ) {
+                BufferStore( "0x%x", value.u._32[I64HI32] );
+                BufferStore( "%08x", value.u._32[I64LO32] );
             } else {
-                BufferStore( "0x%x", *((unsigned_32 *)data) );
+                BufferStore( "0x%x", value.u._32[I64LO32] );
             }
         }
         break;
@@ -514,7 +496,7 @@ static void printOut( char *string, size_t offset, size_t size )
 {
     char *              string_left = string;
     size_t              curr_pos = 0;
-    int                 ascii;
+    bool                ascii;
 
     /* unused parameters */ (void)offset;
 
@@ -546,8 +528,8 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr section,
                                  dis_sec_offset curr_pos, dis_sec_offset end,
                                  unsigned_8 *contents, char *buffer )
 {
-    int         raw;
-    int         is_masm;
+    bool        raw;
+    bool        is_masm;
 
     /* unused parameters */ (void)end;
 
@@ -555,7 +537,7 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr section,
 
     is_masm = IsMasmOutput();
 
-    while( l_entry != NULL && ( l_entry->type == LTYP_ABSOLUTE || l_entry->offset <= curr_pos ) ) {
+    for( ; l_entry != NULL && ( l_entry->type == LTYP_ABSOLUTE || l_entry->offset <= curr_pos ); l_entry = l_entry->next ) {
         switch( l_entry->type ) {
         case LTYP_ABSOLUTE:
             // no print any absolute label here
@@ -569,7 +551,6 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr section,
                 break;
             /* fall through */
         case LTYP_UNNAMED:
-
             if( raw ) {
                 strncpy( buffer, (char *)contents + curr_pos, sizeof( unsigned_32 ) );
             }
@@ -603,7 +584,6 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr section,
             BufferConcatNL();
             BufferPrint();
         }
-        l_entry = l_entry->next;
     }
     return( l_entry );
 }
@@ -647,8 +627,10 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, dis_sec_offset start,
         }
 
         /* Skip over pair relocs */
-        while( r_entry != NULL && (r_entry->type == ORL_RELOC_TYPE_PAIR || r_entry->offset < curr_pos) ) {
-            r_entry = r_entry->next;
+        for( ; r_entry != NULL; r_entry = r_entry->next ) {
+            if( r_entry->type != ORL_RELOC_TYPE_PAIR && r_entry->offset >= curr_pos ) {
+                break;
+            }
         }
         if( r_entry != NULL && r_entry->offset < (curr_pos + curr_size) ) {
             if( r_entry->offset == curr_pos ) {

@@ -137,14 +137,14 @@ static long                     objFilePos;
 static unsigned long            objFileLen;
 
 
-int IsIntelx86( void )
+bool IsIntelx86( void )
 {
     switch( GetMachineType() ) {
     case ORL_MACHINE_TYPE_I386:
     case ORL_MACHINE_TYPE_I8086:
-        return( 1 );
+        return( true );
     default:
-        return( 0 );
+        return( false );
     }
 }
 
@@ -195,9 +195,10 @@ static orl_return scanTabCallBack( orl_sec_handle shnd, const orl_sec_offset *ps
     sp->end = end;
 
     senitel.next = section->scan;
-    tmp = &senitel;
-    while( tmp->next != NULL && ( tmp->next->end < start ) ) {
-        tmp = tmp->next;
+    for( tmp = &senitel; tmp->next != NULL; tmp = tmp->next ) {
+        if( tmp->next->end >= start ) {
+            break;
+        }
     }
 
     if( tmp->next != NULL ) {
@@ -773,8 +774,7 @@ static return_val initSectionTables( void )
                 o_error = DealWithSymbolSection( dynSymTable );
             }
             if( o_error == ORL_OKAY ) {
-                section = relocSections.first;
-                while( section != NULL ) {
+                while( (section = relocSections.first) != NULL ) {
                     o_error = DealWithRelocSection( section->shnd );
                     if( o_error != ORL_OKAY ) {
                         if( o_error == ORL_OUT_OF_MEMORY ) {
@@ -785,7 +785,6 @@ static return_val initSectionTables( void )
                     }
                     relocSections.first = section->next;
                     MemFree( section );
-                    section = relocSections.first;
                 }
                 error = processDrectveSection( drectveSection );
             } else {

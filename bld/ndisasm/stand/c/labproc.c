@@ -208,7 +208,7 @@ bool NeedsQuoting( const char *name )
         return( false );
     if( isdigit( *name ) )
         return( true );
-    while( *name != '\0' ) {
+    for( ; *name != '\0'; ++name ) {
         if( isalnum( *name ) || *name == '_' || *name == '?' || *name == '$' ) {
             /* OK character */
         } else if( *name == '.' && !IsMasmOutput() ) {
@@ -217,7 +217,6 @@ bool NeedsQuoting( const char *name )
             /* character needs quoting */
             return( true );
         }
-        name++;
     }
     return( false );
 }

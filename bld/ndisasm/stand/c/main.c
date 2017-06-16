@@ -513,7 +513,7 @@ static label_entry dumpLabel( label_entry l_entry, section_ptr section,
     bool    is32bit;
 
     is32bit = ( end >= 0x10000 );
-    while( l_entry != NULL && ( l_entry->type == LTYP_ABSOLUTE || l_entry->offset <= loop ) ) {
+    for( ; l_entry != NULL && ( l_entry->type == LTYP_ABSOLUTE || l_entry->offset <= loop ); l_entry = l_entry->next ) {
         switch( l_entry->type ){
         case LTYP_ABSOLUTE:
             break;
@@ -531,6 +531,7 @@ static label_entry dumpLabel( label_entry l_entry, section_ptr section,
         case LTYP_NAMED:
             if( strcmp( l_entry->label.name, section->name ) == 0 )
                 break;
+            /* fall down */
         default:
             PrintLinePrefixAddress( loop, is32bit );
             BufferAlignToTab( PREFIX_SIZE_TABS );
@@ -542,7 +543,6 @@ static label_entry dumpLabel( label_entry l_entry, section_ptr section,
             BufferConcatNL();
             break;
         }
-        l_entry = l_entry->next;
     }
     return( l_entry );
 }
@@ -605,16 +605,19 @@ void DumpDataFromSection( unsigned_8 *contents, dis_sec_offset start,
         } else {
             amount = 16;
         }
-        if( (loop + amount) > end ) amount = end - loop;
+        if( (loop + amount) > end )
+            amount = end - loop;
         /* Skip over pair relocs */
-        while( r_entry != NULL && (r_entry->type == ORL_RELOC_TYPE_PAIR || r_entry->offset < loop) ) {
-            r_entry = r_entry->next;
-        }
-        if( r_entry != NULL && r_entry->offset < loop + amount ) {
-            if( r_entry->offset == loop ) {
-                amount = RelocSize( r_entry );
-            } else {
-                amount = r_entry->offset - loop;
+        for( ; r_entry != NULL; r_entry = r_entry->next ) {
+            if( r_entry->type != ORL_RELOC_TYPE_PAIR && r_entry->offset >= loop ) {
+                if( r_entry->offset < loop + amount ) {
+                    if( r_entry->offset == loop ) {
+                        amount = RelocSize( r_entry );
+                    } else {
+                        amount = r_entry->offset - loop;
+                    }
+                }
+                break;
             }
         }
 
@@ -792,12 +795,11 @@ static void numberUnnamedLabels( label_entry l_entry )
 {
     static label_number labNum = 1;
 
-    while( l_entry != NULL ) {
+    for( ; l_entry != NULL; l_entry = l_entry->next ) {
         if( l_entry->type == LTYP_UNNAMED ) {
             l_entry->label.number = labNum;
             labNum++;
         }
-        l_entry = l_entry->next;
     }
 }
 
