@@ -68,7 +68,7 @@ walk_result DIPIMPENTRY( WalkFileList )( imp_image_handle *ii,
         Make a copy of the file table offset so that we don't have to worry
         about the VM system throwing it out.
     */
-    file_off = __alloca( file_tab_size );
+    file_off = walloca( file_tab_size );
     memcpy( file_off, &hdr->baseSrcFile[0], file_tab_size );
     ic->im = im;
     for( i = 0; i < file_tab_count; ++i ) {
@@ -332,7 +332,7 @@ search_result DIPIMPENTRY( LineCue )( imp_image_handle *ii,
         return( SR_NONE );
     /* make a copy of the line/offset table so that we don't have to worry
        about the VM system throwing it out */
-    line_off = __alloca( num_segs * sizeof( unsigned_32 ) );
+    line_off = walloca( num_segs * sizeof( unsigned_32 ) );
     memcpy( line_off, &fp->baseSrcLn[0], num_segs * sizeof( unsigned_32 ) );
     best_line = (unsigned long)-1L;
     for( seg_idx = 0; seg_idx < num_segs; ++seg_idx ) {
@@ -447,8 +447,8 @@ static search_result SearchFile( imp_image_handle              *ii,
             + num_segs * (sizeof( unsigned_32 ) + sizeof( off_range ) ) );
     if( fp == NULL )
         return( SR_NONE );
-    ranges = __alloca( num_segs * sizeof( *ranges ) );
-    lines  = __alloca( num_segs * sizeof( *lines ) );
+    ranges = walloca( num_segs * sizeof( *ranges ) );
+    lines  = walloca( num_segs * sizeof( *lines ) );
     memcpy( lines, &fp->baseSrcLn[0], num_segs * sizeof( *lines ) );
     memcpy( ranges, &fp->baseSrcLn[num_segs], num_segs * sizeof( *ranges ) );
     for( seg_idx = 0; seg_idx < num_segs; ++seg_idx ) {
@@ -512,7 +512,7 @@ search_result DIPIMPENTRY( AddrCue )( imp_image_handle *ii,
     num_files = hdr->cFile;
     file_tab_size = num_files * sizeof( unsigned_32 );
     hdr = VMBlock( ii, cde->lfo, sizeof( *hdr ) + file_tab_size );
-    files = __alloca( file_tab_size );
+    files = walloca( file_tab_size );
     memcpy( files, &hdr->baseSrcFile[0], file_tab_size );
     best_offset = (addr_off)-1L;
     for( file_idx = 0; file_idx < num_files; ++file_idx ) {

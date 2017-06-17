@@ -149,7 +149,7 @@ size_t DIPIMPENTRY( SymName )( imp_image_handle *ii, imp_sym_handle *is,
         len = ImpInterface.SymName( ii, is, lc, SN_OBJECT, NULL, 0 );
         if( len == 0 )
             return( len );
-        mangled_name = __alloca( len + 1 );
+        mangled_name = walloca( len + 1 );
         ImpInterface.SymName( ii, is, lc, SN_OBJECT, mangled_name, len + 1 );
         if( !__is_mangled( mangled_name, len ) )
             return( 0 );
@@ -258,7 +258,7 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
         char    *scope_name;
         scope_is = source;
         len = ImpInterface.SymName( ii, scope_is, NULL, SN_SOURCE, NULL, 0 );
-        scope_name = __alloca( len + 1 );
+        scope_name = walloca( len + 1 );
         ImpInterface.SymName( ii, scope_is, NULL, SN_SOURCE, scope_name, len + 1 );
         sym_li.scope.start = scope_name;
         sym_li.scope.len = len;
@@ -269,7 +269,7 @@ static search_result DoLookupSym( imp_image_handle *ii, symbol_source ss,
     if( sym_li.type == ST_OPERATOR ) {
         src = sym_li.name.start;
         len = sym_li.name.len;
-        buff = __alloca( len + 20 );
+        buff = walloca( len + 20 );
         dst = buff;
         for( ;; ) {
             if( len == 0 )

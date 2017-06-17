@@ -603,7 +603,7 @@ static dip_status TryPE( dig_fhandle fid, imp_image_handle *ii, any_header *head
         return( DS_ERR|DS_FSEEK_FAILED );
     }
     obj_size = head->pe.num_objects * sizeof( *obj );
-    obj = __alloca( obj_size );
+    obj = walloca( obj_size );
     if( BRead( fid, obj, obj_size ) != obj_size ) {
         return( DS_ERR|DS_FREAD_FAILED );
     }
@@ -932,7 +932,7 @@ static dip_status TryELF( dig_fhandle fid, imp_image_handle *ii )
         off += head.e_phentsize;
     }
     /* Add Symbols */
-    sect = __alloca( head.e_shnum * sizeof( *sect ) );
+    sect = walloca( head.e_shnum * sizeof( *sect ) );
     off = head.e_shoff;
     for( i = 0; i < head.e_shnum; ++i ) {
         if( BSeek( fid, off, DIG_ORG ) != off ) {

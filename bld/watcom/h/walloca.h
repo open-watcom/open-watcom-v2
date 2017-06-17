@@ -24,7 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  Include appropriate header defining alloca().
+* Description:  Include appropriate header defining alloca and define
+*                   walloca macro
 *
 ****************************************************************************/
 
@@ -38,14 +39,12 @@
     #include <stdlib.h>
 #endif
 
-#if !defined( __WATCOMC__ )
-#if defined( _MSC_VER )
-    #define __alloca    _alloca
-#elif defined(__OSX__)
-#elif defined(__HAIKU__)
+#if defined( __WATCOMC__ )
+    #define walloca     __alloca
+#elif defined( _MSC_VER )
+    #define walloca     _alloca
 #else
-    #define __alloca    alloca
-#endif
+    #define walloca     alloca
 #endif
 
 #endif
