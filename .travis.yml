@@ -23,7 +23,7 @@ before_install:
 before_script:
 # get clone of GitHub repository to return Travis CI OW build/log files
 # and compress GitHub repository if necessary to hold only a few last builds
- - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sh gitget.sh
+ - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sh gitget.sh; fi
 # initialize OW build environment variables
  - export OWROOT=$TRAVIS_BUILD_DIR
 # - export OWTOOLS=CLANG
