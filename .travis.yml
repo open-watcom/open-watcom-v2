@@ -57,3 +57,8 @@ after_success:
 #    build_command_prepend:
 #    build_command:         $OWROOT/build.sh
 #    branch_pattern:        master
+
+jobs:
+  include:
+    - stage: docs
+      script: sh $OWROOT/build.sh docs
