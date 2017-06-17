@@ -12214,7 +12214,7 @@ When C++11 is enabled, the
 can no longer appear as a storage specifier.
 
 :MSGSYM. WARN_IMPLICIT_NULLPTR_TO_BOOL
-:MSGTXT. Implicit conversion from 'decltype(nullptr)'' to 'bool'.
+:MSGTXT. Implicit conversion from 'decltype(nullptr)' to 'bool'.
 :MSGJTXT.
 :WARNING. 1
 When C++11 is enabled, an implicit conversion from std::nullptr_t

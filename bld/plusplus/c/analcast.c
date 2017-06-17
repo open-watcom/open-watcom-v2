@@ -2018,7 +2018,12 @@ static void allocClassDestination//ALLOCATE DESTINATION WHEN CLASS
     }
 }
 
-//TODO: fix nullptr values
+/**
+ * This table represents the various possible combinations for
+ * const_cast<target operand>(source operand)
+ *
+ * \Return an integer specifying the type of conversion to be performed (or error).
+ */
 static uint_8 constTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //      source operand
 //      --------------
@@ -2029,20 +2034,19 @@ static uint_8 constTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //     e   i   n   p   a   u   o   p   .   n   p
 //     r   t   u   t   s   n   i   t   .   e   t
 //     r   h   m   r   s   c   d   r   .   r   r
-
 //                                               target operand
 //                                               --------------
-    {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  0  // error
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // arithmetic
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // enumeration
-    ,  1,  3,  3,  5,  3,  3,  3,  3,  0,  0,  0  // pointer
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // class
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // function
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // void
-    ,  1,  4,  4,  4,  4,  4,  4,  6,  0,  0,  0  // member pointer
+    {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  1  // error
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  2  // arithmetic
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  2  // enumeration
+    ,  1,  3,  3,  5,  3,  3,  3,  3,  0,  0,  3  // pointer
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  2  // class
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  2  // function
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  2  // void
+    ,  1,  4,  4,  4,  4,  4,  4,  6,  0,  0,  4  // member pointer
     ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // ellipsis
     ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // generic
-    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // nullptr
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  2  // nullptr
     };
 
 //  0 - impossible
@@ -2054,7 +2058,7 @@ static uint_8 constTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //  6 - const_cast<memb-ptr>( memb-ptr )
 
 
-PTREE CastConst                 // CONST_CASTE< TYPE >( EXPR )
+PTREE CastConst                 // CONST_CAST< TYPE >( EXPR )
     ( PTREE expr )              // - cast expression
 {
     CONVCTL ctl;                // - conversion control
@@ -2074,7 +2078,7 @@ PTREE CastConst                 // CONST_CASTE< TYPE >( EXPR )
         }
     } else switch( constTable[ ctl.tgt.kind ][ ctl.src.kind ] ) {
       case  0 : // impossible
-        DbgVerify( 0, "ReintCast -- bad selection" );
+        DbgVerify( 0, "ConstCast -- bad selection" );
         result = DIAG_IMPOSSIBLE;
         break;
       case  1 : // an operand is error
@@ -2114,7 +2118,12 @@ PTREE CastConst                 // CONST_CASTE< TYPE >( EXPR )
     return doCastResult( &ctl, result );
 }
 
-//TODO: fix nullptr values
+/**
+ * This table represents the various possible combinations for
+ * reinterpret_cast<target operand>(source operand)
+ *
+ * \Return an integer specifying the type of conversion to be performed (or error).
+ */
 static uint_8 reintTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //      source operand
 //      --------------
@@ -2129,15 +2138,15 @@ static uint_8 reintTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //                                               --------------
     {  1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1  // error
     ,  1,  4,  4,  3,  4,  4,  4,  4,  0,  0,  0  // arithmetic
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // enumeration
-    ,  1,  5,  7,  6,  7,  7,  7,  7,  0,  0,  0  // pointer
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // class
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // function
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // void
-    ,  1,  9,  9,  9,  9,  9,  9,  8,  0,  0,  0  // member pointer
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  2  // enumeration
+    ,  1,  5,  7,  6,  7,  7,  7,  7,  0,  0,  7  // pointer
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  2  // class
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  2  // function
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  2  // void
+    ,  1,  9,  9,  9,  9,  9,  9,  8,  0,  0,  9  // member pointer
     ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // ellipsis
     ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // generic
-    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // generic
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  2  // nullptr
     };
 
 //  0 - impossible
@@ -2152,7 +2161,7 @@ static uint_8 reintTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //  9 - source expression cannot be converted to memb-ptr type
 
 
-PTREE CastReint                 // REINTERPRET_CASTE< TYPE >( EXPR )
+PTREE CastReint                 // REINTERPRET_CAST< TYPE >( EXPR )
     ( PTREE expr )              // - cast expression
 {
     CONVCTL ctl;                // - conversion control
@@ -2219,7 +2228,12 @@ PTREE CastReint                 // REINTERPRET_CASTE< TYPE >( EXPR )
 }
 
 
-//TODO: fix nullptr values
+/**
+ * This table represents the various possible combinations for
+ * static_cast<target operand>(source operand)
+ *
+ * \Return an integer specifying the type of conversion to be performed (or error).
+ */
 static uint_8 staticTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //      source operand
 //      --------------
@@ -2232,17 +2246,17 @@ static uint_8 staticTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //     r   h   m   r   s   c   d   r   .   r   r
 //                                               target operand
 //                                               --------------
-    {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  0  // error
-    ,  1,  4,  4,  3,  0,  3,  3,  3,  0,  0,  0  // arithmetic
-    ,  1, 14,  4,  3,  0,  3,  3,  3,  0,  0,  0  // enumeration
-    ,  1,  7,  7, 11,  0,  5,  3,  3,  0,  0,  0  // pointer
-    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // class
-    ,  1,  2,  2,  2,  0,  2,  2,  2,  0,  0,  0  // function
-    ,  1,  6,  6,  6,  0,  6,  6,  6,  0,  0,  0  // void
-    ,  1, 10, 10,  3,  0,  3,  3, 13,  0,  0,  0  // member pointer
+    {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  1  // error
+    ,  1,  4,  4,  3,  0,  3,  3,  3,  0,  0,  3  // arithmetic
+    ,  1, 14,  4,  3,  0,  3,  3,  3,  0,  0,  3  // enumeration
+    ,  1,  7,  7, 11,  0,  5,  3,  3,  0,  0, 16  // pointer
+    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  3  // class
+    ,  1,  2,  2,  2,  0,  2,  2,  2,  0,  0,  3  // function
+    ,  1,  6,  6,  6,  0,  6,  6,  6,  0,  0,  3  // void
+    ,  1, 10, 10,  3,  0,  3,  3, 13,  0,  0, 16  // member pointer
     ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // ellipsis
     ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // generic
-    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // nullptr
+    ,  1, 15,  3,  3,  3,  3,  3,  3,  0,  0,  4  // nullptr
     };
 
 //  0 - impossible
@@ -2257,9 +2271,11 @@ static uint_8 staticTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 // 11 - ptr -> ptr
 // 13 - mptr -> mptr
 // 14 - integral -> enum
+// 15 - zero -> nullptr
+// 16 - nullptr -> ptr, mptr
 
 
-PTREE CastStatic                // STATIC_CASTE< TYPE >( EXPR )
+PTREE CastStatic                // STATIC_CAST< TYPE >( EXPR )
     ( PTREE expr )              // - cast expression
 {
     CONVCTL ctl;                // - conversion control
@@ -2288,7 +2304,7 @@ PTREE CastStatic                // STATIC_CASTE< TYPE >( EXPR )
         }
         switch( jump ) {
           case  0 : // impossible
-            DbgVerify( 0, "ReintCast -- bad selection" );
+            DbgVerify( 0, "StaticCast -- bad selection" );
             result = DIAG_IMPOSSIBLE;
             break;
           case  1 : // an operand is error
@@ -2366,13 +2382,27 @@ PTREE CastStatic                // STATIC_CASTE< TYPE >( EXPR )
                 result = CAST_DO_CGCONV;
             }
             break;
+          case 15: // zero -> nullptr
+            if( zeroSrc( &ctl ) ) {
+                result = CAST_ZERO_TO_NULLPTR;
+            }
+            break;
+          case 16: // nullptr -> ptr, mptr
+            result = CAST_NULLPTR_TO_PTR;
+            break;
         }
         break;
     }
     return doCastResult( &ctl, result );
 }
 
-//TODO: fix nullptr values
+
+/**
+ * This table represents the various possible combinations for
+ * dynamic_cast<target operand>(source operand)
+ *
+ * \Return an integer specifying the type of conversion to be performed (or error).
+ */
 static uint_8 dynamicTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //      source operand
 //      --------------
@@ -2385,17 +2415,17 @@ static uint_8 dynamicTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //     r   h   m   r   s   c   d   r   .   r   r
 //                                               target operand
 //                                               --------------
-    {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  0  // error
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // arithmetic
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // enumeration
-    ,  1,  3,  3,  4,  3,  3,  3,  3,  0,  0,  0  // pointer
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // class
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // function
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // void
-    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  0  // member pointer
+    {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  1  // error
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  2  // arithmetic
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  2  // enumeration
+    ,  1,  3,  3,  4,  3,  3,  3,  3,  0,  0,  3  // pointer
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  2  // class
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  2  // function
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  2  // void
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  2  // member pointer
     ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // ellipsis
     ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // generic
-    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // nullptr
+    ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  2  // nullptr
     };
 
 //  0 - impossible
@@ -2405,7 +2435,7 @@ static uint_8 dynamicTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //  4 - ptr->ptr (or ref->ref )
 
 
-PTREE CastDynamic               // DYNAMIC_CASTE< TYPE >( EXPR )
+PTREE CastDynamic               // DYNAMIC_CAST< TYPE >( EXPR )
     ( PTREE expr )              // - cast expression
 {
     CONVCTL ctl;                // - conversion control
@@ -2490,7 +2520,13 @@ PTREE CastDynamic               // DYNAMIC_CASTE< TYPE >( EXPR )
     return doCastResult( &ctl, result );
 }
 
-//TODO: fix nullptr values
+
+/**
+ * This table represents the various possible combinations for
+ * (target operand)(source operand)
+ *
+ * \Return an integer specifying the type of conversion to be performed (or error).
+ */
 static uint_8 explicitTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //      source operand
 //      --------------
@@ -2506,14 +2542,14 @@ static uint_8 explicitTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
     {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  0  // error
     ,  1, 11, 12,  4,  0,  0,  3,  3,  0,  0,  0  // arithmetic
     ,  1, 12, 12,  4,  0,  0,  3,  3,  0,  0,  0  // enumeration
-    ,  1,  6,  7,  5,  0,  0,  3,  3,  0,  0,  0  // pointer
+    ,  1,  6,  7,  5,  0,  0,  3,  3,  0,  0, 15  // pointer
     ,  1,  0,  0,  0,  0,  0,  3,  0,  0,  0,  0  // class
     ,  1,  2,  2,  2,  0,  2,  2,  2,  0,  0,  0  // function
     ,  1, 13, 13, 13, 13,  0, 13, 13,  0,  0,  0  // void
-    ,  1, 10, 10,  3,  0,  0,  3, 14,  0,  0,  0  // member pointer
+    ,  1, 10, 10,  3,  0,  0,  3, 14,  0,  0, 15  // member pointer
     ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // ellipsis
     ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // generic
-    ,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0  // nullptr
+    ,  1, 16,  3,  3,  3,  3,  3,  3,  0,  0, 12  // nullptr
     };
 
 //  0 - impossible
@@ -2526,13 +2562,15 @@ static uint_8 explicitTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 //  7 - enum -> ptr
 // 10 - zero to memb-ptr
 // 11 - arith -> arith
-// 12 - enum -> arith, arith -> enum, enum->enum
+// 12 - enum -> arith, arith -> enum, enum->enum, nullptr->nullptr
 // 13 - ??? -> void
 // 14 - membptr -> membptr
+// 15 - nullptr -> ptr, mptr
+// 16 - zero -> nullptr
 // 99 - do old conversion for now
 
 
-PTREE CastExplicit              // EXPLICIT CASTE: ( TYPE )( EXPR )
+PTREE CastExplicit              // EXPLICIT CAST: ( TYPE )( EXPR )
     ( PTREE expr )              // - cast expression
 {
     CONVCTL ctl;                // - conversion control
@@ -2636,7 +2674,7 @@ PTREE CastExplicit              // EXPLICIT CASTE: ( TYPE )( EXPR )
     return forceToDestination( &ctl );
 }
 
-//TODO: The nullptr values need to be tuned.
+
 /**
  * This table represents the various possible combinations for implicit conversions between
  * types.
@@ -2658,14 +2696,14 @@ static uint_8 implicitTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
     {  1,  1,  1,  1,  1,  1,  1,  1,  0,  0,  0  // error
     ,  1, 11, 13,  4,  0,  3,  2,  4,  0,  0,  4  // arithmetic
     ,  1,  7, 12,  3,  0,  3,  2,  3,  0,  0,  1  // enumeration
-    ,  1,  6,  6,  5,  0,  0,  2,  3,  0,  0,  15 // pointer
+    ,  1,  6,  6,  5,  0,  0,  2,  3,  0,  0, 15  // pointer
     ,  1,  0,  0,  0,  0,  0,  2,  0,  0,  0,  1  // class
     ,  1,  3,  3,  3,  0,  3,  2,  3,  0,  0,  1  // function
     ,  1,  2,  2,  2,  2,  2,  2,  2,  0,  0,  1  // void
-    ,  1, 10, 10,  3,  0,  3,  2, 14,  0,  0,  15 // member pointer
+    ,  1, 10, 10,  3,  0,  3,  2, 14,  0,  0, 15  // member pointer
     ,  1,  0,  0,  0,  0,  0,  2,  0,  0,  0,  1  // ellipsis
     ,  1,  0,  0,  0,  0,  0,  2,  0,  0,  0,  1  // generic
-    ,  1, 16,  2,  2,  0,  0,  2,  2,  0,  0,  0  // nullptr
+    ,  1, 16,  2,  2,  0,  0,  2,  2,  0,  0, 17  // nullptr
     };
 
 //  0 - impossible
@@ -2683,6 +2721,7 @@ static uint_8 implicitTable[RKD_MAX][RKD_MAX] = // ranking-combinations table
 // 14 - membptr -> membptr
 // 15 - nullptr -> ptr, membptr
 // 16 - arith -> nullptr (only zero constant is ok)
+// 17 - nullptr -> nullptr
 // 99 - do old conversion for now
 
 
@@ -2815,7 +2854,7 @@ static PTREE doCastImplicit     // DO AN IMPLICIT CAST
         switch( jump ) {
           default :
           case  0 : // impossible
-            DbgVerify( 0, "ExplictCast -- bad selection" );
+            DbgVerify( 0, "ImplicitCast -- bad selection" );
             result = DIAG_IMPOSSIBLE;
             break;
           case  1 : // an operand is error
@@ -2890,6 +2929,9 @@ static PTREE doCastImplicit     // DO AN IMPLICIT CAST
             } else {
                 result = DIAG_CAST_ILLEGAL;
             }
+            break;
+          case 17: // nullptr -> nullptr
+            result = CAST_DO_CGCONV;
             break;
         }
     }
