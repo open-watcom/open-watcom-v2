@@ -1,8 +1,15 @@
-language:
- - c
+language:   c
 
 compiler:
  - clang
+
+env:
+ - OWTOOLS=CLANG
+
+matrix:
+  include:
+    - os: osx
+    - os: linux
 
 before_install:
 # install DOSEMU
@@ -12,10 +19,10 @@ before_install:
 before_script:
 # get clone of GitHub repository to return Travis CI OW build/log files
 # and compress GitHub repository if necessary to hold only a few last builds
- - sh gitget.sh
+ - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sh gitget.sh
 # initialize OW build environment variables
  - export OWROOT=$TRAVIS_BUILD_DIR
- - export OWTOOLS=CLANG
+# - export OWTOOLS=CLANG
  - export OWRELROOT=$TRAVIS_BUILD_DIR/../travis-ci-ow-builds
  - export OWOBJDIR=binbuild
  - export OWDOCBUILD=0
@@ -30,11 +37,11 @@ script:
 
 after_failure:
 # after failure transfer log files back to GitHub repository
- - sh gitupdf.sh
+ - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sh gitupdf.sh; fi
 
 after_success:
 # after success transfer OW build to GitHub repository
- - sh gitupds.sh
+ - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sh gitupds.sh; fi
 
 #addons:
 #  coverity_scan:
