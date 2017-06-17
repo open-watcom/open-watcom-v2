@@ -955,7 +955,11 @@ static bool proc_check( const char *curline, bool *prolog )
     return( RC_OK );
 }
 
-char *regs[4] = { "ax",  "dx",  "bx",  "cx" };
+const char * const regs[3][4]= {
+    { "al", "dl", "bl", "cl" },
+    { "ax", "dx", "bx", "cx" },
+    { "eax", "edx", "ebx ", "ecx" },
+};
 
 static bool get_register_argument( token_idx index, char *buffer, int *register_count, bool *on_stack )
 {
@@ -1009,23 +1013,23 @@ static bool get_register_argument( token_idx index, char *buffer, int *register_
             if( Use32 ) {
                 switch( size ) {
                 case 1:
-                    sprintf( buffer, "movzx e%s,[byte %s]", regs[j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "movzx %s,[byte %s]", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
                     break;
                 case 2:
-                    sprintf( buffer, "movzx e%s,[word %s]", regs[j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "movzx %s,[word %s]", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
                     break;
                 case 4:
-                    sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "mov %s,[dword %s]", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
                     break;
                 case 6:
                     if( j > 2 ) {
                         *on_stack = true;
                         return( RC_OK );
                     }
-                    sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "mov %s,[dword %s]", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
                     InputQueueLine( buffer );
                     j++;
-                    sprintf( buffer, "movzx e%s,[word %s+4]", regs[j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "movzx %s,[word %s+4]", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
                     *register_count = j;
                     break;
                 case 8:
@@ -1033,10 +1037,10 @@ static bool get_register_argument( token_idx index, char *buffer, int *register_
                         *on_stack = true;
                         return( RC_OK );
                     }
-                    sprintf( buffer, "mov e%s,[dword %s]", regs[j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "mov %s,[dword %s]", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
                     InputQueueLine( buffer );
                     j++;
-                    sprintf( buffer, "movzx e%s,[dword %s+4]", regs[j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "movzx %s,[dword %s+4]", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
                     *register_count = j;
                     break;
                 default:
@@ -1046,23 +1050,23 @@ static bool get_register_argument( token_idx index, char *buffer, int *register_
             } else {
                 switch( size ) {
                 case 1:
-                    ch = regs[j][0];
+                    ch = regs[A_BYTE][j][0];
                     sprintf( buffer, "xor %ch,%ch", ch, ch );
                     InputQueueLine( buffer );
-                    sprintf( buffer, "mov %cl,[byte %s]", ch, AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "mov %s,[byte %s]", regs[A_BYTE][j], AsmBuffer[i].string_ptr );
                     break;
                 case 2:
-                    sprintf( buffer, "mov %s,[word %s]", regs[j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "mov %s,[word %s]", regs[A_WORD][j], AsmBuffer[i].string_ptr );
                     break;
                 case 4:
                     if( j > 2 ) {
                         *on_stack = true;
                         return( RC_OK );
                     }
-                    sprintf( buffer, "mov %s,[word %s]", regs[j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "mov %s,[word %s]", regs[A_WORD][j], AsmBuffer[i].string_ptr );
                     InputQueueLine( buffer );
                     j++;
-                    sprintf( buffer, "movzx %s,[word %s+2]", regs[j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "movzx %s,[word %s+2]", regs[A_WORD][j], AsmBuffer[i].string_ptr );
                     *register_count = j;
                     break;
                 default:
@@ -1120,22 +1124,21 @@ static bool get_register_argument( token_idx index, char *buffer, int *register_
             switch( size ) {
             case 1:
                 if( Use32 ) {
-                    sprintf( buffer, "movzx e%s,%s", regs[j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "movzx %s,%s", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
                 } else {
-                    ch = regs[j][0];
-                    sprintf( buffer, "mov %cl,%s", ch, AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "mov %s,%s", regs[A_BYTE][j], AsmBuffer[i].string_ptr );
                 }
                 break;
             case 2:
                 if( Use32 ) {
-                    sprintf( buffer, "movzx e%s,%s", regs[j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "movzx %s,%s", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
                 } else {
-                    sprintf( buffer, "mov %s,%s", regs[j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "mov %s,%s", regs[A_WORD][j], AsmBuffer[i].string_ptr );
                 }
                 break;
             case 4:
                 if( Use32 ) {
-                    sprintf( buffer, "mov e%s,%s", regs[j], AsmBuffer[i].string_ptr );
+                    sprintf( buffer, "mov %s,%s", regs[A_DWORD][j], AsmBuffer[i].string_ptr );
                     break;
                 }
             default:
@@ -1146,9 +1149,9 @@ static bool get_register_argument( token_idx index, char *buffer, int *register_
             return( RC_OK );
         } else {
             if( Use32 )
-                sprintf( buffer, "mov e%s,", regs[j] );
+                sprintf( buffer, "mov %s,", regs[A_DWORD][j] );
             else
-                sprintf( buffer, "mov %s,", regs[j] );
+                sprintf( buffer, "mov %s,", regs[A_WORD][j] );
             while( ( AsmBuffer[i].class != TC_FINAL ) &&
                    ( AsmBuffer[i].class != TC_COMMA ) ) {
                 strcat( buffer, AsmBuffer[i++].string_ptr );
