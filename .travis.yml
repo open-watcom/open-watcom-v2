@@ -11,10 +11,14 @@ matrix:
     - os: osx
     - os: linux
 
+addons:
+  apt:
+    packages:
+      - dosemu
+
 before_install:
-# install DOSEMU
- - sudo apt-get update
- - sudo apt-get install -y dosemu
+# install DOS Emulator
+ - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install dosbox; fi
 
 before_script:
 # get clone of GitHub repository to return Travis CI OW build/log files
