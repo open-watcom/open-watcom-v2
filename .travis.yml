@@ -9,7 +9,9 @@ env:
 matrix:
   include:
     - os: osx
+      env: OWVERBOSE=1
     - os: linux
+      env: OWVERBOSE=0
 
 addons:
   apt:
@@ -26,13 +28,11 @@ before_script:
  - sh gitget.sh
 # initialize OW build environment variables
  - export OWROOT=$TRAVIS_BUILD_DIR
-# - export OWTOOLS=CLANG
  - export OWRELROOT=$TRAVIS_BUILD_DIR/../travis-ci-ow-builds
  - export OWOBJDIR=binbuild
  - export OWDOCBUILD=0
  - export OWDOCQUIET=1
  - export USE_FILENAME_VERSION=1
- - export OWVERBOSE=0
  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
  - . $OWROOT/cmnvars.sh
 
