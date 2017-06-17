@@ -49,13 +49,13 @@ struct asmfixup         *InsFixups[OPND_MAX];
 
 #if defined( _STANDALONE_ )
 
-static char *FPPatchName[] = {
+static const char * const FPPatchName[] = {
     #define pick_fp(enum,name,alt_name) name,
     #include "fppatche.h"
     #undef pick_fp
 };
 
-static char *FPPatchAltName[] = {
+static const char * const FPPatchAltName[] = {
     #define pick_fp(enum,name,alt_name) alt_name,
     #include "fppatche.h"
     #undef pick_fp
@@ -365,8 +365,8 @@ bool store_fixup( operand_idx index )
     return( RC_OK );
 }
 
-static bool MakeFpFixup( char *patch_name )
-/*****************************************/
+static bool MakeFpFixup( const char *patch_name )
+/***********************************************/
 {
     dir_node            *dir;
     struct asmfixup     *fixup;
@@ -416,7 +416,7 @@ bool AddFPPatchAndFixups( fp_patches patch )
 /******************************************/
 {
 #if defined( _STANDALONE_ )
-    char    *patch_name;
+    const char  *patch_name;
 
     if( FPPatchName[patch] != NULL ) {
         patch_name = FPPatchName[patch];

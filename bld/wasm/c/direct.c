@@ -281,18 +281,6 @@ static const char * const SimCodeEnd[2][SIM_LAST] = {
 
 static last_seg_info    lastseg;        // last opened simplified segment
 
-static const char * const parm_reg[3][4]= {
-    { "al", "dl", "bl", "cl" },
-    { "ax", "dx", "bx", "cx" },
-    { "eax", "edx", "ebx ", "ecx" },
-};
-
-enum regsize {
-    A_BYTE = 0,
-    A_WORD,
-    A_DWORD,
-};
-
 static char         code_segment_name[MAX_LINE_LEN];
 static asm_tok      const_CodeSize = { TC_NUM, NULL, 0 };
 static asm_tok      const_DataSize = { TC_NUM, NULL, 0 };
@@ -390,20 +378,20 @@ static bool get_watcom_argument_string( char *buffer, int size, int *parm_number
     } else {
         switch( size ) {
         case 1:
-            sprintf( buffer, parm_reg[A_BYTE][parm] );
+            sprintf( buffer, regs[A_BYTE][parm] );
             break;
         case 2:
-            sprintf( buffer, parm_reg[A_WORD][parm] );
+            sprintf( buffer, regs[A_WORD][parm] );
             break;
         case 4:
             if( Use32 ) {
-                sprintf( buffer, parm_reg[A_DWORD][parm] );
+                sprintf( buffer, regs[A_DWORD][parm] );
             } else {
                 if( parm > 2 ) {
                     *on_stack = true;
                     break;
                 }
-                sprintf( buffer, " %s %s", parm_reg[A_WORD][parm], parm_reg[A_WORD][parm + 1] );
+                sprintf( buffer, " %s %s", regs[A_WORD][parm], regs[A_WORD][parm + 1] );
                 *parm_number = ++parm;
             }
             break;
@@ -418,9 +406,9 @@ static bool get_watcom_argument_string( char *buffer, int size, int *parm_number
                     break;
                 }
                 if( size == 6 ) {
-                    sprintf( buffer, " %s %s", parm_reg[A_DWORD][parm], parm_reg[A_WORD][parm + 1] );
+                    sprintf( buffer, " %s %s", regs[A_DWORD][parm], regs[A_WORD][parm + 1] );
                 } else {
-                    sprintf( buffer, " %s %s", parm_reg[A_DWORD][parm], parm_reg[A_DWORD][parm + 1] );
+                    sprintf( buffer, " %s %s", regs[A_DWORD][parm], regs[A_DWORD][parm + 1] );
                 }
                 *parm_number = ++parm;
                 break;

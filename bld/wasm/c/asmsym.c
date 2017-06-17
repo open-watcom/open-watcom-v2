@@ -48,7 +48,7 @@ static struct asm_sym   *sym_table[ HASH_TABLE_SIZE ] = { NULL };
 /* initialize the whole table to null pointers */
 static unsigned         AsmSymCount;    /* Number of symbols in table */
 
-static char             dots[] = " . . . . . . . . . . . . . . . .";
+static char             const dots[] = " . . . . . . . . . . . . . . . .";
 
 #ifdef DEBUG_OUT
 void    DumpASym( void );   /* Forward declaration */

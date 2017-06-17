@@ -36,6 +36,12 @@
 #include "asmsym.h"
 #include "asmops.h"
 
+enum regsize {
+    A_BYTE = 0,
+    A_WORD,
+    A_DWORD,
+};
+
 typedef unsigned char   token_idx;
 #define INVALID_IDX     ((token_idx)-1)
 
@@ -136,6 +142,8 @@ typedef struct asm_code {
 extern const asm_ins                ASMFAR  AsmOpTable[];
 extern const struct AsmCodeName     AsmOpcode[];
 extern const char                   AsmChars[];
+
+extern const char *                 const regs[3][4];
 
 #if defined( _STANDALONE_ )
 
