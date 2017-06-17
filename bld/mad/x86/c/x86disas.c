@@ -722,7 +722,7 @@ static char *StrCopy( const char *s, char *d )
 
 mad_status MADIMPENTRY( DisasmInspectAddr )( const char *start, unsigned len, mad_radix radix, const mad_registers *mr, address *a )
 {
-    char        *buff = __alloca( len * 2 + 1 );
+    char        *buff = walloca( len * 2 + 1 );
     char        *to;
     unsigned    parens;
     char        c;

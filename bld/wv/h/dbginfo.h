@@ -45,7 +45,7 @@
 
 #define HDLAssign( type, dst, src )     memcpy( dst, src, type##_SIZE );
 
-#define DIPHDL( t, v )  t##_handle *v = (t##_handle*)__alloca( t##_SIZE )
+#define DIPHDL( t, v )  t##_handle *v = (t##_handle*)walloca( t##_SIZE )
 
 typedef unsigned_8 inspect_type; enum {
     INSP_CODE,
