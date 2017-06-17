@@ -1,4 +1,4 @@
-language:   c
+language: c
 
 compiler:
  - clang
@@ -9,9 +9,7 @@ env:
 matrix:
   include:
     - os: osx
-      env: OWVERBOSE=1
     - os: linux
-      env: OWVERBOSE=0
 
 addons:
   apt:
@@ -27,6 +25,8 @@ before_script:
 # and compress GitHub repository if necessary to hold only a few last builds
  - sh gitget.sh
 # initialize OW build environment variables
+ - export OWVERBOSE=0
+ - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export OWVERBOSE=1; fi
  - export OWROOT=$TRAVIS_BUILD_DIR
  - export OWRELROOT=$TRAVIS_BUILD_DIR/../travis-ci-ow-builds
  - export OWOBJDIR=binbuild
