@@ -18,12 +18,12 @@ addons:
 
 before_install:
 # install DOS Emulator
- - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install dosbox; fi
+ - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install dosbox; export OWDOSBOX=dosbox; fi
 
 before_script:
 # get clone of GitHub repository to return Travis CI OW build/log files
 # and compress GitHub repository if necessary to hold only a few last builds
- - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sh gitget.sh; fi
+ - sh gitget.sh
 # initialize OW build environment variables
  - export OWROOT=$TRAVIS_BUILD_DIR
 # - export OWTOOLS=CLANG
@@ -41,11 +41,11 @@ script:
 
 after_failure:
 # after failure transfer log files back to GitHub repository
- - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sh gitupdf.sh; fi
+ - sh gitupdf.sh
 
 after_success:
 # after success transfer OW build to GitHub repository
- - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sh gitupds.sh; fi
+ - sh gitupds.sh
 
 #addons:
 #  coverity_scan:
