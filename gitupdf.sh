@@ -6,6 +6,7 @@
 # after failure transfer log files back to GitHub repository
 #
 cd ../travis-ci-ow-builds
+git pull
 #
 # copy build log files to git repository tree
 #
@@ -16,7 +17,6 @@ cp $OWROOT/bld/*.log bld/
 #
 # commit new log files to GitHub repository
 #
-git pull
 git add -f .
 if [ "$TRAVIS_OS_NAME" = "osx" ]
 then
