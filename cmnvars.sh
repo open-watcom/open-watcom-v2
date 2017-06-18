@@ -9,13 +9,6 @@
 export OWBLDVER=20
 export OWBLDVERSTR=2.0
 
-# Set up default path information variable
-if [ -z "$OWDEFPATH" ]; then
-    export OWDEFPATH=$PATH:
-    export OWDEFINCLUDE=$INCLUDE
-    export OWDEFWATCOM=$WATCOM
-fi
-
 # Subdirectory to be used for building OW build tools
 export OWOBJDIR=binbuild
 
@@ -29,9 +22,15 @@ export OWSRCDIR=$OWROOT/bld
 export OWDOCSDIR=$OWROOT/docs
 
 # Set environment variables
+# Set up default path information variable
+if [ -z "$OWDEFPATH" ]; then
+    export OWDEFPATH=$PATH:
+    if [ -n "$INCLUDE" ]; then export OWDEFINCLUDE=$INCLUDE; fi
+    if [ -n "$WATCOM" ]; then export OWDEFWATCOM=$WATCOM; fi
+fi
 export PATH=$OWBINDIR:$OWROOT/build:$OWDEFPATH
-export INCLUDE=$OWDEFINCLUDE
-export WATCOM=$OWDEFWATCOM
+if [ -n "$OWDEFINCLUDE" ]; then export INCLUDE=$OWDEFINCLUDE; fi
+if [ -n "$OWDEFWATCOM" ]; then export WATCOM=$OWDEFWATCOM; fi
 
 # Set Watcom tool chain version to WATCOMVER variable
 export WATCOMVER=0
