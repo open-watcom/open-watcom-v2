@@ -1,6 +1,7 @@
 language: c
 
-cache: ccache
+cache:
+  ccache: true
   directories:
     - build/bin
 
