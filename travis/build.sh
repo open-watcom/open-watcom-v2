@@ -44,6 +44,7 @@ if [ "$1" = "boot" ]; then
     fi
     cd ../..
 else
+    echo "**** $1 rule"
     builder $1
     RC=$?
 fi

@@ -6,10 +6,10 @@ addons:
       - dosemu
 
 before_script:
-# get clone of GitHub repository to return Travis CI OW build/log files
-# and compress GitHub repository if necessary to hold only a few last builds
+ # get clone of GitHub repository to return Travis CI OW build/log files
+ # and compress GitHub repository if necessary to hold only a few last builds
  - sh travis/gitget.sh
-# initialize OW build environment variables
+ # initialize OW build environment variables
  - export OWROOT=$TRAVIS_BUILD_DIR
  - export OWRELROOT=$TRAVIS_BUILD_DIR/../travis-ci-ow-builds
  - export OWOBJDIR=binbuild
@@ -18,16 +18,17 @@ before_script:
  - export USE_FILENAME_VERSION=1
  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
  - . cmnvars.sh
+ - env
 
 #script:
 # - sh build.sh rel
 
 after_failure:
-# after failure transfer log files back to GitHub repository
+ # after failure transfer log files back to GitHub repository
  - sh travis/gitupdf.sh
 
 after_success:
-# after success transfer OW build to GitHub repository
+ # after success transfer OW build to GitHub repository
  - sh travis/gitupds.sh
 
 jobs:
@@ -43,7 +44,7 @@ jobs:
         - OWJOBNAME=BOOTLINUX
       script: sh travis/build.sh boot
       before_cache:
-        # upload artifacts
+        # upload OW build tools
         - sh travis/dropbox.sh upload build/bin/ ./
     - stage: Build Linux
       os: linux
@@ -55,19 +56,20 @@ jobs:
         - OWVERBOSE=0
         - OWJOBNAME=BUILDLINUX
       install:
-        # install artifacts
+        # download OW build tools
         - sh travis/dropbox.sh download ./ build/bin/
       script: sh travis/build.sh rel
     - stage: Build PDF documentation
       os: linux
       compiler: clang
+      sudo: required
       env: 
         - OWTOOLS=CLANG
         - OWDOCBUILD=1
         - OWVERBOSE=0
         - OWJOBNAME=PDFDOCLINUX
       install:
-        # install artifacts
+        # download OW build tools
         - sh travis/dropbox.sh download ./ build/bin/
       script: sh travis/build.sh docpdf
     - stage: Bootstrap OSX
@@ -80,7 +82,7 @@ jobs:
         - OWJOBNAME=BOOTOSX
       script: sh travis/build.sh boot
       before_cache:
-        # upload artifacts
+        # upload OW build tools
         - sh travis/dropbox.sh upload build/bin/ ./
     - stage: Build OSX
       os: osx
@@ -94,7 +96,7 @@ jobs:
         # install DOS Emulator
         - brew install dosbox
         - export OWDOSBOX=dosbox
-        # install artifacts
+        # download OW build tools
         - sh travis/dropbox.sh download ./ build/bin/
       script: sh travis/build.sh rel
 
