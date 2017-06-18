@@ -1,18 +1,18 @@
 language: c
 
+cache: ccache
+  directories:
+    - build/bin
+
 addons:
   apt:
     packages:
       - dosemu
 
-before_install:
-# install DOS Emulator
- - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install dosbox; export OWDOSBOX=dosbox; fi
-
 before_script:
 # get clone of GitHub repository to return Travis CI OW build/log files
 # and compress GitHub repository if necessary to hold only a few last builds
- - sh gitget.sh
+ - sh travis/gitget.sh
 # initialize OW build environment variables
  - export OWROOT=$TRAVIS_BUILD_DIR
  - export OWRELROOT=$TRAVIS_BUILD_DIR/../travis-ci-ow-builds
@@ -21,18 +21,72 @@ before_script:
  - export OWDOCQUIET=1
  - export USE_FILENAME_VERSION=1
  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
- - . $OWROOT/cmnvars.sh
+ - . cmnvars.sh
 
-script:
- - sh $OWROOT/build.sh rel
+#script:
+# - sh build.sh rel
 
 after_failure:
 # after failure transfer log files back to GitHub repository
- - sh gitupdf.sh
+ - sh travis/gitupdf.sh
 
 after_success:
 # after success transfer OW build to GitHub repository
- - sh gitupds.sh
+ - sh travis/gitupds.sh
+
+jobs:
+  include:
+    - stage: bootstrap_osx
+      os: osx
+      compiler: clang
+      env: 
+        - OWTOOLS=CLANG
+        - OWDOCBUILD=0
+        - OWVERBOSE=1
+      install:
+        # install ccache
+        - brew install ccache
+        - PATH=$PATH:/usr/local/opt/ccache/libexec
+      script: sh travis/build.sh boot
+    - stage: bootstrap_linux
+      os: osx
+      compiler: clang
+      env: 
+        - OWTOOLS=CLANG
+        - OWDOCBUILD=0
+        - OWVERBOSE=1
+      script: sh travis/build.sh boot
+    - stage: build_osx
+      os: osx
+      compiler: clang
+      env: 
+        - OWTOOLS=CLANG
+        - OWDOCBUILD=0
+        - OWVERBOSE=0
+      install:
+        # install ccache
+        - brew install ccache
+        - PATH=$PATH:/usr/local/opt/ccache/libexec
+        # install DOS Emulator
+        - brew install dosbox
+        - export OWDOSBOX=dosbox
+      script: sh travis/build.sh rel
+    - stage: build_linux
+      os: linux
+      compiler: clang
+      env: 
+        - OWTOOLS=CLANG
+        - OWDOCBUILD=0
+        - OWVERBOSE=0
+      script: sh travis/build.sh rel
+    - stage: build_docs_pdf
+      os: linux
+      compiler: clang
+      env: 
+        - OWTOOLS=CLANG
+        - OWDOCBUILD=1
+        - OWVERBOSE=0
+      script: sh travis/build.sh docpdf
 
 #addons:
 #  coverity_scan:
@@ -44,18 +98,3 @@ after_success:
 #    build_command_prepend:
 #    build_command:         $OWROOT/build.sh
 #    branch_pattern:        master
-
-jobs:
-  include:
-    - stage: build_osx
-      os: osx
-      compiler: clang
-      env: OWTOOLS=CLANG
-      script: sh $OWROOT/build.sh rel
-    - stage: build_linux
-      os: linux
-      compiler: clang
-      env: OWTOOLS=CLANG
-      script: sh $OWROOT/build.sh rel
-    - stage: build_docs
-      script: sh $OWROOT/build.sh docs

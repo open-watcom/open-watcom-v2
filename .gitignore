@@ -65,6 +65,8 @@
 !/build/
 !/distrib/
 !/docs/
+!/travis/
+
 
 /contrib/*
 !/contrib/*
