@@ -37,67 +37,67 @@ jobs:
       os: linux
       compiler: clang
       sudo: required
-      env: 
+      env:
         - OWTOOLS=CLANG
         - OWDOCBUILD=0
         - OWVERBOSE=1
-        - OWJOBNAME=BOOTLINUX
+        - TRAVISJOBNAME=BOOTLINUX
       script: sh travis/build.sh boot
       before_cache:
         # upload OW build tools
-        - sh travis/dropbox.sh upload build/bin/ ./
+        - sh travis/dropbox.sh upload build/bin/ Linux/
     - stage: Build Linux
       os: linux
       compiler: clang
       sudo: required
-      env: 
+      env:
         - OWTOOLS=CLANG
         - OWDOCBUILD=0
         - OWVERBOSE=0
-        - OWJOBNAME=BUILDLINUX
+        - TRAVISJOBNAME=BUILDLINUX
       install:
         # download OW build tools
-        - sh travis/dropbox.sh download ./ build/bin/
+        - sh travis/dropbox.sh download Linux/ build/bin/
       script: sh travis/build.sh rel
     - stage: Build PDF documentation
       os: linux
       compiler: clang
       sudo: required
-      env: 
+      env:
         - OWTOOLS=CLANG
         - OWDOCBUILD=1
         - OWVERBOSE=0
-        - OWJOBNAME=PDFDOCLINUX
+        - TRAVISJOBNAME=PDFDOCLINUX
       install:
         # download OW build tools
-        - sh travis/dropbox.sh download ./ build/bin/
+        - sh travis/dropbox.sh download Linux/ build/bin/
       script: sh travis/build.sh docpdf
     - stage: Bootstrap OSX
       os: osx
       compiler: clang
-      env: 
+      env:
         - OWTOOLS=CLANG
         - OWDOCBUILD=0
         - OWVERBOSE=1
-        - OWJOBNAME=BOOTOSX
+        - TRAVISJOBNAME=BOOTOSX
       script: sh travis/build.sh boot
       before_cache:
         # upload OW build tools
-        - sh travis/dropbox.sh upload build/bin/ ./
+        - sh travis/dropbox.sh upload build/bin/ OSX/
     - stage: Build OSX
       os: osx
       compiler: clang
-      env: 
+      env:
         - OWTOOLS=CLANG
         - OWDOCBUILD=0
         - OWVERBOSE=0
-        - OWJOBNAME=BUILDOSX
+        - TRAVISJOBNAME=BUILDOSX
       install:
         # install DOS Emulator
         - brew install dosbox
         - export OWDOSBOX=dosbox
         # download OW build tools
-        - sh travis/dropbox.sh download ./ build/bin/
+        - sh travis/dropbox.sh download OSX/ build/bin/
       script: sh travis/build.sh rel
 
 #addons:
