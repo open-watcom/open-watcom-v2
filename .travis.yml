@@ -37,7 +37,31 @@ after_success:
 
 jobs:
   include:
-    - stage: bootstrap_osx
+    - stage: Bootstrap Linux
+      os: linux
+      compiler: clang
+      env: 
+        - OWTOOLS=CLANG
+        - OWDOCBUILD=0
+        - OWVERBOSE=1
+      script: sh travis/build.sh boot
+    - stage: Build Linux
+      os: linux
+      compiler: clang
+      env: 
+        - OWTOOLS=CLANG
+        - OWDOCBUILD=0
+        - OWVERBOSE=0
+      script: sh travis/build.sh rel
+    - stage: Build PDF documentation
+      os: linux
+      compiler: clang
+      env: 
+        - OWTOOLS=CLANG
+        - OWDOCBUILD=1
+        - OWVERBOSE=0
+      script: sh travis/build.sh docpdf
+    - stage: Bootstrap OSX
       os: osx
       compiler: clang
       env: 
@@ -49,15 +73,7 @@ jobs:
         - brew install ccache
         - PATH=$PATH:/usr/local/opt/ccache/libexec
       script: sh travis/build.sh boot
-    - stage: bootstrap_linux
-      os: osx
-      compiler: clang
-      env: 
-        - OWTOOLS=CLANG
-        - OWDOCBUILD=0
-        - OWVERBOSE=1
-      script: sh travis/build.sh boot
-    - stage: build_osx
+    - stage: Build OSX
       os: osx
       compiler: clang
       env: 
@@ -72,22 +88,6 @@ jobs:
         - brew install dosbox
         - export OWDOSBOX=dosbox
       script: sh travis/build.sh rel
-    - stage: build_linux
-      os: linux
-      compiler: clang
-      env: 
-        - OWTOOLS=CLANG
-        - OWDOCBUILD=0
-        - OWVERBOSE=0
-      script: sh travis/build.sh rel
-    - stage: build_docs_pdf
-      os: linux
-      compiler: clang
-      env: 
-        - OWTOOLS=CLANG
-        - OWDOCBUILD=1
-        - OWVERBOSE=0
-      script: sh travis/build.sh docpdf
 
 #addons:
 #  coverity_scan:
