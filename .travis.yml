@@ -1,5 +1,10 @@
 language: c
 
+addons:
+  apt:
+    packages:
+      - dosemu
+
 before_install:
 # install DOS Emulator
  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install dosbox; export OWDOSBOX=dosbox; fi
@@ -49,10 +54,6 @@ jobs:
       script: sh $OWROOT/build.sh rel
     - stage: build_linux
       os: linux
-        addons:
-          apt:
-            packages:
-              - dosemu
       compiler: clang
       env: OWTOOLS=CLANG
       script: sh $OWROOT/build.sh rel
