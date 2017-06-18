@@ -1,10 +1,5 @@
 language: c
 
-cache:
-  ccache: true
-  directories:
-    - build/bin
-
 addons:
   apt:
     packages:
@@ -40,18 +35,28 @@ jobs:
     - stage: Bootstrap Linux
       os: linux
       compiler: clang
+      sudo: required
       env: 
         - OWTOOLS=CLANG
         - OWDOCBUILD=0
         - OWVERBOSE=1
+        - OWJOBNAME=BOOTLINUX
       script: sh travis/build.sh boot
+      before_cache:
+        # upload artifacts
+        - sh travis/dropbox.sh upload build/bin/ ./
     - stage: Build Linux
       os: linux
       compiler: clang
+      sudo: required
       env: 
         - OWTOOLS=CLANG
         - OWDOCBUILD=0
         - OWVERBOSE=0
+        - OWJOBNAME=BUILDLINUX
+      install:
+        # install artifacts
+        - sh travis/dropbox.sh download ./ build/bin/
       script: sh travis/build.sh rel
     - stage: Build PDF documentation
       os: linux
@@ -60,6 +65,10 @@ jobs:
         - OWTOOLS=CLANG
         - OWDOCBUILD=1
         - OWVERBOSE=0
+        - OWJOBNAME=PDFDOCLINUX
+      install:
+        # install artifacts
+        - sh travis/dropbox.sh download ./ build/bin/
       script: sh travis/build.sh docpdf
     - stage: Bootstrap OSX
       os: osx
@@ -68,11 +77,11 @@ jobs:
         - OWTOOLS=CLANG
         - OWDOCBUILD=0
         - OWVERBOSE=1
-      install:
-        # install ccache
-        - brew install ccache
-        - PATH=$PATH:/usr/local/opt/ccache/libexec
+        - OWJOBNAME=BOOTOSX
       script: sh travis/build.sh boot
+      before_cache:
+        # upload artifacts
+        - sh travis/dropbox.sh upload build/bin/ ./
     - stage: Build OSX
       os: osx
       compiler: clang
@@ -80,13 +89,13 @@ jobs:
         - OWTOOLS=CLANG
         - OWDOCBUILD=0
         - OWVERBOSE=0
+        - OWJOBNAME=BUILDOSX
       install:
-        # install ccache
-        - brew install ccache
-        - PATH=$PATH:/usr/local/opt/ccache/libexec
         # install DOS Emulator
         - brew install dosbox
         - export OWDOSBOX=dosbox
+        # install artifacts
+        - sh travis/dropbox.sh download ./ build/bin/
       script: sh travis/build.sh rel
 
 #addons:
