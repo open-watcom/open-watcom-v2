@@ -55,7 +55,7 @@ typedef struct SCC {
 } SCC;
 
 static BitMap       *BitMap_first = NULL;
-static const uint   cInfinity = ~0;
+static const uint   cInfinity = ~0U;
 
 static char *prtCh( uchar c )
 {

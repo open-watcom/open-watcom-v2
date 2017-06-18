@@ -50,7 +50,7 @@ public:
     Lexer::Token parse( Lexer* lexer ) = 0;
     //add data to the TOC entry of a page
     virtual
-    void buildTOC( Page* page ) { page = page; };
+    void buildTOC( Page* page ) { (void)page; };
     //add information from i1, i2, icmd
     virtual
     void buildIndex() { };
@@ -59,7 +59,7 @@ public:
     void linearize( Page* page );
     //add words, punctuation to local dictionary
     virtual
-    std::pair< bool, bool > buildLocalDict( Page* page ) { page = page; return std::make_pair( false, false ); };
+    std::pair< bool, bool > buildLocalDict( Page* page ) { (void)page; return std::make_pair( false, false ); };
     //add encoded text to a cell
     virtual
     void buildText( Cell* cell ) = 0;

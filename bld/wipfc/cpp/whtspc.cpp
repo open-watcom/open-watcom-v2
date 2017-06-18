@@ -103,8 +103,8 @@ void WhiteSpace::buildText( Cell* cell )
 /***************************************************************************/
 std::pair< bool, bool > LiteralWhiteSpace::buildLocalDict( Page* page )
 {
+    (void)page;
     std::pair< bool, bool > retval( false, toggleSpacing );
-    page = page;
     return retval;
 }
 /***************************************************************************/

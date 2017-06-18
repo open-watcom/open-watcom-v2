@@ -55,7 +55,7 @@ Hpn::Hpn( Document* d, Element *p, const std::wstring* f, unsigned int r,
 Lexer::Token Hpn::parse( Lexer* lexer )
 {
     Lexer::Token tok( document->getNextToken() );
-    lexer = lexer;
+    (void)lexer;
     while( tok != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE )
             document->printError( ERR1_ATTRNOTDEF );
@@ -121,7 +121,7 @@ EHpn::EHpn( Document* d, Element *p, const std::wstring* f, unsigned int r,
 Lexer::Token EHpn::parse( Lexer* lexer )
 {
     Lexer::Token tok( document->getNextToken() );
-    lexer = lexer;
+    (void)lexer;
     while( tok != Lexer::TAGEND ) {
         if( tok == Lexer::ATTRIBUTE )
             document->printError( ERR1_ATTRNOTDEF );

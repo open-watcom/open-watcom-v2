@@ -50,7 +50,7 @@ public:
     Lexer::Token parse( Lexer* lexer );
     void buildTOC( Page* page );
     void linearize( Page* page ) { linearizeChildren( page ); };
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 protected:
     Lexer::Token parseAttributes( Lexer* lexer );
 private:

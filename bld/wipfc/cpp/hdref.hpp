@@ -45,7 +45,7 @@ public:
     ~Hdref() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 private:
     Hdref( const Hdref& rhs );                //no copy
     Hdref& operator=( const Hdref& rhs );     //no assignment

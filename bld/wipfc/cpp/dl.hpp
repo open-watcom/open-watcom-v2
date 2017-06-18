@@ -55,7 +55,7 @@ public:
     ~Dl() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 protected:
     Lexer::Token parseAttributes( Lexer* lexer );
 private:
@@ -88,7 +88,7 @@ public:
     unsigned char length() const { return textLength; };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 private:
     DtHd( const DtHd& rhs );            //no copy
     DtHd& operator=( const DtHd& rhs ); //no assignment
@@ -104,7 +104,7 @@ public:
     ~DdHd() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 private:
     DdHd( const DdHd& rhs );            //no copy
     DdHd& operator=( const DdHd& rhs ); //no assignment
@@ -121,7 +121,7 @@ public:
     ~Dt() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 private:
     Dt( const Dt& rhs );            //no copy
     Dt& operator=( const Dt& rhs ); //no assignment
@@ -140,7 +140,7 @@ public:
     ~Dd() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 private:
     Dd( const Dd& rhs );            //no copy
     Dd& operator=( const Dd& rhs ); //no assignment
