@@ -156,12 +156,13 @@ DFA *DFA_new( Ins *ins, uint ni, uint lb, uint ub, Char *rep )
             if( i->i.tag == CHAR ) {
                 Ins *j2;
                 for( j2 = i + 1; j2 < (Ins *)i->i.link; ++j2 ) {
-                    if( !(j2->c.link = goTo[j2->c.value - lb].to) )
+                    j2->c.link = goTo[j2->c.value - lb].to;
+                    if( j2->c.link == NULL )
                         goTo[nGoTos++].ch = j2->c.value;
                     goTo[j2->c.value - lb].to = j2;
                 }
             } else if( i->i.tag == TERM ) {
-                if( !s->rule || ((RegExp *)i->i.link)->u.RuleOp.accept < s->rule->u.RuleOp.accept ) {
+                if( s->rule == NULL || ((RegExp *)i->i.link)->u.RuleOp.accept < s->rule->u.RuleOp.accept ) {
                     s->rule = (RegExp *)i->i.link;
                 }
             }

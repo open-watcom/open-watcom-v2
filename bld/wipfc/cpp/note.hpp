@@ -45,7 +45,7 @@ public:
     ~Note() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 private:
     Note( const Note& rhs );            //no copy
     Note& operator=( const Note& rhs ); //no assignment

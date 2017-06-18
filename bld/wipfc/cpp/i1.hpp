@@ -53,7 +53,7 @@ public:
     ~I1() { };
     Lexer::Token parse( Lexer* lexer );
     void buildIndex();
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
     void setRes( STD1::uint16_t r ) { parentRes = r; };
     void setIdOrName( GlobalDictionaryWord* w ) { parentId = w; };
     void addSecondary( IndexItem* i ) { secondary.push_back( i ); };

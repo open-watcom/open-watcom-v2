@@ -45,7 +45,7 @@ public:
         Element( d, p, f, r, c ), syn( new Synonym() ) { };
     ~ISyn() { };
     Lexer::Token parse( Lexer* lexer );
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 private:
     ISyn( const ISyn& rhs );                //no copy
     ISyn& operator=( const ISyn& rhs );     //no assignment

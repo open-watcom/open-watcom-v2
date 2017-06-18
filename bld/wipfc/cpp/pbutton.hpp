@@ -45,7 +45,7 @@ public:
         CtrlTag( d, p, f, r, c ), res( 0 ) { };
     ~PButton() { };
     Lexer::Token parse( Lexer* lexer );
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
     void build( Controls* ctrls );
 private:
     PButton( const PButton& rhs );              //no copy

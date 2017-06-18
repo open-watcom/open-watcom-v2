@@ -56,7 +56,7 @@ public:
     ~Parml() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 protected:
     Lexer::Token parseAttributes( Lexer* lexer );
 private:
@@ -89,7 +89,7 @@ public:
     ~Pt() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 private:
     Pt( const Pt& rhs );                //no copy
     Pt& operator=( const Pt& rhs );     //no assignment
@@ -108,7 +108,7 @@ public:
     ~Pd() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 private:
     Pd( const Pd& rhs );                //no copy
     Pd& operator=( const Pd& rhs );     //no assignment

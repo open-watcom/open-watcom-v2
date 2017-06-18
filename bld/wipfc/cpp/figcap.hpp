@@ -43,7 +43,7 @@ public:
         unsigned int c ) : Tag( d, p, f, r, c, Tag::LITERAL ) { };
     ~Figcap() { };
     Lexer::Token parse( Lexer* lexer );
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 private:
     Figcap( const Figcap& rhs );            //no copy
     Figcap& operator=( const Figcap& rhs ); //no assignment

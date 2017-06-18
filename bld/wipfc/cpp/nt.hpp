@@ -45,7 +45,7 @@ public:
     ~Nt() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 private:
     Nt( const Nt& rhs );                //no copy
     Nt& operator=( const Nt& rhs );     //no assignment
@@ -68,7 +68,7 @@ public:
     NtLm( Document* d, Element *p, const std::wstring* f, unsigned int r, unsigned int c ) :
         Element( d, p, f, r, c ) { };
     ~NtLm() { };
-    Lexer::Token parse( Lexer* lexer ) { lexer = lexer; return Lexer::END; };
+    Lexer::Token parse( Lexer* lexer ) { (void)lexer; return Lexer::END; };
     void buildText( Cell* cell );
 private:
     NtLm( const NtLm& rhs );            //no copy

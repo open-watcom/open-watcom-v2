@@ -49,7 +49,7 @@ public:
     ~ICmd() { };
     Lexer::Token parse( Lexer* lexer );
     void buildIndex();
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
     void setRes( STD1::uint16_t r ) { parentRes = r; };
     void setIdOrName( GlobalDictionaryWord* w ) { parentId = w; };
     size_t write( std::FILE* out ) { return  index->write( out ); };

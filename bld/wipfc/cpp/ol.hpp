@@ -47,7 +47,7 @@ public:
     ~Ol() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 protected:
     Lexer::Token parseAttributes( Lexer* lexer );
 private:
@@ -78,7 +78,7 @@ public:
     ~OlLi() { };
     Lexer::Token parse( Lexer* lexer );
     void linearize( Page* page ) { linearizeChildren( page ); };
-    void buildText( Cell* cell ) { cell = cell; };
+    void buildText( Cell* cell ) { (void)cell; };
 private:
     OlLi( const OlLi& rhs );            //no copy
     OlLi& operator=( const OlLi& rhs ); //no assignment
