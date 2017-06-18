@@ -3,20 +3,11 @@
 # Script to build the Open Watcom tools on Travis
 # using the host platform's native C/C++ compiler or OW tools.
 #
-# Expects POSIX or OW tools.
+# Expects POSIX tools.
 
 if [ -z "$OWROOT" ]; then
     . ./setvars.sh
 fi
-
-OWBUILDER_BOOTX_OUTPUT=$OWROOT/bootx.log
-
-output_redirect()
-{
-    "$@" >>$OWBUILDER_BOOTX_OUTPUT 2>&1
-}
-
-rm -f $OWBUILDER_BOOTX_OUTPUT
 
 cd $OWSRCDIR
 if [ "$1" = "boot" ]; then
@@ -29,12 +20,12 @@ if [ "$1" = "boot" ]; then
     rm -f $OWBINDIR/wmake
     case `uname` in
         Darwin)
-            output_redirect make -f ../posmake clean
-            output_redirect make -f ../posmake TARGETDEF=-D__OSX__
+            make -f ../posmake clean
+            make -f ../posmake TARGETDEF=-D__OSX__
             ;;
         *)
-            output_redirect make -f ../posmake clean
-            output_redirect make -f ../posmake TARGETDEF=-D__LINUX__
+            make -f ../posmake clean
+            make -f ../posmake TARGETDEF=-D__LINUX__
             ;;
     esac
     RC=$?
@@ -46,8 +37,8 @@ if [ "$1" = "boot" ]; then
         mkdir $OWOBJDIR
         cd $OWOBJDIR
         rm -f $OWBINDIR/builder
-        output_redirect $OWBINDIR/wmake -f ../binmake clean
-        output_redirect $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
+        $OWBINDIR/wmake -f ../binmake clean
+        $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
         builder boot
         RC=$?
     fi
