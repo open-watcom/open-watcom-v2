@@ -1,21 +1,5 @@
 language: c
 
-compiler:
- - clang
-
-env:
- - OWTOOLS=CLANG
-
-matrix:
-  include:
-    - os: osx
-    - os: linux
-
-addons:
-  apt:
-    packages:
-      - dosemu
-
 before_install:
 # install DOS Emulator
  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install dosbox; export OWDOSBOX=dosbox; fi
@@ -25,8 +9,6 @@ before_script:
 # and compress GitHub repository if necessary to hold only a few last builds
  - sh gitget.sh
 # initialize OW build environment variables
- - export OWVERBOSE=0
- - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export OWVERBOSE=1; fi
  - export OWROOT=$TRAVIS_BUILD_DIR
  - export OWRELROOT=$TRAVIS_BUILD_DIR/../travis-ci-ow-builds
  - export OWOBJDIR=binbuild
@@ -60,5 +42,19 @@ after_success:
 
 jobs:
   include:
-    - stage: docs
+    - stage: build_osx
+      os: osx
+      compiler: clang
+      env: OWTOOLS=CLANG
+      script: sh $OWROOT/build.sh rel
+    - stage: build_linux
+      os: linux
+        addons:
+          apt:
+            packages:
+              - dosemu
+      compiler: clang
+      env: OWTOOLS=CLANG
+      script: sh $OWROOT/build.sh rel
+    - stage: build_docs
       script: sh $OWROOT/build.sh docs
