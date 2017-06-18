@@ -313,8 +313,8 @@ db_upload()
     DST=$(normalize_path "$2")
 
     #Checking if the file/dir exists
-    if [ ! -e "$SRC" ] && [ ! -d "$SRC" ]; then
-        print " > No such file or directory: $SRC\n"
+    if [ ! -e "$SRC" ]; then
+        print " > No such file or directory1: $SRC\n"
         ERROR_STATUS=1
         return
     fi
@@ -370,8 +370,6 @@ db_upload_file()
     FILE_SRC=$(normalize_path "$1")
     FILE_DST=$(normalize_path "$2")
 
-    shopt -s nocasematch
-
     #Checking not allowed file names
     basefile_dst=$(basename "$FILE_DST")
     if [ "$basefile_dst" = "thumbs.db" ] || \
@@ -384,8 +382,6 @@ db_upload_file()
         print " > Skipping not allowed file name \"$FILE_DST\"\n"
         return
     fi
-
-    shopt -u nocasematch
 
     #Checking file size
     FILE_SIZE=$(file_size "$FILE_SRC")
@@ -858,38 +854,37 @@ db_sha_local()
 #### START  ####
 ################
 
-COMMAND=${*:$OPTIND:1}
-ARG1=${*:$OPTIND+1:1}
-ARG2=${*:$OPTIND+2:1}
-
-let argnum=$#-$OPTIND
+COMMAND=$1
 
 #CHECKING PARAMS VALUES
 case $COMMAND in
 
     upload)
 
-        if [ $argnum -lt 2 ]; then
+        shift
+        if [ $# -lt 2 ]; then
             usage
         fi
 
-        FILE_DST=${*:$#:1}
-
-        for (( i=OPTIND+1; i<$#; i++ )); do
-            FILE_SRC=${*:$i:1}
-            db_upload "$FILE_SRC" "/$FILE_DST"
+        UPLOAD_DST="$@"
+        for UPLOAD_DST; do true; done
+        for UPLOAD_SRC in "$@"; do
+            if [ $UPLOAD_SRC != $UPLOAD_DST ]; then
+                db_upload "$UPLOAD_SRC" "/$UPLOAD_DST"
+            fi
         done
 
     ;;
 
     download)
 
-        if [ $argnum -lt 1 ]; then
+        shift
+        if [ $# -lt 1 ]; then
             usage
         fi
 
-        FILE_SRC=$ARG1
-        FILE_DST=$ARG2
+        FILE_SRC=$1
+        FILE_DST=$2
 
         db_download "/$FILE_SRC" "$FILE_DST"
 
