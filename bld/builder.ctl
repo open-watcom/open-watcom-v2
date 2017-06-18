@@ -245,8 +245,8 @@ set OWTXTDOCBUILD=1
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
 set OWTXTDOCBUILD=
 
-[ BLOCK <1> docs docsclean ]
-#===========================
+[ BLOCK <1> docs docsclean docpdf ]
+#==================================
 [ INCLUDE <OWDOCSDIR>/builder.ctl ]
 
 [ BLOCK <1> test testclean cleanlog ]
