@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/sh
 #
 # Dropbox Uploader
 #
@@ -66,23 +66,14 @@ VERSION="1.0"
 
 umask 077
 
-#Check the shell
-if [ -z "$BASH_VERSION" ]; then
-    echo -e "Error: this script requires the BASH shell!"
-    exit 1
-fi
-
-shopt -s nullglob #Bash allows filename patterns which match no files to expand to a null string, rather than themselves
-shopt -s dotglob  #Bash includes filenames beginning with a "." in the results of filename expansion
-
 #Check temp folder
-if [[ ! -d "$TMP_DIR" ]]; then
+if [ ! -d "$TMP_DIR" ]; then
     echo -e "Error: the temporary folder $TMP_DIR doesn't exists!"
     echo -e "Please edit this script and set the TMP_DIR variable to a valid temporary folder to use."
     exit 1
 fi
 
-if [[ $DEBUG != 0 ]]; then
+if [ $DEBUG != 0 ]; then
     echo $VERSION
     uname -a 2> /dev/null
     cat /etc/issue 2> /dev/null
@@ -90,14 +81,14 @@ if [[ $DEBUG != 0 ]]; then
     RESPONSE_FILE="$TMP_DIR/du_resp_debug"
 fi
 
-if [[ $CURL_BIN == "" ]]; then
+if [ $CURL_BIN == "" ]; then
     BIN_DEPS="$BIN_DEPS curl"
     CURL_BIN="curl"
 fi
 
 #Dependencies check
 which $BIN_DEPS > /dev/null
-if [[ $? != 0 ]]; then
+if [ $? != 0 ]; then
     for i in $BIN_DEPS; do
         which $i > /dev/null ||
             NOT_FOUND="$i $NOT_FOUND"
@@ -109,7 +100,7 @@ fi
 #Check if readlink is installed and supports the -m option
 #It's not necessary, so no problem if it's not installed
 which readlink > /dev/null
-if [[ $? == 0 && $(readlink -m "//test" 2> /dev/null) == "/test" ]]; then
+if [ $? == 0 && $(readlink -m "//test" 2> /dev/null) == "/test" ]; then
     HAVE_READLINK=1
 else
     HAVE_READLINK=0
@@ -119,12 +110,12 @@ fi
 #otherwise the external printf program will be used
 #Note that the external printf command can cause character encoding issues!
 builtin printf "" 2> /dev/null
-if [[ $? == 0 ]]; then
+if [ $? == 0 ]; then
     PRINTF="builtin printf"
     PRINTF_OPT="-v o"
 else
     PRINTF=$(which printf)
-    if [[ $? != 0 ]]; then
+    if [ $? != 0 ]; then
         echo -e "Error: Required program could not be found: printf"
     fi
     PRINTF_OPT=""
@@ -133,7 +124,7 @@ fi
 #Print the message based on $QUIET variable
 function print
 {
-    if [[ $QUIET == 0 ]]; then
+    if [ $QUIET == 0 ]; then
             echo -ne "$1";
     fi
 }
@@ -141,7 +132,7 @@ function print
 #Remove temporary files
 function remove_temp_files
 {
-    if [[ $DEBUG == 0 ]]; then
+    if [ $DEBUG == 0 ]; then
         rm -fr "$RESPONSE_FILE"
         rm -fr "$CHUNK_FILE"
         rm -fr "$TEMP_FILE"
@@ -151,7 +142,7 @@ function remove_temp_files
 #Converts bytes to human readable format
 function convert_bytes
 {
-    if [[ $HUMAN_READABLE_SIZE == 1 && "$1" != "" ]]; then
+    if [ $HUMAN_READABLE_SIZE == 1 && "$1" != "" ]; then
             if (($1 > 1073741824));then
                 echo $(($1/1073741824)).$(($1%1073741824/100000000))"G";
             elif (($1 > 1048576));then
@@ -277,11 +268,11 @@ function normalize_path
 {
     #The printf is necessary to correctly decode unicode sequences
     path=$($PRINTF "${1//\/\///}")
-    if [[ $HAVE_READLINK == 1 ]]; then
+    if [ $HAVE_READLINK == 1 ]; then
         new_path=$(readlink -m "$path")
 
         #Adding back the final slash, if present in the source
-        if [[ ${path: -1} == "/" && ${#path} -gt 1 ]]; then
+        if [ ${path: -1} == "/" && ${#path} -gt 1 ]; then
             new_path="$new_path/"
         fi
 
@@ -297,7 +288,7 @@ function db_stat
 {
     local FILE=$(normalize_path "$1")
 
-    if [[ $FILE == "/" ]]; then
+    if [ $FILE == "/" ]; then
         echo "DIR"
         return
     fi
@@ -338,14 +329,14 @@ function db_upload
     local DST=$(normalize_path "$2")
 
     #Checking if the file/dir exists
-    if [[ ! -e $SRC && ! -d $SRC ]]; then
+    if [ ! -e $SRC && ! -d $SRC ]; then
         print " > No such file or directory: $SRC\n"
         ERROR_STATUS=1
         return
     fi
 
     #Checking if the file/dir has read permissions
-    if [[ ! -r $SRC ]]; then
+    if [ ! -r $SRC ]; then
         print " > Error reading file $SRC: permission denied\n"
         ERROR_STATUS=1
         return
@@ -354,30 +345,30 @@ function db_upload
     TYPE=$(db_stat "$DST")
 
     #If DST it's a file, do nothing, it's the default behaviour
-    if [[ $TYPE == "FILE" ]]; then
+    if [ $TYPE == "FILE" ]; then
         DST="$DST"
 
     #if DST doesn't exists and doesn't ends with a /, it will be the destination file name
-    elif [[ $TYPE == "ERR" && "${DST: -1}" != "/" ]]; then
+    elif [ $TYPE == "ERR" && "${DST: -1}" != "/" ]; then
         DST="$DST"
 
     #if DST doesn't exists and ends with a /, it will be the destination folder
-    elif [[ $TYPE == "ERR" && "${DST: -1}" == "/" ]]; then
+    elif [ $TYPE == "ERR" && "${DST: -1}" == "/" ]; then
         local filename=$(basename "$SRC")
         DST="$DST/$filename"
 
     #If DST it's a directory, it will be the destination folder
-    elif [[ $TYPE == "DIR" ]]; then
+    elif [ $TYPE == "DIR" ]; then
         local filename=$(basename "$SRC")
         DST="$DST/$filename"
     fi
 
     #It's a directory
-    if [[ -d $SRC ]]; then
+    if [ -d $SRC ]; then
         db_upload_dir "$SRC" "$DST"
 
     #It's a file
-    elif [[ -e $SRC ]]; then
+    elif [ -e $SRC ]; then
         db_upload_file "$SRC" "$DST"
 
     #Unsupported object...
@@ -399,13 +390,13 @@ function db_upload_file
 
     #Checking not allowed file names
     basefile_dst=$(basename "$FILE_DST")
-    if [[ $basefile_dst == "thumbs.db" || \
+    if [ $basefile_dst == "thumbs.db" || \
           $basefile_dst == "desktop.ini" || \
           $basefile_dst == ".ds_store" || \
           $basefile_dst == "icon\r" || \
           $basefile_dst == ".dropbox" || \
           $basefile_dst == ".dropbox.attr" \
-       ]]; then
+       ]; then
         print " > Skipping not allowed file name \"$FILE_DST\"\n"
         return
     fi
@@ -417,22 +408,22 @@ function db_upload_file
 
     #Checking if the file already exists
     TYPE=$(db_stat "$FILE_DST")
-    if [[ $TYPE != "ERR" && $SKIP_EXISTING_FILES == 1 ]]; then
+    if [ $TYPE != "ERR" && $SKIP_EXISTING_FILES == 1 ]; then
         print " > Skipping already existing file \"$FILE_DST\"\n"
         return
     fi
 
     # Checking if the file has the correct check sum
-    if [[ $TYPE != "ERR" ]]; then
+    if [ $TYPE != "ERR" ]; then
         sha_src=$(db_sha_local "$FILE_SRC")
         sha_dst=$(db_sha "$FILE_DST")
-        if [[ $sha_src == $sha_dst && $sha_src != "ERR" ]]; then
+        if [ $sha_src == $sha_dst && $sha_src != "ERR" ]; then
             print "> Skipping file \"$FILE_SRC\", file exists with the same hash\n"
             return
         fi
     fi
 
-    if [[ $FILE_SIZE -gt 157286000 ]]; then
+    if [ $FILE_SIZE -gt 157286000 ]; then
         #If the file is greater than 150Mb, the chunked_upload API will be used
         db_chunked_upload_file "$FILE_SRC" "$FILE_DST"
     else
@@ -449,7 +440,7 @@ function db_simple_upload_file
     local FILE_SRC=$(normalize_path "$1")
     local FILE_DST=$(normalize_path "$2")
 
-    if [[ $SHOW_PROGRESSBAR == 1 && $QUIET == 0 ]]; then
+    if [ $SHOW_PROGRESSBAR == 1 && $QUIET == 0 ]; then
         CURL_PARAMETERS="--progress-bar"
         LINE_CR="\n"
     else
@@ -494,7 +485,7 @@ function db_chunked_upload_file
     SESSION_ID=$(sed -n 's/{"session_id": *"*\([^"]*\)"*.*/\1/p' "$RESPONSE_FILE")
 
     #Uploading chunks...
-    while ([[ $OFFSET != "$FILE_SIZE" ]]); do
+    while ( [ $OFFSET != "$FILE_SIZE" ] ); do
 
         let OFFSET_MB=$OFFSET/1024/1024
 
@@ -518,7 +509,7 @@ function db_chunked_upload_file
             let UPLOAD_ERROR=$UPLOAD_ERROR+1
 
             #On error, the upload is retried for max 3 times
-            if [[ $UPLOAD_ERROR -gt 2 ]]; then
+            if [ $UPLOAD_ERROR -gt 2 ]; then
                 print " FAILED\n"
                 print "An error occurred requesting /chunked_upload\n"
                 ERROR_STATUS=1
@@ -547,7 +538,7 @@ function db_chunked_upload_file
             let UPLOAD_ERROR=$UPLOAD_ERROR+1
 
             #On error, the commit is retried for max 3 times
-            if [[ $UPLOAD_ERROR -gt 2 ]]; then
+            if [ $UPLOAD_ERROR -gt 2 ]; then
                 print " FAILED\n"
                 print "An error occurred requesting /commit_chunked_upload\n"
                 ERROR_STATUS=1
@@ -587,15 +578,15 @@ function db_download
     TYPE=$(db_stat "$SRC")
 
     #It's a directory
-    if [[ $TYPE == "DIR" ]]; then
+    if [ $TYPE == "DIR" ]; then
 
         #If the DST folder is not specified, I assume that is the current directory
-        if [[ $DST == "" ]]; then
+        if [ $DST == "" ]; then
             DST="."
         fi
 
         #Checking if the destination directory exists
-        if [[ ! -d $DST ]]; then
+        if [ ! -d $DST ]; then
             local basedir=""
         else
             local basedir=$(basename "$SRC")
@@ -604,12 +595,12 @@ function db_download
         local DEST_DIR=$(normalize_path "$DST/$basedir")
         print " > Downloading folder \"$SRC\" to \"$DEST_DIR\"... \n"
 
-        if [[ ! -d "$DEST_DIR" ]]; then
+        if [ ! -d "$DEST_DIR" ]; then
             print " > Creating local directory \"$DEST_DIR\"... "
             mkdir -p "$DEST_DIR"
 
             #Check
-            if [[ $? == 0 ]]; then
+            if [ $? == 0 ]; then
                 print "DONE\n"
             else
                 print "FAILED\n"
@@ -618,7 +609,7 @@ function db_download
             fi
         fi
 
-        if [[ $SRC == "/" ]]; then
+        if [ $SRC == "/" ]; then
             SRC_REQ=""
         else
             SRC_REQ="$SRC"
@@ -637,9 +628,9 @@ function db_download
             #Removing unneeded /
             FILE=${FILE##*/}
 
-            if [[ $TYPE == "file" ]]; then
+            if [ $TYPE == "file" ]; then
                 db_download_file "$SRC/$FILE" "$DEST_DIR/$FILE"
-            elif [[ $TYPE == "folder" ]]; then
+            elif [ $TYPE == "folder" ]; then
                 db_download "$SRC/$FILE" "$DEST_DIR"
             fi
 
@@ -648,15 +639,15 @@ function db_download
         rm -fr $OUT_FILE
 
     #It's a file
-    elif [[ $TYPE == "FILE" ]]; then
+    elif [ $TYPE == "FILE" ]; then
 
         #Checking DST
-        if [[ $DST == "" ]]; then
+        if [ $DST == "" ]; then
             DST=$(basename "$SRC")
         fi
 
         #If the destination is a directory, the file will be download into
-        if [[ -d $DST ]]; then
+        if [ -d $DST ]; then
             DST="$DST/$SRC"
         fi
 
@@ -678,7 +669,7 @@ function db_download_file
     local FILE_SRC=$(normalize_path "$1")
     local FILE_DST=$(normalize_path "$2")
 
-    if [[ $SHOW_PROGRESSBAR == 1 && $QUIET == 0 ]]; then
+    if [ $SHOW_PROGRESSBAR == 1 && $QUIET == 0 ]; then
         CURL_PARAMETERS="-L --progress-bar"
         LINE_CR="\n"
     else
@@ -687,7 +678,7 @@ function db_download_file
     fi
 
     #Checking if the file already exists
-    if [[ -e $FILE_DST && $SKIP_EXISTING_FILES == 1 ]]; then
+    if [ -e $FILE_DST && $SKIP_EXISTING_FILES == 1 ]; then
         print " > Skipping already existing file \"$FILE_DST\"\n"
         return
     fi
@@ -696,7 +687,7 @@ function db_download_file
     #1) In this way I can check if the destination file is writable or not
     #2) Curl doesn't automatically creates files with 0 bytes size
     dd if=/dev/zero of="$FILE_DST" count=0 2> /dev/null
-    if [[ $? != 0 ]]; then
+    if [ $? != 0 ]; then
         print " > Error writing file $FILE_DST: permission denied\n"
         ERROR_STATUS=1
         return
@@ -768,7 +759,7 @@ function db_list_outfile
     local HAS_MORE="false"
     local CURSOR=""
 
-    if [[ -n "$2" ]]; then
+    if [ -n "$2" ]; then
         CURSOR="$2"
         HAS_MORE="true"
     fi
@@ -777,7 +768,7 @@ function db_list_outfile
 
     while (true); do
 
-        if [[ $HAS_MORE == "true" ]]; then
+        if [ $HAS_MORE == "true" ]; then
             $CURL_BIN $CURL_ACCEPT_CERTIFICATES -X POST -L -s --show-error --globoff -i -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Content-Type: application/json" --data "{\"cursor\": \"$CURSOR\"}" "$API_LIST_FOLDER_CONTINUE_URL" 2> /dev/null
         else
             $CURL_BIN $CURL_ACCEPT_CERTIFICATES -X POST -L -s --show-error --globoff -i -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Content-Type: application/json" --data "{\"path\": \"$DIR_DST\",\"include_media_info\": false,\"include_deleted\": false,\"include_has_explicit_shared_members\": false}" "$API_LIST_FOLDER_URL" 2> /dev/null
@@ -811,7 +802,7 @@ function db_list_outfile
 
             done < "$TEMP_FILE"
 
-            if [[ $HAS_MORE == "false" ]]; then
+            if [ $HAS_MORE == "false" ]; then
                 break
             fi
 
@@ -831,7 +822,7 @@ function db_sha
 {
     local FILE=$(normalize_path "$1")
 
-    if [[ $FILE == "/" ]]; then
+    if [ $FILE == "/" ]; then
         echo "ERR"
         return
     fi
@@ -841,7 +832,7 @@ function db_sha
     check_http_response
 
     local TYPE=$(sed -n 's/{".tag": *"*\([^"]*\)"*.*/\1/p' "$RESPONSE_FILE")
-    if [[ $TYPE == "folder" ]]; then
+    if [ $TYPE == "folder" ]; then
         echo "ERR"
         return
     fi
@@ -862,12 +853,12 @@ function db_sha_local
     local SHA_CONCAT=""
 
     which shasum > /dev/null
-    if [[ $? != 0 ]]; then
+    if [ $? != 0 ]; then
         echo "ERR"
         return
     fi
 
-    while ([[ $OFFSET -lt "$FILE_SIZE" ]]); do
+    while ([ $OFFSET -lt "$FILE_SIZE" ]); do
         dd if="$FILE_SRC" of="$CHUNK_FILE" bs=4194304 skip=$SKIP count=1 2> /dev/null
         local SHA=$(shasum -a 256 "$CHUNK_FILE" | awk '{print $1}')
         SHA_CONCAT="${SHA_CONCAT}${SHA}"
@@ -894,7 +885,7 @@ case $COMMAND in
 
     upload)
 
-        if [[ $argnum -lt 2 ]]; then
+        if [ $argnum -lt 2 ]; then
             usage
         fi
 
@@ -909,7 +900,7 @@ case $COMMAND in
 
     download)
 
-        if [[ $argnum -lt 1 ]]; then
+        if [ $argnum -lt 1 ]; then
             usage
         fi
 
@@ -922,7 +913,7 @@ case $COMMAND in
 
     *)
 
-        if [[ $COMMAND != "" ]]; then
+        if [ $COMMAND != "" ]; then
             print "Error: Unknown command: $COMMAND\n\n"
             ERROR_STATUS=1
         fi

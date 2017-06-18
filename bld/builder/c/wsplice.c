@@ -729,6 +729,9 @@ static void ProcessRecord( KW kw, const char *record )
             break;
         }
         break;
+    case KW_COMMENT:
+    case KW_EOF:
+        break;
     }
 }
 
