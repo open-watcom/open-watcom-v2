@@ -355,35 +355,34 @@ db_upload()
 
     TYPE=$(db_stat "$DST")
 
-    #If DST it's a file, do nothing, it's the default behaviour
-    if [ "$TYPE" = "FILE" ]; then
-        DST="$DST"
-
     #if DST doesn't exists then check if it is directory or file
-    elif [ "$TYPE" = "ERR" ]; then
-
+    if [ "$TYPE" = "ERR" ]; then
         #if DST ends with a /, it will be the destination folder
-        if [ "$TYPE" = "ERR" ] && check_last_slash "$DST"; then
-            filename=$(basename "$SRC")
-            DST="$DST/$filename"
+        if check_last_slash "$DST"; then
+            TYPE="DIR"
 
         #if DST doesn't ends with a /, it will be the destination file name
         else 
-            DST="$DST"
+            TYPE="FILE"
         fi
-
-    #If DST it's a directory, it will be the destination folder
-    elif [ "$TYPE" = "DIR" ]; then
-        filename=$(basename "$SRC")
-        DST="$DST/$filename"
     fi
 
-    #It's a directory
+    # SRC is a directory
     if [ -d "$SRC" ]; then
-        db_upload_dir "$SRC" "$DST"
+        if [ "$TYPE" = "DIR" ]; then
+            db_upload_dir "$SRC" "$DST"
+        else
+            filename=$(basename "$DST")
+            SRC="$SRC/$filename"
+            db_upload_file "$SRC" "$DST"
+        fi
 
-    #It's a file
+    # SRC is a file
     elif [ -e "$SRC" ]; then
+        if [ "$TYPE" = "DIR" ]; then
+            filename=$(basename "$SRC")
+            DST="$DST/$filename"
+        fi
         db_upload_file "$SRC" "$DST"
 
     #Unsupported object...
