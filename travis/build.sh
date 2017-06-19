@@ -29,22 +29,22 @@ if [ "$1" = "boot" ]; then
             ;;
     esac
     RC=$?
+    cd ../..
     if [ $RC -eq 0 ]; then
         #
         # build new verison of builder for host system
         #
-        cd ../../builder
+        cd builder
         mkdir $OWOBJDIR
         cd $OWOBJDIR
         rm -f $OWBINDIR/builder
         $OWBINDIR/wmake -f ../binmake clean
         $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
+        cd ../..
         builder boot
         RC=$?
     fi
-    cd ../..
 else
-    echo "**** $1 rule"
     builder $1
     RC=$?
 fi
