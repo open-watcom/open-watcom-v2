@@ -388,12 +388,7 @@ db_upload_file()
     #Checking not allowed file names
     basefile_dst=$(basename "$FILE_DST")
     case "$basefile_dst" in
-    	thumbs.db)
-        desktop.ini)
-        .ds_store)
-        icon\r)
-        .dropbox)
-        .dropbox.attr)
+    	thumbs.db|desktop.ini|.ds_store|icon\r|.dropbox|.dropbox.attr)
             print " > Skipping not allowed file name \"$FILE_DST\"\n"
             return
             ;;
