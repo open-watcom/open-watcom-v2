@@ -574,7 +574,7 @@ db_upload_dir()
     DIR_DST="$REMOTE_PATH"
 
     #Creatig remote directory
-    db_mkdir "$DIR_DST"
+    db_mkdir "$(echo "$DIR_DST" | sed 's/\/$//')"
 
     for file in "$DIR_SRC/"*; do
         db_upload "$file" "$DIR_DST"
