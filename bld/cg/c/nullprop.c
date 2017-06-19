@@ -141,7 +141,7 @@ static  bool            DereferencedBy( instruction *ins, name *ptr )
     an index (with op as index), providing the base is NULL, is considered a deref.
 */
 {
-    int                 i;
+    opcnt               i;
     name                *op;
 
     op = ins->result;

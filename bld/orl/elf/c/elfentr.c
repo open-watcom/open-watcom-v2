@@ -41,7 +41,7 @@ elf_handle ELFENTRY ElfInit( orl_funcs *funcs )
 {
     elf_handle                                  elf_hnd;
 
-    elf_hnd = (elf_handle)ORL_CLI_ALLOC( funcs, sizeof( elf_handle_struct ) );
+    elf_hnd = (elf_handle)ORL_CLI_ALLOC( funcs, sizeof( ORL_STRUCT( elf_handle ) ) );
     if( elf_hnd != NULL ) {
         elf_hnd->funcs = funcs;
         elf_hnd->first_file_hnd = NULL;
@@ -68,7 +68,7 @@ orl_return ELFENTRY ElfFileInit( elf_handle elf_hnd, orl_file_id file, elf_file_
     elf_file_handle     elf_file_hnd;
     orl_return          return_val;
 
-    elf_file_hnd = (elf_file_handle)ORL_PTR_ALLOC( elf_hnd, sizeof( elf_file_handle_struct ) );
+    elf_file_hnd = (elf_file_handle)ORL_PTR_ALLOC( elf_hnd, sizeof( ORL_STRUCT( elf_file_handle ) ) );
     if( elf_file_hnd == NULL ) {
         return( ORL_OUT_OF_MEMORY );
     }
@@ -92,10 +92,10 @@ orl_return ELFENTRY ElfFileFini( elf_file_handle elf_file_hnd )
 
 orl_return ELFENTRY ElfFileScan( elf_file_handle elf_file_hnd, const char *desired, orl_sec_return_func return_func )
 {
-    orl_hash_data_struct    *data_entry;
+    orl_hash_data_entry     data_entry;
     elf_quantity            i;
     orl_return              return_val;
-    orl_hash_key            key;
+    orl_hash_key            h_key;
 
     if( desired == NULL ) {
         /* global request */
@@ -112,9 +112,9 @@ orl_return ELFENTRY ElfFileScan( elf_file_handle elf_file_hnd, const char *desir
                 return( return_val );
             }
         }
-        key.u.string = desired;
-        for( data_entry = ORLHashTableQuery( elf_file_hnd->sec_name_hash_table, key ); data_entry != NULL; data_entry = data_entry->next ) {
-            return_val = return_func( (orl_sec_handle)data_entry->data );
+        h_key.u.string = desired;
+        for( data_entry = ORLHashTableQuery( elf_file_hnd->sec_name_hash_table, h_key ); data_entry != NULL; data_entry = data_entry->next ) {
+            return_val = return_func( data_entry->data.u.sec_handle );
             if( return_val != ORL_OKAY ) {
                 return( return_val );
             }
@@ -234,7 +234,7 @@ orl_return ELFENTRY ElfSecQueryReloc( elf_sec_handle elf_sec_hnd, elf_sec_offset
 {
     unsigned        index;
     elf_sec_handle  reloc_sec_hnd;
-    orl_reloc       *reloc;
+    orl_reloc       reloc;
     orl_return      return_val;
 
     if( elf_sec_hnd->type != ORL_SEC_TYPE_PROG_BITS )
@@ -266,7 +266,7 @@ orl_return ELFENTRY ElfSecScanReloc( elf_sec_handle elf_sec_hnd, orl_reloc_retur
 {
     unsigned            index;
     elf_sec_handle      reloc_sec_hnd;
-    orl_reloc           *reloc;
+    orl_reloc           reloc;
     orl_return          return_val;
 
     if( elf_sec_hnd->type != ORL_SEC_TYPE_PROG_BITS ) {
@@ -327,7 +327,7 @@ elf_sec_handle ELFENTRY ElfCvtIdxToSecHdl( elf_file_handle fhdl, orl_table_index
 orl_return ELFENTRY ElfRelocSecScan( elf_sec_handle elf_sec_hnd, orl_reloc_return_func return_func )
 {
     unsigned            index;
-    orl_reloc           *reloc;
+    orl_reloc           reloc;
     orl_return          return_val;
 
     if( elf_sec_hnd->type != ORL_SEC_TYPE_RELOCS && elf_sec_hnd->type != ORL_SEC_TYPE_RELOCS_EXPADD )

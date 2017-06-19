@@ -43,11 +43,11 @@
 
 orl_return      OmfParseComments( omf_sec_handle sh, orl_note_callbacks *cbs, void *cookie )
 {
-    omf_quantity        x;
-    orl_return          return_val;
-    omf_comment_struct  *comment;
-    omf_scan_tab_struct st_entry;
-    orl_sec_handle      csh;
+    omf_quantity                x;
+    orl_return                  return_val;
+    omf_comment                 comment;
+    ORL_STRUCT( omf_scan_tab )  st_entry;
+    orl_sec_handle              csh;
 
     assert( sh );
     assert( cbs );

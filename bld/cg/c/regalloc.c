@@ -207,7 +207,7 @@ static  void    InitChoices( void )
     name                *opnd;
     block               *blk;
     instruction         *ins;
-    int                 i;
+    opcnt               i;
 #endif
 
     for( conf = ConfList; conf != NULL; conf = conf->next_conflict ) {
@@ -659,7 +659,7 @@ static  bool    StealsIdx( instruction *ins,
     hw_reg_set          *index_needs;
     name                *op;
     conflict_node       *new_conf;
-    int                 i;
+    opcnt               i;
     bool                is_result;
 
     is_result = false;

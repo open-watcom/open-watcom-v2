@@ -32,6 +32,7 @@
 #include "elfload.h"
 #include "elforl.h"
 
+
 // fixme: finish making ELF SPECIFIC (see next fixme)
 
 static void fix_ehdr_byte_order( elf_file_handle elf_file_hnd, Elf32_Ehdr *e_hdr )
@@ -369,7 +370,7 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index 
     }
     s_hdr += elf_file_hnd->shentsize; // skip over index 0
     for( i = 0; i < elf_file_hnd->num_sections; ++i ) {
-        elf_sec_hnd = (elf_sec_handle)_ClientAlloc( elf_file_hnd, sizeof( elf_sec_handle_struct ) );
+        elf_sec_hnd = (elf_sec_handle)_ClientAlloc( elf_file_hnd, sizeof( ORL_STRUCT( elf_sec_handle ) ) );
         if( elf_sec_hnd == NULL ) {
             free_elf_sec_handles( elf_file_hnd, i );
             _ClientFree( elf_file_hnd, associated_index );
@@ -390,7 +391,8 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index 
             elf_sec_hnd->size.u._32[I64LO32] = s_hdr64->sh_size.u._32[I64LO32];
             elf_sec_hnd->base.u._32[I64HI32] = s_hdr64->sh_addr.u._32[I64HI32];
             elf_sec_hnd->base.u._32[I64LO32] = s_hdr64->sh_addr.u._32[I64LO32];
-            elf_sec_hnd->file_offset = s_hdr64->sh_offset.u._32[I64LO32];
+            elf_sec_hnd->file_offset.u._32[I64HI32] = s_hdr64->sh_offset.u._32[I64HI32];
+            elf_sec_hnd->file_offset.u._32[I64LO32] = s_hdr64->sh_offset.u._32[I64LO32];
             elf_sec_hnd->entsize.u._32[I64HI32] = s_hdr64->sh_entsize.u._32[I64HI32];
             elf_sec_hnd->entsize.u._32[I64LO32] = s_hdr64->sh_entsize.u._32[I64LO32];
             sh_align = s_hdr64->sh_addralign.u._32[I64LO32];
@@ -406,7 +408,8 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index 
             elf_sec_hnd->size.u._32[I64LO32] = s_hdr32->sh_size;
             elf_sec_hnd->base.u._32[I64HI32] = 0;
             elf_sec_hnd->base.u._32[I64LO32] = s_hdr32->sh_addr;
-            elf_sec_hnd->file_offset = s_hdr32->sh_offset;
+            elf_sec_hnd->file_offset.u._32[I64HI32] = 0;
+            elf_sec_hnd->file_offset.u._32[I64LO32] = s_hdr32->sh_offset;
             elf_sec_hnd->entsize.u._32[I64HI32] = 0;
             elf_sec_hnd->entsize.u._32[I64LO32] = s_hdr32->sh_entsize;
             sh_align = s_hdr32->sh_addralign;
@@ -516,9 +519,13 @@ static orl_return load_elf_sec_handles( elf_file_handle elf_file_hnd, elf_index 
 
 static int section_compare( const void *sec1, const void *sec2 )
 {
-    if( (*(const elf_sec_handle *)sec1)->file_offset > (*(const elf_sec_handle *)sec2)->file_offset )
+    if( (*(const elf_sec_handle *)sec1)->file_offset.u._32[I64HI32] > (*(const elf_sec_handle *)sec2)->file_offset.u._32[I64HI32] )
         return( 1 );
-    if( (*(const elf_sec_handle *)sec1)->file_offset < (*(const elf_sec_handle *)sec2)->file_offset )
+    if( (*(const elf_sec_handle *)sec1)->file_offset.u._32[I64HI32] < (*(const elf_sec_handle *)sec2)->file_offset.u._32[I64HI32] )
+        return( -1 );
+    if( (*(const elf_sec_handle *)sec1)->file_offset.u._32[I64LO32] > (*(const elf_sec_handle *)sec2)->file_offset.u._32[I64LO32] )
+        return( 1 );
+    if( (*(const elf_sec_handle *)sec1)->file_offset.u._32[I64LO32] < (*(const elf_sec_handle *)sec2)->file_offset.u._32[I64LO32] )
         return( -1 );
     return( 0 );
 }
@@ -552,7 +559,8 @@ orl_return ElfLoadFileStructure( elf_file_handle elf_file_hnd )
         if( e_hdr64 == NULL )
             return( ORL_ERROR );
         fix_ehdr64_byte_order( elf_file_hnd, e_hdr64 );
-        shoff = e_hdr64->e_shoff.u._32[I64LO32];
+        shoff.u._32[I64HI32] = e_hdr64->e_shoff.u._32[I64HI32];
+        shoff.u._32[I64LO32] = e_hdr64->e_shoff.u._32[I64LO32];
         shnum = e_hdr64->e_shnum;
         ehsize = e_hdr64->e_ehsize;
         shstrndx = e_hdr64->e_shstrndx;
@@ -563,7 +571,8 @@ orl_return ElfLoadFileStructure( elf_file_handle elf_file_hnd )
         if( e_hdr32 == NULL )
             return( ORL_ERROR );
         fix_ehdr_byte_order( elf_file_hnd, e_hdr32 );
-        shoff = e_hdr32->e_shoff;
+        shoff.u._32[I64HI32] = 0;
+        shoff.u._32[I64LO32] = e_hdr32->e_shoff;
         shnum = e_hdr32->e_shnum;
         ehsize = e_hdr32->e_ehsize;
         shstrndx = e_hdr32->e_shstrndx;
@@ -572,7 +581,7 @@ orl_return ElfLoadFileStructure( elf_file_handle elf_file_hnd )
     }
     elf_file_hnd->num_sections = shnum - 1; // -1 to ignore shdr table index
 
-    contents_size1 = shoff - ehsize;
+    contents_size1 = shoff.u._32[I64LO32] - ehsize;
     sec_header_table_size = elf_file_hnd->shentsize * shnum;
 
     // e_ehsize might not be the same as sizeof( Elf32_Ehdr ) (different versions)
@@ -601,25 +610,25 @@ orl_return ElfLoadFileStructure( elf_file_handle elf_file_hnd )
     qsort( elf_file_hnd->sec_handles, elf_file_hnd->num_sections, sizeof( elf_sec_handle ), section_compare );
 
     elf_sec_hnd = elf_file_hnd->sec_handles[elf_file_hnd->num_sections - 1];
-    contents_size2 = elf_sec_hnd->file_offset + elf_sec_hnd->size.u._32[I64LO32] - shoff - sec_header_table_size;
+    contents_size2 = elf_sec_hnd->file_offset.u._32[I64LO32] + elf_sec_hnd->size.u._32[I64LO32] - shoff.u._32[I64LO32] - sec_header_table_size;
     if( contents_size2 > 0 ) {
-        elf_file_hnd->size = elf_sec_hnd->file_offset + elf_sec_hnd->size.u._32[I64LO32];
+        elf_file_hnd->size = elf_sec_hnd->file_offset.u._32[I64LO32] + elf_sec_hnd->size.u._32[I64LO32];
         elf_file_hnd->contents_buffer2 = _ClientRead( elf_file_hnd, contents_size2 );
         if( elf_file_hnd->contents_buffer2 == NULL ) {
             _ClientFree( elf_file_hnd, name_index );
             return( ORL_ERROR );
         }
     } else {
-        elf_file_hnd->size = shoff + sec_header_table_size;
+        elf_file_hnd->size = shoff.u._32[I64LO32] + sec_header_table_size;
     }
     // determine contents pointers of all sections
     for( i = 0; i < elf_file_hnd->num_sections; ++i ) {
         elf_sec_hnd = elf_file_hnd->sec_handles[i];
         if( elf_sec_hnd->size.u._32[I64LO32] > 0 ) {
-            if( elf_sec_hnd->file_offset < shoff ) {
-                elf_sec_hnd->contents = elf_file_hnd->contents_buffer1 + elf_sec_hnd->file_offset - ehsize;
+            if( elf_sec_hnd->file_offset.u._32[I64LO32] < shoff.u._32[I64LO32] ) {
+                elf_sec_hnd->contents = elf_file_hnd->contents_buffer1 + elf_sec_hnd->file_offset.u._32[I64LO32] - ehsize;
             } else {
-                elf_sec_hnd->contents = elf_file_hnd->contents_buffer2 + elf_sec_hnd->file_offset - shoff - sec_header_table_size;
+                elf_sec_hnd->contents = elf_file_hnd->contents_buffer2 + elf_sec_hnd->file_offset.u._32[I64LO32] - shoff.u._32[I64LO32] - sec_header_table_size;
             }
         }
     }

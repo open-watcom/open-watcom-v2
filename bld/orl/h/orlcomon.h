@@ -36,17 +36,19 @@
 /* Used in both orl.h and orlintl.h
  */
 
-typedef struct {
+TYPEDEF_ORLENTRY_TYPE( orl_reloc );
+
+ORL_STRUCT( orl_reloc ) {
     orl_sec_handle                      section;
     orl_sec_offset                      offset;
     orl_symbol_handle                   symbol;
     orl_reloc_type                      type;
     orl_sec_addend                      addend;
     orl_symbol_handle                   frame; // used in OMF should be NULL otherwise
-} orl_reloc;
+};
 
 typedef orl_return (*orl_sec_return_func)( orl_sec_handle );
-typedef orl_return (*orl_reloc_return_func)( orl_reloc * );
+typedef orl_return (*orl_reloc_return_func)( orl_reloc );
 typedef orl_return (*orl_symbol_return_func)( orl_symbol_handle );
 typedef orl_return (*orl_group_return_func)( orl_group_handle );
 

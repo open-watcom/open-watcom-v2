@@ -98,20 +98,20 @@ static orl_hash_value string_hash_ignorecase( orl_hash_value size, orl_hash_key 
 orl_return ORLHashTableInsert( orl_hash_table hash_table, orl_hash_key key, orl_hash_data data )
 {
     orl_hash_value          hash_value;
-    orl_hash_key_struct     *key_entry;
-    orl_hash_key_struct     *new_key_entry;
-    orl_hash_data_struct    *last_data_entry;
-    orl_hash_data_struct    *new_data_entry;
+    orl_hash_entry          hash_entry;
+    orl_hash_entry          new_hash_entry;
+    orl_hash_data_entry     last_data_entry;
+    orl_hash_data_entry     new_data_entry;
 
-    new_data_entry = (orl_hash_data_struct *)_HashAlloc( hash_table, sizeof( orl_hash_data_struct ) );
+    new_data_entry = (orl_hash_data_entry)_HashAlloc( hash_table, sizeof( ORL_STRUCT( orl_hash_data_entry ) ) );
     if( new_data_entry == NULL )
         return( ORL_OUT_OF_MEMORY );
     new_data_entry->data = data;
     new_data_entry->next = NULL;
     hash_value = hash_table->hash_func( hash_table->size, key );
-    for( key_entry = hash_table->table[hash_value]; key_entry != NULL; key_entry = key_entry->next ) {
-        if( hash_table->compare_func( key_entry->key, key ) ) {
-            last_data_entry = key_entry->data_entry;
+    for( hash_entry = hash_table->table[hash_value]; hash_entry != NULL; hash_entry = hash_entry->next ) {
+        if( hash_table->compare_func( hash_entry->key, key ) ) {
+            last_data_entry = hash_entry->data_entry;
             while( last_data_entry->next != NULL ) {
                 last_data_entry = last_data_entry->next;
             }
@@ -119,25 +119,25 @@ orl_return ORLHashTableInsert( orl_hash_table hash_table, orl_hash_key key, orl_
             return( ORL_OKAY );
         }
     }
-    new_key_entry = (orl_hash_key_struct *)_HashAlloc( hash_table, sizeof( orl_hash_key_struct ) );
-    if( new_key_entry == NULL )
+    new_hash_entry = (orl_hash_entry)_HashAlloc( hash_table, sizeof( ORL_STRUCT( orl_hash_entry ) ) );
+    if( new_hash_entry == NULL )
         return( ORL_OUT_OF_MEMORY );
-    new_key_entry->key = key;
-    new_key_entry->data_entry = new_data_entry;
-    new_key_entry->next = hash_table->table[hash_value];
-    hash_table->table[hash_value] = new_key_entry;
+    new_hash_entry->key = key;
+    new_hash_entry->data_entry = new_data_entry;
+    new_hash_entry->next = hash_table->table[hash_value];
+    hash_table->table[hash_value] = new_hash_entry;
     return( ORL_OKAY );
 }
 
-orl_hash_data_struct *ORLHashTableQuery( orl_hash_table hash_table, orl_hash_key key )
+orl_hash_data_entry ORLHashTableQuery( orl_hash_table hash_table, orl_hash_key key )
 {
-    orl_hash_value      hash_value;
-    orl_hash_key_struct *key_entry;
+    orl_hash_value          hash_value;
+    orl_hash_entry          hash_entry;
 
     hash_value = hash_table->hash_func( hash_table->size, key );
-    for( key_entry = hash_table->table[hash_value]; key_entry != NULL; key_entry = key_entry->next ) {
-        if( hash_table->compare_func( key_entry->key, key ) ) {
-            return( key_entry->data_entry );
+    for( hash_entry = hash_table->table[hash_value]; hash_entry != NULL; hash_entry = hash_entry->next ) {
+        if( hash_table->compare_func( hash_entry->key, key ) ) {
+            return( hash_entry->data_entry );
         }
     }
     return( NULL );
@@ -148,10 +148,10 @@ orl_hash_table ORLHashTableCreate( orl_funcs *funcs, orl_hash_value size, orl_ha
     orl_hash_table      hash_table;
     orl_hash_value      i;
 
-    hash_table = (orl_hash_table)ORL_CLI_ALLOC( funcs, sizeof( orl_hash_table_struct ) );
+    hash_table = (orl_hash_table)ORL_CLI_ALLOC( funcs, sizeof( ORL_STRUCT( orl_hash_table ) ) );
     if( hash_table == NULL )
         return( NULL );
-    hash_table->table = (orl_hash_key_struct **)ORL_CLI_ALLOC( funcs, size * sizeof( orl_hash_key_struct * ) );
+    hash_table->table = (orl_hash_entry *)ORL_CLI_ALLOC( funcs, size * sizeof( orl_hash_entry ) );
     if( hash_table->table == NULL ) {
         ORL_CLI_FREE( funcs, hash_table );
         return( NULL );
@@ -182,19 +182,19 @@ orl_hash_table ORLHashTableCreate( orl_funcs *funcs, orl_hash_value size, orl_ha
 void ORLHashTableFree( orl_hash_table hash_table )
 {
     orl_hash_value              i;
-    orl_hash_key_struct         *key_entry;
-    orl_hash_key_struct         *next_key_entry;
-    orl_hash_data_struct        *data_entry;
-    orl_hash_data_struct        *next_data_entry;
+    orl_hash_entry              hash_entry;
+    orl_hash_entry              next_hash_entry;
+    orl_hash_data_entry         data_entry;
+    orl_hash_data_entry         next_data_entry;
 
     for( i = 0; i < hash_table->size; i++ ) {
-        for( key_entry = hash_table->table[i]; key_entry != NULL; key_entry = next_key_entry ) {
-            next_key_entry = key_entry->next;
-            for( data_entry = key_entry->data_entry; data_entry != NULL; data_entry = next_data_entry ) {
+        for( hash_entry = hash_table->table[i]; hash_entry != NULL; hash_entry = next_hash_entry ) {
+            next_hash_entry = hash_entry->next;
+            for( data_entry = hash_entry->data_entry; data_entry != NULL; data_entry = next_data_entry ) {
                 next_data_entry = data_entry->next;
                 _HashFree( hash_table, data_entry );
             }
-            _HashFree( hash_table, key_entry );
+            _HashFree( hash_table, hash_entry );
         }
     }
     _HashFree( hash_table, hash_table->table );

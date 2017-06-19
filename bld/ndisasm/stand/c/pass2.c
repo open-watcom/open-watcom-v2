@@ -43,12 +43,11 @@
 
 #define COMMENT_TAB_POS 4
 #define OPS_REP_TAB_POS 10
-#define DIS_X86_SEG_OR  ( DIF_X86_CS | DIF_X86_DS | DIF_X86_ES | DIF_X86_FS | \
-                          DIF_X86_GS | DIF_X86_SS )
+#define DIS_X86_SEG_OR  (DIF_X86_CS | DIF_X86_DS | DIF_X86_ES | DIF_X86_FS | DIF_X86_GS | DIF_X86_SS)
 
 struct pass2 {
     dis_sec_offset      loop;
-    orl_sec_size        size;
+    dis_sec_size        size;
     num_errors          disassembly_errors;
     ref_entry           r_entry;
 };
@@ -65,7 +64,7 @@ extern bool                     source_mix;
 extern char *                   CommentString;
 
 static dis_sec_offset   routineBase = 0;
-static orl_sec_size     routineSize = 0;
+static dis_sec_size     routineSize = 0;
 
 dis_return DisCliGetData( void *d, unsigned off, size_t size, void *buff )
 {
@@ -86,7 +85,7 @@ dis_return DisCliGetData( void *d, unsigned off, size_t size, void *buff )
 }
 
 static label_entry handleLabels( const char *sec_name, dis_sec_offset offset, dis_sec_offset end,
-                             label_entry l_entry, orl_sec_size size )
+                             label_entry l_entry, dis_sec_size size )
 // handle any labels at this offset and skip all unused non-label symbols
 {
     bool    is32bit;
@@ -110,7 +109,7 @@ static label_entry handleLabels( const char *sec_name, dis_sec_offset offset, di
         }
         switch( l_entry->type ) {
         case LTYP_NAMED:
-            if( !( DFormat & DFF_ASM ) ) {
+            if( (DFormat & DFF_ASM) == 0 ) {
                 if( offset != 0 && l_entry->binding == ORL_SYM_BINDING_GLOBAL ) {
                     routineSize = offset - routineBase;
                     BufferConcatNL();
@@ -124,14 +123,14 @@ static label_entry handleLabels( const char *sec_name, dis_sec_offset offset, di
                 }
             }
         case LTYP_SECTION:
-            if( !( DFormat & DFF_ASM ) ) {
+            if( (DFormat & DFF_ASM) == 0 ) {
                 PrintLinePrefixAddress( offset, is32bit );
                 BufferAlignToTab( PREFIX_SIZE_TABS );
             }
             BufferStore( "%s:\n", l_entry->label.name );
             break;
         case LTYP_UNNAMED:
-            if( !( DFormat & DFF_ASM ) ) {
+            if( (DFormat & DFF_ASM) == 0 ) {
                 PrintLinePrefixAddress( offset, is32bit );
                 BufferAlignToTab( PREFIX_SIZE_TABS );
             }
@@ -143,62 +142,62 @@ static label_entry handleLabels( const char *sec_name, dis_sec_offset offset, di
     return( l_entry );
 }
 
-static return_val referenceString( ref_entry r_entry, orl_sec_size size,
+static return_val referenceString( ref_entry r_entry, dis_sec_size size,
                                    char *ext_pref, char *int_pref, char *post,
                                    char *buff, ref_flags flags )
 {
     label_entry         l_entry;
-    const char          *sep = ":";
+    const char          *frame_sep;
     const char          *frame;
     char                temp[15];
+    dis_value           value;
 
+    frame_sep = ":";
     frame = r_entry->frame;
-    if( !frame || ( flags & RFLAG_NO_FRAME ) ) {
+    if( frame == NULL || (flags & RFLAG_NO_FRAME) ) {
         frame = "";
-        sep = "";
+        frame_sep = "";
     }
 
+    value.u._32[I64HI32] = 0;
     l_entry = r_entry->label;
-    if( Options & METAWARE_COMPATIBLE || (ext_pref[0]==0 && int_pref[0]==0) ) {
+    if( (Options & METAWARE_COMPATIBLE) || ( ext_pref[0] == '\0' && int_pref[0] == '\0' ) ) {
         switch( l_entry->type ) {
         case LTYP_ABSOLUTE:
-            FmtHexNum( temp, 0, l_entry->offset, false );
-            if( *frame == 0 && ( ( flags & RFLAG_NO_FRAME ) == 0 ) )
+            value.u._32[I64LO32] = l_entry->offset;
+            FmtHexNum( temp, 0, value, true );
+            if( r_entry->frame == NULL && (flags & RFLAG_NO_FRAME) == 0 )
                 frame = "ds:";
-            sprintf( buff, "%s%s[%s]", frame, sep, temp);
+            sprintf( buff, "%s%s[%s]", frame, frame_sep, temp);
             break;
         case LTYP_UNNAMED:
-            sprintf( buff, "%s%s%c$%ld%s", frame, sep, LabelChar,
-                     (long)l_entry->label.number, post );
+            sprintf( buff, "%s%s%c$%ld%s", frame, frame_sep, LabelChar, (long)l_entry->label.number, post );
             break;
         default:
-            sprintf( buff, "%s%s%s%s", frame, sep, l_entry->label.name,
-                     post );
+            sprintf( buff, "%s%s%s%s", frame, frame_sep, l_entry->label.name, post );
             break;
         }
     } else {
         switch( l_entry->type ) {
         case LTYP_EXTERNAL_NAMED:
-            sprintf( buff, "%s%s%s%s", ext_pref, frame, sep,
-                     l_entry->label.name );
+            sprintf( buff, "%s%s%s%s", ext_pref, frame, frame_sep, l_entry->label.name );
             break;
         case LTYP_NAMED:
         case LTYP_SECTION:
         case LTYP_GROUP:
-            sprintf( buff, "%s%s%s%s", int_pref, frame, sep,
-                     l_entry->label.name );
+            sprintf( buff, "%s%s%s%s", int_pref, frame, frame_sep, l_entry->label.name );
             break;
 
         case LTYP_ABSOLUTE:
-            FmtHexNum( temp, 0, l_entry->offset, false );
-            if( *frame == 0 && ( ( flags & RFLAG_NO_FRAME ) == 0 ) )
+            value.u._32[I64LO32] = l_entry->offset;
+            FmtHexNum( temp, 0, value, true );
+            if( *frame == '\0' && ( (flags & RFLAG_NO_FRAME) == 0 ) )
                 frame = "ds:";
-            sprintf( buff, "%s%s%s[%s]", int_pref, frame, sep, temp);
+            sprintf( buff, "%s%s%s[%s]", int_pref, frame, frame_sep, temp);
             break;
 
         default:
-            sprintf( buff, "%s%s%s%c$%ld", int_pref, frame, sep,
-                     LabelChar, (long)l_entry->label.number );
+            sprintf( buff, "%s%s%s%c$%ld", int_pref, frame, frame_sep, LabelChar, (long)l_entry->label.number );
             if( l_entry->offset > size ) {
                 return( RC_ERROR );
             }
@@ -209,33 +208,34 @@ static return_val referenceString( ref_entry r_entry, orl_sec_size size,
 }
 
 size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
-                           dis_sec_offset offset, orl_sec_size sec_size,
-                           ref_entry * r_entry, char *buff )
+                           dis_sec_offset offset, dis_sec_size sec_size,
+                           ref_entry *reference_entry, char *buff )
 // handle any references at this offset
 {
     return_val          error;
-    dis_value           nvalue;
+    dis_sec_addend      nvalue;
     char                *p;
+    ref_entry           r_entry;
 
+    r_entry = *reference_entry;
     buff[0] = '\0';
-    for( ; *r_entry != NULL && (*r_entry)->offset == offset; *r_entry = (*r_entry)->next ) {
-        if( (*r_entry)->no_val == 0 ) {
-            nvalue = value;
-        } else if( (*r_entry)->addend ) {
-            nvalue = HandleAddend( *r_entry );
+    for( ; r_entry != NULL && r_entry->offset == offset; r_entry = r_entry->next ) {
+        if( r_entry->has_val ) {
+            nvalue = value.u._32[I64LO32];
+        } else if( r_entry->addend ) {
+            nvalue = HandleAddend( r_entry );
         } else {
             nvalue = 0;
         }
-        switch( (*r_entry)->type ) {
+        switch( r_entry->type ) {
         case ORL_RELOC_TYPE_MAX + 1:
         case ORL_RELOC_TYPE_JUMP:
         case ORL_RELOC_TYPE_REL_21_SH:
         case ORL_RELOC_TYPE_WORD_26:
-            error = referenceString( *r_entry, sec_size, "j^", "", "",
-                                     buff, flags );
+            error = referenceString( r_entry, sec_size, "j^", "", "", buff, flags );
             if( error != RC_OKAY ) {
                 // label is defined to be beyond the boundaries of the section!
-                if( !(DFormat & DFF_ASM) ){
+                if( (DFormat & DFF_ASM) == 0 ) {
                     BufferStore("\t     %04X", offset );
                     BufferAlignToTab( COMMENT_TAB_POS );
                 } else {
@@ -245,26 +245,22 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
                 BufferMsg( LABEL_BEYOND_SECTION );
                 BufferConcatNL();
                 BufferPrint();
-                *r_entry = (*r_entry)->next;
+                *reference_entry = r_entry->next;
                 return( 0 );
             }
             continue; // Don't print addend
             break;
         case ORL_RELOC_TYPE_SEC_REL:
-            referenceString( *r_entry, sec_size, "s^", "s^", "@s", buff,
-                             flags );
+            referenceString( r_entry, sec_size, "s^", "s^", "@s", buff, flags );
             break;
         case ORL_RELOC_TYPE_HALF_HI:
-            referenceString( *r_entry, sec_size, "h^", "h^", "@h", buff,
-                             flags );
+            referenceString( r_entry, sec_size, "h^", "h^", "@h", buff, flags );
             break;
         case ORL_RELOC_TYPE_HALF_HA:
-            referenceString( *r_entry, sec_size, "ha^", "ha^", "@ha", buff,
-                             flags );
+            referenceString( r_entry, sec_size, "ha^", "ha^", "@ha", buff, flags );
             break;
         case ORL_RELOC_TYPE_HALF_LO:
-            referenceString( *r_entry, sec_size, "l^", "l^", "@l", buff,
-                             flags );
+            referenceString( r_entry, sec_size, "l^", "l^", "@l", buff, flags );
             break;
         case ORL_RELOC_TYPE_REL_14:
         case ORL_RELOC_TYPE_REL_24:
@@ -274,26 +270,20 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
         case ORL_RELOC_TYPE_WORD_16:
         case ORL_RELOC_TYPE_WORD_32:
         case ORL_RELOC_TYPE_WORD_64:
-            if( ( (*r_entry)->label->type != LTYP_GROUP ) &&
-              ( flags & RFLAG_IS_IMMED ) && IsMasmOutput() ) {
-                referenceString( *r_entry, sec_size, "offset ", "offset ",
-                                 "", buff, flags );
+            if( ( r_entry->label->type != LTYP_GROUP ) && (flags & RFLAG_IS_IMMED) && IsMasmOutput() ) {
+                referenceString( r_entry, sec_size, "offset ", "offset ", "", buff, flags );
             } else {
-                referenceString( *r_entry, sec_size, "", "", "", buff,
-                                 flags );
+                referenceString( r_entry, sec_size, "", "", "", buff, flags );
             }
             break;
         case ORL_RELOC_TYPE_REL_16:
-            if( IsIntelx86() && !(*r_entry)->no_val ) {
+            if( IsIntelx86() && r_entry->has_val ) {
                 nvalue -= ins_size;
             }
-            if( ( (*r_entry)->label->type != LTYP_GROUP ) &&
-              ( flags & RFLAG_IS_IMMED ) && IsMasmOutput() ) {
-                referenceString( *r_entry, sec_size, "offset ", "offset ",
-                                 "", buff, flags );
+            if( ( r_entry->label->type != LTYP_GROUP ) && (flags & RFLAG_IS_IMMED) && IsMasmOutput() ) {
+                referenceString( r_entry, sec_size, "offset ", "offset ", "", buff, flags );
             } else {
-                referenceString( *r_entry, sec_size, "", "", "", buff,
-                                 flags  );
+                referenceString( r_entry, sec_size, "", "", "", buff, flags  );
             }
             break;
         case ORL_RELOC_TYPE_WORD_8:
@@ -301,18 +291,16 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
         case ORL_RELOC_TYPE_WORD_HI_8:
         case ORL_RELOC_TYPE_WORD_32_SEG:
             // Keep these seperate because they are OMF specific
-            referenceString( *r_entry, sec_size, "", "", "", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "", buff, flags );
             break;
         case ORL_RELOC_TYPE_SEGMENT:
-            if( ( (*r_entry)->label->type != LTYP_GROUP )
-                && ( (*r_entry)->label->type != LTYP_SECTION )
-                && ( flags & RFLAG_IS_IMMED )
+            if( ( r_entry->label->type != LTYP_GROUP )
+                && ( r_entry->label->type != LTYP_SECTION )
+                && (flags & RFLAG_IS_IMMED)
                 && IsMasmOutput() ) {
-                referenceString( *r_entry, sec_size, "seg ", "seg ", "",
-                                 buff, flags );
+                referenceString( r_entry, sec_size, "seg ", "seg ", "", buff, flags );
             } else {
-                referenceString( *r_entry, sec_size, "", "", "", buff,
-                                 flags );
+                referenceString( r_entry, sec_size, "", "", "", buff, flags );
             }
             break;
 
@@ -340,56 +328,54 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             // relative addresses without relocate
             //
             // in amd64 code the instruction size will be added in pass1.c!
-            if( (*r_entry)->no_val == 0 && !( GetMachineType() == ORL_MACHINE_TYPE_AMD64 ) ) {
+            if( r_entry->has_val && !( GetMachineType() == ORL_MACHINE_TYPE_AMD64 ) ) {
                 nvalue -= ins_size;
             }
-            referenceString( *r_entry, sec_size, "", "", "", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "", buff, flags );
             break;
         case ORL_RELOC_TYPE_TOCREL_14:
             nvalue &= ~0x3;
         case ORL_RELOC_TYPE_TOCREL_16:
-            referenceString( *r_entry, sec_size, "[toc]", "[toc]", "@toc",
-                             buff, flags );
+            referenceString( r_entry, sec_size, "[toc]", "[toc]", "@toc", buff, flags );
             break;
         case ORL_RELOC_TYPE_TOCVREL_14:
             nvalue &= ~0x3;
         case ORL_RELOC_TYPE_TOCVREL_16:
-            referenceString( *r_entry, sec_size, "[tocv]", "[tocv]", "@tocv",
-                             buff, flags );
+            referenceString( r_entry, sec_size, "[tocv]", "[tocv]", "@tocv", buff, flags );
             break;
         case ORL_RELOC_TYPE_GOT_16:
-            referenceString( *r_entry, sec_size, "", "", "@got", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "@got", buff, flags );
             break;
         case ORL_RELOC_TYPE_GOT_16_HI:
-            referenceString( *r_entry, sec_size, "", "", "@got@h", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "@got@h", buff, flags );
             break;
         case ORL_RELOC_TYPE_GOT_16_HA:
-            referenceString( *r_entry, sec_size, "", "", "@got@ha", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "@got@ha", buff, flags );
             break;
         case ORL_RELOC_TYPE_GOT_16_LO:
-            referenceString( *r_entry, sec_size, "", "", "@got@l", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "@got@l", buff, flags );
             break;
         case ORL_RELOC_TYPE_PLTREL_24:
         case ORL_RELOC_TYPE_PLTREL_32:
         case ORL_RELOC_TYPE_PLT_32:
-            referenceString( *r_entry, sec_size, "", "", "@plt", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "@plt", buff, flags );
             break;
         case ORL_RELOC_TYPE_PLT_16_HI:
-            referenceString( *r_entry, sec_size, "", "", "@plt@h", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "@plt@h", buff, flags );
             break;
         case ORL_RELOC_TYPE_PLT_16_HA:
-            referenceString( *r_entry, sec_size, "", "", "@plt@ha", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "@plt@ha", buff, flags );
             break;
         case ORL_RELOC_TYPE_PLT_16_LO:
-            referenceString( *r_entry, sec_size, "", "", "@plt@l", buff, flags );
+            referenceString( r_entry, sec_size, "", "", "@plt@l", buff, flags );
             break;
         default:
             continue;
         }
         // LTYP_UNNAMED labels are always at the correct location
-        // if( nvalue != 0 && (*r_entry)->label->type != LTYP_UNNAMED ) {
+        // if( nvalue != 0 && r_entry->label->type != LTYP_UNNAMED ) {
         // not so - BBB Oct 28, 1996
-        if(( (*r_entry)->no_val == 0 ) && ( nvalue != 0 )) {
+        if( r_entry->has_val && nvalue != 0 ) {
             p = &buff[strlen(buff)];
             if( nvalue < 0 ) {
                 *p++ = '-';
@@ -397,9 +383,12 @@ size_t HandleAReference( dis_value value, int ins_size, ref_flags flags,
             } else {
                 *p++ = '+';
             }
-            FmtHexNum( p, 0, nvalue, false );
+            value.u._32[I64HI32] = 0;
+            value.u._32[I64LO32] = nvalue;
+            FmtHexNum( p, 0, value, true );
         }
     }
+    *reference_entry = r_entry;
     return( strlen( buff ) );
 }
 
@@ -408,27 +397,26 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
     unsigned            size;
     unsigned            len;
     unsigned            i;
-    unsigned            mask;
-    bool                sign_extended;
-    bool                no_prefix;
-    signed_32           value;
+    dis_value           mask;
+    bool                with_prefix;
+    dis_value           value;
 
-    mask = 0;
-    sign_extended = false;
-    no_prefix = false;
+    mask.u._32[I64HI32] = 0;
+    mask.u._32[I64LO32] = 0;
+    with_prefix = true;
     value = ins->op[op_num].value;
     switch( ins->op[op_num].ref_type ) {
     case DRT_SPARC_BYTE:
     case DRT_X86_BYTE:
     case DRT_X64_BYTE:
         size = 2;
-        mask = 0x000000ff;
+        mask.u._32[I64LO32] = 0x000000ff;
         break;
     case DRT_SPARC_HALF:
     case DRT_X86_WORD:
     case DRT_X64_WORD:
         size = 4;
-        mask = 0x0000ffff;
+        mask.u._32[I64LO32] = 0x0000ffff;
         break;
     case DRT_SPARC_WORD:
     case DRT_SPARC_SFLOAT:
@@ -436,15 +424,14 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
     case DRT_X86_DWORDF:
     case DRT_X64_DWORD:
         size = 8;
-        mask = 0xffffffff;
+        mask.u._32[I64LO32] = 0xffffffff;
         break;
     case DRT_X64_QWORD:
-        sign_extended = true;
-        // fall down
     case DRT_SPARC_DWORD:
     case DRT_SPARC_DFLOAT:
         size = 16;
-        mask = 0xffffffff;
+        mask.u._32[I64HI32] = 0xffffffff;
+        mask.u._32[I64LO32] = 0xffffffff;
         break;
     default:
         size = 0;
@@ -455,7 +442,7 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
                 len = 2;
                 if ( len > size ) {
                     size = len;
-                    mask = 0x000000ff;
+                    mask.u._32[I64LO32] = 0x000000ff;
                 }
                 break;
             case DRT_X86_WORD:
@@ -463,7 +450,7 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
                 len = 4;
                 if ( len > size ) {
                     size = len;
-                    mask = 0x0000ffff;
+                    mask.u._32[I64LO32] = 0x0000ffff;
                 }
                 break;
             case DRT_X86_DWORD:
@@ -472,15 +459,15 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
                 len = 8;
                 if ( len > size ) {
                     size = len;
-                    mask = 0xffffffff;
+                    mask.u._32[I64LO32] = 0xffffffff;
                 }
                 break;
             case DRT_X64_QWORD:
                 len = 16;
                 if ( len > size ) {
                     size = len;
-                    mask = 0xffffffff;
-                    sign_extended = true;
+                    mask.u._32[I64HI32] = 0xffffffff;
+                    mask.u._32[I64LO32] = 0xffffffff;
                 }
                 break;
             default:
@@ -489,23 +476,13 @@ static void FmtSizedHexNum( char *buff, dis_dec_ins *ins, unsigned op_num )
         }
         if ( size == 0 ) {
             size = 8;
-            mask = 0xffffffff;
+            mask.u._32[I64LO32] = 0xffffffff;
         }
         break;
     }
-    if( size > 8 ) {
-        size = 8;
-        if( sign_extended ) {
-            if( value < 0 ) {
-                FmtHexNum( buff, size, 0xffffffff, no_prefix );
-            } else {
-                FmtHexNum( buff, size, 0, no_prefix );
-            }
-            buff += strlen( buff );
-            no_prefix = true;
-        }
-    }
-    FmtHexNum( buff, size, mask & value, no_prefix );
+    value.u._32[I64HI32] &= mask.u._32[I64HI32];
+    value.u._32[I64LO32] &= mask.u._32[I64LO32];
+    FmtHexNum( buff, size, value, with_prefix );
 }
 
 size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff, size_t buff_len )
@@ -514,6 +491,7 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff
     size_t              len;
     dis_operand         *op;
     ref_flags           rf;
+    dis_value           value;
 
     /* unused parameters */ (void)buff_len;
 
@@ -529,12 +507,11 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff
         if( pd->r_entry != NULL ) {
             /* if there is an override we must avoid the frame
              */
-            if( ( ins->flags.u.x86 & DIS_X86_SEG_OR ) && IsIntelx86() ) {
+            if( (ins->flags.u.x86 & DIS_X86_SEG_OR) && IsIntelx86() ) {
                 rf |= RFLAG_NO_FRAME;
             }
             len = HandleAReference( op->value, ins->size, rf,
-                        pd->loop + op->op_position, pd->size, &pd->r_entry,
-                        buff );
+                        pd->loop + op->op_position, pd->size, &pd->r_entry, buff );
             if( len != 0 ) {
                 return( len );
             }
@@ -542,24 +519,25 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff
         switch( op->type & DO_MASK ) {
         case DO_RELATIVE:
         case DO_MEMORY_REL:
-            op->value += pd->loop;
+            op->value.u._32[I64LO32] += pd->loop;
             break;
         }
         if( op->base == DR_NONE && op->index == DR_NONE ) {
             FmtSizedHexNum( buff, ins, op_num );
-        } else if( op->value > 0 ) {
-            FmtHexNum( buff, 0, op->value, false );
-        } else if( op->value < 0 ) {
+        } else if( op->value.s._32[I64LO32] > 0 ) {
+            FmtHexNum( buff, 0, op->value, true );
+        } else if( op->value.s._32[I64LO32] < 0 ) {
             buff[0] = '-';
-            FmtHexNum( &buff[1], 0, -op->value, false );
+            value.s._32[I64HI32] = 0;
+            value.s._32[I64LO32] = -op->value.s._32[I64LO32];
+            FmtHexNum( &buff[1], 0, value, true );
         }
         break;
     case DO_IMMED:
         if( pd->r_entry != NULL ) {
             rf |= RFLAG_IS_IMMED;
             len = HandleAReference( op->value, ins->size, rf,
-                        pd->loop + op->op_position, pd->size, &pd->r_entry,
-                        buff );
+                        pd->loop + op->op_position, pd->size, &pd->r_entry, buff );
             if( len != 0 ) {
                 return( len );
             }
@@ -570,49 +548,54 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned op_num, char *buff
     return( strlen( buff ) );
 }
 
-static void processDataInCode( section_ptr sec, unsigned_8 *contents, struct pass2 *data,
-                               orl_sec_size size, label_entry *l_entry )
+static void processDataInCode( section_ptr section, unsigned_8 *contents, struct pass2 *data,
+                               dis_sec_size size, label_entry *l_entry )
 {
-    orl_sec_size        offset;
+    dis_sec_size        offset;
 
     offset = data->loop + size;
     if( DFormat & DFF_ASM ) {
         DumpASMDataFromSection( contents, data->loop, offset, l_entry,
-                                &(data->r_entry), sec );
+                                &(data->r_entry), section );
         BufferPrint();
     } else {
         DumpDataFromSection( contents, data->loop, offset, l_entry,
-                             &(data->r_entry), sec );
+                             &(data->r_entry), section );
     }
-    while( data->r_entry != NULL && ( data->r_entry->offset < offset ) ) {
-        data->r_entry = data->r_entry->next;
+    for( ; data->r_entry != NULL; data->r_entry = data->r_entry->next ) {
+        if( data->r_entry->offset >= offset ) {
+            break;
+        }
     }
     data->loop = offset;
 }
 
-static char *processFpuEmulatorFixup( ref_entry *r, dis_sec_offset loop )
+static ref_entry processFpuEmulatorFixup( ref_entry r_entry, dis_sec_offset loop, const char **pfixup )
 {
-    char    *fixup;
+    const char  *fpu_fixup;
 
-    if( *r != NULL && (*r)->offset == loop ) {
-        fixup = SkipRef( *r );
-        if( fixup != NULL ) {
-            *r = (*r)->next;
+    if( r_entry != NULL && r_entry->offset == loop ) {
+        fpu_fixup = SkipRef( r_entry );
+        if( fpu_fixup != NULL ) {
+            r_entry = r_entry->next;
             // there can be second fixup per instruction with 1 byte offset
             // it must be skipped too, displayed is first only
             // first one is significant, second one is segment override only
-            if( *r && SkipRef( *r ) != NULL && ( (*r)->offset == loop + 1 ) ) {
-                *r = (*r)->next;
+            if( r_entry != NULL && SkipRef( r_entry ) != NULL && ( r_entry->offset == loop + 1 ) ) {
+                r_entry = r_entry->next;
             }
-            if( Options & PRINT_FPU_EMU_FIXUP ) {
-                return( fixup );
+            if( (Options & PRINT_FPU_EMU_FIXUP) == 0 ) {
+                fpu_fixup = NULL;
             }
         }
+    } else {
+        fpu_fixup = NULL;
     }
-    return( NULL );
+    *pfixup = fpu_fixup;
+    return( r_entry );
 }
 
-num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
+num_errors DoPass2( section_ptr section, unsigned_8 *contents, dis_sec_size size,
                     label_list sec_label_list, ref_list sec_ref_list )
 // perform pass 2 on one section
 {
@@ -623,14 +606,16 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
     char                ops[ MAX_OBJ_NAME + 24 ];       // at most 1 label/relocation per instruction, plus room for registers, brackets and other crap
     dis_inst_flags      flags;
     scantab_ptr         st;
-    int                 is_intel;
+    bool                is_intel;
     sa_disasm_struct    sds;
-    char                *FPU_fixup;
+    const char          *FPU_fixup;
     int                 pos_tabs;
     bool                is32bit;
+    orl_table_index     currline;
+    orl_table_index     lineInFile;
 
     routineBase = 0;
-    st = sec->scan;
+    st = section->scan;
     data.size = size;
     sds.data = contents;
     sds.last = size - 1;
@@ -644,21 +629,22 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
         data.r_entry = NULL;
     }
     data.disassembly_errors = 0;
+    currline = 0;
+    lineInFile = 0;
 
     if( source_mix ) {
-        GetSourceFile( sec );
+        GetSourceFile( section );
     }
 
-    PrintHeader( sec );
+    PrintHeader( section );
     if( size && sec_label_list )
-        PrintAssumeHeader( sec );
+        PrintAssumeHeader( section );
     flags.u.all = DIF_NONE;
     if( GetMachineType() == ORL_MACHINE_TYPE_I386 ) {
-        if( ( GetFormat() != ORL_OMF ) ||
-            ( ORLSecGetFlags( sec->shnd ) & ORL_SEC_FLAG_USE_32 ) ) {
+        if( ( GetFormat() != ORL_OMF ) || (ORLSecGetFlags( section->shnd ) & ORL_SEC_FLAG_USE_32) ) {
             flags.u.x86 = DIF_X86_USE32_FLAGS;
         }
-        is_intel = 1;
+        is_intel = true;
     } else {
         is_intel = IsIntelx86();
     }
@@ -666,39 +652,43 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
     for( data.loop = 0; data.loop < size; data.loop += decoded.size ) {
 
         // process data in code segment
-        while( st && ( data.loop > st->end ) ) {
-            st = st->next;
+        for( ; st != NULL; st = st->next ) {
+            if( st->end >= data.loop ) {
+                break;
+            }
         }
-        if( st && ( data.loop >= st->start ) ) {
+        if( st != NULL && ( data.loop >= st->start ) ) {
             decoded.size = 0;
-            processDataInCode( sec, contents, &data, st->end - data.loop, &l_entry );
+            processDataInCode( section, contents, &data, st->end - data.loop, &l_entry );
             st = st->next;
             continue;
         }
         // data may not be listed in scan table, but a fixup at this offset will
         // give it away
-        while( data.r_entry != NULL && ( data.r_entry->offset < data.loop ) ) {
-            data.r_entry = data.r_entry->next;
+        for( ; data.r_entry != NULL; data.r_entry = data.r_entry->next ) {
+            if( data.r_entry->offset >= data.loop ) {
+                break;
+            }
         }
-        FPU_fixup = processFpuEmulatorFixup( &data.r_entry, data.loop );
+        data.r_entry = processFpuEmulatorFixup( data.r_entry, data.loop, &FPU_fixup );
         if( data.r_entry != NULL && ( data.r_entry->offset == data.loop ) ) {
             if( is_intel || IsDataReloc( data.r_entry ) ) {
                 // we just skip the data
                 decoded.size = 0;
-                processDataInCode( sec, contents, &data, RelocSize( data.r_entry ), &l_entry );
+                processDataInCode( section, contents, &data, RelocSize( data.r_entry ), &l_entry );
                 continue;
             }
         }
 
         if( source_mix ) {
-            MixSource( data.loop );
+            MixSource( data.loop, &currline, &lineInFile );
         }
         DisDecodeInit( &DHnd, &decoded );
         decoded.flags.u.all |= flags.u.all;
         sds.offs = data.loop;
         DisDecode( &DHnd, &sds, &decoded );
         if( sec_label_list ) {
-            l_entry = handleLabels( sec->name, data.loop, data.loop + decoded.size, l_entry, size );
+            l_entry = handleLabels( section->name, data.loop, data.loop + decoded.size, l_entry, size );
             if( ( l_entry != NULL )
                 && ( l_entry->offset > data.loop )
                 && ( l_entry->offset < data.loop + decoded.size ) ) {
@@ -709,18 +699,18 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
                     and label process from offset of actual label.
                 */
                 decoded.size = 0;
-                processDataInCode( sec, contents, &data, l_entry->offset - data.loop, &l_entry );
+                processDataInCode( section, contents, &data, l_entry->offset - data.loop, &l_entry );
                 continue;
             }
         }
         DisFormat( &DHnd, &data, &decoded, DFormat, name, sizeof( name ), ops, sizeof( ops ) );
         if( FPU_fixup != NULL ) {
-            if( !(DFormat & DFF_ASM) ) {
+            if( (DFormat & DFF_ASM) == 0 ) {
                 BufferAlignToTab( PREFIX_SIZE_TABS );
             }
             BufferStore( "\t%sFPU fixup %s\n", CommentString, FPU_fixup );
         }
-        if( !(DFormat & DFF_ASM) ) {
+        if( (DFormat & DFF_ASM) == 0 ) {
             unsigned_64     *tmp_64;
             unsigned_32     *tmp_32;
             unsigned_16     *tmp_16;
@@ -747,7 +737,7 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
         BufferStore( "\t%s", name );
         if( *ops != '\0' ) {
             pos_tabs = ( DisInsNameMax( &DHnd ) + TAB_WIDTH ) / TAB_WIDTH + 1;
-            if( !(DFormat & DFF_ASM) ) {
+            if( (DFormat & DFF_ASM) == 0 ) {
                 pos_tabs += PREFIX_SIZE_TABS;
             }
             BufferAlignToTab( pos_tabs );
@@ -757,9 +747,9 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
         BufferPrint();
     }
     if( sec_label_list ) {
-        l_entry = handleLabels( sec->name, size, (dis_sec_offset)-1, l_entry, size );
+        l_entry = handleLabels( section->name, size, (dis_sec_offset)-1, l_entry, size );
     }
-    if( !(DFormat & DFF_ASM) ) {
+    if( (DFormat & DFF_ASM) == 0 ) {
         routineSize = data.loop - routineBase;
         BufferConcatNL();
         BufferMsg( ROUTINE_SIZE );
@@ -767,12 +757,12 @@ num_errors DoPass2( section_ptr sec, unsigned_8 *contents, orl_sec_size size,
         BufferMsg( BYTES );
         BufferConcat(",    ");
         BufferMsg( ROUTINE_BASE );
-        BufferStore(" %s + %04X\n\n", sec->name, routineBase );
+        BufferStore(" %s + %04X\n\n", section->name, routineBase );
         BufferPrint();
     }
     if( source_mix ) {
         EndSourceMix();
     }
-    PrintTail( sec );
+    PrintTail( section );
     return( data.disassembly_errors );
 }

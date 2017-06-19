@@ -217,23 +217,23 @@ mad_status MADIMPENTRY( CallUpStackLevel )( mad_call_up_data *cud,
             /* first instruction is usually 'stwu sp, -framesize(sp)' */
             /* NYI: it could be stwux, and it needn't be the first instruction */
             if( dd.ins.type != DI_PPC_stwu ) return( MS_FAIL );
-            frame_size = -dd.ins.op[1].value;
+            frame_size = -dd.ins.op[1].value.s._32[I64LO32];
         }
         switch( dd.ins.type ) {
         /* track fp saves */
         case DI_PPC_stw:
         case DI_PPC_stwu:
             if( dd.ins.op[0].base == DR_PPC_r31 ) {
-                prev_fp_off = dd.ins.op[1].value;
+                prev_fp_off = dd.ins.op[1].value.s._32[I64LO32];
             }
             if( dd.ins.op[0].base == lr_save_gpr ) {
-                prev_lr_off = dd.ins.op[1].value;
+                prev_lr_off = dd.ins.op[1].value.s._32[I64LO32];
                 lr_save_gpr = -1;
             }
             break;
         /* track lr saves (those have go through a scratch GPR) */
         case DI_PPC_mfspr:
-            if( dd.ins.op[1].value == 8 ) {
+            if( dd.ins.op[1].value.s._32[I64LO32] == 8 ) {
                 lr_save_gpr = dd.ins.op[0].base;
             }
             break;

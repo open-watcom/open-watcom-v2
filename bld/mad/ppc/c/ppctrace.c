@@ -74,7 +74,7 @@ mad_trace_how MADIMPENTRY( TraceOne )( mad_trace_data *td, mad_disasm_data *dd, 
              /* Handle special case of call to the next instruction, which is used
               * to get the GOT pointer in position independent code.
               */
-             if( dd->ins.op[0].value == sizeof( unsigned_32 ) )
+             if( dd->ins.op[0].value.s._32[I64LO32] == sizeof( unsigned_32 ) )
                  return( MTRH_STEP );
              break;
         case MDC_OPER:

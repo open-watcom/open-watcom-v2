@@ -67,7 +67,7 @@ static  byte    NumRefs( instruction *ins, name *op ) {
     Return the number of references to op found in ins.
 */
     byte        refs;
-    byte        i;
+    opcnt       i;
 
     refs = 0;
     for( i = 0; i < ins->num_operands; i++ ) {
@@ -100,7 +100,7 @@ static  bool    AdjustIndex( instruction *ins, name *res, signed_32 c ) {
     If any operands or results of ins refer to res in an index, adjust the
     constant by the given amount and return true.
 */
-    byte        i;
+    opcnt       i;
 
     if( NumRefs( ins, res ) != 1 )
         return( false );

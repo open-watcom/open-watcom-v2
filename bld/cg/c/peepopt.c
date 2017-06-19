@@ -600,9 +600,10 @@ static bool DoConversionOps( instruction *ins, bool *change, instruction **n )
     return( false );
 }
 
-static bool ReferencedBy( instruction *ins, name *op ) {
+static bool ReferencedBy( instruction *ins, name *op )
 /******************************************************/
-    int         i;
+{
+    opcnt       i;
     name        *curr;
 
     if( _OpIsCall( ins->head.opcode ) ) {

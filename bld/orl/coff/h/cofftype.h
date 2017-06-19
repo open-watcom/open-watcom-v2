@@ -37,6 +37,11 @@
 
 #define COFFENTRY
 
+TYPEDEF_LOCAL_TYPE( coff_handle );
+TYPEDEF_LOCAL_TYPE( coff_file_handle );
+TYPEDEF_LOCAL_TYPE( coff_sec_handle );
+TYPEDEF_LOCAL_TYPE( coff_symbol_handle );
+
 // handle definitions
 
 typedef unsigned_8                          coff_file_flags;
@@ -63,24 +68,12 @@ typedef unsigned_32                         coff_quantity;
 typedef unsigned_32                         coff_rva;
 typedef unsigned_32                         coff_sec_base;
 
-typedef struct coff_handle_struct       coff_handle_struct;
-typedef coff_handle_struct              *coff_handle;
-
-typedef struct coff_file_handle_struct  coff_file_handle_struct;
-typedef coff_file_handle_struct         *coff_file_handle;
-
-typedef struct coff_sec_handle_struct   coff_sec_handle_struct;
-typedef coff_sec_handle_struct          *coff_sec_handle;
-
-typedef struct coff_symbol_handle_struct coff_symbol_handle_struct;
-typedef coff_symbol_handle_struct       *coff_symbol_handle;
-
-struct coff_handle_struct {
+ORL_STRUCT( coff_handle ) {
     orl_funcs           *funcs;
     coff_file_handle    first_file_hnd;
 };
 
-struct coff_file_handle_struct {
+ORL_STRUCT( coff_file_handle ) {
     coff_handle         coff_hnd;
     coff_file_handle    next;
     coff_sec_handle     *coff_sec_hnd;
@@ -114,10 +107,10 @@ struct coff_normal_assoc_struct {
 struct coff_reloc_assoc_struct {
     coff_sec_handle     orig_sec;
     unsigned            num_relocs;
-    orl_reloc           *relocs;
+    orl_reloc           relocs;
 };
 
-struct coff_sec_handle_struct {
+ORL_STRUCT( coff_sec_handle ) {
     orl_file_format     file_format;
     coff_file_handle    coff_file_hnd;
     coff_sec_handle     next;
@@ -138,7 +131,7 @@ struct coff_sec_handle_struct {
     bool                relocs_done     : 1;
 };
 
-struct coff_symbol_handle_struct {
+ORL_STRUCT( coff_symbol_handle ) {
     orl_file_format     file_format;
     coff_file_handle    coff_file_hnd;
     orl_symbol_binding  binding;

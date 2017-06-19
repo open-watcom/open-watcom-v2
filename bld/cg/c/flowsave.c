@@ -97,7 +97,7 @@ static bool BlockUses( block *blk, hw_reg_set reg )
 /*************************************************/
 {
     instruction *ins;
-    int         i;
+    opcnt       i;
 
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {
         for( i = 0; i < ins->num_operands; i++ ) {

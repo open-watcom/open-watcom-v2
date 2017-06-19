@@ -45,18 +45,18 @@
 #include "optab.h"
 #include "inssegs.h"
 #include "optimize.h"
+#include "x86split.h"
+#include "overlap.h"
 
 
 extern  name            *IntEquivalent(name*);
 extern  void            UpdateLive(instruction*,instruction*);
 extern  name            *AddrConst(name*,int,constant_class);
 extern  name            *SegName(name*);
-extern  bool            Overlaps( name *, name * );
-extern  void            CnvOpToInt( instruction *, int );
 
-extern  bool    IndexOverlaps( instruction *ins, int i ) {
-/********************************************************/
-
+bool    IndexOverlaps( instruction *ins, opcnt i )
+/************************************************/
+{
     if( ins->operands[i]->n.class != N_INDEXED )
         return( false );
     if( SameThing( ins->operands[i]->i.index, ins->result ) )

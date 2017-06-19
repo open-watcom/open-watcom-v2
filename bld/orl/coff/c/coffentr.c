@@ -41,7 +41,7 @@ coff_handle COFFENTRY CoffInit( orl_funcs *funcs )
 {
     coff_handle         coff_hnd;
 
-    coff_hnd = (coff_handle)ORL_CLI_ALLOC( funcs, sizeof( coff_handle_struct ) );
+    coff_hnd = (coff_handle)ORL_CLI_ALLOC( funcs, sizeof( ORL_STRUCT( coff_handle ) ) );
     if( coff_hnd != NULL ) {
         coff_hnd->funcs = funcs;
         coff_hnd->first_file_hnd = NULL;
@@ -68,10 +68,10 @@ orl_return COFFENTRY CoffFileInit( coff_handle coff_hnd, orl_file_id file, coff_
     coff_file_handle    coff_file_hnd;
     orl_return          return_val;
 
-    coff_file_hnd = (coff_file_handle)ORL_PTR_ALLOC( coff_hnd, sizeof( coff_file_handle_struct ) );
+    coff_file_hnd = (coff_file_handle)ORL_PTR_ALLOC( coff_hnd, sizeof( ORL_STRUCT( coff_file_handle ) ) );
     if( coff_file_hnd == NULL )
         return( ORL_OUT_OF_MEMORY );
-    memset( coff_file_hnd, 0, sizeof( coff_file_handle_struct ) );
+    memset( coff_file_hnd, 0, sizeof( ORL_STRUCT( coff_file_handle ) ) );
     coff_file_hnd->file = file;
     CoffAddFileLinks( coff_hnd, coff_file_hnd );
     return_val = CoffLoadFileStructure( coff_file_hnd );
@@ -90,10 +90,10 @@ orl_return COFFENTRY CoffFileFini( coff_file_handle coff_file_hnd )
 
 orl_return COFFENTRY CoffFileScan( coff_file_handle coff_file_hnd, const char *desired, orl_sec_return_func return_func )
 {
-    orl_hash_data_struct    *data_entry;
+    orl_hash_data_entry     data_entry;
     coff_quantity           i;
     orl_return              return_val;
-    orl_hash_key            key;
+    orl_hash_key            h_key;
 
     if( desired == NULL ) {
         /* global request */
@@ -110,9 +110,9 @@ orl_return COFFENTRY CoffFileScan( coff_file_handle coff_file_hnd, const char *d
                 return( return_val );
             }
         }
-        key.u.string = desired;
-        for( data_entry = ORLHashTableQuery( coff_file_hnd->sec_name_hash_table, key ); data_entry != NULL; data_entry = data_entry->next ) {
-            return_val = return_func( (orl_sec_handle)data_entry->data );
+        h_key.u.string = desired;
+        for( data_entry = ORLHashTableQuery( coff_file_hnd->sec_name_hash_table, h_key ); data_entry != NULL; data_entry = data_entry->next ) {
+            return_val = return_func( data_entry->data.u.sec_handle );
             if( return_val != ORL_OKAY ) {
                 return( return_val );
             }
@@ -208,7 +208,7 @@ orl_table_index COFFENTRY CoffSecGetNumLines( coff_sec_handle coff_sec_hnd )
     return( 0 );
 }
 
-orl_linnum * COFFENTRY CoffSecGetLines( coff_sec_handle coff_sec_hnd )
+orl_linnum COFFENTRY CoffSecGetLines( coff_sec_handle coff_sec_hnd )
 {
     orl_table_index     numlines;
 
@@ -240,7 +240,7 @@ orl_return COFFENTRY CoffSecQueryReloc( coff_sec_handle coff_sec_hnd, coff_sec_o
 {
     unsigned            index;
     coff_sec_handle     reloc_sec_hnd;
-    orl_reloc           *reloc;
+    orl_reloc           reloc;
     orl_return          return_val;
 
     if( coff_sec_hnd->type != ORL_SEC_TYPE_PROG_BITS )
@@ -286,9 +286,8 @@ orl_table_index COFFENTRY CoffCvtSecHdlToIdx( coff_sec_handle shdl )
     return( 0 );
 }
 
-coff_sec_handle COFFENTRY CoffCvtIdxToSecHdl( coff_file_handle fhdl,
-                                              orl_table_index idx )
-/******************************************************************/
+coff_sec_handle COFFENTRY CoffCvtIdxToSecHdl( coff_file_handle fhdl, orl_table_index idx )
+/**********************************************************************************************/
 {
     return( fhdl->orig_sec_hnd[idx - 1] );
 }
@@ -297,7 +296,7 @@ orl_return COFFENTRY CoffSecScanReloc( coff_sec_handle coff_sec_hnd, orl_reloc_r
 {
     unsigned            index;
     coff_sec_handle     reloc_sec_hnd;
-    orl_reloc           *reloc;
+    orl_reloc           reloc;
     orl_return          return_val;
 
     if( coff_sec_hnd->type != ORL_SEC_TYPE_PROG_BITS )
@@ -325,7 +324,7 @@ orl_return COFFENTRY CoffSecScanReloc( coff_sec_handle coff_sec_hnd, orl_reloc_r
 orl_return COFFENTRY CoffRelocSecScan( coff_sec_handle coff_sec_hnd, orl_reloc_return_func return_func )
 {
     unsigned        index;
-    orl_reloc       *reloc;
+    orl_reloc       reloc;
     orl_return      return_val;
 
     if( coff_sec_hnd->type != ORL_SEC_TYPE_RELOCS )

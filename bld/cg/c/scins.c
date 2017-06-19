@@ -87,7 +87,7 @@ bool    ChangeIns( instruction *ins, name *to, name **op, change_type flags )
     opcode_entry        *gen_table;
     name                *save_result;
     name                *old_op;
-    int                 i;
+    opcnt               i;
     name                *save_ops[MAX_OPS_PER_INS];
     type_class_def      class;
     bool                ok;
@@ -260,7 +260,7 @@ bool    FindRegOpnd( score *sc, instruction *ins )
     register or an 'older' register (one that was defined first).
 */
 {
-    int         i;
+    opcnt       i;
     bool        change;
 
     if( IsStackReg( ins->result ) )

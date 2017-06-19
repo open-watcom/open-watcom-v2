@@ -40,7 +40,7 @@ static unsigned GetUByte( void *d, unsigned off )
     unsigned_8  data;
 
     //NYI: have to error check return code
-    DisCliGetData( d, off, sizeof(data), &data );
+    DisCliGetData( d, off, sizeof( data ), &data );
     return( data );
 }
 
@@ -52,7 +52,7 @@ static unsigned GetUShort( void *d, unsigned off )
     }   data;
 
     //NYI: have to error check return code
-    DisCliGetData( d, off, sizeof(data), &data );
+    DisCliGetData( d, off, sizeof( data ), &data );
     return( (data.hi << 8) | data.lo );
 }
 
@@ -66,7 +66,7 @@ static unsigned long GetULong( void *d, unsigned off )
     }   data;
 
     //NYI: have to error check return code
-    DisCliGetData( d, off, sizeof(data), &data );
+    DisCliGetData( d, off, sizeof( data ), &data );
     return( ((unsigned long)data.hi << 24)
         |   ((unsigned long)data.mid_hi << 16)
         |   (data.mid_lo << 8)
@@ -88,7 +88,7 @@ dis_handler_return JVMSByte( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->size += 2;
     ins->num_ops = 1;
     ins->op[0].type = DO_IMMED;
-    ins->op[0].value = GetSByte( d, 1 );
+    ins->op[0].value.s._32[I64LO32] = GetSByte( d, 1 );
     return( DHR_DONE );
 }
 
@@ -97,7 +97,7 @@ dis_handler_return JVMSShort( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->size += 3;
     ins->num_ops = 1;
     ins->op[0].type = DO_IMMED;
-    ins->op[0].value = GetSShort( d, 1 );
+    ins->op[0].value.s._32[I64LO32] = GetSShort( d, 1 );
     return( DHR_DONE );
 }
 
@@ -105,7 +105,7 @@ dis_handler_return JVMUByte( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ins->num_ops = 1;
     ins->op[0].type = DO_IMMED;
-    ins->op[0].value = 0 | GetUByte( d, ins->size + 1 );
+    ins->op[0].value.s._32[I64LO32] = 0 | GetUByte( d, ins->size + 1 );
     ins->size += 2;
     return( DHR_DONE );
 }
@@ -114,7 +114,7 @@ dis_handler_return JVMUShort( dis_handle *h, void *d, dis_dec_ins *ins )
 {
     ins->num_ops = 1;
     ins->op[0].type = DO_IMMED;
-    ins->op[0].value = 0 | GetUShort( d, ins->size + 1 );
+    ins->op[0].value.s._32[I64LO32] = 0 | GetUShort( d, ins->size + 1 );
     ins->size += 3;
     return( DHR_DONE );
 }
@@ -131,13 +131,13 @@ dis_handler_return JVMIInc( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->num_ops = 2;
     ins->op[0].type = DO_MEMORY_ABS;
     if( ins->flags.u.jvm & DIF_JVM_WIDE ) {
-        ins->op[0].value = 0 | GetUShort( d, ins->size + 1 );
+        ins->op[0].value.s._32[I64LO32] = 0 | GetUShort( d, ins->size + 1 );
         ins->size += 1;
     } else {
-        ins->op[0].value = 0 | GetUByte( d, ins->size + 1 );
+        ins->op[0].value.s._32[I64LO32] = 0 | GetUByte( d, ins->size + 1 );
     }
     ins->op[1].type = DO_IMMED;
-    ins->op[1].value = GetSByte( d, ins->size + 2 );
+    ins->op[1].value.s._32[I64LO32] = GetSByte( d, ins->size + 2 );
     ins->size += 3;
     return( DHR_DONE );
 }
@@ -166,9 +166,9 @@ dis_handler_return JVMMultiANewArray( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->size += 4;
     ins->num_ops = 2;
     ins->op[0].type = DO_MEMORY_ABS;
-    ins->op[0].value = 0 | GetUShort( d, 1 );
+    ins->op[0].value.s._32[I64LO32] = 0 | GetUShort( d, 1 );
     ins->op[1].type = DO_IMMED;
-    ins->op[1].value = 0 | GetUByte( d, 3 );
+    ins->op[1].value.s._32[I64LO32] = 0 | GetUByte( d, 3 );
     return( DHR_DONE );
 }
 
@@ -177,7 +177,7 @@ dis_handler_return JVMBrShort( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->size += 3;
     ins->num_ops = 1;
     ins->op[0].type = DO_RELATIVE;
-    ins->op[0].value = 0 | GetUShort( d, 1 );
+    ins->op[0].value.s._32[I64LO32] = 0 | GetUShort( d, 1 );
     return( DHR_DONE );
 }
 
@@ -186,7 +186,7 @@ dis_handler_return JVMBrInt( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->size += 5;
     ins->num_ops = 1;
     ins->op[0].type = DO_RELATIVE;
-    ins->op[0].value = GetULong( d, 1 );
+    ins->op[0].value.s._32[I64LO32] = GetULong( d, 1 );
     return( DHR_DONE );
 }
 
@@ -199,15 +199,15 @@ dis_handler_return JVMTableSwitch( dis_handle *h, void *d, dis_dec_ins *ins )
     off = DisCliGetAlign( d, 1, 4 );
     ins->num_ops = 3;
     ins->op[0].type = DO_RELATIVE;
-    ins->op[0].value = GetULong( d, off );
+    ins->op[0].value.s._32[I64LO32] = GetULong( d, off );
     off += 4;
     ins->op[1].type = DO_IMMED;
-    ins->op[1].value = GetULong( d, off );
+    ins->op[1].value.s._32[I64LO32] = GetULong( d, off );
     off += 4;
     ins->op[2].type = DO_IMMED;
-    ins->op[2].value = GetULong( d, off );
+    ins->op[2].value.s._32[I64LO32] = GetULong( d, off );
     off += 4;
-    ins->size += off + (ins->op[2].value - ins->op[1].value+1)*4;
+    ins->size += off + (ins->op[2].value.s._32[I64LO32] - ins->op[1].value.s._32[I64LO32] + 1)*4;
     return( DHR_DONE );
 }
 
@@ -220,12 +220,12 @@ dis_handler_return JVMLookupSwitch( dis_handle *h, void *d, dis_dec_ins *ins )
     off = DisCliGetAlign( d, 1, 4 );
     ins->num_ops = 2;
     ins->op[0].type = DO_RELATIVE;
-    ins->op[0].value = GetULong( d, off );
+    ins->op[0].value.s._32[I64LO32] = GetULong( d, off );
     off += 4;
     ins->op[1].type = DO_IMMED;
-    ins->op[1].value = GetULong( d, off );
+    ins->op[1].value.s._32[I64LO32] = GetULong( d, off );
     off += 4;
-    ins->size += off + ins->op[1].value * 8;
+    ins->size += off + ins->op[1].value.s._32[I64LO32] * 8;
     return( DHR_DONE );
 }
 
@@ -234,9 +234,9 @@ dis_handler_return JVMInterface( dis_handle *h, void *d, dis_dec_ins *ins )
     ins->size += 5;
     ins->num_ops = 2;
     ins->op[0].type = DO_MEMORY_ABS;
-    ins->op[0].value = 0 | GetUShort( d, 1 );
+    ins->op[0].value.s._32[I64LO32] = 0 | GetUShort( d, 1 );
     ins->op[1].type = DO_IMMED;
-    ins->op[1].value = 0 | GetUByte( d, 3 );
+    ins->op[1].value.s._32[I64LO32] = 0 | GetUByte( d, 3 );
     return( DHR_DONE );
 }
 

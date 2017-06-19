@@ -75,7 +75,7 @@ static void addRef( ref_list sec_ref_list, ref_entry entry )
     }
 }
 
-static const char *getFrameModifier( orl_reloc *rel )
+static const char *getFrameModifier( orl_reloc rel )
 {
     orl_sec_handle      shnd;
     orl_group_handle    grp;
@@ -92,7 +92,7 @@ static const char *getFrameModifier( orl_reloc *rel )
             shnd = ORLSymbolGetSecHandle( rel->symbol );
             if( shnd != ORL_NULL_HANDLE ) {
                 grp = ORLSecGetGroup( shnd );
-                if( grp ) {
+                if( grp != ORL_NULL_HANDLE ) {
                     return( ORLGroupName( grp ) );
                 }
             }
@@ -103,9 +103,9 @@ static const char *getFrameModifier( orl_reloc *rel )
         typ = ORLSymbolGetType( rel->frame );
         if( typ & ( ORL_SYM_TYPE_SECTION | ORL_SYM_TYPE_GROUP ) ) {
             name = ORLSymbolGetName( rel->frame );
-            if( name && !stricmp( name, "FLAT" ) ) {
+            if( name != NULL && stricmp( name, "FLAT" ) == 0 ) {
                 UseFlatModel();
-                if( !( DFormat & DFF_ASM ) ) {
+                if( (DFormat & DFF_ASM) == 0 ) {
                     return( NULL );
                 }
             }
@@ -116,11 +116,12 @@ static const char *getFrameModifier( orl_reloc *rel )
 }
 
 
-orl_return CreateNamedLabelRef( orl_reloc *rel )
+orl_return CreateNamedLabelRef( orl_reloc rel )
 {
     ref_entry           ref;
-    hash_data *         data_ptr;
+    hash_data           *h_data;
     ref_list            sec_ref_list;
+    hash_key            h_key;
 
     if( rel->type == ORL_RELOC_TYPE_PAIR )
         return( ORL_OKAY );
@@ -134,12 +135,14 @@ orl_return CreateNamedLabelRef( orl_reloc *rel )
     if( IsMasmOutput() && rel->frame ) {
         ref->frame = getFrameModifier( rel );
     }
-    data_ptr = HashTableQuery( SymbolToLabelTable, (hash_value) rel->symbol );
-    if( data_ptr != NULL ) {
-        ref->label = (label_entry)*data_ptr;
-        data_ptr = HashTableQuery( HandleToRefListTable, (hash_value)rel->section );
-        if( data_ptr != NULL ) {
-            sec_ref_list = (ref_list)*data_ptr;
+    h_key.u.sym_handle = rel->symbol;
+    h_data = HashTableQuery( SymbolToLabelTable, h_key );
+    if( h_data != NULL ) {
+        ref->label = h_data->u.lab_entry;
+        h_key.u.sec_handle = rel->section;
+        h_data = HashTableQuery( HandleToRefListTable, h_key );
+        if( h_data != NULL ) {
+            sec_ref_list = h_data->u.sec_ref_list;
             addRef( sec_ref_list, ref );
         } else {
             // error!!!!  should have been created
@@ -161,10 +164,12 @@ orl_return DealWithRelocSection( orl_sec_handle shnd )
     return( error );
 }
 
-return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc ) {
+return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc )
+{
     ref_entry           ref;
-    hash_data *         data_ptr;
+    hash_data           *h_data;
     ref_list            sec_ref_list;
+    hash_key            h_key;
 
     ref = MemAlloc( sizeof( ref_entry_struct ) );
     if( ref == NULL ) {
@@ -175,9 +180,10 @@ return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_se
     ref->label = entry;
     ref->type = ORL_RELOC_TYPE_JUMP;
     ref->addend = 0;
-    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value) shnd );
-    if( data_ptr ) {
-        sec_ref_list = (ref_list) *data_ptr;
+    h_key.u.sec_handle = shnd;
+    h_data = HashTableQuery( HandleToRefListTable, h_key );
+    if( h_data != NULL ) {
+        sec_ref_list = h_data->u.sec_ref_list;
         addRef( sec_ref_list, ref );
     } else {
         // error!!!!  should have been created
@@ -190,8 +196,9 @@ return_val CreateUnnamedLabelRef( orl_sec_handle shnd, label_entry entry, dis_se
 return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, dis_sec_offset loc )
 {
     ref_entry           ref;
-    hash_data *         data_ptr;
+    hash_data           *h_data;
     ref_list            sec_ref_list;
+    hash_key            h_key;
 
     ref = MemAlloc( sizeof( ref_entry_struct ) );
     if( ref == NULL ) {
@@ -201,10 +208,10 @@ return_val CreateAbsoluteLabelRef( orl_sec_handle shnd, label_entry entry, dis_s
     ref->offset = loc;
     ref->label = entry;
     ref->type = ORL_RELOC_TYPE_MAX + 1;
-    ref->addend = 0;
-    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value)shnd );
-    if( data_ptr ) {
-        sec_ref_list = (ref_list)*data_ptr;
+    h_key.u.sec_handle = shnd;
+    h_data = HashTableQuery( HandleToRefListTable, h_key );
+    if( h_data != NULL ) {
+        sec_ref_list = h_data->u.sec_ref_list;
         addRef( sec_ref_list, ref );
     } else {
         // error!!!!  should have been created

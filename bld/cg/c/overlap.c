@@ -34,9 +34,8 @@
 #include "coderep.h"
 #include "regset.h"
 #include "namelist.h"
+#include "overlap.h"
 
-
-extern  bool    Overlaps( name *, name * );
 
 static  bool    Conflicts( type_length start,  type_length end,
                            type_length start2, type_length end2 )

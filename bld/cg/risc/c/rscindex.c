@@ -193,7 +193,7 @@ void    FixMemRefs() {
     block       *blk;
     instruction *ins;
     name        **op;
-    unsigned    i;
+    opcnt       i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {

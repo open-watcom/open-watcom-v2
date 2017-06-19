@@ -33,16 +33,14 @@
 #ifndef WDIS_FORMASM_INCLUDED
 #define WDIS_FORMASM_INCLUDED
 
-extern return_val       DumpASMSection( section_ptr, unsigned_8 *, orl_sec_size, unsigned );
-extern return_val       BssASMSection( section_ptr, orl_sec_size, unsigned );
-extern dis_value        HandleAddend( ref_entry );
+extern return_val       DumpASMSection( section_ptr, unsigned_8 *, dis_sec_size, unsigned );
+extern return_val       BssASMSection( section_ptr, dis_sec_size, unsigned );
+extern dis_sec_addend   HandleAddend( ref_entry );
 extern unsigned         RelocSize( ref_entry );
-extern int              IsMasmOutput( void );
-extern int              IsDataReloc( ref_entry );
+extern bool             IsMasmOutput( void );
+extern bool             IsDataReloc( ref_entry );
 extern unsigned         HandleRefInData( ref_entry, void *, bool );
-extern return_val       DumpASMDataFromSection( unsigned_8 *, dis_sec_offset,
-                                                dis_sec_offset, label_entry *,
-                                                ref_entry *, section_ptr );
-extern char             *SkipRef( ref_entry );
+extern return_val       DumpASMDataFromSection( unsigned_8 *, dis_sec_offset, dis_sec_offset, label_entry *, ref_entry *, section_ptr );
+extern const char       *SkipRef( ref_entry );
 
 #endif

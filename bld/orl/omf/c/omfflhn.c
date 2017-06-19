@@ -57,9 +57,9 @@ static orl_return       freeFileHandle( omf_file_handle ofh )
         case ORL_SEC_TYPE_RELOCS:
             if( sh->assoc.reloc.relocs != NULL ) {
                 for( x = 0; x < sh->assoc.reloc.num; x++ ) {
-                    _ClientFree( ofh, sh->assoc.reloc.relocs[x] );
+                    _ClientFree( ofh, (void *)sh->assoc.reloc.relocs[x] );
                 }
-                _ClientFree( ofh, sh->assoc.reloc.relocs );
+                _ClientFree( ofh, (void *)sh->assoc.reloc.relocs );
                 sh->assoc.reloc.relocs = NULL;
                 sh->assoc.reloc.num = 0;
             }
@@ -94,7 +94,7 @@ static orl_return       freeFileHandle( omf_file_handle ofh )
                 sh->contents = NULL;
             }
             if( sh->assoc.seg.lines != NULL && ( sh->assoc.seg.num_lines > 0 ) ) {
-                _ClientFree( ofh, sh->assoc.seg.lines );
+                _ClientFree( ofh, (void *)sh->assoc.seg.lines );
                 sh->assoc.seg.lines = NULL;
                 sh->assoc.seg.num_lines = 0;
             }

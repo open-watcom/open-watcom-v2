@@ -24,7 +24,7 @@
 *
 *  ========================================================================
 *
-* Description: Internal ORL interfaces. 
+* Description: Internal ORL interfaces.
 *
 ****************************************************************************/
 
@@ -38,7 +38,6 @@
 #include <string.h>
 #include "bool.h"
 #include "orlglobl.h"
-#include "orlhshdf.h"
 
 #if !defined( __386__ ) && !defined( __GNUC__ )
 #define ORLUNALIGNED __unaligned
@@ -62,26 +61,44 @@
 #define ORL_PTR_FREE(x,a)               (x)->funcs->cli_free(a)
 
 
+#define LCL_SYM(s)          lcl_ ## s
+#define LCL_CONST_SYM(s)    const_lcl_ ## s
+#define ORL_LCL_STRUCT(s)   struct lcl_ ## s ## _struct
+
+#define TYPEDEF_LCL_TYPE(t)  \
+    typedef const ORL_LCL_STRUCT( t ) * LCL_CONST_SYM( t ); \
+    typedef ORL_LCL_STRUCT( t ) * LCL_SYM( t )
+
+#define TYPEDEF_LOCAL_TYPE(t) \
+    typedef const ORL_STRUCT( t ) * const_ ## t; \
+    typedef ORL_STRUCT( t ) * t
+
+
 /* NB The following are sort of fake.  We are hiding the contents of
    the file-specific section and symbol handles from the ORL
    level, allowing it only to check their type. */
 
-#define ORLI_SEC_HND        ((orli_sec_handle)orl_sec_hnd)
-#define ORLI_SYMBOL_HND     ((orli_symbol_handle)orl_symbol_hnd)
-#define ORLI_GROUP_HND      ((orli_group_handle)orl_group_hnd)
+#define LCL_SEC_HND(p)          ((ORL_LCL_STRUCT( orl_sec_handle ) *)p)
+#define LCL_SYM_HND(p)          ((ORL_LCL_STRUCT( orl_symbol_handle ) *)p)
+#define LCL_GRP_HND(p)          ((ORL_LCL_STRUCT( orl_group_handle ) *)p)
 
-typedef struct orli_sec_handle_struct {
+TYPEDEF_LCL_TYPE( orl_sec_handle );
+TYPEDEF_LCL_TYPE( orl_symbol_handle );
+TYPEDEF_LCL_TYPE( orl_group_handle );
+
+ORL_LCL_STRUCT( orl_sec_handle ) {
     orl_file_format         type;
-} *orli_sec_handle;
+};
 
-typedef struct orli_symbol_handle_struct {
+ORL_LCL_STRUCT( orl_symbol_handle ) {
     orl_file_format         type;
-} *orli_symbol_handle;
+};
 
-typedef struct orli_group_handle_struct {
+ORL_LCL_STRUCT( orl_group_handle ) {
     orl_file_format         type;
-} *orli_group_handle;
+};
 
+#include "orlhshdf.h"
 #include "orlcomon.h"
 
 #endif

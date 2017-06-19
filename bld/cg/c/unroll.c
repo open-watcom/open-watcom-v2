@@ -383,7 +383,7 @@ static  void    ReplaceInductionVars( block *loop, instruction *ins_list,
     instruction *ins;
     instruction *new_ins;
     block       *blk;
-    int         i;
+    opcnt       i;
     signed_32   adjust;
 
     for( ind = IndVarList; ind != NULL; ind = ind->next ) {

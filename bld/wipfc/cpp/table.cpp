@@ -367,7 +367,7 @@ Lexer::Token TableRow::parse( Lexer* lexer )
     }
     if( colCount < colWidth.size() ) {    //check for unspecified columns
         document->printError( ERR1_TABLECELLCOUNTLOW );
-        while( colCount != colWidth.size() ) {
+        while( colCount < colWidth.size() ) {
             unsigned char width( colWidth[ colCount ] );
             TableCol* col( new TableCol( document, this, document->dataName(),
                 document->lexerLine(), document->lexerCol(), width ) );

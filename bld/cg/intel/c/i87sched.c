@@ -757,7 +757,7 @@ extern  void    InitTempEntries( block *blk ) {
 /***************************************/
 
     instruction *ins;
-    int         i;
+    opcnt       i;
 
     TempList = NULL;
     for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {

@@ -42,27 +42,30 @@
 
 /* NB _handle = a type, _hnd = a variable */
 
-#define ORLI_HND                        ((orli_handle)orl_hnd)
-#define ORLI_FILE_HND                   ((orli_file_handle)orl_file_hnd)
+#define LCL_ORL_HND(p)          ((ORL_LCL_STRUCT( orl_handle ) *)p)
+#define LCL_FIL_HND(p)          ((ORL_LCL_STRUCT( orl_file_handle ) *)p)
 
-typedef struct orli_handle_struct {
+TYPEDEF_LCL_TYPE( orl_handle );
+TYPEDEF_LCL_TYPE( orl_file_handle );
+
+ORL_LCL_STRUCT( orl_handle ) {
     orl_funcs                           funcs;
     elf_handle                          elf_hnd;
     coff_handle                         coff_hnd;
     omf_handle                          omf_hnd;
-    struct orli_file_handle_struct      *first_file_hnd;
+    LCL_SYM( orl_file_handle )          first_file_hnd;
     orl_return                          error;
-} *orli_handle;
+};
 
-typedef struct orli_file_handle_struct {
-    orli_handle                         orli_hnd;
-    struct orli_file_handle_struct      *next;
+ORL_LCL_STRUCT( orl_file_handle ) {
+    LCL_SYM( orl_handle )               orl_hnd;
+    LCL_SYM( orl_file_handle )          next;
     orl_file_format                     type;
     union {
         elf_file_handle                 elf;
         coff_file_handle                coff;
         omf_file_handle                 omf;
     } file_hnd;
-} *orli_file_handle;
+};
 
 #endif

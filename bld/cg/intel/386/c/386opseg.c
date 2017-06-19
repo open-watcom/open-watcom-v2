@@ -83,7 +83,7 @@ static  void    AddGlobalIndex( void )
 {
     block       *blk;
     instruction *ins;
-    int         i;
+    opcnt       i;
     name        *gblreg;
 
     gblreg = AllocRegName( HW_EBX );

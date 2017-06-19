@@ -44,7 +44,7 @@ static void free_coff_file_hnd( coff_file_handle coff_file_hnd )
             coff_sec_hnd = coff_file_hnd->coff_sec_hnd[i];
             if( coff_sec_hnd->type == ORL_SEC_TYPE_RELOCS ) {
                 if( coff_sec_hnd->assoc.reloc.relocs != NULL ) {
-                    _ClientFree( coff_file_hnd, coff_sec_hnd->assoc.reloc.relocs );
+                    _ClientFree( coff_file_hnd, (void *)coff_sec_hnd->assoc.reloc.relocs );
                 }
             }
             if( coff_sec_hnd->name_alloced ) {

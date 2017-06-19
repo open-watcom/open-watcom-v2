@@ -37,19 +37,26 @@
 
 #define ELFENTRY
 
+TYPEDEF_LOCAL_TYPE( elf_handle );
+TYPEDEF_LOCAL_TYPE( elf_file_handle );
+TYPEDEF_LOCAL_TYPE( elf_sec_handle );
+TYPEDEF_LOCAL_TYPE( elf_symbol_handle );
+
 // handle definitions
 
 typedef unsigned_8                      elf_file_flags;
 typedef unsigned_32                     elf_file_index;
-typedef unsigned_32                     elf_file_offset;
+typedef unsigned_64                     elf_file_offset;
+typedef unsigned_64                     elf_file_size;
 typedef unsigned_32                     elf_headers_size;
 
 typedef unsigned_32                     elf_sec_flags;
+typedef unsigned_64                     elf_sec_base;
 typedef unsigned_64                     elf_sec_size;
 typedef unsigned_32                     elf_sec_offset;
+typedef signed_64                       elf_sec_addend;
 
 typedef unsigned_64                     elf_symbol_value;
-typedef unsigned_64                     elf_sec_base;
 
 typedef unsigned_16                     elf_reloc_type;
 
@@ -59,24 +66,12 @@ typedef unsigned_16                     elf_half;
 typedef unsigned_32                     elf_word;
 typedef elf_word                        elf_index;
 
-typedef struct elf_handle_struct        elf_handle_struct;
-typedef elf_handle_struct               *elf_handle;
-
-typedef struct elf_file_handle_struct   elf_file_handle_struct;
-typedef elf_file_handle_struct          *elf_file_handle;
-
-typedef struct elf_sec_handle_struct    elf_sec_handle_struct;
-typedef elf_sec_handle_struct           *elf_sec_handle;
-
-typedef struct elf_symbol_handle_struct elf_symbol_handle_struct;
-typedef elf_symbol_handle_struct        *elf_symbol_handle;
-
-struct elf_handle_struct {
+ORL_STRUCT( elf_handle ) {
     orl_funcs           *funcs;
     elf_file_handle     first_file_hnd;
 };
 
-struct elf_file_handle_struct {
+ORL_STRUCT( elf_file_handle ) {
     elf_handle          elf_hnd;
     elf_file_handle     next;
     elf_sec_handle      *sec_handles;
@@ -104,7 +99,7 @@ struct elf_normal_assoc_struct {
 struct elf_reloc_assoc_struct {
     elf_sec_handle      orig_sec;
     elf_sec_handle      symbol_table;
-    orl_reloc           *relocs;
+    orl_reloc           relocs;
 };
 
 struct elf_sym_assoc_struct {
@@ -123,7 +118,7 @@ struct elf_export_assoc_struct {
     char                unused[8];
 };
 
-struct elf_sec_handle_struct {
+ORL_STRUCT( elf_sec_handle ) {
     orl_file_format     file_format;
     elf_file_handle     elf_file_hnd;
     elf_sec_handle      next;
@@ -148,7 +143,7 @@ struct elf_sec_handle_struct {
     } assoc;
 };
 
-struct elf_symbol_handle_struct {
+ORL_STRUCT( elf_symbol_handle ) {
     orl_file_format     file_format;
     elf_file_handle     elf_file_hnd;
     orl_symbol_binding  binding;

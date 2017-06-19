@@ -54,25 +54,28 @@ extern char                 *CommentString;
 extern dis_format_flags     DFormat;
 extern section_list_struct  Sections;
 
-static orl_reloc            *pdataReloc;
+static orl_reloc            pdataReloc;
 
-static void doDescriptorRelocs( ref_entry *r_entry, dis_sec_offset offset, uint_32 address )
+static ref_entry doDescriptorRelocs( ref_entry r_entry, dis_sec_offset offset, uint_32 address )
 {
     /* Skip over pair relocs */
-    while( (*r_entry) != NULL && ((*r_entry)->type == ORL_RELOC_TYPE_PAIR || (*r_entry)->offset < offset ) ) {
-        (*r_entry) = (*r_entry)->next;
+    for( ; r_entry != NULL; r_entry = r_entry->next ) {
+        if( r_entry->type != ORL_RELOC_TYPE_PAIR && r_entry->offset >= offset ) {
+            break;
+        }
     }
-    if( (*r_entry) != NULL && (*r_entry)->offset == offset ) {
-        HandleRefInData( *r_entry, &address, false );
-        (*r_entry) = (*r_entry)->next;
+    if( r_entry != NULL && r_entry->offset == offset ) {
+        HandleRefInData( r_entry, &address, false );
+        r_entry = r_entry->next;
     } else {
         BufferStore("%08X", address );
     }
+    return( r_entry );
 }
 
-static void printDescriptor( dis_sec_offset offset, descriptor_struct *descriptor, ref_entry *r_entry )
+static ref_entry printDescriptor( dis_sec_offset offset, descriptor_struct *descriptor, ref_entry r_entry )
 {
-    char *PreString;
+    char        *PreString;
 
     if( DFormat & DFF_ASM ) {
         PreString = "\t\t.long\t";
@@ -80,14 +83,14 @@ static void printDescriptor( dis_sec_offset offset, descriptor_struct *descripto
         PreString = "\t";
     }
     BufferStore("%s", PreString );
-    doDescriptorRelocs( r_entry, offset, descriptor->begin_address );
+    r_entry = doDescriptorRelocs( r_entry, offset, descriptor->begin_address );
     BufferAlignToTab(6);
     BufferStore("%s ", CommentString );
     BufferMsg( BEGIN_ADDRESS );
     BufferStore(": %d\n", descriptor->begin_address );
 
     BufferStore("%s", PreString );
-    doDescriptorRelocs( r_entry, offset+4, descriptor->end_address );
+    r_entry = doDescriptorRelocs( r_entry, offset+4, descriptor->end_address );
     BufferAlignToTab(6);
     BufferStore("%s ", CommentString );
     BufferMsg( END_ADDRESS );
@@ -96,40 +99,42 @@ static void printDescriptor( dis_sec_offset offset, descriptor_struct *descripto
     BufferPrint();
 
     BufferStore("%s", PreString );
-    doDescriptorRelocs( r_entry, offset+8, descriptor->exception_handler );
+    r_entry = doDescriptorRelocs( r_entry, offset+8, descriptor->exception_handler );
     BufferAlignToTab(6);
     BufferStore("%s ", CommentString );
     BufferMsg( EXCEPTION_HANDLER );
     BufferStore(": %d\n", descriptor->exception_handler );
 
     BufferStore("%s", PreString );
-    doDescriptorRelocs( r_entry, offset+12, descriptor->handler_data );
+    r_entry = doDescriptorRelocs( r_entry, offset+12, descriptor->handler_data );
     BufferAlignToTab(6);
     BufferStore("%s ", CommentString );
     BufferMsg( HANDLER_DATA );
     BufferStore(": %d\n", descriptor->handler_data );
 
     BufferStore("%s", PreString );
-    doDescriptorRelocs( r_entry, offset+16, descriptor->prolog_end );
+    r_entry = doDescriptorRelocs( r_entry, offset+16, descriptor->prolog_end );
     BufferAlignToTab(6);
     BufferStore("%s ", CommentString );
     BufferMsg( PROLOG_END );
     BufferStore(": %d\n\n", descriptor->prolog_end );
 
     BufferPrint();
+
+    return( r_entry );
 }
 
-orl_return StoreReloc( orl_reloc * reloc )
+orl_return StoreReloc( orl_reloc reloc )
 {
     pdataReloc = reloc;
     return( ORL_OKAY );
 }
 
-return_val DumpPDataSection( section_ptr sec, unsigned_8 *contents,
-                        orl_sec_size size, unsigned pass )
+return_val DumpPDataSection( section_ptr section, unsigned_8 *contents, dis_sec_size size, unsigned pass )
 {
+    hash_data           *h_data;
+    hash_key            h_key;
     dis_sec_offset      loop;
-    hash_data *         data_ptr;
     ref_list            r_list;
     ref_entry           r_entry;
     descriptor_struct   descriptor;
@@ -141,17 +146,17 @@ return_val DumpPDataSection( section_ptr sec, unsigned_8 *contents,
         return( RC_OKAY );
 
     is32bit = ( size >= 0x10000 );
-
-    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value)sec->shnd );
+    h_key.u.sec_handle = section->shnd;
+    h_data = HashTableQuery( HandleToRefListTable, h_key );
     r_entry = NULL;
-    if( *data_ptr ) {
-        r_list = (ref_list)*data_ptr;
-        if( r_list ) {
+    if( h_data != NULL ) {
+        r_list = h_data->u.sec_ref_list;
+        if( r_list != NULL ) {
             r_entry = r_list->first;
         }
     }
     BufferConcatNL();
-    PrintHeader( sec );
+    PrintHeader( section );
     BufferConcatNL();
     for( loop = 0; loop < size; loop += sizeof( descriptor_struct ) ) {
         if( r_entry == NULL )
@@ -168,8 +173,10 @@ return_val DumpPDataSection( section_ptr sec, unsigned_8 *contents,
         BufferMsg( PROCEDURE_DESCRIPTOR );
 
         /* Skip over pair relocs */
-        while( r_entry != NULL && (r_entry->type == ORL_RELOC_TYPE_PAIR || r_entry->offset < loop) ) {
-            r_entry = r_entry->next;
+        for( ; r_entry != NULL; r_entry = r_entry->next ) {
+            if( r_entry->type != ORL_RELOC_TYPE_PAIR && r_entry->offset >= loop ) {
+                break;
+            }
         }
         switch( r_entry->label->type ) {
         case LTYP_EXTERNAL_NAMED:
@@ -185,7 +192,7 @@ return_val DumpPDataSection( section_ptr sec, unsigned_8 *contents,
             break;
         }
         BufferConcatNL();
-        printDescriptor( loop, &descriptor, &r_entry );
+        r_entry = printDescriptor( loop, &descriptor, r_entry );
     }
     return( RC_OKAY );
 }

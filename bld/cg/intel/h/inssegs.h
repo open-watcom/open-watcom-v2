@@ -31,10 +31,10 @@
 
 
 extern void     DelSeg( instruction *ins );
-extern void     DelSegOp( instruction *ins, int i );
+extern void     DelSegOp( instruction *ins, opcnt i );
 extern void     DelSegRes( instruction *ins );
 extern void     DupSeg( instruction *ins, instruction *new_ins );
-extern void     DupSegOp( instruction *ins, instruction *new_ins, int i );
+extern void     DupSegOp( instruction *ins, instruction *new_ins, opcnt i );
 extern void     DupSegRes( instruction *ins, instruction *new_ins );
-extern void     MoveSegOp( instruction *ins, instruction *new_ins, int i );
+extern void     MoveSegOp( instruction *ins, instruction *new_ins, opcnt i );
 extern void     MoveSegRes( instruction *ins, instruction *new_ins );

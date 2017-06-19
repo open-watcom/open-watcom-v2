@@ -62,32 +62,32 @@ void CreatePublicsArray( void )
     int                 index = 0;
 
     if( Publics.number ) {
-        Publics.public_symbols = (label_entry *) MemAlloc( sizeof( label_entry ) * Publics.number );
-        ptr = Publics.label_lists;
-        while( ptr ) {
-            entry = ptr->list->first;
-            while( entry ) {
-                while( entry && ( entry->type == LTYP_SECTION ||
-                            entry->binding == ORL_SYM_BINDING_LOCAL ) ) {
-                    entry = entry->next;
+        Publics.public_symbols = (label_entry *)MemAlloc( sizeof( label_entry ) * Publics.number );
+        for( ptr = Publics.label_lists; ptr != NULL; ptr = ptr->next ) {
+            for( entry = ptr->list->first; entry != NULL; entry = entry->next ) {
+                for( ; entry != NULL; entry = entry->next ) {
+                    if( entry->type != LTYP_SECTION && entry->binding != ORL_SYM_BINDING_LOCAL ) {
+                        break;
+                    }
                 }
-                if( !entry ) break;
+                if( entry == NULL )
+                    break;
                 Publics.public_symbols[index] = entry;
                 index++;
-                entry = entry->next;
             }
-            ptr = ptr->next;
         }
         // now sort!
         qsort( Publics.public_symbols, Publics.number, sizeof( label_entry * ), alpha_compare );
     }
 }
 
-void PrintPublics( void ) {
+void PrintPublics( void )
+{
     int                 loop;
     label_entry         entry;
-    hash_data *         data_ptr;
-    section_ptr         sec;
+    hash_data           *h_data;
+    section_ptr         section;
+    hash_key            h_key;
 
     // fixme:  data labels get a _ in front, others one after ??
     BufferMsg( LIST_OF_PUBLICS );
@@ -102,12 +102,13 @@ void PrintPublics( void ) {
     for( loop = 0; loop < Publics.number; loop++ ) {
         entry = Publics.public_symbols[loop];
         BufferConcat( entry->label.name );
-        data_ptr = HashTableQuery( HandleToSectionTable, (hash_value) entry->shnd );
+        h_key.u.sec_handle = entry->shnd;
+        h_data = HashTableQuery( HandleToSectionTable, h_key );
         // fixme: what is the proper behavour if no section found??
-        if( data_ptr ) {
-            sec = (section_ptr) *data_ptr;
+        if( h_data != NULL ) {
+            section = h_data->u.section;
             BufferAlignToTab( SECTION_TAB_POS );
-            BufferConcat( sec->name );
+            BufferConcat( section->name );
         }
         BufferAlignToTab( ADDRESS_TAB_POS );
         BufferStore( "%08X\n", entry->offset );

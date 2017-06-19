@@ -88,8 +88,8 @@ void    FreeIns( instruction *ins ) {
 }
 
 
-instruction     *NewIns( byte num )
-/**********************************
+instruction     *NewIns( opcnt num )
+/***********************************
     Allocate a new instruction (with "num" operands) and initialize its
     fields to sensible defaults.
 */
@@ -142,7 +142,7 @@ instruction     *MakeNary( opcode_defs opcode, name *left,
                                      name *right, name *result,
                                      type_class_def class,
                                      type_class_def base_class,
-                                     byte num_operands )
+                                     opcnt num_operands )
 /************************************************************
     Make a N-ary instruction (OPCODE left, right => result)
 */

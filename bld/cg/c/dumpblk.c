@@ -132,7 +132,7 @@ void    DumpRefs( name *op )
     block       *blk;
     instruction *ins;
     int         dsize;
-    int         i;
+    opcnt       i;
 
     for( blk = HeadBlock; blk != NULL; blk = blk->next_block ) {
         for( ins = blk->ins.hd.next; ins->head.opcode != OP_BLOCK; ins = ins->head.next ) {

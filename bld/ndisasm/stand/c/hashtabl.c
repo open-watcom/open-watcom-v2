@@ -31,123 +31,151 @@
 
 
 #include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 #include "dis.h"
 #include "global.h"
 #include "hashtabl.h"
 #include "memfuncs.h"
 
+#include "clibext.h"
 
-#define _HashCompare( a, b, c )  (a->compare( b, c ) == 0)
 
-int NumberCmp( hash_value n1, hash_value n2 )
+static bool handle_cmp( hash_key n1, hash_key n2 )
 {
-    if( n1 == n2 )
-        return( 0 );
-    if( n1 < n2 )
-        return( -1 );
-    return( 1 );
+    return( n1.u.sec_handle == n2.u.sec_handle );
 }
 
-static hash_value stringEncode( const char *string )
+static bool string_cmp( hash_key p1, hash_key p2 )
 {
-    const unsigned char *p;
-    uint_32             g;
-    uint_32             h;
+    return( strcmp( p1.u.string, p2.u.string ) == 0 );
+}
+
+static bool string_cmp_ignorecase( hash_key p1, hash_key p2 )
+{
+    return( stricmp( p1.u.string, p2.u.string ) == 0 );
+}
+
+static hash_value hash_encode( hash_value size, const char *ptr, size_t len, bool ignorecase )
+{
+    unsigned_32     g;
+    unsigned_32     h;
+    int             c;
 
     h = 0;
-    for( p = (const unsigned char *)string; *p != 0; p++ ) {
-        h = ( h << 4 ) + *p;
-        if( (g = (h & 0xf0000000)) != 0 ) {
+    while( len-- > 0 ) {
+        c = *(unsigned char *)ptr;
+        if( ignorecase )
+            c = toupper( c );
+        h = ( h << 4 ) + c;
+        if( (g = h & 0xf0000000) != 0 ) {
             h = h ^ ( g >> 24 );
             h = h ^ g;
         }
+        ptr++;
     }
-    return( (hash_value)h );
+    return( h % size );
 }
 
-static hash_value hashFunc( hash_table hash_tbl, hash_value key )
+static hash_value handle_hash( hash_value size, hash_key key )
 {
-    return( key % hash_tbl->size );
+    return( hash_encode( size, (const char *)&key.u.sec_handle, sizeof( key.u.sec_handle ), false ) );
 }
 
-return_val HashTableInsert( hash_table hash_tbl, hash_value key, hash_data data )
+static hash_value string_hash( hash_value size, hash_key key )
+{
+    return( hash_encode( size, key.u.string, strlen( key.u.string ), false ) );
+}
+
+static hash_value string_hash_ignorecase( hash_value size, hash_key key )
+{
+    return( hash_encode( size, key.u.string, strlen( key.u.string ), true ) );
+}
+
+return_val HashTableInsert( hash_table hash_tbl, hash_entry_data *key_data )
 {
     hash_value              hash_val;
-    hash_struct             *hash_ptr;
-    hash_struct             *new_element;
+    hash_entry_struct       *hash_entry;
+    hash_entry_struct       *new_hash_entry;
 
-    if( hash_tbl->type == HASH_STRING ) {
-        hash_val = hashFunc( hash_tbl, stringEncode( (char *)key ) );
-    } else {
-        hash_val = hashFunc( hash_tbl, key );
-    }
-    for( hash_ptr = hash_tbl->table[hash_val]; hash_ptr != NULL; hash_ptr = hash_ptr->next ) {
-        if( _HashCompare( hash_tbl, hash_ptr->key, key ) ) {
-            hash_ptr->data = data;
+    hash_val = hash_tbl->hash_func( hash_tbl->size, key_data->key );
+    for( hash_entry = hash_tbl->table[hash_val]; hash_entry != NULL; hash_entry = hash_entry->next ) {
+        if( hash_tbl->compare_func( hash_entry->entry.key, key_data->key ) ) {
+            hash_entry->entry.data = key_data->data;
             return( RC_OKAY );
         }
     }
-    new_element = (hash_struct *)MemAlloc( sizeof( hash_struct ) );
-    if( new_element == NULL ) {
+    new_hash_entry = (hash_entry_struct *)MemAlloc( sizeof( hash_entry_struct ) );
+    if( new_hash_entry == NULL ) {
         return( RC_OUT_OF_MEMORY );
     }
-    new_element->key = key;
-    new_element->data = data;
-    new_element->next = hash_tbl->table[hash_val];
-    hash_tbl->table[hash_val] = new_element;
+    new_hash_entry->entry.key = key_data->key;
+    new_hash_entry->entry.data = key_data->data;
+    new_hash_entry->next = hash_tbl->table[hash_val];
+    hash_tbl->table[hash_val] = new_hash_entry;
     return( RC_OKAY );
 }
 
-hash_data *HashTableQuery( hash_table hash_tbl, hash_value key )
+hash_data *HashTableQuery( hash_table hash_tbl, hash_key key )
 {
     hash_value          hash_val;
-    hash_struct *       hash_ptr;
+    hash_entry_struct   *hash_entry;
 
-    if( hash_tbl->type == HASH_STRING ) {
-        hash_val = hashFunc( hash_tbl, stringEncode( (char *)key ) );
-    } else {
-        hash_val = hashFunc( hash_tbl, key );
-    }
-    for( hash_ptr = hash_tbl->table[hash_val]; hash_ptr != NULL; hash_ptr = hash_ptr->next ) {
-        if( _HashCompare( hash_tbl, hash_ptr->key, key ) ) {
-            return( &(hash_ptr->data) );
+    hash_val = hash_tbl->hash_func( hash_tbl->size, key );
+    for( hash_entry = hash_tbl->table[hash_val]; hash_entry != NULL; hash_entry = hash_entry->next ) {
+        if( hash_tbl->compare_func( hash_entry->entry.key, key ) ) {
+            return( &(hash_entry->entry.data) );
         }
     }
     return( NULL );
 }
 
-hash_table HashTableCreate( hash_table_size size, hash_table_type type, hash_table_comparison_func func )
+hash_table HashTableCreate( hash_value size, hash_table_type type )
 {
     hash_table          hash_tbl;
-    hash_table_size     loop;
+    hash_value          i;
 
     hash_tbl = (hash_table)MemAlloc( sizeof( hash_table_struct ) );
     if( hash_tbl == NULL )
         return( NULL );
-    hash_tbl->table = (hash_struct **)MemAlloc( size * sizeof( hash_struct * ) );
+    hash_tbl->table = (hash_entry_struct **)MemAlloc( size * sizeof( hash_entry_struct * ) );
     if( hash_tbl->table == NULL )
         return( NULL );
     hash_tbl->size = size;
-    hash_tbl->type = type;
-    hash_tbl->compare = func;
-    for( loop = 0; loop < size; loop ++ ) {
-        hash_tbl->table[loop] = NULL;
+    switch( type ) {
+    case HASH_HANDLE:
+        hash_tbl->hash_func = handle_hash;
+        hash_tbl->compare_func = handle_cmp;
+        break;
+    case HASH_STRING:
+        hash_tbl->hash_func = string_hash;
+        hash_tbl->compare_func = string_cmp;
+        break;
+    case HASH_STRING_IGNORECASE:
+    default:
+        hash_tbl->hash_func = string_hash_ignorecase;
+        hash_tbl->compare_func = string_cmp_ignorecase;
+        break;
+    }
+    for( i = 0; i < size; i++ ) {
+        hash_tbl->table[i] = NULL;
     }
     return( hash_tbl );
 }
 
 void HashTableFree( hash_table hash_tbl )
 {
-    hash_table_size     loop;
-    hash_struct         *hash_ptr;
-    hash_struct         *next_hash_ptr;
+    hash_value          i;
+    hash_entry_struct   *hash_entry;
+    hash_entry_struct   *next_hash_entry;
 
-    if( !hash_tbl ) return;
+    if( hash_tbl == NULL )
+        return;
 
-    for( loop = 0; loop < hash_tbl->size; loop++ ) {
-        for( hash_ptr = hash_tbl->table[loop]; hash_ptr != NULL; hash_ptr = next_hash_ptr ) {
-            next_hash_ptr = hash_ptr->next;
-            MemFree( hash_ptr );
+    for( i = 0; i < hash_tbl->size; i++ ) {
+        for( hash_entry = hash_tbl->table[i]; hash_entry != NULL; hash_entry = next_hash_entry ) {
+            next_hash_entry = hash_entry->next;
+            MemFree( hash_entry );
         }
     }
     MemFree( hash_tbl->table );

@@ -108,7 +108,7 @@ mad_status MADIMPENTRY( TraceSimulate )( mad_trace_data *td, mad_disasm_data *dd
     case MDC_JUMP:
     case MDC_CALL:
     case MDC_RET:
-        new = dd->ins.op[1].value;
+        new = dd->ins.op[1].value.s._32[I64LO32];
         if( dd->ins.op[1].type == DO_RELATIVE ) {
             new += out->axp.pal.nt.fir.u._32[0];
         }

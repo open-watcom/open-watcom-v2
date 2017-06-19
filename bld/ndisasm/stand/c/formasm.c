@@ -95,7 +95,7 @@ typedef enum {
     ASCIZ
 } string_type;
 
-int IsMasmOutput( void )
+bool IsMasmOutput( void )
 {
     return( (DFormat & DFF_UNIX) == 0 && ( GetFormat() == ORL_OMF ) );
 }
@@ -203,6 +203,7 @@ static size_t tryDUP( unsigned_8 *bytes, size_t i, size_t size )
 {
     size_t      d;
     size_t      dup;
+    dis_value   value;
 
 
     if( i >= ( size - ( 8 * MIN_DUP_LINES ) ) )
@@ -221,11 +222,14 @@ static size_t tryDUP( unsigned_8 *bytes, size_t i, size_t size )
 
     BufferStore( "0%XH DUP(", dup );
 
+    value.u._32[I64HI32] = 0;
     for( dup = 0; dup < 7; dup++ ) {
-        BufferHex( 2, bytes[i + dup] );
+        value.u._32[I64LO32] = bytes[i + dup];
+        BufferHex( 2, value );
         BufferConcat( "," );
     }
-    BufferHex( 2, bytes[i + 7] );
+    value.u._32[I64LO32] = bytes[i + 7];
+    BufferHex( 2, value );
     BufferConcat( ")" );
     return( d );
 }
@@ -235,7 +239,8 @@ static void printRest( unsigned_8 *bytes, size_t size )
     size_t      i;
     size_t      d;
     char        *btype;
-    int         is_masm;
+    bool        is_masm;
+    dis_value   value;
 
     is_masm = IsMasmOutput();
     if( is_masm ) {
@@ -244,6 +249,7 @@ static void printRest( unsigned_8 *bytes, size_t size )
         btype = "    .byte\t";
     }
     BufferConcat( btype );
+    value.u._32[I64HI32] = 0;
     for( i = 0; i < size; ) {
         // see if we can replace large chunks of homogenous
         // segment space by using the DUP macro
@@ -260,7 +266,8 @@ static void printRest( unsigned_8 *bytes, size_t size )
             }
         }
 
-        BufferHex( 2, bytes[i] );
+        value.u._32[I64LO32] = bytes[i];
+        BufferHex( 2, value );
         if( i < size - 1 ) {
             if( (i % 8) == 7 ) {
                 BufferConcatNL();
@@ -276,11 +283,11 @@ static void printRest( unsigned_8 *bytes, size_t size )
     BufferPrint();
 }
 
-dis_value HandleAddend( ref_entry r_entry )
+dis_sec_addend HandleAddend( ref_entry r_entry )
 // sign-extend an addend value by the appropriate number of bits.
 {
-    dis_value   r_addend;
-    int         bits;
+    dis_sec_addend  r_addend;
+    int             bits;
 
     r_addend = r_entry->addend;
     switch( r_entry->type ) {
@@ -339,14 +346,12 @@ dis_value HandleAddend( ref_entry r_entry )
         bits = 64;
         break;
     }
-    if( (bits != 32) && (r_addend & (1 << (bits - 1) ) ) ) {
+    if( (bits < 32) && (r_addend & (1 << (bits - 1) ) ) )
         return( r_addend | ( 0xFFFFFFFF ^ ((1 << bits) - 1) ) );
-    } else {
-        return( r_addend );
-    }
+    return( r_addend );
 }
 
-int IsDataReloc( ref_entry r_entry )
+bool IsDataReloc( ref_entry r_entry )
 {
     switch( r_entry->type ) {
     case ORL_RELOC_TYPE_ABSOLUTE:
@@ -363,9 +368,9 @@ int IsDataReloc( ref_entry r_entry )
     case ORL_RELOC_TYPE_PLTREL_32:
     case ORL_RELOC_TYPE_PLT_32:
     case ORL_RELOC_TYPE_WORD_64:
-        return( 1 );
+        return( true );
     default:
-        return( 0 );
+        return( false );
     }
 }
 
@@ -435,60 +440,51 @@ unsigned HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
     unsigned            rv;
     const char          * const *types;
     char                buff[MAX_SYM_LEN];      // fixme: should be TS_MAX_OBJNAME or something
+    dis_value           value;
 
     if( IsMasmOutput() ) {
         types = masmTypes;
     } else {
         types = unixTypes;
     }
-
     rv = RelocSize( r_entry );
+    if( asmLabels && types[rv] != NULL ) {
+        BufferConcat( types[rv] );
+    }
+    value.u._32[I64HI32] = 0;
     switch( rv ) {
     case 6:
-        if( asmLabels && types[rv] ) {
-            BufferConcat( types[rv] );
-        }
-        HandleAReference(*((unsigned_32 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED,
-                            r_entry->offset, r_entry->offset + rv, &r_entry, buff );
-        BufferConcat( buff );
+        value.u._32[I64LO32] = *(unsigned_32 *)data;
         break;
     case 4:
-        if( asmLabels ) {
-            BufferConcat( types[rv] );
-        }
-        HandleAReference(*((unsigned_32 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED,
-                            r_entry->offset, r_entry->offset + rv, &r_entry, buff );
-        BufferConcat( buff );
+        value.u._32[I64LO32] = *(unsigned_32 *)data;
         break;
     case 2:
-        if( asmLabels ) {
-            BufferConcat( types[rv] );
-        }
-        HandleAReference(*((unsigned_16 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED,
-                            r_entry->offset, r_entry->offset + rv, &r_entry, buff );
-        BufferConcat( buff );
+        value.u._32[I64LO32] = *(unsigned_16 *)data;
         break;
     case 1:
-        if( asmLabels ) {
-            BufferConcat( types[rv] );
-        }
-        HandleAReference(*((unsigned_8 *)data), 0, RFLAG_DEFAULT | RFLAG_IS_IMMED,
-                            r_entry->offset, r_entry->offset + rv, &r_entry, buff );
-        BufferConcat( buff );
+        value.u._32[I64LO32] = *(unsigned_8 *)data;
         break;
     case 8:
-        if( asmLabels ) {
-            BufferConcat( types[rv] );
-        }
-        HandleAReference( 0, 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset, r_entry->offset + rv, &r_entry, buff );
-        BufferConcat( buff );
-        if( *((unsigned_32 *)data) != 0 || *((unsigned_32 *)data + 1) != 0 ) {
+        value.u._32[I64LO32] = 0;
+        break;
+    default:
+        value.u._32[I64LO32] = 0;
+        break;
+    }
+    HandleAReference( value, 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset, r_entry->offset + rv, &r_entry, buff );
+    BufferConcat( buff );
+    switch( rv ) {
+    case 8:
+        value.u._32[I64LO32] = *(unsigned_32 *)data;
+        value.u._32[I64HI32] = *((unsigned_32 *)data + 1);
+        if( value.u._32[I64LO32] != 0 || value.u._32[I64HI32] != 0 ) {
             BufferConcat( "+" );
-            if( *((unsigned_32 *)data + 1) != 0 ) {
-                BufferStore( "0x%x", *((unsigned_32 *)data + 1) );
-                BufferStore( "%08x", *((unsigned_32 *)data) );
+            if( value.u._32[I64HI32] != 0 ) {
+                BufferStore( "0x%x", value.u._32[I64HI32] );
+                BufferStore( "%08x", value.u._32[I64LO32] );
             } else {
-                BufferStore( "0x%x", *((unsigned_32 *)data) );
+                BufferStore( "0x%x", value.u._32[I64LO32] );
             }
         }
         break;
@@ -500,7 +496,7 @@ static void printOut( char *string, size_t offset, size_t size )
 {
     char *              string_left = string;
     size_t              curr_pos = 0;
-    int                 ascii;
+    bool                ascii;
 
     /* unused parameters */ (void)offset;
 
@@ -528,12 +524,12 @@ static void printOut( char *string, size_t offset, size_t size )
     }
 }
 
-static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
+static label_entry dumpAsmLabel( label_entry l_entry, section_ptr section,
                                  dis_sec_offset curr_pos, dis_sec_offset end,
                                  unsigned_8 *contents, char *buffer )
 {
-    int         raw;
-    int         is_masm;
+    bool        raw;
+    bool        is_masm;
 
     /* unused parameters */ (void)end;
 
@@ -541,7 +537,7 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
 
     is_masm = IsMasmOutput();
 
-    while( l_entry != NULL && ( l_entry->type == LTYP_ABSOLUTE || l_entry->offset <= curr_pos ) ) {
+    for( ; l_entry != NULL && ( l_entry->type == LTYP_ABSOLUTE || l_entry->offset <= curr_pos ); l_entry = l_entry->next ) {
         switch( l_entry->type ) {
         case LTYP_ABSOLUTE:
             // no print any absolute label here
@@ -551,11 +547,10 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
                 break;
             /* fall through */
         case LTYP_NAMED:
-            if( strcmp( l_entry->label.name, sec->name ) == 0 )
+            if( strcmp( l_entry->label.name, section->name ) == 0 )
                 break;
             /* fall through */
         case LTYP_UNNAMED:
-
             if( raw ) {
                 strncpy( buffer, (char *)contents + curr_pos, sizeof( unsigned_32 ) );
             }
@@ -589,14 +584,13 @@ static label_entry dumpAsmLabel( label_entry l_entry, section_ptr sec,
             BufferConcatNL();
             BufferPrint();
         }
-        l_entry = l_entry->next;
     }
     return( l_entry );
 }
 
 return_val DumpASMDataFromSection( unsigned_8 *contents, dis_sec_offset start,
                                    dis_sec_offset end, label_entry *lab_entry,
-                                   ref_entry *reference_entry, section_ptr sec )
+                                   ref_entry *reference_entry, section_ptr section )
 {
     dis_sec_offset      curr_pos;
     size_t              curr_size;
@@ -622,7 +616,7 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, dis_sec_offset start,
 
         /* dump labels
          */
-        l_entry = dumpAsmLabel( l_entry, sec, curr_pos, end, contents, buffer );
+        l_entry = dumpAsmLabel( l_entry, section, curr_pos, end, contents, buffer );
 
         curr_size = end - curr_pos;
         if( l_entry != NULL ) {
@@ -633,8 +627,10 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, dis_sec_offset start,
         }
 
         /* Skip over pair relocs */
-        while( r_entry != NULL && (r_entry->type == ORL_RELOC_TYPE_PAIR || r_entry->offset < curr_pos) ) {
-            r_entry = r_entry->next;
+        for( ; r_entry != NULL; r_entry = r_entry->next ) {
+            if( r_entry->type != ORL_RELOC_TYPE_PAIR && r_entry->offset >= curr_pos ) {
+                break;
+            }
         }
         if( r_entry != NULL && r_entry->offset < (curr_pos + curr_size) ) {
             if( r_entry->offset == curr_pos ) {
@@ -662,18 +658,20 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, dis_sec_offset start,
     return( RC_OKAY );
 }
 
-return_val DumpASMSection( section_ptr sec, unsigned_8 *contents, orl_sec_size size, unsigned pass )
+return_val DumpASMSection( section_ptr section, unsigned_8 *contents, dis_sec_size size, unsigned pass )
 {
-    hash_data           *data_ptr;
+    hash_data           *h_data;
     label_list          sec_label_list;
     label_entry         l_entry;
     ref_list            sec_ref_list;
     ref_entry           r_entry;
     return_val          err;
+    hash_key            h_key;
 
-    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) sec->shnd );
-    if( data_ptr != NULL ) {
-        sec_label_list = (label_list)*data_ptr;
+    h_key.u.sec_handle = section->shnd;
+    h_data = HashTableQuery( HandleToLabelListTable, h_key );
+    if( h_data != NULL ) {
+        sec_label_list = h_data->u.sec_label_list;
         l_entry = sec_label_list->first;
     } else {
         sec_label_list = NULL;
@@ -681,9 +679,9 @@ return_val DumpASMSection( section_ptr sec, unsigned_8 *contents, orl_sec_size s
     }
 
     r_entry = NULL;
-    data_ptr = HashTableQuery( HandleToRefListTable, (hash_value) sec->shnd );
-    if( data_ptr != NULL ) {
-        sec_ref_list = (ref_list)*data_ptr;
+    h_data = HashTableQuery( HandleToRefListTable, h_key );
+    if( h_data != NULL ) {
+        sec_ref_list = h_data->u.sec_ref_list;
         if( sec_ref_list != NULL ) {
             r_entry = sec_ref_list->first;
         }
@@ -696,28 +694,27 @@ return_val DumpASMSection( section_ptr sec, unsigned_8 *contents, orl_sec_size s
 
     if( size == 0 ) {
         if( IsMasmOutput() ) {
-            PrintHeader( sec );
-            dumpAsmLabel( l_entry, sec, 0, 0, NULL, NULL );
-            PrintTail( sec );
+            PrintHeader( section );
+            dumpAsmLabel( l_entry, section, 0, 0, NULL, NULL );
+            PrintTail( section );
         }
         return( RC_OKAY );
     }
 
-    PrintHeader( sec );
-    err = DumpASMDataFromSection( contents, 0, size, &l_entry, &r_entry, sec );
+    PrintHeader( section );
+    err = DumpASMDataFromSection( contents, 0, size, &l_entry, &r_entry, section );
     if( size > 0 ) {
-        l_entry = dumpAsmLabel( l_entry, sec, size, size, NULL, NULL );
+        l_entry = dumpAsmLabel( l_entry, section, size, size, NULL, NULL );
     }
     BufferConcatNL();
     BufferPrint();
     if( err == RC_OKAY ) {
-        PrintTail( sec );
+        PrintTail( section );
     }
     return( err );
 }
 
-static return_val bssUnixASMSection( section_ptr sec, orl_sec_size size,
-                                     label_entry l_entry )
+static return_val bssUnixASMSection( section_ptr section, dis_sec_size size, label_entry l_entry )
 {
     dis_sec_offset              dsiz = 0;
     char                        *prefix;
@@ -726,10 +723,10 @@ static return_val bssUnixASMSection( section_ptr sec, orl_sec_size size,
     if( ( size == 0 ) && ( l_entry == NULL ) )
         return( RC_OKAY );
 
-    PrintHeader( sec );
+    PrintHeader( section );
     prev_entry = NULL;
     for( ; l_entry != NULL; l_entry = l_entry->next ) {
-        if( ( l_entry->type == LTYP_SECTION ) && ( strcmp( l_entry->label.name, sec->name ) == 0 ) ) {
+        if( ( l_entry->type == LTYP_SECTION ) && ( strcmp( l_entry->label.name, section->name ) == 0 ) ) {
             continue;
         } else if( prev_entry == NULL ) {
             prev_entry = l_entry;
@@ -798,18 +795,20 @@ static return_val bssUnixASMSection( section_ptr sec, orl_sec_size size,
 
 #define OFFSET_UNDEF    ((size_t)-1)
 
-static return_val bssMasmASMSection( section_ptr sec, orl_sec_size size,
-                                     label_entry l_entry )
+static return_val bssMasmASMSection( section_ptr section, dis_sec_size size, label_entry l_entry )
 {
-    size_t  offset = OFFSET_UNDEF;
+    size_t      offset = OFFSET_UNDEF;
+    dis_value   value;
 
-    PrintHeader( sec );
+    PrintHeader( section );
 
+    value.u._32[I64HI32] = 0;
     for( ; l_entry != NULL; l_entry = l_entry->next ) {
         if( l_entry->type != LTYP_SECTION ) {
             if( offset != l_entry->offset ) {
                 BufferStore( "    ORG " );
-                BufferHex( 8, l_entry->offset );
+                value.u._32[I64LO32] = l_entry->offset;
+                BufferHex( 8, value );
                 offset = l_entry->offset;
                 BufferConcatNL();
                 BufferPrint();
@@ -840,12 +839,13 @@ static return_val bssMasmASMSection( section_ptr sec, orl_sec_size size,
     }
     if( size > offset ) {
         BufferStore( "    ORG " );
-        BufferHex( 8, size );
+        value.u._32[I64LO32] = size;
+        BufferHex( 8, value );
         BufferConcatNL();
         BufferPrint();
     }
 
-    PrintTail( sec );
+    PrintTail( section );
 
     BufferConcatNL();
     BufferPrint();
@@ -853,36 +853,40 @@ static return_val bssMasmASMSection( section_ptr sec, orl_sec_size size,
     return( RC_OKAY );
 }
 
-return_val BssASMSection( section_ptr sec, orl_sec_size size, unsigned pass )
+return_val BssASMSection( section_ptr section, dis_sec_size size, unsigned pass )
 {
-    hash_data *                 data_ptr;
-    label_list                  sec_label_list;
+    hash_data           *h_data;
+    label_list          sec_label_list;
+    hash_key            h_key;
 
     if( pass == 1 ) {
         return RC_OKAY;
     }
     /* Obtain the Symbol Table */
-    data_ptr = HashTableQuery( HandleToLabelListTable, (hash_value) sec->shnd );
-    if( data_ptr == NULL ) {
+    h_key.u.sec_handle = section->shnd;
+    h_data = HashTableQuery( HandleToLabelListTable, h_key );
+    if( h_data == NULL ) {
         return RC_OKAY;
     }
-    sec_label_list = (label_list)*data_ptr;
+    sec_label_list = h_data->u.sec_label_list;
 
     if( IsMasmOutput() ) {
-        return( bssMasmASMSection( sec, size, sec_label_list->first ) );
+        return( bssMasmASMSection( section, size, sec_label_list->first ) );
     } else {
-        return( bssUnixASMSection( sec, size, sec_label_list->first ) );
+        return( bssUnixASMSection( section, size, sec_label_list->first ) );
     }
 }
 
-char *SkipRef( ref_entry r_entry )
+const char *SkipRef( ref_entry r_entry )
 {
-    hash_data   *data_ptr;
+    hash_data   *h_data;
+    hash_key    h_key;
 
-    if( SkipRefTable && ( r_entry->label->type == LTYP_EXTERNAL_NAMED ) ) {
-        data_ptr = HashTableQuery( SkipRefTable, (hash_value)(r_entry->label->label.name) );
-        if( data_ptr != NULL ) {
-            return( (char *)*data_ptr );
+    if( SkipRefTable != NULL && ( r_entry->label->type == LTYP_EXTERNAL_NAMED ) ) {
+        h_key.u.string = r_entry->label->label.name;
+        h_data = HashTableQuery( SkipRefTable, h_key );
+        if( h_data != NULL ) {
+            return( h_data->u.string );
         }
     }
     return( NULL );

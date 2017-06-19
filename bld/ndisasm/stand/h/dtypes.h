@@ -36,12 +36,14 @@
 
 // label list
 
-typedef uint_32                     label_number;
-typedef uint_32                     label_id;
-typedef uint_16                     list_size;
-typedef uint_16                     num_errors;
+typedef unsigned_32                 label_number;
+typedef unsigned_32                 label_id;
+typedef unsigned_16                 list_size;
+typedef unsigned_16                 num_errors;
 
-typedef orl_sec_offset              dis_sec_offset;
+typedef unsigned_32                 dis_sec_size;
+typedef unsigned_32                 dis_sec_offset;
+typedef signed_32                   dis_sec_addend;
 
 typedef enum {
     LTYP_EXTERNAL_NAMED,
@@ -68,7 +70,7 @@ struct label_entry_struct {
     label_type          type;
     orl_symbol_binding  binding;
     union {
-        char *          name;
+        char            *name;
         label_number    number;
     } label;
     label_entry         next;
@@ -107,9 +109,9 @@ struct reference_entry_struct {
     label_entry         label;
     dis_sec_offset      offset;
     orl_reloc_type      type;
-    orl_sec_addend      addend;
+    dis_sec_addend      addend;
     ref_entry           next;
-    int                 no_val;
+    bool                has_val;
     const char          *frame;
 };
 
@@ -215,33 +217,56 @@ typedef struct sa_disasm_struct     sa_disasm_struct;
 typedef sa_disasm_struct            *sa_disasm;
 
 // hash table definitions
-typedef pointer_int                 hash_value;
-typedef pointer_int                 hash_data;
-typedef uint_32                     hash_table_size;
+typedef struct {
+    union {
+//        const void                  *handle;
+        const void                  *sec_handle;
+        const void                  *sym_handle;
+        const char                  *string;
+    } u;
+} hash_key;
+
+typedef struct {
+    union {
+//        const void                  *handle;
+        ref_list                    sec_ref_list;
+        label_list                  sec_label_list;
+        section_type                sec_type;
+        section_ptr                 section;
+        const char                  *string;
+        label_entry                 lab_entry;
+    } u;
+} hash_data;
+
+typedef unsigned_32                 hash_value;
 
 typedef enum {
     HASH_STRING,
-    HASH_NUMBER
+    HASH_STRING_IGNORECASE,
+    HASH_HANDLE
 } hash_table_type;
 
-typedef int     (*hash_table_comparison_func)( hash_value, hash_value );
+typedef struct hash_entry_struct    hash_entry_struct;
+typedef struct hash_table_struct    hash_table_struct;
+typedef struct hash_entry_data      hash_entry_data;
 
-struct hash_struct {
-    hash_value                      key;
+struct hash_entry_data {
+    hash_key                        key;
     hash_data                       data;
-    struct hash_struct              *next;
 };
 
-typedef struct hash_struct          hash_struct;
+struct hash_entry_struct {
+    hash_entry_data                 entry;
+    hash_entry_struct               *next;
+};
 
 struct hash_table_struct {
-    hash_table_size                 size;
-    hash_table_type                 type;
-    hash_table_comparison_func      compare;
-    hash_struct                     **table;
+    hash_value                      size;
+    hash_value                      (*hash_func)(hash_value,hash_key);
+    bool                            (*compare_func)(hash_key,hash_key);
+    hash_entry_struct               **table;
 };
 
-typedef struct hash_table_struct    hash_table_struct;
 typedef hash_table_struct           *hash_table;
 
 #endif

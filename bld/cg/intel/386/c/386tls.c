@@ -240,7 +240,7 @@ extern  void    ExpandThreadDataRef( instruction *ins )
     used.
 */
 {
-    int                 i;
+    opcnt       i;
 
     for( i = 0; i < ins->num_operands; i++ ) {
         ExpandTlsOp( ins, &ins->operands[i] );

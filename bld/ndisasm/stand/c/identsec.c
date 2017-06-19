@@ -43,48 +43,48 @@ section_type IdentifySec( orl_sec_handle shnd )
 {
     orl_sec_type        type;
     orl_sec_flags       flags;
-    const char          *name;
-    hash_data           *data_ptr;
+    hash_data           *h_data;
+    hash_key            h_key;
 
     type = ORLSecGetType( shnd );
     switch( type ) {
-        case ORL_SEC_TYPE_SYM_TABLE:
-            return( SECTION_TYPE_SYM_TABLE );
-        case ORL_SEC_TYPE_DYN_SYM_TABLE:
-            return( SECTION_TYPE_DYN_SYM_TABLE );
-        case ORL_SEC_TYPE_NO_BITS:
-            return( SECTION_TYPE_BSS );
-        case ORL_SEC_TYPE_PROG_BITS:
-        case ORL_SEC_TYPE_EXPORT:
-        case ORL_SEC_TYPE_IMPORT:
-            flags = ORLSecGetFlags( shnd );
-            if( flags & ORL_SEC_FLAG_EXEC ) {
-                return( SECTION_TYPE_TEXT );
-            }
-            name = ORLSecGetName( shnd );
-            data_ptr = HashTableQuery( NameRecognitionTable, (hash_value) name );
-            if( data_ptr ) {
-                return( (section_type) *data_ptr );
-            }
-            return( SECTION_TYPE_DATA );
-        case ORL_SEC_TYPE_RELOCS:
-            // Under OMF the reloc section is virtual and does not contain
-            // what would normally be considered data
-            if( GetFormat() == ORL_OMF ) {
-                return( SECTION_TYPE_RELOCS );
-            }
-            return( SECTION_TYPE_UNKNOWN );
-        case ORL_SEC_TYPE_NOTE:
-            if( GetFormat() == ORL_OMF ) {
-                return( SECTION_TYPE_DRECTVE );
-            }
-            name = ORLSecGetName( shnd );
-            data_ptr = HashTableQuery( NameRecognitionTable, (hash_value) name );
-            if( data_ptr ) {
-                return( (section_type) *data_ptr );
-            }
-            // fall through - unknown*/
-        default:
-            return( SECTION_TYPE_UNKNOWN );
+    case ORL_SEC_TYPE_SYM_TABLE:
+        return( SECTION_TYPE_SYM_TABLE );
+    case ORL_SEC_TYPE_DYN_SYM_TABLE:
+        return( SECTION_TYPE_DYN_SYM_TABLE );
+    case ORL_SEC_TYPE_NO_BITS:
+        return( SECTION_TYPE_BSS );
+    case ORL_SEC_TYPE_PROG_BITS:
+    case ORL_SEC_TYPE_EXPORT:
+    case ORL_SEC_TYPE_IMPORT:
+        flags = ORLSecGetFlags( shnd );
+        if( flags & ORL_SEC_FLAG_EXEC ) {
+            return( SECTION_TYPE_TEXT );
+        }
+        h_key.u.string = ORLSecGetName( shnd );
+        h_data = HashTableQuery( NameRecognitionTable, h_key );
+        if( h_data != NULL ) {
+            return( h_data->u.sec_type );
+        }
+        return( SECTION_TYPE_DATA );
+    case ORL_SEC_TYPE_RELOCS:
+        // Under OMF the reloc section is virtual and does not contain
+        // what would normally be considered data
+        if( GetFormat() == ORL_OMF ) {
+            return( SECTION_TYPE_RELOCS );
+        }
+        return( SECTION_TYPE_UNKNOWN );
+    case ORL_SEC_TYPE_NOTE:
+        if( GetFormat() == ORL_OMF ) {
+            return( SECTION_TYPE_DRECTVE );
+        }
+        h_key.u.string = ORLSecGetName( shnd );
+        h_data = HashTableQuery( NameRecognitionTable, h_key );
+        if( h_data != NULL ) {
+            return( h_data->u.sec_type );
+        }
+        // fall through - unknown*/
+    default:
+        return( SECTION_TYPE_UNKNOWN );
     }
 }

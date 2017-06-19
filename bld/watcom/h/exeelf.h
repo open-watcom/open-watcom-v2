@@ -643,9 +643,20 @@ typedef struct {
     Elf32_Addr  p_paddr;        // segment physical address
     Elf32_Word  p_filesz;       // size of segment in file
     Elf32_Word  p_memsz;        // size of segment in memory
-    Elf32_Word  p_flags;
+    Elf32_Word  p_flags;        // segment flags
     Elf32_Word  p_align;        // segment align value (in mem & file)
 } Elf32_Phdr;
+
+typedef struct {
+    Elf64_Word  p_type;         // type of segment
+    Elf64_Word  p_flags;        // segment flags
+    Elf64_Off   p_offset;       // offset of segment from beginnning of file
+    Elf64_Addr  p_vaddr;        // segment virtual address
+    Elf64_Addr  p_paddr;        // segment physical address
+    Elf64_Word  p_filesz;       // size of segment in file
+    Elf64_Word  p_memsz;        // size of segment in memory
+    Elf64_Word  p_align;        // segment align value (in mem & file)
+} Elf64_Phdr;
 
 // segment types
 
@@ -665,6 +676,14 @@ typedef struct {
 
 #define PT_OS_O         7       // target os information
 #define PT_RES_O        9       // read-only resource information
+
+// elf segment flag bits
+
+#define PF_X            0x1             // seg has execute permissions
+#define PF_W            0x2             // seg has write permissions
+#define PF_R            0x4             // seg has read permissions
+#define PF_S            0x01000000      // segment is shared.
+#define PF_MASKPROC     0xf0000000      // processor-specific flag mask
 
 // note entry format
 
@@ -764,14 +783,6 @@ typedef struct {
 // DT_INITTERM function prototype
 
 typedef unsigned long INITTERM( unsigned long modhandle, unsigned long flag );
-
-// elf segment flag bits
-
-#define PF_X            0x1             // seg has execute permissions
-#define PF_W            0x2             // seg has write permissions
-#define PF_R            0x4             // seg has read permissions
-#define PF_S            0x01000000      // segment is shared.
-#define PF_MASKPROC     0xf0000000      // processor-specific flag mask
 
 // operating system information
 

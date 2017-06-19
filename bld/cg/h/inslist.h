@@ -41,6 +41,8 @@ typedef int                     instruction_id;
 
 typedef unsigned_32             source_line_number;
 
+typedef byte                    opcnt;
+
 typedef enum {
         INS_NEEDS_WORK,
         OPERANDS_NEED_WORK,

@@ -217,7 +217,7 @@ static bool PushDelayedIfStackOperand( instruction *ins, pn parm, call_state *st
     operands are 8087 stack operands.
 */
 
-    int         i;
+    opcnt       i;
     an          addr;
 
     addr = parm->name;
@@ -242,7 +242,7 @@ static bool PushDelayedIfRedefinition( instruction *ins, pn parm, call_state *st
 */
 
     instruction *next;
-    int         i;
+    opcnt       i;
 
     next = ins->head.next;
     for(;;) {

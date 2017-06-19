@@ -122,7 +122,7 @@ static  void    DumpOpcode( instruction *ins )
 bool    DumpFPUIns87( instruction *ins )
 /**************************************/
 {
-    int         i;
+    opcnt       i;
 
     if( ins->u.gen_table == NULL || ins->table == NULL )
         return( false );

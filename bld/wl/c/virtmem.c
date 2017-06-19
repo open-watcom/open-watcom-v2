@@ -404,8 +404,8 @@ void FreeVirtMem( void )
     _LnkFree( HugeTab );
 }
 
-static void AllocNode( seg_table *node )
-/**************************************/
+static void AllocVMNode( seg_table *node )
+/****************************************/
 /* allocate a regular 4K page */
 {
     void        *mem;
@@ -421,8 +421,8 @@ static void AllocNode( seg_table *node )
     LinkList( &NextSwap, node );
 }
 
-static void AllocHugeNode( huge_table *node )
-/*******************************************/
+static void AllocHugeVMNode( huge_table *node )
+/*********************************************/
 /* allocate a huge page */
 {
     void *      mem;
@@ -490,7 +490,7 @@ static bool ScanNodes( virt_mem mem, void *info, virt_mem_size len,
             }
             end_off = off + len;
             if( page == NULL ) {
-                AllocHugeNode( bignode );
+                AllocHugeVMNode( bignode );
                 page = bignode->page;
             }
             if( end_off <= currlen )
@@ -510,7 +510,7 @@ static bool ScanNodes( virt_mem mem, void *info, virt_mem_size len,
             node = NODE( stg );
             end_off = off + len;
             if( node->loc.spill == 0 ) {
-                AllocNode( node );
+                AllocVMNode( node );
             }
             if( end_off <= node->size )
                 break;

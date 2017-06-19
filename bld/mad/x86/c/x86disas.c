@@ -227,7 +227,7 @@ static mad_disasm_control Adjustment( mad_disasm_data *dd )
     switch( dd->ins.op[OP_1].type & DO_MASK ) {
     case DO_IMMED:
     case DO_RELATIVE:
-        if( (addr_off)dd->ins.op[OP_1].value < dd->addr.mach.offset )
+        if( (addr_off)dd->ins.op[OP_1].value.s._32[I64LO32] < dd->addr.mach.offset )
             return( MDC_TAKEN_BACK );
         return( MDC_TAKEN_FORWARD );
     }
@@ -383,7 +383,7 @@ mad_status MADIMPENTRY( DisasmInsNext )( mad_disasm_data *dd, const mad_register
             next->mach.segment = dd->ins.op[OP_1].extra;
             /* fall through */
         case DO_RELATIVE:
-            next->mach.offset = dd->ins.op[OP_1].value;
+            next->mach.offset = dd->ins.op[OP_1].value.s._32[I64LO32];
             break;
         case DO_REG:
             next->mach.offset = RegValue( mr, dd->ins.op[OP_1].base );
@@ -531,7 +531,7 @@ static walk_result MemReference( int opnd, mad_disasm_data *dd, MEMREF_WALKER *w
     }
     addr.sect_id = 0;
     addr.indirect = 0;
-    addr.mach.offset = op->value;
+    addr.mach.offset = op->value.s._32[I64LO32];
     if( op->base != DR_NONE ) {
         addr.mach.offset += RegValue( mr, op->base );
     }
@@ -937,15 +937,15 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
             size = ( ins->flags.u.x86 & DIF_X86_OPND_LONG ) ? 4 : 2;
         }
         MCTypeInfoForHost( MTK_INTEGER, size, &mti );
-        MCTypeToString( dd->radix, &mti, &op->value, buff, &buff_size );
+        MCTypeToString( dd->radix, &mti, &op->value.s._32[I64LO32], buff, &buff_size );
         break;
     case DO_RELATIVE:
-        val.mach.offset += op->value;
+        val.mach.offset += op->value.s._32[I64LO32];
         MCAddrToString( val, ( ins->flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_N32_PTR : X86T_N16_PTR, MLK_CODE, buff, buff_size );
         break;
     case DO_ABSOLUTE:
         if( op->type & DO_EXTRA ) {
-            val.mach.offset = op->value;
+            val.mach.offset = op->value.s._32[I64LO32];
             val.mach.segment = op->extra;
             MCAddrToString( val, ( ins->flags.u.x86 & DIF_X86_OPND_LONG ) ? X86T_F32_PTR : X86T_F16_PTR, MLK_CODE, buff, buff_size );
             break;
@@ -957,20 +957,20 @@ size_t DisCliValueString( void *d, dis_dec_ins *ins, unsigned opnd, char *buff, 
             // direct memory address
             size = ( ins->flags.u.x86 & DIF_X86_ADDR_LONG ) ? 4 : 2;
             MCTypeInfoForHost( MTK_INTEGER, size, &mti );
-            MCTypeToString( dd->radix, &mti, &op->value, buff, &buff_size );
-        } else if( op->value == 0 ) {
+            MCTypeToString( dd->radix, &mti, &op->value.s._32[I64LO32], buff, &buff_size );
+        } else if( op->value.s._32[I64LO32] == 0 ) {
             // don't output zero disp in indirect memory address
         } else {
             char *p = buff;
             // indirect memory address with displacement
-            if( op->value < 0 ) {
+            if( op->value.s._32[I64LO32] < 0 ) {
                 *( p++ ) = '-';
                 --buff_size;
-                op->value = -op->value;
+                op->value.s._32[I64LO32] = -op->value.s._32[I64LO32];
             }
-            size = GetValueByteSize( op->value );
+            size = GetValueByteSize( op->value.s._32[I64LO32] );
             MCTypeInfoForHost( MTK_INTEGER, size, &mti );
-            MCTypeToString( dd->radix, &mti, &op->value, p, &buff_size );
+            MCTypeToString( dd->radix, &mti, &op->value.s._32[I64LO32], p, &buff_size );
         }
         break;
     }

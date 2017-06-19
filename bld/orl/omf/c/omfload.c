@@ -303,7 +303,7 @@ static orl_return       processThreadFixup( omf_file_handle ofh, omf_bytes *buff
     unsigned_8          method;
     unsigned_8          thred;
     unsigned_8          datum;
-    omf_thred_fixup     *thredp;
+    omf_thred_fixup     thredp;
 
     assert( ofh );
     assert( buffer );
@@ -502,7 +502,7 @@ static orl_return       doCEXTDEF( omf_file_handle ofh, omf_rectyp typ )
     orl_return          return_val;
     omf_bytes           buffer;
     omf_rec_size        len;
-    omf_string_struct   *extname;
+    omf_string          extname;
     omf_idx             idx;
 
     assert( ofh );
@@ -1283,7 +1283,7 @@ orl_return OmfLoadFileStructure( omf_file_handle ofh )
     return( return_val );
 }
 
-orl_return      OmfParseScanTab( omf_bytes buffer, omf_rec_size len, omf_scan_tab_struct *st_entry )
+orl_return      OmfParseScanTab( omf_bytes buffer, omf_rec_size len, omf_scan_tab st_entry )
 {
     int         wordsize;
 

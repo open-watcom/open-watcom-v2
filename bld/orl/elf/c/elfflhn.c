@@ -46,7 +46,7 @@ static void free_elf_file_hnd( elf_file_handle elf_file_hnd )
             case ORL_SEC_TYPE_RELOCS:
             case ORL_SEC_TYPE_RELOCS_EXPADD:
                 if( elf_sec_hnd->assoc.reloc.relocs != NULL ) {
-                    _ClientFree( elf_file_hnd, elf_sec_hnd->assoc.reloc.relocs );
+                    _ClientFree( elf_file_hnd, (void *)elf_sec_hnd->assoc.reloc.relocs );
                 }
                 break;
             case ORL_SEC_TYPE_SYM_TABLE:
