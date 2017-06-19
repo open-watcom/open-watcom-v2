@@ -267,6 +267,7 @@ normalize_path()
     tmppath=$(echo $1 | sed 's/\/\//\//g')
     #The printf is necessary to correctly decode unicode sequences
     path=$(printf "$tmppath")
+printf "normalize_path: %s - %s - %s\n" "$1" "$tmppath" "$path"
     if [ $HAVE_READLINK -eq 1 ]; then
         new_path=$(readlink -m "$path")
 
