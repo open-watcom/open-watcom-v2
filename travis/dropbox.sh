@@ -295,7 +295,7 @@ printf "normalize_path_remote: %s - %s - %s\n" "$1" "$tmppath" "$REMOTE_PATH"
 #Returns FILE/DIR/ERR
 db_stat()
 {
-    if [ $1 = "/" ]; then
+    if [ "$1" = "/" ]; then
         echo "DIR"
         return
     fi
