@@ -110,7 +110,7 @@ fi
 print()
 {
     if [ $QUIET -eq 0 ]; then
-            echo "$1";
+        echo "$1";
     fi
 }
 
@@ -263,8 +263,9 @@ check_last_slash()
 
 normalize_path()
 {
+    tmppath=$(echo $1 | sed 's/\/\//\//')
     #The printf is necessary to correctly decode unicode sequences
-    path=$(printf `echo $1 | sed 's/\/\//\//'`)
+    path=$(printf "$tmppath")
     if [ $HAVE_READLINK -eq 1 ]; then
         new_path=$(readlink -m "$path")
 
@@ -480,7 +481,7 @@ db_chunked_upload_file()
     #Uploading chunks...
     while [ "$OFFSET" != "$FILE_SIZE" ]; do
 
-        let OFFSET_MB=$OFFSET/1024/1024
+        OFFSET_MB=$OFFSET/1024/1024
 
         #Create the chunk
         dd if="$FILE_SRC" of="$CHUNK_FILE" bs=1048576 skip=$OFFSET_MB count=$CHUNK_SIZE 2> /dev/null
@@ -491,7 +492,7 @@ db_chunked_upload_file()
         $CURL_BIN $CURL_ACCEPT_CERTIFICATES -X POST -L -s --show-error --globoff -i -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Dropbox-API-Arg: {\"cursor\": {\"session_id\": \"$SESSION_ID\",\"offset\": $OFFSET},\"close\": false}" --header "Content-Type: application/octet-stream" --data-binary @"$CHUNK_FILE" "$API_CHUNKED_UPLOAD_APPEND_URL" 2> /dev/null
         #check_http_response not needed, because we have to retry the request in case of error
 
-        let OFFSET=$OFFSET+$CHUNK_REAL_SIZE
+        OFFSET=$OFFSET+$CHUNK_REAL_SIZE
 
         #Check
         if grep -q "^HTTP/1.1 200 OK" "$RESPONSE_FILE"; then
@@ -499,7 +500,7 @@ db_chunked_upload_file()
             UPLOAD_ERROR=0
         else
             print "*"
-            let UPLOAD_ERROR=$UPLOAD_ERROR+1
+            UPLOAD_ERROR=$UPLOAD_ERROR+1
 
             #On error, the upload is retried for max 3 times
             if [ $UPLOAD_ERROR -gt 2 ]; then
@@ -528,7 +529,7 @@ db_chunked_upload_file()
             break
         else
             print "*"
-            let UPLOAD_ERROR=$UPLOAD_ERROR+1
+            UPLOAD_ERROR=$UPLOAD_ERROR+1
 
             #On error, the commit is retried for max 3 times
             if [ $UPLOAD_ERROR -gt 2 ]; then
@@ -856,8 +857,8 @@ db_sha_local()
         SHA=$(shasum -a 256 "$CHUNK_FILE" | awk '{print $1}')
         SHA_CONCAT="${SHA_CONCAT}${SHA}"
 
-        let OFFSET=$OFFSET+4194304
-        let SKIP=$SKIP+1
+        OFFSET=$OFFSET+4194304
+        SKIP=$SKIP+1
     done
 
     echo $SHA_CONCAT | sed 's/\([0-9A-F]\{2\}\)/\\\\\\x\1/gI' | xargs printf | shasum -a 256 | awk '{print $1}'
