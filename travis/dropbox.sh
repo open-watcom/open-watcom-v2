@@ -36,6 +36,8 @@ SHOW_PROGRESSBAR=0
 SKIP_EXISTING_FILES=0
 ERROR_STATUS=0
 HUMAN_READABLE_SIZE=1
+LOCAL_PATH=""
+REMOTE_PATH=""
 
 #Don't edit these...
 API_LONGPOLL_FOLDER="https://notify.dropboxapi.com/2/files/list_folder/longpoll"
@@ -268,17 +270,16 @@ normalize_path_local()
     #The printf is necessary to correctly decode unicode sequences
     path=$(printf "$tmppath")
     if [ $HAVE_READLINK -eq 1 ]; then
-        new_path=$(readlink -m "$path")
+        LOCAL_PATH=$(readlink -m "$path")
 
         #Adding back the final slash, if present in the source
         if check_last_slash path && [ ${#path} -gt 1 ]; then
-            new_path="$new_path/"
+            LOCAL_PATH="$LOCAL_PATH/"
         fi
     else
-        $new_path="$path"
+        $LOCAL_PATH="$path"
     fi
-printf "normalize_path_local: %s - %s - %s - %s\n" "$1" "$tmppath" "$path" "$new_path"
-    echo "$new_path"
+printf "normalize_path_local: %s - %s - %s - %s\n" "$1" "$tmppath" "$path" "$LOCAL_PATH"
 }
 
 normalize_path_remote()
@@ -286,16 +287,16 @@ normalize_path_remote()
     #replace "//" by "/" anywhere
     tmppath=$(echo $1 | sed 's/\/\//\//g')
     #The printf is necessary to correctly decode unicode sequences
-    path=$(printf "$tmppath")
-printf "normalize_path_remote: %s - %s - %s\n" "$1" "$tmppath" "$path"
-    echo "$path"
+    REMOTE_PATH=$(printf "$tmppath")
+printf "normalize_path_remote: %s - %s - %s\n" "$1" "$tmppath" "$REMOTE_PATH"
 }
 
 #Check if it's a file or directory
 #Returns FILE/DIR/ERR
 db_stat()
 {
-    FILE=$(normalize_path_remote "$1")
+    normalize_path_remote "$1"
+    FILE="$REMOTE_PATH"
 
     if [ $FILE = "/" ]; then
         echo "DIR"
@@ -334,8 +335,10 @@ db_stat()
 #$2 = Remote destination file/dir
 db_upload()
 {
-    SRC=$(normalize_path_local "$1")
-    DST=$(normalize_path_remote "$2")
+    normalize_path_local "$1"
+    SRC="$LOCAL_PATH"
+    normalize_path_remote "$2"
+    DST="$REMOTE_PATH"
 
     #Checking if the file/dir exists
     if [ ! -e "$SRC" ]; then
@@ -392,8 +395,10 @@ db_upload()
 #$2 = Remote destination file
 db_upload_file()
 {
-    FILE_SRC=$(normalize_path_local "$1")
-    FILE_DST=$(normalize_path_remote "$2")
+    normalize_path_local "$1"
+    FILE_SRC="$LOCAL_PATH"
+    normalize_path_remote "$2"
+    FIEL_DST="$REMOTE_PATH"
 
     #Checking not allowed file names
     basefile_dst=$(basename "$FILE_DST")
@@ -438,8 +443,10 @@ db_upload_file()
 #$2 = Remote destination file
 db_simple_upload_file()
 {
-    FILE_SRC=$(normalize_path_local "$1")
-    FILE_DST=$(normalize_path_remote "$2")
+    normalize_path_local "$1"
+    FILE_SRC="$LOCAL_PATH"
+    normalize_path_remote "$2"
+    FILE_DST="$REMOTE_PATH"
 
     if [ $SHOW_PROGRESSBAR -eq 1 ] && [ $QUIET -eq 0 ]; then
         CURL_PARAMETERS="--progress-bar"
@@ -468,8 +475,10 @@ db_simple_upload_file()
 #$2 = Remote destination file
 db_chunked_upload_file()
 {
-    FILE_SRC=$(normalize_path_local "$1")
-    FILE_DST=$(normalize_path_remote "$2")
+    normalize_path_local "$1"
+    FILE_SRC="$LOCAL_PATH"
+    normalize_path_remote "$2"
+    FILE_DST="$REMOTE_PATH"
 
     print " > Uploading \"$FILE_SRC\" to \"$FILE_DST\""
 
@@ -557,8 +566,10 @@ db_chunked_upload_file()
 #$2 = Remote destination dir
 db_upload_dir()
 {
-    DIR_SRC=$(normalize_path_local "$1")
-    DIR_DST=$(normalize_path_remote "$2")
+    normalize_path_local "$1"
+    DIR_SRC="$LOCAL_PATH"
+    normalize_path_remote "$2"
+    DIR_DST="$REMOTE_PATH"
 
     #Creatig remote directory
     db_mkdir "$DIR_DST"
@@ -573,8 +584,10 @@ db_upload_dir()
 #$2 = Local destination file/dir
 db_download()
 {
-    SRC=$(normalize_path_remote "$1")
-    DST=$(normalize_path_local "$2")
+    normalize_path_remote "$1"
+    SRC="$REMOTE_PATH"
+    normalize_path_local "$2"
+    DST="$LOCAL_PATH"
 
     TYPE=$(db_stat "$SRC")
 
@@ -593,7 +606,8 @@ db_download()
             basedir=$(basename "$SRC")
         fi
 
-        DEST_DIR=$(normalize_path_local "$DST/$basedir")
+        normalize_path_local "$DST/$basedir"
+        DEST_DIR="$LOCAL_PATH"
         print " > Downloading folder \"$SRC\" to \"$DEST_DIR\"... \n"
 
         if [ ! -d "$DEST_DIR" ]; then
@@ -667,8 +681,10 @@ db_download()
 #$2 = Local destination file
 db_download_file()
 {
-    FILE_SRC=$(normalize_path_remote "$1")
-    FILE_DST=$(normalize_path_local "$2")
+    normalize_path_remote "$1"
+    FILE_SRC="$REMOTE_PATH"
+    normalize_path_local "$2"
+    FILE_DST="$LOCAL_PATH"
 
     if [ $SHOW_PROGRESSBAR -eq 1 ] && [ $QUIET -eq 0 ]; then
         CURL_PARAMETERS="-L --progress-bar"
@@ -714,7 +730,8 @@ db_download_file()
 #$1 = Remote file to delete
 db_delete()
 {
-    FILE_DST=$(normalize_path_remote "$1")
+    normalize_path_remote "$1"
+    FILE_DST="$REMOTE_PATH"
 
     print " > Deleting \"$FILE_DST\"... "
     $CURL_BIN $CURL_ACCEPT_CERTIFICATES -X POST -L -s --show-error --globoff -i -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Content-Type: application/json" --data "{\"path\": \"$FILE_DST\"}" "$API_DELETE_URL" 2> /dev/null
@@ -733,7 +750,8 @@ db_delete()
 #$1 = Remote directory to create
 db_mkdir()
 {
-    DIR_DST=$(normalize_path_remote "$1")
+    normalize_path_remote "$1"
+    DIR_DST="$REMOTE_PATH"
 
     print " > Creating Directory \"$DIR_DST\"... "
     $CURL_BIN $CURL_ACCEPT_CERTIFICATES -X POST -L -s --show-error --globoff -i -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Content-Type: application/json" --data "{\"path\": \"$DIR_DST\"}" "$API_MKDIR_URL" 2> /dev/null
@@ -821,7 +839,8 @@ db_list_outfile()
 #$1 = Remote file
 db_sha()
 {
-    FILE=$(normalize_path_remote "$1")
+    normalize_path_remote "$1"
+    FILE="$REMOTE_PATH"
 
     if [ "$FILE" = "/" ]; then
         echo "ERR"
@@ -847,7 +866,8 @@ db_sha()
 #$1 = Local file
 db_sha_local()
 {
-    FILE=$(normalize_path_local "$1")
+    normalize_path_local "$1"
+    FILE="$LOCAL_PATH"
     FILE_SIZE=$(file_size "$FILE")
     OFFSET=0
     SKIP=0
