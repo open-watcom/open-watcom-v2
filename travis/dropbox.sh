@@ -765,6 +765,7 @@ db_mkdir()
     elif grep -q "^HTTP/1.1 403 Forbidden" "$RESPONSE_FILE"; then
         print "ALREADY EXISTS\n"
     else
+        cat "$RESPONSE_FILE"
         print "FAILED\n"
         ERROR_STATUS=1
     fi
