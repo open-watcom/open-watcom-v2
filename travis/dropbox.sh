@@ -275,7 +275,7 @@ normalize_path_local()
         LOCAL_PATH=$(readlink -m "$path")
 
         #Adding back the final slash, if present in the source
-        if check_last_slash path && [ ${#path} -gt 1 ]; then
+        if check_last_slash "$path" && [ ${#path} -gt 1 ]; then
             LOCAL_PATH="$LOCAL_PATH/"
         fi
     else
@@ -363,7 +363,7 @@ db_upload()
     elif [ "$TYPE" = "ERR" ]; then
 
         #if DST ends with a /, it will be the destination folder
-        if [ "$TYPE" = "ERR" ] && check_last_slash $DST; then
+        if [ "$TYPE" = "ERR" ] && check_last_slash "$DST"; then
             filename=$(basename "$SRC")
             DST="$DST/$filename"
 
