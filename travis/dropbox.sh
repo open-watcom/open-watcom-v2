@@ -248,15 +248,27 @@ check_http_response()
 
 }
 
+check_last_slash()
+{
+    case "$1" in
+    */)
+        return 0
+        ;;
+    *)
+        return 1
+        ;;
+    esac
+}
+
 normalize_path()
 {
     #The printf is necessary to correctly decode unicode sequences
-    path=$(printf "${1//\/\///}")
+    path=$(printf `echo $1 | sed 's/\/\//\//'`)
     if [ $HAVE_READLINK -eq 1 ]; then
         new_path=$(readlink -m "$path")
 
         #Adding back the final slash, if present in the source
-        if [ "${path: -1}" = "/" ] && [ ${#path} -gt 1 ]; then
+        if check_last_slash path && [ ${#path} -gt 1 ]; then
             new_path="$new_path/"
         fi
 
@@ -333,11 +345,11 @@ db_upload()
         DST="$DST"
 
     #if DST doesn't exists and doesn't ends with a /, it will be the destination file name
-    elif [ "$TYPE" = "ERR" ] && [ "${DST: -1}" != "/" ]; then
+    elif [ "$TYPE" = "ERR" ] && check_last_slash $DST; then
         DST="$DST"
 
     #if DST doesn't exists and ends with a /, it will be the destination folder
-    elif [ "$TYPE" = "ERR" ] && [ "${DST: -1}" = "/" ]; then
+    elif [ "$TYPE" = "ERR" ] && check_last_slash $DST; then
         filename=$(basename "$SRC")
         DST="$DST/$filename"
 
