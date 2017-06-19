@@ -357,14 +357,18 @@ db_upload()
     if [ "$TYPE" = "FILE" ]; then
         DST="$DST"
 
-    #if DST doesn't exists and doesn't ends with a /, it will be the destination file name
-    elif [ "$TYPE" = "ERR" ] && [ ! check_last_slash $DST ]; then
-        DST="$DST"
+    #if DST doesn't exists then check if it is directory or file
+    elif [ "$TYPE" = "ERR" ]; then
 
-    #if DST doesn't exists and ends with a /, it will be the destination folder
-    elif [ "$TYPE" = "ERR" ] && check_last_slash $DST; then
-        filename=$(basename "$SRC")
-        DST="$DST/$filename"
+        #if DST ends with a /, it will be the destination folder
+        if [ "$TYPE" = "ERR" ] && check_last_slash $DST; then
+            filename=$(basename "$SRC")
+            DST="$DST/$filename"
+
+        #if DST doesn't ends with a /, it will be the destination file name
+        else 
+            DST="$DST"
+        fi
 
     #If DST it's a directory, it will be the destination folder
     elif [ "$TYPE" = "DIR" ]; then
