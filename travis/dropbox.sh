@@ -479,7 +479,7 @@ db_chunked_upload_file()
     SESSION_ID=$(sed -n 's/{"session_id": *"*\([^"]*\)"*.*/\1/p' "$RESPONSE_FILE")
 
     #Uploading chunks...
-    while [ "$OFFSET" != "$FILE_SIZE" ]; do
+    while [ $OFFSET -ne $FILE_SIZE ]; do
 
         OFFSET_MB=$OFFSET/1024/1024
 
@@ -852,7 +852,7 @@ db_sha_local()
         return
     fi
 
-    while [ $OFFSET -lt "$FILE_SIZE" ]; do
+    while [ $OFFSET -lt $FILE_SIZE ]; do
         dd if="$FILE_SRC" of="$CHUNK_FILE" bs=4194304 skip=$SKIP count=1 2> /dev/null
         SHA=$(shasum -a 256 "$CHUNK_FILE" | awk '{print $1}')
         SHA_CONCAT="${SHA_CONCAT}${SHA}"
