@@ -295,16 +295,13 @@ printf "normalize_path_remote: %s - %s - %s\n" "$1" "$tmppath" "$REMOTE_PATH"
 #Returns FILE/DIR/ERR
 db_stat()
 {
-    normalize_path_remote "$1"
-    FILE="$REMOTE_PATH"
-
-    if [ $FILE = "/" ]; then
+    if [ $1 = "/" ]; then
         echo "DIR"
         return
     fi
 
     #Checking if it's a file or a directory
-    $CURL_BIN $CURL_ACCEPT_CERTIFICATES -X POST -L -s --show-error --globoff -i -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Content-Type: application/json" --data "{\"path\": \"$FILE\"}" "$API_METADATA_URL" 2> /dev/null
+    $CURL_BIN $CURL_ACCEPT_CERTIFICATES -X POST -L -s --show-error --globoff -i -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Content-Type: application/json" --data "{\"path\": \"$1\"}" "$API_METADATA_URL" 2> /dev/null
     check_http_response
 
     TYPE=$(sed -n 's/{".tag": *"*\([^"]*\)"*.*/\1/p' "$RESPONSE_FILE")
@@ -361,7 +358,7 @@ db_upload()
         DST="$DST"
 
     #if DST doesn't exists and doesn't ends with a /, it will be the destination file name
-    elif [ "$TYPE" = "ERR" ] && check_last_slash $DST; then
+    elif [ "$TYPE" = "ERR" ] && [ ! check_last_slash $DST ]; then
         DST="$DST"
 
     #if DST doesn't exists and ends with a /, it will be the destination folder
@@ -398,7 +395,7 @@ db_upload_file()
     normalize_path_local "$1"
     FILE_SRC="$LOCAL_PATH"
     normalize_path_remote "$2"
-    FIEL_DST="$REMOTE_PATH"
+    FILE_DST="$REMOTE_PATH"
 
     #Checking not allowed file names
     basefile_dst=$(basename "$FILE_DST")
