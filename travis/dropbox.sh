@@ -392,7 +392,7 @@ db_upload_file()
             print " > Skipping not allowed file name \"$FILE_DST\"\n"
             return
             ;;
-    fi
+    esac
 
     #Checking file size
     FILE_SIZE=$(file_size "$FILE_SRC")
