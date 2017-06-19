@@ -255,9 +255,11 @@ check_last_slash()
 {
     case "$1" in
     */)
+        printf "%s - %s\n" "last slash: true" "$1"
         return 0
         ;;
     *)
+        printf "%s - %s\n" "last slash: false" "$1"
         return 1
         ;;
     esac
