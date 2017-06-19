@@ -263,7 +263,8 @@ check_last_slash()
 
 normalize_path()
 {
-    tmppath=$(echo $1 | sed 's/\/\//\//')
+    #replace "//" by "/" anywhere
+    tmppath=$(echo $1 | sed 's/\/\//\//g')
     #The printf is necessary to correctly decode unicode sequences
     path=$(printf "$tmppath")
     if [ $HAVE_READLINK -eq 1 ]; then
@@ -386,15 +387,16 @@ db_upload_file()
 
     #Checking not allowed file names
     basefile_dst=$(basename "$FILE_DST")
-    if [ "$basefile_dst" = "thumbs.db" ] || \
-       [ "$basefile_dst" = "desktop.ini" ] || \
-       [ "$basefile_dst" = ".ds_store" ] || \
-       [ "$basefile_dst" = "icon\r" ] || \
-       [ "$basefile_dst" = ".dropbox" ] || \
-       [ "$basefile_dst" = ".dropbox.attr" \
-       ]; then
-        print " > Skipping not allowed file name \"$FILE_DST\"\n"
-        return
+    case "$basefile_dst" in
+    	thumbs.db)
+        desktop.ini)
+        .ds_store)
+        icon\r)
+        .dropbox)
+        .dropbox.attr)
+            print " > Skipping not allowed file name \"$FILE_DST\"\n"
+            return
+            ;;
     fi
 
     #Checking file size
@@ -492,7 +494,7 @@ db_chunked_upload_file()
         $CURL_BIN $CURL_ACCEPT_CERTIFICATES -X POST -L -s --show-error --globoff -i -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Dropbox-API-Arg: {\"cursor\": {\"session_id\": \"$SESSION_ID\",\"offset\": $OFFSET},\"close\": false}" --header "Content-Type: application/octet-stream" --data-binary @"$CHUNK_FILE" "$API_CHUNKED_UPLOAD_APPEND_URL" 2> /dev/null
         #check_http_response not needed, because we have to retry the request in case of error
 
-        OFFSET=$OFFSET+$CHUNK_REAL_SIZE
+        OFFSET=$(($OFFSET+$CHUNK_REAL_SIZE))
 
         #Check
         if grep -q "^HTTP/1.1 200 OK" "$RESPONSE_FILE"; then
@@ -500,7 +502,7 @@ db_chunked_upload_file()
             UPLOAD_ERROR=0
         else
             print "*"
-            UPLOAD_ERROR=$UPLOAD_ERROR+1
+            UPLOAD_ERROR=$(($UPLOAD_ERROR+1))
 
             #On error, the upload is retried for max 3 times
             if [ $UPLOAD_ERROR -gt 2 ]; then
@@ -529,7 +531,7 @@ db_chunked_upload_file()
             break
         else
             print "*"
-            UPLOAD_ERROR=$UPLOAD_ERROR+1
+            UPLOAD_ERROR=$(($UPLOAD_ERROR+1))
 
             #On error, the commit is retried for max 3 times
             if [ $UPLOAD_ERROR -gt 2 ]; then
@@ -783,7 +785,7 @@ db_list_outfile()
     {/g')
 
             #Converting escaped quotes to unicode format
-            echo "$DIR_CONTENT" | sed 's/\\"/\\u0022/' > "$TEMP_FILE"
+            echo "$DIR_CONTENT" | sed 's/\\"/\\u0022/g' > "$TEMP_FILE"
 
             #Extracting files and subfolders
             while read -r line; do
@@ -857,8 +859,8 @@ db_sha_local()
         SHA=$(shasum -a 256 "$CHUNK_FILE" | awk '{print $1}')
         SHA_CONCAT="${SHA_CONCAT}${SHA}"
 
-        OFFSET=$OFFSET+4194304
-        SKIP=$SKIP+1
+        OFFSET=$(($OFFSET+4194304))
+        SKIP=$(($SKIP+1))
     done
 
     echo $SHA_CONCAT | sed 's/\([0-9A-F]\{2\}\)/\\\\\\x\1/gI' | xargs printf | shasum -a 256 | awk '{print $1}'
