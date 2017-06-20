@@ -226,7 +226,7 @@ normalize_path_local()
     locpath=$(echo "$1" | sed 's/\/\//\//g')
     case "$locpath" in
       /*)
-    	LOCAL_PATH="$locpath"
+        LOCAL_PATH="$locpath"
         ;;
       *)
         LOCAL_PATH="$TRAVIS_BUILD_DIR/$locpath"
@@ -860,4 +860,4 @@ remove_temp_files
 return $ERROR_STATUS
 }
 
-dropbox_proc "$*"
+dropbox_proc $*
