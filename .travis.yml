@@ -11,7 +11,7 @@ addons:
 before_script:
  # get clone of GitHub repository to return Travis CI OW build/log files
  # and compress GitHub repository if necessary to hold only a few last builds
- - sh travis/gitget.sh
+ - . travis/gitget.sh
  # initialize OW build environment variables
  - export OWROOT=$TRAVIS_BUILD_DIR
  - export OWRELROOT=$TRAVIS_BUILD_DIR/../travis-ci-ow-builds
@@ -23,15 +23,15 @@ before_script:
  - env | sed -n -e '/^TRAVIS/p' -e '/^OW/p' | sort
 
 #script:
-# - sh build.sh rel
+# - . build.sh rel
 
 after_failure:
  # after failure transfer log files back to GitHub repository
- - sh travis/gitupdf.sh
+ - . travis/gitupdf.sh
 
 after_success:
  # after success transfer OW build to GitHub repository
- - sh travis/gitupds.sh
+ - . travis/gitupds.sh
 
 jobs:
   include:
@@ -44,10 +44,10 @@ jobs:
         - OWDOCBUILD=0
         - OWVERBOSE=1
         - OWTRAVISJOB=BOOTLINUX
-      script: sh travis/build.sh boot
+      script: travis/build.sh boot
       before_cache:
         # upload OW build tools
-        - sh travis/savtools.sh
+        - . travis/savtools.sh
     - stage: Build Linux
       os: linux
       compiler: clang
@@ -60,8 +60,8 @@ jobs:
         - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
       install:
         # download OW build tools
-        - sh travis/rsttools.sh
-      script: sh travis/build.sh rel
+        - . travis/rsttools.sh
+      script: travis/build.sh rel
     - stage: Build PDF documentation
       os: linux
       compiler: clang
@@ -74,8 +74,8 @@ jobs:
         - OWGHOSTSCRIPTPATH=$PATH
       install:
         # download OW build tools
-        - sh travis/rsttools.sh
-      script: sh travis/build.sh docpdf
+        - . travis/rsttools.sh
+      script: travis/build.sh docpdf
     - stage: Bootstrap OSX
       os: osx
       compiler: clang
@@ -84,10 +84,10 @@ jobs:
         - OWDOCBUILD=0
         - OWVERBOSE=1
         - OWTRAVISJOB=BOOTOSX
-      script: sh travis/build.sh boot
+      script: travis/build.sh boot
       before_cache:
         # upload OW build tools
-        - sh travis/savtools.sh
+        - . travis/savtools.sh
     - stage: Build OSX
       os: osx
       compiler: clang
@@ -104,8 +104,8 @@ jobs:
         # install Ghostscript
         - brew install ghostscript
         # download OW build tools
-        - sh travis/rsttools.sh
-      script: sh travis/build.sh rel
+        - . travis/rsttools.sh
+      script: travis/build.sh rel
 
 #addons:
 #  coverity_scan:

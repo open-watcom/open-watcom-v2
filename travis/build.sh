@@ -48,4 +48,3 @@ else
     RC=$?
 fi
 cd $OWROOT
-exit $RC
