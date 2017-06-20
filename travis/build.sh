@@ -48,3 +48,4 @@ else
     RC=$?
 fi
 cd $OWROOT
+return $RC

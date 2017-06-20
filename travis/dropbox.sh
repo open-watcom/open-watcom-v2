@@ -99,15 +99,6 @@ if [ $? -ne 0 ]; then
     return 1
 fi
 
-#Check if readlink is installed and supports the -m option
-#It's not necessary, so no problem if it's not installed
-which readlink > /dev/null
-if [ $? -eq 0 ] && [ "$(readlink -m "//test" 2> /dev/null)" = "/test" ]; then
-    HAVE_READLINK=1
-else
-    HAVE_READLINK=0
-fi
-
 #Print the message based on $QUIET variable
 print()
 {
@@ -267,16 +258,14 @@ normalize_path_local()
 {
     #replace "//" by "/" anywhere
     locpath=$(echo "$1" | sed 's/\/\//\//g')
-    if [ $HAVE_READLINK -eq 1 ]; then
-        LOCAL_PATH=$(readlink -m "$locpath")
-
-        #Adding back the final slash, if present in the source
-        if check_last_slash "$locpath" && [ ${#locpath} -gt 1 ]; then
-            LOCAL_PATH="$LOCAL_PATH/"
-        fi
-    else
-        $LOCAL_PATH="$locpath"
-    fi
+    case "$locpath" in
+      /*)
+    	LOCAL_PATH="$locpath"
+        ;;
+      *)
+        LOCAL_PATH="$OWROOT/$locpath"
+        ;;
+    esac
 }
 
 normalize_path_remote()
@@ -451,7 +440,7 @@ db_simple_upload_file()
         LINE_CR=""
     fi
 
-    print " > Uploading \"$FILE_SRC\" to \"$FILE_DST\"... $LINE_CR"
+    print " > Uploading \"$FILE_SRC\" to \"$FILE_DST\"... "
     $CURL_BIN $CURL_ACCEPT_CERTIFICATES $CURL_PARAMETERS -X POST -i --globoff -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Dropbox-API-Arg: {\"path\": \"$FILE_DST\",\"mode\": \"overwrite\",\"autorename\": true,\"mute\": false}" --header "Content-Type: application/octet-stream" --data-binary @"$FILE_SRC" "$API_UPLOAD_URL"
     check_http_response
 
