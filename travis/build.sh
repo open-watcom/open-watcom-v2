@@ -1,13 +1,12 @@
 #!/bin/sh
 #
 # Script to build the Open Watcom tools on Travis
-# using the host platform's native C/C++ compiler or OW tools.
+# using the host platform's native C/C++ compiler.
 #
-# Expects POSIX tools.
-
-if [ -z "$OWROOT" ]; then
-    . ./setvars.sh
-fi
+# Expects 
+#   - POSIX tools
+#   - correct setup for all OW build environment variables
+#
 
 cd $OWSRCDIR
 if [ "$1" = "boot" ]; then
