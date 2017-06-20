@@ -33,7 +33,6 @@ TMP_DIR="/tmp"
 DEBUG=0
 QUIET=0
 SHOW_PROGRESSBAR=0
-SKIP_EXISTING_FILES=0
 ERROR_STATUS=0
 HUMAN_READABLE_SIZE=1
 LOCAL_PATH=""
@@ -66,38 +65,6 @@ CHUNK_FILE="$TMP_DIR/du_chunk_$RANDOM"
 TEMP_FILE="$TMP_DIR/du_tmp_$RANDOM"
 BIN_DEPS="sed basename date grep stat dd mkdir"
 VERSION="1.0"
-
-umask 077
-
-#Check temp folder
-if [ ! -d "$TMP_DIR" ]; then
-    echo "Error: the temporary folder $TMP_DIR doesn't exists!"
-    echo "Please edit this script and set the TMP_DIR variable to a valid temporary folder to use."
-    return 1
-fi
-
-if [ $DEBUG -ne 0 ]; then
-    echo $VERSION
-    uname -a 2> /dev/null
-    cat /etc/issue 2> /dev/null
-    set -x
-    RESPONSE_FILE="$TMP_DIR/du_resp_debug"
-fi
-
-if [ -z "$CURL_BIN" ]; then
-    BIN_DEPS="$BIN_DEPS curl"
-    CURL_BIN="curl"
-fi
-
-#Dependencies check
-which $BIN_DEPS > /dev/null
-if [ $? -ne 0 ]; then
-    for i in $BIN_DEPS; do
-        which $i > /dev/null || NOT_FOUND="$i $NOT_FOUND"
-    done
-    echo "Error: Required program could not be found: $NOT_FOUND"
-    return 1
-fi
 
 #Print the message based on $QUIET variable
 print()
@@ -237,7 +204,6 @@ check_http_response()
                 return 1
             ;;
         esac
-
     fi
 
 }
@@ -245,10 +211,10 @@ check_http_response()
 check_last_slash()
 {
     case "$1" in
-    */)
+      */)
         return 0
         ;;
-    *)
+      *)
         return 1
         ;;
     esac
@@ -394,25 +360,6 @@ db_upload_file()
 
     #Checking file size
     FILE_SIZE=$(file_size "$FILE_SRC")
-
-    #Checking if the file already exists
-    TYPE=$(db_stat "$FILE_DST")
-    if [ "$TYPE" != "ERR" ] && [ $SKIP_EXISTING_FILES -eq 1 ]; then
-        print " > Skipping already existing file \"$FILE_DST\"\n"
-        return
-    fi
-
-    # Checking if the file has the correct check sum
-    if [ "$TYPE" != "ERR" ]; then
-        sha_src=$(sha_local "$FILE_SRC")
-        sha_dst=$(db_sha "$FILE_DST")
-#printf "local_sha:  %s\nremote_sha: %s\n" "$sha_src" "$sha_dst"
-        if [ "$sha_src" = "$sha_dst" ] && [ "$sha_src" != "ERR" ]; then
-            print "> Skipping file \"$FILE_SRC\", file exists with the same hash\n"
-            return
-        fi
-    fi
-
     if [ $FILE_SIZE -gt 157286000 ]; then
         #If the file is greater than 150Mb, the chunked_upload API will be used
         db_chunked_upload_file "$FILE_SRC" "$FILE_DST"
@@ -440,7 +387,7 @@ db_simple_upload_file()
         LINE_CR=""
     fi
 
-    print " > Uploading \"$FILE_SRC\" to \"$FILE_DST\"... "
+    print " > Uploading \"$FILE_SRC\" to \"$FILE_DST\"... $LINE_CR"
     $CURL_BIN $CURL_ACCEPT_CERTIFICATES $CURL_PARAMETERS -X POST -i --globoff -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Dropbox-API-Arg: {\"path\": \"$FILE_DST\",\"mode\": \"overwrite\",\"autorename\": true,\"mute\": false}" --header "Content-Type: application/octet-stream" --data-binary @"$FILE_SRC" "$API_UPLOAD_URL"
     check_http_response
 
@@ -622,12 +569,6 @@ db_download_file()
     else
         CURL_PARAMETERS="-L -s"
         LINE_CR=""
-    fi
-
-    #Checking if the file already exists
-    if [ -e "$FILE_DST" ] && [ $SKIP_EXISTING_FILES -eq 1 ]; then
-        print " > Skipping already existing file \"$FILE_DST\"\n"
-        return
     fi
 
     #Creating the empty file, that for two reasons:
@@ -824,62 +765,44 @@ db_list_outfile()
     echo $OUT_FILE
 }
 
-#Query the sha256-dropbox-sum of a remote file
-#see https://www.dropbox.com/developers/reference/content-hash for more information
-#$1 = Remote file
-db_sha()
+dropbox_proc()
 {
-    normalize_path_remote "$1"
-    FILE="$REMOTE_PATH"
 
-    if [ "$FILE" = "/" ]; then
-        echo "ERR"
-        return
-    fi
+################
+#### check  ####
+################
 
-    #Checking if it's a file or a directory and get the sha-sum
-    $CURL_BIN $CURL_ACCEPT_CERTIFICATES -X POST -L -s --show-error --globoff -i -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Content-Type: application/json" --data "{\"path\": \"$FILE\"}" "$API_METADATA_URL" 2> /dev/null
-    check_http_response
+umask 077
 
-    TYPE=$(sed -n 's/{".tag": *"*\([^"]*\)"*.*/\1/p' "$RESPONSE_FILE")
-    if [ "$TYPE" = "folder" ]; then
-        echo "ERR"
-        return
-    fi
+#Check temp folder
+if [ ! -d "$TMP_DIR" ]; then
+    echo "Error: the temporary folder $TMP_DIR doesn't exists!"
+    echo "Please edit this script and set the TMP_DIR variable to a valid temporary folder to use."
+    return 1
+fi
 
-    SHA256=$(sed -n 's/.*"content_hash": "\([^"]*\).*/\1/p' "$RESPONSE_FILE")
-    echo "$SHA256"
-}
+if [ $DEBUG -ne 0 ]; then
+    echo $VERSION
+    uname -a 2> /dev/null
+    cat /etc/issue 2> /dev/null
+    set -x
+    RESPONSE_FILE="$TMP_DIR/du_resp_debug"
+fi
 
-#Query the sha256-dropbox-sum of a local file
-#see https://www.dropbox.com/developers/reference/content-hash for more information
-#$1 = Local file
-sha_local()
-{
-    normalize_path_local "$1"
-    FILE="$LOCAL_PATH"
-    FILE_SIZE=$(file_size "$FILE")
-    OFFSET=0
-    SKIP=0
-    SHA_CONCAT=""
+if [ -z "$CURL_BIN" ]; then
+    BIN_DEPS="$BIN_DEPS curl"
+    CURL_BIN="curl"
+fi
 
-    which shasum > /dev/null
-    if [ $? -ne 0 ]; then
-        echo "ERR"
-        return
-    fi
-
-    while [ $OFFSET -lt $FILE_SIZE ]; do
-        dd if="$FILE_SRC" of="$CHUNK_FILE" bs=4194304 skip=$SKIP count=1 2> /dev/null
-        SHA=$(shasum -a 256 "$CHUNK_FILE" | awk '{print $1}')
-        SHA_CONCAT="${SHA_CONCAT}${SHA}"
-
-        OFFSET=$(($OFFSET+4194304))
-        SKIP=$(($SKIP+1))
+#Dependencies check
+which $BIN_DEPS > /dev/null
+if [ $? -ne 0 ]; then
+    for i in $BIN_DEPS; do
+        which $i > /dev/null || NOT_FOUND="$i $NOT_FOUND"
     done
-
-    echo $SHA_CONCAT | sed 's/\([0-9A-F]\{2\}\)/\\\\\\x\1/gI' | xargs printf "%s"| shasum -a 256 | awk '{print $1}'
-}
+    echo "Error: Required program could not be found: $NOT_FOUND"
+    return 1
+fi
 
 ################
 #### START  ####
@@ -935,3 +858,6 @@ esac
 
 remove_temp_files
 return $ERROR_STATUS
+}
+
+dropbox_proc "$*"
