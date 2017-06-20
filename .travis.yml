@@ -45,7 +45,7 @@ jobs:
       script: sh travis/build.sh boot
       before_cache:
         # upload OW build tools
-        - sh travis/dropbox.sh upload build/bin/ Linux/
+        - sh travis/savtools.sh
     - stage: Build Linux
       os: linux
       compiler: clang
@@ -57,7 +57,7 @@ jobs:
         - TRAVISJOBNAME=BUILDLINUX
       install:
         # download OW build tools
-        - sh travis/dropbox.sh download Linux/ build/bin/
+        - sh travis/rsttools.sh
       script: sh travis/build.sh rel
     - stage: Build PDF documentation
       os: linux
@@ -70,7 +70,7 @@ jobs:
         - TRAVISJOBNAME=PDFDOCLINUX
       install:
         # download OW build tools
-        - sh travis/dropbox.sh download Linux/ build/bin/
+        - sh travis/rsttools.sh
       script: sh travis/build.sh docpdf
     - stage: Bootstrap OSX
       os: osx
@@ -83,7 +83,7 @@ jobs:
       script: sh travis/build.sh boot
       before_cache:
         # upload OW build tools
-        - sh travis/dropbox.sh upload build/bin/ OSX/
+        - sh travis/savtools.sh
     - stage: Build OSX
       os: osx
       compiler: clang
@@ -97,7 +97,7 @@ jobs:
         - brew install dosbox
         - export OWDOSBOX=dosbox
         # download OW build tools
-        - sh travis/dropbox.sh download OSX/ build/bin/
+        - sh travis/rsttools.sh
       script: sh travis/build.sh rel
 
 #addons:
