@@ -18,7 +18,7 @@ before_script:
  - export USE_FILENAME_VERSION=1
  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
  - . cmnvars.sh
- - env
+ - env | sed -n -e '/^TRAVIS/p' -e '/^OW/p' | sort
 
 #script:
 # - sh build.sh rel
