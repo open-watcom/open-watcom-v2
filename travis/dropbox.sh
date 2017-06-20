@@ -263,7 +263,7 @@ normalize_path_local()
     	LOCAL_PATH="$locpath"
         ;;
       *)
-        LOCAL_PATH="$OWROOT/$locpath"
+        LOCAL_PATH="$TRAVIS_BUILD_DIR/$locpath"
         ;;
     esac
 }

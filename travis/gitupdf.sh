@@ -13,9 +13,9 @@ case "$OWTRAVISJOB" in
     # copy build log files to git repository tree
     #
     if [ ! -d bld ]; then mkdir bld; fi
-    cp $OWROOT/bld/*.log bld/
+    cp $TRAVIS_BUILD_DIR/bld/*.log bld/
     #if [ ! -d docs ]; then mkdir docs; fi
-    #cp $OWROOT/docs/*.log docs/
+    #cp $TRAVIS_BUILD_DIR/docs/*.log docs/
     #
     # commit new log files to GitHub repository
     #
