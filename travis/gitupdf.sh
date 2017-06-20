@@ -5,7 +5,8 @@
 #
 # after failure transfer log files back to GitHub repository
 #
-if [ "$TRAVISJOBNAME" = "BUILDLINUX" ] || [ "$TRAVISJOBNAME" = "BOOTLINUX" ] || [ "$TRAVISJOBNAME" = "BOOTOSX" ]; then
+case "$TRAVISJOBNAME" in
+BOOTLINUX|BUILDLINUX|BOOTOSX)
     cd ../travis-ci-ow-builds
     git pull
     #
@@ -27,4 +28,5 @@ if [ "$TRAVISJOBNAME" = "BUILDLINUX" ] || [ "$TRAVISJOBNAME" = "BOOTLINUX" ] || 
     fi
     git push --quiet -f origin
     cd $TRAVIS_BUILD_DIR
-fi
+    ;;
+esac

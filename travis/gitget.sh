@@ -7,7 +7,8 @@
 #
 # configure Git client
 #
-if [ "$TRAVISJOBNAME" = "BUILDLINUX" ] || [ "$TRAVISJOBNAME" = "BOOTLINUX" ] || [ "$TRAVISJOBNAME" = "BOOTOSX" ]; then
+case "$TRAVISJOBNAME" in
+BOOTLINUX|BUILDLINUX|BOOTOSX)
     git config --global user.email "travis@travis-ci.org"
     git config --global user.name "Travis CI"
     git config --global push.default simple
@@ -31,4 +32,5 @@ if [ "$TRAVISJOBNAME" = "BUILDLINUX" ] || [ "$TRAVISJOBNAME" = "BOOTLINUX" ] || 
         git pull
     fi
     cd $TRAVIS_BUILD_DIR
-fi
+    ;;
+esac
