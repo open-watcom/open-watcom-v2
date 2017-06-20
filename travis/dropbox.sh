@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/usr/sh
 #
 # Dropbox Uploader
 #
@@ -255,11 +255,9 @@ check_last_slash()
 {
     case "$1" in
     */)
-        printf "%s - %s\n" "last slash: true" "$1"
         return 0
         ;;
     *)
-        printf "%s - %s\n" "last slash: false" "$1"
         return 1
         ;;
     esac
@@ -268,9 +266,7 @@ check_last_slash()
 normalize_path_local()
 {
     #replace "//" by "/" anywhere
-    tmppath=$(echo $1 | sed 's/\/\//\//g')
-    #The printf is necessary to correctly decode unicode sequences
-    path=$(printf "$tmppath")
+    path=$(echo $1 | sed 's/\/\//\//g')
     if [ $HAVE_READLINK -eq 1 ]; then
         LOCAL_PATH=$(readlink -m "$path")
 
@@ -281,16 +277,12 @@ normalize_path_local()
     else
         $LOCAL_PATH="$path"
     fi
-printf "normalize_path_local: %s - %s - %s - %s\n" "$1" "$tmppath" "$path" "$LOCAL_PATH"
 }
 
 normalize_path_remote()
 {
     #replace "//" by "/" anywhere
-    tmppath=$(echo $1 | sed 's/\/\//\//g')
-    #The printf is necessary to correctly decode unicode sequences
-    REMOTE_PATH=$(printf "$tmppath")
-printf "normalize_path_remote: %s - %s - %s\n" "$1" "$tmppath" "$REMOTE_PATH"
+    REMOTE_PATH=$(echo $1 | sed 's/\/\//\//g')
 }
 
 #Check if it's a file or directory
@@ -303,7 +295,7 @@ db_stat()
     fi
 
     #Checking if it's a file or a directory
-    $CURL_BIN $CURL_ACCEPT_CERTIFICATES -X POST -L -s --show-error --globoff -i -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Content-Type: application/json" --data "{\"path\": \"$1\"}" "$API_METADATA_URL" 2> /dev/null
+    $CURL_BIN $CURL_ACCEPT_CERTIFICATES -X POST -L -s --show-error --globoff -i -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Content-Type: application/json" --data "{\"path\": \"$(echo $1 | sed 's/\/$//')\"}" "$API_METADATA_URL" 2> /dev/null
     check_http_response
 
     TYPE=$(sed -n 's/{".tag": *"*\([^"]*\)"*.*/\1/p' "$RESPONSE_FILE")
@@ -362,7 +354,7 @@ db_upload()
             TYPE="DIR"
 
         #if DST doesn't ends with a /, it will be the destination file name
-        else 
+        else
             TYPE="FILE"
         fi
     fi
@@ -423,8 +415,9 @@ db_upload_file()
 
     # Checking if the file has the correct check sum
     if [ "$TYPE" != "ERR" ]; then
-        sha_src=$(db_sha_local "$FILE_SRC")
+        sha_src=$(sha_local "$FILE_SRC")
         sha_dst=$(db_sha "$FILE_DST")
+#printf "local_sha:  %s\nremote_sha: %s\n" "$sha_src" "$sha_dst"
         if [ "$sha_src" = "$sha_dst" ] && [ "$sha_src" != "ERR" ]; then
             print "> Skipping file \"$FILE_SRC\", file exists with the same hash\n"
             return
@@ -499,7 +492,7 @@ db_chunked_upload_file()
     #Uploading chunks...
     while [ $OFFSET -ne $FILE_SIZE ]; do
 
-        OFFSET_MB=$OFFSET/1024/1024
+        OFFSET_MB=$(($OFFSET/1024/1024))
 
         #Create the chunk
         dd if="$FILE_SRC" of="$CHUNK_FILE" bs=1048576 skip=$OFFSET_MB count=$CHUNK_SIZE 2> /dev/null
@@ -574,7 +567,7 @@ db_upload_dir()
     DIR_DST="$REMOTE_PATH"
 
     #Creatig remote directory
-    db_mkdir "$(echo "$DIR_DST" | sed 's/\/$//')"
+    db_mkdir "$DIR_DST"
 
     for file in "$DIR_SRC/"*; do
         db_upload "$file" "$DIR_DST"
@@ -587,95 +580,41 @@ db_upload_dir()
 db_download()
 {
     normalize_path_remote "$1"
-    SRC="$REMOTE_PATH"
+    DWNLOAD_SRC="$REMOTE_PATH"
     normalize_path_local "$2"
-    DST="$LOCAL_PATH"
+    DWNLOAD_DST="$LOCAL_PATH"
 
-    TYPE=$(db_stat "$SRC")
-
-    #It's a directory
-    if [ "$TYPE" = "DIR" ]; then
-
-        #If the DST folder is not specified, I assume that is the current directory
-        if [ -z "$DST" ]; then
-            DST="."
-        fi
-
-        #Checking if the destination directory exists
-        if [ ! -d "$DST" ]; then
-            basedir=""
-        else
-            basedir=$(basename "$SRC")
-        fi
-
-        normalize_path_local "$DST/$basedir"
-        DEST_DIR="$LOCAL_PATH"
-        print " > Downloading folder \"$SRC\" to \"$DEST_DIR\"... \n"
-
-        if [ ! -d "$DEST_DIR" ]; then
-            print " > Creating local directory \"$DEST_DIR\"... "
-            mkdir -p "$DEST_DIR"
-
-            #Check
-            if [ $? -eq 0 ]; then
-                print "DONE\n"
-            else
-                print "FAILED\n"
-                ERROR_STATUS=1
-                return
-            fi
-        fi
-
-        if [ "$SRC" = "/" ]; then
-            SRC_REQ=""
-        else
-            SRC_REQ="$SRC"
-        fi
-
-        OUT_FILE=$(db_list_outfile "$SRC_REQ")
-
-        #For each entry...
-        while read -r line; do
-
-            FILE=${line%:*}
-            META=${line##*:}
-            TYPE=${META%;*}
-            SIZE=${META#*;}
-
-            #Removing unneeded /
-            FILE=${FILE##*/}
-
-            if [ "$TYPE" = "file" ]; then
-                db_download_file "$SRC/$FILE" "$DEST_DIR/$FILE"
-            elif [ "$TYPE" = "folder" ]; then
-                db_download "$SRC/$FILE" "$DEST_DIR"
-            fi
-
-        done < $OUT_FILE
-
-        rm -fr $OUT_FILE
-
-    #It's a file
-    elif [ "$TYPE" = "FILE" ]; then
-
-        #Checking DST
-        if [ -z "$DST" ]; then
-            DST=$(basename "$SRC")
-        fi
-
-        #If the destination is a directory, the file will be download into
-        if [ -d "$DST" ]; then
-            DST="$DST/$SRC"
-        fi
-
-        db_download_file "$SRC" "$DST"
-
-    #Doesn't exists
-    else
-        print " > No such file or directory: $SRC\n"
-        ERROR_STATUS=1
-        return
+    #If the DST folder is not specified, I assume that is the current directory
+    if [ -z "$DWNLOAD_DST" ]; then
+        DWNLOAD_DST="./"
     fi
+
+    TYPE=$(db_stat "$DWNLOAD_SRC")
+    #It's a directory
+    # SRC is a directory
+    if [ "$TYPE" = "DIR" ]; then
+        if check_last_slash "$DWNLOAD_DST"; then
+            db_download_dir "$DWNLOAD_SRC" "$DWNLOAD_DST"
+        else
+            filename=$(basename "$DWNLOAD_DST")
+            DWNLOAD_SRC="$DWNLOAD_SRC/$filename"
+            db_download_file "$DWNLOAD_SRC" "$DWNLOAD_DST"
+        fi
+
+    # SRC is a file
+    elif [ "$TYPE" = "FILE" ]; then
+        if check_last_slash "$DWNLOAD_DST"; then
+            filename=$(basename "$DWNLOAD_SRC")
+            DWNLOAD_DST="$DWNLOAD_DST/$filename"
+        fi
+        db_download_file "$DWNLOAD_SRC" "$DWNLOAD_DST"
+
+    #Unsupported object...
+    else
+        print " > No such file or directory: $DWNLOAD_SRC\n"
+        ERROR_STATUS=1
+    fi
+
 }
 
 #Simple file download
@@ -728,6 +667,64 @@ db_download_file()
 }
 
 
+#Generic download wrapper
+#$1 = Remote source dir
+#$2 = Local destination dir
+db_download_dir()
+{
+    normalize_path_remote "$1"
+    DIR_SRC="$REMOTE_PATH"
+    normalize_path_local "$2"
+    DIR_DST="$LOCAL_PATH"
+
+    print " > Downloading folder \"$DIR_SRC\" to \"$DIR_DST\"... "
+
+    if [ ! -d "$DIR_DST" ]; then
+        print "%s\n" " > Creating local directory \"$DIR_DST\"... "
+        mkdir -p "$DIR_DST"
+
+        #Check
+        if [ $? -eq 0 ]; then
+            print "DONE\n"
+        else
+            print "FAILED\n"
+            ERROR_STATUS=1
+            return
+        fi
+    fi
+
+    if [ "$DIR_SRC" = "/" ]; then
+        SRC_REQ="/"
+    else
+        SRC_REQ="$DIR_SRC"
+    fi
+
+    OUT_FILE=$(db_list_outfile "$SRC_REQ")
+
+    #For each entry...
+    while read -r line; do
+
+        DIR_FILE=${line%:*}
+        DIR_META=${line##*:}
+        DIR_TYPE=${DIR_META%;*}
+        DIR_SIZE=${DIR_META#*;}
+
+        #Removing unneeded /
+        DIR_FILE="$(echo "$DIR_FILE" | sed 's/\/$//')"
+
+        if [ "$DIR_TYPE" = "file" ]; then
+            filename=$(basename "$DIR_FILE")
+            DST="$DIR_DST/$filename"
+            db_download_file "$DIR_FILE" "$DST"
+        elif [ "$DIR_TYPE" = "folder" ]; then
+            db_download "$DIR_FILE" "$DIR_DST"
+        fi
+
+    done < $OUT_FILE
+
+    rm -fr $OUT_FILE
+}
+
 #Delete a remote file
 #$1 = Remote file to delete
 db_delete()
@@ -753,10 +750,10 @@ db_delete()
 db_mkdir()
 {
     normalize_path_remote "$1"
-    DIR_DST="$REMOTE_PATH"
+    DIR_DST="$(echo "$REMOTE_PATH" | sed 's/\/$//')"
 
     print " > Creating Directory \"$DIR_DST\"... "
-    $CURL_BIN $CURL_ACCEPT_CERTIFICATES -X POST -L -s --show-error --globoff -i -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Content-Type: application/json" --data "{\"path\": \"$DIR_DST\"}" "$API_MKDIR_URL" 2> /dev/null
+    $CURL_BIN $CURL_ACCEPT_CERTIFICATES -X POST -L -s --show-error --globoff -i -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Content-Type: application/json" --data "{\"path\": \"$DIR_DST\"}" $API_MKDIR_URL 2> /dev/null
     check_http_response
 
     #Check
@@ -764,8 +761,9 @@ db_mkdir()
         print "DONE\n"
     elif grep -q "^HTTP/1.1 403 Forbidden" "$RESPONSE_FILE"; then
         print "ALREADY EXISTS\n"
+    elif grep -q "^HTTP/1.1 409 Conflict" "$RESPONSE_FILE"; then
+        print "ALREADY EXISTS\n"
     else
-        cat "$RESPONSE_FILE"
         print "FAILED\n"
         ERROR_STATUS=1
     fi
@@ -777,7 +775,7 @@ db_mkdir()
 db_list_outfile()
 {
 
-    DIR_DST="$1"
+    LIST_DIR_DST="$1"
     HAS_MORE="false"
     CURSOR=""
 
@@ -791,9 +789,9 @@ db_list_outfile()
     while true; do
 
         if [ "$HAS_MORE" = "true" ]; then
-            $CURL_BIN $CURL_ACCEPT_CERTIFICATES -X POST -L -s --show-error --globoff -i -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Content-Type: application/json" --data "{\"cursor\": \"$CURSOR\"}" "$API_LIST_FOLDER_CONTINUE_URL" 2> /dev/null
+            $CURL_BIN $CURL_ACCEPT_CERTIFICATES -X POST -L -s --show-error --globoff -i -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Content-Type: application/json" --data "{\"cursor\": \"$CURSOR\"}" $API_LIST_FOLDER_CONTINUE_URL 2> /dev/null
         else
-            $CURL_BIN $CURL_ACCEPT_CERTIFICATES -X POST -L -s --show-error --globoff -i -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Content-Type: application/json" --data "{\"path\": \"$DIR_DST\",\"include_media_info\": false,\"include_deleted\": false,\"include_has_explicit_shared_members\": false}" "$API_LIST_FOLDER_URL" 2> /dev/null
+            $CURL_BIN $CURL_ACCEPT_CERTIFICATES -X POST -L -s --show-error --globoff -i -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Content-Type: application/json" --data "{\"path\": \"$LIST_DIR_DST\",\"include_media_info\": false,\"include_deleted\": false,\"include_has_explicit_shared_members\": false}" $API_LIST_FOLDER_URL 2> /dev/null
         fi
 
         check_http_response
@@ -808,7 +806,7 @@ db_list_outfile()
             #and replacing "}, {" with "}\n{"
             #I don't like this piece of code... but seems to be the only way to do this with SED, writing a portable code...
             DIR_CONTENT=$(sed -n 's/.*: \[{\(.*\)/\1/p' "$RESPONSE_FILE" | sed 's/}, *{/}\
-    {/g')
+{/g')
 
             #Converting escaped quotes to unicode format
             echo "$DIR_CONTENT" | sed 's/\\"/\\u0022/g' > "$TEMP_FILE"
@@ -867,7 +865,7 @@ db_sha()
 #Query the sha256-dropbox-sum of a local file
 #see https://www.dropbox.com/developers/reference/content-hash for more information
 #$1 = Local file
-db_sha_local()
+sha_local()
 {
     normalize_path_local "$1"
     FILE="$LOCAL_PATH"
@@ -891,7 +889,7 @@ db_sha_local()
         SKIP=$(($SKIP+1))
     done
 
-    echo $SHA_CONCAT | sed 's/\([0-9A-F]\{2\}\)/\\\\\\x\1/gI' | xargs printf | shasum -a 256 | awk '{print $1}'
+    echo $SHA_CONCAT | sed 's/\([0-9A-F]\{2\}\)/\\\\\\x\1/gI' | xargs printf "%s"| shasum -a 256 | awk '{print $1}'
 }
 
 ################
