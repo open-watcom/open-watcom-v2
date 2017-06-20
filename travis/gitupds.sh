@@ -5,7 +5,8 @@
 #
 # If OW build succeeds then transfer OW build to GitHub repository
 #
-if [ "$TRAVISJOBNAME" = "BUILDLINUX" ]; then
+case "$TRAVISJOBNAME" in
+BUILDLINUX)
     cd ../travis-ci-ow-builds
     #
     # commit updated files to GitHub repository
@@ -18,4 +19,5 @@ if [ "$TRAVISJOBNAME" = "BUILDLINUX" ]; then
         fi
     fi
     cd $TRAVIS_BUILD_DIR
-fi
+    ;;
+esac
