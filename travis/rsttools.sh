@@ -8,4 +8,4 @@ if [ "$TRAVIS_OS_NAME" = "osx" ]; then
 else
     sh travis/dropbox.sh download Linux/ build/bin/
 fi
-sh chmod +x build/bin/*
+chmod +x build/bin/*
