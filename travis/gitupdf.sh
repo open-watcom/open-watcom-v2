@@ -5,8 +5,8 @@
 #
 # after failure transfer log files back to GitHub repository
 #
-case "$TRAVISJOBNAME" in
-BOOTLINUX|BUILDLINUX|BOOTOSX)
+case "$OWTRAVISJOB" in
+  BOOTLINUX|BUILDLINUX|BOOTOSX)
     cd ../travis-ci-ow-builds
     git pull
     #

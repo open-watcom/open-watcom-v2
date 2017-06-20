@@ -102,7 +102,7 @@ fi
 #Check if readlink is installed and supports the -m option
 #It's not necessary, so no problem if it's not installed
 which readlink > /dev/null
-if [ $? -eq 0 ] && [ $(readlink -m "//test" 2> /dev/null) = "/test" ]; then
+if [ $? -eq 0 ] && [ "$(readlink -m "//test" 2> /dev/null)" = "/test" ]; then
     HAVE_READLINK=1
 else
     HAVE_READLINK=0
@@ -266,16 +266,16 @@ check_last_slash()
 normalize_path_local()
 {
     #replace "//" by "/" anywhere
-    path=$(echo $1 | sed 's/\/\//\//g')
+    locpath=$(echo "$1" | sed 's/\/\//\//g')
     if [ $HAVE_READLINK -eq 1 ]; then
-        LOCAL_PATH=$(readlink -m "$path")
+        LOCAL_PATH=$(readlink -m "$locpath")
 
         #Adding back the final slash, if present in the source
-        if check_last_slash "$path" && [ ${#path} -gt 1 ]; then
+        if check_last_slash "$locpath" && [ ${#locpath} -gt 1 ]; then
             LOCAL_PATH="$LOCAL_PATH/"
         fi
     else
-        $LOCAL_PATH="$path"
+        $LOCAL_PATH="$locpath"
     fi
 }
 

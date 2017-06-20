@@ -3,7 +3,10 @@ language: c
 addons:
   apt:
     packages:
+      # install DOS Emulator
       - dosemu
+      # install Ghostscript
+      - ghostscript
 
 before_script:
  # get clone of GitHub repository to return Travis CI OW build/log files
@@ -41,7 +44,7 @@ jobs:
         - OWTOOLS=CLANG
         - OWDOCBUILD=0
         - OWVERBOSE=1
-        - TRAVISJOBNAME=BOOTLINUX
+        - OWTRAVISJOB=BOOTLINUX
       script: sh travis/build.sh boot
       before_cache:
         # upload OW build tools
@@ -54,7 +57,7 @@ jobs:
         - OWTOOLS=CLANG
         - OWDOCBUILD=0
         - OWVERBOSE=0
-        - TRAVISJOBNAME=BUILDLINUX
+        - OWTRAVISJOB=BUILDLINUX
       install:
         # download OW build tools
         - sh travis/rsttools.sh
@@ -67,7 +70,8 @@ jobs:
         - OWTOOLS=CLANG
         - OWDOCBUILD=1
         - OWVERBOSE=0
-        - TRAVISJOBNAME=PDFDOCLINUX
+        - OWTRAVISJOB=PDFDOCLINUX
+        - OWGHOSTSCRIPTPATH=$PATH
       install:
         # download OW build tools
         - sh travis/rsttools.sh
@@ -79,7 +83,7 @@ jobs:
         - OWTOOLS=CLANG
         - OWDOCBUILD=0
         - OWVERBOSE=1
-        - TRAVISJOBNAME=BOOTOSX
+        - OWTRAVISJOB=BOOTOSX
       script: sh travis/build.sh boot
       before_cache:
         # upload OW build tools
@@ -91,11 +95,13 @@ jobs:
         - OWTOOLS=CLANG
         - OWDOCBUILD=0
         - OWVERBOSE=0
-        - TRAVISJOBNAME=BUILDOSX
+        - OWTRAVISJOB=BUILDOSX
       install:
         # install DOS Emulator
         - brew install dosbox
         - export OWDOSBOX=dosbox
+        # install Ghostscript
+        - brew install ghostscript
         # download OW build tools
         - sh travis/rsttools.sh
       script: sh travis/build.sh rel
