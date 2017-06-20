@@ -19,7 +19,6 @@ before_script:
  - export OWDOCBUILD=0
  - export OWDOCQUIET=1
  - export USE_FILENAME_VERSION=1
- - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
  - . cmnvars.sh
  - env | sed -n -e '/^TRAVIS/p' -e '/^OW/p' | sort
 
@@ -58,6 +57,7 @@ jobs:
         - OWDOCBUILD=0
         - OWVERBOSE=0
         - OWTRAVISJOB=BUILDLINUX
+        - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
       install:
         # download OW build tools
         - sh travis/rsttools.sh
@@ -96,6 +96,7 @@ jobs:
         - OWDOCBUILD=0
         - OWVERBOSE=0
         - OWTRAVISJOB=BUILDOSX
+        - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
       install:
         # install DOS Emulator
         - brew install dosbox
