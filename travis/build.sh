@@ -8,6 +8,8 @@
 #   - correct setup for all OW build environment variables
 #
 
+build_proc()
+{
 cd $OWSRCDIR
 if [ "$1" = "boot" ]; then
     #
@@ -49,3 +51,6 @@ else
 fi
 cd $OWROOT
 return $RC
+}
+
+build_proc $*
