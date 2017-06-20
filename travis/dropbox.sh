@@ -1,4 +1,4 @@
-#!/usr/sh
+#!/bin/sh
 #
 # Dropbox Uploader
 #
@@ -73,7 +73,7 @@ umask 077
 if [ ! -d "$TMP_DIR" ]; then
     echo "Error: the temporary folder $TMP_DIR doesn't exists!"
     echo "Please edit this script and set the TMP_DIR variable to a valid temporary folder to use."
-    exit 1
+    return 1
 fi
 
 if [ $DEBUG -ne 0 ]; then
@@ -96,7 +96,7 @@ if [ $? -ne 0 ]; then
         which $i > /dev/null || NOT_FOUND="$i $NOT_FOUND"
     done
     echo "Error: Required program could not be found: $NOT_FOUND"
-    exit 1
+    return 1
 fi
 
 #Check if readlink is installed and supports the -m option
@@ -184,7 +184,7 @@ usage()
     echo "\t download <REMOTE_FILE/DIR> [LOCAL_FILE/DIR]"
 
     remove_temp_files
-    exit 1
+    return 1
 }
 
 #Check the curl exit code
@@ -205,7 +205,7 @@ check_http_response()
             print "\nError: Couldn't resolve proxy. The given proxy host could not be resolved.\n"
 
             remove_temp_files
-            exit 1
+            return 1
         ;;
 
         #Missing CA certificates
@@ -217,21 +217,21 @@ check_http_response()
             print "If the problem persists, try to use the -k option (insecure).\n"
 
             remove_temp_files
-            exit 1
+            return 1
         ;;
 
         6)
             print "\nError: Couldn't resolve host.\n"
 
             remove_temp_files
-            exit 1
+            return 1
         ;;
 
         7)
             print "\nError: Couldn't connect to host.\n"
 
             remove_temp_files
-            exit 1
+            return 1
         ;;
 
     esac
@@ -243,7 +243,7 @@ check_http_response()
         case $ERROR_MSG in
              *access?attempt?failed?because?this?app?is?not?configured?to?have*)
                 echo "\nError: The Permission type/Access level configured doesn't match the DropBox App settings!\nPlease run \"$0 unlink\" and try again."
-                exit 1
+                return 1
             ;;
         esac
 
@@ -945,4 +945,4 @@ case $COMMAND in
 esac
 
 remove_temp_files
-exit $ERROR_STATUS
+return $ERROR_STATUS
