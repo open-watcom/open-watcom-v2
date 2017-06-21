@@ -32,11 +32,10 @@ CHUNK_SIZE=50
 TMP_DIR="/tmp"
 DEBUG=0
 QUIET=0
-SHOW_PROGRESSBAR=0
 ERROR_STATUS=0
-HUMAN_READABLE_SIZE=1
 LOCAL_PATH=""
 REMOTE_PATH=""
+CURL_PARAMETERS="-L -s"
 
 #Don't edit these...
 API_LONGPOLL_FOLDER="https://notify.dropboxapi.com/2/files/list_folder/longpoll"
@@ -81,24 +80,6 @@ remove_temp_files()
         rm -fr "$RESPONSE_FILE"
         rm -fr "$CHUNK_FILE"
         rm -fr "$TEMP_FILE"
-    fi
-}
-
-#Converts bytes to human readable format
-convert_bytes()
-{
-    if [ $HUMAN_READABLE_SIZE -eq 1 ] && [ -n "$1" ]; then
-        if [ $1 -gt 1073741824 ]; then
-            echo $(($1/1073741824)).$(($1%1073741824/100000000))"G";
-        elif [ $1 -gt 1048576 ]; then
-            echo $(($1/1048576)).$(($1%1048576/100000))"M";
-        elif [ $1 -gt 1024 ]; then
-            echo $(($1/1024)).$(($1%1024/100))"K";
-        else
-            echo $1;
-        fi
-    else
-        echo $1;
     fi
 }
 
@@ -379,15 +360,7 @@ db_simple_upload_file()
     normalize_path_remote "$2"
     FILE_DST="$REMOTE_PATH"
 
-    if [ $SHOW_PROGRESSBAR -eq 1 ] && [ $QUIET -eq 0 ]; then
-        CURL_PARAMETERS="--progress-bar"
-        LINE_CR="\n"
-    else
-        CURL_PARAMETERS="-L -s"
-        LINE_CR=""
-    fi
-
-    print " > Uploading \"$FILE_SRC\" to \"$FILE_DST\"... $LINE_CR"
+    print " > Uploading \"$FILE_SRC\" to \"$FILE_DST\"... "
     $CURL_BIN $CURL_ACCEPT_CERTIFICATES $CURL_PARAMETERS -X POST -i --globoff -o "$RESPONSE_FILE" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Dropbox-API-Arg: {\"path\": \"$FILE_DST\",\"mode\": \"overwrite\",\"autorename\": true,\"mute\": false}" --header "Content-Type: application/octet-stream" --data-binary @"$FILE_SRC" "$API_UPLOAD_URL"
     check_http_response
 
@@ -563,14 +536,6 @@ db_download_file()
     normalize_path_local "$2"
     FILE_DST="$LOCAL_PATH"
 
-    if [ $SHOW_PROGRESSBAR -eq 1 ] && [ $QUIET -eq 0 ]; then
-        CURL_PARAMETERS="-L --progress-bar"
-        LINE_CR="\n"
-    else
-        CURL_PARAMETERS="-L -s"
-        LINE_CR=""
-    fi
-
     #Creating the empty file, that for two reasons:
     #1) In this way I can check if the destination file is writable or not
     #2) Curl doesn't automatically creates files with 0 bytes size
@@ -581,7 +546,7 @@ db_download_file()
         return
     fi
 
-    print " > Downloading \"$FILE_SRC\" to \"$FILE_DST\"... $LINE_CR"
+    print " > Downloading \"$FILE_SRC\" to \"$FILE_DST\"... "
     $CURL_BIN $CURL_ACCEPT_CERTIFICATES $CURL_PARAMETERS -X POST --globoff -D "$RESPONSE_FILE" -o "$FILE_DST" --header "Authorization: Bearer $DROPBOX_TOKEN" --header "Dropbox-API-Arg: {\"path\": \"$FILE_SRC\"}" "$API_DOWNLOAD_URL"
     check_http_response
 
@@ -610,7 +575,7 @@ db_download_dir()
     print " > Downloading folder \"$DIR_SRC\" to \"$DIR_DST\"... "
 
     if [ ! -d "$DIR_DST" ]; then
-        print "%s\n" " > Creating local directory \"$DIR_DST\"... "
+        print " > Creating local directory \"$DIR_DST\"... "
         mkdir -p "$DIR_DST"
 
         #Check
@@ -637,7 +602,6 @@ db_download_dir()
         DIR_FILE=${line%:*}
         DIR_META=${line##*:}
         DIR_TYPE=${DIR_META%;*}
-        DIR_SIZE=${DIR_META#*;}
 
         #Removing unneeded /
         DIR_FILE="$(echo "$DIR_FILE" | sed 's/\/$//')"
@@ -746,9 +710,8 @@ db_list_outfile()
 
                 FILE=$(echo "$line" | sed -n 's/.*"path_display": *"\([^"]*\)".*/\1/p')
                 TYPE=$(echo "$line" | sed -n 's/.*".tag": *"\([^"]*\).*/\1/p')
-                SIZE=$(convert_bytes $(echo "$line" | sed -n 's/.*"size": *\([0-9]*\).*/\1/p'))
 
-                echo "$FILE:$TYPE;$SIZE" >> "$OUT_FILE"
+                echo "$FILE:$TYPE" >> "$OUT_FILE"
 
             done < "$TEMP_FILE"
 
