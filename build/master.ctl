@@ -99,6 +99,11 @@ set CCCMD=accopy
     set LOGFNAME=doc
     echo **** DOC rule
 
+[ BLOCK <1> docpdf ]
+#===================
+    set LOGFNAME=docpdf
+    echo **** DOCPDF rule
+
 [ BLOCK <1> docsclean ]
 #======================
     set LOGFNAME=docclean

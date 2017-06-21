@@ -7,22 +7,24 @@
 #
 
 case "$OWTRAVISJOB" in
-  BOOTLINUX|BUILDLINUX|BOOTOSX)
+  BOOTLINUX|BUILDLINUX|BOOTOSX|PDFDOCLINUX)
     cd $OWRELROOT
     git pull
     #
     # copy build log files to git repository tree
     #
-    if [ ! -d bld ]; then mkdir bld; fi
-    cp $TRAVIS_BUILD_DIR/bld/*.log bld/
-    #if [ ! -d docs ]; then mkdir docs; fi
-    #cp $TRAVIS_BUILD_DIR/docs/*.log docs/
+    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+        if [ ! -d bld/osx ]; then mkdir -p bld/osx; fi
+        cp $TRAVIS_BUILD_DIR/bld/*.log bld/osx/
+    else
+        if [ ! -d bld/linux ]; then mkdir -p bld/linux; fi
+        cp $TRAVIS_BUILD_DIR/bld/*.log bld/linux/
+    fi
     #
     # commit new log files to GitHub repository
     #
     git add -f .
-    if [ "$TRAVIS_OS_NAME" = "osx" ]
-    then
+    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
         git commit --quiet -m "Travis CI build $TRAVIS_BUILD_NUMBER (failure) - log files (OSX)"
     else
         git commit --quiet -m "Travis CI build $TRAVIS_BUILD_NUMBER (failure) - log files (Linux)"
