@@ -66,7 +66,7 @@
 !error doc_target variable is not defined. Please setup this variable in make file.
 !else ifeq doc_target docpdf
 dotarget = pdf
-books=$(pdf)
+books=$($(doc_target))
 !else ifeq doc_target txt
 dotarget = txt
 books=txt
