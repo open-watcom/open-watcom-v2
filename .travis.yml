@@ -40,10 +40,10 @@ jobs:
       compiler: clang
       sudo: required
       env:
+        - OWTRAVISJOB=BOOTLINUX
         - OWTOOLS=CLANG
         - OWDOCBUILD=0
         - OWVERBOSE=1
-        - OWTRAVISJOB=BOOTLINUX
       script: travis/build.sh boot
       before_cache:
         # upload OW build tools
@@ -53,10 +53,10 @@ jobs:
       compiler: clang
       sudo: required
       env:
+        - OWTRAVISJOB=BUILDLINUX
         - OWTOOLS=CLANG
         - OWDOCBUILD=0
         - OWVERBOSE=0
-        - OWTRAVISJOB=BUILDLINUX
         - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
       install:
         # download OW build tools
@@ -67,10 +67,10 @@ jobs:
       compiler: clang
       sudo: required
       env:
+        - OWTRAVISJOB=PDFDOCLINUX
         - OWTOOLS=CLANG
         - OWDOCBUILD=1
         - OWVERBOSE=0
-        - OWTRAVISJOB=PDFDOCLINUX
         - OWGHOSTSCRIPTPATH=$PATH
       install:
         # download OW build tools
@@ -80,10 +80,10 @@ jobs:
       os: osx
       compiler: clang
       env:
+        - OWTRAVISJOB=BOOTOSX
         - OWTOOLS=CLANG
         - OWDOCBUILD=0
         - OWVERBOSE=1
-        - OWTRAVISJOB=BOOTOSX
       script: travis/build.sh boot
       before_cache:
         # upload OW build tools
@@ -92,10 +92,10 @@ jobs:
       os: osx
       compiler: clang
       env:
+        - OWTRAVISJOB=BUILDOSX
         - OWTOOLS=CLANG
         - OWDOCBUILD=0
         - OWVERBOSE=0
-        - OWTRAVISJOB=BUILDOSX
         - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
       install:
         # install DOS Emulator
