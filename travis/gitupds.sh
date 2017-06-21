@@ -7,7 +7,7 @@
 #
 
 case "$OWTRAVISJOB" in
-  BUILDLINUX)
+  BUILDLINUX|PDFDOCLINUX)
     cd $OWRELROOT
     #
     # commit updated files to GitHub repository
@@ -15,7 +15,7 @@ case "$OWTRAVISJOB" in
     if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
         if [ "$TRAVIS_OS_NAME" = "linux" ]; then
             git add -f .
-            git commit --quiet -m "Travis CI build $TRAVIS_BUILD_NUMBER (success) - OW distribution"
+            git commit --quiet -m "Travis CI build $TRAVIS_BUILD_NUMBER (success) - OW documentation"
             git push --quiet -f origin
         fi
     fi
