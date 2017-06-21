@@ -8,7 +8,7 @@
 
 case "$OWTRAVISJOB" in
   BOOTLINUX|BUILDLINUX|BOOTOSX)
-    cd ../travis-ci-ow-builds
+    cd $OWRELROOT
     git pull
     #
     # copy build log files to git repository tree

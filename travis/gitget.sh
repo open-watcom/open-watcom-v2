@@ -16,11 +16,11 @@ case "$OWTRAVISJOB" in
     #
     # clone GitHub repository
     #
-    git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git ${TRAVIS_BUILD_DIR}/../travis-ci-ow-builds
+    git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git ${OWRELROOT}
     #
     # compress GitHub repository to hold only a few last builds
     #
-    cd ../travis-ci-ow-builds
+    cd $OWRELROOT
     depth=`git rev-list HEAD --count`
     if [ $depth -gt 10 ]; then
         git checkout --orphan temp1
