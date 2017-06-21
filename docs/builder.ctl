@@ -35,8 +35,8 @@ set PMAKEKEY=txt
 #=====================
     cdsay <PROJDIR>
 
-[ BLOCK <1> docs rel cprel docpdf ]
-#==================================
+[ BLOCK <1> docs rel cprel ]
+#===========================
     [ IFDEF <PMAKEKEY> build ]
         <CPCMD> dos/*.ihp       <OWRELROOT>/binw/
         <CPCMD> win/*.hlp       <OWRELROOT>/binw/
@@ -45,6 +45,14 @@ set PMAKEKEY=txt
         <CCCMD> nt/*.hlp        <OWRELROOT>/binnt/
         <CCCMD> nt/*.cnt        <OWRELROOT>/binnt/
         <CCCMD> htmlhelp/*.chm  <OWRELROOT>/binnt/help/
+        <CCCMD> pdf/*.pdf       <OWRELROOT>/docs/
+    [ ENDIF ]
+    <CCCMD> txt/*.txt       <OWRELROOT>/
+    <CPCMD> areadme.txt     <OWRELROOT>/areadme.txt
+
+[ BLOCK <1> docpdf ]
+#===================
+    [ IFDEF <PMAKEKEY> build ]
         <CCCMD> pdf/*.pdf       <OWRELROOT>/docs/
     [ ENDIF ]
     <CCCMD> txt/*.txt       <OWRELROOT>/
