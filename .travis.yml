@@ -88,24 +88,24 @@ jobs:
       before_cache:
         # upload OW build tools
         - travis/savtools.sh
-    - stage: Build OSX
-      os: osx
-      compiler: clang
-      env:
-        - OWTRAVISJOB=BUILDOSX
-        - OWTOOLS=CLANG
-        - OWDOCBUILD=0
-        - OWVERBOSE=0
-        - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
-      install:
-        # install DOS Emulator
-        - brew install dosbox
-        - export OWDOSBOX=dosbox
-        # install Ghostscript
-        - brew install ghostscript
-        # download OW build tools
-        - travis/rsttools.sh
-      script: travis/build.sh rel
+#    - stage: Build OSX
+#      os: osx
+#      compiler: clang
+#      env:
+#        - OWTRAVISJOB=BUILDOSX
+#        - OWTOOLS=CLANG
+#        - OWDOCBUILD=0
+#        - OWVERBOSE=0
+#        - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
+#      install:
+#        # install DOS Emulator
+#        - brew install dosbox
+#        - export OWDOSBOX=dosbox
+#        # install Ghostscript
+#        - brew install ghostscript
+#        # download OW build tools
+#        - travis/rsttools.sh
+#      script: travis/build.sh rel
 
 #addons:
 #  coverity_scan:
