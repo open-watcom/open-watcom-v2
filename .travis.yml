@@ -16,7 +16,7 @@ before_script:
  - export OWDOCBUILD=0
  - export OWDOCQUIET=1
  - export USE_FILENAME_VERSION=1
- - cmnvars.sh
+ - ./cmnvars.sh
  # get clone of GitHub repository to return Travis CI OW build/log files
  # and compress GitHub repository if necessary to hold only a few last builds
  - travis/gitget.sh
