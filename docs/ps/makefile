@@ -1,5 +1,5 @@
-#pmake: nobuild docs ps pdf
+#pmake: nobuild docs ps pdf docpdf
 
-dotarget=ps
+doc_target=ps
 
 !include ../mif/master.mif
