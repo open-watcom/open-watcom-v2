@@ -3,6 +3,7 @@
 # rsttools.sh - restore OW tools before OW build
 # *****************************************************************
 #
+
 if [ "$TRAVIS_OS_NAME" = "osx" ]; then
     . travis/dropbox.sh download OSX/bin/ build/bin/
     . travis/dropbox.sh download OSX/watcom/ bld/watcom/binbuild/

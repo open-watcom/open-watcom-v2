@@ -5,6 +5,7 @@
 #
 # If OW build succeeds then transfer OW build to GitHub repository
 #
+
 case "$OWTRAVISJOB" in
   BUILDLINUX)
     cd ../travis-ci-ow-builds

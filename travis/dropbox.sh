@@ -767,97 +767,97 @@ db_list_outfile()
 
 dropbox_proc()
 {
-
-################
-#### check  ####
-################
-
-umask 077
-
-#Check temp folder
-if [ ! -d "$TMP_DIR" ]; then
-    echo "Error: the temporary folder $TMP_DIR doesn't exists!"
-    echo "Please edit this script and set the TMP_DIR variable to a valid temporary folder to use."
-    return 1
-fi
-
-if [ $DEBUG -ne 0 ]; then
-    echo $VERSION
-    uname -a 2> /dev/null
-    cat /etc/issue 2> /dev/null
-    set -x
-    RESPONSE_FILE="$TMP_DIR/du_resp_debug"
-fi
-
-if [ -z "$CURL_BIN" ]; then
-    BIN_DEPS="$BIN_DEPS curl"
-    CURL_BIN="curl"
-fi
-
-#Dependencies check
-which $BIN_DEPS > /dev/null
-if [ $? -ne 0 ]; then
-    for i in $BIN_DEPS; do
-        which $i > /dev/null || NOT_FOUND="$i $NOT_FOUND"
-    done
-    echo "Error: Required program could not be found: $NOT_FOUND"
-    return 1
-fi
-
-################
-#### START  ####
-################
-
-COMMAND=$1
-
-#CHECKING PARAMS VALUES
-case $COMMAND in
-
-    upload)
-
-        shift
-        if [ $# -lt 2 ]; then
-            usage
-        fi
-
-        UPLOAD_DST="$@"
-        for UPLOAD_DST; do true; done
-        for UPLOAD_SRC in "$@"; do
-            if [ $UPLOAD_SRC != $UPLOAD_DST ]; then
-                db_upload "$UPLOAD_SRC" "/$UPLOAD_DST"
-            fi
+    
+    ################
+    #### check  ####
+    ################
+    
+    umask 077
+    
+    #Check temp folder
+    if [ ! -d "$TMP_DIR" ]; then
+        echo "Error: the temporary folder $TMP_DIR doesn't exists!"
+        echo "Please edit this script and set the TMP_DIR variable to a valid temporary folder to use."
+        return 1
+    fi
+    
+    if [ $DEBUG -ne 0 ]; then
+        echo $VERSION
+        uname -a 2> /dev/null
+        cat /etc/issue 2> /dev/null
+        set -x
+        RESPONSE_FILE="$TMP_DIR/du_resp_debug"
+    fi
+    
+    if [ -z "$CURL_BIN" ]; then
+        BIN_DEPS="$BIN_DEPS curl"
+        CURL_BIN="curl"
+    fi
+    
+    #Dependencies check
+    which $BIN_DEPS > /dev/null
+    if [ $? -ne 0 ]; then
+        for i in $BIN_DEPS; do
+            which $i > /dev/null || NOT_FOUND="$i $NOT_FOUND"
         done
-
-    ;;
-
-    download)
-
-        shift
-        if [ $# -lt 1 ]; then
+        echo "Error: Required program could not be found: $NOT_FOUND"
+        return 1
+    fi
+    
+    ################
+    #### START  ####
+    ################
+    
+    COMMAND=$1
+    
+    #CHECKING PARAMS VALUES
+    case $COMMAND in
+    
+        upload)
+    
+            shift
+            if [ $# -lt 2 ]; then
+                usage
+            fi
+    
+            UPLOAD_DST="$@"
+            for UPLOAD_DST; do true; done
+            for UPLOAD_SRC in "$@"; do
+                if [ $UPLOAD_SRC != $UPLOAD_DST ]; then
+                    db_upload "$UPLOAD_SRC" "/$UPLOAD_DST"
+                fi
+            done
+    
+        ;;
+    
+        download)
+    
+            shift
+            if [ $# -lt 1 ]; then
+                usage
+            fi
+    
+            FILE_SRC=$1
+            FILE_DST=$2
+    
+            db_download "/$FILE_SRC" "$FILE_DST"
+    
+        ;;
+    
+        *)
+    
+            if [ -n "$COMMAND" ]; then
+                print "Error: Unknown command: $COMMAND\n\n"
+                ERROR_STATUS=1
+            fi
             usage
-        fi
-
-        FILE_SRC=$1
-        FILE_DST=$2
-
-        db_download "/$FILE_SRC" "$FILE_DST"
-
-    ;;
-
-    *)
-
-        if [ -n "$COMMAND" ]; then
-            print "Error: Unknown command: $COMMAND\n\n"
-            ERROR_STATUS=1
-        fi
-        usage
-
-    ;;
-
-esac
-
-remove_temp_files
-return $ERROR_STATUS
+    
+        ;;
+    
+    esac
+    
+    remove_temp_files
+    return $ERROR_STATUS
 }
 
 dropbox_proc $*
