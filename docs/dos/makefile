@@ -1,5 +1,5 @@
 #pmake: build docs os_dos
 
-dotarget=dos
+doc_target=dos
 
 !include ../mif/master.mif

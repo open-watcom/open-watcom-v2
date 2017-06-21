@@ -1,39 +1,39 @@
-# help type         dos  html  htmlhelp  nt  os2  pdf  ps  win
-# distributed       yes  no    yes       yes yes  no   no  yes
-#===================================================
-!inject c_readme    dos  html  htmlhelp  nt  os2  pdf  ps  win
+# help type         dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+# distributed       yes  no    yes       yes yes  no   no  yes no
+#====================================================================
+!inject c_readme    dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 !inject cbooks                           nt
-!inject cgdoc
-!inject cguide      dos  html  htmlhelp  nt  os2  pdf  ps  win
+!inject cgdoc                                                  docpdf
+!inject cguide      dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 !inject cguideq          html                     pdf  ps
 !inject clbtst
-!inject clib        dos  html  htmlhelp  nt  os2  pdf  ps  win
+!inject clib        dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 !inject clib_fox
 !inject clib_nec
 !inject clibnt
 !inject clibqnx
-!inject clr         dos  html  htmlhelp  nt  os2  pdf  ps  win
+!inject clr         dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 !inject clslib
-!inject cpplib      dos  html  htmlhelp  nt  os2  pdf  ps  win
-!inject cw          dos  html  htmlhelp  nt  os2  pdf  ps
+!inject cpplib      dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject cw          dos  html  htmlhelp  nt  os2  pdf  ps      docpdf
 !inject ddespy           html  htmlhelp  nt                win
-!inject devguide
+!inject devguide                                               docpdf
 !inject drnt             html  htmlhelp  nt                win
 !inject drwatcom         html  htmlhelp  nt                win
 !inject ebooks                           nt
 !inject editor           html  htmlhelp  nt                win
-!inject f77graph    dos  html  htmlhelp  nt  os2  pdf  ps  win
-!inject f77lr       dos  html  htmlhelp  nt  os2  pdf  ps  win
-!inject f_readme    dos  html  htmlhelp  nt  os2  pdf  ps  win
+!inject f77graph    dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject f77lr       dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject f_readme    dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 !inject fbooks                           nt
-!inject fpguide     dos  html  htmlhelp  nt  os2  pdf  ps  win
-!inject ftools      dos  html  htmlhelp  nt  os2  pdf  ps  win
-!inject fuguide     dos  html  htmlhelp  nt  os2  pdf  ps  win
-!inject guitool          html                     pdf  ps
+!inject fpguide     dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject ftools      dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject fuguide     dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject guitool          html                     pdf  ps      docpdf
 !inject heapwalk         html  htmlhelp  nt                win
 !inject ide              html  htmlhelp  nt  os2           win
-!inject lguide      dos  html  htmlhelp  nt  os2  pdf  ps  win
-!inject pguide      dos  html  htmlhelp  nt  os2  pdf  ps  win
+!inject lguide      dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject pguide      dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 !inject resacc           html  htmlhelp  nt                win
 !inject rescomp     dos  html  htmlhelp  nt  os2           win
 !inject resdlg           html  htmlhelp  nt                win
@@ -42,14 +42,14 @@
 !inject resmnu           html  htmlhelp  nt                win
 !inject resstr           html  htmlhelp  nt                win
 !inject spy              html  htmlhelp  nt                win
-!inject tools       dos  html  htmlhelp  nt  os2  pdf  ps  win
-!inject trap                                      pdf  ps
-!inject vi          dos  html  htmlhelp  nt  os2  pdf  ps  win
+!inject tools       dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject trap                                      pdf  ps      docpdf
+!inject vi          dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 !inject wasaxp
 !inject wbrw             html  htmlhelp  nt  os2           win
 !inject wccerrs     dos  html  htmlhelp  nt  os2           win
-!inject wd          dos  html  htmlhelp  nt  os2  pdf  ps  win
-!inject wddoc
+!inject wd          dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject wddoc                                                  docpdf
 !inject wfcerrs     dos  html  htmlhelp  nt  os2           win
 !inject wjcerrs
 !inject wlnkerrs         html  htmlhelp  nt                win
@@ -57,23 +57,24 @@
 !inject wprof       dos  html  htmlhelp  nt  os2           win
 !inject wrcerrs          html  htmlhelp  nt                win
 !inject zoom             html  htmlhelp  nt                win
-!inject cmix        dos                      os2           win # depends on zoom, etc.
-!inject fmix        dos                      os2           win # depends on zoom, etc.
-!inject wgmlref                                   pdf  ps
-!inject wipfc       dos  html  htmlhelp  nt  os2  pdf  ps  win
+!inject cmix        dos                      os2           win         # depends on zoom, etc.
+!inject fmix        dos                      os2           win         # depends on zoom, etc.
+!inject wgmlref                                   pdf  ps      docpdf
+!inject wipfc       dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 
-!ifndef dotarget
-!error $$(dotarget) unset for documentation. Must be dos, html, htmlhelp, nt, os2, pdf, ps or win.
-!else
-books=$($(dotarget))
-!endif
-
-!ifeq books
-!ifeq dotarget txt
+!ifndef doc_target
+!error doc_target variable is not defined. Please setup this variable in make file.
+!else ifeq doc_target docpdf
+dotarget = pdf
+books=$(pdf)
+!else ifeq doc_target txt
+dotarget = txt
 books=txt
+!else ifdef $(doc_target)
+dotarget = $(doc_target)
+books=$($(doc_target))
 !else
-!error Unsuported dotarget ($(dotarget)) for documentation. Must be dos, html, htmlhelp, nt, os2, pdf, ps or win.
-!endif
+!error $$(doc_target) value is not valid for documentation. Please consult books.mif file for configured targets.
 !endif
 
 !ifdef hbook
