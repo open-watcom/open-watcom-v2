@@ -5,7 +5,7 @@
 !inject cbooks                           nt
 !inject cgdoc                                                  docpdf
 !inject cguide      dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
-!inject cguideq          html                     pdf  ps
+!inject cguideq
 !inject clbtst
 !inject clib        dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 !inject clib_fox
