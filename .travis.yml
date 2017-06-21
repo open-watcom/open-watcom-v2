@@ -9,9 +9,6 @@ addons:
       - ghostscript
 
 before_script:
- # get clone of GitHub repository to return Travis CI OW build/log files
- # and compress GitHub repository if necessary to hold only a few last builds
- - . travis/gitget.sh
  # initialize OW build environment variables
  - . travis/setowrel.sh
  - export OWROOT=$TRAVIS_BUILD_DIR
@@ -20,6 +17,9 @@ before_script:
  - export OWDOCQUIET=1
  - export USE_FILENAME_VERSION=1
  - . cmnvars.sh
+ # get clone of GitHub repository to return Travis CI OW build/log files
+ # and compress GitHub repository if necessary to hold only a few last builds
+ - . travis/gitget.sh
  - env | sed -n -e '/^TRAVIS/p' -e '/^OW/p' | sort
 
 #script:

@@ -8,7 +8,7 @@
 
 case "$OWTRAVISJOB" in
   BUILDLINUX)
-    cd ../travis-ci-ow-builds
+    cd $OWRELROOT
     #
     # commit updated files to GitHub repository
     #

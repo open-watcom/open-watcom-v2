@@ -10,12 +10,11 @@
 
 build_proc()
 {
-    cd $OWSRCDIR
     if [ "$1" = "boot" ]; then
         #
         # build new verison of wmake for host system
         #
-        cd wmake
+        cd $OWSRCDIR/wmake
         mkdir $OWOBJDIR
         cd $OWOBJDIR
         rm -f $OWBINDIR/wmake
@@ -30,22 +29,22 @@ build_proc()
                 ;;
         esac
         RC=$?
-        cd ../..
         if [ $RC -eq 0 ]; then
             #
             # build new verison of builder for host system
             #
-            cd builder
+            cd $OWSRCDIR/builder
             mkdir $OWOBJDIR
             cd $OWOBJDIR
             rm -f $OWBINDIR/builder
             $OWBINDIR/wmake -f ../binmake clean
             $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
-            cd ../..
+            cd $OWSRCDIR
             builder boot
             RC=$?
         fi
     else
+        cd $OWSRCDIR
         builder $1
         RC=$?
     fi
