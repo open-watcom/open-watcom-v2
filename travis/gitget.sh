@@ -7,6 +7,7 @@
 #
 # configure Git client
 #
+
 case "$OWTRAVISJOB" in
   BOOTLINUX|BUILDLINUX|BOOTOSX)
     git config --global user.email "travis@travis-ci.org"

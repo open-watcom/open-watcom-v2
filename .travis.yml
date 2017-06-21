@@ -13,8 +13,8 @@ before_script:
  # and compress GitHub repository if necessary to hold only a few last builds
  - . travis/gitget.sh
  # initialize OW build environment variables
+ - . travis/setowrel.sh
  - export OWROOT=$TRAVIS_BUILD_DIR
- - export OWRELROOT=$TRAVIS_BUILD_DIR/../travis-ci-ow-builds
  - export OWOBJDIR=binbuild
  - export OWDOCBUILD=0
  - export OWDOCQUIET=1
