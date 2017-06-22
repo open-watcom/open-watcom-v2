@@ -15,7 +15,11 @@ case "$OWTRAVISJOB" in
             #
             cd $OWRELROOT
             git add -f .
-            git commit --quiet -m "Travis CI build $TRAVIS_BUILD_NUMBER (success) - OW documentation"
+            if [ "$OWTRAVISJOB" = "PDFDOCLINUX" ]; then
+                git commit --quiet -m "Travis CI build $TRAVIS_BUILD_NUMBER - Documentation"
+            else
+                git commit --quiet -m "Travis CI build $TRAVIS_BUILD_NUMBER - OW distribution"
+            fi
             git push --quiet -f origin
             cd $TRAVIS_BUILD_DIR
             echo "gitupds.sh - done"
