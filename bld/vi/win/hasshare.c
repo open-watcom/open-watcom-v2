@@ -30,11 +30,12 @@
 ****************************************************************************/
 
 
+#ifdef __WINDOWS__
+
 #include "vi.h"
 #include <dos.h>
 #include <fcntl.h>
 
-#ifndef __NT__
 static bool lockFileRegion( int handle )
 {
     union REGS  r;
@@ -89,4 +90,5 @@ bool HasShare( void )
     return( has_share );
 
 } /* HasShare */
+
 #endif

@@ -10,7 +10,7 @@ objwiny = &
     repcnt.obj clipbrd.obj asavedlg.obj profile.obj &
     finddlg.obj ectlsub.obj grepdlg.obj cmddlg.obj &
     ftbar.obj startdlg.obj usage.obj tagdlg.obj &
-    hasshare.obj linedlg.obj &
+    linedlg.obj &
     clrbar.obj clrpick.obj ftpick.obj repdlg.obj &
     hotkey.obj ssbar.obj subclass.obj snoop.obj &
     ideactiv.obj filetype.obj
@@ -34,6 +34,6 @@ other = $(name).res
 ! ifeq host_os nt
 extraobjs += spawn.obj ntcmds.obj
 ! else
-extraobjs += exec.obj doscmds.obj
+extraobjs += exec.obj doscmds.obj hasshare.obj
 ! endif
 !endif
