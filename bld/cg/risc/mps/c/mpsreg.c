@@ -81,7 +81,7 @@ type_class_def CallState( aux_handle aux, type_def *tipe, call_state *state )
 /***************************************************************************/
 {
     type_class_def      class;
-    uint                i;
+    byte                i;
     hw_reg_set          parms[20];
     hw_reg_set          *parm_src;
     hw_reg_set          *parm_dst;
@@ -129,13 +129,13 @@ type_class_def CallState( aux_handle aux, type_def *tipe, call_state *state )
     if( cclass & NO_MEMORY_READ ) {
         state->attr |= ROUTINE_READS_NO_MEMORY;
     }
-    i = 0;
     if( have_aux_code ) {
         parm_src = FEAuxInfo( aux, PARM_REGS );
     } else {
         parm_src = ParmRegs();
     }
 
+    i = 0;
     parm_dst = &parms[0];
     for( ; !HW_CEqual( *parm_src, HW_EMPTY ); ++parm_src ) {
         *parm_dst = *parm_src;

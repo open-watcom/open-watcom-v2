@@ -1,4 +1,4 @@
-#pmake: nobuild cpu_axp alpha os_nt target_axp
+#pmake: nobuild target_axp cpu_axp alpha os_nt
 
 host_os  = nt
 host_cpu = axp

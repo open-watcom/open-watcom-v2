@@ -1,4 +1,4 @@
-#pmake: build ppc os_nt cpu_386 target_ppc
+#pmake: build target_ppc ppc os_nt cpu_386
 
 host_os  = nt
 host_cpu = 386

@@ -403,7 +403,7 @@ instruction    *FoldIns( instruction *ins ) {
                 return( CmpRelocZero( ins, 0, 1 ) );
             }
         }
-        if( i != 0 ) {
+        if( i > 0 ) {
             if( RelocConst( ins->operands[0] ) ) {
                 return( CmpRelocZero( ins, 1, 0 ) );
             }

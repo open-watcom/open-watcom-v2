@@ -1,4 +1,4 @@
-#pmake: build i86 cpu_386 os_linux target_i86
+#pmake: build target_i86 i86 cpu_386 os_linux
 
 host_os  = linux
 host_cpu = 386

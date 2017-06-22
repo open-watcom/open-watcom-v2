@@ -96,7 +96,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
 /****************************************************************************/
 {
     type_class_def      class;
-    uint                i;
+    byte                i;
     hw_reg_set          parms[24];
     hw_reg_set          *parm_src;
     hw_reg_set          *parm_dst;
@@ -123,7 +123,7 @@ type_class_def  CallState( aux_handle aux, type_def *tipe, call_state *state )
         i++;
     }
     i++;
-    state->parm.table = CGAlloc( i*sizeof( hw_reg_set ) );
+    state->parm.table = CGAlloc( i * sizeof( hw_reg_set ) );
     Copy( parms, state->parm.table, i * sizeof( hw_reg_set ) );
     HW_CAsgn( state->parm.used, HW_EMPTY );
     state->parm.curr_entry = state->parm.table;
