@@ -24,15 +24,15 @@ set PMAKEKEY=txt
 [ BLOCK <1> docpdf ]
 #===================
     cd pdf
-    pmake -d <PMAKEKEY> <PROJPMAKE> <2> <3> <4> <5> <6> <7> <8> <9> -h doc_target=docpdf
+    pmake -d <PMAKEKEY> <PROJPMAKE> <2> <3> <4> <5> <6> <7> <8> <9> -h docset=docpdf
     cd ..
 
 [ BLOCK <1> docsclean clean ]
 #============================
     pmake -d <PMAKEKEY> <PROJPMAKE> <2> <3> <4> <5> <6> <7> <8> <9> -h clean
 
-[ BLOCK <1> docs rel ]
-#=====================
+[ BLOCK <1> docs rel docpdf ]
+#============================
     cdsay <PROJDIR>
 
 [ BLOCK <1> docs rel cprel ]

@@ -1,5 +1,5 @@
 #pmake: build docs txt
 
-doc_target=txt
+docset=txt
 
 !include ../mif/master.mif

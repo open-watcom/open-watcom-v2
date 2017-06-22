@@ -1,5 +1,5 @@
 #pmake: build guitool docs os_win
 
-doc_target=win
+docset=win
 
 !include ../mif/master.mif
