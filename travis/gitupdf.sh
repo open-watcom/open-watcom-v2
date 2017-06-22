@@ -32,6 +32,12 @@ case "$OWTRAVISJOB" in
         fi
         git push --quiet -f origin
         cd $TRAVIS_BUILD_DIR
+        echo "gitupdf.sh - done"
+    else
+        echo "gitupdf.sh - skipped"
     fi
+    ;;
+  *)
+    echo "gitupdf.sh - skipped"
     ;;
 esac

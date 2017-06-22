@@ -24,6 +24,7 @@ case "$OWTRAVISJOB" in
         cd $OWRELROOT
         depth=`git rev-list HEAD --count`
         if [ $depth -gt 10 ]; then
+            echo "gitget.sh - start compression"
             git checkout --orphan temp1
             git add -A
             git commit -am "Initial commit"
@@ -32,8 +33,15 @@ case "$OWTRAVISJOB" in
             git push -f origin master
             git branch --set-upstream-to=origin/master master
             git pull
+            echo "gitget.sh - end compression"
         fi
         cd $TRAVIS_BUILD_DIR
+        echo "gitget.sh - done"
+    else
+        echo "gitget.sh - skipped"
     fi
+    ;;
+  *)
+    echo "gitget.sh - skipped"
     ;;
 esac

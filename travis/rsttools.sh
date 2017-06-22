@@ -13,4 +13,7 @@ if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
         travis/dropbox.sh download Linux/watcom/ bld/watcom/binbuild/
     fi
     chmod +x build/bin/*
+    echo "rsttools.sh - done"
+else
+    echo "rsttools.sh - skipped"
 fi

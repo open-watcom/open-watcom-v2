@@ -14,4 +14,7 @@ if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
         travis/dropbox.sh upload bld/watcom/binbuild/clibext.lib Linux/watcom/
         travis/dropbox.sh upload bld/watcom/binbuild/clibexts.lib Linux/watcom/
     fi
+    echo "savtools.sh - done"
+else
+    echo "savtools.sh - skipped"
 fi
