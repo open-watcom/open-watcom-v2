@@ -127,8 +127,11 @@ void    ShowStartupDialog( void );
 void    CloseStartupDialog( void );
 void    UsageDialog( char **, char *, int );
 char    *GetInitialFileName( void );
-bool    HasShare( void );
 int     PickATag( int clist, char **list, const char *tagname );
+
+#ifdef __WINDOWS__
+bool    HasShare( void );
+#endif
 
 // clrpick.c
 void    InitClrPick( void );
