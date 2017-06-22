@@ -1,83 +1,100 @@
-# help type         dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
-# distributed       yes  no    yes       yes yes  no   no  yes no
-#====================================================================
-!inject c_readme    dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
-!inject cbooks                           nt
-!inject cgdoc                                                  docpdf
-!inject cguide      dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+# help type         txt dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+# distributed       yes yes  no    yes       yes yes  yes  no  yes no    
+#========================================================================
+!inject txt         txt
+!inject c_readme        dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject cbooks                               nt
+!inject cgdoc                                                      docpdf
+!inject cguide          dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 !inject cguideq
 !inject clbtst
-!inject clib        dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject clib            dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 !inject clib_fox
 !inject clib_nec
 !inject clibnt
 !inject clibqnx
-!inject clr         dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject clr             dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 !inject clslib
-!inject cpplib      dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
-!inject cw          dos  html  htmlhelp  nt  os2  pdf  ps      docpdf
-!inject ddespy           html  htmlhelp  nt                win
-!inject devguide                                               docpdf
-!inject drnt             html  htmlhelp  nt                win
-!inject drwatcom         html  htmlhelp  nt                win
-!inject ebooks                           nt
-!inject editor           html  htmlhelp  nt                win
-!inject f77graph    dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
-!inject f77lr       dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
-!inject f_readme    dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
-!inject fbooks                           nt
-!inject fpguide     dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
-!inject ftools      dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
-!inject fuguide     dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
-!inject guitool          html                     pdf  ps      docpdf
-!inject heapwalk         html  htmlhelp  nt                win
-!inject ide              html  htmlhelp  nt  os2           win
-!inject lguide      dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
-!inject pguide      dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
-!inject resacc           html  htmlhelp  nt                win
-!inject rescomp     dos  html  htmlhelp  nt  os2           win
-!inject resdlg           html  htmlhelp  nt                win
-!inject resedt           html  htmlhelp  nt                win
-!inject resimg           html  htmlhelp  nt                win
-!inject resmnu           html  htmlhelp  nt                win
-!inject resstr           html  htmlhelp  nt                win
-!inject spy              html  htmlhelp  nt                win
-!inject tools       dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
-!inject trap                                      pdf  ps      docpdf
-!inject vi          dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject cpplib          dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject cw              dos  html  htmlhelp  nt  os2  pdf  ps      docpdf
+!inject ddespy               html  htmlhelp  nt                win
+!inject devguide                                                   docpdf
+!inject drnt                 html  htmlhelp  nt                win
+!inject drwatcom             html  htmlhelp  nt                win
+!inject ebooks                               nt
+!inject editor               html  htmlhelp  nt                win
+!inject f77graph        dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject f77lr           dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject f_readme        dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject fbooks                               nt
+!inject fpguide         dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject ftools          dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject fuguide         dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject guitool              html                     pdf  ps      docpdf
+!inject heapwalk             html  htmlhelp  nt                win
+!inject ide                  html  htmlhelp  nt  os2           win
+!inject lguide          dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject pguide          dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject resacc               html  htmlhelp  nt                win
+!inject rescomp         dos  html  htmlhelp  nt  os2           win
+!inject resdlg               html  htmlhelp  nt                win
+!inject resedt               html  htmlhelp  nt                win
+!inject resimg               html  htmlhelp  nt                win
+!inject resmnu               html  htmlhelp  nt                win
+!inject resstr               html  htmlhelp  nt                win
+!inject spy                  html  htmlhelp  nt                win
+!inject tools           dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject trap                                          pdf  ps      docpdf
+!inject vi              dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 !inject wasaxp
-!inject wbrw             html  htmlhelp  nt  os2           win
-!inject wccerrs     dos  html  htmlhelp  nt  os2           win
-!inject wd          dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
-!inject wddoc                                                  docpdf
-!inject wfcerrs     dos  html  htmlhelp  nt  os2           win
+!inject wbrw                 html  htmlhelp  nt  os2           win
+!inject wccerrs         dos  html  htmlhelp  nt  os2           win
+!inject wd              dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject wddoc                                                      docpdf
+!inject wfcerrs         dos  html  htmlhelp  nt  os2           win
 !inject wjcerrs
-!inject wlnkerrs         html  htmlhelp  nt                win
-!inject wpperrs     dos  html  htmlhelp  nt  os2           win
-!inject wprof       dos  html  htmlhelp  nt  os2           win
-!inject wrcerrs          html  htmlhelp  nt                win
-!inject zoom             html  htmlhelp  nt                win
-!inject cmix        dos                      os2           win         # depends on zoom, etc.
-!inject fmix        dos                      os2           win         # depends on zoom, etc.
-!inject wgmlref                                   pdf  ps      docpdf
-!inject wipfc       dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject wlnkerrs             html  htmlhelp  nt                win
+!inject wpperrs         dos  html  htmlhelp  nt  os2           win
+!inject wprof           dos  html  htmlhelp  nt  os2           win
+!inject wrcerrs              html  htmlhelp  nt                win
+!inject zoom                 html  htmlhelp  nt                win
+!inject cmix            dos                      os2           win         # depends on zoom, etc.
+!inject fmix            dos                      os2           win         # depends on zoom, etc.
+!inject wgmlref                                       pdf  ps      docpdf
+!inject wipfc           dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 
-!ifndef doc_target
-!error doc_target variable is not defined. Please setup this variable in make file.
-!else ifeq doc_target docpdf
-dotarget = pdf
-books=$($(doc_target))
-!else ifeq doc_target txt
-dotarget = txt
-books=txt
-!else ifdef $(doc_target)
-dotarget = $(doc_target)
-books=$($(doc_target))
-!else
-!error $$(doc_target) value is not valid for documentation. Please consult books.mif file for configured targets.
+
+!ifndef docset
+!error docset variable is not defined. Please setup this variable in make file.
+!else ifndef $(docset)
+!error $$(docset) value is not known. Please consult books.mif file for configured values.
 !endif
 
-!ifdef hbook
+#
+# do targets
+#
+!ifeq docset docpdf
+dotarget = pdf
+!else
+dotarget = $(docset)
+!endif
+
+#
+# wgml targets
+#
+!ifeq dotarget pdf
+wgml_target = ps
+!else ifeq dotarget htmlhelp
+wgml_target = html
+!else
+wgml_target = $(dotarget)
+!endif
+
+!ifndef hbook
+
+books=$($(docset))
+
+!else
 #############################################################
 #
 # Books definition
@@ -620,8 +637,6 @@ book_multi_chapter=1
 
 !endif
 
-!endif
-
-!ifdef hbook
 books=$(hbook)
+
 !endif

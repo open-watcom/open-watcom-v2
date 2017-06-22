@@ -1,5 +1,5 @@
 #pmake: build docs os_nt htmlhelp
 
-doc_target=htmlhelp
+docset=htmlhelp
 
 !include ../mif/master.mif
