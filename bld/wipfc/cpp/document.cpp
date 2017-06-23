@@ -200,7 +200,8 @@ Document::Document( Compiler& c, const char* loc ) :
     currentLeftMargin( 1 ),
     lastPrintableToken( Lexer::END ),
     inDoc( false ),
-    spacing( true )
+    spacing( true ),
+    tmpBitmaps( NULL )
 {
     fonts.reset( new FontCollection( codePage() ) );
     FontEntry fnt;
@@ -218,6 +219,8 @@ Document::Document( Compiler& c, const char* loc ) :
 /***************************************************************************/
 Document::~Document()
 {
+    if( tmpBitmaps != NULL )
+        std::fclose( tmpBitmaps );
     for( CellIter itr = cells.begin(); itr != cells.end(); ++itr )
         delete *itr;
     for( PageIter itr = pages.begin(); itr != pages.end(); ++itr )
@@ -562,10 +565,8 @@ void Document::makeBitmaps()
 {
     if( !bitmapNames.empty() ) {
         //could use tmpfile...
-        tmpName = Environment.value( "TMP" );
-        tmpName += std::tmpnam( NULL );
-        std::FILE* tmp( std::fopen( tmpName.c_str(), "wb" ) );
-        if( !tmp )
+        tmpBitmaps = std::tmpfile();
+        if( tmpBitmaps == NULL )
             throw FatalIOError( ERR_OPEN, L"(temporary file for bitmaps)" );
         //get IPFCARTWORK from env
         std::string env( Environment.value( "IPFCARTWORK" ) );
@@ -606,7 +607,7 @@ void Document::makeBitmaps()
                         std::printf( "Processing bitmap %s\n", fullname.c_str() );
 #endif
                         Bitmap bm( fullname );
-                        itr->second = bm.write( tmp );
+                        itr->second = bm.write( tmpBitmaps );
                         break;
                     }
                     catch( FatalError& e ) {
@@ -620,59 +621,55 @@ void Document::makeBitmaps()
             }
         }
         catch( FatalError& e ) {
-            std::fclose( tmp );
-            std::remove( tmpName.c_str() );
+            std::fclose( tmpBitmaps );
+            tmpBitmaps = NULL;
             throw e;
         }
         catch( FatalIOError& e ) {
-            std::fclose( tmp );
-            std::remove( tmpName.c_str() );
+            std::fclose( tmpBitmaps );
+            tmpBitmaps = NULL;
             throw e;
         }
-        std::fclose( tmp );
     }
 }
 /***************************************************************************/
 STD1::uint32_t Document::writeBitmaps( std::FILE* out )
 {
     STD1::uint32_t offset( 0 );
-    if( !bitmapNames.empty() ) {
+    if( !bitmapNames.empty() && tmpBitmaps != NULL ) {
         offset = std::ftell( out );
-        std::FILE* tmp( std::fopen( tmpName.c_str(), "rb" ) );
-        if( !tmp )
-            throw FatalIOError( ERR_OPEN, L"(temporary file for bitmaps)" );
-        std::fseek( tmp, 0L, SEEK_END );
-        STD1::uint32_t length( std::ftell( tmp ) );
-        std::fseek( tmp, 0L, SEEK_SET );
+        std::fseek( tmpBitmaps, 0L, SEEK_END );
+        STD1::uint32_t length( std::ftell( tmpBitmaps ) );
+        std::fseek( tmpBitmaps, 0L, SEEK_SET );
         std::vector< STD1::uint8_t > buffer( BUFSIZ );
         //copy the temporary file into this one
         try {
             while( length > BUFSIZ ) {
-                if( std::fread( &buffer[0], sizeof( STD1::uint8_t ), BUFSIZ, tmp ) != BUFSIZ )
+                if( std::fread( &buffer[0], sizeof( STD1::uint8_t ), BUFSIZ, tmpBitmaps ) != BUFSIZ )
                     throw FatalIOError( ERR_READ, L"(temporary file for bitmaps)" );
                 if( std::fwrite( &buffer[0], sizeof( STD1::uint8_t ), BUFSIZ, out ) != BUFSIZ )
                     throw FatalError( ERR_WRITE );
                 length -= BUFSIZ;
             }
             if( length ) {
-                if( std::fread( &buffer[0], sizeof( STD1::uint8_t ), length, tmp ) != length )
+                if( std::fread( &buffer[0], sizeof( STD1::uint8_t ), length, tmpBitmaps ) != length )
                     throw FatalIOError( ERR_READ, L"(temporary file for bitmaps)" );
                 if( std::fwrite( &buffer[0], sizeof( STD1::uint8_t ), length, out ) != length )
                     throw FatalError( ERR_WRITE );
             }
         }
         catch( FatalError& e ) {
-            std::fclose( tmp );
-            std::remove( tmpName.c_str() );
+            std::fclose( tmpBitmaps );
+            tmpBitmaps = NULL;
             throw e;
         }
         catch( FatalIOError& e ) {
-            std::fclose( tmp );
-            std::remove( tmpName.c_str() );
+            std::fclose( tmpBitmaps );
+            tmpBitmaps = NULL;
             throw e;
         }
-        std::fclose( tmp );
-        std::remove( tmpName.c_str() );
+        std::fclose( tmpBitmaps );
+        tmpBitmaps = NULL;
     }
     return offset;
 }
