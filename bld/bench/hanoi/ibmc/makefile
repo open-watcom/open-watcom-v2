@@ -2,4 +2,4 @@
 
 compiler = ibmc
 
-!include ..\hanoi.mif
+!include ../hanoi.mif

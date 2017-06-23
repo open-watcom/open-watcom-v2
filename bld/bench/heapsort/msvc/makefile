@@ -2,4 +2,4 @@
 
 compiler = msvc
 
-!include ..\heapsort.mif
+!include ../heapsort.mif

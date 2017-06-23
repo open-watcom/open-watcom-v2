@@ -2,4 +2,4 @@
 
 compiler = watcom
 
-!include ..\owstl.mif
+!include ../owstl.mif

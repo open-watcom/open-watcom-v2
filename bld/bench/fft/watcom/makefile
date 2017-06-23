@@ -2,4 +2,4 @@
 
 compiler = watcom
 
-!include ..\fft.mif
+!include ../fft.mif

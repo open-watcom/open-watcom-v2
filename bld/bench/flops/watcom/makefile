@@ -2,4 +2,4 @@
 
 compiler = watcom
 
-!include ..\flops.mif
+!include ../flops.mif

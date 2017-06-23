@@ -2,4 +2,4 @@
 
 compiler = ibmc
 
-!include ..\queens.mif
+!include ../queens.mif

@@ -2,4 +2,4 @@
 
 compiler = ibmc
 
-!include ..\flops.mif
+!include ../flops.mif

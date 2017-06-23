@@ -2,4 +2,4 @@
 
 compiler = ibmc
 
-!include ..\clinpack.mif
+!include ../clinpack.mif

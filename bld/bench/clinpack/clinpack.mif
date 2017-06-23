@@ -1,4 +1,4 @@
-!include $(bench_dir)\mif\bench.mif
+!include $(bench_dir)/mif/bench.mif
 
 .c: $(bench_dir)\clinpack
 .h: $(bench_dir)\clinpack

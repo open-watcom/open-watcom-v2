@@ -2,4 +2,4 @@
 
 compiler = ibmc
 
-!include ..\dhrystone.mif
+!include ../dhrystone.mif

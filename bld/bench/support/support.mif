@@ -1,4 +1,4 @@
-!include $(bench_dir)\mif\bench.mif
+!include $(bench_dir)/mif/bench.mif
 
 .c: $(bench_dir)\support
 .h: $(bench_dir)\support
@@ -7,15 +7,15 @@
 extra_includes	= $(bench_dir)\support
 extra_cflags	=
 
-!ifeq host_os nt
+!ifdef __NT__
 obj_files = timer.obj report.obj
-!else ifeq host_os os2
+!else ifdef __OS2__
 obj_files = timero32.obj report.obj
 !ifneq compiler watcom
 obj_files += readp5.obj
 !endif
 !else
-!error Unsupported host_os
+all:
 !endif
 
 support.lib : $(obj_files)

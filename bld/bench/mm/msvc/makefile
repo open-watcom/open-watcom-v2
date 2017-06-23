@@ -2,4 +2,4 @@
 
 compiler = msvc
 
-!include ..\mm.mif
+!include ../mm.mif

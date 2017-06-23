@@ -2,4 +2,4 @@
 
 compiler = msvc
 
-!include ..\nsieve.mif
+!include ../nsieve.mif
