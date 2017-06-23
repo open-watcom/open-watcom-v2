@@ -11,7 +11,7 @@ addons:
 cache:
   ccache: true
   directories:
-    - build/bin
+    - ${TRAVIS_BUILD_DIR}/build/bin
 
 before_script:
  # initialize OW build environment variables
