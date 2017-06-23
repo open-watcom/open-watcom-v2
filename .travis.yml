@@ -14,11 +14,9 @@ env:
 
 matrix:
   exclude:
-    - compiler: clang
-      os: osx
+    - os: osx
       env: OWTRAVISJOB=BUILD
-    - compiler: clang
-      os: osx
+    - os: osx
       env: OWTRAVISJOB=DOCPDF
 
 env:
@@ -67,7 +65,6 @@ after_success:
 jobs:
   include:
     - stage: Bootstrap
-      compiler: clang
       os: linux osx
       env: OWTRAVISJOB=BOOTSTRAP
       install:
@@ -79,7 +76,6 @@ jobs:
         # upload OW build tools
         - travis/savtools.sh
     - stage: Build binaries
-      compiler: clang
       os: linux
       env: OWTRAVISJOB=BUILD
       install:
@@ -96,7 +92,6 @@ jobs:
       script:
         - travis/build.sh rel
     - stage: Build PDF documentation
-      compiler: clang
       os: linux
       env: OWTRAVISJOB=DOCPDF
       install:
@@ -108,7 +103,6 @@ jobs:
       script:
         - travis/build.sh docpdf
     - stage: Clear cache
-      compiler: clang
       os: linux osx
       env: OWTRAVISJOB=CLEARCACHE
       before_script: true
