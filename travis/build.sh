@@ -49,23 +49,6 @@ bootstrap_proc()
 
 build_proc()
 {
-    case "$1" in
-        boot)
-            export OWDOCBUILD=0
-            export OWVERBOSE=1
-            ;;
-        rel)
-            export OWDOCBUILD=0
-            export OWVERBOSE=0
-            ;;
-        docpdf)
-            export OWDOCBUILD=1
-            export OWVERBOSE=0
-            export OWGHOSTSCRIPTPATH=$PATH
-            ;;
-        *)
-            ;;
-    esac
     if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
         if [ "$1" = "boot" ]; then
             bootstrap_proc

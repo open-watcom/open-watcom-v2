@@ -8,7 +8,7 @@
 
     travis/cacheinf.sh
 case "$OWTRAVISJOB" in
-  BOOTLINUX|BUILDLINUX|BOOTOSX|PDFDOCLINUX)
+  BOOTSTRAP|BUILDLINUX|PDFDOCLINUX)
     if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
         cd $OWRELROOT
         #
