@@ -1,6 +1,6 @@
 #!/bin/sh
 # *****************************************************************
-# setowrel.sh - set OW release directory for output OW build
+# setowenv.sh - set OW environment variables for OW build
 # *****************************************************************
 #
 
@@ -8,4 +8,5 @@ mkdir -p ../travis-ci-ow-builds
 cd ../travis-ci-ow-builds
 export OWRELROOT=`pwd`
 cd $TRAVIS_BUILD_DIR
-echo "setowrel.sh - done"
+. ./cmnvars.sh
+echo "setowenv.sh - done"
