@@ -1,7 +1,7 @@
 echo "*****************"
-    ls -l ${TRAVIS_BUILD_DIR}/build/bin
+#    ls -l ${TRAVIS_BUILD_DIR}/build/bin
 echo "*****************"
-    ls -l ${HOME}/mycache
+#    ls -l ${HOME}/mycache
 echo "**** ls .casher ****"
     ls -l ${HOME}/.casher
 echo "**** paths ****"
