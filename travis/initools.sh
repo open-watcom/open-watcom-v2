@@ -5,10 +5,7 @@
 #
 
 if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
-    ls -l ${TRAVIS_BUILD_DIR}/build/bin/*
-    ls -l ${HOME}/mycache/*
-    ls -l ${HOME}/.casher/*
-    cat ${HOME}/.casher/paths
+    travis/cacheinf.sh
     echo "initools.sh - done"
 else
     echo "initools.sh - skipped"

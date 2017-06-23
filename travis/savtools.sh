@@ -14,11 +14,7 @@ if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
 #        travis/dropbox.sh upload bld/watcom/binbuild/clibext.lib Linux/watcom/
 #        travis/dropbox.sh upload bld/watcom/binbuild/clibexts.lib Linux/watcom/
 #    fi
-    ls -l ${TRAVIS_BUILD_DIR}/build/bin/*
-#    cp build/bin/* ${HOME}/mycache/
-    ls -l ${HOME}/mycache/*
-    ls -l ${HOME}/.casher/*
-    cat ${HOME}/.casher/paths
+    travis/cacheinf.sh
     echo "savtools.sh - done"
 else
     echo "savtools.sh - skipped"
