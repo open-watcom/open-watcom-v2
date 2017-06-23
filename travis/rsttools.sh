@@ -17,6 +17,8 @@ if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
     ls -l ${HOME}/mycache/*
 #    cp ${HOME}/mycache/* build/bin/
 #    ls -l build/bin/*
+    ls -l ${HOME}/.casher/*
+    cat ${HOME}/.casher/paths
     echo "rsttools.sh - done"
 else
     echo "rsttools.sh - skipped"

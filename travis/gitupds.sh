@@ -6,6 +6,8 @@
 # If OW build succeeds then transfer OW build to GitHub repository
 #
 
+    ls -l ${HOME}/.casher/*
+    cat ${HOME}/.casher/paths
 case "$OWTRAVISJOB" in
   BUILDLINUX|PDFDOCLINUX)
     if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then

@@ -6,6 +6,8 @@
 # after failure transfer log files back to GitHub repository
 #
 
+    ls -l ${HOME}/.casher/*
+    cat ${HOME}/.casher/paths
 case "$OWTRAVISJOB" in
   BOOTLINUX|BUILDLINUX|BOOTOSX|PDFDOCLINUX)
     if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then

@@ -17,6 +17,8 @@ if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
     ls -l ${TRAVIS_BUILD_DIR}/build/bin/*
 #    cp build/bin/* ${HOME}/mycache/
     ls -l ${HOME}/mycache/*
+    ls -l ${HOME}/.casher/*
+    cat ${HOME}/.casher/paths
     echo "savtools.sh - done"
 else
     echo "savtools.sh - skipped"
