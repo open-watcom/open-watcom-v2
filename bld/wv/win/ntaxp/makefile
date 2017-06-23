@@ -1,4 +1,4 @@
-#pmake: os_nt cpu_axp axp
+#pmake: nobuild os_nt cpu_axp axp
 #
 # WATCOM Debugger makefile for NT (character mode)
 #

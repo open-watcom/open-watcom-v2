@@ -1,4 +1,4 @@
-#pmake: os_linux cpu_mps mips
+#pmake: nobuild os_linux cpu_mps mips
 #
 # Open Watcom Debugger makefile for MIPS Linux
 #
