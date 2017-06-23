@@ -4,6 +4,11 @@ compiler: clang
 
 sudo: false
 
+matrix:
+  include:
+    - os: linux
+    - os: osx
+
 env:
   global:
     - OWROOT=$TRAVIS_BUILD_DIR
@@ -70,10 +75,10 @@ jobs:
         - export OWVERBOSE=0
         - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
         # install DOS Emulator
-        - if [ "$TRAVIS_OS_NAME" = "osx" ]; brew install dosbox; fi
-        - if [ "$TRAVIS_OS_NAME" = "osx" ]; export OWDOSBOX=dosbox; fi
+        - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install dosbox; fi
+        - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export OWDOSBOX=dosbox; fi
         # install Ghostscript
-        - if [ "$TRAVIS_OS_NAME" = "osx" ]; brew install ghostscript; fi
+        - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install ghostscript; fi
         # download OW build tools
         - travis/rsttools.sh
       script:
