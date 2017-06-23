@@ -9,6 +9,7 @@ addons:
       - ghostscript
 
 cache:
+  ccache: true
   directories:
     - build/bin
 
