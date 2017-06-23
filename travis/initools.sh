@@ -5,6 +5,7 @@
 #
 
 if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+    ls -l ${TRAVIS_BUILD_DIR}/build/bin/*
     ls -l ${HOME}/mycache/*
     echo "initools.sh - done"
 else

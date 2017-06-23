@@ -9,9 +9,10 @@ addons:
       - ghostscript
 
 cache:
-  ccache: true
+#  ccache: true
   debug: false
   directories:
+    - ${TRAVIS_BUILD_DIR}/build/bin
     - ${HOME}/mycache
 
 before_script:
