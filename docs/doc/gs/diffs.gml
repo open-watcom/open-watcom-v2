@@ -15,6 +15,17 @@ recompile your application.
 :cmt. p4 changes -l @yyyy/mm/dd,#head
 .*
 .*
+.section Differences from Open Watcom version 1.9
+.*
+.*
+.np
+Following is a list of changes made in &product 2.0:
+.begbull
+.bull
+OW tools were ported to 64-bit host platform (Linux and Windows)
+.endbull 
+.*
+.*
 .section Differences from Open Watcom version 1.8
 .*
 .*
