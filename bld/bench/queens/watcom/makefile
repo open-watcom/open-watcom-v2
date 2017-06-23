@@ -2,4 +2,4 @@
 
 compiler = watcom
 
-!include ..\queens.mif
+!include ../queens.mif

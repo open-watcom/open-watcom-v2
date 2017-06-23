@@ -2,4 +2,4 @@
 
 compiler = ibmc
 
-!include ..\heapsort.mif
+!include ../heapsort.mif

@@ -2,4 +2,4 @@
 
 compiler = ibmc
 
-!include ..\c4.mif
+!include ../c4.mif

@@ -2,4 +2,4 @@
 
 compiler = watcom
 
-!include ..\c4.mif
+!include ../c4.mif

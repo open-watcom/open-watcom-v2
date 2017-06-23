@@ -2,4 +2,4 @@
 
 compiler = watcom
 
-!include ..\nsieve.mif
+!include ../nsieve.mif

@@ -15,3 +15,5 @@ bcomp.exe : bcomp.obj
 
 bcomp.obj : bcomp.c
 	wcc386 -w4 -we -d2 bcomp.c
+
+clean: .SYMBOLIC

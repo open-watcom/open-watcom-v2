@@ -2,4 +2,4 @@
 
 compiler = msvc
 
-!include ..\queens.mif
+!include ../queens.mif

@@ -1,7 +1,9 @@
 #pmake: bmark bytemark integer int small w106
 
-host_os  = nt
-host_cpu = 386
+!ifdef __NT__
+all:
+!endif
+
 compiler = custom
 
 cc  = x:\lang\binnt\wcc386
@@ -18,4 +20,4 @@ cpp = x:\lang\binnt\wpp386
 
 deflink = wlink $(lflags_watcom) name $^. file { $< } lib $(bench_dir)\support\watcom\support.lib
 
-!include ..\bmark.mif
+!include ../bmark.mif
