@@ -4,10 +4,9 @@ compiler: clang
 
 sudo: false
 
-matrix:
-  include:
-    - os: linux
-    - os: osx
+os:
+  - linux
+  - osx
 
 env:
   global:
@@ -53,9 +52,18 @@ after_success:
 jobs:
   include:
     - stage: Bootstrap
-      os: 
-        - linux
-        - osx
+      os: linux
+      install:
+        - export OWTRAVISJOB=BOOTSTRAP
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=1
+      script:
+        - travis/build.sh boot
+      before_cache:
+        # upload OW build tools
+        - travis/savtools.sh
+    -
+      os: osx
       install:
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWDOCBUILD=0
@@ -66,9 +74,7 @@ jobs:
         # upload OW build tools
         - travis/savtools.sh
     - stage: Build binaries
-      os: 
-        - linux
-#        - osx
+      os: linux
       install:
         - export OWTRAVISJOB=BUILD
         - export OWDOCBUILD=0
@@ -84,9 +90,7 @@ jobs:
       script:
         - travis/build.sh rel
     - stage: Build PDF documentation
-      os: 
-        - linux
-#        - osx
+      os: linux
       install:
         - export OWTRAVISJOB=DOCPDF
         - export OWDOCBUILD=1
@@ -97,9 +101,12 @@ jobs:
       script:
         - travis/build.sh docpdf
     - stage: Clear cache
-      os: 
-        - linux
-        - osx
+      os: linux
+      install: export OWTRAVISJOB=CLEARCACHE
+      before_script: true
+      script: travis/clrcache.sh
+    -
+      os: osx
       install: export OWTRAVISJOB=CLEARCACHE
       before_script: true
       script: travis/clrcache.sh
