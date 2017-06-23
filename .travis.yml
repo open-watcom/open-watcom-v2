@@ -1,5 +1,4 @@
 language: c
-sudo: false
 
 addons:
   apt:
@@ -11,7 +10,7 @@ addons:
 
 cache:
 #  ccache: true
-  debug: true
+#  debug: true
   directories:
     - ${TRAVIS_BUILD_DIR}/build/bin
 
@@ -46,6 +45,7 @@ jobs:
       os: linux
       compiler: clang
 #      sudo: required
+      sudo: false
       env:
         - OWTRAVISJOB=BOOTLINUX
         - OWTOOLS=CLANG
@@ -62,6 +62,7 @@ jobs:
       os: linux
       compiler: clang
 #      sudo: required
+      sudo: false
       env:
         - OWTRAVISJOB=BUILDLINUX
         - OWTOOLS=CLANG
@@ -76,6 +77,7 @@ jobs:
       os: linux
       compiler: clang
 #      sudo: false
+      sudo: false
       env:
         - OWTRAVISJOB=PDFDOCLINUX
         - OWTOOLS=CLANG
@@ -120,6 +122,7 @@ jobs:
 #      script: travis/build.sh rel
     - stage: Clear cache
       os: linux
+      sudo: false
       env: OWTRAVISJOB=CLEARCACHE
       before_script: true
       script: travis/initools.sh
