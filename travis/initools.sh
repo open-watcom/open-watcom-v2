@@ -5,6 +5,7 @@
 #
 
 if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+    ls -l build/bin/*
     rm build/bin/*
     echo "initools.sh - done"
 else
