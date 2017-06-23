@@ -10,7 +10,11 @@ case "$OWTRAVISJOB" in
   BOOTLINUX|BUILDLINUX|BOOTOSX|PDFDOCLINUX)
     if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
         cd $OWRELROOT
-        git pull
+        #
+        # remove all local changes to upload only error logs
+        #
+        git reset --hard
+        git clean -fd
         #
         # copy build log files to git repository tree
         #
