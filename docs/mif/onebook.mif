@@ -106,7 +106,7 @@ dep_ps = $(hbook).ps
 !ifdef %OWGHOSTSCRIPTPATH
 dep_pdf = $(hbook).pdf
 !endif
-dep_txt = readme.txt freadme.txt
+dep_txt = $(hbook).txt
 
 #############################################################
 
@@ -296,15 +296,15 @@ $(hbook).chm : $(hbook).htm $(hbook).h
 .EXTENSIONS: .pdf
 
 $(hbook).pdf : $(hbook).ps
-    @set OWDOCS_OLD_PATH=$(%PATH)
+    $(noecho)set OWDOCS_OLD_PATH=$(%PATH)
 !ifdef __UNIX__
-    @set PATH=$(%OWGHOSTSCRIPTPATH):$(%PATH)
+    $(noecho)set PATH=$(%OWGHOSTSCRIPTPATH):$(%PATH)
 !else
-    @set PATH=$(%OWGHOSTSCRIPTPATH);$(%PATH)
+    $(noecho)set PATH=$(%OWGHOSTSCRIPTPATH);$(%PATH)
 !endif
     !$(hc_pdf) -r600 $[@ $(hbook).pdf
-    @set PATH=$(%OWDOCS_OLD_PATH)
-    @set OWDOCS_OLD_PATH=
+    $(noecho)set PATH=$(%OWDOCS_OLD_PATH)
+    $(noecho)set OWDOCS_OLD_PATH=
 
 ####################################################
 #
@@ -346,7 +346,7 @@ $(hbook).ipf $(hbook).h : $(book_objs) $(proj_objs)
 .EXTENSIONS: .ps .bmp
 
 $(hbook).ps : $(book_objs) $(book_objs_ps) $(proj_objs)
-    @set OWGMLINC=tmp;$(book_incs);$(whelp_incs);$(gml_incs)
+    $(noecho)set OWGMLINC=tmp;$(book_incs);$(whelp_incs);$(gml_incs)
     %make prepare_wgml_opts
     -$(WGMLCMD:$(to_os_path))
     @if exist $@ @%erase $@
@@ -453,18 +453,14 @@ prepare_wgml_opts : .PROCEDURE
     $(noecho)set GMLINC=$(%GMLINC:..\..\bld\=e:\)
     $(noecho)set GMLINC=$(%GMLINC:..\=c:\)
 !endif
-!ifeq verbose 1
-    @echo GMLLIB=$(%GMLLIB)
-    @echo GMLINC=$(%GMLINC)
-!endif
 !ifeq use_dosemu dosemu
 #-------------------------------------------------------
 # create DOSEMU batch file to run wgml utility
 #-------------------------------------------------------
     @%create $(wgml_tmp_batchfile)
     @%append $(wgml_tmp_batchfile) lredir w: linux\fs$(docs_dir)
-    @%append $(wgml_tmp_batchfile) @set GMLLIB=$(%GMLLIB)
-    @%append $(wgml_tmp_batchfile) @set GMLINC=$(%GMLINC)
+    @%append $(wgml_tmp_batchfile) $(noecho)set GMLLIB=$(%GMLLIB)
+    @%append $(wgml_tmp_batchfile) $(noecho)set GMLINC=$(%GMLINC)
     @%append $(wgml_tmp_batchfile) w:\gml\dos\wgml.exe $(wgml_cmdl_params)
     @%append $(wgml_tmp_batchfile) exitemu
     @crlf -d $(wgml_tmp_batchfile) $(dosemu_wgml_batch)
@@ -474,8 +470,8 @@ prepare_wgml_opts : .PROCEDURE
 #-------------------------------------------------------
     @%create $(dosemu_wgml_batch)
     @%append $(dosemu_wgml_batch) d:
-    @%append $(dosemu_wgml_batch) @set GMLLIB=$(%GMLLIB)
-    @%append $(dosemu_wgml_batch) @set GMLINC=$(%GMLINC)
+    @%append $(dosemu_wgml_batch) $(noecho)set GMLLIB=$(%GMLLIB)
+    @%append $(dosemu_wgml_batch) $(noecho)set GMLINC=$(%GMLINC)
     @%append $(dosemu_wgml_batch) c:\gml\dos\wgml.exe $(wgml_cmdl_params)
     @%append $(dosemu_wgml_batch) exit
 !endif

@@ -5,15 +5,16 @@
 #
 
 if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
-    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-        travis/dropbox.sh upload build/bin/ OSX/bin/
-        travis/dropbox.sh upload bld/watcom/binbuild/clibext.lib OSX/watcom/
-        travis/dropbox.sh upload bld/watcom/binbuild/clibexts.lib OSX/watcom/
-    else
-        travis/dropbox.sh upload build/bin/ Linux/bin/
-        travis/dropbox.sh upload bld/watcom/binbuild/clibext.lib Linux/watcom/
-        travis/dropbox.sh upload bld/watcom/binbuild/clibexts.lib Linux/watcom/
-    fi
+#    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+#        travis/dropbox.sh upload build/bin/ OSX/bin/
+#        travis/dropbox.sh upload bld/watcom/binbuild/clibext.lib OSX/watcom/
+#        travis/dropbox.sh upload bld/watcom/binbuild/clibexts.lib OSX/watcom/
+#    else
+#        travis/dropbox.sh upload build/bin/ Linux/bin/
+#        travis/dropbox.sh upload bld/watcom/binbuild/clibext.lib Linux/watcom/
+#        travis/dropbox.sh upload bld/watcom/binbuild/clibexts.lib Linux/watcom/
+#    fi
+    ls -l build/bin/*
     echo "savtools.sh - done"
 else
     echo "savtools.sh - skipped"

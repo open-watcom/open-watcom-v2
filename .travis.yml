@@ -8,6 +8,10 @@ addons:
       # install Ghostscript
       - ghostscript
 
+cache:
+  directories:
+    - build/bin
+
 before_script:
  # initialize OW build environment variables
  - . travis/setowrel.sh
@@ -44,6 +48,9 @@ jobs:
         - OWTOOLS=CLANG
         - OWDOCBUILD=0
         - OWVERBOSE=1
+      install:
+        # initialize OW build tools
+        - travis/initools.sh
       script: travis/build.sh boot
       before_cache:
         # upload OW build tools
@@ -84,6 +91,8 @@ jobs:
         - OWTOOLS=CLANG
         - OWDOCBUILD=0
         - OWVERBOSE=1
+        # initialize OW build tools
+        - travis/initools.sh
       script: travis/build.sh boot
       before_cache:
         # upload OW build tools
@@ -106,6 +115,11 @@ jobs:
 #        # download OW build tools
 #        - travis/rsttools.sh
 #      script: travis/build.sh rel
+    - stage: Clear cache
+      os: linux
+      env: OWTRAVISJOB=CLEARCACHE
+      before_script: skip
+      script: travis/initools.sh
 
 #addons:
 #  coverity_scan:
