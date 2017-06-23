@@ -1,5 +1,5 @@
 language: c
-sudo: none
+sudo: false
 
 addons:
   apt:
@@ -75,7 +75,7 @@ jobs:
     - stage: Build PDF documentation
       os: linux
       compiler: clang
-#      sudo: none
+#      sudo: false
       env:
         - OWTRAVISJOB=PDFDOCLINUX
         - OWTOOLS=CLANG
