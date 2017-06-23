@@ -1,5 +1,18 @@
 language: c
 
+compiler: clang
+
+env:
+  global:
+    - OWROOT=$TRAVIS_BUILD_DIR
+    - OWTOOLS=CLANG
+    - OWOBJDIR=binbuild
+    - OWDOCBUILD=0
+    - OWDOCQUIET=1
+    - USE_FILENAME_VERSION=1
+
+sudo: false
+
 addons:
   apt:
     packages:
@@ -9,20 +22,12 @@ addons:
       - ghostscript
 
 cache:
-#  ccache: true
-#  debug: true
   directories:
     - ${TRAVIS_BUILD_DIR}/build/bin
 
 before_script:
  # initialize OW build environment variables
- - . travis/setowrel.sh
- - export OWROOT=$TRAVIS_BUILD_DIR
- - export OWOBJDIR=binbuild
- - export OWDOCBUILD=0
- - export OWDOCQUIET=1
- - export USE_FILENAME_VERSION=1
- - . ./cmnvars.sh
+ - . travis/setowenv.sh
  # get clone of GitHub repository to return Travis CI OW build/log files
  # and compress GitHub repository if necessary to hold only a few last builds
  - travis/gitget.sh
@@ -43,75 +48,48 @@ jobs:
   include:
     - stage: Bootstrap Linux
       os: linux
-      compiler: clang
-#      sudo: required
-      sudo: false
-      env:
-        - OWTRAVISJOB=BOOTLINUX
-        - OWTOOLS=CLANG
-        - OWDOCBUILD=0
-        - OWVERBOSE=1
       install:
+        - export OWTRAVISJOB=BOOTLINUX
         # initialize OW build tools
         - travis/initools.sh
-      script: travis/build.sh boot
+      script:
+        - travis/build.sh boot
       before_cache:
         # upload OW build tools
         - travis/savtools.sh
     - stage: Build Linux
       os: linux
-      compiler: clang
-#      sudo: required
-      sudo: false
-      env:
-        - OWTRAVISJOB=BUILDLINUX
-        - OWTOOLS=CLANG
-        - OWDOCBUILD=0
-        - OWVERBOSE=0
-        - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
       install:
+        - export OWTRAVISJOB=BUILDLINUX
+        - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
         # download OW build tools
         - travis/rsttools.sh
-      script: travis/build.sh rel
+      script:
+        - travis/build.sh rel
     - stage: Build PDF documentation
       os: linux
-      compiler: clang
-#      sudo: false
-      sudo: false
-      env:
-        - OWTRAVISJOB=PDFDOCLINUX
-        - OWTOOLS=CLANG
-        - OWDOCBUILD=1
-        - OWVERBOSE=0
-        - OWGHOSTSCRIPTPATH=$PATH
       install:
+        - export OWTRAVISJOB=PDFDOCLINUX
         # download OW build tools
         - travis/rsttools.sh
-      script: travis/build.sh docpdf
+      script:
+        - travis/build.sh docpdf
     - stage: Bootstrap OSX
       os: osx
-      compiler: clang
-      env:
-        - OWTRAVISJOB=BOOTOSX
-        - OWTOOLS=CLANG
-        - OWDOCBUILD=0
-        - OWVERBOSE=1
+      install:
+        - export OWTRAVISJOB=BOOTOSX
         # initialize OW build tools
         - travis/initools.sh
-      script: travis/build.sh boot
+      script:
+        - travis/build.sh boot
       before_cache:
         # upload OW build tools
         - travis/savtools.sh
 #    - stage: Build OSX
 #      os: osx
-#      compiler: clang
-#      env:
-#        - OWTRAVISJOB=BUILDOSX
-#        - OWTOOLS=CLANG
-#        - OWDOCBUILD=0
-#        - OWVERBOSE=0
-#        - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
 #      install:
+#        - export OWTRAVISJOB=BUILDOSX
+#        - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
 #        # install DOS Emulator
 #        - brew install dosbox
 #        - export OWDOSBOX=dosbox
@@ -119,13 +97,15 @@ jobs:
 #        - brew install ghostscript
 #        # download OW build tools
 #        - travis/rsttools.sh
-#      script: travis/build.sh rel
+#      script:
+#        - travis/build.sh rel
     - stage: Clear cache
       os: linux
-      sudo: false
-      env: OWTRAVISJOB=CLEARCACHE
+      install:
+        - export OWTRAVISJOB=CLEARCACHE
       before_script: true
-      script: travis/initools.sh
+      script:
+        - travis/initools.sh
 
 #addons:
 #  coverity_scan:
