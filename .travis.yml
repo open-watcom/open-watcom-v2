@@ -10,6 +10,7 @@ addons:
 
 cache:
   ccache: true
+  debug: true
   directories:
     - ${HOME}/mycache
 
