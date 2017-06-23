@@ -1,4 +1,4 @@
-#pmake: os_dos cpu_i86 i86 intel
+#pmake: nobuild os_dos cpu_i86 i86 intel
 #
 # WATCOM Debugger makefile for DOS
 #

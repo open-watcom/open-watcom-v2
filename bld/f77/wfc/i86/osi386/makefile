@@ -1,4 +1,4 @@
-#pmake: nobuild os_osi cpu_386 target_i86
+#pmake: nobuild target_i86 os_osi cpu_386
 
 host_os  = osi
 host_cpu = 386
