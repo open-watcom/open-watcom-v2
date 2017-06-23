@@ -1,4 +1,5 @@
 language: c
+sudo: none
 
 addons:
   apt:
@@ -44,7 +45,7 @@ jobs:
     - stage: Bootstrap Linux
       os: linux
       compiler: clang
-      sudo: required
+#      sudo: required
       env:
         - OWTRAVISJOB=BOOTLINUX
         - OWTOOLS=CLANG
@@ -60,7 +61,7 @@ jobs:
     - stage: Build Linux
       os: linux
       compiler: clang
-      sudo: required
+#      sudo: required
       env:
         - OWTRAVISJOB=BUILDLINUX
         - OWTOOLS=CLANG
@@ -74,7 +75,7 @@ jobs:
     - stage: Build PDF documentation
       os: linux
       compiler: clang
-      sudo: required
+#      sudo: none
       env:
         - OWTRAVISJOB=PDFDOCLINUX
         - OWTOOLS=CLANG
@@ -120,7 +121,7 @@ jobs:
     - stage: Clear cache
       os: linux
       env: OWTRAVISJOB=CLEARCACHE
-      before_script: skip
+      before_script: true
       script: travis/initools.sh
 
 #addons:
