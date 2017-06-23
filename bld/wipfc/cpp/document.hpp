@@ -244,7 +244,7 @@ private:
     typedef std::vector< STD1::uint32_t >::iterator CellOffsetIter;
     typedef std::vector< STD1::uint32_t >::const_iterator ConstCellOffsetIter;
 
-    std::string tmpName;    //temporary storage for bitmaps
+    std::FILE *tmpBitmaps;  // temporary file for bitmaps
     Text* lastPrintableItem;
     unsigned int maxHeaderLevel;
     unsigned int headerLevel;
