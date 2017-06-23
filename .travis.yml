@@ -2,6 +2,10 @@ language: c
 
 compiler: clang
 
+os:
+  - linux
+  - osx
+
 env:
   global:
     - OWROOT=$TRAVIS_BUILD_DIR
@@ -24,6 +28,7 @@ addons:
 cache:
   directories:
     - ${TRAVIS_BUILD_DIR}/build/bin
+    - ${TRAVIS_BUILD_DIR}/bld/watcom/binbuild
 
 before_script:
  # initialize OW build environment variables
@@ -46,22 +51,28 @@ after_success:
 
 jobs:
   include:
-    - stage: Bootstrap Linux
-      os: linux
+    - stage: Bootstrap
       install:
-        - export OWTRAVISJOB=BOOTLINUX
-        # initialize OW build tools
-        - travis/initools.sh
+        - export OWTRAVISJOB=BOOTSTRAP
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=1
       script:
         - travis/build.sh boot
       before_cache:
         # upload OW build tools
         - travis/savtools.sh
-    - stage: Build Linux
+    - stage: Build binaries
       os: linux
       install:
         - export OWTRAVISJOB=BUILDLINUX
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
         - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
+        # install DOS Emulator
+        - if [ "$TRAVIS_OS_NAME" = "osx" ]; brew install dosbox; fi
+        - if [ "$TRAVIS_OS_NAME" = "osx" ]; export OWDOSBOX=dosbox; fi
+        # install Ghostscript
+        - if [ "$TRAVIS_OS_NAME" = "osx" ]; brew install ghostscript; fi
         # download OW build tools
         - travis/rsttools.sh
       script:
@@ -70,42 +81,16 @@ jobs:
       os: linux
       install:
         - export OWTRAVISJOB=PDFDOCLINUX
+        - export OWDOCBUILD=1
+        - export OWVERBOSE=0
+        - export OWGHOSTSCRIPTPATH=$PATH
         # download OW build tools
         - travis/rsttools.sh
       script:
         - travis/build.sh docpdf
-    - stage: Bootstrap OSX
-      os: osx
-      install:
-        - export OWTRAVISJOB=BOOTOSX
-        # initialize OW build tools
-        - travis/initools.sh
-      script:
-        - travis/build.sh boot
-      before_cache:
-        # upload OW build tools
-        - travis/savtools.sh
-#    - stage: Build OSX
-#      os: osx
-#      install:
-#        - export OWTRAVISJOB=BUILDOSX
-#        - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
-#        # install DOS Emulator
-#        - brew install dosbox
-#        - export OWDOSBOX=dosbox
-#        # install Ghostscript
-#        - brew install ghostscript
-#        # download OW build tools
-#        - travis/rsttools.sh
-#      script:
-#        - travis/build.sh rel
     - stage: Clear cache
-      os: linux
-      install:
-        - export OWTRAVISJOB=CLEARCACHE
       before_script: true
-      script:
-        - travis/initools.sh
+      script: travis/clrcache.sh
 
 #addons:
 #  coverity_scan:
