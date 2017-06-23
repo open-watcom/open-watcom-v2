@@ -7,6 +7,21 @@ os:
   - osx
 
 env:
+  - OWTRAVISJOB=BOOTSTRAP
+  - OWTRAVISJOB=BUILD
+  - OWTRAVISJOB=DOCPDF
+  - OWTRAVISJOB=CLEARCACHE
+
+matrix:
+  exclude:
+    - compiler: clang
+      os: osx
+      env: OWTRAVISJOB=BUILD
+    - compiler: clang
+      os: osx
+      env: OWTRAVISJOB=DOCPDF
+
+env:
   global:
     - OWROOT=$TRAVIS_BUILD_DIR
     - OWTOOLS=CLANG
@@ -52,8 +67,10 @@ after_success:
 jobs:
   include:
     - stage: Bootstrap
+      compiler: clang
+      os: linux osx
+      env: OWTRAVISJOB=BOOTSTRAP
       install:
-        - export OWTRAVISJOB=BOOTSTRAP
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
       script:
@@ -62,9 +79,10 @@ jobs:
         # upload OW build tools
         - travis/savtools.sh
     - stage: Build binaries
+      compiler: clang
       os: linux
+      env: OWTRAVISJOB=BUILD
       install:
-        - export OWTRAVISJOB=BUILDLINUX
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
         - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
@@ -78,9 +96,10 @@ jobs:
       script:
         - travis/build.sh rel
     - stage: Build PDF documentation
+      compiler: clang
       os: linux
+      env: OWTRAVISJOB=DOCPDF
       install:
-        - export OWTRAVISJOB=PDFDOCLINUX
         - export OWDOCBUILD=1
         - export OWVERBOSE=0
         - export OWGHOSTSCRIPTPATH=$PATH
@@ -89,6 +108,9 @@ jobs:
       script:
         - travis/build.sh docpdf
     - stage: Clear cache
+      compiler: clang
+      os: linux osx
+      env: OWTRAVISJOB=CLEARCACHE
       before_script: true
       script: travis/clrcache.sh
 
