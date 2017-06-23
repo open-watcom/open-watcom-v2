@@ -1,7 +1,6 @@
 # help type         txt dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 # distributed       yes yes  no    yes       yes yes  yes  no  yes no    
 #========================================================================
-!inject txt         txt
 !inject c_readme        dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 !inject cbooks                               nt
 !inject cgdoc                                                      docpdf
@@ -28,6 +27,7 @@
 !inject f_readme        dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 !inject fbooks                               nt
 !inject fpguide         dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject freadme     txt
 !inject ftools          dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 !inject fuguide         dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 !inject guitool              html                     pdf  ps      docpdf
@@ -35,6 +35,7 @@
 !inject ide                  html  htmlhelp  nt  os2           win
 !inject lguide          dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
 !inject pguide          dos  html  htmlhelp  nt  os2  pdf  ps  win docpdf
+!inject readme      txt
 !inject resacc               html  htmlhelp  nt                win
 !inject rescomp         dos  html  htmlhelp  nt  os2           win
 !inject resdlg               html  htmlhelp  nt                win
@@ -629,7 +630,9 @@ book_incs=$(incs_wipfc)
 book_src=wipfc
 book_multi_chapter=1
 
-!else ifeq dotarget txt
+!else ifeq hbook freadme
+
+!else ifeq hbook readme
 
 !else
 
