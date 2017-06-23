@@ -2,12 +2,7 @@ language: c
 
 compiler: clang
 
-matrix:
-  include:
-    - compiler: clang
-      os: linux
-    - compiler: clang
-      os: osx
+sudo: false
 
 env:
   global:
@@ -17,8 +12,6 @@ env:
     - OWDOCBUILD=0
     - OWDOCQUIET=1
     - USE_FILENAME_VERSION=1
-
-sudo: false
 
 addons:
   apt:
@@ -55,7 +48,6 @@ after_success:
 jobs:
   include:
     - stage: Bootstrap
-      compiler: clang
       os: 
         - linux
         - osx
@@ -69,10 +61,9 @@ jobs:
         # upload OW build tools
         - travis/savtools.sh
     - stage: Build binaries
-      compiler: clang
       os: 
         - linux
-        - osx
+#        - osx
       install:
         - export OWTRAVISJOB=BUILD
         - export OWDOCBUILD=0
@@ -88,10 +79,9 @@ jobs:
       script:
         - travis/build.sh rel
     - stage: Build PDF documentation
-      compiler: clang
       os: 
         - linux
-        - osx
+#        - osx
       install:
         - export OWTRAVISJOB=DOCPDF
         - export OWDOCBUILD=1
@@ -102,7 +92,6 @@ jobs:
       script:
         - travis/build.sh docpdf
     - stage: Clear cache
-      compiler: clang
       os: 
         - linux
         - osx
