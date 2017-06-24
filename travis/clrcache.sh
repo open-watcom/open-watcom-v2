@@ -4,5 +4,5 @@
 # *****************************************************************
 #
 
-rm -f build/bin/*
-rm -f bld/watcom/binbuild/*
+rm -f   build/bin/*
+rm -rf  bld/watcom/binbuild/*
