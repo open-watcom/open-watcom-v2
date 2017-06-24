@@ -6,9 +6,8 @@
 # If OW build succeeds then transfer OW build to GitHub repository
 #
 
-    travis/cacheinf.sh
 case "$OWTRAVISJOB" in
-  BUILDLINUX|PDFDOCLINUX)
+  BUILD|DOCPDF)
     if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
         if [ "$TRAVIS_OS_NAME" = "linux" ]; then
             #
@@ -16,7 +15,7 @@ case "$OWTRAVISJOB" in
             #
             cd $OWRELROOT
             git add -f .
-            if [ "$OWTRAVISJOB" = "PDFDOCLINUX" ]; then
+            if [ "$OWTRAVISJOB" = "DOCPDF" ]; then
                 git commit --quiet -m "Travis CI build $TRAVIS_JOB_NUMBER - Documentation"
             else
                 git commit --quiet -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution"
