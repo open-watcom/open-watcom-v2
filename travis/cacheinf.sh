@@ -6,19 +6,20 @@
 
 if [ "$OWTRAVIS_DEBUG" = "1" ]; then
     echo "****** CACHE INFO ******"
+    ls -l $CASHER_DIR
     echo "*** paths **************"
-    cat $CASHER_DIR/paths
+    if [ -e $CASHER_DIR/paths ]; then cat $CASHER_DIR/paths; fi
     echo "*** push.log ***********"
-    cat $CASHER_DIR/push.log
+    if [ -e $CASHER_DIR/push.log ]; then cat $CASHER_DIR/push.log; fi
     echo "*** push.err.log *******"
-    cat $CASHER_DIR/push.err.log
+    if [ -e $CASHER_DIR/push.err.log ]; then cat $CASHER_DIR/push.err.log; fi
     echo "*** fetch.log **********"
-    cat $CASHER_DIR/fetch.log
+    if [ -e $CASHER_DIR/fetch.log ]; then cat $CASHER_DIR/fetch.log; fi
     echo "*** fetch.err.log ******"
-    cat $CASHER_DIR/fetch.err.log
+    if [ -e $CASHER_DIR/fetch.err.log ]; then cat $CASHER_DIR/fetch.err.log; fi
     echo "*** tar.log ************"
-    cat $CASHER_DIR/tar.log
+    if [ -e $CASHER_DIR/tar.log ]; then cat $CASHER_DIR/tar.log; fi
     echo "*** tar.err.log ********"
-    cat $CASHER_DIR/tar.err.log
+    if [ -e $CASHER_DIR/tar.err.log ]; then cat $CASHER_DIR/tar.err.log; fi
     echo "************************"
 fi
