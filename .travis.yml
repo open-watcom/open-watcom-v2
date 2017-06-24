@@ -16,12 +16,15 @@ env:
 addons:
   apt:
     packages:
+      # install C cache
+      - ccache
       # install DOS Emulator
       - dosemu
       # install Ghostscript
       - ghostscript
 
 cache:
+  ccache: true
   directories:
     - build/bin
     - bld/watcom/binbuild
@@ -79,6 +82,9 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
         - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
+        # install C cache
+        - brew install ccache
+        - PATH=/usr/local/opt/ccache/libexec:$PATH
         # install DOS Emulator
         - brew install dosbox
         - export OWDOSBOX=dosbox
