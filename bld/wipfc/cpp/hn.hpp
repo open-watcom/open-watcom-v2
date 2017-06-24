@@ -79,7 +79,7 @@ public:
     void setHasChildren() { toc.hasChildren = 1; };
     //has child windows that it controls
     void setIsParent() { toc.extended = 1; etoc.isParent = 1; };
-    void addChild( STD1::uint16_t toc ) { childTOCs.push_back( toc ); };
+    void addChild( STD1::uint16_t toc1 ) { childTOCs.push_back( toc1 ); };
     //this is a header on a split window
     bool isSplit() const { return ( style.word & PageStyle::SPLIT ) == PageStyle::SPLIT; };
     void linearize( Page* page );

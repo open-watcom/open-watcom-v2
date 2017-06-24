@@ -223,8 +223,9 @@ Document::~Document()
         std::fclose( tmpBitmaps );
     for( CellIter itr = cells.begin(); itr != cells.end(); ++itr )
         delete *itr;
-    for( PageIter itr = pages.begin(); itr != pages.end(); ++itr )
+    for( PageIter itr = pages.begin(); itr != pages.end(); ++itr ) {
         delete *itr;
+    }
 }
 /***************************************************************************/
 // Reads the input file and builds the DOM tree
@@ -255,8 +256,9 @@ void Document::parse( Lexer* lexer )
                 tok = processCommand( lexer, 0 );
                 continue;
             }
-            else
+            else {
                 printError( ERR1_TAGCONTEXT );
+            }
         }
         else if( tok != Lexer::WHITESPACE )
             printError( ERR1_HEADTEXT );
@@ -297,8 +299,9 @@ void Document::parse( Lexer* lexer )
                 printError( ERR1_TAGCONTEXT );
                 tok = getNextToken();
             }
-            else
+            else {
                 tok = processCommand( lexer, NULL );
+            }
         }
         else {
             if( tok != Lexer::WHITESPACE )
@@ -403,8 +406,9 @@ void Document::parse( Lexer* lexer )
         throw FatalError( ERR_LARGETOC );
     if( dict->size() > 64000 )
         throw FatalError( ERR_DOCLARGE );
-    else if ( dict->size() == 0 )
+    else if ( dict->size() == 0 ) {
         throw FatalError( ERR_DOCSMALL );
+    }
 }
 /***************************************************************************/
 // Iterate through the DOM tree to build output data
@@ -414,8 +418,9 @@ void Document::build()
     unsigned int visiblePages = 0;
     for( PageIter itr = pages.begin(); itr != pages.end(); ++itr ) {
         ( *itr )->buildTOC();
-        if( ( *itr )->isVisible() )
+        if( ( *itr )->isVisible() ) {
             ++visiblePages;
+        }
     }
     if( !visiblePages )
         throw FatalError( ERR_INVISIBLETOC );
@@ -428,8 +433,9 @@ void Document::build()
     makeIndexes();
     std::for_each( pages.begin(), pages.end(), std::mem_fun( &Page::buildLocalDictionary ) );
     std::for_each( cells.begin(), cells.end(), std::mem_fun( &Cell::build ) );
-    if( compiler.searchable() && dict->buildFTS() ) //build FTS from GlobalDictionary
+    if( compiler.searchable() && dict->buildFTS() ) {   //build FTS from GlobalDictionary
         hdr->recSize = true;
+    }
 }
 /***************************************************************************/
 // Write the file
@@ -514,16 +520,18 @@ void Document::addRes( STD1::uint16_t key, TocRef& value )
 {
     if( resMap.find( key ) == resMap.end() )    //add it to the list
         resMap.insert( std::map< STD1::uint16_t, TocRef >::value_type( key, value ) );
-    else
+    else {
         throw Class3Error( ERR3_DUPRES );
+    }
 }
 /***************************************************************************/
 void Document::addNameOrId( GlobalDictionaryWord* key, TocRef& value )
 {
     if( nameMap.find( key ) == nameMap.end() )  //add it to the list
         nameMap.insert( std::map< GlobalDictionaryWord*, TocRef, ptrLess< GlobalDictionaryWord* > >::value_type( key, value ) );
-    else
+    else {
         throw Class3Error( ERR3_DUPID );
+    }
 }
 /***************************************************************************/
 void Document::addXRef( STD1::uint16_t res, XRef& xref )
@@ -611,8 +619,9 @@ void Document::makeBitmaps()
                         break;
                     }
                     catch( FatalError& e ) {
-                        if( count == paths.size() - 1 )
+                        if( count == paths.size() - 1 ) {
                             throw FatalIOError( e.code, itr->first );
+                        }
                     }
                     catch( Class1Error& e ) {
                         printError( e.code, itr->first );
@@ -654,8 +663,9 @@ STD1::uint32_t Document::writeBitmaps( std::FILE* out )
             if( length ) {
                 if( std::fread( &buffer[0], sizeof( STD1::uint8_t ), length, tmpBitmaps ) != length )
                     throw FatalIOError( ERR_READ, L"(temporary file for bitmaps)" );
-                if( std::fwrite( &buffer[0], sizeof( STD1::uint8_t ), length, out ) != length )
+                if( std::fwrite( &buffer[0], sizeof( STD1::uint8_t ), length, out ) != length ) {
                     throw FatalError( ERR_WRITE );
+                }
             }
         }
         catch( FatalError& e ) {
@@ -681,13 +691,15 @@ STD1::uint32_t Document::writeResMap( std::FILE* out )
         offset = std::ftell( out );
         ConstResMapIter itr;
         for( itr = resMap.begin(); itr != resMap.end(); ++itr ) {
-            if( std::fwrite( &itr->first, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+            if( std::fwrite( &itr->first, sizeof( STD1::uint16_t ), 1, out ) != 1 ) {
                 throw FatalError( ERR_WRITE );
+            }
         }
         for( itr = resMap.begin(); itr != resMap.end(); ++itr ) {
             STD1::uint16_t idx( itr->second.index() );
-            if( std::fwrite( &idx, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+            if( std::fwrite( &idx, sizeof( STD1::uint16_t ), 1, out ) != 1 ) {
                 throw FatalError( ERR_WRITE );
+            }
         }
     }
     return offset;
@@ -700,14 +712,16 @@ STD1::uint32_t Document::writeNameMap( std::FILE* out )
         offset = std::ftell( out );
         ConstNameMapIter itr;
         for( itr = nameMap.begin(); itr != nameMap.end(); ++itr ) {
-            STD1::uint16_t index( itr->first->index() );
-            if( std::fwrite( &index, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+            STD1::uint16_t idx( itr->first->index() );
+            if( std::fwrite( &idx, sizeof( STD1::uint16_t ), 1, out ) != 1 ) {
                 throw FatalError( ERR_WRITE );
+            }
         }
         for( itr = nameMap.begin(); itr != nameMap.end(); ++itr ) {
             STD1::uint16_t idx( itr->second.index() );
-            if( std::fwrite( &idx, sizeof( STD1::uint16_t ), 1, out ) != 1 )
+            if( std::fwrite( &idx, sizeof( STD1::uint16_t ), 1, out ) != 1 ) {
                 throw FatalError( ERR_WRITE );
+            }
         }
     }
     return offset;
@@ -730,8 +744,9 @@ STD1::uint32_t Document::writeTOCOffsets( std::FILE* out )
     if( !tocOffsets.empty() ) {
         offset = std::ftell( out );
         if( std::fwrite( &tocOffsets[0], sizeof( STD1::uint32_t ),
-            tocOffsets.size(), out ) != tocOffsets.size() )
+          tocOffsets.size(), out ) != tocOffsets.size() ) {
             throw FatalError( ERR_WRITE );
+        }
     }
     return offset;
 }
@@ -740,8 +755,9 @@ void Document::writeCells( std::FILE* out )
 {
     if( cells.size() > UINT16_MAX )
         throw FatalError( ERR_LARGETOC );
-    for( CellIter itr = cells.begin(); itr != cells.end(); ++itr )
+    for( CellIter itr = cells.begin(); itr != cells.end(); ++itr ) {
         addCellOffset( (*itr)->write( out ) );
+    }
 }
 /***************************************************************************/
 STD1::uint32_t Document::writeCellOffsets( std::FILE* out )
@@ -750,8 +766,9 @@ STD1::uint32_t Document::writeCellOffsets( std::FILE* out )
     if( !cellOffsets.empty() ) {
         offset = std::ftell( out );
         if( std::fwrite( &cellOffsets[0], sizeof( STD1::uint32_t ),
-            cellOffsets.size(), out ) != cellOffsets.size() )
+          cellOffsets.size(), out ) != cellOffsets.size() ) {
             throw FatalError( ERR_WRITE );
+        }
     }
     return offset;
 }
@@ -785,8 +802,9 @@ STD1::uint32_t Document::writeIndex( std::FILE* out )
         for( IndexIter itr = index.begin(); itr != index.end(); ++itr ) {
             size += ( *itr )->write( out );
             count += ( *itr )->secondaryCount() + 1;
-            if( ( *itr )->isGlobal() )
+            if( ( *itr )->isGlobal() ) {
                 gcount += 1;
+            }
         }
         if( count > UINT16_MAX )
             throw FatalError( ERR_LARGEINDEX );
@@ -879,13 +897,15 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
             }
             catch( FatalError& e ) {
                 delete fname;
-                if( count == paths.size() - 1 )
+                if( count == paths.size() - 1 ) {
                     throw e;
+                }
             }
             catch( FatalIOError& e ) {
                 delete fname;
-                if( count == paths.size() - 1 )
+                if( count == paths.size() - 1 ) {
                     throw e;
+                }
             }
         }
     }
@@ -905,8 +925,9 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
         killQuotes( txt );
         if( !nls->isEntity( sym ) && nameIts.find( sym ) == nameIts.end() ) //add it to the list
             nameIts.insert( std::map< std::wstring, std::wstring >::value_type( sym, txt ) );
-        else
+        else {
             printError( ERR3_DUPSYMBOL );
+        }
     }
     else
         printError( ERR1_CMDNOTDEF );
@@ -935,8 +956,9 @@ void Document::addSynonym( std::wstring& key, Synonym* value )
 {
     if( synonyms.find( key ) == synonyms.end() )    //add it to the list
         synonyms.insert( std::map< std::wstring, Synonym* >::value_type( key, value ) );
-    else
+    else {
         throw Class3Error( ERR3_DUPSYN );
+    }
 }
 /***************************************************************************/
 Synonym* Document::synonym( const std::wstring& key )
@@ -951,8 +973,9 @@ void Document::addIndexId( std::wstring& key, I1* value )
 {
     if( indexMap.find( key ) == indexMap.end() )    //add it to the list
         indexMap.insert( std::map< std::wstring, I1* >::value_type( key, value ) );
-    else
+    else {
         throw Class3Error( ERR3_DUPID );
+    }
 }
 /***************************************************************************/
 I1* Document::indexById( const std::wstring& key )
@@ -986,6 +1009,7 @@ STD1::uint16_t Document::getGroupById( const std::wstring& i )
         compiler.printError( ERR1_NOID, i );
         return 0;
     }
-    else
+    else {
         return grp->index() + 1;
+    }
 }

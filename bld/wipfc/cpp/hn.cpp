@@ -490,7 +490,7 @@ Lexer::Token Hn::parseAttributes( Lexer* lexer )
             }
             else if( key == L"toc" ) {
                 wchar_t ch[2];
-                ch[0] = value[ value.size() - 1 ];//last number is critical value
+                ch[0] = value[value.size() - 1];    //last number is critical value
                 ch[1] = L'\0';
                 int tmp( static_cast< int >( std::wcstol( ch, 0, 10 ) ) );
                 if( tmp < 1 || tmp > 6 )
@@ -614,22 +614,23 @@ void Hn::buildText( Cell* cell )
     if( etoc.setTutor ) {
         std::string tmp;
         wtombstring( tutorial, tmp );
-        size_t size( tmp.size() );
-        if( size > 253 ) {
+        size_t size1( tmp.size() );
+        if( size1 > 253 ) {
             tmp.erase( 253 );
-            size = 253;
+            size1 = 253;
         }
         std::vector< STD1::uint8_t > esc;
-        esc.reserve( size + 3 );
+        esc.reserve( size1 + 3 );
         esc.push_back( 0xFF );  //esc
         esc.push_back( 0x02 );  //size
         esc.push_back( 0x15 );  //begin hide
-        for( unsigned int count1 = 0; count1 < size; count1++ )
-            esc.push_back( static_cast< STD1::uint8_t >( tmp[ count1 ] ) );
+        for( unsigned int count1 = 0; count1 < size1; count1++ )
+            esc.push_back( static_cast< STD1::uint8_t >( tmp[count1] ) );
         esc[1] = static_cast< STD1::uint8_t >( esc.size() - 1 );
         cell->addEsc( esc );
-        if( cell->textFull() )
+        if( cell->textFull() ) {
             printError( ERR1_LARGEPAGE );
+        }
     }
 }
 /***************************************************************************/
