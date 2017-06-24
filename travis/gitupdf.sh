@@ -19,11 +19,11 @@ case "$OWTRAVISJOB" in
         # copy build log files to git repository tree
         #
         if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-            if [ ! -d bld/osx ]; then mkdir -p bld/osx; fi
-            cp $TRAVIS_BUILD_DIR/bld/*.log bld/osx/
+            if [ ! -d bld/osx ]; then mkdir -p logs/osx; fi
+            cp $TRAVIS_BUILD_DIR/bld/*.log logs/osx/
         else
-            if [ ! -d bld/linux ]; then mkdir -p bld/linux; fi
-            cp $TRAVIS_BUILD_DIR/bld/*.log bld/linux/
+            if [ ! -d bld/linux ]; then mkdir -p logs/linux; fi
+            cp $TRAVIS_BUILD_DIR/bld/*.log logs/linux/
         fi
         #
         # commit new log files to GitHub repository
