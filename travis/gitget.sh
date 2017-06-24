@@ -9,7 +9,7 @@
 #
 
 case "$OWTRAVISJOB" in
-  BOOTSTRAP|BUILDLINUX|PDFDOCLINUX)
+  BOOTSTRAP|BUILD|DOCPDF)
     if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
         git config --global user.email "travis@travis-ci.org"
         git config --global user.name "Travis CI"
@@ -23,7 +23,7 @@ case "$OWTRAVISJOB" in
         #
         cd $OWRELROOT
         depth=`git rev-list HEAD --count`
-        if [ $depth -gt 10 ]; then
+        if [ $depth -gt 12 ]; then
             echo "gitget.sh - start compression"
             git checkout --orphan temp1
             git add -A

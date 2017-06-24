@@ -23,8 +23,8 @@ addons:
 
 cache:
   directories:
-    - ${TRAVIS_BUILD_DIR}/build/bin
-    - ${TRAVIS_BUILD_DIR}/bld/watcom/binbuild
+    - build/bin
+    - bld/watcom/binbuild
 
 before_script:
  # initialize OW build environment variables
@@ -47,61 +47,59 @@ after_success:
 
 jobs:
   include:
+    #################################
     - stage: Bootstrap
       os: linux
       install:
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
-      script:
-        - travis/build.sh boot
-      before_cache:
-        # upload OW build tools
-        - travis/savtools.sh
-    -
+      script: travis/build.sh boot
+    - # ...
       os: osx
       install:
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
-      script:
-        - travis/build.sh boot
-      before_cache:
-        # upload OW build tools
-        - travis/savtools.sh
-    - stage: Build binaries
+      script: travis/build.sh boot
+    #################################
+    - stage: Build
       os: linux
       install:
         - export OWTRAVISJOB=BUILD
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
         - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
+      script: travis/build.sh rel
+    - # ...
+      os: osx
+      install:
+        - export OWTRAVISJOB=BUILD
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+        - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
         # install DOS Emulator
-        - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install dosbox; fi
-        - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export OWDOSBOX=dosbox; fi
+        - brew install dosbox
+        - export OWDOSBOX=dosbox
         # install Ghostscript
-        - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install ghostscript; fi
-        # download OW build tools
-        - travis/rsttools.sh
-      script:
-        - travis/build.sh rel
-    - stage: Build PDF documentation
+        - brew install ghostscript
+      script: travis/build.sh rel
+    #################################
+    - stage: PDF Documentation
       os: linux
       install:
         - export OWTRAVISJOB=DOCPDF
         - export OWDOCBUILD=1
         - export OWVERBOSE=0
         - export OWGHOSTSCRIPTPATH=$PATH
-        # download OW build tools
-        - travis/rsttools.sh
-      script:
-        - travis/build.sh docpdf
+      script: travis/build.sh docpdf
+    #################################
     - stage: Clear cache
       os: linux
       install: export OWTRAVISJOB=CLEARCACHE
       before_script: true
       script: travis/clrcache.sh
-    -
+    - # ...
       os: osx
       install: export OWTRAVISJOB=CLEARCACHE
       before_script: true

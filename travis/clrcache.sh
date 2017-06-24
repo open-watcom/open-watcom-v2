@@ -4,4 +4,5 @@
 # *****************************************************************
 #
 
-rm -f ${TRAVIS_BUILD_DIR}/build/bin/*
+rm -f build/bin/*
+rm -f bld/watcom/binbuild/*

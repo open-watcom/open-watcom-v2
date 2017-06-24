@@ -6,9 +6,8 @@
 # after failure transfer log files back to GitHub repository
 #
 
-    travis/cacheinf.sh
 case "$OWTRAVISJOB" in
-  BOOTSTRAP|BUILDLINUX|PDFDOCLINUX)
+  BOOTSTRAP|BUILD|DOCPDF)
     if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
         cd $OWRELROOT
         #
