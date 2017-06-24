@@ -7,7 +7,7 @@
 # configure Git client
 #
 
-if [ "$TRAVIS_BRANCH" = master ]; then
+if [ "$TRAVIS_BRANCH" = "master" ]; then
     case "$OWTRAVISJOB" in
         BOOTSTRAP|BUILD|DOCPDF)
             if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then

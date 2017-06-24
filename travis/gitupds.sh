@@ -1,12 +1,12 @@
 #!/bin/sh
 # *****************************************************************
-# updgits.sh - update git repository if build succeeds
+# gitupds.sh - update git repository if build succeeds
 # *****************************************************************
 #
 # If OW build succeeds then transfer OW build to GitHub repository
 #
 
-if [ "$TRAVIS_BRANCH" = master ]; then
+if [ "$TRAVIS_BRANCH" = "master" ]; then
     case "$OWTRAVISJOB" in
         BUILD|DOCPDF)
             if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then

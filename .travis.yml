@@ -41,16 +41,19 @@ before_script:
    # get clone of GitHub repository to return Travis CI OW build/log files
  - travis/gitget.sh
  - travis/envinfo.sh
+ - travis/cacheinf.sh
 
 #script:
 # - build.sh rel
 
 after_failure:
    # after failure transfer log files back to GitHub repository
+ - travis/cacheinf.sh
  - travis/gitupdf.sh
 
 after_success:
    # after success transfer OW build to GitHub repository
+ - travis/cacheinf.sh
  - travis/gitupds.sh
 
 jobs:
@@ -62,7 +65,9 @@ jobs:
     - stage: GitHub init
       os: linux
       sudo: false
-      before_script: travis/envinfo.sh
+      before_script:
+        - travis/envinfo.sh
+        - travis/cacheinf.sh
       script: travis/gitinit.sh
     #################################
     - stage: Bootstrap
@@ -120,10 +125,13 @@ jobs:
     - stage: Clear cache
       os: linux
       sudo: false
-      before_script: travis/envinfo.sh
+      before_script:
+        - travis/envinfo.sh
+        - travis/cacheinf.sh
       script: travis/clrcache.sh
     - # ...
       os: osx
-      before_script: travis/envinfo.sh
+      before_script:
+        - travis/envinfo.sh
+        - travis/cacheinf.sh
       script: travis/clrcache.sh
-

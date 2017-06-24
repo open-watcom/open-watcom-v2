@@ -6,7 +6,7 @@
 # 1. compress GitHub repository if necessary
 #
 
-if [ "$TRAVIS_BRANCH" = master ]; then
+if [ "$TRAVIS_BRANCH" = "master" ]; then
     if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
         #
         # configure Git client
