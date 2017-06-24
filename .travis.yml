@@ -61,7 +61,8 @@ jobs:
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
-      script: travis/build.sh boot
+      script:
+        - if [ "$SKIP_OSX_BOOTSTRAP" != "1" ]; then travis/build.sh boot; fi
     #################################
     - stage: Build
       os: linux
@@ -83,7 +84,8 @@ jobs:
         - export OWDOSBOX=dosbox
         # install Ghostscript
         - brew install ghostscript
-      script: travis/build.sh rel
+      script:
+        - if [ "$SKIP_OSX_BUILD" != "1" ]; then travis/build.sh rel; fi
     #################################
     - stage: PDF Documentation
       os: linux
