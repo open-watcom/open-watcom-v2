@@ -1,5 +1,5 @@
 # change the name macro to the name of your dip
-!ifdef %USE_FILENAME_VERSION
+!ifdef %OWUSE_FILENAME_VERSION
 name = skel$(bld_ver)
 !else
 name = skel

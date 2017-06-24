@@ -50,7 +50,7 @@ dstdir = $(dstdir_$(host_os)_$(host_cpu))
 langdat_keys_ntx64    = -k ntx64
 langdat_keys_linuxx64 = -k lx64
 langdat_keys = $(langdat_keys_$(bld_os)$(bld_cpu))
-!ifdef %USE_FILENAME_VERSION
+!ifdef %OWUSE_FILENAME_VERSION
 langdat_keys += -k newdbg
 !endif
 
