@@ -49,7 +49,7 @@ bootstrap_proc()
 
 build_proc()
 {
-    if [ "$TRAVIS_BRANCH" = master ]; then
+    if [ "$TRAVIS_BRANCH" = "master" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
             if [ "$1" = "boot" ]; then
                 bootstrap_proc

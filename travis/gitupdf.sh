@@ -1,12 +1,12 @@
 #!/bin/sh
 # *****************************************************************
-# updgitf.sh - update git repository if build fails
+# gitupdf.sh - update git repository if build fails
 # *****************************************************************
 #
 # after failure transfer log files back to GitHub repository
 #
 
-if [ "$TRAVIS_BRANCH" = master ]; then
+if [ "$TRAVIS_BRANCH" = "master" ]; then
     case "$OWTRAVISJOB" in
         BOOTSTRAP|BUILD|DOCPDF)
             if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
