@@ -11,7 +11,7 @@ env:
     - OWOBJDIR=binbuild
     - OWDOCBUILD=0
     - OWDOCQUIET=1
-    - USE_FILENAME_VERSION=1
+    - OWUSE_FILENAME_VERSION=1
 
 addons:
   apt:
@@ -67,8 +67,7 @@ jobs:
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWDOCBUILD=0
         - export OWVERBOSE=1
-      script:
-        - if [ "$SKIP_OSX_BOOTSTRAP" != "1" ]; then travis/build.sh boot; fi
+      script: travis/build.sh boot
     #################################
     - stage: Build
       os: linux
@@ -93,8 +92,7 @@ jobs:
         - export OWDOSBOX=dosbox
         # install Ghostscript
         - brew install ghostscript
-      script:
-        - if [ "$SKIP_OSX_BUILD" != "1" ]; then travis/build.sh rel; fi
+      script: travis/build.sh rel
     #################################
     - stage: PDF Documentation
       os: linux
@@ -107,12 +105,10 @@ jobs:
     #################################
     - stage: Clear cache
       os: linux
-      install: export OWTRAVISJOB=CLEARCACHE
       before_script: true
       script: travis/clrcache.sh
     - # ...
       os: osx
-      install: export OWTRAVISJOB=CLEARCACHE
       before_script: true
       script: travis/clrcache.sh
 
