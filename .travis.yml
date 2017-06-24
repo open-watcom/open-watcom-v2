@@ -4,10 +4,6 @@ compiler: clang
 
 sudo: required
 
-matrix:
-  allow_failures:
-    - os: osx
-
 env:
   global:
     - OWROOT=$TRAVIS_BUILD_DIR
@@ -53,6 +49,9 @@ after_success:
  - travis/gitupds.sh
 
 jobs:
+  allow_failures:
+    - os: osx
+
   include:
     #################################
     - stage: Bootstrap
