@@ -2,8 +2,6 @@ language: c
 
 compiler: clang
 
-sudo: required
-
 env:
   global:
     - OWROOT=$TRAVIS_BUILD_DIR
@@ -22,9 +20,17 @@ addons:
       - dosemu
         # install Ghostscript
       - ghostscript
+  coverity_scan:
+    project:
+      name: "open-watcom/open-watcom-v2"
+      description: "Build submitted via Travis CI"
+    notification_email:    malak.jiri@gmail.com
+    build_command_prepend:
+    build_command:         travis/build.sh
+    branch_pattern:        coverity_scan
 
 cache:
-  ccache: true
+  ccache: false
   directories:
     - build/bin
     - bld/watcom/binbuild
@@ -55,11 +61,13 @@ jobs:
     #################################
     - stage: GitHub init
       os: linux
+      sudo: false
       before_script: true
       script: travis/gitinit.sh
     #################################
     - stage: Bootstrap
       os: linux
+      sudo: false
       install:
         - export OWTRAVISJOB=BOOTSTRAP
         - export OWDOCBUILD=0
@@ -75,6 +83,7 @@ jobs:
     #################################
     - stage: Build
       os: linux
+      sudo: required
       install:
         - export OWTRAVISJOB=BUILD
         - export OWDOCBUILD=0
@@ -100,6 +109,7 @@ jobs:
     #################################
     - stage: Documentation PDF
       os: linux
+      sudo: false
       install:
         - export OWTRAVISJOB=DOCPDF
         - export OWDOCBUILD=1
@@ -109,6 +119,7 @@ jobs:
     #################################
     - stage: Clear cache
       os: linux
+      sudo: false
       before_script: true
       script: travis/clrcache.sh
     - # ...
@@ -116,13 +127,3 @@ jobs:
       before_script: true
       script: travis/clrcache.sh
 
-#addons:
-#  coverity_scan:
-#    project:
-#      name: "open-watcom/open-watcom-v2"
-#      description: "Build submitted via Travis CI"
-
-#    notification_email:    malak.jiri@gmail.com
-#    build_command_prepend:
-#    build_command:         $OWROOT/build.sh
-#    branch_pattern:        master

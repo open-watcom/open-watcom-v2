@@ -6,7 +6,27 @@
 # 1. compress GitHub repository if necessary
 #
 
-if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+if [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
+    if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
+        #
+        # configure Git client
+        #
+        git config --global user.email "travis@travis-ci.org"
+        git config --global user.name "Travis CI"
+        git config --global push.default simple
+        #
+        rm -rf open-watcom
+        #
+        git clone https://${GITHUB_TOKEN}@github.com/open-watcom/open-watcom-v2.git open-watcom/open-watcom-v2
+        git checkout coverity_scan
+        git merge master
+        git push --quiet -f origin coverity_scan
+        #
+        echo "gitinit.sh - done"
+    else
+        echo "gitinit.sh - skipped"
+    fi
+elif [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
     #
     # configure Git client
     #
@@ -23,7 +43,7 @@ if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
     cd ../travis-ci-ow-builds
     depth=`git rev-list HEAD --count`
     if [ $depth -gt 12 ]; then
-        echo "gitshrnk.sh - start compression"
+        echo "gitinit.sh - start compression"
         git checkout --orphan temp1
         git add -A
         git commit -am "Initial commit"
@@ -31,10 +51,10 @@ if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
         git branch -m master
         git push -f origin master
         git branch --set-upstream-to=origin/master master
-        echo "gitshrnk.sh - end compression"
+        echo "gitinit.sh - end compression"
     fi
     cd $TRAVIS_BUILD_DIR
-    echo "gitshrnk.sh - done"
+    echo "gitinit.sh - done"
 else
-    echo "gitshrnk.sh - skipped"
+    echo "gitinit.sh - skipped"
 fi
