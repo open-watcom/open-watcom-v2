@@ -7,7 +7,7 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/prolog.ctl ]
 
-[ BLOCK .<USE_FILENAME_VERSION>. .1. ]
+[ BLOCK .<OWUSE_FILENAME_VERSION>. .1. ]
 #=====================================
     set PROJNAME=dwarf<OWBLDVER>
 

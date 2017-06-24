@@ -33,7 +33,7 @@ extra_cpp_flags =
 !ifeq drwatcom_95 1
 extra_cpp_flags += -DCHICAGO
 !endif
-!ifdef %USE_FILENAME_VERSION
+!ifdef %OWUSE_FILENAME_VERSION
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
 extra_cpp_flags_nt = -DNOUSE3D

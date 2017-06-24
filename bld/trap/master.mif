@@ -106,7 +106,7 @@ xname=$(name)
 # cflags stuff
 ###############
 extra_cpp_flags += -D$(which) -DMD_$(target_cpu) $(extra_cppflags)
-!ifdef %USE_FILENAME_VERSION
+!ifdef %OWUSE_FILENAME_VERSION
 extra_cpp_flags += -DUSE_FILENAME_VERSION=$(bld_ver)
 !endif
 

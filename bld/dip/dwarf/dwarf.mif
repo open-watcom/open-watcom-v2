@@ -1,4 +1,4 @@
-!ifdef %USE_FILENAME_VERSION
+!ifdef %OWUSE_FILENAME_VERSION
 name = dwarf$(bld_ver)
 !else
 name = dwarf
