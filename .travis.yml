@@ -16,11 +16,11 @@ env:
 addons:
   apt:
     packages:
-      # install C cache
+        # install C cache
       - ccache
-      # install DOS Emulator
+        # install DOS Emulator
       - dosemu
-      # install Ghostscript
+        # install Ghostscript
       - ghostscript
 
 cache:
@@ -30,10 +30,9 @@ cache:
     - bld/watcom/binbuild
 
 before_script:
- # initialize OW build environment variables
+   # initialize OW build environment variables
  - . travis/setowenv.sh
- # get clone of GitHub repository to return Travis CI OW build/log files
- # and compress GitHub repository if necessary to hold only a few last builds
+   # get clone of GitHub repository to return Travis CI OW build/log files
  - travis/gitget.sh
  - env | sed -n -e '/^TRAVIS/p' -e '/^OW/p' | sort
 
@@ -41,11 +40,11 @@ before_script:
 # - build.sh rel
 
 after_failure:
- # after failure transfer log files back to GitHub repository
+   # after failure transfer log files back to GitHub repository
  - travis/gitupdf.sh
 
 after_success:
- # after success transfer OW build to GitHub repository
+   # after success transfer OW build to GitHub repository
  - travis/gitupds.sh
 
 jobs:
@@ -53,6 +52,11 @@ jobs:
     - os: osx
 
   include:
+    #################################
+    - stage: GitHub init
+      os: linux
+      before_script: true
+      script: travis/gitinit.sh
     #################################
     - stage: Bootstrap
       os: linux
@@ -84,17 +88,17 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
         - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
-        # install C cache
+          # install C cache
         - brew install ccache
         - PATH=/usr/local/opt/ccache/libexec:$PATH
-        # install DOS Emulator
+          # install DOS Emulator
         - brew install dosbox
         - export OWDOSBOX=dosbox
-        # install Ghostscript
+          # install Ghostscript
         - brew install ghostscript
       script: travis/build.sh rel
     #################################
-    - stage: PDF Documentation
+    - stage: Documentation PDF
       os: linux
       install:
         - export OWTRAVISJOB=DOCPDF
