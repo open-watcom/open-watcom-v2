@@ -49,7 +49,19 @@ bootstrap_proc()
 
 build_proc()
 {
-    if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
+    if [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
+        if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
+            RC=0
+        elif [ "$1" = "boot" ]; then
+            bootstrap_proc
+        elif [ "$1" = "rel" ]; then
+            cd $OWSRCDIR
+            builder $1
+            RC=$?
+        else
+            RC=0
+        fi
+    elif [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
         if [ "$1" = "boot" ]; then
             bootstrap_proc
         else
