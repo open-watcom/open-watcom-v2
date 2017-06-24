@@ -2,7 +2,7 @@ language: c
 
 compiler: clang
 
-sudo: false
+sudo: required
 
 env:
   global:
