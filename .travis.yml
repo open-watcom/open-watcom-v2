@@ -4,6 +4,10 @@ compiler: clang
 
 sudo: required
 
+matrix:
+  allow_failures:
+    - os: osx
+
 env:
   global:
     - OWROOT=$TRAVIS_BUILD_DIR
