@@ -40,7 +40,7 @@ before_script:
  - . travis/setowenv.sh
    # get clone of GitHub repository to return Travis CI OW build/log files
  - travis/gitget.sh
- - env | sed -n -e '/^TRAVIS/p' -e '/^OW/p' | sort
+ - travis/envinfo.sh
 
 #script:
 # - build.sh rel
@@ -62,7 +62,7 @@ jobs:
     - stage: GitHub init
       os: linux
       sudo: false
-      before_script: true
+      before_script: travis/envinfo.sh
       script: travis/gitinit.sh
     #################################
     - stage: Bootstrap
@@ -120,10 +120,10 @@ jobs:
     - stage: Clear cache
       os: linux
       sudo: false
-      before_script: true
+      before_script: travis/envinfo.sh
       script: travis/clrcache.sh
     - # ...
       os: osx
-      before_script: true
+      before_script: travis/envinfo.sh
       script: travis/clrcache.sh
 

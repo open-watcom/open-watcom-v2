@@ -49,7 +49,28 @@ bootstrap_proc()
 
 build_proc()
 {
-    if [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
+    if [ "$TRAVIS_BRANCH" = master ]; then
+        if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
+            if [ "$1" = "boot" ]; then
+                bootstrap_proc
+            else
+                cd $OWSRCDIR
+                builder $1
+                RC=$?
+            fi
+        else
+            if [ "$1" = "rel" ]; then
+                bootstrap_proc
+                if [ $RC -eq 0 ]; then
+                    cd $OWSRCDIR
+                    builder rel
+                    RC=$?
+                fi
+            else
+                RC=0
+            fi
+        fi
+    elif [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
             RC=0
         elif [ "$1" = "boot" ]; then
@@ -61,23 +82,8 @@ build_proc()
         else
             RC=0
         fi
-    elif [ "$TRAVIS_PULL_REQUEST" = "false" ]; then
-        if [ "$1" = "boot" ]; then
-            bootstrap_proc
-        else
-            cd $OWSRCDIR
-            builder $1
-            RC=$?
-        fi
     else
-        if [ "$1" = "rel" ]; then
-            bootstrap_proc
-            if [ $RC -eq 0 ]; then
-                cd $OWSRCDIR
-                builder rel
-                RC=$?
-            fi
-        fi
+        RC=0
     fi
     cd $OWROOT
     return $RC
