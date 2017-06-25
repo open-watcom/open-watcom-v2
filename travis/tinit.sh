@@ -1,12 +1,12 @@
 #!/bin/sh
 # *****************************************************************
-# githubin.sh - initialize GitHub
+# tinit.sh - initialize
 # *****************************************************************
 #
 # 1. compress GitHub repository if necessary
 #
 
-echo_msg="githubin.sh - skipped"
+echo_msg="tinit.sh - skipped"
 
 if [ "$TRAVIS_OS_NAME" = "linux" ]; then
     if [ "$TRAVIS_BRANCH" = "master" ]; then
@@ -27,7 +27,7 @@ if [ "$TRAVIS_OS_NAME" = "linux" ]; then
             cd $OWTRAVIS_BUILD_DIR
             depth=`git rev-list HEAD --count`
             if [ $depth -gt 12 ]; then
-                echo "githubin.sh - start compression"
+                echo "tinit.sh - start compression"
                 git checkout --orphan temp1
                 git add -A
                 git commit -am "Initial commit"
@@ -35,10 +35,10 @@ if [ "$TRAVIS_OS_NAME" = "linux" ]; then
                 git branch -m master
                 git push -f origin master
                 git branch --set-upstream-to=origin/master master
-                echo "githubin.sh - end compression"
+                echo "tinit.sh - end compression"
             fi
             cd $TRAVIS_BUILD_DIR
-            echo_msg="githubin.sh - done"
+            echo_msg="tinit.sh - done"
         fi
 #    elif [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
 #    else
