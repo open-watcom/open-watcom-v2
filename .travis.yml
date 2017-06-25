@@ -13,7 +13,7 @@ env:
     - OWDOCQUIET=1
     - OWUSE_FILENAME_VERSION=1
     - GITQUIET=--quiet
-    - COVERITY_VERBOSE=1
+#    - COVERITY_VERBOSE=1
 
 addons:
   apt:
