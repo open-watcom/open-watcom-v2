@@ -15,8 +15,7 @@ if [ "$TRAVIS_BRANCH" = "master" ]; then
                 #
                 # commit updated files to GitHub repository
                 #
-                cd $OWTRAVIS_GITROOT
-                if [ "$OWTRAVIS_DEBUG" = "1" ]; then pwd; fi
+                cd $OWTRAVIS_BUILD_DIR
                 git add -f .
                 if [ "$OWTRAVISJOB" = "DOCPDF" ]; then
                     git commit $GITQUIET -m "Travis CI build $TRAVIS_JOB_NUMBER - Documentation"
@@ -25,7 +24,6 @@ if [ "$TRAVIS_BRANCH" = "master" ]; then
                 fi
                 git push $GITQUIET -f origin
                 cd $TRAVIS_BUILD_DIR
-                if [ "$OWTRAVIS_DEBUG" = "1" ]; then pwd; fi
                 echo_msg="gitupds.sh - done"
             fi
         fi

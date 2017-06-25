@@ -11,8 +11,7 @@ echo_msg="gitupdf.sh - skipped"
 if [ "$TRAVIS_BRANCH" = "master" ]; then
     if [ "$OWTRAVISJOB" = "BOOTSTRAP" ] || [ "$OWTRAVISJOB" = "BUILD" ] || [ "$OWTRAVISJOB" = "DOCPDF" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
-            cd $OWTRAVIS_GITROOT
-            if [ "$OWTRAVIS_DEBUG" = "1" ]; then pwd; fi
+            cd $OWTRAVIS_BUILD_DIR
             #
             # remove all local changes to upload only error logs
             #
@@ -39,7 +38,6 @@ if [ "$TRAVIS_BRANCH" = "master" ]; then
             fi
             git push $GITQUIET -f origin
             cd $TRAVIS_BUILD_DIR
-            if [ "$OWTRAVIS_DEBUG" = "1" ]; then pwd; fi
             echo_msg="gitupdf.sh - done"
         fi
     fi
