@@ -6,6 +6,8 @@
 # If OW build succeeds then transfer OW build to GitHub repository
 #
 
+echo_msg="gitupds.sh - skipped"
+
 if [ "$TRAVIS_BRANCH" = "master" ]; then
     if [ "$OWTRAVISJOB" = "BUILD" ] || [ "$OWTRAVISJOB" = "DOCPDF" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
@@ -13,36 +15,23 @@ if [ "$TRAVIS_BRANCH" = "master" ]; then
                 #
                 # commit updated files to GitHub repository
                 #
-                cd $OWRELROOT
+                cd $OWTRAVIS_GITROOT
+                if [ "$OWTRAVIS_DEBUG" = "1" ]; then pwd; fi
                 git add -f .
-                if [ "$OWTRAVIS_DEBUG" = "1" ]; then
-                    if [ "$OWTRAVISJOB" = "DOCPDF" ]; then
-                        git commit -m "Travis CI build $TRAVIS_JOB_NUMBER - Documentation"
-                    else
-                        git commit -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution"
-                    fi
-                    git push -f origin
+                if [ "$OWTRAVISJOB" = "DOCPDF" ]; then
+                    git commit $GITQUIET -m "Travis CI build $TRAVIS_JOB_NUMBER - Documentation"
                 else
-                    if [ "$OWTRAVISJOB" = "DOCPDF" ]; then
-                        git commit --quiet -m "Travis CI build $TRAVIS_JOB_NUMBER - Documentation"
-                    else
-                        git commit --quiet -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution"
-                    fi
-                    git push --quiet -f origin
+                    git commit $GITQUIET -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution"
                 fi
+                git push $GITQUIET -f origin
                 cd $TRAVIS_BUILD_DIR
-                echo "gitupds.sh - done"
-            else
-                echo "gitupds.sh - skipped"
+                if [ "$OWTRAVIS_DEBUG" = "1" ]; then pwd; fi
+                echo_msg="gitupds.sh - done"
             fi
-        else
-            echo "gitupds.sh - skipped"
         fi
-    else
-        echo "gitupds.sh - skipped"
     fi
-elif [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
-    echo "gitupds.sh - skipped"
-else
-    echo "gitupds.sh - skipped"
+#elif [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
+#else
 fi
+
+echo "$echo_msg"
