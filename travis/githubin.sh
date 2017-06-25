@@ -20,11 +20,11 @@ if [ "$TRAVIS_BRANCH" = "master" ]; then
         #
         # clone GitHub repository
         #
-        git clone $GITQUIET --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_SLUG}.git $OWTRAVIS_GITROOT
+        git clone $GITQUIET --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
         #
         # compress GitHub repository to hold only a few last builds
         #
-        cd $OWTRAVIS_GITROOT
+        cd $OWTRAVIS_BUILD_DIR
         depth=`git rev-list HEAD --count`
         if [ $depth -gt 12 ]; then
             echo "githubin.sh - start compression"
@@ -51,14 +51,14 @@ elif [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
         #
         cd ..
         rm -rf $TRAVIS_BUILD_DIR
-        git clone https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git $TRAVIS_BUILD_DIR
+        git clone $GITQUIET https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git $TRAVIS_BUILD_DIR
         cd $TRAVIS_BUILD_DIR
         #
         git checkout coverity_scan
         git merge master
         git add -A
-        git commit -am "Travis CI update from master branch"
-        git push -f origin coverity_scan
+        git commit $GITQUIET -am "Travis CI update from master branch"
+        git push $GITQUIET -f origin coverity_scan
         #
         echo_msg="githubin.sh - done"
     fi

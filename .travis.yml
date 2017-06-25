@@ -12,6 +12,7 @@ env:
     - OWDOCBUILD=0
     - OWDOCQUIET=1
     - OWUSE_FILENAME_VERSION=1
+    - GITQUIET=--quiet
 
 addons:
   apt:
@@ -38,11 +39,13 @@ cache:
     - bld/watcom/binbuild
 
 before_install:
- - . travis/gitinit.sh
+ - export OWTRAVIS_REPO_SLUG=open-watcom/travis-ci-ow-builds
+ - export OWTRAVIS_BUILD_DIR=${HOME}/build/$OWTRAVIS_REPO_SLUG
+ - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export GITQUIET=-v; fi
 
 before_script:
    # initialize OW build environment variables
- - export OWRELROOT=$OWTRAVIS_GITROOT
+ - export OWRELROOT=$OWTRAVIS_BUILD_DIR
  - . ./cmnvars.sh
    # get clone of GitHub repository to return Travis CI OW build/log files
  - travis/gitget.sh
