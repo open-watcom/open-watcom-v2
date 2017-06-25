@@ -29,12 +29,21 @@ if [ "$TRAVIS_BRANCH" = "master" ]; then
             # commit new log files to GitHub repository
             #
             git add -f .
-            if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-                git commit --quiet -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (OSX)"
+            if [ "$OWTRAVIS_DEBUG" = "1" ]; then
+                if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+                    git commit -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (OSX)"
+                else
+                    git commit -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (Linux)"
+                fi
+                git push -f origin
             else
-                git commit --quiet -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (Linux)"
+                if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+                    git commit --quiet -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (OSX)"
+                else
+                    git commit --quiet -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (Linux)"
+                fi
+                git push --quiet -f origin
             fi
-            git push --quiet -f origin
             cd $TRAVIS_BUILD_DIR
             echo "gitupdf.sh - done"
         else
