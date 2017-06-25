@@ -17,7 +17,11 @@ if [ "$TRAVIS_BRANCH" = "master" ]; then
         #
         # clone GitHub repository
         #
-        git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git ../travis-ci-ow-builds
+        if [ "$OWTRAVIS_DEBUG" = "1" ]; then
+            git clone --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git ../travis-ci-ow-builds
+        else
+            git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git ../travis-ci-ow-builds
+        fi
         #
         # compress GitHub repository to hold only a few last builds
         #
@@ -53,7 +57,11 @@ elif [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
         git clone https://${GITHUB_TOKEN}@github.com/open-watcom/open-watcom-v2.git open-watcom/open-watcom-v2
         git checkout coverity_scan
         git merge master
-        git push --quiet -f origin coverity_scan
+        if [ "$OWTRAVIS_DEBUG" = "1" ]; then
+            git push -f origin coverity_scan
+        else
+            git push --quiet -f origin coverity_scan
+        fi
         #
         echo "gitinit.sh - done"
     else

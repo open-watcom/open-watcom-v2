@@ -15,12 +15,21 @@ if [ "$TRAVIS_BRANCH" = "master" ]; then
                 #
                 cd $OWRELROOT
                 git add -f .
-                if [ "$OWTRAVISJOB" = "DOCPDF" ]; then
-                    git commit --quiet -m "Travis CI build $TRAVIS_JOB_NUMBER - Documentation"
+                if [ "$OWTRAVIS_DEBUG" = "1" ]; then
+                    if [ "$OWTRAVISJOB" = "DOCPDF" ]; then
+                        git commit -m "Travis CI build $TRAVIS_JOB_NUMBER - Documentation"
+                    else
+                        git commit -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution"
+                    fi
+                    git push -f origin
                 else
-                    git commit --quiet -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution"
+                    if [ "$OWTRAVISJOB" = "DOCPDF" ]; then
+                        git commit --quiet -m "Travis CI build $TRAVIS_JOB_NUMBER - Documentation"
+                    else
+                        git commit --quiet -m "Travis CI build $TRAVIS_JOB_NUMBER - OW distribution"
+                    fi
+                    git push --quiet -f origin
                 fi
-                git push --quiet -f origin
                 cd $TRAVIS_BUILD_DIR
                 echo "gitupds.sh - done"
             else

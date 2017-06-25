@@ -16,7 +16,11 @@ if [ "$TRAVIS_BRANCH" = "master" ]; then
             #
             # clone GitHub repository
             #
-            git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git ${OWRELROOT}
+            if [ "$OWTRAVIS_DEBUG" = "1" ]; then
+                git clone --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git ${OWRELROOT}
+            else
+                git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git ${OWRELROOT}
+            fi
             echo "gitget.sh - done"
         else
             echo "gitget.sh - skipped"
