@@ -61,6 +61,15 @@ after_success:
 jobs:
   allow_failures:
     - os: osx
+  addons:
+    coverity_scan:
+      project:
+        name: "open-watcom/open-watcom-v2"
+        description: "Build submitted via Travis CI"
+        notification_email:    "malak.jiri@gmail.com"
+        build_command_prepend:
+        build_command:         "travis/build.sh scan"
+        branch_pattern:        coverity_scan
 
   include:
     #################################
@@ -88,15 +97,6 @@ jobs:
     #################################
     - stage: Build
       os: linux
-      addons:
-        coverity_scan:
-          project:
-            name: "open-watcom/open-watcom-v2"
-            description: "Build submitted via Travis CI"
-            notification_email:    "malak.jiri@gmail.com"
-            build_command_prepend:
-            build_command:         "travis/build.sh scan"
-            branch_pattern:        coverity_scan
       install:
         - export OWTRAVISJOB=BUILD
         - export OWDOCBUILD=0
