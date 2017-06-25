@@ -38,7 +38,7 @@ cache:
     - bld/watcom/binbuild
 
 before_install:
- - travis/gitinit.sh
+ - . travis/gitinit.sh
 
 before_script:
    # initialize OW build environment variables
