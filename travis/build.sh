@@ -63,7 +63,7 @@ build_proc()
                 bootstrap_proc
                 if [ $RC -eq 0 ]; then
                     cd $OWSRCDIR
-                    builder rel
+                    builder
                     RC=$?
                 fi
             else
@@ -73,12 +73,26 @@ build_proc()
     elif [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
             RC=0
+        elif [ "$1" = "scan" ]; then
+            if [ "$OWTRAVISJOB" = "BUILD" ]; then
+                bootstrap_proc
+                if [ $RC -eq 0 ]; then
+                    cd $OWSRCDIR
+                    builder
+                    RC=$?
+                fi
+            else
+                RC=0
+            fi
+        elif [ "$1" = "rel" ]; then
+            bootstrap_proc
+            if [ $RC -eq 0 ]; then
+                cd $OWSRCDIR
+                builder rel
+                RC=$?
+            fi
         elif [ "$1" = "boot" ]; then
             bootstrap_proc
-        elif [ "$1" = "rel" ]; then
-            cd $OWSRCDIR
-            builder $1
-            RC=$?
         else
             RC=0
         fi

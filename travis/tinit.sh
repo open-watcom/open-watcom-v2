@@ -4,12 +4,12 @@
 # *****************************************************************
 #
 # 1. compress GitHub repository if necessary
-# 2. update GitHub repository coverity_scan branch by master
 #
 
 echo_msg="githubin.sh - skipped"
 
-if [ "$TRAVIS_BRANCH" = "master" ]; then
+if [ "$TRAVIS_OS_NAME" = "linux" ]; then
+    if [ "$TRAVIS_BRANCH" = "master" ]; then
     if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
         #
         # configure Git client
@@ -40,28 +40,8 @@ if [ "$TRAVIS_BRANCH" = "master" ]; then
         cd $TRAVIS_BUILD_DIR
         echo_msg="githubin.sh - done"
     fi
-elif [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
-    if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
-        #
-        # configure Git client
-        #
-        git config --global user.email "travis@travis-ci.org"
-        git config --global user.name "Travis CI"
-        git config --global push.default simple
-        #
-        cd ..
-        rm -rf $TRAVIS_BUILD_DIR
-        git clone $GITQUIET https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git $TRAVIS_BUILD_DIR
-        cd $TRAVIS_BUILD_DIR
-        #
-        git checkout coverity_scan
-        git merge master
-        git add -A
-        git commit $GITQUIET -am "Travis CI update from master branch"
-        git push $GITQUIET -f origin coverity_scan
-        #
-        echo_msg="githubin.sh - done"
     fi
+#elif [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
 #else
 fi
 
