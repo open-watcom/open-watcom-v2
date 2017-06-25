@@ -24,6 +24,15 @@ addons:
       - dosemu
         # install Ghostscript
       - ghostscript
+  coverity_scan:
+    project:
+      name: "$TRAVIS_REPO_SLUG"
+      description: "Build submitted via Travis CI"
+      notification_email:    "malak.jiri@gmail.com"
+      build_command_prepend:
+      build_command:         "travis/build.sh scan"
+      branch_pattern:        coverity_scan
+
 
 cache:
   ccache: false
@@ -57,16 +66,6 @@ after_success:
    # after success transfer OW build to GitHub repository
  - travis/cacheinf.sh
  - travis/gitupds.sh
-
-addons:
-coverity_scan:
-  project:
-    name: "open-watcom/open-watcom-v2"
-    description: "Build submitted via Travis CI"
-    notification_email:    "malak.jiri@gmail.com"
-    build_command_prepend:
-    build_command:         "travis/build.sh scan"
-    branch_pattern:        coverity_scan
 
 jobs:
   allow_failures:
