@@ -6,6 +6,8 @@
 
 if [ "$OWTRAVIS_DEBUG" = "1" ]; then
     echo "****** CACHE INFO ******"
+    echo "`date`"
+    echo "************************"
     ls -l $CASHER_DIR
     echo "*** paths **************"
     if [ -e $CASHER_DIR/paths ]; then cat $CASHER_DIR/paths; fi
