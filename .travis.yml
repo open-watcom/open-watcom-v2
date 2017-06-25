@@ -28,10 +28,10 @@ addons:
     project:
       name: "$TRAVIS_REPO_SLUG"
       description: "Build submitted via Travis CI"
-      notification_email:    "malak.jiri@gmail.com"
-      build_command_prepend:
-      build_command:         "travis/build.sh scan"
-      branch_pattern:        coverity_scan
+    notification_email:    "malak.jiri@gmail.com"
+    build_command_prepend:
+    build_command:         "travis/build.sh scan"
+    branch_pattern:        coverity_scan
 
 
 cache:
