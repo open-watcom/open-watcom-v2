@@ -7,6 +7,8 @@
 # configure Git client
 #
 
+echo_msg="gitget.sh - skipped"
+
 if [ "$TRAVIS_BRANCH" = "master" ]; then
     if [ "$OWTRAVISJOB" = "BOOTSTRAP" ] || [ "$OWTRAVISJOB" = "BUILD" ] || [ "$OWTRAVISJOB" = "DOCPDF" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
@@ -16,20 +18,13 @@ if [ "$TRAVIS_BRANCH" = "master" ]; then
             #
             # clone GitHub repository
             #
-            if [ "$OWTRAVIS_DEBUG" = "1" ]; then
-                git clone --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git ${OWRELROOT}
-            else
-                git clone --quiet --branch=master https://${GITHUB_TOKEN}@github.com/open-watcom/travis-ci-ow-builds.git ${OWRELROOT}
-            fi
-            echo "gitget.sh - done"
-        else
-            echo "gitget.sh - skipped"
+            if [ "$OWTRAVIS_DEBUG" = "1" ]; then pwd; fi
+            git clone $GITQUIET --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_SLUG}.git $OWTRAVIS_GITROOT
+            echo_msg="gitget.sh - done"
         fi
-    else
-        echo "gitget.sh - skipped"
     fi
-elif [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
-    echo "gitget.sh - skipped"
-else
-    echo "gitget.sh - skipped"
+#elif [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
+#else
 fi
+
+echo "$echo_msg"

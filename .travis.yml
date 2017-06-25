@@ -24,7 +24,7 @@ addons:
       - ghostscript
   coverity_scan:
     project:
-      name: "open-watcom/open-watcom-v2"
+      name: "$TRAVIS_REPO_SLUG"
       description: "Build submitted via Travis CI"
     notification_email:    malak.jiri@gmail.com
     build_command_prepend:
@@ -37,9 +37,13 @@ cache:
     - build/bin
     - bld/watcom/binbuild
 
+before_install:
+ - travis/gitinit.sh
+
 before_script:
    # initialize OW build environment variables
- - . travis/setowenv.sh
+ - export OWRELROOT=$OWTRAVIS_GITROOT
+ - . ./cmnvars.sh
    # get clone of GitHub repository to return Travis CI OW build/log files
  - travis/gitget.sh
  - travis/envinfo.sh
@@ -69,7 +73,7 @@ jobs:
       before_script:
         - travis/envinfo.sh
         - travis/cacheinf.sh
-      script: travis/gitinit.sh
+      script: travis/githubin.sh
     #################################
     - stage: Bootstrap
       os: linux

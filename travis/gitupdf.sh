@@ -6,10 +6,13 @@
 # after failure transfer log files back to GitHub repository
 #
 
+echo_msg="gitupdf.sh - skipped"
+
 if [ "$TRAVIS_BRANCH" = "master" ]; then
     if [ "$OWTRAVISJOB" = "BOOTSTRAP" ] || [ "$OWTRAVISJOB" = "BUILD" ] || [ "$OWTRAVISJOB" = "DOCPDF" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
-            cd $OWRELROOT
+            cd $OWTRAVIS_GITROOT
+            if [ "$OWTRAVIS_DEBUG" = "1" ]; then pwd; fi
             #
             # remove all local changes to upload only error logs
             #
@@ -29,31 +32,19 @@ if [ "$TRAVIS_BRANCH" = "master" ]; then
             # commit new log files to GitHub repository
             #
             git add -f .
-            if [ "$OWTRAVIS_DEBUG" = "1" ]; then
-                if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-                    git commit -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (OSX)"
-                else
-                    git commit -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (Linux)"
-                fi
-                git push -f origin
+            if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+                git commit $GITQUIET -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (OSX)"
             else
-                if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-                    git commit --quiet -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (OSX)"
-                else
-                    git commit --quiet -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (Linux)"
-                fi
-                git push --quiet -f origin
+                git commit $GITQUIET -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (Linux)"
             fi
+            git push $GITQUIET -f origin
             cd $TRAVIS_BUILD_DIR
-            echo "gitupdf.sh - done"
-        else
-            echo "gitupdf.sh - skipped"
+            if [ "$OWTRAVIS_DEBUG" = "1" ]; then pwd; fi
+            echo_msg="gitupdf.sh - done"
         fi
-    else
-        echo "gitupdf.sh - skipped"
     fi
-elif [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
-    echo "gitupdf.sh - skipped"
-else
-    echo "gitupdf.sh - skipped"
+#elif [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
+#else
 fi
+
+echo "$echo_msg"
