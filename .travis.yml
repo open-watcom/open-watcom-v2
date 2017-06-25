@@ -64,12 +64,12 @@ jobs:
 
   include:
     #################################
-    - stage: GitHub init
+    - stage: Initialize
       os: linux
       before_script:
         - travis/envinfo.sh
         - travis/cacheinf.sh
-      script: travis/githubin.sh
+      script: travis/tinit.sh
     #################################
     - stage: Bootstrap
       os: linux
@@ -93,9 +93,9 @@ jobs:
           project:
             name: "open-watcom/open-watcom-v2"
             description: "Build submitted via Travis CI"
-            notification_email:    malak.jiri@gmail.com
+            notification_email:    "malak.jiri@gmail.com"
             build_command_prepend:
-            build_command:         travis/build.sh scan
+            build_command:         "travis/build.sh scan"
             branch_pattern:        coverity_scan
       install:
         - export OWTRAVISJOB=BUILD
@@ -129,15 +129,15 @@ jobs:
         - export OWGHOSTSCRIPTPATH=$PATH
       script: travis/build.sh docpdf
     #################################
-    - stage: Clear cache
+    - stage: Finalize
       os: linux
       before_script:
         - travis/envinfo.sh
         - travis/cacheinf.sh
-      script: travis/clrcache.sh
+      script: travis/tfini.sh
     - # ...
       os: osx
       before_script:
         - travis/envinfo.sh
         - travis/cacheinf.sh
-      script: travis/clrcache.sh
+      script: travis/tfini.sh
