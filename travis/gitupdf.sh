@@ -6,11 +6,17 @@
 # after failure transfer log files back to GitHub repository
 #
 
+if [ "$OWTRAVIS_DEBUG" = "1" ]; then
+    GITQUIET=-v
+else
+    GITQUIET=--quiet
+fi
+
 echo_msg="gitupdf.sh - skipped"
 
 if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ]; then
-    if [ "$OWTRAVISJOB" = "BOOTSTRAP" ] || [ "$OWTRAVISJOB" = "BUILD" ] || [ "$OWTRAVISJOB" = "DOCPDF" ]; then
-        if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
+    if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
+        if [ "$OWTRAVISJOB" = "BOOTSTRAP" ] || [ "$OWTRAVISJOB" = "BUILD" ] || [ "$OWTRAVISJOB" = "DOCPDF" ]; then
             cd $OWTRAVIS_BUILD_DIR
             #
             # remove all local changes to upload only error logs
@@ -41,8 +47,6 @@ if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ]; then
             echo_msg="gitupdf.sh - done"
         fi
     fi
-#elif [ "$TRAVIS_BRANCH" = "$OWBRANCH_COVERITY" ]; then
-#else
 fi
 
 echo "$echo_msg"

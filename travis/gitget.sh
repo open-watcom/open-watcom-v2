@@ -7,11 +7,17 @@
 # configure Git client
 #
 
+if [ "$OWTRAVIS_DEBUG" = "1" ]; then
+    GITQUIET=-v
+else
+    GITQUIET=--quiet
+fi
+
 echo_msg="gitget.sh - skipped"
 
 if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ]; then
-    if [ "$OWTRAVISJOB" = "BOOTSTRAP" ] || [ "$OWTRAVISJOB" = "BUILD" ] || [ "$OWTRAVISJOB" = "DOCPDF" ]; then
-        if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
+    if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
+        if [ "$OWTRAVISJOB" = "BOOTSTRAP" ] || [ "$OWTRAVISJOB" = "BUILD" ] || [ "$OWTRAVISJOB" = "DOCPDF" ]; then
             git config --global user.email "travis@travis-ci.org"
             git config --global user.name "Travis CI"
             git config --global push.default simple
@@ -22,8 +28,6 @@ if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ]; then
             echo_msg="gitget.sh - done"
         fi
     fi
-#elif [ "$TRAVIS_BRANCH" = "$OWBRANCH_COVERITY" ]; then
-#else
 fi
 
 echo "$echo_msg"
