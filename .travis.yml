@@ -24,10 +24,8 @@ cache:
 
 before_script:
    # initialize OW build environment variables
- - export OWRELROOT=$OWTRAVIS_BUILD_DIR
  - . ./cmnvars.sh
    # get clone of GitHub repository to return Travis CI OW build/log files
- - travis/gitget.sh
  - travis/envinfo.sh
  - travis/cacheinf.sh
 
@@ -77,19 +75,8 @@ jobs:
         - export OWVERBOSE=0
           # install DOS Emulator
         - sudo apt-get install -y dosemu
-      script: travis/build.sh rel
+      script: travis/build.sh build
     - # ...
-      os: osx
-      install:
-        - export OWTRAVISJOB=BUILD
-        - export OWDOCBUILD=0
-        - export OWVERBOSE=0
-          # install DOS Emulator
-        - brew install dosbox
-        - export OWDOSBOX=dosbox
-      script: travis/build.sh rel
-    #################################
-    - stage: Documentation PDF
       os: linux
       install:
         - export OWTRAVISJOB=DOCPDF
@@ -99,6 +86,16 @@ jobs:
           # install DOS Emulator + Ghostscript
         - sudo apt-get install -y dosemu ghostscript
       script: travis/build.sh docpdf
+    - # ...
+      os: osx
+      install:
+        - export OWTRAVISJOB=BUILD
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+          # install DOS Emulator
+        - brew install dosbox
+        - export OWDOSBOX=dosbox
+      script: travis/build.sh build
     #################################
     - stage: Finalize
       os: linux

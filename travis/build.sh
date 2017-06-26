@@ -46,7 +46,7 @@ build_proc()
 {
     if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
-            if [ "$1" = "rel" ]; then
+            if [ "$1" = "build" ]; then
                 bootutil_proc
                 if [ $RC -eq 0 ]; then
                     cd $OWSRCDIR
@@ -71,8 +71,8 @@ build_proc()
                 fi
             else
                 cd $OWSRCDIR
-                if [ "$1" = "rel" ]; then
-                    builder -q rel
+                if [ "$1" = "build" ]; then
+                    builder -q build
                 else
                     builder -q $1
                 fi
@@ -83,7 +83,7 @@ build_proc()
         if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
             RC=0
         elif [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
-            if [ "$1" = "rel" ]; then
+            if [ "$1" = "build" ]; then
                 RC=0
 #                travis/covscan.sh
             else

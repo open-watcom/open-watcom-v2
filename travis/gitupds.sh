@@ -20,6 +20,25 @@ gitupds_proc()
         if [ "$TRAVIS_EVENT_TYPE" = "push" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then
             if [ "$OWTRAVISJOB" = "BUILD" ] || [ "$OWTRAVISJOB" = "DOCPDF" ]; then
                 #
+                # setup client info
+                #
+                git config --global user.email "travis@travis-ci.org"
+                git config --global user.name "Travis CI"
+                git config --global push.default simple
+                #
+                # clone GitHub repository
+                #
+                git clone $GITQUIET --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+                #
+                # copy OW build to git tree
+                #
+                export OWRELROOT=$OWTRAVIS_BUILD_DIR
+                if [ "$OWTRAVISJOB" = "DOCPDF" ]; then
+                    builder cpdocpdf
+                else
+                    builder cprel
+                fi
+                #
                 # commit updated files to GitHub repository
                 #
                 cd $OWTRAVIS_BUILD_DIR
