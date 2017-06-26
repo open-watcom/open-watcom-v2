@@ -26,9 +26,9 @@ tfini_proc2()
     else
         GITQUIET=--quiet
     fi
-    
+
     echo_msg="tfini.sh - skipped"
-    
+
     if [ "$TRAVIS_BRANCH" = "$OWBRANCH_COVERITY" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "cron" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then
             #
@@ -43,10 +43,15 @@ tfini_proc2()
             git clone $GITQUIET https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git $TRAVIS_BUILD_DIR
             cd $TRAVIS_BUILD_DIR
             #
-            git checkout $OWBRANCH_COVERITY
-            git merge $OWBRANCH
-            git add -A
+            if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git checkout"; fi
+            git checkout $GITQUIET $OWBRANCH_COVERITY
+            if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git merge"; fi
+            git merge $GITQUIET $OWBRANCH
+            if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git add"; fi
+            git add $GITQUIET -A
+            if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git commit"; fi
             git commit $GITQUIET -am "Travis CI update from $OWBRANCH branch"
+            if [ "$OWTRAVIS_DEBUG" = "1" ]; then echo "** git push"; fi
             git push $GITQUIET -f origin $OWBRANCH_COVERITY
             #
             echo_msg="tfini.sh - done"
