@@ -14,23 +14,13 @@ env:
     - OWUSE_FILENAME_VERSION=1
     - OWBRANCH=master
     - OWBRANCH_COVERITY=coverity_scan
-
-addons:
-  apt:
-    packages:
-        # install DOS Emulator
-      - dosemu
-        # install Ghostscript
-      - ghostscript
+    - OWTRAVIS_REPO_SLUG=open-watcom/travis-ci-ow-builds
+    - OWTRAVIS_BUILD_DIR=${HOME}/build/$OWTRAVIS_REPO_SLUG
 
 cache:
   directories:
     - build/bin
     - bld/watcom/binbuild
-
-before_install:
- - export OWTRAVIS_REPO_SLUG=open-watcom/travis-ci-ow-builds
- - export OWTRAVIS_BUILD_DIR=${HOME}/build/$OWTRAVIS_REPO_SLUG
 
 before_script:
    # initialize OW build environment variables
@@ -40,9 +30,6 @@ before_script:
  - travis/gitget.sh
  - travis/envinfo.sh
  - travis/cacheinf.sh
-
-#script:
-# - build.sh rel
 
 after_failure:
    # after failure transfer log files back to GitHub repository
@@ -88,6 +75,8 @@ jobs:
         - export OWTRAVISJOB=BUILD
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
+          # install DOS Emulator
+        - sudo apt-get install -y dosemu
       script: travis/build.sh rel
     - # ...
       os: osx
@@ -98,8 +87,6 @@ jobs:
           # install DOS Emulator
         - brew install dosbox
         - export OWDOSBOX=dosbox
-          # install Ghostscript
-        - brew install ghostscript
       script: travis/build.sh rel
     #################################
     - stage: Documentation PDF
@@ -109,6 +96,8 @@ jobs:
         - export OWDOCBUILD=1
         - export OWVERBOSE=0
         - export OWGHOSTSCRIPTPATH=$PATH
+          # install DOS Emulator + Ghostscript
+        - sudo apt-get install -y dosemu ghostscript
       script: travis/build.sh docpdf
     #################################
     - stage: Finalize
