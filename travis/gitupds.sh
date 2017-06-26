@@ -33,6 +33,7 @@ gitupds_proc()
                 # copy OW build to git tree
                 #
                 export OWRELROOT=$OWTRAVIS_BUILD_DIR
+                cd $OWSRCDIR
                 if [ "$OWTRAVISJOB" = "DOCPDF" ]; then
                     builder cpdocpdf
                 else

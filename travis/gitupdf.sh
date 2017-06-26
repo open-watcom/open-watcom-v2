@@ -29,7 +29,6 @@ gitupdf_proc()
                 # clone GitHub repository
                 #
                 git clone $GITQUIET --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
-                cd $OWTRAVIS_BUILD_DIR
                 #
                 # copy build log files to git repository tree
                 #
@@ -43,6 +42,7 @@ gitupdf_proc()
                 #
                 # commit new log files to GitHub repository
                 #
+                cd $OWTRAVIS_BUILD_DIR
                 git add -f .
                 if [ "$TRAVIS_OS_NAME" = "osx" ]; then
                     git commit $GITQUIET -m "Travis CI build $TRAVIS_JOB_NUMBER (failure) - log files (OSX)"
