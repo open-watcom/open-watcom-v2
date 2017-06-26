@@ -1,5 +1,7 @@
 #!/bin/sh
 
+wget https://scan.coverity.com/download/cxx/linux64 --post-data "token=${COVERITY_SCAN_TOKEN}&project=${TRAVIS_REPO_SLUG}" -O /tmp/coverity_tool.tgz
+
 set -e
 
 # Environment check

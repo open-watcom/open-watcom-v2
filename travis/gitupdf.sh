@@ -8,7 +8,7 @@
 
 echo_msg="gitupdf.sh - skipped"
 
-if [ "$TRAVIS_BRANCH" = "master" ]; then
+if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ]; then
     if [ "$OWTRAVISJOB" = "BOOTSTRAP" ] || [ "$OWTRAVISJOB" = "BUILD" ] || [ "$OWTRAVISJOB" = "DOCPDF" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
             cd $OWTRAVIS_BUILD_DIR
@@ -41,7 +41,7 @@ if [ "$TRAVIS_BRANCH" = "master" ]; then
             echo_msg="gitupdf.sh - done"
         fi
     fi
-#elif [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
+#elif [ "$TRAVIS_BRANCH" = "$OWBRANCH_COVERITY" ]; then
 #else
 fi
 

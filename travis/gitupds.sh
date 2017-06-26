@@ -8,7 +8,7 @@
 
 echo_msg="gitupds.sh - skipped"
 
-if [ "$TRAVIS_BRANCH" = "master" ]; then
+if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ]; then
     if [ "$OWTRAVISJOB" = "BUILD" ] || [ "$OWTRAVISJOB" = "DOCPDF" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
             if [ "$TRAVIS_OS_NAME" = "linux" ]; then
@@ -28,7 +28,7 @@ if [ "$TRAVIS_BRANCH" = "master" ]; then
             fi
         fi
     fi
-#elif [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
+#elif [ "$TRAVIS_BRANCH" = "$OWBRANCH_COVERITY" ]; then
 #else
 fi
 

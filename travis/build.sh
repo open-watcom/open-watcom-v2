@@ -49,7 +49,7 @@ bootstrap_proc()
 
 build_proc()
 {
-    if [ "$TRAVIS_BRANCH" = "master" ]; then
+    if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
             if [ "$1" = "boot" ]; then
                 bootstrap_proc
@@ -70,7 +70,7 @@ build_proc()
                 RC=0
             fi
         fi
-    elif [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
+    elif [ "$TRAVIS_BRANCH" = "$OWBRANCH_COVERITY" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "cron" ]; then
             RC=0
         elif [ "$1" = "scan" ]; then
