@@ -20,8 +20,8 @@ coverity_load_proc()
 
 coverity_run_proc()
 {
-    pwd
-    #cov-build --dir cov-int build.sh
+    export BUILDER_OPT=-q
+    cov-build --dir cov-int build.sh
     #cov-import-scm --dir cov-int --scm git --log cov-int/scm_log.txt 2>&1
     return 0
 }
