@@ -12,8 +12,6 @@ env:
     - OWDOCBUILD=0
     - OWDOCQUIET=1
     - OWUSE_FILENAME_VERSION=1
-    - GITQUIET=--quiet
-#    - COVERITY_VERBOSE=1
     - OWBRANCH=master
     - OWBRANCH_COVERITY=coverity_scan
 
@@ -36,7 +34,6 @@ cache:
 before_install:
  - export OWTRAVIS_REPO_SLUG=open-watcom/travis-ci-ow-builds
  - export OWTRAVIS_BUILD_DIR=${HOME}/build/$OWTRAVIS_REPO_SLUG
- - if [ "$OWTRAVIS_DEBUG" = "1" ]; then export GITQUIET=-v; fi
 
 before_script:
    # initialize OW build environment variables
@@ -94,7 +91,6 @@ jobs:
         - export OWTRAVISJOB=BUILD
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
-        - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
       script: travis/build.sh rel
     - # ...
       os: osx
@@ -102,7 +98,6 @@ jobs:
         - export OWTRAVISJOB=BUILD
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
-        - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then export BUILDER_OPT=-q; fi
           # install C cache
         - brew install ccache
         - PATH=/usr/local/opt/ccache/libexec:$PATH
