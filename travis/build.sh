@@ -66,7 +66,7 @@ build_proc()
                 bootutil_proc
                 if [ $RC -eq 0 ]; then
                     cd $OWSRCDIR
-                    builder boot
+                    builder -q boot
                     RC=$?
                 fi
             else
@@ -74,7 +74,7 @@ build_proc()
                 if [ "$1" = "rel" ]; then
                     builder -q rel
                 else
-                    builder $1
+                    builder -q $1
                 fi
                 RC=$?
             fi
