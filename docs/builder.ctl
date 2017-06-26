@@ -50,8 +50,8 @@ set PMAKEKEY=txt
     <CCCMD> txt/*.txt       <OWRELROOT>/
     <CPCMD> areadme.txt     <OWRELROOT>/areadme.txt
 
-[ BLOCK <1> docpdf ]
-#===================
+[ BLOCK <1> cpdocpdf ]
+#=====================
     [ IFDEF <PMAKEKEY> build ]
         <CCCMD> pdf/*.pdf       <OWRELROOT>/docs/
     [ ENDIF ]

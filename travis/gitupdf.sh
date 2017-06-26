@@ -19,12 +19,17 @@ gitupdf_proc()
     if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
             if [ "$OWTRAVISJOB" = "BOOTSTRAP" ] || [ "$OWTRAVISJOB" = "BUILD" ] || [ "$OWTRAVISJOB" = "DOCPDF" ]; then
+                #
+                # setup client info
+                #
+                git config --global user.email "travis@travis-ci.org"
+                git config --global user.name "Travis CI"
+                git config --global push.default simple
+                #
+                # clone GitHub repository
+                #
+                git clone $GITQUIET --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
                 cd $OWTRAVIS_BUILD_DIR
-                #
-                # remove all local changes to upload only error logs
-                #
-                git reset --hard
-                git clean -fd
                 #
                 # copy build log files to git repository tree
                 #
