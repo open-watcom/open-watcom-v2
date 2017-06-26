@@ -74,7 +74,7 @@ build_proc()
                 if [ "$1" = "build" ]; then
                     builder -q build
                 elif [ "$1" = "docpdf" ]; then
-                    builder build
+                    builder docpdf
                 else
                     builder -q $1
                 fi
