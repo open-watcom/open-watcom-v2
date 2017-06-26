@@ -86,8 +86,8 @@ build_proc()
             RC=0
         elif [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
             if [ "$1" = "build" ]; then
-                RC=0
-#                travis/covscan.sh
+#                RC=0
+                travis/covscan.sh
             else
                 RC=0
             fi
