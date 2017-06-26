@@ -14,6 +14,8 @@ env:
     - OWUSE_FILENAME_VERSION=1
     - GITQUIET=--quiet
 #    - COVERITY_VERBOSE=1
+    - OWBRANCH=master
+    - OWBRANCH_COVERITY=coverity_scan
 
 addons:
   apt:
@@ -24,15 +26,6 @@ addons:
       - dosemu
         # install Ghostscript
       - ghostscript
-  coverity_scan:
-    project:
-      name: "$TRAVIS_REPO_SLUG"
-      description: "Build submitted via Travis CI"
-    notification_email:    "malak.jiri@gmail.com"
-    build_command_prepend:
-    build_command:         "travis/build.sh scan"
-    branch_pattern:        coverity_scan
-
 
 cache:
   ccache: false
@@ -141,3 +134,12 @@ jobs:
         - travis/envinfo.sh
         - travis/cacheinf.sh
       script: travis/tfini.sh
+
+#  coverity_scan:
+#    project:
+#      name: "$TRAVIS_REPO_SLUG"
+#      description: "Build submitted via Travis CI"
+#    notification_email:    "malak.jiri@gmail.com"
+#    build_command_prepend:
+#    build_command:         "travis/build.sh scan"
+#    branch_pattern:        coverity_scan

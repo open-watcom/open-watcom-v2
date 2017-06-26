@@ -9,7 +9,7 @@
 echo_msg="tinit.sh - skipped"
 
 if [ "$TRAVIS_OS_NAME" = "linux" ]; then
-    if [ "$TRAVIS_BRANCH" = "master" ]; then
+    if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
             #
             # configure Git client
@@ -20,7 +20,7 @@ if [ "$TRAVIS_OS_NAME" = "linux" ]; then
             #
             # clone GitHub repository
             #
-            git clone $GITQUIET --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+            git clone $GITQUIET --branch=$OWBRANCH https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
             #
             # compress GitHub repository to hold only a few last builds
             #
@@ -31,16 +31,16 @@ if [ "$TRAVIS_OS_NAME" = "linux" ]; then
                 git checkout --orphan temp1
                 git add -A
                 git commit -am "Initial commit"
-                git branch -D master
-                git branch -m master
-                git push -f origin master
-                git branch --set-upstream-to=origin/master master
+                git branch -D $OWBRANCH
+                git branch -m $OWBRANCH
+                git push -f origin $OWBRANCH
+                git branch --set-upstream-to=origin/$OWBRANCH $OWBRANCH
                 echo "tinit.sh - end compression"
             fi
             cd $TRAVIS_BUILD_DIR
             echo_msg="tinit.sh - done"
         fi
-#    elif [ "$COVERITY_SCAN_BRANCH" = 1 ]; then
+#    elif [ "$TRAVIS_BRANCH" = "$OWBRANCH_COVERITY" ]; then
 #    else
     fi
 fi
