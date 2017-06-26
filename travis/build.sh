@@ -73,6 +73,8 @@ build_proc()
                 cd $OWSRCDIR
                 if [ "$1" = "build" ]; then
                     builder -q build
+                elif [ "$1" = "docpdf" ]; then
+                    builder build
                 else
                     builder -q $1
                 fi
