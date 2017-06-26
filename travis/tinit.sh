@@ -28,7 +28,7 @@ tinit_proc1()
             #
             # clone GitHub repository
             #
-            git clone $GITQUIET --branch=$OWBRANCH https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+            git clone $GITQUIET --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
             #
             # compress GitHub repository to hold only a few last builds
             #
@@ -39,10 +39,10 @@ tinit_proc1()
                 git checkout --orphan temp1
                 git add -A
                 git commit -am "Initial commit"
-                git branch -D $OWBRANCH
-                git branch -m $OWBRANCH
-                git push -f origin $OWBRANCH
-                git branch --set-upstream-to=origin/$OWBRANCH $OWBRANCH
+                git branch -D master
+                git branch -m master
+                git push -f origin master
+                git branch --set-upstream-to=origin/master master
                 echo "tinit.sh - end compression"
             fi
             cd $TRAVIS_BUILD_DIR

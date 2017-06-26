@@ -26,7 +26,7 @@ gitget_proc()
                 #
                 # clone GitHub repository
                 #
-                git clone $GITQUIET --branch=$OWBRANCH https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
+                git clone $GITQUIET --branch=master https://${GITHUB_TOKEN}@github.com/${OWTRAVIS_REPO_SLUG}.git $OWTRAVIS_BUILD_DIR
                 echo_msg="gitget.sh - done"
             fi
         fi
