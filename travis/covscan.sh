@@ -28,6 +28,19 @@ coverity_run_proc()
 
 coverity_upload_proc()
 {
+    RESULTS_ARCHIVE=open-watcom-v2.tgz
+    tar czf $RESULTS_ARCHIVE cov-int
+    SHA=`git rev-parse --short HEAD`
+
+    response=$(curl \
+      --silent --write-out "\n%{http_code}\n" \
+      --form project=$TRAVIS_REPO_SLUG \
+      --form token=$COVERITY_SCAN_TOKEN \
+      --form email=malak.jiri@gmail.com \
+      --form file=@$RESULTS_ARCHIVE \
+      --form version=$SHA \
+      --form description="Open Watcom V2 Travis CI build" \
+      https://scan.coverity.com/builds)
     return 0
 }
 
