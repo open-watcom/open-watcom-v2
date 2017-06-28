@@ -53,6 +53,7 @@ int main( int argc, char *argv[] )
         printf( "Usage: mkmk filename\n" );
         exit( 1 );
     }
+    PPVarInit();
     if( argv[2] != NULL ) {
         PP_PreProcChar = argv[2][0];
     }
@@ -63,5 +64,6 @@ int main( int argc, char *argv[] )
     // call PP_Define here to predefine any desired macros
     PP_Dependency_List( MkMkDependency );
     PP_Fini();
+    PPVarFini();
     return( 0 );
 }

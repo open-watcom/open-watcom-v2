@@ -1385,8 +1385,8 @@ int PP_Char( void )
     return( (unsigned char)*PPTokenPtr++ );
 }
 
-void PreprocVarInit( void )
-/*************************/
+void PPVarInit( void )
+/********************/
 {
     PP_File = NULL;
     PPStack = NULL;
@@ -1397,15 +1397,15 @@ void PreprocVarInit( void )
     PPNextTokenPtr = NULL;
     PPTokenList = NULL;
     PPCurToken = NULL;
+    PPLineBufSize = PPBUFSIZE;
     PPLineBuf = PP_Malloc( PPLineBufSize + 2 );
     memset( PPLineBuf, 0, PPLineBufSize + 2 );
     PP_PreProcChar = '#';
 }
 
-void PreprocVarFini( void )
-/*************************/
+void PPVarFini( void )
+/********************/
 {
     PP_Free( PPLineBuf );
     PPLineBuf = NULL;
-    PPLineBufSize = PPBUFSIZE;
 }

@@ -76,6 +76,7 @@ int main( int argc, char *argv[] )
         printf( "Usage: testpp filename\n" );
         exit( 1 );
     }
+    PPVarInit();
     if( argv[2] != NULL ) {
         PP_PreProcChar = argv[2][0];
     }
@@ -91,6 +92,7 @@ int main( int argc, char *argv[] )
     }
     dumpheap();
     PP_Fini();
+    PPVarFini();
     dumpheap();
     return( 0 );
 }

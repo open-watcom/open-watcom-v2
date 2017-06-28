@@ -367,6 +367,7 @@ int main( int argc, char *argv[] )
 
     rc = EXIT_FAILURE;
     if( doScanParams( argc - 1, argv + 1 ) && nofilenames != 0 ) {
+        PPVarInit();
         fo = stdout;
         if( out_filename != NULL ) {
             fo = fopen( out_filename, "wb" );
@@ -398,6 +399,7 @@ int main( int argc, char *argv[] )
         } else if( fo != NULL ) {
             fclose( fo );
         }
+        PPVarFini();
     }
 
     if( out_filename != NULL ) {

@@ -77,6 +77,7 @@ int main( int argc, char *argv[] )
         printf( "Usage: dumpmac filename\r\n" );
         exit( 1 );
     }
+    PPVarInit();
     if( argv[2] != NULL ) {
         PP_PreProcChar = argv[2][0];
     }
@@ -93,6 +94,7 @@ int main( int argc, char *argv[] )
     PP_Dump_Macros();
     dumpheap();
     PP_Fini();
+    PPVarFini();
     dumpheap();
     return( 0 );
 }
