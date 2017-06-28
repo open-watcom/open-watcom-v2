@@ -9,13 +9,14 @@
 gitupds_proc()
 {
     if [ "$OWTRAVIS_DEBUG" = "1" ]; then
+        set -x
         GITQUIET=-v
     else
         GITQUIET=--quiet
     fi
-    
+
     echo_msg="gitupds.sh - skipped"
-    
+
     if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then
             if [ "$OWTRAVISJOB" = "BUILD" ] || [ "$OWTRAVISJOB" = "DOCPDF" ]; then
@@ -55,7 +56,7 @@ gitupds_proc()
             fi
         fi
     fi
-    
+
     echo "$echo_msg"
 
     return 0

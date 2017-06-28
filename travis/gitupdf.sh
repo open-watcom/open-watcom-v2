@@ -9,13 +9,14 @@
 gitupdf_proc()
 {
     if [ "$OWTRAVIS_DEBUG" = "1" ]; then
+        set -x
         GITQUIET=-v
     else
         GITQUIET=--quiet
     fi
-    
+
     echo_msg="gitupdf.sh - skipped"
-    
+
     if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ]; then
             if [ "$OWTRAVISJOB" = "BOOTSTRAP" ] || [ "$OWTRAVISJOB" = "BUILD" ] || [ "$OWTRAVISJOB" = "DOCPDF" ]; then
@@ -55,7 +56,7 @@ gitupdf_proc()
             fi
         fi
     fi
-    
+
     echo "$echo_msg"
 
     return 0
