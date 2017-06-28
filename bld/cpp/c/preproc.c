@@ -60,33 +60,35 @@ enum cpp_types {
     PP_ELSE
 };
 
-FILELIST    *PP_File = NULL;
-CPP_INFO    *PPStack;
-int         NestLevel;
-int         SkipLevel;
-unsigned    PPLineNumber;                   // current line number
-unsigned    PPFlags;                        // pre-processor flags
-char        PP__DATE__[] = "\"Dec 31 2005\"";// value for __DATE__ macro
-char        PP__TIME__[] = "\"12:00:00\"";  // value for __TIME__ macro
-char        *PPBufPtr;                      // block buffer pointer
-const char  *PPNextTokenPtr;                // next character after token end pointer
-const char  *PPTokenPtr;                    // pointer to next char in token
-MACRO_TOKEN *PPTokenList;                   // pointer to list of tokens
-MACRO_TOKEN *PPCurToken;                    // pointer to current token
-char        PPSavedChar;                    // saved char at end of token
-char        PPLineBuf[4096 + 2];            // line buffer
-MACRO_ENTRY *PPHashTable[HASH_SIZE];
-char        PP_PreProcChar = '#';           // preprocessor line intro
+FILELIST        *PP_File = NULL;
+CPP_INFO        *PPStack;
+int             NestLevel;
+int             SkipLevel;
+unsigned        PPLineNumber;                   // current line number
+unsigned        PPFlags;                        // pre-processor flags
+char            PP__DATE__[] = "\"Dec 31 2005\"";// value for __DATE__ macro
+char            PP__TIME__[] = "\"12:00:00\"";  // value for __TIME__ macro
+char            *PPBufPtr;                      // block buffer pointer
+const char      *PPNextTokenPtr;                // next character after token end pointer
+const char      *PPTokenPtr;                    // pointer to next char in token
+MACRO_TOKEN     *PPTokenList;                   // pointer to list of tokens
+MACRO_TOKEN     *PPCurToken;                    // pointer to current token
+char            PPSavedChar;                    // saved char at end of token
+MACRO_ENTRY     *PPHashTable[HASH_SIZE];
+char            PP_PreProcChar = '#';           // preprocessor line intro
 
-pp_callback *PP_CallBack;                   // mkmk dependency callback function
+pp_callback     *PP_CallBack;                   // mkmk dependency callback function
 
-static char *IncludePath1 = NULL;           // include path from cmdl
-static char *IncludePath2 = NULL;           // include path from env
+static char     *PPLineBuf = NULL;              // line buffer
+static size_t   PPLineBufSize = PPBUFSIZE;
 
-static char *macro_buf = NULL;
-static size_t macro_buf_size = 0;
+static char     *IncludePath1 = NULL;           // include path from cmdl
+static char     *IncludePath2 = NULL;           // include path from env
 
-static char *Months[] = {
+static char     *macro_buf = NULL;
+static size_t   macro_buf_size = 0;
+
+static const char * const Months[] = {
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
@@ -482,6 +484,7 @@ static size_t PP_ReadLine( bool *line_generated )
     FILELIST            *this_file;
     size_t              len;
     unsigned char       c;
+    char                *p;
 
     if( PP_File == NULL ) {     // if end of main file
         return( 0 );            // - indicate EOF
@@ -539,6 +542,13 @@ static size_t PP_ReadLine( bool *line_generated )
         if( PPLineBuf[len - 1] != '\\' )
             break;
         --len;
+        if( PPLineBufSize - len < PPBUFSIZE ) {
+            PPLineBufSize *= 2;
+            p = PP_Malloc( PPLineBufSize + 2 );
+            memcpy( p, PPLineBuf, len );
+            PP_Free( PPLineBuf );
+            PPLineBuf = p;
+        } 
     }
     PPLineBuf[len++] = '\n';
     PPLineBuf[len++] = '\0';
@@ -1375,8 +1385,8 @@ int PP_Char( void )
     return( (unsigned char)*PPTokenPtr++ );
 }
 
-extern void PreprocVarInit( void )
-/********************************/
+void PreprocVarInit( void )
+/*************************/
 {
     PP_File = NULL;
     PPStack = NULL;
@@ -1387,6 +1397,15 @@ extern void PreprocVarInit( void )
     PPNextTokenPtr = NULL;
     PPTokenList = NULL;
     PPCurToken = NULL;
-    memset( PPLineBuf, 0, sizeof( PPLineBuf ) );
+    PPLineBuf = PP_Malloc( PPLineBufSize + 2 );
+    memset( PPLineBuf, 0, PPLineBufSize + 2 );
     PP_PreProcChar = '#';
+}
+
+void PreprocVarFini( void )
+/*************************/
+{
+    PP_Free( PPLineBuf );
+    PPLineBuf = NULL;
+    PPLineBufSize = PPBUFSIZE;
 }

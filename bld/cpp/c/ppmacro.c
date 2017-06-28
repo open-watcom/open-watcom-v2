@@ -879,3 +879,8 @@ void PPMacroVarInit( void )
     NestedMacros = NULL;
     MacroDepth = 0;
 }
+
+void PPMacroVarFini( void )
+/*************************/
+{
+}

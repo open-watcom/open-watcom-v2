@@ -37,6 +37,8 @@ static void MkMkDependency( const char *filename, size_t len, const char *fullna
 {
     char    *fmt;
 
+    /* unused parameters */ (void)len;
+
     if( incl_type == PPINCLUDE_SYS ) {
         fmt = "#include <%s>  ==> <%s>\n";
     } else {

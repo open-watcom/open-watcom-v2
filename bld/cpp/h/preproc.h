@@ -153,7 +153,9 @@ extern  void        PP_OutOfMemory(void);
 extern  const char  *PP_GetEnv( const char *__name );
 
 extern  void        PreprocVarInit( void );
+extern  void        PreprocVarFini( void );
 extern  void        PPMacroVarInit( void );
+extern  void        PPMacroVarFini( void );
 
 extern  FILELIST    *PP_File;
 extern  unsigned    PPLineNumber;
