@@ -75,7 +75,7 @@ void InitGlobs( void )
     DbtableInitStatics();
     LoadstrInitStatics();
     WriteInitStatics();
-    PreprocVarInit();
+    PPVarInit();
     PPMacroVarInit();
     PP_IncludePathInit();
     ParseInitStaticsWIN();
@@ -87,6 +87,8 @@ void FiniGlobs( void )
 {
     FreeCharTable();
     ScanParamShutdown();
+    PPMacroVarFini();
+    PPVarFini();
 }
 
 static bool CreatePreprocFile( void )
