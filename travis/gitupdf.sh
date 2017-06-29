@@ -34,10 +34,10 @@ gitupdf_proc()
                 # copy build log files to git repository tree
                 #
                 if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-                    test -d $OWTRAVIS_BUILD_DIR/bld/osx || mkdir -p $OWTRAVIS_BUILD_DIR/logs/osx
+                    test -d $OWTRAVIS_BUILD_DIR/logs/osx || mkdir -p $OWTRAVIS_BUILD_DIR/logs/osx
                     cp $TRAVIS_BUILD_DIR/bld/*.log $OWTRAVIS_BUILD_DIR/logs/osx/
                 else
-                    test -d $OWTRAVIS_BUILD_DIR/bld/linux || mkdir -p $OWTRAVIS_BUILD_DIR/logs/linux
+                    test -d $OWTRAVIS_BUILD_DIR/logs/linux || mkdir -p $OWTRAVIS_BUILD_DIR/logs/linux
                     cp $TRAVIS_BUILD_DIR/bld/*.log $OWTRAVIS_BUILD_DIR/logs/linux/
                 fi
                 #
