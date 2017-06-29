@@ -75,8 +75,6 @@ void InitGlobs( void )
     DbtableInitStatics();
     LoadstrInitStatics();
     WriteInitStatics();
-    PPVarInit();
-    PPMacroVarInit();
     PP_IncludePathInit();
     ParseInitStaticsWIN();
     ParseInitStaticsOS2();
@@ -87,8 +85,6 @@ void FiniGlobs( void )
 {
     FreeCharTable();
     ScanParamShutdown();
-    PPMacroVarFini();
-    PPVarFini();
 }
 
 static bool CreatePreprocFile( void )
@@ -120,6 +116,7 @@ static bool Pass1( void )
 {
     bool    noerror;
 
+    PP_Init( '#' );
     noerror = RcPass1IoInit();
     if( noerror ) {
         if( !CmdLineParms.PreprocessOnly ) {
@@ -134,10 +131,11 @@ static bool Pass1( void )
         } else {
             CreatePreprocFile();
         }
-        PP_Fini();
+        PP_FileFini();
         RcPass1IoShutdown();
         noerror = !ErrorHasOccured;
     }
+    PP_Fini();
     return( noerror );
 }
 

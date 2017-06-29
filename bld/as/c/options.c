@@ -176,7 +176,7 @@ extern bool OptionsInit( int argc, char **argv ) {
                 if( *s == '=' )
                     ++s;
                 if( *s != '\0' ) {
-                    PP_AddIncludePath( s );
+                    PP_IncludePathAdd( s );
                 }
                 break;
             case 'o':

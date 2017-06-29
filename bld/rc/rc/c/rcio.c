@@ -142,7 +142,7 @@ static bool Pass1InitRes( void )
 
 int RcFindResource( const char *name, char *fullpath )
 {
-    return( PP_FindInclude( name, strlen( name ), fullpath, PPINCLUDE_SRC ) );
+    return( PP_IncludePathFind( name, strlen( name ), fullpath, PPINCLUDE_SRC ) );
 }
 
 
@@ -217,7 +217,7 @@ static bool PreprocessInputFile( void )
     if( CmdLineParms.IgnoreCWD ) {
         flags |= PPFLAG_IGNORE_CWD;
     }
-    rc = PP_Init2( CmdLineParms.InFileName, flags, NULL, CharSetLen );
+    rc = PP_FileInit2( CmdLineParms.InFileName, flags, NULL, CharSetLen );
     if( rc != 0 ) {
         RcError( ERR_CANT_OPEN_FILE, CmdLineParms.InFileName, strerror(errno) );
         return( true );
@@ -271,11 +271,11 @@ extern bool RcPass1IoInit( void )
             includepath = RcGetEnv( "OS2_INCLUDE" );
         }
         if( includepath != NULL ) {
-            PP_AddIncludePath( includepath );
+            PP_IncludePathAdd( includepath );
         }
         includepath = RcGetEnv( "INCLUDE" );
         if( includepath != NULL ) {
-            PP_AddIncludePath( includepath );
+            PP_IncludePathAdd( includepath );
         }
     }
     if( !CmdLineParms.NoPreprocess ) {
@@ -292,7 +292,7 @@ extern bool RcPass1IoInit( void )
         error = Pass1InitRes();
     }
     if( error )  {
-        PP_Fini();
+        PP_FileFini();
         RcIoTextInputShutdown();
         return( false );
     }

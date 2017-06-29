@@ -204,6 +204,7 @@ extern void RcFatalError( unsigned int errornum, ... )
 #if !defined( WRDLL )
     CloseAllFiles();
 #endif
+    PP_FileFini();
     PP_Fini();
     RCSuicide( -1 );
 }

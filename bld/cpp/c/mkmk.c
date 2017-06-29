@@ -30,12 +30,12 @@
 ****************************************************************************/
 
 
-#include "preproc.h"
+#include "_preproc.h"
 
 
 static void MkMkDependency( const char *filename, size_t len, const char *fullname, int incl_type )
 {
-    char    *fmt;
+    const char  *fmt;
 
     /* unused parameters */ (void)len;
 
@@ -53,17 +53,15 @@ int main( int argc, char *argv[] )
         printf( "Usage: mkmk filename\n" );
         exit( 1 );
     }
-    PPVarInit();
-    if( argv[2] != NULL ) {
-        PP_PreProcChar = argv[2][0];
-    }
-    if( PP_Init( argv[1], PPFLAG_DEPENDENCIES, NULL ) != 0 ) {
+    PP_Init( ( argv[2] != NULL ) ? argv[2][0] : '#' );
+    if( PP_FileInit( argv[1], PPFLAG_DEPENDENCIES, NULL ) != 0 ) {
+        PP_Fini();
         printf( "Unable to open '%s'\n", argv[1] );
         exit( 1 );
     }
     // call PP_Define here to predefine any desired macros
     PP_Dependency_List( MkMkDependency );
+    PP_FileFini();
     PP_Fini();
-    PPVarFini();
     return( 0 );
 }
