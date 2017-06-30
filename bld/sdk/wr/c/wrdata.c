@@ -38,7 +38,6 @@
 #include <io.h>
 #include <limits.h>
 #include <string.h>
-#include "watcom.h"
 #include "wrglbl.h"
 #include "wrmsg.h"
 #include "wresall.h"

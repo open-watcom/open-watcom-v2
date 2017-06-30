@@ -30,7 +30,6 @@
 
 
 #include <wwindows.h>
-#include "watcom.h"
 #include "wrglbl.h"
 #include "wrlist.h"
 #include "wrdmsgi.h"

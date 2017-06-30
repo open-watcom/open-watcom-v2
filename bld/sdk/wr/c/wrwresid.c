@@ -32,8 +32,6 @@
 
 #include <wwindows.h>
 #include <string.h>
-
-#include "watcom.h"
 #include "wrglbl.h"
 #include "wresall.h"
 

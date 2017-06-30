@@ -34,7 +34,6 @@
 #include "commonui.h"
 #include <stdio.h>
 #include <string.h>
-#include "watcom.h"
 #include "wrglbl.h"
 #include "wrstrdup.h"
 #include "wrmsg.h"

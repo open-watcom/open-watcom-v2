@@ -37,7 +37,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include "watcom.h"
 #include "wrglbl.h"
 #include "wrmaini.h"
 #include "wrstrdup.h"

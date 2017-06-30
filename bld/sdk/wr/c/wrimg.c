@@ -37,7 +37,6 @@
 #include <io.h>
 #include <stdlib.h>
 #include <string.h>
-#include "watcom.h"
 #include "wrglbl.h"
 #include "wrimg.h"
 #include "wrmsg.h"

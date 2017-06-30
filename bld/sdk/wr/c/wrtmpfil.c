@@ -39,7 +39,6 @@
 #include <direct.h>
 #include <errno.h>
 #include "wio.h"
-#include "watcom.h"
 #include "wrglbl.h"
 #include "wrmsg.h"
 #include "wrmemi.h"

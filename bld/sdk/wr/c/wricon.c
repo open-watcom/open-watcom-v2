@@ -32,8 +32,6 @@
 #include <wwindows.h>
 #include <string.h>
 #include <limits.h>
-
-#include "watcom.h"
 #include "wrglbl.h"
 #include "wresdefn.h"
 
