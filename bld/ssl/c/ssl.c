@@ -130,12 +130,12 @@ static void Usage( void )
     Error( "Usage: ssl {-(v|c)} filename[.ssl] [out_file]" );
 }
 
-void UngetChar( int c )
+static void UngetChar( int c )
 {
     SavedChar = c;
 }
 
-int NextChar( void )
+static int NextChar( void )
 {
     int next;
 

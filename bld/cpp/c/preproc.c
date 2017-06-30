@@ -61,26 +61,27 @@ enum cpp_types {
 };
 
 FILELIST            *PP_File = NULL;
-CPP_INFO            *PPStack;
-int                 NestLevel;
-int                 SkipLevel;
 unsigned            PPLineNumber;                   // current line number
 pp_flags            PPFlags;                        // pre-processor flags
 char                PP__DATE__[14];                 // value for __DATE__ macro
 char                PP__TIME__[11];                 // value for __TIME__ macro
-const char          *PPBufPtr;                      // block buffer pointer
 const char          *PPNextTokenPtr;                // next character after token end pointer
 const char          *PPTokenPtr;                    // pointer to next char in token
 MACRO_TOKEN         *PPTokenList;                   // pointer to list of tokens
 MACRO_TOKEN         *PPCurToken;                    // pointer to current token
 char                PPSavedChar;                    // saved char at end of token
 
-pp_callback         *PP_CallBack;                   // mkmk dependency callback function
+static pp_callback  *PP_CallBack;                   // mkmk dependency callback function
+
+static CPP_INFO     *PPStack;
+static int          NestLevel;
+static int          SkipLevel;
 
 static MACRO_ENTRY  *PPHashTable[HASH_SIZE];
 
 static char         PPPreProcChar;                  // preprocessor line intro
 
+static const char   *PPBufPtr;                      // block buffer pointer
 static char         *PPLineBuf;                     // line buffer
 static size_t       PPLineBufSize;                  // line buffer size
 
@@ -469,24 +470,31 @@ void PPENTRY PP_FileFini( void )
     PP_Free( IncludePath2 );
 }
 
-static size_t PP_ReadBuf( void )
+static size_t PP_ReadBuf( size_t line_len )
 {
     size_t      len;
     FILELIST    *this_file;
+    char        *p;
 
     this_file = PP_File;
     len = fread( this_file->buffer, 1, PPBUFSIZE, this_file->handle );
     this_file->buffer[len] = '\0';
     PPBufPtr = this_file->buffer;
+    if( PPLineBufSize < line_len + len ) {
+        PPLineBufSize *= 2;
+        p = PP_Malloc( PPLineBufSize + 2 );
+        memcpy( p, PPLineBuf, line_len );
+        PP_Free( PPLineBuf );
+        PPLineBuf = p;
+    } 
     return( len );
 }
 
 static size_t PP_ReadLine( bool *line_generated )
 {
     FILELIST            *this_file;
-    size_t              len;
+    size_t              line_len;
     unsigned char       c;
-    char                *p;
 
     if( PP_File == NULL ) {     // if end of main file
         return( 0 );            // - indicate EOF
@@ -495,14 +503,14 @@ static size_t PP_ReadLine( bool *line_generated )
     PPLineBuf[0] = '\0';
     PPNextTokenPtr = PPLineBuf + 1;
     *line_generated = false;
-    len = 1;
+    line_len = 1;
     for( ;; ) {
         for( ;; ) {
             for( ;; ) {
                 c = *PPBufPtr;
                 if( c == DOS_EOF_CHAR ) {               // 17-oct-94
                     c = '\n';
-                    if( len != 1 )
+                    if( line_len != 1 )
                         break;
                     c = DOS_EOF_CHAR;
                 } else {
@@ -511,10 +519,10 @@ static size_t PP_ReadLine( bool *line_generated )
                         break;
                     }
                 }
-                if( c == DOS_EOF_CHAR || (PP_ReadBuf() == 0) ) {
+                if( c == DOS_EOF_CHAR || ( PP_ReadBuf( line_len ) == 0 ) ) {
                     // if the last line of a file does not end with a carriage
                     // return then still return what is on that line
-                    if( len > 1 ) {
+                    if( line_len > 1 ) {
                         c = '\n';
                         break;
                     }
@@ -529,33 +537,26 @@ static size_t PP_ReadLine( bool *line_generated )
                     }
                     PP_GenLine();
                     *line_generated = true;
-                    len = strlen( PPNextTokenPtr );
-                    return( len );
+                    line_len = strlen( PPNextTokenPtr );
+                    return( line_len );
                 }
             }
-            PPLineBuf[len] = c;
+            PPLineBuf[line_len] = c;
             if( c == '\n' )
                 break;
-            ++len;
+            ++line_len;
         }
         PP_File->linenum++;
-        if( PPLineBuf[len - 1] == '\r' )
-            --len;
-        if( PPLineBuf[len - 1] != '\\' )
+        if( PPLineBuf[line_len - 1] == '\r' )
+            --line_len;
+        if( PPLineBuf[line_len - 1] != '\\' )
             break;
-        --len;
-        if( PPLineBufSize - len < PPBUFSIZE ) {
-            PPLineBufSize *= 2;
-            p = PP_Malloc( PPLineBufSize + 2 );
-            memcpy( p, PPLineBuf, len );
-            PP_Free( PPLineBuf );
-            PPLineBuf = p;
-        } 
+        --line_len;
     }
-    PPLineBuf[len++] = '\n';
-    PPLineBuf[len++] = '\0';
+    PPLineBuf[line_len++] = '\n';
+    PPLineBuf[line_len++] = '\0';
     PPNextTokenPtr = PPLineBuf + 1;
-    return( len );
+    return( line_len );
 }
 
 #define _rotl( a, b )   ( ( a << b ) | ( a >> ( 16 - b ) ) )
@@ -1098,7 +1099,7 @@ static int PP_Read( void )
     if( PP_ReadLine( &line_generated ) == 0 )
         return( 0 );
     // don't look for preprocessor directives inside multi-line comments
-    if( !line_generated && !(PPFlags & PPFLAG_SKIP_COMMENT) ) {
+    if( !line_generated && (PPFlags & PPFLAG_SKIP_COMMENT) == 0 ) {
         p = PP_SkipSpace( PPNextTokenPtr, &white_space );
         if( *p == PPPreProcChar ) {
             if( PP_Sharp( p + 1 ) ) {       // if recognized

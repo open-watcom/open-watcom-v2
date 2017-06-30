@@ -57,12 +57,12 @@ typedef struct {
 /****************************************************************************/
 static jmp_buf SymEnv;
 
-void PP_OutOfMemory( void )
+void PPENTRY PP_OutOfMemory( void )
 {
     longjmp( SymEnv, 1 );
 }
 
-void *PP_Malloc( size_t size )
+void * PPENTRY PP_Malloc( size_t size )
 {
     void        *p;
 
@@ -73,7 +73,7 @@ void *PP_Malloc( size_t size )
     return( p );
 }
 
-void PP_Free( void *p )
+void PPENTRY PP_Free( void *p )
 {
     WRMemFree( p );
 }

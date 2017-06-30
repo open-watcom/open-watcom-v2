@@ -95,6 +95,35 @@ extern char     *WdeWriteHeaderTitle;
 /****************************************************************************/
 static char  WdeBusyChars[]         = "-\\|/";
 
+static jmp_buf Env;
+
+
+void PPENTRY PP_OutOfMemory( void )
+{
+    if( WdePopEnv( &Env ) ) {
+        longjmp( Env, 1 );
+    } else {
+        WdeWriteTrail( "Wde PreProc: Fatal error!" );
+        exit( -1 );
+    }
+}
+
+void * PPENTRY PP_Malloc( size_t size )
+{
+    void        *p;
+
+    p = WRMemAlloc( size );
+    if( p == NULL ) {
+        PP_OutOfMemory();
+    }
+    return( p );
+}
+
+void PPENTRY PP_Free( void *p )
+{
+    WRMemFree( p );
+}
+
 static bool WdeViewSymbols( WdeHashTable **table, HWND parent )
 {
     WRHashEntryFlags    flags;

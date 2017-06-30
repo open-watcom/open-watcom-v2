@@ -35,20 +35,20 @@
 #include "rcrtns.h"
 #include "preproc.h"
 
-void *PP_Malloc( size_t size )
-/****************************/
+void * PPENTRY PP_Malloc( size_t size )
+/*************************************/
 {
     return( RESALLOC( size ) );
 }
 
-void PP_Free( void *p )
-/*********************/
+void PPENTRY PP_Free( void *p )
+/*****************************/
 {
     RESFREE( p );
 }
 
-void PP_OutOfMemory( void )
-/*************************/
+void PPENTRY PP_OutOfMemory( void )
+/*********************************/
 {
     RcFatalError( ERR_OUT_OF_MEMORY );
 }

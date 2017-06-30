@@ -36,9 +36,6 @@
 #define PPINCLUDE_SYS       1
 #define PPINCLUDE_SRC       2
 
-#define PPTYPE_SIGNED       0
-#define PPTYPE_UNSIGNED     1
-
 typedef enum {
     PPFLAG_PREPROCESSING    = 0x0001,
     PPFLAG_EMIT_LINE        = 0x0002,
@@ -66,6 +63,9 @@ typedef struct macro_entry {
     char                name[1];
 } MACRO_ENTRY;
 
+#define PPTYPE_SIGNED       0
+#define PPTYPE_UNSIGNED     1
+
 typedef struct preproc_value {
     int                 type;   // PPTYPE_SIGNED or PPTYPE_UNSIGNED
     union {
@@ -89,8 +89,9 @@ extern  int         PPENTRY PP_Char( void );
 extern  void        PPENTRY PP_Define( const char *p );
 extern  void        PPENTRY PP_MacrosWalk( walk_func fn, void *cookie );
 
-extern  const char  * PPENTRY PP_GetEnv( const char *__name );
+// Application defined functions
 
+extern  const char  * PPENTRY PP_GetEnv( const char *__name );
 extern  void        * PPENTRY PP_Malloc( size_t __size );
 extern  void        PPENTRY PP_Free( void *__ptr );
 extern  void        PPENTRY PP_OutOfMemory( void );

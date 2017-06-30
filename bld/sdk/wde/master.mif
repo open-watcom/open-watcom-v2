@@ -50,6 +50,8 @@ extra_c_flags_ppexpr = -zm -fh=preproc.pch
 extra_c_flags_ppmacro = -zm -fh=preproc.pch
 !endif
 
+cpp_objs = preproc.obj ppexpr.obj ppmacro.obj ppenv.obj
+
 objs =  wde_wres.obj wdealign.obj wdecsize.obj wdecust.obj  wdedebug.obj &
         wdedefin.obj wdeedit.obj  wdefbase.obj wdefbutt.obj wdefcbox.obj &
         wdefcntl.obj wdefcust.obj wdefdiag.obj wdefdlg.obj  wdefedit.obj &
@@ -61,15 +63,14 @@ objs =  wde_wres.obj wdealign.obj wdecsize.obj wdecust.obj  wdedebug.obj &
         wdestat.obj  wdestyle.obj &
         wdesym.obj   wdetest.obj  &
         wdetfile.obj wdetoolb.obj &
-        wdeppmem.obj wdemem.obj wdewait.obj wdedefsz.obj wdetxtsz.obj &
+        wdemem.obj wdewait.obj wdedefsz.obj wdetxtsz.obj &
         wdetmenu.obj wdectool.obj wdezordr.obj wderibbn.obj &
         wdeselft.obj wdei2mem.obj wdeldres.obj wdesvres.obj wdesvobj.obj &
         wdestken.obj wdectl3d.obj wdesvdlg.obj wdedde.obj &
         wdeclear.obj wdecurr.obj wdegoto.obj &
         wdefsbar.obj wdeflvw.obj wdeftvw.obj wdefhdr.obj wdeftabc.obj &
         wdefani.obj wdefupdn.obj wdeftrak.obj wdefprog.obj wdefhtky.obj &
-        windlg.obj windlg32.obj &
-        preproc.obj ppexpr.obj ppmacro.obj ppenv.obj pathlist.obj
+        windlg.obj windlg32.obj pathlist.obj $(cpp_objs)
 
 objs_win = wdedispa.obj
 
