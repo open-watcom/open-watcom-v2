@@ -33,6 +33,8 @@
 #define _LOG_H_INCLUDED
 
 #include <stdio.h>
+#include "logi.h"
+
 
 #define LOG_ACTION_TRUNC                1
 #define LOG_ACTION_APPEND               2
@@ -65,30 +67,6 @@ typedef struct loginfo {
 } LogInfo;
 
 #define NO_BUF_LINES                    100
-
-/* Constants for log exists dialog */
-#define LOG_TEXT                        101
-#define LOG_APPEND                      102
-#define LOG_REPLACE                     103
-#define LOG_CANCEL                      IDCANCEL
-
-/* Constants for the configure log dialog */
-#define LOG_CFG_GROUP               201
-#define LOG_CFG_CONT                202
-#define LOG_CFG_PERIODIC            203
-#define LOG_CFG_NAME_GROUP          204
-#define LOG_CFG_QUERY_NAME          205
-#define LOG_CFG_USE_NAME            206
-#define LOG_CFG_ACTION_GROUP        207
-#define LOG_CFG_REPLACE             208
-#define LOG_CFG_APPEND              209
-#define LOG_CFG_QUERY               210
-#define LOG_CFG_OK                  IDOK
-#define LOG_CFG_CANCEL              IDCANCEL
-#define LOG_CFG_TYPE_GROUP          213
-#define LOG_CFG_LNAME_GROUP         214
-#define LOG_CFG_NAME_EDIT           215
-#define LOG_CFG_BROWSE              216
 
 void    LogInit( HWND hwnd, HANDLE inst, void (*writefn)( FILE * ) );
 bool    SpyLogOpen( void );

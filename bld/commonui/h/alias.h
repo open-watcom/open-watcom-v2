@@ -32,10 +32,7 @@
 #ifndef _ALIAS_H_INCLUDED
 #define _ALIAS_H_INCLUDED
 
-#define ALIAS_TEXT                  102
-#define ALIAS_DO_MORE               108
-#define ALIAS_CUR_ID                103
-#define ALIAS_ID_LIST               105
+#include "aliasi.h"
 
 typedef struct analias {
     unsigned long       id;
