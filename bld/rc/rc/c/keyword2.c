@@ -119,7 +119,7 @@ static const unsigned char Weights[] = {
 };
 
 typedef struct HashEntry {
-    char        *keyword;
+    const char  *keyword;
     YYTOKENTYPE token;
 } HashEntry;
 
