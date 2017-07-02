@@ -39,10 +39,10 @@
 #ifdef __WINDOWS__
 typedef struct
 {
-    LPARAM      lParam;
-    WPARAM      wParam;
-    UINT        wMsg;
-    HWND        hWnd;
+    LPARAM  lParam;
+    WPARAM  wParam;
+    UINT    message;
+    HWND    hwnd;
 } CWPSTRUCT;
 typedef CWPSTRUCT FAR *LPCWPSTRUCT;
 #endif
@@ -129,10 +129,10 @@ LRESULT CALLBACK CallWndProcFilter( int ncode, WPARAM wparam, LPARAM lparam )
 
     if( ncode >= 0 ) {
         pcm = (LPCWPSTRUCT)lparam;
-        msg.hwnd = pcm->hWnd;
+        msg.hwnd = pcm->hwnd;
         msg.lParam = pcm->lParam;
         msg.wParam = pcm->wParam;
-        msg.message = pcm->wMsg;
+        msg.message = pcm->message;
         dll_HandleMessage( &msg );
     }
     return( CallNextHookEx( callHookHandle, ncode, wparam, lparam ) );
