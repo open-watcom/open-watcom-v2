@@ -185,6 +185,7 @@ typedef struct {
 extern char             *SpyName;
 extern char             *TitleBar;
 extern char             *TitleBarULine;
+extern size_t           TitleBarLen;
 extern spystate         SpyState;
 extern char             _NEAR SpyPickClass[];
 extern HWND             SpyListBox;
