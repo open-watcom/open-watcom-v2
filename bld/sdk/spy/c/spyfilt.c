@@ -36,7 +36,7 @@
 /*
  * HandleMessage
  */
-void FAR HandleMessage( LPMSG pmsg )
+WINEXPORT void CALLBACK HandleMessage( LPMSG pmsg )
 {
     static char msg[80];
     static char class_name[80];

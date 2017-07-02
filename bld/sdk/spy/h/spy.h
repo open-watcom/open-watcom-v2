@@ -231,7 +231,7 @@ extern void DoSaveSpyConfig( void );
 extern void DoLoadSpyConfig( void );
 
 /* spyfilt.c */
-extern void FAR HandleMessage( LPMSG pmsg );
+WINEXPORT extern void CALLBACK HandleMessage( LPMSG pmsg );
 
 /* spymdlgs.c */
 extern void DoMessageDialog( HWND hwnd, ctl_id id );

@@ -36,14 +36,16 @@
 #include "spydll.h"
 #include "dllmain.h"
 
+#ifdef __WINDOWS__
 typedef struct
 {
     LPARAM      lParam;
     WPARAM      wParam;
     UINT        wMsg;
     HWND        hWnd;
-} callstruct;
-typedef callstruct FAR *LPCALLMSG;
+} CWPSTRUCT;
+typedef CWPSTRUCT FAR *LPCWPSTRUCT;
+#endif
 
 SPYDLLENTRY LRESULT CALLBACK CallWndProcFilter( int ncode, WPARAM wparam, LPARAM lparam );
 SPYDLLENTRY LRESULT CALLBACK GetMessageFilter( int ncode, WPARAM wparam, LPARAM lparam );
@@ -53,7 +55,7 @@ static BOOL             isFiltering = FALSE;
 static HINSTANCE        dllInstance;
 
 #ifndef __NT__
-void (FAR *HandleMessage)( LPMSG pmsg );
+void (CALLBACK *dll_HandleMessage)( LPMSG pmsg );
 #else
 static HWND             spyHwnd;
 static HWND             spyLBHwnd;
@@ -68,9 +70,9 @@ static void findSpyHwnd( void )
 }
 
 /*
- * HandleMessage - send info back to spy for the NT version ONLY
+ * dll_HandleMessage - send info back to spy for the NT version ONLY
  */
-static void HandleMessage( MSG *data )
+static void dll_HandleMessage( LPMSG data )
 {
     COPYDATASTRUCT      info;
 
@@ -123,15 +125,15 @@ int WINAPI WEP( int res )
 LRESULT CALLBACK CallWndProcFilter( int ncode, WPARAM wparam, LPARAM lparam )
 {
     MSG         msg;
-    LPCALLMSG   pcm;
+    LPCWPSTRUCT pcm;
 
     if( ncode >= 0 ) {
-        pcm = (LPCALLMSG)lparam;
+        pcm = (LPCWPSTRUCT)lparam;
         msg.hwnd = pcm->hWnd;
         msg.lParam = pcm->lParam;
         msg.wParam = pcm->wParam;
         msg.message = pcm->wMsg;
-        HandleMessage( &msg );
+        dll_HandleMessage( &msg );
     }
     return( CallNextHookEx( callHookHandle, ncode, wparam, lparam ) );
 
@@ -143,7 +145,7 @@ LRESULT CALLBACK CallWndProcFilter( int ncode, WPARAM wparam, LPARAM lparam )
 LRESULT CALLBACK GetMessageFilter( int ncode, WPARAM wparam, LPARAM lparam )
 {
     if( ncode >= 0 ) {
-        HandleMessage( (LPMSG)lparam );
+        dll_HandleMessage( (LPMSG)lparam );
     }
     return( CallNextHookEx( getHookHandle, ncode, wparam, lparam ) );
 
@@ -157,7 +159,7 @@ void CALLBACK SetFilter( LPVOID hdlmsg )
 #ifdef __NT__
     hdlmsg = hdlmsg;
 #else
-    HandleMessage = hdlmsg;
+    dll_HandleMessage = hdlmsg;
 #endif
 
     if( !isFiltering ) {
