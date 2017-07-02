@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,17 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  Spy peek at window dialog identifers.
+* Description:  Header file for the spy recources ID's.
 *
 ****************************************************************************/
 
 
-#define PEEKMSG_HWND                102
-#define PEEKMSG_TITLE               103
-#define PEEKMSG_CLASS               104
-#define PEEKMSG_PARENT              105
-#define PEEKMSG_STYLE               106
-#define PEEKMSG_SIZE                108
-#define PEEKMSG_STYLECLASS          101
-#define PEEKMSG_STYLECB             107
-#define PEEKMSG_STYLECLASSCB        110
+#include "rcstr.gh"
+#include "uistr.gh"
+
+#include "msgs.h"
+#include "spymsgs.h"
+#include "msgsel.h"
+#include "selwin.h"
+#include "winpick.h"
+#include "spymenu.h"
+#include "peekmsg.h"

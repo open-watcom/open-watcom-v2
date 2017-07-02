@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,14 +30,13 @@
 ****************************************************************************/
 
 
-#include "bool.h"
 #include "spy.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include "spydll.h"
 #include "mark.h"
 #include "aboutdlg.h"
 #include "wwinhelp.h"
+#include "log.h"
+
 
 static BOOL     spyAll;
 static WORD     statusHite = 25;
@@ -133,10 +132,10 @@ static void setSingleWindow( HWND hwnd, HWND selwin )
     tmp[len] = 0;
     if( len == 0 ) {
         fmtstr = GetRCString( STR_1_WIN_TITLE );
-        sprintf( str, fmtstr, SpyName, UINT_STR_LEN, (UINT)(pointer_int)selwin );
+        sprintf( str, fmtstr, SpyName, UINT_STR_LEN, (UINT)(ULONG_PTR)selwin );
     } else {
         fmtstr = GetRCString( STR_1_NAMED_WIN_TITLE );
-        sprintf( str, fmtstr, SpyName, UINT_STR_LEN, (UINT)(pointer_int)selwin, tmp );
+        sprintf( str, fmtstr, SpyName, UINT_STR_LEN, (UINT)(ULONG_PTR)selwin, tmp );
     }
     SetWindowText( hwnd, str );
 
@@ -164,8 +163,8 @@ static void SaveExtra( FILE *f )
  *                to make it so long that the pause is too obvious to the
  *                user
  */
-static void setUpForPick( HWND hwnd, UINT_PTR timerid ) {
-
+static void setUpForPick( HWND hwnd, UINT_PTR timerid )
+{
 #ifdef __WINDOWS__
     SendMessage( hwnd, WM_TIMER, timerid, 0 );
 #else
@@ -174,8 +173,8 @@ static void setUpForPick( HWND hwnd, UINT_PTR timerid ) {
 #endif
 }
 
-static void doSpyAll( HWND hwnd, BOOL state ) {
-
+static void doSpyAll( HWND hwnd, BOOL state )
+{
     const char  *rcstr;
     char        tmp[32];
 
@@ -197,8 +196,8 @@ static void doSpyAll( HWND hwnd, BOOL state ) {
     }
 }
 
-static void showHintBar( HWND hwnd ) {
-
+static void showHintBar( HWND hwnd )
+{
     RECT        area;
     HWND        statushwnd;
 
@@ -233,7 +232,7 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     about_info  ai;
     HMENU       mh;
 
-    switch ( msg ) {
+    switch( msg ) {
     case WM_CREATE:
         GetClientRect( hwnd, &area );
         mh = GetMenu( hwnd );

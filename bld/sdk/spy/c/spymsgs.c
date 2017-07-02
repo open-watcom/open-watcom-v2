@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,9 +31,8 @@
 
 
 #include "spy.h"
-#include <stdio.h>
-#include <string.h>
 #include <dde.h>
+
 
 static message *userMsg;
 
@@ -41,8 +41,8 @@ static message *userMsg;
  */
 message *GetMessageDataFromID( int msgid, char *class_name )
 {
-    int i;
-    int j;
+    WORD    i;
+    WORD    j;
 
     for( i = 0; i < ClassMessagesSize; i++ ) {
         if( i == 0 || stricmp( class_name, ClassMessages[i].class_name ) == 0 ) {
@@ -69,41 +69,38 @@ void ProcessIncomingMessage( int msgid, char *class_name, char *res )
     res[0] = 0;
     msg = GetMessageDataFromID( msgid, class_name );
     if( msg != NULL ) {
-        if( msg->bits[M_WATCH] ) {
+        if( msg->watch ) {
             strcpy( res, msg->str );
         }
-        if( msg->bits[M_STOPON] ) {
+        if( msg->stopon ) {
             SetSpyState( OFF );
             RCsprintf( buf, STR_SPYING_STOPPED, msg->str );
-            MessageBox( SpyMainWindow, buf, SpyName,
-                        MB_OK | MB_ICONINFORMATION );
+            MessageBox( SpyMainWindow, buf, SpyName, MB_OK | MB_ICONINFORMATION );
         }
         msg->count++;
     } else if( msgid > WM_USER ) {
         userMsg->count++;
-        if( userMsg->bits[M_WATCH] ) {
+        if( userMsg->watch ) {
             fmtstr = GetRCString( STR_WM_USER_PLUS );
             sprintf( res, fmtstr, msgid - WM_USER );
         }
-        if( userMsg->bits[M_STOPON] ) {
+        if( userMsg->stopon ) {
             SetSpyState( OFF );
             fmtstr = GetRCString( STR_WM_USER_PLUS );
             sprintf( res, fmtstr, msgid - WM_USER );
             RCsprintf( buf, STR_SPYING_STOPPED, res );
-            MessageBox( SpyMainWindow, buf, SpyName,
-                        MB_OK | MB_ICONINFORMATION );
+            MessageBox( SpyMainWindow, buf, SpyName, MB_OK | MB_ICONINFORMATION );
         }
     } else {
-        if( Filters[MC_UNKNOWN].flag[M_WATCH] ) {
+        if( Filters[MC_UNKNOWN].watch ) {
             fmtstr = GetRCString( STR_UNKNOWN_MSG );
             sprintf( res, fmtstr, msgid );
         }
-        if( Filters[MC_UNKNOWN].flag[M_STOPON] ) {
+        if( Filters[MC_UNKNOWN].stopon ) {
             SetSpyState( OFF );
             fmtstr = GetRCString( STR_UNKNOWN_MSG );
             RCsprintf( buf, STR_SPYING_STOPPED, res );
-            MessageBox( SpyMainWindow, buf, SpyName,
-                        MB_OK | MB_ICONINFORMATION );
+            MessageBox( SpyMainWindow, buf, SpyName, MB_OK | MB_ICONINFORMATION );
         }
     }
 
@@ -113,14 +110,18 @@ void ProcessIncomingMessage( int msgid, char *class_name, char *res )
 /*
  * SetFilterMsgs
  */
-void SetFilterMsgs( MsgClass type, bool val, int bit )
+void SetFilterMsgs( MsgClass type, bool val, bool is_watch )
 {
-    int i, j;
+    WORD    i, j;
 
     for( i = 0; i < ClassMessagesSize; i++ ) {
         for( j = 0; j < ClassMessages[i].message_array_size; j++ ) {
             if( ClassMessages[i].message_array[j].type == type ) {
-                ClassMessages[i].message_array[j].bits[bit] = val;
+                if( is_watch ) {
+                    ClassMessages[i].message_array[j].watch = val;
+                } else {
+                    ClassMessages[i].message_array[j].stopon = val;
+                }
             }
         }
     }
@@ -132,9 +133,10 @@ void SetFilterMsgs( MsgClass type, bool val, int bit )
  */
 void SetFilterSaveBitsMsgs( MsgClass type, bool val, bool *bits )
 {
-    int i, j, k;
+    WORD    i, j, k;
 
-    for( i = 0, k = 0; i < ClassMessagesSize; i++ ) {
+    k = 0;
+    for( i = 0; i < ClassMessagesSize; i++ ) {
         for( j = 0; j < ClassMessages[i].message_array_size; j++ ) {
             if( ClassMessages[i].message_array[j].type == type ) {
                 bits[k] = val;
@@ -157,18 +159,25 @@ void InitMessages( void )
 /*
  * SaveBitState - save current watch/stopon state
  */
-bool *SaveBitState( int x )
+bool *SaveBitState( bool is_watch )
 {
     bool        *data;
-    int         i, j, k;
+    WORD        i, j, k;
+    bool        ft;
 
     data = MemAlloc( TotalMessageArraySize );
     if( data == NULL ) {
         return( NULL );
     }
-    for( i = 0, k = 0; i < ClassMessagesSize; i++ ) {
+    k = 0;
+    for( i = 0; i < ClassMessagesSize; i++ ) {
         for( j = 0; j < ClassMessages[i].message_array_size; j++ ) {
-            data[k++] = ClassMessages[i].message_array[j].bits[x];
+            if( is_watch ) {
+                ft = ClassMessages[i].message_array[j].watch;
+            } else {
+                ft = ClassMessages[i].message_array[j].stopon;
+            }
+            data[k++] = ft;
         }
     }
     return( data );
@@ -193,16 +202,23 @@ bool *CloneBitState( bool *old ) {
 /*
  * RestoreBitState - put back watch/stopon state
  */
-void RestoreBitState( bool *data, int x )
+void RestoreBitState( bool *data, bool is_watch )
 {
-    int         i, j, k;
+    WORD        i, j, k;
+    bool        ft;
 
     if( data == NULL ) {
         return;
     }
-    for( i = 0, k = 0; i < ClassMessagesSize; i++ ) {
+    k = 0;
+    for( i = 0; i < ClassMessagesSize; i++ ) {
         for( j = 0; j < ClassMessages[i].message_array_size; j++ ) {
-            ClassMessages[i].message_array[j].bits[x] = data[k++];
+            ft = data[k++];
+            if( is_watch ) {
+                ClassMessages[i].message_array[j].watch = ft;
+            } else {
+                ClassMessages[i].message_array[j].stopon = ft;
+            }
         }
     }
     MemFree( data );
@@ -234,7 +250,7 @@ void CopyBitState( bool *dst, bool *src )
  */
 void ClearMessageCount( void )
 {
-    int     i, j;
+    WORD    i, j;
 
     for( i = 0; i < ClassMessagesSize; i++ ) {
         for( j = 0; j < ClassMessages[i].message_array_size; j++ ) {

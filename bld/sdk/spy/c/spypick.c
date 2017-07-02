@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,9 +31,6 @@
 
 
 #include "spy.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "wclbproc.h"
 
 
@@ -123,9 +121,9 @@ void UpdateFramedInfo( HWND dlg, HWND framedhwnd, bool ispick  )
     } else {
 
 #ifdef __NT__
-        GetHexStr( id, (DWORD)(pointer_int)framedhwnd, SPYOUT_HWND_LEN );
+        GetHexStr( id, (DWORD)(ULONG_PTR)framedhwnd, SPYOUT_HWND_LEN );
 #else
-        GetHexStr( id, (DWORD)(WORD)framedhwnd, SPYOUT_HWND_LEN );
+        GetHexStr( id, (WORD)(ULONG_PTR)framedhwnd, SPYOUT_HWND_LEN );
 #endif
         id[SPYOUT_HWND_LEN] = 0;
         SetDlgItemText( dlg, WINSEL_HWND, id );

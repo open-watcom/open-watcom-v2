@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -29,12 +30,10 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <wwindows.h>
+#include "spy.h"
 #include "spydll.h"
 #include "dllmain.h"
+
 
 #ifdef __WINDOWS__
 typedef struct
@@ -50,18 +49,17 @@ typedef CWPSTRUCT FAR *LPCWPSTRUCT;
 SPYDLLENTRY LRESULT CALLBACK CallWndProcFilter( int ncode, WPARAM wparam, LPARAM lparam );
 SPYDLLENTRY LRESULT CALLBACK GetMessageFilter( int ncode, WPARAM wparam, LPARAM lparam );
 
-static HHOOK            callHookHandle, getHookHandle;
-static BOOL             isFiltering = FALSE;
+static HHOOK            callHookHandle;
+static HHOOK            getHookHandle;
+static bool             isFiltering = false;
 static HINSTANCE        dllInstance;
-
-#ifndef __NT__
-void (CALLBACK *dll_HandleMessage)( LPMSG pmsg );
-#else
-static HWND             spyHwnd;
-static HWND             spyLBHwnd;
+#ifdef __WINDOWS__
+static message_func     *dll_HandleMessage;
 #endif
 
 #ifdef __NT__
+static HWND             spyHwnd;
+static HWND             spyLBHwnd;
 
 static void findSpyHwnd( void )
 {
@@ -102,9 +100,7 @@ BOOL WINAPI DllMain( HINSTANCE inst, DWORD reason, LPVOID ptr )
 
 int WINAPI LibMain( HINSTANCE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
 {
-    dataseg = dataseg;
-    heap = heap;
-    cmdline = cmdline;
+    /* unused parameters */ (void)dataseg; (void)heap; (void)cmdline;
 
     dllInstance = hmod;
     return( 1 );
@@ -154,18 +150,18 @@ LRESULT CALLBACK GetMessageFilter( int ncode, WPARAM wparam, LPARAM lparam )
 /*
  * SetFilter - set up the message filter
  */
-void CALLBACK SetFilter( LPVOID hdlmsg )
+SPYDLLENTRY void CALLBACK SetFilter( message_func *hdlmsg )
 {
-#ifdef __NT__
-    hdlmsg = hdlmsg;
-#else
+#ifdef __WINDOWS__
     dll_HandleMessage = hdlmsg;
+#else
+    /* unused parameters */ (void)hdlmsg;
 #endif
 
     if( !isFiltering ) {
         callHookHandle = SetWindowsHookEx( WH_CALLWNDPROC, CallWndProcFilter, dllInstance, /*(HTASK)*/ 0 );
         getHookHandle = SetWindowsHookEx( WH_GETMESSAGE, GetMessageFilter, dllInstance, /*(HTASK)*/ 0 );
-        isFiltering = TRUE;
+        isFiltering = true;
     }
 
 } /* SetFilter */
@@ -173,12 +169,12 @@ void CALLBACK SetFilter( LPVOID hdlmsg )
 /*
  * ClearFilter - clear out existing filter
  */
-void CALLBACK ClearFilter( void )
+SPYDLLENTRY void CALLBACK ClearFilter( void )
 {
     if( isFiltering ) {
         UnhookWindowsHookEx( callHookHandle );
         UnhookWindowsHookEx( getHookHandle );
-        isFiltering = FALSE;
+        isFiltering = false;
     }
 
 } /* ClearFilter */

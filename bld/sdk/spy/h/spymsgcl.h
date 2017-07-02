@@ -3,7 +3,6 @@
 *                            Open Watcom Project
 *
 * Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -25,18 +24,23 @@
 *
 *  ========================================================================
 *
-* Description:  Spy peek message/window dialog identifiers.
+* Description:  Spy message class related data.
 *
 ****************************************************************************/
 
 
-#define PEEKMSG_HWND                102
-#define PEEKMSG_TITLE               103
-#define PEEKMSG_CLASS               104
-#define PEEKMSG_PARENT              105
-#define PEEKMSG_STYLE               106
-#define PEEKMSG_SIZE                108
-#define PEEKMSG_STYLECLASS          101
-#define PEEKMSG_STYLECB             107
-#define PEEKMSG_STYLECLASSCB        110
-#define PEEKMSG_ICON                111         // unused in PEEKWIN dialog
+pick( MC_CLIPBRD,   SPYMSG_CLASS01,     "Clipboard" )
+pick( MC_DDE,       SPYMSG_CLASS02,     "DDE"       )
+pick( MC_IME,       SPYMSG_CLASS03,     "IME"       )
+pick( MC_INIT,      SPYMSG_CLASS04,     "Init"      )
+pick( MC_INPUT,     SPYMSG_CLASS05,     "Input"     )
+pick( MC_MDI,       SPYMSG_CLASS06,     "MDI"       )
+pick( MC_MOUSE,     SPYMSG_CLASS07,     "Mouse"     )
+pick( MC_NC_MISC,   SPYMSG_CLASS08,     "NC Misc"   )
+pick( MC_NC_MOUSE,  SPYMSG_CLASS09,     "NC Mouse"  )
+pick( MC_OTHER,     SPYMSG_CLASS10,     "Other"     )
+pick( MC_SYSTEM,    SPYMSG_CLASS11,     "System"    )
+pick( MC_USER,      SPYMSG_CLASS12,     "User"      )
+pick( MC_WINDOW,    SPYMSG_CLASS13,     "Window"    )
+pick( MC_CONTROL,   SPYMSG_CLASS14,     "Controls"  )
+pick( MC_UNKNOWN,   SPYMSG_CLASS15,     "Unknown"   )

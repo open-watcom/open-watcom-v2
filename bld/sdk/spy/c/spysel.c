@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-* Copyright (c) 2015-2016 The Open Watcom Contributors. All Rights Reserved.
+* Copyright (c) 2015-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,11 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
 #include "spy.h"
+#include <ctype.h>
 #include "wclbproc.h"
 
 
@@ -143,9 +140,10 @@ static void addFormattedWindow( HWND hwnd )
 {
     char        res[512];
     char        name[128];
-    char        tmp[5];
     char        lead_bl[128];
     int         i, len;
+    const char  *wmark;
+
     if( IsMyWindow( hwnd ) ) {
         return;
     }
@@ -157,18 +155,17 @@ static void addFormattedWindow( HWND hwnd )
     name[0] = 0;
     len = GetWindowText( hwnd, name, sizeof( name ) );
     name[len] = 0;
-    tmp[0] = ' ';
-    tmp[1] = 0;
+    wmark = " ";
     if( !tmpSpyAll ) {
         for( i = 0; i < tmpWndCnt; i++ ) {
             if( hwnd == tmpWndList[i] ) {
-                tmp[0] = '*';
+                wmark = "*";
                 break;
             }
         }
     }
-    sprintf( res, "%s%0*x%s %s", lead_bl, UINT_STR_LEN, (UINT)(pointer_int)hwnd, tmp, name );
-    SendDlgItemMessage( (HWND)hWndDialog, SELWIN_LISTBOX, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)res );
+    sprintf( res, "%s%0*x%s %s", lead_bl, UINT_STR_LEN, (UINT)(ULONG_PTR)hwnd, wmark, name );
+    SendDlgItemMessage( hWndDialog, SELWIN_LISTBOX, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)res );
 
 } /* addFormattedWindow */
 

@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,12 +31,12 @@
 
 
 #include "spy.h"
-#include <stdio.h>
-#include <stdarg.h>
-#include <stdlib.h>
+#include "spydll.h"
+#include "log.h"
+
 
 #ifdef __WATCOMC__
-extern WORD _STACKLOW;
+extern unsigned _STACKLOW;
 #endif
 
 
@@ -58,7 +59,7 @@ static BOOL spyInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 #endif
     MemStart();
 
-    HandleMessageInst = MakeProcInstance( (FARPROC) HandleMessage, Instance );
+    HandleMessageInst = (message_func *)MakeProcInstance( (FARPROC)HandleMessage, Instance );
     HintWndInit( Instance, NULL, 0 );
 
 

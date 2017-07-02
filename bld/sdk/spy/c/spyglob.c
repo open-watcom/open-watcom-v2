@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -30,7 +31,7 @@
 
 
 #include "spy.h"
-#include <stdio.h>
+
 
 WndConfigInfo   SpyMainWndInfo;
 char            *SpyName;
@@ -50,9 +51,13 @@ BOOL            AutoSaveConfig;
 spystate        SpyState = NEITHER;
 HANDLE          Instance;
 HANDLE          ResInstance;
-LPVOID          HandleMessageInst;
+message_func    *HandleMessageInst;
 HMENU           SpyMenu;
 statwnd         *StatusHdl;
 
-filter          Filters[FILTER_ENTRIES];
+filter          Filters[] = {
+    #define pick(a,b,c) c, b, true, false,
+    #include "spymsgcl.h"
+    #undef pick
+};
 
