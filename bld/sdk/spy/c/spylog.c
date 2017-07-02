@@ -55,9 +55,9 @@ void SpyLogTitle( FILE *f )
     fwrite( buff, 1, strlen( buff ), f );
     fwrite( "\r\n", 1, 2, f );
     fwrite( "\r\n", 1, 2, f );
-    len = strlen( TitleBar );
-    fwrite( TitleBar, 1, len, f );
+    fwrite( TitleBar, 1, TitleBarLen, f );
     fwrite( "\r\n", 1, 2, f );
+    len = strlen( TitleBarULine );
     fwrite( TitleBarULine, 1, len, f );
     fwrite( "\r\n", 1, 2, f );
 

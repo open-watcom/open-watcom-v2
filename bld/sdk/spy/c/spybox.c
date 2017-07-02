@@ -226,7 +226,7 @@ void CreateSpyBox( HWND parent )
 #ifdef __NT__
     if( !IsCommCtrlLoaded() ) {
 #endif
-        SpyListBoxXSize = (int)strlen( TitleBar + 1 ) * xChar;
+        SpyListBoxXSize = (int)( TitleBarLen + 1 ) * xChar;
         SpyListBoxTitle = CreateWindow(
             "STATIC",                   /* Window class name */
             TitleBar,                   /* Window caption */

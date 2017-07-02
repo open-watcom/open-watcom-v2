@@ -227,7 +227,7 @@ void ShowFramedInfo( HWND hwnd, HWND framed )
     DLGPROC     dlgproc;
 
     dlgproc = MakeProcInstance_DLG( ShowInfoDlgProc, Instance );
-    JDialogBoxParam( Instance, "PEEKWIN", (HWND)hwnd, dlgproc, (LPARAM)framed );
+    JDialogBoxParam( Instance, "PEEKWIN", hwnd, dlgproc, (LPARAM)framed );
     FreeProcInstance_DLG( dlgproc );
 
 } /* ShowFramedInfo */

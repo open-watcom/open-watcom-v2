@@ -830,6 +830,7 @@ bool InitGblStrings( void )
     if( TitleBarULine == NULL ) {
         return( false );
     }
+    TitleBarLen = strlen( TitleBar );
     return( true );
 
 } /* InitGblStrings */
