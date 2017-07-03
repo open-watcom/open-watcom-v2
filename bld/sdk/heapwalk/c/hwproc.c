@@ -461,13 +461,11 @@ BOOL FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             break;
         case HEAPMENU_FILE_SAVE:
             InitHeapList( info->list.box, TRUE );
-            SaveListBox( SLB_SAVE_TMP, PutOutGlobalHeader, Config.gfname,
-                         HeapWalkName, hwnd, info->list.box );
+            SaveListBox( SLB_SAVE_TMP, PutOutGlobalHeader, Config.gfname, HeapWalkName, hwnd, info->list.box );
             break;
         case HEAPMENU_FILE_SAVE_TO:
             InitHeapList( info->list.box, TRUE );
-            SaveListBox( SLB_SAVE_AS, PutOutGlobalHeader, Config.gfname,
-                         HeapWalkName, hwnd, info->list.box );
+            SaveListBox( SLB_SAVE_AS, PutOutGlobalHeader, Config.gfname, HeapWalkName, hwnd, info->list.box );
             break;
         case HEAPMENU_SAVE_CONFIG:
             SaveConfigFile( TRUE );

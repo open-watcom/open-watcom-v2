@@ -224,12 +224,10 @@ LONG CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             ClearListBox( MainLBox );
             break;
         case MENU_SAVE_AS:
-            SaveListBox( SLB_SAVE_AS, SaveExtra, "", AppName, hwnd,
-                         GetListBoxHwnd( MainLBox ) );
+            SaveListBox( SLB_SAVE_AS, SaveExtra, "", AppName, hwnd, GetListBoxHwnd( MainLBox ) );
             break;
         case MENU_SAVE:
-            SaveListBox( SLB_SAVE_TMP, SaveExtra, ".\\drwat.txt", AppName,
-                         hwnd, GetListBoxHwnd( MainLBox ) );
+            SaveListBox( SLB_SAVE_TMP, SaveExtra, ".\\drwat.txt", AppName, hwnd, GetListBoxHwnd( MainLBox ) );
             break;
         case MENU_FONT:
             if( ChooseMonoFont( hwnd ) ) {

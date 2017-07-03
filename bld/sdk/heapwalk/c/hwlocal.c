@@ -407,12 +407,10 @@ BOOL FAR PASCAL LocalHeapProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
             ReDisplayLocalHeapList( info->list.box, NULL );
             break;
         case HEAPMENU_FILE_SAVE:
-            SaveListBox( SLB_SAVE_TMP, PutOutLocalHeader, Config.lfname,
-                         HeapWalkName, hwnd, info->list.box );
+            SaveListBox( SLB_SAVE_TMP, PutOutLocalHeader, Config.lfname, HeapWalkName, hwnd, info->list.box );
             break;
         case HEAPMENU_FILE_SAVE_TO:
-            SaveListBox( SLB_SAVE_AS, PutOutLocalHeader, Config.lfname,
-                         HeapWalkName, hwnd, info->list.box );
+            SaveListBox( SLB_SAVE_AS, PutOutLocalHeader, Config.lfname, HeapWalkName, hwnd, info->list.box );
             break;
         case HEAPMENU_GLOBAL_MEMORYINFO:
             info->dialog = DisplayLocalHeapInfo( hwnd );

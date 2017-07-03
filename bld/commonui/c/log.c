@@ -424,8 +424,7 @@ bool LogOpen( void )
     f = fopen( LogCurInfo.config.curname, fmode );
     if( f == NULL ) {
         msgtitle = AllocRCString( LOG_LOG_ERROR );
-        RCMessageBox( LogCurInfo.hwnd, LOG_CANT_OPEN_LOG, msgtitle,
-                      MB_OK | MB_ICONEXCLAMATION );
+        RCMessageBox( LogCurInfo.hwnd, LOG_CANT_OPEN_LOG, msgtitle, MB_OK | MB_ICONEXCLAMATION );
         FreeRCString( msgtitle );
         return( false );
     }

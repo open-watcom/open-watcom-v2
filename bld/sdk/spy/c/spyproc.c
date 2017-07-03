@@ -358,8 +358,7 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             SaveListBox( SLB_SAVE_AS, SaveExtra, "", SpyName, hwnd, SpyListBox );
             break;
         case SPY_SAVE:
-            SaveListBox( SLB_SAVE_TMP, SaveExtra, ".\\wspy.txt", SpyName, hwnd,
-                         SpyListBox );
+            SaveListBox( SLB_SAVE_TMP, SaveExtra, ".\\wspy.txt", SpyName, hwnd, SpyListBox );
             break;
         case SPY_LOG:
             if( LogToggle() ) {

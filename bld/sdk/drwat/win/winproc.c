@@ -157,12 +157,10 @@ LONG __export FAR PASCAL WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
             EraseLog();
             break;
         case MENU_SAVE_AS:
-            SaveListBox( SLB_SAVE_AS, SaveExtra, "", AppName, hwnd,
-                         GetListBoxHwnd( ListBox ) );
+            SaveListBox( SLB_SAVE_AS, SaveExtra, "", AppName, hwnd, GetListBoxHwnd( ListBox ) );
             break;
         case MENU_SAVE:
-            SaveListBox( SLB_SAVE_TMP, SaveExtra, ".\\drwat.txt", AppName,
-                         hwnd, GetListBoxHwnd( ListBox ) );
+            SaveListBox( SLB_SAVE_TMP, SaveExtra, ".\\drwat.txt", AppName, hwnd, GetListBoxHwnd( ListBox ) );
             break;
         case MENU_CLEAR:
             ClearListBox( ListBox );

@@ -149,7 +149,7 @@ bool GetSaveFName( HWND mainhwnd, char *fname )
 /*
  * GenTmpFileName - generate a unique file name based on tmpname
  */
-bool GenTmpFileName( char *tmpname, char *buf )
+bool GenTmpFileName( const char *tmpname, char *buf )
 {
     char        drive[_MAX_DRIVE];
     char        dir[_MAX_DIR];
@@ -197,7 +197,7 @@ bool GenTmpFileName( char *tmpname, char *buf )
  *            current working directory
  *          - assumes that the path given is valid
  */
-static void relToAbs( char *path, char *out )
+static void relToAbs( const char *path, char *out )
 {
     char        *cwd;
     unsigned    old_dir;
@@ -232,7 +232,7 @@ static void relToAbs( char *path, char *out )
      * Make sure _splitpath doesn't mistake the last directory spec as a
      * filename.
      */
-    while( *ptr ) {
+    while( *ptr != '\0' ) {
         ptr++;
     }
     if( *(ptr - 1) != '\\' ) {
@@ -250,7 +250,7 @@ static void relToAbs( char *path, char *out )
 /*
  * ReportSave
  */
-void ReportSave( HWND parent, char *fname, const char *appname, bool save_ok )
+void ReportSave( HWND parent, const char *fname, const char *appname, bool save_ok )
 {
     char        ful_fname[_MAX_PATH];
     char        buf[_MAX_PATH + 20];
@@ -260,8 +260,7 @@ void ReportSave( HWND parent, char *fname, const char *appname, bool save_ok )
         RCsprintf( buf, SLB_DATA_SAVED_TO, ful_fname );
         MessageBox( parent, buf, appname, MB_OK | MB_TASKMODAL );
     } else {
-        RCMessageBox( parent, SLB_CANT_SAVE_DATA, appname,
-                      MB_OK | MB_TASKMODAL | MB_ICONEXCLAMATION );
+        RCMessageBox( parent, SLB_CANT_SAVE_DATA, appname, MB_OK | MB_TASKMODAL | MB_ICONEXCLAMATION );
     }
 
 } /* ReportSave */
@@ -269,7 +268,7 @@ void ReportSave( HWND parent, char *fname, const char *appname, bool save_ok )
 /*
  * SaveListBox - save out a list box
  */
-void SaveListBox( int how, void (*writefn)( FILE * ), char *tmpname,
+void SaveListBox( int how, void (*writefn)( FILE * ), const char *tmpname,
                   const char *appname, HWND mainhwnd, HWND listbox )
 {
     char        fname[_MAX_PATH];
