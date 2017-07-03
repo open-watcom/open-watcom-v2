@@ -450,7 +450,7 @@ void RecordMsg( char *buf )
                 setHorzExtent( info, start );
                 SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)start );
             }
-            SpyLogOut( start );
+            LogOut( start );
             *ptr = '\n';
             start = ptr + 1;
         }
@@ -461,7 +461,7 @@ void RecordMsg( char *buf )
             setHorzExtent( info, start );
             ret = (int)SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)start );
         }
-        SpyLogOut( start );
+        LogOut( start );
     }
     if( ConfigInfo.scroll && ConfigInfo.screen_out ) {
         SendMessage( info->list.box, LB_SETTOPINDEX, ret, 0L );

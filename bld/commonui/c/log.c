@@ -264,7 +264,7 @@ void LogConfigure( void )
     DLGPROC     dlgproc;
 
     if( !LogCurInfo.init ) {
-        SetLogDef();
+        LogSetDef();
     }
     if( LogCurInfo.config.type == LOG_TYPE_BUFFER ) {
         flushLog( true );
@@ -276,9 +276,9 @@ void LogConfigure( void )
 } /* LogConfigure */
 
 /*
- * SetLogDef - set the log configuration to the defaults
+ * LogSetDef - set the log configuration to the defaults
  */
-void SetLogDef( void )
+void LogSetDef( void )
 {
     strcpy( LogCurInfo.config.name, "dflt.log" );
     LogCurInfo.config.type = LOG_TYPE_CONTINUOUS;
@@ -286,29 +286,29 @@ void SetLogDef( void )
     LogCurInfo.config.query_for_name = true;
     LogCurInfo.init = true;
 
-} /* SetLogDef */
+} /* LogSetDef */
 
 /*
- * GetLogConfig - copy the current log configuration information to config
+ * LogGetConfig - copy the current log configuration information to config
  */
-void GetLogConfig( LogConfig *config )
+void LogGetConfig( LogConfig *config )
 {
     if( !LogCurInfo.init ) {
-        SetLogDef();
+        LogSetDef();
     }
     *config = LogCurInfo.config;
 
-} /* GetLogConfig */
+} /* LogGetConfig */
 
 /*
- * SetLogConfig - set current log configuration
+ * LogSetConfig - set current log configuration
  */
-void SetLogConfig( LogConfig *config )
+void LogSetConfig( LogConfig *config )
 {
     LogCurInfo.config = *config;
     LogCurInfo.init = true;
 
-} /* SetLogConfig */
+} /* LogSetConfig */
 
 #define LOG_TYPE                "LOGtype"
 #define LOG_NAME                "LOGname"
@@ -316,14 +316,14 @@ void SetLogConfig( LogConfig *config )
 #define LOG_QUERY               "LOGquery"
 
 /*
- * SaveLogConfig - save the current log configuration
+ * LogSaveConfig - save the current log configuration
  */
-void SaveLogConfig( char *fname, char *section )
+void LogSaveConfig( char *fname, char *section )
 {
     char        buf[10];
 
     if( !LogCurInfo.init ) {
-        SetLogDef();
+        LogSetDef();
     }
 
     itoa( LogCurInfo.config.type, buf, 10 );
@@ -336,26 +336,26 @@ void SaveLogConfig( char *fname, char *section )
 
     WritePrivateProfileString( section, LOG_NAME, LogCurInfo.config.name, fname );
 
-} /* SaveLogConfig */
+} /* LogSaveConfig */
 
 /*
- * LoadLogConfig - read log configuration information from the .ini file
+ * LogLoadConfig - read log configuration information from the .ini file
  */
 
-void LoadLogConfig( char *fname, char *section )
+void LogLoadConfig( char *fname, char *section )
 {
-    SetLogDef();
+    LogSetDef();
     LogCurInfo.config.type = GetPrivateProfileInt( section, LOG_TYPE, LogCurInfo.config.type, fname );
     LogCurInfo.config.def_action = GetPrivateProfileInt( section, LOG_ACTION, LogCurInfo.config.def_action, fname );
     LogCurInfo.config.query_for_name = GetPrivateProfileInt( section, LOG_QUERY, LogCurInfo.config.query_for_name, fname ) != 0;
     GetPrivateProfileString( section, LOG_NAME, LogCurInfo.config.name, LogCurInfo.config.name, LOG_MAX_FNAME, fname );
 
-} /* LoadLogConfig */
+} /* LogLoadConfig */
 
 /*
- * SpyLogOut - dump a message to the log file
+ * LogOut - dump a message to the log file
  */
-void SpyLogOut( char *res )
+void LogOut( char *res )
 {
     size_t  len;
 
@@ -376,12 +376,12 @@ void SpyLogOut( char *res )
         }
     }
 
-} /* SpyLogOut */
+} /* LogOut */
 
 /*
- * SpyLogOpen - open the log file
+ * LogOpen - open the log file
  */
-bool SpyLogOpen( void )
+bool LogOpen( void )
 {
     FILE        *f;
     DLGPROC     dlgproc;
@@ -390,7 +390,7 @@ bool SpyLogOpen( void )
     char        *fmode = "wt";
 
     if( !LogCurInfo.init ) {
-        SetLogDef();
+        LogSetDef();
     }
     if( LogCurInfo.config.query_for_name ) {
         if( !getLogName( LogCurInfo.config.name, LogCurInfo.hwnd ) ) {
@@ -437,23 +437,23 @@ bool SpyLogOpen( void )
     LogCurInfo.config.paused = true;
     return( true );
 
-} /* SpyLogOpen */
+} /* LogOpen */
 
 /*
- * SpyLogClose - close the log file
+ * LogClose - close the log file
  */
-void SpyLogClose( void )
+void LogClose( void )
 {
     flushLog( true );
     LogCurInfo.config.logging = false;
     LogCurInfo.config.paused = false;
 
-} /* SpyLogClose */
+} /* LogClose */
 
 /*
- * SpyLogPauseToggle - switch between paused/unpaused state
+ * LogPauseToggle - switch between paused/unpaused state
  */
-bool SpyLogPauseToggle( void )
+bool LogPauseToggle( void )
 {
     if( LogCurInfo.config.logging ) {
         if( !LogCurInfo.config.paused ) {
@@ -463,7 +463,7 @@ bool SpyLogPauseToggle( void )
     }
     return( LogCurInfo.config.paused );
 
-} /* SpyLogPauseToggle */
+} /* LogPauseToggle */
 
 /*
  * LogToggle - toggle between logging and not logging modes
@@ -471,12 +471,12 @@ bool SpyLogPauseToggle( void )
 bool LogToggle( void )
 {
     if( !LogCurInfo.init ) {
-        SetLogDef();
+        LogSetDef();
     }
     if( !LogCurInfo.config.logging ) {
-        return( SpyLogOpen() );
+        return( LogOpen() );
     }
-    SpyLogClose();
+    LogClose();
     return( LogCurInfo.config.logging );
 
 } /* LogToggle */

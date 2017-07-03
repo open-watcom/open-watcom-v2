@@ -366,7 +366,7 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
         case DDEMENU_LOG_PAUSE:
             mh = GetMenu( hwnd );
             flag = MF_BYCOMMAND;
-            if( SpyLogPauseToggle() ) {
+            if( LogPauseToggle() ) {
                 flag |= MF_CHECKED;
             } else {
                 flag |= MF_UNCHECKED;
@@ -476,13 +476,13 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     case WM_ENDSESSION:
         if( wparam ) {
             SaveConfigFile();
-            SpyLogClose();
+            LogClose();
         }
         break;
     case WM_DESTROY:
         HintWndDestroy( info->hintbar );
         HintFini();
-        SpyLogClose();
+        LogClose();
         FreeProcInstance( (FARPROC)DDEProcInst );
         SaveConfigFile();
         FiniTrackWnd();

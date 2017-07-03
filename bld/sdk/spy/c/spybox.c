@@ -103,7 +103,7 @@ void SpyOut( char *msg, LPMSG pmsg )
     } else {
         strcpy( res, msg );
     }
-    SpyLogOut( res );
+    LogOut( res );
 
 #ifdef __NT__
     if( IsCommCtrlLoaded() ) {

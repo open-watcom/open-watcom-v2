@@ -59,7 +59,7 @@ void LoadSpyConfig( char *fname )
         GetConfigFilePath( iniPath, sizeof( iniPath ) );
         strcat( iniPath, "\\" WATCOM_INI );
         fname = iniPath;
-        LoadLogConfig( fname, spyApp );
+        LogLoadConfig( fname, spyApp );
         InitMonoFont( spyApp, fname, SYSTEM_FIXED_FONT, Instance );
 
         x = GetSystemMetrics( SM_CXSCREEN );
@@ -151,7 +151,7 @@ void SaveSpyConfig( char *fname )
     str = alloca( TotalMessageArraySize + 1 );
     if( fname == NULL ) {
         fname = iniPath;
-        SaveLogConfig( fname, spyApp );
+        LogSaveConfig( fname, spyApp );
         SaveMonoFont( spyApp, fname );
 
 #define GET_BOOL(x)  (((x)!=0) ? "" : "0")

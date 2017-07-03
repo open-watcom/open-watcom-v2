@@ -69,16 +69,16 @@ typedef struct loginfo {
 #define NO_BUF_LINES                    100
 
 void    LogInit( HWND hwnd, HANDLE inst, void (*writefn)( FILE * ) );
-bool    SpyLogOpen( void );
-void    SpyLogOut( char *res );
-void    SetLogDef( void );
-void    GetLogConfig( LogConfig *config );
-void    SetLogConfig( LogConfig *config );
-void    SpyLogClose( void );
-bool    SpyLogPauseToggle( void );
+bool    LogOpen( void );
+void    LogOut( char *res );
+void    LogSetDef( void );
+void    LogGetConfig( LogConfig *config );
+void    LogSetConfig( LogConfig *config );
+void    LogClose( void );
+bool    LogPauseToggle( void );
 bool    LogToggle( void );
 void    LogConfigure( void );
-void    LoadLogConfig( char *fname, char *section );
-void    SaveLogConfig( char *fname, char *section );
+void    LogLoadConfig( char *fname, char *section );
+void    LogSaveConfig( char *fname, char *section );
 
 #endif /* _LOG_H_INCLUDED */

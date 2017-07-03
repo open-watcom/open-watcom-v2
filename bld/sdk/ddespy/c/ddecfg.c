@@ -220,7 +220,7 @@ void ReadConfig( void )
     SetFilter( msgfilter, cbfilter );
 
     /* logging info */
-    LoadLogConfig( iniPath, SECT_NAME );
+    LogLoadConfig( iniPath, SECT_NAME );
     InitMonoFont( SECT_NAME, iniPath, SYSTEM_FIXED_FONT, Instance );
 
 } /* ReadConfig */
@@ -263,7 +263,7 @@ void SaveConfigFile( void )
     GetFilter( msgfilter, cbfilter );
     WritePrivateProfileString( SECT_NAME, MSGFLTER, msgfilter, iniPath );
     WritePrivateProfileString( SECT_NAME, CBFLTER, cbfilter, iniPath );
-    SaveLogConfig( iniPath, SECT_NAME );
+    LogSaveConfig( iniPath, SECT_NAME );
     SaveMonoFont( SECT_NAME, iniPath );
 
 } /* SaveConfigFile */

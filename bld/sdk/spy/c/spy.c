@@ -138,7 +138,7 @@ void SpyFini( void )
     CvrCtl3DFini( Instance );
 #endif
     ClearFilter();
-    SpyLogClose();
+    LogClose();
     SaveSpyConfig( NULL );
     JDialogFini();
 

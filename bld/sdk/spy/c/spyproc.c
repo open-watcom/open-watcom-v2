@@ -445,7 +445,7 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             }
             break;
         case SPY_PAUSE_LOG:
-            if( SpyLogPauseToggle() ) {
+            if( LogPauseToggle() ) {
                 CheckMenuItem( SpyMenu, SPY_PAUSE_LOG,
                                MF_BYCOMMAND | MF_CHECKED );
             } else {
