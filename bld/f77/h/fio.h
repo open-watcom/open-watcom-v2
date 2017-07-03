@@ -92,11 +92,11 @@ typedef struct b_file {                 // file with buffered i/o
 #define CC_NOLF                 0x4000  // no LF
 #define BUFFERED                0x8000  // buffered i/o
 
-#define CR      0x0d                    // carriage return
-#define LF      0x0a                    // line feed
-#define FF      0x0c                    // form feed
+#define CHAR_CR                 0x0d    // carriage return
+#define CHAR_LF                 0x0a    // line feed
+#define CHAR_FF                 0x0c    // form feed
 
-#define CTRL_Z  0x1a                    // Ctrl/Z character (EOF marker)
+#define CHAR_CTRL_Z             0x1a    // Ctrl/Z character (EOF marker)
 
 #define READ_ERROR      ((size_t)-1)    // read error indicator
 
