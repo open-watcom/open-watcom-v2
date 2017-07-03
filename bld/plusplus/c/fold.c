@@ -1179,14 +1179,14 @@ static PTREE FoldBinaryLeft( bool *has_folded,
     PTREE expr, PTREE op1, PTREE op2,
     bool has_decoration )
 {
-    DbgVerify( foldable( op1 ), "op1 must be foldable" );
-
-    *has_folded = false;
-
     PTREE op_t;
     PTREE op_f;
     PTREE *pchild1 = &expr->u.subtree[0];
     PTREE *pchild2 = &expr->u.subtree[1];
+
+    DbgVerify( foldable( op1 ), "op1 must be foldable" );
+
+    *has_folded = false;
 
     switch( expr->cgop ) {
     case CO_EQ:
