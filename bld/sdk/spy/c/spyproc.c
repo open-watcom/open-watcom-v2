@@ -80,7 +80,7 @@ static const MenuItemHint menuHints[] = {
  */
 static void enableSpy( void )
 {
-    SetFilter( HandleMessageInst );
+    SetFilter();
     EnableMenuItem( SpyMenu, SPY_ADD_WINDOW, MF_ENABLED );
     EnableMenuItem( SpyMenu, SPY_STOP, MF_ENABLED );
     ClearMessageCount();
@@ -184,7 +184,7 @@ static void doSpyAll( HWND hwnd, BOOL state )
         spyAll = state;
         EnableMenuItem( SpyMenu, SPY_STOP, MF_ENABLED );
         CheckMenuItem( SpyMenu, SPY_ALL_WINDOWS, MF_CHECKED );
-        SetFilter( HandleMessageInst );
+        SetFilter();
         ClearSelectedWindows();
         if( SpyState == NEITHER ) {
             ClearMessageCount();

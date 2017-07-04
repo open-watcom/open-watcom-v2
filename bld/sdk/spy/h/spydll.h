@@ -44,5 +44,8 @@
 #define SPYDLLENTRY
 #endif
 
-SPYDLLENTRY extern void CALLBACK SetFilter( message_func * );
+#ifdef __WINDOWS__
+SPYDLLENTRY extern void CALLBACK SetFilterProc( message_func * );
+#endif
+SPYDLLENTRY extern void CALLBACK SetFilter( void );
 SPYDLLENTRY extern void CALLBACK ClearFilter( void );

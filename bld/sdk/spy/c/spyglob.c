@@ -51,7 +51,6 @@ BOOL            AutoSaveConfig;
 spystate        SpyState = NEITHER;
 HANDLE          Instance;
 HANDLE          ResInstance;
-message_func    *HandleMessageInst;
 HMENU           SpyMenu;
 statwnd         *StatusHdl;
 

@@ -36,9 +36,12 @@
 
 
 #ifdef __WATCOMC__
-extern unsigned _STACKLOW;
+extern unsigned     _STACKLOW;
 #endif
 
+#ifdef __WINDOWS__
+static message_func *HandleMessageInst;
+#endif
 
 /*
  * spyInit - initialization
@@ -59,7 +62,10 @@ static BOOL spyInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 #endif
     MemStart();
 
+#ifdef __WINDOWS__
     HandleMessageInst = (message_func *)MakeProcInstance( (FARPROC)HandleMessage, Instance );
+    SetFilterProc( HandleMessageInst );
+#endif
     HintWndInit( Instance, NULL, 0 );
 
 
@@ -140,6 +146,9 @@ void SpyFini( void )
     ClearFilter();
     LogClose();
     SaveSpyConfig( NULL );
+#ifdef __WINDOWS__
+    FreeProcInstance( (FARPROC)HandleMessageInst );
+#endif
     JDialogFini();
 
 } /* SpyFini */

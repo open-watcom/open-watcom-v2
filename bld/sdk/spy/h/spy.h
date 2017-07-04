@@ -206,7 +206,6 @@ extern style_info       _NEAR ClassStyleArray[];
 extern WORD             ClassStyleArraySize;
 
 
-extern message_func     *HandleMessageInst;
 extern WndConfigInfo    SpyMainWndInfo;
 extern HMENU            SpyMenu;
 extern statwnd          *StatusHdl;

@@ -98,6 +98,14 @@ BOOL WINAPI DllMain( HINSTANCE inst, DWORD reason, LPVOID ptr )
 
 #else
 
+/*
+ * SetFilterProc - set up the message filter procedure
+ */
+SPYDLLENTRY void CALLBACK SetFilterProc( message_func *hdlmsg )
+{
+    dll_HandleMessage = hdlmsg;
+}
+
 int WINAPI LibMain( HINSTANCE hmod, WORD dataseg, WORD heap, LPSTR cmdline )
 {
     /* unused parameters */ (void)dataseg; (void)heap; (void)cmdline;
@@ -150,14 +158,8 @@ LRESULT CALLBACK GetMessageFilter( int ncode, WPARAM wparam, LPARAM lparam )
 /*
  * SetFilter - set up the message filter
  */
-SPYDLLENTRY void CALLBACK SetFilter( message_func *hdlmsg )
+SPYDLLENTRY void CALLBACK SetFilter( void )
 {
-#ifdef __WINDOWS__
-    dll_HandleMessage = hdlmsg;
-#else
-    /* unused parameters */ (void)hdlmsg;
-#endif
-
     if( !isFiltering ) {
         callHookHandle = SetWindowsHookEx( WH_CALLWNDPROC, CallWndProcFilter, dllInstance, /*(HTASK)*/ 0 );
         getHookHandle = SetWindowsHookEx( WH_GETMESSAGE, GetMessageFilter, dllInstance, /*(HTASK)*/ 0 );
