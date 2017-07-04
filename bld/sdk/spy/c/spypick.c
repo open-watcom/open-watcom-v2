@@ -38,8 +38,8 @@
 WINEXPORT INT_PTR CALLBACK PickDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static HWND     LastFramed;
-static BOOL     Cancelled;
-static BOOL     Picking;
+static bool     Cancelled;
+static bool     Picking;
 static HWND     PickDialogOK;
 static HWND     PickDialogIcon;
 static ctl_id   pickProcCmdId;
@@ -186,7 +186,7 @@ INT_PTR CALLBACK PickDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
         if( pickProcCmdId != SPY_PEEK_WINDOW ) {
             EnableWindow( PickDialogOK, FALSE );
         }
-        Picking = FALSE;
+        Picking = false;
         LastFramed = NULL;
         break;
 #ifndef NOUSE3D
@@ -197,7 +197,7 @@ INT_PTR CALLBACK PickDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
     case WM_COMMAND:
         switch( LOWORD( wparam ) ) {
         case IDCANCEL:
-            Cancelled = TRUE;
+            Cancelled = true;
             EndDialog( hwnd, 0 );
             break;
         case IDOK:
@@ -211,7 +211,7 @@ INT_PTR CALLBACK PickDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
         ClientToScreen( hwnd, &point );
         GetWindowRect( PickDialogIcon, &rect);
         if( PtInRect( &rect, point ) ) {
-            Picking = TRUE;
+            Picking = true;
             LastFramed = NULL;
             UpdateFramedInfo( hwnd, NULL, (pickProcCmdId == SPY_PEEK_WINDOW) );
             SetCapture( hwnd );
@@ -246,7 +246,7 @@ INT_PTR CALLBACK PickDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM l
         break;
     case WM_LBUTTONUP:
         if( Picking ) {
-            Picking = FALSE;
+            Picking = false;
             ReleaseCapture();
             if( LastFramed != NULL ) {
                 FrameAWindow( LastFramed );
@@ -271,7 +271,7 @@ HWND DoPickDialog( ctl_id cmdid )
     ShowWindow( SpyMainWindow, SW_MINIMIZE );
 
     LastFramed = NULL;
-    Cancelled = FALSE;
+    Cancelled = false;
 
     dlgproc = MakeProcInstance_DLG( PickDialogDlgProc, Instance );
     if( cmdid == SPY_PEEK_WINDOW ) {

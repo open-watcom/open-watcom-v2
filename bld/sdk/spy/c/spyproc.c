@@ -38,7 +38,7 @@
 #include "log.h"
 
 
-static BOOL     spyAll;
+static bool     spyAll;
 static WORD     statusHite = 25;
 
 static const MenuItemHint menuHints[] = {
@@ -85,7 +85,7 @@ static void enableSpy( void )
     EnableMenuItem( SpyMenu, SPY_STOP, MF_ENABLED );
     ClearMessageCount();
     CheckMenuItem( SpyMenu, SPY_ALL_WINDOWS, MF_UNCHECKED );
-    spyAll = FALSE;
+    spyAll = false;
     SetSpyState( ON );
 
 } /* enableSpy */
@@ -100,7 +100,7 @@ static void disableSpy( void )
     EnableMenuItem( SpyMenu, SPY_ADD_WINDOW, MF_GRAYED );
     EnableMenuItem( SpyMenu, SPY_STOP, MF_GRAYED );
     SetSpyState( NEITHER );
-    spyAll = FALSE;
+    spyAll = false;
 
 } /* disableSpy */
 
@@ -173,7 +173,7 @@ static void setUpForPick( HWND hwnd, UINT_PTR timerid )
 #endif
 }
 
-static void doSpyAll( HWND hwnd, BOOL state )
+static void doSpyAll( HWND hwnd, bool state )
 {
     const char  *rcstr;
     char        tmp[32];
@@ -222,13 +222,12 @@ static void markCallback( char *res )
  */
 LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-    int         check;
     HWND        selwin;
     HWND        hinthwnd;
     ctl_id      cmdid = 0;
     RECT        area;
-    BOOL        pausestate;
-    BOOL        spyallstate;
+    bool        pausestate;
+    bool        spyallstate;
     about_info  ai;
     HMENU       mh;
 
@@ -342,7 +341,7 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             break;
         case SPY_MARK:
             pausestate = SpyMessagesPaused;
-            SpyMessagesPaused = FALSE;              /* make sure marks are
+            SpyMessagesPaused = false;              /* make sure marks are
                                                      * always added */
             ProcessMark( hwnd, Instance, markCallback );
             SpyMessagesPaused = pausestate;
@@ -435,13 +434,8 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             FreeRCString( ai.title );
             break;
         case SPY_AUTO_SCROLL:
-            if( SpyMessagesAutoScroll ) {
-                SpyMessagesAutoScroll = FALSE;
-                CheckMenuItem( SpyMenu, SPY_AUTO_SCROLL, MF_UNCHECKED );
-            } else {
-                SpyMessagesAutoScroll = TRUE;
-                CheckMenuItem( SpyMenu, SPY_AUTO_SCROLL, MF_CHECKED );
-            }
+            SpyMessagesAutoScroll = !SpyMessagesAutoScroll;
+            CheckMenuItem( SpyMenu, SPY_AUTO_SCROLL, ( SpyMessagesAutoScroll ) ? MF_CHECKED : MF_UNCHECKED );
             break;
         case SPY_PAUSE_LOG:
             if( LogPauseToggle() ) {
@@ -460,14 +454,8 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             ClearMessageCount();
             break;
         case SPY_MESSAGES_ASCFG:
-            if( AutoSaveConfig ) {
-                check = MF_UNCHECKED;
-                AutoSaveConfig = FALSE;
-            } else {
-                AutoSaveConfig = TRUE;
-                check = MF_CHECKED;
-            }
-            CheckMenuItem( SpyMenu, SPY_MESSAGES_ASCFG, check );
+            AutoSaveConfig = !AutoSaveConfig;
+            CheckMenuItem( SpyMenu, SPY_MESSAGES_ASCFG, ( AutoSaveConfig ) ? MF_CHECKED : MF_UNCHECKED );
             break;
         case SPY_MESSAGES_SAVE:
             DoSaveSpyConfig();

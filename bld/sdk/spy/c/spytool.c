@@ -139,13 +139,9 @@ void CreateSpyTool( HWND parent )
 /*
  * ShowSpyTool - show or hide toolbar
  */
-void ShowSpyTool( BOOL show )
+void ShowSpyTool( bool show )
 {
-    if( show ) {
-        ShowWindow( ToolBarWindow( toolBar ), SW_SHOW );
-    } else {
-        ShowWindow( ToolBarWindow( toolBar ), SW_HIDE );
-    }
+    ShowWindow( ToolBarWindow( toolBar ), ( show ) ? SW_SHOW : SW_HIDE );
 
 } /* ShowSpyTool */
 

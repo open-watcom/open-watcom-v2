@@ -59,8 +59,8 @@ bool            old_watch;
 bool            old_stopon;
 DWORD           old_count;
 HWND            currHwnd;
-BOOL            doHilite;
 
+static bool     doHilite;
 static bool     is_watch;
 static bool     *savedBits;
 
@@ -102,8 +102,8 @@ INT_PTR CALLBACK SpyMsgDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
         SetWindowText( hwnd, title );
         nwnd = GetDlgItem( hwnd, DLGMSG_NEXT );
         pwnd = GetDlgItem( hwnd, DLGMSG_PREV );
-        EnableWindow( pwnd, which > 1 );
-        EnableWindow( nwnd, which < pages );
+        EnableWindow( pwnd, ( which > 1 ) ? TRUE : FALSE );
+        EnableWindow( nwnd, ( which < pages ) ? TRUE : FALSE );
         if( which == pages ) {
             max = TotalMessageArraySize % NUM_DLGMSGS;
         } else {
@@ -387,7 +387,7 @@ INT_PTR CALLBACK MessageSelectDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
 
     switch( msg ) {
     case WM_INITDIALOG:
-        doHilite = FALSE;
+        doHilite = false;
         i = 0;
         ptr = GetPointer( lparam );
         strcpy( str, ptr );

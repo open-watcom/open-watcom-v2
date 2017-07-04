@@ -46,7 +46,7 @@ static message_func *HandleMessageInst;
 /*
  * spyInit - initialization
  */
-static BOOL spyInit( HANDLE currinst, HANDLE previnst, int cmdshow )
+static bool spyInit( HANDLE currinst, HANDLE previnst, int cmdshow )
 {
     WNDCLASS    wc;
 
@@ -54,7 +54,7 @@ static BOOL spyInit( HANDLE currinst, HANDLE previnst, int cmdshow )
     Instance = currinst;
     ResInstance = currinst;
     if( !InitGblStrings() ) {
-        return( FALSE );
+        return( false );
     }
     SpyMenu = LoadMenu( ResInstance, "SPYMENU" );
 #ifdef __WATCOMC__
@@ -88,12 +88,12 @@ static BOOL spyInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         wc.lpszMenuName = NULL;
         wc.lpszClassName = SPY_CLASS_NAME;
         if( !RegisterClass( &wc ) ) {
-            return( FALSE );
+            return( false );
         }
 
 #ifdef USE_SNAP_WINDOW
         if( !RegisterSnapClass( Instance ) ) {
-            return( FALSE );
+            return( false );
         }
 #endif
     }
@@ -122,7 +122,7 @@ static BOOL spyInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         NULL );                 /* Create parameters */
 
     if( SpyMainWindow == NULL ) {
-        return( FALSE );
+        return( false );
     }
     MyTask = GetWindowTask( SpyMainWindow );
 
@@ -130,7 +130,7 @@ static BOOL spyInit( HANDLE currinst, HANDLE previnst, int cmdshow )
     UpdateWindow( SpyMainWindow );
 
     InitMessages();
-    return( TRUE );
+    return( true );
 
 } /* spyInit */
 

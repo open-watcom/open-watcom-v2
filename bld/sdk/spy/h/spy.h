@@ -185,15 +185,15 @@ extern spystate         SpyState;
 extern char             _NEAR SpyPickClass[];
 extern HWND             SpyListBox;
 extern HWND             SpyListBoxTitle;
-extern BOOL             SpyMessagesPaused;
+extern bool             SpyMessagesPaused;
 extern HWND             SpyMainWindow;
 extern HANDLE           MyTask;
 extern HANDLE           Instance;
 extern HANDLE           ResInstance;
 extern WORD             ClassMessagesSize;
 extern class_messages   _NEAR ClassMessages[];
-extern BOOL             SpyMessagesAutoScroll;
-extern BOOL             AutoSaveConfig;
+extern bool             SpyMessagesAutoScroll;
+extern bool             AutoSaveConfig;
 extern WORD             WindowCount;
 extern HWND             *WindowList;
 extern class_styles     _NEAR ClassStyles[];
@@ -278,7 +278,7 @@ extern void             SetSpyState( spystate ss );
 /* spysel.c */
 extern void             ClearSelectedWindows( void );
 extern void             AddSelectedWindow( HWND hwnd );
-extern void             DoShowSelectedDialog( HWND hwnd, BOOL *spyall );
+extern void             DoShowSelectedDialog( HWND hwnd, bool *spyall );
 extern void             ShowFramedInfo( HWND hwnd, HWND framed );
 
 /* spytool.c */
@@ -286,7 +286,7 @@ extern void             CreateSpyTool( HWND parent );
 extern void             DestroySpyTool( void );
 extern void             SetOnOffTool( spystate ss );
 extern void             ResizeSpyTool( WORD width, WORD height );
-extern void             ShowSpyTool( BOOL show );
+extern void             ShowSpyTool( bool show );
 extern void             GetSpyToolRect( RECT *prect );
 
 /* spylog.c */

@@ -274,17 +274,8 @@ void ClearSpyBox( void )
  */
 void SpyMessagePauseToggle( void )
 {
-    WORD        check;
-
-    check = MF_BYCOMMAND;
-    if( SpyMessagesPaused ) {
-        check |= MF_UNCHECKED;
-        SpyMessagesPaused = FALSE;
-    } else {
-        SpyMessagesPaused = TRUE;
-        check |= MF_CHECKED;
-    }
-    CheckMenuItem( SpyMenu, SPY_PAUSE_MESSAGES, check );
+    SpyMessagesPaused = !SpyMessagesPaused;
+    CheckMenuItem( SpyMenu, SPY_PAUSE_MESSAGES, MF_BYCOMMAND | (( SpyMessagesPaused ) ? MF_CHECKED : MF_UNCHECKED) );
 
 } /* SpyMessagePauseToggle */
 

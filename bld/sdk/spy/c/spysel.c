@@ -42,7 +42,7 @@ WINEXPORT INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARA
 
 static HWND     *tmpWndList;
 static WORD     tmpWndCnt;
-static BOOL     tmpSpyAll;
+static bool     tmpSpyAll;
 
 /*
  * ClearSelectedWindows - get rid of all selected windows
@@ -81,19 +81,19 @@ void AddSelectedWindow( HWND hwnd )
 static void deleteSelectedWindow( HWND hwnd )
 {
     int         i, j;
-    BOOL        found;
+    bool        found;
 
     if( tmpWndCnt == 0 ) {
         return;
     }
-    found = FALSE;
+    found = false;
 
     for( i = 0; i < tmpWndCnt; i++ ) {
         if( tmpWndList[i] == hwnd ) {
             for( j = i; j < tmpWndCnt - 1; j++ ) {
                 tmpWndList[j] = tmpWndList[j + 1];
             }
-            found = TRUE;
+            found = true;
             break;
         }
     }
@@ -274,9 +274,9 @@ INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
             tmpSpyAll = !tmpSpyAll;
             CheckDlgButton( hwnd, SELWIN_SPYALL, ( tmpSpyAll ) ? BST_CHECKED : BST_UNCHECKED );
             ctl = GetDlgItem( hwnd, SELWIN_ADD );
-            EnableWindow( ctl, !tmpSpyAll );
+            EnableWindow( ctl, ( tmpSpyAll ) ? FALSE : TRUE );
             ctl = GetDlgItem( hwnd, SELWIN_DELETE );
-            EnableWindow( ctl, !tmpSpyAll );
+            EnableWindow( ctl, ( tmpSpyAll ) ? FALSE : TRUE );
             setUpWindows();
             break;
         case SELWIN_LISTBOX:
@@ -366,7 +366,7 @@ INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
 /*
  * DoShowSelectedDialog - start SELETEDWINS dialog
  */
-void DoShowSelectedDialog( HWND hwnd, BOOL *spyall )
+void DoShowSelectedDialog( HWND hwnd, bool *spyall )
 {
     DLGPROC     dlgproc;
     INT_PTR     rc;
