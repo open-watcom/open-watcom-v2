@@ -38,7 +38,7 @@
 #include "intdlg.h"
 #include "stat.h"
 #include "stackt.h"
-#include "log.h"
+#include "drwatlog.h"
 #include "dmptask.h"
 #include "taskctl.h"
 #include "mem.h"
@@ -163,7 +163,7 @@ void DoHeapDialog( HWND );
 /* inth.asm */
 void FAR PASCAL IntHandler( void );
 
-/* log.c */
+/* drwatlog.c */
 void StartLogFile( void );
 void FinishLogFile( void );
 void GetProfileInfo( void );

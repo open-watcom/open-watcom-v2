@@ -10,7 +10,7 @@
 #include "thrdctl.h"
 #include "priority.h"
 #include "retcode.h"
-#include "log.h"
+#include "drwatlog.h"
 #include "end.h"
 #ifndef CHICAGO
 #include "memory.h"
@@ -67,7 +67,7 @@ END
 #include "thrdctl.dlg"
 #include "priority.dlg"
 #include "retcode.dlg"
-#include "log.dlg"
+#include "drwatlog.dlg"
 #include "end.dlg"
 #ifndef CHICAGO
 #include "memory.dlg"

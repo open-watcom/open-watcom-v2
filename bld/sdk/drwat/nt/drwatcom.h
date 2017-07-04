@@ -234,7 +234,7 @@ void Disassemble( address *addr, char *buff, int addbytes,unsigned max );
 bool AllocMadDisasmData(void);
 void DeAllocMadDisasmData(void);
 
-/* log.c */
+/* drwatlog.c */
 void EraseLog( void );
 void ViewLog( void );
 void MakeLog( ExceptDlgInfo *faultinfo );

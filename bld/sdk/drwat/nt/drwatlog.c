@@ -41,7 +41,7 @@
 #include "drwatcom.h"
 #include "srchmsg.h"
 #include "intdlg.h"
-#include "log.h"
+#include "drwatlog.h"
 #include "memdmp.h"
 #include "mem.h"
 #include "jdlg.h"
