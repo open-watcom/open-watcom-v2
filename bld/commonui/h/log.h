@@ -33,7 +33,6 @@
 #define _LOG_H_INCLUDED
 
 #include <stdio.h>
-#include "logi.h"
 
 
 #define LOG_ACTION_TRUNC                1
@@ -58,23 +57,14 @@ typedef struct logconfig {
     bool                query_for_name;
 } LogConfig;
 
-typedef struct loginfo {
-    LogConfig           config;
-    void                (*writefn)( FILE * );
-    HANDLE              instance;
-    HWND                hwnd;
-    bool                init;
-} LogInfo;
-
 #define NO_BUF_LINES                    100
 
-void    LogInit( HWND hwnd, HANDLE inst, void (*writefn)( FILE * ) );
-bool    LogOpen( void );
+void    LogInit( HWND hwnd, HANDLE inst, void (*headerfn)( FILE * ) );
+void    LogFini( void );
 void    LogOut( char *res );
 void    LogSetDef( void );
 void    LogGetConfig( LogConfig *config );
 void    LogSetConfig( LogConfig *config );
-void    LogClose( void );
 bool    LogPauseToggle( void );
 bool    LogToggle( void );
 void    LogConfigure( void );

@@ -57,7 +57,7 @@ WINEXPORT UINT_PTR CALLBACK LBSaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wpara
 /*
  * writeListBoxContents
  */
-static bool writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND listbox )
+static bool writeListBoxContents( void (*headerfn)( FILE * ), char *fname, HWND listbox )
 {
     int         i;
     int         count;
@@ -68,8 +68,8 @@ static bool writeListBoxContents( void (*writefn)( FILE * ), char *fname, HWND l
     if( f == NULL ) {
         return( false );
     }
-    if( writefn != NULL ) {
-        writefn( f );
+    if( headerfn != NULL ) {
+        headerfn( f );
     }
     count = (int)SendMessage( listbox, LB_GETCOUNT, 0, 0L );
     if( count == LB_ERR ) {
@@ -268,7 +268,7 @@ void ReportSave( HWND parent, const char *fname, const char *appname, bool save_
 /*
  * SaveListBox - save out a list box
  */
-void SaveListBox( int how, void (*writefn)( FILE * ), const char *tmpname,
+void SaveListBox( int how, void (*headerfn)( FILE * ), const char *tmpname,
                   const char *appname, HWND mainhwnd, HWND listbox )
 {
     char        fname[_MAX_PATH];
@@ -288,7 +288,7 @@ void SaveListBox( int how, void (*writefn)( FILE * ), const char *tmpname,
         hourglass = LoadCursor( NULL, IDC_WAIT );
         SetCapture( mainhwnd );
         oldcursor = SetCursor( hourglass );
-        ret = writeListBoxContents( writefn, fname, listbox );
+        ret = writeListBoxContents( headerfn, fname, listbox );
         SetCursor( oldcursor );
         ReleaseCapture();
         ReportSave( mainhwnd, fname, appname, ret );

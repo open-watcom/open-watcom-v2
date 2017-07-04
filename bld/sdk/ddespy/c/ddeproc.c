@@ -474,13 +474,13 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
     case WM_ENDSESSION:
         if( wparam ) {
             SaveConfigFile();
-            LogClose();
+            LogFini();
         }
         break;
     case WM_DESTROY:
         HintWndDestroy( info->hintbar );
         HintFini();
-        LogClose();
+        LogFini();
         FreeProcInstance( (FARPROC)DDEProcInst );
         SaveConfigFile();
         FiniTrackWnd();

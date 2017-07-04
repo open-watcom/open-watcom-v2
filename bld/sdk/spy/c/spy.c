@@ -144,7 +144,7 @@ void SpyFini( void )
     CvrCtl3DFini( Instance );
 #endif
     ClearFilter();
-    LogClose();
+    LogFini();
     SaveSpyConfig( NULL );
 #ifdef __WINDOWS__
     FreeProcInstance( (FARPROC)HandleMessageInst );
