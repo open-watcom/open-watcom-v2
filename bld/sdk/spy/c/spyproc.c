@@ -242,9 +242,7 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         SET_WNDINFO( hwnd, (LONG_PTR)SpyListBox );
         CreateSpyTool( hwnd );
         ShowSpyTool( SpyMainWndInfo.show_toolbar );
-        if( SpyMainWndInfo.show_toolbar ) {
-            CheckMenuItem( mh, SPY_SHOW_TOOLBAR, MF_CHECKED | MF_BYCOMMAND );
-        }
+        CheckMenuItem( mh, SPY_SHOW_TOOLBAR, MF_BYCOMMAND | (( SpyMainWndInfo.show_toolbar ) ? MF_CHECKED : MF_UNCHECKED) );
         LogInit( hwnd, Instance, LogSpyBoxHeader );
         CheckMenuItem( SpyMenu, SPY_AUTO_SCROLL, MF_CHECKED );
         EnableMenuItem( SpyMenu, SPY_ADD_WINDOW, MF_GRAYED );
@@ -309,12 +307,8 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         case SPY_SHOW_TOOLBAR:
             SpyMainWndInfo.show_toolbar = !SpyMainWndInfo.show_toolbar;
             mh = GetMenu( hwnd );
-            if( SpyMainWndInfo.show_toolbar ) {
-                CheckMenuItem( mh, SPY_SHOW_TOOLBAR, MF_CHECKED | MF_BYCOMMAND );
-            } else {
-                CheckMenuItem( mh, SPY_SHOW_TOOLBAR, MF_UNCHECKED | MF_BYCOMMAND );
-            }
             ShowSpyTool( SpyMainWndInfo.show_toolbar );
+            CheckMenuItem( mh, SPY_SHOW_TOOLBAR, MF_BYCOMMAND | (( SpyMainWndInfo.show_toolbar ) ? MF_CHECKED : MF_UNCHECKED) );
             GetClientRect( hwnd, &area );
             ResizeSpyBox( area.right - area.left, area.bottom - area.top );
             break;
@@ -469,11 +463,9 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             break;
         case SPY_ANOTHER_WINDOW:
             if( SpyState == NEITHER || spyAll ) {
-                SendMessage( hwnd, WM_COMMAND,
-                             GET_WM_COMMAND_MPS( SPY_WINDOW, 0, 0 ) );
+                SendMessage( hwnd, WM_COMMAND, GET_WM_COMMAND_MPS( SPY_WINDOW, 0, 0 ) );
             } else {
-                SendMessage( hwnd, WM_COMMAND,
-                             GET_WM_COMMAND_MPS( SPY_ADD_WINDOW, 0, 0 ) );
+                SendMessage( hwnd, WM_COMMAND, GET_WM_COMMAND_MPS( SPY_ADD_WINDOW, 0, 0 ) );
             }
             break;
         case SPY_PEEK_WINDOW:
@@ -536,8 +528,7 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         GetClientRect( hwnd, &area );
         area.top = area.bottom - statusHite;
         hinthwnd = GetHintHwnd( StatusHdl );
-        MoveWindow( hinthwnd, area.left, area.top,
-                    area.right - area.left, statusHite, TRUE );
+        MoveWindow( hinthwnd, area.left, area.top, area.right - area.left, statusHite, TRUE );
         ResizeSpyBox( LOWORD( lparam ), HIWORD( lparam ) );
         ResizeSpyTool( LOWORD( lparam ), HIWORD( lparam ) );
         showHintBar( hwnd );

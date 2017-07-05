@@ -38,8 +38,8 @@
 WINEXPORT INT_PTR CALLBACK PickDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
 static HWND     LastFramed;
-static bool     Cancelled;
-static bool     Picking;
+static bool     Cancelled = false;
+static bool     Picking = false;
 static HWND     PickDialogOK;
 static HWND     PickDialogIcon;
 static ctl_id   pickProcCmdId;

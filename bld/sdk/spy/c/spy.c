@@ -156,8 +156,7 @@ void SpyFini( void )
 /*
  * WinMain - main entry point
  */
-int WINMAINENTRY WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline,
-                          int cmdshow )
+int WINMAINENTRY WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int cmdshow )
 {
     MSG         msg;
 #ifdef __NT__

@@ -116,7 +116,8 @@ void ProcessIncomingMessage( UINT msgid, char *class_name, char *res )
  */
 void SetFilterMsgs( MsgClass type, bool val, bool is_watch )
 {
-    WORD    i, j;
+    WORD    i;
+    WORD    j;
 
     for( i = 0; i < ClassMessagesSize; i++ ) {
         for( j = 0; j < ClassMessages[i].message_array_size; j++ ) {
@@ -137,7 +138,9 @@ void SetFilterMsgs( MsgClass type, bool val, bool is_watch )
  */
 void SetFilterSaveBitsMsgs( MsgClass type, bool val, bool *bits )
 {
-    WORD    i, j, k;
+    WORD    i;
+    WORD    j;
+    WORD    k;
 
     k = 0;
     for( i = 0; i < ClassMessagesSize; i++ ) {
@@ -166,7 +169,9 @@ void InitMessages( void )
 bool *SaveBitState( bool is_watch )
 {
     bool        *data;
-    WORD        i, j, k;
+    WORD        i;
+    WORD        j;
+    WORD        k;
     bool        ft;
 
     data = MemAlloc( TotalMessageArraySize );
@@ -208,7 +213,9 @@ bool *CloneBitState( bool *old ) {
  */
 void RestoreBitState( bool *data, bool is_watch )
 {
-    WORD        i, j, k;
+    WORD        i;
+    WORD        j;
+    WORD        k;
     bool        ft;
 
     if( data == NULL ) {
@@ -254,7 +261,8 @@ void CopyBitState( bool *dst, bool *src )
  */
 void ClearMessageCount( void )
 {
-    WORD    i, j;
+    WORD        i;
+    WORD        j;
 
     for( i = 0; i < ClassMessagesSize; i++ ) {
         for( j = 0; j < ClassMessages[i].message_array_size; j++ ) {
