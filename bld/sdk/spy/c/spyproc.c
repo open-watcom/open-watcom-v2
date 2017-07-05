@@ -252,8 +252,7 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         EnableMenuItem( SpyMenu, SPY_OFFON, MF_GRAYED );
         if( SpyMainWndInfo.on_top ) {
             CheckMenuItem( mh, SPY_TOP, MF_CHECKED | MF_BYCOMMAND );
-            SetWindowPos( hwnd, HWND_TOPMOST, 0, 0, 0, 0,
-                          SWP_NOMOVE | SWP_NOSIZE );
+            SetWindowPos( hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
         }
         break;
     case WM_TIMER:
@@ -432,11 +431,9 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             break;
         case SPY_PAUSE_LOG:
             if( LogPauseToggle() ) {
-                CheckMenuItem( SpyMenu, SPY_PAUSE_LOG,
-                               MF_BYCOMMAND | MF_CHECKED );
+                CheckMenuItem( SpyMenu, SPY_PAUSE_LOG, MF_BYCOMMAND | MF_CHECKED );
             } else {
-                CheckMenuItem( SpyMenu, SPY_PAUSE_LOG,
-                               MF_BYCOMMAND | MF_UNCHECKED );
+                CheckMenuItem( SpyMenu, SPY_PAUSE_LOG, MF_BYCOMMAND | MF_UNCHECKED );
             }
             break;
         case SPY_PAUSE_MESSAGES:
