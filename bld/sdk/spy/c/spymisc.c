@@ -93,13 +93,13 @@ void GetWindowName( HWND hwnd, char *str )
         return;
     }
     len = GetWindowText( hwnd, name, sizeof( name ) );
-    name[len] = 0;
+    name[len] = '\0';
     if( len == 0 ) {
         GetHexStr( str, (HWNDINT)(ULONG_PTR)hwnd, HWND_HEX_LEN );
-        str[HWND_HEX_LEN] = 0;
+        str[HWND_HEX_LEN] = '\0';
     } else {
         GetHexStr( hexstr, (HWNDINT)(ULONG_PTR)hwnd, HWND_HEX_LEN );
-        hexstr[HWND_HEX_LEN] = 0;
+        hexstr[HWND_HEX_LEN] = '\0';
         sprintf( str, "%s: %s", hexstr, name );
     }
 
@@ -124,8 +124,8 @@ void GetWindowStyleString( HWND hwnd, char *str, char *sstr )
     exstyle = GET_WNDEXSTYLE( hwnd );
 
     GetHexStr( str, style, STYLE_HEX_LEN );
-    str[STYLE_HEX_LEN] = 0;
-    sstr[0] = 0;
+    str[STYLE_HEX_LEN] = '\0';
+    sstr[0] = '\0';
 
     if( style & WS_CHILD ) {
         id = GET_ID( hwnd );
@@ -142,7 +142,7 @@ void GetWindowStyleString( HWND hwnd, char *str, char *sstr )
     }
 
     len = GetClassName( hwnd, tmp, sizeof( tmp ) );
-    tmp[len] = 0;
+    tmp[len] = '\0';
     for( i = 0; i < ClassStylesSize; i++ ) {
         if( stricmp( tmp, ClassStyles[i].class_name ) == 0 ) {
             for( j = 0; j < ClassStyles[i].style_array_size; j++ ) {
@@ -174,8 +174,8 @@ void GetClassStyleString( HWND hwnd, char *str, char *sstr )
     style = GET_CLASS_STYLE( hwnd );
 
     GetHexStr( str, style, STYLE_HEX_LEN  );
-    str[STYLE_HEX_LEN] = 0;
-    sstr[0] = 0;
+    str[STYLE_HEX_LEN] = '\0';
+    sstr[0] = '\0';
 
     for( i = 0; i < ClassStyleArraySize; i++ ) {
         if( (style & ClassStyleArray[i].mask) == ClassStyleArray[i].flags ) {
@@ -201,7 +201,7 @@ void DumpToComboBox( char *str, HWND cb )
             tmp[i++] = *str;
             str++;
         }
-        tmp[i] = 0;
+        tmp[i] = '\0';
         if( i != 0 ) {
             str++;
             SendMessage( cb, CB_ADDSTRING, 0, (LPARAM)(LPCSTR)tmp );
@@ -222,7 +222,7 @@ void FormatSpyMessage( char *msg, LPMSG pmsg, char *res )
     GetHexStr( res + SPYOUT_MSG, pmsg->message, SPYOUT_MSG_LEN );
     GetHexStr( res + SPYOUT_WPARAM, pmsg->wParam, SPYOUT_WPARAM_LEN );
     GetHexStr( res + SPYOUT_LPARAM, pmsg->lParam, SPYOUT_LPARAM_LEN );
-    res[SPYOUT_LENGTH] = 0;
+    res[SPYOUT_LENGTH] = '\0';
 
 } /* FormatSpyMessage */
 
@@ -242,7 +242,7 @@ void SetSpyState( spystate ss )
         if( str[1] != '<' ) {
             str[0] = '<';
             str[len + 1] = '>';
-            str[len + 2] = 0;
+            str[len + 2] = '\0';
             SetWindowText( SpyMainWindow, str );
         }
         rcstr = GetRCString( STR_SPY_ON );
@@ -252,7 +252,7 @@ void SetSpyState( spystate ss )
         rcstr = GetRCString( STR_SPY_OFF );
         ModifyMenu( SpyMenu, SPY_OFFON, MF_BYCOMMAND | MF_ENABLED | MF_STRING, SPY_OFFON, rcstr );
         if( str[1] == '<' ) {
-            str[len] = 0;
+            str[len] = '\0';
             SetWindowText( SpyMainWindow, str + 2 );
         }
         break;
@@ -260,7 +260,7 @@ void SetSpyState( spystate ss )
         rcstr = GetRCString( STR_SPY_OFF );
         ModifyMenu( SpyMenu, SPY_OFFON, MF_BYCOMMAND | MF_GRAYED | MF_STRING, SPY_OFFON, rcstr );
         if( str[1] == '<' ) {
-            str[len] = 0;
+            str[len] = '\0';
             SetWindowText( SpyMainWindow, str + 2 );
         }
         break;
@@ -282,7 +282,7 @@ bool GetFileName( char *ext, file_dlg_type type, char *fname )
     OPENFILENAME        of;
     BOOL                rc;
 
-    fname[0] = 0;
+    fname[0] = '\0';
     memset( &of, 0, sizeof( OPENFILENAME ) );
     of.lStructSize = sizeof( OPENFILENAME );
     of.hwndOwner = SpyMainWindow;

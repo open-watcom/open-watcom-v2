@@ -30,12 +30,6 @@
 ****************************************************************************/
 
 
-#ifdef __NT__
-    #define SPY_CLASS_NAME  "watspy_NT"
-#else
-    #define SPY_CLASS_NAME  "watspy"
-#endif
-
 #ifdef SPYDLL
 #define SPYDLLENTRY __declspec(dllexport)
 #elif defined( __NT__ )

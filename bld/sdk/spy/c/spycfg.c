@@ -88,10 +88,9 @@ void LoadSpyConfig( char *fname )
     /*
      * what specific messages to watch
      */
+    vals[TotalMessageArraySize] = '\0';
     memset( vals, '1', TotalMessageArraySize );
-    vals[TotalMessageArraySize] = 0;
     GetPrivateProfileString( spyApp, "watch", vals, str, TotalMessageArraySize + 1, fname );
-
     for( j = 0, i = 0; j < ClassMessagesSize; j++ ) {
         for( k = 0; k < ClassMessages[j].message_array_size; k++ ) {
             ClassMessages[j].message_array[k].watch = ( str[i++] != '0' );
@@ -112,8 +111,8 @@ void LoadSpyConfig( char *fname )
     /*
      * what message classes to watch
      */
+    vals[FILTER_ENTRIES] = '\0';
     memset( vals, '1', FILTER_ENTRIES );
-    vals[FILTER_ENTRIES] = 0;
     GetPrivateProfileString( spyApp, "watchclasses", vals, str, FILTER_ENTRIES + 1, fname );
     for( i = 0; i < FILTER_ENTRIES; i++ ) {
         Filters[i].watch = ( str[i] != '0' );
@@ -131,9 +130,7 @@ void LoadSpyConfig( char *fname )
     /*
      * get misc info
      */
-    vals[0] = '1';
-    vals[1] = 0;
-    GetPrivateProfileString( spyApp, "autosavecfg", vals, str, 2, fname );
+    GetPrivateProfileString( spyApp, "autosavecfg", "1", str, 2, fname );
     AutoSaveConfig = ( str[0] != '0');
     CheckMenuItem( SpyMenu, SPY_MESSAGES_ASCFG, ( AutoSaveConfig ) ? MF_CHECKED : MF_UNCHECKED );
 
@@ -179,7 +176,7 @@ void SaveSpyConfig( char *fname )
                 str[i++] = ( ClassMessages[j].message_array[k].watch ) ? '1' : '0';
             }
         }
-        str[TotalMessageArraySize] = 0;
+        str[TotalMessageArraySize] = '\0';
         WritePrivateProfileString( spyApp, "watch", str, fname );
 
         /*
@@ -191,7 +188,7 @@ void SaveSpyConfig( char *fname )
                 str[i++] = ( ClassMessages[j].message_array[k].stopon ) ? '1' : '0';
             }
         }
-        str[TotalMessageArraySize] = 0;
+        str[TotalMessageArraySize] = '\0';
         WritePrivateProfileString( spyApp, "stopon", str, fname );
 
         /*
@@ -200,7 +197,7 @@ void SaveSpyConfig( char *fname )
         for( i = 0; i < FILTER_ENTRIES; i++ ) {
             str[i] = ( Filters[i].watch ) ? '1' : '0';
         }
-        str[FILTER_ENTRIES] = 0;
+        str[FILTER_ENTRIES] = '\0';
         WritePrivateProfileString( spyApp, "watchclasses", str, fname );
 
         /*
@@ -209,16 +206,14 @@ void SaveSpyConfig( char *fname )
         for( i = 0; i < FILTER_ENTRIES; i++ ) {
             str[i] = ( Filters[i].stopon ) ? '1' : '0';
         }
-        str[FILTER_ENTRIES] = 0;
+        str[FILTER_ENTRIES] = '\0';
         WritePrivateProfileString( spyApp, "stoponclasses", str, fname );
     }
 
     /*
      * save misc info
      */
-    str[0] = ( AutoSaveConfig ) ? '1' : '0';
-    str[1] = 0;
-    WritePrivateProfileString( spyApp, "autosavecfg", str, fname );
+    WritePrivateProfileString( spyApp, "autosavecfg", ( AutoSaveConfig ) ? "1" : "0", fname );
 
 } /* SaveSpyConfig */
 

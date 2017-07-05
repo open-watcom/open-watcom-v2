@@ -35,12 +35,12 @@
 #include "log.h"
 
 
-#if defined( __NT__ )
-    #define LISTBOX_X       6
-    #define LISTBOX_Y       6
-#else
+#ifdef __WINDOWS__
     #define LISTBOX_X       10
     #define LISTBOX_Y       10
+#else
+    #define LISTBOX_X       6
+    #define LISTBOX_Y       6
 #endif
 
 static int          xChar, yChar;

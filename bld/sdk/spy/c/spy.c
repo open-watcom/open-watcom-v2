@@ -80,10 +80,10 @@ static bool spyInit( HANDLE currinst, HANDLE previnst, int cmdshow )
         wc.hInstance = Instance;
         wc.hIcon = LoadIcon( ResInstance, "APPLICON" );
         wc.hCursor = LoadCursor( (HANDLE)NULL, IDC_ARROW);
-#ifdef __NT__
-        wc.hbrBackground = NULL;
-#else
+#ifdef __WINDOWS__
         wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+#else
+        wc.hbrBackground = NULL;
 #endif
         wc.lpszMenuName = NULL;
         wc.lpszClassName = SPY_CLASS_NAME;
@@ -91,7 +91,7 @@ static bool spyInit( HANDLE currinst, HANDLE previnst, int cmdshow )
             return( false );
         }
 
-#ifdef USE_SNAP_WINDOW
+#ifdef __NT__
         if( !RegisterSnapClass( Instance ) ) {
             return( false );
         }

@@ -383,12 +383,12 @@ INT_PTR CALLBACK MessageSelectDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
         while( str[i] != ' ' ) {
             i++;
         }
-        str[i] = 0;
+        str[i] = '\0';
         strptr = MemAlloc( strlen( str ) + 1 );
         strcpy( strptr, str );
         SET_DLGDATA( hwnd, strptr );
         setMessageName( hwnd, str );
-        str[SPYOUT_MSG + SPYOUT_MSG_LEN] = 0;
+        str[SPYOUT_MSG + SPYOUT_MSG_LEN] = '\0';
         id = strtoul( str + SPYOUT_MSG, &endptr, 16 );
         if( endptr != str + SPYOUT_MSG + SPYOUT_MSG_LEN ) {
             EndDialog( hwnd, 0 );
@@ -451,10 +451,10 @@ INT_PTR CALLBACK MessageSelectDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
         switch( cmdid ) {
         case MSGSEL_HELP:
             strptr = (char *)GET_DLGDATA( hwnd );
-#ifdef __NT__
-            WWinHelp( hwnd, "win32sdk.hlp", HELP_KEY, (LPARAM)strptr );
-#else
+#ifdef __WINDOWS__
             WWinHelp( hwnd, "win31wh.hlp", HELP_KEY, (LPARAM)strptr );
+#else
+            WWinHelp( hwnd, "win32sdk.hlp", HELP_KEY, (LPARAM)strptr );
 #endif
             break;
         case MSGSEL_SHOWINFO:

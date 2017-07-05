@@ -45,7 +45,7 @@ void LogSpyBoxHeader( FILE *f )
 
     tod = time( NULL );
     strcpy( buff, ctime( &tod ) );
-    buff[strlen( buff ) - 1] = 0;
+    buff[strlen( buff ) - 1] = '\0';
 
     fwrite( SpyName, 1, strlen( SpyName ), f );
     fwrite( "\n", 1, 1, f );

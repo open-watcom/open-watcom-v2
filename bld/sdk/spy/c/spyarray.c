@@ -112,10 +112,10 @@
 /**********************************************************/
 
 #define msgpick1(a,b,c,d,e,f)   { a, b, c, d, e, f },
-#ifdef __NT__
-#define msgpick2(a,b,c,d,e,f)   { a, b, c, d, e, f },
-#else
+#ifdef __WINDOWS__
 #define msgpick2(a,b,c,d,e,f)
+#else
+#define msgpick2(a,b,c,d,e,f)   { a, b, c, d, e, f },
 #endif
 
 static message _NEAR MessageArray[] =  {

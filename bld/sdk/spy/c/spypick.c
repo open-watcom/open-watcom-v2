@@ -97,7 +97,7 @@ void UpdateFramedInfo( HWND dlg, HWND framedhwnd, bool ispick  )
         SetDlgItemText( dlg, PEEKMSG_PARENT, str );
 
         len = GetClassName( framedhwnd, name, sizeof( name ) );
-        name[len] = 0;
+        name[len] = '\0';
         SetDlgItemText( dlg, PEEKMSG_CLASS, name );
 
         if( framedhwnd != NULL ) {
@@ -121,10 +121,10 @@ void UpdateFramedInfo( HWND dlg, HWND framedhwnd, bool ispick  )
     } else {
 
         GetHexStr( id, (HWNDINT)(ULONG_PTR)framedhwnd, SPYOUT_HWND_LEN );
-        id[SPYOUT_HWND_LEN] = 0;
+        id[SPYOUT_HWND_LEN] = '\0';
         SetDlgItemText( dlg, WINSEL_HWND, id );
         len = GetWindowText( framedhwnd, name, sizeof( name ) );
-        name[len] = 0;
+        name[len] = '\0';
         SetDlgItemText( dlg, WINSEL_NAME, name );
     }
 

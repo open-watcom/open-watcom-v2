@@ -67,7 +67,7 @@ void ProcessIncomingMessage( UINT msgid, char *class_name, char *res )
     char        buf[256];
     char        hexstr[20];
 
-    res[0] = 0;
+    res[0] = '\0';
     msg = GetMessageDataFromID( msgid, class_name );
     if( msg != NULL ) {
         if( msg->watch ) {

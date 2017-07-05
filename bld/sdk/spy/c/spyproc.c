@@ -130,7 +130,7 @@ static void setSingleWindow( HWND hwnd, HWND selwin )
     char        hexstr[20];
 
     len = GetWindowText( selwin, tmp, sizeof( tmp ) );
-    tmp[len] = 0;
+    tmp[len] = '\0';
     GetHexStr( hexstr, (HWNDINT)(ULONG_PTR)selwin, HWND_HEX_LEN );
     hexstr[HWND_HEX_LEN] = '\0';
     if( len == 0 ) {

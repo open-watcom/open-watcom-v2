@@ -151,11 +151,11 @@ static void addFormattedWindow( HWND hwnd )
     for( i = 0; i < indentLevel; i++ ) {
         lead_bl[i] = ' ';
     }
-    lead_bl[i] = 0;
+    lead_bl[i] = '\0';
 
-    name[0] = 0;
+    name[0] = '\0';
     len = GetWindowText( hwnd, name, sizeof( name ) );
-    name[len] = 0;
+    name[len] = '\0';
     wmark = " ";
     if( !tmpSpyAll ) {
         for( i = 0; i < tmpWndCnt; i++ ) {
@@ -314,7 +314,7 @@ INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
                 break;
             }
             ch = res[SPYOUT_HWND_LEN];
-            res[SPYOUT_HWND_LEN] = 0;
+            res[SPYOUT_HWND_LEN] = '\0';
             id = (HWND)strtol( res, NULL, 16 );
             if( parm == SELWIN_LISTBOX ) {
                 if( ch == '*' ) {
