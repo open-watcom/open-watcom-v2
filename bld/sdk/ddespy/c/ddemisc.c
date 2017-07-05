@@ -54,16 +54,16 @@ void LogHeader( FILE *f )
     }
     buf[i] = '\0';
     fwrite( buf, 1, strlen( buf ), f );
-    fwrite( "\r\n", 1, 2, f );
+    fwrite( "\n", 1, 1, f );
     RCsprintf( buf, STR_LOG_HEADER, asctime( localtime( &tm ) ) );
     fwrite( buf, 1, strlen( buf ), f );
-    fwrite( "\r\n", 1, 2, f );
+    fwrite( "\n", 1, 1, f );
     for( i = 0; i < 80; i++ ) {
         buf[i] = '-';
     }
     buf[i] = '\0';
     fwrite( buf, 1, strlen( buf ), f );
-    fwrite( "\r\n", 1, 2, f );
+    fwrite( "\n", 1, 1, f );
 
 } /* LogHeader */
 
