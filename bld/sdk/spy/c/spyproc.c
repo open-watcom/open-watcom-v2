@@ -142,16 +142,6 @@ static void setSingleWindow( HWND hwnd, HWND selwin )
 } /* setSingleWindow */
 
 /*
- * SaveExtra - save extra to file
- */
-static void SaveExtra( FILE *f )
-{
-    SpyLogTitle( f );
-
-} /* SaveExtra */
-
-
-/*
  * setUpForPick - for windows Send a WM_TIMER message to the callback
  *              - for NT this function minimizes the spy window and sets
  *                a timer.  When the timer goes off the pick dialog is
@@ -354,10 +344,10 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             }
             break;
         case SPY_SAVE_AS:
-            SaveListBox( SLB_SAVE_AS, SaveExtra, "", SpyName, hwnd, SpyListBox );
+            SaveListBox( SLB_SAVE_AS, SpyLogTitle, SpyLogLine, "", SpyName, hwnd, SpyListBox );
             break;
         case SPY_SAVE:
-            SaveListBox( SLB_SAVE_TMP, SaveExtra, ".\\wspy.txt", SpyName, hwnd, SpyListBox );
+            SaveListBox( SLB_SAVE_TMP, SpyLogTitle, SpyLogLine, ".\\wspy.txt", SpyName, hwnd, SpyListBox );
             break;
         case SPY_LOG:
             if( LogToggle() ) {
@@ -567,4 +557,3 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
     return( 0 );
 
 } /* SpyWindowProc */
-

@@ -326,10 +326,10 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             ProcessMark( hwnd, Instance, RecordMsg );
             break;
         case DDEMENU_SAVE:
-            SaveListBox( SLB_SAVE_TMP, DumpHeader, ".\\wdde.txt", AppName, hwnd, info->list.box );
+            SaveListBox( SLB_SAVE_TMP, DumpHeader, DumpLine, ".\\wdde.txt", AppName, hwnd, info->list.box );
             break;
         case DDEMENU_SAVE_AS:
-            SaveListBox( SLB_SAVE_AS, DumpHeader, "", AppName, hwnd, info->list.box );
+            SaveListBox( SLB_SAVE_AS, DumpHeader, DumpLine, "", AppName, hwnd, info->list.box );
             break;
         case DDEMENU_TOOLBAR:
             ToggleTB( hwnd );

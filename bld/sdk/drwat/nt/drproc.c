@@ -58,9 +58,9 @@ static void MarkPrint( char *str )
 }
 
 /*
- * SaveExtra - save extra to file
+ * SaveHeader - save header to file
  */
-static void SaveExtra( FILE *f )
+static void SaveHeader( FILE *f )
 {
     time_t      tod;
 
@@ -68,7 +68,23 @@ static void SaveExtra( FILE *f )
     tod = time( NULL );
     fprintf( f,"%s", ctime( &tod ) );
     fprintf( f,"------------------------------------------------------------------------\n" );
-} /* SaveExtra */
+} /* SaveHeader */
+
+static char *SaveLine( bool listview, HWND list, int line )
+{
+    static char     str[256];
+
+    str[0] = '\0';
+#ifdef __NT__
+    if( listview ) {
+    } else {
+#endif
+        SendMessage( list, LB_GETTEXT, line, (LPARAM)(LPSTR)str );
+#ifdef __NT__
+    }
+#endif
+    return( str );
+}
 
 /*
  * QueryEnddlgProc
@@ -224,10 +240,10 @@ LONG CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             ClearListBox( MainLBox );
             break;
         case MENU_SAVE_AS:
-            SaveListBox( SLB_SAVE_AS, SaveExtra, "", AppName, hwnd, GetListBoxHwnd( MainLBox ) );
+            SaveListBox( SLB_SAVE_AS, SaveHeader, SaveLine, "", AppName, hwnd, GetListBoxHwnd( MainLBox ) );
             break;
         case MENU_SAVE:
-            SaveListBox( SLB_SAVE_TMP, SaveExtra, ".\\drwat.txt", AppName, hwnd, GetListBoxHwnd( MainLBox ) );
+            SaveListBox( SLB_SAVE_TMP, SaveHeader, SaveLine, ".\\drwat.txt", AppName, hwnd, GetListBoxHwnd( MainLBox ) );
             break;
         case MENU_FONT:
             if( ChooseMonoFont( hwnd ) ) {

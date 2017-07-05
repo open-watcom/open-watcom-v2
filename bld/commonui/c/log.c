@@ -142,7 +142,7 @@ static void flushLog( bool free )
     WORD        i;
     FILE        *f;
 
-    f = fopen( LogCurInfo.config.curname, "wt+" );
+    f = fopen( LogCurInfo.config.curname, "at" );
     if( f == NULL ) {
         return;
     }
@@ -411,7 +411,7 @@ static bool LogOpen( void )
     case LOG_ACTION_TRUNC:
         break;
     case LOG_ACTION_APPEND:
-        fmode = "wt+";
+        fmode = "at";
         break;
     case LOG_ACTION_QUERY:
         if( !access( LogCurInfo.config.curname, F_OK ) ) {
@@ -420,7 +420,7 @@ static bool LogOpen( void )
             FreeProcInstance_DLG( dlgproc );
             switch( ret ) {
             case LOG_APPEND:
-                fmode = "wt+";
+                fmode = "at";
                 break;
             case LOG_REPLACE:
                 break;

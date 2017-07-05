@@ -291,6 +291,7 @@ extern void             GetSpyToolRect( RECT *prect );
 
 /* spylog.c */
 extern void             SpyLogTitle( FILE *f );
+extern char             *SpyLogLine( bool listview, HWND list, int line );
 
 /* spy.c */
 extern void             SpyFini( void );

@@ -307,6 +307,7 @@ void    SaveConfigFile( void );
 /* ddemisc.c */
 void    LogHeader( FILE *f );
 void    DumpHeader( FILE *fptr );
+char    *DumpLine( bool listview, HWND list, int line );
 bool    InitGblStrings( void );
 void    FiniRCStrings( void );
 

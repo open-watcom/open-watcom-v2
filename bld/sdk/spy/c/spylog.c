@@ -59,3 +59,50 @@ void SpyLogTitle( FILE *f )
     fwrite( "\r\n", 1, 2, f );
 
 } /* SpyLogTitle */
+
+char *SpyLogLine( bool listview, HWND list, int line )
+{
+    static char     str[256];
+
+    str[0] = '\0';
+#ifdef __NT__
+    if( listview ) {
+        LVITEM      lvi;
+        char        msg[256];
+        int         i;
+
+        lvi.mask = LVIF_TEXT;
+        lvi.iItem = line;
+        lvi.pszText = msg;
+        lvi.cchTextMax = sizeof( msg );
+        lvi.iSubItem = 0;
+        SendMessage( list, LVM_GETITEM, 0, (LPARAM)&lvi );
+        for( i = strlen( msg ); i < SPYOUT_HWND - 1; ++i ) {
+            msg[i] = ' ';
+        }
+        msg[i++] = ' ';
+        msg[i] = '\0';
+        strcat( str, msg );
+        lvi.iSubItem = 1;
+        SendMessage( list, LVM_GETITEM, 0, (LPARAM)&lvi );
+        strcat( msg, " " );
+        strcat( str, msg );
+        lvi.iSubItem = 2;
+        SendMessage( list, LVM_GETITEM, 0, (LPARAM)&lvi );
+        strcat( msg, " " );
+        strcat( str, msg );
+        lvi.iSubItem = 3;
+        SendMessage( list, LVM_GETITEM, 0, (LPARAM)&lvi );
+        strcat( msg, " " );
+        strcat( str, msg );
+        lvi.iSubItem = 4;
+        SendMessage( list, LVM_GETITEM, 0, (LPARAM)&lvi );
+        strcat( str, msg );
+    } else {
+#endif
+        SendMessage( list, LB_GETTEXT, line, (LPARAM)(LPSTR)str );
+#ifdef __NT__
+    }
+#endif
+    return( str );
+}

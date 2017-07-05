@@ -54,31 +54,56 @@
 /* Window callback functions prototypes */
 WINEXPORT UINT_PTR CALLBACK LBSaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
+static bool checkListView( HWND list )
+{
+#ifdef __WINDOWS__
+    /* unused parameters */ (void)list;
+    return( false );
+#else
+    char        tmp[20];
+
+    GetClassName( list, tmp, sizeof( tmp ) );
+    return( strcmp( tmp, WC_LISTVIEW ) == 0 );
+#endif
+}
+
 /*
  * writeListBoxContents
  */
-static bool writeListBoxContents( void (*headerfn)( FILE * ), char *fname, HWND listbox )
+static bool writeListBoxContents( void (*headerfn)(FILE *), char *(*linefn)(bool, HWND, int), char *fname, HWND listbox )
 {
     int         i;
     int         count;
     FILE        *f;
-    char        str[256];
+    char        *str;
+    bool        listview;
 
-    f = fopen( fname, "w" );
+    f = fopen( fname, "wt" );
     if( f == NULL ) {
         return( false );
     }
     if( headerfn != NULL ) {
         headerfn( f );
     }
-    count = (int)SendMessage( listbox, LB_GETCOUNT, 0, 0L );
-    if( count == LB_ERR ) {
-        fclose( f );
-        return( false );
-    }
-    for( i = 0; i < count; i++ ) {
-        SendMessage( listbox, LB_GETTEXT, i, (LPARAM)(LPSTR)str );
-        fprintf( f, "%s\n", str );
+    if( linefn != NULL ) {
+        listview = checkListView( listbox );
+#ifdef __NT__
+        if( listview ) {
+            count = (int)SendMessage( listbox, LVM_GETITEMCOUNT, 0, 0L );
+        } else {
+#endif
+            count = (int)SendMessage( listbox, LB_GETCOUNT, 0, 0L );
+            if( count == (int)LB_ERR ) {
+                fclose( f );
+                return( false );
+            }
+#ifdef __NT__
+        }
+#endif
+        for( i = 0; i < count; i++ ) {
+            str = linefn( listview, listbox, i );
+            fprintf( f, "%s\n", str );
+        }
     }
     fclose( f );
     return( true );
@@ -268,7 +293,7 @@ void ReportSave( HWND parent, const char *fname, const char *appname, bool save_
 /*
  * SaveListBox - save out a list box
  */
-void SaveListBox( int how, void (*headerfn)( FILE * ), const char *tmpname,
+void SaveListBox( int how, void (*headerfn)(FILE *), char *(*linefn)(bool, HWND, int), const char *tmpname,
                   const char *appname, HWND mainhwnd, HWND listbox )
 {
     char        fname[_MAX_PATH];
@@ -288,7 +313,7 @@ void SaveListBox( int how, void (*headerfn)( FILE * ), const char *tmpname,
         hourglass = LoadCursor( NULL, IDC_WAIT );
         SetCapture( mainhwnd );
         oldcursor = SetCursor( hourglass );
-        ret = writeListBoxContents( headerfn, fname, listbox );
+        ret = writeListBoxContents( headerfn, linefn, fname, listbox );
         SetCursor( oldcursor );
         ReleaseCapture();
         ReportSave( mainhwnd, fname, appname, ret );

@@ -85,6 +85,23 @@ void DumpHeader( FILE *fptr )
 
 } /* DumpHeader */
 
+
+char *DumpLine( bool listview, HWND list, int line )
+{
+    static char     str[256];
+
+    str[0] = '\0';
+#ifdef __NT__
+    if( listview ) {
+    } else {
+#endif
+        SendMessage( list, LB_GETTEXT, line, (LPARAM)(LPSTR)str );
+#ifdef __NT__
+    }
+#endif
+    return( str );
+}
+
 /*
  * InitGblStrings
  */

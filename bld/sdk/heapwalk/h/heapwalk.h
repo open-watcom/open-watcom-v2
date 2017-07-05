@@ -312,6 +312,7 @@ void ShowHeapObject( HWND lbhdl );
 
 /* hwsave.c */
 void PutOutGlobalHeader( FILE *fptr );
+char *DumpGlobalLine( bool listview, HWND list, int line );
 
 /* hwobjec.c */
 void ShowSelector( HWND list );
