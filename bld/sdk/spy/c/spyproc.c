@@ -543,7 +543,7 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         showHintBar( hwnd );
         return( DefWindowProc( hwnd, msg, wparam, lparam ) );
         break;
-#if defined( __NT__ )
+#ifdef __NT__
     case WM_ERASEBKGND: {
         static RECT r;
         GetClientRect( hwnd, &r );

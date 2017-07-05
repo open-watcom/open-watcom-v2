@@ -52,7 +52,7 @@
 #endif
 
 
-#if defined( _M_I86 )
+#ifdef _M_I86
     #define _NEAR   __near
 #else
     #define _NEAR
@@ -142,7 +142,7 @@ typedef enum {
 
 typedef struct {
     const char      *str;
-    WORD            id;
+    UINT            id;
     bool            watch   : 1;
     bool            stopon  : 1;
 } filter;

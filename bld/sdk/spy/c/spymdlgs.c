@@ -482,11 +482,11 @@ INT_PTR CALLBACK MessageSelectDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
             break;
         case MSGSEL_WATCH:
             msgPtr->watch = fl = !msgPtr->watch;
-            CheckDlgButton( hwnd, wparam, ( fl ) ? BST_CHECKED : BST_UNCHECKED );
+            CheckDlgButton( hwnd, (int)wparam, ( fl ) ? BST_CHECKED : BST_UNCHECKED );
             break;
         case MSGSEL_STOPON:
             msgPtr->stopon = fl = !msgPtr->stopon;
-            CheckDlgButton( hwnd, wparam, ( fl ) ? BST_CHECKED : BST_UNCHECKED );
+            CheckDlgButton( hwnd, (int)wparam, ( fl ) ? BST_CHECKED : BST_UNCHECKED );
             break;
         case IDOK:
             PostMessage( hwnd, WM_CLOSE, 0, 0L );
