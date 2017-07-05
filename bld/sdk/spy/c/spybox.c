@@ -358,6 +358,7 @@ void ResetSpyListBox( void )
 bool GetSpyBoxSelection( char *str )
 {
     int     sel;
+
 #ifdef __NT__
     if( !IsCommCtrlLoaded() ) {
 #endif
@@ -370,9 +371,10 @@ bool GetSpyBoxSelection( char *str )
 #ifdef __NT__
     } else {
         LVITEM  lvi;
-        char    buf[9];
+        char    buf[20];
+
         memset( str, ' ', SPYOUT_LENGTH );
-        str[SPYOUT_LENGTH - 1] = '\0';
+        str[SPYOUT_LENGTH] = '\0';
         sel = SendMessage( SpyListBox, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED );
         if( sel == (LRESULT)-1 ) {
             return( false );
@@ -381,7 +383,7 @@ bool GetSpyBoxSelection( char *str )
         lvi.iItem = (int)sel;
         lvi.iSubItem = 0;
         lvi.pszText = buf;
-        lvi.cchTextMax = SPYOUT_LENGTH;
+        lvi.cchTextMax = sizeof( buf );
         SendMessage( SpyListBox, LVM_GETITEM, 0, (LPARAM)&lvi );
         strcpy( str, buf );
         str[strlen( str )] = ' ';
@@ -398,4 +400,3 @@ bool GetSpyBoxSelection( char *str )
 #endif
 
 } /* GetSpyBoxSelection */
-

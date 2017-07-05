@@ -515,7 +515,7 @@ INT_PTR CALLBACK MessageSelectDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
 void DoMessageSelDialog( HWND hwnd )
 {
     DLGPROC     dlgproc;
-    char        str[80];
+    char        str[SPYOUT_LENGTH + 1];
 
     if( !GetSpyBoxSelection( str ) ) {
         return;
