@@ -148,7 +148,7 @@ static void flushLog( bool free )
     }
     for( i = 0; i < LinesUsed; i++ ) {
         fwrite( BufLines[i], 1, strlen( BufLines[i] ), f );
-        fwrite( "\r\n", 1, 2, f );
+        fwrite( "\n", 1, 1, f );
     }
     fclose( f );
     if( free ) {
@@ -442,7 +442,7 @@ static bool LogOpen( void )
     }
     fclose( f );
     LogCurInfo.config.logging = true;
-    LogCurInfo.config.paused = true;
+    LogCurInfo.config.paused = false;
     return( true );
 
 } /* LogOpen */
@@ -509,7 +509,8 @@ void LogInit( HWND hwnd, HANDLE inst, void (*headerfn)( FILE * ) )
 } /* LogInit */
 
 /*
- * LogFini - must be called after any other log functions to end
+ * LogFini - must be called as last log functions to do finalization
+ *             flush data etc.
  *
  */
 void LogFini( void )
