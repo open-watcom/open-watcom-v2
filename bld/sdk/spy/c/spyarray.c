@@ -101,6 +101,9 @@
 #ifndef WM_OTHERWINDOWDESTROYED
     #define WM_OTHERWINDOWDESTROYED         0x0043
 #endif
+#ifndef WM_IME_SYSTEM
+    #define WM_IME_SYSTEM                   0x0287
+#endif
 // RB_GETBANDINFO is defined differently in IE3 than in later versions.  This definition
 // facilitates recognizing both versions of the message.  RB_GETBANDINFO_IE3 is not an
 // official message name.

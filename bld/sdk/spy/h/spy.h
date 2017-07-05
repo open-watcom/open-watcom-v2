@@ -59,10 +59,8 @@
 #endif
 
 #ifdef __WINDOWS__
-    #define UINT_STR_LEN           4
     #define SPY_CLASS_NAME  "watspy"
 #else
-    #define UINT_STR_LEN           8
     #define SPY_CLASS_NAME  "watspy_NT"
 #endif
 
@@ -78,36 +76,53 @@ typedef enum {
 #define GET_TOOLBAR_HEIGHT( y ) ((y) + 2 * BORDER_Y( y ) + 3)
 #define TOOLBAR_HEIGHT          GET_TOOLBAR_HEIGHT( BITMAP_Y )
 
-/*
- * field length in spy messages
- */
 #ifdef __WINDOWS__
-    #define SPYOUT_HWND_LEN     4
-    #define SPYOUT_MSG_LEN      4
-    #define SPYOUT_WPARAM_LEN   4
-    #define SPYOUT_LPARAM_LEN   8
+    #define HWNDINT             UINT
 #else
-    #define SPYOUT_HWND_LEN     8
-    #define SPYOUT_MSG_LEN      8
-    #define SPYOUT_WPARAM_LEN   8
-  #if defined( _WIN64 )
-    #define SPYOUT_LPARAM_LEN   16
+    #define HWNDINT             ULONG_PTR
+#endif
+
+#define STYLE_HEX_LEN           8
+#ifdef __WINDOWS__
+    #define UINT_HEX_LEN        4
+    #define HWND_HEX_LEN        4
+    #define ID_HEX_LEN          4
+    #define WPARAM_HEX_LEN      4
+    #define LPARAM_HEX_LEN      8
+#else
+    #define UINT_HEX_LEN        8
+    #define ID_HEX_LEN          8
+  #ifdef _WIN64
+    #define HWND_HEX_LEN        16
+    #define WPARAM_HEX_LEN      16
+    #define LPARAM_HEX_LEN      16
   #else
-    #define SPYOUT_LPARAM_LEN   8
+    #define HWND_HEX_LEN        8
+    #define WPARAM_HEX_LEN      8
+    #define LPARAM_HEX_LEN      8
   #endif
 #endif
 
 /*
+ * field length in spy messages
+ */
+#define SPYOUT_NAME_LEN         29
+#define SPYOUT_HWND_LEN         HWND_HEX_LEN
+#define SPYOUT_MSG_LEN          ID_HEX_LEN
+#define SPYOUT_WPARAM_LEN       WPARAM_HEX_LEN
+#define SPYOUT_LPARAM_LEN       LPARAM_HEX_LEN
+
+/*
  * offsets in spy messages
  */
-#define SPYOUT_HWND             26
-#define SPYOUT_MSG              (SPYOUT_HWND + 1 + SPYOUT_HWND_LEN)
+#define SPYOUT_HWND             (0 + SPYOUT_NAME_LEN + 1)  /* 26 */
+#define SPYOUT_MSG              (SPYOUT_HWND + SPYOUT_HWND_LEN + 1)
 #ifdef __WINDOWS__
-    #define SPYOUT_WPARAM       (SPYOUT_MSG + 3 + SPYOUT_MSG_LEN)
-    #define SPYOUT_LPARAM       (SPYOUT_WPARAM + 2 + SPYOUT_WPARAM_LEN)
+    #define SPYOUT_WPARAM       (SPYOUT_MSG + SPYOUT_MSG_LEN + 3)
+    #define SPYOUT_LPARAM       (SPYOUT_WPARAM + SPYOUT_WPARAM_LEN + 2)
 #else
-    #define SPYOUT_WPARAM       (SPYOUT_MSG + 1 + SPYOUT_MSG_LEN)
-    #define SPYOUT_LPARAM       (SPYOUT_WPARAM + 1 + SPYOUT_WPARAM_LEN)
+    #define SPYOUT_WPARAM       (SPYOUT_MSG + SPYOUT_MSG_LEN + 1)
+    #define SPYOUT_LPARAM       (SPYOUT_WPARAM + SPYOUT_WPARAM_LEN + 1)
 #endif
 #define SPYOUT_LENGTH           (SPYOUT_LPARAM + SPYOUT_LPARAM_LEN)
 
@@ -135,7 +150,7 @@ typedef struct {
 typedef struct {
     bool            watch   : 1;
     bool            stopon  : 1;
-    WORD            id;
+    UINT            id;
     char            *str;
     MsgClass        type;
     DWORD           count;
@@ -218,7 +233,7 @@ extern WORD             TotalMessageArraySize;
  */
 
 /* spybox.c */
-extern void             SpyOut( char *msg, LPMSG pmsg );
+extern void             SpyOut( char *msg, LPMSG pmsg, char *class_name );
 extern void             CreateSpyBox( HWND );
 extern void             ClearSpyBox( void );
 extern void             SpyMessagePauseToggle( void );
@@ -226,6 +241,7 @@ extern void             ResizeSpyBox( WORD width, WORD height );
 extern void             SaveSpyBox( void );
 extern void             ResetSpyListBox( void );
 extern bool             GetSpyBoxSelection( char *str );
+extern char             *LogSpyBoxLine( bool listview, HWND list, int line );
 
 /* spycfg.c */
 extern void             LoadSpyConfig( char *fname );
@@ -253,9 +269,8 @@ extern bool             GetFileName( char *ext, file_dlg_type type, char *fname 
 extern bool             InitGblStrings( void );
 
 /* spymsgs.c */
-extern message          *GetMessageDataFromID( int msgid, char *class_name );
-extern void             ProcessIncomingMessage( int msgid, char *class_name, char *res );
-extern LPSTR            GetMessageStructAddr( int msgid );
+extern message          *GetMessageDataFromID( UINT msgid, char *class_name );
+extern void             ProcessIncomingMessage( UINT msgid, char *class_name, char *res );
 extern void             InitMessages( void );
 extern void             SetFilterMsgs( MsgClass type, bool val, bool is_watch );
 extern bool             *SaveBitState( bool is_watch );
@@ -290,8 +305,7 @@ extern void             ShowSpyTool( bool show );
 extern void             GetSpyToolRect( RECT *prect );
 
 /* spylog.c */
-extern void             SpyLogTitle( FILE *f );
-extern char             *SpyLogLine( bool listview, HWND list, int line );
+extern void             LogSpyBoxHeader( FILE *f );
 
 /* spy.c */
 extern void             SpyFini( void );

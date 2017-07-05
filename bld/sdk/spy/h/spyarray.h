@@ -135,6 +135,7 @@ msgpick2( true, false, WM_IME_SELECT,                  "WM_IME_SELECT",         
 msgpick2( true, false, WM_IME_CHAR,                    "WM_IME_CHAR",                    MC_IME,      0L )
 msgpick2( true, false, WM_IME_KEYDOWN,                 "WM_IME_KEYDOWN",                 MC_IME,      0L )
 msgpick2( true, false, WM_IME_KEYUP,                   "WM_IME_KEYUP",                   MC_IME,      0L )
+msgpick2( true, false, WM_IME_SYSTEM,                  "WM_IME_SYSTEM",                  MC_IME,      0L )
 msgpick2( true, false, WM_IME_REQUEST,                 "WM_IME_REQUEST",                 MC_IME,      0L )
 msgpick1( true, false, WM_INITDIALOG,                  "WM_INITDIALOG",                  MC_INIT,     0L )
 msgpick1( true, false, WM_INITMENU,                    "WM_INITMENU",                    MC_INIT,     0L )

@@ -127,15 +127,18 @@ static void setSingleWindow( HWND hwnd, HWND selwin )
     char        tmp[32];
     const char  *fmtstr;
     int         len;
+    char        hexstr[20];
 
     len = GetWindowText( selwin, tmp, sizeof( tmp ) );
     tmp[len] = 0;
+    GetHexStr( hexstr, (HWNDINT)(ULONG_PTR)selwin, HWND_HEX_LEN );
+    hexstr[HWND_HEX_LEN] = '\0';
     if( len == 0 ) {
         fmtstr = GetRCString( STR_1_WIN_TITLE );
-        sprintf( str, fmtstr, SpyName, UINT_STR_LEN, (UINT)(ULONG_PTR)selwin );
+        sprintf( str, fmtstr, SpyName, hexstr );
     } else {
         fmtstr = GetRCString( STR_1_NAMED_WIN_TITLE );
-        sprintf( str, fmtstr, SpyName, UINT_STR_LEN, (UINT)(ULONG_PTR)selwin, tmp );
+        sprintf( str, fmtstr, SpyName, hexstr, tmp );
     }
     SetWindowText( hwnd, str );
 
@@ -204,7 +207,7 @@ static void showHintBar( HWND hwnd )
 
 static void markCallback( char *res )
 {
-    SpyOut( res, NULL );
+    SpyOut( res, NULL, "" );
 }
 
 /*
@@ -242,7 +245,7 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
         if( SpyMainWndInfo.show_toolbar ) {
             CheckMenuItem( mh, SPY_SHOW_TOOLBAR, MF_CHECKED | MF_BYCOMMAND );
         }
-        LogInit( hwnd, Instance, SpyLogTitle );
+        LogInit( hwnd, Instance, LogSpyBoxHeader );
         CheckMenuItem( SpyMenu, SPY_AUTO_SCROLL, MF_CHECKED );
         EnableMenuItem( SpyMenu, SPY_ADD_WINDOW, MF_GRAYED );
         EnableMenuItem( SpyMenu, SPY_STOP, MF_GRAYED );
@@ -344,10 +347,10 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             }
             break;
         case SPY_SAVE_AS:
-            SaveListBox( SLB_SAVE_AS, SpyLogTitle, SpyLogLine, "", SpyName, hwnd, SpyListBox );
+            SaveListBox( SLB_SAVE_AS, LogSpyBoxHeader, LogSpyBoxLine, "", SpyName, hwnd, SpyListBox );
             break;
         case SPY_SAVE:
-            SaveListBox( SLB_SAVE_TMP, SpyLogTitle, SpyLogLine, ".\\wspy.txt", SpyName, hwnd, SpyListBox );
+            SaveListBox( SLB_SAVE_TMP, LogSpyBoxHeader, LogSpyBoxLine, ".\\wspy.txt", SpyName, hwnd, SpyListBox );
             break;
         case SPY_LOG:
             if( LogToggle() ) {

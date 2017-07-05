@@ -37,20 +37,26 @@
 /*
  * GetHexStr - convert a number to a hex string, padded out with 0's
  */
-void GetHexStr( LPSTR res, DWORD num, size_t padlen )
+void GetHexStr( LPSTR res, ULONG_PTR num, size_t padlen )
 {
-    char        tmp[10];
+    char        tmp[20];
     size_t      i;
     size_t      j,k;
 
-    ultoa( num, tmp, 16 );
-    i = strlen( tmp );
+#ifdef _WIN64
+    i = sprintf( tmp, "%llx", num );
+#else
+    i = sprintf( tmp, "%lx", num );
+#endif
     k = 0;
     for( j = i; j < padlen; j++ ) {
         res[k++] = '0';
     }
     for( j = 0; j < i; j++ ) {
         res[k++] = tmp[j];
+    }
+    if( padlen == 0 ) {
+        res[k] = '\0';
     }
 
 } /* GetHexStr */
@@ -80,6 +86,7 @@ void GetWindowName( HWND hwnd, char *str )
 {
     int         len;
     char        name[64];
+    char        hexstr[20];
 
     if( hwnd == NULL ) {
         strcpy( str, GetRCString( STR_NONE ) );
@@ -88,10 +95,12 @@ void GetWindowName( HWND hwnd, char *str )
     len = GetWindowText( hwnd, name, sizeof( name ) );
     name[len] = 0;
     if( len == 0 ) {
-        GetHexStr( str, (UINT)(ULONG_PTR)hwnd, 4 );
-        str[4] = 0;
+        GetHexStr( str, (HWNDINT)(ULONG_PTR)hwnd, HWND_HEX_LEN );
+        str[HWND_HEX_LEN] = 0;
     } else {
-        sprintf( str, "%0*x: %s", UINT_STR_LEN, (UINT)(ULONG_PTR)hwnd, name );
+        GetHexStr( hexstr, (HWNDINT)(ULONG_PTR)hwnd, HWND_HEX_LEN );
+        hexstr[HWND_HEX_LEN] = 0;
+        sprintf( str, "%s: %s", hexstr, name );
     }
 
 } /* GetWindowName */
@@ -109,18 +118,20 @@ void GetWindowStyleString( HWND hwnd, char *str, char *sstr )
     const char  *rcstr;
     WORD        i;
     WORD        j;
+    char        hexstr[20];
 
     style = GET_WNDSTYLE( hwnd );
     exstyle = GET_WNDEXSTYLE( hwnd );
 
-    GetHexStr( str, style, 8 );
-    str[8] = 0;
+    GetHexStr( str, style, STYLE_HEX_LEN );
+    str[STYLE_HEX_LEN] = 0;
     sstr[0] = 0;
 
     if( style & WS_CHILD ) {
         id = GET_ID( hwnd );
+        GetHexStr( hexstr, id, 0 );
         rcstr = GetRCString( STR_CHILD_ID );
-        sprintf( tmp, rcstr, id, UINT_STR_LEN, id );
+        sprintf( tmp, rcstr, id, hexstr );
         strcat( str, tmp );
     }
     for( i = 0; i < StyleArraySize; i++ ) {
@@ -135,8 +146,7 @@ void GetWindowStyleString( HWND hwnd, char *str, char *sstr )
     for( i = 0; i < ClassStylesSize; i++ ) {
         if( stricmp( tmp, ClassStyles[i].class_name ) == 0 ) {
             for( j = 0; j < ClassStyles[i].style_array_size; j++ ) {
-                if( (style & ClassStyles[i].style_array[j].mask) ==
-                    ClassStyles[i].style_array[j].flags ) {
+                if( (style & ClassStyles[i].style_array[j].mask) == ClassStyles[i].style_array[j].flags ) {
                     strcat( sstr, ClassStyles[i].style_array[j].name );
                     strcat( sstr, " " );
                 }
@@ -153,21 +163,13 @@ void GetWindowStyleString( HWND hwnd, char *str, char *sstr )
 
 } /* GetWindowStyleString */
 
-#ifdef __WINDOWS__
-    #define STYLE_TYPE          WORD
-    #define STYLE_HEX_LEN       4
-#else
-    #define STYLE_TYPE          DWORD
-    #define STYLE_HEX_LEN       8
-#endif
-
 /*
  * GetClassStyleString - get a string corrosponding to class style bits
  */
 void GetClassStyleString( HWND hwnd, char *str, char *sstr )
 {
-    STYLE_TYPE          style;
-    int                 i;
+    DWORD       style;
+    int         i;
 
     style = GET_CLASS_STYLE( hwnd );
 
@@ -215,10 +217,9 @@ void DumpToComboBox( char *str, HWND cb )
 void FormatSpyMessage( char *msg, LPMSG pmsg, char *res )
 {
     memset( res,' ', SPYOUT_LENGTH );
-    strcpy( res, msg );
-    res[strlen( msg )] = ' ';
-    GetHexStr( res + SPYOUT_HWND,   (DWORD)(ULONG_PTR)pmsg->hwnd, SPYOUT_HWND_LEN );
-    GetHexStr( res + SPYOUT_MSG,    pmsg->message, SPYOUT_MSG_LEN );
+    memcpy( res, msg, strlen( msg ) );
+    GetHexStr( res + SPYOUT_HWND, (HWNDINT)(ULONG_PTR)pmsg->hwnd, SPYOUT_HWND_LEN );
+    GetHexStr( res + SPYOUT_MSG, pmsg->message, SPYOUT_MSG_LEN );
     GetHexStr( res + SPYOUT_WPARAM, pmsg->wParam, SPYOUT_WPARAM_LEN );
     GetHexStr( res + SPYOUT_LPARAM, pmsg->lParam, SPYOUT_LPARAM_LEN );
     res[SPYOUT_LENGTH] = 0;
@@ -311,12 +312,15 @@ bool InitGblStrings( void )
         return( false );
     }
 
-#ifdef __NT__
-    heading = STR_HEADINGS_NT;
-    heading_uline = STR_HEADING_UNDERLINE_NT;
-#else
+#ifdef __WINDOWS__
     heading = STR_HEADINGS_WIN;
     heading_uline = STR_HEADING_UNDERLINE_WIN;
+#elif defined( _WIN64 )
+    heading = STR_HEADINGS_NT64;
+    heading_uline = STR_HEADING_UNDERLINE_NT64;
+#else
+    heading = STR_HEADINGS_NT;
+    heading_uline = STR_HEADING_UNDERLINE_NT;
 #endif
     TitleBar = AllocRCString( heading );
     if( TitleBar == NULL ) {

@@ -187,7 +187,7 @@ void DestroySpyTool( void )
  */
 void SetOnOffTool( spystate ss )
 {
-    char        *str;
+    const char  *str;
 
     switch( ss ) {
     case OFF:
@@ -198,6 +198,9 @@ void SetOnOffTool( spystate ss )
         break;
     case NEITHER:
         str = "NOTONOFF";
+        break;
+    default:
+        str = "";
         break;
     }
     DeleteObject( toolList[OFFON_ITEM].hbmp );

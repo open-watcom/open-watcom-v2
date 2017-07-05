@@ -120,11 +120,7 @@ void UpdateFramedInfo( HWND dlg, HWND framedhwnd, bool ispick  )
 
     } else {
 
-#ifdef __NT__
-        GetHexStr( id, (DWORD)(ULONG_PTR)framedhwnd, SPYOUT_HWND_LEN );
-#else
-        GetHexStr( id, (WORD)(ULONG_PTR)framedhwnd, SPYOUT_HWND_LEN );
-#endif
+        GetHexStr( id, (HWNDINT)(ULONG_PTR)framedhwnd, SPYOUT_HWND_LEN );
         id[SPYOUT_HWND_LEN] = 0;
         SetDlgItemText( dlg, WINSEL_HWND, id );
         len = GetWindowText( framedhwnd, name, sizeof( name ) );
@@ -137,7 +133,7 @@ void UpdateFramedInfo( HWND dlg, HWND framedhwnd, bool ispick  )
 /*
  * GetWindowID - get window ID from mouse coordinates
  */
-static void GetWindowID( HWND hwnd, HWND *who, DWORD lparam )
+static void GetWindowID( HWND hwnd, HWND *who, LPARAM lparam )
 {
     POINT       p;
     HWND        child;

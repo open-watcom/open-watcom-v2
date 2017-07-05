@@ -53,12 +53,18 @@ typedef struct column_info {
 
 #define NUM_COLUMNS 5
 
+#ifdef _WIN64
+#define VAR_COLUMN_WIDTH    150
+#else
+#define VAR_COLUMN_WIDTH    80
+#endif
+
 column_info columns[NUM_COLUMNS] = {
-    { STR_HEADING_1, 150 },
-    { STR_HEADING_2, 80 },
-    { STR_HEADING_3, 80 },
-    { STR_HEADING_4, 80 },
-    { STR_HEADING_5, 80 }
+    { STR_HEADING_1, 200 },                 // text
+    { STR_HEADING_2, VAR_COLUMN_WIDTH },    // HWND
+    { STR_HEADING_3, 80 },                  // UINT
+    { STR_HEADING_4, VAR_COLUMN_WIDTH },    // WPARAM
+    { STR_HEADING_5, VAR_COLUMN_WIDTH }     // LPARAM
 };
 #endif
 
@@ -82,10 +88,10 @@ static void setCharSize( HWND parent )
 /*
  * SpyOut - display spy message
  */
-void SpyOut( char *msg, LPMSG pmsg )
+void SpyOut( char *msg, LPMSG pmsg, char *class_name )
 {
-    static int      i;
-    char            res[SPYOUT_LENGTH + 1];
+    int             i;
+    char            res[SPYOUT_LENGTH + 1 + 80];
 #ifdef __NT__
     LVITEM          lvi;
     char            hwnd_str[SPYOUT_HWND_LEN + 1];
@@ -100,6 +106,8 @@ void SpyOut( char *msg, LPMSG pmsg )
 
     if( pmsg != NULL ) {
         FormatSpyMessage( msg, pmsg, res );
+        res[SPYOUT_LENGTH] = ' ';
+        strcpy( res + SPYOUT_LENGTH + 1, class_name );
     } else {
         strcpy( res, msg );
     }
@@ -108,12 +116,12 @@ void SpyOut( char *msg, LPMSG pmsg )
 #ifdef __NT__
     if( IsCommCtrlLoaded() ) {
         lvi.mask = LVIF_TEXT;
-        lvi.iItem = SendMessage( SpyListBox, LVM_GETITEMCOUNT, 0, 0L );
+        lvi.iItem = (int)SendMessage( SpyListBox, LVM_GETITEMCOUNT, 0, 0L );
         lvi.iSubItem = 0;
-        lvi.pszText = msg;
-        SendMessage( SpyListBox, LVM_INSERTITEM, 0, (LPARAM)&lvi );
-        if( pmsg != NULL ) {
-            GetHexStr( hwnd_str, (DWORD)(ULONG_PTR)pmsg->hwnd, SPYOUT_HWND_LEN );
+        lvi.pszText = NULL;
+        i = (int)SendMessage( SpyListBox, LVM_INSERTITEM, 0, (LPARAM)&lvi );
+        if( pmsg != NULL && i != -1 ) {
+            GetHexStr( hwnd_str, (HWNDINT)(ULONG_PTR)pmsg->hwnd, SPYOUT_HWND_LEN );
             hwnd_str[SPYOUT_HWND_LEN] = '\0';
             GetHexStr( msg_str, pmsg->message, SPYOUT_MSG_LEN );
             msg_str[SPYOUT_MSG_LEN] = '\0';
@@ -121,21 +129,24 @@ void SpyOut( char *msg, LPMSG pmsg )
             wparam_str[SPYOUT_WPARAM_LEN] = '\0';
             GetHexStr( lparam_str, pmsg->lParam, SPYOUT_LPARAM_LEN );
             lparam_str[SPYOUT_LPARAM_LEN] = '\0';
+            lvi.iSubItem = 0;
+            lvi.pszText = msg;
+            SendMessage( SpyListBox, LVM_SETITEMTEXT, i, (LPARAM)&lvi );
             lvi.iSubItem = 1;
             lvi.pszText = hwnd_str;
-            SendMessage( SpyListBox, LVM_SETITEM, 0, (LPARAM)&lvi );
+            SendMessage( SpyListBox, LVM_SETITEMTEXT, i, (LPARAM)&lvi );
             lvi.iSubItem = 2;
             lvi.pszText = msg_str;
-            SendMessage( SpyListBox, LVM_SETITEM, 0, (LPARAM)&lvi );
+            SendMessage( SpyListBox, LVM_SETITEMTEXT, i, (LPARAM)&lvi );
             lvi.iSubItem = 3;
             lvi.pszText = wparam_str;
-            SendMessage( SpyListBox, LVM_SETITEM, 0, (LPARAM)&lvi );
+            SendMessage( SpyListBox, LVM_SETITEMTEXT, i, (LPARAM)&lvi );
             lvi.iSubItem = 4;
             lvi.pszText = lparam_str;
-            SendMessage( SpyListBox, LVM_SETITEM, 0, (LPARAM)&lvi );
+            SendMessage( SpyListBox, LVM_SETITEMTEXT, i, (LPARAM)&lvi );
         }
         if( SpyMessagesAutoScroll ) {
-            SendMessage( SpyListBox, LVM_ENSUREVISIBLE, lvi.iItem, FALSE );
+            SendMessage( SpyListBox, LVM_ENSUREVISIBLE, i, FALSE );
         }
     } else {
 #endif
@@ -352,6 +363,19 @@ void ResetSpyListBox( void )
 
 } /* ResetSpyListBox */
 
+#ifdef __NT__
+static void message_name_align( char *name )
+{
+    size_t  len;
+
+    for( len = strlen( name ); len < SPYOUT_NAME_LEN; ++len ) {
+        name[len] = ' ';
+    }
+    len = SPYOUT_NAME_LEN;
+    name[len] = '\0';
+}
+#endif
+
 /*
  * GetSpyBoxSelection - get the currently selected message
  */
@@ -371,32 +395,68 @@ bool GetSpyBoxSelection( char *str )
 #ifdef __NT__
     } else {
         LVITEM  lvi;
-        char    buf[20];
+        char    buf[80];
 
         memset( str, ' ', SPYOUT_LENGTH );
         str[SPYOUT_LENGTH] = '\0';
-        sel = SendMessage( SpyListBox, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED );
-        if( sel == (LRESULT)-1 ) {
+        sel = (int)SendMessage( SpyListBox, LVM_GETNEXTITEM, (WPARAM)-1, LVNI_SELECTED );
+        if( sel == -1 ) {
             return( false );
         }
-        lvi.mask = LVIF_TEXT;
-        lvi.iItem = (int)sel;
-        lvi.iSubItem = 0;
         lvi.pszText = buf;
         lvi.cchTextMax = sizeof( buf );
-        SendMessage( SpyListBox, LVM_GETITEM, 0, (LPARAM)&lvi );
-        strcpy( str, buf );
-        str[strlen( str )] = ' ';
+        lvi.iSubItem = 0;
+        SendMessage( SpyListBox, LVM_GETITEMTEXT, sel, (LPARAM)&lvi );
+        message_name_align( buf );
+        memcpy( str, buf, SPYOUT_NAME_LEN );
         lvi.iSubItem = 1;
-        SendMessage( SpyListBox, LVM_GETITEM, 1, (LPARAM)&lvi );
-        strncpy( &str[SPYOUT_HWND], buf, SPYOUT_HWND_LEN );
-        str[SPYOUT_HWND + SPYOUT_HWND_LEN] = ' ';
+        SendMessage( SpyListBox, LVM_GETITEMTEXT, sel, (LPARAM)&lvi );
+        memcpy( str + SPYOUT_HWND, buf, SPYOUT_HWND_LEN );
         lvi.iSubItem = 2;
-        SendMessage( SpyListBox, LVM_GETITEM, 1, (LPARAM)&lvi );
-        strncpy( &str[SPYOUT_MSG], buf, SPYOUT_MSG_LEN );
-        str[SPYOUT_MSG + SPYOUT_MSG_LEN] = ' ';
+        SendMessage( SpyListBox, LVM_GETITEMTEXT, sel, (LPARAM)&lvi );
+        memcpy( str + SPYOUT_MSG, buf, SPYOUT_MSG_LEN );
         return( true );
     }
 #endif
 
 } /* GetSpyBoxSelection */
+
+char *LogSpyBoxLine( bool listview, HWND list, int line )
+{
+    static char     str[256];
+
+    str[0] = '\0';
+#ifdef __NT__
+    if( listview ) {
+        LVITEM      lvi;
+        char        buf[80];
+
+        lvi.pszText = buf;
+        lvi.cchTextMax = sizeof( buf );
+        lvi.iSubItem = 0;
+        SendMessage( list, LVM_GETITEMTEXT, line, (LPARAM)&lvi );
+        message_name_align( buf );
+        strcpy( str, buf );
+        buf[0] = ' ';
+        lvi.pszText++;
+        lvi.cchTextMax--;
+        lvi.iSubItem = 1;
+        SendMessage( list, LVM_GETITEMTEXT, line, (LPARAM)&lvi );
+        strcat( str, buf );
+        lvi.iSubItem = 2;
+        SendMessage( list, LVM_GETITEMTEXT, line, (LPARAM)&lvi );
+        strcat( str, buf );
+        lvi.iSubItem = 3;
+        SendMessage( list, LVM_GETITEMTEXT, line, (LPARAM)&lvi );
+        strcat( str, buf );
+        lvi.iSubItem = 4;
+        SendMessage( list, LVM_GETITEMTEXT, line, (LPARAM)&lvi );
+        strcat( str, buf );
+    } else {
+#endif
+        SendMessage( list, LB_GETTEXT, line, (LPARAM)(LPSTR)str );
+#ifdef __NT__
+    }
+#endif
+    return( str );
+}

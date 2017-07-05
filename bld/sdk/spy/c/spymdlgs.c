@@ -38,17 +38,6 @@
 
 #define SDM_SETPAGE (WM_USER + 1)
 
-#ifdef _M_IX86
-extern LPSTR GetPointer( LPARAM );
-#ifdef __NT__
-#pragma aux GetPointer = parm[eax] value[eax];
-#else
-#pragma aux GetPointer = parm[dx ax] value[dx ax];
-#endif
-#else
-#define GetPointer( lparam ) ((LPSTR)lparam)
-#endif
-
 /* Local Window callback functions prototypes */
 WINEXPORT INT_PTR CALLBACK SpyMsgDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 WINEXPORT INT_PTR CALLBACK MessageDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
@@ -60,7 +49,7 @@ bool            old_stopon;
 DWORD           old_count;
 HWND            currHwnd;
 
-static bool     doHilite;
+static bool     doHilite = false;
 static bool     is_watch;
 static bool     *savedBits;
 
@@ -91,7 +80,7 @@ INT_PTR CALLBACK SpyMsgDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM
         ret = true;
         break;
     case SDM_SETPAGE:
-        which = lparam;
+        which = (WORD)lparam;
         firstmsg = (which - 1) * NUM_DLGMSGS;
         pages = TotalMessageArraySize / NUM_DLGMSGS;
         if( TotalMessageArraySize % NUM_DLGMSGS > 0 ) {
@@ -371,7 +360,7 @@ static void setMessageName( HWND hwnd, char *str )
 INT_PTR CALLBACK MessageSelectDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
     int         i;
-    WORD        id;
+    UINT        id;
     ctl_id      cmdid;
     LPSTR       ptr;
     char        str[256];
@@ -388,9 +377,9 @@ INT_PTR CALLBACK MessageSelectDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
     switch( msg ) {
     case WM_INITDIALOG:
         doHilite = false;
-        i = 0;
-        ptr = GetPointer( lparam );
+        ptr = (LPSTR)(ULONG_PTR)lparam;
         strcpy( str, ptr );
+        i = 0;
         while( str[i] != ' ' ) {
             i++;
         }
@@ -400,18 +389,36 @@ INT_PTR CALLBACK MessageSelectDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
         SET_DLGDATA( hwnd, strptr );
         setMessageName( hwnd, str );
         str[SPYOUT_MSG + SPYOUT_MSG_LEN] = 0;
-        id = strtol( &str[SPYOUT_MSG], &endptr, 16 );
+        id = strtoul( str + SPYOUT_MSG, &endptr, 16 );
         if( endptr != str + SPYOUT_MSG + SPYOUT_MSG_LEN ) {
             EndDialog( hwnd, 0 );
             ret = true;
             break;
         }
-        currHwnd = (HWND)(pointer_int)strtol( &str[SPYOUT_HWND], &endptr, 16 );
-        if( endptr != str + SPYOUT_MSG - 1 ) {
+#ifdef _WIN64
+        str[SPYOUT_HWND + SPYOUT_HWND_LEN] = '\0';
+        currHwnd = (HWND)(ULONG_PTR)strtoul( str + SPYOUT_HWND + SPYOUT_HWND_LEN/2, &endptr, 16 );
+        if( endptr != str + SPYOUT_HWND + SPYOUT_HWND_LEN ) {
             EndDialog( hwnd, 0 );
             ret = true;
             break;
         }
+        str[SPYOUT_HWND + SPYOUT_HWND_LEN/2] = '\0';
+        currHwnd += ((ULONG_PTR)strtoul( str + SPYOUT_HWND, &endptr, 16 )) << 32;
+        if( endptr != str + SPYOUT_HWND + SPYOUT_HWND_LEN/2 ) {
+            EndDialog( hwnd, 0 );
+            ret = true;
+            break;
+        }
+#else
+        currHwnd = (HWND)(ULONG_PTR)strtoul( str + SPYOUT_HWND, &endptr, 16 );
+        if( endptr != str + SPYOUT_HWND + SPYOUT_HWND_LEN ) {
+            EndDialog( hwnd, 0 );
+            ret = true;
+            break;
+        }
+#endif
+        class_name[0] = '\0';
         GetClassName( currHwnd, class_name, 80 );
         msgPtr = GetMessageDataFromID( id, class_name );
         if( msgPtr == NULL ) {
@@ -430,7 +437,8 @@ INT_PTR CALLBACK MessageSelectDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
         }
         ltoa( msgPtr->count, tmp, 10 );
         SetDlgItemText( hwnd, MSGSEL_COUNT, tmp );
-        sprintf( tmp, "%0*lX", SPYOUT_HWND_LEN, (DWORD)(pointer_int)currHwnd );
+        GetHexStr( tmp, (HWNDINT)(ULONG_PTR)currHwnd, SPYOUT_HWND_LEN );
+        tmp[SPYOUT_HWND_LEN] = '\0';
         SetDlgItemText( hwnd, MSGSEL_WINDOWID, tmp );
         /* make sure windows hasn't reallocated the handle to us */
         if( !IsWindow( currHwnd ) || currHwnd == hwnd ) {
@@ -525,4 +533,3 @@ void DoMessageSelDialog( HWND hwnd )
     FreeProcInstance_DLG( dlgproc );
 
 } /* DoMessageSelDialog */
-

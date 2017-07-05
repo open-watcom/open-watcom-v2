@@ -39,7 +39,7 @@ static message *userMsg;
 /*
  * GetMessageDataFromID - use message id to look up message structure
  */
-message *GetMessageDataFromID( int msgid, char *class_name )
+message *GetMessageDataFromID( UINT msgid, char *class_name )
 {
     WORD    i;
     WORD    j;
@@ -60,11 +60,12 @@ message *GetMessageDataFromID( int msgid, char *class_name )
 /*
  * ProcessIncomingMessage - get a string associated with a message id
  */
-void ProcessIncomingMessage( int msgid, char *class_name, char *res )
+void ProcessIncomingMessage( UINT msgid, char *class_name, char *res )
 {
     message     *msg;
     const char  *fmtstr;
     char        buf[256];
+    char        hexstr[20];
 
     res[0] = 0;
     msg = GetMessageDataFromID( msgid, class_name );
@@ -93,12 +94,15 @@ void ProcessIncomingMessage( int msgid, char *class_name, char *res )
         }
     } else {
         if( Filters[MC_UNKNOWN].watch ) {
+            GetHexStr( hexstr, msgid, 0 );
             fmtstr = GetRCString( STR_UNKNOWN_MSG );
-            sprintf( res, fmtstr, msgid );
+            sprintf( res, fmtstr, hexstr );
         }
         if( Filters[MC_UNKNOWN].stopon ) {
             SetSpyState( OFF );
+            GetHexStr( hexstr, msgid, 0 );
             fmtstr = GetRCString( STR_UNKNOWN_MSG );
+            sprintf( res, fmtstr, hexstr );
             RCsprintf( buf, STR_SPYING_STOPPED, res );
             MessageBox( SpyMainWindow, buf, SpyName, MB_OK | MB_ICONINFORMATION );
         }
