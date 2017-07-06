@@ -360,7 +360,7 @@ BOOL FAR PASCAL HeapWalkProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             WWinHelp( hwnd, "heapwalk.hlp", HELP_CONTENTS, 0 );
             break;
         case HEAPMENU_HELP_SRCH:
-            WWinHelp( hwnd, "heapwalk.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
+            WWinHelp( hwnd, "heapwalk.hlp", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" );
             break;
         case HEAPMENU_HELP_ON_HELP:
             WWinHelp( hwnd, "winhelp.hlp", HELP_HELPONHELP, 0 );

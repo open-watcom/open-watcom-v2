@@ -1462,8 +1462,8 @@ void CALLBACK WdeHelpRoutine( void )
 
 void CALLBACK WdeHelpSearchRoutine( void )
 {
-    if( !WHtmlHelp( hWinWdeMain, "resdlg.chm", HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
-        WWinHelp( hWinWdeMain, "resdlg.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
+    if( !WHtmlHelp( hWinWdeMain, "resdlg.chm", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" ) ) {
+        WWinHelp( hWinWdeMain, "resdlg.hlp", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" );
     }
 }
 

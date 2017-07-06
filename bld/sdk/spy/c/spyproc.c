@@ -401,8 +401,8 @@ LRESULT CALLBACK SpyWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpara
             }
             break;
         case SPY_HELP_SRCH:
-            if( !WHtmlHelp( hwnd, "spy.chm", HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
-                WWinHelp( hwnd, "spy.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
+            if( !WHtmlHelp( hwnd, "spy.chm", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" ) ) {
+                WWinHelp( hwnd, "spy.hlp", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" );
             }
             break;
         case SPY_HELP_ON_HELP:

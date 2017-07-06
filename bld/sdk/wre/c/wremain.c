@@ -1178,8 +1178,8 @@ WINEXPORT void CALLBACK WREHelpRoutine( void )
 
 void WREHelpSearchRoutine( void )
 {
-    if( !WHtmlHelp( WREMainWin, "resedt.chm", HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
-        WWinHelp( WREMainWin, "resedt.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
+    if( !WHtmlHelp( WREMainWin, "resedt.chm", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" ) ) {
+        WWinHelp( WREMainWin, "resedt.hlp", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" );
     }
 }
 

@@ -1328,8 +1328,8 @@ WINEXPORT void CALLBACK WMenuHelpSearchRoutine( void )
 
     einfo = WGetCurrentEditInfo();
     if( einfo != NULL ) {
-        if( !WHtmlHelp( einfo->win, "resmnu.chm", HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
-            WWinHelp( einfo->win, "resmnu.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
+        if( !WHtmlHelp( einfo->win, "resmnu.chm", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" ) ) {
+            WWinHelp( einfo->win, "resmnu.hlp", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" );
         }
     }
 }

@@ -411,7 +411,7 @@ INT_PTR CALLBACK MessageSelectDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
             break;
         }
 #else
-        currHwnd = (HWND)(ULONG_PTR)strtoul( str + SPYOUT_HWND, &endptr, 16 );
+        currHwnd = (HWND)(UINT_PTR)strtoul( str + SPYOUT_HWND, &endptr, 16 );
         if( endptr != str + SPYOUT_HWND + SPYOUT_HWND_LEN ) {
             EndDialog( hwnd, 0 );
             ret = true;

@@ -270,8 +270,8 @@ LONG CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             }
             break;
         case MENU_HELP_SRCH:
-            if( !WHtmlHelp( hwnd, DR_CHM_FILE, HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
-                WWinHelp( hwnd, DR_HELP_FILE, HELP_PARTIALKEY, (HELP_DATA)"" );
+            if( !WHtmlHelp( hwnd, DR_CHM_FILE, HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" ) ) {
+                WWinHelp( hwnd, DR_HELP_FILE, HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" );
             }
             break;
         case MENU_HELP_ON_HELP:
@@ -293,8 +293,7 @@ LONG CALLBACK MainWindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
             SendMessage( hwnd, WM_CLOSE, 0, 0L );
             break;
         default:
-            MessageBox( hwnd, "This function is not yet available",
-                        AppName, MB_OK );
+            MessageBox( hwnd, "This function is not yet available", AppName, MB_OK );
             break;
         }
         break;

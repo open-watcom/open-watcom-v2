@@ -1197,8 +1197,8 @@ WINEXPORT void CALLBACK WAccHelpSearchRoutine( void )
 
     einfo = WGetCurrentEditInfo();
     if( einfo != NULL ) {
-        if( !WHtmlHelp( einfo->win, "resacc.chm", HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
-            WWinHelp( einfo->win, "resacc.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
+        if( !WHtmlHelp( einfo->win, "resacc.chm", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" ) ) {
+            WWinHelp( einfo->win, "resacc.hlp", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" );
         }
     }
 }

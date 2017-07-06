@@ -413,8 +413,8 @@ LRESULT CALLBACK DDEMainWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
             }
             break;
         case DDEMENU_HELP_SRCH:
-            if( !WHtmlHelp( hwnd, DDE_CHM_FILE, HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
-                WWinHelp( hwnd, DDE_HELP_FILE, HELP_PARTIALKEY, (HELP_DATA)"" );
+            if( !WHtmlHelp( hwnd, DDE_CHM_FILE, HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" ) ) {
+                WWinHelp( hwnd, DDE_HELP_FILE, HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" );
             }
             break;
         case DDEMENU_HELP_ON_HELP:

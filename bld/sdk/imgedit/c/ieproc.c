@@ -747,8 +747,8 @@ void IEHelpRoutine( void )
 void IEHelpSearchRoutine( void )
 {
 #ifndef __OS2_PM__
-    if( !WHtmlHelp( HMainWindow, "resimg.chm", HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
-        WWinHelp( HMainWindow, "resimg.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
+    if( !WHtmlHelp( HMainWindow, "resimg.chm", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" ) ) {
+        WWinHelp( HMainWindow, "resimg.hlp", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" );
     }
 #endif
 

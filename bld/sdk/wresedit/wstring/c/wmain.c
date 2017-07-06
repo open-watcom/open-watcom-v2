@@ -1163,8 +1163,8 @@ WINEXPORT void CALLBACK WStrHelpSearchRoutine( void )
 
     einfo = WGetCurrentEditInfo();
     if( einfo != NULL ) {
-        if( !WHtmlHelp( einfo->win, "resstr.chm", HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
-            WWinHelp( einfo->win, "resstr.hlp", HELP_PARTIALKEY, (HELP_DATA)"" );
+        if( !WHtmlHelp( einfo->win, "resstr.chm", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" ) ) {
+            WWinHelp( einfo->win, "resstr.hlp", HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" );
         }
     }
 }
