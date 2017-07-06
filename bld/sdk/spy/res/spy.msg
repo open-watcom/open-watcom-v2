@@ -86,8 +86,11 @@ pick(   STR_SELECT_WIN,
         "Select Window",
         "Select Window" )
 pick(   STR_WM_USER_PLUS,
-        "WM_USER+%d",
-        "WM_USER+%d" )
+        "WM_USER+%u",
+        "WM_USER+%u" )
+pick(   STR_WM_APP_PLUS,
+        "WM_APP+%u",
+        "WM_APP+%u" )
 pick(   STR_UNKNOWN_MSG,
         "UNKNOWN MSG: 0x%s",
         "UNKNOWN MSG: 0x%s" )

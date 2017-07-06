@@ -64,6 +64,10 @@
     #define SPY_CLASS_NAME  "watspy_NT"
 #endif
 
+#ifndef WM_APP
+    #define WM_APP          0x8000
+#endif
+
 typedef enum {
     DLG_FILE_OPEN,
     DLG_FILE_SAVE

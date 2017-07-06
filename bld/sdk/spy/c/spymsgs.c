@@ -35,6 +35,7 @@
 
 
 static message *userMsg;
+static message *appMsg;
 
 /*
  * GetMessageDataFromID - use message id to look up message structure
@@ -79,7 +80,7 @@ void ProcessIncomingMessage( UINT msgid, char *class_name, char *res )
             MessageBox( SpyMainWindow, buf, SpyName, MB_OK | MB_ICONINFORMATION );
         }
         msg->count++;
-    } else if( msgid > WM_USER ) {
+    } else if( msgid >= WM_USER && msgid < WM_APP ) {
         userMsg->count++;
         if( userMsg->watch ) {
             fmtstr = GetRCString( STR_WM_USER_PLUS );
@@ -89,6 +90,19 @@ void ProcessIncomingMessage( UINT msgid, char *class_name, char *res )
             SetSpyState( OFF );
             fmtstr = GetRCString( STR_WM_USER_PLUS );
             sprintf( res, fmtstr, msgid - WM_USER );
+            RCsprintf( buf, STR_SPYING_STOPPED, res );
+            MessageBox( SpyMainWindow, buf, SpyName, MB_OK | MB_ICONINFORMATION );
+        }
+    } else if( msgid >= WM_APP && msgid < 0xC000 ) {
+        appMsg->count++;
+        if( appMsg->watch ) {
+            fmtstr = GetRCString( STR_WM_APP_PLUS );
+            sprintf( res, fmtstr, msgid - WM_APP );
+        }
+        if( appMsg->stopon ) {
+            SetSpyState( OFF );
+            fmtstr = GetRCString( STR_WM_APP_PLUS );
+            sprintf( res, fmtstr, msgid - WM_APP );
             RCsprintf( buf, STR_SPYING_STOPPED, res );
             MessageBox( SpyMainWindow, buf, SpyName, MB_OK | MB_ICONINFORMATION );
         }
@@ -160,6 +174,7 @@ void SetFilterSaveBitsMsgs( MsgClass type, bool val, bool *bits )
 void InitMessages( void )
 {
     userMsg = GetMessageDataFromID( WM_USER, NULL );
+    appMsg = GetMessageDataFromID( WM_APP, NULL );
 
 } /* InitMessages */
 

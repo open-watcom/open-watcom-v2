@@ -45,6 +45,7 @@
 #define SPYMSG_CLASS13      114
 #define SPYMSG_CLASS14      115
 #define SPYMSG_CLASS15      116
+#define SPYMSG_CLASS16      117
 #define SPYMSG_ALLCLEAR     120
 #define SPYMSG_ALLSET       121
 #define SPYMSG_RANGE_0      122

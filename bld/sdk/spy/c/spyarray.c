@@ -63,20 +63,32 @@
 /**********************************************************
  * Messages undocumented for WINDOWS but documented for NT
  */
+#ifndef WM_PAINTICON
+    #define WM_PAINTICON                    0x0026
+#endif
+#ifndef WM_SETHOTKEY
+    #define WM_SETHOTKEY                    0x0032
+#endif
+#ifndef WM_GETHOTKEY
+    #define WM_GETHOTKEY                    0x0033
+#endif
+#ifndef WM_SYNCPAINT
+    #define WM_SYNCPAINT                    0x0088
+#endif
 #ifndef WM_ENTERMENULOOP
     #define WM_ENTERMENULOOP                0x0211
 #endif
 #ifndef WM_EXITMENULOOP
     #define WM_EXITMENULOOP                 0x0212
 #endif
-#ifndef WM_GETHOTKEY
-    #define WM_GETHOTKEY                    0x0033
+#ifndef WM_NEXTMENU
+    #define WM_NEXTMENU                     0x0213
 #endif
-#ifndef WM_SETHOTKEY
-    #define WM_SETHOTKEY                    0x0032
+#ifndef WM_ENTERSIZEMOVE
+    #define WM_ENTERSIZEMOVE                0x0231
 #endif
-#ifndef WM_PAINTICON
-    #define WM_PAINTICON                    0x0026
+#ifndef WM_EXITSIZEMOVE
+    #define WM_EXITSIZEMOVE                 0x0232
 #endif
 // Control styles
 #ifndef BS_TYPEMASK
@@ -89,11 +101,32 @@
 /**********************************************************
  * Messages undocumented for any version
  */
-#ifndef WM_COALESCE_FIRST
-    #define WM_COALESCE_FIRST               0x0390
+#ifndef WM_SIZEWAIT
+    #define WM_SIZEWAIT                     0x0004
 #endif
-#ifndef WM_COALESCE_LAST
-    #define WM_COALESCE_LAST                0x039F
+#ifndef WM_SETVISIBLE
+    #define WM_SETVISIBLE                   0x0009
+#endif
+#ifndef WM_SYSTEMERROR
+    #define WM_SYSTEMERROR                  0x0017
+#endif
+#ifndef WM_ATTABACTIVE
+    #define WM_ATTABACTIVE                  0x0029
+#endif
+#ifndef WM_FILESYSCHANGE
+    #define WM_FILESYSCHANGE                0x0034
+#endif
+#ifndef WM_ISACTIVEICON
+    #define WM_ISACTIVEICON                 0x0035
+#endif
+#ifndef WM_QUERYPARKICON
+    #define WM_QUERYPARKICON                0x0036
+#endif
+#ifndef WM_QUERYSAVESTATE
+    #define WM_QUERYSAVESTATE               0x0038
+#endif
+#ifndef WM_ACTIVATESHELLWINDOW
+    #define WM_ACTIVATESHELLWINDOW          0x003E
 #endif
 #ifndef WM_OTHERWINDOWCREATED
     #define WM_OTHERWINDOWCREATED           0x0042
@@ -101,9 +134,89 @@
 #ifndef WM_OTHERWINDOWDESTROYED
     #define WM_OTHERWINDOWDESTROYED         0x0043
 #endif
+#ifndef WM_SYNCTASK
+    #define WM_SYNCTASK                     0x0089
+#endif
+#ifndef WM_KLUDGEMINRECT
+    #define WM_KLUDGEMINRECT                0x008B
+#endif
+#ifndef WM_UAHDESTROYWINDOW
+    #define WM_UAHDESTROYWINDOW             0x0090
+#endif
+#ifndef WM_UAHDRAWMENU
+    #define WM_UAHDRAWMENU                  0x0091
+#endif
+#ifndef WM_UAHDRAWMENUITEM
+    #define WM_UAHDRAWMENUITEM              0x0092
+#endif
+#ifndef WM_UAHINITMENU
+    #define WM_UAHINITMENU                  0x0093
+#endif
+#ifndef WM_UAHMEASUREMENUITEM
+    #define WM_UAHMEASUREMENUITEM           0x0094
+#endif
+#ifndef WM_UAHNCPAINTMENUPOPUP
+    #define WM_UAHNCPAINTMENUPOPUP          0x0095
+#endif
+#ifndef WM_NCUAHDRAWCAPTION
+    #define WM_NCUAHDRAWCAPTION             0x00AE
+#endif
+#ifndef WM_NCUAHDRAWFRAME
+    #define WM_NCUAHDRAWFRAME               0x00AF
+#endif
+#ifndef WM_YOMICHAR
+    #define WM_YOMICHAR                     0x0108
+#endif
+#ifndef WM_CONVERTREQUEST
+    #define WM_CONVERTREQUEST               0x010A
+#endif
+#ifndef WM_CONVERTRESULT
+    #define WM_CONVERTRESULT                0x010B
+#endif
+#ifndef WM_INTERIM
+    #define WM_INTERIM                      0x010C
+#endif
+#ifndef WM_SYSTIMER
+    #define WM_SYSTIMER                     0x0118
+#endif
+#ifndef LBCB_STARTTRACK
+    #define LBCB_STARTTRACK                 0x01AE
+#endif
+#ifndef LBCB_ENDTRACK
+    #define LBCB_ENDTRACK                   0x01AF
+#endif
+#ifndef WM_LBTRACKPOINT
+    #define WM_LBTRACKPOINT                 0x0131
+#endif
+#ifndef WM_DROPOBJECT
+    #define WM_DROPOBJECT                   0x022A
+#endif
+#ifndef WM_QUERYDROPOBJECT
+    #define WM_QUERYDROPOBJECT              0x022B
+#endif
+#ifndef WM_BEGINDRAG
+    #define WM_BEGINDRAG                    0x022C
+#endif
+#ifndef WM_DRAGLOOP
+    #define WM_DRAGLOOP                     0x022D
+#endif
+#ifndef WM_DRAGSELECT
+    #define WM_DRAGSELECT                   0x022E
+#endif
+#ifndef WM_DRAGMOVE
+    #define WM_DRAGMOVE                     0x022F
+#endif
 #ifndef WM_IME_SYSTEM
     #define WM_IME_SYSTEM                   0x0287
 #endif
+#ifndef WM_COALESCE_FIRST
+    #define WM_COALESCE_FIRST               0x0390
+#endif
+#ifndef WM_COALESCE_LAST
+    #define WM_COALESCE_LAST                0x039F
+#endif
+
+
 // RB_GETBANDINFO is defined differently in IE3 than in later versions.  This definition
 // facilitates recognizing both versions of the message.  RB_GETBANDINFO_IE3 is not an
 // official message name.
@@ -951,6 +1064,13 @@ static message _NEAR DateTimeMessageArray[] = {
 
 #define DATETIMEMESSAGEARRAYSIZE    (sizeof( DateTimeMessageArray )/sizeof( message ))
 
+static message _NEAR ComboListBoxMessageArray[] = {
+    msgpick1( true, false, LBCB_STARTTRACK,     "LBCB_STARTTRACK",      MC_CONTROL, 0L )
+    msgpick1( true, false, LBCB_ENDTRACK,       "LBCB_ENDTRACK",        MC_CONTROL, 0L )
+};
+
+#define COMBOLISTBOXMESSAGEARRAYSIZE    (sizeof( ComboListBoxMessageArray )/sizeof( message ))
+
 #endif
 
 #undef msgpick1
@@ -980,7 +1100,8 @@ class_messages _NEAR ClassMessages[] = {
     { WC_TABCONTROL,        TabControlMessageArray,     TABCONTROLMESSAGEARRAYSIZE     },
     { ANIMATE_CLASS,        AnimateMessageArray,        ANIMATEMESSAGEARRAYSIZE        },
     { MONTHCAL_CLASS,       MonthCalMessageArray,       MONTHCALMESSAGEARRAYSIZE       },
-    { DATETIMEPICK_CLASS,   DateTimeMessageArray,       DATETIMEMESSAGEARRAYSIZE       }
+    { DATETIMEPICK_CLASS,   DateTimeMessageArray,       DATETIMEMESSAGEARRAYSIZE       },
+    { "combolbox",          ComboListBoxMessageArray,   COMBOLISTBOXMESSAGEARRAYSIZE   },
 #endif
 };
 
