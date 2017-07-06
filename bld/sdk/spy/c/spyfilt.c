@@ -58,8 +58,8 @@ WINEXPORT void CALLBACK HandleMessage( LPMSG pmsg )
             return;
         }
     }
-    class_name[0] = '\0';
-    GetClassName( pmsg->hwnd, class_name, 80 );
+    i = GetClassName( pmsg->hwnd, class_name, sizeof( class_name ) );
+    class_name[i] = '\0';
     ProcessIncomingMessage( pmsg->message, class_name, msg );
     if( msg[0] != 0 ) {
         SpyOut( msg, pmsg, class_name );

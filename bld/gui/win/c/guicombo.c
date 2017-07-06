@@ -54,6 +54,7 @@ BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
 {
     char        buff[5];
     enum_info   *info;
+    int         len;
 
     info = ( enum_info * )lparam;
     if( info == NULL ) {
@@ -62,10 +63,11 @@ BOOL CALLBACK GUISubClassEditComboboxEnumFunc( HWND hwnd, WPI_PARAM2 lparam )
     if( info->success == true ) {
         return( TRUE );
     }
-    GetClassName( hwnd, buff, 5 );
+    len = GetClassName( hwnd, buff, sizeof( buff ) );
+    buff[len] = '\0';
 #ifndef __OS2_PM__
-    //if( !strcmp( buff, "#6" ) ) {
-    if( !strcmp( buff, GUIControls[GUI_EDIT].classname ) ) {
+    //if( strcmp( buff, "#6" ) == 0 ) {
+    if( strcmp( buff, GUIControls[GUI_EDIT].classname ) == 0 ) {
         info->success = true;
         info->old = GUIDoSubClass( hwnd, GUI_EDIT );
         //CvrCtl3dSubclassCtl( hwnd );

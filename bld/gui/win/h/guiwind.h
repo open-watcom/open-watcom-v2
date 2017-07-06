@@ -190,6 +190,12 @@ typedef struct gui_window {
 #define NUM_EXTRA_WORDS         ( GUI_MDI_WORD + 1 )
 #define GUI_ISROOTWIN(wnd)      ( wnd->root != NULL )
 
+#define GUI_CLASSNAME_MAX       64
+
+extern char GUIClass[GUI_CLASSNAME_MAX + 1];
+extern char GUIDialogClass[GUI_CLASSNAME_MAX + 1];
+extern char GUIDefaultClassName[];
+
 #include "guix.h"
 
 #endif // _GUIWIND_H_

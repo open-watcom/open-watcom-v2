@@ -133,12 +133,13 @@ LRESULT __export FAR PASCAL DefaultProc( HWND hwnd, UINT message, WPARAM wparam,
 static BOOL SubClassWindow( HWND hwnd, BOOL do_children )
 {
     char        buffer[80];
+    int         len;
 
     if( hwnd == NULL ) {
         return( 0 );
     }
-    buffer[0] = 0;
-    GetClassName( hwnd, buffer, sizeof( buffer ) );
+    len = GetClassName( hwnd, buffer, sizeof( buffer ) );
+    buffer[len] = '\0';
     Out((OUT_SOFT,"--- Subclass (%s), id=%04x",buffer,hwnd));
     if( GetWindowWord( hwnd, GWW_HINSTANCE ) == (WORD)GetModuleHandle( "USER" ) ) {
         Out((OUT_SOFT,"--- Subclass IGNORED (USER)" ));

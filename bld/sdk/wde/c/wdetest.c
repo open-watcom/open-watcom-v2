@@ -181,7 +181,7 @@ static bool WdeSetDefaultTestControlEntries( HWND win )
     int         len;
     uint_8      class;
 
-    len = GetClassName( win, cname, 19 );
+    len = GetClassName( win, cname, sizeof( cname ) );
     if( len == 0 ) {
         return( TRUE );
     }

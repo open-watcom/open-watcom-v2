@@ -418,8 +418,8 @@ INT_PTR CALLBACK MessageSelectDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
             break;
         }
 #endif
-        class_name[0] = '\0';
-        GetClassName( currHwnd, class_name, 80 );
+        i = GetClassName( currHwnd, class_name, sizeof( class_name ) );
+        class_name[i] = '\0';
         msgPtr = GetMessageDataFromID( id, class_name );
         if( msgPtr == NULL ) {
             EndDialog( hwnd, 0 );
@@ -437,7 +437,7 @@ INT_PTR CALLBACK MessageSelectDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
         }
         ltoa( msgPtr->count, tmp, 10 );
         SetDlgItemText( hwnd, MSGSEL_COUNT, tmp );
-        GetHexStr( tmp, (HWNDINT)(ULONG_PTR)currHwnd, SPYOUT_HWND_LEN );
+        GetHexStr( tmp, (UINT_PTR)currHwnd, SPYOUT_HWND_LEN );
         tmp[SPYOUT_HWND_LEN] = '\0';
         SetDlgItemText( hwnd, MSGSEL_WINDOWID, tmp );
         /* make sure windows hasn't reallocated the handle to us */
@@ -450,11 +450,10 @@ INT_PTR CALLBACK MessageSelectDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam,
         cmdid = LOWORD( wparam );
         switch( cmdid ) {
         case MSGSEL_HELP:
-            strptr = (char *)GET_DLGDATA( hwnd );
 #ifdef __WINDOWS__
-            WWinHelp( hwnd, "win31wh.hlp", HELP_KEY, (LPARAM)strptr );
+            WWinHelp( hwnd, "win31wh.hlp", HELP_KEY, (LPARAM)GET_DLGDATA( hwnd ) );
 #else
-            WWinHelp( hwnd, "win32sdk.hlp", HELP_KEY, (LPARAM)strptr );
+            WWinHelp( hwnd, "win32sdk.hlp", HELP_KEY, (LPARAM)GET_DLGDATA( hwnd ) );
 #endif
             break;
         case MSGSEL_SHOWINFO:

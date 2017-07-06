@@ -131,7 +131,7 @@ static void setSingleWindow( HWND hwnd, HWND selwin )
 
     len = GetWindowText( selwin, tmp, sizeof( tmp ) );
     tmp[len] = '\0';
-    GetHexStr( hexstr, (HWNDINT)(ULONG_PTR)selwin, HWND_HEX_LEN );
+    GetHexStr( hexstr, (UINT_PTR)selwin, HWND_HEX_LEN );
     hexstr[HWND_HEX_LEN] = '\0';
     if( len == 0 ) {
         fmtstr = GetRCString( STR_1_WIN_TITLE );

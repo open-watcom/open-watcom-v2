@@ -347,13 +347,15 @@ static void setDefaultSizeStyle( void )
 static void initHwnds( HWND hwndDlg )
 {
     char    tmp[5];
+    int     len;
 
     hwndFaceName = GetDlgItem( hwndDlg, FT_FACENAME );
     hwndStyle = GetDlgItem( hwndDlg, FT_STYLE );
     hwndSize = GetDlgItem( hwndDlg, FT_SIZE );
     hwndPick = GetDlgItem( hwndDlg, FT_FTPICK );
     hwndSizeEdit = GetWindow( hwndSize, GW_CHILD );
-    GetClassName( hwndSizeEdit, tmp, 5 );
+    len = GetClassName( hwndSizeEdit, tmp, sizeof( tmp ) );
+    tmp[len] = '\0';
     if( stricmp( tmp, "edit" ) != 0 ) {
         hwndSizeEdit = GetWindow( hwndSizeEdit, GW_HWNDNEXT );
     }

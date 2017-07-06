@@ -95,10 +95,10 @@ void GetWindowName( HWND hwnd, char *str )
     len = GetWindowText( hwnd, name, sizeof( name ) );
     name[len] = '\0';
     if( len == 0 ) {
-        GetHexStr( str, (HWNDINT)(ULONG_PTR)hwnd, HWND_HEX_LEN );
+        GetHexStr( str, (UINT_PTR)hwnd, HWND_HEX_LEN );
         str[HWND_HEX_LEN] = '\0';
     } else {
-        GetHexStr( hexstr, (HWNDINT)(ULONG_PTR)hwnd, HWND_HEX_LEN );
+        GetHexStr( hexstr, (UINT_PTR)hwnd, HWND_HEX_LEN );
         hexstr[HWND_HEX_LEN] = '\0';
         sprintf( str, "%s: %s", hexstr, name );
     }
@@ -218,7 +218,7 @@ void FormatSpyMessage( char *msg, LPMSG pmsg, char *res )
 {
     memset( res,' ', SPYOUT_LENGTH );
     memcpy( res, msg, strlen( msg ) );
-    GetHexStr( res + SPYOUT_HWND, (HWNDINT)(ULONG_PTR)pmsg->hwnd, SPYOUT_HWND_LEN );
+    GetHexStr( res + SPYOUT_HWND, (UINT_PTR)pmsg->hwnd, SPYOUT_HWND_LEN );
     GetHexStr( res + SPYOUT_MSG, pmsg->message, SPYOUT_MSG_LEN );
     GetHexStr( res + SPYOUT_WPARAM, pmsg->wParam, SPYOUT_WPARAM_LEN );
     GetHexStr( res + SPYOUT_LPARAM, pmsg->lParam, SPYOUT_LPARAM_LEN );

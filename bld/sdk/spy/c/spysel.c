@@ -165,7 +165,7 @@ static void addFormattedWindow( HWND hwnd )
             }
         }
     }
-    GetHexStr( hexstr, (HWNDINT)(ULONG_PTR)hwnd, HWND_HEX_LEN );
+    GetHexStr( hexstr, (UINT_PTR)hwnd, HWND_HEX_LEN );
     hexstr[HWND_HEX_LEN] = '\0';
     sprintf( res, "%s%s%s %s", lead_bl, hexstr, wmark, name );
     SendDlgItemMessage( hWndDialog, SELWIN_LISTBOX, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)res );

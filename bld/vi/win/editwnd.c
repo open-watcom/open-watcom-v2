@@ -905,11 +905,11 @@ WINEXPORT BOOL CALLBACK ResizeExtra( window_id wid, LPARAM l )
 {
     window_data         *wd;
     char                class[MAX_STR];
+    int                 len;
 
     l = l;
-    class[0] = '\0';
-    GetClassName( wid, class, sizeof( class ) );
-    class[sizeof( class ) - 1] = '\0';
+    len = GetClassName( wid, class, sizeof( class ) );
+    class[len] = '\0';
     if( stricmp( EditWindowClassName, class ) ) {
         return( TRUE );
     }

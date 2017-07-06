@@ -102,8 +102,8 @@ WPI_INST        GUIMainHInst;
 
 #define GUI_CLASSNAME_MAX       64
 
-char GUIClass[GUI_CLASSNAME_MAX];
-char GUIDialogClass[GUI_CLASSNAME_MAX] = "GUIDialogClass";
+char GUIClass[GUI_CLASSNAME_MAX + 1];
+char GUIDialogClass[GUI_CLASSNAME_MAX + 1] = "GUIDialogClass";
 char GUIDefaultClassName[] = "GUIClass";
 
 #define BACKGROUND_STYLES       WS_CHILD | WS_VISIBLE
@@ -129,11 +129,11 @@ static void GUISetWindowClassName( void )
     char        *class_name;
 
     class_name = GUIGetWindowClassName();
-    if( !class_name || !*class_name ) {
+    if( class_name == NULL || *class_name == '\0' ) {
         class_name = GUIDefaultClassName;
     }
-    strncpy( GUIClass, class_name, GUI_CLASSNAME_MAX - 1 );
-    GUIClass[GUI_CLASSNAME_MAX - 1] = '\0';
+    strncpy( GUIClass, class_name, GUI_CLASSNAME_MAX );
+    GUIClass[GUI_CLASSNAME_MAX] = '\0';
 }
 
 void GUIWantPartialRows( gui_window *wnd, bool want )

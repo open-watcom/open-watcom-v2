@@ -146,6 +146,7 @@ static void ControlReq( ctl_request req )
     HWND    hwnd;
     BOOL    is_dbg_wnd;
     char    buff[10];
+    int     len;
 
     Shared.request = req;
     if( !Shared.control_thread_running ) {
@@ -171,7 +172,8 @@ static void ControlReq( ctl_request req )
                 }
                 hwnd = GetParent( hwnd );
             }
-            GetClassName( msg.hwnd, buff, sizeof( buff ) - 1 );
+            len = GetClassName( msg.hwnd, buff, sizeof( buff ) );
+            buff[len] = '\0';
             if( !is_dbg_wnd || strcmp( buff, "WTool" ) == 0 ) {
                 TranslateMessage( &msg );
                 DispatchMessage( &msg );
@@ -183,7 +185,7 @@ static void ControlReq( ctl_request req )
                     }
                     break;
                 case WM_SYSKEYDOWN: // Do not activate menu on F10 single step in GUI debugger
-                      if( msg.wParam == VK_F10 && !strcmp( buff, "GUIClass" ) ) {
+                      if( msg.wParam == VK_F10 && strcmp( buff, "GUIClass" ) == 0 ) {
                         break;
                       }
                       /* Allow someone to press ALT+TAB to get focus! */

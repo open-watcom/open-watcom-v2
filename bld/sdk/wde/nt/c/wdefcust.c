@@ -779,7 +779,7 @@ LRESULT CALLBACK WdeCustomSuperClassProc( HWND hWnd, UINT message, WPARAM wParam
     extra -= sizeof( LONG_PTR );
     wnd_proc = (WNDPROC)GET_WNDLONGPTR( hWnd, extra );
     if( wnd_proc == NULL ) {
-        if( !GetClassName( hWnd, WdeClassName, MAX_NAME ) ) {
+        if( GetClassName( hWnd, WdeClassName, sizeof( WdeClassName ) ) == 0 ) {
             WdeWriteTrail( "WdeCustomSuperClassProc: GetClassName failed!" );
             return( FALSE );
         }

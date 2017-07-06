@@ -54,15 +54,17 @@
 /* Window callback functions prototypes */
 WINEXPORT UINT_PTR CALLBACK LBSaveOFNHookProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam );
 
-static bool checkListView( HWND list )
+static bool isListView( HWND list )
 {
 #ifdef __WINDOWS__
     /* unused parameters */ (void)list;
     return( false );
 #else
     char        tmp[20];
+    int         len;
 
-    GetClassName( list, tmp, sizeof( tmp ) );
+    len = GetClassName( list, tmp, sizeof( tmp ) );
+    tmp[len] = '\0';
     return( strcmp( tmp, WC_LISTVIEW ) == 0 );
 #endif
 }
@@ -86,7 +88,7 @@ static bool writeListBoxContents( void (*headerfn)(FILE *), char *(*linefn)(bool
         headerfn( f );
     }
     if( linefn != NULL ) {
-        listview = checkListView( listbox );
+        listview = isListView( listbox );
 #ifdef __NT__
         if( listview ) {
             count = (int)SendMessage( listbox, LVM_GETITEMCOUNT, 0, 0L );

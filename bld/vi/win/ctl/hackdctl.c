@@ -448,8 +448,10 @@ static bool is_listbox( HWND dlg, int ctl )
 /*****************************************/
 {
     char                buf[100];
+    int                 len;
 
-    GetClassName( GetDlgItem( dlg, ctl ), buf, 100 );
+    len = GetClassName( GetDlgItem( dlg, ctl ), buf, sizeof( buf ) );
+    buf[len] = '\0';
     if( 0 == stricmp( buf, "listbox" ) ) {
         return( true );
     }

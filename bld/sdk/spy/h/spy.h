@@ -76,21 +76,13 @@ typedef enum {
 #define GET_TOOLBAR_HEIGHT( y ) ((y) + 2 * BORDER_Y( y ) + 3)
 #define TOOLBAR_HEIGHT          GET_TOOLBAR_HEIGHT( BITMAP_Y )
 
-#ifdef __WINDOWS__
-    #define HWNDINT             UINT
-#else
-    #define HWNDINT             ULONG_PTR
-#endif
-
 #define STYLE_HEX_LEN           8
 #ifdef __WINDOWS__
-    #define UINT_HEX_LEN        4
     #define HWND_HEX_LEN        4
     #define ID_HEX_LEN          4
     #define WPARAM_HEX_LEN      4
     #define LPARAM_HEX_LEN      8
 #else
-    #define UINT_HEX_LEN        8
     #define ID_HEX_LEN          8
   #ifdef _WIN64
     #define HWND_HEX_LEN        16

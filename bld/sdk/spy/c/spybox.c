@@ -121,7 +121,7 @@ void SpyOut( char *msg, LPMSG pmsg, char *class_name )
         lvi.pszText = NULL;
         i = (int)SendMessage( SpyListBox, LVM_INSERTITEM, 0, (LPARAM)&lvi );
         if( pmsg != NULL && i != -1 ) {
-            GetHexStr( hwnd_str, (HWNDINT)(ULONG_PTR)pmsg->hwnd, SPYOUT_HWND_LEN );
+            GetHexStr( hwnd_str, (UINT_PTR)pmsg->hwnd, SPYOUT_HWND_LEN );
             hwnd_str[SPYOUT_HWND_LEN] = '\0';
             GetHexStr( msg_str, pmsg->message, SPYOUT_MSG_LEN );
             msg_str[SPYOUT_MSG_LEN] = '\0';

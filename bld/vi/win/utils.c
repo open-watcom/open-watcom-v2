@@ -603,10 +603,11 @@ HWND GetOwnedWindow( POINT pt )
         }
     }
 
-    GetClassName( hwndElement, textBuffer, sizeof( textBuffer ) - 1 );
+    i = GetClassName( hwndElement, textBuffer, sizeof( textBuffer ) );
+    textBuffer[i] = '\0';
     nTypes = GetNumWindowTypes();
     for( i = 0; i < nTypes; i++ ) {
-        if( !strcmp( textBuffer, windowName[i] ) ) {
+        if( strcmp( textBuffer, windowName[i] ) == 0 ) {
             /* a recognized window - return handle to it
             */
             if( GET_HINSTANCE( hwndElement ) == GET_HINSTANCE( root_window_id ) ) {
