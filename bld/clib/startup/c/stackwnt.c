@@ -55,6 +55,7 @@ _WCRTLINK unsigned stackavail( void )
 _WCRTLINK _WCNORETURN void __STKOVERFLOW( void )
 {
     __fatal_runtime_error( "stack overflow", -1 );
+    // never return
 }
 
 static void _init_stk( void )

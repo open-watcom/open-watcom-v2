@@ -55,9 +55,9 @@
 
 
 #if defined( __WARP__ )
-#define BLKSIZE_ALIGN           0x10000 // 64kB
+#define SYS_BLKSIZE_ALIGN           0x10000 // 64kB
 #else
-#define BLKSIZE_ALIGN           0x1000  // 4kB
+#define SYS_BLKSIZE_ALIGN           0x1000  // 4kB
 #endif
 
 #define FIRST_FRL(h)    ((frlptr)(h + 1))
@@ -184,7 +184,7 @@ void_nptr __ReAllocDPMIBlock( frlptr frl_old, unsigned req_size )
             dpmi = ((dpmi_hdr *)heap) - 1;
             if( dpmi->dos_seg_value != 0 )
                 return( NULL );
-            size = __ROUND_UP_SIZE( heap->len + sizeof( dpmi_hdr ) + TAG_SIZE + req_size - frl_old->len + TAG_SIZE, BLKSIZE_ALIGN );
+            size = __ROUND_UP_SIZE( heap->len + sizeof( dpmi_hdr ) + TAG_SIZE + req_size - frl_old->len + TAG_SIZE, SYS_BLKSIZE_ALIGN );
             prev_dpmi = dpmi;
             dpmi = TinyDPMIRealloc( dpmi, size );
             if( dpmi == NULL ) {
@@ -333,19 +333,19 @@ static int __AdjustAmount( unsigned *amount )
     amt += ( (TAG_SIZE) + sizeof( freelistp ) + sizeof( miniheapblkp ) );
     if( amt < *amount )
         return( 0 );            // Report request too large
-    if( amt < _amblksiz ) {
+    if( amt < _RWD_amblksiz ) {
         /*
-          _amblksiz may not be even so round down to an even number
-          nb. pathological case: where _amblksiz == 0xffff, we don't
+          _RWD_amblksiz may not be even so round down to an even number
+          nb. pathological case: where _RWD_amblksiz == 0xffff, we don't
                                  want the usual round up to even
         */
-        amt = __ROUND_DOWN_SIZE( _amblksiz, 2 );
+        amt = __ROUND_DOWN_SIZE( _RWD_amblksiz, 2 );
     }
 #if defined( __WINDOWS_386__ ) || defined( __WARP__ ) || defined( __NT__ ) \
   || defined( __CALL21__ ) || defined( __DOS_EXT__ ) || defined( __RDOS__ )
     /* make sure amount is a multiple of 4k/64k */
     *amount = amt;
-    amt = __ROUND_UP_SIZE( amt, BLKSIZE_ALIGN );
+    amt = __ROUND_UP_SIZE( amt, SYS_BLKSIZE_ALIGN );
     if( amt < *amount )
         return( 0 );
 #endif

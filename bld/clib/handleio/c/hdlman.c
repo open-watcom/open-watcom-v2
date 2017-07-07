@@ -256,7 +256,7 @@ _WCRTLINK int _grow_handles( int num )
                 _RWD_errno = ENOMEM;
                 num = __NHandles;
             } else {
-                _fmemset( new_handles, 0xff, num );
+                _fmemset( new_handles, 0xFF, num );
 
                 psp_num_handles = MK_FP( _RWD_psp, 0x32 );
                 psp_handles = MK_FP( _RWD_psp, 0x34 );

@@ -257,7 +257,7 @@ void _ClearWindow( LPWDATA w )
         }
     }
 #else
-    FARmemset( w->image, 0x20, w->width*w->height );
+    FARmemset( w->image, ' ', w->width*w->height );
 #endif
 
 #if defined( __OS2__ )
@@ -383,7 +383,7 @@ void _ResizeWin( LPWDATA w, int x1, int y1, int x2, int y2 )
     }
 #else
     w->image = _MemAlloc( w->width * w->height );
-    FARmemset( w->image, 0x20, w->width * w->height );
+    FARmemset( w->image, ' ', w->width * w->height );
 #endif
 
     if( w->width > w->maxwidth ) {

@@ -30,7 +30,11 @@
 ****************************************************************************/
 
 
-extern void __CommonInit( void );
 #if defined(__OS2__)
 _WCRTDATA extern unsigned __hmodule;
+#endif
+
+extern void __CommonInit( void );
+#if defined(__DOS_386__)
+extern void __CommonTerm( void );
 #endif

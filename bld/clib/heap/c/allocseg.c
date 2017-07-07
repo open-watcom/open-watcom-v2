@@ -82,8 +82,8 @@ __segment __AllocSeg( unsigned int amount )
     }
     /*        heapinfo + frl,  allocated blk,  end tags */
     amount += sizeof( heapblk ) + TAG_SIZE + TAG_SIZE * 2;
-    if( amount < _amblksiz )
-        amount = _amblksiz;
+    if( amount < _RWD_amblksiz )
+        amount = _RWD_amblksiz;
     num_of_paras = __ROUND_UP_SIZE_TO_PARA( amount );
     if( num_of_paras == 0 )
         num_of_paras = PARAS_IN_64K;

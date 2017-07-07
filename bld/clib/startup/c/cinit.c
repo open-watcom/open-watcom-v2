@@ -61,10 +61,6 @@
 void    __CommonInit( void )
 /**************************/
 {
-#if !defined(__NETWARE__) && !defined(__NT__) && !defined(__RDOSDEV__)
-    _amblksiz = 32 * 1024;      /* set minimum memory block allocation */
-#endif
-
 #if defined(__DOS_386__) && !defined(__OSI__)
     /*
      * If we are running under DOS/4G then we need to page lock interrupt

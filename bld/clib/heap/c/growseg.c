@@ -78,8 +78,8 @@ int __GrowSeg( __segment seg, unsigned int amount )
         amount += TAG_SIZE;
         if( amount < TAG_SIZE )
             amount = /*0x....ffff*/ ~0U;
-        if( amount < _amblksiz )
-            amount = _amblksiz;
+        if( amount < _RWD_amblksiz )
+            amount = _RWD_amblksiz;
         num_of_paras = __ROUND_UP_SIZE_TO_PARA( amount );
         if( num_of_paras == 0 )
             num_of_paras = PARAS_IN_64K;

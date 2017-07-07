@@ -102,7 +102,7 @@ CHAR_TYPE *__F_NAME(strncpy,wcsncpy)( CHAR_TYPE *dest, const CHAR_TYPE *src,
 
     /*** If necessary, pad with more null bytes ***/
     if( n > 0 ) {
-        memset( dest, '\0', n * CHARSIZE );
+        memset( dest, 0, n * CHARSIZE );
     }
 
     return( destStart );

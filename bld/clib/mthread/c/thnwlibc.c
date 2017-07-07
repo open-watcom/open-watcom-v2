@@ -45,22 +45,22 @@
 #include "cthread.h"
 #include "snglthrd.h"
 
-#if !defined (_NETWARE_LIBC)
+#if !defined( _NETWARE_LIBC )
 #error This file is for the NetWare LibC based library only
 #endif
 
-extern void BreakPointInt3(void);
+extern void BreakPointInt3( void );
 #pragma aux BreakPointInt3 = 0xCC;
 
-static void __LibCKeyValueDestructor(void * pPerThreadData)
+static void __LibCKeyValueDestructor( void * pPerThreadData )
 {
     /* what to do here with the data! */
 
-    thread_data *tdata = (thread_data *) pPerThreadData;
+    thread_data *tdata = (thread_data *)pPerThreadData;
 
-    if(NULL != tdata)
+    if( NULL != tdata )
     {
-        __RemoveThreadData(tdata->thread_id);
+        __RemoveThreadData( tdata->thread_id );
     }
 }
 
@@ -70,9 +70,9 @@ int __LibCThreadInit( void )
     int err = 0;
     if( __NXSlotID == NO_INDEX )
     {
-        err = NXKeyCreate(__LibCKeyValueDestructor, (void *) NULL, &__NXSlotID);
+        err = NXKeyCreate( __LibCKeyValueDestructor, NULL, &__NXSlotID );
     }
-    if((0 != err) || ( __NXSlotID == NO_INDEX ))
+    if( ( 0 != err ) || ( __NXSlotID == NO_INDEX ) )
     {
         return( FALSE );
     }
@@ -84,7 +84,7 @@ extern void __LibCThreadFini( void )
 {
     if( __NXSlotID != NO_INDEX )
     {
-        NXKeyDelete(__NXSlotID);
+        NXKeyDelete( __NXSlotID );
         __NXSlotID = NO_INDEX;
     }
 }
@@ -107,7 +107,7 @@ int __LibCAddThread( thread_data *tdata )
         lib_free( tdata );
         return( FALSE );
     }
-    if(0 != NXKeySetValue(__NXSlotID, tdata ))
+    if( 0 != NXKeySetValue( __NXSlotID, tdata ) )
     {
         lib_free( tdata );
         return( FALSE );
@@ -124,30 +124,32 @@ void __LibCRemoveThread( int close_handle )
 
     if( __NXSlotID != NO_INDEX )
     {
-        int ccode = NXKeyGetValue(__NXSlotID, (void **)&tdata);
-        if(0 != ccode)
+        int ccode = NXKeyGetValue( __NXSlotID, (void **)&tdata );
+        if( 0 != ccode ) {
             return;
-        #if defined( __RUNTIME_CHECKS__ ) && defined( _M_IX86 )
-            if( tdata == (thread_data *)2 )
-                return;
-        #else
-            if( tdata == NULL )
-                return;
-        #endif
+        }
+#if defined( __RUNTIME_CHECKS__ ) && defined( _M_IX86 )
+        if( tdata == (thread_data *)2 ) {
+            return;
+        }
+#else
+        if( tdata == NULL ) {
+            return;
+        }
+#endif
         __RemoveThreadData( tdata->thread_id );
-        #if defined( __RUNTIME_CHECKS__ ) && defined( _M_IX86 )
-            NXKeySetValue(__NXSlotID, (void *) 2);
-        #else
-            NXKeySetValue(__NXSlotID, NULL);
-        #endif
+#if defined( __RUNTIME_CHECKS__ ) && defined( _M_IX86 )
+        NXKeySetValue( __NXSlotID, (void *)2 );
+#else
+        NXKeySetValue( __NXSlotID, NULL );
+#endif
     }
 }
 
 #if !defined (_NETWARE_LIBC)
-
 might still need this!
-static void __ThreadExit()
-/************************/
+static void __ThreadExit( void )
+/******************************/
 {
     __LibCRemoveThread( TRUE );
     __LibCThreadFini();
@@ -177,7 +179,7 @@ static void begin_thread_helper( void *the_arg )
 
     tdata = alloca( __ThreadDataSize );
     newtid = __GetSystemWideUniqueTID();
-    if( 0 != newtid)
+    if( 0 != newtid )
     {
         data->tid       = newtid;
         start_addr      = data->start_addr;
@@ -226,8 +228,8 @@ extern int __CBeginThread(
     //  to automatically clear context
     */
 
-    if( data.cx = NXContextAlloc( (void (*)(void *))&begin_thread_helper, &data,NX_PRIO_MED, __SYS_ALLOCD_STACK, NX_CTX_NORMAL, &error ) ) {
-        error = NXThreadCreate( data.cx, NX_THR_DETACHED |NX_THR_BIND_CONTEXT, &data.nxtid );
+    if( data.cx = NXContextAlloc( (void (*)(void *))begin_thread_helper, &data, NX_PRIO_MED, __SYS_ALLOCD_STACK, NX_CTX_NORMAL, &error ) ) {
+        error = NXThreadCreate( data.cx, NX_THR_DETACHED | NX_THR_BIND_CONTEXT, &data.nxtid );
     }
 
     if( 0 == error ) {
@@ -252,17 +254,17 @@ extern void __CEndThread( void )
 //  CurrentProcess() is a THREADS.NLM (CLIB) export though it returns the
 //  underlying NetWare TCO pointer. As unique as I can get on NetWare currently
 */
-extern unsigned long CurrentProcess(void);
-extern unsigned long __GetSystemWideUniqueTID(void)
+extern unsigned long CurrentProcess( void );
+extern unsigned long __GetSystemWideUniqueTID( void )
 {
-    return(CurrentProcess());
+    return( CurrentProcess() );
 }
 
-extern int __CreateFirstThreadData(void)
+extern int __CreateFirstThreadData( void )
 {
-    thread_data * tdata = lib_calloc(1, __ThreadDataSize);
+    thread_data * tdata = lib_calloc( 1, __ThreadDataSize );
 
-    if(NULL == tdata)
+    if( NULL == tdata )
         return( 0 );
 
     tdata->__allocated = 1;
@@ -271,15 +273,15 @@ extern int __CreateFirstThreadData(void)
     return( 1 );
 }
 
-extern int __RegisterFirstThreadData(thread_data * tdata)
+extern int __RegisterFirstThreadData( thread_data * tdata )
 {
     __FirstThreadData = tdata;
     return( 0 );
 }
 
-extern int __IsFirstThreadData(thread_data * tdata)
+extern int __IsFirstThreadData( thread_data * tdata )
 {
-    return(__FirstThreadData == tdata);
+    return( __FirstThreadData == tdata );
 }
 
 /*
@@ -290,16 +292,19 @@ _WCRTLINK int *__threadid( void )
     static int BadThreadId = -1L;
     thread_data *tdata = NULL;
 
-    if( __NXSlotID != NO_INDEX ){
-        int ccode = NXKeyGetValue(__NXSlotID, (void **)&tdata);
-        if( 0 != ccode )
+    if( __NXSlotID != NO_INDEX ) {
+        int ccode = NXKeyGetValue( __NXSlotID, (void **)&tdata );
+        if( 0 != ccode ) {
             return( &BadThreadId );
+        }
 #if defined( __RUNTIME_CHECKS__ ) && defined( _M_IX86 )
-        if( tdata == (thread_data *)2 )
+        if( tdata == (thread_data *)2 ) {
             return( &BadThreadId );
+        }
 #else
-        if( tdata == NULL )
+        if( tdata == NULL ) {
             return( &BadThreadId );
+        }
 #endif
         return( (int *)&(tdata->thread_id) );
     }

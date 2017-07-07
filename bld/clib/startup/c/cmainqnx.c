@@ -87,6 +87,7 @@ static void _WCI86FAR __null_FPE_rtn( int fpe_type )
 _WCNORETURN void _Not_Enough_Memory( void )
 {
     __fatal_runtime_error( "Not enough memory", 1 );
+    // never return
 }
 
 #if defined( _M_I86 )
@@ -253,7 +254,6 @@ void _CMain( free, n, cmd, stk_bot, pid )
     __InitRtns( 255 );                      /* call special initializer routines    */
     __MAGIC.sptrs[2] = cmd;                 /* save ptr to spawn message */
     SetupArgs( cmd );
-    _amblksiz = 8 * 1024;                   /* set minimum memory block allocation  */
 
     /*
        Invoke the "last chance" init code in the slib before executing the
@@ -310,7 +310,6 @@ void _CMain( int argc, char **argv, char **arge )
     tdata->__data_size = __ThreadDataSize;
     __QNXInit( tdata );
     __InitRtns( 255 );
-    _amblksiz = 8 * 1024;       /* set minimum memory block allocation  */
     setup_es();
     exit( main( argc, argv, arge ) );
 }

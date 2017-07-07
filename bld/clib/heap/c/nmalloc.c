@@ -208,7 +208,7 @@ _WCRTLINK void_nptr _nmalloc( size_t amt )
         // OS/2 only - if not block of requested type, will allocate one and find in 2nd pass
         // Try to expand heap and retry
         if( expanded || !__ExpandDGROUP( amt ) ) {
-            if( !__nmemneed( amt ) ) {
+            if( __nmemneed( amt ) == 0 ) {
                 break;                  // give up
             }
             expanded = 0;

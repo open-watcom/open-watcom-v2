@@ -97,7 +97,7 @@ static void dump_heap( unsigned long free_size,
     }
     printf( "Percentage of perfect algorithm performance: %lu%%\n",
             100 - (( free_size * 100 ) / used_size ) );
-    memset( usage, 'Û', ROWS * COLS );
+    memset( usage, 0xDB, ROWS * COLS );
 }
 
 static void dump_heaps( void )
@@ -306,7 +306,7 @@ int main( int argc, char **argv )
         _amblksiz = atoi( argv[1] );
     }
 #ifdef VERBOSE
-    memset( usage, 'Û', ROWS * COLS );
+    memset( usage, 0xDB, ROWS * COLS );
 #endif
     srand( 0x8207 );
     for( i = 0; i < NUM_ALLOCS; ++i ) {

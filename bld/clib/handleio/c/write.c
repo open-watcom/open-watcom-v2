@@ -135,7 +135,7 @@ static int zero_pad( int handle )           /* 09-jan-95 */
         return( -1 );
     end_ptr._32[0] = dw_ptr;
 
-    memset( zeroBuf, 0x00, PAD_SIZE );
+    memset( zeroBuf, 0, PAD_SIZE );
 
     while( end_ptr._64 < cur_ptr._64 ) {
         if( (end_ptr._64 + PAD_SIZE) < cur_ptr._64 ) {
@@ -178,7 +178,7 @@ static int zero_pad( int handle )           /* 09-jan-95 */
     if( curPos > eodPos ) {
         bytesToWrite = curPos - eodPos;         /* amount to pad by */
         if( bytesToWrite > 0 ) {                /* only write if needed */
-            memset( zeroBuf, 0x00, PAD_SIZE );  /* zero out a buffer */
+            memset( zeroBuf, 0, PAD_SIZE );  /* zero out a buffer */
             do {                                /* loop until done */
                 if( bytesToWrite > PAD_SIZE )
                     writeAmt = 512;
