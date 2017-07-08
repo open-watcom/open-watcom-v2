@@ -46,7 +46,7 @@ WINEXPORT HDDEDATA EDITAPI DdeCallback( UINT wType, UINT wFmt, HCONV hConv,
                     HSZ hszTopic, HSZ hszItem, HDDEDATA hData, DWORD dwData1,
                     DWORD dwData2 );
 
-static  HCONV       hConv;
+static  HCONV       dde_hConv;
 static  DWORD       idInstance;
 static  HINSTANCE   hInstance;
 static  BOOL        bConnected = FALSE;
@@ -54,7 +54,7 @@ static  BOOL        bConnected = FALSE;
 static BOOL doReset( void )
 {
     // reset for another connect
-    hConv = 0;
+    dde_hConv = 0;
     bConnected = FALSE;
     return( TRUE );
 }
@@ -66,7 +66,7 @@ static char doRequest( char *szCommand )
     BYTE        result;
 
     hszCommand = DdeCreateStringHandle( idInstance, szCommand, CP_WINANSI );
-    hddeData = DdeClientTransaction( NULL, 0, hConv, hszCommand, CF_TEXT,
+    hddeData = DdeClientTransaction( NULL, 0, dde_hConv, hszCommand, CF_TEXT,
                                      XTYP_REQUEST, 500000, NULL );
     DdeFreeStringHandle( idInstance, hszCommand );
 
@@ -129,15 +129,14 @@ int EDITAPI EDITConnect( void )
     hszTopic= DdeCreateStringHandle( idInstance, (LPSTR)szTopic, CP_WINANSI );
 
     // attempt connection
-    hConv = DdeConnect( idInstance, hszService, hszTopic,
-                        (PCONVCONTEXT) NULL );
-    if( hConv == 0 ) {
+    dde_hConv = DdeConnect( idInstance, hszService, hszTopic, (PCONVCONTEXT)NULL );
+    if( dde_hConv == 0 ) {
         // run editor (magically grabs focus)
         sprintf( szCommandLine, "%s -s ddesinit.vi -p \"%s %s\"",
                  szProg, szService, szTopic );
         // ddesinit.vi will now add an ide-activate button to the toolbar
         // this button will NOT be saved by saveconfig
-        #ifdef __NT__
+#ifdef __NT__
         {
             STARTUPINFO         si;
             PROCESS_INFORMATION pi;
@@ -152,9 +151,12 @@ int EDITAPI EDITConnect( void )
                 if( rc == 0 ) {
                     // Now this is starting to get scary
                     #define MAX_TRIES 100
-                    for( n = 0; (hConv = DdeConnect( idInstance, hszService, hszTopic, (PCONVCONTEXT)NULL )) == 0 && n < MAX_TRIES; ++n ) {
+                    for( n = 0; n < MAX_TRIES; ++n ) {
                         DWORD   status;
 
+                        dde_hConv = DdeConnect( idInstance, hszService, hszTopic, (PCONVCONTEXT)NULL );
+                        if( dde_hConv == 0 )
+                            break;
                         GetExitCodeProcess( pi.hProcess, &status );
                         if( status != STILL_ACTIVE )
                             break;
@@ -169,19 +171,18 @@ int EDITAPI EDITConnect( void )
                 CloseHandle(pi.hProcess);
             }
         }
-        #else
+#else
         rc = WinExec( (LPSTR)szCommandLine, SW_RESTORE );
         if( rc >= 32 ) {
-            hConv = DdeConnect( idInstance, hszService, hszTopic,
-                                (PCONVCONTEXT) NULL );
+            dde_hConv = DdeConnect( idInstance, hszService, hszTopic, (PCONVCONTEXT) NULL );
         }
-        #endif
+#endif
     }
 
     DdeFreeStringHandle( idInstance, hszService );
     DdeFreeStringHandle( idInstance, hszTopic );
 
-    if( hConv != 0 ) {
+    if( dde_hConv != 0 ) {
         bConnected = TRUE;
     }
 

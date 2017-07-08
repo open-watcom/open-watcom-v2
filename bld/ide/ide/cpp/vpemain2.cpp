@@ -248,12 +248,12 @@ bool VpeMain::reallyClose()
 
 bool VpeMain::executeCommand( const char *cmdl, int location, const char* title )
 {
-    int i;
+    unsigned i;
 
     if( cmdl != NULL && strlen( cmdl ) > 0 ) {
         WString* cur = NULL;
         WStringList opts;
-        for( i=0; cmdl[i]!= '\0'; i++ ) {
+        for( i = 0; cmdl[i] != '\0'; i++ ) {
             if( cur ) {
                 if( cmdl[i] == '"' ) {
                     opts.add( cur );
@@ -281,7 +281,7 @@ bool VpeMain::executeCommand( const char *cmdl, int location, const char* title 
         }
         WString cmd;
         int j = 0;
-        for( i=0; cmdl[i]!= '\0'; i++ ) {
+        for( i = 0; cmdl[i] != '\0'; i++ ) {
             if( !cur ) {
                 if( cmdl[i] == '$' && cmdl[i+1] == '"' ) {
                     i++;
@@ -322,17 +322,13 @@ bool VpeMain::executeCommand( const char *cmdl, int location, const char* title 
             }
             case EXECUTE_TOUCH_ALL: {
                 MsgRetType      rc;
-                unsigned        i;
                 VComponent      *comp;
-                rc = WMessageDialog::messagef( this, MsgQuestion, MsgYesNo,
-                        _viperRequest,
+                rc = WMessageDialog::messagef( this, MsgQuestion, MsgYesNo, _viperRequest,
                         "Do you really want to remake all targets and their components?" );
                 if( rc == MsgRetYes ) {
-                    i = _compViews.count();
-                    while( i > 0 ) {
-                        comp = (VComponent *)_compViews[i-1];
+                    for( i = _compViews.count(); i-- > 0; ) {
+                        comp = (VComponent *)_compViews[i];
                         comp->touchComponent( true );
-                        i--;
                     }
                 }
                 break;
@@ -369,14 +365,15 @@ bool VpeMain::execute( const WString& cmd )
         for( ; i < icount; ) {
             char ch = cmd[i];
             i++;
-            if( ch == '\n' || ch == '\r' ) break;
+            if( ch == '\n' || ch == '\r' )
+                break;
             cbuff.concat( ch );
         }
         if( cbuff.size() > 0 ) {
             if( strnicmp( cbuff, "!Error ", 7 ) == 0 ) {
                 WString msg;
-                for( size_t i = 7; i < cbuff.size() && cbuff[i] != '$'; i++ ) {
-                    msg.concat( cbuff[i] );
+                for( size_t j = 7; j < cbuff.size() && cbuff[j] != '$'; j++ ) {
+                    msg.concat( cbuff[j] );
                 }
                 WMessageDialog::messagef( this, MsgError, MsgOk, _viperError, msg );
                 return( false );

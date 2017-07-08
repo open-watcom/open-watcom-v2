@@ -31,6 +31,8 @@
 
 #include "commonui.h"
 #include "wddespy.h"
+#include "cbfilt.h"
+#include "msgfilt.h"
 
 static struct {
     bool        *filter;

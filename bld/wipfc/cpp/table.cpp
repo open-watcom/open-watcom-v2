@@ -347,13 +347,13 @@ Lexer::Token TableRow::parse( Lexer* lexer )
                     width = colWidth[ colCount ];
                 else
                     document->printError( ERR1_TABLECELLCOUNTHIGH );
-                TableCol* col( new TableCol( document, this, document->dataName(),
+                TableCol* tablecol( new TableCol( document, this, document->dataName(),
                     document->lexerLine(), document->lexerCol(), width ) );
-                columns.push_back( col );
+                columns.push_back( tablecol );
                 ++colCount;
-                tok = col->parse( lexer );
-                if( col->rows() > rows )
-                    rows = col->rows();
+                tok = tablecol->parse( lexer );
+                if( tablecol->rows() > rows )
+                    rows = tablecol->rows();
             }
             else {
                 document->printError( ERR1_TAGCONTEXT );
@@ -369,9 +369,9 @@ Lexer::Token TableRow::parse( Lexer* lexer )
         document->printError( ERR1_TABLECELLCOUNTLOW );
         while( colCount < colWidth.size() ) {
             unsigned char width( colWidth[ colCount ] );
-            TableCol* col( new TableCol( document, this, document->dataName(),
+            TableCol* tablecol( new TableCol( document, this, document->dataName(),
                 document->lexerLine(), document->lexerCol(), width ) );
-            columns.push_back( col );
+            columns.push_back( tablecol );
             ++colCount;
         }
     }
@@ -484,9 +484,9 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                     ++txtSize;              //keep puctuation together with word if possible
                 if( txtSize > spaces ) {    //need new line
                     if( spaces > 0 ) {
-                        std::wstring txt( spaces, L' ' );
+                        std::wstring spacetxt( spaces, L' ' );
                         WhiteSpace* ws( new WhiteSpace( document, this, document->dataName(),
-                            document->lexerLine(), document->lexerCol(), txt, whiteSpace ) );
+                            document->lexerLine(), document->lexerCol(), spacetxt, whiteSpace ) );
                         appendData( cellLine, ws );
                     }
                     std::list< Element* > lst;
@@ -501,19 +501,19 @@ Lexer::Token TableCol::parse( Lexer* lexer )
             }
         }
         else if( tok == Lexer::ENTITY ) {
-            const std::wstring* txt( document->nameit( lexer->text() ) ); //lookup nameit
-            if( txt ) {
+            const std::wstring* entitytxt( document->nameit( lexer->text() ) ); //lookup nameit
+            if( entitytxt ) {
                 std::wstring* name( document->prepNameitName( lexer->text() ) );
-                IpfBuffer* buffer( new IpfBuffer( name, document->dataLine(), document->dataCol(), *txt ) );
+                IpfBuffer* buffer( new IpfBuffer( name, document->dataLine(), document->dataCol(), *entitytxt ) );
                 document->pushInput( buffer );
                 tok = document->getNextToken();
                 continue;
             }
             if( inLines && currentLine < document->dataLine() ) {
                 if( spaces > 0 ) {
-                    std::wstring txt( spaces, L' ' );
+                    std::wstring spacetxt( spaces, L' ' );
                     WhiteSpace* ws( new WhiteSpace( document, this, document->dataName(),
-                        document->lexerLine(), document->lexerCol(), txt, whiteSpace ) );
+                        document->lexerLine(), document->lexerCol(), spacetxt, whiteSpace ) );
                     appendData( cellLine, ws );
                 }
                 currentLine = document->dataLine();
@@ -525,12 +525,12 @@ Lexer::Token TableCol::parse( Lexer* lexer )
             bool nextIsPunct( false );
             try {
                 wchar_t entity( document->entity( lexer->text() ) );    //lookup entity
-                std::wstring txt(1, entity );
+                std::wstring entitytxt(1, entity );
                 tok = document->getNextToken();
                 if( !std::iswpunct( entity ) ) {
                     while( tok == Lexer::WORD || tok == Lexer::ENTITY ) {
                         if( tok == Lexer::WORD )
-                            txt += lexer->text();       //part of a compound ...-word-entity-word-...
+                            entitytxt += lexer->text();       //part of a compound ...-word-entity-word-...
                         else if( tok == Lexer::ENTITY ) {
                             entity = document->entity( lexer->text() );
                             if ( std::iswpunct( entity ) ) {
@@ -538,40 +538,40 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                                 break;
                             }
                             else
-                                txt+= entity;
+                                entitytxt += entity;
                         }
                         tok = document->getNextToken();
                     }
                 }
-                unsigned char txtSize( static_cast< unsigned char >( txt.size() ) );
+                unsigned char txtSize( static_cast< unsigned char >( entitytxt.size() ) );
                 if( inLines ) {
-                    if( txt.size() > static_cast< std::string::size_type >( spaces ) ) {
-                        txt.erase( spaces );  //trim text
+                    if( entitytxt.size() > static_cast< std::string::size_type >( spaces ) ) {
+                        entitytxt.erase( spaces );  //trim text
                         txtSize = spaces;
                         document->printError( ERR1_TABLECELLTEXTWIDTH );
                     }
                     if( txtSize > 0 ) {
                         Entity* ent( new Entity( document, this, document->dataName(),
-                            document->lexerLine(), document->lexerCol(), txt ) );
+                            document->lexerLine(), document->lexerCol(), entitytxt ) );
                         appendData( cellLine, ent );
                         spaces -= txtSize;
                     }
                 }
                 else {
-                    if( txt.size() > static_cast< std::string::size_type >( colWidth ) ) {
-                        txt.erase( colWidth );  //trim text
+                    if( entitytxt.size() > static_cast< std::string::size_type >( colWidth ) ) {
+                        entitytxt.erase( colWidth );  //trim text
                         txtSize = colWidth;
                         document->printError( ERR1_TABLECELLTEXTWIDTH );
                     }
                     Entity* ent( new Entity( document, this, document->dataName(),
-                        document->lexerLine(), document->lexerCol(), txt ) );
+                        document->lexerLine(), document->lexerCol(), entitytxt ) );
                     if( txtSize < colWidth && ( nextIsPunct || tok == Lexer::PUNCTUATION ) )
                         ++txtSize;              //keep text and punct on same line if possible
                     if( txtSize > spaces ) {    //need new line
                         if( spaces > 0 ) {
-                            std::wstring txt( spaces, L' ' );
+                            std::wstring spacetxt( spaces, L' ' );
                             WhiteSpace* ws( new WhiteSpace( document, this, document->dataName(),
-                                document->lexerLine(), document->lexerCol(), txt, whiteSpace ) );
+                                document->lexerLine(), document->lexerCol(), spacetxt, whiteSpace ) );
                             appendData( cellLine, ws );
                         }
                         std::list< Element* > lst;
@@ -595,9 +595,9 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                 if( currentLine < document->dataLine() ) {
                     currentLine = document->dataLine();
                     if( spaces > 0 ) {
-                        std::wstring txt( spaces, L' ' );
+                        std::wstring spacetxt( spaces, L' ' );
                         WhiteSpace* ws( new WhiteSpace( document, this, document->dataName(),
-                            document->lexerLine(), document->lexerCol(), txt, whiteSpace ) );
+                            document->lexerLine(), document->lexerCol(), spacetxt, whiteSpace ) );
                         appendData( cellLine, ws );
                     }
                     std::list< Element* > lst;
@@ -633,9 +633,9 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                 if( currentLine < document->dataLine() ) {
                     currentLine = document->dataLine();
                     if( spaces > 0 ) {
-                        std::wstring txt( spaces, L' ' );
+                        std::wstring spacetxt( spaces, L' ' );
                         WhiteSpace* ws( new WhiteSpace( document, this, document->dataName(),
-                            document->lexerLine(), document->lexerCol(), txt, whiteSpace ) );
+                            document->lexerLine(), document->lexerCol(), spacetxt, whiteSpace ) );
                         appendData( cellLine, ws );
                     }
                     std::list< Element* > lst;
@@ -644,32 +644,32 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                     spaces = colWidth;
                 }
                 if( spaces > 0 )  {
-                    std::wstring txt( lexer->text() );
-                    if( txt.size() > static_cast< std::string::size_type >( spaces ) ) {
-                        txt.erase( spaces );        //trim text
+                    std::wstring whitespacetxt( lexer->text() );
+                    if( whitespacetxt.size() > static_cast< std::string::size_type >( spaces ) ) {
+                        whitespacetxt.erase( spaces );        //trim text
                     }
                     WhiteSpace* ws( new WhiteSpace( document, this, document->dataName(),
-                        document->lexerLine(), document->lexerCol(), txt, whiteSpace ) );
+                        document->lexerLine(), document->lexerCol(), whitespacetxt, whiteSpace ) );
                     appendData( cellLine, ws );
-                    spaces -= txt.size();
+                    spaces -= whitespacetxt.size();
                 }
                 tok = document->getNextToken();
             }
             else {
-                std::wstring txt( lexer->text() );  //get text from lexer
+                std::wstring whitespacetxt( lexer->text() );  //get text from lexer
                 tok = document->getNextToken();
                 while( tok == Lexer::WHITESPACE ) { //accumulate whitespace
                     if( lexer->text()[0] != L'\n' ) //ignore \n's
-                        txt += lexer->text();
+                        whitespacetxt += lexer->text();
                     tok = document->getNextToken();
                 }
                 if( spaces > 0 ) {
-                    if( txt.size() > static_cast< std::string::size_type >( spaces ) )
-                        txt.erase( spaces );            //trim text
+                    if( whitespacetxt.size() > static_cast< std::string::size_type >( spaces ) )
+                        whitespacetxt.erase( spaces );            //trim text
                     WhiteSpace* ws( new WhiteSpace( document, this, document->dataName(),
-                        document->lexerLine(), document->lexerCol(), txt, whiteSpace ) );
+                        document->lexerLine(), document->lexerCol(), whitespacetxt, whiteSpace ) );
                     appendData( cellLine, ws );
-                    spaces -= txt.size();
+                    spaces -= whitespacetxt.size();
                 }
             }
         }
@@ -884,9 +884,9 @@ Lexer::Token TableCol::parse( Lexer* lexer )
                     printError( ERR1_TABLEELINK );
                 }
                 if( spaces ) {
-                    std::wstring txt( spaces, L' ' );
+                    std::wstring spacetxt( spaces, L' ' );
                     WhiteSpace* ws( new WhiteSpace( document, this, document->dataName(),
-                        document->lexerLine(), document->lexerCol(), txt, whiteSpace ) );
+                        document->lexerLine(), document->lexerCol(), spacetxt, whiteSpace ) );
                     appendData( cellLine, ws );
                 }
                 break;

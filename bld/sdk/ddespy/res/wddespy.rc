@@ -1,5 +1,9 @@
 #include <windows.h>
-#include "wddespy.h"
+#include "ddemenu.h"
+#include "rcstr.gh"
+#include "uistr.gh"
+#include "cbfilt.h"
+#include "msgfilt.h"
 #include "about.h"
 #include "banner.h"
 
@@ -22,7 +26,7 @@ CREATEPROCESS_MANIFEST_RESOURCE_ID RT_MANIFEST MOVEABLE PURE "appmanif.xml"
 "CONVAKA" BITMAP "convaka.bmp"
 "TASKAKA" BITMAP "taskaka.bmp"
 
-#include "menu.rc"
+#include "ddemenu.rc"
 
 STRINGTABLE
 BEGIN

@@ -75,7 +75,7 @@
 static struct XlatStatus {
     int     dll                 : 1;    /* we're building a DLL */
     int     exp                 : 1;    /* there is an .exp file */
-} status;
+} xlat_status;
 
 
 
@@ -872,7 +872,7 @@ void OptionsTranslate( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
 /*************************************************************/
 {
     /*** Parse the /nologo switch now so we can print the banner ***/
-    init_status( &status );
+    init_status( &xlat_status );
     if( cmdOpts->nologo ) {
         QuietModeMessage();
     } else {
@@ -881,8 +881,8 @@ void OptionsTranslate( OPT_STORAGE *cmdOpts, CmdLine *cmdLine )
 
     /*** Parse everything ***/
     unsupported_opts( cmdOpts );
-    default_opts( &status, cmdOpts, cmdLine );
+    default_opts( &xlat_status, cmdOpts, cmdLine );
     def_file_opts( cmdOpts );
-    linker_opts( &status, cmdOpts, cmdLine );
-    merge_opts( &status, cmdOpts, cmdLine );
+    linker_opts( &xlat_status, cmdOpts, cmdLine );
+    merge_opts( &xlat_status, cmdOpts, cmdLine );
 }

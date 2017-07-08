@@ -74,23 +74,23 @@ static unsigned my_write( int hdl, void *buff, unsigned len )
     return( sent );
 }
 
-static char     buff[MAX_TRANS]; /* static to minimize stack space */
+static char     batch_buff[MAX_TRANS]; /* static to minimize stack space */
 
 unsigned BatchChdir( const char *new_dir )
 {
-    buff[0] = LNK_CWD;
-    strcpy( &buff[1], new_dir );
-    my_write( pipeHdl, buff, strlen( buff ) + 1 );
-    my_read( pipeHdl, buff, sizeof( buff ) );
-    return( *(unsigned long *)&buff[1] );
+    batch_buff[0] = LNK_CWD;
+    strcpy( &batch_buff[1], new_dir );
+    my_write( pipeHdl, batch_buff, strlen( batch_buff ) + 1 );
+    my_read( pipeHdl, batch_buff, sizeof( batch_buff ) );
+    return( *(unsigned long *)&batch_buff[1] );
 }
 
 unsigned BatchSpawn( const char *cmd )
 {
 
-    buff[0] = LNK_RUN;
-    strcpy( &buff[1], cmd );
-    my_write( pipeHdl, buff, strlen( buff ) );
+    batch_buff[0] = LNK_RUN;
+    strcpy( &batch_buff[1], cmd );
+    my_write( pipeHdl, batch_buff, strlen( batch_buff ) );
     return( 0 );
 }
 

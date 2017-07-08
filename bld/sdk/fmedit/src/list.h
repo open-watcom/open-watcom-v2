@@ -34,4 +34,4 @@ typedef struct list {
     OBJPTR          elt;
     struct list     *next;
     struct list     *prev;
-};
+} list;

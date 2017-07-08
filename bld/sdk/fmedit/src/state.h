@@ -61,7 +61,7 @@ typedef struct state {
     unsigned        hresizegrid;    /* horizontal resize grid increment         */
     bool            show_eatoms;    /* new eatoms will show their movement rect */
     STATE_HDL       id;             /* state id                                 */
-};
+} state;
 
 #define STATE_INDEX 0
 

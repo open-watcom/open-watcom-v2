@@ -219,7 +219,7 @@ void MComponent::updateItemList( bool update )
         _target->updateAttribs();
 //        MRule* nilRule = _config->nilRule();
         _items.setUpdates( false );
-        for( i=0; i<_items.count(); i++ ) {
+        for( i = 0; i < _items.count(); i++ ) {
             MItem* item = (MItem*)_items[i];
             item->updateAttribs();
             item->setParent( NULL );
@@ -228,7 +228,7 @@ void MComponent::updateItemList( bool update )
         if( _autotrack ) {
             WVList& tracks = _target->rule()->autotracks();
             int icount = tracks.count();
-            for( int i=0; i<icount; i++ ) {
+            for( i = 0; i < icount; i++ ) {
                 WString err;
                 addFromMask( *(WFileName*)tracks[i], err );
             }
@@ -246,7 +246,7 @@ void MComponent::updateItemList( bool update )
 */
         }
 
-        for( i=_items.count(); i>0; ) {
+        for( i = _items.count(); i > 0; ) {
             i--;
             MItem* item = (MItem*)_items[i];
             if( item->isMask() ) {
@@ -719,7 +719,7 @@ bool MComponent::writeCBR( bool mustExist )
                 tfile.setExt( "dbr" );
                 brow.printf( "d %s\n", (const char*)tfile );
                 for( ; i<_workFiles.count(); i++ ) {
-                    MWorkFile* w = (MWorkFile*)_workFiles[i];
+                    w = (MWorkFile*)_workFiles[i];
                     if( w->browseable() ) {
                         w->item()->absResult( tfile );
                         tfile.setExt( "mbr" );
@@ -736,7 +736,9 @@ bool MComponent::writeCBR( bool mustExist )
                 }
                 brow.close();
             }
-            if( found_a_mbr ) return( true );
+            if( found_a_mbr ) {
+                return( true );
+            }
         }
     }
     return( false );

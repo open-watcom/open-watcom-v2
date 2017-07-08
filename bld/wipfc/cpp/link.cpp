@@ -175,8 +175,8 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                     document->printError( ERR2_VALUE );
                 else {
                     wchar_t *end;
-                    unsigned long int x( std::wcstoul( value.c_str(), &end, 10 ) );
-                    origin.xpos = static_cast< STD1::uint16_t >( x );
+                    unsigned long int xpos( std::wcstoul( value.c_str(), &end, 10 ) );
+                    origin.xpos = static_cast< STD1::uint16_t >( xpos );
                     if( *end == L'c' )
                         origin.xPosType = ExtTocEntry::ABSOLUTE_CHAR;
                     else if( *end == L'%' )
@@ -210,8 +210,8 @@ Lexer::Token Link::parseAttributes( Lexer* lexer )
                     document->printError( ERR2_VALUE );
                 else {
                     wchar_t *end;
-                    unsigned long int y( std::wcstoul( value.c_str(), &end, 10 ) );
-                    origin.ypos = static_cast< STD1::uint16_t >( y );
+                    unsigned long int ypos( std::wcstoul( value.c_str(), &end, 10 ) );
+                    origin.ypos = static_cast< STD1::uint16_t >( ypos );
                     if( *end == L'c' )
                         origin.yPosType = ExtTocEntry::ABSOLUTE_CHAR;
                     else if( *end == L'%' )
@@ -509,8 +509,8 @@ void Link::doTopic( Cell* cell )
             //esc.push_back( static_cast< STD1::uint8_t >( index >> 8 ) );
             std::string tmp;
             wtombstring( refid->getText(), tmp );
-            size_t size( tmp.size() );
-            esc.push_back( static_cast< STD1::uint8_t >( size ) );
+            size_t tmpsize( tmp.size() );
+            esc.push_back( static_cast< STD1::uint8_t >( tmpsize ) );
             if( hypergraphic && ( x || y || cx || cy ) ) {
                 esc.push_back( static_cast< STD1::uint8_t >( x ) );
                 esc.push_back( static_cast< STD1::uint8_t >( x >> 8 ) );
@@ -521,16 +521,17 @@ void Link::doTopic( Cell* cell )
                 esc.push_back( static_cast< STD1::uint8_t >( cy ) );
                 esc.push_back( static_cast< STD1::uint8_t >( cy >> 8 ) );
             }
-            if( size > 255 - esc.size() + 1 ) {
-                size = 255 - esc.size() + 1;
-                tmp.erase( size );
+            if( tmpsize > 255 - esc.size() + 1 ) {
+                tmpsize = 255 - esc.size() + 1;
+                tmp.erase( tmpsize );
             }
-            for( size_t count1 = 0; count1 < size; count1++ )
+            for( size_t count1 = 0; count1 < tmpsize; count1++ )
                 esc.push_back( static_cast< STD1::uint8_t >( tmp[ count1 ] ) );
             esc[ 1 ] = static_cast< STD1::uint8_t >( esc.size() - 1 );
             cell->addEsc( esc );
-            if( cell->textFull() )
+            if( cell->textFull() ) {
                 printError( ERR1_LARGEPAGE );
+            }
         }
     }
     else
@@ -619,12 +620,12 @@ void Link::doLaunch( Cell* cell )
         wtombstring( object, buffer );
         buffer += ' ';
         wtombstring( data, buffer );
-        size_t size( buffer.size() );
-        if( size > 255 - esc.size() + 1 ) {
-            size = 255 - esc.size() + 1;
-            buffer.erase( size );
+        size_t buffersize( buffer.size() );
+        if( buffersize > 255 - esc.size() + 1 ) {
+            buffersize = 255 - esc.size() + 1;
+            buffer.erase( buffersize );
         }
-        for( size_t count1 = 0; count1 < size; ++count1 )
+        for( size_t count1 = 0; count1 < buffersize; ++count1 )
             esc.push_back( static_cast< STD1::uint8_t >( buffer[ count1 ] ) );
         esc[ 1 ] = static_cast< STD1::uint8_t >( esc.size() - 1 );
         cell->addEsc( esc );

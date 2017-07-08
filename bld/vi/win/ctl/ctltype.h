@@ -87,8 +87,7 @@ typedef enum {
     CTL_RFLOAT,         // float field with range (with error checking)
     CTL_ESCOMBO,        // editable string combo box (drop down) (implementation MISSING!!!)
     CTL_DHCOMBO         // dynamic combo box, with HWND parm (implementation MISSING!!!)
-};
-typedef signed char ctl_type;
+} ctl_type;
 
 ///////////////////////////////////////////////////////////////////////////////
 // The ctl_dlg_ functions

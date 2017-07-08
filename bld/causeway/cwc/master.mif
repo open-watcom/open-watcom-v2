@@ -14,7 +14,7 @@ inc_dirs = -I.
 objs = cwc.obj
 
 !ifndef bootstrap
-all : cwstub.exe $(proj_name).exe .symbolic
+all : $(proj_name).exe .symbolic
 !endif
 
 $(proj_name).exe : copystub.gh decstub.gh $(objs) $(__MAKEFILES__)
@@ -24,9 +24,6 @@ $(proj_name).exe : copystub.gh decstub.gh $(objs) $(__MAKEFILES__)
 !else
     $(linker) name $@ $(lflags) file {$(objs)}
 !endif
-
-cwstub.exe : ../../cw32/dosi86/cwstub.exe
-    cp $[@ $@
 
 copystub.tmp : copystub.asm
     @%make echo_aslink

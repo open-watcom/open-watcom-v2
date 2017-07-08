@@ -294,7 +294,7 @@ STD1::uint32_t Nls::CountryDef::write( std::FILE *out ) const
     return start;
 }
 /*****************************************************************************/
-void Nls::SbcsGrammerDef::setDefaultBits( NlsRecType type )
+void Nls::SbcsGrammerDef::setDefaultBits( NlsRecType rectype )
 {
     static const unsigned char defbits[ 2 ][ 32 ] = {\
         { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xff, 0xc0, 
@@ -305,7 +305,7 @@ void Nls::SbcsGrammerDef::setDefaultBits( NlsRecType type )
           0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 
           0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
           0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff } };
-    std::memcpy( this->bits, &defbits[ type - 1 ][ 0 ], 32 * sizeof( char ) );
+    std::memcpy( this->bits, &defbits[ rectype - 1 ][ 0 ], 32 * sizeof( char ) );
 }
 /*****************************************************************************/
 STD1::uint32_t Nls::SbcsGrammerDef::write( std::FILE *out ) const

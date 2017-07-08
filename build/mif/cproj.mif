@@ -691,7 +691,13 @@ rc              = $(noecho)*bwrc
 rcaui           = $(noecho)*bwrc
 
 rc_aui_flags    = -zk0 $(rc_cppflags) -I"$(watcom_dir)/h"
+!ifdef bootstrap
+rc_aui          = $(rcaui) $(rc_flags_all) -bt=windows $(rc_aui_flags)
+!else ifndef __WATCOM_TOOLS__
+rc_aui          = $(rcaui) $(rc_flags_all) -bt=windows $(rc_aui_flags)
+!else
 rc_aui          = $(rcaui) $(rc_flags_all) -x -bt=windows $(rc_aui_flags)
+!endif
 
 # current project setup
 !ifeq sys_dll 1

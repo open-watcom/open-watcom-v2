@@ -123,7 +123,7 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
     int  i;
     char *incdir = NULL;
 
-    for( i=1; i<argc; i++ ) {
+    for( i = 1; i < argc; i++ ) {
         if( streq( argv[i], "-c" ) ) {
             if( i+1 < argc ) {
                 i++;
@@ -171,7 +171,7 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
                 _project = NULL;
             }
             if( parms.count() > 0 ) {
-                for( i=_project->components().count(); i>0; ) {
+                for( i = _project->components().count(); i > 0; ) {
                     i--;
                     MComponent* comp = (MComponent*)_project->components()[i];
                     delete _project->removeComponent( comp );
@@ -182,14 +182,14 @@ WEXPORT VpeMain::VpeMain( int argc, char** argv )
         }
         if( _project ) {
             int icount = parms.count();
-            for( int i=0; i<icount; i++ ) {
+            for( i = 0; i < icount; i++ ) {
                 WFileName f( parms.cStringAt(i) );
                 f.absoluteTo(); f.setExt( ".tgt" );
                 _project->attachComponent( f );
             }
             if( sMode ) {
                 SwMode mode = (sMode=='d') ? SWMODE_DEBUG : SWMODE_RELEASE;
-                for( int i=0; i<_project->components().count(); i++ ) {
+                for( i = 0; i < _project->components().count(); i++ ) {
                     MComponent* comp = (MComponent*)_project->components()[i];
                     comp->setMode( mode );
                 }

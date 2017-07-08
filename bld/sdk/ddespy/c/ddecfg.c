@@ -38,6 +38,8 @@
 #include "wddespy.h"
 #include "inipath.h"
 #include "watini.h"
+#include "cbfilt.h"
+#include "msgfilt.h"
 
 #define SECT_NAME       "Open Watcom DDE Spy"
 

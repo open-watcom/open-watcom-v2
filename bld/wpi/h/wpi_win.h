@@ -860,7 +860,7 @@ extern void _wpi_setbmphdrvalues( WPI_BITMAPINFOHEADER *bmih, ULONG size,
 #endif
 
     #define _wpi_wmgetfont( hwnd, font_hld ) \
-        font_hld = _wpi_sendmessage( hwnd, WM_GETFONT, NULL, NULL );
+        font_hld = _wpi_sendmessage( hwnd, WM_GETFONT, 0, 0 );
 
     #define _wpi_createfont( logfont, hfont ) \
         hfont = CreateFontIndirect( &logfont );
@@ -1096,8 +1096,7 @@ extern void _wpi_getbitmapparms( HBITMAP bitmap, int *width, int *height,
     #define _wpi_copyrect( dest, src ) CopyRect( dest, src )
 
     #define _wpi_setredraw( hwnd, redraw ) \
-        _wpi_sendmessage( hwnd, WM_SETREDRAW, \
-                          (WPI_PARAM1) (redraw), (WPI_PARAM2) NULL )
+        _wpi_sendmessage( hwnd, WM_SETREDRAW, (WPI_PARAM1)(redraw), 0 )
 
     #define _wpi_getfirstchild( hwnd ) GetWindow( hwnd, GW_CHILD )
 

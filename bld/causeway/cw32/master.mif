@@ -14,8 +14,6 @@ extra_l_flags = op verbose, statics
 
 .asm : ../../asm
 
-!ifeq host_cpu i86
-
 all : cwstub.exe cwdstub.exe .symbolic
 
 cwstub.exe : cw32.obj $(__MAKEFILES__)
@@ -26,28 +24,3 @@ cwstub.exe : cw32.obj $(__MAKEFILES__)
 cwdstub.exe : cwdstub.obj $(__MAKEFILES__)
     @%make echo_link
     $(linker) name $@ $(lflags) disable 1014 file $[@
-
-!else ifeq host_cpu 386
-
-objs = &
-    cwkrnl1.obj &
-    cwkrnl2.obj &
-    cwkrnl3.obj &
-    cwkrnl4.obj
-
-cwdll.lib : $(objs) $(__MAKEFILES__)
-    $(noecho)%create cwapi.lbc
-    @%append cwapi.lbc ++'__CWAPI_CREATEPSP'.'CAUSEWAY_KERNAL'
-    @%append cwapi.lbc ++'__CWAPI_DELETEPSP'.'CAUSEWAY_KERNAL'
-    @%append cwapi.lbc ++'__CWAPI_EXECMODULE'.'CAUSEWAY_KERNAL'
-    @%append cwapi.lbc ++'__CWAPI_DSIZESELECTOR'.'CAUSEWAY_KERNAL'
-    @%append cwapi.lbc ++'__CWAPI_FINDMODULE'.'CAUSEWAY_KERNAL'
-    @%append cwapi.lbc ++'__CWAPI_UNFINDMODULE'.'CAUSEWAY_KERNAL'
-    @%append cwapi.lbc ++'__CWAPI_FINDFUNCTION'.'CAUSEWAY_KERNAL'
-    @%append cwapi.lbc ++'__CWAPI_GETMEMLINEAR32'.'CAUSEWAY_KERNAL'
-    @%append cwapi.lbc ++'__CWAPI_RESMEMLINEAR32'.'CAUSEWAY_KERNAL'
-    @%append cwapi.lbc ++'__CWAPI_RELMEMLINEAR32'.'CAUSEWAY_KERNAL'
-    @%make echo_lib
-    $(librarian) $(libflags) $(objs) @cwapi.lbc
-
-!endif

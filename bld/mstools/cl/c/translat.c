@@ -73,7 +73,7 @@ static struct XlatStatus {
     int     opt_of              : 1;    /* use -of option */
     int     opt_or              : 1;    /* use -or option */
 #endif
-} status;
+} xlat_status;
 
 
 /*
@@ -808,7 +808,7 @@ void HandleFileTranslate( const char *filename, CmdLine *compCmdLine,
     linkCmdLine = linkCmdLine;
 
     /*** Handle the /P switch ***/
-    if( status.preprocessToFile ) {
+    if( xlat_status.preprocessToFile ) {
         if( compCmdLine != NULL ) {
             _splitpath( filename, drive, dir, fname, NULL );
             _makepath( fullPath, NULL, NULL, fname, ".i" );
@@ -828,7 +828,7 @@ void OptionsTranslate( OPT_STORAGE *cmdOpts, CmdLine *compCmdLine,
 /****************************************************************/
 {
     /*** Parse the /nologo switch now so we can print the banner ***/
-    init_status( &status );
+    init_status( &xlat_status );
     if( cmdOpts->nologo ) {
         QuietModeMessage();
     } else {
@@ -837,8 +837,8 @@ void OptionsTranslate( OPT_STORAGE *cmdOpts, CmdLine *compCmdLine,
 
     /*** Parse everything ***/
     unsupported_opts( cmdOpts );
-    default_opts( &status, cmdOpts, compCmdLine, linkCmdLine );
-    compiler_opts( &status, cmdOpts, compCmdLine );
-    linker_opts( &status, cmdOpts, linkCmdLine );
-    merge_opts( &status, cmdOpts, compCmdLine, linkCmdLine );
+    default_opts( &xlat_status, cmdOpts, compCmdLine, linkCmdLine );
+    compiler_opts( &xlat_status, cmdOpts, compCmdLine );
+    linker_opts( &xlat_status, cmdOpts, linkCmdLine );
+    merge_opts( &xlat_status, cmdOpts, compCmdLine, linkCmdLine );
 }
