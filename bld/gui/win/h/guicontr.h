@@ -33,17 +33,6 @@
 #ifndef _GUICONTR_H_
 #define _GUICONTR_H_
 
-typedef struct control_item {
-    bool                checked;
-    gui_ctl_id          id;
-    gui_control_class   control_class;
-    WPI_WNDPROC         win_call_back;
-    HWND                hwnd;
-    const char          *text;
-    gui_control_styles  style;
-    struct control_item *next;
-} control_item;
-
 typedef struct {
     char                *classname;
     DWORD               style;

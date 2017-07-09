@@ -35,24 +35,24 @@
 #include "aliasi.h"
 
 typedef struct analias {
-    unsigned long       id;
+    ULONG_PTR           id;
     char                *name;
     struct analias      *next;
 } AnAlias;
 
 typedef struct {
     AnAlias             *data;
-    void                (*updatefn)( unsigned long, char *, char *, void * );
+    void                (*updatefn)( ULONG_PTR, char *, char *, void * );
     void                *userdata;
 } AliasList;
 
 typedef AliasList       *AliasHdl;
 
-void    InitAliasHdl( AliasHdl *hdl, void (*updatefn)( unsigned long, char *, char *, void * ), void *userdata );
-void    AddAlias( AliasHdl hdl, char *text, unsigned long id );
+void    InitAliasHdl( AliasHdl *hdl, void (*updatefn)( ULONG_PTR, char *, char *, void * ), void *userdata );
+void    AddAlias( AliasHdl hdl, char *text, ULONG_PTR id );
 void    FreeAlias( AliasHdl hdl );
-char    *LookupAlias( AliasHdl hdl, unsigned long id );
+char    *LookupAlias( AliasHdl hdl, ULONG_PTR id );
 void    Query4Aliases( AliasHdl hdl, HANDLE instance, HWND hwnd, char *title );
-void    EnumAliases( AliasHdl hdl, void (*enumfn)( unsigned long, char *, void * ), void *userdata );
+void    EnumAliases( AliasHdl hdl, void (*enumfn)( ULONG_PTR, char *, void * ), void *userdata );
 
 #endif /* _ALIAS_H_INCLUDED */

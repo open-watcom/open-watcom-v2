@@ -77,7 +77,7 @@ bool TestDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
             GUIMemFree( text );
             GUISetListItemData( gui, LISTBOX_CONTROL, num, (void *)num );
-            num = (int)GUIGetListItemData( gui, LISTBOX_CONTROL, num );
+            num = (gui_ctl_idx)GUIGetListItemData( gui, LISTBOX_CONTROL, num );
             break;
         case EDIT_CONTROL :
             new = GUIGetText( gui, EDIT_CONTROL );

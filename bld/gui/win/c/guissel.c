@@ -33,71 +33,43 @@
 #include "guiwind.h"
 #include "guicutil.h"
 
-static bool GUISelect( gui_window *wnd, gui_ctl_id id, bool set,
-                       WPI_PARAM2 lparam, WPI_MRESULT *ret )
+static bool GUISelect( gui_window *wnd, gui_ctl_id id, bool set, WPI_PARAM2 lparam, WPI_MRESULT *ret )
 {
     gui_control_class   control_class;
     UINT                msg;
-    WPI_PARAM2          wparam;
 
     if( !GUIGetControlClass( wnd, id, &control_class ) ) {
         return( false );
     }
     switch( control_class ) {
     case GUI_EDIT_MLE:
-        if( set ) {
-            msg = MLM_SETSEL;
-        } else {
-            msg = MLM_GETSEL;
-        }
+        msg = ( set ) ? MLM_SETSEL : MLM_GETSEL;
         break;
     case GUI_EDIT:
-        if( set ) {
-            msg = EM_SETSEL;
-        } else {
-            msg = EM_GETSEL;
-        }
+        msg = ( set ) ? EM_SETSEL : EM_GETSEL;
         break;
     case GUI_EDIT_COMBOBOX :
-        if( set ) {
-            msg = CB_SETEDITSEL;
-        } else {
-            msg = CB_GETEDITSEL;
-        }
+        msg = ( set ) ? CB_SETEDITSEL : CB_GETEDITSEL;
         break;
     default :
         return( false );
     }
-    #ifdef __OS2_PM__
-        wparam = lparam;
-        lparam = 0;
-    #elif defined(__NT__)
-        wparam = (INT)LOWORD( lparam );
-        lparam = (INT)HIWORD( lparam );
-    #else
-        wparam = 0;
-    #endif
-    return( GUIToControl( wnd, id, msg, wparam, lparam, ret ) );
+#ifdef __OS2_PM__
+    return( GUIToControl( wnd, id, msg, (WPI_PARAM1)lparam, (WPI_PARAM2)0, ret ) );
+#elif defined(__NT__)
+    return( GUIToControl( wnd, id, msg, (WPI_PARAM1)(INT)LOWORD( lparam ), (WPI_PARAM2)(INT)HIWORD( lparam ), ret ) );
+#else
+    return( GUIToControl( wnd, id, msg, (WPI_PARAM1)0, lparam, ret ) );
+#endif
 }
 
 bool GUISelectAll( gui_window *wnd, gui_ctl_id id, bool select )
 {
-    WPI_PARAM2          lparam;
-
 #ifdef __OS2_PM__
-    if( select ) {
-        lparam = (WPI_PARAM2)MAKELONG( 0, 255 );
-    } else {
-        lparam = (WPI_PARAM2)MAKELONG( 0, 0 );
-    }
+    return( GUISelect( wnd, id, true, (WPI_PARAM2)MAKELONG( 0, ( select ) ? 255 : 0 ), NULL ) );
 #else
-    if( select ) {
-        lparam = (WPI_PARAM2)MAKELONG( 0, -1 );
-    } else {
-        lparam = (WPI_PARAM2)MAKELONG( -1, -1 );
-    }
+    return( GUISelect( wnd, id, true, (WPI_PARAM2)MAKELONG( ( select ) ? 0 : -1, -1 ), NULL ) );
 #endif
-    return( GUISelect( wnd, id, true, lparam, NULL ) );
 }
 
 bool GUISetEditSelect( gui_window *wnd, gui_ctl_id id, int start, int end )
@@ -110,7 +82,7 @@ bool GUIGetEditSelect( gui_window *wnd, gui_ctl_id id, int *start, int *end )
     bool        ret;
     WPI_MRESULT result;
 
-    ret = GUISelect( wnd, id, false, 0, &result );
+    ret = GUISelect( wnd, id, false, (WPI_PARAM2)0, &result );
     if( start != NULL ) {
         *start = LOWORD( result );
     }
@@ -124,9 +96,9 @@ void GUIScrollCaret( gui_window *wnd, gui_ctl_id id )
 {
     WPI_MRESULT result;
 #ifdef  __NT__
-    GUIToControl( wnd, id, EM_SCROLLCARET, 0, 0, &result );
+    GUIToControl( wnd, id, EM_SCROLLCARET, (WPI_PARAM1)0, (WPI_PARAM2)0, &result );
 #else
-    GUIToControl( wnd, id, EM_GETSEL, 0, 0, &result );
-    GUIToControl( wnd, id, EM_SETSEL, 0, result, &result );
+    GUIToControl( wnd, id, EM_GETSEL, (WPI_PARAM1)0, (WPI_PARAM2)0, &result );
+    GUIToControl( wnd, id, EM_SETSEL, (WPI_PARAM1)0, (WPI_PARAM2)result, &result );
 #endif
 }

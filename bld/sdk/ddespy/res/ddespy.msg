@@ -27,8 +27,8 @@ pick(   STR_UNADVISE,
         "アンアドバイス" )
 
 pick(   STR_UNKNOWN_FMT_ID,
-        "0x%0*X (unknown)",
-        "0x%0*X (未知)" )
+        "0x%s (unknown)",
+        "0x%s (未知)" )
 pick(   STR_UNKNOWN,
         "unknown",
         "未知" )
@@ -83,14 +83,14 @@ pick(   STR_ERR_STRUCT_FMT_STR,
         "time: %lu %s ERROR: %s",
         "時間: %lu %s エラ－: %s" )
 pick(   STR_HSZ_STRUCT_DEL,
-        "time: %lu %s STRING DELETED 0x%0*lX (%s) ",
-        "時間: %lu %s 削除文字列 0x%0*lX (%s) " )
+        "time: %lu %s STRING DELETED 0x%s (%s) ",
+        "時間: %lu %s 削除文字列 0x%s (%s) " )
 pick(   STR_HSZ_STRUCT_CREATE,
-        "time: %lu %s STRING CREATED 0x%0*lX (%s) ",
-        "時間: %lu %s 作成文字列 0x%0*lX (%s) " )
+        "time: %lu %s STRING CREATED 0x%s (%s) ",
+        "時間: %lu %s 作成文字列 0x%s (%s) " )
 pick(   STR_HSZ_STRUCT_KEPT,
-        "time: %lu %s STRING KEPT 0x%0*lX (%s) ",
-        "時間: %lu %s 保持文字列 0x%0*lX (%s) " )
+        "time: %lu %s STRING KEPT 0x%s (%s) ",
+        "時間: %lu %s 保持文字列 0x%s (%s) " )
 
 // THESE MESSAGES have changed
 pick(   STR_LNK_STRUCT_FMT_STR_1,

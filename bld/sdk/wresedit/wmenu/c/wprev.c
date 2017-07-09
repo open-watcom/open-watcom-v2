@@ -183,7 +183,7 @@ void WHandleMenuSelect( WMenuEditInfo *einfo, WPARAM wParam, LPARAM lParam )
     HMENU       popup;
     WORD        flags;
     WORD        id;
-    box_pos     pos;
+    LRESULT     pos;
 
     if( einfo == NULL || einfo->menu == NULL || einfo->menu->first_entry == NULL ) {
         return;
@@ -221,12 +221,11 @@ void WHandleMenuSelect( WMenuEditInfo *einfo, WPARAM wParam, LPARAM lParam )
     }
 
     pos = 0;
-
-    if ( WFindEntryLBPos( einfo->menu->first_entry, entry, &pos ) ) {
+    if( WFindEntryLBPos( einfo->menu->first_entry, entry, &pos ) ) {
         pos--;
         einfo->current_entry = NULL;
-        einfo->current_pos = -1;
-        if( SendMessage( lbox, LB_SETCURSEL, pos, 0 ) != LB_ERR ) {
+        einfo->current_pos = LB_ERR;
+        if( SendMessage( lbox, LB_SETCURSEL, (WPARAM)pos, 0 ) != LB_ERR ) {
             WHandleSelChange( einfo );
         }
     }

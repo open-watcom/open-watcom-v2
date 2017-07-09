@@ -309,8 +309,8 @@ static void HandlePopup( gui_window *gui, gui_rect *rect, gui_ctl_id id )
 static void SetFixedFloat( gui_window *gui )
 {
     if( GUIHasToolBar( gui ) ) {
-        if( GUIToolBarFixed( gui) ) {
-            GUISetMenuText( gui, MENU_CHANGE_TOOLBAR, "&Float Toolbar", false);
+        if( GUIToolBarFixed( gui ) ) {
+            GUISetMenuText( gui, MENU_CHANGE_TOOLBAR, "&Float Toolbar", false );
             GUISetHintText( gui, MENU_CHANGE_TOOLBAR, FloatHelp );
         } else {
             GUISetMenuText( gui, MENU_CHANGE_TOOLBAR, "&Fix Toolbar", false );

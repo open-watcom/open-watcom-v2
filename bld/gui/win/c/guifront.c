@@ -41,25 +41,12 @@
 void ActivateNC( gui_window *wnd, bool activate )
 {
     gui_window  *current;
-    bool        found;
 
-    if( wnd == NULL ) {
-        return;
-    }
-
-    found = false;
-    current = wnd;
-    while( current ) {
+    for( current = wnd; current != NULL; current = GUIGetParentWindow( current ) ) {
         if( current->flags & HAS_CAPTION ) {
-            found = true;
+            GUISendMessage( current->hwnd_frame, WM_NCACTIVATE, (WPI_PARAM1)activate, (WPI_PARAM2)0 );
             break;
         }
-        current = GUIGetParentWindow( current );
-    }
-
-    if( found ) {
-        GUISendMessage( current->hwnd_frame, WM_NCACTIVATE,
-                        (WPI_PARAM1)activate, 0 );
     }
 }
 

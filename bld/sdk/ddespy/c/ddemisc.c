@@ -40,6 +40,33 @@
 extern msglist DDEMsgs[1];
 
 /*
+ * GetHexStr - convert a number to a hex string, padded out with 0's
+ */
+void GetHexStr( LPSTR res, ULONG_PTR num, size_t padlen )
+{
+    char        tmp[20];
+    size_t      i;
+    size_t      j,k;
+
+#ifdef _WIN64
+    i = sprintf( tmp, "%llx", num );
+#else
+    i = sprintf( tmp, "%lx", num );
+#endif
+    k = 0;
+    for( j = i; j < padlen; j++ ) {
+        res[k++] = '0';
+    }
+    for( j = 0; j < i; j++ ) {
+        res[k++] = tmp[j];
+    }
+    if( padlen == 0 ) {
+        res[k] = '\0';
+    }
+
+} /* GetHexStr */
+
+/*
  * LogHeader
  */
 void LogHeader( FILE *f )

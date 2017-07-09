@@ -51,13 +51,13 @@ extern bool     WSetEditWithSINT32( HWND, int_32, int );
 extern bool     WSetEditWithWResID( HWND, WResID * );
 extern bool     WSetEditWithStr( HWND, char * );
 extern bool     WSetLBoxWithStr( HWND, char *, void * );
-extern bool     WInsertLBoxWithStr( HWND, int, char *, void * );
+extern bool     WInsertLBoxWithStr( HWND, LRESULT, char *, void * );
 extern bool     WSetLBoxWithWResID( HWND, WResID *, void * );
 
 extern char     *WGetStrFromEdit( HWND, bool * );
 extern WResID   *WGetWResIDFromEdit( HWND, bool * );
 extern int_32   WGetSINT32FromEdit( HWND, bool * );
 
-extern char     *WGetStrFromComboLBox( HWND combo, box_pos pos );
+extern char     *WGetStrFromComboLBox( HWND combo, LRESULT pos );
 
 #endif

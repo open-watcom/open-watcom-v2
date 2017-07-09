@@ -63,7 +63,7 @@ bool WDeleteAccelEntry( WAccelEditInfo *einfo )
 {
     HWND         lbox;
     bool         ok;
-    box_pos      pos;
+    LRESULT      pos;
 
     ok = (einfo != NULL && einfo->edit_dlg != NULL);
 
@@ -73,8 +73,8 @@ bool WDeleteAccelEntry( WAccelEditInfo *einfo )
     }
 
     if( ok ) {
-        pos = (box_pos)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
-        ok = (pos != LB_ERR);
+        pos = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+        ok = ( pos != LB_ERR );
     }
 
     if( ok ) {
@@ -84,12 +84,12 @@ bool WDeleteAccelEntry( WAccelEditInfo *einfo )
     return( ok );
 }
 
-bool WDeleteEditWinLBoxEntry( WAccelEditInfo *einfo, box_pos pos, bool free_it )
+bool WDeleteEditWinLBoxEntry( WAccelEditInfo *einfo, LRESULT pos, bool free_it )
 {
     HWND        lbox;
     bool        ok;
     WAccelEntry *entry;
-    box_pos     max;
+    LRESULT     count;
 
     ok = (einfo != NULL && einfo->edit_dlg != NULL);
 
@@ -99,12 +99,12 @@ bool WDeleteEditWinLBoxEntry( WAccelEditInfo *einfo, box_pos pos, bool free_it )
     }
 
     if( ok ) {
-        max = (box_pos)SendMessage( lbox, LB_GETCOUNT, 0, 0 );
-        ok = (max != 0 && max != LB_ERR && pos < max);
+        count = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
+        ok = ( count != 0 && count != LB_ERR && pos < count );
     }
 
     if( ok ) {
-        entry = (WAccelEntry *)SendMessage( lbox, LB_GETITEMDATA, pos, 0 );
+        entry = (WAccelEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
         if( entry != NULL ) {
             if( free_it ) {
                 ok = WFreeAccelTableEntry( einfo->tbl, entry );
@@ -116,15 +116,15 @@ bool WDeleteEditWinLBoxEntry( WAccelEditInfo *einfo, box_pos pos, bool free_it )
 
     if( ok ) {
         einfo->info->modified = true;
-        ok = (SendMessage( lbox, LB_DELETESTRING, pos, 0 ) != LB_ERR);
+        ok = (SendMessage( lbox, LB_DELETESTRING, (WPARAM)pos, 0 ) != LB_ERR);
     }
 
     if( ok ) {
         einfo->current_entry = NULL;
-        einfo->current_pos = -1;
-        if( pos > max - 2 )
-            pos = max - 2;
-        ok = (SendMessage( lbox, LB_SETCURSEL, pos, 0 ) != LB_ERR);
+        einfo->current_pos = LB_ERR;
+        if( pos > count - 2 )
+            pos = count - 2;
+        ok = (SendMessage( lbox, LB_SETCURSEL, (WPARAM)pos, 0 ) != LB_ERR);
         if( ok ) {
             WHandleSelChange( einfo );
         }

@@ -145,7 +145,7 @@ static bool IsMaximized( gui_window *wnd )
         if( GUIIsMDIChildWindow( wnd ) ) {
             return( MDIIsWndMaximized( hwnd ) );
         } else {
-            return( _wpi_iszoomed( hwnd ) );
+            return( _wpi_iszoomed( hwnd ) != 0 );
         }
     } else {
         return( false );
@@ -161,9 +161,9 @@ static void MDIMaximize( bool max, gui_window *wnd )
 {
 #ifndef __OS2_PM__
     if( max ) {
-        GUISendMessage( wnd->hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0L );
+        GUISendMessage( wnd->hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0 );
     } else {
-        GUISendMessage( wnd->hwnd, WM_SYSCOMMAND, SC_RESTORE, 0L );
+        GUISendMessage( wnd->hwnd, WM_SYSCOMMAND, SC_RESTORE, 0 );
     }
 #else
     max = max;

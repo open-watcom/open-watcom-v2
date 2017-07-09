@@ -63,17 +63,17 @@
 bool WRAPI WRSetLBoxWithStr( HWND lbox, const char *str, void *data )
 {
     bool        ok;
-    int         index;
+    LRESULT     index;
 
     ok = (lbox != (HWND)NULL && str != NULL);
 
     if( ok ) {
-        index = (int)SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
-        ok = (index != LB_ERR && index != LB_ERRSPACE);
+        index = SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
+        ok = ( index != LB_ERR && index != LB_ERRSPACE );
     }
 
     if( ok ) {
-        ok = ( SendMessage( lbox, LB_SETITEMDATA, index, (LPARAM)data ) != LB_ERR );
+        ok = ( SendMessage( lbox, LB_SETITEMDATA, (WPARAM)index, (LPARAM)data ) != LB_ERR );
     }
 
     return( ok );

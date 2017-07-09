@@ -309,7 +309,7 @@ WINEXPORT INT_PTR CALLBACK SegMapDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LP
          */
         SetDlgCourierFont( hwnd, SEGMAP_LIST );
         SendDlgItemMessage( hwnd, SEGMAP_LIST, LB_RESETCONTENT, 0, 0L );
-        for( i=0; i<= 1024; i++ ) {
+        for( i = 0; i <= 1024; i++ ) {
             seg = NumToAddr( DTTaskEntry.hModule, i );
             if( seg != 0 ) {
                 sprintf( buff,"%04d->%04x", i, seg );
@@ -356,10 +356,8 @@ static void SwitchRegSets( HWND hwnd, StatData *statdata )
     if( old_index == new_index ) {
         return;
     }
-    SendDlgItemMessage( hwnd, old_index + REG_LIST_FIRST, HIDE_REG_LIST,
-            (WPARAM)0, (LPARAM)0 );
-    SendDlgItemMessage( hwnd, new_index + REG_LIST_FIRST, UNHIDE_REG_LIST,
-            (WPARAM)0, (LPARAM)0 );
+    SendDlgItemMessage( hwnd, old_index + REG_LIST_FIRST, HIDE_REG_LIST, (WPARAM)0, (LPARAM)0 );
+    SendDlgItemMessage( hwnd, new_index + REG_LIST_FIRST, UNHIDE_REG_LIST, (WPARAM)0, (LPARAM)0 );
     statdata->reg_set_index = new_index;
 }
 

@@ -241,7 +241,7 @@ INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
     const char  *errstr;
     char        *res;
     LRESULT     top;
-    int         sel;
+    LRESULT     sel;
     HWND        id;
     WORD        parm;
     static HWND framedHwnd;
@@ -296,7 +296,7 @@ INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
         case SELWIN_ADD:
         case SELWIN_DELETE:
         case SELWIN_SHOWINFO:
-            sel = (int)SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_GETCURSEL, 0, 0L );
+            sel = SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_GETCURSEL, 0, 0L );
             if( sel == LB_ERR ) {
                 if( parm != SELWIN_LISTBOX ) {
                     errstr = GetRCString( STR_NO_CUR_SELECTION );
@@ -305,7 +305,7 @@ INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
                 break;
             }
             top = SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_GETTOPINDEX, 0, 0L );
-            SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_GETTEXT, sel, (LPARAM)(LPSTR)resdata );
+            SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_GETTEXT, (WPARAM)sel, (LPARAM)(LPSTR)resdata );
             res = resdata;
             while( isspace( *res ) ) {
                 res++;
@@ -315,7 +315,7 @@ INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
             }
             ch = res[SPYOUT_HWND_LEN];
             res[SPYOUT_HWND_LEN] = '\0';
-            id = (HWND)strtol( res, NULL, 16 );
+            id = (HWND)(ULONG_PTR)strtoul( res, NULL, 16 );
             if( parm == SELWIN_LISTBOX ) {
                 if( ch == '*' ) {
                     parm = SELWIN_DELETE;
@@ -342,8 +342,8 @@ INT_PTR CALLBACK ShowSelectedDialogDlgProc( HWND hwnd, UINT msg, WPARAM wparam, 
                 break;
             }
             setUpWindows();
-            SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_SETTOPINDEX, top, 0L );
-            SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_SETCURSEL, sel, 0L );
+            SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_SETTOPINDEX, (WPARAM)top, 0L );
+            SendDlgItemMessage( hwnd, SELWIN_LISTBOX, LB_SETCURSEL, (WPARAM)sel, 0L );
             break;
         case IDCANCEL:
             FrameAWindow( framedHwnd );

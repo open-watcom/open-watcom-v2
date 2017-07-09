@@ -82,17 +82,17 @@ bool WRESetEditWithStr( HWND edit, char *str )
 bool WRESetLBoxWithStr( HWND lbox, char *str, void *data )
 {
     bool    ok;
-    int     index;
+    LRESULT pos;
 
     ok = ( lbox != (HWND)NULL && str != NULL );
 
     if( ok ) {
-        index = (int)SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
-        ok = ( index != LB_ERR && index != LB_ERRSPACE );
+        pos = SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
+        ok = ( pos != LB_ERR && pos != LB_ERRSPACE );
     }
 
     if( ok ) {
-        ok = ( SendMessage( lbox, LB_SETITEMDATA, index, (LPARAM)(LPVOID)data ) != LB_ERR );
+        ok = ( SendMessage( lbox, LB_SETITEMDATA, (WPARAM)pos, (LPARAM)(LPVOID)data ) != LB_ERR );
     }
 
     return( ok );

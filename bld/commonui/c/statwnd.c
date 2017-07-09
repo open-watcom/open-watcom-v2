@@ -704,7 +704,7 @@ void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *
         if( flags == DT_ESC_CONTROLLED  ) {
             flags = DT_VCENTER | DT_LEFT;
             bptr = buff;
-            while( *str != '\0' ) {
+            for( ; *str != '\0'; str++ ) {
                 if( *str == STATUS_ESC_CHAR ) {
                     str++;
                     switch( *str ) {
@@ -733,7 +733,6 @@ void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *
                 } else {
                     *bptr++ = *str;
                 }
-                str++;
             }
             *bptr = '\0';
             bptr = buff;
@@ -745,7 +744,7 @@ void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *
         bptr = (char *)str;
         if( flags == DT_ESC_CONTROLLED ) {
             bptr = buff;
-            while( *str != '\0' ) {
+            for( ; *str != '\0'; str++ ) {
                 if( *str == STATUS_ESC_CHAR ) {
                     str++;
                     if( *str == STATUS_NEXT_BLOCK ) {
@@ -759,7 +758,6 @@ void StatusWndDrawLine( statwnd *sw, WPI_PRES pres, WPI_FONT hfont, const char *
                 } else {
                     *bptr++ = *str;
                 }
-                str++;
             }
             *bptr = '\0';
             bptr = buff;

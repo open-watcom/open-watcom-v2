@@ -1018,7 +1018,7 @@ bool WRAPI WREditSym( HWND parent, WRHashTable **table,
 static bool WRShowSelectedSymbol( HWND hDlg, WRHashTable *table )
 {
     HWND        lbox;
-    int         index;
+    LRESULT     index;
     WRHashEntry *entry;
     bool        standard_entry;
     bool        ok;
@@ -1027,7 +1027,7 @@ static bool WRShowSelectedSymbol( HWND hDlg, WRHashTable *table )
 
     standard_entry = FALSE;
     lbox = GetDlgItem( hDlg, IDB_SYM_LISTBOX );
-    index = (int)SendMessage( lbox, LB_GETCOUNT, 0, 0 );
+    index = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
     ok = (index != LB_ERR);
 
     if( ok ) {
@@ -1036,8 +1036,8 @@ static bool WRShowSelectedSymbol( HWND hDlg, WRHashTable *table )
     }
 
     if( ok ) {
-        index = (int)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
-        entry = (WRHashEntry *)SendMessage( lbox, LB_GETITEMDATA, index, 0 );
+        index = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+        entry = (WRHashEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)index, 0 );
         ok = (entry != NULL);
     }
 
@@ -1054,7 +1054,7 @@ static bool WRShowSelectedSymbol( HWND hDlg, WRHashTable *table )
 static bool WRAddSymbol( HWND hDlg, WRHashTable *table, bool force,
                          char *symbol, WRHashValue value )
 {
-    int                 index;
+    LRESULT             index;
     WRHashEntry         *entry;
     bool                dup;
     bool                ok;
@@ -1090,14 +1090,12 @@ static bool WRAddSymbol( HWND hDlg, WRHashTable *table, bool force,
     if( ok ) {
         if( dup ) {
             // this is neccessary if the value of the string was moified
-            index = (int)SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_FINDSTRINGEXACT, 0,
-                                        (LPARAM)(LPCSTR)symbol );
+            index = SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_FINDSTRINGEXACT, 0, (LPARAM)(LPCSTR)symbol );
         } else {
-            index = (int)SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)symbol );
-            SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_SETITEMDATA,
-                                index, (LPARAM)(LPVOID)entry );
+            index = SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)symbol );
+            SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_SETITEMDATA, (WPARAM)index, (LPARAM)(LPVOID)entry );
         }
-        SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_SETCURSEL, index, 0 );
+        SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_SETCURSEL, (WPARAM)index, 0 );
         WRShowSelectedSymbol( hDlg, table );
     }
 
@@ -1106,23 +1104,23 @@ static bool WRAddSymbol( HWND hDlg, WRHashTable *table, bool force,
 
 static WRHashEntry *getHashEntry( HWND hDlg )
 {
-    int                 index;
+    LRESULT             index;
     int                 count;
     WRHashEntry         *entry;
     HWND                lbox;
 
     lbox = GetDlgItem( hDlg, IDB_SYM_LISTBOX );
-    count = (int)SendMessage( lbox, LB_GETCOUNT, 0, 0 );
-    if( count == 0 || count == LB_ERR ) {
+    index = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
+    if( index == 0 || index == LB_ERR ) {
         return( NULL );
     }
-
-    index = (int)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+    count = index;
+    index = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
     if( index == LB_ERR ) {
         return( NULL );
     }
 
-    entry = (WRHashEntry *)SendMessage( lbox, LB_GETITEMDATA, index, 0 );
+    entry = (WRHashEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)index, 0 );
 
     return( entry );
 }
@@ -1173,33 +1171,32 @@ static bool WRAddNewSymbol( HWND hDlg, WRHashTable *table, HELP_CALLBACK help_ca
 
 static bool WRRemoveSymbol( HWND hDlg, WRHashTable *table )
 {
-    int                 index;
-    int                 count;
+    LRESULT             index;
+    LRESULT             rc;
     WRHashEntry         *entry;
     HWND                lbox;
     bool                ret;
 
     lbox = GetDlgItem( hDlg, IDB_SYM_LISTBOX );
-    count = (int)SendMessage( lbox, LB_GETCOUNT, 0, 0 );
-    if( count == 0 || count == LB_ERR ) {
+    index = SendMessage( lbox, LB_GETCOUNT, 0, 0 );
+    if( index == 0 || index == LB_ERR ) {
         return( true );
     }
 
-    index = (int)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
-    entry = (WRHashEntry *)SendMessage( lbox, LB_GETITEMDATA, index, 0 );
+    index = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+    entry = (WRHashEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)index, 0 );
     if( entry == NULL ) {
         return( false );
     }
 
     ret = WRRemoveName( table, entry->name );
-
     if( !ret ) {
         return( false );
     }
 
-    count = (int)SendMessage( lbox, LB_DELETESTRING, index, 0 );
-    if( count != 0 ) {
-        if( index != 0 && index == count ) {
+    rc = SendMessage( lbox, LB_DELETESTRING, index, 0 );
+    if( rc != 0 ) {
+        if( index != 0 && index == rc ) {
             index--;
         }
         SendDlgItemMessage( hDlg, IDB_SYM_LISTBOX, LB_SETCURSEL, index, 0 );

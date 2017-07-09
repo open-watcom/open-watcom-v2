@@ -98,10 +98,10 @@ char *WdeGetStrFromListBox( HWND hDlg, int id, int index )
     char    *cp;
     int     text_length;
     int     text_copied;
-    int     count;
+    LRESULT rc;
 
-    count = (int)SendDlgItemMessage( hDlg, id, LB_GETCOUNT, 0, 0 );
-    if( count == 0 || count == LB_ERR || count < index ) {
+    rc = SendDlgItemMessage( hDlg, id, LB_GETCOUNT, 0, 0 );
+    if( rc == 0 || rc == LB_ERR || (int)rc < index ) {
         return( NULL );
     }
 
@@ -131,10 +131,10 @@ char *WdeGetStrFromComboLBox( HWND hDlg, int id, int index )
     char    *cp;
     int     text_length;
     int     text_copied;
-    int     count;
+    LRESULT rc;
 
-    count = (int)SendDlgItemMessage( hDlg, id, CB_GETCOUNT, 0, 0L );
-    if( count == 0 || count == CB_ERR || count < index ) {
+    rc = SendDlgItemMessage( hDlg, id, CB_GETCOUNT, 0, 0L );
+    if( rc == 0 || rc == CB_ERR || (int)rc < index ) {
         return( NULL );
     }
 

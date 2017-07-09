@@ -288,13 +288,13 @@ bool WGetEditWindowMenuEntry( WMenuEditInfo *einfo, WMenuEntry *entry,
     }
 
     if( ok ) {
-        if( !(flags & MENU_SEPARATOR) ) {
+        if( (flags & MENU_SEPARATOR) == 0 ) {
             ok = WGetEditWindowText( einfo->edit_dlg, &text );
         }
     }
 
     if( ok ) {
-        if( !(flags & MENU_POPUP) ) {
+        if( (flags & MENU_POPUP) == 0 ) {
             ok = WGetEditWindowID( einfo->edit_dlg, &symbol, &id,
                                    einfo->info->symbol_table,
                                    einfo->combo_change );
@@ -494,7 +494,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     }
 
     if( combo_change ) {
-        *symbol = WGetStrFromComboLBox( GetDlgItem( dlg, IDM_MENUEDID ), -1 );
+        *symbol = WGetStrFromComboLBox( GetDlgItem( dlg, IDM_MENUEDID ), CB_ERR );
     } else {
         *symbol = WGetStrFromEdit( GetDlgItem( dlg, IDM_MENUEDID ), NULL );
     }
@@ -558,12 +558,12 @@ bool WSetEditWindowFlags( HWND dlg, MenuFlags flags, bool reset )
 #if 0
         EnableWindow( GetDlgItem( dlg, IDM_MENUEDPOPUP ), (flags & MENU_POPUP) != 0 );
         EnableWindow( GetDlgItem( dlg, IDM_MENUEDSEP ), (flags & MENU_SEPARATOR) != 0 );
-        EnableWindow( GetDlgItem( dlg, IDM_MENUEDNORMAL ), !(flags & MENU_POPUP) && !(flags & MENU_SEPARATOR) );
+        EnableWindow( GetDlgItem( dlg, IDM_MENUEDNORMAL ), (flags & MENU_POPUP) == 0 && (flags & MENU_SEPARATOR) == 0 );
 #endif
 
         CheckDlgButton( dlg, IDM_MENUEDPOPUP, ( reset || (flags & MENU_POPUP) != 0 ) ? BST_CHECKED : BST_UNCHECKED );
         CheckDlgButton( dlg, IDM_MENUEDSEP, ( !reset && (flags & MENU_SEPARATOR) != 0 ) ? BST_CHECKED : BST_UNCHECKED );
-        CheckDlgButton( dlg, IDM_MENUEDNORMAL, ( !reset && !(flags & MENU_POPUP) && !(flags & MENU_SEPARATOR) ) ? BST_CHECKED : BST_UNCHECKED );
+        CheckDlgButton( dlg, IDM_MENUEDNORMAL, ( !reset && (flags & MENU_POPUP) == 0 && (flags & MENU_SEPARATOR) == 0 ) ? BST_CHECKED : BST_UNCHECKED );
         CheckDlgButton( dlg, IDM_MENUEDCHECKED, ( !reset && (flags & MENU_CHECKED) != 0 ) ? BST_CHECKED : BST_UNCHECKED );
         CheckDlgButton( dlg, IDM_MENUEDGRAYED, ( !reset && (flags & MENU_GRAYED) != 0 ) ? BST_CHECKED : BST_UNCHECKED );
         CheckDlgButton( dlg, IDM_MENUEDINACTIVE, ( !reset && (flags & MENU_INACTIVE) != 0 ) ? BST_CHECKED : BST_UNCHECKED );
@@ -639,14 +639,14 @@ bool WInitEditWindowListBox( WMenuEditInfo *einfo )
 {
     bool        ok;
     HWND        lbox;
-    box_pos     pos;
+    LRESULT     pos;
 
-    ok = (einfo != NULL && einfo->edit_dlg != NULL && einfo->menu != NULL);
+    ok = ( einfo != NULL && einfo->edit_dlg != NULL && einfo->menu != NULL );
 
     if( ok ) {
         pos = 0;
         lbox = GetDlgItem( einfo->edit_dlg, IDM_MENUEDLIST );
-        ok = (lbox != (HWND)NULL);
+        ok = ( lbox != (HWND)NULL );
     }
 
     if( ok ) {
@@ -685,7 +685,7 @@ static bool WInitEditWindow( WMenuEditInfo *einfo )
             ok = WSetEditWindowMenuEntry( einfo, einfo->menu->first_entry );
             if( ok ) {
                 lbox = GetDlgItem( einfo->edit_dlg, IDM_MENUEDLIST );
-                ok = (SendMessage( lbox, LB_SETCURSEL, 0, 0 ) != LB_ERR);
+                ok = ( SendMessage( lbox, LB_SETCURSEL, 0, 0 ) != LB_ERR );
                 einfo->current_entry = einfo->menu->first_entry;
                 einfo->current_pos = 0;
             }
@@ -734,28 +734,28 @@ bool WPasteMenuItem( WMenuEditInfo *einfo )
 bool WClipMenuItem( WMenuEditInfo *einfo, bool cut )
 {
     HWND        lbox;
-    box_pos     pos;
+    LRESULT     pos;
     void        *data;
     uint_32     dsize;
     WMenuEntry  *entry;
     bool        ok;
 
     data = NULL;
-    ok = (einfo != NULL);
+    ok = ( einfo != NULL );
 
     if( ok ) {
         lbox = GetDlgItem( einfo->edit_dlg, IDM_MENUEDLIST );
-        ok = (lbox != (HWND)NULL);
+        ok = ( lbox != (HWND)NULL );
     }
 
     if( ok ) {
-        pos = (box_pos)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
-        ok = (pos != LB_ERR);
+        pos = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+        ok = ( pos != LB_ERR );
     }
 
     if( ok ) {
-        entry = (WMenuEntry *)SendMessage( lbox, LB_GETITEMDATA, pos, 0 );
-        ok = (entry != NULL);
+        entry = (WMenuEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
+        ok = ( entry != NULL );
     }
 
     if( ok ) {
@@ -809,7 +809,7 @@ static bool WQueryChangeEntry( WMenuEditInfo *einfo )
 void WDoHandleSelChange( WMenuEditInfo *einfo, bool change, bool reset )
 {
     HWND        lbox;
-    box_pos     pos;
+    LRESULT     pos;
     WMenuEntry  *entry;
     bool        reinit;
     bool        mod;
@@ -825,23 +825,23 @@ void WDoHandleSelChange( WMenuEditInfo *einfo, bool change, bool reset )
         return;
     }
 
-    pos = (box_pos)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+    pos = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
     if( pos != LB_ERR ) {
-        entry = (WMenuEntry *)SendMessage( lbox, LB_GETITEMDATA, pos, 0 );
+        entry = (WMenuEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
     } else {
         entry = NULL;
     }
 
     if( einfo->current_entry != NULL && !reset ) {
         mod = WGetEditWindowMenuEntry( einfo, einfo->current_entry, TRUE, NULL );
-        if( mod && einfo->current_pos != -1 ) {
+        if( mod && einfo->current_pos != LB_ERR ) {
             if( change || WQueryChangeEntry( einfo ) ) {
                 WGetEditWindowMenuEntry( einfo, einfo->current_entry, FALSE, &reinit );
                 einfo->info->modified = true;
                 if( reinit ) {
                     WInitEditWindowListBox( einfo );
                 } else {
-                    SendMessage( lbox, LB_DELETESTRING, einfo->current_pos, 0 );
+                    SendMessage( lbox, LB_DELETESTRING, (WPARAM)einfo->current_pos, 0 );
                     WAddEditWinLBoxEntry( lbox, einfo->current_entry, einfo->current_pos );
                     WModifyEntryInPreview( einfo, einfo->current_entry );
                 }
@@ -869,9 +869,9 @@ void WDoHandleSelChange( WMenuEditInfo *einfo, bool change, bool reset )
     }
 
     einfo->current_entry = entry;
-    einfo->current_pos = (pos == LB_ERR ? -1 : pos);
+    einfo->current_pos = pos;
     if( pos != LB_ERR ) {
-        SendMessage( lbox, LB_SETCURSEL, pos, 0 );
+        SendMessage( lbox, LB_SETCURSEL, (WPARAM)pos, 0 );
     }
 }
 
@@ -885,27 +885,27 @@ static bool WShiftEntry( WMenuEditInfo *einfo, bool left )
     WMenuEntry  *prev;
     WMenuEntry  *parent;
     WMenuEntry  *entry;
-    box_pos     pos;
+    LRESULT     pos;
     HWND        lbox;
     bool        entry_removed;
     bool        ok;
 
     entry_removed = FALSE;
 
-    ok = (einfo != NULL && einfo->edit_dlg != NULL);
+    ok = ( einfo != NULL && einfo->edit_dlg != NULL );
 
     if( ok ) {
         lbox = GetDlgItem( einfo->edit_dlg, IDM_MENUEDLIST );
-        ok = (lbox != NULL);
+        ok = ( lbox != NULL );
     }
 
     if( ok ) {
-        pos = (box_pos)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
-        ok = (pos != LB_ERR);
+        pos = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+        ok = ( pos != LB_ERR );
     }
 
     if( ok ) {
-        entry = (WMenuEntry *)SendMessage( lbox, LB_GETITEMDATA, pos, 0 );
+        entry = (WMenuEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
         ok = (entry != NULL);
     }
 
@@ -924,8 +924,11 @@ static bool WShiftEntry( WMenuEditInfo *einfo, bool left )
         } else {
             if( prev->child != NULL ) {
                 parent = prev;
-                for( prev = parent->child; prev != NULL && prev->next != NULL;
-                     prev = prev->next );
+                for( prev = parent->child; prev != NULL; prev = prev->next ) {
+                     if( prev->next == NULL ) {
+                         break;
+                     }
+                }
                 ok = WInsertEntryIntoMenu( einfo, prev, parent, entry, FALSE );
             } else {
                 ok = WInsertEntryIntoMenu( einfo, prev, parent, entry, TRUE );
@@ -940,8 +943,8 @@ static bool WShiftEntry( WMenuEditInfo *einfo, bool left )
     if( ok ) {
         einfo->info->modified = true;
         einfo->current_entry = NULL;
-        einfo->current_pos = -1;
-        ok = (SendMessage( lbox, LB_SETCURSEL, pos, 0 ) != LB_ERR);
+        einfo->current_pos = LB_ERR;
+        ok = (SendMessage( lbox, LB_SETCURSEL, (WPARAM)pos, 0 ) != LB_ERR);
         if( ok ) {
             WHandleSelChange( einfo );
         }

@@ -44,13 +44,11 @@ static  bool    WndFindCloseTab( a_window *wnd, int row )
 {
     int         piece;
 
-    piece = wnd->current.piece;
-    while( piece >= 0 ) {
+    for( piece = wnd->current.piece; piece >= 0; --piece ) {
         if( WndPieceIsTab( wnd, row, piece ) ) {
             wnd->current.piece = piece;
             return( true );
         }
-        --piece;
     }
     return( false );
 }

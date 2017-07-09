@@ -454,8 +454,7 @@ bool GUIWindowsMapKey( WPI_PARAM1 vk, WPI_PARAM2 data, gui_key *scan )
     return( GUIConvertVirtKeyToGUIKey( (WORD)vk, scan ) );
 }
 
-WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
-                           WPI_PARAM2 lparam )
+WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     gui_window          *wnd = NULL;
     gui_key_state       key_state;
@@ -476,7 +475,7 @@ WPI_MRESULT GUIProcesskey( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam,
             // activated the main menu
             wnd = GUIGetWindow( hwnd );
             if( wnd && wnd->parent == GUIGetRootWindow() ) {
-                PostMessage(wnd->parent->root, WM_SYSCOMMAND, SC_KEYMENU, wparam);
+                PostMessage( wnd->parent->root, WM_SYSCOMMAND, SC_KEYMENU, wparam );
                 return( MAKELONG( 0, 1 ) );
             } else {
                 return( _wpi_defwindowproc( hwnd, msg, wparam, lparam ) );

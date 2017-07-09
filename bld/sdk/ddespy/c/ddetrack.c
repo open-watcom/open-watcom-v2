@@ -83,10 +83,10 @@ void SetTrackWndDefault( void )
 
     for( i = 0; i < MAX_DDE_TRK; i++ ) {
         Tracking[i].visible = false;
-        Tracking[i].xpos = 0;
-        Tracking[i].ypos = i * GetSystemMetrics( SM_CYCAPTION );
-        Tracking[i].xsize = GetSystemMetrics( SM_CXSCREEN );
-        Tracking[i].ysize = 150;
+        Tracking[i].xpos = (WORD)0;
+        Tracking[i].ypos = (WORD)( i * GetSystemMetrics( SM_CYCAPTION ) );
+        Tracking[i].xsize = (WORD)GetSystemMetrics( SM_CXSCREEN );
+        Tracking[i].ysize = (WORD)150;
     }
 
 } /* SetTrackWndDefault */
@@ -128,7 +128,7 @@ bool CreateTrackWnd( void )
     int         i;
 
     for( i = 0; i < MAX_DDE_TRK; i++ ) {
-        type = DDE_TRK_FIRST + i;
+        type = (WORD)( DDE_TRK_FIRST + i );
         Tracking[i].hwnd = CreateWindow(
             TRACKING_CLASS,             /* Window class name */
             "",                         /* Window caption */
@@ -179,7 +179,7 @@ void SetTrackFont( void )
         info = (DDETrackInfo *)GET_WNDINFO( Tracking[i].hwnd );
         makePushWin( info, Tracking[i].hwnd, info->hdrinfo, info->hdrcnt );
         GetClientRect( Tracking[i].hwnd, &area );
-        ResizeListBox( area.right - area.left, area.bottom - area.top, &info->list );
+        ResizeListBox( (WORD)( area.right - area.left ), (WORD)( area.bottom - area.top ), &info->list );
         SendMessage( info->list.box, WM_SETFONT, (WPARAM)font, MAKELONG( TRUE, 0 ) );
     }
 
@@ -356,9 +356,11 @@ static StringInfo *addStringInfo( MONHSZSTRUCT *info, DDETrackInfo *listinfo )
     StringInfo          **str;
     StringInfo          *ret;
 #ifdef __NT__
+  #ifndef _WIN64
     WORD                *ptr;
     DWORD               len;
     DWORD               ver;
+  #endif
 #endif
 
     str = getNextPos( listinfo );
@@ -452,7 +454,11 @@ static int sortStrByHSZ( const void *str1, const void *str2 )
     if( STR( str2 ) == NULL ) {
         return( -1 );
     }
-    return( (char *)STR( str1 )->hsz - (char *)STR( str2 )->hsz );
+    if( (char *)STR( str1 )->hsz < (char *)STR( str2 )->hsz )
+        return( -1 );
+    if( (char *)STR( str1 )->hsz > (char *)STR( str2 )->hsz )
+        return( 1 );
+    return( 0 );
 
 } /* sortStrByHSZ */
 #undef STR
@@ -466,6 +472,7 @@ static void redispStrTrk( DDETrackInfo *info )
     StringInfo  **items;
     unsigned    i;
     char        buf[80];
+    char        hexstr[20];
 
     SendMessage( info->list.box, LB_RESETCONTENT, 0, 0L );
     switch( info->sorttype ) {
@@ -486,8 +493,9 @@ static void redispStrTrk( DDETrackInfo *info )
         if( items[i] == NULL ) {
             break;
         }
-        sprintf( buf, "%0*lX    %4d    %s", HSZ_FMT_LEN, items[i]->hsz,
-                 items[i]->cnt, items[i]->str );
+        GetHexStr( hexstr, (ULONG_PTR)items[i]->hsz, HSZ_FMT_LEN );
+        hexstr[HSZ_FMT_LEN] = '\0';
+        sprintf( buf, "%s    %4d    %s", hexstr, items[i]->cnt, items[i]->str );
         SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)buf );
     }
 
@@ -576,7 +584,11 @@ static int sortLinkByClient( const void *lnk1, const void *lnk2 )
     if( LNK( lnk2 ) == NULL ) {
         return( -1 );
     }
-    return( (char *)LNK( lnk1 )->client - (char *)LNK( lnk2 )->client );
+    if( (char *)LNK( lnk1 )->client < (char *)LNK( lnk2 )->client )
+        return( -1 );
+    if( (char *)LNK( lnk1 )->client > (char *)LNK( lnk2 )->client )
+        return( 1 );
+    return( 0 );
 
 } /* sortLinkByClient */
 
@@ -591,7 +603,11 @@ static int sortLinkByServer( const void *lnk1, const void *lnk2 )
     if( LNK( lnk2 ) == NULL ) {
         return( -1 );
     }
-    return( (char *)LNK( lnk1 )->server - (char *)LNK( lnk2 )->server );
+    if( (char *)LNK( lnk1 )->server < (char *)LNK( lnk2 )->server )
+        return( -1 );
+    if( (char *)LNK( lnk1 )->server > (char *)LNK( lnk2 )->server )
+        return( 1 );
+    return( 0 );
 
 } /* sortLinkByServer */
 
@@ -682,6 +698,8 @@ static void redispLinkTrk( DDETrackInfo *info, bool islink )
     unsigned    i;
     char        buf[100];
     LinkInfo    **items;
+    char        hexcli[20];
+    char        hexsrv[20];
 
     SendMessage( info->list.box, LB_RESETCONTENT, 0, 0L );
     switch( info->sorttype ) {
@@ -714,14 +732,18 @@ static void redispLinkTrk( DDETrackInfo *info, bool islink )
         if( items[i] == NULL ) {
             break;
         }
+        GetHexStr( hexcli, (ULONG_PTR)items[i]->client, CONV_FMT_LEN );
+        hexcli[CONV_FMT_LEN] = '\0';
+        GetHexStr( hexsrv, (ULONG_PTR)items[i]->server, CONV_FMT_LEN );
+        hexsrv[CONV_FMT_LEN] = '\0';
         if( islink ) {
-            sprintf( buf, "%08lX %08lX %-4s %-10s %-10s %-10s %-18s",
-                     items[i]->client, items[i]->server,
+            sprintf( buf, "%s %s %-4s %-10s %-10s %-10s %-18s",
+                     hexcli, hexsrv,
                      items[i]->type, items[i]->service, items[i]->topic,
                      items[i]->item, items[i]->format );
         } else {
-            sprintf( buf, "%08lX %08lX %-20s %-s", items[i]->client,
-                     items[i]->server, items[i]->service, items[i]->topic );
+            sprintf( buf, "%s %s %-20s %-s", hexcli, hexsrv,
+                     items[i]->service, items[i]->topic );
         }
         SendMessage( info->list.box, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)buf );
     }
@@ -985,6 +1007,8 @@ static void makePushWin( DDETrackInfo *info, HWND hwnd,
         info->hdrcnt = hdrcnt;
         info->hdrinfo = hdrinfo;
     }
+    sz.cx = 0;
+    sz.cy = 0;
     left = 0;
     font = GetMonoFont();
     for( i = 0; i < hdrcnt; i++ ) {
@@ -1049,6 +1073,9 @@ LRESULT CALLBACK DDETrackingWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
             makePushWin( info, hwnd, SrvHdr, SRV_HDR_CNT );
             wintitle = GetRCString( STR_REG_SERVERS );
             break;
+        default:
+            wintitle = "";
+            break;
         }
         SetWindowText( hwnd, wintitle );
         CreateListBox( hwnd, &info->list );
@@ -1066,8 +1093,8 @@ LRESULT CALLBACK DDETrackingWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM 
         ResizeListBox( LOWORD( lparam ), HIWORD( lparam ), &info->list );
         GetWindowRect( hwnd, &area );
         if( wparam != SIZE_MAXIMIZED && wparam != SIZE_MINIMIZED ) {
-            info->config->xsize = area.right - area.left;
-            info->config->ysize = area.bottom - area.top;
+            info->config->xsize = (WORD)( area.right - area.left );
+            info->config->ysize = (WORD)( area.bottom - area.top );
         }
         break;
     case WM_COMMAND:

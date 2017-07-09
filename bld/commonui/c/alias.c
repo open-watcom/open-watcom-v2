@@ -56,7 +56,7 @@ static AliasHdl         CurHdl;         /* used for dialog box processing */
 /*
  * findAlias - search for an alias with the given handle and identifier
  */
-static AnAlias *findAlias( AliasHdl hdl, unsigned long id )
+static AnAlias *findAlias( AliasHdl hdl, ULONG_PTR id )
 {
     AnAlias     *cur;
 
@@ -77,7 +77,7 @@ static AnAlias *findAlias( AliasHdl hdl, unsigned long id )
  *                assigned to it
  */
 void InitAliasHdl( AliasHdl *hdl,
-                   void (*updatefn)( unsigned long, char *, char *, void * ),
+                   void (*updatefn)( ULONG_PTR, char *, char *, void * ),
                    void *userdata )
 {
     *hdl = MemAlloc( sizeof( AliasList ) );
@@ -111,7 +111,7 @@ static void insertAlias( AliasHdl hdl, AnAlias *alias )
  * AddAlias - add an alias to an alias list
  *          - if an alias already exists for this identifier replace it
  */
-void AddAlias( AliasHdl hdl, char *text, unsigned long id )
+void AddAlias( AliasHdl hdl, char *text, ULONG_PTR id )
 {
     AnAlias     *cur;
     size_t      len;
@@ -160,7 +160,7 @@ void FreeAlias( AliasHdl hdl )
  * LookupAlias - return the string associated with an identifier or NULL if
  *               no alias exists
  */
-char *LookupAlias( AliasHdl hdl, unsigned long id )
+char *LookupAlias( AliasHdl hdl, ULONG_PTR id )
 {
     AnAlias     *cur;
 
@@ -225,7 +225,11 @@ INT_PTR CALLBACK AliasDlgProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
         }
         SendDlgItemMessage( hwnd, ALIAS_TEXT, EM_LIMITTEXT, 20, 0 );
         for( cur = CurHdl->data; cur != NULL; cur = cur->next ) {
+#ifdef _WIN64
+            sprintf( buf, "0x%16llX", cur->id );
+#else
             sprintf( buf, "0x%08lX", cur->id );
+#endif
             SendDlgItemMessage( hwnd, ALIAS_ID_LIST, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)buf );
         }
         break;
@@ -329,13 +333,13 @@ void Query4Aliases( AliasHdl hdl, HANDLE instance, HWND hwnd, char *title )
 /*
  * EnumAliases - enumerate all aliases in a given alias list
  */
-void EnumAliases( AliasHdl hdl, void (*enumfn)( unsigned long, char *, void * ), void *userdata )
+void EnumAliases( AliasHdl hdl, void (*enumfn)( ULONG_PTR, char *, void * ), void *userdata )
 {
     AnAlias     *cur;
 
     for( cur = hdl->data; cur != NULL; cur = cur->next ) {
         enumfn( cur->id, cur->name, userdata );
     }
-    enumfn( (unsigned long)-1L, NULL, userdata );
+    enumfn( (ULONG_PTR)-1L, NULL, userdata );
 
 } /* EnumAliases */

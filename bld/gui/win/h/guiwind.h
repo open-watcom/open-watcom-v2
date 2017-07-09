@@ -64,9 +64,6 @@
 #define GUI_MENU_FONT   0
 #define GUI_CHANGE_FONT ( GUI_LAST_MENU_ID + GUI_MENU_FONT + 1 )
 
-typedef struct control_item     control_item;
-typedef struct popup_info       popup_info;
-
 typedef enum flags {
     NONE_SET            = 0x0000,
     HRANGE_SET          = 0x0001,
@@ -118,11 +115,26 @@ typedef struct gui_paint_info {
     int                 force_count;
 } gui_paint_info;
 
-#if defined( __GNUC__)
+typedef struct control_item {
+    bool                checked;
+    gui_ctl_id          id;
+    gui_control_class   control_class;
+    WPI_WNDPROC         win_call_back;
+    HWND                hwnd;
+    const char          *text;
+    gui_control_styles  style;
+    struct control_item *next;
+} control_item;
+
+typedef struct popup_info {
+    HMENU               popup;
+    gui_ctl_id          id;
+    bool                floating;
+    hint_type           type;
+    struct popup_info   *next;
+} popup_info;
+
 struct gui_window {
-#else
-typedef struct gui_window {
-#endif
     HWND                hwnd;
     HWND                hwnd_frame;
     HWND                root;

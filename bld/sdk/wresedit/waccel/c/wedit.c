@@ -249,8 +249,7 @@ bool WSetEditWindowKeyEntry( WAccelEditInfo *einfo, WAccelEntry *entry )
     return( ok );
 }
 
-bool WGetEditWindowKeyEntry( WAccelEditInfo *einfo, WAccelEntry *entry,
-                             bool check_mod )
+bool WGetEditWindowKeyEntry( WAccelEditInfo *einfo, WAccelEntry *entry, bool check_mod )
 {
     bool        ok;
     bool        force_ascii;
@@ -411,7 +410,7 @@ bool WGetEditWindowID( HWND dlg, char **symbol, uint_16 *id,
     }
 
     if( combo_change ) {
-        *symbol = WGetStrFromComboLBox( GetDlgItem( dlg, IDM_ACCEDCMDID ), -1 );
+        *symbol = WGetStrFromComboLBox( GetDlgItem( dlg, IDM_ACCEDCMDID ), CB_ERR );
     } else {
         *symbol = WGetStrFromEdit( GetDlgItem( dlg, IDM_ACCEDCMDID ), NULL );
     }
@@ -576,10 +575,11 @@ bool WInitEditWindowListBox( WAccelEditInfo *einfo )
         lbox = GetDlgItem( einfo->edit_dlg, IDM_ACCEDLIST );
         SendMessage( lbox, WM_SETREDRAW, FALSE, 0 );
         SendMessage( lbox, LB_RESETCONTENT, 0, 0 );
-        entry = einfo->tbl->first_entry;
-        while( entry != NULL && ok ) {
-            ok = WAddEditWinLBoxEntry( einfo, entry, -1 );
-            entry = entry->next;
+        for( entry = einfo->tbl->first_entry; entry != NULL; entry = entry->next ) {
+            ok = WAddEditWinLBoxEntry( einfo, entry, LB_ERR );
+            if( !ok ) {
+                 break;
+            }
         }
         SendMessage( lbox, WM_SETREDRAW, TRUE, 0 );
     }
@@ -660,7 +660,7 @@ bool WPasteAccelItem( WAccelEditInfo *einfo )
 bool WClipAccelItem( WAccelEditInfo *einfo, bool cut )
 {
     HWND        lbox;
-    box_pos     pos;
+    LRESULT     pos;
     WAccelEntry *entry;
     void        *data;
     uint_32     dsize;
@@ -675,12 +675,12 @@ bool WClipAccelItem( WAccelEditInfo *einfo, bool cut )
     }
 
     if( ok ) {
-        pos = (box_pos)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+        pos = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
         ok = (pos != LB_ERR);
     }
 
     if( ok ) {
-        entry = (WAccelEntry *)SendMessage( lbox, LB_GETITEMDATA, pos, 0 );
+        entry = (WAccelEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
         ok = (entry != NULL);
     }
 
@@ -735,7 +735,7 @@ static bool WQueryChangeEntry( WAccelEditInfo *einfo )
 void WDoHandleSelChange( WAccelEditInfo *einfo, bool change, bool reset )
 {
     HWND        lbox;
-    box_pos     pos;
+    LRESULT     pos;
     WAccelEntry *entry;
     bool        mod;
 
@@ -748,20 +748,20 @@ void WDoHandleSelChange( WAccelEditInfo *einfo, bool change, bool reset )
         return;
     }
 
-    pos = (box_pos)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+    pos = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
     if( pos != LB_ERR ) {
-        entry = (WAccelEntry *)SendMessage( lbox, LB_GETITEMDATA, pos, 0 );
+        entry = (WAccelEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
     } else {
         entry = NULL;
     }
 
     if( einfo->current_entry != NULL && !reset ) {
         mod = WGetEditWindowKeyEntry( einfo, einfo->current_entry, TRUE );
-        if( mod && einfo->current_pos != -1 ) {
+        if( mod && einfo->current_pos != LB_ERR ) {
             if( change || WQueryChangeEntry( einfo ) ) {
                 WGetEditWindowKeyEntry( einfo, einfo->current_entry, FALSE );
                 einfo->info->modified = true;
-                SendMessage( lbox, LB_DELETESTRING, einfo->current_pos, 0 );
+                SendMessage( lbox, LB_DELETESTRING, (WPARAM)einfo->current_pos, 0 );
                 WAddEditWinLBoxEntry( einfo, einfo->current_entry, einfo->current_pos );
             }
         }
@@ -782,9 +782,9 @@ void WDoHandleSelChange( WAccelEditInfo *einfo, bool change, bool reset )
     }
 
     einfo->current_entry = entry;
-    einfo->current_pos = (pos == LB_ERR) ? -1 : pos;
+    einfo->current_pos = pos;
     if ( pos != LB_ERR ) {
-        SendMessage ( lbox, LB_SETCURSEL, pos, 0 );
+        SendMessage( lbox, LB_SETCURSEL, (WPARAM)pos, 0 );
     }
 }
 

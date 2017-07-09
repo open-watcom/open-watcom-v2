@@ -1242,7 +1242,7 @@ void WHandleClear( WMenuEditInfo *einfo )
             WFreeMenuEntries( einfo->menu->first_entry );
             einfo->menu->first_entry = NULL;
             einfo->current_entry = NULL;
-            einfo->current_pos = -1;
+            einfo->current_pos = LB_ERR;
             einfo->first_preview_id = FIRST_PREVIEW_ID;
             WResetPrevWindowMenu( einfo );
             if( einfo->info->stand_alone ) {

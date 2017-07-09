@@ -30,24 +30,28 @@
 ****************************************************************************/
 
 
-#ifndef WDEL_INCLUDED
-#define WDEL_INCLUDED
+#include "guiwind.h"
+#include <string.h>
 
-#include "wstr.h"
 
-/****************************************************************************/
-/* macro definitions                                                        */
-/****************************************************************************/
+size_t GUIDlgBuffGetText( gui_window *gui, gui_ctl_id id, char *buff, size_t buff_len )
+{
+    char        *str;
+    size_t      len;
 
-/****************************************************************************/
-/* type definitions                                                         */
-/****************************************************************************/
-
-/****************************************************************************/
-/* function prototypes                                                      */
-/****************************************************************************/
-extern bool WDeleteStringData( WStringEditInfo *, WStringBlock *, uint_16 , bool *bdel );
-extern bool WDeleteStringEntry( WStringEditInfo * );
-extern bool WDeleteEditWinLBoxEntry( WStringEditInfo *, LRESULT, bool );
-
-#endif
+    if( buff_len == 0 )
+        return( 0 );
+    str = GUIGetText( gui, id );
+    if( str == NULL ) {
+        len = 0;
+    } else {
+        --buff_len;     // do space for terminating null char
+        len = strlen( str );
+        if( len > buff_len )
+            len = buff_len;
+        memcpy( buff, str, len );
+        GUIMemFree( str );
+    }
+    buff[len] = '\0';
+    return( len );
+}

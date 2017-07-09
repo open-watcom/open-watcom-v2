@@ -1290,15 +1290,14 @@ void WdeDefineObjectLookupComboEntry( HWND hDlg, WORD hw, WdeHashTable *table )
     char                *cp;
     WdeHashValue        value;
     bool                found;
-    int                 index;
-    int                 count;
+    LRESULT             index;
 
     if( table == NULL ) {
         return;
     }
 
-    count = (int)SendDlgItemMessage( hDlg, IDB_SYMBOL, CB_GETCOUNT, 0, 0L );
-    if( count == 0 || count == CB_ERR ) {
+    index = SendDlgItemMessage( hDlg, IDB_SYMBOL, CB_GETCOUNT, 0, 0L );
+    if( index == 0 || index == CB_ERR ) {
         return;
     }
 
@@ -1306,7 +1305,7 @@ void WdeDefineObjectLookupComboEntry( HWND hDlg, WORD hw, WdeHashTable *table )
     if( hw == CBN_EDITCHANGE ) {
         str = WdeGetStrFromCombo( hDlg, IDB_SYMBOL );
     } else {
-        index = (int)SendDlgItemMessage( hDlg, IDB_SYMBOL, CB_GETCURSEL, 0, 0L );
+        index = SendDlgItemMessage( hDlg, IDB_SYMBOL, CB_GETCURSEL, 0, 0L );
         if( index != CB_ERR ) {
             str = WdeGetStrFromComboLBox( hDlg, IDB_SYMBOL, index );
         }
@@ -1368,15 +1367,14 @@ void WdeDefineObjectLookupHelpComboEntry( HWND hDlg, WORD hw, WdeHashTable *tabl
     char                *cp;
     WdeHashValue        value;
     bool                found;
-    int                 index;
-    int                 count;
+    LRESULT             index;
 
     if( table == NULL ) {
         return;
     }
 
-    count = (int)SendDlgItemMessage( hDlg, IDB_HELPSYMBOL, CB_GETCOUNT, 0, 0L );
-    if( count == 0 || count == CB_ERR ) {
+    index = SendDlgItemMessage( hDlg, IDB_HELPSYMBOL, CB_GETCOUNT, 0, 0L );
+    if( index == 0 || index == CB_ERR ) {
         return;
     }
 
@@ -1384,7 +1382,7 @@ void WdeDefineObjectLookupHelpComboEntry( HWND hDlg, WORD hw, WdeHashTable *tabl
     if( hw == CBN_EDITCHANGE ) {
         str = WdeGetStrFromCombo( hDlg, IDB_HELPSYMBOL );
     } else {
-        index = (int)SendDlgItemMessage( hDlg, IDB_HELPSYMBOL, CB_GETCURSEL, 0, 0L );
+        index = SendDlgItemMessage( hDlg, IDB_HELPSYMBOL, CB_GETCURSEL, 0, 0L );
         if( index != CB_ERR ) {
             str = WdeGetStrFromComboLBox( hDlg, IDB_HELPSYMBOL, index );
         }

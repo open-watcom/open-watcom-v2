@@ -136,10 +136,9 @@ void ListFree( LIST *lst )
 {
     LIST *next;
 
-    while( lst != NULL ) {
+    for( ; lst != NULL; lst = next ) {
         next = lst->next;
         WRMemFree( lst );
-        lst = next;
     }
 }
 
@@ -189,11 +188,10 @@ LIST *ListConsume( LIST *curr )
 
 LIST *ListFindElt( LIST *l, void *elt )
 {
-    while( l != NULL ) {
+    for( ; l != NULL; l = l->next ) {
         if( l->elt == elt ) {
             break;
         }
-        l = l->next;
     }
     return( l );
 }

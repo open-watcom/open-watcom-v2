@@ -308,7 +308,7 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             text = GUIGetListItem( gui, LISTBOX_CONTROL, num );
             GUIMemFree( text );
             GUISetListItemData( gui, LISTBOX_CONTROL, num, (void *)num );
-            num = (int)GUIGetListItemData( gui, LISTBOX_CONTROL, num );
+            num = (gui_ctl_idx)GUIGetListItemData( gui, LISTBOX_CONTROL, num );
             break;
         case EDIT_CONTROL :
             new = GUIGetText( gui, EDIT_CONTROL );
@@ -394,12 +394,10 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             GUICloseDialog( gui );
             break;
         case EDIT_CONTROL :
-            GUIDisplayMessage( gui, "Edit Control", "Got dialog item : ",
-                               GUI_QUESTION );
+            GUIDisplayMessage( gui, "Edit Control", "Got dialog item : ", GUI_QUESTION );
             break;
         case STATIC_CONTROL :
-            GUIDisplayMessage( gui, "Static Control", "Got dialog item : ",
-                               GUI_STOP );
+            GUIDisplayMessage( gui, "Static Control", "Got dialog item : ", GUI_STOP );
             break;
         case ADDBUTTON_CONTROL :
             GUIAddText( gui, LISTBOX_CONTROL, "lisa" );
@@ -412,8 +410,7 @@ bool StaticDialogEventWnd( gui_window *gui, gui_event gui_ev, void *param )
             } else {
                 GUIHideControl( gui, RADIOBUTTON_CONTROL1 );
             }
-            GUIEnableControl( gui, RADIOBUTTON_CONTROL2,
-                              !GUIIsControlEnabled( gui, RADIOBUTTON_CONTROL2 ) );
+            GUIEnableControl( gui, RADIOBUTTON_CONTROL2, !GUIIsControlEnabled( gui, RADIOBUTTON_CONTROL2 ) );
             GUIDisplayMessage( gui, "Clearing", "Sample Application", GUI_OK_CANCEL );
             GUISetChecked( gui, RADIOBUTTON_CONTROL2, GUI_CHECKED );
             GUIClearText( gui, STATIC_CONTROL );

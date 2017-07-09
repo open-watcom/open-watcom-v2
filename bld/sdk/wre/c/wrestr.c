@@ -385,11 +385,9 @@ void WREEndResStringSessions( WREResInfo *rinfo )
 {
     WREStringSession    *session;
 
-    session = WREFindResStringSession( rinfo );
-    while( session != NULL ) {
+    while( (session = WREFindResStringSession( rinfo )) != NULL ) {
         session->info = WStringEndEdit( session->hndl );
         WRERemoveStringEditSession( session );
-        session = WREFindResStringSession( rinfo );
     }
 }
 
@@ -509,18 +507,17 @@ WStringNode *WRECreateStringNodes( WRECurrentResInfo *curr )
 
 void WREFreeStringNode( WStringNode *node )
 {
-    WStringNode *n;
+    WStringNode *next;
 
-    while( node != NULL ) {
-        n = node;
-        node = node->next;
-        if( n->block_name ) {
-            WRMemFree( n->block_name );
+    for( ; node != NULL; node = next ) {
+        next = node->next;
+        if( node->block_name != NULL ) {
+            WRMemFree( node->block_name );
         }
-        if( n->data ) {
-            WRMemFree( n->data );
+        if( node->data != NULL ) {
+            WRMemFree( node->data );
         }
-        WRMemFree( n );
+        WRMemFree( node );
     }
 }
 
@@ -532,9 +529,8 @@ WResTypeNode *WREUseStringNodes( WResDir dir, WStringNode *node )
 
     tnode = NULL;
     tname = WResIDFromNum( RESOURCE2INT( RT_STRING ) );
-    ok = (tname != NULL);
-
-    while( ok && node != NULL ) {
+    ok = ( tname != NULL );
+    for( ; ok && node != NULL; node = node->next ) {
         ok = !WResAddResource( tname, node->block_name, node->MemFlags, 0,
                                (uint_32)node->data_size, dir, &node->lang, NULL );
         if( ok ) {
@@ -542,7 +538,6 @@ WResTypeNode *WREUseStringNodes( WResDir dir, WStringNode *node )
                                    &node->lang, node->data );
             node->data = NULL;
         }
-        node = node->next;
     }
 
     if( tname != NULL ) {

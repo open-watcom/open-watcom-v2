@@ -77,7 +77,7 @@ typedef struct WAccelEditInfo {
     WAccelInfo          *info;
     WAccelTable         *tbl;
     WAccelEntry         *current_entry;
-    int                 current_pos;
+    LRESULT             current_pos;
     HWND                win;
     HWND                edit_dlg;
     WStatBar            *wsb;

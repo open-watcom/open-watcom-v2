@@ -145,5 +145,3 @@ extern void GUIModalDlgOpen( gui_window *parent, const char *title, int rows, in
 
 extern void GUISysModalDlgOpen( const char *title, int rows, int cols,
             gui_control_info *controls_info, int num_controls, GUICALLBACK *gui_call_back, void *extra );
-
-extern unsigned GUIDlgBuffGetText( gui_window *gui, gui_ctl_id id, char *buff, unsigned buff_len );

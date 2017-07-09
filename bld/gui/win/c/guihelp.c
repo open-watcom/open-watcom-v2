@@ -108,18 +108,14 @@ static bool DisplayHelpKey( gui_help_instance inst, HWND hwnd, const char *file,
 {
     hwnd=hwnd;
     file=file;
-    return( !WinSendMsg( (HWND)inst, HM_DISPLAY_HELP,
-                         MPFROMLONG( (LONG)&topic ),
-                         MPFROMSHORT( HM_PANELNAME ) ) );
+    return( !WinSendMsg( (HWND)inst, HM_DISPLAY_HELP, MPFROMLONG( (LONG)&topic ), MPFROMSHORT( HM_PANELNAME ) ) );
 }
 
 static bool DisplayHelpContext( gui_help_instance inst, HWND hwnd, const char *file, const char *topic )
 {
     hwnd=hwnd;
     file=file;
-    return( !WinSendMsg( (HWND)inst, HM_DISPLAY_HELP,
-                         MPFROM2SHORT( (SHORT)topic, 0 ),
-                         MPFROMSHORT( HM_RESOURCEID ) ) );
+    return( !WinSendMsg( (HWND)inst, HM_DISPLAY_HELP, MPFROM2SHORT( (SHORT)topic, 0 ), MPFROMSHORT( HM_RESOURCEID ) ) );
 }
 
 #else

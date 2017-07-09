@@ -442,12 +442,9 @@ static void enableProcChoices( HWND hwnd, BOOL enable )
 /*
  * getProcId
  */
-static DWORD getProcId( HWND hwnd, DWORD id, DWORD index )
+static LRESULT getProcId( HWND hwnd, DWORD id, WPARAM index )
 {
-    DWORD       ret;
-
-    ret = SendDlgItemMessage( hwnd, id, LB_GETITEMDATA, index, 0 );
-    return( ret );
+    return( SendDlgItemMessage( hwnd, id, LB_GETITEMDATA, index, 0 ) );
 }
 
 /*
@@ -458,16 +455,16 @@ static void fillProcInfo( HWND hwnd, char *buf )
     DWORD       procid;
     ProcNode    *proc;
     ProcStats   stats;
-    int         index;
+    LRESULT     index;
     BOOL        error;
 
     error = FALSE;
-    index = (int)SendDlgItemMessage( hwnd, PROCCTL_TASKLIST, LB_GETCURSEL, 0, 0 );
+    index = SendDlgItemMessage( hwnd, PROCCTL_TASKLIST, LB_GETCURSEL, 0, 0 );
     if( index == LB_ERR ) {
         error = TRUE;
         SetDlgItemText( hwnd, PROCCTL_PID, "" );
     } else {
-        procid = getProcId( hwnd, PROCCTL_TASKLIST, index );
+        procid = getProcId( hwnd, PROCCTL_TASKLIST, (WPARAM)index );
         sprintf( buf, "Pid: %08lX", procid );
         SetDlgItemText( hwnd, PROCCTL_PID, buf );
         proc = FindProcess( procid );
@@ -691,7 +688,7 @@ BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
     char                action[ ACTION_BUFSIZE ];
     HWND                lb;
     WORD                cmd;
-    int                 index;
+    LRESULT             index;
     DWORD               procid;
     ProcNode            *procinfo;
     DWORD               rc;
@@ -703,7 +700,7 @@ BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
         procDlg = hwnd;
         fillTaskListBox( hwnd, buf );
         SendDlgItemMessage( hwnd, PROCCTL_TASKLIST, LB_SETCURSEL, 0, 0L );
-        index = (int)SendDlgItemMessage( hwnd, PROCCTL_TASKLIST, LB_GETCURSEL, 0, 0L );
+        index = SendDlgItemMessage( hwnd, PROCCTL_TASKLIST, LB_GETCURSEL, 0, 0L );
         fillProcInfo( hwnd, buf );
         if( index != LB_ERR ) {
             enableProcChoices( hwnd, TRUE );
@@ -722,12 +719,12 @@ BOOL CALLBACK ProcListProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
            || cmd == PROCCTL_VIEWMEM || cmd == PROCCTL_SET_PRIORITY
            || cmd == PROCCTL_ATTATCH || cmd == PROCCTL_MEM ) {
             lb = GetDlgItem( hwnd, PROCCTL_TASKLIST );
-            index = (int)SendMessage( lb, LB_GETCURSEL, 0, 0L );
+            index = SendMessage( lb, LB_GETCURSEL, 0, 0L );
             if( index == LB_ERR ) {
                 RCMessageBox( hwnd, STR_NO_SELECTED_PROCESS, AppName, MB_OK | MB_ICONEXCLAMATION );
                 break;
             }
-            procid = getProcId( hwnd, PROCCTL_TASKLIST, index );
+            procid = getProcId( hwnd, PROCCTL_TASKLIST, (WPARAM)index );
         }
         switch( cmd ) {
 #ifndef CHICAGO

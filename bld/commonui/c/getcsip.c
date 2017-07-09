@@ -63,7 +63,7 @@ DWORD GetRealCSIP( HTASK htask, HMODULE *mod )
         return( csip );
     }
     csip = MAKECSIP( se.wCS, se.wIP );
-    while( 1 ) {
+    for( ;; ) {
         se.dwSize = sizeof( se );
         if( !StackTraceNext( &se ) ) {
             break;

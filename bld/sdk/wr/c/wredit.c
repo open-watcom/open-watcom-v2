@@ -119,10 +119,10 @@ char *WRGetStrFromListBox( HWND hDlg, int id, int index )
     char        *cp;
     int         text_length;
     int         text_copied;
-    int         count;
+    LRESULT     count;
 
-    count = (int)SendDlgItemMessage( hDlg, id, LB_GETCOUNT, 0, 0 );
-    if( count == 0 || count == LB_ERR || count < index ) {
+    count = SendDlgItemMessage( hDlg, id, LB_GETCOUNT, 0, 0 );
+    if( count == 0 || count == LB_ERR || (int)count < index ) {
         return( NULL );
     }
 

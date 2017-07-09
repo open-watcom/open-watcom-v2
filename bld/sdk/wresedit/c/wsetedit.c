@@ -128,36 +128,36 @@ bool WSetEditWithStr( HWND edit, char *str )
 bool WSetLBoxWithStr( HWND lbox, char *str, void *data )
 {
     bool      ok;
-    box_pos   pos = 0;
+    LRESULT   pos;
 
     ok = ( lbox != (HWND)NULL && str != NULL );
 
     if( ok ) {
-        pos = (box_pos)SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
+        pos = SendMessage( lbox, LB_ADDSTRING, 0, (LPARAM)(LPCSTR)str );
         ok = ( pos != LB_ERR && pos != LB_ERRSPACE );
     }
 
     if( ok ) {
-        ok = ( SendMessage( lbox, LB_SETITEMDATA, pos, (LPARAM)(LPVOID)data ) != LB_ERR );
+        ok = ( SendMessage( lbox, LB_SETITEMDATA, (WPARAM)pos, (LPARAM)(LPVOID)data ) != LB_ERR );
     }
 
     return( ok );
 }
 
-bool WInsertLBoxWithStr( HWND lbox, box_pos pos, char *str, void *data )
+bool WInsertLBoxWithStr( HWND lbox, LRESULT pos, char *str, void *data )
 {
     bool      ok;
-    box_pos   new_pos = 0;
+    LRESULT   index;
 
     ok = ( lbox != (HWND)NULL && str != NULL );
 
     if( ok ) {
-        new_pos = (box_pos)SendMessage( lbox, LB_INSERTSTRING, pos, (LPARAM)(LPCSTR)str );
-        ok = ( new_pos != LB_ERR && new_pos != LB_ERRSPACE );
+        index = SendMessage( lbox, LB_INSERTSTRING, (WPARAM)pos, (LPARAM)(LPCSTR)str );
+        ok = ( index != LB_ERR && index != LB_ERRSPACE );
     }
 
     if( ok ) {
-        ok = ( SendMessage( lbox, LB_SETITEMDATA, new_pos, (LPARAM)(LPVOID)data ) != LB_ERR );
+        ok = ( SendMessage( lbox, LB_SETITEMDATA, (WPARAM)index, (LPARAM)(LPVOID)data ) != LB_ERR );
     }
 
     return( ok );
@@ -281,35 +281,35 @@ int_32 WGetSINT32FromEdit( HWND edit, bool *mod )
     return( val );
 }
 
-char *WGetStrFromComboLBox( HWND combo, box_pos pos )
+char *WGetStrFromComboLBox( HWND combo, LRESULT pos )
 {
     char        *cp;
     LRESULT     text_length;
     LRESULT     text_copied;
-    box_pos     count;
+    LRESULT     count;
 
-    if( pos == -1 ) {
-        pos = (box_pos)SendMessage( combo, CB_GETCURSEL, 0, 0 );
+    if( pos == CB_ERR ) {
+        pos = SendMessage( combo, CB_GETCURSEL, 0, 0 );
         if( pos == CB_ERR ) {
             return( NULL );
         }
     }
 
-    count = (box_pos)SendMessage( combo, CB_GETCOUNT, 0, 0 );
+    count = SendMessage( combo, CB_GETCOUNT, 0, 0 );
     if( count == 0 || count == CB_ERR || count < pos ) {
         return( NULL );
     }
 
     text_copied = 0;
 
-    text_length = SendMessage( combo, CB_GETLBTEXTLEN, pos, 0 );
+    text_length = SendMessage( combo, CB_GETLBTEXTLEN, (WPARAM)pos, 0 );
 
     cp = (char *)WRMemAlloc( text_length + 1 );
     if( cp == NULL ) {
         return( NULL );
     }
 
-    text_copied = SendMessage( combo, CB_GETLBTEXT, pos, (LPARAM)(LPSTR)cp );
+    text_copied = SendMessage( combo, CB_GETLBTEXT, (WPARAM)pos, (LPARAM)(LPSTR)cp );
 
     if( text_copied != text_length ) {
         WRMemFree( cp );

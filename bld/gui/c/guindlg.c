@@ -72,29 +72,6 @@ static gui_create_info DlgControl = {
 
 static bool DlgModal = false;
 
-unsigned GUIDlgBuffGetText( gui_window *gui, gui_ctl_id id, char *buff, unsigned buff_len )
-{
-    char        *str;
-    size_t      len;
-
-    if( buff_len == 0 )
-        return( 0 );
-    str = GUIGetText( gui, id );
-    if( str == NULL ) {
-        len = 0;
-    } else {
-        --buff_len;     // do space for terminating null char
-        len = strlen( str );
-        if( len > buff_len )
-            len = buff_len;
-        memcpy( buff, str, len );
-        GUIMemFree( str );
-    }
-    buff[len] = '\0';
-    return( len );
-}
-
-
 static bool DlgRelocNum( gui_ord *pnum, int adjust, gui_coord *charuse )
 {
     gui_ord     num;

@@ -427,10 +427,8 @@ static void freeStringList( const char ***list )
     if( *list == NULL ) {
         return;
     }
-    cnt = 0;
-    while( (*list)[cnt] != NULL ) {
+    for( cnt = 0; (*list)[cnt] != NULL; ++cnt ) {
         GUIMemFree( (void *)(*list)[cnt] );
-        cnt++;
     }
     GUIMemFree( (void *)*list );
     *list = NULL;
@@ -484,7 +482,7 @@ static bool buildFileTypesExts( dlg_info *dlg, const char *data )
     if( data != NULL ) {
         num = 0;
         ok = true;
-        while( *data != '\0' ) {
+        for( ; *data != '\0'; data += len + 1 ) {
             len = strlen( data );
             ok = addToList( &list1, num, data, len );
             if( !ok ) {
@@ -496,7 +494,6 @@ static bool buildFileTypesExts( dlg_info *dlg, const char *data )
             if( !ok ) {
                 break;
             }
-            data += len + 1;
             num++;
         }
         if( !ok ) {
@@ -698,15 +695,14 @@ static bool setFileList( gui_window *gui, const char *ext )
     list = NULL;
     strcpy( ext1, ext );
 
-    ptr = strtok( ext1, ";" );
-    while( ptr != NULL ) {
+    for( ptr = strtok( ext1, ";" ); ptr != NULL; ptr = strtok( NULL, ";" ) ) {
 
         if( getcwd( path, sizeof( path ) ) == NULL ) {
             break;
         }
 
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
-        if( path[strlen(path)-1] != FILE_SEP_CHAR ) {
+        if( path[strlen( path ) - 1] != FILE_SEP_CHAR ) {
             strcat( path, FILE_SEP );
         }
         strcat( path, ptr );
@@ -734,7 +730,6 @@ static bool setFileList( gui_window *gui, const char *ext )
             }
             closedir( directory );
         }
-        ptr = strtok( NULL, ";" );
     }
     GUIClearList( gui, CTL_FILE_LIST );
     if( cnt > 0 ) {
@@ -761,7 +756,9 @@ static bool setDirList( gui_window *gui )
     char                *ptr,*start;
     char                indent[80];
     char                tmp[256];
+#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     const char          **drvlist;
+#endif
     gui_ctl_idx         i;
     size_t              len;
     gui_ctl_idx         curr, cnt;
@@ -794,22 +791,14 @@ static bool setDirList( gui_window *gui )
     }
 
     drive[0] = OPENED_DIR_CHAR;
-    drvlist = NULL;
 #if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     drvlist = GetDriveTextList();
-#endif
-    i = 0;
-    while( drvlist != NULL ) {
-        if( drvlist[i] == NULL ) {
-            break;
-        }
+    for( i = 0; drvlist[i] != NULL; i++ ) {
         if( drvlist[i][0] == drive[1] ) {
             GUISetCurrSelect( gui, CTL_DRIVES, i );
             break;
         }
-        i++;
     }
-#if !defined( __UNIX__ ) && !defined( __NETWARE__ )
     drive[3] = '\\';
     drive[4] = '\0';
 #endif

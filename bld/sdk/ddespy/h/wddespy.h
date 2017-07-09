@@ -92,20 +92,28 @@
 #define MON_CONV_IND            (DDEMENU_MON_CONV - DDE_MON_FIRST)
 
 
-#ifdef __NT__
-    #define HWND_FMT_LEN        8
-    #define CONV_FMT_LEN        8
-    #define TASK_FMT_LEN        8
-    #define FMT_ID_LEN          8
-    #define HSZ_FMT_LEN         8
-    #define WPARAM_FMT_LEN      8
-#else
+#ifdef __WINDOWS__
     #define HWND_FMT_LEN        4
     #define CONV_FMT_LEN        8
     #define TASK_FMT_LEN        4
-    #define FMT_ID_LEN          4
+    #define ID_FMT_LEN          4
     #define HSZ_FMT_LEN         4
     #define WPARAM_FMT_LEN      4
+#else
+    #define ID_FMT_LEN          8
+  #ifdef _WIN64
+    #define HWND_FMT_LEN        16
+    #define CONV_FMT_LEN        16
+    #define TASK_FMT_LEN        16
+    #define HSZ_FMT_LEN         16
+    #define WPARAM_FMT_LEN      16
+  #else
+    #define HWND_FMT_LEN        8
+    #define CONV_FMT_LEN        8
+    #define TASK_FMT_LEN        8
+    #define HSZ_FMT_LEN         8
+    #define WPARAM_FMT_LEN      8
+  #endif
 #endif
 
 typedef struct lstinfo {
@@ -249,6 +257,7 @@ void    DumpHeader( FILE *fptr );
 char    *DumpLine( bool listview, HWND list, int line );
 bool    InitGblStrings( void );
 void    FiniRCStrings( void );
+void    GetHexStr( LPSTR res, ULONG_PTR num, size_t padlen );
 
 /* ddetool.c */
 void    GetFixedTBRect( HWND hwnd, RECT *rect );

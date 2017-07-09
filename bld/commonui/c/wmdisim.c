@@ -251,10 +251,8 @@ static void doRestoreAll( void )
     }
     _wpi_setwindowtext( mdiInfo.root, mdiInfo.main_name );
     childrenMaximized = false;
-    md = mdiHead;
-    while( md != NULL ) {
+    for( md = mdiHead; md != NULL; md = md->next ) {
         doRestore( md->hwnd );
-        md = md->next;
     }
     MDIClearMaximizedMenuConfig();
     deleteMaximizedMenuConfig();
@@ -278,14 +276,12 @@ static void doMaximizeAll( HWND first )
     doMaximize( first );
 
     if( !was_max ) {
-        md = mdiHead;
-        while( md != NULL ) {
+        for( md = mdiHead; md != NULL; md = md->next ) {
             if( md->hwnd != first ) {
                 if( _wpi_isiconic( md->hwnd ) ) {
                     doMaximize( md->hwnd );
                 }
             }
-            md = md->next;
         }
     }
 
@@ -766,14 +762,12 @@ static void finiWindow( HWND hwnd )
     mdi_data    *curr;
     mdi_data    *prev;
 
-    curr = mdiHead;
     prev = NULL;
-    while( curr != NULL ) {
+    for( curr = mdiHead; curr != NULL; curr = curr->next ) {
         if( curr->hwnd == hwnd ) {
             break;
         }
         prev = curr;
-        curr = curr->next;
     }
     if( curr == NULL ) {
         return;
@@ -884,14 +878,12 @@ static void newChildPositions( void )
         return;
     }
 
-    curr = mdiHead;
     memset( &minChildRect, 0, sizeof( RECT ) );
-    while( curr != NULL ) {
+    for( curr = mdiHead; curr != NULL; curr = curr->next ) {
         _wpi_getwindowrect( curr->hwnd, &r );
         orig = minChildRect;
         UnionRect( &minChildRect, &orig, &r );
         haveMinChildRect = true;
-        curr = curr->next;
     }
     tryContainerScrollBars();
 
@@ -1086,12 +1078,10 @@ void MDIContainerResized( void )
     if( MDIIsMaximized() ) {
         _wpi_getwindowrect( mdiInfo.container, &r );
         _wpi_getrectvalues( r, &left, &top, &right, &bottom );
-        md = mdiHead;
-        while( md != NULL ) {
+        for( md = mdiHead; md != NULL; md = md->next ) {
             if( _wpi_isiconic( md->hwnd ) ) {
                 _wpi_movewindow( md->hwnd, 0, 0, right - left + 1, bottom - top + 1, TRUE );
             }
-            md = md->next;
         }
     }
 

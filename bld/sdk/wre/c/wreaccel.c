@@ -421,11 +421,9 @@ void WREEndLangAccelSession( WResLangNode *lnode )
 {
     WREAccelSession     *session;
 
-    session = WREFindLangAccelSession( lnode );
-    while( session != NULL ) {
+    while( (session = WREFindLangAccelSession( lnode )) != NULL ) {
         session->info = WAccelEndEdit( session->hndl );
         WRERemoveAccelEditSession( session );
-        session = WREFindLangAccelSession( lnode );
     }
 }
 
@@ -433,11 +431,9 @@ void WREEndResAccelSessions( WREResInfo *rinfo )
 {
     WREAccelSession     *session;
 
-    session = WREFindResAccelSession( rinfo );
-    while( session != NULL ) {
+    while( (session = WREFindResAccelSession( rinfo )) != NULL ) {
         session->info = WAccelEndEdit( session->hndl );
         WRERemoveAccelEditSession( session );
-        session = WREFindResAccelSession( rinfo );
     }
 }
 

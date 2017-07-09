@@ -916,6 +916,7 @@ extern char *GUIGetListItem( gui_window *wnd, gui_ctl_id id, gui_ctl_idx choice 
 extern bool GUISetText( gui_window *wnd, gui_ctl_id id, const char *text );
 extern bool GUIClearText( gui_window *wnd, gui_ctl_id id );
 extern char *GUIGetText( gui_window *wnd, gui_ctl_id id );
+extern size_t GUIDlgBuffGetText( gui_window *gui, gui_ctl_id id, char *buff, size_t buff_len );
 extern bool GUISelectAll( gui_window *wnd, gui_ctl_id id, bool select );
 extern bool GUISetEditSelect( gui_window *wnd, gui_ctl_id id, int start, int end );
 extern bool GUIGetEditSelect( gui_window *wnd, gui_ctl_id id, int *start, int *end );

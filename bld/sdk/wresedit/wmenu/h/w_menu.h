@@ -79,7 +79,7 @@ typedef struct WMenuEditInfo {
     WMenuInfo   *info;
     WMenu       *menu;
     WMenuEntry  *current_entry;
-    int         current_pos;
+    LRESULT     current_pos;
     HWND        win;
     HWND        edit_dlg;
     HWND        preview_window;
@@ -114,7 +114,7 @@ extern bool             WResetPreviewIDs( WMenuEditInfo *einfo );
 extern HMENU            WCreatePreviewMenu( WMenuEditInfo *einfo );
 extern WMenuEntry       *WFindEntryFromPreviewID( WMenuEntry *, WORD );
 extern WMenuEntry       *WFindEntryFromPreviewPopup( WMenuEntry *, HMENU );
-extern bool             WFindEntryLBPos( WMenuEntry *, WMenuEntry *, box_pos * );
+extern bool             WFindEntryLBPos( WMenuEntry *, WMenuEntry *, LRESULT * );
 extern bool             WModifyEntryInPreview( WMenuEditInfo *, WMenuEntry * );
 
 extern bool             WMakeClipDataFromMenuEntry( WMenuEntry *entry, void **data, uint_32 *dsize );

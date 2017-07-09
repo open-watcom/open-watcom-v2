@@ -74,7 +74,7 @@ bool WInsertAccelEntry( WAccelEditInfo *einfo )
     bool            ok;
     WAccelEntry     *entry;
     WAccelEntry     *new;
-    box_pos         pos;
+    LRESULT         pos;
 
     lbox = NULLHANDLE;
     ok = (einfo != NULL && einfo->edit_dlg != NULL);
@@ -86,13 +86,11 @@ bool WInsertAccelEntry( WAccelEditInfo *einfo )
 
     new = NULL;
     entry = NULL;
-    pos = -1;
+    pos = LB_ERR;
     if( ok ) {
-        pos = (box_pos)SendMessage( lbox, LB_GETCURSEL, 0, 0 );
+        pos = SendMessage( lbox, LB_GETCURSEL, 0, 0 );
         if( pos != LB_ERR ) {
-            entry = (WAccelEntry *)SendMessage( lbox, LB_GETITEMDATA, pos, 0 );
-        } else {
-            pos = -1;
+            entry = (WAccelEntry *)SendMessage( lbox, LB_GETITEMDATA, (WPARAM)pos, 0 );
         }
         new = WCreateNewAccelEntry( einfo );
         ok = (new != NULL);
@@ -108,18 +106,17 @@ bool WInsertAccelEntry( WAccelEditInfo *einfo )
     }
 
     if( ok ) {
-        ok = (SendMessage( lbox, LB_SETCURSEL, pos + 1, 0 ) != LB_ERR);
+        ok = (SendMessage( lbox, LB_SETCURSEL, (WPARAM)( pos + 1 ), 0 ) != LB_ERR);
         if( ok ) {
             einfo->current_entry = NULL;
-            einfo->current_pos = -1;
+            einfo->current_pos = LB_ERR;
             WHandleSelChange( einfo );
         }
     }
 
     if( ok ) {
         SetFocus( GetDlgItem( einfo->edit_dlg, IDM_ACCEDKEY ) );
-        SendDlgItemMessage( einfo->edit_dlg, IDM_ACCEDKEY, EM_SETSEL,
-                            GET_EM_SETSEL_MPS( 0, -1 ) );
+        SendDlgItemMessage( einfo->edit_dlg, IDM_ACCEDKEY, EM_SETSEL, GET_EM_SETSEL_MPS( 0, -1 ) );
     }
 
     if( !ok ) {
@@ -131,7 +128,7 @@ bool WInsertAccelEntry( WAccelEditInfo *einfo )
     return( ok );
 }
 
-bool WAddEditWinLBoxEntry( WAccelEditInfo *einfo, WAccelEntry *entry, box_pos pos )
+bool WAddEditWinLBoxEntry( WAccelEditInfo *einfo, WAccelEntry *entry, LRESULT pos )
 {
     bool    ok;
     char    *lbtext;
