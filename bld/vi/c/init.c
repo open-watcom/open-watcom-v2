@@ -302,7 +302,6 @@ static void doInitializeEditor( int argc, char *argv[] )
         rc = Source( cfgFN, c, &sline );
         if( rc == ERR_FILE_NOT_FOUND ) {
 #ifdef __WIN__
-            CloseStartupDialog();
             MessageBox( NO_WINDOW, "Could not locate configuration information; please make sure your EDPATH environment variable is set correctly",
                         EditorName, MB_OK );
             ExitEditor( -1 );

@@ -88,8 +88,7 @@ WINEXPORT HDDEDATA CALLBACK DDECallback( UINT type, UINT fmt, HCONV hconv,
     case XTYP_DISCONNECT:
     case XTYP_REQUEST:
     case XTYP_POKE:
-        MySprintf( tmp, "%u %U %U %U %U", type, (DWORD)hconv,
-                   (DWORD)topicstrh, (DWORD)itemstrh, (DWORD)hmem );
+        MySprintf( tmp, "%u %U %U %U %U", type, (DWORD)hconv, (DWORD)topicstrh, (DWORD)itemstrh, (DWORD)hmem );
         rc = SourceHookData( SRC_HOOK_DDE, tmp );
         if( rc != ERR_NO_ERR ) {
             DDERet = DdeCreateDataHandle( DDEInstId, (LPBYTE)"err", 4, 0, itemstrh, fmt, 0 );

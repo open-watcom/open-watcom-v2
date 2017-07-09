@@ -9,7 +9,7 @@ objwiny = &
     dde.obj srcwin.obj srcdde.obj tool.obj wintica.obj &
     repcnt.obj clipbrd.obj asavedlg.obj profile.obj &
     finddlg.obj ectlsub.obj grepdlg.obj cmddlg.obj &
-    ftbar.obj startdlg.obj usage.obj tagdlg.obj &
+    ftbar.obj usage.obj tagdlg.obj &
     linedlg.obj &
     clrbar.obj clrpick.obj ftpick.obj repdlg.obj &
     hotkey.obj ssbar.obj subclass.obj snoop.obj &
@@ -24,7 +24,7 @@ rc_ctl_deps = ../win/ctl/setfs.dlg ../win/ctl/setscr.dlg ../win/ctl/setgen.dlg
 rc_deps = &
     ../res/viw.ico ../res/filelist.dlg ../res/fgrep.dlg ../res/asavedlg.dlg &
     ../res/finddlg.dlg ../res/grep.dlg ../res/cmd.dlg ../res/repdlg.dlg &
-    ../res/snoop.dlg ../res/startup.dlg  ../res/usage.dlg ../res/tagdlg.dlg &
+    ../res/snoop.dlg ../res/usage.dlg ../res/tagdlg.dlg &
     ../res/linedlg.dlg ../res/clrbar.dlg ../res/ftbar.dlg ../res/dropclr.cur &
     ../res/nodrop.cur ../res/dropft.cur ../res/dropss.cur &
     $(commonui_dir)/h/about.dlg $(rc_ctl_deps)

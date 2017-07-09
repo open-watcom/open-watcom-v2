@@ -123,8 +123,6 @@ void    FiniInstance( void );
 void    HandleMenuSelect( WPARAM wparam, LPARAM lparam );
 void    GetMenuHelpString( char *res );
 void    SetMenuHelpString( const char *str );
-void    ShowStartupDialog( void );
-void    CloseStartupDialog( void );
 void    UsageDialog( char **, char *, int );
 char    *GetInitialFileName( void );
 int     PickATag( int clist, char **list, const char *tagname );

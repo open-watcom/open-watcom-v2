@@ -149,8 +149,6 @@ int PASCAL WinMain( HINSTANCE inst, HINSTANCE prev, LPSTR cmdline, int show )
     SetConfigFileName( CFG_NAME );
     ReadProfile();
 
-    ShowStartupDialog();
-
     initApplication();
     if( !initInstance() ) {
         return( 0 );
@@ -181,7 +179,6 @@ void MessageLoop( bool block )
 
     if( block ) {
         if( !PeekMessage( &msg, NO_WINDOW, 0, 0, PM_NOYIELD | PM_NOREMOVE ) ) {
-            CloseStartupDialog();
             rc = GetMessage( &msg, NO_WINDOW, 0, 0 );
             if( !rc ) {
                 exit( msg.wParam );

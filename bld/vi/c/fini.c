@@ -106,7 +106,6 @@ void Quit( const char **usage_msg, const char *str, ... )
         } else {
             buff[0] = '\0';
         }
-        CloseStartupDialog();
         UsageDialog( UsageMsg, buff,  sizeof( UsageMsg ) / sizeof( char *) );
     }
 #else

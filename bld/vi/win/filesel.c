@@ -199,10 +199,8 @@ char *GetInitialFileName( void )
     char        *ptr;
     vi_rc       rc;
 
-    CloseStartupDialog();
     path[0] = '\0';
     rc = SelectFileOpen( "", &path, NULL, false );
-    ShowStartupDialog();
     if( rc == ERR_NO_ERR && path[0] != '\0' ) {
         ptr = DupString( path );
     } else {
