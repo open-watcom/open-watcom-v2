@@ -42,14 +42,14 @@
 
 
 /* Local Window callback functions prototypes */
-WINEXPORT HDDEDATA EDITAPI DdeCallback( UINT wType, UINT wFmt, HCONV hConv,
-                    HSZ hszTopic, HSZ hszItem, HDDEDATA hData, DWORD dwData1,
-                    DWORD dwData2 );
+WINEXPORT HDDEDATA CALLBACK VIW_DdeCallback( UINT wType, UINT wFmt, HCONV hConv, HSZ hszTopic, HSZ hszItem,
+                                            HDDEDATA hData, ULONG_PTR dwData1, ULONG_PTR dwData2 );
 
 static  HCONV       dde_hConv;
 static  DWORD       idInstance;
 static  HINSTANCE   hInstance;
 static  BOOL        bConnected = FALSE;
+static  FARPROC     VIW_DdeCallback_inst;
 
 static BOOL doReset( void )
 {
@@ -66,8 +66,7 @@ static char doRequest( char *szCommand )
     BYTE        result;
 
     hszCommand = DdeCreateStringHandle( idInstance, szCommand, CP_WINANSI );
-    hddeData = DdeClientTransaction( NULL, 0, dde_hConv, hszCommand, CF_TEXT,
-                                     XTYP_REQUEST, 500000, NULL );
+    hddeData = DdeClientTransaction( NULL, 0, dde_hConv, hszCommand, CF_TEXT, XTYP_REQUEST, 500000, NULL );
     DdeFreeStringHandle( idInstance, hszCommand );
 
     if( hddeData != (HDDEDATA)NULL ) {
@@ -79,9 +78,8 @@ static char doRequest( char *szCommand )
 
 }
 
-HDDEDATA EDITAPI DdeCallback( UINT wType, UINT wFmt, HCONV hConv,
-                    HSZ hszTopic, HSZ hszItem, HDDEDATA hData, DWORD dwData1,
-                    DWORD dwData2 )
+HDDEDATA CALLBACK VIW_DdeCallback( UINT wType, UINT wFmt, HCONV hConv, HSZ hszTopic, HSZ hszItem,
+                                        HDDEDATA hData, ULONG_PTR dwData1, ULONG_PTR dwData2 )
 {
     wFmt = wFmt;
     hConv = hConv;
@@ -116,10 +114,12 @@ int EDITAPI EDITConnect( void )
         return( TRUE );
     }
 
+
     // initialize our idInstance in ddeml
     if( idInstance == 0 ) {
-        if( DdeInitialize( &idInstance, (PFNCALLBACK) DdeCallback,
-                           APPCMD_CLIENTONLY, 0L ) != DMLERR_NO_ERROR ) {
+        VIW_DdeCallback_inst = MakeProcInstance( (FARPROC)VIW_DdeCallback, hInstance );
+        if( DdeInitialize( &idInstance, (PFNCALLBACK)VIW_DdeCallback_inst, APPCMD_CLIENTONLY, 0L ) != DMLERR_NO_ERROR ) {
+            FreeProcInstance( VIW_DdeCallback_inst );
             return( FALSE );
         }
     }
@@ -132,8 +132,7 @@ int EDITAPI EDITConnect( void )
     dde_hConv = DdeConnect( idInstance, hszService, hszTopic, (PCONVCONTEXT)NULL );
     if( dde_hConv == 0 ) {
         // run editor (magically grabs focus)
-        sprintf( szCommandLine, "%s -s ddesinit.vi -p \"%s %s\"",
-                 szProg, szService, szTopic );
+        sprintf( szCommandLine, "%s -s ddesinit.vi -p \"%s %s\"", szProg, szService, szTopic );
         // ddesinit.vi will now add an ide-activate button to the toolbar
         // this button will NOT be saved by saveconfig
 #ifdef __NT__
@@ -150,17 +149,19 @@ int EDITAPI EDITConnect( void )
                 rc = WaitForInputIdle( pi.hProcess, INFINITE );
                 if( rc == 0 ) {
                     // Now this is starting to get scary
-                    #define MAX_TRIES 100
-                    for( n = 0; n < MAX_TRIES; ++n ) {
+                    // if some problem to get connection then try in loop 100 times (maximum about 30 seconds) 
+                    for( n = 0; n < 100; ++n ) {
                         DWORD   status;
 
                         dde_hConv = DdeConnect( idInstance, hszService, hszTopic, (PCONVCONTEXT)NULL );
-                        if( dde_hConv == 0 )
+                        if( dde_hConv != 0 ) {
                             break;
+                        }
                         GetExitCodeProcess( pi.hProcess, &status );
-                        if( status != STILL_ACTIVE )
+                        if( status != STILL_ACTIVE ) {
                             break;
-                        Sleep( 250 );
+                        }
+                        Sleep( 250 );   // sleep 0.25 second
                     }
                 }
                 /*
@@ -225,8 +226,7 @@ int EDITAPI EDITLocateError( long lRow, int iCol,
 
     if( szErrmsg != NULL ) {
         rc |= doRequest( "echo on" );
-        sprintf( szCommand, "echo 1 \"%.*s\"",
-                 sizeof( szCommand ) - 10,  szErrmsg );
+        sprintf( szCommand, "echo 1 \"%.*s\"", (int)( sizeof( szCommand ) - 10 ),  szErrmsg );
         rc |= doRequest( szCommand );
     }
     return( rc );
@@ -258,6 +258,7 @@ int EDITAPI EDITDisconnect( void )
 {
     if( idInstance != 0 ) {
         DdeUninitialize( idInstance );
+        FreeProcInstance( VIW_DdeCallback_inst );
         idInstance = 0;
     }
     doReset();
