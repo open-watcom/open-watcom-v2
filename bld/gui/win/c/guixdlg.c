@@ -79,7 +79,8 @@ void GUISetJapanese( void )
         newfont = "";
         FontPointSize = 0;
   #else
-        newfont = "ï¿½lï¿½r ï¿½ï¿½ï¿½ï¿½";
+        /* following is DBCS text in Japanese "‚l‚r –¾’©" */
+        newfont = "\x82\x6C\x82\x72\x20\x96\xBE\x92\xA9";
         FontPointSize = 10;
   #endif
         if( Font != NULL ) {
@@ -186,12 +187,12 @@ bool GUIProcessControlNotification( gui_ctl_id id, int wNotify, gui_window *wnd 
                 } else {
                     cntl = _wpi_getdlgitem( wnd->hwnd, id );
                     check = (unsigned)GUISendMessage( cntl, BM_GETCHECK, (WPI_PARAM1)0, (WPI_PARAM2)0 );
-                    if( item->style & GUI_CONTROL_3STATE ) {
-                        check = ( ( check & 3 ) + 1 ) % 3;
-                        GUISendMessage( cntl, BM_SETCHECK, (WPI_PARAM1)check, (WPI_PARAM2)0 );
+                    if( check & BST_CHECKED ) {
+                        check &= ~BST_CHECKED;
                     } else {
-                        GUISendMessage( cntl, BM_SETCHECK, (WPI_PARAM1)!check, (WPI_PARAM2)0 );
+                        check |= BST_CHECKED;
                     }
+                    GUISendMessage( cntl, BM_SETCHECK, (WPI_PARAM1)check, (WPI_PARAM2)0 );
                 }
             }
             /* fall through */
