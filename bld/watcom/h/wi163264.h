@@ -69,6 +69,7 @@
 
 #define BST_UNCHECKED       0
 #define BST_CHECKED         1
+#define BST_PUSHED          4
 
 #define GET_HINSTANCE(hwnd)                     (HINSTANCE)GetWindowWord( hwnd, GWW_HINSTANCE )
 #define GET_WNDPROC(hwnd)                       GetWindowLong( hwnd, GWL_WNDPROC )
