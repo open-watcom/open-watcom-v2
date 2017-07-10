@@ -609,11 +609,14 @@ extern void _wpi_suspendthread( UINT thread_id, WPI_QMSG *msg );
     #define _wpi_f_getoldfont( hdc, oldfont ) SelectObject( hdc, oldfont )
 
 #ifdef __NT__
+  #ifdef _WIN64
     #define _wpi_f_getsystemfont( hdc, font ) \
-        GetObject( \
-            GetStockObject( LOBYTE(LOWORD(GetVersion())) >= 4 ? \
-            DEFAULT_GUI_FONT : SYSTEM_FONT ) \
+        GetObject( GetStockObject( DEFAULT_GUI_FONT ), sizeof( *(font) ), (font) )
+  #else
+    #define _wpi_f_getsystemfont( hdc, font ) \
+        GetObject( GetStockObject( LOBYTE(LOWORD(GetVersion())) >= 4 ? DEFAULT_GUI_FONT : SYSTEM_FONT ) \
             , sizeof( *(font) ), (font) )
+  #endif
 #else
     #define _wpi_f_getsystemfont( hdc, font ) \
         GetObject( GetStockObject( SYSTEM_FONT ), sizeof( *(font) ), (font) )
