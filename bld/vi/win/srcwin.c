@@ -265,22 +265,22 @@ bool RunWindowsCommand( const char *cmd, vi_rc *result, vlist *vl )
             if( *cmd == '\0' ) {
                 return( true );
             }
-            if( !WHtmlHelp( root_window_id, str, HELP_KEY, (HELP_DATA)cmd ) ) {
+            if( !WHtmlHelp( root_window_id, str, HELP_KEY, (HELP_DATA)(LPCSTR)cmd ) ) {
                 if( ext != NULL ) {
                     strcpy( ext, ".hlp" );
                 }
-                WWinHelp( root_window_id, str, HELP_KEY, (HELP_DATA)cmd );
+                WWinHelp( root_window_id, str, HELP_KEY, (HELP_DATA)(LPCSTR)cmd );
             }
             break;
         case WINHELP_PARTIALKEY:
             if( *cmd == '\0' ) {
                 return( true );
             }
-            if( !WHtmlHelp( root_window_id, str, HELP_PARTIALKEY, (HELP_DATA)cmd ) ) {
+            if( !WHtmlHelp( root_window_id, str, HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)cmd ) ) {
                 if( ext != NULL ) {
                     strcpy( ext, ".hlp" );
                 }
-                WWinHelp( root_window_id, str, HELP_PARTIALKEY, (HELP_DATA)cmd );
+                WWinHelp( root_window_id, str, HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)cmd );
             }
             break;
         }

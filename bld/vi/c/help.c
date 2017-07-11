@@ -91,11 +91,11 @@ vi_rc DoHelp( const char *data )
             WWinHelp( root_window_id, vi_helpfile, HELP_CONTENTS, (HELP_DATA)0 );
         }
     } else if( !strcmp( data, "Search" ) ) {
-        if( !WHtmlHelp( root_window_id, vi_chmfile, HELP_PARTIALKEY, (HELP_DATA)"" ) ) {
-            WWinHelp( root_window_id, vi_helpfile, HELP_PARTIALKEY, (HELP_DATA)"" );
+        if( !WHtmlHelp( root_window_id, vi_chmfile, HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" ) ) {
+            WWinHelp( root_window_id, vi_helpfile, HELP_PARTIALKEY, (HELP_DATA)(LPCSTR)"" );
         }
     } else {
-        WWinHelp( root_window_id, win_helpfile, HELP_KEY, (HELP_DATA)data );
+        WWinHelp( root_window_id, win_helpfile, HELP_KEY, (HELP_DATA)(LPCSTR)data );
     }
     return ( ERR_NO_ERR );
 }
