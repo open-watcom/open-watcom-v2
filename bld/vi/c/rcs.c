@@ -173,33 +173,6 @@ bool ViRCSInit( void )
 
 bool ViRCSFini( void )
 {
-  #if defined( __WINDOWS_386__ )
-    FreeProcAddress( _16RCSGetVersion );
-    FreeProcAddress( _16RCSInit );
-    FreeProcAddress( _16RCSCheckout );
-    FreeProcAddress( _16RCSCheckin );
-    FreeProcAddress( _16RCSHasShell );
-    FreeProcAddress( _16RCSRunShell );
-    FreeProcAddress( _16RCSSetSystem );
-    FreeProcAddress( _16RCSQuerySystem );
-    FreeProcAddress( _16RCSRegisterBatchCallback );
-    FreeProcAddress( _16RCSRegisterMessageBoxCallback );
-    FreeProcAddress( _16RCSSetPause );
-    FreeProcAddress( _16RCSFini );
-  #else
-    FreeProcAddress( RCSGetVersion );
-    FreeProcAddress( RCSInit );
-    FreeProcAddress( RCSCheckout );
-    FreeProcAddress( RCSCheckin );
-    FreeProcAddress( RCSHasShell );
-    FreeProcAddress( RCSRunShell );
-    FreeProcAddress( RCSSetSystem );
-    FreeProcAddress( RCSQuerySystem );
-    FreeProcAddress( RCSRegisterBatchCallback );
-    FreeProcAddress( RCSRegisterMessageBoxCallback );
-    FreeProcAddress( RCSSetPause );
-    FreeProcAddress( RCSFini );
-  #endif
     if( LibHandle != (HINSTANCE)0 )
         FreeLibrary( LibHandle );
     return( true );
@@ -245,19 +218,6 @@ bool ViRCSInit( void )
 
 bool ViRCSFini( void )
 {
-    FreeProcAddress( RCSGetVersion );
-    FreeProcAddress( RCSInit );
-    FreeProcAddress( RCSCheckout );
-    FreeProcAddress( RCSCheckin );
-    FreeProcAddress( RCSHasShell );
-    FreeProcAddress( RCSRunShell );
-    FreeProcAddress( RCSSetSystem );
-    FreeProcAddress( RCSQuerySystem );
-    FreeProcAddress( RCSRegisterBatchCallback );
-    FreeProcAddress( RCSRegisterMessageBoxCallback );
-    FreeProcAddress( RCSSetPause );
-    FreeProcAddress( RCSFini );
-
     if( LibHandle != NULL )
         FreeLibrary( LibHandle );
     return( true );
@@ -407,7 +367,7 @@ vi_rc ViRCSCheckin( vi_rc rc )
     DefineUserProc16( GETPROC_USERDEFINED_1, (PROCPTR)Batcher, UDP16_PTR, UDP16_PTR, UDP16_ENDLIST );
     fp = GetProc16( (PROCPTR)Batcher, GETPROC_USERDEFINED_1 );
     _RCSRegisterBatchCallback( r, fp, NULL );
-  #elifdef __WIN__
+  #elif defined( __WIN__ )
     r = _RCSInit( root_window_id, getenv( "WATCOM" ) );
     fp = MakeProcInstance( (FARPROC)Batcher, InstanceHandle );
     _RCSRegisterBatchCallback( r, (BatchCallback *)fp, NULL );
