@@ -582,7 +582,7 @@ static BOOL fileSelectDlg( HINSTANCE hinst, HWND parent, GetFilesInfo *info,
 #else
     of.lpTemplateName = "ADD_SRC_DLG";
 #endif
-    of.lCustData = (DWORD)info;
+    of.lCustData = (LPARAM)info;
     of.lpstrInitialDir = newpath;
     rc = GetOpenFileName( &of );
     last_filter_index = of.nFilterIndex;

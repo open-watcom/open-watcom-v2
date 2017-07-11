@@ -113,11 +113,12 @@ WCLASS VpeMain : public WMdiWindow, public WView
         void mCheckin( WMenuItem *);
         void mCheckout( WMenuItem *);
         void mRcsShell( WMenuItem *);
-        void setRcsScheme( int );
+        void setRcsScheme( rcstype );
         void setMksRcs( WMenuItem *);
         void setMksSi( WMenuItem *);
         void setObjectCycle( WMenuItem *);
         void setPerforce( WMenuItem *);
+        void setGit( WMenuItem *);
         void setPvcs( WMenuItem *);
         void setOtherRcs( WMenuItem *);
         void setNoRcs( WMenuItem *);

@@ -58,7 +58,7 @@
 
 objectCycleSystem ObjCycle;
 
-typedef int (WINAPI *OCINIT)( long instance, HWND window );
+typedef int (WINAPI *OCINIT)( HINSTANCE instance, HWND window );
 typedef int (WINAPI *OCFINI)( void );
 typedef int (WINAPI *OCCHECKIN)( const char *fname, const char *objname );
 typedef int (WINAPI *OCCHECKOUT)( const char *fname, const char *objname );
@@ -80,7 +80,7 @@ int objectCycleSystem::init( userData *d )
     if( dll == NULL )
         return( false );
 #else
-    if( (UINT)dll < 32 )
+    if( dll < (HINSTANCE)32 )
         return( false );
 #endif
     ci_fp = (OCCHECKIN)GetProcAddress( dll, ENTRY_OCCHECKIN );
@@ -89,7 +89,7 @@ int objectCycleSystem::init( userData *d )
     in_fp = (OCINIT)GetProcAddress( dll, ENTRY_OCINIT );
     cl_fp = (OCFINI)GetProcAddress( dll, ENTRY_OCFINI );
 
-    dllId = (long)dll;
+    dllId = dll;
 
     if( in_fp == NULL )
         return( false );
@@ -101,7 +101,7 @@ int objectCycleSystem::fini()
 {
     if( cl_fp != NULL )
         cl_fp();
-    FreeLibrary( (HINSTANCE)dllId );
+    FreeLibrary( dllId );
     return( true );
 };
 

@@ -20,6 +20,7 @@ objs += objcycle.obj
 !endif
 !else ifeq host_os win
 objs += mkssi.obj
+objs += objcycle.obj
 !endif
 
 .cpp : ..;../mkssi;../ocycle

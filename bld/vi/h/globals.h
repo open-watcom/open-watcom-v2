@@ -145,6 +145,7 @@ extern bool             NoRepeatInfo;
 extern char _NEAR       RepeatString[MAX_REPEAT_STRING];
 extern int              SourceErrCount;
 extern bool             BoundData;
+extern bool             RCSActive;
 
 /* file io globals */
 extern int              SwapBlocksInUse;

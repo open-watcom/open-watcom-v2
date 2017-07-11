@@ -13,6 +13,8 @@ type="e" usr="p4_co.bat"
 type="e" usr="p4_ci.bat"
 type="e" usr="pvcs_co.bat"
 type="e" usr="pvcs_ci.bat"
+type="e" usr="git_co.bat"
+type="e" usr="git_ci.bat"
 
 #######################
 # OS/2
@@ -27,6 +29,8 @@ type="e" usr="p4_co.cmd"
 type="e" usr="p4_ci.cmd"
 type="e" usr="pvcs_co.cmd"
 type="e" usr="pvcs_ci.cmd"
+type="e" usr="git_co.cmd"
+type="e" usr="git_ci.cmd"
 
 #######################
 # Windows NT - 386
@@ -41,6 +45,8 @@ type="e" usr="p4_co.bat"
 type="e" usr="p4_ci.bat"
 type="e" usr="pvcs_co.bat"
 type="e" usr="pvcs_ci.bat"
+type="e" usr="git_co.bat"
+type="e" usr="git_ci.bat"
 
 #######################
 # Windows NT - AXP
@@ -55,6 +61,8 @@ type="e" usr="p4_co.bat"
 type="e" usr="p4_ci.bat"
 type="e" usr="pvcs_co.bat"
 type="e" usr="pvcs_ci.bat"
+type="e" usr="git_co.bat"
+type="e" usr="git_ci.bat"
 
 #######################
 # Windows NT - X64
@@ -69,3 +77,5 @@ type="e" usr="p4_co.bat"
 type="e" usr="p4_ci.bat"
 type="e" usr="pvcs_co.bat"
 type="e" usr="pvcs_ci.bat"
+type="e" usr="git_co.bat"
+type="e" usr="git_ci.bat"

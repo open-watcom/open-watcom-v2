@@ -48,8 +48,8 @@ WCLASS VRcsClient : public WObject {
         int Checkin( WFileName *, WString &, WString & );
         int RunShell( void );
         int HasShell( void );
-        int SetSystem( int );
-        int QuerySystem( void );
+        int SetSystem( rcstype );
+        rcstype QuerySystem( void );
     private:
         bool            _initialized;
         WModuleHandle   _dllhdl;

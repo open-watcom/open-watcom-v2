@@ -225,6 +225,7 @@ bool            NoRepeatInfo;
 char            _NEAR RepeatString[MAX_REPEAT_STRING];
 int             SourceErrCount;
 bool            BoundData = false;
+bool            RCSActive = false;
 
 #define INITVARS
 /*

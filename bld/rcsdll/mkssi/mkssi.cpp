@@ -73,7 +73,7 @@ int mksSISystem::init( userData * )
     in_fp = (WSIINIT)GetProcAddress( dll, "wsiInit" );
     cl_fp = (WSICLEANUP)GetProcAddress( dll, "wsiCleanup" );
 #endif
-    dllId = (long)dll;
+    dllId = dll;
 
     if( in_fp == NULL )
         return( false );
@@ -84,7 +84,7 @@ int mksSISystem::init( userData * )
 int mksSISystem::fini()
 {
     if( cl_fp != NULL ) cl_fp();
-    FreeLibrary( (HINSTANCE)dllId );
+    FreeLibrary( dllId );
     return( true );
 };
 

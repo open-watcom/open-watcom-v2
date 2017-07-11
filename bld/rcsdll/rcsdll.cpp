@@ -73,19 +73,17 @@ mksRcsSystem    MksRcs;
 pvcsSystem      Pvcs;
 genericRcs      Generic;
 p4System        Perforce;
+gitSystem       Git;
 wprojRcs        Wproj;
 
 extern "C" {
 
 static const char *rcs_type_strings[] = {
-    "no_rcs",
-    "mks_rcs",
-    "mks_si",
-    "pvcs",
-    "generic",
-    "o_cycle",
-    "perforce",
-    "wproj" // hidden
+    #define pick1(a,b,c,d)      b,
+    #define pick2(a,b,c,d)      b,
+    #include "rcssyst.h"
+    #undef pick1
+    #undef pick2
 };
 
 static const char *pause_strings[] = {
@@ -95,25 +93,18 @@ static const char *pause_strings[] = {
 
 
 static rcsSystem *rcs_systems[] = {
-    NULL,
-    &MksRcs,
-#if defined( __WINDOWS__ ) || defined( __NT__ )
-    &MksSI,
-#else
-    NULL,
-#endif
-    &Pvcs,
-    &Generic,
-#if defined( __NT__ ) && !defined( __AXP__ )
-    &ObjCycle,
-#else
-    NULL,
-#endif
-    &Perforce,
-    &Wproj // hidden
+    #define pick1(a,b,c,d)      c,
+  #if defined( __WINDOWS__ ) || defined( __NT__ )
+    #define pick2(a,b,c,d)      c,
+  #else
+    #define pick2(a,b,c,d)      NULL,
+  #endif
+    #include "rcssyst.h"
+    #undef pick1
+    #undef pick2
 };
 
-rcsdata RCSAPI RCSInit( unsigned long window, char *cfg_dir )
+rcsdata RCSAPI RCSInit( rcshwnd window, char *cfg_dir )
 {
     userData *data;
 
@@ -174,35 +165,35 @@ void RCSAPI RCSSetPause( rcsdata data, int p )
 
 int RCSAPI RCSGetVersion() { return( RCS_DLL_VER ); }
 
-int RCSAPI RCSSetSystem( rcsdata data, int rcs_type )
+int RCSAPI RCSSetSystem( rcsdata data, rcstype rcs_type )
 {
     userData *d = (userData*)data;
     if( d == NULL )
         return( false );
     if( !d->setSystem( rcs_type ) )
         return( false );
-    if( rcs_type > MAX_RCS_TYPE )
+    if( rcs_type > RCS_TYPE_LAST )
         return( false );
     MyWriteProfileString( d->getCfgDir(), RCS_CFG, RCS_SECTION, RCS_KEY, rcs_type_strings[rcs_type] );
     return( true );
 
 }
 
-int RCSAPI RCSQuerySystem( rcsdata data )
+rcstype RCSAPI RCSQuerySystem( rcsdata data )
 {
     char buffer[MAX_RCS_STRING_LEN];
-    int i;
+    rcstype i;
 
     userData *d = (userData*)data;
     if( d == NULL )
-        return( 0 );
+        return( NO_RCS );
     MyGetProfileString( d->getCfgDir(), RCS_CFG, RCS_SECTION, RCS_KEY, RCS_DEFAULT, buffer, MAX_RCS_STRING_LEN );
-    for( i = 1; i <= MAX_RCS_TYPE; i++ ) {
+    for( i = RCS_TYPE_FIRST; i <= RCS_TYPE_LAST; i = (rcstype)( i + 1 ) ) {
         if( strnicmp( buffer, rcs_type_strings[i], strlen( rcs_type_strings[i] ) ) == 0 ) {
             return( i );
         }
     }
-    return( 0 );
+    return( NO_RCS );
 }
 
 int RCSAPI RCSRegisterBatchCallback( rcsdata data, BatchCallback *fp, void *cookie )
@@ -267,7 +258,7 @@ int     __dll_terminate( void )
 
 }  // extern "C"
 
-int userData::setSystem( int rcs_type )
+int userData::setSystem( rcstype rcs_type )
 {
     if( currentSystem != NULL ) {
         currentSystem->fini();

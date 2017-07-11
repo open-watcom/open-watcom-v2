@@ -78,7 +78,9 @@ extern RCSSetPauseFn    RCSSetPause;
 HINSTANCE hInst;
 
 BatchCallback           *BatchProc;
+BatchCallback           Batcher;
 MessageBoxCallback      *MsgProc;
+MessageBoxCallback      Messager;
 rcsdata                 Cookie;
 
 HANDLE hAccTable;                                /* handle to accelerator table */
@@ -106,13 +108,13 @@ int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
     if( !InitInstance( hInstance, nCmdShow ) )
         return( FALSE );
 
-    while( GetMessage(&msg, NULL, NULL, NULL) ) {
+    while( GetMessage(&msg, NULL, 0, 0) ) {
 
         //if( !TranslateAccelerator(hwnd, hAccTable, &msg)
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
-    return( msg.wParam );
+    return( (int)msg.wParam );
 }
 
 int RCSAPI Batcher( rcsstring str, void *cookie )
@@ -121,8 +123,10 @@ int RCSAPI Batcher( rcsstring str, void *cookie )
     return( MessageBox( hwnd, (LPCSTR)str, (LPCSTR)"run batch", MB_OK ) );
 }
 
-int RCSAPI Messager( rcsstring text, rcsstring title, rcsstring buffer, int len, void *cookie )
+int RCSAPI Messager( rcsstring text, rcsstring title, char *buffer, int len, void *cookie )
 {
+    /* unused parameters */ (void)len;
+
     cookie = cookie;
     strcpy( (char*)buffer, "this is a message" );
     return( MessageBox( hwnd, (LPCSTR)text, (LPCSTR)title, MB_OK ) );
@@ -141,7 +145,7 @@ BOOL InitApplication(HANDLE hInstance)
 {
     WNDCLASS  wc;
 
-    wc.style = NULL;
+    wc.style = 0;
     wc.lpfnWndProc = MainWndProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
@@ -152,13 +156,13 @@ BOOL InitApplication(HANDLE hInstance)
     wc.lpszMenuName =  "WatcomEditCntlMenu";
     wc.lpszClassName = "WEditCntlWClass";
 
-    Cookie = RCSInit( (unsigned long)hwnd, getenv( "WATCOM" ) );
+    Cookie = RCSInit( hwnd, getenv( "WATCOM" ) );
     BatchProc = (BatchCallback *)MakeProcInstance( (FARPROC)&Batcher, hInst );
     MsgProc = (MessageBoxCallback *)MakeProcInstance( (FARPROC)&Messager, hInst );
     RCSRegisterBatchCallback( Cookie, BatchProc, NULL );
     RCSRegisterMessageBoxCallback( Cookie, MsgProc, NULL );
 
-    return (RegisterClass(&wc));
+    return( RegisterClass( &wc ) );
 }
 
 
@@ -170,7 +174,7 @@ BOOL InitApplication(HANDLE hInstance)
 
 ****************************************************************************/
 
-bool InitInstance(HINSTANCE hInstance, int nCmdShow)
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance;
     hAccTable = LoadAccelerators(hInst, "WatcomEditCntlAcc");
@@ -190,11 +194,11 @@ bool InitInstance(HINSTANCE hInstance, int nCmdShow)
     );
 
     if( !hwnd )
-        return( false );
+        return( FALSE );
 
     ShowWindow(hwnd, nCmdShow);
     UpdateWindow(hwnd);
-    return( true );
+    return( TRUE );
 
 }
 
@@ -211,7 +215,7 @@ bool InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 ****************************************************************************/
 
-long WINAPI MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     FARPROC lpProcAbout;
 
@@ -281,6 +285,14 @@ long WINAPI MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 SetWindowText( hwnd, "error setting RCS system" );
             }
             break;
+        case IDM_SET_GIT:
+            RCSSetSystem( Cookie, GIT );
+            if( RCSQuerySystem( Cookie ) == GIT ) {
+                SetWindowText( hwnd, "Git" );
+            } else {
+                SetWindowText( hwnd, "error setting RCS system" );
+            }
+            break;
         case IDM_QUERY_SYS:
             switch( RCSQuerySystem( Cookie ) ) {
                 case NO_RCS: SetWindowText( hwnd, "none" ); break;
@@ -290,6 +302,7 @@ long WINAPI MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 case GENERIC: SetWindowText( hwnd, "GENERIC" ); break;
                 case WPROJ: SetWindowText( hwnd, "wproj" ); break;
                 case PERFORCE: SetWindowText( hwnd, "Perforce" ); break;
+                case GIT: SetWindowText( hwnd, "Git" ); break;
             }
             break;
         case IDM_EXIT:
@@ -301,9 +314,9 @@ long WINAPI MainWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         PostQuitMessage(0);
         break;
     default:
-        return (DefWindowProc(hWnd, message, wParam, lParam));
+        return( DefWindowProc(hWnd, message, wParam, lParam) );
     }
-    return (NULL);
+    return( 0 );
 }
 
 

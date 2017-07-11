@@ -31,6 +31,8 @@ template_objs = &
     mks_ci.$(ext_objs) &
     p4_co.$(ext_objs) &
     p4_ci.$(ext_objs) &
+    git_co.$(ext_objs) &
+    git_ci.$(ext_objs) &
     pvcs_co.$(ext_objs) &
     pvcs_ci.$(ext_objs)
 

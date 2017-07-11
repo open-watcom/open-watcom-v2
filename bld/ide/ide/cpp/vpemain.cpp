@@ -509,7 +509,6 @@ WPopupMenu* VpeMain::makeMenu( MenuPop* popup, VToolBar* tools )
     return( pop );
 }
 
-MenuPop VpeMain::popup0a = { "Set Sou&rce Control", (cbp)&VpeMain::onPopup0a, menu0a, 7 };
 MenuData VpeMain::menu0a[] = {
     "MKS &SI", (cbm)&VpeMain::setMksSi, "Use MKS Source Integrity revision control.", 0, NULL, NULL,
     "MKS &RCS", (cbm)&VpeMain::setMksRcs, "Use MKS RCS revision control.", 0, NULL, NULL,
@@ -517,8 +516,10 @@ MenuData VpeMain::menu0a[] = {
     "&Other", (cbm)&VpeMain::setOtherRcs, "Use another revision control system.", 0, NULL, NULL,
     "&None", (cbm)&VpeMain::setNoRcs, "Disable revision control functions.", 0, NULL, NULL,
     "Object &Cycle", (cbm)&VpeMain::setObjectCycle, "Use Object Cycle.", 0, NULL, NULL,
-    "P&erforce", (cbm)&VpeMain::setPerforce, "Use Perforce.", 0, NULL, NULL
+    "P&erforce", (cbm)&VpeMain::setPerforce, "Use Perforce.", 0, NULL, NULL,
+    "G&it", (cbm)&VpeMain::setGit, "Use Git.", 0, NULL, NULL
 };
+MenuPop VpeMain::popup0a = { "Set Sou&rce Control", (cbp)&VpeMain::onPopup0a, menu0a, sizeof( menu0a ) / sizeof( menu0a[0] ) };
 
 MenuPop VpeMain::popup0 = { "&File", (cbp)&VpeMain::onPopup0, menu0, 16 };
 MenuData VpeMain::menu0[] = {
@@ -542,7 +543,7 @@ MenuData VpeMain::menu0[] = {
 
 void VpeMain::onPopup0a( WPopupMenu* pop )
 {
-    int         systype;
+    rcstype     systype;
     int         i;
 
     for( i = 0; i < popup0a.count; i++ ) {
@@ -570,6 +571,9 @@ void VpeMain::onPopup0a( WPopupMenu* pop )
         break;
     case PERFORCE:
         pop->checkItem( true, 6 );
+        break;
+    case GIT:
+        pop->checkItem( true, 7 );
         break;
     }
 }
@@ -2116,7 +2120,7 @@ void VpeMain::mCheckout( WMenuItem *) {
     }
 }
 
-void VpeMain::setRcsScheme( int sys ) {
+void VpeMain::setRcsScheme( rcstype sys ) {
     if( !_rcsClient.SetSystem( sys ) ) {
         WMessageDialog::messagef( this, MsgError, MsgOk, _viperError,
                         "Unable to change the current Source Control system" );
@@ -2137,6 +2141,10 @@ void VpeMain::setObjectCycle( WMenuItem *) {
 
 void VpeMain::setPerforce( WMenuItem *) {
     setRcsScheme( PERFORCE );
+}
+
+void VpeMain::setGit( WMenuItem *) {
+    setRcsScheme( GIT );
 }
 
 void VpeMain::setPvcs( WMenuItem *) {

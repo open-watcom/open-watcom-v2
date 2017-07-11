@@ -154,8 +154,7 @@ bool VRcsClient::Init( void ) {
     if( _getver() != RCS_DLL_VER ) return( false );
 
     // getting the HWND like this violates GUI
-    _dllcookie = _init( (unsigned long)GET_HWND( _parent->handle() ),
-                         getenv( "WATCOM" ) );
+    _dllcookie = _init( GET_HWND( _parent->handle() ), getenv( "WATCOM" ) );
     if( _dllcookie == NULL ) return( false );
 
 #ifdef __WINDOWS__
@@ -222,7 +221,7 @@ int VRcsClient::RunShell( void ) {
     }
 }
 
-int VRcsClient::SetSystem( int systok ) {
+int VRcsClient::SetSystem( rcstype systok ) {
     if( _initialized ) {
         return( _setsystem( _dllcookie, systok ) );
     } else {
@@ -230,7 +229,7 @@ int VRcsClient::SetSystem( int systok ) {
     }
 }
 
-int VRcsClient::QuerySystem( void ) {
+rcstype VRcsClient::QuerySystem( void ) {
     if( _initialized ) {
         return( _querysystem( _dllcookie ) );
     } else {

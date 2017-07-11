@@ -898,16 +898,24 @@ vi_rc RunCommandLine( const char *cmdl )
 #ifdef VI_RCS
     case PCL_T_CHECKOUT:
         rc = ERR_NO_ERR;
+        if( RCSActive ) {
 #ifdef __WINDOWS__
-        if( isOS2() ) break; // OS/2 shell returns before checkout finishes
+            if( !isOS2() ) {    // OS/2 shell returns before checkout finishes
 #endif
-        if( CurrentFile != NULL ) {
-            rc = ViRCSCheckout( rc );
+                if( CurrentFile != NULL ) {
+                    rc = ViRCSCheckout( rc );
+                }
+#ifdef __WINDOWS__
+            }
+#endif
         }
         break;
     case PCL_T_CHECKIN:
-        if( CurrentFile != NULL ) {
-            rc = ViRCSCheckin( rc );
+        rc = ERR_NO_ERR;
+        if( RCSActive ) {
+            if( CurrentFile != NULL ) {
+                rc = ViRCSCheckin( rc );
+            }
         }
         break;
 #endif
