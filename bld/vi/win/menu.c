@@ -1227,7 +1227,7 @@ void SetMenuHelpString( const char *str )
 
 vi_rc DoWindowGadgetMenu( void )
 {
-    SendMessage( current_window_id, WM_SYSCOMMAND, 0xF100, 0x0000002DL );
+    SendMessage( current_window_id, WM_SYSCOMMAND, SC_KEYMENU, (LPARAM)'-' );
     return( ERR_NO_ERR );
 }
 

@@ -85,7 +85,7 @@ static void WdeSetTagState( WdeOrderedEntry *oe )
     if( oe != NULL && oe->tag != (HWND)NULL ) {
         if( oe->mode == WdeSetOrder ) {
             result = SendMessage( oe->tag, BM_GETSTATE, 0, 0 );
-            pressed = ((result & 0x0004) != 0);
+            pressed = ((result & BST_PUSHED) != 0);
             if( pressed && !oe->pos_set ) {
                 SendMessage( oe->tag, BM_SETSTATE, FALSE, 0 );
             } else if( !pressed && oe->pos_set ) {

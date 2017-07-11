@@ -634,7 +634,7 @@ static void fileGrep( const char *dir, char **list, int *clist, window_id wid )
                     SendMessage( wid, LVM_SETITEM, 0, (LPARAM)&lvi );
                 } else {
   #endif
-                    SendMessage( wid, LB_ADDSTRING, 0, (LPARAM)data );
+                    SendMessage( wid, LB_ADDSTRING, 0, (LPARAM)(LPSTR)data );
                     MySprintf( data, "%X", fn );
   #ifdef __NT__
                 }

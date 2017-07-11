@@ -152,7 +152,7 @@ window_id NewEditWindow( void )
     mdinew.style = style;
     mdinew.lParam = 0;
 
-    wid = (window_id)SendMessage( edit_container_id, WM_MDICREATE, 0, (LPARAM)&mdinew );
+    wid = (window_id)SendMessage( edit_container_id, WM_MDICREATE, 0, (LPARAM)(LPVOID)&mdinew );
 
     wd = DATA_FROM_ID( wid );
 
@@ -845,7 +845,7 @@ WINEXPORT LRESULT CALLBACK EditWindowProc( window_id wid, UINT msg, WPARAM wpara
         if( !EditFlags.HoldEverything ) {
             PushMode();
             wd = DATA_FROM_ID( wid );
-            SendMessage( edit_container_id, WM_MDIRESTORE, (UINT)wid, 0L );
+            SendMessage( edit_container_id, WM_MDIRESTORE, (WPARAM)wid, 0L );
             BringUpFile( wd->info, true );
             if( NextFile() > ERR_NO_ERR ) {
                 FileExitOptionSaveChanges( CurrentFile );

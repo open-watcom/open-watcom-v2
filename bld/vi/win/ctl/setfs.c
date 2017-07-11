@@ -406,7 +406,7 @@ static void fillFileType( HWND hwndDlg )
             template = FTSGetNextTemplate( template );
         }
         filldlgData( dlgDataArray + index, template1->data, CurrentInfo );
-        SendMessage( hwndCB, CB_INSERTSTRING, index, (LPARAM)(str + 1) );
+        SendMessage( hwndCB, CB_INSERTSTRING, index, (LPARAM)(LPSTR)(str + 1) );
     }
     index = 0;
     if( oldCurrentInfo != NULL && oldCurrentInfo->CurrentFile != NULL ) {
@@ -568,7 +568,7 @@ static long insertFT( HWND hwndDlg )
     GetWindowText( hwndCB, text, len + 1 );
 
     // attempt to insert at current position
-    index = (int)SendMessage( hwndCB, CB_FINDSTRING, -1, (LPARAM)text );
+    index = (int)SendMessage( hwndCB, CB_FINDSTRING, -1, (LPARAM)(LPSTR)text );
     if( index != CB_ERR && SendMessage( hwndCB, CB_GETLBTEXTLEN, index, 0L ) == strlen( text ) ) {
         MessageBox( hwndDlg, "Template already defined", "", MB_ICONINFORMATION | MB_OK );
         return( 0L );
@@ -581,7 +581,7 @@ static long insertFT( HWND hwndDlg )
     index = 0;
     memmove( dlgDataArray + index + 1, dlgDataArray + index, sizeof( dlg_data ) * ( dlgDataArray_count - index ) );
     dlgDataDefault( dlgDataArray + index );
-    SendMessage( hwndCB, CB_INSERTSTRING, index, (LPARAM)text );
+    SendMessage( hwndCB, CB_INSERTSTRING, index, (LPARAM)(LPSTR)text );
     SendMessage( hwndCB, CB_SETCURSEL, index, 0L );
     updateDialogSettings( hwndDlg, true );
 

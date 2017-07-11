@@ -90,13 +90,13 @@ WINEXPORT INT_PTR CALLBACK OptionsDlgProc( HWND hwnd, UINT msg, WPARAM wparam, L
         switch( LOWORD( wparam ) ) {
         case IDOK:
             ServParms[1] = '\0';
-            if( SendDlgItemMessage( hwnd, IDDI_LPT1, BM_GETCHECK, 0, 0 ) ) {
+            if( SendDlgItemMessage( hwnd, IDDI_LPT1, BM_GETCHECK, 0, 0 ) == BST_CHECKED ) {
                 ServParms[0] = '1';
-            } else if( SendDlgItemMessage( hwnd, IDDI_LPT2, BM_GETCHECK, 0, 0 ) ) {
+            } else if( SendDlgItemMessage( hwnd, IDDI_LPT2, BM_GETCHECK, 0, 0 ) == BST_CHECKED ) {
                 ServParms[0] = '2';
-            } else if( SendDlgItemMessage( hwnd, IDDI_LPT3, BM_GETCHECK, 0, 0 ) ) {
+            } else if( SendDlgItemMessage( hwnd, IDDI_LPT3, BM_GETCHECK, 0, 0 ) == BST_CHECKED ) {
                 ServParms[0] = '3';
-            } else if( SendDlgItemMessage( hwnd, IDDI_PORT, BM_GETCHECK, 0, 0 ) ) {
+            } else if( SendDlgItemMessage( hwnd, IDDI_PORT, BM_GETCHECK, 0, 0 ) == BST_CHECKED ) {
                 ServParms[0] = 'p';
                 GetDlgItemText( hwnd, IDDI_PORT_EDIT, ServParms + 1, PARMS_MAXLEN - 1 );
             } else {
