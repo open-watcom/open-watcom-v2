@@ -100,7 +100,7 @@ int PASCAL WinMain( HINSTANCE currinst, HINSTANCE previnst, LPSTR cmdline, int c
     char                cmd[_MAX_PATH];
     char*               env;
 
-    if( (GetVersion() & 0x800000FF) >= 0x80000004 ) {
+    if( (GetVersion() & 0x800000FF) >= 0x80000004 ) {   // Win 9x/Me
         env = getenv( "WATCOM" );
         if( env == NULL ) {
             if( !env ) {
