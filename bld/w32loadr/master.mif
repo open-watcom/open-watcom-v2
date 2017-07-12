@@ -89,7 +89,7 @@ dbgrun.exe : $(d4grun_objs) $(__MAKEFILES__)
 
 cwsrun.exe : $(cwsrun_objs) $(__MAKEFILES__)
     @%make echo_link
-    $(linker) name $^@ system causeway option stack=32k,map,stub=$(causeway_dir)/cw32/dosi86/cwstub.exe file {$(cwsrun_objs)} lib {clib3r.lib}
+    $(linker) name $^@ system causeway option stack=32k,map file {$(cwsrun_objs)} lib {clib3r.lib}
 
 tntrun.exe : $(tntrun_objs) $(__MAKEFILES__)
     @%make echo_link
