@@ -30,6 +30,13 @@
 ****************************************************************************/
 
 
+#if defined( __NT__ ) && 0
+    #undef  WINVER
+    #define WINVER 0x0500
+    #undef  _WIN32_WINNT
+    #define _WIN32_WINNT 0x0500
+#endif
+
 #include "imgedit.h"
 #include <commdlg.h>
 #include <dos.h>
@@ -254,18 +261,11 @@ static BOOL getSaveFName( char *fname, int imgtype )
     char                path[_MAX_PATH];
     BOOL                ret_val;
     long                of_size;
-#ifndef _WIN64
-  #if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
-    OSVERSIONINFO       os_info;
-  #endif
-#endif
 
     of_size = sizeof( OPENFILENAME );
 #ifndef _WIN64
-  #if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
-    os_info.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
-    GetVersionEx( &os_info );
-    if( os_info.dwMajorVersion < 5 ) {
+  #if defined( __NT__ ) && (_WIN32_WINNT >= 0x0500)
+    if( LOBYTE( LOWORD( GetVersion() ) ) < 5 ) {
         /* Set the appropriate structure size to make this work on Windows 95. */
         of_size = OPENFILENAME_SIZE_VERSION_400;
     }
@@ -1144,18 +1144,11 @@ static BOOL getSavePalName( char *fname )
     char                szFileTitle[_MAX_PATH];
     int                 rc;
     long                of_size;
-#ifndef _WIN64
-  #if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
-    OSVERSIONINFO       os_info;
-  #endif
-#endif
 
     of_size = sizeof( OPENFILENAME );
 #ifndef _WIN64
-  #if defined( __NT__ ) && (WINVER >= 0x0500) && (_WIN32_WINNT >= 0x0500)
-    os_info.dwOSVersionInfoSize = sizeof( OSVERSIONINFO );
-    GetVersionEx( &os_info );
-    if( os_info.dwMajorVersion < 5 ) {
+  #if defined( __NT__ ) && (_WIN32_WINNT >= 0x0500)
+    if( LOBYTE( LOWORD( GetVersion() ) ) < 5 ) {
         /* Set the appropriate structure size to make this work on Windows 95. */
         of_size = OPENFILENAME_SIZE_VERSION_400;
     }
@@ -1175,7 +1168,7 @@ static BOOL getSavePalName( char *fname )
     of.lpstrTitle = IESavePaletteTitle;
     of.lpstrInitialDir = initialDir;
     of.Flags = OFN_SHOWHELP | OFN_OVERWRITEPROMPT;
-#if !defined( __NT__ )
+#ifndef __NT__
     of.Flags |= OFN_ENABLEHOOK;
     of.lpfnHook = MakeProcInstance_OFNHOOK( SaveOFNHookProc, Instance );
 #endif

@@ -269,9 +269,7 @@ char *WREGetFileName( WREGetFileStruct *gf, DWORD flags, WREGetFileAction action
     }
 
 #ifndef __NT__
-    if( wreofn.lpfnHook != NULL ) {
-        FreeProcInstance_OFNHOOK( wreofn.lpfnHook );
-    }
+    FreeProcInstance_OFNHOOK( wreofn.lpfnHook );
 #endif
 
     if( !ret ) {

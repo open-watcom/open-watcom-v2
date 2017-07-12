@@ -288,9 +288,7 @@ char *WdeGetFileName( WdeGetFileStruct *gf, DWORD flags, WdeGetFileNameAction ac
     }
 
 #ifndef __NT__
-    if( wdeofn.lpfnHook != NULL ) {
-        FreeProcInstance_OFNHOOK( wdeofn.lpfnHook );
-    }
+    FreeProcInstance_OFNHOOK( wdeofn.lpfnHook );
 #endif
 
     gf->fn_offset = wdeofn.nFileOffset;

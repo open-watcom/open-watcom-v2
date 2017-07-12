@@ -469,28 +469,6 @@ extern void WriteProfileStrings( bool uninstall )
     }
 }
 
-#if (defined( __NT__ ) || defined( __WINDOWS__ )) && !defined( _UI )
-static bool IsWin40( void )
-{
-#if defined( __NT__ )
-    OSVERSIONINFO       ver;
-
-    ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-    if( GetVersionEx( (OSVERSIONINFO *) &ver ) ) {
-        if( ver.dwMajorVersion >= 4 ) {
-            return( true );
-        } else {
-            return( false );
-        }
-    }
-    return( false );
-#else
-    return( false );
-#endif
-}
-#endif
-
-
 void SetDialogFont()
 {
 #if (defined( __NT__ ) || defined( __WINDOWS__ )) && !defined( _UI )
@@ -498,6 +476,9 @@ void SetDialogFont()
     char            *fontstr;
     LOGFONT         lf;
     char            dlgfont[100];
+#if defined( __NT__ )
+    DWORD   ver;
+#endif
 
     if( !GetVariableIntVal( "IsJapanese" ) ) {
         fontstr = GUIGetFontInfo( MainWnd );
@@ -505,11 +486,16 @@ void SetDialogFont()
 //      following line removed - has no effect on line spacing, it only
 //      causes the dialog boxes to be too narrow in Win 4.0
 //      lf.lfHeight = (lf.lfHeight * 8)/12;
-        if( IsWin40() ) {
+#if defined( __NT__ )
+        ver = GetVersion();
+        if( ver < 0x80000000 && LOBYTE( LOWORD( ver ) ) >= 4 ) {
             lf.lfWeight = FW_NORMAL;
         } else {
             lf.lfWeight = FW_BOLD;
         }
+#else
+        lf.lfWeight = FW_BOLD;
+#endif
         strcpy(lf.lfFaceName, "MS Sans Serif");
         GetFontFormatString( &lf, dlgfont );
         GUISetFontInfo( MainWnd, dlgfont );

@@ -42,23 +42,23 @@ extern TRAPENTRY_FUNC( InfoFunction );
 
 trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
 {
-    trap_version    ver;
-    OSVERSIONINFO   osver;
+    trap_version    trapver;
     HANDLE          dll;
+    DWORD           osver;
 
-    osver.dwOSVersionInfoSize = sizeof( osver );
-    GetVersionEx( &osver );
-#if defined( MD_x64 )
-#else
     IsWin32s = FALSE;
     IsWin95 = FALSE;
     IsWinNT = FALSE;
-    if( osver.dwPlatformId == VER_PLATFORM_WIN32s ) {
-        IsWin32s = TRUE;
-    } else if( osver.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS ) {
-        IsWin95 = TRUE;
-    } else if( osver.dwPlatformId == VER_PLATFORM_WIN32_NT ) {
+#if defined( MD_x64 )
+    IsWinNT = TRUE;
+#else
+    osver = GetVersion();
+    if( osver < 0x80000000 ) {
         IsWinNT = TRUE;
+    } else if( LOBYTE( LOWORD( osver ) ) < 4 ) {
+        IsWin32s = TRUE;
+    } else {
+        IsWin95 = TRUE;
     }
     if( IsWinNT ) {
         dll = LoadLibrary( "VDMDBG.DLL" );
@@ -98,10 +98,10 @@ trap_version TRAPENTRY TrapInit( const char *parms, char *err, bool remote )
     remote = remote;
 
     err[0] = 0;
-    ver.major = TRAP_MAJOR_VERSION;
-    ver.minor = TRAP_MINOR_VERSION;
-    ver.remote = FALSE;
-    return( ver );
+    trapver.major = TRAP_MAJOR_VERSION;
+    trapver.minor = TRAP_MINOR_VERSION;
+    trapver.remote = FALSE;
+    return( trapver );
 }
 
 void TRAPENTRY TrapFini( void )

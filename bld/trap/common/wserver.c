@@ -294,10 +294,10 @@ WINEXPORT LRESULT CALLBACK WindowProc( HWND hwnd, UINT msg, WPARAM wparam, LPARA
             Output( "Press CTRL-ALT-F to interrupt the program" );
 #else
             {
-                OSVERSIONINFO   osver;
-                osver.dwOSVersionInfoSize = sizeof( osver );
-                GetVersionEx( &osver );
-                if( osver.dwPlatformId == VER_PLATFORM_WIN32s ) {
+                DWORD   osver;
+
+                osver = GetVersion();
+                if( osver >= 0x80000000 && LOBYTE( LOWORD( osver ) ) < 4 ) {
                     Output( "You must press CTRL-ALT-F11 to interrupt a program under Win32s" );
                 }
             }
