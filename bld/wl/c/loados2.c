@@ -1205,8 +1205,6 @@ unsigned_32 Write_Stub_File( unsigned_32 stub_align )
             stub_len = NullAlign( stub_align );
         }
         QClose( the_file, FmtData.u.os2.stub_file_name );
-        _LnkFree( FmtData.u.os2.stub_file_name );
-        FmtData.u.os2.stub_file_name = NULL;
     }
     return( stub_len );
 }

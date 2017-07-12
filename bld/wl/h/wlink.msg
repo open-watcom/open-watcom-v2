@@ -169,6 +169,8 @@ pick(    MSG_MAP_OVL_SIZE,              "Overlay area size:" ,
                     "オーバレイ サイズ:" )
 pick(    MSG_MAP_ENTRY_PT_ADDR,     "Entry point address: %a" ,
                     "エントリアドレス: %a" )
+pick(    MSG_MAP_STUB_FILE,             "Stub file: %s" ,
+                    "Stub file: %s" )
 pick(    MSG_MAP_LINK_TIME,             "Link time: %s" ,
                     "リンク時間: %s" )
 pick(    MSG_MAP_COMDAT,                "c = initialized communal data" ,

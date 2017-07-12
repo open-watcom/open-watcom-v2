@@ -51,7 +51,8 @@ typedef enum exe_format {       // there is a corresp. table in MSG.C
     MK_DOS16M           = 0x00020000,
     MK_ZDOS             = 0x00040000,
     MK_RAW              = 0x00080000,
-    MK_RDOS             = 0x00100000
+    MK_RDOS             = 0x00100000,
+    MK_ALL              = 0x001FFFFF
 } exe_format;
 
 #define MK_DOS       (MK_OVERLAYS | MK_DOS_EXE | MK_COM)
@@ -79,7 +80,6 @@ typedef enum exe_format {       // there is a corresp. table in MSG.C
 #define MK_SPLIT_DATA (MK_ELF | MK_PE)
 #define MK_LINEARIZE (MK_ELF | MK_PE)
 #define MK_END_PAD   (MK_DOS)
-#define MK_ALL       (0x001FFFFF)
 
 // linker specific phar lap data
 

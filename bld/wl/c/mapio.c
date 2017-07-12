@@ -886,6 +886,15 @@ void MapSizes( void )
     if( (FmtData.type & MK_NOVELL) == 0 && ( !FmtData.dll || (FmtData.type & MK_PE) ) ){
         Msg_Write_Map( MSG_MAP_ENTRY_PT_ADDR, &StartInfo.addr );
     }
+    if( FmtData.u.os2.no_stub ) {
+        Msg_Write_Map( MSG_MAP_STUB_FILE, "none" );
+    } else if( ( FmtData.type & (MK_OS2 | MK_PE | MK_WIN_VXD) ) && FmtData.u.os2.stub_file_name != NULL ) {
+        Msg_Write_Map( MSG_MAP_STUB_FILE, FmtData.u.os2.stub_file_name );
+    } else if( (FmtData.type & MK_DOS16M) && FmtData.u.d16m.stub != NULL ) {
+        Msg_Write_Map( MSG_MAP_STUB_FILE, FmtData.u.d16m.stub );
+    } else if( (FmtData.type & MK_PHAR_LAP) && FmtData.u.phar.stub != NULL ) {
+        Msg_Write_Map( MSG_MAP_STUB_FILE, FmtData.u.phar.stub );
+    }
 }
 
 void EndTime( void )

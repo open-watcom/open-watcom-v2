@@ -1140,8 +1140,7 @@ bool ProcStub( void )
     if( *nameptr == NULL ) {
         *nameptr = name;
     } else if( IsSystemBlock() ) {
-        /* if we're in a system block, we don't want to override a user
-            specification */
+        /* if we're in a system block, we don't want to override a user specification */
         _LnkFree( name );
     } else {
         _LnkFree( *nameptr );
