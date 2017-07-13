@@ -855,9 +855,12 @@ extern void _wpi_setbmphdrvalues( WPI_BITMAPINFOHEADER *bmih, ULONG size,
     #define _wpi_restorepres( pres, pres_id ) RestoreDC( pres, pres_id )
 
 #ifdef __NT__
+  #ifdef _WIN64
+    #define _wpi_getsystemfont() GetStockObject( DEFAULT_GUI_FONT )
+  #else
     #define _wpi_getsystemfont() \
-        GetStockObject( LOBYTE(LOWORD(GetVersion())) >= 4 ? \
-        DEFAULT_GUI_FONT : SYSTEM_FONT )
+        GetStockObject( LOBYTE(LOWORD(GetVersion())) >= 4 ? DEFAULT_GUI_FONT : SYSTEM_FONT )
+  #endif
 #else
     #define _wpi_getsystemfont() GetStockObject( SYSTEM_FONT )
 #endif
