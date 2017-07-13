@@ -844,6 +844,9 @@ static call_class getCallClass( // GET CLASS OF CALL
             if( fn_flags & TF1_INTERRUPT ) {
                 value |= INTERRUPT;
             }
+            if( fn_flags & TF1_FARSS ) {
+                value |= FARSS;
+            }
             if( fn_flags & TF1_LOADDS ) {
                 value |= LOAD_DS_ON_ENTRY;
             }

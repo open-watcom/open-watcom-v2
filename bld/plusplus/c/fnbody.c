@@ -1820,11 +1820,9 @@ static void initFunctionBody( DECL_INFO *dinfo, FUNCTION_DATA *f, TYPE fn_type )
     }
     ScopeBeginFunction( func );
     if( (TargetSwitches & FLOATING_SS) == 0 ) {
-        if( fn_type->flag & TF1_INTERRUPT ) {
-            if( !CompFlags.mfi_switch_used ) {
-                TargetSwitches |= FLOATING_SS;
-                f->floating_ss = true;
-            }
+        if( fn_type->flag & TF1_FARSS ) {
+            TargetSwitches |= FLOATING_SS;
+            f->floating_ss = true;
         }
     }
     InsertArgs( &(dinfo->parms) );

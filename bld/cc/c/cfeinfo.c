@@ -497,6 +497,9 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
                 cclass |= SUICIDAL;
             }
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
+            if( sym.mods & FLAG_FARSS ) {
+                cclass |= FARSS;
+            }
             if( CompFlags.emit_names ) {
                 cclass |= EMIT_FUNCTION_NAME;
             }

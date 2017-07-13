@@ -168,9 +168,12 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
     if( *state & DECL_STATE_NOTYPE ) {
         CWarn2p( WARN_NO_RET_TYPE_GIVEN, ERR_NO_RET_TYPE_GIVEN, sym->name );
     }
-    sym->attribs.rent = false;   // Assume not override aka re-entrant
+    sym->attribs.rent = false;      /* Assume not override aka re-entrant */
     if( CompFlags.rent && (sym->attribs.declspec == DECLSPEC_DLLIMPORT) ) {
         sym->attribs.rent = true;
+    }
+    if( (sym->mods & FLAG_INTERRUPT) == FLAG_INTERRUPT ) {
+        sym->mods |= FLAG_FARSS;    /* interrupts always use far stack */
     }
     if( stg_class == SC_REGISTER ||
         stg_class == SC_AUTO ||
@@ -231,6 +234,11 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
             }
             if( (sym->mods & FLAG_NORETURN) != (old_sym.mods & FLAG_NORETURN) ) {
                 if( sym->mods & FLAG_NORETURN ) {
+                    CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
+                }
+            }
+            if( (sym->mods & FLAG_FARSS) != (old_sym.mods & FLAG_FARSS) ) {
+                if( sym->mods & FLAG_FARSS ) {
                     CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
                 }
             }

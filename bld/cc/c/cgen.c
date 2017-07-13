@@ -1516,11 +1516,10 @@ static bool DoFuncDefn( SYM_HANDLE funcsym_handle )
     CurFuncHandle = funcsym_handle;
 #if ( _CPU == 8086 ) || ( _CPU == 386 )
     if( ! CompFlags.zu_switch_used ) {
-        if( (CurFunc->mods & FLAG_INTERRUPT) == FLAG_INTERRUPT ) {
-            /* interrupt function */
-            TargetSwitches |= FLOATING_SS;      /* force -zu switch on */
+        if( CurFunc->mods & FLAG_FARSS ) {      /* function use far stack */
+            TargetSwitches |= FLOATING_SS;
         } else {
-            TargetSwitches &= ~ FLOATING_SS;    /* turn it back off */
+            TargetSwitches &= ~ FLOATING_SS;
         }
     }
 #endif

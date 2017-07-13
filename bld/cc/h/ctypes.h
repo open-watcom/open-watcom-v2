@@ -111,6 +111,7 @@ typedef enum    type_modifiers {    /* type   leaf   sym   */
     FLAG_INLINE     = 0x20000,      /* Y20000              _inline keyword */
     FLAG_WAS_ARRAY  = 0x20000,      /* Y20000              for "char *argv[]" */
     FLAG_NORETURN   = 0x40000,      /* Y40000              __declspec(noreturn) */
+    FLAG_FARSS      = 0x80000,      /* Y80000              use far ss for auto variables (-zu) */
 } type_modifiers;
 
 #define MASK_CV_QUALIFIERS  (FLAG_CONST|FLAG_VOLATILE)
@@ -120,7 +121,7 @@ typedef enum    type_modifiers {    /* type   leaf   sym   */
 
 #define MASK_ALL_MEM_MODELS (MASK_MEM_MODEL|FLAG_BASED)
 #define MASK_PTR            (MASK_QUALIFIERS|MASK_ALL_MEM_MODELS)
-#define MASK_FUNC           (MASK_LANGUAGES|FLAG_INLINE|FLAG_LOADDS|FLAG_EXPORT|FLAG_SAVEREGS|FLAG_NORETURN)
+#define MASK_FUNC           (MASK_LANGUAGES|FLAG_INLINE|FLAG_LOADDS|FLAG_EXPORT|FLAG_SAVEREGS|FLAG_NORETURN|FLAG_FARSS)
 
 typedef enum sym_flags {
     SYM_NONE                = 0x00,     /* no symbol */

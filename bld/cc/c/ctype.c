@@ -583,6 +583,8 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                             }
                         } else if( CMPLIT( Buffer, "noreturn" ) == 0 ) {
                             modifier = FLAG_NORETURN;
+                        } else if( CMPLIT( Buffer, "farss" ) == 0 ) {
+                            modifier = FLAG_FARSS;
                         } else {
                             CErr1( ERR_INVALID_DECLSPEC );
                         }
@@ -607,6 +609,13 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                     }
                     if( modifier & FLAG_NORETURN ) {
                         if( info->decl_mod & FLAG_NORETURN ) {
+                            CErr1( ERR_INVALID_DECLSPEC );
+                        } else {
+                            info->decl_mod |= modifier;
+                        }
+                    }
+                    if( modifier & FLAG_FARSS ) {
+                        if( info->decl_mod & FLAG_FARSS ) {
                             CErr1( ERR_INVALID_DECLSPEC );
                         } else {
                             info->decl_mod |= modifier;
@@ -972,7 +981,7 @@ static void AdjFieldTypeNode( FIELDPTR field, type_modifiers decl_mod )
     if( decl_mod ) {
         TYPEPTR     *xtyp;
         TYPEPTR     typ;
-        
+
         xtyp = &field->field_type;
         typ = *xtyp;
         while( ( typ->object != NULL ) && ( typ->decl_type == TYPE_POINTER ) ) {

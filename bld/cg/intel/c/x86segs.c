@@ -104,7 +104,7 @@ hw_reg_set      CalcSegment( cg_sym_handle sym, cg_class class ) {
             return( HW_EMPTY );
         if( _IsntTargetModel( FLOATING_DS ) )
             return( HW_DS );
-        if( !_RoutineIsInterrupt( CurrProc->state.attr ) && _IsntTargetModel( FLOATING_SS ) ) {
+        if( _IsntTargetModel( FLOATING_SS ) ) {
             return( HW_SS );
         }
     }
