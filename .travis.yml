@@ -4,6 +4,8 @@ compiler: gcc
 
 sudo: required
 
+dist: trusty
+
 env:
   global:
     - OWROOT=$TRAVIS_BUILD_DIR
