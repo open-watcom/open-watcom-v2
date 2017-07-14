@@ -37,11 +37,11 @@ char __init_default_win;
 
 LPWDATA (*_WindowsIsWindowedHandle)( int h ) = { NULL };
 void (*_WindowsRemoveWindowedHandle)( int h ) = { NULL };
-unsigned (*_WindowsNewWindow)( char *s, ... ) = { NULL };
+unsigned (*_WindowsNewWindow)( const char *s, ... ) = { NULL };
 int (*_WindowsCloseWindow)( LPWDATA lp ) = { NULL };
-int (*_WindowsSetAbout)( char *p1, char *p2 ) = { NULL };
-int (*_WindowsSetAppTitle)( char *p ) = { NULL };
-int (*_WindowsSetConTitle)( LPWDATA lp, char *s ) = { NULL };
+int (*_WindowsSetAbout)( const char *p1, const char *p2 ) = { NULL };
+int (*_WindowsSetAppTitle)( const char *p ) = { NULL };
+int (*_WindowsSetConTitle)( LPWDATA lp, const char *s ) = { NULL };
 int (*_WindowsDestroyOnClose)( LPWDATA lp ) = { NULL };
 int (*_WindowsYieldControl)( void ) = { NULL };
 int (*_WindowsShutDown)( void ) = { NULL };

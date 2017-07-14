@@ -32,7 +32,6 @@
 
 #define WIN32_NICE_AND_FAT
 #include "variety.h"
-#include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #define INCLUDE_COMMDLG_H
@@ -53,11 +52,13 @@ static LPLDATA createNewEntry( LPWDATA w )
 
     p = FAR_mbsninc( (LPBYTE)w->tmpbuff->data, w->buffoff );
     *p = '\0';
-    ld = _MemAlloc( sizeof( line_data ) + FAR_mbsnbcnt( (LPBYTE)w->tmpbuff->data, w->buffoff ) );
+    ld = FARmalloc( sizeof( line_data ) + FAR_mbsnbcnt( (LPBYTE)w->tmpbuff->data, w->buffoff ) );
 #else
     w->tmpbuff->data[w->buffoff] = 0;
-    ld = _MemAlloc( sizeof( line_data ) + w->buffoff );
+    ld = FARmalloc( sizeof( line_data ) + w->buffoff );
 #endif
+    if( ld == NULL )
+        _OutOfMemoryExit();
     w->buffoff = 0;
     FARstrcpy( ld->data, w->tmpbuff->data );
     if( w->LineTail == NULL ) {
@@ -114,13 +115,15 @@ static void replaceTail( LPWDATA w )
 #endif
 
     tmp = w->LineTail->prev;
-    _MemFree( w->LineTail );
+    FARfree( w->LineTail );
 
 #ifdef _MBCS
-    w->LineTail = _MemAlloc( sizeof( line_data ) + w->buffoff * MB_CUR_MAX );
+    w->LineTail = FARmalloc( sizeof( line_data ) + w->buffoff * MB_CUR_MAX );
 #else
-    w->LineTail = _MemAlloc( sizeof( line_data ) + w->buffoff );
+    w->LineTail = FARmalloc( sizeof( line_data ) + w->buffoff );
 #endif
+    if( w->LineTail == NULL )
+        _OutOfMemoryExit();
 
     FARstrcpy( w->LineTail->data, w->tmpbuff->data );
     w->LineTail->prev = tmp;
@@ -379,11 +382,11 @@ int _UpdateInputLine( LPWDATA w, char *line, unsigned len, BOOL force_add )
 #endif
         j++;
     }
-    #ifdef _MBCS
-        FAR_mbccpy( FAR_mbsninc( (LPBYTE)w->tmpbuff->data, j ), (LPBYTE)"" );
-    #else
-        w->tmpbuff->data[j] = 0;
-    #endif
+#ifdef _MBCS
+    FAR_mbccpy( FAR_mbsninc( (LPBYTE)w->tmpbuff->data, j ), (LPBYTE)"" );
+#else
+    w->tmpbuff->data[j] = 0;
+#endif
 
     if( force_add && !justnew ) {
         w->buffoff = j;
@@ -470,11 +473,9 @@ LPLDATA _GetLineDataPointer( LPWDATA w, DWORD line )
         }
     }
 
-    cnt = 1;
-    ld =  w->LineHead;
-    while( cnt != line && ld != NULL ) {
+    ld = w->LineHead;
+    for( cnt = 1; cnt < line && ld != NULL; ++cnt ) {
         ld = ld->next;
-        cnt++;
     }
     _ReleaseWinLines();
     return( ld );
@@ -486,14 +487,13 @@ LPLDATA _GetLineDataPointer( LPWDATA w, DWORD line )
  */
 void _FreeAllLines( LPWDATA w )
 {
-    LPLDATA     ld,tmp;
+    LPLDATA     ld;
+    LPLDATA     ld_next;
 
     _AccessWinLines();
-    ld = w->LineHead;
-    while( ld != NULL ) {
-        tmp = ld->next;
-        _MemFree( ld );
-        ld = tmp;
+    for( ld = w->LineHead; ld != NULL; ld = ld_next ) {
+        ld_next = ld->next;
+        FARfree( ld );
     }
     w->LineHead = w->LineTail = NULL;
     w->buffoff = 0;
@@ -546,14 +546,12 @@ void _SaveAllLines( LPWDATA w )
         MessageBox( (HWND)NULL, fname,"Error opening file", MB_OK );
         return;
     }
-    ld = w->LineHead;
-    while( ld != NULL ) {
+    for( ld = w->LineHead; ld != NULL; ld = ld->next ) {
 #if defined( _M_I86 )
         fprintf( f,"%Fs\n", ld->data );
 #else
         fprintf( f,"%s\n", ld->data );
 #endif
-        ld = ld->next;
     }
     fclose( f );
     _ReleaseWinLines();
@@ -572,21 +570,19 @@ void _CopyAllLines( LPWDATA w )
     unsigned    len;
     HANDLE      data;
     unsigned    slen;
-    #if defined(__NT__)
-        char    *ptr;
-    #else
-        char    _WCFAR *ptr;
-    #endif
+#if defined(__NT__)
+    char        *ptr;
+#else
+    char        _WCFAR *ptr;
+#endif
 
     /*
      * get number of bytes
      */
     _AccessWinLines();
-    ld = w->LineHead;
     total = 0;
-    while( ld != NULL ) {
+    for( ld = w->LineHead; ld != NULL; ld = ld->next ) {
         total += FARstrlen( ld->data ) + 2;
-        ld = ld->next;
     }
     if( total > MAX_BYTES ) {
         len = (unsigned)MAX_BYTES;
@@ -608,20 +604,19 @@ void _CopyAllLines( LPWDATA w )
     /*
      * copy data into block
      */
-    ld = w->LineHead;
     total = 0;
-    while( ld != NULL ) {
+    for( ld = w->LineHead; ld != NULL; ld = ld->next ) {
         slen = FARstrlen( ld->data ) + 2;
-        if( total + slen > MAX_BYTES ) break;
-        #if defined(__NT__)
-            memcpy( &ptr[total], ld->data, slen - 2 );
-        #else
-            _fmemcpy( &ptr[total], ld->data, slen - 2 );
-        #endif
+        if( total + slen > MAX_BYTES )
+            break;
+#if defined(__NT__)
+        memcpy( &ptr[total], ld->data, slen - 2 );
+#else
+        _fmemcpy( &ptr[total], ld->data, slen - 2 );
+#endif
         ptr[total+slen-2] = 0x0d;
         ptr[total+slen-1] = 0x0a;
         total += slen;
-        ld = ld->next;
     }
     ptr[total] = 0;
     GlobalUnlock( data );

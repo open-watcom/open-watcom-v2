@@ -32,7 +32,6 @@
 #include "variety.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <ctype.h>
 #include <signal.h>
 #include "win.h"
@@ -53,28 +52,29 @@ static char  *AboutMsg = DefaultAboutMsg;
 extern HWND _GetWinMenuHandle( void );
 extern void _ResizeWindows( void );
 
-#define DISPLAY(x)      WinMessageBox( HWND_DESKTOP, NULL, x, "Error", 0, MB_APPLMODAL | MB_NOICON | MB_OK | MB_MOVEABLE );
 #define CTRL_C          0x03
 #define CTRL_CONST      ( 'A' - 1 )
 
-int     _SetAboutDlg( char *title, char *text )
-//=============================================
+int     _SetAboutDlg( const char *title, const char *text )
+//=========================================================
 {
-    if( title ) {
+    if( title != NULL ) {
         if( DefaultAboutTitle != AboutTitle ) {
-            _MemFree( AboutTitle );
+            free( AboutTitle );
         }
-        AboutTitle = _MemAlloc( FARstrlen( title ) + 1 );
-        if( !AboutTitle ) return( 0 );
-        FARstrcpy( AboutTitle, title );
+        AboutTitle = malloc( strlen( title ) + 1 );
+        if( AboutTitle == NULL )
+            _OutOfMemoryExit();
+        strcpy( AboutTitle, title );
     }
-    if( text ) {
+    if( text != NULL ) {
         if( DefaultAboutMsg != AboutMsg ) {
-            _MemFree( AboutMsg );
+            free( AboutMsg );
         }
-        AboutMsg = _MemAlloc( FARstrlen( text ) + 1 );
-        if( !AboutMsg ) return( 0 );
-        FARstrcpy( AboutMsg, text );
+        AboutMsg = malloc( strlen( text ) + 1 );
+        if( AboutMsg == NULL )
+            _OutOfMemoryExit();
+        strcpy( AboutMsg, text );
     }
     return( 1 );
 }
@@ -126,7 +126,7 @@ static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
 
     switch( msg ) {
     case WM_PAINT:
-        hps = WinBeginPaint( hwnd, NULL, &rcl );
+        hps = WinBeginPaint( hwnd, NULLHANDLE, &rcl );
         WinFillRect( hps, &rcl, CLR_DARKGRAY );
         WinEndPaint( hps );
         break;
@@ -161,7 +161,7 @@ static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
             }
             break;
         case DID_FILE_CLEAR:
-            _GetClearInterval();
+            _GetAutoClearInterval();
             break;
         case DID_FILE_EXIT:
             WinSendMsg( _MainFrameWindow, WM_CLOSE, 0, 0 );
@@ -195,7 +195,7 @@ static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
         } else {
             if( (SHORT1FROMMP(mp1) & KC_VIRTUALKEY) &&
                 (SHORT2FROMMP(mp2) != VK_SPACE) ) {
-                scan = 0xff;
+                scan = '\xff';
                 if( SHORT2FROMMP( mp2 ) == VK_BREAK ) {
                     raise( SIGBREAK );
                     break;
@@ -305,7 +305,7 @@ MRESULT EXPENTRY _MainDriver( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 ) {
         break;
 
     case WM_PAINT:
-        hps = WinBeginPaint( hwnd, NULL, &rcl );
+        hps = WinBeginPaint( hwnd, NULLHANDLE, &rcl );
         _SelectFont( hps );
         rect.left = rcl.xLeft;
         rect.top = w->y1 - rcl.yTop;

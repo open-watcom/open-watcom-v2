@@ -31,7 +31,6 @@
 
 
 #include "variety.h"
-#include <string.h>
 #if defined( __OS2__ )
   #define INCL_GPI
 #endif
@@ -55,23 +54,23 @@ void _DisplayAllLines( LPWDATA w, int clearFlag )
 
     /*** If needed, clear the window to avoid residue ***/
     if( clearFlag ) {
-        #ifdef __OS2__
-            /* Clearing done for OS/2 in _DisplayLineInWindowWithColor */
-        #else
-            /* Clearing doesn't always work as with OS/2, so it's done here */
-            dc = GetDC( w->hwnd );
-            #ifndef __NT__
-                UnrealizeObject( w->brush );
-            #endif
-            oldBrush = SelectObject( dc, w->brush );
-            #ifdef __NT__
-                SetBrushOrgEx( dc, 0, 0, NULL  );
-            #endif
-            GetClientRect( w->hwnd, &rect );
-            FillRect( dc, &rect, w->brush );
-            SelectObject( dc, oldBrush );
-            ReleaseDC( w->hwnd, dc );
-        #endif
+#ifdef __OS2__
+        /* Clearing done for OS/2 in _DisplayLineInWindowWithColor */
+#else
+        /* Clearing doesn't always work as with OS/2, so it's done here */
+        dc = GetDC( w->hwnd );
+    #ifndef __NT__
+        UnrealizeObject( w->brush );
+    #endif
+        oldBrush = SelectObject( dc, w->brush );
+    #ifdef __NT__
+        SetBrushOrgEx( dc, 0, 0, NULL  );
+    #endif
+        GetClientRect( w->hwnd, &rect );
+        FillRect( dc, &rect, w->brush );
+        SelectObject( dc, oldBrush );
+        ReleaseDC( w->hwnd, dc );
+#endif
     }
 
     ln = w->TopLineNumber;
@@ -167,7 +166,7 @@ void _DisplayLineInWindowWithColor( LPWDATA w, int line, LPSTR text, int c1,
         WinFillRect( ps, &rcl, c1 );
         GpiSetColor( ps, c2 );
     #ifdef _MBCS
-        GpiCharStringAt( ps, &ptl, _mbsnbcnt(buff,w->width), buff );
+        GpiCharStringAt( ps, &ptl, _mbsnbcnt((PBYTE)buff,w->width), buff );
     #else
         GpiCharStringAt( ps, &ptl, w->width, buff );
     #endif
@@ -309,7 +308,7 @@ void _ShiftWindow( LPWDATA w, int diff )
         RECTL       rcl;
 
         WinQueryWindowRect( hwnd, &rcl );
-        WinScrollWindow( hwnd, 0, -amt, NULL, &rcl, NULL, NULL, SW_INVALIDATERGN );
+        WinScrollWindow( hwnd, 0, -amt, NULL, &rcl, NULLHANDLE, NULL, SW_INVALIDATERGN );
     }
 #else
     {
@@ -335,8 +334,7 @@ void _ShiftWindow( LPWDATA w, int diff )
             eline = sline;
         add = 1;
     }
-    i = sline;
-    while( i != eline ) {
+    for( i = sline; i != eline; i += add ) {
         txt_s = (LPSTR)&w->image[i * w->width];
         txt_d = (LPSTR)&w->image[(i - diff) * w->width];
 #ifdef _MBCS
@@ -344,7 +342,6 @@ void _ShiftWindow( LPWDATA w, int diff )
 #else
         FARmemcpy( txt_d, txt_s, w->width );
 #endif
-        i += add;
     }
 
 } /* _ShiftWindow */
@@ -369,20 +366,24 @@ void _ResizeWin( LPWDATA w, int x1, int y1, int x2, int y2 )
     w->height = height;
 
     /*** Initialize a new w->image array ***/
-    _MemFree( w->image );
+    FARfree( w->image );
 #ifdef _MBCS
     {
         mb_char         mbc;
         int             count;
 
-        w->image = _MemAlloc( sizeof( mb_char ) * w->width * w->height );
+        w->image = FARmalloc( sizeof( mb_char ) * w->width * w->height );
+        if( w->image == NULL )
+            _OutOfMemoryExit();
         mbc = _mbsnextc( (unsigned char *)" " );
         for( count = 0; count < w->width * w->height; count++ ) {
             w->image[count] = mbc;              /* store space in w->image */
         }
     }
 #else
-    w->image = _MemAlloc( w->width * w->height );
+    w->image = FARmalloc( w->width * w->height );
+    if( w->image == NULL )
+        _OutOfMemoryExit();
     FARmemset( w->image, ' ', w->width * w->height );
 #endif
 

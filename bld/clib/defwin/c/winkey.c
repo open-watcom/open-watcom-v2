@@ -32,8 +32,6 @@
 
 #include "variety.h"
 #include <stdlib.h>
-#include <string.h>
-#include <malloc.h>
 #include "win.h"
 
 #define SS_ALT          0x01
@@ -232,12 +230,12 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
 #endif
 
 #ifdef _MBCS
-    res = _MemAlloc( MB_CUR_MAX * ( maxbuff + 1 ) );
+    res = FARmalloc( MB_CUR_MAX * ( maxbuff + 1 ) );
 #else
-    res = _MemAlloc( maxbuff + 1 );
+    res = FARmalloc( maxbuff + 1 );
 #endif
     if( res == NULL)
-        return( 0 );
+        _OutOfMemoryExit();
 
     hwnd = w->hwnd;
 
@@ -247,8 +245,7 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
     _GotEOF = FALSE;
     str[0] = 0;
 
-    while( 1 ) {
-
+    for( ;; ) {
         w->curr_pos = curr_pos;
         _DisplayCursor( w );
         while( !_KeyboardHit( TRUE ) );
@@ -400,7 +397,7 @@ int _GetString( LPWDATA w, char *str, int maxbuff )
                 _SetInputMode( w, FALSE );
                 FARstrcat( res, str );
                 FARstrcpy( str, res );
-                _MemFree( res );
+                FARfree( res );
                 /* return number of bytes */
                 return( strlen( str ) );
             case VK_LEFT:

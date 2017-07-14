@@ -33,8 +33,6 @@
 #include "variety.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <malloc.h>
-#include <string.h>
 #include "win.h"
 /*
  * _SetMyDC - set display context for windows
@@ -118,16 +116,16 @@ void _ExecutionComplete( void )
 
 } /* _ExecutionComplete */
 
-int     _SetConTitle( LPWDATA w, char *title ) {
-//==============================================
-
+int     _SetConTitle( LPWDATA w, const char *title )
+//==================================================
+{
     SetWindowText( w->hwnd, title );
     return( 1 );
 }
 
-int     _SetAppTitle( char *title ) {
-//===================================
-
+int     _SetAppTitle( const char *title )
+//=======================================
+{
     SetWindowText( _MainWindow, title );
     return( 1 );
 }

@@ -31,8 +31,6 @@
 #include "variety.h"
 #include "widechar.h"
 #include <stdlib.h>
-#include <malloc.h>
-#include <string.h>
 #include <stdio.h>
 #ifdef __NT__
     #include <ctype.h>
@@ -54,6 +52,7 @@ extern char __WinTitleBar[20];          /* Text for window title bar */
 
 static BOOL firstInstance( HANDLE );
 static int windowsInit( HANDLE, int );
+static void windowsFini( void );
 
 
 #if defined( __NT__ )
@@ -77,7 +76,10 @@ _WCRTLINK int   __InitDefaultWin()
     return( TRUE );
 }
 
-_WCRTLINK void  __FiniDefaultWin() {}
+_WCRTLINK void  __FiniDefaultWin( void )
+{
+    windowsFini();
+}
 
 #endif
 
@@ -91,12 +93,15 @@ int PASCAL __export DefaultWinMain( HINSTANCE inst, HINSTANCE previnst,
 
     previnst = previnst;
     cmd = cmd;
-    if( !firstInstance( inst ) ) return( FALSE );
-    if( !windowsInit( inst, show ) ) return( FALSE );
+    if( !firstInstance( inst ) )
+        return( FALSE );
+    if( !windowsInit( inst, show ) )
+        return( FALSE );
     _InitFunctionPointers();
 
     rc = pmain( ___Argc, ___Argv );
 
+    windowsFini();
     _WindowsExit();
     return( rc );
 
@@ -118,18 +123,21 @@ static BOOL firstInstance( HANDLE inst)
      */
     sprintf( tmp,"WATCLASS%d", inst );
     mainClass = malloc( strlen( tmp ) + 1 );
-    if( mainClass == NULL ) return( FALSE );
+    if( mainClass == NULL )
+        return( FALSE );
     strcpy( mainClass, tmp );
     sprintf( tmp,"WATSUBCLASS%d", inst );
     _ClassName = malloc( strlen( tmp ) + 1 );
-    if( _ClassName == NULL ) return( FALSE );
+    if( _ClassName == NULL )
+        return( FALSE );
     strcpy( _ClassName, tmp );
 
     /*
      * make a menu (this way, we don't need resources)
      */
     smf = CreateMenu();
-    if( smf == NULL ) return( FALSE );
+    if( smf == NULL )
+        return( FALSE );
     AppendMenu( smf, MF_ENABLED, MSG_WRITE, "&Save As ..." );
     AppendMenu( smf, MF_ENABLED, MSG_SETCLEARINT,
                         "Set &Lines Between Auto-Clears ..." );
@@ -137,18 +145,21 @@ static BOOL firstInstance( HANDLE inst)
     AppendMenu( smf, MF_ENABLED, MSG_EXIT, "E&xit" );
 
     smh = CreateMenu();
-    if( smh == NULL ) return( FALSE );
+    if( smh == NULL )
+        return( FALSE );
     AppendMenu( smh, MF_ENABLED, MSG_ABOUT, "&About..." );
 
     _SubMenuEdit = CreateMenu();
-    if( _SubMenuEdit == NULL ) return( FALSE );
+    if( _SubMenuEdit == NULL )
+        return( FALSE );
     AppendMenu( _SubMenuEdit, MF_ENABLED, MSG_FLUSH, "&Clear" );
     AppendMenu( _SubMenuEdit, MF_ENABLED, MSG_COPY, "&Copy" );
 
     _SubMenuWindows = CreateMenu();
 
     _MainMenu = CreateMenu();
-    if( _MainMenu == NULL ) return( FALSE );
+    if( _MainMenu == NULL )
+        return( FALSE );
     AppendMenu( _MainMenu, MF_POPUP, (UINT) smf, "&File" );
     AppendMenu( _MainMenu, MF_POPUP, (UINT) _SubMenuEdit, "&Edit" );
     AppendMenu( _MainMenu, MF_POPUP, (UINT) _SubMenuWindows, "&Windows" );
@@ -169,7 +180,8 @@ static BOOL firstInstance( HANDLE inst)
     wc.lpszClassName = mainClass;
 
     rc = RegisterClass( &wc );
-    if( !rc ) return( FALSE );
+    if( !rc )
+        return( FALSE );
 
     wc.style = 0;
     wc.lpfnWndProc = (LPVOID) _MainDriver;
@@ -183,7 +195,8 @@ static BOOL firstInstance( HANDLE inst)
     wc.lpszClassName = _ClassName;
 
     rc = RegisterClass( &wc );
-    if( !rc ) return( FALSE );
+    if( !rc )
+        return( FALSE );
     return( TRUE );
 
 } /* firstInstance */
@@ -197,15 +210,15 @@ static int windowsInit( HANDLE inst, int showcmd )
     WORD        x,y;
 
     /*** Create a font to use ***/
-    #ifdef _MBCS
-        if( __IsDBCS ) {
-            _FixedFont = GetStockObject( SYSTEM_FONT );
-        } else {
-            _FixedFont = GetStockObject( SYSTEM_FIXED_FONT );
-        }
-    #else
+#ifdef _MBCS
+    if( __IsDBCS ) {
+        _FixedFont = GetStockObject( SYSTEM_FONT );
+    } else {
         _FixedFont = GetStockObject( SYSTEM_FIXED_FONT );
-    #endif
+    }
+#else
+    _FixedFont = GetStockObject( SYSTEM_FIXED_FONT );
+#endif
     GetObject( _FixedFont, sizeof(LOGFONT), (LPSTR) &logfont );
     _FixedFont = CreateFontIndirect( &logfont );
 
@@ -242,10 +255,18 @@ static int windowsInit( HANDLE inst, int showcmd )
      * create standard IO window - takes output from stdout, stderr and
      *                             input from stdin
      */
-    _NewWindow( "Standard IO", stdin->_handle, stdout->_handle,
-                        stderr->_handle, -1 );
+    _NewWindow( "Standard IO", stdin->_handle, stdout->_handle, stderr->_handle, -1 );
     return( TRUE );
 
 } /* windowsInit */
+
+/*
+ * windowsFini - windows-specific initialization
+*/
+static void windowsFini( void )
+{
+    _FiniMainWindowData();
+
+} /* windowsFini */
 
 #endif

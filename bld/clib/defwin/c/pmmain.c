@@ -32,7 +32,6 @@
 
 #include "variety.h"
 #include <stdlib.h>
-#include <string.h>
 #include <limits.h>
 #define INCL_GPI
 #include "win.h"
@@ -40,17 +39,16 @@
 
 static  char            *WatcomClass = { "WATCOM" };
 static  HWND            ClientWindow;
-static  HMQ             hMessageQueue = { NULL };
+static  HMQ             hMessageQueue = { NULLHANDLE };
 static  FATTRS          FontAttrs;
 
-#define DISPLAY(x)      WinMessageBox( HWND_DESKTOP, NULL, x, "Error", 0, MB_APPLMODAL | MB_NOICON | MB_OK | MB_MOVEABLE );
 
 extern void _SetWinMenuHandle( HWND hmenu );
 extern HWND _GetWinMenuHandle( void );
 
-_WCRTLINK int   __InitDefaultWin() {
-//==================================
-
+_WCRTLINK int   __InitDefaultWin( void )
+//======================================
+{
     ULONG       style;
     RECTL       rcl;
     HWND        menhdl;
@@ -62,11 +60,12 @@ _WCRTLINK int   __InitDefaultWin() {
     _ClassName = WatcomClass;
 
     _AnchorBlock = WinInitialize( 0 );
-    if( _AnchorBlock == 0 ) return( 0 );
+    if( _AnchorBlock == 0 )
+        return( 0 );
     hMessageQueue = WinCreateMsgQueue( _AnchorBlock, 0 );
-    if( hMessageQueue == 0 ) return( 0 );
-    if( !WinRegisterClass( _AnchorBlock, _ClassName, (PFNWP)_MainDriver,
-                           CS_SIZEREDRAW, 0 ) ) {
+    if( hMessageQueue == 0 )
+        return( 0 );
+    if( !WinRegisterClass( _AnchorBlock, _ClassName, (PFNWP)_MainDriver, CS_SIZEREDRAW, 0 ) ) {
         return( 0 );
     }
 
@@ -76,9 +75,10 @@ _WCRTLINK int   __InitDefaultWin() {
             FCF_SHELLPOSITION | FCF_TASKLIST;
     _MainFrameWindow = WinCreateStdWindow( HWND_DESKTOP,
                         WS_VISIBLE | WS_CLIPCHILDREN,
-                        &style, _ClassName, "", 0, NULL, 0, &ClientWindow );
+                        &style, _ClassName, "", 0, NULLHANDLE, 0, &ClientWindow );
 
-    if( _MainFrameWindow == 0 ) return( 0 );
+    if( _MainFrameWindow == 0 )
+        return( 0 );
     WinSendMsg( _MainFrameWindow, WM_SETICON,
         MPFROMLONG( WinQuerySysPointer( HWND_DESKTOP, SPTR_APPICON, TRUE ) ), 0 );
     WinQueryWindowRect( _MainWindow, &rcl );
@@ -100,43 +100,51 @@ _WCRTLINK int   __InitDefaultWin() {
 
     menudesc->afStyle = MIS_TEXT;
     menudesc->afAttribute = 0;
-    menudesc->hwndSubMenu = NULL;
+    menudesc->hwndSubMenu = NULLHANDLE;
     menudesc->hItem = 0;
 
     menudesc->iPosition = 0;
     menudesc->id = DID_FILE_SAVE;
-    if ( MIT_ERROR == (BOOL)WinSendMsg( submenu, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "Save As..." ) ) ) abort();
+    if( MIT_ERROR == (BOOL)WinSendMsg( submenu, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "Save As..." ) ) )
+        abort();
     menudesc->iPosition = 1;
     menudesc->id = DID_FILE_CLEAR;
-    if ( MIT_ERROR == (BOOL)WinSendMsg( submenu, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "Set Lines Between Clears..." ) ) ) abort();
+    if( MIT_ERROR == (BOOL)WinSendMsg( submenu, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "Set Lines Between Clears..." ) ) )
+        abort();
     menudesc->afStyle = MIS_SEPARATOR;
     menudesc->iPosition = 2;
     menudesc->id = 0;
-    if ( MIT_ERROR == (BOOL)WinSendMsg( submenu, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "Exit" ) ) ) abort();
+    if( MIT_ERROR == (BOOL)WinSendMsg( submenu, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "Exit" ) ) )
+        abort();
     menudesc->afStyle = MIS_TEXT;
     menudesc->iPosition = 3;
     menudesc->id = DID_FILE_EXIT;
-    if ( MIT_ERROR == (BOOL)WinSendMsg( submenu, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "Exit" ) ) ) abort();
+    if( MIT_ERROR == (BOOL)WinSendMsg( submenu, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "Exit" ) ) )
+        abort();
     menudesc->iPosition = 0;
     menudesc->id = DID_MAIN_FILE;
     menudesc->hwndSubMenu = submenu;
     menudesc->afStyle = MIS_TEXT | MIS_SUBMENU;
-    if ( MIT_ERROR == (BOOL)WinSendMsg( menhdl, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "~File" ) ) ) abort();
+    if( MIT_ERROR == (BOOL)WinSendMsg( menhdl, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "~File" ) ) )
+        abort();
 
     submenu = WinCreateMenu( menhdl, NULL );
     menudesc->afStyle = MIS_TEXT;
     menudesc->iPosition = 0;
     menudesc->id = DID_EDIT_CLEAR;
-    menudesc->hwndSubMenu = NULL;
-    if ( MIT_ERROR == (BOOL)WinSendMsg( submenu, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "Clear" ) ) ) abort();
+    menudesc->hwndSubMenu = NULLHANDLE;
+    if( MIT_ERROR == (BOOL)WinSendMsg( submenu, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "Clear" ) ) )
+        abort();
     menudesc->iPosition = 1;
     menudesc->id = DID_EDIT_COPY;
-    if ( MIT_ERROR == (BOOL)WinSendMsg( submenu, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "Copy" ) ) ) abort();
+    if( MIT_ERROR == (BOOL)WinSendMsg( submenu, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "Copy" ) ) )
+        abort();
     menudesc->iPosition = 1;
     menudesc->id = DID_MAIN_EDIT;
     menudesc->hwndSubMenu = submenu;
     menudesc->afStyle = MIS_SUBMENU;
-    if ( MIT_ERROR == (BOOL)WinSendMsg( menhdl, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "~Edit" ) ) ) abort();
+    if( MIT_ERROR == (BOOL)WinSendMsg( menhdl, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "~Edit" ) ) )
+        abort();
 
     submenu = WinCreateMenu( menhdl, NULL );
     _SetWinMenuHandle( submenu );
@@ -145,19 +153,22 @@ _WCRTLINK int   __InitDefaultWin() {
     menudesc->id = DID_MAIN_WIND;
     menudesc->hwndSubMenu = submenu;
     menudesc->afStyle = MIS_SUBMENU;
-    if ( MIT_ERROR == (BOOL)WinSendMsg( menhdl, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "~Windows" ) ) ) abort();
+    if( MIT_ERROR == (BOOL)WinSendMsg( menhdl, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "~Windows" ) ) )
+        abort();
 
     submenu = WinCreateMenu( menhdl, NULL );
     menudesc->afStyle = MIS_TEXT;
     menudesc->iPosition = 0;
     menudesc->id = DID_HELP_ABOUT;
-    menudesc->hwndSubMenu = NULL;
-    if ( MIT_ERROR == (BOOL)WinSendMsg( submenu, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "About" ) ) ) abort();
+    menudesc->hwndSubMenu = NULLHANDLE;
+    if( MIT_ERROR == (BOOL)WinSendMsg( submenu, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "About" ) ) )
+        abort();
     menudesc->iPosition = 3;
     menudesc->id = DID_MAIN_HELP;
     menudesc->hwndSubMenu = submenu;
     menudesc->afStyle = MIS_SUBMENU;
-    if ( MIT_ERROR == (BOOL)WinSendMsg( menhdl, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "~Help" ) ) ) abort();
+    if( MIT_ERROR == (BOOL)WinSendMsg( menhdl, ( ULONG )MM_INSERTITEM, MPFROMP( menudesc ), MPFROMP( "~Help" ) ) )
+        abort();
 
     WinSendMsg( _MainFrameWindow, ( ULONG )WM_UPDATEFRAME, 0, 0 );
     _NewWindow( "Standard IO", 0,1,2,-1 );
@@ -169,9 +180,10 @@ _WCRTLINK int   __InitDefaultWin() {
     return( 1 );
 }
 
-_WCRTLINK void  __FiniDefaultWin() {
-//==================================
-
+_WCRTLINK void  __FiniDefaultWin( void )
+//======================================
+{
+    _FiniMainWindowData();
     if( _MainWindow != 0 ) {
         WinDestroyWindow( _MainWindow );
     }
@@ -181,9 +193,9 @@ _WCRTLINK void  __FiniDefaultWin() {
     WinTerminate( _AnchorBlock );
 }
 
-void    _CreateFont( LPWDATA w ) {
-//===============================
-
+void    _CreateFont( LPWDATA w )
+//==============================
+{
     LONG                cFonts = { 0 };
     LONG                num_fonts;
     FONTMETRICS *       fonts;
@@ -199,48 +211,39 @@ void    _CreateFont( LPWDATA w ) {
     ps = WinGetPS( w->hwnd );
     num_fonts = GpiQueryFonts( ps, QF_PUBLIC, NULL, &cFonts,
                                sizeof( FONTMETRICS ), NULL );
-    fonts = _MemAlloc( num_fonts * sizeof( FONTMETRICS ) );
-    GpiQueryFonts( ps, QF_PUBLIC, NULL, &num_fonts, sizeof( FONTMETRICS ),
-                   fonts );
+    fonts = malloc( num_fonts * sizeof( FONTMETRICS ) );
+    if( fonts == NULL )
+        _OutOfMemoryExit();
+    GpiQueryFonts( ps, QF_PUBLIC, NULL, &num_fonts, sizeof( FONTMETRICS ), fonts );
     font_size = UINT_MAX;
     font_selected = 0;
 
-    #ifdef _MBCS
-        if( __IsDBCS ) {
-            /*** Try to find a DBCS font ***/
+#ifdef _MBCS
+    if( __IsDBCS ) {
+        /*** Try to find a DBCS font ***/
+        for( i = 0; i < num_fonts; ++i ) {
+            if( ! (fonts[i].fsType & (FM_TYPE_DBCS|FM_TYPE_FIXED)) )  continue;
+            if( fonts[i].lEmHeight > 10 )  continue;
+            font_size = fonts[i].lEmHeight;
+            font_selected = i;
+            fontChosenFlag = 1;
+            break;
+        }
+        /*** Try to find a regular font if can't find DBCS ***/
+        if( fontChosenFlag == 0 ) {
             for( i = 0; i < num_fonts; ++i ) {
-                if( ! (fonts[i].fsType & (FM_TYPE_DBCS|FM_TYPE_FIXED)) )  continue;
+                if( ! (fonts[i].fsType & FM_TYPE_DBCS) )  continue;
                 if( fonts[i].lEmHeight > 10 )  continue;
                 font_size = fonts[i].lEmHeight;
                 font_selected = i;
                 fontChosenFlag = 1;
                 break;
             }
-            /*** Try to find a regular font if can't find DBCS ***/
-            if( fontChosenFlag == 0 ) {
-                for( i = 0; i < num_fonts; ++i ) {
-                    if( ! (fonts[i].fsType & FM_TYPE_DBCS) )  continue;
-                    if( fonts[i].lEmHeight > 10 )  continue;
-                    font_size = fonts[i].lEmHeight;
-                    font_selected = i;
-                    fontChosenFlag = 1;
-                    break;
-                }
-            }
         }
+    }
 
-        /*** If !__IsDBCS or if DBCS font not found, find a fixed font ***/
-        if( fontChosenFlag == 0 ) {
-            for( i = 0; i < num_fonts; ++i ) {
-                if( ! (fonts[i].fsType & FM_TYPE_FIXED) )  continue;
-                if( fonts[i].lEmHeight > 10 )  continue;
-                font_size = fonts[i].lEmHeight;
-                font_selected = i;
-                break;
-            }
-        }
-    #else
-        /*** Try to find a suitable font ***/
+    /*** If !__IsDBCS or if DBCS font not found, find a fixed font ***/
+    if( fontChosenFlag == 0 ) {
         for( i = 0; i < num_fonts; ++i ) {
             if( ! (fonts[i].fsType & FM_TYPE_FIXED) )  continue;
             if( fonts[i].lEmHeight > 10 )  continue;
@@ -248,7 +251,17 @@ void    _CreateFont( LPWDATA w ) {
             font_selected = i;
             break;
         }
-    #endif
+    }
+#else
+    /*** Try to find a suitable font ***/
+    for( i = 0; i < num_fonts; ++i ) {
+        if( ! (fonts[i].fsType & FM_TYPE_FIXED) )  continue;
+        if( fonts[i].lEmHeight > 10 )  continue;
+        font_size = fonts[i].lEmHeight;
+        font_selected = i;
+        break;
+    }
+#endif
 
     /*** Set up the chosen font ***/
     FontAttrs.usRecordLength = sizeof( FATTRS );
@@ -264,7 +277,7 @@ void    _CreateFont( LPWDATA w ) {
     w->xchar = fonts[font_selected].lAveCharWidth;
     w->ychar = fonts[font_selected].lMaxBaselineExt + SPACE_BETWEEN_LINES;
     w->base_offset = fonts[font_selected].lMaxDescender;
-    _MemFree( fonts );
+    free( fonts );
     WinReleasePS( ps );
 }
 

@@ -31,7 +31,6 @@
 
 
 #include "variety.h"
-#include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include "win.h"
@@ -39,7 +38,7 @@
 /*
  * _NewWindow - create a new window
  */
-unsigned _NewWindow( char *name, ... )
+unsigned _NewWindow( const char *name, ... )
 {
     HWND        hwnd;
     LPWDATA     w;

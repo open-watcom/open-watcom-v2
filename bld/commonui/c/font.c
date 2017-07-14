@@ -70,14 +70,18 @@ int CALLBACK EnumFontsEnumFunc( const LOGFONT FAR *lf, const TEXTMETRIC FAR *tm,
 #ifdef __WINDOWS_386__
     const ENUMLOGFONT   __far *elf = MK_FP32( (void *)lf );
     tm = tm;
-    FARstrcpy( lfFaceName, elf->elfLogFont.lfFaceName );
 #elif defined( __WINDOWS__ )
     ntm = ntm;
 #else
     const ENUMLOGFONT   FAR *elf = (const ENUMLOGFONT FAR *)lf;
     tm = tm;
 #endif
-    FARstrcpy( lfFaceName, elf->elfLogFont.lfFaceName );
+
+#if defined( __WINDOWS__ ) || defined( _M_I86 )
+    _fstrcpy( lfFaceName, elf->elfLogFont.lfFaceName );
+#else
+    strcpy( lfFaceName, elf->elfLogFont.lfFaceName );
+#endif
     ftype = ftype;
     data = data;
 

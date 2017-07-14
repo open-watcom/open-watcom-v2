@@ -61,7 +61,7 @@ _WCRTLINK int   _dwSetAboutDlg( const char *title, const char *text ) {
 #ifdef DEFAULT_WINDOWING
 
     if( _WindowsSetAbout != NULL ) {
-        return( _WindowsSetAbout( (char *)title, (char *)text ) );
+        return( _WindowsSetAbout( title, text ) );
     }
 #else
     text = text;
@@ -77,7 +77,7 @@ _WCRTLINK int   _dwSetAppTitle( const char *title ) {
 #ifdef DEFAULT_WINDOWING
 
     if( _WindowsSetAppTitle != NULL ) {
-        return( _WindowsSetAppTitle( (char *)title ) );
+        return( _WindowsSetAppTitle( title ) );
     }
 #else
     title = title;
@@ -96,7 +96,7 @@ _WCRTLINK int   _dwSetConTitle( int handle, const char *title ) {
     if( _WindowsSetAppTitle != NULL ) {
         res = _WindowsIsWindowedHandle( handle );
         if( res ) {
-            return( _WindowsSetConTitle( res, (char *)title ) );
+            return( _WindowsSetConTitle( res, title ) );
         }
     }
 #else
