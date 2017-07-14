@@ -931,8 +931,7 @@ bool MDIHitClose( HWND hwnd, WPI_MSG msg, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
  * CheckForMessage - check for a WM_COMMAND message that needs to be
  *                   sent to the maximized window
  */
-static bool CheckForMessage( HMENU menu, HWND currentWindow,
-                             WPI_PARAM1 wparam, WPI_PARAM2 lparam )
+static bool CheckForMessage( HMENU menu, HWND hwnd, WPI_PARAM1 wparam, WPI_PARAM2 lparam )
 {
     int         num;
     int         pos;
@@ -943,12 +942,12 @@ static bool CheckForMessage( HMENU menu, HWND currentWindow,
         for( pos = 0; pos < num; pos++ ) {
             flags = GetMenuState( menu, pos, MF_BYPOSITION );
             if( flags & MF_POPUP ) {
-                if( CheckForMessage( GetSubMenu( menu, pos ), currentWindow, wparam, lparam ) ) {
+                if( CheckForMessage( GetSubMenu( menu, pos ), hwnd, wparam, lparam ) ) {
                     return( true );
                 }
             } else {
                 if( GetMenuItemID( menu, pos ) == (UINT)wparam ) {
-                    _wpi_sendmessage( currentWindow, WM_COMMAND, wparam, lparam );
+                    _wpi_sendmessage( hwnd, WM_COMMAND, wparam, lparam );
                     return( true );
                 }
             }
