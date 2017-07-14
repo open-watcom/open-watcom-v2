@@ -145,7 +145,6 @@ extern void     ScreenPage( int page );
 extern void     WindowTitleAOI( window_id wid, const char *title, bool active );
 extern void     WindowTitle( window_id wid, const char *title );
 extern void     ClearWindow( window_id wid );
-extern vi_rc    DisplayLineInWindow( window_id wid, int line, char *text );
 extern void     ShiftWindowUpDown( window_id wid, int lines );
 extern bool     SetDrawingObjects( HDC hdc, type_style *ts );
 extern void     MyTabbedTextOut( HDC, char **, int, bool, POINT *, type_style *, RECT *, window_id, char *, int );
@@ -210,7 +209,7 @@ extern void     StartWindows( void );
 
 /* win/utils.c */
 extern void     SetGadgetString( char *str );
-extern bool     IsGadgetStringChanged( char *str );
+extern bool     IsGadgetStringChanged( const char *str );
 
 /* win/repcnt.c */
 extern void     UpdateRepeatString( char *str );
@@ -238,16 +237,15 @@ extern void     DrawBorder( window_id );
 extern void     SetBorderGadgets( window_id, bool );
 extern void     WindowBorderData( window_id, const char *, int );
 extern void     SetGadgetString( char *str );
-extern bool     IsGadgetStringChanged( char *str );
+extern bool     IsGadgetStringChanged( const char *str );
 
 /* windisp.c */
-extern vi_rc    DisplayLineInWindowWithColor( window_id, int, char *, type_style *, int );
+extern vi_rc    DisplayLineInWindowWithColor( window_id, int, const char *, type_style *, int );
 extern vi_rc    DisplayLineInWindowWithSyntaxStyle( window_id, int, line *, linenum, char *, int, unsigned int );
 extern void     DisplayCrossLineInWindow( window_id, int );
 extern void     HiliteAColumnRange( linenum, int, int );
 extern void     ColorAColumnRange( int, int, int, type_style * );
 extern vi_rc    SetCharInWindowWithColor( window_id, windim, windim, char, type_style * );
-extern vi_rc    DisplayLineInWindow( window_id, int, char * );
 
 /* ui/wininit.c */
 extern void     StartWindows( void );

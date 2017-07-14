@@ -67,20 +67,21 @@ static void putMessage( void )
 /*
  * getOneSetVal - get a single set value
  */
-static char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want_boolstr )
+static const char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want_boolstr )
 {
-    char        *str, *fign;
+    const char  *str;
+    char        *fign;
     cursor_type ct;
     int         i, j;
 
+    *tmpstr = '\0';
     str = tmpstr;
-    *str = '\0';
     if( isbool ) {
         j = (int)((bool *)&EditFlags)[token];
         if( want_boolstr ) {
             str = BoolStr[j];
         } else {
-            sprintf( str, "%d", j );
+            sprintf( tmpstr, "%d", j );
         }
     } else {
         switch( token ) {
@@ -88,7 +89,7 @@ static char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want_bools
             for( i = 0; i < EditVars.NumStatusSections; i++ ) {
                 char        buff[16];
                 sprintf( buff, "%d ", EditVars.StatusSections[i] );
-                strcat( str, buff );
+                strcat( tmpstr, buff );
             }
             break;
         case SETVAR_T_FILEENDSTRING:
@@ -102,7 +103,7 @@ static char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want_bools
         case SETVAR_T_FIGNORE:
             fign = EditVars.FIgnore;
             for( j = 0; j < EditVars.CurrFIgnore; j++ ) {
-                strcat( str, fign );
+                strcat( tmpstr, fign );
                 fign += EXTENSION_LENGTH;
             }
             break;
@@ -126,7 +127,7 @@ static char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want_bools
             break;
         case SETVAR_T_FILENAME:
             if( CurrentFile == NULL ) {
-                str = "";
+                tmpstr = "";
             } else {
                 str = CurrentFile->name;
             }
@@ -150,7 +151,7 @@ static char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want_bools
             } else {
                 ct = EditVars.InsertCursorType;
             }
-            MySprintf( str, "%d %d", ct.height, ct.width );
+            MySprintf( tmpstr, "%d %d", ct.height, ct.width );
             break;
         default:
             j = 0;
@@ -284,7 +285,7 @@ static char *getOneSetVal( int token, bool isbool, char *tmpstr, bool want_bools
                 j = EditVars.ToolBarColor;
                 break;
             }
-            sprintf( str, "%d ", j );
+            sprintf( tmpstr, "%d ", j );
             break;
         }
     }
@@ -1240,7 +1241,7 @@ vi_rc Set( const char *name )
 /*
  * GetASetVal - get set val data
  */
-char *GetASetVal( const char *token )
+const char *GetASetVal( const char *token )
 {
     int         j;
     char        tmpstr[MAX_STR];

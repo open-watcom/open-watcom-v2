@@ -343,13 +343,13 @@ vi_rc EditFile( const char *name, bool dammit )
 } /* EditFile */
 
 #ifndef __WIN__
-static char _NEAR *_NEAR fileOpts[] =  {
-    "<F1> Go To",
-    "<F2> Quit",
-    "<F3> Save & Quit"
+static const char _NEAR *_NEAR fileOpts[] =  {
+    (const char _NEAR *)"<F1> Go To",
+    (const char _NEAR *)"<F2> Quit",
+    (const char _NEAR *)"<F3> Save & Quit"
 };
 
-#define NUM_OPTS sizeof( fileOpts ) / sizeof( char _NEAR * )
+#define NUM_OPTS sizeof( fileOpts ) / sizeof( fileOpts[0] )
 
 /*
  * EditFileFromList - edit from file in current active list

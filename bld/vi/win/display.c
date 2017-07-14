@@ -90,7 +90,7 @@ void ClearWindow( window_id wid )
     TextReleaseDC( wid, hdc );
 }
 
-vi_rc DisplayLineInWindow( window_id wid, int line, char *text )
+vi_rc DisplayLineInWindow( window_id wid, int line, const char *text )
 {
     text = text;
     wid = wid;

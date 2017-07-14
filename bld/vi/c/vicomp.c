@@ -42,9 +42,9 @@
 
 #define isWSorCtrlZ( x )    (isspace( x ) || (x == 0x1A))
 
-char _NEAR  SingleBlank[] = " ";
-char _NEAR  SingleSlash[] = "/";
-char _NEAR  SingleQuote[] = "\"";
+const char _NEAR  SingleBlank[] = " ";
+const char _NEAR  SingleSlash[] = "/";
+const char _NEAR  SingleQuote[] = "\"";
 
 int         SourceErrCount = 0;
 line        *WorkLine;

@@ -197,12 +197,12 @@ vi_rc GenerateConfiguration( const char *fname, bool is_cmdline )
     FILE        *f;
     int         i;
     char        token[128];
-    char        *str;
+    const char  *str;
     char        boolstr[3];
     char        *buff;
     int         num;
     rgb         c;
-    char        *res;
+    const char  *res;
 
     if( fname == NULL ) {
         fname = CFG_NAME;

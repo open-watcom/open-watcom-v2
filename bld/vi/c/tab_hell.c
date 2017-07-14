@@ -135,7 +135,7 @@ bool ExpandTabsInABufferUpToColumn( int endcol, char *in, int inlen, char *out,
 /*
  * ExpandTabsInABuffer - do all tabs in a buffer
  */
-bool ExpandTabsInABuffer( char *in, int inlen, char *out, int outlen )
+bool ExpandTabsInABuffer( const char *in, int inlen, char *out, int outlen )
 {
     int             j, k, tb, l;
     bool            tabme = false;

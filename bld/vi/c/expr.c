@@ -60,14 +60,14 @@ static int          tokenBuffCnt;
 
 #define str( a ) #a
 
-static char     colorTokens[] = {
+static const char   colorTokens[] = {
     #define vi_pick( a ) str( a\0 )
     #include "colors.h"
     #undef vi_pick
 };
 
 #ifdef __WIN__
-static char     ddeTokens[] = {
+static const char   ddeTokens[] = {
     "DDE_FACK\0"
     "DDE_FBUSY\0"
     "DDE_FDEFERUPD\0"

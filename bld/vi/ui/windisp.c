@@ -56,12 +56,13 @@ static void WriteLongLineMarker( window_id wid, type_style *style, char_info *tx
  * displayLineInWindowGeneric - takes an ss_block directly
  */
 static vi_rc displayLineInWindowGeneric( window_id wid, int c_line_no,
-                                char *text, int start_col, ss_block *ss )
+                                const char *text, int start_col, ss_block *ss )
 {
     window              *w;
     char_info           *txt;
     window_id           *over;
-    char                *tmp, *otmp;
+    const char          *tmp;
+    char                *otmp;
     char_info           _FAR *scr;
     size_t              oscr;
     int                 addr, start, end, a, spend;
@@ -82,8 +83,9 @@ static vi_rc displayLineInWindowGeneric( window_id wid, int c_line_no,
     write_eol = false;
     if( EditFlags.RealTabs ) {
         a = strlen( text );
-        otmp = tmp = StaticAlloc();
-        ExpandTabsInABuffer( text, a, tmp, EditVars.MaxLine + 1 );
+        otmp = StaticAlloc();
+        ExpandTabsInABuffer( text, a, otmp, EditVars.MaxLine + 1 );
+        tmp = otmp;
     } else {
         tmp = text;
     }
@@ -215,7 +217,7 @@ static vi_rc displayLineInWindowGeneric( window_id wid, int c_line_no,
 /*
  * DisplayLineInWindowWithColor - do just that
  */
-vi_rc DisplayLineInWindowWithColor( window_id wid, int c_line_no, char *text, type_style *ts, int start_col )
+vi_rc DisplayLineInWindowWithColor( window_id wid, int c_line_no, const char *text, type_style *ts, int start_col )
 {
     ss_block    ss;
 
@@ -583,7 +585,7 @@ vi_rc SetCharInWindowWithColor( window_id wid, windim line, windim col, char tex
 /*
  * DisplayLineInWindow - do as it sounds, use default colors
  */
-vi_rc DisplayLineInWindow( window_id wid, int c_line_no, char *text )
+vi_rc DisplayLineInWindow( window_id wid, int c_line_no, const char *text )
 {
     ss_block    ss;
     window      *w;

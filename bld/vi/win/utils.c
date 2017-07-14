@@ -85,7 +85,7 @@ void SetGadgetString( char *str )
     }
 }
 
-bool IsGadgetStringChanged( char *str )
+bool IsGadgetStringChanged( const char *str )
 {
     return( strcmp( str, windowBordersG ) != 0 );
 }

@@ -35,14 +35,14 @@
 /*
  * language tokens
  */
-char _NEAR SourceTokens[] = {
+const char _NEAR SourceTokens[] = {
     #define PICK(a,b) a "\0"
     #include "srckeys.h"
     #undef PICK
     "\0"
 };
 
-char _NEAR StrTokens[] = {
+const char _NEAR StrTokens[] = {
     "SUBSTR\0"
     "STRLEN\0"
     "STRCHR\0"

@@ -40,11 +40,11 @@
 
 const char _NEAR * _NEAR InternalCommands[] = { "" };
 
-int InternalCommandCount = sizeof( InternalCommands ) / sizeof( char _NEAR * );
+int InternalCommandCount = sizeof( InternalCommands ) / sizeof( InternalCommands[0] );
 
 const char _NEAR * _NEAR ExeExtensions[] = { "" };
 
-int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( char _NEAR * );
+int ExeExtensionCount = sizeof( ExeExtensions ) / sizeof( ExeExtensions[0] );
 
 void ResetSpawnScreen( void )
 {
