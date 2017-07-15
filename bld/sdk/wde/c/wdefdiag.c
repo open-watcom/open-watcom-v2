@@ -93,7 +93,8 @@
 
 #define DEFAULT_FONTFACENAME    "Helv"
 #define DEFAULT_FONTPOINTSIZE   8
-#define DEFAULT_JFONTFACENAME   "‚l‚r –¾’©"
+/* following is DBCS text in Japanese "‚l‚r –¾’©" */
+#define DEFAULT_JFONTFACENAME   "\x82\x6C\x82\x72\x20\x96\xBE\x92\xA9"
 #define DEFAULT_JFONTPOINTSIZE  10
 #define DEFAULT_MEMFLAGS        (MEMFLAG_DISCARDABLE | MEMFLAG_PURE | MEMFLAG_MOVEABLE)
 
