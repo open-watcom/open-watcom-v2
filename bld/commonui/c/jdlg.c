@@ -209,7 +209,8 @@ static size_t getFontInfoSize( BYTE *fontinfo )
 static bool getSystemFontFaceName( char **facename, WORD *pointsize )
 {
 #ifndef USE_SYSTEM_FONT
-    *facename = "‚l‚r –¾’©";
+    /* following is DBCS text in Japanese "‚l‚r –¾’©" */
+    *facename = "\x82\x6C\x82\x72\x20\x96\xBE\x92\xA9";
     *pointsize = 10;
 
     return( true );
