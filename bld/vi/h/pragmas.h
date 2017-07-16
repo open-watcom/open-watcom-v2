@@ -58,6 +58,12 @@ extern void JustAnInt28( void );
 
 extern unsigned DosMaxAlloc( void );
 
+extern void DosIdleCall( void );
+#pragma aux DosIdleCall = \
+        "mov    ax,1680h" \
+        "int    2fh"      \
+    modify [ax];
+
 
 #pragma aux DoSpawn = \
         "push   ds" \

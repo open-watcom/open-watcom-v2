@@ -236,14 +236,12 @@ vi_rc Substitute( linenum n1, linenum n2, const char *data )
     }
     if( *data == '/' )
         ++data;
-    data = SkipLeadingSpaces( data );
-    while( (c = *data) != '\0' ) {
+    for( data = SkipLeadingSpaces( data ); (c = *data) != '\0'; data++ ) {
         if( c == 'g' ) {
             gflag = true;
         } else if( c == 'i' || c == 'c' ) {
             iflag = true;
         }
-        ++data;
     }
     rc = CurrentRegComp( sstr );
     if( rc != ERR_NO_ERR ) {

@@ -454,7 +454,7 @@ void FiniKeyMaps( void )
 
     // assuming Keymaps and InputKeymaps are inited to 0
     // this should be OK
-    for( i = 0; i < MAX_EVENTS; i++){
+    for( i = 0; i < MAX_EVENTS; i++ ) {
         if( KeyMaps[i].data != NULL ) {
             MemFree( KeyMaps[i].data );
         }

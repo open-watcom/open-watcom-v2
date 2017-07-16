@@ -189,7 +189,7 @@ void SetCurrentLineNumber( linenum l )
     if( CurrentFile != NULL ) {
         height = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
         last = CurrentFile->fcbs.tail->end_line - height + 1;
-        if ( LeftTopPos.line > last ){
+        if( LeftTopPos.line > last ) {
              last = LeftTopPos.line;
         }
     } else {

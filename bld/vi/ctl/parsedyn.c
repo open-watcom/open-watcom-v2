@@ -135,9 +135,9 @@ int main( int argc, char *argv[] )
         *end = '\0';
         strcpy( type, line );
 
-        if( !strcmp( type, "DYN_TPL_DIM" ) )
+        if( strcmp( type, "DYN_TPL_DIM" ) == 0 )
             fprintf( out, "    dyn_dim_def        dyn_tpl%-d;\n", elt + 1 );
-        else if( !strcmp( type, "DYN_TPL_STATIC" ) )
+        else if( strcmp( type, "DYN_TPL_STATIC" ) == 0 )
             fprintf( out, "    dyn_static_def        dyn_tpl%-d;\n", elt + 1 );
         else {
             printf( "Invalid template type on line %d\n", Line );
@@ -177,7 +177,7 @@ int main( int argc, char *argv[] )
         *start++ = '\0';
         strcpy( type, line );
 
-        if( !strcmp( type, "DYN_TPL_DIM" ) ) {
+        if( strcmp( type, "DYN_TPL_DIM" ) == 0 ) {
             fputs( "DYN_TPL_DIM, true, 0, ", out );
         } else {
             fputs( "DYN_TPL_STATIC, true, 0, ", out );

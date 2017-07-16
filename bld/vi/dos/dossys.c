@@ -277,11 +277,11 @@ void ScreenPage( int page )
     unsigned long       b;
 
     if( !EditFlags.Monocolor ) {
-        Scrn = (char_info *)0xb8000000;
+        Scrn = (char_info _FAR *)0xb8000000;
     } else {
-        Scrn = (char_info *)0xb0000000;
+        Scrn = (char_info _FAR *)0xb0000000;
     }
-    a = *(unsigned short *)MK_FP( 0x40,0x4e ) / sizeof( char_info );
+    a = *(unsigned short _FAR *)MK_FP( 0x40, 0x4e ) / sizeof( char_info );
     Scrn += a;
     PageCnt += page;
     if( PageCnt > 0 ) {
@@ -298,11 +298,11 @@ void ScreenPage( int page )
     unsigned long       b;
 
     if( !EditFlags.Monocolor ) {
-        Scrn = (char_info *)0xb8000;
+        Scrn = (char_info _FAR *)0xb8000;
     } else {
-        Scrn = (char_info *)0xb0000;
+        Scrn = (char_info _FAR *)0xb0000;
     }
-    a = *(unsigned short *)0x44e / sizeof( char_info );
+    a = *(unsigned short _FAR *)0x44e / sizeof( char_info );
     Scrn += a;
     PageCnt += page;
     if( PageCnt > 0 ) {
@@ -361,8 +361,10 @@ vi_rc ChangeDrive( int drive )
 
 }/* ChangeDrive */
 
-#if defined( _M_I86 ) || defined( __4G__ )
-    #define KEY_PTR (char *)0x00400017;
+#if defined( _M_I86 )
+    #define KEY_PTR (char _FAR *)0x00400017;
+#elif defined( __4G__ )
+    #define KEY_PTR (char _FAR *)0x00000417;
 #else
     #define KEY_PTR MK_FP( PHAR_SCRN_SEL, 0x417 );
 #endif
@@ -431,7 +433,9 @@ void MyDelay( int ms )
     int         final_ticks;
 
     final_ticks = ClockTicks + ((ms * 182L + 5000L) / 10000L);
-    while( ClockTicks < final_ticks );
+    do {
+        DosIdleCall();
+    } while( ClockTicks < final_ticks );
 
 } /* MyDelay */
 

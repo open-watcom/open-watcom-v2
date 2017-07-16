@@ -214,7 +214,7 @@ unsigned BIOSGetKeyboard( unsigned *scan )
     key = VI_KEY( DUMMY );
     do {
         ev = uieventsource( 0 );
-        if ( ev < EV_FIRST_UNUSED ) {
+        if( ev < EV_FIRST_UNUSED ) {
             key = vi_keys[ev];
         }
     } while( key == VI_KEY( DUMMY ) );
@@ -252,7 +252,7 @@ void  BIOSUpdateScreen( size_t offset, unsigned nchars )
         return;
     }
 
-    if ( nchars == EditVars.WindMaxWidth * EditVars.WindMaxHeight ) {
+    if( nchars == EditVars.WindMaxWidth * EditVars.WindMaxHeight ) {
         _physupdate( NULL );
         UserForcedTermRefresh = true;
         return;

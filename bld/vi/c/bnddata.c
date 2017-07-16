@@ -140,7 +140,7 @@ bool SpecialOpen( const char *fn, GENERIC_FILE *gf, bool bounddata )
      */
     if( BoundData ) {
 
-        if( !strcmp( fn, CONFIG_FILE ) ) {
+        if( strcmp( fn, CONFIG_FILE ) == 0 ) {
             i = 0;
         } else {
             i = Tokenize( dataFnames, fn, true );

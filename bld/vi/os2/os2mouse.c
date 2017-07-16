@@ -115,9 +115,9 @@ void InitMouse( void )
         return;
     }
     events = 0x007f;
-    if( MouSetEventMask( &events, mouseHandle ) != 0 ){
+    if( MouSetEventMask( &events, mouseHandle ) != 0 ) {
         events = 0x001f;
-        if( MouSetEventMask( &events, mouseHandle ) == 0 ){
+        if( MouSetEventMask( &events, mouseHandle ) == 0 ) {
             mouseHasTwoButtons = true;
         }
     }

@@ -265,7 +265,7 @@ void XMSFini( void )
     if( !XMSCtrl.inuse ) {
         return;
     }
-    while( XMSCtrl.next_handle > 0 ) {
+    for( ; XMSCtrl.next_handle > 0; XMSCtrl.next_handle-- ) {
         handle = XMSCtrl.handles[XMSCtrl.next_handle - 1];
         if( handle == XMS_HMA_HANDLE ) {
             if( _XMSReleaseHMA( &xmsControl ) == 0 ) {
@@ -276,7 +276,6 @@ void XMSFini( void )
                 break;
             }
         }
-        XMSCtrl.next_handle--;
     }
     XMSCtrl.inuse = false;
 

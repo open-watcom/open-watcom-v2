@@ -134,7 +134,7 @@ void FormatFileEntry( direct_ent *file, char *res )
         buff[3] = 's';
     }
     buff[4] = 'r';
-    if( !(file->attr & _A_RDONLY) ) {
+    if( (file->attr & _A_RDONLY) == 0 ) {
         buff[5] = 'w';
     }
     if( !IsTextFile( file->name ) ) {

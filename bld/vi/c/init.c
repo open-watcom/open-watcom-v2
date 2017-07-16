@@ -266,7 +266,7 @@ static void doInitializeEditor( int argc, char *argv[] )
     GetCWD1( &HomeDirectory );
     GetCWD1( &CurrentDirectory );
     SetCWD( HomeDirectory );
-    if( cfgFN == NULL ){
+    if( cfgFN == NULL ) {
         cfgFN = DupString( CFG_NAME );
     }
 

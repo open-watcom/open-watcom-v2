@@ -343,7 +343,7 @@ static void mouseButtonDown( window_id wid, int x, int y, bool shift )
 {
     int         row, col;
 
-    if (!EditFlags.WasOverstrike ) {
+    if( !EditFlags.WasOverstrike ) {
         ClientToRowCol( wid, x, y, &row, &col, DIVIDE_MIDDLE );
     } else {
         ClientToRowCol( wid, x, y, &row, &col, DIVIDE_BETWEEN );
@@ -550,13 +550,13 @@ void PositionVerticalScrollThumb( window_id wid, linenum top, linenum last )
     if( newlast > 1 ) {
         /* have enough lines to set position normally
         */
-        if( max != newlast ){
+        if( max != newlast ) {
             // always set position with range to avoid screen draws
             SetScrollRange( wid, SB_VERT, 1, newlast, FALSE );
             SetScrollPos( wid, SB_VERT, newtop, TRUE );
         } else {
             pos = GetScrollPos( wid, SB_VERT );
-            if( newtop != pos ){
+            if( newtop != pos ) {
                 SetScrollPos( wid, SB_VERT, newtop, TRUE );
             }
         }
@@ -649,7 +649,7 @@ static void doVScroll( window_id wid, WPARAM wparam, LPARAM lparam )
 
     text_lines = WindowAuxInfo( current_window_id, WIND_INFO_TEXT_LINES );
     diff = LeftTopPos.line - oldTopOfPage;
-    if( diff != 0 ){
+    if( diff != 0 ) {
         if( abs( diff ) > text_lines / 2 ) {
             //  faster to redraw whole screen
             DCInvalidateAllLines();

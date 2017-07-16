@@ -96,15 +96,13 @@ static void dumpMenu( FILE *f, menu *cmenu )
     menu_item   *citem;
     char        str[MAX_STR];
 
-    citem = cmenu->itemhead;
-    while( citem != NULL ) {
+    for( citem = cmenu->itemhead; citem != NULL; citem = citem->next ) {
         if( citem->slen == 0 ) {
             MyFprintf( f, "    menuitem \"\"\n" );
         } else {
             getMenuName( str, citem->str, citem->slen, citem->hi._offs );
             MyFprintf( f, "    menuitem \"%s\" %s\n", str, citem->cmd );
         }
-        citem = citem->next;
     }
     if( cmenu->has_file_list ) {
         MyFprintf( f, "    menuwindowlist\n" );
@@ -175,11 +173,9 @@ static void freeMenuData( menu *cmenu )
     }
     MemFree( cmenu->list );
     MemFree( cmenu->hilist );
-    curr = cmenu->itemhead;
-    while( curr != NULL ) {
+    for( curr = cmenu->itemhead; curr != NULL; curr = next ) {
         next = curr->next;
         MemFree( curr );
-        curr = next;
     }
     tmp = cmenu->next;
     memset( cmenu, 0, sizeof( menu ) );
@@ -210,13 +206,13 @@ static menu *findMenu( const char *str, menu ***predef_menu )
     *predef_menu = NULL;
     res = NULL;
     if( str[0] == 'f' || str[0] == 'w' ) {
-        if( !strnicmp( str, "float", 5 ) ) {
+        if( strnicmp( str, "float", 5 ) == 0 ) {
             num = str[5] - '0';
             if( num >= 0 && num < MAX_FLOAT_MENUS ) {
                 res = floatMenus[num];
                 *predef_menu = &floatMenus[num];
             }
-        } else if( !stricmp( str, "windowgadget" ) ) {
+        } else if( stricmp( str, "windowgadget" ) == 0 ) {
             res = windowGadgetMenu;
             *predef_menu = &windowGadgetMenu;
         }
@@ -224,7 +220,7 @@ static menu *findMenu( const char *str, menu ***predef_menu )
 
     if( res == NULL ) {
         for( res = menuHead; res != NULL; res = res->next ) {
-            if( !stricmp( str, res->str ) ) {
+            if( stricmp( str, res->str ) == 0 ) {
                 break;
             }
         }
@@ -526,20 +522,18 @@ static void addFileList( menu *cmenu )
  */
 static void removeFileList( menu *cmenu )
 {
-    menu_item   *citem, *nitem;
+    menu_item   *citem;
+    menu_item   *next;
     int         i;
 
-    i = 0;
     citem = cmenu->itemhead;
-    while( i < cmenu->orig_itemcnt ) {
+    for( i = 0; i < cmenu->orig_itemcnt; i++ ) {
         citem = citem->next;
-        i++;
     }
-    while( citem != NULL ) {
-        nitem = citem->next;
+    for( ; citem != NULL; citem = next ) {
+        next = citem->next;
         DeleteLLItem( (ss **)&cmenu->itemhead, (ss **)&cmenu->itemtail, (ss *)citem );
         MemFree( citem );
-        citem = nitem;
         cmenu->itemcnt--;
     }
     cmenu->maxwidth = cmenu->orig_maxwidth;
@@ -606,13 +600,12 @@ vi_rc InitMenu( void )
 
 void FiniMenu( void )
 {
-    menu        *oldmenu;
+    menu        *menu;
     int         i;
 
-    while( menuHead != NULL ) {
-        oldmenu = menuHead;
+    while( (menu = menuHead) != NULL ) {
         menuHead = menuHead->next;
-        freeMenu( oldmenu );
+        freeMenu( menu );
     }
     for( i = 0; i < MAX_FLOAT_MENUS; i++ ) {
         if( floatMenus[i] != NULL ) {

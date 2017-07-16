@@ -175,7 +175,7 @@ char *FontlfFaceName( font_type f )
 
 char FontIsFunnyItalic( font_type f )
 {
-    return( !(Fonts[f].lf.lfPitchAndFamily & TMPF_TRUETYPE) && Fonts[f].lf.lfItalic );
+    return( (Fonts[f].lf.lfPitchAndFamily & TMPF_TRUETYPE) == 0 && Fonts[f].lf.lfItalic );
 }
 
 

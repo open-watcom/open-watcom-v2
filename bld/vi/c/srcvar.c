@@ -117,7 +117,7 @@ void VarAddStr( const char *name, const char *val, vlist *vl )
      */
     len = strlen( val );
     for( curr = head; curr != NULL; curr = curr->next ) {
-        if( !strcmp( curr->name, name ) ) {
+        if( strcmp( curr->name, name ) == 0 ) {
             ReplaceString( &curr->value, val );
             curr->len = len;
 #ifndef VICOMP
@@ -206,7 +206,7 @@ vars * VarFind( const char *name, vlist *vl )
     if( name[0] < 'A' || name[0] > 'Z' ) {
         if( vl != NULL ) {
             for( curr = vl->head; curr != NULL; curr = curr->next ) {
-                if( !strcmp( name, curr->name ) ) {
+                if( strcmp( name, curr->name ) == 0 ) {
                     return( curr );
                 }
             }
@@ -218,7 +218,7 @@ vars * VarFind( const char *name, vlist *vl )
      * search globals
      */
     for( curr = VarHead; curr != NULL; curr = curr->next ) {
-        if( !strcmp( name, curr->name ) ) {
+        if( strcmp( name, curr->name ) == 0 ) {
             return( curr );
         }
     }
@@ -240,7 +240,7 @@ void VarFini( void )
 }
 
 #if 0
-void VarDump( void ){
+void VarDump( void ) {
     vars        *curr;
     int         count = 0;
     FILE        *f = fopen( "C:\\vi.out", "a+t" );

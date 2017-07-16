@@ -153,13 +153,11 @@ void DeleteStringHandle( HSZ hdl )
 {
     hsz_list    *hlptr;
 
-    hlptr = hszHead;
-    while( hlptr != NULL ) {
+    for( hlptr = hszHead; hlptr != NULL; hlptr = hlptr->next ) {
         if( hlptr->hsz == hdl ) {
             deleteStringData( hlptr );
             break;
         }
-        hlptr = hlptr->next;
     }
 
 } /* DeleteStringHandle */
@@ -171,11 +169,9 @@ static void freeAllStringHandles( void )
 {
     hsz_list    *hlptr, *next;
 
-    hlptr = hszHead;
-    while( hlptr != NULL ) {
+    for( hlptr = hszHead; hlptr != NULL; hlptr = next ) {
         next = hlptr->next;
         deleteStringData( hlptr );
-        hlptr = next;
     }
 
 } /* freeAllStringHandles */

@@ -54,7 +54,7 @@ static bool getNextPos( int ch, int *opos )
                 pos++;
             }
 #endif
-        } else if ( ch == 0 ) {
+        } else if( ch == 0 ) {
             return( false );
         } else if( EditFlags.EightBits ) {
             pos++;

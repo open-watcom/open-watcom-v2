@@ -35,16 +35,14 @@
 #include <setjmp.h>
 #include "win.h"
 #include "pragmas.h"
-#if defined( __4G__ )
+
+#if defined( _M_I86 ) || defined( __4G__ )
     #define _FAR_   __far
-    #undef _FAR
-    #define _FAR    __far
 #else
     #define _FAR_
 #endif
 
 #if defined( _M_I86 ) || defined( __4G__ )
-
 static void (__interrupt _FAR_ *oldInt1c)( void );
 static void (__interrupt _FAR_ *oldInt1b)( void );
 static void (__interrupt _FAR_ *oldInt23)( void );

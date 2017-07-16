@@ -187,7 +187,8 @@ vi_rc GetSortDir( const char *name, bool want_all_dirs )
 
 } /* GetSortDir */
 
-void DirFini(void){
+void DirFini( void )
+{
     int i;
 
     for( i = 0; i < DirFileCount; i++ ) {

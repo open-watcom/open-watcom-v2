@@ -120,18 +120,17 @@ undo *UndoAlloc( undo_stack *stack, int type )
  */
 void UndoFree( undo *cundo, bool freefcbs )
 {
-    undo    *tundo;
+    undo    *next;
 
-    while( cundo != NULL ) {
+    for( ; cundo != NULL; cundo = next ) {
+        next = cundo->next;
         /*
          * release any fcbs
          */
         if( freefcbs && cundo->type == UNDO_DELETE_FCBS ) {
             FreeFcbList( cundo->data.fcbs.head );
         }
-        tundo = cundo->next;
         MemFree( cundo );
-        cundo = tundo;
     }
 
 } /* UndoFree */

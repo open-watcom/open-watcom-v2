@@ -125,7 +125,7 @@ static int getCursorInfo( window_id wid, int row, int col, int *x, int *width )
     }
     dcline = DCFindLine( row, wid );
 
-    if( dcline->display != 0 ){
+    if( dcline->display != 0 ) {
         // line has not been drawn yet. Can't set cursor.
         *x = -10;
         *width = 0;
@@ -146,13 +146,13 @@ static int getCursorInfo( window_id wid, int row, int col, int *x, int *width )
 
     // this bit adjusts col for real tabs
 
-    if( EditFlags.RealTabs ){
+    if( EditFlags.RealTabs ) {
         // this takes it from the current line!!!! %$#@!
         // what if row isn't the current line! oops!!!
         // luckily this works because who wants to know cursor info
         // for any line but the current one!
 
-        // if( thisLine == CurrentLine ){
+        // if( thisLine == CurrentLine ) {
             int real_left = RealColumnOnCurrentLine( LeftTopPos.column + 1 );
             old_col = col;
             col = RealColumnOnCurrentLine( col + 1 ) - real_left;
@@ -219,8 +219,8 @@ static int getCursorInfo( window_id wid, int row, int col, int *x, int *width )
 
             // Is there a tab in the current block ?
             end_str = cur_pos = str + len;
-            while( *(--cur_pos) != '\t' ){
-                if(cur_pos == str){
+            while( *(--cur_pos) != '\t' ) {
+                if( cur_pos == str ) {
                     no_tab = true;
                     break;
                 }
@@ -248,9 +248,9 @@ static int getCursorInfo( window_id wid, int row, int col, int *x, int *width )
 
 
         // ... and find the position and width of the cursor.
-        if( *end_str == '\t' ){
+        if( *end_str == '\t' ) {
             // in strange case, tab may start before end of prev string
-            end_tab = (old_col - LeftTopPos.column + 1) * avg_width;
+            end_tab = ( old_col - LeftTopPos.column + 1 ) * avg_width;
             *x = left + extent;
             if( *x > end_tab )
                 *x = end_tab;

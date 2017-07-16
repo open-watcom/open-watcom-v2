@@ -111,7 +111,7 @@ static LRESULT doDrop( HWND hwnd, WPARAM wparam )
     CursorOp( COP_ARROW );
     ReleaseCapture();
     haveCapture = false;
-    if( !(wparam & MK_RBUTTON) ) {
+    if( (wparam & MK_RBUTTON) == 0 ) {
         RECT r;
         sendNewFont();
         GetWindowRect( hwnd, &r );

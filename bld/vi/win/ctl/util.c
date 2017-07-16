@@ -70,7 +70,7 @@ vi_rc UtilUpdateStr( char *old, char *val, char *name )
 {
     char    cmd[MAX_SRC_LINE];
 
-    if( !strcmp( old, val ) ) {
+    if( strcmp( old, val ) == 0 ) {
         return( ERR_NO_ERR );
     }
     sprintf( cmd, "set %s %s", name, val );

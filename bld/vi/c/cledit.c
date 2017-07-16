@@ -137,7 +137,7 @@ vi_rc EditFile( const char *name, bool dammit )
         if( len > 0 ) {
             strcpy( mask, fn );
             cnt = 0;
-            for( i = len - 1; i >= 0; --i ) {
+            for( i = len; i-- > 0; ) {
                 if( fn[i] == FILE_SEP ) {
                     for( j = i + 1; j <= len; j++ ) {
                         mask[j - (i + 1)] = fn[j];

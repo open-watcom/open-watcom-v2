@@ -64,7 +64,7 @@ vi_rc FileExists( const char *name )
             if( en == EACCES )  {
                 return( ERR_READ_ONLY_FILE );
             }
-            if ( en == EIO ) {
+            if( en == EIO ) {
                 /*
                  * Trying to open file as writable in read only network share will cause EIO, so
                  * try to open it as read only to determine that share is read only.

@@ -80,7 +80,7 @@ vi_rc DoDotMode( void )
      */
     cnt = GetRepeatCount();
     StartUndoGroup( UndoStack );
-    while( cnt > 0 ) {
+    for( ; cnt-- > 0; ) {
         EditFlags.DotMode = true;
         DotCount = 0;
         LastError = ERR_NO_ERR;
@@ -95,7 +95,6 @@ vi_rc DoDotMode( void )
             }
             DoneLastEvent( rc, true );
         }
-        cnt--;
     }
     EndUndoGroup( UndoStack );
     DCDisplayAllLines();
@@ -137,7 +136,7 @@ vi_rc DoAltDotMode( void )
     DotDigits = 0;
     cnt = GetRepeatCount();
     StartUndoGroup( UndoStack );
-    while( cnt > 0 ) {
+    for( ; cnt-- > 0; ) {
         EditFlags.AltDotMode = true;
         AltDotCount = 0;
         LastError = ERR_NO_ERR;
@@ -152,7 +151,6 @@ vi_rc DoAltDotMode( void )
             }
             DoneLastEvent( rc, false );
         }
-        cnt--;
         EditFlags.AltDotMode = false;
     }
     EndUndoGroup( UndoStack );

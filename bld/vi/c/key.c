@@ -35,6 +35,7 @@
 #ifdef _M_IX86
     #ifdef __WATCOMC__
         #include <i86.h>
+        #include "pragmas.h"
     #endif
 #endif
 #if defined( __OS2__ )
@@ -347,7 +348,9 @@ vi_key GetKey( bool usemouse )
 #if defined( BUSYWAIT )
         }
 #endif
-#if defined( __OS2__ )
+#if defined( __DOS__ )
+        DosIdleCall();
+#elif defined( __OS2__ )
         DosSleep( 1 );
 #endif
     }

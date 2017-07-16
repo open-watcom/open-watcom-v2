@@ -105,12 +105,11 @@ char *StrMerge( int cnt, char *str, ... )
     char        *n;
 
     va_start( arg, str );
-    while( cnt > 0 ) {
+    for( ; cnt-- > 0; ) {
         n = va_arg( arg, char * );
         if( n != NULL ) {
             strcat( str, n );
         }
-        cnt--;
     }
     va_end( arg );
     return( str );

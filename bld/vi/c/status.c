@@ -84,27 +84,21 @@ static void StatusLine( int line, char *str, int format )
     case FMT_CENTRE:
         blanks = 0;
         if( width > len ) {
-            blanks = (width - len) / 2;
+            blanks = ( width - len ) / 2;
         }
         break;
     default:
         DisplayLineInWindow( status_window_id, line, str );
         return;
     }
-    i = 1;
-    while( i <= blanks ) {
+    for( i = 1; i <= blanks; i++ ) {
         SetCharInWindowWithColor( status_window_id, line, i, ' ', style );
-        i++;
     }
-    j = 0;
-    while( j < len && i <= width ) {
+    for( j = 0; j < len && i <= width; j++, i++ ) {
         SetCharInWindowWithColor( status_window_id, line, i, str[j], style );
-        j += 1;
-        i += 1;
     }
-    while( i <= width ) {
+    for( ; i <= width; i++ ) {
         SetCharInWindowWithColor( status_window_id, line, i, ' ', style );
-        i++;
     }
 
 } /* StatusLine */
@@ -229,13 +223,10 @@ void UpdateStatusWindow( void )
             }
             if( use_num ) {
                 ltoa( num, numstr, 10 );
-                digits -= strlen( numstr );
-                while( digits > 0 ) {
+                for( digits -= strlen( numstr ); digits > 0; digits-- ) {
                     *res++ = ' ';
-                    digits--;
                 }
-                ptr = numstr;
-                while( *ptr != '\0' ) {
+                for( ptr = numstr; *ptr != '\0'; ) {
                     *res++ = *ptr++;
                 }
             }

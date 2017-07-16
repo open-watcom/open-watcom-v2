@@ -393,17 +393,16 @@ static void fillFileType( HWND hwndDlg )
 
     hwndCB = GetDlgItem( hwndDlg, SETFS_FILETYPE );
     for( index = 0, fts = FTSGetFirst(); fts != NULL; fts = FTSGetNext( fts ), ++index ) {
-        template1 = template = FTSGetFirstTemplate( fts );
         str[0] = '\0';
         strLen = 0;
-        while( template != NULL ) {
+        template1 = FTSGetFirstTemplate( fts );
+        for( template = template1; template != NULL; template = FTSGetNextTemplate( template ) ) {
             strLen += strlen( template->data ) + 2;
             if( strLen > sizeof( str ) ) {
                 break;
             }
             strcat( str, " " );
             strcat( str, template->data );
-            template = FTSGetNextTemplate( template );
         }
         filldlgData( dlgDataArray + index, template1->data, CurrentInfo );
         SendMessage( hwndCB, CB_INSERTSTRING, index, (LPARAM)(LPSTR)(str + 1) );
@@ -530,7 +529,7 @@ static long deleteSelectedFT( HWND hwndDlg )
     SendMessage( hwndCB, CB_GETLBTEXT, index, (LPARAM)(LPSTR)template );
     // can't delete *.* entry
     rc = IDYES;
-    if( !strcmp( template, "*.*" ) ) {
+    if( strcmp( template, "*.*" ) == 0 ) {
         MessageBox( hwndDlg, "Cannot delete catch-all item", "", MB_ICONINFORMATION | MB_OK );
         rc = IDNO;
     }

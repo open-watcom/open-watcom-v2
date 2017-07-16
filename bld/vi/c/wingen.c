@@ -186,7 +186,7 @@ void SetWindowCursorForReal( void )
     }
 #ifdef __WIN__
     // for windows assume tabs to be of lenght 1
-    if( !EditFlags.RealTabs ){
+    if( !EditFlags.RealTabs ) {
         SetGenericWindowCursor( current_window_id, (int) (CurrentPos.line - LeftTopPos.line + 1),
                                 VirtualColumnOnCurrentLine( CurrentPos.column ) - LeftTopPos.column );
     } else {

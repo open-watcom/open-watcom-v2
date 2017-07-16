@@ -45,7 +45,7 @@ static  char        *firstChar;
 
 static int isGMLComment( char *string )
 {
-    if( !strnicmp( string, ".*", 2 ) || !strnicmp( string, ":cmt.", 5 ) ) {
+    if( strnicmp( string, ".*", 2 ) == 0 || strnicmp( string, ":cmt.", 5 ) == 0 ) {
         return( 1 );
     } else {
         return( 0 );

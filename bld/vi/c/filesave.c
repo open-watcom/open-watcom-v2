@@ -44,13 +44,39 @@
 static int fileHandle;
 
 /*
+ * trimLine - remove trailing whitespace from line
+ */
+static int trimLine( char *buffer, line *cline )
+{
+    int     i;
+    int     len;
+    char    *data;
+
+    data = cline->data;
+    len = strlen( data );
+    if( EditFlags.CMode || EditFlags.RemoveSpaceTrailing ) {
+        for( i = len; i-- > 0; ) {
+            if( data[i] != ' ' && data[i] != '\t' ) {
+                break;
+            }
+            len = i;
+        }
+    }
+    memcpy( buffer, data, len );
+//    cline->len = len;
+//    data[len] = '\0';
+    return( len );
+
+} /* trimLine */
+
+/*
  * writeRange - write a range of lines in an fcb to current file
  */
 static vi_rc writeRange( linenum s, linenum e, fcb *cfcb, long *bytecnt, bool write_crlf, bool last_eol )
 {
     line        *cline;
-    int         i, len = 0;
-    char        *buff, *data;
+    int         len1, len;
+    char        *buff;
     vi_rc       rc;
 
     if( s > e ) {
@@ -66,11 +92,11 @@ static vi_rc writeRange( linenum s, linenum e, fcb *cfcb, long *bytecnt, bool wr
     /*
      * copy data into buffer
      */
+    len = 0;
     for( ; s <= e; ++s ) {
-        for( data = cline->data; *data != '\0'; ++data ) {
-            *buff++ = *data;
-        }
-        len += cline->len;
+        len1 = trimLine( buff, cline );
+        buff += len1;
+        len += len1;
         if( s != e || last_eol ) {
             if( write_crlf ) {
                 *buff++ = CR;
@@ -86,15 +112,15 @@ static vi_rc writeRange( linenum s, linenum e, fcb *cfcb, long *bytecnt, bool wr
      * now write the buffer
      */
     if( fileHandle == 0 ) {
-        i = fwrite( WriteBuffer, 1, len, stdout );
+        len1 = fwrite( WriteBuffer, 1, len, stdout );
     } else {
-        i = write( fileHandle, WriteBuffer, len );
+        len1 = write( fileHandle, WriteBuffer, len );
     }
-    if( i != len ) {
+    if( len1 != len ) {
         return( ERR_FILE_WRITE );
     }
 
-    *bytecnt += (long) len;
+    *bytecnt += (long)len;
     return( ERR_NO_ERR );
 
 } /* writeRange */
@@ -140,8 +166,8 @@ vi_rc SaveFileAs( void )
     }
     // rename current file
 #ifndef __NT__   // this is stupid for all case-preserving systems like NT
-    FileLower( fn );          
-#endif    
+    FileLower( fn );
+#endif
     sprintf( cmd, "set filename \"%s\"", fn );
     RunCommandLine( cmd );
     UpdateLastFileList( fn );
@@ -340,7 +366,7 @@ vi_rc SaveAndExit( const char *fname )
     /*
      * save file and get next one
      */
-    if( CurrentFile != NULL ){
+    if( CurrentFile != NULL ) {
         if( CurrentFile->modified ) {
             rc = SourceHook( SRC_HOOK_WRITE, ERR_NO_ERR );
             if( rc != ERR_NO_ERR ) {

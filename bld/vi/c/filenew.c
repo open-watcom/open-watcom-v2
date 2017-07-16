@@ -57,7 +57,7 @@ static vi_rc createNewFile( const char *name, bool same_file )
     } else {
         if( name != NULL ) {
             for( tmp = InfoHead; tmp != NULL; tmp = tmp->next ) {
-                if( !strcmp( tmp->CurrentFile->name, name ) ) {
+                if( strcmp( tmp->CurrentFile->name, name ) == 0 ) {
                     break;
                 }
             }
@@ -78,7 +78,7 @@ static vi_rc createNewFile( const char *name, bool same_file )
         return( rc );
     }
 #ifdef __WIN__
-    if( !strncmp( name, "untitled", 8 ) ) {
+    if( strncmp( name, "untitled", 8 ) == 0 ) {
         // better yet, pass normal/maximize flag to NewWindow2...
         ShowWindow( wid, SW_SHOWMAXIMIZED );
     }

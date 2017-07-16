@@ -44,7 +44,7 @@ static info *findInfo( char *file_name )
     info    *i;
 
     for( i = InfoHead; i != NULL; i = i->next ) {
-        if( !strcmp( file_name, i->CurrentFile->name ) ) {
+        if( strcmp( file_name, i->CurrentFile->name ) == 0 ) {
             break;
         }
     }

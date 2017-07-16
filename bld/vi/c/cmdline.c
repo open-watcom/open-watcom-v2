@@ -796,7 +796,7 @@ vi_rc RunCommandLine( const char *cmdl )
                         strcpy( snoopbuf, ff->path );
                         /* assume no string means current directory */
                         if( strlen( snoopbuf ) &&
-                            snoopbuf[strlen( snoopbuf ) - 1] != '\\' ){
+                            snoopbuf[strlen( snoopbuf ) - 1] != '\\' ) {
                             strcat( snoopbuf, "\\" );
                         }
                         MySprintf( st, "%s", ff->find );
@@ -858,10 +858,10 @@ vi_rc RunCommandLine( const char *cmdl )
             break;
         }
         rc = ERR_NO_ERR;
-        if( !stricmp( st, "on" ) ) {
+        if( stricmp( st, "on" ) == 0 ) {
             EditFlags.EchoOn = true;
             break;
-        } else if( !stricmp( st, "off" ) ) {
+        } else if( stricmp( st, "off" ) == 0 ) {
             EditFlags.EchoOn = false;
             break;
         }
@@ -1014,7 +1014,7 @@ vi_rc ProcessWindow( int tkn, const char *data )
             rc = NewStatusWindow();
         } else if( wInfo == &menubarw_info ) {
             rc = InitMenu();
-        } else if ( wInfo == &editw_info ) {
+        } else if( wInfo == &editw_info ) {
             ResetAllWindows();
         }
         wInfo = NULL;

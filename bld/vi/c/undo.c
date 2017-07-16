@@ -118,12 +118,11 @@ static void numberLines( fcb *cfcb, linenum sline )
 {
     linenum     tot;
 
-    while( cfcb != NULL ) {
+    for( ; cfcb != NULL; cfcb = cfcb->next ) {
         tot = cfcb->end_line - cfcb->start_line;
         cfcb->start_line = sline;
         cfcb->end_line = sline + tot;
         sline += tot + 1;
-        cfcb = cfcb->next;
     }
 
 } /* numberLines */
