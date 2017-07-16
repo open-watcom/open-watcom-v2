@@ -39,17 +39,18 @@
 #include "clibext.h"
 
 
-int BuildQuotedItem( char *dst, size_t maxlen, const char *path, const char *filename, const char *quote_char )
-/*************************************************************************************************************/
+bool BuildQuotedItem( char *dst, size_t maxlen, const char *path, const char *filename, const char *quote_char )
+/**************************************************************************************************************/
 {
-    int has_space = 0;
+    bool    has_space;
 
     /* unused parameters */ (void)maxlen;
 
+    has_space = false;
     if( strchr( path, ' ' ) != NULL )
-        has_space = 1;
+        has_space = true;
     if( strchr( filename, ' ' ) != NULL )
-        has_space = 1;
+        has_space = true;
 
     strcpy( dst, has_space ? quote_char : "" );
     strcat( dst, path );
@@ -59,8 +60,8 @@ int BuildQuotedItem( char *dst, size_t maxlen, const char *path, const char *fil
     return( has_space );
 }
 
-int UnquoteItem( char *dst, size_t maxlen, const char *src, int (*chk_sep)(char) )
-/*********************************************************************************
+bool UnquoteItem( char *dst, size_t maxlen, const char *src, bool (*chk_sep)(char) )
+/***********************************************************************************
  * Removes doublequote characters from filename and copies other content
  * from src to dst. Only maxlen number of characters are copied to dst
  * including terminating NUL character. Returns value 1 when quotes was
@@ -69,27 +70,27 @@ int UnquoteItem( char *dst, size_t maxlen, const char *src, int (*chk_sep)(char)
 {
     size_t  pos;
     char    c;
-    char    string_open;
-    char    un_quoted;
+    bool    string_open;
+    bool    un_quoted;
 
     assert( maxlen );
 
     // leave space for NUL terminator
     maxlen--;
     pos = 0;
-    string_open = 0;
-    un_quoted = 0;
+    string_open = false;
+    un_quoted = false;
     while( pos < maxlen && (c = *src++) != '\0' ) {
         if( c == '\"' ) {
             string_open = !string_open;
-            un_quoted = 1;
+            un_quoted = true;
             continue;
         }
         if( c == '\\' ) {
             if( string_open && *src != '\0' ) {
                 c = *src++;
                 if( c == '\"' ) {
-                    un_quoted = 1;
+                    un_quoted = true;
                 }
             }
         } else if( !string_open && chk_sep( c ) ) {
@@ -103,16 +104,16 @@ int UnquoteItem( char *dst, size_t maxlen, const char *src, int (*chk_sep)(char)
     return( un_quoted );
 }
 
-char *FindNextSep( const char *str, int (*chk_sep)(char) )
+char *FindNextSep( const char *str, bool (*chk_sep)(char) )
 /*********************************************************
  * Finds next free white space character, allowing doublequotes to
  * be used to specify strings with white spaces.
  */
 {
-    char        string_open;
+    bool        string_open;
     char        c;
 
-    string_open = 0;
+    string_open = false;
     while( (c = *str) != '\0' ) {
         if( c == '\"' ) {
             string_open = !string_open;
