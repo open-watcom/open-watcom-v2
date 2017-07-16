@@ -422,12 +422,11 @@ void GUISetKeyState( void )
     shift = _wpi_getkeystate( VK_SHIFT ) < 0;
 
     vk_cap = _wpi_getkeystate( VK_CAPITAL );
-    /* vk_cap & 0x80 is caplock pressed.
-     * vk_cap & 0x01 indicates and odd number of toggles since the system
+    /* vk_cap & 0x8000 is caplock pressed.
+     * vk_cap & 0x0001 indicates and odd number of toggles since the system
      * was started.
      */
-    caplock = ( ( vk_cap & 0x8000 ) && !( vk_cap & 0x0001 ) ) ||
-              ( ( vk_cap & 0x0001 ) && !( vk_cap & 0x8000 ) );
+    caplock = ( ( vk_cap < 0 ) ? (vk_cap & 1) == 0 : (vk_cap & 1) != 0 );
     if( ( shift && !caplock ) || ( caplock && !shift ) ) {
         SET_KS_SHIFT;
     }
