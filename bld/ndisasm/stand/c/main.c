@@ -71,7 +71,7 @@ hash_table      NameRecognitionTable;
 hash_table      SkipRefTable = NULL;
 
 orl_handle              ORLHnd;
-orl_file_handle         ObjFileHnd;
+orl_file_handle         ObjFileHnd = ORL_NULL_HANDLE;
 orl_sec_handle          debugHnd = ORL_NULL_HANDLE;
 dis_handle              DHnd;
 dis_format_flags        DFormat;
@@ -1019,36 +1019,44 @@ int main( int argc, char *argv[] )
     _argc = argc;
 #endif
 
-    Init();
-    /* build the symbol table */
-    for( section = Sections.first; section != NULL; section = section->next ) {
-        error = DealWithSection( section, 1 );
-        if( error != RC_OKAY ) {
-            return( EXIT_FAILURE );
+    error = Init();
+    if( error == RC_OKAY ) {
+        /* build the symbol table */
+        for( section = Sections.first; section != NULL; section = section->next ) {
+            error = DealWithSection( section, 1 );
+            if( error != RC_OKAY ) {
+                break;
+            }
         }
-    }
-    /* number all the anonymous labels */
-    for( section = Sections.first; section != NULL; section = section->next ) {
-        h_key.u.sec_handle = section->shnd;
-        h_data = HashTableQuery( HandleToLabelListTable, h_key );
-        if( h_data != NULL ) {
-            sec_label_list = h_data->u.sec_label_list;
-            if( sec_label_list != NULL ) {
-                numberUnnamedLabels( sec_label_list->first );
+        if( error == RC_OKAY ) {
+            /* number all the anonymous labels */
+            for( section = Sections.first; section != NULL; section = section->next ) {
+                h_key.u.sec_handle = section->shnd;
+                h_data = HashTableQuery( HandleToLabelListTable, h_key );
+                if( h_data != NULL ) {
+                    sec_label_list = h_data->u.sec_label_list;
+                    if( sec_label_list != NULL ) {
+                        numberUnnamedLabels( sec_label_list->first );
+                    }
+                }
+            }
+            doPrologue();
+            for( section = Sections.first; section != NULL; section = section->next ) {
+                error = DealWithSection( section, 2 );
+                if( error != RC_OKAY ) {
+                    break;
+                }
+            }
+            if( error == RC_OKAY ) {
+                doEpilogue();
+                if( Options & PRINT_PUBLICS ) {
+                    PrintPublics();
+                }
             }
         }
     }
-    doPrologue();
-    for( section = Sections.first; section != NULL; section = section->next ) {
-        error = DealWithSection( section, 2 );
-        if( error != RC_OKAY ) {
-            return( EXIT_FAILURE );
-        }
-    }
-    doEpilogue();
-    if( Options & PRINT_PUBLICS ) {
-        PrintPublics();
-    }
     Fini();
+    if( error != RC_OKAY )
+        return( EXIT_FAILURE );
     return( EXIT_SUCCESS );
 }

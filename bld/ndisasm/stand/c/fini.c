@@ -93,15 +93,17 @@ static void freeLabelList( orl_sec_handle shnd )
     label_entry         next;
     hash_key            h_key;
 
-    h_key.u.sec_handle = shnd;
-    h_data = HashTableQuery( HandleToLabelListTable, h_key );
-    if( h_data != NULL ) {
-        sec_label_list = h_data->u.sec_label_list;
-        for( entry = sec_label_list->first; entry != NULL; entry = next ) {
-            next = entry->next;
-            FreeLabel( entry );
+    if( HandleToLabelListTable != NULL ) {
+        h_key.u.sec_handle = shnd;
+        h_data = HashTableQuery( HandleToLabelListTable, h_key );
+        if( h_data != NULL ) {
+            sec_label_list = h_data->u.sec_label_list;
+            for( entry = sec_label_list->first; entry != NULL; entry = next ) {
+                next = entry->next;
+                FreeLabel( entry );
+            }
+            MemFree( sec_label_list );
         }
-        MemFree( sec_label_list );
     }
 }
 
@@ -197,12 +199,14 @@ void Fini( void )
 {
     freeSectionList( &Sections );
     freeLabelList( 0 );
-    ORLFileScan( ObjFileHnd, NULL, SectionFini );
-    if( Options & PRINT_PUBLICS ) {
-        freePublics();
+    if( ObjFileHnd != ORL_NULL_HANDLE ) {
+        ORLFileScan( ObjFileHnd, NULL, SectionFini );
+        if( Options & PRINT_PUBLICS ) {
+            freePublics();
+        }
+        FreeServicesUsed();
     }
     FreeHashTables();
-    FreeServicesUsed();
     CloseFiles();
     MemPrtList();
     MemClose();

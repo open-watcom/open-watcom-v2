@@ -42,6 +42,6 @@
 
 #define LIST_FILE_EXTENSION ".lst"
 
-extern void HandleArgs( char * );
+extern return_val HandleArgs( void );
 
 #endif

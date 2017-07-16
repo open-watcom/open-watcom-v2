@@ -33,6 +33,9 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#if defined( __WATCOMC__ )
+    #include <process.h>
+#endif
 #include "wio.h"
 #include "dis.h"
 #include "global.h"
@@ -91,11 +94,6 @@ static void printUsage( int msg )
             BufferPrint();
         }
     }
-    if( ObjFileName != NULL ) {
-        MemFree( ObjFileName );
-    }
-    MemClose();
-    exit( 1 );
 }
 
 static int is_ws( char ch )
@@ -191,15 +189,30 @@ static void composeFileNames( bool list_file )
     }
 }
 
-void HandleArgs( char *cmd )
+return_val HandleArgs( void )
 {
     char        *ptr;
     bool        list_file = false;
+    char        *cmd;
+    int         len;
 
     DFormat |= DFF_PSEUDO | DFF_SYMBOLIC_REG;
+
+    len = _bgetcmd( NULL, 0 );
+    cmd = malloc( len + 1 );
+    if( cmd == NULL ) {
+        return( RC_OUT_OF_MEMORY );
+    }
+    if( len > 0 ) {
+        _bgetcmd( cmd, len + 1 );
+    } else {
+        *cmd = '\0';
+    }
     cmd = skipBlanks( cmd );
     if( *cmd == '\0' || *cmd == '?' ) {
         printUsage( 0 );
+        free( cmd );
+        return( RC_ERROR );
     } else {
         while( *cmd != '\0' ) {
             if( IS_OPT_DELIM( *cmd ) ) {
@@ -223,14 +236,20 @@ void HandleArgs( char *cmd )
                                 LabelChar = (char)toupper( *(unsigned char *)cmd );
                             } else {
                                 printUsage( INVALID_I );
+                                free( cmd );
+                                return( RC_ERROR );
                             }
                         } else {
                             printUsage( INVALID_I );
+                            free( cmd );
+                            return( RC_ERROR );
                         }
                         break;
                     case 'l':
                         if( ListFileName ) {
                             printUsage( ONLY_ONE_LISTING );
+                            free( cmd );
+                            return( RC_ERROR );
                         }
                         list_file = true;
                         cmd++;
@@ -289,6 +308,8 @@ void HandleArgs( char *cmd )
                     case 's':
                         if( SourceFileName ) {
                             printUsage( ONLY_ONE_SOURCE );
+                            free( cmd );
+                            return( RC_ERROR );
                         }
                         source_mix = true;
                         cmd++;
@@ -304,11 +325,14 @@ void HandleArgs( char *cmd )
                         BufferStore( "  -%c\n\n", *cmd );
                         BufferPrint();
                         printUsage( 0 );
-                        break;
+                        free( cmd );
+                        return( RC_ERROR );
                 }
             } else {
                 if( ObjFileName ) {
                     printUsage( ONLY_ONE_OBJECT );
+                    free( cmd );
+                    return( RC_ERROR );
                 }
                 ptr = cmd;
                 cmd = skipToNextWS( cmd );
@@ -319,9 +343,13 @@ void HandleArgs( char *cmd )
     }
     if( !ObjFileName ) {
         printUsage( NO_OBJECT );
+        free( cmd );
+        return( RC_ERROR );
     }
     composeFileNames( list_file );
     if( DFormat & DFF_ASM ) {
         Options &= ~(PRINT_PUBLICS | PRINT_EXTERNS);
     }
+    free( cmd );
+    return( RC_OKAY );
 }
