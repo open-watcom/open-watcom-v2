@@ -12212,3 +12212,10 @@ since there was no character after it (i.e., "-p#@" ).
 When C++11 is enabled, the
 .kw auto
 can no longer appear as a storage specifier.
+
+:MSGSYM. WARN_IMPLICIT_NULLPTR_TO_BOOL
+:MSGTXT. Implicit conversion from 'decltype(nullptr)' to 'bool'.
+:MSGJTXT.
+:WARNING. 1
+When C++11 is enabled, an implicit conversion from std::nullptr_t
+to bool is suspicious.

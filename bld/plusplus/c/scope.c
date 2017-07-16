@@ -828,6 +828,7 @@ static void scopeInit(          // SCOPES INITIALIZATION
     if( !CompFlags.enable_std0x ) {
         KwDisable( T_STATIC_ASSERT );
         KwDisable( T_DECLTYPE );
+        KwDisable( T_NULLPTR );
     }
     ExtraRptRegisterCtr( &syms_defined, "symbols defined" );
     ExtraRptRegisterCtr( &scopes_alloced, "scopes allocated" );
@@ -858,6 +859,7 @@ static void scopeFini(          // SCOPES COMPLETION
     if( !CompFlags.enable_std0x ) {
         KwEnable( T_STATIC_ASSERT );
         KwEnable( T_DECLTYPE );
+        KwEnable( T_NULLPTR );
     }
     CarveDestroy( carveSYM_REGION );
     CarveDestroy( carveUSING_NS );

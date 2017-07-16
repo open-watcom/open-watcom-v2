@@ -959,6 +959,10 @@ static YYTOKENTYPE specialAngleBracket( PARSE_STACK *state, YYTOKENTYPE token )
     return( token );
 }
 
+/**
+ * Generate the tree node for the current token
+ * and return its type as a YYTOKENTYPE.
+ */
 static YYTOKENTYPE yylex( PARSE_STACK *state )
 /********************************************/
 {
@@ -1087,6 +1091,11 @@ static YYTOKENTYPE yylex( PARSE_STACK *state )
     case T_FALSE:
         token = Y_FALSE;
         yylval.tree = PTreeBoolConstant( 0 );
+        setLocation( yylval.tree, &yylocation );
+        break;
+    case T_NULLPTR:
+        token = Y_NULLPTR;
+        yylval.tree = PTreeNullptrConstant();
         setLocation( yylval.tree, &yylocation );
         break;
     default:

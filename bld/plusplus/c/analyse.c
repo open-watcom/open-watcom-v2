@@ -1799,6 +1799,11 @@ static unsigned classify_operand( // CLASSIFY OPERAND AS PTR, ARITH, OTHER
                     retn = OPCL_OTHER;
                 }
                 break;
+              // While nullptr is neither a pointer nor an arithmetic type,
+              // it should act like 0 on most occasions.
+              case PT_PTR_CONSTANT :
+                retn = OPCL_ARITH;
+                break;
               default :
                 retn = OPCL_OTHER;
                 break;
@@ -2975,7 +2980,7 @@ start_opac_string:
               &&( 0 != TypeIsBasedPtr( type ) ) ) {
                 continue;
             }
-            if( ! NodeIsZeroIntConstant( right ) ) {
+            if( !( NodeIsZeroIntConstant( right ) || NodeIsNullptr( right ) ) ) {
                 exprError( right, ERR_NOT_PTR_OR_ZERO );
                 break;
             }

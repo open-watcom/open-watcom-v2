@@ -183,13 +183,19 @@ bool Zero64                     // TEST IF 64-BITTER IS ZERO
     return( test->u._32[0] == 0 && test->u._32[1] == 0 );
 }
 
-
-static bool zeroConstant(       // TEST IF NODE IS ZERO CONSTANT
-    PTREE expr )                // - the expression
+/**
+ * Check if node is or evaluates to a zero constant for folding purposes.
+ *
+ * \param expr The expression to be analyzed.
+ */
+static bool zeroConstant( PTREE expr )
 {
     PTREE orig;
 
     switch( expr->op ) {
+    // For boolean folding purposes, nullptr evaluates to zero (false).
+    case PT_PTR_CONSTANT:
+        return( true );
     case PT_INT_CONSTANT:
         if( NULL == Integral64Type( expr->type ) ) {
             return( expr->u.int_constant == 0 );
@@ -209,13 +215,19 @@ static bool zeroConstant(       // TEST IF NODE IS ZERO CONSTANT
     return( false );
 }
 
-
-static bool nonZeroExpr(        // TEST IF NODE IS NON-ZERO EXPRESSION
-    PTREE expr )                // - the expression
+/**
+ * Check if expression evaluates to a non-zero value.
+ *
+ * \param expr The expression to be evaluated.
+ */
+static bool nonZeroExpr( PTREE expr )
 {
     PTREE orig;
 
     switch( expr->op ) {
+    // For boolean folding purposes, nullptr evaluates to zero.
+    case PT_PTR_CONSTANT:
+        return( false );
     case PT_INT_CONSTANT:
     case PT_FLOATING_CONSTANT:
         return ! zeroConstant( expr );

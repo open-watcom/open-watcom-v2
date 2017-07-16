@@ -1843,6 +1843,7 @@ TYPE AlignmentType( TYPE typ )
         case TYP_ARRAY:
             typ = typ->of;
             break;
+        case TYP_NULLPTR:
         case TYP_POINTER:
         case TYP_MEMBER_POINTER:
             return( GetBasicType( TYP_UINT ) );
@@ -8384,6 +8385,7 @@ static void initBasicTypes( void )
         TYP_LONG_DOUBLE,
         TYP_VOID,
         TYP_DOT_DOT_DOT,
+        TYP_NULLPTR,
         TYP_MAX
     };
 

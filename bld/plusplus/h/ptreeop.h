@@ -24,8 +24,8 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description: XMACRO for the various PTREE operators.
+*
 *
 ****************************************************************************/
 
@@ -38,6 +38,7 @@
 {   PTOP( PT_NULL               , PTS_NULL                      )
 ,   PTOP( PT_STRING_CONSTANT    , PTS_NULL                      )
 ,   PTOP( PT_INT_CONSTANT       , PTS_NULL                      )
+,   PTOP( PT_PTR_CONSTANT       , PTS_NULL                      )
 ,   PTOP( PT_FLOATING_CONSTANT  , PTS_NULL                      )
 ,   PTOP( PT_TYPE               , PTS_NULL                      )
 ,   PTOP( PT_ID                 , PTS_NULL                      )

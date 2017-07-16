@@ -257,6 +257,7 @@ typedef enum {
     TYP_GENERIC         = 0x1c,
     TYP_TYPENAME        = 0x1d,
     TYP_FREE            = 0x1e,
+    TYP_NULLPTR         = 0x1f,
     TYP_MAX,
 
     TYP_FIRST_VALID     = TYP_BOOL,

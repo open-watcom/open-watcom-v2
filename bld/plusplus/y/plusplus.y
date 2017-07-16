@@ -142,6 +142,7 @@ Modified        By              Reason
 %token Y_LONG
 %token Y_MUTABLE
 %token Y_NAMESPACE
+%token Y_NULLPTR
 %token Y_NEW
 %token Y_OPERATOR
 %token Y_PRIVATE
@@ -229,6 +230,7 @@ Modified        By              Reason
 %token <tree> Y_TYPE_NAME
 %token <tree> Y_TEMPLATE_NAME
 %token <tree> Y_NAMESPACE_NAME
+%token <tree> Y_NULLPTR
 %token <tree> Y_CONSTANT
 %token <tree> Y_TRUE
 %token <tree> Y_FALSE
@@ -426,6 +428,7 @@ Modified        By              Reason
 
 %type <tree> identifier
 %type <tree> boolean-literal
+%type <tree> pointer-literal
 %type <tree> new-keyword
 %type <tree> delete-keyword
 %type <tree> declarator-id
@@ -710,6 +713,7 @@ literal
     : Y_CONSTANT /* integer-literal character-literal floating-literal */
     | string-literal
     | boolean-literal
+    | pointer-literal
     ;
 
 string-literal
@@ -721,6 +725,10 @@ string-literal
 boolean-literal
     : Y_TRUE
     | Y_FALSE
+    ;
+
+pointer-literal
+    : Y_NULLPTR
     ;
 
 
