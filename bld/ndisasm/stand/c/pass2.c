@@ -555,12 +555,10 @@ static void processDataInCode( section_ptr section, unsigned_8 *contents, struct
 
     offset = data->loop + size;
     if( DFormat & DFF_ASM ) {
-        DumpASMDataFromSection( contents, data->loop, offset, l_entry,
-                                &(data->r_entry), section );
+        DumpASMDataFromSection( contents, data->loop, offset, l_entry, &(data->r_entry), section );
         BufferPrint();
     } else {
-        DumpDataFromSection( contents, data->loop, offset, l_entry,
-                             &(data->r_entry), section );
+        DumpDataFromSection( contents, data->loop, offset, l_entry, &(data->r_entry), section );
     }
     for( ; data->r_entry != NULL; data->r_entry = data->r_entry->next ) {
         if( data->r_entry->offset >= offset ) {

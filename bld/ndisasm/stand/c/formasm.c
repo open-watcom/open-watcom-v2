@@ -100,7 +100,7 @@ bool IsMasmOutput( void )
     return( (DFormat & DFF_UNIX) == 0 && ( GetFormat() == ORL_OMF ) );
 }
 
-static void printRawAndAddress( char * raw_data, dis_sec_offset address )
+static void printRawAndAddress( const char *raw_data, dis_sec_offset address )
 {
     switch( strlen( raw_data ) ) {
     case 0:
@@ -131,7 +131,7 @@ static bool printableChar( char c )
     }
 }
 
-static bool printableString( char *s )
+static bool printableString( const char *s )
 {
     size_t  i;
 
@@ -143,7 +143,7 @@ static bool printableString( char *s )
     return( true );
 }
 
-static size_t printString( char *string, string_type type )
+static size_t printString( const char *string, string_type type )
 {
     char        *buffer;
     size_t      i, j;
@@ -184,7 +184,7 @@ static size_t printString( char *string, string_type type )
             break;
         }
     }
-    buffer[j] = 0;
+    buffer[j] = '\0';
 
     BufferStore( "\"%s\"", buffer );
     BufferPrint();
@@ -238,7 +238,7 @@ static void printRest( unsigned_8 *bytes, size_t size )
 {
     size_t      i;
     size_t      d;
-    char        *btype;
+    const char  *btype;
     bool        is_masm;
     dis_value   value;
 
@@ -274,7 +274,7 @@ static void printRest( unsigned_8 *bytes, size_t size )
                 BufferConcat( btype );
                 BufferPrint();
             } else {
-                BufferConcat(", ");
+                BufferConcat( ", " );
             }
         }
         i++;
@@ -347,7 +347,7 @@ dis_sec_addend HandleAddend( ref_entry r_entry )
         break;
     }
     if( (bits < 32) && (r_addend & (1 << (bits - 1) ) ) )
-        return( r_addend | ( 0xFFFFFFFF ^ ((1 << bits) - 1) ) );
+        r_addend |= ( 0xFFFFFFFF ^ ((1 << bits) - 1) );
     return( r_addend );
 }
 
@@ -448,9 +448,6 @@ unsigned HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
         types = unixTypes;
     }
     rv = RelocSize( r_entry );
-    if( asmLabels && types[rv] != NULL ) {
-        BufferConcat( types[rv] );
-    }
     value.u._32[I64HI32] = 0;
     switch( rv ) {
     case 6:
@@ -472,6 +469,9 @@ unsigned HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
         value.u._32[I64LO32] = 0;
         break;
     }
+    if( asmLabels && types[rv] != NULL ) {
+        BufferConcat( types[rv] );
+    }
     HandleAReference( value, 0, RFLAG_DEFAULT | RFLAG_IS_IMMED, r_entry->offset, r_entry->offset + rv, &r_entry, buff );
     BufferConcat( buff );
     switch( rv ) {
@@ -492,33 +492,29 @@ unsigned HandleRefInData( ref_entry r_entry, void *data, bool asmLabels )
     return( rv );
 }
 
-static void printOut( char *string, size_t offset, size_t size )
+static void printOut( const char *string, size_t offset, size_t size )
 {
-    char *              string_left = string;
-    size_t              curr_pos = 0;
+    const char          *string_left;
+    size_t              item_size;
     bool                ascii;
 
     /* unused parameters */ (void)offset;
 
     ascii = !IsMasmOutput();
-    for( ;; ) {
-        if( string_left < ( string + size ) ) {
-            if( ascii && printableString( string_left ) && strlen( string_left ) > 0 ) {
-                if( strlen( string_left ) < ( size - curr_pos ) ) {
-                    BufferConcat( "    .asciiz\t" );
-                    curr_pos = printString( string_left, ASCIZ );
-                } else {
-                    BufferConcat( "    .ascii\t" );
-                    curr_pos = printString( string_left, ASCII );
-                }
-                string_left += curr_pos;
-            } else {
-                printRest( (unsigned_8 *)string_left, size - (size_t)( string_left - string ) );
-                break;
-            }
-        } else {
+    string_left = string;
+    for( ; string_left < ( string + size ); ) {
+        if( !ascii || !printableString( string_left ) || strlen( string_left ) == 0 ) {
+            printRest( (unsigned_8 *)string_left, size - (size_t)( string_left - string ) );
             break;
         }
+        if( strlen( string_left ) < ( size - item_size ) ) {
+            BufferConcat( "    .asciiz\t" );
+            item_size = printString( string_left, ASCIZ );
+        } else {
+            BufferConcat( "    .ascii\t" );
+            item_size = printString( string_left, ASCII );
+        }
+        string_left += item_size;
         BufferConcatNL();
         BufferPrint();
     }
@@ -594,7 +590,7 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, dis_sec_offset start,
 {
     dis_sec_offset      curr_pos;
     size_t              curr_size;
-    dis_sec_offset      tmp_size;
+    size_t              tmp_size;
     size_t              size;
     label_entry         l_entry;
     ref_entry           r_entry;
@@ -634,7 +630,7 @@ return_val DumpASMDataFromSection( unsigned_8 *contents, dis_sec_offset start,
         }
         if( r_entry != NULL && r_entry->offset < (curr_pos + curr_size) ) {
             if( r_entry->offset == curr_pos ) {
-                BufferConcat("    ");
+                BufferConcat( "    " );
                 curr_size = HandleRefInData( r_entry, contents + curr_pos, true );
                 BufferConcatNL();
                 BufferPrint();
@@ -816,11 +812,11 @@ static return_val bssMasmASMSection( section_ptr section, dis_sec_size size, lab
 
             switch( l_entry->type ) {
             case LTYP_UNNAMED:
-                BufferStore("%c$%d", LabelChar, l_entry->label.number );
+                BufferStore( "%c$%d", LabelChar, l_entry->label.number );
                 break;
             case LTYP_SECTION:
             case LTYP_NAMED:
-                BufferStore("%s", l_entry->label.name );
+                BufferStore( "%s", l_entry->label.name );
                 break;
             }
 

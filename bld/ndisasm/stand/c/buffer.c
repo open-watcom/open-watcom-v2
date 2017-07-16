@@ -168,12 +168,12 @@ void BufferPrint( void )
 // print the buffer to current output destination
 {
     Print( Buffer );
-    *Buffer = 0;
+    *Buffer = '\0';
 }
 
 void BufferHex( unsigned prec, dis_value value )
 {
-    FmtHexNum( IntermedBuffer, prec, value, true );
+    FmtHexNum( IntermedBuffer, prec, value, false );
     BufferConcat( IntermedBuffer );
 }
 

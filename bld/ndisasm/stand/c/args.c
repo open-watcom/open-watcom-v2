@@ -96,18 +96,14 @@ static void printUsage( int msg )
     }
 }
 
-static int is_ws( char ch )
+static bool is_ws( char ch )
 {
-    if( isspace( ch ) )
-        return( 1 );
-    return( 0 );
+    return( isspace( ch ) != 0 );
 }
 
-static int is_ws_or_option( char ch )
+static bool is_ws_or_option( char ch )
 {
-    if( isspace( ch ) || IS_OPT_DELIM( ch ) )
-        return( 1 );
-    return( 0 );
+    return( isspace( ch ) || IS_OPT_DELIM( ch ) );
 }
 
 static char *skipBlanks( const char *cmd )
@@ -118,17 +114,17 @@ static char *skipBlanks( const char *cmd )
     return( (char *)cmd );
 }
 
-static char *skipToNextWS( const char *cmd )
+static char *findNextWS( const char *cmd )
 {
     return( FindNextSep( cmd, is_ws ) );
 }
 
-static char *skipToNextArg( const char *cmd )
+static char *findNextArg( const char *cmd )
 {
     return( skipBlanks( FindNextSep( cmd, is_ws_or_option ) ) );
 }
 
-static char *getFileName( char *start, char *following )
+static char *getFileName( const char *start, const char *following )
 {
     size_t      length;
     char        *name;
@@ -166,7 +162,7 @@ static void composeFileNames( bool list_file )
     if( strlen( extension ) == 0 ) {
         length = strlen( ObjFileName );
         MemFree( ObjFileName );
-        ObjFileName = (char *) MemAlloc( length + strlen( OBJ_FILE_EXTENSION ) + 1 );
+        ObjFileName = (char *)MemAlloc( length + strlen( OBJ_FILE_EXTENSION ) + 1 );
         _makepath( ObjFileName, drive, dir, file_name, OBJ_FILE_EXTENSION );
     } // else file name has an extension - leave as is
 #endif
@@ -174,7 +170,7 @@ static void composeFileNames( bool list_file )
         if( ListFileName == NULL ) {
             length = strlen( drive ) + strlen( dir ) + strlen( dir ) +
                 strlen( file_name ) + strlen( LIST_FILE_EXTENSION );
-            ListFileName = (char *) MemAlloc( length + 1 );
+            ListFileName = (char *)MemAlloc( length + 1 );
             _makepath( ListFileName, drive, dir, file_name, LIST_FILE_EXTENSION );
         } else {
             // check extension
@@ -182,7 +178,7 @@ static void composeFileNames( bool list_file )
             if( strlen( extension ) == 0 ) {
                 length = strlen( ListFileName );
                 MemFree( ListFileName );
-                ListFileName = (char *) MemAlloc( length + strlen( LIST_FILE_EXTENSION ) + 1 );
+                ListFileName = (char *)MemAlloc( length + strlen( LIST_FILE_EXTENSION ) + 1 );
                 _makepath( ListFileName, drive, dir, file_name, LIST_FILE_EXTENSION );
             } // else has extension, leave it as is
         }
@@ -191,10 +187,11 @@ static void composeFileNames( bool list_file )
 
 return_val HandleArgs( void )
 {
-    char        *ptr;
+    const char  *ptr;
     bool        list_file = false;
     char        *cmd;
     int         len;
+    return_val  error;
 
     DFormat |= DFF_PSEUDO | DFF_SYMBOLIC_REG;
 
@@ -203,6 +200,7 @@ return_val HandleArgs( void )
     if( cmd == NULL ) {
         return( RC_OUT_OF_MEMORY );
     }
+    error = RC_OKAY;
     if( len > 0 ) {
         _bgetcmd( cmd, len + 1 );
     } else {
@@ -211,145 +209,144 @@ return_val HandleArgs( void )
     cmd = skipBlanks( cmd );
     if( *cmd == '\0' || *cmd == '?' ) {
         printUsage( 0 );
-        free( cmd );
-        return( RC_ERROR );
+        error = RC_ERROR;
     } else {
         while( *cmd != '\0' ) {
             if( IS_OPT_DELIM( *cmd ) ) {
                 cmd++;
                 switch( tolower( *cmd ) ) {
-                    case 'a':
-                        DFormat |= DFF_ASM;
-                        if( cmd[1] == 'u' ) {
-                            ++cmd;
-                            DFormat |= DFF_UNIX;
-                        }
-                        break;
-                    case 'e':
-                        Options |= PRINT_EXTERNS;
-                        break;
-                    case 'i':
+                case 'a':
+                    DFormat |= DFF_ASM;
+                    if( cmd[1] == 'u' ) {
+                        ++cmd;
+                        DFormat |= DFF_UNIX;
+                    }
+                    break;
+                case 'e':
+                    Options |= PRINT_EXTERNS;
+                    break;
+                case 'i':
+                    cmd++;
+                    if( *cmd == '=' ) {
                         cmd++;
-                        if( *cmd == '=' ) {
-                            cmd++;
-                            if( !isspace( *cmd ) ) {
-                                LabelChar = (char)toupper( *(unsigned char *)cmd );
-                            } else {
-                                printUsage( INVALID_I );
-                                free( cmd );
-                                return( RC_ERROR );
-                            }
-                        } else {
-                            printUsage( INVALID_I );
-                            free( cmd );
-                            return( RC_ERROR );
+                        if( !isspace( *cmd ) ) {
+                            LabelChar = (char)toupper( *(unsigned char *)cmd );
+                            break;
                         }
+                    }
+                    printUsage( INVALID_I );
+                    error = RC_ERROR;
+                    break;
+                case 'l':
+                    if( ListFileName != NULL ) {
+                        printUsage( ONLY_ONE_LISTING );
+                        error = RC_ERROR;
                         break;
-                    case 'l':
-                        if( ListFileName ) {
-                            printUsage( ONLY_ONE_LISTING );
-                            free( cmd );
-                            return( RC_ERROR );
-                        }
-                        list_file = true;
+                    }
+                    list_file = true;
+                    cmd++;
+                    if( *cmd == '=' ) {
                         cmd++;
-                        if( *cmd == '=' ) {
-                            cmd++;
-                            ptr = cmd;
-                            cmd = skipToNextWS( cmd );
-                            ListFileName = getFileName( ptr, cmd );
-                        }
+                        ptr = cmd;
+                        cmd = findNextWS( cmd );
+                        ListFileName = getFileName( ptr, cmd );
+                    }
+                    break;
+                case 'f':
+                    switch( cmd[1] ) {
+                    case 'p':
+                        DFormat ^= DFF_PSEUDO;
+                        ++cmd;
+                        break;
+                    case 'r':
+                        DFormat ^= DFF_SYMBOLIC_REG;
+                        ++cmd;
                         break;
                     case 'f':
+                        Options |= PRINT_FPU_EMU_FIXUP;
+                        break;
+                    case 'i':
+                        DFormat ^= DFF_ALT_INDEXING;
+                        ++cmd;
+                        break;
+                    case 'u':
+                        ++cmd;
                         switch( cmd[1] ) {
-                        case 'p':
-                            DFormat ^= DFF_PSEUDO;
-                            ++cmd;
-                            break;
                         case 'r':
-                            DFormat ^= DFF_SYMBOLIC_REG;
+                            DFormat ^= DFF_REG_UP;
                             ++cmd;
-                            break;
-                        case 'f':
-                            Options |= PRINT_FPU_EMU_FIXUP;
                             break;
                         case 'i':
-                            DFormat ^= DFF_ALT_INDEXING;
+                            DFormat ^= DFF_INS_UP;
                             ++cmd;
                             break;
-                        case 'u':
-                            ++cmd;
-                            switch( cmd[1] ) {
-                            case 'r':
-                                DFormat ^= DFF_REG_UP;
-                                ++cmd;
-                                break;
-                            case 'i':
-                                DFormat ^= DFF_INS_UP;
-                                ++cmd;
-                                break;
-                            default:
-                                DFormat ^= DFF_INS_UP | DFF_REG_UP;
-                            }
-                            break;
+                        default:
+                            DFormat ^= DFF_INS_UP | DFF_REG_UP;
                         }
                         break;
-                    case 'm':
-                        if( cmd[1] == 'w' ) {
-                            Options |= METAWARE_COMPATIBLE;
-                            ++cmd;
-                            break;
-                        }
-                        Options |= NODEMANGLE_NAMES;
+                    }
+                    break;
+                case 'm':
+                    if( cmd[1] == 'w' ) {
+                        Options |= METAWARE_COMPATIBLE;
+                        ++cmd;
                         break;
-                    case 'p':
-                        Options |= PRINT_PUBLICS;
+                    }
+                    Options |= NODEMANGLE_NAMES;
+                    break;
+                case 'p':
+                    Options |= PRINT_PUBLICS;
+                    break;
+                case 's':
+                    if( SourceFileName != NULL ) {
+                        printUsage( ONLY_ONE_SOURCE );
+                        error = RC_ERROR;
                         break;
-                    case 's':
-                        if( SourceFileName ) {
-                            printUsage( ONLY_ONE_SOURCE );
-                            free( cmd );
-                            return( RC_ERROR );
-                        }
-                        source_mix = true;
+                    }
+                    source_mix = true;
+                    cmd++;
+                    if( *cmd == '=' ) {
                         cmd++;
-                        if( *cmd == '=' ) {
-                            cmd++;
-                            ptr = cmd;
-                            cmd = skipToNextWS( cmd );
-                            SourceFileName = getFileName( ptr, cmd );
-                        }
-                        break;
-                    default:
-                        BufferMsg( INVALID_OPTION );
-                        BufferStore( "  -%c\n\n", *cmd );
-                        BufferPrint();
-                        printUsage( 0 );
-                        free( cmd );
-                        return( RC_ERROR );
+                        ptr = cmd;
+                        cmd = findNextWS( cmd );
+                        SourceFileName = getFileName( ptr, cmd );
+                    }
+                    break;
+                default:
+                    BufferMsg( INVALID_OPTION );
+                    BufferStore( "  -%c\n\n", *cmd );
+                    BufferPrint();
+                    printUsage( 0 );
+                    error = RC_ERROR;
+                    break;
+                }
+                if( error != RC_OKAY ) {
+                    break;
                 }
             } else {
-                if( ObjFileName ) {
+                if( ObjFileName != NULL ) {
                     printUsage( ONLY_ONE_OBJECT );
-                    free( cmd );
-                    return( RC_ERROR );
+                    error = RC_ERROR;
+                    break;
                 }
                 ptr = cmd;
-                cmd = skipToNextWS( cmd );
+                cmd = findNextWS( cmd );
                 ObjFileName = getFileName( ptr, cmd );
             }
-            cmd = skipToNextArg( cmd );
+            cmd = findNextArg( cmd );
         }
     }
-    if( !ObjFileName ) {
-        printUsage( NO_OBJECT );
-        free( cmd );
-        return( RC_ERROR );
-    }
-    composeFileNames( list_file );
-    if( DFormat & DFF_ASM ) {
-        Options &= ~(PRINT_PUBLICS | PRINT_EXTERNS);
+    if( error == RC_OKAY ) {
+        if( ObjFileName == NULL ) {
+            printUsage( NO_OBJECT );
+            error = RC_ERROR;
+        } else {
+            composeFileNames( list_file );
+            if( DFormat & DFF_ASM ) {
+                Options &= ~(PRINT_PUBLICS | PRINT_EXTERNS);
+            }
+        }
     }
     free( cmd );
-    return( RC_OKAY );
+    return( error );
 }
