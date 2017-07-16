@@ -96,7 +96,7 @@ HWND WdeGetEditWindowHandle( WdeResInfo *info )
         return( info->edit_win );
     } else {
         info = WdeGetCurrentRes();
-        if( info ) {
+        if( info != NULL ) {
             return( info->edit_win );
         } else {
             return( NULL );

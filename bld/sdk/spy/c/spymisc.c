@@ -195,7 +195,7 @@ void DumpToComboBox( char *str, HWND cb )
     int         i;
 
     SendMessage( cb, CB_RESETCONTENT, 0, 0L );
-    while( *str != 0 ) {
+    while( *str != '\0' ) {
         i = 0;
         while( *str != ' ' ) {
             tmp[i++] = *str;

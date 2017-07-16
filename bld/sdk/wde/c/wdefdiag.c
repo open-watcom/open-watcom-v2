@@ -806,7 +806,7 @@ bool WdeDialogInit( bool first )
 #ifdef WDE_USE_RC_FONTS
     char        *cp;
     char        *font_facename;
-    int         font_pointsize;
+    WORD        font_pointsize;
 #endif
 
     _wde_touch( first );
@@ -2606,7 +2606,7 @@ bool WdeBuildDialogTemplate( WdeDialogBoxHeader *dialog_header, TEMPLATE_HANDLE 
     char        *font_facename;
     short       font_pointsize;
     bool        ok;
-    uint_32     style;
+    DWORD       style;
 
     MenuName = NULL;
     ClassName = NULL;

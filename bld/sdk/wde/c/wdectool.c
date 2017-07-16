@@ -415,7 +415,7 @@ static bool wdeControlsHook( HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam )
 
     if( WdeGetNumRes() && !WdeInCleanup() ) {
         obj = WdeGetCurrentDialog();
-        if( obj && Forward( obj, GET_ORDER_MODE, &mode, NULL ) && mode != WdeSelect ) {
+        if( obj != NULL && Forward( obj, GET_ORDER_MODE, &mode, NULL ) && mode != WdeSelect ) {
             ignore_msg = TRUE;
         }
     }

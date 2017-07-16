@@ -112,30 +112,30 @@ static DialogStyle WdeGetWinStyle( HWND hDlg, DialogStyle style )
 
 WPARAM WdeGetKeys( void )
 {
-    uint_8  buf[256];
-    WPARAM  new_wparam;
+    BYTE        buf[256];
+    WPARAM      wparam;
 
-    new_wparam = 0;
+    wparam = 0;
 
     GetKeyboardState( buf );
 
     if( buf[VK_CONTROL] & 0x80 ) {
-        new_wparam |= MK_CONTROL;
+        wparam |= MK_CONTROL;
     }
     if( buf[VK_SHIFT] & 0x80 ) {
-        new_wparam |= MK_SHIFT;
+        wparam |= MK_SHIFT;
     }
     if( buf[VK_LBUTTON] & 0x80 ) {
-        new_wparam |= MK_LBUTTON;
+        wparam |= MK_LBUTTON;
     }
     if( buf[VK_RBUTTON] & 0x80 ) {
-        new_wparam |= MK_RBUTTON;
+        wparam |= MK_RBUTTON;
     }
     if( buf[VK_MBUTTON] & 0x80 ) {
-        new_wparam |= MK_MBUTTON;
+        wparam |= MK_MBUTTON;
     }
 
-    return( new_wparam );
+    return( wparam );
 }
 
 void WdeSetWinStyles( HWND hDlg, DialogStyle style, DialogStyle mask )

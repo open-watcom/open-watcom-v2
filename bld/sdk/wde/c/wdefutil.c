@@ -198,7 +198,6 @@ OBJPTR WdeCloneObject( OBJPTR obj, POINT *offset )
     OBJPTR              new;
     OBJPTR              parent;
     RECT                rect;
-    WORD                state;
     bool                ok;
 
     new = NULL;
@@ -206,12 +205,7 @@ OBJPTR WdeCloneObject( OBJPTR obj, POINT *offset )
     ok = (offset->x || offset->y);
 
     if( ok ) {
-        state = (WORD)GetKeyState( VK_CONTROL );
-#ifdef __NT__
-        ok = ( (state & 0x8000) != 0 );
-#else
-        ok = ( (state & 0x80) != 0 );
-#endif
+        ok = ( GetKeyState( VK_CONTROL ) < 0 );
     }
 
     if( ok ) {

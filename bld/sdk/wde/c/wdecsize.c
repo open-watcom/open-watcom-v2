@@ -124,20 +124,16 @@ static size_t WdeCalcSizeOfDialogBoxHeader( ResNameOrOrdinal *MenuName, ResNameO
     }
 
     size += WdeCalcSizeOfResNameOrOrdinal( MenuName, is32bit );
-
     size += WdeCalcSizeOfResNameOrOrdinal( ClassName, is32bit );
-
     size += WdeCalcStrlen( Caption, is32bit );
 
     if( FontName != NULL ) {
-        size += sizeof( uint_16 );      /* PointSize */
-
+        size += sizeof( WORD );     /* PointSize */
         if( is32bitEx ) {
-            size += sizeof( uint_16 );  /* FontWeight */
-            size += sizeof( uint_8 );   /* FontItalic */
-            size += sizeof( uint_8 );   /* FontCharset */
+            size += sizeof( WORD ); /* FontWeight */
+            size += sizeof( BYTE ); /* FontItalic */
+            size += sizeof( BYTE ); /* FontCharset */
         }
-
         size += WdeCalcStrlen( FontName, is32bit );
     }
 
