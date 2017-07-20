@@ -90,6 +90,7 @@ target          = $(serv_basename).exe
 !endif
 
 dig_os = $(target_os)
+!include $(dig_dir)/digcli.mif
 !include $(dig_dir)/trpcli.mif
 
 !ifndef test

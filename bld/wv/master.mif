@@ -30,6 +30,7 @@ os2pm = 1
 !include defrule.mif
 !include deftarg.mif
 
+!include $(dig_dir)/digcli.mif
 !include $(dig_dir)/dipcli.mif
 !include $(dig_dir)/madcli.mif
 !include $(dig_dir)/trpcli.mif
