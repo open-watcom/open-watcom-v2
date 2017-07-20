@@ -40,12 +40,12 @@ typedef struct {
 
 #define LINE_WIDTH 512
 
-void main()
+void main( void )
 {
-    LENGTH l;
-    static char near buff[LINE_WIDTH];
-    int row,col;
-    int written;
+//    LENGTH l;
+    static char     buff[LINE_WIDTH];
+//    int row,col;
+//    int written;
 
     KbdRegister( "OS2EDIT", "OS2EDIT_", KR_KBDSTRINGIN );
     getcmd( buff );

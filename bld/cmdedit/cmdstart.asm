@@ -32,7 +32,7 @@
 .286c
 
 extrn           StringIn_       : near
-extrn           DosGetInfoSeg   : far
+extrn           DOSGETINFOSEG   : far
 extrn           InitRetrieve_   : near
 
 FARD segment para public 'FAR_DATA'
@@ -62,8 +62,8 @@ DGROUP group _DATA,CONST
 
 assume cs:_TEXT,ds:DGROUP,ss:DGROUP
 
-public  CMDStart_
-CMDStart_       proc    far
+public  CMDSTART_
+CMDSTART_       proc    far
         push    si
         push    di
         push    es
@@ -79,7 +79,7 @@ CMDStart_       proc    far
         push    ds
         mov     ax,offset localseg
         push    ax
-        call    DosGetInfoSeg
+        call    DOSGETINFOSEG
         mov     es,localseg
         mov     ax,es:[0]
         mov     pid,ax
@@ -93,8 +93,8 @@ CMDStart_       proc    far
 CMDStart_       endp
 
 
-public  OS2Edit_
-OS2Edit_        proc    far
+public  OS2EDIT_
+OS2EDIT_        proc    far
         enter   0,0
         push    di
         push    si
@@ -111,7 +111,7 @@ OS2Edit_        proc    far
         push    ds
         mov     ax,offset localseg
         push    ax
-        call    DosGetInfoSeg
+        call    DOSGETINFOSEG
         mov     es,localseg
         mov     ax,es:[0]
         cmp     pid,ax
@@ -152,7 +152,7 @@ epi:    pop     cx
         pop     di
         leave
         ret
-OS2Edit_        endp
+OS2EDIT_        endp
 _TEXT ends
 
         end CMDStart_

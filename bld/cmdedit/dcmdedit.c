@@ -36,19 +36,17 @@
 #include <dos.h>
 
 #ifdef DOS
-    unsigned char far * far AliasList;
+    char __far * __far AliasList;
 #else
-    unsigned char far * AliasList;
+    char __far *AliasList;
 #endif
 
-extern void InitRetrieve( char far * );
-extern void StringIn( char far *, LENGTH far *, int, int );
-
-int main( void ) {
-    LENGTH l;
-    USHORT row,col;
-    USHORT written;
-    static char near buff[LINE_WIDTH];
+int main( void )
+{
+    LENGTH      l;
+    USHORT      row,col;
+    USHORT      written;
+    static char buff[LINE_WIDTH];
 
     getcmd( buff );
     InitRetrieve( buff );
@@ -58,7 +56,8 @@ int main( void ) {
         VioSetCurPos( row, col+6, 0 );
         l.input = LINE_WIDTH;
         StringIn( &buff, &l, 1, 5 );
-        if( l.output == 1 && buff[0] == 'q' ) break;
+        if( l.output == 1 && buff[0] == 'q' )
+            break;
         DosWrite( 1, "\r\n", 2, &written );
         DosWrite( 1, buff, l.output, &written );
         DosWrite( 1, "\r\n", 2, &written );

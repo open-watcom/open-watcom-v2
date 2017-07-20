@@ -32,10 +32,6 @@
 #include <string.h>
 #include "cmdedit.h"
 
-extern void     PutChar( char ch );
-extern char     *EatWhite( char *word );
-extern void     PutString( char far * str );
-extern int      ReplaceAlias( char far * alias, char * word, char * endword );
 
 #ifdef DOS
 #define SIZE    80
@@ -56,10 +52,10 @@ int ExpandDirCommand( void )
     int         in_quote = FALSE;
 
     if( MaxCursor == 0 ) return( 0 );
-    Line[ MaxCursor ] = '\0';
+    Line[MaxCursor] = '\0';
     line = EatWhite( Line );
     if( HideDirCmds ) {
-        if( line[ 0 ] != '#' ) return( 0 );
+        if( line[0] != '#' ) return( 0 );
         line++;
     }
     if( line[1] != ' ' && line[1] != '\0' ) return( 0 );
@@ -91,7 +87,7 @@ int ExpandDirCommand( void )
     default:
         return( 0 );
     }
-    Line[ MaxCursor ] = '\0';
+    Line[MaxCursor] = '\0';
     while( line[i] == ' ' ) ++i;
     for( ;; ) {
         if( i == MaxCursor ) break;
@@ -110,8 +106,8 @@ int ExpandDirCommand( void )
 }
 
 
-void    DirCmds( char *p )
-/************************/
+static void    DirCmds( char *p )
+/*******************************/
 {
 #if 0
     char        far *q;
@@ -159,10 +155,10 @@ void    DirCmds( char *p )
         if( p[0] == '\0' ) break;
         size = strlen( p );
         /* trim tailing slashes (possibly inserted to replace whitespace) */
-        while( size > 1 && ( p[ size - 1 ] == '\\' || p[ size - 1 ] == '/' ) ) {
+        while( size > 1 && ( p[size - 1] == '\\' || p[size - 1] == '/' ) ) {
             --size;
         }
-        p[ size ] = 0;
+        p[size] = 0;
         if( DosChDir( p, 0 ) == 0 ) break;
         PutString( "\r\nInvalid directory\r\n" );
         break;
@@ -202,15 +198,15 @@ void    DirCmds( char *p )
 }
 
 
-void DoDirCommand( void ) 
+void DoDirCommand( void )
 /***********************/
 {
     Line[MaxCursor] = '\0';
     DirCmds( EatWhite( Line ) + HideDirCmds );
-//    Line[ 0 ] = 'c';
-//    Line[ 1 ] = 'd';
-//    Line[ 2 ] = ' ';
-//    Line[ 3 ] = '.';
-//    Line[ 4 ] = '\0';
+//    Line[0] = 'c';
+//    Line[1] = 'd';
+//    Line[2] = ' ';
+//    Line[3] = '.';
+//    Line[4] = '\0';
     MaxCursor = Cursor = 0;
 }

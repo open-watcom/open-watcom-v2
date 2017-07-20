@@ -61,8 +61,6 @@
 
 #ifdef DOS
 
-#pragma aux pascal "*";
-#define pasrtn int
 #define PASPTR /**/
 #define USHORT  unsigned short
 
@@ -70,8 +68,6 @@ enum { FALSE, TRUE };
 
 #else
 
-#pragma aux pascal "*" parm routine reverse [];
-#define pasrtn int __far __pascal
 #define PASPTR __far
 
 #endif
@@ -86,9 +82,9 @@ enum { FALSE, TRUE };
 typedef unsigned long DWORD;
 
 typedef struct {
-        int     input;
-        int     output;
-        } LENGTH;
+    int     input;
+    int     output;
+} LENGTH;
 
 #ifdef DOS
 
@@ -96,43 +92,43 @@ typedef char            CHAR;
 typedef unsigned char   UCHAR;
 
 typedef struct {
-        int     cb;
-        int     fsMask;
-        int     chTurnAround;
-        int     interm;
-        int     shift;
-        } KBDDESC;
+    int     cb;
+    int     fsMask;
+    int     chTurnAround;
+    int     interm;
+    int     shift;
+} KBDDESC;
 
 typedef struct {
-        UCHAR   chChar;
-        UCHAR   chScan;
-        UCHAR   status;
-        UCHAR   zero;
-        int     shift;
-        long    time;
-        } KBDCHAR;
+    UCHAR   chChar;
+    UCHAR   chScan;
+    UCHAR   status;
+    UCHAR   zero;
+    int     shift;
+    long    time;
+} KBDCHAR;
 
 typedef struct {
-        UCHAR   ascii;
-        UCHAR   scan;
-        UCHAR   status;
-        UCHAR   zero;
-        int     shift;
-        } KBDCHARNT;
+    UCHAR   ascii;
+    UCHAR   scan;
+    UCHAR   status;
+    UCHAR   zero;
+    int     shift;
+} KBDCHARNT;
 
 typedef struct {
-        int     yStart;
-        int     cEnd;
-        int     width;
-        int     attr;
-        } CURSOR;
+    int     yStart;
+    int     cEnd;
+    int     width;
+    int     attr;
+} CURSOR;
 
 typedef struct {
-        char    dta[21];
-        UCHAR   attrFile;
-        char    crap[8];
-        char    achName[MAX_FNAME];
-        } DIRINFO;
+    char    dta[21];
+    UCHAR   attrFile;
+    char    crap[8];
+    char    achName[MAX_FNAME];
+} DIRINFO;
 
 typedef struct _FILETIME {
     DWORD dwLowDateTime;
@@ -148,8 +144,8 @@ typedef struct _WIN32_FIND_DATA {
     DWORD       nFileSizeLow;
     DWORD       dwReserved0;
     DWORD       dwReserved1;
-    CHAR        cFileName[ 260 ];
-    CHAR        cAlternateFileName[ 16 ];
+    CHAR        cFileName[260];
+    CHAR        cAlternateFileName[16];
 } WIN32_FIND_DATA;
 
 #else
@@ -275,8 +271,6 @@ enum {
 #define _null( ch )  ( ( ch ) == '\0' )
 #define _white_or_null( ch ) ( _white( ch ) || _null( ch ) )
 
-extern char __far * FindAlias( char * word, char * endword, char __far * __far *start );
-
 #ifdef DOS
 
 #define DosSetSigHandler( r, p, pa, a, n )
@@ -299,32 +293,108 @@ extern char __far * FindAlias( char * word, char * endword, char __far * __far *
 #define DosChDir( b, z ) DDosChDir( b )
 #define DosAllocSeg( a,b,f ) DDosAllocSeg( a,b )
 extern int      DosFreeEnv( void );
-extern pasrtn   DosRead( USHORT, char __far *, USHORT, USHORT PASPTR *);
-extern pasrtn   DosWrite( USHORT, char __far *, USHORT, USHORT PASPTR *);
-extern int      DDosAllocSeg( unsigned, int PASPTR * );
-extern pasrtn   DosGetEnv( USHORT PASPTR *, USHORT PASPTR * );
-extern int      DVioReadCellStr( char PASPTR *, USHORT PASPTR *, USHORT, USHORT );
-extern int      DDosOpen( char PASPTR *, USHORT PASPTR * );
-extern int      DVioWrtCharStr( char PASPTR *, USHORT, USHORT, USHORT );
-extern int      DVioSetCurType( CURSOR PASPTR * );
-extern int      DVioSetCurPos( USHORT, USHORT );
-extern int      DVioGetCurPos( USHORT PASPTR *, USHORT PASPTR * );
-extern int      DosClose( USHORT );
-extern int      DKbdCharIn( KBDCHAR PASPTR * );
-extern int      DVioGetCurType( CURSOR PASPTR * );
-extern int      DDosFindFirst( char PASPTR *, int, DIRINFO PASPTR * );
-extern int      DVioReadCharStr( char PASPTR *, USHORT PASPTR *, USHORT, USHORT );
-extern int      DVioWrtNChar( UCHAR PASPTR *, int, USHORT, USHORT );
-extern int      DosChgFilePtr( int, long, int, unsigned long PASPTR * );
-extern int      DDosFindNext( DIRINFO PASPTR * );
-extern int      DVioWrtCellStr( char PASPTR *, USHORT, USHORT, USHORT );
-extern int      DKbdGetStatus( KBDDESC PASPTR * );
-extern pasrtn   DDosChDir( char PASPTR *);
-extern pasrtn   DosQCurDir( int, char PASPTR *, int PASPTR * );
-extern pasrtn   DosSelectDisk( int );
-extern pasrtn   DDosQCurDisk( USHORT PASPTR *);
+extern USHORT   DosRead( USHORT, char __far *, USHORT, USHORT PASPTR *);
+extern USHORT   DosWrite( USHORT, char __far *, USHORT, USHORT PASPTR *);
+extern USHORT   DDosAllocSeg( unsigned, int PASPTR * );
+extern USHORT   DosGetEnv( USHORT PASPTR *, USHORT PASPTR * );
+extern USHORT   DVioReadCellStr( char PASPTR *, USHORT PASPTR *, USHORT, USHORT );
+extern USHORT   DDosOpen( char PASPTR *, USHORT PASPTR * );
+extern USHORT   DVioWrtCharStr( char PASPTR *, USHORT, USHORT, USHORT );
+extern USHORT   DVioSetCurType( CURSOR PASPTR * );
+extern USHORT   DVioSetCurPos( USHORT, USHORT );
+extern USHORT   DVioGetCurPos( USHORT PASPTR *, USHORT PASPTR * );
+extern USHORT   DosClose( USHORT );
+extern USHORT   DKbdCharIn( KBDCHAR PASPTR * );
+extern USHORT   DVioGetCurType( CURSOR PASPTR * );
+extern USHORT   DDosFindFirst( char PASPTR *, int, DIRINFO PASPTR * );
+extern USHORT   DVioReadCharStr( char PASPTR *, USHORT PASPTR *, USHORT, USHORT );
+extern USHORT   DVioWrtNChar( UCHAR PASPTR *, int, USHORT, USHORT );
+extern USHORT   DosChgFilePtr( int, long, int, unsigned long PASPTR * );
+extern USHORT   DDosFindNext( DIRINFO PASPTR * );
+extern USHORT   DVioWrtCellStr( char PASPTR *, USHORT, USHORT, USHORT );
+extern USHORT   DKbdGetStatus( KBDDESC PASPTR * );
+extern USHORT   DDosChDir( char PASPTR *);
+extern USHORT   DosQCurDir( int, char PASPTR *, int PASPTR * );
+extern USHORT   DosSelectDisk( int );
+extern USHORT   DDosQCurDisk( USHORT PASPTR *);
 
 #endif
 
 #define GLOBAL extern
 #include "cmddata.h"
+
+extern int      NonFileChar( char ch );
+extern char     __far *GetEnv( char __far *name, int len );
+extern char     __far *InitAlias( char __far *inname );
+extern int      ExpandDirCommand( void );
+extern int      LocateLeftWord( void );
+extern int      LocateRightWord( void );
+extern void     ToLastCmd( void );
+extern void     ToFirstCmd( void );
+extern void     BOL( void );
+extern void     BackSpace( void );
+extern void     Delete( void );
+extern void     DeleteBOW( void );
+extern void     DeleteEOW( void );
+extern void     DoDirCommand( void );
+extern void     DownScreen( void );
+extern void     EOL( void );
+extern void     EraseBOL( void );
+extern void     EraseEOL( void );
+extern void     EraseLine( void );
+extern void     FlipInsertMode( void );
+extern void     FlipScreenCursor( void );
+extern void     InitSave( char __far *name );
+extern void     InsertChar( void );
+extern void     Left( void );
+extern void     LeftScreen( void );
+extern void     LeftWord( void );
+extern void     ListAliases( void );
+extern void     ListCommands( void );
+extern void     LookForAlias( void );
+extern void     MatchACommand( int (*advance)(char *), int (*retreat)(char *) );
+extern void     FiniFile( void );
+extern void     NextFile( void );
+extern void     OverlayChar( void );
+extern void     PFKey( void );
+extern void     PrevFile( void );
+extern void     PutChar( char ch );
+extern void     PutNL( void );
+extern void     PutString( char *str );
+extern void     ReadScreen( int next_line );
+extern void     RestoreLine( void );
+extern void     RetrieveACommand( int (* advance)(char *) );
+extern void     Right( void );
+extern void     RightScreen( void );
+extern void     RightWord( void );
+extern void     SaveCmd( char *, unsigned );
+extern void     SaveLine( void );
+extern void     ScreenCursorOff( void );
+extern void     SetCursorType( void );
+extern void     UpScreen( void );
+extern int      NextCmd( char * );
+extern int      PrevCmd( char * );
+extern int      DelCmd( char * );
+
+extern int      WordSep( char ch );
+extern char     *EatWhite( char *word );
+extern void     RestorePrompt( char PASPTR *line );
+extern void     SavePrompt( char PASPTR *line );
+extern int      PutMore( void );
+extern int      Equal( char __far *str1, char __far *str2, int len );
+
+extern void     PutPad( char *str, int len );
+extern int      ExpandDirCommand( void );
+extern int      ReplaceAlias( char __far *alias, char *word, char *endword );
+extern void     ZapLower( char *str );
+
+
+/* assembler interface declaration */
+extern void     __far SaveSave( char __far *file );
+extern void     __near InitRetrieve( char __far * );
+extern int      __near StringIn( char __far *, LENGTH __far *, int, int );
+#ifdef DOS
+extern char     __far * __far AliasList;
+#else
+extern char     __far *AliasList;
+#endif

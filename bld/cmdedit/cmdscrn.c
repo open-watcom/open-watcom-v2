@@ -40,7 +40,7 @@ void FlipScreenCursor( void )
 
     length = 2;
     VioReadCellStr( buffer, &length, Row+RowOffset, StartCol+ColOffset, 0 );
-    buffer[ 1 ] ^= 0x77;
+    buffer[1] ^= 0x77;
     VioWrtCellStr( buffer, length, Row+RowOffset, StartCol+ColOffset, 0 );
 }
 
@@ -57,7 +57,7 @@ void ReadScreen( int next_line )
     }
     VioReadCharStr( Line, &len, Row+RowOffset, StartCol+ColOffset, 0 );
     while( len != 0 ) {
-        if( Line[ len - 1 ] != ' ' ) break;
+        if( Line[len - 1] != ' ' ) break;
         --len;
     }
     MaxCursor = len;

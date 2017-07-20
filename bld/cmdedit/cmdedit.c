@@ -31,11 +31,6 @@
 
 #include "cmdedit.h"
 
-extern int      PrevCmd( char * );
-extern void     SetCursorType( void );
-extern void     FlipScreenCursor( void );
-extern int      NextCmd( char * );
-
 
 void ToFirstCmd( void )
 /*********************/
@@ -51,15 +46,18 @@ void ToLastCmd( void )
 }
 
 
-extern int WordSep( char ch )
-/***************************/
+int WordSep( char ch )
+/********************/
 {
     static char sep[] = { " \t:;,.<>/?'\"{}[]|\\`~!@$%^&*()-+=" };
     char *psep;
 
-    if( _null( ch ) ) return( 1 );
+    if( _null( ch ) )
+    	return( 1 );
     for( psep = sep; !_null( *psep ); ++psep ) {
-        if( *psep == ch ) return( 1 );
+        if( *psep == ch ) {
+            return( 1 );
+        }
     }
     return( 0 );
 }
@@ -67,7 +65,9 @@ extern int WordSep( char ch )
 void Left( void )
 /***************/
 {
-    if( Cursor != 0 ) --Cursor;
+    if( Cursor != 0 ) {
+        --Cursor;
+    }
 }
 
 int LocateLeftWord( void )
@@ -75,17 +75,21 @@ int LocateLeftWord( void )
 {
     int cursor;
 
-    if( Cursor == 0 ) return( 0 );
+    if( Cursor == 0 )
+    	return( 0 );
     cursor = Cursor;
     --cursor;
-    for(;;) {
-        if( cursor == 0 ) break;
-        if( !WordSep( Line[ cursor ] ) ) break;
+    for( ;; ) {
+        if( cursor == 0 )
+            break;
+        if( !WordSep( Line[cursor] ) )
+            break;
         --cursor;
     }
     for(;;) {
-        if( cursor == 0 ) break;
-        if( WordSep( Line[ cursor ] ) ) {
+        if( cursor == 0 )
+            break;
+        if( WordSep( Line[cursor] ) ) {
             ++cursor;
             break;
         }
@@ -106,11 +110,12 @@ void Delete( void )
     int i;
 
     if ( MaxCursor != 0 ) {
-        if( Cursor != MaxCursor ) Edited = TRUE;
+        if( Cursor != MaxCursor )
+            Edited = TRUE;
         i = Cursor;
-        Line[ MaxCursor ] = ' ';
+        Line[MaxCursor] = ' ';
         while( i < MaxCursor ) {
-            Line[ i ] = Line[ i + 1 ];
+            Line[i] = Line[i + 1];
             ++i;
         }
         --MaxCursor;
@@ -133,7 +138,9 @@ void DeleteBOW( void )
     int cursor;
 
     cursor = LocateLeftWord();
-    while( Cursor != cursor ) BackSpace();
+    while( Cursor != cursor ) {
+        BackSpace();
+    }
 }
 
 void Right( void )
@@ -142,7 +149,7 @@ void Right( void )
     if( Cursor < Overflow ) {
         ++Cursor;
         if( Cursor > MaxCursor ) {
-            Line[ MaxCursor ] = ' ';
+            Line[MaxCursor] = ' ';
         }
     }
 }
@@ -154,13 +161,17 @@ int LocateRightWord( void )
 
     cursor = Cursor;
     for(;;) {
-        if( cursor == MaxCursor ) break;
-        if( WordSep( Line[ cursor ] ) ) break;
+        if( cursor == MaxCursor )
+            break;
+        if( WordSep( Line[cursor] ) )
+            break;
         ++cursor;
     }
     for(;;) {
-        if( cursor == MaxCursor ) break;
-        if( !WordSep( Line[ cursor ] ) ) break;
+        if( cursor == MaxCursor )
+            break;
+        if( !WordSep( Line[cursor] ) )
+            break;
         ++cursor;
     }
     return( cursor );
@@ -258,11 +269,11 @@ void InsertChar( void )
         Edited = TRUE;
         i = MaxCursor;
         while( i > Cursor ) {
-            Line[ i ] = Line[ i - 1 ];
+            Line[i] = Line[i - 1];
             --i;
         }
         ++MaxCursor;
-        Line[ Cursor ] = KbdChar.chChar;
+        Line[Cursor] = KbdChar.chChar;
         ++Cursor;
         Draw = TRUE;
     }
@@ -273,7 +284,7 @@ void OverlayChar( void )
 {
     if( Cursor < Overflow ) {
         Edited = TRUE;
-        Line[ Cursor ] = KbdChar.chChar;
+        Line[Cursor] = KbdChar.chChar;
         ++Cursor;
         Draw = TRUE;
     }
