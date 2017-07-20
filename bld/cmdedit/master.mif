@@ -134,19 +134,19 @@ cmdshell.exe: $(cmdshellobjs) $(__MAKEFILES__)
 #
 os2edit.obj: os2edit.c $(__MAKEFILES__)
     @%make echo_cc
-    $(cc) $(c_flags) $[@ $(common_cflags) -ox -d1 $(inc_dirs_sys)
+    $(cc) $(c_flags) $[@ $(common_cflags) -ox -d1 -fo=$@ $(inc_dirs_sys)
 
 os2edit.exe: os2edit.obj $(__MAKEFILES__)
     @%make echo_link
-    $(linker) debug all op symfile, map sys os2 file os2edit
+    $(linker) debug all op symfile, map sys os2 file $[@
 #
 # OS22EDIT.EXE
 #
 os22edit.obj: os22edit.c $(__MAKEFILES__)
     @%make echo_cc
-    $(cc) $(c_flags) $[@ $(common_cflags) -ox -d1 $(inc_dirs_sys)
+    $(cc) $(c_flags) $[@ $(common_cflags) -ox -d1 -fo=$@ $(inc_dirs_sys)
 
 os22edit.exe: os22edit.obj $(__MAKEFILES__)
     @%make echo_link
-    $(linker) debug all op symfile, map sys os2 file os22edit
+    $(linker) debug all op symfile, map sys os2 file $[@
 !endif
