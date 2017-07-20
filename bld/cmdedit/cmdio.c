@@ -102,7 +102,8 @@ USHORT DKbdCharIn( KBDCHAR PASPTR *k )
             r.h.ah = 0x01;
         }
         intr( 0x16, &r );
-        if( !( r.x.flags & INTR_ZF ) ) break;
+        if( !( r.x.flags & INTR_ZF ) )
+            break;
         intr( 0x28, &r );
     }
     if( Extended ) {
@@ -225,15 +226,13 @@ USHORT DVioReadCellStr( CHAR PASPTR *buff, USHORT PASPTR *plen, USHORT row, USHO
 
     DVioGetCurPos( &oldrow, &oldcol );
     DVioSetCurPos( row, col );
-    len = *plen;
-    while( len >= 2 ) {
+    for( len = *plen; len >= 2; len -= 2 ) {
         CurrentPageInBH();
         r.h.ah = 8;
         intr( 0x10, &r );
         buff[0] = r.h.al;
         buff[1] = r.h.ah;
         buff += 2;
-        len -= 2;
     }
     DVioSetCurPos( oldrow, oldcol );
     return( 0 );
@@ -245,7 +244,7 @@ USHORT DVioWrtCellStr( CHAR PASPTR *buff, USHORT len, USHORT row, USHORT col )
 
     DVioGetCurPos( &oldrow, &oldcol );
     DVioSetCurPos( row, col );
-    while( len >= 2 ) {
+    for( ; len >= 2; len -= 2 ) {
         CurrentPageInBH();
         r.h.ah = 9;
         r.h.al = buff[0];
@@ -253,7 +252,6 @@ USHORT DVioWrtCellStr( CHAR PASPTR *buff, USHORT len, USHORT row, USHORT col )
         r.x.cx = 1;
         intr( 0x10, &r );
         buff += 2;
-        len -= 2;
     }
     DVioSetCurPos( oldrow, oldcol );
     return( 0 );
@@ -386,8 +384,10 @@ USHORT DDosFindFirst( char PASPTR *spec, int attr, DIRINFO PASPTR *buf )
     char *p = buff;
     char *q = spec;
     for( ;; ) {
-        if( *q != '"' ) *p++ = *q;
-        if( !*q ) break;
+        if( *q != '"' )
+            *p++ = *q;
+        if( *q == '\0' )
+            break;
         ++q;
     }
     r.x.ax = 0x714E;
@@ -481,8 +481,10 @@ USHORT DDosChDir( char PASPTR *dir )
     char *p = dir;
     char *q = buff;
     for( ;; ) {
-        if( *p != '"' ) *q++ = *p;
-        if( !*p ) break;
+        if( *p != '"' )
+            *q++ = *p;
+        if( *p == '\0' )
+            break;
         ++p;
     }
     r.x.ax = 0x713B;

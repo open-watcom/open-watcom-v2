@@ -142,24 +142,25 @@ static int FileIgnore( DIRINFO PASPTR *dir, int fattr )
     } else {
         ignore_matches = FALSE;
     }
-    while( !_null( *name ) && *name != '.' ) ++name;
+    while( !_null( *name ) && *name != '.' )
+        ++name;
 #ifndef DOS
     if( *name == '.' ) {
         /* consider: a.b.c   .c is the extension */
         name += _fstrlen( name ) - 1;
-        while( *name != '.' ) --name;
+        while( *name != '.' ) {
+            --name;
+        }
     }
 #endif
     len = 0;
     for( p = name; !_null( *p ); ++p )
         ++len;
     for( ;; ) {
-        for( ;; ) {
-            if( *envname == '.' )
-                break;
-            if( _null( *envname ) )
+        for( ; *envname != '.'; envname++ ) {
+            if( _null( *envname ) ) {
                 return( !ignore_matches );
-            ++envname;
+            }
         }
         if( len == 0 ) {
             if( envname[1] == '.' || _null( envname[1] ) ) {
@@ -186,10 +187,7 @@ static int FindNext( DIRINFO PASPTR *dir, int fattr )
     tmp = 1;
     do {
         cnt = DosFindNext( 1, dir, sizeof( DIRINFO ), &tmp);
-        if( cnt != 0 ) {
-            return( cnt );
-        }
-    } while( FileIgnore( dir, fattr ) );
+    } while( cnt == 0 && FileIgnore( dir, fattr ) );
     return( cnt );
 }
 
@@ -253,8 +251,7 @@ recurse:
             if( i == 0 ) {
                 if( PathCurr != NULL ) {
                     searchpath = TRUE;
-                } else if( Line[0] != '.' && Line[0] != '\\' &&
-                           Line[0] != '/' &&
+                } else if( Line[0] != '.' && Line[0] != '\\' && Line[0] != '/' &&
                            ( MaxCursor == 0 || Line[1] != ':' ) ) {
                     searchpath = TRUE;
                 }
@@ -277,20 +274,16 @@ recurse:
                     dot = FALSE;
 #endif
                     word = PathBuff;
-                    for( ;; ) {
-                        if( *PathCurr == '\0' )
-                            break;
-                        if( *PathCurr == ';' ) {
+                    for( ; (c0 = *PathCurr) != '\0'; PathCurr++ ) {
+                        if( c0 == ';' ) {
                             ++PathCurr;
                             break;
                         }
-                        *word = *PathCurr;
-                        ++word;
-                        ++PathCurr;
+                        *word++ = c0;
                     }
                     *word = 0;
                     ReplaceAlias( PathBuff, Line, Line );
-                    ReplaceAlias( "\\", Line+(word-PathBuff), Line+(word-PathBuff) );
+                    ReplaceAlias( "\\", Line + ( word - PathBuff ), Line + ( word - PathBuff ) );
                 }
             }
             c0 = Line[Cursor+0];

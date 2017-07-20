@@ -51,32 +51,37 @@ int ExpandDirCommand( void )
     char        *line;
     int         in_quote = FALSE;
 
-    if( MaxCursor == 0 ) return( 0 );
+    if( MaxCursor == 0 )
+        return( 0 );
     Line[MaxCursor] = '\0';
     line = EatWhite( Line );
     if( HideDirCmds ) {
-        if( line[0] != '#' ) return( 0 );
+        if( line[0] != '#' )
+            return( 0 );
         line++;
     }
-    if( line[1] != ' ' && line[1] != '\0' ) return( 0 );
+    if( line[1] != ' ' && line[1] != '\0' )
+        return( 0 );
     switch( line[0] ) {
     case 'o':
         i = 1;
-        while( line[i] == ' ' ) ++i;
+        while( line[i] == ' ' )
+            ++i;
         --i;
-        i = ReplaceAlias( "d ..\\", line, line+i+1 ) + i;
+        i += ReplaceAlias( "d ..\\", line, line + i + 1 );
         break;
     case 'u':
         i = 1;
-        while( line[i] == ' ' ) ++i;
+        while( line[i] == ' ' )
+            ++i;
         ups = 1;
         if( line[i] != '\0' ) {
             ups = line[i] - '0';
         }
         MaxCursor = Cursor = ( line - Line ) + 1;
-        ReplaceAlias( "d ..", line+0, line+1 );
+        ReplaceAlias( "d ..", line + 0, line + 1 );
         while( --ups > 0 ) {
-            ReplaceAlias( "\\..", line+4, line+4 );
+            ReplaceAlias( "\\..", line + 4, line + 4 );
         }
         i = MaxCursor - ( line - Line );
         break;
@@ -88,19 +93,19 @@ int ExpandDirCommand( void )
         return( 0 );
     }
     Line[MaxCursor] = '\0';
-    while( line[i] == ' ' ) ++i;
-    for( ;; ) {
-        if( i == MaxCursor ) break;
+    while( line[i] == ' ' )
+        ++i;
+    for( ; i != MaxCursor; i++ ) {
         ch = line[i];
-        if( ch == '"' ) in_quote = !in_quote;
+        if( ch == '"' )
+            in_quote = !in_quote;
         if( !in_quote ) {
             if( ch == ' ' || ch == '/' ) {
                 line[i] = '\\';
             } else if( ch == '-' ) {
-                i += ReplaceAlias( "..\\", line+i, line+i+1 );
+                i += ReplaceAlias( "..\\", line + i, line + i + 1 );
             }
         }
-        ++i;
     }
     return( 1 );
 }
@@ -110,7 +115,7 @@ static void    DirCmds( char *p )
 /*******************************/
 {
 #if 0
-    char        far *q;
+    char        __far *q;
 #endif
     char        cmd;
     char        drv;
@@ -124,7 +129,8 @@ static void    DirCmds( char *p )
     #endif
 
     cmd = *p++;
-    while( *p == ' ' ) ++p;
+    while( *p == ' ' )
+        ++p;
     DosQCurDisk( &drive_num, &drive_map );
     drv = drive_num - 1 + 'A';
 #if 0
@@ -152,14 +158,16 @@ static void    DirCmds( char *p )
     }
     switch( cmd ) {
     case 'd':
-        if( p[0] == '\0' ) break;
+        if( p[0] == '\0' )
+            break;
         size = strlen( p );
         /* trim tailing slashes (possibly inserted to replace whitespace) */
         while( size > 1 && ( p[size - 1] == '\\' || p[size - 1] == '/' ) ) {
             --size;
         }
         p[size] = 0;
-        if( DosChDir( p, 0 ) == 0 ) break;
+        if( DosChDir( p, 0 ) == 0 )
+            break;
         PutString( "\r\nInvalid directory\r\n" );
         break;
 #if 0
@@ -193,7 +201,7 @@ static void    DirCmds( char *p )
     Line[4] = 'd';
     Line[5] = ' ';
     Line[6] = '\\';
-    DosQCurDir( drive_num, Line+7, &size );
+    DosQCurDir( drive_num, Line + 7, &size );
 #endif
 }
 

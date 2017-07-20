@@ -43,7 +43,7 @@ static char Lower( char c )
 int Equal( char __far * str1, char __far * str2, int len )
 /********************************************************/
 {
-    while( --len >= 0 ) {
+    while( len-- > 0 ) {
         if( *str1 == ' ' && *str2 == '\t' ) {
             /**/
         } else if( *str2 == ' ' && *str1 == '\t' ) {
@@ -83,14 +83,12 @@ void PutChar( char ch ) {
 void PutPad( char *str, int len )
 /*******************************/
 {
-    while( *str ) {
+    for( ; *str != '\0'; str++ ) {
         PutChar( *str );
         --len;
-        ++str;
     }
-    while( len > 0 ) {
+    for( ; len-- > 0; ) {
         PutChar( ' ' );
-        --len;
     }
 }
 
@@ -163,13 +161,12 @@ char __far *GetEnv( char __far *name, int len )
 
     if( DosGetEnv( &envseg, &envoff ) != 0 )
         return( 0 );
-    environ = MK_FP( envseg, 0 );
-    while( !_null( *environ ) ) {
+    for( environ = MK_FP( envseg, 0 ); !_null( *environ ); environ++ ) {
         if( Equal( environ, name, len ) )
             return( environ + len );
-        while( !_null( *environ ) )
+        while( !_null( *environ ) ) {
             ++environ;
-        ++environ;
+        }
     }
     return( 0 );
 }

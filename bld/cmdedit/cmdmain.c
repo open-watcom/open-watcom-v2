@@ -33,10 +33,10 @@
 #include "cmdedit.h"
 
 
-void __near InitRetrieve( char __far * inname )
-/*********************************************/
+void __near InitRetrieve( char __far *inname )
+/********************************************/
 {
-    char __far *envname;
+    char    __far *envname;
 
     AppendSlash = FALSE;
     AlwaysSave = FALSE;
@@ -153,10 +153,10 @@ static void ConsolidateQuotes( void )
     int i;
 
     while( BubbleQuotes() );
-    for( i = 0; i < MaxCursor-1; ++i ) {
-        if( Line[i] == '"' && Line[i+1] == '"' ) {
-            memmove( Line+i, Line+i+2, MaxCursor - i - 1 );
-            MaxCursor-= 2;
+    for( i = 0; i < MaxCursor - 1; ++i ) {
+        if( Line[i] == '"' && Line[i + 1] == '"' ) {
+            memmove( Line + i, Line + i + 2, MaxCursor - i - 1 );
+            MaxCursor -= 2;
         }
     }
 }
@@ -241,13 +241,15 @@ int __near StringIn( char __far *userbuff, LENGTH __far *l, int want_alias, int 
         WantAlias = want_alias;
     }
     if( More ) {
-        if( WantAlias ) LookForAlias();
+        if( WantAlias )
+            LookForAlias();
         CopyCmd( userbuff, l, More );
         return( 0 );
     }
     Kbd.cb = sizeof( KBDDESC );
     KbdGetStatus( &Kbd, 0 );
-    if( Kbd.fsMask & KBD_BINARY ) return( -1 );
+    if( Kbd.fsMask & KBD_BINARY )
+        return( -1 );
     RowOffset = 0;
 
     VioGetCurPos( &Row, &Col, 0 );
@@ -292,7 +294,8 @@ int __near StringIn( char __far *userbuff, LENGTH __far *l, int want_alias, int 
                 BuffOne = FALSE;
             }
         }
-        if( KbdChar.chChar == Kbd.chTurnAround ) break;
+        if( KbdChar.chChar == Kbd.chTurnAround )
+            break;
         if( ( KbdChar.chChar == 0 || KbdChar.chChar == 0xE0 ) ) {
             if( KbdChar.chScan != BACK_TAB ) {
                 FiniFile();
@@ -367,14 +370,16 @@ int __near StringIn( char __far *userbuff, LENGTH __far *l, int want_alias, int 
                 break;
             case ALT_0:
             case ALT_HOME:
-                if( RowOffset == 0 ) break;
+                if( RowOffset == 0 )
+                    break;
                 while( ColOffset != -StartCol ) {
                     LeftScreen();
                 }
                 break;
             case ALT_2:
             case ALT_END:
-                if( RowOffset == 0 ) break;
+                if( RowOffset == 0 )
+                    break;
                 ReadScreen( 1 );
                 break;
             case ALT_N:
@@ -433,7 +438,8 @@ int __near StringIn( char __far *userbuff, LENGTH __far *l, int want_alias, int 
                 PFKey();
                 break;
             case ALT_A:
-                if( WantAlias ) ListAliases();
+                if( WantAlias )
+                    ListAliases();
                 break;
             case ALT_H:
                 HideDirCmds = !HideDirCmds;
@@ -498,13 +504,16 @@ int __near StringIn( char __far *userbuff, LENGTH __far *l, int want_alias, int 
     if( ( Edited || AlwaysSave ) && !ImmedCommand ) {
          SaveCmd( Line, MaxCursor );
     }
-    if( WantAlias ) LookForAlias();
+    if( WantAlias )
+        LookForAlias();
     ConsolidateQuotes();
-    if( ExpandDirCommand() ) DoDirCommand();
+    if( ExpandDirCommand() )
+        DoDirCommand();
     FiniFile();
     CopyCmd( userbuff, l, 0 );
     {
         static USHORT dummy;
+
         VioGetCurPos( &Row, &dummy, 0 );
     }
 #ifndef __CMDSHELL__

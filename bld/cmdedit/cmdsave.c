@@ -104,21 +104,27 @@ void __far SaveSave( char __far *file )
     USHORT hdl;
 
     file += 2;
-    while( *file == ' ' || *file == '=' ) ++file;
+    while( *file == ' ' || *file == '=' )
+        ++file;
     len = 0;
-    while( file[len] != '\0' && file[len] != '\r' ) ++len;
+    while( file[len] != '\0' && file[len] != '\r' )
+        ++len;
     while( len-- > 0 ) {
-        if( file[len] != ' ' ) break;
+        if( file[len] != ' ' ) {
+            break;
+        }
     }
     ++len;
     file[len] = '\0';
-    if( file[0] == '\0' ) return;
+    if( file[0] == '\0' )
+        return;
     r.x.dx = FP_OFF( file );
     r.x.ds = FP_SEG( file );
     r.h.ah = 0x3c;
     r.x.cx = 0;
     intr( 0x21, &r );
-    if( r.x.flags & INTR_CF ) return;
+    if( r.x.flags & INTR_CF )
+        return;
     hdl = r.x.ax;
     DosWrite( hdl, SaveArea, SAVE_SIZE, &len );
     DosWrite( hdl, (char __far *)&FirstCmd, sizeof( FirstCmd ), &len );
@@ -146,13 +152,11 @@ static int RestSave( char __far *file )
 
 void InitSave( char __far *name )
 {
-    int i;
-
     if( *name == '\0' || !RestSave( name ) ) {
         FirstCmd = 0;
-        CurrCmd = 0;
-        SaveArea[i=0] = 0;
-        SaveArea[i=1] = 0;
+        CurrCmd =0;
+        SaveArea[0] = 0;
+        SaveArea[1] = 0;
         LastWasNext = FALSE;
         FirstFree = 2;
     }
@@ -214,7 +218,8 @@ int DelCmd( char *cmd )
         ++cmd;
     } while( !( --cnt == 0 ) );
     LastWasNext = TRUE;
-    if( CurrCmd == FirstFree ) return( 0 );
+    if( CurrCmd == FirstFree )
+        return( 0 );
     return( len );
 }
 
@@ -288,12 +293,14 @@ int NextCmd( cmd )
     curr = CurrCmd;
     _ModIndex( curr, SaveArea[curr] + 2 );
     if( !LastWasNext ) {
-        if( curr == FirstFree ) return( 0 );
+        if( curr == FirstFree )
+            return( 0 );
         CurrCmd = curr;
         _ModIndex( curr, SaveArea[curr] + 2 );
     }
     LastWasNext = FALSE;
-    if( curr == FirstFree ) return( 0 );
+    if( curr == FirstFree )
+        return( 0 );
     LastWasNext = TRUE;
     CurrCmd = curr;
     len = SaveArea[curr];
@@ -316,7 +323,8 @@ void ListCommands( void )
     SaveLine();
     SavePrompt( prompt );
     prevs = 0;
-    while( PrevCmd( Line ) ) --prevs;
+    while( PrevCmd( Line ) )
+        --prevs;
     PutNL();
     i = 0;
     for( ;; ) {

@@ -206,7 +206,8 @@ void main( void )
     memset( buffer, 0, sizeof( buffer ) );
     getcmd( buffer );
     src = buffer;
-    while( *src == ' ' ) ++src;
+    while( *src == ' ' )
+        ++src;
     dst = cmdline;
     if( *src == '\0' ) {
         strcpy( dst, "cmd.exe" );

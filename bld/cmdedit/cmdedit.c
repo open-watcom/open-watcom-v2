@@ -53,7 +53,7 @@ int WordSep( char ch )
     char *psep;
 
     if( _null( ch ) )
-    	return( 1 );
+        return( 1 );
     for( psep = sep; !_null( *psep ); ++psep ) {
         if( *psep == ch ) {
             return( 1 );
@@ -76,24 +76,17 @@ int LocateLeftWord( void )
     int cursor;
 
     if( Cursor == 0 )
-    	return( 0 );
-    cursor = Cursor;
-    --cursor;
-    for( ;; ) {
-        if( cursor == 0 )
+        return( 0 );
+    for( cursor = Cursor - 1; cursor > 0; cursor-- ) {
+        if( !WordSep( Line[cursor] ) ) {
             break;
-        if( !WordSep( Line[cursor] ) )
-            break;
-        --cursor;
+        }
     }
-    for(;;) {
-        if( cursor == 0 )
-            break;
+    for( ; cursor > 0; cursor-- ) {
         if( WordSep( Line[cursor] ) ) {
             ++cursor;
             break;
         }
-        --cursor;
     }
     return( cursor );
 }
@@ -112,11 +105,9 @@ void Delete( void )
     if ( MaxCursor != 0 ) {
         if( Cursor != MaxCursor )
             Edited = TRUE;
-        i = Cursor;
         Line[MaxCursor] = ' ';
-        while( i < MaxCursor ) {
+        for( i = Cursor; i < MaxCursor; i++ ) {
             Line[i] = Line[i + 1];
-            ++i;
         }
         --MaxCursor;
     }
@@ -159,20 +150,15 @@ int LocateRightWord( void )
 {
     int cursor;
 
-    cursor = Cursor;
-    for(;;) {
-        if( cursor == MaxCursor )
+    for( cursor = Cursor; cursor < MaxCursor; cursor++ ) {
+        if( WordSep( Line[cursor] ) ) {
             break;
-        if( WordSep( Line[cursor] ) )
-            break;
-        ++cursor;
+        }
     }
-    for(;;) {
-        if( cursor == MaxCursor )
+    for( ; cursor < MaxCursor; cursor++ ) {
+        if( !WordSep( Line[cursor] ) ) {
             break;
-        if( !WordSep( Line[cursor] ) )
-            break;
-        ++cursor;
+        }
     }
     return( cursor );
 }
@@ -188,11 +174,8 @@ void DeleteEOW( void )
 {
     int cursor;
 
-    cursor = LocateRightWord();
-    cursor -= Cursor;
-    while( cursor ) {
+    for( cursor = LocateRightWord() - Cursor; cursor > 0; cursor-- ) {
         Delete();
-        cursor--;
     }
 }
 
@@ -267,10 +250,8 @@ void InsertChar( void )
 
     if( MaxCursor < Overflow ) {
         Edited = TRUE;
-        i = MaxCursor;
-        while( i > Cursor ) {
+        for( i = MaxCursor; i > Cursor; i-- ) {
             Line[i] = Line[i - 1];
-            --i;
         }
         ++MaxCursor;
         Line[Cursor] = KbdChar.chChar;

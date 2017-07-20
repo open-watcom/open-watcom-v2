@@ -44,20 +44,17 @@ void ListAliases( void )
     SavePrompt( prompt );
     PutNL();
     i = 0;
-    alias = AliasList;
-    while( *alias != '\0' ) {
+    for( alias = AliasList; *alias != '\0'; alias++ ) {
         if( *alias == '\n' ) {
             if( ++i == 23 ) {
                 PutChar( '\n' );
                 if( !PutMore() )
                     break;
-                ++alias;
                 i = 0;
                 continue;
             }
         }
         PutChar( *alias );
-        ++alias;
     }
     RestorePrompt( prompt );
     RestoreLine();
@@ -82,20 +79,13 @@ char __far *InitAlias( char __far * inname )
     endname = inname;
     while( *endname == ' ' )
         ++endname;
-    for( ;; ) {
-        if( *endname == '\0' ) {
-            break;
-        }
+    for( ; *endname != '\0'; endname++ ) {
         if( *endname == ' ' ) {
-            *endname = '\0';
-            ++endname;
+            *endname++ = '\0';
             break;
         }
-        ++endname;
     }
-    bp = b;
-    while( *bp = *inname ) {
-        ++bp;
+    for( bp = b; (*bp = *inname) != '\0'; bp++ ) {
         ++inname;
     }
     action=action;
@@ -106,9 +96,9 @@ char __far *InitAlias( char __far * inname )
 #ifdef DOS
         {
             static int alias_seg;
+
             DosAllocSeg( pos + 1 + ALIAS_SLACK, &alias_seg, 0 );
-            *(((int __far *)AliasList)+0) = 0;
-            *(((int __far *)AliasList)+1) = alias_seg;
+            AliasList = (char __far *)MK_FP( alias_seg, 0 );
             AliasSize = pos + ALIAS_SLACK;
         }
 #else
@@ -289,30 +279,27 @@ int ReplaceAlias( char __far * alias, char * word, char * endword )
         return( 0 );
     }
     alias = newalias;
-    endalias = alias;
-    while( *endalias != '\r' && *endalias != '\0' ) {
-        ++endalias;
+    for( endalias = alias; *endalias != '\0'; endalias++ ) {
+        if( *endalias == '\r' ) {
+            break;
+        }
     }
     insert = ( endalias - alias ) - ( endword - word );
     if( ( MaxCursor + insert ) > Overflow )
         return( 0 );
     if( insert < 0 ) {
-        i = word - Line;
-        while( i < MaxCursor ) {
+        for( i = word - Line; i < MaxCursor; i++ ) {
             Line[i] = Line[i - insert];
-            ++i;
         }
     } else if( insert > 0 ) {
-        i = MaxCursor;
-        while( --i >= More ) {
-            if( Line + i < word ) break;
+        for( i = MaxCursor; i-- > More; ) {
+            if( Line + i < word )
+                break;
             Line[i + insert] = Line[i];
         }
     }
     while( alias != endalias ) {
-        *word = *alias;
-        ++word;
-        ++alias;
+        *word++ = *alias++;
     }
     MaxCursor += insert;
     Cursor += insert;
@@ -333,7 +320,8 @@ static char *EndOfWord( char *word )
 void LookForAlias( void )
 /***********************/
 {
-    char    *word, *endword;
+    char    *word;
+    char    *endword;
     char    __far *start;
     char    __far *alias;
 
