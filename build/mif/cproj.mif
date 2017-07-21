@@ -170,7 +170,7 @@ mode_cppflags = -DNDEBUG
 mode_cflags   = -oaxt -d1 $(cdebug_fmt)
 mode_aflags   = -d1 -DNDEBUG
 mode_lflags   = $(ldebug_fmt)
-mode_clflags  = $(cldebug_fmt)
+mode_clflags  = $(cldebug_fmt) -d1
 !ifdef $(proj_name)_distrib_lib
 mode_libflags = -s-t-zld
 !endif
