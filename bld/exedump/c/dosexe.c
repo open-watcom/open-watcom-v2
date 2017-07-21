@@ -66,10 +66,7 @@ static void dmp_dos_head_info( void )
 
     Banner( "DOS EXE Header" );
     Dump_header( (char *)&Dos_head.mod_size, dos_exe_msg );
-    Load_len = Dos_head.file_size * 0x200 + Dos_head.mod_size;
-    if( Dos_head.mod_size != 0 ) {
-        Load_len -= 0x200;
-    }
+    Load_len = Dos_head.file_size * 0x200 - (-Dos_head.mod_size & 0x1ff);
     Wdputslc( "load module length                                   = " );
     Puthex( Load_len, 8 );
     Wdputslc( "H\n\n" );

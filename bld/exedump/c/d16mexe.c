@@ -137,14 +137,16 @@ static void dmp_dos16m_gdt( dos16m_exe_header *d16m_head, int sel_count,
         segdata_offset += file_size;
         Wdputs( "      " );
         mem_size = ((unsigned_32)gdt.gdtreserved & 0x1FFF) << 4;
-        if( mem_size == 0 ) mem_size = file_size;
+        if( mem_size == 0 )
+            mem_size = file_size;
         Puthex( mem_size, 5 );
         Wdputs( "     " );
         Putdec( (gdt.gdtaccess >> 5) & 0x03 );
         Wdputs( "         " );
         Putdec( (gdt.gdtaccess & 0x80) != 0 );
         Wdputs( "       " );
-        if( gdt.gdtreserved & 0x2000 ) Wdputs( "Z" );
+        if( gdt.gdtreserved & 0x2000 )
+            Wdputs( "Z" );
         Wdputslc( "\n" );
     }
     Wdputslc( "\n" );
@@ -198,7 +200,7 @@ static void dmp_dos16m_head_info( dos16m_exe_header *d16m_head )
 
     Banner( "DOS/16M EXE Header" );
     Dump_header( &d16m_head->last_page_bytes, dos16m_exe_msg );
-    load_len = (unsigned_32)d16m_head->pages_in_file * 0x200 + d16m_head->last_page_bytes;
+    load_len = (unsigned_32)d16m_head->pages_in_file * 0x200 - (-d16m_head->last_page_bytes & 0x1ff);
     Wdputs( "\nload module length                                   = " );
     Puthex( load_len, 8 );
     Wdputslc( "H\n" );
