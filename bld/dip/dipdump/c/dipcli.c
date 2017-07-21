@@ -29,13 +29,12 @@
 ****************************************************************************/
 
 
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+//#include <sys/types.h>
 #include <stdio.h>
+#include "bool.h"
+#include "wio.h"
 #include "dip.h"
-#include "dipcli.h"
+#include "dipimp.h"
 
 #if 0
 # define dprintf(a)     do { printf a; } while( 0 )

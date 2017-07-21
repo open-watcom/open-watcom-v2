@@ -30,6 +30,7 @@ objs = &
     dipdump.obj &
     digcli.obj  &
     dipcli.obj  &
+    pathlist.obj &
     $(dip_objs)
 
 !include exetarg.mif
