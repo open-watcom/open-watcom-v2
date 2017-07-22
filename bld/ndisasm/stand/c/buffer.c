@@ -47,7 +47,7 @@ static unsigned                 OutputPos = 0;
 static char                     Buffer[BUFFER_LEN] = {0};
 static char                     IntermedBuffer[BUFFER_LEN] = {0};
 
-void FmtHexNum( char *buff, unsigned prec, dis_value value, bool with_prefix )
+void FmtHexNum( char *buff, unsigned prec, dis_value value )
 {
     char        *src;
     char        *dst;
@@ -59,10 +59,11 @@ void FmtHexNum( char *buff, unsigned prec, dis_value value, bool with_prefix )
     if( ( value.u._32[I64LO32] == 0 ) && ( value.u._32[I64HI32] == 0 ) && ( prec == 0 ) ) {
         strcpy( buff, ( masm_src ) ? "0" : "0x0" );
     } else {
-        fmt = ( with_prefix ) ? (( masm_src ) ? "0%*.*lxH" : "0x%*.*lx") : (( masm_src ) ? "%*.*lxH" : "%*.*lx");
         if( value.u._32[I64HI32] == 0 ) {
+            fmt = ( masm_src ) ? "0%*.*lxH" : "0x%*.*lx";
             len = 0;
         } else {
+            fmt = ( masm_src ) ? "0%*.*lx" : "0x%*.*lx";
             if( prec > 8 ) {
                 len = sprintf( buff, fmt, prec - 8, prec - 8, value.u._32[I64HI32] );
                 prec = 8;
@@ -173,7 +174,7 @@ void BufferPrint( void )
 
 void BufferHex( unsigned prec, dis_value value )
 {
-    FmtHexNum( IntermedBuffer, prec, value, false );
+    FmtHexNum( IntermedBuffer, prec, value );
     BufferConcat( IntermedBuffer );
 }
 
