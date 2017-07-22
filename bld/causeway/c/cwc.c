@@ -523,11 +523,7 @@ static int ProcessEXE( char *fname, char *oname )
     fread( &exe_header, sizeof( exe_header ), 1, f );
     HeaderLen = exe_header.hdr_size * 16;
     // calculate image size
-    if( exe_header.mod_size == 0 ) {
-        ExeLen = exe_header.file_size * 512L;
-    } else {
-        ExeLen = ( exe_header.file_size - 1 ) * 512L + exe_header.mod_size;
-    }
+    ExeLen = exe_header.file_size * 512L - (-exe_header.mod_size & 0x1ff);
     ImageLen = ExeLen - HeaderLen;
     fimg = malloc( ExeLen );
     // read image
@@ -569,9 +565,7 @@ static int ProcessEXE( char *fname, char *oname )
     if( mem_req < 0 )
         mem_req = TotalLen - 0x20;
     exe_header.mod_size = TotalLen % 512;
-    exe_header.file_size = TotalLen / 512;
-    if( exe_header.mod_size != 0 )
-        exe_header.file_size++;
+    exe_header.file_size = ( TotalLen + 511 ) / 512;
     exe_header.num_relocs = 0;
     exe_header.hdr_size = 2;
     exe_header.min_16 += ( mem_req >> 4 ) + 1;

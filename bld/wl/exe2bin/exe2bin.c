@@ -433,9 +433,8 @@ int main( int argc, char *argv[] )
         return( EXIT_FAILURE );
     }
 
-    tot_skip  = header->hdr_size << 4;
-    bin_size  = header->mod_size + ( (header->file_size - 1) << 9) - tot_skip;
-    bin_size += header->mod_size ? 0: 512;
+    tot_skip  = header->hdr_size * 16;
+    bin_size  = header->file_size * 512 - (-header->mod_size & 0x1ff) - tot_skip;
 
     // if we do not operate in extended mode check the various restrictions
     // of the original exe2bin. For com-files skip another 0x100 bytes.

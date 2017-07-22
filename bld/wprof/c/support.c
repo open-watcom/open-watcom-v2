@@ -303,11 +303,7 @@ STATIC int exeHeader( file_handle fh )
             if( signature[0] != 'P' || signature[1] != '6' ) {
                 return( EXE_MZ );
             }
-            pharlap_header = head.file_size * 512L;
-            if( head.mod_size != 0 ) {
-                pharlap_header += head.mod_size;
-                pharlap_header -= 512;
-            }
+            pharlap_header = head.file_size * 512L - (-head.mod_size & 0x1ff);
             if( lseek( fh, pharlap_header, SEEK_SET ) < 0 ) {
                 return( EXE_MZ );
             }
@@ -433,11 +429,7 @@ bool SetExeFile( file_handle fh, bool overlay )
     case EXE_P3_BOUND:
         lseek( exeFH, 0, SEEK_SET );
         read( exeFH, &head, sizeof( head ) );
-        header_base = head.file_size * 512L;
-        if( head.mod_size != 0 ) {
-            header_base += head.mod_size;
-            header_base -= 512;
-        }
+        header_base = head.file_size * 512L - (-head.mod_size & 0x1ff);
         /* fall through to P3 */
     case EXE_P2:
     case EXE_P3:
