@@ -190,35 +190,36 @@ return_val HandleArgs( void )
     const char  *ptr;
     bool        list_file = false;
     char        *cmd;
+    char        *p;
     int         len;
     return_val  error;
 
     DFormat |= DFF_PSEUDO | DFF_SYMBOLIC_REG;
 
     len = _bgetcmd( NULL, 0 );
-    cmd = malloc( len + 1 );
+    p = cmd = malloc( len + 1 );
     if( cmd == NULL ) {
         return( RC_OUT_OF_MEMORY );
     }
     error = RC_OKAY;
     if( len > 0 ) {
-        _bgetcmd( cmd, len + 1 );
+        _bgetcmd( p, len + 1 );
     } else {
-        *cmd = '\0';
+        *p = '\0';
     }
-    cmd = skipBlanks( cmd );
-    if( *cmd == '\0' || *cmd == '?' ) {
+    p = skipBlanks( p );
+    if( *p == '\0' || *p == '?' ) {
         printUsage( 0 );
         error = RC_ERROR;
     } else {
-        while( *cmd != '\0' ) {
-            if( IS_OPT_DELIM( *cmd ) ) {
-                cmd++;
-                switch( tolower( *cmd ) ) {
+        while( *p != '\0' ) {
+            if( IS_OPT_DELIM( *p ) ) {
+                p++;
+                switch( tolower( *p ) ) {
                 case 'a':
                     DFormat |= DFF_ASM;
-                    if( cmd[1] == 'u' ) {
-                        ++cmd;
+                    if( p[1] == 'u' ) {
+                        ++p;
                         DFormat |= DFF_UNIX;
                     }
                     break;
@@ -226,11 +227,11 @@ return_val HandleArgs( void )
                     Options |= PRINT_EXTERNS;
                     break;
                 case 'i':
-                    cmd++;
-                    if( *cmd == '=' ) {
-                        cmd++;
-                        if( !isspace( *cmd ) ) {
-                            LabelChar = (char)toupper( *(unsigned char *)cmd );
+                    p++;
+                    if( *p == '=' ) {
+                        p++;
+                        if( !isspace( *p ) ) {
+                            LabelChar = (char)toupper( *(unsigned char *)p );
                             break;
                         }
                     }
@@ -244,41 +245,41 @@ return_val HandleArgs( void )
                         break;
                     }
                     list_file = true;
-                    cmd++;
-                    if( *cmd == '=' ) {
-                        cmd++;
-                        ptr = cmd;
-                        cmd = findNextWS( cmd );
-                        ListFileName = getFileName( ptr, cmd );
+                    p++;
+                    if( *p == '=' ) {
+                        p++;
+                        ptr = p;
+                        p = findNextWS( p );
+                        ListFileName = getFileName( ptr, p );
                     }
                     break;
                 case 'f':
-                    switch( cmd[1] ) {
+                    switch( p[1] ) {
                     case 'p':
                         DFormat ^= DFF_PSEUDO;
-                        ++cmd;
+                        ++p;
                         break;
                     case 'r':
                         DFormat ^= DFF_SYMBOLIC_REG;
-                        ++cmd;
+                        ++p;
                         break;
                     case 'f':
                         Options |= PRINT_FPU_EMU_FIXUP;
                         break;
                     case 'i':
                         DFormat ^= DFF_ALT_INDEXING;
-                        ++cmd;
+                        ++p;
                         break;
                     case 'u':
-                        ++cmd;
-                        switch( cmd[1] ) {
+                        ++p;
+                        switch( p[1] ) {
                         case 'r':
                             DFormat ^= DFF_REG_UP;
-                            ++cmd;
+                            ++p;
                             break;
                         case 'i':
                             DFormat ^= DFF_INS_UP;
-                            ++cmd;
+                            ++p;
                             break;
                         default:
                             DFormat ^= DFF_INS_UP | DFF_REG_UP;
@@ -287,9 +288,9 @@ return_val HandleArgs( void )
                     }
                     break;
                 case 'm':
-                    if( cmd[1] == 'w' ) {
+                    if( p[1] == 'w' ) {
                         Options |= METAWARE_COMPATIBLE;
-                        ++cmd;
+                        ++p;
                         break;
                     }
                     Options |= NODEMANGLE_NAMES;
@@ -304,17 +305,17 @@ return_val HandleArgs( void )
                         break;
                     }
                     source_mix = true;
-                    cmd++;
-                    if( *cmd == '=' ) {
-                        cmd++;
-                        ptr = cmd;
-                        cmd = findNextWS( cmd );
-                        SourceFileName = getFileName( ptr, cmd );
+                    p++;
+                    if( *p == '=' ) {
+                        p++;
+                        ptr = p;
+                        p = findNextWS( p );
+                        SourceFileName = getFileName( ptr, p );
                     }
                     break;
                 default:
                     BufferMsg( INVALID_OPTION );
-                    BufferStore( "  -%c\n\n", *cmd );
+                    BufferStore( "  -%c\n\n", *p );
                     BufferPrint();
                     printUsage( 0 );
                     error = RC_ERROR;
@@ -329,11 +330,11 @@ return_val HandleArgs( void )
                     error = RC_ERROR;
                     break;
                 }
-                ptr = cmd;
-                cmd = findNextWS( cmd );
-                ObjFileName = getFileName( ptr, cmd );
+                ptr = p;
+                p = findNextWS( p );
+                ObjFileName = getFileName( ptr, p );
             }
-            cmd = findNextArg( cmd );
+            p = findNextArg( p );
         }
     }
     if( error == RC_OKAY ) {
