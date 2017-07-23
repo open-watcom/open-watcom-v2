@@ -57,7 +57,7 @@ dos_memory      RMData;
 rm_data         __far *PMData;
 
 #if defined(__OSI__)
-short   _ExtenderRealModeSelector;
+unsigned short  _ExtenderRealModeSelector;
 #endif
 
 #define CTRL_BREAK_VECTOR      0x1b
@@ -143,7 +143,7 @@ void GUImain( void )
     {
         long    result;
     
-        _Extender = 1;
+        _Extender = DOSX_RATIONAL;
         result = DPMIAllocateLDTDescriptors( 1 );
         if( result < 0 ) {
             StartupErr( LIT_ENG( Unable_to_get_rm_sel ) );

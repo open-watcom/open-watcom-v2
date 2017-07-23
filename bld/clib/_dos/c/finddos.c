@@ -39,6 +39,9 @@
 #include "extender.h"
 
 
+//#define CMP_EXTENDER_INTEL  "cmp  _Extender,9"
+#define CMP_EXTENDER_INTEL  0x80 0x3D offset _Extender DOSX_INTEL
+
 extern unsigned __dos_find_first_dta( const char *path, unsigned attrib, struct find_t *fdta );
 extern unsigned __dos_find_next_dta( struct find_t *fdta );
 extern unsigned __dos_find_close_dta( struct find_t *fdta );
@@ -162,7 +165,7 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
         "call __doserror_" \
         "test eax,eax"  \
         "jnz  L1"       \
-        "cmp  _Extender,9" \
+        CMP_EXTENDER_INTEL \
         "jnz  L1"       \
         "push es"       \
         _MOV_AH DOS_GET_DTA \
@@ -178,7 +181,7 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
         "push es"       \
         _MOV_AH DOS_SET_DTA \
         _INT_21         \
-        "cmp  _Extender,9" \
+        CMP_EXTENDER_INTEL \
         "jnz  L1"       \
         _MOV_AH DOS_GET_DTA \
         _INT_21         \
@@ -189,7 +192,7 @@ extern unsigned __dos_find_close_dta( struct find_t *fdta );
         "call __doserror_" \
         "test eax,eax"  \
         "jnz  L2"       \
-        "cmp  _Extender,9" \
+        CMP_EXTENDER_INTEL \
         "jnz  L2"       \
         MOV_DATA_FROM_DTA \
     "L2: pop  es"       \

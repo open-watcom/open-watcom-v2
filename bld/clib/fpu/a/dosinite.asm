@@ -48,6 +48,7 @@ _DATA segment dword public 'DATA'
     extrn   __X32VM         : byte
     extrn   __D16Infoseg    : word
     extrn   __x386_zero_base_selector : word
+
 sysregs dd  14 dup(0)       ; only need 12, but just in case
 oldidt  dd  0,0
 old7off dd  0

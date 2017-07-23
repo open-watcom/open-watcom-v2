@@ -30,16 +30,11 @@
 ****************************************************************************/
 
 
-#if !defined(__DOS_EXT__) && defined(_M_IX86) && !defined(_M_I86) \
-    && !defined(__WINDOWS__)    \
-    && !defined(__OS2__)        \
-    && !defined(__NT__)         \
-    && !defined(__OSI__)        \
-    && !defined(__QNX__)        \
-    && !defined(__RDOS__)       \
-    && !defined(__LINUX__)
+#if defined(__DOS__) && !defined(__OSI__) && !defined(__CALL21__)
 
+#if !defined(__DOS_EXT__) && defined(_M_IX86) && !defined(_M_I86)
 #define __DOS_EXT__
+#endif
 
 /*
  * Values for '_Extender'
@@ -70,6 +65,8 @@
 #define _IsRationalNonZeroBase() ( _Extender == DOSX_RATIONAL && _ExtenderSubtype == DOSX_RATIONAL_NONZEROBASE )
 #define _IsRationalZeroBase()    ( _Extender == DOSX_RATIONAL && _ExtenderSubtype == DOSX_RATIONAL_ZEROBASE )
 #define _IsFlashTek()            ( _Extender == DOSX_PHAR_V3 && __X32VM != 0 )
+
+#define EXTENDER_RM2PM( s, o )  MK_FP( _ExtenderRealModeSelector, (((unsigned)(s)) << 4) + (o) )
 
 extern  char            _Extender;
 extern  char            _ExtenderSubtype;

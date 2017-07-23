@@ -59,6 +59,7 @@ comment&
 .386p
 
 include xinit.inc
+include extender.inc
 
 public  __x386_zero_base_ptr
 public  __x386_zero_base_selector
@@ -257,7 +258,7 @@ __x386_init proc near
         mov     word ptr _Envptr+4,gs   ; save segment of environment area
         sub     eax,eax                 ; offset 0
         mov     dword ptr _Envptr,eax   ; save offset of environment area
-        mov     _Extender,3             ; pretend to be PharLap V3
+        mov     _Extender,X_PHARLAP_V3  ; pretend to be PharLap V3
         mov     __X32VM,1               ; mark that this is X32VM
         push    fs
         pop     es                      ;pointer to psp

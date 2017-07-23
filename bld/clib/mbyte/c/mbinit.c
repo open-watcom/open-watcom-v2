@@ -39,9 +39,8 @@
 #elif defined __OSI__
 #elif defined __DOS__
     #include <dos.h>
-    #ifndef __386__
-        #include <i86.h>
-    #else
+    #include <i86.h>
+    #ifdef __386__
         #include "dpmi.h"
         #include "extender.h"
     #endif
@@ -54,12 +53,20 @@
 #include "mbchar.h"
 
 
+#if defined __DOS__
+#define DOS_FAR     __far
+#else
+#define DOS_FAR
+#endif
+
+#define _set_dbcs_table(low,high)   memset( __MBCSIsTable + low + 1, _MB_LEAD, high - low + 1 )
+
 #if defined(__DOS__) && !defined(__OSI__)
-    unsigned short _WCFAR * dos_get_dbcs_lead_table( void );
+    unsigned short      __far *dos_get_dbcs_lead_table( void );
 #endif
 
 #if defined(__DOS__) || defined(__WINDOWS__)
-    unsigned short          dos_get_code_page( void );
+    unsigned short      dos_get_code_page( void );
 #endif
 
 
@@ -71,17 +78,27 @@
     unsigned int __MBCodePage = 0;              /* default code page */
 #endif
 
-static void set_dbcs_table( int low, int high )
-{
-    memset( __MBCSIsTable + low + 1, _MB_LEAD, high - low + 1 );
-}
-
 static void clear_dbcs_table( void )
 {
     __IsDBCS = 0;                           /* SBCS for now */
     __MBCodePage = 0;
     memset( __MBCSIsTable, 0, 257 );
 }
+
+#if defined( __DOS__ ) && !defined( __OSI__ ) || defined( __NT__ ) || defined( __OS2__ )
+static void set_dbcs_table( unsigned short DOS_FAR *lead_bytes )
+{
+    unsigned short range;
+
+    clear_dbcs_table();
+    if( *lead_bytes ) {
+        __IsDBCS = 1;       /* set __IsDBCS if needed */
+        for( ; (range = *lead_bytes) != 0; lead_bytes++ ) {
+            _set_dbcs_table( (unsigned char)range, (unsigned char)( range >> 8 ) );
+        }
+    }
+}
+#endif
 
 /****
 ***** Initialize a multi-byte character set.  Returns 0 on success.
@@ -90,21 +107,17 @@ static void clear_dbcs_table( void )
 int __mbinit( int codepage )
 {
 #ifdef __NT__
-    int                     countRange;
     CPINFO                  cpInfo;
     BOOL                    rc;
 #elif defined __OS2__
-    int                     countRange;
     COUNTRYCODE             countryInfo;
-    unsigned char           leadBytes[12];
+    unsigned short          leadBytes[6];
     APIRET                  rc;
     OS_UINT                 buf[8];
     OS_UINT                 bytes;
 #elif defined __OSI__
 #elif defined __DOS__
-    int                     countRange;
-    unsigned short _WCFAR * leadBytes;
-    unsigned char           lowerBound, upperBound;
+    unsigned short          __far *leadBytes;
 #elif defined __WINDOWS__
     DWORD                   version;
     int                     countVal;
@@ -113,111 +126,97 @@ int __mbinit( int codepage )
 
     /*** Handle values from _setmbcp ***/
     if( codepage == _MBINIT_CP_ANSI ) {
-        #ifdef __NT__
-            codepage = GetACP();
-        #else
-            codepage = 0;
-        #endif
+#ifdef __NT__
+        codepage = GetACP();
+#else
+        codepage = 0;
+#endif
     } else if( codepage == _MBINIT_CP_OEM ) {
-        #ifdef __NT__
-            codepage = GetOEMCP();
-        #else
-            codepage = 0;
-        #endif
+#ifdef __NT__
+        codepage = GetOEMCP();
+#else
+        codepage = 0;
+#endif
     } else if( codepage == _MBINIT_CP_SBCS ) {
         clear_dbcs_table();
         return( 0 );
     } else if( codepage == _MBINIT_CP_932 ) {
         clear_dbcs_table();
-        set_dbcs_table( 0x81, 0x9F );
-        set_dbcs_table( 0xE0, 0xFC );
+        _set_dbcs_table( 0x81, 0x9F );
+        _set_dbcs_table( 0xE0, 0xFC );
         __IsDBCS = 1;
         __MBCodePage = 932;
         return( 0 );
     }
 
-    #ifdef __NT__
-        /*** Initialize the __MBCSIsTable values ***/
-        if( codepage == 0 )  codepage = CP_OEMCP;
-        rc = GetCPInfo( codepage, &cpInfo );    /* get code page info */
-        if( rc == FALSE )  return( 1 );
-        clear_dbcs_table();
-        if( cpInfo.LeadByte[0] )  __IsDBCS = 1; /* set __IsDBCS if needed */
-        for( countRange=0; !(cpInfo.LeadByte[countRange]==0x00 &&
-             cpInfo.LeadByte[countRange+1]==0x00); countRange+=2 ) {
-            set_dbcs_table( cpInfo.LeadByte[countRange],
-                            cpInfo.LeadByte[countRange+1] );
-        }
-        /*** Update __MBCodePage ***/
-        if( codepage == CP_OEMCP ) {
-            __MBCodePage = GetOEMCP();
+#ifdef __NT__
+    /*** Initialize the __MBCSIsTable values ***/
+    if( codepage == 0 )
+        codepage = CP_OEMCP;
+    rc = GetCPInfo( codepage, &cpInfo );    /* get code page info */
+    if( rc == FALSE )
+        return( 1 );
+    set_dbcs_table( (unsigned short *)cpInfo.LeadByte );
+    /*** Update __MBCodePage ***/
+    if( codepage == CP_OEMCP ) {
+        __MBCodePage = GetOEMCP();
+    } else {
+        __MBCodePage = codepage;
+    }
+#elif defined __OS2__
+    /*** Initialize the __MBCSIsTable values ***/
+    countryInfo.country = 0;                /* default country */
+    countryInfo.codepage = codepage;        /* specified code page */
+  #if defined(__WARP__)
+    rc = DosQueryDBCSEnv( sizeof( leadBytes ), &countryInfo, (PCHAR)leadBytes );
+  #else
+    rc = DosGetDBCSEv( sizeof( leadBytes ), &countryInfo, (PCHAR)leadBytes );
+  #endif
+    if( rc != 0 )
+        return( 1 );
+    set_dbcs_table( leadBytes );
+    /*** Update __MBCodePage ***/
+    if( codepage == 0 ) {
+  #if defined(__386__) || defined(__PPC__)
+        rc = DosQueryCp( sizeof( buf ), &buf, &bytes );
+  #else
+        rc = DosGetCp( sizeof( buf ), &buf, &bytes );
+  #endif
+        if( rc != 0 ) {
+            __MBCodePage = 0;
         } else {
-            __MBCodePage = codepage;
+            __MBCodePage = (unsigned int)buf[0];
         }
-    #elif defined __OS2__
-        /*** Initialize the __MBCSIsTable values ***/
-        countryInfo.country = 0;                /* default country */
-        countryInfo.codepage = codepage;        /* specified code page */
-        #if defined(__WARP__)
-            rc = DosQueryDBCSEnv( 12, &countryInfo, (PCHAR)leadBytes );
-        #else
-            rc = DosGetDBCSEv( 12, &countryInfo, (PCHAR)leadBytes );
-        #endif
-        if( rc != 0 )  return( 1 );
-        clear_dbcs_table();
-        if( leadBytes[0] )  __IsDBCS = 1;       /* set __IsDBCS if needed */
-        for( countRange=0; !(leadBytes[countRange]==0x00 &&
-             leadBytes[countRange+1]==0x00); countRange+=2 ) {
-            set_dbcs_table( leadBytes[countRange],
-                            leadBytes[countRange+1] );
+    } else {
+        __MBCodePage = codepage;
+    }
+#elif defined __OSI__
+#elif defined __DOS__
+    /*** Initialize the __MBCSIsTable values ***/
+    if( codepage != 0 )
+        return( 1 );       /* can only handle default */
+    leadBytes = dos_get_dbcs_lead_table();
+    if( leadBytes == NULL )
+        return( 0 );
+    set_dbcs_table( leadBytes );
+    __MBCodePage = dos_get_code_page();
+#elif defined __WINDOWS__
+    /*** Initialize the __MBCSIsTable values ***/
+    if( codepage != 0 )
+        return( 1 );       /* can only handle default */
+    version = GetVersion();
+    if( LOWORD(version) < 0x0A03 )
+        return( 1 );    /* 3.1+ needed */
+    clear_dbcs_table();
+    for( countVal = 0; countVal < 256; countVal++ ) {
+        if( IsDBCSLeadByte( (BYTE)countVal ) ) {
+            __MBCSIsTable[countVal + 1] = _MB_LEAD;
+            __IsDBCS = 1;                   /* set __IsDBCS if needed */
         }
-        /*** Update __MBCodePage ***/
-        if( codepage == 0 ) {
-            #if defined(__386__) || defined(__PPC__)
-                rc = DosQueryCp( sizeof(buf), &buf, &bytes );
-            #else
-                rc = DosGetCp( sizeof(buf), &buf, &bytes );
-            #endif
-            if( rc != 0 ) {
-                __MBCodePage = 0;
-            } else {
-                __MBCodePage = (unsigned int)buf[0];
-            }
-        } else {
-            __MBCodePage = codepage;
-        }
-    #elif defined __OSI__
-    #elif defined __DOS__
-        /*** Initialize the __MBCSIsTable values ***/
-        if( codepage != 0 )
-            return( 1 );       /* can only handle default */
-        leadBytes = dos_get_dbcs_lead_table();
-        if( leadBytes == NULL )
-            return( 0 );
-        clear_dbcs_table();
-        if( leadBytes[0] )
-            __IsDBCS = 1;       /* set __IsDBCS if needed */
-        for( countRange=0; leadBytes[countRange]!=0x0000; countRange++ ) {
-            lowerBound = (unsigned char) leadBytes[countRange];
-            upperBound = (unsigned char) (leadBytes[countRange] >> 8);
-            set_dbcs_table( lowerBound, upperBound );
-        }
-        __MBCodePage = dos_get_code_page();
-    #elif defined __WINDOWS__
-        /*** Initialize the __MBCSIsTable values ***/
-        if( codepage != 0 )  return( 1 );       /* can only handle default */
-        version = GetVersion();
-        if( LOWORD(version) < 0x0A03 )  return( 1 );    /* 3.1+ needed */
-        clear_dbcs_table();
-        for( countVal=0; countVal<256; countVal++ ) {
-            if( IsDBCSLeadByte( (BYTE)countVal ) ) {
-                __MBCSIsTable[countVal+1] = _MB_LEAD;
-                __IsDBCS = 1;                   /* set __IsDBCS if needed */
-            }
-        }
-        __MBCodePage = GetKBCodePage();
-    #elif defined __LINUX__
-    #endif
+    }
+    __MBCodePage = GetKBCodePage();
+#elif defined __LINUX__
+#endif
 
     return( 0 );                                /* return success code */
 }
@@ -253,7 +252,7 @@ int __mbinit( int codepage )
         value           [di si] \
         modify          [ax bx cx dx si di es];
 #else
-unsigned short _WCFAR *dos_get_dbcs_lead_table( void )
+unsigned short __far *dos_get_dbcs_lead_table( void )
 /****************************************************/
 {
     union REGS        regs;
@@ -263,7 +262,7 @@ unsigned short _WCFAR *dos_get_dbcs_lead_table( void )
     sregs.ds = 0;
     sregs.es = 0;
     intdosx( &regs, &regs, &sregs );        /* call DOS */
-    if( regs.w.cflag || ( sregs.ds == 0 ))  /* ensure function succeeded */
+    if( regs.w.cflag || ( sregs.ds == 0 ) ) /* ensure function succeeded */
         return( NULL );
     return( MK_FP( sregs.ds, regs.w.si ) ); /* return pointer to table */
 }
@@ -277,16 +276,17 @@ unsigned short dos_get_code_page( void )
     struct SREGS        sregs;
     unsigned char       buf[7];
 
-    regs.w.ax = 0x6501;                     /* get international info */
-    regs.w.bx = 0xFFFF;                     /* global code page */
-    regs.w.cx = 7;                          /* buffer size */
-    regs.w.dx = 0xFFFF;                     /* current country */
-    regs.w.di = FP_OFF( (void __far*)buf ); /* buffer offset */
-    sregs.es = FP_SEG( (void __far*)buf );  /* buffer segment */
-    sregs.ds = 0;                           /* in protected mode (dos16m) DS must be initialized */
-    intdosx( &regs, &regs, &sregs );        /* call DOS */
-    if( regs.w.cflag )  return( 0 );        /* ensure function succeeded */
-    return( * (unsigned short*)(buf+5) );   /* return code page */
+    regs.w.ax = 0x6501;                         /* get international info */
+    regs.w.bx = 0xFFFF;                         /* global code page */
+    regs.w.cx = 7;                              /* buffer size */
+    regs.w.dx = 0xFFFF;                         /* current country */
+    regs.w.di = FP_OFF( (void __far *)buf );    /* buffer offset */
+    sregs.es = FP_SEG( (void __far *)buf );     /* buffer segment */
+    sregs.ds = 0;                               /* in protected mode (dos16m) DS must be initialized */
+    intdosx( &regs, &regs, &sregs );            /* call DOS */
+    if( regs.w.cflag )
+        return( 0 );                            /* ensure function succeeded */
+    return( *(unsigned short *)( buf + 5 ) );   /* return code page */
 }
 #else
 #pragma aux dos_get_code_page = \
@@ -330,8 +330,8 @@ typedef struct {
 } PHARLAP_block;
 #pragma pack(__pop);
 
-unsigned short _WCFAR *dos_get_dbcs_lead_table( void )
-/****************************************************/
+unsigned short __far *dos_get_dbcs_lead_table( void )
+/***************************************************/
 {
     if( _IsPharLap() ) {
         PHARLAP_block   pblock;
@@ -348,8 +348,7 @@ unsigned short _WCFAR *dos_get_dbcs_lead_table( void )
         sregs.ds = FP_SEG( &pblock );
         intdosx( &regs, &regs, &sregs );
         if( pblock.real_ds != 0xFFFF ) {    /* weird OS/2 value */
-            return( MK_FP( _ExtenderRealModeSelector,
-                           (((unsigned)pblock.real_ds)<<4) + regs.w.si ) );
+            return( EXTENDER_RM2PM( pblock.real_ds, regs.w.si ) );
         }
     } else if( _IsRational() ) {
         rm_call_struct  dblock;
@@ -358,8 +357,7 @@ unsigned short _WCFAR *dos_get_dbcs_lead_table( void )
         dblock.eax = 0x6300;                /* get DBCS vector table */
         DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dblock );
         if( (dblock.flags & 1) == 0 && dblock.ds ) {
-            return( MK_FP( _ExtenderRealModeSelector,
-                           (((unsigned)dblock.ds)<<4) + dblock.esi ) );
+            return( EXTENDER_RM2PM( dblock.ds, dblock.esi ) );
         }
     }
     return( NULL );
@@ -368,9 +366,8 @@ unsigned short _WCFAR *dos_get_dbcs_lead_table( void )
 unsigned short dos_get_code_page( void )
 /**************************************/
 {
-    unsigned short __far  * temp;
-    unsigned short          real_seg;
-    unsigned short          codepage = 0;
+    unsigned short      real_seg;
+    unsigned short      codepage = 0;
 
 
     /*** Get the code page ***/
@@ -400,8 +397,7 @@ unsigned short dos_get_code_page( void )
         sregs.ds = FP_SEG( &pblock );
         intdosx( &r, &r, &sregs );
         if( pblock.real_ds != 0xFFFF ) {    /* weird OS/2 value */
-            temp = MK_FP( _ExtenderRealModeSelector, (real_seg<<4) + 5 );
-            codepage = *temp;
+            codepage = *(unsigned short __far *)EXTENDER_RM2PM( real_seg, 5 );
         }
 
         /*** Free DOS Memory under Phar Lap ***/
@@ -427,8 +423,7 @@ unsigned short dos_get_code_page( void )
         dblock.es = real_seg;               /* buffer segment */
         DPMISimulateRealModeInterrupt( 0x21, 0, 0, &dblock );
         if( (dblock.flags & 1) == 0 ) {
-            temp = MK_FP( _ExtenderRealModeSelector, (real_seg<<4) + 5 );
-            codepage = *temp;
+            codepage = *(unsigned short __far *)EXTENDER_RM2PM( real_seg, 5 );
         }
         /*** Free DOS memory with DPMI ***/
         DPMIFreeDOSMemoryBlock( selector );

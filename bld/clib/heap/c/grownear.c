@@ -240,7 +240,7 @@ size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
 }
 #endif
 
-#if defined( __DOS_EXT__ ) && !defined( __CALL21__ )
+#if defined( __DOS_EXT__ )
 static void_nptr RationalAlloc( size_t size )
 {
     dpmi_hdr        *dpmi;

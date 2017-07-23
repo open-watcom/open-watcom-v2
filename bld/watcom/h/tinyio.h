@@ -844,7 +844,7 @@ tiny_ret_t  tiny_call   _TinyDPMISetDescriptor( uint_16 __sel, void __far * );
 
 #define _INT            0xcd
 
-#if ( defined( __WINDOWS_386__ ) || defined( __OSI__ ) || defined( __CALL21__ ) ) && !defined( __NOCALL21__ )
+#if defined( __WINDOWS_386__ ) || defined( __OSI__ ) || defined( __CALL21__ )
  extern  void   __Int21( void );
  #pragma aux __Int21 "*"
  #define _INT_21        "call __Int21"

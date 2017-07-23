@@ -68,7 +68,7 @@ unsigned    BIOSVidPage;
 #ifdef __386__
 LP_VOID firstmeg( unsigned segment, unsigned offset )
 {
-    return( MK_FP( _ExtenderRealModeSelector, (unsigned) (segment << 4) + offset ) );
+    return( EXTENDER_RM2PM( segment, offset ) );
 }
 #endif
 
