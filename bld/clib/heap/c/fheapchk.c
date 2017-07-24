@@ -101,10 +101,7 @@ _WCRTLINK int _fheapchk( void )
         return( heap_status );
     }
     hi._pentry = NULL;
-    for( ;; ) {
-        heap_status = __HeapWalk( &hi, __fheapbeg, _NULLSEG );
-        if( heap_status != _HEAPOK )
-            break;
+    while( (heap_status = __HeapWalk( &hi, __fheapbeg, _NULLSEG )) == _HEAPOK ) {
         if( hi._useflag == _FREEENTRY ) {
             heap_status = checkFree( hi._pentry );
             if( heap_status != _HEAPOK )
@@ -116,10 +113,8 @@ _WCRTLINK int _fheapchk( void )
         heap_status = _HEAPBADNODE;
     } else if( heap_status == _HEAPBADPTR ) {
         heap_status = _HEAPBADNODE;
-    } else {
-        if( heap_status == _HEAPEND ) {
-            heap_status = _HEAPOK;
-        }
+    } else if( heap_status == _HEAPEND ) {
+        heap_status = _HEAPOK;
     }
     _ReleaseFHeap();
     return( heap_status );

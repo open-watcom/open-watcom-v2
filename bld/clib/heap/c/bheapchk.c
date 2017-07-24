@@ -104,10 +104,8 @@ _WCRTLINK int _bheapchk( __segment seg )
             heap_status = _HEAPBADNODE;
         } else if( heap_status == _HEAPBADPTR ) {
             heap_status = _HEAPBADNODE;
-        } else {
-            if( heap_status == _HEAPEND ) {
-                heap_status = _HEAPOK;
-            }
+        } else if( heap_status == _HEAPEND ) {
+            heap_status = _HEAPOK;
         }
     }
     _ReleaseFHeap();

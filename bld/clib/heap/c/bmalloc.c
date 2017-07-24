@@ -49,10 +49,7 @@ _WCRTLINK void_bptr _bmalloc( __segment seg, size_t amt )
         return( ( cstg == NULL ) ? _NULLOFF : cstg );
     }
     _AccessFHeap();
-    for( ;; ) {
-        cstg = __MemAllocator( amt, seg, 0 );
-        if( cstg != NULL )
-            break;
+    while( (cstg = __MemAllocator( amt, seg, 0 )) == NULL ) {
         if( __GrowSeg( seg, amt ) == 0 ) {
             cstg = _NULLOFF;
             break;
