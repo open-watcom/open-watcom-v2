@@ -123,7 +123,7 @@ int __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t
                 }
             }
         }
-        /* _bfree will decrement 'numalloc' */
+        /* ...free functions will decrement 'numalloc' */
         heap->numalloc++;
 #if defined( _M_I86 )
         _bfree( seg, (void_bptr)BLK2CPTR( p2 ) );
