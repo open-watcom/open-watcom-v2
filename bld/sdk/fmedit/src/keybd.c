@@ -38,56 +38,6 @@
 #include "mouse.def"
 #include "keybd.def"
 
-/* Forward References */
-static bool IgnoreKbd( int keycode );
-static bool CheckKbdMove( int keycode );
-static bool ContinueKbdMove( int keycode );
-static bool EndKbdMove( int keycode );
-
-static bool (*KeyDownActions[])( int keycode ) = {
-    CheckKbdMove,                   /* DORMANT          */
-    CheckKbdMove,                   /* OVERBOX          */
-    IgnoreKbd,                      /* MOVING           */
-    IgnoreKbd,                      /* EDITING          */
-    IgnoreKbd,                      /* SIZING           */
-    IgnoreKbd,                      /* CREATING         */
-    IgnoreKbd,                      /* ALIGNING         */
-    IgnoreKbd,                      /* PASTE_PENDING    */
-    IgnoreKbd,                      /* PASTEING         */
-    IgnoreKbd,                      /* SELECTING        */
-    IgnoreKbd,                      /* MOVE_PENDING     */
-    IgnoreKbd,                      /* ACTION_ABORTED   */
-    ContinueKbdMove                 /* KBD_MOVING       */
-};
-
-static bool (*KeyUpActions[])( int keycode ) = {
-    IgnoreKbd,                      /* DORMANT          */
-    IgnoreKbd,                      /* OVERBOX          */
-    IgnoreKbd,                      /* MOVING           */
-    IgnoreKbd,                      /* EDITING          */
-    IgnoreKbd,                      /* SIZING           */
-    IgnoreKbd,                      /* CREATING         */
-    IgnoreKbd,                      /* ALIGNING         */
-    IgnoreKbd,                      /* PASTE_PENDING    */
-    IgnoreKbd,                      /* PASTEING         */
-    IgnoreKbd,                      /* SELECTING        */
-    IgnoreKbd,                      /* MOVE_PENDING     */
-    IgnoreKbd,                      /* ACTION_ABORTED   */
-    EndKbdMove                      /* KBD_MOVING       */
-};
-
-bool ProcessKeyDown( int keycode )
-/********************************/
-{
-    return( KeyDownActions[GetState()]( keycode ) );
-}
-
-bool ProcessKeyUp( int keycode )
-/******************************/
-{
-    return( KeyUpActions[GetState()]( keycode ) );
-}
-
 
 static bool IgnoreKbd( int keycode )
 /**********************************/
@@ -211,4 +161,28 @@ static bool EndKbdMove( int keycode )
     } else {
         return( false );
     }
+}
+
+static bool (*KeyDownActions[])( int keycode ) = {
+    #define pick(id,curs,kdown,kup,mpres,mmove,mrel) kdown,
+    #include "_state.h"
+    #undef pick
+};
+
+static bool (*KeyUpActions[])( int keycode ) = {
+    #define pick(id,curs,kdown,kup,mpres,mmove,mrel) kup,
+    #include "_state.h"
+    #undef pick
+};
+
+bool ProcessKeyDown( int keycode )
+/********************************/
+{
+    return( KeyDownActions[GetState()]( keycode ) );
+}
+
+bool ProcessKeyUp( int keycode )
+/******************************/
+{
+    return( KeyUpActions[GetState()]( keycode ) );
 }

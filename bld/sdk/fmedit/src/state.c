@@ -181,13 +181,13 @@ void ResetSize( void )
     State->sizeinfo = R_NONE;
 }
 
-unsigned char GetSizing( void )
+RESIZE_ID GetSizing( void )
 {
     /* return the sizing info */
     return( State->sizeinfo );
 }
 
-bool Sizing( char op )
+bool Sizing( RESIZE_ID op )
 {
     /* check to see if a sizing operation is valid */
     return( (State->sizeinfo & op) != R_NONE );

@@ -33,7 +33,7 @@
 #include "fmedit.def"
 #include "cursor.def"
 
-enum {
+typedef enum {
     CURSOR_ARROW,
     CURSOR_CROSS,
     CURSOR_S_UD,
@@ -41,55 +41,57 @@ enum {
     CURSOR_S_UR_BL,
     CURSOR_S_UL_BR,
     MAX_CURSORS
-};
-
+} cursor_type;
 
 static HCURSOR Cursors[MAX_CURSORS];
 
-static unsigned char StateCursor[] = {
-    CURSOR_ARROW,       /* DORMANT       */
-    0,                  /* OVERBOX       */
-    CURSOR_CROSS,       /* MOVING        */
-    CURSOR_ARROW,       /* EDITING       */
-    0,                  /* SIZING        */
-    CURSOR_ARROW,       /* CREATING      */
-    CURSOR_ARROW,       /* ALIGNING      */
-    CURSOR_CROSS,       /* PASTE_PENDING */
-    CURSOR_CROSS,       /* PASTEING      */
-    CURSOR_CROSS,       /* SELECTING     */
-    CURSOR_CROSS        /* MOVE_PENDING  */
+static cursor_type StateCursor[] = {
+    #define pick(id,curs,kdown,kup,mpres,mmove,mrel) curs,
+    #include "_state.h"
+    #undef pick
 };
 
-static unsigned char SizeCursor[] = {
-    0,           CURSOR_S_UD,    CURSOR_S_UD,    0,
-    CURSOR_S_LR, CURSOR_S_UL_BR, CURSOR_S_UR_BL, 0,
-    CURSOR_S_LR, CURSOR_S_UR_BL, CURSOR_S_UL_BR
+static cursor_type SizeCursor[] = {
+    0,
+    CURSOR_S_UD,        // R_TOP
+    CURSOR_S_UD,        // R_BOTTOM
+    0,
+    CURSOR_S_LR,        // R_LEFT
+    CURSOR_S_UL_BR,     // R_LEFT + R_TOP
+    CURSOR_S_UR_BL,     // R_LEFT + R_BOTTOM
+    0,
+    CURSOR_S_LR,        // R_RIGHT
+    CURSOR_S_UR_BL,     // R_RIGHT + R_TOP
+    CURSOR_S_UL_BR,     // R_RIGHT + R_BOTTOM
+    0,
+    0,
+    0,
+    0,
+    0,
 };
 
-
-extern void InitCursors( void )
-/*****************************/
+void InitCursors( void )
+/**********************/
 {
     /* set up the various mouse cursors needed */
-    Cursors[CURSOR_ARROW] = LoadCursor( NULL, IDC_ARROW );
-    Cursors[CURSOR_CROSS] = LoadCursor( NULL, IDC_CROSS );
-    Cursors[CURSOR_S_UD] =  LoadCursor( NULL, IDC_SIZENS );
-    Cursors[CURSOR_S_LR] = LoadCursor( NULL, IDC_SIZEWE );
+    Cursors[CURSOR_ARROW]   = LoadCursor( NULL, IDC_ARROW );
+    Cursors[CURSOR_CROSS]   = LoadCursor( NULL, IDC_CROSS );
+    Cursors[CURSOR_S_UD]    = LoadCursor( NULL, IDC_SIZENS );
+    Cursors[CURSOR_S_LR]    = LoadCursor( NULL, IDC_SIZEWE );
     Cursors[CURSOR_S_UR_BL] = LoadCursor( NULL, IDC_SIZENESW );
     Cursors[CURSOR_S_UL_BR] = LoadCursor( NULL, IDC_SIZENWSE );
 }
 
-
-extern void SetStateCursor( STATE_ID st )
-/***************************************/
+void SetStateCursor( STATE_ID st )
+/********************************/
 {
     /* set the cursor depending on the specified state */
-    int cursoridx;
+    cursor_type     cursoridx;
 
-    if( st != SIZING && st != OVERBOX ) {
-        cursoridx = StateCursor[st];
-    } else {
+    if( st == SIZING || st == OVERBOX ) {
         cursoridx = SizeCursor[GetSizing()];
+    } else {
+        cursoridx = StateCursor[st];
     }
     SetCursor( Cursors[cursoridx] );
 }

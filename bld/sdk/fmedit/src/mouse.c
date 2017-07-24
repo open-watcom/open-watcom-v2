@@ -45,85 +45,9 @@
 #include "mouse.def"
 
 
-/* forward references */
-
-// mouse press actions
-static void ActionBegin( POINT, WORD, OBJPTR );
-static void ResizeBegin( POINT, WORD, OBJPTR );
-static void BeginPaste( POINT, WORD, OBJPTR );
-static void ResetEdit( POINT, WORD, OBJPTR );
-static void IgnoreMousePress( POINT, WORD, OBJPTR );
-static void UnexpectedPressStateRecover( POINT, WORD, OBJPTR );
-
-static void (*MousePressActions[])( POINT, WORD, OBJPTR ) = {
-    ActionBegin,                    /* DORMANT          */
-    ResizeBegin,                    /* OVERBOX          */
-    UnexpectedPressStateRecover,    /* MOVING           */
-    ResetEdit,                      /* EDITING          */
-    UnexpectedPressStateRecover,    /* SIZING           */
-    UnexpectedPressStateRecover,    /* CREATING         */
-    UnexpectedPressStateRecover,    /* ALIGNING         */
-    BeginPaste,                     /* PASTE_PENDING    */
-    UnexpectedPressStateRecover,    /* PASTEING         */
-    UnexpectedPressStateRecover,    /* SELECTING        */
-    UnexpectedPressStateRecover,    /* MOVE_PENDING     */
-    UnexpectedPressStateRecover,    /* ACTION_ABORTED   */
-    IgnoreMousePress                /* KBD_MOVING       */
-};
-
-// mouse move and release actions
-static void CheckMousePosn( POINT );
-static void DoObjectMove( POINT );
-static void DoObjectResize( POINT );
-static void DoObjectRecreate( POINT );
-static void UnexpectedStateRecover( POINT );
-static void BeginMove( POINT );
-static void DoPasteMove( POINT );
-static void DoSelectRecreate( POINT );
-static void IgnoreMouse( POINT );
-static void FinishMove( POINT );
-static void FinishResize( POINT );
-static void FinishCreate( POINT );
-static void FinishPaste( POINT );
-static void FinishSelect( POINT );
-static void FinishMovePending( POINT );
-static void FinishActionAborted( POINT pt );
-
-static void (*MouseMoveActions[])( POINT ) = {
-    CheckMousePosn,                 /* DORMANT          */
-    CheckMousePosn,                 /* OVERBOX          */
-    DoObjectMove,                   /* MOVING           */
-    CheckMousePosn,                 /* EDITING          */
-    DoObjectResize,                 /* SIZING           */
-    DoObjectRecreate,               /* CREATING         */
-    UnexpectedStateRecover,         /* ALIGNING         */
-    UnexpectedStateRecover,         /* PASTE_PENDING    */
-    DoPasteMove,                    /* PASTEING         */
-    DoSelectRecreate,               /* SELECTING        */
-    BeginMove,                      /* MOVE_PENDING     */
-    IgnoreMouse,                    /* ACTION_ABORTED   */
-    IgnoreMouse                     /* KBD_MOVING       */
-};
-
-static void (*MouseReleaseActions[])( POINT ) = {
-    UnexpectedStateRecover,         /* DORMANT          */
-    UnexpectedStateRecover,         /* OVERBOX          */
-    FinishMove,                     /* MOVING           */
-    IgnoreMouse,                    /* EDITING          */
-    FinishResize,                   /* SIZING           */
-    FinishCreate,                   /* CREATING         */
-    UnexpectedStateRecover,         /* ALIGNING         */
-    UnexpectedStateRecover,         /* PASTE_PENDING    */
-    FinishPaste,                    /* PASTEING         */
-    FinishSelect,                   /* SELECTING        */
-    FinishMovePending,              /* MOVE_PENDING     */
-    FinishActionAborted,            /* ACTION_ABORTED   */
-    IgnoreMouse                     /* KBD_MOVING       */
-};
-
-static void MovePendingBegin( WORD, OBJPTR );
-static DLIST *OrderList( LIST * );
-static DLIST_ELT GetNextElement( DLIST * );
+static DLIST        *OrderList( LIST * );
+static DLIST_ELT    GetNextElement( DLIST * );
+static void         ResetEdit( POINT, WORD, OBJPTR );
 
 void ProcessDBLCLK( POINT point )
 /*******************************/
@@ -140,7 +64,6 @@ void ProcessDBLCLK( POINT point )
         Define( currobj, &pt, NULL );
     }
 }
-
 
 static void ResizeBegin( POINT pt, WORD ks, OBJPTR d )
 /****************************************************/
@@ -184,25 +107,6 @@ static void ResizeBegin( POINT pt, WORD ks, OBJPTR d )
             Resize( object, &offrect, true );
         }
     }
-}
-
-
-static void ResetEdit( POINT pt, WORD keystate, OBJPTR d )
-/********************************************************/
-{
-    /*  Reset the previous editing operation and proceed with the default
-     *  action for a mouse press.
-     */
-    OBJPTR  currobj;
-
-    d = d;
-    currobj = GetEditCurrObject();
-    if( currobj != NULL ) {
-        Notify( currobj, TERMINATE_EDIT, NULL );
-    }
-    SetBaseState( DORMANT );
-    SetDefState();
-    MousePressActions[GetState()]( pt, keystate, NULL );
 }
 
 
@@ -261,7 +165,7 @@ static void MovePendingBegin( WORD keystate, OBJPTR object )
      * current object */
 
     if( GetCurrObjptr( object ) == NULL ) {
-        if( !(keystate & MK_SHIFT) && !(keystate & MK_CONTROL) ) {
+        if( (keystate & MK_SHIFT) == 0 && (keystate & MK_CONTROL) == 0 ) {
             ResetCurrObject( false );
         }
         AddCurrObject( object );
@@ -273,7 +177,7 @@ static void MovePendingBegin( WORD keystate, OBJPTR object )
     } else {
         SetPrimaryObject( GetCurrObjptr( object ) );
     }
-    SetKeyState( keystate);
+    SetKeyState( keystate );
     SetState( MOVE_PENDING );
 }
 
@@ -387,21 +291,6 @@ static void ActionBegin( POINT point, WORD keystate, OBJPTR obj )
     } else if( !IsMoveOperation( obj, point, keystate ) ) {
         SelectBegin( point, keystate );
     }
-}
-
-
-void ProcessButtonDown( POINT point, WORD keystate, OBJPTR obj )
-/**************************************************************/
-{
-    /* responds to a button down message from the mouse */
-    STATE_ID st;
-
-    st = GetState();
-    if( st != PASTE_PENDING ) {
-        SetCapture( GetAppWnd() );
-    }
-    MousePressActions[st]( point, keystate, obj );
-    SetPrevMouse( point );
 }
 
 
@@ -520,18 +409,6 @@ static bool SignificantMove( POINT pt )
 
     prev = GetPrevMouse();
     return( !(pt.x == prev.x && pt.y == prev.y) );
-}
-
-void ProcessButtonUp( POINT point )
-/*********************************/
-{
-    /* responds to a button up message from the mouse */
-    ProcessMouseMove( point );
-    MouseReleaseActions[GetState()]( point );
-    CheckMousePosn( point );
-    SnapPointToGrid( &point );
-    SetPrevMouse( point );
-    ReleaseCapture();
 }
 
 
@@ -658,19 +535,6 @@ static void DoObjectResize( POINT pt )
             Resize( currobj, &newloc, true );
         }
         SetPrevMouse( pt );
-    }
-}
-
-
-void ProcessMouseMove( POINT point )
-/**********************************/
-{
-    /* responds to a button down message from the mouse */
-    STATE_ID st;
-
-    st = GetState();
-    if( st != MOVE_PENDING || SignificantMove( point ) ) {
-        MouseMoveActions[st]( point );
     }
 }
 
@@ -1272,3 +1136,79 @@ static void FinishActionAborted( POINT pt )
     SetState( DORMANT );
 }
 
+
+static void (*MousePressActions[])( POINT, WORD, OBJPTR ) = {
+    #define pick(id,curs,kdown,kup,mpres,mmove,mrel) mpres,
+    #include "_state.h"
+    #undef pick
+};
+
+static void (*MouseMoveActions[])( POINT ) = {
+    #define pick(id,curs,kdown,kup,mpres,mmove,mrel) mmove,
+    #include "_state.h"
+    #undef pick
+};
+
+static void (*MouseReleaseActions[])( POINT ) = {
+    #define pick(id,curs,kdown,kup,mpres,mmove,mrel) mrel,
+    #include "_state.h"
+    #undef pick
+};
+
+
+static void ResetEdit( POINT pt, WORD keystate, OBJPTR d )
+/********************************************************/
+{
+    /*  Reset the previous editing operation and proceed with the default
+     *  action for a mouse press.
+     */
+    OBJPTR  currobj;
+
+    d = d;
+    currobj = GetEditCurrObject();
+    if( currobj != NULL ) {
+        Notify( currobj, TERMINATE_EDIT, NULL );
+    }
+    SetBaseState( DORMANT );
+    SetDefState();
+    MousePressActions[GetState()]( pt, keystate, NULL );
+}
+
+void ProcessButtonDown( POINT point, WORD keystate, OBJPTR obj )
+/**************************************************************/
+{
+    /* responds to a button down message from the mouse */
+    STATE_ID st;
+
+    st = GetState();
+    if( st != PASTE_PENDING ) {
+        SetCapture( GetAppWnd() );
+    }
+    MousePressActions[st]( point, keystate, obj );
+    SetPrevMouse( point );
+}
+
+void ProcessButtonUp( POINT point )
+/*********************************/
+{
+    /* responds to a button up message from the mouse */
+    ProcessMouseMove( point );
+    MouseReleaseActions[GetState()]( point );
+    CheckMousePosn( point );
+    SnapPointToGrid( &point );
+    SetPrevMouse( point );
+    ReleaseCapture();
+}
+
+
+void ProcessMouseMove( POINT point )
+/**********************************/
+{
+    /* responds to a button down message from the mouse */
+    STATE_ID st;
+
+    st = GetState();
+    if( st != MOVE_PENDING || SignificantMove( point ) ) {
+        MouseMoveActions[st]( point );
+    }
+}

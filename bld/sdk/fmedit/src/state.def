@@ -6,19 +6,9 @@
 typedef struct state STATE;
 
 typedef enum {
-    DORMANT,
-    OVERBOX,
-    MOVING,
-    EDITING,
-    SIZING,
-    CREATING,
-    ALIGNING,
-    PASTE_PENDING,
-    PASTEING,
-    SELECTING,
-    MOVE_PENDING,
-    ACTION_ABORTED,
-    KBD_MOVING
+    #define pick(id,curs,kdown,kup,mpres,mmove,mrel) id,
+    #include "_state.h"
+    #undef pick
 } STATE_ID;
 
 #define H_SIZE( a )     (a >> 2)
@@ -35,8 +25,9 @@ extern void       FreeState( void );
 extern void       SetBaseState( STATE_ID );
 
 extern void       SetSize( RESIZE_ID );
-extern bool       Sizing( char );
+extern bool       Sizing( RESIZE_ID );
 extern void       ResetSize( void );
+extern RESIZE_ID  GetSizing( void );
 
 extern void       SetPrevMouse( POINT );
 extern POINT      GetPrevMouse( void );
@@ -62,7 +53,6 @@ extern void       *GetObjects( void );
 
 extern void       SetErr( char * );
 extern char       *GetErr( void );
-extern unsigned char GetSizing( void );
 
 extern void       SetOffset( POINT );
 extern void       SetScrollRect( RECT );
