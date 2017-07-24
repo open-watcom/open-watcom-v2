@@ -63,6 +63,9 @@
 #define FIRST_FRL(h)    ((frlptr)(h + 1))
 #define FRLPTRADD(p,o)  (frlptr)((PTR)(p)+(o))
 
+#define DPMI2BLK(h)    ((mheapptr)(h + 1))
+#define BLK2DPMI(h)    (((dpmi_hdr *)h) - 1)
+
 #if defined( __DOS_EXT__ )
 extern  int SegmentLimit( void );
 #pragma aux SegmentLimit =  \
@@ -154,8 +157,8 @@ void __FreeDPMIBlocks( void )
         // the DPMI block ( - overhead).  If it is then we can give this
         // DPMI block back to the DPMI host.
         if( heap->freehead.prev->len + sizeof( miniheapblkp ) == heap->len ) {
-            dpmi = ((dpmi_hdr *)heap) - 1;
             __unlink( heap );
+            dpmi = BLK2DPMI( heap );
             if( dpmi->dos_seg_value == 0 ) {    // if DPMI block
                 TinyDPMIFree( dpmi->dpmi_handle );
             } else {                            // else DOS block below 1MB
@@ -169,30 +172,30 @@ void_nptr __ReAllocDPMIBlock( frlptr frl_old, unsigned req_size )
 {
     mheapptr        heap;
     dpmi_hdr        *dpmi;
-    dpmi_hdr        *prev_dpmi;
+//    dpmi_hdr        *prev_dpmi;
     unsigned        size;
     frlptr          frl_new, frl2;
 
     if( !__heap_enabled )
         return( NULL );
     __FreeDPMIBlocks();
-    prev_dpmi = NULL;
+//    prev_dpmi = NULL;
     for( heap = __nheapbeg; heap != NULL; heap = heap->next ) {
         if( ((PTR)heap + sizeof( miniheapblkp ) == (PTR)frl_old) && (heap->numalloc == 1) ) {
             // The mini-heap contains only this memblk
-            __unlink( heap );
-            dpmi = ((dpmi_hdr *)heap) - 1;
+            dpmi = BLK2DPMI( heap );
             if( dpmi->dos_seg_value != 0 )
                 return( NULL );
             size = __ROUND_UP_SIZE( heap->len + sizeof( dpmi_hdr ) + TAG_SIZE + req_size - frl_old->len + TAG_SIZE, SYS_BLKSIZE_ALIGN );
-            prev_dpmi = dpmi;
+//            prev_dpmi = dpmi;
             dpmi = TinyDPMIRealloc( dpmi, size );
             if( dpmi == NULL ) {
-                dpmi = prev_dpmi;
+//                dpmi = prev_dpmi;
                 return( NULL );         // indicate resize failed
             }
             dpmi->dos_seg_value = 0;
-            heap = (mheapptr)( dpmi + 1 );
+            __unlink( heap );
+            heap = DPMI2BLK( dpmi );
             heap->len = size - sizeof( dpmi_hdr ) - TAG_SIZE;
             frl_new = __LinkUpNewNHeap( heap );
             heap->numalloc = 1;
@@ -241,7 +244,7 @@ size_t __LastFree( void )    /* used by nheapgrow to know about adjustment */
 #endif
 
 #if defined( __DOS_EXT__ )
-static void_nptr RationalAlloc( size_t size )
+static mheapptr RationalAlloc( size_t size )
 {
     dpmi_hdr        *dpmi;
     mheapptr        heap;
@@ -252,10 +255,10 @@ static void_nptr RationalAlloc( size_t size )
     /* size is a multiple of 4k */
     dpmi = TinyDPMIAlloc( size );
     if( dpmi != NULL ) {
-        heap = (mheapptr)( dpmi + 1 );
-        heap->len = size - sizeof( dpmi_hdr );
         dpmi->dos_seg_value = 0;        // indicate DPMI block
-        return( (void_nptr)heap );
+        heap = DPMI2BLK( dpmi );
+        heap->len = size - sizeof( dpmi_hdr );
+        return( heap );
     }
     if( __minreal & 0xfff00000 ) {
         /* checks for users that want >1M real memory saved */
@@ -272,9 +275,9 @@ static void_nptr RationalAlloc( size_t size )
         if( TINY_OK( DOS_block ) ) {
             dpmi = (dpmi_hdr *)TinyDPMIBase( DOS_block );
             dpmi->dos_seg_value = DOS_block;
-            heap = (mheapptr)( dpmi + 1 );
+            heap = DPMI2BLK( dpmi );
             heap->len = size - sizeof( dpmi_hdr );
-            return( (void_nptr)heap );
+            return( heap );
         }
     }
     return( NULL );
@@ -417,21 +420,25 @@ static int __CreateNewNHeap( unsigned amount )
   #elif defined( __DOS_EXT__ )
     // if( !__IsCtsNHeap() ) {
     {
-        tag         _WCNEAR *tmp_tag;
-
         if( _IsRational() ) {
-            tmp_tag = RationalAlloc( amount );
-            if( tmp_tag ) {
-                amount = *tmp_tag;
+            mheapptr    heap1;
+
+            heap1 = RationalAlloc( amount );
+            if( heap1 == NULL ) {
+                return( 0 );
             }
+            amount = heap1->len;
+            brk_value = (unsigned)heap1;
         } else {    /* CodeBuilder */
+            tag         _WCNEAR *tmp_tag;
+
             tmp_tag = TinyCBAlloc( amount );
             amount -= TAG_SIZE;
+            if( tmp_tag == NULL ) {
+                return( 0 );
+            }
+            brk_value = (unsigned)tmp_tag;
         }
-        if( tmp_tag == NULL ) {
-            return( 0 );
-        }
-        brk_value = (unsigned)tmp_tag;
     }
     // Pharlap, RSI/non-zero can never call this function
   #elif defined( __RDOS__ )
