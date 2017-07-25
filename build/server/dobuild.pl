@@ -128,9 +128,11 @@ sub set_prev_changeno
 sub batch_output_make_change_objdir
 {
     if ($OStype eq 'UNIX') {
+        print BATCH 'if [ ! -d $OWBINDIR ]; then mkdir $OWBINDIR; fi';
         print BATCH 'if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi';
         print BATCH 'cd $OWOBJDIR';
     } else {
+        print BATCH 'if not exist %OWBINDIR% mkdir %OWBINDIR%';
         print BATCH 'if not exist %OWOBJDIR% mkdir %OWOBJDIR%';
         print BATCH 'cd %OWOBJDIR%';
     }
@@ -519,7 +521,7 @@ sub run_boot_build
 
 sub run_build
 {
-    my $logfile = "$OW\/build\/", $ow_obj_dir, "\/pass.log";
+    my $logfile = "$OW\/build\/$ow_obj_dir\/pass.log";
     my $bldbase = "$home\/$Common::config{'BLDBASE'}";
     my $bldlast = "$home\/$Common::config{'BLDLAST'}";
 
