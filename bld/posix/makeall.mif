@@ -33,28 +33,30 @@ all : lib $(commands) .symbolic
 
 lib : .symbolic $(__MAKEFILES__)
     @if not exist $(libdir:$(to_os_path)) @mkdir $(libdir:$(to_os_path))
-    @cd $(libdir:$(to_os_path))
+    $(noecho)cd $(libdir:$(to_os_path))
     !@wmake -h $(mkfile)
 !ifdef alt_subdir_$(host_os)$(host_cpu)_$(model)
+    $(noecho)cd $(curr_dir_all)
     @if not exist $(altlibdir:$(to_os_path)) @mkdir $(altlibdir:$(to_os_path))
-    @cd $(altlibdir:$(to_os_path))
+    $(noecho)cd $(altlibdir:$(to_os_path))
     !@wmake -h $(altmkfile)
 !endif
-    @cd $(curr_dir_all)
+    $(noecho)cd $(curr_dir_all)
 
 $(commands) : .symbolic $(__MAKEFILES__)
     !@wmake -h -f $(posix_dir)/src/$^@/makefile
 
 clean : .symbolic
     @echo clean $(libdir:$(to_os_path))
-    @cd $(libdir:$(to_os_path))
+    $(noecho)cd $(libdir:$(to_os_path))
     @%make clean_all_objs
 !ifdef alt_subdir_$(host_os)$(host_cpu)_$(model)
+    $(noecho)cd $(curr_dir_all)
     @echo clean $(altlibdir:$(to_os_path))
-    @cd $(altlibdir:$(to_os_path))
+    $(noecho)cd $(altlibdir:$(to_os_path))
     @%make clean_all_objs
 !endif
-    @cd $(curr_dir_all)
+    $(noecho)cd $(curr_dir_all)
     @echo clean $(curr_dir_all)
     @%make clean_all_objs
 
