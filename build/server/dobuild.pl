@@ -51,10 +51,11 @@ if ($#ARGV == -1) {
     exit 1;
 }
 
-my $home      = $Common::config{'HOME'};
-my $OW        = $Common::config{'OW'};
-my $TOOLS     = $Common::config{'TOOLS'};
-my $relroot   = $Common::config{'RELROOT'};
+my $home       = $Common::config{'HOME'};
+my $OW         = $Common::config{'OW'};
+my $TOOLS      = $Common::config{'TOOLS'};
+my $relroot    = $Common::config{'RELROOT'};
+my $ow_obj_dir = 'buildsrv';
 
 if ($^O eq 'MSWin32') {
     $OStype = 'WIN32';
@@ -218,9 +219,10 @@ sub make_boot_batch
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n//;
-        if    (/$setenv OWROOT=/i)  { print BATCH "$setenv OWROOT=", $OW; }
+        if    (/$setenv OWROOT=/i)   { print BATCH "$setenv OWROOT=", $OW; }
+        elsif (/$setenv OWOBJDIR=/i) { print BATCH "$setenv OWOBJDIR=", $ow_obj_dir; }
         elsif (/$setenv OWTOOLS=/i)  { print BATCH "$setenv OWTOOLS=", $TOOLS; }
-        else                        { print BATCH; }
+        else                         { print BATCH; }
     }
     close(INPUT);
     print BATCH "$setenv OWRELROOT=", $relroot;
@@ -250,6 +252,7 @@ sub make_build_batch
     while (<INPUT>) {
         s/\r?\n//;
         if    (/$setenv OWROOT=/i)   { print BATCH "$setenv OWROOT=", $OW; }
+        elsif (/$setenv OWOBJDIR=/i) { print BATCH "$setenv OWOBJDIR=", $ow_obj_dir; }
         elsif (/$setenv OWTOOLS=/i)  { print BATCH "$setenv OWTOOLS=", $TOOLS; }
         elsif (/$setenv OWDOSBOX=/i) { ; }
         else                         { print BATCH; }
@@ -286,7 +289,8 @@ sub make_docs_batch
     while (<INPUT>) {
         s/\r?\n//;
         if    (/$setenv OWROOT=/i)            { print BATCH "$setenv OWROOT=", $OW; }
-        elsif (/$setenv OWTOOLS=/i)            { print BATCH "$setenv OWTOOLS=", $TOOLS; }
+        elsif (/$setenv OWOBJDIR=/i)          { print BATCH "$setenv OWOBJDIR=", $ow_obj_dir; }
+        elsif (/$setenv OWTOOLS=/i)           { print BATCH "$setenv OWTOOLS=", $TOOLS; }
         elsif (/$setenv OWDOSBOX=/i)          { ; }
         elsif (/$setenv OWGHOSTSCRIPTPATH=/i) { ; }
         elsif (/$setenv OWWIN95HC=/i)         { ; }
@@ -328,6 +332,7 @@ sub make_test_batch
     while (<INPUT>) {
         s/\r?\n//;
         if    (/$setenv OWROOT=/i)   { print BATCH "$setenv OWROOT=", $OW; }
+        elsif (/$setenv OWOBJDIR=/i) { print BATCH "$setenv OWOBJDIR=", $ow_obj_dir; }
         elsif (/$setenv OWTOOLS=/i)  { print BATCH "$setenv OWTOOLS=", $TOOLS; }
         elsif (/$setenv OWDOSBOX=/i) { ; }
         else                         { print BATCH; }
@@ -363,9 +368,10 @@ sub make_installer_batch
     open(INPUT, "$setvars") || die "Unable to open $setvars file.";
     while (<INPUT>) {
         s/\r?\n//;
-        if    (/$setenv OWROOT=/i)  { print BATCH "$setenv OWROOT=", $OW; }
+        if    (/$setenv OWROOT=/i)   { print BATCH "$setenv OWROOT=", $OW; }
+        elsif (/$setenv OWOBJDIR=/i) { print BATCH "$setenv OWOBJDIR=", $ow_obj_dir; }
         elsif (/$setenv OWTOOLS=/i)  { print BATCH "$setenv OWTOOLS=", $TOOLS; }
-        else                        { print BATCH; }
+        else                         { print BATCH; }
     }
     close(INPUT);
     print BATCH "$setenv OWRELROOT=", $relroot;
@@ -513,7 +519,7 @@ sub run_boot_build
 
 sub run_build
 {
-    my $logfile = "$OW\/bld\/pass.log";
+    my $logfile = "$OW\/build\/", $ow_obj_dir, "\/pass.log";
     my $bldbase = "$home\/$Common::config{'BLDBASE'}";
     my $bldlast = "$home\/$Common::config{'BLDLAST'}";
 

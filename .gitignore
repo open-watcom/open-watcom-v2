@@ -71,8 +71,13 @@
 /contrib/*
 !/contrib/*
 
+/build/*
 !/build/*.lnk
+!/build/*.awk
+!/build/*.ctl
 !/build/external/*
+!/build/mif/*
+!/build/server/*
 
 /distrib/ow/*/*
 
