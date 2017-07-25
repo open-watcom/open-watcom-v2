@@ -7,6 +7,7 @@ set OWBUILDER_REDIR_ERROUT=2^>^&1
 set NUL=
 :skip_errout
 if exist %OWBUILDER_BOOTX_OUTPUT% del %OWBUILDER_BOOTX_OUTPUT%
+if not exist %OWBINDIR%\%NUL% mkdir %OWBINDIR%
 set BUILDER_ARG=%1
 if "%BUILDER_ARG%" == "" set BUILDER_ARG=build
 cd %OWSRCDIR%\wmake
@@ -32,6 +33,7 @@ if exist %OWBINDIR%\builder.exe del %OWBINDIR%\builder.exe
 %OWBINDIR%\wmake -f ..\binmake clean >>%OWBUILDER_BOOTX_OUTPUT% %OWBUILDER_REDIR_ERROUT%
 %OWBINDIR%\wmake -f ..\binmake bootstrap=1 builder.exe >>%OWBUILDER_BOOTX_OUTPUT% %OWBUILDER_REDIR_ERROUT%
 if errorlevel == 1 goto error_exit
+if "%BUILDER_ARG%" == "preboot" goto error_exit
 cd %OWSRCDIR%
 builder boot
 if errorlevel == 1 goto error_exit

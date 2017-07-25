@@ -21,8 +21,8 @@ env:
 
 cache:
   directories:
-    - build/bin
-    - bld/watcom/binbuild
+    - build/$OWOBJDIR
+    - bld/watcom/$OWOBJDIR
 
 before_script:
    # initialize OW build environment variables

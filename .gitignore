@@ -72,7 +72,6 @@
 !/contrib/*
 
 !/build/*.lnk
-/build/bin/*
 !/build/external/*
 
 /distrib/ow/*/*

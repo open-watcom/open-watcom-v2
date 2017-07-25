@@ -10,10 +10,10 @@ export OWBLDVER=20
 export OWBLDVERSTR=2.0
 
 # Subdirectory to be used for building OW build tools
-export OWOBJDIR=binbuild
+if [ -z "$OWOBJDIR" ]; then export OWOBJDIR=binbuild; fi
 
 # Subdirectory to be used for build binaries
-export OWBINDIR=$OWROOT/build/bin
+export OWBINDIR=$OWROOT/build/$OWOBJDIR
 
 # Subdirectory containing OW sources
 export OWSRCDIR=$OWROOT/bld

@@ -17,10 +17,10 @@ set OWDEFWATCOM=%WATCOM%
 :defpath_set
 
 REM Subdirectory to be used for building OW build tools
-set OWOBJDIR=binbuild
+if "%OWOBJDIR%" == "" set OWOBJDIR=binbuild
 
 REM Subdirectory to be used for build binaries
-set OWBINDIR=%OWROOT%\build\bin
+set OWBINDIR=%OWROOT%\build\%OWOBJDIR%
 
 REM Subdirectory containing OW sources
 set OWSRCDIR=%OWROOT%\bld
@@ -46,10 +46,9 @@ REM OS specifics
 
 REM setup right COMSPEC for non-standard COMSPEC setting on NT based systems
 if not '%OS%' == 'Windows_NT' goto no_windows_nt
+if '%NTDOS%' == '1' goto no_windows_nt
 set COMSPEC=%WINDIR%\system32\cmd.exe
 set COPYCMD=/y
 :no_windows_nt
-
-set DOS4G=quiet
 
 echo Open Watcom build environment

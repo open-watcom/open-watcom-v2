@@ -23,6 +23,7 @@ output_redirect()
 }
 
 rm -f $OWBUILDER_BOOTX_OUTPUT
+if [ ! -d $OWBINDIR ]; then mkdir $OWBINDIR; fi
 cd $OWSRCDIR/wmake
 if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
 cd $OWOBJDIR
@@ -61,14 +62,16 @@ else
     rm -f $OWBINDIR/builder
     output_redirect $OWBINDIR/wmake -f ../binmake clean
     output_redirect $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
-    cd $OWSRCDIR
-    builder boot
-    RC=$?
-    if [ $RC -ne 0 ]; then
-        echo "builder bootstrap build error"
-    else
-        builder $BUILDER_ARG
+    if [ "$BUILDER_ARG" != "prebuild" ]; then
+        cd $OWSRCDIR
+        builder boot
         RC=$?
+        if [ $RC -ne 0 ]; then
+            echo "builder bootstrap build error"
+        else
+            builder $BUILDER_ARG
+            RC=$?
+        fi
     fi
 fi
 cd $OWROOT
