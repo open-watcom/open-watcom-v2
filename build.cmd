@@ -1,8 +1,8 @@
 @echo off
 REM Script to build the Open Watcom tools
-set OWBUILDER_BOOTX_OUTPUT=%OWROOT%\bootx.log
-if exist %OWBUILDER_BOOTX_OUTPUT% del %OWBUILDER_BOOTX_OUTPUT%
 if not exist %OWBINDIR% mkdir %OWBINDIR%
+set OWBUILDER_BOOTX_OUTPUT=%OWBINDIR%\bootx.log
+if exist %OWBUILDER_BOOTX_OUTPUT% del %OWBUILDER_BOOTX_OUTPUT%
 set BUILDER_ARG=%1
 if "%BUILDER_ARG%" == "" set BUILDER_ARG=build
 cd %OWSRCDIR%\wmake

@@ -5,17 +5,19 @@
 #
 # Expects POSIX or OW tools.
 
+if [ -z "$OWROOT" ]; then
+    . ./setvars.sh
+fi
+
 if [ -z "$1" ]; then
     BUILDER_ARG=build
 else
     BUILDER_ARG=$1
 fi
 
-if [ -z "$OWROOT" ]; then
-    . ./setvars.sh
-fi
+if [ ! -d $OWBINDIR ]; then mkdir $OWBINDIR; fi
 
-OWBUILDER_BOOTX_OUTPUT=$OWROOT/bootx.log
+OWBUILDER_BOOTX_OUTPUT=$OWBINDIR/bootx.log
 
 output_redirect()
 {
@@ -23,7 +25,6 @@ output_redirect()
 }
 
 rm -f $OWBUILDER_BOOTX_OUTPUT
-if [ ! -d $OWBINDIR ]; then mkdir $OWBINDIR; fi
 cd $OWSRCDIR/wmake
 if [ ! -d $OWOBJDIR ]; then mkdir $OWOBJDIR; fi
 cd $OWOBJDIR

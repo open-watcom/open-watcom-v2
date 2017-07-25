@@ -35,10 +35,10 @@ gitupdf_proc()
                 #
                 if [ "$TRAVIS_OS_NAME" = "osx" ]; then
                     test -d $OWTRAVIS_BUILD_DIR/logs/osx || mkdir -p $OWTRAVIS_BUILD_DIR/logs/osx
-                    cp $TRAVIS_BUILD_DIR/bld/*.log $OWTRAVIS_BUILD_DIR/logs/osx/
+                    cp $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*.log $OWTRAVIS_BUILD_DIR/logs/osx/
                 else
                     test -d $OWTRAVIS_BUILD_DIR/logs/linux || mkdir -p $OWTRAVIS_BUILD_DIR/logs/linux
-                    cp $TRAVIS_BUILD_DIR/bld/*.log $OWTRAVIS_BUILD_DIR/logs/linux/
+                    cp $TRAVIS_BUILD_DIR/build/$OWOBJDIR/*.log $OWTRAVIS_BUILD_DIR/logs/linux/
                 fi
                 #
                 # commit new log files to GitHub repository
