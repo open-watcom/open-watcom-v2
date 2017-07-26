@@ -29,6 +29,16 @@
 ****************************************************************************/
 
 
+/*
+ * Comments for heap implementation.
+ *
+ * brk value should be pointer to the start/end of heap blok (heap structure) ???
+ *
+ * CALL21 memory block have 2 * TAG reserved on the begining, heap block start after this ???
+ * DPMI memory block have dpmi_hdr reserved on the begining, heap block start after this
+ *
+ */
+
 #include "dll.h"        // needs to be first
 #include "variety.h"
 #include <stddef.h>
@@ -53,12 +63,6 @@
   #include "tinyio.h"
 #endif
 
-
-#if defined( __WARP__ )
-#define SYS_BLKSIZE_ALIGN           0x10000 // 64kB
-#else
-#define SYS_BLKSIZE_ALIGN           0x1000  // 4kB
-#endif
 
 #define FIRST_FRL(h)    ((frlptr)(h + 1))
 #define FRLPTRADD(p,o)  (frlptr)((PTR)(p)+(o))
@@ -186,7 +190,11 @@ void_nptr __ReAllocDPMIBlock( frlptr frl_old, unsigned req_size )
             dpmi = BLK2DPMI( heap );
             if( dpmi->dos_seg_value != 0 )
                 return( NULL );
-            size = __ROUND_UP_SIZE( heap->len + sizeof( dpmi_hdr ) + TAG_SIZE + req_size - frl_old->len + TAG_SIZE, SYS_BLKSIZE_ALIGN );
+#if defined( __WARP__ )
+            size = __ROUND_UP_SIZE_64K( heap->len + sizeof( dpmi_hdr ) + TAG_SIZE + req_size - frl_old->len + TAG_SIZE );
+#else
+            size = __ROUND_UP_SIZE_4K( heap->len + sizeof( dpmi_hdr ) + TAG_SIZE + req_size - frl_old->len + TAG_SIZE );
+#endif
 //            prev_dpmi = dpmi;
             dpmi = TinyDPMIRealloc( dpmi, size );
             if( dpmi == NULL ) {
@@ -200,8 +208,7 @@ void_nptr __ReAllocDPMIBlock( frlptr frl_old, unsigned req_size )
             frl_new = __LinkUpNewNHeap( heap );
             heap->numalloc = 1;
 
-            // round up to even number
-            req_size = __ROUND_UP_SIZE( req_size, 2 );
+            req_size = __ROUND_UP_SIZE( req_size, 2 );  /* make even */
             size = frl_new->len - req_size;
             if( size >= FRL_SIZE ) {    // Enough to spare a free block
                 SET_BLK_SIZE_INUSE( frl_new, req_size );// adjust size and set allocated bit
@@ -291,13 +298,13 @@ static mheapptr RationalAlloc( size_t size )
 
 static int __AdjustAmount( unsigned *amount )
 {
-    unsigned old_amount = *amount;
+    unsigned old_amount;
     unsigned amt;
 #if !( defined( __WINDOWS__ ) || defined( __WARP__ ) || defined( __NT__ ) )
     unsigned last_free_amt;
 #endif
 
-    amt = old_amount;
+    amt = old_amount = *amount;
     amt = __ROUND_UP_SIZE( amt + TAG_SIZE, ROUND_SIZE );
     if( amt < old_amount ) {
         return( 0 );
@@ -321,7 +328,7 @@ static int __AdjustAmount( unsigned *amount )
 #endif
     /* amount is even here */
     /*
-      extra amounts        (22-feb-91 AFS)
+      extra amounts
 
        (1) adding a new heap needs:
            frl                    free block req'd for _nmalloc request
@@ -332,9 +339,9 @@ static int __AdjustAmount( unsigned *amount )
        (2) extending heap needs:
            tag               free block req'd for _nmalloc request
     */
-    *amount = amt;
+    old_amount = amt;
     amt += ( (TAG_SIZE) + sizeof( freelistp ) + sizeof( miniheapblkp ) );
-    if( amt < *amount )
+    if( amt < old_amount )
         return( 0 );            // Report request too large
     if( amt < _RWD_amblksiz ) {
         /*
@@ -344,12 +351,18 @@ static int __AdjustAmount( unsigned *amount )
         */
         amt = __ROUND_DOWN_SIZE( _RWD_amblksiz, 2 );
     }
-#if defined( __WINDOWS_386__ ) || defined( __WARP__ ) || defined( __NT__ ) \
-  || defined( __CALL21__ ) || defined( __DOS_EXT__ ) || defined( __RDOS__ )
-    /* make sure amount is a multiple of 4k/64k */
-    *amount = amt;
-    amt = __ROUND_UP_SIZE( amt, SYS_BLKSIZE_ALIGN );
-    if( amt < *amount )
+#if defined( __WARP__ )
+    /* make sure amount is a multiple of 64k */
+    old_amount = amt;
+    amt = __ROUND_UP_SIZE_64K( amt );
+    if( amt < old_amount )
+        return( 0 );
+#elif defined( __WINDOWS_386__ ) || defined( __NT__ ) || defined( __CALL21__ ) \
+        || defined( __DOS_EXT__ ) || defined( __RDOS__ )
+    /* make sure amount is a multiple of 4k */
+    old_amount = amt;
+    amt = __ROUND_UP_SIZE_4K( amt );
+    if( amt < old_amount )
         return( 0 );
 #endif
     *amount = amt;

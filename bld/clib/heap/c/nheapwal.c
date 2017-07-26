@@ -59,7 +59,7 @@ int __NHeapWalk( struct _heapinfo *entry, mheapptr heap )
     if( frl == NULL ) {
         frl = FIRST_FRL( heap );
     } else {    /* advance to next entry */
-        for( ; heap->next != NULL; heap = heap->next ) {
+        for( heap = __nheapbeg; heap->next != NULL; heap = heap->next ) {
             if( IS_IN_HEAP( frl, heap ) ) {
                 break;
             }
