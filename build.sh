@@ -63,7 +63,7 @@ else
     rm -f $OWBINDIR/builder
     output_redirect $OWBINDIR/wmake -f ../binmake clean
     output_redirect $OWBINDIR/wmake -f ../binmake bootstrap=1 builder.exe
-    if [ "$BUILDER_ARG" != "prebuild" ]; then
+    if [ "$BUILDER_ARG" != "preboot" ]; then
         cd $OWSRCDIR
         builder boot
         RC=$?
