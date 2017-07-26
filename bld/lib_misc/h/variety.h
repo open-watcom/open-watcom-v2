@@ -324,6 +324,7 @@
 #define __null_check( p, a )
 #define __stream_check( s, a )
 
+#define __ROUND_UP_SIZE_64K( __x )          __ROUND_UP_SIZE(__x,65536)
 #define __ROUND_UP_SIZE_4K( __x )           __ROUND_UP_SIZE(__x,4096)
 #define __ROUND_UP_SIZE_PARA( __x )         __ROUND_UP_SIZE(__x,16)
 
