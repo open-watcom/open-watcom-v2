@@ -107,6 +107,8 @@
 !/bld/awk/c/*
 !/bld/awk/h/*
 #
+/bld/browser/dlgprs/*/*ytab.*
+#
 /bld/clib/alias/objs.mif
 /bld/clib/alias/a/*
 /bld/clib/library/*/*/*.def
