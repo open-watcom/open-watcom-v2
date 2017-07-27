@@ -47,14 +47,9 @@
     #include <windows.h>
 #else
     #include <dos.h>
-#endif
-#include "rtdata.h"
-#if defined(__OS2__)
-#elif defined(__QNX__)
-#elif defined(__WINDOWS__)
-#else
     #include "tinyio.h"
 #endif
+#include "rtdata.h"
 #include "heap.h"
 
 

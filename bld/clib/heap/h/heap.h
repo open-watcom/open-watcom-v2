@@ -50,6 +50,34 @@
 #define BLK2CPTR(f)     ((unsigned)((unsigned)(f) + TAG_SIZE))
 #define CPTR2BLK(p)     ((unsigned)((unsigned)(p) - TAG_SIZE))
 
+#if defined( __DOS_EXT__ )
+#define DPMI2BLK(h)    ((mheapptr)(h + 1))
+#define BLK2DPMI(h)    (((dpmi_hdr *)h) - 1)
+#endif
+
+#define TAG_SIZE        (sizeof( tag ))
+#if defined( _M_I86 )
+    #define HEAP_ROUND_SIZE (TAG_SIZE)
+#else
+    #define HEAP_ROUND_SIZE (TAG_SIZE + TAG_SIZE)
+#endif
+#define __ROUND_UP_SIZE_HEAP(s)     __ROUND_UP_SIZE( s + TAG_SIZE, HEAP_ROUND_SIZE )
+#define __ROUND_DOWN_SIZE_HEAP(s)   __ROUND_DOWN_SIZE( s - TAG_SIZE, HEAP_ROUND_SIZE )
+#define FRL_SIZE                    __ROUND_UP_SIZE( sizeof( freelistp ), HEAP_ROUND_SIZE )
+
+#if defined( _M_IX86 )
+ #define _DGroup()      FP_SEG((&__nheapbeg))
+#else
+ #define _DGroup()      0
+#endif
+
+#define __HM_SUCCESS    0
+#define __HM_FAIL       1
+#define __HM_TRYGROW    2
+
+#define PARAS_IN_64K    (0x1000)
+#define END_TAG         (/*0x....ffff*/ ~0U)
+
 #define memcpy_i86      "shr cx,1"  "rep movsw" "adc cx,cx"   "rep movsb"
 #define memcpy_386      "shr ecx,1" "rep movsw" "adc ecx,ecx" "rep movsb"
 
@@ -194,30 +222,12 @@ extern int              __HeapSet( __segment __seg, unsigned fill );
 extern void             _WCFAR __HeapInit( mheapptr start, unsigned int amount );
 #endif
 
-
 #if defined( __DOS_EXT__ )
-extern void             __FreeDPMIBlocks( void );
 extern void             *__ReAllocDPMIBlock( frlptr p1, unsigned req_size );
 extern void             *__ExpandDPMIBlock( frlptr, unsigned );
 #endif
 
 extern int              __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t *growth_size );
-
-#if defined( _M_IX86 )
- #define _DGroup()      FP_SEG((&__nheapbeg))
-#else
- #define _DGroup()      0
-#endif
-// __IsCtsNHeap() is used to determine whether the operating system provides
-// a continuous near heap block. __ExpandDGroup should slice for more near
-// heap under those operating systems with __IsCtsNHeap() == 1.
-#if defined( __WARP__ ) || defined( __NT__ ) || defined( __WINDOWS__ ) || defined( __RDOS__ )
- #define __IsCtsNHeap() (0)
-#elif defined( __DOS_EXT__ )
- #define __IsCtsNHeap() (!(_IsRationalZeroBase() || _IsCodeBuilder()))
-#else
- #define __IsCtsNHeap() (1)
-#endif
 
 extern  void_bptr       __MemAllocator( unsigned __size, __segment __seg, void_bptr __heap );
 extern  void            __MemFree( void_bptr __cstg, __segment __seg, void_bptr __heap );
@@ -228,19 +238,6 @@ extern  void            __MemFree( void_bptr __cstg, __segment __seg, void_bptr 
   #pragma aux __MemAllocator "*" parm [eax] [dx] [ebx]
   #pragma aux __MemFree      "*" parm [eax] [dx] [ebx]
 #endif
-
-#define PARAS_IN_64K    (0x1000)
-#define END_TAG         (/*0x....ffff*/ ~0U)
-
-#define TAG_SIZE        (sizeof( tag ))
-#if defined( _M_I86 )
-    #define HEAP_ROUND_SIZE (TAG_SIZE)
-#else
-    #define HEAP_ROUND_SIZE (TAG_SIZE + TAG_SIZE)
-#endif
-#define __ROUND_UP_SIZE_HEAP(s)     __ROUND_UP_SIZE( s, HEAP_ROUND_SIZE )
-#define __ROUND_DOWN_SIZE_HEAP(s)   __ROUND_DOWN_SIZE( s, HEAP_ROUND_SIZE )
-#define FRL_SIZE                    __ROUND_UP_SIZE_HEAP( sizeof( freelistp ) )
 
 #define GET_BLK_SIZE(p)             ((p)->len & ~1U)
 #define IS_BLK_INUSE(p)             (((p)->len & 1) != 0)
@@ -254,10 +251,6 @@ extern  void            __MemFree( void_bptr __cstg, __segment __seg, void_bptr 
 
 #define IS_IN_HEAP(m,h)     ((unsigned)(h) <= (unsigned)(m) && (unsigned)(m) < (unsigned)NEXT_BLK((h)))
 
-#define __HM_SUCCESS    0
-#define __HM_FAIL       1
-#define __HM_TRYGROW    2
-
 #if defined( __WARP__ )
 extern unsigned char    _os2_use_obj_any;           // Prefer high memory heap block
 extern unsigned char    _os2_obj_any_supported;     // DosAllocMem supports OBJ_ANY
@@ -268,3 +261,9 @@ extern void __setcbrk( unsigned offset );
 #endif
 
 extern void __UnlinkNHeap( mheapptr heap, mheapptr prev_heap, mheapptr next_heap );
+
+#if defined(__WARP__) || defined(__WINDOWS__) || defined(__NT__) || \
+    defined(__CALL21__) || defined(__RDOS__) || defined(__DOS_EXT__)
+extern int __ReturnMemToSystem( mheapptr heap );
+extern int __nheapshrink( void );
+#endif

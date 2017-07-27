@@ -40,14 +40,11 @@
     #include <windows.h>
 #elif defined(__WINDOWS_386__)
     #include "windpmi.h"
-#endif
-#if defined(__OS2__)
+#elif defined(__OS2__)
     #include <wos2.h>
-#endif
-#if defined(__RDOS__)
+#elif defined(__RDOS__)
     #include <rdos.h>
-#endif
-#if defined(__CALL21__)
+#elif defined(__CALL21__) || defined(__DOS_EXT__)
     #include "tinyio.h"
 #endif
 
@@ -71,13 +68,10 @@ _WCRTLINK int _nheapmin( void )
     return( _nheapshrink() );
 }
 
-#if defined(__WARP__)        || \
-    defined(__WINDOWS__)     || \
-    defined(__NT__)          || \
-    defined(__CALL21__)      || \
-    defined(__RDOS__)
+#if defined(__WARP__) || defined(__WINDOWS__) || defined(__NT__) || \
+    defined(__CALL21__) || defined(__RDOS__) || defined(__DOS_EXT__)
 
-static int __ReturnMemToSystem( mheapptr heap )
+int __ReturnMemToSystem( mheapptr heap )
 {
   #if defined(__WARP__)
     if( DosFreeMem( (PBYTE)heap ) )
@@ -96,13 +90,20 @@ static int __ReturnMemToSystem( mheapptr heap )
     // No way to free storage under OSI
     if( heap != NULL )
         return( -1 );
+  #elif defined(__DOS_EXT__)
+    dpmi_hdr    *dpmi = BLK2DPMI( heap );
+    if( dpmi->dos_seg_value == 0 ) {    // if DPMI block
+        TinyDPMIFree( dpmi->dpmi_handle );
+    } else {                            // else DOS block below 1MB
+        TinyFreeBlock( dpmi->dos_seg_value );
+    }
   #elif defined(__RDOS__)
     RdosFreeMem( heap );
   #endif
     return( 0 ); // success
 }
 
-_WCRTLINK int _nheapshrink( void )
+int __nheapshrink( void )
 {
     mheapptr    heap;
     mheapptr    next_heap;
@@ -110,7 +111,6 @@ _WCRTLINK int _nheapshrink( void )
 
     // Shrink by releasing mini-heaps
 
-    _AccessNHeap();
     for( heap = __nheapbeg; heap != NULL; heap = next_heap ) {
         next_heap = heap->next;
         if( heap->len - sizeof( miniheapblkp ) == (heap->freehead.prev)->len ) {
@@ -122,25 +122,36 @@ _WCRTLINK int _nheapshrink( void )
             }
         }
     }
-    _ReleaseNHeap();
     return( 0 );
 }
 
-#else
+#endif
 
 _WCRTLINK int _nheapshrink( void )
 {
+    int         rc;
+#if defined(__WARP__) || defined(__WINDOWS__) || defined(__NT__) || \
+    defined(__CALL21__) || defined(__RDOS__)
+#else
     mheapptr    heap;
     frlptr      last_free;
     frlptr      end_tag;
     unsigned    new_brk;
+#endif
 
     // Shrink by adjusting _curbrk
 
     _AccessNHeap();
+#if defined(__WARP__) || defined(__WINDOWS__) || defined(__NT__) || \
+    defined(__CALL21__) || defined(__RDOS__)
+    rc = __nheapshrink();
+#else
   #if defined(__DOS_EXT__)
-    if( !__IsCtsNHeap() ) {
+    if( _IsRationalZeroBase() || _IsCodeBuilder() ) {
+        rc = __nheapshrink();
+    } else {
   #endif
+        rc = 0;
         if( __nheapbeg == NULL ) {
             _ReleaseNHeap();
             return( 0 ); // No near heap, can't shrink
@@ -216,14 +227,10 @@ _WCRTLINK int _nheapshrink( void )
             _ReleaseNHeap();
             return( -1 );
         }
-        _ReleaseNHeap();
-        return( 0 );
   #if defined(__DOS_EXT__)
     }
-    __FreeDPMIBlocks(); // For RSI/zero-base and Intel CB
-    _ReleaseNHeap();
-    return( 0 );
   #endif
-}
-
 #endif
+    _ReleaseNHeap();
+    return( rc );
+}

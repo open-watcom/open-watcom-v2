@@ -80,7 +80,7 @@ _WCRTLINK void_fptr _fmalloc( size_t amt )
 
     // Try to determine which segment to begin allocating from.
     // first, round up the amount
-    size = __ROUND_UP_SIZE_HEAP( amt + TAG_SIZE );
+    size = __ROUND_UP_SIZE_HEAP( amt );
     if( size < FRL_SIZE ) {
         size = FRL_SIZE;
     }

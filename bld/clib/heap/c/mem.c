@@ -60,7 +60,7 @@ void_bptr __MemAllocator( unsigned req_size, __segment seg, void_bptr heap )
     if( req_size != 0 ) {                               // quit if size is zero
         unsigned    size;
 
-        size = __ROUND_UP_SIZE_HEAP( req_size + TAG_SIZE );// round up size
+        size = __ROUND_UP_SIZE_HEAP( req_size );        // round up size
         if( size >= req_size ) {                        // quit if overflowed
             unsigned    largest;
 
