@@ -48,13 +48,13 @@ _WCRTLINK void *_expand( void *cstg, size_t amount )
 
 _WCRTLINK void_nptr _nexpand( void_nptr cstg, size_t req_size )
 {
+    size_t  growth_size;
 #if defined( __WARP__ ) || defined( __NT__ ) || defined( __WINDOWS__ ) || defined( __RDOS__ )
 #else
     struct {
         unsigned expanded : 1;
     }       flags;
     int     retval;
-    size_t  growth_size;
 #endif
 
     _AccessNHeap();

@@ -318,98 +318,70 @@ static int __AdjustAmount( unsigned *amount )
 
 #if defined( __WINDOWS__ ) || defined( __WARP__ ) || defined( __NT__ ) \
   || defined( __CALL21__ ) || defined( __DOS_EXT__ ) || defined( __RDOS__ )
-static int __CreateNewNHeap( unsigned amount )
-{
-    mheapptr        heap;
-    frlptr          frl;
-    unsigned        brk_value;
-  #if defined( __WARP__ )
-    ULONG           os2_alloc_flags;
-  #endif
 
-    // first try to free any available storage
-    __nheapshrink();
+static mheapptr __GetMemFromSystem( unsigned *amount )
+{
+    unsigned    brk_value = 0;
+
   #if defined( __WINDOWS_286__ )
-    brk_value = (unsigned)LocalAlloc( LMEM_FIXED, amount );
-    if( brk_value == 0 ) {
-        return( 0 );
-    }
+    brk_value = (unsigned)LocalAlloc( LMEM_FIXED, *amount );
   #elif defined( __WINDOWS_386__ )
-    brk_value = (unsigned)DPMIAlloc( amount );
-    if( brk_value == 0 ) {
-        return( 0 );
-    }
+    brk_value = (unsigned)DPMIAlloc( *amount );
   #elif defined( __WARP__ )
     {
         PBYTE           p;
-        APIRET          apiret;
+        ULONG           os2_alloc_flags;
 
         os2_alloc_flags = PAG_COMMIT | PAG_READ | PAG_WRITE;
         if( _os2_obj_any_supported && _os2_use_obj_any ) {
             os2_alloc_flags |= OBJ_ANY;
         }
-        apiret = DosAllocMem( (PPVOID)&p, amount, os2_alloc_flags );
-        if( apiret )
-            return( 0 );
-
-        brk_value = (unsigned)p;
+        if( DosAllocMem( (PPVOID)&p, *amount, os2_alloc_flags ) == 0 ) {
+            brk_value = (unsigned)p;
+        }
     }
   #elif defined( __NT__ )
-    brk_value = (unsigned)VirtualAlloc( NULL, amount, MEM_COMMIT, PAGE_EXECUTE_READWRITE );
-    //brk_value = (unsigned) LocalAlloc( LMEM_FIXED, amount );
-    if( brk_value == 0 ) {
-        return( 0 );
-    }
+    brk_value = (unsigned)VirtualAlloc( NULL, *amount, MEM_COMMIT, PAGE_EXECUTE_READWRITE );
+    //brk_value = (unsigned) LocalAlloc( LMEM_FIXED, *amount );
   #elif defined( __CALL21__ )
-    {
-        tag _WCNEAR *tmp_tag;
-
-        tmp_tag = (tag _WCNEAR *)TinyMemAlloc( amount );
-        if( tmp_tag == NULL ) {
-            return( 0 );
-        }
+    brk_value = (unsigned)TinyMemAlloc( *amount );
+    if( brk_value != 0 ) {
         /* make sure it will not look like the end of a heap */
-        tmp_tag[0] = ! END_TAG;
-        brk_value = (unsigned)&tmp_tag[2];
-        amount -= 2 * TAG_SIZE; // subtract extra tag
+        *(tag _WCNEAR *)brk_value = !END_TAG;
+        brk_value += 2 * TAG_SIZE;
+        *amount -= 2 * TAG_SIZE;    // subtract extra tag
     }
   #elif defined( __DOS_EXT__ )
     if( _IsRationalZeroBase() ) {
-        mheapptr    heap1;
-
-        heap1 = RationalAlloc( amount );
-        if( heap1 == NULL ) {
-            return( 0 );
+        brk_value = (unsigned)RationalAlloc( *amount );
+        if( brk_value != 0 ) {
+            *amount = ((mheapptr)brk_value)->len;
         }
-        amount = heap1->len;
-        brk_value = (unsigned)heap1;
     } else if( _IsCodeBuilder() ) {
-        tag         _WCNEAR *tmp_tag;
-
-        tmp_tag = TinyCBAlloc( amount );
-        amount -= TAG_SIZE;
-        if( tmp_tag == NULL ) {
-            return( 0 );
+        brk_value = (unsigned)TinyCBAlloc( *amount );
+        if( brk_value != 0 ) {
+            *amount -= TAG_SIZE;
         }
-        brk_value = (unsigned)tmp_tag;
     }
     // Pharlap, RSI/non-zero should never call this function
   #elif defined( __RDOS__ )
-    brk_value = (unsigned)RdosAllocateMem( amount );
-    if( brk_value == 0 ) {
-        return( 0 );
-    }
+    brk_value = (unsigned)RdosAllocateMem( *amount );
   #endif
-    if( amount - TAG_SIZE > amount ) {
-        return( 0 );
-    }
-    amount -= TAG_SIZE;
-    if( amount < sizeof( miniheapblkp ) + sizeof( freelistp ) ) {
-        /* there isn't enough for a heap block (struct miniheapblkp) and one free block (frl) */
+    return( (mheapptr)brk_value );
+}
+
+static int __CreateNewNHeap( unsigned amount )
+{
+    mheapptr        heap;
+    frlptr          frl;
+
+    // first try to free any available storage
+    __nheapshrink();
+    heap = __GetMemFromSystem( &amount );
+    if( heap == NULL ) {
         return( 0 );
     }
     /* we've got a new heap block */
-    heap = (mheapptr)brk_value;
     heap->len = amount;
   #if defined( __WARP__ )
     // Remeber if block was allocated with OBJ_ANY - may be in high memory

@@ -58,7 +58,7 @@ unsigned int    __LargestSizeB4MiniHeapRover = 0;
  * _os2lalloc always allocates from lower memory
  */
 
-unsigned char _os2_use_obj_any = FALSE;
+unsigned char _os2_use_obj_any = 0;
 
 _WCRTLINK int _use_os2_high_mem( int fUseHighMem )
 {
