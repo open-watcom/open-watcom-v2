@@ -24,8 +24,7 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description:  internal function for unlink near heap.
 *
 ****************************************************************************/
 
@@ -33,27 +32,28 @@
 #include "dll.h"        // needs to be first
 #include "variety.h"
 #include <stddef.h>
-#include <malloc.h>
 #include "heap.h"
-#include "heapacc.h"
 
 
-/* Return the amount of memory available in the near heap. */
-/* Best done at start of program and after _nheapgrow() has been called. */
-
-_WCRTLINK size_t _memavl( void )
+void __UnlinkNHeap( mheapptr heap, mheapptr prev_heap, mheapptr next_heap )
 {
-    size_t      length;
-    frlptr      frl;
-    mheapptr    heap;
-
-    length = 0;
-    _AccessNHeap();
-    for( heap = __nheapbeg; heap != NULL; heap = heap->next ) {
-        for( frl = heap->freehead.next; frl != (frlptr)&heap->freehead; frl = frl->next ) {
-            length += __ROUND_DOWN_SIZE_HEAP( frl->len - TAG_SIZE );
+    if( __nheapbeg == heap )
+        __nheapbeg = next_heap;
+    // Update rovers
+    if( __MiniHeapRover == heap ) {
+        __MiniHeapRover = prev_heap;
+        if( __MiniHeapRover == NULL ) {
+            __MiniHeapRover = __nheapbeg;
+            __LargestSizeB4MiniHeapRover = 0;
         }
     }
-    _ReleaseNHeap();
-    return( length );
+    if( __MiniHeapFreeRover == heap ) {
+        __MiniHeapFreeRover = NULL;
+    }
+    if( prev_heap != NULL ) {
+        prev_heap->next = next_heap;
+    }
+    if( next_heap != NULL ) {
+        next_heap->prev = prev_heap;
+    }
 }

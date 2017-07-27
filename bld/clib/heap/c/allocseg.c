@@ -109,14 +109,6 @@ __segment __AllocSeg( unsigned int amount )
             GlobalFree( hmem );
             return( _NULLSEG );
         }
-  #if 0
-        /* code generator can't handle this */
-        if( FP_OFF( px ) != 0 ) {    /* in case, Microsoft changes Windows */
-            GlobalUnlock( hmem );   /* in post 3.1 versions */
-            GlobalFree( hmem );
-            return( _NULLSEG );
-        }
-  #endif
         seg = FP_SEG( px );
     }
 #else

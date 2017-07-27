@@ -191,7 +191,9 @@ extern int              __FreeSeg( __segment __seg );
 extern int              __HeapWalk( struct _heapinfo *entry, __segment seg, __segment one_heap );
 extern int              __HeapMin( __segment __seg, __segment one_heap );
 extern int              __HeapSet( __segment __seg, unsigned fill );
+extern void             _WCFAR __HeapInit( mheapptr start, unsigned int amount );
 #endif
+
 
 #if defined( __DOS_EXT__ )
 extern void             __FreeDPMIBlocks( void );
@@ -200,10 +202,6 @@ extern void             *__ExpandDPMIBlock( frlptr, unsigned );
 #endif
 
 extern int              __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t *growth_size );
-
-#if defined( _M_I86 )
-extern void             _WCFAR __HeapInit( mheapptr start, unsigned int amount );
-#endif
 
 #if defined( _M_IX86 )
  #define _DGroup()      FP_SEG((&__nheapbeg))
@@ -236,11 +234,13 @@ extern  void            __MemFree( void_bptr __cstg, __segment __seg, void_bptr 
 
 #define TAG_SIZE        (sizeof( tag ))
 #if defined( _M_I86 )
-    #define ROUND_SIZE  (TAG_SIZE)
+    #define HEAP_ROUND_SIZE (TAG_SIZE)
 #else
-    #define ROUND_SIZE  (TAG_SIZE + TAG_SIZE)
+    #define HEAP_ROUND_SIZE (TAG_SIZE + TAG_SIZE)
 #endif
-#define FRL_SIZE        __ROUND_UP_SIZE( sizeof( freelistp ), ROUND_SIZE )
+#define __ROUND_UP_SIZE_HEAP(s)     __ROUND_UP_SIZE( s, HEAP_ROUND_SIZE )
+#define __ROUND_DOWN_SIZE_HEAP(s)   __ROUND_DOWN_SIZE( s, HEAP_ROUND_SIZE )
+#define FRL_SIZE                    __ROUND_UP_SIZE_HEAP( sizeof( freelistp ) )
 
 #define GET_BLK_SIZE(p)             ((p)->len & ~1U)
 #define IS_BLK_INUSE(p)             (((p)->len & 1) != 0)
@@ -266,3 +266,5 @@ extern unsigned char    _os2_obj_any_supported;     // DosAllocMem supports OBJ_
 #if defined( __QNX__ )
 extern void __setcbrk( unsigned offset );
 #endif
+
+extern void __UnlinkNHeap( mheapptr heap, mheapptr prev_heap, mheapptr next_heap );

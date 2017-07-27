@@ -34,7 +34,7 @@
  *
  * brk value should be pointer to the start/end of heap blok (heap structure) ???
  *
- * CALL21 memory block have 2 * TAG reserved on the begining, heap block start after this ???
+ * CALL21 memory block have 2 * TAG reserved on the begining, heap block start after this ??? need review
  * DPMI memory block have dpmi_hdr reserved on the begining, heap block start after this
  *
  */
@@ -86,25 +86,24 @@ static frlptr __LinkUpNewNHeap( mheapptr heap )
     mheapptr    prev_heap2;
 
     /* insert into ordered heap list */
-    /* logic wasn't inserting heaps in proper ascending order */
+    /* ascending order should be: prev_heap2 < heap < heap2  */
+    /* exceptions for special cases when prev_heap2 and/or heap2 are NULL */
     prev_heap2 = NULL;
     for( heap2 = __nheapbeg; heap2 != NULL; heap2 = heap2->next ) {
-        if( heap < heap2 )
+        if( heap < heap2 ) {
+            /* insert before 'heap2' (list is non-empty) */
+            heap2->prev = heap;
             break;
+        }
         prev_heap2 = heap2;
     }
-    /* ascending order should be: prev_heap2 < heap < heap2  */
-    /* except for special cases when prev_heap2 and/or heap2 are NULL */
     heap->prev = prev_heap2;
     heap->next = heap2;
     if( prev_heap2 != NULL ) {
         prev_heap2->next = heap;
-    } else {            /* add heap to beginning of heap */
+    } else {
+        /* add heap to beginning of heap list */
         __nheapbeg = heap;
-    }
-    if( heap2 != NULL ) {
-        /* insert before 'heap2' (list is non-empty) */
-        heap2->prev = heap;
     }
     /* Fill out the new miniheap descriptor */
     heap->freehead.len = 0;
@@ -122,33 +121,6 @@ static frlptr __LinkUpNewNHeap( mheapptr heap )
 
 #if defined( __DOS_EXT__ )
 
-static void __unlink( mheapptr heap )
-{
-    mheapptr            prev;
-    mheapptr            next;
-
-    if( __nheapbeg == heap ) {
-        __nheapbeg = heap->next;
-    }
-    if( heap == __MiniHeapRover ) {
-        __MiniHeapRover = heap->prev;
-        if( __MiniHeapRover == NULL ) {
-            __MiniHeapRover = __nheapbeg;
-            __LargestSizeB4MiniHeapRover = 0;
-        }
-    }
-    if( heap == __MiniHeapFreeRover ) {
-        __MiniHeapFreeRover = NULL;
-    }
-    prev = heap->prev;
-    next = heap->next;
-    if( prev != NULL )
-        prev->next = next;
-    if( next != NULL ) {
-        next->prev = prev;
-    }
-}
-
 void __FreeDPMIBlocks( void )
 {
     mheapptr    heap;
@@ -161,7 +133,7 @@ void __FreeDPMIBlocks( void )
         // the DPMI block ( - overhead).  If it is then we can give this
         // DPMI block back to the DPMI host.
         if( heap->freehead.prev->len + sizeof( miniheapblkp ) == heap->len ) {
-            __unlink( heap );
+            __UnlinkNHeap( heap, heap->prev, next_heap );
             dpmi = BLK2DPMI( heap );
             if( dpmi->dos_seg_value == 0 ) {    // if DPMI block
                 TinyDPMIFree( dpmi->dpmi_handle );
@@ -186,15 +158,16 @@ void_nptr __ReAllocDPMIBlock( frlptr frl_old, unsigned req_size )
 //    prev_dpmi = NULL;
     for( heap = __nheapbeg; heap != NULL; heap = heap->next ) {
         if( ((PTR)heap + sizeof( miniheapblkp ) == (PTR)frl_old) && (heap->numalloc == 1) ) {
+            mheapptr    prev_heap;
+            mheapptr    next_heap;
+
             // The mini-heap contains only this memblk
             dpmi = BLK2DPMI( heap );
             if( dpmi->dos_seg_value != 0 )
                 return( NULL );
-#if defined( __WARP__ )
-            size = __ROUND_UP_SIZE_64K( heap->len + sizeof( dpmi_hdr ) + TAG_SIZE + req_size - frl_old->len + TAG_SIZE );
-#else
+            prev_heap = heap->prev;
+            next_heap = heap->next;
             size = __ROUND_UP_SIZE_4K( heap->len + sizeof( dpmi_hdr ) + TAG_SIZE + req_size - frl_old->len + TAG_SIZE );
-#endif
 //            prev_dpmi = dpmi;
             dpmi = TinyDPMIRealloc( dpmi, size );
             if( dpmi == NULL ) {
@@ -202,7 +175,7 @@ void_nptr __ReAllocDPMIBlock( frlptr frl_old, unsigned req_size )
                 return( NULL );         // indicate resize failed
             }
             dpmi->dos_seg_value = 0;
-            __unlink( heap );
+            __UnlinkNHeap( heap, prev_heap, next_heap );
             heap = DPMI2BLK( dpmi );
             heap->len = size - sizeof( dpmi_hdr ) - TAG_SIZE;
             frl_new = __LinkUpNewNHeap( heap );
@@ -305,7 +278,7 @@ static int __AdjustAmount( unsigned *amount )
 #endif
 
     amt = old_amount = *amount;
-    amt = __ROUND_UP_SIZE( amt + TAG_SIZE, ROUND_SIZE );
+    amt = __ROUND_UP_SIZE_HEAP( amt + TAG_SIZE );
     if( amt < old_amount ) {
         return( 0 );
     }

@@ -76,11 +76,9 @@ _WCRTLINK int _nheapmin( void )
     defined(__NT__)          || \
     defined(__CALL21__)      || \
     defined(__RDOS__)
+
 static int __ReturnMemToSystem( mheapptr heap )
 {
-    mheapptr    next_heap;
-
-    next_heap = heap->next;
   #if defined(__WARP__)
     if( DosFreeMem( (PBYTE)heap ) )
         return( -1 );
@@ -101,59 +99,43 @@ static int __ReturnMemToSystem( mheapptr heap )
   #elif defined(__RDOS__)
     RdosFreeMem( heap );
   #endif
-    if( __MiniHeapRover == heap ) {  // Update rovers
-        if( next_heap != NULL ) {
-            __MiniHeapRover = next_heap;
-        } else {
-            __MiniHeapRover = __nheapbeg;
-            __LargestSizeB4MiniHeapRover = 0;
-        }
-    }
-    // Re-test rover; if we freed the only mini-heap, we might end up
-    // pointing back to it
-    if( __MiniHeapRover == heap ) {
-        __MiniHeapRover = NULL;
-    }
-    if( __MiniHeapFreeRover == heap ) {
-        __MiniHeapFreeRover = NULL;
-    }
     return( 0 ); // success
 }
-
-static void __ReleaseMiniHeap( mheapptr heap )
-{
-    mheapptr    prev_heap;
-    mheapptr    next_heap;
-
-    prev_heap = heap->prev;
-    next_heap = heap->next;
-    if( __ReturnMemToSystem( heap ) == 0 ) {
-        if( prev_heap == NULL ) {
-            __nheapbeg = next_heap;
-        } else {
-            prev_heap->next = next_heap;
-        }
-        if( next_heap != NULL ) {
-            next_heap->prev = prev_heap;
-        }
-    } //else: do not unlink if the memory cannot be freed successfully
-}
-
-#endif
 
 _WCRTLINK int _nheapshrink( void )
 {
     mheapptr    heap;
-#if !defined(__WARP__)        && \
-    !defined(__WINDOWS__)     && \
-    !defined(__NT__)          && \
-    !defined(__CALL21__)      && \
-    !defined(__RDOS__)
-    // Shrink by adjusting _curbrk
+    mheapptr    next_heap;
+    mheapptr    prev_heap;
 
+    // Shrink by releasing mini-heaps
+
+    _AccessNHeap();
+    for( heap = __nheapbeg; heap != NULL; heap = next_heap ) {
+        next_heap = heap->next;
+        if( heap->len - sizeof( miniheapblkp ) == (heap->freehead.prev)->len ) {
+            prev_heap = heap->prev;
+            if( __ReturnMemToSystem( heap ) == 0 ) {
+                __UnlinkNHeap( heap, prev_heap, next_heap );
+            } else {
+                // do not unlink if the memory cannot be freed successfully
+            }
+        }
+    }
+    _ReleaseNHeap();
+    return( 0 );
+}
+
+#else
+
+_WCRTLINK int _nheapshrink( void )
+{
+    mheapptr    heap;
     frlptr      last_free;
     frlptr      end_tag;
     unsigned    new_brk;
+
+    // Shrink by adjusting _curbrk
 
     _AccessNHeap();
   #if defined(__DOS_EXT__)
@@ -221,18 +203,13 @@ _WCRTLINK int _nheapshrink( void )
             new_brk = (unsigned)BLK2CPTR( last_free );
         } else {
             // we can remove this miniheapblk
-            if( heap->prev ) { // Not the first miniheapblk
-                heap->prev->next = NULL;
+            if( heap->prev != NULL ) { // Not the first miniheapblk
                 new_brk = (unsigned)heap;//->prev + (unsigned)heap->prev->len;
             } else { // Is the first miniheapblk
                 new_brk = (unsigned)__nheapbeg;
-                __nheapbeg = NULL;
             }
-            // Update rover info
-            if( __MiniHeapRover == heap ) {
-                __MiniHeapRover = __nheapbeg;
-                __LargestSizeB4MiniHeapRover = 0;
-            }
+            // Unlink and update rover info
+            __UnlinkNHeap( heap, heap->prev, heap->next );
         }
 
         if( __brk( new_brk ) == (void_nptr)-1 ) {
@@ -247,20 +224,6 @@ _WCRTLINK int _nheapshrink( void )
     _ReleaseNHeap();
     return( 0 );
   #endif
-#else
-    // Shrink by releasing mini-heaps
-    {
-        mheapptr next_heap;
-
-        _AccessNHeap();
-        for( heap = __nheapbeg; heap != NULL; heap = next_heap ) {
-            next_heap = heap->next;
-            if( heap->len - sizeof( miniheapblkp ) == (heap->freehead.prev)->len ) {
-                __ReleaseMiniHeap( heap );
-            }
-        }
-        _ReleaseNHeap();
-        return( 0 );
-    }
-#endif
 }
+
+#endif

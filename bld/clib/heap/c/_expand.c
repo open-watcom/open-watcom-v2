@@ -53,7 +53,7 @@ int __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t
     size_t          free_size;
 
     /* round (new_size + tag) to multiple of pointer size */
-    new_size = __ROUND_UP_SIZE( req_size + TAG_SIZE, ROUND_SIZE );
+    new_size = __ROUND_UP_SIZE_HEAP( req_size + TAG_SIZE );
     if( new_size < req_size )
         new_size = /*0x....ffff*/ ~0U;  //go for max
     if( new_size < FRL_SIZE ) {

@@ -52,6 +52,7 @@
 !inject nheapchk.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
 !inject nheapmin.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
 !inject nheapset.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
+!inject nheapunl.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
 !inject nheapwal.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
 !inject nmalloc.obj  d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
 !inject nmemneed.obj d16 d32             nt nta ntp         o16 o32 q16 q32 w16 w32 osi l32 lpc lmp rdu
