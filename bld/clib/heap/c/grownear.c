@@ -67,10 +67,10 @@
 #define FIRST_FRL(h)    ((frlptr)(h + 1))
 #define FRLPTRADD(p,o)  (frlptr)((PTR)(p)+(o))
 
+#if defined( __DOS_EXT__ )
 #define DPMI2BLK(h)    ((mheapptr)(h + 1))
 #define BLK2DPMI(h)    (((dpmi_hdr *)h) - 1)
 
-#if defined( __DOS_EXT__ )
 extern  int SegmentLimit( void );
 #pragma aux SegmentLimit =  \
         "xor    eax,eax"    \
@@ -527,8 +527,8 @@ int __ExpandDGROUP( unsigned amount )
         SET_BLK_END( (frlptr)NEXT_BLK( frl ) );
     } else {
         if( amount < sizeof( miniheapblkp ) + sizeof( freelistp ) ) {
-            /*  there isn't enough for a heap block (struct miniheapblkp) and
-                one free block (freelistp) */
+            /* there isn't enough for a heap block (struct miniheapblkp) and
+               one free block (freelistp) */
             return( 0 );
         }
         // Initializing the near heap if __nheapbeg == NULL,

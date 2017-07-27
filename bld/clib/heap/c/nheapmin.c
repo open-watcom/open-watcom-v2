@@ -94,7 +94,7 @@ static int __ReturnMemToSystem( mheapptr heap )
         return( -1 );
   #elif defined(__CALL21__)
     // No way to free storage under OSI
-    if( heap )
+    if( heap != NULL )
         return( -1 );
   #elif defined(__RDOS__)
     RdosFreeMem( heap );
