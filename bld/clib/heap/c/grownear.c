@@ -382,7 +382,7 @@ static int __CreateNewNHeap( unsigned amount )
         return( 0 );
     }
     /* we've got a new heap block */
-    heap->len = amount;
+    heap->len = amount - TAG_SIZE;
   #if defined( __WARP__ )
     // Remeber if block was allocated with OBJ_ANY - may be in high memory
     heap->used_obj_any = ( _os2_obj_any_supported && _os2_use_obj_any );
