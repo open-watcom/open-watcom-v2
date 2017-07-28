@@ -59,10 +59,12 @@ static LPLDATA createNewEntry( LPWDATA w )
 #endif
     if( ld == NULL )
         _OutOfMemoryExit();
+    ld->next = NULL;
     w->buffoff = 0;
     FARstrcpy( ld->data, w->tmpbuff->data );
     if( w->LineTail == NULL ) {
         w->LineHead = w->LineTail = ld;
+        ld->prev = NULL;
     } else {
         w->LineTail->next = ld;
         ld->prev = w->LineTail;
