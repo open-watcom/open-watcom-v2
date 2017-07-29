@@ -362,8 +362,9 @@ static mheapptr __GetMemFromSystem( unsigned *amount )
         if( brk_value != 0 ) {
             *amount -= TAG_SIZE;
         }
+//    } else {
+        // Pharlap, RSI/non-zero should never call this function
     }
-    // Pharlap, RSI/non-zero should never call this function
   #elif defined( __RDOS__ )
     brk_value = (unsigned)RdosAllocateMem( *amount );
   #endif
@@ -424,8 +425,9 @@ int __ExpandDGROUP( unsigned amount )
         return( __CreateNewNHeap( amount ) );
     } else if( _IsPharLap() && !_IsFlashTek() ) {
         _curbrk = SegmentLimit();
+//    } else {
+        // Rational non-zero based system should go through.
     }
-    // Rational non-zero based system should go through.
   #endif
     new_brk_value = amount + _curbrk;
     if( new_brk_value < _curbrk ) {

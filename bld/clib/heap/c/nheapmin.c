@@ -119,6 +119,8 @@ int __nheapshrink( void )
 
     for( heap = __nheapbeg; heap != NULL; heap = next_heap ) {
         next_heap = heap->next;
+        // see if the last free entry has the full size of the block ( - overhead )
+        // if it is then we can give this block back to the system
         if( heap->len - sizeof( miniheapblkp ) == (heap->freehead.prev)->len ) {
             prev_heap = heap->prev;
             if( __ReturnMemToSystem( heap ) == 0 ) {
