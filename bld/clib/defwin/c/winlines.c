@@ -108,7 +108,7 @@ static void incrementLastLineNumber( LPWDATA w )
  */
 static void replaceTail( LPWDATA w )
 {
-    LPLDATA             tmp;
+    LPLDATA             prev;
 
 #ifdef _MBCS
     *(FAR_mbsninc( (LPBYTE)w->tmpbuff->data, w->buffoff )) = '\0';
@@ -116,7 +116,7 @@ static void replaceTail( LPWDATA w )
     w->tmpbuff->data[w->buffoff] = 0;
 #endif
 
-    tmp = w->LineTail->prev;
+    prev = w->LineTail->prev;
     FARfree( w->LineTail );
 
 #ifdef _MBCS
@@ -128,9 +128,10 @@ static void replaceTail( LPWDATA w )
         _OutOfMemoryExit();
 
     FARstrcpy( w->LineTail->data, w->tmpbuff->data );
-    w->LineTail->prev = tmp;
-    if( tmp != NULL ) {
-        tmp->next = w->LineTail;
+    w->LineTail->next = NULL;
+    w->LineTail->prev = prev;
+    if( prev != NULL ) {
+        prev->next = w->LineTail;
     } else {
         w->LineHead = w->LineTail;
     }
