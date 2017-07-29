@@ -576,6 +576,7 @@ bool ProcPath( void )
         new_path->next = ObjPath;
         ObjPath = new_path;
         DEBUG(( DBG_BASE, "path: %s", new_path->name ));
+        return( true );
     }
     return( false );
 }
