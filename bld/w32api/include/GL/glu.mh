@@ -12,7 +12,7 @@
 
 :include readonly.sp
 
-#include <gl/gl.h>
+#include <GL/gl.h>
 
 :include cpluspro.sp
 
