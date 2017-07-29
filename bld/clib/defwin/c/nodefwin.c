@@ -76,7 +76,8 @@ _WCRTLINK int   _dwYield( void )
     return( 0 );
 }
 
-_WCRTLINK int   _dwShutDown( void ) {
+_WCRTLINK int   _dwShutDown( void )
+{
     return( 0 );
 }
 

@@ -79,9 +79,9 @@ int     _SetAboutDlg( const char *title, const char *text )
     return( 1 );
 }
 
-static  USHORT  _VirtualKey( MPARAM mp1, MPARAM mp2 ) {
-//====================================================
-
+static  USHORT  _VirtualKey( MPARAM mp1, MPARAM mp2 )
+//===================================================
+{
     unsigned short      vk;
 
     if( SHORT1FROMMP( mp1 ) & KC_VIRTUALKEY ) {
@@ -267,9 +267,9 @@ static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
 }
 
 
-MRESULT EXPENTRY _MainDriver( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 ) {
-//============================================================================
-
+MRESULT EXPENTRY _MainDriver( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
+//===========================================================================
+{
     LPWDATA     w;
     LONG        height;
     LONG        width;

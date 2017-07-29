@@ -40,9 +40,9 @@
 
 extern HWND _GetWinMenuHandle( void );
 
-int _MessageLoop( BOOL doexit ) {
-//===============================
-
+int _MessageLoop( BOOL doexit )
+//=============================
+{
     QMSG        msg;
     int         rc;
     extern int  DoStdIO;
@@ -62,9 +62,9 @@ int _MessageLoop( BOOL doexit ) {
     return( rc );
 }
 
-int _BlockingMessageLoop( BOOL doexit ) {
-//======================================
-
+int _BlockingMessageLoop( BOOL doexit )
+//=====================================
+{
     int         rc;
     QMSG        msg;
 
@@ -92,28 +92,27 @@ int     _SetAppTitle( const char *title )
     return( WinSetWindowText( _MainFrameWindow, title ) );
 }
 
-int     _ShutDown( void ) {
-//=========================
-
+int     _ShutDown( void )
+//=======================
+{
     WinSetWindowPos( _MainFrameWindow, 0, 0, 0, 0, 0, SWP_MINIMIZE );
     WinSendMsg( _MainFrameWindow, WM_CLOSE, 0, 0 );
     return( 0 );
 }
 
-int     _CloseWindow( LPWDATA w ) {
-//=================================
-
+int     _CloseWindow( LPWDATA w )
+//===============================
+{
     if( w->destroy ) {
         WinSendMsg( w->hwnd, WM_CLOSE, 0, 0 );
     }
     return( 0 );
 }
 
-void    _NewCursor( LPWDATA w, cursors type ) {
-//============================================
-
+void    _NewCursor( LPWDATA w, cursors type )
+//===========================================
 // change the cursor type
-
+{
     if( w->hascursor ) {
         WinDestroyCursor( w->hwnd );
         w->hascursor = FALSE;
@@ -138,11 +137,10 @@ void    _NewCursor( LPWDATA w, cursors type ) {
 }
 
 
-void    _DisplayCursor( LPWDATA w ) {
-//==================================
-
+void    _DisplayCursor( LPWDATA w )
+//=================================
 // show the current cursor position
-
+{
     HPS                 ps;
     int                 x;
     int                 y;
@@ -240,9 +238,9 @@ void _ExecutionComplete( void )
 } /* _ExecutionComplete */
 
 
-void _Error( HWND hwndDlg, char *caption, char *msg ) {
-//=======================================================
-
+void _Error( HWND hwndDlg, char *caption, char *msg )
+//===================================================
+{
     WinMessageBox( HWND_DESKTOP, hwndDlg, msg, caption, 0,
                    MB_APPLMODAL | MB_NOICON | MB_OK | MB_MOVEABLE );
 }
@@ -250,8 +248,8 @@ void _Error( HWND hwndDlg, char *caption, char *msg ) {
 /*
  * _ResizeWindows - Resize windows after a main window resize
  */
-void _ResizeWindows( void ) {
-
+void _ResizeWindows( void )
+{
     int         i;
     int         place = 0;
     LPWDATA     w;

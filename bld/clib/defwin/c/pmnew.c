@@ -115,12 +115,12 @@ void _ReleaseWindowResources( LPWDATA w )
 /*
  * _SetWinMenuHandle - Sets the internal submenu handle.
  */
-void _SetWinMenuHandle( HWND hmenu ) {
-
+void _SetWinMenuHandle( HWND hmenu )
+{
     menuHandle = hmenu;
 }
 
-HWND _GetWinMenuHandle( void ) {
-
+HWND _GetWinMenuHandle( void )
+{
     return( menuHandle );
 }

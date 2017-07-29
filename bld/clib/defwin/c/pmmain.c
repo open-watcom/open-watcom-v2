@@ -281,9 +281,9 @@ void    _CreateFont( LPWDATA w )
 }
 
 
-void    _SelectFont( HPS ps ) {
-//============================
-
+void    _SelectFont( HPS ps )
+//===========================
+{
     GpiCreateLogFont( ps, NULL, FIXED_FONT, &FontAttrs );
     GpiSetCharSet( ps, FIXED_FONT );
 }

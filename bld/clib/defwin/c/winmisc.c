@@ -130,9 +130,9 @@ int     _SetAppTitle( const char *title )
     return( 1 );
 }
 
-int     _ShutDown( void ) {
-//=========================
-
+int     _ShutDown( void )
+//=======================
+{
     flushall();
     DestroyWindow( _MainWindow );
     _MainWindowDestroyed = 1;
