@@ -314,9 +314,9 @@ LPWDATA _AnotherWindowData( HWND hwnd, va_list al )
 } /* _AnotherWindowData */
 
 /*
- * _DestroyAWindow - get rid of a windows data
+ * _FreeWindowData - get rid of a windows data
  */
-void _DestroyAWindow( LPWDATA w )
+void _FreeWindowData( LPWDATA w )
 {
     int i,j;
 
@@ -335,4 +335,4 @@ void _DestroyAWindow( LPWDATA w )
         }
     }
 
-} /* _DestroyAWindow */
+} /* _FreeWindowData */

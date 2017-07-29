@@ -223,7 +223,7 @@ static int os_write( int handle, const void *buffer, unsigned len, unsigned *amt
 
     rc = 0;
 #ifdef DEFAULT_WINDOWING
-    if( _WindowsStdout != NULL && (res = _WindowsIsWindowedHandle( handle )) != 0 ) {
+    if( _WindowsStdout != NULL && (res = _WindowsIsWindowedHandle( handle )) != NULL ) {
         *amt = _WindowsStdout( res, buffer, len );
     } else
 #endif

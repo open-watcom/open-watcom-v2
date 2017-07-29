@@ -137,7 +137,7 @@ int __qwrite( int handle, const void *buffer, unsigned len )
         LPWDATA res;
 
         res = _WindowsIsWindowedHandle( handle );
-        if( res ) {
+        if( res != NULL ) {
             int rt;
             rt = _WindowsStdout( res, buffer, len );
             if( atomic == 1 ) {

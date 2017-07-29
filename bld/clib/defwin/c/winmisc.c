@@ -140,12 +140,15 @@ int     _ShutDown( void ) {
 }
 
 
-int     _CloseWindow( LPWDATA w ) {
-//=================================
+int     _CloseWindow( LPWDATA w )
+//===============================
+{
+    HWND    hwnd;
 
     if( w->destroy ) {
-        _DestroyAWindow( w );
-        DestroyWindow( w->hwnd );
+        hwnd = w->hwnd;
+        _FreeWindowData( w );
+        DestroyWindow( hwnd );
     }
     return( 0 );
 }

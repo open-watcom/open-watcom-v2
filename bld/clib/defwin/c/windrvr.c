@@ -270,7 +270,7 @@ long CALLBACK _MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam
         break;
 
     case WM_DESTROY:
-        _DestroyAWindow( w );
+        _FreeWindowData( w );
         break;
 
     case WM_PAINT:

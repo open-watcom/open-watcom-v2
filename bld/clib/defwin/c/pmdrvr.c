@@ -300,7 +300,7 @@ MRESULT EXPENTRY _MainDriver( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 ) {
     case WM_DESTROY:
         WinSendMsg( _GetWinMenuHandle(), ( ULONG )MM_DELETEITEM,
                 MPFROM2SHORT( ( w->handles[0] + DID_WIND_STDIO ), FALSE ), 0 );
-        _DestroyAWindow( w );
+        _FreeWindowData( w );
         return( 0 );
         break;
 
