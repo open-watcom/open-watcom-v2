@@ -36,7 +36,7 @@
 #pragma aux __init_default_win "*";
 char __init_default_win;
 
-#if ( defined(__OS2__) && (defined(__386__)||defined(__PPC__)) ) || defined(__NT__) || \
+#if ( defined(__OS2__) && ( defined(__386__) || defined(__PPC__) ) ) || defined(__NT__) || \
     defined(__WINDOWS_386__) || defined(__WINDOWS__)
 
 #define __SW_BW

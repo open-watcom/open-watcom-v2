@@ -77,7 +77,7 @@ void _DisplayAllLines( LPWDATA w, int clearFlag )
     ld = _GetLineDataPointer( w, ln );
     end = w->height;
 
-    for( i=1; i<end; i++ ) {
+    for( i = 1; i < end; i++ ) {
         if( ld == NULL ) {
             _DisplayLineInWindow( w, i, " " );
         } else {
@@ -150,7 +150,7 @@ void _DisplayLineInWindowWithColor( LPWDATA w, int line, LPSTR text, int c1,
         POINTL          points[TXTBOX_COUNT];
 
         ptl.x = 0;
-        ptl.y = (w->y2 - w->y1) - (line+1)*w->ychar + w->base_offset;
+        ptl.y = ( w->y2 - w->y1 ) - ( line + 1 ) * w->ychar + w->base_offset;
         ps = WinGetPS( hwnd );
         _SelectFont( ps );
         GpiQueryTextBox( ps, startcol, w->tmpbuff->data, TXTBOX_COUNT, points );
@@ -161,12 +161,12 @@ void _DisplayLineInWindowWithColor( LPWDATA w, int line, LPSTR text, int c1,
         GpiQueryTextBox( ps, strlen( buff ), buff, TXTBOX_COUNT, points );
     #endif
         rcl.xRight = points[TXTBOX_BOTTOMRIGHT].x;
-        rcl.yTop = (w->y2 - w->y1) - line*w->ychar;
+        rcl.yTop = ( w->y2 - w->y1 ) - line * w->ychar;
         rcl.yBottom = rcl.yTop - w->ychar;
         WinFillRect( ps, &rcl, c1 );
         GpiSetColor( ps, c2 );
     #ifdef _MBCS
-        GpiCharStringAt( ps, &ptl, _mbsnbcnt((PBYTE)buff,w->width), buff );
+        GpiCharStringAt( ps, &ptl, _mbsnbcnt( (PBYTE)buff, w->width ), buff );
     #else
         GpiCharStringAt( ps, &ptl, w->width, buff );
     #endif
@@ -256,7 +256,7 @@ void _ClearWindow( LPWDATA w )
         }
     }
 #else
-    FARmemset( w->image, ' ', w->width*w->height );
+    FARmemset( w->image, ' ', w->width * w->height );
 #endif
 
 #if defined( __OS2__ )
@@ -301,7 +301,7 @@ void _ShiftWindow( LPWDATA w, int diff )
     int         i,sline,eline,add;
 
     hwnd = w->hwnd;
-    amt = -diff*w->ychar;
+    amt = -diff * w->ychar;
 
 #if defined( __OS2__ )
     {
@@ -315,7 +315,7 @@ void _ShiftWindow( LPWDATA w, int diff )
         RECT        rect;
 
         GetClientRect( hwnd, &rect );
-        i = (rect.bottom + 1) / w->ychar;
+        i = ( rect.bottom + 1 ) / w->ychar;
         rect.bottom = i * w->ychar;
         ScrollWindow( hwnd, 0, amt, NULL, &rect );
     }
@@ -336,7 +336,7 @@ void _ShiftWindow( LPWDATA w, int diff )
     }
     for( i = sline; i != eline; i += add ) {
         txt_s = (LPSTR)&w->image[i * w->width];
-        txt_d = (LPSTR)&w->image[(i - diff) * w->width];
+        txt_d = (LPSTR)&w->image[( i - diff ) * w->width];
 #ifdef _MBCS
         FARmemcpy( txt_d, txt_s, sizeof( mb_char ) * w->width );
 #else
@@ -353,7 +353,7 @@ void _ResizeWin( LPWDATA w, int x1, int y1, int x2, int y2 )
 {
     int height;
 
-    height = (y2 - y1 + 1) / w->ychar + 1;
+    height = ( y2 - y1 + 1 ) / w->ychar + 1;
     if( w->CurrentLineNumber - w->TopLineNumber >= height ) {
         w->CurrentLineNumber = w->TopLineNumber + height - 1;
     }
@@ -362,7 +362,7 @@ void _ResizeWin( LPWDATA w, int x1, int y1, int x2, int y2 )
     w->x2 = x2;
     w->y1 = y1;
     w->y2 = y2;
-    w->width = (x2 - x1 + 1) / w->xchar + 1;
+    w->width = ( x2 - x1 + 1 ) / w->xchar + 1;
     w->height = height;
 
     /*** Initialize a new w->image array ***/
@@ -387,7 +387,7 @@ void _ResizeWin( LPWDATA w, int x1, int y1, int x2, int y2 )
     FARmemset( w->image, ' ', w->width * w->height );
 #endif
 
-    if( w->width > w->maxwidth ) {
+    if( w->maxwidth < w->width ) {
         w->maxwidth = w->width;
     }
 

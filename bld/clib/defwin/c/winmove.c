@@ -39,9 +39,10 @@
 void _MovePageUp( LPWDATA w )
 {
 
-    if( w->TopLineNumber == 1 )  return;
-    w->CurrentLineNumber -= (w->height-1);
-    w->TopLineNumber -= (w->height-1);
+    if( w->TopLineNumber == 1 )
+        return;
+    w->CurrentLineNumber -= w->height - 1;
+    w->TopLineNumber -= w->height - 1;
     if( (signed long) w->CurrentLineNumber < 1 ) {
         w->CurrentLineNumber = 1;
     }
@@ -61,12 +62,14 @@ void _MovePageDown( LPWDATA w )
     DWORD       ll;
 
     ll = _GetLastLineNumber( w );
-    w->CurrentLineNumber += (w->height-1);
-    w->TopLineNumber += (w->height-1);
+    w->CurrentLineNumber += w->height - 1;
+    w->TopLineNumber += w->height - 1;
     if( w->CurrentLineNumber > ll ) {
         w->CurrentLineNumber = ll;
-        w->TopLineNumber = w->CurrentLineNumber - (w->height/2);
-        if( (signed long) w->TopLineNumber < 1 ) w->TopLineNumber = 1;
+        w->TopLineNumber = w->CurrentLineNumber - ( w->height / 2 );
+        if( (signed long) w->TopLineNumber < 1 ) {
+            w->TopLineNumber = 1;
+        }
     }
     _PositionScrollThumb( w );
     _DisplayAllLines( w, TRUE );
@@ -102,7 +105,7 @@ void _MoveLineDown( LPWDATA w )
 
     ll = _GetLastLineNumber( w );
     if( w->CurrentLineNumber != ll ) {
-        bot = w->TopLineNumber + w->height-1;
+        bot = w->TopLineNumber + w->height - 1;
         if( bot < ll ) {
             _ShiftWindow( w, 1 );
             lp = _GetLineDataPointer( w, bot );
@@ -126,19 +129,22 @@ void _MoveToLine( LPWDATA w, DWORD line, BOOL center )
     DWORD       bottom;
     DWORD       ll;
 
-    height = w->height-2;
+    height = w->height - 2;
     bottom = w->TopLineNumber + height;
     ll = _GetLastLineNumber( w );
-    if( (line >= w->TopLineNumber) && (line <= bottom) && !center ) return;
+    if( (line >= w->TopLineNumber) && (line <= bottom) && !center )
+        return;
     if( center || bottom < ll ) {
-        w->TopLineNumber = line - height/2;
+        w->TopLineNumber = line - ( height / 2 );
     } else {
-        if( bottom > ll ) bottom = ll;
+        if( bottom > ll )
+            bottom = ll;
         if( bottom > line ) {
             w->TopLineNumber = line - height;
         }
     }
-    if( (signed long) w->TopLineNumber < 1L ) w->TopLineNumber = 1;
+    if( (signed long) w->TopLineNumber < 1L )
+        w->TopLineNumber = 1;
     w->CurrentLineNumber = line;
     _PositionScrollThumb( w );
     _DisplayAllLines( w, TRUE );

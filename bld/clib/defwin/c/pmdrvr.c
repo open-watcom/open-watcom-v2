@@ -131,22 +131,20 @@ static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
         WinEndPaint( hps );
         break;
     case WM_WINDOWPOSCHANGED:
-        if ( ( ( SWP *)( mp1 ) )->fl & ( SWP_SIZE | SWP_NOADJUST |
-                                         SWP_MINIMIZE | SWP_MAXIMIZE |
-                                         SWP_RESTORE ) ) {
+        if( ((SWP *)mp1)->fl & (SWP_SIZE | SWP_NOADJUST | SWP_MINIMIZE | SWP_MAXIMIZE | SWP_RESTORE) ) {
             _ResizeWindows();
         }
         break;
     case WM_COMMAND:
         dlg_id = SHORT1FROMMP( mp1 );
 
-        if ( dlg_id >= DID_WIND_STDIO ) {
+        if( dlg_id >= DID_WIND_STDIO ) {
             w = _GetActiveWindowData();
             w = _IsWindowedHandle( dlg_id - DID_WIND_STDIO );
             if( w != NULL ) {
                 _MakeWindowActive( w );
                 WinQueryWindowPos( w->frame, &swps );
-                if ( swps.fl & SWP_MINIMIZE ) {
+                if( swps.fl & SWP_MINIMIZE ) {
                     WinSetWindowPos( w->frame, swps.hwndInsertBehind, swps.x,
                                 swps.y, swps.cx, swps.cy, SWP_RESTORE );
                 }
@@ -168,7 +166,7 @@ static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
             break;
         case DID_EDIT_CLEAR:
             w = _GetActiveWindowData();
-            if( w != NULL && !w->InputMode ) {
+            if( w != NULL && w->InputMode == 0 ) {
                 if( w != NULL && !w->gphwin ) {
                     _FreeAllLines( w );
                     _ClearWindow( w );
@@ -188,13 +186,13 @@ static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
         break;
     case WM_CHAR:
         w = _GetActiveWindowData();
-        if( w == NULL )  break;
+        if( w == NULL )
+            break;
         vk = _VirtualKey( mp1, mp2 );
         if( SHORT1FROMMP( mp1 ) & KC_KEYUP ) {
             _WindowsKeyUp( vk, 0 );
         } else {
-            if( (SHORT1FROMMP(mp1) & KC_VIRTUALKEY) &&
-                (SHORT2FROMMP(mp2) != VK_SPACE) ) {
+            if( (SHORT1FROMMP(mp1) & KC_VIRTUALKEY) && (SHORT2FROMMP(mp2) != VK_SPACE) ) {
                 scan = '\xff';
                 if( SHORT2FROMMP( mp2 ) == VK_BREAK ) {
                     raise( SIGBREAK );
@@ -202,23 +200,22 @@ static MRESULT _MainWindowProc( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
                 }
             } else {
                 scan = CHAR4FROMMP( mp1 );
-                if( ( SHORT1FROMMP( mp1 ) & KC_CTRL ) && ( vk == CTRL_C ) ) {
+                if( (SHORT1FROMMP( mp1 ) & KC_CTRL) && ( vk == CTRL_C ) ) {
                     raise( SIGINT );
                     break;
                 }
             }
 
-            if( !(SHORT1FROMMP(mp1) & KC_VIRTUALKEY)  &&
-                    (w==NULL || w->InputMode) ) {
-                #ifdef _MBCS
-                    if( vk & 0xFF00 ) {             /* double-byte char */
-                        _WindowsKeyPush( vk&0x00FF, scan );
-                        _WindowsKeyPush( (vk&0xFF00)>>8, scan );
-                    } else                          /* single-byte char */
-                        _WindowsKeyPush( vk, scan );
-                #else
+            if( (SHORT1FROMMP( mp1 ) & KC_VIRTUALKEY) == 0 && (w == NULL || w->InputMode) ) {
+#ifdef _MBCS
+                if( vk & 0xFF00 ) {             /* double-byte char */
+                    _WindowsKeyPush( vk & 0x00FF, scan );
+                    _WindowsKeyPush( (vk & 0xFF00) >> 8, scan );
+                } else                          /* single-byte char */
                     _WindowsKeyPush( vk, scan );
-                #endif
+#else
+                _WindowsKeyPush( vk, scan );
+#endif
                 break;
             } else {
                 WinShowPointer( HWND_DESKTOP, FALSE );
@@ -324,7 +321,7 @@ MRESULT EXPENTRY _MainDriver( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 ) {
         WinQueryWindowRect( hwnd, &rcl );
         width = SHORT1FROMMP( mp2 );
         height = SHORT2FROMMP( mp2 );
-        _ResizeWin( w, rcl.xLeft, rcl.yTop, rcl.xLeft+width, rcl.yTop+height );
+        _ResizeWin( w, rcl.xLeft, rcl.yTop, rcl.xLeft + width, rcl.yTop + height );
         _DisplayAllLines( w, FALSE );
         break;
 
@@ -332,8 +329,7 @@ MRESULT EXPENTRY _MainDriver( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 ) {
         WinShowPointer( HWND_DESKTOP, FALSE );
         switch( SHORT2FROMMP( mp2 ) ) {
         case SB_SLIDERPOSITION:
-            _MoveToLine( w, _GetLineFromThumbPosition( w,
-                            SHORT1FROMMP( mp2 ) ), TRUE  );
+            _MoveToLine( w, _GetLineFromThumbPosition( w, SHORT1FROMMP( mp2 ) ), TRUE  );
             break;
         case SB_PAGEDOWN:
             _MovePageDown( w );

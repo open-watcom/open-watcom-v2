@@ -201,7 +201,7 @@ void _AddLine( LPWDATA w, const void *in_data, unsigned len )
     const unsigned char     *data;
     static unsigned char    leadByte;
     static int              leadByteWaiting;
-    unsigned char           ch[MB_CUR_MAX+1];
+    unsigned char           ch[MB_CUR_MAX + 1];
     LPBYTE                  p;
 #else
     const char              *data;
@@ -223,14 +223,14 @@ void _AddLine( LPWDATA w, const void *in_data, unsigned len )
 #else
         curbufoff = FARstrlen( w->tmpbuff->data );
 #endif
-        if( curbufoff > w->buffoff ) {
+        if( w->buffoff < curbufoff ) {
             w->buffoff = curbufoff;
         }
     }
     if( w->no_advance ) {
         curbufoff = 0;
     }
-    for( i = 0; i < len; i ++ ) {
+    for( i = 0; i < len; i++ ) {
         w->no_advance = FALSE;
         do {
             hadbreak = FALSE;
@@ -290,7 +290,7 @@ void _AddLine( LPWDATA w, const void *in_data, unsigned len )
             } else if( ch[0] != '\0' ) {
                 FAR_mbccpy( FAR_mbsninc( (LPBYTE)w->tmpbuff->data, curbufoff ), ch );
                 curbufoff++;
-                if( curbufoff > w->buffoff ) {
+                if( w->buffoff < curbufoff ) {
                     w->buffoff = curbufoff;
                 }
                 if( TOOWIDE( w->buffoff, w ) ) {
@@ -331,7 +331,7 @@ void _AddLine( LPWDATA w, const void *in_data, unsigned len )
                 }
             } else {
                 w->tmpbuff->data[curbufoff++] = ch;
-                if( curbufoff > w->buffoff ) {
+                if( w->buffoff < curbufoff ) {
                     w->buffoff = curbufoff;
                 }
                 if( TOOWIDE( w->buffoff, w ) ) {
@@ -616,8 +616,8 @@ void _CopyAllLines( LPWDATA w )
 #else
         _fmemcpy( &ptr[total], ld->data, slen - 2 );
 #endif
-        ptr[total+slen-2] = 0x0d;
-        ptr[total+slen-1] = 0x0a;
+        ptr[total + slen - 2] = 0x0d;
+        ptr[total + slen - 1] = 0x0a;
         total += slen;
     }
     ptr[total] = 0;
@@ -644,7 +644,8 @@ DWORD _GetLastLineNumber( LPWDATA w )
     DWORD       ll;
 
     ll = w->LastLineNumber;
-    if( w->lineinprogress ) ll++;
+    if( w->lineinprogress )
+        ll++;
     return( ll );
 
 } /* _GetLastLineNumber */

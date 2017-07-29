@@ -110,7 +110,7 @@ static char *helpMsg = "Enter the number of lines of text you would like to keep
 static void setIntegerValue( HWND hwndDlg, USHORT id, ULONG val )
 //===============================================================
 {
-    char        buff[MAX_INTEGER_FIELD+1];
+    char        buff[MAX_INTEGER_FIELD + 1];
 
     ultoa( val, buff, 10 );
     WinSetDlgItemText( hwndDlg, id, buff );
@@ -120,12 +120,12 @@ static void setIntegerValue( HWND hwndDlg, USHORT id, ULONG val )
 static BOOL getIntegerValue( HWND hwndDlg, USHORT id, ULONG *pval )
 //=================================================================
 {
-    char        buff[MAX_INTEGER_FIELD+1];
+    char        buff[MAX_INTEGER_FIELD + 1];
     char        *ptr;
     ULONG       val;
     ULONG       len;
 
-    len = WinQueryDlgItemText( hwndDlg, id, MAX_INTEGER_FIELD+1, buff );
+    len = WinQueryDlgItemText( hwndDlg, id, MAX_INTEGER_FIELD + 1, buff );
     /* strtoul will accept negative numbers */
     ptr = buff;
     while( isspace( (unsigned char)*ptr ) )

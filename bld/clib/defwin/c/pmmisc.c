@@ -118,7 +118,8 @@ void    _NewCursor( LPWDATA w, cursors type ) {
         WinDestroyCursor( w->hwnd );
         w->hascursor = FALSE;
     }
-    if( type == KILL_CURSOR ) return;
+    if( type == KILL_CURSOR )
+        return;
     w->CaretType = type;
     switch( type ) {
     case SMALL_CURSOR:
@@ -156,18 +157,17 @@ void    _DisplayCursor( LPWDATA w ) {
     GpiQueryTextBox( ps, w->curr_pos, w->tmpbuff->data, TXTBOX_COUNT, points );
 #endif
     x = points[TXTBOX_CONCAT].x;
-    y = (w->y2 - w->y1) - (w->LastLineNumber-w->TopLineNumber+1) * w->ychar;
+    y = ( w->y2 - w->y1 ) - ( w->LastLineNumber - w->TopLineNumber + 1 ) * w->ychar;
     WinReleasePS( ps );
     WinCreateCursor( w->hwnd, x, y, 0, 0, CURSOR_SETPOS, NULL );
     WinShowCursor( w->hwnd, TRUE );
 }
 
 
-void    _SetInputMode( LPWDATA w, BOOL val ) {
-//===========================================
-
+void    _SetInputMode( LPWDATA w, int val )
+//=========================================
 // set whether or not we are in input mode
-
+{
     w->InputMode = val;
 }
 
@@ -186,7 +186,7 @@ void _ShowWindowActive( LPWDATA w, LPWDATA last )
         menudesc.iPosition = 0;
         menudesc.id = DID_WIND_STDIO + last->handles[0];
         menudesc.hwndSubMenu = NULLHANDLE;
-        WinSendMsg( _GetWinMenuHandle(), ( ULONG )MM_SETITEM, FALSE, MPFROMP( &menudesc ) );
+        WinSendMsg( _GetWinMenuHandle(), (ULONG)MM_SETITEM, FALSE, MPFROMP( &menudesc ) );
         if( last->CaretType != ORIGINAL_CURSOR ) {
             _NewCursor( last, KILL_CURSOR );
         }
@@ -206,7 +206,7 @@ void _ShowWindowActive( LPWDATA w, LPWDATA last )
         menudesc.iPosition = 0;
         menudesc.id = DID_WIND_STDIO + w->handles[0];
         menudesc.hwndSubMenu = NULLHANDLE;
-        WinSendMsg( _GetWinMenuHandle(), ( ULONG )MM_SETITEM, FALSE, MPFROMP( &menudesc ) );
+        WinSendMsg( _GetWinMenuHandle(), (ULONG)MM_SETITEM, FALSE, MPFROMP( &menudesc ) );
         if( w->CaretType != ORIGINAL_CURSOR ) {
             _NewCursor( w, w->CaretType );
             _DisplayCursor( w );

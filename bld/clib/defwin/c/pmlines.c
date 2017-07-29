@@ -40,7 +40,7 @@
  */
 void _SaveAllLines( LPWDATA w )
 {
-    char                fname[CCHMAXPATH+1];
+    char                fname[CCHMAXPATH + 1];
     FILEDLG             fdlg;
     HWND                hwmenu;
     FILE                *f;
@@ -58,7 +58,7 @@ void _SaveAllLines( LPWDATA w )
     strcpy( fdlg.szFullFile, "*.*" );
 
     hwmenu = WinWindowFromID( _MainFrameWindow, FID_MENU );
-    if ( WinFileDlg( HWND_DESKTOP, hwmenu, &fdlg ) ) {
+    if( WinFileDlg( HWND_DESKTOP, hwmenu, &fdlg ) ) {
         /*
          * save lines
          */
@@ -102,8 +102,11 @@ void _CopyAllLines( LPWDATA w )
     for( ld = w->LineHead; ld != NULL; ld = ld->next ) {
         total += strlen( ld->data ) + 2;
     }
-    if( total > MAX_BYTES ) len = (unsigned) MAX_BYTES;
-    else len = total;
+    if( total > MAX_BYTES ) {
+        len = (unsigned) MAX_BYTES;
+    } else {
+        len = total;
+    }
 
     /*
      * get memory block
@@ -122,10 +125,11 @@ void _CopyAllLines( LPWDATA w )
     ptr = data;
     for( ld = w->LineHead; ld != NULL; ld = ld->next ) {
         slen = strlen( ld->data ) + 2;
-        if( total + slen > MAX_BYTES ) break;
+        if( total + slen > MAX_BYTES )
+            break;
         memcpy( &ptr[total], ld->data, slen - 2 );
-        ptr[total+slen-2] = 0x0d;
-        ptr[total+slen-1] = 0x0a;
+        ptr[total + slen - 2] = 0x0d;
+        ptr[total + slen - 1] = 0x0a;
         total += slen;
     }
     ptr[total] = 0;

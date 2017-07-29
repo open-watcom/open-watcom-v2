@@ -234,7 +234,7 @@ int _DynamicDialogBox( PFNWP fn, HWND hwnd, TEMPLATE_HANDLE dlgtemplate )
     HWND handle;
 
     handle = WinCreateDlg( HWND_DESKTOP, hwnd, fn, (WPDLGTEMPLATE)dlgtemplate, NULL );
-    if ( handle == NULLHANDLE ) {
+    if( handle == NULLHANDLE ) {
         WinMessageBox( HWND_DESKTOP, NULLHANDLE, "Window Creation Error Occurred", "Error", 0, MB_APPLMODAL | MB_NOICON | MB_OK | MB_MOVEABLE );
         return( 0 );
     }

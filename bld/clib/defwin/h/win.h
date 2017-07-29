@@ -343,7 +343,7 @@ extern int      _MessageLoop( BOOL );
 extern int      _BlockingMessageLoop( BOOL );
 extern void     _NewCursor( LPWDATA, cursors );
 extern void     _DisplayCursor( LPWDATA w );
-extern void     _SetInputMode( LPWDATA, BOOL );
+extern void     _SetInputMode( LPWDATA, int );
 extern void     _ShowWindowActive( LPWDATA w, LPWDATA last );
 extern void     _OutOfMemory( void );
 extern __declspec(noreturn) void _OutOfMemoryExit( void );

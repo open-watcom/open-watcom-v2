@@ -67,7 +67,8 @@ unsigned _NewWindow( const char *name, ... )
         NULL                                /* extra data pointer         */
     );
 
-    if( !hwnd ) return( FALSE );
+    if( !hwnd )
+        return( FALSE );
     /*
      * allocate window data area
      */
@@ -87,12 +88,12 @@ unsigned _NewWindow( const char *name, ... )
     xchar = tm.tmMaxCharWidth;
     ychar = tm.tmHeight;
     w->xchar = xchar;
-    w->ychar = ychar+2;
+    w->ychar = ychar + 2;
     w->inst = _MainWindowData->inst;
     _PositionScrollThumb( w );
-    AppendMenu( _SubMenuWindows, MF_ENABLED, MSG_WINDOWS+w->handles[0], str );
+    AppendMenu( _SubMenuWindows, MF_ENABLED, MSG_WINDOWS + w->handles[0], str );
 
-    MoveWindow( hwnd,x1*xchar,y1*ychar, x2*xchar, y2*ychar, TRUE );
+    MoveWindow( hwnd, x1 * xchar, y1 * ychar, x2 * xchar, y2 * ychar, TRUE );
     DeleteMenu( GetSystemMenu( hwnd, 0 ), SC_CLOSE, MF_BYCOMMAND );
     ShowWindow( hwnd, SW_NORMAL );
     UpdateWindow( hwnd );
@@ -110,6 +111,6 @@ void _ReleaseWindowResources( LPWDATA w )
     if( w->hascursor ) {
         DestroyCaret();
     }
-    DeleteMenu( _SubMenuWindows, MSG_WINDOWS+w->handles[0], MF_BYCOMMAND );
+    DeleteMenu( _SubMenuWindows, MSG_WINDOWS + w->handles[0], MF_BYCOMMAND );
 
 } /* _ReleaseWindowResources */

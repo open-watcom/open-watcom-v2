@@ -81,10 +81,10 @@ unsigned _NewWindow( const char *name, ... )
     _PositionScrollThumb( w );
     WinQueryWindowRect( _MainWindow, &rcl );
     WinSetWindowPos( frame, HWND_TOP,
-                x1*w->xchar,
-                (rcl.yTop - rcl.yBottom)-y1*w->ychar-y2*w->ychar,
-                x2*w->xchar,
-                y2*w->ychar,
+                x1 * w->xchar,
+                ( rcl.yTop - rcl.yBottom ) - y1 * w->ychar - y2 * w->ychar,
+                x2 * w->xchar,
+                y2 * w->ychar,
                 SWP_SIZE | SWP_MOVE | SWP_ZORDER );
 
     menus.iPosition = _MainWindowData->window_count - 1;

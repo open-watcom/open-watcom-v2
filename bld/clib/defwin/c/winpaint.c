@@ -59,17 +59,17 @@ void _RepaintWindow( LPWDATA w, PRECT rcPaint, HDC ph )
      * get area to redraw
      */
     ptop = rcPaint->top / w->ychar;
-    if( ptop != 0 && (rcPaint->top % w->ychar != 0) )
+    if( ptop != 0 && ( rcPaint->top % w->ychar ) != 0 )
         ptop--;
     pbot = rcPaint->bottom / w->ychar ;
     if( pbot == 0 )
         return;
     if( pbot >= w->height )
-        pbot = w->height-1;
-    if( rcPaint->bottom % w->ychar == 0 )
+        pbot = w->height - 1;
+    if( ( rcPaint->bottom % w->ychar ) == 0 )
         pbot--;
     pleft = 0;
-    pright = w->width-1;
+    pright = w->width - 1;
     width = w->width;
     poff = pleft * w->xchar;
     pdown = ptop * w->ychar;

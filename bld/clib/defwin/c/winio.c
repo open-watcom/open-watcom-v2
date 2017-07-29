@@ -43,15 +43,17 @@ unsigned _DoStdin( LPWDATA w, void *in_buff, unsigned size )
 
     buff = (char *)in_buff;
 
-    if( w == NULL ) return( 0 );
-    if( !w->active) _MakeWindowActive( w );
+    if( w == NULL )
+        return( 0 );
+    if( !w->active )
+        _MakeWindowActive( w );
     rc = _GetString( w, buff, size );
     if( _GotEOF ) {
         if( rc < size ) {
             buff[rc++] = CTRL_Z;
         }
     } else {
-        if( (rc+2) < size ) {
+        if( (rc + 2) < size ) {
             buff[rc++] = 0x0d;
             buff[rc++] = 0x0a;
         } else if( ( rc == 0 ) && ( size == 1 ) ) {/* rc==0 ==> key was enter */
@@ -71,8 +73,10 @@ unsigned _DoStdin( LPWDATA w, void *in_buff, unsigned size )
 unsigned _DoStdout( LPWDATA w, const void *buff, unsigned size )
 {
 
-    if( w == NULL ) return( 0 );
-    if( !w->active) _MakeWindowActive( w );
+    if( w == NULL )
+        return( 0 );
+    if( !w->active )
+        _MakeWindowActive( w );
     _AddLine( w, buff, size );
     _MessageLoop( TRUE );
     return( size );
@@ -84,8 +88,10 @@ unsigned _DoStdout( LPWDATA w, const void *buff, unsigned size )
  */
 unsigned _DoKbhit( LPWDATA w )
 {
-    if( w == NULL ) return( FALSE );
-    if( !w->active) _MakeWindowActive( w );
+    if( w == NULL )
+        return( FALSE );
+    if( !w->active )
+        _MakeWindowActive( w );
     return( _KeyboardHit( FALSE ) );
 
 } /* _DoKbhit */
@@ -97,11 +103,14 @@ unsigned _DoGetch( LPWDATA w )
 {
     unsigned    ci;
 
-    if( w == NULL ) return( 0 );
-    if( !w->active) _MakeWindowActive( w );
+    if( w == NULL )
+        return( 0 );
+    if( !w->active )
+        _MakeWindowActive( w );
     while( !_KeyboardHit( TRUE ) );
     ci = _GetKeyboard( NULL );
-    if( ci > 0x80 ) ci -= 0x80;
+    if( ci > 0x80 )
+        ci -= 0x80;
     return( ci );
 
 } /* _DoGetch */
@@ -130,8 +139,10 @@ void _DoPutch( LPWDATA w, unsigned ch )
 {
     char tmp[2];
 
-    if( w == NULL ) return;
-    if( !w->active) _MakeWindowActive( w );
+    if( w == NULL )
+        return;
+    if( !w->active )
+        _MakeWindowActive( w );
     tmp[0] = ch;
     tmp[1] = 0;
     _AddLine( w, tmp, 1 );

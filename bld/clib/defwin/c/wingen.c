@@ -234,11 +234,11 @@ void _GetWindowNameAndCoords( const char *name, char *dest, int *x1, int *x2, in
     _y1 += 2;
     _x2 -= 2;
     _y2 -= 2;
-    if( _x1 > X_MAX/3 ) {
+    if( _x1 > ( X_MAX / 3 ) ) {
         _x1 = 0;
         _x2 = X_MAX;
     }
-    if( _y1 > Y_MAX/3 ) {
+    if( _y1 > ( Y_MAX / 3 ) ) {
         _y1 = 0;
         _y2 = Y_MAX;
     }

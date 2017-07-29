@@ -131,7 +131,7 @@ static long MainWindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpara
             break;
         case MSG_FLUSH:
             w = _GetActiveWindowData();
-            if( w != NULL && !w->InputMode ) {
+            if( w != NULL && w->InputMode == 0 ) {
                 if( w != NULL && !w->gphwin ) {
                     _FreeAllLines( w );
                     _ClearWindow( w );
@@ -164,7 +164,7 @@ static long MainWindowProc( HWND hwnd, UINT message, WPARAM wparam, LPARAM lpara
             shiftState &= ~SS_CTRL;
             raise( SIGBREAK );
             break;
-        } else if( ( shiftState & SS_CTRL ) && ( wparam == 'C' ) ) {
+        } else if( (shiftState & SS_CTRL) && ( wparam == 'C' ) ) {
             MessageBox( hwnd, "", "SIGINT",
                         MB_APPLMODAL | MB_ICONINFORMATION | MB_OK );
             shiftState &= ~SS_CTRL;
@@ -298,7 +298,7 @@ long CALLBACK _MainDriver( HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam
         FillRect( dc, &rect, w->brush );
         SelectObject( dc, oldbrush );
         ReleaseDC( hwnd, dc );
-        _ResizeWin( w, rect.left, rect.top, rect.left+width, rect.top+height );
+        _ResizeWin( w, rect.left, rect.top, rect.left + width, rect.top + height );
         _DisplayAllLines( w, FALSE );
         return( 0 );
 

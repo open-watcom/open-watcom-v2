@@ -163,7 +163,8 @@ void _NewCursor( LPWDATA w, cursors type )
         DestroyCaret();
         w->hascursor = FALSE;
     }
-    if( type == KILL_CURSOR ) return;
+    if( type == KILL_CURSOR )
+        return;
     w->CaretType = type;
     switch( type ) {
     case SMALL_CURSOR:
@@ -190,26 +191,22 @@ void _DisplayCursor( LPWDATA w )
 
     dc = GetDC( w->hwnd );
     SelectObject( dc, _FixedFont );
-    #ifdef _MBCS
-        #ifdef __NT__
-            GetTextExtentPoint32( dc, w->tmpbuff->data,
-                                  FAR_mbsnbcnt( (LPBYTE)w->tmpbuff->data,w->buffoff+w->curr_pos),
-                                  &size );
-        #else
-            GetTextExtentPoint( dc, w->tmpbuff->data,
-                                FAR_mbsnbcnt( (LPBYTE)w->tmpbuff->data, w->buffoff + w->curr_pos),
-                                &size );
-        #endif
-    #else
-        #ifdef __NT__
-            GetTextExtentPoint32( dc, w->tmpbuff->data, w->buffoff+w->curr_pos,
-                                  &size );
-        #else
-            GetTextExtentPoint( dc, w->tmpbuff->data, w->buffoff+w->curr_pos,
-                                &size );
-        #endif
-    #endif
-    SetCaretPos( size.cx+1, (w->LastLineNumber-w->TopLineNumber)*w->ychar );
+#ifdef _MBCS
+  #ifdef __NT__
+    GetTextExtentPoint32( dc, w->tmpbuff->data,
+                          FAR_mbsnbcnt( (LPBYTE)w->tmpbuff->data, w->buffoff + w->curr_pos ), &size );
+  #else
+    GetTextExtentPoint( dc, w->tmpbuff->data,
+                        FAR_mbsnbcnt( (LPBYTE)w->tmpbuff->data, w->buffoff + w->curr_pos ), &size );
+  #endif
+#else
+  #ifdef __NT__
+    GetTextExtentPoint32( dc, w->tmpbuff->data, w->buffoff + w->curr_pos, &size );
+  #else
+    GetTextExtentPoint( dc, w->tmpbuff->data, w->buffoff + w->curr_pos, &size );
+  #endif
+#endif
+    SetCaretPos( size.cx + 1, ( w->LastLineNumber - w->TopLineNumber ) * w->ychar );
     ReleaseDC( w->hwnd, dc );
     ShowCaret( w->hwnd );
 
@@ -218,13 +215,16 @@ void _DisplayCursor( LPWDATA w )
 /*
  * _SetInputMode - set whether or not we are in input mode
  */
-void _SetInputMode( LPWDATA w, BOOL val  )
+void _SetInputMode( LPWDATA w, int val  )
 {
     WORD cmd;
 
     w->InputMode = val;
-    if( w->InputMode ) cmd = MF_GRAYED;
-    else cmd = MF_ENABLED;
+    if( w->InputMode ) {
+        cmd = MF_GRAYED;
+    } else {
+        cmd = MF_ENABLED;
+    }
     EnableMenuItem( _SubMenuEdit, MSG_FLUSH, cmd );
 
 } /* _SetInputMode */
@@ -235,7 +235,7 @@ void _SetInputMode( LPWDATA w, BOOL val  )
 void _ShowWindowActive( LPWDATA w, LPWDATA last )
 {
     if( last != NULL ) {
-        CheckMenuItem( _SubMenuWindows, MSG_WINDOWS+last->handles[0],
+        CheckMenuItem( _SubMenuWindows, MSG_WINDOWS + last->handles[0],
                  MF_UNCHECKED | MF_BYCOMMAND );
         SendMessage( last->hwnd, WM_NCACTIVATE, FALSE, 0L );
         if( last->CaretType != ORIGINAL_CURSOR ) {
@@ -243,7 +243,7 @@ void _ShowWindowActive( LPWDATA w, LPWDATA last )
         }
     }
     if( w != NULL ) {
-        CheckMenuItem( _SubMenuWindows, MSG_WINDOWS+w->handles[0],
+        CheckMenuItem( _SubMenuWindows, MSG_WINDOWS + w->handles[0],
                  MF_CHECKED | MF_BYCOMMAND );
         ShowWindow( w->hwnd, SW_SHOW );
         SendMessage( w->hwnd, WM_NCACTIVATE, TRUE, 0L );

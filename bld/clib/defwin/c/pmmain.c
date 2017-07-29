@@ -71,8 +71,7 @@ _WCRTLINK int   __InitDefaultWin( void )
 
     _InitMainWindowData( 0 );
 
-    style = FCF_TITLEBAR | FCF_SYSMENU | FCF_SIZEBORDER | FCF_MINMAX |
-            FCF_SHELLPOSITION | FCF_TASKLIST;
+    style = FCF_TITLEBAR | FCF_SYSMENU | FCF_SIZEBORDER | FCF_MINMAX | FCF_SHELLPOSITION | FCF_TASKLIST;
     _MainFrameWindow = WinCreateStdWindow( HWND_DESKTOP,
                         WS_VISIBLE | WS_CLIPCHILDREN,
                         &style, _ClassName, "", 0, NULLHANDLE, 0, &ClientWindow );
@@ -222,22 +221,22 @@ void    _CreateFont( LPWDATA w )
     if( __IsDBCS ) {
         /*** Try to find a DBCS font ***/
         for( i = 0; i < num_fonts; ++i ) {
-            if( ! (fonts[i].fsType & (FM_TYPE_DBCS|FM_TYPE_FIXED)) )  continue;
-            if( fonts[i].lEmHeight > 10 )  continue;
-            font_size = fonts[i].lEmHeight;
-            font_selected = i;
-            fontChosenFlag = 1;
-            break;
-        }
-        /*** Try to find a regular font if can't find DBCS ***/
-        if( fontChosenFlag == 0 ) {
-            for( i = 0; i < num_fonts; ++i ) {
-                if( ! (fonts[i].fsType & FM_TYPE_DBCS) )  continue;
-                if( fonts[i].lEmHeight > 10 )  continue;
+            if( (fonts[i].fsType & (FM_TYPE_DBCS | FM_TYPE_FIXED)) && fonts[i].lEmHeight <= 10 ) {
                 font_size = fonts[i].lEmHeight;
                 font_selected = i;
                 fontChosenFlag = 1;
                 break;
+            }
+        }
+        /*** Try to find a regular font if can't find DBCS ***/
+        if( fontChosenFlag == 0 ) {
+            for( i = 0; i < num_fonts; ++i ) {
+                if( (fonts[i].fsType & FM_TYPE_DBCS) && fonts[i].lEmHeight <= 10 ) {
+                    font_size = fonts[i].lEmHeight;
+                    font_selected = i;
+                    fontChosenFlag = 1;
+                    break;
+                }
             }
         }
     }
@@ -245,21 +244,21 @@ void    _CreateFont( LPWDATA w )
     /*** If !__IsDBCS or if DBCS font not found, find a fixed font ***/
     if( fontChosenFlag == 0 ) {
         for( i = 0; i < num_fonts; ++i ) {
-            if( ! (fonts[i].fsType & FM_TYPE_FIXED) )  continue;
-            if( fonts[i].lEmHeight > 10 )  continue;
-            font_size = fonts[i].lEmHeight;
-            font_selected = i;
-            break;
+            if( (fonts[i].fsType & FM_TYPE_FIXED) && fonts[i].lEmHeight <= 10 ) {
+                font_size = fonts[i].lEmHeight;
+                font_selected = i;
+                break;
+            }
         }
     }
 #else
     /*** Try to find a suitable font ***/
     for( i = 0; i < num_fonts; ++i ) {
-        if( ! (fonts[i].fsType & FM_TYPE_FIXED) )  continue;
-        if( fonts[i].lEmHeight > 10 )  continue;
-        font_size = fonts[i].lEmHeight;
-        font_selected = i;
-        break;
+        if( (fonts[i].fsType & FM_TYPE_FIXED) && fonts[i].lEmHeight <= 10 ) {
+            font_size = fonts[i].lEmHeight;
+            font_selected = i;
+            break;
+        }
     }
 #endif
 
