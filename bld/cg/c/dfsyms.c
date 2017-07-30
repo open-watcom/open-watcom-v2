@@ -403,6 +403,42 @@ static  void    FiniLineSegBck( void )
     BEFreeBack( bck );
 }
 
+static int InitCU( dw_cu_info *cu )
+{
+    type_def        *tipe_addr;
+
+    cu->source_filename = FEAuxInfo( NULL, SOURCE_NAME );
+    cu->directory = "";
+    cu->inc_list = NULL;
+    cu->inc_list_len = 0;
+    tipe_addr = TypeAddress( TY_NEAR_POINTER );
+    cu->offset_size = tipe_addr->length;
+    cu->segment_size = 0;
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+    if( _IsntTargetModel( FLAT_MODEL ) ) {
+        cu->segment_size = 2;
+    }
+#endif
+    switch( GetMemModel() ) {
+    case 'h':
+        cu->model = DW_MODEL_HUGE;
+        break;
+    case 'l':
+        cu->model = DW_MODEL_LARGE;
+        break;
+    case 'f':
+        cu->model = DW_MODEL_FLAT;
+        break;
+    case 's':
+        cu->model = DW_MODEL_SMALL;
+        break;
+    default:
+        cu->model = DW_MODEL_NONE;
+        break;
+    }
+    return( 0 );
+}
+
 void    DFSymRange( cg_sym_handle sym, offset size )
 /**************************************************/
 // I don't see what this is good for. The aranges for any
@@ -448,17 +484,13 @@ void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
     dw_cu_info      cu;
     back_handle     bck;
     segment_id      old;
-    type_def        *tipe_addr;
 
     if( _IsntModel( DBG_LOCALS | DBG_TYPES ) ) {
         return;
     }
     if( CcuDef ) {
-        cu.source_filename = FEAuxInfo( NULL, SOURCE_NAME );
-        cu.directory = "";
+        InitCU( &cu );
         cu.dbg_pch = dbg_pch;
-        cu.inc_list = NULL;
-        cu.inc_list_len = 0;
         old = SetOP( code );
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         if( _IsTargetModel( FLAT_MODEL ) ) {
@@ -474,13 +506,11 @@ void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
             // disabled. The low/high pc attribs should probably be handled by
             // the linker.
             cu.flags = false;
-            cu.segment_size = 0;
         } else {
             bck = NULL;
             cu.flags = false;
             Pc_Low = NULL;
             Pc_High = NULL;
-            cu.segment_size = 2;
         }
 #else
         bck = MakeLabel();
@@ -488,29 +518,9 @@ void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
         Pc_Low = bck;
         Pc_High = MakeLabel();
         cu.flags = true;
-        cu.segment_size = 0;
 #endif
         SetOP( old );
         Comp_High = Pc_High;
-        tipe_addr = TypeAddress( TY_NEAR_POINTER );
-        cu.offset_size = tipe_addr->length;
-        switch( GetMemModel() ) {
-            case 'h':
-                cu.model = DW_MODEL_HUGE;
-                break;
-            case 'l':
-                cu.model = DW_MODEL_LARGE;
-                break;
-            case 'f':
-                cu.model = DW_MODEL_FLAT;
-                break;
-            case 's':
-                cu.model = DW_MODEL_SMALL;
-                break;
-            default:
-                cu.model = DW_MODEL_NONE;
-                break;
-        }
         DWBeginCompileUnit( Client, &cu );
         if( cu.flags ) {
             BEFreeBack( bck );
@@ -618,7 +628,6 @@ void    DFObjLineInitDbgInfo( void )
     };
     dw_init_info    info;
     dw_cu_info      cu;
-    type_def       *tipe_addr;
 
     info.language = DWLANG_C;
     info.compiler_options = DW_CM_DEBUGGER;
@@ -632,42 +641,17 @@ void    DFObjLineInitDbgInfo( void )
         if( Client == NULL ) {
             Zoiks( ZOIKS_107 ); /* Bad */
         }
-        cu.source_filename = FEAuxInfo( NULL, SOURCE_NAME );
-        cu.directory = "";
+        InitCU( &cu );
         cu.dbg_pch = NULL;
-        cu.inc_list = NULL;
-        cu.inc_list_len = 0;
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         if( _IsTargetModel( FLAT_MODEL ) ) {
             cu.flags = true;
-            cu.segment_size = 0;
         } else {
             cu.flags = false;
-            cu.segment_size = 2;
         }
 #else
         cu.flags = true;
-        cu.segment_size = 0;
 #endif
-        tipe_addr = TypeAddress( TY_NEAR_POINTER );
-        cu.offset_size = tipe_addr->length;
-        switch( GetMemModel() ) {
-            case 'h':
-                cu.model = DW_MODEL_HUGE;
-                break;
-            case 'l':
-                cu.model = DW_MODEL_LARGE;
-                break;
-            case 'f':
-                cu.model = DW_MODEL_FLAT;
-                break;
-            case 's':
-                cu.model = DW_MODEL_SMALL;
-                break;
-            default:
-                cu.model = DW_MODEL_NONE;
-                break;
-        }
         DWInitDebugLine( Client, &cu );
     } else {
         Zoiks( ZOIKS_107 ); /* Big Error */
