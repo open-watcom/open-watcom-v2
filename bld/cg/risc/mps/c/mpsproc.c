@@ -579,7 +579,7 @@ void GenProlog( void )
 
     old = SetOP( AskCodeSeg() );
     label = CurrProc->label;
-    if( _IsModel( NUMBERS ) ) {
+    if( _IsModel( DBG_NUMBERS ) ) {
         OutFileStart( HeadBlock->ins.hd.line_num );
     }
     TellKeepLabel( label );

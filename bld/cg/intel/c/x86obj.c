@@ -1112,7 +1112,7 @@ void    ObjInit( void )
         if( _IsModel( DBG_LOCALS | DBG_TYPES ) ) {
             DFObjInitDbgInfo();
 #if 0 // save for JimR and linker
-        } else if( _IsModel( NUMBERS ) ) {
+        } else if( _IsModel( DBG_NUMBERS ) ) {
             DFObjLineInitDbgInfo();
 #endif
         }
@@ -1926,7 +1926,7 @@ void    ObjFini( void )
             }
             DFObjFiniDbgInfo( codesize );
 #if 0 //save for Jimr
-        } else if( _IsModel( NUMBERS ) ) {
+        } else if( _IsModel( DBG_NUMBERS ) ) {
             DFObjLineFini( );
 #endif
         }

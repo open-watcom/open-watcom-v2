@@ -343,10 +343,10 @@ static  void    CGStart( void ) {
 #endif
 
         if( CGOpts & CGOPT_DB_LINE ) {
-            cg_opts |= NUMBERS;
+            cg_opts |= DBG_NUMBERS;
         }
         if( CGOpts & CGOPT_DB_LOCALS ) {
-            cg_opts |= DBG_TYPES | DBG_LOCALS | NUMBERS | NO_OPTIMIZATION;
+            cg_opts |= DBG_TYPES | DBG_LOCALS | DBG_NUMBERS | NO_OPTIMIZATION;
         }
         if( CGOpts & CGOPT_DI_CV ) {
             cg_opts |= DBG_CV;

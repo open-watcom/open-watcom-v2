@@ -577,7 +577,7 @@ void    GenProlog( void )
         EmitNameInCode();
     }
 
-    if( _IsModel( NUMBERS ) ) {
+    if( _IsModel( DBG_NUMBERS ) ) {
         CodeLineNumber( HeadBlock->ins.hd.line_num, false );
     }
 

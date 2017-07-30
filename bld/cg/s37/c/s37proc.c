@@ -132,7 +132,7 @@ extern  void    GenProlog() {
     seg_id      old;
 
     old = SetOP( AskCodeSeg() );
-    if( _IsModel( NUMBERS ) ) {
+    if( _IsModel( DBG_NUMBERS ) ) {
         CodeLineNum( HeadBlock->ins.hd.line_num );
     }
     if( _IsModel( INTERNAL_DBG_OUTPUT ) ) {

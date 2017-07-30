@@ -760,7 +760,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         // optimizing the writing of the debugging info by referring back
         // to the info in another module
         CompFlags.all_debug_type_names = true;
-        GenSwitches |= NUMBERS | DBG_TYPES | DBG_LOCALS;
+        GenSwitches |= DBG_NUMBERS | DBG_TYPES | DBG_LOCALS;
         if( debugOptionAfterOptOption( data ) ) {
             GenSwitches |= NO_OPTIMIZATION;
         }
@@ -773,7 +773,7 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         CompFlags.inline_functions = false;
         /* fall through */
     case OPT_debug_info_d2:
-        GenSwitches |= NUMBERS | DBG_TYPES | DBG_LOCALS;
+        GenSwitches |= DBG_NUMBERS | DBG_TYPES | DBG_LOCALS;
         if( debugOptionAfterOptOption( data ) ) {
             GenSwitches |= NO_OPTIMIZATION;
         }
@@ -781,14 +781,14 @@ static void analyseAnyTargetOptions( OPT_STORAGE *data )
         break;
     case OPT_debug_info_d2t:
         CompFlags.no_debug_type_names = true;
-        GenSwitches |= NUMBERS | DBG_TYPES | DBG_LOCALS;
+        GenSwitches |= DBG_NUMBERS | DBG_TYPES | DBG_LOCALS;
         if( debugOptionAfterOptOption( data ) ) {
             GenSwitches |= NO_OPTIMIZATION;
         }
         data->oe = 0;
         break;
     case OPT_debug_info_d1:
-        GenSwitches |= NUMBERS;
+        GenSwitches |= DBG_NUMBERS;
         break;
     case OPT_debug_info_d0:
         break;

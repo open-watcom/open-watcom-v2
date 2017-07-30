@@ -33,7 +33,7 @@
 #ifndef _CG_SWITCH_INCLUDED
 
 #define NO_OPTIMIZATION         0x80000000L
-#define NUMBERS                 0x40000000L
+#define DBG_NUMBERS             0x40000000L
 #define FORTRAN_ALIASING        0x20000000L
 
 #define DBG_DF                  0x10000000L

@@ -92,7 +92,7 @@ extern  void    DFDefSegs( void ){
                                      SEG_COMB_NORMAL+SEG_USE_32 );
             DwarfSegs[i].bck = NULL;
         }
-    }else if( _IsModel( NUMBERS ) ){
+    }else if( _IsModel( DBG_NUMBERS ) ){
             DwarfSegs[DW_DEBUG_LINE].seg = DbgSegDef( DwarfSegNames[DW_DEBUG_LINE].seg_name,
                                      DwarfSegNames[DW_DEBUG_LINE].class_name,
                                      SEG_COMB_NORMAL+SEG_USE_32 );

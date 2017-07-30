@@ -113,7 +113,7 @@ structure, defined below.
 :DDHD.Definition
 :DT.NO_OPTIMIZATION
 :DD.Turn off optimizations.
-:DT.NUMBERS
+:DT.DBG_NUMBERS
 :DD.Generate line number debugging information.
 :DT.FORTRAN_ALIASING
 :DD.Assume pointers are only used for parameter passing.
@@ -2998,6 +2998,7 @@ segment.
 :LI.DBG_FWD_TYPE
 :LI.DBG_LOCALS
 :LI.DBG_NIL_TYPE
+:LI.DBG_NUMBERS
 :LI.DBG_TYPES
 :LI.DLL_EXPORT
 :LI.DO_FLOATING_FIXUPS
@@ -3092,7 +3093,6 @@ segment.
 :LI.NO_STRUCT_REG_RETURNS
 :LI.NULL
 :LI.NULLCHAR
-:LI.NUMBERS
 :LI.O_FIRST_COND
 :LI.O_FIRST_FLOW
 :LI.O_LAST_COND

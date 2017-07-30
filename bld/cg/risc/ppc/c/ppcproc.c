@@ -465,12 +465,12 @@ void    GenProlog( void )
     lc = AskLocation();
     CurrProc->targ.proc_start = lc;
     label = CurrProc->label;
-    if( _IsModel( NUMBERS ) ) {
+    if( _IsModel( DBG_NUMBERS ) ) {
         OutFileStart( HeadBlock->ins.hd.line_num );
     }
     OutTOCRec( label );
     CodeLabel( label, DepthAlign( PROC_ALIGN ) );
-    if( _IsModel( NUMBERS ) ) {
+    if( _IsModel( DBG_NUMBERS ) ) {
         OutFuncStart( label, lc, HeadBlock->ins.hd.line_num );
     }
     if( _IsModel( DBG_LOCALS ) ) {  // d1+ or d2
@@ -514,7 +514,7 @@ void    GenEpilog( void )
     if( _IsModel( DBG_LOCALS ) ){  // d1+ or d2
         DbgRtnEnd( CurrProc->targ.debug, lc );
     }
-    if( _IsModel( NUMBERS ) ) {
+    if( _IsModel( DBG_NUMBERS ) ) {
         OutFuncEnd( lc );
     }
     OutPDataRec( CurrProc->label, CurrProc->targ.pro_size, lc );

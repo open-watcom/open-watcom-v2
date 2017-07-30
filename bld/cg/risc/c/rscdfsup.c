@@ -85,7 +85,7 @@ extern  void    DFDefSegs( void ){
             DwarfSegs[i].seg = DbgSegDef( DwarfSegNames[i].seg_name );
             DwarfSegs[i].bck = NULL;
         }
-    } else if( _IsModel( NUMBERS ) ) {
+    } else if( _IsModel( DBG_NUMBERS ) ) {
         DwarfSegs[DW_DEBUG_LINE].seg = DbgSegDef( DwarfSegNames[DW_DEBUG_LINE].seg_name );
         DwarfSegs[DW_DEBUG_LINE].bck = NULL;
     }
