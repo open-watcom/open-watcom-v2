@@ -926,8 +926,11 @@ void Test_halloc( test_result *result )
 }
 #endif
 
-void TranslateResult( test_result *result )
+int TranslateResult( test_result *result )
 {
+    int rc;
+
+    rc = ( result->status != TEST_PASS );
     if( result->status == TEST_FAIL ) {
         printf( "FUNCTION(S) FAILED: %s.\n", result->funcname );
         printf( "Message: %s.\n", result->msg );
@@ -959,6 +962,7 @@ void TranslateResult( test_result *result )
             printf( "After freeing the allocated memory: " );
             printf( "_memavl() = %u\n", memavail );
         }
+        rc = 1;
     }
     memrecord = _memavl();
 #endif
@@ -967,6 +971,7 @@ void TranslateResult( test_result *result )
         getche();
         cprintf( "\r\n" );
     }
+    return( rc );
 }
 
 void Usage( char *filename )
@@ -1067,6 +1072,7 @@ void DisplayConstants( void )
 int main( int argc, char *argv[] )
 {
     test_result result;
+    int         rc;
 
 #ifdef __SW_BW
     FILE *my_stdout;
@@ -1087,42 +1093,53 @@ int main( int argc, char *argv[] )
 #endif
 
     Test_alloca_stackavail__memavl__memmax( &result );
-    TranslateResult( &result );
+    rc = TranslateResult( &result );
 
     Test_calloc__msize( &result, TYPE_DEFAULT );
-    TranslateResult( &result );
+    if( TranslateResult( &result ) )
+        rc = 1;
 
     Test_malloc_realloc__expand( &result, TYPE_DEFAULT );
-    TranslateResult( &result );
+    if( TranslateResult( &result ) )
+        rc = 1;
 
     Test_calloc__msize( &result, TYPE_NEAR );
-    TranslateResult( &result );
+    if( TranslateResult( &result ) )
+        rc = 1;
 
     Test_malloc_realloc__expand( &result, TYPE_NEAR );
-    TranslateResult( &result );
+    if( TranslateResult( &result ) )
+        rc = 1;
 
     Test__freect( &result );
-    TranslateResult( &result );
+    if( TranslateResult( &result ) )
+        rc = 1;
+
 #if defined( _M_I86 )
     Test_calloc__msize( &result, TYPE_FAR );
-    TranslateResult( &result );
+    if( TranslateResult( &result ) )
+        rc = 1;
 
     Test_malloc_realloc__expand( &result, TYPE_FAR );
-    TranslateResult( &result );
+    if( TranslateResult( &result ) )
+        rc = 1;
 
     seg = _bheapseg( BASED_HEAP_SIZE );
 
     Test_calloc__msize( &result, TYPE_BASED );
-    TranslateResult( &result );
+    if( TranslateResult( &result ) )
+        rc = 1;
 
     Test_malloc_realloc__expand( &result, TYPE_BASED );
-    TranslateResult( &result );
+    if( TranslateResult( &result ) )
+        rc = 1;
 
     if( seg != _NULLSEG )
         _bfreeseg( seg );
 
     Test_halloc( &result );
-    TranslateResult( &result );
+    if( TranslateResult( &result ) )
+        rc = 1;
 #endif
     printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
 #ifdef __SW_BW
@@ -1130,5 +1147,7 @@ int main( int argc, char *argv[] )
     fclose( my_stdout );
     _dwShutDown();
 #endif
+    if( rc )
+        return( EXIT_FAILURE );
     return( EXIT_SUCCESS );
 }
