@@ -9,8 +9,8 @@
 
 tfini_proc1()
 {
-    rm -f   build/bin/*
-    rm -rf  bld/watcom/binbuild/*
+    rm -f   build/$OWOBJDIR/*
+    rm -rf  bld/watcom/$OWOBJDIR/*
     
     return 0
 }
