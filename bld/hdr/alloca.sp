@@ -14,14 +14,14 @@
 :segment DOS
   #if defined( _M_I86 )
 :endsegment
-   #define alloca( s )  ((__ALLOCA_ALIGN(s)<stackavail())?__alloca(s):(void __based(__segname("_STACK")) *)0)
-   #define _alloca( s ) ((__ALLOCA_ALIGN(s)<stackavail())?__alloca(s):(void __based(__segname("_STACK")) *)0)
+   #define alloca( s )  ((__ALLOCA_ALIGN(s)<stackavail())?__alloca(s): (void *)0)
+   #define _alloca( s ) ((__ALLOCA_ALIGN(s)<stackavail())?__alloca(s): (void *)0)
 :segment DOS
   #else
    extern void __GRO(_w_size_t __size);
    #pragma aux __GRO "*" __parm __routine []
-   #define alloca( s )  ((__ALLOCA_ALIGN(s)<stackavail())?(__GRO(__ALLOCA_ALIGN(s)),__alloca(s)):(void __based(__segname("_STACK")) *)0)
-   #define _alloca( s ) ((__ALLOCA_ALIGN(s)<stackavail())?(__GRO(__ALLOCA_ALIGN(s)),__alloca(s)):(void __based(__segname("_STACK")) *)0)
+   #define alloca( s )  ((__ALLOCA_ALIGN(s)<stackavail())?(__GRO(__ALLOCA_ALIGN(s)),__alloca(s)): (void *)0)
+   #define _alloca( s ) ((__ALLOCA_ALIGN(s)<stackavail())?(__GRO(__ALLOCA_ALIGN(s)),__alloca(s)): (void *)0)
   #endif
 :endsegment
 
