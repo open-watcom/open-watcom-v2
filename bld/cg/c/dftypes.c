@@ -237,16 +237,13 @@ static  dw_handle   MKBckVar( back_handle bck, int off, dw_handle tipe ){
     DWLocSym( Client, locid, (dw_sym_handle)bck, DW_W_LABEL );
     DWLocOp( Client, locid, DW_LOC_plus_uconst, off );
     dw_loc = DWLocFini( Client, locid );
+    dw_segloc = NULL;
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
-    if( _IsTargetModel( FLAT_MODEL ) ) {
-        dw_segloc = NULL;
-    } else {
+    if( _IsntTargetModel( FLAT_MODEL ) ) {
         locid = DWLocInit( Client );
         DWLocSym( Client, locid, (dw_sym_handle)bck, DW_W_LABEL_SEG );
         dw_segloc = DWLocFini( Client, locid );
     }
-#else
-    dw_segloc = NULL;
 #endif
     obj = DWVariable( Client, tipe, dw_loc, 0, dw_segloc, "__bck", 0, 0 );
 

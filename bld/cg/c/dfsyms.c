@@ -483,7 +483,7 @@ void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
 {
     dw_cu_info      cu;
     back_handle     bck;
-    segment_id      old;
+//    segment_id      old;
 
     if( _IsntModel( DBG_LOCALS | DBG_TYPES ) ) {
         return;
@@ -491,6 +491,12 @@ void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
     if( CcuDef ) {
         InitCU( &cu );
         cu.dbg_pch = dbg_pch;
+#if 0
+        Pc_Low = NULL;
+        Pc_High = NULL;
+        bck = NULL;
+        cu.flags = false;
+#else
         old = SetOP( code );
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         if( _IsTargetModel( FLAT_MODEL ) ) {
@@ -520,6 +526,7 @@ void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
         cu.flags = true;
 #endif
         SetOP( old );
+#endif
         Comp_High = Pc_High;
         DWBeginCompileUnit( Client, &cu );
         if( cu.flags ) {
@@ -643,6 +650,9 @@ void    DFObjLineInitDbgInfo( void )
         }
         InitCU( &cu );
         cu.dbg_pch = NULL;
+#if 0
+        cu.flags = false;
+#else
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         if( _IsTargetModel( FLAT_MODEL ) ) {
             cu.flags = true;
@@ -651,6 +661,7 @@ void    DFObjLineInitDbgInfo( void )
         }
 #else
         cu.flags = true;
+#endif
 #endif
         DWInitDebugLine( Client, &cu );
     } else {
@@ -778,23 +789,17 @@ void    DFGenStatic( cg_sym_handle sym, dbg_loc loc )
         flags = 0;
     }
     name = FEName( sym );
-    if( attr & FE_STATIC ) {
+    dw_segloc = NULL;
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
-        if( _IsTargetModel( FLAT_MODEL ) ) {
-            dw_segloc = NULL;
-        } else {
+    if( attr & FE_STATIC ) {
+        if( _IsntTargetModel( FLAT_MODEL ) ) {
             dw_segloc = SegLoc( sym );
         }
-#else
-        dw_segloc = NULL;
-#endif
-    } else {
-        dw_segloc = NULL;
     }
+#endif
     dbtype = FEDbgType( sym ); /* causes name side effects */
     dw_loc = DBGLoc2DF( loc );
-    obj = DWVariable( Client, dbtype, dw_loc,
-                0, dw_segloc, name, 0, flags );
+    obj = DWVariable( Client, dbtype, dw_loc, 0, dw_segloc, name, 0, flags );
     if( attr &  FE_GLOBAL ) {
         name = FEName( sym );
         DWPubname( Client, obj, name );
@@ -998,15 +1003,15 @@ void    DFProEnd( dbg_rtn *rtn, offset lc )
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
     dw_retloc = RetLoc( rtn->ret_offset );
     dw_frameloc = FrameLoc();
-    if( _IsTargetModel( FLAT_MODEL ) ) {
-        dw_segloc = NULL;
-    } else {
-        dw_segloc = SegLoc( sym );
-    }
 #else
     dw_retloc = NULL;
     dw_frameloc = NULL;
+#endif
     dw_segloc = NULL;
+#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+    if( _IsntTargetModel( FLAT_MODEL ) ) {
+        dw_segloc = SegLoc( sym );
+    }
 #endif
     rtn->end_lbl = MakeLabel();
     Pc_Low  = FEBack( sym );

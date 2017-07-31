@@ -63,7 +63,7 @@ extern  int     MulCost( unsigned_32 num )
         /* The 286 can multiply reasonably quickly. */
         cost = 18;
     } else if( _CPULevel( CPU_186 ) ) {
-        /* The 81086/188 is slower. */
+        /* The 80186/188 is slower. */
         cost = 28;
     } else {
         /* The 8086/8088 is a real dog! */
