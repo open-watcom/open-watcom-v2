@@ -976,7 +976,11 @@ File: source\diag0156.c
   definition: 'X20::operator X20::E ()'
 File: source\diag0157.c
 (3,12): Warning! W690: conditional expression is always false (zero)
+(27,9): Warning! W367: conditional expression in if statement is always true
+(30,5): Warning! W013: unreachable code
 (34,9): Warning! W690: conditional expression is always false (zero)
+(34,9): Warning! W368: conditional expression in if statement is always false
+(35,9): Warning! W013: unreachable code
 (50,6): Error! E279: too many initializers
 (68,6): Error! E279: too many initializers
 (87,6): Error! E279: too many initializers
