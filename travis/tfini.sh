@@ -11,6 +11,7 @@ tfini_proc1()
 {
     rm -f   build/$OWOBJDIR/*
     rm -rf  bld/watcom/$OWOBJDIR/*
+    rm -rf  test/*
     
     return 0
 }

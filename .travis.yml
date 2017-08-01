@@ -23,6 +23,7 @@ cache:
   directories:
     - build/$OWOBJDIR
     - bld/watcom/$OWOBJDIR
+    - test
 
 before_script:
    # initialize OW build environment variables
@@ -98,6 +99,14 @@ jobs:
 #        - brew install dosbox
 #        - export OWDOSBOX=dosbox
 #      script: travis/build.sh build
+    #################################
+    - stage: Test
+      os: linux
+      install:
+        - export OWTRAVISJOB=TEST
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+      script: travis/test.sh
     #################################
     - stage: Finalize
       os: linux
