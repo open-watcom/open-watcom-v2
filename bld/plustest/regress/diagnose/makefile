@@ -13,11 +13,17 @@ diagchk0 = di860000.chk
 diagchk1 = di860100.chk
 diagchk2 = di860200.chk
 diagchk3 = di860300.chk
-!else
-diagchk0 = diag0000.chk
-diagchk1 = diag0100.chk
-diagchk2 = diag0200.chk
-diagchk3 = diag0300.chk
+!else ifeq arch 386
+diagchk0 = d3860000.chk
+diagchk1 = d3860100.chk
+diagchk2 = d3860200.chk
+diagchk3 = d3860300.chk
+dosystest = testsys
+!else ifeq arch axp
+diagchk0 = daxp0000.chk
+diagchk1 = daxp0100.chk
+diagchk2 = daxp0200.chk
+diagchk3 = daxp0300.chk
 dosystest = testsys
 !endif
 
