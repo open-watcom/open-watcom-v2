@@ -53,10 +53,6 @@ gitupds_proc()
                 git push $GITQUIET -f origin
                 cd $TRAVIS_BUILD_DIR
                 echo_msg="gitupds.sh - done"
-                export OWRELROOT=$OWROOT/test
-                cd $OWSRCDIR
-                builder cprel
-                cd $TRAVIS_BUILD_DIR
             fi
         fi
     fi

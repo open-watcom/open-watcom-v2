@@ -73,12 +73,18 @@ build_proc()
                 cd $OWSRCDIR
                 if [ "$1" = "build" ]; then
                     builder -q build
+                    RC=$?
+                    if [ $RC -eq 0 ]; then
+                        export OWRELROOT=$OWROOT/test
+                        builder -q cprel
+                    fi
                 elif [ "$1" = "docpdf" ]; then
                     builder docpdf
+                    RC=$?
                 else
                     builder -q $1
+                    RC=$?
                 fi
-                RC=$?
             fi
         fi
     elif [ "$TRAVIS_BRANCH" = "$OWBRANCH_COVERITY" ]; then

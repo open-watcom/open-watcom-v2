@@ -11,9 +11,6 @@ build_proc()
 {
     if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then
-            export WATCOM=d:\dev\ow-v2\pass
-            export INCLUDE=%WATCOM%\h;%WATCOM%\h\nt
-            export PATH=$WATCOM/binl64:$WATCOM/binl:$PATH
             cd $OWSRCDIR
             builder -i testclean
             builder -i test
