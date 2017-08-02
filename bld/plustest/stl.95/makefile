@@ -28,12 +28,12 @@ alt_error = 00
 test_flags = -d2
 !endif
 
-test_flags += -w0 -I.. -fi=../pch.h -fh
+test_flags += -w0 -Isource -fi=source/pch.h -fh
 
 test_flags_i86 += -mm -zm
 
 extra_run_istmit1 = <istmit1.in
-extra_run_tech01 = | sed -f fixpath.sed
+extra_run_tech01 = | sed -e "s/\//\\/g"
 
 stack_386=opt stack=64k
 stack_i86=opt stack=16k
@@ -41,9 +41,9 @@ stack_axp=opt stack=64k
 
 opt_link = FILE tempbuf.obj, random.obj
 
-.cpp: ../../stl.94/examples;..
+.cpp: ../stl.94/examples;source
 
-!include ../../stl.94/examples/stl_test.mif
+!include ../stl.94/examples/stl_test.mif
 
 test : .symbolic start clean start_test test.lnk tempbuf.obj random.obj $(tests)
 !ifeq arch i86

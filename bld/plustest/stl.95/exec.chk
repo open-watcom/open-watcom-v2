@@ -931,7 +931,7 @@ World Hello
 Hello World
 PASS executing swprnge1
 PASS compiling tech01
-..\..\stl.94\examples\tech01.cpp
+..\stl.94\examples\tech01.cpp
 PASS executing tech01
 PASS compiling times
 total = 70
