@@ -6,6 +6,7 @@ plustest_name = diagnose
 diagnose_opts += -ew -we -wx -e1000 -eq
 archdep_opts = -dARCH=$(arch) -fr=.ser
 alt_error=00
+fix_source_path=sed -e "s/source\//source\\/g"
 
 # The check files for x86 are a bit different.
 !ifeq arch i86
@@ -70,7 +71,7 @@ diagspec.out : .procedure source/diag0001.c
     @%make set_path_wpp
     -$(wpp_$(arch)) $[@ $(diagnose_opts) $(opt_diag0001) -eq
     @%make set_old_path
-    @sed -f fixpath.sed diag0001.err >diagspec.out
+    @$(fix_source_path) diag0001.err >diagspec.out
 
 test_special : .symbolic diagspec.out
     -diff -b diagspec.out diagspec.chk >diffspec.out
@@ -79,27 +80,27 @@ test_special : .symbolic diagspec.out
     @rm diffspec.out
 
 diag0000.out : ./catfile.exe $(diags_0099)
-    $[@ -a *.err | sed -f fixpath.sed >diag0000.out
+    $[@ -a *.err | $(fix_source_path) >diag0000.out
     @%make diag_clean
 
 diag0100.out : ./catfile.exe $(diags_0199)
-    $[@ -a *.err | sed -f fixpath.sed >diag0100.out
+    $[@ -a *.err | $(fix_source_path) >diag0100.out
     @%make diag_clean
 
 diag0200.out : ./catfile.exe $(diags_0299)
-    $[@ -a *.err | sed -f fixpath.sed >diag0200.out
+    $[@ -a *.err | $(fix_source_path) >diag0200.out
     @%make diag_clean
 
 diag0300.out : ./catfile.exe $(diags_0399)
-    $[@ -a *.err | sed -f fixpath.sed >diag0300.out
+    $[@ -a *.err | $(fix_source_path) >diag0300.out
     @%make diag_clean
 
 diag386.out : ./catfile.exe $(diags_sys)
-    $[@ -a *.ser | sed -f fixpath.sed >diag386.out
+    $[@ -a *.ser | $(fix_source_path) >diag386.out
     @%make diag_clean
 
 diagaxp.out : ./catfile.exe $(diags_sys)
-    $[@ -a *.ser | sed -f fixpath.sed >diagaxp.out
+    $[@ -a *.ser | $(fix_source_path) >diagaxp.out
     @%make diag_clean
 
 diag_clean : .procedure
