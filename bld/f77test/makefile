@@ -10,7 +10,7 @@ all_tests = $(nist_tests)
 
 !include testenv1.mif
 
-test : .symbolic start clean start_test cd_regress $(test_grp_list) cd_back ./chktest.exe
+test : .symbolic start clean start_test $(test_grp_list) ./chktest.exe
     @set ERROR_FILE=error.out
     @set ERROR_MSG=
     @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
@@ -23,12 +23,6 @@ start_test: .symbolic
     @if exist *.sav rm -f *.sav
     @if exist $(log_file) rm -f $(log_file)
     @set FTEST_LOG_FILE=$(log_file)
-
-cd_regress : .symbolic
-    cd regress
-
-cd_back : .symbolic
-    cd ..
 
 $(test_grp_list) : .symbolic
     cd $@

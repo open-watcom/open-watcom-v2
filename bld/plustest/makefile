@@ -127,7 +127,7 @@ stl94_examples_dir = stl.94\examples
 stl95_dir          = stl.95\examples
 !endif
 
-test : .symbolic start clean start_test cd_regress $(test_grp_list) $(test_grp2_list) cd_back ./chktest.exe
+test : .symbolic start clean start_test $(test_grp_list) $(test_grp2_list) ./chktest.exe
     @set ERROR_FILE=error.out
     @set ERROR_MSG=
     @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
@@ -140,12 +140,6 @@ start_test: .symbolic
     @if exist *.sav rm -f *.sav
     @if exist $(log_file) rm -f $(log_file)
     set PLUSTEST_LOG_FILE=$(log_file)
-
-cd_regress : .symbolic
-    cd regress
-
-cd_back : .symbolic
-    cd ..
 
 $(all) : .procedure
 !ifdef %TEST_ARCH
