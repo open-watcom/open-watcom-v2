@@ -1,7 +1,7 @@
 plustest_name = cool
 
 !include testenv1.mif
-!include ../lib.mif
+!include ../source/lib.mif
 
 exes = &
     test_as1.$(exe) &
@@ -53,7 +53,7 @@ test_flags = -ot-op-d1
 alt_error=00
 !endif
 
-test_flags += -I"../.." -w0 -fi=../__ialias.h
+test_flags += -I"../source" -w0 -fi=../source/__ialias.h
 
 test_flags_i86 = -ml -zm
 
@@ -63,7 +63,7 @@ stack_axp=opt stack=32k
 
 opt_link = LIBRARY ../cool.lib
 
-.cpp : .;..
+.cpp : .;../source
 
 test : .symbolic start clean start_test ../cool.lib test.lnk $(exes)
 !ifeq arch i86
