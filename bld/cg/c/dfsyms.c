@@ -483,7 +483,7 @@ void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
 {
     dw_cu_info      cu;
     back_handle     bck;
-//    segment_id      old;
+    segment_id      old;
 
     if( _IsntModel( DBG_LOCALS | DBG_TYPES ) ) {
         return;
