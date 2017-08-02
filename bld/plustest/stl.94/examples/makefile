@@ -16,7 +16,7 @@ alt_error = 00
 test_flags = -d2
 !endif
 
-test_flags += -w0 -I".;.." -fi=../pch.h -fhq
+test_flags += -w0 -I".;../source" -fi=../source/pch.h -fhq
 
 test_flags_i86 = -mm -zm
 
@@ -27,7 +27,7 @@ stack_i86=opt stack=16k
 stack_axp=opt stack=64k
 
 opt_link = FILE tempbuf.obj, random.obj
-.cpp: .;..
+.cpp: .;../source
 
 !include stl_test.mif
 

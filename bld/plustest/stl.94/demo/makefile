@@ -16,7 +16,7 @@ test_flags = -d2-hd
 alt_error=00
 !endif
 
-test_flags += -w0 -I..
+test_flags += -w0 -I../source
 
 test_flags_i86 = -mm -zm
 
@@ -26,7 +26,7 @@ stack_axp=opt stack=128k
 
 extra_run_demo = <demo.in
 
-.cpp: .;..
+.cpp: .;../source
 
 #
 # function code overflow 16-bit segment
