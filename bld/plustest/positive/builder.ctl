@@ -7,7 +7,7 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/prolog.ctl ]
 
-cdsay <PROJDIR>
+cdsay .
 
 [ BLOCK <1> test ]
 #=================

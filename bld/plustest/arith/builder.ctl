@@ -7,6 +7,8 @@ set PROJDIR=<CWD>
 
 [ INCLUDE <OWROOT>/build/prolog.ctl ]
 
+cdsay .
+
 [ BLOCK <1> test ]
 #=================
     wmake -h test0=1
