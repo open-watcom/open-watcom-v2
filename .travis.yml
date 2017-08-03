@@ -103,7 +103,7 @@ jobs:
 #        - export OWDOSBOX=dosbox
 #      script: travis/build.sh build
     #################################
-    - stage: Test
+    - stage: Test1
       os: linux
       install:
         - export OWTOOLS=WATCOM
@@ -115,6 +115,18 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
       script: travis/test.sh
+    - stage: Test2
+      os: linux
+      install:
+        - export OWTOOLS=WATCOM
+        - export WATCOM=$OWROOT/test
+        - export PATH=$WATCOM/binl:$PATH
+        - export INCLUDE=$WATCOM/lh
+        - unset LIB
+        - export OWTRAVISJOB=TEST
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+      script: travis/test.sh cpp
     #################################
     - stage: Finalize
       os: linux

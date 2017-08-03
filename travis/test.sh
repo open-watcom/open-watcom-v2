@@ -11,9 +11,21 @@ build_proc()
 {
     if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "push" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then
-            cd $OWSRCDIR
-            builder -q -i testclean
-            builder -q -i test
+            if [ "$1" = "cpp" ]; then
+                cd $OWSRCDIR/plustest
+                builder -i testclean
+                builder -i test
+            else
+                cd $OWSRCDIR/wasmtest
+                builder -i testclean
+                builder -i test
+                cd $OWSRCDIR/ctest
+                builder -i testclean
+                builder -i test
+                cd $OWSRCDIR/f77test
+                builder -i testclean
+                builder -i test
+            fi
         fi
     elif [ "$TRAVIS_BRANCH" = "$OWBRANCH_COVERITY" ]; then
         RC=0
