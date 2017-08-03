@@ -89,7 +89,6 @@ diags_sys_defn = &
 
 diags_0099_defn = &
     diag0001$(err_sin) &
-    diag0001$(err_sin) &
     diag0002$(err_sin) &
     diag0003$(err_sin) &
     diag0004$(err_sin) &

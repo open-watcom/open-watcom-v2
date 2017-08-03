@@ -56,14 +56,16 @@ test : .symbolic start clean start_test test.lnk er01.lib er03.lib $(exes) ./chk
     @set ERROR_MSG=failure to complete test stream
     %write $(%ERROR_FILE) OK
     $]@ exec.out >> $(%ERROR_FILE)
-    diff -b $(%ERROR_FILE) error.chk
+    %make save_sav
+    diff -b $(sav_file) error.chk
+    %make clean_sav
     %append $(log_file) PASS $(%__CWD__)
     %make clean
 
 er02.$(exe) : er02.obj er02b.obj
 
 start_test : .symbolic
-    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+    %make clean_sav
     @set ERROR_FILE=exec.out
     %create $(%ERROR_FILE)
 
@@ -77,8 +79,12 @@ er03.lib : er03b.obj er03c.obj
     $(librarian) $^@ +er03b.obj +er03c.obj
     @%make set_old_path
 
-save : .symbolic
-    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
+save_sav : .procedure
+    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
+    @if exist exec.out @rm exec.out
+
+clean_sav : .procedure
+    @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
-    @%make common_clean
+    %make common_clean

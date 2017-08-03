@@ -21,19 +21,25 @@ stack_i86=opt stack=4k
 stack_axp=opt stack=8k
 
 test : .symbolic start clean start_test test.lnk strtest.$(exe)
-    diff $(%ERROR_FILE) strtest.chk
+    %make save_sav
+    diff $(sav_file) strtest.chk
+    %make clean_sav
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 
 strtest.$(exe) : strtest.obj string.obj strngrep.obj
 
 start_test : .symbolic
-    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+    %make clean_sav
     @set ERROR_FILE=exec.out
     %create $(%ERROR_FILE)
 
-save : .symbolic
-    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
+save_sav : .procedure
+    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
+    @if exist exec.out @rm exec.out
+
+clean_sav : .procedure
+    @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
-    @%make common_clean
+    %make common_clean

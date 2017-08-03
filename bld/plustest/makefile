@@ -166,4 +166,4 @@ $(test_grp2_list) : .symbolic
     @cd ..
 
 clean : .procedure
-    @%make common_clean
+    %make common_clean

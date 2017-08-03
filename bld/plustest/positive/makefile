@@ -93,7 +93,9 @@ test : .symbolic start clean start_test test.lnk $(positive_exes) ./chk_exec.exe
     @set ERROR_MSG=failure to complete test stream
     %write $(%ERROR_FILE) OK
     $]@ exec.out >>$(%ERROR_FILE)
-    diff -b $(%ERROR_FILE) error.chk
+    %make save_sav
+    diff -b $(sav_file) error.chk
+    %make clean_sav
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 
@@ -113,13 +115,17 @@ cltemp21.exe : cltemp21.obj cltmp21b.obj
 friend4.exe : friend4.obj friend4b.obj
 
 start_test : .symbolic
-    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+    %make clean_sav
     @set ERROR_FILE=exec.out
     %create $(%ERROR_FILE)
 
-save : .symbolic
-    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
+save_sav : .procedure
+    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
+    @if exist exec.out @rm exec.out
+
+clean_sav : .procedure
+    @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
     @if exist failure rm -f failure
-    @%make common_clean
+    %make common_clean

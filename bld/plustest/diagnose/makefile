@@ -33,7 +33,9 @@ dosystest = testsys
 test : .symbolic start clean start_test test0000 test0100 test0200 test0300 $(dosystest) test_special
     @set ERROR_FILE=error.out
     @set ERROR_MSG=
+    %make save_sav
     diff -b diff.out diff.chk >$(nulldevice)
+    %make clean_sav
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 
@@ -69,7 +71,7 @@ testsys : .symbolic diag$(arch).out
 
 diagspec.out : .procedure source/diag0001.c
     @%make set_path_wpp
-    -$(wpp_$(arch)) $[@ $(diagnose_opts) $(opt_diag0001) -eq
+    -$(wpp_$(arch)) $[@ $(diagnose_opts) $(opt_diag0001)
     @%make set_old_path
     @$(fix_source_path) diag0001.err >diagspec.out
 
@@ -109,22 +111,32 @@ diag_clean : .procedure
     @if exist *.pch rm -f *.pch
 
 start_test : .symbolic
-    @if exist diff.out rm -f diff.out
-    @if exist s$(arch)0000.sav rm s$(arch)0000.sav
-    @if exist s$(arch)0100.sav rm s$(arch)0100.sav
-    @if exist s$(arch)0200.sav rm s$(arch)0200.sav
-    @if exist s$(arch)0300.sav rm s$(arch)0300.sav
-    @if exist s$(arch)_$(arch).sav rm s$(arch)_$(arch).sav
-    @if exist s$(arch)spec.sav rm s$(arch)spec.sav
+    @if exist diff.out rm diff.out
+    %make clean_sav
 
-save : .symbolic
-    @if exist diag0000.out cp diag0000.out s$(arch)0000.sav
-    @if exist diag0100.out cp diag0100.out s$(arch)0100.sav
-    @if exist diag0200.out cp diag0200.out s$(arch)0200.sav
-    @if exist diag0300.out cp diag0300.out s$(arch)0300.sav
-    @if exist diag$(arch).out cp diag$(arch).out s$(arch)_$(arch).sav
-    @if exist diagspec.out cp diagspec.out s$(arch)spec.sav
+save_sav : .procedure
+    @if exist diag0000.out @cp diag0000.out s$(arch)0000.sav >$(nulldevice)
+    @if exist diag0100.out @cp diag0100.out s$(arch)0100.sav >$(nulldevice)
+    @if exist diag0200.out @cp diag0200.out s$(arch)0200.sav >$(nulldevice)
+    @if exist diag0300.out @cp diag0300.out s$(arch)0300.sav >$(nulldevice)
+    @if exist diag$(arch).out @cp diag$(arch).out s$(arch)_$(arch).sav >$(nulldevice)
+    @if exist diagspec.out @cp diagspec.out s$(arch)spec.sav >$(nulldevice)
+    #
+    @if exist diag0000.out @rm diag0000.out
+    @if exist diag0100.out @rm diag0100.out
+    @if exist diag0200.out @rm diag0200.out
+    @if exist diag0300.out @rm diag0300.out
+    @if exist diag$(arch).out @rm diag$(arch).out
+    @if exist diagspec.out @rm diagspec.out
+
+clean_sav : .procedure
+    @if exist s$(arch)0000.sav @rm s$(arch)0000.sav
+    @if exist s$(arch)0100.sav @rm s$(arch)0100.sav
+    @if exist s$(arch)0200.sav @rm s$(arch)0200.sav
+    @if exist s$(arch)0300.sav @rm s$(arch)0300.sav
+    @if exist s$(arch)_$(arch).sav @rm s$(arch)_$(arch).sav
+    @if exist s$(arch)spec.sav @rm s$(arch)spec.sav
 
 clean : .procedure
     @%make diag_clean
-    @%make common_clean
+    %make common_clean

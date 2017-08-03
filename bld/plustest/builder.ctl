@@ -8,6 +8,8 @@ set PLUSTEST_NAME=result
 
 cdsay .
 
+rm <PLUSTEST_NAME>.log
+
 [ INCLUDE arith/builder.ctl ]
 [ INCLUDE bits/builder.ctl ]
 [ INCLUDE bits64/builder.ctl ]

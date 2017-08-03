@@ -39,7 +39,9 @@ extra_run_test3 = 1000 1000
 exes = test1.$(exe) test2.$(exe) test3.$(exe)
 
 test : .symbolic start clean start_test test.lnk $(exes)
-    diff $(%ERROR_FILE) test.chk
+    %make save_sav
+    diff $(sav_file) test.chk
+    %make clean_sav
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 
@@ -48,12 +50,16 @@ test2.$(exe) : test2.obj field.obj
 test3.$(exe) : test3.obj field.obj
 
 start_test : .symbolic
-    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+    %make clean_sav
     @set ERROR_FILE=exec.out
     %create $(%ERROR_FILE)
 
-save : .symbolic
-    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
+save_sav : .procedure
+    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
+    @if exist exec.out @rm exec.out
+
+clean_sav : .procedure
+    @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
-    @%make common_clean
+    %make common_clean

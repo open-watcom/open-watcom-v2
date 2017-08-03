@@ -42,7 +42,9 @@ exes = &
     spltest.$(exe)
 
 test : .symbolic start clean start_test test.lnk $(exes)
-    diff $(%ERROR_FILE) exec.chk
+    %make save_sav
+    diff $(sav_file) exec.chk
+    %make clean_sav
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 
@@ -51,7 +53,7 @@ splassoc.$(exe) : splassoc.obj splash.obj regex.obj
 justify.$(exe) : justify.obj splash.obj regex.obj
 
 start_test : .symbolic
-    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
+    %make clean_sav
     @set ERROR_FILE=exec.out
     %create $(%ERROR_FILE)
 
@@ -60,8 +62,12 @@ regex.obj : regex.c
     $(wcc_$(arch)) $[* $(test_flags_$(arch)) -fo=.obj
     @%make set_old_path
 
-save : .symbolic
-    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
+save_sav : .procedure
+    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
+    @if exist exec.out @rm exec.out
+
+clean_sav : .procedure
+    @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
-    @%make common_clean
+    %make common_clean
