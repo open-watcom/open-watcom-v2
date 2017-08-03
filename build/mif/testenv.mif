@@ -1225,6 +1225,8 @@ wfc_mps = $(comp_wfc_mps) $(wfc_any) $(targ_bld_wfc_$(targ_env_mps))
 
 librarian = $(wlib_any) $(lib_any) -n -b
 
+sav_file = s$(arch)_$(alt_error).sav
+
 set_path_wcc : .PROCEDURE .EXPLICIT
 !ifdef path_wcc
 #    @echo Set PATH for wcc DLL
@@ -1271,5 +1273,5 @@ set_old_path : .PROCEDURE .EXPLICIT
 !endif
 
 common_clean : .PROCEDURE .EXPLICIT
-    -rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
-    -rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+    -@rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+    -@rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
