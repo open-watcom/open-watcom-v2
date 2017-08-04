@@ -1860,7 +1860,7 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
 #endif
     comnum = findInternal( cmdname );
     if( (flags & FLAG_SILENT) == 0 ||
-        (Glob.noexec && (comnum != COM_FOR || (flags & FLAG_SHELL)) &&
+        (Glob.noexec && (comnum != COM_FOR && comnum != COM_IF || (flags & FLAG_SHELL)) &&
         !percent_cmd) ) {
         if( !Glob.noheader && !Glob.compat_posix ) {
             PrtMsg( INF | NEOL | JUST_A_TAB );
@@ -1875,7 +1875,7 @@ STATIC RET_T shellSpawn( char *cmd, shell_flags flags )
      * `Path=C:\Program Files (x86)\foo' which will be detected as containing
      * metacharacters. Stupid Microsoft...
      */
-    if( hasMetas( cmd ) && comnum != COM_SET && comnum != COM_FOR ) {
+    if( hasMetas( cmd ) && comnum != COM_SET && comnum != COM_FOR && comnum != COM_IF ) {
         flags |= FLAG_SHELL; /* pass to shell because of '>','<' or '|' */
     }
     if( (flags & FLAG_ENV_ARGS) && (flags & FLAG_SHELL) == 0 ) {
