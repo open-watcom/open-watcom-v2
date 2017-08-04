@@ -1,7 +1,7 @@
 plustest_name = cool
 
 !include testenv1.mif
-!include ../source/lib.mif
+!include ../lib.mif
 
 exes = &
     test_as1.$(exe) &
@@ -53,7 +53,7 @@ test_flags = -ot-op-d1
 alt_error=00
 !endif
 
-test_flags += -I"../source" -w0 -fi=../source/__ialias.h
+test_flags += -I.. -I"../source" -w0 -fi=../__ialias.h
 
 test_flags_i86 = -ml -zm
 

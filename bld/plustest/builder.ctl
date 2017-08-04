@@ -16,6 +16,7 @@ rm <PLUSTEST_NAME>.log
 [ INCLUDE bitset/builder.ctl ]
 [ INCLUDE claslist/builder.ctl ]
 [ INCLUDE contain/builder.ctl ]
+[ INCLUDE cool/builder.ctl ]
 [ INCLUDE datainit/builder.ctl ]
 [ INCLUDE dcmat/builder.ctl ]
 [ INCLUDE diagnose/builder.ctl ]
@@ -42,13 +43,11 @@ rm <PLUSTEST_NAME>.log
 [ INCLUDE sizelist/builder.ctl ]
 [ INCLUDE splash/builder.ctl ]
 [ INCLUDE stepanov/builder.ctl ]
+[ INCLUDE stl.94/builder.ctl ]
 [ INCLUDE stl.95/builder.ctl ]
 [ INCLUDE torture/builder.ctl ]
 [ INCLUDE wclass/builder.ctl ]
 [ INCLUDE yacl/builder.ctl ]
 [ INCLUDE winnt/builder.ctl ]
 
-[ INCLUDE cool/builder.ctl ]
-[ INCLUDE stl.94/builder.ctl ]
-    
 cdsay .

@@ -6,7 +6,7 @@ plustest_name = diagnose
 diagnose_opts += -ew -we -wx -e1000 -eq
 archdep_opts = -dARCH=$(arch) -fr=.ser
 alt_error=00
-fix_source_path=sed -e "s/source\//source\\/g"
+fix_source_path=sed -f fixpath.sed
 
 # The check files for x86 are a bit different.
 !ifeq arch i86

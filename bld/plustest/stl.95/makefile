@@ -33,7 +33,7 @@ test_flags += -w0 -Isource -fi=source/pch.h -fh
 test_flags_i86 += -mm -zm
 
 extra_run_istmit1 = <istmit1.in
-extra_run_tech01 = | sed -e "s/\//\\/g"
+extra_run_tech01 = | sed -f fixpath.sed
 
 stack_386=opt stack=64k
 stack_i86=opt stack=16k

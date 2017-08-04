@@ -36,7 +36,7 @@ alt_error=00
 
 test_flags_386 += -fpi87-fp5-mf
 test_flags_i86 += -fpi87-fp5-ml
-test_flags_axp += 
+test_flags_axp +=
 
 test_flags = -e1000 -fi=arith.h
 

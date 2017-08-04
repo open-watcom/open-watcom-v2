@@ -29,10 +29,8 @@ test_flags_i86 += -s -os -wx -we
 test : .symbolic start clean start_test $($(arch)_inline_objs) ./chk_exec.exe
     @set ERROR_FILE=error.out
     @set ERROR_MSG=failure to complete test stream
-    %write $(%ERROR_FILE) OK
-    $]@ exec.out >>$(%ERROR_FILE)
     %make save_sav
-    diff -b $(sav_file) error.chk
+    diff -b $(sav_file) inline.chk
     %make clean_sav
     %append $(log_file) PASS $(%__CWD__)
     @%make clean

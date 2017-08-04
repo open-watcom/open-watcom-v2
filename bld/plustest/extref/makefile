@@ -54,10 +54,8 @@ exes = er01.$(exe) er02.$(exe) er03.$(exe)
 test : .symbolic start clean start_test test.lnk er01.lib er03.lib $(exes) ./chk_exec.exe
     @set ERROR_FILE=error.out
     @set ERROR_MSG=failure to complete test stream
-    %write $(%ERROR_FILE) OK
-    $]@ exec.out >> $(%ERROR_FILE)
     %make save_sav
-    diff -b $(sav_file) error.chk
+    diff -b $(sav_file) extref.chk
     %make clean_sav
     %append $(log_file) PASS $(%__CWD__)
     %make clean
