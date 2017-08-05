@@ -64,7 +64,9 @@ start : .SYMBOLIC .EXPLICIT
      @echo using !loaddll $(dll_wcc_$(arch))
 !  endif
 !endif
+!ifndef plustest_name
     @echo ==== $(%__CTIME__) $(%__CWD__) ====
+!endif
     @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
     %append $(log_file) TEST $(arch)/$(alt_error)
 
