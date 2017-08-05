@@ -88,7 +88,7 @@ test.$(exe) : $(objs) test1.lnk
     @%make set_old_path
 
 test1.lnk : makefile $(objs)
-    %create $@
+    $(noecho)%create $@
     @%append $@ DEBUG line
 !ifndef noisy
     @%append $@ opt quiet
@@ -106,9 +106,9 @@ test1.lnk : makefile $(objs)
     @for %i in ( $(objs) ) do @%append $@ FILE %i
 
 start_test : .symbolic
-    %make clean_sav
+    $(noecho)%make clean_sav
     @set ERROR_FILE=exec.out
-    %create $(%ERROR_FILE)
+    $(noecho)%create $(%ERROR_FILE)
 
 save_sav : .procedure
     @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
@@ -118,4 +118,4 @@ clean_sav : .procedure
     @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
-    %make common_clean
+    $(noecho)%make common_clean

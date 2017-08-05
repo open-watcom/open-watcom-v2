@@ -31,11 +31,11 @@ dosystest = testsys
 .c: source
 
 test : .symbolic start clean start_test test0000 test0100 test0200 test0300 $(dosystest) test_special
-    @set ERROR_FILE=error.out
-    @set ERROR_MSG=
-    %make save_sav
+    @set ERROR_FILE=$(log_file)
+    @set ERROR_MSG=FAILED
+    $(noecho)%make save_sav
     diff -b diff.out diff.chk >$(nulldevice)
-    %make clean_sav
+    $(noecho)%make clean_sav
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 
@@ -106,13 +106,13 @@ diagaxp.out : ./catfile.exe $(diags_sys)
     @%make diag_clean
 
 diag_clean : .procedure
-    @if exist *.err rm -f *.err
-    @if exist *.ser rm -f *.ser
-    @if exist *.pch rm -f *.pch
+    @if exist *.err $(noecho)rm -f *.err
+    @if exist *.ser $(noecho)rm -f *.ser
+    @if exist *.pch $(noecho)rm -f *.pch
 
 start_test : .symbolic
-    @if exist diff.out rm diff.out
-    %make clean_sav
+    @if exist diff.out $(noecho)rm diff.out
+    $(noecho)%make clean_sav
 
 save_sav : .procedure
     @if exist diag0000.out @cp diag0000.out s$(arch)0000.sav >$(nulldevice)
@@ -139,4 +139,4 @@ clean_sav : .procedure
 
 clean : .procedure
     @%make diag_clean
-    %make common_clean
+    $(noecho)%make common_clean

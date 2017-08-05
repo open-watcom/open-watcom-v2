@@ -71,7 +71,7 @@ start : .SYMBOLIC .EXPLICIT
     %append $(log_file) TEST $(arch)/$(alt_error)
 
 test.lnk : $(__MAKEFILES__) .EXPLICIT
-    %create $@
+    $(noecho)%create $@
     @%append $@ $(targ_ldb_$(targ_env_$(arch)))
     @%append $@ $(targ_lnk_$(targ_env_$(arch)))
     @%append $@ $(lnk_any)

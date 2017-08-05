@@ -27,25 +27,29 @@ test : .symbolic start clean start_test
 !else ifeq targ_env_386 wnt386
 test : .symbolic start clean start_test tomdll.dll test.lnk tomexe.$(exe)
     cat tomexe.out >>$(%ERROR_FILE)
-    %make save_sav
+    @set ERROR_FILE=$(log_file)
+    @set ERROR_MSG=FAILED
+    $(noecho)%make save_sav
     diff $(sav_file) exec.chk
-    %make clean_sav
+    $(noecho)%make clean_sav
 !else ifdef __NT386__
 test : .symbolic start clean start_test
 !else
 test : .symbolic start clean start_test tomdll.dll test.lnk tomexe.$(exe)
     cat tomexe.out >>$(%ERROR_FILE)
-    %make save_sav
+    @set ERROR_FILE=$(log_file)
+    @set ERROR_MSG=FAILED
+    $(noecho)%make save_sav
     diff $(sav_file) exec.chk
-    %make clean_sav
+    $(noecho)%make clean_sav
 !endif
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 
 start_test : .symbolic
-    %make clean_sav
+    $(noecho)%make clean_sav
     @set ERROR_FILE=exec.out
-    %create $(%ERROR_FILE)
+    $(noecho)%create $(%ERROR_FILE)
 
 tomdll.dll : tomdll.obj tomdll.lnk
     @%make set_path_wlink
@@ -59,7 +63,7 @@ tomdll.obj : tomdll.c
     @%make set_old_path
 
 tomdll.lnk : $(__MAKEFILES__)
-    %create $^@
+    $(noecho)%create $^@
     @%append $^@ $(ldebug_$(arch))
     @%append $^@ $(lnk_any)
     @%append $^@ SYSTEM nt dll initinstance terminstance reference __DLLstart_
@@ -74,4 +78,4 @@ clean_sav : .procedure
     @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
-    %make common_clean
+    $(noecho)%make common_clean

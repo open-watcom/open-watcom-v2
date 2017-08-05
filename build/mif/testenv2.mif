@@ -32,7 +32,7 @@ start : .SYMBOLIC .EXPLICIT
 
 !if 0
 test.lnk : $(__MAKEFILES__) .EXPLICIT
-    %create $@
+    $(noecho)%create $@
     @%append $@ $(targ_ldb_$(targ_env_$(arch)))
     @%append $@ $(targ_lnk_$(targ_env_$(arch)))
     @%append $@ $(lnk_any)
@@ -173,13 +173,12 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 
 ./chk_exec.exe : $(watcom_dir)/c/chk_exec.c .EXPLICIT
     @%make echo_bldcl
-    $(noecho) $(bld_cl) $(bld_cl_opts) $(bld_extra_defines) $<
+    $(noecho)$(bld_cl) $(bld_cl_opts) $(bld_extra_defines) $<
 
 ./chktest.exe : $(watcom_dir)/c/chktest.c .EXPLICIT
     @%make echo_bldcl
-    $(noecho) $(bld_cl) $(bld_cl_opts) $<
+    $(noecho)$(bld_cl) $(bld_cl_opts) $<
 
 ./catfile.exe: $(watcom_dir)/c/catfile.c .EXPLICIT
     @%make echo_bldcl
-    $(noecho) $(bld_cl) $(bld_cl_opts) $<
-
+    $(noecho)$(bld_cl) $(bld_cl_opts) $<

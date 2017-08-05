@@ -33,16 +33,18 @@ opt_link = LIBRARY matrix.lib
 exes = test.$(exe) tmatrix.$(exe)
 
 test : .symbolic start clean start_test matrix.lib test.lnk $(exes)
-    %make save_sav
+    @set ERROR_FILE=$(log_file)
+    @set ERROR_MSG=FAILED
+    $(noecho)%make save_sav
     diff $(sav_file) test.chk
-    %make clean_sav
+    $(noecho)%make clean_sav
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 
 start_test : .symbolic
-    %make clean_sav
+    $(noecho)%make clean_sav
     @set ERROR_FILE=exec.out
-    %create $(%ERROR_FILE)
+    $(noecho)%create $(%ERROR_FILE)
 
 matrix.lib : $(objs) matrix.lbc
     @%make set_path_wlib
@@ -51,7 +53,7 @@ matrix.lib : $(objs) matrix.lbc
     @%make set_old_path
 
 matrix.lbc : makefile
-    %create $@
+    $(noecho)%create $@
     @for %i in ( $(objs) ) do @%append $@ -+%i
 
 save_sav : .procedure
@@ -62,4 +64,4 @@ clean_sav : .procedure
     @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
-    %make common_clean
+    $(noecho)%make common_clean

@@ -79,6 +79,8 @@ alt_error = 00
 add_br_ = $(br_opt)
 !endif
 
+noisy = 1
+
 test_flags_386 += $(add_br_$(no_br_$^*))
 
 test_flags = -we-w0 -Isource
@@ -92,10 +94,12 @@ test : .symbolic start clean start_test test.lnk $(positive_exes) ./chk_exec.exe
     @set ERROR_FILE=error.out
     @set ERROR_MSG=failure to complete test stream
     %write $(%ERROR_FILE) OK
-    $]@ exec.out >>$(%ERROR_FILE)
-    %make save_sav
+    -$]@ exec.out >>$(%ERROR_FILE)
+    set ERROR_FILE=$(log_file)
+    set ERROR_MSG=FAILED
+    $(noecho)%make save_sav
     diff -b $(sav_file) error.chk
-    %make clean_sav
+    $(noecho)%make clean_sav
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 
@@ -115,9 +119,9 @@ cltemp21.exe : cltemp21.obj cltmp21b.obj
 friend4.exe : friend4.obj friend4b.obj
 
 start_test : .symbolic
-    %make clean_sav
+    $(noecho)%make clean_sav
     @set ERROR_FILE=exec.out
-    %create $(%ERROR_FILE)
+    $(noecho)%create $(%ERROR_FILE)
 
 save_sav : .procedure
     @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
@@ -127,5 +131,5 @@ clean_sav : .procedure
     @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
-    @if exist failure rm -f failure
-    %make common_clean
+    @if exist failure $(noecho)rm -f failure
+    $(noecho)%make common_clean

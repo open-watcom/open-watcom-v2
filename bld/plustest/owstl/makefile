@@ -102,9 +102,11 @@ test_flags = -e1000
 test : .symbolic start clean start_test
 !else
 test : .symbolic start clean start_test test.lnk $(exes)
-    %make save_sav
+    @set ERROR_FILE=$(log_file)
+    @set ERROR_MSG=FAILED
+    $(noecho)%make save_sav
     diff $(sav_file) test.chk
-    %make clean_sav
+    $(noecho)%make clean_sav
 !endif
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
@@ -126,9 +128,9 @@ mmwindef.$(exe): .symbolic
 !endif
 
 start_test : .symbolic
-    %make clean_sav
+    $(noecho)%make clean_sav
     @set ERROR_FILE=exec.out
-    %create $(%ERROR_FILE)
+    $(noecho)%create $(%ERROR_FILE)
 
 # ensures mmwindef.cpp and mmwin16.cpp are always identical to 
 # nominmax.cpp
@@ -147,6 +149,6 @@ clean_sav : .procedure
     @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
-    @if exist mmwin16.cpp rm -f mmwin16.cpp
-    @if exist mmwindef.cpp rm -f mmwindef.cpp
-    %make common_clean
+    @if exist mmwin16.cpp $(noecho)rm -f mmwin16.cpp
+    @if exist mmwindef.cpp $(noecho)rm -f mmwindef.cpp
+    $(noecho)%make common_clean

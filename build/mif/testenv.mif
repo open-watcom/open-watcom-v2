@@ -131,56 +131,6 @@ path_wlink = $(src_dir)\wl\ntx64.dll
 .ERROR
     @%make set_old_path
 
-!ifdef buildtest
-!ifdef __OS2__
-bld_incl    = -I"$(hdr_dir)/dos" -I"$(os2api_dir)/os2386/h"
-!else ifdef __MSDOS__
-bld_incl    = -I"$(hdr_dir)/dos"
-!else ifdef __NT__
-bld_incl    = -I"$(hdr_dir)/dos" -I"$(w32api_dir)/nt"
-!else ifdef __LINUX__
-bld_incl    = -I"$(hdr_dir)/linux"
-!endif
-!endif
-
-!ifdef __OS2__
-bld_sys     = os2v2
-bld_cl      = $(buildtest_prefix)wcl386 -zq -bt=os2
-bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
-!else ifdef __MSDOS__
-bld_sys     = dos4g
-bld_cl      = $(buildtest_prefix)wcl386 -zq -bt=dos
-bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
-!else ifdef __NTAXP__
-bld_sys     = ntaxp
-bld_cl      = $(buildtest_prefix)wclaxp -zq -bt=nt
-bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
-!else ifdef __NT386__
-bld_sys     = nt
-bld_cl      = $(buildtest_prefix)wcl386 -zq -bt=nt
-bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
-!else ifdef __NTX64__
-bld_sys     = nt
-bld_cl      = $(buildtest_prefix)wcl386 -zq -bt=nt
-bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
-!else ifdef __LINUXPPC__
-bld_sys     = linuxppc
-bld_cl      = $(buildtest_prefix)wclppc -zq -bt=linux
-bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
-!else ifdef __LINUXMIPS__
-bld_sys     = linuxmips
-bld_cl      = $(buildtest_prefix)wclmps -zq -bt=linux
-bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
-!else ifdef __LINUX386__
-bld_sys     = linux
-bld_cl      = $(buildtest_prefix)wcl386 -zq -bt=linux
-bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
-!else ifdef __LINUXX64__
-bld_sys     = linux
-bld_cl      = $(buildtest_prefix)wcl386 -zq -bt=linux
-bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
-!endif
-
 !ifdef wasmtest_name
 bld_extra_defines = -DWASM
 !else ifdef ftest_name
@@ -1186,6 +1136,7 @@ targ_lnk_lnxmps = system linuxmips
 was_any = -zq
 wcc_any = -zq
 wpp_any = -zq
+wcl_any = -zq
 wfc_any = -Quiet
 lnk_any = option noundefsok, map, quiet
 lib_any = -q
@@ -1224,6 +1175,56 @@ wfc_ppc = $(comp_wfc_ppc) $(wfc_any) $(targ_bld_wfc_$(targ_env_ppc))
 wfc_mps = $(comp_wfc_mps) $(wfc_any) $(targ_bld_wfc_$(targ_env_mps))
 
 librarian = $(wlib_any) $(lib_any) -n -b
+
+!ifdef buildtest
+!ifdef __OS2__
+bld_incl    = -I"$(hdr_dir)/dos" -I"$(os2api_dir)/os2386/h"
+!else ifdef __MSDOS__
+bld_incl    = -I"$(hdr_dir)/dos"
+!else ifdef __NT__
+bld_incl    = -I"$(hdr_dir)/dos" -I"$(w32api_dir)/nt"
+!else ifdef __LINUX__
+bld_incl    = -I"$(hdr_dir)/linux"
+!endif
+!endif
+
+!ifdef __OS2__
+bld_sys     = os2v2
+bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=os2
+bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+!else ifdef __MSDOS__
+bld_sys     = dos4g
+bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=dos
+bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+!else ifdef __NTAXP__
+bld_sys     = ntaxp
+bld_cl      = $(buildtest_prefix)wclaxp $(wcl_any) -bt=nt
+bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+!else ifdef __NT386__
+bld_sys     = nt
+bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=nt
+bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+!else ifdef __NTX64__
+bld_sys     = nt
+bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=nt
+bld_cl_opts = -fpc -ox -w8 -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+!else ifdef __LINUXPPC__
+bld_sys     = linuxppc
+bld_cl      = $(buildtest_prefix)wclppc $(wcl_any) -bt=linux
+bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+!else ifdef __LINUXMIPS__
+bld_sys     = linuxmips
+bld_cl      = $(buildtest_prefix)wclmps $(wcl_any) -bt=linux
+bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+!else ifdef __LINUX386__
+bld_sys     = linux
+bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=linux
+bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+!else ifdef __LINUXX64__
+bld_sys     = linux
+bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=linux
+bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
+!endif
 
 sav_file = s$(arch)_$(alt_error).sav
 

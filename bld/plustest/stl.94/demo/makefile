@@ -37,9 +37,11 @@ extra_run_demo = <demo.in
 test : .symbolic start clean start_test
 !else
 test : .symbolic start clean start_test test.lnk demo.$(exe)
-    %make save_sav
+    @set ERROR_FILE=$(log_file)
+    @set ERROR_MSG=FAILED
+    $(noecho)%make save_sav
     diff $(sav_file) demo.chk
-    %make clean_sav
+    $(noecho)%make clean_sav
 !endif
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
@@ -47,9 +49,9 @@ test : .symbolic start clean start_test test.lnk demo.$(exe)
 demo.$(exe) : demo.obj tempbuf.obj
 
 start_test : .symbolic
-    %make clean_sav
+    $(noecho)%make clean_sav
     @set ERROR_FILE=exec.out
-    %create $(%ERROR_FILE)
+    $(noecho)%create $(%ERROR_FILE)
 
 save_sav : .procedure
     @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
@@ -59,4 +61,4 @@ clean_sav : .procedure
     @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
-    %make common_clean
+    $(noecho)%make common_clean

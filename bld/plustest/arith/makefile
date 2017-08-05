@@ -57,16 +57,18 @@ exes = &
     waste.$(exe)
 
 test : .symbolic start clean start_test test.lnk $(exes)
-    %make save_sav
+    @set ERROR_FILE=$(log_file)
+    @set ERROR_MSG=FAILED
+    $(noecho)%make save_sav
     diff $(sav_file) test.chk
-    %make clean_sav
+    $(noecho)%make clean_sav
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 
 start_test : .symbolic
-    %make clean_sav
+    $(noecho)%make clean_sav
     @set ERROR_FILE=exec.out
-    %create $(%ERROR_FILE)
+    $(noecho)%create $(%ERROR_FILE)
 
 dmc.$(exe) : dmc.obj
     @%make set_path_wlink
@@ -74,7 +76,7 @@ dmc.$(exe) : dmc.obj
     $(noecho)$(linker) @test.lnk NAME $@ FILE $[@
     @%make set_old_path
     @%append $(%ERROR_FILE) --------$^*--------
-    crlf -u dmc.cpp dmctest.out
+    $(noecho)crlf -u dmc.cpp dmctest.out
     @%make set_path_rtdll
     $(run) $(exec_prefix)$@ c dmctest.out dmc.out >>$(%ERROR_FILE)
     $(run) $(exec_prefix)$@ d dmc.out cpp.out >>$(%ERROR_FILE)
@@ -89,4 +91,4 @@ clean_sav : .procedure
     @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
-    %make common_clean
+    $(noecho)%make common_clean

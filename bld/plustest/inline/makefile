@@ -27,18 +27,18 @@ test_flags_i86 += -s -os -wx -we
     @cp $< $@ >$(nulldevice)
 
 test : .symbolic start clean start_test $($(arch)_inline_objs) ./chk_exec.exe
-    @set ERROR_FILE=error.out
-    @set ERROR_MSG=failure to complete test stream
-    %make save_sav
+    @set ERROR_FILE=$(log_file)
+    @set ERROR_MSG=FAILED
+    $(noecho)%make save_sav
     diff -b $(sav_file) inline.chk
-    %make clean_sav
+    $(noecho)%make clean_sav
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 
 start_test : .symbolic
-    %make clean_sav
+    $(noecho)%make clean_sav
     @set ERROR_FILE=exec.out
-    %create $(%ERROR_FILE)
+    $(noecho)%create $(%ERROR_FILE)
 !ifndef $(arch)_inline_objs
     @%append $(%ERROR_FILE) PASS decoding $(arch)
 !endif
@@ -51,8 +51,8 @@ clean_sav : .procedure
     @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
-    @if exist *.gcp rm -f *.gcp
-    @if exist *.ls1 rm -f *.ls1
-    @if exist *.dis rm -f *.dis
-    @if exist failure rm failure
-    %make common_clean
+    @if exist *.gcp $(noecho)rm -f *.gcp
+    @if exist *.ls1 $(noecho)rm -f *.ls1
+    @if exist *.dis $(noecho)rm -f *.dis
+    @if exist failure $(noecho)rm failure
+    $(noecho)%make common_clean

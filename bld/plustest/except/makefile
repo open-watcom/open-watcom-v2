@@ -82,30 +82,32 @@ stderr_check_axp = 2>>stderr.out
 sav_file_2 = x$(arch)_$(alt_error).sav
 
 test : .symbolic start clean start_test $(batch_sym) test.lnk $(exes)
-    %make save_sav
+    @set ERROR_FILE=$(log_file)
+    @set ERROR_MSG=FAILED
+    $(noecho)%make save_sav
     diff $(sav_file) exec.chk
 !ifdef stderr_check_$(arch)
     diff $(sav_file_2) stderr.chk
 !endif
-    %make clean_sav
+    $(noecho)%make clean_sav
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 
 start_test : .symbolic
-    %make clean_sav
+    $(noecho)%make clean_sav
     @set ERROR_FILE=exec.out
-    %create $(%ERROR_FILE)
+    $(noecho)%create $(%ERROR_FILE)
 !ifdef stderr_check_$(arch)
-    %create stderr.out
+    $(noecho)%create stderr.out
 !endif
 
 !ifdef BATCH_TEST
 $(batch_lnk) : $(__MAKEFILES__)
-    %create $(batch_lnk)
+    $(noecho)%create $(batch_lnk)
     @for %i in ( $(objs) ) do %append $(batch_lnk) STARTLINK @test FILE %i ENDLINK
 
 $(batch_cmp) : $(__MAKEFILES__)
-    %create $(batch_cmp)
+    $(noecho)%create $(batch_cmp)
     @for %i in ( $(srcs) ) do %append $(batch_cmp) %i
 
 batch_build : .symbolic test.lnk $(batch_lnk) $(batch_cmp)
@@ -129,10 +131,10 @@ clean_sav : .procedure
 
 clean : .procedure
 !ifdef BATCH_TEST
-    @if exist *.fcb rm *.fcb
-    @if exist *.fcl rm *.fcl
+    @if exist *.fcb $(noecho)rm *.fcb
+    @if exist *.fcl $(noecho)rm *.fcl
 !endif
-    %make common_clean
+    $(noecho)%make common_clean
 
 !ifdef BATCH_TEST
 .before

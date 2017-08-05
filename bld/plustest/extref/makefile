@@ -52,20 +52,20 @@ opt_link_er03 = LIB er03.lib
 exes = er01.$(exe) er02.$(exe) er03.$(exe)
 
 test : .symbolic start clean start_test test.lnk er01.lib er03.lib $(exes) ./chk_exec.exe
-    @set ERROR_FILE=error.out
-    @set ERROR_MSG=failure to complete test stream
-    %make save_sav
+    @set ERROR_FILE=$(log_file)
+    @set ERROR_MSG=FAILED
+    $(noecho)%make save_sav
     diff -b $(sav_file) extref.chk
-    %make clean_sav
+    $(noecho)%make clean_sav
     %append $(log_file) PASS $(%__CWD__)
-    %make clean
+    $(noecho)%make clean
 
 er02.$(exe) : er02.obj er02b.obj
 
 start_test : .symbolic
-    %make clean_sav
+    $(noecho)%make clean_sav
     @set ERROR_FILE=exec.out
-    %create $(%ERROR_FILE)
+    $(noecho)%create $(%ERROR_FILE)
 
 er01.lib : er01b.obj er01c.obj er01d.obj
     @%make set_path_wlib
@@ -87,4 +87,4 @@ clean_sav : .procedure
     @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
-    %make common_clean
+    $(noecho)%make common_clean

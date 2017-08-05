@@ -51,23 +51,25 @@ all_tests = &
 
 
 test : .symbolic start clean start_test $(all_tests)
-    %make save_sav
+    @set ERROR_FILE=$(log_file)
+    @set ERROR_MSG=FAILED
+    $(noecho)%make save_sav
     diff $(sav_file) exec.chk
-    %make clean_sav
+    $(noecho)%make clean_sav
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 
 start_test : .symbolic
-    %make clean_sav
+    $(noecho)%make clean_sav
     @set ERROR_FILE=exec.out
-    %create $(%ERROR_FILE)
-    %make gen_input
+    $(noecho)%create $(%ERROR_FILE)
+    $(noecho)%make gen_input
 
 zap_output : .procedure
-    @if exist *.i rm *.i
-    @if exist *.i0 rm *.i0
-    @if exist *.i1 rm *.i1
-    @if exist *.gh rm *.gh
+    @if exist *.i $(noecho)rm *.i
+    @if exist *.i0 $(noecho)rm *.i0
+    @if exist *.i1 $(noecho)rm *.i1
+    @if exist *.gh $(noecho)rm *.gh
 
 gen_input: .procedure ./geninput.exe
     $[@
@@ -87,4 +89,4 @@ clean_sav : .procedure
 
 clean : .procedure
     @%make zap_output
-    %make common_clean
+    $(noecho)%make common_clean

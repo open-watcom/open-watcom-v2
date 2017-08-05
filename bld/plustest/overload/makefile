@@ -123,7 +123,9 @@ stack_i86=opt stack=8k
 stack_axp=opt stack=16k
 
 test : .symbolic start clean start_test test.lnk $(exes)
-    %make save_sav
+    @set ERROR_FILE=$(log_file)
+    @set ERROR_MSG=FAILED
+    $(noecho)%make save_sav
 !ifeq arch i86
     # There are certain unavoidable differences between 16-bit and
     # 32-bit platforms, causing slightly different (but valid) results
@@ -131,14 +133,14 @@ test : .symbolic start clean start_test test.lnk $(exes)
 !else
     diff $(sav_file) overload.chk
 !endif
-    %make clean_sav
+    $(noecho)%make clean_sav
     %append $(log_file) PASS $(%__CWD__)
     @%make clean
 
 start_test : .symbolic
-    %make clean_sav
+    $(noecho)%make clean_sav
     @set ERROR_FILE=exec.out
-    %create $(%ERROR_FILE)
+    $(noecho)%create $(%ERROR_FILE)
 
 save_sav : .procedure
     @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
@@ -148,4 +150,4 @@ clean_sav : .procedure
     @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
-    %make common_clean
+    $(noecho)%make common_clean
