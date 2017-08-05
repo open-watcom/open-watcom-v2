@@ -113,12 +113,14 @@ enum {                                  // TYPE-SIG flags
 };
 
 typedef struct ts_hdr TS_HDR;
+#include "pushpck1.h"
 struct ts_hdr                           // TYPE-SIG HEADER
 {   uint_8  hdr_actual;                 // - actual entry
     uint_8  hdr_ptr;                    // - T* entry
     uint_8  hdr_ref;                    // - T& entry
     uint_8  flags;                      // - flags
 };
+#include "poppck.h"
 
 #define __STR( __s ) #__s                               // quoted string
 #define __PASTE( __s1, __s2 )        __s1##__s2         // paste tokens
