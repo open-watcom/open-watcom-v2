@@ -46,7 +46,8 @@ start_test : .symbolic
 
 tort.lib : tort.lbc $(objs)
     @%make set_path_wlib
-    $(librarian) @$[@
+    @%make echo_lib
+    $(noecho)$(librarian) @$[@
     @%make set_old_path
 
 tort.lbc : $(__MAKEFILES__)

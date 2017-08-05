@@ -46,7 +46,8 @@ start_test : .symbolic
 
 matrix.lib : $(objs) matrix.lbc
     @%make set_path_wlib
-    $(librarian) $@ @matrix.lbc
+    @%make echo_lib
+    $(noecho)$(librarian) $@ @matrix.lbc
     @%make set_old_path
 
 matrix.lbc : makefile

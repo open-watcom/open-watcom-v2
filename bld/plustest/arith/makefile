@@ -70,7 +70,8 @@ start_test : .symbolic
 
 dmc.$(exe) : dmc.obj
     @%make set_path_wlink
-    $(linker) @test.lnk NAME $@ FILE $[@
+    @%make echo_link
+    $(noecho)$(linker) @test.lnk NAME $@ FILE $[@
     @%make set_old_path
     @%append $(%ERROR_FILE) --------$^*--------
     crlf -u dmc.cpp dmctest.out

@@ -113,7 +113,8 @@ test : .symbolic start clean start_test test.lnk $(exes)
 $(names) : test.lnk .symbolic
     @%make $^*.obj
     @%make set_path_wlink
-    $(linker) @test.lnk NAME $^*.exe FILE $^*.obj
+    @%make echo_link
+    $(noecho)$(linker) @test.lnk NAME $^*.exe FILE $^*.obj
     @%make set_path_rtdll
     $(run) $(exec_prefix)$^*.exe
     @%make set_old_path
@@ -133,10 +134,10 @@ start_test : .symbolic
 # nominmax.cpp
 
 mmwin16.cpp : nominmax.cpp
-    cp nominmax.cpp mmwin16.cpp
+    cp nominmax.cpp mmwin16.cpp >$(nulldevice)
 
 mmwindef.cpp : nominmax.cpp
-    cp nominmax.cpp mmwindef.cpp
+    cp nominmax.cpp mmwindef.cpp >$(nulldevice)
 
 save_sav : .procedure
     @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)

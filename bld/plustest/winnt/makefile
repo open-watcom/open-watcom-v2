@@ -49,7 +49,8 @@ start_test : .symbolic
 
 tomdll.dll : tomdll.obj tomdll.lnk
     @%make set_path_wlink
-    $(linker) @$]@ NAME $@
+    @%make echo_link
+    $(noecho)$(linker) @$]@ NAME $@
     @%make set_old_path
 
 tomdll.obj : tomdll.c

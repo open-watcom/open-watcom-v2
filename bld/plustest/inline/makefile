@@ -24,7 +24,7 @@ test_flags_i86 += -s -os -wx -we
     @*awk -v target=$(init_$^&) -f $(wasmtest_dir)/createc.awk -v OUTFILE=$^. $[@
 
 .src.gcp:
-    @cp $< $@
+    @cp $< $@ >$(nulldevice)
 
 test : .symbolic start clean start_test $($(arch)_inline_objs) ./chk_exec.exe
     @set ERROR_FILE=error.out

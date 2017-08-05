@@ -66,7 +66,8 @@ test : .symbolic start clean start_test base.lib io.lib test.lnk $(exes)
 dkbtrtst.$(exe) : dkbtrtst.obj
     @set ERROR_MSG=*** failure to link $^&
     @%make set_path_wlink
-    $(linker) @test.lnk NAME $@ FILE $[@ $(opt_link)
+    @%make echo_link
+    $(noecho)$(linker) @test.lnk NAME $@ FILE $[@ $(opt_link)
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=*** failure to execute $^&
     @%make set_path_rtdll
@@ -79,7 +80,8 @@ dkbtrtst.$(exe) : dkbtrtst.obj
 perstest.$(exe) : perstest.obj
     @set ERROR_MSG=*** failure to link $^&
     @%make set_path_wlink
-    $(linker) @test.lnk NAME $@ FILE $[@ $(opt_link)
+    @%make echo_link
+    $(noecho)$(linker) @test.lnk NAME $@ FILE $[@ $(opt_link)
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=*** failure to execute $^&
     @%make set_path_rtdll

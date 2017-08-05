@@ -28,7 +28,8 @@ test : .symbolic start clean start_test ./opt.$(exe)
 ./opt.$(exe) : $(objs) test.lnk
     @set ERROR_MSG=failure to link $^*
     @%make set_path_wlink
-    $(linker) @$]@ NAME $@ file {$(objs)}
+    @%make echo_link
+    $(noecho)$(linker) @$]@ NAME $@ file {$(objs)}
     @set ERROR_MSG=failure to run $^*
     @%make set_path_rtdll
     $(run) $@ >>$(%ERROR_FILE)

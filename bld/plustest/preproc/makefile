@@ -11,7 +11,7 @@ alt_error=00
     $(wpp_$(arch)) $[@ -w0 -pl -fo=.i -fip
     @%make set_old_path
     cat $(%ERROR_FILE) $^@ >tmp_exec.out
-    cp tmp_exec.out $(%ERROR_FILE)
+    cp tmp_exec.out $(%ERROR_FILE) >$(nulldevice)
 
 .c.i1:
     %append $(%ERROR_FILE) @@@ $^@ @@@
@@ -19,7 +19,7 @@ alt_error=00
     $(wpp_$(arch)) $[@ -w0 -plc -fo=.i1 -fip
     @%make set_old_path
     cat $(%ERROR_FILE) $^@ >tmp_exec.out
-    cp tmp_exec.out $(%ERROR_FILE)
+    cp tmp_exec.out $(%ERROR_FILE) >$(nulldevice)
 
 .c.i0:
     %append $(%ERROR_FILE) @@@ $^@ @@@
@@ -27,7 +27,7 @@ alt_error=00
     $(wpp_$(arch)) $[@ -w0 -pl -pw=0 -fo=.i0 -fip
     @%make set_old_path
     cat $(%ERROR_FILE) $^@ >tmp_exec.out
-    cp tmp_exec.out $(%ERROR_FILE)
+    cp tmp_exec.out $(%ERROR_FILE) >$(nulldevice)
 
 all_tests = &
     pp01.i &
@@ -75,7 +75,8 @@ gen_input: .procedure ./geninput.exe
     @rm *.obj
 
 ./geninput.exe : geninput.c
-    $(bld_cl) $(bld_cl_opts) -cc++ $<
+    @%make echo_bldcl
+    $(noecho)$(bld_cl) $(bld_cl_opts) -cc++ $<
 
 save_sav : .procedure
     @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)

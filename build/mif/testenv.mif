@@ -1272,6 +1272,51 @@ set_old_path : .PROCEDURE .EXPLICIT
     @set PATH=$(old_path)
 !endif
 
+echo_as : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo as $@
+!endif
+
+echo_cc : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo cc $@
+!endif
+
+echo_cxx : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo c++ $@
+!endif
+
+echo_bldcl : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo bld_cl $@
+!endif
+
+echo_link : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo link $@
+!endif
+
+echo_lib : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo lib $@
+!endif
+
+echo_wdis : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo wdis $@
+!endif
+
+echo_dmpobj : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo dmpobj $@
+!endif
+
+echo_diff : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo diff $@
+!endif
+
 common_clean : .PROCEDURE .EXPLICIT
     -@rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
     -@rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res

@@ -10,7 +10,8 @@ lib_objs = &
 
 ../cool.lib : $(lib_objs) cool.lbc .EXPLICIT
     @%make set_path_wlib
-    $(librarian) -p=512 $@ @cool.lbc
+    @%make echo_lib
+    $(noecho)$(librarian) -p=512 $@ @cool.lbc
     @%make set_old_path
 
 cool.lbc : makefile .EXPLICIT

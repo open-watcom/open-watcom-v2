@@ -94,25 +94,17 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 .obj.dis:
     @set ERROR_MSG=failure to decode $[@
     @$(buildtest_prefix)wdis -l=$@ -a -ff $[@
-    @set ESM_CHECK=%null
-    @if exist $^&.esm @set ESM_CHECK=diff -i -b $^&.dis $^&.esm
-    $(%ESM_CHECK)
+    @if exist $^&.esm diff -i -b $^&.dis $^&.esm
     @$(buildtest_prefix)dmpobj -q -rec=FIXUPP $[@ | sed -f $(wasmtest_dir)/fixlst1.sed >$^&.lst
-    @set EMP_CHECK=@%null
-    @if exist $^&.emp @set EMP_CHECK=diff -i -b $^&.lst $^&.emp
-    $(%EMP_CHECK)
+    @if exist $^&.emp diff -i -b $^&.lst $^&.emp
     @%append $(%ERROR_FILE) PASS decoding $[@
 
 .obj.dib:
     @set ERROR_MSG=failure to decode $[@
     @$(buildtest_prefix)wdis -l=$@ -ff $[@
-    @set ESM_CHECK=%null
-    @if exist $^&.esm @set ESM_CHECK=diff -i -b $^&.dib $^&.esm
-    $(%ESM_CHECK)
+    @if exist $^&.esm diff -i -b $^&.dib $^&.esm
     @$(buildtest_prefix)dmpobj -q -rec=FIXUPP $[@ | sed -f $(wasmtest_dir)/fixlst1.sed >$^&.lst
-    @set EMP_CHECK=@%null
-    @if exist $^&.emp @set EMP_CHECK=diff -i -b $^&.lst $^&.emp
-    $(%EMP_CHECK)
+    @if exist $^&.emp diff -i -b $^&.lst $^&.emp
     @%append $(%ERROR_FILE) PASS decoding $[@
 
 .obj.dum: .SYMBOLIC
@@ -129,14 +121,10 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 
 .obj.lst:
     @set ERROR_MSG=failure to decode $[@
-    @set ESM_CHECK=@%null
-    @if exist $(wasmtest_dir)/inline/$^&.esm @set ESM_CHECK=diff -i -b $^&.dis $(wasmtest_dir)/inline/$^&.esm
     -$(buildtest_prefix)wdis -a $[@ | sed -f $(wasmtest_dir)/fixlst2.sed $(extra_sed_$^*) >$^&.dis
-    $(%ESM_CHECK)
-    @set EMP_CHECK=@%null
-    @if exist $(wasmtest_dir)/inline/$^&.emp @set EMP_CHECK=diff -i -b $@ $(wasmtest_dir)/inline/$^&.emp
+    @if exist $(wasmtest_dir)/inline/$^&.esm diff -i -b $^&.dis $(wasmtest_dir)/inline/$^&.esm
     -$(buildtest_prefix)dmpobj -q -rec=FIXUPP $[@ | sed -f $(wasmtest_dir)/fixlst1.sed >$@
-    $(%EMP_CHECK)
+    @if exist $(wasmtest_dir)/inline/$^&.emp diff -i -b $@ $(wasmtest_dir)/inline/$^&.emp
     @%append $(%ERROR_FILE) PASS decoding $[@
 
 .c.err:
@@ -184,11 +172,14 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 !endif
 
 ./chk_exec.exe : $(watcom_dir)/c/chk_exec.c .EXPLICIT
-    $(bld_cl) $(bld_cl_opts) $(bld_extra_defines) $<
+    @%make echo_bldcl
+    $(noecho) $(bld_cl) $(bld_cl_opts) $(bld_extra_defines) $<
 
 ./chktest.exe : $(watcom_dir)/c/chktest.c .EXPLICIT
-    $(bld_cl) $(bld_cl_opts) $<
+    @%make echo_bldcl
+    $(noecho) $(bld_cl) $(bld_cl_opts) $<
 
 ./catfile.exe: $(watcom_dir)/c/catfile.c .EXPLICIT
-    $(bld_cl) $(bld_cl_opts) $<
+    @%make echo_bldcl
+    $(noecho) $(bld_cl) $(bld_cl_opts) $<
 
