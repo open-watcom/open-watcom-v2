@@ -12,20 +12,20 @@ cdsay .
 [ BLOCK <1> test ]
 #=================
     wmake -h test0=1
-cdsay .
+    cdsay .
     wmake -h test1=1
-cdsay .
+    cdsay .
     wmake -h test2=1
-cdsay .
+    cdsay .
     wmake -h test3=1
 [ IFDEF <EXTRA_ARCH> i86 386 axp ppc mps ]
-cdsay .
+    cdsay .
     wmake -h test0=1 arch=<EXTRA_ARCH>
-cdsay .
+    cdsay .
     wmake -h test1=1 arch=<EXTRA_ARCH>
-cdsay .
+    cdsay .
     wmake -h test2=1 arch=<EXTRA_ARCH>
-cdsay .
+    cdsay .
     wmake -h test3=1 arch=<EXTRA_ARCH>
 [ ENDIF ]
 

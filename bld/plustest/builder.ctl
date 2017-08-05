@@ -9,6 +9,7 @@ set PLUSTEST_NAME=result
 cdsay .
 
 rm <PLUSTEST_NAME>.log
+rm *.sav
 
 [ INCLUDE arith/builder.ctl ]
 [ INCLUDE bits/builder.ctl ]
@@ -47,7 +48,29 @@ rm <PLUSTEST_NAME>.log
 [ INCLUDE stl.95/builder.ctl ]
 [ INCLUDE torture/builder.ctl ]
 [ INCLUDE wclass/builder.ctl ]
-[ INCLUDE yacl/builder.ctl ]
 [ INCLUDE winnt/builder.ctl ]
+[ INCLUDE yacl/builder.ctl ]
+
+[ INCLUDE <OWROOT>/build/prolog.ctl ]
+
+cdsay .
+
+[ BLOCK <1> test ]
+#=================
+    wmake -h
+
+[ BLOCK <1> testclean ]
+#======================
+    wmake -h clean
+
+[ BLOCK <1> cleanlog ]
+#======================
+    cdsay <PROJDIR>
+    echo rm -f *.log
+    rm -f *.log
+
+[ BLOCK . . ]
+
+[ INCLUDE <OWROOT>/build/epilog.ctl ]
 
 cdsay .

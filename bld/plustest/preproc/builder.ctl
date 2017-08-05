@@ -13,6 +13,7 @@ cdsay .
 #=================
     wmake -h test0=1
 [ IFDEF <EXTRA_ARCH> i86 386 axp ppc mps ]
+    cdsay .
     wmake -h test0=1 arch=<EXTRA_ARCH>
 [ ENDIF ]
 
