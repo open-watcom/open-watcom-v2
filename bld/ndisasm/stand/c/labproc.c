@@ -62,7 +62,7 @@ static void labelNameAlloc( label_entry entry, const char *name )
         __demangle_l( name, 0, entry->label.name + 2, len + 1 );
     } else {
         len = strlen( name );
-        entry->label.name = MemAlloc( len + 3 );
+        entry->label.name = MemAlloc( len + 4 );
         strcpy( entry->label.name + 2, name );
     }
     entry->label.name[0] = 0;
