@@ -30,14 +30,15 @@ dosystest = testsys
 
 .c: source
 
-test : .symbolic start clean start_test test0000 test0100 test0200 test0300 $(dosystest) test_special
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAILED
+test : .symbolic start clean start_test test0000 test0100 test0200 test0300 $(dosystest) test_special set_result
+    @%make clean
+
+set_result : .symbolic
+    $(noecho)%make set_fail
     $(noecho)%make save_sav
     diff -b diff.out diff.chk >$(nulldevice)
     $(noecho)%make clean_sav
-    %append $(log_file) PASS $(%__CWD__)
-    @%make clean
+    $(noecho)%make set_pass
 
 test0000 : .symbolic diag0000.out
     -diff -b diag0000.out $(diagchk0) >diff0000.out

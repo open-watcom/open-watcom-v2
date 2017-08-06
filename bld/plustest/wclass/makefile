@@ -68,18 +68,20 @@ wmsgdlg.obj &
 wwinmain.obj
 
 !ifeq arch i86
-test : .symbolic start clean start_test test.$(exe)
+test : .symbolic start clean start_test test.$(exe) set_result
 !else ifeq arch 386
 !ifeq targ_env_386 wnt386
-test : .symbolic start clean start_test test.$(exe)
+test : .symbolic start clean start_test test.$(exe) set_result
 !else
-test : .symbolic start clean start_test
+test : .symbolic start clean start_test set_result
 !endif
 !else
-test : .symbolic start clean start_test
+test : .symbolic start clean start_test set_result
 !endif
-    %append $(log_file) PASS $(%__CWD__)
     @%make clean
+
+set_result : .symbolic
+    $(noecho)%make set_pass
 
 test.$(exe) : $(objs) test1.lnk
     @%make set_path_wlink
@@ -106,16 +108,7 @@ test1.lnk : makefile $(objs)
     @for %i in ( $(objs) ) do @%append $@ FILE %i
 
 start_test : .symbolic
-    $(noecho)%make clean_sav
-    @set ERROR_FILE=exec.out
-    $(noecho)%create $(%ERROR_FILE)
-
-save_sav : .procedure
-    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
-    @if exist exec.out @rm exec.out
-
-clean_sav : .procedure
-    @if exist $(sav_file) @rm $(sav_file)
+    @%make common_start_test
 
 clean : .procedure
     $(noecho)%make common_clean

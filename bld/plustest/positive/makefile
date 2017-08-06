@@ -90,18 +90,19 @@ stack_i86 = op stack=12k
 
 .cpp: source
 
-test : .symbolic start clean start_test test.lnk $(positive_exes) ./chk_exec.exe
+test : .symbolic start clean start_test test.lnk $(positive_exes) set_result
+    @%make clean
+
+set_result : ./chk_exec.exe .symbolic
     @set ERROR_FILE=error.out
     @set ERROR_MSG=failure to complete test stream
-    %write $(%ERROR_FILE) OK
+    $(noecho)%write $(%ERROR_FILE) OK
     -$]@ exec.out >>$(%ERROR_FILE)
-    set ERROR_FILE=$(log_file)
-    set ERROR_MSG=FAILED
-    $(noecho)%make save_sav
-    diff -b $(sav_file) error.chk
-    $(noecho)%make clean_sav
-    %append $(log_file) PASS $(%__CWD__)
-    @%make clean
+    $(noecho)%make set_fail
+    $(noecho)%make common_save_sav
+    diff -b error.out error.chk >$(nulldevice)
+    $(noecho)%make common_clean_sav
+    $(noecho)%make set_pass
 
 link3.exe : link3.obj link3b.obj
 link4.exe : link4.obj link4b.obj
@@ -119,16 +120,8 @@ cltemp21.exe : cltemp21.obj cltmp21b.obj
 friend4.exe : friend4.obj friend4b.obj
 
 start_test : .symbolic
-    $(noecho)%make clean_sav
-    @set ERROR_FILE=exec.out
-    $(noecho)%create $(%ERROR_FILE)
-
-save_sav : .procedure
-    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
-    @if exist exec.out @rm exec.out
-
-clean_sav : .procedure
-    @if exist $(sav_file) @rm $(sav_file)
+    @%make common_start_test
+    @set ERROR_MSG=error
 
 clean : .procedure
     @if exist failure $(noecho)rm -f failure

@@ -15,16 +15,20 @@ build_proc()
                 cd $OWSRCDIR/plustest
                 builder -i testclean
                 builder -i test
+                cat result.log
             else
                 cd $OWSRCDIR/wasmtest
                 builder -i testclean
                 builder -i test
+                cat result.log
                 cd $OWSRCDIR/ctest
                 builder -i testclean
                 builder -i test
+                cat result.log
                 cd $OWSRCDIR/f77test
                 builder -i testclean
                 builder -i test
+                cat result.log
             fi
         fi
     elif [ "$TRAVIS_BRANCH" = "$OWBRANCH_COVERITY" ]; then

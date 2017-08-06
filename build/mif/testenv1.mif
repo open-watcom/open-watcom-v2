@@ -48,9 +48,6 @@
 !  endif
 !endif
 
-.ERROR
-    @%append $(%ERROR_FILE) $(%ERROR_MSG)
-
 start : .SYMBOLIC .EXPLICIT
 !ifdef dll_loaded
 !  ifdef wasmtest_name
@@ -67,8 +64,7 @@ start : .SYMBOLIC .EXPLICIT
 !ifndef plustest_name
     @echo ==== $(%__CTIME__) $(%__CWD__) ====
 !endif
-    @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
-    %append $(log_file) TEST $(arch)/$(alt_error)
+    @%make set_test_header
 
 test.lnk : $(__MAKEFILES__) .EXPLICIT
     $(noecho)%create $@
@@ -231,3 +227,15 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 ./catfile.exe: $(watcom_dir)/c/catfile.c .EXPLICIT
     @%make echo_bldcl
     $(noecho)$(bld_cl) $(bld_cl_opts) $<
+
+common_save_sav : .procedure .EXPLICIT
+    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
+    @if exist exec.out @rm exec.out
+
+common_clean_sav : .procedure .EXPLICIT
+    @if exist $(sav_file) @rm $(sav_file)
+
+common_start_test : .procedure .EXPLICIT
+    $(noecho)%make common_clean_sav
+    @set ERROR_FILE=exec.out
+    $(noecho)%create $(%ERROR_FILE)

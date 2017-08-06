@@ -81,7 +81,7 @@ template = &
 # the list of .exe targets
 ext = .$(exe)
 exes = $+ $(template) $-
-# a list of names so lazy old me can type "wmake alg01" to 
+# a list of names so lazy old me can type "wmake alg01" to
 # create and run algo01.exe without running the full suite
 ext =
 names = $+ $(template) $-
@@ -99,17 +99,21 @@ test_flags = -e1000
 # the main target to run the test suite
 
 !ifeq arch i86
-test : .symbolic start clean start_test
+test : .symbolic start clean start_test set_result
 !else
-test : .symbolic start clean start_test test.lnk $(exes)
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAILED
-    $(noecho)%make save_sav
-    diff $(sav_file) test.chk
-    $(noecho)%make clean_sav
+test : .symbolic start clean start_test test.lnk $(exes) set_result
 !endif
-    %append $(log_file) PASS $(%__CWD__)
     @%make clean
+
+set_result : .symbolic
+!ifeq arch i86
+!else
+    $(noecho)%make set_fail
+    $(noecho)%make common_save_sav
+    diff $(sav_file) test.chk
+    $(noecho)%make common_clean_sav
+!endif
+    $(noecho)%make set_pass
 
 # this is my laziness bit...
 $(names) : test.lnk .symbolic
@@ -128,11 +132,9 @@ mmwindef.$(exe): .symbolic
 !endif
 
 start_test : .symbolic
-    $(noecho)%make clean_sav
-    @set ERROR_FILE=exec.out
-    $(noecho)%create $(%ERROR_FILE)
+    @%make common_start_test
 
-# ensures mmwindef.cpp and mmwin16.cpp are always identical to 
+# ensures mmwindef.cpp and mmwin16.cpp are always identical to
 # nominmax.cpp
 
 mmwin16.cpp : nominmax.cpp
@@ -140,13 +142,6 @@ mmwin16.cpp : nominmax.cpp
 
 mmwindef.cpp : nominmax.cpp
     cp nominmax.cpp mmwindef.cpp >$(nulldevice)
-
-save_sav : .procedure
-    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
-    @if exist exec.out @rm exec.out
-
-clean_sav : .procedure
-    @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
     @if exist mmwin16.cpp $(noecho)rm -f mmwin16.cpp

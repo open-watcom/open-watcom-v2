@@ -34,31 +34,26 @@ extra_run_demo = <demo.in
 #
 
 !ifeq arch i86
-test : .symbolic start clean start_test
+test : .symbolic start clean start_test set_result
 !else
-test : .symbolic start clean start_test test.lnk demo.$(exe)
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAILED
-    $(noecho)%make save_sav
-    diff $(sav_file) demo.chk
-    $(noecho)%make clean_sav
+test : .symbolic start clean start_test test.lnk demo.$(exe) set_result
 !endif
-    %append $(log_file) PASS $(%__CWD__)
     @%make clean
+
+set_result : .symbolic
+!ifeq arch i86
+!else
+    $(noecho)%make set_fail
+    $(noecho)%make common_save_sav
+    diff $(sav_file) demo.chk
+    $(noecho)%make common_clean_sav
+!endif
+    $(noecho)%make set_pass
 
 demo.$(exe) : demo.obj tempbuf.obj
 
 start_test : .symbolic
-    $(noecho)%make clean_sav
-    @set ERROR_FILE=exec.out
-    $(noecho)%create $(%ERROR_FILE)
-
-save_sav : .procedure
-    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
-    @if exist exec.out @rm exec.out
-
-clean_sav : .procedure
-    @if exist $(sav_file) @rm $(sav_file)
+    @%make common_start_test
 
 clean : .procedure
     $(noecho)%make common_clean

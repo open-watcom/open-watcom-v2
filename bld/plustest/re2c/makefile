@@ -22,32 +22,31 @@ extra_run_re2c = -d plusplus.lex
 
 sav_file_2 = x$(arch)_$(alt_error).sav
 
-test : .symbolic start clean start_test test.lnk re2c.$(exe)
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAILED
+test : .symbolic start clean start_test test.lnk re2c.$(exe) set_result
+    @%make clean
+
+set_result : .symbolic
+    $(noecho)%make set_fail
     $(noecho)%make save_sav
     -diff $(sav_file) exec.chk
     -diff $(sav_file_2) debug.chk | wc >wc.out
     diff -b wc.out wc.chk
     $(noecho)%make clean_sav
-    %append $(log_file) PASS $(%__CWD__)
-    @%make clean
+    $(noecho)%make set_pass
 
 re2c.$(exe) : re2c.obj code.obj dfa.obj parser.obj scanner.obj useful.obj asc2ebc.obj ebc2asc.obj getopt.obj
 
 start_test : .symbolic
-    $(noecho)%make clean_sav
-    @set ERROR_FILE=exec.out
-    $(noecho)%create $(%ERROR_FILE)
+    @%make common_start_test
+    @if exist $(sav_file_2) @rm $(sav_file_2)
 
 save_sav : .procedure
-    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
+    @%make common_save_sav
     @if exist debug.out @cp debug.out $(sav_file_2) >$(nulldevice)
-    @if exist exec.out @rm exec.out
     @if exist debug.out @rm debug.out
 
 clean_sav : .procedure
-    @if exist $(sav_file) @rm $(sav_file)
+    @%make common_clean_sav
     @if exist $(sav_file_2) @rm $(sav_file_2)
 
 clean : .procedure

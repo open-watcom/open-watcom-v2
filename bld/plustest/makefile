@@ -6,12 +6,11 @@ plustest_name = result
 
 test : ./chktest.exe .symbolic
     set PLUSTEST_LOG_FILE=$(log_file)
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAILED
+    $(noecho)%make set_fail
     @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
     $]@ $(log_file)
     %append $(log_file) TEST
-    %append $(log_file) PASS $(%__CWD__)
-    
+    $(noecho)%make set_pass
+
 clean: .symbolic
     @%null

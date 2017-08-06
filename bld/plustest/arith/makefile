@@ -56,19 +56,18 @@ exes = &
     rsa.$(exe)      &
     waste.$(exe)
 
-test : .symbolic start clean start_test test.lnk $(exes)
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAILED
-    $(noecho)%make save_sav
-    diff $(sav_file) test.chk
-    $(noecho)%make clean_sav
-    %append $(log_file) PASS $(%__CWD__)
+test : .symbolic start clean start_test test.lnk $(exes) set_result
     @%make clean
 
+set_result : .symbolic
+    $(noecho)%make set_fail
+    $(noecho)%make common_save_sav
+    diff $(sav_file) test.chk
+    $(noecho)%make common_clean_sav
+    $(noecho)%make set_pass
+
 start_test : .symbolic
-    $(noecho)%make clean_sav
-    @set ERROR_FILE=exec.out
-    $(noecho)%create $(%ERROR_FILE)
+    @%make common_start_test
 
 dmc.$(exe) : dmc.obj
     @%make set_path_wlink
@@ -82,13 +81,6 @@ dmc.$(exe) : dmc.obj
     $(run) $(exec_prefix)$@ d dmc.out cpp.out >>$(%ERROR_FILE)
     @%make set_old_path
     diff -b cpp.out dmctest.out >>$(%ERROR_FILE)
-
-save_sav : .procedure
-    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
-    @if exist exec.out @rm exec.out
-
-clean_sav : .procedure
-    @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
     $(noecho)%make common_clean

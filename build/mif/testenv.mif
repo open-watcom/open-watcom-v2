@@ -1273,6 +1273,26 @@ set_old_path : .PROCEDURE .EXPLICIT
     @set PATH=$(old_path)
 !endif
 
+.ERROR
+    @if not "$(%ERROR_FILE)" == "" $(noecho)%append $(%ERROR_FILE) $(%ERROR_MSG)
+
+set_fail : .PROCEDURE .EXPLICIT
+    @set ERROR_FILE=$(log_file)
+    @set ERROR_MSG=FAIL $(%__CWD__)
+
+set_pass : .PROCEDURE .EXPLICIT
+    @%append $(log_file) PASS $(%__CWD__)
+
+set_test_header : .PROCEDURE .EXPLICIT
+    @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
+    @%make echo_test_header
+    $(noecho)%append $(log_file) TEST $(arch)/$(alt_error)
+
+echo_test_header : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo TEST $(arch)/$(alt_error)
+!endif
+
 echo_as : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo as $@

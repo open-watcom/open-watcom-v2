@@ -51,21 +51,20 @@ opt_link_er03 = LIB er03.lib
 
 exes = er01.$(exe) er02.$(exe) er03.$(exe)
 
-test : .symbolic start clean start_test test.lnk er01.lib er03.lib $(exes) ./chk_exec.exe
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAILED
-    $(noecho)%make save_sav
-    diff -b $(sav_file) extref.chk
-    $(noecho)%make clean_sav
-    %append $(log_file) PASS $(%__CWD__)
+test : .symbolic start clean start_test test.lnk er01.lib er03.lib $(exes) ./chk_exec.exe set_result
     $(noecho)%make clean
+
+set_result : .symbolic
+    $(noecho)%make set_fail
+    $(noecho)%make common_save_sav
+    diff -b $(sav_file) extref.chk
+    $(noecho)%make common_clean_sav
+    $(noecho)%make set_pass
 
 er02.$(exe) : er02.obj er02b.obj
 
 start_test : .symbolic
-    $(noecho)%make clean_sav
-    @set ERROR_FILE=exec.out
-    $(noecho)%create $(%ERROR_FILE)
+    @%make common_start_test
 
 er01.lib : er01b.obj er01c.obj er01d.obj
     @%make set_path_wlib
@@ -78,13 +77,6 @@ er03.lib : er03b.obj er03c.obj
     @%make echo_lib
     $(noecho)$(librarian) $^@ +er03b.obj +er03c.obj
     @%make set_old_path
-
-save_sav : .procedure
-    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
-    @if exist exec.out @rm exec.out
-
-clean_sav : .procedure
-    @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
     $(noecho)%make common_clean

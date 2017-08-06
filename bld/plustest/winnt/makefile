@@ -21,35 +21,39 @@ test_flags += -w0 $(incl_sys_nt)
 stack_386 = op stack=128k
 
 !ifndef __NT__
-test : .symbolic start clean start_test
+test : .symbolic start clean start_test set_result
 !else ifeq arch i86
-test : .symbolic start clean start_test
+test : .symbolic start clean start_test set_result
 !else ifeq targ_env_386 wnt386
-test : .symbolic start clean start_test tomdll.dll test.lnk tomexe.$(exe)
-    cat tomexe.out >>$(%ERROR_FILE)
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAILED
-    $(noecho)%make save_sav
-    diff $(sav_file) exec.chk
-    $(noecho)%make clean_sav
+test : .symbolic start clean start_test tomdll.dll test.lnk tomexe.$(exe) set_result
 !else ifdef __NT386__
-test : .symbolic start clean start_test
+test : .symbolic start clean start_test set_result
 !else
-test : .symbolic start clean start_test tomdll.dll test.lnk tomexe.$(exe)
-    cat tomexe.out >>$(%ERROR_FILE)
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAILED
-    $(noecho)%make save_sav
-    diff $(sav_file) exec.chk
-    $(noecho)%make clean_sav
+test : .symbolic start clean start_test tomdll.dll test.lnk tomexe.$(exe) set_result
 !endif
-    %append $(log_file) PASS $(%__CWD__)
     @%make clean
 
+set_result : .symbolic
+!ifndef __NT__
+!else ifeq arch i86
+!else ifeq targ_env_386 wnt386
+    cat tomexe.out >>$(%ERROR_FILE)
+    $(noecho)%make set_fail
+    $(noecho)%make common_save_sav
+    diff $(sav_file) exec.chk
+    $(noecho)%make common_clean_sav
+!else ifdef __NT386__
+!else
+    cat tomexe.out >>$(%ERROR_FILE)
+    $(noecho)%make set_fail
+    $(noecho)%make common_save_sav
+    diff $(sav_file) exec.chk
+    $(noecho)%make common_clean_sav
+!endif
+    $(noecho)%make set_pass
+
 start_test : .symbolic
-    $(noecho)%make clean_sav
-    @set ERROR_FILE=exec.out
-    $(noecho)%create $(%ERROR_FILE)
+    @%make common_start_test
 
 tomdll.dll : tomdll.obj tomdll.lnk
     @%make set_path_wlink
@@ -69,13 +73,6 @@ tomdll.lnk : $(__MAKEFILES__)
     @%append $^@ SYSTEM nt dll initinstance terminstance reference __DLLstart_
     @%append $^@ OPTION map, caseexact, stack=128k, quiet
     @%append $^@ FILE tomdll.obj
-
-save_sav : .procedure
-    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
-    @if exist exec.out @rm exec.out
-
-clean_sav : .procedure
-    @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
     $(noecho)%make common_clean

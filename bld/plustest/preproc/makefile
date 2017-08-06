@@ -50,19 +50,18 @@ all_tests = &
     pp17.i1 &
 
 
-test : .symbolic start clean start_test $(all_tests)
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAILED
-    $(noecho)%make save_sav
-    diff $(sav_file) exec.chk
-    $(noecho)%make clean_sav
-    %append $(log_file) PASS $(%__CWD__)
+test : .symbolic start clean start_test $(all_tests) set_result
     @%make clean
 
+set_result : .symbolic
+    $(noecho)%make set_fail
+    $(noecho)%make common_save_sav
+    diff $(sav_file) exec.chk
+    $(noecho)%make common_clean_sav
+    $(noecho)%make set_pass
+
 start_test : .symbolic
-    $(noecho)%make clean_sav
-    @set ERROR_FILE=exec.out
-    $(noecho)%create $(%ERROR_FILE)
+    @%make common_start_test
     $(noecho)%make gen_input
 
 zap_output : .procedure
@@ -79,13 +78,6 @@ gen_input: .procedure ./geninput.exe
 ./geninput.exe : geninput.c
     @%make echo_bldcl
     $(noecho)$(bld_cl) $(bld_cl_opts) -cc++ $<
-
-save_sav : .procedure
-    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
-    @if exist exec.out @rm exec.out
-
-clean_sav : .procedure
-    @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
     @%make zap_output

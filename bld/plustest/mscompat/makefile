@@ -12,7 +12,7 @@ diag0251$(ext) &
 diag0267$(ext) &
 diag0268$(ext) &
 lisa006$(ext) &
-lisa012$(ext)  
+lisa012$(ext)
 
 files_comp = &
 ms01$(ext) &
@@ -23,11 +23,11 @@ udcnv16$(ext) &
 udcnv17$(ext)
 
 .cpp.exe :
-    e:\cmds\mclauto.cmd $[* 
+    e:\cmds\mclauto.cmd $[*
     @%make set_path_rtdll
     $(run) $(exec_prefix)$[*.exe >> $(%ERROR_FILE)
     @%make set_old_path
-    
+
 .cpp.mer :
     e:\cmds\mclauto.cmd $[* /c
     type $[*.mer >> $(%ERROR_FILE)
@@ -38,26 +38,18 @@ err_out = $+ $(files_err) $-
 ext=.exe
 comp_out = $+ $(files_comp) $-
 
-test : .symbolic start clean start_test $(comp_out) $(err_out)
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAILED
-    $(noecho)%make save_sav
-    diff $(sav_file) mscompat.chk
-    $(noecho)%make clean_sav
-    %append $(log_file) PASS $(%__CWD__)
+test : .symbolic start clean start_test $(comp_out) $(err_out) set_result
     @%make clean
 
+set_result : .symbolic
+    $(noecho)%make set_fail
+    $(noecho)%make common_save_sav
+    diff $(sav_file) mscompat.chk
+    $(noecho)%make common_clean_sav
+    $(noecho)%make set_pass
+
 start_test : .symbolic
-    $(noecho)%make clean_sav
-    @set ERROR_FILE=exec.out
-    $(noecho)%create $(%ERROR_FILE)
-
-save_sav : .procedure
-    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
-    @if exist exec.out @rm exec.out
-
-clean_sav : .procedure
-    @if exist $(sav_file) @rm $(sav_file)
+    @%make common_start_test
 
 clean : .procedure
     @if exist *.mer $(noecho)rm *.mer

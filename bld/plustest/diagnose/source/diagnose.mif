@@ -404,7 +404,7 @@ diags_0399_defn = &
     diag0311$(err_sin) &
     diag0312$(err_sin) &
     diag0313$(err_sin) &
-    
+
 err_sin = .err
 err_sys = .ser
 
@@ -413,8 +413,7 @@ diags_0099 = $+ $(diags_0099_defn) $-
 diags_0199 = $+ $(diags_0199_defn) $-
 diags_0299 = $+ $(diags_0299_defn) $-
 diags_0399 = $+ $(diags_0399_defn) $-
-    
-    
+
 err_sin =
 err_sys =
 

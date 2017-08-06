@@ -36,33 +36,29 @@ stack_386=opt stack=64k
 stack_i86=opt stack=16k
 stack_axp=opt stack=64k
 
-# not posible to compile it for 16-bit due to 
+# not posible to compile it for 16-bit due to
 # ehmix.c requires more than 64kB memory for code
 #
 !ifeq arch i86
-test : .symbolic start clean start_test
+test : .symbolic start clean start_test set_result
 !else
-test : .symbolic start clean start_test test.lnk ehmix.$(exe)
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAILED
-    $(noecho)%make save_sav
-    diff $(sav_file) $(check_file)
-    $(noecho)%make clean_sav
+test : .symbolic start clean start_test test.lnk ehmix.$(exe) set_result
 !endif
-    %append $(log_file) PASS $(%__CWD__)
     @%make clean
 
+set_result : .symbolic
+!ifeq arch i86
+    $(noecho)%make set_pass
+!else
+    $(noecho)%make set_fail
+    $(noecho)%make common_save_sav
+    diff $(sav_file) $(check_file)
+    $(noecho)%make common_clean_sav
+    $(noecho)%make set_pass
+!endif
+
 start_test : .symbolic
-    $(noecho)%make clean_sav
-    @set ERROR_FILE=exec.out
-    $(noecho)%create $(%ERROR_FILE)
-
-save_sav : .procedure
-    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
-    @if exist exec.out @rm exec.out
-
-clean_sav : .procedure
-    @if exist $(sav_file) @rm $(sav_file)
+    @%make common_start_test
 
 clean : .procedure
     $(noecho)%make common_clean

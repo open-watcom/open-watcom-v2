@@ -31,20 +31,19 @@ opt_link = LIB tort.lib
 
 exes = dim2arr.$(exe) mdarrtst.$(exe)
 
-test : .symbolic start clean start_test test.lnk tort.lib $(exes)
-    cat output.out >>$(%ERROR_FILE)
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAILED
-    $(noecho)%make save_sav
-    diff $(sav_file) exec.chk
-    $(noecho)%make clean_sav
-    %append $(log_file) PASS $(%__CWD__)
+test : .symbolic start clean start_test test.lnk tort.lib $(exes) set_result
     @%make clean
 
+set_result : .symbolic
+    cat output.out >>$(%ERROR_FILE)
+    $(noecho)%make set_fail
+    $(noecho)%make common_save_sav
+    diff $(sav_file) exec.chk
+    $(noecho)%make common_clean_sav
+    $(noecho)%make set_pass
+
 start_test : .symbolic
-    $(noecho)%make clean_sav
-    @set ERROR_FILE=exec.out
-    $(noecho)%create $(%ERROR_FILE)
+    @%make common_start_test
 
 tort.lib : tort.lbc $(objs)
     @%make set_path_wlib
@@ -56,13 +55,6 @@ tort.lbc : $(__MAKEFILES__)
     $(noecho)%create $^@
     @%append $^@ $^*.lib
     @for %i in ( $(objs) ) do @%append $^@ -+%i
-
-save_sav : .procedure
-    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
-    @if exist exec.out @rm exec.out
-
-clean_sav : .procedure
-    @if exist $(sav_file) @rm $(sav_file)
 
 clean : .procedure
     $(noecho)%make common_clean

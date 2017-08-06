@@ -81,22 +81,22 @@ stderr_check_axp = 2>>stderr.out
 
 sav_file_2 = x$(arch)_$(alt_error).sav
 
-test : .symbolic start clean start_test $(batch_sym) test.lnk $(exes)
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAILED
+test : .symbolic start clean start_test $(batch_sym) test.lnk $(exes) set_result
+    @%make clean
+
+set_result : .symbolic
+    $(noecho)%make set_fail
     $(noecho)%make save_sav
     diff $(sav_file) exec.chk
 !ifdef stderr_check_$(arch)
     diff $(sav_file_2) stderr.chk
 !endif
     $(noecho)%make clean_sav
-    %append $(log_file) PASS $(%__CWD__)
-    @%make clean
+    $(noecho)%make set_pass
 
 start_test : .symbolic
-    $(noecho)%make clean_sav
-    @set ERROR_FILE=exec.out
-    $(noecho)%create $(%ERROR_FILE)
+    @%make common_start_test
+    @if exist $(sav_file_2) @rm $(sav_file_2)
 !ifdef stderr_check_$(arch)
     $(noecho)%create stderr.out
 !endif
@@ -112,7 +112,7 @@ $(batch_cmp) : $(__MAKEFILES__)
 
 batch_build : .symbolic test.lnk $(batch_lnk) $(batch_cmp)
     @%make set_path_wpp
-    $(wpp_$(arch)) -fc=$(batch_cmp) $(test_flags_$(arch)) 
+    $(wpp_$(arch)) -fc=$(batch_cmp) $(test_flags_$(arch))
     @%make set_path_wlink
     @%make echo_link
     $(noecho)$(linker) @$(batch_lnk)
@@ -120,13 +120,12 @@ batch_build : .symbolic test.lnk $(batch_lnk) $(batch_cmp)
 !endif
 
 save_sav : .procedure
-    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
+    @%make common_save_sav
     @if exist stderr.out @cp stderr.out $(sav_file_2) >$(nulldevice)
-    @if exist exec.out @rm exec.out
     @if exist stderr.out @rm stderr.out
 
 clean_sav : .procedure
-    @if exist $(sav_file) @rm $(sav_file)
+    @%make common_clean_sav
     @if exist $(sav_file_2) @rm $(sav_file_2)
 
 clean : .procedure
