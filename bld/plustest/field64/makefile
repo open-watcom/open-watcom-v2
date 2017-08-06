@@ -42,11 +42,7 @@ test : .symbolic start clean start_test test.lnk $(exes) set_result
     @%make clean
 
 set_result : .symbolic
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-    diff $(sav_file) test.chk
-    $(noecho)%make common_clean_sav
-    $(noecho)%make set_pass
+    $(noecho)%make common_set_result
 
 test1.$(exe) : test1.obj field.obj
 test2.$(exe) : test2.obj field.obj

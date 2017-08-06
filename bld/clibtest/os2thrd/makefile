@@ -3,6 +3,8 @@
 
 clibtest_name = os2thrd
 
+!ifdef __OS2__
+
 os2exes = tdll32_1.dll texe32_1.exe texe32_2.exe
 
 #all : start clean start_test $(os2exes) tests .symbolic
@@ -37,3 +39,9 @@ texe32_2.exe : ../c/test2.c
     @%make set_path_wlink
     $(linker) SYSTEM os2v2 $(link_opts) $(link_x86) opt offset=0x01000000 FILE $^*.obj
     @%make set_old_path
+
+!else
+
+all : .symbolic
+
+!endif

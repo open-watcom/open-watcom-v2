@@ -1,5 +1,7 @@
 ctest_name = inline
 
+inline_assembly = 1
+
 !include testenv1.mif
 !include inline.mif
 
@@ -19,36 +21,27 @@ test_flags_i86 += -s -os -wx -we
 .src: $(wasmtest_dir)/inline
 .asm: $(wasmtest_dir)/inline
 
-.asm.gc:
-    @set ERROR_MSG=failure to create $^.
-    @*awk -v target=$(init_$^&) -f $(wasmtest_dir)/createc.awk -v OUTFILE=$^. $[@
+test : .symbolic start clean start_test $($(arch)_inline_objs) set_result
+    @%make clean
 
-.src.gc:
-    @cp $< $@
-
-test : .symbolic start clean start_test $($(arch)_inline_objs) ./chk_exec.exe
-    @set ERROR_FILE=error.out
-    @set ERROR_MSG=failure to complete test stream
-    %write $(%ERROR_FILE) OK
-    $]@ exec.out >>$(%ERROR_FILE)
-    diff -b $(%ERROR_FILE) error.chk
-    %append $(log_file) PASS $(%__CWD__)
-    %make clean
+set_result : .symbolic ./chk_exec.exe
+    -@%write error.out OK
+    -$]@ exec.out >>error.out
+    $(noecho)%make set_fail
+    $(noecho)%make common_save_sav
+    diff -b error.out error.chk
+    $(noecho)%make common_clean_sav
+    $(noecho)%make set_pass
 
 start_test : .symbolic
-    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
-    @set ERROR_FILE=exec.out
-    %create $(%ERROR_FILE)
+    $(noecho)%make common_start_test
 !ifndef $(arch)_inline_objs
     @%append $(%ERROR_FILE) PASS decoding
 !endif
 
-save : .symbolic
-    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
-
 clean : .procedure
+    @%make common_clean
     @if exist *.gc rm -f *.gc
     @if exist *.ls1 rm -f *.ls1
     @if exist *.dis rm -f *.dis
     @if exist failure rm failure
-    @%make common_clean

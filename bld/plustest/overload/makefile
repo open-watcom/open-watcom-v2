@@ -131,9 +131,9 @@ set_result : .symbolic
 !ifeq arch i86
     # There are certain unavoidable differences between 16-bit and
     # 32-bit platforms, causing slightly different (but valid) results
-    diff $(sav_file) overload.i86
+    diff $(sav_file) execi86.chk
 !else
-    diff $(sav_file) overload.chk
+    diff $(sav_file) exec.chk
 !endif
     $(noecho)%make common_clean_sav
     $(noecho)%make set_pass

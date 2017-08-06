@@ -1,5 +1,7 @@
 plustest_name = inline
 
+inline_assembly = 1
+
 !include testenv1.mif
 !include inline.mif
 
@@ -19,22 +21,11 @@ test_flags_i86 += -s -os -wx -we
 .src: $(wasmtest_dir)/inline
 .asm: $(wasmtest_dir)/inline
 
-.asm.gcp:
-    @set ERROR_MSG=failure to create $^&
-    @*awk -v target=$(init_$^&) -f $(wasmtest_dir)/createc.awk -v OUTFILE=$^. $[@
-
-.src.gcp:
-    @cp $< $@ >$(nulldevice)
-
 test : .symbolic start clean start_test $($(arch)_inline_objs) ./chk_exec.exe set_result
     @%make clean
 
 set_result : .symbolic
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-    diff -b $(sav_file) inline.chk
-    $(noecho)%make common_clean_sav
-    $(noecho)%make set_pass
+    $(noecho)%make common_set_result
 
 start_test : .symbolic
     @%make common_start_test

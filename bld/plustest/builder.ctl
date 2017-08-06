@@ -51,26 +51,22 @@ rm *.sav
 [ INCLUDE winnt/builder.ctl ]
 [ INCLUDE yacl/builder.ctl ]
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
-
-cdsay .
-
 [ BLOCK <1> test ]
 #=================
+    cdsay .
     wmake -h
 
 [ BLOCK <1> testclean ]
 #======================
+    cdsay .
     wmake -h clean
 
 [ BLOCK <1> cleanlog ]
-#======================
-    cdsay <PROJDIR>
-    echo rm -f *.log
-    rm -f *.log
+#=====================
+    cdsay .
+    echo rm -f *.log *.sav
+    rm -f *.log *.sav
 
 [ BLOCK . . ]
-
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
 
 cdsay .

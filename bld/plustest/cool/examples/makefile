@@ -57,15 +57,11 @@ test : .symbolic start clean start_test ../cool.lib test.lnk $(exes) set_result
     @%make clean
 
 set_result : .symbolic
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-    diff $(sav_file) exec.chk
-    $(noecho)%make common_clean_sav
-    $(noecho)%make set_pass
+    $(noecho)%make common_set_result
 
 start_test : .symbolic
     @%make common_start_test
 
 clean : .procedure
-    @if exist ../cool.lib $(noecho)rm ../cool.lib
     $(noecho)%make common_clean
+    @if exist ../cool.lib $(noecho)rm ../cool.lib

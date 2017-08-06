@@ -45,7 +45,7 @@ set_result : .symbolic
 !else
     $(noecho)%make set_fail
     $(noecho)%make common_save_sav
-    diff $(sav_file) demo.chk
+    diff $(sav_file) exec.chk
     $(noecho)%make common_clean_sav
 !endif
     $(noecho)%make set_pass

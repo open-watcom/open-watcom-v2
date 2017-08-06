@@ -32,7 +32,7 @@ test : .symbolic start clean start_test test.lnk tbits.$(exe) set_result
 set_result : .symbolic
     $(noecho)%make set_fail
     $(noecho)%make common_save_sav
-    diff $(sav_file) ../bits/tbits.chk
+    diff $(sav_file) ../bits/exec.chk
     $(noecho)%make common_clean_sav
     $(noecho)%make set_pass
 

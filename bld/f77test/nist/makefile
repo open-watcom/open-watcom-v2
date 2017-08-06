@@ -61,25 +61,23 @@ fflags_axp += -INCPath=source #-we-w0
 
 .for: source
 
-test : .symbolic start clean start_test test.lnk $(positive_exes) ./chk_exec.exe
-    @set ERROR_FILE=error.out
-    @set ERROR_MSG=failure to complete test stream
-    echo OK > $(%ERROR_FILE)
-    $]@ exec.out >> $(%ERROR_FILE)
-    diff -b $(%ERROR_FILE) error.chk
-    %append $(log_file) PASS $(%__CWD__)
+test : .symbolic start clean start_test test.lnk $(positive_exes) set_result
     %make clean
 
-start_test : .symbolic
-    @if exist s$(arch)_$(alt_error).sav rm -f s$(arch)_$(alt_error).sav
-    @set ERROR_FILE=exec.out
-    %create $(%ERROR_FILE)
+set_result : .symbolic ./chk_exec.exe
+    -$(noecho)%write error.out OK
+    -$]@ exec.out >>error.out
+    $(noecho)%make set_fail
+    $(noecho)%make common_save_sav
+    diff -b error.out error.chk
+    $(noecho)%make common_clean_sav
+    $(noecho)%make set_pass
 
-save : .symbolic
-    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
+start_test : .symbolic
+    $(noecho)%make common_start_test
 
 clean : .procedure
+    @%make common_clean
     @if exist for007 rm for007
     @if exist for009 rm for009
     @if exist for024 rm for024
-    @%make common_clean

@@ -3,6 +3,8 @@
 
 clibtest_name = ntthrd
 
+!ifdef __NT__
+
 ntexes = tstdll1.dll tstexe1.exe
 
 #all : start clean start_test $(exes) tests .symbolic
@@ -30,3 +32,9 @@ tstexe1.exe : ../c/tstrtnt1.c tstdll1.lib
     @%make set_path_wlink
     $(linker) SYSTEM nt $(link_opts) $(link_x86) opt offset=0x01000000 FILE $^*.obj LIBRARY $]@
     @%make set_old_path
+
+!else
+
+all : .symbolic
+
+!endif

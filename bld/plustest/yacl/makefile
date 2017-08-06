@@ -60,11 +60,7 @@ test : .symbolic start clean start_test base.lib io.lib test.lnk $(exes) set_res
     @%make clean
 
 set_result : .symbolic
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-    diff $(sav_file) test.chk
-    $(noecho)%make common_clean_sav
-    $(noecho)%make set_pass
+    $(noecho)%make common_set_result
 
 dkbtrtst.$(exe) : dkbtrtst.obj
     @set ERROR_MSG=*** failure to link $^&

@@ -169,13 +169,10 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 !endif
 
 ./chk_exec.exe : $(watcom_dir)/c/chk_exec.c .EXPLICIT
-    @%make echo_bldcl
     $(noecho)$(bld_cl) $(bld_cl_opts) $(bld_extra_defines) $<
 
 ./chktest.exe : $(watcom_dir)/c/chktest.c .EXPLICIT
-    @%make echo_bldcl
     $(noecho)$(bld_cl) $(bld_cl_opts) $<
 
 ./catfile.exe: $(watcom_dir)/c/catfile.c .EXPLICIT
-    @%make echo_bldcl
     $(noecho)$(bld_cl) $(bld_cl_opts) $<

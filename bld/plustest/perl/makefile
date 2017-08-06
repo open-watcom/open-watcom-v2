@@ -32,11 +32,7 @@ test : .symbolic start clean start_test test.lnk $(exes) set_result
 
 set_result : .symbolic
     cat t2.out >>$(%ERROR_FILE)
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-    diff $(sav_file) exec.chk
-    $(noecho)%make common_clean_sav
-    $(noecho)%make set_pass
+    $(noecho)%make common_set_result
 
 perltest.$(exe) : perltest.obj perlclas.obj regex.obj
 perlasso.$(exe) : perlasso.obj perlclas.obj regex.obj

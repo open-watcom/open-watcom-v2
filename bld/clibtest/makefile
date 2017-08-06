@@ -1,71 +1,16 @@
 clibtest_name = result
 
-!include testenv2.mif
+!include testenv1.mif
 
-test_grp_list = &
-cgsupp &
-char &
-direct &
-environ &
-file &
-fmtint &
-fmttest &
-handleio &
-heap &
-heap2 &
-intel &
-intmath &
-mbyte &
-memory &
-misc &
-process &
-safefile &
-safefmt &
-safeio &
-safembyt &
-safesrch &
-safestr &
-safwstr &
-safwtime &
-search &
-startup &
-streamio &
-string &
-time
-
-
-!ifdef __DOS__
-test_grp_list += bios _dos
-!else ifdef __NT__
-test_grp_list += bios _dos ntthrd
-!else ifdef __OS2__
-test_grp_list += _dos os2thrd
-!else ifdef __UNIX__
-test_grp_list +=
-!endif
-
-# unused tests
-###############
-#
-
-test : .symbolic start clean start_test $(test_grp_list) ./chktest.exe
-#    @set ERROR_FILE=error.out
-#    @set ERROR_MSG=
+test : ./chktest.exe .symbolic
+    set CLIBTEST_LOG_FILE=$(log_file)
+    $(noecho)%make set_fail
     @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
     $]@ $(log_file)
     %append $(log_file) TEST
-    %append $(log_file) PASS $(%__CWD__)
-    %make clean
+    $(noecho)%make set_pass
 
-start_test: .symbolic
-    @if exist *.sav rm -f *.sav
-    @if exist $(log_file) rm -f $(log_file)
-    set CLIBTEST_LOG_FILE=$(log_file)
-
-$(test_grp_list) : .symbolic
-    @cd $@
-    -wmake -h
-    @cd ..
-
-clean : .procedure
-    @%make common_clean
+clean: .symbolic
+    @if exist chktest.exe rm chktest.exe
+    @if exist chktest.obj rm chktest.obj
+    @if exist chktest.map rm chktest.map

@@ -66,24 +66,22 @@ stack_i86 = opt stack=12k
 .c: source
 .p: source
 
-test : .symbolic start clean start_test $(positive_exes) ./chk_exec.exe
-    @set ERROR_FILE=error.out
-    @set ERROR_MSG=failure to complete test stream
-    %write $(%ERROR_FILE) OK
-    $]@ exec.out >> $(%ERROR_FILE)
-    diff -b $(%ERROR_FILE) error.chk
-    %append $(log_file) PASS $(%__CWD__)
+test : .symbolic start clean start_test test.lnk $(positive_exes) set_result
     %make clean
 
-start_test : .symbolic test.lnk
-    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
-    @set ERROR_FILE=exec.out
-    %create $(%ERROR_FILE)
+set_result : .symbolic ./chk_exec.exe
+    -@%write error.out OK
+    -$]@ exec.out >> error.out
+    $(noecho)%make set_fail
+    $(noecho)%make common_save_sav
+    diff -b error.out error.chk
+    $(noecho)%make common_clean_sav
+    $(noecho)%make set_pass
 
-save : .symbolic
-    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
+start_test : .symbolic
+    @%make common_start_test
 
 clean : .procedure
+    @%make common_clean
     @if exist failure rm -f failure
     @if exist *.i rm -f *.i
-    @%make common_clean

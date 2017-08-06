@@ -59,30 +59,36 @@ alt_error = 00
 
 test_flags_386 += $(add_br_$(no_br_$^*))
 
+sav_file_2 = x$(arch)_$(alt_error).sav
+
 .c: source
 
-test : .symbolic start clean start_test $(callconv_exes) ./chk_exec.exe
-    @set ERROR_MSG=symbol name failure
-    diff -b $(%RUN_FILE) sym$(arch)$(alt_error).chk
-    @set ERROR_FILE=error.out
-    @set ERROR_MSG=failure to complete test stream
-    %write $(%ERROR_FILE) OK
-    $]@ exec.out >>$(%ERROR_FILE)
-    diff -b $(%ERROR_FILE) error.chk
-    %append $(log_file) PASS $(%__CWD__)
+test : .symbolic start clean start_test test.lnk $(callconv_exes) set_result
     @%make clean
 
-start_test : .symbolic test.lnk
-    @if exist s$(arch)_$(alt_error).sav rm s$(arch)_$(alt_error).sav
-    @if exist x$(arch)_$(alt_error).sav rm x$(arch)_$(alt_error).sav
-    @set ERROR_FILE=exec.out
+set_result : .symbolic ./chk_exec.exe
+    -diff -b $(%RUN_FILE) sym$(arch)$(alt_error).chk >error.out
+    -%append error.out OK
+    -$]@ exec.out >>error.out
+    $(noecho)%make set_fail
+    $(noecho)%make common_save_sav
+    diff -b error.out error.chk
+    $(noecho)%make common_clean_sav
+    $(noecho)%make set_pass
+
+start_test : .symbolic
+    @%make common_start_test
+    @if exist $(sav_file_2) rm $(sav_file_2)
     @set RUN_FILE=symbols.out
-    %create $(%ERROR_FILE)
     %create $(%RUN_FILE)
 
-save : .symbolic
-    @if exist exec.out cp exec.out s$(arch)_$(alt_error).sav
-    @if exist symbols.out cp symbols.out x$(arch)_$(alt_error).sav
+save_sav : .symbolic
+    @%make common_save_sav
+    @if exist symbols.out cp symbols.out $(sav_file_2)
+
+clean_sav : .symbolic
+    @%make common_clean_sav
+    @if exist $(sav_file_2) rm $(sav_file_2)
 
 $(callconv_all_objs) : source/obj.c
     @set ERROR_MSG=failure to compile $^@

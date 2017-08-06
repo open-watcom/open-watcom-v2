@@ -94,13 +94,11 @@ test : .symbolic start clean start_test test.lnk $(positive_exes) set_result
     @%make clean
 
 set_result : ./chk_exec.exe .symbolic
-    @set ERROR_FILE=error.out
-    @set ERROR_MSG=failure to complete test stream
-    $(noecho)%write $(%ERROR_FILE) OK
-    -$]@ exec.out >>$(%ERROR_FILE)
+    -$(noecho)%write error.out OK
+    -$]@ exec.out >>error.out
     $(noecho)%make set_fail
     $(noecho)%make common_save_sav
-    diff -b error.out error.chk >$(nulldevice)
+    diff -b error.out exec.chk >$(nulldevice)
     $(noecho)%make common_clean_sav
     $(noecho)%make set_pass
 

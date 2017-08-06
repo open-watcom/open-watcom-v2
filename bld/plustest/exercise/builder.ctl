@@ -5,12 +5,11 @@ set PROJNAME=plustest
 
 set PROJDIR=<CWD>
 
-[ INCLUDE <OWROOT>/build/prolog.ctl ]
-
-cdsay .
+[ INCLUDE <OWROOT>/build/master.ctl ]
 
 [ BLOCK <1> test ]
 #=================
+    cdsay .
     wmake -h test0=1
     cdsay .
     wmake -h test1=1
@@ -55,14 +54,9 @@ cdsay .
 
 [ BLOCK <1> testclean ]
 #======================
+    cdsay .
     wmake -h clean
-
-[ BLOCK <1> cleanlog ]
-#======================
-    cdsay <PROJDIR>
-    echo rm -f *.log
-    rm -f *.log
 
 [ BLOCK . . ]
 
-[ INCLUDE <OWROOT>/build/epilog.ctl ]
+cdsay .

@@ -1308,6 +1308,11 @@ echo_cxx : .PROCEDURE .EXPLICIT
     @echo c++ $@
 !endif
 
+echo_wfc : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo wfc $@
+!endif
+
 echo_bldcl : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo bld_cl $@

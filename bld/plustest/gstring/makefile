@@ -24,11 +24,7 @@ test : .symbolic start clean start_test test.lnk strtest.$(exe) set_result
     @%make clean
 
 set_result : .symbolic
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-    diff $(sav_file) strtest.chk
-    $(noecho)%make common_clean_sav
-    $(noecho)%make set_pass
+    $(noecho)%make common_set_result
 
 strtest.$(exe) : strtest.obj string.obj strngrep.obj
 

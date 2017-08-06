@@ -55,11 +55,7 @@ test : .symbolic start clean start_test test.lnk er01.lib er03.lib $(exes) ./chk
     $(noecho)%make clean
 
 set_result : .symbolic
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-    diff -b $(sav_file) extref.chk
-    $(noecho)%make common_clean_sav
-    $(noecho)%make set_pass
+    $(noecho)%make common_set_result
 
 er02.$(exe) : er02.obj er02b.obj
 

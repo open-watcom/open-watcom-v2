@@ -45,11 +45,7 @@ test : .symbolic start clean start_test test.lnk $(exes) set_result
     @%make clean
 
 set_result : .symbolic
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-    diff $(sav_file) exec.chk
-    $(noecho)%make common_clean_sav
-    $(noecho)%make set_pass
+    $(noecho)%make common_set_result
 
 spltest.$(exe) : spltest.obj splash.obj regex.obj
 splassoc.$(exe) : splassoc.obj splash.obj regex.obj
