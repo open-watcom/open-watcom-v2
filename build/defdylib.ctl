@@ -22,7 +22,7 @@ cdsay <PROJDIR>
 [ BLOCK <1> clean ]
 #==================
     pmake -d build <PROJPMAKE> <2> <3> <4> <5> <6> <7> <8> <9> -h clean
-    
+
 [ BLOCK <1> boot ]
 #=================
     mkdir <OWOBJDIR>
