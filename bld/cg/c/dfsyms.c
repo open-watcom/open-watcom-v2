@@ -54,6 +54,7 @@
 #include "cgprotos.h"
 #include "feprotos.h"
 
+#define DWARF_CU_REC_NO_PCLO_PCHI   1
 
 extern  void            DoBigBckPtr(back_handle,offset);
 extern  void            DataLong( unsigned_32 );
@@ -483,7 +484,9 @@ void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
 {
     dw_cu_info      cu;
     back_handle     bck;
+#ifndef DWARF_CU_REC_NO_PCLO_PCHI
     segment_id      old;
+#endif
 
     if( _IsntModel( DBG_LOCALS | DBG_TYPES ) ) {
         return;
@@ -491,7 +494,7 @@ void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
     if( CcuDef ) {
         InitCU( &cu );
         cu.dbg_pch = dbg_pch;
-#if 0
+#ifdef DWARF_CU_REC_NO_PCLO_PCHI
         Pc_Low = NULL;
         Pc_High = NULL;
         bck = NULL;
@@ -650,7 +653,7 @@ void    DFObjLineInitDbgInfo( void )
         }
         InitCU( &cu );
         cu.dbg_pch = NULL;
-#if 0
+#if DWARF_CU_REC_NO_PCLO_PCHI
         cu.flags = false;
 #else
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
