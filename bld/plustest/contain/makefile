@@ -229,4 +229,5 @@ start_test : .symbolic
     @set ERROR_MSG=general error
 
 clean : .procedure
+    @%make echo_clean
     $(noecho)%make common_clean

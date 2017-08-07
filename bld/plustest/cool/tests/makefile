@@ -83,5 +83,6 @@ start_test : .symbolic
     @%make common_start_test
 
 clean : .procedure
-    @if exist ../cool.lib $(noecho)rm ../cool.lib
+    @%make echo_clean
     $(noecho)%make common_clean
+    @if exist ../cool.lib $(noecho)rm ../cool.lib

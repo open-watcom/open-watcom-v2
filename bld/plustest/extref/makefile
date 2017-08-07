@@ -75,4 +75,5 @@ er03.lib : er03b.obj er03c.obj
     @%make set_old_path
 
 clean : .procedure
+    @%make echo_clean
     $(noecho)%make common_clean

@@ -1343,6 +1343,11 @@ echo_diff : .PROCEDURE .EXPLICIT
     @echo diff $@
 !endif
 
+echo_clean : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo clean
+!endif
+
 common_clean : .PROCEDURE .EXPLICIT
-    -@rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
-    -@rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+    -$(noecho)rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
+    -$(noecho)rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res

@@ -101,4 +101,5 @@ $(callconv_all_objs) : source/obj.c
     objxref $^@ >>$(%RUN_FILE)
 
 clean : .procedure
+    @%make echo_clean
     @%make common_clean

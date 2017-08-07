@@ -129,11 +129,12 @@ clean_sav : .procedure
     @if exist $(sav_file_2) @rm $(sav_file_2)
 
 clean : .procedure
+    @%make echo_clean
+    $(noecho)%make common_clean
 !ifdef BATCH_TEST
     @if exist *.fcb $(noecho)rm *.fcb
     @if exist *.fcl $(noecho)rm *.fcl
 !endif
-    $(noecho)%make common_clean
 
 !ifdef BATCH_TEST
 .before

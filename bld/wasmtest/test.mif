@@ -19,6 +19,7 @@ start_test : .symbolic
     @set ERROR_MSG=unknown failure
 
 clean : .procedure
+    @%make echo_clean
     @if exist failure $(noecho)rm failure
     @if exist *.dis $(noecho)rm -f *.dis
     @if exist *.dib $(noecho)rm -f *.dib

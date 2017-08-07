@@ -40,8 +40,9 @@ start_test : .symbolic
 !endif
 
 clean : .procedure
+    @%make echo_clean
     @%make common_clean
-    @if exist *.gc rm -f *.gc
-    @if exist *.ls1 rm -f *.ls1
-    @if exist *.dis rm -f *.dis
-    @if exist failure rm failure
+    @if exist *.gc $(noecho)rm -f *.gc
+    @if exist *.ls1 $(noecho)rm -f *.ls1
+    @if exist *.dis $(noecho)rm -f *.dis
+    @if exist failure $(noecho)rm failure

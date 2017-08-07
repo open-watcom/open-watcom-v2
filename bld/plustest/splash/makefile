@@ -60,4 +60,5 @@ regex.obj : regex.c
     @%make set_old_path
 
 clean : .procedure
+    @%make echo_clean
     $(noecho)%make common_clean

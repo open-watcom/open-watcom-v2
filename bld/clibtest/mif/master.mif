@@ -540,4 +540,6 @@ runlnx : $(lnxexes) .symbolic
 additional_cleanup = lnx_3r lnx_3s
 
 clean global : .procedure
-    rm -f *.err *.obj *.exe *.exp *.rex *.dll *.lib *.res *.log *.sym *.map tmpfile _tmpfile.* $(additional_cleanup)
+    @%make echo_clean
+    @%make common_clean
+    $(noecho)rm -f *.rex *.log tmpfile _tmpfile.* $(additional_cleanup)

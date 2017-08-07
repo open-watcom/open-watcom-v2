@@ -52,4 +52,5 @@ matrix.lbc : makefile
     @for %i in ( $(objs) ) do @%append $@ -+%i
 
 clean : .procedure
+    @%make echo_clean
     $(noecho)%make common_clean

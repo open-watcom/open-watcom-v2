@@ -13,6 +13,7 @@ test : ./chktest.exe .symbolic
     $(noecho)%make set_pass
 
 clean: .symbolic
-    @if exist chktest.exe rm chktest.exe
-    @if exist chktest.obj rm chktest.obj
-    @if exist chktest.map rm chktest.map
+    @%make echo_clean
+    @if exist chktest.exe $(noecho)rm chktest.exe
+    @if exist chktest.obj $(noecho)rm chktest.obj
+    @if exist chktest.map $(noecho)rm chktest.map

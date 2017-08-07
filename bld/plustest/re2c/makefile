@@ -50,4 +50,5 @@ clean_sav : .procedure
     @if exist $(sav_file_2) @rm $(sav_file_2)
 
 clean : .procedure
+    @%make echo_clean
     $(noecho)%make common_clean

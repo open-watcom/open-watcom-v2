@@ -30,5 +30,6 @@ save : .symbolic
     @if exist diag0000.out cp diag0000.out s$(arch)0000.sav
 
 clean : .procedure
+    @%make echo_clean
     @%make common_clean
-    @if exist *.ser rm *.ser
+    @if exist *.ser $(noecho)rm *.ser

@@ -144,6 +144,7 @@ mmwindef.cpp : nominmax.cpp
     cp nominmax.cpp mmwindef.cpp >$(nulldevice)
 
 clean : .procedure
+    @%make echo_clean
+    $(noecho)%make common_clean
     @if exist mmwin16.cpp $(noecho)rm -f mmwin16.cpp
     @if exist mmwindef.cpp $(noecho)rm -f mmwindef.cpp
-    $(noecho)%make common_clean

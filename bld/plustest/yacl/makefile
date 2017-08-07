@@ -94,7 +94,8 @@ start_test : .symbolic
     @%make common_start_test
 
 clean : .procedure
+    @%make echo_clean
+    $(noecho)%make common_clean
     @if exist *.dat $(noecho)rm -f *.dat
     @if exist base.lib $(noecho)rm -f base.lib
     @if exist io.lib $(noecho)rm -f io.lib
-    $(noecho)%make common_clean

@@ -122,5 +122,6 @@ start_test : .symbolic
     @set ERROR_MSG=error
 
 clean : .procedure
-    @if exist failure $(noecho)rm -f failure
+    @%make echo_clean
     $(noecho)%make common_clean
+    @if exist failure $(noecho)rm -f failure

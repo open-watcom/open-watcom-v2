@@ -82,6 +82,7 @@ start_test : .symbolic
     @%make common_start_test
 
 clean : .procedure
+    @%make echo_clean
     @%make common_clean
-    @if exist failure rm -f failure
-    @if exist *.i rm -f *.i
+    @if exist failure $(noecho)rm -f failure
+    @if exist *.i $(noecho)rm -f *.i

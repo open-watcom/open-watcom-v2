@@ -77,7 +77,8 @@ start_test : .symbolic
     $(noecho)%make common_start_test
 
 clean : .procedure
+    @%make echo_clean
     @%make common_clean
-    @if exist for007 rm for007
-    @if exist for009 rm for009
-    @if exist for024 rm for024
+    @if exist for007 $(noecho)rm for007
+    @if exist for009 $(noecho)rm for009
+    @if exist for024 $(noecho)rm for024

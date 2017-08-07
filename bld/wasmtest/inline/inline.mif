@@ -140,4 +140,5 @@ log_file=testcomp.log
 all : clean $(asm_objs) $(c_objs) .SYMBOLIC
 
 clean : .SYMBOLIC
-    @rm -f *.obj *.ls? *.dis *.gc *.err mem.trk *.log
+    @%make echo_clean
+    $(noecho)rm -f *.obj *.ls? *.dis *.gc *.err mem.trk *.log

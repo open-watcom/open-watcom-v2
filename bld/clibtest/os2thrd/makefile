@@ -44,4 +44,6 @@ texe32_2.exe : ../c/test2.c
 
 all : .symbolic
 
+clean : .symbolic
+
 !endif

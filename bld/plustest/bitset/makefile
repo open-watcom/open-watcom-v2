@@ -34,4 +34,5 @@ start_test : .symbolic
     @%make common_start_test
 
 clean : .procedure
+    @%make echo_clean
     $(noecho)%make common_clean

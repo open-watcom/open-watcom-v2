@@ -79,4 +79,5 @@ dmc.$(exe) : dmc.obj
     diff -b cpp.out dmctest.out >>$(%ERROR_FILE)
 
 clean : .procedure
+    @%make echo_clean
     $(noecho)%make common_clean

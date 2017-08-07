@@ -94,5 +94,6 @@ start_test : .symbolic
     $(noecho)%make common_start_test
 
 clean : .procedure
+    @%make echo_clean
     @%make common_clean
-    @if exist failure rm -f failure
+    @if exist failure $(noecho)rm -f failure

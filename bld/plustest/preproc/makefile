@@ -76,5 +76,6 @@ gen_input: .procedure ./geninput.exe
     $(noecho)$(bld_cl) $(bld_cl_opts) -cc++ $<
 
 clean : .procedure
-    @%make zap_output
+    @%make echo_clean
     $(noecho)%make common_clean
+    @%make zap_output

@@ -34,8 +34,9 @@ start_test : .symbolic
 !endif
 
 clean : .procedure
+    @%make echo_clean
+    $(noecho)%make common_clean
     @if exist *.gcp $(noecho)rm -f *.gcp
     @if exist *.ls1 $(noecho)rm -f *.ls1
     @if exist *.dis $(noecho)rm -f *.dis
     @if exist failure $(noecho)rm failure
-    $(noecho)%make common_clean

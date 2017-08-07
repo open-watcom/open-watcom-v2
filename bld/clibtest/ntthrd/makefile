@@ -37,4 +37,6 @@ tstexe1.exe : ../c/tstrtnt1.c tstdll1.lib
 
 all : .symbolic
 
+clean : .symbolic
+
 !endif

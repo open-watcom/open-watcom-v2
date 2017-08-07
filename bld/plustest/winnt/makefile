@@ -75,4 +75,5 @@ tomdll.lnk : $(__MAKEFILES__)
     @%append $^@ FILE tomdll.obj
 
 clean : .procedure
+    @%make echo_clean
     $(noecho)%make common_clean

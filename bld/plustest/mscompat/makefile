@@ -48,5 +48,6 @@ start_test : .symbolic
     @%make common_start_test
 
 clean : .procedure
-    @if exist *.mer $(noecho)rm *.mer
+    @%make echo_clean
     $(noecho)%make common_clean
+    @if exist *.mer $(noecho)rm *.mer

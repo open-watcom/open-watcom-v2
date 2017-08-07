@@ -139,5 +139,6 @@ clean_sav : .procedure
     @if exist s$(arch)spec.sav @rm s$(arch)spec.sav
 
 clean : .procedure
+    @%make echo_clean
     @%make diag_clean
     $(noecho)%make common_clean
