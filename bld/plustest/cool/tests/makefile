@@ -72,9 +72,9 @@ set_result : .symbolic
     $(noecho)%make set_fail
     $(noecho)%make common_save_sav
 !ifeq arch i86
-    diff $(sav_file) execi86.chk
+    diff $(sav_file) execi86.chk >$(nulldevice)
 !else
-    diff $(sav_file) exec.chk
+    diff $(sav_file) exec.chk >$(nulldevice)
 !endif
     $(noecho)%make common_clean_sav
     $(noecho)%make set_pass
