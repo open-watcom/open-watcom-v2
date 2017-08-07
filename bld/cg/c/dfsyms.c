@@ -653,7 +653,7 @@ void    DFObjLineInitDbgInfo( void )
         }
         InitCU( &cu );
         cu.dbg_pch = NULL;
-#if DWARF_CU_REC_NO_PCLO_PCHI
+#ifdef DWARF_CU_REC_NO_PCLO_PCHI
         cu.flags = false;
 #else
 #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
