@@ -41,11 +41,8 @@ exes = &
     justify.$(exe) &
     spltest.$(exe)
 
-test : .symbolic start clean start_test test.lnk $(exes) set_result
+test : .symbolic start clean start_test test.lnk $(exes) common_set_result
     @%make clean
-
-set_result : .symbolic
-    $(noecho)%make common_set_result
 
 spltest.$(exe) : spltest.obj splash.obj regex.obj
 splassoc.$(exe) : splassoc.obj splash.obj regex.obj

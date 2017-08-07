@@ -20,11 +20,8 @@ stack_axp=opt stack=16k
 
 exes = testi.$(exe) testf.$(exe)
 
-test : .symbolic start clean start_test test.lnk $(exes) set_result
+test : .symbolic start clean start_test test.lnk $(exes) common_set_result
     @%make clean
-
-set_result : .symbolic
-    $(noecho)%make common_set_result
 
 testi.$(exe) : testi.obj iformat.obj
 testf.$(exe) : testf.obj fformat.obj

@@ -21,11 +21,8 @@ test_flags_i86 += -s -os -wx -we
 .src: $(wasmtest_dir)/inline
 .asm: $(wasmtest_dir)/inline
 
-test : .symbolic start clean start_test $($(arch)_inline_objs) ./chk_exec.exe set_result
+test : .symbolic start clean start_test $($(arch)_inline_objs) ./chk_exec.exe common_set_result
     @%make clean
-
-set_result : .symbolic
-    $(noecho)%make common_set_result
 
 start_test : .symbolic
     @%make common_start_test

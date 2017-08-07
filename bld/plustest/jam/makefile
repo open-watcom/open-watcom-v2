@@ -20,11 +20,8 @@ stack_386=opt stack=8k
 stack_i86=opt stack=4k
 stack_axp=opt stack=8k
 
-test : .symbolic start clean start_test test.lnk testftor.$(exe) set_result
+test : .symbolic start clean start_test test.lnk testftor.$(exe) common_set_result
     @%make clean
-
-set_result : .symbolic
-    $(noecho)%make common_set_result
 
 testftor.$(exe) : testftor.obj assert.obj
 

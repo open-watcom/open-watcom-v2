@@ -32,11 +32,8 @@ opt_link = LIBRARY matrix.lib
 
 exes = test.$(exe) tmatrix.$(exe)
 
-test : .symbolic start clean start_test matrix.lib test.lnk $(exes) set_result
+test : .symbolic start clean start_test matrix.lib test.lnk $(exes) common_set_result
     @%make clean
-
-set_result : .symbolic
-    $(noecho)%make common_set_result
 
 start_test : .symbolic
     @%make common_start_test

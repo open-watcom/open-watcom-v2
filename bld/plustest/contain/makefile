@@ -218,11 +218,8 @@ exes = $(wc_list_template) $(wc_vect_template) $(wc_hash_template) &
 
 .cpp : source
 
-test : .symbolic start clean start_test memchk.obj test.lnk $(exes) set_result
+test : .symbolic start clean start_test memchk.obj test.lnk $(exes) common_set_result
     @%make clean
-
-set_result : .symbolic
-    $(noecho)%make common_set_result
 
 start_test : .symbolic
     @%make common_start_test
