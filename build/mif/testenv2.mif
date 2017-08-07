@@ -23,9 +23,7 @@ start : .SYMBOLIC .EXPLICIT
      @echo using !loaddll $(dll_wcc_$(arch))
 !  endif
 !endif
-    @echo ==== $(%__CTIME__) $(%__CWD__) ====
-    @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
-    %append $(log_file) TEST $(clibtest_name)
+    @%make set_test_header2
 
 !if 0
 test.lnk : $(__MAKEFILES__) .EXPLICIT

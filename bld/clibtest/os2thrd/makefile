@@ -10,7 +10,7 @@ os2exes = tdll32_1.dll texe32_1.exe texe32_2.exe
 #all : start clean start_test $(os2exes) tests .symbolic
 all : start clean start_test $(os2exes) os2tests .symbolic
 #    diff $(%ERROR_FILE) test.chk
-    %append $(log_file) PASS $(%__CWD__)
+    %make set_pass
     @%make clean
 
 !include ../mif/master.mif

@@ -129,7 +129,12 @@ path_wlink = $(src_dir)\wl\ntx64.dll
 .ERASE
 
 .ERROR
+    echo "error!"
     @%make set_old_path
+    @if not "$(%ERROR_FILE)" == "" $(noecho)%append $(%ERROR_FILE) $(%ERROR_MSG)
+#    @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_FILE=failure
+    @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_MSG=unknown failure after test end
+
 
 !ifdef wasmtest_name
 bld_extra_defines = -DWASM
@@ -1273,11 +1278,6 @@ set_old_path : .PROCEDURE .EXPLICIT
     @set PATH=$(old_path)
 !endif
 
-.ERROR
-    @if not "$(%ERROR_FILE)" == "" $(noecho)%append $(%ERROR_FILE) $(%ERROR_MSG)
-#    @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_FILE=failure
-    @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_MSG=unknown failure after test end
-
 set_fail : .PROCEDURE .EXPLICIT
     @set ERROR_FILE=$(log_file)
     @set ERROR_MSG=FAIL $(%__CWD__)
@@ -1290,9 +1290,19 @@ set_test_header : .PROCEDURE .EXPLICIT
     @%make echo_test_header
     $(noecho)%append $(log_file) TEST $(arch)/$(alt_error)
 
+set_test_header2 : .PROCEDURE .EXPLICIT
+    @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
+    @%make echo_test_header2
+    $(noecho)%append $(log_file) TEST $(clibtest_name)
+
 echo_test_header : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo TEST $(arch)/$(alt_error)
+!endif
+
+echo_test_header2 : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo TEST $(clibtest_name)
 !endif
 
 echo_as : .PROCEDURE .EXPLICIT
@@ -1351,5 +1361,5 @@ echo_clean : .PROCEDURE .EXPLICIT
 !endif
 
 common_clean : .PROCEDURE .EXPLICIT
-    -$(noecho)rm -f *.?bj *.err *.lnk *.exe *.exp *.out *.sym *.dmp *.map
-    -$(noecho)rm -f *.lst *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res
+    -$(noecho)rm -f *.?bj *.err *.lnk *.exp *.out *.sym *.dmp *.map *.lst
+    -$(noecho)rm -f *.tmp *.lbc *.def *.dll *.pdb *.pch *.lib *.res *.exe
