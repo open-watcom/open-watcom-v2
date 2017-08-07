@@ -1275,6 +1275,8 @@ set_old_path : .PROCEDURE .EXPLICIT
 
 .ERROR
     @if not "$(%ERROR_FILE)" == "" $(noecho)%append $(%ERROR_FILE) $(%ERROR_MSG)
+#    @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_FILE=failure
+    @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_MSG=unknown failure after test end
 
 set_fail : .PROCEDURE .EXPLICIT
     @set ERROR_FILE=$(log_file)

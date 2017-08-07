@@ -14,20 +14,20 @@ build_proc()
             if [ "$1" = "cpp" ]; then
                 cd $OWSRCDIR/plustest
                 builder -q -i testclean
-                builder -q -i test
+                builder -i test
                 cat result.log
             else
                 cd $OWSRCDIR/wasmtest
                 builder -q -i testclean
-                builder -q -i test
+                builder -i test
                 cat result.log
                 cd $OWSRCDIR/ctest
                 builder -q -i testclean
-                builder -q -i test
+                builder -i test
                 cat result.log
                 cd $OWSRCDIR/f77test
                 builder -q -i testclean
-                builder -q -i test
+                builder -i test
                 cat result.log
             fi
         fi
