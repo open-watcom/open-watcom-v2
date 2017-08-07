@@ -129,7 +129,6 @@ path_wlink = $(src_dir)\wl\ntx64.dll
 .ERASE
 
 .ERROR
-    echo "error!"
     @%make set_old_path
     @if not "$(%ERROR_FILE)" == "" $(noecho)%append $(%ERROR_FILE) $(%ERROR_MSG)
 #    @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_FILE=failure
@@ -1353,6 +1352,11 @@ echo_dmpobj : .PROCEDURE .EXPLICIT
 echo_diff : .PROCEDURE .EXPLICIT
 !ifeq verbose 0
     @echo diff $@
+!endif
+
+echo_wbind : .PROCEDURE .EXPLICIT
+!ifeq verbose 0
+    @echo wbind $@
 !endif
 
 echo_clean : .PROCEDURE .EXPLICIT

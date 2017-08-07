@@ -465,7 +465,8 @@ w386_3r.exe : $(srcfile)
     @%make echo_link
     $(noecho)$(linker) SYSTEM win386 $(link_opts) $(link_x86) OPTION mindata=32K,maxdata=32K FILE $^*.obj
     @%make set_old_path
-    $(wbind) -n -q -s $(win386ldr) $^*
+    @%make echo_wbind
+    $(noecho)$(wbind) -n -q -s $(win386ldr) $^*
 
 w386_3s.exe : $(srcfile)
     @%make echo_cc
@@ -474,7 +475,8 @@ w386_3s.exe : $(srcfile)
     @%make echo_link
     $(noecho)$(linker) SYSTEM win386 $(link_opts) $(link_x86) OPTION mindata=32K,maxdata=32K FILE $^*.obj
     @%make set_old_path
-    $(wbind) -n -q -s $(win386ldr) $^*
+    @%make echo_wbind
+    $(noecho)$(wbind) -n -q -s $(win386ldr) $^*
 
 wnt_3r.exe : $(srcfile)
     @%make echo_cc

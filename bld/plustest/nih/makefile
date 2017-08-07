@@ -59,8 +59,11 @@ test_flags_386 = -mf
 test_flags_i86 = -ml
 test_flags_axp =
 
-test : .symbolic start clean start_test $(objs) common_set_result
+test : .symbolic start clean start_test $(objs) set_result
     @%make clean
+
+set_result : .symbolic
+    $(noecho)%make set_pass
 
 start_test : .symbolic
     @%make common_start_test
