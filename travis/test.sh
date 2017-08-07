@@ -13,21 +13,21 @@ build_proc()
         if [ "$TRAVIS_EVENT_TYPE" = "push" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then
             if [ "$1" = "cpp" ]; then
                 cd $OWSRCDIR/plustest
-                builder -i testclean
-                builder -i test
+                builder -q -i testclean
+                builder -q -i test
                 cat result.log
             else
                 cd $OWSRCDIR/wasmtest
-                builder -i testclean
-                builder -i test
+                builder -q -i testclean
+                builder -q -i test
                 cat result.log
                 cd $OWSRCDIR/ctest
-                builder -i testclean
-                builder -i test
+                builder -q -i testclean
+                builder -q -i test
                 cat result.log
                 cd $OWSRCDIR/f77test
-                builder -i testclean
-                builder -i test
+                builder -q -i testclean
+                builder -q -i test
                 cat result.log
             fi
         fi

@@ -265,6 +265,13 @@ common_start_test : .procedure .EXPLICIT
 common_set_result : .procedure .EXPLICIT
     $(noecho)%make set_fail
     $(noecho)%make common_save_sav
+    diff -b $(sav_file) exec.chk >$(nulldevice)
+    $(noecho)%make common_clean_sav
+    $(noecho)%make set_pass
+
+common_set_result_display : .procedure .EXPLICIT
+    $(noecho)%make set_fail
+    $(noecho)%make common_save_sav
     diff -b $(sav_file) exec.chk
     $(noecho)%make common_clean_sav
     $(noecho)%make set_pass
