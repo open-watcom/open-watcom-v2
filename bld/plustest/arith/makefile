@@ -56,11 +56,8 @@ exes = &
     rsa.$(exe)      &
     waste.$(exe)
 
-test : .symbolic start clean start_test test.lnk $(exes) set_result
+test : .symbolic start clean start_test test.lnk $(exes) common_set_result
     @%make clean
-
-set_result : .symbolic
-    $(noecho)%make common_set_result
 
 start_test : .symbolic
     @%make common_start_test
