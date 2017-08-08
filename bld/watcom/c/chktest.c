@@ -227,13 +227,13 @@ int main( int argc, char **argv ) {
         if( IsCdsayLine( curr_buff ) ) {
             if( state == 1 ) {
                 retval = 1;
-                tprintf( "line %u: '%s' test failed\n", line, last_buff );
+                tprintf( "line %u: '%s' test failed\n", line - 1, last_buff );
             } else if( state == 2 ) {
                 retval = 1;
-                tprintf( "line %u: '%s' test failed\n", line, last_buff );
+                tprintf( "line %u: '%s' test failed\n", line - 1, last_buff );
             } else if( fail != 0 ) {
                 retval = 1;
-                tprintf( "line %u: '%s' test failed\n", line, last_buff );
+                tprintf( "line %u: '%s' test failed\n", line - 1, last_buff );
             }
             p = last_buff;
             last_buff = curr_buff;

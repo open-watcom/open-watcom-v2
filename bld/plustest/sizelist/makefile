@@ -20,15 +20,8 @@ stack_386=opt stack=8k
 stack_i86=opt stack=4k
 stack_axp=opt stack=8k
 
-test : .symbolic start clean start_test test.lnk psfistt.$(exe) set_result
+test : .symbolic start clean start_test test.lnk psfistt.$(exe) common_set_result
     @%make clean
-
-set_result : .symbolic
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-    diff $(sav_file) psfistt.chk
-    $(noecho)%make common_clean_sav
-    $(noecho)%make set_pass
 
 start_test : .symbolic
     @%make common_start_test
