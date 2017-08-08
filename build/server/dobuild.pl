@@ -400,16 +400,14 @@ sub process_log
     while (<LOGFILE>) {
         s/\r?\n//;
         if (/^[=]+ .* [=]+$/) {     # new project start
-            if ($project_name ne 'none') {
+            if ($project_name ne 'none' && $arch_test ne '') {
                 if ($first_message eq 'yes') {
                     print REPORT "$title Failed!";
                     $result = 'fail';
                     $first_message = 'no';
                 }
-                if ($arch_test ne '') {
-                    print REPORT "\t\t$project_name\t$arch_test";
-                    $result = 'fail';
-                }
+                print REPORT "\t\t$project_name\t$arch_test";
+                $result = 'fail';
             }
             @fields = split;
             $project_name = Common::remove_OWloc($fields[2]);
@@ -417,6 +415,17 @@ sub process_log
         } elsif (/^TEST/) {
             @fields = split;
             $arch_test = $fields[1];
+        } elsif (/^FAIL/) {
+            if ($project_name ne 'none' && $arch_test ne '') {
+                if ($first_message eq 'yes') {
+                    print REPORT "$title Failed!";
+                    $result = 'fail';
+                    $first_message = 'no';
+                }
+                print REPORT "\t\t$project_name\t$arch_test";
+                $result = 'fail';
+            }
+            $project_name = 'none';
         } elsif (/^PASS/) {
             $project_name = 'none';
         }
@@ -424,15 +433,13 @@ sub process_log
     close(LOGFILE);
 
     # Handle the case where the failed test is the last one.
-    if ($project_name ne 'none') {
-      if ($arch_test ne '') {
+    if ($project_name ne 'none' && $arch_test ne '') {
         if ($first_message eq 'yes') {
             print REPORT "$title Failed!";
             $first_message = 'no';
         }
         print REPORT "\t\t$project_name\t$arch_test";
         $result = 'fail';
-      }
     }
 
     # This is what we want to see.

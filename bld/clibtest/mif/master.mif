@@ -152,17 +152,17 @@ rundeps = $(r_$(bld_os))
 
 !endif
 
-test : start clean start_test $(exes) tests set_result .symbolic
-    @%make clean
-
-set_result : .symbolic
+test : start clean start_build $(exes) start_test tests .symbolic
 #    diff $(%ERROR_FILE) test.chk
     %make set_pass
+    @%make clean
 
-start_test : .symbolic
+start_build : .symbolic
 #    @set ERROR_FILE=exec.out
 #    %create $(%ERROR_FILE)
 
+start_test : .symbolic
+    $(noecho)%make set_fail
 
 tests : $(rundeps) .symbolic
     @echo The clib tests completed: SUCCESS!
