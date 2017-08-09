@@ -13,7 +13,7 @@ all : .symbolic start clean start_test $(ntexes) nttests
     %make set_pass
     @%make clean
 
-!include ../mif/master.mif
+!include ../master.mif
 
 nttests: ntrunwnt .symbolic
     @echo The clib tests completed: SUCCESS!

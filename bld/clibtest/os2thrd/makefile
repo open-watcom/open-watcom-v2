@@ -13,7 +13,7 @@ all : start clean start_test $(os2exes) os2tests .symbolic
     %make set_pass
     @%make clean
 
-!include ../mif/master.mif
+!include ../master.mif
 
 os2tests: os2runos2 .symbolic
     @echo The clib tests completed: SUCCESS!
