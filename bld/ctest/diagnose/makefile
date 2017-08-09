@@ -1,7 +1,7 @@
 ctest_name = diagnose
 
 !include testenv1.mif
-!include source/diagnose.mif
+!include ../diagnose.mif
 
 diagnose_opts += -we -wx -e1000 -eq
 archdep_opts = -dARCH=$(arch) -fr=.ser
@@ -21,7 +21,7 @@ set_result : .symbolic
     $(noecho)%make set_pass
 
 diag0000.out : ./catfile.exe $(diags_0099)
-    $[@ -a *.err | sed -f fixpath.sed >diag0000.out
+    $[@ -a *.err | sed -f source/fixpath.sed >diag0000.out
 
 start_test : .symbolic
     @if exist s$(arch)0000.sav rm s$(arch)0000.sav

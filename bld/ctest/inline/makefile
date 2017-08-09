@@ -3,7 +3,7 @@ ctest_name = inline
 inline_assembly = 1
 
 !include testenv1.mif
-!include inline.mif
+!include ../inline.mif
 
 !ifdef test1
 test_flags_386 =

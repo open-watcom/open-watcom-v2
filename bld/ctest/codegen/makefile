@@ -1,7 +1,7 @@
 ctest_name = codegen
 
 !include testenv1.mif
-!include source/codegen.mif
+!include ../codegen.mif
 
 test_flags = -we-w0 -Isource
 
