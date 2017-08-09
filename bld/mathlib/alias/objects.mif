@@ -1,6 +1,6 @@
 #                    d16c d16i d32c d32i n32c n32i winc wini nta ntp opc lpc lmp
 #================================================================================
-!if exist(../../../objs.mif)
-!   include ../../../objs.mif
+!if exist(../../../objs.gmk)
+!   include ../../../objs.gmk
 !endif
 !include ../../../../objlist.mif

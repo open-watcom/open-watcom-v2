@@ -11,11 +11,11 @@ all : $(objfiles) $(libname).lib .symbolic
 
 $(libname).lib : $(objs) $(libs) $(__MAKEFILES__)
     @rm -f export.tmp
-    @rm -f export.def
+    @rm -f export.gdf
     @%make echo_lib
     $(librarian) $(mlib_lib_flags) $(mlib_linkage_flags) $^@ $(objs) $(libs)
 !ifeq linkage dynamic
-    $(sed) -f $(lib_misc_dir)/sed/export.sed export.tmp > export.def
+    $(sed) -f $(lib_misc_dir)/sed/export.sed export.tmp > export.gdf
 !endif
 
 !include ../../../deps.mif

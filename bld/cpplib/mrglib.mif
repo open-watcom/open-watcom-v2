@@ -1,6 +1,6 @@
 proj_name = cpplib
 
-additional_cleanup = *.def
+additional_cleanup = *.gdf
 
 !include $(cpplib_dir)/libtarg.mif
 
@@ -53,20 +53,20 @@ $(target_lib) : $(libs) $(__MAKEFILES__)
     $(noecho)%create $^&.lbc
     @for %i in ($(libs)) do @%append $^&.lbc +%i
     @rm -f export.tmp
-    @rm -f export.def
+    @rm -f export.gdf
     @%make echo_lib
     $(librarian) $(plib_lib_flags) $(plib_linkage_flags) $^@ @$^&.lbc
 !ifeq linkage dynamic
-    $(sed) -f $(lib_misc_dir)/sed/export.sed export.tmp > export.def
+    $(sed) -f $(lib_misc_dir)/sed/export.sed export.tmp > export.gdf
 !endif
 
 $(target_lib_x) : $(libsx) $(__MAKEFILES__)
     $(noecho)%create $^&.lbc
     @for %i in ($(libsx)) do @%append $^&.lbc +%i
     @rm -f exportx.tmp
-    @rm -f exportx.def
+    @rm -f exportx.gdf
     @%make echo_lib
     $(librarian) $(plib_lib_flags) $(plibx_linkage_flags) $^@ @$^&.lbc
 !ifeq linkage dynamic
-    $(sed) -f $(lib_misc_dir)/sed/export.sed exportx.tmp > exportx.def
+    $(sed) -f $(lib_misc_dir)/sed/export.sed exportx.tmp > exportx.gdf
 !endif

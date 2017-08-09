@@ -11,7 +11,7 @@ dll_libs = $+ &
 
 dll_def = $+ &
     $(cpplib_dir)/runtime/nt386.def &
-    $(cpplib_dir)/library/$(__pifx__).dll/exportx.def &
+    $(cpplib_dir)/library/$(__pifx__).dll/exportx.gdf &
     $-
 
 dll_objs = $+ &

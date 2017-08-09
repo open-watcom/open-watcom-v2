@@ -3,7 +3,7 @@
 !include $(clib_dir)/librules.mif
 
 .c   : ../../../c
-.asm : ../../../a
+.asm .gas : ../../../a
 
 all : $(objfiles) $(libname).lib .symbolic
     @%null

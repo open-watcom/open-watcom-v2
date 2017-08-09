@@ -1,5 +1,7 @@
 proj_name = mathlib
 
+.EXTENSIONS: .gas
+
 # remap fpu to processor
 mlib_286 = 286
 mlib_287 = 286

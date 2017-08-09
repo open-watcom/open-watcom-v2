@@ -4,6 +4,7 @@
 *.core
 *.d32
 *.dip
+*.dis
 *.dll
 *.dSYM
 *.elf
@@ -11,13 +12,27 @@
 *.exe
 *.exp
 *.ext
+# generated .asm source file
+*.gas
+# generated C source file
 *.gc
+# generated .ch source file
 *.gch
+# generated C++ source file
 *.gcp
+# generated .def file
+*.gdf
+# generated .dh source file
 *.gdh
+# generated .dlg source file (dialog resource)
 *.gdl
-*.gh
+# generated .h source file
+*.gh 
+# generated .mif make file
+*.gmk
+# generated .cpp source file
 *.gpp
+# generated .rc source file
 *.grc
 *.i
 *.i0
@@ -61,7 +76,7 @@
 *.u
 
 /*/
-!/bld/
+#!/bld/
 !/build/
 !/distrib/
 !/docs/
@@ -96,12 +111,10 @@
 /docs/txt/*
 
 ###
-/bld/as/*/*/*_in.y
-/bld/as/*/*/*_in.re
-/bld/as/*/*/*lexyy.c
-/bld/as/*/*/*ytab.*
-#
-/bld/aui/os2*/*.dlg
+#/bld/as/*/*/*_in.y
+#/bld/as/*/*/*_in.re
+#/bld/as/*/*/*lexyy.c
+#/bld/as/*/*/*ytab.*
 #
 /bld/awk/*/*
 !/bld/awk/c/*
@@ -109,18 +122,10 @@
 #
 /bld/browser/dlgprs/*/*ytab.*
 #
-/bld/clib/alias/objs.mif
-/bld/clib/alias/a/*
-/bld/clib/library/*/*/*.def
-#
 /bld/clibtest/*/
 !/bld/clibtest/c/*
 !/bld/clibtest/*/makefile
 !/bld/clibtest/*/builder.ctl
-#
-/bld/cpplib/library/*/*/*.def
-#
-#/bld/ctest/*/*
 #
 /bld/f77test/nist/FOR*
 /bld/f77test/nist/__wfc__.vm*
@@ -134,10 +139,6 @@
 #
 /bld/ide/cfg/*/*.cfg
 #
-/bld/mathlib/alias/objs.mif
-/bld/mathlib/alias/a/*
-/bld/mathlib/library/*/*/*.def
-#
 /bld/misc/*/unicode*
 #
 /bld/os2api/os2286/*/*
@@ -148,7 +149,6 @@
 #
 /bld/plusplus/*/*/ytab.*
 #
-/bld/plustest/*/*.dis
 /bld/plustest/owstl/mmwin16.cpp
 /bld/plustest/owstl/mmwindef.cpp
 #
@@ -180,7 +180,6 @@
 !/bld/w32api/test/*
 #
 /bld/wasmtest/*/*.dib
-/bld/wasmtest/*/*.dis
 #
 !/bld/wattcp/inc/sys/*.err
 #
@@ -215,7 +214,6 @@
 /bld/wmake/regress/cmds/*
 #
 /bld/wv/dbg/*/*.dbg
-/bld/wv/os2/*/*.dlg
 ###
 
 stderr.txt

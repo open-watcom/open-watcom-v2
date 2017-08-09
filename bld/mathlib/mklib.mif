@@ -5,6 +5,7 @@
 
 .c   : ../../../c
 .asm : ../../../a;$(fpuemu_dir)/i86/asm;$(fpuemu_dir)/386/asm
+.gas : ../../../a
 
 all : $(objfiles) $(libname).lib .symbolic
     @%null
