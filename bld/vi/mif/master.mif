@@ -8,11 +8,11 @@ vi_autodepends = .AUTODEPEND
 
 vi_trmem = 1
 
+.EXTENSIONS: .gch .gdh
 .EXTENSIONS: .ch .dh
-.EXTENSIONS: .ctl .dyn
 .EXTENSIONS: .vi .dat
 
-additional_cleanup = *.rex *.dh *.ch $(bind_compiled)
+additional_cleanup = *.rex *.gdh *.gch $(bind_compiled)
 
 !include cproj.mif
 !include defrule.mif
@@ -78,21 +78,21 @@ $(name).exe : $(special) $(objs) $(objsroot) $(objinit) $(libs) $(other) $(videp
 $(bind_compiled) : $(bind_compiled:./=../dat/) $(__MAKEFILES__)
     vicomp ../dat/$^. $^.
 
-setfs.obj : setfs.c setfs.ch setfs.dh
-setgen.obj : setgen.c setgen.ch setgen.dh
-setscr.obj : setscr.c setscr.ch
+setfs.obj : setfs.c setfs.gch setfs.gdh
+setgen.obj : setgen.c setgen.gch setgen.gdh
+setscr.obj : setscr.c setscr.gch
 
-setfs.ch : ../win/ctl/setfs.ctl
-setscr.ch : ../win/ctl/setscr.ctl
-setgen.ch : ../win/ctl/setgen.ctl
+setfs.gch : ../win/ctl/setfs.ch
+setscr.gch : ../win/ctl/setscr.ch
+setgen.gch : ../win/ctl/setgen.ch
 
-setfs.ch setscr.ch setgen.ch : $(__MAKEFILES__)
+setfs.gch setscr.gch setgen.gch : $(__MAKEFILES__)
     parsectl $[@ $@ Ctl_$^&
 
-setfs.dh : ../win/ctl/setfs.dyn
-setgen.dh : ../win/ctl/setgen.dyn
+setfs.gdh : ../win/ctl/setfs.dh
+setgen.gdh : ../win/ctl/setgen.dh
 
-setfs.dh setgen.dh: $(__MAKEFILES__)
+setfs.gdh setgen.gdh: $(__MAKEFILES__)
     parsedyn $[@ $@ Dyn_$^&
 
 $(name).res : $(vi_dir)/res/viw.rc $(__MAKEFILES__) $(vi_autodepends)

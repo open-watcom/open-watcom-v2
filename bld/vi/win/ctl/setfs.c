@@ -260,8 +260,8 @@ static void fs_set( void *dlg, ctl_elt *ctl, void *data )
     }
 }
 
-#include "setfs.dh"
-#include "setfs.ch"
+#include "setfs.gdh"
+#include "setfs.gch"
 
 static void globalTodlgData( dlg_data *data, info *envInfo )
 {

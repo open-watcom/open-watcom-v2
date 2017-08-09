@@ -103,7 +103,7 @@ static void scrn_set( void *dlg, ctl_elt *ctl, void *data )
     }
 }
 
-#include "setscr.ch"
+#include "setscr.gch"
 
 static void globalTodlgData( void )
 {
