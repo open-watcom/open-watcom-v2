@@ -78,31 +78,27 @@
 *.u
 
 /*/
-#!/bld/
+!/bld/
 !/build/
+!/contrib/
 !/distrib/
 !/docs/
 !/travis/
 
+!/contrib/**
 
-/contrib/*
-!/contrib/*
-
-/build/*
-!/build/*.lnk
-!/build/*.awk
-!/build/*.ctl
-!/build/external/*
-!/build/mif/*
-!/build/server/*
+/build/*/
+!/build/bwlink.lnk
+!/build/external/
+!/build/external/**
+!/build/mif/
+!/build/server/
 
 /distrib/ow/*/*
 
-!/docs/doc/whelp/*.cop
+!/docs/doc/**
+!/docs/gml/**
 /docs/dos/*
-!/docs/gml/dos/*.exe
-!/docs/gml/os2/*.exe
-!/docs/gml/syslibl/*.cop
 /docs/html/*
 /docs/htmlhelp/*
 /docs/nt/*
@@ -113,21 +109,24 @@
 /docs/txt/*
 
 ###
-#/bld/as/*/*/*_in.y
-#/bld/as/*/*/*_in.re
-#/bld/as/*/*/*lexyy.c
-#/bld/as/*/*/*ytab.*
+/bld/as/*/*/*_in.y
+/bld/as/*/*/*_in.re
+/bld/as/*/*/*lexyy.c
+/bld/as/*/*/*ytab.*
 #
-/bld/awk/*/*
-!/bld/awk/c/*
-!/bld/awk/h/*
+!/bld/aui/*/*.gh
+#
+/bld/awk/*/proctab.c
+/bld/awk/*/ytab.h
+!/bld/awk/c/proctab.c
+!/bld/awk/h/ytab.h
 #
 /bld/browser/dlgprs/*/*ytab.*
 #
-/bld/clibtest/*/
-!/bld/clibtest/c/*
-!/bld/clibtest/*/makefile
-!/bld/clibtest/*/builder.ctl
+#/bld/clibtest/*/
+#!/bld/clibtest/c/*
+#!/bld/clibtest/*/makefile
+#!/bld/clibtest/*/builder.ctl
 #
 /bld/f77test/nist/FOR*
 /bld/f77test/nist/__wfc__.vm*
@@ -162,12 +161,7 @@
 #
 /bld/sdk/wr/*/*ytab.*
 #
-!/bld/src/dll/dll16.lnk
-!/bld/src/dll/dll32.lnk
-!/bld/src/dll/gen16.lnk
-!/bld/src/dll/gen32.lnk
-!/bld/src/os2/dll/dllsamp.lnk
-!/bld/src/os2/som/wps/owobject.lnk
+!/bld/src/**/*.lnk
 #
 /bld/vi/*/*.cfg
 /bld/vi/*/*.ini
@@ -220,6 +214,7 @@
 
 stderr.txt
 stdout.txt
+failures
 
 binbuild
 
