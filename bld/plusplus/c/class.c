@@ -1180,8 +1180,6 @@ static void defineInlineFuncsAndDefArgExprs( CLASS_DATA *data )
     SCOPE sym_scope;
     PTREE defarg_expr;
 
-    ExpectingToken( T_RIGHT_BRACE );
-
     SrcFileGetTokenLocn( &locn );
     // process default args
     save_scope = GetCurrScope();

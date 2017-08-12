@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
+* Copyright (c) 2017-2017 The Open Watcom Contributors. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -24,36 +24,22 @@
 *
 *  ========================================================================
 *
-* Description:  WHEN YOU FIGURE OUT WHAT THIS FILE DOES, PLEASE
-*               DESCRIBE IT HERE!
+* Description: Function declarations for creating c++11 Lambda closures.
 *
 ****************************************************************************/
 
+#ifndef _LAMBDA_H
+#define _LAMBDA_H
 
-#ifndef _YYDRIVER_H
+#include "ptree.h"
+#include "yydriver.h"
+#include "symtype.h"
 
-#include "preproc.h"
+extern void       LambdaStartClosure(PARSE_STACK *state);
+extern PTREE      LambdaFinishClosure();
+extern DECL_INFO *LambdaMakeClosureCallOpDeclaration(DECL_INFO *parameter_declaration_clause,
+                                                     DECL_SPEC *trailing_return_type,
+                                                     TOKEN_LOCN *locn);
+extern void       LambdaAttachBodyToCallOp(DECL_INFO *lambda_function);
 
-typedef struct parse_stack PARSE_STACK;
-
-extern void ParseFlush( void );
-extern REWRITE *ParseGetRecordingInProgress( TOKEN_LOCN ** );
-extern PTREE ParseExpr( TOKEN end_token );
-extern void ParseDecls( void );
-extern PTREE ParseExprDecl( void );
-extern PTREE ParseMemInit( void );
-extern PTREE ParseDefArg( void );
-extern PTREE ParseTemplateIntDefArg( void );
-extern PTREE ParseTemplateTypeDefArg( void );
-extern DECL_INFO *ParseException( void );
-extern DECL_SPEC *ParseClassInstantiation( REWRITE * );
-extern DECL_INFO *ReparseFunctionDeclaration( REWRITE * );
-extern void ParseClassMemberInstantiation( REWRITE * );
-extern void ParseFunctionInstantiation( REWRITE * );
-extern void ParsePushQualification( void * );
-extern void *ParsePopQualification( void );
-extern void *ParseCurrQualification( void );
-extern SYMBOL ParseCurrFunction( void );
-
-#define _YYDRIVER_H
 #endif

@@ -148,6 +148,7 @@ common_objs = &
     $(_subdir_)jis2unic.obj &
     $(_subdir_)keyword.obj &
     $(_subdir_)label.obj &
+    $(_subdir_)lambda.obj &
     $(_subdir_)linkage.obj &
     $(_subdir_)mainproc.obj &
     $(_subdir_)membptr.obj &

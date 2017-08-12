@@ -29,6 +29,7 @@ YYDRIVER: driver code to make use of YACC generated parser tables and support
 #include "memmgr.h"
 #include "cgfront.h"
 #include "rtngen.h"
+#include "lambda.h"
 #ifndef NDEBUG
 #include "pragdefn.h"
 #include "dbg.h"
@@ -1320,6 +1321,16 @@ static void pushClassData( PARSE_STACK *state, type_flag flags, CLASS_INIT extra
         extra |= CLINIT_TEMPLATE_DECL;
     }
     ClassInitState( flags, extra, class_mod_list );
+}
+
+static void pushLambdaData( PARSE_STACK *state )
+/**********************************************/
+{
+    GLOBAL_STACK **head;
+
+    head = &(state->gstack);
+    GStackPush( head, GS_CLASS_DATA );
+    ClassPush( &((*head)->u.classdata) );
 }
 
 static void reuseGStack( PARSE_STACK *state, gstack_type id )

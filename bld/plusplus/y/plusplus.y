@@ -511,6 +511,18 @@ Modified        By              Reason
 %type <tree> expr-decl-stmt
 %type <tree> goal-symbol
 
+%type <tree> lambda-expression
+%type <tree> lambda-introducer
+%type <tree> lambda-capture
+%type <tree> lambda-capture-opt
+%type <tree> capture-default
+%type <tree> capture-list
+%type <tree> capture
+%type <tree> simple-capture
+%type <tree> init-capture
+%type <dinfo> lambda-declarator
+%type <dinfo> lambda-declarator-opt
+
 %nonassoc Y_LEFT_PAREN
 %nonassoc Y_FAVOUR_REDUCE_SPECIAL
 
@@ -741,6 +753,7 @@ primary-expression
     | Y_LEFT_PAREN expression Y_RIGHT_PAREN
     { $$ = $2; }
     | id-expression
+    | lambda-expression
     ;
 
 id-expression
@@ -3544,4 +3557,99 @@ special-new-direct-abstract-declarator
     ;
 
 
+
+lambda-expression
+    : lambda-introducer lambda-declarator-opt function-body /* non-standard */
+    {
+        GStackPop( &(state->gstack) );  /* decl-info */
+        if( $2->has_dspec ) {
+            GStackPop( &(state->gstack) );      /* decl-spec */
+        }
+
+        LambdaAttachBodyToCallOp($2);
+
+        $$ = LambdaFinishClosure();
+
+        GStackPop( &(state->gstack) );
+        GStackPop( &(state->gstack) );
+    }
+    ;
+
+lambda-introducer
+    : Y_LEFT_BRACKET lambda-capture-opt Y_RIGHT_BRACKET
+    {
+
+        pushLambdaData( state );
+        pushDefaultDeclSpec( state );
+        LambdaStartClosure(state);
+        $$ = NULL;
+    }
+    ;
+
+lambda-capture
+    : capture-default
+    | capture-list
+    | capture-default Y_COMMA capture-list
+    { $$ = NULL; }
+    ;
+
+lambda-capture-opt
+    : /* nothing */
+    | lambda-capture
+    {
+        CErr1( ERR_NOT_IMPLEMENTED ); // Captures are not yet implemented
+    }
+    ;
+
+capture-default
+    : Y_AND
+    { $$ = NULL; }
+    | Y_EQUAL
+    { $$ = NULL; }
+    ;
+
+capture-list
+    : capture
+    | capture-list Y_COMMA capture
+    { $$ = NULL; }
+    ;
+
+capture
+    : simple-capture
+    | init-capture
+    { $$ = NULL; }
+    ;
+
+simple-capture
+    : identifier
+    | Y_AND identifier
+    { $$ = NULL; }
+    | Y_THIS
+    { $$ = NULL; }
+    ;
+
+init-capture
+    : identifier initializer
+    | Y_AND identifier initializer
+    { $$ = NULL; }
+    ;
+
+lambda-declarator
+    : Y_LEFT_PAREN parameter-declaration-clause Y_RIGHT_PAREN Y_ARROW decl-specifier-seq
+    {
+        $$ = LambdaMakeClosureCallOpDeclaration($2, $5, &yylp[1]);
+
+        GStackPush( &(state->gstack), GS_DECL_INFO );
+        state->gstack->u.dinfo = $$;
+    }
+    ;
+
+lambda-declarator-opt
+    : /* nothing */
+    {
+        CErr1( ERR_NOT_IMPLEMENTED );
+    }
+    | lambda-declarator
+    { $$ = $1; }
+    ;
 %%

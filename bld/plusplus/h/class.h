@@ -32,6 +32,8 @@
 
 #ifndef _CLASS_H
 
+#include "template.h"
+
 typedef struct vf_hide VF_HIDE;
 
 typedef struct class_data CLASS_DATA;
