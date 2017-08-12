@@ -133,6 +133,7 @@ path_wlink = $(src_dir)\wl\ntx64.dll
     @if not "$(%ERROR_FILE)" == "" $(noecho)%append $(%ERROR_FILE) $(%ERROR_MSG)
 #    @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_FILE=failure
     @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_MSG=unknown failure after test end
+    @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_FILE=failures
 
 
 !ifdef wasmtest_name
