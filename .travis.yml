@@ -12,7 +12,7 @@ env:
     - OWOBJDIR=binbuild
     - OWDOCBUILD=0
     - OWDOCQUIET=1
-    - OWUSE_FILENAME_VERSION=1
+#    - OWUSE_FILENAME_VERSION=1
     - OWBRANCH=master
     - OWBRANCH_COVERITY=coverity_scan
     - OWTRAVIS_REPO_SLUG=open-watcom/travis-ci-ow-builds
