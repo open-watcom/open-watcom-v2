@@ -5,7 +5,9 @@
 *.d32
 *.dip
 *.dis
+# ignore *.dll files, but include *.dll subdirectories
 *.dll
+!*.dll/
 *.dSYM
 *.elf
 *.err
