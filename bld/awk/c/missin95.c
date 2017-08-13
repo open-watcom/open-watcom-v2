@@ -3,8 +3,9 @@
    if this won't load, use the return NULL statements. */
 
 #include <stdio.h>
+#include "awk.h"
 
-FILE *popen(char *s, char *m) {
+FILE *popen( const char *s, const char *m ) {
 #ifdef __DOS__
     s=s;m=m;
     return( NULL );
@@ -13,7 +14,7 @@ FILE *popen(char *s, char *m) {
 #endif
 }
 
-int pclose(FILE *f) {
+int pclose( FILE *f ) {
 #ifdef __DOS__
     f=f;
     return( 0 );
