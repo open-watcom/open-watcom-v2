@@ -46,18 +46,17 @@ build_proc()
 {
     if [ "$TRAVIS_BRANCH" = "$OWBRANCH" ]; then
         if [ "$TRAVIS_EVENT_TYPE" = "pull_request" ]; then
-            if [ "$1" = "build" ]; then
+            if [ "$1" = "boot" ]; then
                 bootutil_proc
                 if [ $RC -eq 0 ]; then
                     cd $OWSRCDIR
                     builder boot
                     RC=$?
-                    if [ $RC -eq 0 ]; then
-                        cd $OWSRCDIR
-                        builder
-                        RC=$?
-                    fi
                 fi
+            elif [ "$1" = "build" ]; then
+                cd $OWSRCDIR
+                builder build
+                RC=$?
             else
                 RC=0
             fi
@@ -69,22 +68,22 @@ build_proc()
                     builder -q boot
                     RC=$?
                 fi
+            elif [ "$1" = "build" ]; then
+                cd $OWSRCDIR
+                builder -q build
+                RC=$?
+                if [ $RC -eq 0 ]; then
+                    export OWRELROOT=$OWROOT/test
+                    builder -q cprel
+                fi
+            elif [ "$1" = "docpdf" ]; then
+                cd $OWSRCDIR
+                builder docpdf
+                RC=$?
             else
                 cd $OWSRCDIR
-                if [ "$1" = "build" ]; then
-                    builder -q build
-                    RC=$?
-                    if [ $RC -eq 0 ]; then
-                        export OWRELROOT=$OWROOT/test
-                        builder -q cprel
-                    fi
-                elif [ "$1" = "docpdf" ]; then
-                    builder docpdf
-                    RC=$?
-                else
-                    builder -q $1
-                    RC=$?
-                fi
+                builder -q $1
+                RC=$?
             fi
         fi
     elif [ "$TRAVIS_BRANCH" = "$OWBRANCH_COVERITY" ]; then
