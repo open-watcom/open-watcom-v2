@@ -12219,3 +12219,8 @@ can no longer appear as a storage specifier.
 :WARNING. 1
 When C++11 is enabled, an implicit conversion from std::nullptr_t
 to bool is suspicious.
+
+:MSGSYM. ERR_CXX11_LAMBDA
+:MSGTXT. Lambdas are only available in C++11 mode (-za0x flag).
+:MSGJTXT.
+Feature is only available with -za0x flag.

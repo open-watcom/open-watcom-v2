@@ -111,6 +111,11 @@ DECL_INFO *LambdaMakeClosureCallOpDeclaration(DECL_INFO *parameter_declaration_c
  **/
 PTREE LambdaFinishClosure()
 {
+    // Lambdas are only supported starting c++11.
+    if ( !CompFlags.enable_std0x ) {
+        CErr(ERR_CXX11_LAMBDA);
+    }
+
 	DECL_SPEC * complete_closure_type = ClassEnd();
 	complete_closure_type->stg_class = STG_AUTO; //FIXME
 
