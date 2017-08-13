@@ -4,6 +4,7 @@
 
 #include <stdio.h>
 #include "awk.h"
+#include "proto.h"
 
 FILE *popen( const char *s, const char *m ) {
 #ifdef __DOS__
