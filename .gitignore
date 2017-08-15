@@ -29,7 +29,7 @@
 # generated .dlg source file (dialog resource)
 *.gdl
 # generated .h source file
-*.gh 
+*.gh
 # generated .mif make file
 *.gmk
 # generated .cpp source file
@@ -77,6 +77,8 @@
 *.trp
 *.u
 
+*ytab.*
+
 /*/
 !/bld/
 !/build/
@@ -112,21 +114,11 @@
 /bld/as/*/*/*_in.y
 /bld/as/*/*/*_in.re
 /bld/as/*/*/*lexyy.c
-/bld/as/*/*/*ytab.*
-#
-!/bld/aui/*/*.gh
 #
 /bld/awk/*/proctab.c
-/bld/awk/*/ytab.h
 !/bld/awk/c/proctab.c
+!/bld/awk/c/ytab.c
 !/bld/awk/h/ytab.h
-#
-/bld/browser/dlgprs/*/*ytab.*
-#
-#/bld/clibtest/*/
-#!/bld/clibtest/c/*
-#!/bld/clibtest/*/makefile
-#!/bld/clibtest/*/builder.ctl
 #
 /bld/f77test/nist/FOR*
 /bld/f77test/nist/__wfc__.vm*
@@ -146,20 +138,17 @@
 /bld/os2api/os2386/*/*
 #
 /bld/pbide/cfg/*/*.cfg
-/bld/pbide/*/*/ytab.*
-#
-/bld/plusplus/*/*/ytab.*
 #
 /bld/plustest/owstl/mmwin16.cpp
 /bld/plustest/owstl/mmwindef.cpp
+!/bld/plustest/re2c05/ytab.h
+#
+!/bld/re2c/h/ytab.h
 #
 /bld/rc/rc/*/*.uni
-/bld/rc/rc/*/*ytab.*
 #
 /bld/rcsdll/batch/*/*.bat
 /bld/rcsdll/batch/*/*.cmd
-#
-/bld/sdk/wr/*/*ytab.*
 #
 !/bld/src/**/*.lnk
 #
@@ -181,14 +170,7 @@
 #
 /bld/wcl/owcc/*/*.owc
 #
-/bld/wgml/test/*.ops
-/bld/wgml/test/*.OPS
-/bld/wgml/test/*.nps
-/bld/wgml/test/*.old
-/bld/wgml/test/*.OLD
-/bld/wgml/test/*.new
-/bld/wgml/test/*.ntr
-/bld/wgml/test/testlib/*.bat
+/bld/wgml/test/testlib/*
 #
 /bld/win386/vxd/*.386
 /bld/win386/conv/win386/*
@@ -215,8 +197,6 @@
 stderr.txt
 stdout.txt
 failures
-
-binbuild
 
 !makefile
 !afile
