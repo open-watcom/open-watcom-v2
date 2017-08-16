@@ -51,8 +51,17 @@ opt_link_er03 = LIB er03.lib
 
 exes = er01.$(exe) er02.$(exe) er03.$(exe)
 
-test : .symbolic start clean start_test test.lnk er01.lib er03.lib $(exes) ./chk_exec.exe common_set_result
+test : .symbolic start clean start_test test.lnk er01.lib er03.lib $(exes) set_result
     $(noecho)%make clean
+
+set_result : ./chk_exec.exe .symbolic
+    -$(noecho)%write error.out OK
+    -$]@ exec.out >>error.out
+    $(noecho)%make set_fail
+    $(noecho)%make common_save_sav
+    diff -b error.out error.chk >$(nulldevice)
+    $(noecho)%make common_clean_sav
+    $(noecho)%make set_pass
 
 er02.$(exe) : er02.obj er02b.obj
 
