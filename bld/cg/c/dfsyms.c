@@ -321,19 +321,20 @@ void    DFInitDbgInfo( void )
     CcuDef = false;
     Client = NULL;
 }
-#define MAX_LANG 4
+
 struct lang_map{
      uint       lang;
      char       name[10];
 };
 
-
-struct lang_map LangNames[MAX_LANG] = {
+struct lang_map LangNames[] = {
     {DWLANG_C,       "C"},
     {DWLANG_CPP,     "CPP"},
     {DWLANG_FORTRAN, "FORTRAN"},
     {DWLANG_FORTRAN, "FORTRAN77"},
 };
+
+#define MAX_LANG    (sizeof( LangNames ) / sizeof( LangNames[0] ))
 
 static int SetLang( void )
 {
@@ -488,6 +489,10 @@ void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
     segment_id      old;
 #endif
 
+#ifndef DWARF_CU_REC_NO_PCLO_PCHI
+    /* unused parameters */ (void *)code;
+#endif
+
     if( _IsntModel( DBG_LOCALS | DBG_TYPES ) ) {
         return;
     }
@@ -501,7 +506,7 @@ void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
         cu.flags = false;
 #else
         old = SetOP( code );
-#if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
+    #if _TARGET & ( _TARG_IAPX86 | _TARG_80386 )
         if( _IsTargetModel( FLAT_MODEL ) ) {
             bck = MakeLabel();
             OutLabel( bck->lbl );
@@ -521,13 +526,13 @@ void    DFBegCCU( segment_id code, dw_sym_handle dbg_pch )
             Pc_Low = NULL;
             Pc_High = NULL;
         }
-#else
+    #else
         bck = MakeLabel();
         OutLabel( bck->lbl );
         Pc_Low = bck;
         Pc_High = MakeLabel();
         cu.flags = true;
-#endif
+    #endif
         SetOP( old );
 #endif
         Comp_High = Pc_High;
