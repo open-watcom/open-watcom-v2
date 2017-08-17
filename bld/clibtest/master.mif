@@ -207,8 +207,8 @@ runtests : .symbolic
     @%make underlnx386
     @echo ==== $(%__CTIME__) $(%__CWD__) ==== | tee lnx.log
     @echo Running tests under Linux... | tee -a lnx.log
-    -@./lnx_3r | tee -a lnx.log
-    -@./lnx_3s | tee -a lnx.log
+    -@./lnx_3r.exe | tee -a lnx.log
+    -@./lnx_3s.exe | tee -a lnx.log
     @cat lnx.log >> ../_lnx_.log
 !else
 !error Operating system unknown.
@@ -526,7 +526,7 @@ wntw_axp.exe : $(srcfile)
     $(noecho)$(linker) SYSTEM ntaxp_win $(link_opts) $(link_axp) FILE $^*.obj
     @%make set_old_path
 
-lnx_3r : $(srcfile)
+lnx_3r.exe : $(srcfile)
     @%make echo_cc
     $(noecho)$(wcc_386) $[@ $(test_flags) $(test_flags_386) -3r -bt=linux $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
@@ -534,7 +534,7 @@ lnx_3r : $(srcfile)
     $(noecho)$(linker) SYSTEM linux $(link_opts) $(link_x86) FILE $^*.obj
     @%make set_old_path
 
-lnx_3s : $(srcfile)
+lnx_3s.exe : $(srcfile)
     @%make echo_cc
     $(noecho)$(wcc_386) $[@ $(test_flags) $(test_flags_386) -3s -bt=linux $(c_dbg_flags) $(extra_test_flags)
     @%make set_path_wlink
@@ -618,12 +618,10 @@ runwnt : $(wntexes) .symbolic
 
 # Run Linux executables
 runlnx : $(lnxexes) .symbolic
-    @lnx_3r
-    @lnx_3s
-
-additional_cleanup = lnx_3r lnx_3s
+    @./lnx_3r.exe
+    @./lnx_3s.exe
 
 clean global : .procedure
     @%make echo_clean
     @%make common_clean
-    $(noecho)rm -f *.rex *.log tmpfile _tmpfile.* $(additional_cleanup)
+    $(noecho)rm -f *.rex *.log tmpfile _tmpfile.*
