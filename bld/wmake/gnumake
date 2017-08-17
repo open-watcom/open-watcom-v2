@@ -17,26 +17,26 @@ CFILES=macros.c main.c mautodep.c mautoomf.c mautoorl.c mautores.c \
 OBJS=$(CFILES:.c=.o)
 OBJS:=$(foreach i,$(OBJS),$(OWOBJDIR)/$i)
 
-$(OWOBJDIR)/wsplice: $(OWOBJDIR)/wsplice.o $(OWOBJDIR)/clibext.o
+$(OWOBJDIR)/wsplice.exe: $(OWOBJDIR)/wsplice.o $(OWOBJDIR)/clibext.o
 	$(CC) -g $^ -o $@
 
-$(OWOBJDIR)/usage.gh : h/usage.sp $(OWOBJDIR)/wsplice
-	$(OWOBJDIR)/wsplice -kIS_RC -kENGLISH -f '{MSG_USAGE_BASE+%#%+, "%s"},' h/usage.sp $@
+$(OWOBJDIR)/usage.gh : h/usage.sp $(OWOBJDIR)/wsplice.exe
+	$(OWOBJDIR)/wsplice.exe -kIS_RC -kENGLISH -f '{MSG_USAGE_BASE+%#%+, "%s"},' h/usage.sp $@
 
-$(OWOBJDIR)/cretype : cretype.c
+$(OWOBJDIR)/cretype.exe : cretype.c
 	$(CC) -I../watcom/h -o $@ $<
 
-$(OWOBJDIR)/isarray.gh : $(OWOBJDIR)/cretype
+$(OWOBJDIR)/isarray.gh : $(OWOBJDIR)/cretype.exe
 	$< > $@
 
-$(OWBINDIR)/wmake: $(OWOBJDIR)/wmake
+$(OWBINDIR)/wmake: $(OWOBJDIR)/wmake.exe
 	cp $< $@
 
-$(OWOBJDIR)/wmake: $(OWOBJDIR)/usage.gh $(OWOBJDIR)/isarray.gh $(OBJS)
+$(OWOBJDIR)/wmake.exe: $(OWOBJDIR)/usage.gh $(OWOBJDIR)/isarray.gh $(OBJS)
 	$(CC) -g $(OBJS) -o $@
 
 $(OWOBJDIR):
 	mkdir $(OWOBJDIR)
 
 clean:
-	rm -f $(OWOBJDIR)/*.o $(OWOBJDIR)/*.gh
+	rm -f $(OWOBJDIR)/*.o $(OWOBJDIR)/*.gh $(OWOBJDIR)/*.exe
