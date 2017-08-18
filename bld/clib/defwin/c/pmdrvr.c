@@ -299,7 +299,6 @@ MRESULT EXPENTRY _MainDriver( HWND hwnd, USHORT msg, MPARAM mp1, MPARAM mp2 )
                 MPFROM2SHORT( ( w->handles[0] + DID_WIND_STDIO ), FALSE ), 0 );
         _FreeWindowData( w );
         return( 0 );
-        break;
 
     case WM_PAINT:
         hps = WinBeginPaint( hwnd, NULLHANDLE, &rcl );

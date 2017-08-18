@@ -50,4 +50,3 @@ unsigned (*_WindowsGetch)( LPWDATA lp ) = { NULL };
 unsigned (*_WindowsGetche)( LPWDATA lp ) = { NULL };
 void (*_WindowsPutch)( LPWDATA lp, unsigned u ) = { NULL };
 void (*_WindowsExitRtn)( void ) = { NULL };
-

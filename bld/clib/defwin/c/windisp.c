@@ -251,7 +251,7 @@ void _ClearWindow( LPWDATA w )
         int             count;
 
         mbc = _mbsnextc( (unsigned char *)" " );
-        for( count=0; count < w->width * w->height; count++ ) {
+        for( count = 0; count < w->width * w->height; count++ ) {
             w->image[count] = mbc;              /* store space in w->image */
         }
     }

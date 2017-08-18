@@ -65,12 +65,12 @@ int _MessageLoop( BOOL doexit )
         TranslateMessage( &msg );
         DispatchMessage( &msg );
     }
-    #if defined(__NT__)
-        // Yield() is obsolete under Win32
-        Sleep(0);
-    #else
-        Yield();
-    #endif
+#if defined(__NT__)
+    // Yield() is obsolete under Win32
+    Sleep(0);
+#else
+    Yield();
+#endif
     return( rc );
 
 } /* _MessageLoop */
@@ -81,7 +81,7 @@ int _MessageLoop( BOOL doexit )
 int _BlockingMessageLoop( BOOL doexit )
 {
     MSG         msg;
-    WORD        rc=1;
+    WORD        rc;
 
     rc = GetMessage( &msg, (HWND)NULL, 0, 0 );
     if( !rc ) {
@@ -143,12 +143,8 @@ int     _ShutDown( void )
 int     _CloseWindow( LPWDATA w )
 //===============================
 {
-    HWND    hwnd;
-
     if( w->destroy ) {
-        hwnd = w->hwnd;
-        _FreeWindowData( w );
-        DestroyWindow( hwnd );
+        DestroyWindow( w->hwnd );
     }
     return( 0 );
 }

@@ -42,8 +42,8 @@ void _RepaintWindow( LPWDATA w, PRECT rcPaint, HPS ph )
 void _RepaintWindow( LPWDATA w, PRECT rcPaint, HDC ph )
 #endif
 {
-    int                 i;
-    WORD                ptop,pbot,pleft,pright,poff,pdown;
+    WORD                i;
+    WORD                ptop, pbot, pleft, pright, poff, pdown;
     WORD                width;
 #ifdef _MBCS
     mb_char _WCI86FAR   *image;
@@ -59,7 +59,7 @@ void _RepaintWindow( LPWDATA w, PRECT rcPaint, HDC ph )
      * get area to redraw
      */
     ptop = rcPaint->top / w->ychar;
-    if( ptop != 0 && ( rcPaint->top % w->ychar ) != 0 )
+    if( ptop > 0 && ( rcPaint->top % w->ychar ) != 0 )
         ptop--;
     pbot = rcPaint->bottom / w->ychar ;
     if( pbot == 0 )
@@ -91,7 +91,7 @@ void _RepaintWindow( LPWDATA w, PRECT rcPaint, HDC ph )
             ptl.y = ( w->y2 - w->y1 ) - ( pdown + w->ychar ) + w->base_offset;
     #ifdef _MBCS
             {
-                int         count;
+                WORD        count;
                 LPSTR       buff;
 
                 buff = FARmalloc( sizeof( mb_char ) * ( width + 1 ) );
@@ -115,7 +115,8 @@ void _RepaintWindow( LPWDATA w, PRECT rcPaint, HDC ph )
         SetTextColor( (HDC)ph, _ColorMap[w->text_color] );
     #ifdef _MBCS
         {
-            int         count, bytes;
+            WORD        count;
+            size_t      bytes;
             LPSTR       buff;
 
             buff = FARmalloc( sizeof( mb_char ) * ( width + 1 ) );

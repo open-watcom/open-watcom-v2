@@ -188,8 +188,7 @@ void _ShowWindowActive( LPWDATA w, LPWDATA last )
         if( last->CaretType != ORIGINAL_CURSOR ) {
             _NewCursor( last, KILL_CURSOR );
         }
-        WinSendMsg( WinWindowFromID( last->frame, FID_TITLEBAR ), TBM_SETHILITE,
-                FALSE, 0 );
+        WinSendMsg( WinWindowFromID( last->frame, FID_TITLEBAR ), TBM_SETHILITE, FALSE, 0 );
         WinSetFocus( HWND_DESKTOP, _MainWindow );
     }
     if( w != NULL ) {
@@ -209,8 +208,7 @@ void _ShowWindowActive( LPWDATA w, LPWDATA last )
             _NewCursor( w, w->CaretType );
             _DisplayCursor( w );
         }
-        WinSendMsg( WinWindowFromID( w->frame, FID_TITLEBAR ), TBM_SETHILITE,
-                MPFROMSHORT( TRUE ), 0 );
+        WinSendMsg( WinWindowFromID( w->frame, FID_TITLEBAR ), TBM_SETHILITE, MPFROMSHORT( TRUE ), 0 );
     }
 
 } /* _ShowWindowActive */
@@ -221,8 +219,8 @@ void _ShowWindowActive( LPWDATA w, LPWDATA last )
  */
 void _OutOfMemory( void )
 {
-        WinMessageBox( HWND_DESKTOP, _MainWindow, "Out Of Memory!",
-                       "SYSTEM ERROR", 0, MB_OK );
+    WinMessageBox( HWND_DESKTOP, _MainWindow, "Out Of Memory!", "SYSTEM ERROR", 0, MB_OK );
+
 } /* _OutOfMemory */
 
 
