@@ -1,14 +1,12 @@
 plustest_name = owstl
 
-!include testenv1.mif
-
 !ifdef test1
 test_flags_386 = -d2-fpd-xs-za
 test_flags_i86 = -d2-fpd-xs-za
 test_flags_axp = -d2-xs-za
 alt_error=01
 !else ifdef test2   # This test was using -xss, but that does not entirely work yet.
-test_flags_386 = -os-d1-3s-xs $(br_opt)
+test_flags_386 = -os-d1-3s-xs
 test_flags_i86 = -os-d1-xs
 test_flags_axp = -os-d1-xs
 alt_error=02
@@ -23,7 +21,7 @@ test_flags_i86 = -ox-fpd-xs
 test_flags_axp = -ox-xs
 alt_error=04
 !else ifdef test5
-test_flags_386 = -d2-xs $(br_opt)
+test_flags_386 = -d2-xs
 test_flags_i86 = -d2-xs
 test_flags_axp = -d2-xs
 alt_error=05
@@ -32,6 +30,14 @@ test_flags_386 = -os-d2-xst
 test_flags_i86 = -os-d2-xst
 test_flags_axp = -os-d2-xst
 alt_error=00
+!endif
+
+!include testenv1.mif
+
+!ifeq alt_error 02
+test_flags_386 += $(br_opt)
+!else ifeq alt_error 05
+test_flags_386 += $(br_opt)
 !endif
 
 test_flags_386 += -wx-wcd433-fpi87-fp5-mf
@@ -99,21 +105,12 @@ test_flags = -e1000
 # the main target to run the test suite
 
 !ifeq arch i86
-test : .symbolic start clean start_test set_result
+test : .symbolic start clean start_test
+    $(noecho)%append $(log_file) PASS $(%__CWD__)
 !else
-test : .symbolic start clean start_test test.lnk $(exes) set_result
+test : .symbolic start clean start_test test.lnk $(exes) common_set_result_display
 !endif
     @%make clean
-
-set_result : .symbolic
-!ifeq arch i86
-!else
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-    diff $(sav_file) exec.chk
-    $(noecho)%make common_clean_sav
-!endif
-    $(noecho)%make set_pass
 
 # this is my laziness bit...
 $(names) : test.lnk .symbolic

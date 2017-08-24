@@ -1,11 +1,12 @@
 plustest_name = diagnose
 
+alt_error=00
+
 !include testenv1.mif
 !include source/diagnose.mif
 
 diagnose_opts += -ew -we -wx -e1000 -eq
 archdep_opts = -dARCH=$(arch) -fr=.ser
-alt_error=00
 fix_source_path=sed -f fixpath.sed
 
 # The check files for x86 are a bit different.
@@ -30,15 +31,11 @@ dosystest = testsys
 
 .c: source
 
-test : .symbolic start clean start_test test0000 test0100 test0200 test0300 $(dosystest) test_special set_result
+test : .symbolic start clean start_test test0000 test0100 test0200 test0300 $(dosystest) test_special set_result_check
     @%make clean
 
-set_result : .symbolic
-    $(noecho)%make set_fail
-    $(noecho)%make save_sav
-    diff -b diff.out diff.chk >$(nulldevice)
-    $(noecho)%make clean_sav
-    $(noecho)%make set_pass
+check_result : .procedure
+    -diff -b diff.out diff.chk >$(nulldevice)
 
 test0000 : .symbolic diag0000.out
     -diff -b diag0000.out $(diagchk0) >diff0000.out
@@ -131,6 +128,10 @@ clean_sav : .procedure
     @if exist s$(arch)0300.sav @rm s$(arch)0300.sav
     @if exist s$(arch)_$(arch).sav @rm s$(arch)_$(arch).sav
     @if exist s$(arch)spec.sav @rm s$(arch)spec.sav
+
+set_pass : .procedure
+    $(noecho)%make clean_sav
+    @set ERROR_MSG=PASS $(%__CWD__)
 
 clean : .procedure
     @%make echo_clean

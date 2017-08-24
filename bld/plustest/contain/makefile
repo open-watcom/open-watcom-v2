@@ -2,8 +2,6 @@ plustest_name = contain
 # this is a long test so quit if something goes wrong
 no_continue = yes
 
-!include testenv1.mif
-
 !ifdef test1
 save_out = $(arch)_1
 test_flags = -d2-j
@@ -32,6 +30,8 @@ test_flags_386 += -ei-zp4
 test_flags_i86 += -ei-zp2
 alt_error=00
 !endif
+
+!include testenv1.mif
 
 opt_memchk = -zl -wcd=887
 

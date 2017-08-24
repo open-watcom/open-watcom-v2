@@ -1,5 +1,13 @@
 plustest_name = nih
 
+!ifdef test1
+test_flags = -d2
+alt_error=01
+!else
+test_flags = -ox-d1
+alt_error=00
+!endif
+
 !include testenv1.mif
 
 objs =  &
@@ -45,25 +53,15 @@ objs =  &
     string.obj  &
     time.obj
 
-!ifdef test1
-test_flags = -d2
-alt_error=01
-!else
-test_flags = -ox-d1
-alt_error=00
-!endif
-
 test_flags += -DNESTED_TYPES -w0 -I. -fi=__ialias.h
 
 test_flags_386 = -mf
 test_flags_i86 = -ml
 test_flags_axp =
 
-test : .symbolic start clean start_test $(objs) set_result
+test : .symbolic start clean start_test $(objs)
+    $(noecho)%append $(log_file) PASS $(%__CWD__)
     @%make clean
-
-set_result : .symbolic
-    $(noecho)%make set_pass
 
 start_test : .symbolic
     @%make common_start_test

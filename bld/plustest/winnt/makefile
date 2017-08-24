@@ -1,19 +1,25 @@
 plustest_name = winnt
 
-!include testenv1.mif
-
 !ifdef test1
 test_flags = -oxa-d1
 alt_error=01
 !else ifdef test2
-test_flags = -oxa-d1 $(br_opt)
+test_flags = -oxa-d1
 alt_error=02
 !else ifdef test3
-test_flags = -d2 $(br_opt)
+test_flags = -d2
 alt_error=03
 !else
 test_flags = -d2
 alt_error=00
+!endif
+
+!include testenv1.mif
+
+!ifeq alt_error 02
+test_flags += $(br_opt)
+!else ifeq alt_error 03
+test_flags += $(br_opt)
 !endif
 
 test_flags += -w0 $(incl_sys_nt)
@@ -21,36 +27,24 @@ test_flags += -w0 $(incl_sys_nt)
 stack_386 = op stack=128k
 
 !ifndef __NT__
-test : .symbolic start clean start_test set_result
+test : .symbolic start clean start_test
+    $(noecho)%append $(log_file) PASS $(%__CWD__)
 !else ifeq arch i86
-test : .symbolic start clean start_test set_result
+test : .symbolic start clean start_test
+    $(noecho)%append $(log_file) PASS $(%__CWD__)
 !else ifeq targ_env_386 wnt386
-test : .symbolic start clean start_test tomdll.dll test.lnk tomexe.$(exe) set_result
+test : .symbolic start clean start_test tomdll.dll test.lnk tomexe.$(exe) test_set_result
 !else ifdef __NT386__
-test : .symbolic start clean start_test set_result
+test : .symbolic start clean start_test
+    $(noecho)%append $(log_file) PASS $(%__CWD__)
 !else
-test : .symbolic start clean start_test tomdll.dll test.lnk tomexe.$(exe) set_result
+test : .symbolic start clean start_test tomdll.dll test.lnk tomexe.$(exe) test_set_result
 !endif
     @%make clean
 
-set_result : .symbolic
-!ifndef __NT__
-!else ifeq arch i86
-!else ifeq targ_env_386 wnt386
+test_set_result : .symbolic
     cat tomexe.out >>$(%ERROR_FILE)
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-    diff $(sav_file) exec.chk
-    $(noecho)%make common_clean_sav
-!else ifdef __NT386__
-!else
-    cat tomexe.out >>$(%ERROR_FILE)
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-    diff $(sav_file) exec.chk
-    $(noecho)%make common_clean_sav
-!endif
-    $(noecho)%make set_pass
+    $(noecho)%make common_set_result_display
 
 start_test : .symbolic
     @%make common_start_test

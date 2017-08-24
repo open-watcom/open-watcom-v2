@@ -1,15 +1,9 @@
 ctest_name = positive
 
-!include testenv1.mif
-!include ../positive.mif
-
-test_flags = -we-w0 -Isource
-
 !ifdef test1
 test_flags_386 = -d2-mf
 test_flags_i86 = -d2-mc-2
 test_flags_axp = -d2-si
-add_br_ = $(br_opt)
 alt_error = 01
 !else ifdef test2
 test_flags_386 = -d1-oxtan-mf
@@ -56,8 +50,18 @@ test_flags_386 = -ox-d1-ms
 test_flags_i86 = -ox-d1-ms
 test_flags_axp = -ox-d1
 alt_error = 00
+!endif
+
+!include testenv1.mif
+!include ../positive.mif
+
+!ifeq alt_error 00
+add_br_ = $(br_opt)
+!else ifeq alt_error 01
 add_br_ = $(br_opt)
 !endif
+
+test_flags = -we-w0 -Isource
 
 test_flags_386 += $(add_br_$(no_br_$^*))
 
@@ -66,17 +70,16 @@ stack_i86 = opt stack=12k
 .c: source
 .p: source
 
-test : .symbolic start clean start_test test.lnk $(positive_exes) set_result
+test : .symbolic start clean start_test test.lnk $(positive_exes) test_set_result
     %make clean
 
-set_result : .symbolic ./chk_exec.exe
+check_result : .procedure
+    -diff -b error.out error.chk
+
+test_set_result : .symbolic ./chk_exec.exe
     -@%write error.out OK
     -$]@ exec.out >> error.out
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-    diff -b error.out error.chk
-    $(noecho)%make common_clean_sav
-    $(noecho)%make set_pass
+    $(noecho)%make common_set_result_check
 
 start_test : .symbolic
     @%make common_start_test

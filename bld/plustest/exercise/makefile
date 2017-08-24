@@ -1,14 +1,5 @@
 plustest_name = exercise
 
-!include testenv1.mif
-
-exes = &
-    chkcl.$(exe) &
-    ctordtor.$(exe) &
-    mp.$(exe) &
-    ovldall.$(exe) &
-    switcher.$(exe) &
-
 !ifdef test1
 test_flags += -d2-xds
 alt_error=01
@@ -32,16 +23,29 @@ test_flags += -ox-d1-xdt
 alt_error=07
 !else ifdef test8
 test_flags += -d2-xs
-add_br_ = $(br_opt)
 alt_error=08
 !else ifdef test9
 test_flags += -ox-d1-xs
-add_br_ = $(br_opt)
 alt_error=09
 !else
 test_flags += -ox-d1-xst
 alt_error=00
 !endif
+
+!include testenv1.mif
+
+!ifeq alt_error 08
+add_br_ = $(br_opt)
+!else ifeq alt_error 09
+add_br_ = $(br_opt)
+!endif
+
+exes = &
+    chkcl.$(exe) &
+    ctordtor.$(exe) &
+    mp.$(exe) &
+    ovldall.$(exe) &
+    switcher.$(exe) &
 
 test_flags += -w0
 

@@ -1,5 +1,19 @@
 plustest_name = cool
 
+!ifdef test1
+test_flags = -op-d2
+alt_error=01
+!else ifdef test2
+test_flags = -ot-op-d1-xds
+alt_error=02
+!else ifdef test3
+test_flags = -op-d2-xds
+alt_error=03
+!else
+test_flags = -ot-op-d1
+alt_error=00
+!endif
+
 !include testenv1.mif
 !include ../lib.mif
 
@@ -26,20 +40,6 @@ exes = &
     ex9_5.$(exe) &
     ex9_7.$(exe) &
     ex9_11.$(exe)
-
-!ifdef test1
-test_flags = -op-d2
-alt_error=01
-!else ifdef test2
-test_flags = -ot-op-d1-xds
-alt_error=02
-!else ifdef test3
-test_flags = -op-d2-xds
-alt_error=03
-!else
-test_flags = -ot-op-d1
-alt_error=00
-!endif
 
 test_flags += -I.. -I"../source" -w0 -fi=../__ialias.h
 

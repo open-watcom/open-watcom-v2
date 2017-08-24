@@ -1,7 +1,5 @@
 plustest_name = stl94
 
-!include testenv1.mif
-
 !ifdef test1
 test_flags = -oxa-d1-hd
 alt_error=01
@@ -15,6 +13,8 @@ alt_error=03
 test_flags = -d2-hd
 alt_error=00
 !endif
+
+!include testenv1.mif
 
 test_flags += -w0 -I../source
 
@@ -34,21 +34,12 @@ extra_run_demo = <demo.in
 #
 
 !ifeq arch i86
-test : .symbolic start clean start_test set_result
+test : .symbolic start clean start_test
+    $(noecho)%append $(log_file) PASS $(%__CWD__)
 !else
-test : .symbolic start clean start_test test.lnk demo.$(exe) set_result
+test : .symbolic start clean start_test test.lnk demo.$(exe) common_set_result_display
 !endif
     @%make clean
-
-set_result : .symbolic
-!ifeq arch i86
-!else
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-    diff $(sav_file) exec.chk
-    $(noecho)%make common_clean_sav
-!endif
-    $(noecho)%make set_pass
 
 demo.$(exe) : demo.obj tempbuf.obj
 

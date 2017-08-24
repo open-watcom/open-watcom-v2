@@ -1,10 +1,5 @@
 ctest_name = callconv
 
-!include testenv1.mif
-!include ../callconv.mif
-
-test_flags = -we-w0 -Isource
-
 !ifdef test1
 test_flags_386 = -d2-mf
 test_flags_i86 = -d2-mc-2
@@ -57,37 +52,38 @@ test_flags_axp = -d1
 alt_error = 00
 !endif
 
-test_flags_386 += $(add_br_$(no_br_$^*))
-
 sav_file_2 = x$(arch)_$(alt_error).sav
+
+!include testenv1.mif
+!include ../callconv.mif
+
+test_flags = -we-w0 -Isource
+
+test_flags_386 += $(add_br_$(no_br_$^*))
 
 .c: source
 
-test : .symbolic start clean start_test test.lnk $(callconv_exes) set_result
+test : .symbolic start clean start_test test.lnk $(callconv_exes) test_set_result
     @%make clean
 
-set_result : .symbolic ./chk_exec.exe
+check_result : .procedure
+    -diff -b error.out error.chk
+
+test_set_result : .symbolic ./chk_exec.exe
     -diff -b $(%RUN_FILE) sym$(arch)$(alt_error).chk >error.out
     -%append error.out OK
     -$]@ exec.out >>error.out
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-    diff -b error.out error.chk
-    $(noecho)%make common_clean_sav
-    $(noecho)%make set_pass
+    $(noecho)%make common_set_result_check
 
 start_test : .symbolic
     @%make common_start_test
-    @if exist $(sav_file_2) rm $(sav_file_2)
     @set RUN_FILE=symbols.out
     %create $(%RUN_FILE)
 
-save_sav : .symbolic
-    @%make common_save_sav
+save_sav_2 : .procedure
     @if exist symbols.out cp symbols.out $(sav_file_2)
 
-clean_sav : .symbolic
-    @%make common_clean_sav
+clean_sav_2 : .procedure
     @if exist $(sav_file_2) rm $(sav_file_2)
 
 $(callconv_all_objs) : source/obj.c

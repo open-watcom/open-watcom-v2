@@ -1,7 +1,5 @@
 plustest_name = wclass
 
-!include testenv1.mif
-
 !ifdef test1
 test_flags_i86 = -d2-ml
 test_flags_386 = -d2-mf
@@ -18,6 +16,8 @@ test_flags_386 = -ox-d1-mf
 test_flags_axp = -ox-d1
 alt_error=00
 !endif
+
+!include testenv1.mif
 
 test_flags = -zq -I"$(%WATCOM)/h"
 
@@ -68,20 +68,18 @@ wmsgdlg.obj &
 wwinmain.obj
 
 !ifeq arch i86
-test : .symbolic start clean start_test test.$(exe) set_result
+test : .symbolic start clean start_test test.$(exe)
 !else ifeq arch 386
 !ifeq targ_env_386 wnt386
-test : .symbolic start clean start_test test.$(exe) set_result
+test : .symbolic start clean start_test test.$(exe)
 !else
-test : .symbolic start clean start_test set_result
+test : .symbolic start clean start_test
 !endif
 !else
-test : .symbolic start clean start_test set_result
+test : .symbolic start clean start_test
 !endif
+    @%append $(log_file) PASS $(%__CWD__)
     @%make clean
-
-set_result : .symbolic
-    $(noecho)%make set_pass
 
 test.$(exe) : $(objs) test1.lnk
     @%make set_path_wlink

@@ -1,7 +1,5 @@
 plustest_name = claslist
 
-!include testenv1.mif
-
 !ifdef test1
 test_flags = -d2~
 alt_error=01
@@ -9,6 +7,8 @@ alt_error=01
 test_flags = -ox-d1
 alt_error=00
 !endif
+
+!include testenv1.mif
 
 test_flags_386 = -mf
 test_flags_i86 = -mc

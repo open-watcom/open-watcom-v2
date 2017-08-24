@@ -1,5 +1,13 @@
 plustest_name = torture
 
+!ifdef test1
+test_flags = -d2-j
+alt_error=01
+!else
+test_flags = -ox-d1-j
+alt_error=00
+!endif
+
 !include testenv1.mif
 
 objs = &
@@ -8,14 +16,6 @@ objs = &
     newlog.obj &
     ordkeyma.obj &
     pool.obj
-
-!ifdef test1
-test_flags = -d2-j
-alt_error=01
-!else
-test_flags = -ox-d1-j
-alt_error=00
-!endif
 
 test_flags += -w0-I. -fi=__ialias.h
 
@@ -31,10 +31,10 @@ opt_link = LIB tort.lib
 
 exes = dim2arr.$(exe) mdarrtst.$(exe)
 
-test : .symbolic start clean start_test test.lnk tort.lib $(exes) set_result
+test : .symbolic start clean start_test test.lnk tort.lib $(exes) test_set_result
     @%make clean
 
-set_result : .symbolic
+test_set_result : .symbolic
     cat output.out >>$(%ERROR_FILE)
     $(noecho)%make common_set_result
 

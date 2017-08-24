@@ -3,7 +3,38 @@ plustest_name = except
 #
 # 95/09/14 -- J.W.Welch     -- added batch capability
 
+!ifdef test1
+test_flags = -d2-xst
+alt_error=01
+!else ifdef test2
+test_flags = -d2-xss
+alt_error=02
+!else ifdef test3
+test_flags = -ox-d1-xss
+alt_error=03
+!else
+test_flags = -ox-d1-xst
+alt_error=00
+!endif
+
+!ifneq targ_env_386 cw386
+!ifneq targ_env_386 d4g386
+stderr_check_386 = 2>>stderr.out
+!endif
+!endif
+stderr_check_axp = 2>>stderr.out
+
+!ifdef stderr_check_$(arch)
+sav_file_2 = x$(arch)_$(alt_error).sav
+!endif
+
 !include testenv1.mif
+
+!ifeq alt_error 00
+add_br_ = $(br_opt)
+!else ifeq alt_error 02
+add_br_ = $(br_opt)
+!endif
 
 files = &
     excok.$(ext) &
@@ -40,22 +71,6 @@ batch_sym = batch_build
 
 test_flags += -I"../positive/source"
 
-!ifdef test1
-test_flags += -d2-xst
-alt_error=01
-!else ifdef test2
-test_flags += -d2-xss
-add_br_ = $(br_opt)
-alt_error=02
-!else ifdef test3
-test_flags += -ox-d1-xss
-alt_error=03
-!else
-test_flags += -ox-d1-xst
-add_br_ = $(br_opt)
-alt_error=00
-!endif
-
 !ifdef %plustest_bad_br
 no_br_excok = no
 !endif
@@ -72,33 +87,28 @@ stack_386=opt stack=32k
 stack_i86=opt stack=8k
 stack_axp=opt stack=32k
 
-!ifneq targ_env_386 cw386
-!ifneq targ_env_386 d4g386
-stderr_check_386 = 2>>stderr.out
-!endif
-!endif
-stderr_check_axp = 2>>stderr.out
-
-sav_file_2 = x$(arch)_$(alt_error).sav
-
-test : .symbolic start clean start_test $(batch_sym) test.lnk $(exes) set_result
+test : .symbolic start clean start_test $(batch_sym) test.lnk $(exes) common_set_result_check
     @%make clean
 
-set_result : .symbolic
-    $(noecho)%make set_fail
-    $(noecho)%make save_sav
-    diff $(sav_file) exec.chk
-!ifdef stderr_check_$(arch)
-    diff $(sav_file_2) stderr.chk
+check_result : .procedure
+    -diff $(sav_file) exec.chk
+!ifdef sav_file_2
+    -diff $(sav_file_2) stderr.chk
 !endif
-    $(noecho)%make clean_sav
-    $(noecho)%make set_pass
 
 start_test : .symbolic
     @%make common_start_test
-    @if exist $(sav_file_2) @rm $(sav_file_2)
-!ifdef stderr_check_$(arch)
+!ifdef sav_file_2
     $(noecho)%create stderr.out
+!endif
+
+!ifdef sav_file_2
+save_sav_2 : .procedure
+    @if exist stderr.out @cp stderr.out $(sav_file_2) >$(nulldevice)
+    @if exist stderr.out @rm stderr.out
+
+clean_sav_2 : .procedure
+    @if exist $(sav_file_2) @rm $(sav_file_2)
 !endif
 
 !ifdef BATCH_TEST
@@ -118,15 +128,6 @@ batch_build : .symbolic test.lnk $(batch_lnk) $(batch_cmp)
     $(noecho)$(linker) @$(batch_lnk)
     @%make set_old_path
 !endif
-
-save_sav : .procedure
-    @%make common_save_sav
-    @if exist stderr.out @cp stderr.out $(sav_file_2) >$(nulldevice)
-    @if exist stderr.out @rm stderr.out
-
-clean_sav : .procedure
-    @%make common_clean_sav
-    @if exist $(sav_file_2) @rm $(sav_file_2)
 
 clean : .procedure
     @%make echo_clean

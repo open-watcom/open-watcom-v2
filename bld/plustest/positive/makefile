@@ -1,14 +1,10 @@
 plustest_name = positive
 
-!include testenv1.mif
-!include source/positive.mif
-
 !ifdef test1
 test_flags_386 = -d2-xss-mf
 test_flags_i86 = -d2-xss-mc-2
 test_flags_axp = -d2-xss-si
 opt_EH_yes = -xss
-add_br_ = $(br_opt)
 alt_error = 01
 !else ifdef test2
 test_flags_386 = -d1-xss-mf
@@ -76,6 +72,14 @@ test_flags_i86 = -ox-d1-xdt-ms
 test_flags_axp = -ox-d1-xdt
 opt_EH_yes = -xst
 alt_error = 00
+!endif
+
+!include testenv1.mif
+!include source/positive.mif
+
+!ifeq alt_error 00
+add_br_ = $(br_opt)
+!else ifeq alt_error 01
 add_br_ = $(br_opt)
 !endif
 
@@ -90,17 +94,16 @@ stack_i86 = op stack=12k
 
 .cpp: source
 
-test : .symbolic start clean start_test test.lnk $(positive_exes) set_result
+test : .symbolic start clean start_test test.lnk $(positive_exes) test_set_result common_set_result_check
     @%make clean
 
-set_result : ./chk_exec.exe .symbolic
+check_result : .procedure
+    -diff -b error.out exec.chk >$(nulldevice)
+
+test_set_result : ./chk_exec.exe .symbolic
     -$(noecho)%write error.out OK
     -$]@ exec.out >>error.out
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-    diff -b error.out exec.chk >$(nulldevice)
-    $(noecho)%make common_clean_sav
-    $(noecho)%make set_pass
+#    $(noecho)%make common_set_result_check
 
 link3.exe : link3.obj link3b.obj
 link4.exe : link4.obj link4b.obj

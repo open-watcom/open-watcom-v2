@@ -1,5 +1,18 @@
 plustest_name = overload
 
+!ifdef test1
+!   define test_flags -d2
+alt_error=01
+!else ifdef test2
+!   define test_flags -ox-d1-w0-j
+alt_error=02
+!else
+!   define test_flags -ox-d1-w0-otexanr
+alt_error=00
+!endif
+
+exec_chk_i86 = execi86.chk
+
 !include testenv1.mif
 
 exes = &
@@ -107,36 +120,12 @@ opt_ptrfun04 = -za
 opt_ptrfun05 = -za
 opt_cv08 = -xbov1
 
-!ifdef test1
-!   define test_flags -d2
-alt_error=01
-!else ifdef test2
-!   define test_flags -ox-d1-w0-j
-alt_error=02
-!else
-!   define test_flags -ox-d1-w0-otexanr
-alt_error=00
-!endif
-
 stack_386=opt stack=16k
 stack_i86=opt stack=8k
 stack_axp=opt stack=16k
 
-test : .symbolic start clean start_test test.lnk $(exes) set_result
+test : .symbolic start clean start_test test.lnk $(exes) common_set_result_display
     @%make clean
-
-set_result : .symbolic
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-!ifeq arch i86
-    # There are certain unavoidable differences between 16-bit and
-    # 32-bit platforms, causing slightly different (but valid) results
-    diff $(sav_file) execi86.chk
-!else
-    diff $(sav_file) exec.chk
-!endif
-    $(noecho)%make common_clean_sav
-    $(noecho)%make set_pass
 
 start_test : .symbolic
     @%make common_start_test

@@ -1,7 +1,5 @@
 plustest_name = perl
 
-!include testenv1.mif
-
 !ifdef test1
 test_flags = -d2
 alt_error=01
@@ -9,6 +7,8 @@ alt_error=01
 test_flags = -ox-d1
 alt_error=00
 !endif
+
+!include testenv1.mif
 
 test_flags += -w0 -DTEST
 
@@ -27,10 +27,10 @@ exes = &
     perlasso.$(exe) &
     tstio.$(exe)
 
-test : .symbolic start clean start_test test.lnk $(exes) set_result
+test : .symbolic start clean start_test test.lnk $(exes) test_set_result
     @%make clean
 
-set_result : .symbolic
+test_set_result : .symbolic
     cat t2.out >>$(%ERROR_FILE)
     $(noecho)%make common_set_result
 

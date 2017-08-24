@@ -1,8 +1,5 @@
 ftest_name = positive
 
-!include testenv1.mif
-!include source/positive.mif
-
 !ifdef test1
 fflags_386 = -D2 -MF
 fflags_i86 = -D2 -MM -2
@@ -55,23 +52,25 @@ fflags_axp = -ox-d1
 alt_error = 00
 !endif
 
+!include testenv1.mif
+!include source/positive.mif
+
 fflags_386 += -INCPath=source #-we-w0
 fflags_i86 += -INCPath=source #-we-w0
 fflags_axp += -INCPath=source #-we-w0
 
 .for: source
 
-test : .symbolic start clean start_test test.lnk $(positive_exes) set_result
+test : .symbolic start clean start_test test.lnk $(positive_exes) test_set_result
     %make clean
 
-set_result : .symbolic ./chk_exec.exe
+check_result : .procedure
+    -diff -b error.out error.chk
+
+test_set_result : .symbolic ./chk_exec.exe
     -$(noecho)%write error.out OK
     -$]@ exec.out >>error.out
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-    diff -b error.out error.chk
-    $(noecho)%make common_clean_sav
-    $(noecho)%make set_pass
+    $(noecho)%make common_set_result_check
 
 start_test : .symbolic
     $(noecho)%make common_start_test

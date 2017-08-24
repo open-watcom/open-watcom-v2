@@ -1,7 +1,5 @@
 plustest_name = stepanov
 
-!include testenv1.mif
-
 !ifdef test1
 alt_error=01
 test_flags = -d2-w0
@@ -12,6 +10,8 @@ test_flags = -ox-d1-w0-j
 alt_error=00
 test_flags = -ox-d1-w0-otexanr
 !endif
+
+!include testenv1.mif
 
 test_flags_i86 = -mm
 
@@ -38,21 +38,12 @@ exes = $(oopacks) $(stepanovs)
 # "too fast" and finish at "zero" execution time.
 
 !ifeq arch i86
-test : .symbolic start clean start_test set_result
+test : .symbolic start clean start_test
+    $(noecho)%append $(log_file) PASS $(%__CWD__)
 !else
-test : .symbolic start clean start_test test.lnk $(exes) set_result
+test : .symbolic start clean start_test test.lnk $(exes) common_set_result_display
 !endif
     @%make clean
-
-set_result : .symbolic
-!ifeq arch i86
-!else
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-    diff $(sav_file) exec.chk
-    $(noecho)%make common_clean_sav
-!endif
-    $(noecho)%make set_pass
 
 start_test : .symbolic
     @%make common_start_test

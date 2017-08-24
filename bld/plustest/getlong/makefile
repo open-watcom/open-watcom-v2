@@ -1,7 +1,5 @@
 plustest_name = getlong
 
-!include testenv1.mif
-
 !ifdef test1
 test_flags = -d2
 alt_error=01
@@ -9,6 +7,8 @@ alt_error=01
 test_flags = -ox-d1
 alt_error=00
 !endif
+
+!include testenv1.mif
 
 stack_386=opt stack=8k
 stack_i86=opt stack=4k

@@ -1,5 +1,16 @@
 plustest_name = splash
 
+!ifdef test1
+test_flags = -d2
+alt_error=01
+!else ifdef test2
+test_flags = -ox-d1
+alt_error=02
+!else
+test_flags = -ox-d1 -oe1000
+alt_error=00
+!endif
+
 !include testenv1.mif
 
 objs = &
@@ -14,16 +25,6 @@ tracer.obj &
 tstio.obj &
 xcl.obj
 
-!ifdef test1
-test_flags = -d2
-alt_error=01
-!else ifdef test2
-test_flags = -ox-d1
-alt_error=02
-!else
-test_flags = -ox-d1 -oe1000
-alt_error=00
-!endif
 test_flags += -w0-dTEST
 
 test_flags_386 = $(test_flags) -3s

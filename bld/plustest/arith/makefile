@@ -1,14 +1,12 @@
 plustest_name = arith
 
-!include testenv1.mif
-
 !ifdef test1
 test_flags_386 = -d2-fpd
 test_flags_i86 = -d2-fpd
 test_flags_axp = -d2
 alt_error=01
 !else ifdef test2
-test_flags_386 = -os-d1-3s-xds $(br_opt)
+test_flags_386 = -os-d1-3s-xds
 test_flags_i86 = -os-d1-xds
 test_flags_axp = -os-d1-xds
 alt_error=02
@@ -23,7 +21,7 @@ test_flags_i86 = -ot-d1-fpd -oe1000
 test_flags_axp = -ot-d1 -oe1000
 alt_error=04
 !else ifdef test5
-test_flags_386 = -d2 $(br_opt)
+test_flags_386 = -d2
 test_flags_i86 = -d2
 test_flags_axp = -d2
 alt_error=05
@@ -32,6 +30,14 @@ test_flags_386 = -os-d1-xst
 test_flags_i86 = -os-d1-xst
 test_flags_axp = -os-d1-xst
 alt_error=00
+!endif
+
+!include testenv1.mif
+
+!ifeq alt_error 02
+test_flags_386 += $(br_opt)
+!else ifeq alt_error 05
+test_flags_386 += $(br_opt)
 !endif
 
 test_flags_386 += -fpi87-fp5-mf

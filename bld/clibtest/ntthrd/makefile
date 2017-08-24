@@ -10,7 +10,7 @@ ntexes = tstdll1.dll tstexe1.exe
 #all : start clean start_test $(exes) tests .symbolic
 all : .symbolic start clean start_test $(ntexes) nttests
 #    diff $(%ERROR_FILE) test.chk
-    %make set_pass
+    @%append $(log_file) PASS $(%__CWD__)
     @%make clean
 
 !include ../master.mif

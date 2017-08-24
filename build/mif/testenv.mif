@@ -135,7 +135,6 @@ path_wlink = $(src_dir)\wl\ntx64.dll
     @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_MSG=unknown failure after test end
     @if "$(%ERROR_FILE)" == "$(log_file)" $(noecho)set ERROR_FILE=failures
 
-
 !ifdef wasmtest_name
 bld_extra_defines = -DWASM
 !else ifdef ftest_name
@@ -1231,8 +1230,6 @@ bld_cl      = $(buildtest_prefix)wcl386 $(wcl_any) -bt=linux
 bld_cl_opts = -fpc -ox -w8 -fo=.obj -fe=$^@ $(bld_incl) -I"$(watcom_dir)/h"
 !endif
 
-sav_file = s$(arch)_$(alt_error).sav
-
 set_path_wcc : .PROCEDURE .EXPLICIT
 !ifdef path_wcc
 #    @echo Set PATH for wcc DLL
@@ -1277,13 +1274,6 @@ set_old_path : .PROCEDURE .EXPLICIT
 #    @echo Restore old PATH
     @set PATH=$(old_path)
 !endif
-
-set_fail : .PROCEDURE .EXPLICIT
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAIL $(%__CWD__)
-
-set_pass : .PROCEDURE .EXPLICIT
-    @%append $(log_file) PASS $(%__CWD__)
 
 set_test_header : .PROCEDURE .EXPLICIT
     @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====

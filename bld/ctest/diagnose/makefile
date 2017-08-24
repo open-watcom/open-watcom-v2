@@ -1,24 +1,21 @@
 ctest_name = diagnose
 
+alt_error=00
+
 !include testenv1.mif
 !include ../diagnose.mif
 
 diagnose_opts += -we -wx -e1000 -eq
 archdep_opts = -dARCH=$(arch) -fr=.ser
-alt_error=00
 
 .c: source
 
-test : .symbolic start clean start_test diag0000.out set_result
+test : .symbolic start clean start_test diag0000.out common_set_result_check
     %make clean
 
-set_result : .symbolic
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
+check_result : .procedure
     -diff -b diag0000.out diag0000.chk >diff0000.out
-    diff -b diff0000.out diff0000.chk
-    $(noecho)%make common_clean_sav
-    $(noecho)%make set_pass
+    -diff -b diff0000.out diff0000.chk
 
 diag0000.out : ./catfile.exe $(diags_0099)
     $[@ -a *.err | sed -f source/fixpath.sed >diag0000.out

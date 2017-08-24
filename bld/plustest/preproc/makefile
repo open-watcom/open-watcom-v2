@@ -1,9 +1,9 @@
 # pp11 has incorrect output
 plustest_name = preproc
 
-!include testenv1.mif
-
 alt_error=00
+
+!include testenv1.mif
 
 .c.i:
     %append $(%ERROR_FILE) @@@ $^@ @@@

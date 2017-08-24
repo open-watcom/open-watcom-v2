@@ -1,5 +1,21 @@
 plustest_name = cool
 
+!ifdef test1
+test_flags = -op-d2
+alt_error=01
+!else ifdef test2
+test_flags = -ot-op-d1-xds
+alt_error=02
+!else ifdef test3
+test_flags = -op-d2-xds
+alt_error=03
+!else
+test_flags = -ot-op-d1
+alt_error=00
+!endif
+
+exec_chk_i86 = execi86.chk
+
 !include testenv1.mif
 !include ../lib.mif
 
@@ -39,20 +55,6 @@ exes = &
     test_qua.$(exe) &
 !endif
 
-!ifdef test1
-test_flags = -op-d2
-alt_error=01
-!else ifdef test2
-test_flags = -ot-op-d1-xds
-alt_error=02
-!else ifdef test3
-test_flags = -op-d2-xds
-alt_error=03
-!else
-test_flags = -ot-op-d1
-alt_error=00
-!endif
-
 test_flags += -I.. -I"../source" -w0 -fi=../__ialias.h
 
 test_flags_i86 = -ml -zm
@@ -65,19 +67,8 @@ opt_link = LIBRARY ../cool.lib
 
 .cpp : .;../source
 
-test : .symbolic start clean start_test ../cool.lib test.lnk $(exes) set_result
+test : .symbolic start clean start_test ../cool.lib test.lnk $(exes) common_set_result
     @%make clean
-
-set_result : .symbolic
-    $(noecho)%make set_fail
-    $(noecho)%make common_save_sav
-!ifeq arch i86
-    diff $(sav_file) execi86.chk >$(nulldevice)
-!else
-    diff $(sav_file) exec.chk >$(nulldevice)
-!endif
-    $(noecho)%make common_clean_sav
-    $(noecho)%make set_pass
 
 start_test : .symbolic
     @%make common_start_test

@@ -1,5 +1,13 @@
 plustest_name = dcmat
 
+!ifdef test1
+test_flags = -d2
+alt_error=01
+!else
+test_flags = -ox-d1
+alt_error=00
+!endif
+
 !include testenv1.mif
 
 objs = &
@@ -9,14 +17,6 @@ objs = &
     four1.obj &
     realft.obj &
     svdcmp.obj
-
-!ifdef test1
-test_flags = -d2
-alt_error=01
-!else
-test_flags = -ox-d1
-alt_error=00
-!endif
 
 test_flags += -e10 -w0 -D__ATT_complex__ -I.
 
