@@ -83,8 +83,8 @@
 #!inject wntw_3s.exe                b_nt386                         b_ntx64
 !inject wnt_axp.exe                b_ntaxp
 #!inject wntw_axp.exe               b_ntaxp
-!inject lnx_3r                                   b_linux386                b_linuxx64
-!inject lnx_3s                                   b_linux386                b_linuxx64
+!inject lnx_3r.exe                               b_linux386                b_linuxx64
+!inject lnx_3s.exe                               b_linux386                b_linuxx64
 !inject rdos_3r.exe                                         b_rdos
 !inject rdosdev_3r.exe                                      b_rdos
 #=====================================================================================
@@ -131,9 +131,9 @@ test_flags_axp = -hc
 link_x86  = DEBUG dwarf
 link_axp  = DEBUG codeview
 !ifeq release 0
-link_opts = NAME $^* OPTION quiet, map, symf
+link_opts = NAME $^@ OPTION quiet, map, symf
 !else
-link_opts = NAME $^* OPTION quiet, map
+link_opts = NAME $^@ OPTION quiet, map
 !endif
 
 !ifdef srcfile

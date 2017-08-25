@@ -93,6 +93,7 @@ CHAR_TYPE ProgramName[128];                     // executable filename
 char SrcFILE[128];                              // Lowered __FILE__
 int NumErrors = 0;                              // number of errors
 
+#ifndef __UNIX__
 static void jump_fn( jmp_buf env )
 {
     longjmp( env, 7 );
@@ -193,9 +194,12 @@ static void tryanalysis( int line, int hist, const CHAR_TYPE *pgm, const CHAR_TY
 
     __F_NAME( __Fini_Argv, __wFini_Argv )(); // Throw away data
 }
+#endif
 
 int __F_NAME( main, wmain )( int argc, const CHAR_TYPE * const * const argv )
 {
+#ifndef __UNIX__
+
 #ifdef __SW_BW
     FILE    *my_stdout;
 
@@ -285,5 +289,6 @@ int __F_NAME( main, wmain )( int argc, const CHAR_TYPE * const * const argv )
     _dwShutDown();
 #endif
 
+#endif
     return( EXIT_SUCCESS );
 }

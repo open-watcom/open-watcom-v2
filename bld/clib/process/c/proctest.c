@@ -36,6 +36,9 @@
 #include <string.h>
 #include <process.h>
 #include <signal.h>
+#if defined( __UNIX__ )
+    #include <sys/stat.h>
+#endif
 
 
 char ProgramName[512];                          /* executable filename */
@@ -231,8 +234,11 @@ int main( int argc, char * const argv[] )
 
         /* Check inherited output redirection */
         handle_out = dup( STDOUT_FILENO );
-        
-        handle = creat( "test.fil", S_IREAD|S_IWRITE );
+#if defined( __UNIX__ )
+        handle = creat( "test.fil", (S_IRUSR | S_IRGRP | S_IROTH) | (S_IWUSR | S_IWGRP | S_IWOTH) );
+#else
+        handle = creat( "test.fil", S_IREAD | S_IWRITE );
+#endif
         VERIFY( handle != -1 );
 
         status = dup2( handle, STDOUT_FILENO );
@@ -261,6 +267,8 @@ int main( int argc, char * const argv[] )
 
         signal_count = 0;
         signal_number = 0;
+
+#ifdef SIGBREAK
         /* Install SIGBREAK handler */
         VERIFY( signal( SIGBREAK, break_handler ) == SIG_DFL );
 
@@ -272,6 +280,7 @@ int main( int argc, char * const argv[] )
         /* Raise again - nothing should have happened */
         VERIFY( raise( SIGBREAK ) == 0 );
         VERIFY( signal_count == 1 );
+#endif
 
         /*** Print a pass/fail message and quit ***/
         if( NumErrors != 0 ) {
