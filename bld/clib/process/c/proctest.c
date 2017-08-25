@@ -137,7 +137,7 @@ int main( int argc, char * const argv[] )
     if( child ) {
         char    *env_var;
 
-        if( argc == 4 ) {        
+        if( argc == 4 ) {
         /* Verify expected command line contents */
             VERIFY( !strcmp( argv[1], ARG1 ) );
             VERIFY( !strcmp( argv[2], ARG2 ) );
@@ -169,13 +169,13 @@ int main( int argc, char * const argv[] )
             }
             else
                 return( EXIT_FAILURE );
-        }                   
+        }
     } else {
         int         rc;
         char        **env;
         const char  *path = "PATH=.";   /* Default PATH if none is found */
         const char  *child_args[] = { ProgramName, ARG1, ARG2, ARG3, NULL };
-        const char  *child_envp[] = { NULL, VAR_NAME "=" VAR_TEXT, NULL };
+        const char  *child_envp[] = { NULL, VAR_NAME "=" VAR_TEXT, "DOS4G=QUIET", NULL };
 
         /* We need to pass PATH down to the child because DOS/4GW style stub
          * programs rely on it to function properly.
@@ -203,7 +203,7 @@ int main( int argc, char * const argv[] )
 
         /* Modify our environment that child will inherit */
         VERIFY( !setenv( VAR_NAME, VAR_TEXT, 1 ) );
-        
+
         rc = spawnl( P_WAIT, ProgramName, ProgramName, ARG1, ARG2, ARG3, NULL );
         VERIFY( rc == CHILD_RC );
 
@@ -252,7 +252,7 @@ int main( int argc, char * const argv[] )
 
         status = dup2( handle_out, STDOUT_FILENO );
         VERIFY( status != -1 );
-        
+
         handle = open( "test.fil", O_RDWR );
         VERIFY( handle != -1 );
 
