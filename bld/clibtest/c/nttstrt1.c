@@ -1,16 +1,9 @@
-/* tstsrtnt1.c (Tests Startup NT 1)  */
+/* nttstsrt1.c - NT Startup Tests 1  */
 /*
  * Code to verify the movement of thread data heap allocation
  * for DLL's from __NTInit to _LibMain (where it really belong).
  *
  */
-
-#if !defined(QA_MAKE_EXE) && !defined(QA_MAKE_DLL)
-#error You must define either of QA_MAKE_EXE or QA_MAKE_DLL
-#endif
-#if defined(QA_MAKE_EXE) && defined(QA_MAKE_DLL)
-#error You can only define one of QA_MAKE_EXE or QA_MAKE_DLL
-#endif
 
 #include <stdio.h>
 #include <process.h>
@@ -76,9 +69,7 @@ void QA_func1( void )
     sleep( 1 /* second */); // Let'em die
 }
 
-#endif /* QA_MAKE_DLL */
-
-#if defined(QA_MAKE_EXE)
+#else /* QA_MAKE_DLL */
 
 __declspec(dllimport)
 void QA_func1( void );
@@ -111,4 +102,4 @@ int main( void )
     return( 0 );
 }
 
-#endif /* QA_MAKE_EXE */
+#endif /* !QA_MAKE_DLL */

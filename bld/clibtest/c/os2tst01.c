@@ -1,12 +1,3 @@
-/* OS/2 Startup Test 1  */
-
-#if !defined(QA_MAKE_EXE) && !defined(QA_MAKE_DLL)
-#error You must define either of QA_MAKE_EXE or QA_MAKE_DLL
-#endif
-#if defined(QA_MAKE_EXE) && defined(QA_MAKE_DLL)
-#error You can only define one of QA_MAKE_EXE or QA_MAKE_DLL
-#endif
-
 #include <stdio.h>
 #include <process.h>
 #include <dos.h>
@@ -56,9 +47,9 @@ void __export QA_func1( void )
     sleep( 1 /* second */); // Let'em die
 }
 
-#endif /* QA_MAKE_DLL */
+#else /* QA_MAKE_DLL */
 
-#if defined(QA_MAKE_EXE)
+/* OS/2 Startup Test 1  */
 
 extern void QA_func1( void );
 
@@ -80,6 +71,7 @@ void do_start_threads( void )
         _beginthread( &exe_threadfunc, NULL, 8192, 0 );
     }
 }
+
 
 /* OS/2 Threading Test 2 */
 
@@ -145,4 +137,4 @@ int main( void )
     return( 0 );
 }
 
-#endif /* QA_MAKE_EXE */
+#endif /* !QA_MAKE_DLL */

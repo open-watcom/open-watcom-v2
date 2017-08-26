@@ -42,70 +42,58 @@
 # LNX   Linux (386)             lnx_3r
 #                               lnx_3s
 # RDOS  RDOS (32-bit app)       rdos_3r
+#                               rdos_3s
 # RDOSDEV RDOS (32-bit device)  rdosdev_3r
 #
-#
-# build invocation     platform
-#                      b_dos b_win b_nt... b_os2 b_linux... b_rdos b_ntx64 b_linuxx64
-#=====================================================================================
-!inject dos_s.exe      b_dos b_win b_nt386
-!inject dos_c.exe      b_dos b_win b_nt386
-!inject dos_m.exe      b_dos b_win b_nt386
-!inject dos_l.exe      b_dos b_win b_nt386
-!inject dos_h.exe      b_dos b_win b_nt386
-!inject cw_3s.exe      b_dos b_win b_nt386
-!inject cw_3r.exe      b_dos b_win b_nt386
-#!inject pls_3s.exe     b_dos b_win b_nt386
-#!inject pls_3r.exe     b_dos b_win b_nt386
-!inject d4g_3s.exe     b_dos b_win b_nt386
-!inject d4g_3r.exe     b_dos b_win b_nt386
-#!inject x32_3s.exe     b_dos b_win b_nt386
-#!inject x32_3r.exe     b_dos b_win b_nt386
-!inject os2_s.exe                          b_os2
-!inject os2_c.exe                          b_os2
-!inject os2_m.exe                          b_os2
-!inject os2_l.exe                          b_os2
-!inject os2_h.exe                          b_os2
-!inject os2_mt.exe                         b_os2
-!inject os3_3r.exe                         b_os2
-!inject os3_3s.exe                         b_os2
-!inject os3pm_3r.exe                       b_os2
-!inject os3pm_3s.exe                       b_os2
-!inject win_s.exe            b_win b_nt386
-!inject win_c.exe            b_win b_nt386
-!inject win_m.exe            b_win b_nt386
-!inject win_l.exe            b_win b_nt386
-!inject w386_3r.exe          b_win b_nt386
-!inject w386_3s.exe          b_win b_nt386
-!inject wnt_3r.exe                 b_nt386                         b_ntx64
-!inject wnt_3s.exe                 b_nt386                         b_ntx64
-#!inject wntw_3r.exe                b_nt386                         b_ntx64
-#!inject wntw_3s.exe                b_nt386                         b_ntx64
-!inject wnt_axp.exe                b_ntaxp
-#!inject wntw_axp.exe               b_ntaxp
-!inject lnx_3r.exe                               b_linux386                b_linuxx64
-!inject lnx_3s.exe                               b_linux386                b_linuxx64
-!inject rdos_3r.exe                                         b_rdos
-!inject rdosdev_3r.exe                                      b_rdos
-#=====================================================================================
-#
-# test invocation  platform
-#                      r_dos r_win r_nt... r_os2 r_linux... r_rdos r_ntx64 r_linuxx64
-#=====================================================================================
-!inject rundos         r_dos r_win r_nt386
-!inject runcw          r_dos r_win r_nt386
-!inject rund4g         r_dos r_win r_nt386
-#!inject runpls         r_dos r_win r_nt386
-!inject runw16               r_win r_nt386
-!inject runw386              r_win r_nt386
-!inject runos2                             r_os2
-!inject runos3                             r_os2
-!inject runwnt                     r_nt386                         r_ntx64
-!inject runlnx                                   r_linux386                r_linuxx64
-#=====================================================================================
+
+t_rundos    = dos_s$(ext) dos_c$(ext) dos_m$(ext) dos_l$(ext) dos_h$(ext)
+t_runcw     = cw_3r$(ext) cw_3s$(ext)
+t_runpls    = pls_3r$(ext) pls_3s$(ext)
+t_rund4g    = d4g_3r$(ext) d4g_3s$(ext)
+t_runx32    = x32_3r$(ext) x32_3s$(ext)
+t_runos2    = os2_s$(ext) os2_c$(ext) os2_m$(ext) os2_l$(ext) os2_h$(ext) os2_mt$(ext)
+t_runos3    = os3_3r$(ext) os3_3s$(ext) os3pm_3r$(ext) os3pm_3s$(ext)
+t_runw16    = win_s$(ext) win_c$(ext) win_m$(ext) win_l$(ext)
+t_runw386   = w386_3r$(ext) w386_3s$(ext)
+t_runwnt    = wnt_3r$(ext) wnt_3s$(ext) #wntw_3r$(ext) wntw_3s$(ext)
+t_runwntaxp = wnt_axp$(ext) #wntw_axp$(ext)
+t_runlnx    = lnx_3r$(ext) lnx_3s$(ext)
+t_runrdos   = rdos_3r$(ext) rdos_3s$(ext) rdosdev_3r$(ext)
+
+t_dos       = $(t_rundos) $(t_runcw) $(t_rund4g) #$(t_runpls) $(t_runx32)
+t_win       = $(t_dos) $(t_runw16) $(t_runw386)
+t_nt386     = $(t_win) $(t_runwnt)
+t_ntaxp     = $(t_runwntaxp)
+t_ntx64     = $(t_runwnt)
+t_os2       = $(t_dos) $(t_runos2) $(t_runos3)
+t_linux386  = $(t_runlnx)
+t_linuxx64  = $(t_runlnx)
+t_rdos      = $(t_runrdos)
+
+!ifdef srcfile
+
+ext=.exe
+!ifdef t_$(bld_os)$(bld_cpu)
+exes = $+$(t_$(bld_os)$(bld_cpu))$-
+!else ifdef t_$(bld_os)
+exes = $+$(t_$(bld_os))$-
+!endif
+
+ext=
+!ifdef t_$(bld_os)$(bld_cpu)
+rundeps = $+$(t_$(bld_os)$(bld_cpu))$-
+!else ifdef t_$(bld_os)
+rundeps = $+$(r_$(bld_os))$-
+!endif
+
+!else
+
+ext=
+
+!endif
 
 !include tools.mif
-!include testenv2.mif
+!include testenv1.mif
 
 .extensions:
 .extensions: .exe .rex .exp .obj .c .asm
@@ -136,20 +124,10 @@ link_opts = NAME $^@ OPTION quiet, map, symf
 link_opts = NAME $^@ OPTION quiet, map
 !endif
 
-!ifdef srcfile
-
-!ifdef b_$(bld_os)$(bld_cpu)
-exes = $(b_$(bld_os)$(bld_cpu))
-!else ifdef b_$(bld_os)
-exes = $(b_$(bld_os))
-!endif
-
-!ifdef r_$(bld_os)$(bld_cpu)
-rundeps = $(r_$(bld_os)$(bld_cpu))
-!else ifdef r_$(bld_os)
-rundeps = $(r_$(bld_os))
-!endif
-
+!ifeq clibtest_name ntthrd
+wnt_dll =1
+!else ifeq clibtest_name os2thrd
+os3_dll =1
 !endif
 
 test : start clean start_build $(exes) start_test tests .symbolic
@@ -169,7 +147,7 @@ start_test : .symbolic
     @set ERROR_MSG=FAIL $(%__CWD__)
 
 tests : $(rundeps) .symbolic
-    @echo The clib tests completed: SUCCESS!
+#    @echo The clib tests completed: SUCCESS!
 
 runtests : .symbolic
 !ifdef notnt
@@ -398,20 +376,60 @@ os2_mt.exe : $(srcfile)
     $(noecho)$(linker) SYSTEM os2 pmcompatible $(link_opts) $(link_x86) OPTION stack=8k FILE $^*.obj
     @%make set_old_path
 
+!ifdef os3_dll
+os3_3r.exe : $(srcfile) os3_3rd.dll
+!else
 os3_3r.exe : $(srcfile)
+!endif
     @%make echo_cc
+!ifdef os3_dll
+    $(noecho)$(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3r -bt=os2 $(c_dbg_flags) $(extra_test_flags) -bm
+!else
     $(noecho)$(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3r -bt=os2 $(c_dbg_flags) $(extra_test_flags)
+!endif
     @%make set_path_wlink
     @%make echo_link
+!ifdef os3_dll
+    $(noecho)$(linker) SYSTEM os2v2 pmcompatible $(link_opts) $(link_x86) FILE $^*.obj LIBRARY os3_3rd.lib
+!else
     $(noecho)$(linker) SYSTEM os2v2 pmcompatible $(link_opts) $(link_x86) FILE $^*.obj
+!endif
     @%make set_old_path
 
-os3_3s.exe : $(srcfile)
+os3_3rd.dll : $(srcfile)
     @%make echo_cc
-    $(noecho)$(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3s -bt=os2 $(c_dbg_flags) $(extra_test_flags)
+    $(noecho)$(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3r -bt=os2 $(c_dbg_flags) $(extra_test_flags) -bd -bm -DQA_MAKE_DLL
     @%make set_path_wlink
     @%make echo_link
+    $(noecho)$(linker) SYSTEM os2v2_dll $(link_opts) $(link_x86) opt offset=0x01000000, impl FILE $^*.obj
+    @%make set_old_path
+
+!ifdef os3_dll
+os3_3s.exe : $(srcfile) os3_3sd.dll
+!else
+os3_3s.exe : $(srcfile)
+!endif
+    @%make echo_cc
+!ifdef os3_dll
+    $(noecho)$(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3s -bt=os2 $(c_dbg_flags) $(extra_test_flags) -bm
+!else
+    $(noecho)$(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3s -bt=os2 $(c_dbg_flags) $(extra_test_flags)
+!endif
+    @%make set_path_wlink
+    @%make echo_link
+!ifdef os3_dll
+    $(noecho)$(linker) SYSTEM os2v2 pmcompatible $(link_opts) $(link_x86) FILE $^*.obj LIBRARY os3_3sd.lib
+!else
     $(noecho)$(linker) SYSTEM os2v2 pmcompatible $(link_opts) $(link_x86) FILE $^*.obj
+!endif
+    @%make set_old_path
+
+os3_3sd.dll : $(srcfile)
+    @%make echo_cc
+    $(noecho)$(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3s -bt=os2 $(c_dbg_flags) $(extra_test_flags) -bd -bm -DQA_MAKE_DLL
+    @%make set_path_wlink
+    @%make echo_link
+    $(noecho)$(linker) SYSTEM os2v2_dll $(link_opts) $(link_x86) opt offset=0x01000000, impl FILE $^*.obj
     @%make set_old_path
 
 os3pm_3r.exe : $(srcfile)
@@ -482,20 +500,60 @@ w386_3s.exe : $(srcfile)
     @%make echo_wbind
     $(noecho)$(wbind) -n -q -s $(win386ldr) $^*
 
+!ifdef wnt_dll
+wnt_3r.exe : $(srcfile) wnt_3rd.dll
+!else
 wnt_3r.exe : $(srcfile)
+!endif
     @%make echo_cc
+!ifdef wnt_dll
+    $(noecho)$(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3r -bt=nt $(c_dbg_flags) $(extra_test_flags) -bm
+!else
     $(noecho)$(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3r -bt=nt $(c_dbg_flags) $(extra_test_flags)
+!endif
     @%make set_path_wlink
     @%make echo_link
+!ifdef wnt_dll
+    $(noecho)$(linker) SYSTEM nt $(link_opts) $(link_x86) FILE $^*.obj LIBRARY $^*d.lib
+!else
     $(noecho)$(linker) SYSTEM nt $(link_opts) $(link_x86) FILE $^*.obj
+!endif
     @%make set_old_path
 
-wnt_3s.exe : $(srcfile)
+wnt_3rd.dll : $(srcfile)
     @%make echo_cc
-    $(noecho)$(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3s -bt=nt $(c_dbg_flags) $(extra_test_flags)
+    $(noecho)$(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3r -bt=nt $(c_dbg_flags) -bd -bm -DQA_MAKE_DLL
     @%make set_path_wlink
     @%make echo_link
+    $(noecho)$(linker) SYSTEM nt_dll $(link_opts) $(link_x86) FILE $^*.obj opt offset=0x01000000, impl
+    @%make set_old_path
+
+!ifdef wnt_dll
+wnt_3s.exe : $(srcfile) wnt_3sd.dll
+!else
+wnt_3s.exe : $(srcfile)
+!endif
+    @%make echo_cc
+!ifdef wnt_dll
+    $(noecho)$(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3s -bt=nt $(c_dbg_flags) $(extra_test_flags) -bm
+!else
+    $(noecho)$(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3s -bt=nt $(c_dbg_flags) $(extra_test_flags)
+!endif
+    @%make set_path_wlink
+    @%make echo_link
+!ifdef wnt_dll
+    $(noecho)$(linker) SYSTEM nt $(link_opts) $(link_x86) FILE $^*.obj LIBRARY wnt_3sd.lib
+!else
     $(noecho)$(linker) SYSTEM nt $(link_opts) $(link_x86) FILE $^*.obj
+!endif
+    @%make set_old_path
+
+wnt_3sd.dll : $(srcfile)
+    @%make echo_cc
+    $(noecho)$(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3s -bt=nt $(c_dbg_flags) -bd -bm -DQA_MAKE_DLL
+    @%make set_path_wlink
+    @%make echo_link
+    $(noecho)$(linker) SYSTEM nt_dll $(link_opts) $(link_x86) opt offset=0x01000000, impl FILE $^*.obj
     @%make set_old_path
 
 wntw_3r.exe : $(srcfile)
@@ -547,20 +605,21 @@ lnx_3s.exe : $(srcfile)
     @%make set_old_path
 
 # Run 16-bit DOS executables
-rundos : $(dosexes) .symbolic
-    @dos_s.exe
-    @dos_c.exe
-    @dos_m.exe
-    @dos_l.exe
-    @dos_h.exe
+$+$(t_rundos)$- : .symbolic
+    -$@.exe
+    @set RESULT_MSG=FAIL
+    @if not errorlevel 1 @set RESULT_MSG=PASS
+    @echo $(%RESULT_MSG)
 
 # Run CauseWay 32-bit DOS extended executables
-runcw : $(cwexes) .symbolic
-    @cw_3r.exe
-    @cw_3s.exe
+$+$(t_runcw)$- : .symbolic
+    -$@.exe
+    @set RESULT_MSG=FAIL
+    @if not errorlevel 1 @set RESULT_MSG=PASS
+    @echo $(%RESULT_MSG)
 
 # Run DOS/4G 32-bit DOS extended executables
-rund4g : $(d4gexes) .symbolic
+$+$(t_rund4g)$- : .symbolic
     # The DOS/4GW 1.97 loader uses an old broken 16-bit MSC runtime that does
     # not handle long PATH env vars; make PATH short for this test
     @set OPATH=$(%PATH)
@@ -569,61 +628,71 @@ rund4g : $(d4gexes) .symbolic
 !else
     @set PATH=$(%WATCOM)\binw
 !endif
-    @d4g_3r.exe
-    @d4g_3s.exe
+    -$@.exe
+    @set RESULT_MSG=FAIL
+    @if not errorlevel 1 @set RESULT_MSG=PASS
+    @echo $(%RESULT_MSG)
     @set PATH=$(%OPATH)
     @set OPATH=
 
 # Run PharLap 386|DOS 32-bit DOS extended executables
-runpls : $(plsexes) .symbolic
-    @pls_3r.exe
-    @pls_3s.exe
+$+$(t_runpls)$- : .symbolic
+    -$@.exe
+    @set RESULT_MSG=FAIL
+    @if not errorlevel 1 @set RESULT_MSG=PASS
+    @echo $(%RESULT_MSG)
 
 # Run Windows 3.x 16-bit executables
-runw16 : $(w16exes) .symbolic
+$+$(t_runw16)$- : .symbolic
     @rm -f tmp.log
-    @echo Executing win_s.exe
-    @win_s.exe
-    @echo Executing win_c.exe
-    @win_c.exe
-    @echo Executing win_m.exe
-    @win_m.exe
-    @echo Executing win_l.exe
-    @win_l.exe
+    @echo Executing $@.exe
+    -$@.exe
+    @set RESULT_MSG=FAIL
+    @if not errorlevel 1 @set RESULT_MSG=PASS
+    @echo $(%RESULT_MSG)
     @type tmp.log
 
 # Run Windows 3.x 32-bit executables (Win386)
-runw386 :  $(w386exes) .symbolic
+$+$(t_runw386)$- : .symbolic
     @rm -f tmp.log
-    @echo Executing w386_3r.exe
-    @w386_3r.exe
-    @echo Executing w386_3s.exe
-    @w386_3s.exe
+    @echo Executing $@.exe
+    -$@.exe
+    @set RESULT_MSG=FAIL
+    @if not errorlevel 1 @set RESULT_MSG=PASS
+    @echo $(%RESULT_MSG)
     @type tmp.log
 
 # Run OS/2 16-bit executables
-runos2 : $(os2exes) .symbolic
-    @os2_s.exe
-    @os2_c.exe
-    @os2_m.exe
-    @os2_l.exe
-    @os2_h.exe
-    @os2_mt.exe
+$+$(t_runos2)$- : .symbolic
+    -$@.exe
+    @set RESULT_MSG=FAIL
+    @if not errorlevel 1 @set RESULT_MSG=PASS
+    @echo $(%RESULT_MSG)
 
 # Run OS/2 32-bit executables
-runos3 : $(os3exes) .symbolic
-    @os3_3r.exe
-    @os3_3s.exe
+$+$(t_runos3)$- : .symbolic
+    -$@.exe
+    @set RESULT_MSG=FAIL
+    @if not errorlevel 1 @set RESULT_MSG=PASS
+    @echo $(%RESULT_MSG)
 
 # Run Windows NT (Win32) executables
-runwnt : $(wntexes) .symbolic
-    @wnt_3r.exe
-    @wnt_3s.exe
+$+$(t_runwnt)$- : .symbolic
+!ifdef wnt_dll
+    -$@.exe
+!else
+    -$@.exe >$(nulldevice)
+!endif
+    @set RESULT_MSG=FAIL
+    @if not errorlevel 1 @set RESULT_MSG=PASS
+    @echo $(%RESULT_MSG)
 
 # Run Linux executables
-runlnx : $(lnxexes) .symbolic
-    @./lnx_3r.exe
-    @./lnx_3s.exe
+$+$(t_runlnx)$- : .symbolic
+    -./$@.exe
+    @set RESULT_MSG=FAIL
+    @if not errorlevel 1 @set RESULT_MSG=PASS
+    @echo $(%RESULT_MSG)
 
 clean global : .procedure
     @%make echo_clean
