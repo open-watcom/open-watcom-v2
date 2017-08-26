@@ -1,4 +1,4 @@
-/* test1.c (OS/2 Startup Test 1)  */
+/* OS/2 Startup Test 1  */
 
 #if !defined(QA_MAKE_EXE) && !defined(QA_MAKE_DLL)
 #error You must define either of QA_MAKE_EXE or QA_MAKE_DLL
@@ -11,9 +11,10 @@
 #include <process.h>
 #include <dos.h>
 
-#if defined(QA_MAKE_DLL)
-
+#define INCL_DOS
 #include <os2.h>
+
+#if defined(QA_MAKE_DLL)
 
 void dll_threadfunc( void* private_data )
 {
@@ -80,13 +81,68 @@ void do_start_threads( void )
     }
 }
 
+/* OS/2 Threading Test 2 */
 
-int main()
+/* Test thread creation - many very short-lived threads in quick
+ * succession, and vary thread priority. If there are problems
+ * with threads that are either too short-lived or created too
+ * quickly after each other, this test should detect them.
+ */
+
+static int counter = 0;
+
+static void exe_threadfunc1( void* private_data )
 {
+    DosSetPriority( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, 0 );
+    ++counter;
+}
+
+static void exe_threadfunc2( void* private_data )
+{
+    DosSetPriority( PRTYS_THREAD, PRTYC_IDLETIME, 0, 0 );
+    ++counter;
+}
+
+static void do_start_threads1( void )
+{
+    int i;
+
+    printf( "calling do_start_threads1\n" );
+    for( i = 0; i < 100; ++i ) {
+        _beginthread( &exe_threadfunc1, NULL, 8192, 0 );
+    }
+}
+
+static void do_start_threads2( void )
+{
+    int i;
+
+    printf( "calling do_start_threads2\n" );
+    for( i = 0; i < 100; ++i ) {
+        _beginthread( &exe_threadfunc2, NULL, 8192, 0 );
+    }
+}
+
+int main( void )
+{
+    /* Test 1 */
     do_start_threads();
     sleep( 1 /* second */); // Let'em die
     QA_func1();
-    return 0;
+
+    /* Test 2 */
+    // First try threads that will exit very quickly
+    do_start_threads1();
+    sleep( 1 /* second */); // Let'em die
+    printf( "threadfunc entered %2d times.\n", counter );
+    DosSetPriority( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, 0 );
+    // Next try threads that won't finish before all have been created
+    do_start_threads2();
+    printf( "threadfunc entered %2d times.\n", counter );
+    sleep( 1 /* second */); // Let'em die
+    printf( "threadfunc entered %2d times.\n", counter );
+
+    return( 0 );
 }
 
 #endif /* QA_MAKE_EXE */
