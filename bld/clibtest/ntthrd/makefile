@@ -1,4 +1,4 @@
-# makefile for tstrtnt1.c - test that DLL threading
+# makefile for nttstrt1.c - test that DLL threading
 # starts as expected.
 
 clibtest_name = ntthrd
@@ -21,7 +21,7 @@ nttests: ntrunwnt .symbolic
 ntrunwnt : tstexe1.exe .symbolic
     @$[@
 
-tstdll1.dll : ../c/tstrtnt1.c
+tstdll1.dll : ../c/nttstrt1.c
     @%make echo_cc
     $(noecho)$(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3r -bt=nt -bd -bm -DQA_MAKE_DLL -fo=$^*.obj $(c_dbg_flags)
     @%make set_path_wlink
@@ -29,7 +29,7 @@ tstdll1.dll : ../c/tstrtnt1.c
     $(noecho)$(linker) SYSTEM nt_dll $(link_opts) $(link_x86) opt offset=0x01000000, impl FILE $^*.obj
     @%make set_old_path
 
-tstexe1.exe : ../c/tstrtnt1.c tstdll1.lib
+tstexe1.exe : ../c/nttstrt1.c tstdll1.lib
     @%make echo_cc
     $(noecho)$(wcc_386) $[@ $(test_flags) $(test_flags_386) -mf -3r -bt=nt -bm -DQA_MAKE_EXE -fo=$^*.obj $(c_dbg_flags)
     @%make set_path_wlink
