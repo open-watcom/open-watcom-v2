@@ -29,17 +29,18 @@
 ****************************************************************************/
 
 
-#include <bios.h>
-#include <conio.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-
-#if defined(__DOS__) || defined(__WINDOWS__)
 
 #ifdef __SW_BW
     #include <wdefwin.h>
 #endif
+
+#if defined(__DOS__) || defined(__WINDOWS__)
+
+#include <bios.h>
+#include <conio.h>
+#include <string.h>
 
 #define VERIFY( exp )   if( !(exp) ) {                                      \
                             printf( "%s: ***FAILURE*** at line %d of %s.\n",\
@@ -305,10 +306,6 @@ int main( int argc, char *argv[] )
 }
 
 #else
-
-#ifdef __SW_BW
-    #include <wdefwin.h>
-#endif
 
 int main( int argc, char *argv[] )
 {

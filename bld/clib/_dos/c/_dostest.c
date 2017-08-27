@@ -31,6 +31,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#if !defined( __UNIX__ ) && !defined( __RDOS__ )
+
 #include <dos.h>
 #include <fcntl.h>
 #include <share.h>
@@ -513,5 +516,15 @@ int main( int argc, char *argv[] )
     fclose( my_stdout );
     _dwShutDown();
 #endif
-    return( 0 );
+    return( EXIT_SUCCESS );
 }
+
+#else
+
+int main( int argc, char *argv[] )
+{
+    printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
+    return( EXIT_SUCCESS );
+}
+
+#endif
