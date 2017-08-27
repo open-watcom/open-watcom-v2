@@ -2,12 +2,14 @@
 #include <process.h>
 #include <dos.h>
 
+#ifdef __OS2__
+
 #define INCL_DOS
 #include <os2.h>
 
 #if defined(QA_MAKE_DLL)
 
-void dll_threadfunc( void* private_data )
+void dll_threadfunc( void *private_data )
 {
     static int counter = 0;
 
@@ -16,7 +18,7 @@ void dll_threadfunc( void* private_data )
             counter, private_data );
 }
 
-void do_start_threads( const char* const szMsg )
+void do_start_threads( const char *const szMsg )
 {
     int i;
 
@@ -26,7 +28,7 @@ void do_start_threads( const char* const szMsg )
     }
 }
 
-static const char* const rgMsgs[2] =
+static const char *const rgMsgs[2] =
 {
     "Process initialization\n",
     "Process termination\n"
@@ -44,7 +46,7 @@ unsigned APIENTRY LibMain( unsigned hmod, unsigned termination )
 void __export QA_func1( void )
 {
     do_start_threads( "QA_func1" );
-    sleep( 1 /* second */); // Let'em die
+    sleep( 1 ); // sleep 1 second, Let'em die
 }
 
 #else /* QA_MAKE_DLL */
@@ -54,7 +56,7 @@ void __export QA_func1( void )
 extern void QA_func1( void );
 
 // check that threading works at all in the exe
-void exe_threadfunc( void* private_data )
+void exe_threadfunc( void *private_data )
 {
     static int counter = 0;
 
@@ -72,7 +74,6 @@ void do_start_threads( void )
     }
 }
 
-
 /* OS/2 Threading Test 2 */
 
 /* Test thread creation - many very short-lived threads in quick
@@ -83,13 +84,13 @@ void do_start_threads( void )
 
 static int counter = 0;
 
-static void exe_threadfunc1( void* private_data )
+static void exe_threadfunc1( void *private_data )
 {
     DosSetPriority( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, 0 );
     ++counter;
 }
 
-static void exe_threadfunc2( void* private_data )
+static void exe_threadfunc2( void *private_data )
 {
     DosSetPriority( PRTYS_THREAD, PRTYC_IDLETIME, 0, 0 );
     ++counter;
@@ -119,22 +120,48 @@ int main( void )
 {
     /* Test 1 */
     do_start_threads();
-    sleep( 1 /* second */); // Let'em die
+    sleep( 1 ); // sleep 1 second, Let'em die
     QA_func1();
 
     /* Test 2 */
     // First try threads that will exit very quickly
     do_start_threads1();
-    sleep( 1 /* second */); // Let'em die
+    sleep( 1 ); // sleep 1 second, Let'em die
     printf( "threadfunc entered %2d times.\n", counter );
     DosSetPriority( PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, 0 );
     // Next try threads that won't finish before all have been created
     do_start_threads2();
     printf( "threadfunc entered %2d times.\n", counter );
-    sleep( 1 /* second */); // Let'em die
+    sleep( 1 ); // sleep 1 second, Let'em die
     printf( "threadfunc entered %2d times.\n", counter );
 
     return( 0 );
 }
 
 #endif /* !QA_MAKE_DLL */
+
+#else
+
+#include <stdio.h>
+
+#ifdef __SW_BW
+    #include <wdefwin.h>
+#endif
+
+int main( void )
+{
+#ifdef __SW_BW
+    FILE    *my_stdout;
+
+    my_stdout = freopen( "tmp.log", "a", stdout );
+    if( my_stdout == NULL ) {
+        fprintf( stderr, "Unable to redirect stdout\n" );
+        return( -1 );
+    }
+    fclose( my_stdout );
+    _dwShutDown();
+#endif
+    return( 0 );
+}
+
+#endif

@@ -5,6 +5,8 @@
  *
  */
 
+#ifdef __NT__
+
 #include <stdio.h>
 #include <process.h>
 #include <dos.h>
@@ -13,26 +15,26 @@
 
 #include <windows.h>
 
-void threadfunc_dll( void* private_data )
+void threadfunc_dll( void *private_data )
 {
     static int counter = 0;
 
     ++counter;
     printf( "DLL threadfunc entered %2d time. This time during %s\n",
-            counter, private_data);
+            counter, private_data );
 }
 
-void do_start_threads(const char* const szMsg)
+void do_start_threads( const char *const szMsg )
 {
     int i;
 
     printf( "In DLL do_start_threads called from %s\n", szMsg );
-    for( i = 0; i < 10; i++) {
-        _beginthread( &threadfunc_dll, 4096, /* remove const */ (void*)szMsg );
+    for( i = 0; i < 10; i++ ) {
+        _beginthread( &threadfunc_dll, 4096, /* remove const */ (void *)szMsg );
     }
 }
 
-static const char* const rgMsgs[4] =
+static const char *const rgMsgs[4] =
 {
     "DLL_PROCESS_ATTACH\n",
     "DLL_PROCESS_DETACH\n",
@@ -44,19 +46,19 @@ int __stdcall DllMain( HANDLE hdll, DWORD reason, LPVOID reserved )
 {
     switch( reason ) {
     case DLL_PROCESS_ATTACH:
-        printf(rgMsgs[0]);
+        printf( rgMsgs[0] );
         break;
 
     case DLL_PROCESS_DETACH:
-        printf(rgMsgs[1]);
+        printf( rgMsgs[1] );
         break;
 
     case DLL_THREAD_ATTACH:
-        printf(rgMsgs[2]);
+        printf( rgMsgs[2] );
         break;
 
     case DLL_THREAD_DETACH:
-        printf(rgMsgs[3]);
+        printf( rgMsgs[3] );
         break;
     }
     return( TRUE );
@@ -66,7 +68,7 @@ __declspec(dllexport)
 void QA_func1( void )
 {
     do_start_threads( "QA_func1" );
-    sleep( 1 /* second */); // Let'em die
+    sleep( 1 ); // sleep 1 second, Let'em die
 }
 
 #else /* QA_MAKE_DLL */
@@ -75,7 +77,7 @@ __declspec(dllimport)
 void QA_func1( void );
 
 // check that threading works at all in the exe
-void exe_threadfunc( void* private_data )
+void exe_threadfunc( void *private_data )
 {
     static int counter = 0;
     ++counter;
@@ -97,9 +99,35 @@ void do_start_threads( void )
 int main( void )
 {
     do_start_threads();
-    sleep( 1 /* second */); // Let'em die
+    sleep( 1 ); // sleep 1 second, Let'em die
     QA_func1();
     return( 0 );
 }
 
 #endif /* !QA_MAKE_DLL */
+
+#else
+
+#include <stdio.h>
+
+#ifdef __SW_BW
+    #include <wdefwin.h>
+#endif
+
+int main( void )
+{
+#ifdef __SW_BW
+    FILE    *my_stdout;
+
+    my_stdout = freopen( "tmp.log", "a", stdout );
+    if( my_stdout == NULL ) {
+        fprintf( stderr, "Unable to redirect stdout\n" );
+        return( -1 );
+    }
+    fclose( my_stdout );
+    _dwShutDown();
+#endif
+    return( 0 );
+}
+
+#endif
