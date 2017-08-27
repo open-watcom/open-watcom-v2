@@ -127,6 +127,18 @@ jobs:
         - export OWDOCBUILD=0
         - export OWVERBOSE=0
       script: travis/test.sh cpp
+    - stage: Test3
+      os: linux
+      install:
+        - export OWTOOLS=WATCOM
+        - export WATCOM=$OWROOT/test
+        - export PATH=$WATCOM/binl:$PATH
+        - export INCLUDE=$WATCOM/lh
+        - unset LIB
+        - export OWTRAVISJOB=TEST
+        - export OWDOCBUILD=0
+        - export OWVERBOSE=0
+      script: travis/test.sh crtl
     #################################
     - stage: Finalize
       os: linux

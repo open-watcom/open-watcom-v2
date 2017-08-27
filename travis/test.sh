@@ -16,6 +16,11 @@ build_proc()
                 builder -q -i testclean
                 builder -i test
                 cat result.log
+            elif [ "$1" = "crtl" ]; then
+                cd $OWSRCDIR/clibtest
+                builder -q -i testclean
+                builder -i test
+                cat result.log
             else
                 cd $OWSRCDIR/wasmtest
                 builder -q -i testclean
@@ -33,6 +38,11 @@ build_proc()
         elif [ "$TRAVIS_EVENT_TYPE" = "pull_request" ] && [ "$TRAVIS_OS_NAME" = "linux" ]; then
             if [ "$1" = "cpp" ]; then
                 cd $OWSRCDIR/plustest
+                builder -q -i testclean
+                builder -i test
+                cat result.log
+            elif [ "$1" = "crtl" ]; then
+                cd $OWSRCDIR/clibtest
                 builder -q -i testclean
                 builder -i test
                 cat result.log
