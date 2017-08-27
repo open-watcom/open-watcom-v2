@@ -8,13 +8,13 @@ test_flags = -ox-d1
 alt_error=00
 !endif
 
+test_flags_386 = -mf-3s
+test_flags_i86 = -ml -3
+test_flags_axp =
+
 sav_file_2 = x$(arch)_$(alt_error).sav
 
 !include testenv1.mif
-
-test_flags_386 += $(test_flags) -mf-3s
-test_flags_i86 += $(test_flags) -ml -3
-test_flags_axp += $(test_flags)
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k

@@ -11,9 +11,9 @@ alt_error=00
 test_flags = -ox-d1-w0-otexanr
 !endif
 
-!include testenv1.mif
-
 test_flags_i86 = -mm
+
+!include testenv1.mif
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k

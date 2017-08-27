@@ -14,15 +14,17 @@ test_flags = -d2
 alt_error=00
 !endif
 
+test_flags += -w0
+
 !include testenv1.mif
+
+test_flags += $(incl_sys_nt)
 
 !ifeq alt_error 02
 test_flags += $(br_opt)
 !else ifeq alt_error 03
 test_flags += $(br_opt)
 !endif
-
-test_flags += -w0 $(incl_sys_nt)
 
 stack_386 = op stack=128k
 
@@ -57,7 +59,7 @@ tomdll.dll : tomdll.obj tomdll.lnk
 
 tomdll.obj : tomdll.c
     @%make set_path_wpp
-    $(wpp_$(arch)) $[@ $(test_flags) -bd
+    $(wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) -bd
     @%make set_old_path
 
 tomdll.lnk : $(__MAKEFILES__)

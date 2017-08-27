@@ -14,6 +14,10 @@ test_flags = -ot-op-d1
 alt_error=00
 !endif
 
+test_flags += -I.. -I"../source" -w0 -fi=../__ialias.h
+
+test_flags_i86 = -ml -zm
+
 exec_chk_i86 = execi86.chk
 
 !include testenv1.mif
@@ -54,10 +58,6 @@ exes = &
     test_m_v.$(exe) &
     test_qua.$(exe) &
 !endif
-
-test_flags += -I.. -I"../source" -w0 -fi=../__ialias.h
-
-test_flags_i86 = -ml -zm
 
 stack_386=opt stack=32k
 stack_i86=opt stack=24k

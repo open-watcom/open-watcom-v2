@@ -14,6 +14,10 @@ test_flags = -ot-op-d1
 alt_error=00
 !endif
 
+test_flags += -I.. -I"../source" -w0 -fi=../__ialias.h
+
+test_flags_i86 = -ml -zm
+
 !include testenv1.mif
 !include ../lib.mif
 
@@ -40,10 +44,6 @@ exes = &
     ex9_5.$(exe) &
     ex9_7.$(exe) &
     ex9_11.$(exe)
-
-test_flags += -I.. -I"../source" -w0 -fi=../__ialias.h
-
-test_flags_i86 = -ml -zm
 
 stack_386=opt stack=64k
 stack_i86=opt stack=48k

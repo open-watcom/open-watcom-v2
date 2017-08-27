@@ -8,6 +8,12 @@ test_flags = -ox-d1-j
 alt_error=00
 !endif
 
+test_flags += -w0-I. -fi=__ialias.h
+
+test_flags_386 = -mf
+test_flags_i86 = -ml -fi=noinline.h
+test_flags_axp =
+
 !include testenv1.mif
 
 objs = &
@@ -16,12 +22,6 @@ objs = &
     newlog.obj &
     ordkeyma.obj &
     pool.obj
-
-test_flags += -w0-I. -fi=__ialias.h
-
-test_flags_386 = -mf
-test_flags_i86 = -ml -fi=noinline.h
-test_flags_axp =
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k

@@ -17,11 +17,13 @@ test_flags_axp = -ox-d1
 alt_error=00
 !endif
 
-!include testenv1.mif
-
 test_flags = -zq -I"$(%WATCOM)/h"
 
-test_flags_i86 += -zw $(incl_sys_win) -bt=windows -DSTRICT
+test_flags_i86 += -zw -bt=windows -DSTRICT
+
+!include testenv1.mif
+
+test_flags_i86 += $(incl_sys_win)
 test_flags_386 += $(incl_sys_nt)
 test_flags_axp += $(incl_sys_nt)
 

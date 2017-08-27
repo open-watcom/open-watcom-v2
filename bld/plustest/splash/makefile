@@ -11,6 +11,12 @@ test_flags = -ox-d1 -oe1000
 alt_error=00
 !endif
 
+test_flags += -w0-dTEST
+
+test_flags_386 = -3s
+test_flags_i86 = -mm
+test_flags_axp =
+
 !include testenv1.mif
 
 objs = &
@@ -24,12 +30,6 @@ spltest.obj &
 tracer.obj &
 tstio.obj &
 xcl.obj
-
-test_flags += -w0-dTEST
-
-test_flags_386 = $(test_flags) -3s
-test_flags_i86 = $(test_flags) -mm
-test_flags_axp = $(test_flags)
 
 stack_386=opt stack=64k
 stack_i86=opt stack=8k
@@ -54,7 +54,7 @@ start_test : .symbolic
 
 regex.obj : regex.c
     @%make set_path_wcc
-    $(wcc_$(arch)) $[* $(test_flags_$(arch)) -fo=.obj
+    $(wcc_$(arch)) $[* $(test_flags) $(test_flags_$(arch)) -fo=.obj
     @%make set_old_path
 
 clean : .procedure

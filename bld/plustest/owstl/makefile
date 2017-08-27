@@ -1,5 +1,7 @@
 plustest_name = owstl
 
+test_flags = -e1000
+
 !ifdef test1
 test_flags_386 = -d2-fpd-xs-za
 test_flags_i86 = -d2-fpd-xs-za
@@ -32,17 +34,17 @@ test_flags_axp = -os-d2-xst
 alt_error=00
 !endif
 
-!include testenv1.mif
-
-!ifeq alt_error 02
-test_flags_386 += $(br_opt)
-!else ifeq alt_error 05
-test_flags_386 += $(br_opt)
-!endif
-
 test_flags_386 += -wx-wcd433-fpi87-fp5-mf
 test_flags_i86 += -wx-wcd433-fpi87-fp5-ml-zm
 test_flags_axp += -wx-wcd433
+
+!include testenv1.mif
+
+!ifeq alt_error 02
+test_flags += $(br_opt)
+!else ifeq alt_error 05
+test_flags += $(br_opt)
+!endif
 
 stack_386=opt stack=32k
 stack_i86=opt stack=8k
@@ -99,8 +101,6 @@ opt_mmwindef = $(incl_sys_nt)
 !ifeq arch i86
 opt_mmwindef += -3
 !endif
-
-test_flags = -e1000
 
 # the main target to run the test suite
 

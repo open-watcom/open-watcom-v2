@@ -14,13 +14,13 @@ alt_error = 00
 test_flags = -d2
 !endif
 
-exec_chk_i86 = execi86.chk
-
-!include testenv1.mif
-
 test_flags += -w0 -I".;../source" -fi=../source/pch.h -fhq
 
 test_flags_i86 = -mm -zm
+
+exec_chk_i86 = execi86.chk
+
+!include testenv1.mif
 
 extra_run_istmit1 = <istmit1.in
 

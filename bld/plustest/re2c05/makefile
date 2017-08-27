@@ -8,11 +8,11 @@ test_flags = -ox-d1
 alt_error=00
 !endif
 
-!include testenv1.mif
+test_flags_386 = -mf-zc
+test_flags_i86 = -ml-zc
+test_flags_axp =
 
-test_flags_386 += $(test_flags) -mf-zc
-test_flags_i86 += $(test_flags) -ml-zc
-test_flags_axp += $(test_flags)
+!include testenv1.mif
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k

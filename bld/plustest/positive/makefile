@@ -1,5 +1,7 @@
 plustest_name = positive
 
+test_flags = -we-w0 -Isource
+
 !ifdef test1
 test_flags_386 = -d2-xss-mf
 test_flags_i86 = -d2-xss-mc-2
@@ -83,11 +85,9 @@ add_br_ = $(br_opt)
 add_br_ = $(br_opt)
 !endif
 
+test_flags += $(add_br_$(no_br_$^*))
+
 noisy = 1
-
-test_flags_386 += $(add_br_$(no_br_$^*))
-
-test_flags = -we-w0 -Isource
 
 # Some tests require more than the default stack size
 stack_i86 = op stack=12k

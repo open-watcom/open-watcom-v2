@@ -1,5 +1,7 @@
 plustest_name = field64
 
+test_flags = -e1000
+
 !ifdef test1
 test_flags_386 = -d2-fpd
 test_flags_i86 = -d2-fpd-zm
@@ -22,13 +24,11 @@ test_flags_axp = -os-d1-xst
 alt_error=00
 !endif
 
-!include testenv1.mif
-
 test_flags_386 += -fpi87-fp5-mf
 test_flags_i86 += -fpi87-fp5-ml-s
 test_flags_axp +=
 
-test_flags = -e1000
+!include testenv1.mif
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k

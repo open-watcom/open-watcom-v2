@@ -1,13 +1,13 @@
 plustest_name = overload
 
 !ifdef test1
-!   define test_flags -d2
+test_flags = -d2
 alt_error=01
 !else ifdef test2
-!   define test_flags -ox-d1-w0-j
+test_flags = -ox-d1-w0-j
 alt_error=02
 !else
-!   define test_flags -ox-d1-w0-otexanr
+test_flags = -ox-d1-w0-otexanr
 alt_error=00
 !endif
 

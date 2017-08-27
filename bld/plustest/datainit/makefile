@@ -2,6 +2,8 @@ plustest_name = datainit
 
 alt_error=00
 
+test_flags = -ox-d1-w0
+
 !include testenv1.mif
 
 exes = &
@@ -47,8 +49,6 @@ idata39.$(exe) &
 idata40.$(exe) &
 idata41.$(exe) &
 idata42.$(exe)
-
-test_flags += -ox-d1-w0
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k

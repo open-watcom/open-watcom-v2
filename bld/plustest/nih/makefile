@@ -8,6 +8,12 @@ test_flags = -ox-d1
 alt_error=00
 !endif
 
+test_flags += -DNESTED_TYPES -w0 -I. -fi=__ialias.h
+
+test_flags_386 = -mf
+test_flags_i86 = -ml
+test_flags_axp =
+
 !include testenv1.mif
 
 objs =  &
@@ -52,12 +58,6 @@ objs =  &
     stack.obj  &
     string.obj  &
     time.obj
-
-test_flags += -DNESTED_TYPES -w0 -I. -fi=__ialias.h
-
-test_flags_386 = -mf
-test_flags_i86 = -ml
-test_flags_axp =
 
 test : .symbolic start clean start_test $(objs)
     $(noecho)%append $(log_file) PASS $(%__CWD__)

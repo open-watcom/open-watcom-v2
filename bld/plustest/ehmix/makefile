@@ -20,6 +20,8 @@ test_flags = -ox-d1-xs
 alt_error=00
 !endif
 
+test_flags += -xr
+
 !ifdef __OS2__
 exec_chk_386 = os2386.chk
 !else ifdef __LINUX__
@@ -35,8 +37,6 @@ test_flags += $(br_opt)
 !else ifeq alt_error 01
 test_flags += $(br_opt)
 !endif
-
-test_flags += -xr
 
 stack_386=opt stack=64k
 stack_i86=opt stack=16k

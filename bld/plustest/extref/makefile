@@ -18,13 +18,13 @@ extref_eh = -xss
 alt_error=00
 !endif
 
-!include testenv1.mif
-
 !ifneq arch axp
 # until we implement it under AXP
 test_flags += -zv
 !endif
 test_flags += -I"../positive/source"
+
+!include testenv1.mif
 
 !ifneq arch axp
 # until we implement it under AXP

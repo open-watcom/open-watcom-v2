@@ -17,6 +17,12 @@ test_flags = -ox-d1-xst
 alt_error=00
 !endif
 
+test_flags += -I"../positive/source"
+
+test_flags_386 = -mf
+test_flags_i86 = -mc
+test_flags_axp = 
+
 !ifneq targ_env_386 cw386
 !ifneq targ_env_386 d4g386
 stderr_check_386 = 2>>stderr.out
@@ -35,6 +41,12 @@ add_br_ = $(br_opt)
 !else ifeq alt_error 02
 add_br_ = $(br_opt)
 !endif
+
+!ifdef %plustest_bad_br
+no_br_excok = no
+!endif
+
+test_flags += $(add_br_$(no_br_$^*))
 
 files = &
     excok.$(ext) &
@@ -67,20 +79,6 @@ batch_cmp = except.fcb
 batch_lnk = except.fcl
 
 batch_sym = batch_build
-!endif
-
-test_flags += -I"../positive/source"
-
-!ifdef %plustest_bad_br
-no_br_excok = no
-!endif
-
-!ifeq arch 386
-test_flags_386 += $(test_flags) -mf $(add_br_$(no_br_$^*))
-!else ifeq arch i86
-test_flags_i86 += $(test_flags) -mc
-!else ifeq arch axp
-test_flags_axp += $(test_flags)
 !endif
 
 stack_386=opt stack=32k
@@ -122,7 +120,7 @@ $(batch_cmp) : $(__MAKEFILES__)
 
 batch_build : .symbolic test.lnk $(batch_lnk) $(batch_cmp)
     @%make set_path_wpp
-    $(wpp_$(arch)) -fc=$(batch_cmp) $(test_flags_$(arch))
+    $(wpp_$(arch)) -fc=$(batch_cmp) $(test_flags) $(test_flags_$(arch))
     @%make set_path_wlink
     @%make echo_link
     $(noecho)$(linker) @$(batch_lnk)
@@ -139,5 +137,5 @@ clean : .procedure
 
 !ifdef BATCH_TEST
 .before
-    @echo test_flags=$(test_flags_$(arch))
+#    @echo test_flags=$(test_flags_$(arch))
 !endif

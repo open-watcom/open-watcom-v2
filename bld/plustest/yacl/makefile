@@ -16,6 +16,10 @@ test_flags = -op-d2
 alt_error=00
 !endif
 
+test_flags += -ei -I.. -w0 -D__OS2__
+
+test_flags_i86 = -ml
+
 !include testenv1.mif
 !include base/lib.mif
 !include io/lib.mif
@@ -38,10 +42,6 @@ strtest.$(exe) &
 treeprnt.$(exe) &
 treetest.$(exe) &
 wordcnt.$(exe)
-
-test_flags += -ei -I.. -w0 -D__OS2__
-
-test_flags_i86 = -ml
 
 stack_386=opt stack=32k
 stack_i86=opt stack=24k

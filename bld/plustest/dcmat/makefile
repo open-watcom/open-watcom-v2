@@ -8,6 +8,12 @@ test_flags = -ox-d1
 alt_error=00
 !endif
 
+test_flags += -e10 -w0 -D__ATT_complex__ -I.
+
+test_flags_386 =
+test_flags_i86 = -mm -zm
+test_flags_axp =
+
 !include testenv1.mif
 
 objs = &
@@ -17,12 +23,6 @@ objs = &
     four1.obj &
     realft.obj &
     svdcmp.obj
-
-test_flags += -e10 -w0 -D__ATT_complex__ -I.
-
-test_flags_386 =
-test_flags_i86 = -mm -zm
-test_flags_axp =
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k

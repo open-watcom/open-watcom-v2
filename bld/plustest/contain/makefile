@@ -6,40 +6,40 @@ no_continue = yes
 save_out = $(arch)_1
 test_flags = -d2-j
 opt_EH_yes = -xst
-test_flags_386 += -ei-zp1
-test_flags_i86 += -ei-zp2
+test_flags_386 = -ei-zp1
+test_flags_i86 = -ei-zp2
 alt_error=01
 !else ifdef test2
 save_out = $(arch)_2
 test_flags = -oxratl-d1-j
-test_flags_386 += -ei-zp2
+test_flags_386 = -ei-zp2
 opt_EH_yes = -xss
 alt_error=02
 !else ifdef test3
 save_out = $(arch)_3
 test_flags = -oxratl-d1-j
 opt_EH_yes = -xs
-test_flags_386 += -ei
-test_flags_i86 += -ei
+test_flags_386 = -ei
+test_flags_i86 = -ei
 alt_error=03
 !else
 save_out = $(arch)_0
 test_flags = -d2-j
 opt_EH_yes = -xs
-test_flags_386 += -ei-zp4
-test_flags_i86 += -ei-zp2
+test_flags_386 = -ei-zp4
+test_flags_i86 = -ei-zp2
 alt_error=00
 !endif
 
-!include testenv1.mif
-
-opt_memchk = -zl -wcd=887
+test_flags += -w4 -we -I=source
 
 test_flags_386 += -3s-mf
 test_flags_i86 += -3-ml -fi="source/noinline.h"
 test_flags_axp += -si
 
-test_flags += -w4 -we -I=source
+!include testenv1.mif
+
+opt_memchk = -zl -wcd=887
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k

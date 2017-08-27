@@ -1,5 +1,7 @@
 plustest_name = arith
 
+test_flags = -e1000 -fi=arith.h
+
 !ifdef test1
 test_flags_386 = -d2-fpd
 test_flags_i86 = -d2-fpd
@@ -32,19 +34,17 @@ test_flags_axp = -os-d1-xst
 alt_error=00
 !endif
 
-!include testenv1.mif
-
-!ifeq alt_error 02
-test_flags_386 += $(br_opt)
-!else ifeq alt_error 05
-test_flags_386 += $(br_opt)
-!endif
-
 test_flags_386 += -fpi87-fp5-mf
 test_flags_i86 += -fpi87-fp5-ml
 test_flags_axp +=
 
-test_flags = -e1000 -fi=arith.h
+!include testenv1.mif
+
+!ifeq alt_error 02
+test_flags += $(br_opt)
+!else ifeq alt_error 05
+test_flags += $(br_opt)
+!endif
 
 stack_386=opt stack=16k
 stack_i86=opt stack=8k
