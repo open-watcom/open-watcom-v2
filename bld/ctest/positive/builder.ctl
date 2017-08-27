@@ -29,10 +29,6 @@ set PROJDIR=<CWD>
     wmake -h test8=1
     cdsay .
     wmake -h test9=1
-    cdsay .
-    wmake -h test10=1
-    cdsay .
-    wmake -h test11=1
 [ IFDEF <EXTRA_ARCH> i86 386 axp ppc mps ]
     cdsay .
     wmake -h test0=1 arch=<EXTRA_ARCH>
@@ -54,10 +50,6 @@ set PROJDIR=<CWD>
     wmake -h test8=1 arch=<EXTRA_ARCH>
     cdsay .
     wmake -h test9=1 arch=<EXTRA_ARCH>
-    cdsay .
-    wmake -h test10=1 arch=<EXTRA_ARCH>
-    cdsay .
-    wmake -h test11=1 arch=<EXTRA_ARCH>
 [ ENDIF ]
 
 [ BLOCK <1> testclean ]

@@ -1,5 +1,7 @@
 ctest_name = callconv
 
+test_flags = -we-w0 -Isource
+
 !ifdef test1
 test_flags_386 = -d2-mf
 test_flags_i86 = -d2-mc-2
@@ -56,10 +58,6 @@ sav_file_2 = x$(arch)_$(alt_error).sav
 
 !include testenv1.mif
 !include ../callconv.mif
-
-test_flags = -we-w0 -Isource
-
-test_flags_386 += $(add_br_$(no_br_$^*))
 
 .c: source
 

@@ -1,5 +1,7 @@
 ctest_name = positive
 
+test_flags = -we-w0 -Isource
+
 !ifdef test1
 test_flags_386 = -d2-mf
 test_flags_i86 = -d2-mc-2
@@ -56,14 +58,12 @@ alt_error = 00
 !include ../positive.mif
 
 !ifeq alt_error 00
-add_br_ = $(br_opt)
+add_br_ = $(targ_br_$(targ_env_$(arch)))
 !else ifeq alt_error 01
-add_br_ = $(br_opt)
+add_br_ = $(targ_br_$(targ_env_$(arch)))
 !endif
 
-test_flags = -we-w0 -Isource
-
-test_flags_386 += $(add_br_$(no_br_$^*))
+test_flags += $(add_br_$(no_br_$^*))
 
 stack_i86 = opt stack=12k
 
