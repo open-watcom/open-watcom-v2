@@ -74,16 +74,16 @@ t_rdos      = $(t_runrdos)
 
 ext=.exe
 !ifdef t_$(bld_os)$(bld_cpu)
-exes = $+$(t_$(bld_os)$(bld_cpu))$-
+buil_tests = $+$(t_$(bld_os)$(bld_cpu))$-
 !else ifdef t_$(bld_os)
-exes = $+$(t_$(bld_os))$-
+buil_tests = $+$(t_$(bld_os))$-
 !endif
 
 ext=
 !ifdef t_$(bld_os)$(bld_cpu)
-rundeps = $+$(t_$(bld_os)$(bld_cpu))$-
+run_tests = $+$(t_$(bld_os)$(bld_cpu))$-
 !else ifdef t_$(bld_os)
-rundeps = $+$(r_$(bld_os))$-
+run_tests = $+$(r_$(bld_os))$-
 !endif
 
 !else
@@ -130,24 +130,15 @@ wnt_dll =1
 os3_dll =1
 !endif
 
-test : start clean start_build $(exes) start_test tests .symbolic
-#    diff $(%ERROR_FILE) test.chk
-    @%append $(log_file) PASS $(%__CWD__)
+test : start clean start_build $(buil_tests) start_test $(run_tests) common_set_result .symbolic
     @%make clean
 
 start_build : .symbolic
-#    @set ERROR_FILE=exec.out
-#    %create $(%ERROR_FILE)
-
-set_pass : .PROCEDURE .EXPLICIT
-    @set ERROR_MSG=PASS $(%__CWD__)
+    @%make common_start_test
+    @set ERROR_MSG=failure to build $$^*
 
 start_test : .symbolic
-    @set ERROR_FILE=$(log_file)
-    @set ERROR_MSG=FAIL $(%__CWD__)
-
-tests : $(rundeps) .symbolic
-#    @echo The clib tests completed: SUCCESS!
+    @set ERROR_MSG=failure to run $$^*
 
 runtests : .symbolic
 !ifdef notnt
@@ -607,16 +598,12 @@ lnx_3s.exe : $(srcfile)
 # Run 16-bit DOS executables
 $+$(t_rundos)$- : .symbolic
     -$@.exe
-    @set RESULT_MSG=FAIL
-    @if not errorlevel 1 @set RESULT_MSG=PASS
-    @echo $(%RESULT_MSG)
+    @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
 
 # Run CauseWay 32-bit DOS extended executables
 $+$(t_runcw)$- : .symbolic
     -$@.exe
-    @set RESULT_MSG=FAIL
-    @if not errorlevel 1 @set RESULT_MSG=PASS
-    @echo $(%RESULT_MSG)
+    @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
 
 # Run DOS/4G 32-bit DOS extended executables
 $+$(t_rund4g)$- : .symbolic
@@ -629,64 +616,48 @@ $+$(t_rund4g)$- : .symbolic
     @set PATH=$(%WATCOM)\binw
 !endif
     -$@.exe
-    @set RESULT_MSG=FAIL
-    @if not errorlevel 1 @set RESULT_MSG=PASS
-    @echo $(%RESULT_MSG)
+    @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
     @set PATH=$(%OPATH)
     @set OPATH=
 
 # Run PharLap 386|DOS 32-bit DOS extended executables
 $+$(t_runpls)$- : .symbolic
     -$@.exe
-    @set RESULT_MSG=FAIL
-    @if not errorlevel 1 @set RESULT_MSG=PASS
-    @echo $(%RESULT_MSG)
+    @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
 
 # Run Windows 3.x 16-bit executables
 $+$(t_runw16)$- : .symbolic
     @rm -f tmp.log
     -$@.exe
-    @set RESULT_MSG=FAIL
-    @if not errorlevel 1 @set RESULT_MSG=PASS
+    @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
     @type tmp.log
-    @echo $(%RESULT_MSG)
 
 # Run Windows 3.x 32-bit executables (Win386)
 $+$(t_runw386)$- : .symbolic
     @rm -f tmp.log
     -$@.exe
-    @set RESULT_MSG=FAIL
-    @if not errorlevel 1 @set RESULT_MSG=PASS
+    @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
     @type tmp.log
-    @echo $(%RESULT_MSG)
 
 # Run OS/2 16-bit executables
 $+$(t_runos2)$- : .symbolic
     -$@.exe
-    @set RESULT_MSG=FAIL
-    @if not errorlevel 1 @set RESULT_MSG=PASS
-    @echo $(%RESULT_MSG)
+    @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
 
 # Run OS/2 32-bit executables
 $+$(t_runos3)$- : .symbolic
     -$@.exe
-    @set RESULT_MSG=FAIL
-    @if not errorlevel 1 @set RESULT_MSG=PASS
-    @echo $(%RESULT_MSG)
+    @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
 
 # Run Windows NT (Win32) executables
 $+$(t_runwnt)$- : .symbolic
     -$@.exe
-    @set RESULT_MSG=FAIL
-    @if not errorlevel 1 @set RESULT_MSG=PASS
-    @echo $(%RESULT_MSG)
+    @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
 
 # Run Linux executables
 $+$(t_runlnx)$- : .symbolic
     -./$@.exe
-    @set RESULT_MSG=FAIL
-    @if not errorlevel 1 @set RESULT_MSG=PASS
-    @echo $(%RESULT_MSG)
+    @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
 
 clean global : .procedure
     @%make echo_clean

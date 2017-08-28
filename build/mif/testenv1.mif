@@ -56,7 +56,11 @@
 !  endif
 !endif
 
+!ifdef clibtest_name
+sav_file = $(clibtest_name).sav
+!else
 sav_file = s$(arch)_$(alt_error).sav
+!endif
 
 start : .SYMBOLIC .EXPLICIT
 !ifdef dll_loaded
@@ -69,9 +73,22 @@ start : .SYMBOLIC .EXPLICIT
     @echo using !loaddll $(dll_wpp_$(arch))
 ! else ifdef mathtest_name
     @echo using !loaddll $(dll_wcc_$(arch))
+! else ifdef clibtest_name
+    @echo using !loaddll $(dll_wcc_$(arch))
 ! endif
 !endif
-    @%make set_test_header
+    @%append $(log_file) ==== $(%__CTIME__) $(%__CWD__) ====
+!ifdef clibtest_name
+! ifeq verbose 0
+    @echo TEST $(clibtest_name)
+! endif
+    $(noecho)%append $(log_file) TEST $(clibtest_name)
+!else
+! ifeq verbose 0
+    @echo TEST $(arch)/$(alt_error)
+! endif
+    $(noecho)%append $(log_file) TEST $(arch)/$(alt_error)
+!endif
 
 test.lnk : $(__MAKEFILES__) .EXPLICIT
     $(noecho)%create $@
@@ -284,7 +301,7 @@ common_set_result : .procedure .EXPLICIT
     -diff -b $(sav_file) exec.chk >$(nulldevice)
 !endif
     @if not errorlevel 1 $(noecho)%make __set_pass
-    $(noecho)%append $(%ERROR_FILE) $(%ERROR_MSG)
+    $(noecho)%append $(log_file) $(%ERROR_MSG)
 
 common_set_result_display : .procedure .EXPLICIT
     @set ERROR_FILE=$(log_file)
@@ -296,7 +313,7 @@ common_set_result_display : .procedure .EXPLICIT
     -diff -b $(sav_file) exec.chk
 !endif
     @if not errorlevel 1 $(noecho)%make __set_pass
-    $(noecho)%append $(%ERROR_FILE) $(%ERROR_MSG)
+    $(noecho)%append $(log_file) $(%ERROR_MSG)
 
 common_set_result_check : .procedure .EXPLICIT
     @set ERROR_FILE=$(log_file)
@@ -304,7 +321,7 @@ common_set_result_check : .procedure .EXPLICIT
     $(noecho)%make __save_sav
     $(noecho)%make check_result
     @if not errorlevel 1 $(noecho)%make __set_pass
-    $(noecho)%append $(%ERROR_FILE) $(%ERROR_MSG)
+    $(noecho)%append $(log_file) $(%ERROR_MSG)
 
 full_set_result : .procedure .EXPLICIT
     @set ERROR_FILE=$(log_file)
@@ -313,7 +330,7 @@ full_set_result : .procedure .EXPLICIT
     -$]@ $(log_file) >$(nulldevice)
     @if not errorlevel 1 @set ERROR_MSG=PASS $(%__CWD__)
     %append $(log_file) TEST
-    $(noecho)%append $(%ERROR_FILE) $(%ERROR_MSG)
+    $(noecho)%append $(log_file) $(%ERROR_MSG)
 
 set_result_check : .procedure .EXPLICIT
     @set ERROR_FILE=$(log_file)
@@ -321,4 +338,4 @@ set_result_check : .procedure .EXPLICIT
     $(noecho)%make save_sav
     $(noecho)%make check_result
     @if not errorlevel 1 $(noecho)%make set_pass
-    $(noecho)%append $(%ERROR_FILE) $(%ERROR_MSG)
+    $(noecho)%append $(log_file) $(%ERROR_MSG)
