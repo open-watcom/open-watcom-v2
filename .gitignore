@@ -176,6 +176,7 @@
 /bld/win386/vxd/*.386
 /bld/win386/conv/win386/*
 #
+/bld/wipfc/autom4te.cache/
 /bld/wipfc/*/config.h
 /bld/wipfc/*/config.status
 /bld/wipfc/*/Makefile
