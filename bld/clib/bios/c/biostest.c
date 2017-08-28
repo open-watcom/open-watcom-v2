@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef __SW_BW
     #include <wdefwin.h>
@@ -40,7 +41,6 @@
 
 #include <bios.h>
 #include <conio.h>
-#include <string.h>
 
 #define VERIFY( exp )   if( !(exp) ) {                                      \
                             printf( "%s: ***FAILURE*** at line %d of %s.\n",\

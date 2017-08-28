@@ -31,13 +31,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #if !defined( __UNIX__ ) && !defined( __RDOS__ )
 
 #include <dos.h>
 #include <fcntl.h>
 #include <share.h>
-#include <string.h>
 #include <ctype.h>
 #include <unistd.h>
 
