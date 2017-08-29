@@ -53,7 +53,7 @@
 
 /* Declaration specifiers */
 #define DECLSPEC_IMPORT             __declspec(dllimport)
-#define DECLSPEC_NORETURN
+#define DECLSPEC_NORETURN           __declspec(noreturn)
 #define DECLSPEC_NOTHROW
 #define DECLSPEC_ALIGN( x )
 #define DECLSPEC_UUID( x )
