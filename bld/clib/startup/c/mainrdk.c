@@ -57,7 +57,7 @@
 
 
 extern void _cexit_( unsigned ret_code );
-#pragma aux _cexit_  "*" parm routine [eax]
+#pragma aux _cexit_  "*" parm routine [eax] aborts
 
 static void __NullAccessRtn( int handle )
 {
@@ -99,7 +99,7 @@ void __RdosMain( void )
     _LpPgmName = (char *)RdosGetExeName();
 #else
     _LpPgmName = "";
-#endif    
+#endif
 
     RdosGetVersion( &major, &minor, &release );
     _RWD_osmajor = major;
@@ -110,7 +110,7 @@ void __RdosMain( void )
     if( _LpCmdLine == 0 )
         _LpCmdLine = "";
     else {
-       while( *_LpCmdLine != 0 && *_LpCmdLine != ' ' && *_LpCmdLine != 0x9 ) 
+       while( *_LpCmdLine != 0 && *_LpCmdLine != ' ' && *_LpCmdLine != 0x9 )
          _LpCmdLine++;
     }
 #else
@@ -124,4 +124,5 @@ void __RdosMain( void )
 _WCRTLINK _WCNORETURN void __exit( unsigned ret_code )
 {
     _cexit_( ret_code );  // A device-driver should never clean-up rtns, so just exit!
+    // never return
 }

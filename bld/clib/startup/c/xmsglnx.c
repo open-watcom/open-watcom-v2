@@ -43,11 +43,14 @@ _WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *msg, unsigned retcod
     newline = '\n';
     write( STDERR_FILENO, &newline, 1 );
     _sys_exit( retcode );
+    // never return
 }
 
 _WCRTLINK _WCNORETURN void __fatal_runtime_error( char _WCI86FAR *msg, unsigned retcode )
 {
     if( __EnterWVIDEO( msg ) )
         _sys_exit( retcode );
+        // never return
     __exit_with_msg( msg, retcode );
+    // never return
 }

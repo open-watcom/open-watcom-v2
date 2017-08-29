@@ -130,8 +130,10 @@ void KillDebugger( int ret_code )
 #ifdef __NT__
     ret_code = ret_code;
     ExitProcess( 0 );
+    // never return
 #else
     TinyExit( ret_code );
+    // never return
 #endif
 }
 

@@ -288,6 +288,7 @@ int _cstart_( void )
         retcode = _SetupArgv( pre_main );
     }
     ExitThread( 0, retcode );
+    // never return
     return( 0 );
 }
 
@@ -340,13 +341,14 @@ void __VersionEnforcement( void )
 }
 #endif
 
-_WCNORETURN void __exit( unsigned rc )
+_WCRTLINK _WCNORETURN void __exit( unsigned rc )
 {
     __FiniRtns( 0, InitFiniLevel );
 /*
  * Netware has own _exit procedure
  */
     _exit( rc );
+    // never return
 }
 
 unsigned short __GETDS( void )

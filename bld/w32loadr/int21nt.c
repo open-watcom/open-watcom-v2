@@ -455,6 +455,7 @@ unsigned __Int21C( union REGS *r )
         break;
     case DOS_EXIT:
         ExitProcess( r->x.eax );
+        // never return
     case DOS_IOCTL:
         if( r->h.al == 0 ) {            // Get Device Data
             r->x.edx = 0;

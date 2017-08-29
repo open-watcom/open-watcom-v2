@@ -210,4 +210,5 @@ _WCRTLINK _WCNORETURN void __exit( unsigned ret_code )
     }
 
     DosExit( EXIT_PROCESS, ret_code );
+    // never return
 }

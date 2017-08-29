@@ -159,4 +159,5 @@ void __CEndThread( void )
         __NTRemoveThread( TRUE );
     }
     ExitThread( 0 );
+    // never return
 }

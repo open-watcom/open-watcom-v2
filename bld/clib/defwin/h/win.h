@@ -346,7 +346,7 @@ extern void     _DisplayCursor( LPWDATA w );
 extern void     _SetInputMode( LPWDATA, int );
 extern void     _ShowWindowActive( LPWDATA w, LPWDATA last );
 extern void     _OutOfMemory( void );
-extern __declspec(noreturn) void _OutOfMemoryExit( void );
+extern _WCNORETURN void _OutOfMemoryExit( void );
 extern void     _ExecutionComplete( void );
 extern int      _SetAppTitle( const char * );
 extern int      _SetConTitle( LPWDATA, const char *);

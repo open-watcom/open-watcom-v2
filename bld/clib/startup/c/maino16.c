@@ -130,7 +130,7 @@ int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
     DosGetMachineMode( (PBYTE)&_osmode );
     {
         unsigned short      version;
-    
+
         DosGetVersion( (PUSHORT)&version );
         _RWD_osmajor = version >> 8;
         _RWD_osminor = version & 0xff;
@@ -144,7 +144,7 @@ int _OS2Main( char _WCI86FAR *stklow, char _WCI86FAR *stktop,
     {
         char    _WCI86FAR *src;
         char    _WCI86FAR *pgmp;
-    
+
         src = MK_FP( envseg, cmdoff );
         _LpPgmName = stklow;
         /* back up from the ao: pointer to the eo: pointer (see OS/2 2.0 docs)*/
@@ -225,7 +225,9 @@ _WCRTLINK _WCNORETURN void __exit( unsigned ret_code )
 #ifdef __SW_BD
     RetCode = ret_code;
     longjmp( JmpBuff, 1 );
+    // never return
 #else
     DosExit( EXIT_PROCESS, ret_code );
+    // never return
 #endif
 }

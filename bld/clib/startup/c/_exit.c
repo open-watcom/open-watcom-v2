@@ -39,4 +39,5 @@ _WCRTLINK _WCNORETURN void _Exit( int status )
 /********************************************/
 {
     _exit( status );
+    // never return
 }

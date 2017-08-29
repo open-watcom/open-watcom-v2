@@ -45,6 +45,7 @@ void Output( const char *str )
 void SayGNiteGracey( int return_code )
 {
     ExitProcess( return_code );
+    // never return
 }
 
 void StartupErr( const char *err )

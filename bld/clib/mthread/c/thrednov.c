@@ -52,8 +52,7 @@ extern long             ExamineLocalSemaphore( long );
 extern int              SignalLocalSemaphore( long );
 extern int              WaitOnLocalSemaphore( long );
 extern void             ExitThread( int , int );
-extern int              BeginThread( void (*)( void * ), void *, unsigned,
-                                     void * );
+extern int              BeginThread( void (*)( void * ), void *, unsigned, void * );
 
 extern  void            **__ThreadIDs;
 
@@ -147,7 +146,7 @@ static void begin_thread_helper( void *the_arg )
     }
 }
 
-extern int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
+int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
                          unsigned stack_size, void *arglist )
 {
     begin_thread_data   data;
@@ -166,7 +165,7 @@ extern int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
     return( data.tid );
 }
 
-extern void __CEndThread( void )
+void __CEndThread( void )
 {
     int         thrdid;
 
@@ -175,4 +174,5 @@ extern void __CEndThread( void )
     __ThreadData[thrdid].data = NULL;
     __ThreadIDs[thrdid] = NULL;
     ExitThread( EXIT_THREAD, 0 );
+    // never return
 }

@@ -59,26 +59,26 @@ struct __lnx_thread {
     void        *args;
 };
 
-void *__LinuxGetThreadData( ) 
+void *__LinuxGetThreadData( void )
 {
-volatile struct __lnx_tls_entry *walker;
-void *ret;
+    volatile struct __lnx_tls_entry *walker;
+    void *ret;
 
     ret = NULL;
 
     sem_wait( __tls_sem );
-    
+
         walker = __tls;
         while( walker != NULL ) {
-            if( walker->id == gettid( ) ) {
+            if( walker->id == gettid() ) {
                 ret = walker->tls;
                 break;
             }
             walker = walker->next;
         }
-        
+
     sem_post( __tls_sem );
-    
+
     return ret;
 }
 
@@ -91,44 +91,40 @@ volatile struct __lnx_tls_entry *previous;
         walker = __tls;
         previous = NULL;
         while( walker != NULL ) {
-            if( walker->id == gettid( ) )
+            if( walker->id == gettid() )
                 break;
 
             previous = walker;
             walker = walker->next;
         }
-    
+
         if( walker == NULL && __data != NULL ) {
             walker = (struct __lnx_tls_entry *)lib_malloc( sizeof( struct __lnx_tls_entry * ) );
             walker->tls = __data;
-            walker->id = gettid( );
+            walker->id = gettid();
             walker->next = NULL;
-            
-            if(previous == NULL)
+
+            if( previous == NULL ) {
                 __tls = walker;
-            else
+            } else {
                 previous->next = walker;
-        
+            }
         } else if( walker != NULL && __data == NULL ) {
-        
-            if( previous != NULL )
+            if( previous != NULL ) {
                 previous->next = walker->next;
-            else
+            } else {
                 __tls = walker->next;
-            
+            }
             lib_free((void *)walker);
-                
         } else if( walker != NULL && __data != NULL ) {
-        
             walker->tls = __data;
-            
         }
     sem_post( __tls_sem );
 }
 
 static void __cloned_lnx_start_fn( void *thrvoiddata )
 {
-  
+
     struct __lnx_thread *thrdata;
 
     __LinuxAddThread(NULL);
@@ -138,6 +134,7 @@ static void __cloned_lnx_start_fn( void *thrvoiddata )
     free( thrvoiddata );
 
     _sys_exit( 0 );
+    // never return
 }
 
 int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
@@ -149,7 +146,7 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
     unsigned            flags = CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND
                             | CLONE_THREAD | CLONE_SYSVSEM | CLONE_PTRACE | CLONE_IO
                             | CLONE_PARENT_SETTID | CLONE_CHILD_CLEARTID | CLONE_DETACHED;
-    
+
     if( stack_size == 0 && stack_bottom == NULL ) {
         stack_size = 16 * 4096; /* Docs and other platforms suggest this is
                                  * the OpenWatcom default
@@ -169,9 +166,9 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
     thrdata->start_addr = start_addr;
     thrdata->args = arglist;
 
-    pid = clone( (int(*)(void *))__cloned_lnx_start_fn,  
+    pid = clone( (int(*)(void *))__cloned_lnx_start_fn,
                  (void *)( (int)stack_bottom + stack_size ),
-                 flags, 
+                 flags,
                  thrdata );
 
     return( (int)pid );
@@ -182,4 +179,5 @@ void __CEndThread( void )
 {
     __LinuxSetThreadData(NULL);
     _sys_exit( 0 );
+    // never return
 }

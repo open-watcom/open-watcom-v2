@@ -66,7 +66,7 @@ static void _null_exit_rtn( void ) {}
 void    (*__FPE_handler_exit)( void ) = _null_exit_rtn;
 #endif
 
-_WCRTLINK void exit( int status )
+_WCRTLINK _WCNORETURN void exit( int status )
 {
 #ifdef DEFAULT_WINDOWING
     if( _WindowsExitRtn != NULL ) {      // JBS 27-JUL-98
@@ -76,6 +76,7 @@ _WCRTLINK void exit( int status )
 #if defined(__WINDOWS_386__)
     if( __Is_DLL ) {
         _exit( status );
+        // never return
     }
 #elif defined(__NT__) || defined(__WARP__)
     (*__int23_exit)();
@@ -84,16 +85,19 @@ _WCRTLINK void exit( int status )
             (*__process_fini)( FINI_PRIORITY_EXIT, 255 );
         }
         _exit( status );
+        // never return
     }
 #elif defined(__DOS__) || defined(__OS2__) || defined(__WINDOWS__) && defined(_M_I86)
     (*__int23_exit)();
 #elif defined(__RDOS__)
     if( RdosIsForked() ) {
         _exit( status );
+        // never return
     }
 #endif
     __FiniRtns( FINI_PRIORITY_EXIT, 255 );
     _exit( status );
+    // never return
 }
 
 
@@ -117,7 +121,7 @@ _WCRTLINK void _UnloadCLib( void )
 
 #else
 
-_WCRTLINK void _exit( int status )
+_WCRTLINK _WCNORETURN void _exit( int status )
 {
 #if defined(__DOS__) || defined(__OS2__) || defined(__NT__) || defined(__WINDOWS__) && defined(_M_I86)
     (*__int23_exit)();

@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2016 Open Watcom Contributors. 
+*    Portions Copyright (c) 2016 Open Watcom Contributors.
 *    All Rights Reserved.
 *
 *  ========================================================================
@@ -71,9 +71,10 @@ static void __callfn( int (*__fn)(void *), void *args, void *tls )
      * exit code
      */
     _sys_exit( ret );
+    // never return
 }
 
-_WCRTLINK pid_t clone(int (*__fn)(void *), void *__child_stack, int __flags, 
+_WCRTLINK pid_t clone(int (*__fn)(void *), void *__child_stack, int __flags,
                       void *args, ...)
 {
     syscall_res res;

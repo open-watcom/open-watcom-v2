@@ -98,9 +98,14 @@ _WCRTLINK _WCNORETURN void __exit( unsigned ret_code )
     if( __FirstThreadData != NULL && gettid( ) == __FirstThreadData->thread_id ) {
         __FiniRtns( 0, FINI_PRIORITY_EXIT - 1 );
         _sys_exit_group( ret_code );
-    } else
+        // never return
+    } else {
+        _sys_exit( ret_code );
+        // never return
+    }
 #else
     __FiniRtns( 0, FINI_PRIORITY_EXIT - 1 );
-#endif
     _sys_exit( ret_code );
+    // never return
+#endif
 }

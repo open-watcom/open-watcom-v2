@@ -477,6 +477,7 @@ int __cdecl __ExceptionFilter( LPEXCEPTION_RECORD ex,
     rv = UnhandledExceptionFilter( &rec );
     if( rv == EXCEPTION_EXECUTE_HANDLER ) {
         ExitProcess( -1 );
+        // never return
     } else if( rv == EXCEPTION_CONTINUE_EXECUTION ) {
         return( ExceptionContinueExecution );
     }

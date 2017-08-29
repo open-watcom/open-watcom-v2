@@ -139,4 +139,5 @@ void __CEndThreadEx( unsigned retval )
         __NTRemoveThread( FALSE );
     }
     ExitThread( retval );
+    // never return
 }

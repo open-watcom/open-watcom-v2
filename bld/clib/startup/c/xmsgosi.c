@@ -41,9 +41,11 @@ _WCRTLINK _WCNORETURN void __exit_with_msg( char *msg, unsigned retcode )
     putch( '\r' );
     putch( '\n' );
     __exit( retcode );
+    // never return
 }
 
 _WCRTLINK _WCNORETURN void __fatal_runtime_error( char *msg, unsigned retcode )
 {
     __exit_with_msg( msg, retcode );
+    // never return
 }

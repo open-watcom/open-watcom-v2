@@ -52,8 +52,10 @@ _WCRTLINK _WCNORETURN void __exit_with_msg( char *msg, unsigned retcode )
     write( STDOUT_FILENO, &newline, 2 );
 #if defined (_NETWARE_CLIB)
     ExitThread( 0, retcode );
+    // never return
 #else
     NXThreadExit(&retcode);
+    // never return
 #endif
 }
 
@@ -62,8 +64,11 @@ _WCRTLINK _WCNORETURN void __fatal_runtime_error( char *msg, unsigned retcode )
     if( __EnterWVIDEO( msg ) )
 #if defined (_NETWARE_CLIB)
         ExitThread( 0, retcode );
+        // never return
 #else
         NXThreadExit( &retcode );
+        // never return
 #endif
     __exit_with_msg( msg, retcode );
+    // never return
 }

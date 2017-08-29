@@ -193,13 +193,14 @@ void _InitFunctionPointers( void )
 
 } /* _InitFunctionPointers */
 
-__declspec(noreturn) void _OutOfMemoryExit( void )
+_WCNORETURN void _OutOfMemoryExit( void )
 {
     _OutOfMemory();
     while( _MessageLoop( FALSE ) )
         ;
     _WindowsExitRtn = NULL;
     exit( 0 );
+    // never return
 }
 
 #ifdef __NT__
