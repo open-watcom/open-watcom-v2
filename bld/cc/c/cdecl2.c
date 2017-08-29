@@ -538,47 +538,25 @@ new_var:
 static void AdjSymTypeNode( SYMPTR sym, type_modifiers decl_mod )
 {
     TYPEPTR     typ;
+    bool		adjust;
 
     if( decl_mod ) {
         typ = sym->sym_type;
         if( typ->decl_type == TYPE_FUNCTION ) {
-            if( (sym->mods & MASK_LANGUAGES) != decl_mod ) {
-                if( sym->mods & MASK_LANGUAGES ) {
+        	adjust = false;
+            if( (sym->mods & MASK_LANGUAGES) != (decl_mod & MASK_LANGUAGES) ) {
+                if( (sym->mods & MASK_LANGUAGES) && (decl_mod & MASK_LANGUAGES) ) {
                     CErr1( ERR_INVALID_DECLSPEC );
                 } else {
-                    sym->mods |= decl_mod;
-                    if( (typ->u.fn.decl_flags & MASK_LANGUAGES) != decl_mod ) {
-                        if( typ->u.fn.decl_flags & MASK_LANGUAGES ) {
-                            CErr1( ERR_INVALID_DECLSPEC );
-                        } else {
-                            sym->sym_type = FuncNode( typ->object, typ->u.fn.decl_flags | decl_mod, typ->u.fn.parms );
-                        }
-                    }
+                    adjust = true;
                 }
+            }
+            if( adjust || (sym->mods & FLAG_NORETURN) != (decl_mod & FLAG_NORETURN) ) {
+                sym->mods |= decl_mod;
+                AdjFuncTypeNode( &sym->sym_type, decl_mod );
             }
         } else {
-            TYPEPTR     *xtyp;
-
-            xtyp = &sym->sym_type;
-            while( ( typ->object != NULL ) && ( typ->decl_type == TYPE_POINTER ) ) {
-                xtyp = &typ->object;
-                typ = typ->object;
-            }
-            if( typ->decl_type == TYPE_FUNCTION ) {
-                if( (typ->u.fn.decl_flags & MASK_LANGUAGES) != decl_mod ) {
-                    if( typ->u.fn.decl_flags & MASK_LANGUAGES ) {
-                        CErr1( ERR_INVALID_DECLSPEC );
-                    } else {
-                        *xtyp = FuncNode( typ->object, typ->u.fn.decl_flags | decl_mod, typ->u.fn.parms );
-                    }
-                }
-            } else {
-                if( sym->mods & MASK_LANGUAGES ) {
-                    CErr1( ERR_INVALID_DECLSPEC );
-                } else {
-                    sym->mods |= decl_mod;
-                }
-            }
+            AdjTypeNode( &sym->sym_type, decl_mod, sym );
         }
     }
 }

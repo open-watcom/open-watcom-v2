@@ -976,28 +976,45 @@ static void ClearFieldHashTable( TAGPTR tag )
     }
 }
 
-static void AdjFieldTypeNode( FIELDPTR field, type_modifiers decl_mod )
+void AdjFuncTypeNode( TYPEPTR *ptyp, type_modifiers decl_mod )
+{
+    TYPEPTR     typ;
+    bool        adjust;
+
+    adjust = false;
+    typ = *ptyp;
+    if( (typ->u.fn.decl_flags & MASK_LANGUAGES) != (decl_mod & MASK_LANGUAGES) ) {
+        if( (typ->u.fn.decl_flags & MASK_LANGUAGES) && (decl_mod & MASK_LANGUAGES) ) {
+            CErr1( ERR_INVALID_DECLSPEC );
+        } else {
+            adjust = true;
+        }
+    }
+    if( adjust || (typ->u.fn.decl_flags & FLAG_NORETURN) != (decl_mod & FLAG_NORETURN) ) {
+        *ptyp = FuncNode( typ->object, typ->u.fn.decl_flags | decl_mod, typ->u.fn.parms );
+    }
+}
+
+void AdjTypeNode( TYPEPTR *ptyp, type_modifiers decl_mod, SYMPTR sym )
 {
     if( decl_mod ) {
-        TYPEPTR     *xtyp;
         TYPEPTR     typ;
 
-        xtyp = &field->field_type;
-        typ = *xtyp;
+        typ = *ptyp;
         while( ( typ->object != NULL ) && ( typ->decl_type == TYPE_POINTER ) ) {
-            xtyp = &typ->object;
-            typ = *xtyp;
+            ptyp = &typ->object;
+            typ = *ptyp;
         }
         if( typ->decl_type == TYPE_FUNCTION ) {
-            if( (typ->u.fn.decl_flags & MASK_LANGUAGES) != decl_mod ) {
-                if( typ->u.fn.decl_flags & MASK_LANGUAGES ) {
-                    CErr1( ERR_INVALID_DECLSPEC );
-                } else {
-                    *xtyp = FuncNode( typ->object, typ->u.fn.decl_flags | decl_mod, typ->u.fn.parms );
-                }
-            }
-        } else {
+            AdjFuncTypeNode( ptyp, decl_mod );
+        } else if( sym == NULL ) {
             CErr1( ERR_INVALID_DECLSPEC );
+        } else {
+            if( sym->mods & MASK_LANGUAGES ) {
+                CErr1( ERR_INVALID_DECLSPEC );
+            } else {
+                sym->mods |= decl_mod;
+            }
         }
     }
 }
@@ -1063,7 +1080,7 @@ static target_size GetFields( TYPEPTR decl )
             if( CurToken != T_COLON ) {
                 field = FieldDecl( typ, info.mod, state );
                 field->level = struct_level;
-                AdjFieldTypeNode( field, info.decl_mod );
+                AdjTypeNode( &field->field_type, info.decl_mod, NULL );
                 field = NewField( field, decl );
             }
             if( CurToken == T_COLON ) {
@@ -1617,7 +1634,7 @@ target_size TypeSizeEx( TYPEPTR typ, bitfield_width *pFieldWidth )
     return( size );
 }
 
-/* Return an integer type of specified size, or NULL in case of failure. 
+/* Return an integer type of specified size, or NULL in case of failure.
  * The type will be signed if 'sign' is true. The type will have exactly
  * requested size if 'exact' is true, or the next larger type will be
  * returned (eg. 64-bit integer if 6 byte size is requested).
