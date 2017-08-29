@@ -123,4 +123,5 @@ void __CEndThread( void )
 {
     __QNXRemoveThread();
     __qnx_exit( 0 );
+    // never return
 }

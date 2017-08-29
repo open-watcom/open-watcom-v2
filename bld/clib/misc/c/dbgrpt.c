@@ -143,7 +143,7 @@ static int window_report( int reporttype, const char *filename,
             case IDABORT:
                 raise( SIGABRT );
                 _exit( 3 );
-                break;
+                // never return
             case IDRETRY:
                 retval = 1;
                 break;
@@ -174,7 +174,7 @@ static int window_report( int reporttype, const char *filename,
                 case MBID_ABORT:
                     raise( SIGABRT );
                     _exit( 3 );
-                    break;
+                    // never return
                 case MBID_RETRY:
                     retval = 1;
                     break;

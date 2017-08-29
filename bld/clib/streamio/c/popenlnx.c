@@ -2,7 +2,7 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 2014 Open Watcom contributors. 
+*    Portions Copyright (c) 2014 Open Watcom contributors.
 *    All Rights Reserved.
 *
 *  ========================================================================
@@ -38,69 +38,62 @@
 #define _PIPE_READ_END      0
 #define _PIPE_WRITE_END     1
 
-_WCRTLINK FILE* popen(const char *command, const char *mode)
+_WCRTLINK FILE *popen( const char *command, const char *mode )
 {
     int fd[2];
     pid_t pid;
     FILE *fp;
 
-    if ((mode[0] != 'r' && mode[0] != 'w') || mode[1] != '\0') {
+    if( ( mode[0] != 'r' && mode[0] != 'w' ) || mode[1] != '\0' ) {
         /* Note: by checking mode[1], we are basically ruling out
          * glibc's extra designators, as we should.
          */
         _RWD_errno = EINVAL;
-        return NULL;
+        return( NULL );
     }
-    
-    if (pipe(fd) < 0) {
+    if( pipe( fd ) < 0 ) {
         /* errno is set appropriately in pipe */
-        return NULL;
+        return( NULL );
     }
-
     pid = fork();
-    
-    switch (pid) {
-        
-        case -1:
-            /* Fork failed... */
-            close(fd[0]);
-            close(fd[1]);
+    switch( pid ) {
+    case -1:
+        /* Fork failed... */
+        close( fd[0] );
+        close( fd[1] );
 
-            /* errno should be set by failing fork call */
-            return NULL;
-        
-        case 0:
-            /* Duplicate the file handle we want, close both originals */
-            if (mode[0] == 'r') {
-                dup2(fd[_PIPE_WRITE_END], STDOUT_FILENO);
-            } else {
-                dup2(fd[_PIPE_READ_END], STDIN_FILENO);
-            }
-            close(fd[0]);
-            close(fd[1]);
-        
-            execl("/bin/sh", "sh", "-c", command, (char *) NULL);
-            _exit(1);
+        /* errno should be set by failing fork call */
+        return( NULL );
+    case 0:
+        /* Duplicate the file handle we want, close both originals */
+        if( mode[0] == 'r' ) {
+            dup2( fd[_PIPE_WRITE_END], STDOUT_FILENO );
+        } else {
+            dup2( fd[_PIPE_READ_END], STDIN_FILENO );
+        }
+        close( fd[0] );
+        close( fd[1] );
 
-        default:
-            /* This is the parent process.  Close the proper pipe end. */
-            if (mode[0] == 'r') {
-                close(fd[_PIPE_WRITE_END]);
-                fp = fdopen(fd[_PIPE_READ_END], mode);
-                if(fp == NULL) {
-                    close(fd[_PIPE_READ_END]);
-                }
-            } else {
-                close(fd[_PIPE_READ_END]);
-                fp = fdopen(fd[_PIPE_WRITE_END], mode);
-                if(fp == NULL) {
-                    close(fd[_PIPE_WRITE_END]);
-                }
+        execl( "/bin/sh", "sh", "-c", command, (char *)NULL );
+        _exit( 1 );
+        // never return
+    default:
+        /* This is the parent process.  Close the proper pipe end. */
+        if( mode[0] == 'r' ) {
+            close( fd[_PIPE_WRITE_END] );
+            fp = fdopen( fd[_PIPE_READ_END], mode );
+            if( fp == NULL ) {
+                close( fd[_PIPE_READ_END] );
             }
-            
-            _FP_PIPEDATA(fp).isPipe = 1;
-            _FP_PIPEDATA(fp).pid = pid;       
+        } else {
+            close( fd[_PIPE_READ_END] );
+            fp = fdopen( fd[_PIPE_WRITE_END], mode );
+            if( fp == NULL ) {
+                close( fd[_PIPE_WRITE_END] );
+            }
+        }
+        _FP_PIPEDATA( fp ).isPipe = 1;
+        _FP_PIPEDATA( fp ).pid = pid;
     }
-
-    return fp;
+    return( fp );
 }

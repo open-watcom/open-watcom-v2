@@ -54,6 +54,7 @@ int _MessageLoop( BOOL doexit )
             if( doexit ) {
                 _WindowsExitRtn = NULL;
                 exit( 0 );
+                // never return
             }
             return( rc );
         }
@@ -73,6 +74,7 @@ int _BlockingMessageLoop( BOOL doexit )
         if( doexit ) {
             _WindowsExitRtn = NULL;
             exit( 0 );
+            // never return
         }
         return( rc );
     }

@@ -59,6 +59,7 @@ int _MessageLoop( BOOL doexit )
             if( doexit ) {
                 _WindowsExitRtn = NULL;
                 exit( msg.wParam );
+                // never return
             }
             break;
         }
@@ -88,6 +89,7 @@ int _BlockingMessageLoop( BOOL doexit )
         if( doexit ) {
             _WindowsExitRtn = NULL;
             exit( msg.wParam );
+            // never return
         }
     } else {
         TranslateMessage( &msg );
