@@ -81,7 +81,7 @@ static void DgAlignPad(         // INSERT PADDING IN A STRUCTURE
 {
     unsigned left;
 
-    left = ( ( total + DG_ALIGN - 1 ) & ( - DG_ALIGN ) ) - total;
+    left = _RoundUp( total, DG_ALIGN ) - total;
     if( left > 0 ) {
         DgUninitBytes( left );
     }

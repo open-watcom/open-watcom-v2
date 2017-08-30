@@ -1108,12 +1108,12 @@ NAME CppNameThrowRo(            // NAME OF THROW R/O BLOCK
     return( mangledNameType( type, IN_NAME_THROW_RO ) );
 }
 
-static const char *cppNameCgop(       // PRODUCE PRINTABLE OPERATOR NAME
-    CGOP oper )                 // - operator
+static const char *cppNameCgop(     // PRODUCE PRINTABLE OPERATOR NAME
+    CGOP oper )                     // - operator
 {
-    const char *name;                 // - name
+    const char *name;               // - name
 
-    static const char *opNames[] = {   // - opcode long names
+    static const char * const opNames[] = {   // - opcode long names
         #include "ppopslnm.h"
     };
 
