@@ -61,8 +61,6 @@ extern int main( int, char **, char ** );
 #define __FAR
 #endif
 
-extern  void    __qnx_exit( int __status );
-
 void    __near *_endheap;                   /* temporary work-around */
 char    *__near __env_mask;
 char    ** _WCDATA environ;                 /* pointer to environment variables */

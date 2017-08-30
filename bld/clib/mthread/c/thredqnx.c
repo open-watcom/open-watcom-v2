@@ -45,7 +45,7 @@
 #include "rterrno.h"
 
 
-extern  void            __qnx_exit( int __status );
+_WCNORETURN extern void     __qnx_exit( int __status );
 
 typedef struct thread_args {
     thread_fn   *rtn;
