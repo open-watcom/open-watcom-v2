@@ -842,8 +842,7 @@ extern align_type   GetTypeAlignment( TYPEPTR );
 extern void         TypesPurge( void );
 extern void         AddTypeHash( TYPEPTR );
 extern void         AddPtrTypeHash( TYPEPTR );
-extern void         AdjFuncTypeNode( TYPEPTR *ptyp, type_modifiers decl_mod );
-extern void         AdjTypeNode( TYPEPTR *ptyp, type_modifiers decl_mod, SYMPTR sym );
+extern void         AdjModsTypeNode( TYPEPTR *ptyp, type_modifiers decl_mod, SYMPTR sym );
 
 /* cusage */
 extern void         CCusage( void );

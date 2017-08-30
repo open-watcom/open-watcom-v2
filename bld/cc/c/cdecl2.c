@@ -535,32 +535,6 @@ new_var:
     return( sym_handle );
 }
 
-static void AdjSymTypeNode( SYMPTR sym, type_modifiers decl_mod )
-{
-    TYPEPTR     typ;
-    bool		adjust;
-
-    if( decl_mod ) {
-        typ = sym->sym_type;
-        if( typ->decl_type == TYPE_FUNCTION ) {
-        	adjust = false;
-            if( (sym->mods & MASK_LANGUAGES) != (decl_mod & MASK_LANGUAGES) ) {
-                if( (sym->mods & MASK_LANGUAGES) && (decl_mod & MASK_LANGUAGES) ) {
-                    CErr1( ERR_INVALID_DECLSPEC );
-                } else {
-                    adjust = true;
-                }
-            }
-            if( adjust || (sym->mods & FLAG_NORETURN) != (decl_mod & FLAG_NORETURN) ) {
-                sym->mods |= decl_mod;
-                AdjFuncTypeNode( &sym->sym_type, decl_mod );
-            }
-        } else {
-            AdjTypeNode( &sym->sym_type, decl_mod, sym );
-        }
-    }
-}
-
 static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl_state *state )
 {
     SYM_HANDLE      sym_handle;
@@ -606,7 +580,7 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
         }
         VfyNewSym( sym->info.hash, sym->name );
         sym->attribs.stg_class = info->stg;
-        AdjSymTypeNode( sym, info->decl_mod );
+    	AdjModsTypeNode( &sym->sym_type, info->decl_mod, sym );
         sym_handle = SymAdd( sym->info.hash, sym );
     } else {
         sym->attribs.declspec = info->decl;
@@ -620,7 +594,7 @@ static SYM_HANDLE InitDeclarator( SYMPTR sym, decl_info const * const info, decl
                  CErr1( ERR_INVALID_DECLSPEC );
             }
         }
-        AdjSymTypeNode( sym, info->decl_mod );
+    	AdjModsTypeNode( &sym->sym_type, info->decl_mod, sym );
         if( typ->decl_type == TYPE_FUNCTION ) {
             sym_handle = FuncDecl( sym, info->stg, state );
         } else {
@@ -1513,7 +1487,7 @@ static TYPEPTR *GetProtoType( decl_info *first )
             }
         }
         sym->attribs.stg_class = stg_class;
-        AdjSymTypeNode( sym, info.decl_mod );
+    	AdjModsTypeNode( &sym->sym_type, info.decl_mod, sym );
         AdjParmType( sym );
         parmlist = NewParm( sym->sym_type, parmlist );
         if( parm_count == 0 ) {

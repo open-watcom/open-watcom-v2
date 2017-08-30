@@ -976,26 +976,25 @@ static void ClearFieldHashTable( TAGPTR tag )
     }
 }
 
-void AdjFuncTypeNode( TYPEPTR *ptyp, type_modifiers decl_mod )
+static bool CheckAdjModsTypeNode( type_modifiers old_mod, type_modifiers decl_mod )
 {
-    TYPEPTR     typ;
     bool        adjust;
 
     adjust = false;
-    typ = *ptyp;
-    if( (typ->u.fn.decl_flags & MASK_LANGUAGES) != (decl_mod & MASK_LANGUAGES) ) {
-        if( (typ->u.fn.decl_flags & MASK_LANGUAGES) && (decl_mod & MASK_LANGUAGES) ) {
+    if( (decl_mod & MASK_LANGUAGES) && (old_mod & MASK_LANGUAGES) != (decl_mod & MASK_LANGUAGES) ) {
+        if( old_mod & MASK_LANGUAGES ) {
             CErr1( ERR_INVALID_DECLSPEC );
         } else {
             adjust = true;
         }
     }
-    if( adjust || (typ->u.fn.decl_flags & FLAG_NORETURN) != (decl_mod & FLAG_NORETURN) ) {
-        *ptyp = FuncNode( typ->object, typ->u.fn.decl_flags | decl_mod, typ->u.fn.parms );
+    if( (decl_mod & FLAG_NORETURN) && (old_mod & FLAG_NORETURN) == 0 ) {
+        adjust = true;
     }
+    return( adjust );
 }
 
-void AdjTypeNode( TYPEPTR *ptyp, type_modifiers decl_mod, SYMPTR sym )
+void AdjModsTypeNode( TYPEPTR *ptyp, type_modifiers decl_mod, SYMPTR sym )
 {
     if( decl_mod ) {
         TYPEPTR     typ;
@@ -1005,15 +1004,18 @@ void AdjTypeNode( TYPEPTR *ptyp, type_modifiers decl_mod, SYMPTR sym )
             ptyp = &typ->object;
             typ = *ptyp;
         }
-        if( typ->decl_type == TYPE_FUNCTION ) {
-            AdjFuncTypeNode( ptyp, decl_mod );
-        } else if( sym == NULL ) {
-            CErr1( ERR_INVALID_DECLSPEC );
-        } else {
-            if( sym->mods & MASK_LANGUAGES ) {
+        if( sym == NULL ) {
+            if( typ->decl_type != TYPE_FUNCTION ) {
                 CErr1( ERR_INVALID_DECLSPEC );
-            } else {
+            }
+        } else {
+            if( CheckAdjModsTypeNode( sym->mods, decl_mod ) ) {
                 sym->mods |= decl_mod;
+            }
+        }
+        if( typ->decl_type == TYPE_FUNCTION ) {
+            if( CheckAdjModsTypeNode( typ->u.fn.decl_flags, decl_mod ) ) {
+                *ptyp = FuncNode( typ->object, typ->u.fn.decl_flags | decl_mod, typ->u.fn.parms );
             }
         }
     }
@@ -1080,7 +1082,7 @@ static target_size GetFields( TYPEPTR decl )
             if( CurToken != T_COLON ) {
                 field = FieldDecl( typ, info.mod, state );
                 field->level = struct_level;
-                AdjTypeNode( &field->field_type, info.decl_mod, NULL );
+                AdjModsTypeNode( &field->field_type, info.decl_mod, NULL );
                 field = NewField( field, decl );
             }
             if( CurToken == T_COLON ) {
