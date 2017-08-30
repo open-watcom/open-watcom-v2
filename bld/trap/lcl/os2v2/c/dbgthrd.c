@@ -64,6 +64,7 @@ static void StopApplication(void)
     DosDebug(&StopBuff);
     DosPostEventSem(StopDoneSem);
     DosExit(EXIT_THREAD, 0);
+    // never return
 }
 
 static void CantDoIt(void)

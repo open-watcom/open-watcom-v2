@@ -477,6 +477,7 @@ static void Fatal( char *what, PCONTEXTRECORD p )
         MsgFileHandle = 1;
     }
     DosExit( EXIT_PROCESS, 8 );
+    // never return
 }
 
 static ULONG __cdecl ExceptRoutine( PEXCEPTIONREPORTRECORD report,
@@ -486,6 +487,7 @@ static ULONG __cdecl ExceptRoutine( PEXCEPTIONREPORTRECORD report,
 {
     if( NestedException )
         DosExit( EXIT_PROCESS, 8 );
+        // never return
     NestedException = 1;
     switch( report->ExceptionNum ) {
     case XCPT_ACCESS_VIOLATION:
@@ -508,6 +510,7 @@ static ULONG __cdecl ExceptRoutine( PEXCEPTIONREPORTRECORD report,
          */
         if (BreakFlag == 1)
             DosExit(EXIT_PROCESS, 8);
+            // never return
         BreakFlag = 1;
         //DosAcknowledgeSignalException( report->ExceptionInfo[0] );
         break;

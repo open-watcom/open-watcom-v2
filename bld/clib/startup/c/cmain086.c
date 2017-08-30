@@ -54,5 +54,6 @@ extern int     main( int, char ** );
 void _CMain( void )
 {
     exit( main( ___Argc, ___Argv ) );
+    // never return
 }
 #endif

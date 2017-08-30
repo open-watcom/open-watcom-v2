@@ -150,6 +150,6 @@ _WCRTLINK _WCNORETURN void __exit( unsigned ret_code )
         }
         // !TO DO
         // here is missing call to system exit procedure
-        // never return
+        // should never return
     }
 }

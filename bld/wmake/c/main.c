@@ -560,6 +560,7 @@ STATIC void init( char const * const *argv )
     MemInit();          /* memory handlers          */
     if( !MsgInit() ) {
         exit( EXIT_FAILURE );
+        // never return
     }
     VecInit();          /* vector strings           */
     CacheInit();        /* directory cacheing       */
@@ -635,16 +636,19 @@ static int ExitSafe( int rc )
 NO_RETURN void ExitFatal( void )
 {
     exit( ExitSafe( EXIT_FATAL ) );
+    // never return
 }
 
 NO_RETURN void ExitError( void )
 {
     exit( ExitSafe( EXIT_ERROR ) );
+    // never return
 }
 
 NO_RETURN void ExitOK( void )
 {
     exit( ExitSafe( EXIT_OK ) );
+    // never return
 }
 
 int main( int argc, char **argv )

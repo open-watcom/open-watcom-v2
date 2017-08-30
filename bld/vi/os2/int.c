@@ -46,7 +46,7 @@ static void BrkHandler( int sig_num )
         EditFlags.BreakPressed = true;
     }
     KeyAdd( VI_KEY( CTRL_C ) );
-} 
+}
 
 static volatile int     exitThread;
 
@@ -94,6 +94,7 @@ static void TimerThread( void )
     }
     exitThread = false;
     DosExit( EXIT_THREAD, 0 );
+    // never return
 }
 
 static TID timerTID;

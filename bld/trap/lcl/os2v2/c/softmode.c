@@ -156,6 +156,7 @@ static VOID APIENTRY BeginThreadHelper( ULONG arg )
     DosPostEventSem( BeginThreadSem );
     SoftModeThread( &tdata );
     DosExit( EXIT_THREAD, 0 );
+    // never return
 }
 
 

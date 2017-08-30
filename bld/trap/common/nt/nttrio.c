@@ -53,6 +53,7 @@ void StartupErr( const char *err )
     Output( err );
     Output( "\r\n" );
     SayGNiteGracey( 1 );
+    // never return
 }
 
 int KeyPress( void )

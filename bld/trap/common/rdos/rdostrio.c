@@ -45,6 +45,7 @@ void Output( const char *str )
 void SayGNiteGracey( int return_code )
 {
     RdosUnloadExe( return_code );
+    // never return
 }
 
 void StartupErr( const char *err )
@@ -52,6 +53,7 @@ void StartupErr( const char *err )
     Output( err );
     Output( "\r\n" );
     SayGNiteGracey( 1 );
+    // never return
 }
 
 int KeyPress( void )

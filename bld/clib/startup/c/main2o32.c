@@ -72,6 +72,7 @@ void __F_NAME(__OS2Main,__wOS2Main)( unsigned hmod, unsigned reserved,
     __sig_init_rtn();
     __CommonInit();
     exit( __F_NAME(main( ___Argc, ___Argv ),wmain( ___wArgc, ___wArgv )) );
+    // never return
 #else
     thread_data     *tdata;
 

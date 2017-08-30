@@ -310,6 +310,7 @@ void StartupErr( const char *err )
 {
     Error( err );
     exit( 2 );
+    // never return
 }
 
 void RestoreHandlers( void )

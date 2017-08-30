@@ -79,4 +79,5 @@ void __cdecl _LinuxMain( int argc, char **argv, char **arge )
     __ASTACKPTR = (char *)__alloca( __ASTACKSIZ ) + __ASTACKSIZ;
 
     exit( main( argc, argv, arge ) );
+    // never return
 }

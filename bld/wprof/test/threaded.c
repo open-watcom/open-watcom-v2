@@ -71,6 +71,7 @@ void trd(void) {
     DosSemClear( &TrdsSem );
     DosSleep( 100000 );
     DosExit( EXIT_THREAD, 0 );
+    // never return
 }
 
 void main(void)
@@ -89,4 +90,5 @@ void main(void)
         DosSleep( 100 );
     }
     DosExit( EXIT_THREAD, 0 );
+    // never return
 }

@@ -116,6 +116,7 @@ void SetCmdArgStart( int num, char *ptr )
 void KillDebugger( int ret_code )
 {
     DosExit( EXIT_PROCESS, ret_code );
+    // never return
 }
 
 void GrabHandlers( void )

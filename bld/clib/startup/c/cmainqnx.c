@@ -266,6 +266,7 @@ void _CMain( free, n, cmd, stk_bot, pid )
 
     /* Invoke main skipping over the full path of the loaded command */
     exit( main( _argc, _argv, environ ) );    /* 02-jan-91 */
+    // never return
 }
 #else
 
@@ -310,5 +311,6 @@ void _CMain( int argc, char **argv, char **arge )
     __InitRtns( 255 );
     setup_es();
     exit( main( argc, argv, arge ) );
+    // never return
 }
 #endif
