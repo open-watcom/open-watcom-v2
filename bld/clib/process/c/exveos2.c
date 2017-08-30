@@ -50,5 +50,6 @@ _WCRTLINK int execve( const char *path, const char *const argv[],
     if( _RWD_errno != 0 ) return( -1 );
     __int23_exit();
     DosExit( EXIT_PROCESS, rc );
+    // never return
     return( 0 );
 }

@@ -116,4 +116,5 @@ _WCRTLINK void _WCFAR _endthread( void )
 {
     __ThreadData[*_threadid] = NULL;
     DosExit( EXIT_THREAD, 0 );
+    // never return
 }

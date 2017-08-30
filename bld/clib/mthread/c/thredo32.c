@@ -125,4 +125,5 @@ void __CEndThread( void )
     __sig_fini_rtn();
     __OS2RemoveThread();
     DosExit( EXIT_THREAD, 0 );
+    // never return
 }
