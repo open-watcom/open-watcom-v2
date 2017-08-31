@@ -361,6 +361,7 @@ STRM_T GetCHR( void )
                 } else {
                     PrtMsg( FTL | LOC | BARF_CHARACTER, s );
                     ExitFatal();
+                    // never return
                 }
             }
             if( s == '\f' ) {

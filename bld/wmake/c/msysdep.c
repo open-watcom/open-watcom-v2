@@ -372,6 +372,7 @@ void CheckForBreak( void )
         sig_count = 0;
         PrtMsg( ERR | USER_BREAK_ENCOUNTERED );
         ExitError();
+        // never return
     }
 }
 

@@ -227,6 +227,7 @@ STATIC void cpyTxt( OURPTR vec, const char FAR *text, size_t len )
     if( clen > vec->d.totlen ) {      /* check for overflow */
         PrtMsg( FTL | LOC | MAXIMUM_STRING_LENGTH );
         ExitFatal();
+        // never return
     }
 
     tail = vec->d.tail;

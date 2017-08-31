@@ -207,11 +207,13 @@ STATIC char *createTmpFileName( void )
                 FreeSafe( tmpPath );
                 PrtMsg( FTL | TMP_PATH_TOO_LONG );
                 ExitFatal();
+                // never return
             } else if( strlen( tmpPath ) + strlen( fileName ) >= _MAX_PATH ) {
                 FreeVec( buf );
                 FreeSafe( tmpPath );
                 PrtMsg( FTL | TMP_PATH_TOO_LONG );
                 ExitFatal();
+                // never return
             }
         }
         if( tmpPath == NULL ) {
@@ -791,44 +793,36 @@ STATIC RET_T percentCmd( const char *cmdname, char *arg )
     case PER_ABORT:
         closeCurrentFile();
         ExitError();
-
+        // never return
     case PER_APPEND:
         return( percentWrite( arg, WR_APPEND ) );
-
     case PER_CREATE:
         return( percentWrite( arg, WR_CREATE ) );
-
     case PER_ERASE:
         return( percentErase( arg ) );
-
     case PER_MAKE:
         return( percentMake( arg ) );
-
     case PER_NULL:
         break;
-
     case PER_QUIT:
         closeCurrentFile();
         ExitOK();
-
+        // never return
     case PER_RENAME:
         return( percentRename( arg ) );
-
     case PER_STOP:
         closeCurrentFile();
         if( !GetYes( DO_YOU_WISH_TO_CONT ) ) {
             ExitOK();
+            // never return
         }
         break;
-
     case PER_WRITE:
         return( percentWrite( arg, WR_WRITE ) );
-
     default:
         assert( false );
         break;
-    };
-
+    }
     return( RET_SUCCESS );
 }
 
@@ -847,6 +841,7 @@ STATIC int intSystem( const char *cmd )
     if( pid == 0 ) {
         execl( "/bin/sh", "sh", "-c", cmd, NULL );
         exit( 127 );
+        // never return
     }
     for( ;; ) {
         if( waitpid( pid, &status, 0 ) == -1 ) {
@@ -2023,6 +2018,7 @@ STATIC RET_T execLine( char *line )
     if( OSCorrupted() ) {
         PrtMsg( FTL | OS_CORRUPTED );
         ExitFatal();
+        // never return
     }
     CheckForBreak();
     if( rc != RET_SUCCESS && (flags & FLAG_IGNORE) == 0 ) {
@@ -2055,6 +2051,7 @@ INT32 ExecCommand( char *line )
     if( OSCorrupted() ) {
         PrtMsg( FTL | OS_CORRUPTED );
         ExitFatal();
+        // never return
     }
     CheckForBreak();
 

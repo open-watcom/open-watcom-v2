@@ -506,15 +506,16 @@ void PrtMsg( enum MsgClass num, ... )
 #endif
 
 #if !defined( NDEBUG )
-void massert( const char *expr, const char *file, int line )
+NO_RETURN void massert( const char *expr, const char *file, int line )
 {
     PrtMsg( FTL | ASSERTION_FAILED, expr, file, line );
     ExitFatal();
+    // never return
 }
 #endif
 
-void Usage( void )
-/****************/
+NO_RETURN void Usage( void )
+/**************************/
 {
     char        msgbuff[MAX_RESOURCE_SIZE];
     int         i;
@@ -527,6 +528,7 @@ void Usage( void )
         PrtMsg( INF | PRNTSTR, msgbuff );
     }
     ExitOK();
+    // never return
 }
 
 

@@ -115,9 +115,11 @@ STATIC void MemCheck( void )
         case _HEAPBADBEGIN:
             PrtMsg( FTL | PRNTSTR, "Near heap is damaged!" );
             ExitFatal();
+            // never return
         case _HEAPBADNODE:
             PrtMsg( FTL | PRNTSTR, "Bad node in Near heap!" );
             ExitFatal();
+            // never return
         }
         switch( _fheapchk() ) {
         case _HEAPOK:
@@ -126,9 +128,11 @@ STATIC void MemCheck( void )
         case _HEAPBADBEGIN:
             PrtMsg( FTL | PRNTSTR, "Far heap is damaged!" );
             ExitFatal();
+            // never return
         case _HEAPBADNODE:
             PrtMsg( FTL | PRNTSTR, "Bad node in Far heap!" );
             ExitFatal();
+            // never return
         }
 #else
         switch( _heapchk() ) {
@@ -138,9 +142,11 @@ STATIC void MemCheck( void )
         case _HEAPBADBEGIN:
             PrtMsg( FTL | PRNTSTR, "Heap is damaged!" );
             ExitFatal();
+            // never return
         case _HEAPBADNODE:
             PrtMsg( FTL | PRNTSTR, "Bad node in Heap!" );
             ExitFatal();
+            // never return
         }
 #endif
         busy = false;
@@ -271,6 +277,7 @@ void MemInit( void )
     if( Handle == NULL ) {
         PrtMsg( FTL | PRNTSTR, "Unable to track memory!" );
         ExitFatal();
+        // never return
     }
 #endif
 }
@@ -348,6 +355,7 @@ void *MallocSafe( size_t size )
     if( ptr == NULL ) {
         PrtMsg( FTL | OUT_OF_MEMORY );
         ExitFatal();
+        // never return
     }
     return( ptr );
 }
@@ -368,6 +376,7 @@ void *CallocSafe( size_t size )
     if( ptr == NULL ) {
         PrtMsg( FTL | OUT_OF_MEMORY );
         ExitFatal();
+        // never return
     }
 #else
     ptr = MallocSafe( size );
@@ -410,6 +419,7 @@ char *StrDupSafe( const char *str )
     if( p == NULL ) {
         PrtMsg( FTL | OUT_OF_MEMORY );
         ExitFatal();
+        // never return
     }
 #else
     p = MallocSafe( len );
@@ -456,6 +466,7 @@ void FAR *FarMallocSafe( size_t size )
     if( p == NULL ) {
         PrtMsg( FTL | OUT_OF_MEMORY );
         ExitFatal();
+        // never return
     }
 
     return( p );
