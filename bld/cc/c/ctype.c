@@ -991,6 +991,9 @@ static bool CheckAdjModsTypeNode( type_modifiers old_mod, type_modifiers decl_mo
     if( (decl_mod & FLAG_NORETURN) && (old_mod & FLAG_NORETURN) == 0 ) {
         adjust = true;
     }
+    if( (decl_mod & FLAG_FARSS) && (old_mod & FLAG_FARSS) == 0 ) {
+        adjust = true;
+    }
     return( adjust );
 }
 
