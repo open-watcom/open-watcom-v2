@@ -135,9 +135,9 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 .p.obj:
     @set ERROR_MSG=failure to preprocess $^@
     @%make set_path_wcc
-    $(wcc_$(arch)) $[@ $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -pl -fo=.i
+    $(wcc_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -pl -fo=.i
     @set ERROR_MSG=failure to compile $[&.i
-    $(wcc_$(arch)) $[&.i $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
+    $(wcc_$(arch)) $[&.i $(test_flags) $(test_flags_$(arch)) $(opt_$^*) $(opt_EH_$(EH_$^*)) -fo=.obj
     @%make set_old_path
 
 .obj.dis:
@@ -188,7 +188,7 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
     @set ERROR_MSG=failure to compile $^&
     @%make set_path_wcc
     @%make echo_cc
-    $(noecho)$(wcc_$(arch)) $[@ $(test_flags_$(arch)) $(opt_$^*) -fo=.obj
+    $(noecho)$(wcc_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) -fo=.obj
     @%make set_old_path
     @%append $(%ERROR_FILE) PASS compiling $^&
 
@@ -196,7 +196,7 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
     @set ERROR_MSG=failure to compile $^&
     @%make set_path_wpp
     @%make echo_cxx
-    $(noecho)$(wpp_$(arch)) $[@ $(test_flags_$(arch)) $(opt_$^*) -fo=.obj
+    $(noecho)$(wpp_$(arch)) $[@ $(test_flags) $(test_flags_$(arch)) $(opt_$^*) -fo=.obj
     @%make set_old_path
     @%append $(%ERROR_FILE) PASS compiling $^&
 
