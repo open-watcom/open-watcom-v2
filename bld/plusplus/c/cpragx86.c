@@ -417,9 +417,11 @@ void PragAux(                   // #PRAGMA AUX ...
         unsigned uses_auto: 1;
     } have;
 
-    if( !GetAliasInfo() ) return;
+    if( !GetAliasInfo() )
+        return;
     CurrEntry = NULL;
-    if( !IS_ID_OR_KEYWORD( CurToken ) ) return;
+    if( !IS_ID_OR_KEYWORD( CurToken ) )
+        return;
     SetCurrInfo();
     NextToken();
     AuxCopy( CurrInfo, CurrAlias );

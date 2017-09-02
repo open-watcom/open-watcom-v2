@@ -90,8 +90,10 @@ AUX_ENTRY *AuxLookup( const char *name )
 {
     AUX_ENTRY *ent;
 
-    for( ent = AuxList; ent; ent = ent->next ) {
-        if( strcmp( ent->name, name ) == 0 ) break;
+    for( ent = AuxList; ent != NULL; ent = ent->next ) {
+        if( strcmp( ent->name, name ) == 0 ) {
+            break;
+        }
     }
     return( ent );
 }
@@ -100,7 +102,7 @@ char *AuxRetrieve( AUX_INFO *pragma )
 {
     AUX_ENTRY *ent;
 
-    for( ent = AuxList; ent; ent = ent->next ) {
+    for( ent = AuxList; ent != NULL; ent = ent->next ) {
         if( ent->info == pragma ) {
             return( ent->name );
         }

@@ -203,8 +203,8 @@ TOKEN SpecialMacro(             // EXECUTE A SPECIAL MACRO
 void DefineAlternativeTokens(   // DEFINE ALTERNATIVE TOKENS
     void )
 ;
-AUX_INFO * PragmaLookup(        // FIND A PRAGMA
-    char * name,                // - name of the pragma
+AUX_INFO *PragmaLookup(         // FIND A PRAGMA
+    const char *name,           // - name of the pragma
     unsigned index )            // - index (M_UNKNOWN if not known)
 ;
 AUX_INFO *PragmaGetIndex( AUX_INFO * );

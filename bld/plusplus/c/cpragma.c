@@ -1224,7 +1224,7 @@ static MAGIC_WORD magicWords[] = {
 
 
 static int lookupMagicKeyword(  // LOOKUP A MAGIC KEYWORD
-    char *name )                // - name to be looked up
+    const char *name )          // - name to be looked up
 {
     int     i;
 
@@ -1235,7 +1235,9 @@ static int lookupMagicKeyword(  // LOOKUP A MAGIC KEYWORD
         }
     }
     for( i = 0; i < sizeof( magicWords ) / sizeof( magicWords[0] ) - 1; i++ ) {
-        if( strcmp( magicWords[i].name + 2, name ) == 0 ) break;
+        if( strcmp( magicWords[i].name + 2, name ) == 0 ) {
+            break;
+        }
     }
     return( i );
 }
@@ -1416,8 +1418,8 @@ void PragObjNameInfo(           // RECOGNIZE OBJECT NAME INFORMATION
 #endif
 
 
-AUX_INFO *PragmaLookup( char *name, unsigned index )
-/**************************************************/
+AUX_INFO *PragmaLookup( const char *name, unsigned index )
+/********************************************************/
 {
     AUX_ENTRY *ent;
 

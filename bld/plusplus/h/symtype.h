@@ -1631,7 +1631,7 @@ extern TYPE MakePragmaModifier( AUX_INFO * );
 extern TYPE AddNonFunctionPragma( TYPE, TYPE );
 extern void ForceNoDefaultArgs( DECL_INFO *, int );
 
-extern TYPE MakePragma( char * );
+extern TYPE MakePragma( const char * );
 extern TYPE MakeIndexPragma( unsigned );
 extern bool CurrFunctionHasEllipsis( void );
 extern void TypeTraverse( type_id, void (*)( TYPE, void *), void * );

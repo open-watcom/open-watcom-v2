@@ -4424,8 +4424,8 @@ void PTypePop( DECL_SPEC *dspec )
     PTypeRelease( dspec );
 }
 
-TYPE MakePragma( char *name )
-/***************************/
+TYPE MakePragma( const char *name )
+/*********************************/
 {
     TYPE type;
     AUX_INFO *pragma;
