@@ -245,7 +245,7 @@ static void fmtTypeBased( TYPE type, VBUF *pvbuf )
 static void fmtNicePragma( AUX_INFO *pragma, VBUF *pvbuf )
 /********************************************************/
 {
-    char *id;
+    const char  *id;
 
     if( pragma == NULL ) {
         return;

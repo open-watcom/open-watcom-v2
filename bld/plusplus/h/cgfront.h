@@ -1326,7 +1326,7 @@ bool ReverseParms(              // ASK IF PRAGMA REQUIRES REVERSED PARMS
 ;
 bool PragmaName(                // RETURN true IF NAME OF PRAGMA IS SIMPLE
     AUX_INFO *pragma,           // - pragma
-    char **id )                 // - returned name
+    const char **id )           // - returned name
 ;
 void ScopeGenAccessReset(       // RESET ACCESS SCOPE FOR GENERATION
     void )

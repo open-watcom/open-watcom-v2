@@ -91,7 +91,7 @@ void freeAuxInfo(               // FREE ALL AUX INFO MEM
 AUX_ENTRY *AuxLookup(           // LOOK UP AUX ENTRY
     const char *name )
 ;
-char *AuxRetrieve(              // RETRIEVE NAME OF AUX ENTRY
+const char *AuxRetrieve(        // RETRIEVE NAME OF AUX ENTRY
     AUX_INFO *pragma )
 ;
 void CgInfoAddPragmaExtrefS(    // ADD EXTREF FOR PRAGMA'D NAME

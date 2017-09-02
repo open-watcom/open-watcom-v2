@@ -223,6 +223,11 @@ struct _src_file {                          // SOURCE FILE (PERMANENT)
     bool                force_include : 1;  // -- force include this header file
 };
 
+typedef enum {
+    #define pick( a, b, c ) a,
+    #include "auxinfo.h"
+    #undef pick
+} magic_word_idx;
 
 #include "symtype.h"
 #include "symbol.h"

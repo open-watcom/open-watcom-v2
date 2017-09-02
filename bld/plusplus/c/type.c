@@ -4439,8 +4439,8 @@ TYPE MakePragma( const char *name )
     return( type );
 }
 
-TYPE MakeIndexPragma( unsigned index )
-/************************************/
+TYPE MakeIndexPragma( magic_word_idx index )
+/******************************************/
 {
     TYPE type;
     AUX_INFO *pragma;

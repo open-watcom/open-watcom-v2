@@ -1337,7 +1337,7 @@ extern SYMBOL ScopeASMUseSymbol( NAME, bool * );
 extern void ScopeASMUsesAuto( void );
 extern SYMBOL ScopeASMLookup( NAME );
 extern SYMBOL ScopeIntrinsic( bool );
-extern void ScopeAuxName( char *, AUX_INFO * );
+extern void ScopeAuxName( const char *, AUX_INFO * );
 
 extern SYMBOL ScopeInsert( SCOPE, SYMBOL, NAME );
 extern bool ScopeCarefulInsert( SCOPE, SYMBOL *, NAME );
@@ -1632,7 +1632,7 @@ extern TYPE AddNonFunctionPragma( TYPE, TYPE );
 extern void ForceNoDefaultArgs( DECL_INFO *, int );
 
 extern TYPE MakePragma( const char * );
-extern TYPE MakeIndexPragma( unsigned );
+extern TYPE MakeIndexPragma( magic_word_idx );
 extern bool CurrFunctionHasEllipsis( void );
 extern void TypeTraverse( type_id, void (*)( TYPE, void *), void * );
 extern bool FunctionUsesAllTypes( SYMBOL, SCOPE, void (*)( SYMBOL ) );

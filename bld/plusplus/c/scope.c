@@ -7061,8 +7061,8 @@ static void changeNonFunction( SYMBOL sym, AUX_INFO *auxinfo )
     }
 }
 
-void ScopeAuxName( char *id, AUX_INFO *auxinfo )
-/***********************************************/
+void ScopeAuxName( const char *id, AUX_INFO *auxinfo )
+/****************************************************/
 {
     NAME name;
     SEARCH_RESULT *result;

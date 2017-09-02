@@ -98,7 +98,7 @@ AUX_ENTRY *AuxLookup( const char *name )
     return( ent );
 }
 
-char *AuxRetrieve( AUX_INFO *pragma )
+const char *AuxRetrieve( AUX_INFO *pragma )
 {
     AUX_ENTRY *ent;
 
