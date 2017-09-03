@@ -13,8 +13,8 @@ typedef __declspec(__stdcall) void * f2( char p1, short p2, int p3, long p4, lon
 void * __stdcall test1( char p1, short p2, int p3, long p4, long long p5 );
 __declspec(__stdcall) void * test1( char p1, short p2, int p3, long p4, long long p5 );
 
-extern void **(__stdcall * x3)( char p1, short p2, int p3, long p4, long long p5 );
-__declspec(__stdcall) void **(* x3)( char p1, short p2, int p3, long p4, long long p5 );
+extern void **(__stdcall * __stdcall x3)( char p1, short p2, int p3, long p4, long long p5 );
+__declspec(__stdcall) void **(__stdcall * x3)( char p1, short p2, int p3, long p4, long long p5 );
 
 int res[5];
 
