@@ -1,8 +1,6 @@
 namespace std {
-  _WPRTLINK extern void terminate();
-  #pragma aux terminate aborts
-  _WPRTLINK extern void unexpected();
-  #pragma aux unexpected aborts
+  _WPRTLINK _WCNORETURN extern void terminate();
+  _WPRTLINK _WCNORETURN extern void unexpected();
 
   typedef void (*unexpected_handler)();
   typedef void (*terminate_handler)();

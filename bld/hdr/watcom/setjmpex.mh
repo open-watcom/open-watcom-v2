@@ -19,7 +19,6 @@
 :include cpluspro.sp
 
 _WCRTLINK _WCNORETURN extern int _setjmpex(jmp_buf __env);
-#pragma aux _setjmpex aborts
 
 #undef setjmp
 #define setjmp(__env)  _setjmpex(__env)

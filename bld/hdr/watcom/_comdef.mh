@@ -60,7 +60,7 @@
  #define _WRTLFCONV __declspec(__watcall)
  #define _WRTLDCONV __declspec(__watcall)
  #if defined(_M_IX86)
-  #define _WCNORETURN
+  #define _WCNORETURN __declspec(aborts)
   #define _WCNEAR __near
   #define _WCFAR __far
   #define _WCHUGE __huge
@@ -80,7 +80,7 @@
   #endif
 :endsegment
  #elif defined(__AXP__)
-  #define _WCNORETURN
+  #define _WCNORETURN __declspec(aborts)
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
@@ -90,7 +90,7 @@
   #define _WCINTERRUPT
   #define _WCUNALIGNED __unaligned
  #elif defined(__PPC__)
-  #define _WCNORETURN
+  #define _WCNORETURN __declspec(aborts)
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE
@@ -100,7 +100,7 @@
   #define _WCINTERRUPT
   #define _WCUNALIGNED __unaligned
  #elif defined(__MIPS__)
-  #define _WCNORETURN
+  #define _WCNORETURN __declspec(aborts)
   #define _WCNEAR
   #define _WCFAR
   #define _WCHUGE

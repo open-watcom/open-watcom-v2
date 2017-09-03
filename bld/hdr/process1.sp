@@ -11,9 +11,7 @@ namespace std {
 _WCRTLINK extern char   *getenv( const char *__name );
 _WCRTLINK extern int    system( const char *__cmd );
 _WCRTLINK _WCNORETURN extern void   abort( void );
-#pragma aux abort aborts
 _WCRTLINK _WCNORETURN extern void   exit( int __status );
-#pragma aux exit aborts
 :segment CNAME
 
 }
