@@ -47,10 +47,10 @@
 #define STACK_SIZE  0
 
 struct __thread_pass {
-    void      *(*start_routine)(void*); 
-    void      *arg;
-    pthread_t  thread;
-    sem_t      registered;
+    void        *(*start_routine)(void *);
+    void        *arg;
+    pthread_t   thread;
+    sem_t       registered;
 };
 
 static void __thread_start( void *data )
@@ -58,101 +58,104 @@ static void __thread_start( void *data )
     struct __thread_pass    *passed;
     void                    *ret;
 
-    void                    *(*start_routine)(void*);
+    void                    *(*start_routine)(void *);
     void                    *arg;
 
     passed = (struct __thread_pass *)data;
-    
+
     passed->thread = __register_thread();
 
     start_routine = passed->start_routine;
     arg = passed->arg;
-    
+
     /* Lock our running mutex to allow for future joins */
-    pthread_mutex_lock(__get_thread_running_mutex(passed->thread));
-    
-    sem_post(&passed->registered);
-    
+    pthread_mutex_lock( __get_thread_running_mutex( passed->thread ) );
+
+    sem_post( &passed->registered );
+
     /* Call the user routine */
-    ret = start_routine(arg);
-    
+    ret = start_routine( arg );
+
     /* The pointer 'ret' must be returned to any waiting
      * "join" operations
      */
-    pthread_exit(ret);
+    pthread_exit( ret );
+    // never return
 }
 
 _WCRTLINK int pthread_create( pthread_t *thread, const pthread_attr_t *attr,
-                              void *(*start_routine)(void*), void *arg )
+                              void *(*start_routine)(void *), void *arg )
 {
-    int ret;
-    size_t stack_size;
-    char *stack;
-    struct __thread_pass *passed;
-    
-    if(thread == NULL) {
+    int                     ret;
+    size_t                  stack_size;
+    char                    *stack;
+    struct __thread_pass    *passed;
+
+    if( thread == NULL ) {
         _RWD_errno = EINVAL;
         return( -1 );
     }
-    
+
     stack_size = STACK_SIZE;
     stack = NULL;
-    
-    if(attr != NULL) {
-        if(attr->stack_size > STACK_SIZE)
+
+    if( attr != NULL ) {
+        if( attr->stack_size > STACK_SIZE )
             stack_size = attr->stack_size;
-            
-        if(attr->stack_addr != NULL)
+
+        if( attr->stack_addr != NULL ) {
             stack = (char *)attr->stack_addr;
+        }
     }
-    
-    passed = (struct __thread_pass *)malloc(sizeof(struct __thread_pass));
-    if(passed == NULL) {
+
+    passed = (struct __thread_pass *)malloc( sizeof( struct __thread_pass ) );
+    if( passed == NULL ) {
         _RWD_errno = ENOMEM;
         return( -1 );
     }
-    
+
     passed->start_routine = start_routine;
     passed->arg = arg;
     passed->thread = (pthread_t)-1;
-    
-    if(stack == NULL && stack_size > 0) {
-        stack = (char *)malloc(stack_size*sizeof(char *));
-        if(stack == NULL) {
-            free(passed);
+
+    if( stack == NULL && stack_size > 0 ) {
+        stack = (char *)malloc( stack_size * sizeof( char * ) );
+        if( stack == NULL ) {
+            free( passed );
             _RWD_errno = ENOMEM;
             return( -1 );
         }
     }
-    
-    if(sem_init(&passed->registered, 0, 0) != 0) {
+
+    if( sem_init( &passed->registered, 0, 0 ) != 0 ) {
         return( -1 );
     }
-    
+
     ret = _beginthread( __thread_start, NULL, 0, (void *)passed );
-    
+
     /* Wait for registration */
-    sem_wait(&passed->registered);
-    
+    sem_wait( &passed->registered );
+
     /* Apply a few more attributes if necessary */
-    if(attr != NULL) {
-        if(attr->sched_inherit == PTHREAD_EXPLICIT_SCHED)
-            sched_setscheduler(__get_thread_id(passed->thread), attr->sched_policy, attr->sched_params);
-        
-        if(attr->detached == PTHREAD_CREATE_DETACHED)
-            pthread_detach(passed->thread);
+    if( attr != NULL ) {
+        if( attr->sched_inherit == PTHREAD_EXPLICIT_SCHED )
+            sched_setscheduler( __get_thread_id( passed->thread ), attr->sched_policy, attr->sched_params );
+
+        if( attr->detached == PTHREAD_CREATE_DETACHED ) {
+            pthread_detach( passed->thread );
+        }
     }
-    
-    if(ret >= 0) {
+
+    if( ret >= 0 ) {
         *thread = passed->thread;
         ret = 0;
     }
-    
+
     /* Destroy the registration semaphore */
-    sem_destroy(&passed->registered);
+    sem_destroy( &passed->registered );
 
     /* Destroy the passing structure */
-    free(passed);
+    free( passed );
 
     return( ret );
 }
