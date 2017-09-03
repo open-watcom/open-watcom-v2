@@ -154,8 +154,9 @@ typedef enum {
     MSDS_NAKED          = 0x0004,
     MSDS_THREAD         = 0x0008,
     MSDS_MODIFIER       = 0x0010,
-    MSDS_NORETURN       = 0x0020,
-    MSDS_FARSS          = 0x0040,
+    MSDS_ABORTS         = 0x0020,
+    MSDS_NORETURN       = 0x0040,
+    MSDS_FARSS          = 0x0080,
     MSDS_NULL           = 0x0000
 } ms_declspec_t;
 
@@ -281,8 +282,9 @@ typedef enum {
     TF1_INTRINSIC       = 0x00000100,
     TF1_EXPLICIT        = 0x00000200,
     TF1_NAKED           = 0x00000400,
-    TF1_NORETURN        = 0x00000800,
-    TF1_FARSS           = 0x00001000,
+    TF1_ABORTS          = 0x00000800,
+    TF1_NORETURN        = 0x00001000,
+    TF1_FARSS           = 0x00002000,
     TF1_PLUSPLUS_SET    = 0x80000000,   /* note 1 */// don't change TF1_PLUSPLUS
     TF1_CONST           = 0x00000001,               // TYP_MODIFIER
     TF1_VOLATILE        = 0x00000002,
@@ -349,6 +351,7 @@ typedef enum {
                           | TF1_LOADDS
                           | TF1_INTRINSIC
                           | TF1_NAKED
+                          | TF1_ABORTS
                           | TF1_NORETURN
                           | TF1_PURE
                           | TF1_EXPLICIT

@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 *
 *                            Open Watcom Project
 *
@@ -2472,6 +2472,8 @@ DECL_SPEC *PTypeMSDeclSpec( DECL_SPEC *dspec, PTREE id )
         spec->ms_declspec = MSDS_THREAD;
     } else if( strcmp( NameStr( name ), "naked" ) == 0 ) {
         spec->ms_declspec = MSDS_NAKED;
+    } else if( strcmp( NameStr( name ), "aborts" ) == 0 ) {
+        spec->ms_declspec = MSDS_ABORTS;
     } else if( strcmp( NameStr( name ), "noreturn" ) == 0 ) {
         spec->ms_declspec = MSDS_NORETURN;
     } else if( strcmp( NameStr( name ), "farss" ) == 0 ) {
@@ -3369,6 +3371,11 @@ static TYPE makeMSDeclSpecType( DECL_SPEC *dspec )
     }
     if( ms_declspec & MSDS_NAKED ) {
         fnmod_type = MakeFlagModifier( TF1_TYP_FUNCTION | TF1_NAKED );
+        fnmod_type->of = type;
+        type = fnmod_type;
+    }
+    if( ms_declspec & MSDS_ABORTS ) {
+        fnmod_type = MakeFlagModifier( TF1_TYP_FUNCTION | TF1_ABORTS );
         fnmod_type->of = type;
         type = fnmod_type;
     }

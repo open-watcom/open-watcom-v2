@@ -823,6 +823,9 @@ static call_class getCallClass( // GET CLASS OF CALL
             }
 #endif
             fn_flags = fn_type->flag;
+            if( fn_flags & TF1_ABORTS ) {
+                value |= SUICIDAL;
+            }
             if( fn_flags & TF1_NORETURN ) {
                 value |= SUICIDAL;
             }
@@ -1543,7 +1546,7 @@ bool IsPragmaAborts(            // TEST IF FUNCTION NEVER RETURNS
 bool IsFuncAborts(              // TEST IF FUNCTION NEVER RETURNS
     SYMBOL func )               // - function symbol
 {
-    return( (func->flag & TF1_NORETURN) != 0 );
+    return( (func->flag & TF1_NORETURN) != 0 || (func->flag & TF1_ABORTS) != 0 );
 }
 
 dbg_type FEDbgType(             // GET DEBUG TYPE FOR SYMBOL
