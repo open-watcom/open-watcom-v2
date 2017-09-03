@@ -36,16 +36,16 @@
 
 namespace std {
 
-  PFV set_terminate(              // SET HANDLER FOR TERMINATE
-      PFV handler )               // - handler to be used
-  {
-    THREAD_CTL *thr;            // - thread control
-    PFV previous_handler;       // - previous handler
+    terminate_handler set_terminate(    // SET HANDLER FOR TERMINATE
+        terminate_handler handler )     // - handler to be used
+    {
+        THREAD_CTL *thr;                // - thread control
+        terminate_handler previous_handler;       // - previous handler
 
-    thr = &_RWD_ThreadData;
-    previous_handler = thr->terminate;
-    thr->terminate = handler;
-    return( previous_handler );
-  }
+        thr = &_RWD_ThreadData;
+        previous_handler = thr->terminate;
+        thr->terminate = handler;
+        return( previous_handler );
+    }
 
 }
