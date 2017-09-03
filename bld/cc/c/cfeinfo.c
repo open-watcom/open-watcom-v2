@@ -459,6 +459,8 @@ bool FunctionAborts( SYMPTR sym, SYM_HANDLE sym_handle )
 
     if( sym_handle != SYM_NULL ) {
         SymGet( sym, sym_handle );
+        if( sym->mods & FLAG_ABORTS )
+            return( true );
         if( sym->mods & FLAG_NORETURN )
             return( true );
         ent = AuxLookup( SymName( sym, sym_handle ) );
@@ -492,6 +494,9 @@ call_class GetCallClass( SYM_HANDLE sym_handle )
                     }
                 }
 #endif
+            }
+            if( sym.mods & FLAG_ABORTS ) {
+                cclass |= SUICIDAL;
             }
             if( sym.mods & FLAG_NORETURN ) {
                 cclass |= SUICIDAL;

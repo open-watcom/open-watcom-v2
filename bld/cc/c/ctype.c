@@ -581,6 +581,8 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                             } else {
                                 info->naked = true;
                             }
+                        } else if( CMPLIT( Buffer, "aborts" ) == 0 ) {
+                            modifier = FLAG_ABORTS;
                         } else if( CMPLIT( Buffer, "noreturn" ) == 0 ) {
                             modifier = FLAG_NORETURN;
                         } else if( CMPLIT( Buffer, "farss" ) == 0 ) {
@@ -602,6 +604,13 @@ static void DeclSpecifiers( bool *plain_int, decl_info *info )
                     }
                     if( modifier & MASK_LANGUAGES ) {
                         if( info->decl_mod & MASK_LANGUAGES ) {
+                            CErr1( ERR_INVALID_DECLSPEC );
+                        } else {
+                            info->decl_mod |= modifier;
+                        }
+                    }
+                    if( modifier & FLAG_ABORTS ) {
+                        if( info->decl_mod & FLAG_ABORTS ) {
                             CErr1( ERR_INVALID_DECLSPEC );
                         } else {
                             info->decl_mod |= modifier;
@@ -987,6 +996,9 @@ static bool CheckAdjModsTypeNode( type_modifiers old_mod, type_modifiers decl_mo
         } else {
             adjust = true;
         }
+    }
+    if( (decl_mod & FLAG_ABORTS) && (old_mod & FLAG_ABORTS) == 0 ) {
+        adjust = true;
     }
     if( (decl_mod & FLAG_NORETURN) && (old_mod & FLAG_NORETURN) == 0 ) {
         adjust = true;

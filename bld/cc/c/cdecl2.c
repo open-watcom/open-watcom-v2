@@ -232,6 +232,11 @@ static SYM_HANDLE FuncDecl( SYMPTR sym, stg_classes stg_class, decl_state *state
             if( (sym->mods & FLAG_INLINE) != (old_sym.mods & FLAG_INLINE) ) {
                 old_sym.mods |= FLAG_INLINE;    //either is inline
             }
+            if( (sym->mods & FLAG_ABORTS) != (old_sym.mods & FLAG_ABORTS) ) {
+                if( sym->mods & FLAG_ABORTS ) {
+                    CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
+                }
+            }
             if( (sym->mods & FLAG_NORETURN) != (old_sym.mods & FLAG_NORETURN) ) {
                 if( sym->mods & FLAG_NORETURN ) {
                     CErr2p( ERR_MODIFIERS_DISAGREE, sym->name );
@@ -1028,7 +1033,7 @@ static TYPEPTR Pointer( TYPEPTR typ, struct mod_info *info )
             typ = BPtrNode( typ, flags, info->segid, sym_handle, info->based_kind );
             sym_handle = SYM_NULL;
             info->segid = SEG_UNKNOWN;  // start over
-            info->modifier = (flags & (FLAG_INLINE|FLAG_NORETURN)) | TypeQualifier();  // .. * const
+            info->modifier = (flags & (FLAG_INLINE | FLAG_ABORTS | FLAG_NORETURN)) | TypeQualifier();  // .. * const
             info->based_kind = BASED_NONE;
         } else {
             break;
