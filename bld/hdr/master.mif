@@ -145,6 +145,8 @@ options_c_wctype   = -kCONLY
 #
 options_c_graph2   = -i../watcom -kVERSION2
 
+options_c_except   = -kOWEXCEPTIONS
+
 !ifneq $(system)_dirs
 $($(system)_dirs):
 !ifdef __UNIX__

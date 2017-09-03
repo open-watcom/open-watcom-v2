@@ -94,7 +94,7 @@ codecvt_deps   = codecvt.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
 complex_deps   = complex.mh ../crwat.sp ../crwatcnt.sp ../readonly.sp ../cpponly.sp ../owrtlink.sp $(packll)
 conditio_deps  = conditio.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
 deque_deps     = deque.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
-exception_deps = exceptio.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp ../cpppfv.sp ../watexc.sp ../throws.sp
+exception_deps = exceptio.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp ../cpppfv.sp ../watexc.sp ../throws.sp ../except.sp
 forward_deps   = forward_.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
 function_deps  = function.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
 future_deps    = future.mh ../crwatcnt.sp ../readonly.sp ../cpponly.sp
@@ -183,7 +183,7 @@ dosfunc.h       : dosfunc.mh ../crwat.sp ../readonly.sp
 eh.h            : eh.mh ../crwat.sp ../readonly.sp ../cpponly.sp
 env.h           : env.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../wchar_t.sp $(posixext)
 errno.h         : $(errno_deps)
-except.h        : except.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp ../cpppfv.sp ../watexc.sp
+except.h        : except.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp ../cpppfv.sp ../watexc.sp ../except.sp
 exceptio.h      : $(exception_deps)
 excpt.h         : excpt.mh ../crwat.sp ../readonly.sp $(cplus)
 fenv.h          : fenv.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(packll)

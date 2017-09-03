@@ -13,6 +13,10 @@
 
 :include readonly.sp
 
+#ifndef __cplusplus
+
 #define noreturn _Noreturn
+
+#endif
 
 #endif

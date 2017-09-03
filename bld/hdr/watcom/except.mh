@@ -17,16 +17,12 @@
 
 :include watexc.sp
 
-namespace std {
-  _WPRTLINK _WCNORETURN extern void terminate( void );
-#pragma aux terminate aborts
-  _WPRTLINK _WCNORETURN extern void unexpected( void );
-#pragma aux unexpected aborts
-  _WPRTLINK extern PFV      set_terminate( PFV );
-  _WPRTLINK extern PFV      set_unexpected( PFV );
-}
+:include except.sp
+
+using std::terminate_handler;
 using std::terminate;
 using std::set_terminate;
+using std::unexpected_handler;
 using std::unexpected;
 using std::set_unexpected;
 
