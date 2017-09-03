@@ -28,6 +28,7 @@
 
 _WCRTLINK extern int    _setjmp( jmp_buf __env );
 _WCRTLINK _WCNORETURN extern void   longjmp( jmp_buf __env, int __val );
+#pragma aux longjmp aborts
 
 #if !defined(_SETJMPEX_H_INCLUDED_)
  #define setjmp(__env)  _setjmp(__env)
@@ -64,6 +65,7 @@ typedef struct {
 
 _WCRTLINK extern void __sigjmpsave( sigjmp_buf __env, int __msk );
 _WCRTLINK _WCNORETURN extern void siglongjmp( sigjmp_buf __env, int __val );
+#pragma aux siglongjmp aborts
 
 #define sigsetjmp( __env, __msk ) ( __sigjmpsave( __env, __msk ), \
                                     _setjmp( (__env)[0].__buf ) )

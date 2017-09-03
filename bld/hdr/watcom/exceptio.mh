@@ -89,7 +89,9 @@ namespace std {
   typedef void (*terminate_handler)( );
 
   _WPRTLINK _WCNORETURN extern void terminate( );
+#pragma aux terminate aborts
   _WPRTLINK _WCNORETURN extern void unexpected( );
+#pragma aux unexpected aborts
   _WPRTLINK extern terminate_handler set_terminate( terminate_handler );
   _WPRTLINK extern unexpected_handler set_unexpected( unexpected_handler );
 

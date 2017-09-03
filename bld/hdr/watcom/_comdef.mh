@@ -60,7 +60,7 @@
  #define _WRTLFCONV __declspec(__watcall)
  #define _WRTLDCONV __declspec(__watcall)
  #if defined(_M_IX86)
-  #define _WCNORETURN __declspec(noreturn)
+  #define _WCNORETURN
   #define _WCNEAR __near
   #define _WCFAR __far
   #define _WCHUGE __huge
