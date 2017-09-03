@@ -1002,20 +1002,12 @@ void AdjModsTypeNode( TYPEPTR *ptyp, type_modifiers decl_mod, SYMPTR sym )
     if( decl_mod ) {
         TYPEPTR     typ;
 
-        typ = *ptyp;
-        while( ( typ->object != NULL ) && ( typ->decl_type == TYPE_POINTER ) ) {
-            ptyp = &typ->object;
-            typ = *ptyp;
-        }
-        if( sym == NULL ) {
-            if( typ->decl_type != TYPE_FUNCTION ) {
-                CErr1( ERR_INVALID_DECLSPEC );
-            }
-        } else {
+        if( sym != NULL ) {
             if( CheckAdjModsTypeNode( sym->mods, decl_mod ) ) {
                 sym->mods |= decl_mod;
             }
         }
+        typ = *ptyp;
         if( typ->decl_type == TYPE_FUNCTION ) {
             if( CheckAdjModsTypeNode( typ->u.fn.decl_flags, decl_mod ) ) {
                 *ptyp = FuncNode( typ->object, typ->u.fn.decl_flags | decl_mod, typ->u.fn.parms );
