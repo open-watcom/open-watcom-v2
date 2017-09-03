@@ -30,4 +30,3 @@
 
 
 extern _WCNORETURN void     __STKOVERFLOW( void );
-#pragma aux __STKOVERFLOW aborts

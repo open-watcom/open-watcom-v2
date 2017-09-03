@@ -56,8 +56,8 @@
 #include "cmain.h"
 
 
-extern void _cexit_( unsigned ret_code );
-#pragma aux _cexit_  "*" parm routine [eax] aborts
+_WCNORETURN extern void _cexit_( unsigned ret_code );
+#pragma aux _cexit_  "*" parm routine [eax]
 
 static void __NullAccessRtn( int handle )
 {

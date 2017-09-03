@@ -41,13 +41,9 @@
 // - this is the funtion that is called from ASM and from C, C++
 // - note there is no #pragma aborts so that debugger can trace out
 extern _WCRTLINK _WCNORETURN void __exit_with_msg( char _WCI86FAR *, unsigned );
-#pragma aux __exit_with_msg aborts
 extern _WCRTLINK _WCNORETURN void __fatal_runtime_error( char _WCI86FAR *, unsigned );
-#pragma aux __fatal_runtime_error aborts
 extern _WCRTLINK _WCNORETURN void _Not_Enough_Memory( void );
-#pragma aux _Not_Enough_Memory aborts
 extern _WCRTLINK _WCNORETURN void __exit( unsigned );
-#pragma aux __exit aborts
 
 // ASM interface
 // - always uses register calling convention
@@ -55,11 +51,9 @@ extern _WCRTLINK _WCNORETURN void __exit( unsigned );
 //   of __exit_with_msg
 extern _WCNORETURN void __do_exit_with_msg( char _WCI86FAR *, unsigned );
 #if defined( _M_I86 )
-    #pragma aux __do_exit_with_msg "*__" parm caller [ax dx] [bx] aborts
+    #pragma aux __do_exit_with_msg "*__" parm caller [ax dx] [bx]
 #elif defined( _M_IX86 )
-    #pragma aux __do_exit_with_msg "*__" parm caller [eax] [edx] aborts
-#else
-    #pragma aux __do_exit_with_msg aborts
+    #pragma aux __do_exit_with_msg "*__" parm caller [eax] [edx]
 #endif
 
 // WVIDEO interface
