@@ -33,6 +33,7 @@
 
 typedef enum {
     #define RTFUN( code, name ) code
+    #define RTFUN1( code )      code
     #define RTDAT( code, name ) code
     #define RTFNC( code, name ) code
     #define RTFNP( code, name ) code
@@ -40,6 +41,7 @@ typedef enum {
     #include "_rtfuns.h"
 
     #undef RTFUN
+    #undef RTFUN1
     #undef RTDAT
     #undef RTFNC
     #undef RTFNP

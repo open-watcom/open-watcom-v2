@@ -615,8 +615,8 @@ static bool resolveSymbol       // RESOLVE FUNCTION SYMBOL, IF POSSIBLE
                     fun->flag |= SF_LONGJUMP;
                     retb = true;
                 } else {
-                    _print( "deleted: repository has IG_LONGJUMP\n" );
-                    DbgVerify( frec->flags & RFFLAG_IG_LONGJUMP
+                    _print( "deleted: repository has IGN_LONGJUMP\n" );
+                    DbgVerify( frec->flags & RFFLAG_IGN_LONGJUMP
                              , "resolveSymbol -- bad repository function" );
                     RepoFunRelease( frec );
                     retb = false;

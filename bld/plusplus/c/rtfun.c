@@ -51,7 +51,7 @@ typedef enum                    // SPECIFIES RUN-TIME SYMBOL'S TYPE
 ,   RTS_IS_THROW  = 0x8000      // - function is a C++ throw
 ,   RTS_NO_THROW  = 0x0001      // - never does throw or equivalent
 ,   RTS_CAN_THROW = 0x0002      // - could throw
-,   RTS_IG_THROW  = 0x0004      // - throwing to be ignored
+,   RTS_IGN_THROW = 0x0004      // - throwing to be ignored
 } RTS_TYPE;
 
 // function name array
@@ -59,6 +59,7 @@ typedef enum                    // SPECIFIES RUN-TIME SYMBOL'S TYPE
 static const char *runTimeCodeString[] = {
     #define QSTRING( name ) __STR( name )
     #define RTFUN( code, name ) QSTRING(CPPLIB(name))
+    #define RTFUN1( code )      ""
     #define RTDAT( code, name ) QSTRING(CPPLIBDATA(name))
     #define RTFNC( code, name ) QSTRING(name)
     #define RTFNP( code, name ) #name
@@ -67,6 +68,7 @@ static const char *runTimeCodeString[] = {
 
     #undef QSTRING
     #undef RTFUN
+    #undef RTFUN1
     #undef RTDAT
     #undef RTFNC
     #undef RTFNP
@@ -118,8 +120,8 @@ static SYMBOL rtSymbolCreate(   // CREATE NEW RUN-TIME SYMBOL
             flags |= SF_LONGJUMP;
         } else if( runtime_type & RTS_NO_THROW ) {
             flags |= SF_NO_LONGJUMP;
-        } else if( runtime_type & RTS_IG_THROW ) {
-            RepoFunAdd( name, RFFLAG_IG_LONGJUMP );
+        } else if( runtime_type & RTS_IGN_THROW ) {
+            RepoFunAdd( name, RFFLAG_IGN_LONGJUMP );
         }
         if( runtime_type & RTS_IS_THROW ) {
             flags |= SF_IS_THROW;
@@ -180,7 +182,7 @@ SYMBOL RunTimeCallSymbol(       // GET SYMBOL FOR A RUN-TIME CALL
           case RTF_CTAS_1S :
           case RTF_CTAS_1M :
           case RTF_CTAS_2S :
-            runtime = RTS_BASE_VOID | RTS_POINTER | RTS_FUNCTION | RTS_IG_THROW;
+            runtime = RTS_BASE_VOID | RTS_POINTER | RTS_FUNCTION | RTS_IGN_THROW;
             break;
           case RTF_DYN_CAST_PTR :
           case RTF_DYN_CAST_VOID :
