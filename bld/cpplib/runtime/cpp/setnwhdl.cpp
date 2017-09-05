@@ -40,7 +40,6 @@
 #include "cpplib.h"
 #include <stddef.h>
 #include <malloc.h>
-#include <new>
 
 
 namespace std {

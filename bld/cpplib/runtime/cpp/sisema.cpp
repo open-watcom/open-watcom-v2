@@ -39,7 +39,6 @@
 #ifdef __SW_BM
 
 #include "cpplib.h"
-#include <new>
 
 extern "C"
 _WPRTLINK

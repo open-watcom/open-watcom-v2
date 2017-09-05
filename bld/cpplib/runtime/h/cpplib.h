@@ -51,7 +51,15 @@ union   RO_DTREG;
 struct  THREAD_CTL;
 struct  _EXC_PR;
 
-#include <stddef.h>
+#include <cstddef>
+#include <exception>
+#if defined( INTERNAL_NEW ) && ( defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB ) )
+  #define __SW_BR
+#endif
+#include <new>
+#if defined( INTERNAL_NEW ) && ( defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB ) )
+  #undef __SW_BR
+#endif
 
 #define PointUsingOffset( type, base, offset ) \
     ( (type*)( (char*)base + offset ) )
@@ -61,12 +69,12 @@ struct  _EXC_PR;
 // this is necessary to avoid unnecessary overhead on pointer arithmetic
 #ifdef __HUGE__
 #define RT_FAR __far
-typedef unsigned    RT_STATE_VAR;       // State variable
-typedef unsigned    offset_t;           // offset
+typedef unsigned        RT_STATE_VAR;       // State variable
+typedef unsigned        offset_t;           // offset
 #else
 #define RT_FAR
-typedef size_t      RT_STATE_VAR;       // State variable
-typedef size_t      offset_t;           // offset
+typedef std::size_t     RT_STATE_VAR;       // State variable
+typedef std::size_t     offset_t;           // offset
 #endif
 
 // TYPEDEFS : c vs c++ language insensitive typedefs
@@ -144,7 +152,7 @@ struct TYPE_SIG_HDR             // TYPE SIGNATURE: BASE
 
 struct TYPE_SIG_SCALAR          // TYPE SIGNATURE: SCALAR, POINTER TO CLASS
 {   TS_HDR hdr;                 // - header
-    size_t size;                // - size of scalar
+    std::size_t size;           // - size of scalar
     char const * name;          // - type-signature name
 };
 
@@ -153,7 +161,7 @@ struct TYPE_SIG_CLASS           // TYPE SIGNATURE: CLASS (NO VIRTUAL BASES)
     pFUNctor ctor;              // - addr[ default CTOR ]
     pFUNcopy copyctor;          // - addr[ copy CTOR ]
     pFUNdtor dtor;              // - addr[ DTOR ]
-    size_t size;                // - size of object thrown
+    std::size_t size;           // - size of object thrown
     char const * name;          // - type-signature name
 };
 
@@ -162,7 +170,7 @@ struct TYPE_SIG_CLASS_VIRT      // TYPE SIGNATURE: CLASS (VIRTUAL BASES)
     pFUNctorV ctor;             // - addr[ default CTOR ]
     pFUNcopyV copyctor;         // - addr[ copy CTOR ]
     pFUNdtor dtor;              // - addr[ DTOR ]
-    size_t size;                // - size of object thrown
+    std::size_t size;           // - size of object thrown
     char const * name;          // - type-signature name
 };
 
@@ -188,11 +196,11 @@ union rt_type_sig               // RT_TYPE_SIG: one of
 
 struct THROW_CNV                // THROW CONVERSION
 {   RT_TYPE_SIG signature;      // - type signature
-    size_t offset;              // - offset
+    std::size_t offset;         // - offset
 };
 
 struct THROW_RO
-{   size_t count;               // - number of throw conversions
+{   std::size_t count;          // - number of throw conversions
     THROW_CNV cnvs[1];          // - throw conversions
 };
 
@@ -202,7 +210,7 @@ struct THROW_RO
 //************************************************************************
 
 struct ARRAY_STORAGE            // ARRAY_STORAGE -- structure of array
-{   size_t element_count;       // - number of elements
+{   std::size_t element_count;  // - number of elements
     char apparent_address[];    // - address used in code
 };
 
@@ -218,26 +226,26 @@ struct ARRAY_STORAGE            // ARRAY_STORAGE -- structure of array
 //
 //************************************************************************
 
-struct THREAD_CTL               // THREAD_CTL -- control execution thread
+struct THREAD_CTL                           // THREAD_CTL -- control execution thread
 {
     union {
-        RW_DTREG* registered;   // - list of registrations, execution
-        THREAD_CTL* call_base;  // - furthest THREAD_CTL down call chain
+        RW_DTREG            *registered;    // - list of registrations, execution
+        THREAD_CTL          *call_base;     // - furthest THREAD_CTL down call chain
     };
     union {
-        struct {                    // - flags:
-            unsigned terminated :1; // - - "terminate" called
-            unsigned executable :1; // - - is .EXE (not .DLL)
+        struct {                            // - flags:
+            unsigned        terminated :1;  // - - "terminate" called
+            unsigned        executable :1;  // - - is .EXE (not .DLL)
         } flags;
-        void *d0;               // - padding
+        void                *d0;            // - padding
     };
-    ACTIVE_EXC *excepts;        // - exceptions being handled
-    char *abort_msg;            // - abortion message
-    pFUNVOIDVOID unexpected;    // - "unexpected" routine
-    pFUNVOIDVOID terminate;     // - "terminate" routine
-    pFUNVOIDVOID new_handler;   // - new_handler routine (ANSI)
-    pFUNINTUNSIGNED _new_handler;//- _new_handler routine (Microsoft)
-    _EXC_PR* exc_pr;            // - controls exceptional processing
+    ACTIVE_EXC              *excepts;       // - exceptions being handled
+    char                    *abort_msg;     // - abortion message
+    std::unexpected_handler unexpected;     // - "unexpected" routine
+    std::terminate_handler  terminate;      // - "terminate" routine
+    std::new_handler        new_handler;    // - new_handler routine (ANSI)
+    pFUNINTUNSIGNED         _new_handler;   // - _new_handler routine (Microsoft)
+    _EXC_PR                 *exc_pr;        // - controls exceptional processing
 };
 
 
@@ -354,7 +362,7 @@ void CPPLIB( multi_thread_init )    // INITIALIZER FOR MULTI-THREAD DATA
     ( void )
 ;
 void* CPPLIB( new_allocator )(      // DEFAULT ALLOCATOR FOR NEW, NEW[]
-    size_t size )                   // - size required
+    std::size_t size )              // - size required
 ;
 void * CPPLIB( new_array )(         // CALL NEW AND CTORS FOR ARRAY ELEMENTS
     ARRAY_STORAGE *new_alloc,       // - what was allocated
@@ -390,17 +398,23 @@ RT_TYPE_SIG CPPLIB( ts_pnted )(     // POINT PAST POINTER TYPE-SIG
 RT_TYPE_SIG CPPLIB( ts_refed )(     // POINT PAST REFERENCE TYPE-SIG, IF REQ'D
     RT_TYPE_SIG sig )               // - the signature
 ;
-size_t CPPLIB( ts_size )(           // GET SIZE OF ELEMENT FROM TYPE SIGNATURE
+std::size_t CPPLIB( ts_size )(      // GET SIZE OF ELEMENT FROM TYPE SIGNATURE
     RT_TYPE_SIG sig )               // - type signature
 ;
 _WPRTLINK
-_WCNORETURN
+//_WCNORETURN
 void CPPLIB( undefed_cdtor )(       // ISSUE ERROR FOR UNDEFINED CTOR, DTOR
     void )
 ;
 // never return
 _WPRTLINK
+//_WCNORETURN
 void CPPLIB( undefined_member_function )( // ISSUE ERROR FOR UNDEFINED CTOR, DTOR
+    void )
+;
+// never return
+_WPRTLINK
+void CPPLIB( undef_vfun )(          // TRAP STRIPPED VIRTUAL CALLS
     void )
 ;
 _WPRTLINK
@@ -410,7 +424,7 @@ int CPPLIB( static_init )(          // CHECK STATIC INIT ONCE ONLY BIT
 ;
 void CPPLIB( unmark_bitvect )(      // UNMARK LAST BIT IN BIT-VECTOR
     uint_8 *bit_vect,               // - bit vector
-    size_t bit_count )              // - # bits in vector
+    std::size_t bit_count )         // - # bits in vector
 ;
 _WPRTLINK
 int CPPLIB( static_init )(          // CHECK STATIC INIT ONCE ONLY BIT
@@ -424,15 +438,6 @@ void *CPPLIB( assign_array )(       // CALL OPERATOR= FOR ARRAY
     unsigned count,                 // - number of elements
     unsigned size,                  // - size of one element
     pFUNcopy opeq )                 // - operator= for an element
-;
-_WPRTLINK
-void CPPLIB( undef_vfun )(          // TRAP STRIPPED VIRTUAL CALLS
-    void )
-;
-_WPRTLINK
-_WCNORETURN
-void CPPLIB( undefined_member_function )( // ISSUE ERROR FOR UNDEFINED CTOR, DTOR
-    void )
 ;
 
 #ifndef NDEBUG

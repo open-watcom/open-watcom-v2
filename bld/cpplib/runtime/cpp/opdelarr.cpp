@@ -40,16 +40,10 @@
 //      exported, but it is not present in new.h so that
 //      the entry point can be replaced in the user code
 
+#define INTERNAL_NEW
 #include "cpplib.h"
 #include "lock.h"
 #include <malloc.h>
-#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
-  #define __SW_BR
-#endif
-#include <new.h>
-#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
-  #undef __SW_BR
-#endif
 
 #if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
 static void __do_delete_array( void *p )

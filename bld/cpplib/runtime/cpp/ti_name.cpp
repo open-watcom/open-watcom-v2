@@ -36,7 +36,6 @@
 #define __LIB__
 #include "demangle.h"
 
-#include <new>
 #include <typeinfo>
 
 #pragma initialize 19;

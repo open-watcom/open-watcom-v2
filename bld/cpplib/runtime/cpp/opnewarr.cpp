@@ -41,23 +41,17 @@
 //      the entry point can be replaced in the user code
 
 
+#define INTERNAL_NEW
 #include "cpplib.h"
 #include "lock.h"
-#include <stddef.h>
-#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
-  #define __SW_BR
-#endif
-#include <new.h>
-#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
-  #undef __SW_BR
-#endif
+#include <cstddef>
 
 
 #if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
-static void* __do_new_array( unsigned size )
+static void* __do_new_array( std::size_t size )
 #else
-_WPRTLINK void* operator new[](  // ALLOCATE STORAGE FOR NEW[]
-    size_t size )               // - size required
+_WPRTLINK void* operator new[]( // ALLOCATE STORAGE FOR NEW[]
+    std::size_t size )          // - size required
 #endif
 {
     return ::operator new( size );
@@ -66,7 +60,8 @@ _WPRTLINK void* operator new[](  // ALLOCATE STORAGE FOR NEW[]
 #if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
 static _PUP __pfn_new_array = &__do_new_array;
 
-_WPRTLINK extern _PUP _set_op_new_array( _PUP ona ) {
+_WPRTLINK extern _PUP _set_op_new_array( _PUP ona )
+{
     _PUP old;
     _RWD_StaticInitSema.p();
     old = __pfn_new_array;
@@ -75,8 +70,8 @@ _WPRTLINK extern _PUP _set_op_new_array( _PUP ona ) {
     return( old );
 }
 
-_WPRTLINK void* operator new[](  // ALLOCATE STORAGE FOR NEW[]
-    size_t size )               // - size required
+_WPRTLINK void* operator new[]( // ALLOCATE STORAGE FOR NEW[]
+    std::size_t size )          // - size required
 {
     return (*__pfn_new_array)( size );
 }

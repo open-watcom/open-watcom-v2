@@ -31,8 +31,6 @@
 
 
 #include "cpplib.h"
-
-#include <exception.h>
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
@@ -70,7 +68,7 @@ static void fneDispatch(        // DISPATCH "unexpected"
                                 , 0
                                 , dispatch->rw
                                 , dispatch->rethrow ? 0 : exc );
-            unexpected();
+            std::unexpected();
             marker._state = EXCSTATE_TERMINATE;
             CPPLIB( call_terminate )( RTMSG_RET_UNEXPECT, ctl );
             // never return
@@ -86,7 +84,7 @@ static void fneDispatch(        // DISPATCH "unexpected"
                                     , 0
                                     , dispatch->rw
                                     , dispatch->rethrow ? 0 : exc );
-                throw bad_exception();
+                throw std::bad_exception();
             }
             if( srch->state == EXCSTATE_BAD_EXC ) {
                 // throw of bad_exception did not get through fn-exc
