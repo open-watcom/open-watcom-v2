@@ -42,10 +42,10 @@ using std::set_new_handler;
 
 :include cpppfv.sp
 
-extern void *operator new( size_t );
-extern void *operator new( size_t, void * );
-extern void *operator new []( size_t );
-extern void *operator new []( size_t, void * );
+extern void *operator new( std::size_t );
+extern void *operator new( std::size_t, void * );
+extern void *operator new []( std::size_t );
+extern void *operator new []( std::size_t, void * );
 extern void operator delete( void * );
 extern void operator delete []( void * );
 _WPRTLINK extern PFU _set_new_handler( PFU );
