@@ -223,7 +223,7 @@ SYMBOL RunTimeCallSymbol(       // GET SYMBOL FOR A RUN-TIME CALL
           case RTF_THROW :
           case RTF_THROW_ZERO :
           case RTF_RETHROW :
-            runtime = RTS_BASE_VOID | RTS_FUNCTION | RTS_IS_THROW | RTF_THROW;
+            runtime = RTS_BASE_VOID | RTS_FUNCTION | RTS_IS_THROW;
             // it is absolutely critical that the function definition
             // in the runtime library be #pragma aborts because otherwise
             // -3s code in the runtime lib assumes a return address was
