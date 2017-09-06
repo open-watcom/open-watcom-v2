@@ -43,6 +43,7 @@
 #include "cpplib.h"
 #include "lock.h"
 #include <malloc.h>
+#include <new>
 
 #ifdef _RTDLL
 static void __do_delete_array( void *p )
@@ -57,7 +58,8 @@ _WPRTLINK void operator delete[](// RELEASE STORAGE FOR NEW[]
 #ifdef _RTDLL
 static _PVV __pfn_delete_array = &__do_delete_array;
 
-_WPRTLINK extern _PVV _set_op_delete_array( _PVV oda ) {
+_WPRTLINK extern _PVV _set_op_delete_array( _PVV oda )
+{
     _PVV old;
     _RWD_StaticInitSema.p();
     old = __pfn_delete_array;

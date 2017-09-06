@@ -46,6 +46,7 @@
 #include "lock.h"
 #include <malloc>
 #include <cstddef>
+#include <new>
 
 
 #ifdef _RTDLL

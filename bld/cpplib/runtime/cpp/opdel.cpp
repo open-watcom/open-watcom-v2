@@ -63,7 +63,8 @@ _WPRTLINK void operator delete( // RELEASE STORAGE
 #ifdef _RTDLL
 static _PVV __pfn_delete = &__do_delete;
 
-_WPRTLINK extern _PVV _set_op_delete( _PVV od ) {
+_WPRTLINK extern _PVV _set_op_delete( _PVV od )
+{
     _PVV old;
     _RWD_StaticInitSema.p();
     old = __pfn_delete;
