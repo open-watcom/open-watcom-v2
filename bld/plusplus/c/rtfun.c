@@ -172,68 +172,68 @@ SYMBOL RunTimeCallSymbol(       // GET SYMBOL FOR A RUN-TIME CALL
     sym = rtSymbolLookup( name );
     if( sym == NULL ) {
         switch( rt_code ) {
-          case RTF_ASSIGN_ARR :
-          case RTF_COPY_ARR :
-          case RTF_COPY_VARR :
-          case RTF_CTOR_ARR :
-          case RTF_CTOR_VARR :
-          case RTF_DEREGISTER :
-          case RTF_DTOR_ARR :
-          case RTF_CTAS_1S :
-          case RTF_CTAS_1M :
-          case RTF_CTAS_2S :
+        case RTF_ASSIGN_ARR :
+        case RTF_COPY_ARR :
+        case RTF_COPY_VARR :
+        case RTF_CTOR_ARR :
+        case RTF_CTOR_VARR :
+        case RTF_DEREGISTER :
+        case RTF_DTOR_ARR :
+        case RTF_CTAS_1S :
+        case RTF_CTAS_1M :
+        case RTF_CTAS_2S :
             rt_type = RTS_BASE_VOID | RTS_POINTER | RTS_FUNCTION | RTS_IGN_THROW;
             break;
-          case RTF_DYN_CAST_PTR :
-          case RTF_DYN_CAST_VOID :
+        case RTF_DYN_CAST_PTR :
+        case RTF_DYN_CAST_VOID :
             rt_type = RTS_BASE_VOID | RTS_POINTER | RTS_FUNCTION | RTS_NO_THROW;
             break;
-          case RTF_CTAS_GM :
-          case RTF_CTAS_GS :
-          case RTF_DTOR_AR_STORE :
-          case RTF_DYN_CAST_REF :
-          case RTF_GET_TYPEID :
+        case RTF_CTAS_GM :
+        case RTF_CTAS_GS :
+        case RTF_DTOR_AR_STORE :
+        case RTF_DYN_CAST_REF :
+        case RTF_GET_TYPEID :
             rt_type = RTS_BASE_VOID | RTS_POINTER | RTS_FUNCTION | RTS_CAN_THROW;
             break;
-          case RTF_STATIC_INIT :
+        case RTF_STATIC_INIT :
             rt_type = RTS_BASE_SINT | RTS_FUNCTION | RTS_NO_THROW;
             break;
 #if _CPU == _AXP
-          case RTF_PD_HANDLER :
-          case RTF_PD_HANDLER_RTN :
+        case RTF_PD_HANDLER :
+        case RTF_PD_HANDLER_RTN :
 #else
-          case RTF_FS_HANDLER :
-          case RTF_FS_HANDLER_RTN :
+        case RTF_FS_HANDLER :
+        case RTF_FS_HANDLER_RTN :
 #endif
             rt_type = RTS_BASE_SINT | RTS_FUNCTION | RTS_HANDLER | RTS_NO_THROW;
             break;
-          case RTF_SETJMP :
+        case RTF_SETJMP :
             rt_type = RTS_BASE_UINT | RTS_FUNCTION | RTS_CAN_THROW;
             break;
-          case RTF_MOD_DTOR :
+        case RTF_MOD_DTOR :
 //        case RTF_INLINE_FREG :    // not req'd with new library
-          case RTF_LONGJMP_REF :
-          case RTF_UNDEF_DATA :
-          case RTD_FS_ROOT :
-          case RTD_TS_GENERIC :
-          case RTD_TS_OS2 :
-          case RTD_TS_NT :
+        case RTF_LONGJMP_REF :
+        case RTF_UNDEF_DATA :
+        case RTD_FS_ROOT :
+        case RTD_TS_GENERIC :
+        case RTD_TS_OS2 :
+        case RTD_TS_NT :
             rt_type = RTS_BASE_SINT;
             break;
-          case RTF_THROW :
-          case RTF_THROW_ZERO :
-          case RTF_RETHROW :
+        case RTF_THROW :
+        case RTF_THROW_ZERO :
+        case RTF_RETHROW :
             rt_type = RTS_BASE_VOID | RTS_FUNCTION | RTS_IS_THROW;
             // it is absolutely critical that the function definition
             // in the runtime library be #pragma aborts because otherwise
             // -3s code in the runtime lib assumes a return address was
             // pushed (AFS 29-jul-93)
             break;
-          case RTF_FS_PUSH :
-          case RTF_FS_POP :
+        case RTF_FS_PUSH :
+        case RTF_FS_POP :
             rt_type = RTS_BASE_VOID | RTS_FUNCTION | RTS_INLINE;
             break;
-          default :
+        default :
             rt_type = RTS_BASE_VOID | RTS_FUNCTION | RTS_NO_THROW;
             break;
         }
@@ -251,7 +251,7 @@ PTREE RunTimeCall(              // GENERATE A RUN-TIME CALL PARSE SUBTREE
     SYMBOL func;
 
     func = RunTimeCallSymbol( rt_code );
-    DbgVerify( (PointerTypeEquivalent( type ) == NULL)
+    DbgVerify( (PointerTypeEquivalent( type ) == NULL )
                == (PointerTypeEquivalent( SymFuncReturnType( func ) ) == NULL)
              , "RunTimeCall -- return type mismatch" );
     return NodeMakeCall( func, type, expr );

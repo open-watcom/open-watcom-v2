@@ -4059,7 +4059,7 @@ start_opac_string:
                                   , GetBasicType( TYP_VOID )
                                   , RTF_RETHROW );
             } else {
-                RTF rt_code;    // - code for R/T routine
+                RTF rt_code;      // - code for R/T routine
 //                TYPE cl_type;   // - NULL or class type
                 type = throw_exp->type;
 //                cl_type = ClassTypeForType( type );

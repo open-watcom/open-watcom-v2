@@ -61,7 +61,6 @@
 #include "cppexit.h"
 #include "cgbackut.h"
 #include "cginmisc.h"
-#include "pragdefn.h"
 #include "specfuns.h"
 #include "autodept.h"
 #include "dwarfid.h"
