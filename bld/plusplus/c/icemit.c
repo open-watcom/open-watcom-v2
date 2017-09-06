@@ -864,11 +864,7 @@ static void checkDeadCode(      // TEST FOR DEAD CODE
         expr = PTreeOp( &expr->u.subtree[0]->u.subtree[0] );
         if( expr->op == PT_SYMBOL ) {
             func = getPtreeSymbol( expr );
-            if( IsFuncAborts( func ) ) {
-                FunctionBodyDeadCode();
-                CgFrontCode( IC_AFTER_ABORTS );
-            }
-            if( IsPragmaAborts( func ) ) {
+            if( IsFuncAborts( func ) || IsPragmaAborts( func ) ) {
                 FunctionBodyDeadCode();
                 CgFrontCode( IC_AFTER_ABORTS );
             }

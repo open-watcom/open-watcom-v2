@@ -184,6 +184,9 @@ static const char* extsOut[] =        // extensions for output files
 
 #endif
 
+static const char* extsNo[] =        // no extensions
+    { NULL };
+
 static char *FNameBuf = NULL;   // file name buffer for output files
 
 char *IoSuppOutFileName(        // BUILD AN OUTPUT NAME FROM SOURCE NAME
@@ -652,6 +655,9 @@ static bool doIoSuppOpenSrc(    // OPEN A SOURCE FILE (PRIMARY,HEADER)
         if( !IS_DIR_SEP( fd->dir[0] ) ) {
             paths = pathCmd;
         }
+        break;
+    default:
+        exts = extsNo;
         break;
     }
     if( paths != NULL ) {
