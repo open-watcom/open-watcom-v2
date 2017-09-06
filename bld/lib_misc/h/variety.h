@@ -192,6 +192,7 @@
 // handle building dll's with appropriate linkage
 #if !defined(__SW_BR) && (defined(__WARP__) || defined(__NT__))
     #if defined(__MAKE_DLL_WRTLIB)
+        #define _RTDLL
         #undef _WCRTLINK
         #undef _WCIRTLINK
         #undef _WCRTDATA

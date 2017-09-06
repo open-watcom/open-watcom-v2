@@ -53,13 +53,7 @@ struct  _EXC_PR;
 
 #include <cstddef>
 #include <exception>
-#if defined( INTERNAL_NEW ) && ( defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB ) )
-  #define __SW_BR
-  #include <new>
-  #undef __SW_BR
-#else
-  #include <new>
-#endif
+#include <new>
 
 #define PointUsingOffset( type, base, offset ) \
     ( (type*)( (char*)base + offset ) )

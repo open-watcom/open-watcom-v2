@@ -42,14 +42,13 @@
 //      the entry point can be replaced in the user code
 // 0004
 
-#define INTERNAL_NEW
 #include "cpplib.h"
 #include "lock.h"
 #include <malloc>
 #include <cstddef>
 
 
-#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
+#ifdef _RTDLL
 static void *__do_new( std::size_t size )
 #else
 _WPRTLINK void *operator new(   // ALLOCATE STORAGE FOR NEW
@@ -83,7 +82,7 @@ _WPRTLINK void *operator new(   // ALLOCATE STORAGE FOR NEW
     return p;
 }
 
-#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
+#ifdef _RTDLL
 static _PUP __pfn_new = &__do_new;
 
 _WPRTLINK extern _PUP _set_op_new( _PUP on )

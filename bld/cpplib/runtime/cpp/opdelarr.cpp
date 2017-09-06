@@ -40,12 +40,11 @@
 //      exported, but it is not present in new.h so that
 //      the entry point can be replaced in the user code
 
-#define INTERNAL_NEW
 #include "cpplib.h"
 #include "lock.h"
 #include <malloc.h>
 
-#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
+#ifdef _RTDLL
 static void __do_delete_array( void *p )
 #else
 _WPRTLINK void operator delete[](// RELEASE STORAGE FOR NEW[]
@@ -55,7 +54,7 @@ _WPRTLINK void operator delete[](// RELEASE STORAGE FOR NEW[]
     ::delete( (char *) p );
 }
 
-#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
+#ifdef _RTDLL
 static _PVV __pfn_delete_array = &__do_delete_array;
 
 _WPRTLINK extern _PVV _set_op_delete_array( _PVV oda ) {

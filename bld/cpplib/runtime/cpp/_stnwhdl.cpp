@@ -43,7 +43,6 @@
 #include <stddef.h>
 #include <malloc.h>
 #include "rtexcept.h"
-#include <new>
 
 
 _WPRTLINK

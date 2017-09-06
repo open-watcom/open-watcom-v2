@@ -41,13 +41,12 @@
 //      the entry point can be replaced in the user code
 
 
-#define INTERNAL_NEW
 #include "cpplib.h"
 #include "lock.h"
 #include <cstddef>
 
 
-#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
+#ifdef _RTDLL
 static void* __do_new_array( std::size_t size )
 #else
 _WPRTLINK void* operator new[]( // ALLOCATE STORAGE FOR NEW[]
@@ -57,7 +56,7 @@ _WPRTLINK void* operator new[]( // ALLOCATE STORAGE FOR NEW[]
     return ::operator new( size );
 }
 
-#if defined( __MAKE_DLL_CPPLIB ) || defined( __MAKE_DLL_WRTLIB )
+#ifdef _RTDLL
 static _PUP __pfn_new_array = &__do_new_array;
 
 _WPRTLINK extern _PUP _set_op_new_array( _PUP ona )

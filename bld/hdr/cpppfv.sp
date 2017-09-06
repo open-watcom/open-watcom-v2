@@ -14,7 +14,7 @@
  typedef int (*_PNH)( unsigned );
 #endif
 :segment DOS | LINUX
-#ifdef __SW_BR
+#if defined(__SW_BR) || defined(_RTDLL)
  #ifndef _PPV_DEFINED
  #define _PPV_DEFINED
   #define _PPV_DEFINED_
@@ -23,7 +23,7 @@
  #ifndef _PUP_DEFINED
  #define _PUP_DEFINED
   #define _PUP_DEFINED_
-  typedef void* (*_PUP)( unsigned );
+  typedef void* (*_PUP)( std::size_t );
  #endif
 #endif
 :endsegment
