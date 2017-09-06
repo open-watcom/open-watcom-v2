@@ -107,7 +107,7 @@ _WCRTLINK extern int    __iscsym(int);
  #endif
 :include extepi.sp
 
-#if (defined(__SW_BR) || defined(_RTDLL))
+#if defined(__SW_BR) || defined(_RTDLL)
  #define _IsTable _IsTable_br
 #endif
 _WCRTDATA extern const unsigned char _WCDATA _IsTable[257];

@@ -325,7 +325,7 @@ _WCRTLINK extern int    *__get_daylight_ptr( void );
 #if defined( __FUNCTION_DATA_ACCESS )
  #define timezone       (*__get_timezone_ptr())
  #define daylight       (*__get_daylight_ptr())
-#elif defined( __SW_BR ) || defined( _RTDLL )
+#elif defined(__SW_BR) || defined(_RTDLL)
  #define timezone       timezone_br
  #define daylight       daylight_br
 #endif
