@@ -534,7 +534,7 @@ PTREE AnalyseNew(               // ANALYSE A "NEW" OPERATOR (WITH OVERLOADING)
     //
     if( array_number != NULL ) {
         if( sym_ctor != NULL ) {
-            unsigned rt_code;       // - run-time function code
+            RTF rt_code;            // - run-time function code
             PTREE args;             // - run-time call arguments
             TYPE_SIG *sig;          // - type signature for class
             bool errors;            // - true ==> errors

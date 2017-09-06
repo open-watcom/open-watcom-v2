@@ -1251,7 +1251,7 @@ static void dataInitRunTimeCall( target_size_t start, target_size_t size )
     PTREE               node;
     unsigned            num_elem;
     TYPE                base_type;
-    RTF                 fun_code;
+    RTF                 rt_code;
     SYMBOL              ctor_sym;
 
     switch( currInit->state ) {
@@ -1300,11 +1300,11 @@ static void dataInitRunTimeCall( target_size_t start, target_size_t size )
                                 , dataInitPadLeftSide( start )
                                 , NULL );
             if( TypeHasVirtualBases( base_type ) ) {
-                fun_code = RTF_CTOR_VARR;
+                rt_code = RTF_CTOR_VARR;
             } else {
-                fun_code = RTF_CTOR_ARR;
+                rt_code = RTF_CTOR_ARR;
             }
-            node = RunTimeCall( node, MakeReferenceTo( base_type ), fun_code );
+            node = RunTimeCall( node, MakeReferenceTo( base_type ), rt_code );
             node = dtorableObjectCtored( currInit->nest, node, true );
             node = NodeDone( node );
 
