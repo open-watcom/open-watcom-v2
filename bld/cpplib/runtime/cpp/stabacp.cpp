@@ -44,7 +44,7 @@ void * CPPLIB( copy_array )(    // CALL COPY CONSTRUCTORS FOR ARRAY
     RT_TYPE_SIG sig )           // - signature of array
 {
     pFUNcopy ctor;              // - constructor for an element
-    size_t size;                // - size of an array element
+    std::size_t size;           // - size of an array element
                                 // - array-ctor control
     _RTARCTOR ar_ctor( 0, sig, tgt_array );
 
@@ -60,4 +60,3 @@ void * CPPLIB( copy_array )(    // CALL COPY CONSTRUCTORS FOR ARRAY
     ar_ctor.complete();
     return ar_ctor._array;
 }
-

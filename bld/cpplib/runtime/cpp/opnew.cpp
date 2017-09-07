@@ -43,10 +43,7 @@
 // 0004
 
 #include "cpplib.h"
-#include "lock.h"
-#include <malloc>
-#include <cstddef>
-#include <new>
+#include <malloc.h>
 
 
 #ifdef _RTDLL

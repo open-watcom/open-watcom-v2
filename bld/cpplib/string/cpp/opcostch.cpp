@@ -59,6 +59,8 @@
 
 #include "strng.h"
 #include "stghdr.h"
+#include <cstdlib>
+
 
 String::operator const char *() {
 /*******************************/
@@ -67,7 +69,7 @@ String::operator const char *() {
 //       If the C string should persist longer, then it should be copied
 //       (eg. using strdup)
 
-    ::free( __c_string );
+    std::free( __c_string );
 #ifndef NDEBUG
     if( __c_string != NULL ) {
         _CStrAllocCount--;
@@ -77,7 +79,7 @@ String::operator const char *() {
         __c_string = NULL;
         return( __c_string );
     }
-    __c_string = (char *) ::malloc( __slength + 1 );
+    __c_string = (char *)std::malloc( __slength + 1 );
     if( __c_string == NULL ) {
         return( __c_string );
     }
@@ -85,7 +87,7 @@ String::operator const char *() {
     _CStrAllocCount++;
 #endif
     if( __slength > 0 ) {
-        ::memcpy( __c_string, __srep->__value + __offset, __slength );
+        std::memcpy( __c_string, __srep->__value + __offset, __slength );
     }
     __c_string[__slength] = '\0';
     return( __c_string );

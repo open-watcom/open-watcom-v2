@@ -34,7 +34,7 @@
 #else
 #include "variety.h"
 #include <unistd.h>
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
 #include <stdiobuf>
 #endif
@@ -71,7 +71,7 @@ int stdiobuf::overflow( int c ) {
         if( base() == NULL ) {
             if( c != EOF ) {
                 char charbuf = (char)c;
-                written = ::fwrite( &charbuf
+                written = std::fwrite( &charbuf
                                   , sizeof( char )
                                   , 1
                                   , __file_pointer );
@@ -95,13 +95,13 @@ int stdiobuf::overflow( int c ) {
     }
     waiting = (__huge_ptr_int)(pptr() - pbase());
     if( waiting > 0 ) {
-        written = ::fwrite( pbase(), sizeof( char ), waiting, __file_pointer );
+        written = std::fwrite( pbase(), sizeof( char ), waiting, __file_pointer );
         if( written == EOF ) {
             return( EOF );
         }
         waiting -= written;
         if( waiting > 0 ) {
-            ::memmove( pbase(), pbase() + written, waiting );
+            std::memmove( pbase(), pbase() + written, waiting );
             setp( pbase(), epptr() );
             pbump( waiting );
         } else {

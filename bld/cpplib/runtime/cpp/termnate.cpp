@@ -30,10 +30,8 @@
 ****************************************************************************/
 
 #include "cpplib.h"
-#include <stddef.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include "rtexcept.h"
-#include <except.h>
 #include "rtmsgs.h"
 #include "exitwmsg.h"
 

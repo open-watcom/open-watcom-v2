@@ -32,8 +32,8 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <string.h>
-#include <strstrea>
+#include <cstring>
+#include <strstream>
 #endif
 #include "ioutil.h"
 
@@ -65,7 +65,7 @@ namespace std {
             newbuf = (char *) __alloc_fn( size );
         }
         if( newbuf != NULL ) {
-            ::memcpy( newbuf, oldbuf, size );
+            memcpy( newbuf, oldbuf, size );
             setb( newbuf, newbuf + size, false );
 
             if( pbase() != NULL ) {
@@ -85,4 +85,4 @@ namespace std {
     return( base() );
   }
 
-}
+} // namespace std

@@ -37,7 +37,7 @@
 #pragma warning 656 9
 
 #include "variety.h"
-#include <stdio.h>
+#include <cstdio>
 #include "xfloat.h"
 
 typedef int __huge_ptr_int;
@@ -69,8 +69,8 @@ public:
 extern "C" {
 _WCRTLINK extern int __plusplus_fstat( int handle, int *ios_mode );
 _WCRTLINK extern int __plusplus_open( const char *name, int *ios_mode, int prot );
-_WCRTLINK extern FILE *__get_std_stream( unsigned handle );
-_WCRTLINK extern int __flush( FILE *fp );
+_WCRTLINK extern std::FILE *__get_std_stream( unsigned handle );
+_WCRTLINK extern int __flush( std::FILE *fp );
 };
 
 #define _IOUTIL_H_INCLUDED

@@ -32,6 +32,5 @@
 
 // combine include files for pre-compiled headers
 #include "variety.h"
-#include <malloc.h>
-#include <string.h>
+#include <cstring>
 #include <string.hpp>

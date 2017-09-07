@@ -33,9 +33,9 @@
 #else
 #include "variety.h"
 #include <unistd.h>
-#include <string.h>
+#include <cstring>
 #include <fstream>
-#include <limits.h>
+#include <climits>
 #endif
 #include "ioutil.h"
 
@@ -86,11 +86,11 @@ namespace std {
 
     // if appending, remember current offset and seek to end
     if( __file_mode & ios::app ) {
-        offset = tell( fd() );
+        offset = ::tell( fd() );
         if( offset < 0 ) {
             return( EOF );
         }
-        if( lseek( fd(), 0, ios::end ) < 0 ) {
+        if( ::lseek( fd(), 0, ios::end ) < 0 ) {
             return( EOF );
         }
     }
@@ -111,7 +111,7 @@ namespace std {
         }
         waiting -= written;
         if( waiting > 0 ) {
-            ::memmove( pbase(), pbase() + written, waiting );
+            memmove( pbase(), pbase() + written, waiting );
             setp( pbase(), epptr() );
             pbump( waiting );
         } else {
@@ -129,7 +129,7 @@ namespace std {
 
     // if appending, restore current offset
     if( __file_mode & ios::app ) {
-        if( lseek( fd(), offset, ios::beg ) < 0 ) {
+        if( ::lseek( fd(), offset, ios::beg ) < 0 ) {
             return( EOF );
         }
     }

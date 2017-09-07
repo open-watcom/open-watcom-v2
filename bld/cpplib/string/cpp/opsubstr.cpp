@@ -59,11 +59,12 @@
 
 #include "strng.h"
 
-String String::operator () ( size_t pos, size_t len ) const {
-/***********************************************************/
+String String::operator () ( std::size_t pos, std::size_t len ) const
+/*******************************************************************/
 // Substring operator: return a String containing the characters from
 // position "pos" for a length of "len".
 // Use the existing StringRep with an appropriate offset/length.
+{
     String  result;
 
     result.__FreeStringRep();

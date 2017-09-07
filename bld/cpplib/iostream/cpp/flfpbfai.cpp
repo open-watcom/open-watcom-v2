@@ -33,7 +33,7 @@
 #else
 #include "variety.h"
 #include <unistd.h>
-#include <stdio.h>
+#include <cstdio>
 #include <fstream>
 #endif
 
@@ -71,7 +71,7 @@ namespace std {
     } else {
         offset = -1;
     }
-    if( lseek( fd(), offset, ios::cur ) < 0 ) {
+    if( ::lseek( fd(), offset, ios::cur ) < 0 ) {
         return( EOF );
     }
     return( c );

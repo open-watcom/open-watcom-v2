@@ -31,7 +31,6 @@
 
 
 #include "cpplib.h"
-#include <except.h>
 #include "rtexcept.h"
 #include "rtmsgs.h"
 

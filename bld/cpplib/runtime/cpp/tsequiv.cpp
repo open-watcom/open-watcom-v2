@@ -31,7 +31,7 @@
 
 
 #include "cpplib.h"
-#include <string.h>
+#include <cstring>
 #include "rtexcept.h"
 
 
@@ -108,7 +108,7 @@ rboolean CPPLIB( ts_equiv )(    // TEST IF TYPE SIG.S ARE EQUIVALENT
               case THROBJ_CLASS :
               case THROBJ_CLASS_VIRT :
                 if( tgt->clss.size == src->clss.size ) {
-                    if( 0 == strcmp( tgt->clss.name, src->clss.name ) ) {
+                    if( 0 == std::strcmp( tgt->clss.name, src->clss.name ) ) {
                         retn = true;
                     } else {
                         retn = false;
@@ -120,7 +120,7 @@ rboolean CPPLIB( ts_equiv )(    // TEST IF TYPE SIG.S ARE EQUIVALENT
               case THROBJ_PTR_FUN :
               case THROBJ_SCALAR :
                 if( tgt->scalar.size == src->scalar.size ) {
-                    if( 0 == strcmp( tgt->scalar.name, src->scalar.name ) ) {
+                    if( 0 == std::strcmp( tgt->scalar.name, src->scalar.name ) ) {
                         retn = true;
                     } else {
                         retn = false;

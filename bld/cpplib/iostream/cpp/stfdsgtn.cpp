@@ -32,7 +32,7 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <string.h>
+#include <cstring>
 #include <iostream>
 #include <streambu>
 #endif
@@ -61,7 +61,7 @@ namespace std {
         if( available > len ) {                 // too many?
             available = len;
         }
-        ::memcpy( buf, gptr(), available );
+        memcpy( buf, gptr(), available );
         gbump( available );
         returned  += available;
         buf       += available;

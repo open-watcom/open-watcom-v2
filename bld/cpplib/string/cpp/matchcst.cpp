@@ -70,5 +70,5 @@ int String::match( const char *s ) const {
     return( (int)__MatchStrings( __srep->__value + __offset,
                                  __slength,
                                  s,
-                                 ::strlen( s ) ) );
+                                 std::strlen( s ) ) );
 }

@@ -34,18 +34,20 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <stdlib.h>
-#include <string.h>
-#include <iostream.h>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
 #endif
 #include "ioutil.h"
 #include "lock.h"
 #include "osthdr.h"
 
-ostream &ostream::operator << ( signed __int64 i ) {
-/**************************************************/
-// Write a signed long integer to the stream.
+namespace std {
 
+ostream &ostream::operator << ( signed __int64 i ) 
+/************************************************/
+// Write a signed long integer to the stream.
+{
     int         base;
     char        buffer[LONGEST_INT64 + 1];
     int         size;
@@ -70,7 +72,7 @@ ostream &ostream::operator << ( signed __int64 i ) {
     if( buffer[0] == '-' ) {
         digit_offset = 1;
     }
-    size = ::strlen( buffer );
+    size = strlen( buffer );
 
     // Write the number:
     if( opfx() ) {
@@ -79,3 +81,5 @@ ostream &ostream::operator << ( signed __int64 i ) {
     }
     return( *this );
 }
+
+} // namespace std

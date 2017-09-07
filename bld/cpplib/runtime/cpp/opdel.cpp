@@ -44,7 +44,6 @@
 //      the entry point can be replaced in the user code
 
 #include "cpplib.h"
-#include "lock.h"
 #include <malloc.h>
 
 

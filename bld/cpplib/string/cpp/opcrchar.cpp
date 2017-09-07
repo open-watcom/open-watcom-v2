@@ -59,13 +59,13 @@
 
 #include "strng.h"
 
-const char &String::operator () ( size_t pos ) const {
-/****************************************************/
+const char &String::operator () ( std::size_t pos ) const
+/*******************************************************/
 // Reference-to-character operator: return a reference to the character
 // at position "pos".
 // If the String is not well-formed, or if pos is not valid,
 // return a reference to String::__ref_char:
-
+{
     if( __srep == NULL  ||  pos >= __slength ) {
         return( __ref_char );
     }

@@ -38,8 +38,6 @@
 // 92/05/15  -- G.R.Bentz        -- defined
 
 #include "cpplib.h"
-#include <stddef.h>
-#include <malloc.h>
 
 
 namespace std {

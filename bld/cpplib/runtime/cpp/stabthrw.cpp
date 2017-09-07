@@ -31,9 +31,9 @@
 
 
 #include "cpplib.h"
-#include <stdlib.h>
-#include <string.h>
-#include <malloc.h>
+#include <cstdlib>
+#include <cstring>
+#include <alloca.h>
 
 #ifdef __USE_PD
 #   include <setjmpex.h>
@@ -146,11 +146,11 @@ static void catchDispatch(      // DISPATCH A CATCH BLOCK
         case THROBJ_PTR_SCALAR :
         case THROBJ_PTR_FUN :
             if( dispatch->zero ) {
-                memset( tgt, 0, sig->scalar.size );
+                std::memset( tgt, 0, sig->scalar.size );
                 break;
             }
         case THROBJ_SCALAR :
-            memcpy( tgt, src, sig->scalar.size );
+            std::memcpy( tgt, src, sig->scalar.size );
             break;
         case THROBJ_CLASS :
             sig = throwCnvSig( dispatch );
@@ -366,7 +366,7 @@ static void processThrow(       // PROCESS A THROW
     case DISPATCHABLE_SYS_EXC :
     {
         char buffer[ sizeof( RTMSG_SYS_EXC ) ];
-        ::memcpy( buffer, RTMSG_SYS_EXC, sizeof( buffer ) );
+        std::memcpy( buffer, RTMSG_SYS_EXC, sizeof( buffer ) );
         ltoa( dispatch.system_exc, buffer + sizeof( buffer) - 9, 16 );
         CPPLIB( fatal_runtime_error )( buffer, 1 );
         // never return

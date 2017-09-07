@@ -59,12 +59,15 @@
 
 #include "strng.h"
 #include "stghdr.h"
+#include <cstdlib>
 
-void String::__FreeStringRep() {
-/******************************/
+
+void String::__FreeStringRep()
+/****************************/
+{
     if( __srep != NULL ) {
         if( --(__srep->__refcount) <= 0 ) {
-            ::free( __srep );
+            std::free( __srep );
             __srep    = NULL;
             __slength = 0;
             __offset  = 0;

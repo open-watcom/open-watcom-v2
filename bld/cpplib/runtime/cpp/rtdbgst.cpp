@@ -35,12 +35,10 @@
 #undef __OBSCURE_STREAM_INTERNALS  // kludge! we need manipulate with FILE structure
 
 #include "cpplib.h"
-
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdlib.h>
-
+#include <cstdio>
+#include <cstdarg>
+#include <cstring>
+#include <cstdlib>
 #include "rtexcept.h"
 #include "exc_pr.h"
 
@@ -51,9 +49,9 @@ extern "C" _WCRTLINK extern FILE *__get_std_stream( unsigned handle );
 
 #define STDOUT_FILENO 1
 
-static FILE* fstk[ MX_FSTK ];   // suspended files
-static unsigned index;          // top of files stack
-static int logging;             // true ==> logging at level 0
+static std::FILE *fstk[MX_FSTK];    // suspended files
+static unsigned index;              // top of files stack
+static int logging;                 // true ==> logging at level 0
 
 static void dumpDtorCmd( RW_DTREG*, DTOR_CMD* );
 
@@ -93,7 +91,7 @@ static void dump(               // FORMATTED DUMP
 {
     va_list args;               // - for variable arguments
     rboolean done;              // - true ==> done formatting
-    size_t blk_type;            // - type of block
+    std::size_t blk_type;       // - type of block
     RW_DTREG* rw;               // - R/W header
 
     va_start( args, ft );
@@ -270,7 +268,7 @@ static void dump(               // FORMATTED DUMP
           case FT_STATE :       // state table
           { RO_STATE* state;    // - current state
             DTOR_CMD* cmd;      // - command from state table
-            size_t index;       // - index
+            std::size_t index;  // - index
             state = va_arg( args, RO_STATE* );
             dump( FT_PTR, "STATE TABLE", state
                 , FT_END );
@@ -766,12 +764,12 @@ void __DumpPdata()
 static void reDirSwitch         // SWITCH TWO FILE AREAS
     ( void )
 {
-    FILE temp;                  // - temporary area
-    FILE* fp;                   // - file
+    std::FILE temp;             // - temporary area
+    std::FILE *fp;              // - file
 
     fflush( __get_std_stream( STDOUT_FILENO ) );
     temp = *__get_std_stream( STDOUT_FILENO );
-    fp = fstk[ index ];
+    fp = fstk[index];
     *__get_std_stream( STDOUT_FILENO ) = *fp;
     *fp = temp;
 }
@@ -784,20 +782,20 @@ static void reDirBeg            // START REDIRECTION FOR A FILE
         fflush( __get_std_stream( STDOUT_FILENO ) );
     } else {
         char fname[32];
-        FILE* fp;
+        std::FILE *fp;
         strcpy( fname, default_file );
-        itoa( index, &fname[ sizeof( default_file ) - 1 ], 10 );
-        fp =  fopen( fname, "wt" );
+        itoa( index, &fname[sizeof( default_file ) - 1], 10 );
+        fp = std::fopen( fname, "wt" );
         if( NULL == fp ) {
             puts( "DBGIO -- failure to open file" );
             puts( fname );
-            fstk[ index ] = 0;
+            fstk[index] = NULL;
         } else {
-            fstk[ index ] = fp;
+            fstk[index] = fp;
             reDirSwitch();
         }
     }
-    ++ index;
+    ++index;
 }
 
 static void reDirEnd            // COMPLETE REDIRECTION FOR A FILE
@@ -808,10 +806,10 @@ static void reDirEnd            // COMPLETE REDIRECTION FOR A FILE
     } else {
         -- index;
         if( index < MX_FSTK ) {
-            FILE* fp = fstk[ index ];
-            if( fp != 0 ) {
+            std::FILE *fp = fstk[index];
+            if( fp != NULL ) {
                 reDirSwitch();
-                fclose( fstk[ index ] );
+                std::fclose( fstk[index] );
             }
         }
     }

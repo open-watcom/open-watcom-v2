@@ -33,7 +33,7 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <ctype.h>
+#include <cctype>
 #include <iostream>
 #include <streambu>
 #endif
@@ -53,7 +53,7 @@ std::ios::iostate __getbase( std::streambuf *sb, int &base, std::streamsize &off
         return( std::ios::failbit );
     }
     if( ch != '0' ) {
-        if( isdigit( ch ) ) {
+        if( std::isdigit( ch ) ) {
             base = 10;
         } else {
             return( std::ios::failbit );
@@ -61,9 +61,9 @@ std::ios::iostate __getbase( std::streambuf *sb, int &base, std::streamsize &off
     } else {
         offset++;
         ch = sb->snextc();
-        if( tolower( ch ) == 'x' ) {
+        if( std::tolower( ch ) == 'x' ) {
             sb->sbumpc();
-            if ( isxdigit( sb->speekc() ) ) {
+            if ( std::isxdigit( sb->speekc() ) ) {
                 base = 16;
                 offset++;
             } else {

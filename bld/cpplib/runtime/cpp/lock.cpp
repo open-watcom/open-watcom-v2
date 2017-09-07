@@ -33,17 +33,18 @@
 #ifdef __SW_BM
 
 #include "cpplib.h"
-#include <string.h>
-#include <lock.h>
+#include <cstring>
 #include "rtinit.h"
 
-__lock::__lock() {
-/*****************/
-    ::memset( &locksem, 0, sizeof( locksem ) );
+__lock::__lock() 
+/**************/
+{
+    std::memset( &locksem, 0, sizeof( locksem ) );
 }
 
-__lock::~__lock() {
-/*****************/
+__lock::~__lock() 
+/***************/
+{
     // JBS 99/10/15
     unsigned lock_count;
 
@@ -55,13 +56,15 @@ __lock::~__lock() {
     _CloseSemaphore( &locksem );
 }
 
-void __lock::p( void ) {
-/**********************/
+void __lock::p( void ) 
+/********************/
+{
     _AccessSemaphore( &locksem );
 }
 
-void __lock::v( void ) {
-/**********************/
+void __lock::v( void ) 
+/********************/
+{
     _ReleaseSemaphore( &locksem );
 }
 

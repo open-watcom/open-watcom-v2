@@ -32,7 +32,7 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #endif
 #include "ioutil.h"
@@ -61,7 +61,7 @@ namespace std {
 
     // Write the number:
     if( opfx() ) {
-        setstate( __WATCOM_ios::writeitem( *this, buf, ::strlen( buf ), 2 ) );
+        setstate( __WATCOM_ios::writeitem( *this, buf, strlen( buf ), 2 ) );
         osfx();
     }
     return( *this );

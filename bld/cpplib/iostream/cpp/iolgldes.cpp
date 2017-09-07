@@ -36,7 +36,7 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <iostream.h>
+#include <iostream>
 #endif
 #include "lock.h"
 

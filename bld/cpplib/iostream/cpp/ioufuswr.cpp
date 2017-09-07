@@ -44,7 +44,7 @@ void *__WATCOM_ios::find_user_word( std::ios *pios, int index ) {
     ios_word_values *last_wptr;
     ipvalue         *user_word_ptr;
 
-    if( (index < 0) || (index >= ios::__xalloc_index) ) {
+    if( (index < 0) || (index >= std::ios::__xalloc_index) ) {
         return( NULL );
     }
     last_wptr = NULL;

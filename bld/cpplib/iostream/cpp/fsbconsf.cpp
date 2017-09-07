@@ -32,7 +32,7 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <stdio.h>
+#include <cstdio>
 #include <fstream>
 #endif
 #include "ioutil.h"

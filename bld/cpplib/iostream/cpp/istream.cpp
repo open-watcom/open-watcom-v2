@@ -30,14 +30,14 @@
 ****************************************************************************/
 
 #include "variety.h"
-#include <ctype.h>
-#include <limits.h>
-#include <errno.h>
-#include <stdlib.h>
+#include <cctype>
+#include <climits>
+#include <cerrno>
+#include <cstdlib>
 #include <iostream>
 #include <streambu>
-#include <ioutil.h>
-#include <lock.h>
+#include "ioutil.h"
+#include "lock.h"
 
 #define ERR_CHAR    '\0'
 
@@ -275,7 +275,7 @@ namespace std {
 #endif
   }
 
-}
+} // namespace std
 
 static ios::iostate getsign( streambuf *sb, char &sign, int &base ) {
 /*******************************************************************/
@@ -376,10 +376,10 @@ static ios::iostate getnumber( streambuf *sb, unsigned long &number,
         if( base == 8 ) {
             is_digit = (ch >= '0'  &&  ch <= '7');
         } else {
-            is_digit = isdigit( ch );
+            is_digit = std::isdigit( ch );
             if( base == 16 && !is_digit ) {
                 char low_char;
-                low_char = (char)tolower( ch );
+                low_char = (char)std::tolower( ch );
                 if( low_char >= 'a'  &&  low_char <= 'f' ) {
                     digit_value = low_char - 'a' + 10;
                     is_digit    = true;
@@ -607,7 +607,7 @@ namespace std {
     return( *this );
   }
 
-}
+} // namespace std
 
 static ios::iostate getaline( istream &istrm, char *buf, int len,
     char delim, int is_get, int &chars_read )
@@ -878,4 +878,4 @@ namespace std {
     }
   }
 
-}
+} // namespace std

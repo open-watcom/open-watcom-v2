@@ -29,11 +29,10 @@
 *
 ****************************************************************************/
 
-#include <errno.h>
-#include <stddef.h>
-#include <stdio.h>
-#include <string.h>
-#include <wchar.h>
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
+#include <cwchar>
 
 #include "cpplib.h"
 #include "rt_rtti.h"

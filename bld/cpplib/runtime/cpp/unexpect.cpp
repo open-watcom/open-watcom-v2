@@ -30,9 +30,7 @@
 ****************************************************************************/
 
 #include "cpplib.h"
-#include <stddef.h>
 #include "rtexcept.h"
-#include <except.h>
 #include "rtmsgs.h"
 #include "exc_pr.h"
 

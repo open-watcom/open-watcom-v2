@@ -60,9 +60,10 @@
 
 #include "strng.h"
 
-String::String( char c, size_t rep ) : __offset( 0 ), __c_string( NULL ) {
-/************************************************************************/
+String::String( char c, std::size_t rep ) : __offset( 0 ), __c_string( NULL ) 
+/***************************************************************************/
 // Constructor: make a String from a single character / repetition of the char
+{
     if( rep == NPOS ) {
         __srep = NULL;
     } else {
@@ -71,8 +72,8 @@ String::String( char c, size_t rep ) : __offset( 0 ), __c_string( NULL ) {
     if( __srep == NULL ) {
         __slength = 0;
     } else {
-        __slength        = rep;
-        ::memset( __srep->__value, c, rep );
+        __slength = rep;
+        std::memset( __srep->__value, c, rep );
         //while( rep-- > 0 ) __srep->__value[rep] = c;
     }
 }

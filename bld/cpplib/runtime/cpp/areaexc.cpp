@@ -31,8 +31,7 @@
 
 
 #include "cpplib.h"
-#include <stddef.h>
-#include <limits.h>
+#include <climits>
 
 
 #if INT_MAX == SHRT_MAX
@@ -43,8 +42,8 @@
 
 struct exc_area
 {
-    size_t  area_size;
-    char    work_area[ EXC_SIZE - sizeof( size_t ) ];
+    std::size_t area_size;
+    char        work_area[EXC_SIZE - sizeof( std::size_t )];
 };
 
 extern "C" struct exc_area __EXC_AREA = { EXC_SIZE };

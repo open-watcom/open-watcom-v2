@@ -34,7 +34,7 @@
 #else
 #include "variety.h"
 #include <unistd.h>
-#include <stdio.h>
+#include <cstdio>
 #include <iostream>
 #include <stdiobuf.h>
 #endif

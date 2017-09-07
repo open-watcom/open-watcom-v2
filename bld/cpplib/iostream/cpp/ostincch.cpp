@@ -43,7 +43,7 @@ namespace std {
     if( s != NULL ) {
         __lock_it( __i_lock );
         if( opfx() ) {
-            setstate( __WATCOM_ios::writeitem( *this, s, ::strlen( s ), 0 ) );
+            setstate( __WATCOM_ios::writeitem( *this, s, strlen( s ), 0 ) );
             osfx();
         }
     }

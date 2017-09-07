@@ -62,16 +62,16 @@
 //       were read in the buffer. At that time we discerned that no one
 //       else was setting failbit in that case, so we stopped doing it.
 
-ios::iostate __getaline( std::istream &istrm,
+std::ios::iostate __getaline( std::istream &istrm,
                          char *buf,
                          std::streamsize len,
                          char delim,
                          int is_get,
                          std::streamsize &chars_read ) {
-    int           c;
-    std::streamsize    offset;
-    ios::iostate  state = 0;
-    streambuf    *sb;
+    int                 c;
+    std::streamsize     offset;
+    std::ios::iostate   state = 0;
+    std::streambuf      *sb;
 
     offset = 0;
     __lock_it( istrm.__i_lock );
@@ -83,7 +83,7 @@ ios::iostate __getaline( std::istream &istrm,
             c = sb->speekc();
             if( c == EOF ) {
                 if( offset == 0 ) {
-                    state |= ios::eofbit;
+                    state |= std::ios::eofbit;
                 }
                 break;
             }
@@ -107,7 +107,7 @@ ios::iostate __getaline( std::istream &istrm,
     // be what our competitors do.
     // 
     if( (offset == 0) && (c != (int)(unsigned char)delim) ) {
-        state |= ios::failbit;
+        state |= std::ios::failbit;
     }
 
     // the draft standard says that len-1 characters is an error if
@@ -116,7 +116,7 @@ ios::iostate __getaline( std::istream &istrm,
     // 
     #if 0
     if( offset == len && !is_get ) {
-        state |= ios::failbit;
+        state |= std::ios::failbit;
     }
     #endif
     return( state );

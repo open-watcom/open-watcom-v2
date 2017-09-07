@@ -32,7 +32,7 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <strstrea>
+#include <strstream>
 #endif
 #include "ssfhdr.h"
 
@@ -41,27 +41,27 @@
 // the put area, allowing the seek to go beyond the end of the get
 // area. The get area must then be extended.
 
-streampos __get_position( streamoff offset,
-                          ios::seekdir direction,
+std::streampos __get_position( std::streamoff offset,
+                          std::ios::seekdir direction,
                           char *base,
                           char *ptr,
                           char *end,
                           char *extended_end ) {
 
-    streampos size;
+    std::streampos size;
 
     size = extended_end - base;
-    if( direction == ios::beg ) {
+    if( direction == std::ios::beg ) {
         return( offset <= size ? offset : EOF );
     }
-    if( direction == ios::end ) {
+    if( direction == std::ios::end ) {
         size   = end - base;        // use real end, not extended_end
         offset = -offset;
         return( offset <= size ? size - offset : EOF );
     }
-    if( direction == ios::cur ) {
-        streampos cur_offset = ptr - base;
-        streampos remaining  = extended_end - ptr;
+    if( direction == std::ios::cur ) {
+        std::streampos cur_offset = ptr - base;
+        std::streampos remaining  = extended_end - ptr;
 
         if( offset < 0 ) {
             offset = -offset;

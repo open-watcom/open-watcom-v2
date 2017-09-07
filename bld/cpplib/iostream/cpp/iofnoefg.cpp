@@ -33,7 +33,7 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <errno.h>
+#include <cerrno>
 #include <iostream>
 #endif
 #include "exitwmsg.h"

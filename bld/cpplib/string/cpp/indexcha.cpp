@@ -62,13 +62,14 @@
 #include "strng.h"
 #include "strsrch.def"
 
-int String::index( const char *searchstr, size_t pos ) const {
-/************************************************************/
+int String::index( const char *searchstr, std::size_t pos ) const
+/***************************************************************/
 // "index" member function: find the position of C string "searchstr" in
 // String "*this", starting at position "pos".
 // Return -1 if the string does not occur.
 // If either *this is not well-formed or searchstr is NULL, then the result is
 // undefined (in this case -1).
+{
     long result;
 
     if( __srep == NULL  ||  searchstr == NULL ) return( -1 );
@@ -76,6 +77,6 @@ int String::index( const char *searchstr, size_t pos ) const {
     result = StringSearch( __srep->__value + __offset + pos,
                            __slength - pos,
                            searchstr,
-                           ::strlen( searchstr ) );
+                           std::strlen( searchstr ) );
     return( (int)(result < 0 ? result : result + pos ));
 }

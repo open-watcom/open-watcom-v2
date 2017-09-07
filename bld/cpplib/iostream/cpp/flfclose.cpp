@@ -33,7 +33,7 @@
 #else
 #include "variety.h"
 #include <unistd.h>
-#include <fstream.h>
+#include <fstream>
 #endif
 
 namespace std {

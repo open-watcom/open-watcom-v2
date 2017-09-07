@@ -34,7 +34,7 @@
 #include "rtexcept.h"
 
 #include <typeinfo>
-#include <string.h>
+#include <cstring>
 
 namespace std {
 

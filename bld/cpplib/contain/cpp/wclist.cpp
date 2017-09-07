@@ -31,10 +31,10 @@
 
 
 #include "variety.h"
-#include <stdlib.h>
+#include <cstdlib>
 #include <wclist.h>
 #include <wclistit.h>
-#include <iostream.h>
+#include <iostream>
 
 
 

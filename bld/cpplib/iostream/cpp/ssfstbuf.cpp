@@ -32,8 +32,8 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <string.h>
-#include <strstrea>
+#include <cstring>
+#include <strstream>
 #endif
 #include "ioutil.h"
 
@@ -75,7 +75,7 @@ namespace std {
     if( size > 0 ) {
         eget = get + size;
     } else if( size == 0 ) {
-        eget = get + ::strlen( get );       // use up NULLCHAR, too!
+        eget = get + strlen( get );         // use up NULLCHAR, too!
     } else {
         __unlimited = 1;
         eget = get + DEFAULT_MAINBUF_SIZE;
@@ -99,4 +99,3 @@ namespace std {
   }
 
 }
-

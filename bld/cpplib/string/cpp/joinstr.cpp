@@ -59,11 +59,12 @@
 
 #include "strng.h"
 
-void String::__JoinStrings( const   char *l, size_t  llen,
-                            const   char *r, size_t  rlen ) {
+void String::__JoinStrings( const char *l, std::size_t llen,
+                            const char *r, std::size_t rlen )
 /***********************************************************/
 // Join two strings, specified by l/llen and r/rlen.
 // Store the result in *this, which may have a value already.
+{
     String::StringRep *new_srep;
 
     if( l == NULL ) llen = 0;
@@ -74,14 +75,13 @@ void String::__JoinStrings( const   char *l, size_t  llen,
         return;
     }
     if( llen > 0 ) {
-        ::memcpy( new_srep->__value, l, llen );
+        std::memcpy( new_srep->__value, l, llen );
     }
     if( rlen > 0 ) {
-        ::memcpy( new_srep->__value + llen, r, rlen );
+        std::memcpy( new_srep->__value + llen, r, rlen );
     }
     __FreeStringRep();
     __srep    = new_srep;
     __slength = llen + rlen;
     __offset  = 0;
 }
-

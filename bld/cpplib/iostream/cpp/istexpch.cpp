@@ -32,7 +32,7 @@
 #include "iost.h"
 #else
 #include "variety.h"
-#include <ctype.h>
+#include <cctype>
 #include <iostream>
 #endif
 #include "lock.h"

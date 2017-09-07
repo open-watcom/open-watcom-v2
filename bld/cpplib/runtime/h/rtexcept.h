@@ -137,7 +137,7 @@ struct DTOR_CMD_ARRAY_INIT              // DTOR_CMD: ARRAY_INIT
 };
 
 typedef void (*pFunDelete1)( void* );
-typedef void (*pFunDelete2)( void*, size_t );
+typedef void (*pFunDelete2)( void*, std::size_t );
 union pFunDelete {
     pFunDelete1 delete_1;
     pFunDelete2 delete_2;
@@ -154,8 +154,8 @@ struct DTOR_CMD_DLT_2                   // DTOR_CMD: DTC_DLT_..._2
 {   DTOR_CMD_BASE base;                 // - base
     AlignPad1
     offset_t offset;                    // - offset to ptr to area
-    pFunDelete2 op_del;                 // - operator delete( void*, size_t );
-    size_t size;                        // - size of object
+    pFunDelete2 op_del;                 // - operator delete( void*, std::size_t );
+    std::size_t size;                   // - size of object
 };
 
 union DTOR_CMD                          // DTOR_CMD: one of
@@ -168,7 +168,7 @@ union DTOR_CMD                          // DTOR_CMD: one of
     DTOR_CMD_COMPONENT component;       // - component of object
     DTOR_CMD_ARRAY_INIT array_init;     // - array being initialized
     DTOR_CMD_DLT_1 delete_1;            // - delete: operator delete(void*)
-    DTOR_CMD_DLT_2 delete_2;            // - delete: operator delete(void*,size_t)
+    DTOR_CMD_DLT_2 delete_2;            // - delete: operator delete(void*,std::size_t)
     DTOR_CMD_CTOR_TEST ctor_test;       // - ctor-test
 };
 

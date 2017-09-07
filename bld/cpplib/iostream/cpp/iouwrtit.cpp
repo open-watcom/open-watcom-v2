@@ -43,13 +43,13 @@ std::ios::iostate __WATCOM_ios::writeitem( std::ostream &ostrm,
                                            int size,
                                            int fill_offset ) {
 
-    int           put_size;
-    long          format_flags;
-    int           padding_size;
-    char         *padding_buffer;
-    int           ret;
-    streambuf    *sb;
-    std::ios::iostate  state;
+    int                 put_size;
+    long                format_flags;
+    int                 padding_size;
+    char                *padding_buffer;
+    int                 ret;
+    std::streambuf      *sb;
+    std::ios::iostate   state;
 
     state = std::ios::goodbit;
     __lock_it( ostrm.__i_lock );
@@ -60,7 +60,7 @@ std::ios::iostate __WATCOM_ios::writeitem( std::ostream &ostrm,
         if( padding_buffer == NULL ) {
             padding_size = 0;
         } else {
-            ::memset( padding_buffer, ostrm.fill(), padding_size );
+            std::memset( padding_buffer, ostrm.fill(), padding_size );
         }
     }
     format_flags = ostrm.flags();

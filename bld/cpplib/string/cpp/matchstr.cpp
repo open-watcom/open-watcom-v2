@@ -59,14 +59,15 @@
 
 #include "strng.h"
 
-signed long __MatchStrings( const char *s1, size_t s1len,
-                            const char *s2, size_t s2len ) {
-/***************************************************************/
+signed long __MatchStrings( const char *s1, std::size_t s1len,
+                            const char *s2, std::size_t s2len )
+/*************************************************************/
 // Match two strings, returning the offset from the start where
 // "s1" and "s2" differ.
 // Assumes "s1" and "s2" are not NULL.
 // Return -1 if the strings are identical.
-    size_t pos;
+{
+    std::size_t pos;
 
     for( pos = 0;; (++s1, ++s2, ++pos) ) {
         if( pos >= s1len ) {            // off the end of s1?

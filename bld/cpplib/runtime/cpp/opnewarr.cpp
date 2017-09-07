@@ -42,9 +42,6 @@
 
 
 #include "cpplib.h"
-#include "lock.h"
-#include <cstddef>
-#include <new>
 
 
 #ifdef _RTDLL

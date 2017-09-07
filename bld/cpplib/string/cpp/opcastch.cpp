@@ -61,13 +61,14 @@
 
 #include "strng.h"
 
-_WPRTLINK String operator + ( const String &l, const char *r ) {
+_WPRTLINK String operator + ( const String &l, const char *r )
 /*************************************************************/
 // Concatenate operator: String + C string
-    size_t  rstrlen;
+{
+    std::size_t rstrlen;
 
     // If "r" is an empty string, just use "l":
-    rstrlen = (r == NULL) ? 0 : ::strlen( r );
+    rstrlen = (r == NULL) ? 0 : std::strlen( r );
     if( rstrlen == 0 ) {
         String result( l );
         return( result );

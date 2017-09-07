@@ -51,7 +51,7 @@ struct  THREAD_CTL;
 struct  _EXC_PR;
 
 #include <cstddef>
-#include <exception>
+#include <except.h>
 #include <new>
 
 #define PointUsingOffset( type, base, offset ) \
@@ -111,7 +111,7 @@ extern "C" {
 
 #ifdef __SW_BM
     #include "thread.h"
-    #include <lock.h>
+    #include "lock.h"
 #endif
 
 #if defined( __USE_FS ) || defined( __USE_RW ) || defined( __USE_PD )

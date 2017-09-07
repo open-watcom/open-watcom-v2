@@ -33,7 +33,7 @@
 #else
 #include "variety.h"
 #include <unistd.h>
-#include <stdio.h>
+#include <cstdio>
 #include <fstream>
 #endif
 
@@ -70,7 +70,7 @@ namespace std {
     default:
         return( EOF );
     }
-    newpos = lseek( fd(), offset, origin );
+    newpos = ::lseek( fd(), offset, origin );
     if( newpos == -1 ) {
         return( EOF );
     }

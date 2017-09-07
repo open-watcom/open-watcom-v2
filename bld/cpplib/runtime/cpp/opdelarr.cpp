@@ -41,9 +41,7 @@
 //      the entry point can be replaced in the user code
 
 #include "cpplib.h"
-#include "lock.h"
-#include <malloc.h>
-#include <new>
+
 
 #ifdef _RTDLL
 static void __do_delete_array( void *p )

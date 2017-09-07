@@ -47,7 +47,7 @@ static void* arr_point_object(  // POINT AT OBJECT FOR ENTRY
     RW_DTREG* rw,               // - R/W entry
     RT_STATE_VAR state_var )    // - state variable
 {
-    size_t size = CPPLIB( ts_size )( rw->base.ro->array.sig );
+    std::size_t size = CPPLIB( ts_size )( rw->base.ro->array.sig );
     return (void*)( (char*)rw->array.array + ( state_var - 1 ) * size );
 }
 

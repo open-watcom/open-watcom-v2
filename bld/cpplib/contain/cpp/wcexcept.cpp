@@ -31,7 +31,7 @@
 
 
 #include "variety.h"
-#include <stdlib.h>
+#include <cstdlib>
 #include <wcdefs.h>
 #include <wcexcept.h>
 

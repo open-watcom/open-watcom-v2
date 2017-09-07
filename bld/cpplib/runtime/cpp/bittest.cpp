@@ -44,7 +44,7 @@ uint_8 CPPLIB( bit_test )(      // TEST IF BIT IS ON
     uint_8* bits,               // - bits
     offset_t bit_no )           // - bit_no
 {
-    size_t offset;              // - offset within "bits"
+    std::size_t offset;         // - offset within "bits"
 
     offset = bit_no / 8;
     bit_no -= ( offset * 8 );
@@ -57,7 +57,7 @@ void CPPLIB( bit_off )(         // TURN BIT OFF
     uint_8* bits,               // - bits
     offset_t bit_no )           // - bit_no
 {
-    size_t offset;              // - offset within "bits"
+    std::size_t offset;         // - offset within "bits"
 
     offset = bit_no / 8;
     bit_no -= ( offset * 8 );

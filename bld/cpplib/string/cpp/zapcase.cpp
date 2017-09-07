@@ -59,16 +59,17 @@
 //
 #include "strng.h"
 
-String String::__ZapCase( __zapcase_t zapfn ) const {
-/***************************************************/
+String String::__ZapCase( __zapcase_t zapfn ) const
+/*************************************************/
+{
     String result;
 
     result.__FreeStringRep();
     result.__srep = __AllocStringRep( NULL, __slength );
     if( result.__srep != NULL ) {
-        char       *src;
-        char       *dest;
-        size_t     len;
+        char        *src;
+        char        *dest;
+        std::size_t len;
 
         src  = __srep->__value + __offset;
         dest = result.__srep->__value;
