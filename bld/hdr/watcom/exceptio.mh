@@ -46,6 +46,8 @@ using std::terminate;
 
 :include throws.sp
 
+:include except.sp
+
 namespace std {
 
   class _WPRTLINK exception {
@@ -83,8 +85,6 @@ namespace std {
   };
 
 } // namespace std
-
-:include except.sp
 
 #endif
 :endsegment
