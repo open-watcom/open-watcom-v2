@@ -247,14 +247,13 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
     @set ERROR_MSG=*** failure to execute $^&
     @%make set_path_rtdll
 !ifdef ftest_name
-    $(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out $(stderr_check_$(arch))
-!else ifeq plustest_name except
-    -$(run) $(exec_prefix)$@ $(extra_run_$^*) >>exec.out $(stderr_check_$(arch))
+    -$(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out $(stderr_check_$(arch))
 !else
-    $(run) $(exec_prefix)$@ $(extra_run_$^*) >>exec.out $(stderr_check_$(arch))
+    -$(run) $(exec_prefix)$@ $(extra_run_$^*) >>exec.out $(stderr_check_$(arch))
 !endif
+    @if not errorlevel 1 @set ERROR_MSG=PASS executing $^&
     @%make set_old_path
-    @%append $(%ERROR_FILE) PASS executing $^&
+    @%append $(%ERROR_FILE) $(%ERROR_MSG)
 !ifdef ftest_name
     @%make echo_diff
     $(noecho)diff $*.out expected/$*.chk >> exec.out

@@ -84,6 +84,7 @@ static void fneDispatch(        // DISPATCH "unexpected"
                                     , dispatch->rw
                                     , dispatch->rethrow ? 0 : exc );
                 throw std::bad_exception();
+                // never return
             }
             if( srch->state == EXCSTATE_BAD_EXC ) {
                 // throw of bad_exception did not get through fn-exc
