@@ -863,7 +863,7 @@ PCH_struct symbol {                     // SYMBOL in symbol table
         int             sym_offset;     // - SC_AUTO,SC_REGISTER -- fast cgen
     } u;
     symbol_flag         flag;           // - flags
-    uint_8              flag2;          // - flags2
+    symbol_flag2        flag2;          // - flags2
     symbol_class        id;             // - storage class
     fe_seg_id           segid;          // - segment id
 };
