@@ -183,7 +183,7 @@ dosfunc.h       : dosfunc.mh ../crwat.sp ../readonly.sp
 eh.h            : eh.mh ../crwat.sp ../readonly.sp ../cpponly.sp
 env.h           : env.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) ../wchar_t.sp $(posixext)
 errno.h         : $(errno_deps)
-except.h        : except.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp ../watexc.sp ../except.sp
+except.h        : except.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../cpponly.sp  ../cpppfv.sp ../watexc.sp ../except.sp
 exceptio.h      : $(exception_deps)
 excpt.h         : excpt.mh ../crwat.sp ../readonly.sp $(cplus)
 fenv.h          : fenv.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(packll)
