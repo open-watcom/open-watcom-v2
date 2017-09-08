@@ -1545,7 +1545,7 @@ bool IsPragmaAborts(            // TEST IF FUNCTION NEVER RETURNS
 bool IsFuncAborts(              // TEST IF FUNCTION NEVER RETURNS
     SYMBOL func )               // - function symbol
 {
-    return( (func->flag & TF1_NORETURN) != 0 || (func->flag & TF1_ABORTS) != 0 );
+    return( (func->sym_type->flag & TF1_NORETURN) != 0 || (func->sym_type->flag & TF1_ABORTS) != 0 );
 }
 
 dbg_type FEDbgType(             // GET DEBUG TYPE FOR SYMBOL
