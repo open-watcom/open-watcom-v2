@@ -109,5 +109,4 @@ namespace std {
     return( __NOT_EOF );
   }
 
-}
-
+} // namespace std

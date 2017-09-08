@@ -39,14 +39,6 @@
 #endif
 
 
-#ifdef _M_I86
-#define XBPTR(t,s)      t __based(s) *
-#define BASED           __based(void)
-#else
-#define XBPTR(t,s)      t _WCNEAR *
-#define BASED           _WCNEAR
-#endif
-
 #define BLK2CPTR(f)     ((unsigned)((unsigned)(f) + TAG_SIZE))
 #define CPTR2BLK(p)     ((unsigned)((unsigned)(p) - TAG_SIZE))
 
@@ -96,7 +88,11 @@
 #define memset_i86      "mov ah,al" "shr cx,1"  "rep stosw" "adc cx,cx"   "rep stosb"
 #define memset_386      "mov ah,al" "shr ecx,1" "rep stosw" "adc ecx,ecx" "rep stosb"
 
-typedef void            BASED *void_bptr;
+#ifdef _M_I86
+typedef void            __based(void) *void_bptr;
+#else
+typedef void            _WCNEAR *void_bptr;
+#endif
 typedef void            _WCNEAR *void_nptr;
 typedef void            _WCFAR *void_fptr;
 typedef void            _WCHUGE *void_hptr;

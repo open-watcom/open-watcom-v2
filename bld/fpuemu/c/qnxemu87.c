@@ -1,5 +1,15 @@
 #define _NO_SLIB
 
+#include <string.h>
+#include <sys/io_msg.h>
+#include <sys/proc_msg.h>
+#include <sys/kernel.h>
+#include <sys/sendmx.h>
+#include <sys/utsname.h>
+#include <errno.h>
+#include <i86.h>
+#include "initfini.h"
+
 #ifdef __386__
 /*
  * Stub routines/variable to save space
@@ -15,23 +25,12 @@ int __kererr(int errcode)
 void __FiniRtns()
 {
 }
-
 unsigned _endheap;
 #endif
-#if defined(__386__) || __WATCOMC__ >= 900
+
 unsigned _STACKTOP;
 unsigned _STACKLOW;
 unsigned _curbrk;
-#endif
-
-#include <string.h>
-#include <sys/io_msg.h>
-#include <sys/proc_msg.h>
-#include <sys/kernel.h>
-#include <sys/sendmx.h>
-#include <sys/utsname.h>
-#include <errno.h>
-#include <i86.h>
 
 extern void __interrupt __int7();
 #pragma aux __int7 "*";
@@ -61,12 +60,7 @@ char    _32bit;
 #endif
 
 
-int (__send)( pid, msg1, msg2, nbytes1, nbytes2 )
-pid_t       pid;
-void __FAR    *msg1;
-void __FAR    *msg2;
-unsigned    nbytes1;
-unsigned    nbytes2;
+int (__send)(pid_t pid, void __FAR *msg1, void __FAR *msg2, unsigned nbytes1, unsigned nbytes2 )
 {
     struct _mxfer_entry xmsg1;
     struct _mxfer_entry xmsg2;
@@ -147,7 +141,7 @@ __Null_Argv() {} /* to satisfy main_entry */
 __exit_with_msg() {}
 __fatal_runtime_error() {}
 
-main()
+void main( void )
 {
     union {
         struct _proc_emul87         s;
@@ -183,8 +177,7 @@ main()
 }
 
 
-void __qnx_exit( status )
-    int status;
+void __qnx_exit( int status )
 {
     struct _proc_terminate msg;
 
@@ -196,9 +189,8 @@ void __qnx_exit( status )
 }
 
 
-(qnx_fd_detach)(fd)
-int fd;
-    {
+int (qnx_fd_detach)(int fd)
+{
     union sfd {
         struct _proc_fd         s;
         struct _proc_fd_reply1  r;
@@ -219,12 +211,11 @@ int fd;
         }
 
     return(0);
-    }
+}
 
 
-int (close)(fd)
-int     fd;
-    {
+int (close)(int fd)
+{
     union _close
         {
         struct _io_close        s;
@@ -255,13 +246,10 @@ int     fd;
 
     qnx_fd_detach(fd);
     return(EOK);
-    }
+}
 
 
-int (write)(fd, buf, nbytes)
-    int              fd;
-    const void      *buf;
-    unsigned int     nbytes;
+int (write)(int fd, const void *buf, unsigned nbytes)
 {
     register unsigned   count = 0;
     union _write
@@ -307,7 +295,7 @@ int (write)(fd, buf, nbytes)
     return(count);
 }
 
-static int has_fpu()
+static int has_fpu( void )
 {
     union {
         struct _proc_osinfo         s;

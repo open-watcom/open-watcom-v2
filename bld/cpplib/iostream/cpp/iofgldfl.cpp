@@ -42,7 +42,7 @@
 #include "lock.h"
 #include "iofhdr.h"
 
-std::ios::iostate __getLDFsign( std::streambuf *sb, char *&bufptr, int is_exp ) {
+static std::ios::iostate __getLDFsign( std::streambuf *sb, char *&bufptr, int is_exp ) {
 
     std::ios::iostate  state;
     int           c, sign;
@@ -71,7 +71,7 @@ std::ios::iostate __getLDFsign( std::streambuf *sb, char *&bufptr, int is_exp ) 
     return( state );
 }
 
-std::ios::iostate __getLDFmantissa( std::streambuf *sb, char *&bufptr ) {
+static std::ios::iostate __getLDFmantissa( std::streambuf *sb, char *&bufptr ) {
 
     std::ios::iostate  state;
     int           c, mant_digits;
@@ -116,7 +116,7 @@ std::ios::iostate __getLDFmantissa( std::streambuf *sb, char *&bufptr ) {
     return( state );
 }
 
-std::ios::iostate __getLDFexponent( std::streambuf *sb, char *&bufptr ) {
+static std::ios::iostate __getLDFexponent( std::streambuf *sb, char *&bufptr ) {
 
     std::ios::iostate  state;
     int           c, exp, exp_digits;

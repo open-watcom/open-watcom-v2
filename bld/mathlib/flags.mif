@@ -1,4 +1,4 @@
-sw_c_common = -za99-w8-we-x-xx-zam-oax-zl
+sw_c_common = -za99-w8-we-x-xx-zam-oax-zl-wpx
 !ifdef __UNIX__
 sw_c_common += -fo=.obj
 !endif

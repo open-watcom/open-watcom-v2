@@ -38,7 +38,7 @@
 #include "heapacc.h"
 
 
-#define HEAP(s)     ((XBPTR(heapblkp, s))0)
+#define HEAP(s)     ((heapblkp __based(s) *)0)
 
 #if defined(__BIG_DATA__)
 

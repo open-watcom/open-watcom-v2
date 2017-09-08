@@ -98,4 +98,4 @@ namespace std {
     }
   }
 
-}
+} // namespace std

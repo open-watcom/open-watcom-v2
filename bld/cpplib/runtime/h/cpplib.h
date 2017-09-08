@@ -420,11 +420,6 @@ void CPPLIB( unmark_bitvect )(      // UNMARK LAST BIT IN BIT-VECTOR
     std::size_t bit_count )         // - # bits in vector
 ;
 _WPRTLINK
-int CPPLIB( static_init )(          // CHECK STATIC INIT ONCE ONLY BIT
-    unsigned char *bits,            // - bit field to check
-    int mask )                      // - mask we are interested in
-;
-_WPRTLINK
 void *CPPLIB( assign_array )(       // CALL OPERATOR= FOR ARRAY
     void *tgt_array,                // - target array
     void *src_array,                // - source array

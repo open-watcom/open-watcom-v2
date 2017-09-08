@@ -38,6 +38,8 @@
 #include "dlgdynam.h"
 #include "dlgtest.h"
 #include "guirmenu.h"
+#include "wresdefn.h"
+
 
 char *program_invocation_name = "sample";
 
@@ -1017,7 +1019,7 @@ static int GetStringIndent( int *indent, gui_ord hscroll,
     return( string_indent );
 }
 
-void PaintWindow( gui_window *gui, gui_ord row, gui_ord num, int vscroll,
+static void PaintWindow( gui_window *gui, gui_ord row, gui_ord num, int vscroll,
                   int hscroll )
 {
     out_info            *out;

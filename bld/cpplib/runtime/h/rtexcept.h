@@ -587,10 +587,6 @@ void CPPLIB( PdUnwind )         // UNWIND USING PROCEDURE DESCRIPTORS
     ( FsExcRec* exc_rec )       // - exception record
 ;
 #endif
-_WPRTLINK
-void CPPLIB( rethrow )(         // RE-THROW AN EXCEPTION
-    void )
-;
 RO_STATE* CPPLIB( stab_entry )  // GET ENTRY FOR STATE VARIABLE
     ( RO_DTREG* ro              // - R/O entry
     , RT_STATE_VAR state_var )  // - state variable
@@ -608,15 +604,23 @@ RO_STATE* CPPLIB( stab_trav_move )( // MOVE TO NEXT ACTUAL POSITION
 RO_STATE* CPPLIB( stab_trav_next )// POINT AT NEXT STATE-TABLE ENTRY
     ( STAB_TRAVERSE* ctl )      // - control for travsersal
 ;
+
 _WPRTLINK
+_WCNORETURN
 void CPPLIB( throw )(           // THROW AN EXCEPTION OBJECT
     void *object,               // - address of object
     THROW_RO *throw_ro )        // - throw R/O block
 ;
 _WPRTLINK
+_WCNORETURN
 void CPPLIB( throw_zero )(      // THROW AN EXCEPTION OBJECT (CONST ZERO)
     void *object,               // - address of object
     THROW_RO *throw_ro )        // - throw R/O block
+;
+_WPRTLINK
+_WCNORETURN
+void CPPLIB( rethrow )(         // RE-THROW AN EXCEPTION
+    void )
 ;
 
 #ifdef RW_REGISTRATION

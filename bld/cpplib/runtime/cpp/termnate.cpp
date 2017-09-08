@@ -52,6 +52,7 @@ namespace std {
             msg = thr->abort_msg;
             if( msg == NULL ) {
                 __exit( 1 );
+                // never return
             }
         } else {
             (*handler)();

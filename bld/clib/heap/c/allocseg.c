@@ -52,10 +52,10 @@
 #include "rtdata.h"
 #include "heap.h"
 
-
-#define HEAP(s)             ((XBPTR(heapblk, s))0)
-#define FIRST_FRL(s)        ((XBPTR(freelist, s))(HEAP(s) + 1))
-#define SET_HEAP_END(s,p)   ((XBPTR(freelistp, s))(p))->len=END_TAG;((XBPTR(freelistp, s))(p))->prev=0
+#define HEAP(s)             ((heapblk __based(s) *)0)
+#define FIRST_FRL(s)        ((freelist __based(s) *)(HEAP(s) + 1))
+#define SET_HEAP_END(s,p)   ((freelistp __based(s) *)(p))->len=END_TAG; \
+                            ((freelistp __based(s) *)(p))->prev=0
 
 #if defined(__QNX__)
 extern unsigned         __qnx_alloc_flags;

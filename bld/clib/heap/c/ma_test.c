@@ -950,7 +950,7 @@ int TranslateResult( test_result *result )
         }
     } else if( result->status != TEST_PASS ) {
         printf( "INTERNAL: UNEXPECTED TEST RESULT.\n" );
-        exit( EXIT_FAILURE );
+        return( 2 );
     }
 #if defined( _M_I86 ) && !defined(__WINDOWS__)
     if( memrecord != memavail ) {
@@ -992,7 +992,7 @@ void Usage( char *filename )
     cprintf( "        -?      displays this message." );
 }
 
-void ParseArgs( int argc, char *argv[] )
+int ParseArgs( int argc, char *argv[] )
 {
     int ctr, charcount;
     char *p;
@@ -1000,20 +1000,20 @@ void ParseArgs( int argc, char *argv[] )
     char *delims = { "/-" };
 
     if( argc == 1 )
-        return;
+        return( 0 );
     *buffer = '\0';
     if( argv[1][0] == '?' ) {
         Usage( argv[0] );
-        exit( EXIT_FAILURE );
+        return( 1 );
     } else if( argv[1][0] != '/' && argv[1][0] != '-' ) {
         cprintf( "Invalid option '%s'.\r\n", argv[1] );
-        exit( EXIT_FAILURE );
+        return( 1 );
     }
     for( ctr = 1, charcount = 0; ctr < argc; ++ctr ) {
         charcount += ( strlen( argv[ctr] ) + 1 );
         if( charcount >= ARGLENGTH ) {
             fprintf( stderr, "Argument list too long.\n" );
-            exit( EXIT_FAILURE );
+            return( 1 );
         }
         strcat( buffer, argv[ctr] );
     }
@@ -1044,15 +1044,14 @@ void ParseArgs( int argc, char *argv[] )
                 break;
             case '?':
                 Usage( argv[0] );
-                exit( EXIT_FAILURE );
-                break;
+                return( 1 );
             default:
                 cprintf( "Invalid option '%s'.\r\n", p );
-                exit( EXIT_FAILURE );
-                break;
+                return( 1 );
         }
         p = strtok( NULL, delims );
     }
+    return( 0 );
 }
 
 void DisplayConstants( void )
@@ -1082,7 +1081,8 @@ int main( int argc, char *argv[] )
         return( EXIT_FAILURE );
     }
 #endif
-    ParseArgs( argc, argv );
+    if( ParseArgs( argc, argv ) )
+        return( EXIT_FAILURE );
 
     if( more_debug )
         DisplayConstants();
@@ -1092,54 +1092,122 @@ int main( int argc, char *argv[] )
     memrecord = memavail = _memavl();
 #endif
 
+    rc = 0;
     Test_alloca_stackavail__memavl__memmax( &result );
-    rc = TranslateResult( &result );
+    switch( TranslateResult( &result ) ) {
+    case 2:
+        return( EXIT_FAILURE );
+    case 1:
+        rc = 1;
+    default:
+        break;
+    }
 
     Test_calloc__msize( &result, TYPE_DEFAULT );
-    if( TranslateResult( &result ) )
+    switch( TranslateResult( &result ) ) {
+    case 2:
+        return( EXIT_FAILURE );
+    case 1:
         rc = 1;
+    default:
+        break;
+    }
 
     Test_malloc_realloc__expand( &result, TYPE_DEFAULT );
-    if( TranslateResult( &result ) )
+    switch( TranslateResult( &result ) ) {
+    case 2:
+        return( EXIT_FAILURE );
+    case 1:
         rc = 1;
+    default:
+        break;
+    }
 
     Test_calloc__msize( &result, TYPE_NEAR );
-    if( TranslateResult( &result ) )
+    switch( TranslateResult( &result ) ) {
+    case 2:
+        return( EXIT_FAILURE );
+    case 1:
         rc = 1;
+    default:
+        break;
+    }
 
     Test_malloc_realloc__expand( &result, TYPE_NEAR );
-    if( TranslateResult( &result ) )
+    switch( TranslateResult( &result ) ) {
+    case 2:
+        return( EXIT_FAILURE );
+    case 1:
         rc = 1;
+    default:
+        break;
+    }
 
     Test__freect( &result );
-    if( TranslateResult( &result ) )
+    switch( TranslateResult( &result ) ) {
+    case 2:
+        return( EXIT_FAILURE );
+    case 1:
         rc = 1;
+    default:
+        break;
+    }
 
 #if defined( _M_I86 )
     Test_calloc__msize( &result, TYPE_FAR );
-    if( TranslateResult( &result ) )
+    switch( TranslateResult( &result ) ) {
+    case 2:
+        return( EXIT_FAILURE );
+    case 1:
         rc = 1;
+    default:
+        break;
+    }
 
     Test_malloc_realloc__expand( &result, TYPE_FAR );
-    if( TranslateResult( &result ) )
+    switch( TranslateResult( &result ) ) {
+    case 2:
+        return( EXIT_FAILURE );
+    case 1:
         rc = 1;
+    default:
+        break;
+    }
 
     seg = _bheapseg( BASED_HEAP_SIZE );
 
     Test_calloc__msize( &result, TYPE_BASED );
-    if( TranslateResult( &result ) )
+    switch( TranslateResult( &result ) ) {
+    case 2:
+        return( EXIT_FAILURE );
+    case 1:
         rc = 1;
+    default:
+        break;
+    }
 
     Test_malloc_realloc__expand( &result, TYPE_BASED );
-    if( TranslateResult( &result ) )
+    switch( TranslateResult( &result ) ) {
+    case 2:
+        return( EXIT_FAILURE );
+    case 1:
         rc = 1;
+    default:
+        break;
+    }
 
     if( seg != _NULLSEG )
         _bfreeseg( seg );
 
     Test_halloc( &result );
-    if( TranslateResult( &result ) )
+    switch( TranslateResult( &result ) ) {
+    case 2:
+        return( EXIT_FAILURE );
+    case 1:
         rc = 1;
+    default:
+        break;
+    }
 #endif
     printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
 #ifdef __SW_BW

@@ -628,14 +628,17 @@ $+$(t_runpls)$- : .symbolic
 # Run Windows 3.x 16-bit executables
 $+$(t_runw16)$- : .symbolic
     @rm -f tmp.log
+    set ERROR_NO=1
     -$@.exe
-    @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
+    @if not errorlevel 1 set ERROR_NO=0
+    if not $(%ERROR_NO) == 0 %append $(%ERROR_FILE) $(%ERROR_MSG)
     @type tmp.log
 
 # Run Windows 3.x 32-bit executables (Win386)
 $+$(t_runw386)$- : .symbolic
     @rm -f tmp.log
     -$@.exe
+    echo %errorlevel%
     @if errorlevel 1 %append $(%ERROR_FILE) $(%ERROR_MSG)
     @type tmp.log
 

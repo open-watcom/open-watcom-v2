@@ -37,9 +37,15 @@
 #include "heapacc.h"
 
 
-#define HEAP(s)             XBPTR(miniheapblkp, s)
-#define FRLPTR(s)           XBPTR(freelistp, s)
-#define FRLPTRADD(s,p,o)    (FRLPTR(s))((PTR)(p)+(o))
+#ifdef _M_I86
+#define HEAP(s)             miniheapblkp __based(s) *
+#define FRLPTR(s)           freelistp __based(s) *
+#define FRLPTRADD(s,p,o)    (freelistp __based(s) *)((PTR)(p)+(o))
+#else
+#define HEAP(s)             miniheapblkp _WCNEAR *
+#define FRLPTR(s)           freelistp _WCNEAR *
+#define FRLPTRADD(s,p,o)    (freelistp _WCNEAR *)((PTR)(p)+(o))
+#endif
 
 int __HeapManager_expand( __segment seg, void_bptr cstg, size_t req_size, size_t *growth_size )
 {

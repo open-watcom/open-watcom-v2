@@ -36,7 +36,7 @@
 #include "heap.h"
 
 
-#define HEAP(s)    ((XBPTR(heapblkp, s))0)
+#define HEAP(s)    ((heapblkp __based(s) *)0)
 
 __segment __bheapbeg = _NULLSEG;
 

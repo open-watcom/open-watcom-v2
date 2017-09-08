@@ -38,8 +38,8 @@
 #include "heapacc.h"
 
 
-#define HEAP(s)     ((XBPTR(heapblkp, s))0)
-#define FRLPTR(s)   XBPTR(freelistp, s)
+#define HEAP(s)     ((heapblkp __based(s) *)0)
+#define FRLPTR(s)   freelistp __based(s) *
 
 static int checkFreeList( unsigned long *free_size, __segment req_seg )
 {

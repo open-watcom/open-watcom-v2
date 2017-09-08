@@ -45,7 +45,7 @@
     #pragma aux (__outside_CLIB) __fmemneed;
 #endif
 
-#define HEAP(s)     ((XBPTR(heapblkp, s))0)
+#define HEAP(s)     ((heapblkp __based(s) *)0)
 
 __segment __fheapbeg = _NULLSEG;        /* head of segment list in far heap */
 __segment __fheapRover = _NULLSEG;      /* segment to start search at */

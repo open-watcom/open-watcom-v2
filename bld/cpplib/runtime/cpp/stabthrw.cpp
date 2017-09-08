@@ -47,6 +47,7 @@
 #include "rtmsgs.h"
 
 
+_WCNORETURN
 static void fneDispatch(        // DISPATCH "unexpected"
     DISPATCH_EXC *dispatch )    // - dispatch control
 {
@@ -74,9 +75,7 @@ static void fneDispatch(        // DISPATCH "unexpected"
             // never return
         }
         DISPATCH_EXC *cand = srch->dispatch;
-        if( NULL != cand
-          && dispatch->rw        == cand->rw
-          && dispatch->state_var == cand->state_var ) {
+        if( NULL != cand && dispatch->rw == cand->rw && dispatch->state_var == cand->state_var ) {
             if( srch->state == EXCSTATE_UNEXPECTED ) {
                 // throw/rethrow did not get through fn-exc
                 exc->state = EXCSTATE_BAD_EXC;
@@ -112,6 +111,7 @@ static void fneDispatch(        // DISPATCH "unexpected"
 #define throwCnvSig( d ) CPPLIB( ts_refed )( (d)->cnv_try->signature )
 
 
+_WCNORETURN
 static void catchDispatch(      // DISPATCH A CATCH BLOCK
     DISPATCH_EXC *dispatch )    // - dispatch control
 {
@@ -191,9 +191,10 @@ static void catchDispatch(      // DISPATCH A CATCH BLOCK
         }
     }
     longjmp( *env, dispatch->catch_no + 1 );
+    // never return
 }
 
-
+_WCNORETURN
 static void processThrow(       // PROCESS A THROW
     void *object,               // - address of object
     THROW_RO *throw_ro,         // - thrown R/O block
@@ -350,17 +351,18 @@ static void processThrow(       // PROCESS A THROW
     switch( dispatch.type ) {
     case DISPATCHABLE_FNEXC :
         fneDispatch( &dispatch );
+        // never return
     case DISPATCHABLE_CATCH :
         catchDispatch( &dispatch );
+        // never return
     case DISPATCHABLE_NO_CATCH :
         if( dispatch.rethrow ) {
             CPPLIB( fatal_runtime_error )( RTMSG_RETHROW, 1 );
             // never return
         } else {
-          { _EXC_PR marker( &rt_ctl, 0, EXCSTATE_TERMINATE );
+            _EXC_PR marker( &rt_ctl, 0, EXCSTATE_TERMINATE );
             CPPLIB( call_terminate )( RTMSG_NO_HANDLER, rt_ctl.thr );
             // never return
-          }
         }
 #if 0 // not now
     case DISPATCHABLE_SYS_EXC :
@@ -381,15 +383,6 @@ static void processThrow(       // PROCESS A THROW
 
 extern "C"
 _WPRTLINK
-void CPPLIB( rethrow )(        // RE-THROW AN EXCEPTION
-    void )
-{
-    processThrow( NULL, NULL, false );
-}
-
-
-extern "C"
-_WPRTLINK
 void CPPLIB( catch_done )(      // COMPLETION OF CATCH
 #ifdef RW_REGISTRATION
     void
@@ -403,8 +396,7 @@ void CPPLIB( catch_done )(      // COMPLETION OF CATCH
     RW_DTREG* rw = RwTop( rt_ctl.thr );
 #endif
     rt_ctl.setRwRo( rw );
-    RO_STATE* state = CPPLIB( stab_entry )( rw->base.ro
-                                          , rw->fun.base.state_var );
+    RO_STATE* state = CPPLIB( stab_entry )( rw->base.ro, rw->fun.base.state_var );
     DTOR_CMD* cmd = TryFromCatch( state->u.cmd_addr );
     ACTIVE_EXC* exc = CPPLIB( find_active )( &rt_ctl, rw, cmd );
     CPPLIB( dtor_free_exc )( exc, &rt_ctl );
@@ -417,19 +409,34 @@ void CPPLIB( catch_done )(      // COMPLETION OF CATCH
 
 extern "C"
 _WPRTLINK
+_WCNORETURN
 void CPPLIB( throw )(           // THROW AN EXCEPTION OBJECT (NOT CONST ZERO)
     void *object,               // - address of object
     THROW_RO *throw_ro )        // - throw R/O block
 {
     processThrow( object, throw_ro, false );
+    // never return
 }
 
 
 extern "C"
 _WPRTLINK
+_WCNORETURN
 void CPPLIB( throw_zero )(      // THROW AN EXCEPTION OBJECT (CONST ZERO)
     void *object,               // - address of object
     THROW_RO *throw_ro )        // - throw R/O block
 {
     processThrow( object, throw_ro, true );
+    // never return
+}
+
+
+extern "C"
+_WPRTLINK
+_WCNORETURN
+void CPPLIB( rethrow )(        // RE-THROW AN EXCEPTION
+    void )
+{
+    processThrow( NULL, NULL, false );
+    // never return
 }

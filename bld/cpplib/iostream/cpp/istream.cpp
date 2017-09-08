@@ -256,7 +256,7 @@ namespace std {
     }
     return( *this );
   }
-  
+
   istream &istream::operator >> ( signed int &i ) {
     /***********************************************/
 #if UINT_MAX == USHRT_MAX

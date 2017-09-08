@@ -51,7 +51,9 @@ __lock::~__lock()
     lock_count = locksem.count;
     while( locksem.count > 0 ) {
         _ReleaseSemaphore( &locksem );                  // unlock as many times as required
-        if( locksem.count == lock_count ) break;        // quit since it won't unlock
+        if( locksem.count == lock_count ) {             // quit since it won't unlock
+            break;
+        }
     }
     _CloseSemaphore( &locksem );
 }

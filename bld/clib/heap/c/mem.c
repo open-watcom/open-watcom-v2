@@ -36,8 +36,13 @@
 #include "heap.h"
 
 
-#define HEAP(s)     ((XBPTR(heapblkp, s))(heap))
-#define FRLPTR(s)   XBPTR(freelistp, s)
+#ifdef _M_I86
+#define HEAP(s)     ((heapblkp __based(s) *)(heap))
+#define FRLPTR(s)   freelistp __based(s) *
+#else
+#define HEAP(s)     ((heapblkp _WCNEAR *)(heap))
+#define FRLPTR(s)   freelistp _WCNEAR *
+#endif
 
 //
 // input:

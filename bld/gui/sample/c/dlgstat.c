@@ -176,7 +176,7 @@ static const char *ListBoxFunc( const void *data_handle, int item )
     return( ((const char **)data_handle)[item] );
 }
 
-void ContrCallBack( gui_window *gui, gui_ctl_id id, void *param )
+static void ContrCallBack( gui_window *gui, gui_ctl_id id, void *param )
 {
     int                 i;
     int                 *num;

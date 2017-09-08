@@ -52,7 +52,8 @@ struct free_area                // FREE_AREA -- freed area in exception area
 
 typedef struct exc_area EXC_AREA;
 struct exc_area                 // ENTIRE AREA
-{   std::size_t size;           // - size of area
+{
+    std::size_t size;           // - size of area
     FREE_AREA *freed;           // - freed blocks - NULL only at start
 #ifdef __SW_BM
     __lock semaphore;           // - semaphore for area

@@ -53,9 +53,10 @@
 #include "heap.h"
 
 
-#define HEAP(s)             ((XBPTR(heapblkp, s))0)
-#define FRLPTR(s)           XBPTR(freelistp, s)
-#define SET_HEAP_END(s,p)   ((FRLPTR(s))(p))->len = END_TAG; ((FRLPTR(s))(p))->prev = 0
+#define HEAP(s)             ((heapblkp __based(s) *)0)
+#define FRLPTR(s)           freelistp __based(s) *
+#define SET_HEAP_END(s,p)   ((FRLPTR(s))(p))->len = END_TAG; \
+                            ((FRLPTR(s))(p))->prev = 0
 
 int __GrowSeg( __segment seg, unsigned int amount )
 {

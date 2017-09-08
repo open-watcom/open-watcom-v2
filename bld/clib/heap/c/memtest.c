@@ -100,7 +100,7 @@ static void dump_heap( unsigned long free_size,
     memset( usage, 0xDB, ROWS * COLS );
 }
 
-static void dump_heaps( void )
+static int dump_heaps( void )
 {
     unsigned            row, col, siz;
     unsigned            prev_seg;
@@ -194,7 +194,7 @@ static void dump_heaps( void )
     }
     if( heap_status != _HEAPEND ) {
         printf( "FAIL: line %d heap_status=%d\n", __LINE__, heap_status );
-        exit( EXIT_FAILURE );
+        return( EXIT_FAILURE );
     }
     memset( &usage[last_row][last_col], ' ',
             &usage[ROWS][0] - &usage[last_row][last_col] );
@@ -206,6 +206,7 @@ static void dump_heaps( void )
     printf( "segment: %x\n", prev_seg );
 #endif
     dump_heap( free_size, used_size, largest_free_size );
+    return( EXIT_SUCCESS );
 }
 #endif
 
@@ -359,7 +360,8 @@ int main( int argc, char **argv )
         return( EXIT_FAILURE );
     }
 #ifdef VERBOSE
-    dump_heaps();
+    if( dump_heaps() != EXIT_SUCCESS )
+        return( EXIT_FAILURE );
 #endif
     printf( "Tests completed (%s).\n", strlwr( argv[0] ) );
 #ifdef __SW_BW

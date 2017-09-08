@@ -48,7 +48,7 @@ _WCRTLINK void_bptr _bcalloc( __segment seg, size_t n, size_t el_size )
     }
     cstg = _bmalloc( seg, el_size );
     if( cstg != _NULLOFF ) {
-        _fmemset( (void_fptr)(seg :> cstg), 0, el_size );
+        _fmemset( seg :> cstg, 0, el_size );
     }
     return( cstg );
 }

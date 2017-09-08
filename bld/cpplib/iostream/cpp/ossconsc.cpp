@@ -44,7 +44,7 @@ namespace std {
   // array will not grow dynamically.
 
   ostrstream::ostrstream( signed char *str, int size, ios::openmode mode )
-    : strstreambase( (char *)str, 
+    : strstreambase( (char *)str,
                      size,
                      ((str==0) ? 0 : (char*)str +
                         ((mode & (ios::atend|ios::append)) ?
