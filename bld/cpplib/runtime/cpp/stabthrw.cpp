@@ -70,8 +70,8 @@ static void fneDispatch(        // DISPATCH "unexpected"
                                 , dispatch->rw
                                 , dispatch->rethrow ? 0 : exc );
             std::unexpected();
-            marker._state = EXCSTATE_TERMINATE;
-            CPPLIB( call_terminate )( RTMSG_RET_UNEXPECT, ctl );
+//            marker._state = EXCSTATE_TERMINATE;
+//            CPPLIB( call_terminate )( RTMSG_RET_UNEXPECT, ctl );
             // never return
         }
         DISPATCH_EXC *cand = srch->dispatch;
