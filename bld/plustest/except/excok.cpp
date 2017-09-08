@@ -250,7 +250,7 @@ void throw_int()
 
 void test_passthru()
 {
-    PFV unex;
+    unexpected_handler unex;
 
     unex = set_unexpected( throw_int );
     try {
