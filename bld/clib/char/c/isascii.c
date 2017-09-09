@@ -37,9 +37,13 @@
 #endif
 
 
-#undef  isascii
+#ifdef __WIDECHAR__
+#undef iswascii
+#else
+#undef __isascii
+#endif
 
-_WCRTLINK int __F_NAME(isascii,iswascii)( INTCHAR_TYPE c )
+_WCRTLINK int __F_NAME(__isascii,iswascii)( INTCHAR_TYPE c )
 {
     return( (UINTCHAR_TYPE)(c) <= 0x7f );
 }

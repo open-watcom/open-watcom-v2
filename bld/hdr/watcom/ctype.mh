@@ -94,27 +94,15 @@ _WCRTLINK extern int    isblank(int);
 /* These names are not in ctype.h according to C99. */
 _WCRTLINK extern int    _tolower(int);
 _WCRTLINK extern int    _toupper(int);
-_WCRTLINK extern int    __iscsymf(int);
-_WCRTLINK extern int    __iscsym(int);
-
-:include ext.sp
- _WCRTLINK extern int   isleadbyte(int);
- _WCRTLINK extern int   isascii(int);
- _WCRTLINK extern int   __isascii(int);
- #if !defined(__FUNCTION_DATA_ACCESS)
-  #define isascii(__c) ((unsigned)(__c) <= 0x7f)
-  #define __isascii(__c) ((unsigned)(__c) <= 0x7f)
- #endif
-:include extepi.sp
 
 #if defined(__SW_BR) || defined(_RTDLL)
  #define _IsTable _IsTable_br
 #endif
 _WCRTDATA extern const unsigned char _WCDATA _IsTable[257];
 
-#if !defined(__FUNCTION_DATA_ACCESS)
 :: Eliminate macros from cctype. These can be put back later as in-lines.
 :segment !CNAME
+#if !defined(__FUNCTION_DATA_ACCESS)
 #define isalnum(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & (_LOWER|_UPPER|_DIGIT))
 #define isalpha(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & (_LOWER|_UPPER))
 #define iscntrl(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _CNTRL)
@@ -130,14 +118,29 @@ _WCRTDATA extern const unsigned char _WCDATA _IsTable[257];
 :include extc99.sp
 #define isblank(__c)  (((__c)==' ')||((__c)=='\t'))
 :include extepi.sp
-
-:endsegment
-#define __iscsymf(__c) (isalpha(__c)||((__c)=='_'))
-#define __iscsym(__c)  (isalnum(__c)||((__c)=='_'))
 #endif
 
-#define iscsym        __iscsym
-#define iscsymf       __iscsymf
+:endsegment
+:include ext.sp
+_WCRTLINK extern int    isleadbyte(int);
+_WCRTLINK extern int    __isascii(int);
+_WCRTLINK extern int    __toascii(int);
+_WCRTLINK extern int    __iscsymf(int);
+_WCRTLINK extern int    __iscsym(int);
+#if !defined(__FUNCTION_DATA_ACCESS)
+:: Eliminate macros from cctype. These can be put back later as in-lines.
+:segment !CNAME
+#define __isascii(__c)  ((unsigned)(__c) <= 0x7f)
+#define __toascii(__c)  ((__c) & 0x7f)
+:endsegment
+#define __iscsymf(__c)  (isalpha(__c)||((__c)=='_'))
+#define __iscsym(__c)   (isalnum(__c)||((__c)=='_'))
+#endif
+#define isascii         __isascii
+#define toascii         __toascii
+#define iscsym          __iscsym
+#define iscsymf         __iscsymf
+:include extepi.sp
 
 :segment CNAME
 :include cplusepi.sp

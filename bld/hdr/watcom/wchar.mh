@@ -103,7 +103,6 @@ using std::wscanf;
 // C99 functions not specified for wchar.h
 using std::iswalnum;
 using std::iswalpha;
-using std::iswascii;
 using std::iswcntrl;
 using std::iswdigit;
 using std::iswgraph;
@@ -126,16 +125,6 @@ using std::towupper;
 
 :include owrtlink.sp
 
-:segment DOS
-#ifndef _IO_H_INCLUDED
- #include <io.h>
-#endif
-
-#ifndef _SYS_STAT_H_INCLUDED
- #include <sys/stat.h>
-#endif
-
-:endsegment
 :segment CNAME
 #ifndef _CSTDARG_INCLUDED
  #include <cstdarg>
@@ -281,7 +270,7 @@ _WCRTLINK extern wchar_t  *_wcsset( wchar_t *, wchar_t );
 _WCRTLINK extern wchar_t  *_wmktemp( wchar_t *__template );
 _WCRTLINK extern wchar_t  *_wtempnam( const wchar_t *__dir, const wchar_t *__prefix );
 
-:: Also in stdint.h
+:: Also in cstdint/stdint.h
 #define WCHAR_MIN       0
 #define WCHAR_MAX       65535U
 
@@ -297,22 +286,8 @@ _WCRTLINK extern wchar_t  *_wtempnam( const wchar_t *__dir, const wchar_t *__pre
 namespace std {
 
 :endsegment
-_WCRTLINK extern int      iswalnum( wint_t __wc );
-_WCRTLINK extern int      iswalpha( wint_t __wc );
-_WCRTLINK extern int      iswascii( wint_t __wc );
-_WCRTLINK extern int      iswcntrl( wint_t __wc );
-_WCRTLINK extern int      iswdigit( wint_t __wc );
-_WCRTLINK extern int      iswgraph( wint_t __wc );
-_WCRTLINK extern int      iswlower( wint_t __wc );
-_WCRTLINK extern int      iswprint( wint_t __wc );
-_WCRTLINK extern int      iswpunct( wint_t __wc );
-_WCRTLINK extern int      iswspace( wint_t __wc );
-_WCRTLINK extern int      iswupper( wint_t __wc );
-_WCRTLINK extern int      iswxdigit( wint_t __wc );
-_WCRTLINK extern int      iswctype( wint_t __wc, wctype_t __desc );
-_WCRTLINK extern wctype_t wctype( const char *__property );
-_WCRTLINK extern wint_t   towlower( wint_t __wc );
-_WCRTLINK extern wint_t   towupper( wint_t __wc );
+:keep WCHAR
+:include wctype.sp
 
 :segment CNAME
 } // namespace std

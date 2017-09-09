@@ -180,7 +180,7 @@ using std::uintmax_t;
 #define UINTMAX_MAX  18446744073709551615ULL
 
 /* Limits of wide character types */
-:: Also in wchar.h
+:: Also in cwchar/wchar.h
 #define WCHAR_MIN       0
 #define WCHAR_MAX       65535U
 #define WINT_MIN        WCHAR_MIN

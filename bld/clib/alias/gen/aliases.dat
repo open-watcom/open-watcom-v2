@@ -192,4 +192,3 @@ wcsnco        wcsncmp           _wcsncoll         d16 d32 nt  nta ntp         o1
 write_        write             _write            d16 d32 nt  nta ntp         o16 o32         w16 w32 osi             rdu rdk
 wtoi__        _wtoi             _watoi            d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
 wtol__        _wtol             _watol            d16 d32 nt  nta ntp         o16 o32 q16 q32 w16 w32     l32
-_isasc        isascii           __isascii         d16 d32 nt  nta ntp nvc nvl o16 o32 q16 q32 w16 w32 osi l32         rdu rdk

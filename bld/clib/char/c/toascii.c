@@ -24,29 +24,18 @@
 *
 *  ========================================================================
 *
-* Description:  Implementation of __iscsymf().
+* Description:  Implementation of __toascii().
 *
 ****************************************************************************/
 
 
 #include "variety.h"
-#include "widechar.h"
-#include <stdio.h>
 #include <ctype.h>
-#ifdef __WIDECHAR__
- #include <wctype.h>
-#endif
-#include "istable.h"
 
 
-#ifdef __WIDECHAR__
-#undef __iswcsymf
-#else
-#undef __iscsymf
-#endif
+#undef __toascii
 
-_WCRTLINK int __F_NAME(__iscsymf,__iswcsymf)( INTCHAR_TYPE c )
+_WCRTLINK int __toascii( int c )
 {
-    return( IS_ASCII_INT( c )
-        && ( IsWhat( c, _LOWER | _UPPER ) || ((unsigned char)c == '_') ) );
+    return( c & 0x7f );
 }
