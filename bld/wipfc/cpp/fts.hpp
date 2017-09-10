@@ -41,13 +41,13 @@ class FTSElement {
 public:
     FTSElement() : pageCount( 0 ), dataSize( 0 ), firstPage( 0 ), comp( NONE ) { };
     //set the number of pages on which the word might occur
-    void setPages( size_t count );
+    void setPages( std::size_t count );
     //the word appears on page i
-    void onPage( size_t i );
+    void onPage( std::size_t i );
     void build();
     //Only valid after build is run
     bool bigFTS() { return dataSize + 2 > UINT8_MAX; };
-    size_t write( std::FILE* out, bool big ) const;
+    std::size_t write( std::FILE* out, bool big ) const;
 private:
     FTSElement( const FTSElement& rhs );            //no copy
     FTSElement& operator=( const FTSElement& rhs ); //no assignment
@@ -60,9 +60,9 @@ private:
         TRUNC,              //no empty bytes after last set bit
         DBL_TRUNC           //first panel number, then bitstring with no empty bytes
     };                      //  after last set bit
-    size_t pageCount;       //number of pages the word is in
-    size_t maxPage;         //the highest page number
-    size_t dataSize;        //the size of the compressed bitstring
+    std::size_t pageCount;  //number of pages the word is in
+    std::size_t maxPage;    //the highest page number
+    std::size_t dataSize;   //the size of the compressed bitstring
     STD1::uint16_t firstPage;   //the first page the word is in
     CompressionCode comp;
     std::vector< STD1::uint8_t > pages; //bitstring of what pages its found on (for FTS)

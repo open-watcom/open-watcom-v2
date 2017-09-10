@@ -206,8 +206,8 @@ Document::Document( Compiler& c, const char* loc ) :
     fonts.reset( new FontCollection( codePage() ) );
     FontEntry fnt;
     char buffer[ sizeof( fnt.faceName ) ];
-    size_t size( std::wcstombs( buffer, cgraphicFontFaceName().c_str(), sizeof( fnt.faceName ) ) );
-    if( size == static_cast< size_t>( -1 ) )
+    std::size_t size( std::wcstombs( buffer, cgraphicFontFaceName().c_str(), sizeof( fnt.faceName ) ) );
+    if( size == static_cast< std::size_t >( -1 ) )
         throw FatalError( ERR_T_CONV );
     std::strncpy( fnt.faceName, buffer, sizeof( fnt.faceName ) );
     fnt.height = cgraphicFontHeight();
@@ -600,7 +600,7 @@ void Document::makeBitmaps()
             for( BitmapNameIter itr = bitmapNames.begin(); itr != bitmapNames.end(); ++itr ) {
                 std::string fname;
                 wtombstring( itr->first, fname );
-                for( size_t count = 0; count < paths.size(); ++count ) {
+                for( std::size_t count = 0; count < paths.size(); ++count ) {
                     std::string fullname( paths[ count ] );
                     if( !fullname.empty() )
                         fullname += slash;
@@ -879,7 +879,7 @@ Lexer::Token Document::processCommand( Lexer* lexer, Tag* parent )
             mbtowstring( env.substr( idx1, idx2 - idx1 ), fbuffer );
             paths.push_back( fbuffer );
         }
-        for( size_t count = 0; count < paths.size(); ++count ) {
+        for( std::size_t count = 0; count < paths.size(); ++count ) {
             std::wstring* fname( new std::wstring( paths[ count ] ) );
             if( !fname->empty() )
                 *fname += slash;

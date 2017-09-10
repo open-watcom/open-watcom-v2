@@ -41,7 +41,7 @@
 
 class Cell {
 public:
-    Cell( size_t m) : maxDictSize( m ) { };
+    Cell( std::size_t m) : maxDictSize( m ) { };
     ~Cell() { };
     //add a word to the local dictionary
     void addWord( STD1::uint16_t word );
@@ -52,8 +52,8 @@ public:
     //add an escape sequence to the encoded text
     void addEsc( const std::vector< STD1::uint8_t >& esc );
     //set the cell's index (position in the list of cells)
-    void setIndex( size_t i ) { idx = i; };
-    size_t index() const { return idx; };
+    void setIndex( std::size_t i ) { idx = i; };
+    std::size_t index() const { return idx; };
     //is this cell empty?
     bool empty() const { return text.empty(); }
     //is the local dictionary full (time for a new cell)?
@@ -78,8 +78,8 @@ private:
     std::vector< Element* > elements;       //elements in this cell
     typedef std::vector< Element* >::iterator ElementIter;
     typedef std::vector< Element* >::const_iterator ConstElementIter;
-    size_t maxDictSize;
-    size_t idx;                             //index of this cell in cell array
+    std::size_t maxDictSize;
+    std::size_t idx;                        //index of this cell in cell array
 };
 
 /*

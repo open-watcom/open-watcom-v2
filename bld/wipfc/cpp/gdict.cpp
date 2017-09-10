@@ -55,7 +55,7 @@ GlobalDictionaryWord* GlobalDictionary::insert( std::wstring& word )
 }
 /***************************************************************************/
 // Call after parsing, but before local dictionary construction
-void GlobalDictionary::convert( size_t count )
+void GlobalDictionary::convert( std::size_t count )
 {
     STD1::uint16_t index( 0 );
     for( WordIter iter = words.begin(); iter != words.end(); ++iter, ++index) {

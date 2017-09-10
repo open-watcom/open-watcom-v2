@@ -59,7 +59,7 @@ void BitmapBlock::write( std::FILE* out ) const
 */
 STD1::uint32_t BitmapBlock::compress( std::FILE* in )
 {
-    size_t block;
+    std::size_t block;
     if( type ) {
         std::vector< STD1::uint8_t > buffer( blockSize );
         block = std::fread( &buffer[0], sizeof( STD1::uint8_t ), blockSize, in );
@@ -73,11 +73,11 @@ STD1::uint32_t BitmapBlock::compress( std::FILE* in )
         std::vector< STD1::uint16_t > prefix( TABLESIZE );
         std::vector< STD1::uint8_t >  append( TABLESIZE );
         std::vector< STD1::uint8_t >::const_iterator itr( buffer.begin() );
-        size_t          bytesIn( 1 );
-        size_t          bytesOut( 0 );
-//        size_t          checkPoint( 0 );
-//        size_t          oldCompRatio( 100 );
-        size_t          newCompRatio;
+        std::size_t     bytesIn( 1 );
+        std::size_t     bytesOut( 0 );
+//        std::size_t     checkPoint( 0 );
+//        std::size_t     oldCompRatio( 100 );
+        std::size_t     newCompRatio;
         STD1::uint16_t  nextCode( FIRST );
         STD1::uint16_t  codeIndex;
         STD1::uint16_t  stringCode( *itr );
@@ -133,7 +133,7 @@ STD1::uint32_t BitmapBlock::compress( std::FILE* in )
         if( buffer2.size() != buffer.size() )
             std::cout<< "    Expanded data size is not equal to the original" << std::endl;
         std::cout << "    Index Original Restored" << std::endl;
-        size_t index( 0 );
+        std::size_t index( 0 );
         InputIter in( buffer.begin() );
         OutputIter out( buffer2.begin() );
         while ( in != buffer.end() ) {
@@ -182,7 +182,7 @@ STD1::uint16_t BitmapBlock::outputCode( STD1::uint16_t code )
     while( bitCount >= 8 ) {
         //debugging
         //STD1::uint8_t byte( static_cast< STD1::uint8_t >( bitBuffer >> 24 ) );
-        //size_t bytesWritten( data.size() );
+        //std::size_t bytesWritten( data.size() );
         //data.push_back( byte );
         data.push_back( static_cast< STD1::uint8_t >( bitBuffer >> 24 ) );
         bitBuffer <<= 8;
@@ -307,7 +307,7 @@ STD1::uint16_t BitmapBlock::getCode( InputIter& in )
 BitmapBlock::DecodeIter BitmapBlock::decodeString( std::vector< STD1::uint16_t >& prefix,
     std::vector< STD1::uint8_t >& append, DecodeIter decode, STD1::uint16_t code )
 {
-    size_t index = 0;
+    std::size_t index = 0;
     while( code > 255 ) {
         *decode = append[ code ];
         ++decode;

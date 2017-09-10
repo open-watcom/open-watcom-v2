@@ -614,7 +614,7 @@ void Hn::buildText( Cell* cell )
     if( etoc.setTutor ) {
         std::string tmp;
         wtombstring( tutorial, tmp );
-        size_t size1( tmp.size() );
+        std::size_t size1( tmp.size() );
         if( size1 > 253 ) {
             tmp.erase( 253 );
             size1 = 253;

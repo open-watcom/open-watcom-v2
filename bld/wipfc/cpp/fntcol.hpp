@@ -42,11 +42,11 @@ class FontCollection
 public:
     FontCollection( int cp );
     //returns the index of the font in the list
-    size_t add( FontEntry& fnt );
+    std::size_t add( FontEntry& fnt );
     //the number of bytes written by the collection
     STD1::uint32_t length() { return bytes; };
     //the number of fonts in the collection
-    size_t size() { return fonts.size(); };
+    std::size_t size() { return fonts.size(); };
     STD1::uint32_t write( std::FILE * out );
 private:
     FontCollection( const FontCollection& rhs );            //no copy

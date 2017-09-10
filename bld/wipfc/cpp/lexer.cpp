@@ -230,7 +230,7 @@ void Lexer::getCmdId()
     else if( buffer.find( L".br", 0, 3 ) == 0 )
         cmdCode = BREAK;
     else if( buffer.find( L".ce", 0, 3 ) == 0 ) {
-        size_t cut( 0 );
+        std::size_t cut( 0 );
         cmdCode = CENTER;
         buffer.erase( 0, 3 );
         for( cut = 0; cut <= buffer.length() && buffer[ cut ] == L' '; ++cut )
@@ -239,7 +239,7 @@ void Lexer::getCmdId()
             buffer.erase( 0, cut );     //trim leading spaces
     }
     else if( buffer.find( L".im", 0, 3 ) == 0 ) {
-        size_t cut( 0 );
+        std::size_t cut( 0 );
         cmdCode = IMBED;
         buffer.erase( 0, 3 );
         buffer.erase( buffer.size() - 1 );  //trim '/n'
@@ -250,7 +250,7 @@ void Lexer::getCmdId()
     }
     else if( buffer.find( L".nameit", 0, 7 ) == 0 ) {
         cmdCode = NAMEIT;
-        size_t cut( 0 );
+        std::size_t cut( 0 );
         buffer.erase( 0, 7 );
         buffer.erase( buffer.size() - 1 );  //trim '/n'
         for( cut = 0; cut <= buffer.length() && buffer[cut] == L' '; ++cut )

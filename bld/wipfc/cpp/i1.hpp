@@ -60,7 +60,7 @@ public:
     STD1::uint16_t secondaryCount() const
         { return static_cast< STD1::uint16_t >( secondary.size() ); };
     bool isGlobal() const { return primary->isGlobal(); };
-    size_t write( std::FILE* out );
+    std::size_t write( std::FILE* out );
     bool operator==( const I1& rhs ) const{ return *primary == *rhs.primary; };
     bool operator==( const std::wstring& rhs ) const { return *primary == rhs; };
     bool operator<( const I1& rhs ) const { return *primary < *rhs.primary; };

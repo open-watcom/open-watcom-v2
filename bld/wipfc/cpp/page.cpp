@@ -77,7 +77,7 @@ bool Page::addWord( GlobalDictionaryWord* word )
 //Write a TOC entry
 STD1::uint32_t Page::write( std::FILE* out )
 {
-    size_t tocsize( sizeof( TocEntry ) + toc.cellCount * sizeof( STD1::uint16_t ) );
+    std::size_t tocsize( sizeof( TocEntry ) + toc.cellCount * sizeof( STD1::uint16_t ) );
     if( toc.extended ) {
         tocsize += sizeof( ExtTocEntry );
         if( etoc.setPos )

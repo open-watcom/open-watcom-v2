@@ -59,17 +59,17 @@ private:
         UNDEFINED = 0xFFFF
     };
     STD1::uint32_t  bitBuffer;      //buffer for variable length codes
-    size_t          bitCount;       //bits in the buffer
-    size_t          bitsPerCode;    //code size
-    size_t          hashingShift;
-    size_t          maxCode;
-    size_t          checkCount;     //when to check for degradation
+    std::size_t     bitCount;       //bits in the buffer
+    std::size_t     bitsPerCode;    //code size
+    std::size_t     hashingShift;
+    std::size_t     maxCode;
+    std::size_t     checkCount;     //when to check for degradation
     STD1::uint16_t  blockSize;      //uncompressed data size
     STD1::uint16_t  size;           //starting with next field
     STD1::uint8_t   type;           //0 == uncompressed, 2 == LZW compressed
     std::vector< STD1::uint8_t > data;
 
-    size_t maxVal( unsigned int n ) { return ( 1 << n ) - 1; };
+    std::size_t maxVal( unsigned int n ) { return ( 1 << n ) - 1; };
     //check for a matching code
     STD1::int16_t findMatch( std::vector< STD1::uint16_t >& code,
         std::vector< STD1::uint16_t >& prefix,

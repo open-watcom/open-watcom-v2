@@ -52,7 +52,7 @@ public:
     void buildText( Cell* cell ) { (void)cell; };
     void setRes( STD1::uint16_t r ) { parentRes = r; };
     void setIdOrName( GlobalDictionaryWord* w ) { parentId = w; };
-    size_t write( std::FILE* out ) { return  index->write( out ); };
+    std::size_t write( std::FILE* out ) { return  index->write( out ); };
     bool operator==( const ICmd& rhs ) const{ return *index == *rhs.index; };
     bool operator==( const std::wstring& rhs ) const { return *index == rhs; };
     bool operator<( const ICmd& rhs ) const { return *index < *rhs.index; };

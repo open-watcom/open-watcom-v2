@@ -91,7 +91,7 @@ void Hide::buildText( Cell* cell )
 {
     std::string tmp;
     wtombstring( keyPhrase, tmp );
-    size_t size( tmp.size() );
+    std::size_t size( tmp.size() );
     if( size > 253 ) {
         tmp.erase( 253 );
         size = 253;

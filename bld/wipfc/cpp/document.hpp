@@ -115,7 +115,7 @@ public:
     //add an icmd entry
     void addCmdIndex( ICmd* i ) { icmd.push_back( i ); };
     //get the maximum size of a local dictionary in a cell
-    size_t maxLocalDictionarySize() const { return hdr->maxLocalIndex; };
+    std::size_t maxLocalDictionarySize() const { return hdr->maxLocalIndex; };
     //parse a command
     Lexer::Token processCommand( Lexer* lexer, Tag* parent );
     //get a TOC index from the resource number to TOC index map
@@ -155,7 +155,7 @@ public:
     STD1::uint16_t extFileIndex( std::wstring& str ) { return extfiles->index( str ); };
 
     //To FontCollection
-    size_t addFont( FontEntry& fnt ) { return fonts->add( fnt ); };
+    std::size_t addFont( FontEntry& fnt ) { return fonts->add( fnt ); };
 
     //To GlobalDictionary
     GlobalDictionaryWord * addWord( GlobalDictionaryWord* word ) { return dict->insert( word ); };

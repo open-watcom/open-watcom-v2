@@ -98,7 +98,7 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                 else {
                     wchar_t *end;
                     unsigned long int x( std::wcstoul( value.c_str(), &end, 10 ) );
-                    origin.xpos = static_cast< uint16_t >( x );
+                    origin.xpos = static_cast< STD1::uint16_t >( x );
                     if( *end == L'c' )
                         origin.xPosType = ExtTocEntry::ABSOLUTE_CHAR;
                     else if( *end == L'%' )
@@ -187,7 +187,7 @@ Lexer::Token AcViewport::parseAttributes( Lexer* lexer )
                 else {
                     wchar_t *end;
                     unsigned long int height = std::wcstoul( value.c_str(), &end, 10 );
-                    size.height = static_cast< uint16_t >( height );
+                    size.height = static_cast< STD1::uint16_t >( height );
                     if( *end == L'c' )
                         size.heightType = ExtTocEntry::ABSOLUTE_CHAR;
                     else if( *end == L'%' )
@@ -235,24 +235,24 @@ void AcViewport::buildText( Cell* cell )
         if( !objectName.empty() ) {
             std::string buffer;
             wtombstring( objectName, buffer );
-            size_t bytes( buffer.size() );
-            for( size_t count1 = 0; count1 < bytes; ++count1 )
+            std::size_t bytes( buffer.size() );
+            for( std::size_t count1 = 0; count1 < bytes; ++count1 )
                 esc.push_back( static_cast< STD1::uint8_t >( buffer[ count1 ] ) );
         }
         esc.push_back( static_cast< STD1::uint8_t >( dll.size() + 1 ) );
         if( !dll.empty() ) {
             std::string buffer;
             wtombstring( dll, buffer );
-            size_t bytes( buffer.size() );
-            for( size_t count1 = 0; count1 < bytes; ++count1 )
+            std::size_t bytes( buffer.size() );
+            for( std::size_t count1 = 0; count1 < bytes; ++count1 )
                 esc.push_back( static_cast< STD1::uint8_t >( buffer[ count1 ] ) );
         }
         esc.push_back( static_cast< STD1::uint8_t >( objectInfo.size() + 1 ) );
         if( !objectInfo.empty() ) {
             std::string buffer;
             wtombstring( objectInfo, buffer );
-            size_t bytes( buffer.size() );
-            for( size_t count1 = 0; count1 < bytes; ++count1 )
+            std::size_t bytes( buffer.size() );
+            for( std::size_t count1 = 0; count1 < bytes; ++count1 )
                 esc.push_back( static_cast< STD1::uint8_t >( buffer[ count1 ] ) );
         }
         if( doOrigin || doSize ) {
@@ -265,12 +265,12 @@ void AcViewport::buildText( Cell* cell )
             esc.push_back( 0 );
             if( doOrigin ) {
                 STD1::uint8_t* src = reinterpret_cast< STD1::uint8_t* >( &origin );
-                for( size_t count1 = 0; count1 < sizeof( PageOrigin ); ++count1, ++src)
+                for( std::size_t count1 = 0; count1 < sizeof( PageOrigin ); ++count1, ++src)
                     esc.push_back( *src );
             }
             if( doSize ) {
                 STD1::uint8_t* src = reinterpret_cast< STD1::uint8_t* >( &size );
-                for( size_t count1 = 0; count1 < sizeof( PageSize ); ++count1, ++src)
+                for( std::size_t count1 = 0; count1 < sizeof( PageSize ); ++count1, ++src)
                     esc.push_back( *src );
             }
         }
