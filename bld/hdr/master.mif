@@ -140,12 +140,6 @@ options_c_time     = -kCONLY
 options_c_wchar    = -kCONLY
 options_c_wctype   = -kCONLY
 
-#
-# Special case for graph2.h and pgchart2.h headers
-#
-options_c_graph2   = -i../watcom -kVERSION2
-
-options_c_except   = -kOWEXCEPTIONS
 
 !ifneq $(system)_dirs
 $($(system)_dirs):

@@ -192,7 +192,7 @@ fnmatch.h       : fnmatch.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(extensi
 fstream.h       : $(fstream_deps)
 generic.h       : generic.mh ../crwat.sp ../readonly.sp ../cpponly.sp
 graph.h         : $(graph_deps)
-graph2.h        : $(graph_deps)
+graph2.h        : graph2.mh $(graph_deps)
 i86.h           : i86.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus) $(packll)
 inttypes.h      : $(inttypes_deps)
 io.h            : io.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../lfndos.sp ../systypes.sp $(cplus) $(packll) ../time_t.sp ../wchar_t.sp ../maxpath.sp ../access.sp ../seekpos.sp $(extension)
