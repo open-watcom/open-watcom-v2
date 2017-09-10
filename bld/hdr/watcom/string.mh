@@ -546,14 +546,14 @@ namespace _watcom {
     static bool lt( const char_type &c1, const char_type &c2 )
       { return( std::tolower( c1 ) < std::tolower( c2 ) ); }
 
-    static int compare( const char_type *s1, const char_type *s2, size_t n )
+    static int compare( const char_type *s1, const char_type *s2, std::size_t n )
       { return( _memicmp( s1, s2, n ) ); }
 
     // Too bad there's no _memichr.
-    static const char_type *find( const char_type *s, size_t n, const char_type &a )
+    static const char_type *find( const char_type *s, std::size_t n, const char_type &a )
     {
       const char_type *result = 0;
-      for( size_t i = 0; i < n; ++i ) {
+      for( std::size_t i = 0; i < n; ++i ) {
         if( std::tolower( *s ) == std::tolower( a ) ) {
           result = s;
           break;
