@@ -137,6 +137,7 @@ options_c_stdio    = -kCONLY
 options_c_stdlib   = -kCONLY
 options_c_string   = -kCONLY
 options_c_time     = -kCONLY
+options_c_wcdefs   = -kCPPONLY
 options_c_wchar    = -kCONLY
 options_c_wctype   = -kCONLY
 

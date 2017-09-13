@@ -13,7 +13,9 @@
 #endif
 :elsesegment
 :segment !CONLY
+:segment !CPPONLY
 #ifdef __cplusplus
+:endsegment
  #ifndef _STDSIZE_T_DEFINED
  #define _STDSIZE_T_DEFINED
   namespace std {
@@ -26,8 +28,11 @@
   #define _SIZE_T_DEFINED_
   using std::size_t;
  #endif
+:segment !CPPONLY
 #else  /* __cplusplus not defined */
 :endsegment
+:endsegment
+:segment !CPPONLY
  #ifndef _SIZE_T_DEFINED
  #define _SIZE_T_DEFINED
   #define _SIZE_T_DEFINED_
@@ -36,5 +41,6 @@
  #endif
 :segment !CONLY
 #endif /* __cplusplus not defined */
+:endsegment
 :endsegment
 :endsegment
