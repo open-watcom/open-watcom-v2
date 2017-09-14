@@ -112,7 +112,7 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
 :elsesegment
 #if defined(_M_I86)
  _WCRTLINK extern int _WCFAR  _beginthread(
-    void (_WCFAR *__start_address)(void _WCFAR *),
+    void (_WCCALLBACK _WCFAR *__start_address)(void _WCFAR *),
     void _WCFAR *__stack_bottom, unsigned __stack_size, void _WCFAR *__arglist );
  #pragma intrinsic(_beginthread)
  _WCRTLINK extern void _WCFAR _endthread( void );
