@@ -59,7 +59,7 @@ _WPRTLINK extern PFU _set_new_handler( PFU );
 :endsegment
 
 namespace std {
-    typedef void (*new_handler)();
+    typedef void (_WCCALLBACK *new_handler)();
     _WPRTLINK extern new_handler set_new_handler( new_handler );
 }
 

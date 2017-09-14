@@ -109,7 +109,7 @@ using std::wcstoull;
 
 :include rsize_t.sp
 
-typedef void (*constraint_handler_t)( const char * __restrict __msg, void * __restrict __ptr, errno_t __error );
+typedef void (_WCCALLBACK *constraint_handler_t)( const char * __restrict __msg, void * __restrict __ptr, errno_t __error );
 
 :include saferepi.sp
 
@@ -151,14 +151,14 @@ _WCIRTLINK extern int    abs( int __j );
 #if defined(_M_IX86) && 0
 #pragma aux abs     parm nomemory modify nomemory
 #endif
-_WRTLFCONV extern int    atexit( void ( *__func )( void ) );
+_WRTLFCONV extern int    atexit( void (_WCCALLBACK *__func)( void ) );
 _WMRTLINK extern double  atof( const char *__nptr );
 _WCRTLINK extern int     atoi( const char *__nptr );
 _WCRTLINK extern long int atol( const char *__nptr );
 _WCRTLINK extern long long int atoll( const char *__nptr );
 _WCRTLINK extern void    *bsearch( const void *__key, const void *__base,
                                   size_t __nmemb, size_t __size,
-                                  int (*__compar)(const void *__pkey, const void *__pbase) );
+                                  int (_WCCALLBACK *__compare)(const void *__pkey, const void *__pbase) );
 _WCRTLINK extern void    *calloc( size_t __n, size_t __size );
 _WCIRTLINK extern div_t  div( int __numer, int __denom );
 _WCRTLINK _WCNORETURN extern void _Exit( int __status );
@@ -189,7 +189,7 @@ _WCRTLINK extern size_t  wcstombs( char *__s, const wchar_t *__pwcs, size_t __n 
 _WCRTLINK extern int     wctomb( char *__s, wchar_t __wchar );
 :endsegment
 _WCRTLINK extern void    qsort( void *__base, size_t __nmemb, size_t __size,
-                                int (*__compar)( const void *, const void * ) );
+                                int (_WCCALLBACK *__compare)( const void *, const void * ) );
 _WCRTLINK extern int     rand( void );
 _WCRTLINK extern void    *realloc( void *__ptr, size_t __size );
 _WCRTLINK extern void    srand( unsigned int __seed );
@@ -393,15 +393,15 @@ _WCRTLINK extern unsigned __int64 _strtoui64( const char *__nptr, char **__endpt
 :include saferpro.sp
 
 _WCRTLINK extern constraint_handler_t set_constraint_handler_s( constraint_handler_t __handler );
-_WCRTLINK extern void abort_handler_s( const char * __restrict __msg, void * __restrict __ptr, errno_t __error );
-_WCRTLINK extern void ignore_handler_s( const char * __restrict __msg, void * __restrict __ptr, errno_t __error );
+_WCHANDLER extern void abort_handler_s( const char * __restrict __msg, void * __restrict __ptr, errno_t __error );
+_WCHANDLER extern void ignore_handler_s( const char * __restrict __msg, void * __restrict __ptr, errno_t __error );
 
 _WCRTLINK extern errno_t getenv_s( size_t * __restrict __len, char * __restrict __value, rsize_t __maxsize, const char * __restrict __name );
 
 _WCRTLINK extern void    *bsearch_s( const void *__key, const void *__base, rsize_t __nmemb, rsize_t __size,
-                                     int (*__compar)(const void *__x, const void *__y, void *__context), void *__context);
+                                     int (_WCCALLBACK *__compare)(const void *__x, const void *__y, void *__context), void *__context);
 _WCRTLINK extern errno_t qsort_s( void *__base, rsize_t __nmemb, rsize_t __size,
-                                  int (*__compar)(const void *__x, const void *__y, void *__context), void *__context);
+                                  int (_WCCALLBACK *__compare)(const void *__x, const void *__y, void *__context), void *__context);
 
 _WCRTLINK extern errno_t wctomb_s( int * __restrict __status, char * __restrict __s, rsize_t __smax, wchar_t __wc );
 _WCRTLINK extern errno_t mbstowcs_s( size_t * __restrict __retval, wchar_t * __restrict __dst, rsize_t __dstmax, const char * __restrict __src, rsize_t __len );
@@ -660,7 +660,7 @@ extern  wchar_t **__wargv;      /* vector of wide cmd line args */
 :endsegment
 :include brk.sp
 
-typedef void (*onexit_t)( void );
+typedef void (_WCCALLBACK *onexit_t)( void );
 _WCRTLINK extern onexit_t     onexit( onexit_t __func );
 
 :include extepi.sp

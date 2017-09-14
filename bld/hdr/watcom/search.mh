@@ -14,10 +14,10 @@
 
 _WCRTLINK extern void *lfind( const void *__key, const void *__base,
                               unsigned *__num, unsigned __width,
-                              int (* __compare)(const void *, const void *) );
+                              int (_WCCALLBACK * __compare)(const void *, const void *) );
 _WCRTLINK extern void *lsearch( const void *__key, void *__base,
                                 unsigned *__num, unsigned __width,
-                                int (* __compare)(const void *, const void *) );
+                                int (_WCCALLBACK * __compare)(const void *, const void *) );
 
 :include cplusepi.sp
 

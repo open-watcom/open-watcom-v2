@@ -314,9 +314,9 @@ struct  exception {
 #define TLOSS           5       /* total loss of significance */
 #define PLOSS           6       /* partial loss of significance */
 
-_WMRTLINK extern int    matherr( struct _exception * );
+_WCHANDLER extern int   matherr( struct _exception * );
 _WMRTLINK extern double _matherr( struct _exception * );
-_WMRTLINK extern void   _set_matherr( int (*rtn)( struct _exception * ) );
+_WMRTLINK extern void   _set_matherr( int (_WCCALLBACK *rtn)( struct _exception * ) );
 
 _WCRTLINK extern int _dieeetomsbin( double *__x, double *__y );
 _WCRTLINK extern int _dmsbintoieee( double *__x, double *__y );

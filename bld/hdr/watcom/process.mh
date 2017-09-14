@@ -105,7 +105,7 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
 
 :segment QNX | LINUX
 #if defined(__386__)
- _WCRTLINK extern int   _beginthread( void (*__start_address)(void *),
+ _WCRTLINK extern int   _beginthread( void (_WCCALLBACK *__start_address)(void *),
      void *__stack_bottom, unsigned __stack_size, void *__arglist );
  #pragma intrinsic(_beginthread)
  _WCRTLINK extern void  _endthread( void );
@@ -124,7 +124,7 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
 #else
  #if defined(__NT__)
   _WCRTLINK extern unsigned long _beginthread(
-                void (*__start_address)(void *),
+                void (_WCCALLBACK *__start_address)(void *),
                 unsigned __stack_size, void *__arglist );
   _WCRTLINK extern unsigned long _beginthreadex( void *__security,
                 unsigned __stack_size,
@@ -135,11 +135,11 @@ _WCRTLINK extern int    _execvpe( const char *__file, const char *const __argv[]
 :include thrdhndl.sp
  #elif defined(__RDOS__) || defined(__RDOSDEV__)
   _WCRTLINK extern int  _beginthread(
-                void (*__start_address)(void *), int prio,
+                void (_WCCALLBACK *__start_address)(void *), int prio,
                 const char *thread_name,
                 unsigned __stack_size, void *__arglist );
  #else
-  _WCRTLINK extern int  _beginthread( void (*__start_address)(void *),
+  _WCRTLINK extern int  _beginthread( void (_WCCALLBACK *__start_address)(void *),
       void *__stack_bottom, unsigned __stack_size, void *__arglist );
   #pragma intrinsic(_beginthread)
  #endif

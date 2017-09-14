@@ -51,7 +51,7 @@ namespace std {
   public:
     strstreambuf();
     strstreambuf( streamsize __allocation_size );
-    strstreambuf( void *(*__alloc_fn)( long ), void (*__free_fn)( void * ) );
+    strstreambuf( void *(_WCCALLBACK *__alloc_fn)( long ), void (_WCCALLBACK *__free_fn)( void * ) );
     strstreambuf( char *__str, streamsize __size, char *__pstart = NULL );
    ~strstreambuf();
 
@@ -73,8 +73,8 @@ namespace std {
   private:
     void  __strstreambuf( char *, streamsize, char * );
 
-    void *(*__alloc_fn)( long );
-    void  (*__free_fn)( void * );
+    void *(_WCCALLBACK *__alloc_fn)( long );
+    void  (_WCCALLBACK *__free_fn)( void * );
     streamsize __allocation_size;
     int   __minbuf_size;
     unsigned  __frozen    : 1;
