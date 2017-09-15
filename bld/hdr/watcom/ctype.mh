@@ -39,10 +39,25 @@ using std::isxdigit;
 using std::tolower;
 using std::toupper;
 
+#if defined(__SW_BR) || defined(_RTDLL)
+ #define _IsTable _IsTable_br
+#endif
+using std::_IsTable;
 :: Now the extensions section.
+
 :: C99 functions in ctype.h that are currently considered extensions.
 :include extc99.sp
 using std::isblank;
+:include extepi.sp
+
+:include ext.sp
+using std::_tolower;
+using std::_toupper;
+using std::isleadbyte;
+using std::__isascii;
+using std::__toascii;
+using std::__iscsymf;
+using std::__iscsym;
 :include extepi.sp
 
 #else /* __cplusplus not defined */
@@ -79,67 +94,73 @@ _WCRTLINK extern int    isxdigit(int);
 _WCRTLINK extern int    tolower(int);
 _WCRTLINK extern int    toupper(int);
 
-:: C99 functions in ctype.h that are currently considered extensions.
-:include extc99.sp
-_WCRTLINK extern int    isblank(int);
-:include extepi.sp
-:include nsstdepi.sp
-
-/* These names are not in ctype.h according to C99. */
-_WCRTLINK extern int    _tolower(int);
-_WCRTLINK extern int    _toupper(int);
-
 #if defined(__SW_BR) || defined(_RTDLL)
  #define _IsTable _IsTable_br
 #endif
 _WCRTDATA extern const unsigned char _WCDATA _IsTable[257];
+:: Now the extensions section.
 
-:: Eliminate macros from cctype. These can be put back later as in-lines.
-:segment !CNAME
-#if !defined(__FUNCTION_DATA_ACCESS)
-#define isalnum(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & (_LOWER|_UPPER|_DIGIT))
-#define isalpha(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & (_LOWER|_UPPER))
-#define iscntrl(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _CNTRL)
-#define isdigit(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _DIGIT)
-#define isgraph(__c) (((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & (_PRINT|_SPACE))==_PRINT)
-#define islower(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _LOWER)
-#define isprint(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _PRINT)
-#define ispunct(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _PUNCT)
-#define isspace(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _SPACE)
-#define isupper(__c)  ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _UPPER)
-#define isxdigit(__c) ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _XDIGT)
-
+:: C99 functions in ctype.h that are currently considered extensions.
 :include extc99.sp
-#define isblank(__c)  (((__c)==' ')||((__c)=='\t'))
+_WCRTLINK extern int    isblank(int);
 :include extepi.sp
-#endif
 
-:endsegment
 :include ext.sp
+_WCRTLINK extern int    _tolower(int);
+_WCRTLINK extern int    _toupper(int);
 _WCRTLINK extern int    isleadbyte(int);
 _WCRTLINK extern int    __isascii(int);
 _WCRTLINK extern int    __toascii(int);
 _WCRTLINK extern int    __iscsymf(int);
 _WCRTLINK extern int    __iscsym(int);
-#if !defined(__FUNCTION_DATA_ACCESS)
-:: Eliminate macros from cctype. These can be put back later as in-lines.
 :segment !CNAME
+:include extepi.sp
+:: Eliminate macros from cctype. These can be put back later as in-lines.
+
+#if !defined(__FUNCTION_DATA_ACCESS)
+
+#define isalnum(__c)    ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & (_LOWER|_UPPER|_DIGIT))
+#define isalpha(__c)    ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & (_LOWER|_UPPER))
+#define iscntrl(__c)    ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _CNTRL)
+#define isdigit(__c)    ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _DIGIT)
+#define isgraph(__c)    (((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & (_PRINT|_SPACE))==_PRINT)
+#define islower(__c)    ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _LOWER)
+#define isprint(__c)    ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _PRINT)
+#define ispunct(__c)    ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _PUNCT)
+#define isspace(__c)    ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _SPACE)
+#define isupper(__c)    ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _UPPER)
+#define isxdigit(__c)   ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & _XDIGT)
+
+:include extc99.sp
+#define isblank(__c)    (((__c)==' ')||((__c)=='\t'))
+:include extepi.sp
+
+:include ext.sp
 #define __isascii(__c)  ((unsigned)(__c) <= 0x7f)
 #define __toascii(__c)  ((__c) & 0x7f)
-:endsegment
 #define __iscsymf(__c)  (isalpha(__c)||((__c)=='_'))
 #define __iscsym(__c)   (isalnum(__c)||((__c)=='_'))
-#endif
+:include extepi.sp
+
+#endif /* __FUNCTION_DATA_ACCESS not defined */
+
+:include ext.sp
+:elsesegment
+
+:endsegment
 #define isascii         __isascii
 #define toascii         __toascii
 #define iscsym          __iscsym
 #define iscsymf         __iscsymf
 :include extepi.sp
+:segment !CNAME
+
+#endif /* __cplusplus not defined */
+:endsegment
+:include nsstdepi.sp
 
 :segment CNAME
 :include cplusepi.sp
-:elsesegment
-#endif /* __cplusplus not defined */
-:endsegment
 
+:endsegment
 #endif
