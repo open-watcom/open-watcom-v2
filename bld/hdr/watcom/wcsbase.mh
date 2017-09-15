@@ -399,7 +399,7 @@ void WCSkipListBase<Type>::forAll( void(*user_fn)( Type, void * )
     register node_ptr curr;
 
     curr = header->forward[ 0 ];
-    while ( curr != 0 ) {
+    while( curr != 0 ) {
         user_fn( base_whole_node( curr )->data, data );
         curr = curr->forward[ 0 ];
     }
@@ -507,7 +507,7 @@ void WCPtrSkipListBase<Type, SkipListBase>::clearAndDestroy() {
     register node_ptr curr;
 
     curr = header->forward[ 0 ];
-    while ( curr != 0 ) {
+    while( curr != 0 ) {
         delete( (Type *)base_whole_node( curr )->data );
         curr = curr->forward[ 0 ];
     }

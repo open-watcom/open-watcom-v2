@@ -38,13 +38,9 @@ using std::va_list;
 :endsegment
 :include valist.sp
 
-:segment CNAME
-namespace std {
-  typedef __va_list va_list;
-}
-:elsesegment
+:include nsstd.sp
 typedef __va_list va_list;
-:endsegment
+:include nsstdepi.sp
 
 #if defined(__AXP__)
  #define _AXP_WORD_SIZE     8

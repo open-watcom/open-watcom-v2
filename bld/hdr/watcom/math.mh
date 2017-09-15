@@ -52,6 +52,7 @@ using std::tanh;
 
 :: C99 functions in math.h that are currently considered extensions.
 :include extc99.sp
+
 using std::acosh;
 using std::asinh;
 using std::atanh;
@@ -152,21 +153,19 @@ _WMRTDATA extern const float    __f_posqnan;
 #define INFINITY   __f_infinity
 #define NAN        __f_posqnan
 
-/* The sign of the gamma function as returned by 
+/* The sign of the gamma function as returned by
  * lgamma
  */
 extern int signgam;
 
-:segment CNAME
-namespace std {
-
-:endsegment
+:include nsstd.sp
 _WMRTLINK extern double ceil( double __x );
 _WMRTLINK extern double floor( double __x );
 #if defined(_M_IX86) && 0
 #pragma aux ceil  parm nomemory modify nomemory
 #pragma aux floor parm nomemory modify nomemory
 #endif
+
 _WMRTLINK extern double frexp( double __value, int *__exp );
 _WMRTLINK extern double ldexp( double __x, int __exp );
 _WMRTLINK extern double modf( double __value, double *__iptr );
@@ -191,6 +190,7 @@ _WMIRTLINK extern double tanh( double __x );
 
 :: C99 functions in math.h that are currently considered extensions.
 :include extc99.sp
+
 _WMRTLINK extern double acosh( double __x );
 _WMRTLINK extern double asinh( double __x );
 _WMRTLINK extern double atanh( double __x );
@@ -248,16 +248,13 @@ extern int __math_errhandling_flag;
 #define MATH_ERRNO      1
 #define MATH_ERREXCEPT  2
 /* As an extension, support Watcom errors as well */
-#define MATH_ERRWATCOM  4   
+#define MATH_ERRWATCOM  4
 
 #define math_errhandling __math_errhandling_flag
 
 :include extepi.sp
+:include nsstdepi.sp
 
-:segment CNAME
-} // namespace std
-
-:endsegment
 :include ext.sp
 ::
 :: Begin of extension section
@@ -333,15 +330,12 @@ _WCRTLINK extern int _fmsbintoieee( float *__x, float *__y );
     Defining the __NO_MATH_OPS macro will stop the compiler from
     recognizing the following functions as intrinsic operators.
 */
-:segment CNAME
-namespace std {
-  #pragma intrinsic(log,cos,sin,tan,sqrt,fabs,pow,atan2,fmod)
-  #pragma intrinsic(acos,asin,atan,cosh,exp,log10,sinh,tanh)
-}
-:elsesegment
+
+:include nsstd.sp
 #pragma intrinsic(log,cos,sin,tan,sqrt,fabs,pow,atan2,fmod)
 #pragma intrinsic(acos,asin,atan,cosh,exp,log10,sinh,tanh)
-:endsegment
+:include nsstdepi.sp
+
 #endif
 
 :include poppack.sp
@@ -352,7 +346,7 @@ namespace std {
 #endif /* __cplusplus not defined */
 :endsegment
 
-#endif
+#endif /* _CMATH_INCLUDED */
 
 :segment CNAME
 :: For C++ provide the appropriate overloaded signatures. These signatures
@@ -361,8 +355,7 @@ namespace std {
 #ifndef _CMATH_AUX_INCLUDED
 #define _CMATH_AUX_INCLUDED
 
-namespace std {
-
+:include nsstd.sp
   // double
   inline double abs( double __x ) { return( fabs( __x ) ); }
   inline double pow( double __x, int __y )
@@ -443,10 +436,9 @@ namespace std {
   inline long double sqrt ( long double __x ) { return( sqrt ( (double)__x ) ); }
   inline long double tan  ( long double __x ) { return( tan  ( (double)__x ) ); }
   inline long double tanh ( long double __x ) { return( tanh ( (double)__x ) ); }
+:include nsstdepi.sp
 
-} // namespace std
+#endif /* _CMATH_AUX_INCLUDED */
 
-#endif
-
-#endif
+#endif /* _INCLUDED_FROM_MATH_H */
 :endsegment

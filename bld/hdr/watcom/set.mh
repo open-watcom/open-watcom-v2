@@ -33,11 +33,11 @@
  #include <function>
 #endif
 
-namespace std {
-
+:keep NSSTD
+:include nsstd.sp
 //associative container set, as defined in incits/iso/iec14882-2003
 template< class Key,
-          class Compare = less< Key >, 
+          class Compare = less< Key >,
           class Allocator = allocator< Key >,
           class Implementation = _ow::RedBlackTree< Key, Compare, Allocator,
                                                     _ow::TreeKeyWrapper<Key> > >
@@ -54,7 +54,7 @@ public:
     typedef typename Allocator::const_pointer       const_pointer;
 
     explicit set(const Compare& comp = Compare(), const Allocator& = Allocator());
-    
+
     template< class InputIterator >
     set( InputIterator first,
          InputIterator last,
@@ -82,7 +82,7 @@ public:
  * ctors
  */
 template< class Key, class Compare, class Allocator, class Implementation >
-set< Key, Compare, Allocator, Implementation >::set( 
+set< Key, Compare, Allocator, Implementation >::set(
     const Compare& c,
     const Allocator& a ) : Implementation( c, a )
 {
@@ -145,8 +145,6 @@ public:
 
 
 };//class multiset
-
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif

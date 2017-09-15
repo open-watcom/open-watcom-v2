@@ -19,8 +19,9 @@
  #include <_hash.h>
 #endif
 
-namespace std {
-
-} // namespace std
+:keep NSSTD
+:include nsstd.sp
+:include nyi.sp
+:include nsstdepi.sp
 
 #endif

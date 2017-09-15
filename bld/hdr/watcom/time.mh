@@ -197,10 +197,7 @@ _WCRTLINK extern int     nanosleep( const struct timespec *rqtp, struct timespec
 :include extepi.sp
 :: End of QNX | LINUX segment
 :endsegment
-:segment CNAME
-namespace std {
-
-:endsegment
+:include nsstd.sp
 struct tm {
     int  tm_sec;    /* seconds after the minute -- [0,61] */
     int  tm_min;    /* minutes after the hour   -- [0,59] */
@@ -225,11 +222,8 @@ _WCRTLINK extern time_t       time( time_t *__timer );
 :segment !NO_WIDECHAR
 _WCRTLINK extern size_t       wcsftime( wchar_t *, size_t, const wchar_t *, const struct tm * );
 :endsegment
+:include nsstdepi.sp
 
-:segment CNAME
-} // namespace std
-
-:endsegment
 :segment !CNAME
 #define difftime( t1, t0 )  ( ( double ) ( t1 ) - ( double ) ( t0 ) )
 :endsegment

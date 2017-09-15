@@ -146,9 +146,9 @@
 #define _POSIX_THREAD_KEYS_MAX  512 /*  Open Watcom really doesn't have a   */
                                     /*  limit since a linked list is used,  */
                                     /*  but 512 is bigger than most.        */
-                                    
+
 #define PTHREAD_KEYS_MAX _POSIX_THREAD_KEYS_MAX
-                                    
+
 /*
  *  Run-time increasable values
  *
@@ -253,8 +253,8 @@
 :: <cstddef> is needed for wchar_t. Once wchar_t is built-in this include
 :: can be removed.
 
-namespace std {
-
+:keep NSSTD
+:include nsstd.sp
   enum float_round_style {
     round_indeterminate       = -1,
     round_toward_zero         =  0,
@@ -890,8 +890,7 @@ namespace std {
     static const bool tinyness_before = false;
     static const float_round_style round_style = round_to_nearest;
   };
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif
 :endsegment

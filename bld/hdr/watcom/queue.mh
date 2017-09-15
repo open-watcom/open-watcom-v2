@@ -29,8 +29,8 @@
   #include <vector>
 #endif
 
-namespace std {
-
+:keep NSSTD
+:include nsstd.sp
     // =====
     // Queue
     // =====
@@ -171,7 +171,7 @@ namespace std {
     {
         c.swap( other.c );
     }
-    
+
     // _Sane( ) const
     template< class Type, class Container >
     inline bool queue< Type, Container >::_Sane( ) const
@@ -353,7 +353,6 @@ namespace std {
         x.swap( y );
     }
     #endif
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif

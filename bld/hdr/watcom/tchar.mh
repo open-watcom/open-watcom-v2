@@ -344,7 +344,7 @@ _WCRTLINK extern long int wcstol( const wchar_t *, wchar_t **, int );
 _WCRTLINK extern unsigned long int wcstoul( const wchar_t *, wchar_t **, int );
 
 #ifdef __cplusplus
-}
+} // namespace std
 using std::wcstod;
 using std::wcstol;
 using std::wcstoul;

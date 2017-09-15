@@ -64,10 +64,7 @@ using std::isblank;
 #define _SPACE  0x02
 #define _CNTRL  0x01
 
-:segment CNAME
-namespace std {
-
-:endsegment
+:include nsstd.sp
 _WCRTLINK extern int    isalnum(int);
 _WCRTLINK extern int    isalpha(int);
 _WCRTLINK extern int    iscntrl(int);
@@ -86,11 +83,8 @@ _WCRTLINK extern int    toupper(int);
 :include extc99.sp
 _WCRTLINK extern int    isblank(int);
 :include extepi.sp
+:include nsstdepi.sp
 
-:segment CNAME
-} // namespace std
-
-:endsegment
 /* These names are not in ctype.h according to C99. */
 _WCRTLINK extern int    _tolower(int);
 _WCRTLINK extern int    _toupper(int);

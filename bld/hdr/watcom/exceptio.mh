@@ -48,8 +48,8 @@ using std::terminate;
 
 :include except.sp
 
-namespace std {
-
+:keep NSSTD
+:include nsstd.sp
   class _WPRTLINK exception {
     const char *_what_val;
   public:
@@ -83,8 +83,7 @@ namespace std {
 
     virtual ~bad_exception( ) _WCTHROWS() { }
   };
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif
 :endsegment

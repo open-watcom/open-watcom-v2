@@ -128,10 +128,7 @@ typedef void (_WCCALLBACK *constraint_handler_t)( const char * __restrict __msg,
 #define EXIT_FAILURE    0xFF
 :endsegment
 
-:segment CNAME
-namespace std {
-
-:endsegment
+:include nsstd.sp
 typedef struct  {
     int     quot;
     int     rem;
@@ -200,27 +197,14 @@ _WCRTLINK extern long int strtol( const char *__nptr, char **__endptr, int __bas
 _WCRTLINK extern long long int strtoll( const char *__nptr, char **__endptr, int __base );
 _WCRTLINK extern unsigned long strtoul( const char *__nptr, char **__endptr, int __base );
 _WCRTLINK extern unsigned long long int strtoull( const char *__nptr, char **__endptr, int __base );
+:include nsstdepi.sp
 
-:segment CNAME
-} // namespace std
-
-:endsegment
 :keep  NOUSING
 :include process1.sp
 
 #if defined(__INLINE_FUNCTIONS__)
-:segment CNAME
-namespace std {
-  #pragma intrinsic(abs,div,labs)
-:segment DOS | QNX
-  #if !defined(_M_I86)
-:endsegment
-   #pragma intrinsic(ldiv)
-:segment DOS | QNX
-  #endif
-:endsegment
-}
-:elsesegment
+
+:include nsstd.sp
 #pragma intrinsic(abs,div,labs)
 :segment DOS | QNX
 #if !defined(_M_I86)
@@ -229,7 +213,8 @@ namespace std {
 :segment DOS | QNX
 #endif
 :endsegment
-:endsegment
+:include nsstdepi.sp
+
 #endif
 
 :segment !CNAME
@@ -303,17 +288,15 @@ _WCRTLINK extern wchar_t  *_ultow( unsigned long int, wchar_t *, int );
 _WCRTLINK extern wchar_t  *_ulltow( unsigned long long int, wchar_t *, int );
 _WMRTLINK extern double   _wtof( const wchar_t * );
 _WMRTLINK extern double   _watof( const wchar_t * );
-:segment CNAME
-namespace std {
-:endsegment
+
+:include nsstd.sp
 _WCRTLINK extern long int wcstol( const wchar_t *, wchar_t **, int );
 _WCRTLINK extern long long int wcstoll( const wchar_t *, wchar_t **, int );
 _WMRTLINK extern double  wcstod( const wchar_t *, wchar_t ** );
 _WCRTLINK extern unsigned long int wcstoul( const wchar_t *, wchar_t **, int );
 _WCRTLINK extern unsigned long long int wcstoull( const wchar_t *, wchar_t **, int );
-:segment CNAME
-}
-:endsegment
+:include nsstdepi.sp
+
 _WCRTLINK extern wchar_t  *_atouni( wchar_t *, const char * );
 _WCRTLINK extern wchar_t  *_wfullpath( wchar_t *, const wchar_t *, _w_size_t );
 _WCRTLINK extern void     _wmakepath( wchar_t *__path, const wchar_t *__drive,
@@ -673,19 +656,20 @@ _WCRTLINK extern onexit_t     onexit( onexit_t __func );
 #endif /* __cplusplus not defined */
 :endsegment
 
-#endif
-
+#endif /* _CSTDLIB_INCLUDED */
 :segment CNAME
+
 :: For C++ provide the appropriate overloaded signatures. These signatures
 :: must not be extern "C" (which is why they are down here).
 #ifndef _INCLUDED_FROM_STDLIB_H
 #ifndef _CSTDLIB_AUX_INCLUDED
 #define _CSTDLIB_AUX_INCLUDED
-namespace std {
-  inline long int abs( long int __x ) { return( labs( __x ) ); }
-  inline ldiv_t div( long int __n, long int __d )
-    { return( ldiv( __n, __d ) ); }
-}
-#endif
-#endif
+
+:include nsstd.sp
+inline long int abs( long int __x ) { return( labs( __x ) ); }
+inline ldiv_t div( long int __n, long int __d ) { return( ldiv( __n, __d ) ); }
+:include nsstdepi.sp
+
+#endif /* _CSTDLIB_AUX_INCLUDED */
+#endif /* _INCLUDED_FROM_STDLIB_H */
 :endsegment

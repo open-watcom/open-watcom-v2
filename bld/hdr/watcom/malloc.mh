@@ -166,7 +166,7 @@ _WCRTLINK extern void *_os2hmalloc( size_t __size );
 
 :endsegment
 #ifdef __cplusplus
-}
+} // namespace std
 using std::calloc;
 using std::free;
 using std::malloc;

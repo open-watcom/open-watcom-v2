@@ -50,8 +50,8 @@ using std::oct;
 // This is referred to in class ios, but is defined later, or elsewhere:
 class _WPRTLINK __WATCOM_ios;
 
-namespace std {
-
+:keep NSSTD
+:include nsstd.sp
   // Position in the stream (absolute value, 0 is first byte):
   typedef long streampos;
 
@@ -321,8 +321,7 @@ namespace std {
   _WPRTLINK extern ios &dec( ios & );
   _WPRTLINK extern ios &hex( ios & );
   _WPRTLINK extern ios &oct( ios & );
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif
 :endsegment

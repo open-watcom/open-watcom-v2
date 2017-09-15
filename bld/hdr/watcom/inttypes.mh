@@ -306,12 +306,11 @@ using std::wcstoumax;
 :include pshpackl.sp
 
 :: In cname version place all these typedefs in std namespace
-:segment CNAME
-namespace std {
-:elsesegment
+:include nsstd.sp
+:segment !CNAME
 :include wchar_t.sp
-:endsegment
 
+:endsegment
 typedef struct {
     intmax_t    quot;
     intmax_t    rem;
@@ -323,11 +322,8 @@ _WCRTLINK extern intmax_t   strtoimax( const char *__nptr, char **__endptr, int 
 _WCRTLINK extern uintmax_t  strtoumax( const char *__nptr, char **__endptr, int __base );
 _WCRTLINK extern intmax_t   wcstoimax( const wchar_t *__nptr, wchar_t **__endptr, int __base );
 _WCRTLINK extern uintmax_t  wcstoumax( const wchar_t *__nptr, wchar_t **__endptr, int __base );
+:include nsstdepi.sp
 
-:segment CNAME
-} // namespace std
-
-:endsegment
 :include poppack.sp
 
 :segment CNAME

@@ -188,10 +188,7 @@ using std::towupper;
 
 :include mbmax.sp
 
-:segment CNAME
-namespace std {
-
-:endsegment
+:include nsstd.sp
 typedef int mbstate_t;
 
 _WCRTLINK extern wint_t   btowc( int __c );
@@ -249,11 +246,8 @@ _WCRTLINK extern wchar_t  *wmemmove( wchar_t *__s1, const wchar_t *__s2, size_t 
 _WCRTLINK extern wchar_t  *wmemset( wchar_t *__s, wchar_t __wc, size_t __n );
 _WCRTLINK extern int      wprintf( const wchar_t *__format, ... );
 _WCRTLINK extern int      wscanf( const wchar_t *__format, ... );
+:include nsstdepi.sp
 
-:segment CNAME
-} // namespace std
-
-:endsegment
 _WCRTLINK extern wchar_t  *_wcsdup( const wchar_t * );
 _WCRTLINK extern int      _wcsicmp( const wchar_t *, const wchar_t * );
 _WCRTLINK extern wchar_t  *_wcslwr( wchar_t * );
@@ -282,16 +276,12 @@ _WCRTLINK extern wchar_t  *_wtempnam( const wchar_t *__dir, const wchar_t *__pre
 
 :include ext.sp
 
-:segment CNAME
-namespace std {
-
-:endsegment
+:include nsstd.sp
 :keep WCHAR
 :include wctype.sp
+:include nsstdepi.sp
 
 :segment CNAME
-} // namespace std
-
 :: C99 says this function is named mbsinit.
 _WCRTLINK extern int     sisinit( const std::mbstate_t *__ps );
 

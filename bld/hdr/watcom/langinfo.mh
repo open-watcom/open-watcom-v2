@@ -8,7 +8,7 @@
  ***************************************************************************/
 #ifndef _LANGINFO_H_INCLUDED
 #define _LANGINFO_H_INCLUDED
- 
+
 :include readonly.sp
 
 #define CODESET     0
@@ -43,7 +43,7 @@
 #define MON_5       0x404
 #define MON_6       0x405
 #define MON_7       0x406
-#define MON_8       0x407 
+#define MON_8       0x407
 #define MON_9       0x408
 #define MON_10      0x409
 #define MON_11      0x40A
@@ -75,12 +75,12 @@
 #define NOEXPR      0x801
 
 #define CRNCYSTR    0x900
- 
+
 :include cpluspro.sp
 
 char *nl_langinfo(int __item);
 
 :include cplusepi.sp
- 
+
 #endif /* _LANGINFO_H_INCLUDED */
- 
+

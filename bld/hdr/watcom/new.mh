@@ -58,17 +58,19 @@ _WPRTLINK extern PFU _set_new_handler( PFU );
 #endif
 :endsegment
 
-namespace std {
+:keep NSSTD
+:include nsstd.sp
     typedef void (_WCCALLBACK *new_handler)();
     _WPRTLINK extern new_handler set_new_handler( new_handler );
-}
+:include nsstdepi.sp
 
 // NOTE: Open Watcom currently does not throw std::bad_alloc on
 // allocation failures. This class is defined here to so that programs
 // that reference it will at least compile. Consider this a first step
 // in building an exception throwing implementation of operator new.
 
-namespace std {
+:keep NSSTD
+:include nsstd.sp
   class bad_alloc : public exception {
   public:
     bad_alloc( ) _WCTHROWS() :
@@ -81,7 +83,7 @@ namespace std {
 
     virtual ~bad_alloc( ) _WCTHROWS() { }
   };
-}
+:include nsstdepi.sp
 
 #endif
 :endsegment

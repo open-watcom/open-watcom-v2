@@ -462,8 +462,8 @@ inline double norm( Complex const &__cv ) {
  #include <ostream>
 #endif
 
-namespace std {
-
+:keep NSSTD
+:include nsstd.sp
   template< class FloatT >
   class complex {
   public:
@@ -849,8 +849,7 @@ namespace std {
       FloatT temp2( 1.0 + ( temp1 * temp1 ) );
       return( complex< FloatT >( log( mag_rp ) + 0.5 * log( temp2 ),
                                  atan2( x.imag( ), x.real( ) ) ) );
-    }
-    else if( mag_ip > 32 * mag_rp ) {
+    } else if( mag_ip > 32 * mag_rp ) {
       FloatT temp1( x.real( ) / x.imag( ) );
       FloatT temp2( 1.0 + ( temp1 * temp1 ) );
       return( complex< FloatT >( log( mag_ip ) + 0.5 * log( temp2 ),
@@ -951,30 +950,31 @@ namespace std {
 
     char ch;
 
-    if (!(strm >> ch))
+    if( !(strm >> ch) )
       return strm;
 
-    if ('(' == ch) {
-      if (strm >> re && strm >> ch) {
-        if (',' == ch && strm >> im)
+    if( '(' == ch ) {
+      if( strm >> re && strm >> ch ) {
+        if( ',' == ch && strm >> im ) {
           strm >> ch;
+        }
 
-          // avoid setting failbit if either badbit
-          // or failbit is already set in the stream
-          if (')' != ch && strm)
-            strm.setstate (strm.failbit);
+        // avoid setting failbit if either badbit
+        // or failbit is already set in the stream
+        if( ')' != ch && strm ) {
+          strm.setstate( strm.failbit );
+        }
       }
-    }
-    else if (strm.putback (ch)) {
+    } else if( strm.putback( ch ) ) {
       strm >> re;
     }
 
-    if (strm)
+    if( strm )
       z = complex< FloatT >(re, im);
 
     return strm;
   }
-} // namespace std
+:include nsstdepi.sp
 
 #endif
 :endsegment

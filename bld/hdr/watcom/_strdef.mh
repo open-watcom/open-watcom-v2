@@ -38,8 +38,8 @@
  #include <memory>
 #endif
 
-namespace std {
-
+:keep NSSTD
+:include nsstd.sp
   // struct char_traits
   // ******************
   template< class CharT > struct char_traits { };
@@ -176,10 +176,6 @@ namespace std {
       { return( WEOF ); }
   };
 
-} // namespace std
-
-
-namespace std {
 
   // ===================================
   // Definition of basic_string template
@@ -455,7 +451,7 @@ namespace std {
     size_type temp = buf_length;
     while( temp != 1 ) {
       if( temp & 0x1 ) return( false );
-      temp >>= 1; 
+      temp >>= 1;
     }
     return( true );
   }
@@ -520,8 +516,7 @@ namespace std {
     if( buf_length > other.str_length ) {
       Traits::copy( buffer, other.buffer, other.str_length );
       str_length = other.str_length;
-    }
-    else {
+    } else {
       replace_buffer( other.buffer, other.str_length );
     }
     return( *this );
@@ -537,7 +532,6 @@ namespace std {
     buffer[str_length] = CharT();
     return( buffer );
   }
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif

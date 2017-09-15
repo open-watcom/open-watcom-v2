@@ -74,12 +74,13 @@ enum {
 
 // **************************** PREDEFINED STREAMS ***************************
 
-namespace std {
+:keep NSSTD
+:include nsstd.sp
   _WPRTLINK extern istream _WCDATA cin;
   _WPRTLINK extern ostream _WCDATA cout;
   _WPRTLINK extern ostream _WCDATA cerr;
   _WPRTLINK extern ostream _WCDATA clog;
-}
+:include nsstdepi.sp
 
 #endif
 :endsegment

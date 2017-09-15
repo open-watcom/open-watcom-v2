@@ -254,10 +254,7 @@ using std::uintmax_t;
 :include saferepi.sp
 
 :: In cname version place all these typedefs in std namespace
-:segment CNAME
-namespace std {
-
-:endsegment
+:include nsstd.sp
 :include exactint.sp
 
 /* Minimum-width types. */
@@ -288,11 +285,8 @@ typedef unsigned long long uint_fast64_t;
 /* Greatest-width types. */
 typedef long long intmax_t;
 typedef unsigned long long uintmax_t;
+:include nsstdepi.sp
 
-:segment CNAME
-} // namespace std
-
-:endsegment
 :segment !CNAME
 #endif /* __cplusplus not defined */
 :endsegment

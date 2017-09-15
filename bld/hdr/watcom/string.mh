@@ -126,10 +126,7 @@ using std::wcsxfrm;
 
 :include nlserror.sp
 
-:segment CNAME
-namespace std {
-
-:endsegment
+:include nsstd.sp
 _WCIRTLINK extern void    *memchr( const void *__s, int __c, size_t __n );
 _WCIRTLINK extern int     memcmp( const void *__s1, const void *__s2, size_t __n );
 _WCIRTLINK extern void    *memcpy( void *__s1, const void *__s2, size_t __n );
@@ -168,11 +165,8 @@ _WCRTLINK  extern size_t  strspn( const char *__s1, const char *__s2 );
 _WCRTLINK  extern char    *strstr( const char *__s1, const char *__s2 );
 _WCRTLINK  extern char    *strtok( char *__s1, const char *__s2 );
 _WCRTLINK  extern size_t  strxfrm( char *__s1, const char *__s2, size_t __n );
+:include nsstdepi.sp
 
-:segment CNAME
-} // namespace std
-
-:endsegment
 _WCRTLINK  extern int _stricoll( const char *__s1, const char *__s2 );
 _WCRTLINK  extern int _strncoll( const char *__s1, const char *__s2, _w_size_t __n );
 _WCRTLINK  extern int _strnicoll( const char *__s1, const char *__s2, _w_size_t __n );
@@ -379,10 +373,7 @@ _WCRTLINK extern _w_size_t strlcat( char *__s1, const char *__s2, _w_size_t __n 
 _WCRTLINK extern _w_size_t strlcpy( char *__s1, const char *__s2, _w_size_t __n );
 
 :segment !NO_WIDECHAR
-:segment CNAME
-namespace std {
-
-:endsegment
+:include nsstd.sp
 _WCRTLINK extern wchar_t  *wcscat( wchar_t *, const wchar_t * );
 _WCRTLINK extern wchar_t  *wcschr( const wchar_t *, wint_t );
 _WCRTLINK extern int      wcscmp( const wchar_t *, const wchar_t * );
@@ -399,11 +390,8 @@ _WCRTLINK extern size_t   wcsspn( const wchar_t *, const wchar_t * );
 _WCRTLINK extern wchar_t  *wcsstr( const wchar_t *, const wchar_t * );
 _WCRTLINK extern wchar_t  *wcstok( wchar_t *, const wchar_t *, wchar_t ** );
 _WCRTLINK extern size_t   wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t __n );
+:include nsstdepi.sp
 
-:segment CNAME
-} // namespace std
-
-:endsegment
 _WCRTLINK extern int      wcscmpi( const wchar_t *, const wchar_t * );
 _WCRTLINK extern wchar_t  *wcserror( int );
 :segment DOS
@@ -454,27 +442,21 @@ extern void __strerror( int __max, int __errnum, char *__buf );
 :include extepi.sp
 
 #ifdef  __INLINE_FUNCTIONS__
+
 :include ext.sp
  #pragma intrinsic(movedata,_fmemchr,_fmemcmp,_fmemcpy,_fmemset)
  #pragma intrinsic(_fstrcat,_fstrcmp,_fstrcpy,_fstrlen)
 :include extepi.sp
-:segment CNAME
-namespace std {
-  #pragma intrinsic(memchr,memcmp,memcpy,strcat,strcpy,strlen,strchr)
-:segment DOS | QNX
-  #if defined(_M_I86)
-    #pragma intrinsic(memset,strcmp)
-  #endif
-:endsegment
-}
-:elsesegment
+
+:include nsstd.sp
  #pragma intrinsic(memchr,memcmp,memcpy,strcat,strcpy,strlen,strchr)
 :segment DOS | QNX
  #if defined(_M_I86)
   #pragma intrinsic(memset,strcmp)
  #endif
 :endsegment
-:endsegment
+:include nsstdepi.sp
+
 #endif  /* __INLINE_FUNCTIONS__ */
 
 :segment !CNAME
@@ -573,8 +555,8 @@ namespace _watcom {
 
 :include namwat.sp
 
-namespace std {
-
+:keep NSSTD
+:include nsstd.sp
   // ================================
   // Member functions of basic_string
   // ================================
@@ -643,8 +625,7 @@ namespace std {
     if( buf_length > other_length ) {
       Traits::copy( buffer, s, other_length );
       str_length = other_length;
-    }
-    else {
+    } else {
       replace_buffer( s, other_length );
     }
     return( *this );
@@ -847,8 +828,7 @@ namespace std {
     if( n < buf_length - str_length ) {
       Traits::copy( buffer + str_length, s, n );
       str_length += n;
-    }
-    else {
+    } else {
       // Prepare new buffer.
       size_type result_length = str_length + n;
       size_type new_length;
@@ -933,8 +913,7 @@ namespace std {
       Traits::move( buffer + pos + n, buffer + pos, str_length - pos );
       Traits::copy( buffer + pos, s, n );
       str_length += n;
-    }
-    else {
+    } else {
       // Prepare new buffer.
       size_type result_length = str_length + n;
       size_type new_length;
@@ -998,8 +977,7 @@ namespace std {
         buffer + pos + insert_length, buffer + pos, str_length - pos );
       Traits::assign( buffer + pos, insert_length, c );
       str_length += insert_length;
-    }
-    else {
+    } else {
       // Prepare new buffer.
       size_type result_length = str_length + insert_length;
       size_type new_length;
@@ -1142,8 +1120,7 @@ namespace std {
                     str_length - pos - remove_length );
       Traits::copy( buffer + pos, s, n2 );
       str_length = result_length;
-    }
-    else {
+    } else {
       // Prepare new buffer.
       size_type new_length;
       pointer new_buffer = alloc( result_length + 1, new_length );
@@ -1574,7 +1551,8 @@ namespace std {
           break;
         }
       }
-      if ( !found ) return( index );
+      if( !found )
+        return( index );
       ++index;
     }
 
@@ -1957,8 +1935,7 @@ namespace std {
     left.swap( right );
   }
   #endif
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif
 :endsegment

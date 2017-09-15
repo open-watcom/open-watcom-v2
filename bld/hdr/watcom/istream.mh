@@ -49,8 +49,8 @@ using std::iostream;
  #include <ostream>
 #endif
 
-namespace std {
-
+:keep NSSTD
+:include nsstd.sp
   // **************************** ISTREAM ************************************
 :include pshpackl.sp
   class _WPRTLINK istream : virtual public ios {
@@ -262,8 +262,7 @@ namespace std {
     iostream();
   };
 :include poppack.sp
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif
 :endsegment

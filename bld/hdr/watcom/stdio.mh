@@ -188,16 +188,10 @@ struct __iobuf {
 };
 #endif
 
-:segment CNAME
-namespace std {
-
-:endsegment
+:include nsstd.sp
 typedef struct __iobuf FILE;
 typedef long           fpos_t;
-:segment CNAME
-
-}
-:endsegment
+:include nsstdepi.sp
 
 :segment QNX | LINUX
 #define FOPEN_MAX   _NFILES
@@ -344,10 +338,7 @@ _WCRTDATA extern FILE   _WCDATA __iob[];
 #define TMP_MAX     (26*26*26)          /*  Max times tmpnam can be called  */
 
 :: Declarations of standard C99 functions (but see below for more information).
-:segment CNAME
-namespace std {
-
-:endsegment
+:include nsstd.sp
 _WCRTLINK extern void   clearerr( FILE *__fp );
 _WCRTLINK extern int    fclose( FILE *__fp );
 _WCRTLINK extern int    feof( FILE *__fp );
@@ -402,10 +393,9 @@ _WCRTLINK extern int    vscanf( const char *__format, __va_list __arg );
 _WCRTLINK extern int    vsnprintf( char *__s, size_t __bufsize, const char *__format, __va_list __arg );
 _WCRTLINK extern int    vsscanf( const char *__s, const char *__format, __va_list __arg );
 :include extepi.sp
+:include nsstdepi.sp
 
 :segment CNAME
-} // namespace std
-
 :: Implementation specific functions remain in the global namespace.
 _WCRTLINK extern int        _getw( std::FILE *__fp );
 _WCRTLINK extern int        _pclose( std::FILE *__fp );
@@ -437,10 +427,7 @@ _WCRTLINK extern char  *_tempnam( const char *__dir, const char *__prefix );
 :endsegment
 
 :segment !NO_WIDECHAR
-:segment CNAME
-namespace std {
-
-:endsegment
+:include nsstd.sp
 /* These names are not in stdio according to C99. */
 _WCRTLINK extern wint_t   getwc( FILE * );
 _WCRTLINK extern wint_t   getwchar( void );
@@ -463,11 +450,8 @@ _WCRTLINK extern int      vwprintf( const wchar_t *, __va_list );
 _WCRTLINK extern int      vwscanf( const wchar_t *, __va_list );
 _WCRTLINK extern int      wprintf( const wchar_t *, ... );
 _WCRTLINK extern int      wscanf( const wchar_t *, ... );
+:include nsstdepi.sp
 
-:segment CNAME
-} // namespace std
-
-:endsegment
 :endsegment
 /* These names are not part of C89 or C99. */
 ::

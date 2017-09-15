@@ -277,7 +277,7 @@ _WCRTLINK extern void    sound( unsigned __frequency );
 /* macros to break 'far' pointers into segment and offset components */
 
 #define _FP_OFF(__p) ((unsigned)(__p))
- 
+
 :segment DOS | QNX
 #if defined(_M_I86)
  #define _FP_SEG(__p) ((unsigned)((unsigned long)(void __far*)(__p) >> 16))

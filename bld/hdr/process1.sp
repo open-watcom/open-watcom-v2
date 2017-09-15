@@ -14,11 +14,11 @@ _WCRTLINK _WCNORETURN extern void   abort( void );
 _WCRTLINK _WCNORETURN extern void   exit( int __status );
 :segment CNAME
 
-}
+} // namespace std
 :elsesegment !CONLY
 
 #ifdef __cplusplus
-}
+} // namespace std
 :endsegment
 :endsegment
 :segment !CNAME & !NOUSING

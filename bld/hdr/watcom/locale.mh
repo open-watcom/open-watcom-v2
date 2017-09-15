@@ -71,10 +71,7 @@ using std::localeconv;
 #define LC_MIN  LC_CTYPE
 #define LC_MAX  LC_ALL
 
-:segment CNAME
-namespace std {
-
-:endsegment
+:include nsstd.sp
 struct lconv {
         char *decimal_point;
         char *thousands_sep;
@@ -98,11 +95,8 @@ struct lconv {
 
 _WCRTLINK extern char    *setlocale( int __category,const char *__locale );
 _WCRTLINK extern struct lconv *localeconv(void);
+:include nsstdepi.sp
 
-:segment CNAME
-} // namespace std
-
-:endsegment
 :segment !NO_WIDECHAR
 _WCRTLINK extern wchar_t *_wsetlocale( int __category,const wchar_t *__locale );
 :endsegment
@@ -132,9 +126,10 @@ _WCRTLINK extern wchar_t *_wsetlocale( int __category,const wchar_t *__locale );
 
 :include cpponly.sp
 
-namespace std {
-
-} // namespace std
+:keep NSSTD
+:include nsstd.sp
+:include nyi.sp
+:include nsstdepi.sp
 
 #endif
 :endsegment

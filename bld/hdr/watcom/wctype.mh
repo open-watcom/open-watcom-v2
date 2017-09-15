@@ -82,15 +82,9 @@ using std::iswblank;
 #define WEOF ((wint_t)(-1))
 :endsegment
 
-:segment CNAME
-namespace std {
-
-:endsegment
+:include nsstd.sp
 :include wctype.sp
-:segment CNAME
-
-} // namespace std
-:endsegment
+:include nsstdepi.sp
 
 :include ext.sp
 :segment CNAME

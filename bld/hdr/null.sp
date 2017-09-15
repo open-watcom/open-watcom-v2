@@ -21,7 +21,7 @@
 :segment DOS | QNX
   #else
    #define NULL 0L
-  #endif 
+  #endif
 :endsegment
 :segment !CNAME
  #else

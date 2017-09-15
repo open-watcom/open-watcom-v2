@@ -42,8 +42,8 @@ using std::strstream;
  #include <iostream>
 #endif
 
-namespace std {
-
+:keep NSSTD
+:include nsstd.sp
   // **************************** STRSTREAMBUF *******************************
 
 :include pshpackl.sp
@@ -197,8 +197,7 @@ namespace std {
     __lock_it( __i_lock );
     return( rdbuf()->str() );
   }
-
-} // namespace std
+:include nsstdepi.sp
 
 #endif
 :endsegment

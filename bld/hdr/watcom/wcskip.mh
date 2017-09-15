@@ -332,7 +332,7 @@ void WCValSkipListDict<Key, Value>
     register node_ptr curr;
 
     curr = header->forward[ 0 ];
-    while ( curr != 0 ) {
+    while( curr != 0 ) {
         user_fn( base_whole_node( curr )->data.key
                , base_whole_node( curr )->data.value, data );
         curr = curr->forward[ 0 ];
