@@ -409,7 +409,6 @@ _WCRTLINK extern wchar_t  *_wdoserror( int __errnum );
 ::_WCRTLINK extern wchar_t  *wcsrev( wchar_t * );
 ::_WCRTLINK extern wchar_t  *wcsset( wchar_t *, wchar_t );
 ::
-_WCRTLINK extern wchar_t    *_ustrtok( wchar_t *, const wchar_t * );
 _WCRTLINK extern wchar_t    *_wcsnset( wchar_t *, int, _w_size_t );
 _WCRTLINK extern wchar_t    *_wcsspnp( const wchar_t *__s1, const wchar_t *__s2 );
 _WCRTLINK extern int        _wcsnicmp( const wchar_t *, const wchar_t *, _w_size_t );
