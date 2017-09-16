@@ -44,7 +44,7 @@ typedef struct utf_table {
         long                    lval;
 } utf_table;
 
-#ifdef _M_I86HM
+#if defined( _M_I86 ) && defined( __HUGE__ )
  extern const utf_table __far __utf_table[7];
 #else
  extern const utf_table __near __utf_table[7];
