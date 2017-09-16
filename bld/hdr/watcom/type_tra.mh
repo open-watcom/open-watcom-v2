@@ -13,7 +13,6 @@
 
 :include cpponly.sp
 
-:keep NSSTD
 :include nsstd.sp
     template< class T, T v >
     struct integral_constant{

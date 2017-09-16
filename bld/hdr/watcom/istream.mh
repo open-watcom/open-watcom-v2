@@ -49,7 +49,6 @@ using std::iostream;
  #include <ostream>
 #endif
 
-:keep NSSTD
 :include nsstd.sp
   // **************************** ISTREAM ************************************
 :include pshpackl.sp

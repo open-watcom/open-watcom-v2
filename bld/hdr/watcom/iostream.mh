@@ -74,7 +74,6 @@ enum {
 
 // **************************** PREDEFINED STREAMS ***************************
 
-:keep NSSTD
 :include nsstd.sp
   _WPRTLINK extern istream _WCDATA cin;
   _WPRTLINK extern ostream _WCDATA cout;

@@ -33,7 +33,6 @@
  #include <function>
 #endif
 
-:keep NSSTD
 :include nsstd.sp
 /* ==================================================================
  * class map

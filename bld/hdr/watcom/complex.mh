@@ -1,4 +1,11 @@
-:segment !CPPCOMPLEX
+::
+:: This file generates three different headers.
+::
+::   complex.h : Default wsplice operation.
+::   ccomplex  : CNAME wsplice operation.
+::   complex   : CPPONLY + CNAME wsplice operation.
+::
+:segment !CPPONLY
 //
 //  complex.h   Complex Numbers
 //
@@ -462,7 +469,6 @@ inline double norm( Complex const &__cv ) {
  #include <ostream>
 #endif
 
-:keep NSSTD
 :include nsstd.sp
   template< class FloatT >
   class complex {

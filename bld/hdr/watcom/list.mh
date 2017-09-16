@@ -38,7 +38,6 @@
  #include <function>
 #endif
 
-:keep NSSTD
 :include nsstd.sp
     template< class Type, class Allocator = allocator< Type > >
     class list {

@@ -39,7 +39,6 @@ using std::fstream;
 
 :include owrtlink.sp
 
-:keep NSSTD
 :include nsstd.sp
   class _WPRTLINK ios;
 

@@ -15,7 +15,6 @@
 
 :include cpponly.sp
 
-:keep NSSTD
 :include nsstd.sp
 :include nyi.sp
 :include nsstdepi.sp

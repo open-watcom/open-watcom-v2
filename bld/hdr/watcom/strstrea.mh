@@ -42,7 +42,6 @@ using std::strstream;
  #include <iostream>
 #endif
 
-:keep NSSTD
 :include nsstd.sp
   // **************************** STRSTREAMBUF *******************************
 

@@ -18,7 +18,6 @@
  #include <deque>
 #endif
 
-:keep NSSTD
 :include nsstd.sp
 /*===================================================================
  * stack template adaptor

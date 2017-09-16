@@ -37,7 +37,6 @@
  #include <_meta.h>
 #endif
 
-:keep NSSTD
 :include nsstd.sp
     template< class T, class A  = allocator< T > >
     class forward_list{

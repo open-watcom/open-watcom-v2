@@ -48,7 +48,6 @@ using std::terminate;
 
 :include except.sp
 
-:keep NSSTD
 :include nsstd.sp
   class _WPRTLINK exception {
     const char *_what_val;

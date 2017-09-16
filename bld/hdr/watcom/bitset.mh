@@ -31,7 +31,6 @@
  #include <iosfwd>
 #endif
 
-:keep NSSTD
 :include nsstd.sp
     template< size_t N > class bitset {
     public:

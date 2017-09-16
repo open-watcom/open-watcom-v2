@@ -19,7 +19,6 @@
  #include <cstddef>
 #endif
 
-:keep NSSTD
 :include nsstd.sp
     template< class Arg1, class Result >
     struct unary_function {

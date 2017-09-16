@@ -41,7 +41,6 @@
  #include <type_tra>
 #endif
 
-:keep NSSTD
 :include nsstd.sp
   template< class Type, class Allocator = allocator< Type >,
             int PageSize = 32 > //to do, assert/force power of 2

@@ -50,7 +50,6 @@ using std::underflow_error;
  #include <exceptio>
 #endif
 
-:keep NSSTD
 :include nsstd.sp
   namespace _ow {
 

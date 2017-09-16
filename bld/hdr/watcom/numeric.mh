@@ -13,7 +13,6 @@
 
 :include cpponly.sp
 
-:keep NSSTD
 :include nsstd.sp
   // accumulate
   // **********

@@ -50,7 +50,6 @@ using std::streambuf;
 
 #define __char_to_int( __c )    ((int)(unsigned char)(__c))
 
-:keep NSSTD
 :include nsstd.sp
   // **************************** STREAMBUF **********************************
 :include pshpackl.sp

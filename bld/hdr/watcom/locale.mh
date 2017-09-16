@@ -1,13 +1,16 @@
 ::
-:: This file generates three different headers: locale.h, clocale, and
-:: locale. The "default" wsplice operation produces locale.h, the header
-:: used in the C library. A CNAME wsplice operation produces clocale, the
-:: C++ partner to C's locale.h. A special CPPLOCALE wsplice operation
-:: generates C++'s locale header. That header is not directly related to
-:: either locale.h or clocale.
+:: This file generates three different headers.
+::
+::   locale.h : Default wsplice operation.
+::   clocale  : CNAME wsplice operation.
+::   locale   : CPPONLY + CNAME wsplice operation.
+::
+:: The locale.h, the header used in the C library.
+:: The clocale, the C++ partner to C's locale.h.
+:: C++'s locale header is not directly related to either locale.h or clocale.
 :: (Peter Chapin)
 ::
-:segment !CPPLOCALE
+:segment !CPPONLY
 /***************************************************************************
  * FILE: locale.h/clocale (Localization)
  *
@@ -132,7 +135,6 @@ _WCRTLINK extern wchar_t      *_wsetlocale( int __category, const wchar_t *__loc
 
 :include cpponly.sp
 
-:keep NSSTD
 :include nsstd.sp
 :include nyi.sp
 :include nsstdepi.sp

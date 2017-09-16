@@ -33,7 +33,6 @@
  #include <function>
 #endif
 
-:keep NSSTD
 :include nsstd.sp
 //associative container set, as defined in incits/iso/iec14882-2003
 template< class Key,

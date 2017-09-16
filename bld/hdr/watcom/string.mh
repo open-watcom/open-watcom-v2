@@ -1,13 +1,13 @@
 ::
 :: This file generates three different headers.
 ::
-::   string.h: Default wsplice operation.
-::   cstring : CNAME wsplice operation.
-::   string  : CPPSTRING wsplice operation.
+::   string.h : Default wsplice operation.
+::   cstring  : CNAME wsplice operation.
+::   string   : CPPONLY(+CNAME) wsplice operation.
 ::
 :: Note that string is not directly related to string.h or cstring.
 ::
-:segment !CPPSTRING
+:segment !CPPONLY
 /***************************************************************************
  * FILE: string.h/cstring (String functions)
  *
@@ -554,7 +554,6 @@ namespace _watcom {
 
 :include namwat.sp
 
-:keep NSSTD
 :include nsstd.sp
   // ================================
   // Member functions of basic_string

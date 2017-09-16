@@ -19,7 +19,6 @@
  #include <cstddef>
 #endif
 
-:keep NSSTD
 :include nsstd.sp
   struct input_iterator_tag  { };
   struct output_iterator_tag { };

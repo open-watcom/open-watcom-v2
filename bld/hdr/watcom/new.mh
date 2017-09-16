@@ -58,7 +58,6 @@ _WPRTLINK extern PFU _set_new_handler( PFU );
 #endif
 :endsegment
 
-:keep NSSTD
 :include nsstd.sp
     typedef void (_WCCALLBACK *new_handler)();
     _WPRTLINK extern new_handler set_new_handler( new_handler );
@@ -69,7 +68,6 @@ _WPRTLINK extern PFU _set_new_handler( PFU );
 // that reference it will at least compile. Consider this a first step
 // in building an exception throwing implementation of operator new.
 
-:keep NSSTD
 :include nsstd.sp
   class bad_alloc : public exception {
   public:

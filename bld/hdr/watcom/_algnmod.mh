@@ -23,7 +23,6 @@
  #include <utility>
 #endif
 
-:keep NSSTD
 :include nsstd.sp
     // all_of( InputIterator, InputIterator, Predicate )
     // *************************************************

@@ -1,4 +1,4 @@
-:segment CNAME | NSSTD
+:segment CNAME
 namespace std {
 
 :endsegment

@@ -35,7 +35,6 @@
  #include <type_tra>
 #endif
 
-:keep NSSTD
 :include nsstd.sp
 template<class Type, class Allocator = allocator< Type > >
 class vector {

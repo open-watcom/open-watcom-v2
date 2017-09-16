@@ -189,7 +189,6 @@ namespace _ow {
 } // namespace _ow
 
 
-:keep NSSTD
 :include nsstd.sp
     template< class UIntType, UIntType a, UIntType c, UIntType m >
     class linear_congruential{

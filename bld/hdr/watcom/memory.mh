@@ -1,4 +1,11 @@
-:segment !CPPMEMORY
+::
+:: This file generates three different headers.
+::
+::   memory.h : Default wsplice operation.
+::   cmemory  : CNAME wsplice operation.
+::   memory   : CPPONLY + CNAME wsplice operation.
+::
+:segment !CPPONLY
 /*
  *  memory.h    C library memory manipulation functions
  *
@@ -67,7 +74,6 @@ inline void _RawDestroy( Iterator ptr )
     ( *ptr ).~value_type( );
 }
 
-:keep NSSTD
 :include nsstd.sp
     template< class Type > class allocator;
 

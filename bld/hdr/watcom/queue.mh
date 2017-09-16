@@ -29,7 +29,6 @@
   #include <vector>
 #endif
 
-:keep NSSTD
 :include nsstd.sp
     // =====
     // Queue

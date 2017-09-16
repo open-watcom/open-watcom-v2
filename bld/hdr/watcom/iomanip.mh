@@ -199,7 +199,6 @@ SMANIP_define( long );
 
 // Create the prototypes for the manipulator functions.
 
-:keep NSSTD
 :include nsstd.sp
   SMANIP_make( long, resetiosflags );
   SMANIP_make( int,  setbase );
@@ -335,7 +334,6 @@ template<class T>
 
 :segment IOMANIP_SIMPLIFICATION
 // manipulator prototypes
-:keep NSSTD
 :include nsstd.sp
   smanip<long> resetiosflags( long );
   smanip<int>  setbase( int );
@@ -346,7 +344,6 @@ template<class T>
 :include nsstdepi.sp
 :elsesegment
 // applicator objects
-:keep NSSTD
 :include nsstd.sp
   _WPRTLINK extern sapp<long> _WCDATA resetiosflags;
   _WPRTLINK extern sapp<int>  _WCDATA setbase;

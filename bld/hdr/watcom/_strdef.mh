@@ -38,7 +38,6 @@
  #include <memory>
 #endif
 
-:keep NSSTD
 :include nsstd.sp
   // struct char_traits
   // ******************

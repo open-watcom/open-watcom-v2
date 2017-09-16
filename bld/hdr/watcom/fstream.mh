@@ -45,7 +45,6 @@ using std::fstream;
 // POSIX file handle:
 typedef int filedesc;
 
-:keep NSSTD
 :include nsstd.sp
   // **************************** FILEBUF ************************************
 
