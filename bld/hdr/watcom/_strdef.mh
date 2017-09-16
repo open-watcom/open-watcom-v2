@@ -18,7 +18,7 @@
 
 :include cpponly.sp
 
-#if !defined(_STDEXCEPT_INCLUDED)
+#ifndef _STDEXCEPT_INCLUDED
  #error The header _strdef.h is not to be directly included in user programs
 #endif
 

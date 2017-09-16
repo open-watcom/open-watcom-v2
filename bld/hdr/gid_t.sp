@@ -6,7 +6,7 @@
 :elsesegment ARCHMIPS
  typedef long           gid_t;  /* Used for group IDs               */
 :elsesegment
- #if defined(__386__)
+ #ifdef __386__
   typedef unsigned short gid_t; /* Used for group IDs               */
  #elif defined(__MIPS__)
   typedef long           gid_t; /* Used for group IDs               */

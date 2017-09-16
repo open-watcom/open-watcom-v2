@@ -96,7 +96,7 @@ _WCRTLINK extern int    iswascii( wint_t __wc );
 _WCRTLINK extern int    __iswcsymf( wint_t __wc );
 _WCRTLINK extern int    __iswcsym( wint_t __wc );
 :endsegment
-#if !defined(__FUNCTION_DATA_ACCESS)
+#ifndef __FUNCTION_DATA_ACCESS
 :segment !CNAME
 #define iswascii(__c)   ((unsigned)(__c) < 0x80)
 :endsegment

@@ -467,7 +467,7 @@
     };
 
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
 
     template< >
     struct hash< long > : public unary_function< long, size_t >

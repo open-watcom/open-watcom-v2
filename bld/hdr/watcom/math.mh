@@ -103,7 +103,7 @@ using std::nanl;
 :include pshpackl.sp
 
 _WCRTLINK extern const double   *__get_HugeValue_ptr( void );
-#if defined(__FUNCTION_DATA_ACCESS)
+#ifdef __FUNCTION_DATA_ACCESS
  #define _HugeValue             (*__get_HugeValue_ptr())
 #elif defined(__SW_BR) || defined(_RTDLL)
  #define _HugeValue             _HugeValue_br
@@ -232,7 +232,7 @@ _WMRTLINK extern double nanl(const char *ignored);
 #endif
 
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
  #define FP_ILOGBNAN  (-32767-1)
  #define FP_ILOGB0    32767
 #else

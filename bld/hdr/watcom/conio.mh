@@ -24,13 +24,13 @@ _WCRTLINK extern int getche(void);
 _WCRTLINK extern int _getche(void);
 _WCRTLINK extern int kbhit(void);
 _WCRTLINK extern int _kbhit(void);
-#if defined(_M_IX86)
+#ifdef _M_IX86
  _WCIRTLINK extern unsigned inp(unsigned __port);
  _WCIRTLINK extern unsigned inpw(unsigned __port);
  _WCIRTLINK extern unsigned outp(unsigned __port, unsigned __value);
  _WCIRTLINK extern unsigned outpw(unsigned __port,unsigned __value);
 :segment DOS | QNX
- #if !defined(_M_I86)
+ #ifndef _M_I86
 :endsegment
   _WCIRTLINK extern unsigned inpd(unsigned __port);
   _WCIRTLINK extern unsigned outpd(unsigned __port, unsigned __value);
@@ -46,7 +46,7 @@ _WCRTLINK extern int vcscanf( const char *__format, __va_list __arg );
 #if defined(__INLINE_FUNCTIONS__) && defined(_M_IX86)
  #pragma intrinsic(inp,inpw,outp,outpw)
 :segment DOS | QNX
- #if !defined(_M_I86)
+ #ifndef _M_I86
 :endsegment
   #pragma intrinsic(inpd,outpd)
 :segment DOS | QNX
@@ -54,7 +54,7 @@ _WCRTLINK extern int vcscanf( const char *__format, __va_list __arg );
 :endsegment
 #endif
 
-#if defined(_M_IX86)
+#ifdef _M_IX86
  #define _inp   inp
  #define _inpw  inpw
  #define _inpd  inpd

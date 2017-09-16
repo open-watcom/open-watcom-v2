@@ -8,7 +8,7 @@
 
 :include readonly.sp
 
-#if !defined(__MIPS__)
+#ifndef __MIPS__
  #error sysmips.h is only supported on MIPS architecture
 #endif
 

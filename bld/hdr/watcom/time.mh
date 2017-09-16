@@ -303,7 +303,7 @@ _WCRTLINK extern errno_t      _wctime_s( wchar_t *__s, rsize_t __maxsize, const 
 :endsegment
 _WCRTLINK extern void   tzset( void );
 _WCRTLINK extern char   **__get_tzname_ptr( void );
-#if defined(__FUNCTION_DATA_ACCESS)
+#ifdef __FUNCTION_DATA_ACCESS
  #define tzname         (*__get_tzname_ptr())
 #elif defined(__SW_BR) || defined(_RTDLL)
  #define tzname  tzname_br
@@ -316,7 +316,7 @@ _WCRTDATA extern char * _WCDATA tzname[2];  /*  time zone names */
 :endsegment
 _WCRTLINK extern long   *__get_timezone_ptr( void );
 _WCRTLINK extern int    *__get_daylight_ptr( void );
-#if defined( __FUNCTION_DATA_ACCESS )
+#ifdef __FUNCTION_DATA_ACCESS
  #define timezone       (*__get_timezone_ptr())
  #define daylight       (*__get_daylight_ptr())
 #elif defined(__SW_BR) || defined(_RTDLL)

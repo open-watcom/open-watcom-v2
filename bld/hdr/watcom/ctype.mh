@@ -117,7 +117,7 @@ _WCRTLINK extern int    __iscsym(int);
 :include extepi.sp
 :: Eliminate macros from cctype. These can be put back later as in-lines.
 
-#if !defined(__FUNCTION_DATA_ACCESS)
+#ifndef __FUNCTION_DATA_ACCESS
 
 #define isalnum(__c)    ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & (_LOWER|_UPPER|_DIGIT))
 #define isalpha(__c)    ((unsigned char)(_IsTable[((unsigned char)(__c))+1]) & (_LOWER|_UPPER))

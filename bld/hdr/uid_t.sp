@@ -6,7 +6,7 @@
 :elsesegment ARCHMIPS
  typedef long           uid_t;  /* Used for user IDs                */
 :elsesegment
- #if defined(__386__)
+ #ifdef __386__
   typedef unsigned short uid_t; /* Used for user IDs                */
  #elif defined(__MIPS__)
   typedef long           uid_t; /* Used for user IDs                */

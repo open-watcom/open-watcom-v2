@@ -57,7 +57,7 @@ using std::wcstoumax;
 :: if __STDC_FORMAT_MACROS is defined. */
 ::
 :segment CNAME
-#if defined(__STDC_FORMAT_MACROS)
+#ifdef __STDC_FORMAT_MACROS
 
 :endsegment
 #define PRId8   "hhd"
@@ -221,7 +221,7 @@ using std::wcstoumax;
 #define SCNXMAX     "llX"
 
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
 ::
 #if defined(__SMALL__) || defined(__MEDIUM__)
 :: typedef int intptr_t;

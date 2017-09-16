@@ -32,7 +32,7 @@
 
 :segment LINUX
 #undef __FILLER
-#if defined(_M_IX86)
+#ifdef _M_IX86
  #define __FILLER(a) unsigned short a;
 #else
  #define __FILLER(a)
@@ -65,7 +65,7 @@ _WCRTLINK extern int _heapshrink( void );
 _WCRTLINK extern int _nheapshrink( void );
 
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
 _WCRTLINK extern int _fheapchk( void );
 _WCRTLINK extern int _fheapset( unsigned int __fill );
 _WCRTLINK extern int _fheapwalk( struct _heapinfo *__entry );
@@ -120,7 +120,7 @@ _WCRTLINK extern size_t _nmsize( void _WCNEAR *__ptr );
 :endsegment
 
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
 _WCRTLINK extern int __fmemneed( size_t );
 #if !defined(_fcalloc) || !defined(_INC_WINDOWSX)
 _WCRTLINK extern void _WCFAR *_fcalloc( size_t __n, size_t __size );
@@ -180,7 +180,7 @@ using std::_os2hmalloc;
 #endif
 
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
 /* based heap function prototypes */
 
 #define _NULLSEG ((__segment)0)

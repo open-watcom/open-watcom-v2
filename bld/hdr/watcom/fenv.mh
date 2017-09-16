@@ -21,7 +21,7 @@
 
 /* type for holding FPU environment */
 :segment DOS | QNX
-#if defined(_M_I86)
+#ifdef _M_I86
 typedef struct {
     unsigned short control_word;
     unsigned short status_word;

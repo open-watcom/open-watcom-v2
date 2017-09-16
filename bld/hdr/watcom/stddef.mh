@@ -73,18 +73,18 @@ using std::ptrdiff_t;
 :endsegment
 
 :segment QNX | LINUX
-#if defined(__386__)
+#ifdef __386__
  _WCRTLINK extern int *__threadid(void); /* pointer to thread id */
  #define _threadid (__threadid())
 #endif
 :elsesegment DOS
 :include ext.sp
-#if defined(_M_I86)
+#ifdef _M_I86
  _WCRTDATA extern int _WCFAR *_threadid;        /* pointer to thread id */
 #else
  _WCRTLINK extern int *__threadid(void); /* pointer to thread id */
  #define _threadid (__threadid())
- #if defined(__NT__)
+ #ifdef __NT__
 :include thrdhndl.sp
  #endif
 #endif

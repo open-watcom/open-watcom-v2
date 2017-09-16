@@ -160,7 +160,7 @@ using std::wscanf;
 #define BUFSIZ          4096        /*  Default buffer size                 */
 :elsesegment
 #define _NFILES         20          /* number of files that can be handled */
-#if defined(_M_I86)
+#ifdef _M_I86
  #define BUFSIZ         512         /*  Default buffer size                 */
 #else
  #define BUFSIZ         4096        /*  Default buffer size                 */
@@ -173,7 +173,7 @@ using std::wscanf;
 :: This (strange?) technique keeps the name '__iobuf' in the global namespace.
 struct __stream_link;
 struct __iobuf;
-#if !defined(__OBSCURE_STREAM_INTERNALS)
+#ifndef __OBSCURE_STREAM_INTERNALS
 struct __iobuf {
     unsigned char        *_ptr;         /* next character position */
     int                   _cnt;         /* number of characters left */
@@ -215,7 +215,7 @@ _WCRTLINK extern std::FILE  *__get_iob_ptr( void );
 :elsesegment
 _WCRTLINK extern FILE       *__get_iob_ptr( void );
 :endsegment
-#if defined(__FUNCTION_DATA_ACCESS)
+#ifdef __FUNCTION_DATA_ACCESS
  #define __iob          (*__get_iob_ptr())
 #elif defined(__SW_BR) || defined(_RTDLL)
  #define __iob          __iob_br
@@ -227,7 +227,7 @@ _WCRTLINK extern std::FILE *__get_std_file(unsigned handle);
 _WCRTLINK extern FILE *__get_std_file(unsigned handle);
 :endsegment
 
-#if !defined(__OBSCURE_STREAM_INTERNALS)
+#ifndef __OBSCURE_STREAM_INTERNALS
 :segment CNAME
 _WCRTDATA extern std::FILE  _WCDATA __iob[];
 /*
@@ -654,7 +654,7 @@ _WCRTLINK extern int         pclose( FILE *__stream );
 :: Eliminate all macro versions of these functions from cstdio
 :: Eventually they can be re-introduced as proper in-line functions.
 :segment !CNAME
-#if !defined(__OBSCURE_STREAM_INTERNALS)
+#ifndef __OBSCURE_STREAM_INTERNALS
 #define clearerr(fp)    ((fp)->_flag &= ~(_SFERR|_EOF))
 #define feof(fp)        ((fp)->_flag & _EOF)
 #define ferror(fp)      ((fp)->_flag & _SFERR)
@@ -666,7 +666,7 @@ _WCRTLINK extern int         pclose( FILE *__stream );
 #define getc(fp)        fgetc(fp)
 #define putc(c,fp)      fputc(c,fp)
 #else
-#if !defined(__OBSCURE_STREAM_INTERNALS)
+#ifndef __OBSCURE_STREAM_INTERNALS
 #define getc(fp) \
         ((fp)->_cnt<=0 \
 :segment DOS

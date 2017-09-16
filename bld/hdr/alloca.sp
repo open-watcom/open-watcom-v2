@@ -12,7 +12,7 @@
   #define __alloca( s )         __doalloca(__ALLOCA_ALIGN(s))
 
 :segment DOS
-  #if defined( _M_I86 )
+  #ifdef _M_I86
 :endsegment
    #define alloca( s )  ((__ALLOCA_ALIGN(s)<stackavail())?__alloca(s): (void *)0)
    #define _alloca( s ) ((__ALLOCA_ALIGN(s)<stackavail())?__alloca(s): (void *)0)
@@ -26,7 +26,7 @@
 :endsegment
 
 :segment DOS | QNX
-  #if defined( _M_I86 )
+  #ifdef _M_I86
     #pragma aux __doalloca = \
             "sub sp,ax"     \
             __parm __nomemory [__ax] __value [__sp] __modify __exact __nomemory [__sp]

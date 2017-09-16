@@ -21,7 +21,7 @@
 
 #undef va_start
 
-#if defined(__PPC__)
+#ifdef __PPC__
  extern void *__builtin_va_start(va_list*, ...);
  #pragma intrinsic(__builtin_va_start)
  #define va_alist       void *__alist, ...
@@ -39,7 +39,7 @@
 :segment DOS | QNX
  #if defined(__HUGE__) || defined(__SW_ZU)
 :elsesegment
- #if defined(__SW_ZU)
+ #ifdef __SW_ZU
 :endsegment
   #define va_start(ap)  ((ap)[0]=(char _WCFAR*)&__alist,(void)0)
  #else

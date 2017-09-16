@@ -35,7 +35,7 @@ using std::oct;
 :include owrtlink.sp
 
 // Define EOF to be the same as that used with C.
-#if !defined( EOF )
+#ifndef EOF
  #define EOF (-1)
 #endif
 

@@ -10,11 +10,11 @@
 
 :include owrtlink.sp
 
-#if !defined(_SETJMP_H_INCLUDED_)
+#ifndef _SETJMP_H_INCLUDED_
  #include <setjmp.h>
 #endif
 
-#if defined(__AXP__)
+#ifdef __AXP__
 
 :include cpluspro.sp
 

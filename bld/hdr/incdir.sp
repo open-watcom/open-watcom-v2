@@ -1,5 +1,5 @@
 #ifndef _ARCH_DIR
- #if defined(__386__)
+ #ifdef __386__
   #define _ARCH_DIR i386
  #elif defined(__MIPS__)
   #define _ARCH_DIR mips
