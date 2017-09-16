@@ -263,14 +263,14 @@ extern int __math_errhandling_flag;
 /* non-ANSI */
 
 struct _complex {
-        double  x;
-        double  y;
+    double  x;
+    double  y;
 };
 :segment !CNAME
 
 struct complex {
-        double  x;
-        double  y;
+    double  x;
+    double  y;
 };
 :endsegment
 
@@ -287,20 +287,20 @@ _WMRTLINK extern double yn( int __n, double __x );
  */
 
 struct _exception {
-        int     type;           /* type of error, see below */
-        const char *name;       /* name of math function */
-        double  arg1;           /* value of first argument to function */
-        double  arg2;           /* second argument (if indicated) */
-        double  retval;         /* default return value */
+    int     type;           /* type of error, see below */
+    const char *name;       /* name of math function */
+    double  arg1;           /* value of first argument to function */
+    double  arg2;           /* second argument (if indicated) */
+    double  retval;         /* default return value */
 };
 :segment !CNAME
 
 struct  exception {
-        int     type;           /* type of error, see below */
-        const char *name;       /* name of math function */
-        double  arg1;           /* value of first argument to function */
-        double  arg2;           /* second argument (if indicated) */
-        double  retval;         /* default return value */
+    int     type;           /* type of error, see below */
+    const char *name;       /* name of math function */
+    double  arg1;           /* value of first argument to function */
+    double  arg2;           /* second argument (if indicated) */
+    double  retval;         /* default return value */
 };
 :endsegment
 
@@ -347,8 +347,8 @@ _WCRTLINK extern int _fmsbintoieee( float *__x, float *__y );
 :endsegment
 
 #endif /* _CMATH_INCLUDED */
-
 :segment CNAME
+
 :: For C++ provide the appropriate overloaded signatures. These signatures
 :: must not be extern "C" (which is why they are down here).
 #ifndef _INCLUDED_FROM_MATH_H
@@ -358,28 +358,23 @@ _WCRTLINK extern int _fmsbintoieee( float *__x, float *__y );
 :include nsstd.sp
   // double
   inline double abs( double __x ) { return( fabs( __x ) ); }
-  inline double pow( double __x, int __y )
-    { return( pow( __x, (double)__y ) ); }
+  inline double pow( double __x, int __y ) { return( pow( __x, (double)__y ) ); }
 
   // float
   inline float abs  ( float __x ) { return( abs  ( (double)__x ) ); }
   inline float acos ( float __x ) { return( acos ( (double)__x ) ); }
   inline float asin ( float __x ) { return( asin ( (double)__x ) ); }
   inline float atan ( float __x ) { return( atan ( (double)__x ) ); }
-  inline float atan2( float __x, float __y )
-    { return( atan2( (double)__x, (double)__y ) ); }
+  inline float atan2( float __x, float __y ) { return( atan2( (double)__x, (double)__y ) ); }
   inline float ceil ( float __x ) { return( ceil ( (double)__x ) ); }
   inline float cos  ( float __x ) { return( cos  ( (double)__x ) ); }
   inline float cosh ( float __x ) { return( cosh ( (double)__x ) ); }
   inline float exp  ( float __x ) { return( exp  ( (double)__x ) ); }
   inline float fabs ( float __x ) { return( fabs ( (double)__x ) ); }
   inline float floor( float __x ) { return( floor( (double)__x ) ); }
-  inline float fmod ( float __x, float __y )
-    { return( fmod( (double)__x, (double)__y ) ); }
-  inline float frexp( float __value, int *__exp )
-    { return( frexp( (double)__value, __exp ) ); }
-  inline float ldexp( float __x, int __exp )
-    { return( ldexp( (double)__x, __exp ) ); }
+  inline float fmod ( float __x, float __y ) { return( fmod( (double)__x, (double)__y ) ); }
+  inline float frexp( float __value, int *__exp ) { return( frexp( (double)__value, __exp ) ); }
+  inline float ldexp( float __x, int __exp ) { return( ldexp( (double)__x, __exp ) ); }
   inline float log  ( float __x ) { return( log  ( (double)__x ) ); }
   inline float log10( float __x ) { return( log10( (double)__x ) ); }
   inline float modf ( float __value, float *__iptr )
@@ -389,10 +384,8 @@ _WCRTLINK extern int _fmsbintoieee( float *__x, float *__y );
     *__iptr = __i;
     return( __result );
   }
-  inline float pow  ( float __x, float __y )
-    { return( pow  ( (double)__x, (double)__y ) ); }
-  inline float pow  ( float __x, int __y )
-    { return( pow  ( (double)__x, __y ) ); }
+  inline float pow  ( float __x, float __y ) { return( pow  ( (double)__x, (double)__y ) ); }
+  inline float pow  ( float __x, int __y ) { return( pow  ( (double)__x, __y ) ); }
   inline float sin  ( float __x ) { return( sin  ( (double)__x ) ); }
   inline float sinh ( float __x ) { return( sinh ( (double)__x ) ); }
   inline float sqrt ( float __x ) { return( sqrt ( (double)__x ) ); }
@@ -404,20 +397,16 @@ _WCRTLINK extern int _fmsbintoieee( float *__x, float *__y );
   inline long double acos ( long double __x ) { return( acos ( (double)__x ) ); }
   inline long double asin ( long double __x ) { return( asin ( (double)__x ) ); }
   inline long double atan ( long double __x ) { return( atan ( (double)__x ) ); }
-  inline long double atan2( long double __x, long double __y )
-    { return( atan2( (double)__x, (double)__y ) ); }
+  inline long double atan2( long double __x, long double __y ) { return( atan2( (double)__x, (double)__y ) ); }
   inline long double ceil ( long double __x ) { return( ceil ( (double)__x ) ); }
   inline long double cos  ( long double __x ) { return( cos  ( (double)__x ) ); }
   inline long double cosh ( long double __x ) { return( cosh ( (double)__x ) ); }
   inline long double exp  ( long double __x ) { return( exp  ( (double)__x ) ); }
   inline long double fabs ( long double __x ) { return( fabs ( (double)__x ) ); }
   inline long double floor( long double __x ) { return( floor( (double)__x ) ); }
-  inline long double fmod ( long double __x, long double __y )
-    { return( fmod( (double)__x, (double)__y ) ); }
-  inline long double frexp( long double __value, int *__exp )
-    { return( frexp( (double)__value, __exp ) ); }
-  inline long double ldexp( long double __x, int __exp )
-    { return( ldexp( (double)__x, __exp ) ); }
+  inline long double fmod ( long double __x, long double __y ) { return( fmod( (double)__x, (double)__y ) ); }
+  inline long double frexp( long double __value, int *__exp ) { return( frexp( (double)__value, __exp ) ); }
+  inline long double ldexp( long double __x, int __exp ) { return( ldexp( (double)__x, __exp ) ); }
   inline long double log  ( long double __x ) { return( log  ( (double)__x ) ); }
   inline long double log10( long double __x ) { return( log10( (double)__x ) ); }
   inline long double modf ( long double __value, long double *__iptr )
@@ -427,10 +416,8 @@ _WCRTLINK extern int _fmsbintoieee( float *__x, float *__y );
     *__iptr = __i;
     return( __result );
   }
-  inline long double pow  ( long double __x, long double __y )
-    { return( pow  ( (double)__x, (double)__y ) ); }
-  inline long double pow  ( long double __x, int __y )
-    { return( pow  ( (double)__x, __y ) ); }
+  inline long double pow  ( long double __x, long double __y ) { return( pow  ( (double)__x, (double)__y ) ); }
+  inline long double pow  ( long double __x, int __y ) { return( pow  ( (double)__x, __y ) ); }
   inline long double sin  ( long double __x ) { return( sin  ( (double)__x ) ); }
   inline long double sinh ( long double __x ) { return( sinh ( (double)__x ) ); }
   inline long double sqrt ( long double __x ) { return( sqrt ( (double)__x ) ); }
