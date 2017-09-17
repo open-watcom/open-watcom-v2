@@ -4,6 +4,7 @@
  namespace std {
    typedef int mbstate_t;
  }
+ typedef std::mbstate_t _w_mbstate_t;
 #endif
 :elsesegment
 :segment !CONLY
@@ -13,6 +14,7 @@
   namespace std {
     typedef int mbstate_t;
   }
+  typedef std::mbstate_t _w_mbstate_t;
  #endif
  #ifndef _MBSTATE_T_DEFINED
  #define _MBSTATE_T_DEFINED
@@ -25,6 +27,7 @@
  #define _MBSTATE_T_DEFINED
   #define _MBSTATE_T_DEFINED_
   typedef int mbstate_t;
+  typedef mbstate_t _w_mbstate_t;
  #endif
 :segment !CONLY
 #endif /* __cplusplus not defined */
