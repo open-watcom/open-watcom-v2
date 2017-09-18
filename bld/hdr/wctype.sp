@@ -1,3 +1,4 @@
+:include nsstd.sp
 _WCRTLINK extern int      iswalnum( wint_t __wc );
 _WCRTLINK extern int      iswalpha( wint_t __wc );
 _WCRTLINK extern int      iswcntrl( wint_t __wc );
@@ -22,3 +23,4 @@ _WCRTLINK extern wctrans_t wctrans( const char *__property );
 _WCRTLINK extern int      iswblank( wint_t __wc );
 :include extepi.sp
 :endsegment
+:include nsstdepi.sp

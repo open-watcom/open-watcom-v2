@@ -78,9 +78,7 @@ using std::iswblank;
 
 :include wctranst.sp
 
-:include nsstd.sp
 :include wctype.sp
-:include nsstdepi.sp
 
 :include ext.sp
 :segment CNAME
