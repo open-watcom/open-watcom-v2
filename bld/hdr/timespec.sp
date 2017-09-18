@@ -8,4 +8,4 @@ struct timespec {
     long tv_nsec;
 };
 
-#endif
+#endif /* _TIMESPEC_DEFINED */
