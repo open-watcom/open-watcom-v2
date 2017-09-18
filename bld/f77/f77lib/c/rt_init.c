@@ -76,22 +76,26 @@ void            (*_PartialReleaseFIO)( void ) = &__NullFIOAccess;
 unsigned        __FThreadDataOffset;
 
 
-void    __InitFThreadData( fthread_data *td ) {
-//=============================================
+void    __InitFThreadData( void *td )
+//==========================================
+{
+    fthread_data *ftd;
 
-// Must match __InitRTData().
+    ftd = THREADPTR2FTHREADPTR( td );
 
-    td->__ExCurr = NULL;
-    td->__XceptionFlags = 0;
+    // Must match __InitRTData().
+
+    ftd->__ExCurr = NULL;
+    ftd->__XceptionFlags = 0;
 }
 
 #endif
 
 
-static  void    __InitRTData( void ) {
+static  void    __InitRTData( void )
 //==============================
-
-// Must match __InitFThreadData().
+{
+    // Must match __InitFThreadData().
 
     _RWD_ExCurr = NULL;
     _RWD_XcptFlags = 0;

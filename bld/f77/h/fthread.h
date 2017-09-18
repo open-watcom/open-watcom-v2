@@ -50,11 +50,13 @@ typedef struct fthread_data {
 
 extern  unsigned        __FThreadDataOffset;
 
-#define __FTHREADDATAPTR ((fthread_data *)(((char *)__THREADDATAPTR) + __FThreadDataOffset))
+#define THREADPTR2FTHREADPTR(p) ((fthread_data *)(((char *)(p)) + __FThreadDataOffset))
+
+#define __FTHREADDATAPTR 	THREADPTR2FTHREADPTR( __THREADDATAPTR )
 
 extern void             __FiniFThreadProcessing( void );
 extern int              __InitFThreadProcessing( void );
-extern void             __InitFThreadData( fthread_data * );
+extern void             __InitFThreadData( void * );
 extern void             __InitMultiThreadIO( void );
 
 extern void             __FiniBeginThread( void );

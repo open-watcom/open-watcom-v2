@@ -62,17 +62,17 @@ typedef void fthread_fn( void * );
 typedef struct {
     fthread_fn  *rtn;
     void        *arglist;
-} thread_info;
+} fthread_info;
 
-beginner                FBeginThread;
-ender                   FEndThread;
-initializer             FInitDataThread;
+beginner            FBeginThread;
+ender               FEndThread;
+initializer         FInitDataThread;
 
-static  beginner        *__BeginThread;
-static  ender           *__EndThread;
-static  initializer     *__InitDataThread;
+static  beginner    *__BeginThread;
+static  ender       *__EndThread;
+static  initializer *__InitThreadData;
 
-static  bool            ThreadsInitialized;
+static  bool        ThreadsInitialized;
 
 static  unsigned  InitFThreads( void )
 //====================================
@@ -117,35 +117,35 @@ static  void    ThreadStarter( void )
 }
 
 
-static  void    ThreadHelper( void *arg_ti )
-//==========================================
+static  void    ThreadHelper( void *arg_fti )
+//===========================================
 {
-    thread_info *ti = arg_ti;
+    fthread_info *fti = arg_fti;
 
     FThreadInit();
-    __FTHREADDATAPTR->__rtn = ti->rtn;
-    __FTHREADDATAPTR->__arglist = ti->arglist;
-    RMemFree( ti );
+    __FTHREADDATAPTR->__rtn = fti->rtn;
+    __FTHREADDATAPTR->__arglist = fti->arglist;
+    RMemFree( fti );
     RTSpawn( ThreadStarter );
     FThreadFini();
     __EndThread();
 }
 
 
-int FBeginThread( fthread_fn *rtn, void *stack, unsigned stk_size, void *arglist )
+int FBeginThread( thread_fn *rtn, void *stack, unsigned stk_size, void *arglist )
 //================================================================================
 {
-    thread_info *ti;
+    fthread_info *fti;
 
     if( InitFThreads() != 0 )
         return( -1 );
-    ti = RMemAlloc( sizeof( thread_info ) );
-    if( ti == NULL )
+    fti = RMemAlloc( sizeof( fthread_info ) );
+    if( fti == NULL )
         return( -1 );
-    ti->rtn = rtn;
-    ti->arglist = arglist;
+    fti->rtn = (fthread_fn *)rtn;
+    fti->arglist = arglist;
 
-    return( __BeginThread( ThreadHelper, stack, stk_size, ti ) );
+    return( __BeginThread( ThreadHelper, stack, stk_size, fti ) );
 }
 
 
@@ -159,8 +159,8 @@ void FEndThread( void )
 int  FInitDataThread( void *td )
 //==============================
 {
-    __InitFThreadData( (fthread_data *)((char *)td + __FThreadDataOffset) );
-    return( __InitDataThread( td ) );
+    __InitFThreadData( td );
+    return( __InitThreadData( td ) );
 }
 
 
@@ -171,9 +171,9 @@ int     __fortran BEGINTHREAD( fthread_fn *rtn, unsigned long *stk_size )
 //=======================================================================
 {
 #ifdef __NT__
-    return( (int)_beginthread( rtn, *stk_size, NULL ) );
+    return( (int)_beginthread( (thread_fn *)rtn, *stk_size, NULL ) );
 #else
-    return( _beginthread( rtn, NULL, *stk_size, NULL ) );
+    return( _beginthread( (thread_fn *)rtn, NULL, *stk_size, NULL ) );
 #endif
 }
 
@@ -188,7 +188,7 @@ void    __fortran ENDTHREAD( void )
 unsigned        __fortran THREADID( void )
 //========================================
 {
-    return( *__threadid() );
+    return( *_threadid );
 }
 
 
@@ -208,7 +208,7 @@ void    __InitBeginThread( void )
 {
     __BeginThread = &FBeginThread;
     __EndThread = &FEndThread;
-    __InitDataThread = &FInitDataThread;
-    __RegisterThreadData( &__BeginThread, &__EndThread, &__InitDataThread );
+    __InitThreadData = &FInitDataThread;
+    __RegisterThreadData( &__BeginThread, &__EndThread, &__InitThreadData );
     ThreadsInitialized = false;
 }
