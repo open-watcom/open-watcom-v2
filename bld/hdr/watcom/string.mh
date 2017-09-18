@@ -216,6 +216,7 @@ _WCRTLINK extern _w_size_t strlcpy( char *__s1, const char *__s2, _w_size_t __n 
 
 /* Wide character handling functions */
 
+:include nsstd.sp
 _WCRTLINK extern wchar_t    *wcscat( wchar_t *, const wchar_t * );
 _WCRTLINK extern wchar_t    *wcschr( const wchar_t *, wint_t );
 _WCRTLINK extern int        wcscmp( const wchar_t *, const wchar_t * );
@@ -232,6 +233,7 @@ _WCRTLINK extern size_t     wcsspn( const wchar_t *, const wchar_t * );
 _WCRTLINK extern wchar_t    *wcsstr( const wchar_t *, const wchar_t * );
 _WCRTLINK extern wchar_t    *wcstok( wchar_t *, const wchar_t *, wchar_t ** );
 _WCRTLINK extern size_t     wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t __n );
+:include nsstdepi.sp
 
 _WCRTLINK extern int        wcscmpi( const wchar_t *, const wchar_t * );
 _WCRTLINK extern wchar_t    *wcserror( int );
