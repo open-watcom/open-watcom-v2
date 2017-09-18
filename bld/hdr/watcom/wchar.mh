@@ -36,7 +36,6 @@ using std::mbstate_t;
 #define _SIZE_T_DEFINED_
 using std::size_t;
 #endif
-using std::tm;              // <= Fix me?
 #ifndef _WINT_T_DEFINED
 #define _WINT_T_DEFINED
 #define _WINT_T_DEFINED_
@@ -47,6 +46,7 @@ using std::wint_t;
 #define _WCTYPE_T_DEFINED_
 using std::wctype_t;
 #endif
+using std::tm;              // <= Fix me?
 
 // C99 functions in wchar.h
 using std::fgetwc;
@@ -168,6 +168,14 @@ using std::towupper;
 :include cpluspro.sp
 
 :endsegment
+:include null.sp
+
+:include mbmax.sp
+
+:include wcharmax.sp
+
+:include weof.sp
+
 :segment !CNAME
 :include wchar_t.sp
 
@@ -190,10 +198,6 @@ using std::towupper;
 :include saferepi.sp
 
 :endsegment
-:include null.sp
-
-:include mbmax.sp
-
 :include nsstd.sp
 _WCRTLINK extern wint_t   btowc( int __c );
 _WCRTLINK extern wint_t   fgetwc( FILE *__strm );
@@ -267,14 +271,6 @@ _WCRTLINK extern wchar_t  *_wcsrev( wchar_t * );
 _WCRTLINK extern wchar_t  *_wcsset( wchar_t *, wchar_t );
 _WCRTLINK extern wchar_t  *_wmktemp( wchar_t *__template );
 _WCRTLINK extern wchar_t  *_wtempnam( const wchar_t *__dir, const wchar_t *__prefix );
-
-:include wcharmax.sp
-
-:segment CNAME
-#define WEOF ((std::wint_t)(-1))
-:elsesegment
-#define WEOF ((wint_t)(-1))
-:endsegment
 
 :include ext.sp
 

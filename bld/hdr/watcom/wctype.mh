@@ -70,17 +70,13 @@ using std::iswblank;
 :include cpluspro.sp
 
 :endsegment
+:include weof.sp
+
 :include wint_t.sp
 
 :include wctype_t.sp
 
 :include wctranst.sp
-
-:segment CNAME
-#define WEOF ((std::wint_t)(-1))
-:elsesegment
-#define WEOF ((wint_t)(-1))
-:endsegment
 
 :include nsstd.sp
 :include wctype.sp
