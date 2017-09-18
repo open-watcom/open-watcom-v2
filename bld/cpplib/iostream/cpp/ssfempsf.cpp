@@ -40,8 +40,7 @@ namespace std {
   // Create an empty strstreambuf that will use dynamic allocation using
   // the specified allocate/free functions.
 
-  strstreambuf::strstreambuf( void *(*alloc)( long ),
-                              void (*free)( void * ) ) {
+  strstreambuf::strstreambuf( void *(_WCCALLBACK *alloc)( long ), void (_WCCALLBACK *free)( void * ) ) {
     __strstreambuf( NULL, 0, NULL );
     __alloc_fn = alloc;
     __free_fn  = free;
