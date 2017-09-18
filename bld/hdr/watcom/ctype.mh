@@ -39,25 +39,9 @@ using std::isxdigit;
 using std::tolower;
 using std::toupper;
 
-#if defined(__SW_BR) || defined(_RTDLL)
- #define _IsTable _IsTable_br
-#endif
-using std::_IsTable;
-:: Now the extensions section.
-
 :: C99 functions in ctype.h that are currently considered extensions.
 :include extc99.sp
 using std::isblank;
-:include extepi.sp
-
-:include ext.sp
-using std::_tolower;
-using std::_toupper;
-using std::isleadbyte;
-using std::__isascii;
-using std::__toascii;
-using std::__iscsymf;
-using std::__iscsym;
 :include extepi.sp
 
 #else /* __cplusplus not defined */
@@ -94,16 +78,16 @@ _WCRTLINK extern int    isxdigit(int);
 _WCRTLINK extern int    tolower(int);
 _WCRTLINK extern int    toupper(int);
 
-#if defined(__SW_BR) || defined(_RTDLL)
- #define _IsTable _IsTable_br
-#endif
-_WCRTDATA extern const unsigned char _WCDATA _IsTable[257];
-:: Now the extensions section.
-
 :: C99 functions in ctype.h that are currently considered extensions.
 :include extc99.sp
 _WCRTLINK extern int    isblank(int);
 :include extepi.sp
+:include nsstdepi.sp
+
+#if defined(__SW_BR) || defined(_RTDLL)
+ #define _IsTable _IsTable_br
+#endif
+_WCRTDATA extern const unsigned char _WCDATA _IsTable[257];
 
 :include ext.sp
 _WCRTLINK extern int    _tolower(int);
@@ -157,7 +141,6 @@ _WCRTLINK extern int    __iscsym(int);
 
 #endif /* __cplusplus not defined */
 :endsegment
-:include nsstdepi.sp
 
 :segment CNAME
 :include cplusepi.sp
