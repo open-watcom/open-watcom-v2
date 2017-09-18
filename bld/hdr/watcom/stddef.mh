@@ -45,13 +45,22 @@ using std::ptrdiff_t;
 :include cpluspro.sp
 
 :endsegment
-:include size_t.sp
+:include null.sp
+
+:segment CNAME
+#define offsetof(__typ,__id) __offsetof(__typ,__id)
+:elsesegment
+:: Use subtraction so that the result before cast is of ptrdiff_t type;
+:: without this, we have a problem in environments where size_t is
+:: not large enough for far pointers
+#define offsetof(__typ,__id) ((size_t)((char *)&(((__typ*)0)->__id) - (char *)0))
+:endsegment
 
 :segment !CNAME
 :include wchar_t.sp
 
 :endsegment
-:include null.sp
+:include size_t.sp
 
 :include ptrdifft.sp
 
@@ -63,33 +72,26 @@ using std::ptrdiff_t;
 :include saferepi.sp
 
 :endsegment
-:segment CNAME
-#define offsetof(__typ,__id) __offsetof(__typ,__id)
-:elsesegment
-:: Use subtraction so that the result before cast is of ptrdiff_t type;
-:: without this, we have a problem in environments where size_t is
-:: not large enough for far pointers
-#define offsetof(__typ,__id) ((size_t)((char *)&(((__typ*)0)->__id) - (char *)0))
-:endsegment
-
-:segment QNX | LINUX
-#ifdef __386__
- _WCRTLINK extern int *__threadid(void); /* pointer to thread id */
- #define _threadid (__threadid())
-#endif
-:elsesegment DOS
 :include ext.sp
-#ifdef _M_I86
- _WCRTDATA extern int _WCFAR *_threadid;        /* pointer to thread id */
-#else
- _WCRTLINK extern int *__threadid(void); /* pointer to thread id */
+
+:: Thread symbols section.
+:segment QNX | DOS
+#ifndef _M_I86
+:endsegment
  #define _threadid (__threadid())
+ _WCRTLINK extern int *__threadid( void ); /* pointer to thread id */
+:segment DOS
  #ifdef __NT__
 :include thrdhndl.sp
  #endif
-#endif
-:include extepi.sp
+#else
+ _WCRTDATA extern int _WCFAR *_threadid;   /* pointer to thread id */
 :endsegment
+:segment QNX | DOS
+#endif
+:endsegment
+
+:include extepi.sp
 
 :segment CNAME
 :include cplusepi.sp
