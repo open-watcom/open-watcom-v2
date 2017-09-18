@@ -7,7 +7,7 @@ CC = bwcl386
 !endif
 
 all : .symbolic
-    $(CC) -fe=exercise -fo=exercise -zq <<
+    $(CC) -fe=exercise -fo=exercise -I"../dos" -zq <<
 $#include <stdio.h>
 $#include <limits.h>
 

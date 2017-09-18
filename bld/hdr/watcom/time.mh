@@ -81,16 +81,6 @@ using std::time;
 
 :include clock_t.sp
 
-:segment !CNAME
-:include saferpro.sp
-
-:include errno_t.sp
-
-:include rsize_t.sp
-
-:include saferepi.sp
-
-:endsegment
 #define CLOCKS_PER_SEC   1000
 :segment DOS
 #define CLK_TCK          1000
@@ -281,22 +271,6 @@ _WCRTLINK extern wchar_t     *__wasctime( const struct tm *, wchar_t * );
 :endsegment
 :include extepi.sp
 
-:segment !CNAME
-:include saferpro.sp
-
-_WCRTLINK extern errno_t      asctime_s( char *__s, rsize_t __maxsize, const struct tm *__timeptr );
-_WCRTLINK extern errno_t      ctime_s( char *__s, rsize_t __maxsize, const time_t *__timer );
-_WCRTLINK extern struct tm    *gmtime_s( const time_t * __restrict __timer, struct tm * __restrict __result );
-_WCRTLINK extern struct tm    *localtime_s( const time_t * __restrict __timer, struct tm * __restrict __t );
-
-:segment !NO_WIDECHAR
-_WCRTLINK extern errno_t      _wasctime_s( wchar_t *__s, rsize_t __maxsize, const struct tm *__timeptr );
-_WCRTLINK extern errno_t      _wctime_s( wchar_t *__s, rsize_t __maxsize, const time_t *__timer );
-:endsegment
-
-:include saferepi.sp
-
-:endsegment
 :segment QNX | LINUX
 :include extunix.sp
 
@@ -332,6 +306,26 @@ _WCRTDATA extern int    _WCDATA daylight;   /* d.s.t. indicator */
 :include extepi.sp
 :endsegment
 
+:segment !CNAME
+:include saferpro.sp
+
+:include errno_t.sp
+
+:include rsize_t.sp
+
+_WCRTLINK extern errno_t      asctime_s( char *__s, rsize_t __maxsize, const struct tm *__timeptr );
+_WCRTLINK extern errno_t      ctime_s( char *__s, rsize_t __maxsize, const time_t *__timer );
+_WCRTLINK extern struct tm    *gmtime_s( const time_t * __restrict __timer, struct tm * __restrict __result );
+_WCRTLINK extern struct tm    *localtime_s( const time_t * __restrict __timer, struct tm * __restrict __t );
+
+:segment !NO_WIDECHAR
+_WCRTLINK extern errno_t      _wasctime_s( wchar_t *__s, rsize_t __maxsize, const struct tm *__timeptr );
+_WCRTLINK extern errno_t      _wctime_s( wchar_t *__s, rsize_t __maxsize, const time_t *__timer );
+:endsegment
+
+:include saferepi.sp
+
+:endsegment
 :include poppack.sp
 
 :segment CNAME

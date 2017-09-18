@@ -566,55 +566,6 @@ _WCRTLINK extern int      putws( const wchar_t * );
 
 :endsegment
 :endsegment
-:segment !CNAME
-:include saferpro.sp
-
-:include rsize_t.sp
-
-:include errno_t.sp
-
-_WCRTLINK extern char     *gets_s( char *__s, rsize_t __n );
-_WCRTLINK extern int      fprintf_s( FILE * __restrict __stream, const char * __restrict __format, ... );
-_WCRTLINK extern int      fscanf_s( FILE * __restrict __stream, const char * __restrict __format, ... );
-_WCRTLINK extern int      printf_s( const char * __restrict __format, ... );
-_WCRTLINK extern int      scanf_s( const char * __restrict __format, ... );
-_WCRTLINK extern int      snprintf_s( char * __restrict __s, rsize_t __n, const char * __restrict __format, ... );
-_WCRTLINK extern int      sprintf_s( char * __restrict s, rsize_t __n, const char * __restrict __format, ... );
-_WCRTLINK extern int      sscanf_s( const char * __restrict __s, const char * __restrict __format, ... );
-_WCRTLINK extern int      vfprintf_s( FILE * __restrict __stream, const char * __restrict __format, __va_list __arg );
-_WCRTLINK extern int      vfscanf_s( FILE * __restrict __stream, const char * __restrict __format, __va_list __arg );
-_WCRTLINK extern int      vprintf_s( const char * __restrict __format, __va_list __arg );
-_WCRTLINK extern int      vscanf_s( const char * __restrict __format, __va_list __arg );
-_WCRTLINK extern int      vsnprintf_s( char * __restrict __s, rsize_t __n, const char * __restrict __format, __va_list __arg );
-_WCRTLINK extern int      vsprintf_s( char * __restrict __s, rsize_t __n, const char * __restrict __format, __va_list __arg );
-_WCRTLINK extern int      vsscanf_s( const char * __restrict __s, const char * __restrict __format, __va_list __arg );
-_WCRTLINK extern errno_t  fopen_s( FILE * __restrict * __restrict __streamptr, const char * __restrict __filename,
-                                   const char * __restrict __mode);
-_WCRTLINK extern errno_t  freopen_s( FILE * __restrict * __restrict __newstreamptr, const char * __restrict __filename,
-                                     const char * __restrict __mode, FILE * __restrict __stream );
-_WCRTLINK extern errno_t  tmpfile_s( FILE * __restrict * __restrict __streamptr);
-_WCRTLINK extern errno_t  tmpnam_s( char *__s, rsize_t __maxsize );
-
-#define TMP_MAX_S   (26*26*26)      /* has to be same as TMP_MAX */
-
-:segment QNX | LINUX
-#define L_tmpnam_s  255             /* has to be same as L_tmpnam */
-:elsesegment
-#define L_tmpnam_s  13              /* has to be same as L_tmpnam */
-:endsegment
-
-:segment !NO_WIDECHAR
-/* These functions pertain to wide character handling. */
-_WCRTLINK extern errno_t _wfopen_s( FILE * __restrict * __restrict __streamptr, const wchar_t * __restrict __filename,
-                                    const wchar_t * __restrict __mode);
-_WCRTLINK extern errno_t _wfreopen_s( FILE * __restrict * __restrict __newstreamptr, const wchar_t * __restrict __filename,
-                                      const wchar_t * __restrict __mode, FILE * __restrict __stream );
-_WCRTLINK extern errno_t _wtmpnam_s( wchar_t *__s, rsize_t __maxsize );
-
-:endsegment
-:include saferepi.sp
-
-:endsegment
 :segment QNX
 #ifdef _this_belongs_in_a_private_qnx_header
  extern int _input_line_max;            /* defaults to 20 */
@@ -683,6 +634,55 @@ _WCRTLINK extern int         pclose( FILE *__stream );
 ::
 #define getchar()       getc(stdin)
 #define putchar(c)      putc(c,stdout)
+
+:endsegment
+:segment !CNAME
+:include saferpro.sp
+
+#define TMP_MAX_S   (26*26*26)      /* has to be same as TMP_MAX */
+
+:segment QNX | LINUX
+#define L_tmpnam_s  255             /* has to be same as L_tmpnam */
+:elsesegment
+#define L_tmpnam_s  13              /* has to be same as L_tmpnam */
+:endsegment
+
+:include rsize_t.sp
+
+:include errno_t.sp
+
+_WCRTLINK extern char     *gets_s( char *__s, rsize_t __n );
+_WCRTLINK extern int      fprintf_s( FILE * __restrict __stream, const char * __restrict __format, ... );
+_WCRTLINK extern int      fscanf_s( FILE * __restrict __stream, const char * __restrict __format, ... );
+_WCRTLINK extern int      printf_s( const char * __restrict __format, ... );
+_WCRTLINK extern int      scanf_s( const char * __restrict __format, ... );
+_WCRTLINK extern int      snprintf_s( char * __restrict __s, rsize_t __n, const char * __restrict __format, ... );
+_WCRTLINK extern int      sprintf_s( char * __restrict s, rsize_t __n, const char * __restrict __format, ... );
+_WCRTLINK extern int      sscanf_s( const char * __restrict __s, const char * __restrict __format, ... );
+_WCRTLINK extern int      vfprintf_s( FILE * __restrict __stream, const char * __restrict __format, __va_list __arg );
+_WCRTLINK extern int      vfscanf_s( FILE * __restrict __stream, const char * __restrict __format, __va_list __arg );
+_WCRTLINK extern int      vprintf_s( const char * __restrict __format, __va_list __arg );
+_WCRTLINK extern int      vscanf_s( const char * __restrict __format, __va_list __arg );
+_WCRTLINK extern int      vsnprintf_s( char * __restrict __s, rsize_t __n, const char * __restrict __format, __va_list __arg );
+_WCRTLINK extern int      vsprintf_s( char * __restrict __s, rsize_t __n, const char * __restrict __format, __va_list __arg );
+_WCRTLINK extern int      vsscanf_s( const char * __restrict __s, const char * __restrict __format, __va_list __arg );
+_WCRTLINK extern errno_t  fopen_s( FILE * __restrict * __restrict __streamptr, const char * __restrict __filename,
+                                   const char * __restrict __mode);
+_WCRTLINK extern errno_t  freopen_s( FILE * __restrict * __restrict __newstreamptr, const char * __restrict __filename,
+                                     const char * __restrict __mode, FILE * __restrict __stream );
+_WCRTLINK extern errno_t  tmpfile_s( FILE * __restrict * __restrict __streamptr);
+_WCRTLINK extern errno_t  tmpnam_s( char *__s, rsize_t __maxsize );
+
+:segment !NO_WIDECHAR
+/* These functions pertain to wide character handling. */
+_WCRTLINK extern errno_t _wfopen_s( FILE * __restrict * __restrict __streamptr, const wchar_t * __restrict __filename,
+                                    const wchar_t * __restrict __mode);
+_WCRTLINK extern errno_t _wfreopen_s( FILE * __restrict * __restrict __newstreamptr, const wchar_t * __restrict __filename,
+                                      const wchar_t * __restrict __mode, FILE * __restrict __stream );
+_WCRTLINK extern errno_t _wtmpnam_s( wchar_t *__s, rsize_t __maxsize );
+
+:endsegment
+:include saferepi.sp
 
 :endsegment
 :include poppack.sp

@@ -64,14 +64,6 @@ using std::ptrdiff_t;
 
 :include ptrdifft.sp
 
-:segment !CNAME
-:include saferpro.sp
-
-:include rsize_t.sp
-
-:include saferepi.sp
-
-:endsegment
 :include ext.sp
 
 :: Thread symbols section.
@@ -93,6 +85,14 @@ using std::ptrdiff_t;
 
 :include extepi.sp
 
+:segment !CNAME
+:include saferpro.sp
+
+:include rsize_t.sp
+
+:include saferepi.sp
+
+:endsegment
 :segment CNAME
 :include cplusepi.sp
 :elsesegment
