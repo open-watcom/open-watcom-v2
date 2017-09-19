@@ -18,14 +18,6 @@
 
 :include errno.sp
 
-:segment !CNAME
-:include saferpro.sp
-
-:include errno_t.sp
-
-:include saferepi.sp
-
-:endsegment
 :segment QNX
 /* --- Symbolic names of the error return conditions --- */
 
@@ -226,6 +218,16 @@
 #define EILSEQ  40      /* Illegal multibyte sequence */
 :endsegment
 
+::::::::: Safer C :::::::::
+:segment !CNAME
+:include saferpro.sp
+
+:include errno_t.sp
+
+:include saferepi.sp
+
+:endsegment
+::::::::: Safer C :::::::::
 :include cplusepi.sp
 
 #endif

@@ -238,19 +238,6 @@ using std::uintmax_t;
 #endif /* Constant macros. */
 
 :endsegment
-:include saferpro.sp
-
-#if SIZE_MAX > 65535U
-:: In 32-bit environments, objects up to 2GB are allowed. This could be
-:: refined with OS-specific and possibly dynamically determined values.
- #define RSIZE_MAX      (SIZE_MAX >> 1)
-#else
-:: In 16-bit environments, anything up to SIZE_MAX is definitely valid!
- #define RSIZE_MAX      SIZE_MAX
-#endif
-
-:include saferepi.sp
-
 :: In cname version place all these typedefs in std namespace
 :include nsstd.sp
 :include exactint.sp
@@ -285,6 +272,23 @@ typedef long long intmax_t;
 typedef unsigned long long uintmax_t;
 :include nsstdepi.sp
 
+::::::::: Safer C :::::::::
+:segment !CNAME
+:include saferpro.sp
+
+#if SIZE_MAX > 65535U
+:: In 32-bit environments, objects up to 2GB are allowed. This could be
+:: refined with OS-specific and possibly dynamically determined values.
+ #define RSIZE_MAX      (SIZE_MAX >> 1)
+#else
+:: In 16-bit environments, anything up to SIZE_MAX is definitely valid!
+ #define RSIZE_MAX      SIZE_MAX
+#endif
+
+:include saferepi.sp
+
+:endsegment
+::::::::: Safer C :::::::::
 :segment !CNAME
 #endif /* __cplusplus not defined */
 :endsegment

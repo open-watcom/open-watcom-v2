@@ -85,6 +85,7 @@ using std::ptrdiff_t;
 
 :include extepi.sp
 
+::::::::: Safer C :::::::::
 :segment !CNAME
 :include saferpro.sp
 
@@ -93,6 +94,7 @@ using std::ptrdiff_t;
 :include saferepi.sp
 
 :endsegment
+::::::::: Safer C :::::::::
 :segment CNAME
 :include cplusepi.sp
 :elsesegment

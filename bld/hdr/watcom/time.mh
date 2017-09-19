@@ -303,6 +303,7 @@ _WCRTDATA extern int    _WCDATA daylight;   /* d.s.t. indicator */
 :include extepi.sp
 :endsegment
 
+::::::::: Safer C :::::::::
 :segment !CNAME
 :include saferpro.sp
 
@@ -322,6 +323,7 @@ _WCRTLINK extern errno_t      _wctime_s( wchar_t *__s, rsize_t __maxsize, const 
 :include saferepi.sp
 
 :endsegment
+::::::::: Safer C :::::::::
 :include poppack.sp
 
 :segment CNAME

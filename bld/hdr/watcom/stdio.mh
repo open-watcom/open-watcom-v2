@@ -632,6 +632,7 @@ _WCRTLINK extern int         pclose( FILE *__stream );
 #define putchar(c)      putc(c,stdout)
 
 :endsegment
+::::::::: Safer C :::::::::
 :segment !CNAME
 :include saferpro.sp
 
@@ -680,6 +681,7 @@ _WCRTLINK extern errno_t _wtmpnam_s( wchar_t *__s, rsize_t __maxsize );
 :include saferepi.sp
 
 :endsegment
+::::::::: Safer C :::::::::
 :include poppack.sp
 
 :segment CNAME

@@ -304,14 +304,13 @@ extern void                 __strerror( int __max, int __errnum, char *__buf );
 
 #endif  /* __INLINE_FUNCTIONS__ */
 
+::::::::: Safer C :::::::::
 :segment !CNAME
 :include saferpro.sp
 
 :include errno_t.sp
 
 :include rsize_t.sp
-
-/* Safer C Library functions */
 
 _WCRTLINK extern errno_t    memcpy_s( void * __restrict __s1, rsize_t __s1max, const void * __restrict __s2, rsize_t __n );
 _WCRTLINK extern errno_t    memmove_s( void *__s1, rsize_t __s1max, const void *__s2, rsize_t __n );
@@ -327,6 +326,7 @@ _WCRTLINK extern size_t     strnlen_s( const char *__s, size_t __maxsize );
 :include saferepi.sp
 
 :endsegment
+::::::::: Safer C :::::::::
 :segment CNAME
 :include cplusepi.sp
 :elsesegment

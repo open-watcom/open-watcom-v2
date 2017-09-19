@@ -589,6 +589,7 @@ _WCRTLINK extern onexit_t     onexit( onexit_t __func );
 
 :include extepi.sp
 
+::::::::: Safer C :::::::::
 :segment !CNAME
 :include saferpro.sp
 
@@ -630,6 +631,7 @@ _WCRTLINK extern errno_t wcstombs_s( size_t * __restrict __retval, char * __rest
 :include saferepi.sp
 
 :endsegment
+::::::::: Safer C :::::::::
 :include poppack.sp
 
 :segment CNAME
@@ -639,6 +641,7 @@ _WCRTLINK extern errno_t wcstombs_s( size_t * __restrict __retval, char * __rest
 :endsegment
 
 #endif /* _CSTDLIB_INCLUDED */
+::::::::: C++ only :::::::::
 :segment CNAME
 
 :: For C++ provide the appropriate overloaded signatures. These signatures
@@ -655,3 +658,4 @@ inline ldiv_t div( long int __n, long int __d ) { return( ldiv( __n, __d ) ); }
 #endif /* _CSTDLIB_AUX_INCLUDED */
 #endif /* _INCLUDED_FROM_STDLIB_H */
 :endsegment
+::::::::: C++ only :::::::::

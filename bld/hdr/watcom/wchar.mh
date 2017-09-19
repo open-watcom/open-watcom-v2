@@ -283,6 +283,7 @@ _WCRTLINK extern int        _vswprintf( wchar_t *__s, const wchar_t *__format, v
 
 :include extepi.sp
 
+::::::::: Safer C :::::::::
 :segment !CNAME
 :include saferpro.sp
 
@@ -330,6 +331,7 @@ _WCRTLINK extern errno_t _fwcsrtombs_s( size_t _WCFAR * __restrict __retval, cha
 :include saferepi.sp
 
 :endsegment
+::::::::: Safer C :::::::::
 :segment CNAME
 :include cplusepi.sp
 :elsesegment
