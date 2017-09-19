@@ -413,10 +413,7 @@ _WCRTLINK extern char  *_tempnam( const char *__dir, const char *__prefix );
 :: Begin of extension section
 ::
 
-:segment !CNAME
 :include wchar_t.sp
-
-:endsegment
 :include wint_t.sp
 
 :include weof.sp

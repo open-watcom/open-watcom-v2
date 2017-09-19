@@ -17,7 +17,6 @@
 :include cpluspro.sp
 
 :include wchar_t.sp
-
 :segment LINUX
 :include lnxkpack.sp
 

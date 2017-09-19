@@ -103,10 +103,7 @@ using std::wcsxfrm;
 :include cpluspro.sp
 
 :endsegment
-:segment !CNAME
 :include wchar_t.sp
-
-:endsegment
 :include wint_t.sp
 
 :include size_t.sp

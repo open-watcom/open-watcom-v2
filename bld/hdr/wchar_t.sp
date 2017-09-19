@@ -1,3 +1,4 @@
+:segment !CNAME
 :segment !CONLY
 #ifndef __cplusplus
 :endsegment
@@ -8,4 +9,6 @@
  #endif
 :segment !CONLY
 #endif
+:endsegment
+
 :endsegment

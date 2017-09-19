@@ -56,10 +56,7 @@ using std::ptrdiff_t;
 #define offsetof(__typ,__id) ((size_t)((char *)&(((__typ*)0)->__id) - (char *)0))
 :endsegment
 
-:segment !CNAME
 :include wchar_t.sp
-
-:endsegment
 :include size_t.sp
 
 :include ptrdifft.sp

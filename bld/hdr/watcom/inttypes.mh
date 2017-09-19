@@ -307,10 +307,7 @@ using std::wcstoumax;
 
 :: In cname version place all these typedefs in std namespace
 :include nsstd.sp
-:segment !CNAME
 :include wchar_t.sp
-
-:endsegment
 typedef struct {
     intmax_t    quot;
     intmax_t    rem;

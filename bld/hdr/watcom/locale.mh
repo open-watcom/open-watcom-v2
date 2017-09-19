@@ -61,10 +61,7 @@ using std::_wsetlocale;
 :endsegment
 :include pshpackl.sp
 
-:segment !CNAME
 :include wchar_t.sp
-
-:endsegment
 :include null.sp
 
 #define LC_CTYPE        0

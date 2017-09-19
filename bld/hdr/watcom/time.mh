@@ -69,10 +69,7 @@ using std::time;
 :endsegment
 :include pshpackl.sp
 
-:segment !CNAME
 :include wchar_t.sp
-
-:endsegment
 :include size_t.sp
 
 :include null.sp

@@ -21,7 +21,6 @@
 :include pshpackl.sp
 
 :include wchar_t.sp
-
 :keep NAMEMAX
 :include maxpath.sp
 :remove NAMEMAX
