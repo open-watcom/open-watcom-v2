@@ -103,8 +103,8 @@ struct lconv {
 _WCRTLINK extern char         *setlocale( int __category, const char *__locale );
 _WCRTLINK extern struct lconv *localeconv(void);
 
-:include ext.sp
 :: Wide character version
+:include ext.sp
 _WCRTLINK extern wchar_t      *_wsetlocale( int __category, const wchar_t *__locale );
 :include extepi.sp
 :include nsstdepi.sp

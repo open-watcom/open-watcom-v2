@@ -50,7 +50,7 @@ using std::free;
 using std::labs;
 using std::ldiv;
 using std::malloc;
-:: Wide character version
+:: Wide/Multi-byte character version
 using std::mblen;
 using std::mbstowcs;
 using std::mbtowc;
