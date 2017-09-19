@@ -224,7 +224,7 @@ _WMRTLINK extern char    *ecvt( double __val, int __ndig, int *__dec, int *__sig
 _WMRTLINK extern char    *_ecvt( double __val, int __ndig, int *__dec, int *__sign );
 _WMRTLINK extern char    *fcvt( double __val, int __ndig, int *__dec, int *__sign );
 _WMRTLINK extern char    *_fcvt( double __val, int __ndig, int *__dec, int *__sign );
-_WCRTLINK extern char    *_fullpath( char *__buf, const char *__path, _w_size_t __size );
+_WCRTLINK extern char    *_fullpath( char *__buf, const char *__path, __w_size_t __size );
 _WMRTLINK extern char    *gcvt( double __val, int __ndig, char *__buf );
 _WMRTLINK extern char    *_gcvt( double __val, int __ndig, char *__buf );
 _WCRTLINK extern char    *itoa( int __value, char *__buf, int __radix );
@@ -280,7 +280,7 @@ _WCRTLINK extern unsigned long long int wcstoull( const wchar_t *, wchar_t **, i
 :include nsstdepi.sp
 
 _WCRTLINK extern wchar_t  *_atouni( wchar_t *, const char * );
-_WCRTLINK extern wchar_t  *_wfullpath( wchar_t *, const wchar_t *, _w_size_t );
+_WCRTLINK extern wchar_t  *_wfullpath( wchar_t *, const wchar_t *, __w_size_t );
 _WCRTLINK extern void     _wmakepath( wchar_t *__path, const wchar_t *__drive,
                                       const wchar_t *__dir,
                                       const wchar_t *__fname,

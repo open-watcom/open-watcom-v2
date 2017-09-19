@@ -27,12 +27,12 @@
 #define _nrealloc   realloc
 #define _nmsize     _msize
 :elsesegment WINDOWSX_MALLOC
-_WCRTLINK extern void _WCNEAR *_ncalloc( _w_size_t __n, _w_size_t __size );
-_WCRTLINK extern void _WCNEAR *_nexpand( void _WCNEAR *__ptr, _w_size_t __size );
+_WCRTLINK extern void _WCNEAR *_ncalloc( __w_size_t __n, __w_size_t __size );
+_WCRTLINK extern void _WCNEAR *_nexpand( void _WCNEAR *__ptr, __w_size_t __size );
 _WCRTLINK extern void _nfree( void _WCNEAR *__ptr );
-_WCRTLINK extern void _WCNEAR *_nmalloc( _w_size_t __size );
-_WCRTLINK extern void _WCNEAR *_nrealloc( void _WCNEAR *__ptr, _w_size_t __size );
-_WCRTLINK extern _w_size_t _nmsize( void _WCNEAR *__ptr );
+_WCRTLINK extern void _WCNEAR *_nmalloc( __w_size_t __size );
+_WCRTLINK extern void _WCNEAR *_nrealloc( void _WCNEAR *__ptr, __w_size_t __size );
+_WCRTLINK extern __w_size_t _nmsize( void _WCNEAR *__ptr );
 :endsegment
 :segment WINDOWSX_DEFINES
 #define _fmemccpy   _memccpy
@@ -46,13 +46,13 @@ _WCRTLINK extern _w_size_t _nmsize( void _WCNEAR *__ptr );
 #define _fstrchr    strchr
 #define _fstrcmp    strcmp
 :elsesegment WINDOWSX_STRING
-_WCRTLINK extern void _WCFAR *_fmemccpy( void _WCFAR *__s1, const void _WCFAR *__s2, int __c, _w_size_t __n );
-_WCIRTLINK extern void _WCFAR *_fmemchr( const void _WCFAR *__s, int __c, _w_size_t __n );
-_WCIRTLINK extern int _fmemcmp( const void _WCFAR *__s1, const void _WCFAR *__s2, _w_size_t __n );
-_WCIRTLINK extern void _WCFAR *_fmemcpy( void _WCFAR *__s1, const void _WCFAR *__s2, _w_size_t __n );
-_WCRTLINK extern int _fmemicmp( const void _WCFAR *__s1, const void _WCFAR *__s2, _w_size_t __n );
-_WCRTLINK extern void _WCFAR *_fmemmove( void _WCFAR *__s1, const void _WCFAR *__s2, _w_size_t __n );
-_WCIRTLINK extern void _WCFAR *_fmemset( void _WCFAR *__s, int __c, _w_size_t __n );
+_WCRTLINK extern void _WCFAR *_fmemccpy( void _WCFAR *__s1, const void _WCFAR *__s2, int __c, __w_size_t __n );
+_WCIRTLINK extern void _WCFAR *_fmemchr( const void _WCFAR *__s, int __c, __w_size_t __n );
+_WCIRTLINK extern int _fmemcmp( const void _WCFAR *__s1, const void _WCFAR *__s2, __w_size_t __n );
+_WCIRTLINK extern void _WCFAR *_fmemcpy( void _WCFAR *__s1, const void _WCFAR *__s2, __w_size_t __n );
+_WCRTLINK extern int _fmemicmp( const void _WCFAR *__s1, const void _WCFAR *__s2, __w_size_t __n );
+_WCRTLINK extern void _WCFAR *_fmemmove( void _WCFAR *__s1, const void _WCFAR *__s2, __w_size_t __n );
+_WCIRTLINK extern void _WCFAR *_fmemset( void _WCFAR *__s, int __c, __w_size_t __n );
 _WCIRTLINK extern char _WCFAR *_fstrcat( char _WCFAR *__s1, const char _WCFAR *__s2 );
 _WCRTLINK extern char _WCFAR *_fstrchr( const char _WCFAR *__s, int __c );
 _WCIRTLINK extern int _fstrcmp( const char _WCFAR *__s1, const char _WCFAR *__s2 );
@@ -70,15 +70,15 @@ _WCIRTLINK extern int _fstrcmp( const char _WCFAR *__s1, const char _WCFAR *__s2
 #define _fstrnicmp  _strnicmp
 :elsesegment WINDOWSX_STRING
 _WCIRTLINK extern char _WCFAR *_fstrcpy( char _WCFAR *__s1, const char _WCFAR *__s2 );
-_WCRTLINK extern _w_size_t _fstrcspn( const char _WCFAR *__s1, const char _WCFAR *__s2 );
+_WCRTLINK extern __w_size_t _fstrcspn( const char _WCFAR *__s1, const char _WCFAR *__s2 );
 _WCRTLINK extern char _WCFAR *_fstrdup( const char _WCFAR *__string );
 _WCRTLINK extern int _fstricmp( const char _WCFAR *__s1, const char _WCFAR *__s2 );
-_WCIRTLINK extern _w_size_t _fstrlen( const char _WCFAR *__s );
+_WCIRTLINK extern __w_size_t _fstrlen( const char _WCFAR *__s );
 _WCRTLINK extern char _WCFAR *_fstrlwr( char _WCFAR *__string );
-_WCRTLINK extern char _WCFAR *_fstrncat( char _WCFAR *__s1, const char _WCFAR *__s2, _w_size_t __n );
-_WCRTLINK extern int _fstrncmp( const char _WCFAR *__s1, const char _WCFAR *__s2, _w_size_t __n );
-_WCRTLINK extern char _WCFAR *_fstrncpy( char _WCFAR *__s1, const char _WCFAR *__s2, _w_size_t __n );
-_WCRTLINK extern int _fstrnicmp( const char _WCFAR *__s1, const char _WCFAR *__s2, _w_size_t __n );
+_WCRTLINK extern char _WCFAR *_fstrncat( char _WCFAR *__s1, const char _WCFAR *__s2, __w_size_t __n );
+_WCRTLINK extern int _fstrncmp( const char _WCFAR *__s1, const char _WCFAR *__s2, __w_size_t __n );
+_WCRTLINK extern char _WCFAR *_fstrncpy( char _WCFAR *__s1, const char _WCFAR *__s2, __w_size_t __n );
+_WCRTLINK extern int _fstrnicmp( const char _WCFAR *__s1, const char _WCFAR *__s2, __w_size_t __n );
 :endsegment
 :segment WINDOWSX_DEFINES
 #define _fstrnset   _strnset
@@ -91,12 +91,12 @@ _WCRTLINK extern int _fstrnicmp( const char _WCFAR *__s1, const char _WCFAR *__s
 #define _fstrtok    strtok
 #define _fstrupr    _strupr
 :elsesegment WINDOWSX_STRING
-_WCRTLINK extern char _WCFAR *_fstrnset( char _WCFAR *__string, int __c, _w_size_t __len );
+_WCRTLINK extern char _WCFAR *_fstrnset( char _WCFAR *__string, int __c, __w_size_t __len );
 _WCRTLINK extern char _WCFAR *_fstrpbrk( const char _WCFAR *__s1, const char _WCFAR *__s2 );
 _WCRTLINK extern char _WCFAR *_fstrrchr( const char _WCFAR *__s, int __c );
 _WCRTLINK extern char _WCFAR *_fstrrev( char _WCFAR *__string );
 _WCRTLINK extern char _WCFAR *_fstrset( char _WCFAR *__string, int __c );
-_WCRTLINK extern _w_size_t _fstrspn( const char _WCFAR *__s1, const char _WCFAR *__s2 );
+_WCRTLINK extern __w_size_t _fstrspn( const char _WCFAR *__s1, const char _WCFAR *__s2 );
 _WCRTLINK extern char _WCFAR *_fstrstr( const char _WCFAR *__s1, const char _WCFAR *__s2 );
 _WCRTLINK extern char _WCFAR *_fstrtok( char _WCFAR *__s1, const char _WCFAR *__s2 );
 _WCRTLINK extern char _WCFAR *_fstrupr( char _WCFAR *__string );

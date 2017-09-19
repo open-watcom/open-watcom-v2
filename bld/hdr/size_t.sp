@@ -7,9 +7,9 @@
  namespace std {
    typedef unsigned size_t;
  }
-:: The type _w_size_t is an alias for std::size_t or size_t as
+:: The type __w_size_t is an alias for std::size_t or size_t as
 :: appropriate. It is intended to simplify the standard headers.
- typedef std::size_t _w_size_t;
+ typedef std::size_t __w_size_t;
 #endif
 :elsesegment
 :segment !CONLY
@@ -21,7 +21,7 @@
   namespace std {
     typedef unsigned size_t;
   }
-  typedef std::size_t _w_size_t;
+  typedef std::size_t __w_size_t;
  #endif
  #ifndef _SIZE_T_DEFINED
  #define _SIZE_T_DEFINED
@@ -37,7 +37,7 @@
  #define _SIZE_T_DEFINED
   #define _SIZE_T_DEFINED_
   typedef unsigned size_t;
-  typedef size_t   _w_size_t;
+  typedef size_t   __w_size_t;
  #endif
 :segment !CONLY
 #endif /* __cplusplus not defined */

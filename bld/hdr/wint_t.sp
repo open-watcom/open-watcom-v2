@@ -4,7 +4,7 @@
  namespace std {
    typedef wchar_t wint_t;
  }
- typedef std::wint_t _w_wint_t;
+ typedef std::wint_t __w_wint_t;
 #endif
 :elsesegment
 :segment !CONLY
@@ -14,7 +14,7 @@
   namespace std {
     typedef wchar_t wint_t;
   }
-  typedef std::wint_t _w_wint_t;
+  typedef std::wint_t __w_wint_t;
  #endif
  #ifndef _WINT_T_DEFINED
  #define _WINT_T_DEFINED
@@ -27,7 +27,7 @@
  #define _WINT_T_DEFINED
   #define _WINT_T_DEFINED_
   typedef unsigned short wint_t;
-  typedef wint_t _w_wint_t;
+  typedef wint_t __w_wint_t;
  #endif
 :segment !CONLY
 #endif /* __cplusplus not defined */
