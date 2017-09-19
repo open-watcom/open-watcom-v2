@@ -35,6 +35,7 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include <stddef.h>
 #include <math.h>
 #include <float.h>
 #include "pi.h"
