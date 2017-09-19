@@ -209,16 +209,15 @@ _WCRTLINK extern struct tm    *localtime( const time_t *__timer );
 _WCRTLINK extern time_t       mktime( struct tm *__timeptr );
 _WCRTLINK extern size_t       strftime( char *__s, size_t __maxsiz, const char *__fmt, const struct tm *__tp );
 _WCRTLINK extern time_t       time( time_t *__timer );
-:segment !NO_WIDECHAR
+:: Wide character version
 _WCRTLINK extern size_t       wcsftime( wchar_t *, size_t, const wchar_t *, const struct tm * );
-:endsegment
 :include nsstdepi.sp
 
 :segment !CNAME
 #define difftime( t1, t0 )  ( ( double ) ( t1 ) - ( double ) ( t0 ) )
 :endsegment
 
-:segment !NO_WIDECHAR
+:: Wide character version
 :segment CNAME
 _WCRTLINK extern wchar_t      *_wasctime( const std::tm * );
 _WCRTLINK extern wchar_t      *_wctime( const std::time_t * );
@@ -231,7 +230,6 @@ _WCRTLINK extern wchar_t      *_wctime( const time_t * );
 _WCRTLINK extern wchar_t      *_wstrdate( wchar_t *__buf );
 _WCRTLINK extern wchar_t      *_wstrtime( wchar_t *__buf );
 _WCRTLINK extern size_t       _wstrftime_ms( wchar_t *, size_t, const char *, const struct tm * );
-:endsegment
 :endsegment
 
 :include ext.sp
@@ -260,14 +258,13 @@ _WCRTLINK extern struct tm   *localtime_r( const time_t *__timer, struct tm *__t
 :endsegment
 _WCRTLINK extern char        *_strdate( char *__buf );
 _WCRTLINK extern char        *_strtime( char *__buf );
-:segment !NO_WIDECHAR
+:: Wide character version
 :segment CNAME
 _WCRTLINK extern wchar_t     *__wctime( const std::time_t *, wchar_t * );
 _WCRTLINK extern wchar_t     *__wasctime( const std::tm *, wchar_t * );
 :elsesegment
 _WCRTLINK extern wchar_t     *__wctime( const time_t *, wchar_t * );
 _WCRTLINK extern wchar_t     *__wasctime( const struct tm *, wchar_t * );
-:endsegment
 :endsegment
 :include extepi.sp
 
@@ -318,10 +315,9 @@ _WCRTLINK extern errno_t      ctime_s( char *__s, rsize_t __maxsize, const time_
 _WCRTLINK extern struct tm    *gmtime_s( const time_t * __restrict __timer, struct tm * __restrict __result );
 _WCRTLINK extern struct tm    *localtime_s( const time_t * __restrict __timer, struct tm * __restrict __t );
 
-:segment !NO_WIDECHAR
+:: Wide character version
 _WCRTLINK extern errno_t      _wasctime_s( wchar_t *__s, rsize_t __maxsize, const struct tm *__timeptr );
 _WCRTLINK extern errno_t      _wctime_s( wchar_t *__s, rsize_t __maxsize, const time_t *__timer );
-:endsegment
 
 :include saferepi.sp
 

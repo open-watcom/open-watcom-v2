@@ -97,7 +97,7 @@ using std::vsscanf;
 using std::wint_t;
 #endif
 
-:segment !NO_WIDECHAR
+:: Wide character version
 // C99 functions that are not specified for stdio.h
 using std::fgetwc;
 using std::fgetws;
@@ -121,7 +121,6 @@ using std::vwscanf;
 using std::wprintf;
 using std::wscanf;
 
-:endsegment
 ::
 :: End of extension section
 ::
@@ -422,7 +421,7 @@ _WCRTLINK extern char  *_tempnam( const char *__dir, const char *__prefix );
 
 :include weof.sp
 
-:segment !NO_WIDECHAR
+:: Wide character version
 :include nsstd.sp
 /* These names are not in stdio according to C99. */
 _WCRTLINK extern wint_t   getwc( FILE * );
@@ -448,7 +447,6 @@ _WCRTLINK extern int      wprintf( const wchar_t *, ... );
 _WCRTLINK extern int      wscanf( const wchar_t *, ... );
 :include nsstdepi.sp
 
-:endsegment
 /* These names are not part of C89 or C99. */
 ::
 :: The following is generated into cstdio
@@ -475,7 +473,7 @@ _WCRTLINK extern int           fgetchar( void );
 _WCRTLINK extern int           fileno(std::FILE *);
 _WCRTLINK extern int           fputchar( int __c );
 
-:segment !NO_WIDECHAR
+:: Wide character version
 /* These functions pertain to wide character handling. */
 _WCRTLINK extern int           _bwprintf( wchar_t *, std::size_t, const wchar_t *, ... );
 _WCRTLINK extern wchar_t       *_getws( wchar_t * );
@@ -504,7 +502,6 @@ _WCRTLINK extern std::wint_t   fputwchar( std::wint_t );
 _WCRTLINK extern wchar_t       *getws( wchar_t * );
 _WCRTLINK extern int           putws( const wchar_t * );
 
-:endsegment
 ::
 :: The following is generated into stdio.h
 :elsesegment
@@ -535,7 +532,7 @@ _WCRTLINK extern int      fseeko( FILE *__fp, off_t __offset, int __whence );
 _WCRTLINK extern off_t    ftello( FILE *__fp );
 
 :endsegment
-:segment !NO_WIDECHAR
+:: Wide character version
 /* These functions pertain to wide character handling. */
 _WCRTLINK extern int      _bwprintf( wchar_t *, size_t, const wchar_t *, ... );
 _WCRTLINK extern wint_t   _fgetwchar( void );
@@ -564,7 +561,6 @@ _WCRTLINK extern wint_t   fputwchar( wint_t );
 _WCRTLINK extern wchar_t  *getws( wchar_t * );
 _WCRTLINK extern int      putws( const wchar_t * );
 
-:endsegment
 :endsegment
 :segment QNX
 #ifdef _this_belongs_in_a_private_qnx_header
@@ -673,7 +669,7 @@ _WCRTLINK extern errno_t  freopen_s( FILE * __restrict * __restrict __newstreamp
 _WCRTLINK extern errno_t  tmpfile_s( FILE * __restrict * __restrict __streamptr);
 _WCRTLINK extern errno_t  tmpnam_s( char *__s, rsize_t __maxsize );
 
-:segment !NO_WIDECHAR
+:: Wide character version
 /* These functions pertain to wide character handling. */
 _WCRTLINK extern errno_t _wfopen_s( FILE * __restrict * __restrict __streamptr, const wchar_t * __restrict __filename,
                                     const wchar_t * __restrict __mode);
@@ -681,7 +677,6 @@ _WCRTLINK extern errno_t _wfreopen_s( FILE * __restrict * __restrict __newstream
                                       const wchar_t * __restrict __mode, FILE * __restrict __stream );
 _WCRTLINK extern errno_t _wtmpnam_s( wchar_t *__s, rsize_t __maxsize );
 
-:endsegment
 :include saferepi.sp
 
 :endsegment

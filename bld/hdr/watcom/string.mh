@@ -71,9 +71,9 @@ using std::strstr;
 using std::strtok;
 using std::strxfrm;
 
-:include ext.sp
 // C99 functions not officially in string.h
-:segment !NO_WIDECHAR
+:include ext.sp
+:: Wide character version
 using std::wcscat;
 using std::wcschr;
 using std::wcscmp;
@@ -90,7 +90,6 @@ using std::wcsspn;
 using std::wcsstr;
 using std::wcstok;
 using std::wcsxfrm;
-:endsegment
 :include extepi.sp
 
 #else /* __cplusplus not defined */
@@ -212,10 +211,10 @@ _WCRTLINK extern char  *strupr( char *__string );
 
 _WCRTLINK extern _w_size_t strlcat( char *__s1, const char *__s2, _w_size_t __n );
 _WCRTLINK extern _w_size_t strlcpy( char *__s1, const char *__s2, _w_size_t __n );
-:segment !NO_WIDECHAR
 
 /* Wide character handling functions */
 
+:: Wide character version
 :include nsstd.sp
 _WCRTLINK extern wchar_t    *wcscat( wchar_t *, const wchar_t * );
 _WCRTLINK extern wchar_t    *wcschr( const wchar_t *, wint_t );
@@ -235,6 +234,7 @@ _WCRTLINK extern wchar_t    *wcstok( wchar_t *, const wchar_t *, wchar_t ** );
 _WCRTLINK extern size_t     wcsxfrm( wchar_t *__s1, const wchar_t *__s2, size_t __n );
 :include nsstdepi.sp
 
+:: Wide character version
 _WCRTLINK extern int        wcscmpi( const wchar_t *, const wchar_t * );
 _WCRTLINK extern wchar_t    *wcserror( int );
 :segment DOS
@@ -243,6 +243,7 @@ _WCRTLINK extern wchar_t    *_wdoserror( int __errnum );
 #endif
 :endsegment
 
+:: Wide character version
 ::_WCRTLINK extern wchar_t  *wcsnset( wchar_t *, int, _w_size_t );
 ::_WCRTLINK extern int      wcsnicmp( const wchar_t *, const wchar_t *, _w_size_t );
 ::_WCRTLINK extern wchar_t  *wcsdup( const wchar_t * );
@@ -266,11 +267,11 @@ _WCRTLINK extern wchar_t    *_wcsrev( wchar_t * );
 _WCRTLINK extern wchar_t    *_wcsset( wchar_t *, wchar_t );
 _WCRTLINK extern wchar_t    *_wcserror( const wchar_t * );
 
-/* BSD 'safe' wide string copy functions */
+/* BSD 'safe' wide character string copy functions */
 
+:: Wide character version
 _WCRTLINK extern _w_size_t  wcslcat( wchar_t *__s1, const wchar_t *__s2, _w_size_t __n );
 _WCRTLINK extern _w_size_t  wcslcpy( wchar_t *__s1, const wchar_t *__s2, _w_size_t __n );
-:endsegment
 
 /* Additional Functions (POSIX but non-standard in string.h) */
 
