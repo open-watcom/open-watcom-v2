@@ -16,8 +16,6 @@
 
 :include cpluspro.sp
 
-:include null.sp
-
 #define FLT_NORMALIZE   0
 #define FLT_RADIX       2
 #define FLT_ROUNDS      1       /* round to nearest */
