@@ -29,15 +29,13 @@
 *
 ****************************************************************************/
 
+#include "cpplib.h"
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
 #include <cwchar>
-
-#include "cpplib.h"
 #include "rt_rtti.h"
 
-#include <typeinfo.h>
 // works around an EH problem
 #pragma inline_depth(0)
 
