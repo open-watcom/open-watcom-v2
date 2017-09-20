@@ -50,7 +50,7 @@ using std::raise;
 typedef int sig_atomic_t;
 :include nsstdepi.sp
 
-typedef void (*__sig_func)( int );
+typedef void (_WCCALLBACK *__sig_func)( int );
 :segment LINUX
 
 :include incdir.sp
@@ -88,12 +88,12 @@ typedef struct {
 typedef long    sigset_t;       /* Used for signal sets             */
 #endif
 struct sigaction {
-    void        (__SIG_FAR *sa_handler)(int);
+    void        (__SIG_FAR _WCCALLBACK *sa_handler)(int);
     sigset_t    sa_mask;
     int         sa_flags;
 };
 struct _sigaction {
-    void        (__SIG_FAR *sa_handler)(int);
+    void        (__SIG_FAR _WCCALLBACK *sa_handler)(int);
     sigset_t    sa_mask;
     short int   sa_flags;
 };
@@ -140,7 +140,7 @@ struct msigevent {
 ::
 :include extepi.sp
 
-typedef void (__SIG_FAR *__far_sig_func)( int );
+typedef void (__SIG_FAR _WCCALLBACK *__far_sig_func)( int );
 
 #define __FAR_SIG_ERR       ((__far_sig_func)(unsigned)-1)
 #define __FAR_SIG_DFL       ((__far_sig_func)(unsigned)0)
@@ -220,7 +220,7 @@ typedef void (__SIG_FAR *__far_sig_func)( int );
 :endsegment
 :include nsstd.sp
 _WCRTLINK extern int  raise( int __sig );
-_WCRTLINK extern void (*signal( int __sig, void (*__func)(int) ) )(int);
+_WCRTLINK extern void (_WCCALLBACK *signal( int __sig, void (_WCCALLBACK *__func)(int) ) )(int);
 :include nsstdepi.sp
 
 :segment QNX | LINUX
