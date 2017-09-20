@@ -74,7 +74,7 @@ _WCRTLINK extern int    sched_rr_get_interval( pid_t __pid,
                                                struct timespec *__ts );
 
 :segment LINUX
-_WCRTLINK extern pid_t  clone( int (*__fn)(void *), void *__child_stack,
+_WCRTLINK extern pid_t  clone( int (_WCCALLBACK *__fn)(void *), void *__child_stack,
                                int __flags, void *args, ... );
 :endsegment
 

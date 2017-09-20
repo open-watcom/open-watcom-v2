@@ -29,7 +29,7 @@ const size_t NPOS = (size_t) -1;
 
 // Define a typedef for a "C" function
 extern "C" {
- _WCRTLINK typedef int (*__zapcase_t)( int );
+ _WCRTLINK typedef int (_WCCALLBACK *__zapcase_t)( int );
 };
 
 class _WPRTLINK String {
