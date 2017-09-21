@@ -31,7 +31,6 @@
 
 
 #define global
-#define NULL 0
 #include "target.h"
 #include "pragdefn.h"
 #include "toggle.h"
