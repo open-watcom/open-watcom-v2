@@ -39,8 +39,8 @@
 
 */
 
-#include <windows.h>
 #include <string.h>
+#include <windows.h>
 #include "version.h"
 
 #define _glue( a, b ) a ## b

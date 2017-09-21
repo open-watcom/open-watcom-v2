@@ -32,6 +32,10 @@
 #ifndef WRESSETR_INCLUDED
 #define WRESSETR_INCLUDED
 
+#if !defined( _WIN64 ) && !defined( __WATCOMC__ ) && defined( __UNIX__ )
+#include <sys/types.h>
+#endif
+
 /* The low level I/O routines named below will be passed a file handle by the */
 /* higher level I/O routines and which must be the file handle returned by one */
 /* of the file opening functions which will get it from the low level open */

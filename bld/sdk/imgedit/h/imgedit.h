@@ -34,7 +34,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
 #include "commonui.h"
 #include "watcom.h"
 #include "macros.h"
