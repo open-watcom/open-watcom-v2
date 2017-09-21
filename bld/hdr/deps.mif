@@ -12,7 +12,6 @@ cplus     = ../cpluspro.sp ../cplusepi.sp
 ns_std    = ../nsstd.sp ../nsstdepi.sp
 
 crwatqnx_sp = ../crwat.sp ../crqnx.sp ../crwatqnx.sp
-timespec_sp = ../timespec.sp ../time_t.sp
 wctype_sp   = ../wctype.sp $(ns_std) $(c99ext)
 maxpath_sp  = ../maxpath.sp $(extension)
 
@@ -38,7 +37,7 @@ stdio_deps    = stdio.mh $(crwatqnx_sp) ../readonly.sp $(extension) $(c99ext) $(
 stdlib_deps   = stdlib.mh $(crwatqnx_sp) ../readonly.sp $(extension) $(unixext) ../owrtlink.sp ../lfndos.sp $(cplus) $(packll) ../wchar_t.sp ../size_t.sp $(saferc) ../null.sp ../mbmax.sp $(maxpath_sp) ../errno.sp ../alloca.sp ../brk.sp ../process1.sp ../_exit.sp $(ns_std)
 stdnoret_deps = stdnoret.mh ../crwat.sp ../readonly.sp
 string_deps   = string.mh ../crwat.sp ../crwatcnt.sp ../readonly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wint_t.sp ../size_t.sp $(saferc) ../null.sp ../nlserror.sp ../namwat.sp $(ns_std) ../windowsx.sp
-time_deps     = time.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp ../size_t.sp ../null.sp ../time_t.sp ../clock_t.sp $(saferc) $(unixext) $(extension) ../timer_t.sp ../clockidt.sp $(ns_std) $(timespec_sp) ../tm.sp
+time_deps     = time.mh ../crwat.sp ../readonly.sp ../owrtlink.sp ../systypes.sp $(cplus) $(packll) ../wchar_t.sp ../size_t.sp ../null.sp ../time_t.sp ../clock_t.sp $(saferc) $(unixext) $(extension) ../timer_t.sp ../clockidt.sp $(ns_std) ../timespec.sp ../tm.sp
 wchar_deps    = wchar.mh ../crwat.sp ../readonly.sp $(extension) ../owrtlink.sp $(cplus) ../wchar_t.sp ../wint_t.sp ../wctype_t.sp ../size_t.sp $(saferc) ../null.sp ../mbmax.sp $(ns_std) ../weof.sp $(wctype_sp) ../tm.sp ../file.sp
 wctype_deps   = wctype.mh ../crwat.sp ../readonly.sp $(extension) $(c99ext) ../owrtlink.sp $(cplus) ../wint_t.sp ../wctype_t.sp ../wctranst.sp $(ns_std) ../weof.sp $(wctype_sp)
 
@@ -225,7 +224,7 @@ new.h           : $(new_deps)
 ostream.h       : $(ostream_deps)
 pgchart.h       : $(pgchart_deps)
 search.h        : search.mh ../crwat.sp ../readonly.sp ../owrtlink.sp $(cplus)
-semaphor.h      : semaphor.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus) $(timespec_sp)
+semaphor.h      : semaphor.mh ../crwatcnt.sp ../readonly.sp ../owrtlink.sp $(cplus) ../timespec.sp
 setjmp.h        : $(setjmp_deps)
 setjmpex.h      : setjmpex.mh $(crwatqnx_sp) ../readonly.sp ../owrtlink.sp $(cplus)
 share.h         : share.mh ../crwat.sp ../readonly.sp $(extension)
