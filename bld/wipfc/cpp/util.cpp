@@ -31,6 +31,7 @@
 #if defined( __unix__ ) && !defined( __UNIX__ )
     #define __UNIX__ __unix__
 #endif
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <memory>
