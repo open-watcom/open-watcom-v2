@@ -51,7 +51,7 @@ void RegisterRtns( DisAsmRtns *rtns )
 void MiscDoCode( instruction *ins, bool is32, DisAsmRtns *rtns )
 {
     if( CurRtns != NULL ) {
-        MessageBox( NULL, "Disassembly Error!!", "", MB_OK );
+        MessageBox( (HWND)NULL, "Disassembly Error!!", "", MB_OK );
         return;
     }
     CurRtns = rtns;
@@ -67,7 +67,7 @@ void MiscDoCode( instruction *ins, bool is32, DisAsmRtns *rtns )
 void MiscFormatIns( char *buf, instruction *ins, form_option optn, DisAsmRtns *rtns )
 {
     if( CurRtns != NULL ) {
-        MessageBox( NULL, "Disassembly Error!!", "", MB_OK );
+        MessageBox( (HWND)NULL, "Disassembly Error!!", "", MB_OK );
         return;
     }
     CurRtns = rtns;

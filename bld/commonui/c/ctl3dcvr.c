@@ -98,7 +98,7 @@ static HBRUSH _DLLFAR _CB_Ctl3dCtlColorEx(UINT wm, WPARAM wp, LPARAM lp )
   #if 0
     return( Ctl3dCtlColorEx( wm, wp, lp ) );
   #else
-    return( NULL );
+    return( (HBRUSH)NULL );
   #endif
 }
 

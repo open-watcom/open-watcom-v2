@@ -255,17 +255,17 @@ static TEMPLATE_HANDLE loadDialogTemplate( HINSTANCE hinst, LPCSTR lpszDlgTemp, 
 
     hrsrc = FindResource( hinst, lpszDlgTemp, RT_DIALOG );
     if( hrsrc == (HRSRC)NULL ) {
-        return( NULL );
+        return( (TEMPLATE_HANDLE)NULL );
     }
 
     *size = SizeofResource( hinst, hrsrc );
     if( *size == 0 ) {
-        return( NULL );
+        return( (TEMPLATE_HANDLE)NULL );
     }
 
     jdlgtemplate = LoadResource( hinst, hrsrc );
     if( jdlgtemplate == (TEMPLATE_HANDLE)NULL ) {
-        return( NULL );
+        return( (TEMPLATE_HANDLE)NULL );
     }
 
     return( jdlgtemplate );
@@ -295,14 +295,14 @@ static TEMPLATE_HANDLE createJTemplate( TEMPLATE_HANDLE dlgtemplate, DWORD size 
 
     template = (BYTE *)LockResource( dlgtemplate );
     if( template == NULL ) {
-        return( NULL );
+        return( (TEMPLATE_HANDLE)NULL );
     }
 
     if( !hasFontInfo( template ) ) {
 #ifdef __WINDOWS__
         UnlockResource( dlgtemplate );
 #endif
-        return( NULL );
+        return( (TEMPLATE_HANDLE)NULL );
     }
 
     fontinfo = findFontInfo( template );
@@ -324,7 +324,7 @@ static TEMPLATE_HANDLE createJTemplate( TEMPLATE_HANDLE dlgtemplate, DWORD size 
 #ifdef __WINDOWS__
         UnlockResource( dlgtemplate );
 #endif
-        return( NULL );
+        return( (TEMPLATE_HANDLE)NULL );
     }
 
     jtemplate = (BYTE *)GlobalLock( jdlgtemplate );
@@ -333,7 +333,7 @@ static TEMPLATE_HANDLE createJTemplate( TEMPLATE_HANDLE dlgtemplate, DWORD size 
 #ifdef __WINDOWS__
         UnlockResource( dlgtemplate );
 #endif
-        return( NULL );
+        return( (TEMPLATE_HANDLE)NULL );
     }
 
     /* copy template data up to fontinfo */

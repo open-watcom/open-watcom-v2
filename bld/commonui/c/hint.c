@@ -244,7 +244,7 @@ void HintWndDestroy( statwnd *wnd )
  */
 bool HintWndInit( HINSTANCE hinstance, statushook hook, int extra )
 {
-    return( StatusWndInit( hinstance, hook, extra, NULL ) );
+    return( StatusWndInit( hinstance, hook, extra, (HCURSOR)NULL ) );
 
 } /* HintWndInit */
 

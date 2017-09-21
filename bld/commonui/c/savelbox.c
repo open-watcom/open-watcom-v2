@@ -312,7 +312,7 @@ void SaveListBox( int how, void (*headerfn)(FILE *), char *(*linefn)(bool, HWND,
         }
     }
     if( ret ) {
-        hourglass = LoadCursor( NULL, IDC_WAIT );
+        hourglass = LoadCursor( (HINSTANCE)NULL, IDC_WAIT );
         SetCapture( mainhwnd );
         oldcursor = SetCursor( hourglass );
         ret = writeListBoxContents( headerfn, linefn, fname, listbox );

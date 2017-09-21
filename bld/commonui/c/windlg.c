@@ -133,7 +133,7 @@ TEMPLATE_HANDLE DialogTemplate( DWORD style, int x, int y, int cx, int cy,
 
     dlgtemplate = GlobalAlloc( GMEM_MOVEABLE | GMEM_ZEROINIT, blocklen );
     if( dlgtemplate == NULL )
-        return( NULL );
+        return( (TEMPLATE_HANDLE)NULL );
 
     *templatelen = blocklen;
     template = GetPtrGlobalLock( dlgtemplate );
@@ -227,7 +227,7 @@ TEMPLATE_HANDLE AddControl( TEMPLATE_HANDLE old_dlgtemplate, int x, int y, int c
     GlobalUnlock( old_dlgtemplate );
     new_dlgtemplate = GlobalReAlloc( old_dlgtemplate, blocklen, GMEM_MOVEABLE | GMEM_ZEROINIT );
     if( new_dlgtemplate == NULL )
-        return( NULL );
+        return( (TEMPLATE_HANDLE)NULL );
 
     template = GetPtrGlobalLock( new_dlgtemplate );
 

@@ -131,7 +131,7 @@ static void getDesktopBitmap( void )
     HDC         memdc;
     HBITMAP     oldbmp;
 
-    hdc = GetDC( NULL );
+    hdc = GetDC( (HWND)NULL );
     memdc = CreateCompatibleDC( hdc );
 
     deskTopBitmap = CreateCompatibleBitmap( hdc, screenWidth, screenHeight );
@@ -140,7 +140,7 @@ static void getDesktopBitmap( void )
 
     SelectObject( memdc, oldbmp );
     DeleteDC( memdc );
-    ReleaseDC( NULL, hdc );
+    ReleaseDC( (HWND)NULL, hdc );
 
 } /* getDesktopBitmap */
 
@@ -180,12 +180,12 @@ HWND DisplayDesktop( HWND hparent )
     screenWidth = (short)GetSystemMetrics( SM_CXSCREEN );
     screenHeight = (short)GetSystemMetrics( SM_CYSCREEN );
 
-    prevcursor = SetCursor( LoadCursor(NULL, IDC_WAIT) );
+    prevcursor = SetCursor( LoadCursor( (HINSTANCE)NULL, IDC_WAIT ) );
     getDesktopBitmap();
 
     desktopwindow = createDeskWindow( hparent );
 
-    RedrawWindow( desktopwindow, NULL, NULL, RDW_UPDATENOW | RDW_ALLCHILDREN );
+    RedrawWindow( desktopwindow, NULL, (HRGN)NULL, RDW_UPDATENOW | RDW_ALLCHILDREN );
     SetCursor( prevcursor );
     SetWindowPos( desktopwindow, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE );
     return( desktopwindow );
