@@ -83,6 +83,7 @@ _WCRTLINK extern size_t _msize( void *__ptr );
 
 :keep WINDOWSX_MALLOC
 :include windowsx.sp
+:remove WINDOWSX_MALLOC
 
 :segment DOS | QNX
 #ifdef _M_I86

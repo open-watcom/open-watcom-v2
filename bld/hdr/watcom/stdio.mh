@@ -169,26 +169,11 @@ using std::wscanf;
 :include maxpath.sp
 :remove FILENAME
 
-:: This (strange?) technique keeps the name '__iobuf' in the global namespace.
-struct __stream_link;
-struct __iobuf;
-#ifndef __OBSCURE_STREAM_INTERNALS
-struct __iobuf {
-    unsigned char        *_ptr;         /* next character position */
-    int                   _cnt;         /* number of characters left */
-    struct __stream_link *_link;        /* location of associated struct */
-    unsigned              _flag;        /* mode of file access */
-    int                   _handle;      /* file handle */
-    unsigned              _bufsize;     /* size of buffer */
-    unsigned short        _ungotten;    /* used by ungetc and ungetwc */
-:segment QNX
-    struct __iobuf       *_unused;      /* spare entry */
-:endsegment
-};
-#endif
+:keep DECLARE_STRUCT
+:include file.sp
+:remove DECLARE_STRUCT
 
 :include nsstd.sp
-typedef struct __iobuf FILE;
 typedef long           fpos_t;
 :include nsstdepi.sp
 
@@ -202,12 +187,12 @@ typedef long           fpos_t;
  #define FOPEN_MAX      (_NFILES-2)
 #endif /* extensions disabled */
 :endsegment
-:keep PATHMAX
 :segment DOS
 
+:keep PATHMAX
 :include maxpath.sp
-:endsegment
 :remove PATHMAX
+:endsegment
 
 :segment CNAME
 _WCRTLINK extern std::FILE  *__get_iob_ptr( void );

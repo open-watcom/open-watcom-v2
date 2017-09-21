@@ -139,25 +139,9 @@ using std::wctype;
 #ifndef _CSTDARG_INCLUDED
  #include <cstdarg>
 #endif
-
-#ifndef _CSTDIO_INCLUDED
- #include <cstdio>
-#endif
-
-#ifndef _CSTDLIB_INCLUDED
- #include <cstdlib>
-#endif
 :elsesegment
 #ifndef _STDARG_H_INCLUDED
  #include <stdarg.h>
-#endif
-
-#ifndef _STDIO_H_INCLUDED
- #include <stdio.h>
-#endif
-
-#ifndef _STDLIB_H_INCLUDED
- #include <stdlib.h>
 #endif
 :endsegment
 
@@ -183,19 +167,9 @@ using std::wctype;
 
 :include mbstatet.sp
 
-:segment CNAME
-#ifndef _STDTM_DEFINED
-#define _STDTM_DEFINED
-namespace std {
- struct tm;
-}
-#endif
-:elsesegment
-#ifndef _TM_DEFINED
-#define _TM_DEFINED
- struct tm;
-#endif
-:endsegment
+:include tm.sp
+
+:include file.sp
 
 :include nsstd.sp
 _WCRTLINK extern wint_t   btowc( int __c );
@@ -293,6 +267,8 @@ _WCRTLINK extern int        _vswprintf( wchar_t *__s, const wchar_t *__format, v
 ::::::::: Safer C :::::::::
 :segment !CNAME
 :include saferpro.sp
+
+:include time_t.sp
 
 :include errno_t.sp
 

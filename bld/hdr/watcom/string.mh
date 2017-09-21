@@ -186,6 +186,7 @@ _WCRTLINK  extern char      *strtok_r( char *__s1, const char *__s2, char **__p1
 
 :keep WINDOWSX_STRING
 :include windowsx.sp
+:remove WINDOWSX_STRING
 
 _WCIRTLINK extern void movedata( unsigned __srcseg, unsigned __srcoff, unsigned __tgtseg, unsigned __tgtoff, unsigned __len );
 
