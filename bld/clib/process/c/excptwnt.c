@@ -30,11 +30,12 @@
 
 
 #include "variety.h"
-#include <windows.h>
+#include <stddef.h>
 #include <excpt.h>
 #include <float.h>
 #include <signal.h>
 #include <unistd.h>
+#include <windows.h>
 #include "iomode.h"
 #include "rtdata.h"
 #include "sigfunc.h"

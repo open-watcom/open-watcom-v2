@@ -31,8 +31,8 @@
 
 
 #include "variety.h"
-#include "cover.h"
 #include <stdlib.h>
+#include "cover.h"
 
 struct wndprocs *ClassProcList = 0;
 

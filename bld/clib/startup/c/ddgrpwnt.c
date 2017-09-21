@@ -30,9 +30,9 @@
 
 
 #include "variety.h"
-#include <windows.h>
 #include <string.h>
 #include <stdlib.h>
+#include <windows.h>
 #include "ddgrp.h"
 
 #define message_prefix \

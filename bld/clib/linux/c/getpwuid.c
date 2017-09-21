@@ -30,9 +30,12 @@
 * Author: J. Armstrong
 ****************************************************************************/
 
+
 #include "variety.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <pwd.h>
+
 
 _WCRTLINK struct passwd *getpwuid(uid_t uid)
 {

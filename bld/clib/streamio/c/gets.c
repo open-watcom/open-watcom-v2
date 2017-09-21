@@ -31,7 +31,9 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include <stddef.h>
 #include <stdio.h>
+#include <wchar.h>
 
 
 _WCRTLINK CHAR_TYPE *__F_NAME(gets,getws)( CHAR_TYPE *s )

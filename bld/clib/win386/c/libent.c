@@ -30,10 +30,11 @@
 ****************************************************************************/
 
 
-#include <windows.h>
+#include <stddef.h>
 #include <dos.h>
 #include <malloc.h>
 #include <stdarg.h>
+#include <windows.h>
 
 typedef struct libent {
     void        *proc;

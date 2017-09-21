@@ -31,9 +31,9 @@
 
 
 #include "variety.h"
-#include "cover.h"
 #include <string.h>
 #include <dos.h>
+#include "cover.h"
 
 
 void *MapAliasToFlat( DWORD alias )

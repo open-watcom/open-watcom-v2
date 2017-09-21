@@ -32,6 +32,7 @@
 ****************************************************************************/
 
 #include "variety.h"
+#include <stddef.h>
 #include <termios.h>
 #include "rterrno.h"
 #include "thread.h"

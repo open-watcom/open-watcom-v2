@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <stdio.h>
 #if defined(__NT__)
     #include <windows.h>

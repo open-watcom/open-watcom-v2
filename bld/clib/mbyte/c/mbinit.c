@@ -30,6 +30,8 @@
 
 
 #include "variety.h"
+#include <string.h>
+#include <mbstring.h>
 #ifdef __NT__
     #include <windows.h>
     #include <winnls.h>
@@ -48,8 +50,6 @@
     #include <windows.h>
 #elif defined __LINUX__
 #endif
-#include <string.h>
-#include <mbstring.h>
 #include "mbchar.h"
 
 

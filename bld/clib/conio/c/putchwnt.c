@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <conio.h>
 #include <windows.h>
 #include "ntconio.h"

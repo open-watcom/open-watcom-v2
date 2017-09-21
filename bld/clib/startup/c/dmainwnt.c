@@ -32,8 +32,8 @@
 #include "variety.h"
 #include "widechar.h"
 #include <stdlib.h>
-#include <windows.h>
 #include <process.h>
+#include <windows.h>
 #include "initfini.h"
 #include "libwin32.h"
 #include "initarg.h"

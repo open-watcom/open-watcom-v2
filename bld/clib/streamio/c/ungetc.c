@@ -31,6 +31,7 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include <stddef.h>
 #include <stdio.h>
 #ifdef __WIDECHAR__
     #include <mbstring.h>

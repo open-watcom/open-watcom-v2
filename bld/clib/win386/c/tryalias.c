@@ -30,8 +30,8 @@
 
 
 #include "variety.h"
-#include "cover.h"
 #include <string.h>
+#include "cover.h"
 
 #define MAX_CNAME       10
 

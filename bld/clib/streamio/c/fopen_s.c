@@ -32,6 +32,7 @@
 #include "variety.h"
 #include "widechar.h"
 #include "saferlib.h"
+#include <stddef.h>
 #include <wchar.h>
 #include <stdio.h>
 #include <ctype.h>

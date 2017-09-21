@@ -30,15 +30,16 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <conio.h>
 #include <dos.h>
 #include <windows.h>
 #include "ntconio.h"
 #include "rtdata.h"
 #include "fileacc.h"
 #include "defwin.h"
-#include <unistd.h>
-#include <conio.h>
 
 _WCRTLINK int kbhit( void )
 {

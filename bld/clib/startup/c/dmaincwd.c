@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <malloc.h>
 #include <i86.h>
 #include "initfini.h"

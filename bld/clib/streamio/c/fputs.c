@@ -31,7 +31,9 @@
 
 #include "variety.h"
 #include "widechar.h"
+#include <stddef.h>
 #include <stdio.h>
+#include <wchar.h>
 #include "fileacc.h"
 #include "rtdata.h"
 #include "flush.h"

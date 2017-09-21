@@ -32,14 +32,14 @@
 #include "variety.h"
 #include "widechar.h"
 #include <stdlib.h>
-#ifdef __NT__
-    #include <windows.h>
-#endif
 #include <string.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#ifdef __NT__
+    #include <windows.h>
+#endif
 #include "rtinit.h"
 #include "p5prof.h"
 #include "ljmphdl.h"

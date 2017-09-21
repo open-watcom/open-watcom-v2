@@ -31,9 +31,9 @@
 
 
 #include "variety.h"
-#include <windows.h>
 #include <stdlib.h>
 #include <dos.h>
+#include <windows.h>
 #include "rtdata.h"
 #include "seterrno.h"
 

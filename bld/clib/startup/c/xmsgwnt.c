@@ -30,8 +30,9 @@
 
 
 #include "variety.h"
-#include <windows.h>
+#include <stddef.h>
 #include <io.h>
+#include <windows.h>
 #include "iomode.h"
 #include "rtdata.h"
 #include "exitwmsg.h"

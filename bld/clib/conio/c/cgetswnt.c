@@ -30,9 +30,10 @@
 
 
 #include "variety.h"
-#include <windows.h>
+#include <stddef.h>
 #include <conio.h>
 #include <unistd.h>
+#include <windows.h>
 #include "ntconio.h"
 #include "fileacc.h"
 #include "defwin.h"

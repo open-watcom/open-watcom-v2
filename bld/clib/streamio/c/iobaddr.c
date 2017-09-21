@@ -30,8 +30,11 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include "clibsupp.h"
 #include "rtdata.h"
+
+
 #if defined( __NETWARE__ )
   #if !defined( _THIN_LIB ) || defined( _NETWARE_CLIB )
     extern FILE   **__get_stdin ( void );

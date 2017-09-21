@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <stdio.h>
 #include "rtdata.h"
 #include "liballoc.h"
