@@ -191,8 +191,8 @@ namespace std {
 }
 #endif
 :elsesegment
-#ifndef _STDTM_DEFINED
-#define _STDTM_DEFINED
+#ifndef _TM_DEFINED
+#define _TM_DEFINED
  struct tm;
 #endif
 :endsegment
