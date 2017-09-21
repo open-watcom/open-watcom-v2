@@ -46,7 +46,11 @@ using std::wint_t;
 #define _WCTYPE_T_DEFINED_
 using std::wctype_t;
 #endif
-using std::tm;              // <= Fix me?
+#ifndef _TM_DEFINED
+#define _TM_DEFINED
+ #define _TM_DEFINED_
+ using std::tm;
+#endif
 
 // C99 functions in wchar.h
 using std::fgetwc;
@@ -143,10 +147,6 @@ using std::wctype;
 #ifndef _CSTDLIB_INCLUDED
  #include <cstdlib>
 #endif
-
-#ifndef _CTIME_INCLUDED
- #include <ctime>
-#endif
 :elsesegment
 #ifndef _STDARG_H_INCLUDED
  #include <stdarg.h>
@@ -158,10 +158,6 @@ using std::wctype;
 
 #ifndef _STDLIB_H_INCLUDED
  #include <stdlib.h>
-#endif
-
-#ifndef _TIME_H_INCLUDED
- #include <time.h>
 #endif
 :endsegment
 
@@ -186,6 +182,20 @@ using std::wctype;
 :include size_t.sp
 
 :include mbstatet.sp
+
+:segment CNAME
+#ifndef _STDTM_DEFINED
+#define _STDTM_DEFINED
+namespace std {
+ struct tm;
+}
+#endif
+:elsesegment
+#ifndef _STDTM_DEFINED
+#define _STDTM_DEFINED
+ struct tm;
+#endif
+:endsegment
 
 :include nsstd.sp
 _WCRTLINK extern wint_t   btowc( int __c );

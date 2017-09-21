@@ -40,7 +40,11 @@
  #define _TIME_T_DEFINED_
  using std::time_t;
 #endif
-using std::tm;
+#ifndef _TM_DEFINED
+#define _TM_DEFINED
+ #define _TM_DEFINED_
+ using std::tm;
+#endif
 
 // C99 functions in time.h
 using std::asctime;
@@ -196,7 +200,18 @@ struct tm {
     int  tm_yday;   /* days since January 1     -- [0,365]*/
     int  tm_isdst;  /* Daylight Savings Time flag */
 };
+:include nsstdepi.sp
+:segment CNAME
+#ifndef _STDTM_DEFINED
+#define _STDTM_DEFINED
+#endif
+:elsesegment
+#ifndef _TM_DEFINED
+#define _TM_DEFINED
+#endif
+:endsegment
 
+:include nsstd.sp
 _WCRTLINK extern char         *asctime( const struct tm *__timeptr );
 _WCRTLINK extern clock_t      clock( void );
 _WCRTLINK extern char         *ctime( const time_t *__timer );
