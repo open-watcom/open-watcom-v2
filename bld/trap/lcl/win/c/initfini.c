@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #include <stdio.h>
 #include <dos.h>
 #include "cpuglob.h"

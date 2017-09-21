@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #include <windows.h>
 #include "trpimp.h"
 #include "winstrt.h"
