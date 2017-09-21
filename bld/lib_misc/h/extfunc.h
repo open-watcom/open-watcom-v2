@@ -85,10 +85,11 @@
 
     #pragma aux __outside_CLIB modify [__AX __BX __CX __DX __DS __ES __FS __GS];
     /*
-            use as follows:
+        use as follows:
 
-    typedef void vfv( void );
-    #pragma aux (__outside_CLIB) __vfv;
+        typedef void vfv( void );
+        #pragma aux (__outside_CLIB) vfv;
+
     */
 
     #undef __AX
