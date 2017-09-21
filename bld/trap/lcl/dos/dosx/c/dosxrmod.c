@@ -32,7 +32,6 @@
 #if defined( DOS4G )
 //#define DEBUG_TRAP  1
   #include "trapdbg.h"
-  #include <stdio.h>
   #include "rsi1632.h"
 #elif defined( CAUSEWAY )
   #include "dpmi.h"

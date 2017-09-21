@@ -31,7 +31,6 @@
 
 #include <unistd.h>
 #include <stdlib.h>
-#include <stdio.h>
 #include <termios.h>
 #include <fcntl.h>
 #include <sys/stat.h>

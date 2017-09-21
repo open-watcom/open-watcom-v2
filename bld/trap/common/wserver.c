@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
+#include <stddef.h>
 #include <process.h>
 #include <wwindows.h>
 #include "wserver.h"

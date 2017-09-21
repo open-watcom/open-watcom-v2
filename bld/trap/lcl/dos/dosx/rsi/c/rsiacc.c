@@ -32,9 +32,7 @@
 
 //#define DEBUG_TRAP
 #include "trapdbg.h"
-
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include <conio.h>
 #include <io.h>
