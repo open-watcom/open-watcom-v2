@@ -34,6 +34,7 @@
 #ifndef wdefinitions
 #define wdefinitions
 
+#include <cstddef>
 #include "wstd.h"
 
 #ifdef _M_I86
