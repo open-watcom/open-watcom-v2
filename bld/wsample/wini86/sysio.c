@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #include <windows.h>
 #include <malloc.h>
 #include "tinyio.h"

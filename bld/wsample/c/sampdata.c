@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #if defined(__WINDOWS__)
 #include <windows.h>
 #endif
