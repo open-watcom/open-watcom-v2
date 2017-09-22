@@ -14,19 +14,14 @@ struct __iobuf {
     struct __iobuf       *_unused;      /* spare entry */
 :endsegment
 };
-#endif
-#ifndef ___IOBUF_DEFINED
 #define ___IOBUF_DEFINED
- #ifdef __OBSCURE_STREAM_INTERNALS
-  struct __iobuf;
- #endif
 #endif
-:elsesegment
+
+:endsegment
 #ifndef ___IOBUF_DEFINED
 #define ___IOBUF_DEFINED
  struct __iobuf;
 #endif
-:endsegment
 :segment CNAME
 #ifndef _STDFILE_DEFINED
 #define _STDFILE_DEFINED

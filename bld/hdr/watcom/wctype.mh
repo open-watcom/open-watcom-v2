@@ -81,21 +81,15 @@ using std::iswblank;
 :include wctype.sp
 
 :include ext.sp
-:segment CNAME
-_WCRTLINK extern int    iswascii( std::wint_t __wc );
-_WCRTLINK extern int    __iswcsymf( std::wint_t __wc );
-_WCRTLINK extern int    __iswcsym( std::wint_t __wc );
-:elsesegment
-_WCRTLINK extern int    iswascii( wint_t __wc );
-_WCRTLINK extern int    __iswcsymf( wint_t __wc );
-_WCRTLINK extern int    __iswcsym( wint_t __wc );
-:endsegment
+_WCRTLINK extern int        iswascii( __w_wint_t __wc );
+_WCRTLINK extern int        __iswcsymf( __w_wint_t __wc );
+_WCRTLINK extern int        __iswcsym( __w_wint_t __wc );
 #ifndef __FUNCTION_DATA_ACCESS
 :segment !CNAME
-#define iswascii(__c)   ((unsigned)(__c) < 0x80)
+#define iswascii(__c)       ((unsigned)(__c) < 0x80)
 :endsegment
-#define __iswcsymf(__c) (iswalpha(__c) || ((__c)=='_'))
-#define __iswcsym(__c)  (iswalnum(__c) || ((__c)=='_'))
+#define __iswcsymf(__c)     (iswalpha(__c) || ((__c)=='_'))
+#define __iswcsym(__c)      (iswalnum(__c) || ((__c)=='_'))
 #endif
 :include extepi.sp
 
