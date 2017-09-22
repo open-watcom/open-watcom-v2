@@ -33,15 +33,17 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-unsigned __pascal VxDGet( void __far *rec, unsigned len );
-void __pascal VxDPut( const void __far *rec, unsigned len );
-char __pascal VxDConnect( void );
-int  __pascal VxDDisconnect( void );
-const char * __pascal VxDLink( const char __far *name );
-int  __pascal VxDUnLink( void );
-int  __pascal VxDPresent( void );
-int  __pascal VxDPutPending( void );
-void __pascal VxDRaiseInterrupt( unsigned intr );
+
+extern unsigned     __pascal VxDGet( void __far *rec, unsigned len );
+extern void         __pascal VxDPut( const void __far *rec, unsigned len );
+extern char         __pascal VxDConnect( void );
+extern int          __pascal VxDDisconnect( void );
+extern const char   * __pascal VxDLink( const char __far *name );
+extern int          __pascal VxDUnLink( void );
+extern int          __pascal VxDPresent( void );
+extern int          __pascal VxDPutPending( void );
+extern void         __pascal VxDRaiseInterrupt( unsigned intr );
+
 #ifdef __cplusplus
 }
 #endif

@@ -30,6 +30,7 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #include <stdio.h>
 #include <conio.h>
 #include <process.h>
@@ -46,7 +47,9 @@ int main( void )
     linked = 0;
     for( ;; ) {
         printf( "cmd> " );
-        if( gets( buff ) == NULL ) break;
+        if( fgets( buff, sizeof( buff ), stdin ) == NULL )
+            break;
+        strtok( buff, "\n" );
         if( !linked ) {
             err = BatchLink( NULL );
             if( err != NULL ) {
