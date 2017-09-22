@@ -35,6 +35,10 @@
 
 #include <time.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum __ws {
     ADW_OK,
     ADW_NO_DEPS,
@@ -56,5 +60,9 @@ walk_status WalkOBJAutoDep( const char *file_name
 walk_status WalkRESAutoDep( const char *file_name
                           , rtn_status (*rtn)( time_t, char *, void * )
                           , void *data );
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif
