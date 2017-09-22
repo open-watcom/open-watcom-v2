@@ -31,6 +31,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <mbstring.h>
 #include <windows.h>
 #include "liballoc.h"

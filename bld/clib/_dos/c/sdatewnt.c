@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <stddef.h>
 #include <dos.h>
 #include <windows.h>
 #include "osver.h"

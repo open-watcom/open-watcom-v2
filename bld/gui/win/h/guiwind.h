@@ -36,6 +36,7 @@
 
 
 #ifdef __OS2_PM__
+    #include <stddef.h>     /* NULL value */
     #define INCL_GPI
     #define INCL_WIN
     #define INCL_DOSNLS
@@ -45,7 +46,7 @@
     #define INCLUDE_COMMDLG_H
     #define NOCOMM
     #define WIN32_LEAN_AND_MEAN
-    #include <wwindows.h>
+    #include <wwindows.h>   /* NULL value */
     #include <commdlg.h>
 #endif
 

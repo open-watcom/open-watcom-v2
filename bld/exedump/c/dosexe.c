@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #include <stdio.h>
 #include <setjmp.h>
 #include "wio.h"

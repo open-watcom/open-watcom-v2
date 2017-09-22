@@ -31,7 +31,7 @@
 
 
 #include "variety.h"
-#include <stdio.h>
+#include <stddef.h>
 #include <windows.h>
 #include "rterrno.h"
 #include "fileacc.h"

@@ -29,9 +29,9 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #include <stdio.h>
 #include <setjmp.h>
-
 #include "wdglb.h"
 #include "wdfunc.h"
 
