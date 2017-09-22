@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include <limits.h>
 #include <wwindows.h>
+#include <limits.h>
 #include "global.h"
 #include "fmedit.def"
 #include "object.def"

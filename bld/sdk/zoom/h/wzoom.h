@@ -30,8 +30,8 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include "commonui.h"
+#include <stdlib.h>
 #include "watcom.h"
 #include "mem.h"
 #include "config.h"

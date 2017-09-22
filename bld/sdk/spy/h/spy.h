@@ -30,11 +30,11 @@
 ****************************************************************************/
 
 
+#include "commonui.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include "commonui.h"
 #include "bool.h"
 #include "watcom.h"
 #include "spyrc.h"

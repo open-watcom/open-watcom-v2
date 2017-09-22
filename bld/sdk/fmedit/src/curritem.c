@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include <wwindows.h>
+#include <stdlib.h>
 #include "global.h"
 #include "fmedit.def"
 #include "curritem.h"

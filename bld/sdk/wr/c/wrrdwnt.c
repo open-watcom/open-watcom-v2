@@ -61,9 +61,9 @@ bool WRReadResourceEntry( WResFileID fid, uint_32 offset, resource_entry *res_en
 /****************************************************************************/
 /* static function prototypes                                               */
 /****************************************************************************/
-static int      WRWinNTHeaderHasResourceTable( exe_pe_header * );
+static bool     WRWinNTHeaderHasResourceTable( exe_pe_header * );
 static int      WRCalcObjTableOffset( WResFileID, exe_pe_header * );
-static int      WRReadNTObjectTable( WResFileID, exe_pe_header *, pe_object ** );
+static bool     WRReadNTObjectTable( WResFileID, exe_pe_header *, pe_object ** );
 static bool     WRLoadWResDirFromWinNTEXE( WResFileID, WResDir * );
 static bool     WRHandleWinNTTypeDir( WResFileID, WResDir *, uint_32 );
 static bool     WRHandleWinNTTypeEntry( WResFileID, WResDir *, resource_dir_entry *, bool );
@@ -107,7 +107,7 @@ long int WRReadWinNTExeHeader( WResFileID fid, exe_pe_header *header )
     uint_16     offset;
     bool        ok;
 
-    old_pos = -1;
+    old_pos = false;
 
     ok = ( fid != WRES_NIL_HANDLE && header != NULL );
 
@@ -188,14 +188,14 @@ int WRCalcObjTableOffset( WResFileID fid, exe_pe_header *hdr )
     return( offset );
 }
 
-int WRReadNTObjectTable( WResFileID fid, exe_pe_header *hdr, pe_object **ot )
+bool WRReadNTObjectTable( WResFileID fid, exe_pe_header *hdr, pe_object **ot )
 {
     size_t  size;
     int     ot_offset;
 
     ot_offset = WRCalcObjTableOffset( fid, hdr );
     if( ot_offset == 0 || ResSeek( fid, ot_offset, SEEK_SET ) ) {
-        return( FALSE );
+        return( false );
     }
     if( IS_PE64( *hdr ) ) {
         size = sizeof( pe_object ) * PE64( *hdr ).num_objects;
@@ -213,7 +213,7 @@ int WRReadNTObjectTable( WResFileID fid, exe_pe_header *hdr, pe_object **ot )
     return( *ot != NULL );
 }
 
-int WRIsHeaderValidWINNT( exe_pe_header *header )
+bool WRIsHeaderValidWINNT( exe_pe_header *header )
 {
     /* at some point will we have to check the CPUTYPE ????!!!! */
     if( IS_PE64( *header ) ) {
@@ -223,7 +223,7 @@ int WRIsHeaderValidWINNT( exe_pe_header *header )
     }
 }
 
-int WRWinNTHeaderHasResourceTable( exe_pe_header *header )
+bool WRWinNTHeaderHasResourceTable( exe_pe_header *header )
 {
     int                 num_tables;
     pe_hdr_table_entry  *table;
@@ -505,7 +505,7 @@ bool WRHandleWinNTLangIDEntry( WResFileID fid, WResDir *dir, WResID *type,
     if( ok ) {
         offset = WR_MAP_DATA_RVA( res_entry.data_rva );
         lang.lang = HIWORD( rd_entry->id_name );
-        lang.sublang = LOWORD( rd_entry->id_name );
+        lang.sublang = LOBYTE( LOWORD( rd_entry->id_name ) );
         ok = !WResAddResource( type, name, 0, offset, res_entry.size, *dir, &lang, NULL );
     }
 

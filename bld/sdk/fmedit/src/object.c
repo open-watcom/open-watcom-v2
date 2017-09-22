@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include <string.h>
 #include "wwindows.h"
+#include <string.h>
 #include "watcom.h"
 #include "fmedit.def"
 #include "state.def"

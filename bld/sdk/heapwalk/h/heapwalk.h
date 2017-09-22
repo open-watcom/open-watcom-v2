@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include <stdio.h>
 #include "commonui.h"
+#include <stdio.h>
 #include "bool.h"
 #include "watcom.h"
 #include "heapwlk.h"

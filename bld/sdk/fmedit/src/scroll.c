@@ -29,9 +29,9 @@
 ****************************************************************************/
 
 
+#include <wwindows.h>
 #include <stdlib.h>
 #include <limits.h>
-#include <wwindows.h>
 #include "global.h"
 #include "fmedit.def"
 #include "state.def"

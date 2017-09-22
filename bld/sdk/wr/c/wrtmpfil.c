@@ -108,15 +108,15 @@ bool WRAPI WRReadEntireFile( const char *fname, BYTE **data, size_t *size )
     return( ok );
 }
 
-int WRAPI WRDeleteFile( const char *name )
+bool WRAPI WRDeleteFile( const char *name )
 {
     if( name != NULL && WRFileExists( name ) ) {
-        return( !remove( name ) );
+        return( remove( name ) == 0 );
     }
-    return( FALSE );
+    return( false );
 }
 
-int WRAPI WRFileExists( const char *name )
+bool WRAPI WRFileExists( const char *name )
 {
     return( name != NULL && access( name, R_OK ) == 0 );
 }
@@ -174,13 +174,13 @@ bool WRAPI WRCopyFile( const char *dst_name, const char *src_name )
     return( ok );
 }
 
-int WRAPI WRRenameFile( const char *new, const char *old )
+bool WRAPI WRRenameFile( const char *new, const char *old )
 {
     char     new_drive[_MAX_DRIVE];
     char     old_drive[_MAX_DRIVE];
 
     if( new == NULL || old == NULL ) {
-        return( FALSE );
+        return( false );
     }
 
     _splitpath( new, new_drive, NULL, NULL, NULL );
@@ -190,14 +190,14 @@ int WRAPI WRRenameFile( const char *new, const char *old )
         if( WRCopyFile( new, old ) ) {
             return( WRDeleteFile( old ) );
         } else {
-            return( FALSE );
+            return( false );
         }
     } else {
         if( rename( old, new ) == 0 ) {
-            return( TRUE );
+            return( true );
         }
         LastError = errno;
-        return( FALSE );
+        return( false );
     }
 }
 

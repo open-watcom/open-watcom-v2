@@ -41,9 +41,9 @@
 /* function prototypes                                                      */
 /****************************************************************************/
 WRDLLENTRY extern bool     WRAPI WRReadEntireFile( const char *fname, BYTE **data, size_t *size );
-WRDLLENTRY extern int      WRAPI WRDeleteFile( const char * );
-WRDLLENTRY extern int      WRAPI WRFileExists( const char * );
-WRDLLENTRY extern int      WRAPI WRRenameFile( const char *, const char * );
+WRDLLENTRY extern bool     WRAPI WRDeleteFile( const char * );
+WRDLLENTRY extern bool     WRAPI WRFileExists( const char * );
+WRDLLENTRY extern bool     WRAPI WRRenameFile( const char *, const char * );
 WRDLLENTRY extern bool     WRAPI WRBackupFile( const char *, bool  );
 WRDLLENTRY extern void     WRAPI WRFreeTempFileName( char * );
 WRDLLENTRY extern char *   WRAPI WRGetTempFileName( const char * );
