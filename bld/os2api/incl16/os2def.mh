@@ -8,7 +8,9 @@
 
 :include cpluspro.sp
 
+#ifndef NULL
 :include null.sp
+#endif
 
 #define FAR     __far
 #define NEAR    __near
