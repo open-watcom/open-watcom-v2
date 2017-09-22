@@ -29,6 +29,11 @@
 ****************************************************************************/
 
 
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <sys/types.h>
 #if defined( __NT__ ) || defined( __WINDOWS__ )
   #if defined( __WINDOWS__ )
     #define INCLUDE_COMMDLG_H
@@ -38,11 +43,6 @@
     #include <commdlg.h>
   #endif
 #endif
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <sys/types.h>
 #include "wio.h"
 #include "watcom.h"
 #include "bool.h"
