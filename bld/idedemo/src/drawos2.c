@@ -29,10 +29,9 @@
 ****************************************************************************/
 
 
-#define INCL_PM
-
-#include <os2.h>
 #include <string.h>
+#define INCL_PM
+#include <os2.h>
 #include "drawmenu.h"
 #include "button.h"
 #include "room.h"

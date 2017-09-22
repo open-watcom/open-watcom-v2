@@ -40,7 +40,11 @@ Description:
 */
 
 /* set some switches that are used in windows.h */
+
 //#define       WINVER  0x0300          // make sure we don't use any 3.1 stuff
+#include <stdlib.h>
+#include <math.h>
+#include <ctype.h>
 #ifdef PLAT_OS2
 #define INCL_PM
 #define INCL_DOSMODULEMGR
@@ -53,13 +57,8 @@ Description:
 #define  TRACK_MEM
 #endif
 #include "mem.h"
-
 #include "mytypes.h"
 #include "wpi.h"
-
-#include <stdlib.h>
-#include <math.h>
-#include <ctype.h>
 #include "watdlg.h"
 
 

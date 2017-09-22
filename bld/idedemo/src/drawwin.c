@@ -29,8 +29,8 @@
 ****************************************************************************/
 
 
-#include <windows.h>
 #include <string.h>
+#include <windows.h>
 #include "drawmenu.h"
 #include "button.h"
 #include "room.h"

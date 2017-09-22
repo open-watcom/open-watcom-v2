@@ -40,6 +40,7 @@
 
 */
 
+#include <stddef.h>
 #ifdef PLAT_OS2
 #define INCL_PM
 #include <os2.h>

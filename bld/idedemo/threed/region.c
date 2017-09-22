@@ -38,6 +38,9 @@
 
 */
 
+#include <string.h>
+#include <stdlib.h>
+#include <math.h>
 #ifdef PLAT_OS2
 #define INCL_PM
 #include <os2.h>
@@ -48,13 +51,8 @@
 #ifndef PROD
 #define  TRACK_MEM
 #endif
-
 #include "mem.h"
-
 #include "wpi.h"
-#include <string.h>
-#include <stdlib.h>
-#include <math.h>
 #include "region.h"
 #include "cgrids.h"
 

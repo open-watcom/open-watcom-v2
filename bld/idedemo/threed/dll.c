@@ -32,8 +32,8 @@
 
 #if defined(__WINDOWS__)
 
-#include <windows.h>
 #include <stdlib.h>     // for __win_xxx_flags
+#include <windows.h>
 
 HINSTANCE hInstDLL;             // Saved module handle.
 
@@ -71,6 +71,7 @@ int main()
 }
 #elif defined(__WINDOWS_NT__) || defined( __NT__ )
 
+#include <stddef.h>
 #include <windows.h>
 
 HINSTANCE hInstDLL;                // Saved module handle.

@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stddef.h>
 #include <windows.h>
 #include "button.h"
 #include "win1632.h"
