@@ -146,14 +146,8 @@ using std::wscanf;
 :endsegment
 :include pshpackl.sp
 
-:include size_t.sp
-
-:include ssize_t.sp
-
 ::include null.sp
 ::
-:include valist.sp
-
 :segment QNX | LINUX
 #define _NFILES         16          /*  minimum guaranteed open files       */
 #define BUFSIZ          4096        /*  Default buffer size                 */
@@ -165,18 +159,17 @@ using std::wscanf;
  #define BUFSIZ         4096        /*  Default buffer size                 */
 #endif
 :endsegment
+
 :keep FILENAME
 :include maxpath.sp
 :remove FILENAME
 
-:keep DECLARE_STRUCT
-:include file.sp
-:remove DECLARE_STRUCT
+:segment DOS
+:keep PATHMAX
+:include maxpath.sp
+:remove PATHMAX
 
-:include nsstd.sp
-typedef long           fpos_t;
-:include nsstdepi.sp
-
+:endsegment
 :segment QNX | LINUX
 #define FOPEN_MAX   _NFILES
 :elsesegment
@@ -187,12 +180,78 @@ typedef long           fpos_t;
  #define FOPEN_MAX      (_NFILES-2)
 #endif /* extensions disabled */
 :endsegment
-:segment DOS
 
-:keep PATHMAX
-:include maxpath.sp
-:remove PATHMAX
+:segment QNX | LINUX
+/* values for _flag field in FILE struct */
+:elsesegment
+/* values for _flag field in FILE struct and _iomode array */
 :endsegment
+
+#define _READ   0x0001  /* file opened for reading */
+#define _WRITE  0x0002  /* file opened for writing */
+:segment QNX | LINUX
+#define _UNGET  0x0100  /* ungetc has been done */
+:elsesegment
+#define _UNGET  0x0004  /* ungetc has been done */
+:endsegment
+#define _BIGBUF 0x0008  /* big buffer allocated */
+#define _EOF    0x0010  /* EOF has occurred */
+#define _SFERR  0x0020  /* error has occurred on this file */
+#define _APPEND 0x0080  /* file opened for append */
+:segment QNX | LINUX
+#define _BINARY 0x0000  /* not required for POSIX QNX       */
+#define _IOFBF  0x0000  /*  full buffering                  */
+#define _IOLBF  0x0040  /*  line buffering                  */
+#define _IONBF  0x0004  /*  no buffering                    */
+:elsesegment
+#define _BINARY 0x0040  /* file is binary, skip CRLF processing */
+#define _IOFBF  0x0100  /* full buffering */
+#define _IOLBF  0x0200  /* line buffering */
+#define _IONBF  0x0400  /* no buffering */
+:endsegment
+#define _TMPFIL 0x0800  /* this is a temporary file */
+#define _DIRTY  0x1000  /* buffer has been modified */
+#define _ISTTY  0x2000  /* is console device */
+#define _DYNAMIC 0x4000 /* FILE is dynamically allocated   */
+#define _FILEEXT 0x8000 /* lseek with positive offset has been done */
+#define _COMMIT 0x0001  /* extended flag: commit OS buffers on flush */
+
+:include eof.sp
+
+:include seekpos.sp
+
+#define _NOT_ORIENTED   0               /* stream not yet oriented */
+#define _BYTE_ORIENTED  1               /* byte-oriented stream */
+#define _WIDE_ORIENTED  2               /* wide-oriented stream */
+
+:segment QNX | LINUX
+:include extunix.sp
+#define L_cuserid   14                  /*  Max length of login names       */
+#define L_ctermid   16                  /*  Max length of terminal names    */
+#define P_tmpdir    "/usr/tmp"          /*  Temporary file directory        */
+:include extepi.sp
+
+#define L_tmpnam    255                 /*  Max length of tmp file names    */
+:elsesegment
+#define L_tmpnam    13
+#define _P_tmpdir   "\\"                /* used by _tempnam */
+#define _wP_tmpdir  L"\\"               /* used by _wtempnam */
+:endsegment
+#define TMP_MAX     (26*26*26)          /*  Max times tmpnam can be called  */
+
+:include size_t.sp
+
+:include ssize_t.sp
+
+:include valist.sp
+
+:keep DECLARE_STRUCT
+:include file.sp
+:remove DECLARE_STRUCT
+
+:include nsstd.sp
+typedef long           fpos_t;
+:include nsstdepi.sp
 
 :segment CNAME
 _WCRTLINK extern std::FILE  *__get_iob_ptr( void );
@@ -262,64 +321,6 @@ _WCRTDATA extern FILE   _WCDATA __iob[];
 :endsegment
 
 #endif /* __OBSCURE_STREAM_INTERNALS */
-
-:segment QNX | LINUX
-/* values for _flag field in FILE struct */
-:elsesegment
-/* values for _flag field in FILE struct and _iomode array */
-:endsegment
-
-#define _READ   0x0001  /* file opened for reading */
-#define _WRITE  0x0002  /* file opened for writing */
-:segment QNX | LINUX
-#define _UNGET  0x0100  /* ungetc has been done */
-:elsesegment
-#define _UNGET  0x0004  /* ungetc has been done */
-:endsegment
-#define _BIGBUF 0x0008  /* big buffer allocated */
-#define _EOF    0x0010  /* EOF has occurred */
-#define _SFERR  0x0020  /* error has occurred on this file */
-#define _APPEND 0x0080  /* file opened for append */
-:segment QNX | LINUX
-#define _BINARY 0x0000  /* not required for POSIX QNX       */
-#define _IOFBF  0x0000  /*  full buffering                  */
-#define _IOLBF  0x0040  /*  line buffering                  */
-#define _IONBF  0x0004  /*  no buffering                    */
-:elsesegment
-#define _BINARY 0x0040  /* file is binary, skip CRLF processing */
-#define _IOFBF  0x0100  /* full buffering */
-#define _IOLBF  0x0200  /* line buffering */
-#define _IONBF  0x0400  /* no buffering */
-:endsegment
-#define _TMPFIL 0x0800  /* this is a temporary file */
-#define _DIRTY  0x1000  /* buffer has been modified */
-#define _ISTTY  0x2000  /* is console device */
-#define _DYNAMIC 0x4000 /* FILE is dynamically allocated   */
-#define _FILEEXT 0x8000 /* lseek with positive offset has been done */
-#define _COMMIT 0x0001  /* extended flag: commit OS buffers on flush */
-
-:include eof.sp
-
-:include seekpos.sp
-
-#define _NOT_ORIENTED   0               /* stream not yet oriented */
-#define _BYTE_ORIENTED  1               /* byte-oriented stream */
-#define _WIDE_ORIENTED  2               /* wide-oriented stream */
-
-:segment QNX | LINUX
-:include extunix.sp
-#define L_cuserid   14                  /*  Max length of login names       */
-#define L_ctermid   16                  /*  Max length of terminal names    */
-#define P_tmpdir    "/usr/tmp"          /*  Temporary file directory        */
-:include extepi.sp
-
-#define L_tmpnam    255                 /*  Max length of tmp file names    */
-:elsesegment
-#define L_tmpnam    13
-#define _P_tmpdir   "\\"                /* used by _tempnam */
-#define _wP_tmpdir  L"\\"               /* used by _wtempnam */
-:endsegment
-#define TMP_MAX     (26*26*26)          /*  Max times tmpnam can be called  */
 
 :: Declarations of standard C99 functions (but see below for more information).
 :include nsstd.sp
