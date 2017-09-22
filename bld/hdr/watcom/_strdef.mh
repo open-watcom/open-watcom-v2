@@ -38,6 +38,8 @@
  #include <memory>
 #endif
 
+:include eof.sp
+
 :include nsstd.sp
   // struct char_traits
   // ******************

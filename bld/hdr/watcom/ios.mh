@@ -35,9 +35,7 @@ using std::oct;
 :include owrtlink.sp
 
 // Define EOF to be the same as that used with C.
-#ifndef EOF
- #define EOF (-1)
-#endif
+:include eof.sp
 
 // __NOT_EOF is useful for those functions that return "something other
 // than EOF" to indicate that everything is OK.

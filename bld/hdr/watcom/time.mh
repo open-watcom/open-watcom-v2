@@ -73,27 +73,78 @@ using std::time;
 :endsegment
 :include pshpackl.sp
 
+:include null.sp
+
+#define CLOCKS_PER_SEC   1000
+
+:segment DOS
+::
+:: Begin of extension section
+::
+:include ext.sp
+
+#define CLK_TCK          1000
+
+:include extepi.sp
+:elsesegment QNX | LINUX
+:include extunix.sp
+
+#define CLK_TCK          1000
+
+/*  Clock types */
+#define CLOCK_REALTIME              0
+:segment LINUX
+#define CLOCK_MONOTONIC             1
+#define CLOCK_PROCESS_CPUTIME_ID    2
+#define CLOCK_THREAD_CPUTIME_ID     3
+#define CLOCK_MONOTONIC_RAW         4
+:endsegment
+
+/* Timer settime flags */
+#define TIMER_ABSTIME           0x0001
+#define TIMER_ADDREL            0x0100
+#define TIMER_PRESERVE_EXEC     0x0200
+#define TIMER_AUTO_RELEASE      0x0400
+
+:include extepi.sp
+
+:segment QNX
+:include ext.sp
+
+/* QNX msg notify types */
+#define _TNOTIFY_SLEEP          0
+#define _TNOTIFY_PROXY          1
+#define _TNOTIFY_MESSENGER      1
+#define _TNOTIFY_SIGNAL         2
+
+/* ticksize flags */
+#define _TICKSIZE_STANDARD      0
+#define _TICKSIZE_CLOSEST       1
+#define _TICKSIZE_EXTERNAL      2
+
+:include extepi.sp
+
+:endsegment
+::
+:: End of extension section
+::
+:endsegment
 :include wchar_t.sp
 :include size_t.sp
-
-:include null.sp
 
 :include time_t.sp
 
 :include clock_t.sp
 
-#define CLOCKS_PER_SEC   1000
-:segment DOS
-#define CLK_TCK          1000
-:endsegment
+:keep DECLARE_STRUCT
+:include tm.sp
+:remove DECLARE_STRUCT
 
-:segment QNX | LINUX
-:include extunix.sp
 ::
 :: Begin of extension section
 ::
-
-#define CLK_TCK          1000
+:segment QNX | LINUX
+:include extunix.sp
 
 :include timer_t.sp
 :include clockidt.sp
@@ -118,80 +169,17 @@ struct itimercb {
     }    itcb_event;
     int  itcb_count;
 };
-#endif
 
-/*  Clock types */
-#define CLOCK_REALTIME                  0
-:segment LINUX
-#define CLOCK_MONOTONIC                 1
-#define CLOCK_PROCESS_CPUTIME_ID        2
-#define CLOCK_THREAD_CPUTIME_ID         3
-#define CLOCK_MONOTONIC_RAW             4
-:endsegment
-
-/* Timer settime flags */
-#define TIMER_ABSTIME           0x0001
-#define TIMER_ADDREL            0x0100
-#define TIMER_PRESERVE_EXEC     0x0200
-#define TIMER_AUTO_RELEASE      0x0400
-
-/* QNX msg notify types */
-#define _TNOTIFY_SLEEP          0
-#define _TNOTIFY_PROXY          1
-#define _TNOTIFY_MESSENGER      1
-#define _TNOTIFY_SIGNAL         2
-
-/* ticksize flags */
-#define _TICKSIZE_STANDARD      0
-#define _TICKSIZE_CLOSEST       1
-#define _TICKSIZE_EXTERNAL      2
-
-_WCRTLINK extern int clock_gettime( clockid_t clock_id, struct timespec *tp );
-_WCRTLINK extern int clock_getres( clockid_t clock_id, struct timespec *res );
-:segment LINUX
-_WCRTLINK extern int clock_settime( clockid_t clock_id, const struct timespec *tp );
-_WCRTLINK extern int clock_nanosleep( clockid_t clock_id, int flags, const struct timespec *req, struct timespec *rmdr );
-:endsegment
-
-:segment QNX
-_WCRTLINK extern int clock_settime( clockid_t clock_id, struct timespec *tp );
-_WCRTLINK extern int clock_setres( clockid_t clock_id, struct timespec *res );
-
-:include ext.sp
-_WCRTLINK extern int qnx_getclock( pid_t pid, clockid_t clock_id, struct timespec *tp );
-_WCRTLINK extern int qnx_setclock( pid_t pid, clockid_t clock_id, struct timespec *tp );
-_WCRTLINK extern int qnx_clock( nid_t nid, clockid_t clock_id, struct timespec *tp );
-:include extepi.sp
-:endsegment
+#endif /* __POSIX_TIMERS */
 
 struct sigevent;               /* for C++ */
 
-_WCRTLINK extern int     timer_create( clockid_t clock_id, struct sigevent *evp, timer_t *tmr );
-_WCRTLINK extern int     timer_delete( timer_t timerid );
-_WCRTLINK extern int     timer_getoverrun( timer_t timerid );
-_WCRTLINK extern int     timer_gettime( timer_t timerid, struct itimerspec *value );
-_WCRTLINK extern int     timer_settime( timer_t timerid, int flags, struct itimerspec *value, struct itimerspec *ovalue );
-:segment QNX
-
-:include ext.sp
-_WCRTLINK extern long    qnx_timerperiod( long );
-_WCRTLINK extern long    qnx_ticksize( long nsec, int flags );
-_WCRTLINK extern int     qnx_adj_time( long, long, long *, long * );
 :include extepi.sp
+
 :endsegment
-
-_WCRTLINK extern int     nanosleep( const struct timespec *rqtp, struct timespec *rmtp );
-
 ::
 :: End of extension section
 ::
-:include extepi.sp
-:: End of QNX | LINUX segment
-:endsegment
-:keep DECLARE_STRUCT
-:include tm.sp
-:remove DECLARE_STRUCT
-
 :include nsstd.sp
 _WCRTLINK extern char         *asctime( const struct tm *__timeptr );
 _WCRTLINK extern clock_t      clock( void );
@@ -203,13 +191,19 @@ _WCRTLINK extern time_t       mktime( struct tm *__timeptr );
 _WCRTLINK extern size_t       strftime( char *__s, size_t __maxsiz, const char *__fmt, const struct tm *__tp );
 _WCRTLINK extern time_t       time( time_t *__timer );
 :: Wide character version
+:include ext.sp
 _WCRTLINK extern size_t       wcsftime( wchar_t *, size_t, const wchar_t *, const struct tm * );
+:include extepi.sp
 :include nsstdepi.sp
 
 :segment !CNAME
 #define difftime( t1, t0 )  ( ( double ) ( t1 ) - ( double ) ( t0 ) )
 :endsegment
 
+::
+:: Begin of extension section
+::
+:include ext.sp
 :: Wide character version
 :segment CNAME
 _WCRTLINK extern wchar_t      *_wasctime( const std::tm * );
@@ -225,7 +219,6 @@ _WCRTLINK extern wchar_t      *_wstrtime( wchar_t *__buf );
 _WCRTLINK extern size_t       _wstrftime_ms( wchar_t *, size_t, const char *, const struct tm * );
 :endsegment
 
-:include ext.sp
 :segment CNAME
 _WCRTLINK extern char        *_asctime( const std::tm *__timeptr, char *__buf );
 _WCRTLINK extern char        *_ctime( const std::time_t *__timer, char *__buf );
@@ -264,6 +257,45 @@ _WCRTLINK extern wchar_t     *__wasctime( const struct tm *, wchar_t * );
 :segment QNX | LINUX
 :include extunix.sp
 
+_WCRTLINK extern int     clock_gettime( clockid_t clock_id, struct timespec *tp );
+_WCRTLINK extern int     clock_getres( clockid_t clock_id, struct timespec *res );
+:segment QNX
+_WCRTLINK extern int     clock_settime( clockid_t clock_id, struct timespec *tp );
+:elsesegment LINUX
+_WCRTLINK extern int     clock_settime( clockid_t clock_id, const struct timespec *tp );
+_WCRTLINK extern int     clock_nanosleep( clockid_t clock_id, int flags, const struct timespec *req, struct timespec *rmdr );
+:endsegment
+
+_WCRTLINK extern int     timer_create( clockid_t clock_id, struct sigevent *evp, timer_t *tmr );
+_WCRTLINK extern int     timer_delete( timer_t timerid );
+_WCRTLINK extern int     timer_getoverrun( timer_t timerid );
+_WCRTLINK extern int     timer_gettime( timer_t timerid, struct itimerspec *value );
+_WCRTLINK extern int     timer_settime( timer_t timerid, int flags, struct itimerspec *value, struct itimerspec *ovalue );
+
+_WCRTLINK extern int     nanosleep( const struct timespec *rqtp, struct timespec *rmtp );
+
+:include extepi.sp
+
+:endsegment
+:segment QNX
+:include ext.sp
+
+_WCRTLINK extern int     clock_setres( clockid_t clock_id, struct timespec *res );
+
+_WCRTLINK extern int     qnx_getclock( pid_t pid, clockid_t clock_id, struct timespec *tp );
+_WCRTLINK extern int     qnx_setclock( pid_t pid, clockid_t clock_id, struct timespec *tp );
+_WCRTLINK extern int     qnx_clock( nid_t nid, clockid_t clock_id, struct timespec *tp );
+
+_WCRTLINK extern long    qnx_timerperiod( long );
+_WCRTLINK extern long    qnx_ticksize( long nsec, int flags );
+_WCRTLINK extern int     qnx_adj_time( long, long, long *, long * );
+
+:include extepi.sp
+
+:endsegment
+:segment QNX | LINUX
+:include extunix.sp
+
 :endsegment
 _WCRTLINK extern void   tzset( void );
 _WCRTLINK extern char   **__get_tzname_ptr( void );
@@ -275,6 +307,8 @@ _WCRTLINK extern char   **__get_tzname_ptr( void );
 _WCRTDATA extern char * _WCDATA tzname[2];  /*  time zone names */
 
 :segment QNX | LINUX
+:include extepi.sp
+
 :include ext.sp
 
 :endsegment
@@ -289,13 +323,14 @@ _WCRTLINK extern int    *__get_daylight_ptr( void );
 #endif
 _WCRTDATA extern long   _WCDATA timezone;   /* # of seconds from GMT */
 _WCRTDATA extern int    _WCDATA daylight;   /* d.s.t. indicator */
+
 :segment QNX | LINUX
-
 :include extepi.sp
 
-:include extepi.sp
 :endsegment
-
+::
+:: End of extension section
+::
 ::::::::: Safer C :::::::::
 :segment !CNAME
 :include saferpro.sp

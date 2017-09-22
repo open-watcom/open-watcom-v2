@@ -150,8 +150,8 @@ using std::wscanf;
 
 :include ssize_t.sp
 
-:include null.sp
-
+::include null.sp
+::
 :include valist.sp
 
 :segment QNX | LINUX
@@ -298,7 +298,7 @@ _WCRTDATA extern FILE   _WCDATA __iob[];
 #define _FILEEXT 0x8000 /* lseek with positive offset has been done */
 #define _COMMIT 0x0001  /* extended flag: commit OS buffers on flush */
 
-#define EOF         (-1)                /*  End of File/Error return code   */
+:include eof.sp
 
 :include seekpos.sp
 
@@ -400,8 +400,6 @@ _WCRTLINK extern char  *_tempnam( const char *__dir, const char *__prefix );
 
 :include wchar_t.sp
 :include wint_t.sp
-
-:include weof.sp
 
 :: Wide character version
 :include nsstd.sp
