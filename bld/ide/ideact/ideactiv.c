@@ -30,9 +30,9 @@
 ****************************************************************************/
 
 
+#include <string.h>
 #define INCLUDE_COMMDLG_H
 #include <wwindows.h>
-#include <string.h>
 #include "ideactiv.h"
 #include "wclbproc.h"
 

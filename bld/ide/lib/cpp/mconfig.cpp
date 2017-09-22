@@ -30,6 +30,13 @@
 ****************************************************************************/
 
 
+#include <stdlib.h>
+#if defined( __WATCOMC__ )
+    #include <mbctype.h>
+#endif
+#if defined( __WINDOWS__ ) || defined( __NT__ )
+    #include <windows.h>    //temporary ?
+#endif
 #include "mconfig.hpp"
 #include "mrule.hpp"
 #include "mtarget.hpp"
@@ -40,20 +47,10 @@
 #include "wobjfile.hpp"
 #include "mtypo.hpp"
 
-#if defined( __WATCOMC__ )
-#include <mbctype.h>
-#endif
 
-extern "C" {
-    #include <stdlib.h>
-    #if defined( __WINDOWS__ ) || defined( __NT__ )
-        #include <windows.h>    //temporary ?
-    #endif
-};
-
-#define MALLOC(s) (char*)malloc(s)
-#define REALLOC(p,s) (char*)realloc(p,s)
-#define FREE(p) if( p != NULL ) free(p)
+#define MALLOC(s)       (char *)malloc(s)
+#define REALLOC(p,s)    (char *)realloc(p,s)
+#define FREE(p)         if( p != NULL ) free(p)
 
 Define( MConfig )
 

@@ -45,10 +45,8 @@
 // require that we also include headers from several other places.
 #define GET_HWND( x ) (*((HWND *)(x)))
 
-extern "C" {
-int RCSAPI GetInputCB( rcsstring text, rcsstring title,
-                                        char *buffer, int len,
-                                        void *cookie )
+extern "C"
+int RCSAPI GetInputCB( rcsstring text, rcsstring title, char *buffer, int len, void *cookie )
 {
     WStringList         prompts;
     WStringList         input;
@@ -67,6 +65,7 @@ int RCSAPI GetInputCB( rcsstring text, rcsstring title,
     }
 }
 
+extern "C"
 int RCSAPI DoBatchCB( rcsstring str, void *cookie ) {
     VpeMain     *parent;
     WString     cmd( str );
@@ -75,8 +74,6 @@ int RCSAPI DoBatchCB( rcsstring str, void *cookie ) {
     parent->executeCommand( str, EXECUTE_BATCH, "" );
     return( 1 );
 }
-
-}// extern "C"
 
 VRcsClient::VRcsClient( WWindow *parent ) {
     _parent = parent;
@@ -162,8 +159,7 @@ bool VRcsClient::Init( void ) {
     if( _batchcb == NULL ) {
         rc = 0;
     } else {
-        rc = _regbatchcb( _dllcookie, (BatchCallback *)_batchcb,
-                                (void *)_parent );
+        rc = _regbatchcb( _dllcookie, (BatchCallback *)_batchcb, (void *)_parent );
     }
 #else
     rc = _regbatchcb( _dllcookie, DoBatchCB, (void *)_parent );
@@ -178,8 +174,7 @@ bool VRcsClient::Init( void ) {
     if( _msgcb == NULL ) {
         rc = 0;
     } else {
-        rc = _regmsgboxcb( _dllcookie, (MessageBoxCallback *)_msgcb,
-                            (void *)_parent );
+        rc = _regmsgboxcb( _dllcookie, (MessageBoxCallback *)_msgcb, (void *)_parent );
     }
 #else
     rc = _regmsgboxcb( _dllcookie, GetInputCB, (void *)_parent );
@@ -244,4 +239,3 @@ int VRcsClient::HasShell( void ) {
         return( 0 );
     }
 }
-

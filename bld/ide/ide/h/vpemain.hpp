@@ -31,9 +31,6 @@
 
 #ifndef vpemain_class
 #define vpemain_class
-#ifndef NULL
-#define NULL 0
-#endif
 
 #include "wserver.hpp"
 #include "wmdiwndw.hpp" // after wserver.hpp - we need windows.h before gui.h

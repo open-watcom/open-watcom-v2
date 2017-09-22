@@ -31,11 +31,8 @@
 
 #include <io.h>
 #include <stdlib.h>
-
-extern "C" {
-    #include "rcdefs.h"
-    #include "banner.h"
-};
+#include "rcdefs.h"
+#include "banner.h"
 
 #include "vpemain.hpp"
 #include "vmsglog.hpp"

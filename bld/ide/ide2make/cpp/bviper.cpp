@@ -29,6 +29,7 @@
 ****************************************************************************/
 
 
+#include <stdio.h>
 #include "mconfig.hpp"
 #include "mproject.hpp"
 #include "mcompon.hpp"
@@ -41,9 +42,6 @@
 #include "mrstate.hpp"
 #include "mcstate.hpp"
 
-extern "C" {
-    #include <stdio.h>
-};
 
 // Force the state classes to be linked in
 MTool   footool( "footool", "footool" );

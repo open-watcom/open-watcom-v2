@@ -38,11 +38,9 @@
 #include "mrswitch.hpp"
 #include "maction.hpp"
 #include "mactset.hpp"
-extern "C" {
 #ifndef __UNIX__
     #include <dos.h>
 #endif
-};
 
 #include "clibext.h"
 

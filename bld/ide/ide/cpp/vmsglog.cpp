@@ -30,20 +30,14 @@
 ****************************************************************************/
 
 
-extern "C" {
-    #include <stdio.h>
-    #include "rcdefs.h"
-
+#include <stddef.h>
+#include <stdio.h>
+#include "rcdefs.h"
 #ifdef __WINDOWS__
     #include "common.h"
     #include "link.h"
 #endif
-#define CONNECTION_TRIES        10
-#define CONNECTION_INTERVAL     300
-    static int _connectionTries = 0;
-    #include "batcher.h"
-};
-
+#include "batcher.h"
 #include "vpemain.hpp"
 #include "vmsglog.hpp"
 #include "mproject.hpp"
@@ -67,9 +61,15 @@ extern "C" {
 #define LOG_HELP_KEY    GUI_KEY_F1
 #define LOG_ESCAPE_KEY  GUI_KEY_ESCAPE
 
+#define CONNECTION_TRIES        10
+#define CONNECTION_INTERVAL     300
+
 extern char _viperError[];
+
 static WString lastCD;
 static char sFilter[] = { "Listing Files(*.txt)\0*.txt\0All files(*.*)\0*.*\0\0" };
+
+static int _connectionTries = 0;
 
 static char fortranGrpCodes[] = {
      'A','R'

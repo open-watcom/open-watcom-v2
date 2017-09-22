@@ -36,10 +36,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <wwindows.h>
 #include <sys/stat.h>
 #include <io.h>
 #include <direct.h>
+#include <wwindows.h>
 #ifdef __WINDOWS__
 #include <commdlg.h>
 #endif
