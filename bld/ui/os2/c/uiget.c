@@ -31,11 +31,10 @@
 
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 #include <i86.h>
-#include "doscall.h"
 #include "uidef.h"
+#include "doscall.h"
 #include "uiforce.h"
 
 

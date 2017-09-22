@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/seginfo.h>
@@ -49,7 +48,6 @@
 #include <string.h>
 #include <i86.h>
 #include "uidef.h"
-
 #include "uivirt.h"
 #include "qnxuiext.h"
 #include "ctkeyb.h"

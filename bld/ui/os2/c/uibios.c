@@ -30,10 +30,9 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include <conio.h>
-#include "uidef.h"
 #include <stdio.h>
+#include "uidef.h"
 #include "doscall.h"
 #define HANDLE 0
 

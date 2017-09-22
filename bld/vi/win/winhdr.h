@@ -38,6 +38,7 @@
 #endif
 
 #ifdef __OS2__
+    #include <stddef.h>     /* NULL value */
     #define INCL_BASE
     #define INCL_PM
     #include <os2.h>
@@ -49,7 +50,7 @@
     #define INCLUDE_SHELLAPI_H
     #define INCLUDE_TOOLHELP_H
     #define WIN32_LEAN_AND_MEAN
-    #include <wwindows.h>
+    #include <wwindows.h>   /* NULL value */
     #include <commdlg.h>
     #include <ddeml.h>
     #include <shellapi.h>

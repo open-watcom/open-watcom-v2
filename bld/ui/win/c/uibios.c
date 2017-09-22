@@ -30,12 +30,11 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include <dos.h>
 #include <conio.h>
+#include "uidef.h"
 #include "uidos.h"
 #include "biosui.h"
-#include "uidef.h"
 
 static MONITOR ui_data = {
     25,

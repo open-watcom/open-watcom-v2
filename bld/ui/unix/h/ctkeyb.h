@@ -29,13 +29,10 @@
 ****************************************************************************/
 
 
-#include <stddef.h>
-#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <unistd.h>
 #include <fcntl.h>
-
 #include <string.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -43,11 +40,9 @@
 #include <ctype.h>
 #include "uidef.h"
 #include "uishift.h"
-
 #include "uivirt.h"
 #include "unxuiext.h"
 #include "qdebug.h"
-
 #include "trie.h"
 #include "tixparse.h"
 

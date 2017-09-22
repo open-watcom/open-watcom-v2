@@ -31,8 +31,6 @@
 
 
 #include <dos.h>
-#include <stdlib.h>
-
 #include "uidef.h"
 #include "charmap.h"
 #include "biosui.h"

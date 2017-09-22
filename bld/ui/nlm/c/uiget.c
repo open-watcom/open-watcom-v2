@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include <time.h>
 #include <process.h>
 #include "uidef.h"

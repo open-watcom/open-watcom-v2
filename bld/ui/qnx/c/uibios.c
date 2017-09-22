@@ -30,7 +30,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/seginfo.h>

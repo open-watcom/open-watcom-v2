@@ -30,11 +30,10 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include <stdlib.h>
 #include <dos.h>
 #include "uidef.h"
 #include "uiattrs.h"
+#include <windows.h>
 
 #define         _swap(a,b)              {int i; i=a; a=b; b=i;}
 

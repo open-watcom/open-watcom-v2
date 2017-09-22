@@ -29,7 +29,6 @@
 ****************************************************************************/
 
 
-#include <stdlib.h>
 #include <string.h>
 #ifdef __WATCOMC__
     #if defined( _M_IX86 )

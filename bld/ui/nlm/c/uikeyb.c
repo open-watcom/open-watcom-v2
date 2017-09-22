@@ -33,7 +33,6 @@
 // NOTE: Until we find a way of waking a thread that has blocked on a
 // GetKey call we will busy wait for input.
 
-#include <stdlib.h>
 #include <malloc.h>
 #include <dos.h>
 #include <procdefs.h>

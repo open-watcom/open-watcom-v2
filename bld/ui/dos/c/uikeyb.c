@@ -31,7 +31,6 @@
 
 
 #include <string.h>
-#include <stdlib.h>
 #include <dos.h>
 #ifdef __386__
 #include <conio.h>

@@ -29,9 +29,6 @@
 ****************************************************************************/
 
 
-#ifdef __UNIX__
-#include <stdlib.h>
-#endif
 #include <stdio.h>
 #include <string.h>
 #ifndef __UNIX__

@@ -30,11 +30,10 @@
 ****************************************************************************/
 
 
-#include <windows.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include "uidef.h"
 #include "uiforce.h"
+#include <windows.h>
 
 
 void UIAPI uiflush( void )

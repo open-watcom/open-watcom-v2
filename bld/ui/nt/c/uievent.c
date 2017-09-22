@@ -30,13 +30,12 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include <stdlib.h>
 #include <malloc.h>
 #include <dos.h>
 #include "uidef.h"
 #include "uishift.h"
 #include "uimouse.h"
+#include <windows.h>
 
 static unsigned char shift_state;
 
