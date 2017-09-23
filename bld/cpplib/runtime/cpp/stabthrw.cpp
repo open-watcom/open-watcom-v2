@@ -47,8 +47,8 @@
 #include "rtmsgs.h"
 
 
-_WCNORETURN
-static void fneDispatch(        // DISPATCH "unexpected"
+static _WCNORETURN
+void fneDispatch(               // DISPATCH "unexpected"
     DISPATCH_EXC *dispatch )    // - dispatch control
 {
     THREAD_CTL *ctl;            // - thread-specific data
@@ -112,8 +112,9 @@ static void fneDispatch(        // DISPATCH "unexpected"
 #define throwCnvSig( d ) CPPLIB( ts_refed )( (d)->cnv_try->signature )
 
 
-_WCNORETURN
-static void catchDispatch(      // DISPATCH A CATCH BLOCK
+// never return
+static _WCNORETURN
+void catchDispatch(             // DISPATCH A CATCH BLOCK
     DISPATCH_EXC *dispatch )    // - dispatch control
 {
     RW_DTREG* blk;              // - function block for dispatch
@@ -195,8 +196,9 @@ static void catchDispatch(      // DISPATCH A CATCH BLOCK
     // never return
 }
 
-_WCNORETURN
-static void processThrow(       // PROCESS A THROW
+// never return
+static _WCNORETURN
+void processThrow(              // PROCESS A THROW
     void *object,               // - address of object
     THROW_RO *throw_ro,         // - thrown R/O block
     rboolean is_zero )          // - true ==> thrown object is zero constant
@@ -408,6 +410,7 @@ void CPPLIB( catch_done )(      // COMPLETION OF CATCH
 }
 
 
+// never return
 extern "C"
 _WPRTLINK
 _WCNORETURN
@@ -420,6 +423,7 @@ void CPPLIB( throw )(           // THROW AN EXCEPTION OBJECT (NOT CONST ZERO)
 }
 
 
+// never return
 extern "C"
 _WPRTLINK
 _WCNORETURN
@@ -432,6 +436,7 @@ void CPPLIB( throw_zero )(      // THROW AN EXCEPTION OBJECT (CONST ZERO)
 }
 
 
+// never return
 extern "C"
 _WPRTLINK
 _WCNORETURN
