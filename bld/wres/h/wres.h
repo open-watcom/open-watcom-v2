@@ -70,7 +70,7 @@ typedef struct WResDirHead {        /* head of the directory */
     uint_16                 NumTypes;
     WResTypeNode            *Head;
     WResTypeNode            *Tail;
-    WResTargetOS            TargetOS;
+    uint_16                 TargetOS;
 } WResDirHead;
 
 /***** Exported types *****/
@@ -88,8 +88,8 @@ typedef struct WResDirHead  *WResDir;
 #define WResIsEmptyWindow( wind )       ((wind).CurrType == NULL || (wind).CurrRes == NULL || (wind).CurrLang == NULL)
 #define WResGetNumTypes( dir )          ((dir)->NumTypes)
 #define WResGetNumResources( dir )      ((dir)->NumResources)
-#define WResGetTargetOS( dir )          ((dir)->TargetOS)
-#define WResSetTargetOS( dir, os )      (dir)->TargetOS = (os)
+#define WResGetTargetOS( dir )          ((WResTargetOS)((dir)->TargetOS))
+#define WResSetTargetOS( dir, os )      (dir)->TargetOS = ((uint_16)(os))
 #define WResIsFirstResOfType( wind )    ((wind).CurrRes == (wind).CurrType->Head && WResIsFirstLangOfRes( wind ))
 #define WResIsFirstLangOfRes( wind )    ((wind).CurrLang == (wind).CurrRes->Head)
 

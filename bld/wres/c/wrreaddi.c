@@ -196,7 +196,7 @@ static bool readWResDir( WResFileID fid, WResDir currdir, void *fileinfo )
     WResExtHeader   ext_head;
     bool            error;
 
-    ext_head.TargetOS = WRES_OS_WIN16;
+    WResSetTargetOS( &ext_head, WRES_OS_WIN16 );
     /* read the header and check that it is valid */
     error = WResReadHeaderRecord( &head, fid );
     if( !error ) {
@@ -226,7 +226,7 @@ static bool readWResDir( WResFileID fid, WResDir currdir, void *fileinfo )
     if( !error ) {
         currdir->NumResources = head.NumResources;
         currdir->NumTypes = head.NumTypes;
-        currdir->TargetOS = ext_head.TargetOS;
+        WResSetTargetOS( currdir, WResGetTargetOS( &ext_head ) );
         if( WRESSEEK( fid, head.DirOffset, SEEK_SET ) ) {
             error = WRES_ERROR( WRS_SEEK_FAILED );
         }
@@ -277,9 +277,9 @@ static bool readMResDir( WResFileID fid, WResDir currdir, bool *dup_discarded,
         *dup_discarded = false;
     }
     if( iswin32 ) {
-        currdir->TargetOS = WRES_OS_WIN32;
+        WResSetTargetOS( currdir, WRES_OS_WIN32 );
     } else {
-        currdir->TargetOS = WRES_OS_WIN16;
+        WResSetTargetOS( currdir, WRES_OS_WIN16 );
     }
     /* assume that a NULL head is the EOF which is the only way of detecting */
     /* the end of a MS .RES file */

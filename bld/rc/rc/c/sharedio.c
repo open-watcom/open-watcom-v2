@@ -75,7 +75,7 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
     WResID          *res_type;
     bool            error;
     bool            dup_discarded;
-    WResTargetOS    target;
+    WResTargetOS    res_os;
 
     *allopen = true;
     *resinfo = NULL;
@@ -123,10 +123,10 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
         WResIDFree( res_name );
         WResIDFree( res_type );
 
-        target = WResGetTargetOS( resfile->Dir );
+        res_os = WResGetTargetOS( resfile->Dir );
         switch( type ) {
         case EXE_TYPE_NE_WIN:
-            if( target != WRES_OS_WIN16 ) {
+            if( res_os != WRES_OS_WIN16 ) {
                 RcError( ERR_NONWIN_RES_TO_WIN_EXE, resfile->name, exename );
                 goto HANDLE_ERROR;
             }
@@ -134,20 +134,20 @@ bool OpenResFiles( ExtraRes *resnames, ResFileInfo **resinfo, bool *allopen,
         case EXE_TYPE_NE_OS2:
             // No way to tell MS and IBM resource files apart, and I can't find
             // a good way to figure out if this is a Watcom .res file
-            if( target != WRES_OS_WIN16 && target != WRES_OS_OS2 ) {
+            if( res_os != WRES_OS_WIN16 && res_os != WRES_OS_OS2 ) {
                 RcError( ERR_NONWIN_RES_TO_WIN_EXE, resfile->name, exename );
                 goto HANDLE_ERROR;
             }
             break;
         case EXE_TYPE_PE:
-            if( target != WRES_OS_WIN32 ) {
+            if( res_os != WRES_OS_WIN32 ) {
                 RcError( ERR_NONNT_RES_TO_NT_EXE, resfile->name, exename );
                 goto HANDLE_ERROR;
             }
             break;
         case EXE_TYPE_LX:
             // Same problem as with EXE_TYPE_NE_OS2
-            if( target != WRES_OS_OS2 && target != WRES_OS_WIN16 ) {
+            if( res_os != WRES_OS_OS2 && res_os != WRES_OS_WIN16 ) {
                 RcError( ERR_NONOS2_RES_TO_OS2_EXE, resfile->name, exename );
                 goto HANDLE_ERROR;
             }

@@ -42,8 +42,8 @@
 #include "wresdefn.h"
 
 bool DumpContents( WResTypeInfo *type, WResResInfo *res,
-                    WResLangInfo *lang, WResFileID fid, uint_16 os )
-/******************************************************************/
+                    WResLangInfo *lang, WResFileID fid, WResTargetOS res_os )
+/***************************************************************************/
 {
     bool    error;
 
@@ -51,20 +51,20 @@ bool DumpContents( WResTypeInfo *type, WResResInfo *res,
     fprintf( stdout, "\tOffset: 0x%08lx  Length: 0x%08lx\n",
             lang->Offset, lang->Length );
 
-    if (type->TypeName.IsName) {
+    if( type->TypeName.IsName ) {
         /* it is not one of the predefined types */
         error = false;
     } else {
-        switch (type->TypeName.ID.Num) {
+        switch( type->TypeName.ID.Num ) {
         case RESOURCE2INT( RT_MENU ):
-            if( os == WRES_OS_WIN16 ) {
+            if( res_os == WRES_OS_WIN16 ) {
                 error = DumpMenu( lang->Offset, lang->Length, fid );
             } else {
                 error = false;
             }
             break;
         case RESOURCE2INT( RT_DIALOG ):
-            if( os == WRES_OS_WIN16 ) {
+            if( res_os == WRES_OS_WIN16 ) {
                 error = DumpDialog( lang->Offset, lang->Length, fid );
             } else {
                 error = false;
@@ -77,7 +77,7 @@ bool DumpContents( WResTypeInfo *type, WResResInfo *res,
             error = DumpCursorGroup( lang->Offset, lang->Length, fid );
             break;
         case RESOURCE2INT( RT_STRING ):
-            if( os == WRES_OS_WIN16 ) {
+            if( res_os == WRES_OS_WIN16 ) {
                 error = DumpString( lang->Offset, lang->Length, fid );
             } else {
                 error = false;
