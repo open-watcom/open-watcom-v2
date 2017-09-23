@@ -367,7 +367,6 @@ namespace _watcom {
 
   struct ichar_traits : std::char_traits< char > {
 
-    // Use tolower for compatibility with _memicmp.
     static bool eq( const char_type &c1, const char_type &c2 )
       { return( std::tolower( c1 ) == std::tolower( c2 ) ); }
 
@@ -376,12 +375,12 @@ namespace _watcom {
 
     static int compare( const char_type *s1, const char_type *s2, std::size_t n )
       {
-        for( std::size_t i = 0; i < n; i++ ) {
+        while( n-- > 0 ) {
           if( std::tolower( *str1 ) > std::tolower( *str2 ) )
             return( 1 );
           if( std::tolower( *str1 ) < std::tolower( *str2 ) )
             return( -1 );
-          if( *str1 == 0 || *str2 == 0 )
+          if( *str1 == '\0' || *str2 == '\0' )
             return( 0 );
           str1++;
           str2++;
@@ -392,8 +391,8 @@ namespace _watcom {
     // Too bad there's no _memichr.
     static const char_type *find( const char_type *s, std::size_t n, const char_type &a )
     {
-      const char_type *result = 0;
-      for( std::size_t i = 0; i < n; ++i ) {
+      const char_type *result = NULL;
+      while( n-- > 0 ) {
         if( std::tolower( *s ) == std::tolower( a ) ) {
           result = s;
           break;

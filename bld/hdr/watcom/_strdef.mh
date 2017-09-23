@@ -63,22 +63,22 @@
       { return( c1 < c2 ); }
 
     static int compare( const char_type *s1, const char_type *s2, size_t n )
-      { return( memcmp(s1, s2, n ) ); }
+      { return( memcmp( s1, s2, n ) ); }
 
     static size_t length( const char_type *s )
       { return( strlen(s) ); }
 
     static const char_type *find( const char_type *s, size_t n, const char_type &a )
-      { return( static_cast< char_type * >( memchr(s, a, n) ) ); }
+      { return( static_cast< char_type * >( memchr( s, a, n ) ) ); }
 
     static char_type *move( char_type *s1, const char_type *s2, size_t n )
-      { return( static_cast< char_type * >( memmove(s1, s2, n) ) ); }
+      { return( static_cast< char_type * >( memmove( s1, s2, n ) ) ); }
 
     static char_type *copy( char_type *s1, const char_type *s2, size_t n )
-      { return( static_cast< char_type * >( memcpy(s1, s2, n) ) ); }
+      { return( static_cast< char_type * >( memcpy( s1, s2, n ) ) ); }
 
     static char_type *assign( char_type *s, size_t n, char_type a )
-      { return( static_cast< char_type * >( memset(s, a, n) ) ); }
+      { return( static_cast< char_type * >( memset( s, a, n ) ) ); }
 
     static int_type not_eof( const int_type &c )
       { return( (c != EOF) ? c : 0 ); }
@@ -115,7 +115,7 @@
 
     static int compare( const char_type *s1, const char_type *s2, size_t n )
     {
-      for( size_t i = 0; i < n; ++i ) {
+      while( n-- > 0 ) {
         if( *s1 < *s2 ) return( -1 );
         if( *s1 > *s2 ) return(  1 );
         ++s1; ++s2;
@@ -128,8 +128,8 @@
 
     static const char_type *find( const char_type *s, size_t n, const char_type &a )
     {
-      const char_type *result = 0;
-      for( size_t i = 0; i < n; ++i ) {
+      const char_type *result = NULL;
+      while( n-- > 0 ) {
         if( *s == a ) {
           result = s;
           break;
@@ -141,22 +141,19 @@
 
     static char_type *move( char_type *s1, const char_type *s2, size_t n )
     {
-      return( static_cast< char_type * >
-              ( memmove(s1, s2, n * sizeof( char_type ) ) ) );
+      return( static_cast< char_type * >( memmove( s1, s2, n * sizeof( char_type ) ) ) );
     }
 
     static char_type *copy( char_type *s1, const char_type *s2, size_t n )
     {
-      return( static_cast< char_type * >
-              ( memcpy(s1, s2, n * sizeof( char_type ) ) ) );
+      return( static_cast< char_type * >( memcpy( s1, s2, n * sizeof( char_type ) ) ) );
     }
 
     static char_type *assign( char_type *s, size_t n, char_type a )
     {
       char_type *p = s;
-      for( size_t i = 0; i < n; ++i ) {
-        *p = a;
-        ++p;
+      while( n-- > 0 ) {
+        *p++ = a;
       }
       return( s );
     }
@@ -416,7 +413,8 @@
     size_type length = 8;
 
     // Find a power of two that produces a sufficient size.
-    while( length < required ) length <<= 1;
+    while( length < required )
+        length <<= 1;
     result = mem.allocate( length );
 
     // Update outputs only if allocation successful.
@@ -451,7 +449,8 @@
     // Is buf_length a power of 2?
     size_type temp = buf_length;
     while( temp != 1 ) {
-      if( temp & 0x1 ) return( false );
+      if( temp & 0x1 )
+        return( false );
       temp >>= 1;
     }
     return( true );
