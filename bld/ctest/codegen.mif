@@ -25,6 +25,16 @@ opt_op_mul3 = -DTREE_PARTS
 opt_op_div3 = -DTREE_PARTS
 !endif
 
+codegen_i86_tests = &
+    op_add2.$(exe) &
+    op_sub2.$(exe) &
+    op_mul2.$(exe) &
+    op_div2.$(exe) &
+    op_add3.$(exe) &
+    op_sub3.$(exe) &
+    op_mul3.$(exe) &
+    op_div3.$(exe) &
+
 codegen_tests = &
     op_add.$(exe) &
     op_sub.$(exe) &
@@ -37,14 +47,7 @@ codegen_tests = &
     oprshift.$(exe) &
     oplshift.$(exe) &
 !ifeq arch i86
-    op_add2.$(exe) &
-    op_sub2.$(exe) &
-    op_mul2.$(exe) &
-    op_div2.$(exe) &
-    op_add3.$(exe) &
-    op_sub3.$(exe) &
-    op_mul3.$(exe) &
-    op_div3.$(exe) &
+    $(codegen_i86_tests)
 !endif
 
 codegen_exes = $+ $(codegen_tests) $-
