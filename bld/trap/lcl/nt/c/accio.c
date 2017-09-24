@@ -39,6 +39,8 @@
 #include "stdnt.h"
 #include "ntextx.h"
 
+static const DWORD          local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
+
 trap_retval ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
@@ -128,7 +130,7 @@ trap_retval ReqFile_seek( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    rc = SetFilePointer( (HANDLE)acc->handle, acc->pos, NULL, acc->mode );
+    rc = SetFilePointer( (HANDLE)acc->handle, acc->pos, NULL, local_seek_method[acc->mode] );
     if( rc == INVALID_SET_FILE_POINTER ) {
         ret->err = GetLastError();
     } else {

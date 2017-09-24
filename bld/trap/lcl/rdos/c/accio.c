@@ -104,16 +104,16 @@ trap_retval ReqFile_seek( void )
     ret->err = 0;
     ret->pos = 0;
     switch( acc->mode ) {
-    case 0:
+    case TF_SEEK_ORG:
         RdosSetFilePos( acc->handle, pos );
         ret->pos = pos;
         break;
-    case 1:
+    case TF_SEEK_CUR:
         pos += RdosGetFilePos( acc->handle );
         RdosSetFilePos( acc->handle, pos );
         ret->pos = pos;
         break;
-    case 2:
+    case TF_SEEK_END:
         pos += RdosGetFileSize( acc->handle );
         RdosSetFilePos( acc->handle, pos );
         ret->pos = pos;

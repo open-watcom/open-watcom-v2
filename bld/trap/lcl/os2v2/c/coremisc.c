@@ -47,6 +47,8 @@
 #define OPEN_CREATE  1
 #define OPEN_PRIVATE 2
 
+static const ULONG      local_seek_method[] = { FILE_BEGIN, FILE_CURRENT, FILE_END };
+
 trap_retval ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
@@ -250,7 +252,7 @@ trap_retval ReqFile_seek( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    ret->err = DosSetFilePtr( acc->handle, acc->pos, acc->mode, (PULONG)&ret->pos );
+    ret->err = DosSetFilePtr( acc->handle, acc->pos, local_seek_method[acc->mode], (PULONG)&ret->pos );
     return( sizeof( *ret ) );
 }
 

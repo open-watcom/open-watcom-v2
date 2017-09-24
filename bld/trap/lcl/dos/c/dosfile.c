@@ -47,6 +47,8 @@ extern tiny_ret_t       Fork( const char __far *, unsigned );
 
 const char DosExtList[] = DOSEXTLIST;
 
+static const seek_info  local_seek_method[] = { TIO_SEEK_SET, TIO_SEEK_CUR, TIO_SEEK_END };
+
 trap_retval ReqFile_get_config( void )
 {
     file_get_config_ret *ret;
@@ -96,7 +98,7 @@ trap_retval ReqFile_seek( void )
 
     acc = GetInPtr( 0 );
     ret = GetOutPtr( 0 );
-    rc = TinyLSeek( acc->handle, acc->pos, acc->mode, (u32_stk_ptr)&pos );
+    rc = TinyLSeek( acc->handle, acc->pos, local_seek_method[acc->mode], (u32_stk_ptr)&pos );
     ret->pos = pos;
     ret->err = TINY_ERROR( rc ) ? TINY_INFO( rc ) : 0;
     return( sizeof( *ret ) );
