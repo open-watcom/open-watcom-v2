@@ -41,13 +41,12 @@ static enderex      *__EndThreadEx      = __CEndThreadEx;
 _WCRTLINK unsigned long _beginthreadex(
     void *security,
     unsigned stack_size,
-    thread_fnex *start_address,
+    thread_fnex *start_addr,
     void *arglist,
     unsigned initflag,
     unsigned *thrdaddr )
 {
-    return( __BeginThreadEx( security, stack_size, start_address, arglist,
-            initflag, thrdaddr ) );
+    return( __BeginThreadEx( security, stack_size, start_addr, arglist, initflag, thrdaddr ) );
 }
 
 _WCRTLINK void _endthreadex( unsigned retval )

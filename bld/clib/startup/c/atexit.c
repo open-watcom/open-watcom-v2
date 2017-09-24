@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -37,29 +38,29 @@
 #include "extfunc.h"
 #include "rtinit.h"
 
+
 #define EXIT_LIMIT      32
 
-static  void    (* _HUGEDATA _ExitList[EXIT_LIMIT])( void );
-static  int     _ExitCount;
+typedef void    __exit_fn( void );
+#if defined(_M_IX86)
+    #pragma aux (__outside_CLIB) __exit_fn;
+#endif
 
-_WRTLFCONV int atexit( void (*func)( void ) )
+static __exit_fn    * _HUGEDATA _ExitList[EXIT_LIMIT];
+static int          _ExitCount;
+
+_WRTLFCONV int atexit( void (* func)( void ) )
 {
     if( _ExitCount < EXIT_LIMIT ) {
-        _ExitList[ _ExitCount++ ] = func;
+        _ExitList[_ExitCount++] = (__exit_fn *)func;
         return( 0 );                /* indicate added successfully */
     }
     return( -1 );                   /* indicate no room */
 }
 
-typedef void exit_fn( void );
-#if defined(_M_IX86)
-    #pragma aux (__outside_CLIB) exit_fn;
-#endif
-
 static void _Full_at_exit_rtn( void )
 {
     int         count;
-    exit_fn     *func;
 
     count = _ExitCount;
     if( count == ( EXIT_LIMIT + 1 ) ) {
@@ -67,10 +68,8 @@ static void _Full_at_exit_rtn( void )
     }
     _ExitCount = EXIT_LIMIT + 1;    /* prevent others being registered */
     /* call functions in reverse order of their registration */
-    while( count != 0 ) {
-        --count;
-        func = _ExitList[ count ];
-        (*func)();                 /* invoke user exit routine */
+    while( count-- > 0 ) {
+        (*_ExitList[count])();      /* invoke user exit routine */
     }
 }
 

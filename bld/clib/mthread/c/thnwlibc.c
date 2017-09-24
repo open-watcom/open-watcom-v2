@@ -162,14 +162,14 @@ typedef struct {
     void                *arglist;
     void                *stack_bottom;
     TID                 tid;
-    NXSema_t *          semaphore;
+    NXSema_t            *semaphore;
     NXThreadId_t        nxtid;      /* NKS TID */
     NXContext_t         cx;         /* NKS Context */
 } begin_thread_data;
 
 static void begin_thread_helper( void *the_arg )
 {
-    thread_fn           *start_addr;
+    __thread_fn         *start_addr;
     void                *arglist;
     void                *stack_bottom;
 
@@ -182,7 +182,7 @@ static void begin_thread_helper( void *the_arg )
     if( 0 != newtid )
     {
         data->tid       = newtid;
-        start_addr      = data->start_addr;
+        start_addr      = (__thread_fn *)data->start_addr;
         arglist         = data->arglist;
         stack_bottom    = data->stack_bottom;
 
@@ -204,10 +204,10 @@ static void begin_thread_helper( void *the_arg )
 }
 
 extern int __CBeginThread(
-    thread_fn *     start_addr,
-    void *          stack_bottom,
+    thread_fn       *start_addr,
+    void            *stack_bottom,
     unsigned        stack_size,
-    void *          arglist
+    void            *arglist
     )
 {
     begin_thread_data   data;
@@ -228,7 +228,7 @@ extern int __CBeginThread(
     //  to automatically clear context
     */
 
-    if( data.cx = NXContextAlloc( (void (*)(void *))begin_thread_helper, &data, NX_PRIO_MED, __SYS_ALLOCD_STACK, NX_CTX_NORMAL, &error ) ) {
+    if( data.cx = NXContextAlloc( begin_thread_helper, &data, NX_PRIO_MED, __SYS_ALLOCD_STACK, NX_CTX_NORMAL, &error ) ) {
         error = NXThreadCreate( data.cx, NX_THR_DETACHED | NX_THR_BIND_CONTEXT, &data.nxtid );
     }
 

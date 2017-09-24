@@ -48,7 +48,7 @@
 _WCNORETURN extern void     __qnx_exit( int __status );
 
 typedef struct thread_args {
-    thread_fn   *rtn;
+    thread_fn   *start_addr;
     void        *argument;
     void        *stack_bottom;
     sem_t       event;
@@ -59,12 +59,12 @@ static int begin_thread_helper( void *ptr )
 /*****************************************/
 {
     thread_args                 *td;
-    thread_fn                   *rtn;
+    __thread_fn                 *start_addr;
     void                        *arg;
     thread_data                 *tdata;
 
     td = ptr;
-    rtn = td->rtn;
+    start_addr = (__thread_fn *)td->start_addr;
     arg = td->argument;
 
     tdata = __alloca( __ThreadDataSize );
@@ -76,7 +76,7 @@ static int begin_thread_helper( void *ptr )
 
     __posix_sem_post( &td->event );
     _fpreset();
-    (*rtn)( arg );
+    (*start_addr)( arg );
     _endthread();
     return( 0 );
 }
@@ -100,11 +100,12 @@ int __CBeginThread( thread_fn *start_addr, void *stack_bottom,
         }
     }
     __InitMultipleThread();
-    td.rtn = start_addr;
+    td.start_addr = start_addr;
     td.argument = arglist;
     td.stack_bottom = stack_bottom;
     rc = __posix_sem_init( &td.event, 1, 0 );
-    if( rc == -1 ) return( -1 );
+    if( rc == -1 )
+        return( -1 );
     pid = tfork( stack_bottom, stack_size, begin_thread_helper, &td, 0 );
     if( pid != -1 ) {
         /*

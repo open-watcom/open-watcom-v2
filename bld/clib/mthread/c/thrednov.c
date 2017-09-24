@@ -114,7 +114,7 @@ typedef struct {
 
 static void begin_thread_helper( void *the_arg )
 {
-    thread_fn           *start_addr;
+    __thread_fn         *start_addr;
     void                *arglist;
     void                *stack_bottom;
 
@@ -126,7 +126,7 @@ static void begin_thread_helper( void *the_arg )
     newtid = gettid( NULL );
     if( newtid != 0 ) {
         data->tid = newtid;
-        start_addr = data->start_addr;
+        start_addr = (__thread_fn *)data->start_addr;
         arglist = data->arglist;
         stack_bottom = data->stack_bottom;
         SignalLocalSemaphore( data->semaphore );

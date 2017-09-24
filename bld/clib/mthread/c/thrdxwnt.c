@@ -52,20 +52,20 @@
 extern  DWORD           __TlsIndex;
 
 typedef struct thread_args {
-    thread_fnex *rtn;
+    thread_fnex *start_addr;
     void        *argument;
 } thread_args;
 
 static DWORD WINAPI begin_thread_helper( thread_args *td )
 /***********************************************************/
 {
-    thread_fnex         *rtn;
+    thread_fnex         *start_addr;
     void                *arg;
     REGISTRATION_RECORD rr;
     thread_data         *tdata;
     DWORD               rv;
 
-    rtn = td->rtn;
+    start_addr = td->start_addr;
     arg = td->argument;
     free( td );
 
@@ -83,7 +83,7 @@ static DWORD WINAPI begin_thread_helper( thread_args *td )
 
     __NewExceptionFilter( &rr );
     __sig_init_rtn();   // fills in a thread-specific copy of signal table
-    rv = (*rtn)( arg );
+    rv = (*start_addr)( arg );
     _endthreadex( rv );
     return( rv );
 }
@@ -114,7 +114,7 @@ unsigned long __CBeginThreadEx(
 
     stack_size = __ROUND_UP_SIZE_4K( stack_size );
 
-    td->rtn = start_addr;
+    td->start_addr = start_addr;
     td->argument = arglist;
 
     th = CreateThread(
