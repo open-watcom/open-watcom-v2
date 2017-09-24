@@ -37,7 +37,7 @@
 #include "strutil.h"
 
 
-char **DosErrMsgs[] = {
+static char **DosErrMsgs[] = {
     LITREF_ENG( Empty ),
     #define pickdoserr(id,text) LITREF_ENG(ERR_DOS_##id),
     #include "_doserr.h"

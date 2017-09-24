@@ -41,28 +41,30 @@
 
 extern char             _osmajor;
 
-file_components         LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' } };
-char                    LclPathSep = { ';' };
+const file_components   LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' } };
+const char              LclPathSep = { ';' };
+
+static const seek_info  local_seek_method[] = { TIO_SEEK_SET, TIO_SEEK_CUR, TIO_SEEK_END };
 
 void LocalErrMsg( sys_error code, char *buff )
 {
     GetDOSErrMsg( code, buff );
 }
 
-sys_handle LocalOpen( const char *name, open_access access )
+sys_handle LocalOpen( const char *name, obj_attrs oattrs )
 {
     tiny_ret_t  ret;
     unsigned    mode;
 
-    if( (access & OP_WRITE) == 0 ) {
+    if( (oattrs & OP_WRITE) == 0 ) {
         mode = TIO_READ;
-        access &= ~(OP_CREATE|OP_TRUNC);
-    } else if( access & OP_READ ) {
+        oattrs &= ~(OP_CREATE | OP_TRUNC);
+    } else if( oattrs & OP_READ ) {
         mode = TIO_READ_WRITE;
     } else {
         mode = TIO_WRITE;
     }
-    if( access & (OP_CREATE|OP_TRUNC) ) {
+    if( oattrs & (OP_CREATE | OP_TRUNC) ) {
         ret = TinyCreate( name, TIO_NORMAL );
     } else {
         if( _osmajor >= 3 )
@@ -135,7 +137,7 @@ unsigned long LocalSeek( sys_handle hdl, unsigned long npos, seek_method method 
     tiny_ret_t      ret;
     unsigned long   pos;
 
-    ret = TinyLSeek( hdl, npos, method, (u32_stk_ptr)&pos );
+    ret = TinyLSeek( hdl, npos, local_seek_method[method], (u32_stk_ptr)&pos );
     if( TINY_ERROR( ret ) ) {
         StashErrCode( TINY_INFO( ret ), OP_LOCAL );
         return( ERR_SEEK );

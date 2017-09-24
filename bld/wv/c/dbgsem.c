@@ -728,10 +728,10 @@ static void BasicType( unsigned basic_type )
 
 static ssl_value MechPush_n_Pop( unsigned select, ssl_value parm )
 {
-    location_list       ll;
-    dip_type_info       ti;
-    ssl_value           result;
-    const static unsigned       TypeTbl[] = {
+    location_list           ll;
+    dip_type_info           ti;
+    ssl_value               result;
+    static const unsigned   TypeTbl[] = {
         TI_CREATE( TK_VOID,     TM_NONE,         0 ),
         TI_CREATE( TK_INTEGER,  TM_UNSIGNED,     1 ),
         TI_CREATE( TK_INTEGER,  TM_SIGNED,       1 ),

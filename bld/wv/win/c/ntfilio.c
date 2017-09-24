@@ -49,9 +49,10 @@
 #include "clibext.h"
 
 
-file_components         LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' } };
-char                    LclPathSep = { ';' };
+const file_components   LclFile = { '.', ':', { '\\', '/' }, { '\r', '\n' } };
+const char              LclPathSep = { ';' };
 
+static const int        local_seek_method[] = { SEEK_SET, SEEK_CUR, SEEK_END };
 
 //NYI: should use native NT calls
 
@@ -60,21 +61,21 @@ void LocalErrMsg( sys_error code, char *buff )
     StrCopy( strerror( code ), buff );
 }
 
-sys_handle LocalOpen( const char *name, open_access access )
+sys_handle LocalOpen( const char *name, obj_attrs oattrs )
 {
     unsigned    openmode;
     int         ret;
 
-    if( (access & OP_WRITE) == 0 ) {
+    if( (oattrs & OP_WRITE) == 0 ) {
         openmode = O_RDONLY;
-    } else if( access & OP_READ ) {
+    } else if( oattrs & OP_READ ) {
         openmode = O_RDWR;
     } else {
         openmode = O_WRONLY;
     }
-    if( access & OP_CREATE )
+    if( oattrs & OP_CREATE )
         openmode |= O_CREAT;
-    if( access & OP_TRUNC )
+    if( oattrs & OP_TRUNC )
         openmode |= O_TRUNC;
     ret = open( name, openmode | O_BINARY, 0666 );
     if( ret == -1 ) {
@@ -89,7 +90,7 @@ size_t LocalRead( sys_handle filehndl, void *ptr, size_t len )
 {
     ssize_t ret;
 
-    ret = read( filehndl, ptr, len );
+    ret = posix_read( filehndl, ptr, len );
     if( ret < 0 ) {
         StashErrCode( errno, OP_LOCAL );
         return( ERR_RETURN );
@@ -101,7 +102,7 @@ size_t LocalWrite( sys_handle filehndl, const void *ptr, size_t len )
 {
     ssize_t ret;
 
-    ret = write( filehndl, ptr, len );
+    ret = posix_write( filehndl, ptr, len );
     if( ret < 0 ) {
         StashErrCode( errno, OP_LOCAL );
         return( ERR_RETURN );
@@ -113,7 +114,7 @@ unsigned long LocalSeek( sys_handle hdl, unsigned long len, seek_method method )
 {
     off_t       ret;
 
-    ret = lseek( hdl, len, method );
+    ret = lseek( hdl, len, local_seek_method[method] );
     if( ret == (off_t)-1 ) {
         StashErrCode( errno, OP_LOCAL );
         return( ERR_SEEK );

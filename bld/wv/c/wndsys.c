@@ -145,7 +145,7 @@ static void ToWndChooseNew( a_window *p )
     WndChooseNew();
 }
 
-static void (*WndJmpTab[])( a_window * ) =
+static void (* const WndJmpTab[])( a_window * ) =
 {
     &WndClose,
     &WndCursorStart,
@@ -687,7 +687,7 @@ void SaveMainScreen( char *name )
 
     if( !GetInitName( name, buff, sizeof( buff ) ) )
         return;
-    fh = FileOpen( buff, OP_WRITE|OP_CREATE );
+    fh = FileOpen( buff, OP_WRITE | OP_CREATE );
     if( fh == NIL_HANDLE )
         return;
     WriteStream( fh, &WndMainRect, sizeof( WndMainRect ) );

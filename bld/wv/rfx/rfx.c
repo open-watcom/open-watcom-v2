@@ -52,7 +52,7 @@
 #include "rfxacc.h"
 #include "rfx.h"
 
-char _Literal_No_Mem_4_Path[] = { "no memory for PATH" };
+const char _Literal_No_Mem_4_Path[] = { "no memory for PATH" };
 
 enum {
     IO_OK,
@@ -104,7 +104,7 @@ extern  char            *Squish( file_parse *parse, char *into );
 dbg_switches            DbgSwitches;
 char                    *TxtBuff;
 char                    Buff[BUFF_LEN];
-char                    NullStr[] = { NULLCHAR };
+const char              NullStr[] = { NULLCHAR };
 int                     MaxOnLine = { 0 };
 bool                    Typing = false;
 error_handle            ErrorStatus = { 0 };
@@ -125,7 +125,7 @@ COPYPTR CopySpecs;
 
 #define REAL_CODE( err ) (GetSystemErrCode(err)&0xffff)
 
-const char *HelpText[] = {
+const char * const HelpText[] = {
     "",
     "Commands which accept special file names are:",
     "",
@@ -155,7 +155,7 @@ const char *HelpText[] = {
     NULL
 };
 
-char * ErrMessages[] = {
+const char * const ErrMessages[] = {
     "",
     "End of file encountered",
     "File not found",
@@ -198,7 +198,7 @@ char * ErrMessages[] = {
 };
 
 
-static char * Day[] = {
+static const char * const Day[] = {
     "Sun  ",
     "Mon  ",
     "Tue  ",
@@ -236,7 +236,7 @@ static void     FormatDTA( char *buff, trap_dta *dir, bool wide );
 
 static void Help( void )
 {
-    const char  **txts;
+    const char  * const *txts;
     const char  *txt;
 
     for( txts = HelpText; (txt = *txts) != NULL; ++txts ) {
@@ -273,12 +273,13 @@ char *StrCopy( const char *src, char *dest )
 
 static const char *RealRFXName( const char *name, object_loc *loc )
 {
-    open_access op;
+    obj_attrs   oattrs;
 
-    name = RealFName( name, &op );
-    if( op & OP_LOCAL ) {
+    oattrs = 0;
+    name = RealFName( name, &oattrs );
+    if( oattrs & OP_LOCAL ) {
         *loc = LOC_LOCAL;
-    } else if( op & OP_REMOTE ) {
+    } else if( oattrs & OP_REMOTE ) {
         *loc = LOC_REMOTE;
     } else {
         *loc = LOC_DEFAULT;
@@ -286,7 +287,7 @@ static const char *RealRFXName( const char *name, object_loc *loc )
     return( name );
 }
 
-static open_access RFX2Acc( object_loc loc )
+static obj_attrs RFX2Acc( object_loc loc )
 {
     if( loc == LOC_DEFAULT )
         loc = DefaultLocation;
@@ -583,7 +584,7 @@ static void SameDate( file_handle fh_src, object_loc src_loc, file_handle fh_dst
 
 static void OutName( void )
 {
-    static char Name[] = { "[RFX] " };
+    static const char Name[] = { "[RFX] " };
 
     WriteStream( STD_ERR, Name, sizeof( Name ) - 1 );
 }

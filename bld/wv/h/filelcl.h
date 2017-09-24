@@ -34,11 +34,11 @@ extern void             LocalErrMsg( sys_error, char * );
 extern size_t           LocalRead( sys_handle, void *, size_t );
 extern size_t           LocalWrite( sys_handle, const void *, size_t );
 extern unsigned long    LocalSeek( sys_handle, unsigned long, seek_method );
-extern sys_handle       LocalOpen( char const *, open_access );
+extern sys_handle       LocalOpen( char const *, obj_attrs );
 extern error_handle     LocalClose( sys_handle );
 extern sys_handle       LocalHandleSys( file_handle );
 extern long             LocalGetFileDate( const char *name );
 extern bool             LocalSetFileDate( const char *name, long date );
 
-extern file_components  LclFile;
-extern char             LclPathSep;
+extern const file_components    LclFile;
+extern const char               LclPathSep;

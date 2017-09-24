@@ -34,7 +34,7 @@
 #include "dbgerr.h"
 #include "helpio.h"
 
-static int seekTypeConvTable[] = { DIO_SEEK_ORG, DIO_SEEK_CUR, DIO_SEEK_END };
+static const seek_method    stream_seek_method[] = { DIO_SEEK_ORG, DIO_SEEK_CUR, DIO_SEEK_END };
 
 HELPIO long int HelpFileLen( HelpFp fp )
 {
@@ -59,7 +59,7 @@ HELPIO size_t HelpWrite( HelpFp fp, const char *buf, size_t len )
 
 HELPIO long int HelpSeek( HelpFp fp, long int offset, HelpSeekType where ) {
 
-    return( SeekStream( (file_handle)fp, offset, seekTypeConvTable[where] ) );
+    return( SeekStream( (file_handle)fp, offset, stream_seek_method[where] ) );
 }
 
 HELPIO long int HelpTell( HelpFp fp )

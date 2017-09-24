@@ -29,7 +29,7 @@
 ****************************************************************************/
 
 
-extern char *AboutMessage[];
+extern const char * const AboutMessage[];
 extern int  AboutSize;
 extern int  FingMessageSize;
 

@@ -440,12 +440,12 @@ bool Redirect( bool input, char *hndlname )
     mx_entry            out[1];
     redirect_stdin_req  acc;
     redirect_stdin_ret  ret;
-    open_access         loc;
+    obj_attrs           oattrs;
 
     acc.req = input ? REQ_REDIRECT_STDIN : REQ_REDIRECT_STDOUT;
     in[0].ptr = &acc;
     in[0].len = sizeof( acc );
-    in[1].ptr = FileLoc( hndlname, &loc );
+    in[1].ptr = FileLoc( hndlname, &oattrs );
     in[1].len = (trap_elen)( strlen( in[1].ptr ) + 1 );
     out[0].ptr = &ret;
     out[0].len = sizeof( ret );

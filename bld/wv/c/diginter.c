@@ -59,36 +59,36 @@ void DIGCLIENTRY( Free )( void *p )
     _Free( p );
 }
 
-static open_access DIG2WVOpenMode( dig_open mode )
+static obj_attrs DIG2WVOpenMode( dig_open mode )
 {
-    open_access loc;
+    obj_attrs   oattrs;
 
-    loc = 0;
+    oattrs = 0;
     if( mode & DIG_READ ) {
-        loc |= OP_READ;
+        oattrs |= OP_READ;
     }
     if( mode & DIG_WRITE ) {
-        loc |= OP_WRITE;
+        oattrs |= OP_WRITE;
     }
     if( mode & DIG_CREATE ) {
-        loc |= OP_CREATE;
+        oattrs |= OP_CREATE;
     }
     if( mode & DIG_TRUNC ) {
-        loc |= OP_TRUNC;
+        oattrs |= OP_TRUNC;
     }
     if( mode & DIG_APPEND ) {
-        loc |= OP_APPEND;
+        oattrs |= OP_APPEND;
     }
     if( mode & DIG_REMOTE ) {
-        loc |= OP_REMOTE;
+        oattrs |= OP_REMOTE;
     }
     if( mode & DIG_LOCAL ) {
-        loc |= OP_LOCAL;
+        oattrs |= OP_LOCAL;
     }
     if( mode & DIG_SEARCH ) {
-        loc |= OP_SEARCH;
+        oattrs |= OP_SEARCH;
     }
-    return( loc );
+    return( oattrs );
 }
 
 dig_fhandle DIGCLIENTRY( Open )( char const *name, dig_open mode )

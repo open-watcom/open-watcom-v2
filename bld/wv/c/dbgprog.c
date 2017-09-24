@@ -84,7 +84,7 @@ extern void             WndSetCmdPmt(char *,char *,unsigned int ,void (*)(void))
 
 extern bool             DownLoadTask;
 
-const char              *RealFName( const char *name, open_access *loc );
+const char              *RealFName( const char *name, obj_attrs *oattrs );
 
 static bool             CopyToRemote( const char *local, const char *remote, bool strip, void *cookie );
 
@@ -458,7 +458,7 @@ static image_entry *CreateImage( const char *exe, const char *symfile )
     const char          *this_name;
     unsigned            this_len;
     char_ring           *curr;
-    open_access         ind;
+    obj_attrs           oattrs;
 
     if( exe != NULL && symfile == NULL ) {
         local = false;
@@ -466,7 +466,7 @@ static image_entry *CreateImage( const char *exe, const char *symfile )
         this_len = ExtPointer( exe, OP_REMOTE ) - exe;
         for( curr = LocalDebugInfo; curr != NULL; curr = curr->next ) {
             curr_name = SkipPathInfo( curr->name, OP_LOCAL );
-            curr_name = RealFName( curr_name, &ind );
+            curr_name = RealFName( curr_name, &oattrs );
             if( curr_name[0] == '@' && curr_name[1] == 'l' )
                 curr_name += 2;
             curr_len = ExtPointer( curr_name, OP_LOCAL ) - curr_name;
@@ -851,7 +851,7 @@ static void WndNewProg( void )
 
 static int DoLoadProg( const char *task, const char *symfile, error_handle *errh )
 {
-    open_access         loc;
+    obj_attrs           oattrs;
     const char          *name;
     size_t              len;
     static char         fullname[2048];
@@ -865,7 +865,7 @@ static int DoLoadProg( const char *task, const char *symfile, error_handle *errh
 #endif
     if( task[0] == NULLCHAR )
         return( TASK_NONE );
-    name = FileLoc( task, &loc );
+    name = FileLoc( task, &oattrs );
     if( DownLoadTask ) {
         strcpy( fullname, name );
         fh = FullPathOpen( TaskCmd, strlen( TaskCmd ), "exe", TxtBuff, TXT_LEN );
@@ -904,7 +904,7 @@ void LoadProg( void )
     error_handle        errh = 0;
     int                 ret;
     unsigned long       system_handle;
-    static char         NullProg[] = { NULLCHAR, NULLCHAR, ARG_TERMINATE };
+    static const char   NullProg[] = { NULLCHAR, NULLCHAR, ARG_TERMINATE };
     bool                dummy;
 
     ClearMachState();
