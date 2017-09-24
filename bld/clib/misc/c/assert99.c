@@ -36,6 +36,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
 #include "rterrmsg.h"
 #undef NDEBUG
 #include <assert.h>
@@ -46,7 +47,7 @@
 #define FMT_STRING      STRING("%hs, function %hs, file %hs, line %d.\n")
 
 #ifndef __WIDECHAR__
-    static int __extra_return;
+    static int __extra_return = 0;
 #endif
 
 _WCRTLINK void __F_NAME(_assert99,_wassert99)( char *expr, char *func, char *fn, int line_num )
@@ -73,12 +74,13 @@ _WCRTLINK void __F_NAME(_assert99,_wassert99)( char *expr, char *func, char *fn,
         strcat( buf, ": " );
         strcat( buf, str );
         DebuggerBreakAfterReturnWithMessage( after_num_returns, buf );
-    } else
+    } else {
 #endif
-    {
         __F_NAME(__rterr_msg,__wrterr_msg)( TITLE_STRING, str );
         abort();
+#ifndef __WIDECHAR__
     }
+#endif
 }
 
 _WCRTLINK void __F_NAME(__assert99,__wassert99)( int value, char *expr, char *func, char *fn, int line_num )
