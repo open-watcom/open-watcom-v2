@@ -60,8 +60,6 @@ ResTypeInfo WResFindResType( WResFileID fid )
             type = RT_WATCOM;
         } else if( magic[0] == 0L ) {
             type = RT_WIN32;
-        } else {
-            type = RT_WIN16;
         }
     }
     return( type );
