@@ -39,6 +39,7 @@
 #include "_ptint.h"
 #include "rterrno.h"
 #include "thread.h"
+#include "extfunc.h"
 
 
 /* By default, allow OpenWatcom's thread library
@@ -46,8 +47,14 @@
  */
 #define STACK_SIZE  0
 
+typedef void            *pthread_fn( void * );
+typedef pthread_fn      __pthread_fn;
+#if defined(_M_IX86)
+#pragma aux (__outside_CLIB) __pthread_fn;
+#endif
+
 struct __thread_pass {
-    void        *(*start_routine)(void *);
+    pthread_fn  *start_routine;
     void        *arg;
     pthread_t   thread;
     sem_t       registered;
@@ -58,14 +65,14 @@ static void __thread_start( void *data )
     struct __thread_pass    *passed;
     void                    *ret;
 
-    void                    *(*start_routine)(void *);
+    __pthread_fn            *start_routine;
     void                    *arg;
 
     passed = (struct __thread_pass *)data;
 
     passed->thread = __register_thread();
 
-    start_routine = passed->start_routine;
+    start_routine = (__pthread_fn *)passed->start_routine;
     arg = passed->arg;
 
     /* Lock our running mutex to allow for future joins */
@@ -74,7 +81,7 @@ static void __thread_start( void *data )
     sem_post( &passed->registered );
 
     /* Call the user routine */
-    ret = start_routine( arg );
+    ret = (*start_routine)( arg );
 
     /* The pointer 'ret' must be returned to any waiting
      * "join" operations
@@ -84,7 +91,7 @@ static void __thread_start( void *data )
 }
 
 _WCRTLINK int pthread_create( pthread_t *thread, const pthread_attr_t *attr,
-                              void *(*start_routine)(void *), void *arg )
+                              pthread_fn *start_routine, void *arg )
 {
     int                     ret;
     size_t                  stack_size;

@@ -30,6 +30,7 @@
 
 
 #include "variety.h"
+#include <stdio.h>
 #include <string.h>
 #include <signal.h>
 #include <float.h>
@@ -39,12 +40,10 @@
 #include <semaphore.h>
 #include "rtdata.h"
 #include "liballoc.h"
-#include "extfunc.h"
 #include "linuxsys.h"
 #include "mthread.h"
 #include "cthread.h"
 
-#include <stdio.h>
 
 static volatile struct __lnx_tls_entry {
     pid_t    id;
