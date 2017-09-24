@@ -182,9 +182,14 @@ char *RcTmpFileName( void )
 /* uses the TMP env. var. if it is set and puts the result into tmpfilename */
 /* which is assumed to be a buffer of at least _MAX_PATH characters */
 {
+    char        *out;
+#if defined( _MSC_VER ) && _MSC_VER > 1800
+
+    out = RESALLOC( L_tmpnam + 1 );
+    tmpnam( out );
+#else
     char        *nextchar;
     const char  *tmpdir;
-    char        *out;
     size_t      len;
 
     tmpdir = RcGetEnv( "TMP" );
@@ -201,6 +206,7 @@ char *RcTmpFileName( void )
         }
     }
     tmpnam( nextchar );
+#endif
     return( out );
 }
 
