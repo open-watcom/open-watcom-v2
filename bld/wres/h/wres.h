@@ -39,7 +39,7 @@
 
 /***** Private Types *****/
 
-typedef uint_16             WResStrLen;
+typedef uint_16             WResLen;
 
 typedef struct WResLangNode {
     struct WResLangNode     *Next;
