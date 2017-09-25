@@ -29,13 +29,13 @@
 ****************************************************************************/
 
 
-#include <windows.h>
-#include "penwin.h"
-#include "penwoem.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include <dos.h>
+#include <windows.h>
+#include "penwin.h"
+#include "penwoem.h"
 #include "winext.h"
 
 #pragma aux BackPatch_penwin parm [ax];
