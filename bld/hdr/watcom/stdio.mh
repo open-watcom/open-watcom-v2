@@ -146,8 +146,8 @@ using std::wscanf;
 :endsegment
 :include pshpackl.sp
 
-::include null.sp
-::
+:include null.sp
+
 :segment QNX | LINUX
 #define _NFILES         16          /*  minimum guaranteed open files       */
 #define BUFSIZ          4096        /*  Default buffer size                 */
