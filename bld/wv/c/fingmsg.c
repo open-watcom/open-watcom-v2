@@ -37,7 +37,8 @@
 #include "fingmsg.h"
 
 const char * const AboutMessage[] = {
-    "Open Watcom Debugger" banner1( "", _WD_VERSION_ ) ".", 
+    "Open Watcom Debugger" STR_BITNESS,
+    banner1p2( _WD_VERSION_ ) ".", 
     banner2,
     banner2a( "1987" ),
     banner3,
