@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -173,7 +174,7 @@ void RdosGetBitmapInfo( int handle, int *BitPerPixel, int *width, int *height, i
 int RdosReadDir( int Handle, int EntryNr, int MaxNameSize, char *PathName, long *FileSize, int *Attribute, unsigned long *MsbTime, unsigned long *LsbTime )
 {
     int val;
-    
+
     __asm {
         mov ebx,Handle
         mov edx,EntryNr
@@ -208,7 +209,7 @@ int RdosReadResource( int handle, int ID, char *Buf, int Size )
     unsigned int unicode;
     unsigned short int low;
     unsigned short int high;
-    
+
     if( handle == 0 ) {
         __asm {
             mov eax,fs:[0x24]
@@ -245,25 +246,26 @@ int RdosReadResource( int handle, int ID, char *Buf, int Size )
                     len++;
                     dst++;
                 }
-            }
-            else {
-                if( low >= 0xD800 && low < 0xDC00) {
+            } else {
+                if( low >= 0xD800 && low < 0xDC00 ) {
                     high = *src;
                     src++;
                     low -= 0xD800;
                     unicode = low << 10;
 
-                    if (high < 0xDC00 || high >= 0xE000)
+                    if( high < 0xDC00 || high >= 0xE000 ) {
                         high = 0;
-                    else
+                    } else {
                         high -= 0xDC00;
+                    }
 
                     unicode += high;
                     unicode += 0x10000;
-                } else
+                } else {
                     unicode = low;
+                }
 
-                if( unicode < 0x800) {
+                if( unicode < 0x800 ) {
                     if( len + 2 <= Size ) {
                         *dst = 0xC0 + (char)((unicode >> 6) & 0x1F);
                         dst++;
@@ -271,9 +273,8 @@ int RdosReadResource( int handle, int ID, char *Buf, int Size )
                         dst++;
                         len += 2;
                     }
-                } 
-                else {
-                    if( unicode < 0x10000) {
+                } else {
+                    if( unicode < 0x10000 ) {
                         if( len + 3 <= Size ) {
                             *dst = 0xE0 + (char)((unicode >> 12) & 0xF);
                             dst++;
@@ -283,8 +284,7 @@ int RdosReadResource( int handle, int ID, char *Buf, int Size )
                             dst++;
                             len += 3;
                         }
-                    } 
-                    else {
+                    } else {
                         if( len + 4 <= Size ) {
                             *dst = 0xF0 + (char)((unicode >> 18) & 0x7);
                             dst++;
@@ -297,10 +297,10 @@ int RdosReadResource( int handle, int ID, char *Buf, int Size )
                             len += 4;
                         }
                     }
-                }                                
+                }
             }
-        }            
-    }    
+        }
+    }
 
     return( len );
 }
@@ -310,7 +310,7 @@ int RdosReadBinaryResource( int handle, int ID, char *Buf, int Size )
     char *RcPtr = 0;
     int RcSize;
     int ok;
-    
+
     if( handle == 0 ) {
         __asm {
             mov eax,fs:[0x24]
@@ -337,8 +337,8 @@ int RdosReadBinaryResource( int handle, int ID, char *Buf, int Size )
     if( RcSize ) {
         if( RcSize > Size )
             RcSize = Size;
-        memcpy( Buf, RcPtr, RcSize );            
-    }    
+        memcpy( Buf, RcPtr, RcSize );
+    }
 
     return( RcSize );
 }
@@ -346,7 +346,7 @@ int RdosReadBinaryResource( int handle, int ID, char *Buf, int Size )
 int RdosExec( const char *prog, const char *param, const char *startdir, const char *env )
 {
     TRdosParam p;
-    TRdosParam *pp;    
+    TRdosParam *pp;
     int flatdata = 0;
     int ok = 0;
 
@@ -358,8 +358,7 @@ int RdosExec( const char *prog, const char *param, const char *startdir, const c
     if( param ) {
         p.param.offset = param;
         p.param.sel = flatdata;
-    }
-    else {
+    } else {
         p.param.offset = 0;
         p.param.sel = 0;
     }
@@ -367,8 +366,7 @@ int RdosExec( const char *prog, const char *param, const char *startdir, const c
     if( startdir ) {
         p.startdir.offset = startdir;
         p.startdir.sel = flatdata;
-    }
-    else {
+    } else {
         p.startdir.offset = 0;
         p.startdir.sel = 0;
     }
@@ -376,13 +374,12 @@ int RdosExec( const char *prog, const char *param, const char *startdir, const c
     if( env ) {
         p.env.offset = env;
         p.env.sel = flatdata;
-    }
-    else {
+    } else {
         p.env.offset = 0;
         p.env.sel = 0;
     }
 
-    pp = &p; 
+    pp = &p;
 
     __asm {
         mov esi,prog
@@ -393,19 +390,17 @@ int RdosExec( const char *prog, const char *param, const char *startdir, const c
     RdosCarryToBool();
     __asm {
         mov ok,eax
-    }    
+    }
 
-    if( ok ) {
+    if( ok )
         return( RdosGetExitCode() );
-    }        
-    else
-        return( 0 );
+    return( 0 );
 }
 
 int RdosSpawn( const char *prog, const char *param, const char *startdir, const char *env, int *thread )
 {
     TRdosParam p;
-    TRdosParam *pp;    
+    TRdosParam *pp;
     int flatdata = 0;
     int ok = 0;
     int threadid = 0;
@@ -419,8 +414,7 @@ int RdosSpawn( const char *prog, const char *param, const char *startdir, const 
     if( param ) {
         p.param.offset = param;
         p.param.sel = flatdata;
-    }
-    else {
+    } else {
         p.param.offset = 0;
         p.param.sel = 0;
     }
@@ -428,8 +422,7 @@ int RdosSpawn( const char *prog, const char *param, const char *startdir, const 
     if( startdir ) {
         p.startdir.offset = startdir;
         p.startdir.sel = flatdata;
-    }
-    else {
+    } else {
         p.startdir.offset = 0;
         p.startdir.sel = 0;
     }
@@ -437,13 +430,12 @@ int RdosSpawn( const char *prog, const char *param, const char *startdir, const 
     if( env ) {
         p.env.offset = env;
         p.env.sel = flatdata;
-    }
-    else {
+    } else {
         p.env.offset = 0;
         p.env.sel = 0;
     }
 
-    pp = &p; 
+    pp = &p;
 
     __asm {
         mov esi,prog
@@ -460,20 +452,19 @@ int RdosSpawn( const char *prog, const char *param, const char *startdir, const 
     RdosCarryToBool();
     __asm {
         mov ok,eax
-    }    
+    }
 
     if( ok ) {
         *thread = threadid;
         return( handle );
-    }        
-    else
-        return( 0 );
+    }
+    return( 0 );
 }
 
 int RdosSpawnDebug( const char *prog, const char *param, const char *startdir, const char *env, int *thread )
 {
     TRdosParam p;
-    TRdosParam *pp;    
+    TRdosParam *pp;
     int flatdata = 0;
     int ok = 0;
     int threadid = 0;
@@ -487,8 +478,7 @@ int RdosSpawnDebug( const char *prog, const char *param, const char *startdir, c
     if( param ) {
         p.param.offset = param;
         p.param.sel = flatdata;
-    }
-    else {
+    } else {
         p.param.offset = 0;
         p.param.sel = 0;
     }
@@ -496,8 +486,7 @@ int RdosSpawnDebug( const char *prog, const char *param, const char *startdir, c
     if( startdir ) {
         p.startdir.offset = startdir;
         p.startdir.sel = flatdata;
-    }
-    else {
+    } else {
         p.startdir.offset = 0;
         p.startdir.sel = 0;
     }
@@ -505,13 +494,12 @@ int RdosSpawnDebug( const char *prog, const char *param, const char *startdir, c
     if( env ) {
         p.env.offset = env;
         p.env.sel = flatdata;
-    }
-    else {
+    } else {
         p.env.offset = 0;
         p.env.sel = 0;
     }
 
-    pp = &p; 
+    pp = &p;
 
     __asm {
         mov esi,prog
@@ -528,14 +516,13 @@ int RdosSpawnDebug( const char *prog, const char *param, const char *startdir, c
     RdosCarryToBool();
     __asm {
         mov ok,eax
-    }    
+    }
 
     if( ok ) {
         *thread = threadid;
         return( handle );
-    }        
-    else
-        return( 0 );
+    }
+    return( 0 );
 }
 
 static slib_callback_t mem_putc;
