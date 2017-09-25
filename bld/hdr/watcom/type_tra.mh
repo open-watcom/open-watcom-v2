@@ -303,7 +303,7 @@
     // ==================================================================
     // 4.8 other transformations
     /*
-      template <std::size_t Len, std::size_t Align> struct aligned_storage;
+      template <size_t Len, size_t Align> struct aligned_storage;
     */
 :include nsstdepi.sp
 
