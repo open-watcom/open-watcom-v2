@@ -5,9 +5,11 @@
  *
  */
 
+#include <stddef.h>
+#include <stdio.h>
+
 #ifdef __NT__
 
-#include <stdio.h>
 #include <process.h>
 #include <dos.h>
 
@@ -106,9 +108,7 @@ int main( void )
 
 #endif /* !QA_MAKE_DLL */
 
-#else
-
-#include <stdio.h>
+#else /* !__NT__ */
 
 #ifdef __SW_BW
     #include <wdefwin.h>

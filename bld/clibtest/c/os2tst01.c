@@ -1,3 +1,4 @@
+#include <stddef.h>
 #include <stdio.h>
 #include <process.h>
 #include <dos.h>
