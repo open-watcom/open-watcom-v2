@@ -438,7 +438,7 @@ _WCRTDATA extern char * _WCDATA _pgmptr;  /* pointer to executable name */
 
 :: Wide character version
 :segment DOS
-#if defined(__NT__) || (defined(__OS2__) && (defined(__386__) || defined(__PPC__)))
+#if defined(__NT__) || ( defined(__OS2__) && !defined(_M_I86) )
 _WCRTLINK extern wchar_t **__get_wpgmptr_ptr( void );
 #ifdef __FUNCTION_DATA_ACCESS
  #define _wpgmptr  (*__get_wpgmptr_ptr())
@@ -569,7 +569,7 @@ extern  int       __argc;       /* number of cmd line args */
 extern  char    **__argv;       /* vector of cmd line args */
 :: Wide character version
 :segment DOS
-#if defined(__NT__) || (defined(__OS2__) && (defined(__386__) || defined(__PPC__)))
+#if defined(__NT__) || ( defined(__OS2__) && !defined(_M_I86) )
 extern  int       __wargc;      /* number of wide cmd line args */
 extern  wchar_t **__wargv;      /* vector of wide cmd line args */
 #endif
@@ -619,7 +619,7 @@ _WCRTLINK extern errno_t wcstombs_s( size_t * __restrict __retval, char * __rest
  _WCRTLINK extern errno_t   _get_pgmptr( char ** __p );
 :: Wide character version
 :segment DOS
- #if defined(__NT__) || (defined(__OS2__) && (defined(__386__) || defined(__PPC__)))
+ #if defined(__NT__) || ( defined(__OS2__) && !defined(_M_I86) )
   _WCRTLINK extern errno_t  _get_wpgmptr( wchar_t ** __p );
  #endif
 :endsegment
