@@ -221,25 +221,25 @@ Line 104 -- caught 1234
 PASS executing excdtor
 PASS compiling excrt_01
 my_unexp
-PASS executing excrt_01
+FAIL executing excrt_01
 PASS compiling excrt_02
 my_term
-PASS executing excrt_02
+FAIL executing excrt_02
 PASS compiling excrt_03
-PASS executing excrt_03
+FAIL executing excrt_03
 PASS compiling excrt_04
-PASS executing excrt_04
+FAIL executing excrt_04
 PASS compiling excrt_05
-PASS executing excrt_05
+FAIL executing excrt_05
 PASS compiling excrt_06
-PASS executing excrt_06
+FAIL executing excrt_06
 PASS compiling excrt_07
-PASS executing excrt_07
+FAIL executing excrt_07
 PASS compiling excrt_08
-PASS executing excrt_08
+FAIL executing excrt_08
 PASS compiling excrt_09
-PASS executing excrt_09
+FAIL executing excrt_09
 PASS compiling excrt_10
-PASS executing excrt_10
+FAIL executing excrt_10
 PASS compiling excrt_11
-PASS executing excrt_11
+FAIL executing excrt_11

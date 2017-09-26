@@ -25,10 +25,10 @@ test_flags_axp =
 
 !ifneq targ_env_386 cw386
 !ifneq targ_env_386 d4g386
-stderr_check_386 = 2>>stderr.out
+stderr_check_386 = stderr.out
 !endif
 !endif
-stderr_check_axp = 2>>stderr.out
+stderr_check_axp = stderr.out
 
 !ifdef stderr_check_$(arch)
 sav_file_2 = x$(arch)_$(alt_error).sav
@@ -90,20 +90,20 @@ test : .symbolic start clean start_test $(batch_sym) test.lnk $(exes) common_set
 
 check_result : .procedure
     -diff $(sav_file) exec.chk
-!ifdef sav_file_2
+!ifdef stderr_check_$(arch)
     -diff $(sav_file_2) stderr.chk
 !endif
 
 start_test : .symbolic
     @%make common_start_test
-!ifdef sav_file_2
-    $(noecho)%create stderr.out
+!ifdef stderr_check_$(arch)
+    $(noecho)%create $(stderr_check_$(arch))
 !endif
 
-!ifdef sav_file_2
+!ifdef stderr_check_$(arch)
 save_sav_2 : .procedure
-    @if exist stderr.out @cp stderr.out $(sav_file_2) >$(nulldevice)
-    @if exist stderr.out @rm stderr.out
+    @if exist $(stderr_check_$(arch)) @cp $(stderr_check_$(arch)) $(sav_file_2) >$(nulldevice)
+    @if exist $(stderr_check_$(arch)) @rm $(stderr_check_$(arch))
 
 clean_sav_2 : .procedure
     @if exist $(sav_file_2) @rm $(sav_file_2)

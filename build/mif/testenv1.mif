@@ -244,12 +244,21 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
     @%make echo_link
     $(noecho)$(linker) @test.lnk $(opt_link) $(opt_link_$^*) NAME $^@ FILE {$<}
     @%append $(%ERROR_FILE) PASS compiling $^&
-    @set ERROR_MSG=*** failure to execute $^&
+    @set ERROR_MSG=FAIL executing $^&
     @%make set_path_rtdll
-!ifdef ftest_name
-    -$(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out $(stderr_check_$(arch))
+!ifdef stderr_check_$(arch)
+! ifdef ftest_name
+    -$(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out 2>>$(stderr_check_$(arch))
+! else
+    @%append $(stderr_check_$(arch)) --------$^*--------
+    -$(run) $(exec_prefix)$@ $(extra_run_$^*) >>exec.out 2>>$(stderr_check_$(arch))
+! endif
 !else
-    -$(run) $(exec_prefix)$@ $(extra_run_$^*) >>exec.out $(stderr_check_$(arch))
+! ifdef ftest_name
+    -$(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out
+! else
+    -$(run) $(exec_prefix)$@ $(extra_run_$^*) >>exec.out
+! endif
 !endif
     @if not errorlevel 1 @set ERROR_MSG=PASS executing $^&
     @%make set_old_path

@@ -1,11 +1,26 @@
+--------excok--------
+--------excfancy--------
+--------excalloc--------
+--------excdtor--------
+--------excrt_01--------
 return from "unexpected" function!
+--------excrt_02--------
 return from "terminate" function!
+--------excrt_03--------
 no handler active to catch thrown object!
+--------excrt_04--------
 throw during construction of exception!
+--------excrt_05--------
 no memory left to handle thrown exception!
+--------excrt_06--------
 no handler active to catch thrown object!
+--------excrt_07--------
 no handler active to catch thrown object!
+--------excrt_08--------
 violation of function exception specification!
+--------excrt_09--------
 throw while "terminate" function active!
+--------excrt_10--------
 violation of function exception specification!
+--------excrt_11--------
 throw while "terminate" function active!
