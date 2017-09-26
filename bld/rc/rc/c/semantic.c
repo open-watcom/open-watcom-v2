@@ -64,7 +64,7 @@ SemOffset SemStartResource( void )
         save_fid = CurrResFile.fid;
         save_name = CurrResFile.filename;
         /* put the temporary file in the same location as the output RES file */
-        MSFormatTmpFile = RcMakeTmpInSameDir( CmdLineParms.OutResFileName, "tmp" );
+        MSFormatTmpFile = RcMakeTmpInSameDir( CmdLineParms.OutResFileName, '1', "res" );
         CurrResFile.fid = ResOpenNewFile( MSFormatTmpFile );
         if( CurrResFile.fid == WRES_NIL_HANDLE ) {
             CurrResFile.fid = save_fid;

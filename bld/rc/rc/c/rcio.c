@@ -57,19 +57,19 @@
 #include "clibext.h"
 
 
-char *RcMakeTmpInSameDir( const char *dirfile, char *ext )
-/********************************************************/
+char *RcMakeTmpInSameDir( const char *dirfile, char id, const char *ext )
+/***********************************************************************/
 {
     char    drive[_MAX_DRIVE];
     char    dir[_MAX_DIR];
     char    *out;
-#ifdef __DOS__
-    char    *fname = "__TMP__";
-#else
     char    fname[32];
+#if defined( __DOS__ ) || defined( __OSI__ )
+    sprintf( fname, "__TMP%c__", id );
+#else
     // Must be able to run several "rc" executables simultaneously
     // in the same directory
-    sprintf( fname, "__RCTMP%lu__", (unsigned long)getpid() );
+    sprintf( fname, "__RCTMP%c%lu__", id, (unsigned long)getpid() );
 #endif
     out = RESALLOC( strlen( dirfile ) + 1 + strlen( fname ) + strlen( ext ) + 1 );
     _splitpath( dirfile, drive, dir, NULL, NULL );
@@ -78,14 +78,14 @@ char *RcMakeTmpInSameDir( const char *dirfile, char *ext )
 } /* RcMakeTmpInSameDir */
 
 static bool Pass1InitRes( void )
-/*****************************/
+/******************************/
 {
     WResID        null_id;
     ResMemFlags   null_memflags;
     ResLocation   null_loc;
 
     /* put the temporary file in the same location as the output file */
-    CurrResFile.filename = RcMakeTmpInSameDir( CmdLineParms.OutResFileName, "res" );
+    CurrResFile.filename = RcMakeTmpInSameDir( CmdLineParms.OutResFileName, '0', "res" );
 
     /* initialize the directory */
     CurrResFile.dir = WResInitDir();
@@ -582,7 +582,7 @@ extern bool RcPass2IoInit( void )
     memset( &Pass2Info, '\0', sizeof( RcPass2Info ) );
     Pass2Info.IoBuffer = RESALLOC( IO_BUFFER_SIZE );
     /* put the temporary file in the same location as the output file */
-    Pass2Info.TmpFileName = RcMakeTmpInSameDir( CmdLineParms.OutExeFileName, "tmp" );
+    Pass2Info.TmpFileName = RcMakeTmpInSameDir( CmdLineParms.OutExeFileName, '2', "tmp" );
     noerror = openExeFileInfoRO( CmdLineParms.InExeFileName, &(Pass2Info.OldFile) );
     if( noerror ) {
         noerror = openNewExeFileInfo( Pass2Info.TmpFileName, &(Pass2Info.TmpFile) );

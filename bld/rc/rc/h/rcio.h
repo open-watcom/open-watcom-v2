@@ -70,7 +70,7 @@ typedef struct LogicalFileInfo {
     bool                    IsCOrHFile;
 } LogicalFileInfo;
 
-extern char         *RcMakeTmpInSameDir( const char *dirfile, char *ext );
+extern char         *RcMakeTmpInSameDir( const char *dirfile, char id, const char *ext );
 extern bool         RcPass1IoInit( void );
 extern void         RcPass1IoShutdown( void );
 extern bool         RcPass2IoInit( void );
