@@ -7,6 +7,8 @@ additional_cleanup = *.gdf
 !include cproj.mif
 !include deftarg.mif
 
+!include $(cpplib_dir)/libflags.mif
+
 !include $(cpplib_dir)/plibname.mif
 
 !ifdef export_only

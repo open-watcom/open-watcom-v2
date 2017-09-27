@@ -41,9 +41,3 @@ suffix = mt$(suffix_$(processor))
 !else
 suffix = $(suffix_$(processor))
 !endif
-
-!ifeq release 0
-plib_lib_flags = -b-c-n-pa
-!else
-plib_lib_flags = -b-c-n-pa-s-t-zld
-!endif
