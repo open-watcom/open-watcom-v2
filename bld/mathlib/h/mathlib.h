@@ -2,6 +2,7 @@
 *
 *                            Open Watcom Project
 *
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
 *    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
@@ -36,7 +37,6 @@
 #include "cplx.h"
 #include "mathcode.h"
 
-#define _RWD_matherr    __matherr_handler
 
 #if !defined(_M_IX86) || defined(__FLAT__)
     typedef double                                      *m_dbl_arg;
@@ -64,12 +64,8 @@
     extern  double  __pow87_err( double, double, unsigned char );
     extern  double  __math87_err( double, unsigned char );
 
-    _WMRTLINK extern int    __matherr( struct _exception * );
-
  #if defined( __WATCOMC__ )
     #pragma aux __fprem     "*_" parm [];
-
-    #pragma aux __matherr   "*";
 
   #if defined(__386__)
     #pragma aux _atan87    "_*" parm [edx eax] value [edx eax];
@@ -97,8 +93,6 @@
  #endif
 
 #endif
-
-extern  int     (*__matherr_handler)( struct _exception * );
 
 extern  void    __fprem( double, double, m_int_arg, m_dbl_arg );
 extern  int     __sgn( double );

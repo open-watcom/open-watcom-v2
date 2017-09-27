@@ -2,9 +2,8 @@
 *
 *                            Open Watcom Project
 *
-*    Portions Copyright (c) 1983-2002 Sybase, Inc.
-*    Portions Copyright (c) 2014 Open Watcom contributors. 
-*    All Rights Reserved.
+* Copyright (c) 2002-2017 The Open Watcom Contributors. All Rights Reserved.
+*    Portions Copyright (c) 1983-2002 Sybase, Inc. All Rights Reserved.
 *
 *  ========================================================================
 *
@@ -39,6 +38,20 @@
 #include "mathlib.h"
 #include "clibsupp.h"
 #include "_matherr.h"
+
+
+#define _RWD_matherr    __matherr_handler
+
+#if defined(_M_IX86)
+    _WMRTLINK extern int    __matherr( struct _exception * );
+ #if defined( __WATCOMC__ )
+    #pragma aux __matherr   "*";
+ #endif
+#endif
+
+extern  int     (*__matherr_handler)( struct _exception * );
+
+#endif
 
 static const char * const Msgs[] = {
     0,
