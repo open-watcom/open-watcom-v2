@@ -568,7 +568,7 @@ static void TI_CURSOR_MOVE( int c, int r )
 
     OldCol = c;
     OldRow = r;
-} 
+}
 
 static void TI_SETCOLOUR( int f, int b )
 {
@@ -1367,7 +1367,7 @@ static int ti_refresh( int must )
                 }
                 if( diff )
                     break;
-                dirty_area.row1--; 
+                dirty_area.row1--;
             }
         }
 
