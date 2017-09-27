@@ -13,7 +13,7 @@
 # configuration values:
 #
 # targ_env_386 = wnt386/d4g386/cw386/os2386/linux386 (depends on current OS)
-# targ_env_i86 = os2i86/dosi86 (depends on current OS)
+# targ_env_i86 = os2i86/dosi86/wnti86 (depends on current OS)
 # targ_env_axp = ntaxp (depends on current OS)
 # targ_env_ppc = linuxppc/ntppc (depends on current OS)
 # targ_env_mps = linuxmips (depends on current OS)

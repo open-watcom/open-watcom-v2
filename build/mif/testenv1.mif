@@ -56,18 +56,6 @@
 !  endif
 !endif
 
-dos_redirect_dosi86 = 1
-dos_redirect_cw386  = 1
-dos_redirect_d4g386 = 1
-dos_redirect_pls386 = 1
-dos_redirect_tnt386 = 1
-
-!ifdef dos_redirect_$(targ_env_$(arch))
-dos_redirect = $(dos_redirect_$(targ_env_$(arch)))
-!else ifdef __MSDOS__
-dos_redirect = 1
-!endif
-
 !ifdef clibtest_name
 sav_file = $(clibtest_name).sav
 !else
@@ -249,6 +237,19 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
 !endif
     @%make set_old_path
     @if not exist $@ %write $@ I did not generate errors for $^&
+
+dos_redirect_dosi86 = 1
+dos_redirect_wnti86 = 1
+dos_redirect_cw386  = 1
+dos_redirect_d4g386 = 1
+dos_redirect_pls386 = 1
+dos_redirect_tnt386 = 1
+
+!ifdef __MSDOS__
+dos_redirect = 1
+!else ifdef dos_redirect_$(targ_env_$(arch))
+dos_redirect = $(dos_redirect_$(targ_env_$(arch)))
+!endif
 
 .obj.$(exe):
     @set ERROR_MSG=*** failure to link $^&
