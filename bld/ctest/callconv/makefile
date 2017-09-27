@@ -75,14 +75,8 @@ test_set_result : .symbolic ./chk_exec.exe
 
 start_test : .symbolic
     @%make common_start_test
-    @set RUN_FILE=symbols.out
+    @set RUN_FILE=exec2.out
     %create $(%RUN_FILE)
-
-save_sav_2 : .procedure
-    @if exist symbols.out cp symbols.out $(sav_file_2)
-
-clean_sav_2 : .procedure
-    @if exist $(sav_file_2) rm $(sav_file_2)
 
 $(callconv_all_objs) : source/obj.c
     @set ERROR_MSG=failure to compile $^@

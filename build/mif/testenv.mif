@@ -235,7 +235,7 @@ bld_extra_defines = -DINLINETEST
 !  endif
 !endif
 !ifndef targ_env_386
-!  ifdef __DOS__
+!  ifdef __MSDOS__
 !    define targ_env_386 d4g386
 #!    define targ_env_386 cw386
 !  else ifdef __OS2__
@@ -275,7 +275,7 @@ bld_extra_defines = -DINLINETEST
 !  endif
 !endif
 !ifndef targ_env_i86
-!  ifdef __DOS__
+!  ifdef __MSDOS__
 !    define targ_env_i86 dosi86
 !  else ifdef __OS2__
 !    define targ_env_i86 os2i86
@@ -308,7 +308,7 @@ bld_extra_defines = -DINLINETEST
 !  endif
 !endif
 !ifndef targ_env_axp
-!  ifdef __DOS__
+!  ifdef __MSDOS__
 !    define targ_env_axp dosaxp
 !  else ifdef __OS2__
 !    define targ_env_axp os2axp
@@ -379,7 +379,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wasm_386
 !  ifdef buildtest
 #    build version of assembler for 386
-!    ifdef __DOS__
+!    ifdef __MSDOS__
 !      define comp_wasm_386 $(src_dir)\wasm\dos386\wasm
 !    else ifdef __OS2__
 !      define comp_wasm_386 $(src_dir)\wasm\os2386\wasm
@@ -402,7 +402,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wasm_i86
 !  ifdef buildtest
 #    build version of assembler for i86
-!    ifdef __DOS__
+!    ifdef __MSDOS__
 !      define comp_wasm_i86 $(src_dir)\wasm\dos386\wasm
 !    else ifdef __OS2__
 !      define comp_wasm_i86 $(src_dir)\wasm\os2386\wasm
@@ -458,7 +458,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wcc_386
 !  ifdef buildtest
 #    build version of C compiler for 386
-!    ifdef __DOS__
+!    ifdef __MSDOS__
 !      define comp_wcc_386 $(src_dir)\cc\386\dos386\$(bin_subdir)\wcc386
 !    else ifdef __OS2__
 !      define comp_wcc_386 $(src_dir)\cc\386\os2386.dll\$(bin_subdir)\wcc386
@@ -481,7 +481,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wcc_i86
 !  ifdef buildtest
 #    build version of C compiler for i86
-!    ifdef __DOS__
+!    ifdef __MSDOS__
 !      define comp_wcc_i86 $(src_dir)\cc\i86\dos386\$(bin_subdir)\wcc
 !    else ifdef __OS2__
 !      define comp_wcc_i86 $(src_dir)\cc\i86\os2386.dll\$(bin_subdir)\wcc
@@ -583,7 +583,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wpp_386
 !  ifdef buildtest
 #    build version of C++ compiler for 386
-!    ifdef __DOS__
+!    ifdef __MSDOS__
 !      define comp_wpp_386 $(src_dir)\plusplus\386\dos386\wpp386
 !    else ifdef __OS2__
 !      define comp_wpp_386 $(src_dir)\plusplus\386\os2386.dll\wpp386
@@ -606,7 +606,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wpp_i86
 !  ifdef buildtest
 #    build version of C++ compiler for i86
-!    ifdef __DOS__
+!    ifdef __MSDOS__
 !      define comp_wpp_i86 $(src_dir)\plusplus\i86\dos386\wpp
 !    else ifdef __OS2__
 !      define comp_wpp_i86 $(src_dir)\plusplus\i86\os2386.dll\wpp
@@ -708,7 +708,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wfc_386
 !  ifdef buildtest
 #    build version of F77 compiler for 386
-!    ifdef __DOS__
+!    ifdef __MSDOS__
 !      define comp_wfc_386 $(src_dir)\f77\wfc\386\dos386\wfc386
 !    else ifdef __OS2__
 !      define comp_wfc_386 $(src_dir)\f77\wfc\386\os2386\wfc386
@@ -731,7 +731,7 @@ bld_extra_defines = -DINLINETEST
 !ifndef comp_wfc_i86
 !  ifdef buildtest
 #    build version of F77 compiler for i86
-!    ifdef __DOS__
+!    ifdef __MSDOS__
 !      define comp_wfc_i86 $(src_dir)\f77\wfc\i86\dos386\wfc
 !    else ifdef __OS2__
 !      define comp_wfc_i86 $(src_dir)\f77\wfc\i86\os2386\wfc

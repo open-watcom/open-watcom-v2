@@ -221,36 +221,25 @@ Line 104 -- caught 1234
 PASS executing excdtor
 PASS compiling excrt_01
 my_unexp
-return from "unexpected" function!
 FAIL executing excrt_01
 PASS compiling excrt_02
 my_term
-return from "terminate" function!
 FAIL executing excrt_02
 PASS compiling excrt_03
-no handler active to catch thrown object!
 FAIL executing excrt_03
 PASS compiling excrt_04
-throw during construction of exception!
 FAIL executing excrt_04
 PASS compiling excrt_05
-no memory left to handle thrown exception!
 FAIL executing excrt_05
 PASS compiling excrt_06
-no handler active to catch thrown object!
 FAIL executing excrt_06
 PASS compiling excrt_07
-no handler active to catch thrown object!
 FAIL executing excrt_07
 PASS compiling excrt_08
-violation of function exception specification!
 FAIL executing excrt_08
 PASS compiling excrt_09
-throw while "terminate" function active!
 FAIL executing excrt_09
 PASS compiling excrt_10
-violation of function exception specification!
 FAIL executing excrt_10
 PASS compiling excrt_11
-throw while "terminate" function active!
 FAIL executing excrt_11

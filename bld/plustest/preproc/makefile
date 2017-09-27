@@ -10,24 +10,21 @@ alt_error=00
     @%make set_path_wpp
     $(wpp_$(arch)) $[@ -w0 -pl -fo=.i -fip
     @%make set_old_path
-    cat $(%ERROR_FILE) $^@ >tmp_exec.out
-    cp tmp_exec.out $(%ERROR_FILE) >$(nulldevice)
+    cat $^@ >>$(%ERROR_FILE)
 
 .c.i1:
     %append $(%ERROR_FILE) @@@ $^@ @@@
     @%make set_path_wpp
     $(wpp_$(arch)) $[@ -w0 -plc -fo=.i1 -fip
     @%make set_old_path
-    cat $(%ERROR_FILE) $^@ >tmp_exec.out
-    cp tmp_exec.out $(%ERROR_FILE) >$(nulldevice)
+    cat $^@ >>$(%ERROR_FILE)
 
 .c.i0:
     %append $(%ERROR_FILE) @@@ $^@ @@@
     @%make set_path_wpp
     $(wpp_$(arch)) $[@ -w0 -pl -pw=0 -fo=.i0 -fip
     @%make set_old_path
-    cat $(%ERROR_FILE) $^@ >tmp_exec.out
-    cp tmp_exec.out $(%ERROR_FILE) >$(nulldevice)
+    cat $^@ >>$(%ERROR_FILE)
 
 all_tests = &
     pp01.i &

@@ -24,7 +24,7 @@ start_test : .symbolic
     @if exist s$(arch)0000.sav rm s$(arch)0000.sav
 
 save : .symbolic
-    @if exist diag0000.out cp diag0000.out s$(arch)0000.sav
+    @if exist diag0000.out %ren diag0000.out s$(arch)0000.sav
 
 clean : .procedure
     @%make echo_clean

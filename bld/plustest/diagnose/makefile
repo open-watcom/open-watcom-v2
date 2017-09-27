@@ -107,19 +107,18 @@ start_test : .symbolic
     $(noecho)%make clean_sav
 
 save_sav : .procedure
-    @if exist diag0000.out @cp diag0000.out s$(arch)0000.sav >$(nulldevice)
-    @if exist diag0100.out @cp diag0100.out s$(arch)0100.sav >$(nulldevice)
-    @if exist diag0200.out @cp diag0200.out s$(arch)0200.sav >$(nulldevice)
-    @if exist diag0300.out @cp diag0300.out s$(arch)0300.sav >$(nulldevice)
-    @if exist diag$(arch).out @cp diag$(arch).out s$(arch)_$(arch).sav >$(nulldevice)
-    @if exist diagspec.out @cp diagspec.out s$(arch)spec.sav >$(nulldevice)
-    #
-    @if exist diag0000.out @rm diag0000.out
-    @if exist diag0100.out @rm diag0100.out
-    @if exist diag0200.out @rm diag0200.out
-    @if exist diag0300.out @rm diag0300.out
-    @if exist diag$(arch).out @rm diag$(arch).out
-    @if exist diagspec.out @rm diagspec.out
+    @if exist s$(arch)0000.sav @rm s$(arch)0000.sav
+    @if exist diag0000.out @%ren diag0000.out s$(arch)0000.sav >$(nulldevice)
+    @if exist s$(arch)0100.sav @rm s$(arch)0100.sav
+    @if exist diag0100.out @%ren diag0100.out s$(arch)0100.sav >$(nulldevice)
+    @if exist s$(arch)0200.sav @rm s$(arch)0200.sav
+    @if exist diag0200.out @%ren diag0200.out s$(arch)0200.sav >$(nulldevice)
+    @if exist s$(arch)0300.sav @rm s$(arch)0300.sav
+    @if exist diag0300.out @%ren diag0300.out s$(arch)0300.sav >$(nulldevice)
+    @if exist s$(arch)_$(arch).sav @rm s$(arch)_$(arch).sav
+    @if exist diag$(arch).out @%ren diag$(arch).out s$(arch)_$(arch).sav >$(nulldevice)
+    @if exist s$(arch)spec.sav @rm s$(arch)spec.sav
+    @if exist diagspec.out @%ren diagspec.out s$(arch)spec.sav >$(nulldevice)
 
 clean_sav : .procedure
     @if exist s$(arch)0000.sav @rm s$(arch)0000.sav

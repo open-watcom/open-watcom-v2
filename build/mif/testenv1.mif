@@ -56,6 +56,18 @@
 !  endif
 !endif
 
+dos_redirect_dosi86 = 1
+dos_redirect_cw386  = 1
+dos_redirect_d4g386 = 1
+dos_redirect_pls386 = 1
+dos_redirect_tnt386 = 1
+
+!ifdef dos_redirect_$(targ_env_$(arch))
+dos_redirect = $(dos_redirect_$(targ_env_$(arch)))
+!else ifdef __MSDOS__
+dos_redirect = 1
+!endif
+
 !ifdef clibtest_name
 sav_file = $(clibtest_name).sav
 !else
@@ -246,18 +258,17 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
     @%append $(%ERROR_FILE) PASS compiling $^&
     @set ERROR_MSG=FAIL executing $^&
     @%make set_path_rtdll
-!ifdef stderr_check_$(arch)
-! ifdef ftest_name
-    -$(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out 2>>$(stderr_check_$(arch))
-! else
-    @%append $(stderr_check_$(arch)) --------$^*--------
-    -$(run) $(exec_prefix)$@ $(extra_run_$^*) >>exec.out 2>>$(stderr_check_$(arch))
-! endif
-!else
+!ifdef dos_redirect
 ! ifdef ftest_name
     -$(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out
 ! else
     -$(run) $(exec_prefix)$@ $(extra_run_$^*) >>exec.out
+! endif
+!else
+! ifdef ftest_name
+    -$(run) $(exec_prefix)$@ $(extra_run_$^*) >$*.out 2>&1
+! else
+    -$(run) $(exec_prefix)$@ $(extra_run_$^*) >>exec.out 2>&1
 ! endif
 !endif
     @if not errorlevel 1 @set ERROR_MSG=PASS executing $^&
@@ -278,16 +289,17 @@ test.lnk : $(__MAKEFILES__) .EXPLICIT
     $(noecho)$(bld_cl) $(bld_cl_opts) $<
 
 __save_sav : .procedure .EXPLICIT
-    @if exist exec.out @cp exec.out $(sav_file) >$(nulldevice)
-    @if exist exec.out @rm exec.out
+    @if exist $(sav_file) rm $(sav_file)
+    @if exist exec.out %ren exec.out $(sav_file) >$(nulldevice)
 !ifdef sav_file_2
-    $(noecho)%make save_sav_2
+    @if exist $(sav_file_2) rm $(sav_file_2)
+    @if exist exec2.out %ren exec2.out $(sav_file_2) >$(nulldevice)
 !endif
 
 __clean_sav : .procedure .EXPLICIT
-    @if exist $(sav_file) @rm $(sav_file)
+    @if exist $(sav_file) rm $(sav_file)
 !ifdef sav_file_2
-    $(noecho)%make clean_sav_2
+    @if exist $(sav_file_2) rm $(sav_file_2)
 !endif
 
 common_start_test : .procedure .EXPLICIT
@@ -303,7 +315,9 @@ common_set_result : .procedure .EXPLICIT
     @set ERROR_FILE=$(log_file)
     @set ERROR_MSG=FAIL $(%__CWD__)
     $(noecho)%make __save_sav
-!ifdef exec_chk_$(arch)
+!if defined( dos_redirect ) && defined( dos_exec_chk_$(arch) )
+    -diff -b $(sav_file) $(dos_exec_chk_$(arch)) >$(nulldevice)
+!else ifdef exec_chk_$(arch)
     -diff -b $(sav_file) $(exec_chk_$(arch)) >$(nulldevice)
 !else
     -diff -b $(sav_file) exec.chk >$(nulldevice)
@@ -315,7 +329,9 @@ common_set_result_display : .procedure .EXPLICIT
     @set ERROR_FILE=$(log_file)
     @set ERROR_MSG=FAIL $(%__CWD__)
     $(noecho)%make __save_sav
-!ifdef exec_chk_$(arch)
+!if defined( dos_redirect ) && defined( dos_exec_chk_$(arch) )
+    -diff -b $(sav_file) $(dos_exec_chk_$(arch))
+!else ifdef exec_chk_$(arch)
     -diff -b $(sav_file) $(exec_chk_$(arch))
 !else
     -diff -b $(sav_file) exec.chk

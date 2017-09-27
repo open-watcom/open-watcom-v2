@@ -24,7 +24,7 @@ test : .symbolic start clean start_test test.lnk re2c.$(exe) common_set_result_c
     @%make clean
 
 check_result : .procedure
-    -diff $(sav_file) debug.chk | wc >wc.out
+    -diff $(sav_file) exec.chk | wc >wc.out
     -diff -b wc.out wc.chk
 
 re2c.$(exe) : re2c.obj code.obj dfa.obj memchk.obj parser.obj scanner.obj substr.obj translat.obj actions.obj
