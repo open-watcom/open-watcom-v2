@@ -37,6 +37,7 @@
 #endif
 #include "ioutil.h"
 
+
 namespace std {
 
   // Do the allocation required if allocate() thinks it's needed. If the

@@ -39,6 +39,7 @@
 #include "ioutil.h"
 #include "lock.h"
 
+
 namespace std {
 
   // Write the "len" characters starting at "buf" into the put area.

@@ -39,6 +39,7 @@
 #include "ioutil.h"
 #include "lock.h"
 
+
 namespace std {
 
   // Return the "len" characters starting at get_ptr. If there aren't

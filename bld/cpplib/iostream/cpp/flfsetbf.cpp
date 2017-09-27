@@ -34,7 +34,6 @@
 #include "variety.h"
 #include <fstream>
 #endif
-#include "ioutil.h"
 
 namespace std {
 

@@ -34,7 +34,8 @@
 #include "variety.h"
 #include <fstream>
 #endif
-#include "ioutil.h"
+#include "clibsupp.h"
+
 
 namespace std {
 

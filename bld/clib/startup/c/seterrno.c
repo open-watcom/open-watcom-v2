@@ -36,6 +36,7 @@
 #include "seterrno.h"
 #include "thread.h"
 
+
 _WCRTLINK void __set_EDOM( void )
 {
     _RWD_errno = EDOM;

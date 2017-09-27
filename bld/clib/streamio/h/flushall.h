@@ -24,11 +24,9 @@
 *
 *  ========================================================================
 *
-* Description:  Prototype for __flush and __flushall internal routines.
+* Description:  Prototype for __flushall internal routines.
 *
 ****************************************************************************/
 
-/* __flush is used by C++ run-time library */
-_WCRTLINK extern int    __flush( FILE * );
 
 extern int              __flushall( int );

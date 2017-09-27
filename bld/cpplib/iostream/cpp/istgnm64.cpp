@@ -38,9 +38,9 @@
 #include <iostream>
 #include <streambu>
 #endif
-#include "ioutil.h"
 #include "lock.h"
 #include "isthdr.h"
+
 
 // Used by getnumber. Multiplication by 8 is done using a left-shift of
 // three bits. Multiplication by 16 is done using a left-shift of four

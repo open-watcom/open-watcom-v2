@@ -37,6 +37,7 @@
 #endif
 #include "ioutil.h"
 
+
 namespace std {
 
   // Freeze the strstreambuf, and return a pointer to the contents. This

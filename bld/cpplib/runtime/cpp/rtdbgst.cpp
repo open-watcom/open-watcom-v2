@@ -41,13 +41,15 @@
 #include <cstdlib>
 #include "rtexcept.h"
 #include "exc_pr.h"
+#include "clibsupp.h"
 
-extern "C" _WCRTLINK extern FILE *__get_std_stream( unsigned handle );
 
 #define MX_FSTK         10
 #define default_file    "_CPPDBG_."
 
 #define STDOUT_FILENO 1
+
+extern "C" {
 
 static std::FILE *fstk[MX_FSTK];    // suspended files
 static unsigned index;              // top of files stack
@@ -89,7 +91,7 @@ static unsigned indent = 1;     // # of indentations
 static void dump(               // FORMATTED DUMP
     enum FT ft, ... )           // - FT formatting
 {
-    va_list args;               // - for variable arguments
+    std::va_list args;          // - for variable arguments
     rboolean done;              // - true ==> done formatting
     std::size_t blk_type;       // - type of block
     RW_DTREG* rw;               // - R/W header
@@ -691,7 +693,6 @@ static void dumpExcs(           // DUMP EXCEPTIONS LIST
 }
 
 
-extern "C"
 void CPPLIB( DbgRtDumpModuleDtor )( // DUMP MODULE DTOR BLOCKS
     void )
 {
@@ -713,7 +714,6 @@ void CPPLIB( DbgRtDumpModuleDtor )( // DUMP MODULE DTOR BLOCKS
 }
 
 
-extern "C"
 void CPPLIB( DbgRtDumpAutoDtor )( // DUMP REGISTRATION BLOCKS
     void )
 {
@@ -733,7 +733,6 @@ void CPPLIB( DbgRtDumpAutoDtor )( // DUMP REGISTRATION BLOCKS
 
 #ifdef PD_REGISTRATION
 
-extern "C"
 void __DumpPdata()
 {
     PData* p = (PData*)0x430000;
@@ -783,7 +782,7 @@ static void reDirBeg            // START REDIRECTION FOR A FILE
     } else {
         char fname[32];
         std::FILE *fp;
-        strcpy( fname, default_file );
+        std::strcpy( fname, default_file );
         itoa( index, &fname[sizeof( default_file ) - 1], 10 );
         fp = std::fopen( fname, "wt" );
         if( NULL == fp ) {
@@ -815,7 +814,6 @@ static void reDirEnd            // COMPLETE REDIRECTION FOR A FILE
     }
 }
 
-extern "C"
 void DbgRedirectBeg             // START REDIRECTION
     ( void )
 {
@@ -825,7 +823,6 @@ void DbgRedirectBeg             // START REDIRECTION
     }
 }
 
-extern "C"
 int DbgRedirectEnd              // COMPLETE REDIRECTION
     ( void )
 {
@@ -840,7 +837,6 @@ int DbgRedirectEnd              // COMPLETE REDIRECTION
     return retn;
 }
 
-extern "C"
 void DbgLogBeg                  // START LOGGING
     ( void )
 {
@@ -850,7 +846,6 @@ void DbgLogBeg                  // START LOGGING
     reDirBeg();
 }
 
-extern "C"
 int DbgLogEnd                   // END LOGGING
     ( void )
 {
@@ -859,5 +854,7 @@ int DbgLogEnd                   // END LOGGING
     }
     return index;
 }
+
+} /* extern "C" */
 
 #endif

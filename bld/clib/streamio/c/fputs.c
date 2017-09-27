@@ -36,7 +36,7 @@
 #include <wchar.h>
 #include "fileacc.h"
 #include "rtdata.h"
-#include "flush.h"
+#include "clibsupp.h"
 #include "streamio.h"
 
 

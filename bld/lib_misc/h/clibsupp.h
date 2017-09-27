@@ -35,8 +35,23 @@
 
 #include <stdio.h>
 
-_WCRTLINK extern void __set_EDOM( void );
-_WCRTLINK extern void __set_ERANGE( void );
-_WCRTLINK extern FILE *__get_std_stream( unsigned handle );
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+_WCRTLINK extern void   __set_EDOM( void );
+_WCRTLINK extern void   __set_ERANGE( void );
+
+/* __get_std_stream and __flush are used by C++ run-time library */
+_WCRTLINK extern FILE   *__get_std_stream( unsigned handle );
+_WCRTLINK extern int    __flush( FILE * );
+
+/* __plusplus_fstat and __plusplus_open are used by C++ run-time library */
+_WCRTLINK extern int    __plusplus_fstat( int handle, int *pios_mode );
+_WCRTLINK extern int    __plusplus_open( const char *name, int *pios_mode, int prot );
+
+#ifdef __cplusplus
+} /* extern "C" */
+#endif
 
 #endif

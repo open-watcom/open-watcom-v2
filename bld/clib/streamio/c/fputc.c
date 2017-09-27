@@ -41,7 +41,7 @@
 #include "rterrno.h"
 #include "fileacc.h"
 #include "orient.h"
-#include "flush.h"
+#include "clibsupp.h"
 #include "streamio.h"
 #include "thread.h"
 

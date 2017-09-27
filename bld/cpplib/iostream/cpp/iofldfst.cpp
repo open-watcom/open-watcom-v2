@@ -38,7 +38,6 @@
 #include "variety.h"
 #include <iostream>
 #endif
-#include "ioutil.h"
 #include "iofhdr.h"
 
 

@@ -35,7 +35,6 @@
 #include <cerrno>
 #include <iostream>
 #endif
-#include "ioutil.h"
 #include "lock.h"
 #include "iofhdr.h"
 #include "fltsupp.h"

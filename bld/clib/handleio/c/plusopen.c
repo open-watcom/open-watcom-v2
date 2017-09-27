@@ -35,7 +35,8 @@
 #include <share.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include "handleio.h"
+#include "clibsupp.h"
+
 
 // these must be the same as is defined in iostream.h
 
