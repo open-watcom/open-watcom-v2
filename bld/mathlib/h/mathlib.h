@@ -66,29 +66,28 @@
 
  #if defined( __WATCOMC__ )
     #pragma aux __fprem     "*_" parm [];
-
   #if defined(__386__)
-    #pragma aux _atan87    "_*" parm [edx eax] value [edx eax];
-    #pragma aux _exp87     "_*" parm [edx eax] value [edx eax];
-    #pragma aux _log87     "_*" parm [edx eax] value [edx eax];
-    #pragma aux _cos87     "_*" parm [edx eax] value [edx eax];
-    #pragma aux _sin87     "_*" parm [edx eax] value [edx eax];
-    #pragma aux _tan87     "_*" parm [edx eax] value [edx eax];
-    #pragma aux __sqrt87   "*"  parm [edx eax] value [edx eax];
-    #pragma aux __sqrtd    "*"  parm [edx eax] value [edx eax];
-    #pragma aux _ModF      "_*" parm caller [eax] [edx];
-    #pragma aux _ZBuf2F    "_*" parm caller [eax] [edx];
+    #pragma aux _atan87     "_*" parm [edx eax] value [edx eax];
+    #pragma aux _exp87      "_*" parm [edx eax] value [edx eax];
+    #pragma aux _log87      "_*" parm [edx eax] value [edx eax];
+    #pragma aux _cos87      "_*" parm [edx eax] value [edx eax];
+    #pragma aux _sin87      "_*" parm [edx eax] value [edx eax];
+    #pragma aux _tan87      "_*" parm [edx eax] value [edx eax];
+    #pragma aux __sqrt87    "*"  parm [edx eax] value [edx eax];
+    #pragma aux __sqrtd     "*"  parm [edx eax] value [edx eax];
+    #pragma aux _ModF       "_*" parm caller [eax] [edx];
+    #pragma aux _ZBuf2F     "_*" parm caller [eax] [edx];
   #else
-    #pragma aux _atan87    "_*" parm [ax bx cx dx] value [ax bx cx dx];
-    #pragma aux _exp87     "_*" parm [ax bx cx dx] value [ax bx cx dx];
-    #pragma aux _log87     "_*" parm [ax bx cx dx] value [ax bx cx dx];
-    #pragma aux _cos87     "_*" parm [ax bx cx dx] value [ax bx cx dx];
-    #pragma aux _sin87     "_*" parm [ax bx cx dx] value [ax bx cx dx];
-    #pragma aux _tan87     "_*" parm [ax bx cx dx] value [ax bx cx dx];
-    #pragma aux __sqrt87   "*"  parm [ax bx cx dx] value [ax bx cx dx];
-    #pragma aux __sqrtd    "*"  parm [ax bx cx dx] value [ax bx cx dx];
-    #pragma aux _ModF      "_*" parm caller [ax] [dx];
-    #pragma aux _ZBuf2F    "_*" parm caller [ax] [dx];
+    #pragma aux _atan87     "_*" parm [ax bx cx dx] value [ax bx cx dx];
+    #pragma aux _exp87      "_*" parm [ax bx cx dx] value [ax bx cx dx];
+    #pragma aux _log87      "_*" parm [ax bx cx dx] value [ax bx cx dx];
+    #pragma aux _cos87      "_*" parm [ax bx cx dx] value [ax bx cx dx];
+    #pragma aux _sin87      "_*" parm [ax bx cx dx] value [ax bx cx dx];
+    #pragma aux _tan87      "_*" parm [ax bx cx dx] value [ax bx cx dx];
+    #pragma aux __sqrt87    "*"  parm [ax bx cx dx] value [ax bx cx dx];
+    #pragma aux __sqrtd     "*"  parm [ax bx cx dx] value [ax bx cx dx];
+    #pragma aux _ModF       "_*" parm caller [ax] [dx];
+    #pragma aux _ZBuf2F     "_*" parm caller [ax] [dx];
   #endif
  #endif
 
