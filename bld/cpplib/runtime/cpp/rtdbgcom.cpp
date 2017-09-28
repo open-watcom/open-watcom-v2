@@ -35,20 +35,21 @@
 #include "cpplib.h"
 #include "rtexcept.h"
 
+extern "C" {
+
 static unsigned inserted_at;    // # inserted calls to atoms
 static unsigned inserted_op;    // # inserted calls to operators
 
-extern "C"
 void __dbg_comma_op( void )     // INSERTED CALL AT OPERATOR
 {
-    ++ inserted_op;
+    ++inserted_op;
 }
 
-
-extern "C"
 void __dbg_comma_at( void )     // INSERTED CALL AT ATOM
 {
-    ++ inserted_at;
+    ++inserted_at;
 }
+
+} /* extern "C" */
 
 #endif

@@ -50,23 +50,16 @@ _WPRTLINK unsigned      _wint_thread_data_offset;
 extern "C" AXI( CPPLIB( multi_thread_init ), INIT_PRIORITY_THREAD )
 #endif
 
+extern "C" {
+
 #ifndef NDEBUG
 
-    extern "C" {
+    // THESE CAUSE THE DEBUGGING ROUTINES TO BE FORCED INTO MODULES
 
-        // THESE CAUSE THE DEBUGGING ROUTINES TO BE FORCED INTO MODULES
-
-        extern void CPPLIB( DbgRtDumpAutoDtor )( void );
-        extern void CPPLIB( DbgRtDumpModuleDtor )( void );
-
-        #pragma extref ( CPPLIB( DbgRtDumpAutoDtor ) );
-        #pragma extref ( CPPLIB( DbgRtDumpModuleDtor ) );
-
-    };
+    #pragma extref ( CPPLIB( DbgRtDumpAutoDtor ) );
+    #pragma extref ( CPPLIB( DbgRtDumpModuleDtor ) );
 
 #endif
-
-extern "C" {
 
     // Note: these have _WPRTDATA because they are used only to check
     //       consistency. Linker must resolve references to them.

@@ -39,6 +39,7 @@
 #include <cstdarg>
 #include <cstring>
 #include <cstdlib>
+#include <unistd.h>
 #include "rtexcept.h"
 #include "exc_pr.h"
 #include "clibsupp.h"
@@ -47,16 +48,7 @@
 #define MX_FSTK         10
 #define default_file    "_CPPDBG_."
 
-#define STDOUT_FILENO 1
-
 extern "C" {
-
-static std::FILE *fstk[MX_FSTK];    // suspended files
-static unsigned index;              // top of files stack
-static int logging;                 // true ==> logging at level 0
-
-static void dumpDtorCmd( RW_DTREG*, DTOR_CMD* );
-
 
 enum FT                         // types of formatting
 {   FT_RW                       // - R/W header
@@ -77,16 +69,18 @@ enum FT                         // types of formatting
 ,   FT_END                      // - end
 };
 
+static std::FILE    *fstk[MX_FSTK]; // suspended files
+static unsigned     index;          // top of files stack
+static int          logging;        // true ==> logging at level 0
+static unsigned     indent = 1;     // # of indentations
+
+static void dumpDtorCmd( RW_DTREG*, DTOR_CMD* );
 
 static void dumpTitle(          // DUMP A TITLE
     const char* title )         // - the title
 {
     printf( "%s\n\n", title );
 }
-
-
-static unsigned indent = 1;     // # of indentations
-
 
 static void dump(               // FORMATTED DUMP
     enum FT ft, ... )           // - FT formatting
