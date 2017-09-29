@@ -27,13 +27,13 @@
 // C99 types in stddef.h
 #ifndef _SIZE_T_DEFINED
 #define _SIZE_T_DEFINED
-#define _SIZE_T_DEFINED_
-using std::size_t;
+ #define _SIZE_T_DEFINED_
+ using std::size_t;
 #endif
 #ifndef _PTRDIFF_T_DEFINED
 #define _PTRDIFF_T_DEFINED
-#define _PTRDIFF_T_DEFIEND_
-using std::ptrdiff_t;
+ #define _PTRDIFF_T_DEFIEND_
+ using std::ptrdiff_t;
 #endif
 
 #else /* __cplusplus not defined */

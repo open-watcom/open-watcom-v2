@@ -24,7 +24,7 @@
 #endif
 
 #ifndef _STDEXCEPT_INCLUDED
- #include <stdexcep>
+ #include <stdexcept>
 #endif
 
 #ifndef _IOSFWD_INCLUDED

@@ -15,7 +15,7 @@
 :include cpponly.sp
 
 #ifndef _ALGORITHM_INCLUDED
- #include <algorith>
+ #include <algorithm>
 #endif
 
 #ifndef _ITERATOR_INCLUDED
@@ -31,11 +31,11 @@
 #endif
 
 #ifndef _TYPE_TRAITS_INCLUDED
- #include <type_tra>
+ #include <type_traits>
 #endif
 
 #ifndef _FUNCTIONAL_INCLUDED
- #include <function>
+ #include <functional>
 #endif
 
 :include nsstd.sp

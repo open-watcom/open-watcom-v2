@@ -37,7 +37,7 @@ using std::set_new_handler;
 #endif
 
 #ifndef _EXCEPTION_INCLUDED
- #include <exceptio>
+ #include <exception>
 #endif
 
 :include cpppfv.sp

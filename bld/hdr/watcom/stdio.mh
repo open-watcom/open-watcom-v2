@@ -93,8 +93,8 @@ using std::vsscanf;
 // C99 types that are not specified for stdio.h
 #ifndef _WINT_T_DEFINED
 #define _WINT_T_DEFINED
-#define _WINT_T_DEFINED_
-using std::wint_t;
+ #define _WINT_T_DEFINED_
+ using std::wint_t;
 #endif
 
 :: Wide character version

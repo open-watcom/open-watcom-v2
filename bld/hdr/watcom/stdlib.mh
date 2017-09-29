@@ -32,8 +32,8 @@ using std::div_t;
 using std::ldiv_t;
 #ifndef _SIZE_T_DEFINED
 #define _SIZE_T_DEFINED
-#define _SIZE_T_DEFINED_
-using std::size_t;
+ #define _SIZE_T_DEFINED_
+ using std::size_t;
 #endif
 
 // C99 functions in stdlib.h

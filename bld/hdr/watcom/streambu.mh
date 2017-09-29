@@ -14,7 +14,7 @@
 :include readonly.sp
 
 #ifndef _STREAMBUF_INCLUDED
- #include <streambu>
+ #include <streambuf>
 #endif
 using std::streambuf;
 

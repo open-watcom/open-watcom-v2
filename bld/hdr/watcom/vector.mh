@@ -28,11 +28,11 @@
 #endif
 
 #ifndef _STDEXCEPT_INCLUDED
- #include <stdexcep>
+ #include <stdexcept>
 #endif
 
 #ifndef _TYPE_TRAITS_INCLUDED
- #include <type_tra>
+ #include <type_traits>
 #endif
 
 :include nsstd.sp

@@ -16,7 +16,7 @@
 :include readonly.sp
 
 #ifndef _EXCEPTION_INCLUDED
- #include <exceptio>
+ #include <exception>
 #endif
 using std::exception;
 using std::bad_exception;
@@ -29,7 +29,7 @@ using std::terminate;
 // using std::uncaught_exception;
 
 // Needed for compatibility with Watcom legacy code?
-// #include <stdexcep.h>
+// #include <stdexcept.h>
 
 #endif
 :elsesegment

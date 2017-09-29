@@ -28,13 +28,13 @@
 // C99 types in wctype.h
 #ifndef _WINT_T_DEFINED
 #define _WINT_T_DEFINED
-#define _WINT_T_DEFINED_
-using std::wint_t;
+ #define _WINT_T_DEFINED_
+ using std::wint_t;
 #endif
 #ifndef _WCTYPE_T_DEFINED
 #define _WCTYPE_T_DEFINED
-#define _WCTYPE_T_DEFINED_
-using std::wctype_t;
+ #define _WCTYPE_T_DEFINED_
+ using std::wctype_t;
 #endif
 
 // C99 functions in wctype.h

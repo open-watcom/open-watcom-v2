@@ -8,13 +8,13 @@
 //              defines the necessary classes for strstream support.
 ///////////////////////////////////////////////////////////////////////////
 :segment !CNAME
-#ifndef _STRSTREA_H_INCLUDED
-#define _STRSTREA_H_INCLUDED
+#ifndef _STRSTREAM_H_INCLUDED
+#define _STRSTREAM_H_INCLUDED
 
 :include readonly.sp
 
-#ifndef _STRSTREA_INCLUDED
- #include <strstrea>
+#ifndef _STRSTREAM_INCLUDED
+ #include <strstream>
 #endif
 using std::strstreambuf;
 using std::strstreambase;
@@ -29,8 +29,8 @@ using std::strstream;
 
 #endif
 :elsesegment
-#ifndef _STRSTREA_INCLUDED
-#define _STRSTREA_INCLUDED
+#ifndef _STRSTREAM_INCLUDED
+#define _STRSTREAM_INCLUDED
 
 :include readonly.sp
 
