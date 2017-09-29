@@ -36,7 +36,7 @@
 #include <unistd.h>
 #include <cstdio>
 #include <iostream>
-#include <stdiobuf>
+#include <stdiobuf.h>
 #endif
 #include "sdfhdr.h"
 

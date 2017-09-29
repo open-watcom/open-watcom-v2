@@ -33,20 +33,13 @@
 #define _ISTHDR_H_INCLUDED
 
 #define ERR_CHAR    '\0'
+
 extern std::ios::iostate __getaline( std::istream &, char *, std::streamsize, char, int, std::streamsize & );
 extern std::ios::iostate __getsign( std::streambuf *, char & );
 extern std::ios::iostate __getbase( std::streambuf *, int &, std::streamsize & );
 extern std::ios::iostate __getnumber( std::streambuf *, unsigned long &, int, std::streamsize & );
-extern std::ios::iostate __getunsignedlong( std::streambuf *,
-                                            unsigned long &,
-                                            unsigned long,
-                                            signed long,
-                                            std::ios::fmtflags );
-extern std::ios::iostate __getnumberint64( std::streambuf *, unsigned __int64 &, int, int &);
-extern std::ios::iostate __getunsignedint64( std::streambuf *,
-                                             unsigned __int64 &,
-                                             unsigned __int64,
-                                             signed __int64,
-                                             std::ios::fmtflags );
+extern std::ios::iostate __getunsignedlong( std::streambuf *, unsigned long &, unsigned long, signed long, std::ios::fmtflags );
+extern std::ios::iostate __getnumberint64( std::streambuf *, unsigned __int64 &, int, int & );
+extern std::ios::iostate __getunsignedint64( std::streambuf *, unsigned __int64 &, unsigned __int64, signed __int64, std::ios::fmtflags );
 
 #endif

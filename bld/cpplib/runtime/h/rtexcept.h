@@ -61,7 +61,6 @@ typedef enum                    // TYPES OF DISPATCHABILITIES
 // Commands referenced from state-variable table
 //************************************************************************
 
-
 struct RT_ARRAY_INIT                    // RT_ARRAY_INIT: array being init'ed
 {   void* array;                        // - addr[ array ]
     RT_TYPE_SIG sig;                    // - type signature
@@ -103,7 +102,7 @@ struct DTOR_CMD_TRY                     // DTOR_CMD: TRY
 {   DTOR_CMD_BASE base;                 // - base
     DTOR_CMD_BASE base_catch;           // - base: catch
     AlignPad2
-    RT_STATE_VAR state;                 // - state preceding try
+    RT_STATE_VAR state_var;             // - state preceding try
     offset_t jmp_buf;                   // - RW-offset[ longjmp jmp_buf ]
     offset_t offset;                    // - RW-offset[ try variable ]
     offset_t count;                     // - number of catch blocks
@@ -414,7 +413,6 @@ struct DISPATCH_EXC             // DISPATCH_EXC -- dispatch control
     PData* pdata;               // - proc. descr. for dispatching rtn.
 #endif
 };
-
 
 //************************************************************************
 // PROTOTYPES

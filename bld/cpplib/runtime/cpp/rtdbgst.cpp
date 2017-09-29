@@ -400,7 +400,7 @@ static void dumpDtorCmd(        // DUMP DTOR COMMAND
         break;
       case DTC_TRY :
         dump( FT_TEXT, "TRY"
-            , FT_OFF,  "state", cmd->try_cmd.state
+            , FT_OFF,  "state", cmd->try_cmd.state_var
             , FT_OFF,  "jmpbuf", cmd->try_cmd.jmp_buf
             , FT_PTR,  "addr", PointOffset( rw, cmd->try_cmd.jmp_buf )
             , FT_OFF,  "offset", cmd->try_cmd.offset
