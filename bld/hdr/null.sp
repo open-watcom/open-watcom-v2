@@ -9,6 +9,7 @@
 ::
 :: New code used after version 1.8
 ::
+#ifndef NULL
 :segment !CONLY
 :segment !CNAME
 #ifdef __cplusplus
@@ -32,3 +33,4 @@
 #endif
 :endsegment
 :endsegment
+#endif
